@@ -191,8 +191,6 @@
 #include "../filter/hq2x.h"
 #include "../filter/2xsai.h"
 
-#define RenderMethod ((Src.Height > SNES_HEIGHT_EXTENDED || Src.Width == 512) ? RenderMethodHiRes : RenderMethod)
-
 #ifndef max
 #define max(a, b) (((a) > (b)) ? (a) : (b))
 #endif
@@ -345,7 +343,7 @@ void CDirect3D::Render(SSurface Src)
 				ResetDevice();
 				return;
 			default:
-				DXTRACE_ERR( TEXT("Internal driver error"), hr);
+				DXTRACE_ERR_MSGBOX( TEXT("Internal driver error"), hr);
 				return;
 		}
 	}
@@ -362,8 +360,8 @@ void CDirect3D::Render(SSurface Src)
 
 		RenderMethod (Src, Dst, &dstRect);
 		if(!Settings.AutoDisplayMessages) {
-			WinSetCustomDisplaySurface((void *)Dst.Surface, Dst.Pitch/2, dstRect.right-dstRect.left, dstRect.bottom-dstRect.top, GetFilterScale(GUI.Scale));
-			S9xDisplayMessages ((uint16*)Dst.Surface, Dst.Pitch/2, dstRect.right-dstRect.left, dstRect.bottom-dstRect.top, GetFilterScale(GUI.Scale));
+			WinSetCustomDisplaySurface((void *)Dst.Surface, Dst.Pitch/2, dstRect.right-dstRect.left, dstRect.bottom-dstRect.top, GetFilterScale(CurrentScale));
+			S9xDisplayMessages ((uint16*)Dst.Surface, Dst.Pitch/2, dstRect.right-dstRect.left, dstRect.bottom-dstRect.top, GetFilterScale(CurrentScale));
 		}
 
 		drawSurface->UnlockRect(0);

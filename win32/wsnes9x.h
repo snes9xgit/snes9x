@@ -294,9 +294,7 @@ struct sGUI {
     int  RefreshRate;*/
 	dMode FullscreenMode;
     RenderFilter Scale;
-    RenderFilter NextScale;
     RenderFilter ScaleHiRes;
-    RenderFilter NextScaleHiRes;
     bool DoubleBuffered;
     bool FullScreen;
     bool Stretch;
@@ -558,8 +556,6 @@ enum
 #define EXT_OFFSET (EXT_PITCH * 2 + 2 * 2)
 
 #define WIN32_WHITE RGB(255,255,255)
-
-#define SET_UI_COLOR(r,g,b) SetInfoDlgColor(r,g,b)
 
 /*****************************************************************************/
 

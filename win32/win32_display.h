@@ -182,6 +182,10 @@
 #include "render.h"
 #include <vector>
 
+#define IsHiRes(x) ((x.Height > SNES_HEIGHT_EXTENDED || x.Width == 512))
+#define RenderMethod (IsHiRes(Src) ? RenderMethodHiRes : RenderMethod)
+#define CurrentScale (IsHiRes(Src) ? GUI.ScaleHiRes : GUI.Scale)
+
 void WinRefreshDisplay(void);
 void S9xSetWinPixelFormat ();
 void SwitchToGDI();

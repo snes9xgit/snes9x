@@ -202,7 +202,6 @@ CDirectSound::CDirectSound()
 	bufferSize = 0;
 	blockSamples = 0;
 	hTimer = NULL;
-	hTimerQueue = NULL;
 }
 
 CDirectSound::~CDirectSound()
@@ -268,12 +267,6 @@ opened DirectSound in exclusive mode."),
 		}
 	}
 
-	hTimerQueue = CreateTimerQueue();
-	if(!hTimerQueue) {
-		DeInitDirectSound();
-		return false;
-	}
-
     return (initDone);
 }
 
@@ -292,10 +285,6 @@ void CDirectSound::DeInitDirectSound()
         lpDS->Release ();
         lpDS = NULL;
     }
-	if(hTimerQueue) {
-		DeleteTimerQueueEx(hTimer,NULL);
-		hTimerQueue = NULL;
-	}
 }
 
 /*  CDirectSound::InitSoundBuffer
@@ -371,8 +360,7 @@ deinitializes the DirectSound/temp buffers and stops the mixing timer
 void CDirectSound::DeInitSoundBuffer()
 {
 	if(hTimer) {
-		if(!DeleteTimerQueueTimer(hTimerQueue,hTimer,INVALID_HANDLE_VALUE))
-			DeleteTimerQueueTimer(hTimerQueue,hTimer,INVALID_HANDLE_VALUE);
+		timeKillEvent(hTimer);
 		hTimer = NULL;
 	}
 	if( lpDSB != NULL)
@@ -428,8 +416,8 @@ bool CDirectSound::SetupSound()
 
 	last_block = blockCount - 1;
 	
-
-	if(!CreateTimerQueueTimer(&hTimer,hTimerQueue,SoundTimerCallback,(void *)this,blockTime/2,blockTime/2,WT_EXECUTEINIOTHREAD)) {
+	hTimer = timeSetEvent (blockTime/2, blockTime/2, SoundTimerCallback, (DWORD_PTR)this, TIME_PERIODIC);
+	if(!hTimer) {
 		DeInitSoundBuffer();
 		return false;
 	}
@@ -460,6 +448,8 @@ void CDirectSound::MixSound()
     HRESULT hResult;
 	DWORD curr_block;
 	
+	if(!initDone)
+		return;
 	
     lpDSB->GetCurrentPosition (&play_pos, NULL);
 
@@ -509,8 +499,9 @@ void CDirectSound::MixSound()
 /*  CDirectSound::SoundTimerCallback
 Timer callback that tries to mix a new block. Called twice each block.
 */
-VOID CALLBACK CDirectSound::SoundTimerCallback(PVOID lpParameter,BOOLEAN TimerOrWaitFired) {
-	CDirectSound *S9xDirectSound = (CDirectSound *)lpParameter;
+
+VOID CALLBACK CDirectSound::SoundTimerCallback(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2) {
+	CDirectSound *S9xDirectSound = (CDirectSound *)dwUser;
     S9xDirectSound->MixSound();
 }
 

@@ -373,6 +373,7 @@ inline static bool GetFilter32BitSupport(RenderFilter filterID)
 		case FILTER_SCANLINES:
 		case FILTER_TVMODE3X:
 		case FILTER_DOTMATRIX3X:
+		case FILTER_SIMPLE4X:
 			return true;
 
 		default:

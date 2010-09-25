@@ -1354,7 +1354,7 @@ void DoAVIClose(int reason)
 void DoAVIVideoFrame(SSurface* source_surface, int Width, int Height/*, bool8 sixteen_bit*/)
 {
 	static uint32 lastFrameCount=0;
-	if(!GUI.AVIOut || (IPPU.FrameCount==lastFrameCount))
+	if(!GUI.AVIOut || !avi_buffer || (IPPU.FrameCount==lastFrameCount))
 	{
 		return;
 	}

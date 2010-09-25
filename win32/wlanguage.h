@@ -325,7 +325,7 @@
 #define GAMEDEVICE_NUMPADPREFIX "Numpad-%c"
 #define GAMEDEVICE_VK_TAB "Tab"
 #define GAMEDEVICE_VK_BACK "Backspace"
-#define GAMEDEVICE_VK_CLEAR "Delete"
+#define GAMEDEVICE_VK_CLEAR "Clear"
 #define GAMEDEVICE_VK_RETURN "Enter"
 #define GAMEDEVICE_VK_LSHIFT "LShift"
 #define GAMEDEVICE_VK_RSHIFT "RShift"

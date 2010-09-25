@@ -300,6 +300,8 @@ void _makepath (char *, const char *, const char *, const char *, const char *);
 #define strncasecmp	strnicmp
 void WinDisplayStringFromBottom(const char *string, int linesFromBottom, int pixelsFromLeft, bool allowWrap);
 #define S9xDisplayString	WinDisplayStringFromBottom
+void SetInfoDlgColor(unsigned char, unsigned char, unsigned char);
+#define SET_UI_COLOR(r,g,b) SetInfoDlgColor(r,g,b)
 #endif
 
 #ifdef __DJGPP

@@ -237,18 +237,18 @@ void WinSetDefaultValues ()
 	GUI.ValidControllerOptions = 0xFFFF;
 	GUI.IgnoreNextMouseMove	= false;
 
-	GUI.HideMenu = false;
-	GUI.window_size.left = 0;
+	//GUI.HideMenu = false;
+	/*GUI.window_size.left = 0;
 	GUI.window_size.right =	524;
 	GUI.window_size.top	= 0;
-	GUI.window_size.bottom = 524;
-	GUI.FullscreenMode.width =	640;
+	GUI.window_size.bottom = 524;*/
+	/*GUI.FullscreenMode.width =	640;
 	GUI.FullscreenMode.height = 480;
 	GUI.FullscreenMode.depth =	16;
 	GUI.Scale =	FILTER_NONE;
 	GUI.NextScale =	FILTER_NONE;
 	GUI.ScaleHiRes =	FILTER_NONE;
-	GUI.NextScaleHiRes =	FILTER_NONE;
+	GUI.NextScaleHiRes =	FILTER_NONE;*/
 	GUI.DoubleBuffered = false;
 	GUI.FullScreen = false;
 	GUI.Stretch	= false;
@@ -262,29 +262,29 @@ void WinSetDefaultValues ()
 	WinDeleteRecentGamesList ();
 
 	// ROM Options
-	memset (&Settings, 0, sizeof (Settings));
+	//memset (&Settings, 0, sizeof (Settings));
 
-	Settings.ForceLoROM	= false;
-	Settings.ForceInterleaved =	false;
+	//Settings.ForceLoROM	= false;
+	//Settings.ForceInterleaved =	false;
 
-	Settings.ForceNotInterleaved = false;
-	Settings.ForceInterleaved =	false;
-	Settings.ForceInterleaved2 = false;
+	//Settings.ForceNotInterleaved = false;
+	//Settings.ForceInterleaved =	false;
+	//Settings.ForceInterleaved2 = false;
 
-	Settings.ForcePAL =	false;
-	Settings.ForceNTSC = false;
-	Settings.ForceHeader = false;
-	Settings.ForceNoHeader = false;
+	//Settings.ForcePAL =	false;
+	//Settings.ForceNTSC = false;
+	//Settings.ForceHeader = false;
+	//Settings.ForceNoHeader = false;
 
 	// Sound options
-	Settings.SoundSync = FALSE;
-	Settings.Mute =	FALSE;
-	Settings.SoundPlaybackRate = 32000;
-	Settings.SixteenBitSound = TRUE;
-	Settings.Stereo	= TRUE;
-	Settings.ReverseStereo = FALSE;
+	//Settings.SoundSync = FALSE;
+	//Settings.Mute =	FALSE;
+	//Settings.SoundPlaybackRate = 32000;
+	//Settings.SixteenBitSound = TRUE;
+	//Settings.Stereo	= TRUE;
+	//Settings.ReverseStereo = FALSE;
 	GUI.SoundChannelEnable=255;
-	GUI.FAMute	= FALSE;
+	//GUI.FAMute	= FALSE;
 
 	// Tracing options
 	Settings.TraceDMA =	false;
@@ -300,41 +300,41 @@ void WinSetDefaultValues ()
 	Settings.FrameTime = 16667;
 
 	// CPU options
-	Settings.HDMATimingHack = 100;
-	Settings.Shutdown =	false;
-	Settings.ShutdownMaster	= false;
-	Settings.BlockInvalidVRAMAccess = true;
-	Settings.DisableIRQ	= false;
+	//Settings.HDMATimingHack = 100;
+	//Settings.Shutdown =	false;
+	//Settings.ShutdownMaster	= false;
+	//Settings.BlockInvalidVRAMAccess = true;
+	//Settings.DisableIRQ	= false;
 	Settings.Paused	= false;
-	Timings.H_Max =	SNES_CYCLES_PER_SCANLINE;
-	Timings.HBlankStart	= (256 * Timings.H_Max)	/ SNES_HCOUNTER_MAX;
-	Settings.SkipFrames	= AUTO_FRAMERATE;
+	//Timings.H_Max =	SNES_CYCLES_PER_SCANLINE;
+	//Timings.HBlankStart	= (256 * Timings.H_Max)	/ SNES_HCOUNTER_MAX;
+	//Settings.SkipFrames	= AUTO_FRAMERATE;
 
 	// ROM image and peripheral	options
 	Settings.MultiPlayer5Master	= false;
 	Settings.SuperScopeMaster =	false;
 	Settings.MouseMaster = false;
-	Settings.SuperFX = false;
+	//Settings.SuperFX = false;
 
 	// SNES	graphics options
-	Settings.DisableGraphicWindows = false;
-	Settings.DisableHDMA = false;
-	GUI.HeightExtend = false;
-	Settings.DisplayFrameRate =	false;
+	//Settings.DisableGraphicWindows = false;
+	//Settings.DisableHDMA = false;
+	//GUI.HeightExtend = false;
+	//Settings.DisplayFrameRate =	false;
 //	Settings.SixteenBit =	true;
-	Settings.Transparency =	true;
-	Settings.SupportHiRes =	true;
-	Settings.AutoDisplayMessages = false; // this port supports	text display on	post-rendered surface
+	//Settings.Transparency =	true;
+	//Settings.SupportHiRes =	true;
+	//Settings.AutoDisplayMessages = false; // this port supports	text display on	post-rendered surface
 
-	Settings.DisplayPressedKeys	= 0;
-	GUI.CurrentSaveSlot = 0;
-	Settings.AutoSaveDelay = 15;
-	Settings.ApplyCheats = true;
+	//Settings.DisplayPressedKeys	= 0;
+	//GUI.CurrentSaveSlot = 0;
+	//Settings.AutoSaveDelay = 15;
+	//Settings.ApplyCheats = true;
 
-	Settings.TurboMode = false;
-	Settings.TurboSkipFrames = 15;
-	GUI.TurboModeToggle	= true;
-	Settings.AutoMaxSkipFrames = 1;
+	//Settings.TurboMode = false;
+	//Settings.TurboSkipFrames = 15;
+	//GUI.TurboModeToggle	= true;
+	//Settings.AutoMaxSkipFrames = 1;
 
 #ifdef NETPLAY_SUPPORT
 	Settings.Port =	1996;
@@ -344,11 +344,9 @@ void WinSetDefaultValues ()
 	NPServer.SendROMImageOnConnect = false;
 #endif
 
-	GUI.FreezeFileDir [0] =	0;
+	//GUI.FreezeFileDir [0] =	0;
 	Settings.TakeScreenshot=false;
-	Settings.StretchScreenshots=1;
-
-	GUI.EmulatedFullscreen = false;
+	//Settings.StretchScreenshots=1;
 
 	GUI.Language=0;
 }
@@ -892,7 +890,6 @@ void WinPostSave(ConfigFile& conf)
 void WinPostLoad(ConfigFile& conf)
 {
 	int i;
-	GUI.NextScale =	GUI.Scale;
 	if(Settings.DisplayPressedKeys) Settings.DisplayPressedKeys = 2;
 	for(i=0;i<8;i++) Joypad[i+8].Enabled = Joypad[i].Enabled;
 	if(GUI.MaxRecentGames < 1) GUI.MaxRecentGames = 1;
@@ -975,7 +972,7 @@ void WinRegisterConfigItems()
 	AddBoolC("Stretch:MaintainAspectRatio", GUI.AspectRatio, true, "prevents stretching from changing the aspect ratio");
 	AddUIntC("Stretch:AspectRatioBaseWidth", GUI.AspectWidth, 256, "base width for aspect ratio calculation (AR=AspectRatioBaseWidth/224), default is 256 - set to 299 for 4:3 aspect ratio");
 	AddBoolC("Stretch:BilinearFilter", GUI.BilinearFilter, true, "allows bilinear filtering of stretching. Depending on your video card and the window size, this may result in a lower framerate.");
-	AddBoolC("Stretch:LocalVidMem", GUI.LocalVidMem, true, "determines the location of video memory, if UseVideoMemory = true. May increase or decrease rendering performance, depending on your setup and which filter and stretching options are active.");
+	AddBoolC("Stretch:LocalVidMem", GUI.LocalVidMem, true, "determines the location of video memory in DirectDraw mode. May increase or decrease rendering performance, depending on your setup and which filter and stretching options are active.");
 	AddBool("Fullscreen:Enabled", GUI.FullScreen, false);
 	AddUInt("Fullscreen:Width", GUI.FullscreenMode.width, 640);
 	AddUInt("Fullscreen:Height", GUI.FullscreenMode.height, 480);
@@ -984,11 +981,11 @@ void WinRegisterConfigItems()
 	AddBool("Fullscreen:DoubleBuffered", GUI.DoubleBuffered, false);
 	AddBoolC("Fullscreen:EmulateFullscreen", GUI.EmulateFullscreen, true,"true makes snes9x create a window that spans the entire screen when going fullscreen");
 	AddBoolC("HideMenu", GUI.HideMenu, false, "true to auto-hide the menu bar on startup.");
-	AddBoolC("Vsync", GUI.Vsync, false, "true to enable Vsync, only available with Direct3D");
+	AddBoolC("Vsync", GUI.Vsync, false, "true to enable Vsync");
 #undef CATEGORY
 #define CATEGORY "Settings"
-	AddUIntC("FrameSkip", Settings.SkipFrames, AUTO_FRAMERATE, "200=automatic, 0=none, 1=skip every other, ...");
-	AddUIntC("AutoMaxSkipFramesAtOnce", Settings.AutoMaxSkipFrames, 0, "most frames to skip at once to maintain speed, don't set to more than 1 or 2 frames because the skipping algorithm isn't very smart");
+	AddUIntC("FrameSkip", Settings.SkipFrames, AUTO_FRAMERATE, "200=automatic (limits at 50/60 fps), 0=none, 1=skip every other, ...");
+	AddUIntC("AutoMaxSkipFramesAtOnce", Settings.AutoMaxSkipFrames, 0, "most frames to skip at once to maintain speed in automatic mode, don't set to more than 1 or 2 frames because the skipping algorithm isn't very smart");
 	AddUIntC("TurboFrameSkip", Settings.TurboSkipFrames, 15, "how many frames to skip when in fast-forward mode");
 	AddUInt("AutoSaveDelay", Settings.AutoSaveDelay, 30);
 	AddBool2C("SpeedHacks", Settings.ShutdownMaster, false, "on to skip emulating the CPU when it is not being used ... recommended OFF");
@@ -1029,29 +1026,21 @@ void WinRegisterConfigItems()
 		ADD(25); ADD(26); ADD(27); ADD(28); ADD(29); ADD(30); ADD(31); ADD(32);
 		assert(MAX_RECENT_GAMES_LIST_SIZE == 32);
 	#undef ADD
-	AddString("Pack:StarOcean", GUI.StarOceanPack, _MAX_PATH, "");
-	AddString("Pack:FarEast", GUI.FEOEZPack, _MAX_PATH, "");
-	AddString("Pack:SFA2NTSC", GUI.SFA2NTSCPack, _MAX_PATH, "");
-	AddString("Pack:SFA2PAL", GUI.SFA2PALPack, _MAX_PATH, "");
-	AddString("Pack:Momotarou", GUI.MDHPack, _MAX_PATH, "");
-	AddString("Pack:SFZ2", GUI.SFZ2Pack, _MAX_PATH, "");
-	AddString("Pack:ShounenJump", GUI.SJNSPack, _MAX_PATH, "");
-	AddString("Pack:SPL4", GUI.SPL4Pack, _MAX_PATH, "");
 	AddString("Rom:MultiCartA", multiRomA, _MAX_PATH, "");
 	AddString("Rom:MultiCartB", multiRomB, _MAX_PATH, "");
 #undef CATEGORY
 #define	CATEGORY "Sound"
-	AddIntC("Sync", Settings.SoundSync, 1, "1 to enable sound sync to CPU, 0 to disable. Necessary for some sounds to be accurate. Not supported unless SoundDriver=0. May cause sound problems on certain setups.");
+	AddIntC("Sync", Settings.SoundSync, 1, "1 to sync emulation to sound output, 0 to disable.");
 	AddBool2("Stereo", Settings.Stereo, true);
 	AddBool("SixteenBitSound", Settings.SixteenBitSound, true);
-	AddUIntC("Rate", Settings.SoundPlaybackRate, 32000, "sound playback quality, in Hz: 1=8000, 2=11025, 3=16000, 4=22050, 5=30000, 6=32000, 7=35000, 8=44100, 9=48000");
-	AddUIntC("InputRate", Settings.SoundInputRate, 31900, "");
+	AddUIntC("Rate", Settings.SoundPlaybackRate, 32000, "sound playback quality, in Hz");
+	AddUIntC("InputRate", Settings.SoundInputRate, 31900, "for each 'Input rate' samples generated by the SNES, 'Playback rate' samples will produced. If you experience crackling you can try to lower this setting.");
 	AddBoolC("ReverseStereo", Settings.ReverseStereo, false, "true to swap speaker outputs");
 	AddBoolC("Mute", GUI.Mute, false, "true to mute sound output (does not disable the sound CPU)");
 #undef CATEGORY
 #define	CATEGORY "Sound\\Win"
-	AddUIntC("SoundDriver", GUI.SoundDriver, 4, "0=Snes9xDirectSound (recommended), 1=fmodDirectSound, 2=fmodWaveSound, 3=fmodA3DSound, 4=XAudio2");
-	AddUIntC("BufferSize", GUI.SoundBufferSize, 64, "sound buffer size - the mixing interval is multiplied by this (and an additional *4 in case of DirectSound) ");
+	AddUIntC("SoundDriver", GUI.SoundDriver, 4, "0=Snes9xDirectSound, 4=XAudio2 (recommended), 5=FMOD Default, 6=FMOD ASIO, 7=FMOD OpenAL");
+	AddUIntC("BufferSize", GUI.SoundBufferSize, 64, "sound buffer size in ms - determines the internal and output sound buffer sizes. actual mixing is done every SoundBufferSize/4 samples");
 	AddBoolC("MuteFrameAdvance", GUI.FAMute, false, "true to prevent Snes9x from outputting sound when the Frame Advance command is in use");
 #undef CATEGORY
 #define	CATEGORY "Controls"
@@ -1059,7 +1048,7 @@ void WinRegisterConfigItems()
 #undef CATEGORY
 #define	CATEGORY "ROM"
 	AddBoolC("Cheat", Settings.ApplyCheats, true, "true to allow enabled cheats to be applied");
-	AddInvBoolC("Patch", Settings.NoPatch, true, "true to allow IPS patches to be applied (\"soft patching\")");
+	AddInvBoolC("Patch", Settings.NoPatch, true, "true to allow IPS/UPS patches to be applied (\"soft patching\")");
 	AddBoolC("BS", Settings.BS, false, "Broadcast Satellaview emulation");
 	AddStringC("Filename", rom_filename, MAX_PATH, "", "filename of ROM to run when Snes9x opens");
 #undef CATEGORY

@@ -1707,8 +1707,6 @@ LRESULT CALLBACK WinProc(
 			//end turbo
 		case ID_OPTIONS_DISPLAY:
 			{
-				int old_scale = GUI.NextScale;
-
 				RestoreGUIDisplay ();
 				
 				if(GUI.FullScreen)
@@ -1717,11 +1715,6 @@ LRESULT CALLBACK WinProc(
 				
 				SwitchToGDI();
 
-				if (GUI.NextScale != old_scale)
-				{
-					UpdateScale((RenderFilter &)old_scale, GUI.NextScale);
-				}
-				GUI.ScaleHiRes = GUI.NextScaleHiRes;
 				RestoreSNESDisplay ();
 
 				S9xGraphicsDeinit();
@@ -2324,7 +2317,7 @@ LRESULT CALLBACK WinProc(
 
 	case WM_EXITMENULOOP:
 		UpdateWindow(GUI.hWnd);
-		//UpdateBackBuffer();
+		DrawMenuBar(GUI.hWnd);
 		S9xClearPause (PAUSE_MENU);
 		break;
 
@@ -2333,7 +2326,7 @@ LRESULT CALLBACK WinProc(
 		CheckMenuStates ();
 
 		SwitchToGDI();
-		DrawMenuBar( GUI.hWnd);
+		DrawMenuBar(GUI.hWnd);
 		break;
 
 	case WM_CLOSE: {
@@ -2351,14 +2344,8 @@ LRESULT CALLBACK WinProc(
 		return (0);
 	case WM_PAINT:
         {
-            PAINTSTRUCT paint;
-
-            BeginPaint (GUI.hWnd, &paint);
-
 			// refresh screen
 			WinRefreshDisplay();
-
-			EndPaint (GUI.hWnd, &paint);
             break;
         }
 	case WM_SYSCOMMAND:
@@ -3446,7 +3433,7 @@ int WINAPI WinMain(
                 DispatchMessage (&msg);
             }
 
-			S9xSetSoundMute(Settings.ForcedPause || (Settings.Paused && (!Settings.FrameAdvance || GUI.FAMute)));
+			S9xSetSoundMute(GUI.Mute || Settings.ForcedPause || (Settings.Paused && (!Settings.FrameAdvance || GUI.FAMute)));
         }
 
 #ifdef NETPLAY_SUPPORT
@@ -3765,6 +3752,7 @@ static void CheckMenuStates ()
     SetMenuItemInfo (GUI.hMenu, ID_FILE_RESET, FALSE, &mii);
     SetMenuItemInfo (GUI.hMenu, ID_CHEAT_ENTER, FALSE, &mii);
     SetMenuItemInfo (GUI.hMenu, ID_CHEAT_SEARCH_MODAL, FALSE, &mii);
+	SetMenuItemInfo (GUI.hMenu, IDM_ROM_INFO, FALSE, &mii);
 
 	if (GUI.FullScreen)
         mii.fState |= MFS_DISABLED;
@@ -4834,25 +4822,19 @@ int CALLBACK DlgInfoProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				default:strcat(romtext, "Unknown region 15");break;
 				}
 				SendDlgItemMessage(hDlg, IDC_ROM_DATA, WM_SETTEXT, 0, (LPARAM)romtext);
-				return true;
 				break;
 			}
 			case WM_CTLCOLORSTATIC:
 
-				if(GUI.InfoColor!=WIN32_WHITE)
+				if(GetDlgCtrlID((HWND)lParam)==IDC_ROM_DATA && GUI.InfoColor!=WIN32_WHITE)
 				{
 					SetTextColor((HDC)wParam, GUI.InfoColor);
 					SetBkColor((HDC)wParam, RGB(0,0,0));
+					return (BOOL)GetStockObject( BLACK_BRUSH );
 				}
-				return true;break;
-		case WM_PAINT:
-		{
-		PAINTSTRUCT ps;
-		BeginPaint (hDlg, &ps);
-
-		EndPaint (hDlg, &ps);
-		}
-		return true;
+				break;
+			case WM_PAINT:
+				break;
 
 			case WM_COMMAND:
 				{
@@ -4863,11 +4845,13 @@ int CALLBACK DlgInfoProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						EndDialog(hDlg, 0);
 						return true;
 						break;
-					default: return false; break;
+					default: break;
 					}
 				}
-			default:return false;
+			default:
+				break;
 	}
+	return DefWindowProc (hDlg, msg, wParam, lParam);
 }
 
 int CALLBACK DlgAboutProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -6939,6 +6923,8 @@ int CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 		if(GUI.DoubleBuffered)
 			SendDlgItemMessage(hDlg, IDC_DBLBUFFER, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
+		if(GUI.Vsync)
+			SendDlgItemMessage(hDlg, IDC_VSYNC, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
 		SendDlgItemMessage(hDlg,IDC_FRAMERATESKIPSLIDER,TBM_SETRANGE,(WPARAM)true,(LPARAM)MAKELONG(0,9));
 		if(Settings.SkipFrames!=AUTO_FRAMERATE)
 			SendDlgItemMessage(hDlg,IDC_FRAMERATESKIPSLIDER,TBM_SETPOS,(WPARAM)true,(LPARAM)Settings.SkipFrames);
@@ -7020,7 +7006,7 @@ int CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			}
 		}
 
-		SendDlgItemMessage(hDlg,IDC_FILTERBOX,CB_SETCURSEL,(WPARAM)GUI.NextScale,0);
+		SendDlgItemMessage(hDlg,IDC_FILTERBOX,CB_SETCURSEL,(WPARAM)GUI.Scale,0);
 
 		UpdateModeComboBox(GetDlgItem(hDlg,IDC_RESOLUTION));
 
@@ -7248,6 +7234,9 @@ updateFilterBox2:
 			GUI.HeightExtend = IsDlgButtonChecked(hDlg, IDC_HEIGHT_EXTEND)!=0;
 			Settings.AutoDisplayMessages = IsDlgButtonChecked(hDlg, IDC_MESSAGES_IN_IMAGE);
 			GUI.DoubleBuffered = (bool)(IsDlgButtonChecked(hDlg, IDC_DBLBUFFER)==BST_CHECKED);
+			GUI.Vsync = (bool)(IsDlgButtonChecked(hDlg, IDC_VSYNC
+				
+				)==BST_CHECKED);
 			if(IsDlgButtonChecked(hDlg, IDC_AUTOFRAME))
 			{
 				Settings.SkipFrames=AUTO_FRAMERATE;
@@ -7278,15 +7267,11 @@ updateFilterBox2:
 
 			WinSaveConfigFile();
 
-			if(!GUI.FullScreen || (GUI.FullscreenMode.width >= 512 && GUI.FullscreenMode.height >= 478))
-				GUI.NextScale = (RenderFilter)SendDlgItemMessage(hDlg,IDC_FILTERBOX,CB_GETCURSEL,0,0);
-			else
-				GUI.NextScale = FILTER_NONE;
+			if(GUI.FullScreen && (GUI.FullscreenMode.width < 512 || GUI.FullscreenMode.height < 478))
+				GUI.Scale = FILTER_NONE;
 
-			if(!GUI.FullScreen || (GUI.FullscreenMode.width >= 512 && GUI.FullscreenMode.height >= 478))
-				GUI.NextScaleHiRes = GUI.ScaleHiRes;
-			else
-				GUI.NextScaleHiRes = FILTER_SIMPLE1X;
+			if(GUI.FullScreen && (GUI.FullscreenMode.width < 512 || GUI.FullscreenMode.height < 478))
+				GUI.ScaleHiRes = FILTER_SIMPLE1X;
 
 			EndDialog(hDlg,0);
 			WinDisplayApplyChanges();
@@ -7313,8 +7298,8 @@ updateFilterBox2:
 
 			{
 				//UpdateScale(GUI.Scale, prevScale);
-				GUI.Scale = GUI.NextScale = (RenderFilter)prevScale;
-				GUI.ScaleHiRes = GUI.NextScaleHiRes = (RenderFilter)prevScaleHiRes;
+				GUI.Scale = (RenderFilter)prevScale;
+				GUI.ScaleHiRes = (RenderFilter)prevScaleHiRes;
 				GFX.RealPPL = prevPPL;
 				GUI.Stretch = prevStretch;
 				Settings.AutoDisplayMessages = prevAutoDisplayMessages;

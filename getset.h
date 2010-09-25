@@ -266,6 +266,7 @@ inline uint8 S9xGetByte (uint32 Address)
 
 inline uint16 S9xGetWord (uint32 Address, enum s9xwrap_t w = WRAP_NONE)
 {
+	uint16 ret;
 	uint32	mask = MEMMAP_MASK & (w == WRAP_PAGE ? 0xff : (w == WRAP_BANK ? 0xffff : 0xffffff));
 	if ((Address & mask) == mask)
 	{
@@ -309,7 +310,8 @@ inline uint16 S9xGetWord (uint32 Address, enum s9xwrap_t w = WRAP_NONE)
 	switch ((pint) GetAddress)
 	{
 		case CMemory::MAP_CPU:
-			return (S9xGetCPU(Address & 0xffff) | (S9xGetCPU((Address + 1) & 0xffff) << 8));
+			ret = S9xGetCPU(Address & 0xffff);
+			return (ret | (S9xGetCPU((Address + 1) & 0xffff) << 8));
 
 		case CMemory::MAP_PPU:
 			if (CPU.InDMAorHDMA)
@@ -317,8 +319,9 @@ inline uint16 S9xGetWord (uint32 Address, enum s9xwrap_t w = WRAP_NONE)
 				OpenBus = S9xGetByte(Address);
 				return (OpenBus | (S9xGetByte(Address + 1) << 8));
 			}
-
-			return (S9xGetPPU(Address & 0xffff) | (S9xGetPPU((Address + 1) & 0xffff) << 8));
+			
+			ret = S9xGetPPU(Address & 0xffff);
+			return (ret | (S9xGetPPU((Address + 1) & 0xffff) << 8));
 
 		case CMemory::MAP_LOROM_SRAM:
 		case CMemory::MAP_SA1RAM:
@@ -347,28 +350,36 @@ inline uint16 S9xGetWord (uint32 Address, enum s9xwrap_t w = WRAP_NONE)
 			return (READ_WORD(Memory.BWRAM + ((Address & 0x7fff) - 0x6000)));
 
 		case CMemory::MAP_DSP:
-			return (S9xGetDSP(Address & 0xffff) | (S9xGetDSP((Address + 1) & 0xffff) << 8));
+			ret = S9xGetDSP(Address & 0xffff);
+			return (ret | (S9xGetDSP((Address + 1) & 0xffff) << 8));
 
 		case CMemory::MAP_SPC7110_ROM:
-			return (S9xGetSPC7110Byte(Address) | (S9xGetSPC7110Byte(Address + 1) << 8));
+			ret = S9xGetSPC7110Byte(Address);
+			return (ret | (S9xGetSPC7110Byte(Address + 1) << 8));
 
 		case CMemory::MAP_SPC7110_DRAM:
-			return (S9xGetSPC7110(0x4800) | (S9xGetSPC7110(0x4800) << 8));
+			ret = S9xGetSPC7110(0x4800);
+			return (ret | (S9xGetSPC7110(0x4800) << 8));
 
 		case CMemory::MAP_C4:
-			return (S9xGetC4(Address & 0xffff) | (S9xGetC4((Address + 1) & 0xffff) << 8));
+			ret = S9xGetC4(Address & 0xffff);
+			return (ret | (S9xGetC4((Address + 1) & 0xffff) << 8));
 
 		case CMemory::MAP_OBC_RAM:
-			return (S9xGetOBC1(Address & 0xffff) | (S9xGetOBC1((Address + 1) & 0xffff) << 8));
+			ret = S9xGetOBC1(Address & 0xffff);
+			return (ret | (S9xGetOBC1((Address + 1) & 0xffff) << 8));
 
 		case CMemory::MAP_SETA_DSP:
-			return (S9xGetSetaDSP(Address) | (S9xGetSetaDSP(Address + 1) << 8));
+			ret = S9xGetSetaDSP(Address);
+			return (ret | (S9xGetSetaDSP(Address + 1) << 8));
 
 		case CMemory::MAP_SETA_RISC:
-			return (S9xGetST018(Address) | (S9xGetST018(Address + 1) << 8));
+			ret = S9xGetST018(Address);
+			return (ret | (S9xGetST018(Address + 1) << 8));
 
 		case CMemory::MAP_BSX:
-			return (S9xGetBSX(Address) | (S9xGetBSX(Address + 1) << 8));
+			ret = S9xGetBSX(Address);
+			return (ret | (S9xGetBSX(Address + 1) << 8));
 
 		case CMemory::MAP_NONE:
 		default:

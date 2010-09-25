@@ -561,11 +561,11 @@ void CDirectDraw::Render(SSurface Src)
 	if (!GUI.DepthConverted)
 	{
 		SSurface tmp;
-		static BYTE buf [256 * 239 * 4*3*3];
+		static BYTE buf[SNES_WIDTH * sizeof(uint16) * SNES_HEIGHT_EXTENDED * sizeof(uint16) *4*4];
 
 		tmp.Surface = buf;
 
-		if(GUI.Scale == FILTER_NONE) {
+		if(CurrentScale == FILTER_NONE) {
 			tmp.Pitch = Src.Pitch;
 			tmp.Width = Src.Width;
 			tmp.Height = Src.Height;
@@ -583,8 +583,8 @@ void CDirectDraw::Render(SSurface Src)
 	}
 
 	if(!Settings.AutoDisplayMessages) {
-		WinSetCustomDisplaySurface((void *)Dst.Surface, (Dst.Pitch*8/GUI.ScreenDepth), srcRect.right-srcRect.left, srcRect.bottom-srcRect.top, GetFilterScale(GUI.Scale));
-		S9xDisplayMessages ((uint16*)Dst.Surface, Dst.Pitch/2, srcRect.right-srcRect.left, srcRect.bottom-srcRect.top, GetFilterScale(GUI.Scale));
+		WinSetCustomDisplaySurface((void *)Dst.Surface, (Dst.Pitch*8/GUI.ScreenDepth), srcRect.right-srcRect.left, srcRect.bottom-srcRect.top, GetFilterScale(CurrentScale));
+		S9xDisplayMessages ((uint16*)Dst.Surface, Dst.Pitch/2, srcRect.right-srcRect.left, srcRect.bottom-srcRect.top, GetFilterScale(CurrentScale));
 	}
 
 	RECT lastRect = SizeHistory [GUI.FlipCounter % GUI.NumFlipFrames];

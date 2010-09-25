@@ -266,8 +266,6 @@ bool8 S9xInitUpdate (void)
 	return (TRUE);
 }
 
-#define RenderMethod ((Src.Height > SNES_HEIGHT_EXTENDED || Src.Width == 512) ? RenderMethodHiRes : RenderMethod)
-
 // only necessary for avi recording
 // TODO: check if this can be removed
 bool8 S9xContinueUpdate(int Width, int Height)
@@ -687,6 +685,8 @@ void ConvertDepth (SSurface *src, SSurface *dst, RECT *srect)
 
 void WinDisplayStringFromBottom (const char *string, int linesFromBottom, int pixelsFromLeft, bool allowWrap)
 {
+	if(Settings.StopEmulation)
+		return;
 	if(Settings.AutoDisplayMessages) {
 		WinSetCustomDisplaySurface((void *)GFX.Screen, GFX.RealPPL, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight, 1);
 		WinDisplayStringInBuffer<uint16>(string, linesFromBottom, pixelsFromLeft, allowWrap);
