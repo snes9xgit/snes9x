@@ -1692,7 +1692,6 @@ int S9xUnfreezeFromStream (STREAM stream)
 		S9xSetPCBase(Registers.PBPC);
 		S9xUnpackStatus();
 		S9xFixCycles();
-		Memory.FixROMSpeed();
 
 		for (int d = 0; d < 8; d++)
 			DMA[d] = dma_snap.dma[d];

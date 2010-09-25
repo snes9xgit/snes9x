@@ -180,15 +180,17 @@
 #include "apu.h"
 #include "snapshot.h"
 #include "display.h"
-#include "resampler.h"
+#include "linear_resampler.h"
+#include "hermite_resampler.h"
 
 #define APU_DEFAULT_INPUT_RATE		32000
 #define APU_MINIMUM_SAMPLE_COUNT	512
 #define APU_MINIMUM_SAMPLE_BLOCK	128
-#define APU_NUMERATOR_NTSC			5632
-#define APU_DENOMINATOR_NTSC		118125
-#define APU_NUMERATOR_PAL			102400
-#define APU_DENOMINATOR_PAL			2128137
+#define APU_NUMERATOR_NTSC			15664
+#define APU_DENOMINATOR_NTSC		328125
+#define APU_NUMERATOR_PAL			34176
+#define APU_DENOMINATOR_PAL			709379
+#define APU_DEFAULT_RESAMPLER		HermiteResampler
 
 SNES_SPC	*spc_core = NULL;
 
@@ -224,8 +226,12 @@ namespace spc
 	static int32		reference_time;
 	static uint32		remainder;
 
-	static const int32	timing_hack_numerator   = SNES_SPC::tempo_unit;
-	static int32		timing_hack_denominator = SNES_SPC::tempo_unit;
+	static const int	timing_hack_numerator   = SNES_SPC::tempo_unit;
+	static int			timing_hack_denominator = SNES_SPC::tempo_unit;
+	/* Set these to NTSC for now. Will change to PAL in S9xAPUTimingSetSpeedup
+	   if necessary on game load. */
+	static uint32		ratio_numerator = APU_NUMERATOR_NTSC;
+	static uint32		ratio_denominator = APU_DENOMINATOR_NTSC;
 }
 
 static void EightBitize (uint8 *, int);
@@ -445,7 +451,7 @@ bool8 S9xInitSound (int buffer_ms, int lag_ms)
 	   arguments. Use 2x in the resampler for buffer leveling with SoundSync */
 	if (!spc::resampler)
 	{
-		spc::resampler = new Resampler(spc::buffer_size >> (Settings.SoundSync ? 0 : 1));
+		spc::resampler = new APU_DEFAULT_RESAMPLER(spc::buffer_size >> (Settings.SoundSync ? 0 : 1));
 		if (!spc::resampler)
 		{
 			delete[] spc::landing_buffer;
@@ -534,22 +540,14 @@ void S9xDeinitAPU (void)
 
 static inline int S9xAPUGetClock (int32 cpucycles)
 {
-	if (Settings.PAL)
-		return ((int) floor(((double) APU_NUMERATOR_PAL   * spc::timing_hack_numerator * (cpucycles - spc::reference_time) + spc::remainder) /
-							((double) APU_DENOMINATOR_PAL * spc::timing_hack_denominator)));
-	else
-		return (APU_NUMERATOR_NTSC   * spc::timing_hack_numerator * (cpucycles - spc::reference_time) + spc::remainder) /
-			   (APU_DENOMINATOR_NTSC * spc::timing_hack_denominator);
+	return (spc::ratio_numerator * (cpucycles - spc::reference_time) + spc::remainder) /
+			spc::ratio_denominator;
 }
 
 static inline int S9xAPUGetClockRemainder (int32 cpucycles)
 {
-	if (Settings.PAL)
-		return ((int) fmod (((double) APU_NUMERATOR_PAL   * spc::timing_hack_numerator * (cpucycles - spc::reference_time) + spc::remainder),
-							((double) APU_DENOMINATOR_PAL * spc::timing_hack_denominator)));
-	else
-		return (APU_NUMERATOR_NTSC   * spc::timing_hack_numerator * (cpucycles - spc::reference_time) + spc::remainder) %
-			   (APU_DENOMINATOR_NTSC * spc::timing_hack_denominator);
+	return (spc::ratio_numerator * (cpucycles - spc::reference_time) + spc::remainder) %
+			spc::ratio_denominator;
 }
 
 uint8 S9xAPUReadPort (int port)
@@ -590,9 +588,12 @@ void S9xAPUTimingSetSpeedup (int ticks)
 	if (ticks != 0)
 		printf("APU speedup hack: %d\n", ticks);
 
-	spc_core->set_tempo(SNES_SPC::tempo_unit - ticks);
-
 	spc::timing_hack_denominator = SNES_SPC::tempo_unit - ticks;
+	spc_core->set_tempo(spc::timing_hack_denominator);
+
+	spc::ratio_numerator = Settings.PAL ? APU_NUMERATOR_PAL : APU_NUMERATOR_NTSC;
+	spc::ratio_denominator = Settings.PAL ? APU_DENOMINATOR_PAL : APU_DENOMINATOR_NTSC;
+	spc::ratio_denominator = spc::ratio_denominator * spc::timing_hack_denominator / spc::timing_hack_numerator;
 
 	UpdatePlaybackRate();
 }

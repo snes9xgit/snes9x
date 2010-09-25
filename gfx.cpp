@@ -2013,6 +2013,20 @@ static void DisplayStringFromBottom (const char *string, int linesFromBottom, in
 static void DisplayFrameRate (void)
 {
 	char	string[10];
+	static uint32 lastFrameCount = 0, calcFps = 0;
+	static time_t lastTime = time(NULL);
+
+	time_t currTime = time(NULL);
+	if (lastTime != currTime) {
+		if (lastFrameCount < IPPU.TotalEmulatedFrames) {
+			calcFps = (IPPU.TotalEmulatedFrames - lastFrameCount) / (uint32)(currTime - lastTime);
+		}
+		lastTime = currTime;
+		lastFrameCount = IPPU.TotalEmulatedFrames;
+	}
+	sprintf(string, "%u fps", calcFps);
+	S9xDisplayString(string, 2, IPPU.RenderedScreenWidth - (font_width - 1) * strlen(string) - 1, false);
+
 #ifdef DEBUGGER
 	const int	len = 8;
 	sprintf(string, "%02d/%02d %02d", (int) IPPU.DisplayedRenderedFrameCount, (int) Memory.ROMFramesPerSecond, (int) IPPU.FrameCount);

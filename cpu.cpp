@@ -207,22 +207,6 @@ static void S9xResetCPU (void)
 
 static void S9xSoftResetCPU (void)
 {
-	Registers.PBPC = 0;
-	Registers.PB = 0;
-	Registers.PCw = S9xGetWord(0xfffc);
-	OpenBus = Registers.PCh;
-	Registers.D.W = 0;
-	Registers.DB = 0;
-	Registers.SH = 1;
-	Registers.SL -= 3;
-	Registers.XH = 0;
-	Registers.YH = 0;
-
-	ICPU.ShiftedPB = 0;
-	ICPU.ShiftedDB = 0;
-	SetFlags(MemoryFlag | IndexFlag | IRQ | Emulation);
-	ClearFlags(Decimal);
-
 	CPU.Cycles = 182; // Or 188. This is the cycle count just after the jump to the Reset Vector.
 	CPU.PrevCycles = -1;
 	CPU.V_Counter = 0;
@@ -247,6 +231,22 @@ static void S9xSoftResetCPU (void)
 	CPU.PBPCAtOpcodeStart = 0xffffffff;
 	CPU.AutoSaveTimer = 0;
 	CPU.SRAMModified = FALSE;
+
+	Registers.PBPC = 0;
+	Registers.PB = 0;
+	Registers.PCw = S9xGetWord(0xfffc);
+	OpenBus = Registers.PCh;
+	Registers.D.W = 0;
+	Registers.DB = 0;
+	Registers.SH = 1;
+	Registers.SL -= 3;
+	Registers.XH = 0;
+	Registers.YH = 0;
+
+	ICPU.ShiftedPB = 0;
+	ICPU.ShiftedDB = 0;
+	SetFlags(MemoryFlag | IndexFlag | IRQ | Emulation);
+	ClearFlags(Decimal);
 
 	Timings.InterlaceField = FALSE;
 	Timings.H_Max = Timings.H_Max_Master;

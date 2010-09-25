@@ -291,11 +291,6 @@
 		<p>
 			Called once a complete SNES screen has been rendered into the <code>GFX.Screen</code> memory buffer, now is your chance to copy the SNES rendered screen to the host computer's screen memory. The problem is that you have to cope with different sized SNES rendered screens: 256*224, 256*239, 512*224, 512*239, 512*448 and 512*478.
 		</p>
-
-		<h3><code>bool8 S9xContinueUpdate (int width, int height)</code></h3>
-		<p>
-			Similar to <code>S9xDeinitUpdate</code>, but in interlace mode (512*448 or 512*478) only. Called once an even frame has been rendered into the <code>GFX.Screen</code> memory buffer.
-		</p>
 		<h3><code>void S9xMessage (int type, int number, const char *message)</code></h3>
 		<p>
 			When Snes9x wants to display an error, information or warning message, it calls this function. Check in <code>messages.h</code> for the types and individual message numbers that Snes9x currently passes as parameters.<br>
@@ -384,7 +379,7 @@
 			The sound generation rate on a SNES is directly proportional to the video output rate. Displays that synchronize with the vertical refresh but have a slightly lower refresh-rate than the emulated system can experience sound drop-outs. It may be beneficial to provide an option for users to configure <code>Settings.SoundInputRate</code> to suit their own systems. Setting <code>Settings.SoundInputRate</code> to a value that matches the actual output rate (i.e. 31977hz for 59.96hz) or lower will allow the users to eliminate crackling. A range of 31000hz to 33000hz should be inclusive enough for all displays. Use of this setting paired with the <code>S9xSyncSound</code> function can eliminate sound discontinuity.
 		</p>
 		<div style="text-align:right; margin-top:3em">
-			Updated most recently by: 2010/01/09 zones
+			Updated most recently by: 2009/12/20 zones
 		</div>
 	</body>
 </html>

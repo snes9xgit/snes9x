@@ -239,7 +239,6 @@ struct CMemory
 	uint8	*WriteMap[MEMMAP_NUM_BLOCKS];
 	uint8	BlockIsRAM[MEMMAP_NUM_BLOCKS];
 	uint8	BlockIsROM[MEMMAP_NUM_BLOCKS];
-	uint8	MemorySpeed[MEMMAP_NUM_BLOCKS];
 	uint8	ExtendedFormat;
 
 	char	ROMFilename[PATH_MAX + 1];
@@ -287,8 +286,6 @@ struct CMemory
 	char *	SafeANK (const char *);
 	void	ParseSNESHeader (uint8 *);
 	void	InitROM (void);
-	void	FixROMSpeed (void);
-	void	ResetSpeedMap (void);
 
 	uint32	map_mirror (uint32, uint32);
 	void	map_lorom (uint32, uint32, uint32, uint32, uint32);

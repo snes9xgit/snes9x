@@ -1565,8 +1565,6 @@ void S9xSetCPU (uint8 Byte, uint16 Address)
 {
 	if (Address < 0x4200)
 	{
-		CPU.Cycles += ONE_CYCLE; // XSlow
-
 		switch (Address)
 		{
 			case 0x4016: // JOYSER0
@@ -1851,8 +1849,6 @@ void S9xSetCPU (uint8 Byte, uint16 Address)
 					}
 					else
 						CPU.FastROMSpeed = SLOW_ONE_CYCLE;
-
-					Memory.FixROMSpeed();
 				}
 
 				break;
@@ -1910,8 +1906,6 @@ uint8 S9xGetCPU (uint16 Address)
 			pad_read = TRUE;
 		}
 	#endif
-
-		CPU.Cycles += ONE_CYCLE; // XSlow
 
 		switch (Address)
 		{

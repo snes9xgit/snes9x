@@ -194,7 +194,7 @@
 	#include "win32/wsnes9x.h"
 
 	#define ioctl ioctlsocket
-	#define close closesocket
+	#define close(h) if(h){closesocket(h);}
 	#define read(a,b,c) recv(a, b, c, 0)
 	#define write(a,b,c) send(a, b, c, 0)
 #else
