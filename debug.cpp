@@ -317,6 +317,10 @@ static int	AddrModes[256] =
 	 4, 11,  9, 20, 26,  7,  7, 13,  0, 16,  0,  0, 23, 15, 15, 18  // F
 };
 
+static uint8 S9xDebugGetByte (uint32);
+static uint16 S9xDebugGetWord (uint32);
+static uint8 S9xDebugSA1GetByte (uint32);
+static uint16 S9xDebugSA1GetWord (uint32);
 static uint8 debug_cpu_op_print (char *, uint8, uint16);
 static uint8 debug_sa1_op_print (char *, uint8, uint16);
 static void debug_line_print (const char *);
@@ -329,6 +333,107 @@ static void debug_whats_used (void);
 static void debug_whats_missing (void);
 
 
+static uint8 S9xDebugGetByte (uint32 Address)
+{
+	int		block = (Address & 0xffffff) >> MEMMAP_SHIFT;
+	uint8	*GetAddress = Memory.Map[block];
+	uint8	byte = 0;
+
+	if (GetAddress >= (uint8 *) CMemory::MAP_LAST)
+	{
+		byte = *(GetAddress + (Address & 0xffff));
+		return (byte);
+	}
+
+	switch ((pint) GetAddress)
+	{
+		case CMemory::MAP_LOROM_SRAM:
+		case CMemory::MAP_SA1RAM:
+			byte = *(Memory.SRAM + ((((Address & 0xff0000) >> 1) | (Address & 0x7fff)) & Memory.SRAMMask));
+			return (byte);
+
+		case CMemory::MAP_LOROM_SRAM_B:
+			byte = *(Multi.sramB + ((((Address & 0xff0000) >> 1) | (Address & 0x7fff)) & Multi.sramMaskB));
+			return (byte);
+
+		case CMemory::MAP_HIROM_SRAM:
+		case CMemory::MAP_RONLY_SRAM:
+			byte = *(Memory.SRAM + (((Address & 0x7fff) - 0x6000 + ((Address & 0xf0000) >> 3)) & Memory.SRAMMask));
+			return (byte);
+
+		case CMemory::MAP_BWRAM:
+			byte = *(Memory.BWRAM + ((Address & 0x7fff) - 0x6000));
+			return (byte);
+
+		default:
+			return (byte);
+	}
+}
+
+static uint16 S9xDebugGetWord (uint32 Address)
+{
+	uint16	word;
+
+	word  = S9xDebugGetByte(Address);
+	word |= S9xDebugGetByte(Address + 1) << 8;
+
+	return (word);
+}
+
+static uint8 S9xDebugSA1GetByte (uint32 Address)
+{
+	int		block = (Address & 0xffffff) >> MEMMAP_SHIFT;
+	uint8	*GetAddress = SA1.Map[block];
+	uint8	byte = 0;
+
+	if (GetAddress >= (uint8 *) CMemory::MAP_LAST)
+	{
+		byte = *(GetAddress + (Address & 0xffff));
+		return (byte);
+	}
+
+	switch ((pint) GetAddress)
+	{
+		case CMemory::MAP_LOROM_SRAM:
+		case CMemory::MAP_SA1RAM:
+			byte = *(Memory.SRAM + (Address & 0xffff));
+			return (byte);
+
+		case CMemory::MAP_BWRAM:
+			byte = *(SA1.BWRAM + ((Address & 0x7fff) - 0x6000));
+			return (byte);
+
+		case CMemory::MAP_BWRAM_BITMAP:
+			Address -= 0x600000;
+			if (SA1.VirtualBitmapFormat == 2)
+				byte = (Memory.SRAM[(Address >> 2) & 0xffff] >> ((Address & 3) << 1)) &  3;
+			else
+				byte = (Memory.SRAM[(Address >> 1) & 0xffff] >> ((Address & 1) << 2)) & 15;
+			return (byte);
+
+		case CMemory::MAP_BWRAM_BITMAP2:
+			Address = (Address & 0xffff) - 0x6000;
+			if (SA1.VirtualBitmapFormat == 2)
+				byte = (SA1.BWRAM[(Address >> 2) & 0xffff] >> ((Address & 3) << 1)) &  3;
+			else
+				byte = (SA1.BWRAM[(Address >> 1) & 0xffff] >> ((Address & 1) << 2)) & 15;
+			return (byte);
+
+		default:
+			return (byte);
+	}
+}
+
+static uint16 S9xDebugSA1GetWord (uint32 Address)
+{
+	uint16	word;
+
+	word  = S9xDebugSA1GetByte(Address);
+	word |= S9xDebugSA1GetByte(Address + 1) << 8;
+
+	return (word);
+}
+
 static uint8 debug_cpu_op_print (char *Line, uint8 Bank, uint16 Address)
 {
 	uint8	S9xOpcode;
@@ -339,15 +444,12 @@ static uint8 debug_cpu_op_print (char *Line, uint8 Bank, uint16 Address)
 	int8	SByte;
 	uint8	Size = 0;
 
-	int32	Cycles = CPU.Cycles;
-	uint32	WaitAddress = CPU.WaitAddress;
-
-	S9xOpcode = S9xGetByte((Bank << 16) + Address);
+	S9xOpcode = S9xDebugGetByte((Bank << 16) + Address);
 	sprintf(Line, "$%02X:%04X %02X ", Bank, Address, S9xOpcode);
 
-	Operant[0] = S9xGetByte((Bank << 16) + Address + 1);
-	Operant[1] = S9xGetByte((Bank << 16) + Address + 2);
-	Operant[2] = S9xGetByte((Bank << 16) + Address + 3);
+	Operant[0] = S9xDebugGetByte((Bank << 16) + Address + 1);
+	Operant[1] = S9xDebugGetByte((Bank << 16) + Address + 2);
+	Operant[2] = S9xDebugGetByte((Bank << 16) + Address + 3);
 
 	switch (AddrModes[S9xOpcode])
 	{
@@ -505,7 +607,7 @@ static uint8 debug_cpu_op_print (char *Line, uint8 Bank, uint16 Address)
 			        Operant[0]);
 			Word = Operant[0];
 			Word += Registers.D.W;
-			Word = S9xGetWord(Word);
+			Word = S9xDebugGetWord(Word);
 			sprintf(Line, "%-32s[$%02X:%04X]", Line, Registers.DB, Word);
 			Size = 2;
 			break;
@@ -520,7 +622,7 @@ static uint8 debug_cpu_op_print (char *Line, uint8 Bank, uint16 Address)
 			Word = Operant[0];
 			Word += Registers.D.W;
 			Word += Registers.X.W;
-			Word = S9xGetWord(Word);
+			Word = S9xDebugGetWord(Word);
 			sprintf(Line, "%-32s[$%02X:%04X]", Line, Registers.DB, Word);
 			Size = 2;
 			break;
@@ -534,7 +636,7 @@ static uint8 debug_cpu_op_print (char *Line, uint8 Bank, uint16 Address)
 			        Operant[0]);
 			Word = Operant[0];
 			Word += Registers.D.W;
-			Word = S9xGetWord(Word);
+			Word = S9xDebugGetWord(Word);
 			Word += Registers.Y.W;
 			sprintf(Line, "%-32s[$%02X:%04X]", Line, Registers.DB, Word);
 			Size = 2;
@@ -549,8 +651,8 @@ static uint8 debug_cpu_op_print (char *Line, uint8 Bank, uint16 Address)
 			        Operant[0]);
 			Word = Operant[0];
 			Word += Registers.D.W;
-			Byte = S9xGetByte(Word + 2);
-			Word = S9xGetWord(Word);
+			Byte = S9xDebugGetByte(Word + 2);
+			Word = S9xDebugGetWord(Word);
 			sprintf(Line, "%-32s[$%02X:%04X]", Line, Byte, Word);
 			Size = 2;
 			break;
@@ -564,8 +666,8 @@ static uint8 debug_cpu_op_print (char *Line, uint8 Bank, uint16 Address)
 			        Operant[0]);
 			Word = Operant[0];
 			Word += Registers.D.W;
-			Byte = S9xGetByte(Word + 2);
-			Word = S9xGetWord(Word);
+			Byte = S9xDebugGetByte(Word + 2);
+			Word = S9xDebugGetWord(Word);
 			Word += Registers.Y.W;
 			sprintf(Line, "%-32s[$%02X:%04X]", Line, Byte, Word);
 			Size = 2;
@@ -670,7 +772,7 @@ static uint8 debug_cpu_op_print (char *Line, uint8 Bank, uint16 Address)
 			        Operant[0]);
 			Word = Registers.S.W;
 			Word += Operant[0];
-			Word = S9xGetWord(Word);
+			Word = S9xDebugGetWord(Word);
 			Word += Registers.Y.W;
 			sprintf(Line, "%-32s[$%02X:%04X]", Line, Registers.DB, Word);
 			Size = 2;
@@ -686,7 +788,7 @@ static uint8 debug_cpu_op_print (char *Line, uint8 Bank, uint16 Address)
 			        Operant[1],
 			        Operant[0]);
 			Word = (Operant[1] << 8) | Operant[0];
-			Word = S9xGetWord(Word);
+			Word = S9xDebugGetWord(Word);
 			sprintf(Line, "%-32s[$%02X:%04X]", Line, Registers.PB, Word);
 			Size = 3;
 			break;
@@ -701,8 +803,8 @@ static uint8 debug_cpu_op_print (char *Line, uint8 Bank, uint16 Address)
 			        Operant[1],
 			        Operant[0]);
 			Word = (Operant[1] << 8) | Operant[0];
-			Byte = S9xGetByte(Word + 2);
-			Word = S9xGetWord(Word);
+			Byte = S9xDebugGetByte(Word + 2);
+			Word = S9xDebugGetWord(Word);
 			sprintf(Line, "%-32s[$%02X:%04X]", Line, Byte, Word);
 			Size = 3;
 			break;
@@ -718,7 +820,7 @@ static uint8 debug_cpu_op_print (char *Line, uint8 Bank, uint16 Address)
 			        Operant[0]);
 			Word = (Operant[1] << 8) | Operant[0];
 			Word += Registers.X.W;
-			Word = S9xGetWord(ICPU.ShiftedPB + Word);
+			Word = S9xDebugGetWord(ICPU.ShiftedPB + Word);
 			sprintf(Line, "%-32s[$%02X:%04X]", Line, Registers.PB, Word);
 			Size = 3;
 			break;
@@ -764,7 +866,7 @@ static uint8 debug_cpu_op_print (char *Line, uint8 Bank, uint16 Address)
 			        Operant[0]);
 			Word = Operant[0];
 			Word += Registers.D.W;
-			Word = S9xGetWord(Word);
+			Word = S9xDebugGetWord(Word);
 			sprintf(Line, "%-32s[$%04X]", Line, Word);
 			Size = 2;
 			break;
@@ -782,13 +884,10 @@ static uint8 debug_cpu_op_print (char *Line, uint8 Bank, uint16 Address)
 	        CheckIRQ() ? 'I' : 'i',
 	        CheckZero() ? 'Z' : 'z',
 	        CheckCarry() ? 'C' : 'c',
-	        (long) Cycles,
+	        (long) CPU.Cycles,
 	        (long) CPU.V_Counter,
 	        IPPU.FrameCount,
 	        CPU.IRQActive);
-
-	CPU.Cycles = Cycles;
-	CPU.WaitAddress = WaitAddress;
 
 	return (Size);
 }
@@ -803,12 +902,12 @@ static uint8 debug_sa1_op_print (char *Line, uint8 Bank, uint16 Address)
 	int8	SByte;
 	uint8	Size = 0;
 
-	S9xOpcode = S9xSA1GetByte((Bank << 16) + Address);
+	S9xOpcode = S9xDebugSA1GetByte((Bank << 16) + Address);
 	sprintf(Line, "$%02X:%04X %02X ", Bank, Address, S9xOpcode);
 
-	Operant[0] = S9xSA1GetByte((Bank << 16) + Address + 1);
-	Operant[1] = S9xSA1GetByte((Bank << 16) + Address + 2);
-	Operant[2] = S9xSA1GetByte((Bank << 16) + Address + 3);
+	Operant[0] = S9xDebugSA1GetByte((Bank << 16) + Address + 1);
+	Operant[1] = S9xDebugSA1GetByte((Bank << 16) + Address + 2);
+	Operant[2] = S9xDebugSA1GetByte((Bank << 16) + Address + 3);
 
 	switch (AddrModes[S9xOpcode])
 	{
@@ -966,7 +1065,7 @@ static uint8 debug_sa1_op_print (char *Line, uint8 Bank, uint16 Address)
 			        Operant[0]);
 			Word = Operant[0];
 			Word += SA1Registers.D.W;
-			Word = S9xSA1GetWord(Word);
+			Word = S9xDebugSA1GetWord(Word);
 			sprintf(Line, "%-32s[$%02X:%04X]", Line, SA1Registers.DB, Word);
 			Size = 2;
 			break;
@@ -981,7 +1080,7 @@ static uint8 debug_sa1_op_print (char *Line, uint8 Bank, uint16 Address)
 			Word = Operant[0];
 			Word += SA1Registers.D.W;
 			Word += SA1Registers.X.W;
-			Word = S9xSA1GetWord(Word);
+			Word = S9xDebugSA1GetWord(Word);
 			sprintf(Line, "%-32s[$%02X:%04X]", Line, SA1Registers.DB, Word);
 			Size = 2;
 			break;
@@ -995,7 +1094,7 @@ static uint8 debug_sa1_op_print (char *Line, uint8 Bank, uint16 Address)
 			        Operant[0]);
 			Word = Operant[0];
 			Word += SA1Registers.D.W;
-			Word = S9xSA1GetWord(Word);
+			Word = S9xDebugSA1GetWord(Word);
 			Word += SA1Registers.Y.W;
 			sprintf(Line, "%-32s[$%02X:%04X]", Line, SA1Registers.DB, Word);
 			Size = 2;
@@ -1010,8 +1109,8 @@ static uint8 debug_sa1_op_print (char *Line, uint8 Bank, uint16 Address)
 			        Operant[0]);
 			Word = Operant[0];
 			Word += SA1Registers.D.W;
-			Byte = S9xSA1GetByte(Word + 2);
-			Word = S9xSA1GetWord(Word);
+			Byte = S9xDebugSA1GetByte(Word + 2);
+			Word = S9xDebugSA1GetWord(Word);
 			sprintf(Line, "%-32s[$%02X:%04X]", Line, Byte, Word);
 			Size = 2;
 			break;
@@ -1025,8 +1124,8 @@ static uint8 debug_sa1_op_print (char *Line, uint8 Bank, uint16 Address)
 			        Operant[0]);
 			Word = Operant[0];
 			Word += SA1Registers.D.W;
-			Byte = S9xSA1GetByte(Word + 2);
-			Word = S9xSA1GetWord(Word);
+			Byte = S9xDebugSA1GetByte(Word + 2);
+			Word = S9xDebugSA1GetWord(Word);
 			Word += SA1Registers.Y.W;
 			sprintf(Line, "%-32s[$%02X:%04X]", Line, Byte, Word);
 			Size = 2;
@@ -1131,7 +1230,7 @@ static uint8 debug_sa1_op_print (char *Line, uint8 Bank, uint16 Address)
 			        Operant[0]);
 			Word = SA1Registers.S.W;
 			Word += Operant[0];
-			Word = S9xSA1GetWord(Word);
+			Word = S9xDebugSA1GetWord(Word);
 			Word += SA1Registers.Y.W;
 			sprintf(Line, "%-32s[$%02X:%04X]", Line, SA1Registers.DB, Word);
 			Size = 2;
@@ -1147,7 +1246,7 @@ static uint8 debug_sa1_op_print (char *Line, uint8 Bank, uint16 Address)
 			        Operant[1],
 			        Operant[0]);
 			Word = (Operant[1] << 8) | Operant[0];
-			Word = S9xSA1GetWord(Word);
+			Word = S9xDebugSA1GetWord(Word);
 			sprintf(Line, "%-32s[$%02X:%04X]", Line, SA1Registers.PB, Word);
 			Size = 3;
 			break;
@@ -1162,8 +1261,8 @@ static uint8 debug_sa1_op_print (char *Line, uint8 Bank, uint16 Address)
 			        Operant[1],
 			        Operant[0]);
 			Word = (Operant[1] << 8) | Operant[0];
-			Byte = S9xSA1GetByte(Word + 2);
-			Word = S9xSA1GetWord(Word);
+			Byte = S9xDebugSA1GetByte(Word + 2);
+			Word = S9xDebugSA1GetWord(Word);
 			sprintf(Line, "%-32s[$%02X:%04X]", Line, Byte, Word);
 			Size = 3;
 			break;
@@ -1179,7 +1278,7 @@ static uint8 debug_sa1_op_print (char *Line, uint8 Bank, uint16 Address)
 			        Operant[0]);
 			Word = (Operant[1] << 8) | Operant[0];
 			Word += SA1Registers.X.W;
-			Word = S9xSA1GetWord(SA1.ShiftedPB + Word);
+			Word = S9xDebugSA1GetWord(SA1.ShiftedPB + Word);
 			sprintf(Line, "%-32s[$%02X:%04X]", Line, SA1Registers.PB, Word);
 			Size = 3;
 			break;
@@ -1275,7 +1374,7 @@ static void debug_process_command (char *Line)
 			if (fs)
 			{
 				for (int i = 0; i < Count; i++)
-					putc(S9xGetByte(Address + i), fs);
+					putc(S9xDebugGetByte(Address + i), fs);
 				fclose(fs);
 			}
 			else
@@ -1292,17 +1391,17 @@ static void debug_process_command (char *Line)
 		printf("Vectors:\n");
 		sprintf(string, "      8 Bit   16 Bit ");
 		debug_line_print(string);
-		sprintf(string, "ABT $00:%04X|$00:%04X", S9xGetWord(0xFFF8), S9xGetWord(0xFFE8));
+		sprintf(string, "ABT $00:%04X|$00:%04X", S9xDebugGetWord(0xFFF8), S9xDebugGetWord(0xFFE8));
 		debug_line_print(string);
-		sprintf(string, "BRK $00:%04X|$00:%04X", S9xGetWord(0xFFFE), S9xGetWord(0xFFE6));
+		sprintf(string, "BRK $00:%04X|$00:%04X", S9xDebugGetWord(0xFFFE), S9xDebugGetWord(0xFFE6));
 		debug_line_print(string);
-		sprintf(string, "COP $00:%04X|$00:%04X", S9xGetWord(0xFFF4), S9xGetWord(0xFFE4));
+		sprintf(string, "COP $00:%04X|$00:%04X", S9xDebugGetWord(0xFFF4), S9xDebugGetWord(0xFFE4));
 		debug_line_print(string);
-		sprintf(string, "IRQ $00:%04X|$00:%04X", S9xGetWord(0xFFFE), S9xGetWord(0xFFEE));
+		sprintf(string, "IRQ $00:%04X|$00:%04X", S9xDebugGetWord(0xFFFE), S9xDebugGetWord(0xFFEE));
 		debug_line_print(string);
-		sprintf(string, "NMI $00:%04X|$00:%04X", S9xGetWord(0xFFFA), S9xGetWord(0xFFEA));
+		sprintf(string, "NMI $00:%04X|$00:%04X", S9xDebugGetWord(0xFFFA), S9xDebugGetWord(0xFFEA));
 		debug_line_print(string);
-		sprintf(string, "RES     $00:%04X", S9xGetWord(0xFFFC));
+		sprintf(string, "RES     $00:%04X", S9xDebugGetWord(0xFFFC));
 		debug_line_print(string);
 	}
 
@@ -1733,7 +1832,6 @@ static void debug_process_command (char *Line)
 		int		CLine;
 		int		CByte;
 		uint8	MemoryByte;
-		int32	Cycles = CPU.Cycles;
 
 		if (Debug.Dump.Bank != 0 || Debug.Dump.Address != 0)
 		{
@@ -1756,7 +1854,7 @@ static void debug_process_command (char *Line)
 				    Address + CByte == 0x4210)
 					MemoryByte = 0;
 				else
-					MemoryByte = S9xGetByte((Bank << 16) + Address + CByte);
+					MemoryByte = S9xDebugGetByte((Bank << 16) + Address + CByte);
 
 				sprintf(string, "%s %02X", string, MemoryByte);
 			}
@@ -1772,7 +1870,7 @@ static void debug_process_command (char *Line)
 				    Address + CByte == 0x4210)
 					MemoryByte = 0;
 				else
-					MemoryByte = S9xGetByte((Bank << 16) + Address + CByte);
+					MemoryByte = S9xDebugGetByte((Bank << 16) + Address + CByte);
 
 				if (MemoryByte < 32 || MemoryByte >= 127)
 					MemoryByte = '?';
@@ -1787,8 +1885,6 @@ static void debug_process_command (char *Line)
 
 		Debug.Dump.Bank = Bank;
 		Debug.Dump.Address = Address;
-
-		CPU.Cycles = Cycles;
 	}
 
 	if (*Line == 'q')

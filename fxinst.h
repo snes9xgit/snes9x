@@ -371,7 +371,7 @@ struct FxRegs_s
 	uint32	vCounter;
 	uint32	vInstCount;
 	uint32	vSCBRDirty;					// If SCBR is written, our cached screen pointers need updating
-
+	
 	uint8	*avRegAddr;					// To reference avReg in snapshot.cpp
 };
 

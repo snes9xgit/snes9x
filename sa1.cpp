@@ -788,13 +788,41 @@ static void S9xSA1CharConv2 (void)
 	uint32	offset         = (SA1.in_char_dma & 7) ? 0 : 1;
 	int		depth          = (Memory.FillRAM[0x2231] & 3) == 0 ? 8 : (Memory.FillRAM[0x2231] & 3) == 1 ? 4 : 2;
 	int		bytes_per_char = 8 * depth;
-	uint8	*p             = &Memory.FillRAM[0x3000] + dest + offset * bytes_per_char;
+	uint8	*p             = &Memory.FillRAM[0x3000] + (dest & 0x7ff) + offset * bytes_per_char;
 	uint8	*q             = &Memory.ROM[CMemory::MAX_ROM_SIZE - 0x10000] + offset * 64;
 
 	switch (depth)
 	{
 		case 2:
+			for (int l = 0; l < 8; l++, q += 8)
+			{
+				for (int b = 0; b < 8; b++)
+				{
+					uint8	r = *(q + b);
+					*(p +  0) = (*(p +  0) << 1) | ((r >> 0) & 1);
+					*(p +  1) = (*(p +  1) << 1) | ((r >> 1) & 1);
+				}
+
+				p += 2;
+			}
+
+			break;
+
 		case 4:
+			for (int l = 0; l < 8; l++, q += 8)
+			{
+				for (int b = 0; b < 8; b++)
+				{
+					uint8	r = *(q + b);
+					*(p +  0) = (*(p +  0) << 1) | ((r >> 0) & 1);
+					*(p +  1) = (*(p +  1) << 1) | ((r >> 1) & 1);
+					*(p + 16) = (*(p + 16) << 1) | ((r >> 2) & 1);
+					*(p + 17) = (*(p + 17) << 1) | ((r >> 3) & 1);
+				}
+
+				p += 2;
+			}
+
 			break;
 
 		case 8:

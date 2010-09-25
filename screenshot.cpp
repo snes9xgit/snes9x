@@ -209,7 +209,7 @@ bool8 S9xDoScreenshot (int width, int height)
 	if (!png_ptr)
 	{
 		fclose(fp);
-		unlink(fname);
+		remove(fname);
 		S9xMessage(S9X_ERROR, 0, "Failed to take screenshot.");
 		return (FALSE);
 	}
@@ -219,7 +219,7 @@ bool8 S9xDoScreenshot (int width, int height)
 	{
 		png_destroy_write_struct(&png_ptr, (png_infopp) NULL);
 		fclose(fp);
-		unlink(fname);
+		remove(fname);
 		S9xMessage(S9X_ERROR, 0, "Failed to take screenshot.");
 		return (FALSE);
 	}
@@ -228,7 +228,7 @@ bool8 S9xDoScreenshot (int width, int height)
 	{
 		png_destroy_write_struct(&png_ptr, &info_ptr);
 		fclose(fp);
-		unlink(fname);
+		remove(fname);
 		S9xMessage(S9X_ERROR, 0, "Failed to take screenshot.");
 		return (FALSE);
 	}

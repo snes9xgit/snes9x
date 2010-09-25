@@ -224,11 +224,15 @@ typedef uint32_t			uint32;
 typedef int64_t				int64;
 typedef uint64_t			uint64;
 #else	// HAVE_STDINT_H
+#ifdef __WIN32__
+typedef intptr_t			pint;
+#else	// __WIN32__
 #ifdef PTR_NOT_INT
 typedef long				pint;
 #else
 typedef int					pint;
 #endif
+#endif	// __WIN32__
 #ifdef __WIN32__
 #ifdef __BORLANDC__
 #include <systypes.h>
@@ -325,7 +329,7 @@ void SetInfoDlgColor(unsigned char, unsigned char, unsigned char);
 #define TITLE "Snes9x"
 #endif
 
-#if defined(__i386__) || defined(__i486__) || defined(__i586__) || defined(__i686__) || defined(__x86_64__) || defined(__alpha__) || defined(__MIPSEL__) || defined(_M_IX86)
+#if defined(__i386__) || defined(__i486__) || defined(__i586__) || defined(__i686__) || defined(__x86_64__) || defined(__alpha__) || defined(__MIPSEL__) || defined(_M_IX86) || defined(_M_X64)
 #define LSB_FIRST
 #define FAST_LSB_WORD_ACCESS
 #else

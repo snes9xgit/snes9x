@@ -307,8 +307,10 @@ void S9xMainLoop (void)
 		if (SA1.Executing)
 			S9xSA1MainLoop();
 
+	#if (S9X_ACCURACY_LEVEL <= 2)
 		while (CPU.Cycles >= CPU.NextEvent)
 			S9xDoHEventProcessing();
+	#endif
 	}
 
 	S9xPackStatus();
@@ -356,9 +358,28 @@ void S9xClearIRQ (uint32 source)
 void S9xDoHEventProcessing (void)
 {
 #ifdef DEBUGGER
+	static char	eventname[13][32] =
+	{
+		"",
+		"HC_HBLANK_START_EVENT",
+		"HC_IRQ_1_3_EVENT     ",
+		"HC_HDMA_START_EVENT  ",
+		"HC_IRQ_3_5_EVENT     ",
+		"HC_HCOUNTER_MAX_EVENT",
+		"HC_IRQ_5_7_EVENT     ",
+		"HC_HDMA_INIT_EVENT   ",
+		"HC_IRQ_7_9_EVENT     ",
+		"HC_RENDER_EVENT      ",
+		"HC_IRQ_9_A_EVENT     ",
+		"HC_WRAM_REFRESH_EVENT",
+		"HC_IRQ_A_1_EVENT     "
+	};
+#endif
+
+#ifdef DEBUGGER
 	if (Settings.TraceHCEvent)
-		S9xTraceFormattedMessage("--- HC event processing  (%02d)  expected HC:%04d  executed HC:%04d",
-			CPU.WhichEvent, CPU.NextEvent, CPU.Cycles);
+		S9xTraceFormattedMessage("--- HC event processing  (%s)  expected HC:%04d  executed HC:%04d",
+			eventname[CPU.WhichEvent], CPU.NextEvent, CPU.Cycles);
 #endif
 
 #ifdef CPU_SHUTDOWN
@@ -366,13 +387,16 @@ void S9xDoHEventProcessing (void)
 #endif
 
 	switch (CPU.WhichEvent)
-    {
+	{
 		case HC_HBLANK_START_EVENT:
 			S9xCheckMissingHTimerPosition(Timings.HBlankStart);
-
+			S9xReschedule();
 			break;
 
 		case HC_HDMA_START_EVENT:
+			S9xCheckMissingHTimerPosition(Timings.HDMAStart);
+			S9xReschedule();
+
 			if (PPU.HDMA && CPU.V_Counter <= PPU.ScreenHeight)
 			{
 			#ifdef DEBUGGER
@@ -380,8 +404,6 @@ void S9xDoHEventProcessing (void)
 			#endif
 				PPU.HDMA = S9xDoHDMA(PPU.HDMA);
 			}
-
-			S9xCheckMissingHTimerPosition(Timings.HDMAStart);
 
 			break;
 
@@ -470,7 +492,7 @@ void S9xDoHEventProcessing (void)
 				missing.dma_this_frame = 0;
 			#endif
 				IPPU.MaxBrightness = PPU.Brightness;
-				PPU.ForcedBlanking = (Memory.FillRAM [0x2100] >> 7) & 1;
+				PPU.ForcedBlanking = (Memory.FillRAM[0x2100] >> 7) & 1;
 
 				if (!PPU.ForcedBlanking)
 				{
@@ -511,14 +533,21 @@ void S9xDoHEventProcessing (void)
 				S9xStartScreenRefresh();
 
 			CPU.NextEvent = -1;
+			S9xReschedule();
 
 			break;
 
 		case HC_HDMA_INIT_EVENT:
-			if (CPU.V_Counter == 0)
-				S9xStartHDMA();
-
 			S9xCheckMissingHTimerPosition(Timings.HDMAInit);
+			S9xReschedule();
+
+			if (CPU.V_Counter == 0)
+			{
+			#ifdef DEBUGGER
+				S9xTraceFormattedMessage("*** HDMA Init  HC:%04d, Channel:%02x", CPU.Cycles, PPU.HDMA);
+			#endif
+				S9xStartHDMA();
+			}
 
 			break;
 
@@ -527,6 +556,7 @@ void S9xDoHEventProcessing (void)
 				RenderLine((uint8) (CPU.V_Counter - FIRST_VISIBLE_LINE));
 
 			S9xCheckMissingHTimerPosition(Timings.RenderPos);
+			S9xReschedule();
 
 			break;
 
@@ -534,10 +564,12 @@ void S9xDoHEventProcessing (void)
 		#ifdef DEBUGGER
 			S9xTraceFormattedMessage("*** WRAM Refresh  HC:%04d", CPU.Cycles);
 		#endif
+
 			S9xCheckMissingHTimerHalt(Timings.WRAMRefreshPos, SNES_WRAM_REFRESH_CYCLES);
 			CPU.Cycles += SNES_WRAM_REFRESH_CYCLES;
 
 			S9xCheckMissingHTimerPosition(Timings.WRAMRefreshPos);
+			S9xReschedule();
 
 			break;
 
@@ -553,13 +585,13 @@ void S9xDoHEventProcessing (void)
 			if (PPU.VTimerEnabled && (CPU.V_Counter == PPU.VTimerPosition))
 				S9xSetIRQ(PPU_IRQ_SOURCE);
 
+			S9xReschedule();
 			break;
-    }
-
-    S9xReschedule();
+	}
 
 #ifdef DEBUGGER
 	if (Settings.TraceHCEvent)
-		S9xTraceFormattedMessage("--- HC event rescheduled (%02d)  expected HC:%04d", CPU.WhichEvent, CPU.NextEvent);
+		S9xTraceFormattedMessage("--- HC event rescheduled (%s)  expected HC:%04d  current  HC:%04d",
+			eventname[CPU.WhichEvent], CPU.NextEvent, CPU.Cycles);
 #endif
 }

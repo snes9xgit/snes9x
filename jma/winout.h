@@ -64,8 +64,9 @@ public:
       MoveBlockBackward();
     BYTE *p = m_Buffer + m_Pos;
     aDistance++;
+   BYTE *p2 = p - aDistance;
     for(UINT32 i = 0; i < aLen; i++)
-      p[i] = p[i - aDistance];
+      p[i] = p2[i];
     m_Pos += aLen;
   }
 

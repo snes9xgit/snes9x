@@ -2611,9 +2611,6 @@ void CMemory::InitROM (void)
 	Timings.NMIDMADelay  = 24;
 	Timings.IRQPendCount = 0;
 
-	CPU.FastROMSpeed = 0;
-	ResetSpeedMap();
-
 	IPPU.TotalEmulatedFrames = 0;
 
 	//// Hack games
@@ -2653,36 +2650,6 @@ void CMemory::InitROM (void)
 		PostRomInitFunc();
 
     S9xVerifyControllers();
-}
-
-void CMemory::FixROMSpeed (void)
-{
-	if (CPU.FastROMSpeed == 0)
-		CPU.FastROMSpeed = SLOW_ONE_CYCLE;
-
-	// [80-bf]:[8000-ffff], [c0-ff]:[0000-ffff]
-	for (int c = 0x800; c < 0x1000; c++)
-	{
-		if (c & 0x8 || c & 0x400)
-			MemorySpeed[c] = (uint8) CPU.FastROMSpeed;
-	}
-}
-
-void CMemory::ResetSpeedMap (void)
-{
-	memset(MemorySpeed, SLOW_ONE_CYCLE, 0x1000);
-
-	// Fast  - [00-3f|80-bf]:[2000-3fff|4200-5fff]
-	// XSlow - [00-3f|80-bf]:[4000-41ff] see also S9xGet/SetCPU()
-	for (int i = 0; i < 0x400; i += 0x10)
-	{
-		MemorySpeed[i + 2] = MemorySpeed[0x800 + i + 2] = ONE_CYCLE;
-		MemorySpeed[i + 3] = MemorySpeed[0x800 + i + 3] = ONE_CYCLE;
-		MemorySpeed[i + 4] = MemorySpeed[0x800 + i + 4] = ONE_CYCLE;
-		MemorySpeed[i + 5] = MemorySpeed[0x800 + i + 5] = ONE_CYCLE;
-	}
-
-	FixROMSpeed();
 }
 
 // memory map
@@ -3598,37 +3565,6 @@ void CMemory::ApplyROMFixes (void)
 
 	if (!Settings.DisableGameSpecificHacks)
 	{
-		// The HC counter (CPU.Cycles for snes9x) passes over the WRAM refresh point (HC~536)
-		// while preparing to jump to the IRQ vector address.
-		// That is to say, the WRAM refresh point is passed over in S9xOpcode_IRQ().
-		// Then, HDMA starts just after $210e is half updated, and it causes the flicker of the ground.
-		// IRQ timing is bad? HDMA timing is bad? else?
-		if (match_na("GUNDAMW ENDLESSDUEL")) // Shin Kidou Senki Gundam W - Endless Duel
-		{
-			Timings.HDMAStart   -= 10;
-			Timings.HBlankStart -= 10;
-			printf("HDMA timing hack: %d\n", Timings.HDMAStart);
-		}
-
-		// Due to Snes9x's very inaccurate timings,
-		// HDMA transfer to $210D-$2114 between the first and second writings to the same addresses.
-		if (match_na("POWER RANGERS FIGHT")) // Mighty Morphin Power Rangers - The Fighting Edition
-		{
-			Timings.HDMAStart   -= 10;
-			Timings.HBlankStart -= 10;
-			printf("HDMA timing hack: %d\n", Timings.HDMAStart);
-		}
-
-		if (match_na("SFX SUPERBUTOUDEN2")) // Dragon Ball Z - Super Butouden 2
-		{
-			Timings.HDMAStart   += 20;
-			Timings.HBlankStart += 20;
-			printf("HDMA timing hack: %d\n", Timings.HDMAStart);
-		}
-	}
-
-	if (!Settings.DisableGameSpecificHacks)
-	{
 		// The delay to sync CPU and DMA which Snes9x cannot emulate.
 		// Some games need really severe delay timing...
 		if (match_na("BATTLE GRANDPRIX")) // Battle Grandprix
@@ -3655,6 +3591,12 @@ void CMemory::ApplyROMFixes (void)
 		if (match_na("Aero the AcroBat 2"))
 		{
 			Timings.IRQPendCount = 2;
+			printf("IRQ count hack: %d\n", Timings.IRQPendCount);
+		}
+
+		if (match_na("BATTLE BLAZE"))
+		{
+			Timings.IRQPendCount = 1;
 			printf("IRQ count hack: %d\n", Timings.IRQPendCount);
 		}
 	}
