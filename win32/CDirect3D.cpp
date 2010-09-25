@@ -178,14 +178,13 @@
 #pragma comment( lib, "d3dx9" )
 #pragma comment( lib, "DxErr9" )
 
-#include "../snes9x.h"
-
-#include <Dxerr.h>
-#include <tchar.h>
 #include "cdirect3d.h"
 #include "win32_display.h"
+#include "../snes9x.h"
 #include "../gfx.h"
+#include "../display.h"
 #include "wsnes9x.h"
+#include <Dxerr.h>
 #include <commctrl.h>
 
 #include "../filter/hq2x.h"
@@ -212,7 +211,15 @@ CDirect3D::CDirect3D()
 	afterRenderHeight = 0;
 	quadTextureSize = 0;
 	fullscreen = false;
-	iFilterScale = 0;
+	filterScale = 1;
+	for(int i = 0; i < MAX_SHADER_TEXTURES; i++) {
+		rubyLUT[i] = NULL;
+	}
+	effect=NULL;
+	shader_compiled=false;
+	shaderTimer = 1.0f;
+	shaderTimeStart = 0;
+	shaderTimeElapsed = 0;
 }
 
 /* CDirect3D::~CDirect3D()
@@ -244,7 +251,7 @@ bool CDirect3D::Initialize(HWND hWnd)
 
 	ZeroMemory(&dPresentParams, sizeof(dPresentParams));
 	dPresentParams.hDeviceWindow = hWnd;
-    dPresentParams.Windowed = TRUE;
+    dPresentParams.Windowed = true;
 	dPresentParams.BackBufferCount = GUI.DoubleBuffered?2:1;
     dPresentParams.SwapEffect = D3DSWAPEFFECT_DISCARD;
 	dPresentParams.BackBufferFormat = D3DFMT_UNKNOWN;
@@ -266,19 +273,11 @@ bool CDirect3D::Initialize(HWND hWnd)
 		return false;
 	}
 
-
-	//VideoMemory controls if we want bilinear filtering
-	if(GUI.BilinearFilter) {
-		pDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-		pDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
-	} else {
-		pDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
-		pDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_POINT);
-	}
-
 	pDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
 
 	init_done = true;
+
+	ApplyDisplayChanges();
 
 	return true;
 
@@ -287,6 +286,7 @@ bool CDirect3D::Initialize(HWND hWnd)
 void CDirect3D::DeInitialize()
 {
 	DestroyDrawSurface();
+	SetShader(NULL);
 
 	if(vertexBuffer) {
 		vertexBuffer->Release();
@@ -308,7 +308,117 @@ void CDirect3D::DeInitialize()
 	afterRenderHeight = 0;
 	quadTextureSize = 0;
 	fullscreen = false;
-	iFilterScale = 0;
+	filterScale = 0;
+}
+
+bool CDirect3D::SetShader(const TCHAR *file)
+{
+	//MUDLORD: the guts
+	//Compiles a shader from files on disc
+	//Sets LUT textures to texture files in PNG format.
+
+	TCHAR folder[MAX_PATH];
+	TCHAR rubyLUTfileName[MAX_PATH];
+	TCHAR *slash;
+
+	HRESULT hr;
+
+	shader_compiled = false;
+	shaderTimer = 1.0f;
+	shaderTimeStart = 0;
+	shaderTimeElapsed = 0;
+
+	if(effect) {
+		effect->Release();
+		effect = NULL;
+	}
+	for(int i = 0; i < MAX_SHADER_TEXTURES; i++) {
+		if (rubyLUT[i] != NULL) {
+			rubyLUT[i]->Release();
+			rubyLUT[i] = NULL;
+		}
+	}
+	if (file == NULL || *file==TEXT('\0'))
+		return true;
+
+	lstrcpy(folder,file);
+	slash = _tcsrchr(folder,TEXT('\\'));
+	if(slash)
+		*(slash+1)=TEXT('\0');
+	else
+		*folder=TEXT('\0');
+	SetCurrentDirectory(S9xGetDirectoryT(DEFAULT_DIR));
+
+	for(int i = 0; i < MAX_SHADER_TEXTURES; i++) {		
+		_stprintf(rubyLUTfileName, TEXT("%srubyLUT%d.png"), folder, i);
+		hr = D3DXCreateTextureFromFile(pDevice,rubyLUTfileName,&rubyLUT[i]);
+		if FAILED(hr){
+			rubyLUT[i] = NULL;
+		}
+	}
+
+	LPD3DXBUFFER pBufferErrors = NULL;
+	hr = D3DXCreateEffectFromFile( pDevice,file,NULL, NULL,
+		D3DXSHADER_ENABLE_BACKWARDS_COMPATIBILITY, NULL, &effect, 
+		&pBufferErrors );
+	if( FAILED(hr) ) {
+		TCHAR errorMsg[MAX_PATH + 50];
+		_stprintf(errorMsg,TEXT("Error loading HLSL effect file:\n%s"),file);
+		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"),
+			MB_OK|MB_ICONEXCLAMATION);
+		if(pBufferErrors) {
+			LPVOID pCompilErrors = pBufferErrors->GetBufferPointer();
+			MessageBox(NULL, (const TCHAR*)pCompilErrors, TEXT("FX Compile Error"),
+				MB_OK|MB_ICONEXCLAMATION);
+		}
+		return false;
+	}
+	D3DXHANDLE hTech;
+	effect->FindNextValidTechnique(NULL,&hTech);
+	effect->SetTechnique( hTech );
+	shader_compiled = true;
+	return true;
+}
+
+void CDirect3D::SetShaderVars()
+{
+	D3DXVECTOR4 rubyTextureSize;
+	D3DXVECTOR4 rubyInputSize;
+	D3DXVECTOR4 rubyOutputSize;
+	D3DXHANDLE  rubyTimer;
+
+	int shaderTime = GetTickCount();
+	shaderTimeElapsed += shaderTime - shaderTimeStart;
+	shaderTimeStart = shaderTime;
+	if(shaderTimeElapsed > 100) {
+		shaderTimeElapsed = 0;
+		shaderTimer += 0.01f;
+	}
+	rubyTextureSize.x = rubyTextureSize.y = (float)quadTextureSize;
+	rubyTextureSize.z = rubyTextureSize.w = 1.0 / quadTextureSize;
+	rubyInputSize.x = (float)afterRenderWidth;
+	rubyInputSize.y = (float)afterRenderHeight;
+	rubyInputSize.z = 1.0 / rubyInputSize.y;
+	rubyInputSize.w = 1.0 / rubyInputSize.z;
+	rubyOutputSize.x  = GUI.Stretch?(float)dPresentParams.BackBufferWidth:(float)afterRenderWidth;
+	rubyOutputSize.y  = GUI.Stretch?(float)dPresentParams.BackBufferHeight:(float)afterRenderHeight;
+	rubyOutputSize.z = 1.0 / rubyOutputSize.y;
+	rubyOutputSize.w = 1.0 / rubyOutputSize.x;
+	rubyTimer = effect->GetParameterByName(0, "rubyTimer");
+
+	effect->SetFloat(rubyTimer, shaderTimer);
+	effect->SetVector("rubyTextureSize", &rubyTextureSize);
+	effect->SetVector("rubyInputSize", &rubyInputSize);
+	effect->SetVector("rubyOutputSize", &rubyOutputSize);
+
+	effect->SetTexture("rubyTexture", drawSurface);
+	for(int i = 0; i < MAX_SHADER_TEXTURES; i++) {
+		char rubyLUTName[256];
+		sprintf(rubyLUTName, "rubyLUT%d", i);
+		if (rubyLUT[i] != NULL) {
+			effect->SetTexture( rubyLUTName, rubyLUT[i] );
+		}
+	}
 }
 
 /*  CDirect3D::Render
@@ -321,7 +431,7 @@ void CDirect3D::Render(SSurface Src)
 {
 	SSurface Dst;
 	RECT dstRect;
-	int iNewFilterScale;
+	unsigned int newFilterScale;
 	D3DLOCKED_RECT lr;
 	D3DLOCKED_RECT lrConv;
 	HRESULT hr;
@@ -330,9 +440,9 @@ void CDirect3D::Render(SSurface Src)
 
 	//create a new draw surface if the filter scale changes
 	//at least factor 2 so we can display unscaled hi-res images
-	iNewFilterScale = max(2,max(GetFilterScale(GUI.ScaleHiRes),GetFilterScale(GUI.Scale)));
-	if(iNewFilterScale!=iFilterScale) {
-		ChangeDrawSurfaceSize(iNewFilterScale);
+	newFilterScale = max(2,max(GetFilterScale(GUI.ScaleHiRes),GetFilterScale(GUI.Scale)));
+	if(newFilterScale!=filterScale) {
+		ChangeDrawSurfaceSize(newFilterScale);
 	}
 
 	if(FAILED(hr = pDevice->TestCooperativeLevel())) {
@@ -376,13 +486,28 @@ void CDirect3D::Render(SSurface Src)
 
 	if(!GUI.Stretch||GUI.AspectRatio)
 		pDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
-	
+
 	pDevice->BeginScene();
 
 	pDevice->SetTexture(0, drawSurface);
 	pDevice->SetFVF(FVF_COORDS_TEX);
 	pDevice->SetStreamSource(0,vertexBuffer,0,sizeof(VERTEX));
-	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,0,2);
+
+	if (shader_compiled) {
+		UINT passes;
+	
+		SetShaderVars();
+
+		hr = effect->Begin(&passes, 0);
+		for(UINT pass = 0; pass < passes; pass++ ) {
+			effect->BeginPass(pass);
+			pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,0,2);
+			effect->EndPass();
+		}
+		effect->End();
+	} else {
+		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,0,2);
+	}
 
     pDevice->EndScene();
 
@@ -397,12 +522,12 @@ and creates a new texture
 */
 void CDirect3D::CreateDrawSurface()
 {
-	int neededSize;
+	unsigned int neededSize;
 	HRESULT hr;
 
 	//we need at least 512 pixels (SNES_WIDTH * 2) so we can start with that value
 	quadTextureSize = 512;
-	neededSize = SNES_WIDTH * iFilterScale;
+	neededSize = SNES_WIDTH * filterScale;
 	while(quadTextureSize < neededSize)
 		quadTextureSize *=2;
 
@@ -460,13 +585,13 @@ bool CDirect3D::BlankTexture(LPDIRECT3DTEXTURE9 texture)
 changes the draw surface size: deletes the old textures, creates a new texture
 and calculate new vertices
 IN:
-iScale	-	the scale that has to fit into the textures
+scale	-	the scale that has to fit into the textures
 -----
 returns true if successful, false otherwise
 */
-bool CDirect3D::ChangeDrawSurfaceSize(int iScale)
+bool CDirect3D::ChangeDrawSurfaceSize(unsigned int scale)
 {
-	iFilterScale = iScale;
+	filterScale = scale;
 
 	if(pDevice) {
 		DestroyDrawSurface();
@@ -483,56 +608,10 @@ calculates the vertex coordinates
 */
 void CDirect3D::SetupVertices()
 {
-	float xFactor;
-	float yFactor;
-	float minFactor;
-	float renderWidthCalc,renderHeightCalc;
 	RECT drawRect;
-	int hExtend = GUI.HeightExtend ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT;
-	float snesAspect = (float)GUI.AspectWidth/hExtend;
 	void *pLockedVertexBuffer;
 
-	if(GUI.Stretch) {
-		if(GUI.AspectRatio) {
-			//fix for hi-res images with FILTER_NONE
-			//where we need to correct the aspect ratio
-			renderWidthCalc = (float)afterRenderWidth;
-			renderHeightCalc = (float)afterRenderHeight;
-			if(renderWidthCalc/renderHeightCalc>snesAspect)
-				renderWidthCalc = renderHeightCalc * snesAspect;
-			else if(renderWidthCalc/renderHeightCalc<snesAspect)
-				renderHeightCalc = renderWidthCalc / snesAspect;
-
-			xFactor = (float)dPresentParams.BackBufferWidth / renderWidthCalc;
-			yFactor = (float)dPresentParams.BackBufferHeight / renderHeightCalc;
-			minFactor = xFactor < yFactor ? xFactor : yFactor;
-
-			drawRect.right = (LONG)(renderWidthCalc * minFactor);
-			drawRect.bottom = (LONG)(renderHeightCalc * minFactor);
-
-			drawRect.left = (dPresentParams.BackBufferWidth - drawRect.right) / 2;
-			drawRect.top = (dPresentParams.BackBufferHeight - drawRect.bottom) / 2;
-			drawRect.right += drawRect.left;
-			drawRect.bottom += drawRect.top;
-		} else {
-			drawRect.top = 0;
-			drawRect.left = 0;
-			drawRect.right = dPresentParams.BackBufferWidth;
-			drawRect.bottom = dPresentParams.BackBufferHeight;
-		}
-	} else {
-		drawRect.left = ((int)(dPresentParams.BackBufferWidth) - (int)afterRenderWidth) / 2;
-		drawRect.top = ((int)(dPresentParams.BackBufferHeight) - (int)afterRenderHeight) / 2;
-		if(drawRect.left < 0) drawRect.left = 0;
-		if(drawRect.top < 0) drawRect.top = 0;
-		drawRect.right = drawRect.left + afterRenderWidth;
-		drawRect.bottom = drawRect.top + afterRenderHeight;
-
-		//the lines below would downsize the image if window size is smaller than the output, but
-		//since the old directdraw code did not do that I've left it out
-		//if(drawRect.right > dPresentParams.BackBufferWidth) drawRect.right = dPresentParams.BackBufferWidth;
-		//if(drawRect.bottom > dPresentParams.BackBufferHeight) drawRect.bottom = dPresentParams.BackBufferHeight;
-	}
+	drawRect = CalculateDisplayRect(afterRenderWidth,afterRenderHeight,dPresentParams.BackBufferWidth,dPresentParams.BackBufferHeight);
 
 	float tX = (float)afterRenderWidth / (float)quadTextureSize;
 	float tY = (float)afterRenderHeight / (float)quadTextureSize;
@@ -564,7 +643,7 @@ bool CDirect3D::ChangeRenderSize(unsigned int newWidth, unsigned int newHeight)
 
 	//if we already have the desired size no change is necessary
 	//during fullscreen no changes are allowed
-	if(fullscreen || dPresentParams.BackBufferWidth == newWidth && dPresentParams.BackBufferHeight == newHeight)
+	if(dPresentParams.BackBufferWidth == newWidth && dPresentParams.BackBufferHeight == newHeight)
 		return true;
 
 	if(!ResetDevice())
@@ -581,12 +660,15 @@ returns true if successful, false otherwise
 */
 bool CDirect3D::ResetDevice()
 {
-	if(!pDevice) return false;
+	if(!init_done) return false;
 
 	HRESULT hr;
 
 	//release prior to reset
 	DestroyDrawSurface();
+
+	if(effect)
+		effect->OnLostDevice();
 
 	//zero or unknown values result in the current window size/display settings
 	dPresentParams.BackBufferWidth = 0;
@@ -613,6 +695,9 @@ bool CDirect3D::ResetDevice()
 		DXTRACE_ERR(TEXT("Unable to reset device"), hr);
 		return false;
 	}
+
+	if(effect)
+		effect->OnResetDevice();
 
 	if(GUI.BilinearFilter) {
 		pDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
@@ -722,5 +807,10 @@ returns true if successful, false otherwise
 */
 bool CDirect3D::ApplyDisplayChanges(void)
 {
+	if(GUI.shaderEnabled && GUI.HLSLshaderFileName)
+		SetShader(GUI.HLSLshaderFileName);
+	else
+		SetShader(NULL);
+
 	return ChangeRenderSize(0,0);
 }

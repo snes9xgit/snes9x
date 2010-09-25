@@ -209,6 +209,9 @@ public:
 	bool clipped;
 	bool dDinitialized;
 
+	unsigned char *convertBuffer;
+	unsigned int filterScale;
+
 	DDPIXELFORMAT DDPixelFormat;
 public:
 	bool SetDisplayMode(

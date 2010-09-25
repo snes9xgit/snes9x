@@ -184,7 +184,6 @@
 
 #define STRICT
 #include <windows.h>
-#include <tchar.h>
 #include <io.h>
 
 #if (((defined(_MSC_VER) && _MSC_VER >= 1300)) || defined(__MINGW32__))
@@ -889,7 +888,7 @@ static LRESULT CALLBACK InputCustomWndProc(HWND hwnd, UINT msg, WPARAM wParam, L
 {
 	// retrieve the custom structure POINTER for THIS window
     InputCust *icp = GetInputCustom(hwnd);
-	HWND pappy = (HWND__ *)GetWindowLongPtr(hwnd,GWL_HWNDPARENT);
+	HWND pappy = (HWND__ *)GetWindowLongPtr(hwnd,GWLP_HWNDPARENT);
 	funky= hwnd;
 
 	static HWND selectedItem = NULL;
@@ -950,7 +949,7 @@ static LRESULT CALLBACK InputCustomWndProc(HWND hwnd, UINT msg, WPARAM wParam, L
 
 		icp->crForeGnd = ((~col) & 0x00ffffff);
 		icp->crBackGnd = col;
-		SetWindowText(hwnd,temp);
+		SetWindowText(hwnd,_tFromChar(temp));
 		InvalidateRect(icp->hwnd, NULL, FALSE);
 		UpdateWindow(icp->hwnd);
 		SendMessage(pappy,WM_USER+43,wParam,(LPARAM)hwnd);
@@ -969,7 +968,7 @@ static LRESULT CALLBACK InputCustomWndProc(HWND hwnd, UINT msg, WPARAM wParam, L
 		}
 		icp->crForeGnd = ((~col) & 0x00ffffff);
 		icp->crBackGnd = col;
-		SetWindowText(hwnd,temp);
+		SetWindowText(hwnd,_tFromChar(temp));
 		InvalidateRect(icp->hwnd, NULL, FALSE);
 		UpdateWindow(icp->hwnd);
 
@@ -1071,7 +1070,7 @@ static LRESULT CALLBACK HotInputCustomWndProc(HWND hwnd, UINT msg, WPARAM wParam
 {
 	// retrieve the custom structure POINTER for THIS window
     InputCust *icp = GetInputCustom(hwnd);
-	HWND pappy = (HWND__ *)GetWindowLongPtr(hwnd,GWL_HWNDPARENT);
+	HWND pappy = (HWND__ *)GetWindowLongPtr(hwnd,GWLP_HWNDPARENT);
 	funky= hwnd;
 
 	static HWND selectedItem = NULL;
@@ -1200,7 +1199,7 @@ static LRESULT CALLBACK HotInputCustomWndProc(HWND hwnd, UINT msg, WPARAM wParam
 
 			icp->crForeGnd = ((~col) & 0x00ffffff);
 			icp->crBackGnd = col;
-			SetWindowText(hwnd,temp);
+			SetWindowText(hwnd,_tFromChar(temp));
 			InvalidateRect(icp->hwnd, NULL, FALSE);
 			UpdateWindow(icp->hwnd);
 			SendMessage(pappy,WM_USER+43,wParam,(LPARAM)hwnd);
@@ -1237,7 +1236,7 @@ static LRESULT CALLBACK HotInputCustomWndProc(HWND hwnd, UINT msg, WPARAM wParam
 
 					icp->crForeGnd = ((~col) & 0x00ffffff);
 					icp->crBackGnd = col;
-					SetWindowText(hwnd,temp);
+					SetWindowText(hwnd,_tFromChar(temp));
 					InvalidateRect(icp->hwnd, NULL, FALSE);
 					UpdateWindow(icp->hwnd);
 					SendMessage(pappy,WM_USER+43,wParam,(LPARAM)hwnd);
@@ -1265,7 +1264,7 @@ static LRESULT CALLBACK HotInputCustomWndProc(HWND hwnd, UINT msg, WPARAM wParam
 		}
 		icp->crForeGnd = ((~col) & 0x00ffffff);
 		icp->crBackGnd = col;
-		SetWindowText(hwnd,temp);
+		SetWindowText(hwnd,_tFromChar(temp));
 		InvalidateRect(icp->hwnd, NULL, FALSE);
 		UpdateWindow(icp->hwnd);
 		}

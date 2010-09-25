@@ -217,17 +217,17 @@ struct AVIFile
 	long				tBytes, ByteBuffer;
 };
 
-static char saved_cur_avi_fnameandext[MAX_PATH];
-static char saved_avi_fname[MAX_PATH];
-static char saved_avi_ext[MAX_PATH];
+static TCHAR saved_cur_avi_fnameandext[MAX_PATH];
+static TCHAR saved_avi_fname[MAX_PATH];
+static TCHAR saved_avi_ext[MAX_PATH];
 static int avi_segnum=0;
 static struct AVIFile saved_avi_info;
 static int use_prev_options=0;
 
-static bool truncate_existing(const char* filename)
+static bool truncate_existing(const TCHAR* filename)
 {
 	// this is only here because AVIFileOpen doesn't seem to do it for us
-	FILE* fd = fopen(filename, "wb");
+	FILE* fd = _tfopen(filename, TEXT("wb"));
 	if(fd)
 	{
 		fclose(fd);
@@ -313,7 +313,7 @@ void AVISetSoundFormat(const WAVEFORMATEX* wave_format, struct AVIFile* avi_out)
 	avi_out->sound_added = true;
 }
 
-int AVIBegin(const char* filename, struct AVIFile* _avi_out)
+int AVIBegin(const TCHAR* filename, struct AVIFile* _avi_out)
 {
 	AVIFile& avi = *_avi_out;
 	int result = 0;
@@ -390,13 +390,13 @@ int AVIBegin(const char* filename, struct AVIFile* _avi_out)
 		avi.tBytes = 0;
 		avi.ByteBuffer = 0;
 
-		strncpy(saved_cur_avi_fnameandext,filename,MAX_PATH);
-		strncpy(saved_avi_fname,filename,MAX_PATH);
-		char* dot = strrchr(saved_avi_fname, '.');
-		if(dot && dot > strrchr(saved_avi_fname, '/') && dot > strrchr(saved_avi_fname, '\\'))
+		lstrcpyn(saved_cur_avi_fnameandext,filename,MAX_PATH);
+		lstrcpyn(saved_avi_fname,filename,MAX_PATH);
+		TCHAR* dot = _tcsrchr(saved_avi_fname, TEXT('.'));
+		if(dot && dot > _tcsrchr(saved_avi_fname, TEXT('/')) && dot > _tcsrchr(saved_avi_fname, TEXT('\\')))
 		{
-			strcpy(saved_avi_ext,dot);
-			dot[0]='\0';
+			lstrcpy(saved_avi_ext,dot);
+			dot[0]=TEXT('\0');
 		}
 
 		// success
@@ -452,17 +452,17 @@ int AVIGetSoundFormat(const struct AVIFile* avi_out, const WAVEFORMATEX** ppForm
 
 static int AVINextSegment(struct AVIFile* avi_out)
 {
-	char avi_fname[MAX_PATH];
-	strcpy(avi_fname,saved_avi_fname);
-	char avi_fname_temp[MAX_PATH];
-	sprintf(avi_fname_temp, "%s_part%d%s", avi_fname, avi_segnum+2, saved_avi_ext);
+	TCHAR avi_fname[MAX_PATH];
+	lstrcpy(avi_fname,saved_avi_fname);
+	TCHAR avi_fname_temp[MAX_PATH];
+	_stprintf(avi_fname_temp, TEXT("%s_part%d%s"), avi_fname, avi_segnum+2, saved_avi_ext);
 	saved_avi_info=*avi_out;
 	use_prev_options=1;
 	avi_segnum++;
 	clean_up(avi_out);
 	int ret = AVIBegin(avi_fname_temp, avi_out);
 	use_prev_options=0;
-	strcpy(saved_avi_fname,avi_fname);
+	lstrcpy(saved_avi_fname,avi_fname);
 	return ret;
 }
 

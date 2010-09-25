@@ -93,6 +93,7 @@
 #define IDC_MOVIE_METADATA              1090
 #define IDC_MULTICART_EDITA             1090
 #define IDC_INRATEEDIT                  1090
+#define IDC_SHADER_HLSL_FILE            1090
 #define IDC_PAUSEINTERVAL               1091
 #define IDC_UPRIGHT                     1091
 #define IDC_MULTICART_BIOSEDIT          1091
@@ -101,8 +102,10 @@
 #define IDC_MULTICART_EDITB             1092
 #define IDC_PAUSESPIN                   1093
 #define IDC_DWNRIGHT                    1093
+#define IDC_SHADER_GLSL_VERTEX_FILE     1093
 #define IDC_SYNCBYRESET                 1094
 #define IDC_DOWN                        1094
+#define IDC_SHADER_GLSL_FRAGMENT_FILE   1094
 #define IDC_SENDROM                     1095
 #define IDC_DWNLEFT                     1095
 #define IDC_ACTASSERVER                 1096
@@ -345,6 +348,11 @@
 #define IDC_INRATETEXT                  3012
 #define IDC_SPIN_MAX_SKIP_DISP          3013
 #define IDC_SPIN_MAX_SKIP_DISP_FIXED    3014
+#define IDC_SHADER_ENABLED              3015
+#define IDC_SHADER_HLSL_BROWSE          3016
+#define IDC_SHADER_GROUP                3017
+#define IDC_SHADER_GLSL_VERTEX_BROWSE   3018
+#define IDC_SHADER_GLSL_FRAGMENT_BROWSE 3019
 #define ID_FILE_EXIT                    40001
 #define ID_LANGUAGE_ENGLISH             40002
 #define ID_LANGUAGE_NEDERLANDS          40003
@@ -462,6 +470,7 @@
 #define ID_FILE_LOADMULTICART           40153
 #define ID_SOUND_16MS                   40154
 #define ID_SOUND_32MS                   40155
+#define ID_FILE_SAVE_SPC_DATA           40066
 #define ID_SOUND_48MS                   40156
 #define ID_SOUND_64MS                   40157
 #define ID_SOUND_80MS                   40158
@@ -479,8 +488,8 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        151
-#define _APS_NEXT_COMMAND_VALUE         40154
-#define _APS_NEXT_CONTROL_VALUE         3014
+#define _APS_NEXT_COMMAND_VALUE         40156
+#define _APS_NEXT_CONTROL_VALUE         3018
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

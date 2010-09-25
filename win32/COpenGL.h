@@ -174,106 +174,92 @@
   Nintendo Co., Limited and its subsidiary companies.
  ***********************************************************************************/
 
-#include "IS9xSoundOutput.h"
-#include "../snes9x.h"
-#include "../apu/apu.h"
-#include "wsnes9x.h"
-#include "CDirectSound.h"
-#include "CXAudio2.h"
-#include "win32_sound.h"
-// FMOD and FMOD Ex cannot be used at the same time
-#ifdef FMOD_SUPPORT
-#include "CFMOD.h"
-#pragma comment(linker,"/DEFAULTLIB:fmodvc.lib")
-#elif defined FMODEX_SUPPORT
-#include "CFMODEx.h"
-#if defined(_WIN64)
-#pragma comment(linker,"/DEFAULTLIB:fmodex64_vc.lib")
-#else
-#pragma comment(linker,"/DEFAULTLIB:fmodex_vc.lib")
-#endif // _WIN64
-#endif // FMODEX_SUPPORT
 
-#define CLAMP(x, low, high) (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
 
-// available sound output methods
-CDirectSound S9xDirectSound;
-CXAudio2 S9xXAudio2;
-// FMOD and FMOD Ex cannot be used at the same time
-#ifdef FMOD_SUPPORT
-CFMOD S9xFMOD;
-#elif defined FMODEX_SUPPORT
-CFMODEx S9xFMODEx;
-#endif
+#ifndef COPENGL_H
+#define COPENGL_H
 
-// Interface used to access the sound output
-IS9xSoundOutput *S9xSoundOutput = &S9xXAudio2;
+#include <windows.h>
+#include <gl\gl.h>
+#include "glext.h"
+#include "wglext.h"
+#include "IS9xDisplayOutput.h"
 
-/*  ReInitSound
-reinitializes the sound core with current settings
-IN:
-mode		-	0 disables sound output, 1 enables
------
-returns true if successful, false otherwise
+/* IS9xDisplayOutput
+	Interface for display driver.
 */
-bool ReInitSound()
+class COpenGL : public IS9xDisplayOutput
 {
-	Settings.SoundInputRate = CLAMP(Settings.SoundInputRate,8000, 48000);
-	Settings.SoundPlaybackRate = CLAMP(Settings.SoundPlaybackRate,8000, 48000);
-	S9xSetSoundMute(GUI.Mute);
-	if(S9xSoundOutput)
-		S9xSoundOutput->DeInitSoundOutput();
-	return S9xInitSound(GUI.SoundBufferSize,0);
-}
+private:
+	HDC					hDC;
+	HGLRC				hRC;
+	HWND				hWnd;
+	GLuint				drawTexture;
+	GLuint				drawBuffer;
+	GLfloat				vertices[8];
+    GLfloat				texcoords[8];
+	unsigned char *		noPboBuffer;
 
-void CloseSoundDevice() {
-	S9xSoundOutput->DeInitSoundOutput();
-	S9xSetSamplesAvailableCallback(NULL,NULL);
-}
+	bool initDone;
+	bool fullscreen;
+	unsigned int quadTextureSize;
+	unsigned int filterScale;
+	unsigned int afterRenderWidth, afterRenderHeight;
 
-/*  S9xOpenSoundDevice
-called by S9xInitSound - initializes the currently selected sound output and
-applies the current sound settings
------
-returns true if successful, false otherwise
-*/
-bool8 S9xOpenSoundDevice ()
-{
-	// point the interface to the correct output object
-	switch(GUI.SoundDriver) {
-		case WIN_SNES9X_DIRECT_SOUND_DRIVER:
-			S9xSoundOutput = &S9xDirectSound;
-			break;
-#ifdef FMOD_SUPPORT
-		case WIN_FMOD_DIRECT_SOUND_DRIVER:
-		case WIN_FMOD_WAVE_SOUND_DRIVER:
-		case WIN_FMOD_A3D_SOUND_DRIVER:
-			S9xSoundOutput = &S9xFMOD;
-			break;
-#elif defined FMODEX_SUPPORT
-		case WIN_FMODEX_DEFAULT_DRIVER:
-		case WIN_FMODEX_ASIO_DRIVER:
-		case WIN_FMODEX_OPENAL_DRIVER:
-			S9xSoundOutput = &S9xFMODEx;
-			break;
+	bool shaderFunctionsLoaded;
+	bool shaderCompiled;
+
+	bool pboFunctionsLoaded;
+
+	GLuint shaderProgram;
+    GLuint vertexShader;
+    GLuint fragmentShader;
+
+	// PBO Functions
+	PFNGLGENBUFFERSPROC		glGenBuffers;
+	PFNGLBINDBUFFERPROC		glBindBuffer;
+	PFNGLBUFFERDATAPROC		glBufferData;
+	PFNGLDELETEBUFFERSPROC	glDeleteBuffers;
+	PFNGLMAPBUFFERPROC		glMapBuffer;
+	PFNGLUNMAPBUFFERPROC	glUnmapBuffer;
+
+	// Shader Functions
+
+	PFNGLCREATEPROGRAMPROC			glCreateProgram;
+    PFNGLCREATESHADERPROC			glCreateShader;
+    PFNGLCOMPILESHADERPROC			glCompileShader;
+    PFNGLDELETESHADERPROC			glDeleteShader;
+	PFNGLDELETEPROGRAMPROC			glDeleteProgram;
+	PFNGLATTACHSHADERPROC			glAttachShader;
+	PFNGLDETACHSHADERPROC			glDetachShader;
+	PFNGLLINKPROGRAMPROC			glLinkProgram;
+	PFNGLUSEPROGRAMPROC				glUseProgram;
+	PFNGLSHADERSOURCEPROC			glShaderSource;
+	PFNGLGETUNIFORMLOCATIONPROC		glGetUniformLocation;
+	PFNGLUNIFORM2FVPROC				glUniform2fv;
+
+	PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
+
+	bool SetShaders(const TCHAR *fragment,const TCHAR *vertex);
+	bool LoadShaderFunctions();
+	bool LoadPBOFunctions();
+	void CreateDrawSurface(void);
+	void DestroyDrawSurface(void);
+	bool ChangeDrawSurfaceSize(unsigned int scale);
+	void SetupVertices();
+
+public:
+	COpenGL();
+	~COpenGL();
+	bool Initialize(HWND hWnd);
+	void DeInitialize();
+	void Render(SSurface Src);
+	bool ChangeRenderSize(unsigned int newWidth, unsigned int newHeight);
+	bool ApplyDisplayChanges(void);
+	bool SetFullscreen(bool fullscreen);
+	void SetSnes9xColorFormat(void);
+	void EnumModes(std::vector<dMode> *modeVector);	
+};
+
+
 #endif
-		case WIN_XAUDIO2_SOUND_DRIVER:
-			S9xSoundOutput = &S9xXAudio2;
-			break;
-		default:	// we default to DirectSound
-			GUI.SoundDriver = WIN_SNES9X_DIRECT_SOUND_DRIVER;
-			S9xSoundOutput = &S9xDirectSound;
-	}
-	if(!S9xSoundOutput->InitSoundOutput())
-		return false;
-	S9xSetSamplesAvailableCallback (S9xSoundCallback, NULL);
-	return S9xSoundOutput->SetupSound();
-}
-
-/*  S9xSoundCallback
-called by the sound core to process generated samples
-*/
-void S9xSoundCallback(void *data)
-{	
-	S9xSoundOutput->ProcessSound();
-}

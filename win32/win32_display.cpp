@@ -186,6 +186,7 @@
 #include "win32_display.h"
 #include "CDirect3D.h"
 #include "CDirectDraw.h"
+#include "COpenGL.h"
 #include "IS9xDisplayOutput.h"
 
 #include "../filter/hq2x.h"
@@ -194,6 +195,7 @@
 // available display output methods
 CDirect3D Direct3D;
 CDirectDraw DirectDraw;
+COpenGL OpenGL;
 
 // Interface used to access the display output
 IS9xDisplayOutput *S9xDisplayOutput=&Direct3D;
@@ -231,11 +233,15 @@ bool WinDisplayReset(void)
 {
 	S9xDisplayOutput->DeInitialize();
 	switch(GUI.outputMethod) {
+		default:
 		case DIRECT3D:
 			S9xDisplayOutput = &Direct3D;
 			break;
 		case DIRECTDRAW:
 			S9xDisplayOutput = &DirectDraw;
+			break;
+		case OPENGL:
+			S9xDisplayOutput = &OpenGL;
 			break;
 	}
 	if(S9xDisplayOutput->Initialize(GUI.hWnd)) {
@@ -253,6 +259,56 @@ bool WinDisplayReset(void)
 void WinDisplayApplyChanges()
 {
 	S9xDisplayOutput->ApplyDisplayChanges();
+}
+
+RECT CalculateDisplayRect(unsigned int sourceWidth,unsigned int sourceHeight,
+						  unsigned int displayWidth,unsigned int displayHeight)
+{
+	float xFactor;
+	float yFactor;
+	float minFactor;
+	float renderWidthCalc,renderHeightCalc;
+	int hExtend = GUI.HeightExtend ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT;
+	float snesAspect = (float)GUI.AspectWidth/hExtend;
+	RECT drawRect;
+
+	if(GUI.Stretch) {
+		if(GUI.AspectRatio) {
+			//fix for hi-res images with FILTER_NONE
+			//where we need to correct the aspect ratio
+			renderWidthCalc = (float)sourceWidth;
+			renderHeightCalc = (float)sourceHeight;
+			if(renderWidthCalc/renderHeightCalc>snesAspect)
+				renderWidthCalc = renderHeightCalc * snesAspect;
+			else if(renderWidthCalc/renderHeightCalc<snesAspect)
+				renderHeightCalc = renderWidthCalc / snesAspect;
+
+			xFactor = (float)displayWidth / renderWidthCalc;
+			yFactor = (float)displayHeight / renderHeightCalc;
+			minFactor = xFactor < yFactor ? xFactor : yFactor;
+
+			drawRect.right = (LONG)(renderWidthCalc * minFactor);
+			drawRect.bottom = (LONG)(renderHeightCalc * minFactor);
+
+			drawRect.left = (displayWidth - drawRect.right) / 2;
+			drawRect.top = (displayHeight - drawRect.bottom) / 2;
+			drawRect.right += drawRect.left;
+			drawRect.bottom += drawRect.top;
+		} else {
+			drawRect.top = 0;
+			drawRect.left = 0;
+			drawRect.right = displayWidth;
+			drawRect.bottom = displayHeight;
+		}
+	} else {
+		drawRect.left = ((int)(displayWidth) - (int)sourceWidth) / 2;
+		drawRect.top = ((int)(displayHeight) - (int)sourceHeight) / 2;
+		if(drawRect.left < 0) drawRect.left = 0;
+		if(drawRect.top < 0) drawRect.top = 0;
+		drawRect.right = drawRect.left + sourceWidth;
+		drawRect.bottom = drawRect.top + sourceHeight;
+	}
+	return drawRect;
 }
 
 // we no longer support 8bit modes - no palette necessary
@@ -476,6 +532,24 @@ void RestoreSNESDisplay ()
 
 /* DirectDraw only end */
 
+void SaveMainWinPos()
+{
+	WINDOWPLACEMENT wndPlacement={0};
+	wndPlacement.length = sizeof(WINDOWPLACEMENT);
+	GetWindowPlacement(GUI.hWnd,&wndPlacement);
+	GUI.window_maximized = wndPlacement.showCmd == SW_SHOWMAXIMIZED;
+	GUI.window_size = wndPlacement.rcNormalPosition;
+}
+
+void RestoreMainWinPos()
+{
+	WINDOWPLACEMENT wndPlacement={0};
+	wndPlacement.length = sizeof(WINDOWPLACEMENT);
+	wndPlacement.showCmd = GUI.window_maximized?SW_SHOWMAXIMIZED:SW_SHOWNORMAL;
+	wndPlacement.rcNormalPosition = GUI.window_size;
+	SetWindowPlacement(GUI.hWnd,&wndPlacement);
+}
+
 /*  ToggleFullScreen
 switches between fullscreen and window mode and saves the window position
 if EmulateFullscreen is set we simply create a borderless window that spans the screen
@@ -489,7 +563,7 @@ void ToggleFullScreen ()
 		MONITORINFO mi;
 		GUI.EmulatedFullscreen = !GUI.EmulatedFullscreen;
 		if(GUI.EmulatedFullscreen) {
-			GetWindowRect (GUI.hWnd, &GUI.window_size);
+			SaveMainWinPos();
 			if(GetMenu(GUI.hWnd)!=NULL)
 				SetMenu(GUI.hWnd,NULL);
 			SetWindowLong (GUI.hWnd, GWL_STYLE, WS_POPUP|WS_VISIBLE);
@@ -498,40 +572,36 @@ void ToggleFullScreen ()
 			GetMonitorInfo(hm,&mi);
 			SetWindowPos (GUI.hWnd, HWND_TOP, mi.rcMonitor.left, mi.rcMonitor.top, mi.rcMonitor.right - mi.rcMonitor.left, mi.rcMonitor.bottom - mi.rcMonitor.top, SWP_DRAWFRAME|SWP_FRAMECHANGED);
 		} else {
-			bool maximized = GUI.window_maximized;
 			SetWindowLong( GUI.hWnd, GWL_STYLE, WS_POPUPWINDOW|WS_CAPTION|
                    WS_THICKFRAME|WS_VISIBLE|WS_MINIMIZEBOX|WS_MAXIMIZEBOX);
 			SetMenu(GUI.hWnd,GUI.hMenu);
-			SetWindowPos (GUI.hWnd, HWND_NOTOPMOST, GUI.window_size.left, GUI.window_size.top, GUI.window_size.right - GUI.window_size.left, GUI.window_size.bottom - GUI.window_size.top, SWP_DRAWFRAME|SWP_FRAMECHANGED);
-			if(maximized)
-				ShowWindow(GUI.hWnd, SW_MAXIMIZE);
+			SetWindowPos (GUI.hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE|SWP_DRAWFRAME|SWP_FRAMECHANGED);
+			RestoreMainWinPos();
 		}
 	} else {
 		GUI.FullScreen = !GUI.FullScreen;
 		if(GUI.FullScreen) {
-			GetWindowRect (GUI.hWnd, &GUI.window_size);
+			SaveMainWinPos();
 			if(GetMenu(GUI.hWnd)!=NULL)
 				SetMenu(GUI.hWnd,NULL);
 			SetWindowLong (GUI.hWnd, GWL_STYLE, WS_POPUP|WS_VISIBLE);
-			SetWindowPos (GUI.hWnd, HWND_TOP, 0, 0, 0, 0, SWP_DRAWFRAME|SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOSIZE);
+			SetWindowPos (GUI.hWnd, HWND_TOP, 0, 0, GUI.FullscreenMode.width, GUI.FullscreenMode.height, SWP_DRAWFRAME|SWP_FRAMECHANGED);
 			if(!S9xDisplayOutput->SetFullscreen(true))
 				GUI.FullScreen = false;
 		}
 		if(!GUI.FullScreen) {
-			bool maximized = GUI.window_maximized;
 			SetWindowLong( GUI.hWnd, GWL_STYLE, WS_POPUPWINDOW|WS_CAPTION|
                    WS_THICKFRAME|WS_VISIBLE|WS_MINIMIZEBOX|WS_MAXIMIZEBOX);
 			SetMenu(GUI.hWnd,GUI.hMenu);
 			S9xDisplayOutput->SetFullscreen(false);
-			SetWindowPos (GUI.hWnd, HWND_NOTOPMOST, GUI.window_size.left, GUI.window_size.top, GUI.window_size.right - GUI.window_size.left, GUI.window_size.bottom - GUI.window_size.top, SWP_DRAWFRAME|SWP_FRAMECHANGED);
-			if(maximized)
-				ShowWindow(GUI.hWnd, SW_MAXIMIZE);
+			SetWindowPos (GUI.hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE|SWP_DRAWFRAME|SWP_FRAMECHANGED);
+			RestoreMainWinPos();
 		}
+		S9xGraphicsDeinit();
+		S9xSetWinPixelFormat ();
+		S9xInitUpdate();
+		S9xGraphicsInit();
 	}
-	S9xGraphicsDeinit();
-	S9xSetWinPixelFormat ();
-	S9xInitUpdate();
-	S9xGraphicsInit();
 	IPPU.RenderThisFrame = true;
 
 	S9xClearPause (PAUSE_TOGGLE_FULL_SCREEN);
@@ -837,7 +907,7 @@ void WinDisplayStringInBuffer (const char *string, int linesFromBottom, int pixe
 	if (linesFromBottom <= 0)
 		linesFromBottom = 1;
 
-	screenPtrType	*dst = (screenPtrType	*)displayScreen + (displayHeight - fontheight_scaled * linesFromBottom) * displayPpl + pixelsFromLeft;
+	screenPtrType	*dst = (screenPtrType	*)displayScreen + (displayHeight - fontheight_scaled * linesFromBottom) * displayPpl + (int)(pixelsFromLeft * (2*(float)displayWidth/IPPU.RenderedScreenWidth - displayScale));
 
 	int	len = strlen(string);
 	int	max_chars = displayWidth / (fontwidth_scaled - displayScale);

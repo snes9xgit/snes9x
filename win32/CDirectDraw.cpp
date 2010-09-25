@@ -206,6 +206,8 @@ CDirectDraw::CDirectDraw()
     depth = -1;
     doubleBuffered = false;
 	dDinitialized = false;
+	convertBuffer = NULL;
+	filterScale = 0;
 }
 
 CDirectDraw::~CDirectDraw()
@@ -270,6 +272,11 @@ void CDirectDraw::DeInitialize()
         lpDD->Release();
         lpDD = NULL;
     }
+	if(convertBuffer) {
+		delete [] convertBuffer;
+		convertBuffer = NULL;
+	}
+	filterScale = 0;
 	dDinitialized = false;
 }
 
@@ -543,6 +550,8 @@ void CDirectDraw::Render(SSurface Src)
 
 	DDSCAPS caps;
 
+	unsigned int newFilterScale;
+
 	ZeroMemory(&caps,sizeof(DDSCAPS));
 	caps.dwCaps = DDSCAPS_BACKBUFFER;
 
@@ -561,9 +570,17 @@ void CDirectDraw::Render(SSurface Src)
 	if (!GUI.DepthConverted)
 	{
 		SSurface tmp;
-		static BYTE buf[SNES_WIDTH * sizeof(uint16) * SNES_HEIGHT_EXTENDED * sizeof(uint16) *4*4];
+		
+		newFilterScale = max(2,max(GetFilterScale(GUI.ScaleHiRes),GetFilterScale(GUI.Scale)));
 
-		tmp.Surface = buf;
+		if(newFilterScale!=filterScale) {
+			if(convertBuffer)
+				delete [] convertBuffer;
+			filterScale = newFilterScale;
+			convertBuffer = new unsigned char[SNES_WIDTH * sizeof(uint16) * SNES_HEIGHT_EXTENDED * sizeof(uint16) *filterScale*filterScale]();
+		}
+
+		tmp.Surface = convertBuffer;
 
 		if(CurrentScale == FILTER_NONE) {
 			tmp.Pitch = Src.Pitch;
@@ -717,6 +734,10 @@ void CDirectDraw::Render(SSurface Src)
 			lpDDSurface2->Blt (&rect, NULL, &rect,
 							   DDBLT_WAIT | DDBLT_COLORFILL, &fx);
 		}
+	}
+
+	if(GUI.Vsync) {
+		lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN,NULL);
 	}
 
 	lpDDSPrimary2->Flip (NULL, GUI.Vsync?DDFLIP_WAIT:DDFLIP_NOVSYNC);

@@ -195,7 +195,6 @@
 #include <shlobj.h>
 #include <objidl.h>
 
-
 #include "wsnes9x.h"
 #include "win32_sound.h"
 #include "win32_display.h"
@@ -212,8 +211,6 @@
 #include "AVIOutput.h"
 #include "InputCustom.h"
 #include <vector>
-
-#include <tchar.h>
 
 #if (((defined(_MSC_VER) && _MSC_VER >= 1300)) || defined(__MINGW32__))
 	// both MINGW and VS.NET use fstream instead of fstream.h which is deprecated
@@ -255,30 +252,30 @@ extern SNPServer NPServer;
 __int64 PCBase, PCFrameTime, PCFrameTimeNTSC, PCFrameTimePAL, PCStart, PCEnd;
 DWORD PCStartTicks, PCEndTicks;
 
-int CALLBACK DlgSP7PackConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
-int CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
-int CALLBACK DlgInfoProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
-int CALLBACK DlgAboutProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
-int CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK  DlgSP7PackConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK DlgInfoProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK DlgAboutProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 
-int CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
-int CALLBACK DlgMultiROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK DlgMultiROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK DlgChildSplitProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
-int CALLBACK DlgNPProgress(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
-int CALLBACK DlgPackConfigProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
-int CALLBACK DlgNetConnect(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
-int CALLBACK DlgNPOptions(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
-int CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
-int CALLBACK DlgInputConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
-int CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
-int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
-int CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
-int CALLBACK DlgCheatSearchAdd(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
-int CALLBACK DlgCreateMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
-int CALLBACK DlgOpenMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK DlgNPProgress(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK DlgPackConfigProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK DlgNetConnect(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK DlgNPOptions(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK DlgInputConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK DlgCheatSearchAdd(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK DlgCreateMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK DlgOpenMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 HRESULT CALLBACK EnumModesCallback( LPDDSURFACEDESC lpDDSurfaceDesc, LPVOID lpContext);
 
-int CALLBACK test(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK test(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 
 #define NOTKNOWN "Unknown Company "
 #define HEADER_SIZE 512
@@ -594,7 +591,7 @@ struct sLanguages Languages[] = {
 
 struct OpenMovieParams
 {
-	char Path[_MAX_PATH];
+	TCHAR Path[_MAX_PATH];
 	bool8 ReadOnly;
 	bool8 DisplayInput;
 	uint8 ControllersMask;
@@ -611,7 +608,7 @@ std::vector<dMode> dm;
 /*****************************************************************************/
 /* WinProc                                                                   */
 /*****************************************************************************/
-void DoAVIOpen(const char* filename);
+void DoAVIOpen(const TCHAR* filename);
 void DoAVIClose(int reason);
 void RestoreGUIDisplay ();
 void RestoreSNESDisplay ();
@@ -619,8 +616,8 @@ void FreezeUnfreeze (int slot, bool8 freeze);
 void CheckDirectoryIsWritable (const char *filename);
 static void CheckMenuStates ();
 static void ResetFrameTimer ();
-bool8 LoadROM (const char *filename);
-bool8 LoadMultiROM (const char *filename, const char *filename2);
+bool8 LoadROM (const TCHAR *filename);
+bool8 LoadMultiROM (const TCHAR *filename, const TCHAR *filename2);
 bool8 S9xLoadROMImage (const TCHAR *string);
 #ifdef NETPLAY_SUPPORT
 static void EnableServer (bool8 enable);
@@ -638,21 +635,21 @@ void WinCleanupConfigData ();
 #include "../snapshot.h"
 const char *S9xGetFilenameInc (const char *);
 void S9xSetRecentGames ();
-void S9xAddToRecentGames (const char *filename);
+void S9xAddToRecentGames (const TCHAR *filename);
 void S9xRemoveFromRecentGames (int i);
 
-static void absToRel(char* relPath, const char* absPath, const char* baseDir)
+static void absToRel(TCHAR* relPath, const TCHAR* absPath, const TCHAR* baseDir)
 {
-	strcpy(relPath, absPath);
-	if(!strncasecmp(absPath, baseDir, strlen(baseDir)))
+	lstrcpy(relPath, absPath);
+	if(!_tcsncicmp(absPath, baseDir, lstrlen(baseDir)))
 	{
-		char temp [MAX_PATH];
-		temp[MAX_PATH-3]='\0';
-		const char* relative = absPath+strlen(baseDir);
-		while(relative[0]=='\\' || relative[0]=='/')
+		TCHAR temp [MAX_PATH];
+		temp[MAX_PATH-3]=TEXT('\0');
+		const TCHAR* relative = absPath+lstrlen(baseDir);
+		while(relative[0]==TEXT('\\') || relative[0]==TEXT('/'))
 			relative++;
-		relPath[0]='.'; relPath[1]='\\';
-		strcpy(relPath+2, relative);
+		relPath[0]=TEXT('.'); relPath[1]=TEXT('\\');
+		lstrcpy(relPath+2, relative);
 	}
 }
 
@@ -784,7 +781,7 @@ static void CenterCursor()
 void S9xRestoreWindowTitle ()
 {
     TCHAR buf [100];
-    sprintf (buf, TEXT(WINDOW_TITLE), VERSION);
+    _stprintf (buf, WINDOW_TITLE, TEXT(VERSION));
     SetWindowText (GUI.hWnd, buf);
 }
 
@@ -1328,7 +1325,7 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 	return 1;
 }
 
-static bool DoOpenRomDialog(char filename [_MAX_PATH], bool noCustomDlg = false)
+static bool DoOpenRomDialog(TCHAR filename [_MAX_PATH], bool noCustomDlg = false)
 {
 	if(GUI.CustomRomOpen && !noCustomDlg)
 	{
@@ -1349,23 +1346,23 @@ static bool DoOpenRomDialog(char filename [_MAX_PATH], bool noCustomDlg = false)
 	// standard file dialog
 	{
 		OPENFILENAME ofn;
-		static char szFileName[MAX_PATH] = {0};
-		char szPathName[MAX_PATH];
-		_fullpath(szPathName, S9xGetDirectory(ROM_DIR), MAX_PATH);
+		static TCHAR szFileName[MAX_PATH] = {0};
+		TCHAR szPathName[MAX_PATH];
+		_tfullpath(szPathName, S9xGetDirectoryT(ROM_DIR), MAX_PATH);
 
 		// a limited strcat that doesn't mind null characters
 #define strcat0(to,from) do{memcpy(to,from,sizeof(from)-1);to+=sizeof(from)-1;}while(false)
 
 		// make filter string using entries in valid_ext
-		char lpfilter [8192] = {0};
-		char* lpfilterptr = (char*)lpfilter;
+		TCHAR lpfilter [8192] = {0};
+		TCHAR* lpfilterptr = lpfilter;
 		for(int i=0; i<2; i++)
 		{
 			if(!i)
 				strcat0(lpfilterptr, FILE_INFO_ROM_FILE_TYPE);
 			else
 				strcat0(lpfilterptr, FILE_INFO_UNCROM_FILE_TYPE);
-			strcat0(lpfilterptr, "\0");
+			strcat0(lpfilterptr, TEXT("\0"));
 			if(valid_ext) // add valid extensions to string
 			{
 				ExtList* ext = valid_ext;
@@ -1373,41 +1370,41 @@ static bool DoOpenRomDialog(char filename [_MAX_PATH], bool noCustomDlg = false)
 				bool first = true;
 				while(ext && (extlen_approx < 2048))
 				{
-					if((!i || !ext->compressed) && ext->extension && strlen(ext->extension) < 256)
+					if((!i || !ext->compressed) && ext->extension && lstrlen(ext->extension) < 256)
 					{
 						if(!first)
-							strcat(lpfilterptr, ";*.");
+							lstrcat(lpfilterptr, TEXT(";*."));
 						else
 						{
-							strcat(lpfilterptr, "*.");
+							lstrcat(lpfilterptr, TEXT("*."));
 							first = false;
 						}
-						strcat(lpfilterptr, ext->extension);
-						extlen_approx += strlen(ext->extension) + 3;
+						lstrcat(lpfilterptr, ext->extension);
+						extlen_approx += lstrlen(ext->extension) + 3;
 					}
 					ext = ext->next;
 				}
-				lpfilterptr += strlen(lpfilterptr);
+				lpfilterptr += lstrlen(lpfilterptr);
 			}
 			else
-				strcat0(lpfilterptr, "*.smc");
-			strcat0(lpfilterptr, "\0");
+				strcat0(lpfilterptr, TEXT("*.smc"));
+			strcat0(lpfilterptr, TEXT("\0"));
 		}
 		strcat0(lpfilterptr, FILE_INFO_ANY_FILE_TYPE);
-		strcat0(lpfilterptr, "\0*.*\0\0");
+		strcat0(lpfilterptr, TEXT("\0*.*\0\0"));
 
 		ZeroMemory((LPVOID)&ofn, sizeof(OPENFILENAME));
 		ofn.lStructSize = sizeof(OPENFILENAME);
 		ofn.hwndOwner = GUI.hWnd;
 		ofn.lpstrFilter = lpfilter;
 		ofn.lpstrFile = szFileName;
-		ofn.lpstrDefExt = "smc";
+		ofn.lpstrDefExt = TEXT("smc");
 		ofn.nMaxFile = MAX_PATH;
 		ofn.Flags = OFN_HIDEREADONLY | OFN_FILEMUSTEXIST;
 		ofn.lpstrInitialDir = szPathName;
 		if(GetOpenFileName(&ofn))
 		{
-			strncpy(filename, ofn.lpstrFile, _MAX_PATH);
+			_tcsncpy(filename, ofn.lpstrFile, _MAX_PATH);
 			return true;
 		}
 		return false;
@@ -1415,8 +1412,8 @@ static bool DoOpenRomDialog(char filename [_MAX_PATH], bool noCustomDlg = false)
 }
 
 
-char multiRomA [MAX_PATH] = {0}; // lazy, should put in sGUI and add init to {0} somewhere
-char multiRomB [MAX_PATH] = {0};
+TCHAR multiRomA [MAX_PATH] = {0}; // lazy, should put in sGUI and add init to {0} somewhere
+TCHAR multiRomB [MAX_PATH] = {0};
 
 
 static bool startingMovie = false;
@@ -1487,20 +1484,20 @@ LRESULT CALLBACK WinProc(
 			{
 				RestoreGUIDisplay ();  //exit DirectX
 				OPENFILENAME  ofn;
-				char  szFileName[MAX_PATH];
-				char  szPathName[MAX_PATH];
-				SetCurrentDirectory(S9xGetDirectory(DEFAULT_DIR));
-				_fullpath(szPathName, GUI.MovieDir, MAX_PATH);
-				mkdir(szPathName);
+				TCHAR  szFileName[MAX_PATH];
+				TCHAR  szPathName[MAX_PATH];
+				SetCurrentDirectory(S9xGetDirectoryT(DEFAULT_DIR));
+				_tfullpath(szPathName, GUI.MovieDir, MAX_PATH);
+				_tmkdir(szPathName);
 
-				szFileName[0] = '\0';
+				szFileName[0] = TEXT('\0');
 
 				ZeroMemory( (LPVOID)&ofn, sizeof(OPENFILENAME) );
 				ofn.lStructSize = sizeof(OPENFILENAME);
 				ofn.hwndOwner = GUI.hWnd;
-				ofn.lpstrFilter = FILE_INFO_AVI_FILE_TYPE "\0*.avi\0" FILE_INFO_ANY_FILE_TYPE "\0*.*\0\0";
+				ofn.lpstrFilter = FILE_INFO_AVI_FILE_TYPE TEXT("\0*.avi\0") FILE_INFO_ANY_FILE_TYPE TEXT("\0*.*\0\0");
 				ofn.lpstrFile = szFileName;
-				ofn.lpstrDefExt = "avi";
+				ofn.lpstrDefExt = TEXT("avi");
 				ofn.nMaxFile = MAX_PATH;
 				ofn.Flags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
 				ofn.lpstrInitialDir = szPathName;
@@ -1526,23 +1523,23 @@ LRESULT CALLBACK WinProc(
 				if(DialogBoxParam(g_hInst, MAKEINTRESOURCE(IDD_OPENMOVIE), hWnd, DlgOpenMovie, (LPARAM)&op) &&
 					op.Path[0]!='\0')
 				{
-					int err=S9xMovieOpen (op.Path, op.ReadOnly);
+					int err=S9xMovieOpen (_tToChar(op.Path), op.ReadOnly);
 					if(err!=SUCCESS)
 					{
-						_TCHAR* err_string=TEXT(MOVIE_ERR_COULD_NOT_OPEN);
+						TCHAR* err_string=MOVIE_ERR_COULD_NOT_OPEN;
 						switch(err)
 						{
 						case FILE_NOT_FOUND:
-							err_string=TEXT(MOVIE_ERR_NOT_FOUND);
+							err_string=MOVIE_ERR_NOT_FOUND;
 							break;
 						case WRONG_FORMAT:
-							err_string=TEXT(MOVIE_ERR_WRONG_FORMAT);
+							err_string=MOVIE_ERR_WRONG_FORMAT;
 							break;
 						case WRONG_VERSION:
-							err_string=TEXT(MOVIE_ERR_WRONG_VERSION);
+							err_string=MOVIE_ERR_WRONG_VERSION;
 							break;
 						}
-						MessageBox( hWnd, err_string, TEXT(SNES9X_INFO), MB_OK);
+						MessageBox( hWnd, err_string, SNES9X_INFO, MB_OK);
 					}
 				}
 				RestoreSNESDisplay ();// re-enter after dialog
@@ -1567,24 +1564,24 @@ LRESULT CALLBACK WinProc(
 					}
 
 					startingMovie = true;
-					int err=S9xMovieCreate (op.Path, op.ControllersMask, op.Opts, op.Metadata, wcslen(op.Metadata));
+					int err=S9xMovieCreate (_tToChar(op.Path), op.ControllersMask, op.Opts, op.Metadata, wcslen(op.Metadata));
 					startingMovie = false;
 					if(err!=SUCCESS)
 					{
-						_TCHAR* err_string=TEXT(MOVIE_ERR_COULD_NOT_OPEN);
+						TCHAR* err_string=MOVIE_ERR_COULD_NOT_OPEN;
 						switch(err)
 						{
 						case FILE_NOT_FOUND:
-							err_string=TEXT(MOVIE_ERR_NOT_FOUND);
+							err_string=MOVIE_ERR_NOT_FOUND;
 							break;
 						case WRONG_FORMAT:
-							err_string=TEXT(MOVIE_ERR_WRONG_FORMAT);
+							err_string=MOVIE_ERR_WRONG_FORMAT;
 							break;
 						case WRONG_VERSION:
-							err_string=TEXT(MOVIE_ERR_WRONG_VERSION);
+							err_string=MOVIE_ERR_WRONG_VERSION;
 							break;
 						}
-						MessageBox( hWnd, err_string, TEXT(SNES9X_INFO), MB_OK);
+						MessageBox( hWnd, err_string, SNES9X_INFO, MB_OK);
 					}
 				}
 				RestoreSNESDisplay ();// re-enter after dialog
@@ -1763,6 +1760,7 @@ LRESULT CALLBACK WinProc(
 						Memory.SaveSRAM (S9xGetFilename (".srm", SRAM_DIR));
 						S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
 					}
+					
 					Settings.StopEmulation = !LoadMultiROM (multiRomA, multiRomB);
 					if (!Settings.StopEmulation)
 					{
@@ -1799,7 +1797,7 @@ LRESULT CALLBACK WinProc(
 
 		case ID_FILE_LOAD_GAME:
 			{
-				char filename [_MAX_PATH];
+				TCHAR filename [_MAX_PATH];
 
 #ifdef NETPLAY_SUPPORT
 				if (Settings.NetPlay && !Settings.NetPlayServer)
@@ -1884,7 +1882,7 @@ LRESULT CALLBACK WinProc(
             EnableServer (!Settings.NetPlayServer);
 			if(Settings.NetPlayServer)
 			{
-				char localhostmsg [512];
+				TCHAR localhostmsg [512];
 				// FIXME: need winsock2.h for this, don't know how to include it
 				//struct addrinfo *aiList = NULL;
 				//if(getaddrinfo("localhost", Settings.Port, NULL, &aiList) == 0)
@@ -1896,8 +1894,8 @@ LRESULT CALLBACK WinProc(
 				{
 					char localhostname [256];
 					gethostname(localhostname,256);
-					sprintf(localhostmsg, "Your host name is: %s\nYour port number is: %d", localhostname, Settings.Port);
-					MessageBox(GUI.hWnd,localhostmsg,"Note",MB_OK);
+					_stprintf(localhostmsg, TEXT("Your host name is: %s\nYour port number is: %d"), _tFromChar(localhostname), Settings.Port);
+					MessageBox(GUI.hWnd,localhostmsg,TEXT("Note"),MB_OK);
 				}
 			}
             break;
@@ -1953,7 +1951,7 @@ LRESULT CALLBACK WinProc(
         case ID_NETPLAY_ROM:
             if (NPServer.SyncByReset)
             {
-			if (MessageBox (GUI.hWnd, TEXT(WINPROC_NET_RESTART), TEXT(SNES9X_WARN),
+			if (MessageBox (GUI.hWnd, TEXT(WINPROC_NET_RESTART), SNES9X_WARN,
 											MB_OKCANCEL | MB_ICONWARNING) == IDCANCEL)
 											break;
             }
@@ -2107,6 +2105,10 @@ LRESULT CALLBACK WinProc(
 						}	break;
 						case ID_SAVESCREENSHOT:
 							Settings.TakeScreenshot=true;
+							break;
+						case ID_FILE_SAVE_SPC_DATA:
+							S9xDumpSPCSnapshot();
+							S9xMessage(S9X_INFO, 0, INFO_SAVE_SPC);
 							break;
 						case ID_FILE_SAVE_SRAM_DATA: {
 							bool8 success = Memory.SaveSRAM (S9xGetFilename (".srm", SRAM_DIR));
@@ -2304,7 +2306,7 @@ LRESULT CALLBACK WinProc(
 										}
 										else
 										{
-											sprintf (String, ERR_ROM_NOT_FOUND, GUI.RecentGames [i]);
+											sprintf (String, ERR_ROM_NOT_FOUND, _tToChar(GUI.RecentGames [i]));
 											S9xMessage (S9X_ERROR, S9X_ROM_NOT_FOUND, String);
 											S9xRemoveFromRecentGames(i);
 										}
@@ -2329,13 +2331,9 @@ LRESULT CALLBACK WinProc(
 		DrawMenuBar(GUI.hWnd);
 		break;
 
-	case WM_CLOSE: {
-		bool maximized = GUI.window_maximized;
-		ShowWindow(GUI.hWnd, SW_RESTORE);
-		GUI.window_maximized = maximized;
-		if (!GUI.FullScreen && !GUI.EmulatedFullscreen)
-			GetWindowRect (GUI.hWnd, &GUI.window_size);
-	}	break;
+	case WM_CLOSE:
+		SaveMainWinPos();
+		break;
 
 	case WM_DESTROY:
 		Memory.SaveSRAM(S9xGetFilename(".srm", SRAM_DIR));
@@ -2381,25 +2379,6 @@ LRESULT CALLBACK WinProc(
 		//                RealizePalette (GUI.WindowDC);
 		break;
 	case WM_SIZE:
-		if (wParam == SIZE_MAXIMIZED)
-		{
-			GUI.window_maximized = true;
-		}
-		if (wParam == SIZE_RESTORED)
-		{
-			GUI.window_maximized = false;
-			if(GUI.InactivePause)
-			{
-				S9xClearPause (PAUSE_WINDOW_ICONISED);
-			}
-		}
-		if (wParam == SIZE_MINIMIZED || wParam == SIZE_MAXHIDE)
-		{
-///			if(GUI.InactivePause)
-			{
-				S9xClearPause (PAUSE_WINDOW_ICONISED);
-			}
-		}
 		WinChangeWindowSize(LOWORD(lParam),HIWORD(lParam));
 		break;
 	case WM_MOVE:
@@ -2418,7 +2397,7 @@ LRESULT CALLBACK WinProc(
 	case WM_DISPLAYCHANGE:
 		if (!GUI.FullScreen)
 		{
-			WinDisplayReset();
+			//WinDisplayReset();
 		}
 		break;
 	case WM_MOUSEMOVE:
@@ -2578,7 +2557,7 @@ LRESULT CALLBACK WinProc(
 		break;
 #ifdef NETPLAY_SUPPORT
 	case WM_USER + 3:
-		NetPlay.Answer = S9xLoadROMImage ((const char *) lParam);
+		NetPlay.Answer = S9xLoadROMImage (_tFromChar((const char *) lParam));
 		SetEvent (NetPlay.ReplyEvent);
 		break;
 	case WM_USER + 2:
@@ -2587,8 +2566,8 @@ LRESULT CALLBACK WinProc(
 	case WM_USER + 1:
 		RestoreGUIDisplay ();
 		S9xRestoreWindowTitle ();
-		MessageBox (GUI.hWnd, NetPlay.ErrorMsg,
-			TEXT(SNES9X_NP_ERROR), MB_OK | MB_ICONSTOP);
+		MessageBox (GUI.hWnd, _tFromChar(NetPlay.ErrorMsg),
+			SNES9X_NP_ERROR, MB_OK | MB_ICONSTOP);
 		RestoreSNESDisplay ();
 		break;
 	case WM_USER:
@@ -2598,7 +2577,7 @@ LRESULT CALLBACK WinProc(
 		{
 			TCHAR buf [NP_MAX_ACTION_LEN + 10];
 
-			sprintf (buf, TEXT("%s %3d%%"), NetPlay.ActionMsg, (int) lParam);
+			_stprintf (buf, TEXT("%s %3d%%"), _tFromChar(NetPlay.ActionMsg), (int) lParam);
 			SetWindowText (GUI.hWnd, buf);
 		}
 #if 0
@@ -2630,48 +2609,31 @@ BOOL WinInit( HINSTANCE hInstance)
 
     wndclass.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
     wndclass.lpfnWndProc = WinProc;
-    wndclass.cbClsExtra = 0;
-    wndclass.cbWndExtra = 0;
     wndclass.hInstance = hInstance;
     wndclass.hIcon = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_ICON1));
     wndclass.hIconSm = (HICON)LoadImage(hInstance, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 16, 16, 0);
-    wndclass.hCursor = NULL; //LoadCursor (NULL, IDC_ARROW);
+    wndclass.hCursor = NULL;
     wndclass.lpszMenuName = NULL;
     wndclass.lpszClassName = TEXT("Snes9X: WndClass");
 	wndclass.hbrBackground=(HBRUSH)GetStockObject(BLACK_BRUSH);
-
-	//// Initialize the struct to zero
-	//ZeroMemory(&wcx,sizeof(WNDCLASSEX));
-	//wcx.cbSize = sizeof(WNDCLASSEX); // Must always be sizeof(WNDCLASSEX)
-	//wcx.style = CS_HREDRAW|CS_VREDRAW |CS_DBLCLKS ; // Class styles
-	//wcx.lpfnWndProc = (WNDPROC)MainWndProc; // Pointer to the callback procedure
-	//wcx.cbClsExtra = 0; // Extra byte to allocate following the wndclassex structure
-	//wcx.cbWndExtra = 0; // Extra byte to allocate following an instance of the structure
-	//wcx.hInstance = hInstance; // Instance of the application
-	//wcx.hIcon = NULL; // Class Icon
-	//wcx.hCursor = LoadCursor(NULL, IDC_ARROW); // Class Cursor
-	//wcx.hbrBackground = (HBRUSH)(COLOR_WINDOW); // Background brush
-	//wcx.lpszMenuName = NULL; // Menu resource
-	//wcx.lpszClassName = "Lesson2"; // Name of this class
-	//wcx.hIconSm = NULL; // Small icon for this class
 
     GUI.hInstance = hInstance;
 
     if (!RegisterClassEx (&wndclass))
 	{
-		MessageBox (NULL, "Failed to register windows class", "Internal Error", MB_OK | MB_ICONSTOP);
+		MessageBox (NULL, TEXT("Failed to register windows class"), TEXT("Internal Error"), MB_OK | MB_ICONSTOP);
         return FALSE;
 	}
 
 	GUI.hMenu = LoadMenu (hInstance, MAKEINTRESOURCE( Languages[ GUI.Language].idMenu));
     if (GUI.hMenu == NULL)
 	{
-		MessageBox (NULL, "Failed to initialize the menu.\nThis could indicate a failure of your operating system;\ntry closing some other windows or programs, or restart your computer, before opening Snes9x again.\nOr, if you compiled this program yourself, ensure that Snes9x was built with the proper resource files.", "Snes9X - Menu Initialization Failure", MB_OK | MB_ICONSTOP);
+		MessageBox (NULL, TEXT("Failed to initialize the menu.\nThis could indicate a failure of your operating system;\ntry closing some other windows or programs, or restart your computer, before opening Snes9x again.\nOr, if you compiled this program yourself, ensure that Snes9x was built with the proper resource files."), TEXT("Snes9X - Menu Initialization Failure"), MB_OK | MB_ICONSTOP);
 //        return FALSE; // disabled: try to function without the menu
 	}
 
     TCHAR buf [100];
-    sprintf (buf, TEXT(WINDOW_TITLE), VERSION);
+    _stprintf (buf, WINDOW_TITLE, TEXT(VERSION));
 
     DWORD dwExStyle;
     DWORD dwStyle;
@@ -2779,7 +2741,7 @@ VOID CALLBACK HotkeyTimer( UINT idEvent, UINT uMsg, DWORD dwUser, DWORD dw1, DWO
 	}
 }
 
-VOID CALLBACK FrameTimer( UINT idEvent, UINT uMsg, DWORD dwUser, DWORD dw1, DWORD dw2)
+void CALLBACK FrameTimer( UINT idEvent, UINT uMsg, DWORD dwUser, DWORD dw1, DWORD dw2)
 {
 	// QueryPerformanceCounter is unreliable on newfangled frequency-switching computers,
 	// yet is absolutely necessary for best performance on somewhat older computers (even ones that are capable of frequency switching but don't do it very often).
@@ -3296,8 +3258,6 @@ int WINAPI WinMain(
     WinSaveConfigFile ();
 	WinLockConfigFile ();
 
-	bool maximized = GUI.window_maximized;
-
     WinInit (hInstance);
 	if(GUI.HideMenu)
 	{
@@ -3306,33 +3266,25 @@ int WINAPI WinMain(
 
 	InitLUTsWin32(); // init win hq2x
 
-	WinDisplayReset();
-
-    MoveWindow (GUI.hWnd, GUI.window_size.left,
+    /*SetWindowPos (GUI.hWnd,HWND_TOP, GUI.window_size.left,
 		GUI.window_size.top,
 		GUI.window_size.right - GUI.window_size.left,
-		GUI.window_size.bottom - GUI.window_size.top, TRUE);
+		GUI.window_size.bottom - GUI.window_size.top, SWP_FRAMECHANGED);
 
     if (!GUI.FullScreen)
     {
         RECT rect;
         GetClientRect (GUI.hWnd, &rect);
         InvalidateRect (GUI.hWnd, &rect, true);
-    }
+    }*/
 
     GUI.ControlForced = 0xff;
 
     S9xSetRecentGames ();
-	ShowWindow (GUI.hWnd, maximized ? SW_MAXIMIZE : SW_SHOWNORMAL);
-    /*SetForegroundWindow (GUI.hWnd);
-    SetFocus (GUI.hWnd);*/
 
-	// hack for borders-not-shown bug (Windows bug?) on startup
-	if(!maximized)
-	{
-		ShowWindow (GUI.hWnd, SW_HIDE);
-		ShowWindow (GUI.hWnd, SW_SHOWNORMAL);
-	}
+	RestoreMainWinPos();
+
+	WinDisplayReset();
 
 	if(GUI.FullScreen) {
 		GUI.FullScreen = false;
@@ -3368,10 +3320,10 @@ int WINAPI WinMain(
 
 
     Settings.StopEmulation = TRUE;
-    GUI.hFrameTimer = timeSetEvent (20, 0, FrameTimer, 0, TIME_PERIODIC);
+    GUI.hFrameTimer = timeSetEvent (20, 0, (LPTIMECALLBACK)FrameTimer, 0, TIME_PERIODIC);
 
 	if(GUI.JoystickHotkeys || GUI.BackgroundKeyHotkeys)
-	    GUI.hHotkeyTimer = timeSetEvent (32, 0, HotkeyTimer, 0, TIME_PERIODIC);
+	    GUI.hHotkeyTimer = timeSetEvent (32, 0, (LPTIMECALLBACK)HotkeyTimer, 0, TIME_PERIODIC);
 	else
 		GUI.hHotkeyTimer = 0;
 
@@ -3383,7 +3335,7 @@ int WINAPI WinMain(
         MessageBox( GUI.hWnd, Languages[ GUI.Language].errFrameTimer, TEXT("Snes9X - Frame Timer"), MB_OK | MB_ICONINFORMATION);
     }
 
-    Settings.StopEmulation = !LoadROM (rom_filename);
+    Settings.StopEmulation = !LoadROM (_tFromChar(rom_filename));
 
     if (!Settings.StopEmulation)
     {
@@ -3614,11 +3566,11 @@ loop_exit:
 
 void FreezeUnfreeze (int slot, bool8 freeze)
 {
-    static TCHAR filename [_MAX_PATH + 1];
-    TCHAR drive [_MAX_DRIVE + 1];
-    TCHAR dir [_MAX_DIR + 1];
-    TCHAR fname [_MAX_FNAME + 1];
-    TCHAR ext [_MAX_EXT + 1];
+    static char filename [_MAX_PATH + 1];
+    char drive [_MAX_DRIVE + 1];
+    char dir [_MAX_DIR + 1];
+    char fname [_MAX_FNAME + 1];
+    char ext [_MAX_EXT + 1];
 
 #ifdef NETPLAY_SUPPORT
     if (!freeze && Settings.NetPlay && !Settings.NetPlayServer)
@@ -3638,13 +3590,13 @@ void FreezeUnfreeze (int slot, bool8 freeze)
 		    if((!oldDir && !zmv) || (!freeze && _access (filename, 0) != 0 && slot < 10))
 			{
 				if(!zmv)
-					sprintf (ext, TEXT(".%03d"), slot);
+					sprintf (ext, ".%03d", slot);
 				else
-					sprintf (ext, TEXT(".zs%c"), digits [slot]);
+					sprintf (ext, ".zs%c", digits [slot]);
 				if (GUI.FreezeFileDir [0])
 				{
 					strcpy (filename, oldDir ? S9xGetDirectory(ROMFILENAME_DIR) : S9xGetDirectory(SNAPSHOT_DIR));
-					strcat (filename, TEXT("\\"));
+					strcat (filename, "\\");
 					strcat (filename, fname);
 					strcat (filename, ext);
 				}
@@ -3730,6 +3682,7 @@ static void CheckMenuStates ()
     mii.fState = MFS_UNCHECKED;
     if (Settings.StopEmulation)
         mii.fState |= MFS_DISABLED;
+	SetMenuItemInfo (GUI.hMenu, ID_FILE_SAVE_SPC_DATA, FALSE, &mii);
     SetMenuItemInfo (GUI.hMenu, ID_FILE_SAVE_SRAM_DATA, FALSE, &mii);
     SetMenuItemInfo (GUI.hMenu, ID_FILE_SAVE1, FALSE, &mii);
     SetMenuItemInfo (GUI.hMenu, ID_FILE_SAVE2, FALSE, &mii);
@@ -3967,15 +3920,15 @@ static void ResetFrameTimer ()
     if (GUI.hFrameTimer)
         timeKillEvent (GUI.hFrameTimer);
 
-    GUI.hFrameTimer = timeSetEvent ((Settings.FrameTime+500)/1000, 0, FrameTimer, 0, TIME_PERIODIC);
+    GUI.hFrameTimer = timeSetEvent ((Settings.FrameTime+500)/1000, 0, (LPTIMECALLBACK)FrameTimer, 0, TIME_PERIODIC);
 }
 
-bool8 LoadROM (const char *filename)
+bool8 LoadROM (const TCHAR *filename)
 {
 	if (!filename || !*filename)
 		return (FALSE);
-	SetCurrentDirectory(S9xGetDirectory(ROM_DIR));
-    if (Memory.LoadROM (filename))
+	SetCurrentDirectory(S9xGetDirectoryT(ROM_DIR));
+    if (Memory.LoadROM (_tToChar(filename)))
     {
 		S9xStartCheatSearch (&Cheat);
         ReInitSound();
@@ -3985,10 +3938,10 @@ bool8 LoadROM (const char *filename)
     return (FALSE);
 }
 
-bool8 LoadMultiROM (const char *filename, const char *filename2)
+bool8 LoadMultiROM (const TCHAR *filename, const TCHAR *filename2)
 {
-	SetCurrentDirectory(S9xGetDirectory(ROM_DIR));
-    if (Memory.LoadMultiCart (filename, filename2))
+	SetCurrentDirectory(S9xGetDirectoryT(ROM_DIR));
+    if (Memory.LoadMultiCart (_tToChar(filename), _tToChar(filename2)))
     {
 		S9xStartCheatSearch (&Cheat);
         ReInitSound();
@@ -4001,12 +3954,12 @@ bool8 LoadMultiROM (const char *filename, const char *filename2)
 bool8 S9xLoadROMImage (const TCHAR *string)
 {
     RestoreGUIDisplay ();
-    TCHAR *buf = new TCHAR [200 + strlen (string)];
-    sprintf (buf, TEXT("The NetPlay server is requesting you load the following game:\n '%s'"),
+    TCHAR *buf = new TCHAR [200 + lstrlen (string)];
+    _stprintf (buf, TEXT("The NetPlay server is requesting you load the following game:\n '%s'"),
 		string);
 
     MessageBox (GUI.hWnd, buf,
-		TEXT(SNES9X_INFO),
+		SNES9X_INFO,
 		MB_OK | MB_ICONINFORMATION);
 
     delete buf;
@@ -4072,36 +4025,36 @@ void EnableServer (bool8 enable)
 }
 #endif
 
-void S9xAddToRecentGames (const char *filename)
+void S9xAddToRecentGames (const TCHAR *filename)
 {
     // Make sure its not in the list already
     int i;
 	for(i = 0; i < MAX_RECENT_GAMES_LIST_SIZE; i++)
-        if (!*GUI.RecentGames[i] || strcmp (filename, GUI.RecentGames[i]) == 0)
+        if (!*GUI.RecentGames[i] || lstrcmp (filename, GUI.RecentGames[i]) == 0)
             break;
 
 	const bool underMax = (i < MAX_RECENT_GAMES_LIST_SIZE);
 	if(underMax && *GUI.RecentGames[i])
 	{
 		// It is in the list, move it to the head of the list.
-		char temp [MAX_PATH];
-		strcpy(temp, GUI.RecentGames[i]);
+		TCHAR temp [MAX_PATH];
+		lstrcpy(temp, GUI.RecentGames[i]);
 		for(int j = i; j > 0; j--)
-			strcpy(GUI.RecentGames[j], GUI.RecentGames[j-1]);
+			lstrcpy(GUI.RecentGames[j], GUI.RecentGames[j-1]);
 
-		strcpy(GUI.RecentGames[0], temp);
+		lstrcpy(GUI.RecentGames[0], temp);
 	}
 	else
 	{
 		// Not in the list, add it.
 		if(underMax)
 			// Extend the recent game list length by 1.
-			memmove(&GUI.RecentGames[1], &GUI.RecentGames[0], MAX_PATH*i);
+			memmove(&GUI.RecentGames[1], &GUI.RecentGames[0], MAX_PATH*i*sizeof(TCHAR));
 		else
 			// Throw the last item off the end of the list
-			memmove(&GUI.RecentGames[1], &GUI.RecentGames[0], MAX_PATH*(i-1));
+			memmove(&GUI.RecentGames[1], &GUI.RecentGames[0], MAX_PATH*(i-1)*sizeof(TCHAR));
 
-		strcpy(GUI.RecentGames[0], filename);
+		lstrcpy(GUI.RecentGames[0], filename);
 
 		WinSaveConfigFile();
 	}
@@ -4114,8 +4067,8 @@ void S9xRemoveFromRecentGames (int i)
 	if (*GUI.RecentGames [i])
 	{
 		for (int j = i; j < MAX_RECENT_GAMES_LIST_SIZE-1; j++)
-			strcpy(GUI.RecentGames [j], GUI.RecentGames [j + 1]);
-		*GUI.RecentGames [MAX_RECENT_GAMES_LIST_SIZE-1] = '\0';
+			lstrcpy(GUI.RecentGames [j], GUI.RecentGames [j + 1]);
+		*GUI.RecentGames [MAX_RECENT_GAMES_LIST_SIZE-1] = TEXT('\0');
 
 		S9xSetRecentGames ();
 	}
@@ -4147,29 +4100,29 @@ void S9xSetRecentGames ()
                 // Build up a menu item string in the form:
                 // 1. <basename of ROM image name>
 
-                sprintf (name, TEXT("&%c. "), i < 9 ? '1' + i : 'A' + i - 9);
+                _stprintf (name, TEXT("&%c. "), i < 9 ? '1' + i : 'A' + i - 9);
 
 				// append the game title to name, with formatting modifications as necessary
 				{
 					TCHAR baseName [256];
-					strcpy (baseName, S9xBasename (GUI.RecentGames [i]));
-					int pos = strlen (name), baseNameLen = strlen (baseName);
+					lstrcpy (baseName, _tFromChar(S9xBasename (_tToChar(GUI.RecentGames [i]))));
+					int pos = lstrlen (name), baseNameLen = lstrlen (baseName);
 					for (int j = 0; j < baseNameLen ; j++)
 					{
-						char c = baseName [j];
+						TCHAR c = baseName [j];
 						name [pos++] = c;
 
 						// & is a special character in Windows menus,
 						// so we have to change & to && when copying over the game title
 						// otherwise "Pocky & Rocky (U).smc" will show up as "Pocky _Rocky (U).smc", for example
-						if(c == '&')
-							name [pos++] = '&';
+						if(c == TEXT('&'))
+							name [pos++] = TEXT('&');
 					}
-					name [pos] = '\0';
+					name [pos] = TEXT('\0');
 				}
 
 				mii.dwTypeData = name;
-                mii.cch = strlen (name) + 1;
+                mii.cch = lstrlen (name) + 1;
                 mii.wID = 0xFF00 + i;
 
                 InsertMenuItem (recent, 0xFF00 + i, FALSE, &mii);
@@ -4181,7 +4134,7 @@ void S9xSetRecentGames ()
 void WinDeleteRecentGamesList ()
 {
 	for(int i=0;i<MAX_RECENT_GAMES_LIST_SIZE;i++)
-		GUI.RecentGames[i][0]='\0';
+		GUI.RecentGames[i][0]=TEXT('\0');
 }
 
 BOOL CreateToolTip(int toolID, HWND hDlg, TCHAR* pText)
@@ -4223,7 +4176,7 @@ BOOL CreateToolTip(int toolID, HWND hDlg, TCHAR* pText)
     return TRUE;
 }
 
-int CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	HWND hTrackbar;
 	TCHAR valTxt[10];
@@ -4234,8 +4187,8 @@ int CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 		// FIXME: these strings should come from wlanguage.h
 
-		CreateToolTip(IDC_INRATEEDIT,hDlg,"For each 'Input rate' samples generated by the SNES, 'Playback rate' samples will produced. If you experience crackling you can try to lower this setting.");
-		CreateToolTip(IDC_INRATE,hDlg,"For each 'Input rate' samples generated by the SNES, 'Playback rate' samples will produced. If you experience crackling you can try to lower this setting.");
+		CreateToolTip(IDC_INRATEEDIT,hDlg,TEXT("For each 'Input rate' samples generated by the SNES, 'Playback rate' samples will produced. If you experience crackling you can try to lower this setting."));
+		CreateToolTip(IDC_INRATE,hDlg,TEXT("For each 'Input rate' samples generated by the SNES, 'Playback rate' samples will produced. If you experience crackling you can try to lower this setting."));
 		
 		int pos;
 		pos = SendDlgItemMessage(hDlg, IDC_DRIVER, CB_INSERTSTRING,-1,(LPARAM)TEXT("Snes9x DirectSound"));
@@ -4268,7 +4221,7 @@ int CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		SendDlgItemMessage(hDlg, IDC_INRATE, TBM_SETRANGE,TRUE,MAKELONG(0,20));
 		SendDlgItemMessage(hDlg, IDC_INRATE, TBM_SETPOS,TRUE,(Settings.SoundInputRate - 31100)/50);
 		SendDlgItemMessage(hDlg, IDC_INRATE, TBM_SETTICFREQ,1,0);
-		_snprintf(valTxt,10,"%d",Settings.SoundInputRate);
+		_sntprintf(valTxt,10,TEXT("%d"),Settings.SoundInputRate);
 		Edit_SetText(GetDlgItem(hDlg, IDC_INRATEEDIT),valTxt);
 		
 
@@ -4345,7 +4298,7 @@ int CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			hTrackbar = GetDlgItem(hDlg, IDC_INRATE);
 			if((HWND)lParam==hTrackbar) {
 				int trackValue = 31100 + 50 * SendDlgItemMessage(hDlg,IDC_INRATE,TBM_GETPOS,0,0);
-				_snprintf(valTxt,10,"%d",trackValue);
+				_sntprintf(valTxt,10,TEXT("%d"),trackValue);
 				Edit_SetText(GetDlgItem(hDlg, IDC_INRATEEDIT),valTxt);
 				return true;
 			}
@@ -4461,7 +4414,7 @@ const char *StaticRAMBitSize ()
     return (tmp);
 }
 
-int CALLBACK DlgInfoProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK DlgInfoProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch(msg)
 	{
@@ -4821,7 +4774,7 @@ int CALLBACK DlgInfoProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				case 14:strcat(romtext, "Unknown region 14");break;
 				default:strcat(romtext, "Unknown region 15");break;
 				}
-				SendDlgItemMessage(hDlg, IDC_ROM_DATA, WM_SETTEXT, 0, (LPARAM)romtext);
+				SendDlgItemMessageA(hDlg, IDC_ROM_DATA, WM_SETTEXT, 0, (LPARAM)romtext);
 				break;
 			}
 			case WM_CTLCOLORSTATIC:
@@ -4851,10 +4804,10 @@ int CALLBACK DlgInfoProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			default:
 				break;
 	}
-	return DefWindowProc (hDlg, msg, wParam, lParam);
+	return FALSE;
 }
 
-int CALLBACK DlgAboutProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK DlgAboutProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 
 	switch(msg)
@@ -4863,9 +4816,9 @@ int CALLBACK DlgAboutProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		WinRefreshDisplay();
 		{
 			TCHAR buf[2048];//find better way of dealing.
-			sprintf(buf,TEXT(DISCLAIMER_TEXT),VERSION);
+			_stprintf(buf,DISCLAIMER_TEXT,TEXT(VERSION));
 			SetDlgItemText(hDlg, IDC_DISCLAIMER, buf);
-			SetWindowText(hDlg, TEXT(ABOUT_DIALOG_TITLE) TEXT(APP_NAME));
+			SetWindowText(hDlg, ABOUT_DIALOG_TITLE APP_NAME);
 		}
 		return true;
 	case WM_PAINT:
@@ -4891,16 +4844,16 @@ int CALLBACK DlgAboutProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	default:return false;
 	}
 }
-int CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	static char paths[8][MAX_PATH];
+	static TCHAR paths[8][MAX_PATH];
 	static int which = 0;
 	switch(msg)
 	{
 	case WM_INITDIALOG:
 		WinRefreshDisplay();
 		{
-			SetWindowText(hDlg, TEXT(EMUSET_TITLE));
+			SetWindowText(hDlg, EMUSET_TITLE);
 			SetDlgItemText(hDlg, IDC_TOGGLE_TURBO, EMUSET_TOGGLE_TURBO);
 			SetDlgItemText(hDlg, IDC_LABEL_FREEZE, EMUSET_LABEL_DIRECTORY);
 			SetDlgItemText(hDlg, IDOK, BUTTON_OK);
@@ -4913,7 +4866,7 @@ int CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			SetDlgItemText(hDlg, IDC_LABEL_STURBO, EMUSET_LABEL_STURBO);
 			SetDlgItemText(hDlg, IDC_BROWSE, EMUSET_BROWSE);
 			SetDlgItemText(hDlg, IDC_CUSTOM_FOLDER_FIELD, GUI.FreezeFileDir);
-			SetDlgItemText(hDlg, IDC_CONFIG_NAME_BOX, S9X_CONF_FILE_NAME);
+			SetDlgItemText(hDlg, IDC_CONFIG_NAME_BOX, TEXT(S9X_CONF_FILE_NAME));
 			SendDlgItemMessage(hDlg, IDC_SRAM_SPIN, UDM_SETRANGE, 0, MAKELPARAM((short)99, (short)0));
 			SendDlgItemMessage(hDlg, IDC_SRAM_SPIN,UDM_SETPOS,0, Settings.AutoSaveDelay);
 			SendDlgItemMessage(hDlg, IDC_SPIN_MAX_SKIP, UDM_SETRANGE, 0, MAKELPARAM((short)59, (short)0));
@@ -4925,28 +4878,28 @@ int CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			CheckDlgButton(hDlg,IDC_CUSTOMROMOPEN,GUI.CustomRomOpen ? BST_CHECKED : BST_UNCHECKED);
 
 			int inum = 0;
-			strcpy(paths[inum++],GUI.RomDir);
+			lstrcpy(paths[inum++],GUI.RomDir);
 			SendDlgItemMessage(hDlg,IDC_DIRCOMBO,CB_ADDSTRING,0,(LPARAM)(LPCTSTR)SETTINGS_OPTION_DIRECTORY_ROMS);
-			strcpy(paths[inum++],GUI.ScreensDir);
+			lstrcpy(paths[inum++],GUI.ScreensDir);
 			SendDlgItemMessage(hDlg,IDC_DIRCOMBO,CB_ADDSTRING,0,(LPARAM)(LPCTSTR)SETTINGS_OPTION_DIRECTORY_SCREENS);
-			strcpy(paths[inum++],GUI.MovieDir);
+			lstrcpy(paths[inum++],GUI.MovieDir);
 			SendDlgItemMessage(hDlg,IDC_DIRCOMBO,CB_ADDSTRING,0,(LPARAM)(LPCTSTR)SETTINGS_OPTION_DIRECTORY_MOVIES);
-			strcpy(paths[inum++],GUI.SPCDir);
+			lstrcpy(paths[inum++],GUI.SPCDir);
 			SendDlgItemMessage(hDlg,IDC_DIRCOMBO,CB_ADDSTRING,0,(LPARAM)(LPCTSTR)SETTINGS_OPTION_DIRECTORY_SPCS);
-			strcpy(paths[inum++],GUI.FreezeFileDir);
+			lstrcpy(paths[inum++],GUI.FreezeFileDir);
 			SendDlgItemMessage(hDlg,IDC_DIRCOMBO,CB_ADDSTRING,0,(LPARAM)(LPCTSTR)SETTINGS_OPTION_DIRECTORY_SAVES);
-			strcpy(paths[inum++],GUI.SRAMFileDir);
+			lstrcpy(paths[inum++],GUI.SRAMFileDir);
 			SendDlgItemMessage(hDlg,IDC_DIRCOMBO,CB_ADDSTRING,0,(LPARAM)(LPCTSTR)SETTINGS_OPTION_DIRECTORY_SRAM);
-			strcpy(paths[inum++],GUI.PatchDir);
+			lstrcpy(paths[inum++],GUI.PatchDir);
 			SendDlgItemMessage(hDlg,IDC_DIRCOMBO,CB_ADDSTRING,0,(LPARAM)(LPCTSTR)SETTINGS_OPTION_DIRECTORY_PATCHESANDCHEATS);
-			strcpy(paths[inum++],GUI.BiosDir);
+			lstrcpy(paths[inum++],GUI.BiosDir);
 			SendDlgItemMessage(hDlg,IDC_DIRCOMBO,CB_ADDSTRING,0,(LPARAM)(LPCTSTR)SETTINGS_OPTION_DIRECTORY_BIOS);
 
 			SendDlgItemMessage(hDlg,IDC_DIRCOMBO,CB_SETCURSEL,(WPARAM)0,0);
  			SetDlgItemText(hDlg, IDC_CUSTOM_FOLDER_FIELD, paths[0]);
 			which = 0;
 
-			SetCurrentDirectory(S9xGetDirectory(DEFAULT_DIR));
+			SetCurrentDirectory(S9xGetDirectoryT(DEFAULT_DIR));
 		}
 		case WM_PAINT:
 		{
@@ -4967,8 +4920,8 @@ int CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					BROWSEINFO bi;
 					ZeroMemory(&bi, sizeof(BROWSEINFO));
 					TCHAR path[MAX_PATH];
-					_fullpath(path, paths[which], MAX_PATH);
-					TCHAR title[]=TEXT(SETTINGS_TITLE_SELECTFOLDER);
+					_tfullpath(path, paths[which], MAX_PATH);
+					TCHAR title[]=SETTINGS_TITLE_SELECTFOLDER;
 					bi.hwndOwner=hDlg;
 					bi.pszDisplayName=path;
 					bi.lpszTitle=title;
@@ -4979,7 +4932,7 @@ int CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 					SHGetMalloc(&lpm);
 					lpm->Free(iidl);
-					absToRel(paths[which], path, S9xGetDirectory(DEFAULT_DIR));
+					absToRel(paths[which], path, S9xGetDirectoryT(DEFAULT_DIR));
  					SetDlgItemText(hDlg, IDC_CUSTOM_FOLDER_FIELD, paths[which]);
 				}
 				break;
@@ -4994,14 +4947,14 @@ int CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			case IDOK:
 				{
 					int inum = 0;
-					strcpy(GUI.RomDir,paths[inum++]);
-					strcpy(GUI.ScreensDir,paths[inum++]);
-					strcpy(GUI.MovieDir,paths[inum++]);
-					strcpy(GUI.SPCDir,paths[inum++]);
-					strcpy(GUI.FreezeFileDir,paths[inum++]);
-					strcpy(GUI.SRAMFileDir,paths[inum++]);
-					strcpy(GUI.PatchDir,paths[inum++]);
-					strcpy(GUI.BiosDir,paths[inum++]);
+					lstrcpy(GUI.RomDir,paths[inum++]);
+					lstrcpy(GUI.ScreensDir,paths[inum++]);
+					lstrcpy(GUI.MovieDir,paths[inum++]);
+					lstrcpy(GUI.SPCDir,paths[inum++]);
+					lstrcpy(GUI.FreezeFileDir,paths[inum++]);
+					lstrcpy(GUI.SRAMFileDir,paths[inum++]);
+					lstrcpy(GUI.PatchDir,paths[inum++]);
+					lstrcpy(GUI.BiosDir,paths[inum++]);
 
 					GUI.TurboModeToggle = (BST_CHECKED==IsDlgButtonChecked(hDlg, IDC_TOGGLE_TURBO));
 					GUI.InactivePause = (BST_CHECKED==IsDlgButtonChecked(hDlg, IDC_INACTIVE_PAUSE));
@@ -5034,13 +4987,13 @@ bool ExtensionIsValid(const TCHAR * filename)
 	{
 		if(curr->extension==NULL)
 		{
-			if(NULL==strstr(filename, TEXT(".")))
+			if(NULL==_tcsstr(filename, TEXT(".")))
 				return true;
 		}
-		else if(filename[(strlen(filename)-1)-strlen(curr->extension)]=='.')
+		else if(filename[(lstrlen(filename)-1)-lstrlen(curr->extension)]=='.')
 		{
-			if(0==_strnicmp(&filename[(strlen(filename))-strlen(curr->extension)],
-				curr->extension, strlen(curr->extension)))
+			if(0==_tcsncicmp(&filename[(lstrlen(filename))-lstrlen(curr->extension)],
+				curr->extension, lstrlen(curr->extension)))
 				return true;
 		}
 		curr=curr->next;
@@ -5055,13 +5008,13 @@ bool IsCompressed(const TCHAR* filename)
 	{
 		if(curr->extension==NULL)
 		{
-			if(NULL==strstr(filename, TEXT(".")))
+			if(NULL==_tcsstr(filename, TEXT(".")))
 				return curr->compressed;
 		}
-		else if(filename[(strlen(filename)-1)-strlen(curr->extension)]=='.')
+		else if(filename[(lstrlen(filename)-1)-lstrlen(curr->extension)]=='.')
 		{
-			if(0==_strnicmp(&filename[(strlen(filename))-strlen(curr->extension)],
-				curr->extension, strlen(curr->extension)))
+			if(0==_tcsncicmp(&filename[(lstrlen(filename))-lstrlen(curr->extension)],
+				curr->extension, lstrlen(curr->extension)))
 				return curr->compressed;
 		}
 		curr=curr->next;
@@ -5110,21 +5063,21 @@ inline unsigned short sum(unsigned char *array, unsigned int size = HEADER_SIZE)
 
 void rominfo(const TCHAR *filename, TCHAR *namebuffer, TCHAR *sizebuffer)
 {
-	strcpy(namebuffer, ROM_ITEM_DESCNOTAVAILABLE);
-	strcpy(sizebuffer, "? Mbits");
+	lstrcpy(namebuffer, ROM_ITEM_DESCNOTAVAILABLE);
+	lstrcpy(sizebuffer, TEXT("? Mbits"));
 
 	if(IsCompressed(filename))
 	{
-		unzFile uf = unzOpen(filename);
+		unzFile uf = unzOpen(_tToChar(filename));
 		if(uf)
 		{
 			unz_file_info info;
 			if(UNZ_OK == unzGetCurrentFileInfo(uf, &info, 0,0,0,0,0,0))
 			{
 				if (info.uncompressed_size < 0x8000) // Smaller than a block
-					strcpy(namebuffer, ROM_ITEM_NOTAROM);
+					lstrcpy(namebuffer, ROM_ITEM_NOTAROM);
 				else
-					strcpy(namebuffer, ROM_ITEM_COMPRESSEDROMDESCRIPTION);
+					lstrcpy(namebuffer, ROM_ITEM_COMPRESSEDROMDESCRIPTION);
 
 				// should subtract header size, so this may be slightly off, but it's better than "? MBits"
 				double MBitD = (double)(info.uncompressed_size - 0) / 0x100000 * 8;
@@ -5132,29 +5085,29 @@ void rominfo(const TCHAR *filename, TCHAR *namebuffer, TCHAR *sizebuffer)
 				int sizeIndex;
 				if(0!=(MBitI / 10))
 				{
-					sizebuffer[0] = MBitI / 10 + '0';
+					sizebuffer[0] = MBitI / 10 + TEXT('0');
 					sizeIndex = 1;
 				}
 				else
 					sizeIndex = 0;
-				sizebuffer[sizeIndex+0] = MBitI % 10 + '0';
-				sizebuffer[sizeIndex+1] = '.';
-				sizebuffer[sizeIndex+2] = (char)((MBitD - MBitI) * 10) + '0';
-				sizebuffer[sizeIndex+3] = (char)((int)((MBitD - MBitI) * 100) % 10) + '0';
-				sizebuffer[sizeIndex+4] = ' ';
-				sizebuffer[sizeIndex+5] = 'M';
-				sizebuffer[sizeIndex+6] = 'b';
-				sizebuffer[sizeIndex+7] = 'i';
-				sizebuffer[sizeIndex+8] = 't';
-				sizebuffer[sizeIndex+9] = '\0';
+				sizebuffer[sizeIndex+0] = MBitI % 10 + TEXT('0');
+				sizebuffer[sizeIndex+1] = TEXT('.');
+				sizebuffer[sizeIndex+2] = (char)((MBitD - MBitI) * 10) + TEXT('0');
+				sizebuffer[sizeIndex+3] = (char)((int)((MBitD - MBitI) * 100) % 10) + TEXT('0');
+				sizebuffer[sizeIndex+4] = TEXT(' ');
+				sizebuffer[sizeIndex+5] = TEXT('M');
+				sizebuffer[sizeIndex+6] = TEXT('b');
+				sizebuffer[sizeIndex+7] = TEXT('i');
+				sizebuffer[sizeIndex+8] = TEXT('t');
+				sizebuffer[sizeIndex+9] = TEXT('\0');
 			}
 			unzClose(uf);
 		}
 		return;
 	}
 
-	struct stat filestats;
-	stat(filename, &filestats);
+	struct _stat filestats;
+	_tstat(filename, &filestats);
 
 	int HeaderSize = 0;
 
@@ -5210,7 +5163,7 @@ void rominfo(const TCHAR *filename, TCHAR *namebuffer, TCHAR *sizebuffer)
 				if (InfoScore((char *)HeaderBuffer) > 1)
 				{
 					EHi = true;
-					strncpy(namebuffer, (char *)HeaderBuffer, 21);
+					_tcsncpy(namebuffer, _tFromChar((char *)HeaderBuffer), 21);
 				}
 			}
 
@@ -5228,7 +5181,7 @@ void rominfo(const TCHAR *filename, TCHAR *namebuffer, TCHAR *sizebuffer)
 					ROMFile.read(HiHead, INFO_LEN);
 					int HiScore = InfoScore(HiHead);
 
-					strncpy(namebuffer, LoScore > HiScore ? LoHead : HiHead, 21);
+					_tcsncpy(namebuffer, _tFromChar(LoScore > HiScore ? LoHead : HiHead), 21);
 
 					if (filestats.st_size - HeaderSize >= 0x20000)
 					{
@@ -5238,26 +5191,28 @@ void rominfo(const TCHAR *filename, TCHAR *namebuffer, TCHAR *sizebuffer)
 
 						if (IntLScore > LoScore && IntLScore > HiScore)
 						{
-							strncpy(namebuffer, LoHead, 21);
+							_tcsncpy(namebuffer, _tFromChar(LoHead), 21);
 						}
 					}
 				}
 				else //ROM only has one block
 				{
+					char buf[21];
 					ROMFile.seekg(0x7FC0 + HeaderSize, ios::beg);
-					ROMFile.read(namebuffer, 21);
+					ROMFile.read(buf, 21);
+					_tcsncpy(namebuffer,_tFromChar(buf),21);
 				}
 			}
 			ROMFile.close();
 		}
 		else //Couldn't open file
 		{
-			strcpy(namebuffer, ROM_ITEM_CANTOPEN);
+			lstrcpy(namebuffer, ROM_ITEM_CANTOPEN);
 		}
 	}
 	else //Smaller than a block
 	{
-		strcpy(namebuffer, ROM_ITEM_NOTAROM);
+		lstrcpy(namebuffer, ROM_ITEM_NOTAROM);
 	}
 
 	double MBitD = (double)(filestats.st_size - HeaderSize) / 0x100000 * 8;
@@ -5265,29 +5220,29 @@ void rominfo(const TCHAR *filename, TCHAR *namebuffer, TCHAR *sizebuffer)
 	int sizeIndex;
 	if(0!=(MBitI / 10))
 	{
-		sizebuffer[0] = MBitI / 10 + '0';
+		sizebuffer[0] = MBitI / 10 + TEXT('0');
 		sizeIndex = 1;
 	}
 	else
 		sizeIndex = 0;
-	sizebuffer[sizeIndex+0] = MBitI % 10 + '0';
-	sizebuffer[sizeIndex+1] = '.';
-	sizebuffer[sizeIndex+2] = (char)((MBitD - MBitI) * 10) + '0';
-	sizebuffer[sizeIndex+3] = (char)((int)((MBitD - MBitI) * 100) % 10) + '0';
-	sizebuffer[sizeIndex+4] = ' ';
-	sizebuffer[sizeIndex+5] = 'M';
-	sizebuffer[sizeIndex+6] = 'b';
-	sizebuffer[sizeIndex+7] = 'i';
-	sizebuffer[sizeIndex+8] = 't';
-	sizebuffer[sizeIndex+9] = '\0';
-	namebuffer[21] = '\0';
+	sizebuffer[sizeIndex+0] = MBitI % 10 + TEXT('0');
+	sizebuffer[sizeIndex+1] = TEXT('.');
+	sizebuffer[sizeIndex+2] = (char)((MBitD - MBitI) * 10) + TEXT('0');
+	sizebuffer[sizeIndex+3] = (char)((int)((MBitD - MBitI) * 100) % 10) + TEXT('0');
+	sizebuffer[sizeIndex+4] = TEXT(' ');
+	sizebuffer[sizeIndex+5] = TEXT('M');
+	sizebuffer[sizeIndex+6] = TEXT('b');
+	sizebuffer[sizeIndex+7] = TEXT('i');
+	sizebuffer[sizeIndex+8] = TEXT('t');
+	sizebuffer[sizeIndex+9] = TEXT('\0');
+	namebuffer[21] = TEXT('\0');
 }
 
 void GetPathFromTree( HWND hDlg, UINT tree, TCHAR* selected, HTREEITEM hItem)
 {
 	TVITEM tv;
 	TCHAR temp[MAX_PATH];
-	temp[0]='\0';
+	temp[0]=('\0');
 	ZeroMemory(&tv, sizeof(TVITEM));
 	HTREEITEM hTreeTemp=hItem;
 
@@ -5306,26 +5261,26 @@ void GetPathFromTree( HWND hDlg, UINT tree, TCHAR* selected, HTREEITEM hItem)
 	tv.cchTextMax =MAX_PATH;
 	TreeView_GetItem(GetDlgItem(hDlg, tree), &tv);
 
-	sprintf(selected, TEXT("%s"), temp);
+	_stprintf(selected, TEXT("%s"), temp);
 	while(TreeView_GetParent(GetDlgItem(hDlg, tree), hTreeTemp))
 	{
-		temp[0]='\0';
+		temp[0]=TEXT('\0');
 		hTreeTemp=TreeView_GetParent(GetDlgItem(hDlg, tree), hTreeTemp);
 		tv.mask=TVIF_HANDLE|TVIF_TEXT;
 		tv.hItem=hTreeTemp;
 		tv.pszText=temp;
 		tv.cchTextMax =MAX_PATH;
 		TreeView_GetItem(GetDlgItem(hDlg, tree), &tv);
-		sprintf(temp, TEXT("%s\\%s"),temp, selected);
-		strcpy(selected, temp);
+		_stprintf(temp, TEXT("%s\\%s"),temp, selected);
+		lstrcpy(selected, temp);
 	}
 }
 
 typedef struct RomDataCacheNode
 {
-	char* fname;
-	char* rname;
-	char* rmbits;
+	TCHAR* fname;
+	TCHAR* rname;
+	TCHAR* rmbits;
 	struct RomDataCacheNode* next;
 } RomDataList;
 
@@ -5351,20 +5306,20 @@ void ClearCacheList(RomDataList* rdl)
 }
 
 
-void ExpandDir(char * selected, HTREEITEM hParent, HWND hDlg)
+void ExpandDir(TCHAR * selected, HTREEITEM hParent, HWND hDlg)
 {
 	TCHAR temp[MAX_PATH];
 	WIN32_FIND_DATA wfd;
 	ZeroMemory(&wfd, sizeof(WIN32_FIND_DATA));
-	strcat(selected, TEXT("\\*"));
+	lstrcat(selected, TEXT("\\*"));
 	HANDLE hFind=FindFirstFile(selected,&wfd);
-	selected[(strlen(selected)-1)]='\0';
+	selected[(lstrlen(selected)-1)]=TEXT('\0');
 
 	do
 	{
 		if(wfd.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY)
 		{
-			if(strcmp(wfd.cFileName, TEXT("."))&&strcmp(wfd.cFileName, TEXT("..")))
+			if(lstrcmp(wfd.cFileName, TEXT("."))&&lstrcmp(wfd.cFileName, TEXT("..")))
 			{
 				//skip these, add the rest.
 				TV_INSERTSTRUCT tvis;
@@ -5380,9 +5335,9 @@ void ExpandDir(char * selected, HTREEITEM hParent, HWND hDlg)
 				tvis.item.iSelectedImage=locked?8:6;
 				HTREEITEM hNewTree=TreeView_InsertItem(GetDlgItem(hDlg, IDC_ROM_DIR),&tvis);
 
-				strcpy(temp, selected);
-				strcat(temp, wfd.cFileName);
-				strcat(temp, TEXT("\\*"));
+				lstrcpy(temp, selected);
+				lstrcat(temp, wfd.cFileName);
+				lstrcat(temp, TEXT("\\*"));
 
 				bool subdir=false;
 				WIN32_FIND_DATA wfd2;
@@ -5392,7 +5347,7 @@ void ExpandDir(char * selected, HTREEITEM hParent, HWND hDlg)
 				{
 					if(wfd2.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY)
 					{
-						if(strcmp(wfd2.cFileName, TEXT("."))&&strcmp(wfd2.cFileName, TEXT("..")))
+						if(lstrcmp(wfd2.cFileName, TEXT("."))&&lstrcmp(wfd2.cFileName, TEXT("..")))
 						{
 							subdir=true;
 						}
@@ -5445,10 +5400,10 @@ void ListFilesFromFolder(HWND hDlg, RomDataList** prdl)
 	WIN32_FIND_DATA wfd;
 	ZeroMemory(&wfd, sizeof(WIN32_FIND_DATA));
 
-	strcat(selected, TEXT("\\*"));
+	lstrcat(selected, TEXT("\\*"));
 
 	HANDLE hFind=FindFirstFile(selected, &wfd);
-	selected[(strlen(selected)-1)]='\0';
+	selected[(lstrlen(selected)-1)]=TEXT('\0');
 	do
 	{
 		if(wfd.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY)
@@ -5457,11 +5412,11 @@ void ListFilesFromFolder(HWND hDlg, RomDataList** prdl)
 		{
 			RomDataList* newitem=new RomDataList;
 			ZeroMemory(newitem, sizeof(RomDataList));
-			newitem->fname=new char[1+strlen(wfd.cFileName)];
-			strcpy(newitem->fname, wfd.cFileName);
+			newitem->fname=new TCHAR[1+lstrlen(wfd.cFileName)];
+			lstrcpy(newitem->fname, wfd.cFileName);
 
 			// hide ntldr and no-name files
-			if(!newitem->fname || !*newitem->fname || (!strcmp(newitem->fname, "ntldr") && strlen(selected)<4))
+			if(!newitem->fname || !*newitem->fname || (!lstrcmp(newitem->fname, TEXT("ntldr")) && lstrlen(selected)<4))
 				continue;
 
 			// too small to be a ROM
@@ -5474,7 +5429,7 @@ void ListFilesFromFolder(HWND hDlg, RomDataList** prdl)
 				rdl=newitem;
 			else
 			{
-				if(0>stricmp(newitem->fname,rdl->fname))
+				if(0>_tcsicmp(newitem->fname,rdl->fname))
 				{
 					newitem->next=rdl;
 					rdl=newitem;
@@ -5483,7 +5438,7 @@ void ListFilesFromFolder(HWND hDlg, RomDataList** prdl)
 				{
 					RomDataList* trail=rdl;
 					current=rdl->next;
-					while(current!=NULL&&0<stricmp(newitem->fname,current->fname))
+					while(current!=NULL&&0<_tcsicmp(newitem->fname,current->fname))
 					{
 						trail=current;
 						current=current->next;
@@ -5505,17 +5460,17 @@ void ListFilesFromFolder(HWND hDlg, RomDataList** prdl)
 }
 
 // load multicart rom dialog
-int CALLBACK DlgMultiROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK DlgMultiROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch(msg)
 	{
 	case WM_INITDIALOG:{
 		WinRefreshDisplay();
 		TCHAR path[MAX_PATH];
-		SetCurrentDirectory(S9xGetDirectory(BIOS_DIR));
-		_fullpath(path, "stbios.bin", MAX_PATH);
+		SetCurrentDirectory(S9xGetDirectoryT(BIOS_DIR));
+		_tfullpath(path, TEXT("stbios.bin"), MAX_PATH);
 		SetDlgItemText(hDlg, IDC_MULTICART_BIOSEDIT, path);
-		FILE* ftemp = fopen(path, "rb");
+		FILE* ftemp = fopen(_tToChar(path), "rb");
 		if(ftemp)
 		{
 			fclose(ftemp);
@@ -5528,15 +5483,15 @@ int CALLBACK DlgMultiROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		break;}
 	case WM_COMMAND:
 		{
-			char rom1[MAX_PATH]={0}, rom2[MAX_PATH]={0};
-			SetCurrentDirectory(S9xGetDirectory(ROM_DIR));
+			TCHAR rom1[MAX_PATH]={0}, rom2[MAX_PATH]={0};
+			SetCurrentDirectory(S9xGetDirectoryT(ROM_DIR));
 			switch(LOWORD(wParam))
 			{
 			case IDOK:
 				GetDlgItemText(hDlg, IDC_MULTICART_EDITA, multiRomA, MAX_PATH);
 				GetDlgItemText(hDlg, IDC_MULTICART_EDITB, multiRomB, MAX_PATH);
-				if(*multiRomA) _fullpath(multiRomA, multiRomA, MAX_PATH);
-				if(*multiRomB) _fullpath(multiRomB, multiRomB, MAX_PATH);
+				if(*multiRomA) _tfullpath(multiRomA, multiRomA, MAX_PATH);
+				if(*multiRomB) _tfullpath(multiRomB, multiRomB, MAX_PATH);
 				EndDialog(hDlg, 1);
 				return true;
 			case IDCANCEL:
@@ -5545,29 +5500,29 @@ int CALLBACK DlgMultiROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			case IDC_MULTICART_SWAP:
 				GetDlgItemText(hDlg, IDC_MULTICART_EDITA, rom2, MAX_PATH);
 				GetDlgItemText(hDlg, IDC_MULTICART_EDITB, rom1, MAX_PATH);
-				if(*rom1) _fullpath(rom1, rom1, MAX_PATH);
-				if(*rom2) _fullpath(rom2, rom2, MAX_PATH);
+				if(*rom1) _tfullpath(rom1, rom1, MAX_PATH);
+				if(*rom2) _tfullpath(rom2, rom2, MAX_PATH);
 				SetDlgItemText(hDlg, IDC_MULTICART_EDITA, rom1);
 				SetDlgItemText(hDlg, IDC_MULTICART_EDITB, rom2);
 				break;
 			case IDC_MULTICART_BROWSEA:
 				if(!DoOpenRomDialog(rom1, true))
 					break;
-				_fullpath(rom1, rom1, MAX_PATH);
+				_tfullpath(rom1, rom1, MAX_PATH);
 				SetDlgItemText(hDlg, IDC_MULTICART_EDITA, rom1);
 				break;
 			case IDC_MULTICART_BROWSEB:
 				if(!DoOpenRomDialog(rom2, true))
 					break;
-				_fullpath(rom2, rom2, MAX_PATH);
+				_tfullpath(rom2, rom2, MAX_PATH);
 				SetDlgItemText(hDlg, IDC_MULTICART_EDITB, rom2);
 				break;
 			case IDC_MULTICART_CLEARA:
-				rom1[0] = '\0';
+				rom1[0] = TEXT('\0');
 				SetDlgItemText(hDlg, IDC_MULTICART_EDITA, rom1);
 				break;
 			case IDC_MULTICART_CLEARB:
-				rom1[1] = '\0';
+				rom1[1] = TEXT('\0');
 				SetDlgItemText(hDlg, IDC_MULTICART_EDITB, rom2);
 				break;
 			}
@@ -5576,7 +5531,7 @@ int CALLBACK DlgMultiROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	return false;
 }
 
-int CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	int rv=0;
 	static HWND hSplit;
@@ -5627,7 +5582,7 @@ int CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			hSplit=CreateWindow(TEXT("S9xSplitter"), TEXT(""),WS_CHILD|WS_VISIBLE , p.x, p.y, listRect.left-treeRect.right , listRect.bottom-listRect.top, hDlg,NULL, g_hInst,0);
 
 			LVCOLUMN col;
-			static const LPSTR temp1 = TEXT(ROM_COLUMN_FILENAME);
+			static const LPTSTR temp1 = ROM_COLUMN_FILENAME;
 			ZeroMemory(&col, sizeof(LVCOLUMN));
 			col.mask=LVCF_FMT|LVCF_ORDER|LVCF_TEXT|LVCF_WIDTH;
 			col.fmt=LVCFMT_LEFT;
@@ -5638,7 +5593,7 @@ int CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 			ListView_InsertColumn(romList,    0,   &col);
 
-			static const LPSTR temp2 = TEXT(ROM_COLUMN_DESCRIPTION);
+			static const LPTSTR temp2 = ROM_COLUMN_DESCRIPTION;
 			ZeroMemory(&col, sizeof(LVCOLUMN));
 			col.mask=LVCF_FMT|LVCF_ORDER|LVCF_TEXT|LVCF_WIDTH|LVCF_SUBITEM;
 			col.fmt=LVCFMT_LEFT;
@@ -5651,7 +5606,7 @@ int CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			ListView_InsertColumn(romList,    1,   &col);
 
 
-			static const LPSTR temp3 = TEXT(ROM_COLUMN_SIZE);
+			static const LPTSTR temp3 = ROM_COLUMN_SIZE;
 			ZeroMemory(&col, sizeof(LVCOLUMN));
 			col.mask=LVCF_FMT|LVCF_ORDER|LVCF_TEXT|LVCF_WIDTH|LVCF_SUBITEM;
 			col.fmt=LVCFMT_LEFT;
@@ -5664,26 +5619,26 @@ int CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			ListView_InsertColumn(romList,    2,   &col);
 
 
-			SendDlgItemMessage(hDlg, IDC_MEM_TYPE,CB_INSERTSTRING,0,(LPARAM)TEXT(ROM_OPTION_AUTODETECT));
-			SendDlgItemMessage(hDlg, IDC_MEM_TYPE,CB_INSERTSTRING,1,(LPARAM)TEXT(ROM_OPTION_FORCEHIROM));
-			SendDlgItemMessage(hDlg, IDC_MEM_TYPE,CB_INSERTSTRING,2,(LPARAM)TEXT(ROM_OPTION_FORCELOROM));
+			SendDlgItemMessage(hDlg, IDC_MEM_TYPE,CB_INSERTSTRING,0,(LPARAM)ROM_OPTION_AUTODETECT);
+			SendDlgItemMessage(hDlg, IDC_MEM_TYPE,CB_INSERTSTRING,1,(LPARAM)ROM_OPTION_FORCEHIROM);
+			SendDlgItemMessage(hDlg, IDC_MEM_TYPE,CB_INSERTSTRING,2,(LPARAM)ROM_OPTION_FORCELOROM);
 			SendDlgItemMessage(hDlg, IDC_MEM_TYPE,CB_SETCURSEL,0,0);
 
-			SendDlgItemMessage(hDlg, IDC_VIDEO_MODE,CB_INSERTSTRING,0,(LPARAM)TEXT(ROM_OPTION_AUTODETECT));
-			SendDlgItemMessage(hDlg, IDC_VIDEO_MODE,CB_INSERTSTRING,1,(LPARAM)TEXT(ROM_OPTION_FORCEPAL));
-			SendDlgItemMessage(hDlg, IDC_VIDEO_MODE,CB_INSERTSTRING,2,(LPARAM)TEXT(ROM_OPTION_FORCENTSC));
+			SendDlgItemMessage(hDlg, IDC_VIDEO_MODE,CB_INSERTSTRING,0,(LPARAM)ROM_OPTION_AUTODETECT);
+			SendDlgItemMessage(hDlg, IDC_VIDEO_MODE,CB_INSERTSTRING,1,(LPARAM)ROM_OPTION_FORCEPAL);
+			SendDlgItemMessage(hDlg, IDC_VIDEO_MODE,CB_INSERTSTRING,2,(LPARAM)ROM_OPTION_FORCENTSC);
 			SendDlgItemMessage(hDlg, IDC_VIDEO_MODE,CB_SETCURSEL,0,0);
 
-			SendDlgItemMessage(hDlg, IDC_HEADER,CB_INSERTSTRING,0,(LPARAM)TEXT(ROM_OPTION_AUTODETECT));
-			SendDlgItemMessage(hDlg, IDC_HEADER,CB_INSERTSTRING,1,(LPARAM)TEXT(ROM_OPTION_FORCEHEADER));
-			SendDlgItemMessage(hDlg, IDC_HEADER,CB_INSERTSTRING,2,(LPARAM)TEXT(ROM_OPTION_FORCENOHEADER));
+			SendDlgItemMessage(hDlg, IDC_HEADER,CB_INSERTSTRING,0,(LPARAM)ROM_OPTION_AUTODETECT);
+			SendDlgItemMessage(hDlg, IDC_HEADER,CB_INSERTSTRING,1,(LPARAM)ROM_OPTION_FORCEHEADER);
+			SendDlgItemMessage(hDlg, IDC_HEADER,CB_INSERTSTRING,2,(LPARAM)ROM_OPTION_FORCENOHEADER);
 			SendDlgItemMessage(hDlg, IDC_HEADER,CB_SETCURSEL,0,0);
 
-			SendDlgItemMessage(hDlg, IDC_INTERLEAVE,CB_INSERTSTRING,0,(LPARAM)TEXT(ROM_OPTION_AUTODETECT));
-			SendDlgItemMessage(hDlg, IDC_INTERLEAVE,CB_INSERTSTRING,1,(LPARAM)TEXT(ROM_OPTION_NONINTERLEAVED));
-			SendDlgItemMessage(hDlg, IDC_INTERLEAVE,CB_INSERTSTRING,2,(LPARAM)TEXT(ROM_OPTION_MODE1));
-			SendDlgItemMessage(hDlg, IDC_INTERLEAVE,CB_INSERTSTRING,3,(LPARAM)TEXT(ROM_OPTION_MODE2));
-			SendDlgItemMessage(hDlg, IDC_INTERLEAVE,CB_INSERTSTRING,4,(LPARAM)TEXT(ROM_OPTION_GD24));
+			SendDlgItemMessage(hDlg, IDC_INTERLEAVE,CB_INSERTSTRING,0,(LPARAM)ROM_OPTION_AUTODETECT);
+			SendDlgItemMessage(hDlg, IDC_INTERLEAVE,CB_INSERTSTRING,1,(LPARAM)ROM_OPTION_NONINTERLEAVED);
+			SendDlgItemMessage(hDlg, IDC_INTERLEAVE,CB_INSERTSTRING,2,(LPARAM)ROM_OPTION_MODE1);
+			SendDlgItemMessage(hDlg, IDC_INTERLEAVE,CB_INSERTSTRING,3,(LPARAM)ROM_OPTION_MODE2);
+			SendDlgItemMessage(hDlg, IDC_INTERLEAVE,CB_INSERTSTRING,4,(LPARAM)ROM_OPTION_GD24);
 			SendDlgItemMessage(hDlg, IDC_INTERLEAVE,CB_SETCURSEL,0,0);
 
 			hIcons=ImageList_Create(16,16,ILC_COLOR24,10,10);
@@ -5714,12 +5669,12 @@ int CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			long result=ERROR_SUCCESS/*-1*/;
 			HTREEITEM hTreeDrive=NULL;
 
-			char drive [_MAX_DRIVE + 1];
-			strcpy (drive,"C:\\");
+			TCHAR drive [_MAX_DRIVE + 1];
+			lstrcpy (drive,TEXT("C:\\"));
 
 
-			_fullpath (buffer, S9xGetDirectory(ROM_DIR), MAX_PATH);
-			_splitpath (buffer, drive, NULL, NULL, NULL);
+			_tfullpath (buffer, S9xGetDirectoryT(ROM_DIR), MAX_PATH);
+			_tsplitpath (buffer, drive, NULL, NULL, NULL);
 
 			DWORD driveMask=GetLogicalDrives();
 
@@ -5760,12 +5715,12 @@ int CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 						HTREEITEM hTwee=TreeView_InsertItem(dirList,&tvis);
 
-						if(result==ERROR_SUCCESS && !strncasecmp(drive, driveName, 2))
+						if(result==ERROR_SUCCESS && !_tcsnicmp(drive, driveName, 2))
 							hTreeDrive=hTwee;
 
 						TCHAR temp[10];
-						strcpy(temp, driveName);
-						strcat(temp, TEXT("\\*"));
+						lstrcpy(temp, driveName);
+						lstrcat(temp, TEXT("\\*"));
 						bool subdir=false;
 
 						if(driveType==DRIVE_REMOVABLE || driveType == DRIVE_CDROM || driveType == DRIVE_UNKNOWN)
@@ -5786,7 +5741,7 @@ int CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 							{
 								if(wfd2.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY)
 								{
-									if(strcmp(wfd2.cFileName, TEXT("."))&&strcmp(wfd2.cFileName, TEXT("..")))
+									if(lstrcmp(wfd2.cFileName, TEXT("."))&&lstrcmp(wfd2.cFileName, TEXT("..")))
 									{
 										subdir=true;
 									}
@@ -5821,8 +5776,8 @@ int CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 					do
 					{
-						temp2=strstr(temp, TEXT("\\"));
-						temp3=strstr(temp, TEXT("/"));
+						temp2=_tcsstr(temp, TEXT("\\"));
+						temp3=_tcsstr(temp, TEXT("/"));
 						if(temp3 && temp3 < temp2)
 							temp2 = temp3;
 
@@ -5831,15 +5786,15 @@ int CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						tvi.mask=TVIF_TEXT;
 						tvi.pszText=blah;
 						tvi.cchTextMax=MAX_PATH;
-						blah[0]='\0';
+						blah[0]=TEXT('\0');
 
 						if(temp2)
-							*temp2='\0';
+							*temp2=TEXT('\0');
 
 						tvi.hItem=hTemp;
 						TreeView_GetItem(dirList, &tvi);
 
-						if(strcasecmp(blah, temp) != 0)
+						if(_tcsstr(blah, temp) != 0)
 						{
 							do
 							{
@@ -5850,7 +5805,7 @@ int CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 								tvi.hItem=hTemp;
 								TreeView_GetItem(dirList, &tvi);
 							}
-							while((hTemp != NULL) && (strcasecmp(blah, temp) != 0));
+							while((hTemp != NULL) && (_tcsstr(blah, temp) != 0));
 
 							if(hTemp!=NULL)
 							{
@@ -5884,13 +5839,14 @@ int CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						LVFINDINFO lvfi;
 						ZeroMemory(&lvfi, sizeof(LVFINDINFO));
-						TCHAR *tmp, *tmp2;
-						tmp=Memory.ROMFilename;
-						while(tmp2=strstr(tmp, TEXT("\\")))
-							tmp=tmp2+1;
+						TCHAR tmp[_MAX_PATH];
+						TCHAR *tmp2;
+						lstrcpy(tmp,_tFromChar(Memory.ROMFilename));
+						while(tmp2=_tcsstr(tmp, TEXT("\\")))
+							tmp2=tmp2+1;
 
 						lvfi.flags=LVFI_STRING;
-						lvfi.psz=tmp;
+						lvfi.psz=tmp2;
 
 						int idx=ListView_FindItem(romList, -1, &lvfi);
 						ListView_SetSelectionMark(romList, idx);
@@ -5965,13 +5921,13 @@ int CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					TCHAR buffer[32];
 					TCHAR buffer2[32];
 					GetPathFromTree(hDlg, IDC_ROM_DIR, path, TreeView_GetSelection(dirList));
-					strcat(path, "\\");
-					strcat(path, nextInvalidatedROM->fname);
+					lstrcat(path, TEXT("\\"));
+					lstrcat(path, nextInvalidatedROM->fname);
 					rominfo(path, buffer, buffer2);
-					nextInvalidatedROM->rname=new char[strlen(buffer)+1];
-					strcpy(nextInvalidatedROM->rname, buffer);
-					nextInvalidatedROM->rmbits=new char[strlen(buffer2)+1];
-					strcpy(nextInvalidatedROM->rmbits, buffer2);
+					nextInvalidatedROM->rname=new TCHAR[lstrlen(buffer)+1];
+					lstrcpy(nextInvalidatedROM->rname, buffer);
+					nextInvalidatedROM->rmbits=new TCHAR[lstrlen(buffer2)+1];
+					lstrcpy(nextInvalidatedROM->rmbits, buffer2);
 
 					ListView_RedrawItems(romList,nextInvalidatedROMCounter,nextInvalidatedROMCounter);
 				}
@@ -6018,7 +5974,7 @@ int CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						lvi.cchTextMax=MAX_PATH;
 						ListView_GetItem(romList, &lvi);
 
-						strcpy(temp, filename);
+						lstrcpy(temp, filename);
 
 						HTREEITEM hTreeTemp=TreeView_GetSelection(dirList);
 						TVITEM tv;
@@ -6029,21 +5985,21 @@ int CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						tv.pszText=temp;
 						tv.cchTextMax =MAX_PATH;
 						TreeView_GetItem(dirList, &tv);
-						sprintf(temp, TEXT("%s\\%s"), temp, filename);
+						_stprintf(temp, TEXT("%s\\%s"), temp, filename);
 
-						strcpy(filename, temp);
+						lstrcpy(filename, temp);
 
 						while(TreeView_GetParent(dirList, hTreeTemp)!=NULL)
 						{
-							temp[0]='\0';
+							temp[0]=TEXT('\0');
 							hTreeTemp=TreeView_GetParent(dirList, hTreeTemp);
 							tv.mask=TVIF_HANDLE|TVIF_TEXT;
 							tv.hItem=hTreeTemp;
 							tv.pszText=temp;
 							tv.cchTextMax =MAX_PATH;
 							TreeView_GetItem(dirList, &tv);
-							sprintf(temp, TEXT("%s\\%s"),temp, filename);
-							strcpy(filename, temp);
+							_stprintf(temp, TEXT("%s\\%s"),temp, filename);
+							lstrcpy(filename, temp);
 						}
 
 						int iTemp=SendDlgItemMessage(hDlg, IDC_MEM_TYPE,CB_GETCURSEL,0,0);
@@ -6083,17 +6039,17 @@ int CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						else if(iTemp==2)
 							Settings.ForceNoHeader=TRUE;
 
-						strcpy(temp, filename);
-						int i=strlen(temp);
-						while(temp[i]!='\\' && temp[i]!='/')
+						lstrcpy(temp, filename);
+						int i=lstrlen(temp);
+						while(temp[i]!=TEXT('\\') && temp[i]!=TEXT('/'))
 						{
-							temp[i]='\0';
+							temp[i]=TEXT('\0');
 							i--;
 						}
-						temp[i]='\0';
+						temp[i]=TEXT('\0');
 
 						if(!GUI.LockDirectories)
-							absToRel(GUI.RomDir, temp, S9xGetDirectory(DEFAULT_DIR));
+							absToRel(GUI.RomDir, temp, S9xGetDirectoryT(DEFAULT_DIR));
 					}
 					else
 					{
@@ -6153,7 +6109,7 @@ int CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 							}
 
 							//This is the string we search for
-							LPCSTR searchstr = pFindInfo->lvfi.psz;
+							LPCTSTR searchstr = pFindInfo->lvfi.psz;
 
 							int startPos = pFindInfo->iStart;
 							//Is startPos outside the list (happens if last item is selected)
@@ -6176,13 +6132,13 @@ int CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 							do
 							{
 								// does this word begin with all characters in searchstr?
-								if( _tcsnicmp(curr->fname, searchstr, strlen(searchstr)) == 0)
+								if( _tcsnicmp(curr->fname, searchstr, lstrlen(searchstr)) == 0)
 								{
 									// select this item and stop search
 									pResult = currentPos;
 									break;
 								}
-								else if( _tcsnicmp(curr->fname, searchstr, strlen(searchstr)) > 0)
+								else if( _tcsnicmp(curr->fname, searchstr, lstrlen(searchstr)) > 0)
 								{
 									if(looped)
 									{
@@ -6270,18 +6226,18 @@ int CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 							if(nmlvdi->item.iSubItem==0)
 							{
-								nmlvdi->item.pszText=curr->fname?curr->fname:(char*)"";
+								nmlvdi->item.pszText=curr->fname?curr->fname:TEXT("");
 								nmlvdi->item.cchTextMax=MAX_PATH;
 							}
 							if(nmlvdi->item.iSubItem==1)
 							{
-								nmlvdi->item.pszText=curr->rname?curr->rname:(char*)"";
+								nmlvdi->item.pszText=curr->rname?curr->rname:TEXT("");
 								nmlvdi->item.cchTextMax=24;
 							}
 
 							if(nmlvdi->item.iSubItem==2)
 							{
-								nmlvdi->item.pszText=curr->rmbits?curr->rmbits:(char*)"";
+								nmlvdi->item.pszText=curr->rmbits?curr->rmbits:TEXT("");
 								nmlvdi->item.cchTextMax=11;
 							}
 							// nmlvdi->item.mask=LVIF_TEXT; // This is bad as wine relies on this to not change.
@@ -6476,23 +6432,23 @@ LRESULT CALLBACK DlgChildSplitProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 
 
 #ifdef NETPLAY_SUPPORT
-int CALLBACK DlgNetConnect(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK DlgNetConnect(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 //	HKEY hKey;
-	char defPort[5];
-	char portTemp[5];
-	char temp[100];
+	TCHAR defPort[5];
+	TCHAR portTemp[5];
+	TCHAR temp[100];
 //	char temp2[5];
-	static char* hostname;
+	static TCHAR* hostname;
 //	unsigned long cbData;
 //	static int i;
 	if(Settings.Port==0)
 	{
-		_itoa(1996,defPort,10);
+		_itot(1996,defPort,10);
 	}
 	else
 	{
-		_itoa(Settings.Port,defPort,10);
+		_itot(Settings.Port,defPort,10);
 	}
 
 	WORD chkLength;
@@ -6508,7 +6464,7 @@ int CALLBACK DlgNetConnect(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		SetDlgItemText(hDlg,IDC_CLEARHISTORY, NPCON_CLEARHISTORY);
 		SetDlgItemText(hDlg,IDOK,BUTTON_OK);
 		SetDlgItemText(hDlg,IDCANCEL,BUTTON_CANCEL);
-		hostname = (char *)lParam;
+		hostname = (TCHAR *)lParam;
 		{
 			for(int i=0; i<MAX_RECENT_HOSTS_LIST_SIZE && *GUI.RecentHostNames[i]; i++)
 				SendDlgItemMessage(hDlg, IDC_HOSTNAME, CB_INSERTSTRING,i,(LPARAM)GUI.RecentHostNames[i]);
@@ -6519,14 +6475,6 @@ int CALLBACK DlgNetConnect(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		SendDlgItemMessage(hDlg, IDC_HOSTNAME, WM_SETTEXT, 0, (LPARAM)NPCON_ENTERHOST);
 
 		return TRUE;
-		case WM_PAINT:
-		{
-			PAINTSTRUCT ps;
-			BeginPaint (hDlg, &ps);
-
-			EndPaint (hDlg, &ps);
-		}
-		return true;
 
 	case WM_COMMAND:
 		switch(LOWORD(wParam))
@@ -6537,7 +6485,7 @@ int CALLBACK DlgNetConnect(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					SendDlgItemMessage(hDlg,IDC_HOSTNAME,CB_RESETCONTENT,0,0);
 					SendDlgItemMessage(hDlg,IDC_HOSTNAME,CB_INSERTSTRING,0,(LPARAM)GUI.RecentHostNames[0]);
 					for(int i=1; i<MAX_RECENT_HOSTS_LIST_SIZE; i++)
-						*GUI.RecentHostNames[i] = '\0';
+						*GUI.RecentHostNames[i] = TEXT('\0');
 				}
 				break;
 			}
@@ -6548,26 +6496,26 @@ int CALLBACK DlgNetConnect(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				*((LPWORD)portTemp) = chkLength;
 				SendDlgItemMessage(hDlg,IDC_PORTNUMBER,EM_GETLINE,0,(LPARAM)(LPCTSTR)portTemp);
 
-				if(atoi(portTemp)>65535||atoi(portTemp)<1024)
+				if(_ttoi(portTemp)>65535||_ttoi(portTemp)<1024)
 				{
-					MessageBox(hDlg,"Port Number needs to be between 1024 and 65535","Error",MB_OK);
+					MessageBox(hDlg,TEXT("Port Number needs to be between 1024 and 65535"),TEXT("Error"),MB_OK);
 					break;
 				}
 				else
 				{
-					Settings.Port = atoi(portTemp);
+					Settings.Port = _ttoi(portTemp);
 				}
 				//chkLength = (WORD) SendDlgItemMessage(hDlg,IDC_HOSTNAME,EM_LINELENGTH,0,0);
 				//if(chkLength > 0)
 				//{
 				//SendDlgItemMessage(hDlg,IDC_HOSTNAME,EM_GETLINE,0,(LPARAM)hostname);
 				SendDlgItemMessage(hDlg,IDC_HOSTNAME,WM_GETTEXT,100,(LPARAM)temp);
-				if(!strcmp(temp, NPCON_ENTERHOST))
+				if(!lstrcmp(temp, NPCON_ENTERHOST))
 				{
-					MessageBox(hDlg,NPCON_PLEASE_ENTERHOST,"Error",MB_OK);
+					MessageBox(hDlg,NPCON_PLEASE_ENTERHOST,TEXT("Error"),MB_OK);
 					break;
 				}
-				strcpy(hostname,temp);
+				lstrcpy(hostname,temp);
 				//MessageBox(hDlg,temp,"hola",MB_OK);
 
 				// save hostname in recent list
@@ -6577,18 +6525,18 @@ int CALLBACK DlgNetConnect(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						if(!*GUI.RecentHostNames[i])
 						{
-							strcpy(GUI.RecentHostNames[i], hostname);
+							lstrcpy(GUI.RecentHostNames[i], hostname);
 							break;
 						}
-						else if(!stricmp(GUI.RecentHostNames[i], hostname))
+						else if(!_tcsicmp(GUI.RecentHostNames[i], hostname))
 							break;
 					}
 					if(i == MAX_RECENT_HOSTS_LIST_SIZE)
-						strcpy(GUI.RecentHostNames[1+(rand()%(MAX_RECENT_HOSTS_LIST_SIZE-1))], hostname);
+						lstrcpy(GUI.RecentHostNames[1+(rand()%(MAX_RECENT_HOSTS_LIST_SIZE-1))], hostname);
 				}
 
 				unsigned long len;
-				len = strlen(temp);
+				len = lstrlen(temp);
 				if(len > 0)
 				{
 					EndDialog(hDlg,1);
@@ -6664,7 +6612,7 @@ void LoadExts(void)
 	#endif
 		if(!in.is_open())
 		{
-			MessageBox(GUI.hWnd, "Fatal Error: The File \"Valid.Ext\" could not be found or created.", "Error", MB_ICONERROR|MB_OK);
+			MessageBox(GUI.hWnd, TEXT("Fatal Error: The File \"Valid.Ext\" could not be found or created."), TEXT("Error"), MB_ICONERROR|MB_OK);
 			PostQuitMessage(-1);
 		}
 	}
@@ -6682,8 +6630,8 @@ void LoadExts(void)
 				curr->compressed=true;
 			if(strlen(buffer)>1)
 			{
-				curr->extension=new char[strlen(buffer)-1];
-				strncpy(curr->extension, buffer, strlen(buffer)-1);
+				curr->extension=new TCHAR[strlen(buffer)-1];
+				_tcsncpy(curr->extension, _tFromChar(buffer), strlen(buffer)-1);
 				curr->extension[strlen(buffer)-1]='\0';
 			}
 			else curr->extension=NULL;
@@ -6707,20 +6655,20 @@ void MakeExtFile(void)
 	out<<"binN"<<endl<<"gd3N"<<endl<<"mghN"<<endl<<"gd7N"<<endl<<"ausN"<<endl;
 	out<<"dx2N"<<endl<<"aN"<<endl<<"jmaY";
 	out.close();
-	SetFileAttributes("Valid.Ext", FILE_ATTRIBUTE_ARCHIVE|FILE_ATTRIBUTE_READONLY);
+	SetFileAttributes(TEXT("Valid.Ext"), FILE_ATTRIBUTE_ARCHIVE|FILE_ATTRIBUTE_READONLY);
 };
 #ifdef NETPLAY_SUPPORT
-int CALLBACK DlgNPOptions(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK DlgNPOptions(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	char defPort[5];
+	TCHAR defPort[5];
 	WORD chkLength;
 	if(Settings.Port==0)
 	{
-		_itoa(1996,defPort,10);
+		_itot(1996,defPort,10);
 	}
 	else
 	{
-		_itoa(Settings.Port,defPort,10);
+		_itot(Settings.Port,defPort,10);
 	}
 
 	switch (msg)
@@ -6779,14 +6727,14 @@ int CALLBACK DlgNPOptions(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				chkLength=(WORD)SendDlgItemMessage(hDlg,IDC_PORTNUMBERA,EM_LINELENGTH,0,0);
 				*((LPWORD)defPort) = chkLength;
 				SendDlgItemMessage(hDlg,IDC_PORTNUMBERA,EM_GETLINE,0,(LPARAM)defPort);
-				if(atoi(defPort)<1024||atoi(defPort)>65535)
+				if(_ttoi(defPort)<1024||_ttoi(defPort)>65535)
 				{
-					MessageBox(hDlg,"Port Number needs to be betweeb 1024 and 65535","Error",MB_OK);
+					MessageBox(hDlg,TEXT("Port Number needs to be betweeb 1024 and 65535"),TEXT("Error"),MB_OK);
 					break;
 				}
 				else
 				{
-					Settings.Port = atoi(defPort);
+					Settings.Port = _ttoi(defPort);
 				}
 				//MessageBox(hDlg,defPort,defPort,MB_OK);
 				Settings.NetPlayServer = IsDlgButtonChecked(hDlg,IDC_ACTASSERVER);
@@ -6857,7 +6805,7 @@ void UpdateModeComboBox(HWND hComboBox)
 	WinEnumDisplayModes(&dm);
 
 	for(int i=0;i<dm.size();i++) {
-		sprintf( modeTxt, "%dx%d %dbit %dhz", dm[i].width , dm[i].height, dm[i].depth ,dm[i].rate);
+		_stprintf( modeTxt, TEXT("%dx%d %dbit %dhz"), dm[i].width , dm[i].height, dm[i].depth ,dm[i].rate);
 		ComboBox_AddString(hComboBox,modeTxt);
 		if(GUI.FullscreenMode.width==dm[i].width&&GUI.FullscreenMode.height==dm[i].height&&GUI.FullscreenMode.rate==dm[i].rate&&GUI.FullscreenMode.depth==dm[i].depth) {
 			ComboBox_SetCurSel(hComboBox,i);
@@ -6866,46 +6814,56 @@ void UpdateModeComboBox(HWND hComboBox)
 	}
 	if(!foundCurMode) {
 		dm.push_back(GUI.FullscreenMode);
-		sprintf( modeTxt, "Unsupported mode selected");
+		_stprintf( modeTxt, TEXT("Unsupported mode selected"));
 		ComboBox_AddString(hComboBox,modeTxt);
 		ComboBox_SetCurSel(hComboBox,ComboBox_GetCount(hComboBox)-1);
 	}
 
 }
 
-int CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+static WNDPROC lpfnOldWndProc;
+
+LRESULT CALLBACK GroupBoxCheckBoxTitle(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	RECT checkBoxRect;
+	if(message==WM_PAINT) {
+		HWND checkHwnd=GetDlgItem(GetParent(hWnd),IDC_SHADER_ENABLED);
+		GetClientRect(checkHwnd,&checkBoxRect);
+		MapWindowPoints(checkHwnd,hWnd,(LPPOINT)&checkBoxRect,2);
+		ValidateRect(hWnd,&checkBoxRect);
+	}
+	return CallWindowProc(lpfnOldWndProc, hWnd, message, wParam, lParam);
+}
+
+INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	int index;
-	char s[80],temp[80];
+	TCHAR s[80];
+	char temp[80];
+	TCHAR openFileName[MAX_PATH];
+	OPENFILENAME ofn;
 
 	// temporary GUI state for restoring after previewing while selecting options
 	static int prevScale, prevScaleHiRes, prevPPL;
-	static bool prevStretch, prevAspectRatio, prevHeightExtend, prevAutoDisplayMessages, prevVideoMemory;
+	static bool prevStretch, prevAspectRatio, prevHeightExtend, prevAutoDisplayMessages, prevVideoMemory, prevShaderEnabled;
 	static int prevAspectWidth;
 	static OutputMethod prevOutputMethod;
+	static TCHAR prevHLSLShaderFile[MAX_PATH],prevGLSLvertexShaderFile[MAX_PATH],prevGLSLfragmentShaderFile[MAX_PATH];
 
 	switch(msg)
 	{
-	case WM_PAINT:
-		{
-			PAINTSTRUCT ps;
-			BeginPaint (hDlg, &ps);
-
-			EndPaint (hDlg, &ps);
-		}
-		return true;
 
 	case WM_INITDIALOG:
 		WinRefreshDisplay();
 
-		CreateToolTip(IDC_EMUFULLSCREEN,hDlg,"Emulate fullscreen by creating a window that spans the entire screen when going fullscreen");
-		CreateToolTip(IDC_AUTOFRAME,hDlg,"Try to achieve 50/60 fps by limiting the speed and skipping at most 'max skipped frames'");
-		CreateToolTip(IDC_MAXSKIP,hDlg,"Try to achieve 50/60 fps by limiting the speed and skipping at most 'max skipped frames'");
-		CreateToolTip(IDC_FIXEDSKIP,hDlg,"Always skip a fixed number of frames - no speed limit");
-		CreateToolTip(IDC_SKIPCOUNT,hDlg,"Always skip a fixed number of frames - no speed limit");
-		CreateToolTip(IDC_HIRES,hDlg,"Support the hi-res mode that a few games use, otherwise render them in low-res");
-		CreateToolTip(IDC_HEIGHT_EXTEND,hDlg,"Display an extra 15 pixels at the bottom, which few games use. Also increases AVI output size from 256x224 to 256x240");
-		CreateToolTip(IDC_MESSAGES_IN_IMAGE,hDlg,"Draw text inside the SNES image (will get into AVIs, screenshots, and filters)");
+		CreateToolTip(IDC_EMUFULLSCREEN,hDlg,TEXT("Emulate fullscreen by creating a window that spans the entire screen when going fullscreen"));
+		CreateToolTip(IDC_AUTOFRAME,hDlg,TEXT("Try to achieve 50/60 fps by limiting the speed and skipping at most 'max skipped frames'"));
+		CreateToolTip(IDC_MAXSKIP,hDlg,TEXT("Try to achieve 50/60 fps by limiting the speed and skipping at most 'max skipped frames'"));
+		CreateToolTip(IDC_FIXEDSKIP,hDlg,TEXT("Always skip a fixed number of frames - no speed limit"));
+		CreateToolTip(IDC_SKIPCOUNT,hDlg,TEXT("Always skip a fixed number of frames - no speed limit"));
+		CreateToolTip(IDC_HIRES,hDlg,TEXT("Support the hi-res mode that a few games use, otherwise render them in low-res"));
+		CreateToolTip(IDC_HEIGHT_EXTEND,hDlg,TEXT("Display an extra 15 pixels at the bottom, which few games use. Also increases AVI output size from 256x224 to 256x240"));
+		CreateToolTip(IDC_MESSAGES_IN_IMAGE,hDlg,TEXT("Draw text inside the SNES image (will get into AVIs, screenshots, and filters)"));
 
 		prevOutputMethod = GUI.outputMethod;
 		prevScale = GUI.Scale;
@@ -6917,8 +6875,13 @@ int CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		prevAspectWidth = GUI.AspectWidth;
 		prevHeightExtend = GUI.HeightExtend;
 		prevAutoDisplayMessages = Settings.AutoDisplayMessages != 0;
+		prevShaderEnabled = GUI.shaderEnabled;
+		lstrcpy(prevHLSLShaderFile,GUI.HLSLshaderFileName);
+		lstrcpy(prevGLSLvertexShaderFile,GUI.GLSLvertexShaderFileName);
+		lstrcpy(prevGLSLfragmentShaderFile,GUI.GLSLfragmentShaderFileName);
 
-		sprintf(s,"Current: %dx%d %dbit %dHz",GUI.FullscreenMode.width,GUI.FullscreenMode.height,GUI.FullscreenMode.depth,GUI.FullscreenMode.rate);
+
+		_stprintf(s,TEXT("Current: %dx%d %dbit %dHz"),GUI.FullscreenMode.width,GUI.FullscreenMode.height,GUI.FullscreenMode.depth,GUI.FullscreenMode.rate);
 		SendDlgItemMessage(hDlg,IDC_CURRMODE,WM_SETTEXT,0,(LPARAM)s);
 
 		if(GUI.DoubleBuffered)
@@ -6945,13 +6908,10 @@ int CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			SendDlgItemMessage(hDlg, IDC_STRETCH, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
 		}
 
-
-
-
 		if(GUI.AspectRatio)
 			SendDlgItemMessage(hDlg, IDC_ASPECT, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
-		SendDlgItemMessage(hDlg,IDC_ASPECTDROP,CB_ADDSTRING,0,(LPARAM)"8:7");
-		SendDlgItemMessage(hDlg,IDC_ASPECTDROP,CB_ADDSTRING,0,(LPARAM)"4:3");
+		SendDlgItemMessage(hDlg,IDC_ASPECTDROP,CB_ADDSTRING,0,(LPARAM)TEXT("8:7"));
+		SendDlgItemMessage(hDlg,IDC_ASPECTDROP,CB_ADDSTRING,0,(LPARAM)TEXT("4:3"));
 		switch(GUI.AspectWidth) {
 			case 256:
 				SendDlgItemMessage(hDlg,IDC_ASPECTDROP,CB_SETCURSEL,(WPARAM)0,0);
@@ -6960,7 +6920,7 @@ int CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				SendDlgItemMessage(hDlg,IDC_ASPECTDROP,CB_SETCURSEL,(WPARAM)1,0);
 				break;
 			default:
-				SendDlgItemMessage(hDlg,IDC_ASPECTDROP,CB_ADDSTRING,0,(LPARAM)"Custom");
+				SendDlgItemMessage(hDlg,IDC_ASPECTDROP,CB_ADDSTRING,0,(LPARAM)TEXT("Custom"));
 				SendDlgItemMessage(hDlg,IDC_ASPECTDROP,CB_SETCURSEL,(WPARAM)2,0);
 				break;
 		}
@@ -6985,24 +6945,40 @@ int CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		SendDlgItemMessage(hDlg, IDC_SPIN_MAX_SKIP_DISP, UDM_SETPOS,0, Settings.AutoMaxSkipFrames);
 		SendDlgItemMessage(hDlg, IDC_SPIN_MAX_SKIP_DISP_FIXED, UDM_SETRANGE, 0, MAKELPARAM((short)59, (short)0));
 		SendDlgItemMessage(hDlg, IDC_SPIN_MAX_SKIP_DISP_FIXED, UDM_SETPOS,0, Settings.SkipFrames==AUTO_FRAMERATE?0:Settings.SkipFrames);
-		
+
+		if(GUI.shaderEnabled) {
+			SendDlgItemMessage(hDlg, IDC_SHADER_ENABLED, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
+			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_HLSL_FILE),TRUE);
+			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_HLSL_BROWSE),TRUE);
+			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_FRAGMENT_FILE),TRUE);
+			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_FRAGMENT_BROWSE),TRUE);
+			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_VERTEX_FILE),TRUE);
+			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_VERTEX_BROWSE),TRUE);
+		}
+		SetDlgItemText(hDlg,IDC_SHADER_HLSL_FILE,GUI.HLSLshaderFileName);
+		SetDlgItemText(hDlg,IDC_SHADER_GLSL_VERTEX_FILE,GUI.GLSLvertexShaderFileName);
+		SetDlgItemText(hDlg,IDC_SHADER_GLSL_FRAGMENT_FILE,GUI.GLSLfragmentShaderFileName);
+
+		lpfnOldWndProc = (WNDPROC)SetWindowLongPtr(GetDlgItem(hDlg,IDC_SHADER_GROUP),GWLP_WNDPROC,(LONG_PTR)GroupBoxCheckBoxTitle);
+
 		EnableWindow(GetDlgItem(hDlg, IDC_ASPECT), GUI.Stretch);
 
-		SendDlgItemMessage(hDlg,IDC_OUTPUTMETHOD,CB_ADDSTRING,0,(LPARAM)"DirectDraw");
-		SendDlgItemMessage(hDlg,IDC_OUTPUTMETHOD,CB_ADDSTRING,0,(LPARAM)"Direct3D");
+		SendDlgItemMessage(hDlg,IDC_OUTPUTMETHOD,CB_ADDSTRING,0,(LPARAM)TEXT("DirectDraw"));
+		SendDlgItemMessage(hDlg,IDC_OUTPUTMETHOD,CB_ADDSTRING,0,(LPARAM)TEXT("Direct3D"));
+		SendDlgItemMessage(hDlg,IDC_OUTPUTMETHOD,CB_ADDSTRING,0,(LPARAM)TEXT("OpenGL"));
 		SendDlgItemMessage(hDlg,IDC_OUTPUTMETHOD,CB_SETCURSEL,(WPARAM)GUI.outputMethod,0);
 		// add all the GUI.Scale filters to the combo box
 		for(int filter = 0 ; filter < (int)NUM_FILTERS ; filter++)
 		{
 			strcpy(temp,GetFilterName((RenderFilter)filter));
-			SendDlgItemMessage(hDlg,IDC_FILTERBOX,CB_ADDSTRING,0,(LPARAM) (LPCTSTR)temp);
+			SendDlgItemMessageA(hDlg,IDC_FILTERBOX,CB_ADDSTRING,0,(LPARAM) (LPCTSTR)temp);
 		}
 		for(int filter = 0 ; filter < (int)NUM_FILTERS ; filter++)
 		{
 			if(GetFilterHiResSupport((RenderFilter)filter))
 			{
 				strcpy(temp,GetFilterName((RenderFilter)filter));
-				SendDlgItemMessage(hDlg,IDC_FILTERBOX2,CB_ADDSTRING,0,(LPARAM) (LPCTSTR)temp);
+				SendDlgItemMessageA(hDlg,IDC_FILTERBOX2,CB_ADDSTRING,0,(LPARAM) (LPCTSTR)temp);
 			}
 		}
 
@@ -7136,6 +7112,79 @@ int CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				UpdateWindow(GUI.hWnd);
 			}
 			break;
+		case IDC_SHADER_ENABLED:
+			GUI.shaderEnabled = (bool)(IsDlgButtonChecked(hDlg,IDC_SHADER_ENABLED)==BST_CHECKED);
+			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GROUP),GUI.shaderEnabled);
+			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_HLSL_FILE),GUI.shaderEnabled);
+			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_HLSL_BROWSE),GUI.shaderEnabled);
+			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_VERTEX_FILE),GUI.shaderEnabled);
+			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_VERTEX_BROWSE),GUI.shaderEnabled);
+			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_FRAGMENT_FILE),GUI.shaderEnabled);
+			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_FRAGMENT_BROWSE),GUI.shaderEnabled);
+
+			GetDlgItemText(hDlg,IDC_SHADER_HLSL_FILE,GUI.HLSLshaderFileName,MAX_PATH);
+			GetDlgItemText(hDlg,IDC_SHADER_GLSL_VERTEX_FILE,GUI.GLSLvertexShaderFileName,MAX_PATH);
+			GetDlgItemText(hDlg,IDC_SHADER_GLSL_FRAGMENT_FILE,GUI.GLSLfragmentShaderFileName,MAX_PATH);
+			WinDisplayApplyChanges();
+			WinRefreshDisplay();
+			break;
+		case IDC_SHADER_HLSL_BROWSE:
+			GetDlgItemText(hDlg,IDC_SHADER_HLSL_FILE,openFileName,MAX_PATH);
+			ZeroMemory((LPVOID)&ofn, sizeof(OPENFILENAME));
+
+			ofn.lStructSize = sizeof(OPENFILENAME);
+			ofn.hwndOwner = hDlg;
+			ofn.lpstrFilter = TEXT("Effect Files\0*.fx\0All Files\0*.*\0\0");			
+			ofn.lpstrFile = openFileName;
+			ofn.lpstrTitle = TEXT("Select Shader");
+			ofn.lpstrDefExt = TEXT("fx");
+			ofn.nMaxFile = MAX_PATH;
+			ofn.Flags = OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+			if(GetOpenFileName(&ofn)) {
+				SetDlgItemText(hDlg,IDC_SHADER_HLSL_FILE,openFileName);
+				lstrcpy(GUI.HLSLshaderFileName,openFileName);
+				WinDisplayApplyChanges();
+				WinRefreshDisplay();
+			}
+			break;
+		case IDC_SHADER_GLSL_VERTEX_BROWSE:
+			GetDlgItemText(hDlg,IDC_SHADER_GLSL_VERTEX_FILE,openFileName,MAX_PATH);
+			ZeroMemory((LPVOID)&ofn, sizeof(OPENFILENAME));
+
+			ofn.lStructSize = sizeof(OPENFILENAME);
+			ofn.hwndOwner = hDlg;
+			ofn.lpstrFilter = TEXT("All Files\0*.*\0\0");			
+			ofn.lpstrFile = openFileName;
+			ofn.lpstrTitle = TEXT("Select Shader");
+			ofn.lpstrDefExt = TEXT("*.*");
+			ofn.nMaxFile = MAX_PATH;
+			ofn.Flags = OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+			if(GetOpenFileName(&ofn)) {
+				SetDlgItemText(hDlg,IDC_SHADER_GLSL_VERTEX_FILE,openFileName);
+				lstrcpy(GUI.GLSLvertexShaderFileName,openFileName);
+				WinDisplayApplyChanges();
+				WinRefreshDisplay();
+			}
+			break;
+		case IDC_SHADER_GLSL_FRAGMENT_BROWSE:
+			GetDlgItemText(hDlg,IDC_SHADER_GLSL_FRAGMENT_FILE,openFileName,MAX_PATH);
+			ZeroMemory((LPVOID)&ofn, sizeof(OPENFILENAME));
+
+			ofn.lStructSize = sizeof(OPENFILENAME);
+			ofn.hwndOwner = hDlg;
+			ofn.lpstrFilter = TEXT("All Files\0*.*\0\0");			
+			ofn.lpstrFile = openFileName;
+			ofn.lpstrTitle = TEXT("Select Shader");
+			ofn.lpstrDefExt = TEXT("*.*");
+			ofn.nMaxFile = MAX_PATH;
+			ofn.Flags = OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+			if(GetOpenFileName(&ofn)) {
+				SetDlgItemText(hDlg,IDC_SHADER_GLSL_FRAGMENT_FILE,openFileName);
+				lstrcpy(GUI.GLSLfragmentShaderFileName,openFileName);
+				WinDisplayApplyChanges();
+				WinRefreshDisplay();
+			}
+			break;
 		case IDC_FILTERBOX:
 			if(HIWORD(wParam)==CBN_SELCHANGE) {
 				int scale = (int)SendDlgItemMessage(hDlg,IDC_FILTERBOX,CB_GETCURSEL,0,0);
@@ -7162,7 +7211,7 @@ int CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 checkUpdateFilterBox2:
 				{
 					char textOriginal [256];
-					SendMessage(GetDlgItem(hDlg, IDC_FILTERBOX), WM_GETTEXT, 256,(LPARAM)textOriginal);
+					SendMessageA(GetDlgItem(hDlg, IDC_FILTERBOX), WM_GETTEXT, 256,(LPARAM)textOriginal);
 					int count = SendDlgItemMessage(hDlg,IDC_FILTERBOX2,CB_GETCOUNT,0,0);
 //					int scale = GUI.Scale;
 					bool switched = false;
@@ -7178,11 +7227,11 @@ checkUpdateFilterBox2:
 							strcpy(textOriginal, GetFilterName(filter));
 						}
 						for(int i=0; i<count && !switched; i++){
-							int textLen = SendDlgItemMessage(hDlg,IDC_FILTERBOX2,CB_GETLBTEXTLEN,(WPARAM)i,0);
+							int textLen = SendDlgItemMessageA(hDlg,IDC_FILTERBOX2,CB_GETLBTEXTLEN,(WPARAM)i,0);
 							char* text = new char[textLen+1];
-							SendDlgItemMessage(hDlg,IDC_FILTERBOX2,CB_GETLBTEXT,(WPARAM)i,(LPARAM)text);
+							SendDlgItemMessageA(hDlg,IDC_FILTERBOX2,CB_GETLBTEXT,(WPARAM)i,(LPARAM)text);
 							if(!stricmp(textOriginal, text)){
-								SendDlgItemMessage(hDlg,IDC_FILTERBOX2,CB_SETCURSEL,(WPARAM)i,0);
+								SendDlgItemMessageA(hDlg,IDC_FILTERBOX2,CB_SETCURSEL,(WPARAM)i,0);
 								switched = true;
 							}
 							delete[] text;
@@ -7258,6 +7307,8 @@ updateFilterBox2:
 
 			GUI.FullscreenMode = dm[index];
 
+			GetDlgItemText(hDlg,IDC_SHADER_HLSL_FILE,GUI.HLSLshaderFileName,MAX_PATH);
+
 
 			// we might've changed the region that the game draws over
 			// (by turning on "maintain aspect ratio", or turning on "extend height" when "maintain aspect ratio" is already on),
@@ -7307,7 +7358,10 @@ updateFilterBox2:
 				GUI.AspectRatio = prevAspectRatio;
 				GUI.AspectWidth = prevAspectWidth;
 				GUI.HeightExtend = prevHeightExtend;
-
+				GUI.shaderEnabled = prevShaderEnabled;
+				lstrcpy(GUI.HLSLshaderFileName,prevHLSLShaderFile);
+				lstrcpy(GUI.GLSLvertexShaderFileName,prevGLSLvertexShaderFile);
+				lstrcpy(GUI.GLSLfragmentShaderFileName,prevGLSLfragmentShaderFile);
 			}	
 
 			EndDialog(hDlg,0);
@@ -7350,7 +7404,7 @@ SJoyState JoystickF [16];
 
 
 #ifdef NETPLAY_SUPPORT
-int CALLBACK DlgNPProgress(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK DlgNPProgress(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	SendDlgItemMessage(hDlg,IDC_NPPROGRESS,PBM_SETRANGE,0,(LPARAM)MAKELPARAM (0, 100));
 	SendDlgItemMessage(hDlg,IDC_NPPROGRESS,PBM_SETPOS,(WPARAM)(int)NetPlay.PercentageComplete,0);
@@ -7358,9 +7412,9 @@ int CALLBACK DlgNPProgress(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	return false;
 }
 #endif
-int CALLBACK DlgInputConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK DlgInputConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	char temp[256];
+	TCHAR temp[256];
 	short C;
 	int i, which;
 	static int index=0;
@@ -7418,13 +7472,13 @@ switch(msg)
 
 		for(i=1;i<6;i++)
 		{
-			sprintf(temp,INPUTCONFIG_JPCOMBO,i);
+			_stprintf(temp,INPUTCONFIG_JPCOMBO,i);
 			SendDlgItemMessage(hDlg,IDC_JPCOMBO,CB_ADDSTRING,0,(LPARAM)(LPCTSTR)temp);
 		}
 
 		for(i=6;i<11;i++)
 		{
-			sprintf(temp,INPUTCONFIG_JPCOMBO INPUTCONFIG_LABEL_CONTROLLER_TURBO_PANEL_MOD,i-5);
+			_stprintf(temp,INPUTCONFIG_JPCOMBO INPUTCONFIG_LABEL_CONTROLLER_TURBO_PANEL_MOD,i-5);
 			SendDlgItemMessage(hDlg,IDC_JPCOMBO,CB_ADDSTRING,0,(LPARAM)(LPCTSTR)temp);
 		}
 
@@ -7704,8 +7758,8 @@ static void set_hotkeyinfo(HWND hDlg)
 	case 3:
 		for(int i = 0 ; i < 10 ; i++)
 		{
-			char temp [64];
-			sprintf(temp, "Select Slot %d", i);
+			TCHAR temp [64];
+			_stprintf(temp, TEXT("Select Slot %d"), i);
 			SetDlgItemText(hDlg,IDC_LABEL_HK1+i,temp);
 		}
 		for(int i = 10 ; i < 13 ; i++)
@@ -7716,7 +7770,7 @@ static void set_hotkeyinfo(HWND hDlg)
 }
 
 // DlgHotkeyConfig
-int CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK DlgHotkeyConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	int i, which;
 	static int index=0;
@@ -7744,8 +7798,8 @@ switch(msg)
 		// insert hotkey page list items
 		for(i=1 ; i <= 4 ; i++)
 		{
-			char temp[256];
-			sprintf(temp,HOTKEYS_HKCOMBO,i);
+			TCHAR temp[256];
+			_stprintf(temp,HOTKEYS_HKCOMBO,i);
 			SendDlgItemMessage(hDlg,IDC_HKCOMBO,CB_ADDSTRING,0,(LPARAM)(LPCTSTR)temp);
 		}
 
@@ -7940,23 +7994,23 @@ switch(msg)
 
 
 template<typename IntType>
-int ScanAddress(const char* str, IntType& value)
+int ScanAddress(const TCHAR* str, IntType& value)
 {
 	int ret = 0;
-	if(tolower(*str) == 's')
+	if(_totlower(*str) == TEXT('s'))
 	{
-		ret = sscanf(str+1, "%x", &value);
+		ret = _stscanf(str+1, TEXT("%x"), &value);
 		value += 0x7E0000 + 0x20000;
 	}
-	else if(tolower(*str) == 'i')
+	else if(_totlower(*str) == TEXT('i'))
 	{
-		ret = sscanf(str+1, "%x", &value);
+		ret = _stscanf(str+1, TEXT("%x"), &value);
 		value += 0x7E0000 + 0x30000;
 	}
 	else
 	{
-		int plus = (*str == '0' && tolower(str[1]) == 'x') ? 2 : 0;
-		ret = sscanf(str+plus, "%x", &value);
+		int plus = (*str == TEXT('0') && _totlower(str[1]) == TEXT('x')) ? 2 : 0;
+		ret = _stscanf(str+plus, TEXT("%x"), &value);
 	}
 	return ret;
 }
@@ -7979,7 +8033,7 @@ DWORD* state;
 						a.cchTextMax=e; \
 						ListView_GetItem(GetDlgItem(hDlg, b), &a);
 
-int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static bool internal_change;
 	static bool has_sel;
@@ -7999,8 +8053,8 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			SendDlgItemMessage(hDlg, IDC_CHEAT_BYTE, EM_LIMITTEXT, 3, 0);
 
 			LVCOLUMN col;
-			char temp[32];
-			strcpy(temp,SEARCH_COLUMN_ADDRESS);
+			TCHAR temp[32];
+			lstrcpy(temp,SEARCH_COLUMN_ADDRESS);
 			ZeroMemory(&col, sizeof(LVCOLUMN));
 			col.mask=LVCF_FMT|LVCF_ORDER|LVCF_TEXT|LVCF_WIDTH;
 			col.fmt=LVCFMT_LEFT;
@@ -8011,7 +8065,7 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 			ListView_InsertColumn(GetDlgItem(hDlg,IDC_CHEAT_LIST),    0,   &col);
 
-			strcpy(temp,SEARCH_COLUMN_VALUE);
+			lstrcpy(temp,SEARCH_COLUMN_VALUE);
 			ZeroMemory(&col, sizeof(LVCOLUMN));
 			col.mask=LVCF_FMT|LVCF_ORDER|LVCF_TEXT|LVCF_WIDTH|LVCF_SUBITEM;
 			col.fmt=LVCFMT_LEFT;
@@ -8023,7 +8077,7 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 			ListView_InsertColumn(GetDlgItem(hDlg,IDC_CHEAT_LIST),    1,   &col);
 
-			strcpy(temp,SEARCH_COLUMN_DESCRIPTION);
+			lstrcpy(temp,SEARCH_COLUMN_DESCRIPTION);
 			ZeroMemory(&col, sizeof(LVCOLUMN));
 			col.mask=LVCF_FMT|LVCF_ORDER|LVCF_TEXT|LVCF_WIDTH|LVCF_SUBITEM;
 			col.fmt=LVCFMT_LEFT;
@@ -8041,9 +8095,9 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			uint32 counter;
 			for(counter=0; counter<Cheat.num_cheats; counter++)
 			{
-				char buffer[7];
+				TCHAR buffer[22];
 				int curr_idx=-1;
-				sprintf(buffer, "%06X", Cheat.c[counter].address);
+				_stprintf(buffer, TEXT("%06X"), Cheat.c[counter].address);
 				LVITEM lvi;
 				ZeroMemory(&lvi, sizeof(LVITEM));
 				lvi.mask=LVIF_TEXT;
@@ -8061,7 +8115,7 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				ct.index[counter]=curr_idx;
 				ct.state[counter]=Untouched;
 
-				sprintf(buffer, "%02X", Cheat.c[counter].byte);
+				_stprintf(buffer, TEXT("%02X"), Cheat.c[counter].byte);
 				ZeroMemory(&lvi, sizeof(LVITEM));
 				lvi.iItem=curr_idx;
 				lvi.iSubItem=1;
@@ -8070,11 +8124,12 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				lvi.cchTextMax=3;
 				SendDlgItemMessage(hDlg,IDC_CHEAT_LIST, LVM_SETITEM, 0, (LPARAM)&lvi);
 
+				lstrcpy(buffer,_tFromChar(Cheat.c[counter].name));
 				ZeroMemory(&lvi, sizeof(LVITEM));
 				lvi.iItem=curr_idx;
 				lvi.iSubItem=2;
 				lvi.mask=LVIF_TEXT;
-				lvi.pszText=Cheat.c[counter].name;
+				lvi.pszText=buffer;
 				lvi.cchTextMax=23;
 				SendDlgItemMessage(hDlg,IDC_CHEAT_LIST, LVM_SETITEM, 0, (LPARAM)&lvi);
 
@@ -8109,20 +8164,20 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						new_sel=3;
 						//change
-						char buf[25];
+						TCHAR buf[25];
 						LV_ITEM lvi;
 
 						ITEM_QUERY (lvi, IDC_CHEAT_LIST, 0, buf, 7);
 
 						SetDlgItemText(hDlg, IDC_CHEAT_ADDRESS, lvi.pszText);
 
-						ITEM_QUERY (lvi, IDC_CHEAT_LIST, 1, &buf[strlen(buf)], 3);
+						ITEM_QUERY (lvi, IDC_CHEAT_LIST, 1, &buf[lstrlen(buf)], 3);
 
 						SetDlgItemText(hDlg, IDC_CHEAT_CODE, buf);
-						char temp[4];
+						TCHAR temp[4];
 						int q;
-						sscanf(lvi.pszText, "%02X", &q);
-						sprintf(temp, "%d", q);
+						_stscanf(lvi.pszText, TEXT("%02X"), &q);
+						_stprintf(temp, TEXT("%d"), q);
 						SetDlgItemText(hDlg, IDC_CHEAT_BYTE, temp);
 
 						ITEM_QUERY (lvi, IDC_CHEAT_LIST, 2, buf, 24);
@@ -8165,7 +8220,8 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			case IDC_ADD_CHEAT:
 				{
 					char temp[24];
-					GetDlgItemText(hDlg, IDC_CHEAT_CODE, temp, 23);
+					TCHAR tempDesc[24];
+					GetDlgItemTextA(hDlg, IDC_CHEAT_CODE, temp, 23);
 					if(strcmp(temp, ""))
 					{
 						int j;
@@ -8193,9 +8249,9 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 						for(j=0; j<count; j++)
 						{
-							char buffer[7];
+							TCHAR buffer[7];
 							int curr_idx=-1;
-							sprintf(buffer, "%06X", addy);
+							_stprintf(buffer, TEXT("%06X"), addy);
 							LVITEM lvi;
 							ZeroMemory(&lvi, sizeof(LVITEM));
 							lvi.mask=LVIF_TEXT;
@@ -8212,7 +8268,7 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 							}
 
 
-							sprintf(buffer, "%02X", byte[j]);
+							_stprintf(buffer, TEXT("%02X"), byte[j]);
 							ZeroMemory(&lvi, sizeof(LVITEM));
 							lvi.iItem=curr_idx;
 							lvi.iSubItem=1;
@@ -8221,13 +8277,14 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 							lvi.cchTextMax=2;
 							SendDlgItemMessage(hDlg,IDC_CHEAT_LIST, LVM_SETITEM, 0, (LPARAM)&lvi);
 
-							GetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, temp, 23);
+
+							GetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, tempDesc, 23);
 
 							ZeroMemory(&lvi, sizeof(LVITEM));
 							lvi.iItem=curr_idx;
 							lvi.iSubItem=2;
 							lvi.mask=LVIF_TEXT;
-							lvi.pszText=temp;
+							lvi.pszText=tempDesc;
 							lvi.cchTextMax=23;
 							SendDlgItemMessage(hDlg,IDC_CHEAT_LIST, LVM_SETITEM, 0, (LPARAM)&lvi);
 
@@ -8239,8 +8296,8 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					else
 					{
 						uint8 byte;
-						char buffer[7];
-						char buffer2[7];
+						TCHAR buffer[7];
+						TCHAR buffer2[7];
 
 						GetDlgItemText(hDlg, IDC_CHEAT_ADDRESS, buffer, 7);
 						GetDlgItemText(hDlg, IDC_CHEAT_BYTE, buffer2, 7);
@@ -8256,11 +8313,11 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 						int scanres;
 						if(buffer2[0]=='$')
-							sscanf(buffer2,"$%2X", (unsigned int*)&scanres);
-						else sscanf(buffer2,"%d", &scanres);
+							_stscanf(buffer2,TEXT("$%2X"), (unsigned int*)&scanres);
+						else _stscanf(buffer2,TEXT("%d"), &scanres);
 						byte = (uint8)(scanres & 0xff);
 
-						sprintf(buffer2, "%02X", byte);
+						_stprintf(buffer2, TEXT("%02X"), byte);
 
 						ZeroMemory(&lvi, sizeof(LVITEM));
 						lvi.iItem=curr_idx;
@@ -8270,13 +8327,13 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						lvi.cchTextMax=2;
 						SendDlgItemMessage(hDlg,IDC_CHEAT_LIST, LVM_SETITEM, 0, (LPARAM)&lvi);
 
-						GetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, temp, 23);
+						GetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, tempDesc, 23);
 
 						ZeroMemory(&lvi, sizeof(LVITEM));
 						lvi.iItem=curr_idx;
 						lvi.iSubItem=2;
 						lvi.mask=LVIF_TEXT;
-						lvi.pszText=temp;
+						lvi.pszText=tempDesc;
 						lvi.cchTextMax=23;
 						SendDlgItemMessage(hDlg,IDC_CHEAT_LIST, LVM_SETITEM, 0, (LPARAM)&lvi);
 					}
@@ -8284,9 +8341,11 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				break;
 			case IDC_UPDATE_CHEAT:
 				{
-									char temp[24];
+					TCHAR temp[24];
+					char code[24];
 					GetDlgItemText(hDlg, IDC_CHEAT_CODE, temp, 23);
-					if(strcmp(temp, ""))
+					strcpy(code,_tToChar(temp));
+					if(strcmp(code, ""))
 					{
 						int j;
 						bool skip=false;
@@ -8294,7 +8353,7 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						uint32 addy;
 						uint8 byte[3];
 						//test game genie
-						if (NULL==S9xGameGenieToRaw (temp, addy, byte[0]))
+						if (NULL==S9xGameGenieToRaw (code, addy, byte[0]))
 							skip=true;
 						//test goldfinger
 
@@ -8304,7 +8363,7 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 						if(!skip)
 						{
-							if(NULL==S9xProActionReplayToRaw(temp, addy, byte[0]))
+							if(NULL==S9xProActionReplayToRaw(code, addy, byte[0]))
 								skip=true;
 						}
 
@@ -8319,9 +8378,9 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 						for(j=0; j<count; j++)
 						{
-							char buffer[7];
+							TCHAR buffer[7];
 //							int curr_idx=-1;
-							sprintf(buffer, "%06X", addy);
+							_stprintf(buffer, TEXT("%06X"), addy);
 							LVITEM lvi;
 							ZeroMemory(&lvi, sizeof(LVITEM));
 							lvi.mask=LVIF_TEXT;
@@ -8330,7 +8389,7 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 							lvi.iItem=sel_idx;
 							ListView_SetItem(GetDlgItem(hDlg,IDC_CHEAT_LIST), &lvi);
 
-							sprintf(buffer, "%02X", byte[j]);
+							_stprintf(buffer, TEXT("%02X"), byte[j]);
 							ZeroMemory(&lvi, sizeof(LVITEM));
 							lvi.iItem=sel_idx;
 							lvi.iSubItem=1;
@@ -8357,7 +8416,7 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					else
 					{
 												uint8 byte;
-						char buffer[7];
+						TCHAR buffer[7];
 
 						GetDlgItemText(hDlg, IDC_CHEAT_ADDRESS, buffer, 7);
 						int j;
@@ -8380,12 +8439,12 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						GetDlgItemText(hDlg, IDC_CHEAT_BYTE, buffer, 7);
 
 						int scanres;
-						if(buffer[0]=='$')
-							sscanf(buffer,"$%2X", (unsigned int*)&scanres);
-						else sscanf(buffer,"%d", &scanres);
+						if(buffer[0]==TEXT('$'))
+							_stscanf(buffer,TEXT("$%2X"), (unsigned int*)&scanres);
+						else _stscanf(buffer,TEXT("%d"), &scanres);
 						byte = (uint8)(scanres & 0xff);
 
-						sprintf(buffer, "%02X", byte);
+						_stprintf(buffer, TEXT("%02X"), byte);
 
 						ZeroMemory(&lvi, sizeof(LVITEM));
 						lvi.iItem=sel_idx;
@@ -8427,10 +8486,10 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				break;
 			case IDC_CLEAR_CHEATS:
 				internal_change = true;
-				SetDlgItemText(hDlg,IDC_CHEAT_CODE,"");
-				SetDlgItemText(hDlg,IDC_CHEAT_ADDRESS,"");
-				SetDlgItemText(hDlg,IDC_CHEAT_BYTE,"");
-				SetDlgItemText(hDlg,IDC_CHEAT_DESCRIPTION,"");
+				SetDlgItemText(hDlg,IDC_CHEAT_CODE,TEXT(""));
+				SetDlgItemText(hDlg,IDC_CHEAT_ADDRESS,TEXT(""));
+				SetDlgItemText(hDlg,IDC_CHEAT_BYTE,TEXT(""));
+				SetDlgItemText(hDlg,IDC_CHEAT_DESCRIPTION,TEXT(""));
 				ListView_SetItemState(GetDlgItem(hDlg, IDC_CHEAT_LIST),sel_idx, 0, LVIS_SELECTED|LVIS_FOCUSED);
 				ListView_SetSelectionMark(GetDlgItem(hDlg, IDC_CHEAT_LIST), -1);
 				sel_idx=-1;
@@ -8470,8 +8529,8 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 						if(has_sel&&!new_sel&&strlen(buffer2)!=0)
 						{
-							SetDlgItemText(hDlg, IDC_CHEAT_ADDRESS, "");
-							SetDlgItemText(hDlg, IDC_CHEAT_BYTE, "");
+							SetDlgItemText(hDlg, IDC_CHEAT_ADDRESS, TEXT(""));
+							SetDlgItemText(hDlg, IDC_CHEAT_BYTE, TEXT(""));
 
 						}
 
@@ -8545,7 +8604,7 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						SendMessage(GetDlgItem(hDlg, IDC_CHEAT_BYTE), WM_GETTEXT, 4,(LPARAM)buffer);
 
 						if(has_sel&&!new_sel&&0!=strlen(buffer2))
-							SetDlgItemText(hDlg, IDC_CHEAT_CODE, "");
+							SetDlgItemText(hDlg, IDC_CHEAT_CODE, TEXT(""));
 
 						if(new_sel!=0)
 							new_sel--;
@@ -8571,8 +8630,8 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				{
 					uint32 j, k;
 					long index;
-					char buffer[4];
-					char buffer2[4];
+					TCHAR buffer[4];
+					TCHAR buffer2[4];
 					POINT point;
 					switch(HIWORD(wParam))
 					{
@@ -8588,19 +8647,19 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						index = SendMessage((HWND)lParam,(UINT) EM_CHARFROMPOS, 0, (LPARAM) ((point.x&0x0000FFFF) | (((point.y&0x0000FFFF))<<16)));
 
 						k=0;
-						for(j=0; j<strlen(buffer);j++)
+						for(j=0; j<lstrlen(buffer);j++)
 						{
-							if( (buffer[j]>='0' && buffer[j]<='9') || (buffer[j]>='A' && buffer[j]<='F') || buffer[j]=='$')
+							if( (buffer[j]>=TEXT('0') && buffer[j]<=TEXT('9')) || (buffer[j]>=TEXT('A') && buffer[j]<=TEXT('F')) || buffer[j]==TEXT('$'))
 							{
 								buffer2[k]=buffer[j];
 								k++;
 							}
 							else index --;
 						}
-						buffer2[k]='\0';
+						buffer2[k]=TEXT('\0');
 
-						if(has_sel&&!new_sel&&0!=strlen(buffer2))
-							SetDlgItemText(hDlg, IDC_CHEAT_CODE, "");
+						if(has_sel&&!new_sel&&0!=lstrlen(buffer2))
+							SetDlgItemText(hDlg, IDC_CHEAT_CODE, TEXT(""));
 
 						if(new_sel!=0)
 							new_sel--;
@@ -8610,7 +8669,7 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						SendMessage((HWND)lParam,  (UINT) EM_SETSEL, (WPARAM) (index), index);
 
 						SendMessage(GetDlgItem(hDlg, IDC_CHEAT_ADDRESS), WM_GETTEXT, 7,(LPARAM)buffer);
-						if(strlen(buffer2)!=0 && strlen(buffer) !=0)
+						if(lstrlen(buffer2)!=0 && lstrlen(buffer) !=0)
 						{
 							if(has_sel)
 								EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), true);
@@ -8650,7 +8709,7 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 										//update me!
 										//get these!
 
-										char buf[25];
+										TCHAR buf[25];
 										LV_ITEM lvi;
 										ZeroMemory(&lvi, sizeof(LV_ITEM));
 										lvi.iItem= k;
@@ -8672,7 +8731,7 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 										ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
 
-										sscanf(lvi.pszText, "%02X", &scanned);
+										_stscanf(lvi.pszText, TEXT("%02X"), &scanned);
 										Cheat.c[l].byte = (uint8)(scanned & 0xff);
 
 										ZeroMemory(&lvi, sizeof(LV_ITEM));
@@ -8684,7 +8743,7 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 										ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
 
-										strcpy(Cheat.c[l].name,lvi.pszText);
+										strcpy(Cheat.c[l].name,_tToChar(lvi.pszText));
 
 										Cheat.c[l].enabled=ListView_GetCheckState(GetDlgItem(hDlg, IDC_CHEAT_LIST),k);
 
@@ -8699,7 +8758,7 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 								uint32 address;
 								uint8 byte;
 								bool8 enabled;
-								char buf[25];
+								TCHAR buf[25];
 								LV_ITEM lvi;
 								ZeroMemory(&lvi, sizeof(LV_ITEM));
 								lvi.iItem= k;
@@ -8721,7 +8780,7 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 								ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
 
-								sscanf(lvi.pszText, "%02X", &scanned);
+								_stscanf(lvi.pszText, TEXT("%02X"), &scanned);
 								byte = (uint8)(scanned & 0xff);
 
 								enabled=ListView_GetCheckState(GetDlgItem(hDlg, IDC_CHEAT_LIST),k);
@@ -8737,13 +8796,13 @@ int CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 								ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
 
-								strcpy(Cheat.c[Cheat.num_cheats-1].name, lvi.pszText);
+								strcpy(Cheat.c[Cheat.num_cheats-1].name, _tToChar(lvi.pszText));
 
 
 							}
 						}
 
-						for(l=(int)Cheat.num_cheats;l>=0;l--)
+						for(l=(int)Cheat.num_cheats-1;l>=0;l--)
 						{
 							if(ct.state[l]==Deleted)
 							{
@@ -8843,7 +8902,7 @@ bool TestRange(int val_type, S9xCheatDataSize bytes,  uint32 value)
 }
 
 
-int CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static S9xCheatDataSize bytes;
 	static int val_type;
@@ -8936,8 +8995,8 @@ int CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			}
 
 			LVCOLUMN col;
-			char temp[32];
-			strcpy(temp,"Address");
+			TCHAR temp[32];
+			lstrcpy(temp,TEXT("Address"));
 			ZeroMemory(&col, sizeof(LVCOLUMN));
 			col.mask=LVCF_FMT|LVCF_ORDER|LVCF_TEXT|LVCF_WIDTH;
 			col.fmt=LVCFMT_LEFT;
@@ -8948,7 +9007,7 @@ int CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 			ListView_InsertColumn(GetDlgItem(hDlg,IDC_ADDYS),   0,   &col);
 
-			strcpy(temp,"Curr. Value");
+			lstrcpy(temp,TEXT("Curr. Value"));
 			ZeroMemory(&col, sizeof(LVCOLUMN));
 			col.mask=LVCF_FMT|LVCF_ORDER|LVCF_TEXT|LVCF_WIDTH|LVCF_SUBITEM;
 			col.fmt=LVCFMT_LEFT;
@@ -8960,7 +9019,7 @@ int CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 			ListView_InsertColumn(GetDlgItem(hDlg,IDC_ADDYS),    1,   &col);
 
-			strcpy(temp,"Prev. Value");
+			lstrcpy(temp,TEXT("Prev. Value"));
 			ZeroMemory(&col, sizeof(LVCOLUMN));
 			col.mask=LVCF_FMT|LVCF_ORDER|LVCF_TEXT|LVCF_WIDTH|LVCF_SUBITEM;
 			col.fmt=LVCFMT_LEFT;
@@ -9022,11 +9081,11 @@ int CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					if(j=nmlvdi->item.iSubItem==0)
 					{
 						if(i < 0x20000)
-							sprintf(buf, "%06X", i+0x7E0000);
+							_stprintf(buf, TEXT("%06X"), i+0x7E0000);
 						else if(i < 0x30000)
-							sprintf(buf, "s%05X", i-0x20000);
+							_stprintf(buf, TEXT("s%05X"), i-0x20000);
 						else
-							sprintf(buf, "i%05X", i-0x30000);
+							_stprintf(buf, TEXT("i%05X"), i-0x30000);
 						nmlvdi->item.pszText=buf;
 						nmlvdi->item.cchTextMax=8;
 					}
@@ -9046,17 +9105,17 @@ int CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						switch(val_type)
 						{
 						case 1:
-							sprintf(buf, "%u", q);
+							_stprintf(buf, TEXT("%u"), q);
 							break;
 						case 3:
 							{
 								switch(bytes)
 								{
 									default:
-									case S9X_8_BITS:sprintf(buf, "%02X", q&0xFF);break;
-									case S9X_16_BITS: sprintf(buf, "%04X", q&0xFFFF); break;
-									case S9X_24_BITS: sprintf(buf, "%06X", q&0xFFFFFF);break;
-									case S9X_32_BITS: sprintf(buf, "%08X", q);break;
+									case S9X_8_BITS:  _stprintf(buf, TEXT("%02X"), q&0xFF);break;
+									case S9X_16_BITS: _stprintf(buf, TEXT("%04X"), q&0xFFFF); break;
+									case S9X_24_BITS: _stprintf(buf, TEXT("%06X"), q&0xFFFFFF);break;
+									case S9X_32_BITS: _stprintf(buf, TEXT("%08X"), q);break;
 								}
 							}
 							break;
@@ -9067,21 +9126,21 @@ int CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 									default:
 									case S9X_8_BITS:
 										if((q-128)<0)
-											sprintf(buf, "%d", q&0xFF);
-										else sprintf(buf, "%d", q-256);
+											_stprintf(buf, TEXT("%d"), q&0xFF);
+										else _stprintf(buf, TEXT("%d"), q-256);
 										break;
 									case S9X_16_BITS:
 										if((q-32768)<0)
-											sprintf(buf, "%d", q&0xFFFF);
-										else sprintf(buf, "%d", q-65536);
+											_stprintf(buf, TEXT("%d"), q&0xFFFF);
+										else _stprintf(buf, TEXT("%d"), q-65536);
 										break;
 									case S9X_24_BITS:
 										if((q-0x800000)<0)
-											sprintf(buf, "%d", q&0xFFFFFF);
-										else sprintf(buf, "%d", q-0x1000000);
+											_stprintf(buf, TEXT("%d"), q&0xFFFFFF);
+										else _stprintf(buf, TEXT("%d"), q-0x1000000);
 										break;
 
-									case S9X_32_BITS: sprintf(buf, "%d", q);break;
+									case S9X_32_BITS: _stprintf(buf, TEXT("%d"), q);break;
 								}
 								break;
 						}
@@ -9104,17 +9163,17 @@ int CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						switch(val_type)
 						{
 						case 1:
-							sprintf(buf, "%u", q);
+							_stprintf(buf, TEXT("%u"), q);
 							break;
 						case 3:
 							{
 								switch(bytes)
 								{
 									default:
-									case S9X_8_BITS:sprintf(buf, "%02X", q&0xFF);break;
-									case S9X_16_BITS: sprintf(buf, "%04X", q&0xFFFF); break;
-									case S9X_24_BITS: sprintf(buf, "%06X", q&0xFFFFFF);break;
-									case S9X_32_BITS: sprintf(buf, "%08X", q);break;
+									case S9X_8_BITS:_stprintf(buf, TEXT("%02X"), q&0xFF);break;
+									case S9X_16_BITS: _stprintf(buf, TEXT("%04X"), q&0xFFFF); break;
+									case S9X_24_BITS: _stprintf(buf, TEXT("%06X"), q&0xFFFFFF);break;
+									case S9X_32_BITS: _stprintf(buf, TEXT("%08X"), q);break;
 								}
 								break;
 							}
@@ -9125,21 +9184,21 @@ int CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 									default:
 									case S9X_8_BITS:
 										if((q-128)<0)
-											sprintf(buf, "%d", q&0xFF);
-										else sprintf(buf, "%d", q-256);
+											_stprintf(buf, TEXT("%d"), q&0xFF);
+										else _stprintf(buf, TEXT("%d"), q-256);
 										break;
 									case S9X_16_BITS:
 										if((q-32768)<0)
-											sprintf(buf, "%d", q&0xFFFF);
-										else sprintf(buf, "%d", q-65536);
+											_stprintf(buf, TEXT("%d"), q&0xFFFF);
+										else _stprintf(buf, TEXT("%d"), q-65536);
 										break;
 									case S9X_24_BITS:
 										if((q-0x800000)<0)
-											sprintf(buf, "%d", q&0xFFFFFF);
-										else sprintf(buf, "%d", q-0x1000000);
+											_stprintf(buf, TEXT("%d"), q&0xFFFFFF);
+										else _stprintf(buf, TEXT("%d"), q-0x1000000);
 										break;
 
-									case S9X_32_BITS: sprintf(buf, "%d", q);break;
+									case S9X_32_BITS: _stprintf(buf, TEXT("%d"), q);break;
 								}
 								break;
 						}
@@ -9184,7 +9243,7 @@ int CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					}
 
 					//This is the string we search for
-					LPCSTR searchstr = pFindInfo->lvfi.psz;
+					const TCHAR *searchstr = pFindInfo->lvfi.psz;
 
 					int startPos = pFindInfo->iStart;
 					//Is startPos outside the list (happens if last item is selected)
@@ -9372,30 +9431,30 @@ int CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 					ScanAddress(buf, cht.address);
 
-					memset(buf, 0, 7);
+					memset(buf, 0, sizeof(TCHAR) * 7);
 					if(val_type==1)
 					{
 						ITEM_QUERY(lvi, IDC_ADDYS, 1, buf, 12);
-						sscanf(buf, "%u", &cht.new_val);
-						memset(buf, 0, 7);
+						_stscanf(buf, TEXT("%u"), &cht.new_val);
+						memset(buf, 0, sizeof(TCHAR) * 7);
 						ITEM_QUERY(lvi, IDC_ADDYS, 2, buf, 12);
-						sscanf(buf, "%u", &cht.saved_val);
+						_stscanf(buf, TEXT("%u"), &cht.saved_val);
 					}
 					else if(val_type==3)
 					{
 						ITEM_QUERY(lvi, IDC_ADDYS, 1, buf, 12);
-						sscanf(buf, "%x", &cht.new_val);
-						memset(buf, 0, 7);
+						_stscanf(buf, TEXT("%x"), &cht.new_val);
+						memset(buf, 0, sizeof(TCHAR) * 7);
 						ITEM_QUERY(lvi, IDC_ADDYS, 2, buf, 12);
-						sscanf(buf, "%x", &cht.saved_val);
+						_stscanf(buf, TEXT("%x"), &cht.saved_val);
 					}
 					else
 					{
 						ITEM_QUERY(lvi, IDC_ADDYS, 1, buf, 12);
-						sscanf(buf, "%d", &cht.new_val);
-						memset(buf, 0, 7);
+						_stscanf(buf, TEXT("%d"), &cht.new_val);
+						memset(buf, 0, sizeof(TCHAR) * 7);
 						ITEM_QUERY(lvi, IDC_ADDYS, 2, buf, 12);
-						sscanf(buf, "%d", &cht.saved_val);
+						_stscanf(buf, TEXT("%d"), &cht.saved_val);
 					}
 					cht.format=val_type;
 					//invoke dialog
@@ -9448,12 +9507,12 @@ int CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			case IDC_C_WATCH:
 				{
 					uint32 address = (uint32)-1;
-					char buf [12];
+					TCHAR buf [12];
 					LVITEM lvi;
 					ITEM_QUERY(lvi, IDC_ADDYS, 0, buf, 7);
 					ScanAddress(buf, address);
 					{
-						memset(buf, 0, 7);
+						memset(buf, 0, sizeof(TCHAR) * 7);
 
 						unsigned int i;
 						for(i = 0 ; i < sizeof(watches)/sizeof(*watches) ; i++)
@@ -9476,7 +9535,7 @@ int CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 						watches[i].format=val_type;
 						watches[i].address=address;
-						strncpy(watches[i].buf,buf,12);
+						strncpy(watches[i].buf,_tToChar(buf),12);
 						if(address < 0x7E0000 + 0x20000)
 							sprintf(watches[i].desc, "%6X", address);
 						else if(address < 0x7E0000 + 0x30000)
@@ -9505,23 +9564,23 @@ int CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			case IDC_C_LOADWATCH:
 				{
 					OPENFILENAME  ofn;
-					char  szFileName[MAX_PATH];
-					char  szPathName[MAX_PATH];
-					strcpy(szFileName, "watches");
-					_fullpath(szPathName, S9xGetDirectory(CHEAT_DIR), MAX_PATH);
+					TCHAR  szFileName[MAX_PATH];
+					TCHAR  szPathName[MAX_PATH];
+					lstrcpy(szFileName, TEXT("watches"));
+					_tfullpath(szPathName, S9xGetDirectoryT(CHEAT_DIR), MAX_PATH);
 
 					ZeroMemory( (LPVOID)&ofn, sizeof(OPENFILENAME) );
 					ofn.lStructSize = sizeof(OPENFILENAME);
 					ofn.hwndOwner = GUI.hWnd;
-					ofn.lpstrFilter = FILE_INFO_TXT_FILE_TYPE "\0*.txt\0" FILE_INFO_ANY_FILE_TYPE "\0*.*\0\0";
+					ofn.lpstrFilter = FILE_INFO_TXT_FILE_TYPE TEXT("\0*.txt\0") FILE_INFO_ANY_FILE_TYPE TEXT("\0*.*\0\0");
 					ofn.lpstrFile = szFileName;
-					ofn.lpstrDefExt = "txt";
+					ofn.lpstrDefExt = TEXT("txt");
 					ofn.nMaxFile = MAX_PATH;
 					ofn.Flags = OFN_HIDEREADONLY | OFN_FILEMUSTEXIST;
 					ofn.lpstrInitialDir = szPathName;
 					if(GetOpenFileName( &ofn ))
 					{
-						FILE *file = fopen(szFileName, "r");
+						FILE *file = _tfopen(szFileName, TEXT("r"));
 						if(file)
 						{
 							unsigned int i;
@@ -9564,23 +9623,23 @@ int CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			case IDC_C_SAVEWATCH:
 				{
 					OPENFILENAME  ofn;
-					char  szFileName[MAX_PATH];
-					char  szPathName[MAX_PATH];
-					strcpy(szFileName, "watches");
-					_fullpath(szPathName, S9xGetDirectory(CHEAT_DIR), MAX_PATH);
+					TCHAR  szFileName[MAX_PATH];
+					TCHAR  szPathName[MAX_PATH];
+					lstrcpy(szFileName, TEXT("watches"));
+					_tfullpath(szPathName, S9xGetDirectoryT(CHEAT_DIR), MAX_PATH);
 
 					ZeroMemory( (LPVOID)&ofn, sizeof(OPENFILENAME) );
 					ofn.lStructSize = sizeof(OPENFILENAME);
 					ofn.hwndOwner = GUI.hWnd;
-					ofn.lpstrFilter = FILE_INFO_TXT_FILE_TYPE "\0*.txt\0" FILE_INFO_ANY_FILE_TYPE "\0*.*\0\0";
+					ofn.lpstrFilter = FILE_INFO_TXT_FILE_TYPE TEXT("\0*.txt\0") FILE_INFO_ANY_FILE_TYPE TEXT("\0*.*\0\0");
 					ofn.lpstrFile = szFileName;
-					ofn.lpstrDefExt = "txt";
+					ofn.lpstrDefExt = TEXT("txt");
 					ofn.nMaxFile = MAX_PATH;
 					ofn.Flags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
 					ofn.lpstrInitialDir = szPathName;
 					if(GetSaveFileName( &ofn ))
 					{
-						FILE *file = fopen(szFileName, "w");
+						FILE *file = _tfopen(szFileName, TEXT("w"));
 						if(file)
 						{
 							for(unsigned int i = 0 ; i < sizeof(watches)/sizeof(*watches) ; i++)
@@ -9674,15 +9733,15 @@ int CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					else
 					{
 						if(val_type==1)
-							ret=_stscanf(buf, "%ul", &value);
+							ret=_stscanf(buf, TEXT("%ul"), &value);
 						else if (val_type==2)
-							ret=_stscanf(buf, "%d", &value);
-						else ret=_stscanf(buf, "%x", &value);
+							ret=_stscanf(buf, TEXT("%d"), &value);
+						else ret=_stscanf(buf, TEXT("%x"), &value);
 
 
 						if(ret!=1||!TestRange(val_type, bytes, value))
 						{
-							MessageBox(hDlg, TEXT(SEARCH_ERR_INVALIDSEARCHVALUE), TEXT(SEARCH_TITLE_CHEATERROR), MB_OK);
+							MessageBox(hDlg, SEARCH_ERR_INVALIDSEARCHVALUE, SEARCH_TITLE_CHEATERROR, MB_OK);
 							return true;
 						}
 
@@ -9732,7 +9791,7 @@ int CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	return false;
 }
 
-int CALLBACK DlgCheatSearchAdd(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK DlgCheatSearchAdd(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static struct ICheat* new_cheat;
 	int ret=-1;
@@ -9743,17 +9802,17 @@ int CALLBACK DlgCheatSearchAdd(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam
 		{
 			TCHAR buf [12];
 			new_cheat=(struct ICheat*)lParam;
-			sprintf(buf, "%06X", new_cheat->address);
+			_stprintf(buf, TEXT("%06X"), new_cheat->address);
 			SetDlgItemText(hDlg, IDC_NC_ADDRESS, buf);
 			switch(new_cheat->format)
 			{
 			default:
 			case 1://UNSIGNED
-				memset(buf,0,12);
-				sprintf(buf, "%u", new_cheat->new_val);
+				memset(buf,0,sizeof(TCHAR) * 12);
+				_stprintf(buf, TEXT("%u"), new_cheat->new_val);
 				SetDlgItemText(hDlg, IDC_NC_CURRVAL, buf);
-				memset(buf,0,12);
-				sprintf(buf, "%u", new_cheat->saved_val);
+				memset(buf,0,sizeof(TCHAR) * 12);
+				_stprintf(buf, TEXT("%u"), new_cheat->saved_val);
 				SetDlgItemText(hDlg, IDC_NC_PREVVAL, buf);
 				SetWindowLong(GetDlgItem(hDlg, IDC_NC_NEWVAL), GWL_STYLE, ES_NUMBER |GetWindowLong(GetDlgItem(hDlg, IDC_NC_NEWVAL),GWL_STYLE));
 				SetWindowLong(GetDlgItem(hDlg, IDC_NC_CURRVAL), GWL_STYLE, ES_NUMBER |GetWindowLong(GetDlgItem(hDlg, IDC_NC_CURRVAL),GWL_STYLE));
@@ -9789,13 +9848,13 @@ int CALLBACK DlgCheatSearchAdd(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam
 				break;
 			case 3:
 				{
-					char formatstring[10];
-					sprintf(formatstring, "%%%02dX",new_cheat->size*2);
-					memset(buf,0,12);
-					sprintf(buf, formatstring, new_cheat->new_val);
+					TCHAR formatstring[10];
+					_stprintf(formatstring, TEXT("%%%02dX"),new_cheat->size*2);
+					memset(buf,0,sizeof(TCHAR) * 12);
+					_stprintf(buf, formatstring, new_cheat->new_val);
 					SetDlgItemText(hDlg, IDC_NC_CURRVAL, buf);
-					memset(buf,0,12);
-					sprintf(buf, formatstring, new_cheat->saved_val);
+					memset(buf,0,sizeof(TCHAR) * 12);
+					_stprintf(buf, formatstring, new_cheat->saved_val);
 					SetDlgItemText(hDlg, IDC_NC_PREVVAL, buf);
 					SendDlgItemMessage(hDlg, IDC_NC_CURRVAL,EM_SETLIMITTEXT, new_cheat->size*2, 0);
 					SendDlgItemMessage(hDlg, IDC_NC_PREVVAL,EM_SETLIMITTEXT, new_cheat->size*2, 0);
@@ -9804,11 +9863,11 @@ int CALLBACK DlgCheatSearchAdd(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam
 				}
 				break; //HEX
 			case 2:
-			memset(buf,0,12);
-			sprintf(buf, "%d", new_cheat->new_val);
+			memset(buf,0,sizeof(TCHAR) * 12);
+			_stprintf(buf, TEXT("%d"), new_cheat->new_val);
 			SetDlgItemText(hDlg, IDC_NC_CURRVAL, buf);
-			memset(buf,0,12);
-			sprintf(buf, "%d", new_cheat->saved_val);
+			memset(buf,0,sizeof(TCHAR) * 12);
+			_stprintf(buf, TEXT("%d"), new_cheat->saved_val);
 			SetDlgItemText(hDlg, IDC_NC_PREVVAL, buf);
 			if(new_cheat->size==1)
 			{
@@ -9878,11 +9937,11 @@ int CALLBACK DlgCheatSearchAdd(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam
 					if(0!=GetDlgItemText(hDlg, IDC_NC_NEWVAL, buf, 12))
 					{
 						if(new_cheat->format==2)
-							ret=sscanf(buf, "%d", &new_cheat->new_val);
+							ret=_stscanf(buf, TEXT("%d"), &new_cheat->new_val);
 						else if(new_cheat->format==1)
-							ret=sscanf(buf, "%u", &new_cheat->new_val);
+							ret=_stscanf(buf, TEXT("%u"), &new_cheat->new_val);
 						else if(new_cheat->format==3)
-							ret=sscanf(buf, "%x", &new_cheat->new_val);
+							ret=_stscanf(buf, TEXT("%x"), &new_cheat->new_val);
 
 						if(ret!=1 || !TestRange(new_cheat->format, tmp, new_cheat->new_val))
 						{
@@ -9897,11 +9956,11 @@ int CALLBACK DlgCheatSearchAdd(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam
 						{
 							int i;
 							if(new_cheat->format==2)
-								ret=sscanf(buf, "%d", &i);
+								ret=_stscanf(buf, TEXT("%d"), &i);
 							else if(new_cheat->format==1)
-								ret=sscanf(buf, "%u", &i);
+								ret=_stscanf(buf, TEXT("%u"), &i);
 							else if(new_cheat->format==3)
-								ret=sscanf(buf, "%x", &i);
+								ret=_stscanf(buf, TEXT("%x"), &i);
 
 							if(ret!=1 || !TestRange(new_cheat->format, tmp, i))
 							{
@@ -9913,7 +9972,9 @@ int CALLBACK DlgCheatSearchAdd(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam
 							new_cheat->saved_val=i;
 							new_cheat->saved=TRUE;
 						}
-						GetDlgItemText(hDlg, IDC_NC_DESC, new_cheat->name, 23);
+						TCHAR tempBuf[22];
+						GetDlgItemText(hDlg, IDC_NC_DESC, tempBuf, 22);
+						strncpy(new_cheat->name,_tToChar(tempBuf),22);
 
 						new_cheat->enabled=TRUE;
 						S9xAddCheat(new_cheat->enabled,new_cheat->saved_val,new_cheat->address,new_cheat->new_val);
@@ -9932,24 +9993,24 @@ int CALLBACK DlgCheatSearchAdd(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam
 	}
 }
 
-static void set_movieinfo(const char* path, HWND hDlg)
+static void set_movieinfo(const TCHAR* path, HWND hDlg)
 {
 	MovieInfo m;
 	int i;
 	int getInfoResult=FILE_NOT_FOUND;
 
-	if(strlen(path))
-		getInfoResult = S9xMovieGetInfo(path, &m);
+	if(lstrlen(path))
+		getInfoResult = S9xMovieGetInfo(_tToChar(path), &m);
 
 	if(getInfoResult!=FILE_NOT_FOUND)
 	{
-		char* p;
-		char tmpstr[128];
-		strncpy(tmpstr, ctime(&m.TimeCreated), 127);
-		tmpstr[127]='\0';
-		if((p=strrchr(tmpstr, '\n')))
-			*p='\0';
-		SetWindowTextA(GetDlgItem(hDlg, IDC_MOVIE_DATE), tmpstr);
+		TCHAR* p;
+		TCHAR tmpstr[128];
+		lstrcpyn(tmpstr, _tctime(&m.TimeCreated), 127);
+		tmpstr[127]=TEXT('\0');
+		if((p=_tcsrchr(tmpstr, TEXT('\n'))))
+			*p=TEXT('\0');
+		SetWindowText(GetDlgItem(hDlg, IDC_MOVIE_DATE), tmpstr);
 
 		uint32 div = Memory.ROMFramesPerSecond;
 		if(!div) div = 60;
@@ -9959,19 +10020,19 @@ static void set_movieinfo(const char* path, HWND hDlg)
 		uint32 minutes=l%60;
 		l/=60;
 		uint32 hours=l%60;
-		sprintf(tmpstr, "%02d:%02d:%02d", hours, minutes, seconds);
-		SetWindowTextA(GetDlgItem(hDlg, IDC_MOVIE_LENGTH), tmpstr);
-		sprintf(tmpstr, "%u", m.LengthFrames);
-		SetWindowTextA(GetDlgItem(hDlg, IDC_MOVIE_FRAMES), tmpstr);
-		sprintf(tmpstr, "%u", m.RerecordCount);
-		SetWindowTextA(GetDlgItem(hDlg, IDC_MOVIE_RERECORD), tmpstr);
+		_stprintf(tmpstr, TEXT("%02d:%02d:%02d"), hours, minutes, seconds);
+		SetWindowText(GetDlgItem(hDlg, IDC_MOVIE_LENGTH), tmpstr);
+		_stprintf(tmpstr, TEXT("%u"), m.LengthFrames);
+		SetWindowText(GetDlgItem(hDlg, IDC_MOVIE_FRAMES), tmpstr);
+		_stprintf(tmpstr, TEXT("%u"), m.RerecordCount);
+		SetWindowText(GetDlgItem(hDlg, IDC_MOVIE_RERECORD), tmpstr);
 	}
 	else
 	{
-		SetWindowText(GetDlgItem(hDlg, IDC_MOVIE_DATE), _T(""));
-		SetWindowText(GetDlgItem(hDlg, IDC_MOVIE_LENGTH), _T(""));
-		SetWindowText(GetDlgItem(hDlg, IDC_MOVIE_FRAMES), _T(""));
-		SetWindowText(GetDlgItem(hDlg, IDC_MOVIE_RERECORD), _T(""));
+		SetWindowText(GetDlgItem(hDlg, IDC_MOVIE_DATE), TEXT(""));
+		SetWindowText(GetDlgItem(hDlg, IDC_MOVIE_LENGTH), TEXT(""));
+		SetWindowText(GetDlgItem(hDlg, IDC_MOVIE_FRAMES), TEXT(""));
+		SetWindowText(GetDlgItem(hDlg, IDC_MOVIE_RERECORD), TEXT(""));
 	}
 
 	if(getInfoResult==SUCCESS)
@@ -9997,7 +10058,7 @@ static void set_movieinfo(const char* path, HWND hDlg)
 
 			SetWindowTextW(GetDlgItem(hDlg, IDC_MOVIE_METADATA), metadata);
 		}
-		SetWindowText(GetDlgItem(hDlg, IDC_LABEL_MOVIEINFOBOX), _T(MOVIE_LABEL_AUTHORINFO));
+		SetWindowText(GetDlgItem(hDlg, IDC_LABEL_MOVIEINFOBOX), MOVIE_LABEL_AUTHORINFO);
 
 		if(m.ReadOnly)
 		{
@@ -10037,25 +10098,25 @@ static void set_movieinfo(const char* path, HWND hDlg)
 		}
 
 		{
-			char str [256];
+			TCHAR str [256];
 
 			if(m.SyncFlags & MOVIE_SYNC_HASROMINFO)
 			{
-				sprintf(str, MOVIE_INFO_MOVIEROM MOVIE_INFO_ROMINFO, m.ROMCRC32, m.ROMName);
-				SetWindowText(GetDlgItem(hDlg, IDC_MOVIEROMINFO), _T(str));
+				_stprintf(str, MOVIE_INFO_MOVIEROM MOVIE_INFO_ROMINFO, m.ROMCRC32, _tFromChar(m.ROMName));
+				SetWindowText(GetDlgItem(hDlg, IDC_MOVIEROMINFO), str);
 			}
 			else
 			{
-				sprintf(str, MOVIE_INFO_MOVIEROM MOVIE_INFO_ROMNOTSTORED);
-				SetWindowText(GetDlgItem(hDlg, IDC_MOVIEROMINFO), _T(str));
+				_stprintf(str, MOVIE_INFO_MOVIEROM MOVIE_INFO_ROMNOTSTORED);
+				SetWindowText(GetDlgItem(hDlg, IDC_MOVIEROMINFO), str);
 			}
 
 			bool mismatch = (m.SyncFlags & MOVIE_SYNC_HASROMINFO) && m.ROMCRC32 != Memory.ROMCRC32;
-			sprintf(str, MOVIE_INFO_CURRENTROM MOVIE_INFO_ROMINFO "%s", Memory.ROMCRC32, Memory.ROMName, mismatch?MOVIE_INFO_MISMATCH:"");
-			SetWindowText(GetDlgItem(hDlg, IDC_CURRENTROMINFO), _T(str));
+			_stprintf(str, MOVIE_INFO_CURRENTROM MOVIE_INFO_ROMINFO TEXT("%s"), Memory.ROMCRC32, _tFromChar(Memory.ROMName), mismatch?MOVIE_INFO_MISMATCH:TEXT(""));
+			SetWindowText(GetDlgItem(hDlg, IDC_CURRENTROMINFO), str);
 
-			sprintf(str, "%s", mismatch?MOVIE_WARNING_MISMATCH:MOVIE_WARNING_OK);
-			SetWindowText(GetDlgItem(hDlg, IDC_PLAYWARN), _T(str));
+			_stprintf(str, TEXT("%s"), mismatch?MOVIE_WARNING_MISMATCH:MOVIE_WARNING_OK);
+			SetWindowText(GetDlgItem(hDlg, IDC_PLAYWARN), str);
 		}
 
 		EnableWindow(GetDlgItem(hDlg, IDOK), TRUE);
@@ -10063,42 +10124,42 @@ static void set_movieinfo(const char* path, HWND hDlg)
 	else
 	{
 		// get the path of (where we think) the movie is
-		char tempPathStr [512];
-		strncpy(tempPathStr, path, 512);
-		tempPathStr[511] = '\0';
-		char* slash = strrchr(tempPathStr, '\\');
-		slash = max(slash, strrchr(tempPathStr, '/'));
-		if(slash) *slash = '\0';
-		char tempDirStr [512];
-		char dirStr [768];
-		_fullpath(tempDirStr, tempPathStr, 512);
-		char* documeStr = strstr(tempDirStr, "Documents and Settings");
+		TCHAR tempPathStr [512];
+		lstrcpyn(tempPathStr, path, 512);
+		tempPathStr[511] = TEXT('\0');
+		TCHAR* slash = _tcsrchr(tempPathStr, TEXT('\\'));
+		slash = max(slash, _tcsrchr(tempPathStr, TEXT('/')));
+		if(slash) *slash = TEXT('\0');
+		TCHAR tempDirStr [512];
+		TCHAR dirStr [768];
+		_tfullpath(tempDirStr, tempPathStr, 512);
+		TCHAR* documeStr = _tcsstr(tempDirStr, TEXT("Documents and Settings"));
 		if(documeStr) { // abbreviate
-			strcpy(documeStr, documeStr+14);
-			strncpy(documeStr, "docume~1", 8);
+			lstrcpy(documeStr, documeStr+14);
+			lstrcpyn(documeStr, TEXT("docume~1"), 8);
 		}
-		sprintf(dirStr, MOVIE_INFO_DIRECTORY, tempDirStr);
+		_stprintf(dirStr, MOVIE_INFO_DIRECTORY, tempDirStr);
 
 		switch(getInfoResult)
 		{
 			default:
-				SetWindowText(GetDlgItem(hDlg, IDC_PLAYWARN), _T(""));
-				SetWindowText(GetDlgItem(hDlg, IDC_MOVIE_METADATA), _T(""));
+				SetWindowText(GetDlgItem(hDlg, IDC_PLAYWARN), TEXT(""));
+				SetWindowText(GetDlgItem(hDlg, IDC_MOVIE_METADATA), TEXT(""));
 				break;
 			case FILE_NOT_FOUND:
-				SetWindowText(GetDlgItem(hDlg, IDC_PLAYWARN), _T(MOVIE_ERR_NOT_FOUND_SHORT));
-				SetWindowText(GetDlgItem(hDlg, IDC_MOVIE_METADATA), _T(MOVIE_ERR_NOT_FOUND));
+				SetWindowText(GetDlgItem(hDlg, IDC_PLAYWARN), MOVIE_ERR_NOT_FOUND_SHORT);
+				SetWindowText(GetDlgItem(hDlg, IDC_MOVIE_METADATA), MOVIE_ERR_NOT_FOUND);
 				break;
 			case WRONG_FORMAT:
-				SetWindowText(GetDlgItem(hDlg, IDC_PLAYWARN), _T(MOVIE_ERR_WRONG_FORMAT_SHORT));
-				SetWindowText(GetDlgItem(hDlg, IDC_MOVIE_METADATA), _T(MOVIE_ERR_WRONG_FORMAT));
+				SetWindowText(GetDlgItem(hDlg, IDC_PLAYWARN), MOVIE_ERR_WRONG_FORMAT_SHORT);
+				SetWindowText(GetDlgItem(hDlg, IDC_MOVIE_METADATA), MOVIE_ERR_WRONG_FORMAT);
 				break;
 			case WRONG_VERSION:
-				SetWindowText(GetDlgItem(hDlg, IDC_PLAYWARN), _T(MOVIE_ERR_WRONG_VERSION_SHORT));
-				SetWindowText(GetDlgItem(hDlg, IDC_MOVIE_METADATA), _T(MOVIE_ERR_WRONG_VERSION));
+				SetWindowText(GetDlgItem(hDlg, IDC_PLAYWARN), MOVIE_ERR_WRONG_VERSION_SHORT);
+				SetWindowText(GetDlgItem(hDlg, IDC_MOVIE_METADATA), MOVIE_ERR_WRONG_VERSION);
 				break;
 		}
-		SetWindowText(GetDlgItem(hDlg, IDC_LABEL_MOVIEINFOBOX), _T(MOVIE_LABEL_ERRORINFO));
+		SetWindowText(GetDlgItem(hDlg, IDC_LABEL_MOVIEINFOBOX), MOVIE_LABEL_ERRORINFO);
 
 		EnableWindow(GetDlgItem(hDlg, IDC_READONLY), FALSE);
 		EnableWindow(GetDlgItem(hDlg, IDC_DISPLAY_INPUT), FALSE);
@@ -10112,13 +10173,13 @@ static void set_movieinfo(const char* path, HWND hDlg)
 		}
 
 		{
-			char str [256];
+			TCHAR str [256];
 
 			// no movie loaded
 			SetWindowText(GetDlgItem(hDlg, IDC_MOVIEROMINFO), dirStr);
 
-			sprintf(str, MOVIE_INFO_CURRENTROM MOVIE_INFO_ROMINFO, Memory.ROMCRC32, Memory.ROMName);
-			SetWindowText(GetDlgItem(hDlg, IDC_CURRENTROMINFO), _T(str));
+			_stprintf(str, MOVIE_INFO_CURRENTROM MOVIE_INFO_ROMINFO, Memory.ROMCRC32, _tFromChar(Memory.ROMName));
+			SetWindowText(GetDlgItem(hDlg, IDC_CURRENTROMINFO), str);
 		}
 
 		EnableWindow(GetDlgItem(hDlg, IDOK), FALSE);
@@ -10126,19 +10187,19 @@ static void set_movieinfo(const char* path, HWND hDlg)
 
 }
 
-int CALLBACK DlgOpenMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK DlgOpenMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static OpenMovieParams* op=NULL;
-	static char movieDirectory [MAX_PATH];
+	static TCHAR movieDirectory [MAX_PATH];
 
 	switch(msg)
 	{
 	case WM_INITDIALOG:
 		WinRefreshDisplay();
 		{
-			SetCurrentDirectory(S9xGetDirectory(DEFAULT_DIR));
-			_fullpath (movieDirectory, GUI.MovieDir, MAX_PATH);
-			mkdir(movieDirectory);
+			SetCurrentDirectory(S9xGetDirectoryT(DEFAULT_DIR));
+			_tfullpath (movieDirectory, GUI.MovieDir, MAX_PATH);
+			_tmkdir(movieDirectory);
 			SetCurrentDirectory(movieDirectory);
 
 			op=(OpenMovieParams*)lParam;
@@ -10151,14 +10212,14 @@ int CALLBACK DlgOpenMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				TCHAR dir [_MAX_DIR + 1];
 				TCHAR fname [_MAX_FNAME + 1];
 				TCHAR ext [_MAX_EXT + 1];
-				_splitpath (Memory.ROMFilename, drive, dir, fname, ext);
-				_makepath (filename, "", "", fname, "smv");
+				_tsplitpath (_tFromChar(Memory.ROMFilename), drive, dir, fname, ext);
+				_tmakepath (filename, TEXT(""), TEXT(""), fname, TEXT("smv"));
 				SetWindowText(GetDlgItem(hDlg, IDC_MOVIE_PATH), filename);
 				set_movieinfo(filename, hDlg);
 			}
 			else
 			{
-				set_movieinfo("", hDlg);
+				set_movieinfo(TEXT(""), hDlg);
 			}
 
 			SendDlgItemMessage(hDlg,IDC_READONLY,BM_SETCHECK,GUI.MovieReadOnly ? BST_CHECKED : BST_UNCHECKED,0);
@@ -10180,21 +10241,21 @@ int CALLBACK DlgOpenMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			case IDC_ALLOWLEFTRIGHT:
 			case IDC_FMUT:
 			case IDC_SYNC_TO_SOUND_CPU:
-				SetWindowText(GetDlgItem(hDlg, IDC_LOADEDFROMMOVIE), _T(""));
+				SetWindowText(GetDlgItem(hDlg, IDC_LOADEDFROMMOVIE), TEXT(""));
 				break;
 			case IDC_BROWSE_MOVIE:
 				{
 					OPENFILENAME  ofn;
-					char  szFileName[MAX_PATH];
+					TCHAR  szFileName[MAX_PATH];
 
-					szFileName[0] = '\0';
+					szFileName[0] = TEXT('\0');
 
 					ZeroMemory( (LPVOID)&ofn, sizeof(OPENFILENAME) );
 					ofn.lStructSize = sizeof(OPENFILENAME);
 					ofn.hwndOwner = hDlg;
-					ofn.lpstrFilter = MOVIE_FILETYPE_DESCRIPTION "\0*.smv\0" FILE_INFO_ANY_FILE_TYPE "\0*.*\0\0";
+					ofn.lpstrFilter = MOVIE_FILETYPE_DESCRIPTION TEXT("\0*.smv\0") FILE_INFO_ANY_FILE_TYPE TEXT("\0*.*\0\0");
 					ofn.lpstrFile = szFileName;
-					ofn.lpstrDefExt = "smv";
+					ofn.lpstrDefExt = TEXT("smv");
 					ofn.nMaxFile = MAX_PATH;
 					ofn.Flags = OFN_HIDEREADONLY | OFN_FILEMUSTEXIST; // hide previously-ignored read-only checkbox (the real read-only box is in the open-movie dialog itself)
 					ofn.lpstrInitialDir = movieDirectory;
@@ -10204,9 +10265,9 @@ int CALLBACK DlgOpenMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 						if(!GUI.LockDirectories)
 						{
-							char temp [256];
+							TCHAR temp [256];
 							GetCurrentDirectory(MAX_PATH, temp);
-							absToRel(GUI.MovieDir, temp, S9xGetDirectory(DEFAULT_DIR));
+							absToRel(GUI.MovieDir, temp, S9xGetDirectoryT(DEFAULT_DIR));
 						}
 
 						set_movieinfo(szFileName, hDlg);
@@ -10217,7 +10278,7 @@ int CALLBACK DlgOpenMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 			case IDC_MOVIE_PATH:
 				{
-					char  szFileName[MAX_PATH];
+					TCHAR  szFileName[MAX_PATH];
 					GetWindowText(GetDlgItem(hDlg, IDC_MOVIE_PATH), szFileName, MAX_PATH);
 					set_movieinfo(szFileName, hDlg);
 				}
@@ -10262,19 +10323,19 @@ static bool existsSRAM ()
   return(!access(S9xGetFilename(".srm", SRAM_DIR), R_OK|W_OK));
 }
 
-int CALLBACK DlgCreateMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK DlgCreateMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static OpenMovieParams* op=NULL;
-	static char movieDirectory [MAX_PATH];
+	static TCHAR movieDirectory [MAX_PATH];
 
 	switch(msg)
 	{
 	case WM_INITDIALOG:
 		{
 			WinRefreshDisplay();
-			SetCurrentDirectory(S9xGetDirectory(DEFAULT_DIR));
-			_fullpath (movieDirectory, GUI.MovieDir, MAX_PATH);
-			mkdir(movieDirectory);
+			SetCurrentDirectory(S9xGetDirectoryT(DEFAULT_DIR));
+			_tfullpath (movieDirectory, GUI.MovieDir, MAX_PATH);
+			_tmkdir(movieDirectory);
 			SetCurrentDirectory(movieDirectory);
 
 			// have to save here or the SRAM file might not exist when we check for it
@@ -10301,8 +10362,8 @@ int CALLBACK DlgCreateMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				TCHAR dir [_MAX_DIR + 1];
 				TCHAR fname [_MAX_FNAME + 1];
 				TCHAR ext [_MAX_EXT + 1];
-				_splitpath (Memory.ROMFilename, drive, dir, fname, ext);
-				_makepath (filename, "", "", fname, "smv");
+				_tsplitpath (_tFromChar(Memory.ROMFilename), drive, dir, fname, ext);
+				_tmakepath (filename, TEXT(""), TEXT(""), fname, TEXT("smv"));
 				SetWindowText(GetDlgItem(hDlg, IDC_MOVIE_PATH), filename);
 			}
 
@@ -10338,16 +10399,16 @@ int CALLBACK DlgCreateMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			case IDC_BROWSE_MOVIE:
 				{
 					OPENFILENAME  ofn;
-					char  szFileName[MAX_PATH];
+					TCHAR  szFileName[MAX_PATH];
 
-					szFileName[0] = '\0';
+					szFileName[0] = TEXT('\0');
 
 					ZeroMemory( (LPVOID)&ofn, sizeof(OPENFILENAME) );
 					ofn.lStructSize = sizeof(OPENFILENAME);
 					ofn.hwndOwner = hDlg;
-					ofn.lpstrFilter = MOVIE_FILETYPE_DESCRIPTION "\0*.smv\0" FILE_INFO_ANY_FILE_TYPE "\0*.*\0\0";
+					ofn.lpstrFilter = MOVIE_FILETYPE_DESCRIPTION TEXT("\0*.smv\0") FILE_INFO_ANY_FILE_TYPE TEXT("\0*.*\0\0");
 					ofn.lpstrFile = szFileName;
-					ofn.lpstrDefExt = "smv";
+					ofn.lpstrDefExt = TEXT("smv");
 					ofn.nMaxFile = MAX_PATH;
 					ofn.Flags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
 					ofn.lpstrInitialDir = movieDirectory;
@@ -10357,9 +10418,9 @@ int CALLBACK DlgCreateMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 						if(!GUI.LockDirectories)
 						{
-							char temp [256];
+							TCHAR temp [256];
 							GetCurrentDirectory(MAX_PATH, temp);
-							absToRel(GUI.MovieDir, temp, S9xGetDirectory(DEFAULT_DIR));
+							absToRel(GUI.MovieDir, temp, S9xGetDirectoryT(DEFAULT_DIR));
 						}
 					}
 					SetCurrentDirectory(movieDirectory);

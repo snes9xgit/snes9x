@@ -225,7 +225,7 @@ bool CXAudio2::InitXAudio2(void)
 		MessageBox (GUI.hWnd, TEXT("\
 Unable to initialize XAudio2. You will not be able to hear any\n\
 sound effects or music while playing.\n\n\
-It is usually caused by not having a recent DirectX release installed."),
+This is usually caused by not having a recent DirectX release installed."),
 			TEXT("Snes9X - Unable to Initialize XAudio2"),
             MB_OK | MB_ICONWARNING);
 		return false;

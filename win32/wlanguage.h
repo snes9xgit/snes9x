@@ -179,116 +179,116 @@
 
 /* This is where all the GUI text strings will eventually end up */
 
-#define WINDOW_TITLE "Snes9X v%s for Windows"
+#define WINDOW_TITLE TEXT("Snes9X v1.5X Testing")
 
 // the windows registry is no longer used
 //#define MY_REG_KEY   "Software\\Emulators\\Snes9X"
 //#define REG_KEY_VER  "1.31"
 
-#define DISCLAIMER_TEXT        "Snes9X v%s for Windows.\r\n" \
-        "(c) Copyright 1996 - 2002  Gary Henderson and Jerremy Koot (jkoot@snes9x.com)\r\n" \
-        "(c) Copyright 2002 - 2004  Matthew Kendora\r\n" \
-        "(c) Copyright 2002 - 2005  Peter Bortas\r\n" \
-        "(c) Copyright 2004 - 2005  Joel Yliluoma\r\n" \
-        "(c) Copyright 2001 - 2006  John Weidman\r\n" \
-        "(c) Copyright 2002 - 2010  Brad Jorsch, funkyass, Kris Bleakley, Nach, zones\r\n" \
-		"(c) Copyright 2006 - 2007  nitsuja\r\n" \
-        "(c) Copyright 2009 - 2010  BearOso, OV2\r\n\r\n" \
-        "Windows Port Authors: Matthew Kendora, funkyass, nitsuja, Nach, blip, OV2.\r\n\r\n" \
-	"Snes9X is a Super Nintendo Entertainment System\r\n" \
-		"emulator that allows you to play most games designed\r\n" \
-		"for the SNES on your PC.\r\n\r\n" \
-		"Please visit http://www.snes9x.com for\r\n" \
-		"up-to-the-minute information and help on Snes9X.\r\n\r\n" \
-		"Nintendo is a trade mark."
+#define DISCLAIMER_TEXT        TEXT("Snes9X v%s for Windows.\r\n\
+        (c) Copyright 1996 - 2002  Gary Henderson and Jerremy Koot (jkoot@snes9x.com)\r\n\
+        (c) Copyright 2002 - 2004  Matthew Kendora\r\n\
+        (c) Copyright 2002 - 2005  Peter Bortas\r\n\
+        (c) Copyright 2004 - 2005  Joel Yliluoma\r\n\
+        (c) Copyright 2001 - 2006  John Weidman\r\n\
+        (c) Copyright 2002 - 2010  Brad Jorsch, funkyass, Kris Bleakley, Nach, zones\r\n\
+		(c) Copyright 2006 - 2007  nitsuja\r\n\
+        (c) Copyright 2009 - 2010  BearOso, OV2\r\n\r\n\
+        Windows Port Authors: Matthew Kendora, funkyass, nitsuja, Nach, blip, OV2.\r\n\r\n\
+		Snes9X is a Super Nintendo Entertainment System\r\n\
+		emulator that allows you to play most games designed\r\n\
+		for the SNES on your PC.\r\n\r\n\
+		Please visit http://www.snes9x.com for\r\n\
+		up-to-the-minute information and help on Snes9X.\r\n\r\n\
+		Nintendo is a trade mark.")
 
 
-#define APP_NAME "Snes9x"
+#define APP_NAME TEXT("Snes9x")
 // possible global strings
-#define SNES9X_INFO "Snes9x: Information"
-#define SNES9X_WARN "Snes9x: WARNING!"
-#define SNES9X_DXS "Snes9X: DirectSound"
-#define SNES9X_SNDQ "Snes9X: Sound CPU Question"
-#define SNES9X_NP_ERROR "Snes9X: NetPlay Error"
-#define BUTTON_OK "&OK"
-#define BUTTON_CANCEL "&Cancel"
+#define SNES9X_INFO TEXT("Snes9x: Information")
+#define SNES9X_WARN TEXT("Snes9x: WARNING!")
+#define SNES9X_DXS TEXT("Snes9X: DirectSound")
+#define SNES9X_SNDQ TEXT("Snes9X: Sound CPU Question")
+#define SNES9X_NP_ERROR TEXT("Snes9X: NetPlay Error")
+#define BUTTON_OK TEXT("&OK")
+#define BUTTON_CANCEL TEXT("&Cancel")
 
 // Gamepad Dialog Strings
-#define INPUTCONFIG_TITLE "Input Configuration"
-#define INPUTCONFIG_JPTOGGLE "Enabled"
+#define INPUTCONFIG_TITLE TEXT("Input Configuration")
+#define INPUTCONFIG_JPTOGGLE TEXT("Enabled")
 //#define INPUTCONFIG_DIAGTOGGLE "Toggle Diagonals"
 //#define INPUTCONFIG_OK "&OK"
 //#define INPUTCONFIG_CANCEL "&Cancel"
-#define INPUTCONFIG_JPCOMBO "Joypad #%d"
-#define INPUTCONFIG_LABEL_UP "Up"
-#define INPUTCONFIG_LABEL_DOWN "Down"
-#define INPUTCONFIG_LABEL_LEFT "Left"
-#define INPUTCONFIG_LABEL_RIGHT "Right"
-#define INPUTCONFIG_LABEL_A "A"
-#define INPUTCONFIG_LABEL_B "B"
-#define INPUTCONFIG_LABEL_X "X"
-#define INPUTCONFIG_LABEL_Y "Y"
-#define INPUTCONFIG_LABEL_L "L"
-#define INPUTCONFIG_LABEL_R "R"
-#define INPUTCONFIG_LABEL_START "Start"
-#define INPUTCONFIG_LABEL_SELECT "Select"
-#define INPUTCONFIG_LABEL_UPLEFT "Up Left"
-#define INPUTCONFIG_LABEL_UPRIGHT "Up Right"
-#define INPUTCONFIG_LABEL_DOWNRIGHT "Dn Right"
-#define INPUTCONFIG_LABEL_DOWNLEFT "Dn Left"
-#define INPUTCONFIG_LABEL_BLUE "Blue means the button is already mapped.\nPink means it conflicts with a custom hotkey.\nRed means it's reserved by Windows.\nButtons can be disabled using Escape."
-#define INPUTCONFIG_LABEL_UNUSED ""
-#define INPUTCONFIG_LABEL_CLEAR_TOGGLES_AND_TURBO "Clear All"
-#define INPUTCONFIG_LABEL_MAKE_TURBO "TempTurbo"
-#define INPUTCONFIG_LABEL_MAKE_HELD "Autohold"
-#define INPUTCONFIG_LABEL_MAKE_TURBO_HELD "Autofire"
-#define INPUTCONFIG_LABEL_CONTROLLER_TURBO_PANEL_MOD " Turbo"
+#define INPUTCONFIG_JPCOMBO TEXT("Joypad #%d")
+#define INPUTCONFIG_LABEL_UP TEXT("Up")
+#define INPUTCONFIG_LABEL_DOWN TEXT("Down")
+#define INPUTCONFIG_LABEL_LEFT TEXT("Left")
+#define INPUTCONFIG_LABEL_RIGHT TEXT("Right")
+#define INPUTCONFIG_LABEL_A TEXT("A")
+#define INPUTCONFIG_LABEL_B TEXT("B")
+#define INPUTCONFIG_LABEL_X TEXT("X")
+#define INPUTCONFIG_LABEL_Y TEXT("Y")
+#define INPUTCONFIG_LABEL_L TEXT("L")
+#define INPUTCONFIG_LABEL_R TEXT("R")
+#define INPUTCONFIG_LABEL_START TEXT("Start")
+#define INPUTCONFIG_LABEL_SELECT TEXT("Select")
+#define INPUTCONFIG_LABEL_UPLEFT TEXT("Up Left")
+#define INPUTCONFIG_LABEL_UPRIGHT TEXT("Up Right")
+#define INPUTCONFIG_LABEL_DOWNRIGHT TEXT("Dn Right")
+#define INPUTCONFIG_LABEL_DOWNLEFT TEXT("Dn Left")
+#define INPUTCONFIG_LABEL_BLUE TEXT("Blue means the button is already mapped.\nPink means it conflicts with a custom hotkey.\nRed means it's reserved by Windows.\nButtons can be disabled using Escape.")
+#define INPUTCONFIG_LABEL_UNUSED TEXT("")
+#define INPUTCONFIG_LABEL_CLEAR_TOGGLES_AND_TURBO TEXT("Clear All")
+#define INPUTCONFIG_LABEL_MAKE_TURBO TEXT("TempTurbo")
+#define INPUTCONFIG_LABEL_MAKE_HELD TEXT("Autohold")
+#define INPUTCONFIG_LABEL_MAKE_TURBO_HELD TEXT("Autofire")
+#define INPUTCONFIG_LABEL_CONTROLLER_TURBO_PANEL_MOD TEXT(" Turbo")
 
 // Hotkeys Dialog Strings
-#define HOTKEYS_TITLE "Hotkey Configuration"
+#define HOTKEYS_TITLE TEXT("Hotkey Configuration")
 #define HOTKEYS_CONTROL_MOD "Ctrl + "
 #define HOTKEYS_SHIFT_MOD "Shift + "
 #define HOTKEYS_ALT_MOD "Alt + "
-#define HOTKEYS_LABEL_BLUE "Blue means the hotkey is already mapped.\nPink means it conflicts with a game button.\nRed means it's reserved by Windows.\nA hotkey can be disabled using Escape."
-#define HOTKEYS_HKCOMBO "Page %d"
-#define HOTKEYS_LABEL_1_1 "speed +"
-#define HOTKEYS_LABEL_1_2 "speed -"
-#define HOTKEYS_LABEL_1_3 "pause"
-#define HOTKEYS_LABEL_1_4 "frame advance"
-#define HOTKEYS_LABEL_1_5 "fast forward"
-#define HOTKEYS_LABEL_1_6 "skip +"
-#define HOTKEYS_LABEL_1_7 "skip -"
-#define HOTKEYS_LABEL_1_8 "superscope turbo"
-#define HOTKEYS_LABEL_1_9 "superscope pause"
-#define HOTKEYS_LABEL_1_10 "show pressed keys"
-#define HOTKEYS_LABEL_1_11 "movie frame count"
-#define HOTKEYS_LABEL_1_12 "movie read-only"
-#define HOTKEYS_LABEL_1_13 "save screenshot"
-#define HOTKEYS_LABEL_2_1 "Graphics Layer 1"
-#define HOTKEYS_LABEL_2_2 "Graphics Layer 2"
-#define HOTKEYS_LABEL_2_3 "Graphics Layer 3"
-#define HOTKEYS_LABEL_2_4 "Graphics Layer 4"
-#define HOTKEYS_LABEL_2_5 "Sprites Layer"
-#define HOTKEYS_LABEL_2_6 "Clipping Windows"
-#define HOTKEYS_LABEL_2_7 "Transparency"
-#define HOTKEYS_LABEL_2_8 "HDMA Emulation"
-#define HOTKEYS_LABEL_2_9 "GLCube Mode"
-#define HOTKEYS_LABEL_2_10 "Switch Controllers"
-#define HOTKEYS_LABEL_2_11 "Joypad Swap"
-#define HOTKEYS_LABEL_2_12 "Reset Game"
-#define HOTKEYS_LABEL_2_13 "Toggle Cheats"
-#define HOTKEYS_LABEL_3_1 "Turbo A mode"
-#define HOTKEYS_LABEL_3_2 "Turbo B mode"
-#define HOTKEYS_LABEL_3_3 "Turbo Y mode"
-#define HOTKEYS_LABEL_3_4 "Turbo X mode"
-#define HOTKEYS_LABEL_3_5 "Turbo L mode"
-#define HOTKEYS_LABEL_3_6 "Turbo R mode"
-#define HOTKEYS_LABEL_3_7 "Turbo Start mode"
-#define HOTKEYS_LABEL_3_8 "Turbo Select mode"
-#define HOTKEYS_LABEL_3_9 "Turbo Left mode"
-#define HOTKEYS_LABEL_3_10 "Turbo Up mode"
-#define HOTKEYS_LABEL_3_11 "Turbo Right mode"
-#define HOTKEYS_LABEL_3_12 "Turbo Down mode"
+#define HOTKEYS_LABEL_BLUE TEXT("Blue means the hotkey is already mapped.\nPink means it conflicts with a game button.\nRed means it's reserved by Windows.\nA hotkey can be disabled using Escape.")
+#define HOTKEYS_HKCOMBO TEXT("Page %d")
+#define HOTKEYS_LABEL_1_1 TEXT("speed +")
+#define HOTKEYS_LABEL_1_2 TEXT("speed -")
+#define HOTKEYS_LABEL_1_3 TEXT("pause")
+#define HOTKEYS_LABEL_1_4 TEXT("frame advance")
+#define HOTKEYS_LABEL_1_5 TEXT("fast forward")
+#define HOTKEYS_LABEL_1_6 TEXT("skip +")
+#define HOTKEYS_LABEL_1_7 TEXT("skip -")
+#define HOTKEYS_LABEL_1_8 TEXT("superscope turbo")
+#define HOTKEYS_LABEL_1_9 TEXT("superscope pause")
+#define HOTKEYS_LABEL_1_10 TEXT("show pressed keys")
+#define HOTKEYS_LABEL_1_11 TEXT("movie frame count")
+#define HOTKEYS_LABEL_1_12 TEXT("movie read-only")
+#define HOTKEYS_LABEL_1_13 TEXT("save screenshot")
+#define HOTKEYS_LABEL_2_1 TEXT("Graphics Layer 1")
+#define HOTKEYS_LABEL_2_2 TEXT("Graphics Layer 2")
+#define HOTKEYS_LABEL_2_3 TEXT("Graphics Layer 3")
+#define HOTKEYS_LABEL_2_4 TEXT("Graphics Layer 4")
+#define HOTKEYS_LABEL_2_5 TEXT("Sprites Layer")
+#define HOTKEYS_LABEL_2_6 TEXT("Clipping Windows")
+#define HOTKEYS_LABEL_2_7 TEXT("Transparency")
+#define HOTKEYS_LABEL_2_8 TEXT("HDMA Emulation")
+#define HOTKEYS_LABEL_2_9 TEXT("GLCube Mode")
+#define HOTKEYS_LABEL_2_10 TEXT("Switch Controllers")
+#define HOTKEYS_LABEL_2_11 TEXT("Joypad Swap")
+#define HOTKEYS_LABEL_2_12 TEXT("Reset Game")
+#define HOTKEYS_LABEL_2_13 TEXT("Toggle Cheats")
+#define HOTKEYS_LABEL_3_1 TEXT("Turbo A mode")
+#define HOTKEYS_LABEL_3_2 TEXT("Turbo B mode")
+#define HOTKEYS_LABEL_3_3 TEXT("Turbo Y mode")
+#define HOTKEYS_LABEL_3_4 TEXT("Turbo X mode")
+#define HOTKEYS_LABEL_3_5 TEXT("Turbo L mode")
+#define HOTKEYS_LABEL_3_6 TEXT("Turbo R mode")
+#define HOTKEYS_LABEL_3_7 TEXT("Turbo Start mode")
+#define HOTKEYS_LABEL_3_8 TEXT("Turbo Select mode")
+#define HOTKEYS_LABEL_3_9 TEXT("Turbo Left mode")
+#define HOTKEYS_LABEL_3_10 TEXT("Turbo Up mode")
+#define HOTKEYS_LABEL_3_11 TEXT("Turbo Right mode")
+#define HOTKEYS_LABEL_3_12 TEXT("Turbo Down mode")
 //#define HOTKEYS_LABEL_4_12 "Interpolate Mode 7"
 //#define HOTKEYS_LABEL_4_13 "BG Layering hack"
 
@@ -449,70 +449,70 @@
 
 //Emulator Settings
 
-#define EMUSET_TITLE "Emulation Settings"
-#define EMUSET_LABEL_DIRECTORY "Directory"
-#define EMUSET_BROWSE "&Browse..."
-#define EMUSET_LABEL_ASRAM "Auto-Save S-RAM"
-#define EMUSET_LABEL_ASRAM_TEXT "seconds after last change (0 disables auto-save)"
-#define EMUSET_LABEL_SMAX "Skip at most"
-#define EMUSET_LABEL_SMAX_TEXT "frames in auto-frame rate mode"
-#define EMUSET_LABEL_STURBO "Skip Rendering"
-#define EMUSET_LABEL_STURBO_TEXT "frames in fast-forward mode"
-#define EMUSET_TOGGLE_TURBO "Toggled fast-forward mode"
+#define EMUSET_TITLE TEXT("Emulation Settings")
+#define EMUSET_LABEL_DIRECTORY TEXT("Directory")
+#define EMUSET_BROWSE TEXT("&Browse...")
+#define EMUSET_LABEL_ASRAM TEXT("Auto-Save S-RAM")
+#define EMUSET_LABEL_ASRAM_TEXT TEXT("seconds after last change (0 disables auto-save)")
+#define EMUSET_LABEL_SMAX TEXT("Skip at most")
+#define EMUSET_LABEL_SMAX_TEXT TEXT("frames in auto-frame rate mode")
+#define EMUSET_LABEL_STURBO TEXT("Skip Rendering")
+#define EMUSET_LABEL_STURBO_TEXT TEXT("frames in fast-forward mode")
+#define EMUSET_TOGGLE_TURBO TEXT("Toggled fast-forward mode")
 
 //Netplay Options
 
-#define NPOPT_TITLE "Netplay Options"
-#define NPOPT_LABEL_PORTNUM "Socket Port Number"
-#define NPOPT_LABEL_PAUSEINTERVAL "Ask Server to Pause when"
-#define NPOPT_LABEL_PAUSEINTERVAL_TEXT "frames behind"
-#define NPOPT_LABEL_MAXSKIP "Maximum Frame Rate Skip"
-#define NPOPT_SYNCBYRESET "Sync By Reset"
-#define NPOPT_SENDROM "Send ROM Image to Client on Connect"
-#define NPOPT_ACTASSERVER "Act As Server"
-#define NPOPT_PORTNUMBLOCK "Port Settings"
-#define NPOPT_CLIENTSETTINGSBLOCK "Client Settings"
-#define NPOPT_SERVERSETTINGSBLOCK "Server Settings"
+#define NPOPT_TITLE TEXT("Netplay Options")
+#define NPOPT_LABEL_PORTNUM TEXT("Socket Port Number")
+#define NPOPT_LABEL_PAUSEINTERVAL TEXT("Ask Server to Pause when")
+#define NPOPT_LABEL_PAUSEINTERVAL_TEXT TEXT("frames behind")
+#define NPOPT_LABEL_MAXSKIP TEXT("Maximum Frame Rate Skip")
+#define NPOPT_SYNCBYRESET TEXT("Sync By Reset")
+#define NPOPT_SENDROM TEXT("Send ROM Image to Client on Connect")
+#define NPOPT_ACTASSERVER TEXT("Act As Server")
+#define NPOPT_PORTNUMBLOCK TEXT("Port Settings")
+#define NPOPT_CLIENTSETTINGSBLOCK TEXT("Client Settings")
+#define NPOPT_SERVERSETTINGSBLOCK TEXT("Server Settings")
 
 //Netplay Connect
 
 
-#define NPCON_TITLE "Connect to Server"
-#define NPCON_LABEL_SERVERADDY "Server Address"
-#define NPCON_LABEL_PORTNUM "Port Number"
-#define NPCON_CLEARHISTORY "Clear History"
-#define NPCON_ENTERHOST "enter host name..."
-#define NPCON_PLEASE_ENTERHOST "Please enter a host name."
+#define NPCON_TITLE TEXT("Connect to Server")
+#define NPCON_LABEL_SERVERADDY TEXT("Server Address")
+#define NPCON_LABEL_PORTNUM TEXT("Port Number")
+#define NPCON_CLEARHISTORY TEXT("Clear History")
+#define NPCON_ENTERHOST TEXT("enter host name...")
+#define NPCON_PLEASE_ENTERHOST TEXT("Please enter a host name.")
 
 
 //Movie Messages
 
-#define MOVIE_FILETYPE_DESCRIPTION "Snes9x Movie File"
-#define MOVIE_LABEL_SYNC_DATA_FROM_MOVIE "LOADED FROM MOVIE:"
-#define MOVIE_LABEL_SYNC_DATA_NOT_FROM_MOVIE "SETTINGS NOT IN MOVIE; VERIFY:"
-#define MOVIE_ERR_COULD_NOT_OPEN "Could not open movie file."
-#define MOVIE_ERR_NOT_FOUND_SHORT "File not found."
-#define MOVIE_ERR_NOT_FOUND "The movie file was not found or could not be opened."
-#define MOVIE_ERR_WRONG_FORMAT_SHORT "Unrecognized format."
-#define MOVIE_ERR_WRONG_FORMAT "The movie file is corrupt or in the wrong format."
-#define MOVIE_ERR_WRONG_VERSION_SHORT "Unsupported movie version."
-#define MOVIE_ERR_WRONG_VERSION MOVIE_ERR_WRONG_VERSION_SHORT " You need a different version of Snes9x to play this movie."
+#define MOVIE_FILETYPE_DESCRIPTION TEXT("Snes9x Movie File")
+#define MOVIE_LABEL_SYNC_DATA_FROM_MOVIE TEXT("LOADED FROM MOVIE:")
+#define MOVIE_LABEL_SYNC_DATA_NOT_FROM_MOVIE TEXT("SETTINGS NOT IN MOVIE; VERIFY:")
+#define MOVIE_ERR_COULD_NOT_OPEN TEXT("Could not open movie file.")
+#define MOVIE_ERR_NOT_FOUND_SHORT TEXT("File not found.")
+#define MOVIE_ERR_NOT_FOUND TEXT("The movie file was not found or could not be opened.")
+#define MOVIE_ERR_WRONG_FORMAT_SHORT TEXT("Unrecognized format.")
+#define MOVIE_ERR_WRONG_FORMAT TEXT("The movie file is corrupt or in the wrong format.")
+#define MOVIE_ERR_WRONG_VERSION_SHORT TEXT("Unsupported movie version.")
+#define MOVIE_ERR_WRONG_VERSION MOVIE_ERR_WRONG_VERSION_SHORT TEXT(" You need a different version of Snes9x to play this movie.")
 #define MOVIE_ERR_NOFRAMETOGGLE "No movie; can't toggle frame count"
 #define MOVIE_ERR_NOREADONLYTOGGLE "No movie; can't toggle read-only"
-#define MOVIE_LABEL_AUTHORINFO "Author Info:"
-#define MOVIE_LABEL_ERRORINFO "Error Info:"
-#define MOVIE_INFO_MISMATCH " <-- MISMATCH !!!"
-#define MOVIE_INFO_CURRENTROM "Current ROM:"
-#define MOVIE_INFO_MOVIEROM "Movie's ROM:"
-#define MOVIE_INFO_ROMNOTSTORED " (not stored in movie file)"
-#define MOVIE_INFO_ROMINFO " crc32=%08X, name=%s"
-#define MOVIE_INFO_DIRECTORY " Path: %s"
-#define MOVIE_WARNING_MISMATCH "WARNING: You don't have the right ROM loaded!"
-#define MOVIE_WARNING_OK "Press OK to start playing the movie."
-#define MOVIE_LABEL_STARTSETTINGS "Recording Start"
-#define MOVIE_LABEL_CONTSETTINGS "Record Controllers"
-#define MOVIE_LABEL_SYNCSETTINGS "Misc. Recording Settings"
-#define MOVIE_SHUTDOWNMASTER_WARNING "The \"SpeedHacks\" setting in your snes9x.cfg file is on.\nThis makes emulation less CPU-intensive, but also less accurate,\ncausing some games to lag noticeably more than they should.\nYou might want to reconsider recording a movie under these conditions."
+#define MOVIE_LABEL_AUTHORINFO TEXT("Author Info:")
+#define MOVIE_LABEL_ERRORINFO TEXT("Error Info:")
+#define MOVIE_INFO_MISMATCH TEXT(" <-- MISMATCH !!!")
+#define MOVIE_INFO_CURRENTROM TEXT("Current ROM:")
+#define MOVIE_INFO_MOVIEROM TEXT("Movie's ROM:")
+#define MOVIE_INFO_ROMNOTSTORED TEXT(" (not stored in movie file)")
+#define MOVIE_INFO_ROMINFO TEXT(" crc32=%08X, name=%s")
+#define MOVIE_INFO_DIRECTORY TEXT(" Path: %s")
+#define MOVIE_WARNING_MISMATCH TEXT("WARNING: You don't have the right ROM loaded!")
+#define MOVIE_WARNING_OK TEXT("Press OK to start playing the movie.")
+#define MOVIE_LABEL_STARTSETTINGS TEXT("Recording Start")
+#define MOVIE_LABEL_CONTSETTINGS TEXT("Record Controllers")
+#define MOVIE_LABEL_SYNCSETTINGS TEXT("Misc. Recording Settings")
+#define MOVIE_SHUTDOWNMASTER_WARNING TEXT("The \"SpeedHacks\" setting in your snes9x.cfg file is on.\nThis makes emulation less CPU-intensive, but also less accurate,\ncausing some games to lag noticeably more than they should.\nYou might want to reconsider recording a movie under these conditions.")
 
 // Save Messages
 
@@ -525,69 +525,71 @@
 
 // Cheat or Cheat Search Messages
 
-#define SEARCH_TITLE_RANGEERROR "Range Error"
-#define SEARCH_TITLE_CHEATERROR "Snes9x Cheat Error"
-#define SEARCH_ERR_INVALIDNEWVALUE "You have entered an out of range or invalid value for the new value"
-#define SEARCH_ERR_INVALIDCURVALUE "You have entered an out of range or invalid value for\n"\
-                                   "the current value. This value is used when a cheat is unapplied.\n"\
-                                   "(If left blank, no value is restored when the cheat is unapplied)"
-#define SEARCH_ERR_INVALIDSEARCHVALUE "Please enter a valid value for a search!"
-#define SEARCH_COLUMN_ADDRESS "Address"
-#define SEARCH_COLUMN_VALUE "Value"
-#define SEARCH_COLUMN_DESCRIPTION "Description"
+#define SEARCH_TITLE_RANGEERROR TEXT("Range Error")
+#define SEARCH_TITLE_CHEATERROR TEXT("Snes9x Cheat Error")
+#define SEARCH_ERR_INVALIDNEWVALUE TEXT("You have entered an out of range or invalid value for the new value")
+#define SEARCH_ERR_INVALIDCURVALUE TEXT("You have entered an out of range or invalid value for\n\
+                                   the current value. This value is used when a cheat is unapplied.\n\
+                                   (If left blank, no value is restored when the cheat is unapplied)")
+#define SEARCH_ERR_INVALIDSEARCHVALUE TEXT("Please enter a valid value for a search!")
+#define SEARCH_COLUMN_ADDRESS TEXT("Address")
+#define SEARCH_COLUMN_VALUE TEXT("Value")
+#define SEARCH_COLUMN_DESCRIPTION TEXT("Description")
 
 // ROM dialog
 
-#define ROM_COLUMN_FILENAME "File"
-#define ROM_COLUMN_DESCRIPTION "Description"
-#define ROM_COLUMN_SIZE "Size"
-#define ROM_OPTION_AUTODETECT "Auto-Detect"
-#define ROM_OPTION_FORCEHEADER "Force Header"
-#define ROM_OPTION_FORCENOHEADER "Force No Header"
-#define ROM_OPTION_FORCEPAL "Force PAL"
-#define ROM_OPTION_FORCENTSC "Force NTSC"
-#define ROM_OPTION_FORCEHIROM "Force HiROM"
-#define ROM_OPTION_FORCELOROM "Force LoROM"
-#define ROM_OPTION_NONINTERLEAVED "Force not interleaved"
-#define ROM_OPTION_MODE1 "Force mode 1"
-#define ROM_OPTION_MODE2 "Force mode 2"
-#define ROM_OPTION_GD24 "Force GD24"
-#define ROM_ITEM_NOTAROM "Not a ROM"
-#define ROM_ITEM_CANTOPEN "Can't Open File"
-#define ROM_ITEM_DESCNOTAVAILABLE "(Not Available)"
-#define ROM_ITEM_COMPRESSEDROMDESCRIPTION ""
+#define ROM_COLUMN_FILENAME TEXT("File")
+#define ROM_COLUMN_DESCRIPTION TEXT("Description")
+#define ROM_COLUMN_SIZE TEXT("Size")
+#define ROM_OPTION_AUTODETECT TEXT("Auto-Detect")
+#define ROM_OPTION_FORCEHEADER TEXT("Force Header")
+#define ROM_OPTION_FORCENOHEADER TEXT("Force No Header")
+#define ROM_OPTION_FORCEPAL TEXT("Force PAL")
+#define ROM_OPTION_FORCENTSC TEXT("Force NTSC")
+#define ROM_OPTION_FORCEHIROM TEXT("Force HiROM")
+#define ROM_OPTION_FORCELOROM TEXT("Force LoROM")
+#define ROM_OPTION_NONINTERLEAVED TEXT("Force not interleaved")
+#define ROM_OPTION_MODE1 TEXT("Force mode 1")
+#define ROM_OPTION_MODE2 TEXT("Force mode 2")
+#define ROM_OPTION_GD24 TEXT("Force GD24")
+#define ROM_ITEM_NOTAROM TEXT("Not a ROM")
+#define ROM_ITEM_CANTOPEN TEXT("Can't Open File")
+#define ROM_ITEM_DESCNOTAVAILABLE TEXT("(Not Available)")
+#define ROM_ITEM_COMPRESSEDROMDESCRIPTION TEXT("")
 
 // Settings
 
-#define SETTINGS_TITLE_SELECTFOLDER "Select Folder"
-#define SETTINGS_OPTION_DIRECTORY_ROMS "Roms"
-#define SETTINGS_OPTION_DIRECTORY_SCREENS "Screenshots"
-#define SETTINGS_OPTION_DIRECTORY_MOVIES "Movies"
-#define SETTINGS_OPTION_DIRECTORY_SPCS "SPCs"
-#define SETTINGS_OPTION_DIRECTORY_SAVES "Saves"
-#define SETTINGS_OPTION_DIRECTORY_SRAM "SRAM"
-#define SETTINGS_OPTION_DIRECTORY_PATCHESANDCHEATS "Patch&Cheat"
-#define SETTINGS_OPTION_DIRECTORY_BIOS "BIOS files"
+#define SETTINGS_TITLE_SELECTFOLDER TEXT("Select Folder")
+#define SETTINGS_OPTION_DIRECTORY_ROMS TEXT("Roms")
+#define SETTINGS_OPTION_DIRECTORY_SCREENS TEXT("Screenshots")
+#define SETTINGS_OPTION_DIRECTORY_MOVIES TEXT("Movies")
+#define SETTINGS_OPTION_DIRECTORY_SPCS TEXT("SPCs")
+#define SETTINGS_OPTION_DIRECTORY_SAVES TEXT("Saves")
+#define SETTINGS_OPTION_DIRECTORY_SRAM TEXT("SRAM")
+#define SETTINGS_OPTION_DIRECTORY_PATCHESANDCHEATS TEXT("Patch&Cheat")
+#define SETTINGS_OPTION_DIRECTORY_BIOS TEXT("BIOS files")
 
 // Misc.
 
 #define INPUT_INFO_DISPLAY_ENABLED "Input display enabled."
 #define INPUT_INFO_DISPLAY_DISABLED "Input display disabled."
 
-#define FILE_INFO_AVI_FILE_TYPE "AVI file"
-#define FILE_INFO_TXT_FILE_TYPE "Text file"
-#define FILE_INFO_ROM_FILE_TYPE "ROM files or archives"
-#define FILE_INFO_UNCROM_FILE_TYPE "Uncompressed ROM files"
-#define FILE_INFO_ANY_FILE_TYPE "All files"
+#define FILE_INFO_AVI_FILE_TYPE TEXT("AVI file")
+#define FILE_INFO_TXT_FILE_TYPE TEXT("Text file")
+#define FILE_INFO_ROM_FILE_TYPE TEXT("ROM files or archives")
+#define FILE_INFO_UNCROM_FILE_TYPE TEXT("Uncompressed ROM files")
+#define FILE_INFO_ANY_FILE_TYPE TEXT("All files")
 
 #define ERR_ROM_NOT_FOUND "ROM image \"%s\" was not found or could not be opened."
 #define SRM_SAVE_FAILED "Failed to save SRM file."
+
+#define INFO_SAVE_SPC "Saving SPC Data."
 
 #define CHEATS_INFO_ENABLED "Cheats enabled."
 #define CHEATS_INFO_DISABLED "Cheats disabled."
 #define CHEATS_INFO_ENABLED_NONE "Cheats enabled. (None are active.)"
 
-#define MULTICART_BIOS_NOT_FOUND "not found!"
-#define MULTICART_BIOS_FOUND ""
+#define MULTICART_BIOS_NOT_FOUND TEXT("not found!")
+#define MULTICART_BIOS_FOUND TEXT("")
 
-#define ABOUT_DIALOG_TITLE "About "
+#define ABOUT_DIALOG_TITLE TEXT("About ")
