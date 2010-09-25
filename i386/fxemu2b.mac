@@ -1,0 +1,88 @@
+;Copyright (C) 1997-2001 ZSNES Team ( zsknight@zsnes.com / _demo_@zsnes.com )
+;
+;This program is free software; you can redistribute it and/or
+;modify it under the terms of the GNU General Public License
+;as published by the Free Software Foundation; either
+;version 2 of the License, or (at your option) any later
+;version.
+;
+;This program is distributed in the hope that it will be useful,
+;but WITHOUT ANY WARRANTY; without even the implied warranty of
+;MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;GNU General Public License for more details.
+;
+;You should have received a copy of the GNU General Public License
+;along with this program; if not, write to the Free Software
+;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+
+
+
+
+
+
+
+
+%macro TORNb 1   ; V
+   FETCHPIPE
+   test dword [SfxB],1
+   jnz .VersionB
+   mov edi, SfxR0+%1*4
+   inc ebp                ; Increase program counter
+   mov eax,ebp
+   sub eax,[SfxCPB]
+   mov dword[withr15sk],1
+   mov [SfxR15],eax
+   call [FxTableb+ecx*4]
+   mov edi,SfxR0
+   ret
+.VersionB
+   mov eax,[esi]            ; Read Source
+   mov dword[withr15sk],1
+   inc ebp                ; Increase program counter
+   mov [SfxR0+%1*4],eax             ; Write
+   CLRFLAGS
+   ret
+%endmacro
+
+%macro FROMRNb 1 ; V
+   FETCHPIPE
+   test dword [SfxB],1
+   jnz .VersionB
+   mov esi,SfxR0+%1*4
+   inc ebp                ; Increase program counter
+   call [FxTable+ecx*4]
+   mov esi,SfxR0
+   ret
+.VersionB
+   mov eax,[SfxR0+%1*4]             ; Read
+   inc ebp
+   mov [edi],eax        ; Write Destination
+   mov [SfxSignZero],eax
+   shr al,7
+   mov byte[SfxOverflow],al
+   CLRFLAGS
+   ret
+%endmacro
+
+%macro TORNc 1   ; V
+   FETCHPIPE
+   mov eax,[esi]            ; Read Source
+   inc ebp                ; Increase program counter
+   mov [SfxR0+%1*4],eax             ; Write
+   CLRFLAGS
+   ret
+%endmacro
+
+
+%macro FROMRNc 1 ; V
+   FETCHPIPE
+   mov eax,[SfxR0+%1*4]             ; Read
+   inc ebp
+   mov [edi],eax        ; Write Destination
+   mov [SfxSignZero],eax
+   shr al,7
+   mov byte[SfxOverflow],al
+   CLRFLAGS
+   ret
+%endmacro

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Snes9x
+Comment=Super NES Emulator
+Type=Application
+Categories=Game;Emulator;
+MimeType=application/x-snes-rom;
+Exec=snes9x-gtk %F
+TryExec=snes9x-gtk
+Icon=snes9x

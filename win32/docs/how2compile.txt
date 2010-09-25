@@ -1,0 +1,45 @@
+Various software and tools are required to compile Snes9x on Windows:
+
+- Microsoft Visual C++ 7.1 or Microsoft Visual C++ 6.0 SP5 with the
+  latest Platform SDK, to compile all the C++ source code.
+  The current official binary is compiled with Visual Studio 2008
+
+- A recent DirectX SDK. The official binary is compiled against the June 2008 SDK.
+
+- nasm(optional). I use version 0.97. Used to assemble the optional ZSNES FX and C4 core
+  included in Snes9x. Download from www.web-sites.co.uk/nasm
+  Note: the official binary does not use the asm files.
+
+- zlib(optional) - The release binaries are built against a static zlib compiled
+  against VC's multi-threaded C runtime and renamed to zlibmt.lib, to avoid linker conflicts.
+  removing ZLIB from the preprocessor definitions and zlibmt.lib from the library
+  listing will disable zip support.
+  (the zlib directory should reside at win32/../../zlib, i.e. 2 directories up, the
+  lib file is expected in win32/../../zlib/lib)
+
+- libpng(optional) - Like zlib, this is a renamed libpng.lib, built against the same
+  C runtime for the same reasons. Building your own is as simple as changing the runtime
+  used by libpng's own project files, compiling, renaming the result to libpngmt.lib
+  HAVE_LIBPNG is the define used to include this code, used for screenshots.
+  (the libpng directory should reside at win32/../../libpng, i.e. 2 directories up)
+
+- fmod(optional) - Versions 3.20 and above. Used to provide extra sound output
+  options that increases hardware compatibility with some PC hardware.
+  Version 3.33 broke A3D support on some hardware so I reverted back to
+  version 3.20. However, I'm told 3.40, just released at time of writing,  fixes the problem.
+  Download from www.fmod.org Unpack into a temp folder and copy the API
+  sub-folder contents into win32/../../fmod. Disable fmod support by removing the
+  FMOD_SUPPORT from the Preprocessor Definitions text box.
+
+- fmod ex(optional) - Used to provide extra sound output. Cannot be used at the same time as
+  normal FMOD support. Disable fmod support by removing the FMODEX_SUPPORT from the Preprocessor
+  Definitions text box.
+
+- To compile Snes9x:
+    Run the MAKEASM.BAT script. nasmw will need to be on your path
+      for the script to work. Only necessary if you want to compile with ZSNES_C4 or ZSNES_FX
+    Start up Visual C++.
+    Load the Snes9x project file.
+    Select the desired configuration and build.
+    The Release configuration may build significantly slower than Debug.
+    Then you can run it.

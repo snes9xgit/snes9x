@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Snes9X", "snes9xw.vcproj", "{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		C core|Win32 = C core|Win32
+		Debug|Win32 = Debug|Win32
+		Debug+ASM|Win32 = Debug+ASM|Win32
+		Release|Win32 = Release|Win32
+		Release+ASM|Win32 = Release+ASM|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}.C core|Win32.ActiveCfg = C core|Win32
+		{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}.C core|Win32.Build.0 = C core|Win32
+		{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}.Debug|Win32.Build.0 = Debug|Win32
+		{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}.Debug+ASM|Win32.ActiveCfg = Debug+ASM|Win32
+		{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}.Debug+ASM|Win32.Build.0 = Debug+ASM|Win32
+		{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}.Release|Win32.ActiveCfg = Release|Win32
+		{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}.Release|Win32.Build.0 = Release|Win32
+		{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}.Release+ASM|Win32.ActiveCfg = Release+ASM|Win32
+		{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}.Release+ASM|Win32.Build.0 = Release+ASM|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

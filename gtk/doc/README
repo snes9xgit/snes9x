@@ -1,0 +1,49 @@
+Snes9x for GTK/X11 README 
+-------------------------
+
+  The following contains installation instructions, known issues, and info on
+  features currently missing from the GTK port of Snes9x.
+
+
+Requirements / Build Notes:
+---------------------------
+
+  The GTK port of Snes9x is a separate codebase from the unix port, and uses a
+  variety of multiplatform libraries for compatibility. The following
+  are the required libraries for this port:
+
+    Library                Required Version
+    ------------------------------------
+    GTK+                   >= 2.10 and dependencies
+    libxml2                >= 2.0
+    One or more of portaudio, PulseAudio, SDL, ALSA, or OSS
+
+  And for joystick support:
+
+    Library             Required Version
+    ------------------------------------    
+    SDL                 >= 1.2.12
+
+  Building requires you run the configure script with the parameter
+    --with-gtk
+  and for OpenGL support
+    --with-gtk --with-opengl
+
+  An appropriate configure command as an example would be:
+    $ ./configure --prefix=/usr --with-gtk --with-opengl
+
+  Next, issue the "make" command:
+    $ make
+
+  An standalone executable named "snes9x-gtk" will be created. This may be
+  run in place. To install the program and errata, use 
+    # make install
+  as a privileged user.
+
+
+Joystick Support:
+-----------------
+
+  Snes9x will autodetect your joystick when run. If you've used any
+  calibration programs beforehand, you may need to reboot your operating
+  system to undo the damage they've done.

@@ -1,0 +1,49 @@
+"Address"         = "Address";
+"Value"           = "Value";
+"Description"     = "Description";
+
+// Mes: replace ROM name with @
+// Pos: position of @ (UniChar count)
+
+"OpenROMMes"      = "Choose a ROM image";
+"FreezeToMes"     = "Save the @ freeze file";
+"FreezeToPos"     = "10";
+"DefrostFromMes"  = "Choose a @ freeze file";
+"DefrostFromPos"  = "10";
+"NPROMNameMes"    = "Server requests @.";
+"NPROMNamePos"    = "17";
+"RecordToMes"     = "Save the @ movie file";
+"RecordToPos"     = "10";
+"PlayFromMes"     = "Choose a @ movie file";
+"PlayFromPos"     = "10";
+"QTRecordMes"     = "Save the @ QuickTime movie";
+"QTRecordPos"     = "10";
+
+"MoviePrevMes"    = "Date :\nTime :\nLength :\nFrames :";   // indexes of info area
+"MoviePrevWidth"  = "120";									// width of info area
+"MoviePrevBorder" = "45";									// width of indexes column
+
+"ClearMenu"       = "Clear Menu";
+
+"NPReady"         = "Ready";
+"NPConnecting"    = "Connecting";
+"NPServerName"    = "Server";
+
+"AlertMes_03"     = "The folders for saving files could not be created.";
+"AlertMes_04"     = "Some features will not work properly without these folders.";
+"AlertMes_05"     = "This ROM image has bad checksum, so might not work properly.";
+"AlertMes_06"     = "Or failed to detect map / interleave.";
+"AlertMes_07"     = "No enough space in Cheat Entry.";
+"AlertMes_08"     = "Delete some cheats before.";
+"AlertMes_09"     = "Snes9x cannot run on your system.";
+"AlertMes_10"     = "System requirements: Mac OS X 10.3.9 or later, QuickTime 7 or later.";
+
+"PresetNum"       = "Preset #%ld";
+
+"RunMenu"         = "Run";
+"PauseMenu"       = "Pause";
+
+"ResetCIFilter"   = "Reset All Parameters";
+
+"SoundEffectDlg"  = "Sound Effect";
+"CreateMetalDlg"  = "NO";	// "YES" to metalize above dialogs

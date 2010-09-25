@@ -1,0 +1,8 @@
+src/gtk_binding.cpp
+src/gtk_cheat.cpp
+src/gtk_config.cpp
+src/gtk_display_driver_opengl.cpp
+src/gtk_preferences.cpp
+src/gtk_s9x.cpp
+src/gtk_s9xwindow.cpp
+src/snes9x.glade

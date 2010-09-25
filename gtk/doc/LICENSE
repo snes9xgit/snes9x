@@ -1,0 +1,7 @@
+The Snes9x GTK port (C) Brandon Wright <bearoso@gmail.com> is provided under
+the GNU Lesser General Public License (LGPL) as noted in lgpl.txt, and also 
+under the Snes9x license as noted in snes9x-license.txt. The snes_ntsc filter
+is licensed under the LGPL 2.1 (lgpl.txt). Particular files may also be the 
+work of other authors, and will note any license information within them.
+
+Brandon Wright (bearoso)

@@ -1,0 +1,260 @@
+FAQ for Windows Port
+
+
+Wassail,
+This is the much anticipated and highly informative Frequently Asked Questions
+article, which contains, believe it or not, Frequently Asked Questions! This
+time around we have also included Frequently Answered Answers! I shall be your
+host on this gleeful sojourn through a text document where anything can, but
+probably won't, happen. On our first section of this mystical journey you shall
+see various frequently asked questions, as well as their answers!
+
+The majority of the things in this FAQ are based off the Windows port of Snes9x.
+While some of the information is relevant to most, or all, ports, no gaurantees
+are made that what is said will be accurate for all versions.
+
+--------------------------------------------------------------------------------
+
+Chapter 1:
+
+Emulator Specific Questions
+    Or
+  It's Not The Size Of An Emulator That Counts; It's How You Use It.
+
+Q: When is the next version (of Snes9x) coming out?
+  A: Chances are it will be coming out when enough changes have been made to
+suitably make a release. You can generally guesstimate the release date by
+paying attention to the Developers forum at snes9x.com. But don't ask them when
+the next release will be.
+
+Q: Why do my games run too fast?
+  A: Through proper nutrition and training an increase in abilities is often
+found. It is possible that certain ROMs, whilst training for the annual Rohm
+race, surpassed a sane limit. Generally not allowing them to run will cause
+atrophy, making them somewhat slower. Seriously though, try using the + and/or -
+keys to adjust the emulated speed. If that doesn't do anything, try holding down
+Shift and pressing the - key a bunch of times first. In the display settings
+make sure the "Use Frame Limiter" and "Automatic Frame Skipping" boxes are
+checked. Also try pressing Tab and make sure your Tab key isn't stuck down.
+
+Q: Why doesn't Snes9x support transparencies?
+  A: It does! Make sure the "Transparency" box is checked in the settings menu.
+
+Q: I recently purchased a gamepad controller. Will it work on Snes9x?
+  A: More than likely yes. Any USB compatable controller will work. Generally
+this means any controller made within the past 7 years or so. If you are having
+problems consider updating drivers and recalibrating your controller.
+
+Q: In Snes9x my gamepad is having trouble inputting any diagonal directions on
+the D-Pad. How can I fix this?
+  A: While setting up your controller functions in Snes9x, make sure you do not
+setup the diagonal buttons; leave them blank. Ye olde Snes only had 4 buttons on
+the D-Pad: Up, down, left and right. By pressing two directions you would go in
+the appropriate diagonal direction (game specific, of course). If you have
+accidently set a value in the diagonal boxes already either select them one at a
+time and hit "Escape", or press the "Toggle Diagonals" button.
+
+Q: Soooooo... Why the heck do you have diagonals in the controller setup anyway?
+  A: Simple really. Some people enjoy using the keyboard, or have no other
+choice. In the next chapter the topic of keyboard input limitations will be
+addressed. Being able to input the diagonals can help hinder that occurrence. It
+can also make keyboard usage a bit easier... assigning the directional controls
+to the number pad for instance.
+
+Q: I gotsid me a translation patch (.ips) for my game. Now what do I do so I can
+use it?
+  A: Make sure both your ROM image and .ips file are in the same folder. Finally
+make sure they have the exact same name (minus file extensions, of course). As
+an example "Pie.smc" should have "Pie.ips" and "Super_Pie3(E).smc" should have
+"Super_Pie3(E).ips". Now open up Snes9x, load your ROM and voila! It should be
+noted that IPS patches are almost always designed for use with a specific dump
+of a ROM. If you are positive you are using it correctly, but it still does not
+work, consider trying a ROM from a different source.
+
+Q: I think my options in Snes9x got screwed up, how do I reset them?
+  A: Snes9x uses a config file, so you can edit your options there in any text
+editor if you're having problems. You can safely delete your config file (called
+snes9x.conf) to reset all of the options. If it doesn't let you delete or change
+it, make sure to close Snes9x first.
+
+Q: I had a bad checksummed game that didn't work so I adjusted the header, but
+it still doesn't work :( Why?
+  A: It should be noted that while it is possible to plop a ROM into Snestool,
+or several other programs, and adjust the header size to be the same as a proper
+"good checksum" ROM, this merely mimics the appearance of a good ROM. Any
+problems still found within its evil will remain. One could compare it to
+covering up a circumorbital haematoma with a paper bag.
+
+--------------------------------------------------------------------------------
+
+Chapter 2:
+
+Game Specific Questions
+    Or
+  How I Learned To Stop Worrying And Love The ROM
+
+Q: Why doesn't game X work?
+  A: There are four possible answers to this question, depending on the
+scenario. Answer one is that it does work, but your ROM dump is incorrect (this
+MAY be fixed by reattaching your cartridge to your copier and redumping). Answer
+two is that we have found a solution or a hack to the problem, but have not yet
+implemented a fix. Answer three, a subsidiary of answer two, is that we do NOT
+know what is wrong with it, and as such have not yet implemented a fix. Answer
+four is that Snes9x CANNOT emulate the game correctly due to its poor
+implementation around timings between emulated units.
+
+Q: Why doesn't Snes9x display SD3/Secret of Mana/other hi-res games properly?
+  A: Some games had resolution changes at certain parts during the game that
+affect the pixel size of what is shown on screen. Due to the way this is handled
+some games require specific options to keep "right". First, make sure that
+Hi-res support is selected in the option menus, that option can slow down
+performance on slower machines, although it is now on by default. Second, it is
+recommended your filter option is set to anything except "none." "Simple 2X" is
+a good choice. Note: In the event the "Hi-res" option is greyed out, make sure
+your display resolution is at least 512 x 480.
+
+Q: Why can't I press many buttons at once? Especially in Chrono Trigger.
+  A: Most standard keyboards (There are a few exceptions, though only a few) can
+only output so much data to the compter at a time. As such your computer is
+often unable to carry-out the instructions you have given it. There are
+solutions abound, of course, and here they are now: Lovely recommendation one is
+to rearrange the keymapping in Snes9x so that all the necessary buttons are on a
+single keystroke... That way you can press 1 key and have it do all the actions.
+The draw back to this is that if you set "a" to jump and shoot you will be
+unable to jump without shooting, or shoot without jumping, until you change it
+back. The super sexy recommendation number 2 is to set the ctrl and alt keys to
+some of the necessary buttons. The draw back to this is that often these buttons
+can cause problems if used in tandum with other keys, due to Windows shortcuts.
+You may, for instance, be using alt to jump and while in midair hit f4 to load a
+savestate... That will close the program, which is bad. Finally, and the method
+I personally recommend, is to purchase a gamepad. The draw backs to this are
+that it requires time and money.
+
+--------------------------------------------------------------------------------
+
+Chapter 3:
+All About Netplay
+    Or
+  More Slow Than A Quadriplegic Ninja Turtle, But Only Half As Entertaining
+
+Q: Snes9x netplay sucks, can I make it better?
+  A: Yes, yes you can! Snes9x is open source so all you need to make netplay
+better is advanced programming knowledge and a will to improve upon the Snes9x
+code. At present time Snes9x is more for LANplay, best used in a small network
+of local computers. I recommend ZSNES (http://www.zsnes.com/) and zbattle
+(http://www.zbattle.net/) for your random chaotic netplay needs.
+
+Q: I am using a Windows port of Snes9x. My friend is using a Mac. Can we
+netplay?
+  A: Yes... Just not with each other. Snes9x, at this time, does not support
+cross-platform netplay.
+
+Q: Yea who don know dat but when i do what do afta y find som1 (now that I have
+someone to play with, what do I do?)
+  A: An excellent... ...question. I couldn't have worded it better myself.
+Despite my sarcasm however I must cringe at the fact I can actually understand
+it enough to answer. The answer depends on if you are acting as the server/host
+or the client. If you are the host you must first find your IP address and give
+it to the person you intend to play online with. Next open Snes9x, load the ROM
+you wish to netplay, and then from the netplay menu, select "Act as Server."
+Then you wait until the client connects... Now, if you are the client, first
+receive the IP address from the host, open Snes9x, and open the ROM you wish to
+netplay. Select "Connect to Server" from the netplay menu, and fill out the
+necessary information. Server address should contain the IP address of the host.
+After that is done click "Connect." Assuming both parties have done their role
+correctly, a netplay match should soon start.
+
+Q: How do I chat with my partner during netplay?
+  A: I personally recommend yelling really loudly, but the telephone is also a
+somewhat plausible answer I suppose. Seriously.
+
+Q: Can I play with more than 2 players?
+  A: Indeed you can. Basically the same steps to starting a multiplayer game
+apply, however there are a few important differences. Obviously the game you
+wish to multiplay in must support three or more players. Now then, make sure
+that you, as well as everyone intending to play, has selected the "Enable
+Multitap 5" option from the input menu. If you don't do this it just won't work.
+
+--------------------------------------------------------------------------------
+
+Chapter 4:
+Miscellaneous Questions
+    Or
+  Q-Bert Is My Only Friend
+
+Q: Is it legal?
+  A: This has been asked time and again, and the answer is yes. Developing,
+downloading, or using the emulator, Snes9x, is completely legal. Downloading
+games, called ROMS, however is not. If you own the original cartridge of a game,
+you are still not entitled to download the ROM image of that game. You may
+create a single backup image of your own cartridge via proper hardware, but it
+must be YOUR cartridge and is only usable in place of the original... so only
+one may be active at any time. Many sites claim that you may legally download
+ROMs for up to 24 hours before they must be deleted. This is also wrong; you
+can't legally download these for "trial" purposes. You can't download ROMs for
+educational purposes either. If you wish to use Super Nintendo Entertainment
+System games for educational purposes, contact your closest Nintendo Outlet and
+discuss educational programming with them. Finally, a small number of ROMs are
+labeled "(PD)". This means public domain, and these games are not under
+copyright. As such they are legal to download at your hearts content. These
+include programs created by internet users such as yourself for use in Super
+Nintendo emulators. As of this time there are no commercial videogames in the
+public domain.
+
+Q: My friend, Tibby, says that you are wrong and that game companies don't care
+if you download games!
+  A: Whilst not actually a question, and more of a statement, I am afraid Tibby
+is incorrect.  Feel free to peruse the various legal documentation sprawled
+throughout the World Wide Web or your local constituency. As for the blatant
+generalization that companies do not care; At least one does, and truthfully
+many more do as well, as such the statement is obviously a fallacy. For those
+who think it is not fair, or shouldn't be the way it is... perhaps not, though
+as holders of a copyright it is up to Nintendo to decide how and when their
+products are distributed. 
+
+Q: I just purchased your fine program off eBay for $19.89, but my friend says I
+can download it for free. Can you guys give me my money back?
+  A: Okay, this question hasn't actually been asked, however our free
+downloadable program does seem to get sold on eBay more often than it should,
+which is to say at all. We cannot reimburse anyone who was unlucky enough to be
+scammed into purchasing Snes9x, just as McDonalds cannot reimburse you if you
+purchased 100 Happy Meals from a random stranger and he gave you a frozen fish.
+If you find yourself in this situation... Purchasing Snes9x, not frozen fish...
+Please take the time to inform eBay via their heavily disguised investigations
+department, and leave any negative feedback that you wish. It would also be
+appreciated by the Snes9x team if you could mention where and when this happened
+so that we can take measures to stop it from happening again. While the fact we
+aren't making money from the program in no way bothers us (It is freeware after
+all), that some grubby bastards are does.
+
+Q: So err, where exactly do I contact y'all, eh?
+  A: The most convenient way to contact us would be via www.snes9x.com. There is
+a forum that is checked at least 12 times a day by regulars, and at least a few
+of us can actually give some advice. E-mail is also a possibility, though it is
+much slower, and you'll hafta find the e-mail addresses on your own. Be sure to
+read the FAQ and Read me before posting, as things already answered many a time
+will probably result in random insults or heavy sarcasm.
+
+--------------------------------------------------------------------------------
+
+Chapter 5:
+The Conclusion
+    Or
+  That Block Of Words And Various Punctuation Symbols At The End Of The Document
+  That Isn't Totally Dissimilar To Something That May, Or May Not, Be Considered
+  A Conclusion Given The Contents Held Within The Paragraph(s) It Contains
+
+I hope you enjoyed this jaunt through the magical land of FAQs. Much has been
+said but, obviously, there is still room to grow and expand. Should you feel you
+have a question worthy of this vast tome of knowledge please leave it in the
+"board feedback" section of the Snes9x Forum. I have been your host and shall
+return again next time with an even greater FAQ.
+
+I would like to take the time to thank the vast plethora of people who have
+helped me conjur this machination of goodness. However, in the annals of time I
+have probably forgotten many of those who have given me advice, defintions,
+technologial information and cookies. It would be unfair to only mention the
+small portion of names I remember from an excessivley long and ever-expanding
+list. As such, I won't. Toodles.
+
+Knowledge is power; Learn it well

@@ -1,0 +1,101 @@
+; Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+;
+; Super FX assembler emulator code
+; (c) Copyright 1998, 1999 zsKnight and _Demo_.
+;
+; Permission to use, copy, modify and distribute Snes9x in both binary and
+; source form, for non-commercial purposes, is hereby granted without fee,
+; providing that this license information and copyright notice appear with
+; all copies and any derived work.
+;
+; This software is provided 'as-is', without any express or implied
+; warranty. In no event shall the authors be held liable for any damages
+; arising from the use of this software.
+;
+; Snes9x is freeware for PERSONAL USE only. Commercial users should
+; seek permission of the copyright holders first. Commercial use includes
+; charging money for Snes9x or software derived from Snes9x.
+;
+; The copyright holders request that bug fixes and improvements to the code
+; should be forwarded to them so everyone can benefit from the modifications
+; in future versions.
+;
+; Super NES and Super Nintendo Entertainment System are trademarks of
+; Nintendo Co., Limited and its subsidiary companies.
+;
+;*******************************************************
+; InitReg                          Initializes Registers
+;*******************************************************
+
+%macro setreg 2
+    mov edi,%1
+    add edi,[regptr]
+    mov eax,%2
+    mov [edi],eax
+%endmacro
+
+;*******************************************************
+; Registers     Note : Remember to restore AH, ECX, & DX
+;*******************************************************
+
+%macro checkmultchange 0
+    ; execute multiplication
+    cmp byte[multchange],0
+    je .nomult
+    push edx
+    push eax
+    xor bh,bh
+    mov bl,[mode7B+1]
+    mov ax,[mode7A]
+    test bl,80h
+    jz .noneg
+    mov bh,0FFh
+.noneg
+    imul bx
+    mov [compmult],ax
+    mov [compmult+2],dl
+    pop eax
+    pop edx
+    mov byte[multchange],0
+.nomult
+%endmacro
+
+%macro mouse4016doxA 2
+    cmp byte[JoyAPos],%1
+    jne .nx7
+    mov bx,[mousexpos]
+    shr bx,%2
+    and bx,1
+    mov al,bl
+.nx7
+%endmacro
+
+%macro mouse4016doyA 2
+    cmp byte[JoyAPos],%1
+    jne .ny7
+    mov bx,[mouseypos]
+    shr bx,%2
+    and bx,1
+    mov al,bl
+.ny7
+%endmacro
+
+%macro mouse4017dox 2
+    cmp byte[JoyBPos],%1
+    jne .nx7
+    mov bx,[mousexpos]
+    shr bx,%2
+    and bx,1
+    mov al,bl
+.nx7
+%endmacro
+
+%macro mouse4017doy 2
+    cmp byte[JoyBPos],%1
+    jne .ny7
+    mov bx,[mouseypos]
+    shr bx,%2
+    and bx,1
+    mov al,bl
+.ny7
+%endmacro
