@@ -833,8 +833,8 @@ static void S9xInitWindowMode (void)
 	oldDisplayMode = CGDisplayCurrentMode(gGameDisplayID);
 
 	mode = CGDisplayBestModeForParameters(gGameDisplayID, depth, width, height, &exactMatch);
-
-	CGDisplaySwitchToMode(gGameDisplayID, mode);
+	if (exactMatch)
+		CGDisplaySwitchToMode(gGameDisplayID, mode);
 #else
 	oldDisplayModeRef = CGDisplayCopyDisplayMode(gGameDisplayID);
 
