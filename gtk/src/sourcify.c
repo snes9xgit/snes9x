@@ -32,7 +32,7 @@ main (int argc,
              "int %s_size = %d;\n\n", 
              argv[3], 
              (int) file_info.st_size);
-    fprintf (outfile, "char %s [] = \n{\n  ", argv[3]);
+    fprintf (outfile, "unsigned char %s [] = \n{\n  ", argv[3]);
     
     counter = 0;
     

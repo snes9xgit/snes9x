@@ -9,7 +9,6 @@
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkkeysyms.h>
-#include <glade/glade-build.h>
 
 #include "gtk_config.h"
 #include "gtk_s9x.h"
@@ -128,7 +127,6 @@ Snes9xConfig::load_defaults (void)
     aspect_ratio = 0;
     scale_method = 0;
     overscan = 0;
-    data_location = DIR_ROM;
     save_sram_after_secs = 0;
     rom_loaded = 0;
     multithreading = 0;
@@ -143,11 +141,11 @@ Snes9xConfig::load_defaults (void)
     mute_sound = FALSE;
     fullscreen = FALSE;
     ui_visible = TRUE;
-    statusbar_visible = TRUE;
+    statusbar_visible = FALSE;
     default_esc_behavior = 1;
     prevent_screensaver = FALSE;
     sound_driver = 0;
-    sound_buffer_size = 64;
+    sound_buffer_size = 32;
     sound_playback_rate = 5;
     sound_input_rate = 31950;
     last_directory[0] = '\0';
@@ -155,7 +153,11 @@ Snes9xConfig::load_defaults (void)
     window_height = -1;
     preferences_width = -1;
     preferences_height = -1;
-    custom_sram_directory[0] = '\0';
+    sram_directory[0] = '\0';
+    export_directory[0] = '\0';
+    savestate_directory[0] = '\0';
+    cheat_directory[0] = '\0';
+    patch_directory[0] = '\0';
     screensaver_needs_reset = FALSE;
     ntsc_setup = snes_ntsc_composite;
     ntsc_scanline_intensity = 1;
@@ -177,6 +179,10 @@ Snes9xConfig::load_defaults (void)
     use_pbos = 1;
     pbo_format = 0;
     npot_textures = FALSE;
+    use_shaders = 0;
+    fragment_shader[0] = '\0';
+    vertex_shader[0] = '\0';
+    sync_every_frame = FALSE;
 #endif
 
     /* Snes9X Variables */
@@ -280,10 +286,13 @@ Snes9xConfig::save_config_file (void)
     xml_out_int (xml, "overscan", overscan);
     xml_out_int (xml, "force_hires", force_hires);
     xml_out_int (xml, "force_inverted_byte_order", force_inverted_byte_order);
-    xml_out_int (xml, "data_location", data_location);
     xml_out_int (xml, "multithreading", multithreading);
     xml_out_string (xml, "last_directory", last_directory);
-    xml_out_string (xml, "custom_sram_directory", custom_sram_directory);
+    xml_out_string (xml, "sram_directory", sram_directory);
+    xml_out_string (xml, "savestate_directory", savestate_directory);
+    xml_out_string (xml, "cheat_directory", cheat_directory);
+    xml_out_string (xml, "patch_directory", patch_directory);
+    xml_out_string (xml, "export_directory", export_directory);
     xml_out_int (xml, "window_width", window_width);
     xml_out_int (xml, "window_height", window_height);
     xml_out_int (xml, "preferences_width", preferences_width);
@@ -317,9 +326,13 @@ Snes9xConfig::save_config_file (void)
 #ifdef USE_OPENGL
     xml_out_int (xml, "bilinear_filter", bilinear_filter);
     xml_out_int (xml, "sync_to_vblank", sync_to_vblank);
+    xml_out_int (xml, "sync_every_frame", sync_every_frame);
     xml_out_int (xml, "use_pbos", use_pbos);
     xml_out_int (xml, "pbo_format", pbo_format);
     xml_out_int (xml, "npot_textures", npot_textures);
+    xml_out_int (xml, "use_shaders", use_shaders);
+    xml_out_string (xml, "fragment_shader", fragment_shader);
+    xml_out_string (xml, "vertex_shader", vertex_shader);
 #endif
 
 #ifdef USE_JOYSTICK
@@ -462,9 +475,13 @@ Snes9xConfig::set_option (const char *name, const char *value)
     else if (!strcasecmp (name, "scale_method"))
     {
         scale_method = atoi (value);
-
+#ifdef USE_HQ2X
         if (scale_method >= NUM_FILTERS)
             scale_method = 0;
+#else
+        if (scale_method >= NUM_FILTERS - 3)
+            scale_method = 0;
+#endif /* USE_HQ2X */
     }
     else if (!strcasecmp (name, "multithreading"))
     {
@@ -493,6 +510,12 @@ Snes9xConfig::set_option (const char *name, const char *value)
         sync_to_vblank = atoi (value);
 #endif
     }
+    else if (!strcasecmp (name, "sync_every_frame"))
+    {
+#ifdef USE_OPENGL
+        sync_every_frame = atoi (value);
+#endif
+    }
     else if (!strcasecmp (name, "use_pbos"))
     {
 #ifdef USE_OPENGL
@@ -512,6 +535,24 @@ Snes9xConfig::set_option (const char *name, const char *value)
         npot_textures = atoi (value);
 #endif
     }
+    else if (!strcasecmp (name, "use_shaders"))
+    {
+#ifdef USE_OPENGL
+        use_shaders = atoi (value);
+#endif
+    }
+    else if (!strcasecmp (name, "fragment_shader"))
+    {
+#ifdef USE_OPENGL
+        strncpy (fragment_shader, value, PATH_MAX);
+#endif
+    }
+    else if (!strcasecmp (name, "vertex_shader"))
+    {
+#ifdef USE_OPENGL
+        strncpy (vertex_shader, value, PATH_MAX);
+#endif
+    }
     else if (!strcasecmp (name, "joystick_threshold"))
     {
 #ifdef USE_JOYSTICK
@@ -520,7 +561,7 @@ Snes9xConfig::set_option (const char *name, const char *value)
     }
     else if (!strcasecmp (name, "data_location"))
     {
-        data_location = atoi (value);
+        /* Deprecated */
     }
     else if (!strcasecmp (name, "save_sram_after_secs"))
     {
@@ -599,7 +640,27 @@ Snes9xConfig::set_option (const char *name, const char *value)
     }
     else if (!strcasecmp (name, "custom_sram_directory"))
     {
-        strncpy (custom_sram_directory, value, PATH_MAX);
+        strncpy (sram_directory, value, PATH_MAX);
+    }
+    else if (!strcasecmp (name, "sram_directory"))
+    {
+        strncpy (sram_directory, value, PATH_MAX);
+    }
+    else if (!strcasecmp (name, "savestate_directory"))
+    {
+        strncpy (savestate_directory, value, PATH_MAX);
+    }
+    else if (!strcasecmp (name, "cheat_directory"))
+    {
+        strncpy (cheat_directory, value, PATH_MAX);
+    }
+    else if (!strcasecmp (name, "patch_directory"))
+    {
+        strncpy (patch_directory, value, PATH_MAX);
+    }
+    else if (!strcasecmp (name, "export_directory"))
+    {
+        strncpy (export_directory, value, PATH_MAX);
     }
     else if (!strcasecmp (name, "window_width"))
     {
@@ -1044,13 +1105,17 @@ Snes9xConfig::load_config_file (void)
 
     if (stat (pathname, &file_info))
     {
-        if (mkdir (pathname, 0))
+        if (mkdir (pathname, 0755))
         {
             fprintf (stderr,
                      _("Couldn't create config directory: %s\n"),
                      pathname);
             return -1;
         }
+    }
+    else
+    {
+        chmod (pathname, 0755);
     }
 
     free (pathname);

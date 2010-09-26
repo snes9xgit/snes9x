@@ -94,5 +94,6 @@ class JoyDevice
 
 void S9xDeinitInputDevices (void);
 Binding S9xGetBindingByName (const char *name);
+bool S9xIsMousePluggedIn (void);
 
 #endif /* __GTK_CONTROL_H*/

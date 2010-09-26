@@ -17,6 +17,7 @@
 
 void S9xPostRomInit (void);
 void S9xSyncSpeedFinish (void);
+static void S9xCheckPointerTimer (void);
 static gboolean S9xIdleFunc (gpointer data);
 static gboolean S9xScreenSaverCheckFunc (gpointer data);
 
@@ -45,7 +46,6 @@ main (int argc, char *argv[])
     gdk_threads_init ();
 
     gtk_init (&argc, &argv);
-    glade_init ();
 
     bindtextdomain (GETTEXT_PACKAGE, SNES9XLOCALEDIR);
     bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
@@ -73,6 +73,11 @@ main (int argc, char *argv[])
     g_set_application_name ("Snes9x");
 
     top_level = new Snes9xWindow (gui_config);
+
+    /* If we're going to fullscreen, do it before showing window to avoid flicker. */
+    if ((gui_config->full_screen_on_open && rom_filename) || (gui_config->fullscreen))
+        gtk_window_fullscreen (top_level->get_window ());
+
     top_level->show ();
 
     S9xInitDisplay (argc, argv);
@@ -97,7 +102,8 @@ main (int argc, char *argv[])
 
     if (rom_filename)
     {
-        top_level->try_open_rom (rom_filename);
+        if (S9xOpenROM (rom_filename) && gui_config->full_screen_on_open)
+            gtk_window_unfullscreen (top_level->get_window());
     }
 
     memset (&sig_callback, 0, sizeof (struct sigaction));
@@ -334,6 +340,8 @@ S9xIdleFunc (gpointer data)
     if (syncing)
         S9xSyncSpeedFinish ();
 
+    S9xCheckPointerTimer ();
+
     S9xProcessEvents (TRUE);
 
 #ifdef NETPLAY_SUPPORT
@@ -397,6 +405,7 @@ S9xParseArg (char **argv, int &i, int argc)
             {
                 gui_config->scale_method = FILTER_SUPER2XSAI;
             }
+#ifdef USE_HQ2X
             else if (!strcasecmp (argv[i], "hq2x"))
             {
                 gui_config->scale_method = FILTER_HQ2X;
@@ -409,6 +418,7 @@ S9xParseArg (char **argv, int &i, int argc)
             {
                 gui_config->scale_method = FILTER_HQ4X;
             }
+#endif /* USE_HQ2X */
             else if (!strcasecmp (argv[i], "epx"))
             {
                 gui_config->scale_method = FILTER_EPX;
@@ -593,6 +603,23 @@ S9xSyncSpeed (void)
     }
 
     syncing = 1;
+
+    return;
+}
+
+static void
+S9xCheckPointerTimer (void)
+{
+    if (!gui_config->pointer_is_visible)
+        return;
+
+    gettimeofday (&now, NULL);
+
+    if (TIMER_DIFF (now, gui_config->pointer_timestamp) > 1000000)
+    {
+        top_level->hide_mouse_cursor ();
+        gui_config->pointer_is_visible = FALSE;
+    }
 
     return;
 }

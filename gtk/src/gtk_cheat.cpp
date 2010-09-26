@@ -22,6 +22,7 @@ display_errorbox (const char *error)
                                                 GTK_BUTTONS_OK,
                                                 "%s",
                                                 error);
+    gtk_window_set_title (GTK_WINDOW (dialog), _("Error"));
     gtk_dialog_run (GTK_DIALOG (dialog));
     gtk_widget_destroy (dialog);
 
@@ -51,11 +52,11 @@ event_code_toggled (GtkCellRendererToggle *cell_renderer,
 }
 
 Snes9xCheats::Snes9xCheats (void)
-    : GladeWindow (snes9x_glade, snes9x_glade_size, "cheat_window")
+    : GtkBuilderWindow ("cheat_window")
 {
     GtkTreeView     *view;
     GtkCellRenderer *renderer;
-    GladeWindowCallbacks callbacks[] =
+    GtkBuilderWindowCallbacks callbacks[] =
     {
         { "add_code", G_CALLBACK (event_add_code) },
         { "remove_code", G_CALLBACK (event_remove_code) },

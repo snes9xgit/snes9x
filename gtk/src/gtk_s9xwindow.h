@@ -7,15 +7,13 @@
 #include <GL/gl.h>
 #endif
 
-#include <glade/glade.h>
-
 #include "gtk_s9x.h"
-#include "gtk_glade_window.h"
+#include "gtk_builder_window.h"
 
 #define SIZE_FLAG_NO_DRAWING     -1
 #define SIZE_FLAG_DIRTY          -2
 
-class Snes9xWindow : public GladeWindow
+class Snes9xWindow : public GtkBuilderWindow
 {
     public:
         Snes9xWindow (Snes9xConfig *config);
@@ -67,6 +65,7 @@ class Snes9xWindow : public GladeWindow
         void update_accels (void);
         void toggle_ui (void);
         void resize_viewport (int width, int height);
+        void expose (GdkEventExpose *event);
 
         Snes9xConfig   *config;
         unsigned char  user_pause;
@@ -81,7 +80,7 @@ class Snes9xWindow : public GladeWindow
         int            paused_from_focus_loss;
         uint16         mouse_loc_x, mouse_loc_y;
         GdkPixbuf      *icon, *splash;
-        GdkCursor      *cursor;
+        GdkCursor      *default_cursor, *empty_cursor;
         GtkDrawingArea *drawing_area;
         GtkWidget      *recent_menu;
 };

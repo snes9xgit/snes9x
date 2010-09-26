@@ -2,18 +2,13 @@
 #define __GTK_PREFERENCES_H
 
 #include <gtk/gtk.h>
-#include <glade/glade.h>
 #include "gtk_s9x.h"
-#include "gtk_glade_window.h"
+#include "gtk_builder_window.h"
 
 gboolean snes9x_preferences_open (GtkWidget *widget,
                                   gpointer data);
 
-gboolean snes9x_preferences_close (GtkWidget *widget,
-                                   GdkEvent *event,
-                                   gpointer data);
-
-class Snes9xPreferences : public GladeWindow
+class Snes9xPreferences : public GtkBuilderWindow
 {
     public:
         Snes9xPreferences (Snes9xConfig *config);

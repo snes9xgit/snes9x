@@ -11,7 +11,7 @@ noinst_LIBRARIES =
 INCLUDES = -I$(top_srcdir) -I.. -DSNES9XLOCALEDIR=\""$(snes9xlocaledir)"\"
 
 CLEANFILES = \
-    src/gtk_glade.cpp \
+    src/gtk_snes9x_ui.cpp \
     src/sourcify
 
 snes9x_gtk_SOURCES = \
@@ -20,8 +20,6 @@ snes9x_gtk_SOURCES = \
     ../filter/2xsai.h \
     ../filter/epx.cpp \
     ../filter/epx.h \
-    ../filter/hq2x.cpp \
-    ../filter/hq2x.h \
     src/filter_epx_unsafe.h \
     src/filter_epx_unsafe.cpp \
     src/gtk_binding.cpp \
@@ -39,9 +37,9 @@ snes9x_gtk_SOURCES = \
     src/gtk_display.h \
     src/gtk_file.cpp \
     src/gtk_file.h \
-    src/gtk_glade.cpp \
-    src/gtk_glade_window.cpp \
-    src/gtk_glade_window.h \
+    src/gtk_snes9x_ui.cpp \
+    src/gtk_builder_window.cpp \
+    src/gtk_builder_window.h \
     src/gtk_preferences.cpp \
     src/gtk_preferences.h \
     src/gtk_s9xcore.h \
@@ -56,6 +54,12 @@ snes9x_gtk_SOURCES = \
     src/snes_ntsc.h \
     src/snes_ntsc_impl.h \
     src/snes_ntsc.c
+
+if HQ2X
+snes9x_gtk_SOURCES += \
+    ../filter/hq2x.cpp \
+    ../filter/hq2x.h
+endif
 
 if PORTAUDIO
 snes9x_gtk_SOURCES += \
@@ -230,8 +234,8 @@ SUFFIXES = .asm .ASM
 src/sourcify: src/sourcify.c
 	$(CC) src/sourcify.c -o src/sourcify
 
-src/gtk_glade.cpp: src/sourcify src/snes9x.glade
-	src/sourcify src/snes9x.glade src/gtk_glade.cpp snes9x_glade
+src/gtk_snes9x_ui.cpp: src/sourcify src/snes9x.ui
+	src/sourcify src/snes9x.ui src/gtk_snes9x_ui.cpp snes9x_ui
 
 .asm.o:
 	$(NASM) -f elf -DELF $(NASM_FLAGS) -i ./ -i ../ -i ../i386/ -i i386/ -o $@ $*.asm

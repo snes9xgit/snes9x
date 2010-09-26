@@ -55,6 +55,7 @@ S9xNetplayConnect (void)
                                       "Couldn't connect to server: %s:%d",
                                       gui_config->netplay_last_host,
                                       gui_config->netplay_last_port);
+        gtk_window_set_title (GTK_WINDOW (msg), _("Connection Error"));
 
         gtk_dialog_run (GTK_DIALOG (msg));
         gtk_widget_destroy (msg);

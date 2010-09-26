@@ -1,7 +1,7 @@
 AC_INIT([snes9x-gtk], 1.52)
 dnl Set CFLAGS, CXXFLAGS to something 
 dnl before doing AC_PROG_CC, AC_PROG_CXX to avoid default -g
-CFLAGS="-O2 -Wall -W -pedantic -Wno-unused-parameter -pipe $CFLAGS"
+CFLAGS="-Os -Wall -W -pedantic -Wno-unused-parameter -pipe $CFLAGS"
 CXXFLAGS="$CFLAGS"
 
 AC_PROG_CC
@@ -15,7 +15,7 @@ AM_INIT_AUTOMAKE([foreign subdir-objects])
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 AM_PROG_CC_C_O
-IT_PROG_INTLTOOL([0.40.1])
+IT_PROG_INTLTOOL([0.37.0])
 GETTEXT_PACKAGE=[snes9x-gtk]
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE")
@@ -109,6 +109,12 @@ AC_ARG_WITH(sdd1-decomp,
   [],
   [with_sdd1_decomp=yes])
 
+AC_ARG_WITH(hq2x, 
+  [AS_HELP_STRING([--with(out)-hq2x],
+    [Enable support for the HQ2x family of filters (default: with)])],
+  [],
+  [with_hq2x=yes])
+
 AC_ARG_WITH(netplay,
   [AS_HELP_STRING([--with(out)-netplay],
     [Enable netplay support (default: without)])],
@@ -133,7 +139,7 @@ AC_ARG_WITH(zlib,
   [],
   [with_zlib=yes])
 
-AC_ARG_WITH(png,
+AC_ARG_WITH(screenshot,
   [AS_HELP_STRING([--with(out)-screenshot],
     [Screenshot support through libpng if available (default: with)])],
   [],
@@ -144,6 +150,8 @@ if test yes = "$with_debug" ; then
 else
   CFLAGS="$CFLAGS -fomit-frame-pointer"
 fi
+
+CFLAGS="$CFLAGS -DGSEAL_ENABLE -DG_DISABLE_SINGLE_INCLUDES -DGDK_DISABLE_DEPRECATED -DGTK_DISABLE_DEPRECATED -DGDK_DISABLE_SINGLE_INCLUDES -DGTK_DISABLE_SINGLE_INCLUDES"
 
 ZSNESFX='#ZSNESFX=yes'
 ZSNESC4='#ZSNESC4=yes'
@@ -167,9 +175,8 @@ fi
 GTK=yes
 snes9x_info_display="GTK"
 
-PKG_CHECK_MODULES([GTK], [gtk+-2.0 >= 2.10])
+PKG_CHECK_MODULES([GTK], [gtk+-2.0 >= 2.16])
 PKG_CHECK_MODULES([GLIB], [gthread-2.0 >= 2.6 gobject-2.0 >= 2.6])
-PKG_CHECK_MODULES([GLADE], [libglade-2.0 >= 2.0])
 PKG_CHECK_MODULES([LIBXML], [libxml-2.0 >= 2.0])
                           
 if test yes = "$with_opengl" ; then
@@ -280,10 +287,27 @@ if test yes = "$with_xrandr" ; then
         echo "--> Disabling Xrandr support."
     ])
 fi
-PKG_CHECK_MODULES([LIBPNG],libpng)
 
-CFLAGS="$CFLAGS $GTK_CFLAGS $GLIB_CFLAGS $GLADE_CFLAGS $LIBXML_CFLAGS $PORTAUDIO_CFLAGS $LIBPNG_CFLAGS $SDL_CFLAGS $XV_CFLAGS $XRANDR_CFLAGS $ALSA_CFLAGS $PULSEAUDIO_CFLAGS"
-LIBS="$LIBS $GTK_LIBS $GLIB_LIBS $GLADE_LIBS $LIBXML_LIBS $PORTAUDIO_LIBS $LIBPNG_LIBS $SDL_LIBS $XV_LIBS $XRANDR_LIBS $ALSA_LIBS $PULSEAUDIO_LIBS"
+LIBPNG_CFLAGS=""
+LIBPNG_LIBS=""
+if test yes = "$with_screenshot"; then
+    PKG_CHECK_MODULES([LIBPNG],[libpng],[
+        CFLAGS="$CFLAGS -DHAVE_LIBPNG"
+    ],[
+        echo "Cannot find libpng."
+        echo "--> Disabling screenshot support."
+    ])
+fi
+
+if test yes = "$with_hq2x" ; then
+    HQ2X=yes
+    CFLAGS="$CFLAGS -DUSE_HQ2X"
+else
+    HQ2X=0
+fi
+
+CFLAGS="$CFLAGS $GTK_CFLAGS $GLIB_CFLAGS $LIBXML_CFLAGS $PORTAUDIO_CFLAGS $LIBPNG_CFLAGS $SDL_CFLAGS $XV_CFLAGS $XRANDR_CFLAGS $ALSA_CFLAGS $PULSEAUDIO_CFLAGS"
+LIBS="$LIBS $GTK_LIBS $GLIB_LIBS $LIBXML_LIBS $PORTAUDIO_LIBS $LIBPNG_LIBS $SDL_LIBS $XV_LIBS $XRANDR_LIBS $ALSA_LIBS $PULSEAUDIO_LIBS"
 
 
 AC_MSG_CHECKING(if the CPU is IA32)
@@ -369,13 +393,6 @@ if test yes = "$with_zlib"; then
         CFLAGS="$CFLAGS -DZLIB"
         LIBS="$LIBS -lz"
       ], ,)
-fi
-
-if test yes = "$with_screenshot"; then
-  AC_CHECK_LIB(png, png_init_io, [
-    CFLAGS="$CFLAGS -DHAVE_LIBPNG"
-    LIBS="$LIBS -lpng"
-  ], , -lz -lm)
 fi
 
 dnl Check for functions
@@ -471,6 +488,7 @@ AM_CONDITIONAL(DEBUG, [test yes = "$with_debug" ])
 AM_CONDITIONAL(SDL, [test yes = "$GTKJOY"])
 AM_CONDITIONAL(ALSA, [test yes = "$ALSA"])
 AM_CONDITIONAL(PULSEAUDIO, [test yes = "$PULSEAUDIO"])
+AM_CONDITIONAL(HQ2X, [test yes = "$HQ2X"])
 
 AC_SUBST(NASM)
 AC_SUBST(NASM_FLAGS)
@@ -544,4 +562,8 @@ if ! test yes = "$PORTAUDIO" ; then
             fi
         fi
     fi
+fi
+
+if ! test yes = "$HQ2X"; then
+    echo "HQ2x filter compilation is disabled."
 fi

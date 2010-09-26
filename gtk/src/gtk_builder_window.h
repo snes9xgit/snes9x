@@ -1,19 +1,19 @@
-#ifndef __GTK_GLADE_WINDOW_H
-#define __GTK_GLADE_WINDOW_H
+#ifndef __GTK_BUILDER_WINDOW_H
+#define __GTK_BUILDER_WINDOW_H
 
 #include <gtk/gtk.h>
-#include <glade/glade.h>
 
 typedef struct
 {
     const char *signal;
     GCallback function;
-} GladeWindowCallbacks;
+} GtkBuilderWindowCallbacks;
 
-class GladeWindow
+class GtkBuilderWindow
 {
     public:
-        GladeWindow (const char *buffer, int size, const char *root);
+        GtkBuilderWindow (const char *root);
+        ~GtkBuilderWindow ();
         GtkWidget *get_widget (const char *name);
         void resize (int width, int height);
         GtkWindow *get_window (void);
@@ -21,10 +21,7 @@ class GladeWindow
         int get_width (void);
         int get_height (void);
 
-    protected:
-        void signal_connect (const char *name, GCallback func);
-        void signal_connect (const char *name, GCallback func, gpointer data);
-        void signal_connect (GladeWindowCallbacks *callbacks);
+        void signal_connect (GtkBuilderWindowCallbacks *callbacks);
         void enable_widget (const char *name, unsigned char state);
         void set_button_label (const char *name, const char *label);
         unsigned char get_check (const char *name);
@@ -41,8 +38,12 @@ class GladeWindow
         void set_slider (const char *name, float value);
         int has_focus (const char *widget);
 
-        GtkWidget *window;
-        GladeXML  *glade;
+protected:
+        static void signal_connection_func (GtkBuilder *, GObject *, const gchar *, const char *, GObject *, GConnectFlags, gpointer);
+
+        GtkWidget  *window;
+        GtkBuilder *builder;
+        GtkBuilderWindowCallbacks *callbacks;
 };
 
-#endif /* __GTK_GLADE_WINDOW_H */
+#endif /* __GTK_BUILDER_WINDOW_H */

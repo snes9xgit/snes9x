@@ -1,6 +1,8 @@
 #ifndef __GTK_DISPLAY_DRIVER_XV_H
 #define __GTK_DISPLAY_DRIVER_XV_H
 
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
 #include <X11/extensions/XShm.h>
 #include <X11/extensions/Xvlib.h>
 
@@ -27,11 +29,14 @@ class S9xXVDisplayDriver : public S9xDisplayDriver
     private:
         void clear (void);
         void update_image_size (int width, int height);
+        void resize_window (int width, int height);
+        void create_window (int width, int height);
 
         Display *display;
         Window xwindow;
         GC xgc;
         Colormap xcolormap;
+        XVisualInfo *vi;
         GdkWindow *gdk_window;
 
         XvImage *xv_image;

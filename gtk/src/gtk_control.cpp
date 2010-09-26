@@ -130,6 +130,22 @@ S9xPollPointer (uint32 id, int16 *x, int16 *y)
 }
 
 bool
+S9xIsMousePluggedIn (void)
+{
+    enum controllers ctl;
+    int8 id1, id2, id3, id4;
+
+    for (int i = 0; i <= 1; i++)
+    {
+        S9xGetController (i, &ctl, &id1, &id2, &id3, &id4);
+        if (ctl == CTL_MOUSE)
+            return true;
+    }
+
+    return false;
+}
+
+bool
 S9xGrabJoysticks (void)
 {
     if (joystick_lock)
