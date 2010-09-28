@@ -303,7 +303,6 @@ void WinSetDefaultValues ()
 	Settings.HDMATimingHack = 100;
 	Settings.Shutdown =	false;
 	Settings.ShutdownMaster	= false;
-	Settings.BlockInvalidVRAMAccess = true;
 	Settings.DisableIRQ	= false;
 	Settings.Paused	= false;
 	Timings.H_Max =	SNES_CYCLES_PER_SCANLINE;
@@ -992,7 +991,7 @@ void WinRegisterConfigItems()
 	AddUIntC("TurboFrameSkip", Settings.TurboSkipFrames, 15, "how many frames to skip when in fast-forward mode");
 	AddUInt("AutoSaveDelay", Settings.AutoSaveDelay, 30);
 	AddBool2C("SpeedHacks", Settings.ShutdownMaster, false, "on to skip emulating the CPU when it is not being used ... recommended OFF");
-	AddBool("BlockInvalidVRAMAccess", Settings.BlockInvalidVRAMAccess, true);
+	AddBool("BlockInvalidVRAMAccess", Settings.BlockInvalidVRAMAccessMaster, true);
 	AddBool2C("SnapshotScreenshots", Settings.SnapshotScreenshots, true, "on to save the screenshot in each snapshot, for loading-when-paused display");
 	AddBoolC("MovieTruncateAtEnd", Settings.MovieTruncate, true, "true to truncate any leftover data in the movie file after the current frame when recording stops");
 	AddBoolC("MovieNotifyIgnored", Settings.MovieNotifyIgnored, false, "true to display \"(ignored)\" in the frame counter when recording when the last frame of input was not used by the SNES (such as lag or loading frames)");

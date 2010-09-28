@@ -307,7 +307,6 @@ void S9xSoftReset (void)
 {
 	S9xResetSaveTimer(FALSE);
 
-	memset(Memory.VRAM, 0x00, 0x10000);
 	ZeroMemory(Memory.FillRAM, 0x8000);
 
 	if (Settings.BS)

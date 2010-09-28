@@ -464,12 +464,12 @@ void S9xLoadConfigFiles (char **argv, int argc)
 
 	// Hack
 
-	Settings.DisableGameSpecificHacks   = !conf.GetBool("Hack::EnableGameSpecificHacks",       true);
-	Settings.BlockInvalidVRAMAccess     = !conf.GetBool("Hack::AllowInvalidVRAMAccess",        false);
-	Settings.ShutdownMaster             =  conf.GetBool("Hack::SpeedHacks",                    false);
-	Settings.DisableIRQ                 =  conf.GetBool("Hack::DisableIRQ",                    false);
-	Settings.DisableHDMA                =  conf.GetBool("Hack::DisableHDMA",                   false);
-	Settings.HDMATimingHack             =  conf.GetInt ("Hack::HDMATiming",                    100);
+	Settings.DisableGameSpecificHacks       = !conf.GetBool("Hack::EnableGameSpecificHacks",       true);
+	Settings.BlockInvalidVRAMAccessMaster   = !conf.GetBool("Hack::AllowInvalidVRAMAccess",        false);
+	Settings.ShutdownMaster                 =  conf.GetBool("Hack::SpeedHacks",                    false);
+	Settings.DisableIRQ                     =  conf.GetBool("Hack::DisableIRQ",                    false);
+	Settings.DisableHDMA                    =  conf.GetBool("Hack::DisableHDMA",                   false);
+	Settings.HDMATimingHack                 =  conf.GetInt ("Hack::HDMATiming",                    100);
 
 	// Netplay
 
