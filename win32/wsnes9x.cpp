@@ -300,6 +300,7 @@ HANDLE SoundEvent;
 ExtList* valid_ext=NULL;
 void MakeExtFile(void);
 void LoadExts(void);
+static bool ExtensionIsValid(const TCHAR *filename);
 
 extern FILE *trace_fs;
 extern SCheatData Cheat;
@@ -616,8 +617,8 @@ void FreezeUnfreeze (int slot, bool8 freeze);
 void CheckDirectoryIsWritable (const char *filename);
 static void CheckMenuStates ();
 static void ResetFrameTimer ();
-bool8 LoadROM (const TCHAR *filename);
-bool8 LoadMultiROM (const TCHAR *filename, const TCHAR *filename2);
+static bool LoadROM (const TCHAR *filename);
+static bool LoadMultiROM (const TCHAR *filename, const TCHAR *filename2);
 bool8 S9xLoadROMImage (const TCHAR *string);
 #ifdef NETPLAY_SUPPORT
 static void EnableServer (bool8 enable);
@@ -1411,7 +1412,6 @@ static bool DoOpenRomDialog(TCHAR filename [_MAX_PATH], bool noCustomDlg = false
 	}
 }
 
-
 TCHAR multiRomA [MAX_PATH] = {0}; // lazy, should put in sGUI and add init to {0} somewhere
 TCHAR multiRomB [MAX_PATH] = {0};
 
@@ -1438,9 +1438,7 @@ LRESULT CALLBACK WinProc(
     {
 	case WM_CREATE:
 		g_hInst = ((LPCREATESTRUCT)lParam)->hInstance;
-#ifndef MK_APU
-		DeleteMenu(GUI.hMenu,IDM_CATCH_UP_SOUND,MF_BYCOMMAND);
-#endif
+		DragAcceptFiles(hWnd, TRUE);
 		return 0;
 	case WM_KEYDOWN:
 		if(GUI.BackgroundKeyHotkeys)
@@ -1477,9 +1475,36 @@ LRESULT CALLBACK WinProc(
 			}
 		}
 		break;
+
+	case WM_DROPFILES:
+		HDROP hDrop;
+		UINT fileCount;
+		TCHAR droppedFile[PATH_MAX];
+
+		hDrop = (HDROP)wParam;
+		fileCount = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
+		if (fileCount == 1) {
+			DragQueryFile(hDrop, 0, droppedFile, PATH_MAX);
+
+			if (ExtensionIsValid(droppedFile)) {
+				LoadROM(droppedFile);
+			} else {
+				S9xMessage(S9X_ERROR, S9X_ROM_INFO, "Unknown file extension.");
+			}
+		}
+		DragFinish(hDrop);
+
+		return 0;
+
 	case WM_COMMAND:
 		switch (wParam & 0xffff)
 		{
+		case ID_FILE_AVI_RECORDING:
+			if (!GUI.AVIOut)
+				PostMessage(GUI.hWnd, WM_COMMAND, ID_FILE_WRITE_AVI, NULL);
+			else
+				PostMessage(GUI.hWnd, WM_COMMAND, ID_FILE_STOP_AVI, NULL);
+			break;
 		case ID_FILE_WRITE_AVI:
 			{
 				RestoreGUIDisplay ();  //exit DirectX
@@ -1791,7 +1816,6 @@ LRESULT CALLBACK WinProc(
 				}
 
 				RestoreSNESDisplay ();
-				GUI.ScreenCleared = true;
 			}
 			break;
 
@@ -1799,53 +1823,13 @@ LRESULT CALLBACK WinProc(
 			{
 				TCHAR filename [_MAX_PATH];
 
-#ifdef NETPLAY_SUPPORT
-				if (Settings.NetPlay && !Settings.NetPlayServer)
-				{
-					S9xMessage (S9X_INFO, S9X_NETPLAY_NOT_SERVER,
-						WINPROC_DISCONNECT);
-					break;
-				}
-#endif
 				RestoreGUIDisplay ();
 
-				if(DoOpenRomDialog(filename))
-				{
-					if (!Settings.StopEmulation)
-					{
-						Memory.SaveSRAM (S9xGetFilename (".srm", SRAM_DIR));
-						S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
-					}
-					Settings.StopEmulation = !LoadROM (filename);
-					if (!Settings.StopEmulation)
-					{
-						bool8 loadedSRAM = Memory.LoadSRAM (S9xGetFilename (".srm", SRAM_DIR));
-						if(!loadedSRAM) // help migration from earlier Snes9x versions by checking ROM directory for savestates
-							Memory.LoadSRAM (S9xGetFilename (".srm", ROMFILENAME_DIR));
-						S9xLoadCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
-						S9xAddToRecentGames (filename);
-						CheckDirectoryIsWritable (S9xGetFilename (".---", SNAPSHOT_DIR));
-						CheckMenuStates ();
-#ifdef NETPLAY_SUPPORT
-						if (NPServer.SendROMImageOnConnect)
-							S9xNPServerQueueSendingROMImage ();
-						else
-							S9xNPServerQueueSendingLoadROMRequest (Memory.ROMName);
-#endif
-					}
-
-					if(GUI.ControllerOption == SNES_SUPERSCOPE)
-						SetCursor (GUI.GunSight);
-					else
-					{
-						SetCursor (GUI.Arrow);
-						GUI.CursorTimer = 60;
-					}
-					Settings.Paused = false;
+				if(DoOpenRomDialog(filename)) {
+					LoadROM(filename);
 				}
 
 				RestoreSNESDisplay ();
-				GUI.ScreenCleared = true;
 			}
 			break;
 
@@ -1859,7 +1843,6 @@ LRESULT CALLBACK WinProc(
                 SetMenu( GUI.hWnd, GUI.hMenu);
             else
                 SetMenu( GUI.hWnd, NULL);
-            GUI.ScreenCleared = true;
             break;
 
 		case ID_LANGUAGE_ENGLISH:
@@ -2273,39 +2256,8 @@ LRESULT CALLBACK WinProc(
 										j++;
 									if (i == j)
 									{
-#ifdef NETPLAY_SUPPORT
-										if (Settings.NetPlay && !Settings.NetPlayServer)
-										{
-											S9xMessage (S9X_INFO, S9X_NETPLAY_NOT_SERVER,
-												WINPROC_DISCONNECT);
-											break;
-										}
-#endif
-										if (!Settings.StopEmulation)
-										{
-											Memory.SaveSRAM (S9xGetFilename (".srm", SRAM_DIR));
-											S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
-										}
-										Settings.StopEmulation = !LoadROM (GUI.RecentGames [i]);
-										if (!Settings.StopEmulation)
-										{
-											bool8 loadedSRAM = Memory.LoadSRAM (S9xGetFilename (".srm", SRAM_DIR));
-											if(!loadedSRAM) // help migration from earlier Snes9x versions by checking ROM directory for savestates
-												Memory.LoadSRAM (S9xGetFilename (".srm", ROMFILENAME_DIR));
-											S9xLoadCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
-											S9xAddToRecentGames (GUI.RecentGames [i]);
-											CheckDirectoryIsWritable (S9xGetFilename (".---", SNAPSHOT_DIR));
-											CheckMenuStates ();
-#ifdef NETPLAY_SUPPORT
-											if (NPServer.SendROMImageOnConnect)
-												S9xNPServerQueueSendingROMImage ();
-											else
-												S9xNPServerQueueSendingLoadROMRequest (Memory.ROMName);
-#endif
-											Settings.Paused = false;
-										}
-										else
-										{
+
+										if (!LoadROM(GUI.RecentGames [i])) {
 											sprintf (String, ERR_ROM_NOT_FOUND, _tToChar(GUI.RecentGames [i]));
 											S9xMessage (S9X_ERROR, S9X_ROM_NOT_FOUND, String);
 											S9xRemoveFromRecentGames(i);
@@ -3335,28 +3287,7 @@ int WINAPI WinMain(
         MessageBox( GUI.hWnd, Languages[ GUI.Language].errFrameTimer, TEXT("Snes9X - Frame Timer"), MB_OK | MB_ICONINFORMATION);
     }
 
-    Settings.StopEmulation = !LoadROM (_tFromChar(rom_filename));
-
-    if (!Settings.StopEmulation)
-    {
-		bool8 loaded = Memory.LoadSRAM (S9xGetFilename (".srm", SRAM_DIR));
-		if(!loaded) // help migration from earlier Snes9x versions by checking ROM directory for savestates
-			Memory.LoadSRAM (S9xGetFilename (".srm", ROMFILENAME_DIR));
-        S9xLoadCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
-        CheckDirectoryIsWritable (S9xGetFilename (".---", SNAPSHOT_DIR));
-        CheckMenuStates ();
-    }
-
-    if (!Settings.StopEmulation)
-    {
-        if (GUI.ControllerOption == SNES_SUPERSCOPE)
-            SetCursor (GUI.GunSight);
-        else
-        {
-            SetCursor (GUI.Arrow);
-            GUI.CursorTimer = 60;
-        }
-    }
+    LoadROM(_tFromChar(rom_filename));
 
 	S9xUnmapAllControls();
 	S9xSetupDefaultKeymap();
@@ -3846,12 +3777,6 @@ static void CheckMenuStates ()
 	mii.fState = (S9xMovieActive () && !Settings.StopEmulation) ? MFS_ENABLED : MFS_DISABLED;
     SetMenuItemInfo (GUI.hMenu, ID_FILE_MOVIE_STOP, FALSE, &mii);
 
-	mii.fState = (!Settings.StopEmulation) ? MFS_ENABLED : MFS_DISABLED;
-    SetMenuItemInfo (GUI.hMenu, ID_FILE_WRITE_AVI, FALSE, &mii);
-
-	mii.fState = (!Settings.StopEmulation && (GUI.AVIOut)) ? MFS_ENABLED : MFS_DISABLED;
-    SetMenuItemInfo (GUI.hMenu, ID_FILE_STOP_AVI, FALSE, &mii);
-
 	mii.fState = (GUI.SoundChannelEnable & (1 << 0)) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL1, FALSE, &mii);
 	mii.fState = (GUI.SoundChannelEnable & (1 << 1)) ? MFS_CHECKED : MFS_UNCHECKED;
@@ -3906,6 +3831,16 @@ static void CheckMenuStates ()
 	validFlag = (((1<<SNES_JUSTIFIER_2) & GUI.ValidControllerOptions) && (!S9xMovieActive() || !S9xMovieGetFrameCounter())) ? MFS_ENABLED : MFS_DISABLED;
 	mii.fState = validFlag|((controller[0] == CTL_JOYPAD && controller[1] == CTL_JUSTIFIER && ids[0]) ? MFS_CHECKED : MFS_UNCHECKED);
     SetMenuItemInfo (GUI.hMenu, IDM_JUSTIFIERS, FALSE, &mii);
+
+	mii.fState = !Settings.StopEmulation ? MFS_ENABLED : MFS_DISABLED;
+	SetMenuItemInfo (GUI.hMenu, ID_FILE_AVI_RECORDING, FALSE, &mii);
+  
+	ZeroMemory(&mii, sizeof(mii));
+	mii.cbSize = sizeof(mii);
+	mii.fMask = MIIM_STRING;
+
+	mii.dwTypeData = !GUI.AVIOut ? TEXT("Start AVI Recording...") : TEXT("Stop AVI Recording");
+	SetMenuItemInfo (GUI.hMenu, ID_FILE_AVI_RECORDING, FALSE, &mii);
 }
 
 static void ResetFrameTimer ()
@@ -3923,7 +3858,7 @@ static void ResetFrameTimer ()
     GUI.hFrameTimer = timeSetEvent ((Settings.FrameTime+500)/1000, 0, (LPTIMECALLBACK)FrameTimer, 0, TIME_PERIODIC);
 }
 
-bool8 LoadROM (const TCHAR *filename)
+static bool LoadROMPlain(const TCHAR *filename)
 {
 	if (!filename || !*filename)
 		return (FALSE);
@@ -3938,7 +3873,51 @@ bool8 LoadROM (const TCHAR *filename)
     return (FALSE);
 }
 
-bool8 LoadMultiROM (const TCHAR *filename, const TCHAR *filename2)
+static bool LoadROM(const TCHAR *filename) {
+
+#ifdef NETPLAY_SUPPORT
+	if (Settings.NetPlay && !Settings.NetPlayServer)
+	{
+		S9xMessage (S9X_INFO, S9X_NETPLAY_NOT_SERVER,
+			WINPROC_DISCONNECT);
+		return false;
+	}
+#endif
+
+	if (!Settings.StopEmulation) {
+		Memory.SaveSRAM (S9xGetFilename (".srm", SRAM_DIR));
+		S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
+	}
+
+	Settings.StopEmulation = !LoadROMPlain(filename);
+
+	if (!Settings.StopEmulation) {
+		bool8 loadedSRAM = Memory.LoadSRAM (S9xGetFilename (".srm", SRAM_DIR));
+		if(!loadedSRAM) // help migration from earlier Snes9x versions by checking ROM directory for savestates
+			Memory.LoadSRAM (S9xGetFilename (".srm", ROMFILENAME_DIR));
+		S9xAddToRecentGames (filename);
+		CheckDirectoryIsWritable (S9xGetFilename (".---", SNAPSHOT_DIR));
+
+#ifdef NETPLAY_SUPPORT
+		if (NPServer.SendROMImageOnConnect)
+			S9xNPServerQueueSendingROMImage ();
+		else
+			S9xNPServerQueueSendingLoadROMRequest (Memory.ROMName);
+#endif
+	}
+
+	if(GUI.ControllerOption == SNES_SUPERSCOPE)
+		SetCursor (GUI.GunSight);
+	else {
+		SetCursor (GUI.Arrow);
+		GUI.CursorTimer = 60;
+	}
+	Settings.Paused = false;
+
+	return !Settings.StopEmulation;
+}
+
+static bool LoadMultiROM (const TCHAR *filename, const TCHAR *filename2)
 {
 	SetCurrentDirectory(S9xGetDirectoryT(ROM_DIR));
     if (Memory.LoadMultiCart (_tToChar(filename), _tToChar(filename2)))
@@ -3966,25 +3945,8 @@ bool8 S9xLoadROMImage (const TCHAR *string)
 
     TCHAR FileName [_MAX_PATH];
 
-	if(DoOpenRomDialog(FileName))
-    {
-        if (!Settings.StopEmulation)
-        {
-            Memory.SaveSRAM (S9xGetFilename (".srm", SRAM_DIR));
-            S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
-        }
-        Settings.StopEmulation = !LoadROM (FileName);
-        if (!Settings.StopEmulation)
-        {
-			bool8 loaded = Memory.LoadSRAM (S9xGetFilename (".srm", SRAM_DIR));
-			if(!loaded) // help migration from earlier Snes9x versions by checking ROM directory for savestates
-				Memory.LoadSRAM (S9xGetFilename (".srm", ROMFILENAME_DIR));
-            S9xLoadCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
-            CheckDirectoryIsWritable (S9xGetFilename (".---", SNAPSHOT_DIR));
-            CheckMenuStates ();
-        }
-        else
-            return (FALSE);
+	if(DoOpenRomDialog(FileName)) {
+        return LoadROM(FileName);
     }
     else
         return (FALSE);
@@ -4980,7 +4942,7 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 
 #define SKIP_FLOPPY
 
-bool ExtensionIsValid(const TCHAR * filename)
+static bool ExtensionIsValid(const TCHAR * filename)
 {
 	ExtList* curr=valid_ext;
 	while(curr!=NULL)
@@ -7016,11 +6978,8 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			WinDisplayApplyChanges();
 
 			WinRefreshDisplay();
+			break;
 
-
-			// make video memory option match stretching option, but allow it to be changed via the other checkbox
-			CheckDlgButton(hDlg,IDC_BILINEAR,GUI.Stretch);
-			/* fall through */
 		case IDC_BILINEAR:
 
 			GUI.BilinearFilter = (bool)(IsDlgButtonChecked(hDlg,IDC_BILINEAR)==BST_CHECKED);
@@ -10092,7 +10051,6 @@ static void set_movieinfo(const TCHAR* path, HWND hDlg)
 //		if(m.SyncFlags & MOVIE_SYNC_DATA_EXISTS)
 		{
 			SendDlgItemMessage(hDlg,IDC_ALLOWLEFTRIGHT,BM_SETCHECK,    (m.SyncFlags & MOVIE_SYNC_LEFTRIGHT)!=0  ? (WPARAM)BST_CHECKED : (WPARAM)BST_UNCHECKED, 0);
-			SendDlgItemMessage(hDlg,IDC_FMUT,BM_SETCHECK,              (m.SyncFlags & MOVIE_SYNC_FAKEMUTE)!=0   ? (WPARAM)BST_CHECKED : (WPARAM)BST_UNCHECKED, 0);
 			SendDlgItemMessage(hDlg,IDC_SYNC_TO_SOUND_CPU,BM_SETCHECK, (m.SyncFlags & MOVIE_SYNC_SYNCSOUND)!=0  ? (WPARAM)BST_CHECKED : (WPARAM)BST_UNCHECKED, 0);
 	//		SetWindowText(GetDlgItem(hDlg, IDC_LOADEDFROMMOVIE), _T(MOVIE_LABEL_SYNC_DATA_FROM_MOVIE));
 		}
@@ -10224,10 +10182,6 @@ INT_PTR CALLBACK DlgOpenMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 			SendDlgItemMessage(hDlg,IDC_READONLY,BM_SETCHECK,GUI.MovieReadOnly ? BST_CHECKED : BST_UNCHECKED,0);
 
-			//EnableWindow(GetDlgItem(hDlg, IDC_SYNC_TO_SOUND_CPU), Settings.SoundDriver<1||Settings.SoundDriver>3); // can't sync sound to CPU unless using "Snes9x DirectSound" driver
-
-			EnableWindow(GetDlgItem(hDlg, IDC_FMUT), FALSE);
-
 			SetDlgItemText(hDlg,IDC_LABEL_STARTSETTINGS, MOVIE_LABEL_STARTSETTINGS);
 			SetDlgItemText(hDlg,IDC_LABEL_CONTROLLERSETTINGS, MOVIE_LABEL_CONTSETTINGS);
 			SetDlgItemText(hDlg,IDC_LABEL_SYNCSETTINGS, MOVIE_LABEL_SYNCSETTINGS);
@@ -10239,7 +10193,6 @@ INT_PTR CALLBACK DlgOpenMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			switch(LOWORD(wParam))
 			{
 			case IDC_ALLOWLEFTRIGHT:
-			case IDC_FMUT:
 			case IDC_SYNC_TO_SOUND_CPU:
 				SetWindowText(GetDlgItem(hDlg, IDC_LOADEDFROMMOVIE), TEXT(""));
 				break;

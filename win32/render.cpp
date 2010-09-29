@@ -389,10 +389,8 @@ void SelectRenderMethod()
 	RenderMethod = FilterToMethod(GUI.Scale);
 	RenderMethodHiRes = FilterToMethod(GUI.ScaleHiRes);
 
-	if (GUI.ScreenCleared || OldRenderMethod != RenderMethod || OldRenderMethodHiRes != RenderMethodHiRes)
+	if (OldRenderMethod != RenderMethod || OldRenderMethodHiRes != RenderMethodHiRes)
         snes9x_clear_change_log = GUI.NumFlipFrames;
-
-    GUI.ScreenCleared = false;
 
 	GUI.DepthConverted = !GUI.NeedDepthConvert;
 	if(GUI.ScreenDepth == 32 &&

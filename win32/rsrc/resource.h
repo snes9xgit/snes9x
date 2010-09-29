@@ -55,7 +55,6 @@
 #define IDC_MUTE                        1016
 #define IDC_SKIP_TYPE                   1017
 #define IDC_SCROLLBAR1                  1018
-#define IDC_FMUT                        1018
 #define IDC_VRAM_DISPLAY                1019
 #define IDC_WIP1                        1019
 #define IDC_ADDRESS                     1020
@@ -357,6 +356,7 @@
 #define ID_LANGUAGE_ENGLISH             40002
 #define ID_LANGUAGE_NEDERLANDS          40003
 #define ID_WINDOW_HIDEMENUBAR           40004
+#define ID_FILE_AVI_RECORDING           40005
 #define ID_SOUND_NOSOUND                40021
 #define ID_OPTIONS_JOYPAD               40022
 #define ID_WINDOW_SHOWFPS               40023
@@ -432,7 +432,6 @@
 #define IDM_ENABLE_MULTITAP             40104
 #define IDM_MOUSE_TOGGLE                40105
 #define IDM_SCOPE_TOGGLE                40106
-#define IDM_CATCH_UP_SOUND              40107
 #define IDM_GFX_PACKS                   40108
 #define IDM_JUSTIFIER                   40109
 #define ID_SCREENSHOT                   40110

@@ -527,7 +527,6 @@ static bool LockSurface2 (LPDIRECTDRAWSURFACE2 lpDDSurface, SSurface *lpSurface)
                 return (false);
 
             hResult = lpDDSurface->Restore();
-            GUI.ScreenCleared = true;
             if (hResult != DD_OK)
                 return (false);
 

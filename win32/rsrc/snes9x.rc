@@ -865,8 +865,7 @@ BEGIN
         MENUITEM "Movie Record...",             ID_FILE_MOVIE_RECORD, GRAYED
         MENUITEM "Movie Stop",                  ID_FILE_MOVIE_STOP, GRAYED
         MENUITEM SEPARATOR
-        MENUITEM "Record AVI...",               ID_FILE_WRITE_AVI, GRAYED
-        MENUITEM "Stop AVI Recording",          ID_FILE_STOP_AVI, GRAYED
+        MENUITEM "AVI Recording",               ID_FILE_AVI_RECORDING, GRAYED
         MENUITEM SEPARATOR
         MENUITEM "&Reset Game",                 ID_FILE_RESET, GRAYED
         MENUITEM "&Pause",                      ID_FILE_PAUSE, GRAYED

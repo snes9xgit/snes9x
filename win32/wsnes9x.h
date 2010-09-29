@@ -318,7 +318,6 @@ struct sGUI {
 	TCHAR GLSLvertexShaderFileName[MAX_PATH];
 	TCHAR GLSLfragmentShaderFileName[MAX_PATH];
 
-    bool ScreenCleared;
     bool IgnoreNextMouseMove;
     RECT window_size;
 	bool window_maximized;

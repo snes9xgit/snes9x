@@ -243,7 +243,6 @@ void WinSetDefaultValues ()
 	GUI.FlipCounter	= 0;
 	GUI.NumFlipFrames =	1;
 	GUI.BilinearFilter	= false;
-	GUI.ScreenCleared =	true;
 	GUI.LockDirectories = false;
 	GUI.window_maximized = false;
 

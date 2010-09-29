@@ -373,8 +373,6 @@ bool8 S9xDeinitUpdate (int Width, int Height)
 	// avi writing
 	DoAVIVideoFrame(&Src, Width, Height);
 
-	GUI.ScreenCleared = true;
-
     SelectRenderMethod ();
 
 	// Clear some of the old SNES rendered image
@@ -456,7 +454,6 @@ static void ClearSurface (LPDIRECTDRAWSURFACE2 lpDDSurface)
 
 void UpdateBackBuffer()
 {
-    GUI.ScreenCleared = true;
 
     if (GUI.outputMethod==DIRECTDRAW && GUI.FullScreen)
     {
