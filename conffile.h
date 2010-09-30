@@ -179,6 +179,7 @@
 #define _CONFIG_H_
 
 #include <set>
+#include <map>
 #include <vector>
 #include <string>
 
@@ -187,6 +188,11 @@
 #endif
 #include "snes9x.h"
 #include "reader.h"
+
+#ifndef MAX
+#  define MAX(a,b)  ((a) > (b)? (a) : (b))
+#  define MIN(a,b)  ((a) < (b)? (a) : (b))
+#endif
 
 class ConfigFile {
   public:
@@ -222,7 +228,7 @@ class ConfigFile {
     bool DeleteSection(const char *section);
     typedef std::vector<std::pair<std::string,std::string> > secvec_t;
     secvec_t GetSection(const char *section);
-    int GetSectionSize(const char *section);
+    int GetSectionSize(const std::string section);
 
 	// Clears all key-value pairs that didn't receive a Set command, or a Get command with autoAdd on
     void ClearUnused(void);
@@ -349,7 +355,47 @@ class ConfigFile {
         friend struct key_less;
         friend struct line_less;
     };
+	class SectionSizes {
+	  protected:
+		std::map<std::string,uint32> sections;
+
+	  public:
+		uint32 GetSectionSize(const std::string section) {
+			uint32 count=0;
+			uint32 seclen;
+			std::map<std::string,uint32>::iterator it;
+			for(it=sections.begin(); it!=sections.end(); it++) {
+				seclen = MIN(section.size(),it->first.size());
+				if(it->first==section || !section.compare(0,seclen,it->first,0,seclen)) count+=it->second;
+			}
+			return count;
+		}
+
+		void IncreaseSectionSize(const std::string section) {
+			std::map<std::string,uint32>::iterator it=sections.find(section);
+			if(it!=sections.end())
+				it->second++;
+			else
+				sections.insert(std::pair<std::string,uint32>(section,1));
+		}
+
+		void DecreaseSectionSize(const std::string section) {
+			std::map<std::string,uint32>::iterator it=sections.find(section);
+			if(it!=sections.end())
+				it->second--;
+		}
+
+		void ClearSections() {
+			sections.clear();
+		}
+
+		void DeleteSection(const std::string section) {
+			sections.erase(section);
+		}
+
+	};
     std::set<ConfigEntry, ConfigEntry::key_less> data;
+	SectionSizes sectionSizes;
 	int linectr;
 	static bool defaultAutoAdd;
 	static bool niceAlignment;
