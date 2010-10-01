@@ -948,12 +948,6 @@ BEGIN
         MENUITEM "&Stretch Image\tAlt+Backspace", 40032
         MENUITEM "&Maintain Aspect Ratio",      40123
         MENUITEM "&Bilinear Filtering",         ID_WINDOW_VIDMEM
-        MENUITEM SEPARATOR
-        POPUP "&Language"
-        BEGIN
-            MENUITEM "&English",                    ID_LANGUAGE_ENGLISH, CHECKED
-            MENUITEM "&Nederlands",                 ID_LANGUAGE_NEDERLANDS, GRAYED
-        END
     END
     POPUP "&Cheat"
     BEGIN
@@ -975,6 +969,14 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Options...",                 ID_NETPLAY_OPTIONS
     END
+#ifdef DEBUGGER
+    POPUP "&Debug"
+    BEGIN
+        MENUITEM "&Trace",                      ID_DEBUG_TRACE
+        MENUITEM "&Frame Advance",              ID_DEBUG_FRAME_ADVANCE
+        MENUITEM "View SNES &Status",           ID_DEBUG_SNES_STATUS
+    END
+#endif
     POPUP "&Help"
     BEGIN
         MENUITEM "&About...",                   ID_HELP_ABOUT

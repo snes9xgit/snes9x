@@ -309,7 +309,7 @@ extern bool8 do_frame_adjust;
 HINSTANCE g_hInst;
 
 #ifdef DEBUGGER
-extern "C" void Trace ();
+#include "../debug.h"
 #endif
 
 static const char *rom_filename = NULL;
@@ -580,7 +580,6 @@ static uint32 FrameTimings[] = {
 
 // Languages supported by Snes9X: Windows
 // 0 - English [Default]
-// 1 - Dutch/Nederlands
 struct sLanguages Languages[] = {
 	{ IDR_MENU_US,
 		TEXT("Failed to initialize currently selected display output!\n Try switching to a different output method in the display settings."),
@@ -1845,20 +1844,6 @@ LRESULT CALLBACK WinProc(
                 SetMenu( GUI.hWnd, NULL);
             break;
 
-		case ID_LANGUAGE_ENGLISH:
-            GUI.Language = 0;
-
-            SetMenu( GUI.hWnd, LoadMenu( GUI.hInstance, MAKEINTRESOURCE( Languages[ GUI.Language].idMenu)));
-            DestroyMenu( GUI.hMenu);
-            GUI.hMenu = GetMenu( GUI.hWnd);
-            break;
-		case ID_LANGUAGE_NEDERLANDS:
-            GUI.Language = 1;
-
-            SetMenu( GUI.hWnd, LoadMenu( GUI.hInstance, MAKEINTRESOURCE( Languages[ GUI.Language].idMenu)));
-            DestroyMenu( GUI.hMenu);
-            GUI.hMenu = GetMenu( GUI.hWnd);
-            break;
 #ifdef NETPLAY_SUPPORT
 		case ID_NETPLAY_SERVER:
             S9xRestoreWindowTitle ();
@@ -2231,14 +2216,17 @@ LRESULT CALLBACK WinProc(
 							break;
 #ifdef DEBUGGER
 						case ID_DEBUG_TRACE:
-							{
-								Trace ();
-								break;
-							}
+							CPU.Flags ^= TRACE_FLAG;
+							break;
+
 						case ID_DEBUG_FRAME_ADVANCE:
 							CPU.Flags |= FRAME_ADVANCE_FLAG;
 							ICPU.FrameAdvanceCount = 1;
 							Settings.Paused = FALSE;
+							break;
+
+						case ID_DEBUG_SNES_STATUS:
+							MessageBox(GUI.hWnd, TEXT("Sorry, but this function is not implemented yet."), NULL, MB_OK | MB_ICONINFORMATION);
 							break;
 #endif
 						case IDM_ROM_INFO:
@@ -2577,7 +2565,7 @@ BOOL WinInit( HINSTANCE hInstance)
         return FALSE;
 	}
 
-	GUI.hMenu = LoadMenu (hInstance, MAKEINTRESOURCE( Languages[ GUI.Language].idMenu));
+	GUI.hMenu = LoadMenu(GUI.hInstance, MAKEINTRESOURCE(IDR_MENU_US));
     if (GUI.hMenu == NULL)
 	{
 		MessageBox (NULL, TEXT("Failed to initialize the menu.\nThis could indicate a failure of your operating system;\ntry closing some other windows or programs, or restart your computer, before opening Snes9x again.\nOr, if you compiled this program yourself, ensure that Snes9x was built with the proper resource files."), TEXT("Snes9X - Menu Initialization Failure"), MB_OK | MB_ICONSTOP);
@@ -3218,18 +3206,6 @@ int WINAPI WinMain(
 
 	InitLUTsWin32(); // init win hq2x
 
-    /*SetWindowPos (GUI.hWnd,HWND_TOP, GUI.window_size.left,
-		GUI.window_size.top,
-		GUI.window_size.right - GUI.window_size.left,
-		GUI.window_size.bottom - GUI.window_size.top, SWP_FRAMECHANGED);
-
-    if (!GUI.FullScreen)
-    {
-        RECT rect;
-        GetClientRect (GUI.hWnd, &rect);
-        InvalidateRect (GUI.hWnd, &rect, true);
-    }*/
-
     GUI.ControlForced = 0xff;
 
     S9xSetRecentGames ();
@@ -3287,7 +3263,8 @@ int WINAPI WinMain(
         MessageBox( GUI.hWnd, Languages[ GUI.Language].errFrameTimer, TEXT("Snes9X - Frame Timer"), MB_OK | MB_ICONINFORMATION);
     }
 
-    LoadROM(_tFromChar(rom_filename));
+	if(rom_filename)
+		LoadROM(_tFromChar(rom_filename));
 
 	S9xUnmapAllControls();
 	S9xSetupDefaultKeymap();
@@ -3758,17 +3735,14 @@ static void CheckMenuStates ()
     if (Settings.ReverseStereo)
         SetMenuItemInfo (GUI.hMenu, ID_SOUND_REVERSE_STEREO, FALSE, &mii);
 
-#ifndef DEBUGGER
-    mii.fState = MFS_DISABLED;
-#else
-    mii.fState = MFS_UNCHECKED;
-#endif
+#ifdef DEBUGGER
+    mii.fState = (CPU.Flags & TRACE_FLAG) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_DEBUG_TRACE, FALSE, &mii);
-    SetMenuItemInfo (GUI.hMenu, ID_DEBUG_TRACE_SPC, FALSE, &mii);
-    SetMenuItemInfo (GUI.hMenu, ID_DEBUG_TRACE_SA1, FALSE, &mii);
-    SetMenuItemInfo (GUI.hMenu, ID_DEBUG_TRACE_DSP1, FALSE, &mii);
+    mii.fState = MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_DEBUG_FRAME_ADVANCE, FALSE, &mii);
+    mii.fState = MFS_DISABLED;
     SetMenuItemInfo (GUI.hMenu, ID_DEBUG_SNES_STATUS, FALSE, &mii);
+#endif
 
 	mii.fState = (!Settings.StopEmulation) ? MFS_ENABLED : MFS_DISABLED;
     SetMenuItemInfo (GUI.hMenu, ID_FILE_MOVIE_PLAY, FALSE, &mii);

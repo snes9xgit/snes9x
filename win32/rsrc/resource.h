@@ -353,8 +353,6 @@
 #define IDC_SHADER_GLSL_VERTEX_BROWSE   3018
 #define IDC_SHADER_GLSL_FRAGMENT_BROWSE 3019
 #define ID_FILE_EXIT                    40001
-#define ID_LANGUAGE_ENGLISH             40002
-#define ID_LANGUAGE_NEDERLANDS          40003
 #define ID_WINDOW_HIDEMENUBAR           40004
 #define ID_FILE_AVI_RECORDING           40005
 #define ID_SOUND_NOSOUND                40021
@@ -400,9 +398,6 @@
 #define ID_OPTIONS_EMULATION            40069
 #define ID_OPTIONS_SETTINGS             40070
 #define ID_DEBUG_TRACE                  40071
-#define ID_DEBUG_TRACE_SPC              40072
-#define ID_DEBUG_TRACE_SA1              40073
-#define ID_DEBUG_TRACE_DSP1             40074
 #define ID_DEBUG_FRAME_ADVANCE          40075
 #define ID_DEBUG_SNES_STATUS            40076
 #define ID_NETPLAY_SERVER               40077

@@ -383,13 +383,13 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libpngdmt.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib xapobase.lib zlibdmtx64.lib"
+				AdditionalDependencies="libpngdmtx64.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib xapobase.lib zlibdmtx64.lib"
 				OutputFile=".\snes9x-debug-x64.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\FMOD\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx_x64\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx\api\lib&quot;;&quot;$(ProjectDir)..\i386&quot;;&quot;$(ProjectDir)..\..\zlib\lib&quot;;&quot;$(ProjectDir)..\..\libPNG\lib&quot;"
 				EnableUAC="false"
-				DelayLoadDLLs="fmod.dll;fmodex.dll"
+				DelayLoadDLLs="fmodex64.dll"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(IntDir)/snes9x-debug-x64.pdb"
 				GenerateMapFile="false"
@@ -978,7 +978,7 @@
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\FMOD\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx_x64\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx\api\lib&quot;;&quot;$(ProjectDir)..\i386&quot;;&quot;$(ProjectDir)..\..\zlib\lib&quot;;&quot;$(ProjectDir)..\..\libPNG\lib&quot;"
 				EnableUAC="false"
-				DelayLoadDLLs="fmod.dll;fmodex64.dll"
+				DelayLoadDLLs="fmodex64.dll"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(IntDir)/snes9x-debug-x64.pdb"
 				GenerateMapFile="false"
@@ -1814,96 +1814,7 @@
 				RelativePath="..\debug.cpp"
 				>
 				<FileConfiguration
-					Name="Release|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|x64"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|x64"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug+ASM|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Debug+ASM|x64"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release+ASM|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release+ASM|x64"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|x64"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|x64"
-					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -1915,7 +1826,6 @@
 				>
 				<FileConfiguration
 					Name="Release|Win32"
-					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -1923,7 +1833,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|x64"
-					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -1931,7 +1840,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32"
-					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -1939,7 +1847,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|x64"
-					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -1947,7 +1854,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug+ASM|Win32"
-					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -1955,7 +1861,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug+ASM|x64"
-					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -1963,7 +1868,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release+ASM|Win32"
-					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -1971,7 +1875,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release+ASM|x64"
-					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -1979,7 +1882,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug Unicode|Win32"
-					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -1987,7 +1889,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug Unicode|x64"
-					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -1995,7 +1896,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release Unicode|Win32"
-					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -2003,7 +1903,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release Unicode|x64"
-					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
