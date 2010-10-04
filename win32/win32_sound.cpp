@@ -239,6 +239,7 @@ returns true if successful, false otherwise
 */
 bool8 S9xOpenSoundDevice ()
 {
+	S9xSetSamplesAvailableCallback (NULL, NULL);
 	// point the interface to the correct output object
 	switch(GUI.SoundDriver) {
 		case WIN_SNES9X_DIRECT_SOUND_DRIVER:
@@ -266,8 +267,12 @@ bool8 S9xOpenSoundDevice ()
 	}
 	if(!S9xSoundOutput->InitSoundOutput())
 		return false;
+	
+	if(!S9xSoundOutput->SetupSound())
+		return false;
+	
 	S9xSetSamplesAvailableCallback (S9xSoundCallback, NULL);
-	return S9xSoundOutput->SetupSound();
+	return true;
 }
 
 /*  S9xSoundCallback

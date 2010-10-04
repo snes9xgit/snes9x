@@ -199,9 +199,9 @@ private:
 
 	int blockCount;							// number of blocks in the buffer
 	int blockSize;							// bytes in one block
-	int blockSamples;
+	int blockSamples;						// samples in one block
 	int bufferSize;							// bytes in the whole buffer
-	int blockTime;
+	int blockTime;							// ms in one block
 
 	DWORD last_block;						// the last block that was mixed
 
