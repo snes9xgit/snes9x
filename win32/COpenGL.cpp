@@ -86,10 +86,9 @@ bool COpenGL::Initialize(HWND hWnd)
 
 	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress( "wglSwapIntervalEXT" );
 	
-	glEnable(GL_VERTEX_ARRAY);
-    glEnable(GL_TEXTURE_COORD_ARRAY);
+	glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnable(GL_BLEND);
-	glEnable(GL_PIXEL_UNPACK_BUFFER);
 	glEnable(GL_TEXTURE_2D);
 
 	glMatrixMode (GL_PROJECTION);
