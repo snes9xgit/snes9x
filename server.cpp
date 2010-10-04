@@ -1035,7 +1035,8 @@ void S9xNPServerLoop (void *)
 #ifdef NP_DEBUG
     printf ("SERVER: Server thread exiting @%ld\n", S9xGetMilliTime () - START);
 #endif
-    S9xNPStopServer ();
+    // OV2: S9xNPStopServer has already been called if we get here
+    // S9xNPStopServer ();
 }
 
 bool8 S9xNPStartServer (int port)
