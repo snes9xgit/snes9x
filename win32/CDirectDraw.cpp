@@ -551,6 +551,8 @@ void CDirectDraw::Render(SSurface Src)
 
 	unsigned int newFilterScale;
 
+	if(!dDinitialized) return;
+
 	ZeroMemory(&caps,sizeof(DDSCAPS));
 	caps.dwCaps = DDSCAPS_BACKBUFFER;
 
@@ -876,6 +878,8 @@ HRESULT CALLBACK EnumModesCallback( LPDDSURFACEDESC lpDDSurfaceDesc, LPVOID lpCo
 
 void CDirectDraw::EnumModes(std::vector<dMode> *modeVector)
 {
+	if(!dDinitialized)
+		return;
 	lpDD->EnumDisplayModes(DDEDM_REFRESHRATES,NULL,(void *)modeVector,(LPDDENUMMODESCALLBACK)EnumModesCallback);
 }
 
