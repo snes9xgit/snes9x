@@ -8443,10 +8443,10 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 							internal_change=false;
 							return true;
 						}
-						SendMessage((HWND)lParam, WM_GETTEXT, 15,(LPARAM)buffer);
+						SendMessageA((HWND)lParam, WM_GETTEXT, 15,(LPARAM)buffer);
 						GetCaretPos(&point);
 
-						index = SendMessage((HWND)lParam,(UINT) EM_CHARFROMPOS, 0, (LPARAM) ((point.x&0x0000FFFF) | (((point.y&0x0000FFFF))<<16)));
+						index = SendMessageA((HWND)lParam,(UINT) EM_CHARFROMPOS, 0, (LPARAM) ((point.x&0x0000FFFF) | (((point.y&0x0000FFFF))<<16)));
 
 						k=0;
 						for(j=0; j<strlen(buffer);j++)
@@ -8462,8 +8462,8 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 						if(has_sel&&!new_sel&&strlen(buffer2)!=0)
 						{
-							SetDlgItemText(hDlg, IDC_CHEAT_ADDRESS, TEXT(""));
-							SetDlgItemText(hDlg, IDC_CHEAT_BYTE, TEXT(""));
+							SetDlgItemTextA(hDlg, IDC_CHEAT_ADDRESS, "");
+							SetDlgItemTextA(hDlg, IDC_CHEAT_BYTE, "");
 
 						}
 
@@ -8471,8 +8471,8 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 							new_sel--;
 
 						internal_change=true;
-						SendMessage((HWND)lParam, WM_SETTEXT, 0,(LPARAM)buffer2);
-						SendMessage((HWND)lParam,  (UINT) EM_SETSEL, (WPARAM) (index), index);
+						SendMessageA((HWND)lParam, WM_SETTEXT, 0,(LPARAM)buffer2);
+						SendMessageA((HWND)lParam,  (UINT) EM_SETSEL, (WPARAM) (index), index);
 
 						uint32 addy;
 						uint8 val;
@@ -8512,10 +8512,10 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 							internal_change=false;
 							return true;
 						}
-						SendMessage((HWND)lParam, WM_GETTEXT, 7,(LPARAM)buffer);
+						SendMessageA((HWND)lParam, WM_GETTEXT, 7,(LPARAM)buffer);
 						GetCaretPos(&point);
 
-						index = SendMessage((HWND)lParam,(UINT) EM_CHARFROMPOS, 0, (LPARAM) ((point.x&0x0000FFFF) | (((point.y&0x0000FFFF))<<16)));
+						index = SendMessageA((HWND)lParam,(UINT) EM_CHARFROMPOS, 0, (LPARAM) ((point.x&0x0000FFFF) | (((point.y&0x0000FFFF))<<16)));
 
 						k=0;
 						for(j=0; j<strlen(buffer);j++)
@@ -8531,13 +8531,13 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 
 						internal_change=true;
-						SendMessage((HWND)lParam, WM_SETTEXT, 0,(LPARAM)buffer2);
-						SendMessage((HWND)lParam,  (UINT) EM_SETSEL, (WPARAM) (index), index);
+						SendMessageA((HWND)lParam, WM_SETTEXT, 0,(LPARAM)buffer2);
+						SendMessageA((HWND)lParam,  (UINT) EM_SETSEL, (WPARAM) (index), index);
 
-						SendMessage(GetDlgItem(hDlg, IDC_CHEAT_BYTE), WM_GETTEXT, 4,(LPARAM)buffer);
+						SendMessageA(GetDlgItem(hDlg, IDC_CHEAT_BYTE), WM_GETTEXT, 4,(LPARAM)buffer);
 
 						if(has_sel&&!new_sel&&0!=strlen(buffer2))
-							SetDlgItemText(hDlg, IDC_CHEAT_CODE, TEXT(""));
+							SetDlgItemTextA(hDlg, IDC_CHEAT_CODE, "");
 
 						if(new_sel!=0)
 							new_sel--;
@@ -8574,10 +8574,10 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 							internal_change=false;
 							return true;
 						}
-						SendMessage((HWND)lParam, WM_GETTEXT, 4,(LPARAM)buffer);
+						SendMessageA((HWND)lParam, WM_GETTEXT, 4,(LPARAM)buffer);
 						GetCaretPos(&point);
 
-						index = SendMessage((HWND)lParam,(UINT) EM_CHARFROMPOS, 0, (LPARAM) ((point.x&0x0000FFFF) | (((point.y&0x0000FFFF))<<16)));
+						index = SendMessageA((HWND)lParam,(UINT) EM_CHARFROMPOS, 0, (LPARAM) ((point.x&0x0000FFFF) | (((point.y&0x0000FFFF))<<16)));
 
 						k=0;
 						for(j=0; j<lstrlen(buffer);j++)
@@ -8592,16 +8592,16 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						buffer2[k]=TEXT('\0');
 
 						if(has_sel&&!new_sel&&0!=lstrlen(buffer2))
-							SetDlgItemText(hDlg, IDC_CHEAT_CODE, TEXT(""));
+							SetDlgItemTextA(hDlg, IDC_CHEAT_CODE, "");
 
 						if(new_sel!=0)
 							new_sel--;
 
 						internal_change=true;
-						SendMessage((HWND)lParam, WM_SETTEXT, 0,(LPARAM)buffer2);
-						SendMessage((HWND)lParam,  (UINT) EM_SETSEL, (WPARAM) (index), index);
+						SendMessageA((HWND)lParam, WM_SETTEXT, 0,(LPARAM)buffer2);
+						SendMessageA((HWND)lParam,  (UINT) EM_SETSEL, (WPARAM) (index), index);
 
-						SendMessage(GetDlgItem(hDlg, IDC_CHEAT_ADDRESS), WM_GETTEXT, 7,(LPARAM)buffer);
+						SendMessageA(GetDlgItem(hDlg, IDC_CHEAT_ADDRESS), WM_GETTEXT, 7,(LPARAM)buffer);
 						if(lstrlen(buffer2)!=0 && lstrlen(buffer) !=0)
 						{
 							if(has_sel)
