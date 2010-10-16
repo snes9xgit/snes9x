@@ -358,7 +358,7 @@ const char*	WinParseCommandLineAndLoadConfigFile (char *line)
 	static char	*parameters	[MAX_PARAMETERS];
 	int	count =	0;
 
-	parameters [count++] = "Snes9XW";
+	parameters [count++] = "Snes9X";
 
 	while (count < MAX_PARAMETERS && *p)
 	{

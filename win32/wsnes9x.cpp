@@ -194,6 +194,7 @@
 
 #include <shlobj.h>
 #include <objidl.h>
+#include <Shobjidl.h>
 
 #include "wsnes9x.h"
 #include "win32_sound.h"
@@ -284,6 +285,11 @@ INT_PTR CALLBACK test(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 #define WM_CUSTKEYDOWN	(WM_USER+50)
 #define WM_CUSTKEYUP	(WM_USER+51)
 
+#ifdef UNICODE
+#define S9XW_SHARD_PATH SHARD_PATHW
+#else
+#define S9XW_SHARD_PATH SHARD_PATHA
+#endif
 
 /*****************************************************************************/
 /* Global variables                                                          */
@@ -2602,7 +2608,6 @@ BOOL WinInit( HINSTANCE hInstance)
         return FALSE;
 
     GUI.hDC = GetDC (GUI.hWnd);
-	LoadExts();
     GUI.GunSight = LoadCursor (hInstance, MAKEINTRESOURCE (IDC_CURSOR_SCOPE));
     GUI.Arrow = LoadCursor (NULL, IDC_ARROW);
     GUI.Accelerators = LoadAccelerators (hInstance, MAKEINTRESOURCE (IDR_SNES9X_ACCELERATORS));
@@ -3189,6 +3194,8 @@ int WINAPI WinMain(
 	if(ferr) setvbuf(ferr, NULL, _IONBF, 0);
 
 	DWORD wSoundTimerRes;
+
+	LoadExts();
 
 	WinRegisterConfigItems ();
 
@@ -4010,6 +4017,58 @@ void S9xRemoveFromRecentGames (int i)
 	}
 }
 
+HRESULT Win7_JLSetRecentGames(ICustomDestinationList *pcdl, IObjectArray *poaRemoved, UINT maxSlots)
+{
+    IObjectCollection *poc;
+    HRESULT hr = CoCreateInstance
+                    (CLSID_EnumerableObjectCollection, 
+                    NULL, 
+                    CLSCTX_INPROC_SERVER, 
+                    IID_PPV_ARGS(&poc));
+    if (SUCCEEDED(hr)) {
+		UINT max_list = MIN(maxSlots,GUI.MaxRecentGames);
+		for (UINT i = 0; i < max_list && *GUI.RecentGames[i]; i++) {
+            IShellItem *psi;
+			if(SUCCEEDED(SHCreateItemFromParsingName(GUI.RecentGames[i],NULL,IID_PPV_ARGS(&psi)))) {
+                hr = poc->AddObject(psi);
+                psi->Release();
+            }
+        }
+
+        IObjectArray *poa;
+        hr = poc->QueryInterface(IID_PPV_ARGS(&poa));
+        if (SUCCEEDED(hr)) {
+            hr = pcdl->AppendCategory(TEXT("ROMs"), poa);
+            poa->Release();
+        }
+        poc->Release();
+    }
+    return hr;
+}
+
+void Win7_CreateJumpList()
+{    
+    ICustomDestinationList *pcdl;
+    HRESULT hr = CoCreateInstance(
+                    CLSID_DestinationList, 
+                    NULL, 
+                    CLSCTX_INPROC_SERVER, 
+                    IID_PPV_ARGS(&pcdl));
+    if (SUCCEEDED(hr)) {
+        UINT maxSlots;
+        IObjectArray *poaRemoved;
+        hr = pcdl->BeginList(&maxSlots, IID_PPV_ARGS(&poaRemoved));
+        if (SUCCEEDED(hr)) {
+            hr = Win7_JLSetRecentGames(pcdl, poaRemoved,maxSlots);
+            if (SUCCEEDED(hr)) {
+                hr = pcdl->CommitList();
+            }
+            poaRemoved->Release();
+        }
+		pcdl->Release();
+    }
+}
+
 void S9xSetRecentGames ()
 {
     HMENU file = GetSubMenu (GUI.hMenu, 0);
@@ -4063,6 +4122,7 @@ void S9xSetRecentGames ()
 
                 InsertMenuItem (recent, 0xFF00 + i, FALSE, &mii);
             }
+			Win7_CreateJumpList();
         }
     }
 }
@@ -6503,6 +6563,75 @@ void SetInfoDlgColor(unsigned char r, unsigned char g, unsigned char b)
 	GUI.InfoColor=RGB(r,g,b);
 }
 
+#define SNES9XWPROGID TEXT("Snes9x.Win32")
+#define SNES9XWPROGIDDESC TEXT("Snes9x ROM")
+#define REGCREATEKEY(key,subkey) \
+	if(regResult=RegCreateKeyEx(key, subkey,\
+					0, NULL, REG_OPTION_NON_VOLATILE, KEY_SET_VALUE , NULL , &hKey, NULL ) != ERROR_SUCCESS){\
+		return false;\
+	}
+#define REGSETVALUE(key,name,type,data,size) \
+	if(regResult=RegSetValueEx(key, name, NULL, type, (BYTE *)data, size) != ERROR_SUCCESS){\
+		RegCloseKey(hKey);\
+		return false;\
+	}
+
+bool RegisterProgid() {
+	LONG	regResult;
+	TCHAR	szRegKey[PATH_MAX];
+	TCHAR	szExeName[PATH_MAX];
+	HKEY	hKey;
+
+	szRegKey[PATH_MAX-1]=TEXT('\0');
+	GetModuleFileName(NULL, szExeName, PATH_MAX);
+
+	_stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\%s"),SNES9XWPROGID);
+	REGCREATEKEY(HKEY_CURRENT_USER, szRegKey)
+	int test = lstrlen(SNES9XWPROGIDDESC) + 1;
+	REGSETVALUE(hKey,NULL,REG_SZ,SNES9XWPROGIDDESC,22)
+	RegCloseKey(hKey);
+
+	_stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\%s\\DefaultIcon"),SNES9XWPROGID);
+	REGCREATEKEY(HKEY_CURRENT_USER,szRegKey)
+	_stprintf_s(szRegKey,PATH_MAX-1,TEXT("%s,0"),szExeName);
+	REGSETVALUE(hKey,NULL,REG_SZ,szRegKey,(lstrlen(szRegKey) + 1) * sizeof(TCHAR))
+	RegCloseKey(hKey);
+
+	_stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\%s\\shell"),SNES9XWPROGID);
+	REGCREATEKEY(HKEY_CURRENT_USER,szRegKey)
+	REGSETVALUE(hKey,NULL,REG_SZ,TEXT("open"),5 * sizeof(TCHAR))
+	RegCloseKey(hKey);
+
+	_stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\%s\\shell\\open\\command"),SNES9XWPROGID);
+	REGCREATEKEY(HKEY_CURRENT_USER,szRegKey)
+	_stprintf_s(szRegKey,PATH_MAX-1,TEXT("\"%s\" \"%%L\""),szExeName);
+	REGSETVALUE(hKey,NULL,REG_SZ,szRegKey,(lstrlen(szRegKey) + 1) * sizeof(TCHAR))
+	RegCloseKey(hKey);
+
+	return true;
+}
+
+bool RegisterExt(TCHAR *ext) {
+	LONG	regResult;
+	TCHAR	szRegKey[PATH_MAX];
+	HKEY	hKey;
+
+	_stprintf(szRegKey,TEXT("Software\\Classes\\.%s\\OpenWithProgids"),ext);
+	REGCREATEKEY(HKEY_CURRENT_USER,szRegKey)
+	REGSETVALUE(hKey,SNES9XWPROGID,REG_NONE,NULL,NULL)
+	RegCloseKey(hKey);
+
+	return true;
+}
+
+void RegisterExts(void) {
+	ExtList *curr=valid_ext;
+	while(curr->next!=NULL) {
+		RegisterExt(curr->extension);
+		curr=curr->next;
+	}
+}
+
 void ClearExts(void)
 {
 	ExtList* temp;
@@ -6578,6 +6707,8 @@ void LoadExts(void)
 	curr=valid_ext;
 	valid_ext=valid_ext->next;
 	delete curr;
+	RegisterProgid();
+	RegisterExts();
 }
 
 void MakeExtFile(void)

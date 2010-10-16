@@ -1813,13 +1813,6 @@
 			<File
 				RelativePath="..\debug.cpp"
 				>
-				<FileConfiguration
-					Name="Debug+ASM|x64"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\debug.h"
@@ -4388,188 +4381,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\CDirect3D.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\CDirect3D.h"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug+ASM|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug+ASM|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release+ASM|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release+ASM|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\CDirectDraw.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\CDirectDraw.h"
-				>
-			</File>
-			<File
-				RelativePath=".\CDirectSound.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\CDirectSound.h"
-				>
-			</File>
-			<File
-				RelativePath=".\CFMOD.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\CFMOD.h"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release+ASM|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release+ASM|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\CFMODEx.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\CFMODEx.h"
-				>
-			</File>
-			<File
-				RelativePath=".\COpenGL.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\COpenGL.h"
-				>
-			</File>
-			<File
-				RelativePath=".\CXAudio2.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\CXAudio2.h"
-				>
-			</File>
-			<File
 				RelativePath=".\InputCustom.cpp"
 				>
 			</File>
@@ -4578,35 +4389,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\IS9xDisplayOutput.h"
-				>
-			</File>
-			<File
-				RelativePath=".\IS9xSoundOutput.h"
-				>
-			</File>
-			<File
 				RelativePath=".\render.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\render.h"
-				>
-			</File>
-			<File
-				RelativePath=".\snes_ntsc.c"
-				>
-			</File>
-			<File
-				RelativePath=".\snes_ntsc.h"
-				>
-			</File>
-			<File
-				RelativePath=".\snes_ntsc_config.h"
-				>
-			</File>
-			<File
-				RelativePath=".\snes_ntsc_impl.h"
 				>
 			</File>
 			<File
@@ -4645,6 +4432,204 @@
 				RelativePath=".\wsnes9x.h"
 				>
 			</File>
+			<Filter
+				Name="SoundDriver"
+				>
+				<File
+					RelativePath=".\CDirectSound.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CDirectSound.h"
+					>
+				</File>
+				<File
+					RelativePath=".\CFMOD.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CFMOD.h"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|x64"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release+ASM|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release+ASM|x64"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release Unicode|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release Unicode|x64"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\CFMODEx.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CFMODEx.h"
+					>
+				</File>
+				<File
+					RelativePath=".\CXAudio2.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CXAudio2.h"
+					>
+				</File>
+				<File
+					RelativePath=".\IS9xSoundOutput.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="VideoDriver"
+				>
+				<File
+					RelativePath=".\CDirect3D.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CDirect3D.h"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|x64"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|x64"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug+ASM|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug+ASM|x64"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release+ASM|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release+ASM|x64"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug Unicode|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug Unicode|x64"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release Unicode|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release Unicode|x64"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\CDirectDraw.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CDirectDraw.h"
+					>
+				</File>
+				<File
+					RelativePath=".\COpenGL.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\COpenGL.h"
+					>
+				</File>
+				<File
+					RelativePath=".\IS9xDisplayOutput.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="i386"
@@ -6974,6 +6959,22 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\snes_ntsc.c"
+				>
+			</File>
+			<File
+				RelativePath=".\snes_ntsc.h"
+				>
+			</File>
+			<File
+				RelativePath=".\snes_ntsc_config.h"
+				>
+			</File>
+			<File
+				RelativePath=".\snes_ntsc_impl.h"
+				>
 			</File>
 		</Filter>
 		<File

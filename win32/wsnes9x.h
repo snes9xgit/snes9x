@@ -208,7 +208,6 @@
 #define COUNT(a) (sizeof (a) / sizeof (a[0]))
 #define GUI_VERSION 1008
 
-extern unsigned char* SoundBuffer;
 #define MAX_RECENT_GAMES_LIST_SIZE 32
 #define MAX_RECENT_HOSTS_LIST_SIZE 16
 

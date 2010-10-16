@@ -740,7 +740,7 @@ BEGIN
         BLOCK "080904b0"
         BEGIN
             VALUE "CompanyName", "http://www.snes9x.com"
-            VALUE "FileDescription", "Snes9XW"
+            VALUE "FileDescription", "Snes9X"
             VALUE "FileVersion", "1.52"
             VALUE "InternalName", "Snes9X"
             VALUE "LegalCopyright", "Copyright  1996-2010"
