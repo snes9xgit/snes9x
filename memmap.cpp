@@ -3513,6 +3513,7 @@ void CMemory::ApplyROMFixes (void)
 	//// APU timing hacks :(
 
 	Timings.APUSpeedup = 0;
+	Timings.APUAllowTimeOverflow = FALSE;
 
 	if (!Settings.DisableGameSpecificHacks)
 	{
@@ -3554,9 +3555,15 @@ void CMemory::ApplyROMFixes (void)
 			match_na("HEIWA Parlor!Mini8")                      || // Parlor mini 8
 			match_nn("SANKYO Fever! \xCC\xA8\xB0\xCA\xDE\xB0!"))   // SANKYO Fever! Fever!
 			Timings.APUSpeedup = 1;
+
+		if (match_na ("EARTHWORM JIM 2")						|| // Earthworm Jim 2
+			match_na ("NBA Hangtime")							|| // NBA Hang Time
+			match_na ("MSPACMAN"))								   // Ms Pacman
+			Timings.APUAllowTimeOverflow = TRUE;
 	}
 
 	S9xAPUTimingSetSpeedup(Timings.APUSpeedup);
+	S9xAPUAllowTimeOverflow(Timings.APUAllowTimeOverflow);
 
 	//// Other timing hacks :(
 

@@ -68,6 +68,8 @@ blargg_err_t SNES_SPC::init()
 		m.cycle_table [i * 2 + 0] = n >> 4;
 		m.cycle_table [i * 2 + 1] = n & 0x0F;
 	}
+
+	allow_time_overflow = false;
 	
 	#if SPC_LESS_ACCURATE
 		memcpy( reg_times, reg_times_, sizeof reg_times );

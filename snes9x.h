@@ -334,6 +334,7 @@ struct STimings
 	int32	NMIDMADelay;	// The delay of NMI trigger after DMA transfers. Snes9x cannot emulate correctly.
 	int32	IRQPendCount;	// This value is just a hack, because Snes9x cannot emulate any events in an opcode.
 	int32	APUSpeedup;
+	bool8	APUAllowTimeOverflow;
 };
 
 struct SSettings

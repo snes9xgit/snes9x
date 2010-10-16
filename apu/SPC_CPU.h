@@ -196,7 +196,9 @@ loop:
 	check( (unsigned) y < 0x100 );
 	
 	opcode = *pc;
-	if ( (rel_time += m.cycle_table [opcode]) > 0 )
+	if (allow_time_overflow && rel_time >= 0 )
+		goto stop;
+	if ( (rel_time += m.cycle_table [opcode]) > 0 && !allow_time_overflow)
 		goto out_of_time;
 	
 	#ifdef SPC_CPU_OPCODE_HOOK

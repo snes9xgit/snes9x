@@ -106,6 +106,8 @@ public:
 
 //// Snes9x Accessor
 
+	void	spc_allow_time_overflow( bool );
+
 	void    dsp_set_spc_snapshot_callback( void (*callback) (void) );
 	void    dsp_dump_spc_snapshot( void );
 	void    dsp_set_stereo_switch( int );
@@ -258,6 +260,9 @@ private:
 	static char const signature [signature_size + 1];
 	
 	void save_regs( uint8_t out [reg_count] );
+
+// Snes9x timing hack
+	bool allow_time_overflow;
 };
 
 #include <assert.h>
@@ -284,5 +289,7 @@ inline void SNES_SPC::disable_surround( bool disable ) { dsp.disable_surround( d
 #if !SPC_NO_COPY_STATE_FUNCS
 inline bool SNES_SPC::check_kon() { return dsp.check_kon(); }
 #endif
+
+inline void SNES_SPC::spc_allow_time_overflow( bool allow ) { allow_time_overflow = allow; }
 
 #endif
