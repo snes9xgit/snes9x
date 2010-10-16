@@ -598,6 +598,11 @@ void S9xAPUTimingSetSpeedup (int ticks)
 	UpdatePlaybackRate();
 }
 
+void S9xAPUAllowTimeOverflow (bool allow)
+{
+	spc_core->spc_allow_time_overflow(allow);
+}
+
 void S9xResetAPU (void)
 {
 	spc::reference_time = 0;

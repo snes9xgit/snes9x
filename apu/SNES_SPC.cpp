@@ -511,7 +511,7 @@ int SNES_SPC::cpu_read( int addr, rel_time_t time )
 BOOST::uint8_t* SNES_SPC::run_until_( time_t end_time )\
 {\
 	rel_time_t rel_time = m.spc_time - end_time;\
-	assert( rel_time <= 0 );\
+	/*assert( rel_time <= 0 );*/\
 	m.spc_time = end_time;\
 	m.dsp_time += rel_time;\
 	m.timers [0].next_time += rel_time;\
@@ -524,7 +524,7 @@ BOOST::uint8_t* SNES_SPC::run_until_( time_t end_time )\
 	m.timers [0].next_time -= rel_time;\
 	m.timers [1].next_time -= rel_time;\
 	m.timers [2].next_time -= rel_time;\
-	assert( m.spc_time <= end_time );\
+	/*assert( m.spc_time >= end_time );*/\
 	return &REGS [r_cpuio0];\
 }
 
@@ -543,7 +543,7 @@ void SNES_SPC::end_frame( time_t end_time )
 	// Greatest number of clocks early that emulation can stop early due to
 	// not being able to execute current instruction without going over
 	// allowed time.
-	assert( -cpu_lag_max <= m.spc_time && m.spc_time <= 0 );
+	assert( -cpu_lag_max <= m.spc_time && m.spc_time <= cpu_lag_max );
 	
 	// Catch timers up to CPU
 	for ( int i = 0; i < timer_count; i++ )

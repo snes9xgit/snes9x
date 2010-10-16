@@ -195,6 +195,7 @@ void S9xAPUExecute (void);
 void S9xAPUEndScanline (void);
 void S9xAPUSetReferenceTime (int32);
 void S9xAPUTimingSetSpeedup (int);
+void S9xAPUAllowTimeOverflow (bool);
 void S9xAPULoadState (uint8 *);
 void S9xAPUSaveState (uint8 *);
 void S9xDumpSPCSnapshot (void);
