@@ -307,6 +307,7 @@ struct sGUI {
     bool AspectRatio;
 	OutputMethod outputMethod;
 	int AspectWidth;
+	bool AlwaysCenterImage;
 	bool EmulateFullscreen;
 	bool EmulatedFullscreen;
 	bool BilinearFilter;

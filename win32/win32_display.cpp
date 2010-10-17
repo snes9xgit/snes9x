@@ -303,8 +303,10 @@ RECT CalculateDisplayRect(unsigned int sourceWidth,unsigned int sourceHeight,
 	} else {
 		drawRect.left = ((int)(displayWidth) - (int)sourceWidth) / 2;
 		drawRect.top = ((int)(displayHeight) - (int)sourceHeight) / 2;
-		if(drawRect.left < 0) drawRect.left = 0;
-		if(drawRect.top < 0) drawRect.top = 0;
+		if(!GUI.AlwaysCenterImage) {
+			if(drawRect.left < 0) drawRect.left = 0;
+			if(drawRect.top < 0) drawRect.top = 0;
+		}
 		drawRect.right = drawRect.left + sourceWidth;
 		drawRect.bottom = drawRect.top + sourceHeight;
 	}

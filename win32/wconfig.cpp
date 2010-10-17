@@ -245,6 +245,7 @@ void WinSetDefaultValues ()
 	GUI.BilinearFilter	= false;
 	GUI.LockDirectories = false;
 	GUI.window_maximized = false;
+	GUI.EmulatedFullscreen = false;
 
 	WinDeleteRecentGamesList ();
 
@@ -901,6 +902,7 @@ void WinRegisterConfigItems()
 	AddStringC("OpenGL:GLSLvertexFileName", GUI.GLSLvertexShaderFileName, MAX_PATH, "", "vertex shader filename for OpenGL mode");
 	AddStringC("OpenGL:GLSLfragmentFileName", GUI.GLSLfragmentShaderFileName, MAX_PATH, "", "fragment shader filename for OpenGL mode");
 	AddBoolC("ExtendHeight", GUI.HeightExtend, false, "true to display an extra 15 pixels at the bottom, which few games use. Also increases AVI output size from 256x224 to 256x240.");
+	AddBoolC("AlwaysCenterImage", GUI.AlwaysCenterImage,false, "true to center the image even if larger than window");
 	AddIntC("Window:Width", GUI.window_size.right, 512, "256=1x, 512=2x, 768=3x, 1024=4x, etc. (usually)");
 	AddIntC("Window:Height", GUI.window_size.bottom, 448, "224=1x, 448=2x, 672=3x,  896=4x, etc. (usually)");
 	AddIntC("Window:Left", GUI.window_size.left, 0, "in pixels from left edge of screen");
