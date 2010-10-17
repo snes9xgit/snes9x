@@ -403,15 +403,6 @@ event_control_combo_changed (GtkComboBox *widget, gpointer user_data)
     return;
 }
 
-static void
-event_switch_page (GtkNotebook     *notebook,
-                   GtkNotebookPage *page,
-                   guint           page_num,
-                   gpointer        data)
-{
-    return;
-}
-
 #ifdef USE_JOYSTICK
 
 static gboolean
@@ -529,7 +520,6 @@ Snes9xPreferences::Snes9xPreferences (Snes9xConfig *config) :
         { "control_toggle", G_CALLBACK (event_control_toggle) },
         { "on_key_press", G_CALLBACK (event_key_press) },
         { "control_combo_changed", G_CALLBACK (event_control_combo_changed) },
-        { "change_current_page", G_CALLBACK (event_switch_page) },
         { "sram_folder_browse", G_CALLBACK (event_sram_folder_browse) },
         { "scale_method_changed", G_CALLBACK (event_scale_method_changed) },
         { "hw_accel_changed", G_CALLBACK (event_hw_accel_changed) },
