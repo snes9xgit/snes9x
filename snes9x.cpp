@@ -565,7 +565,7 @@ void S9xUsage (void)
 	S9xMessage(S9X_INFO, S9X_USAGE, "");
 
 	// PATCH/CHEAT OPTIONS
-	S9xMessage(S9X_INFO, S9X_USAGE, "-nopatch                        Do not apply any available IPS patches");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-nopatch                        Do not apply any available IPS/UPS patches");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-cheat                          Apply saved cheats");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-gamegenie <code>               Supply a Game Genie code");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-actionreplay <code>            Supply a Pro-Action Reply code");
@@ -874,7 +874,7 @@ char * S9xParseArgs (char **argv, int argc)
 				Settings.ShutdownMaster = TRUE;
 			else
 			if (!strcasecmp(argv[i], "-invalidvramaccess"))
-				Settings.BlockInvalidVRAMAccess = FALSE;
+				Settings.BlockInvalidVRAMAccessMaster = FALSE;
 			else
 
 			// OTHER OPTIONS
