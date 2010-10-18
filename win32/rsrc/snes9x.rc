@@ -830,26 +830,26 @@ BEGIN
         POPUP "&Save Game Position"
         BEGIN
             MENUITEM "Slot #&1",                    ID_FILE_SAVE1
-            MENUITEM "Slot #&2",                    ID_FILE_SAVE2, GRAYED
-            MENUITEM "Slot #&3",                    ID_FILE_SAVE3, GRAYED
-            MENUITEM "Slot #&4",                    ID_FILE_SAVE4, GRAYED
-            MENUITEM "Slot #&5",                    ID_FILE_SAVE5, GRAYED
-            MENUITEM "Slot #&6",                    ID_FILE_SAVE6, GRAYED
-            MENUITEM "Slot #&7",                    ID_FILE_SAVE7, GRAYED
-            MENUITEM "Slot #&8",                    ID_FILE_SAVE8, GRAYED
-            MENUITEM "Slot #&9",                    ID_FILE_SAVE9, GRAYED
+            MENUITEM "Slot #&2",                    ID_FILE_SAVE2
+            MENUITEM "Slot #&3",                    ID_FILE_SAVE3
+            MENUITEM "Slot #&4",                    ID_FILE_SAVE4
+            MENUITEM "Slot #&5",                    ID_FILE_SAVE5
+            MENUITEM "Slot #&6",                    ID_FILE_SAVE6
+            MENUITEM "Slot #&7",                    ID_FILE_SAVE7
+            MENUITEM "Slot #&8",                    ID_FILE_SAVE8
+            MENUITEM "Slot #&9",                    ID_FILE_SAVE9
         END
         POPUP "&Load Game Position"
         BEGIN
             MENUITEM "Slot #&1",                    ID_FILE_LOAD1
-            MENUITEM "Slot #&2",                    ID_FILE_LOAD2, GRAYED
-            MENUITEM "Slot #&3",                    ID_FILE_LOAD3, GRAYED
-            MENUITEM "Slot #&4",                    ID_FILE_LOAD4, GRAYED
-            MENUITEM "Slot #&5",                    ID_FILE_LOAD5, GRAYED
-            MENUITEM "Slot #&6",                    ID_FILE_LOAD6, GRAYED
-            MENUITEM "Slot #&7",                    ID_FILE_LOAD7, GRAYED
-            MENUITEM "Slot #&8",                    ID_FILE_LOAD8, GRAYED
-            MENUITEM "Slot #&9",                    ID_FILE_LOAD9, GRAYED
+            MENUITEM "Slot #&2",                    ID_FILE_LOAD2
+            MENUITEM "Slot #&3",                    ID_FILE_LOAD3
+            MENUITEM "Slot #&4",                    ID_FILE_LOAD4
+            MENUITEM "Slot #&5",                    ID_FILE_LOAD5
+            MENUITEM "Slot #&6",                    ID_FILE_LOAD6
+            MENUITEM "Slot #&7",                    ID_FILE_LOAD7
+            MENUITEM "Slot #&8",                    ID_FILE_LOAD8
+            MENUITEM "Slot #&9",                    ID_FILE_LOAD9
         END
         MENUITEM "Load MultiCart...",           ID_FILE_LOADMULTICART
         MENUITEM SEPARATOR
@@ -857,24 +857,25 @@ BEGIN
         BEGIN
             MENUITEM "S&ave SPC Data",              ID_FILE_SAVE_SPC_DATA
             MENUITEM "Save Screenshot",             ID_SAVESCREENSHOT
-            MENUITEM "Sa&ve S-RAM Data",            ID_FILE_SAVE_SRAM_DATA, GRAYED
+            MENUITEM "Sa&ve S-RAM Data",            ID_FILE_SAVE_SRAM_DATA
         END
-        MENUITEM "ROM Information...",          IDM_ROM_INFO, GRAYED
+        MENUITEM "ROM Information...",          IDM_ROM_INFO
         MENUITEM SEPARATOR
-        MENUITEM "Movie Play...",               ID_FILE_MOVIE_PLAY, GRAYED
-        MENUITEM "Movie Record...",             ID_FILE_MOVIE_RECORD, GRAYED
-        MENUITEM "Movie Stop",                  ID_FILE_MOVIE_STOP, GRAYED
+        MENUITEM "Movie Play...",               ID_FILE_MOVIE_PLAY
+        MENUITEM "Movie Record...",             ID_FILE_MOVIE_RECORD
+        MENUITEM "Movie Stop",                  ID_FILE_MOVIE_STOP
         MENUITEM SEPARATOR
-        MENUITEM "AVI Recording",               ID_FILE_AVI_RECORDING, GRAYED
+        MENUITEM "AVI Recording",               ID_FILE_AVI_RECORDING
         MENUITEM SEPARATOR
-        MENUITEM "&Reset Game",                 ID_FILE_RESET, GRAYED
-        MENUITEM "&Pause",                      ID_FILE_PAUSE, GRAYED
+        MENUITEM "&Reset Game",                 ID_FILE_RESET
         MENUITEM "E&xit\tAlt+F4",               ID_FILE_EXIT
     END
-    POPUP "&Options"
+    POPUP "&Emulation"
     BEGIN
-        MENUITEM "&Display Configuration...\tAlt+F5", ID_OPTIONS_DISPLAY
-        MENUITEM "&Settings...\tAlt+F8",        ID_OPTIONS_SETTINGS
+        MENUITEM "&Pause",                      ID_FILE_PAUSE
+        MENUITEM "Pause &When Inactive",        ID_SOUND_48MS
+        MENUITEM SEPARATOR
+        MENUITEM "Se&ttings...\tAlt+F8",        ID_OPTIONS_SETTINGS
     END
     POPUP "&Input"
     BEGIN
@@ -895,31 +896,31 @@ BEGIN
         POPUP "&Playback Rate"
         BEGIN
             MENUITEM "&Mute Sound",                 ID_SOUND_NOSOUND
-            MENUITEM "8KHz",                        ID_SOUND_8000HZ, GRAYED
-            MENUITEM "11KHz",                       ID_SOUND_11025HZ, GRAYED
-            MENUITEM "16KHz",                       ID_SOUND_16000HZ, GRAYED
-            MENUITEM "22KHz",                       ID_SOUND_22050HZ, GRAYED
-            MENUITEM "30KHz",                       ID_SOUND_30000HZ, GRAYED
-            MENUITEM "32KHz (SNES)",                ID_SOUND_32000HZ, GRAYED
-            MENUITEM "35KHz",                       ID_SOUND_35000HZ, GRAYED
-            MENUITEM "44KHz",                       ID_SOUND_44100HZ, GRAYED
-            MENUITEM "48KHz",                       ID_SOUND_48000HZ, GRAYED
+            MENUITEM "8KHz",                        ID_SOUND_8000HZ
+            MENUITEM "11KHz",                       ID_SOUND_11025HZ
+            MENUITEM "16KHz",                       ID_SOUND_16000HZ
+            MENUITEM "22KHz",                       ID_SOUND_22050HZ
+            MENUITEM "30KHz",                       ID_SOUND_30000HZ
+            MENUITEM "32KHz (SNES)",                ID_SOUND_32000HZ
+            MENUITEM "35KHz",                       ID_SOUND_35000HZ
+            MENUITEM "44KHz",                       ID_SOUND_44100HZ
+            MENUITEM "48KHz",                       ID_SOUND_48000HZ
         END
         POPUP "&Buffer Length"
         BEGIN
             MENUITEM "16ms",                        ID_SOUND_16MS
-            MENUITEM "32ms",                        ID_SOUND_32MS, GRAYED
-            MENUITEM "48ms",                        ID_SOUND_48MS, GRAYED
-            MENUITEM "64ms",                        ID_SOUND_64MS, GRAYED
-            MENUITEM "80ms",                        ID_SOUND_80MS, GRAYED
-            MENUITEM "96ms",                        ID_SOUND_96MS, GRAYED
-            MENUITEM "112ms",                       ID_SOUND_112MS, GRAYED
-            MENUITEM "128ms",                       ID_SOUND_128MS, GRAYED
-            MENUITEM "144ms",                       ID_SOUND_144MS, GRAYED
-            MENUITEM "160ms",                       ID_SOUND_160MS, GRAYED
-            MENUITEM "176ms",                       ID_SOUND_176MS, GRAYED
-            MENUITEM "194ms",                       ID_SOUND_194MS, GRAYED
-            MENUITEM "210ms",                       ID_SOUND_210MS, GRAYED
+            MENUITEM "32ms",                        ID_SOUND_32MS
+            MENUITEM "48ms",                        ID_SOUND_48MS
+            MENUITEM "64ms",                        ID_SOUND_64MS
+            MENUITEM "80ms",                        ID_SOUND_80MS
+            MENUITEM "96ms",                        ID_SOUND_96MS
+            MENUITEM "112ms",                       ID_SOUND_112MS
+            MENUITEM "128ms",                       ID_SOUND_128MS
+            MENUITEM "144ms",                       ID_SOUND_144MS
+            MENUITEM "160ms",                       ID_SOUND_160MS
+            MENUITEM "176ms",                       ID_SOUND_176MS
+            MENUITEM "194ms",                       ID_SOUND_194MS
+            MENUITEM "210ms",                       ID_SOUND_210MS
         END
         POPUP "&Channels"
         BEGIN
@@ -941,20 +942,23 @@ BEGIN
         MENUITEM "S&ync Sound\tAlt+]",          ID_SOUND_SYNC
         MENUITEM "&Settings...\tAlt+T",         ID_SOUND_OPTIONS
     END
-    POPUP "&Window"
+    POPUP "&Video"
     BEGIN
         MENUITEM "&Hide menubar\tEsc",          ID_WINDOW_HIDEMENUBAR
         MENUITEM "&Full Screen\tAlt+Enter",     ID_WINDOW_FULLSCREEN
+        MENUITEM SEPARATOR
         MENUITEM "&Stretch Image\tAlt+Backspace", 40032
         MENUITEM "&Maintain Aspect Ratio",      40123
         MENUITEM "&Bilinear Filtering",         ID_WINDOW_VIDMEM
+        MENUITEM SEPARATOR
+        MENUITEM "&Display Configuration...\tAlt+F5", ID_OPTIONS_DISPLAY
     END
     POPUP "&Cheat"
     BEGIN
         MENUITEM "&Game Genie, Pro-Action Replay Codes\tAlt+E", ID_CHEAT_ENTER
-        MENUITEM "&Search for New Cheats",      ID_CHEAT_SEARCH_MODAL, GRAYED
-        MENUITEM "Search for New Cheats (active)\tAlt+A", 40064, GRAYED
-        MENUITEM "&Apply Cheats",               ID_CHEAT_APPLY, CHECKED, GRAYED
+        MENUITEM "&Search for New Cheats",      ID_CHEAT_SEARCH_MODAL
+        MENUITEM "Search for New Cheats (active)\tAlt+A", 40064
+        MENUITEM "&Apply Cheats",               ID_CHEAT_APPLY, CHECKED
     END
     POPUP "&Netplay"
     BEGIN
@@ -969,14 +973,6 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Options...",                 ID_NETPLAY_OPTIONS
     END
-#ifdef DEBUGGER
-    POPUP "&Debug"
-    BEGIN
-        MENUITEM "&Trace",                      ID_DEBUG_TRACE
-        MENUITEM "&Frame Advance",              ID_DEBUG_FRAME_ADVANCE
-        MENUITEM "View SNES &Status",           ID_DEBUG_SNES_STATUS
-    END
-#endif
     POPUP "&Help"
     BEGIN
         MENUITEM "&About...",                   ID_HELP_ABOUT

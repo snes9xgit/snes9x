@@ -2051,217 +2051,220 @@ LRESULT CALLBACK WinProc(
 				RestoreSNESDisplay ();
 				break;
 			}
-						case ID_WINDOW_FULLSCREEN:
-							ToggleFullScreen ();
-							break;
-						case ID_WINDOW_STRETCH: {
-							GUI.Stretch = !GUI.Stretch;
-							if(!GUI.Stretch != !GUI.BilinearFilter) {
-								GUI.BilinearFilter = !GUI.BilinearFilter;
-								RestoreSNESDisplay ();
-							}
-							RECT rect;
-							GetClientRect (GUI.hWnd, &rect);
-							InvalidateRect (GUI.hWnd, &rect, true);
-						}	break;
-						case ID_WINDOW_ASPECTRATIO: {
-							GUI.AspectRatio = !GUI.AspectRatio;
-							RECT rect;
-							GetClientRect (GUI.hWnd, &rect);
-							InvalidateRect (GUI.hWnd, &rect, true);
-						}	break;
-						case ID_WINDOW_VIDMEM: {
-							GUI.BilinearFilter = !GUI.BilinearFilter;
-							RestoreSNESDisplay ();
-							RECT rect;
-							GetClientRect (GUI.hWnd, &rect);
-							InvalidateRect (GUI.hWnd, &rect, true);
-						}	break;
-						case ID_SAVESCREENSHOT:
-							Settings.TakeScreenshot=true;
-							break;
-						case ID_FILE_SAVE_SPC_DATA:
-							S9xDumpSPCSnapshot();
-							S9xMessage(S9X_INFO, 0, INFO_SAVE_SPC);
-							break;
-						case ID_FILE_SAVE_SRAM_DATA: {
-							bool8 success = Memory.SaveSRAM (S9xGetFilename (".srm", SRAM_DIR));
-							if(!success)
-								S9xMessage(S9X_ERROR, S9X_FREEZE_FILE_INFO, SRM_SAVE_FAILED);
-						}	break;
-						case ID_FILE_RESET:
+		case ID_WINDOW_FULLSCREEN:
+			ToggleFullScreen ();
+			break;
+		case ID_WINDOW_STRETCH: {
+			GUI.Stretch = !GUI.Stretch;
+			if(!GUI.Stretch != !GUI.BilinearFilter) {
+				GUI.BilinearFilter = !GUI.BilinearFilter;
+				RestoreSNESDisplay ();
+			}
+			RECT rect;
+			GetClientRect (GUI.hWnd, &rect);
+			InvalidateRect (GUI.hWnd, &rect, true);
+		}	break;
+		case ID_WINDOW_ASPECTRATIO: {
+			GUI.AspectRatio = !GUI.AspectRatio;
+			RECT rect;
+			GetClientRect (GUI.hWnd, &rect);
+			InvalidateRect (GUI.hWnd, &rect, true);
+		}	break;
+		case ID_WINDOW_VIDMEM: {
+			GUI.BilinearFilter = !GUI.BilinearFilter;
+			RestoreSNESDisplay ();
+			RECT rect;
+			GetClientRect (GUI.hWnd, &rect);
+			InvalidateRect (GUI.hWnd, &rect, true);
+		}	break;
+		case ID_SAVESCREENSHOT:
+			Settings.TakeScreenshot=true;
+			break;
+		case ID_FILE_SAVE_SPC_DATA:
+			S9xDumpSPCSnapshot();
+			S9xMessage(S9X_INFO, 0, INFO_SAVE_SPC);
+			break;
+		case ID_FILE_SAVE_SRAM_DATA: {
+			bool8 success = Memory.SaveSRAM (S9xGetFilename (".srm", SRAM_DIR));
+			if(!success)
+				S9xMessage(S9X_ERROR, S9X_FREEZE_FILE_INFO, SRM_SAVE_FAILED);
+		}	break;
+		case ID_FILE_RESET:
 #ifdef NETPLAY_SUPPORT
-							if (Settings.NetPlayServer)
-							{
-								S9xNPReset ();
-								ReInitSound();
-							}
-							else
-								if (!Settings.NetPlay)
+			if (Settings.NetPlayServer)
+			{
+				S9xNPReset ();
+				ReInitSound();
+			}
+			else
+				if (!Settings.NetPlay)
 #endif
-								{
-									S9xMovieUpdateOnReset ();
-									if(S9xMoviePlaying())
-										S9xMovieStop (TRUE);
-									S9xSoftReset ();
-									ReInitSound();
-								}
-								if(!S9xMovieRecording())
-									Settings.Paused = false;
-								break;
-						case ID_FILE_PAUSE:
-							Settings.Paused = !Settings.Paused;
-							Settings.FrameAdvance = false;
-							GUI.FrameAdvanceJustPressed = 0;
-							break;
-						case ID_FILE_LOAD1:
-							FreezeUnfreeze (0, FALSE);
-							break;
-						case ID_FILE_LOAD2:
-							FreezeUnfreeze (1, FALSE);
-							break;
-						case ID_FILE_LOAD3:
-							FreezeUnfreeze (2, FALSE);
-							break;
-						case ID_FILE_LOAD4:
-							FreezeUnfreeze (3, FALSE);
-							break;
-						case ID_FILE_LOAD5:
-							FreezeUnfreeze (4, FALSE);
-							break;
-						case ID_FILE_LOAD6:
-							FreezeUnfreeze (5, FALSE);
-							break;
-						case ID_FILE_LOAD7:
-							FreezeUnfreeze (6, FALSE);
-							break;
-						case ID_FILE_LOAD8:
-							FreezeUnfreeze (7, FALSE);
-							break;
-						case ID_FILE_LOAD9:
-							FreezeUnfreeze (8, FALSE);
-							break;
-						case ID_FILE_SAVE1:
-							FreezeUnfreeze (0, TRUE);
-							break;
-						case ID_FILE_SAVE2:
-							FreezeUnfreeze (1, TRUE);
-							break;
-						case ID_FILE_SAVE3:
-							FreezeUnfreeze (2, TRUE);
-							break;
-						case ID_FILE_SAVE4:
-							FreezeUnfreeze (3, TRUE);
-							break;
-						case ID_FILE_SAVE5:
-							FreezeUnfreeze (4, TRUE);
-							break;
-						case ID_FILE_SAVE6:
-							FreezeUnfreeze (5, TRUE);
-							break;
-						case ID_FILE_SAVE7:
-							FreezeUnfreeze (6, TRUE);
-							break;
-						case ID_FILE_SAVE8:
-							FreezeUnfreeze (7, TRUE);
-							break;
-						case ID_FILE_SAVE9:
-							FreezeUnfreeze (8, TRUE);
-							break;
-						case ID_CHEAT_ENTER:
-							RestoreGUIDisplay ();
-							S9xRemoveCheats ();
-							DialogBox(g_hInst, MAKEINTRESOURCE(IDD_CHEATER), hWnd, DlgCheater);
-							S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
-							S9xApplyCheats ();
-							RestoreSNESDisplay ();
-							break;
-						case ID_CHEAT_SEARCH:
-							RestoreGUIDisplay ();
-							if(!cheatSearchHWND) // create and show non-modal cheat search window
-							{
-								cheatSearchHWND = CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_CHEAT_SEARCH), hWnd, DlgCheatSearch); // non-modal/modeless
-								ShowWindow(cheatSearchHWND, SW_SHOW);
-							}
-							else // already open so just reactivate the window
-							{
-								SetActiveWindow(cheatSearchHWND);
-							}
-							RestoreSNESDisplay ();
-							break;
-						case ID_CHEAT_SEARCH_MODAL:
-							RestoreGUIDisplay ();
-							DialogBox(g_hInst, MAKEINTRESOURCE(IDD_CHEAT_SEARCH), hWnd, DlgCheatSearch); // modal
-							S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
-							RestoreSNESDisplay ();
-							break;
-						case ID_CHEAT_APPLY:
-							Settings.ApplyCheats = !Settings.ApplyCheats;
-							if (!Settings.ApplyCheats){
-								S9xRemoveCheats ();
-								S9xMessage (S9X_INFO, S9X_GAME_GENIE_CODE_ERROR, CHEATS_INFO_DISABLED);
-							}else{
-								S9xApplyCheats ();
-								bool on = false;
-								extern struct SCheatData Cheat;
-								for (uint32 i = 0; i < Cheat.num_cheats && !on; i++)
-									if (Cheat.c [i].enabled)
-										on = true;
-								S9xMessage (S9X_INFO, S9X_GAME_GENIE_CODE_ERROR, on ? CHEATS_INFO_ENABLED : CHEATS_INFO_ENABLED_NONE);
-							}
-							break;
-						case ID_OPTIONS_SETTINGS:
-							RestoreGUIDisplay ();
-							DialogBox(g_hInst, MAKEINTRESOURCE(IDD_EMU_SETTINGS), hWnd, DlgEmulatorProc);
-							RestoreSNESDisplay ();
-							break;
-						case ID_HELP_ABOUT:
-							RestoreGUIDisplay ();
-							DialogBox(g_hInst, MAKEINTRESOURCE(IDD_ABOUT), hWnd, DlgAboutProc);
-							RestoreSNESDisplay ();
-							break;
+				{
+					S9xMovieUpdateOnReset ();
+					if(S9xMoviePlaying())
+						S9xMovieStop (TRUE);
+					S9xSoftReset ();
+					ReInitSound();
+				}
+				if(!S9xMovieRecording())
+					Settings.Paused = false;
+				break;
+		case ID_FILE_PAUSE:
+			Settings.Paused = !Settings.Paused;
+			Settings.FrameAdvance = false;
+			GUI.FrameAdvanceJustPressed = 0;
+			break;
+		case ID_FILE_LOAD1:
+			FreezeUnfreeze (0, FALSE);
+			break;
+		case ID_FILE_LOAD2:
+			FreezeUnfreeze (1, FALSE);
+			break;
+		case ID_FILE_LOAD3:
+			FreezeUnfreeze (2, FALSE);
+			break;
+		case ID_FILE_LOAD4:
+			FreezeUnfreeze (3, FALSE);
+			break;
+		case ID_FILE_LOAD5:
+			FreezeUnfreeze (4, FALSE);
+			break;
+		case ID_FILE_LOAD6:
+			FreezeUnfreeze (5, FALSE);
+			break;
+		case ID_FILE_LOAD7:
+			FreezeUnfreeze (6, FALSE);
+			break;
+		case ID_FILE_LOAD8:
+			FreezeUnfreeze (7, FALSE);
+			break;
+		case ID_FILE_LOAD9:
+			FreezeUnfreeze (8, FALSE);
+			break;
+		case ID_FILE_SAVE1:
+			FreezeUnfreeze (0, TRUE);
+			break;
+		case ID_FILE_SAVE2:
+			FreezeUnfreeze (1, TRUE);
+			break;
+		case ID_FILE_SAVE3:
+			FreezeUnfreeze (2, TRUE);
+			break;
+		case ID_FILE_SAVE4:
+			FreezeUnfreeze (3, TRUE);
+			break;
+		case ID_FILE_SAVE5:
+			FreezeUnfreeze (4, TRUE);
+			break;
+		case ID_FILE_SAVE6:
+			FreezeUnfreeze (5, TRUE);
+			break;
+		case ID_FILE_SAVE7:
+			FreezeUnfreeze (6, TRUE);
+			break;
+		case ID_FILE_SAVE8:
+			FreezeUnfreeze (7, TRUE);
+			break;
+		case ID_FILE_SAVE9:
+			FreezeUnfreeze (8, TRUE);
+			break;
+		case ID_CHEAT_ENTER:
+			RestoreGUIDisplay ();
+			S9xRemoveCheats ();
+			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_CHEATER), hWnd, DlgCheater);
+			S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
+			S9xApplyCheats ();
+			RestoreSNESDisplay ();
+			break;
+		case ID_CHEAT_SEARCH:
+			RestoreGUIDisplay ();
+			if(!cheatSearchHWND) // create and show non-modal cheat search window
+			{
+				cheatSearchHWND = CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_CHEAT_SEARCH), hWnd, DlgCheatSearch); // non-modal/modeless
+				ShowWindow(cheatSearchHWND, SW_SHOW);
+			}
+			else // already open so just reactivate the window
+			{
+				SetActiveWindow(cheatSearchHWND);
+			}
+			RestoreSNESDisplay ();
+			break;
+		case ID_CHEAT_SEARCH_MODAL:
+			RestoreGUIDisplay ();
+			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_CHEAT_SEARCH), hWnd, DlgCheatSearch); // modal
+			S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
+			RestoreSNESDisplay ();
+			break;
+		case ID_CHEAT_APPLY:
+			Settings.ApplyCheats = !Settings.ApplyCheats;
+			if (!Settings.ApplyCheats){
+				S9xRemoveCheats ();
+				S9xMessage (S9X_INFO, S9X_GAME_GENIE_CODE_ERROR, CHEATS_INFO_DISABLED);
+			}else{
+				S9xApplyCheats ();
+				bool on = false;
+				extern struct SCheatData Cheat;
+				for (uint32 i = 0; i < Cheat.num_cheats && !on; i++)
+					if (Cheat.c [i].enabled)
+						on = true;
+				S9xMessage (S9X_INFO, S9X_GAME_GENIE_CODE_ERROR, on ? CHEATS_INFO_ENABLED : CHEATS_INFO_ENABLED_NONE);
+			}
+			break;
+		case ID_EMULATION_PAUSEWHENINACTIVE:
+			GUI.InactivePause = !GUI.InactivePause;
+			break;
+		case ID_OPTIONS_SETTINGS:
+			RestoreGUIDisplay ();
+			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_EMU_SETTINGS), hWnd, DlgEmulatorProc);
+			RestoreSNESDisplay ();
+			break;
+		case ID_HELP_ABOUT:
+			RestoreGUIDisplay ();
+			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_ABOUT), hWnd, DlgAboutProc);
+			RestoreSNESDisplay ();
+			break;
 #ifdef DEBUGGER
-						case ID_DEBUG_TRACE:
-							CPU.Flags ^= TRACE_FLAG;
-							break;
+		case ID_DEBUG_TRACE:
+			CPU.Flags ^= TRACE_FLAG;
+			break;
 
-						case ID_DEBUG_FRAME_ADVANCE:
-							CPU.Flags |= FRAME_ADVANCE_FLAG;
-							ICPU.FrameAdvanceCount = 1;
-							Settings.Paused = FALSE;
-							break;
+		case ID_DEBUG_FRAME_ADVANCE:
+			CPU.Flags |= FRAME_ADVANCE_FLAG;
+			ICPU.FrameAdvanceCount = 1;
+			Settings.Paused = FALSE;
+			break;
 
-						case ID_DEBUG_SNES_STATUS:
-							MessageBox(GUI.hWnd, TEXT("Sorry, but this function is not implemented yet."), NULL, MB_OK | MB_ICONINFORMATION);
-							break;
+		case ID_DEBUG_SNES_STATUS:
+			MessageBox(GUI.hWnd, TEXT("Sorry, but this function is not implemented yet."), NULL, MB_OK | MB_ICONINFORMATION);
+			break;
 #endif
-						case IDM_ROM_INFO:
-							RestoreGUIDisplay ();
-							DialogBox(g_hInst, MAKEINTRESOURCE(IDD_ROM_INFO), hWnd, DlgInfoProc);
-							RestoreSNESDisplay ();
-							break;
-						default:
-							if ((wParam & 0xffff) >= 0xFF00)
-							{
-								int i = (wParam & 0xffff) - 0xFF00;
-								int j = 0;
-								{
-									while (j < MAX_RECENT_GAMES_LIST_SIZE && j != i)
-										j++;
-									if (i == j)
-									{
+		case IDM_ROM_INFO:
+			RestoreGUIDisplay ();
+			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_ROM_INFO), hWnd, DlgInfoProc);
+			RestoreSNESDisplay ();
+			break;
+		default:
+			if ((wParam & 0xffff) >= 0xFF00)
+			{
+				int i = (wParam & 0xffff) - 0xFF00;
+				int j = 0;
+				{
+					while (j < MAX_RECENT_GAMES_LIST_SIZE && j != i)
+						j++;
+					if (i == j)
+					{
 
-										if (!LoadROM(GUI.RecentGames [i])) {
-											sprintf (String, ERR_ROM_NOT_FOUND, _tToChar(GUI.RecentGames [i]));
-											S9xMessage (S9X_ERROR, S9X_ROM_NOT_FOUND, String);
-											S9xRemoveFromRecentGames(i);
-										}
-									}
-								}
-							}
-							break;
-            }
-            break;
+						if (!LoadROM(GUI.RecentGames [i])) {
+							sprintf (String, ERR_ROM_NOT_FOUND, _tToChar(GUI.RecentGames [i]));
+							S9xMessage (S9X_ERROR, S9X_ROM_NOT_FOUND, String);
+							S9xRemoveFromRecentGames(i);
+						}
+					}
+				}
+			}
+			break;
+        }
+        break;
 
 	case WM_EXITMENULOOP:
 		UpdateWindow(GUI.hWnd);
@@ -3593,6 +3596,9 @@ static void CheckMenuStates ()
 
 	mii.fState = (Settings.Paused && !Settings.StopEmulation) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_FILE_PAUSE, FALSE, &mii);
+
+	mii.fState = (GUI.InactivePause) ? MFS_CHECKED : MFS_UNCHECKED;
+    SetMenuItemInfo (GUI.hMenu, ID_EMULATION_PAUSEWHENINACTIVE, FALSE, &mii);
 
     mii.fState = MFS_UNCHECKED;
     if (Settings.StopEmulation)
