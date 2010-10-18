@@ -123,6 +123,8 @@ main (int argc, char *argv[])
     gui_config->flush_joysticks ();
 #endif
 
+    gtk_window_present (top_level->get_window ());
+
     gdk_threads_lock ();
 
     gtk_main ();
