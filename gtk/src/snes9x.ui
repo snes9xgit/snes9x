@@ -8,7 +8,6 @@
     <property name="title" translatable="yes">About Snes9x</property>
     <property name="type_hint">normal</property>
     <property name="skip_taskbar_hint">True</property>
-    <property name="has_separator">False</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox6">
         <property name="visible">True</property>
@@ -50,18 +49,16 @@
               </packing>
             </child>
             <child>
-              <object class="GtkScrolledWindow" id="scrolledwindow7">
+              <object class="GtkViewport" id="viewport1">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="border_width">5</property>
-                <property name="hscrollbar_policy">automatic</property>
+                <property name="resize_mode">queue</property>
                 <child>
-                  <object class="GtkViewport" id="viewport7">
+                  <object class="GtkScrolledWindow" id="scrolledwindow7">
                     <property name="visible">True</property>
-                    <property name="resize_mode">queue</property>
-                    <property name="shadow_type">out</property>
+                    <property name="can_focus">True</property>
+                    <property name="hscrollbar_policy">automatic</property>
                     <child>
-                      <object class="GtkTextView" id="textview1">
+                      <object class="GtkTextView" id="about_text_view">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="editable">False</property>
@@ -494,7 +491,6 @@
     <property name="window_position">center-on-parent</property>
     <property name="default_width">320</property>
     <property name="type_hint">dialog</property>
-    <property name="has_separator">False</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox5">
         <property name="visible">True</property>
@@ -616,7 +612,6 @@
     <property name="title" translatable="yes">Snes9x NetPlay</property>
     <property name="window_position">center-on-parent</property>
     <property name="type_hint">dialog</property>
-    <property name="has_separator">False</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox4">
         <property name="visible">True</property>
@@ -1011,7 +1006,6 @@
     <property name="window_position">center-on-parent</property>
     <property name="type_hint">dialog</property>
     <property name="skip_taskbar_hint">True</property>
-    <property name="has_separator">False</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox3">
         <property name="visible">True</property>
@@ -1522,7 +1516,6 @@
     <property name="window_position">center-on-parent</property>
     <property name="type_hint">dialog</property>
     <property name="skip_taskbar_hint">True</property>
-    <property name="has_separator">False</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox2">
         <property name="visible">True</property>
@@ -1642,7 +1635,6 @@
     <property name="default_height">480</property>
     <property name="type_hint">dialog</property>
     <property name="skip_taskbar_hint">True</property>
-    <property name="has_separator">False</property>
     <signal name="key-press-event" handler="on_key_press" swapped="no"/>
     <signal name="style-set" handler="style_set" swapped="no"/>
     <child internal-child="vbox">
@@ -6795,12 +6787,12 @@
   <object class="GtkWindow" id="main_window">
     <property name="events">GDK_EXPOSURE_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_FOCUS_CHANGE_MASK | GDK_STRUCTURE_MASK | GDK_SUBSTRUCTURE_MASK</property>
     <property name="title" translatable="yes">Snes9x</property>
-    <signal name="delete-event" handler="main_window_delete_event" swapped="no"/>
+    <signal name="window-state-event" handler="main_window_state_event" swapped="no"/>
     <signal name="key-press-event" handler="main_window_key_press_event" swapped="no"/>
     <signal name="focus-out-event" handler="focus_out_event" swapped="no"/>
     <signal name="focus-in-event" handler="focus_in_event" swapped="no"/>
-    <signal name="window-state-event" handler="main_window_state_event" swapped="no"/>
     <signal name="key-release-event" handler="main_window_key_release_event" swapped="no"/>
+    <signal name="delete-event" handler="main_window_delete_event" swapped="no"/>
     <child>
       <object class="GtkVBox" id="vbox1">
         <property name="visible">True</property>

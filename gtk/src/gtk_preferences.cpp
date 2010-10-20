@@ -467,6 +467,7 @@ event_about_clicked (GtkButton *widget, gpointer data)
     std::string version_string;
     GtkBuilderWindow *about_dialog = new GtkBuilderWindow ("about_dialog");
     Snes9xPreferences *preferences = (Snes9xPreferences *) data;
+    PangoFontDescription *monospace;
 
     ((version_string += _("Snes9x version: ")) += VERSION) += ", ";
     ((version_string += _("GTK+ port version: ")) += SNES9X_GTK_VERSION) += "\n";
@@ -501,6 +502,13 @@ event_about_clicked (GtkButton *widget, gpointer data)
 
     gtk_image_set_from_pixbuf (GTK_IMAGE (about_dialog->get_widget ("preferences_splash")),
                                top_level->splash);
+
+    monospace = pango_font_description_from_string ("Monospace 7");
+
+    gtk_widget_modify_font (about_dialog->get_widget ("about_text_view"),
+                            monospace);
+
+    pango_font_description_free (monospace);
 
     gtk_window_set_transient_for (about_dialog->get_window (),
                                   preferences->get_window ());
