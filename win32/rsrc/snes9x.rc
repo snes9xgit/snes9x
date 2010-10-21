@@ -873,7 +873,7 @@ BEGIN
     POPUP "&Emulation"
     BEGIN
         MENUITEM "&Pause",                      ID_FILE_PAUSE
-        MENUITEM "Pause &When Inactive",        ID_SOUND_48MS
+        MENUITEM "Pause &When Inactive",        ID_EMULATION_PAUSEWHENINACTIVE
         MENUITEM SEPARATOR
         MENUITEM "Se&ttings...\tAlt+F8",        ID_OPTIONS_SETTINGS
     END

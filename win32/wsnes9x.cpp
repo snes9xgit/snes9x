@@ -3190,6 +3190,8 @@ int WINAPI WinMain(
 {
 	Settings.StopEmulation = TRUE;
 
+	SetCurrentDirectory(S9xGetDirectoryT(DEFAULT_DIR));
+
 	// Redirect stderr and stdout to file. It wouldn't go to any commandline anyway.
 	FILE* fout = freopen("stdout.txt", "w", stdout);
 	if(fout) setvbuf(fout, NULL, _IONBF, 0);

@@ -393,6 +393,7 @@
 #define ID_CHEAT_ENTER                  40063
 #define ID_CHEAT_SEARCH                 40064
 #define ID_CHEAT_APPLY                  40065
+#define ID_FILE_SAVE_SPC_DATA           40066
 #define ID_HELP_ABOUT                   40067
 #define ID_SOUND_OPTIONS                40068
 #define ID_OPTIONS_EMULATION            40069
@@ -464,7 +465,6 @@
 #define ID_FILE_LOADMULTICART           40153
 #define ID_SOUND_16MS                   40154
 #define ID_SOUND_32MS                   40155
-#define ID_FILE_SAVE_SPC_DATA           40066
 #define ID_SOUND_48MS                   40156
 #define ID_SOUND_64MS                   40157
 #define ID_SOUND_80MS                   40158
@@ -476,13 +476,14 @@
 #define ID_SOUND_176MS                  40164
 #define ID_SOUND_194MS                  40165
 #define ID_SOUND_210MS                  40166
+#define ID_EMULATION_PAUSEWHENINACTIVE  40167
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        151
-#define _APS_NEXT_COMMAND_VALUE         40156
+#define _APS_NEXT_COMMAND_VALUE         40168
 #define _APS_NEXT_CONTROL_VALUE         3018
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
