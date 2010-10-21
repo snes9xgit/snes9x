@@ -104,7 +104,7 @@ Snes9xConfig::Snes9xConfig (void)
 {
 #ifdef USE_JOYSTICK
     joystick = NULL;
-    joystick_threshold = 50;
+    joystick_threshold = 40;
 #endif
 
 #ifdef USE_OPENGL

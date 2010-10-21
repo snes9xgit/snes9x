@@ -504,10 +504,8 @@ event_about_clicked (GtkButton *widget, gpointer data)
                                top_level->splash);
 
     monospace = pango_font_description_from_string ("Monospace 7");
-
     gtk_widget_modify_font (about_dialog->get_widget ("about_text_view"),
                             monospace);
-
     pango_font_description_free (monospace);
 
     gtk_window_set_transient_for (about_dialog->get_window (),
