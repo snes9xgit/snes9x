@@ -547,24 +547,32 @@ S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
         }
     }
 
-    if (!vertex || !fragment)
+    if (!vertex && !fragment)
     {
-        fprintf (stderr, _("Shader is missing either a vertex or fragment program.\n"));
+        fprintf (stderr, _("Shader lacks any programs.\n"));
         xmlFreeDoc (xml_doc);
         return 0;
     }
 
     program = glCreateProgram ();
-    vertex_shader = glCreateShader (GL_VERTEX_SHADER);
-    fragment_shader = glCreateShader (GL_FRAGMENT_SHADER);
-    glShaderSource (vertex_shader, 1, (const GLchar **) &vertex, NULL);
-    glShaderSource (fragment_shader, 1, (const GLchar **) &fragment, NULL);
-    glCompileShader (vertex_shader);
-    glCompileShader (fragment_shader);
-    glAttachShader (program, vertex_shader);
-    glAttachShader (program, fragment_shader);
-    glLinkProgram (program);
 
+    if (vertex)
+    {
+        vertex_shader = glCreateShader (GL_VERTEX_SHADER);
+        glShaderSource (vertex_shader, 1, (const GLchar **) &vertex, NULL);
+        glCompileShader (vertex_shader);
+        glAttachShader (program, vertex_shader);
+    }
+
+    if (fragment)
+    {
+        fragment_shader = glCreateShader (GL_FRAGMENT_SHADER);
+        glShaderSource (fragment_shader, 1, (const GLchar **) &fragment, NULL);
+        glCompileShader (fragment_shader);
+        glAttachShader (program, fragment_shader);
+    }
+
+    glLinkProgram (program);
     glUseProgram (program);
 
     xmlFreeDoc (xml_doc);
