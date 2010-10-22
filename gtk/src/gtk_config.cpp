@@ -332,7 +332,6 @@ Snes9xConfig::save_config_file (void)
     xml_out_int (xml, "npot_textures", npot_textures);
     xml_out_int (xml, "use_shaders", use_shaders);
     xml_out_string (xml, "fragment_shader", fragment_shader);
-    xml_out_string (xml, "vertex_shader", vertex_shader);
 #endif
 
 #ifdef USE_JOYSTICK
@@ -550,7 +549,7 @@ Snes9xConfig::set_option (const char *name, const char *value)
     else if (!strcasecmp (name, "vertex_shader"))
     {
 #ifdef USE_OPENGL
-        strncpy (vertex_shader, value, PATH_MAX);
+        /* Deprecated */
 #endif
     }
     else if (!strcasecmp (name, "joystick_threshold"))
@@ -1140,6 +1139,8 @@ Snes9xConfig::load_config_file (void)
     xml_root = xmlDocGetRootElement (xml_doc);
 
     parse_snes9x (xml_root);
+
+    xmlFreeDoc (xml_doc);
 
     return 0;
 }

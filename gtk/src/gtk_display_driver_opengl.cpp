@@ -1,5 +1,7 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
 #include <X11/Xlib.h>
 #include <GL/glx.h>
 #include <GL/glxext.h>
@@ -39,44 +41,6 @@ static const char *glUnmapBufferNames[] = { "glUnmapBuffer",
                                             "glUnmapBufferARB",
                                             "glUnmapBufferEXT",
                                             NULL };
-
-static char *
-get_file_contents (const char *filename)
-{
-    struct stat fs;
-    int         fd;
-
-    if (!filename || !strlen (filename) || stat (filename, &fs))
-    {
-        return NULL;
-    }
-
-    fd = open (filename, O_RDONLY);
-    if (fd == -1)
-        return NULL;
-
-    char *contents = new char[fs.st_size + 1];
-
-    int bytes_read = 0;
-    while (bytes_read < fs.st_size)
-    {
-        int retval;
-        retval = read (fd, contents + bytes_read, fs.st_size - bytes_read);
-        if (retval == -1)
-        {
-            delete[] contents;
-            close (fd);
-            return NULL;
-        }
-        bytes_read += retval;
-    }
-
-    contents[fs.st_size] = '\0';
-
-    close (fd);
-
-    return contents;
-}
 
 gl_proc
 get_null_address_proc (const GLubyte *name)
@@ -539,10 +503,11 @@ S9xOpenGLDisplayDriver::load_shader_functions (void)
 }
 
 int
-S9xOpenGLDisplayDriver::load_shaders (const char *vertex_file,
-                                      const char *fragment_file)
+S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
 {
-    char *fragment, *vertex;
+    xmlDoc *xml_doc = NULL;
+    xmlNodePtr node = NULL;
+    char *fragment = NULL, *vertex = NULL;
 
     if (!load_shader_functions ())
     {
@@ -550,18 +515,42 @@ S9xOpenGLDisplayDriver::load_shaders (const char *vertex_file,
         return 0;
     }
 
-    fragment = get_file_contents (fragment_file);
-    if (!fragment)
+    xml_doc = xmlReadFile (shader_file, NULL, 0);
+
+    if (!xml_doc)
     {
-        fprintf (stderr, _("Cannot load fragment program.\n"));
+        fprintf (stderr, _("Cannot read shader file.\n"));
         return 0;
     }
 
-    vertex   = get_file_contents (vertex_file);
-    if (!vertex)
+    node = xmlDocGetRootElement (xml_doc);
+
+    if (xmlStrcasecmp (node->name, BAD_CAST "shader"))
     {
-        fprintf (stderr, _("Cannot load vertex program.\n"));
-        delete[] fragment;
+        fprintf (stderr, _("File %s is not a shader file.\n"), shader_file);
+        xmlFreeDoc (xml_doc);
+        return 0;
+    }
+
+    for (xmlNodePtr i = node->children; i; i = i->next)
+    {
+        if (!xmlStrcasecmp (i->name, BAD_CAST "vertex"))
+        {
+            if (i->children)
+                vertex = (char *) i->children->content;
+        }
+
+        if (!xmlStrcasecmp (i->name, BAD_CAST "fragment"))
+        {
+            if (i->children)
+                fragment = (char *) i->children->content;
+        }
+    }
+
+    if (!vertex || !fragment)
+    {
+        fprintf (stderr, _("Shader is missing either a vertex or fragment program.\n"));
+        xmlFreeDoc (xml_doc);
         return 0;
     }
 
@@ -577,6 +566,8 @@ S9xOpenGLDisplayDriver::load_shaders (const char *vertex_file,
     glLinkProgram (program);
 
     glUseProgram (program);
+
+    xmlFreeDoc (xml_doc);
 
     return 1;
 }
@@ -602,7 +593,7 @@ S9xOpenGLDisplayDriver::opengl_defaults (void)
     using_shaders = 0;
     if (config->use_shaders)
     {
-        if (!load_shaders (config->vertex_shader, config->fragment_shader))
+        if (!load_shaders (config->fragment_shader))
         {
             config->use_shaders = 0;
         }

@@ -232,10 +232,6 @@ event_shader_select (GtkButton *widget, gpointer data)
     {
         entry = GTK_ENTRY (window->get_widget ("fragment_shader"));
     }
-    else
-    {
-        entry = GTK_ENTRY (window->get_widget ("vertex_shader"));
-    }
 
     dialog = gtk_file_chooser_dialog_new ("Select Shader File",
                                           window->get_window (),
@@ -733,7 +729,6 @@ Snes9xPreferences::move_settings_to_dialog (void)
     set_check ("npot_textures",             config->npot_textures);
     set_check ("use_shaders",               config->use_shaders);
     set_entry_text ("fragment_shader",      config->fragment_shader);
-    set_entry_text ("vertex_shader",        config->vertex_shader);
 #endif
 
 #ifdef USE_JOYSTICK
@@ -861,7 +856,6 @@ Snes9xPreferences::get_settings_from_dialog (void)
     config->sync_every_frame          = get_check ("sync_every_frame");
 
     strncpy (config->fragment_shader, get_entry_text ("fragment_shader"), PATH_MAX);
-    strncpy (config->vertex_shader, get_entry_text ("vertex_shader"), PATH_MAX);
 
     config->pbo_format = get_combo ("pixel_format");
 #endif
