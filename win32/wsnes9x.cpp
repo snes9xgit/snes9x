@@ -4025,6 +4025,7 @@ void S9xRemoveFromRecentGames (int i)
 	}
 }
 
+#ifdef UNICODE
 HRESULT Win7_JLSetRecentGames(ICustomDestinationList *pcdl, IObjectArray *poaRemoved, UINT maxSlots)
 {
     IObjectCollection *poc;
@@ -4076,6 +4077,7 @@ void Win7_CreateJumpList()
 		pcdl->Release();
     }
 }
+#endif
 
 void S9xSetRecentGames ()
 {
@@ -4130,7 +4132,9 @@ void S9xSetRecentGames ()
 
                 InsertMenuItem (recent, 0xFF00 + i, FALSE, &mii);
             }
+#ifdef UNICODE
 			Win7_CreateJumpList();
+#endif
         }
     }
 }
@@ -6923,7 +6927,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	static bool prevStretch, prevAspectRatio, prevHeightExtend, prevAutoDisplayMessages, prevVideoMemory, prevShaderEnabled;
 	static int prevAspectWidth;
 	static OutputMethod prevOutputMethod;
-	static TCHAR prevHLSLShaderFile[MAX_PATH],prevGLSLvertexShaderFile[MAX_PATH],prevGLSLfragmentShaderFile[MAX_PATH];
+	static TCHAR prevHLSLShaderFile[MAX_PATH],prevGLSLShaderFile[MAX_PATH];
 
 	switch(msg)
 	{
@@ -6952,8 +6956,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		prevAutoDisplayMessages = Settings.AutoDisplayMessages != 0;
 		prevShaderEnabled = GUI.shaderEnabled;
 		lstrcpy(prevHLSLShaderFile,GUI.HLSLshaderFileName);
-		lstrcpy(prevGLSLvertexShaderFile,GUI.GLSLvertexShaderFileName);
-		lstrcpy(prevGLSLfragmentShaderFile,GUI.GLSLfragmentShaderFileName);
+		lstrcpy(prevGLSLShaderFile,GUI.GLSLshaderFileName);
 
 
 		_stprintf(s,TEXT("Current: %dx%d %dbit %dHz"),GUI.FullscreenMode.width,GUI.FullscreenMode.height,GUI.FullscreenMode.depth,GUI.FullscreenMode.rate);
@@ -7025,14 +7028,11 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			SendDlgItemMessage(hDlg, IDC_SHADER_ENABLED, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
 			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_HLSL_FILE),TRUE);
 			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_HLSL_BROWSE),TRUE);
-			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_FRAGMENT_FILE),TRUE);
-			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_FRAGMENT_BROWSE),TRUE);
-			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_VERTEX_FILE),TRUE);
-			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_VERTEX_BROWSE),TRUE);
+			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_FILE),TRUE);
+			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_BROWSE),TRUE);
 		}
 		SetDlgItemText(hDlg,IDC_SHADER_HLSL_FILE,GUI.HLSLshaderFileName);
-		SetDlgItemText(hDlg,IDC_SHADER_GLSL_VERTEX_FILE,GUI.GLSLvertexShaderFileName);
-		SetDlgItemText(hDlg,IDC_SHADER_GLSL_FRAGMENT_FILE,GUI.GLSLfragmentShaderFileName);
+		SetDlgItemText(hDlg,IDC_SHADER_GLSL_FILE,GUI.GLSLshaderFileName);
 
 		lpfnOldWndProc = (WNDPROC)SetWindowLongPtr(GetDlgItem(hDlg,IDC_SHADER_GROUP),GWLP_WNDPROC,(LONG_PTR)GroupBoxCheckBoxTitle);
 
@@ -7189,14 +7189,11 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GROUP),GUI.shaderEnabled);
 			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_HLSL_FILE),GUI.shaderEnabled);
 			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_HLSL_BROWSE),GUI.shaderEnabled);
-			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_VERTEX_FILE),GUI.shaderEnabled);
-			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_VERTEX_BROWSE),GUI.shaderEnabled);
-			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_FRAGMENT_FILE),GUI.shaderEnabled);
-			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_FRAGMENT_BROWSE),GUI.shaderEnabled);
+			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_FILE),GUI.shaderEnabled);
+			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_BROWSE),GUI.shaderEnabled);
 
 			GetDlgItemText(hDlg,IDC_SHADER_HLSL_FILE,GUI.HLSLshaderFileName,MAX_PATH);
-			GetDlgItemText(hDlg,IDC_SHADER_GLSL_VERTEX_FILE,GUI.GLSLvertexShaderFileName,MAX_PATH);
-			GetDlgItemText(hDlg,IDC_SHADER_GLSL_FRAGMENT_FILE,GUI.GLSLfragmentShaderFileName,MAX_PATH);
+			GetDlgItemText(hDlg,IDC_SHADER_GLSL_FILE,GUI.GLSLshaderFileName,MAX_PATH);
 			WinDisplayApplyChanges();
 			WinRefreshDisplay();
 			break;
@@ -7219,8 +7216,8 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				WinRefreshDisplay();
 			}
 			break;
-		case IDC_SHADER_GLSL_VERTEX_BROWSE:
-			GetDlgItemText(hDlg,IDC_SHADER_GLSL_VERTEX_FILE,openFileName,MAX_PATH);
+		case IDC_SHADER_GLSL_BROWSE:
+			GetDlgItemText(hDlg,IDC_SHADER_GLSL_FILE,openFileName,MAX_PATH);
 			ZeroMemory((LPVOID)&ofn, sizeof(OPENFILENAME));
 
 			ofn.lStructSize = sizeof(OPENFILENAME);
@@ -7232,27 +7229,8 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			ofn.nMaxFile = MAX_PATH;
 			ofn.Flags = OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
 			if(GetOpenFileName(&ofn)) {
-				SetDlgItemText(hDlg,IDC_SHADER_GLSL_VERTEX_FILE,openFileName);
-				lstrcpy(GUI.GLSLvertexShaderFileName,openFileName);
-				WinDisplayApplyChanges();
-				WinRefreshDisplay();
-			}
-			break;
-		case IDC_SHADER_GLSL_FRAGMENT_BROWSE:
-			GetDlgItemText(hDlg,IDC_SHADER_GLSL_FRAGMENT_FILE,openFileName,MAX_PATH);
-			ZeroMemory((LPVOID)&ofn, sizeof(OPENFILENAME));
-
-			ofn.lStructSize = sizeof(OPENFILENAME);
-			ofn.hwndOwner = hDlg;
-			ofn.lpstrFilter = TEXT("All Files\0*.*\0\0");			
-			ofn.lpstrFile = openFileName;
-			ofn.lpstrTitle = TEXT("Select Shader");
-			ofn.lpstrDefExt = TEXT("*.*");
-			ofn.nMaxFile = MAX_PATH;
-			ofn.Flags = OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
-			if(GetOpenFileName(&ofn)) {
-				SetDlgItemText(hDlg,IDC_SHADER_GLSL_FRAGMENT_FILE,openFileName);
-				lstrcpy(GUI.GLSLfragmentShaderFileName,openFileName);
+				SetDlgItemText(hDlg,IDC_SHADER_GLSL_FILE,openFileName);
+				lstrcpy(GUI.GLSLshaderFileName,openFileName);
 				WinDisplayApplyChanges();
 				WinRefreshDisplay();
 			}
@@ -7432,8 +7410,7 @@ updateFilterBox2:
 				GUI.HeightExtend = prevHeightExtend;
 				GUI.shaderEnabled = prevShaderEnabled;
 				lstrcpy(GUI.HLSLshaderFileName,prevHLSLShaderFile);
-				lstrcpy(GUI.GLSLvertexShaderFileName,prevGLSLvertexShaderFile);
-				lstrcpy(GUI.GLSLfragmentShaderFileName,prevGLSLfragmentShaderFile);
+				lstrcpy(GUI.GLSLshaderFileName,prevGLSLShaderFile);
 			}	
 
 			EndDialog(hDlg,0);

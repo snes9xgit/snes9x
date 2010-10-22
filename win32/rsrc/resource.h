@@ -101,10 +101,9 @@
 #define IDC_MULTICART_EDITB             1092
 #define IDC_PAUSESPIN                   1093
 #define IDC_DWNRIGHT                    1093
-#define IDC_SHADER_GLSL_VERTEX_FILE     1093
+#define IDC_SHADER_GLSL_FILE		    1093
 #define IDC_SYNCBYRESET                 1094
 #define IDC_DOWN                        1094
-#define IDC_SHADER_GLSL_FRAGMENT_FILE   1094
 #define IDC_SENDROM                     1095
 #define IDC_DWNLEFT                     1095
 #define IDC_ACTASSERVER                 1096
@@ -350,8 +349,7 @@
 #define IDC_SHADER_ENABLED              3015
 #define IDC_SHADER_HLSL_BROWSE          3016
 #define IDC_SHADER_GROUP                3017
-#define IDC_SHADER_GLSL_VERTEX_BROWSE   3018
-#define IDC_SHADER_GLSL_FRAGMENT_BROWSE 3019
+#define IDC_SHADER_GLSL_BROWSE			3018
 #define ID_FILE_EXIT                    40001
 #define ID_WINDOW_HIDEMENUBAR           40004
 #define ID_FILE_AVI_RECORDING           40005

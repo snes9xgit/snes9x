@@ -240,7 +240,7 @@ private:
 
 	PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
 
-	bool SetShaders(const TCHAR *fragment,const TCHAR *vertex);
+	bool SetShaders(const TCHAR *glslFileName);
 	bool LoadShaderFunctions();
 	bool LoadPBOFunctions();
 	void CreateDrawSurface(void);

@@ -4,6 +4,7 @@
 #include "../gfx.h"
 #include "../display.h"
 #include "wsnes9x.h"
+#include <msxml2.h>
 
 #include "../filter/hq2x.h"
 #include "../filter/2xsai.h"
@@ -113,7 +114,7 @@ void COpenGL::DeInitialize()
 {
 	initDone = false;
 	if(shaderCompiled)
-		SetShaders(NULL,NULL);
+		SetShaders(NULL);
 	DestroyDrawSurface();
 	wglMakeCurrent(NULL,NULL);
 	if(hRC) {
@@ -304,10 +305,10 @@ bool COpenGL::ApplyDisplayChanges(void)
 	if(wglSwapIntervalEXT) {
 		wglSwapIntervalEXT(GUI.Vsync?1:0);
 	}
-	if(GUI.shaderEnabled && GUI.GLSLvertexShaderFileName && GUI.GLSLfragmentShaderFileName)
-		SetShaders(GUI.GLSLfragmentShaderFileName,GUI.GLSLvertexShaderFileName);
+	if(GUI.shaderEnabled && GUI.GLSLshaderFileName)
+		SetShaders(GUI.GLSLshaderFileName);
 	else
-		SetShaders(NULL,NULL);
+		SetShaders(NULL);
 
 	RECT windowSize;
 	GetClientRect(hWnd,&windowSize);
@@ -480,9 +481,13 @@ char *ReadFileContents(const TCHAR *filename)
 
 }
 
-bool COpenGL::SetShaders(const TCHAR *fragmentFileName,const TCHAR *vertexFileName)
+bool COpenGL::SetShaders(const TCHAR *glslFileName)
 {
 	char *fragment=NULL, *vertex=NULL;
+	IXMLDOMDocument * pXMLDoc = NULL;
+	IXMLDOMNode * pXDN = NULL;
+	HRESULT hr;
+	BSTR queryString, nodeContent;
 
 	shaderCompiled = false;
 
@@ -502,7 +507,7 @@ bool COpenGL::SetShaders(const TCHAR *fragmentFileName,const TCHAR *vertexFileNa
 		shaderProgram = 0;
 	}
 
-	if(fragmentFileName==NULL||vertexFileName==NULL)
+	if(glslFileName==NULL || *glslFileName==TEXT('\0'))
 		return true;
 
 	if(!LoadShaderFunctions()) {
@@ -511,24 +516,76 @@ bool COpenGL::SetShaders(const TCHAR *fragmentFileName,const TCHAR *vertexFileNa
         return false;
     }
 
-	if(*fragmentFileName!=TEXT('\0')) {
-		fragment = ReadFileContents(fragmentFileName);
-		if (!fragment) {
-			TCHAR errorMsg[MAX_PATH + 50];
-			_stprintf(errorMsg,TEXT("Error loading GLSL fragment shader file:\n%s"),fragmentFileName);
-			MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"),
-				MB_OK|MB_ICONEXCLAMATION);
-		}
+	hr = CoCreateInstance(CLSID_DOMDocument,NULL,CLSCTX_INPROC_SERVER,IID_PPV_ARGS(&pXMLDoc));
+
+	if(FAILED(hr)) {
+		MessageBox(NULL, TEXT("Error creating XML Parser"), TEXT("Shader Loading Error"),
+			MB_OK|MB_ICONEXCLAMATION);
+		return false;
 	}
 
-	if(*vertexFileName!=TEXT('\0')) {
-		vertex = ReadFileContents (vertexFileName);
-		if (!vertex) {
-			TCHAR errorMsg[MAX_PATH + 50];
-			_stprintf(errorMsg,TEXT("Error loading GLSL vertex shader file:\n%s"),vertexFileName);
-			MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"),
-				MB_OK|MB_ICONEXCLAMATION);
+	VARIANT fileName;
+	VARIANT_BOOL ret;
+	fileName.vt = VT_BSTR;
+#ifdef UNICODE
+	fileName.bstrVal = SysAllocString(glslFileName);
+#else
+	wchar_t tempfilename[MAX_PATH];
+	MultiByteToWideChar(CP_UTF8,0,glslFileName,-1,tempfilename,MAX_PATH);
+	fileName.bstrVal = SysAllocString(tempfilename);
+#endif
+	hr = pXMLDoc->load(fileName,&ret);
+	SysFreeString(fileName.bstrVal);
+
+	if(FAILED(hr) || hr==S_FALSE) {
+		TCHAR errorMsg[MAX_PATH + 50];
+		_stprintf(errorMsg,TEXT("Error loading GLSL shader file:\n%s"),glslFileName);
+		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"),
+			MB_OK|MB_ICONEXCLAMATION);
+		pXMLDoc->Release();
+		return false;
+	}
+
+	queryString=SysAllocString(L"/shader/fragment");
+	hr = pXMLDoc->selectSingleNode(queryString,&pXDN);
+	SysFreeString(queryString);
+
+	if(hr == S_OK) {
+		hr = pXDN->get_text(&nodeContent);
+		if(hr == S_OK) {
+			int requiredChars = WideCharToMultiByte(CP_ACP,0,nodeContent,-1,fragment,0,NULL,NULL);
+			fragment = new char[requiredChars];
+			WideCharToMultiByte(CP_UTF8,0,nodeContent,-1,fragment,requiredChars,NULL,NULL);
 		}
+		SysFreeString(nodeContent);
+		pXDN->Release();
+		pXDN = NULL;
+	}
+
+	queryString=SysAllocString(L"/shader/vertex");
+	hr = pXMLDoc->selectSingleNode(queryString,&pXDN);
+	SysFreeString(queryString);
+
+	if(hr == S_OK) {
+		hr = pXDN->get_text(&nodeContent);
+		if(hr == S_OK) {
+			int requiredChars = WideCharToMultiByte(CP_ACP,0,nodeContent,-1,vertex,0,NULL,NULL);
+			vertex = new char[requiredChars];
+			WideCharToMultiByte(CP_UTF8,0,nodeContent,-1,vertex,requiredChars,NULL,NULL);
+		}
+		SysFreeString(nodeContent);
+		pXDN->Release();
+		pXDN = NULL;
+	}
+
+	pXMLDoc->Release();
+
+	if(!fragment && !vertex) {
+		TCHAR errorMsg[MAX_PATH + 50];
+		_stprintf(errorMsg,TEXT("No vertex or fragment program in file:\n%s"),glslFileName);
+		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"),
+			MB_OK|MB_ICONEXCLAMATION);
+		return false;
 	}
 
     shaderProgram = glCreateProgram ();
