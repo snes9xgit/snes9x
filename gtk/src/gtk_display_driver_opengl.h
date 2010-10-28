@@ -130,7 +130,6 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
         GLuint                   vertex_shader;
 
         int                      dyn_resizing;
-        int                      filtering;
         int                      using_pbos;
         int                      using_shaders;
         int                      initialized;

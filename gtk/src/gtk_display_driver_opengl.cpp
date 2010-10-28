@@ -111,7 +111,6 @@ __extension__
 void
 S9xOpenGLDisplayDriver::update (int width, int height)
 {
-    GLint filter;
     uint8 *final_buffer = NULL;
     int   final_pitch;
     void  *pboMemory = NULL;
@@ -132,16 +131,12 @@ S9xOpenGLDisplayDriver::update (int width, int height)
         resize_window (allocation.width, allocation.height);
     }
 
-    /* This avoids messing with the texture parameters every time */
-    if (config->bilinear_filter != filtering)
-    {
-        filter = config->bilinear_filter ? GL_LINEAR : GL_NEAREST;
-        glTexParameteri (tex_target, GL_TEXTURE_MAG_FILTER, filter);
-        glTexParameteri (tex_target, GL_TEXTURE_MIN_FILTER, filter);
-        glTexParameteri (tex_target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri (tex_target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        filtering = config->bilinear_filter;
-    }
+    GLint filter = config->bilinear_filter ? GL_LINEAR : GL_NEAREST;
+    glTexParameteri (tex_target, GL_TEXTURE_MAG_FILTER, filter);
+    glTexParameteri (tex_target, GL_TEXTURE_MIN_FILTER, filter);
+    GLint clamp = (using_shaders || !dyn_resizing) ? GL_CLAMP_TO_BORDER : GL_CLAMP_TO_EDGE;
+    glTexParameteri (tex_target, GL_TEXTURE_WRAP_S, clamp);
+    glTexParameteri (tex_target, GL_TEXTURE_WRAP_T, clamp);
 
     glClear (GL_COLOR_BUFFER_BIT);
     glEnable (tex_target);
@@ -860,8 +855,6 @@ S9xOpenGLDisplayDriver::init (void)
 
     GFX.Screen = (uint16 *) padded_buffer[0];
     GFX.Pitch = image_width * image_bpp;
-
-    filtering = -1;
 
     swap_control (config->sync_to_vblank);
 
