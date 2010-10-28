@@ -228,10 +228,7 @@ event_shader_select (GtkButton *widget, gpointer data)
     gint          result;
     GtkEntry      *entry;
 
-    if (!strcmp (gtk_buildable_get_name (GTK_BUILDABLE (widget)), "fragment_shader_button"))
-    {
-        entry = GTK_ENTRY (window->get_widget ("fragment_shader"));
-    }
+    entry = GTK_ENTRY (window->get_widget ("fragment_shader"));
 
     dialog = gtk_file_chooser_dialog_new ("Select Shader File",
                                           window->get_window (),

@@ -17,10 +17,13 @@
 #define FILTER_EPX_SMOOTH           5
 #define FILTER_NTSC                 6
 #define FILTER_SCANLINES            7
-#define FILTER_HQ2X                 8
-#define FILTER_HQ3X                 9
-#define FILTER_HQ4X                 10
-#define NUM_FILTERS                 11
+#define FILTER_SIMPLE2X             8
+#define FILTER_SIMPLE3X             9
+#define FILTER_SIMPLE4X             10
+#define FILTER_HQ2X                 11
+#define FILTER_HQ3X                 12
+#define FILTER_HQ4X                 13
+#define NUM_FILTERS                 14
 
 #define NTSC_COMPOSITE              0
 #define NTSC_SVIDEO                 1

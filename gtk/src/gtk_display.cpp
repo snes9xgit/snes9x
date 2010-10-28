@@ -967,6 +967,122 @@ S9xForceHires (void *buffer,
 }
 
 void
+filter_2x (void *src,
+           int src_pitch,
+           void *dst,
+           int dst_pitch,
+           int width,
+           int height)
+{
+    int x, y;
+
+    for (y = 0; y < height; y++)
+    {
+        uint16 *in = (uint16 *) ((uint8 *) src + y * src_pitch);
+        uint16 *out1 = (uint16 *) ((uint8 *) dst + (y * 2) * dst_pitch);
+        uint16 *out2 = (uint16 *) ((uint8 *) dst + ((y * 2) + 1) * dst_pitch);
+
+        for (x = 0; x < width; x++)
+        {
+            uint16 pixel = *in++;
+
+            *out1++ = pixel;
+            *out1++ = pixel;
+
+            *out2++ = pixel;
+            *out2++ = pixel;
+        }
+    }
+
+    return;
+}
+
+void
+filter_3x (void *src,
+           int src_pitch,
+           void *dst,
+           int dst_pitch,
+           int width,
+           int height)
+{
+    int x, y;
+
+    for (y = 0; y < height; y++)
+    {
+        uint16 *in = (uint16 *) ((uint8 *) src + y * src_pitch);
+        uint16 *out1 = (uint16 *) ((uint8 *) dst + (y * 3) * dst_pitch);
+        uint16 *out2 = (uint16 *) ((uint8 *) dst + ((y * 3) + 1) * dst_pitch);
+        uint16 *out3 = (uint16 *) ((uint8 *) dst + ((y * 3) + 2) * dst_pitch);
+
+        for (x = 0; x < width; x++)
+        {
+            uint16 pixel = *in++;
+
+            *out1++ = pixel;
+            *out1++ = pixel;
+            *out1++ = pixel;
+
+            *out2++ = pixel;
+            *out2++ = pixel;
+            *out2++ = pixel;
+
+            *out3++ = pixel;
+            *out3++ = pixel;
+            *out3++ = pixel;
+        }
+    }
+
+    return;
+}
+
+void
+filter_4x (void *src,
+           int src_pitch,
+           void *dst,
+           int dst_pitch,
+           int width,
+           int height)
+{
+    int x, y;
+
+    for (y = 0; y < height; y++)
+    {
+        uint16 *in = (uint16 *) ((uint8 *) src + y * src_pitch);
+        uint16 *out1 = (uint16 *) ((uint8 *) dst +  (y * 4) * dst_pitch);
+        uint16 *out2 = (uint16 *) ((uint8 *) dst + ((y * 4) + 1) * dst_pitch);
+        uint16 *out3 = (uint16 *) ((uint8 *) dst + ((y * 4) + 2) * dst_pitch);
+        uint16 *out4 = (uint16 *) ((uint8 *) dst + ((y * 4) + 3) * dst_pitch);
+
+        for (x = 0; x < width; x++)
+        {
+            uint16 pixel = *in++;
+
+            *out1++ = pixel;
+            *out1++ = pixel;
+            *out1++ = pixel;
+            *out1++ = pixel;
+
+            *out2++ = pixel;
+            *out2++ = pixel;
+            *out2++ = pixel;
+            *out2++ = pixel;
+
+            *out3++ = pixel;
+            *out3++ = pixel;
+            *out3++ = pixel;
+            *out3++ = pixel;
+
+            *out4++ = pixel;
+            *out4++ = pixel;
+            *out4++ = pixel;
+            *out4++ = pixel;
+        }
+    }
+
+    return;
+}
+
+void
 filter_scanlines (void *src_buffer,
                   int src_pitch,
                   void *dst_buffer,
@@ -1030,6 +1146,21 @@ get_filter_scale (int &width, int &height)
         case FILTER_SUPER2XSAI:
             width *= 2;
             height *= 2;
+            break;
+
+        case FILTER_SIMPLE2X:
+            width *= 2;
+            height *= 2;
+            break;
+
+        case FILTER_SIMPLE3X:
+            width *= 3;
+            height *= 3;
+            break;
+
+        case FILTER_SIMPLE4X:
+            width *= 4;
+            height *= 4;
             break;
 
 #ifdef USE_HQ2X
@@ -1167,6 +1298,47 @@ internal_filter (uint8 *src_buffer,
 
             break;
 #endif /* USE_HQ2X */
+
+        case FILTER_SIMPLE4X:
+
+            if (((width * 4) <= S9xDisplayDriver::scaled_max_width) &&
+                    ((height * 4) <= S9xDisplayDriver::scaled_max_height))
+            {
+                filter_4x (src_buffer,
+                           src_pitch,
+                           dst_buffer,
+                           dst_pitch,
+                           width,
+                           height);
+
+                break;
+            }
+
+        case FILTER_SIMPLE3X:
+
+            if (width * 3 <= S9xDisplayDriver::scaled_max_width &&
+                    height * 3 <= S9xDisplayDriver::scaled_max_height)
+            {
+                filter_3x (src_buffer,
+                          src_pitch,
+                          dst_buffer,
+                          dst_pitch,
+                          width,
+                          height);
+
+                break;
+            }
+
+        case FILTER_SIMPLE2X:
+
+            filter_2x (src_buffer,
+                       src_pitch,
+                       dst_buffer,
+                       dst_pitch,
+                       width,
+                       height);
+
+            break;
 
         case FILTER_EPX:
 
