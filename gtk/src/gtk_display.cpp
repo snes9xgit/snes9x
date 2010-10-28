@@ -1148,21 +1148,6 @@ get_filter_scale (int &width, int &height)
             height *= 2;
             break;
 
-        case FILTER_SIMPLE2X:
-            width *= 2;
-            height *= 2;
-            break;
-
-        case FILTER_SIMPLE3X:
-            width *= 3;
-            height *= 3;
-            break;
-
-        case FILTER_SIMPLE4X:
-            width *= 4;
-            height *= 4;
-            break;
-
 #ifdef USE_HQ2X
         case FILTER_HQ4X:
             if (((width * 4) <= S9xDisplayDriver::scaled_max_width) &&
@@ -1187,6 +1172,29 @@ get_filter_scale (int &width, int &height)
             height *= 2;
             break;
 #endif /* USE_HQ2X */
+
+        case FILTER_SIMPLE4X:
+            if (((width * 4) <= S9xDisplayDriver::scaled_max_width) &&
+                ((height * 4) <= S9xDisplayDriver::scaled_max_height))
+            {
+                width *= 4;
+                height *= 4;
+                break;
+            }
+
+        case FILTER_SIMPLE3X:
+            if (width * 3 <= S9xDisplayDriver::scaled_max_width &&
+                    height * 3 <= S9xDisplayDriver::scaled_max_height)
+            {
+                width *= 3;
+                height *= 3;
+                break;
+            }
+
+        case FILTER_SIMPLE2X:
+            width *= 2;
+            height *= 2;
+            break;
 
         case FILTER_EPX:
             width *= 2;
