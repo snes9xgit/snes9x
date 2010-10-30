@@ -123,6 +123,7 @@ class Snes9xConfig
         int           pause_emulation_on_switch;
         int           num_threads;
         unsigned char screensaver_needs_reset;
+        int           modal_dialogs;
 
         int            pointer_is_visible;
         struct timeval pointer_timestamp;

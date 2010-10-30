@@ -68,8 +68,7 @@ class Snes9xWindow : public GtkBuilderWindow
         void expose (GdkEventExpose *event);
 
         Snes9xConfig   *config;
-        unsigned char  user_pause;
-        unsigned char  sys_pause;
+        int            user_pause, sys_pause;
         int            last_width, last_height;
         int            mouse_region_x, mouse_region_y;
         int            mouse_region_width, mouse_region_height;

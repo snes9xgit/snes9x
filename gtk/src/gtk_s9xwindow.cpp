@@ -1846,7 +1846,7 @@ Snes9xWindow::toggle_ui (void)
 void
 Snes9xWindow::pause_from_focus_change (void)
 {
-    sys_pause++;
+    sys_pause += config->modal_dialogs;
 
     propagate_pause_state ();
 
@@ -1856,7 +1856,8 @@ Snes9xWindow::pause_from_focus_change (void)
 void
 Snes9xWindow::unpause_from_focus_change (void)
 {
-    sys_pause--;
+    if (--sys_pause < 0)
+        sys_pause = 0;
     propagate_pause_state ();
 
     return;

@@ -172,6 +172,7 @@ Snes9xConfig::load_defaults (void)
     netplay_last_rom [0] = '\0';
     netplay_last_host [0] = '\0';
     netplay_last_port = 6096;
+    modal_dialogs = 1;
 
 #ifdef USE_OPENGL
     bilinear_filter = 0;
@@ -307,6 +308,7 @@ Snes9xConfig::save_config_file (void)
         xml_out_int (xml, "fullscreen", fullscreen);
     xml_out_int (xml, "ui_visible", ui_visible);
     xml_out_int (xml, "statusbar_visible", statusbar_visible);
+    xml_out_int (xml, "modal_dialogs", modal_dialogs);
 
     xml_out_float (xml, "ntsc_hue", ntsc_setup.hue);
     xml_out_float (xml, "ntsc_saturation", ntsc_setup.saturation);
@@ -660,6 +662,10 @@ Snes9xConfig::set_option (const char *name, const char *value)
     else if (!strcasecmp (name, "export_directory"))
     {
         strncpy (export_directory, value, PATH_MAX);
+    }
+    else if (!strcasecmp (name, "modal_dialogs"))
+    {
+        modal_dialogs = atoi (value) ? 1 : 0;
     }
     else if (!strcasecmp (name, "window_width"))
     {
