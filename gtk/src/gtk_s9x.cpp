@@ -196,6 +196,16 @@ S9xOpenROM (const char *rom_filename)
     {
         Memory.LoadSRAM (S9xGetFilename (".srm", SRAM_DIR));
         S9xLoadCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
+
+        for (unsigned int i = 0; i < Cheat.num_cheats; i++)
+        {
+            if (Cheat.c[i].enabled)
+            {
+                /* RAM is fresh, so we need to clean out old saved values */
+                Cheat.c[i].saved = FALSE;
+                S9xApplyCheat (i);
+            }
+        }
     }
     else
     {

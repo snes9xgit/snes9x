@@ -14,6 +14,14 @@ enum
 extern SCheatData Cheat;
 
 static void
+add_cheat (uint32 address, uint8 byte, const char *description)
+{
+    S9xAddCheat (FALSE, TRUE, address, byte);
+    S9xEnableCheat (Cheat.num_cheats - 1);
+    strncpy (Cheat.c[Cheat.num_cheats - 1].name, description, 22);
+}
+
+static void
 display_errorbox (const char *error)
 {
     GtkWidget *dialog = gtk_message_dialog_new (NULL,
@@ -103,9 +111,6 @@ Snes9xCheats::Snes9xCheats (void)
     gtk_tree_view_set_model (view, GTK_TREE_MODEL (store));
 
     gtk_widget_realize (window);
-
-    gtk_combo_box_set_active (GTK_COMBO_BOX (get_widget ("code_type_combo")),
-                              0);
 
     signal_connect (callbacks);
 
@@ -220,61 +225,26 @@ Snes9xCheats::add_code (void)
     uint8 bytes [3];
     bool8 sram;
     uint8 num_bytes;
-    const char *error;
-    int errorno = 0;
-
-    int type = get_combo ("code_type_combo");
+    const char *description;
 
     const gchar *code = get_entry_text ("code_entry");
 
-    switch (type)
+    description = get_entry_text ("description_entry");
+    if (description[0] == '\0')
+        description = _("No description");
+
+    if (!S9xGameGenieToRaw (code, address, byte))
+        add_cheat (address, byte, description);
+    else if (!S9xProActionReplayToRaw (code, address, byte))
+        add_cheat (address, byte, description);
+    else if (!S9xGoldFingerToRaw (code, address, sram, num_bytes, bytes))
     {
-        case TYPE_GAME_GENIE:
-            if ((error = S9xGameGenieToRaw (code, address, byte)) == NULL)
-                S9xAddCheat (TRUE, FALSE, address, byte);
-            else
-            {
-                display_errorbox (error);
-                errorno = 1;
-            }
-            break;
-
-        case TYPE_ACTION_REPLAY:
-            if ((error = S9xProActionReplayToRaw (code, address, byte)) == NULL)
-                S9xAddCheat (TRUE, FALSE, address, byte);
-            else
-            {
-                display_errorbox (error);
-                errorno = 1;
-            }
-
-            break;
-
-        case TYPE_GOLDFINGER:
-
-            if ((error = S9xGoldFingerToRaw (code, address, sram,
-                                             num_bytes, bytes)) == NULL)
-            {
-                for (int c = 0; c < num_bytes; c++)
-                    S9xAddCheat (TRUE, FALSE, address + c, bytes [c]);
-            }
-            else
-            {
-                display_errorbox (error);
-                errorno = 1;
-            }
-
-            break;
+        for (int c = 0; c < num_bytes; c++)
+            add_cheat (address + c, bytes[c], description);
     }
-
-    if (!errorno)
+    else
     {
-        const char *entry_text = get_entry_text ("description_entry");
-
-        if (strlen (entry_text) <= 0)
-            strncpy (Cheat.c[Cheat.num_cheats - 1].name, _("No description"), 22);
-        else
-            strncpy (Cheat.c[Cheat.num_cheats - 1].name, entry_text, 22);
+        display_errorbox (_("Code does not match Game Genie, ProAction Replay, or GoldFinger format."));
     }
 
     gtk_widget_grab_focus (get_widget ("code_entry"));
