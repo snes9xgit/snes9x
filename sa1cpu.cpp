@@ -229,19 +229,22 @@
 
 void S9xSA1MainLoop (void)
 {
-#if 0
 	if (SA1.Flags & NMI_FLAG)
 	{
-		SA1.Flags &= ~NMI_FLAG;
-		if (SA1.WaitingForInterrupt)
+		if (Memory.FillRAM[0x2200] & 0x10)
 		{
-			SA1.WaitingForInterrupt = FALSE;
-			SA1Registers.PCw++;
-		}
+			SA1.Flags &= ~NMI_FLAG;
+			Memory.FillRAM[0x2301] |= 0x10;
 
-		S9xSA1Opcode_NMI();
+			if (SA1.WaitingForInterrupt)
+			{
+				SA1.WaitingForInterrupt = FALSE;
+				SA1Registers.PCw++;
+			}
+
+			S9xSA1Opcode_NMI();
+		}
 	}
-#endif
 
 	if (SA1.Flags & IRQ_FLAG)
 	{

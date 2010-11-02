@@ -400,7 +400,7 @@ void S9xDoHEventProcessing (void)
 			if (PPU.HDMA && CPU.V_Counter <= PPU.ScreenHeight)
 			{
 			#ifdef DEBUGGER
-				S9xTraceFormattedMessage("*** HDMA  HC:%04d, Channel:%02x", CPU.Cycles, PPU.HDMA);
+				S9xTraceFormattedMessage("*** HDMA Transfer HC:%04d, Channel:%02x", CPU.Cycles, PPU.HDMA);
 			#endif
 				PPU.HDMA = S9xDoHDMA(PPU.HDMA);
 			}
@@ -544,7 +544,7 @@ void S9xDoHEventProcessing (void)
 			if (CPU.V_Counter == 0)
 			{
 			#ifdef DEBUGGER
-				S9xTraceFormattedMessage("*** HDMA Init  HC:%04d, Channel:%02x", CPU.Cycles, PPU.HDMA);
+				S9xTraceFormattedMessage("*** HDMA Init     HC:%04d, Channel:%02x", CPU.Cycles, PPU.HDMA);
 			#endif
 				S9xStartHDMA();
 			}

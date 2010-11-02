@@ -2857,7 +2857,11 @@ void S9xOpcode_IRQ (void)
 {
 #ifdef DEBUGGER
 	if (CPU.Flags & TRACE_FLAG)
+	#ifdef SA1_OPCODES
+		S9xTraceMessage("*** SA1 IRQ");
+	#else
 		S9xTraceMessage("*** IRQ");
+	#endif
 #endif
 
 	// IRQ and NMI do an opcode fetch as their first "IO" cycle.
@@ -2928,7 +2932,11 @@ void S9xOpcode_NMI (void)
 {
 #ifdef DEBUGGER
 	if (CPU.Flags & TRACE_FLAG)
+	#ifdef SA1_OPCODES
+		S9xTraceMessage("*** SA1 NMI");
+	#else
 		S9xTraceMessage("*** NMI");
+	#endif
 #endif
 
 	// IRQ and NMI do an opcode fetch as their first "IO" cycle.
@@ -2949,7 +2957,7 @@ void S9xOpcode_NMI (void)
 		AddCycles(2 * SLOW_ONE_CYCLE);
 		S9xSA1SetPCBase(Memory.FillRAM[0x2205] | (Memory.FillRAM[0x2206] << 8));
 	#else
-		if (Settings.SA1 && (Memory.FillRAM[0x2209] & 0x20))
+		if (Settings.SA1 && (Memory.FillRAM[0x2209] & 0x10))
 		{
 			OpenBus = Memory.FillRAM[0x220d];
 			AddCycles(2 * SLOW_ONE_CYCLE);

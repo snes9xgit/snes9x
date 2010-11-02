@@ -361,7 +361,7 @@ uint8 S9xGetSA1 (uint32 address)
 		}
 
 		default:
-			printf("R: %04x\n", address);
+			//printf("R: %04x\n", address);
 			break;
 	}
 
@@ -393,12 +393,10 @@ void S9xSetSA1 (uint8 byte, uint32 address)
 			if (byte & 0x10)
 			{
 				Memory.FillRAM[0x2301] |= 0x10;
-			#ifdef DEBUGGER
-				printf("###SA1 NMI\n");
-			#endif
 				if (Memory.FillRAM[0x220a] & 0x10)
 				{
-					//
+					SA1.Flags |= NMI_FLAG;
+					SA1.Executing = !SA1.Waiting && SA1.S9xOpcodes;
 				}
 			}
 
@@ -487,9 +485,8 @@ void S9xSetSA1 (uint8 byte, uint32 address)
 
 			if (((byte ^ Memory.FillRAM[0x220a]) & 0x10) && (Memory.FillRAM[0x2301] & byte & 0x10))
 			{
-			#ifdef DEBUGGER
-				printf("###SA1 NMI\n");
-			#endif
+				SA1.Flags |= NMI_FLAG;
+				//SA1.Executing = !SA1.Waiting;
 			}
 
 			break;
@@ -513,7 +510,7 @@ void S9xSetSA1 (uint8 byte, uint32 address)
 				Memory.FillRAM[0x2301] &= ~0x20;
 			}
 
-			if (byte & 0x10) // Clear NMI
+			if (byte & 0x10)
 				Memory.FillRAM[0x2301] &= ~0x10;
 
 			if (!SA1.IRQActive)
