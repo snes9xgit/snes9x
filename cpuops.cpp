@@ -2985,7 +2985,7 @@ void S9xOpcode_NMI (void)
 		AddCycles(2 * SLOW_ONE_CYCLE);
 		S9xSA1SetPCBase(Memory.FillRAM[0x2205] | (Memory.FillRAM[0x2206] << 8));
 	#else
-		if (Settings.SA1 && (Memory.FillRAM[0x2209] & 0x20))
+		if (Settings.SA1 && (Memory.FillRAM[0x2209] & 0x10))
 		{
 			OpenBus = Memory.FillRAM[0x220d];
 			AddCycles(2 * SLOW_ONE_CYCLE);
