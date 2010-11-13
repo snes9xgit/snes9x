@@ -4032,10 +4032,23 @@ void S9xRemoveFromRecentGames (int i)
 }
 
 #ifdef UNICODE
+
+/* OV2: We need dynamic binding to this function as it is not present in
+   windows versions < vista. Since the jumplist is a win7 feature this
+   is not a problem.
+*/
+typedef HRESULT (STDAPICALLTYPE *SHCIFPN) (__in PCWSTR pszPath, __in_opt IBindCtx *pbc, __in REFIID riid, __deref_out void **ppv);
+
 HRESULT Win7_JLSetRecentGames(ICustomDestinationList *pcdl, IObjectArray *poaRemoved, UINT maxSlots)
 {
     IObjectCollection *poc;
-    HRESULT hr = CoCreateInstance
+
+	HMODULE S32dll = GetModuleHandle(TEXT("shell32.dll"));
+	SHCIFPN SHCreateIFPN = (SHCIFPN)GetProcAddress(S32dll,"SHCreateItemFromParsingName");
+	if(!SHCreateIFPN) {
+		return S_FALSE;
+	}
+	HRESULT hr = CoCreateInstance
                     (CLSID_EnumerableObjectCollection, 
                     NULL, 
                     CLSCTX_INPROC_SERVER, 
@@ -4044,7 +4057,7 @@ HRESULT Win7_JLSetRecentGames(ICustomDestinationList *pcdl, IObjectArray *poaRem
 		UINT max_list = MIN(maxSlots,GUI.MaxRecentGames);
 		for (UINT i = 0; i < max_list && *GUI.RecentGames[i]; i++) {
             IShellItem *psi;
-			if(SUCCEEDED(SHCreateItemFromParsingName(GUI.RecentGames[i],NULL,IID_PPV_ARGS(&psi)))) {
+			if(SUCCEEDED(SHCreateIFPN(GUI.RecentGames[i],NULL,IID_PPV_ARGS(&psi)))) {
                 hr = poc->AddObject(psi);
                 psi->Release();
             }
@@ -7209,10 +7222,10 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 			ofn.lStructSize = sizeof(OPENFILENAME);
 			ofn.hwndOwner = hDlg;
-			ofn.lpstrFilter = TEXT("Effect Files\0*.fx\0All Files\0*.*\0\0");			
+			ofn.lpstrFilter = TEXT("Shader Files\0*.shader\0All Files\0*.*\0\0");			
 			ofn.lpstrFile = openFileName;
 			ofn.lpstrTitle = TEXT("Select Shader");
-			ofn.lpstrDefExt = TEXT("fx");
+			ofn.lpstrDefExt = TEXT("shader");
 			ofn.nMaxFile = MAX_PATH;
 			ofn.Flags = OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
 			if(GetOpenFileName(&ofn)) {
@@ -7228,10 +7241,10 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 			ofn.lStructSize = sizeof(OPENFILENAME);
 			ofn.hwndOwner = hDlg;
-			ofn.lpstrFilter = TEXT("All Files\0*.*\0\0");			
+			ofn.lpstrFilter = TEXT("Shader Files\0*.shader\0All Files\0*.*\0\0");			
 			ofn.lpstrFile = openFileName;
 			ofn.lpstrTitle = TEXT("Select Shader");
-			ofn.lpstrDefExt = TEXT("*.*");
+			ofn.lpstrDefExt = TEXT("shader");
 			ofn.nMaxFile = MAX_PATH;
 			ofn.Flags = OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
 			if(GetOpenFileName(&ofn)) {
