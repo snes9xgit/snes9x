@@ -257,19 +257,19 @@ void COpenGL::Render(SSurface Src)
 	if (shaderCompiled) {
         GLint location;
 
-		float inputSize[2] = { afterRenderWidth, afterRenderHeight };
+		float inputSize[2] = { (float)afterRenderWidth, (float)afterRenderHeight };
         location = glGetUniformLocation (shaderProgram, "rubyInputSize");
         glUniform2fv (location, 1, inputSize);
 
 		RECT windowSize;
 		GetClientRect(hWnd,&windowSize);
 
-		float outputSize[2] = {GUI.Stretch?windowSize.right:afterRenderWidth,
-							GUI.Stretch?windowSize.bottom:afterRenderHeight };
+		float outputSize[2] = {(float)(GUI.Stretch?windowSize.right:afterRenderWidth),
+							(float)(GUI.Stretch?windowSize.bottom:afterRenderHeight) };
         location = glGetUniformLocation (shaderProgram, "rubyOutputSize");
         glUniform2fv (location, 1, outputSize);
 
-		float textureSize[2] = { quadTextureSize, quadTextureSize };
+		float textureSize[2] = { (float)quadTextureSize, (float)quadTextureSize };
         location = glGetUniformLocation (shaderProgram, "rubyTextureSize");
         glUniform2fv (location, 1, textureSize);
     }
@@ -485,9 +485,12 @@ bool COpenGL::SetShaders(const TCHAR *glslFileName)
 {
 	char *fragment=NULL, *vertex=NULL;
 	IXMLDOMDocument * pXMLDoc = NULL;
+	IXMLDOMElement * pXDE = NULL;
 	IXMLDOMNode * pXDN = NULL;
 	HRESULT hr;
 	BSTR queryString, nodeContent;
+
+	TCHAR errorMsg[MAX_PATH + 50];
 
 	shaderCompiled = false;
 
@@ -538,13 +541,36 @@ bool COpenGL::SetShaders(const TCHAR *glslFileName)
 	SysFreeString(fileName.bstrVal);
 
 	if(FAILED(hr) || hr==S_FALSE) {
-		TCHAR errorMsg[MAX_PATH + 50];
 		_stprintf(errorMsg,TEXT("Error loading GLSL shader file:\n%s"),glslFileName);
-		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"),
-			MB_OK|MB_ICONEXCLAMATION);
+		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"), MB_OK|MB_ICONEXCLAMATION);
 		pXMLDoc->Release();
 		return false;
 	}
+
+	VARIANT attributeValue;
+	BSTR attributeName;
+
+	hr = pXMLDoc->get_documentElement(&pXDE);
+	if(FAILED(hr) || hr==S_FALSE) {
+		_stprintf(errorMsg,TEXT("Error loading root element from file:\n%s"),glslFileName);
+		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"), MB_OK|MB_ICONEXCLAMATION);
+		pXMLDoc->Release();
+		return false;
+	}
+
+	attributeName=SysAllocString(L"language");
+	pXDE->getAttribute(attributeName,&attributeValue);
+	SysFreeString(attributeName);
+	pXDE->Release();
+
+	if(attributeValue.vt!=VT_BSTR || lstrcmpiW(attributeValue.bstrVal,L"glsl")) {
+		_stprintf(errorMsg,TEXT("Shader language is <%s>, expected <GLSL> in file:\n%s"),attributeValue.bstrVal,glslFileName);
+		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"), MB_OK|MB_ICONEXCLAMATION);
+		if(attributeValue.vt==VT_BSTR) SysFreeString(attributeValue.bstrVal);
+		pXMLDoc->Release();
+		return false;
+	}
+	if(attributeValue.vt==VT_BSTR) SysFreeString(attributeValue.bstrVal);
 
 	queryString=SysAllocString(L"/shader/fragment");
 	hr = pXMLDoc->selectSingleNode(queryString,&pXDN);
@@ -581,10 +607,8 @@ bool COpenGL::SetShaders(const TCHAR *glslFileName)
 	pXMLDoc->Release();
 
 	if(!fragment && !vertex) {
-		TCHAR errorMsg[MAX_PATH + 50];
 		_stprintf(errorMsg,TEXT("No vertex or fragment program in file:\n%s"),glslFileName);
-		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"),
-			MB_OK|MB_ICONEXCLAMATION);
+		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"), MB_OK|MB_ICONEXCLAMATION);
 		return false;
 	}
 

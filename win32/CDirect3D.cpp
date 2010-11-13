@@ -320,6 +320,14 @@ bool CDirect3D::SetShader(const TCHAR *file)
 	TCHAR folder[MAX_PATH];
 	TCHAR rubyLUTfileName[MAX_PATH];
 	TCHAR *slash;
+	char *shaderText = NULL;
+
+	TCHAR errorMsg[MAX_PATH + 50];
+
+	IXMLDOMDocument * pXMLDoc = NULL;
+	IXMLDOMElement * pXDE = NULL;
+	IXMLDOMNode * pXDN = NULL;
+	BSTR queryString, nodeContent;
 
 	HRESULT hr;
 
@@ -341,6 +349,100 @@ bool CDirect3D::SetShader(const TCHAR *file)
 	if (file == NULL || *file==TEXT('\0'))
 		return true;
 
+	hr = CoCreateInstance(CLSID_DOMDocument,NULL,CLSCTX_INPROC_SERVER,IID_PPV_ARGS(&pXMLDoc));
+
+	if(FAILED(hr)) {
+		MessageBox(NULL, TEXT("Error creating XML Parser"), TEXT("Shader Loading Error"),
+			MB_OK|MB_ICONEXCLAMATION);
+		return false;
+	}
+
+	VARIANT fileName;
+	VARIANT_BOOL ret;
+	fileName.vt = VT_BSTR;
+#ifdef UNICODE
+	fileName.bstrVal = SysAllocString(file);
+#else
+	wchar_t tempfilename[MAX_PATH];
+	MultiByteToWideChar(CP_UTF8,0,file,-1,tempfilename,MAX_PATH);
+	fileName.bstrVal = SysAllocString(tempfilename);
+#endif
+	hr = pXMLDoc->load(fileName,&ret);
+	SysFreeString(fileName.bstrVal);
+
+	if(FAILED(hr) || hr==S_FALSE) {
+		_stprintf(errorMsg,TEXT("Error loading HLSL shader file:\n%s"),file);
+		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"), MB_OK|MB_ICONEXCLAMATION);
+		pXMLDoc->Release();
+		return false;
+	}
+
+	VARIANT attributeValue;
+	BSTR attributeName;
+
+	hr = pXMLDoc->get_documentElement(&pXDE);
+	if(FAILED(hr) || hr==S_FALSE) {
+		_stprintf(errorMsg,TEXT("Error loading root element from file:\n%s"),file);
+		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"), MB_OK|MB_ICONEXCLAMATION);
+		pXMLDoc->Release();
+		return false;
+	}
+
+	attributeName=SysAllocString(L"language");
+	pXDE->getAttribute(attributeName,&attributeValue);
+	SysFreeString(attributeName);
+	pXDE->Release();
+
+	if(attributeValue.vt!=VT_BSTR || lstrcmpiW(attributeValue.bstrVal,L"hlsl")) {
+		_stprintf(errorMsg,TEXT("Shader language is <%s>, expected <HLSL> in file:\n%s"),attributeValue.bstrVal,file);
+		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"), MB_OK|MB_ICONEXCLAMATION);
+		if(attributeValue.vt==VT_BSTR) SysFreeString(attributeValue.bstrVal);
+		pXMLDoc->Release();
+		return false;
+	}
+	if(attributeValue.vt==VT_BSTR) SysFreeString(attributeValue.bstrVal);
+
+	queryString=SysAllocString(L"/shader/source");
+	hr = pXMLDoc->selectSingleNode(queryString,&pXDN);
+	SysFreeString(queryString);
+
+	if(hr == S_OK) {
+		hr = pXDN->get_text(&nodeContent);
+		if(hr == S_OK) {
+			int requiredChars = WideCharToMultiByte(CP_ACP,0,nodeContent,-1,shaderText,0,NULL,NULL);
+			shaderText = new char[requiredChars];
+			WideCharToMultiByte(CP_UTF8,0,nodeContent,-1,shaderText,requiredChars,NULL,NULL);
+		}
+		SysFreeString(nodeContent);
+		pXDN->Release();
+		pXDN = NULL;
+	}
+
+	pXMLDoc->Release();
+
+	if(!shaderText) {
+		_stprintf(errorMsg,TEXT("No HLSL shader program in file:\n%s"),file);
+		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"),
+			MB_OK|MB_ICONEXCLAMATION);
+		return false;
+	}
+
+	LPD3DXBUFFER pBufferErrors = NULL;
+	hr = D3DXCreateEffect( pDevice,shaderText,strlen(shaderText),NULL, NULL,
+		D3DXSHADER_ENABLE_BACKWARDS_COMPATIBILITY, NULL, &effect, 
+		&pBufferErrors );
+	delete[] shaderText;
+	if( FAILED(hr) ) {
+		_stprintf(errorMsg,TEXT("Error parsing HLSL shader file:\n%s"),file);
+		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"), MB_OK|MB_ICONEXCLAMATION);
+		if(pBufferErrors) {
+			LPVOID pCompilErrors = pBufferErrors->GetBufferPointer();
+			MessageBox(NULL, (const TCHAR*)pCompilErrors, TEXT("FX Compile Error"),
+				MB_OK|MB_ICONEXCLAMATION);
+		}
+		return false;
+	}
+
 	lstrcpy(folder,file);
 	slash = _tcsrchr(folder,TEXT('\\'));
 	if(slash)
@@ -357,22 +459,6 @@ bool CDirect3D::SetShader(const TCHAR *file)
 		}
 	}
 
-	LPD3DXBUFFER pBufferErrors = NULL;
-	hr = D3DXCreateEffectFromFile( pDevice,file,NULL, NULL,
-		D3DXSHADER_ENABLE_BACKWARDS_COMPATIBILITY, NULL, &effect, 
-		&pBufferErrors );
-	if( FAILED(hr) ) {
-		TCHAR errorMsg[MAX_PATH + 50];
-		_stprintf(errorMsg,TEXT("Error loading HLSL effect file:\n%s"),file);
-		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"),
-			MB_OK|MB_ICONEXCLAMATION);
-		if(pBufferErrors) {
-			LPVOID pCompilErrors = pBufferErrors->GetBufferPointer();
-			MessageBox(NULL, (const TCHAR*)pCompilErrors, TEXT("FX Compile Error"),
-				MB_OK|MB_ICONEXCLAMATION);
-		}
-		return false;
-	}
 	D3DXHANDLE hTech;
 	effect->FindNextValidTechnique(NULL,&hTech);
 	effect->SetTechnique( hTech );
