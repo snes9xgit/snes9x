@@ -2077,6 +2077,9 @@ LRESULT CALLBACK WinProc(
 			GetClientRect (GUI.hWnd, &rect);
 			InvalidateRect (GUI.hWnd, &rect, true);
 		}	break;
+		case ID_VIDEO_SHOWFRAMERATE:
+			Settings.DisplayFrameRate = !Settings.DisplayFrameRate;
+			break;
 		case ID_SAVESCREENSHOT:
 			Settings.TakeScreenshot=true;
 			break;
@@ -3595,6 +3598,9 @@ static void CheckMenuStates ()
 	if(!GUI.Stretch)
 		mii.fState |= MFS_DISABLED;
     SetMenuItemInfo (GUI.hMenu, ID_WINDOW_VIDMEM, FALSE, &mii);
+
+	mii.fState = Settings.DisplayFrameRate ? MFS_CHECKED : MFS_UNCHECKED;
+    SetMenuItemInfo (GUI.hMenu, ID_VIDEO_SHOWFRAMERATE, FALSE, &mii);
 
 	mii.fState = (Settings.Paused && !Settings.StopEmulation) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_FILE_PAUSE, FALSE, &mii);

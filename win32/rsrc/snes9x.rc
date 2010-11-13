@@ -34,7 +34,7 @@ IDC_CURSOR_SCOPE        CURSOR                  "nodrop.cur"
 
 IDR_SNES9X_ACCELERATORS ACCELERATORS 
 BEGIN
-    "E",            ID_CHEAT_ENTER,         VIRTKEY, ALT, NOINVERT
+    "G",            ID_CHEAT_ENTER,         VIRTKEY, ALT, NOINVERT
     "A",            ID_CHEAT_SEARCH,        VIRTKEY, ALT, NOINVERT
     "O",            ID_FILE_LOAD_GAME,      VIRTKEY, CONTROL, NOINVERT
     VK_F5,          ID_OPTIONS_DISPLAY,     VIRTKEY, ALT, NOINVERT
@@ -872,7 +872,7 @@ BEGIN
         MENUITEM "&Pause",                      ID_FILE_PAUSE
         MENUITEM "Pause &When Inactive",        ID_EMULATION_PAUSEWHENINACTIVE
         MENUITEM SEPARATOR
-        MENUITEM "Se&ttings...\tAlt+F8",        ID_OPTIONS_SETTINGS
+        MENUITEM "&Settings...\tAlt+F8",        ID_OPTIONS_SETTINGS
     END
     POPUP "&Input"
     BEGIN
@@ -947,12 +947,13 @@ BEGIN
         MENUITEM "&Stretch Image\tAlt+Backspace", 40032
         MENUITEM "&Maintain Aspect Ratio",      40123
         MENUITEM "&Bilinear Filtering",         ID_WINDOW_VIDMEM
+        MENUITEM "Show Frame &Rate",            ID_VIDEO_SHOWFRAMERATE
         MENUITEM SEPARATOR
         MENUITEM "&Display Configuration...\tAlt+F5", ID_OPTIONS_DISPLAY
     END
     POPUP "&Cheat"
     BEGIN
-        MENUITEM "&Game Genie, Pro-Action Replay Codes\tAlt+E", ID_CHEAT_ENTER
+        MENUITEM "&Game Genie, Pro-Action Replay Codes\tAlt+G", ID_CHEAT_ENTER
         MENUITEM "&Search for New Cheats",      ID_CHEAT_SEARCH_MODAL
         MENUITEM "Search for New Cheats (active)\tAlt+A", 40064
         MENUITEM "&Apply Cheats",               ID_CHEAT_APPLY, CHECKED
