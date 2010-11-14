@@ -197,11 +197,6 @@
 #define CLIP_XOR			2
 #define CLIP_XNOR			3
 
-#define PPU_IRQ_SOURCE		(1 << 1)
-#define GSU_IRQ_SOURCE		(1 << 2)
-#define SA1_IRQ_SOURCE		(1 << 7)
-#define SA1_DMA_IRQ_SOURCE	(1 << 5)
-
 struct ClipData
 {
 	uint8	Count;
@@ -385,9 +380,6 @@ uint8 S9xGetPPU (uint16);
 void S9xSetCPU (uint8, uint16);
 uint8 S9xGetCPU (uint16);
 void S9xUpdateHVTimerPosition (void);
-void S9xCheckMissingHTimerPosition (int32);
-void S9xCheckMissingHTimerRange (int32, int32);
-void S9xCheckMissingHTimerHalt (int32, int32);
 void S9xFixColourBrightness (void);
 void S9xDoAutoJoypad (void);
 

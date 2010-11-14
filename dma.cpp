@@ -185,7 +185,7 @@
 #include "missing.h"
 #endif
 
-#define ADD_CYCLES(n)	CPU.Cycles += (n)
+#define ADD_CYCLES(n)	{ CPU.PrevCycles = CPU.Cycles; CPU.Cycles += (n); S9xCheckInterrupts(); }
 
 extern uint8	*HDMAMemPointers[8];
 extern int		HDMA_ModeByteCounts[8];
@@ -1282,7 +1282,7 @@ bool8 S9xDoDMA (uint8 Channel)
 		}
 	}
 
-	if ((CPU.Flags & NMI_FLAG) && (Timings.NMITriggerPos != 0xffff))
+	if (CPU.NMILine && (Timings.NMITriggerPos != 0xffff))
 	{
 		Timings.NMITriggerPos = CPU.Cycles + Timings.NMIDMADelay;
 		if (Timings.NMITriggerPos >= Timings.H_Max)

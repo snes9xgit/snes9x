@@ -179,6 +179,9 @@
 #define _CPUEXEC_H_
 
 #include "ppu.h"
+#ifdef DEBUGGER
+#include "debug.h"
+#endif
 
 struct SOpcodes
 {
@@ -193,7 +196,6 @@ struct SICPU
 	uint8	_Zero;
 	uint8	_Negative;
 	uint8	_Overflow;
-	bool8	CPUExecuting;
 	uint32	ShiftedPB;
 	uint32	ShiftedDB;
 	uint32	Frame;
@@ -217,8 +219,6 @@ void S9xMainLoop (void);
 void S9xReset (void);
 void S9xSoftReset (void);
 void S9xDoHEventProcessing (void);
-void S9xClearIRQ (uint32);
-void S9xSetIRQ (uint32);
 
 static inline void S9xUnpackStatus (void)
 {
@@ -272,82 +272,73 @@ static inline void S9xFixCycles (void)
 
 static inline void S9xReschedule (void)
 {
-	uint8	next = 0;
-	int32	hpos = 0;
-
 	switch (CPU.WhichEvent)
 	{
 		case HC_HBLANK_START_EVENT:
-		case HC_IRQ_1_3_EVENT:
-			next = HC_HDMA_START_EVENT;
-			hpos = Timings.HDMAStart;
+			CPU.WhichEvent = HC_HDMA_START_EVENT;
+			CPU.NextEvent  = Timings.HDMAStart;
 			break;
 
 		case HC_HDMA_START_EVENT:
-		case HC_IRQ_3_5_EVENT:
-			next = HC_HCOUNTER_MAX_EVENT;
-			hpos = Timings.H_Max;
+			CPU.WhichEvent = HC_HCOUNTER_MAX_EVENT;
+			CPU.NextEvent  = Timings.H_Max;
 			break;
 
 		case HC_HCOUNTER_MAX_EVENT:
-		case HC_IRQ_5_7_EVENT:
-			next = HC_HDMA_INIT_EVENT;
-			hpos = Timings.HDMAInit;
+			CPU.WhichEvent = HC_HDMA_INIT_EVENT;
+			CPU.NextEvent  = Timings.HDMAInit;
 			break;
 
 		case HC_HDMA_INIT_EVENT:
-		case HC_IRQ_7_9_EVENT:
-			next = HC_RENDER_EVENT;
-			hpos = Timings.RenderPos;
+			CPU.WhichEvent = HC_RENDER_EVENT;
+			CPU.NextEvent  = Timings.RenderPos;
 			break;
 
 		case HC_RENDER_EVENT:
-		case HC_IRQ_9_A_EVENT:
-			next = HC_WRAM_REFRESH_EVENT;
-			hpos = Timings.WRAMRefreshPos;
+			CPU.WhichEvent = HC_WRAM_REFRESH_EVENT;
+			CPU.NextEvent  = Timings.WRAMRefreshPos;
 			break;
 
 		case HC_WRAM_REFRESH_EVENT:
-		case HC_IRQ_A_1_EVENT:
-			next = HC_HBLANK_START_EVENT;
-			hpos = Timings.HBlankStart;
+			CPU.WhichEvent = HC_HBLANK_START_EVENT;
+			CPU.NextEvent  = Timings.HBlankStart;
 			break;
 	}
+}
 
-	if (((int32) PPU.HTimerPosition > CPU.NextEvent) && ((int32) PPU.HTimerPosition < hpos))
+static inline void S9xCheckInterrupts (void)
+{
+	bool8	thisIRQ = PPU.HTimerEnabled || PPU.VTimerEnabled;
+
+	if (CPU.IRQLine && thisIRQ)
+		CPU.IRQTransition = TRUE;
+
+	if (PPU.HTimerEnabled)
 	{
-		hpos = (int32) PPU.HTimerPosition;
-
-		switch (next)
-		{
-			case HC_HDMA_START_EVENT:
-				next = HC_IRQ_1_3_EVENT;
-				break;
-
-			case HC_HCOUNTER_MAX_EVENT:
-				next = HC_IRQ_3_5_EVENT;
-				break;
-
-			case HC_HDMA_INIT_EVENT:
-				next = HC_IRQ_5_7_EVENT;
-				break;
-
-			case HC_RENDER_EVENT:
-				next = HC_IRQ_7_9_EVENT;
-				break;
-
-			case HC_WRAM_REFRESH_EVENT:
-				next = HC_IRQ_9_A_EVENT;
-				break;
-
-			case HC_HBLANK_START_EVENT:
-				next = HC_IRQ_A_1_EVENT;
-				break;
-		}
+		if (CPU.PrevCycles >= PPU.HTimerPosition || CPU.Cycles < PPU.HTimerPosition)
+			thisIRQ = FALSE;
 	}
 
-	CPU.NextEvent  = hpos;
-	CPU.WhichEvent = next;
+	if (PPU.VTimerEnabled)
+	{
+		int32	vcounter = CPU.V_Counter;
+		if (CPU.Cycles >= Timings.H_Max)
+			vcounter++;
+	
+		if (vcounter != PPU.VTimerPosition)
+			thisIRQ = FALSE;
+	}
+
+	if (!CPU.IRQLastState && thisIRQ)
+	{
+#ifdef DEBUGGER
+		S9xTraceFormattedMessage("--- /IRQ High->Low  prev HC:%04d  curr HC:%04d  HTimer:%d Pos:%04d  VTimer:%d Pos:%03d",
+			CPU.PrevCycles, CPU.Cycles, PPU.HTimerEnabled, PPU.HTimerPosition, PPU.VTimerEnabled, PPU.VTimerPosition);
+#endif
+		CPU.IRQLine = TRUE;
+	}
+
+	CPU.IRQLastState = thisIRQ;
 }
 
 #endif

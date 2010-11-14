@@ -198,32 +198,33 @@ struct SSA1
 	uint8	_Zero;
 	uint8	_Negative;
 	uint8	_Overflow;
-	bool8	CPUExecuting;
 	uint32	ShiftedPB;
 	uint32	ShiftedDB;
 
 	uint32	Flags;
+	int32	Cycles;
+	int32	PrevCycles;
 	uint8	*PCBase;
-	bool8	IRQActive;
-	bool8	Waiting;
 	bool8	WaitingForInterrupt;
-	uint32	WaitAddress;
-	uint32	WaitCounter;
-	uint32	PBPCAtOpcodeStart;
-	uint8	*WaitByteAddress1;
-	uint8	*WaitByteAddress2;
 
 	uint8	*Map[MEMMAP_NUM_BLOCKS];
 	uint8	*WriteMap[MEMMAP_NUM_BLOCKS];
 	uint8	*BWRAM;
 
-	bool8	Executing;
-	bool8	overflow;
 	bool8	in_char_dma;
-	int16	op1;
-	int16	op2;
+	bool8	TimerIRQLastState;
+	uint16	HTimerIRQPos;
+	uint16	VTimerIRQPos;
+	int16	HCounter;
+	int16	VCounter;
+	int16	PrevHCounter;
+	int32	MemSpeed;
+	int32	MemSpeedx2;
 	int32	arithmetic_op;
-	int64	sum;
+	uint16	op1;
+	uint16	op2;
+	uint64	sum;
+	bool8	overflow;
 	uint8	VirtualBitmapFormat;
 	uint8	variable_bit_pos;
 };
@@ -263,12 +264,7 @@ uint8 S9xGetSA1 (uint32);
 void S9xSetSA1 (uint8, uint32);
 void S9xSA1Init (void);
 void S9xSA1MainLoop (void);
-void S9xSA1ExecuteDuringSleep (void);
 void S9xSA1PostLoadState (void);
-
-#define SNES_IRQ_SOURCE		(1 << 7)
-#define TIMER_IRQ_SOURCE	(1 << 6)
-#define DMA_IRQ_SOURCE		(1 << 5)
 
 static inline void S9xSA1UnpackStatus (void)
 {

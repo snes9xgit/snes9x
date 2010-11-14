@@ -887,7 +887,7 @@ static uint8 debug_cpu_op_print (char *Line, uint8 Bank, uint16 Address)
 	        (long) CPU.Cycles,
 	        (long) CPU.V_Counter,
 	        IPPU.FrameCount,
-	        CPU.IRQActive);
+	        (PPU.HTimerEnabled ? 0x10 : 0) | (PPU.VTimerEnabled ? 0x01 : 0));
 
 	return (Size);
 }

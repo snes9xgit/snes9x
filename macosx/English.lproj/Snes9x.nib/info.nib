@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>IBFramework Version</key>
-	<string>740</string>
+	<string>804</string>
 	<key>IBLastKnownRelativeProjectPath</key>
-	<string>../ntsctest.xcodeproj</string>
+	<string>../snes9x.xcodeproj</string>
 	<key>IBOldestOS</key>
 	<integer>6</integer>
 	<key>IBOpenObjects</key>
@@ -13,7 +13,7 @@
 		<integer>265</integer>
 	</array>
 	<key>IBSystem Version</key>
-	<string>10C540</string>
+	<string>10H574</string>
 	<key>targetFramework</key>
 	<string>IBCarbonFramework</string>
 </dict>

@@ -353,7 +353,7 @@ static FreezeData	SnapCPU[] =
 	INT_ENTRY(6, PrevCycles),
 	INT_ENTRY(6, V_Counter),
 	INT_ENTRY(6, Flags),
-	INT_ENTRY(6, IRQActive),
+//	INT_ENTRY(6, IRQActive),
 	INT_ENTRY(6, IRQPending),
 	INT_ENTRY(6, MemSpeed),
 	INT_ENTRY(6, MemSpeedx2),
@@ -366,9 +366,9 @@ static FreezeData	SnapCPU[] =
 	INT_ENTRY(6, WhichEvent),
 	INT_ENTRY(6, NextEvent),
 	INT_ENTRY(6, WaitingForInterrupt),
-	INT_ENTRY(6, WaitAddress),
-	INT_ENTRY(6, WaitCounter),
-	INT_ENTRY(6, PBPCAtOpcodeStart)
+//	INT_ENTRY(6, WaitAddress),
+//	INT_ENTRY(6, WaitCounter),
+//	INT_ENTRY(6, PBPCAtOpcodeStart)
 };
 
 #undef STRUCT
@@ -649,17 +649,17 @@ static FreezeData	SnapFX[] =
 
 static FreezeData	SnapSA1[] =
 {
-	INT_ENTRY(6, CPUExecuting),
+//	INT_ENTRY(6, CPUExecuting),
 	INT_ENTRY(6, ShiftedPB),
 	INT_ENTRY(6, ShiftedDB),
 	INT_ENTRY(6, Flags),
-	INT_ENTRY(6, IRQActive),
-	INT_ENTRY(6, Waiting),
+//	INT_ENTRY(6, IRQActive),
+//	INT_ENTRY(6, Waiting),
 	INT_ENTRY(6, WaitingForInterrupt),
-	INT_ENTRY(6, WaitAddress),
-	INT_ENTRY(6, WaitCounter),
-	INT_ENTRY(6, PBPCAtOpcodeStart),
-	INT_ENTRY(6, Executing),
+//	INT_ENTRY(6, WaitAddress),
+//	INT_ENTRY(6, WaitCounter),
+//	INT_ENTRY(6, PBPCAtOpcodeStart),
+//	INT_ENTRY(6, Executing),
 	INT_ENTRY(6, overflow),
 	INT_ENTRY(6, in_char_dma),
 	INT_ENTRY(6, op1),

@@ -280,7 +280,6 @@ static void Op##OP (void) \
 			S9xSetPCBase(ICPU.ShiftedPB + newPC.W); \
 		else \
 			Registers.PCw = newPC.W; \
-		CPUShutdown(); \
 	} \
 }
 
@@ -515,9 +514,6 @@ static inline void CPY (uint8 val)
 
 static inline void DEC16 (uint32 OpAddress, s9xwrap_t w)
 {
-#ifdef CPU_SHUTDOWN
-	CPU.WaitAddress = 0xffffffff;
-#endif
 	uint16	Work16 = S9xGetWord(OpAddress, w) - 1;
 	AddCycles(ONE_CYCLE);
 	S9xSetWord(Work16, OpAddress, w, WRITE_10);
@@ -527,9 +523,6 @@ static inline void DEC16 (uint32 OpAddress, s9xwrap_t w)
 
 static inline void DEC8 (uint32 OpAddress)
 {
-#ifdef CPU_SHUTDOWN
-	CPU.WaitAddress = 0xffffffff;
-#endif
 	uint8	Work8 = S9xGetByte(OpAddress) - 1;
 	AddCycles(ONE_CYCLE);
 	S9xSetByte(Work8, OpAddress);
@@ -551,9 +544,6 @@ static inline void EOR (uint8 val)
 
 static inline void INC16 (uint32 OpAddress, s9xwrap_t w)
 {
-#ifdef CPU_SHUTDOWN
-	CPU.WaitAddress = 0xffffffff;
-#endif
 	uint16	Work16 = S9xGetWord(OpAddress, w) + 1;
 	AddCycles(ONE_CYCLE);
 	S9xSetWord(Work16, OpAddress, w, WRITE_10);
@@ -563,9 +553,6 @@ static inline void INC16 (uint32 OpAddress, s9xwrap_t w)
 
 static inline void INC8 (uint32 OpAddress)
 {
-#ifdef CPU_SHUTDOWN
-	CPU.WaitAddress = 0xffffffff;
-#endif
 	uint8	Work8 = S9xGetByte(OpAddress) + 1;
 	AddCycles(ONE_CYCLE);
 	S9xSetByte(Work8, OpAddress);

@@ -241,7 +241,7 @@ enum
 	iNibOAutoSaveInterval,
 
 	iNibMCPUCycles = 601,
-	iNibMShutdownMaster,
+	iNibMReserved1,
 	iNibMTurboSkipArrows,
 	iNibMTurboSkipText,
 	iNibMFrameSkip,
@@ -329,7 +329,6 @@ static PrefList	prefList[] =
 	{ 'QTfg', &macQTMovFlag,								sizeof(uint16     ) },
 
 	{ 'HHck', &Settings.HDMATimingHack,					    sizeof(int32      ) },
-	{ 'stdm', &Settings.ShutdownMaster,						sizeof(bool8      ) },
 	{ 'TbRt', &macFastForwardRate,							sizeof(int        ) },
 	{ 'FSkp', &macFrameSkip,							    sizeof(int        ) },
 	{ 'IvVR', &Settings.BlockInvalidVRAMAccessMaster,       sizeof(bool8      ) },
@@ -845,10 +844,6 @@ void ConfigurePreferences (void)
 			sprintf(num, "%" PRIi32, Settings.HDMATimingHack);
 			SetEditTextCStr(ctl, num, false);
 
-			cid.id = iNibMShutdownMaster;
-			HIViewFindByID(root, cid, &ctl);
-			SetControl32BitValue(ctl, Settings.ShutdownMaster);
-
 			cid.id = iNibMTurboSkipArrows;
 			HIViewFindByID(root, cid, &ctl);
 			SetControl32BitValue(ctl, macFastForwardRate);
@@ -1203,10 +1198,6 @@ void ConfigurePreferences (void)
 			Settings.HDMATimingHack = atoi(num);
 			if ((Settings.HDMATimingHack <= 0) || (Settings.HDMATimingHack >= 200))
 				Settings.HDMATimingHack = 100;
-
-			cid.id = iNibMShutdownMaster;
-			HIViewFindByID(root, cid, &ctl);
-			Settings.ShutdownMaster = GetControl32BitValue(ctl) ? true : false;
 
 			cid.id = iNibMTurboSkipArrows;
 			HIViewFindByID(root, cid, &ctl);
