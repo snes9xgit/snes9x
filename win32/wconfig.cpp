@@ -301,8 +301,6 @@ void WinSetDefaultValues ()
 
 	// CPU options
 	Settings.HDMATimingHack = 100;
-	Settings.Shutdown =	false;
-	Settings.ShutdownMaster	= false;
 	Settings.DisableIRQ	= false;
 	Settings.Paused	= false;
 	Timings.H_Max =	SNES_CYCLES_PER_SCANLINE;
@@ -794,8 +792,6 @@ std::vector<ConfigItem> configItems;
 static char filterString [1024], filterString2 [1024], snapVerString [256];
 static bool niceAlignment, showComments, readOnlyConfig;
 static int configSort;
-static BOOL loadedShutdownMaster;
-static BOOL preSaveShutdownMaster;
 
 void WinPreSave(ConfigFile& conf)
 {
@@ -817,9 +813,6 @@ void WinPreSave(ConfigFile& conf)
 		}
 	}
 	sprintf(snapVerString, "Snapshot save version. Must be between 1 and %d (inclusive)", SNAPSHOT_VERSION);
-
-	preSaveShutdownMaster = Settings.ShutdownMaster;
-	Settings.ShutdownMaster &= loadedShutdownMaster; // never save change-to-true of speed hacks during execution
 
 //	GetWindowRect (GUI.hWnd, &GUI.window_size);
 	GUI.window_size.right -= GUI.window_size.left;
@@ -886,7 +879,6 @@ void WinPostSave(ConfigFile& conf)
 		case 8: Settings.SoundPlaybackRate = 44100; break;
 		case 9: Settings.SoundPlaybackRate = 48000; break;
 	}*/
-	Settings.ShutdownMaster = preSaveShutdownMaster; // revert temp change
 }
 void WinPostLoad(ConfigFile& conf)
 {
@@ -915,8 +907,6 @@ void WinPostLoad(ConfigFile& conf)
 	ConfigFile::SetShowComments(showComments);
 	ConfigFile::SetAlphaSort(configSort==2);
 	ConfigFile::SetTimeSort(configSort==1);
-	loadedShutdownMaster = Settings.ShutdownMaster;
-	preSaveShutdownMaster = Settings.ShutdownMaster;
 
 	WinPostSave(conf);
 }
@@ -990,7 +980,6 @@ void WinRegisterConfigItems()
 	AddUIntC("AutoMaxSkipFramesAtOnce", Settings.AutoMaxSkipFrames, 0, "most frames to skip at once to maintain speed, don't set to more than 1 or 2 frames because the skipping algorithm isn't very smart");
 	AddUIntC("TurboFrameSkip", Settings.TurboSkipFrames, 15, "how many frames to skip when in fast-forward mode");
 	AddUInt("AutoSaveDelay", Settings.AutoSaveDelay, 30);
-	AddBool2C("SpeedHacks", Settings.ShutdownMaster, false, "on to skip emulating the CPU when it is not being used ... recommended OFF");
 	AddBool("BlockInvalidVRAMAccess", Settings.BlockInvalidVRAMAccessMaster, true);
 	AddBool2C("SnapshotScreenshots", Settings.SnapshotScreenshots, true, "on to save the screenshot in each snapshot, for loading-when-paused display");
 	AddBoolC("MovieTruncateAtEnd", Settings.MovieTruncate, true, "true to truncate any leftover data in the movie file after the current frame when recording stops");

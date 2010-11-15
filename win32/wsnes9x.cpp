@@ -1556,16 +1556,6 @@ LRESULT CALLBACK WinProc(
 				if(DialogBoxParam(g_hInst, MAKEINTRESOURCE(IDD_CREATEMOVIE), hWnd, DlgCreateMovie, (LPARAM)&op) &&
 					op.Path[0]!='\0')
 				{
-					if(Settings.ShutdownMaster)
-					{
-						static bool seenItOnce = false;
-						if(!seenItOnce)
-						{
-							seenItOnce = true;
-							MessageBox(hWnd, MOVIE_SHUTDOWNMASTER_WARNING, SNES9X_WARN, MB_OK);
-						}
-					}
-
 					startingMovie = true;
 					int err=S9xMovieCreate (op.Path, op.ControllersMask, op.Opts, op.Metadata, wcslen(op.Metadata));
 					startingMovie = false;

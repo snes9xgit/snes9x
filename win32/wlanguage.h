@@ -512,7 +512,6 @@
 #define MOVIE_LABEL_STARTSETTINGS "Recording Start"
 #define MOVIE_LABEL_CONTSETTINGS "Record Controllers"
 #define MOVIE_LABEL_SYNCSETTINGS "Misc. Recording Settings"
-#define MOVIE_SHUTDOWNMASTER_WARNING "The \"SpeedHacks\" setting in your snes9x.cfg file is on.\nThis makes emulation less CPU-intensive, but also less accurate,\ncausing some games to lag noticeably more than they should.\nYou might want to reconsider recording a movie under these conditions."
 
 // Save Messages
 
