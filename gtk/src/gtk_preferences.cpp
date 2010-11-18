@@ -341,14 +341,17 @@ event_hw_accel_changed (GtkComboBox *widget, gpointer data)
     switch (value)
     {
         case HWA_NONE:
+            gtk_widget_show (window->get_widget ("bilinear_filter"));
             gtk_widget_hide (window->get_widget ("opengl_frame"));
             gtk_widget_hide (window->get_widget ("xv_frame"));
             break;
         case HWA_OPENGL:
+            gtk_widget_show (window->get_widget ("bilinear_filter"));
             gtk_widget_show (window->get_widget ("opengl_frame"));
             gtk_widget_hide (window->get_widget ("xv_frame"));
             break;
         case HWA_XV:
+            gtk_widget_hide (window->get_widget ("bilinear_filter"));
             gtk_widget_show (window->get_widget ("xv_frame"));
             gtk_widget_hide (window->get_widget ("opengl_frame"));
             break;
@@ -717,8 +720,9 @@ Snes9xPreferences::move_settings_to_dialog (void)
     set_combo ("frameskip_combo",
                Settings.SkipFrames == AUTO_FRAMERATE ?
                    0 : Settings.SkipFrames + 1);
-#ifdef USE_OPENGL
     set_check ("bilinear_filter",           config->bilinear_filter);
+
+#ifdef USE_OPENGL
     set_check ("sync_to_vblank",            config->sync_to_vblank);
     set_check ("sync_every_frame",          config->sync_every_frame);
     set_check ("use_pbos",                  config->use_pbos);
@@ -826,6 +830,7 @@ Snes9xPreferences::get_settings_from_dialog (void)
     config->ntsc_scanline_intensity   = get_combo ("ntsc_scanline_intensity");
     config->scanline_filter_intensity = get_combo ("scanline_filter_intensity");
     config->hw_accel                  = hw_accel_value (get_combo ("hw_accel"));
+    config->bilinear_filter           = get_check ("bilinear_filter");
     config->num_threads               = get_spin ("num_threads");
     config->default_esc_behavior      = get_combo ("default_esc_behavior");
     config->prevent_screensaver       = get_check ("prevent_screensaver");
@@ -845,7 +850,6 @@ Snes9xPreferences::get_settings_from_dialog (void)
         gfx_needs_restart = 1;
     }
 
-    config->bilinear_filter           = get_check ("bilinear_filter");
     config->sync_to_vblank            = get_check ("sync_to_vblank");
     config->use_pbos                  = get_check ("use_pbos");
     config->npot_textures             = get_check ("npot_textures");

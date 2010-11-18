@@ -81,6 +81,7 @@ class Snes9xConfig
         float         ntsc_merge_fields;
         unsigned int  ntsc_scanline_intensity;
         unsigned int  scanline_filter_intensity;
+        unsigned char bilinear_filter;
         unsigned char hw_accel;
         unsigned char allow_opengl;
         unsigned char allow_xv;
@@ -138,7 +139,6 @@ class Snes9xConfig
 
 
 #ifdef USE_OPENGL
-        unsigned char bilinear_filter;
         unsigned char sync_to_vblank;
         unsigned char opengl_activated;
         unsigned char use_pbos;
