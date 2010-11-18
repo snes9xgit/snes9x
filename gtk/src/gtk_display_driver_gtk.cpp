@@ -77,10 +77,10 @@ S9xGTKDisplayDriver::output (void *src,
                              int  dst_width,
                              int  dst_height)
 {
-    if (dst_width > gdk_buffer_width || dst_height > gdk_buffer_height)
+    if (width > gdk_buffer_width || height > gdk_buffer_height)
     {
-        gdk_buffer_width = dst_width;
-        gdk_buffer_height = dst_height;
+        gdk_buffer_width = width;
+        gdk_buffer_height = height;
 
         gdk_pixbuf_unref (pixbuf);
 
@@ -97,31 +97,31 @@ S9xGTKDisplayDriver::output (void *src,
                                            NULL);
     }
 
-    if (width != dst_width || height != dst_height)
-    {
-        S9xConvertScale (src,
-                         padded_buffer[2],
-                         src_pitch,
-                         gdk_buffer_width * 3,
-                         width,
-                         height,
-                         dst_width, dst_height,
-                         24);
-    }
-    else
-    {
-        S9xConvert (src,
-                    padded_buffer[2],
-                    src_pitch,
-                    gdk_buffer_width * 3,
-                    width,
-                    height,
-                    24);
-    }
+    S9xConvert (src,
+                padded_buffer[2],
+                src_pitch,
+                gdk_buffer_width * 3,
+                width,
+                height,
+                24);
 
     cairo_t *cr = gdk_cairo_create (gtk_widget_get_window (drawing_area));
 
     gdk_cairo_set_source_pixbuf (cr, pixbuf, x, y);
+
+    if (width != dst_width || height != dst_height)
+    {
+        cairo_matrix_t matrix;
+        cairo_pattern_t *pattern = cairo_get_source (cr);;
+
+        cairo_matrix_init_identity (&matrix);
+        cairo_matrix_scale (&matrix,
+                            (double) width / (double) dst_width,
+                            (double) height / (double) dst_height);
+        cairo_matrix_translate (&matrix, -x, -y);
+        cairo_pattern_set_matrix (pattern, &matrix);
+        cairo_pattern_set_filter (pattern, CAIRO_FILTER_NEAREST);
+    }
 
     cairo_rectangle (cr, x, y, dst_width, dst_height);
     cairo_fill (cr);
