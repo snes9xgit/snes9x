@@ -32,6 +32,8 @@ class S9xGTKDisplayDriver : public S9xDisplayDriver
         GdkPixbuf *pixbuf;
         int gdk_buffer_width;
         int gdk_buffer_height;
+        int last_known_width;
+        int last_known_height;
 };
 
 #endif /* __GTK_DISPLAY_DRIVER_GTK_H */

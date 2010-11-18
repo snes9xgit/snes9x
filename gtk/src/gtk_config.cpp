@@ -162,6 +162,7 @@ Snes9xConfig::load_defaults (void)
     ntsc_setup = snes_ntsc_composite;
     ntsc_scanline_intensity = 1;
     scanline_filter_intensity = 0;
+    bilinear_filter = 0;
     netplay_activated = FALSE;
     netplay_server_up = FALSE;
     netplay_is_server = FALSE;
@@ -175,7 +176,6 @@ Snes9xConfig::load_defaults (void)
     modal_dialogs = 1;
 
 #ifdef USE_OPENGL
-    bilinear_filter = 0;
     sync_to_vblank = 1;
     use_pbos = 1;
     pbo_format = 0;
@@ -323,9 +323,9 @@ Snes9xConfig::save_config_file (void)
     xml_out_int (xml, "ntsc_scanline_intensity", ntsc_scanline_intensity);
     xml_out_int (xml, "scanline_filter_intensity", scanline_filter_intensity);
     xml_out_int (xml, "hw_accel", hw_accel);
+    xml_out_int (xml, "bilinear_filter", bilinear_filter);
 
 #ifdef USE_OPENGL
-    xml_out_int (xml, "bilinear_filter", bilinear_filter);
     xml_out_int (xml, "sync_to_vblank", sync_to_vblank);
     xml_out_int (xml, "sync_every_frame", sync_every_frame);
     xml_out_int (xml, "use_pbos", use_pbos);
@@ -499,9 +499,7 @@ Snes9xConfig::set_option (const char *name, const char *value)
     }
     else if (!strcasecmp (name, "bilinear_filter"))
     {
-#ifdef USE_OPENGL
         bilinear_filter = atoi (value);
-#endif
     }
     else if (!strcasecmp (name, "sync_to_vblank"))
     {

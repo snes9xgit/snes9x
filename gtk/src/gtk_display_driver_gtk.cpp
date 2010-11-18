@@ -62,6 +62,7 @@ S9xGTKDisplayDriver::update (int width, int height)
 
     x = width; y = height; w = c_width; h = c_height;
     S9xApplyAspect (x, y, w, h);
+
     output (final_buffer, final_pitch, x, y, width, height, w, h);
 
     return;
@@ -77,7 +78,7 @@ S9xGTKDisplayDriver::output (void *src,
                              int  dst_width,
                              int  dst_height)
 {
-    if (width > gdk_buffer_width || height > gdk_buffer_height)
+    if (width != gdk_buffer_width || height != gdk_buffer_height)
     {
         gdk_buffer_width = width;
         gdk_buffer_height = height;
@@ -95,6 +96,14 @@ S9xGTKDisplayDriver::output (void *src,
                                            gdk_buffer_width * 3,
                                            NULL,
                                            NULL);
+    }
+
+    if (last_known_width != dst_width || last_known_height != dst_height)
+    {
+        clear ();
+
+        last_known_width = dst_width;
+        last_known_height = dst_height;
     }
 
     S9xConvert (src,
@@ -120,11 +129,15 @@ S9xGTKDisplayDriver::output (void *src,
                             (double) height / (double) dst_height);
         cairo_matrix_translate (&matrix, -x, -y);
         cairo_pattern_set_matrix (pattern, &matrix);
-        cairo_pattern_set_filter (pattern, CAIRO_FILTER_NEAREST);
+        cairo_pattern_set_filter (pattern,
+                                  config->bilinear_filter
+                                       ? CAIRO_FILTER_BILINEAR
+                                       : CAIRO_FILTER_NEAREST);
     }
 
     cairo_rectangle (cr, x, y, dst_width, dst_height);
     cairo_fill (cr);
+
     cairo_destroy (cr);
 
     window->set_mouseable_area (x, y, width, height);
