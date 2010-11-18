@@ -170,7 +170,7 @@ S9xOpenGLDisplayDriver::update (int width, int height)
     w = allocation.width; h = allocation.height;
     S9xApplyAspect (x, y, w, h);
 
-    glViewport (x, allocation.height-y-h, w, h);
+    glViewport (x, allocation.height - y - h, w, h);
     window->set_mouseable_area (x, y, w, h);
 
     update_texture_size (width, height);
