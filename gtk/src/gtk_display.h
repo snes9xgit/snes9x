@@ -80,16 +80,6 @@ void S9xConvert (void *src,
                  int height,
                  int bpp);
 
-void S9xConvertScale (void *src,
-                      void *dst,
-                      int src_pitch,
-                      int dst_pitch,
-                      int width,
-                      int height,
-                      int dest_width,
-                      int dest_height,
-                      int bpp);
-
 void S9xConvertMask (void *src,
                      void *dst,
                      int  src_pitch,
