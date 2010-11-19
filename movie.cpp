@@ -786,8 +786,8 @@ int S9xMovieOpen (const char *filename, bool8 read_only)
 
 	read_movie_extrarominfo(fd, &Movie);
 
-	fn = dup(fileno(fd));
-	fclose(fd);
+	fflush(fd);
+	fn = fileno(fd);
 
 	store_previous_settings();
 	restore_movie_settings();
@@ -807,6 +807,7 @@ int S9xMovieOpen (const char *filename, bool8 read_only)
 		result = S9xUnfreezeFromStream(stream);
 
 	CLOSE_STREAM(stream);
+	fclose(fd);
 
 	if (result != SUCCESS)
 		return (result);
@@ -853,7 +854,6 @@ int S9xMovieCreate (const char *filename, uint8 controllers_mask, uint8 opts, co
 {
 	FILE	*fd;
 	STREAM	stream;
-	int		fn;
 
 	if (controllers_mask == 0)
 		return (WRONG_FORMAT);
@@ -902,10 +902,9 @@ int S9xMovieCreate (const char *filename, uint8 controllers_mask, uint8 opts, co
 
 	write_movie_extrarominfo(fd, &Movie);
 
-	fn = dup(fileno(fd));
 	fclose(fd);
 
-	stream = REOPEN_STREAM(fn, "ab");
+	stream = OPEN_STREAM(filename, "ab");
 	if (!stream)
 		return (FILE_NOT_FOUND);
 
@@ -1009,9 +1008,10 @@ int S9xMovieGetInfo (const char *filename, struct MovieInfo *info)
 	strncpy(info->ROMName, local_movie.ROMName, 23);
 
 	fclose(fd);
-
-	if (access(filename, W_OK))
+	if ((fd = fopen(filename, "r+")) == NULL)
 		info->ReadOnly = true;
+	else
+		fclose(fd);
 
 	return (SUCCESS);
 }
