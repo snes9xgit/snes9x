@@ -213,11 +213,7 @@ struct InternalPPU
 	bool8	DirectColourMapsNeedRebuild;
 	uint8	*TileCache[7];
 	uint8	*TileCached[7];
-#ifdef CORRECT_VRAM_READS
 	uint16	VRAMReadBuffer;
-#else
-	bool8	FirstVRAMRead;
-#endif
 	bool8	Interlace;
 	bool8	InterlaceOBJ;
 	bool8	PseudoHires;

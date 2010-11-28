@@ -425,7 +425,6 @@ static const int	ptrspeeds[4] = { 1, 1, 4, 8 };
 	S(ToggleBG2), \
 	S(ToggleBG3), \
 	S(ToggleEmuTurbo), \
-	S(ToggleHDMA), \
 	S(ToggleSprites), \
 	S(ToggleTransparency) \
 
@@ -2452,11 +2451,6 @@ void S9xApplyCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 					case ToggleSprites:
 						Settings.BG_Forced ^= 16;
 						DisplayStateChange("Sprites", !(Settings.BG_Forced & 16));
-						break;
-
-					case ToggleHDMA:
-						Settings.DisableHDMA = !Settings.DisableHDMA;
-						DisplayStateChange("HDMA emulation", !Settings.DisableHDMA);
 						break;
 
 					case ToggleTransparency:

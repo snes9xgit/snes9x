@@ -451,7 +451,6 @@ const char * S9xParseDisplayConfig (ConfigFile &conf, int pass)
 		keymaps.push_back(strpair_t("K00:3",            "ToggleBG2"));
 		keymaps.push_back(strpair_t("K00:4",            "ToggleBG3"));
 		keymaps.push_back(strpair_t("K00:5",            "ToggleSprites"));
-		keymaps.push_back(strpair_t("K00:0",            "ToggleHDMA"));
 		keymaps.push_back(strpair_t("K00:9",            "ToggleTransparency"));
 		keymaps.push_back(strpair_t("K00:BackSpace",    "ClipWindows"));
 		keymaps.push_back(strpair_t("K00:A+Escape",     "Debugger"));

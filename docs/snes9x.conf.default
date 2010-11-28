@@ -67,8 +67,6 @@ Justifier2Crosshair = 4 MagicPink/Black
 EnableGameSpecificHacks = TRUE
 AllowInvalidVRAMAccess = FALSE
 SpeedHacks = FALSE
-DisableIRQ = FALSE
-DisableHDMA = FALSE
 HDMATiming = 100
 
 [Netplay]
@@ -231,7 +229,6 @@ K00:4 = ToggleBG3
 K00:5 = ToggleSprites
 K00:9 = ToggleTransparency
 K00:BackSpace = ClipWindows
-K00:0 = ToggleHDMA
 K00:A+Escape = Debugger
 M00:Pointer = Pointer Mouse1+Superscope+Justifier1
 M00:B0 = {Mouse1 L,Superscope Fire,Justifier1 Trigger}

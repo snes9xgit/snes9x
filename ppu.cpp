@@ -275,6 +275,11 @@ void S9xUpdateHVTimerPosition (void)
 		if (PPU.VTimerPosition >= Timings.V_Max)
 			PPU.VTimerPosition = 0;
 	}
+
+#ifdef DEBUGGER
+	S9xTraceFormattedMessage("--- IRQ Timer set  HTimer:%d Pos:%04d  VTimer:%d Pos:%03d",
+		PPU.HTimerEnabled, PPU.HTimerPosition, PPU.VTimerEnabled, PPU.VTimerPosition);
+#endif
 }
 
 void S9xFixColourBrightness (void)
@@ -618,7 +623,7 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 			case 0x2116: // VMADDL
 				PPU.VMA.Address &= 0xff00;
 				PPU.VMA.Address |= Byte;
-			#ifdef CORRECT_VRAM_READS
+
 				if (PPU.VMA.FullGraphicCount)
 				{
 					uint32 addr = PPU.VMA.Address;
@@ -628,15 +633,13 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 				}
 				else
 					IPPU.VRAMReadBuffer = READ_WORD(Memory.VRAM + ((PPU.VMA.Address << 1) & 0xffff));
-			#else
-				IPPU.FirstVRAMRead = TRUE;
-			#endif
+
 				break;
 
 			case 0x2117: // VMADDH
 				PPU.VMA.Address &= 0x00ff;
 				PPU.VMA.Address |= Byte << 8;
-			#ifdef CORRECT_VRAM_READS
+
 				if (PPU.VMA.FullGraphicCount)
 				{
 					uint32 addr = PPU.VMA.Address;
@@ -646,22 +649,14 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 				}
 				else
 					IPPU.VRAMReadBuffer = READ_WORD(Memory.VRAM + ((PPU.VMA.Address << 1) & 0xffff));
-			#else
-				IPPU.FirstVRAMRead = TRUE;
-			#endif
+
 				break;
 
 			case 0x2118: // VMDATAL
-			#ifndef CORRECT_VRAM_READS
-				IPPU.FirstVRAMRead = TRUE;
-			#endif
 				REGISTER_2118(Byte);
 				break;
 
 			case 0x2119: // VMDATAH
-			#ifndef CORRECT_VRAM_READS
-				IPPU.FirstVRAMRead = TRUE;
-			#endif
 				REGISTER_2119(Byte);
 				break;
 
@@ -1213,7 +1208,6 @@ uint8 S9xGetPPU (uint16 Address)
 				return (PPU.OpenBus1 = byte);
 
 			case 0x2139: // VMDATALREAD
-			#ifdef CORRECT_VRAM_READS
 				byte = IPPU.VRAMReadBuffer & 0xff;
 				if (!PPU.VMA.High)
 				{
@@ -1229,33 +1223,13 @@ uint8 S9xGetPPU (uint16 Address)
 
 					PPU.VMA.Address += PPU.VMA.Increment;
 				}
-			#else
-				if (IPPU.FirstVRAMRead)
-					byte = Memory.VRAM[(PPU.VMA.Address << 1) & 0xffff];
-				else
-				if (PPU.VMA.FullGraphicCount)
-				{
-					uint32 addr = PPU.VMA.Address - 1;
-					uint32 rem = addr & PPU.VMA.Mask1;
-					uint32 address = (addr & ~PPU.VMA.Mask1) + (rem >> PPU.VMA.Shift) + ((rem & (PPU.VMA.FullGraphicCount - 1)) << 3);
-					byte = Memory.VRAM[((address << 1) - 2) & 0xffff];
-				}
-				else
-					byte = Memory.VRAM[((PPU.VMA.Address << 1) - 2) & 0xffff];
 
-				if (!PPU.VMA.High)
-				{
-					PPU.VMA.Address += PPU.VMA.Increment;
-					IPPU.FirstVRAMRead = FALSE;
-				}
-			#endif
 			#ifdef DEBUGGER
 				missing.vram_read = 1;
 			#endif
 				return (PPU.OpenBus1 = byte);
 
 			case 0x213a: // VMDATAHREAD
-			#ifdef CORRECT_VRAM_READS
 				byte = (IPPU.VRAMReadBuffer >> 8) & 0xff;
 				if (PPU.VMA.High)
 				{
@@ -1271,26 +1245,6 @@ uint8 S9xGetPPU (uint16 Address)
 
 					PPU.VMA.Address += PPU.VMA.Increment;
 				}
-			#else
-				if (IPPU.FirstVRAMRead)
-					byte = Memory.VRAM[((PPU.VMA.Address << 1) + 1) & 0xffff];
-				else
-				if (PPU.VMA.FullGraphicCount)
-				{
-					uint32 addr = PPU.VMA.Address - 1;
-					uint32 rem = addr & PPU.VMA.Mask1;
-					uint32 address = (addr & ~PPU.VMA.Mask1) + (rem >> PPU.VMA.Shift) + ((rem & (PPU.VMA.FullGraphicCount - 1)) << 3);
-					byte = Memory.VRAM[((address << 1) - 1) & 0xffff];
-				}
-				else
-					byte = Memory.VRAM[((PPU.VMA.Address << 1) - 1) & 0xffff];
-
-				if (PPU.VMA.High)
-				{
-					PPU.VMA.Address += PPU.VMA.Increment;
-					IPPU.FirstVRAMRead = FALSE;
-				}
-			#endif
 			#ifdef DEBUGGER
 				missing.vram_read = 1;
 			#endif
@@ -1657,8 +1611,6 @@ void S9xSetCPU (uint8 Byte, uint16 Address)
 			case 0x420c: // HDMAEN
 				if (CPU.InDMAorHDMA)
 					return;
-				if (Settings.DisableHDMA)
-					Byte = 0;
 				Memory.FillRAM[0x420c] = Byte;
 				// Yoshi's Island, Genjyu Ryodan, Mortal Kombat, Tales of Phantasia
 				PPU.HDMA = Byte & ~PPU.HDMAEnded;
@@ -2005,11 +1957,7 @@ void S9xSoftResetPPU (void)
 	ZeroMemory(IPPU.TileCached[TILE_2BIT_ODD],  MAX_2BIT_TILES);
 	ZeroMemory(IPPU.TileCached[TILE_4BIT_EVEN], MAX_4BIT_TILES);
 	ZeroMemory(IPPU.TileCached[TILE_4BIT_ODD],  MAX_4BIT_TILES);
-#ifdef CORRECT_VRAM_READS
 	IPPU.VRAMReadBuffer = 0; // XXX: FIXME: anything better?
-#else
-	IPPU.FirstVRAMRead = FALSE;
-#endif
 	IPPU.Interlace = FALSE;
 	IPPU.InterlaceOBJ = FALSE;
 	IPPU.DoubleWidthPixels = FALSE;

@@ -197,7 +197,7 @@
 
 #define kMacS9XCFString		CFSTR("Snes9x")
 
-#define	MAC_VERSION			"100"
+#define	MAC_VERSION			"102"
 
 #include <Carbon/Carbon.h>
 

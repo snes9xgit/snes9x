@@ -342,7 +342,7 @@ struct SnapshotScreenshotInfo
 
 static struct Obsolete
 {
-	uint8	reserved;
+	uint8	CPU_IRQActive;
 }	Obsolete;
 
 #define STRUCT	struct SCPUState
@@ -353,7 +353,7 @@ static FreezeData	SnapCPU[] =
 	INT_ENTRY(6, PrevCycles),
 	INT_ENTRY(6, V_Counter),
 	INT_ENTRY(6, Flags),
-//	INT_ENTRY(6, IRQActive),
+	OBSOLETE_INT_ENTRY(6, 7, CPU_IRQActive),
 	INT_ENTRY(6, IRQPending),
 	INT_ENTRY(6, MemSpeed),
 	INT_ENTRY(6, MemSpeedx2),
@@ -366,9 +366,14 @@ static FreezeData	SnapCPU[] =
 	INT_ENTRY(6, WhichEvent),
 	INT_ENTRY(6, NextEvent),
 	INT_ENTRY(6, WaitingForInterrupt),
-//	INT_ENTRY(6, WaitAddress),
-//	INT_ENTRY(6, WaitCounter),
-//	INT_ENTRY(6, PBPCAtOpcodeStart)
+	DELETED_INT_ENTRY(6, 7, WaitAddress, 4),
+	DELETED_INT_ENTRY(6, 7, WaitCounter, 4),
+	DELETED_INT_ENTRY(6, 7, PBPCAtOpcodeStart, 4),
+	INT_ENTRY(7, NMILine),
+	INT_ENTRY(7, IRQLine),
+	INT_ENTRY(7, IRQTransition),
+	INT_ENTRY(7, IRQLastState),
+	INT_ENTRY(7, IRQExternal)
 };
 
 #undef STRUCT
@@ -576,7 +581,9 @@ static FreezeData	SnapTimings[] =
 	INT_ENTRY(6, DMACPUSync),
 	INT_ENTRY(6, NMIDMADelay),
 	INT_ENTRY(6, IRQPendCount),
-	INT_ENTRY(6, APUSpeedup)
+	INT_ENTRY(6, APUSpeedup),
+	INT_ENTRY(7, IRQTriggerCycles),
+	INT_ENTRY(7, APUAllowTimeOverflow)
 };
 
 #ifndef ZSNES_FX
@@ -649,17 +656,17 @@ static FreezeData	SnapFX[] =
 
 static FreezeData	SnapSA1[] =
 {
-//	INT_ENTRY(6, CPUExecuting),
+	DELETED_INT_ENTRY(6, 7, CPUExecuting, 1),
 	INT_ENTRY(6, ShiftedPB),
 	INT_ENTRY(6, ShiftedDB),
 	INT_ENTRY(6, Flags),
-//	INT_ENTRY(6, IRQActive),
-//	INT_ENTRY(6, Waiting),
+	DELETED_INT_ENTRY(6, 7, IRQActive, 1),
+	DELETED_INT_ENTRY(6, 7, Waiting, 1),
 	INT_ENTRY(6, WaitingForInterrupt),
-//	INT_ENTRY(6, WaitAddress),
-//	INT_ENTRY(6, WaitCounter),
-//	INT_ENTRY(6, PBPCAtOpcodeStart),
-//	INT_ENTRY(6, Executing),
+	DELETED_INT_ENTRY(6, 7, WaitAddress, 4),
+	DELETED_INT_ENTRY(6, 7, WaitCounter, 4),
+	DELETED_INT_ENTRY(6, 7, PBPCAtOpcodeStart, 4),
+	DELETED_INT_ENTRY(6, 7, Executing, 1),
 	INT_ENTRY(6, overflow),
 	INT_ENTRY(6, in_char_dma),
 	INT_ENTRY(6, op1),
@@ -667,7 +674,17 @@ static FreezeData	SnapSA1[] =
 	INT_ENTRY(6, arithmetic_op),
 	INT_ENTRY(6, sum),
 	INT_ENTRY(6, VirtualBitmapFormat),
-	INT_ENTRY(6, variable_bit_pos)
+	INT_ENTRY(6, variable_bit_pos),
+	INT_ENTRY(7, Cycles),
+	INT_ENTRY(7, PrevCycles),
+	INT_ENTRY(7, TimerIRQLastState),
+	INT_ENTRY(7, HTimerIRQPos),
+	INT_ENTRY(7, VTimerIRQPos),
+	INT_ENTRY(7, HCounter),
+	INT_ENTRY(7, VCounter),
+	INT_ENTRY(7, PrevHCounter),
+	INT_ENTRY(7, MemSpeed),
+	INT_ENTRY(7, MemSpeedx2)
 };
 
 #undef STRUCT
@@ -1685,6 +1702,40 @@ int S9xUnfreezeFromStream (STREAM stream)
 
 		if (local_bsx_data)
 			UnfreezeStructFromCopy(&BSX, SnapBSX, COUNT(SnapBSX), local_bsx_data, version);
+
+		if (version < SNAPSHOT_VERSION)
+		{
+			printf("Converting old snapshot version %d to %d\n...", version, SNAPSHOT_VERSION);
+
+			CPU.NMILine = (CPU.Flags & (1 <<  7)) ? TRUE : FALSE;
+			CPU.IRQLine = (CPU.Flags & (1 << 11)) ? TRUE : FALSE;
+			CPU.IRQTransition = FALSE;
+			CPU.IRQLastState = FALSE;
+			CPU.IRQExternal = (Obsolete.CPU_IRQActive & ~(1 << 1)) ? TRUE : FALSE;
+
+			switch (CPU.WhichEvent)
+			{
+				case 12:	case   1:	CPU.WhichEvent = 1; break;
+				case  2:	case   3:	CPU.WhichEvent = 2; break;
+				case  4:	case   5:	CPU.WhichEvent = 3; break;
+				case  6:	case   7:	CPU.WhichEvent = 4; break;
+				case  8:	case   9:	CPU.WhichEvent = 5; break;
+				case 10:	case  11:	CPU.WhichEvent = 6; break;
+			}
+
+			if (local_sa1) // FIXME
+			{
+				SA1.Cycles = SA1.PrevCycles = 0;
+				SA1.TimerIRQLastState = FALSE;
+				SA1.HTimerIRQPos = Memory.FillRAM[0x2212] | (Memory.FillRAM[0x2213] << 8);
+				SA1.VTimerIRQPos = Memory.FillRAM[0x2214] | (Memory.FillRAM[0x2215] << 8);
+				SA1.HCounter = 0;
+				SA1.VCounter = 0;
+				SA1.PrevHCounter = 0;
+				SA1.MemSpeed = SLOW_ONE_CYCLE;
+				SA1.MemSpeedx2 = SLOW_ONE_CYCLE * 2;
+			}
+		}
 
 		CPU.Flags |= old_flags & (DEBUG_MODE_FLAG | TRACE_FLAG | SINGLE_STEP_FLAG | FRAME_ADVANCE_FLAG);
 		ICPU.ShiftedPB = Registers.PB << 16;
