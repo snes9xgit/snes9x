@@ -200,9 +200,7 @@ Snes9xConfig::load_defaults (void)
     Settings.Stereo = TRUE;
     Settings.ReverseStereo = FALSE;
     Settings.SoundPlaybackRate = 32000;
-    Settings.DisableHDMA = 0;
     Settings.StopEmulation = TRUE;
-    Settings.DisableIRQ = FALSE;
     Settings.FrameTimeNTSC = 16667;
     Settings.FrameTimePAL = 20000;
     Settings.SupportHiRes = true;
@@ -363,7 +361,6 @@ Snes9xConfig::save_config_file (void)
     xml_out_int (xml, "stereo", Settings.Stereo);
     xml_out_int (xml, "reverse_stereo", Settings.ReverseStereo);
     xml_out_int (xml, "playback_rate", gui_config->sound_playback_rate);
-    xml_out_int (xml, "hdma", !(Settings.DisableHDMA));
     xml_out_int (xml, "block_invalid_vram_access", Settings.BlockInvalidVRAMAccessMaster);
     xml_out_int (xml, "upanddown", Settings.UpAndDown);
 
@@ -621,7 +618,7 @@ Snes9xConfig::set_option (const char *name, const char *value)
     }
     else if (!strcasecmp (name, "hdma"))
     {
-        Settings.DisableHDMA = !(atoi (value));
+        /* Deprecated */
     }
     else if (!strcasecmp (name, "speedhacks"))
     {
