@@ -450,7 +450,7 @@ struct SCustomKeys {
 	SCustomKey ClippingWindows;
 //	SCustomKey BGLHack;
 	SCustomKey Transparency;
-	SCustomKey HDMA;
+//	SCustomKey HDMA;
 	SCustomKey GLCube;
 //	SCustomKey InterpMode7;
 	SCustomKey JoypadSwap;

@@ -528,7 +528,6 @@ struct SCustomKeys CustomKeys = {
 	{'8',0}, // Clipping Windows
 //	{'8',0}, // BG Layering hack
 	{'9',0}, // Transparency
-	{'0',0}, // HDMA Emulation
 	{'6',CUSTKEY_SHIFT_MASK}, // GLCube Mode
 //	{'9',CUSTKEY_SHIFT_MASK}, // Interpolate Mode 7
 	{'6',0}, // Joypad Swap
@@ -1154,12 +1153,6 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 			sprintf (InfoString, "Speed: %.0f%% (%.1f ms/frame)", ((Settings.PAL?Settings.FrameTimePAL:Settings.FrameTimeNTSC) * 100.0f) / (float)Settings.FrameTime, Settings.FrameTime*0.001f);
 			S9xSetInfoString (InfoString);
 			hitHotKey = true;
-		}
-		if(wParam == CustomKeys.HDMA.key
-		&& modifiers == CustomKeys.HDMA.modifiers)
-		{
-			Settings.DisableHDMA = !Settings.DisableHDMA;
-			S9xDisplayStateChange (WINPROC_HDMA_TEXT, !Settings.DisableHDMA);
 		}
 		if(wParam == CustomKeys.BGL1.key
 		&& modifiers == CustomKeys.BGL1.modifiers)
@@ -7615,7 +7608,7 @@ static void set_hotkeyinfo(HWND hDlg)
 		SendDlgItemMessage(hDlg,IDC_HOTKEY5,WM_USER+44,CustomKeys.BGL5.key,CustomKeys.BGL5.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY6,WM_USER+44,CustomKeys.ClippingWindows.key,CustomKeys.ClippingWindows.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY7,WM_USER+44,CustomKeys.Transparency.key,CustomKeys.Transparency.modifiers);
-		SendDlgItemMessage(hDlg,IDC_HOTKEY8,WM_USER+44,CustomKeys.HDMA.key,CustomKeys.HDMA.modifiers);
+//		SendDlgItemMessage(hDlg,IDC_HOTKEY8,WM_USER+44,CustomKeys.HDMA.key,CustomKeys.HDMA.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY9,WM_USER+44,CustomKeys.GLCube.key,CustomKeys.GLCube.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY10,WM_USER+44,CustomKeys.SwitchControllers.key,CustomKeys.SwitchControllers.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY11,WM_USER+44,CustomKeys.JoypadSwap.key,CustomKeys.JoypadSwap.modifiers);
@@ -7842,7 +7835,7 @@ switch(msg)
 			break;
 		case IDC_HOTKEY8:
 			if(index == 0) CustomKeys.ScopeTurbo.key = wParam,  CustomKeys.ScopeTurbo.modifiers = modifiers;
-			if(index == 1) CustomKeys.HDMA.key = wParam,       CustomKeys.HDMA.modifiers = modifiers;
+//			if(index == 1) CustomKeys.HDMA.key = wParam,       CustomKeys.HDMA.modifiers = modifiers;
 			if(index == 2) CustomKeys.TurboSelect.key = wParam,    CustomKeys.TurboSelect.modifiers = modifiers;
 			if(index == 3) CustomKeys.SelectSave[7].key = wParam,	CustomKeys.SelectSave[7].modifiers = modifiers;
 			break;

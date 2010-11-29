@@ -301,7 +301,6 @@ void WinSetDefaultValues ()
 
 	// CPU options
 	Settings.HDMATimingHack = 100;
-	Settings.DisableIRQ	= false;
 	Settings.Paused	= false;
 	Timings.H_Max =	SNES_CYCLES_PER_SCANLINE;
 	Timings.HBlankStart	= (256 * Timings.H_Max)	/ SNES_HCOUNTER_MAX;
@@ -315,7 +314,6 @@ void WinSetDefaultValues ()
 
 	// SNES	graphics options
 	Settings.DisableGraphicWindows = false;
-	Settings.DisableHDMA = false;
 	GUI.HeightExtend = false;
 	Settings.DisplayFrameRate =	false;
 //	Settings.SixteenBit =	true;
@@ -1104,7 +1102,7 @@ void WinRegisterConfigItems()
 	ADDN(SelectSave[0],SelectSlot0); ADDN(SelectSave[1],SelectSlot1); ADDN(SelectSave[2],SelectSlot2); ADDN(SelectSave[3],SelectSlot3); ADDN(SelectSave[4],SelectSlot4); ADDN(SelectSave[5],SelectSlot5); ADDN(SelectSave[6],SelectSlot6); ADDN(SelectSave[7],SelectSlot7); ADDN(SelectSave[8],SelectSlot8); ADDN(SelectSave[9],SelectSlot9);
 	ADD(SaveScreenShot); ADD(SlotPlus); ADD(SlotMinus); ADD(SlotSave); ADD(SlotLoad);
 	ADD(BGL1); ADD(BGL2); ADD(BGL3); ADD(BGL4); ADD(BGL5);
-	ADD(ClippingWindows); /*ADD(BGLHack);*/ ADD(Transparency); ADD(HDMA); ADD(GLCube);
+	ADD(ClippingWindows); /*ADD(BGLHack);*/ ADD(Transparency); /*ADD(HDMA)*/; ADD(GLCube);
 	/*ADD(InterpMode7);*/ ADD(JoypadSwap); ADD(SwitchControllers); ADD(ResetGame); ADD(ToggleCheats);
 	ADD(TurboA); ADD(TurboB); ADD(TurboY); ADD(TurboX); ADD(TurboL); ADD(TurboR); ADD(TurboStart); ADD(TurboSelect); ADD(TurboUp); ADD(TurboDown); ADD(TurboLeft); ADD(TurboRight);
 #undef ADD
