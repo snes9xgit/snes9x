@@ -748,7 +748,8 @@ void CDirectDraw::Render(SSurface Src)
 
 bool CDirectDraw::ApplyDisplayChanges(void)
 {
-	return true;
+	return SetDisplayMode (GUI.FullscreenMode.width, GUI.FullscreenMode.height, max(GetFilterScale(GUI.Scale), GetFilterScale(GUI.ScaleHiRes)), GUI.FullscreenMode.depth, GUI.FullscreenMode.rate,
+		TRUE, GUI.DoubleBuffered);
 }
 
 bool CDirectDraw::ChangeRenderSize(unsigned int newWidth, unsigned int newHeight)
