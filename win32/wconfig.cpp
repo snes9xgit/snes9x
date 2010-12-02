@@ -223,8 +223,8 @@ void S9xParseArg (char **argv, int &i, int argc)
 	}
 }
 
-extern char multiRomA [MAX_PATH]; // lazy, should put in sGUI and add init to {0} somewhere
-extern char multiRomB [MAX_PATH];
+extern TCHAR multiRomA [MAX_PATH]; // lazy, should put in sGUI and add init to {0} somewhere
+extern TCHAR multiRomB [MAX_PATH];
 
 void WinSetDefaultValues ()
 {
@@ -237,54 +237,19 @@ void WinSetDefaultValues ()
 	GUI.ValidControllerOptions = 0xFFFF;
 	GUI.IgnoreNextMouseMove	= false;
 
-	GUI.HideMenu = false;
-	GUI.window_size.left = 0;
-	GUI.window_size.right =	524;
-	GUI.window_size.top	= 0;
-	GUI.window_size.bottom = 524;
-	GUI.FullscreenMode.width =	640;
-	GUI.FullscreenMode.height = 480;
-	GUI.FullscreenMode.depth =	16;
-	GUI.Scale =	FILTER_NONE;
-	GUI.NextScale =	FILTER_NONE;
-	GUI.ScaleHiRes =	FILTER_NONE;
-	GUI.NextScaleHiRes =	FILTER_NONE;
 	GUI.DoubleBuffered = false;
 	GUI.FullScreen = false;
 	GUI.Stretch	= false;
 	GUI.FlipCounter	= 0;
 	GUI.NumFlipFrames =	1;
 	GUI.BilinearFilter	= false;
-	GUI.ScreenCleared =	true;
 	GUI.LockDirectories = false;
 	GUI.window_maximized = false;
+	GUI.EmulatedFullscreen = false;
 
 	WinDeleteRecentGamesList ();
 
-	// ROM Options
-	memset (&Settings, 0, sizeof (Settings));
-
-	Settings.ForceLoROM	= false;
-	Settings.ForceInterleaved =	false;
-
-	Settings.ForceNotInterleaved = false;
-	Settings.ForceInterleaved =	false;
-	Settings.ForceInterleaved2 = false;
-
-	Settings.ForcePAL =	false;
-	Settings.ForceNTSC = false;
-	Settings.ForceHeader = false;
-	Settings.ForceNoHeader = false;
-
-	// Sound options
-	Settings.SoundSync = FALSE;
-	Settings.Mute =	FALSE;
-	Settings.SoundPlaybackRate = 32000;
-	Settings.SixteenBitSound = TRUE;
-	Settings.Stereo	= TRUE;
-	Settings.ReverseStereo = FALSE;
 	GUI.SoundChannelEnable=255;
-	GUI.FAMute	= FALSE;
 
 	// Tracing options
 	Settings.TraceDMA =	false;
@@ -300,40 +265,13 @@ void WinSetDefaultValues ()
 	Settings.FrameTime = 16667;
 
 	// CPU options
-	Settings.HDMATimingHack = 100;
-	Settings.Shutdown =	false;
-	Settings.ShutdownMaster	= false;
-	Settings.DisableIRQ	= false;
 	Settings.Paused	= false;
-	Timings.H_Max =	SNES_CYCLES_PER_SCANLINE;
-	Timings.HBlankStart	= (256 * Timings.H_Max)	/ SNES_HCOUNTER_MAX;
-	Settings.SkipFrames	= AUTO_FRAMERATE;
 
 	// ROM image and peripheral	options
 	Settings.MultiPlayer5Master	= false;
 	Settings.SuperScopeMaster =	false;
 	Settings.MouseMaster = false;
-	Settings.SuperFX = false;
-
-	// SNES	graphics options
-	Settings.DisableGraphicWindows = false;
-	Settings.DisableHDMA = false;
-	GUI.HeightExtend = false;
-	Settings.DisplayFrameRate =	false;
-//	Settings.SixteenBit =	true;
-	Settings.Transparency =	true;
-	Settings.SupportHiRes =	true;
-	Settings.AutoDisplayMessages = false; // this port supports	text display on	post-rendered surface
-
-	Settings.DisplayPressedKeys	= 0;
-	GUI.CurrentSaveSlot = 0;
-	Settings.AutoSaveDelay = 15;
-	Settings.ApplyCheats = true;
-
-	Settings.TurboMode = false;
-	Settings.TurboSkipFrames = 15;
-	GUI.TurboModeToggle	= true;
-	Settings.AutoMaxSkipFrames = 1;
+	//Settings.SuperFX = false;
 
 #ifdef NETPLAY_SUPPORT
 	Settings.Port =	1996;
@@ -343,11 +281,7 @@ void WinSetDefaultValues ()
 	NPServer.SendROMImageOnConnect = false;
 #endif
 
-	GUI.FreezeFileDir [0] =	0;
 	Settings.TakeScreenshot=false;
-	Settings.StretchScreenshots=1;
-
-	GUI.EmulatedFullscreen = false;
 
 	GUI.Language=0;
 }
@@ -368,7 +302,7 @@ static char rom_filename [MAX_PATH] = {0,};
 
 static bool S9xSaveConfigFile(ConfigFile &conf){
 
-	configMutex = CreateMutex(NULL, FALSE, "Snes9xConfigMutex");
+	configMutex = CreateMutex(NULL, FALSE, TEXT("Snes9xConfigMutex"));
 	int times = 0;
 	DWORD waitVal = WAIT_TIMEOUT;
 	while(waitVal == WAIT_TIMEOUT && ++times <= 150) // wait at most 15 seconds
@@ -382,7 +316,7 @@ static bool S9xSaveConfigFile(ConfigFile &conf){
 	// ensure previous config file is not lost if we crash while writing the new one
 	std::string	ftemp;
 	{
-		CopyFile(fname.c_str(), (fname + ".autobak").c_str(), FALSE);
+		CopyFileA(fname.c_str(), (fname + ".autobak").c_str(), FALSE);
 
 		ftemp=S9xGetDirectory(DEFAULT_DIR);
 		ftemp+=SLASH_STR "config_error";
@@ -425,7 +359,7 @@ const char*	WinParseCommandLineAndLoadConfigFile (char *line)
 	static char	*parameters	[MAX_PARAMETERS];
 	int	count =	0;
 
-	parameters [count++] = "Snes9XW";
+	parameters [count++] = "Snes9X";
 
 	while (count < MAX_PARAMETERS && *p)
 	{
@@ -458,7 +392,7 @@ const char*	WinParseCommandLineAndLoadConfigFile (char *line)
 			}
 	}
 
-	configMutex = CreateMutex(NULL, FALSE, "Snes9xConfigMutex");
+	configMutex = CreateMutex(NULL, FALSE, TEXT("Snes9xConfigMutex"));
 	int times = 0;
 	DWORD waitVal = WAIT_TIMEOUT;
 	while(waitVal == WAIT_TIMEOUT && ++times <= 150) // wait at most 15 seconds
@@ -485,7 +419,7 @@ const char*	WinParseCommandLineAndLoadConfigFile (char *line)
 				if(tempfile)
 				{
 					fclose(tempfile);
-					MoveFileEx((fname + ".autobak").c_str(), fname.c_str(), MOVEFILE_REPLACE_EXISTING|MOVEFILE_WRITE_THROUGH);
+					MoveFileExA((fname + ".autobak").c_str(), fname.c_str(), MOVEFILE_REPLACE_EXISTING|MOVEFILE_WRITE_THROUGH);
 				}
 			}
 		  remove(ftemp.c_str());
@@ -612,8 +546,8 @@ struct ConfigItem
 				if(size	== 8) *(uint64*)addr = (uint64)conf.GetUInt(name, reinterpret_cast<uint32>(def));
 				break;
 			case CIT_STRING:
-				strncpy((char*)addr, conf.GetString(name, reinterpret_cast<const char*>(def)), size-1);
-				((char*)addr)[size-1] = '\0';
+				lstrcpyn((TCHAR*)addr, _tFromChar(conf.GetString(name, reinterpret_cast<const char*>(def))), size-1);
+				((TCHAR*)addr)[size-1] = TEXT('\0');
 				break;
 			case CIT_INVBOOL:
 			case CIT_INVBOOLONOFF:
@@ -718,8 +652,8 @@ struct ConfigItem
 				if(size	== 8) conf.SetUInt(name, (uint32)(*(uint64*)addr), 10, comment);
 				break;
 			case CIT_STRING:
-				if((char*)addr)
-					conf.SetString(name, (char*)addr, comment);
+				if((TCHAR*)addr)
+					conf.SetString(name, std::string(_tToChar((TCHAR*)addr)), comment);
 				break;
 			case CIT_INVBOOL:
 				if(size	== 1) conf.SetBool(name, 0==(*(uint8 *)addr), "TRUE","FALSE", comment);
@@ -772,7 +706,7 @@ struct ConfigItem
 
 std::vector<ConfigItem> configItems;
 // var must be a persistent variable. In the case of strings, it must point to a writeable character array.
-#define AddItemC(name, var, def, comment, type) configItems.push_back(ConfigItem((const char*)(CATEGORY "::" name), (void*)(pint)(&var), sizeof(var), (void*)(pint)def, (const char*)comment, (ConfigItemType)type))
+#define AddItemC(name, var, def, comment, type) configItems.push_back(ConfigItem((const char*)(CATEGORY "::" name), (void*)(&var), sizeof(var), (void*)(pint)def, (const char*)comment, (ConfigItemType)type))
 #define AddItem(name, var, def, type) AddItemC(name,var,def,"",type)
 #define AddUInt(name, var, def) AddItem(name,var,def,CIT_UINT)
 #define AddInt(name, var, def) AddItem(name,var,def,CIT_INT)
@@ -788,7 +722,7 @@ std::vector<ConfigItem> configItems;
 #define AddBool2C(name, var, def, comment) AddItemC(name,var,def,comment,CIT_BOOLONOFF)
 #define AddInvBoolC(name, var, def, comment) AddItemC(name,var,def,comment,CIT_INVBOOL)
 #define AddInvBool2C(name, var, def, comment) AddItemC(name,var,def,comment,CIT_INVBOOLONOFF)
-#define AddStringC(name, var, buflen, def, comment) configItems.push_back(ConfigItem((const char*)(CATEGORY "::" name), (void*)(pint)var, buflen, (void*)(pint)def, (const char*)comment, CIT_STRING))
+#define AddStringC(name, var, buflen, def, comment) configItems.push_back(ConfigItem((const char*)(CATEGORY "::" name), (void*)var, buflen, (void*)(pint)def, (const char*)comment, CIT_STRING))
 #define AddString(name, var, buflen, def) AddStringC(name, var, buflen, def, "")
 
 static char filterString [1024], filterString2 [1024], snapVerString [256];
@@ -891,7 +825,6 @@ void WinPostSave(ConfigFile& conf)
 void WinPostLoad(ConfigFile& conf)
 {
 	int i;
-	GUI.NextScale =	GUI.Scale;
 	if(Settings.DisplayPressedKeys) Settings.DisplayPressedKeys = 2;
 	for(i=0;i<8;i++) Joypad[i+8].Enabled = Joypad[i].Enabled;
 	if(GUI.MaxRecentGames < 1) GUI.MaxRecentGames = 1;
@@ -903,8 +836,8 @@ void WinPostLoad(ConfigFile& conf)
 			gap = true;
 		else if(gap)
 		{
-			memmove(GUI.RecentGames[i-1], GUI.RecentGames[i], MAX_PATH);
-			*GUI.RecentGames[i] = '\0';
+			memmove(GUI.RecentGames[i-1], GUI.RecentGames[i], MAX_PATH * sizeof(TCHAR));
+			*GUI.RecentGames[i] = TEXT('\0');
 			gap = false;
 			i = -1;
 		}
@@ -964,7 +897,11 @@ void WinRegisterConfigItems()
 	AddUIntC("OutputMethod", GUI.outputMethod, 1, "0=DirectDraw, 1=Direct3D");
 	AddUIntC("FilterType", GUI.Scale, 0, filterString);
 	AddUIntC("FilterHiRes", GUI.ScaleHiRes, 0, filterString2);
+	AddBoolC("ShaderEnabled", GUI.shaderEnabled, false, "true to use pixel shader (if supported by output method)");
+	AddStringC("Direct3D:HLSLFileName", GUI.HLSLshaderFileName, MAX_PATH, "", "shader filename for Direct3D mode");
+	AddStringC("OpenGL:GLSLFileName", GUI.GLSLshaderFileName, MAX_PATH, "", "shader filename for OpenGL mode (bsnes-style XML shader)");
 	AddBoolC("ExtendHeight", GUI.HeightExtend, false, "true to display an extra 15 pixels at the bottom, which few games use. Also increases AVI output size from 256x224 to 256x240.");
+	AddBoolC("AlwaysCenterImage", GUI.AlwaysCenterImage,false, "true to center the image even if larger than window");
 	AddIntC("Window:Width", GUI.window_size.right, 512, "256=1x, 512=2x, 768=3x, 1024=4x, etc. (usually)");
 	AddIntC("Window:Height", GUI.window_size.bottom, 448, "224=1x, 448=2x, 672=3x,  896=4x, etc. (usually)");
 	AddIntC("Window:Left", GUI.window_size.left, 0, "in pixels from left edge of screen");
@@ -974,7 +911,7 @@ void WinRegisterConfigItems()
 	AddBoolC("Stretch:MaintainAspectRatio", GUI.AspectRatio, true, "prevents stretching from changing the aspect ratio");
 	AddUIntC("Stretch:AspectRatioBaseWidth", GUI.AspectWidth, 256, "base width for aspect ratio calculation (AR=AspectRatioBaseWidth/224), default is 256 - set to 299 for 4:3 aspect ratio");
 	AddBoolC("Stretch:BilinearFilter", GUI.BilinearFilter, true, "allows bilinear filtering of stretching. Depending on your video card and the window size, this may result in a lower framerate.");
-	AddBoolC("Stretch:LocalVidMem", GUI.LocalVidMem, true, "determines the location of video memory, if UseVideoMemory = true. May increase or decrease rendering performance, depending on your setup and which filter and stretching options are active.");
+	AddBoolC("Stretch:LocalVidMem", GUI.LocalVidMem, true, "determines the location of video memory in DirectDraw mode. May increase or decrease rendering performance, depending on your setup and which filter and stretching options are active.");
 	AddBool("Fullscreen:Enabled", GUI.FullScreen, false);
 	AddUInt("Fullscreen:Width", GUI.FullscreenMode.width, 640);
 	AddUInt("Fullscreen:Height", GUI.FullscreenMode.height, 480);
@@ -983,11 +920,11 @@ void WinRegisterConfigItems()
 	AddBool("Fullscreen:DoubleBuffered", GUI.DoubleBuffered, false);
 	AddBoolC("Fullscreen:EmulateFullscreen", GUI.EmulateFullscreen, true,"true makes snes9x create a window that spans the entire screen when going fullscreen");
 	AddBoolC("HideMenu", GUI.HideMenu, false, "true to auto-hide the menu bar on startup.");
-	AddBoolC("Vsync", GUI.Vsync, false, "true to enable Vsync, only available with Direct3D");
+	AddBoolC("Vsync", GUI.Vsync, false, "true to enable Vsync");
 #undef CATEGORY
 #define CATEGORY "Settings"
-	AddUIntC("FrameSkip", Settings.SkipFrames, AUTO_FRAMERATE, "200=automatic, 0=none, 1=skip every other, ...");
-	AddUIntC("AutoMaxSkipFramesAtOnce", Settings.AutoMaxSkipFrames, 0, "most frames to skip at once to maintain speed, don't set to more than 1 or 2 frames because the skipping algorithm isn't very smart");
+	AddUIntC("FrameSkip", Settings.SkipFrames, AUTO_FRAMERATE, "200=automatic (limits at 50/60 fps), 0=none, 1=skip every other, ...");
+	AddUIntC("AutoMaxSkipFramesAtOnce", Settings.AutoMaxSkipFrames, 0, "most frames to skip at once to maintain speed in automatic mode, don't set to more than 1 or 2 frames because the skipping algorithm isn't very smart");
 	AddUIntC("TurboFrameSkip", Settings.TurboSkipFrames, 15, "how many frames to skip when in fast-forward mode");
 	AddUInt("AutoSaveDelay", Settings.AutoSaveDelay, 30);
 	AddBool2C("SpeedHacks", Settings.ShutdownMaster, false, "on to skip emulating the CPU when it is not being used ... recommended OFF");
@@ -1028,29 +965,21 @@ void WinRegisterConfigItems()
 		ADD(25); ADD(26); ADD(27); ADD(28); ADD(29); ADD(30); ADD(31); ADD(32);
 		assert(MAX_RECENT_GAMES_LIST_SIZE == 32);
 	#undef ADD
-	AddString("Pack:StarOcean", GUI.StarOceanPack, _MAX_PATH, "");
-	AddString("Pack:FarEast", GUI.FEOEZPack, _MAX_PATH, "");
-	AddString("Pack:SFA2NTSC", GUI.SFA2NTSCPack, _MAX_PATH, "");
-	AddString("Pack:SFA2PAL", GUI.SFA2PALPack, _MAX_PATH, "");
-	AddString("Pack:Momotarou", GUI.MDHPack, _MAX_PATH, "");
-	AddString("Pack:SFZ2", GUI.SFZ2Pack, _MAX_PATH, "");
-	AddString("Pack:ShounenJump", GUI.SJNSPack, _MAX_PATH, "");
-	AddString("Pack:SPL4", GUI.SPL4Pack, _MAX_PATH, "");
 	AddString("Rom:MultiCartA", multiRomA, _MAX_PATH, "");
 	AddString("Rom:MultiCartB", multiRomB, _MAX_PATH, "");
 #undef CATEGORY
 #define	CATEGORY "Sound"
-	AddIntC("Sync", Settings.SoundSync, 1, "1 to enable sound sync to CPU, 0 to disable. Necessary for some sounds to be accurate. Not supported unless SoundDriver=0. May cause sound problems on certain setups.");
+	AddIntC("Sync", Settings.SoundSync, 1, "1 to sync emulation to sound output, 0 to disable.");
 	AddBool2("Stereo", Settings.Stereo, true);
 	AddBool("SixteenBitSound", Settings.SixteenBitSound, true);
-	AddUIntC("Rate", Settings.SoundPlaybackRate, 32000, "sound playback quality, in Hz: 1=8000, 2=11025, 3=16000, 4=22050, 5=30000, 6=32000, 7=35000, 8=44100, 9=48000");
-	AddUIntC("InputRate", Settings.SoundInputRate, 31900, "");
+	AddUIntC("Rate", Settings.SoundPlaybackRate, 32000, "sound playback quality, in Hz");
+	AddUIntC("InputRate", Settings.SoundInputRate, 31900, "for each 'Input rate' samples generated by the SNES, 'Playback rate' samples will produced. If you experience crackling you can try to lower this setting.");
 	AddBoolC("ReverseStereo", Settings.ReverseStereo, false, "true to swap speaker outputs");
 	AddBoolC("Mute", GUI.Mute, false, "true to mute sound output (does not disable the sound CPU)");
 #undef CATEGORY
 #define	CATEGORY "Sound\\Win"
-	AddUIntC("SoundDriver", GUI.SoundDriver, 4, "0=Snes9xDirectSound (recommended), 1=fmodDirectSound, 2=fmodWaveSound, 3=fmodA3DSound, 4=XAudio2");
-	AddUIntC("BufferSize", GUI.SoundBufferSize, 64, "sound buffer size - the mixing interval is multiplied by this (and an additional *4 in case of DirectSound) ");
+	AddUIntC("SoundDriver", GUI.SoundDriver, 4, "0=Snes9xDirectSound, 4=XAudio2 (recommended), 5=FMOD Default, 6=FMOD ASIO, 7=FMOD OpenAL");
+	AddUIntC("BufferSize", GUI.SoundBufferSize, 64, "sound buffer size in ms - determines the internal and output sound buffer sizes. actual mixing is done every SoundBufferSize/4 samples");
 	AddBoolC("MuteFrameAdvance", GUI.FAMute, false, "true to prevent Snes9x from outputting sound when the Frame Advance command is in use");
 #undef CATEGORY
 #define	CATEGORY "Controls"
@@ -1058,7 +987,7 @@ void WinRegisterConfigItems()
 #undef CATEGORY
 #define	CATEGORY "ROM"
 	AddBoolC("Cheat", Settings.ApplyCheats, true, "true to allow enabled cheats to be applied");
-	AddInvBoolC("Patch", Settings.NoPatch, true, "true to allow IPS patches to be applied (\"soft patching\")");
+	AddInvBoolC("Patch", Settings.NoPatch, true, "true to allow IPS/UPS patches to be applied (\"soft patching\")");
 	AddBoolC("BS", Settings.BS, false, "Broadcast Satellaview emulation");
 	AddStringC("Filename", rom_filename, MAX_PATH, "", "filename of ROM to run when Snes9x opens");
 #undef CATEGORY
@@ -1141,13 +1070,13 @@ void WinLockConfigFile ()
 	STREAM fp;
 	if((fp=OPEN_STREAM(fname.c_str(), "r"))!=NULL){
 		CLOSE_STREAM(fp);
-		locked_file=CreateFile(fname.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+		locked_file=CreateFileA(fname.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
 	} else {
 		fname=S9xGetDirectory(DEFAULT_DIR);
 		fname+=SLASH_STR "snes9x.cfg";
 		if((fp=OPEN_STREAM(fname.c_str(), "r"))!=NULL){
 			CLOSE_STREAM(fp);
-			locked_file=CreateFile(fname.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+			locked_file=CreateFileA(fname.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
 		}
 	}
 }

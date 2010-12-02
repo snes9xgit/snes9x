@@ -182,15 +182,23 @@
 #include "render.h"
 #include <vector>
 
+#define IsHiRes(x) ((x.Height > SNES_HEIGHT_EXTENDED || x.Width == 512))
+#define RenderMethod (IsHiRes(Src) ? RenderMethodHiRes : RenderMethod)
+#define CurrentScale (IsHiRes(Src) ? GUI.ScaleHiRes : GUI.Scale)
+
 void WinRefreshDisplay(void);
 void S9xSetWinPixelFormat ();
 void SwitchToGDI();
+void SaveMainWinPos();
+void RestoreMainWinPos();
 void ToggleFullScreen ();
 void RestoreGUIDisplay ();
 void RestoreSNESDisplay ();
 void WinChangeWindowSize(unsigned int newWidth, unsigned int newHeight);
 bool WinDisplayReset(void);
 void WinDisplayApplyChanges();
+RECT CalculateDisplayRect(unsigned int sourceWidth,unsigned int sourceHeight,
+						  unsigned int displayWidth,unsigned int displayHeight);
 void WinEnumDisplayModes(std::vector<dMode> *modeVector);
 void ConvertDepth (SSurface *src, SSurface *dst, RECT *srect);
 void WinDisplayStringFromBottom (const char *string, int linesFromBottom, int pixelsFromLeft, bool allowWrap);

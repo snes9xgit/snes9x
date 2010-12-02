@@ -284,31 +284,19 @@ const char *S9xGetFilename (const char *ex, enum s9x_getdirtype dirtype)
     return (filename);
 }
 
-const void S9xGetLastDirectory (char* buffer, int buf_len)
-{
-	if(buf_len <= 0)
-		return;
-
-	GetCurrentDirectory(buf_len, buffer);
-}
-
-#define IS_SLASH(x) ((x) == '\\' || (x) == '/')
-static char startDirectory [PATH_MAX];
+#define IS_SLASH(x) ((x) == TEXT('\\') || (x) == TEXT('/'))
+static TCHAR startDirectory [PATH_MAX];
 static bool startDirectoryValid = false;
 
-const char *S9xGetDirectory (enum s9x_getdirtype dirtype)
+const TCHAR *S9xGetDirectoryT (enum s9x_getdirtype dirtype)
 {
-//	_fullpath
 	if(!startDirectoryValid)
 	{
-		// directory from which the executable was launched
-//		GetCurrentDirectory(PATH_MAX, startDirectory);
-
 		// directory of the executable's location:
 		GetModuleFileName(NULL, startDirectory, PATH_MAX);
-        for(int i=strlen(startDirectory); i>=0; i--){
+        for(int i=lstrlen(startDirectory); i>=0; i--){
             if(IS_SLASH(startDirectory[i])){
-                startDirectory[i]='\0';
+                startDirectory[i]=TEXT('\0');
                 break;
             }
         }
@@ -318,7 +306,7 @@ const char *S9xGetDirectory (enum s9x_getdirtype dirtype)
 
 	SetCurrentDirectory(startDirectory); // makes sure relative paths are relative to the application's location
 
-	const char* rv = startDirectory;
+	const TCHAR* rv = startDirectory;
 
     switch(dirtype){
 	  default:
@@ -356,13 +344,13 @@ const char *S9xGetDirectory (enum s9x_getdirtype dirtype)
 		  break;
 
 	  case ROMFILENAME_DIR: {
-			static char filename [PATH_MAX];
-			strcpy(filename, Memory.ROMFilename);
+			static TCHAR filename [PATH_MAX];
+			lstrcpy(filename, _tFromChar(Memory.ROMFilename));
 			if(!filename[0])
 				rv = GUI.RomDir;
-			for(int i=strlen(filename); i>=0; i--){
+			for(int i=lstrlen(filename); i>=0; i--){
 				if(IS_SLASH(filename[i])){
-					filename[i]='\0';
+					filename[i]=TEXT('\0');
 					break;
 				}
 			}
@@ -371,35 +359,18 @@ const char *S9xGetDirectory (enum s9x_getdirtype dirtype)
 		break;
     }
 
-	mkdir(rv);
+	_tmkdir(rv);
 
 	return rv;
 }
 
-///*extern "C"*/ const char *S9xGetFilename (const char *e)
-//{
-//    static char filename [_MAX_PATH + 1];
-//    char drive [_MAX_DRIVE + 1];
-//    char dir [_MAX_DIR + 1];
-//    char fname [_MAX_FNAME + 1];
-//    char ext [_MAX_EXT + 1];
-//
-//    if (strlen (GUI.FreezeFileDir))
-//    {
-//        _splitpath (Memory.ROMFilename, drive, dir, fname, ext);
-//        strcpy (filename, GUI.FreezeFileDir);
-//        strcat (filename, TEXT("\\"));
-//        strcat (filename, fname);
-//        strcat (filename, e);
-//    }
-//    else
-//    {
-//        _splitpath (Memory.ROMFilename, drive, dir, fname, ext);
-//        _makepath (filename, drive, dir, fname, e);
-//    }
-//
-//    return (filename);
-//}
+const char *S9xGetDirectory (enum s9x_getdirtype dirtype)
+{
+	static char path[PATH_MAX]={0};
+	strncpy(path,_tToChar(S9xGetDirectoryT(dirtype)),PATH_MAX-1);
+
+	return path;
+}
 
 const char *S9xGetFilenameInc (const char *e, enum s9x_getdirtype dirtype)
 {
@@ -488,41 +459,23 @@ void S9xMessage (int type, int, const char *str)
 		case S9X_WARNING:
 			fprintf(stdout, "%s\n", str);
 			if(Settings.StopEmulation)
-				MessageBox(GUI.hWnd, str, "Warning",     MB_OK | MB_ICONWARNING);
+				MessageBoxA(GUI.hWnd, str, "Warning",     MB_OK | MB_ICONWARNING);
 			break;
 		case S9X_ERROR:
 			fprintf(stderr, "%s\n", str);
 			if(Settings.StopEmulation)
-				MessageBox(GUI.hWnd, str, "Error",       MB_OK | MB_ICONERROR);
+				MessageBoxA(GUI.hWnd, str, "Error",       MB_OK | MB_ICONERROR);
 			break;
 		case S9X_FATAL_ERROR:
 			fprintf(stderr, "%s\n", str);
 			if(Settings.StopEmulation)
-				MessageBox(GUI.hWnd, str, "Fatal Error", MB_OK | MB_ICONERROR);
+				MessageBoxA(GUI.hWnd, str, "Fatal Error", MB_OK | MB_ICONERROR);
 			break;
 		default:
 				fprintf(stdout, "%s\n", str);
 			break;
 	}
 }
-
-/*unsigned long _interval = 10;
-long _buffernos = 4;
-long _blocksize = 4400;
-long _samplecount = 440;
-long _maxsamplecount = 0;
-long _buffersize = 0;
-
-bool StartPlaying = false;
-DWORD _lastblock = 0;
-bool8 pending_setup = false;
-long pending_rate = 0;
-bool8 pending_16bit = false;
-bool8 pending_stereo = false;*/
-extern uint8 *syncSoundBuffer;
-
-//static bool8 block_signal = FALSE;
-//static volatile bool8 pending_signal = FALSE;
 
 extern unsigned long START;
 
@@ -644,7 +597,7 @@ void S9xSyncSpeed( void)
 		SkipFrames = Settings.TurboSkipFrames;
 	else
 		SkipFrames = (Settings.SkipFrames == AUTO_FRAMERATE) ? 0 : Settings.SkipFrames;
-	if (++IPPU.FrameSkip >= SkipFrames)
+	if (IPPU.FrameSkip++ >= SkipFrames)
 	{
 	    IPPU.FrameSkip = 0;
 	    IPPU.SkippedFrames = 0;
@@ -665,7 +618,7 @@ const char *S9xBasename (const char *f)
 	return (p + 1);
 
 #ifdef __DJGPP
-    if (p = strrchr (f, SLASH_CHAR))
+    if (p = _tcsrchr (f, SLASH_CHAR))
 	return (p + 1);
 #endif
 
@@ -1004,8 +957,8 @@ void InitSnes9X( void)
 //    extern FILE *trace;
 
 //    trace = fopen( "SNES9X.TRC", "wt");
-    freopen( "SNES9X.OUT", "wt", stdout);
-    freopen( "SNES9X.ERR", "wt", stderr);
+//    freopen( "SNES9X.OUT", "wt", stdout);
+//    freopen( "SNES9X.ERR", "wt", stderr);
 
 //    CPU.Flags |= TRACE_FLAG;
 //    APU.Flags |= TRACE_FLAG;
@@ -1035,7 +988,7 @@ void InitSnes9X( void)
     S9xGraphicsInit();
 
 	InitializeCriticalSection(&GUI.SoundCritSect);
-	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
 
     S9xInitAPU();
 	
@@ -1163,84 +1116,7 @@ bool JustifierOffscreen()
 //	}
 //}
 
-#ifdef MK_APU_RESAMPLE
-void ResampleTo16000HzM16(uint16* input, uint16*output,int output_samples)
-{
-	int i=0;
-	for(i=0;i<output_samples;i++)
-	{
-		output[i]=(input[i*2]+input[(2*i)+1])>>1;
-	}
-}
-
-void ResampleTo16000HzS16(uint16* input, uint16*output,int output_samples)
-{
-	int i=0;
-	for(i=0;i<output_samples;i+=2)
-	{
-		output[i]=(input[i*2]+input[(2*(i+1))])>>1;
-		output[i+1]=(input[(i*2)+1]+input[(2*(i+1))+1])>>1;
-	}
-}
-void ResampleTo8000HzM16(uint16* input, uint16*output,int output_samples)
-{
-	int i=0;
-	for(i=0;i<output_samples;i++)
-	{
-		output[i]=(input[i*4]+input[(4*i)+1]+input[(4*i)+2]+input[(4*i)+3])>>2;
-	}
-}
-
-void ResampleTo8000HzS16(uint16* input, uint16*output,int output_samples)
-{
-	int i=0;
-	for(i=0;i<output_samples;i+=2)
-	{
-		output[i]=(input[i*4]+input[(4*i)+2]+input[(4*(i+1))]+input[(4*(i+1))+2])>>2;
-		output[i+1]=(input[(i*4)+1]+input[(4*i)+3]+input[(4*(i+1))+1]+input[(4*(i+1))+3])>>2;
-	}
-}
-
-void ResampleTo16000HzM8(uint8* input, uint8*output,int output_samples)
-{
-	int i=0;
-	for(i=0;i<output_samples;i++)
-	{
-		output[i]=(input[i*2]+input[(2*i)+1])>>1;
-	}
-}
-
-void ResampleTo16000HzS8(uint8* input, uint8*output,int output_samples)
-{
-	int i=0;
-	for(i=0;i<output_samples;i+=2)
-	{
-		output[i]=(input[i*2]+input[(2*(i+1))])>>1;
-		output[i+1]=(input[(i*2)+1]+input[(2*(i+1))+1])>>1;
-	}
-}
-void ResampleTo8000HzM8(uint8* input, uint8*output,int output_samples)
-{
-	int i=0;
-	for(i=0;i<output_samples;i++)
-	{
-		output[i]=(input[i*4]+input[(4*i)+1]+input[(4*i)+2]+input[(4*i)+3])>>2;
-	}
-}
-
-void ResampleTo8000HzS8(uint8* input, uint8*output,int output_samples)
-{
-	int i=0;
-	for(i=0;i<output_samples;i+=2)
-	{
-		output[i]=(input[i*4]+input[(4*i)+2]+input[(4*(i+1))]+input[(4*(i+1))+2])>>2;
-		output[i+1]=(input[(i*4)+1]+input[(4*i)+3]+input[(4*(i+1))+1]+input[(4*(i+1))+3])>>2;
-	}
-}
-
-#endif
-
-void DoAVIOpen(const char* filename)
+void DoAVIOpen(const TCHAR* filename)
 {
 	// close current instance
 	if(GUI.AVIOut)
@@ -1354,7 +1230,7 @@ void DoAVIClose(int reason)
 void DoAVIVideoFrame(SSurface* source_surface, int Width, int Height/*, bool8 sixteen_bit*/)
 {
 	static uint32 lastFrameCount=0;
-	if(!GUI.AVIOut || (IPPU.FrameCount==lastFrameCount))
+	if(!GUI.AVIOut || !avi_buffer || (IPPU.FrameCount==lastFrameCount))
 	{
 		return;
 	}

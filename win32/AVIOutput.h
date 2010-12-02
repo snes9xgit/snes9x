@@ -200,7 +200,7 @@ void AVISetSoundFormat(const WAVEFORMATEX* wave_format, struct AVIFile* avi_out)
 // after setting up output options, start writing with this
 // returns 1 if successful, 0 otherwise
 // check the return value!
-int AVIBegin(const char* filename, struct AVIFile* avi_out);
+int AVIBegin(const TCHAR* filename, struct AVIFile* avi_out);
 
 // get the format in use from an already existing avi output object
 // returns 1 if successful, 0 otherwise

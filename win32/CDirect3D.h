@@ -177,8 +177,12 @@
 #ifndef W9XDIRECT3D_H
 #define W9XDIRECT3D_H
 
-#include <windows.h>
+#define MAX_SHADER_TEXTURES 8
+
 #include <d3d9.h>
+#include <d3dx9.h>
+#include <windows.h>
+
 #include "render.h"
 #include "wsnes9x.h"
 #include "IS9xDisplayOutput.h"
@@ -205,19 +209,28 @@ private:
 
 	LPDIRECT3DVERTEXBUFFER9 vertexBuffer;
 	D3DPRESENT_PARAMETERS dPresentParams;
-	int iFilterScale;									//the current maximum filter scale (at least 2)
+	unsigned int filterScale;							//the current maximum filter scale (at least 2)
 	unsigned int afterRenderWidth, afterRenderHeight;	//dimensions after filter has been applied
 	unsigned int quadTextureSize;						//size of the texture (only multiples of 2)
 	bool fullscreen;									//are we currently displaying in fullscreen mode
 	
 	VERTEX triangleStripVertices[4];					//the 4 vertices that make up our display rectangle
 
+	LPD3DXEFFECT            effect;
+	LPDIRECT3DTEXTURE9      rubyLUT[MAX_SHADER_TEXTURES];
+	bool shader_compiled;
+	float shaderTimer;
+	int shaderTimeStart;
+	int shaderTimeElapsed;
+
 	bool BlankTexture(LPDIRECT3DTEXTURE9 texture);
 	void CreateDrawSurface();
 	void DestroyDrawSurface();
-	bool ChangeDrawSurfaceSize(int iScale);
+	bool ChangeDrawSurfaceSize(unsigned int scale);
 	void SetupVertices();
 	bool ResetDevice();
+	void SetShaderVars();
+	bool SetShader(const TCHAR *file);
 
 public:
 	CDirect3D();

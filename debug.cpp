@@ -1532,8 +1532,7 @@ static void debug_process_command (char *Line)
 			if (SA1.Flags & TRACE_FLAG)
 			{
 				printf("SA1 CPU instruction tracing enabled.\n");
-				if (trace2 == NULL)
-					trace2 = fopen("trace_sa1.log", "wb");
+				ENSURE_TRACE_OPEN(trace2,"trace_sa1.log","wb")
 			}
 			else
 			{
@@ -1549,8 +1548,7 @@ static void debug_process_command (char *Line)
 			if (CPU.Flags & TRACE_FLAG)
 			{
 				printf("CPU instruction tracing enabled.\n");
-				if (trace == NULL)
-					trace = fopen("trace.log", "wb");
+				ENSURE_TRACE_OPEN(trace,"trace.log","wb")
 			}
 			else
 			{
@@ -2580,8 +2578,7 @@ void S9xTrace (void)
 {
 	char	msg[512];
 
-	if (trace == NULL)
-		trace = fopen("trace.log", "a");
+	ENSURE_TRACE_OPEN(trace,"trace.log","a")
 
 	debug_cpu_op_print(msg, Registers.PB, Registers.PCw);
 	fprintf(trace, "%s\n", msg);
@@ -2591,8 +2588,7 @@ void S9xSA1Trace (void)
 {
 	char	msg[512];
 
-	if (trace2 == NULL)
-		trace2 = fopen("trace_sa1.log", "a");
+	ENSURE_TRACE_OPEN(trace2,"trace_sa1.log","a")
 
 	debug_sa1_op_print(msg, SA1Registers.PB, SA1Registers.PCw);
 	fprintf(trace2, "%s\n", msg);

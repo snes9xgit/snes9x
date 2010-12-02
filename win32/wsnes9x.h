@@ -192,6 +192,7 @@
 #endif
 #include <windows.h>
 #include <windowsx.h>
+#include <tchar.h>
 #include <ddraw.h>
 #include <mmsystem.h>
 #ifndef __BORLANDC__
@@ -207,9 +208,17 @@
 #define COUNT(a) (sizeof (a) / sizeof (a[0]))
 #define GUI_VERSION 1008
 
-extern unsigned char* SoundBuffer;
 #define MAX_RECENT_GAMES_LIST_SIZE 32
 #define MAX_RECENT_HOSTS_LIST_SIZE 16
+
+#include "_tfwopen.h"
+#ifdef UNICODE
+#define _tToChar WideToUtf8
+#define _tFromChar Utf8ToWide
+#else
+#define _tToChar
+#define _tFromChar
+#endif
 
 /****************************************************************************/
 inline static void Log (const char *str)
@@ -262,7 +271,8 @@ enum RenderFilter{
 
 enum OutputMethod {
 	DIRECTDRAW = 0,
-	DIRECT3D
+	DIRECT3D,
+	OPENGL
 };
 
 struct dMode
@@ -279,7 +289,6 @@ struct sGUI {
     HINSTANCE hInstance;
 
     DWORD hFrameTimer;
-    //DWORD hSoundTimer;
     DWORD hHotkeyTimer;
     HANDLE ClientSemaphore;
     HANDLE FrameTimerSemaphore;
@@ -287,22 +296,27 @@ struct sGUI {
 
     BYTE Language;
 
-    //unsigned long PausedFramesBeforeMutingSound;
-    /*int  Width;
-    int  Height;
-    int  Depth;
-    int  RefreshRate;*/
+	//Graphic Settings
 	dMode FullscreenMode;
     RenderFilter Scale;
-    RenderFilter NextScale;
     RenderFilter ScaleHiRes;
-    RenderFilter NextScaleHiRes;
     bool DoubleBuffered;
     bool FullScreen;
     bool Stretch;
     bool HeightExtend;
     bool AspectRatio;
-    bool ScreenCleared;
+	OutputMethod outputMethod;
+	int AspectWidth;
+	bool AlwaysCenterImage;
+	bool EmulateFullscreen;
+	bool EmulatedFullscreen;
+	bool BilinearFilter;
+	bool LocalVidMem;
+	bool Vsync;	
+	bool shaderEnabled;
+	TCHAR HLSLshaderFileName[MAX_PATH];
+	TCHAR GLSLshaderFileName[MAX_PATH];
+
     bool IgnoreNextMouseMove;
     RECT window_size;
 	bool window_maximized;
@@ -348,46 +362,33 @@ struct sGUI {
 	int SoundDriver;
 	int SoundBufferSize;
 	bool Mute;
+	// used for sync sound synchronization
+	CRITICAL_SECTION SoundCritSect;
 
-    char RomDir [_MAX_PATH];
-    char ScreensDir [_MAX_PATH];
-    char MovieDir [_MAX_PATH];
-    char SPCDir [_MAX_PATH];
-    char FreezeFileDir [_MAX_PATH];
-    char SRAMFileDir [_MAX_PATH];
-    char PatchDir [_MAX_PATH];
-    char BiosDir [_MAX_PATH];
+    TCHAR RomDir [_MAX_PATH];
+    TCHAR ScreensDir [_MAX_PATH];
+    TCHAR MovieDir [_MAX_PATH];
+    TCHAR SPCDir [_MAX_PATH];
+    TCHAR FreezeFileDir [_MAX_PATH];
+    TCHAR SRAMFileDir [_MAX_PATH];
+    TCHAR PatchDir [_MAX_PATH];
+    TCHAR BiosDir [_MAX_PATH];
 	bool LockDirectories;
 
-    char RecentGames [MAX_RECENT_GAMES_LIST_SIZE][MAX_PATH];
-    char RecentHostNames [MAX_RECENT_HOSTS_LIST_SIZE][MAX_PATH];
+    TCHAR RecentGames [MAX_RECENT_GAMES_LIST_SIZE][MAX_PATH];
+    TCHAR RecentHostNames [MAX_RECENT_HOSTS_LIST_SIZE][MAX_PATH];
 
 	//turbo switches -- SNES-wide
 	unsigned short TurboMask;
-	char StarOceanPack[MAX_PATH];
-	char SFA2PALPack[MAX_PATH];
-	char SFA2NTSCPack[MAX_PATH];
-	char SFZ2Pack[MAX_PATH];
-	char SJNSPack[MAX_PATH];
-	char FEOEZPack[MAX_PATH];
-	char SPL4Pack[MAX_PATH];
-	char MDHPack[MAX_PATH];
 	COLORREF InfoColor;
 	bool HideMenu;
-	bool BilinearFilter;
-	bool LocalVidMem;
-	bool Vsync; // XXX: unused - OV2: used in Direct3D mode
+	
 	// avi writing
 	struct AVIFile* AVIOut;
-	OutputMethod outputMethod;
-	int AspectWidth;
-	bool EmulateFullscreen;
-	bool EmulatedFullscreen;
+	
 	long FrameCount;
     long LastFrameCount;
     unsigned long IdleCount;
-	// used for sync sound synchronization
-	CRITICAL_SECTION SoundCritSect;
 };
 
 //TURBO masks
@@ -559,8 +560,6 @@ enum
 
 #define WIN32_WHITE RGB(255,255,255)
 
-#define SET_UI_COLOR(r,g,b) SetInfoDlgColor(r,g,b)
-
 /*****************************************************************************/
 
 void S9xSetWinPixelFormat ();
@@ -572,5 +571,6 @@ void S9xSetWinPixelFormat ();
 const char* GetFilterName(RenderFilter filterID);
 int GetFilterScale(RenderFilter filterID);
 bool GetFilterHiResSupport(RenderFilter filterID);
+const TCHAR * S9xGetDirectoryT (enum s9x_getdirtype);
 
 #endif // !defined(SNES9X_H_INCLUDED)

@@ -176,62 +176,90 @@
 
 
 
+#ifndef COPENGL_H
+#define COPENGL_H
 
-// CDirectDraw.h: interface for the CDirectDraw class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(CDIRECTDRAW_H_INCLUDED)
-#define CDIRECTDRAW_H_INCLUDED
-
+#include <windows.h>
+#include <gl\gl.h>
+#include "glext.h"
+#include "wglext.h"
 #include "IS9xDisplayOutput.h"
 
-#if _MSC_VER >= 1000
-#pragma once
-#endif // _MSC_VER >= 1000
-
-class CDirectDraw: public IS9xDisplayOutput
+/* IS9xDisplayOutput
+	Interface for display driver.
+*/
+class COpenGL : public IS9xDisplayOutput
 {
-public:	
-	HRESULT dErr;
-	LPDIRECTDRAW lpDD;
-	LPDIRECTDRAWCLIPPER lpDDClipper;
-	LPDIRECTDRAWPALETTE lpDDPalette;
+private:
+	HDC					hDC;
+	HGLRC				hRC;
+	HWND				hWnd;
+	GLuint				drawTexture;
+	GLuint				drawBuffer;
+	GLfloat				vertices[8];
+    GLfloat				texcoords[8];
+	unsigned char *		noPboBuffer;
 
-	LPDIRECTDRAWSURFACE2 lpDDSPrimary2;
-	LPDIRECTDRAWSURFACE2 lpDDSOffScreen2;
-
-	RECT SizeHistory [10];
-
-	int width, height;
-	char depth;
-	bool doubleBuffered;
-	bool clipped;
-	bool dDinitialized;
-
-	unsigned char *convertBuffer;
+	bool initDone;
+	bool fullscreen;
+	unsigned int quadTextureSize;
 	unsigned int filterScale;
+	unsigned int afterRenderWidth, afterRenderHeight;
 
-	DDPIXELFORMAT DDPixelFormat;
+	bool shaderFunctionsLoaded;
+	bool shaderCompiled;
+
+	bool pboFunctionsLoaded;
+
+	GLuint shaderProgram;
+    GLuint vertexShader;
+    GLuint fragmentShader;
+
+	// PBO Functions
+	PFNGLGENBUFFERSPROC		glGenBuffers;
+	PFNGLBINDBUFFERPROC		glBindBuffer;
+	PFNGLBUFFERDATAPROC		glBufferData;
+	PFNGLDELETEBUFFERSPROC	glDeleteBuffers;
+	PFNGLMAPBUFFERPROC		glMapBuffer;
+	PFNGLUNMAPBUFFERPROC	glUnmapBuffer;
+
+	// Shader Functions
+
+	PFNGLCREATEPROGRAMPROC			glCreateProgram;
+    PFNGLCREATESHADERPROC			glCreateShader;
+    PFNGLCOMPILESHADERPROC			glCompileShader;
+    PFNGLDELETESHADERPROC			glDeleteShader;
+	PFNGLDELETEPROGRAMPROC			glDeleteProgram;
+	PFNGLATTACHSHADERPROC			glAttachShader;
+	PFNGLDETACHSHADERPROC			glDetachShader;
+	PFNGLLINKPROGRAMPROC			glLinkProgram;
+	PFNGLUSEPROGRAMPROC				glUseProgram;
+	PFNGLSHADERSOURCEPROC			glShaderSource;
+	PFNGLGETUNIFORMLOCATIONPROC		glGetUniformLocation;
+	PFNGLUNIFORM2FVPROC				glUniform2fv;
+
+	PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
+
+	bool SetShaders(const TCHAR *glslFileName);
+	bool LoadShaderFunctions();
+	bool LoadPBOFunctions();
+	void CreateDrawSurface(void);
+	void DestroyDrawSurface(void);
+	bool ChangeDrawSurfaceSize(unsigned int scale);
+	void SetupVertices();
+
 public:
-	bool SetDisplayMode(
-		int pWidth, int pHeight, int pScale,
-		char pDepth, int pRefreshRate, bool pWindowed,
-		bool pDoubleBuffered);
-    void GetPixelFormat ();
+	COpenGL();
+	~COpenGL();
+	bool Initialize(HWND hWnd);
 	void DeInitialize();
-	bool Initialize (HWND hWnd);
-
 	void Render(SSurface Src);
-	bool ApplyDisplayChanges(void);
 	bool ChangeRenderSize(unsigned int newWidth, unsigned int newHeight);
+	bool ApplyDisplayChanges(void);
 	bool SetFullscreen(bool fullscreen);
-	void SetSnes9xColorFormat();
-
-	void EnumModes(std::vector<dMode> *modeVector);
-
-	CDirectDraw();
-	virtual ~CDirectDraw();
+	void SetSnes9xColorFormat(void);
+	void EnumModes(std::vector<dMode> *modeVector);	
 };
 
-#endif // !defined(CDIRECTDRAW_H_INCLUDED)
+
+#endif

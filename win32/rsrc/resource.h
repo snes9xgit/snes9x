@@ -55,7 +55,6 @@
 #define IDC_MUTE                        1016
 #define IDC_SKIP_TYPE                   1017
 #define IDC_SCROLLBAR1                  1018
-#define IDC_FMUT                        1018
 #define IDC_VRAM_DISPLAY                1019
 #define IDC_WIP1                        1019
 #define IDC_ADDRESS                     1020
@@ -93,6 +92,7 @@
 #define IDC_MOVIE_METADATA              1090
 #define IDC_MULTICART_EDITA             1090
 #define IDC_INRATEEDIT                  1090
+#define IDC_SHADER_HLSL_FILE            1090
 #define IDC_PAUSEINTERVAL               1091
 #define IDC_UPRIGHT                     1091
 #define IDC_MULTICART_BIOSEDIT          1091
@@ -101,6 +101,7 @@
 #define IDC_MULTICART_EDITB             1092
 #define IDC_PAUSESPIN                   1093
 #define IDC_DWNRIGHT                    1093
+#define IDC_SHADER_GLSL_FILE            1093
 #define IDC_SYNCBYRESET                 1094
 #define IDC_DOWN                        1094
 #define IDC_SENDROM                     1095
@@ -145,6 +146,7 @@
 #define IDC_CLEAR_CHEATS                1126
 #define IDC_JPTOGGLE                    1126
 #define IDC_LOCALVIDMEM                 1126
+#define IDC_VSYNC                       1126
 #define IDC_CHEAT_DESCRIPTION           1127
 #define IDC_KEYBOARD                    1127
 #define IDC_ALLOWLEFTRIGHT              1127
@@ -344,10 +346,13 @@
 #define IDC_INRATETEXT                  3012
 #define IDC_SPIN_MAX_SKIP_DISP          3013
 #define IDC_SPIN_MAX_SKIP_DISP_FIXED    3014
+#define IDC_SHADER_ENABLED              3015
+#define IDC_SHADER_HLSL_BROWSE          3016
+#define IDC_SHADER_GROUP                3017
+#define IDC_SHADER_GLSL_BROWSE          3018
 #define ID_FILE_EXIT                    40001
-#define ID_LANGUAGE_ENGLISH             40002
-#define ID_LANGUAGE_NEDERLANDS          40003
 #define ID_WINDOW_HIDEMENUBAR           40004
+#define ID_FILE_AVI_RECORDING           40005
 #define ID_SOUND_NOSOUND                40021
 #define ID_OPTIONS_JOYPAD               40022
 #define ID_WINDOW_SHOWFPS               40023
@@ -386,14 +391,13 @@
 #define ID_CHEAT_ENTER                  40063
 #define ID_CHEAT_SEARCH                 40064
 #define ID_CHEAT_APPLY                  40065
+#define ID_FILE_SAVE_SPC_DATA           40066
 #define ID_HELP_ABOUT                   40067
 #define ID_SOUND_OPTIONS                40068
 #define ID_OPTIONS_EMULATION            40069
 #define ID_OPTIONS_SETTINGS             40070
 #define ID_DEBUG_TRACE                  40071
-#define ID_DEBUG_TRACE_SPC              40072
-#define ID_DEBUG_TRACE_SA1              40073
-#define ID_DEBUG_TRACE_DSP1             40074
+#define ID_FRAME_ADVANCE				40074
 #define ID_DEBUG_FRAME_ADVANCE          40075
 #define ID_DEBUG_SNES_STATUS            40076
 #define ID_NETPLAY_SERVER               40077
@@ -423,7 +427,6 @@
 #define IDM_ENABLE_MULTITAP             40104
 #define IDM_MOUSE_TOGGLE                40105
 #define IDM_SCOPE_TOGGLE                40106
-#define IDM_CATCH_UP_SOUND              40107
 #define IDM_GFX_PACKS                   40108
 #define IDM_JUSTIFIER                   40109
 #define ID_SCREENSHOT                   40110
@@ -435,7 +438,7 @@
 #define ID_FILE_STOP_AVI                40117
 #define ID_OPTIONS_KEYCUSTOM            40118
 #define ID_WINDOW_                      40119
-#define ID_WINDOW_VIDMEM                40122
+#define ID_WINDOW_BILINEAR              40122
 #define ID_WINDOW_ASPECTRATIO           40123
 #define ID_TURBO_LEFT                   40124
 #define ID_TURBO_UP                     40125
@@ -472,14 +475,20 @@
 #define ID_SOUND_176MS                  40164
 #define ID_SOUND_194MS                  40165
 #define ID_SOUND_210MS                  40166
+#define ID_EMULATION_PAUSEWHENINACTIVE  40167
+#define ID_VIDEO_SHOWFRAMERATE          40168
+#define ID_WINDOW_SIZE_1X               40169
+#define ID_WINDOW_SIZE_2X               40170
+#define ID_WINDOW_SIZE_3X               40171
+#define ID_WINDOW_SIZE_4X               40172
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        151
-#define _APS_NEXT_COMMAND_VALUE         40154
-#define _APS_NEXT_CONTROL_VALUE         3014
+#define _APS_NEXT_COMMAND_VALUE         40173
+#define _APS_NEXT_CONTROL_VALUE         3018
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

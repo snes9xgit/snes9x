@@ -373,6 +373,7 @@ inline static bool GetFilter32BitSupport(RenderFilter filterID)
 		case FILTER_SCANLINES:
 		case FILTER_TVMODE3X:
 		case FILTER_DOTMATRIX3X:
+		case FILTER_SIMPLE4X:
 			return true;
 
 		default:
@@ -388,10 +389,8 @@ void SelectRenderMethod()
 	RenderMethod = FilterToMethod(GUI.Scale);
 	RenderMethodHiRes = FilterToMethod(GUI.ScaleHiRes);
 
-	if (GUI.ScreenCleared || OldRenderMethod != RenderMethod || OldRenderMethodHiRes != RenderMethodHiRes)
+	if (OldRenderMethod != RenderMethod || OldRenderMethodHiRes != RenderMethodHiRes)
         snes9x_clear_change_log = GUI.NumFlipFrames;
-
-    GUI.ScreenCleared = false;
 
 	GUI.DepthConverted = !GUI.NeedDepthConvert;
 	if(GUI.ScreenDepth == 32 &&

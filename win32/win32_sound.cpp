@@ -187,8 +187,12 @@
 #pragma comment(linker,"/DEFAULTLIB:fmodvc.lib")
 #elif defined FMODEX_SUPPORT
 #include "CFMODEx.h"
+#if defined(_WIN64)
+#pragma comment(linker,"/DEFAULTLIB:fmodex64_vc.lib")
+#else
 #pragma comment(linker,"/DEFAULTLIB:fmodex_vc.lib")
-#endif
+#endif // _WIN64
+#endif // FMODEX_SUPPORT
 
 #define CLAMP(x, low, high) (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
 
@@ -235,6 +239,7 @@ returns true if successful, false otherwise
 */
 bool8 S9xOpenSoundDevice ()
 {
+	S9xSetSamplesAvailableCallback (NULL, NULL);
 	// point the interface to the correct output object
 	switch(GUI.SoundDriver) {
 		case WIN_SNES9X_DIRECT_SOUND_DRIVER:
@@ -253,7 +258,7 @@ bool8 S9xOpenSoundDevice ()
 			S9xSoundOutput = &S9xFMODEx;
 			break;
 #endif
-			case WIN_XAUDIO2_SOUND_DRIVER:
+		case WIN_XAUDIO2_SOUND_DRIVER:
 			S9xSoundOutput = &S9xXAudio2;
 			break;
 		default:	// we default to DirectSound
@@ -262,8 +267,12 @@ bool8 S9xOpenSoundDevice ()
 	}
 	if(!S9xSoundOutput->InitSoundOutput())
 		return false;
+	
+	if(!S9xSoundOutput->SetupSound())
+		return false;
+	
 	S9xSetSamplesAvailableCallback (S9xSoundCallback, NULL);
-	return S9xSoundOutput->SetupSound();
+	return true;
 }
 
 /*  S9xSoundCallback

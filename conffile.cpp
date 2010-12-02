@@ -186,11 +186,6 @@
 #define snprintf _snprintf // needs ANSI compliant name
 #endif
 
-#ifndef MAX
-#  define MAX(a,b)  ((a) > (b)? (a) : (b))
-#  define MIN(a,b)  ((a) < (b)? (a) : (b))
-#endif
-
 #define SORT_SECTIONS_BY_SIZE // output
 
 using namespace std;
@@ -208,6 +203,7 @@ ConfigFile::ConfigFile(void) {
 
 void ConfigFile::Clear(void){
     data.clear();
+	sectionSizes.ClearSections();
 	linectr = 0;
 }
 
@@ -287,8 +283,10 @@ void ConfigFile::LoadFile(Reader *r, const char *name){
 
         ConfigEntry e(line, section, key, val);
 		e.comment = comment;
-        data.erase(e);
+        if(data.erase(e))
+			sectionSizes.DecreaseSectionSize(e.section);
         data.insert(e);
+		sectionSizes.IncreaseSectionSize(e.section);
     } while(!eof);
 	curConfigFile = NULL;
 }
@@ -470,12 +468,14 @@ bool ConfigFile::SetString(const char *key, string val, const char *comment){
     if(i!=data.end()){
         e.line=i->line;
         data.erase(e);
+		sectionSizes.DecreaseSectionSize(e.section);
         ret=true;
     }
 	if((i==data.end() && (!alphaSort || timeSort)) || (!alphaSort && timeSort))
 		e.line = linectr++;
 
     data.insert(e);
+	sectionSizes.IncreaseSectionSize(e.section);
     return ret;
 }
 
@@ -562,7 +562,12 @@ const char* ConfigFile::GetComment(const char *key)
 }
 
 bool ConfigFile::DeleteKey(const char *key){
-    return (data.erase(ConfigEntry(key))>0);
+	ConfigEntry e = ConfigEntry(key);
+	if(data.erase(e)) {
+		sectionSizes.DecreaseSectionSize(e.section);
+		return true;
+	}
+    return false;
 }
 
 /***********************************************/
@@ -574,6 +579,7 @@ bool ConfigFile::DeleteSection(const char *section){
     if(s==data.end()) return false;
     for(e=s; e!=data.end() && e->section==section; e++) ;
     data.erase(s, e);
+	sectionSizes.DeleteSection(section);
     return true;
 }
 
@@ -589,13 +595,8 @@ ConfigFile::secvec_t ConfigFile::GetSection(const char *section){
     return v;
 }
 
-int ConfigFile::GetSectionSize(const char *section){
-	int count=0;
-	const unsigned int seclen=strlen(section);
-    set<ConfigEntry, ConfigEntry::key_less>::iterator i;
-    for(i=data.begin(); i!=data.end(); i++)
-        if(i->section==section || !strncasecmp(section,i->section.c_str(),MIN(seclen,i->section.size()))) count++;
-    return count;
+int ConfigFile::GetSectionSize(const std::string section){
+	return sectionSizes.GetSectionSize(section);
 }
 
 // Clears all key-value pairs that didn't receive a "Get" or "Exists" command
@@ -621,8 +622,8 @@ void ConfigFile::ClearLines()
 
 bool ConfigFile::ConfigEntry::section_then_key_less::operator()(const ConfigEntry &a, const ConfigEntry &b) {
 	if(curConfigFile && a.section!=b.section){
-		const int sva = curConfigFile->GetSectionSize(a.section.c_str());
-		const int svb = curConfigFile->GetSectionSize(b.section.c_str());
+		const int sva = curConfigFile->GetSectionSize(a.section);
+		const int svb = curConfigFile->GetSectionSize(b.section);
 		if(sva<svb) return true;
 		if(sva>svb) return false;
 		return a.section<b.section;

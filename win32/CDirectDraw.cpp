@@ -206,6 +206,8 @@ CDirectDraw::CDirectDraw()
     depth = -1;
     doubleBuffered = false;
 	dDinitialized = false;
+	convertBuffer = NULL;
+	filterScale = 0;
 }
 
 CDirectDraw::~CDirectDraw()
@@ -270,6 +272,11 @@ void CDirectDraw::DeInitialize()
         lpDD->Release();
         lpDD = NULL;
     }
+	if(convertBuffer) {
+		delete [] convertBuffer;
+		convertBuffer = NULL;
+	}
+	filterScale = 0;
 	dDinitialized = false;
 }
 
@@ -520,7 +527,6 @@ static bool LockSurface2 (LPDIRECTDRAWSURFACE2 lpDDSurface, SSurface *lpSurface)
                 return (false);
 
             hResult = lpDDSurface->Restore();
-            GUI.ScreenCleared = true;
             if (hResult != DD_OK)
                 return (false);
 
@@ -543,6 +549,10 @@ void CDirectDraw::Render(SSurface Src)
 
 	DDSCAPS caps;
 
+	unsigned int newFilterScale;
+
+	if(!dDinitialized) return;
+
 	ZeroMemory(&caps,sizeof(DDSCAPS));
 	caps.dwCaps = DDSCAPS_BACKBUFFER;
 
@@ -561,11 +571,19 @@ void CDirectDraw::Render(SSurface Src)
 	if (!GUI.DepthConverted)
 	{
 		SSurface tmp;
-		static BYTE buf [256 * 239 * 4*3*3];
+		
+		newFilterScale = max(2,max(GetFilterScale(GUI.ScaleHiRes),GetFilterScale(GUI.Scale)));
 
-		tmp.Surface = buf;
+		if(newFilterScale!=filterScale) {
+			if(convertBuffer)
+				delete [] convertBuffer;
+			filterScale = newFilterScale;
+			convertBuffer = new unsigned char[SNES_WIDTH * sizeof(uint16) * SNES_HEIGHT_EXTENDED * sizeof(uint16) *filterScale*filterScale]();
+		}
 
-		if(GUI.Scale == FILTER_NONE) {
+		tmp.Surface = convertBuffer;
+
+		if(CurrentScale == FILTER_NONE) {
 			tmp.Pitch = Src.Pitch;
 			tmp.Width = Src.Width;
 			tmp.Height = Src.Height;
@@ -583,8 +601,8 @@ void CDirectDraw::Render(SSurface Src)
 	}
 
 	if(!Settings.AutoDisplayMessages) {
-		WinSetCustomDisplaySurface((void *)Dst.Surface, (Dst.Pitch*8/GUI.ScreenDepth), srcRect.right-srcRect.left, srcRect.bottom-srcRect.top, GetFilterScale(GUI.Scale));
-		S9xDisplayMessages ((uint16*)Dst.Surface, Dst.Pitch/2, srcRect.right-srcRect.left, srcRect.bottom-srcRect.top, GetFilterScale(GUI.Scale));
+		WinSetCustomDisplaySurface((void *)Dst.Surface, (Dst.Pitch*8/GUI.ScreenDepth), srcRect.right-srcRect.left, srcRect.bottom-srcRect.top, GetFilterScale(CurrentScale));
+		S9xDisplayMessages ((uint16*)Dst.Surface, Dst.Pitch/2, srcRect.right-srcRect.left, srcRect.bottom-srcRect.top, GetFilterScale(CurrentScale));
 	}
 
 	RECT lastRect = SizeHistory [GUI.FlipCounter % GUI.NumFlipFrames];
@@ -719,6 +737,10 @@ void CDirectDraw::Render(SSurface Src)
 		}
 	}
 
+	if(GUI.Vsync) {
+		lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN,NULL);
+	}
+
 	lpDDSPrimary2->Flip (NULL, GUI.Vsync?DDFLIP_WAIT:DDFLIP_NOVSYNC);
 
 	SizeHistory [GUI.FlipCounter % GUI.NumFlipFrames] = dstRect;
@@ -726,7 +748,8 @@ void CDirectDraw::Render(SSurface Src)
 
 bool CDirectDraw::ApplyDisplayChanges(void)
 {
-	return true;
+	return SetDisplayMode (GUI.FullscreenMode.width, GUI.FullscreenMode.height, max(GetFilterScale(GUI.Scale), GetFilterScale(GUI.ScaleHiRes)), GUI.FullscreenMode.depth, GUI.FullscreenMode.rate,
+		TRUE, GUI.DoubleBuffered);
 }
 
 bool CDirectDraw::ChangeRenderSize(unsigned int newWidth, unsigned int newHeight)
@@ -856,6 +879,8 @@ HRESULT CALLBACK EnumModesCallback( LPDDSURFACEDESC lpDDSurfaceDesc, LPVOID lpCo
 
 void CDirectDraw::EnumModes(std::vector<dMode> *modeVector)
 {
+	if(!dDinitialized)
+		return;
 	lpDD->EnumDisplayModes(DDEDM_REFRESHRATES,NULL,(void *)modeVector,(LPDDENUMMODESCALLBACK)EnumModesCallback);
 }
 

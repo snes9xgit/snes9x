@@ -193,6 +193,7 @@
 #endif
 
 #ifdef DEBUGGER
+#include "debug.h"
 extern FILE	*trace;
 #endif
 
@@ -493,8 +494,7 @@ void S9xLoadConfigFiles (char **argv, int argc)
 
 	if (conf.GetBool("DEBUG::Trace", false))
 	{
-		if (!trace)
-			trace = fopen("trace.log", "wb");
+		ENSURE_TRACE_OPEN(trace,"trace.log","wb")
 		CPU.Flags |= TRACE_FLAG;
 	}
 #endif
@@ -845,8 +845,7 @@ char * S9xParseArgs (char **argv, int argc)
 			else
 			if (!strcasecmp(argv[i], "-trace"))
 			{
-				if (!trace)
-					trace = fopen("trace.log", "wb");
+				ENSURE_TRACE_OPEN(trace,"trace.log","wb")
 				CPU.Flags |= TRACE_FLAG;
 			}
 			else

@@ -199,17 +199,14 @@ private:
 
 	int blockCount;							// number of blocks in the buffer
 	int blockSize;							// bytes in one block
-	int blockSamples;
+	int blockSamples;						// samples in one block
 	int bufferSize;							// bytes in the whole buffer
-	int blockTime;
+	int blockTime;							// ms in one block
 
 	DWORD last_block;						// the last block that was mixed
 
 	bool initDone;							// has init been called successfully?
-	HANDLE hTimerQueue;						// handle to the mixing thread
-	HANDLE hTimer;
-
-	volatile bool threadExit;				// mixing thread exit signal
+	DWORD hTimer;							// mixing timer
 	
 	bool InitDirectSound ();
 	void DeInitDirectSound();
@@ -217,7 +214,7 @@ private:
 	bool InitSoundBuffer();
 	void DeInitSoundBuffer();
 
-	static VOID CALLBACK CDirectSound::SoundTimerCallback(PVOID lpParameter,BOOLEAN TimerOrWaitFired);
+	static VOID CALLBACK SoundTimerCallback(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2);
 	
 	void ProcessSound();
 	void MixSound();

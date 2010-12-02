@@ -180,12 +180,17 @@
 #ifndef _DEBUG_H_
 #define _DEBUG_H_
 
+#include <string>
+
 struct SBreakPoint
 {
 	bool8	Enabled;
 	uint8	Bank;
 	uint16	Address;
 };
+
+#define ENSURE_TRACE_OPEN(fp,file,mode) \
+	if(!fp) {std::string fn=S9xGetDirectory(DEFAULT_DIR);fn+=SLASH_STR file;fp=fopen(fn.c_str(),mode);}
 
 extern struct SBreakPoint	S9xBreakpoint[6];
 
