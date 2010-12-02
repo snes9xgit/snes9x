@@ -79,24 +79,6 @@ AC_ARG_WITH(pulseaudio,
   [],
   [with_pulseaudio=yes])
 
-AC_ARG_WITH(assembler,
-  [AS_HELP_STRING([--with(out)-assembler],
-    [Use assembler cores if available (default: with)])],
-  [],
-  [with_assembler=yes])
-
-AC_ARG_WITH(zsnesc4,
-  [AS_HELP_STRING([--with(out)-zsnesc4],
-    [Use ZSNES C4 core if available (default: same as --with-assembler)])],
-  [],
-  [with_zsnesc4=$with_assembler])
-
-AC_ARG_WITH(zsnesfx,
-  [AS_HELP_STRING([--with(out)-zsnesfx],
-    [Use ZSNES SuperFX core if available (default: same as --with-assembler)])],
-  [],
-  [with_zsnesfx=$with_assembler])
-
 AC_ARG_WITH(debugger, 
   [AS_HELP_STRING([--with(out)-debugger],
     [Enable debugger (default: without)])],
@@ -309,48 +291,9 @@ fi
 CFLAGS="$CFLAGS $GTK_CFLAGS $GLIB_CFLAGS $LIBXML_CFLAGS $PORTAUDIO_CFLAGS $LIBPNG_CFLAGS $SDL_CFLAGS $XV_CFLAGS $XRANDR_CFLAGS $ALSA_CFLAGS $PULSEAUDIO_CFLAGS"
 LIBS="$LIBS $GTK_LIBS $GLIB_LIBS $LIBXML_LIBS $PORTAUDIO_LIBS $LIBPNG_LIBS $SDL_LIBS $XV_LIBS $XRANDR_LIBS $ALSA_LIBS $PULSEAUDIO_LIBS"
 
-
-AC_MSG_CHECKING(if the CPU is IA32)
-AC_CACHE_VAL(snes9x_cv_i386_cpu, [
-  AC_TRY_COMPILE([
-#if (defined (__i386__) || defined (__i486__) ||\
-     defined (__i586__) || defined (__i686__) || defined (__WIN32__) || defined (__DJGPP))
-/* */
-#else
-#error Not i386.
-#endif
-  ], [], snes9x_cv_i386_cpu=yes, snes9x_cv_i386_cpu=no)])
-
-dnl Enable assembler optimizations if CPU is x86
-
 NASM="not_found"
-if test yes = "$with_assembler"; then
-  AC_PATH_PROG(prog_nasm, nasm, no)
-
-  if test "x$ac_cv_path_prog_nasm" = "xno"; then
-    if test yes = "$snes9x_cv_i386_cpu"; then
-        AC_MSG_WARN([No nasm found. Will build without assembler optimizations.])
-    fi
-  else
-    if test yes = "$snes9x_cv_i386_cpu"; then
-      NASM="$ac_cv_path_prog_nasm"
-    fi
-  fi
-fi
-
-if test $NASM != "not_found"; then
-  if test yes = "$with_zsnesc4"; then
-    ZSNESC4=yes
-    CFLAGS="$CFLAGS -DZSNES_C4"
-    NASM_FLAGS="$NASM_FLAGS -DZSNES_C4"
-  fi
-  if test yes = "$with_zsnesfx"; then
-    ZSNESFX=yes
-    CFLAGS="$CFLAGS -DZSNES_FX -DEXECUTE_SUPERFX_PER_LINE"
-    NASM_FLAGS="$NASM_FLAGS -DZSNES_FX -DEXECUTE_SUPERFX_PER_LINE"
-  fi
-  CPUINC='-Ii386'
-fi
+ZSNESC4=no
+ZSNESFX=no
 
 CFLAGS="$CFLAGS -DCORRECT_VRAM_READS"
 CORRECT_VRAM_READS=1
@@ -358,7 +301,6 @@ CORRECT_VRAM_READS=1
 if test yes = "$with_debugger"; then
    CFLAGS="$CFLAGS -DDEBUGGER"
 fi
-
 
 dnl Enable SDD1 decompression if requested
 if test yes = "$with_sdd1_decomp"; then
