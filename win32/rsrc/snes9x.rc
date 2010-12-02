@@ -701,18 +701,6 @@ IDB_HIDDENFOLDER        BITMAP                  "hiddir.bmp"
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_ICON1               ICON                    "icon1.ico"
-#endif    // English (U.S.) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// Dutch (Netherlands) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NLD)
-#ifdef _WIN32
-LANGUAGE LANG_DUTCH, SUBLANG_DUTCH
-#pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -776,19 +764,6 @@ BEGIN
 END
 
 #endif    // APSTUDIO_INVOKED
-
-#endif    // Dutch (Netherlands) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// English (U.K.) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENG)
-#ifdef _WIN32
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
-#pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -871,7 +846,8 @@ BEGIN
     BEGIN
         MENUITEM "&Pause",                      ID_FILE_PAUSE
         MENUITEM "Pause &When Inactive",        ID_EMULATION_PAUSEWHENINACTIVE
-        MENUITEM SEPARATOR
+		MENUITEM "&Frame Advance",				ID_FRAME_ADVANCE
+		MENUITEM SEPARATOR
         MENUITEM "&Settings...\tAlt+F8",        ID_OPTIONS_SETTINGS
     END
     POPUP "&Input"
@@ -943,10 +919,17 @@ BEGIN
     BEGIN
         MENUITEM "&Hide menubar\tEsc",          ID_WINDOW_HIDEMENUBAR
         MENUITEM "&Full Screen\tAlt+Enter",     ID_WINDOW_FULLSCREEN
+		POPUP "&Window Size"
+		BEGIN
+			MENUITEM "&1x"						ID_WINDOW_SIZE_1X
+			MENUITEM "&2x"						ID_WINDOW_SIZE_2X
+			MENUITEM "&3x"						ID_WINDOW_SIZE_3X
+			MENUITEM "&4x"						ID_WINDOW_SIZE_4X
+		END
         MENUITEM SEPARATOR
-        MENUITEM "&Stretch Image\tAlt+Backspace", 40032
-        MENUITEM "&Maintain Aspect Ratio",      40123
-        MENUITEM "&Bilinear Filtering",         ID_WINDOW_VIDMEM
+        MENUITEM "&Stretch Image\tAlt+Backspace", ID_WINDOW_STRETCH
+        MENUITEM "&Maintain Aspect Ratio",      ID_WINDOW_ASPECTRATIO
+        MENUITEM "&Bilinear Filtering",         ID_WINDOW_BILINEAR
         MENUITEM "Show Frame &Rate",            ID_VIDEO_SHOWFRAMERATE
         MENUITEM SEPARATOR
         MENUITEM "&Display Configuration...\tAlt+F5", ID_OPTIONS_DISPLAY
@@ -977,7 +960,7 @@ BEGIN
     END
 END
 
-#endif    // English (U.K.) resources
+#endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

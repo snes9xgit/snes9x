@@ -2054,29 +2054,35 @@ LRESULT CALLBACK WinProc(
 		case ID_WINDOW_FULLSCREEN:
 			ToggleFullScreen ();
 			break;
-		case ID_WINDOW_STRETCH: {
+		case ID_WINDOW_SIZE_1X:
+		case ID_WINDOW_SIZE_2X:
+		case ID_WINDOW_SIZE_3X:
+		case ID_WINDOW_SIZE_4X:
+			UINT factor,newWidth,newHeight;
+			factor = (wParam & 0xffff) - ID_WINDOW_SIZE_1X + 1;
+			newWidth = GUI.AspectWidth * factor;
+			newHeight = (GUI.HeightExtend ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT) * factor;
+			newWidth += 2*(GetSystemMetrics(SM_CXBORDER) + GetSystemMetrics(SM_CXDLGFRAME));
+			newHeight += 2*(GetSystemMetrics(SM_CYBORDER) + GetSystemMetrics(SM_CYDLGFRAME)) +
+				GetSystemMetrics(SM_CYCAPTION) + (GUI.HideMenu ? 0 : (GetSystemMetrics(SM_CYMENU) +
+						  (factor<2 ? GetSystemMetrics(SM_CYMENU) : 0)));
+			SetWindowPos(GUI.hWnd,0,0,0,newWidth,newHeight,SWP_NOMOVE);
+			break;
+		case ID_WINDOW_STRETCH:
 			GUI.Stretch = !GUI.Stretch;
-			if(!GUI.Stretch != !GUI.BilinearFilter) {
-				GUI.BilinearFilter = !GUI.BilinearFilter;
-				RestoreSNESDisplay ();
-			}
-			RECT rect;
-			GetClientRect (GUI.hWnd, &rect);
-			InvalidateRect (GUI.hWnd, &rect, true);
-		}	break;
-		case ID_WINDOW_ASPECTRATIO: {
+			WinDisplayApplyChanges();
+			WinRefreshDisplay();
+			break;
+		case ID_WINDOW_ASPECTRATIO:
 			GUI.AspectRatio = !GUI.AspectRatio;
-			RECT rect;
-			GetClientRect (GUI.hWnd, &rect);
-			InvalidateRect (GUI.hWnd, &rect, true);
-		}	break;
-		case ID_WINDOW_VIDMEM: {
+			WinDisplayApplyChanges();
+			WinRefreshDisplay();
+			break;
+		case ID_WINDOW_BILINEAR:
 			GUI.BilinearFilter = !GUI.BilinearFilter;
-			RestoreSNESDisplay ();
-			RECT rect;
-			GetClientRect (GUI.hWnd, &rect);
-			InvalidateRect (GUI.hWnd, &rect, true);
-		}	break;
+			WinDisplayApplyChanges();
+			WinRefreshDisplay();
+			break;
 		case ID_VIDEO_SHOWFRAMERATE:
 			Settings.DisplayFrameRate = !Settings.DisplayFrameRate;
 			break;
@@ -2226,6 +2232,10 @@ LRESULT CALLBACK WinProc(
 			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_ABOUT), hWnd, DlgAboutProc);
 			RestoreSNESDisplay ();
 			break;
+		case ID_FRAME_ADVANCE:
+			Settings.Paused = true;
+			Settings.FrameAdvance = true;
+			break;
 #ifdef DEBUGGER
 		case ID_DEBUG_TRACE:
 			CPU.Flags ^= TRACE_FLAG;
@@ -2235,10 +2245,6 @@ LRESULT CALLBACK WinProc(
 			CPU.Flags |= FRAME_ADVANCE_FLAG;
 			ICPU.FrameAdvanceCount = 1;
 			Settings.Paused = FALSE;
-			break;
-
-		case ID_DEBUG_SNES_STATUS:
-			MessageBox(GUI.hWnd, TEXT("Sorry, but this function is not implemented yet."), NULL, MB_OK | MB_ICONINFORMATION);
 			break;
 #endif
 		case IDM_ROM_INFO:
@@ -2583,6 +2589,13 @@ BOOL WinInit( HINSTANCE hInstance)
 		MessageBox (NULL, TEXT("Failed to initialize the menu.\nThis could indicate a failure of your operating system;\ntry closing some other windows or programs, or restart your computer, before opening Snes9x again.\nOr, if you compiled this program yourself, ensure that Snes9x was built with the proper resource files."), TEXT("Snes9X - Menu Initialization Failure"), MB_OK | MB_ICONSTOP);
 //        return FALSE; // disabled: try to function without the menu
 	}
+#ifdef DEBUGGER
+	if(GUI.hMenu) {
+		InsertMenu(GUI.hMenu,ID_OPTIONS_SETTINGS,MF_BYCOMMAND | MF_STRING | MF_ENABLED,ID_DEBUG_FRAME_ADVANCE,TEXT("&Debug Frame Advance"));
+		InsertMenu(GUI.hMenu,ID_OPTIONS_SETTINGS,MF_BYCOMMAND | MF_STRING | MF_ENABLED,ID_DEBUG_TRACE,TEXT("&Trace"));
+		InsertMenu(GUI.hMenu,ID_OPTIONS_SETTINGS,MF_BYCOMMAND | MF_SEPARATOR | MF_ENABLED,NULL,NULL);
+	}
+#endif
 
     TCHAR buf [100];
     _stprintf (buf, WINDOW_TITLE, TEXT(VERSION));
@@ -3597,7 +3610,7 @@ static void CheckMenuStates ()
 	mii.fState = GUI.BilinearFilter ? MFS_CHECKED : MFS_UNCHECKED;
 	if(!GUI.Stretch)
 		mii.fState |= MFS_DISABLED;
-    SetMenuItemInfo (GUI.hMenu, ID_WINDOW_VIDMEM, FALSE, &mii);
+    SetMenuItemInfo (GUI.hMenu, ID_WINDOW_BILINEAR, FALSE, &mii);
 
 	mii.fState = Settings.DisplayFrameRate ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_VIDEO_SHOWFRAMERATE, FALSE, &mii);
@@ -3759,10 +3772,6 @@ static void CheckMenuStates ()
 #ifdef DEBUGGER
     mii.fState = (CPU.Flags & TRACE_FLAG) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_DEBUG_TRACE, FALSE, &mii);
-    mii.fState = MFS_UNCHECKED;
-    SetMenuItemInfo (GUI.hMenu, ID_DEBUG_FRAME_ADVANCE, FALSE, &mii);
-    mii.fState = MFS_DISABLED;
-    SetMenuItemInfo (GUI.hMenu, ID_DEBUG_SNES_STATUS, FALSE, &mii);
 #endif
 
 	mii.fState = (!Settings.StopEmulation) ? MFS_ENABLED : MFS_DISABLED;

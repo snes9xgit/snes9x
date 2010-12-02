@@ -397,6 +397,7 @@
 #define ID_OPTIONS_EMULATION            40069
 #define ID_OPTIONS_SETTINGS             40070
 #define ID_DEBUG_TRACE                  40071
+#define ID_FRAME_ADVANCE				40074
 #define ID_DEBUG_FRAME_ADVANCE          40075
 #define ID_DEBUG_SNES_STATUS            40076
 #define ID_NETPLAY_SERVER               40077
@@ -437,7 +438,7 @@
 #define ID_FILE_STOP_AVI                40117
 #define ID_OPTIONS_KEYCUSTOM            40118
 #define ID_WINDOW_                      40119
-#define ID_WINDOW_VIDMEM                40122
+#define ID_WINDOW_BILINEAR              40122
 #define ID_WINDOW_ASPECTRATIO           40123
 #define ID_TURBO_LEFT                   40124
 #define ID_TURBO_UP                     40125
@@ -476,13 +477,17 @@
 #define ID_SOUND_210MS                  40166
 #define ID_EMULATION_PAUSEWHENINACTIVE  40167
 #define ID_VIDEO_SHOWFRAMERATE          40168
+#define ID_WINDOW_SIZE_1X               40169
+#define ID_WINDOW_SIZE_2X               40170
+#define ID_WINDOW_SIZE_3X               40171
+#define ID_WINDOW_SIZE_4X               40172
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        151
-#define _APS_NEXT_COMMAND_VALUE         40169
+#define _APS_NEXT_COMMAND_VALUE         40173
 #define _APS_NEXT_CONTROL_VALUE         3018
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
