@@ -208,6 +208,7 @@ Snes9xConfig::load_defaults (void)
     Settings.BlockInvalidVRAMAccessMaster = TRUE;
     Settings.SoundSync = 1;
     Settings.HDMATimingHack = 100;
+    Settings.ApplyCheats = 1;
 
 #ifdef NETPLAY_SUPPORT
     Settings.NetPlay = FALSE;
