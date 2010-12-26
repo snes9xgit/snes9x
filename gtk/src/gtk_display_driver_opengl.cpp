@@ -923,6 +923,8 @@ S9xOpenGLDisplayDriver::gl_swap (void)
 
     if (config->sync_every_frame)
     {
+        usleep (0);
+        glXWaitX ();
         glFinish ();
     }
 
