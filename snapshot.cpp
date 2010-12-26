@@ -1272,6 +1272,7 @@ bool8 S9xUnfreezeGame (const char *filename)
 void S9xFreezeToStream (STREAM stream)
 {
 	char	buffer[1024];
+	uint8 *soundsnapshot = new uint8[SPC_SAVE_STATE_BLOCK_SIZE];
 
 	S9xSetSoundMute(TRUE);
 
@@ -1305,7 +1306,6 @@ void S9xFreezeToStream (STREAM stream)
 
 	FreezeBlock (stream, "FIL", Memory.FillRAM, 0x8000);
 
-	uint8	soundsnapshot[SPC_SAVE_STATE_BLOCK_SIZE];
 	S9xAPUSaveState(soundsnapshot);
 	FreezeBlock (stream, "SND", soundsnapshot, SPC_SAVE_STATE_BLOCK_SIZE);
 
@@ -1428,6 +1428,8 @@ void S9xFreezeToStream (STREAM stream)
 #endif
 
 	S9xSetSoundMute(FALSE);
+
+	delete [] soundsnapshot;
 }
 
 int S9xUnfreezeFromStream (STREAM stream)
@@ -2194,7 +2196,7 @@ static void UnfreezeStructFromCopy (void *sbase, FreezeData *fields, int num_fie
 					case 1:
 						if (fields[i].offset < 0)
 						{
-							ptr++; 
+							ptr++;
 							break;
 						}
 
