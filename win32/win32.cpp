@@ -224,6 +224,7 @@ static int avi_width = 0;
 static int avi_height = 0;
 static uint32 avi_skip_frames = 0;
 static bool pre_avi_soundsync = true;
+static uint32 pre_avi_soundinputrate = 32000;
 //void Convert8To24 (SSurface *src, SSurface *dst, RECT *srect);
 void Convert16To24 (SSurface *src, SSurface *dst, RECT *srect);
 void DoAVIOpen(const char* filename);
@@ -1124,10 +1125,13 @@ void DoAVIOpen(const TCHAR* filename)
 		AVIClose(&GUI.AVIOut);
 		GUI.AVIOut = NULL;
 	}
-
-	CloseSoundDevice();
+	
 	pre_avi_soundsync = Settings.SoundSync;
+	pre_avi_soundinputrate = Settings.SoundInputRate;
 	Settings.SoundSync = false;
+	Settings.SoundInputRate = 32000;
+	ReInitSound();
+	CloseSoundDevice();
 
 	// create new writer
 	AVICreate(&GUI.AVIOut);
@@ -1209,6 +1213,7 @@ void DoAVIClose(int reason)
 	avi_sound_buffer = NULL;
 
 	Settings.SoundSync = pre_avi_soundsync;
+	Settings.SoundInputRate = pre_avi_soundinputrate;
 	ReInitSound();
 
 	switch(reason)
