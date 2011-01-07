@@ -461,18 +461,20 @@ char *ConfigFile::GetStringDup(const char *key, const char *def){
 bool ConfigFile::SetString(const char *key, string val, const char *comment){
     set<ConfigEntry, ConfigEntry::key_less>::iterator i;
     bool ret=false;
+    bool found;
 
     ConfigEntry e(key, val);
 	if(comment && *comment) e.comment = comment;
 	e.used=true;
 
     i=data.find(e);
-    if(i!=data.end()){
+    found=(i==data.end());
+    if(!found){
         e.line=i->line;
         data.erase(e);
         ret=true;
     }
-	if((i==data.end() && (!alphaSort || timeSort)) || (!alphaSort && timeSort))
+	if((found && (!alphaSort || timeSort)) || (!alphaSort && timeSort))
 		e.line = linectr++;
 
     data.insert(e);
