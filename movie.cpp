@@ -745,7 +745,8 @@ int S9xMovieUnfreeze (uint8 *buf, uint32 size)
 	}
 	else
 	{
-		if (current_frame > Movie.MaxFrame || current_sample > Movie.MaxSample || memcmp(Movie.InputBuffer, ptr, space_needed))
+      uint32   space_processed = (Movie.BytesPerSample * (current_sample + 1));
+      if (current_frame > Movie.MaxFrame || current_sample > Movie.MaxSample || memcmp(Movie.InputBuffer, ptr, space_processed))
 			return (SNAPSHOT_INCONSISTENT);
 
 		change_state(MOVIE_STATE_PLAY);
