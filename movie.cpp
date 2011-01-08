@@ -808,7 +808,6 @@ int S9xMovieOpen (const char *filename, bool8 read_only)
 		result = S9xUnfreezeFromStream(stream);
 
 	CLOSE_STREAM(stream);
-	fclose(fd);
 
 	if (result != SUCCESS)
 		return (result);
