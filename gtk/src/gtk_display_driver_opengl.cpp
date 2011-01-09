@@ -736,6 +736,8 @@ S9xOpenGLDisplayDriver::resize_window (int width, int height)
 
     glXMakeCurrent (display, xwindow, glx_context);
 
+    swap_control (config->sync_to_vblank);
+
     return;
 }
 
@@ -866,30 +868,49 @@ S9xOpenGLDisplayDriver::init (void)
 void
 S9xOpenGLDisplayDriver::swap_control (int enable)
 {
-    glSwapIntervalProc glSwapInterval = NULL;
-    const char         *ext_str;
+    static glSwapIntervalProc     glSwapInterval = NULL;
+    static glXSwapIntervalEXTProc glXSwapIntervalEXT = NULL;
+    static int                    queried = FALSE;
+    const char                   *ext_str;
 
-    ext_str = glXQueryExtensionsString (display, DefaultScreen (display));
+    enable = enable ? 1 : 0;
 
-    /* We try to set this with both extensions since some cards pretend
-     * to support both, but ignore one. */
-
-    if (strstr (ext_str, "GLX_MESA_swap_control"))
+    if (!queried)
     {
-        glSwapInterval = (glSwapIntervalProc)
-            glGetProcAddress ((GLubyte *) "glXSwapIntervalMESA");
-        if (glSwapInterval)
-            glSwapInterval (enable ? 1 : 0);
+        ext_str = glXQueryExtensionsString (display, DefaultScreen (display));
+
+        /* We try to set this with both extensions since some cards pretend
+         * to support both, but ignore one. */
+
+        if (strstr (ext_str, "GLX_MESA_swap_control"))
+        {
+            glSwapInterval = (glSwapIntervalProc)
+                    glGetProcAddress ((GLubyte *) "glXSwapIntervalMESA");
+        }
+
+        if (strstr (ext_str, "GLX_SGI_swap_control"))
+        {
+            glSwapInterval = (glSwapIntervalProc)
+                    glGetProcAddress ((GLubyte *) "glXSwapIntervalSGI");
+        }
+
+        if (strstr (ext_str, "GLX_EXT_swap_control"))
+        {
+            glXSwapIntervalEXT = (glXSwapIntervalEXTProc)
+                    glGetProcAddress ((GLubyte *) "glXSwapIntervalEXT");
+        }
+
+        queried = TRUE;
     }
 
-    else if (strstr (ext_str, "GLX_SGI_swap_control"))
+    if (glSwapInterval)
     {
-        glSwapInterval = (glSwapIntervalProc)
-            glGetProcAddress ((GLubyte *) "glXSwapIntervalSGI");
-        if (glSwapInterval)
-        {
-            glSwapInterval (enable ? 1 : 0);
-        }
+        glSwapInterval (enable);
+    }
+
+    if (glXSwapIntervalEXT)
+    {
+        glXSwapIntervalEXT (display, xwindow, enable);
     }
 
     return;
