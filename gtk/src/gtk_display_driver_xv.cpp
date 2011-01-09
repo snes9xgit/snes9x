@@ -39,11 +39,13 @@ S9xXVDisplayDriver::S9xXVDisplayDriver (Snes9xWindow *window,
 void
 S9xXVDisplayDriver::resize_window (int width, int height)
 {
-    g_object_unref (gdk_window);
-    XDestroyWindow (display, xwindow);
+    XWindowChanges changes;
+
+    changes.width = width;
+    changes.height = height;
+    XConfigureWindow (display, xwindow, CWWidth | CWHeight, &changes);
     XSync (display, False);
 
-    create_window (width, height);
     gdk_window_show (gdk_window);
 
     return;
