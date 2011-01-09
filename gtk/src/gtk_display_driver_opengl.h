@@ -35,6 +35,9 @@ typedef void      (*gl_proc)                  (void);
 typedef gl_proc   (*getProcAddressProc)       (const GLubyte *name);
 
 typedef GLint     (*glSwapIntervalProc)       (GLint interval);
+typedef void      (*glXSwapIntervalEXTProc)   (Display *dpy,
+                                               GLXDrawable drawable,
+                                               int interval);
 /* Procedures for pixel buffer objects */
 typedef void      (*glGenBuffersProc)         (GLsizei n, GLuint *buffers);
 typedef void      (*glDeleteBuffersProc)      (GLsizei n, const GLuint *buffers);
