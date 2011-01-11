@@ -533,7 +533,7 @@ struct SCustomKeys CustomKeys = {
 //	{'8',0}, // BG Layering hack
 	{'9',0}, // Transparency
 	{'0',0}, // HDMA Emulation
-	{'6',CUSTKEY_SHIFT_MASK}, // GLCube Mode
+//	{'6',CUSTKEY_SHIFT_MASK}, // GLCube Mode
 //	{'9',CUSTKEY_SHIFT_MASK}, // Interpolate Mode 7
 	{'6',0}, // Joypad Swap
 	{'7',0}, // Switch Controllers
@@ -7742,13 +7742,11 @@ static void set_hotkeyinfo(HWND hDlg)
 		SendDlgItemMessage(hDlg,IDC_HOTKEY6,WM_USER+44,CustomKeys.ClippingWindows.key,CustomKeys.ClippingWindows.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY7,WM_USER+44,CustomKeys.Transparency.key,CustomKeys.Transparency.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY8,WM_USER+44,CustomKeys.HDMA.key,CustomKeys.HDMA.modifiers);
-		SendDlgItemMessage(hDlg,IDC_HOTKEY9,WM_USER+44,CustomKeys.GLCube.key,CustomKeys.GLCube.modifiers);
+		SendDlgItemMessage(hDlg,IDC_HOTKEY9,WM_USER+44,0,0);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY10,WM_USER+44,CustomKeys.SwitchControllers.key,CustomKeys.SwitchControllers.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY11,WM_USER+44,CustomKeys.JoypadSwap.key,CustomKeys.JoypadSwap.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY12,WM_USER+44,CustomKeys.ResetGame.key,CustomKeys.ResetGame.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY13,WM_USER+44,CustomKeys.ToggleCheats.key,CustomKeys.ToggleCheats.modifiers);
-//		SendDlgItemMessage(hDlg,IDC_HOTKEY12,WM_USER+44,CustomKeys.InterpMode7.key,CustomKeys.InterpMode7.modifiers);
-//		SendDlgItemMessage(hDlg,IDC_HOTKEY13,WM_USER+44,CustomKeys.BGLHack.key,CustomKeys.BGLHack.modifiers);
 		break;
 	case 2:
 		SendDlgItemMessage(hDlg,IDC_HOTKEY1,WM_USER+44,CustomKeys.TurboA.key,CustomKeys.TurboA.modifiers);
@@ -7763,7 +7761,7 @@ static void set_hotkeyinfo(HWND hDlg)
 		SendDlgItemMessage(hDlg,IDC_HOTKEY10,WM_USER+44,CustomKeys.TurboUp.key,CustomKeys.TurboUp.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY11,WM_USER+44,CustomKeys.TurboRight.key,CustomKeys.TurboRight.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY12,WM_USER+44,CustomKeys.TurboDown.key,CustomKeys.TurboDown.modifiers);
-		SendDlgItemMessage(hDlg,IDC_HOTKEY12,WM_USER+44,0,0);
+		SendDlgItemMessage(hDlg,IDC_HOTKEY13,WM_USER+44,0,0);
 		break;
 	case 3:
 		for(int i = 0 ; i < 10 ; i++)
@@ -7809,7 +7807,7 @@ static void set_hotkeyinfo(HWND hDlg)
 		SetDlgItemText(hDlg,IDC_LABEL_HK6,HOTKEYS_LABEL_2_6);
 		SetDlgItemText(hDlg,IDC_LABEL_HK7,HOTKEYS_LABEL_2_7);
 		SetDlgItemText(hDlg,IDC_LABEL_HK8,HOTKEYS_LABEL_2_8);
-		SetDlgItemText(hDlg,IDC_LABEL_HK9,HOTKEYS_LABEL_2_9);
+		SetDlgItemText(hDlg,IDC_LABEL_HK9,INPUTCONFIG_LABEL_UNUSED);
 		SetDlgItemText(hDlg,IDC_LABEL_HK10,HOTKEYS_LABEL_2_10);
 		SetDlgItemText(hDlg,IDC_LABEL_HK11,HOTKEYS_LABEL_2_11);
 		SetDlgItemText(hDlg,IDC_LABEL_HK12,HOTKEYS_LABEL_2_12);
@@ -7823,7 +7821,6 @@ static void set_hotkeyinfo(HWND hDlg)
 		SetDlgItemText(hDlg,IDC_LABEL_HK5,HOTKEYS_LABEL_3_5);
 		SetDlgItemText(hDlg,IDC_LABEL_HK6,HOTKEYS_LABEL_3_6);
 		SetDlgItemText(hDlg,IDC_LABEL_HK7,HOTKEYS_LABEL_3_7);
-		SetDlgItemText(hDlg,IDC_LABEL_HK8,HOTKEYS_LABEL_3_8);
 		SetDlgItemText(hDlg,IDC_LABEL_HK8,HOTKEYS_LABEL_3_8);
 		SetDlgItemText(hDlg,IDC_LABEL_HK9,HOTKEYS_LABEL_3_9);
 		SetDlgItemText(hDlg,IDC_LABEL_HK10,HOTKEYS_LABEL_3_10);
@@ -7974,7 +7971,7 @@ switch(msg)
 			break;
 		case IDC_HOTKEY9:
 			if(index == 0) CustomKeys.ScopePause.key = wParam, CustomKeys.ScopePause.modifiers = modifiers;
-			if(index == 1) CustomKeys.GLCube.key = wParam,      CustomKeys.GLCube.modifiers = modifiers;
+			//if(index == 1) CustomKeys.GLCube.key = wParam,      CustomKeys.GLCube.modifiers = modifiers;
 			if(index == 2) CustomKeys.TurboLeft.key = wParam,    CustomKeys.TurboLeft.modifiers = modifiers;
 			if(index == 3) CustomKeys.SelectSave[8].key = wParam,	CustomKeys.SelectSave[8].modifiers = modifiers;
 			break;

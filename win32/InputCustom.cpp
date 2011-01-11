@@ -669,7 +669,7 @@ int GetNumHotKeysAssignedTo (WORD Key, int modifiers)
 		if(MATCHES_KEY(ClippingWindows))   count++;
 //		if(MATCHES_KEY(BGLHack))           count++;
 		if(MATCHES_KEY(Transparency))      count++;
-		if(MATCHES_KEY(GLCube))            count++;
+//		if(MATCHES_KEY(GLCube))            count++;
 //		if(MATCHES_KEY(InterpMode7))       count++;
 		if(MATCHES_KEY(JoypadSwap))        count++;
 		if(MATCHES_KEY(SwitchControllers)) count++;

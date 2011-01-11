@@ -1044,7 +1044,7 @@ void WinRegisterConfigItems()
 	ADDN(SelectSave[0],SelectSlot0); ADDN(SelectSave[1],SelectSlot1); ADDN(SelectSave[2],SelectSlot2); ADDN(SelectSave[3],SelectSlot3); ADDN(SelectSave[4],SelectSlot4); ADDN(SelectSave[5],SelectSlot5); ADDN(SelectSave[6],SelectSlot6); ADDN(SelectSave[7],SelectSlot7); ADDN(SelectSave[8],SelectSlot8); ADDN(SelectSave[9],SelectSlot9);
 	ADD(SaveScreenShot); ADD(SlotPlus); ADD(SlotMinus); ADD(SlotSave); ADD(SlotLoad);
 	ADD(BGL1); ADD(BGL2); ADD(BGL3); ADD(BGL4); ADD(BGL5);
-	ADD(ClippingWindows); /*ADD(BGLHack);*/ ADD(Transparency); ADD(HDMA); ADD(GLCube);
+	ADD(ClippingWindows); /*ADD(BGLHack);*/ ADD(Transparency); ADD(HDMA); /*ADD(GLCube);*/
 	/*ADD(InterpMode7);*/ ADD(JoypadSwap); ADD(SwitchControllers); ADD(ResetGame); ADD(ToggleCheats);
 	ADD(TurboA); ADD(TurboB); ADD(TurboY); ADD(TurboX); ADD(TurboL); ADD(TurboR); ADD(TurboStart); ADD(TurboSelect); ADD(TurboUp); ADD(TurboDown); ADD(TurboLeft); ADD(TurboRight);
 #undef ADD

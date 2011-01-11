@@ -272,7 +272,6 @@
 #define HOTKEYS_LABEL_2_6 TEXT("Clipping Windows")
 #define HOTKEYS_LABEL_2_7 TEXT("Transparency")
 #define HOTKEYS_LABEL_2_8 TEXT("HDMA Emulation")
-#define HOTKEYS_LABEL_2_9 TEXT("GLCube Mode")
 #define HOTKEYS_LABEL_2_10 TEXT("Switch Controllers")
 #define HOTKEYS_LABEL_2_11 TEXT("Joypad Swap")
 #define HOTKEYS_LABEL_2_12 TEXT("Reset Game")
