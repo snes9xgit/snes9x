@@ -814,7 +814,7 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 	for (int J = 0; J < 5; J++)
 	{
 		extern bool S9xGetState (WORD KeyIdent);
-		if(Joypad[J].Enabled && (!S9xGetState(Joypad[J+8].Left))) // enabled and Togglify
+		if(Joypad[J].Enabled && (!S9xGetState(Joypad[J+8].Autohold))) // enabled and Togglify
 		{
 			SJoypad & p = ToggleJoypadStorage[J];
 			if(wParam == Joypad[J].L) p.L = !p.L;
@@ -829,10 +829,10 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 			if(wParam == Joypad[J].Right) p.Right = !p.Right;
 			if(wParam == Joypad[J].Up) p.Up = !p.Up;
 			if(wParam == Joypad[J].Down) p.Down = !p.Down;
-///					if(wParam == Joypad[J].Left_Down) p.Left_Down = !p.Left_Down;
-///					if(wParam == Joypad[J].Left_Up) p.Left_Up = !p.Left_Up;
-///					if(wParam == Joypad[J].Right_Down) p.Right_Down = !p.Right_Down;
-///					if(wParam == Joypad[J].Right_Up) p.Right_Up = !p.Right_Up;
+//			if(wParam == Joypad[J].Left_Down) p.Left_Down = !p.Left_Down;
+//			if(wParam == Joypad[J].Left_Up) p.Left_Up = !p.Left_Up;
+//			if(wParam == Joypad[J].Right_Down) p.Right_Down = !p.Right_Down;
+//			if(wParam == Joypad[J].Right_Up) p.Right_Up = !p.Right_Up;
 			if(!Settings.UpAndDown)
 			{
 				if(p.Left && p.Right)
@@ -841,7 +841,7 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 					p.Up = p.Down = false;
 			}
 		}
-		if(Joypad[J].Enabled && (!S9xGetState(Joypad[J+8].Down))) // enabled and turbo-togglify (TurboTog)
+		if(Joypad[J].Enabled && (!S9xGetState(Joypad[J+8].Autofire))) // enabled and turbo-togglify (TurboTog)
 		{
 			SJoypad & p = TurboToggleJoypadStorage[J];
 			if(wParam == Joypad[J].L) p.L = !p.L;
@@ -852,23 +852,23 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 			if(wParam == Joypad[J].X) p.X = !p.X;
 			if(wParam == Joypad[J].Start) p.Start = !p.Start;
 			if(wParam == Joypad[J].Select) p.Select = !p.Select;
-///					if(wParam == Joypad[J].Left) p.Left = !p.Left;
-///					if(wParam == Joypad[J].Right) p.Right = !p.Right;
-///					if(wParam == Joypad[J].Up) p.Up = !p.Up;
-///					if(wParam == Joypad[J].Down) p.Down = !p.Down;
-///					if(wParam == Joypad[J].Left_Down) p.Left_Down = !p.Left_Down;
-///					if(wParam == Joypad[J].Left_Up) p.Left_Up = !p.Left_Up;
-///					if(wParam == Joypad[J].Right_Down) p.Right_Down = !p.Right_Down;
-///					if(wParam == Joypad[J].Right_Up) p.Right_Up = !p.Right_Up;
-/*					if(!Settings.UpAndDown)
+			if(wParam == Joypad[J].Left) p.Left = !p.Left;
+			if(wParam == Joypad[J].Right) p.Right = !p.Right;
+			if(wParam == Joypad[J].Up) p.Up = !p.Up;
+			if(wParam == Joypad[J].Down) p.Down = !p.Down;
+//			if(wParam == Joypad[J].Left_Down) p.Left_Down = !p.Left_Down;
+//			if(wParam == Joypad[J].Left_Up) p.Left_Up = !p.Left_Up;
+//			if(wParam == Joypad[J].Right_Down) p.Right_Down = !p.Right_Down;
+//			if(wParam == Joypad[J].Right_Up) p.Right_Up = !p.Right_Up;
+			if(!Settings.UpAndDown)
 			{
-				if(p.Left && p.Right && )
+				if(p.Left && p.Right)
 					p.Left = p.Right = false;
 				if(p.Up && p.Down)
 					p.Up = p.Down = false;
-			}*/
+			}
 		}
-		if(wParam == Joypad[J+8].Right) // clear all
+		if(wParam == Joypad[J+8].ClearAll) // clear all
 		{
 			{
 				SJoypad & p = ToggleJoypadStorage[J];

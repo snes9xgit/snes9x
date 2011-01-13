@@ -464,10 +464,22 @@ struct SCustomKeys {
 
 struct SJoypad {
     BOOL Enabled;
-    WORD Left;
-    WORD Right;
-    WORD Up;
-    WORD Down;
+    union {
+        WORD Left;
+        WORD Autohold;
+    };
+    union {
+        WORD Right;
+        WORD ClearAll;
+    };
+    union {
+        WORD Up;
+        WORD TempTurbo;
+    };
+    union {
+        WORD Down;
+        WORD Autofire;
+    };
     WORD Left_Up;
     WORD Left_Down;
     WORD Right_Up;
