@@ -776,26 +776,12 @@ void WinPreSave(ConfigFile& conf)
 	if(GUI.window_size.bottom < 10) GUI.window_size.bottom = 10;
 	if(GUI.window_size.right < 10) GUI.window_size.right = 10;
 
-	/*if(!Settings.SoundPlaybackRate) {Settings.SoundPlaybackRate = 6; GUI.Mute = TRUE;}
-	else if(Settings.SoundPlaybackRate <= 8000) Settings.SoundPlaybackRate = 1;
-	else if(Settings.SoundPlaybackRate <= 11025) Settings.SoundPlaybackRate = 2;
-	else if(Settings.SoundPlaybackRate <= 16000) Settings.SoundPlaybackRate = 3;
-	else if(Settings.SoundPlaybackRate <= 22050) Settings.SoundPlaybackRate = 4;
-	else if(Settings.SoundPlaybackRate <= 30000) Settings.SoundPlaybackRate = 5;
-	else if(Settings.SoundPlaybackRate <= 32000) Settings.SoundPlaybackRate = 6;
-	else if(Settings.SoundPlaybackRate <= 35000) Settings.SoundPlaybackRate = 7;
-	else if(Settings.SoundPlaybackRate <= 44100) Settings.SoundPlaybackRate = 8;
-	else Settings.SoundPlaybackRate = 9;*/
 	conf.DeleteKey("Sound::Mono");
 	if(configSort == 2)
 		conf.ClearLines();
 }
 void WinPostSave(ConfigFile& conf)
 {
-	/*if(GUI.window_size.left < -30) GUI.window_size.left = -30;
-	if(GUI.window_size.top < -30) GUI.window_size.top = -30;
-	if(GUI.window_size.left+GUI.window_size.right > GetSystemMetrics(SM_CXSCREEN)+30) GUI.window_size.left = GetSystemMetrics(SM_CXSCREEN)+30-GUI.window_size.right;
-	if(GUI.window_size.top+GUI.window_size.bottom > GetSystemMetrics(SM_CYSCREEN)+30) GUI.window_size.top = GetSystemMetrics(SM_CYSCREEN)+30-GUI.window_size.bottom;*/
 	int extra_width  = 2*(GetSystemMetrics(SM_CXBORDER) +
 						  GetSystemMetrics(SM_CXDLGFRAME));
 	int extra_height = 2*(GetSystemMetrics(SM_CYBORDER) +
@@ -809,17 +795,6 @@ void WinPostSave(ConfigFile& conf)
 	GUI.window_size.bottom += GUI.window_size.top;
 	GUI.window_size.right += extra_width;
 	GUI.window_size.bottom += extra_height;
-	/*switch(Settings.SoundPlaybackRate){
-		case 1: Settings.SoundPlaybackRate = 8000; break;
-		case 2: Settings.SoundPlaybackRate = 11025; break;
-		case 3: Settings.SoundPlaybackRate = 16000; break;
-		case 4: Settings.SoundPlaybackRate = 22050; break;
-		case 5: Settings.SoundPlaybackRate = 30000; break;
-		case 6: Settings.SoundPlaybackRate = 32000; break;
-		case 7: Settings.SoundPlaybackRate = 35000; break;
-		case 8: Settings.SoundPlaybackRate = 44100; break;
-		case 9: Settings.SoundPlaybackRate = 48000; break;
-	}*/
 	Settings.ShutdownMaster = preSaveShutdownMaster; // revert temp change
 }
 void WinPostLoad(ConfigFile& conf)

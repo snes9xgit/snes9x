@@ -584,5 +584,6 @@ const char* GetFilterName(RenderFilter filterID);
 int GetFilterScale(RenderFilter filterID);
 bool GetFilterHiResSupport(RenderFilter filterID);
 const TCHAR * S9xGetDirectoryT (enum s9x_getdirtype);
+RECT GetWindowMargins(HWND hwnd, UINT width);
 
 #endif // !defined(SNES9X_H_INCLUDED)

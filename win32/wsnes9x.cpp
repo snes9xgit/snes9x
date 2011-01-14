@@ -2058,15 +2058,17 @@ LRESULT CALLBACK WinProc(
 		case ID_WINDOW_SIZE_2X:
 		case ID_WINDOW_SIZE_3X:
 		case ID_WINDOW_SIZE_4X:
-			UINT factor,newWidth,newHeight;
+			UINT factor, newWidth, newHeight;
+			RECT margins;
 			factor = (wParam & 0xffff) - ID_WINDOW_SIZE_1X + 1;
 			newWidth = GUI.AspectWidth * factor;
 			newHeight = (GUI.HeightExtend ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT) * factor;
-			newWidth += 2*(GetSystemMetrics(SM_CXBORDER) + GetSystemMetrics(SM_CXDLGFRAME));
-			newHeight += 2*(GetSystemMetrics(SM_CYBORDER) + GetSystemMetrics(SM_CYDLGFRAME)) +
-				GetSystemMetrics(SM_CYCAPTION) + (GUI.HideMenu ? 0 : (GetSystemMetrics(SM_CYMENU) +
-						  (factor<2 ? GetSystemMetrics(SM_CYMENU) : 0)));
-			SetWindowPos(GUI.hWnd,0,0,0,newWidth,newHeight,SWP_NOMOVE);
+
+			margins = GetWindowMargins(GUI.hWnd,newWidth);
+			newHeight += margins.top + margins.bottom;
+			newWidth += margins.left + margins.right;
+
+			SetWindowPos(GUI.hWnd, NULL, 0, 0, newWidth, newHeight, SWP_NOMOVE);
 			break;
 		case ID_WINDOW_STRETCH:
 			GUI.Stretch = !GUI.Stretch;
@@ -4165,6 +4167,27 @@ void S9xSetRecentGames ()
 #endif
         }
     }
+}
+
+RECT GetWindowMargins(HWND hwnd, UINT width)
+{
+	RECT rcMargins = {0,0,0,0};
+
+	AdjustWindowRectEx(&rcMargins, GetWindowStyle(hwnd), !GUI.HideMenu, GetWindowExStyle(hwnd));
+
+	rcMargins.left = abs(rcMargins.left);
+	rcMargins.top = abs(rcMargins.top);
+
+	if (!GUI.HideMenu) {
+		RECT rcTemp = {0,0,width,0x7FFF}; // 0x7FFF="Infinite" height
+		SendMessage(hwnd, WM_NCCALCSIZE, FALSE, (LPARAM)&rcTemp);
+
+		// Adjust our previous calculation to compensate for menu
+		// wrapping.
+		rcMargins.top = rcTemp.top;
+	}
+
+	return rcMargins;
 }
 
 void WinDeleteRecentGamesList ()
