@@ -1134,21 +1134,11 @@ bool8 CMemory::Init (void)
 	BIOSROM = ROM + 0x300000; // BS
 	BSRAM   = ROM + 0x400000; // BS
 
-#if defined(ZSNES_FX) || defined(ZSNES_C4)
-    ::ROM    = ROM;
-    ::SRAM   = SRAM;
-    ::RegRAM = FillRAM;
-#endif
-
-#ifdef ZSNES_FX
-	SFXPlotTable = ROM + 0x400000;
-#else
 	SuperFX.pvRegisters = FillRAM + 0x3000;
 	SuperFX.nRamBanks   = 2; // Most only use 1.  1=64KB=512Mb, 2=128KB=1024Mb
 	SuperFX.pvRam       = SRAM;
 	SuperFX.nRomBanks   = (2 * 1024 * 1024) / (32 * 1024);
 	SuperFX.pvRom       = (uint8 *) ROM;
-#endif
 
 	PostRomInitFunc = NULL;
 
@@ -2263,10 +2253,8 @@ void CMemory::InitROM (void)
 	Settings.SETA = 0;
 	Settings.SRTC = FALSE;
 	Settings.BS = FALSE;
-#ifndef ZSNES_FX
+	
 	SuperFX.nRomBanks = CalculatedSize >> 15;
-#endif
-	SA1.Executing = FALSE;
 
 	//// Parse ROM header and read ROM informatoin
 
@@ -2392,9 +2380,7 @@ void CMemory::InitROM (void)
 		case 0x1520:
 		case 0x1A20:
 			Settings.SuperFX = TRUE;
-		#ifndef ZSNES_FX
 			S9xInitSuperFX();
-		#endif
 			if (ROM[0x7FDA] == 0x33)
 				SRAMSize = ROM[0x7FBD];
 			else
@@ -3493,7 +3479,6 @@ bool8 CMemory::match_id (const char *str)
 
 void CMemory::ApplyROMFixes (void)
 {
-	Settings.Shutdown = Settings.ShutdownMaster;
 	Settings.BlockInvalidVRAMAccess = Settings.BlockInvalidVRAMAccessMaster;
 
 	//// Warnings
@@ -3570,6 +3555,7 @@ void CMemory::ApplyROMFixes (void)
 
 	Timings.HDMAStart   = SNES_HDMA_START_HC + Settings.HDMATimingHack - 100;
 	Timings.HBlankStart = SNES_HBLANK_START_HC + Timings.HDMAStart - SNES_HDMA_START_HC;
+	Timings.IRQTriggerCycles = 10;
 
 	if (!Settings.DisableGameSpecificHacks)
 	{
@@ -3584,14 +3570,6 @@ void CMemory::ApplyROMFixes (void)
 
 	if (!Settings.DisableGameSpecificHacks)
 	{
-		// Opcode-based emulators cannot escape from "reading $4211/BPL" infinite loop...
-		// The true IRQ can be triggered inside an opcode.
-		if (match_na("TRAVERSE")) // Traverse - Starlight & Prairie
-		{
-			Timings.IRQPendCount = 1;
-			printf("IRQ count hack: %d\n", Timings.IRQPendCount);
-		}
-
 		// An infinite loop reads $4212 and waits V-blank end, whereas VIRQ is set V=0.
 		// If Snes9x succeeds to escape from the loop before jumping into the IRQ handler, the game goes further.
 		// If Snes9x jumps into the IRQ handler before escaping from the loop,
@@ -3599,12 +3577,6 @@ void CMemory::ApplyROMFixes (void)
 		if (match_na("Aero the AcroBat 2"))
 		{
 			Timings.IRQPendCount = 2;
-			printf("IRQ count hack: %d\n", Timings.IRQPendCount);
-		}
-
-		if (match_na("BATTLE BLAZE"))
-		{
-			Timings.IRQPendCount = 1;
 			printf("IRQ count hack: %d\n", Timings.IRQPendCount);
 		}
 	}
@@ -3617,242 +3589,6 @@ void CMemory::ApplyROMFixes (void)
 			Settings.BlockInvalidVRAMAccess = FALSE;
 			printf("Invalid VRAM access hack\n");
 		}
-	}
-
-	//// CPU speed-ups (CPU_Shutdown())
-
-	// Force disabling a speed-up hack
-    // Games which spool sound samples between the SNES and sound CPU using
-    // H-DMA as the sample is playing.
-	if (match_na("EARTHWORM JIM 2") || // Earth Worm Jim 2
-		match_na("PRIMAL RAGE")     || // Primal Rage
-		match_na("CLAY FIGHTER")    || // Clay Fighter
-		match_na("ClayFighter 2")   || // Clay Fighter 2
-		match_na("WeaponLord")      || // Weapon Lord
-		match_nn("WAR 2410")        || // War 2410
-		match_id("ARF")             || // Star Ocean
-		match_id("A4WJ")            || // Mini Yonku Shining Scorpion - Let's & Go!!
-		match_nn("NHL")             ||
-		match_nc("MADDEN"))
-	{
-		if (Settings.Shutdown)
-			printf("Disabled CPU shutdown hack.\n");
-		Settings.Shutdown = FALSE;
-	}
-
-	// SA-1
-	SA1.WaitAddress = 0xffffffff;
-	SA1.WaitByteAddress1 = NULL;
-	SA1.WaitByteAddress2 = NULL;
-
-	if (Settings.SA1)
-	{
-		// Itoi Shigesato no Bass Tsuri No.1 (J)
-		if (match_id("ZBPJ"))
-		{
-			SA1.WaitAddress = 0x0093f1;
-			SA1.WaitByteAddress1 = FillRAM + 0x304a;
-		}
-
-		// Daisenryaku Expert WWII (J)
-		if (match_id("AEVJ"))
-		{
-			SA1.WaitAddress = 0x0ed18d;
-			SA1.WaitByteAddress1 = FillRAM + 0x3000;
-		}
-
-		// Derby Jockey 2 (J)
-		if (match_id("A2DJ"))
-		{
-			SA1.WaitAddress = 0x008b62;
-		}
-
-		// Dragon Ball Z - Hyper Dimension (J)
-		if (match_id("AZIJ"))
-		{
-			SA1.WaitAddress = 0x008083;
-			SA1.WaitByteAddress1 = FillRAM + 0x3020;
-		}
-
-		// SD Gundam G NEXT (J)
-		if (match_id("ZX3J"))
-		{
-			SA1.WaitAddress = 0x0087f2;
-			SA1.WaitByteAddress1 = FillRAM + 0x30c4;
-		}
-
-		// Shougi no Hanamichi (J)
-		if (match_id("AARJ"))
-		{
-			SA1.WaitAddress = 0xc1f85a;
-			SA1.WaitByteAddress1 = SRAM + 0x0c64;
-			SA1.WaitByteAddress2 = SRAM + 0x0c66;
-		}
-
-		// Asahi Shinbun Rensai Katou Hifumi Kudan Shougi Shingiryu (J)
-		if (match_id("A23J"))
-		{
-			SA1.WaitAddress = 0xc25037;
-			SA1.WaitByteAddress1 = SRAM + 0x0c06;
-			SA1.WaitByteAddress2 = SRAM + 0x0c08;
-		}
-
-		// Taikyoku Igo - Idaten (J)
-		if (match_id("AIIJ"))
-		{
-			SA1.WaitAddress = 0xc100be;
-			SA1.WaitByteAddress1 = SRAM + 0x1002;
-			SA1.WaitByteAddress2 = SRAM + 0x1004;
-		}
-
-		// Takemiya Masaki Kudan no Igo Taishou (J)
-		if (match_id("AITJ"))
-		{
-			SA1.WaitAddress = 0x0080b7;
-		}
-
-		// J. League '96 Dream Stadium (J)
-		if (match_id("AJ6J"))
-		{
-			SA1.WaitAddress = 0xc0f74a;
-		}
-
-		// Jumpin' Derby (J)
-		if (match_id("AJUJ"))
-		{
-			SA1.WaitAddress = 0x00d926;
-		}
-
-		// Kakinoki Shougi (J)
-		if (match_id("AKAJ"))
-		{
-			SA1.WaitAddress = 0x00f070;
-		}
-
-		// Hoshi no Kirby 3 (J), Kirby's Dream Land 3 (U)
-		if (match_id("AFJJ") || match_id("AFJE"))
-		{
-			SA1.WaitAddress = 0x0082d4;
-			SA1.WaitByteAddress1 = SRAM + 0x72a4;
-		}
-
-		// Hoshi no Kirby - Super Deluxe (J)
-		if (match_id("AKFJ"))
-		{
-			SA1.WaitAddress = 0x008c93;
-			SA1.WaitByteAddress1 = FillRAM + 0x300a;
-			SA1.WaitByteAddress2 = FillRAM + 0x300e;
-		}
-
-		// Kirby Super Star (U)
-		if (match_id("AKFE"))
-		{
-			SA1.WaitAddress = 0x008cb8;
-			SA1.WaitByteAddress1 = FillRAM + 0x300a;
-			SA1.WaitByteAddress2 = FillRAM + 0x300e;
-		}
-
-		// Super Mario RPG (J), (U)
-		if (match_id("ARWJ") || match_id("ARWE"))
-		{
-			SA1.WaitAddress = 0xc0816f;
-			SA1.WaitByteAddress1 = FillRAM + 0x3000;
-		}
-
-		// Marvelous (J)
-		if (match_id("AVRJ"))
-		{
-			SA1.WaitAddress = 0x0085f2;
-			SA1.WaitByteAddress1 = FillRAM + 0x3024;
-		}
-
-		// Harukanaru Augusta 3 - Masters New (J)
-		if (match_id("AO3J"))
-		{
-			SA1.WaitAddress = 0x00dddb;
-			SA1.WaitByteAddress1 = FillRAM + 0x37b4;
-		}
-
-		// Jikkyou Oshaberi Parodius (J)
-		if (match_id("AJOJ"))
-		{
-			SA1.WaitAddress = 0x8084e5;
-		}
-
-		// Super Bomberman - Panic Bomber W (J)
-		if (match_id("APBJ"))
-		{
-			SA1.WaitAddress = 0x00857a;
-		}
-
-		// Pebble Beach no Hatou New - Tournament Edition (J)
-		if (match_id("AONJ"))
-		{
-			SA1.WaitAddress = 0x00df33;
-			SA1.WaitByteAddress1 = FillRAM + 0x37b4;
-		}
-
-		// PGA European Tour (U)
-		if (match_id("AEPE"))
-		{
-			SA1.WaitAddress = 0x003700;
-			SA1.WaitByteAddress1 = FillRAM + 0x3102;
-		}
-
-		// PGA Tour 96 (U)
-		if (match_id("A3GE"))
-		{
-			SA1.WaitAddress = 0x003700;
-			SA1.WaitByteAddress1 = FillRAM + 0x3102;
-		}
-
-		// Power Rangers Zeo - Battle Racers (U)
-		if (match_id("A4RE"))
-		{
-			SA1.WaitAddress = 0x009899;
-			SA1.WaitByteAddress1 = FillRAM + 0x3000;
-		}
-
-		// SD F-1 Grand Prix (J)
-		if (match_id("AGFJ"))
-		{
-			SA1.WaitAddress = 0x0181bc;
-		}
-
-		// Saikousoku Shikou Shougi Mahjong (J)
-		if (match_id("ASYJ"))
-		{
-			SA1.WaitAddress = 0x00f2cc;
-			SA1.WaitByteAddress1 = SRAM + 0x7ffe;
-			SA1.WaitByteAddress2 = SRAM + 0x7ffc;
-		}
-
-		// Shougi Saikyou II (J)
-		if (match_id("AX2J"))
-		{
-			SA1.WaitAddress = 0x00d675;
-		}
-
-		// Mini Yonku Shining Scorpion - Let's & Go!! (J)
-		if (match_id("A4WJ"))
-		{
-			SA1.WaitAddress = 0xc048be;
-		}
-
-		// Shin Shougi Club (J)
-		if (match_id("AHJJ"))
-		{
-			SA1.WaitAddress = 0xc1002a;
-			SA1.WaitByteAddress1 = SRAM + 0x0806;
-			SA1.WaitByteAddress2 = SRAM + 0x0808;
-		}
-
-		// rest games:
-		// Habu Meijin no Omoshiro Shougi (J)
-		// Hayashi Kaihou Kudan no Igo Taidou (J)
-		// Shougi Saikyou (J)
-		// Super Robot Wars Gaiden (J)
-		// Super Shougi 3 - Kitaihei (J)
 	}
 
 	//// SRAM initial value

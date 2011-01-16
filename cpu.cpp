@@ -208,12 +208,16 @@ static void S9xResetCPU (void)
 static void S9xSoftResetCPU (void)
 {
 	CPU.Cycles = 182; // Or 188. This is the cycle count just after the jump to the Reset Vector.
-	CPU.PrevCycles = -1;
+	CPU.PrevCycles = CPU.Cycles;
 	CPU.V_Counter = 0;
 	CPU.Flags = CPU.Flags & (DEBUG_MODE_FLAG | TRACE_FLAG);
 	CPU.PCBase = NULL;
-	CPU.IRQActive = FALSE;
-	CPU.IRQPending = 0;
+	CPU.NMILine = FALSE;
+	CPU.IRQLine = FALSE;
+	CPU.IRQTransition = FALSE;
+	CPU.IRQLastState = FALSE;
+	CPU.IRQExternal = FALSE;
+	CPU.IRQPending = Timings.IRQPendCount;
 	CPU.MemSpeed = SLOW_ONE_CYCLE;
 	CPU.MemSpeedx2 = SLOW_ONE_CYCLE * 2;
 	CPU.FastROMSpeed = SLOW_ONE_CYCLE;
@@ -226,9 +230,6 @@ static void S9xSoftResetCPU (void)
 	CPU.WhichEvent = HC_RENDER_EVENT;
 	CPU.NextEvent  = Timings.RenderPos;
 	CPU.WaitingForInterrupt = FALSE;
-	CPU.WaitAddress = 0xffffffff;
-	CPU.WaitCounter = 0;
-	CPU.PBPCAtOpcodeStart = 0xffffffff;
 	CPU.AutoSaveTimer = 0;
 	CPU.SRAMModified = FALSE;
 
@@ -261,7 +262,6 @@ static void S9xSoftResetCPU (void)
 
 	ICPU.S9xOpcodes = S9xOpcodesE1;
 	ICPU.S9xOpLengths = S9xOpLengthsM1X1;
-	ICPU.CPUExecuting = TRUE;
 
 	S9xUnpackStatus();
 }

@@ -328,14 +328,3 @@ uint8 * S9xGetMemPointerC4 (uint16 Address)
 		return (NULL);
 	return (Memory.C4RAM - 0x6000 + (Address & 0xffff));
 }
-
-#ifdef ZSNES_C4
-START_EXTERN_C
-
-void C4LoaDMem (char *C4RAM)
-{
-	memmove(C4RAM + (READ_WORD(C4RAM + 0x1f45) & 0x1fff), C4GetMemPointer(READ_3WORD(C4RAM + 0x1f40)), READ_WORD(C4RAM + 0x1f43));
-}
-
-END_EXTERN_C
-#endif

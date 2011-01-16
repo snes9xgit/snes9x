@@ -357,14 +357,6 @@ struct SMulti
 extern CMemory	Memory;
 extern SMulti	Multi;
 
-#if defined(ZSNES_FX) || defined(ZSNES_C4)
-START_EXTERN_C
-extern uint8	*ROM;
-extern uint8	*SRAM;
-extern uint8	*RegRAM;
-END_EXTERN_C
-#endif
-
 void S9xAutoSaveSRAM (void);
 bool8 LoadZip(const char *, int32 *, int32 *, uint8 *);
 

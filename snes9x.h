@@ -186,8 +186,6 @@
 #include "65c816.h"
 #include "messages.h"
 
-#define S9X_ACCURACY_LEVEL		3
-
 #ifdef ZLIB
 #include <zlib.h>
 #define STREAM					gzFile
@@ -263,8 +261,6 @@
 #define TRACE_FLAG			(1 <<  1)	// debugger
 #define SINGLE_STEP_FLAG	(1 <<  2)	// debugger
 #define BREAK_FLAG			(1 <<  3)	// debugger
-#define NMI_FLAG			(1 <<  7)	// CPU
-#define IRQ_FLAG			(1 << 11)	// CPU
 #define SCAN_KEYS_FLAG		(1 <<  4)	// CPU
 #define HALTED_FLAG			(1 << 12)	// APU
 #define FRAME_ADVANCE_FLAG	(1 <<  9)
@@ -274,12 +270,16 @@
 
 struct SCPUState
 {
+	uint32	Flags;
 	int32	Cycles;
 	int32	PrevCycles;
 	int32	V_Counter;
-	uint32	Flags;
 	uint8	*PCBase;
-	bool8	IRQActive;
+	bool8	NMILine;
+	bool8	IRQLine;
+	bool8	IRQTransition;
+	bool8	IRQLastState;
+	bool8	IRQExternal;
 	int32	IRQPending;
 	int32	MemSpeed;
 	int32	MemSpeedx2;
@@ -293,9 +293,6 @@ struct SCPUState
 	uint8	WhichEvent;
 	int32	NextEvent;
 	bool8	WaitingForInterrupt;
-	uint32	WaitAddress;
-	uint32	WaitCounter;
-	uint32	PBPCAtOpcodeStart;
 	uint32	AutoSaveTimer;
 	bool8	SRAMModified;
 };
@@ -303,17 +300,11 @@ struct SCPUState
 enum
 {
 	HC_HBLANK_START_EVENT = 1,
-	HC_IRQ_1_3_EVENT      = 2,
-	HC_HDMA_START_EVENT   = 3,
-	HC_IRQ_3_5_EVENT      = 4,
-	HC_HCOUNTER_MAX_EVENT = 5,
-	HC_IRQ_5_7_EVENT      = 6,
-	HC_HDMA_INIT_EVENT    = 7,
-	HC_IRQ_7_9_EVENT      = 8,
-	HC_RENDER_EVENT       = 9,
-	HC_IRQ_9_A_EVENT      = 10,
-	HC_WRAM_REFRESH_EVENT = 11,
-	HC_IRQ_A_1_EVENT      = 12
+	HC_HDMA_START_EVENT   = 2,
+	HC_HCOUNTER_MAX_EVENT = 3,
+	HC_HDMA_INIT_EVENT    = 4,
+	HC_RENDER_EVENT       = 5,
+	HC_WRAM_REFRESH_EVENT = 6
 };
 
 struct STimings
@@ -327,12 +318,13 @@ struct STimings
 	int32	HDMAInit;
 	int32	HDMAStart;
 	int32	NMITriggerPos;
+	int32	IRQTriggerCycles;
 	int32	WRAMRefreshPos;
 	int32	RenderPos;
 	bool8	InterlaceField;
 	int32	DMACPUSync;		// The cycles to synchronize DMA and CPU. Snes9x cannot emulate correctly.
 	int32	NMIDMADelay;	// The delay of NMI trigger after DMA transfers. Snes9x cannot emulate correctly.
-	int32	IRQPendCount;	// This value is just a hack, because Snes9x cannot emulate any events in an opcode.
+	int32	IRQPendCount;	// This value is just a hack.
 	int32	APUSpeedup;
 	bool8	APUAllowTimeOverflow;
 };
@@ -405,12 +397,8 @@ struct SSettings
 	char	CartBName[PATH_MAX + 1];
 
 	bool8	DisableGameSpecificHacks;
-	bool8	ShutdownMaster;
-	bool8	Shutdown;
 	bool8	BlockInvalidVRAMAccessMaster;
 	bool8	BlockInvalidVRAMAccess;
-	bool8	DisableIRQ;
-	bool8	DisableHDMA;
 	int32	HDMATimingHack;
 
 	bool8	ForcedPause;

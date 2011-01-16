@@ -178,7 +178,8 @@
 #ifndef _FXEMU_H_
 #define _FXEMU_H_
 
-#ifndef ZSNES_FX
+#define FX_BREAKPOINT				(-1)
+#define FX_ERROR_ILLEGAL_ADDRESS	(-2)
 
 // The FxInfo_s structure, the link between the FxEmulator and the Snes Emulator
 struct FxInfo_s
@@ -196,41 +197,12 @@ struct FxInfo_s
 extern struct FxInfo_s	SuperFX;
 
 void S9xInitSuperFX (void);
+void S9xResetSuperFX (void);
+void S9xSuperFXExec (void);
 void S9xSetSuperFX (uint8, uint16);
 uint8 S9xGetSuperFX (uint16);
 void fx_flushCache (void);
 void fx_computeScreenPointers (void);
 uint32 fx_run (uint32);
-
-#define FX_BREAKPOINT				(-1)
-#define FX_ERROR_ILLEGAL_ADDRESS	(-2)
-
-#else
-
-#define	S9xSetSuperFX	S9xSuperFXWriteReg
-#define	S9xGetSuperFX	S9xSuperFXReadReg
-
-START_EXTERN_C
-extern uint8	*SFXPlotTable;
-
-void S9xSuperFXWriteReg (uint8, uint32);
-uint8 S9xSuperFXReadReg (uint32);
-void S9xSuperFXPreSaveState (void);
-void S9xSuperFXPostSaveState (void);
-void S9xSuperFXPostLoadState (void);
-END_EXTERN_C
-
-#endif
-
-#ifdef ZSNES_FX
-START_EXTERN_C
-#endif
-
-void S9xResetSuperFX (void);
-void S9xSuperFXExec (void);
-
-#ifdef ZSNES_FX
-END_EXTERN_C
-#endif
 
 #endif

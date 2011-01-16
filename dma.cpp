@@ -185,7 +185,7 @@
 #include "missing.h"
 #endif
 
-#define ADD_CYCLES(n)	CPU.Cycles += (n)
+#define ADD_CYCLES(n)	{ CPU.PrevCycles = CPU.Cycles; CPU.Cycles += (n); S9xCheckInterrupts(); }
 
 extern uint8	*HDMAMemPointers[8];
 extern int		HDMA_ModeByteCounts[8];
@@ -741,9 +741,6 @@ bool8 S9xDoDMA (uint8 Channel)
 							break;
 
 						case 0x18: // VMDATAL
-						#ifndef CORRECT_VRAM_READS
-							IPPU.FirstVRAMRead = TRUE;
-						#endif
 							if (!PPU.VMA.FullGraphicCount)
 							{
 								do
@@ -766,9 +763,6 @@ bool8 S9xDoDMA (uint8 Channel)
 							break;
 
 						case 0x19: // VMDATAH
-						#ifndef CORRECT_VRAM_READS
-							IPPU.FirstVRAMRead = TRUE;
-						#endif
 							if (!PPU.VMA.FullGraphicCount)
 							{
 								do
@@ -837,9 +831,6 @@ bool8 S9xDoDMA (uint8 Channel)
 					if (d->BAddress == 0x18)
 					{
 						// VMDATAL
-					#ifndef CORRECT_VRAM_READS
-						IPPU.FirstVRAMRead = TRUE;
-					#endif
 						if (!PPU.VMA.FullGraphicCount)
 						{
 							switch (b)
@@ -1282,7 +1273,7 @@ bool8 S9xDoDMA (uint8 Channel)
 		}
 	}
 
-	if ((CPU.Flags & NMI_FLAG) && (Timings.NMITriggerPos != 0xffff))
+	if (CPU.NMILine && (Timings.NMITriggerPos != 0xffff))
 	{
 		Timings.NMITriggerPos = CPU.Cycles + Timings.NMIDMADelay;
 		if (Timings.NMITriggerPos >= Timings.H_Max)
@@ -1373,10 +1364,7 @@ static inline bool8 HDMAReadLineCount (int d)
 
 void S9xStartHDMA (void)
 {
-	if (Settings.DisableHDMA)
-		PPU.HDMA = 0;
-	else
-		PPU.HDMA = Memory.FillRAM[0x420c];
+	PPU.HDMA = Memory.FillRAM[0x420c];
 
 #ifdef DEBUGGER
 	missing.hdma_this_frame = PPU.HDMA;

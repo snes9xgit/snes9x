@@ -178,8 +178,6 @@
 #ifndef _FXINST_H_
 #define _FXINST_H_
 
-#ifndef ZSNES_FX
-
 /*
  * FxChip(GSU) register space specification
  * (Register address space 3000-32ff)
@@ -540,7 +538,5 @@ extern void (*fx_OpcodeTable[]) (void);
 
 // Set this define if branches are relative to the instruction in the delay slot (I think they are)
 #define BRANCH_DELAY_RELATIVE
-
-#endif
 
 #endif

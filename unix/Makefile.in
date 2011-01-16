@@ -1,5 +1,3 @@
-@S9XZSNESFX@
-@S9XZSNESC4@
 @S9XDEBUGGER@
 @S9XNETPLAY@
 @S9XZIP@
@@ -9,26 +7,11 @@
 OS         = `uname -s -r -m|sed \"s/ /-/g\"|tr \"[A-Z]\" \"[a-z]\"|tr \"/()\" \"___\"`
 BUILDDIR   = .
 
-OBJECTS    = ../apu/apu.o ../apu/SNES_SPC.o ../apu/SNES_SPC_misc.o ../apu/SNES_SPC_state.o ../apu/SPC_DSP.o ../apu/SPC_Filter.o ../bsx.o ../cheats.o ../cheats2.o ../clip.o ../conffile.o ../controls.o ../cpu.o ../cpuexec.o ../cpuops.o ../crosshairs.o ../dma.o ../dsp.o ../dsp1.o ../dsp2.o ../dsp3.o ../dsp4.o ../gfx.o ../globals.o ../logger.o ../memmap.o ../movie.o ../obc1.o ../ppu.o ../reader.o ../sa1.o ../sa1cpu.o ../screenshot.o ../sdd1.o ../sdd1emu.o ../seta.o ../seta010.o ../seta011.o ../seta018.o ../snapshot.o ../snes9x.o ../spc7110.o ../srtc.o ../tile.o ../filter/2xsai.o ../filter/blit.o ../filter/epx.o ../filter/hq2x.o ../filter/snes_ntsc.o unix.o x11.o
-DEFS       = -DMITSHM -DCPU_SHUTDOWN -DSPC700_SHUTDOWN -DCORRECT_VRAM_READS
-
-ifdef S9XZSNESFX
-OBJECTS   += ../i386/fxemu2.o ../i386/fxemu2b.o ../i386/fxemu2c.o ../i386/fxtable.o ../i386/sfxproc.o ../i386/zsnes.o
-else
-OBJECTS   += ../fxinst.o ../fxemu.o
-ifdef S9XDEBUGGER
-OBJECTS   += ../fxdbg.o
-endif
-endif
-
-ifdef S9XZSNESC4
-OBJECTS   += ../i386/c4.o ../i386/zsnesc4.o ../c4.o
-else
-OBJECTS   += ../c4.o ../c4emu.o
-endif
+OBJECTS    = ../apu/apu.o ../apu/SNES_SPC.o ../apu/SNES_SPC_misc.o ../apu/SNES_SPC_state.o ../apu/SPC_DSP.o ../apu/SPC_Filter.o ../bsx.o ../c4.o ../c4emu.o ../cheats.o ../cheats2.o ../clip.o ../conffile.o ../controls.o ../cpu.o ../cpuexec.o ../cpuops.o ../crosshairs.o ../dma.o ../dsp.o ../dsp1.o ../dsp2.o ../dsp3.o ../dsp4.o ../fxinst.o ../fxemu.o ../gfx.o ../globals.o ../logger.o ../memmap.o ../movie.o ../obc1.o ../ppu.o ../reader.o ../sa1.o ../sa1cpu.o ../screenshot.o ../sdd1.o ../sdd1emu.o ../seta.o ../seta010.o ../seta011.o ../seta018.o ../snapshot.o ../snes9x.o ../spc7110.o ../srtc.o ../tile.o ../filter/2xsai.o ../filter/blit.o ../filter/epx.o ../filter/hq2x.o ../filter/snes_ntsc.o unix.o x11.o
+DEFS       = -DMITSHM
 
 ifdef S9XDEBUGGER
-OBJECTS   += ../debug.o
+OBJECTS   += ../debug.o ../fxdbg.o
 endif
 
 ifdef S9XNETPLAY
@@ -45,14 +28,13 @@ endif
 
 CCC        = @CXX@
 CC         = @CC@
-NASM       = @S9XNASM@
 GASM       = @CXX@
 INCLUDES   = -I. -I.. -I../apu/ -I../unzip/ -I../jma/ -I../filter/
 
 CCFLAGS    = @S9XFLGS@ @S9XDEFS@ $(DEFS)
 CFLAGS     = $(CCFLAGS)
 
-.SUFFIXES: .o .cpp .c .cc .h .m .i .s .asm .obj
+.SUFFIXES: .o .cpp .c .cc .h .m .i .s .obj
 
 all: Makefile configure snes9x
 
@@ -107,9 +89,6 @@ snes9x: $(OBJECTS)
 .s.o:
 	@echo Compiling $*.s
 	sh-elf-as -little $*.s -o $@
-
-.asm.o:
-	$(NASM) -f elf -DELF @S9XDEFS@ -i../i386/ -o $@ $*.asm
 
 .obj.o:
 	cp $*.obj $*.o

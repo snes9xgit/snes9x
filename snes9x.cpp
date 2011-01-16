@@ -467,9 +467,6 @@ void S9xLoadConfigFiles (char **argv, int argc)
 
 	Settings.DisableGameSpecificHacks       = !conf.GetBool("Hack::EnableGameSpecificHacks",       true);
 	Settings.BlockInvalidVRAMAccessMaster   = !conf.GetBool("Hack::AllowInvalidVRAMAccess",        false);
-	Settings.ShutdownMaster                 =  conf.GetBool("Hack::SpeedHacks",                    false);
-	Settings.DisableIRQ                     =  conf.GetBool("Hack::DisableIRQ",                    false);
-	Settings.DisableHDMA                    =  conf.GetBool("Hack::DisableHDMA",                   false);
 	Settings.HDMATimingHack                 =  conf.GetInt ("Hack::HDMATiming",                    100);
 
 	// Netplay
@@ -586,10 +583,7 @@ void S9xUsage (void)
 	S9xMessage(S9X_INFO, S9X_USAGE, "-debug                          Set the Debugger flag");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-trace                          Begin CPU instruction tracing");
 #endif
-	S9xMessage(S9X_INFO, S9X_USAGE, "-noirq                          (Not recommended) Disable IRQ emulation");
-	S9xMessage(S9X_INFO, S9X_USAGE, "-nohdma                         (Not recommended) Disable HDMA emulation");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-hdmatiming <1-199>             (Not recommended) Changes HDMA transfer timings");
-	S9xMessage(S9X_INFO, S9X_USAGE, "-cpushutdown                    (Not recommended) Skip emulation until the next");
 	S9xMessage(S9X_INFO, S9X_USAGE, "                                event comes");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-invalidvramaccess              (Not recommended) Allow invalid VRAM access");
 	S9xMessage(S9X_INFO, S9X_USAGE, "");
@@ -851,12 +845,6 @@ char * S9xParseArgs (char **argv, int argc)
 			else
 		#endif
 
-			if (!strcasecmp(argv[i], "-noirq"))
-				Settings.DisableIRQ = TRUE;
-			else
-			if (!strcasecmp(argv[i], "-nohdma"))
-				Settings.DisableHDMA = TRUE;
-			else
 			if (!strcasecmp(argv[i], "-hdmatiming"))
 			{
 				if (i + 1 < argc)
@@ -868,9 +856,6 @@ char * S9xParseArgs (char **argv, int argc)
 				else
 					S9xUsage();
 			}
-			else
-			if (!strcasecmp(argv[i], "-cpushutdown"))
-				Settings.ShutdownMaster = TRUE;
 			else
 			if (!strcasecmp(argv[i], "-invalidvramaccess"))
 				Settings.BlockInvalidVRAMAccessMaster = FALSE;

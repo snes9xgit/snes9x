@@ -202,6 +202,7 @@ void S9xResetSuperFX (void)
 	SuperFX.speedPerLine = (uint32) (0.417 * 10.5e6 * ((1.0 / (float) Memory.ROMFramesPerSecond) / ((float) (Timings.V_Max))));
 	SuperFX.oneLineDone = FALSE;
 	SuperFX.vFlags = 0;
+	CPU.IRQExternal = FALSE;
 	FxReset(&SuperFX);
 }
 
@@ -299,13 +300,10 @@ uint8 S9xGetSuperFX (uint16 address)
 	uint8	byte;
 
 	byte = Memory.FillRAM[address];
-#ifdef CPU_SHUTDOWN
-	if (address == 0x3030)
-		CPU.WaitAddress = CPU.PBPCAtOpcodeStart;
-#endif
+
 	if (address == 0x3031)
 	{
-		S9xClearIRQ(GSU_IRQ_SOURCE);
+		CPU.IRQExternal = FALSE;
 		Memory.FillRAM[0x3031] = byte & 0x7f;
 	}
 
@@ -320,7 +318,7 @@ void S9xSuperFXExec (void)
 
 		uint16 GSUStatus = Memory.FillRAM[0x3000 + GSU_SFR] | (Memory.FillRAM[0x3000 + GSU_SFR + 1] << 8);
 		if ((GSUStatus & (FLG_G | FLG_IRQ)) == FLG_IRQ)
-			S9xSetIRQ(GSU_IRQ_SOURCE);
+			CPU.IRQExternal = TRUE;
 	}
 }
 

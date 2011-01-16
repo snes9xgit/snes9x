@@ -12,7 +12,7 @@
 	<body>
 		<h1 style="text-align:center">How to Port Snes9x to a New Platform</h1>
 		<div style="text-align:right">
-			Version: 1.52<br>
+			Version: 1.53<br>
 			(c) Copyright 1998 Gary Henderson
 		</div>
 		<h2>Introduction</h2>
@@ -56,21 +56,9 @@
 		<p>
 			Define this if your compiler uses shift right arithmetic for signed values. For example, GCC and Visual C++ use shift right arithmetic.
 		</p>
-		<h3><code>CPU_SHUTDOWN</code></h3>
-		<p>
-			This is a speed-up hack. When defined and if <code>Settings.ShutdownMaster</code> is <code>true</code>, Snes9x starts watching for when CPU is in a simply loop waiting for a known event to happen - like the end of the current scanline. If Snes9x spots CPU in such a loop, it simply skips the emulation of its instructions until the event happens. It can be a big win with lots of SNES games, but will break a small number of games. In this case, set <code>Settings.ShutdownMaster</code> to <code>false</code> before you load a ROM image. Note that this hack is forcibly disabled in some games. See <code>Memory.ApplyROMFixes</code> function for the list of such games.
-		</p>
-		<h3><code>CORRECT_VRAM_READS</code></h3>
-		<p>
-			You must define this. It allows correct VRAM reads.
-		</p>
 		<h3><code>ZLIB / UNZIP_SUPPORT / JMA_SUPPORT</code></h3>
 		<p>
 			Define these if you want to support GZIP/ZIP/JMA compressed ROM images and GZIP compressed freeze-game files.
-		</p>
-		<h3><code>ZSNES_FX / ZSNES_C4</code></h3>
-		<p>
-			Define these if your CPU is x86 compatible and you're going to use the ZSNES Super FX and C4 assembler codes.
 		</p>
 		<h3><code>USE_OPENGL</code></h3>
 		<p>
@@ -81,9 +69,7 @@
 			ZLIB<br>
 			UNZIP_SUPPORT<br>
 			JMA_SUPPORT<br>
-			CPU_SHUTDOWN<br>
 			RIGHTSHIFT_IS_SAR<br>
-			CORRECT_VRAM_READS
 		</code></p>
 		<h2>Editing port.h</h2>
 		<p>
@@ -379,7 +365,7 @@
 			The sound generation rate on a SNES is directly proportional to the video output rate. Displays that synchronize with the vertical refresh but have a slightly lower refresh-rate than the emulated system can experience sound drop-outs. It may be beneficial to provide an option for users to configure <code>Settings.SoundInputRate</code> to suit their own systems. Setting <code>Settings.SoundInputRate</code> to a value that matches the actual output rate (i.e. 31977hz for 59.96hz) or lower will allow the users to eliminate crackling. A range of 31000hz to 33000hz should be inclusive enough for all displays. Use of this setting paired with the <code>S9xSyncSound</code> function can eliminate sound discontinuity.
 		</p>
 		<div style="text-align:right; margin-top:3em">
-			Updated most recently by: 2009/12/20 zones
+			Updated most recently by: 2011/1/16 zones
 		</div>
 	</body>
 </html>

@@ -1,6 +1,6 @@
 AC_PREREQ([2.60])
-AC_INIT([Snes9x], [1.52], [], [snes9x])
-AC_REVISION([$Revision: 1.52 $])
+AC_INIT([Snes9x], [1.53], [], [snes9x])
+AC_REVISION([$Revision: 1.53 $])
 
 AC_CONFIG_SRCDIR([unix.cpp])
 
@@ -105,52 +105,6 @@ AC_S9X_COMPILER_FLAG([-pedantic],             [pedantic])
 AC_S9X_COMPILER_FLAG([-Wall],                 [Wall])
 AC_S9X_COMPILER_FLAG([-W],                    [W])
 AC_S9X_COMPILER_FLAG([-Wno-unused-parameter], [Wno_unused_parameter])
-
-# Check if the CPU is x86.
-
-AC_MSG_CHECKING([whether the CPU is x86])
-
-AC_CACHE_VAL([snes9x_cv_x86_cpu],
-[
-	case "$target" in
-		i686-*-* | i586-*-* | i486-*-* | i386-*-*)
-			snes9x_cv_x86_cpu="yes"
-			;;		
-		*)
-			snes9x_cv_x86_cpu="no"
-			;;
-	esac
-])
-
-AC_MSG_RESULT([$snes9x_cv_x86_cpu])
-
-# Enable ZSNES C4 and SuperFX assembler cores if CPU is x86.
-
-S9XZSNESFX="#S9XZSNESFX=1"
-S9XZSNESC4="#S9XZSNESC4=1"
-S9XNASM=""
-
-AC_ARG_ENABLE([zsnes_asm],
-	[AS_HELP_STRING([--enable-zsnes-asm],
-		[build with ZSNES C4 and SuperFX assembler cores if available (default: no)])],
-	[], [enable_zsnes_asm="no"])
-
-if test "x$enable_zsnes_asm" = "xyes"; then
-	if test "x$snes9x_cv_x86_cpu" = "xyes"; then
-		AC_PATH_PROG([S9XNASM], [nasm], [no])
-		if test "x$S9XNASM" != "xno"; then
-			S9XZSNESFX="S9XZSNESFX=1"
-			S9XZSNESC4="S9XZSNESC4=1"
-			S9XDEFS="$S9XDEFS -DZSNES_FX -DZSNES_C4"
-		else
-			AC_MSG_WARN([nasm not found. Build without ZSNES assembler cores.])
-			enable_zsnes_asm="no"
-		fi
-	else
-		AC_MSG_WARN([Your CPU is not x86. Build without ZSNES assembler cores.])
-		enable_zsnes_asm="no"
-	fi
-fi
 
 # Check if the OS is Linux.
 
@@ -464,9 +418,6 @@ S9XLIBS="`echo \"$S9XLIBS\" | sed -e 's/^  *//'`"
 AC_SUBST(S9XFLGS)
 AC_SUBST(S9XDEFS)
 AC_SUBST(S9XLIBS)
-AC_SUBST(S9XZSNESFX)
-AC_SUBST(S9XZSNESC4)
-AC_SUBST(S9XNASM)
 AC_SUBST(S9XDEBUGGER)
 AC_SUBST(S9XNETPLAY)
 AC_SUBST(S9XZIP)
@@ -491,7 +442,6 @@ gamepad support...... $enable_gamepad
 GZIP support......... $enable_gzip
 ZIP support.......... $enable_zip
 JMA support.......... $enable_jma
-using ZSNES asm...... $enable_zsnes_asm
 debugger............. $enable_debugger
 
 EOF

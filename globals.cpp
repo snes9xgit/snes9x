@@ -209,6 +209,8 @@ struct SDSP3			DSP3;
 struct SDSP4			DSP4;
 struct SSA1				SA1;
 struct SSA1Registers	SA1Registers;
+struct FxRegs_s			GSU;
+struct FxInfo_s			SuperFX;
 struct SST010			ST010;
 struct SST011			ST011;
 struct SST018			ST018;
@@ -228,10 +230,6 @@ struct Missing			missing;
 #endif
 struct SCheatData		Cheat;
 struct Watch			watches[16];
-#ifndef ZSNES_FX
-struct FxRegs_s			GSU;
-struct FxInfo_s			SuperFX;
-#endif
 CMemory					Memory;
 
 char	String[513];
@@ -243,15 +241,6 @@ uint16	DirectColourMaps[8][256];
 SnesModel	M1SNES = { 1, 3, 2 };
 SnesModel	M2SNES = { 2, 4, 3 };
 SnesModel	*Model = &M1SNES;
-
-#if defined(ZSNES_FX) || defined(ZSNES_C4)
-uint8	*ROM    = NULL;
-uint8	*SRAM   = NULL;
-uint8	*RegRAM = NULL;
-#endif
-#ifdef ZSNES_FX
-uint8	*SFXPlotTable = NULL;
-#endif
 
 #ifdef GFX_MULTI_FORMAT
 uint32	RED_LOW_BIT_MASK           = RED_LOW_BIT_MASK_RGB565;
