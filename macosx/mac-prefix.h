@@ -191,13 +191,12 @@
 #ifndef _mac_prefix_h_
 #define _mac_prefix_h_
 
-#define	MAC_PATH_ENCODING	kCFStringEncodingUTF8
 #define	MAC_PATH_SEPARATOR	"/"
 #define	MAC_PATH_SEP_CHAR	'/'
 
 #define kMacS9XCFString		CFSTR("Snes9x")
 
-#define	MAC_VERSION			"100"
+#define	MAC_VERSION			"102"
 
 #include <Carbon/Carbon.h>
 

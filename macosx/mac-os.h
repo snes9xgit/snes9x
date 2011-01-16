@@ -307,6 +307,7 @@ extern uint32			macSoundBuffer_ms, macSoundInterval_ms;
 extern bool8			macSoundLagEnable;
 extern uint16			aueffect;
 extern uint8			saveInROMFolder;
+extern CFStringRef		saveFolderPath;
 extern int				macCurvatureWarp, macAspectRatio;
 extern int				macFastForwardRate, macFrameAdvanceRate;
 extern int				inactiveMode;

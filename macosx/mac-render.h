@@ -196,5 +196,6 @@ void DeinitGraphics (void);
 void DrawPauseScreen (CGContextRef, HIRect);
 void ClearGFXScreen (void);
 void DrawFreezeDefrostScreen (uint8 *);
+void GetGameDisplay (int *, int *);
 
 #endif

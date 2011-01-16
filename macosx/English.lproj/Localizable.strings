@@ -24,6 +24,7 @@
 "MoviePrevBorder" = "45";									// width of indexes column
 
 "ClearMenu"       = "Clear Menu";
+"NoneSelected"    = "None Selected";
 
 "NPReady"         = "Ready";
 "NPConnecting"    = "Connecting";
@@ -47,3 +48,36 @@
 
 "SoundEffectDlg"  = "Sound Effect";
 "CreateMetalDlg"  = "NO";	// "YES" to metalize above dialogs
+
+"RecordSMV1"      = "1";
+"RecordSMV2"      = "2";
+"RecordSMV3"      = "3";
+"RecordSMV4"      = "4";
+"RecordSMV5"      = "5";
+"RecordSMV6"      = "Players to Record :";
+"RecordSMV7"      = "Comment :";
+"RecordSMV8"      = "Reset";
+
+"PlaySMV1"        = "Read Only";
+"PlaySMV2"        = "Export to QuickTime Movie at a Time";
+
+"QTRecord1"       = "Double Size";
+"QTRecord2"       = "Overscan";
+"QTRecord3"       = "Frame Skip :";
+"QTRecord4"       = "Compression...";
+
+"OpenROM1"        = "Memory Type :";
+"OpenROM2"        = "Video System :";
+"OpenROM3"        = "Interleave Mode :";
+"OpenROM4"        = "Header :";
+"OpenROM5"        = "Auto Detect";
+"OpenROM6"        = "Force LoROM";
+"OpenROM7"        = "Force HiROM";
+"OpenROM8"        = "Force PAL";
+"OpenROM9"        = "Force NTSC";
+"OpenROMa"        = "Force not Interleaved";
+"OpenROMb"        = "Force Mode 1";
+"OpenROMc"        = "Force Mode 2";
+"OpenROMd"        = "Force GD24";
+"OpenROMe"        = "Force no Header";
+"OpenROMf"        = "Force Header";

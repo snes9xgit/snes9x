@@ -338,7 +338,7 @@ bool8 SNES9X_OpenMultiCart (void)
 	{
 		cart[i][0] = 0;
 		if (multiCartPath[i])
-			r = CFStringGetCString(multiCartPath[i], cart[i], PATH_MAX, MAC_PATH_ENCODING);
+			r = CFStringGetCString(multiCartPath[i], cart[i], PATH_MAX, kCFStringEncodingUTF8);
 	}
 
 	SNES9X_InitSound();

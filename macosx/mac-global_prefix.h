@@ -198,10 +198,8 @@
 #define ZLIB
 #define UNZIP_SUPPORT
 #define	JMA_SUPPORT
-#define CPU_SHUTDOWN
 #define USE_OPENGL
 #define RIGHTSHIFT_IS_SAR
-#define CORRECT_VRAM_READS
 #define HAVE_STDINT_H
 //#define DEBUGGER
 

@@ -666,7 +666,7 @@ static pascal OSStatus MultiCartPaneEventHandler (EventHandlerCallRef inHandlerR
 														cid.signature = 'MNAM';
 														HIViewFindByID(view, cid, &ctl);
 
-														url = CFURLCreateWithBytes(kCFAllocatorDefault, data, dataSize, MAC_PATH_ENCODING, NULL);
+														url = CFURLCreateWithBytes(kCFAllocatorDefault, data, dataSize, kCFStringEncodingUTF8, NULL);
 														str = CFURLCopyLastPathComponent(url);
 														SetStaticTextCFString(ctl, str, true);
 														CFRelease(str);

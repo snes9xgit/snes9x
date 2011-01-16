@@ -299,13 +299,10 @@ static void MacQTCloseVideoComponent (ComponentInstance ci)
 	err = CloseComponent(ci);
 }
 
-void MacQTVideoConfig (WindowRef parent)
+void MacQTVideoConfig (void)
 {
 	OSStatus			err;
 	ComponentInstance	ci;
-
-	if (running)
-		return;
 
 	MacQTOpenVideoComponent(&ci);
 
@@ -316,7 +313,7 @@ void MacQTVideoConfig (WindowRef parent)
 	SCWindowSettings	ws;
 	ws.size          = sizeof(SCWindowSettings);
 	ws.windowRefKind = scWindowRefKindCarbon;
-	ws.parentWindow  = parent;
+	ws.parentWindow  = NULL;
 	err = SCSetInfo(ci, scWindowOptionsType, &ws);
 
 	err = SCRequestSequenceSettings(ci);
@@ -353,7 +350,7 @@ void MacQTStartRecording (char *path)
 
 	// storage
 
-	str = CFStringCreateWithCString(kCFAllocatorDefault, path, MAC_PATH_ENCODING);
+	str = CFStringCreateWithCString(kCFAllocatorDefault, path, kCFStringEncodingUTF8);
 	url = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, str, kCFURLPOSIXPathStyle, false);
 	err = QTNewDataReferenceFromCFURL(url, 0, &(sqt.dataRef), &(sqt.dataRefType));
 	CheckError(err, 21);

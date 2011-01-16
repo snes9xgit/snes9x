@@ -282,7 +282,7 @@ static void ExportCGImageToPNGFile (CGImageRef image, const char *path)
 	Handle					dataRef;
 	OSType					dataRefType;
 
-	str = CFStringCreateWithCString(kCFAllocatorDefault, path, MAC_PATH_ENCODING);
+	str = CFStringCreateWithCString(kCFAllocatorDefault, path, kCFStringEncodingUTF8);
 	if (str)
 	{
 		url = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, str, kCFURLPOSIXPathStyle, false);

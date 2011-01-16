@@ -827,7 +827,6 @@ void ConfigureSoundEffects (void)
 			EventTypeSpec		event[] = { { kEventClassWindow,  kEventWindowClose         },
 											{ kEventClassCommand, kEventCommandProcess      },
 											{ kEventClassCommand, kEventCommandUpdateStatus } };
-			MenuRef				menu;
 			HIViewRef			ctl, userpane, contentview;
 			HIViewID			cid;
 			CFStringRef			str;
@@ -927,18 +926,13 @@ void ConfigureSoundEffects (void)
 
 			cid.signature = 'Epop';
 			HIViewFindByID(userpane, cid, &ctl);
-			menu = HIMenuViewGetMenu(ctl);
-			for (int i = 1; i <= CountMenuItems(menu); i++)
-				CheckMenuItem(menu, i, false);
 			switch (cureffect)
 			{
 				case kAUReverb:
-					CheckMenuItem(menu, 1, true);
 					SetControl32BitValue(ctl, 1);
 					break;
 
 				case kAUGraphEQ:
-					CheckMenuItem(menu, 2, true);
 					SetControl32BitValue(ctl, 2);
 					break;
 			}

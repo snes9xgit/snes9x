@@ -188,7 +188,7 @@
  ***********************************************************************************/
 
 
-#import <AppKit/AppKit.h>
+#import <Cocoa/Cocoa.h>
 
 #import "mac-cocoatools.h"
 
@@ -216,4 +216,115 @@ void CocoaPlayFreezeDefrostSound (void)
 	}
 
 	[pool release];
+}
+
+void CocoaAddStatTextToView (NSView *view, NSString *label, float x, float y, float w, float h, NSTextField **out)
+{
+	NSTextField	*control;
+
+	control = [[[NSTextField alloc] init] autorelease];
+
+	[[control cell] setControlSize: NSSmallControlSize];
+	[control setFont: [NSFont systemFontOfSize: [NSFont systemFontSizeForControlSize: NSSmallControlSize]]];
+	[control setStringValue: NSLocalizedString(label, @"")];
+	[control setBezeled: NO];
+	[control setDrawsBackground: NO];
+	[control setEditable: NO];
+	[control setSelectable: NO];
+
+	[view addSubview: control];
+	[control setFrame: NSMakeRect(x, y, w, h)];
+
+	if (out != NULL)
+		*out = control;
+}
+
+void CocoaAddEditTextToView (NSView *view, NSString *label, float x, float y, float w, float h, NSTextField **out)
+{
+	NSTextField	*control;
+
+	control = [[[NSTextField alloc] init] autorelease];
+
+	[[control cell] setControlSize: NSSmallControlSize];
+	[control setFont: [NSFont systemFontOfSize: [NSFont systemFontSizeForControlSize: NSSmallControlSize]]];
+	[control setStringValue: NSLocalizedString(label, @"")];
+	[control setBezeled: YES];
+	[control setDrawsBackground: YES];
+	[control setEditable: YES];
+	[control setSelectable: YES];
+
+	[view addSubview: control];
+	[control setFrame: NSMakeRect(x, y, w, h)];
+
+	if (out != NULL)
+		*out = control;
+}
+
+void CocoaAddMPushBtnToView (NSView *view, NSString *label, float x, float y, float w, float h, NSButton **out)
+{
+	NSButton	*control;
+
+	control = [[[NSButton alloc] init] autorelease];
+
+	[[control cell] setControlSize: NSSmallControlSize];
+	[control setFont: [NSFont systemFontOfSize: [NSFont systemFontSizeForControlSize: NSSmallControlSize]]];
+	[control setTitle: NSLocalizedString(label, @"")];
+	[control setBezelStyle: NSRoundedBezelStyle];
+	[control setButtonType: NSMomentaryPushInButton];
+
+	[view addSubview: control];
+	[control setFrame: NSMakeRect(x, y, w, h)];
+
+	if (out != NULL)
+		*out = control;
+}
+
+void CocoaAddCheckBoxToView (NSView *view, NSString *label, float x, float y, float w, float h, NSButton **out)
+{
+	NSButton	*control;
+
+	control = [[[NSButton alloc] init] autorelease];
+
+	[[control cell] setControlSize: NSSmallControlSize];
+	[control setFont: [NSFont systemFontOfSize: [NSFont systemFontSizeForControlSize: NSSmallControlSize]]];
+	[control setTitle: NSLocalizedString(label, @"")];
+	[control setButtonType: NSSwitchButton];
+
+	[view addSubview: control];
+	[control setFrame: NSMakeRect(x, y, w, h)];
+
+	if (out != NULL)
+		*out = control;
+}
+
+void CocoaAddPopUpBtnToView (NSView *view, NSArray *array, float x, float y, float w, float h, NSPopUpButton **out)
+{
+	NSPopUpButton	*control;
+	NSMenu			*menu;
+	int				n;
+
+	menu = [[[NSMenu alloc] init] autorelease];
+
+	n = [array count];
+	for (int i = 0; i < n; i++)
+	{
+		NSString	*item = [array objectAtIndex: i];
+		if ([item isEqualToString: @"---"])
+			[menu addItem: [NSMenuItem separatorItem]];
+		else
+			[menu addItemWithTitle: item action: NULL keyEquivalent: @""];
+	}
+
+	control = [[[NSPopUpButton alloc] init] autorelease];
+
+	[[control cell] setControlSize: NSSmallControlSize];
+	[control setFont: [NSFont systemFontOfSize: [NSFont systemFontSizeForControlSize: NSSmallControlSize]]];
+	[control setPullsDown: NO];
+	[control setMenu: menu];
+
+	[view addSubview: control];
+	[control setFrame: NSMakeRect(x, y, w, h)];
+
+	if (out != NULL)
+		*out = control;
 }

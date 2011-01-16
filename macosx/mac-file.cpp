@@ -204,6 +204,7 @@
 static void AddFolderIcon (FSRef *, const char *);
 static OSStatus FindSNESFolder (FSRef *, char *, const char *);
 static OSStatus FindApplicationSupportFolder (FSRef *, char *, const char *);
+static OSStatus FindCustomFolder (FSRef *, char *, const char *);
 
 
 static OSStatus FindSNESFolder (FSRef *folderRef, char *folderPath, const char *folderName)
@@ -223,17 +224,20 @@ static OSStatus FindSNESFolder (FSRef *folderRef, char *folderPath, const char *
 	r    = CFURLGetFSRef(purl, &pref);
 
 	err = FSMakeFSRefUnicode(&pref, CFStringGetLength(fstr), buffer, kTextEncodingUnicodeDefault, folderRef);
- 	if (err == dirNFErr || err == fnfErr)
+	if (err == dirNFErr || err == fnfErr)
 	{
 		err = FSCreateDirectoryUnicode(&pref, CFStringGetLength(fstr), buffer, kFSCatInfoNone, NULL, folderRef, NULL, NULL);
 		if (err == noErr)
 			AddFolderIcon(folderRef, folderName);
 	}
 
-	if (err != noErr && !folderWarning)
+	if (err)
 	{
-		AppearanceAlert(kAlertCautionAlert, kFolderFail, kFolderHint);
-		folderWarning = true;
+		if (!folderWarning)
+		{
+			AppearanceAlert(kAlertCautionAlert, kFolderFail, kFolderHint);
+			folderWarning = true;
+		}
 	}
 	else
 		err = FSRefMakePath(folderRef, (unsigned char *) folderPath, PATH_MAX);
@@ -265,6 +269,7 @@ static OSStatus FindApplicationSupportFolder (FSRef *folderRef, char *folderPath
 		if (err == dirNFErr || err == fnfErr)
 			err = FSCreateDirectoryUnicode(&p2ref, 6, s9xfolder, kFSCatInfoNone, NULL, &p1ref, NULL, NULL);
 	}
+
 	if (err)
 		return (err);
 
@@ -272,17 +277,62 @@ static OSStatus FindApplicationSupportFolder (FSRef *folderRef, char *folderPath
 	CFStringGetCharacters(fstr, CFRangeMake(0, CFStringGetLength(fstr)), buffer);
 
 	err = FSMakeFSRefUnicode(&p1ref, CFStringGetLength(fstr), buffer, kTextEncodingUnicodeDefault, folderRef);
- 	if (err == dirNFErr || err == fnfErr)
+	if (err == dirNFErr || err == fnfErr)
 	{
 		err = FSCreateDirectoryUnicode(&p1ref, CFStringGetLength(fstr), buffer, kFSCatInfoNone, NULL, folderRef, NULL, NULL);
 		if (err == noErr)
 			AddFolderIcon(folderRef, folderName);
 	}
 
-	if (err != noErr && !folderWarning)
+	if (err)
 	{
-		AppearanceAlert(kAlertCautionAlert, kFolderFail, kFolderHint);
-		folderWarning = true;
+		if (!folderWarning)
+		{
+			AppearanceAlert(kAlertCautionAlert, kFolderFail, kFolderHint);
+			folderWarning = true;
+		}
+	}
+	else
+		err = FSRefMakePath(folderRef, (unsigned char *) folderPath, PATH_MAX);
+
+	CFRelease(fstr);
+
+	return (err);
+}
+
+static OSStatus FindCustomFolder (FSRef *folderRef, char *folderPath, const char *folderName)
+{
+	OSStatus	err;
+	CFStringRef	fstr;
+	FSRef		pref;
+	UniChar		buffer[PATH_MAX + 1];
+	char		s[PATH_MAX + 1];
+
+	err = CFStringGetCString(saveFolderPath, s, PATH_MAX, kCFStringEncodingUTF8) ? noErr : -1;
+	if (err == noErr)
+		err = FSPathMakeRef((unsigned char *) s, &pref, NULL);
+
+	if (err)
+		return (err);
+
+	fstr = CFStringCreateWithCString(kCFAllocatorDefault, folderName, CFStringGetSystemEncoding());
+	CFStringGetCharacters(fstr, CFRangeMake(0, CFStringGetLength(fstr)), buffer);
+
+	err = FSMakeFSRefUnicode(&pref, CFStringGetLength(fstr), buffer, kTextEncodingUnicodeDefault, folderRef);
+	if (err == dirNFErr || err == fnfErr)
+	{
+		err = FSCreateDirectoryUnicode(&pref, CFStringGetLength(fstr), buffer, kFSCatInfoNone, NULL, folderRef, NULL, NULL);
+		if (err == noErr)
+			AddFolderIcon(folderRef, folderName);
+	}
+
+	if (err)
+	{
+		if (!folderWarning)
+		{
+			AppearanceAlert(kAlertCautionAlert, kFolderFail, kFolderHint);
+			folderWarning = true;
+		}
 	}
 	else
 		err = FSRefMakePath(folderRef, (unsigned char *) folderPath, PATH_MAX);
@@ -472,6 +522,9 @@ const char * S9xGetFilename (const char *inExt, enum s9x_getdirtype dirtype)
 
 		if (saveInROMFolder == 0)
 			err = FindSNESFolder(&ref, s, folderName);
+		else
+		if (saveFolderPath && (saveInROMFolder == 4))
+			err = FindCustomFolder(&ref, s, folderName);
 		else
 			err = FindApplicationSupportFolder(&ref, s, folderName);
 

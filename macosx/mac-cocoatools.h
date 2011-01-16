@@ -192,5 +192,10 @@
 #define _mac_cocoatools_h_
 
 void CocoaPlayFreezeDefrostSound (void);
+void CocoaAddStatTextToView (NSView *, NSString *, float, float, float, float, NSTextField **);
+void CocoaAddEditTextToView (NSView *, NSString *, float, float, float, float, NSTextField **);
+void CocoaAddMPushBtnToView (NSView *, NSString *, float, float, float, float, NSButton **);
+void CocoaAddCheckBoxToView (NSView *, NSString *, float, float, float, float, NSButton **);
+void CocoaAddPopUpBtnToView (NSView *, NSArray *, float, float, float, float, NSPopUpButton **);
 
 #endif

@@ -390,7 +390,7 @@ static pascal void NPServerDialogTimerHandler (EventLoopTimerRef inTimer, void *
 		HIViewFindByID(root, cid, &ctl);
 		if (npplayer[c].online)
 		{
-			ref = CFStringCreateWithCString(kCFAllocatorDefault, npplayer[c].ip, MAC_PATH_ENCODING);
+			ref = CFStringCreateWithCString(kCFAllocatorDefault, npplayer[c].ip, kCFStringEncodingUTF8);
 			if (ref)
 			{
 				SetStaticTextCFString(ctl, ref, true);
@@ -406,7 +406,7 @@ static pascal void NPServerDialogTimerHandler (EventLoopTimerRef inTimer, void *
 		HIViewFindByID(root, cid, &ctl);
 		if (npplayer[c].online)
 		{
-			ref = CFStringCreateWithCString(kCFAllocatorDefault, npplayer[c].name, MAC_PATH_ENCODING);
+			ref = CFStringCreateWithCString(kCFAllocatorDefault, npplayer[c].name, kCFStringEncodingUTF8);
 			if (ref)
 			{
 				SetStaticTextCFString(ctl, ref, true);
@@ -598,7 +598,7 @@ void NPServerInit (void)
 	if (ref)
 	{
 		Boolean	r;
-		r = CFStringGetCString(ref, npplayer[0].name, 256, MAC_PATH_ENCODING);
+		r = CFStringGetCString(ref, npplayer[0].name, 256, kCFStringEncodingUTF8);
 		if (!r)
 			strcpy(npplayer[0].name, "unknown");
 

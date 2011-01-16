@@ -176,7 +176,7 @@
 		CF047DE9109D0E0600FD0754 /* winout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAA7B5F207609F76001BAB8B /* winout.cpp */; settings = {COMPILER_FLAGS = "-fexceptions"; }; };
 		CF047DEA109D0E0600FD0754 /* mac-appleevent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EACDDBB004D6A89700A80003 /* mac-appleevent.cpp */; };
 		CF047DEB109D0E0600FD0754 /* mac-audio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EADE6347052E5C4300A80003 /* mac-audio.cpp */; };
-		CF047DEC109D0E0600FD0754 /* mac-cart.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67004AC7FCE00A80003 /* mac-cart.cpp */; };
+		CF047DEC109D0E0600FD0754 /* mac-cart.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67004AC7FCE00A80003 /* mac-cart.mm */; };
 		CF047DED109D0E0600FD0754 /* mac-cheat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67204AC7FCE00A80003 /* mac-cheat.cpp */; };
 		CF047DEE109D0E0600FD0754 /* mac-cheatfinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67404AC7FCE00A80003 /* mac-cheatfinder.cpp */; };
 		CF047DEF109D0E0600FD0754 /* mac-client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA16051C0639E4C0004412AB /* mac-client.cpp */; };
@@ -191,7 +191,7 @@
 		CF047DF8109D0E0600FD0754 /* mac-multicart.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA26BBD50B3676E800A570B5 /* mac-multicart.cpp */; };
 		CF047DF9109D0E0600FD0754 /* mac-musicbox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67F04AC7FCE00A80003 /* mac-musicbox.cpp */; };
 		CF047DFA109D0E0600FD0754 /* mac-netplay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA1605500639E735004412AB /* mac-netplay.cpp */; };
-		CF047DFB109D0E0600FD0754 /* mac-os.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE0E96604D582B700A80003 /* mac-os.cpp */; };
+		CF047DFB109D0E0600FD0754 /* mac-os.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAE0E96604D582B700A80003 /* mac-os.mm */; };
 		CF047DFC109D0E0600FD0754 /* mac-prefs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE0E96B04D584B700A80003 /* mac-prefs.cpp */; };
 		CF047DFD109D0E0600FD0754 /* mac-quicktime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAA7F18506CB3D6F00C2D767 /* mac-quicktime.cpp */; };
 		CF047DFE109D0E0600FD0754 /* mac-render.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA942A50059B0F9000D7D022 /* mac-render.cpp */; };
@@ -360,7 +360,7 @@
 		CF0567360CF98E7E00C7877C /* winout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAA7B5F207609F76001BAB8B /* winout.cpp */; settings = {COMPILER_FLAGS = "-fexceptions"; }; };
 		CF0567380CF98E7E00C7877C /* mac-appleevent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EACDDBB004D6A89700A80003 /* mac-appleevent.cpp */; };
 		CF0567390CF98E7E00C7877C /* mac-audio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EADE6347052E5C4300A80003 /* mac-audio.cpp */; };
-		CF05673B0CF98E7E00C7877C /* mac-cart.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67004AC7FCE00A80003 /* mac-cart.cpp */; };
+		CF05673B0CF98E7E00C7877C /* mac-cart.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67004AC7FCE00A80003 /* mac-cart.mm */; };
 		CF05673C0CF98E7E00C7877C /* mac-cheat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67204AC7FCE00A80003 /* mac-cheat.cpp */; };
 		CF05673D0CF98E7E00C7877C /* mac-cheatfinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67404AC7FCE00A80003 /* mac-cheatfinder.cpp */; };
 		CF05673E0CF98E7E00C7877C /* mac-client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA16051C0639E4C0004412AB /* mac-client.cpp */; };
@@ -375,7 +375,7 @@
 		CF0567490CF98E7E00C7877C /* mac-multicart.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA26BBD50B3676E800A570B5 /* mac-multicart.cpp */; };
 		CF05674A0CF98E7E00C7877C /* mac-musicbox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67F04AC7FCE00A80003 /* mac-musicbox.cpp */; };
 		CF05674B0CF98E7E00C7877C /* mac-netplay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA1605500639E735004412AB /* mac-netplay.cpp */; };
-		CF05674C0CF98E7E00C7877C /* mac-os.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE0E96604D582B700A80003 /* mac-os.cpp */; };
+		CF05674C0CF98E7E00C7877C /* mac-os.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAE0E96604D582B700A80003 /* mac-os.mm */; };
 		CF05674D0CF98E7E00C7877C /* mac-prefs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE0E96B04D584B700A80003 /* mac-prefs.cpp */; };
 		CF05674E0CF98E7E00C7877C /* mac-quicktime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAA7F18506CB3D6F00C2D767 /* mac-quicktime.cpp */; };
 		CF05674F0CF98E7E00C7877C /* mac-render.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA942A50059B0F9000D7D022 /* mac-render.cpp */; };
@@ -565,7 +565,7 @@
 		CF2F46C31095EE72007D33FA /* winout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAA7B5F207609F76001BAB8B /* winout.cpp */; settings = {COMPILER_FLAGS = "-fexceptions"; }; };
 		CF2F46C41095EE72007D33FA /* mac-appleevent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EACDDBB004D6A89700A80003 /* mac-appleevent.cpp */; };
 		CF2F46C51095EE72007D33FA /* mac-audio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EADE6347052E5C4300A80003 /* mac-audio.cpp */; };
-		CF2F46C61095EE72007D33FA /* mac-cart.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67004AC7FCE00A80003 /* mac-cart.cpp */; };
+		CF2F46C61095EE72007D33FA /* mac-cart.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67004AC7FCE00A80003 /* mac-cart.mm */; };
 		CF2F46C71095EE72007D33FA /* mac-cheat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67204AC7FCE00A80003 /* mac-cheat.cpp */; };
 		CF2F46C81095EE72007D33FA /* mac-cheatfinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67404AC7FCE00A80003 /* mac-cheatfinder.cpp */; };
 		CF2F46C91095EE72007D33FA /* mac-client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA16051C0639E4C0004412AB /* mac-client.cpp */; };
@@ -580,7 +580,7 @@
 		CF2F46D21095EE72007D33FA /* mac-multicart.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA26BBD50B3676E800A570B5 /* mac-multicart.cpp */; };
 		CF2F46D31095EE72007D33FA /* mac-musicbox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67F04AC7FCE00A80003 /* mac-musicbox.cpp */; };
 		CF2F46D41095EE72007D33FA /* mac-netplay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA1605500639E735004412AB /* mac-netplay.cpp */; };
-		CF2F46D51095EE72007D33FA /* mac-os.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE0E96604D582B700A80003 /* mac-os.cpp */; };
+		CF2F46D51095EE72007D33FA /* mac-os.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAE0E96604D582B700A80003 /* mac-os.mm */; };
 		CF2F46D61095EE72007D33FA /* mac-prefs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE0E96B04D584B700A80003 /* mac-prefs.cpp */; };
 		CF2F46D71095EE72007D33FA /* mac-quicktime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAA7F18506CB3D6F00C2D767 /* mac-quicktime.cpp */; };
 		CF2F46D81095EE72007D33FA /* mac-render.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA942A50059B0F9000D7D022 /* mac-render.cpp */; };
@@ -669,6 +669,12 @@
 		CFA518D90EBCB4CA008379F6 /* ioapi.h in Headers */ = {isa = PBXBuildFile; fileRef = CFA518D60EBCB4CA008379F6 /* ioapi.h */; };
 		CFA518DD0EBCB4D2008379F6 /* unzip.h in Headers */ = {isa = PBXBuildFile; fileRef = CFA518DA0EBCB4D2008379F6 /* unzip.h */; };
 		CFA518E80EBCB5B1008379F6 /* crypt.h in Headers */ = {isa = PBXBuildFile; fileRef = CFA518E50EBCB5B1008379F6 /* crypt.h */; };
+		CFAEC7DE1113149B00E0A846 /* hermite_resampler.h in Headers */ = {isa = PBXBuildFile; fileRef = CFAEC7DC1113149B00E0A846 /* hermite_resampler.h */; };
+		CFAEC7DF1113149B00E0A846 /* linear_resampler.h in Headers */ = {isa = PBXBuildFile; fileRef = CFAEC7DD1113149B00E0A846 /* linear_resampler.h */; };
+		CFAEC7E01113149B00E0A846 /* hermite_resampler.h in Headers */ = {isa = PBXBuildFile; fileRef = CFAEC7DC1113149B00E0A846 /* hermite_resampler.h */; };
+		CFAEC7E11113149B00E0A846 /* linear_resampler.h in Headers */ = {isa = PBXBuildFile; fileRef = CFAEC7DD1113149B00E0A846 /* linear_resampler.h */; };
+		CFAEC7E21113149B00E0A846 /* hermite_resampler.h in Headers */ = {isa = PBXBuildFile; fileRef = CFAEC7DC1113149B00E0A846 /* hermite_resampler.h */; };
+		CFAEC7E31113149B00E0A846 /* linear_resampler.h in Headers */ = {isa = PBXBuildFile; fileRef = CFAEC7DD1113149B00E0A846 /* linear_resampler.h */; };
 		CFE7FBB10D2F6755002F3102 /* debug.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE061710526CCB900A80003 /* debug.cpp */; };
 		CFE7FBB40D2F67BA002F3102 /* fxemu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE0617C0526CCB900A80003 /* fxemu.cpp */; };
 		CFE7FBB80D2F683C002F3102 /* debug.h in Headers */ = {isa = PBXBuildFile; fileRef = EA6E6C0E08F9734500CB3555 /* debug.h */; };
@@ -737,6 +743,8 @@
 		CFA518E50EBCB5B1008379F6 /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
 		CFA82C3D0F1B43A60089C17F /* srtcemu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = srtcemu.h; sourceTree = "<group>"; };
 		CFA82C3E0F1B43A60089C17F /* srtcemu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = srtcemu.cpp; sourceTree = "<group>"; };
+		CFAEC7DC1113149B00E0A846 /* hermite_resampler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hermite_resampler.h; sourceTree = "<group>"; };
+		CFAEC7DD1113149B00E0A846 /* linear_resampler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linear_resampler.h; sourceTree = "<group>"; };
 		CFEFAE8A10EAC92300FB081A /* snes_ntsc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = snes_ntsc.c; sourceTree = "<group>"; };
 		CFEFAE8E10EAC92B00FB081A /* snes_ntsc_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = snes_ntsc_config.h; sourceTree = "<group>"; };
 		CFEFAE8F10EAC92B00FB081A /* snes_ntsc_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = snes_ntsc_impl.h; sourceTree = "<group>"; };
@@ -897,10 +905,10 @@
 		EAE061EA0526CCB900A80003 /* srtc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = srtc.h; sourceTree = "<group>"; };
 		EAE061EB0526CCB900A80003 /* tile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = tile.cpp; sourceTree = "<group>"; };
 		EAE061EC0526CCB900A80003 /* tile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = tile.h; sourceTree = "<group>"; };
-		EAE0E96604D582B700A80003 /* mac-os.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = "mac-os.cpp"; sourceTree = "<group>"; };
+		EAE0E96604D582B700A80003 /* mac-os.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = "mac-os.mm"; sourceTree = "<group>"; };
 		EAE0E96B04D584B700A80003 /* mac-prefs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = "mac-prefs.cpp"; sourceTree = "<group>"; };
 		EAECB66D04AC7FCD00A80003 /* mac-appleevent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "mac-appleevent.h"; sourceTree = "<group>"; };
-		EAECB67004AC7FCE00A80003 /* mac-cart.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = "mac-cart.cpp"; sourceTree = "<group>"; };
+		EAECB67004AC7FCE00A80003 /* mac-cart.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = "mac-cart.mm"; sourceTree = "<group>"; };
 		EAECB67104AC7FCE00A80003 /* mac-cart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "mac-cart.h"; sourceTree = "<group>"; };
 		EAECB67204AC7FCE00A80003 /* mac-cheat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = "mac-cheat.cpp"; sourceTree = "<group>"; };
 		EAECB67304AC7FCE00A80003 /* mac-cheat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "mac-cheat.h"; sourceTree = "<group>"; };
@@ -1044,6 +1052,8 @@
 				CF37574F10A6AEA1001BF7C5 /* blargg_config.h */,
 				CF37575010A6AEA1001BF7C5 /* blargg_endian.h */,
 				CF37575110A6AEA1001BF7C5 /* blargg_source.h */,
+				CFAEC7DC1113149B00E0A846 /* hermite_resampler.h */,
+				CFAEC7DD1113149B00E0A846 /* linear_resampler.h */,
 				CF37575310A6AEA1001BF7C5 /* resampler.h */,
 				CF37575410A6AEA1001BF7C5 /* ring_buffer.h */,
 				CF37575610A6AEA1001BF7C5 /* SNES_SPC.h */,
@@ -1259,7 +1269,7 @@
 				EA362C3E086119D100FBE476 /* HID_Utilities_External.h */,
 				EACDDBB004D6A89700A80003 /* mac-appleevent.cpp */,
 				EADE6347052E5C4300A80003 /* mac-audio.cpp */,
-				EAECB67004AC7FCE00A80003 /* mac-cart.cpp */,
+				EAECB67004AC7FCE00A80003 /* mac-cart.mm */,
 				EAECB67204AC7FCE00A80003 /* mac-cheat.cpp */,
 				EAECB67404AC7FCE00A80003 /* mac-cheatfinder.cpp */,
 				EA16051C0639E4C0004412AB /* mac-client.cpp */,
@@ -1274,7 +1284,7 @@
 				EA26BBD50B3676E800A570B5 /* mac-multicart.cpp */,
 				EAECB67F04AC7FCE00A80003 /* mac-musicbox.cpp */,
 				EA1605500639E735004412AB /* mac-netplay.cpp */,
-				EAE0E96604D582B700A80003 /* mac-os.cpp */,
+				EAE0E96604D582B700A80003 /* mac-os.mm */,
 				EAE0E96B04D584B700A80003 /* mac-prefs.cpp */,
 				EAA7F18506CB3D6F00C2D767 /* mac-quicktime.cpp */,
 				EA942A50059B0F9000D7D022 /* mac-render.cpp */,
@@ -1423,6 +1433,8 @@
 				CF047D97109D0E0600FD0754 /* mac-prefix.h in Headers */,
 				CF047D98109D0E0600FD0754 /* mac-global_prefix.h in Headers */,
 				CF047D99109D0E0600FD0754 /* HID_Utilities_External.h in Headers */,
+				CFAEC7E01113149B00E0A846 /* hermite_resampler.h in Headers */,
+				CFAEC7E11113149B00E0A846 /* linear_resampler.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1538,6 +1550,8 @@
 				CF0566EC0CF98E7E00C7877C /* mac-prefix.h in Headers */,
 				CF0566ED0CF98E7E00C7877C /* mac-global_prefix.h in Headers */,
 				CF0566EE0CF98E7E00C7877C /* HID_Utilities_External.h in Headers */,
+				CFAEC7DE1113149B00E0A846 /* hermite_resampler.h in Headers */,
+				CFAEC7DF1113149B00E0A846 /* linear_resampler.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1653,6 +1667,8 @@
 				CF2F46711095EE72007D33FA /* mac-prefix.h in Headers */,
 				CF2F46721095EE72007D33FA /* mac-global_prefix.h in Headers */,
 				CF2F46731095EE72007D33FA /* HID_Utilities_External.h in Headers */,
+				CFAEC7E21113149B00E0A846 /* hermite_resampler.h in Headers */,
+				CFAEC7E31113149B00E0A846 /* linear_resampler.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1721,9 +1737,16 @@
 /* Begin PBXProject section */
 		20286C28FDCF999611CA2CEA /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = EA6A1100085808D200A1CF18 /* Build configuration list for PBXProject "snes9x" */;
+			buildConfigurationList = EA6A1100085808D200A1CF18 /* Build configuration list for PBXProject "macpdate" */;
 			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 20286C29FDCF999611CA2CEA /* Snes9x CVS */;
 			projectDirPath = "";
 			projectRoot = ..;
@@ -1904,7 +1927,7 @@
 				CF047DE9109D0E0600FD0754 /* winout.cpp in Sources */,
 				CF047DEA109D0E0600FD0754 /* mac-appleevent.cpp in Sources */,
 				CF047DEB109D0E0600FD0754 /* mac-audio.cpp in Sources */,
-				CF047DEC109D0E0600FD0754 /* mac-cart.cpp in Sources */,
+				CF047DEC109D0E0600FD0754 /* mac-cart.mm in Sources */,
 				CF047DED109D0E0600FD0754 /* mac-cheat.cpp in Sources */,
 				CF047DEE109D0E0600FD0754 /* mac-cheatfinder.cpp in Sources */,
 				CF047DEF109D0E0600FD0754 /* mac-client.cpp in Sources */,
@@ -1919,7 +1942,7 @@
 				CF047DF8109D0E0600FD0754 /* mac-multicart.cpp in Sources */,
 				CF047DF9109D0E0600FD0754 /* mac-musicbox.cpp in Sources */,
 				CF047DFA109D0E0600FD0754 /* mac-netplay.cpp in Sources */,
-				CF047DFB109D0E0600FD0754 /* mac-os.cpp in Sources */,
+				CF047DFB109D0E0600FD0754 /* mac-os.mm in Sources */,
 				CF047DFC109D0E0600FD0754 /* mac-prefs.cpp in Sources */,
 				CF047DFD109D0E0600FD0754 /* mac-quicktime.cpp in Sources */,
 				CF047DFE109D0E0600FD0754 /* mac-render.cpp in Sources */,
@@ -1999,7 +2022,7 @@
 				CF0567360CF98E7E00C7877C /* winout.cpp in Sources */,
 				CF0567380CF98E7E00C7877C /* mac-appleevent.cpp in Sources */,
 				CF0567390CF98E7E00C7877C /* mac-audio.cpp in Sources */,
-				CF05673B0CF98E7E00C7877C /* mac-cart.cpp in Sources */,
+				CF05673B0CF98E7E00C7877C /* mac-cart.mm in Sources */,
 				CF05673C0CF98E7E00C7877C /* mac-cheat.cpp in Sources */,
 				CF05673D0CF98E7E00C7877C /* mac-cheatfinder.cpp in Sources */,
 				CF05673E0CF98E7E00C7877C /* mac-client.cpp in Sources */,
@@ -2014,7 +2037,7 @@
 				CF0567490CF98E7E00C7877C /* mac-multicart.cpp in Sources */,
 				CF05674A0CF98E7E00C7877C /* mac-musicbox.cpp in Sources */,
 				CF05674B0CF98E7E00C7877C /* mac-netplay.cpp in Sources */,
-				CF05674C0CF98E7E00C7877C /* mac-os.cpp in Sources */,
+				CF05674C0CF98E7E00C7877C /* mac-os.mm in Sources */,
 				CF05674D0CF98E7E00C7877C /* mac-prefs.cpp in Sources */,
 				CF05674E0CF98E7E00C7877C /* mac-quicktime.cpp in Sources */,
 				CF05674F0CF98E7E00C7877C /* mac-render.cpp in Sources */,
@@ -2094,7 +2117,7 @@
 				CF2F46C31095EE72007D33FA /* winout.cpp in Sources */,
 				CF2F46C41095EE72007D33FA /* mac-appleevent.cpp in Sources */,
 				CF2F46C51095EE72007D33FA /* mac-audio.cpp in Sources */,
-				CF2F46C61095EE72007D33FA /* mac-cart.cpp in Sources */,
+				CF2F46C61095EE72007D33FA /* mac-cart.mm in Sources */,
 				CF2F46C71095EE72007D33FA /* mac-cheat.cpp in Sources */,
 				CF2F46C81095EE72007D33FA /* mac-cheatfinder.cpp in Sources */,
 				CF2F46C91095EE72007D33FA /* mac-client.cpp in Sources */,
@@ -2109,7 +2132,7 @@
 				CF2F46D21095EE72007D33FA /* mac-multicart.cpp in Sources */,
 				CF2F46D31095EE72007D33FA /* mac-musicbox.cpp in Sources */,
 				CF2F46D41095EE72007D33FA /* mac-netplay.cpp in Sources */,
-				CF2F46D51095EE72007D33FA /* mac-os.cpp in Sources */,
+				CF2F46D51095EE72007D33FA /* mac-os.mm in Sources */,
 				CF2F46D61095EE72007D33FA /* mac-prefs.cpp in Sources */,
 				CF2F46D71095EE72007D33FA /* mac-quicktime.cpp in Sources */,
 				CF2F46D81095EE72007D33FA /* mac-render.cpp in Sources */,
@@ -2475,7 +2498,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EA6A1100085808D200A1CF18 /* Build configuration list for PBXProject "snes9x" */ = {
+		EA6A1100085808D200A1CF18 /* Build configuration list for PBXProject "macpdate" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EA6A1102085808D200A1CF18 /* Release */,

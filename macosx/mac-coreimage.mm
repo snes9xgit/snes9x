@@ -626,10 +626,7 @@ void ConfigureCoreImageFilter (void)
 			int	n = CountMenuItems(ciFilterMenu);
 			SetControlPopupMenuHandle(ctl, ciFilterMenu);
 			HIViewSetMaximum(ctl, n);
-			for (int i = 1; i <= n; i++)
-				CheckMenuItem(ciFilterMenu, i, false);
 			value = [ciFilterNameList indexOfObject: (NSString *) ciFilterName];
-			CheckMenuItem(ciFilterMenu, value + 1, true);
 			HIViewSetValue(ctl, value + 1);
 			
 			ReplaceFilterUI(window);

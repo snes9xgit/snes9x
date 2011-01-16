@@ -1459,17 +1459,14 @@ static void S9xDeinitCoreImage (void)
 	}
 }
 
-void S9xInitDisplay (int argc, char **argv)
+void GetGameDisplay (int *w, int *h)
 {
-	if (directDisplay)
-		return;
-
-	gGameDisplayID = CGMainDisplayID();
-
 	CGDisplayErr		cgErr;
 	CGDisplayCount		numDisplays, maxDisplays = 32;
 	CGDirectDisplayID	activeDisplays[32];
 	CGPoint				windowAt;
+
+	gGameDisplayID = CGMainDisplayID();
 
 	windowAt = CGPointMake((float) windowPos[kWindowScreen].h, (float) windowPos[kWindowScreen].v);
 
@@ -1482,6 +1479,20 @@ void S9xInitDisplay (int argc, char **argv)
 				gGameDisplayID = activeDisplays[i];
 		}
 	}
+
+	if (w != NULL && h != NULL)
+	{
+		*w = CGDisplayPixelsWide(gGameDisplayID);
+		*h = CGDisplayPixelsHigh(gGameDisplayID);
+	}
+}
+
+void S9xInitDisplay (int argc, char **argv)
+{
+	if (directDisplay)
+		return;
+
+	GetGameDisplay(NULL, NULL);
 
 	glScreenBounds = CGDisplayBounds(gGameDisplayID);
 
@@ -1713,7 +1724,7 @@ static void S9xPutImageOpenGL (int width, int height)
 			if (glstretch)
 			{
 				float   fpw = (float) glScreenH / vh * 512.0f;
-				int		pw  = (int) (fpw + ((float) glScreenW - fpw) * (float) macAspectRatio / 100.0);
+				int		pw  = (int) (fpw + ((float) glScreenW - fpw) * (float) macAspectRatio / 10000.0);
 
 				glViewport((glScreenW - pw) >> 1, 0, pw, glScreenH);
 			}
@@ -1963,7 +1974,7 @@ static void S9xPutImageCoreImage (int width, int height)
 			if (glstretch)
 			{
 				float   fpw = (float) glScreenH / vh * 512.0f;
-				int		pw  = (int) (fpw + ((float) glScreenW - fpw) * (float) macAspectRatio / 100.0);
+				int		pw  = (int) (fpw + ((float) glScreenW - fpw) * (float) macAspectRatio / 10000.0);
 
 				glViewport((glScreenW - pw) >> 1, 0, pw, glScreenH);
 			}
@@ -2042,7 +2053,7 @@ static void S9xPutImageOverscanOpenGL (int width, int height)
 			if (glstretch)
 			{
 				float   fpw = (float) glScreenH / vh * 512.0f;
-				int		pw  = (int) (fpw + ((float) glScreenW - fpw) * (float) macAspectRatio / 100.0);
+				int		pw  = (int) (fpw + ((float) glScreenW - fpw) * (float) macAspectRatio / 10000.0);
 
 				glViewport((glScreenW - pw) >> 1, 0, pw, glScreenH);
 			}
@@ -2312,7 +2323,7 @@ static void S9xPutImageOverscanCoreImage (int width, int height)
 			if (glstretch)
 			{
 				float   fpw = (float) glScreenH / vh * 512.0f;
-				int		pw  = (int) (fpw + ((float) glScreenW - fpw) * (float) macAspectRatio / 100.0);
+				int		pw  = (int) (fpw + ((float) glScreenW - fpw) * (float) macAspectRatio / 10000.0);
 
 				glViewport((glScreenW - pw) >> 1, 0, pw, glScreenH);
 			}
@@ -2377,7 +2388,7 @@ static void S9xPutImageBlitGL2 (int blit_width, int blit_height)
 			{
 				int		sh  = (blit_width > blit_height * 2) ? (blit_height * 2) : blit_height;
 				float	fpw = (float) glScreenH / (float) sh * (float) blit_width;
-				int		pw  = (int) (fpw + ((float) glScreenW - fpw) * (float) macAspectRatio / 100.0);
+				int		pw  = (int) (fpw + ((float) glScreenW - fpw) * (float) macAspectRatio / 10000.0);
 				glViewport((glScreenW - pw) >> 1, 0, pw, glScreenH);
 			}
 			else
@@ -2543,7 +2554,7 @@ static void S9xPutImageBlitGL2CoreImage (int blit_width, int blit_height)
 			{
 				int		sh  = (blit_width > blit_height * 2) ? (blit_height * 2) : blit_height;
 				float	fpw = (float) glScreenH / (float) sh * (float) blit_width;
-				int		pw  = (int) (fpw + ((float) glScreenW - fpw) * (float) macAspectRatio / 100.0);
+				int		pw  = (int) (fpw + ((float) glScreenW - fpw) * (float) macAspectRatio / 10000.0);
 				glViewport((glScreenW - pw) >> 1, 0, pw, glScreenH);
 			}
 			else

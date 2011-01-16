@@ -422,7 +422,6 @@ void CheatFinder (void)
 	OSStatus				err;
 	HIViewRef				ctl;
 	HIViewID				cid;
-	MenuRef					menu;
 	char					num[256];
 	WindowData				cf;
 	EventHandlerRef			wEref, pEref;
@@ -517,10 +516,6 @@ void CheatFinder (void)
 
 					cid.signature = kCFNumBytesPop;
 					HIViewFindByID(root, cid, &ctl);
-					menu = HIMenuViewGetMenu(ctl);
-					for (int i = 1; i <= CountMenuItems(menu); i++)
-						CheckMenuItem(menu, i, false);
-					CheckMenuItem(menu, cfViewNumBytes, true);
 					SetControl32BitValue(ctl, cfViewNumBytes);
 
 					cid.signature = kCFViewModeRad;
@@ -529,10 +524,6 @@ void CheatFinder (void)
 
 					cid.signature = kCFCompModePop;
 					HIViewFindByID(root, cid, &ctl);
-					menu = HIMenuViewGetMenu(ctl);
-					for (int i = 1; i <= CountMenuItems(menu); i++)
-						CheckMenuItem(menu, i, false);
-					CheckMenuItem(menu, cfCompMode, true);
 					SetControl32BitValue(ctl, cfCompMode);
 
 					if (cfIsNewGame || (!cfIsStored && (cfCompWith == kCFCompWithStored)))
@@ -1704,7 +1695,7 @@ static void CheatFinderListViewDraw (CGContextRef ctx, HIRect *bounds, ListViewD
 				f = -(y + 12.0f);
 
 				sprintf(t1, "%06lX", cfAddress[i] + 0x7E0000);
-				str = CFStringCreateWithCString(kCFAllocatorDefault, t1, MAC_PATH_ENCODING);
+				str = CFStringCreateWithCString(kCFAllocatorDefault, t1, kCFStringEncodingUTF8);
 				astr = CFAttributedStringCreate(kCFAllocatorDefault, str, attr);
 				line = CTLineCreateWithAttributedString(astr);
 				CGContextSetTextPosition(ctx, ax, f);
@@ -1717,7 +1708,7 @@ static void CheatFinderListViewDraw (CGContextRef ctx, HIRect *bounds, ListViewD
 				strcpy(t1, "            ");
 				t1[11 - strlen(t2)] = 0;
 				strcat(t1, t2);
-				str = CFStringCreateWithCString(kCFAllocatorDefault, t1, MAC_PATH_ENCODING);
+				str = CFStringCreateWithCString(kCFAllocatorDefault, t1, kCFStringEncodingUTF8);
 				astr = CFAttributedStringCreate(kCFAllocatorDefault, str, attr);
 				line = CTLineCreateWithAttributedString(astr);
 				CGContextSetTextPosition(ctx, vx, f);

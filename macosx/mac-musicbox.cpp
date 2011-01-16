@@ -230,7 +230,7 @@ static pthread_t		mbxThread;
 
 static uint16			stereo_switch;
 
-static volatile Boolean	stopNow, showIndicator, mbxFinished;
+static volatile Boolean	stopNow, showIndicator, mbxFinished, headPressed;
 
 static void SPCPlayExec (void);
 static void SPCPlayFreeze (void);
@@ -300,6 +300,7 @@ void MusicBoxDialog (void)
 			mboxPause = false;
 			mbxFinished = false;
 			showIndicator = false;
+			headPressed = false;
 
 			stereo_switch = ~0;
 			spc_core->dsp_set_stereo_switch(stereo_switch);
@@ -327,7 +328,7 @@ void MusicBoxDialog (void)
 			HIViewFindByID(root, cid, &ctl);
 			SetStaticTextTrunc(ctl, truncEnd, false);
 			_splitpath(Memory.ROMFilename, drive, dir, fname, ext);
-			sref = CFStringCreateWithCString(kCFAllocatorDefault, fname, MAC_PATH_ENCODING);
+			sref = CFStringCreateWithCString(kCFAllocatorDefault, fname, kCFStringEncodingUTF8);
 			if (sref)
 			{
 				SetStaticTextCFString(ctl, sref, false);
@@ -596,9 +597,7 @@ static pascal OSStatus MusicBoxEventHandler (EventHandlerCallRef inHandlerCallRe
 
 							case 'HEAD':
 							{
-								showIndicator = !showIndicator;
-								SPCPlayDefrost();
-								showIndicator = !showIndicator;
+								headPressed = true;
 								result = noErr;
 								break;
 							}
@@ -639,6 +638,14 @@ static void * SoundTask (void *)
 				SPCPlayExec();
 			else
 				S9xMainLoop();
+		}
+
+		if (headPressed)
+		{
+			showIndicator = !showIndicator;
+			SPCPlayDefrost();
+			showIndicator = !showIndicator;
+			headPressed = false;
 		}
 
 		last += (1000000 / Memory.ROMFramesPerSecond);

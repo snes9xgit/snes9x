@@ -363,7 +363,7 @@ bool8 NPClientDialog (void)
 
 				cid.signature = 'CLNM';
 				HIViewFindByID(root, cid, &ctl);
-				ref = CFStringCreateWithCString(kCFAllocatorDefault, npName, MAC_PATH_ENCODING);
+				ref = CFStringCreateWithCString(kCFAllocatorDefault, npName, kCFStringEncodingUTF8);
 				if (ref)
 				{
 					SetEditTextCFString(ctl, ref, false);
@@ -452,7 +452,7 @@ static pascal OSStatus NPClientDialogEventHandler (EventHandlerCallRef inHandler
 								{
 									Boolean	r;
 
-									r = CFStringGetCString(ref, npclient.name, 256, MAC_PATH_ENCODING);
+									r = CFStringGetCString(ref, npclient.name, 256, kCFStringEncodingUTF8);
 									if (!r)
 										strcpy(npclient.name, "unknown");
 									else
@@ -903,7 +903,7 @@ static bool8 NPClientBeginOpenROMImage (WindowRef window)
 
 	ResetCheatFinder();
 
-	romRef  = CFStringCreateWithCString(kCFAllocatorDefault, nprominfo.fname, MAC_PATH_ENCODING);
+	romRef  = CFStringCreateWithCString(kCFAllocatorDefault, nprominfo.fname, kCFStringEncodingUTF8);
 	numRef  = CFCopyLocalizedString(CFSTR("NPROMNamePos"), "1");
 	baseRef = CFCopyLocalizedString(CFSTR("NPROMNameMes"), "NPROM");
 	mesRef  = CFStringCreateMutableCopy(kCFAllocatorDefault, 0, baseRef);
@@ -1168,7 +1168,7 @@ static void NPClientBeginPlayerListSheet (void)
 		{
 			cid.id = npcinfo[i].player;
 			HIViewFindByID(root, cid, &ctl);
-			ref = CFStringCreateWithCString(kCFAllocatorDefault, npcinfo[i].name, MAC_PATH_ENCODING);
+			ref = CFStringCreateWithCString(kCFAllocatorDefault, npcinfo[i].name, kCFStringEncodingUTF8);
 			if (ref)
 			{
 				SetStaticTextCFString(ctl, ref, false);

@@ -193,32 +193,32 @@
 
 enum
 {
-	kAutoROMType = 0,
-	kLoROMForce,
-	kHiROMForce
+	kAutoROMType       = 0,
+	kLoROMForce        = 2,
+	kHiROMForce        = 3
 };
 
 enum
 {
-	kAutoInterleave = 0,
-	kNoInterleaveForce,
-	kInterleaveForce,
-	kInterleave2Force,
-	kInterleaveGD24
+	kAutoInterleave    = 0,
+	kNoInterleaveForce = 2,
+	kInterleaveForce   = 3,
+	kInterleave2Force  = 4,
+	kInterleaveGD24    = 5
 };
 
 enum
 {
-	kAutoVideo = 0,
-	kPALForce,
-	kNTSCForce
+	kAutoVideo         = 0,
+	kPALForce          = 2,
+	kNTSCForce         = 3
 };
 
 enum
 {
-	kAutoHeader = 0,
-	kNoHeaderForce,
-	kHeaderForce
+	kAutoHeader        = 0,
+	kNoHeaderForce     = 2,
+	kHeaderForce       = 3
 };
 
 void SNES9X_Go (void);

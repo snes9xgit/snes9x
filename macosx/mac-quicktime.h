@@ -194,6 +194,6 @@
 void MacQTStartRecording (char *);
 void MacQTStopRecording (void);
 void MacQTRecordFrame (int, int);
-void MacQTVideoConfig (WindowRef);
+void MacQTVideoConfig (void);
 
 #endif

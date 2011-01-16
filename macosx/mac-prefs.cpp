@@ -199,10 +199,12 @@
 
 #include "mac-prefix.h"
 #include "mac-audio.h"
+#include "mac-cart.h"
 #include "mac-coreimage.h"
 #include "mac-dialog.h"
 #include "mac-keyboard.h"
 #include "mac-os.h"
+#include "mac-render.h"
 #include "mac-snes9x.h"
 #include "mac-stringtools.h"
 #include "mac-prefs.h"
@@ -224,6 +226,7 @@ enum
 	iNibGScreenCurvature,
 	iNibGCurvatureWarp,
 	iNibGAspectRatio,
+	iNibGAspectRatioText,
 
 	iNibSSynchronize = 201,
 	iNibS16BitPlayback,
@@ -241,7 +244,7 @@ enum
 	iNibOAutoSaveInterval,
 
 	iNibMCPUCycles = 601,
-	iNibMShutdownMaster,
+	iNibMReserved1,
 	iNibMTurboSkipArrows,
 	iNibMTurboSkipText,
 	iNibMFrameSkip,
@@ -279,6 +282,11 @@ enum
 	iOpenGLNTSC_TV_SMode,
 	iOpenGLNTSC_TV_RMode,
 	iOpenGLNTSC_TV_MMode
+};
+
+enum
+{
+	iNibSaveFolderNameMenuItem  = 5
 };
 
 static int	lastTabIndex = 1;
@@ -329,7 +337,6 @@ static PrefList	prefList[] =
 	{ 'QTfg', &macQTMovFlag,								sizeof(uint16     ) },
 
 	{ 'HHck', &Settings.HDMATimingHack,					    sizeof(int32      ) },
-	{ 'stdm', &Settings.ShutdownMaster,						sizeof(bool8      ) },
 	{ 'TbRt', &macFastForwardRate,							sizeof(int        ) },
 	{ 'FSkp', &macFrameSkip,							    sizeof(int        ) },
 	{ 'IvVR', &Settings.BlockInvalidVRAMAccessMaster,       sizeof(bool8      ) },
@@ -375,6 +382,7 @@ static void SelectTabPane (HIViewRef, SInt16);
 static pascal void InputRateSliderActionProc (HIViewRef, HIViewPartCode);
 static pascal void LittleArrowsActionProc (HIViewRef, HIViewPartCode);
 static pascal OSStatus InputRateTextEventHandler (EventHandlerCallRef, EventRef, void *);
+static pascal OSStatus AspectRatioTextEventHandler (EventHandlerCallRef, EventRef, void *);
 static pascal OSStatus TabEventHandler (EventHandlerCallRef, EventRef, void *);
 static pascal OSStatus PreferencesEventHandler (EventHandlerCallRef, EventRef, void *);
 
@@ -407,6 +415,20 @@ void SavePrefs (void)
 
 			CFRelease(mref);
 		}
+	}
+
+	mref = CFStringCreateMutableCopy(kCFAllocatorDefault, 0, CFSTR("Preferences_SaveFolder"));
+	if (mref)
+	{
+		if (saveFolderPath)
+		{
+			CFPreferencesSetAppValue(mref, saveFolderPath, kCFPreferencesCurrentApplication);
+			CFRelease(saveFolderPath);
+		}
+		else
+			CFPreferencesSetAppValue(mref, NULL, kCFPreferencesCurrentApplication);
+
+		CFRelease(mref);
 	}
 
 	CFPreferencesAppSynchronize(kCFPreferencesCurrentApplication);
@@ -442,6 +464,16 @@ void LoadPrefs (void)
 			CFRelease(mref);
 		}
 	}
+
+	mref = CFStringCreateMutableCopy(kCFAllocatorDefault, 0, CFSTR("Preferences_SaveFolder"));
+	if (mref)
+	{
+		sref = (CFStringRef) CFPreferencesCopyAppValue(mref, kCFPreferencesCurrentApplication);
+		if (sref)
+			saveFolderPath = sref;
+
+		CFRelease(mref);
+	}
 }
 
 void ConfigurePreferences (void)
@@ -476,10 +508,11 @@ void ConfigurePreferences (void)
 		err = CreateWindowFromNib(nibRef, CFSTR("Preferences"), &tWindowRef);
 		if (err == noErr)
 		{
-			EventHandlerUPP		tUPP, iUPP, pUPP;
-			EventHandlerRef		tRef, iRef, pRef;
+			EventHandlerUPP		tUPP, iUPP, aUPP, pUPP;
+			EventHandlerRef		tRef, iRef, aRef, pRef;
 			EventTypeSpec		tEvents[] = { { kEventClassControl, kEventControlHit          } },
 								iEvents[] = { { kEventClassControl, kEventControlClick        } },
+								aEvents[] = { { kEventClassControl, kEventControlClick        } },
 								pEvents[] = { { kEventClassWindow,  kEventWindowClose         },
 											  { kEventClassCommand, kEventCommandProcess      },
 											  { kEventClassCommand, kEventCommandUpdateStatus } };
@@ -504,6 +537,12 @@ void ConfigurePreferences (void)
 			HIViewFindByID(root, cid, &ctl);
 			iUPP = NewEventHandlerUPP(InputRateTextEventHandler);
 			err = InstallControlEventHandler(ctl, iUPP, GetEventTypeCount(iEvents), iEvents, 0, &iRef);
+
+			cid.signature = 'grap';
+			cid.id = iNibGAspectRatioText;
+			HIViewFindByID(root, cid, &ctl);
+			aUPP = NewEventHandlerUPP(AspectRatioTextEventHandler);
+			err = InstallControlEventHandler(ctl, aUPP, GetEventTypeCount(aEvents), aEvents, 0, &aRef);
 
 			pUPP = NewEventHandlerUPP(PreferencesEventHandler);
 			err = InstallWindowEventHandler(tWindowRef, pUPP, GetEventTypeCount(pEvents), pEvents, (void *) tWindowRef, &pRef);
@@ -539,98 +578,77 @@ void ConfigurePreferences (void)
 
 			cid.id = iNibGVideoMode;
 			HIViewFindByID(root, cid, &ctl);
-			menu = HIMenuViewGetMenu(ctl);
-			for (int i = 1; i <= CountMenuItems(menu); i++)
-				CheckMenuItem(menu, i, false);
 			switch (videoMode)
 			{
 				case VIDEOMODE_BLOCKY:
-					CheckMenuItem(menu, iOpenGLBlocky, true);
 					SetControl32BitValue(ctl, iOpenGLBlocky);
 					break;
 
 				case VIDEOMODE_TV:
-					CheckMenuItem(menu, iOpenGLTVMode, true);
 					SetControl32BitValue(ctl, iOpenGLTVMode);
 					break;
 
 				case VIDEOMODE_SMOOTH:
-					CheckMenuItem(menu, iOpenGLSmoothMode, true);
 					SetControl32BitValue(ctl, iOpenGLSmoothMode);
 					break;
 
 				case VIDEOMODE_SUPEREAGLE:
-					CheckMenuItem(menu, iOpenGLEagleMode, true);
 					SetControl32BitValue(ctl, iOpenGLEagleMode);
 					break;
 
 				case VIDEOMODE_2XSAI:
-					CheckMenuItem(menu, iOpenGL2xSAIMode, true);
 					SetControl32BitValue(ctl, iOpenGL2xSAIMode);
 					break;
 
 				case VIDEOMODE_SUPER2XSAI:
-					CheckMenuItem(menu, iOpenGLSuper2xSAIMode, true);
 					SetControl32BitValue(ctl, iOpenGLSuper2xSAIMode);
 					break;
 
 				case VIDEOMODE_EPX:
-					CheckMenuItem(menu, iOpenGLEPXMode, true);
 					SetControl32BitValue(ctl, iOpenGLEPXMode);
 					break;
 
 				case VIDEOMODE_HQ2X:
-					CheckMenuItem(menu, iOpenGLHQ2xMode, true);
 					SetControl32BitValue(ctl, iOpenGLHQ2xMode);
 					break;
 
 				case VIDEOMODE_HQ3X:
-					CheckMenuItem(menu, iOpenGLHQ3xMode, true);
 					SetControl32BitValue(ctl, iOpenGLHQ3xMode);
 					break;
 
 				case VIDEOMODE_HQ4X:
-					CheckMenuItem(menu, iOpenGLHQ4xMode, true);
 					SetControl32BitValue(ctl, iOpenGLHQ4xMode);
 					break;
 
 				case VIDEOMODE_NTSC_C:
-					CheckMenuItem(menu, iOpenGLNTSC_CMode, true);
 					SetControl32BitValue(ctl, iOpenGLNTSC_CMode);
 					break;
 
 				case VIDEOMODE_NTSC_S:
-					CheckMenuItem(menu, iOpenGLNTSC_SMode, true);
 					SetControl32BitValue(ctl, iOpenGLNTSC_SMode);
 					break;
 
 				case VIDEOMODE_NTSC_R:
-					CheckMenuItem(menu, iOpenGLNTSC_RMode, true);
 					SetControl32BitValue(ctl, iOpenGLNTSC_RMode);
 					break;
 
 				case VIDEOMODE_NTSC_M:
-					CheckMenuItem(menu, iOpenGLNTSC_MMode, true);
 					SetControl32BitValue(ctl, iOpenGLNTSC_MMode);
 					break;
 
 				case VIDEOMODE_NTSC_TV_C:
-					CheckMenuItem(menu, iOpenGLNTSC_TV_CMode, true);
 					SetControl32BitValue(ctl, iOpenGLNTSC_TV_CMode);
 					break;
 
 				case VIDEOMODE_NTSC_TV_S:
-					CheckMenuItem(menu, iOpenGLNTSC_TV_SMode, true);
 					SetControl32BitValue(ctl, iOpenGLNTSC_TV_SMode);
 					break;
 
 				case VIDEOMODE_NTSC_TV_R:
-					CheckMenuItem(menu, iOpenGLNTSC_TV_RMode, true);
 					SetControl32BitValue(ctl, iOpenGLNTSC_TV_RMode);
 					break;
 
 				case VIDEOMODE_NTSC_TV_M:
-					CheckMenuItem(menu, iOpenGLNTSC_TV_MMode, true);
 					SetControl32BitValue(ctl, iOpenGLNTSC_TV_MMode);
 					break;
 			}
@@ -698,53 +716,41 @@ void ConfigurePreferences (void)
 
 			cid.id = iNibSPlaybackRate;
 			HIViewFindByID(root, cid, &ctl);
-			menu = HIMenuViewGetMenu(ctl);
-			for (int i = 1; i <= CountMenuItems(menu); i++)
-				CheckMenuItem(menu, i, false);
 			switch (Settings.SoundPlaybackRate)
 			{
 				case 48000:
-					CheckMenuItem(menu, 1, true);
 					SetControl32BitValue(ctl, 1);
 					break;
 
 				case 44100:
-					CheckMenuItem(menu, 2, true);
 					SetControl32BitValue(ctl, 2);
 					break;
 
 				case 35000:
-					CheckMenuItem(menu, 3, true);
 					SetControl32BitValue(ctl, 3);
 					break;
 
 				case 32000:
-					CheckMenuItem(menu, 4, true);
 					SetControl32BitValue(ctl, 4);
 					break;
 
 				case 30000:
-					CheckMenuItem(menu, 5, true);
 					SetControl32BitValue(ctl, 5);
 					break;
 
 				case 22050:
-					CheckMenuItem(menu, 6, true);
 					SetControl32BitValue(ctl, 6);
 					break;
 
 				case 16000:
-					CheckMenuItem(menu, 7, true);
 					SetControl32BitValue(ctl, 7);
 					break;
 
 				case 11025:
-					CheckMenuItem(menu, 8, true);
 					SetControl32BitValue(ctl, 8);
 					break;
 
 				case 8000:
-					CheckMenuItem(menu, 9, true);
 					SetControl32BitValue(ctl, 9);
 					break;
 			}
@@ -761,44 +767,32 @@ void ConfigurePreferences (void)
 
 			cid.id = iNibSInterval;
 			HIViewFindByID(root, cid, &ctl);
-			menu = HIMenuViewGetMenu(ctl);
-			for (int i = 1; i <= CountMenuItems(menu); i++)
-				CheckMenuItem(menu, i, false);
 			switch (macSoundInterval_ms)
 			{
 				case 8:
-					CheckMenuItem(menu, 1, true);
 					SetControl32BitValue(ctl, 1);
 					break;
 
 				case 16:
-					CheckMenuItem(menu, 2, true);
 					SetControl32BitValue(ctl, 2);
 					break;
 
 				case 32:
-					CheckMenuItem(menu, 3, true);
 					SetControl32BitValue(ctl, 3);
 					break;
 
 				case 64:
-					CheckMenuItem(menu, 4, true);
 					SetControl32BitValue(ctl, 4);
 					break;
 
 				case 0:
 				default:
-					CheckMenuItem(menu, 6, true);
 					SetControl32BitValue(ctl, 6);
 					break;
 			}
 
 			cid.id = iNibSBufferSize;
 			HIViewFindByID(root, cid, &ctl);
-			menu = HIMenuViewGetMenu(ctl);
-			for (int i = 1; i <= CountMenuItems(menu); i++)
-				CheckMenuItem(menu, i, false);
-			CheckMenuItem(menu, macSoundBuffer_ms / 20, true);
 			SetControl32BitValue(ctl, macSoundBuffer_ms / 20);
 
 			cid.id = iNibSAllowLag;
@@ -813,24 +807,28 @@ void ConfigurePreferences (void)
 
 			cid.id = iNibOSaveFolder;
 			HIViewFindByID(root, cid, &ctl);
-			menu = HIMenuViewGetMenu(ctl);
-			for (int i = 1; i <= CountMenuItems(menu); i++)
-				CheckMenuItem(menu, i, false);
-			if (saveInROMFolder == 1)
+			SetControl32BitValue(ctl, saveInROMFolder + 1);
+			err = GetControlData(ctl, kControlMenuPart, kControlPopupButtonMenuRefTag, sizeof(MenuRef), &menu, NULL);
+			if (saveFolderPath)
 			{
-				CheckMenuItem(menu, 2, true);
-				SetControl32BitValue(ctl, 2);
+				CFURLRef	url;
+				CFStringRef	ref;
+
+				url = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, saveFolderPath, kCFURLPOSIXPathStyle, true);
+				ref = CFURLCopyLastPathComponent(url);
+				err = SetMenuItemTextWithCFString(menu, iNibSaveFolderNameMenuItem, ref);
+				CFRelease(ref);
+				CFRelease(url);
+				EnableMenuItem(menu, iNibSaveFolderNameMenuItem);
 			}
 			else
-			if (saveInROMFolder == 0)
 			{
-				CheckMenuItem(menu, 1, true);
-				SetControl32BitValue(ctl, 1);
-			}
-			else
-			{
-				CheckMenuItem(menu, 3, true);
-				SetControl32BitValue(ctl, 3);
+				CFStringRef	ref;
+
+				ref = CFCopyLocalizedString(CFSTR("NoneSelected"), "NoneSelected");
+				err = SetMenuItemTextWithCFString(menu, iNibSaveFolderNameMenuItem, ref);
+				CFRelease(ref);
+				DisableMenuItem(menu, iNibSaveFolderNameMenuItem);
 			}
 
 			cid.id = iNibOAutoSaveInterval;
@@ -845,10 +843,6 @@ void ConfigurePreferences (void)
 			sprintf(num, "%" PRIi32, Settings.HDMATimingHack);
 			SetEditTextCStr(ctl, num, false);
 
-			cid.id = iNibMShutdownMaster;
-			HIViewFindByID(root, cid, &ctl);
-			SetControl32BitValue(ctl, Settings.ShutdownMaster);
-
 			cid.id = iNibMTurboSkipArrows;
 			HIViewFindByID(root, cid, &ctl);
 			SetControl32BitValue(ctl, macFastForwardRate);
@@ -861,10 +855,6 @@ void ConfigurePreferences (void)
 
 			cid.id = iNibMFrameSkip;
 			HIViewFindByID(root, cid, &ctl);
-			menu = HIMenuViewGetMenu(ctl);
-			for (int i = 1; i <= CountMenuItems(menu); i++)
-				CheckMenuItem(menu, i, false);
-			CheckMenuItem(menu, macFrameSkip + 2, true);
 			SetControl32BitValue(ctl, macFrameSkip + 2);
 
 			cid.id = iNibMAllowInvalidVRAMAccess;
@@ -1181,14 +1171,7 @@ void ConfigurePreferences (void)
 
 			cid.id = iNibOSaveFolder;
 			HIViewFindByID(root, cid, &ctl);
-			int	saveto = GetControl32BitValue(ctl);
-			if (saveto == 2)
-				saveInROMFolder = 1;
-			else
-			if (saveto == 1)
-				saveInROMFolder = 0;
-			else
-				saveInROMFolder = 3;
+			saveInROMFolder = GetControl32BitValue(ctl) - 1;
 
 			cid.id = iNibOAutoSaveInterval;
 			HIViewFindByID(root, cid, &ctl);
@@ -1203,10 +1186,6 @@ void ConfigurePreferences (void)
 			Settings.HDMATimingHack = atoi(num);
 			if ((Settings.HDMATimingHack <= 0) || (Settings.HDMATimingHack >= 200))
 				Settings.HDMATimingHack = 100;
-
-			cid.id = iNibMShutdownMaster;
-			HIViewFindByID(root, cid, &ctl);
-			Settings.ShutdownMaster = GetControl32BitValue(ctl) ? true : false;
 
 			cid.id = iNibMTurboSkipArrows;
 			HIViewFindByID(root, cid, &ctl);
@@ -1267,6 +1246,9 @@ void ConfigurePreferences (void)
 
 			err = RemoveEventHandler(pRef);
 			DisposeEventHandlerUPP(pUPP);
+
+			err = RemoveEventHandler(aRef);
+			DisposeEventHandlerUPP(aUPP);
 
 			err = RemoveEventHandler(iRef);
 			DisposeEventHandlerUPP(iUPP);
@@ -1392,6 +1374,36 @@ static pascal OSStatus InputRateTextEventHandler (EventHandlerCallRef inHandlerR
 	return (result);
 }
 
+static pascal OSStatus AspectRatioTextEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
+{
+	OSStatus	err, result = eventNotHandledErr;
+	HIViewRef	ctl, slider;
+	HIViewID	cid;
+	float		w, h, v;
+	int			iw, ih;
+
+	err = GetEventParameter(inEvent, kEventParamDirectObject, typeControlRef, NULL, sizeof(ControlRef), NULL, &ctl);
+	if (err == noErr)
+	{
+		cid.signature = 'grap';
+		cid.id = iNibGAspectRatio;
+		HIViewFindByID(HIViewGetSuperview(ctl), cid, &slider);
+
+		GetGameDisplay(&iw, &ih);
+		w = (float) iw;
+		h = (float) ih;
+
+		v = (float) SNES_WIDTH / (float) SNES_HEIGHT * h;
+		macAspectRatio = (int) (((4.0f / 3.0f) * h - v) / (w - v) * 10000.0f);
+
+		SetControl32BitValue(slider, macAspectRatio);
+
+		result = noErr;
+	}
+
+	return (result);
+}
+
 static pascal OSStatus TabEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
 {
 	OSStatus	err, result = eventNotHandledErr;
@@ -1423,22 +1435,28 @@ static pascal OSStatus PreferencesEventHandler (EventHandlerCallRef inHandlerRef
 	switch (GetEventClass(inEvent))
 	{
 		case kEventClassWindow:
+		{
 			switch (GetEventKind(inEvent))
 			{
 				case kEventWindowClose:
+				{
 					QuitAppModalLoopForWindow(tWindowRef);
 					result = noErr;
 					break;
+				}
 			}
 
 			break;
+		}
 
 		case kEventClassCommand:
+		{
 			switch (GetEventKind(inEvent))
 			{
 				HICommand	tHICommand;
 
 				case kEventCommandUpdateStatus:
+				{
 					err = GetEventParameter(inEvent, kEventParamDirectObject, typeHICommand, NULL, sizeof(HICommand), NULL, &tHICommand);
 					if (err == noErr && tHICommand.commandID == 'clos')
 					{
@@ -1447,11 +1465,15 @@ static pascal OSStatus PreferencesEventHandler (EventHandlerCallRef inHandlerRef
 					}
 
 					break;
+				}
 
 				case kEventCommandProcess:
+				{
 					HIViewRef	ctl, root;
 					HIViewID	cid;
 					SInt32		value;
+					FSRef		ref;
+					bool8		r;
 
 					root = HIViewGetRoot(tWindowRef);
 
@@ -1461,14 +1483,17 @@ static pascal OSStatus PreferencesEventHandler (EventHandlerCallRef inHandlerRef
 						switch (tHICommand.commandID)
 						{
 							case 'S_EF':
+							{
 								HideWindow(tWindowRef);
 								ConfigureSoundEffects();
 								ShowWindow(tWindowRef);
 
 								result = noErr;
 								break;
+							}
 
 							case 'G_FL':
+							{
 								if (systemVersion >= 0x1040)
 								{
 									HideWindow(tWindowRef);
@@ -1478,8 +1503,10 @@ static pascal OSStatus PreferencesEventHandler (EventHandlerCallRef inHandlerRef
 
 								result = noErr;
 								break;
+							}
 
 							case 'G__7':
+							{
 								cid.signature = 'grap';
 								cid.id = iNibGGLStretch;
 								HIViewFindByID(root, cid, &ctl);
@@ -1494,8 +1521,10 @@ static pascal OSStatus PreferencesEventHandler (EventHandlerCallRef inHandlerRef
 
 								result = noErr;
 								break;
+							}
 
 							case 'G_13':
+							{
 								cid.signature = 'grap';
 								cid.id = iNibGScreenCurvature;
 								HIViewFindByID(root, cid, &ctl);
@@ -1510,8 +1539,10 @@ static pascal OSStatus PreferencesEventHandler (EventHandlerCallRef inHandlerRef
 
 								result = noErr;
 								break;
+							}
 
 							case 'S__3':
+							{
 								cid.signature = 'snd_';
 								cid.id = iNibSStereo;
 								HIViewFindByID(root, cid, &ctl);
@@ -1526,13 +1557,88 @@ static pascal OSStatus PreferencesEventHandler (EventHandlerCallRef inHandlerRef
 
 								result = noErr;
 								break;
+							}
+
+							case 'F_FL':
+							{
+								UInt32	modifierkey;
+
+								err = GetEventParameter(inEvent, kEventParamKeyModifiers, typeUInt32, NULL, sizeof(UInt32), NULL, &modifierkey);
+								if (err == noErr)
+								{
+									if (modifierkey & optionKey)
+									{
+										CFStringRef	str;
+										MenuRef		menu;
+
+										str = CFCopyLocalizedString(CFSTR("NoneSelected"), "NoneSelected");
+
+										cid.signature = 'othe';
+										cid.id = iNibOSaveFolder;
+										HIViewFindByID(root, cid, &ctl);
+										SetControl32BitValue(ctl, 3);
+										err = GetControlData(ctl, kControlMenuPart, kControlPopupButtonMenuRefTag, sizeof(MenuRef), &menu, NULL);
+										err = SetMenuItemTextWithCFString(menu, iNibSaveFolderNameMenuItem, str);
+										DisableMenuItem(menu, iNibSaveFolderNameMenuItem);
+										HIViewSetNeedsDisplay(ctl, true);
+
+										CFRelease(str);
+
+										if (saveFolderPath)
+											CFRelease(saveFolderPath);
+										saveFolderPath = NULL;
+									}
+									else
+										r = NavBeginChooseFolderSheet(tWindowRef);
+								}
+
+								result = noErr;
+								break;
+							}
+
+							case 'NvDn':
+							{
+								r = NavEndChooseFolderSheet(&ref);
+								if (r)
+								{
+									CFStringRef	str;
+									CFURLRef	url;
+									MenuRef		menu;
+
+									url = CFURLCreateFromFSRef(kCFAllocatorDefault, &ref);
+									str = CFURLCopyLastPathComponent(url);
+
+									cid.signature = 'othe';
+									cid.id = iNibOSaveFolder;
+									HIViewFindByID(root, cid, &ctl);
+									SetControl32BitValue(ctl, iNibSaveFolderNameMenuItem);
+									err = GetControlData(ctl, kControlMenuPart, kControlPopupButtonMenuRefTag, sizeof(MenuRef), &menu, NULL);
+									err = SetMenuItemTextWithCFString(menu, iNibSaveFolderNameMenuItem, str);
+									EnableMenuItem(menu, iNibSaveFolderNameMenuItem);
+									HIViewSetNeedsDisplay(ctl, true);
+
+									CFRelease(str);
+
+									str = CFURLCopyFileSystemPath(url, kCFURLPOSIXPathStyle);
+									if (saveFolderPath)
+										CFRelease(saveFolderPath);
+									saveFolderPath = str;
+
+									CFRelease(url);
+								}
+
+								result = noErr;
+								break;
+							}
 						}
 					}
 
 					break;
+				}
 			}
 
 			break;
+		}
 	}
 
 	return (result);
@@ -1557,7 +1663,6 @@ void ConfigureExtraOptions (void)
 											   { kEventClassCommand, kEventCommandUpdateStatus } };
 			HIViewRef		ctl, root;
 			HIViewID		cid;
-			MenuRef			menu;
 
 			root = HIViewGetRoot(tWindowRef);
 			cid.id = 0;
@@ -1580,10 +1685,6 @@ void ConfigureExtraOptions (void)
 
 			cid.signature = 'Hint';
 			HIViewFindByID(root, cid, &ctl);
-			menu = HIMenuViewGetMenu(ctl);
-			for (int i = 1; i <= CountMenuItems(menu); i++)
-				CheckMenuItem(menu, i, false);
-			CheckMenuItem(menu, extraOptions.glStorageHint, true);
 			SetControl32BitValue(ctl, extraOptions.glStorageHint);
 
 			eventUPP = NewEventHandlerUPP(DefaultEventHandler);

@@ -194,6 +194,8 @@
 bool8 NavOpenROMImage (FSRef *);
 bool8 NavBeginOpenROMImageSheet (WindowRef, CFStringRef);
 bool8 NavEndOpenROMImageSheet (FSRef *);
+bool8 NavBeginChooseFolderSheet (WindowRef);
+bool8 NavEndChooseFolderSheet (FSRef *);
 bool8 NavFreezeTo (char *);
 bool8 NavDefrostFrom (char *);
 bool8 NavRecordMovieTo (char *);

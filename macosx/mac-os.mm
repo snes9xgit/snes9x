@@ -188,48 +188,49 @@
  ***********************************************************************************/
 
 
-#include "snes9x.h"
-#include "memmap.h"
-#include "apu.h"
-#include "controls.h"
-#include "crosshairs.h"
-#include "cheats.h"
-#include "movie.h"
-#include "display.h"
-#include "blit.h"
+#import "snes9x.h"
+#import "memmap.h"
+#import "apu.h"
+#import "controls.h"
+#import "crosshairs.h"
+#import "cheats.h"
+#import "movie.h"
+#import "display.h"
+#import "blit.h"
 
 #ifdef DEBUGGER
-#include "debug.h"
+#import "debug.h"
 #endif
 
-#include <QuickTime/QuickTime.h>
-#include <pthread.h>
+#import <Cocoa/Cocoa.h>
+#import <QuickTime/QuickTime.h>
+#import <pthread.h>
 
-#include "mac-prefix.h"
-#include "mac-appleevent.h"
-#include "mac-audio.h"
-#include "mac-cheat.h"
-#include "mac-cheatfinder.h"
-#include "mac-client.h"
-#include "mac-cocoatools.h"
-#include "mac-controls.h"
-#include "mac-coreimage.h"
-#include "mac-dialog.h"
-#include "mac-file.h"
-#include "mac-gworld.h"
-#include "mac-joypad.h"
-#include "mac-keyboard.h"
-#include "mac-multicart.h"
-#include "mac-musicbox.h"
-#include "mac-netplay.h"
-#include "mac-prefs.h"
-#include "mac-quicktime.h"
-#include "mac-render.h"
-#include "mac-screenshot.h"
-#include "mac-server.h"
-#include "mac-snes9x.h"
-#include "mac-stringtools.h"
-#include "mac-os.h"
+#import "mac-prefix.h"
+#import "mac-appleevent.h"
+#import "mac-audio.h"
+#import "mac-cheat.h"
+#import "mac-cheatfinder.h"
+#import "mac-client.h"
+#import "mac-cocoatools.h"
+#import "mac-controls.h"
+#import "mac-coreimage.h"
+#import "mac-dialog.h"
+#import "mac-file.h"
+#import "mac-gworld.h"
+#import "mac-joypad.h"
+#import "mac-keyboard.h"
+#import "mac-multicart.h"
+#import "mac-musicbox.h"
+#import "mac-netplay.h"
+#import "mac-prefs.h"
+#import "mac-quicktime.h"
+#import "mac-render.h"
+#import "mac-screenshot.h"
+#import "mac-server.h"
+#import "mac-snes9x.h"
+#import "mac-stringtools.h"
+#import "mac-os.h"
 
 #define	kRecentMenu_MAX		20
 #define KeyIsPressed(km, k)	(1 & (((unsigned char *) km) [(k) >> 3] >> ((k) & 7)))
@@ -246,10 +247,10 @@ SInt32				systemVersion;
 
 uint32				controlPad[MAC_MAX_PLAYERS];
 
-uint8				romDetect           = kAutoROMType,
-					interleaveDetect    = kAutoInterleave,
-					videoDetect         = kAutoVideo,
-					headerDetect        = kAutoHeader;
+uint8				romDetect           = 0,
+					interleaveDetect    = 0,
+					videoDetect         = 0,
+					headerDetect        = 0;
 
 WindowRef			gWindow             = NULL;
 HIRect				gWindowRect;
@@ -302,6 +303,7 @@ bool8				macSoundLagEnable   = false;
 uint16				aueffect            = 0;
 
 uint8				saveInROMFolder     = 2;	// 0 : Snes9x  1 : ROM  2 : Application Support
+CFStringRef			saveFolderPath;
 
 int					macCurvatureWarp    = 15,
 					macAspectRatio      = 0;
@@ -944,7 +946,7 @@ void InitGameWindow (void)
 	err = InstallControlEventHandler(ctl, gameWUPaneUPP, GetEventTypeCount(wupaneEvents), wupaneEvents, (void *) gWindow, &gameWUPaneEventRef);
 
 	_splitpath(Memory.ROMFilename, drive, dir, fname, ext);
-	ref = CFStringCreateWithCString(kCFAllocatorDefault, fname, MAC_PATH_ENCODING);
+	ref = CFStringCreateWithCString(kCFAllocatorDefault, fname, kCFStringEncodingUTF8);
 	if (ref)
 	{
 		SetWindowTitleWithCFString(gWindow, ref);
@@ -1322,7 +1324,7 @@ void AddRecentItem (FSRef *ref)
 	{
 		CFStringRef	pathRef;
 
-		pathRef = CFStringCreateWithCString(kCFAllocatorDefault, path, MAC_PATH_ENCODING);
+		pathRef = CFStringCreateWithCString(kCFAllocatorDefault, path, kCFStringEncodingUTF8);
 		if (pathRef)
 		{
 			int	i, j;
@@ -1392,7 +1394,7 @@ void BuildRecentMenu (void)
 		Boolean	r;
 		char	path[PATH_MAX + 1];
 
-		r = CFStringGetCString(recentItem[i], path, PATH_MAX, MAC_PATH_ENCODING);
+		r = CFStringGetCString(recentItem[i], path, PATH_MAX, kCFStringEncodingUTF8);
 		if (r)
 		{
 			CFStringRef	nameRef;
@@ -1400,7 +1402,7 @@ void BuildRecentMenu (void)
 
 			_splitpath(path, drive, dir, fname, ext);
 			snprintf(path, PATH_MAX + 1, "%s%s", fname, ext);
-			nameRef = CFStringCreateWithCString(kCFAllocatorDefault, path, MAC_PATH_ENCODING);
+			nameRef = CFStringCreateWithCString(kCFAllocatorDefault, path, kCFStringEncodingUTF8);
 			if (nameRef)
 			{
 				err = AppendMenuItemTextWithCFString(recentMenu, nameRef, 0, 'FRe0' + i, NULL);
@@ -1611,7 +1613,7 @@ static OSStatus HandleMenuChoice (UInt32 command, Boolean *done)
 		char	path[PATH_MAX + 1];
 
 		index = (int) (command & 0x000000FF) - (int) '0';
-		r = CFStringGetCString(recentItem[index], path, PATH_MAX, MAC_PATH_ENCODING);
+		r = CFStringGetCString(recentItem[index], path, PATH_MAX, kCFStringEncodingUTF8);
 		if (r)
 		{
 			FSRef	ref;
@@ -3049,7 +3051,7 @@ void GetGameScreenPointer (int16 *x, int16 *y, bool fullmouse)
 		{
 			float   fpw = (float) glScreenH / (float) ph * 512.0f;
 
-			scopeViewInfo.width      = (int) (fpw + ((float) glScreenW - fpw) * (float) macAspectRatio / 100.0);
+			scopeViewInfo.width      = (int) (fpw + ((float) glScreenW - fpw) * (float) macAspectRatio / 10000.0);
 			scopeViewInfo.height     = glScreenH;
 			scopeViewInfo.globalLeft = (int) glScreenBounds.origin.x + ((glScreenW - scopeViewInfo.width) >> 1);
 			scopeViewInfo.globalTop  = (int) glScreenBounds.origin.y;
@@ -3127,6 +3129,8 @@ static void Initialize (void)
 
 	printf("OS: %x  QuickTime: %x\n\n", (unsigned) systemVersion, (unsigned) qtVersion);
 
+	NSApplicationLoad();
+
 	ZeroMemory(&Settings, sizeof(Settings));
 	Settings.MouseMaster = true;
 	Settings.SuperScopeMaster = true;
@@ -3167,6 +3171,8 @@ static void Initialize (void)
 
 	npServerIP[0] = 0;
 	npName[0] = 0;
+
+	saveFolderPath = NULL;
 
 	CreateIconImages();
 
