@@ -532,7 +532,6 @@ struct SCustomKeys CustomKeys = {
 	{'8',0}, // Clipping Windows
 //	{'8',0}, // BG Layering hack
 	{'9',0}, // Transparency
-	{'0',0}, // HDMA Emulation
 //	{'6',CUSTKEY_SHIFT_MASK}, // GLCube Mode
 //	{'9',CUSTKEY_SHIFT_MASK}, // Interpolate Mode 7
 	{'6',0}, // Joypad Swap
@@ -1158,12 +1157,6 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 			S9xSetInfoString (InfoString);
 			hitHotKey = true;
 		}
-		if(wParam == CustomKeys.HDMA.key
-		&& modifiers == CustomKeys.HDMA.modifiers)
-		{
-			Settings.DisableHDMA = !Settings.DisableHDMA;
-			S9xDisplayStateChange (WINPROC_HDMA_TEXT, !Settings.DisableHDMA);
-		}
 		if(wParam == CustomKeys.BGL1.key
 		&& modifiers == CustomKeys.BGL1.modifiers)
 		{
@@ -1583,16 +1576,6 @@ LRESULT CALLBACK WinProc(
 				if(DialogBoxParam(g_hInst, MAKEINTRESOURCE(IDD_CREATEMOVIE), hWnd, DlgCreateMovie, (LPARAM)&op) &&
 					op.Path[0]!='\0')
 				{
-					if(Settings.ShutdownMaster)
-					{
-						static bool seenItOnce = false;
-						if(!seenItOnce)
-						{
-							seenItOnce = true;
-							MessageBox(hWnd, MOVIE_SHUTDOWNMASTER_WARNING, SNES9X_WARN, MB_OK);
-						}
-					}
-
 					startingMovie = true;
 					int err=S9xMovieCreate (_tToChar(op.Path), op.ControllersMask, op.Opts, op.Metadata, wcslen(op.Metadata));
 					startingMovie = false;
@@ -7764,8 +7747,7 @@ static void set_hotkeyinfo(HWND hDlg)
 		SendDlgItemMessage(hDlg,IDC_HOTKEY5,WM_USER+44,CustomKeys.BGL5.key,CustomKeys.BGL5.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY6,WM_USER+44,CustomKeys.ClippingWindows.key,CustomKeys.ClippingWindows.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY7,WM_USER+44,CustomKeys.Transparency.key,CustomKeys.Transparency.modifiers);
-		SendDlgItemMessage(hDlg,IDC_HOTKEY8,WM_USER+44,CustomKeys.HDMA.key,CustomKeys.HDMA.modifiers);
-		SendDlgItemMessage(hDlg,IDC_HOTKEY9,WM_USER+44,0,0);
+//		SendDlgItemMessage(hDlg,IDC_HOTKEY8,WM_USER+44,CustomKeys.HDMA.key,CustomKeys.HDMA.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY10,WM_USER+44,CustomKeys.SwitchControllers.key,CustomKeys.SwitchControllers.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY11,WM_USER+44,CustomKeys.JoypadSwap.key,CustomKeys.JoypadSwap.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY12,WM_USER+44,CustomKeys.ResetGame.key,CustomKeys.ResetGame.modifiers);
@@ -7988,7 +7970,7 @@ switch(msg)
 			break;
 		case IDC_HOTKEY8:
 			if(index == 0) CustomKeys.ScopeTurbo.key = wParam,  CustomKeys.ScopeTurbo.modifiers = modifiers;
-			if(index == 1) CustomKeys.HDMA.key = wParam,       CustomKeys.HDMA.modifiers = modifiers;
+//			if(index == 1) CustomKeys.HDMA.key = wParam,       CustomKeys.HDMA.modifiers = modifiers;
 			if(index == 2) CustomKeys.TurboSelect.key = wParam,    CustomKeys.TurboSelect.modifiers = modifiers;
 			if(index == 3) CustomKeys.SelectSave[7].key = wParam,	CustomKeys.SelectSave[7].modifiers = modifiers;
 			break;

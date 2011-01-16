@@ -271,7 +271,6 @@ void WinSetDefaultValues ()
 	Settings.MultiPlayer5Master	= false;
 	Settings.SuperScopeMaster =	false;
 	Settings.MouseMaster = false;
-	//Settings.SuperFX = false;
 
 #ifdef NETPLAY_SUPPORT
 	Settings.Port =	1996;
@@ -728,8 +727,6 @@ std::vector<ConfigItem> configItems;
 static char filterString [1024], filterString2 [1024], snapVerString [256];
 static bool niceAlignment, showComments, readOnlyConfig;
 static int configSort;
-static BOOL loadedShutdownMaster;
-static BOOL preSaveShutdownMaster;
 
 void WinPreSave(ConfigFile& conf)
 {
@@ -751,9 +748,6 @@ void WinPreSave(ConfigFile& conf)
 		}
 	}
 	sprintf(snapVerString, "Snapshot save version. Must be between 1 and %d (inclusive)", SNAPSHOT_VERSION);
-
-	preSaveShutdownMaster = Settings.ShutdownMaster;
-	Settings.ShutdownMaster &= loadedShutdownMaster; // never save change-to-true of speed hacks during execution
 
 //	GetWindowRect (GUI.hWnd, &GUI.window_size);
 	GUI.window_size.right -= GUI.window_size.left;
@@ -795,7 +789,6 @@ void WinPostSave(ConfigFile& conf)
 	GUI.window_size.bottom += GUI.window_size.top;
 	GUI.window_size.right += extra_width;
 	GUI.window_size.bottom += extra_height;
-	Settings.ShutdownMaster = preSaveShutdownMaster; // revert temp change
 }
 void WinPostLoad(ConfigFile& conf)
 {
@@ -823,8 +816,6 @@ void WinPostLoad(ConfigFile& conf)
 	ConfigFile::SetShowComments(showComments);
 	ConfigFile::SetAlphaSort(configSort==2);
 	ConfigFile::SetTimeSort(configSort==1);
-	loadedShutdownMaster = Settings.ShutdownMaster;
-	preSaveShutdownMaster = Settings.ShutdownMaster;
 
 	WinPostSave(conf);
 }
@@ -902,7 +893,6 @@ void WinRegisterConfigItems()
 	AddUIntC("AutoMaxSkipFramesAtOnce", Settings.AutoMaxSkipFrames, 0, "most frames to skip at once to maintain speed in automatic mode, don't set to more than 1 or 2 frames because the skipping algorithm isn't very smart");
 	AddUIntC("TurboFrameSkip", Settings.TurboSkipFrames, 15, "how many frames to skip when in fast-forward mode");
 	AddUInt("AutoSaveDelay", Settings.AutoSaveDelay, 30);
-	AddBool2C("SpeedHacks", Settings.ShutdownMaster, false, "on to skip emulating the CPU when it is not being used ... recommended OFF");
 	AddBool("BlockInvalidVRAMAccess", Settings.BlockInvalidVRAMAccessMaster, true);
 	AddBool2C("SnapshotScreenshots", Settings.SnapshotScreenshots, true, "on to save the screenshot in each snapshot, for loading-when-paused display");
 	AddBoolC("MovieTruncateAtEnd", Settings.MovieTruncate, true, "true to truncate any leftover data in the movie file after the current frame when recording stops");
@@ -1019,7 +1009,7 @@ void WinRegisterConfigItems()
 	ADDN(SelectSave[0],SelectSlot0); ADDN(SelectSave[1],SelectSlot1); ADDN(SelectSave[2],SelectSlot2); ADDN(SelectSave[3],SelectSlot3); ADDN(SelectSave[4],SelectSlot4); ADDN(SelectSave[5],SelectSlot5); ADDN(SelectSave[6],SelectSlot6); ADDN(SelectSave[7],SelectSlot7); ADDN(SelectSave[8],SelectSlot8); ADDN(SelectSave[9],SelectSlot9);
 	ADD(SaveScreenShot); ADD(SlotPlus); ADD(SlotMinus); ADD(SlotSave); ADD(SlotLoad);
 	ADD(BGL1); ADD(BGL2); ADD(BGL3); ADD(BGL4); ADD(BGL5);
-	ADD(ClippingWindows); /*ADD(BGLHack);*/ ADD(Transparency); ADD(HDMA); /*ADD(GLCube);*/
+	ADD(ClippingWindows); /*ADD(BGLHack);*/ ADD(Transparency); /*ADD(HDMA)*/; /*ADD(GLCube);*/
 	/*ADD(InterpMode7);*/ ADD(JoypadSwap); ADD(SwitchControllers); ADD(ResetGame); ADD(ToggleCheats);
 	ADD(TurboA); ADD(TurboB); ADD(TurboY); ADD(TurboX); ADD(TurboL); ADD(TurboR); ADD(TurboStart); ADD(TurboSelect); ADD(TurboUp); ADD(TurboDown); ADD(TurboLeft); ADD(TurboRight);
 #undef ADD

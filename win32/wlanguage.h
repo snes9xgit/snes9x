@@ -179,7 +179,7 @@
 
 /* This is where all the GUI text strings will eventually end up */
 
-#define WINDOW_TITLE TEXT("Snes9X v1.5X Testing")
+#define WINDOW_TITLE TEXT("Snes9X v%s for Windows")
 
 // the windows registry is no longer used
 //#define MY_REG_KEY   "Software\\Emulators\\Snes9X"
@@ -511,7 +511,6 @@
 #define MOVIE_LABEL_STARTSETTINGS TEXT("Recording Start")
 #define MOVIE_LABEL_CONTSETTINGS TEXT("Record Controllers")
 #define MOVIE_LABEL_SYNCSETTINGS TEXT("Misc. Recording Settings")
-#define MOVIE_SHUTDOWNMASTER_WARNING TEXT("The \"SpeedHacks\" setting in your snes9x.cfg file is on.\nThis makes emulation less CPU-intensive, but also less accurate,\ncausing some games to lag noticeably more than they should.\nYou might want to reconsider recording a movie under these conditions.")
 
 // Save Messages
 
