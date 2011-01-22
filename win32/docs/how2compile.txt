@@ -9,10 +9,6 @@ NOTE: Unicode support requires a special zlib build - see the end of the zlib en
 
 - A recent DirectX SDK. The official binary is compiled against the June 2008 SDK.
 
-- nasm(optional). I use version 0.97. Used to assemble the optional ZSNES FX and C4 core
-  included in Snes9x. Download from www.web-sites.co.uk/nasm
-  Note: the official binary does not use the asm files.
-
 - zlib(optional) - The release binaries are built against a static zlib compiled
   against VC's multi-threaded C runtime and renamed to zlibmt.lib, to avoid linker conflicts.
   removing ZLIB from the preprocessor definitions and zlibmt.lib from the library
@@ -42,8 +38,6 @@ NOTE: Unicode support requires a special zlib build - see the end of the zlib en
   Definitions text box.
 
 - To compile Snes9x:
-    Run the MAKEASM.BAT script. nasmw will need to be on your path
-      for the script to work. Only necessary if you want to compile with ZSNES_C4 or ZSNES_FX
     Start up Visual C++.
     Load the Snes9x project file.
     Select the desired configuration and build.
