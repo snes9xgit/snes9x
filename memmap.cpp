@@ -3544,7 +3544,8 @@ void CMemory::ApplyROMFixes (void)
 		if (match_na ("EARTHWORM JIM 2")						|| // Earthworm Jim 2
 			match_na ("NBA Hangtime")							|| // NBA Hang Time
 			match_na ("MSPACMAN")								|| // Ms Pacman
-			match_na ("THE MASK"))								   // The Mask
+			match_na ("THE MASK")								|| // The Mask
+			match_na ("PRIMAL RAGE"))							   // Primal Rage
 			Timings.APUAllowTimeOverflow = TRUE;
 	}
 
