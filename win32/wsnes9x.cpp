@@ -3404,7 +3404,7 @@ int WINAPI WinMain(
 				sSyncTime=timeGetTime();
 
 				while(!S9xSyncSound()) {
-					Sleep(0);
+					Sleep(2);
 					sSyncWaited=timeGetTime();
 					if(sSyncWaited-sSyncTime > 1000) {
 						S9xClearSamples();
