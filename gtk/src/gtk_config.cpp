@@ -135,7 +135,7 @@ Snes9xConfig::load_defaults (void)
     allow_xv = 0;
     allow_xrandr = 0;
     force_inverted_byte_order = FALSE;
-    hires_effect = HIRES_MERGE;
+    hires_effect = HIRES_NORMAL;
     pause_emulation_on_switch = 0;
     num_threads = 2;
     mute_sound = FALSE;
