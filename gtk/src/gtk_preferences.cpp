@@ -545,13 +545,6 @@ Snes9xPreferences::Snes9xPreferences (Snes9xConfig *config) :
     last_toggled = NULL;
     this->config = config;
 
-    size_group[0] = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-    gtk_size_group_add_widget (size_group[0], get_widget ("resolution_combo"));
-    gtk_size_group_add_widget (size_group[0], get_widget ("scale_method_combo"));
-    size_group[1] = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-    gtk_size_group_add_widget (size_group[1], get_widget ("change_display_resolution"));
-    gtk_size_group_add_widget (size_group[1], get_widget ("scale_method_label"));
-
     fix_style ();
 
     gtk_widget_realize (window);
@@ -563,9 +556,6 @@ Snes9xPreferences::Snes9xPreferences (Snes9xConfig *config) :
 
 Snes9xPreferences::~Snes9xPreferences (void)
 {
-    g_object_unref (size_group[0]);
-    g_object_unref (size_group[1]);
-
     return;
 }
 
@@ -630,7 +620,7 @@ Snes9xPreferences::move_settings_to_dialog (void)
     set_check ("scale_to_fit",              config->scale_to_fit);
     set_check ("overscan",                  config->overscan);
     set_check ("multithreading",            config->multithreading);
-    set_check ("force_hires",               config->force_hires);
+    set_combo ("hires_effect",              config->hires_effect);
     set_check ("maintain_aspect_ratio",     config->maintain_aspect_ratio);
     set_combo ("aspect_ratio",              config->aspect_ratio);
     if (config->sram_directory[0] == '\0')
@@ -808,7 +798,7 @@ Snes9xPreferences::get_settings_from_dialog (void)
     config->maintain_aspect_ratio     = get_check ("maintain_aspect_ratio");
     config->aspect_ratio              = get_combo ("aspect_ratio");
     config->scale_method              = get_combo ("scale_method_combo");
-    config->force_hires               = get_check ("force_hires");
+    config->hires_effect              = get_combo ("hires_effect");
     config->force_inverted_byte_order = get_check ("force_inverted_byte_order");
     Settings.AutoSaveDelay            = get_entry_value ("save_sram_after_sec");
     config->multithreading            = get_check ("multithreading");

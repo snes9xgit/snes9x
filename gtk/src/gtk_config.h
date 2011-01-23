@@ -15,6 +15,10 @@
 #define HWA_OPENGL              1
 #define HWA_XV                  2
 
+#define HIRES_MERGE             0
+#define HIRES_NORMAL            1
+#define HIRES_SCALE             2
+
 #define ESC_TOGGLE_MENUBAR      0
 #define ESC_EXIT_FULLSCREEN     1
 #define ESC_EXIT_SNES9X         2
@@ -63,7 +67,7 @@ class Snes9xConfig
         unsigned int  scale_method;
         unsigned char overscan;
         unsigned char multithreading;
-        unsigned char force_hires;
+        int           hires_effect;
         unsigned char force_inverted_byte_order;
 
         snes_ntsc_setup_t ntsc_setup;

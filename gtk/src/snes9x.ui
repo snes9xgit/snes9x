@@ -1,16 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <interface>
   <requires lib="gtk+" version="2.16"/>
   <!-- interface-naming-policy project-wide -->
   <object class="GtkWindow" id="main_window">
     <property name="events">GDK_EXPOSURE_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_FOCUS_CHANGE_MASK | GDK_STRUCTURE_MASK | GDK_SUBSTRUCTURE_MASK</property>
     <property name="title" translatable="yes">Snes9x</property>
-    <signal name="key-release-event" handler="main_window_key_release_event" swapped="no"/>
-    <signal name="key-press-event" handler="main_window_key_press_event" swapped="no"/>
-    <signal name="focus-out-event" handler="focus_out_event" swapped="no"/>
-    <signal name="focus-in-event" handler="focus_in_event" swapped="no"/>
-    <signal name="delete-event" handler="main_window_delete_event" swapped="no"/>
-    <signal name="window-state-event" handler="main_window_state_event" swapped="no"/>
+    <signal name="delete_event" handler="main_window_delete_event"/>
+    <signal name="key_press_event" handler="main_window_key_press_event"/>
+    <signal name="focus_out_event" handler="focus_out_event"/>
+    <signal name="focus_in_event" handler="focus_in_event"/>
+    <signal name="window_state_event" handler="main_window_state_event"/>
+    <signal name="key_release_event" handler="main_window_key_release_event"/>
     <child>
       <object class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
@@ -32,7 +32,7 @@
                         <property name="use_underline">True</property>
                         <property name="image">image2</property>
                         <property name="use_stock">False</property>
-                        <signal name="activate" handler="on_open_rom_activate" swapped="no"/>
+                        <signal name="activate" handler="on_open_rom_activate"/>
                       </object>
                     </child>
                     <child>
@@ -56,7 +56,7 @@
                         <property name="use_underline">True</property>
                         <property name="image">image3</property>
                         <property name="use_stock">False</property>
-                        <signal name="activate" handler="open_netplay" swapped="no"/>
+                        <signal name="activate" handler="open_netplay"/>
                       </object>
                     </child>
                     <child>
@@ -64,7 +64,7 @@
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Open _MultiCart...</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="open_multicart" swapped="no"/>
+                        <signal name="activate" handler="open_multicart"/>
                       </object>
                     </child>
                     <child>
@@ -77,7 +77,7 @@
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">_Load State</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_load_state_item_activate" swapped="no"/>
+                        <signal name="activate" handler="on_load_state_item_activate"/>
                         <child type="submenu">
                           <object class="GtkMenu" id="load_state_item_menu">
                             <child>
@@ -85,7 +85,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">Slot _0</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="load_save_state" swapped="no"/>
+                                <signal name="activate" handler="load_save_state"/>
                               </object>
                             </child>
                             <child>
@@ -93,7 +93,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">Slot _1</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="load_save_state" swapped="no"/>
+                                <signal name="activate" handler="load_save_state"/>
                               </object>
                             </child>
                             <child>
@@ -101,7 +101,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">Slot _2</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="load_save_state" swapped="no"/>
+                                <signal name="activate" handler="load_save_state"/>
                               </object>
                             </child>
                             <child>
@@ -109,7 +109,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">Slot _3</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="load_save_state" swapped="no"/>
+                                <signal name="activate" handler="load_save_state"/>
                               </object>
                             </child>
                             <child>
@@ -117,7 +117,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">Slot _4</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="load_save_state" swapped="no"/>
+                                <signal name="activate" handler="load_save_state"/>
                               </object>
                             </child>
                             <child>
@@ -125,7 +125,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">Slot _5</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="load_save_state" swapped="no"/>
+                                <signal name="activate" handler="load_save_state"/>
                               </object>
                             </child>
                             <child>
@@ -133,7 +133,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">Slot _6</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="load_save_state" swapped="no"/>
+                                <signal name="activate" handler="load_save_state"/>
                               </object>
                             </child>
                             <child>
@@ -141,7 +141,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">Slot _7</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="load_save_state" swapped="no"/>
+                                <signal name="activate" handler="load_save_state"/>
                               </object>
                             </child>
                             <child>
@@ -149,7 +149,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">Slot _8</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="load_save_state" swapped="no"/>
+                                <signal name="activate" handler="load_save_state"/>
                               </object>
                             </child>
                             <child>
@@ -162,7 +162,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">From _File...</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="load_state_file" swapped="no"/>
+                                <signal name="activate" handler="load_state_file"/>
                               </object>
                             </child>
                           </object>
@@ -174,7 +174,7 @@
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">_Save State</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_save_state_item_activate" swapped="no"/>
+                        <signal name="activate" handler="on_save_state_item_activate"/>
                         <child type="submenu">
                           <object class="GtkMenu" id="save_state_item_menu">
                             <child>
@@ -182,7 +182,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">Slot _0</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="save_save_state" swapped="no"/>
+                                <signal name="activate" handler="save_save_state"/>
                               </object>
                             </child>
                             <child>
@@ -190,7 +190,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">Slot _1</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="save_save_state" swapped="no"/>
+                                <signal name="activate" handler="save_save_state"/>
                               </object>
                             </child>
                             <child>
@@ -198,7 +198,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">Slot _2</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="save_save_state" swapped="no"/>
+                                <signal name="activate" handler="save_save_state"/>
                               </object>
                             </child>
                             <child>
@@ -206,7 +206,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">Slot _3</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="save_save_state" swapped="no"/>
+                                <signal name="activate" handler="save_save_state"/>
                               </object>
                             </child>
                             <child>
@@ -214,7 +214,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">Slot _4</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="save_save_state" swapped="no"/>
+                                <signal name="activate" handler="save_save_state"/>
                               </object>
                             </child>
                             <child>
@@ -222,7 +222,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">Slot _5</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="save_save_state" swapped="no"/>
+                                <signal name="activate" handler="save_save_state"/>
                               </object>
                             </child>
                             <child>
@@ -230,7 +230,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">Slot _6</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="save_save_state" swapped="no"/>
+                                <signal name="activate" handler="save_save_state"/>
                               </object>
                             </child>
                             <child>
@@ -238,7 +238,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">Slot _7</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="save_save_state" swapped="no"/>
+                                <signal name="activate" handler="save_save_state"/>
                               </object>
                             </child>
                             <child>
@@ -246,7 +246,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">Slot _8</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="save_save_state" swapped="no"/>
+                                <signal name="activate" handler="save_save_state"/>
                               </object>
                             </child>
                             <child>
@@ -259,7 +259,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">To _File...</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="save_state_file" swapped="no"/>
+                                <signal name="activate" handler="save_state_file"/>
                               </object>
                             </child>
                           </object>
@@ -278,7 +278,7 @@
                         <property name="use_underline">True</property>
                         <property name="image">image4</property>
                         <property name="use_stock">False</property>
-                        <signal name="activate" handler="save_spc" swapped="no"/>
+                        <signal name="activate" handler="save_spc"/>
                       </object>
                     </child>
                     <child>
@@ -293,7 +293,7 @@
                         <property name="use_underline">True</property>
                         <property name="image">image5</property>
                         <property name="use_stock">False</property>
-                        <signal name="activate" handler="rom_info" swapped="no"/>
+                        <signal name="activate" handler="rom_info"/>
                       </object>
                     </child>
                     <child>
@@ -308,7 +308,7 @@
                         <property name="use_underline">True</property>
                         <property name="image">image18</property>
                         <property name="use_stock">False</property>
-                        <signal name="activate" handler="main_window_delete_event" swapped="no"/>
+                        <signal name="activate" handler="main_window_delete_event"/>
                       </object>
                     </child>
                   </object>
@@ -329,7 +329,7 @@
                         <property name="use_underline">True</property>
                         <property name="image">image6</property>
                         <property name="use_stock">False</property>
-                        <signal name="activate" handler="on_continue_item_activate" swapped="no"/>
+                        <signal name="activate" handler="on_continue_item_activate"/>
                       </object>
                     </child>
                     <child>
@@ -339,7 +339,7 @@
                         <property name="use_underline">True</property>
                         <property name="image">image7</property>
                         <property name="use_stock">False</property>
-                        <signal name="activate" handler="on_pause_item_activate" swapped="no"/>
+                        <signal name="activate" handler="on_pause_item_activate"/>
                       </object>
                     </child>
                     <child>
@@ -356,7 +356,7 @@
                         <property name="use_underline">True</property>
                         <property name="image">image8</property>
                         <property name="use_stock">False</property>
-                        <signal name="activate" handler="open_movie" swapped="no"/>
+                        <signal name="activate" handler="open_movie"/>
                       </object>
                     </child>
                     <child>
@@ -367,7 +367,7 @@
                         <property name="use_underline">True</property>
                         <property name="image">image19</property>
                         <property name="use_stock">False</property>
-                        <signal name="activate" handler="record_movie" swapped="no"/>
+                        <signal name="activate" handler="record_movie"/>
                       </object>
                     </child>
                     <child>
@@ -378,7 +378,7 @@
                         <property name="use_underline">True</property>
                         <property name="image">image9</property>
                         <property name="use_stock">False</property>
-                        <signal name="activate" handler="stop_recording" swapped="no"/>
+                        <signal name="activate" handler="stop_recording"/>
                       </object>
                     </child>
                     <child>
@@ -389,7 +389,7 @@
                         <property name="use_underline">True</property>
                         <property name="image">image10</property>
                         <property name="use_stock">False</property>
-                        <signal name="activate" handler="jump_to_frame" swapped="no"/>
+                        <signal name="activate" handler="jump_to_frame"/>
                       </object>
                     </child>
                     <child>
@@ -404,7 +404,7 @@
                         <property name="use_underline">True</property>
                         <property name="image">image11</property>
                         <property name="use_stock">False</property>
-                        <signal name="activate" handler="sync_clients" swapped="no"/>
+                        <signal name="activate" handler="sync_clients"/>
                       </object>
                     </child>
                     <child>
@@ -420,7 +420,7 @@
                         <property name="use_underline">True</property>
                         <property name="image">image12</property>
                         <property name="use_stock">False</property>
-                        <signal name="activate" handler="hard_reset" swapped="no"/>
+                        <signal name="activate" handler="hard_reset"/>
                       </object>
                     </child>
                     <child>
@@ -430,7 +430,7 @@
                         <property name="use_underline">True</property>
                         <property name="image">image13</property>
                         <property name="use_stock">False</property>
-                        <signal name="activate" handler="on_reset_item_activate" swapped="no"/>
+                        <signal name="activate" handler="on_reset_item_activate"/>
                       </object>
                     </child>
                   </object>
@@ -442,7 +442,7 @@
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">_View</property>
                 <property name="use_underline">True</property>
-                <signal name="activate" handler="on_view_menu_activate" swapped="no"/>
+                <signal name="activate" handler="on_view_menu_activate"/>
                 <child type="submenu">
                   <object class="GtkMenu" id="view_menu_menu">
                     <child>
@@ -452,7 +452,7 @@
                         <property name="use_underline">True</property>
                         <property name="image">image14</property>
                         <property name="use_stock">False</property>
-                        <signal name="activate" handler="toggle_interface" swapped="no"/>
+                        <signal name="activate" handler="toggle_interface"/>
                       </object>
                     </child>
                     <child>
@@ -460,7 +460,7 @@
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">_Status Bar</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="show_statusbar" swapped="no"/>
+                        <signal name="activate" handler="show_statusbar"/>
                       </object>
                     </child>
                     <child>
@@ -491,7 +491,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">_1x</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="exact_1x" swapped="no"/>
+                                <signal name="activate" handler="exact_1x"/>
                               </object>
                             </child>
                             <child>
@@ -499,7 +499,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">_2x</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="exact_2x" swapped="no"/>
+                                <signal name="activate" handler="exact_2x"/>
                               </object>
                             </child>
                             <child>
@@ -507,7 +507,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">_3x</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="exact_3x" swapped="no"/>
+                                <signal name="activate" handler="exact_3x"/>
                               </object>
                             </child>
                             <child>
@@ -515,7 +515,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">_4x</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="exact_4x" swapped="no"/>
+                                <signal name="activate" handler="exact_4x"/>
                               </object>
                             </child>
                             <child>
@@ -523,7 +523,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">_5x</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="exact_5x" swapped="no"/>
+                                <signal name="activate" handler="exact_5x"/>
                               </object>
                             </child>
                             <child>
@@ -544,7 +544,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">1x</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="correct_1x" swapped="no"/>
+                                <signal name="activate" handler="correct_1x"/>
                               </object>
                             </child>
                             <child>
@@ -552,7 +552,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">2x</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="correct_2x" swapped="no"/>
+                                <signal name="activate" handler="correct_2x"/>
                               </object>
                             </child>
                             <child>
@@ -560,7 +560,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">3x</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="correct_3x" swapped="no"/>
+                                <signal name="activate" handler="correct_3x"/>
                               </object>
                             </child>
                             <child>
@@ -568,7 +568,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">4x</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="correct_4x" swapped="no"/>
+                                <signal name="activate" handler="correct_4x"/>
                               </object>
                             </child>
                             <child>
@@ -576,7 +576,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">5x</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="correct_5x" swapped="no"/>
+                                <signal name="activate" handler="correct_5x"/>
                               </object>
                             </child>
                           </object>
@@ -595,7 +595,7 @@
                         <property name="use_underline">True</property>
                         <property name="image">image15</property>
                         <property name="use_stock">False</property>
-                        <signal name="activate" handler="on_fullscreen_item_activate" swapped="no"/>
+                        <signal name="activate" handler="on_fullscreen_item_activate"/>
                       </object>
                     </child>
                   </object>
@@ -621,7 +621,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">SNES Port 1</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="on_snes_port_1_activate" swapped="no"/>
+                                <signal name="activate" handler="on_snes_port_1_activate"/>
                                 <child type="submenu">
                                   <object class="GtkMenu" id="snes_port_1_menu">
                                     <child>
@@ -629,7 +629,7 @@
                                         <property name="visible">True</property>
                                         <property name="label" translatable="yes">Joypad</property>
                                         <property name="use_underline">True</property>
-                                        <signal name="activate" handler="on_port_activate" swapped="no"/>
+                                        <signal name="activate" handler="on_port_activate"/>
                                       </object>
                                     </child>
                                     <child>
@@ -638,7 +638,7 @@
                                         <property name="label" translatable="yes">Mouse</property>
                                         <property name="use_underline">True</property>
                                         <property name="group">joypad1</property>
-                                        <signal name="activate" handler="on_port_activate" swapped="no"/>
+                                        <signal name="activate" handler="on_port_activate"/>
                                       </object>
                                     </child>
                                     <child>
@@ -648,7 +648,7 @@
                                         <property name="use_underline">True</property>
                                         <property name="active">True</property>
                                         <property name="group">joypad1</property>
-                                        <signal name="activate" handler="on_port_activate" swapped="no"/>
+                                        <signal name="activate" handler="on_port_activate"/>
                                       </object>
                                     </child>
                                   </object>
@@ -660,7 +660,7 @@
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">SNES Port 2</property>
                                 <property name="use_underline">True</property>
-                                <signal name="activate" handler="on_snes_port_2_activate" swapped="no"/>
+                                <signal name="activate" handler="on_snes_port_2_activate"/>
                                 <child type="submenu">
                                   <object class="GtkMenu" id="snes_port_2_menu">
                                     <child>
@@ -668,7 +668,7 @@
                                         <property name="visible">True</property>
                                         <property name="label" translatable="yes">Joypad</property>
                                         <property name="use_underline">True</property>
-                                        <signal name="activate" handler="on_port_activate" swapped="no"/>
+                                        <signal name="activate" handler="on_port_activate"/>
                                       </object>
                                     </child>
                                     <child>
@@ -677,7 +677,7 @@
                                         <property name="label" translatable="yes">Mouse</property>
                                         <property name="use_underline">True</property>
                                         <property name="group">joypad2</property>
-                                        <signal name="activate" handler="on_port_activate" swapped="no"/>
+                                        <signal name="activate" handler="on_port_activate"/>
                                       </object>
                                     </child>
                                     <child>
@@ -686,7 +686,7 @@
                                         <property name="label" translatable="yes">Multitap</property>
                                         <property name="use_underline">True</property>
                                         <property name="group">joypad2</property>
-                                        <signal name="activate" handler="on_port_activate" swapped="no"/>
+                                        <signal name="activate" handler="on_port_activate"/>
                                       </object>
                                     </child>
                                     <child>
@@ -696,7 +696,7 @@
                                         <property name="use_underline">True</property>
                                         <property name="active">True</property>
                                         <property name="group">joypad2</property>
-                                        <signal name="activate" handler="on_port_activate" swapped="no"/>
+                                        <signal name="activate" handler="on_port_activate"/>
                                       </object>
                                     </child>
                                   </object>
@@ -718,7 +718,7 @@
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                         <property name="label" translatable="yes">_Cheats...</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="open_cheats" swapped="no"/>
+                        <signal name="activate" handler="open_cheats"/>
                       </object>
                     </child>
                     <child>
@@ -734,7 +734,7 @@
                         <property name="use_underline">True</property>
                         <property name="image">image16</property>
                         <property name="use_stock">False</property>
-                        <signal name="activate" handler="on_preferences_item_activate" swapped="no"/>
+                        <signal name="activate" handler="on_preferences_item_activate"/>
                       </object>
                     </child>
                   </object>
@@ -754,11 +754,11 @@
             <property name="visible">True</property>
             <property name="app_paintable">True</property>
             <property name="events">GDK_EXPOSURE_MASK | GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_STRUCTURE_MASK | GDK_SUBSTRUCTURE_MASK</property>
-            <signal name="expose-event" handler="on_drawingarea_expose" swapped="no"/>
-            <signal name="button-press-event" handler="drawingarea_button_press" swapped="no"/>
-            <signal name="motion-notify-event" handler="drawingarea_motion_notify" swapped="no"/>
-            <signal name="button-release-event" handler="drawingarea_button_release" swapped="no"/>
-            <signal name="size-allocate" handler="size_allocate" swapped="no"/>
+            <signal name="expose_event" handler="on_drawingarea_expose"/>
+            <signal name="button_press_event" handler="drawingarea_button_press"/>
+            <signal name="motion_notify_event" handler="drawingarea_motion_notify"/>
+            <signal name="button_release_event" handler="drawingarea_button_release"/>
+            <signal name="size_allocate" handler="size_allocate"/>
           </object>
           <packing>
             <property name="position">1</property>
@@ -783,8 +783,8 @@
     <property name="default_height">480</property>
     <property name="type_hint">dialog</property>
     <property name="skip_taskbar_hint">True</property>
-    <signal name="key-press-event" handler="on_key_press" swapped="no"/>
-    <signal name="style-set" handler="style_set" swapped="no"/>
+    <signal name="key_press_event" handler="on_key_press"/>
+    <signal name="style_set" handler="style_set"/>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox1">
         <property name="visible">True</property>
@@ -800,7 +800,7 @@
                 <property name="tab_border">0</property>
                 <property name="tab_hborder">1</property>
                 <property name="tab_vborder">0</property>
-                <signal name="switch-page" handler="change_current_page" swapped="no"/>
+                <signal name="switch_page" handler="change_current_page"/>
                 <child>
                   <object class="GtkScrolledWindow" id="scrolledwindow1">
                     <property name="visible">True</property>
@@ -1012,20 +1012,6 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkCheckButton" id="force_hires">
-                                            <property name="label" translatable="yes">Force SNES-hires output</property>
-                                            <property name="visible">True</property>
-                                            <property name="can_focus">True</property>
-                                            <property name="receives_default">False</property>
-                                            <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                            <property name="tooltip_text" translatable="yes">Detects frames that are not output by Snes9x in hires, and scales them</property>
-                                            <property name="draw_indicator">True</property>
-                                          </object>
-                                          <packing>
-                                            <property name="position">2</property>
-                                          </packing>
-                                        </child>
-                                        <child>
                                           <object class="GtkHBox" id="hbox9">
                                             <property name="visible">True</property>
                                             <property name="spacing">5</property>
@@ -1070,6 +1056,41 @@
                                             </child>
                                           </object>
                                           <packing>
+                                            <property name="position">2</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkHBox" id="hbox8">
+                                            <property name="visible">True</property>
+                                            <property name="spacing">12</property>
+                                            <child>
+                                              <object class="GtkLabel" id="label124">
+                                                <property name="visible">True</property>
+                                                <property name="label" translatable="yes">High-resolution effect:</property>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="position">0</property>
+                                              </packing>
+                                            </child>
+                                            <child>
+                                              <object class="GtkComboBox" id="hires_effect">
+                                                <property name="visible">True</property>
+                                                <property name="model">liststore15</property>
+                                                <child>
+                                                  <object class="GtkCellRendererText" id="cellrenderertext1"/>
+                                                  <attributes>
+                                                    <attribute name="text">0</attribute>
+                                                  </attributes>
+                                                </child>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="position">1</property>
+                                              </packing>
+                                            </child>
+                                          </object>
+                                          <packing>
                                             <property name="position">3</property>
                                           </packing>
                                         </child>
@@ -1092,7 +1113,7 @@
                                               <object class="GtkComboBox" id="scale_method_combo">
                                                 <property name="visible">True</property>
                                                 <property name="model">liststore12</property>
-                                                <signal name="changed" handler="scale_method_changed" swapped="no"/>
+                                                <signal name="changed" handler="scale_method_changed"/>
                                                 <child>
                                                   <object class="GtkCellRendererText" id="cellrenderertext12"/>
                                                   <attributes>
@@ -1101,6 +1122,7 @@
                                                 </child>
                                               </object>
                                               <packing>
+                                                <property name="expand">False</property>
                                                 <property name="position">1</property>
                                               </packing>
                                             </child>
@@ -1170,7 +1192,7 @@
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">True</property>
-                                                    <signal name="clicked" handler="ntsc_composite_preset" swapped="no"/>
+                                                    <signal name="clicked" handler="ntsc_composite_preset"/>
                                                   </object>
                                                   <packing>
                                                     <property name="expand">False</property>
@@ -1183,7 +1205,7 @@
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">True</property>
-                                                    <signal name="clicked" handler="ntsc_svideo_preset" swapped="no"/>
+                                                    <signal name="clicked" handler="ntsc_svideo_preset"/>
                                                   </object>
                                                   <packing>
                                                     <property name="expand">False</property>
@@ -1196,7 +1218,7 @@
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">True</property>
-                                                    <signal name="clicked" handler="ntsc_rgb_preset" swapped="no"/>
+                                                    <signal name="clicked" handler="ntsc_rgb_preset"/>
                                                   </object>
                                                   <packing>
                                                     <property name="expand">False</property>
@@ -1209,7 +1231,7 @@
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">True</property>
-                                                    <signal name="clicked" handler="ntsc_monochrome_preset" swapped="no"/>
+                                                    <signal name="clicked" handler="ntsc_monochrome_preset"/>
                                                   </object>
                                                   <packing>
                                                     <property name="expand">False</property>
@@ -1701,7 +1723,7 @@
                                             <property name="visible">True</property>
                                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                             <property name="model">liststore9</property>
-                                            <signal name="changed" handler="hw_accel_changed" swapped="no"/>
+                                            <signal name="changed" handler="hw_accel_changed"/>
                                             <child>
                                               <object class="GtkCellRendererText" id="cellrenderertext9"/>
                                               <attributes>
@@ -1754,7 +1776,6 @@
                                                 <property name="can_focus">True</property>
                                                 <property name="receives_default">False</property>
                                                 <property name="tooltip_text" translatable="yes">Use glFinish to reduce latency by one frame. May cause 100% CPU usage in faulty graphics drivers</property>
-                                                <property name="use_action_appearance">False</property>
                                                 <property name="draw_indicator">True</property>
                                               </object>
                                               <packing>
@@ -1844,7 +1865,6 @@
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">False</property>
-                                                    <property name="use_action_appearance">False</property>
                                                     <property name="xalign">0</property>
                                                     <property name="draw_indicator">True</property>
                                                   </object>
@@ -1857,7 +1877,7 @@
                                                   <object class="GtkEntry" id="fragment_shader">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
-                                                    <property name="invisible_char">•</property>
+                                                    <property name="invisible_char">&#x2022;</property>
                                                     <property name="invisible_char_set">True</property>
                                                   </object>
                                                   <packing>
@@ -1870,7 +1890,7 @@
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">True</property>
-                                                    <signal name="clicked" handler="shader_select" swapped="no"/>
+                                                    <signal name="clicked" handler="shader_select"/>
                                                   </object>
                                                   <packing>
                                                     <property name="expand">False</property>
@@ -2552,10 +2572,10 @@
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="editable">False</property>
-                                        <property name="invisible_char">•</property>
+                                        <property name="invisible_char">&#x2022;</property>
                                         <property name="secondary_icon_stock">gtk-clear</property>
-                                        <signal name="delete-from-cursor" handler="game_data_clear" swapped="no"/>
-                                        <signal name="icon-release" handler="game_data_clear" swapped="no"/>
+                                        <signal name="delete_from_cursor" handler="game_data_clear"/>
+                                        <signal name="icon_release" handler="game_data_clear"/>
                                       </object>
                                       <packing>
                                         <property name="left_attach">1</property>
@@ -2567,10 +2587,10 @@
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="editable">False</property>
-                                        <property name="invisible_char">•</property>
+                                        <property name="invisible_char">&#x2022;</property>
                                         <property name="secondary_icon_stock">gtk-clear</property>
-                                        <signal name="delete-from-cursor" handler="game_data_clear" swapped="no"/>
-                                        <signal name="icon-release" handler="game_data_clear" swapped="no"/>
+                                        <signal name="delete_from_cursor" handler="game_data_clear"/>
+                                        <signal name="icon_release" handler="game_data_clear"/>
                                       </object>
                                       <packing>
                                         <property name="left_attach">1</property>
@@ -2584,10 +2604,10 @@
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="editable">False</property>
-                                        <property name="invisible_char">•</property>
+                                        <property name="invisible_char">&#x2022;</property>
                                         <property name="secondary_icon_stock">gtk-clear</property>
-                                        <signal name="delete-from-cursor" handler="game_data_clear" swapped="no"/>
-                                        <signal name="icon-release" handler="game_data_clear" swapped="no"/>
+                                        <signal name="delete_from_cursor" handler="game_data_clear"/>
+                                        <signal name="icon_release" handler="game_data_clear"/>
                                       </object>
                                       <packing>
                                         <property name="left_attach">1</property>
@@ -2601,10 +2621,10 @@
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="editable">False</property>
-                                        <property name="invisible_char">•</property>
+                                        <property name="invisible_char">&#x2022;</property>
                                         <property name="secondary_icon_stock">gtk-clear</property>
-                                        <signal name="delete-from-cursor" handler="game_data_clear" swapped="no"/>
-                                        <signal name="icon-release" handler="game_data_clear" swapped="no"/>
+                                        <signal name="delete_from_cursor" handler="game_data_clear"/>
+                                        <signal name="icon_release" handler="game_data_clear"/>
                                       </object>
                                       <packing>
                                         <property name="left_attach">1</property>
@@ -2618,10 +2638,10 @@
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="editable">False</property>
-                                        <property name="invisible_char">•</property>
+                                        <property name="invisible_char">&#x2022;</property>
                                         <property name="secondary_icon_stock">gtk-clear</property>
-                                        <signal name="delete-from-cursor" handler="game_data_clear" swapped="no"/>
-                                        <signal name="icon-release" handler="game_data_clear" swapped="no"/>
+                                        <signal name="delete_from_cursor" handler="game_data_clear"/>
+                                        <signal name="icon_release" handler="game_data_clear"/>
                                       </object>
                                       <packing>
                                         <property name="left_attach">1</property>
@@ -2636,7 +2656,7 @@
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
-                                        <signal name="clicked" handler="game_data_browse" swapped="no"/>
+                                        <signal name="clicked" handler="game_data_browse"/>
                                       </object>
                                       <packing>
                                         <property name="left_attach">2</property>
@@ -2651,7 +2671,7 @@
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
-                                        <signal name="clicked" handler="game_data_browse" swapped="no"/>
+                                        <signal name="clicked" handler="game_data_browse"/>
                                       </object>
                                       <packing>
                                         <property name="left_attach">2</property>
@@ -2668,7 +2688,7 @@
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
-                                        <signal name="clicked" handler="game_data_browse" swapped="no"/>
+                                        <signal name="clicked" handler="game_data_browse"/>
                                       </object>
                                       <packing>
                                         <property name="left_attach">2</property>
@@ -2685,7 +2705,7 @@
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
-                                        <signal name="clicked" handler="game_data_browse" swapped="no"/>
+                                        <signal name="clicked" handler="game_data_browse"/>
                                       </object>
                                       <packing>
                                         <property name="left_attach">2</property>
@@ -2702,7 +2722,7 @@
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
-                                        <signal name="clicked" handler="game_data_browse" swapped="no"/>
+                                        <signal name="clicked" handler="game_data_browse"/>
                                       </object>
                                       <packing>
                                         <property name="left_attach">2</property>
@@ -2823,7 +2843,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="tooltip_text" translatable="yes">Automatically save the game's SRAM at this interval. Setting this to 0 will only save when quitting or changing ROMs</property>
-                                    <property name="invisible_char">•</property>
+                                    <property name="invisible_char">&#x2022;</property>
                                     <property name="width_chars">5</property>
                                     <property name="xalign">1</property>
                                   </object>
@@ -2920,7 +2940,7 @@
                           <object class="GtkComboBox" id="control_combo">
                             <property name="visible">True</property>
                             <property name="model">liststore3</property>
-                            <signal name="changed" handler="control_combo_changed" swapped="no"/>
+                            <signal name="changed" handler="control_combo_changed"/>
                             <child>
                               <object class="GtkCellRendererText" id="cellrenderertext3"/>
                               <attributes>
@@ -2949,7 +2969,7 @@
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="use_underline">True</property>
-                            <signal name="clicked" handler="reset_current_joypad" swapped="no"/>
+                            <signal name="clicked" handler="reset_current_joypad"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -2999,7 +3019,7 @@
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="use_underline">True</property>
-                            <signal name="clicked" handler="swap_with" swapped="no"/>
+                            <signal name="clicked" handler="swap_with"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -3032,7 +3052,7 @@
                       <object class="GtkNotebook" id="notebook2">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <signal name="switch-page" handler="change_current_page" swapped="no"/>
+                        <signal name="switch_page" handler="change_current_page"/>
                         <child>
                           <object class="GtkHBox" id="hbox11">
                             <property name="visible">True</property>
@@ -3931,7 +3951,7 @@
                                                 <property name="receives_default">True</property>
                                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                                 <property name="use_underline">True</property>
-                                                <signal name="clicked" handler="calibrate" swapped="no"/>
+                                                <signal name="clicked" handler="calibrate"/>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>
@@ -4069,7 +4089,7 @@
                       <object class="GtkNotebook" id="notebook3">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <signal name="switch-page" handler="change_current_page" swapped="no"/>
+                        <signal name="switch_page" handler="change_current_page"/>
                         <child>
                           <object class="GtkScrolledWindow" id="scrolledwindow2">
                             <property name="visible">True</property>
@@ -5789,7 +5809,7 @@
                 <property name="can_default">True</property>
                 <property name="receives_default">False</property>
                 <property name="use_stock">True</property>
-                <signal name="clicked" handler="on_apply_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_apply_clicked"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -5818,9 +5838,8 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
-                <signal name="clicked" handler="about_clicked" swapped="no"/>
+                <signal name="clicked" handler="about_clicked"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -6280,6 +6299,23 @@
       <column type="gchararray"/>
     </columns>
   </object>
+  <object class="GtkListStore" id="liststore15">
+    <columns>
+      <!-- column-name item -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">Blend at pixel boundaries</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Output directly</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Scale low-resolution screens</col>
+      </row>
+    </data>
+  </object>
   <object class="GtkDialog" id="cheat_window">
     <property name="width_request">512</property>
     <property name="height_request">350</property>
@@ -6379,7 +6415,7 @@
                     <property name="receives_default">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <property name="use_stock">True</property>
-                    <signal name="clicked" handler="add_code" swapped="no"/>
+                    <signal name="clicked" handler="add_code"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -6395,7 +6431,7 @@
                     <property name="receives_default">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <property name="use_stock">True</property>
-                    <signal name="clicked" handler="remove_code" swapped="no"/>
+                    <signal name="clicked" handler="remove_code"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -6493,7 +6529,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <signal name="clicked" handler="browse_clicked" swapped="no"/>
+                            <signal name="clicked" handler="browse_clicked"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -6505,7 +6541,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <signal name="clicked" handler="clear_clicked" swapped="no"/>
+                            <signal name="clicked" handler="clear_clicked"/>
                             <child>
                               <object class="GtkImage" id="image26">
                                 <property name="visible">True</property>
@@ -6628,7 +6664,7 @@
                             <property name="active">True</property>
                             <property name="draw_indicator">True</property>
                             <property name="group">connect_radio</property>
-                            <signal name="toggled" handler="server_toggled" swapped="no"/>
+                            <signal name="toggled" handler="server_toggled"/>
                           </object>
                           <packing>
                             <property name="position">2</property>
@@ -7051,44 +7087,44 @@
     <property name="icon-size">1</property>
   </object>
   <object class="GtkAdjustment" id="adjustment1">
+    <property name="value">1</property>
     <property name="lower">1</property>
     <property name="upper">60</property>
-    <property name="value">1</property>
     <property name="step_increment">1</property>
     <property name="page_increment">1</property>
   </object>
   <object class="GtkAdjustment" id="adjustment2">
+    <property name="value">6096</property>
     <property name="lower">1</property>
     <property name="upper">9999</property>
-    <property name="value">6096</property>
     <property name="step_increment">1</property>
     <property name="page_increment">1</property>
   </object>
   <object class="GtkAdjustment" id="adjustment3">
+    <property name="value">6096</property>
     <property name="lower">1</property>
     <property name="upper">9999</property>
-    <property name="value">6096</property>
     <property name="step_increment">1</property>
     <property name="page_increment">1</property>
   </object>
   <object class="GtkAdjustment" id="adjustment4">
+    <property name="value">50</property>
     <property name="lower">1</property>
     <property name="upper">100</property>
-    <property name="value">50</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjustment5">
+    <property name="value">31990</property>
     <property name="lower">31500</property>
     <property name="upper">32500</property>
-    <property name="value">31990</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjustment6">
+    <property name="value">2</property>
     <property name="lower">2</property>
     <property name="upper">256</property>
-    <property name="value">2</property>
     <property name="step_increment">1</property>
     <property name="page_increment">1</property>
   </object>
@@ -7123,9 +7159,9 @@
     <property name="page_increment">0.10000000000000001</property>
   </object>
   <object class="GtkAdjustment" id="adjustment12">
+    <property name="value">1.0408340855860843e-17</property>
     <property name="lower">-1</property>
     <property name="upper">1</property>
-    <property name="value">1.0408340855860843e-17</property>
     <property name="step_increment">0.01</property>
     <property name="page_increment">0.10000000000000001</property>
   </object>
@@ -7154,9 +7190,9 @@
     <property name="page_increment">0.10000000000000001</property>
   </object>
   <object class="GtkAdjustment" id="adjustment17">
+    <property name="value">2</property>
     <property name="lower">2</property>
     <property name="upper">8</property>
-    <property name="value">2</property>
     <property name="step_increment">1</property>
     <property name="page_increment">1</property>
   </object>
@@ -7421,7 +7457,6 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
