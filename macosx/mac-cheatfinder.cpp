@@ -1278,7 +1278,7 @@ static void CheatFinderHandleAddEntryButton (WindowData *cf)
 		PlayAlertSound();
 	else
 	if (Cheat.num_cheats + cfViewNumBytes > MAX_CHEATS)
-		AppearanceAlert(kAlertCautionAlert, kCFCantAddWarning, kCFCantAddHint);
+		AppearanceAlert(kAlertCautionAlert, kS9xMacAlertCFCantAddEntry, kS9xMacAlertCFCantAddEntryHint);
 	else
 		CheatFinderBeginAddEntrySheet(cf);
 }

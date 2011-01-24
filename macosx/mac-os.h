@@ -296,7 +296,7 @@ extern int64			lastFrame;
 extern unsigned long	spcFileCount, pngFileCount;
 extern SInt32			systemVersion;
 extern bool8			finished, cartOpen,
-						autofire, hidExist, folderWarning, lockedROMMedia, directDisplay;
+						autofire, hidExist, directDisplay;
 extern bool8			fullscreen, autoRes,
 						glstretch, gl32bit, vsync, drawoverscan, lastoverscan, screencurvature,
 						multiprocessor, ciFilterEnable;

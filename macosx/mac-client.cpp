@@ -922,11 +922,10 @@ static bool8 NPClientBeginOpenROMImage (WindowRef window)
 
 static bool8 NPClientEndOpenROMImage (void)
 {
-	OSStatus		err;
-	FSCatalogInfo	info;
-	FSRef			cartRef;
-	char			filename[PATH_MAX + 1];
-	bool8			r;
+	OSStatus	err;
+	FSRef		cartRef;
+	char		filename[PATH_MAX + 1];
+	bool8		r;
 
 	r = NavEndOpenROMImageSheet(&cartRef);
 	if (!r)
@@ -935,8 +934,7 @@ static bool8 NPClientEndOpenROMImage (void)
 		return (false);
 	}
 
-	err = FSGetCatalogInfo(&cartRef, kFSCatInfoVolume, &info, NULL, NULL, NULL);
-	lockedROMMedia = IsLockedMedia(info.volume);
+	CheckSaveFolder(&cartRef);
 
 	Settings.ForceLoROM          = (romDetect        == kLoROMForce       );
 	Settings.ForceHiROM          = (romDetect        == kHiROMForce       );
