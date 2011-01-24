@@ -7098,7 +7098,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		// have to start focus on something like this or Escape won't exit the dialog
 		SetFocus(hDlg);
 
-		goto checkUpdateFilterBox2;
+		SendDlgItemMessage(hDlg,IDC_FILTERBOX2,CB_SETCURSEL,(WPARAM)GUI.ScaleHiRes,0);
 
 		break;
 	case WM_CLOSE:
@@ -7330,7 +7330,7 @@ updateFilterBox2:
 			{
 				char text [256];
 				text[0] = '\0';
-				SendMessage(GetDlgItem(hDlg, IDC_FILTERBOX2), WM_GETTEXT, 256,(LPARAM)text);
+				SendMessageA(GetDlgItem(hDlg, IDC_FILTERBOX2), WM_GETTEXT, 256,(LPARAM)text);
 
 				int scale = GUI.Scale;
 				for(int i=0; i<NUM_FILTERS; i++)
