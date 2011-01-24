@@ -135,7 +135,7 @@ Snes9xConfig::load_defaults (void)
     allow_xv = 0;
     allow_xrandr = 0;
     force_inverted_byte_order = FALSE;
-    force_hires = 0;
+    hires_effect = HIRES_NORMAL;
     pause_emulation_on_switch = 0;
     num_threads = 2;
     mute_sound = FALSE;
@@ -283,7 +283,7 @@ Snes9xConfig::save_config_file (void)
     xml_out_int (xml, "aspect_ratio", aspect_ratio);
     xml_out_int (xml, "scale_method", scale_method);
     xml_out_int (xml, "overscan", overscan);
-    xml_out_int (xml, "force_hires", force_hires);
+    xml_out_int (xml, "hires_effect", hires_effect);
     xml_out_int (xml, "force_inverted_byte_order", force_inverted_byte_order);
     xml_out_int (xml, "multithreading", multithreading);
     xml_out_string (xml, "last_directory", last_directory);
@@ -467,7 +467,12 @@ Snes9xConfig::set_option (const char *name, const char *value)
     }
     else if (!strcasecmp (name, "force_hires"))
     {
-        force_hires = atoi (value);
+        /* Deprecated */
+    }
+    else if (!strcasecmp (name, "hires_effect"))
+    {
+        hires_effect = atoi (value);
+        hires_effect = CLAMP (hires_effect, 0, 2);
     }
     else if (!strcasecmp (name, "scale_method"))
     {

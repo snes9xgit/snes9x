@@ -17,7 +17,7 @@ class S9xDisplayDriver
         virtual void reconfigure (int width, int height) = 0;
 
         /* Namespaced sizing constants */
-        static const int image_width = 512;
+        static const int image_width = 1024;
         static const int image_height = 478;
         static const int image_bpp = 2;
         static const int scaled_max_width = 1024;

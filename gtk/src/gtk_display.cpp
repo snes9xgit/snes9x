@@ -688,6 +688,39 @@ S9xForceHires (void *buffer,
     return;
 }
 
+#undef  AVERAGE_1555
+#define AVERAGE_1555(el0, el1) (((el0) & (el1)) + ((((el0) ^ (el1)) & 0x7BDE) >> 1))
+static void
+S9xMergeHires (void *buffer,
+               int  pitch,
+               int  &width,
+               int  &height)
+{
+    if (width <= 256)
+        return;
+
+    for (register int y = 0; y < height; y++)
+    {
+        register uint16 *input = (uint16 *) ((uint8 *) buffer + y * pitch);
+        register uint16 *output = input;
+        register uint16 l, r;
+
+        l = 0;
+        for (register int x = 0; x < (width >> 1); x++)
+        {
+            r = *input++;
+            *output++ = AVERAGE_1555 (l, r);
+            l = r;
+
+            r = *input++;
+            *output++ = AVERAGE_1555 (l, r);
+            l = r;
+        }
+    }
+
+    return;
+}
+
 void
 filter_2x (void *src,
            int src_pitch,
@@ -1603,11 +1636,19 @@ S9xDeinitUpdate (int width, int height)
             else
                 height = 224;
 
-        if (gui_config->force_hires)
+        if (gui_config->hires_effect == HIRES_SCALE)
         {
             S9xForceHires (GFX.Screen,
                            S9xDisplayDriver::image_width *
-                           S9xDisplayDriver::image_bpp,
+                               S9xDisplayDriver::image_bpp,
+                           width,
+                           height);
+        }
+        else if (gui_config->hires_effect == HIRES_MERGE)
+        {
+            S9xMergeHires (GFX.Screen,
+                           S9xDisplayDriver::image_width *
+                               S9xDisplayDriver::image_bpp,
                            width,
                            height);
         }
