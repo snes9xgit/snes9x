@@ -3509,7 +3509,7 @@ static void Op42 (void)
 				S9xMessage(S9X_DEBUG, S9X_DEBUG_OUTPUT, buf);
 				if (trace != NULL)
 					fclose(trace);
-				ENSURE_TRACE_OPEN(trace,"WDMtrace.log","ab")
+				ENSURE_TRACE_OPEN(trace, "WDMtrace.log", "ab")
 			}
 
 			break;

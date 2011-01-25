@@ -129,6 +129,8 @@
 #define IDC_TRANS                       1113
 #define IDC_HIRES                       1114
 #define IDC_CHEAT_CODE                  1115
+#define IDC_HIRES2                      1115
+#define IDC_HIRESBLEND                  1115
 #define IDC_FILTERBOX                   1116
 #define IDC_FILTERBOX2                  1117
 #define IDC_AUTOFRAME                   1118
@@ -397,7 +399,7 @@
 #define ID_OPTIONS_EMULATION            40069
 #define ID_OPTIONS_SETTINGS             40070
 #define ID_DEBUG_TRACE                  40071
-#define ID_FRAME_ADVANCE				40074
+#define ID_FRAME_ADVANCE                40074
 #define ID_DEBUG_FRAME_ADVANCE          40075
 #define ID_DEBUG_SNES_STATUS            40076
 #define ID_NETPLAY_SERVER               40077

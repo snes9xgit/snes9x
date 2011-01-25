@@ -222,10 +222,9 @@ void SNES9X_Go (void)
 
 bool8 SNES9X_OpenCart (FSRef *inRef)
 {
-	OSStatus		err;
-	FSCatalogInfo	info;
-	FSRef			cartRef;
-	char			filename[PATH_MAX + 1];
+	OSStatus	err;
+	FSRef		cartRef;
+	char		filename[PATH_MAX + 1];
 
 	DeinitGameWindow();
 
@@ -251,8 +250,7 @@ bool8 SNES9X_OpenCart (FSRef *inRef)
 
 	spcFileCount = pngFileCount = 0;
 
-	err = FSGetCatalogInfo(&cartRef, kFSCatInfoVolume, &info, NULL, NULL, NULL);
-	lockedROMMedia = IsLockedMedia(info.volume);
+	CheckSaveFolder(&cartRef);
 
 	Settings.ForceLoROM          = (romDetect        == kLoROMForce       );
 	Settings.ForceHiROM          = (romDetect        == kHiROMForce       );
@@ -623,6 +621,7 @@ void SNES9X_Quit (void)
 	if (cartOpen)
 	{
 		SNES9X_SaveSRAM();
+		S9xResetSaveTimer(false);
 		S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
 	}
 

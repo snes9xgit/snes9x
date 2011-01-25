@@ -79,6 +79,6 @@ public:
 
 #define fopen _tfwopen
 #define remove _twremove
-#endif
-
 #endif // _TFWOPEN_H
+
+#endif 

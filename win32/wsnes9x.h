@@ -300,6 +300,7 @@ struct sGUI {
 	dMode FullscreenMode;
     RenderFilter Scale;
     RenderFilter ScaleHiRes;
+	bool BlendHiRes;
     bool DoubleBuffered;
     bool FullScreen;
     bool Stretch;

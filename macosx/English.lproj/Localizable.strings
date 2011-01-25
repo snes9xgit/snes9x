@@ -30,8 +30,10 @@
 "NPConnecting"    = "Connecting";
 "NPServerName"    = "Server";
 
-"AlertMes_03"     = "The folders for saving files could not be created.";
-"AlertMes_04"     = "Some features will not work properly without these folders.";
+"AlertMes_01"     = "The folder for saving files is not found.";
+"AlertMes_02"     = "Application Support folder will be used instead.";
+"AlertMes_03"     = "The folder for saving files is not writable.";
+"AlertMes_04"     = "Application Support folder will be used instead.";
 "AlertMes_05"     = "This ROM image has bad checksum, so might not work properly.";
 "AlertMes_06"     = "Or failed to detect map / interleave.";
 "AlertMes_07"     = "No enough space in Cheat Entry.";

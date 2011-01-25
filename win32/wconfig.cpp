@@ -863,6 +863,7 @@ void WinRegisterConfigItems()
 	AddUIntC("OutputMethod", GUI.outputMethod, 1, "0=DirectDraw, 1=Direct3D");
 	AddUIntC("FilterType", GUI.Scale, 0, filterString);
 	AddUIntC("FilterHiRes", GUI.ScaleHiRes, 0, filterString2);
+	AddBoolC("BlendHiRes", GUI.BlendHiRes, true, "true to horizontally blend Hi-Res images (better transparency effect on filters that do not account for this)");
 	AddBoolC("ShaderEnabled", GUI.shaderEnabled, false, "true to use pixel shader (if supported by output method)");
 	AddStringC("Direct3D:HLSLFileName", GUI.HLSLshaderFileName, MAX_PATH, "", "shader filename for Direct3D mode");
 	AddStringC("OpenGL:GLSLFileName", GUI.GLSLshaderFileName, MAX_PATH, "", "shader filename for OpenGL mode (bsnes-style XML shader)");

@@ -189,8 +189,7 @@
 
 
 #include "snes9x.h"
-#include "apu.h"
-#include "gfx.h"
+#include "memmap.h"
 #include "blit.h"
 
 #include <OpenGL/OpenGL.h>
@@ -202,6 +201,7 @@
 #include "mac-cart.h"
 #include "mac-coreimage.h"
 #include "mac-dialog.h"
+#include "mac-file.h"
 #include "mac-keyboard.h"
 #include "mac-os.h"
 #include "mac-render.h"
@@ -1279,6 +1279,15 @@ void ConfigurePreferences (void)
 		{
 			InitGameWindow();
 			ShowWindow(gWindow);
+		}
+
+		if (cartOpen)
+		{
+			FSRef	ref;
+
+			err = FSPathMakeRef((unsigned char *) Memory.ROMFilename, &ref, NULL);
+			if (err == noErr)
+				CheckSaveFolder(&ref);
 		}
 	}
 }

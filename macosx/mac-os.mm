@@ -195,6 +195,7 @@
 #import "crosshairs.h"
 #import "cheats.h"
 #import "movie.h"
+#import "snapshot.h"
 #import "display.h"
 #import "blit.h"
 
@@ -280,8 +281,6 @@ bool8				finished            = false,
 					cartOpen            = false,
 					autofire            = false,
 					hidExist            = true,
-					folderWarning       = false,
-					lockedROMMedia      = false,
 					directDisplay       = false;
 
 bool8				fullscreen          = false,
@@ -433,7 +432,9 @@ enum
 	kmCtrKey   = 0x3B,
 	kmMinusKey = 0x1B,
 	kmQKey     = 0x0C,
-	kmWKey     = 0x0D
+	kmWKey     = 0x0D,
+	kmOKey     = 0x1F,
+	kmPKey     = 0x23
 };
 
 struct ButtonCommand
@@ -452,6 +453,9 @@ struct GameViewInfo
 };
 
 static volatile bool8	rejectinput     = false;
+
+static bool8			pauseEmulation  = false,
+						frameAdvance    = false;
 
 static pthread_t		s9xthread;
 
@@ -493,7 +497,9 @@ static ButtonCommand	btncmd[] =
 	{ "_mac1",           km0Key,     false },
 	{ "_mac2",           kmMinusKey, false },
 	{ "_mac3",           kmQKey,     false },
-	{ "_mac4",           kmWKey,     false }
+	{ "_mac4",           kmWKey,     false },
+	{ "_mac5",           kmOKey,     false },
+	{ "_mac6",           kmPKey,     false }
 };
 
 #define	kCommandListSize	(sizeof(btncmd) / sizeof(btncmd[0]))
@@ -598,6 +604,13 @@ int main (int argc, char **argv)
 
 			pthread_join(s9xthread, NULL);
 
+			if (!Settings.NetPlay || Settings.NetPlayServer)
+			{
+				SNES9X_SaveSRAM();
+				S9xResetSaveTimer(false);
+				S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
+			}
+
 			S9xDeinitDisplay();
 
 			if (Settings.NetPlay)
@@ -657,6 +670,10 @@ static void * MacSnes9xThread (void *)
 static inline void EmulationLoop (void)
 {
 	bool8	olddisplayframerate = false;
+	int		storedMacFrameSkip  = macFrameSkip;
+
+	pauseEmulation = false;
+	frameAdvance   = false;
 
 	if (macQTRecord)
 	{
@@ -704,7 +721,22 @@ static inline void EmulationLoop (void)
 		while (running)
 		{
 			ProcessInput();
-			S9xMainLoop();
+
+			if (!pauseEmulation)
+				S9xMainLoop();
+			else
+			{
+				if (frameAdvance)
+				{
+					macFrameSkip = 1;
+					skipFrames = 1;
+					frameAdvance = false;
+					S9xMainLoop();
+					macFrameSkip = storedMacFrameSkip;
+				}
+
+				usleep(Settings.FrameTime);
+			}
 		}
 	}
 
@@ -2767,6 +2799,14 @@ static void ProcessInput (void)
 								sprintf(msg, "Emulation Speed: 100/%d", macFrameAdvanceRate / 10000);
 								S9xSetInfoString(msg);
 								break;
+
+							case 5:
+								pauseEmulation = !pauseEmulation;
+								break;
+
+							case 6:
+								frameAdvance = true;
+								break;
 						}
 					}
 					else
@@ -3123,7 +3163,7 @@ static void Initialize (void)
 
 	if ((systemVersion < 0x1039) || (qtVersion < 0x07008000))
 	{
-		AppearanceAlert(kAlertStopAlert, kRequiredSystemWarning, kRequiredSystemHint);
+		AppearanceAlert(kAlertStopAlert, kS9xMacAlertRequiredSystem, kS9xMacAlertRequiredSystemHint);
 		QuitWithFatalError(0, "os 09");
 	}
 
@@ -3427,7 +3467,7 @@ void S9xMessage (int type, int number, const char *message)
 
 		if ((type == S9X_INFO) && (number == S9X_ROM_INFO))
 			if (strstr(message, "checksum ok") == NULL)
-				AppearanceAlert(kAlertCautionAlert, kBadRomWarning, kBadRomHint);
+				AppearanceAlert(kAlertCautionAlert, kS9xMacAlertkBadRom, kS9xMacAlertkBadRomHint);
 	}
 	else
 	{

@@ -207,6 +207,78 @@ static OSStatus FindApplicationSupportFolder (FSRef *, char *, const char *);
 static OSStatus FindCustomFolder (FSRef *, char *, const char *);
 
 
+void CheckSaveFolder (FSRef *cartRef)
+{
+	OSStatus		err;
+	Boolean			r;
+	FSCatalogInfo	finfo;
+	FSVolumeInfo	vinfo;
+	FSRef			ref;
+	CFURLRef		burl, purl;
+	char			s[PATH_MAX + 1];
+
+	switch (saveInROMFolder)
+	{
+		case 0: // Snes9x folder
+			burl = CFBundleCopyBundleURL(CFBundleGetMainBundle());
+			purl = CFURLCreateCopyDeletingLastPathComponent(kCFAllocatorDefault, burl);
+			r    = CFURLGetFSRef(purl, &ref);
+			CFRelease(purl);
+			CFRelease(burl);
+			break;
+
+		case 1: // ROM folder
+			err = FSGetCatalogInfo(cartRef, kFSCatInfoNone, NULL, NULL, NULL, &ref);
+			break;
+
+		case 2: // Application Support folder
+			return;
+
+		case 4: // Custom folder
+			if (saveFolderPath == NULL)
+			{
+				saveInROMFolder = 2;
+				return;
+			}
+
+			r = CFStringGetCString(saveFolderPath, s, PATH_MAX, kCFStringEncodingUTF8);
+			err = FSPathMakeRef((unsigned char *) s, &ref, NULL);
+			if (err)
+			{
+				AppearanceAlert(kAlertCautionAlert, kS9xMacAlertFolderNotFound, kS9xMacAlertFolderNotFoundHint);
+				saveInROMFolder = 2;
+				return;
+			}
+
+			break;
+	}
+
+	err = FSGetCatalogInfo(&ref, kFSCatInfoUserPrivs | kFSCatInfoVolume, &finfo, NULL, NULL, NULL);
+	if (err == noErr)
+	{
+		if (finfo.userPrivileges & kioACUserNoMakeChangesMask)
+		{
+			AppearanceAlert(kAlertCautionAlert, kS9xMacAlertFolderFailToCreate, kS9xMacAlertFolderFailToCreateHint);
+			saveInROMFolder = 2;
+			return;
+		}
+
+		err = FSGetVolumeInfo(finfo.volume, 0, NULL, kFSVolInfoFlags, &vinfo, NULL, NULL);
+		if (err == noErr)
+		{
+			if ((vinfo.flags & kFSVolFlagHardwareLockedMask) || (vinfo.flags & kFSVolFlagSoftwareLockedMask))
+			{
+				AppearanceAlert(kAlertCautionAlert, kS9xMacAlertFolderFailToCreate, kS9xMacAlertFolderFailToCreateHint);
+				saveInROMFolder = 2;
+				return;
+			}
+		}
+	}
+
+	if (err)
+		saveInROMFolder = 2;
+}
+
 static OSStatus FindSNESFolder (FSRef *folderRef, char *folderPath, const char *folderName)
 {
 	OSStatus	err;
@@ -231,15 +303,7 @@ static OSStatus FindSNESFolder (FSRef *folderRef, char *folderPath, const char *
 			AddFolderIcon(folderRef, folderName);
 	}
 
-	if (err)
-	{
-		if (!folderWarning)
-		{
-			AppearanceAlert(kAlertCautionAlert, kFolderFail, kFolderHint);
-			folderWarning = true;
-		}
-	}
-	else
+	if (err == noErr)
 		err = FSRefMakePath(folderRef, (unsigned char *) folderPath, PATH_MAX);
 
 	CFRelease(purl);
@@ -284,15 +348,7 @@ static OSStatus FindApplicationSupportFolder (FSRef *folderRef, char *folderPath
 			AddFolderIcon(folderRef, folderName);
 	}
 
-	if (err)
-	{
-		if (!folderWarning)
-		{
-			AppearanceAlert(kAlertCautionAlert, kFolderFail, kFolderHint);
-			folderWarning = true;
-		}
-	}
-	else
+	if (err == noErr)
 		err = FSRefMakePath(folderRef, (unsigned char *) folderPath, PATH_MAX);
 
 	CFRelease(fstr);
@@ -307,6 +363,9 @@ static OSStatus FindCustomFolder (FSRef *folderRef, char *folderPath, const char
 	FSRef		pref;
 	UniChar		buffer[PATH_MAX + 1];
 	char		s[PATH_MAX + 1];
+
+	if (saveFolderPath == NULL)
+		return (-1);
 
 	err = CFStringGetCString(saveFolderPath, s, PATH_MAX, kCFStringEncodingUTF8) ? noErr : -1;
 	if (err == noErr)
@@ -326,15 +385,7 @@ static OSStatus FindCustomFolder (FSRef *folderRef, char *folderPath, const char
 			AddFolderIcon(folderRef, folderName);
 	}
 
-	if (err)
-	{
-		if (!folderWarning)
-		{
-			AppearanceAlert(kAlertCautionAlert, kFolderFail, kFolderHint);
-			folderWarning = true;
-		}
-	}
-	else
+	if (err == noErr)
 		err = FSRefMakePath(folderRef, (unsigned char *) folderPath, PATH_MAX);
 
 	CFRelease(fstr);
@@ -437,21 +488,6 @@ static void AddFolderIcon (FSRef *fref, const char *folderName)
 	}
 }
 
-Boolean IsLockedMedia (FSVolumeRefNum volume)
-{
-    OSStatus		err;
-	FSVolumeInfo	info;
-
-	err = FSGetVolumeInfo(volume, 0, NULL, kFSVolInfoFlags, &info, NULL, NULL);
-    if (err == noErr)
-	{
-		if ((info.flags & kFSVolFlagHardwareLockedMask) || (info.flags & kFSVolFlagSoftwareLockedMask))
-			return (true);
-	}
-
-	return (false);
-}
-
 const char * S9xGetFilename (const char *inExt, enum s9x_getdirtype dirtype)
 {
 	static int	index = 0;
@@ -506,6 +542,7 @@ const char * S9xGetFilename (const char *inExt, enum s9x_getdirtype dirtype)
 
 		case '.dat':
 		case '.out':
+		case '.log':
 			strcpy(folderName, "Logs");
 			break;
 
@@ -514,18 +551,29 @@ const char * S9xGetFilename (const char *inExt, enum s9x_getdirtype dirtype)
 			break;
 	}
 
-	if (folderName[0] && ((saveInROMFolder != 1) || lockedROMMedia))
+	if (folderName[0] && (saveInROMFolder != 1))
 	{
 		char	s[PATH_MAX + 1];
 
 		s[0] = 0;
+		err = -1;
 
 		if (saveInROMFolder == 0)
+		{
 			err = FindSNESFolder(&ref, s, folderName);
-		else
-		if (saveFolderPath && (saveInROMFolder == 4))
+			if (err)
+				saveInROMFolder = 2;
+		}
+
+		if (saveInROMFolder == 4)
+		{
 			err = FindCustomFolder(&ref, s, folderName);
-		else
+			if (err)
+				saveInROMFolder = 2;
+		
+		}
+
+		if (saveInROMFolder == 2)
 			err = FindApplicationSupportFolder(&ref, s, folderName);
 
 		if (err == noErr)
@@ -675,6 +723,7 @@ const char * S9xGetDirectory (enum s9x_getdirtype dirtype)
 		case SPC_DIR:			strcpy(inExt, ".spc");	break;
 		case CHEAT_DIR:			strcpy(inExt, ".cht");	break;
 		case BIOS_DIR:			strcpy(inExt, ".bio");	break;
+		case LOG_DIR:			strcpy(inExt, ".log");	break;
 		default:				strcpy(inExt, ".xxx");	break;
 	}
 

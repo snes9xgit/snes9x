@@ -600,6 +600,9 @@ void S9xAPUTimingSetSpeedup (int ticks)
 
 void S9xAPUAllowTimeOverflow (bool allow)
 {
+	if (allow)
+		printf("APU time overflow allowed\n");
+
 	spc_core->spc_allow_time_overflow(allow);
 }
 
