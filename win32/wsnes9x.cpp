@@ -6958,7 +6958,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 	// temporary GUI state for restoring after previewing while selecting options
 	static int prevScale, prevScaleHiRes, prevPPL;
-	static bool prevStretch, prevAspectRatio, prevHeightExtend, prevAutoDisplayMessages, prevVideoMemory, prevShaderEnabled;
+	static bool prevStretch, prevAspectRatio, prevHeightExtend, prevAutoDisplayMessages, prevBilinearFilter, prevShaderEnabled;
 	static int prevAspectWidth;
 	static OutputMethod prevOutputMethod;
 	static TCHAR prevHLSLShaderFile[MAX_PATH],prevGLSLShaderFile[MAX_PATH];
@@ -6983,7 +6983,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		prevScaleHiRes = GUI.ScaleHiRes;
 		prevPPL = GFX.RealPPL;
 		prevStretch = GUI.Stretch;
-		prevVideoMemory = GUI.BilinearFilter;
+		prevBilinearFilter = GUI.BilinearFilter;
 		prevAspectRatio = GUI.AspectRatio;
 		prevAspectWidth = GUI.AspectWidth;
 		prevHeightExtend = GUI.HeightExtend;
@@ -7009,6 +7009,8 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 		if(Settings.SupportHiRes)
 			SendDlgItemMessage(hDlg, IDC_HIRES, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
+		if(GUI.BlendHiRes)
+			SendDlgItemMessage(hDlg, IDC_HIRESBLEND, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
 		if(GUI.HeightExtend)
 			SendDlgItemMessage(hDlg, IDC_HEIGHT_EXTEND, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
 		if(Settings.AutoDisplayMessages)
@@ -7386,6 +7388,7 @@ updateFilterBox2:
 			fullscreenWanted = (bool)(IsDlgButtonChecked(hDlg, IDC_FULLSCREEN)==BST_CHECKED);
 			GUI.EmulateFullscreen = (bool)(IsDlgButtonChecked(hDlg, IDC_EMUFULLSCREEN)==BST_CHECKED);
 			Settings.DisplayFrameRate = IsDlgButtonChecked(hDlg, IDC_SHOWFPS);
+			GUI.BlendHiRes = (bool)(IsDlgButtonChecked(hDlg, IDC_HIRESBLEND)==BST_CHECKED);
 
 			index = ComboBox_GetCurSel(GetDlgItem(hDlg,IDC_RESOLUTION));
 
@@ -7438,7 +7441,7 @@ updateFilterBox2:
 				GFX.RealPPL = prevPPL;
 				GUI.Stretch = prevStretch;
 				Settings.AutoDisplayMessages = prevAutoDisplayMessages;
-				GUI.BilinearFilter = prevVideoMemory;
+				GUI.BilinearFilter = prevBilinearFilter;
 				GUI.AspectRatio = prevAspectRatio;
 				GUI.AspectWidth = prevAspectWidth;
 				GUI.HeightExtend = prevHeightExtend;

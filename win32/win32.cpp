@@ -1236,7 +1236,7 @@ void DoAVIClose(int reason)
 	}
 }
 
-void DoAVIVideoFrame(SSurface* source_surface, int Width, int Height/*, bool8 sixteen_bit*/)
+void DoAVIVideoFrame(SSurface* source_surface)
 {
 	static uint32 lastFrameCount=0;
 	if(!GUI.AVIOut || !avi_buffer || (IPPU.FrameCount==lastFrameCount))
