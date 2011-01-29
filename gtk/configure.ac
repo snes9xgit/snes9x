@@ -1,8 +1,15 @@
 AC_INIT([snes9x-gtk], 1.53)
-dnl Set CFLAGS, CXXFLAGS to something 
-dnl before doing AC_PROG_CC, AC_PROG_CXX to avoid default -g
-CFLAGS="-Os -Wall -W -pedantic -Wno-unused-parameter -pipe $CFLAGS"
-CXXFLAGS="$CFLAGS"
+
+if test -z "$CFLAGS"; then
+    CFLAGS="-Os -pipe"
+fi
+if test -z "$CXXFLAGS"; then
+    CXXFLAGS="$CFLAGS"
+fi
+
+EXTRA_FLAGS="-Wall -W -pedantic -Wno-unused-parameter"
+CFLAGS="$CFLAGS $EXTRA_FLAGS"
+CXXFLAGS="$CXXFLAGS $EXTRA_FLAGS"
 
 AC_PROG_CC
 AC_PROG_CXX
