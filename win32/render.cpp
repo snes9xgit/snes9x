@@ -549,6 +549,34 @@ inline void SetRect(RECT* rect, int width, int height, int scale)
 	rect->bottom = (height - (GUI.HeightExtend?0:15)) * scale;
 }
 
+#define AVERAGE_565(el0, el1) (((el0) & (el1)) + ((((el0) ^ (el1)) & 0xF7DE) >> 1))
+void RenderMergeHires(void *buffer, int pitch, unsigned int &width, unsigned int &height)
+{
+    if (width <= 256)
+        return;
+
+    for (register int y = 0; y < height; y++)
+    {
+        register uint16 *input = (uint16 *) ((uint8 *) buffer + y * pitch);
+        register uint16 *output = input;
+        register uint16 l, r;
+
+        l = 0;
+        for (register int x = 0; x < (width >> 1); x++)
+        {
+            r = *input++;
+            *output++ = AVERAGE_565 (l, r);
+            l = r;
+
+            r = *input++;
+            *output++ = AVERAGE_565 (l, r);
+            l = r;
+        }
+    }
+
+    return;
+}
+
 
 // No enlargement, just render to the screen
 void RenderPlain (SSurface Src, SSurface Dst, RECT *rect)
@@ -600,14 +628,14 @@ void RenderForced1X( SSurface Src, SSurface Dst, RECT *rect)
 					memcpy (lpDst, lpSrc, Src.Width << 1);
 			else
 				for (H = 0; H < srcHeight; H++, lpDst += dstPitch, lpSrc += srcPitch)
-					HalfLine16 (lpDst, lpSrc, Src.Width);
+					HalfLine16 (lpDst, lpSrc, Src.Width >> 1);
 		else
 			if(Src.Width != 512)
 				for (H = 0; H != Src.Height; H+=2, lpDst += dstPitch, lpSrc += srcPitch<<1)
 					memcpy (lpDst, lpSrc, Src.Width << 1);
 			else
 				for (H = 0; H < Src.Height >> 1; H++, lpDst += dstPitch, lpSrc += srcPitch<<1)
-					HalfLine16 (lpDst, lpSrc, Src.Width);
+					HalfLine16 (lpDst, lpSrc, Src.Width >> 1);
 	}
 	else if(GUI.ScreenDepth == 32)
 	{
@@ -619,14 +647,14 @@ void RenderForced1X( SSurface Src, SSurface Dst, RECT *rect)
 					SingleLine32 (lpDst, lpSrc, Src.Width);
 			else
 				for (H = 0; H < srcHeight; H++, lpDst += dstPitch, lpSrc += srcPitch)
-					HalfLine32 (lpDst, lpSrc, Src.Width);
+					HalfLine32 (lpDst, lpSrc, Src.Width >> 1);
 		else
 			if(Src.Width != 512)
 				for (H = 0; H != Src.Height; H+=2, lpDst += dstPitch, lpSrc += srcPitch<<1)
 					SingleLine32 (lpDst, lpSrc, Src.Width);
 			else
 				for (H = 0; H < Src.Height >> 1; H++, lpDst += dstPitch, lpSrc += srcPitch<<1)
-					HalfLine32 (lpDst, lpSrc, Src.Width);
+					HalfLine32 (lpDst, lpSrc, Src.Width >> 1);
 	}
 }
 

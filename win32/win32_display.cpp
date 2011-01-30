@@ -196,6 +196,7 @@
 CDirect3D Direct3D;
 CDirectDraw DirectDraw;
 COpenGL OpenGL;
+SSurface Src = {0};
 
 // Interface used to access the display output
 IS9xDisplayOutput *S9xDisplayOutput=&Direct3D;
@@ -208,14 +209,18 @@ IS9xDisplayOutput *S9xDisplayOutput=&Direct3D;
 #endif
 
 bool8 S9xDeinitUpdate (int, int);
-void DoAVIVideoFrame(SSurface* source_surface, int width, int height);
+void DoAVIVideoFrame(SSurface* source_surface);
 
 /*  WinRefreshDisplay
 repeats the last rendered frame
 */
 void WinRefreshDisplay(void)
 {
-	S9xDeinitUpdate(IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight);
+	SelectRenderMethod ();
+	if(Src.Surface!=NULL) {
+		S9xDisplayOutput->Render(Src);
+		GUI.FlipCounter++;
+	}
 }
 
 void WinChangeWindowSize(unsigned int newWidth, unsigned int newHeight)
@@ -329,9 +334,7 @@ bool8 S9xInitUpdate (void)
 bool8 S9xContinueUpdate(int Width, int Height)
 {
 	// called every other frame during interlace
-
-    SSurface Src;
-
+	
     Src.Width = Width;
 	if(Height%SNES_HEIGHT)
 	    Src.Height = Height;
@@ -344,10 +347,8 @@ bool8 S9xContinueUpdate(int Width, int Height)
     Src.Pitch = GFX.Pitch;
     Src.Surface = (BYTE*)GFX.Screen;
 
-	Height = Src.Height;
-
 	// avi writing
-	DoAVIVideoFrame(&Src, Width, Height);
+	DoAVIVideoFrame(&Src);
 
 	return true;
 }
@@ -355,8 +356,6 @@ bool8 S9xContinueUpdate(int Width, int Height)
 // do the actual rendering of a frame
 bool8 S9xDeinitUpdate (int Width, int Height)
 {
-    SSurface Src;
-
     Src.Width = Width;
 	if(Height%SNES_HEIGHT)
 	    Src.Height = Height;
@@ -372,10 +371,12 @@ bool8 S9xDeinitUpdate (int Width, int Height)
 	const int OrigHeight = Height;
 	Height = Src.Height;
 
-	// avi writing
-	DoAVIVideoFrame(&Src, Width, Height);
+	if(GUI.BlendHiRes) {
+		RenderMergeHires(Src.Surface,Src.Pitch,Src.Width,Src.Height);
+	}
 
-    SelectRenderMethod ();
+	// avi writing
+	DoAVIVideoFrame(&Src);
 
 	// Clear some of the old SNES rendered image
 	// when the resolution becomes lower in x or y,
@@ -406,9 +407,7 @@ bool8 S9xDeinitUpdate (int Width, int Height)
         LastHeight = OrigHeight;
     }
 	
-	S9xDisplayOutput->Render(Src);
-
-    GUI.FlipCounter++;
+	WinRefreshDisplay();
 
     return (true);
 }
