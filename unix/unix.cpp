@@ -891,11 +891,13 @@ void S9xAutoSaveSRAM (void)
 
 void S9xSyncSpeed (void)
 {
+#ifndef NOSOUND
 	if (Settings.SoundSync)
 	{
 		while (!S9xSyncSound())
 			usleep(0);
 	}
+#endif
 
 	if (Settings.DumpStreams)
 		return;
@@ -1550,6 +1552,7 @@ int main (int argc, char **argv)
 	printf("\n\nSnes9x " VERSION " for unix\n");
 
 	snprintf(default_dir, PATH_MAX + 1, "%s%s%s", getenv("HOME"), SLASH_STR, ".snes9x");
+	s9x_base_dir = default_dir;
 
 	ZeroMemory(&Settings, sizeof(Settings));
 	Settings.MouseMaster = TRUE;
