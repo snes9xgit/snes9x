@@ -492,7 +492,10 @@ void S9xSelectTileRenderers (int BGMode, bool8 sub, bool8 obj)
 	M7M1 = PPU.BGMosaic[0] && PPU.Mosaic > 1;
 	M7M2 = PPU.BGMosaic[1] && PPU.Mosaic > 1;
 
-	if (!IPPU.DoubleWidthPixels)
+	bool8 interlace = obj ? FALSE : IPPU.Interlace;
+	bool8 hires = !sub && (BGMode == 5 || BGMode == 6 || IPPU.PseudoHires);
+
+	if (!IPPU.DoubleWidthPixels)	// normal width
 	{
 		DT     = Renderers_DrawTile16Normal1x1;
 		DCT    = Renderers_DrawClippedTile16Normal1x1;
@@ -502,31 +505,9 @@ void S9xSelectTileRenderers (int BGMode, bool8 sub, bool8 obj)
 		DM7BG2 = M7M2 ? Renderers_DrawMode7MosaicBG2Normal1x1 : Renderers_DrawMode7BG2Normal1x1;
 		GFX.LinesPerTile = 8;
 	}
-	else
+	else if(hires)					// hires double width
 	{
-		bool8	hires, interlace;
-
-		if (obj) // OBJ
-		{
-			hires = (BGMode == 5 || BGMode == 6 || IPPU.PseudoHires);
-			interlace = IPPU.InterlaceOBJ;
-		}
-		else
-		if (BGMode == 5 || BGMode == 6)
-		{
-			hires = TRUE;
-			interlace = IPPU.Interlace;
-		}
-		else
-		{
-			hires = IPPU.PseudoHires;
-			interlace = FALSE;
-		}
-
-		if (sub)
-			hires = FALSE;
-
-		if (hires && interlace)
+		if (interlace)
 		{
 			DT     = Renderers_DrawTile16HiresInterlace;
 			DCT    = Renderers_DrawClippedTile16HiresInterlace;
@@ -537,7 +518,6 @@ void S9xSelectTileRenderers (int BGMode, bool8 sub, bool8 obj)
 			GFX.LinesPerTile = 4;
 		}
 		else
-		if (hires)
 		{
 			DT     = Renderers_DrawTile16Hires;
 			DCT    = Renderers_DrawClippedTile16Hires;
@@ -547,7 +527,9 @@ void S9xSelectTileRenderers (int BGMode, bool8 sub, bool8 obj)
 			DM7BG2 = M7M2 ? Renderers_DrawMode7MosaicBG2Hires : Renderers_DrawMode7BG2Hires;
 			GFX.LinesPerTile = 8;
 		}
-		else
+	}
+	else							// normal double width
+	{
 		if (interlace)
 		{
 			DT     = Renderers_DrawTile16Interlace;
@@ -1435,7 +1417,7 @@ extern struct SLineMatrixData	LineMatrixData[240];
 #define DRAW_PIXEL(N, M)	DRAW_PIXEL_N2x1(N, M)
 #define NAME2				Interlace
 
-// Third-level include: Get the Interlace renderers.
+// Third-level include: Get the double width Interlace renderers.
 
 #include "tile.cpp"
 

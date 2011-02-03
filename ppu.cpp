@@ -454,10 +454,7 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 					PPU.BGMode = Byte & 7;
 					// BJ: BG3Priority only takes effect if BGMode == 1 and the bit is set
 					PPU.BG3Priority = ((Byte & 0x0f) == 0x09);
-					if (PPU.BGMode == 5 || PPU.BGMode == 6)
-						IPPU.Interlace = Memory.FillRAM[0x2133] & 1;
-					else
-						IPPU.Interlace = 0;
+					IPPU.Interlace = Memory.FillRAM[0x2133] & 1;
 				#ifdef DEBUGGER
 					missing.modes[PPU.BGMode] = 1;
 				#endif
@@ -979,8 +976,7 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 						FLUSH_REDRAW();
 						if ((Memory.FillRAM[0x2133] ^ Byte) & 2)
 							IPPU.OBJChanged = TRUE;
-						if (PPU.BGMode == 5 || PPU.BGMode == 6)
-							IPPU.Interlace = Byte & 1;
+						IPPU.Interlace = Byte & 1;
 						IPPU.InterlaceOBJ = Byte & 2;
 					}
 				#ifdef DEBUGGER
