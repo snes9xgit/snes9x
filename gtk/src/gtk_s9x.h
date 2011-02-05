@@ -36,6 +36,12 @@
 extern Snes9xWindow *top_level;
 extern Snes9xConfig *gui_config;
 
+#ifdef USE_GTK3
+#define GDK_COMPAT_WINDOW_XID(window) (gdk_x11_window_get_xid (window))
+#else
+#define GDK_COMPAT_WINDOW_XID(window) (GDK_WINDOW_XWINDOW (window))
+#endif
+
 int S9xOpenROM (const char *filename);
 void S9xNoROMLoaded (void);
 void S9xROMLoaded (void);

@@ -30,7 +30,7 @@ S9xXVDisplayDriver::S9xXVDisplayDriver (Snes9xWindow *window,
     this->config = config;
     this->drawing_area = GTK_WIDGET (window->drawing_area);
     display =
-        gdk_x11_drawable_get_xdisplay (GDK_DRAWABLE (gtk_widget_get_window (drawing_area)));
+        gdk_x11_display_get_xdisplay (gdk_window_get_display (gtk_widget_get_window (drawing_area)));
     last_known_width = last_known_height = -1;
 
     return;
@@ -62,7 +62,7 @@ S9xXVDisplayDriver::create_window (int width, int height)
     window_attr.background_pixmap = None;
 
     xwindow = XCreateWindow (display,
-                             GDK_WINDOW_XWINDOW (gtk_widget_get_window (drawing_area)),
+                             GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (drawing_area)),
                              0,
                              0,
                              width,
@@ -81,7 +81,11 @@ S9xXVDisplayDriver::create_window (int width, int height)
     XMapWindow (display, xwindow);
     XSync (display, False);
 
+#if USE_GTK3
+    gdk_window = gdk_x11_window_foreign_new_for_display (gdk_window_get_display (gtk_widget_get_window (drawing_area)), xwindow);
+#else
     gdk_window = gdk_window_foreign_new (xwindow);
+#endif
     XSync (display, False);
 
     gdk_window_set_user_data (gdk_window, drawing_area);
@@ -269,13 +273,13 @@ S9xXVDisplayDriver::init (void)
     /* Setup XV */
     gtk_widget_realize (drawing_area);
 
-    display = gdk_x11_drawable_get_xdisplay (GDK_DRAWABLE (gtk_widget_get_window (drawing_area)));
+    display = gdk_x11_display_get_xdisplay (gdk_window_get_display (gtk_widget_get_window (drawing_area)));
     screen = gtk_widget_get_screen (drawing_area);
     root = gdk_screen_get_root_window (screen);
 
     xv_portid = -1;
     XvQueryAdaptors (display,
-                     GDK_WINDOW_XWINDOW (root),
+                     GDK_COMPAT_WINDOW_XID (root),
                      &num_adaptors,
                      &adaptors);
 
@@ -441,7 +445,7 @@ S9xXVDisplayDriver::init (void)
 
     XSetWindowAttributes window_attr;
     xcolormap = XCreateColormap (display,
-                                GDK_WINDOW_XWINDOW (gtk_widget_get_window (drawing_area)),
+                                GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (drawing_area)),
                                 vi->visual,
                                 AllocNone);
 

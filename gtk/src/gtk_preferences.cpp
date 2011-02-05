@@ -1,6 +1,9 @@
 #include <string>
 #include <stdlib.h>
 #include <gdk/gdkkeysyms.h>
+#ifdef USE_GTK3
+#include <gdk/gdkkeysyms-compat.h>
+#endif
 
 #include "gtk_preferences.h"
 #include "gtk_config.h"
@@ -62,14 +65,6 @@ event_calibrate (GtkButton *widget, gpointer data)
     return;
 }
 #endif
-
-static void
-event_style_set (GtkWidget *widget, GtkStyle *previous_style, gpointer data)
-{
-    ((Snes9xPreferences *) data)->fix_style ();
-
-    return;
-}
 
 static void
 event_control_toggle (GtkToggleButton *widget, gpointer data)
@@ -249,7 +244,7 @@ event_shader_select (GtkButton *widget, gpointer data)
 
 
     result = gtk_dialog_run (GTK_DIALOG (dialog));
-    gtk_widget_hide_all (dialog);
+    gtk_widget_hide (dialog);
 
     if (result == GTK_RESPONSE_ACCEPT)
     {
@@ -311,7 +306,7 @@ event_game_data_browse (GtkButton *widget, gpointer data)
                                        gtk_entry_get_text (entry));
 
     result = gtk_dialog_run (GTK_DIALOG (dialog));
-    gtk_widget_hide_all (dialog);
+    gtk_widget_hide (dialog);
 
     if (result == GTK_RESPONSE_ACCEPT)
     {
@@ -500,8 +495,13 @@ event_about_clicked (GtkButton *widget, gpointer data)
                                top_level->splash);
 
     monospace = pango_font_description_from_string ("Monospace 7");
+#ifdef USE_GTK3
+    gtk_widget_override_font (about_dialog->get_widget ("about_text_view"),
+                              monospace);
+#else
     gtk_widget_modify_font (about_dialog->get_widget ("about_text_view"),
                             monospace);
+#endif
     pango_font_description_free (monospace);
 
     gtk_window_set_transient_for (about_dialog->get_window (),
@@ -527,7 +527,6 @@ Snes9xPreferences::Snes9xPreferences (Snes9xConfig *config) :
         { "hw_accel_changed", G_CALLBACK (event_hw_accel_changed) },
         { "reset_current_joypad", G_CALLBACK (event_reset_current_joypad) },
         { "swap_with", G_CALLBACK (event_swap_with) },
-        { "style_set", G_CALLBACK (event_style_set) },
         { "ntsc_composite_preset", G_CALLBACK (event_ntsc_composite_preset) },
         { "ntsc_svideo_preset", G_CALLBACK (event_ntsc_svideo_preset) },
         { "ntsc_rgb_preset", G_CALLBACK (event_ntsc_rgb_preset) },
@@ -544,8 +543,6 @@ Snes9xPreferences::Snes9xPreferences (Snes9xConfig *config) :
 
     last_toggled = NULL;
     this->config = config;
-
-    fix_style ();
 
     gtk_widget_realize (window);
 
@@ -591,22 +588,6 @@ Snes9xPreferences::store_ntsc_settings (void)
     config->ntsc_setup.resolution   = get_slider ("ntsc_resolution");
     config->ntsc_setup.saturation   = get_slider ("ntsc_saturation");
     config->ntsc_setup.sharpness    = get_slider ("ntsc_sharpness");
-
-    return;
-}
-
-void
-Snes9xPreferences::fix_style (void)
-{
-    GtkStyle *style = gtk_rc_get_style (get_widget ("preferences_notebook"));
-
-    gtk_widget_set_style (get_widget ("display_viewport"), style);
-    gtk_widget_set_style (get_widget ("sound_viewport"), style);
-    gtk_widget_set_style (get_widget ("emulation_viewport"), style);
-    gtk_widget_set_style (get_widget ("shortcut_viewport1"), style);
-    gtk_widget_set_style (get_widget ("shortcut_viewport2"), style);
-    gtk_widget_set_style (get_widget ("shortcut_viewport3"), style);
-    gtk_widget_set_style (get_widget ("shortcut_viewport4"), style);
 
     return;
 }
@@ -979,7 +960,7 @@ Snes9xPreferences::browse_folder_dialog (void)
                                          S9xGetDirectory (HOME_DIR));
 
     result = gtk_dialog_run (GTK_DIALOG (dialog));
-    gtk_widget_hide_all (dialog);
+    gtk_widget_hide (dialog);
 
     if (result == GTK_RESPONSE_ACCEPT)
     {
@@ -1031,7 +1012,7 @@ Snes9xPreferences::show (void)
                       config->xrr_sizes[i].width,
                       config->xrr_sizes[i].height);
 
-            gtk_combo_box_append_text (GTK_COMBO_BOX (combo), size_string);
+            combo_box_append (GTK_COMBO_BOX (combo), size_string);
         }
 #endif
     }
@@ -1042,47 +1023,44 @@ Snes9xPreferences::show (void)
 
 #ifdef USE_HQ2X
     combo = get_widget ("scale_method_combo");
-    gtk_combo_box_append_text (GTK_COMBO_BOX (combo),
-                               _("HQ2x"));
-    gtk_combo_box_append_text (GTK_COMBO_BOX (combo),
-                               _("HQ3x"));
-    gtk_combo_box_append_text (GTK_COMBO_BOX (combo),
-                               _("HQ4x"));
+    combo_box_append (GTK_COMBO_BOX (combo), _("HQ2x"));
+    combo_box_append (GTK_COMBO_BOX (combo), _("HQ3x"));
+    combo_box_append (GTK_COMBO_BOX (combo), _("HQ4x"));
 #endif
 
     combo = get_widget ("hw_accel");
-    gtk_combo_box_append_text (GTK_COMBO_BOX (combo),
-                               _("None - Use software scaler"));
+    combo_box_append (GTK_COMBO_BOX (combo),
+                      _("None - Use software scaler"));
 
     if (config->allow_opengl)
-        gtk_combo_box_append_text (GTK_COMBO_BOX (combo),
-                                   _("OpenGL - Use 3D graphics hardware"));
+        combo_box_append (GTK_COMBO_BOX (combo),
+                          _("OpenGL - Use 3D graphics hardware"));
 
     if (config->allow_xv)
-        gtk_combo_box_append_text (GTK_COMBO_BOX (combo),
-                                   _("XVideo - Use hardware video blitter"));
+        combo_box_append (GTK_COMBO_BOX (combo),
+                          _("XVideo - Use hardware video blitter"));
 
     combo = get_widget ("sound_driver");
 
 #ifdef USE_PORTAUDIO
-    gtk_combo_box_append_text (GTK_COMBO_BOX (combo),
-                               _("PortAudio"));
+    combo_box_append (GTK_COMBO_BOX (combo),
+                      _("PortAudio"));
 #endif
 #ifdef USE_OSS
-    gtk_combo_box_append_text (GTK_COMBO_BOX (combo),
-                               _("Open Sound System"));
+    combo_box_append (GTK_COMBO_BOX (combo),
+                      _("Open Sound System"));
 #endif
 #ifdef USE_JOYSTICK
-    gtk_combo_box_append_text (GTK_COMBO_BOX (combo),
-                               _("SDL"));
+    combo_box_append (GTK_COMBO_BOX (combo),
+                      _("SDL"));
 #endif
 #ifdef USE_ALSA
-    gtk_combo_box_append_text (GTK_COMBO_BOX (combo),
-                               _("ALSA"));
+    combo_box_append (GTK_COMBO_BOX (combo),
+                      _("ALSA"));
 #endif
 #ifdef USE_PULSEAUDIO
-    gtk_combo_box_append_text (GTK_COMBO_BOX (combo),
-                               _("PulseAudio"));
+    combo_box_append (GTK_COMBO_BOX (combo),
+                      _("PulseAudio"));
 #endif
 
     move_settings_to_dialog ();

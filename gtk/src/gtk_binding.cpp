@@ -3,6 +3,9 @@
 #include <string.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkkeysyms.h>
+#ifdef USE_GTK3
+#include <gdk/gdkkeysyms-compat.h>
+#endif
 
 #include "gtk_s9x.h"
 #include "gtk_binding.h"

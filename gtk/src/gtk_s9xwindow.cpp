@@ -1,6 +1,9 @@
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
 #include <gdk/gdkkeysyms.h>
+#ifdef USE_GTK3
+#include <gdk/gdkkeysyms-compat.h>
+#endif
 #include <cairo.h>
 
 #ifdef USE_XV
@@ -653,8 +656,10 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
 
     gtk_widget_realize (window);
     gtk_widget_realize (GTK_WIDGET (drawing_area));
+#ifndef USE_GTK3
     gdk_window_set_back_pixmap (gtk_widget_get_window (window), NULL, FALSE);
     gdk_window_set_back_pixmap (gtk_widget_get_window (GTK_WIDGET (drawing_area)), NULL, FALSE);
+#endif
 
     gtk_check_menu_item_set_active (
         GTK_CHECK_MENU_ITEM (get_widget ("show_statusbar_item")),
@@ -873,7 +878,7 @@ Snes9xWindow::open_movie_dialog (bool readonly)
                                          S9xGetDirectory (SRAM_DIR));
 
     result = gtk_dialog_run (GTK_DIALOG (dialog));
-    gtk_widget_hide_all (dialog);
+    gtk_widget_hide (dialog);
 
     if (result == GTK_RESPONSE_ACCEPT)
     {
@@ -1018,7 +1023,7 @@ Snes9xWindow::load_state_dialog ()
     gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (dialog), filter);
 
     result = gtk_dialog_run (GTK_DIALOG (dialog));
-    gtk_widget_hide_all (dialog);
+    gtk_widget_hide (dialog);
 
     if (result == GTK_RESPONSE_ACCEPT)
     {
@@ -1142,7 +1147,7 @@ Snes9xWindow::save_state_dialog ()
 
     result = gtk_dialog_run (GTK_DIALOG (dialog));
 
-    gtk_widget_hide_all (dialog);
+    gtk_widget_hide (dialog);
 
     if (result == GTK_RESPONSE_ACCEPT)
     {
@@ -1209,7 +1214,7 @@ Snes9xWindow::save_spc_dialog ()
 
     result = gtk_dialog_run (GTK_DIALOG (dialog));
 
-    gtk_widget_hide_all (dialog);
+    gtk_widget_hide (dialog);
 
     if (result == GTK_RESPONSE_ACCEPT)
     {
@@ -1554,14 +1559,15 @@ Snes9xWindow::enter_fullscreen_mode (void)
         }
         else
         {
-            Display *display = gdk_x11_drawable_get_xdisplay (GDK_DRAWABLE (gtk_widget_get_window (window)));
+            GdkDisplay *gdk_display = gdk_window_get_display (gtk_widget_get_window (window));
+            Display *display = gdk_x11_display_get_xdisplay (gdk_display);
             GdkScreen *screen = gtk_widget_get_screen (window);
             GdkWindow *root = gdk_screen_get_root_window (screen);
 
             gdk_display_sync (gdk_display_get_default ());
             XRRSetScreenConfig (display,
                                 config->xrr_config,
-                                GDK_WINDOW_XWINDOW (root),
+                                GDK_COMPAT_WINDOW_XID (root),
                                 (SizeID) mode,
                                 config->xrr_rotation,
                                 CurrentTime);
@@ -1599,13 +1605,14 @@ Snes9xWindow::leave_fullscreen_mode (void)
     {
         gtk_widget_hide (window);
 
-        Display *display = gdk_x11_drawable_get_xdisplay (GDK_DRAWABLE (gtk_widget_get_window (window)));
+        GdkDisplay *gdk_display = gdk_window_get_display (gtk_widget_get_window (window));
+        Display *display = gdk_x11_display_get_xdisplay (gdk_display);
         GdkScreen *screen = gtk_widget_get_screen (window);
         GdkWindow *root = gdk_screen_get_root_window (screen);
 
         XRRSetScreenConfig (display,
                             config->xrr_config,
-                            GDK_WINDOW_XWINDOW (root),
+                            GDK_COMPAT_WINDOW_XID (root),
                             (SizeID) config->xrr_original_size,
                             config->xrr_rotation,
                             CurrentTime);
@@ -1648,7 +1655,16 @@ Snes9xWindow::draw_background (int rect_x, int rect_y, int rect_w, int rect_h)
     w = allocation.width;
     h = allocation.height;
 
+#ifdef USE_GTK3
+    GdkRGBA rgba;
+    gtk_style_context_get_background_color (gtk_widget_get_style_context (widget), GTK_STATE_FLAG_SELECTED, &rgba);
+    sel.red = rgba.red * 65535;
+    sel.green = rgba.green * 65535;
+    sel.blue = rgba.blue * 65535;
+#else
     sel = gtk_widget_get_style (widget)->bg[GTK_STATE_SELECTED];
+#endif
+
 
     if (rect_x < 0)
     {

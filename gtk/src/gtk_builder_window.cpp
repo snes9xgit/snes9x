@@ -234,6 +234,26 @@ GtkBuilderWindow::set_spin (const char *name, unsigned int value)
     return;
 }
 
+void
+GtkBuilderWindow::combo_box_append (const char *name, const char *value)
+{
+    combo_box_append (GTK_COMBO_BOX (get_widget (name)), value);
+}
+
+void
+GtkBuilderWindow::combo_box_append (GtkComboBox *combo, const char *value)
+{
+    GtkListStore *store;
+    GtkTreeIter iter;
+
+    store = GTK_LIST_STORE (gtk_combo_box_get_model (combo));
+
+    gtk_list_store_append (store, &iter);
+    gtk_list_store_set (store, &iter, 0, value, -1);
+
+    return;
+}
+
 GtkWindow *
 GtkBuilderWindow::get_window (void)
 {

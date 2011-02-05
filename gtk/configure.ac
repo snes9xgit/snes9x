@@ -140,8 +140,6 @@ else
   CFLAGS="$CFLAGS -fomit-frame-pointer"
 fi
 
-CFLAGS="$CFLAGS -DGSEAL_ENABLE -DG_DISABLE_SINGLE_INCLUDES -DGDK_DISABLE_DEPRECATED -DGTK_DISABLE_DEPRECATED -DGDK_DISABLE_SINGLE_INCLUDES -DGTK_DISABLE_SINGLE_INCLUDES"
-
 ZSNESFX='#ZSNESFX=yes'
 ZSNESC4='#ZSNESC4=yes'
 ASMCPU=''
@@ -165,9 +163,12 @@ GTK=yes
 snes9x_info_display="GTK"
 
 PKG_CHECK_MODULES([GTK], [gtk+-2.0 >= 2.16])
+
+# CFLAGS="$CFLAGS -DUSE_GTK3"
+
 PKG_CHECK_MODULES([GLIB], [gthread-2.0 >= 2.6 gobject-2.0 >= 2.6])
 PKG_CHECK_MODULES([LIBXML], [libxml-2.0 >= 2.0])
-                          
+
 if test yes = "$with_opengl" ; then
 
     AC_CHECK_LIB(GL,glGetString,[
@@ -461,7 +462,6 @@ if test yes = "$OPENGL" ; then
 else
     if test yes = "$with_opengl" ; then
         echo "!!! NOT able to use OpenGL support"
-        echo "--- Needs gtkglext and OpenGL libraries and headers"
     fi
 fi
 

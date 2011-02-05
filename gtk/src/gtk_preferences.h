@@ -22,7 +22,6 @@ class Snes9xPreferences : public GtkBuilderWindow
         int combo_value (int hw_accel);
         void focus_next (void);
         void swap_with (void);
-        void fix_style (void);
         void reset_current_joypad (void);
         void load_ntsc_settings (void);
         void store_ntsc_settings (void);

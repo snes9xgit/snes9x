@@ -461,7 +461,7 @@ S9xOpenROMDialog (void)
     }
 
     result = gtk_dialog_run (GTK_DIALOG (dialog));
-    gtk_widget_hide_all (dialog);
+    gtk_widget_hide (dialog);
 
     if (result == GTK_RESPONSE_ACCEPT)
     {

@@ -750,7 +750,7 @@ S9xOpenGLDisplayDriver::create_window (int width, int height)
     window_attr.background_pixmap = None;
 
     xwindow = XCreateWindow (display,
-                             GDK_WINDOW_XWINDOW (gtk_widget_get_window (drawing_area)),
+                             GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (drawing_area)),
                              0,
                              0,
                              width,
@@ -769,7 +769,11 @@ S9xOpenGLDisplayDriver::create_window (int width, int height)
     XMapWindow (display, xwindow);
     XSync (display, False);
 
+#if USE_GTK3
+    gdk_window = gdk_x11_window_foreign_new_for_display (gdk_window_get_display (gtk_widget_get_window (drawing_area)), xwindow);
+#else
     gdk_window = gdk_window_foreign_new (xwindow);
+#endif
     XSync (display, False);
 
     gdk_window_set_user_data (gdk_window, drawing_area);
@@ -791,7 +795,7 @@ S9xOpenGLDisplayDriver::init_glx (void)
     }
 
     xcolormap = XCreateColormap (display,
-                                GDK_WINDOW_XWINDOW (gtk_widget_get_window (drawing_area)),
+                                GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (drawing_area)),
                                 vi->visual,
                                 AllocNone);
 

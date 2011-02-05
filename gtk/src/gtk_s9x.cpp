@@ -125,8 +125,6 @@ main (int argc, char *argv[])
 
     gtk_window_present (top_level->get_window ());
 
-    gdk_threads_lock ();
-
     gtk_main ();
 
     return 0;
