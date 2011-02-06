@@ -137,15 +137,30 @@ event_open_netplay (GtkWidget *widget, gpointer data)
     return TRUE;
 }
 
+#ifdef USE_GTK3
 static gboolean
-event_drawingarea_expose (GtkWidget       *widget,
-                          GdkEventExpose  *event,
-                          gpointer        data)
+event_drawingarea_draw (GtkWidget *widget,
+                        cairo_t   *cr,
+                        gpointer  data)
 {
-    ((Snes9xWindow *) data)->expose (event);
+    ((Snes9xWindow *) data)->expose (NULL, cr);
 
     return FALSE;
 }
+
+#endif
+
+#ifndef USE_GTK3
+static gboolean
+event_drawingarea_expose (GtkWidget      *widget,
+                          GdkEventExpose *event,
+                          gpointer       data)
+{
+    ((Snes9xWindow *) data)->expose (event, NULL);
+
+    return FALSE;
+}
+#endif
 
 static gboolean
 event_key (GtkWidget *widget, GdkEventKey *event, gpointer data)
@@ -582,7 +597,6 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
         { "main_window_state_event", G_CALLBACK (event_main_window_state_event) },
         { "on_continue_item_activate", G_CALLBACK (event_continue_item_activate) },
         { "on_pause_item_activate", G_CALLBACK (event_pause_item_activate) },
-        { "on_drawingarea_expose", G_CALLBACK (event_drawingarea_expose) },
         { "main_window_key_press_event", G_CALLBACK (event_key) },
         { "main_window_key_release_event", G_CALLBACK (event_key) },
         { "on_fullscreen_item_activate", G_CALLBACK (event_fullscreen) },
@@ -673,6 +687,24 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
     gtk_widget_hide (get_widget ("sync_clients_separator"));
 #endif
 
+#ifdef USE_GTK3
+    g_signal_connect_data (drawing_area,
+                           "draw",
+                           G_CALLBACK (event_drawingarea_draw),
+                           this,
+                           NULL,
+                           (GConnectFlags) 0);
+
+    gtk_window_set_has_resize_grip (GTK_WINDOW (window), FALSE);
+
+#else
+    g_signal_connect_data (drawing_area,
+                           "expose-event",
+                           G_CALLBACK (event_drawingarea_expose),
+                           this,
+                           NULL,
+                           (GConnectFlags) 0);
+#endif
     signal_connect (callbacks);
 
     if (config->window_width < 100 || config->window_height < 100)
@@ -690,9 +722,9 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
 }
 
 void
-Snes9xWindow::expose (GdkEventExpose *event)
+Snes9xWindow::expose (GdkEventExpose *event, cairo_t *cr)
 {
-    if (event && (!config->rom_loaded || last_width < 0) && last_width != SIZE_FLAG_DIRTY)
+    if ((!config->rom_loaded || last_width < 0) && last_width != SIZE_FLAG_DIRTY)
     {
         if (!(config->fullscreen) && !(maximized_state))
         {
@@ -700,10 +732,14 @@ Snes9xWindow::expose (GdkEventExpose *event)
             config->window_height = get_height ();
         }
 
-        draw_background (event->area.x,
-                         event->area.y,
-                         event->area.width,
-                         event->area.height);
+#ifdef USE_GTK3
+        draw_background (cr);
+#else
+        draw_background_clipped (event->area.x,
+                                 event->area.y,
+                                 event->area.width,
+                                 event->area.height);
+#endif
     }
     else
     {
@@ -1641,15 +1677,15 @@ Snes9xWindow::leave_fullscreen_mode (void)
 }
 
 void
-Snes9xWindow::draw_background (int rect_x, int rect_y, int rect_w, int rect_h)
+Snes9xWindow::draw_background (cairo_t *cr)
 {
     GtkWidget       *widget = GTK_WIDGET (drawing_area);
-    GtkAllocation   allocation;
     GdkColor        sel;
-    int             w,h;
+    GtkAllocation   allocation;
+    int             w, h;
     cairo_pattern_t *pattern;
-    cairo_t         *cr;
-    GdkRectangle    rect;
+
+    cairo_save (cr);
 
     gtk_widget_get_allocation (widget, &allocation);
     w = allocation.width;
@@ -1665,26 +1701,6 @@ Snes9xWindow::draw_background (int rect_x, int rect_y, int rect_w, int rect_h)
     sel = gtk_widget_get_style (widget)->bg[GTK_STATE_SELECTED];
 #endif
 
-
-    if (rect_x < 0)
-    {
-        rect.x = 0;
-        rect.y = 0;
-        rect.width = w;
-        rect.height = h;
-    }
-    else
-    {
-        rect.x = rect_x;
-        rect.y = rect_y;
-        rect.width = rect_w;
-        rect.height = rect_h;
-    }
-
-    gdk_window_begin_paint_rect (gtk_widget_get_window (widget), &rect);
-
-    /* Draw a fancy-pants gradient */
-    cr = gdk_cairo_create (gtk_widget_get_window (widget));
     pattern = cairo_pattern_create_linear (0.0,
                                            0.0,
                                            0.0,
@@ -1701,19 +1717,9 @@ Snes9xWindow::draw_background (int rect_x, int rect_y, int rect_w, int rect_h)
                                       (double) sel.green * 0.6 / 65535,
                                       (double) sel.blue  * 0.6 / 65535);
 
-    cairo_rectangle (cr,
-                     (double) rect.x,
-                     (double) rect.y,
-                     (double) rect.width,
-                     (double) rect.height);
-
-    cairo_clip (cr);
-    cairo_save (cr);
-
     cairo_set_source (cr, pattern);
 
-    cairo_rectangle (cr, 0.0, 0.0, (double) w, (double) h);
-    cairo_fill (cr);
+    cairo_paint (cr);
 
     cairo_restore (cr);
 
@@ -1730,9 +1736,35 @@ Snes9xWindow::draw_background (int rect_x, int rect_y, int rect_w, int rect_h)
     cairo_fill (cr);
 
     cairo_pattern_destroy (pattern);
-    cairo_destroy (cr);
 
-    gdk_window_end_paint (gtk_widget_get_window (widget));
+    return;
+}
+
+void
+Snes9xWindow::draw_background_clipped (int rect_x,
+                                       int rect_y,
+                                       int rect_w,
+                                       int rect_h)
+{
+    GtkWidget       *widget = GTK_WIDGET (drawing_area);
+    cairo_t         *cr;
+
+    cr = gdk_cairo_create (gtk_widget_get_window (widget));
+
+    if (rect_x >= 0)
+    {
+        cairo_rectangle (cr,
+                         (double) rect_x,
+                         (double) rect_y,
+                         (double) rect_w,
+                         (double) rect_h);
+
+        cairo_clip (cr);
+    }
+
+    draw_background (cr);
+
+    cairo_destroy (cr);
 
     return;
 }

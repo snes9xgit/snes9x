@@ -134,6 +134,12 @@ AC_ARG_WITH(screenshot,
   [],
   [with_screenshot=yes])
 
+AC_ARG_WITH(gtk3,
+  [AS_HELP_STRING([--with(out)-gtk3],
+    [Build with GTK+ 3 if available (default: without)])],
+  [],
+  [with_gtk3=no])
+
 if test yes = "$with_debug" ; then
   CFLAGS="$CFLAGS -g"
 else
@@ -162,10 +168,16 @@ fi
 GTK=yes
 snes9x_info_display="GTK"
 
-PKG_CHECK_MODULES([GTK], [gtk+-2.0 >= 2.16])
+GTK3_WARNING=no
+if test yes = "$with_gtk3" ; then
+    GTK_VERSION="gtk+-3.0"
+    GTK3_WARNING=yes
+    CFLAGS="$CFLAGS -DUSE_GTK3"
+else
+    GTK_VERSION="gtk+-2.0 >= 2.16"
+fi
 
-# CFLAGS="$CFLAGS -DUSE_GTK3"
-
+PKG_CHECK_MODULES([GTK], ["$GTK_VERSION"])
 PKG_CHECK_MODULES([GLIB], [gthread-2.0 >= 2.6 gobject-2.0 >= 2.6])
 PKG_CHECK_MODULES([LIBXML], [libxml-2.0 >= 2.0])
 
@@ -448,6 +460,12 @@ AC_OUTPUT(Makefile data/Makefile po/Makefile.in)
 echo ""
 echo "Snes9x will build with support for the following:"
 echo ""
+
+if test yes = "$GTK3_WARNING" ; then
+    echo "    GTK+ 3.0 (experimental)"
+else
+    echo "    GTK+ 2.0"
+fi
 
 if test yes = "$ALSA" ; then
     echo "    ALSA"

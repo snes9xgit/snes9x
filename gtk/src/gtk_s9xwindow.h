@@ -53,10 +53,11 @@ class Snes9xWindow : public GtkBuilderWindow
         void show (void);
         void show_status_message (const char *message);
         void update_statusbar (void);
-        void draw_background (int rect_x = -1,
-                              int rect_y = -1,
-                              int rect_w = -1,
-                              int rect_h = -1);
+        void draw_background_clipped (int rect_x = -1,
+                                      int rect_y = -1,
+                                      int rect_w = -1,
+                                      int rect_h = -1);
+        void draw_background (cairo_t *cr);
         void set_menu_item_selected (const char *name);
         void set_mouseable_area (int x, int y, int width, int height);
         void set_menu_item_accel_to_binding (const char *name,
@@ -65,7 +66,7 @@ class Snes9xWindow : public GtkBuilderWindow
         void update_accels (void);
         void toggle_ui (void);
         void resize_viewport (int width, int height);
-        void expose (GdkEventExpose *event);
+        void expose (GdkEventExpose *event, cairo_t *cr);
 
         Snes9xConfig   *config;
         int            user_pause, sys_pause;
