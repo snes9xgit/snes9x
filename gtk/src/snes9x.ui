@@ -5,12 +5,12 @@
   <object class="GtkWindow" id="main_window">
     <property name="events">GDK_EXPOSURE_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_FOCUS_CHANGE_MASK | GDK_STRUCTURE_MASK | GDK_SUBSTRUCTURE_MASK</property>
     <property name="title" translatable="yes">Snes9x</property>
-    <signal name="delete_event" handler="main_window_delete_event"/>
-    <signal name="key_press_event" handler="main_window_key_press_event"/>
-    <signal name="focus_out_event" handler="focus_out_event"/>
-    <signal name="focus_in_event" handler="focus_in_event"/>
     <signal name="window_state_event" handler="main_window_state_event"/>
     <signal name="key_release_event" handler="main_window_key_release_event"/>
+    <signal name="key_press_event" handler="main_window_key_press_event"/>
+    <signal name="delete_event" handler="main_window_delete_event"/>
+    <signal name="focus_out_event" handler="focus_out_event"/>
+    <signal name="focus_in_event" handler="focus_in_event"/>
     <child>
       <object class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
@@ -754,10 +754,10 @@
             <property name="visible">True</property>
             <property name="app_paintable">True</property>
             <property name="events">GDK_EXPOSURE_MASK | GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_STRUCTURE_MASK | GDK_SUBSTRUCTURE_MASK</property>
-            <signal name="expose_event" handler="on_drawingarea_expose"/>
             <signal name="button_press_event" handler="drawingarea_button_press"/>
-            <signal name="motion_notify_event" handler="drawingarea_motion_notify"/>
+            <signal name="expose_event" handler="on_drawingarea_expose"/>
             <signal name="button_release_event" handler="drawingarea_button_release"/>
+            <signal name="motion_notify_event" handler="drawingarea_motion_notify"/>
             <signal name="size_allocate" handler="size_allocate"/>
           </object>
           <packing>
@@ -783,8 +783,8 @@
     <property name="default_height">480</property>
     <property name="type_hint">dialog</property>
     <property name="skip_taskbar_hint">True</property>
-    <signal name="key_press_event" handler="on_key_press"/>
     <signal name="style_set" handler="style_set"/>
+    <signal name="key_press_event" handler="on_key_press"/>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox1">
         <property name="visible">True</property>
@@ -1771,11 +1771,11 @@
                                             </child>
                                             <child>
                                               <object class="GtkCheckButton" id="sync_every_frame">
-                                                <property name="label" translatable="yes">Sync every frame</property>
+                                                <property name="label" translatable="yes">Reduce input lag</property>
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">True</property>
                                                 <property name="receives_default">False</property>
-                                                <property name="tooltip_text" translatable="yes">Use glFinish to reduce latency by one frame. May cause 100% CPU usage in faulty graphics drivers</property>
+                                                <property name="tooltip_text" translatable="yes">Sync the program with the video output after every displayed frame to reduce input latency</property>
                                                 <property name="draw_indicator">True</property>
                                               </object>
                                               <packing>
@@ -6306,7 +6306,7 @@
     </columns>
     <data>
       <row>
-        <col id="0" translatable="yes">Blend at pixel boundaries</col>
+        <col id="0" translatable="yes">Merge adjacent pairs</col>
       </row>
       <row>
         <col id="0" translatable="yes">Output directly</col>

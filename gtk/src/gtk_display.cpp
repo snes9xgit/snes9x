@@ -696,27 +696,24 @@ S9xMergeHires (void *buffer,
                int  &width,
                int  &height)
 {
-    if (width <= 256)
+    if (width < 512)
+    {
         return;
+    }
 
     for (register int y = 0; y < height; y++)
     {
         register uint16 *input = (uint16 *) ((uint8 *) buffer + y * pitch);
         register uint16 *output = input;
-        register uint16 l, r;
 
-        l = 0;
         for (register int x = 0; x < (width >> 1); x++)
         {
-            r = *input++;
-            *output++ = AVERAGE_1555 (l, r);
-            l = r;
-
-            r = *input++;
-            *output++ = AVERAGE_1555 (l, r);
-            l = r;
+            *output++ = AVERAGE_1555 (input[0], input[1]);
+            input += 2;
         }
     }
+
+    width >>= 1;
 
     return;
 }
