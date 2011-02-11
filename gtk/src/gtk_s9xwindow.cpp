@@ -732,14 +732,13 @@ Snes9xWindow::expose (GdkEventExpose *event, cairo_t *cr)
             config->window_height = get_height ();
         }
 
-#ifdef USE_GTK3
-        draw_background (cr);
-#else
-        draw_background_clipped (event->area.x,
-                                 event->area.y,
-                                 event->area.width,
-                                 event->area.height);
-#endif
+        if (!cr)
+            draw_background (event->area.x,
+                             event->area.y,
+                             event->area.width,
+                             event->area.height);
+        else
+            draw_background (cr);
     }
     else
     {
@@ -1595,7 +1594,7 @@ Snes9xWindow::enter_fullscreen_mode (void)
         }
         else
         {
-            GdkDisplay *gdk_display = gdk_window_get_display (gtk_widget_get_window (window));
+            GdkDisplay *gdk_display = gtk_widget_get_display (window);
             Display *display = gdk_x11_display_get_xdisplay (gdk_display);
             GdkScreen *screen = gtk_widget_get_screen (window);
             GdkWindow *root = gdk_screen_get_root_window (screen);
@@ -1641,7 +1640,7 @@ Snes9xWindow::leave_fullscreen_mode (void)
     {
         gtk_widget_hide (window);
 
-        GdkDisplay *gdk_display = gdk_window_get_display (gtk_widget_get_window (window));
+        GdkDisplay *gdk_display = gtk_widget_get_display (window);
         Display *display = gdk_x11_display_get_xdisplay (gdk_display);
         GdkScreen *screen = gtk_widget_get_screen (window);
         GdkWindow *root = gdk_screen_get_root_window (screen);
@@ -1682,14 +1681,11 @@ Snes9xWindow::draw_background (cairo_t *cr)
     GtkWidget       *widget = GTK_WIDGET (drawing_area);
     GdkColor        sel;
     GtkAllocation   allocation;
-    int             w, h;
     cairo_pattern_t *pattern;
 
-    cairo_save (cr);
-
     gtk_widget_get_allocation (widget, &allocation);
-    w = allocation.width;
-    h = allocation.height;
+
+    cairo_save (cr);
 
 #ifdef USE_GTK3
     GdkRGBA rgba;
@@ -1704,7 +1700,7 @@ Snes9xWindow::draw_background (cairo_t *cr)
     pattern = cairo_pattern_create_linear (0.0,
                                            0.0,
                                            0.0,
-                                           (double) h);
+                                           (double) allocation.height);
 
     cairo_pattern_add_color_stop_rgb (pattern,
                                       0.0,
@@ -1725,12 +1721,12 @@ Snes9xWindow::draw_background (cairo_t *cr)
 
     /* Put the Snes9x logo in the center */
     gdk_cairo_set_source_pixbuf (cr, splash,
-                                 (w - gdk_pixbuf_get_width (splash)) / 2,
-                                 (h - gdk_pixbuf_get_height (splash)) / 2);
+                                 (allocation.width - gdk_pixbuf_get_width (splash)) / 2,
+                                 (allocation.height - gdk_pixbuf_get_height (splash)) / 2);
 
     cairo_rectangle (cr,
-                     (w - gdk_pixbuf_get_width (splash)) / 2,
-                     (h - gdk_pixbuf_get_height (splash)) / 2,
+                     (allocation.width - gdk_pixbuf_get_width (splash)) / 2,
+                     (allocation.height - gdk_pixbuf_get_height (splash)) / 2,
                      gdk_pixbuf_get_width (splash),
                      gdk_pixbuf_get_height (splash));
     cairo_fill (cr);
@@ -1741,28 +1737,41 @@ Snes9xWindow::draw_background (cairo_t *cr)
 }
 
 void
-Snes9xWindow::draw_background_clipped (int rect_x,
-                                       int rect_y,
-                                       int rect_w,
-                                       int rect_h)
+Snes9xWindow::draw_background (int x, int y, int w, int h)
 {
-    GtkWidget       *widget = GTK_WIDGET (drawing_area);
-    cairo_t         *cr;
+    cairo_t         *cr = NULL;
+    GdkWindow       *gdk_window = gtk_widget_get_window (GTK_WIDGET (drawing_area));
 
-    cr = gdk_cairo_create (gtk_widget_get_window (widget));
-
-    if (rect_x >= 0)
+    if (x >= 0)
     {
+        GdkRectangle rect;
+
+        rect.x = x;
+        rect.y = y;
+        rect.width = w;
+        rect.height = h;
+
+        gdk_window_begin_paint_rect (gdk_window, &rect);
+
+        cr = gdk_cairo_create (gdk_window);
+
         cairo_rectangle (cr,
-                         (double) rect_x,
-                         (double) rect_y,
-                         (double) rect_w,
-                         (double) rect_h);
+                         (double) x,
+                         (double) y,
+                         (double) w,
+                         (double) h);
 
         cairo_clip (cr);
-    }
 
-    draw_background (cr);
+        draw_background (cr);
+        gdk_window_end_paint (gdk_window);
+    }
+    else
+    {
+        cr = gdk_cairo_create (gdk_window);
+
+        draw_background (cr);
+    }
 
     cairo_destroy (cr);
 

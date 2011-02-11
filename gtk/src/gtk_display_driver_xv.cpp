@@ -30,7 +30,7 @@ S9xXVDisplayDriver::S9xXVDisplayDriver (Snes9xWindow *window,
     this->config = config;
     this->drawing_area = GTK_WIDGET (window->drawing_area);
     display =
-        gdk_x11_display_get_xdisplay (gdk_window_get_display (gtk_widget_get_window (drawing_area)));
+        gdk_x11_display_get_xdisplay (gtk_widget_get_display (drawing_area));
     last_known_width = last_known_height = -1;
 
     return;
@@ -273,7 +273,7 @@ S9xXVDisplayDriver::init (void)
     /* Setup XV */
     gtk_widget_realize (drawing_area);
 
-    display = gdk_x11_display_get_xdisplay (gdk_window_get_display (gtk_widget_get_window (drawing_area)));
+    display = gdk_x11_display_get_xdisplay (gtk_widget_get_display (drawing_area));
     screen = gtk_widget_get_screen (drawing_area);
     root = gdk_screen_get_root_window (screen);
 
