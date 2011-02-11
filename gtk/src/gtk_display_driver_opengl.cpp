@@ -770,7 +770,7 @@ S9xOpenGLDisplayDriver::create_window (int width, int height)
     XSync (display, False);
 
 #if USE_GTK3
-    gdk_window = gdk_x11_window_foreign_new_for_display (gdk_window_get_display (gtk_widget_get_window (drawing_area)), xwindow);
+    gdk_window = gdk_x11_window_foreign_new_for_display (gtk_widget_get_display (drawing_area), xwindow);
 #else
     gdk_window = gdk_window_foreign_new (xwindow);
 #endif
