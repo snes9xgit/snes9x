@@ -718,6 +718,16 @@ void S9xUpdateScreen (void)
 				for (register int32 y = (int32) GFX.StartY - 1; y >= 0; y--)
 					memmove(GFX.Screen + y * GFX.PPL, GFX.Screen + y * GFX.RealPPL, IPPU.RenderedScreenWidth * sizeof(uint16));
 			}
+			else if (IPPU.DoubleHeightPixels && !IPPU.Interlace)
+			{
+				for (register int32 y = 0; y < (int32) GFX.StartY; y++)
+					memmove(GFX.Screen + y * GFX.RealPPL, GFX.Screen + y * GFX.PPL, IPPU.RenderedScreenWidth * sizeof(uint16));
+
+				IPPU.DoubleHeightPixels = FALSE;
+				IPPU.RenderedScreenHeight = PPU.ScreenHeight;
+				GFX.PPL = GFX.RealPPL;
+				GFX.DoInterlace = 0;
+			}
 		}
 
 		if ((Memory.FillRAM[0x2130] & 0x30) != 0x30 && (Memory.FillRAM[0x2131] & 0x3f))
