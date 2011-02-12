@@ -301,6 +301,7 @@ struct sGUI {
     RenderFilter Scale;
     RenderFilter ScaleHiRes;
 	bool BlendHiRes;
+	bool AVIHiRes;
     bool DoubleBuffered;
     bool FullScreen;
     bool Stretch;

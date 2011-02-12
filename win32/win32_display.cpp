@@ -209,7 +209,7 @@ IS9xDisplayOutput *S9xDisplayOutput=&Direct3D;
 #endif
 
 bool8 S9xDeinitUpdate (int, int);
-void DoAVIVideoFrame(SSurface* source_surface);
+void DoAVIVideoFrame();
 
 /*  WinRefreshDisplay
 repeats the last rendered frame
@@ -348,7 +348,7 @@ bool8 S9xContinueUpdate(int Width, int Height)
     Src.Surface = (BYTE*)GFX.Screen;
 
 	// avi writing
-	DoAVIVideoFrame(&Src);
+	DoAVIVideoFrame();
 
 	return true;
 }
@@ -371,12 +371,12 @@ bool8 S9xDeinitUpdate (int Width, int Height)
 	const int OrigHeight = Height;
 	Height = Src.Height;
 
+	// avi writing
+	DoAVIVideoFrame();
+
 	if(GUI.BlendHiRes) {
 		RenderMergeHires(Src.Surface,Src.Pitch,Src.Width,Src.Height);
 	}
-
-	// avi writing
-	DoAVIVideoFrame(&Src);
 
 	// Clear some of the old SNES rendered image
 	// when the resolution becomes lower in x or y,

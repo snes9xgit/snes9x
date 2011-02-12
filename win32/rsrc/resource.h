@@ -79,6 +79,7 @@
 #define IDC_VIDEO_MODE                  1066
 #define IDC_CUSTOMROMOPEN               1066
 #define IDC_HEADER                      1067
+#define IDC_HIRESAVI                    1067
 #define IDC_ROMLIST                     1068
 #define IDC_MEM_TYPE                    1069
 #define IDC_HOSTNAME                    1086

@@ -218,11 +218,14 @@ returns true if successful, false otherwise
 */
 bool ReInitSound()
 {
+	if (GUI.AVIOut)
+		return false;
 	Settings.SoundInputRate = CLAMP(Settings.SoundInputRate,8000, 48000);
 	Settings.SoundPlaybackRate = CLAMP(Settings.SoundPlaybackRate,8000, 48000);
 	S9xSetSoundMute(GUI.Mute);
 	if(S9xSoundOutput)
 		S9xSoundOutput->DeInitSoundOutput();
+
 	return S9xInitSound(GUI.SoundBufferSize,0);
 }
 

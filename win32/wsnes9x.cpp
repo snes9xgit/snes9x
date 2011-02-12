@@ -3225,15 +3225,13 @@ int WINAPI WinMain(
 
 	RestoreMainWinPos();
 
-	WinDisplayReset();
+	void InitSnes9X (void);
+	InitSnes9X ();
 
 	if(GUI.FullScreen) {
 		GUI.FullScreen = false;
 		ToggleFullScreen();
 	}
-
-    void InitSnes9X (void);
-    InitSnes9X ();
 
     TIMECAPS tc;
     if (timeGetDevCaps(&tc, sizeof(TIMECAPS))== TIMERR_NOERROR)
@@ -4918,6 +4916,7 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 			CheckDlgButton(hDlg,IDC_TOGGLE_TURBO,GUI.TurboModeToggle ? BST_CHECKED : BST_UNCHECKED);
 			CheckDlgButton(hDlg,IDC_INACTIVE_PAUSE,GUI.InactivePause ? BST_CHECKED : BST_UNCHECKED);
 			CheckDlgButton(hDlg,IDC_CUSTOMROMOPEN,GUI.CustomRomOpen ? BST_CHECKED : BST_UNCHECKED);
+			CheckDlgButton(hDlg,IDC_HIRESAVI,GUI.AVIHiRes ? BST_CHECKED : BST_UNCHECKED);
 
 			int inum = 0;
 			lstrcpy(paths[inum++],GUI.RomDir);
@@ -5001,6 +5000,7 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 					GUI.TurboModeToggle = (BST_CHECKED==IsDlgButtonChecked(hDlg, IDC_TOGGLE_TURBO));
 					GUI.InactivePause = (BST_CHECKED==IsDlgButtonChecked(hDlg, IDC_INACTIVE_PAUSE));
 					GUI.CustomRomOpen = (BST_CHECKED==IsDlgButtonChecked(hDlg, IDC_CUSTOMROMOPEN));
+					GUI.AVIHiRes = (BST_CHECKED==IsDlgButtonChecked(hDlg, IDC_HIRESAVI));
 
 					Settings.TurboSkipFrames=SendDlgItemMessage(hDlg, IDC_SPIN_TURBO_SKIP, UDM_GETPOS, 0,0);
 					Settings.AutoMaxSkipFrames=SendDlgItemMessage(hDlg, IDC_SPIN_MAX_SKIP, UDM_GETPOS, 0,0);
