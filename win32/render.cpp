@@ -550,15 +550,15 @@ inline void SetRect(RECT* rect, int width, int height, int scale)
 }
 
 #define AVERAGE_565(el0, el1) (((el0) & (el1)) + ((((el0) ^ (el1)) & 0xF7DE) >> 1))
-void RenderMergeHires(void *buffer, int pitch, unsigned int &width, unsigned int &height)
+void RenderMergeHires(void *src, void* dst, int pitch, unsigned int &width, unsigned int &height)
 {
     if (width <= 256)
         return;
 
     for (register int y = 0; y < height; y++)
     {
-        register uint16 *input = (uint16 *) ((uint8 *) buffer + y * pitch);
-        register uint16 *output = input;
+        register uint16 *input = (uint16 *) ((uint8 *) src + y * pitch);
+        register uint16 *output = (uint16 *) ((uint8 *) dst + y * pitch);
         register uint16 l, r;
 
         l = 0;

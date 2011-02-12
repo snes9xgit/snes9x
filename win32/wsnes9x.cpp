@@ -6958,7 +6958,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 	// temporary GUI state for restoring after previewing while selecting options
 	static int prevScale, prevScaleHiRes, prevPPL;
-	static bool prevStretch, prevAspectRatio, prevHeightExtend, prevAutoDisplayMessages, prevBilinearFilter, prevShaderEnabled;
+	static bool prevStretch, prevAspectRatio, prevHeightExtend, prevAutoDisplayMessages, prevBilinearFilter, prevShaderEnabled, prevBlendHires;
 	static int prevAspectWidth;
 	static OutputMethod prevOutputMethod;
 	static TCHAR prevHLSLShaderFile[MAX_PATH],prevGLSLShaderFile[MAX_PATH];
@@ -6989,6 +6989,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		prevHeightExtend = GUI.HeightExtend;
 		prevAutoDisplayMessages = Settings.AutoDisplayMessages != 0;
 		prevShaderEnabled = GUI.shaderEnabled;
+		prevBlendHires = GUI.BlendHiRes;
 		lstrcpy(prevHLSLShaderFile,GUI.HLSLshaderFileName);
 		lstrcpy(prevGLSLShaderFile,GUI.GLSLshaderFileName);
 
@@ -7184,6 +7185,11 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			// refresh screen, so the user can see the new mode
 			WinDisplayApplyChanges();
 
+			WinRefreshDisplay();
+			break;
+
+		case IDC_HIRESBLEND:
+			GUI.BlendHiRes = (bool)(IsDlgButtonChecked(hDlg,IDC_HIRESBLEND)==BST_CHECKED);
 			WinRefreshDisplay();
 			break;
 
@@ -7446,6 +7452,7 @@ updateFilterBox2:
 				GUI.AspectWidth = prevAspectWidth;
 				GUI.HeightExtend = prevHeightExtend;
 				GUI.shaderEnabled = prevShaderEnabled;
+				GUI.BlendHiRes = prevBlendHires;
 				lstrcpy(GUI.HLSLshaderFileName,prevHLSLShaderFile);
 				lstrcpy(GUI.GLSLshaderFileName,prevGLSLShaderFile);
 			}	

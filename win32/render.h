@@ -195,7 +195,7 @@ typedef void (*TRenderMethod)( SSurface Src, SSurface Dst, RECT *);
 
 void SelectRenderMethod();
 void InitLUTsWin32();
-void RenderMergeHires(void *buffer, int pitch, unsigned int &width, unsigned int &height);
+void RenderMergeHires(void *src, void* dst, int pitch, unsigned int &width, unsigned int &height);
 
 extern TRenderMethod RenderMethod;
 extern TRenderMethod RenderMethodHiRes;

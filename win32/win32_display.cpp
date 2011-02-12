@@ -197,6 +197,7 @@ CDirect3D Direct3D;
 CDirectDraw DirectDraw;
 COpenGL OpenGL;
 SSurface Src = {0};
+extern BYTE *ScreenBufferBlend;
 
 // Interface used to access the display output
 IS9xDisplayOutput *S9xDisplayOutput=&Direct3D;
@@ -216,11 +217,20 @@ repeats the last rendered frame
 */
 void WinRefreshDisplay(void)
 {
+	if(!Src.Width)
+		return;
+
 	SelectRenderMethod ();
-	if(Src.Surface!=NULL) {
-		S9xDisplayOutput->Render(Src);
-		GUI.FlipCounter++;
+
+	Src.Surface = (BYTE *)GFX.Screen;
+
+	if(Src.Width > SNES_WIDTH && GUI.BlendHiRes) {
+		RenderMergeHires(Src.Surface,ScreenBufferBlend,Src.Pitch,Src.Width,Src.Height);
+		Src.Surface = ScreenBufferBlend;
 	}
+
+	S9xDisplayOutput->Render(Src);
+	GUI.FlipCounter++;
 }
 
 void WinChangeWindowSize(unsigned int newWidth, unsigned int newHeight)
@@ -368,15 +378,8 @@ bool8 S9xDeinitUpdate (int Width, int Height)
     Src.Pitch = GFX.Pitch;
     Src.Surface = (BYTE*)GFX.Screen;
 
-	const int OrigHeight = Height;
-	Height = Src.Height;
-
 	// avi writing
 	DoAVIVideoFrame();
-
-	if(GUI.BlendHiRes) {
-		RenderMergeHires(Src.Surface,Src.Pitch,Src.Width,Src.Height);
-	}
 
 	// Clear some of the old SNES rendered image
 	// when the resolution becomes lower in x or y,
@@ -388,23 +391,23 @@ bool8 S9xDeinitUpdate (int Width, int Height)
 
         if (Width < LastWidth)
         {
-            const int hh = max(LastHeight, OrigHeight);
+            const int hh = max(LastHeight, Height);
             for (int i = 0; i < hh; i++)
                 memset (GFX.Screen + i * (GFX.Pitch>>1) + Width*1, 0, 4);
         }
-        if (OrigHeight < LastHeight)
+        if (Height < LastHeight)
 		{
             const int ww = max(LastWidth, Width);
-            for (int i = OrigHeight; i < LastHeight ; i++)
+            for (int i = Height; i < LastHeight ; i++)
                 memset (GFX.Screen + i * (GFX.Pitch>>1), 0, ww * 2);
 
 			// also old clear extended height stuff from drawing surface
-			if((int)Src.Height > OrigHeight)
-				for (int i = OrigHeight; i < (int)Src.Height ; i++)
+			if((int)Src.Height > Height)
+				for (int i = Height; i < (int)Src.Height ; i++)
 					memset (Src.Surface + i * Src.Pitch, 0, Src.Pitch);
 		}
         LastWidth = Width;
-        LastHeight = OrigHeight;
+        LastHeight = Height;
     }
 	
 	WinRefreshDisplay();
