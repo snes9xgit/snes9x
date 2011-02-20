@@ -789,19 +789,28 @@ void S9xPutImage (int width, int height)
 
 	if (width <= SNES_WIDTH)
 	{
-		copyWidth  = width  * 2;
-		copyHeight = height * 2;
-
-		switch (GUI.video_mode)
+		if (height > SNES_HEIGHT_EXTENDED)
 		{
-			case VIDEOMODE_BLOCKY:		blitFn = S9xBlitPixScaled16;		break;
-			case VIDEOMODE_TV:			blitFn = S9xBlitPixScaledTV16;		break;
-			case VIDEOMODE_SMOOTH:		blitFn = S9xBlitPixSmooth16;		break;
-			case VIDEOMODE_SUPEREAGLE:	blitFn = S9xBlitPixSuperEagle16;	break;
-			case VIDEOMODE_2XSAI:		blitFn = S9xBlitPix2xSaI16;			break;
-			case VIDEOMODE_SUPER2XSAI:	blitFn = S9xBlitPixSuper2xSaI16;	break;
-			case VIDEOMODE_EPX:			blitFn = S9xBlitPixEPX16;			break;
-			case VIDEOMODE_HQ2X:		blitFn = S9xBlitPixHQ2x16;			break;
+			copyWidth  = width * 2;
+			copyHeight = height;
+			blitFn = S9xBlitPixDoubled16;
+		}
+		else
+		{
+			copyWidth  = width  * 2;
+			copyHeight = height * 2;
+
+			switch (GUI.video_mode)
+			{
+				case VIDEOMODE_BLOCKY:		blitFn = S9xBlitPixScaled16;		break;
+				case VIDEOMODE_TV:			blitFn = S9xBlitPixScaledTV16;		break;
+				case VIDEOMODE_SMOOTH:		blitFn = S9xBlitPixSmooth16;		break;
+				case VIDEOMODE_SUPEREAGLE:	blitFn = S9xBlitPixSuperEagle16;	break;
+				case VIDEOMODE_2XSAI:		blitFn = S9xBlitPix2xSaI16;			break;
+				case VIDEOMODE_SUPER2XSAI:	blitFn = S9xBlitPixSuper2xSaI16;	break;
+				case VIDEOMODE_EPX:			blitFn = S9xBlitPixEPX16;			break;
+				case VIDEOMODE_HQ2X:		blitFn = S9xBlitPixHQ2x16;			break;
+			}
 		}
 	}
 	else

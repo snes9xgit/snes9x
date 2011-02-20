@@ -327,6 +327,23 @@ void S9xBlitPixHiRes16 (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, int dstRo
 	}
 }
 
+void S9xBlitPixDoubled16 (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, int dstRowBytes, int width, int height)
+{
+	for (; height; height--)
+	{
+		uint16	*dP = (uint16 *) dstPtr, *bP = (uint16 *) srcPtr;
+
+		for (int i = 0; i < width; i++)
+		{
+			*dP++ = *bP;
+			*dP++ = *bP++;
+		}
+
+		srcPtr += srcRowBytes;
+		dstPtr += dstRowBytes;
+	}
+}
+
 void S9xBlitPixScaledTV16 (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, int dstRowBytes, int width, int height)
 {
 	uint8	*dstPtr2 = dstPtr + dstRowBytes, *deltaPtr = XDelta;

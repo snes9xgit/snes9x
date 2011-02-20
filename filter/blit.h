@@ -192,6 +192,7 @@ void S9xBlitNTSCFilterSet (const snes_ntsc_setup_t *);
 void S9xBlitPixSmall16 (uint8 *, int, uint8 *, int, int, int);
 void S9xBlitPixScaled16 (uint8 *, int, uint8 *, int, int, int);
 void S9xBlitPixHiRes16 (uint8 *, int, uint8 *, int, int, int);
+void S9xBlitPixDoubled16 (uint8 *, int, uint8 *, int, int, int);
 void S9xBlitPixScaledTV16 (uint8 *, int, uint8 *, int, int, int);
 void S9xBlitPixHiResTV16 (uint8 *, int, uint8 *, int, int, int);
 void S9xBlitPixHiResMixedTV16 (uint8 *, int, uint8 *, int, int, int);
