@@ -1245,7 +1245,7 @@ static inline void RenderBlitScreen (Blitter Fn, int x, int sW, int sH, int cW, 
 				uint8	*tmpBuffer = blitGLBuffer + (1024 * 512 * 2);
 				int		aligned    = ((ntsc_width + 2) >> 1) << 1;
 				(Fn) ((uint8 *) buf, sW * 2, tmpBuffer, 1024 * 2, sW, sH);
-				S9xBlitPixHiResMixedTV16(tmpBuffer, 1024 * 2, blitGLBuffer, 1024 * 2, aligned, cH);
+				S9xBlitPixMixedTV1x2(tmpBuffer, 1024 * 2, blitGLBuffer, 1024 * 2, aligned, cH);
 				cH *= 2;
 			}
 
@@ -1581,6 +1581,22 @@ static void S9xPutImageBlitGL (int width, int height)
 	{
 		default:
 		case 2:
+			if (videoMode == VIDEOMODE_BLEND)
+			{
+				if (width <= 256)
+				{
+					copyWidth  = width  * 2;
+					copyHeight = height;
+					blitFn = S9xBlitPixBlend2x1;
+				}
+				else
+				{
+					copyWidth  = width;
+					copyHeight = height;
+					blitFn = S9xBlitPixBlend1x1;
+				}
+			}
+			else
 			if (height <= 256)
 			{
 				if (width <= 256)
@@ -1591,7 +1607,7 @@ static void S9xPutImageBlitGL (int width, int height)
 					switch (videoMode)
 					{
 						default:
-						case VIDEOMODE_TV:			blitFn = S9xBlitPixScaledTV16;		break;
+						case VIDEOMODE_TV:			blitFn = S9xBlitPixTV2x2;			break;
 						case VIDEOMODE_SUPEREAGLE:	blitFn = S9xBlitPixSuperEagle16;	break;
 						case VIDEOMODE_2XSAI:		blitFn = S9xBlitPix2xSaI16;			break;
 						case VIDEOMODE_SUPER2XSAI:	blitFn = S9xBlitPixSuper2xSaI16;	break;
@@ -1605,13 +1621,13 @@ static void S9xPutImageBlitGL (int width, int height)
 					{
 						copyWidth  = width;
 						copyHeight = height * 2;
-						blitFn = S9xBlitPixHiResTV16;
+						blitFn = S9xBlitPixTV1x2;
 					}
 					else
 					{
 						copyWidth  = width;
 						copyHeight = height;
-						blitFn = S9xBlitPixSmall16;
+						blitFn = S9xBlitPixSimple1x1;
 					}
 				}
 			}
@@ -1619,7 +1635,7 @@ static void S9xPutImageBlitGL (int width, int height)
 			{
 				copyWidth  = width;
 				copyHeight = height;
-				blitFn = S9xBlitPixSmall16;
+				blitFn = S9xBlitPixSimple1x1;
 			}
 
 			break;
@@ -1635,7 +1651,7 @@ static void S9xPutImageBlitGL (int width, int height)
 			{
 				copyWidth  = width;
 				copyHeight = height;
-				blitFn = S9xBlitPixSmall16;
+				blitFn = S9xBlitPixSimple1x1;
 			}
 
 			break;
@@ -1658,7 +1674,7 @@ static void S9xPutImageBlitGL (int width, int height)
 			{
 				copyWidth  = width;
 				copyHeight = height;
-				blitFn = S9xBlitPixSmall16;
+				blitFn = S9xBlitPixSimple1x1;
 			}
 
 			break;

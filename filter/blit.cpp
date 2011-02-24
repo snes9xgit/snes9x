@@ -181,11 +181,12 @@
 #define ALL_COLOR_MASK	(FIRST_COLOR_MASK | SECOND_COLOR_MASK | THIRD_COLOR_MASK)
 
 #ifdef GFX_MULTI_FORMAT
-static uint16	lowPixelMask = 0, qlowPixelMask = 0;
+static uint16	lowPixelMask = 0, qlowPixelMask = 0, highBitsMask = 0;
 static uint32	colorMask = 0;
 #else
 #define lowPixelMask	(RGB_LOW_BITS_MASK)
 #define qlowPixelMask	((RGB_HI_BITS_MASK >> 3) | TWO_LOW_BITS_MASK)
+#define highBitsMask	(ALL_COLOR_MASK & RGB_REMOVE_LOW_BITS_MASK)
 #define colorMask		(((~RGB_HI_BITS_MASK & ALL_COLOR_MASK) << 16) | (~RGB_HI_BITS_MASK & ALL_COLOR_MASK))
 #endif
 
@@ -204,6 +205,7 @@ bool8 S9xBlitFilterInit (void)
 #ifdef GFX_MULTI_FORMAT
 	lowPixelMask  = RGB_LOW_BITS_MASK;
 	qlowPixelMask = (RGB_HI_BITS_MASK >> 3) | TWO_LOW_BITS_MASK;
+	highBitsMask  = ALL_COLOR_MASK & RGB_REMOVE_LOW_BITS_MASK;
 	colorMask     = ((~RGB_HI_BITS_MASK & ALL_COLOR_MASK) << 16) | (~RGB_HI_BITS_MASK & ALL_COLOR_MASK);
 #endif
 
@@ -252,7 +254,7 @@ void S9xBlitNTSCFilterSet (const snes_ntsc_setup_t *setup)
 	snes_ntsc_init(ntsc, setup);
 }
 
-void S9xBlitPixSmall16 (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, int dstRowBytes, int width, int height)
+void S9xBlitPixSimple1x1 (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, int dstRowBytes, int width, int height)
 {
 	width <<= 1;
 
@@ -264,7 +266,41 @@ void S9xBlitPixSmall16 (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, int dstRo
 	}
 }
 
-void S9xBlitPixScaled16 (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, int dstRowBytes, int width, int height)
+void S9xBlitPixSimple1x2 (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, int dstRowBytes, int width, int height)
+{
+	width <<= 1;
+
+	for (; height; height--)
+	{
+		memcpy(dstPtr, srcPtr, width);
+		dstPtr += dstRowBytes;
+		memcpy(dstPtr, srcPtr, width);
+		srcPtr += srcRowBytes;
+		dstPtr += dstRowBytes;
+	}
+}
+
+void S9xBlitPixSimple2x1 (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, int dstRowBytes, int width, int height)
+{
+	for (; height; height--)
+	{
+		uint16	*dP = (uint16 *) dstPtr, *bP = (uint16 *) srcPtr;
+
+		for (int i = 0; i < (width >> 1); i++)
+		{
+			*dP++ = *bP;
+			*dP++ = *bP++;
+
+			*dP++ = *bP;
+			*dP++ = *bP++;
+		}
+
+		srcPtr += srcRowBytes;
+		dstPtr += dstRowBytes;
+	}
+}
+
+void S9xBlitPixSimple2x2 (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, int dstRowBytes, int width, int height)
 {
 	uint8	*dstPtr2 = dstPtr + dstRowBytes, *deltaPtr = XDelta;
 	dstRowBytes <<= 1;
@@ -313,30 +349,24 @@ void S9xBlitPixScaled16 (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, int dstR
 	}
 }
 
-void S9xBlitPixHiRes16 (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, int dstRowBytes, int width, int height)
-{
-	width <<= 1;
-
-	for (; height; height--)
-	{
-		memcpy(dstPtr, srcPtr, width);
-		dstPtr += dstRowBytes;
-		memcpy(dstPtr, srcPtr, width);
-		srcPtr += srcRowBytes;
-		dstPtr += dstRowBytes;
-	}
-}
-
-void S9xBlitPixDoubled16 (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, int dstRowBytes, int width, int height)
+void S9xBlitPixBlend1x1 (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, int dstRowBytes, int width, int height)
 {
 	for (; height; height--)
 	{
 		uint16	*dP = (uint16 *) dstPtr, *bP = (uint16 *) srcPtr;
+		uint16	prev, curr;
 
-		for (int i = 0; i < width; i++)
+		prev = *bP;
+
+		for (int i = 0; i < (width >> 1); i++)
 		{
-			*dP++ = *bP;
-			*dP++ = *bP++;
+			curr  = *bP++;
+			*dP++ = (prev & curr) + (((prev ^ curr) & highBitsMask) >> 1);
+			prev  = curr;
+
+			curr  = *bP++;
+			*dP++ = (prev & curr) + (((prev ^ curr) & highBitsMask) >> 1);
+			prev  = curr;
 		}
 
 		srcPtr += srcRowBytes;
@@ -344,7 +374,58 @@ void S9xBlitPixDoubled16 (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, int dst
 	}
 }
 
-void S9xBlitPixScaledTV16 (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, int dstRowBytes, int width, int height)
+void S9xBlitPixBlend2x1 (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, int dstRowBytes, int width, int height)
+{
+	for (; height; height--)
+	{
+		uint16	*dP = (uint16 *) dstPtr, *bP = (uint16 *) srcPtr;
+		uint16	prev, curr;
+
+		prev = *bP;
+
+		for (int i = 0; i < (width >> 1); i++)
+		{
+			curr  = *bP++;
+			*dP++ = (prev & curr) + (((prev ^ curr) & highBitsMask) >> 1);
+			*dP++ = curr;
+			prev  = curr;
+
+			curr  = *bP++;
+			*dP++ = (prev & curr) + (((prev ^ curr) & highBitsMask) >> 1);
+			*dP++ = curr;
+			prev  = curr;
+		}
+
+		srcPtr += srcRowBytes;
+		dstPtr += dstRowBytes;
+	}
+}
+
+void S9xBlitPixTV1x2 (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, int dstRowBytes, int width, int height)
+{
+	uint8	*dstPtr2 = dstPtr + dstRowBytes;
+	dstRowBytes <<= 1;
+
+	for (; height; height--)
+	{
+		uint32	*dP1 = (uint32 *) dstPtr, *dP2 = (uint32 *) dstPtr2, *bP = (uint32 *) srcPtr;
+		uint32	product, darkened;
+
+		for (int i = 0; i < (width >> 1); i++)
+		{
+			product = *dP1++ = *bP++;
+			darkened  = (product = (product >> 1) & colorMask);
+			darkened += (product = (product >> 1) & colorMask);
+			*dP2++  = darkened;
+		}
+
+		srcPtr  += srcRowBytes;
+		dstPtr  += dstRowBytes;
+		dstPtr2 += dstRowBytes;
+	}
+}
+
+void S9xBlitPixTV2x2 (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, int dstRowBytes, int width, int height)
 {
 	uint8	*dstPtr2 = dstPtr + dstRowBytes, *deltaPtr = XDelta;
 	dstRowBytes <<= 1;
@@ -455,31 +536,7 @@ void S9xBlitPixScaledTV16 (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, int ds
 	}
 }
 
-void S9xBlitPixHiResTV16 (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, int dstRowBytes, int width, int height)
-{
-	uint8	*dstPtr2 = dstPtr + dstRowBytes;
-	dstRowBytes <<= 1;
-
-	for (; height; height--)
-	{
-		uint32	*dP1 = (uint32 *) dstPtr, *dP2 = (uint32 *) dstPtr2, *bP = (uint32 *) srcPtr;
-		uint32	product, darkened;
-
-		for (int i = 0; i < (width >> 1); i++)
-		{
-			product = *dP1++ = *bP++;
-			darkened  = (product = (product >> 1) & colorMask);
-			darkened += (product = (product >> 1) & colorMask);
-			*dP2++  = darkened;
-		}
-
-		srcPtr  += srcRowBytes;
-		dstPtr  += dstRowBytes;
-		dstPtr2 += dstRowBytes;
-	}
-}
-
-void S9xBlitPixHiResMixedTV16 (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, int dstRowBytes, int width, int height)
+void S9xBlitPixMixedTV1x2 (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, int dstRowBytes, int width, int height)
 {
 	uint8	*dstPtr2 = dstPtr + dstRowBytes, *srcPtr2 = srcPtr + srcRowBytes;
 	dstRowBytes <<= 1;
@@ -520,7 +577,7 @@ void S9xBlitPixHiResMixedTV16 (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, in
 	}
 }
 
-void S9xBlitPixSmooth16 (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, int dstRowBytes, int width, int height)
+void S9xBlitPixSmooth2x2 (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, int dstRowBytes, int width, int height)
 {
 	uint8	*dstPtr2 = dstPtr + dstRowBytes, *deltaPtr = XDelta;
 	uint32	lastLinePix[SNES_WIDTH << 1];
