@@ -178,6 +178,9 @@
 #pragma comment( lib, "d3dx9" )
 #pragma comment( lib, "DxErr" )
 
+#pragma comment( lib, "cg.lib" )
+#pragma comment( lib, "cgd3d9.lib" )
+
 #include "cdirect3d.h"
 #include "win32_display.h"
 #include "../snes9x.h"
@@ -216,10 +219,12 @@ CDirect3D::CDirect3D()
 		rubyLUT[i] = NULL;
 	}
 	effect=NULL;
-	shader_compiled=false;
+	shader_type = D3D_SHADER_NONE;
 	shaderTimer = 1.0f;
 	shaderTimeStart = 0;
 	shaderTimeElapsed = 0;
+	cgContext = NULL;
+	cgVertexProgram = cgFragmentProgram = NULL;
 }
 
 /* CDirect3D::~CDirect3D()
@@ -273,6 +278,12 @@ bool CDirect3D::Initialize(HWND hWnd)
 		return false;
 	}
 
+	cgContext = cgCreateContext();
+	hr = cgD3D9SetDevice(pDevice);
+	if(FAILED(hr)) {
+		DXTRACE_ERR_MSGBOX(TEXT("Error setting cg device"), hr);
+	}
+
 	pDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
 
 	init_done = true;
@@ -303,6 +314,13 @@ void CDirect3D::DeInitialize()
 		pD3D = NULL;
 	}
 
+	if(cgContext) {
+		cgDestroyContext(cgContext);
+		cgContext = NULL;
+	}
+
+	cgD3D9SetDevice(NULL);
+
 	init_done = false;
 	afterRenderWidth = 0;
 	afterRenderHeight = 0;
@@ -312,6 +330,73 @@ void CDirect3D::DeInitialize()
 }
 
 bool CDirect3D::SetShader(const TCHAR *file)
+{
+	SetShaderCG(NULL);
+	SetShaderHLSL(NULL);
+	shader_type = D3D_SHADER_NONE;
+	if(file!=NULL && lstrlen(file)>3 && _tcsncicmp(&file[lstrlen(file)-3],TEXT(".cg"),3)==0) {
+		return SetShaderCG(file);
+	} else {
+		return SetShaderHLSL(file);
+	}
+}
+
+bool CDirect3D::SetShaderCG(const TCHAR *file)
+{
+	TCHAR errorMsg[MAX_PATH + 50];
+	HRESULT hr;
+
+	if(cgFragmentProgram) {
+		cgDestroyProgram(cgFragmentProgram);
+		cgFragmentProgram = NULL;
+	}
+	if(cgVertexProgram) {
+		cgDestroyProgram(cgVertexProgram);
+		cgVertexProgram = NULL;
+	}
+
+	if (file == NULL || *file==TEXT('\0'))
+		return true;
+
+	CGprofile vertexProfile = cgD3D9GetLatestVertexProfile();
+	CGprofile pixelProfile = cgD3D9GetLatestPixelProfile();
+
+	const char** vertexOptions = cgD3D9GetOptimalOptions(vertexProfile);
+	const char** pixelOptions = cgD3D9GetOptimalOptions(pixelProfile);
+
+	char *fileContents = ReadShaderFileContents(file);
+	if(!fileContents)
+		return false;
+
+	cgVertexProgram = cgCreateProgram( cgContext, CG_SOURCE, fileContents,
+						vertexProfile, "main_vertex", vertexOptions);
+
+	cgFragmentProgram = cgCreateProgram( cgContext, CG_SOURCE, fileContents,
+						pixelProfile, "main_fragment", pixelOptions);
+
+	delete [] fileContents;
+
+	if(!cgVertexProgram && !cgFragmentProgram) {
+		_stprintf(errorMsg,TEXT("No vertex or fragment program in file:\n%s"),file);
+		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"), MB_OK|MB_ICONEXCLAMATION);
+		return false;
+	}
+
+	if(cgVertexProgram) {
+		hr = cgD3D9LoadProgram(cgVertexProgram,false,0);
+		hr = cgD3D9BindProgram(cgVertexProgram);
+	}
+	if(cgFragmentProgram) {
+		hr = cgD3D9LoadProgram(cgFragmentProgram,false,0);
+		hr = cgD3D9BindProgram(cgFragmentProgram);
+	}
+
+	shader_type = D3D_SHADER_CG;
+
+	return true;
+}
+
+bool CDirect3D::SetShaderHLSL(const TCHAR *file)
 {
 	//MUDLORD: the guts
 	//Compiles a shader from files on disc
@@ -331,7 +416,6 @@ bool CDirect3D::SetShader(const TCHAR *file)
 
 	HRESULT hr;
 
-	shader_compiled = false;
 	shaderTimer = 1.0f;
 	shaderTimeStart = 0;
 	shaderTimeElapsed = 0;
@@ -462,48 +546,77 @@ bool CDirect3D::SetShader(const TCHAR *file)
 	D3DXHANDLE hTech;
 	effect->FindNextValidTechnique(NULL,&hTech);
 	effect->SetTechnique( hTech );
-	shader_compiled = true;
+	shader_type = D3D_SHADER_HLSL;
 	return true;
 }
 
 void CDirect3D::SetShaderVars()
 {
-	D3DXVECTOR4 rubyTextureSize;
-	D3DXVECTOR4 rubyInputSize;
-	D3DXVECTOR4 rubyOutputSize;
-	D3DXHANDLE  rubyTimer;
+	if(shader_type == D3D_SHADER_HLSL) {
+		D3DXVECTOR4 rubyTextureSize;
+		D3DXVECTOR4 rubyInputSize;
+		D3DXVECTOR4 rubyOutputSize;
+		D3DXHANDLE  rubyTimer;
 
-	int shaderTime = GetTickCount();
-	shaderTimeElapsed += shaderTime - shaderTimeStart;
-	shaderTimeStart = shaderTime;
-	if(shaderTimeElapsed > 100) {
-		shaderTimeElapsed = 0;
-		shaderTimer += 0.01f;
-	}
-	rubyTextureSize.x = rubyTextureSize.y = (float)quadTextureSize;
-	rubyTextureSize.z = rubyTextureSize.w = 1.0 / quadTextureSize;
-	rubyInputSize.x = (float)afterRenderWidth;
-	rubyInputSize.y = (float)afterRenderHeight;
-	rubyInputSize.z = 1.0 / rubyInputSize.y;
-	rubyInputSize.w = 1.0 / rubyInputSize.z;
-	rubyOutputSize.x  = GUI.Stretch?(float)dPresentParams.BackBufferWidth:(float)afterRenderWidth;
-	rubyOutputSize.y  = GUI.Stretch?(float)dPresentParams.BackBufferHeight:(float)afterRenderHeight;
-	rubyOutputSize.z = 1.0 / rubyOutputSize.y;
-	rubyOutputSize.w = 1.0 / rubyOutputSize.x;
-	rubyTimer = effect->GetParameterByName(0, "rubyTimer");
-
-	effect->SetFloat(rubyTimer, shaderTimer);
-	effect->SetVector("rubyTextureSize", &rubyTextureSize);
-	effect->SetVector("rubyInputSize", &rubyInputSize);
-	effect->SetVector("rubyOutputSize", &rubyOutputSize);
-
-	effect->SetTexture("rubyTexture", drawSurface);
-	for(int i = 0; i < MAX_SHADER_TEXTURES; i++) {
-		char rubyLUTName[256];
-		sprintf(rubyLUTName, "rubyLUT%d", i);
-		if (rubyLUT[i] != NULL) {
-			effect->SetTexture( rubyLUTName, rubyLUT[i] );
+		int shaderTime = GetTickCount();
+		shaderTimeElapsed += shaderTime - shaderTimeStart;
+		shaderTimeStart = shaderTime;
+		if(shaderTimeElapsed > 100) {
+			shaderTimeElapsed = 0;
+			shaderTimer += 0.01f;
 		}
+		rubyTextureSize.x = rubyTextureSize.y = (float)quadTextureSize;
+		rubyTextureSize.z = rubyTextureSize.w = 1.0 / quadTextureSize;
+		rubyInputSize.x = (float)afterRenderWidth;
+		rubyInputSize.y = (float)afterRenderHeight;
+		rubyInputSize.z = 1.0 / rubyInputSize.y;
+		rubyInputSize.w = 1.0 / rubyInputSize.z;
+		rubyOutputSize.x  = GUI.Stretch?(float)dPresentParams.BackBufferWidth:(float)afterRenderWidth;
+		rubyOutputSize.y  = GUI.Stretch?(float)dPresentParams.BackBufferHeight:(float)afterRenderHeight;
+		rubyOutputSize.z = 1.0 / rubyOutputSize.y;
+		rubyOutputSize.w = 1.0 / rubyOutputSize.x;
+		rubyTimer = effect->GetParameterByName(0, "rubyTimer");
+
+		effect->SetFloat(rubyTimer, shaderTimer);
+		effect->SetVector("rubyTextureSize", &rubyTextureSize);
+		effect->SetVector("rubyInputSize", &rubyInputSize);
+		effect->SetVector("rubyOutputSize", &rubyOutputSize);
+
+		effect->SetTexture("rubyTexture", drawSurface);
+		for(int i = 0; i < MAX_SHADER_TEXTURES; i++) {
+			char rubyLUTName[256];
+			sprintf(rubyLUTName, "rubyLUT%d", i);
+			if (rubyLUT[i] != NULL) {
+				effect->SetTexture( rubyLUTName, rubyLUT[i] );
+			}
+		}
+	} else if(shader_type == D3D_SHADER_CG) {
+		CGparameter cgpModelViewProj = cgGetNamedParameter(cgVertexProgram, "modelViewProj");
+
+		CGparameter cgpVideoSize = cgGetNamedParameter(cgFragmentProgram, "IN.video_size");
+		CGparameter cgpTextureSize = cgGetNamedParameter(cgFragmentProgram, "IN.texture_size");
+		CGparameter cgpOutputSize = cgGetNamedParameter(cgFragmentProgram, "IN.output_size");
+
+		D3DXMATRIX mvpMat;
+		D3DXVECTOR2 videoSize;
+		D3DXVECTOR2 textureSize;
+		D3DXVECTOR2 outputSize;
+		videoSize.x = (float)afterRenderWidth;
+		videoSize.y = (float)afterRenderHeight;
+		textureSize.x = textureSize.y = (float)quadTextureSize;
+		outputSize.x = GUI.Stretch?(float)dPresentParams.BackBufferWidth:(float)afterRenderWidth;
+		outputSize.y = GUI.Stretch?(float)dPresentParams.BackBufferHeight:(float)afterRenderHeight;
+
+		D3DXMatrixIdentity(&mvpMat);
+
+		if(cgpModelViewProj)
+			cgD3D9SetUniformMatrix(cgpModelViewProj,&mvpMat);
+		if(cgpVideoSize)
+			cgD3D9SetUniform(cgpVideoSize,&videoSize);
+		if(cgpTextureSize)
+			cgD3D9SetUniform(cgpTextureSize,&textureSize);
+		if(cgpOutputSize)
+			cgD3D9SetUniform(cgpOutputSize,&outputSize);
 	}
 }
 
@@ -579,10 +692,15 @@ void CDirect3D::Render(SSurface Src)
 	pDevice->SetFVF(FVF_COORDS_TEX);
 	pDevice->SetStreamSource(0,vertexBuffer,0,sizeof(VERTEX));
 
-	if (shader_compiled) {
+	if(shader_type == D3D_SHADER_CG) {
+		cgD3D9BindProgram(cgFragmentProgram);
+		cgD3D9BindProgram(cgVertexProgram);
+	}
+
+	SetShaderVars();
+
+	if (shader_type == D3D_SHADER_HLSL) {
 		UINT passes;
-	
-		SetShaderVars();
 
 		hr = effect->Begin(&passes, 0);
 		for(UINT pass = 0; pass < passes; pass++ ) {
@@ -893,8 +1011,8 @@ returns true if successful, false otherwise
 */
 bool CDirect3D::ApplyDisplayChanges(void)
 {
-	if(GUI.shaderEnabled && GUI.HLSLshaderFileName)
-		SetShader(GUI.HLSLshaderFileName);
+	if(GUI.shaderEnabled && GUI.D3DshaderFileName)
+		SetShader(GUI.D3DshaderFileName);
 	else
 		SetShader(NULL);
 

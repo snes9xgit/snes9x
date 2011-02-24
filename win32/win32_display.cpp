@@ -430,6 +430,31 @@ void S9xSetWinPixelFormat ()
 	S9xDisplayOutput->SetSnes9xColorFormat();
 }
 
+char *ReadShaderFileContents(const TCHAR *filename)
+{
+	HANDLE hFile;
+	DWORD size;
+	DWORD bytesRead;
+	char *contents;
+
+	hFile = CreateFile(filename, GENERIC_READ, FILE_SHARE_READ, NULL,
+				OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN , 0);
+	if(hFile == INVALID_HANDLE_VALUE){
+		return NULL;
+	}
+	size = GetFileSize(hFile,NULL);
+	contents = new char[size+1];
+	if(!ReadFile(hFile,contents,size,&bytesRead,NULL)) {
+		CloseHandle(hFile);
+		delete[] contents;
+		return NULL;
+	}
+	CloseHandle(hFile);
+	contents[size] = '\0';
+	return contents;
+
+}
+
 // TODO: abstract the following functions in some way - only necessary for directdraw
 
 /* DirectDraw only begin */

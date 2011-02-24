@@ -181,13 +181,15 @@
 
 #include <windows.h>
 #include <gl\gl.h>
+#include <Cg/cg.h>
+#include <Cg/cgGL.h>
+
 #include "glext.h"
 #include "wglext.h"
 #include "IS9xDisplayOutput.h"
 
-/* IS9xDisplayOutput
-	Interface for display driver.
-*/
+enum current_ogl_shader_type { OGL_SHADER_NONE, OGL_SHADER_GLSL, OGL_SHADER_CG };
+
 class COpenGL : public IS9xDisplayOutput
 {
 private:
@@ -207,9 +209,12 @@ private:
 	unsigned int afterRenderWidth, afterRenderHeight;
 
 	bool shaderFunctionsLoaded;
-	bool shaderCompiled;
 
 	bool pboFunctionsLoaded;
+
+	CGcontext cgContext;
+	CGprogram cgVertexProgram, cgFragmentProgram;
+	current_ogl_shader_type shader_type;
 
 	GLuint shaderProgram;
     GLuint vertexShader;
@@ -240,7 +245,9 @@ private:
 
 	PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
 
-	bool SetShaders(const TCHAR *glslFileName);
+	bool SetShaders(const TCHAR *file);
+	bool SetShadersCG(const TCHAR *file);
+	bool SetShadersGLSL(const TCHAR *glslFileName);
 	bool LoadShaderFunctions();
 	bool LoadPBOFunctions();
 	void CreateDrawSurface(void);
