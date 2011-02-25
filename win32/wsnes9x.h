@@ -316,8 +316,8 @@ struct sGUI {
 	bool LocalVidMem;
 	bool Vsync;	
 	bool shaderEnabled;
-	TCHAR HLSLshaderFileName[MAX_PATH];
-	TCHAR GLSLshaderFileName[MAX_PATH];
+	TCHAR D3DshaderFileName[MAX_PATH];
+	TCHAR OGLshaderFileName[MAX_PATH];
 
     bool IgnoreNextMouseMove;
     RECT window_size;

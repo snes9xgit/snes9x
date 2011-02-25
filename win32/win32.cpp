@@ -203,8 +203,10 @@
 
 #include <math.h>
 
-BYTE *ScreenBuf1 = NULL;
+BYTE *ScreenBuf = NULL;
+BYTE *ScreenBufBlend = NULL;
 BYTE *ScreenBuffer = NULL;
+BYTE *ScreenBufferBlend = NULL;
 
 struct SJoyState Joystick [16];
 uint32 joypads [8];
@@ -976,14 +978,17 @@ void InitSnes9X( void)
 	extern void S9xPostRomInit();
 	Memory.PostRomInitFunc = S9xPostRomInit;
 
-    ScreenBuf1 = new BYTE [EXT_PITCH * EXT_HEIGHT];
+    ScreenBuf = new BYTE [EXT_PITCH * EXT_HEIGHT];
+	ScreenBufBlend = new BYTE [EXT_PITCH * EXT_HEIGHT];
 
-    ScreenBuffer = ScreenBuf1 + EXT_OFFSET;
-    memset (ScreenBuf1, 0, EXT_PITCH * EXT_HEIGHT);
+    ScreenBuffer = ScreenBuf + EXT_OFFSET;
+	ScreenBufferBlend = ScreenBufBlend + EXT_OFFSET;
+    memset (ScreenBuf, 0, EXT_PITCH * EXT_HEIGHT);
+	memset (ScreenBufBlend, 0, EXT_PITCH * EXT_HEIGHT);
 
     GFX.Pitch = EXT_PITCH;
     GFX.RealPPL = EXT_PITCH;
-    GFX.Screen = (uint16*)(ScreenBuf1 + EXT_OFFSET);
+	GFX.Screen = (uint16*)(ScreenBuffer);
 
 	InitializeCriticalSection(&GUI.SoundCritSect);
 	CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
@@ -1001,8 +1006,10 @@ void InitSnes9X( void)
 }
 void DeinitS9x()
 {
-	if(ScreenBuf1)
-		delete [] ScreenBuf1;
+	if(ScreenBuf)
+		delete [] ScreenBuf;
+	if(ScreenBufBlend)
+		delete [] ScreenBufBlend;
 	DeleteCriticalSection(&GUI.SoundCritSect);
 	CoUninitialize();
 	if(GUI.GunSight)
