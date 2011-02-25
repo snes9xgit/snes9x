@@ -6958,10 +6958,10 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 	// temporary GUI state for restoring after previewing while selecting options
 	static int prevScale, prevScaleHiRes, prevPPL;
-	static bool prevStretch, prevAspectRatio, prevHeightExtend, prevAutoDisplayMessages, prevBilinearFilter, prevShaderEnabled;
+	static bool prevStretch, prevAspectRatio, prevHeightExtend, prevAutoDisplayMessages, prevBilinearFilter, prevShaderEnabled, prevBlendHires;
 	static int prevAspectWidth;
 	static OutputMethod prevOutputMethod;
-	static TCHAR prevHLSLShaderFile[MAX_PATH],prevGLSLShaderFile[MAX_PATH];
+	static TCHAR prevD3DShaderFile[MAX_PATH],prevOGLShaderFile[MAX_PATH];
 
 	switch(msg)
 	{
@@ -6989,8 +6989,9 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		prevHeightExtend = GUI.HeightExtend;
 		prevAutoDisplayMessages = Settings.AutoDisplayMessages != 0;
 		prevShaderEnabled = GUI.shaderEnabled;
-		lstrcpy(prevHLSLShaderFile,GUI.HLSLshaderFileName);
-		lstrcpy(prevGLSLShaderFile,GUI.GLSLshaderFileName);
+		prevBlendHires = GUI.BlendHiRes;
+		lstrcpy(prevD3DShaderFile,GUI.D3DshaderFileName);
+		lstrcpy(prevOGLShaderFile,GUI.OGLshaderFileName);
 
 
 		_stprintf(s,TEXT("Current: %dx%d %dbit %dHz"),GUI.FullscreenMode.width,GUI.FullscreenMode.height,GUI.FullscreenMode.depth,GUI.FullscreenMode.rate);
@@ -7067,8 +7068,8 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_FILE),TRUE);
 			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_BROWSE),TRUE);
 		}
-		SetDlgItemText(hDlg,IDC_SHADER_HLSL_FILE,GUI.HLSLshaderFileName);
-		SetDlgItemText(hDlg,IDC_SHADER_GLSL_FILE,GUI.GLSLshaderFileName);
+		SetDlgItemText(hDlg,IDC_SHADER_HLSL_FILE,GUI.D3DshaderFileName);
+		SetDlgItemText(hDlg,IDC_SHADER_GLSL_FILE,GUI.OGLshaderFileName);
 
 		lpfnOldWndProc = (WNDPROC)SetWindowLongPtr(GetDlgItem(hDlg,IDC_SHADER_GROUP),GWLP_WNDPROC,(LONG_PTR)GroupBoxCheckBoxTitle);
 
@@ -7187,6 +7188,11 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			WinRefreshDisplay();
 			break;
 
+		case IDC_HIRESBLEND:
+			GUI.BlendHiRes = (bool)(IsDlgButtonChecked(hDlg,IDC_HIRESBLEND)==BST_CHECKED);
+			WinRefreshDisplay();
+			break;
+
 		case IDC_AUTOFRAME:
 			if(BN_CLICKED==HIWORD(wParam)||BN_DBLCLK==HIWORD(wParam))
 			{
@@ -7228,8 +7234,8 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_FILE),GUI.shaderEnabled);
 			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_BROWSE),GUI.shaderEnabled);
 
-			GetDlgItemText(hDlg,IDC_SHADER_HLSL_FILE,GUI.HLSLshaderFileName,MAX_PATH);
-			GetDlgItemText(hDlg,IDC_SHADER_GLSL_FILE,GUI.GLSLshaderFileName,MAX_PATH);
+			GetDlgItemText(hDlg,IDC_SHADER_HLSL_FILE,GUI.D3DshaderFileName,MAX_PATH);
+			GetDlgItemText(hDlg,IDC_SHADER_GLSL_FILE,GUI.OGLshaderFileName,MAX_PATH);
 			WinDisplayApplyChanges();
 			WinRefreshDisplay();
 			break;
@@ -7239,7 +7245,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 			ofn.lStructSize = sizeof(OPENFILENAME);
 			ofn.hwndOwner = hDlg;
-			ofn.lpstrFilter = TEXT("Shader Files\0*.shader\0All Files\0*.*\0\0");			
+			ofn.lpstrFilter = TEXT("Shader Files\0*.shader;*.cg\0All Files\0*.*\0\0");
 			ofn.lpstrFile = openFileName;
 			ofn.lpstrTitle = TEXT("Select Shader");
 			ofn.lpstrDefExt = TEXT("shader");
@@ -7247,7 +7253,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			ofn.Flags = OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
 			if(GetOpenFileName(&ofn)) {
 				SetDlgItemText(hDlg,IDC_SHADER_HLSL_FILE,openFileName);
-				lstrcpy(GUI.HLSLshaderFileName,openFileName);
+				lstrcpy(GUI.D3DshaderFileName,openFileName);
 				WinDisplayApplyChanges();
 				WinRefreshDisplay();
 			}
@@ -7258,7 +7264,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 			ofn.lStructSize = sizeof(OPENFILENAME);
 			ofn.hwndOwner = hDlg;
-			ofn.lpstrFilter = TEXT("Shader Files\0*.shader\0All Files\0*.*\0\0");			
+			ofn.lpstrFilter = TEXT("Shader Files\0*.shader;*.cg\0All Files\0*.*\0\0");
 			ofn.lpstrFile = openFileName;
 			ofn.lpstrTitle = TEXT("Select Shader");
 			ofn.lpstrDefExt = TEXT("shader");
@@ -7266,7 +7272,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			ofn.Flags = OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
 			if(GetOpenFileName(&ofn)) {
 				SetDlgItemText(hDlg,IDC_SHADER_GLSL_FILE,openFileName);
-				lstrcpy(GUI.GLSLshaderFileName,openFileName);
+				lstrcpy(GUI.OGLshaderFileName,openFileName);
 				WinDisplayApplyChanges();
 				WinRefreshDisplay();
 			}
@@ -7394,7 +7400,7 @@ updateFilterBox2:
 
 			GUI.FullscreenMode = dm[index];
 
-			GetDlgItemText(hDlg,IDC_SHADER_HLSL_FILE,GUI.HLSLshaderFileName,MAX_PATH);
+			GetDlgItemText(hDlg,IDC_SHADER_HLSL_FILE,GUI.D3DshaderFileName,MAX_PATH);
 
 
 			// we might've changed the region that the game draws over
@@ -7446,8 +7452,9 @@ updateFilterBox2:
 				GUI.AspectWidth = prevAspectWidth;
 				GUI.HeightExtend = prevHeightExtend;
 				GUI.shaderEnabled = prevShaderEnabled;
-				lstrcpy(GUI.HLSLshaderFileName,prevHLSLShaderFile);
-				lstrcpy(GUI.GLSLshaderFileName,prevGLSLShaderFile);
+				GUI.BlendHiRes = prevBlendHires;
+				lstrcpy(GUI.D3DshaderFileName,prevD3DShaderFile);
+				lstrcpy(GUI.OGLshaderFileName,prevOGLShaderFile);
 			}	
 
 			EndDialog(hDlg,0);

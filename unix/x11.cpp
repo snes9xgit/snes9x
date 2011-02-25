@@ -789,19 +789,28 @@ void S9xPutImage (int width, int height)
 
 	if (width <= SNES_WIDTH)
 	{
-		copyWidth  = width  * 2;
-		copyHeight = height * 2;
-
-		switch (GUI.video_mode)
+		if (height > SNES_HEIGHT_EXTENDED)
 		{
-			case VIDEOMODE_BLOCKY:		blitFn = S9xBlitPixScaled16;		break;
-			case VIDEOMODE_TV:			blitFn = S9xBlitPixScaledTV16;		break;
-			case VIDEOMODE_SMOOTH:		blitFn = S9xBlitPixSmooth16;		break;
-			case VIDEOMODE_SUPEREAGLE:	blitFn = S9xBlitPixSuperEagle16;	break;
-			case VIDEOMODE_2XSAI:		blitFn = S9xBlitPix2xSaI16;			break;
-			case VIDEOMODE_SUPER2XSAI:	blitFn = S9xBlitPixSuper2xSaI16;	break;
-			case VIDEOMODE_EPX:			blitFn = S9xBlitPixEPX16;			break;
-			case VIDEOMODE_HQ2X:		blitFn = S9xBlitPixHQ2x16;			break;
+			copyWidth  = width * 2;
+			copyHeight = height;
+			blitFn = S9xBlitPixSimple2x1;
+		}
+		else
+		{
+			copyWidth  = width  * 2;
+			copyHeight = height * 2;
+
+			switch (GUI.video_mode)
+			{
+				case VIDEOMODE_BLOCKY:		blitFn = S9xBlitPixSimple2x2;		break;
+				case VIDEOMODE_TV:			blitFn = S9xBlitPixTV2x2;			break;
+				case VIDEOMODE_SMOOTH:		blitFn = S9xBlitPixSmooth2x2;		break;
+				case VIDEOMODE_SUPEREAGLE:	blitFn = S9xBlitPixSuperEagle16;	break;
+				case VIDEOMODE_2XSAI:		blitFn = S9xBlitPix2xSaI16;			break;
+				case VIDEOMODE_SUPER2XSAI:	blitFn = S9xBlitPixSuper2xSaI16;	break;
+				case VIDEOMODE_EPX:			blitFn = S9xBlitPixEPX16;			break;
+				case VIDEOMODE_HQ2X:		blitFn = S9xBlitPixHQ2x16;			break;
+			}
 		}
 	}
 	else
@@ -812,16 +821,15 @@ void S9xPutImage (int width, int height)
 
 		switch (GUI.video_mode)
 		{
-			default:					blitFn = S9xBlitPixHiRes16;			break;
-			case VIDEOMODE_TV:			blitFn = S9xBlitPixHiResTV16;		break;
+			default:					blitFn = S9xBlitPixSimple1x2;	break;
+			case VIDEOMODE_TV:			blitFn = S9xBlitPixTV1x2;		break;
 		}
 	}
 	else
 	{
 		copyWidth  = width;
 		copyHeight = height;
-
-		blitFn = S9xBlitPixSmall16;
+		blitFn = S9xBlitPixSimple1x1;
 	}
 
 	blitFn((uint8 *) GFX.Screen, GFX.Pitch, GUI.blit_screen, GUI.blit_screen_pitch, width, height);

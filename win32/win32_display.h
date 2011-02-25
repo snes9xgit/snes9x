@@ -205,5 +205,6 @@ void WinDisplayStringFromBottom (const char *string, int linesFromBottom, int pi
 void WinSetCustomDisplaySurface(void *screen, int ppl, int width, int height, int scale);
 template<typename screenPtrType>
 void WinDisplayStringInBuffer (const char *string, int linesFromBottom, int pixelsFromLeft, bool allowWrap);
+char *ReadShaderFileContents(const TCHAR *filename);
 
 #endif

@@ -453,6 +453,20 @@ Snes9xPreferences::calibration_dialog (void)
 #endif
 
 static void
+event_input_rate_changed (GtkRange *range, gpointer data)
+{
+    char text[256];
+    GtkLabel *label = GTK_LABEL (data);
+    double value = gtk_range_get_value (range) / 32040.0 * 60.09881389744051;
+
+    snprintf (text, 256, "%.4f hz", value);
+
+    gtk_label_set_text (label, text);
+
+    return;
+}
+
+static void
 event_about_clicked (GtkButton *widget, gpointer data)
 {
     std::string version_string;
@@ -547,6 +561,13 @@ Snes9xPreferences::Snes9xPreferences (Snes9xConfig *config) :
     gtk_widget_realize (window);
 
     signal_connect (callbacks);
+
+    g_signal_connect_data (get_widget ("sound_input_rate"),
+                           "value-changed",
+                           G_CALLBACK (event_input_rate_changed),
+                           get_widget ("relative_video_rate"),
+                           NULL,
+                           (GConnectFlags) 0);
 
     return;
 }

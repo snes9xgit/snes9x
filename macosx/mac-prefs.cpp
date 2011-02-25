@@ -267,6 +267,7 @@ enum
 	iOpenGLBlocky = 1,
 	iOpenGLTVMode,
 	iOpenGLSmoothMode,
+	iOpenGLBlendMode,
 	iOpenGLEagleMode,
 	iOpenGL2xSAIMode,
 	iOpenGLSuper2xSAIMode,
@@ -308,7 +309,7 @@ static PrefList	prefList[] =
 	{ 'gl32', &gl32bit,										sizeof(bool8      ) },
 	{ 'glst', &glstretch,									sizeof(bool8      ) },
 	{ 'draw', &drawingMethod,								sizeof(long       ) },
-	{ 'vmod', &videoMode,									sizeof(int        ) },
+	{ 'Vmod', &videoMode,									sizeof(int        ) },
 	{ 'MPmt', &multiprocessor,								sizeof(bool8      ) },
 	{ 'VSNC', &vsync,										sizeof(bool8      ) },
 	{ 'H239', &drawoverscan,								sizeof(bool8      ) },
@@ -590,6 +591,10 @@ void ConfigurePreferences (void)
 
 				case VIDEOMODE_SMOOTH:
 					SetControl32BitValue(ctl, iOpenGLSmoothMode);
+					break;
+
+				case VIDEOMODE_BLEND:
+					SetControl32BitValue(ctl, iOpenGLBlendMode);
 					break;
 
 				case VIDEOMODE_SUPEREAGLE:
@@ -952,6 +957,11 @@ void ConfigurePreferences (void)
 				case iOpenGLSmoothMode:
 					drawingMethod = kDrawingOpenGL;
 					videoMode = VIDEOMODE_SMOOTH;
+					break;
+
+				case iOpenGLBlendMode:
+					drawingMethod = kDrawingBlitGL;
+					videoMode = VIDEOMODE_BLEND;
 					break;
 
 				case iOpenGLEagleMode:

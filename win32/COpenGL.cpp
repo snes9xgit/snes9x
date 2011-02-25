@@ -9,6 +9,9 @@
 #include "../filter/hq2x.h"
 #include "../filter/2xsai.h"
 
+#pragma comment( lib, "cg.lib" )
+#pragma comment( lib, "cggl.lib" )
+
 
 COpenGL::COpenGL(void)
 {
@@ -23,11 +26,13 @@ COpenGL::COpenGL(void)
 	afterRenderHeight = 0;
 	fullscreen = false;
 	shaderFunctionsLoaded = false;
-	shaderCompiled = false;
+	shader_type = OGL_SHADER_NONE;
 	pboFunctionsLoaded = false;
 	shaderProgram = 0;
     vertexShader = 0;
     fragmentShader = 0;
+	cgContext = NULL;
+	cgVertexProgram = cgFragmentProgram = NULL;
 }
 
 COpenGL::~COpenGL(void)
@@ -99,6 +104,8 @@ bool COpenGL::Initialize(HWND hWnd)
 	glVertexPointer(2, GL_FLOAT, 0, vertices);
 	glTexCoordPointer(2, GL_FLOAT, 0, texcoords);
 
+	cgContext = cgCreateContext();
+
 	GetClientRect(hWnd,&windowRect);
 	ChangeRenderSize(windowRect.right,windowRect.bottom);
 
@@ -113,8 +120,7 @@ bool COpenGL::Initialize(HWND hWnd)
 void COpenGL::DeInitialize()
 {
 	initDone = false;
-	if(shaderCompiled)
-		SetShaders(NULL);
+	SetShaders(NULL);
 	DestroyDrawSurface();
 	wglMakeCurrent(NULL,NULL);
 	if(hRC) {
@@ -132,7 +138,7 @@ void COpenGL::DeInitialize()
 	afterRenderWidth = 0;
 	afterRenderHeight = 0;
 	shaderFunctionsLoaded = false;
-	shaderCompiled = false;
+	shader_type = OGL_SHADER_NONE;
 }
 
 void COpenGL::CreateDrawSurface()
@@ -254,24 +260,37 @@ void COpenGL::Render(SSurface Src)
 		ApplyDisplayChanges();
 	}
 
-	if (shaderCompiled) {
-        GLint location;
+	if (shader_type != OGL_SHADER_NONE) {
+		GLint location;
 
 		float inputSize[2] = { (float)afterRenderWidth, (float)afterRenderHeight };
-        location = glGetUniformLocation (shaderProgram, "rubyInputSize");
-        glUniform2fv (location, 1, inputSize);
-
 		RECT windowSize;
 		GetClientRect(hWnd,&windowSize);
-
 		float outputSize[2] = {(float)(GUI.Stretch?windowSize.right:afterRenderWidth),
 							(float)(GUI.Stretch?windowSize.bottom:afterRenderHeight) };
-        location = glGetUniformLocation (shaderProgram, "rubyOutputSize");
-        glUniform2fv (location, 1, outputSize);
-
 		float textureSize[2] = { (float)quadTextureSize, (float)quadTextureSize };
-        location = glGetUniformLocation (shaderProgram, "rubyTextureSize");
-        glUniform2fv (location, 1, textureSize);
+
+		if(shader_type == OGL_SHADER_GLSL) {
+			location = glGetUniformLocation (shaderProgram, "rubyInputSize");
+			glUniform2fv (location, 1, inputSize);
+
+			location = glGetUniformLocation (shaderProgram, "rubyOutputSize");
+			glUniform2fv (location, 1, outputSize);
+
+			location = glGetUniformLocation (shaderProgram, "rubyTextureSize");
+			glUniform2fv (location, 1, textureSize);
+		} else if(shader_type == OGL_SHADER_CG) {
+			CGparameter cgpModelViewProj = cgGetNamedParameter(cgVertexProgram, "modelViewProj");
+
+			CGparameter cgpVideoSize = cgGetNamedParameter(cgFragmentProgram, "IN.video_size");
+			CGparameter cgpTextureSize = cgGetNamedParameter(cgFragmentProgram, "IN.texture_size");
+			CGparameter cgpOutputSize = cgGetNamedParameter(cgFragmentProgram, "IN.output_size");
+
+			cgGLSetStateMatrixParameter(cgpModelViewProj, CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY);
+			cgGLSetParameter2fv(cgpVideoSize, inputSize);
+			cgGLSetParameter2fv(cgpTextureSize, textureSize);
+			cgGLSetParameter2fv(cgpOutputSize, outputSize);
+		}
     }
 
 	glPixelStorei(GL_UNPACK_ROW_LENGTH, quadTextureSize);
@@ -305,8 +324,8 @@ bool COpenGL::ApplyDisplayChanges(void)
 	if(wglSwapIntervalEXT) {
 		wglSwapIntervalEXT(GUI.Vsync?1:0);
 	}
-	if(GUI.shaderEnabled && GUI.GLSLshaderFileName)
-		SetShaders(GUI.GLSLshaderFileName);
+	if(GUI.shaderEnabled && GUI.OGLshaderFileName)
+		SetShaders(GUI.OGLshaderFileName);
 	else
 		SetShaders(NULL);
 
@@ -456,32 +475,79 @@ bool COpenGL::LoadShaderFunctions()
 	return shaderFunctionsLoaded;
 }
 
-char *ReadFileContents(const TCHAR *filename)
+bool COpenGL::SetShaders(const TCHAR *file)
 {
-	HANDLE hFile;
-	DWORD size;
-	DWORD bytesRead;
-	char *contents;
-
-	hFile = CreateFile(filename, GENERIC_READ, FILE_SHARE_READ, NULL,
-				OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN , 0);
-	if(hFile == INVALID_HANDLE_VALUE){
-		return NULL;
+	SetShadersCG(NULL);
+	SetShadersGLSL(NULL);
+	shader_type = OGL_SHADER_NONE;
+	if(file!=NULL && lstrlen(file)>3 && _tcsncicmp(&file[lstrlen(file)-3],TEXT(".cg"),3)==0) {
+		return SetShadersCG(file);
+	} else {
+		return SetShadersGLSL(file);
 	}
-	size = GetFileSize(hFile,NULL);
-	contents = new char[size+1];
-	if(!ReadFile(hFile,contents,size,&bytesRead,NULL)) {
-		CloseHandle(hFile);
-		delete[] contents;
-		return NULL;
-	}
-	CloseHandle(hFile);
-	contents[size] = '\0';
-	return contents;
-
 }
 
-bool COpenGL::SetShaders(const TCHAR *glslFileName)
+bool COpenGL::SetShadersCG(const TCHAR *file)
+{
+	TCHAR errorMsg[MAX_PATH + 50];
+	HRESULT hr;
+
+	if(cgFragmentProgram) {
+		cgDestroyProgram(cgFragmentProgram);
+		cgFragmentProgram = NULL;
+	}
+	if(cgVertexProgram) {
+		cgDestroyProgram(cgVertexProgram);
+		cgVertexProgram = NULL;
+	}
+
+	CGprofile vertexProfile = cgGLGetLatestProfile(CG_GL_VERTEX);
+	CGprofile fragmentProfile = cgGLGetLatestProfile(CG_GL_FRAGMENT);
+
+	cgGLDisableProfile(vertexProfile);
+	cgGLDisableProfile(fragmentProfile);
+
+	if (file == NULL || *file==TEXT('\0'))
+		return true;
+
+	cgGLSetOptimalOptions(vertexProfile);
+	cgGLSetOptimalOptions(fragmentProfile);
+
+	char *fileContents = ReadShaderFileContents(file);
+	if(!fileContents)
+		return false;
+
+	cgVertexProgram = cgCreateProgram( cgContext, CG_SOURCE, fileContents,
+						vertexProfile, "main_vertex", NULL);
+
+	cgFragmentProgram = cgCreateProgram( cgContext, CG_SOURCE, fileContents,
+						fragmentProfile, "main_fragment", NULL);
+
+	delete [] fileContents;
+
+	if(!cgVertexProgram && !cgFragmentProgram) {
+		_stprintf(errorMsg,TEXT("No vertex or fragment program in file:\n%s"),file);
+		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"), MB_OK|MB_ICONEXCLAMATION);
+		return false;
+	}
+
+	if(cgVertexProgram) {
+		cgGLEnableProfile(vertexProfile);
+		cgGLLoadProgram(cgVertexProgram);
+		cgGLBindProgram(cgVertexProgram);
+	}
+	if(cgFragmentProgram) {
+		cgGLEnableProfile(fragmentProfile);
+		cgGLLoadProgram(cgFragmentProgram);
+		cgGLBindProgram(cgFragmentProgram);
+	}
+
+	shader_type = OGL_SHADER_CG;
+
+	return true;
+}
+
+bool COpenGL::SetShadersGLSL(const TCHAR *glslFileName)
 {
 	char *fragment=NULL, *vertex=NULL;
 	IXMLDOMDocument * pXMLDoc = NULL;
@@ -491,8 +557,6 @@ bool COpenGL::SetShaders(const TCHAR *glslFileName)
 	BSTR queryString, nodeContent;
 
 	TCHAR errorMsg[MAX_PATH + 50];
-
-	shaderCompiled = false;
 
 	if(fragmentShader) {
 		glDetachShader(shaderProgram,fragmentShader);
@@ -631,7 +695,7 @@ bool COpenGL::SetShaders(const TCHAR *glslFileName)
     glLinkProgram(shaderProgram);
     glUseProgram(shaderProgram);
 
-	shaderCompiled = true;
+	shader_type = OGL_SHADER_GLSL;
 
     return true;
 }

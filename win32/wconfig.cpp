@@ -865,8 +865,8 @@ void WinRegisterConfigItems()
 	AddUIntC("FilterHiRes", GUI.ScaleHiRes, 0, filterString2);
 	AddBoolC("BlendHiRes", GUI.BlendHiRes, true, "true to horizontally blend Hi-Res images (better transparency effect on filters that do not account for this)");
 	AddBoolC("ShaderEnabled", GUI.shaderEnabled, false, "true to use pixel shader (if supported by output method)");
-	AddStringC("Direct3D:HLSLFileName", GUI.HLSLshaderFileName, MAX_PATH, "", "shader filename for Direct3D mode");
-	AddStringC("OpenGL:GLSLFileName", GUI.GLSLshaderFileName, MAX_PATH, "", "shader filename for OpenGL mode (bsnes-style XML shader)");
+	AddStringC("Direct3D:D3DShader", GUI.D3DshaderFileName, MAX_PATH, "", "shader filename for Direct3D mode (HLSL effect file or CG shader");
+	AddStringC("OpenGL:OGLShader", GUI.OGLshaderFileName, MAX_PATH, "", "shader filename for OpenGL mode (bsnes-style XML shader or CG shader)");
 	AddBoolC("ExtendHeight", GUI.HeightExtend, false, "true to display an extra 15 pixels at the bottom, which few games use. Also increases AVI output size from 256x224 to 256x240.");
 	AddBoolC("AlwaysCenterImage", GUI.AlwaysCenterImage,false, "true to center the image even if larger than window");
 	AddIntC("Window:Width", GUI.window_size.right, 512, "256=1x, 512=2x, 768=3x, 1024=4x, etc. (usually)");

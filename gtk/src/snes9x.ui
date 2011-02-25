@@ -2095,7 +2095,7 @@
                                     <child>
                                       <object class="GtkTable" id="table7">
                                         <property name="visible">True</property>
-                                        <property name="n_rows">3</property>
+                                        <property name="n_rows">4</property>
                                         <property name="n_columns">2</property>
                                         <property name="column_spacing">10</property>
                                         <property name="row_spacing">5</property>
@@ -2141,8 +2141,8 @@
                                           <packing>
                                             <property name="left_attach">1</property>
                                             <property name="right_attach">2</property>
-                                            <property name="top_attach">2</property>
-                                            <property name="bottom_attach">3</property>
+                                            <property name="top_attach">3</property>
+                                            <property name="bottom_attach">4</property>
                                             <property name="x_options">GTK_FILL</property>
                                             <property name="y_options">GTK_FILL</property>
                                           </packing>
@@ -2154,8 +2154,8 @@
                                             <property name="label" translatable="yes">Buffer size:</property>
                                           </object>
                                           <packing>
-                                            <property name="top_attach">2</property>
-                                            <property name="bottom_attach">3</property>
+                                            <property name="top_attach">3</property>
+                                            <property name="bottom_attach">4</property>
                                             <property name="x_options">GTK_FILL</property>
                                             <property name="y_options">GTK_FILL</property>
                                           </packing>
@@ -2214,6 +2214,30 @@
                                             <property name="left_attach">1</property>
                                             <property name="right_attach">2</property>
                                             <property name="x_options">GTK_FILL</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel" id="label139">
+                                            <property name="visible">True</property>
+                                            <property name="xalign">0</property>
+                                            <property name="label" translatable="yes">Video rate:</property>
+                                          </object>
+                                          <packing>
+                                            <property name="top_attach">2</property>
+                                            <property name="bottom_attach">3</property>
+                                            <property name="x_options">GTK_FILL</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel" id="relative_video_rate">
+                                            <property name="visible">True</property>
+                                            <property name="label" translatable="yes">label</property>
+                                          </object>
+                                          <packing>
+                                            <property name="left_attach">1</property>
+                                            <property name="right_attach">2</property>
+                                            <property name="top_attach">2</property>
+                                            <property name="bottom_attach">3</property>
                                           </packing>
                                         </child>
                                       </object>

@@ -183,6 +183,9 @@
 #include <d3dx9.h>
 #include <windows.h>
 
+#include <Cg/cg.h>
+#include <Cg/cgD3D9.h>
+
 #include "render.h"
 #include "wsnes9x.h"
 #include "IS9xDisplayOutput.h"
@@ -198,6 +201,8 @@ typedef struct _VERTEX {
 			this->x=x;this->y=y;this->z=z;this->rhw=rhw;this->tx=tx;this->ty=ty;
 		}
 } VERTEX; //our custom vertex with a constuctor for easier assignment
+
+enum current_d3d_shader_type { D3D_SHADER_NONE, D3D_SHADER_HLSL, D3D_SHADER_CG };
 
 class CDirect3D: public IS9xDisplayOutput
 {
@@ -218,7 +223,9 @@ private:
 
 	LPD3DXEFFECT            effect;
 	LPDIRECT3DTEXTURE9      rubyLUT[MAX_SHADER_TEXTURES];
-	bool shader_compiled;
+	CGcontext cgContext;
+	CGprogram cgVertexProgram, cgFragmentProgram;
+	current_d3d_shader_type shader_type;
 	float shaderTimer;
 	int shaderTimeStart;
 	int shaderTimeElapsed;
@@ -231,6 +238,8 @@ private:
 	bool ResetDevice();
 	void SetShaderVars();
 	bool SetShader(const TCHAR *file);
+	bool SetShaderHLSL(const TCHAR *file);
+	bool SetShaderCG(const TCHAR *file);
 
 public:
 	CDirect3D();
