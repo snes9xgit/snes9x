@@ -222,13 +222,6 @@ void WinRefreshDisplay(void)
 
 	SelectRenderMethod ();
 
-	Src.Surface = (BYTE *)GFX.Screen;
-
-	if(Src.Width > SNES_WIDTH && GUI.BlendHiRes) {
-		RenderMergeHires(Src.Surface,ScreenBufferBlend,Src.Pitch,Src.Width,Src.Height);
-		Src.Surface = ScreenBufferBlend;
-	}
-
 	S9xDisplayOutput->Render(Src);
 	GUI.FlipCounter++;
 }

@@ -3217,7 +3217,7 @@ int WINAPI WinMain(
 		SetMenu (GUI.hWnd, NULL);
 	}
 
-	InitLUTsWin32(); // init win hq2x
+	InitRenderFilters();
 
     GUI.ControlForced = 0xff;
 
