@@ -282,14 +282,25 @@ void COpenGL::Render(SSurface Src)
 		} else if(shader_type == OGL_SHADER_CG) {
 			CGparameter cgpModelViewProj = cgGetNamedParameter(cgVertexProgram, "modelViewProj");
 
+			cgGLSetStateMatrixParameter(cgpModelViewProj, CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY);
+
 			CGparameter cgpVideoSize = cgGetNamedParameter(cgFragmentProgram, "IN.video_size");
 			CGparameter cgpTextureSize = cgGetNamedParameter(cgFragmentProgram, "IN.texture_size");
 			CGparameter cgpOutputSize = cgGetNamedParameter(cgFragmentProgram, "IN.output_size");
 
-			cgGLSetStateMatrixParameter(cgpModelViewProj, CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY);
-			cgGLSetParameter2fv(cgpVideoSize, inputSize);
-			cgGLSetParameter2fv(cgpTextureSize, textureSize);
-			cgGLSetParameter2fv(cgpOutputSize, outputSize);
+#define setProgram2fv(program,varname,floats)\
+{\
+	CGparameter cgp = cgGetNamedParameter(program, varname);\
+	if(cgp)\
+		cgGLSetParameter2fv(cgp,floats);\
+}\
+
+			setProgram2fv(cgFragmentProgram,"IN.video_size",inputSize);
+			setProgram2fv(cgFragmentProgram,"IN.texture_size",textureSize);
+			setProgram2fv(cgFragmentProgram,"IN.output_size",outputSize);
+			setProgram2fv(cgVertexProgram,"IN.video_size",inputSize);
+			setProgram2fv(cgVertexProgram,"IN.texture_size",textureSize);
+			setProgram2fv(cgVertexProgram,"IN.output_size",outputSize);
 		}
     }
 
@@ -487,6 +498,26 @@ bool COpenGL::SetShaders(const TCHAR *file)
 	}
 }
 
+void COpenGL::checkForCgError(const char *situation)
+{
+	char buffer[4096];
+	CGerror error = cgGetError();
+	const char *string = cgGetErrorString(error);
+
+	if (error != CG_NO_ERROR) {
+		sprintf(buffer,
+			  "Situation: %s\n"
+			  "Error: %s\n\n"
+			  "Cg compiler output...\n", situation, string);
+		MessageBoxA(0, buffer,
+				  "Cg error", MB_OK|MB_ICONEXCLAMATION);
+		if (error == CG_COMPILER_ERROR) {
+			MessageBoxA(0, cgGetLastListing(cgContext),
+					  "Cg compilation error", MB_OK|MB_ICONEXCLAMATION);
+		}
+	}
+}
+
 bool COpenGL::SetShadersCG(const TCHAR *file)
 {
 	TCHAR errorMsg[MAX_PATH + 50];
@@ -520,14 +551,16 @@ bool COpenGL::SetShadersCG(const TCHAR *file)
 	cgVertexProgram = cgCreateProgram( cgContext, CG_SOURCE, fileContents,
 						vertexProfile, "main_vertex", NULL);
 
+	checkForCgError("Compiling vertex program");
+
 	cgFragmentProgram = cgCreateProgram( cgContext, CG_SOURCE, fileContents,
 						fragmentProfile, "main_fragment", NULL);
 
+	checkForCgError("Compiling fragment program");
+
 	delete [] fileContents;
 
-	if(!cgVertexProgram && !cgFragmentProgram) {
-		_stprintf(errorMsg,TEXT("No vertex or fragment program in file:\n%s"),file);
-		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"), MB_OK|MB_ICONEXCLAMATION);
+	if(!cgVertexProgram || !cgFragmentProgram) {
 		return false;
 	}
 

@@ -239,6 +239,7 @@ private:
 	void SetShaderVars();
 	bool SetShader(const TCHAR *file);
 	bool SetShaderHLSL(const TCHAR *file);
+	void checkForCgError(const char *situation);
 	bool SetShaderCG(const TCHAR *file);
 
 public:

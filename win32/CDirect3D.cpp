@@ -341,6 +341,26 @@ bool CDirect3D::SetShader(const TCHAR *file)
 	}
 }
 
+void CDirect3D::checkForCgError(const char *situation)
+{
+	char buffer[4096];
+	CGerror error = cgGetError();
+	const char *string = cgGetErrorString(error);
+
+	if (error != CG_NO_ERROR) {
+		sprintf(buffer,
+			  "Situation: %s\n"
+			  "Error: %s\n\n"
+			  "Cg compiler output...\n", situation, string);
+		MessageBoxA(0, buffer,
+				  "Cg error", MB_OK|MB_ICONEXCLAMATION);
+		if (error == CG_COMPILER_ERROR) {
+			MessageBoxA(0, cgGetLastListing(cgContext),
+					  "Cg compilation error", MB_OK|MB_ICONEXCLAMATION);
+		}
+	}
+}
+
 bool CDirect3D::SetShaderCG(const TCHAR *file)
 {
 	TCHAR errorMsg[MAX_PATH + 50];
@@ -371,14 +391,16 @@ bool CDirect3D::SetShaderCG(const TCHAR *file)
 	cgVertexProgram = cgCreateProgram( cgContext, CG_SOURCE, fileContents,
 						vertexProfile, "main_vertex", vertexOptions);
 
+	checkForCgError("Compiling vertex program");
+
 	cgFragmentProgram = cgCreateProgram( cgContext, CG_SOURCE, fileContents,
 						pixelProfile, "main_fragment", pixelOptions);
 
+	checkForCgError("Compiling fragment program");
+
 	delete [] fileContents;
 
-	if(!cgVertexProgram && !cgFragmentProgram) {
-		_stprintf(errorMsg,TEXT("No vertex or fragment program in file:\n%s"),file);
-		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"), MB_OK|MB_ICONEXCLAMATION);
+	if(!cgVertexProgram || !cgFragmentProgram) {
 		return false;
 	}
 
@@ -591,12 +613,6 @@ void CDirect3D::SetShaderVars()
 			}
 		}
 	} else if(shader_type == D3D_SHADER_CG) {
-		CGparameter cgpModelViewProj = cgGetNamedParameter(cgVertexProgram, "modelViewProj");
-
-		CGparameter cgpVideoSize = cgGetNamedParameter(cgFragmentProgram, "IN.video_size");
-		CGparameter cgpTextureSize = cgGetNamedParameter(cgFragmentProgram, "IN.texture_size");
-		CGparameter cgpOutputSize = cgGetNamedParameter(cgFragmentProgram, "IN.output_size");
-
 		D3DXMATRIX mvpMat;
 		D3DXVECTOR2 videoSize;
 		D3DXVECTOR2 textureSize;
@@ -609,14 +625,25 @@ void CDirect3D::SetShaderVars()
 
 		D3DXMatrixIdentity(&mvpMat);
 
+		CGparameter cgpModelViewProj = cgGetNamedParameter(cgVertexProgram, "modelViewProj");
+
 		if(cgpModelViewProj)
 			cgD3D9SetUniformMatrix(cgpModelViewProj,&mvpMat);
-		if(cgpVideoSize)
-			cgD3D9SetUniform(cgpVideoSize,&videoSize);
-		if(cgpTextureSize)
-			cgD3D9SetUniform(cgpTextureSize,&textureSize);
-		if(cgpOutputSize)
-			cgD3D9SetUniform(cgpOutputSize,&outputSize);
+
+#define setProgramUniform(program,varname,floats)\
+{\
+	CGparameter cgp = cgGetNamedParameter(program, varname);\
+	if(cgp)\
+		cgD3D9SetUniform(cgp,floats);\
+}\
+
+		setProgramUniform(cgFragmentProgram,"IN.video_size",&videoSize);
+		setProgramUniform(cgFragmentProgram,"IN.texture_size",&textureSize);
+		setProgramUniform(cgFragmentProgram,"IN.output_size",&outputSize);
+
+		setProgramUniform(cgVertexProgram,"IN.video_size",&videoSize);
+		setProgramUniform(cgVertexProgram,"IN.texture_size",&textureSize);
+		setProgramUniform(cgVertexProgram,"IN.output_size",&outputSize);
 	}
 }
 
