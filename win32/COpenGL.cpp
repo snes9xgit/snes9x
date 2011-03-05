@@ -343,7 +343,6 @@ bool COpenGL::ApplyDisplayChanges(void)
 	RECT windowSize;
 	GetClientRect(hWnd,&windowSize);
 	ChangeRenderSize(windowSize.right,windowSize.bottom);
-	SetupVertices();
 	return true;
 }
 

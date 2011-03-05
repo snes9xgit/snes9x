@@ -190,15 +190,14 @@
 #include "wsnes9x.h"
 #include "IS9xDisplayOutput.h"
 
-#define FVF_COORDS_TEX D3DFVF_XYZRHW | D3DFVF_TEX1
+#define FVF_COORDS_TEX D3DFVF_XYZ | D3DFVF_TEX1
 
 typedef struct _VERTEX {
 		float x, y, z;
-		float rhw;
 		float tx, ty;
 		_VERTEX() {}
-		_VERTEX(float x,float y,float z,float rhw,float tx,float ty) {
-			this->x=x;this->y=y;this->z=z;this->rhw=rhw;this->tx=tx;this->ty=ty;
+		_VERTEX(float x,float y,float z,float tx,float ty) {
+			this->x=x;this->y=y;this->z=z;this->tx=tx;this->ty=ty;
 		}
 } VERTEX; //our custom vertex with a constuctor for easier assignment
 
@@ -226,6 +225,7 @@ private:
 	CGcontext cgContext;
 	CGprogram cgVertexProgram, cgFragmentProgram;
 	current_d3d_shader_type shader_type;
+
 	float shaderTimer;
 	int shaderTimeStart;
 	int shaderTimeElapsed;
@@ -234,6 +234,7 @@ private:
 	void CreateDrawSurface();
 	void DestroyDrawSurface();
 	bool ChangeDrawSurfaceSize(unsigned int scale);
+	void SetViewport();
 	void SetupVertices();
 	bool ResetDevice();
 	void SetShaderVars();

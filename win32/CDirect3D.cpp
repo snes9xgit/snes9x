@@ -284,9 +284,13 @@ bool CDirect3D::Initialize(HWND hWnd)
 		DXTRACE_ERR_MSGBOX(TEXT("Error setting cg device"), hr);
 	}
 
+	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+
 	pDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
 
 	init_done = true;
+
+	SetViewport();
 
 	ApplyDisplayChanges();
 
@@ -405,8 +409,25 @@ bool CDirect3D::SetShaderCG(const TCHAR *file)
 	}
 
 	if(cgVertexProgram) {
-		hr = cgD3D9LoadProgram(cgVertexProgram,false,0);
+		hr = cgD3D9LoadProgram(cgVertexProgram,true,0);
 		hr = cgD3D9BindProgram(cgVertexProgram);
+
+		D3DXMATRIX matWorld;
+		D3DXMATRIX matView;
+		D3DXMATRIX matProj;
+		D3DXMATRIX mvp;
+
+		pDevice->GetTransform(D3DTS_WORLD,&matWorld);
+		pDevice->GetTransform(D3DTS_VIEW,&matView);
+		pDevice->GetTransform(D3DTS_PROJECTION,&matProj);
+
+		mvp = matWorld * matView * matProj;
+		D3DXMatrixTranspose(&mvp,&mvp);
+
+		CGparameter cgpModelViewProj = cgGetNamedParameter(cgVertexProgram, "modelViewProj");
+
+		if(cgpModelViewProj)
+			cgD3D9SetUniformMatrix(cgpModelViewProj,&mvp);
 	}
 	if(cgFragmentProgram) {
 		hr = cgD3D9LoadProgram(cgFragmentProgram,false,0);
@@ -613,7 +634,7 @@ void CDirect3D::SetShaderVars()
 			}
 		}
 	} else if(shader_type == D3D_SHADER_CG) {
-		D3DXMATRIX mvpMat;
+
 		D3DXVECTOR2 videoSize;
 		D3DXVECTOR2 textureSize;
 		D3DXVECTOR2 outputSize;
@@ -622,13 +643,6 @@ void CDirect3D::SetShaderVars()
 		textureSize.x = textureSize.y = (float)quadTextureSize;
 		outputSize.x = GUI.Stretch?(float)dPresentParams.BackBufferWidth:(float)afterRenderWidth;
 		outputSize.y = GUI.Stretch?(float)dPresentParams.BackBufferHeight:(float)afterRenderHeight;
-
-		D3DXMatrixIdentity(&mvpMat);
-
-		CGparameter cgpModelViewProj = cgGetNamedParameter(cgVertexProgram, "modelViewProj");
-
-		if(cgpModelViewProj)
-			cgD3D9SetUniformMatrix(cgpModelViewProj,&mvpMat);
 
 #define setProgramUniform(program,varname,floats)\
 {\
@@ -703,11 +717,11 @@ void CDirect3D::Render(SSurface Src)
 		drawSurface->UnlockRect(0);
 	}
 
-	//if the output size of the render method changes we need new vertices
+	//if the output size of the render method changes we need to update the viewport
 	if(afterRenderHeight != dstRect.bottom || afterRenderWidth != dstRect.right) {
 		afterRenderHeight = dstRect.bottom;
 		afterRenderWidth = dstRect.right;
-		SetupVertices();
+		SetViewport();
 	}
 
 	if(!GUI.Stretch||GUI.AspectRatio)
@@ -719,12 +733,12 @@ void CDirect3D::Render(SSurface Src)
 	pDevice->SetFVF(FVF_COORDS_TEX);
 	pDevice->SetStreamSource(0,vertexBuffer,0,sizeof(VERTEX));
 
+	SetShaderVars();
+
 	if(shader_type == D3D_SHADER_CG) {
 		cgD3D9BindProgram(cgFragmentProgram);
 		cgD3D9BindProgram(cgVertexProgram);
 	}
-
-	SetShaderVars();
 
 	if (shader_type == D3D_SHADER_HLSL) {
 		UINT passes;
@@ -839,24 +853,43 @@ calculates the vertex coordinates
 */
 void CDirect3D::SetupVertices()
 {
-	RECT drawRect;
 	void *pLockedVertexBuffer;
-
-	drawRect = CalculateDisplayRect(afterRenderWidth,afterRenderHeight,dPresentParams.BackBufferWidth,dPresentParams.BackBufferHeight);
 
 	float tX = (float)afterRenderWidth / (float)quadTextureSize;
 	float tY = (float)afterRenderHeight / (float)quadTextureSize;
 
-	//we need to substract -0.5 from the x/y coordinates to match texture with pixel space
-	//see http://msdn.microsoft.com/en-us/library/bb219690(VS.85).aspx
-	triangleStripVertices[0] = VERTEX((float)drawRect.left - 0.5f,(float)drawRect.bottom - 0.5f,0.0f,1.0f,0.0f,tY);
-	triangleStripVertices[1] = VERTEX((float)drawRect.left - 0.5f,(float)drawRect.top - 0.5f,0.0f,1.0f,0.0f,0.0f);
-	triangleStripVertices[2] = VERTEX((float)drawRect.right - 0.5f,(float)drawRect.bottom - 0.5f,0.0f,1.0f,tX,tY);
-	triangleStripVertices[3] = VERTEX((float)drawRect.right - 0.5f,(float)drawRect.top - 0.5f,0.0f,1.0f,tX,0.0f);
+	triangleStripVertices[0] = VERTEX(0.0f,0.0f,0.0f,0.0f,tY);
+	triangleStripVertices[1] = VERTEX(0.0f,1.0f,0.0f,0.0f,0.0f);
+	triangleStripVertices[2] = VERTEX(1.0f,0.0f,0.0f,tX,tY);
+	triangleStripVertices[3] = VERTEX(1.0f,1.0f,0.0f,tX,0.0f);
 
 	HRESULT hr = vertexBuffer->Lock(0,0,&pLockedVertexBuffer,NULL);
 	memcpy(pLockedVertexBuffer,triangleStripVertices,sizeof(triangleStripVertices));
 	vertexBuffer->Unlock();
+}
+
+void CDirect3D::SetViewport()
+{
+	D3DXMATRIX matIdentity;
+	D3DXMATRIX matProjection;
+
+	D3DXMatrixOrthoOffCenterLH(&matProjection,0.0f,1.0f,0.0f,1.0f,0.0f,1.0f);
+	D3DXMatrixIdentity(&matIdentity);
+	pDevice->SetTransform(D3DTS_WORLD,&matIdentity);
+	pDevice->SetTransform(D3DTS_VIEW,&matIdentity);
+	pDevice->SetTransform(D3DTS_PROJECTION,&matProjection);
+
+	RECT drawRect = CalculateDisplayRect(afterRenderWidth,afterRenderHeight,dPresentParams.BackBufferWidth,dPresentParams.BackBufferHeight);
+	D3DVIEWPORT9 viewport;
+	viewport.X = drawRect.left;
+	viewport.Y = drawRect.top;
+	viewport.Height = drawRect.bottom - drawRect.top;
+	viewport.Width = drawRect.right - drawRect.left;
+	viewport.MinZ = 0.0f;
+	viewport.MaxZ = 1.0f;
+	HRESULT hr = pDevice->SetViewport(&viewport);
+
+	SetupVertices();
 }
 
 /*  CDirect3D::ChangeRenderSize
@@ -879,7 +912,8 @@ bool CDirect3D::ChangeRenderSize(unsigned int newWidth, unsigned int newHeight)
 
 	if(!ResetDevice())
 		return false;
-	SetupVertices();
+
+	SetViewport();
 	return true;
 }
 
@@ -937,6 +971,8 @@ bool CDirect3D::ResetDevice()
 		pDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
 		pDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_POINT);
 	}
+
+	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 
 	pDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
 	
