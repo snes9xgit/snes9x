@@ -222,13 +222,6 @@ void WinRefreshDisplay(void)
 
 	SelectRenderMethod ();
 
-	Src.Surface = (BYTE *)GFX.Screen;
-
-	if(Src.Width > SNES_WIDTH && GUI.BlendHiRes) {
-		RenderMergeHires(Src.Surface,ScreenBufferBlend,Src.Pitch,Src.Width,Src.Height);
-		Src.Surface = ScreenBufferBlend;
-	}
-
 	S9xDisplayOutput->Render(Src);
 	GUI.FlipCounter++;
 }
@@ -796,7 +789,7 @@ void WinDisplayStringFromBottom (const char *string, int linesFromBottom, int pi
 
 static int	font_width = 8, font_height = 9;
 static void *displayScreen;
-int displayPpl, displayWidth, displayHeight, displayScale,fontwidth_scaled,fontheight_scaled;
+int displayPpl, displayWidth, displayHeight, displayScale, fontwidth_scaled, fontheight_scaled;
 
 void WinSetCustomDisplaySurface(void *screen, int ppl, int width, int height, int scale)
 {
@@ -804,7 +797,7 @@ void WinSetCustomDisplaySurface(void *screen, int ppl, int width, int height, in
 	displayPpl=ppl;
 	displayWidth=width;
 	displayHeight=height;
-	displayScale=scale;
+	displayScale=max(1,width/IPPU.RenderedScreenWidth);
 	fontwidth_scaled=font_width*displayScale;
 	fontheight_scaled=font_height*displayScale;
 }
@@ -933,7 +926,7 @@ void WinDisplayStringInBuffer (const char *string, int linesFromBottom, int pixe
 	if (linesFromBottom <= 0)
 		linesFromBottom = 1;
 
-	screenPtrType	*dst = (screenPtrType	*)displayScreen + (displayHeight - fontheight_scaled * linesFromBottom) * displayPpl + (int)(pixelsFromLeft * (2*(float)displayWidth/IPPU.RenderedScreenWidth - displayScale));
+	screenPtrType	*dst = (screenPtrType	*)displayScreen + (displayHeight - fontheight_scaled * linesFromBottom) * displayPpl + (int)(pixelsFromLeft * (float)displayWidth/IPPU.RenderedScreenWidth);
 
 	int	len = strlen(string);
 	int	max_chars = displayWidth / (fontwidth_scaled - displayScale);

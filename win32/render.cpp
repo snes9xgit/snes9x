@@ -220,14 +220,20 @@ void RenderBlarggNTSCComposite(SSurface Src, SSurface Dst, RECT *);
 void RenderBlarggNTSCSvideo(SSurface Src, SSurface Dst, RECT *);
 void RenderBlarggNTSCRgb(SSurface Src, SSurface Dst, RECT *);
 void RenderBlarggNTSC(SSurface Src, SSurface Dst, RECT *);
+void RenderMergeHires(void *src, int srcPitch , void* dst, int dstPitch, unsigned int width, unsigned int height);
+void InitLUTsWin32(void);
 // Contains the pointer to the now active render method
-TRenderMethod RenderMethod = RenderPlain;
-TRenderMethod RenderMethodHiRes = RenderPlain;
+typedef void (*TRenderMethod)( SSurface Src, SSurface Dst, RECT *);
+TRenderMethod _RenderMethod = RenderPlain;
+TRenderMethod _RenderMethodHiRes = RenderPlain;
 
 // Used as change log
 static uint8 ChangeLog1 [EXT_PITCH * MAX_SNES_HEIGHT];
 static uint8 ChangeLog2 [EXT_PITCH * MAX_SNES_HEIGHT];
 static uint8 ChangeLog3 [EXT_PITCH * MAX_SNES_HEIGHT];
+
+BYTE *BlendBuf = NULL;
+BYTE *BlendBuffer = NULL;
 
 uint8 *ChangeLog [3] = {
     ChangeLog1, ChangeLog2, ChangeLog3
@@ -236,6 +242,11 @@ uint8 *ChangeLog [3] = {
 START_EXTERN_C
 uint8 snes9x_clear_change_log = 0;
 END_EXTERN_C
+
+enum BlarggMode { UNINITIALIZED,BLARGGCOMPOSITE,BLARGGSVIDEO,BLARGGRGB };
+
+snes_ntsc_t *ntsc = NULL;
+BlarggMode blarggMode = UNINITIALIZED;
 
 TRenderMethod FilterToMethod(RenderFilter filterID)
 {
@@ -381,15 +392,30 @@ inline static bool GetFilter32BitSupport(RenderFilter filterID)
 	}
 }
 
+inline static bool GetFilterBlendSupport(RenderFilter filterID)
+{
+	switch(filterID)
+	{
+		case FILTER_SIMPLE1X:
+		case FILTER_BLARGGCOMP:
+		case FILTER_BLARGGSVID:
+		case FILTER_BLARGGRGB:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
 void SelectRenderMethod()
 {
-    TRenderMethod OldRenderMethod = RenderMethod;
-    TRenderMethod OldRenderMethodHiRes = RenderMethodHiRes;
+    TRenderMethod OldRenderMethod = _RenderMethod;
+    TRenderMethod OldRenderMethodHiRes = _RenderMethodHiRes;
 
-	RenderMethod = FilterToMethod(GUI.Scale);
-	RenderMethodHiRes = FilterToMethod(GUI.ScaleHiRes);
+	_RenderMethod = FilterToMethod(GUI.Scale);
+	_RenderMethodHiRes = FilterToMethod(GUI.ScaleHiRes);
 
-	if (OldRenderMethod != RenderMethod || OldRenderMethodHiRes != RenderMethodHiRes)
+	if (OldRenderMethod != _RenderMethod || OldRenderMethodHiRes != _RenderMethodHiRes)
         snes9x_clear_change_log = GUI.NumFlipFrames;
 
 	GUI.DepthConverted = !GUI.NeedDepthConvert;
@@ -399,6 +425,32 @@ void SelectRenderMethod()
 	{
 		// filter supports converting
 		GUI.DepthConverted = true;
+	}
+}
+
+void RenderMethod(SSurface Src, SSurface Dst, RECT * rect)
+{
+	if(Src.Height > SNES_HEIGHT_EXTENDED || Src.Width == 512) {
+		if(GUI.BlendHiRes && Src.Width == 512 && !GetFilterBlendSupport(GUI.ScaleHiRes)) {
+			RenderMergeHires(Src.Surface,Src.Pitch,BlendBuffer,EXT_PITCH,Src.Width,Src.Height);
+			Src.Surface = BlendBuffer;
+		}
+		_RenderMethodHiRes(Src,Dst,rect);
+	} else {
+		_RenderMethod(Src,Dst,rect);
+	}
+}
+
+void InitRenderFilters(void)
+{
+	InitLUTsWin32();
+	if(!ntsc) {
+		ntsc =  new snes_ntsc_t;
+	}
+	if(!BlendBuf) {
+		BlendBuf = new BYTE [EXT_PITCH * EXT_HEIGHT];
+		BlendBuffer = BlendBuf + EXT_OFFSET;
+		memset(BlendBuf, 0, EXT_PITCH * EXT_HEIGHT);
 	}
 }
 
@@ -550,15 +602,12 @@ inline void SetRect(RECT* rect, int width, int height, int scale)
 }
 
 #define AVERAGE_565(el0, el1) (((el0) & (el1)) + ((((el0) ^ (el1)) & 0xF7DE) >> 1))
-void RenderMergeHires(void *src, void* dst, int pitch, unsigned int &width, unsigned int &height)
+void RenderMergeHires(void *src, int srcPitch , void* dst, int dstPitch, unsigned int width, unsigned int height)
 {
-    if (width <= 256)
-        return;
-
     for (register int y = 0; y < height; y++)
     {
-        register uint16 *input = (uint16 *) ((uint8 *) src + y * pitch);
-        register uint16 *output = (uint16 *) ((uint8 *) dst + y * pitch);
+        register uint16 *input = (uint16 *) ((uint8 *) src + y * srcPitch);
+        register uint16 *output = (uint16 *) ((uint8 *) dst + y * dstPitch);
         register uint16 l, r;
 
         l = 0;
@@ -2538,17 +2587,8 @@ void RenderSimple4X( SSurface Src, SSurface Dst, RECT *rect)
 	}
 }
 
-
-enum BlarggMode { UNINITIALIZED,BLARGGCOMPOSITE,BLARGGSVIDEO,BLARGGRGB };
-
-snes_ntsc_t *ntsc = NULL;
-BlarggMode blarggMode = UNINITIALIZED;
-
 void RenderBlarggNTSCComposite( SSurface Src, SSurface Dst, RECT *rect)
 {
-	if(!ntsc) {
-		ntsc = (snes_ntsc_t *)malloc(sizeof(snes_ntsc_t));
-	}
 	if(blarggMode!=BLARGGCOMPOSITE) {
 		snes_ntsc_setup_t setup = snes_ntsc_composite;
 		setup.merge_fields = 1;
@@ -2560,9 +2600,6 @@ void RenderBlarggNTSCComposite( SSurface Src, SSurface Dst, RECT *rect)
 
 void RenderBlarggNTSCSvideo( SSurface Src, SSurface Dst, RECT *rect)
 {
-	if(!ntsc) {
-		ntsc = (snes_ntsc_t *)malloc(sizeof(snes_ntsc_t));
-	}
 	if(blarggMode!=BLARGGSVIDEO) {
 		snes_ntsc_setup_t setup = snes_ntsc_svideo;
 		setup.merge_fields = 1;
@@ -2574,9 +2611,6 @@ void RenderBlarggNTSCSvideo( SSurface Src, SSurface Dst, RECT *rect)
 
 void RenderBlarggNTSCRgb( SSurface Src, SSurface Dst, RECT *rect)
 {
-	if(!ntsc) {
-		ntsc = (snes_ntsc_t *)malloc(sizeof(snes_ntsc_t));
-	}
 	if(blarggMode!=BLARGGRGB) {
 		snes_ntsc_setup_t setup = snes_ntsc_rgb;
 		setup.merge_fields = 1;

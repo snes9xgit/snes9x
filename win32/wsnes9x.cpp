@@ -3217,7 +3217,7 @@ int WINAPI WinMain(
 		SetMenu (GUI.hWnd, NULL);
 	}
 
-	InitLUTsWin32(); // init win hq2x
+	InitRenderFilters();
 
     GUI.ControlForced = 0xff;
 
@@ -7085,12 +7085,15 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			strcpy(temp,GetFilterName((RenderFilter)filter));
 			SendDlgItemMessageA(hDlg,IDC_FILTERBOX,CB_ADDSTRING,0,(LPARAM) (LPCTSTR)temp);
 		}
-		for(int filter = 0 ; filter < (int)NUM_FILTERS ; filter++)
+		for(int filter = 0, hiResPos = 0 ; filter < (int)NUM_FILTERS ; filter++)
 		{
 			if(GetFilterHiResSupport((RenderFilter)filter))
 			{
 				strcpy(temp,GetFilterName((RenderFilter)filter));
 				SendDlgItemMessageA(hDlg,IDC_FILTERBOX2,CB_ADDSTRING,0,(LPARAM) (LPCTSTR)temp);
+				if(GUI.ScaleHiRes==filter)
+					SendDlgItemMessage(hDlg,IDC_FILTERBOX2,CB_SETCURSEL,(WPARAM)hiResPos,0);
+				hiResPos++;
 			}
 		}
 
@@ -7100,8 +7103,6 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 		// have to start focus on something like this or Escape won't exit the dialog
 		SetFocus(hDlg);
-
-		SendDlgItemMessage(hDlg,IDC_FILTERBOX2,CB_SETCURSEL,(WPARAM)GUI.ScaleHiRes,0);
 
 		break;
 	case WM_CLOSE:

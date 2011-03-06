@@ -191,13 +191,9 @@ struct SSurface {
 	unsigned int Width, Height;
 };
 
-typedef void (*TRenderMethod)( SSurface Src, SSurface Dst, RECT *);
+void RenderMethod(SSurface Src, SSurface Dst, RECT *);
 
 void SelectRenderMethod();
-void InitLUTsWin32();
-void RenderMergeHires(void *src, void* dst, int pitch, unsigned int &width, unsigned int &height);
-
-extern TRenderMethod RenderMethod;
-extern TRenderMethod RenderMethodHiRes;
+void InitRenderFilters();
 
 #endif

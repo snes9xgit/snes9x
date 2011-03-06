@@ -246,6 +246,7 @@ private:
 	PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
 
 	bool SetShaders(const TCHAR *file);
+	void checkForCgError(const char *situation);
 	bool SetShadersCG(const TCHAR *file);
 	bool SetShadersGLSL(const TCHAR *glslFileName);
 	bool LoadShaderFunctions();
