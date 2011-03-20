@@ -163,6 +163,16 @@ without also owning the actual SNES ROM cartridges, and even then you may be
 liable under various EULAs.
 
 
+CG Shaders
+--------
+If you want to use CG Shaders in Snex9x for windows you need to install the
+CG Toolkit from nvidia's developer zone:
+http://developer.nvidia.com/object/cg_download.html
+
+CG shaders work in both D3D and OpenGL. Various shaders can be found in
+Themaister's Emulator Shader Pack:
+https://github.com/Themaister/Emulator-Shader-Pack
+
 
 Controllers Support
 ===================
