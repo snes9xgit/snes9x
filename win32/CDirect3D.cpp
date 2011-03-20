@@ -178,9 +178,6 @@
 #pragma comment( lib, "d3dx9" )
 #pragma comment( lib, "DxErr" )
 
-#pragma comment( lib, "cg.lib" )
-#pragma comment( lib, "cgd3d9.lib" )
-
 #include "cdirect3d.h"
 #include "win32_display.h"
 #include "../snes9x.h"
@@ -225,6 +222,7 @@ CDirect3D::CDirect3D()
 	shaderTimeElapsed = 0;
 	cgContext = NULL;
 	cgVertexProgram = cgFragmentProgram = NULL;
+	cgAvailable = false;
 }
 
 /* CDirect3D::~CDirect3D()
@@ -278,10 +276,14 @@ bool CDirect3D::Initialize(HWND hWnd)
 		return false;
 	}
 
-	cgContext = cgCreateContext();
-	hr = cgD3D9SetDevice(pDevice);
-	if(FAILED(hr)) {
-		DXTRACE_ERR_MSGBOX(TEXT("Error setting cg device"), hr);
+	cgAvailable = loadCgFunctions();
+
+	if(cgAvailable) {
+		cgContext = cgCreateContext();
+		hr = cgD3D9SetDevice(pDevice);
+		if(FAILED(hr)) {
+			DXTRACE_ERR_MSGBOX(TEXT("Error setting cg device"), hr);
+		}
 	}
 
 	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
@@ -323,7 +325,8 @@ void CDirect3D::DeInitialize()
 		cgContext = NULL;
 	}
 
-	cgD3D9SetDevice(NULL);
+	if(cgAvailable)
+		cgD3D9SetDevice(NULL);
 
 	init_done = false;
 	afterRenderWidth = 0;
@@ -331,6 +334,8 @@ void CDirect3D::DeInitialize()
 	quadTextureSize = 0;
 	fullscreen = false;
 	filterScale = 0;
+	unloadCgLibrary();
+	cgAvailable = false;
 }
 
 bool CDirect3D::SetShader(const TCHAR *file)
@@ -381,6 +386,12 @@ bool CDirect3D::SetShaderCG(const TCHAR *file)
 
 	if (file == NULL || *file==TEXT('\0'))
 		return true;
+
+	if(!cgAvailable) {
+		MessageBox(NULL, TEXT("The CG runtime is unavailable, CG shaders will not run.\nConsult the snes9x readme for information on how to obtain the runtime."), TEXT("CG Error"),
+			MB_OK|MB_ICONEXCLAMATION);
+        return false;
+    }
 
 	CGprofile vertexProfile = cgD3D9GetLatestVertexProfile();
 	CGprofile pixelProfile = cgD3D9GetLatestPixelProfile();

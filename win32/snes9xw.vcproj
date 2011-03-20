@@ -3202,6 +3202,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\cgFunctions.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\cgFunctions.h"
+					>
+				</File>
+				<File
 					RelativePath=".\COpenGL.cpp"
 					>
 				</File>

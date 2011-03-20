@@ -9,9 +9,6 @@
 #include "../filter/hq2x.h"
 #include "../filter/2xsai.h"
 
-#pragma comment( lib, "cg.lib" )
-#pragma comment( lib, "cggl.lib" )
-
 
 COpenGL::COpenGL(void)
 {
@@ -33,6 +30,7 @@ COpenGL::COpenGL(void)
     fragmentShader = 0;
 	cgContext = NULL;
 	cgVertexProgram = cgFragmentProgram = NULL;
+	cgAvailable = false;
 }
 
 COpenGL::~COpenGL(void)
@@ -104,7 +102,10 @@ bool COpenGL::Initialize(HWND hWnd)
 	glVertexPointer(2, GL_FLOAT, 0, vertices);
 	glTexCoordPointer(2, GL_FLOAT, 0, texcoords);
 
-	cgContext = cgCreateContext();
+	cgAvailable = loadCgFunctions();
+	if(cgAvailable) {
+		cgContext = cgCreateContext();
+	}
 
 	GetClientRect(hWnd,&windowRect);
 	ChangeRenderSize(windowRect.right,windowRect.bottom);
@@ -139,6 +140,8 @@ void COpenGL::DeInitialize()
 	afterRenderHeight = 0;
 	shaderFunctionsLoaded = false;
 	shader_type = OGL_SHADER_NONE;
+	unloadCgLibrary();
+	cgAvailable = false;
 }
 
 void COpenGL::CreateDrawSurface()
@@ -283,10 +286,6 @@ void COpenGL::Render(SSurface Src)
 			CGparameter cgpModelViewProj = cgGetNamedParameter(cgVertexProgram, "modelViewProj");
 
 			cgGLSetStateMatrixParameter(cgpModelViewProj, CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY);
-
-			CGparameter cgpVideoSize = cgGetNamedParameter(cgFragmentProgram, "IN.video_size");
-			CGparameter cgpTextureSize = cgGetNamedParameter(cgFragmentProgram, "IN.texture_size");
-			CGparameter cgpOutputSize = cgGetNamedParameter(cgFragmentProgram, "IN.output_size");
 
 #define setProgram2fv(program,varname,floats)\
 {\
@@ -521,6 +520,7 @@ bool COpenGL::SetShadersCG(const TCHAR *file)
 {
 	TCHAR errorMsg[MAX_PATH + 50];
 	HRESULT hr;
+	CGprofile vertexProfile, fragmentProfile;
 
 	if(cgFragmentProgram) {
 		cgDestroyProgram(cgFragmentProgram);
@@ -531,14 +531,22 @@ bool COpenGL::SetShadersCG(const TCHAR *file)
 		cgVertexProgram = NULL;
 	}
 
-	CGprofile vertexProfile = cgGLGetLatestProfile(CG_GL_VERTEX);
-	CGprofile fragmentProfile = cgGLGetLatestProfile(CG_GL_FRAGMENT);
+	if(cgAvailable) {
+		vertexProfile = cgGLGetLatestProfile(CG_GL_VERTEX);
+		fragmentProfile = cgGLGetLatestProfile(CG_GL_FRAGMENT);
 
-	cgGLDisableProfile(vertexProfile);
-	cgGLDisableProfile(fragmentProfile);
+		cgGLDisableProfile(vertexProfile);
+		cgGLDisableProfile(fragmentProfile);
+	}
 
 	if (file == NULL || *file==TEXT('\0'))
 		return true;
+
+	if(!cgAvailable) {
+		MessageBox(NULL, TEXT("The CG runtime is unavailable, CG shaders will not run.\nConsult the snes9x readme for information on how to obtain the runtime."), TEXT("CG Error"),
+			MB_OK|MB_ICONEXCLAMATION);
+        return false;
+    }
 
 	cgGLSetOptimalOptions(vertexProfile);
 	cgGLSetOptimalOptions(fragmentProfile);

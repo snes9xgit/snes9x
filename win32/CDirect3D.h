@@ -183,8 +183,7 @@
 #include <d3dx9.h>
 #include <windows.h>
 
-#include <Cg/cg.h>
-#include <Cg/cgD3D9.h>
+#include "cgFunctions.h"
 
 #include "render.h"
 #include "wsnes9x.h"
@@ -225,6 +224,7 @@ private:
 	CGcontext cgContext;
 	CGprogram cgVertexProgram, cgFragmentProgram;
 	current_d3d_shader_type shader_type;
+	bool cgAvailable;
 
 	float shaderTimer;
 	int shaderTimeStart;
