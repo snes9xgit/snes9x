@@ -530,19 +530,25 @@ static pascal OSStatus GameWindowUserPaneEventHandler (EventHandlerCallRef, Even
 
 int main (int argc, char **argv)
 {
-	OSStatus		err;
-	EventHandlerRef	eref;
-	EventHandlerUPP	eUPP;
-	EventTypeSpec	mEvents[] = { { kEventClassCommand, kEventCommandProcess      },
-								  { kEventClassCommand, kEventCommandUpdateStatus } },
-					sEvents[] = { { kEventClassCommand, kEventCommandProcess      },
-								  { kEventClassCommand, kEventCommandUpdateStatus },
-								  { kEventClassMouse,   kEventMouseUp             },
-								  { kEventClassMouse,   kEventMouseMoved          },
-								  { kEventClassMouse,   kEventMouseDragged        } };
+#ifdef MAC_PANTHER_SUPPORT
+	NSAutoreleasePool	*pool;
+#endif
+	OSStatus			err;
+	EventHandlerRef		eref;
+	EventHandlerUPP		eUPP;
+	EventTypeSpec		mEvents[] = { { kEventClassCommand, kEventCommandProcess      },
+									  { kEventClassCommand, kEventCommandUpdateStatus } },
+						sEvents[] = { { kEventClassCommand, kEventCommandProcess      },
+									  { kEventClassCommand, kEventCommandUpdateStatus },
+									  { kEventClassMouse,   kEventMouseUp             },
+									  { kEventClassMouse,   kEventMouseMoved          },
+									  { kEventClassMouse,   kEventMouseDragged        } };
 
+#ifdef MAC_PANTHER_SUPPORT
+	pool = [[NSAutoreleasePool alloc] init];
+#endif
 	eUPP = NewEventHandlerUPP(MainEventHandler);
- 	err = InstallApplicationEventHandler(eUPP, GetEventTypeCount(mEvents), mEvents, NULL, &eref);
+	err = InstallApplicationEventHandler(eUPP, GetEventTypeCount(mEvents), mEvents, NULL, &eref);
 
 	Initialize();
 
@@ -566,7 +572,11 @@ int main (int argc, char **argv)
 
 			err = RemoveEventHandler(eref);
 			DisposeEventHandlerUPP(eUPP);
+		#ifdef MAC_PANTHER_SUPPORT
+			[pool release];
 
+			pool = [[NSAutoreleasePool alloc] init];
+		#endif
 			eUPP = NewEventHandlerUPP(SubEventHandler);
 			err = InstallApplicationEventHandler(eUPP, GetEventTypeCount(sEvents), sEvents, NULL, &eref);
 
@@ -627,7 +637,11 @@ int main (int argc, char **argv)
 
 			err = RemoveEventHandler(eref);
 			DisposeEventHandlerUPP(eUPP);
+		#ifdef MAC_PANTHER_SUPPORT
+			[pool release];
 
+			pool = [[NSAutoreleasePool alloc] init];
+		#endif
 			eUPP = NewEventHandlerUPP(MainEventHandler);
 			err = InstallApplicationEventHandler(eUPP, GetEventTypeCount(mEvents), mEvents, NULL, &eref);
 		}
@@ -642,7 +656,10 @@ int main (int argc, char **argv)
 	Deinitialize();
 
 	err = RemoveEventHandler(eref);
- 	DisposeEventHandlerUPP(eUPP);
+	DisposeEventHandlerUPP(eUPP);
+#ifdef MAC_PANTHER_SUPPORT
+	[pool release];
+#endif
 
 	return (0);
 }

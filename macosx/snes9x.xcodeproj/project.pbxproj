@@ -116,7 +116,6 @@
 		CF047DA7109D0E0600FD0754 /* freeze_defrost.aiff in Resources */ = {isa = PBXBuildFile; fileRef = EA85C3560B4ECBD900F5F9C9 /* freeze_defrost.aiff */; };
 		CF047DA8109D0E0600FD0754 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = EA3BEA9E0A28384E00A8FAE5 /* InfoPlist.strings */; };
 		CF047DA9109D0E0600FD0754 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = EA3BEA980A28384E00A8FAE5 /* Localizable.strings */; };
-		CF047DAA109D0E0600FD0754 /* Snes9x.nib in Resources */ = {isa = PBXBuildFile; fileRef = EA3BEA9C0A28384E00A8FAE5 /* Snes9x.nib */; };
 		CF047DAB109D0E0600FD0754 /* Snes9x Help in Resources */ = {isa = PBXBuildFile; fileRef = EA3BEAA80A28386500A8FAE5 /* Snes9x Help */; };
 		CF047DAF109D0E0600FD0754 /* bsx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA2F380F09B17E070078DCA7 /* bsx.cpp */; };
 		CF047DB0109D0E0600FD0754 /* c4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE0615F0526CCB900A80003 /* c4.cpp */; };
@@ -312,7 +311,6 @@
 		CF0566FC0CF98E7E00C7877C /* freeze_defrost.aiff in Resources */ = {isa = PBXBuildFile; fileRef = EA85C3560B4ECBD900F5F9C9 /* freeze_defrost.aiff */; };
 		CF0566FD0CF98E7E00C7877C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = EA3BEA9E0A28384E00A8FAE5 /* InfoPlist.strings */; };
 		CF0566FE0CF98E7E00C7877C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = EA3BEA980A28384E00A8FAE5 /* Localizable.strings */; };
-		CF0566FF0CF98E7E00C7877C /* Snes9x.nib in Resources */ = {isa = PBXBuildFile; fileRef = EA3BEA9C0A28384E00A8FAE5 /* Snes9x.nib */; };
 		CF0567000CF98E7E00C7877C /* Snes9x Help in Resources */ = {isa = PBXBuildFile; fileRef = EA3BEAA80A28386500A8FAE5 /* Snes9x Help */; };
 		CF0567030CF98E7E00C7877C /* bsx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA2F380F09B17E070078DCA7 /* bsx.cpp */; };
 		CF0567040CF98E7E00C7877C /* c4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE0615F0526CCB900A80003 /* c4.cpp */; };
@@ -396,6 +394,9 @@
 		CF0567600CF98E7E00C7877C /* libHIDUtilities_u.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA3D2F580A26085800BDACCC /* libHIDUtilities_u.a */; };
 		CF0567810CF9971000C7877C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF05677E0CF9971000C7877C /* QuartzCore.framework */; };
 		CF10B8F20F63BF8A009C81CD /* libz_u.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CF10B8EF0F63BF8A009C81CD /* libz_u.a */; };
+		CF14733E132DA4E1000D0F91 /* Snes9x.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF14733C132DA4E1000D0F91 /* Snes9x.xib */; };
+		CF14733F132DA4E1000D0F91 /* Snes9x.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF14733C132DA4E1000D0F91 /* Snes9x.xib */; };
+		CF147340132DA4E1000D0F91 /* Snes9x.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF14733C132DA4E1000D0F91 /* Snes9x.xib */; };
 		CF2F46121095EE72007D33FA /* 65c816.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE0615A0526CCB900A80003 /* 65c816.h */; };
 		CF2F46151095EE72007D33FA /* bsx.h in Headers */ = {isa = PBXBuildFile; fileRef = EA2F381A09B17E9E0078DCA7 /* bsx.h */; };
 		CF2F46161095EE72007D33FA /* c4.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE061600526CCB900A80003 /* c4.h */; };
@@ -505,7 +506,6 @@
 		CF2F46811095EE72007D33FA /* freeze_defrost.aiff in Resources */ = {isa = PBXBuildFile; fileRef = EA85C3560B4ECBD900F5F9C9 /* freeze_defrost.aiff */; };
 		CF2F46821095EE72007D33FA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = EA3BEA9E0A28384E00A8FAE5 /* InfoPlist.strings */; };
 		CF2F46831095EE72007D33FA /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = EA3BEA980A28384E00A8FAE5 /* Localizable.strings */; };
-		CF2F46841095EE72007D33FA /* Snes9x.nib in Resources */ = {isa = PBXBuildFile; fileRef = EA3BEA9C0A28384E00A8FAE5 /* Snes9x.nib */; };
 		CF2F46851095EE72007D33FA /* Snes9x Help in Resources */ = {isa = PBXBuildFile; fileRef = EA3BEAA80A28386500A8FAE5 /* Snes9x Help */; };
 		CF2F46891095EE72007D33FA /* bsx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA2F380F09B17E070078DCA7 /* bsx.cpp */; };
 		CF2F468A1095EE72007D33FA /* c4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE0615F0526CCB900A80003 /* c4.cpp */; };
@@ -699,6 +699,7 @@
 		CF0567660CF98E7E00C7877C /* Snes9x.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Snes9x.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CF05677E0CF9971000C7877C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = /System/Library/Frameworks/QuartzCore.framework; sourceTree = "<absolute>"; };
 		CF10B8EF0F63BF8A009C81CD /* libz_u.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libz_u.a; sourceTree = "<group>"; };
+		CF14733D132DA4E1000D0F91 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/Snes9x.xib; sourceTree = "<group>"; };
 		CF2CFFD30F10F2C000B8B35E /* spc7110emu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = spc7110emu.cpp; sourceTree = "<group>"; };
 		CF2CFFD40F10F2C000B8B35E /* spc7110dec.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = spc7110dec.cpp; sourceTree = "<group>"; };
 		CF2CFFDB0F10F2DD00B8B35E /* spc7110emu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spc7110emu.h; sourceTree = "<group>"; };
@@ -774,7 +775,6 @@
 		EA31FE2D05F7743E00E13748 /* gfx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = gfx.cpp; sourceTree = "<group>"; };
 		EA362C3E086119D100FBE476 /* HID_Utilities_External.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = HID_Utilities_External.h; sourceTree = "<group>"; };
 		EA3BEA990A28384E00A8FAE5 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/Localizable.strings; sourceTree = "<group>"; };
-		EA3BEA9D0A28384E00A8FAE5 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/Snes9x.nib; sourceTree = "<group>"; };
 		EA3BEA9F0A28384E00A8FAE5 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		EA3BEAA90A28386500A8FAE5 /* English */ = {isa = PBXFileReference; lastKnownFileType = folder; name = English; path = "English.lproj/Snes9x Help"; sourceTree = "<group>"; };
 		EA3D2F360A26083B00BDACCC /* SRAM.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = SRAM.icns; sourceTree = "<group>"; };
@@ -1307,7 +1307,7 @@
 				EA85C3560B4ECBD900F5F9C9 /* freeze_defrost.aiff */,
 				EA3BEA9E0A28384E00A8FAE5 /* InfoPlist.strings */,
 				EA3BEA980A28384E00A8FAE5 /* Localizable.strings */,
-				EA3BEA9C0A28384E00A8FAE5 /* Snes9x.nib */,
+				CF14733C132DA4E1000D0F91 /* Snes9x.xib */,
 				EA3BEAA80A28386500A8FAE5 /* Snes9x Help */,
 				EA3D2F580A26085800BDACCC /* libHIDUtilities_u.a */,
 				CF10B8EF0F63BF8A009C81CD /* libz_u.a */,
@@ -1737,7 +1737,7 @@
 /* Begin PBXProject section */
 		20286C28FDCF999611CA2CEA /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = EA6A1100085808D200A1CF18 /* Build configuration list for PBXProject "macpdate" */;
+			buildConfigurationList = EA6A1100085808D200A1CF18 /* Build configuration list for PBXProject "snes9x" */;
 			compatibilityVersion = "Xcode 2.4";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -1778,7 +1778,7 @@
 				CF047DA7109D0E0600FD0754 /* freeze_defrost.aiff in Resources */,
 				CF047DA8109D0E0600FD0754 /* InfoPlist.strings in Resources */,
 				CF047DA9109D0E0600FD0754 /* Localizable.strings in Resources */,
-				CF047DAA109D0E0600FD0754 /* Snes9x.nib in Resources */,
+				CF14733F132DA4E1000D0F91 /* Snes9x.xib in Resources */,
 				CF047DAB109D0E0600FD0754 /* Snes9x Help in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1802,7 +1802,7 @@
 				CF0566FC0CF98E7E00C7877C /* freeze_defrost.aiff in Resources */,
 				CF0566FD0CF98E7E00C7877C /* InfoPlist.strings in Resources */,
 				CF0566FE0CF98E7E00C7877C /* Localizable.strings in Resources */,
-				CF0566FF0CF98E7E00C7877C /* Snes9x.nib in Resources */,
+				CF147340132DA4E1000D0F91 /* Snes9x.xib in Resources */,
 				CF0567000CF98E7E00C7877C /* Snes9x Help in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1826,7 +1826,7 @@
 				CF2F46811095EE72007D33FA /* freeze_defrost.aiff in Resources */,
 				CF2F46821095EE72007D33FA /* InfoPlist.strings in Resources */,
 				CF2F46831095EE72007D33FA /* Localizable.strings in Resources */,
-				CF2F46841095EE72007D33FA /* Snes9x.nib in Resources */,
+				CF14733E132DA4E1000D0F91 /* Snes9x.xib in Resources */,
 				CF2F46851095EE72007D33FA /* Snes9x Help in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2146,20 +2146,20 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
+		CF14733C132DA4E1000D0F91 /* Snes9x.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CF14733D132DA4E1000D0F91 /* English */,
+			);
+			name = Snes9x.xib;
+			sourceTree = "<group>";
+		};
 		EA3BEA980A28384E00A8FAE5 /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
 				EA3BEA990A28384E00A8FAE5 /* English */,
 			);
 			name = Localizable.strings;
-			sourceTree = "<group>";
-		};
-		EA3BEA9C0A28384E00A8FAE5 /* Snes9x.nib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				EA3BEA9D0A28384E00A8FAE5 /* English */,
-			);
-			name = Snes9x.nib;
 			sourceTree = "<group>";
 		};
 		EA3BEA9E0A28384E00A8FAE5 /* InfoPlist.strings */ = {
@@ -2414,7 +2414,7 @@
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G4;
+				GCC_MODEL_TUNING = G3;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PREFIX_HEADER = "mac-global_prefix.h";
@@ -2448,7 +2448,7 @@
 				LIBRARY_SEARCH_PATHS = .;
 				MACOSX_DEPLOYMENT_TARGET = 10.3;
 				OTHER_CFLAGS = (
-					"-mcpu=G4",
+					"-mcpu=G3",
 					"-fomit-frame-pointer",
 					"-fast",
 				);
@@ -2498,7 +2498,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EA6A1100085808D200A1CF18 /* Build configuration list for PBXProject "macpdate" */ = {
+		EA6A1100085808D200A1CF18 /* Build configuration list for PBXProject "snes9x" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EA6A1102085808D200A1CF18 /* Release */,
