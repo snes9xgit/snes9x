@@ -1,3 +1,59 @@
+Snes9x 1.53
+
+- Rebuilt IRQ handling.                                     (zones)
+- Improved overall timings, now Snes9x can handle events in
+  a opcode a little.                                        (zones)
+- Improved screen interlace and sprite interlace supports.  (OV2, zones)
+- Fixed Hi-Res pixel plotter.                               (BearOso, zones, OV2)
+- Fixed C4 for Mega Man X2's "weapon get" screen.           (Jonas Quinn)
+- Fixed Super Buster Bros. graphics after reset.            (Jonas Quinn)
+- Improved SA-1 support.                                    (zones)
+- Added SA-1 CC2 support.                                   (Jonas Quinn, byuu)
+- Fixed SA-1 NMI override mode.                             (zones)
+- Fixed Dual Orb 2 sound glitch.                            (byuu)
+- New APU timing hack, fixes various games that exhibit
+  problems with Blargg's SNES_SPC library.                  (OV2)
+- Fixed movie snapshot unfreeze inconsistency.              (gocha)
+- Faster config file saving.                                (OV2)
+- Fixed BlockInvalidVRAMAccess config file option.
+  (windows port, unix port and gtk legacy config)           (Jonas Quinn)
+- Remove POSIX dup and access calls, and rename qword to
+  fix compilation with Cell SDK.                            (BearOso)
+- Fixed PS3 version save state crash by using heap
+  allocation for soundsnapshot.                             (danieldematteis)
+- Fixed crash relating to double-closed descriptor.         (BearOso)
+- Removed CPUShutdown speedhack, DisableHDMA and
+  DisableIRQ options.                                       (zones)
+- Removed remaining outdated asm code.                      (zones)
+- JMA 64 bit support.                                       (kode54, Nach, friedrich.goepel)
+- GTK+, Win32, Mac: Added optional Hi-Res blending.         (BearOso, OV2, zones)
+- GTK+, Win32: Support for bSNES-style XML shaders.         (BearOso, OV2)
+- Win32: Full unicode support.                              (OV2)
+- Win32: Restored OpenGL mode.                              (OV2)
+- Win32: x64 version.                                       (OV2)
+- Win32: HLSL shader support.                               (mudlord)
+- Win32: Win7 jumplist synchronizes with recent roms list.  (OV2)
+- Win32: Updated menu structure.                            (OV2)
+- Win32: Drag&Drop support for ROMs.                        (gocha, OV2)
+- Win32: Reworked movie-recording with size selection.      (gocha, OV2)
+- Win32: Restored SPC save option.                          (OV2)
+- Win32: Fixed vsync in DirectDraw.                         (OV2)
+- Win32: Improved window position saving.                   (OV2)
+- Win32: Restored compile with DEBUGGER.                    (gocha)
+- Win32: Fixed various edge-case errors and/or possible
+  leaks.                                                    (Brian Friesen)
+- Win32: Config file option to always center image.         (OV2)
+- Win32: Fixed "Turbo Down mode" hotkey assignment.         (gocha)
+- Win32: Added and fixed Autofire for D-pad.                (gocha)
+- Win32: Fixed aggressive soundsync wait.                   (OV2)
+- Win32: Added window size presets.                         (OV2)
+- Mac  : Added pause and frame advance functions.           (zones)
+- Mac  : Now you can choose any folder for saving files.    (zones)
+- Mac  : Updated Music Box (mostly internally).             (zones)
+- Mac  : Fixed gliches in open/save dialogs on 10.6.        (zones)
+- Mac  : Fixed display configuration in windowed mode.      (zones)
+- Unix : Fixed segfault and hang-up with -DNOSOUND.         (zones)
+
 Snes9x 1.52
 - IMPORTANT NOTICE: The structure of savestates (also known
   as snapshots / freeze files) is incompatible with older

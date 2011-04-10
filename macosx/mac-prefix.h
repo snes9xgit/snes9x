@@ -179,7 +179,7 @@
 
   Snes9x for Mac OS X
 
-  (c) Copyright 2001 - 2010  zones
+  (c) Copyright 2001 - 2011  zones
   (c) Copyright 2002 - 2005  107
   (c) Copyright 2002         PB1400c
   (c) Copyright 2004         Alexander and Sander
@@ -196,7 +196,7 @@
 
 #define kMacS9XCFString		CFSTR("Snes9x")
 
-#define	MAC_VERSION			"102"
+#define	MAC_VERSION			"112"
 
 #include <Carbon/Carbon.h>
 

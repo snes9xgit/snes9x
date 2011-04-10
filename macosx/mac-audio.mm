@@ -179,7 +179,7 @@
 
   Snes9x for Mac OS X
 
-  (c) Copyright 2001 - 2010  zones
+  (c) Copyright 2001 - 2011  zones
   (c) Copyright 2002 - 2005  107
   (c) Copyright 2002         PB1400c
   (c) Copyright 2004         Alexander and Sander
@@ -191,6 +191,7 @@
 #include "snes9x.h"
 #include "apu.h"
 
+#include <Cocoa/Cocoa.h>
 #include <CoreAudio/CoreAudio.h>
 #include <AudioToolbox/AudioToolbox.h>
 #include <AudioUnit/AudioUnitCarbonView.h>

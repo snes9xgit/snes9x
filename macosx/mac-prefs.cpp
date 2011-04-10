@@ -179,7 +179,7 @@
 
   Snes9x for Mac OS X
 
-  (c) Copyright 2001 - 2010  zones
+  (c) Copyright 2001 - 2011  zones
   (c) Copyright 2002 - 2005  107
   (c) Copyright 2002         PB1400c
   (c) Copyright 2004         Alexander and Sander
@@ -361,9 +361,9 @@ static PrefList	prefList[] =
 	{ 'chea', &applycheat,									sizeof(bool8      ) },
 
 	{ 'ARec', autofireRec,									sizeof(autofireRec) },
-	{ 'WPos', windowPos,									sizeof(windowPos  ) },
-	{ 'WSiz', windowSize,									sizeof(windowSize ) },
-	{ 'WExt', (void *) &windowExtend,						sizeof(bool8      ) },
+	{ 'wPos', windowPos,									sizeof(windowPos  ) },
+	{ 'wSiz', windowSize,									sizeof(windowSize ) },
+	{ 'wExt', (void *) &windowExtend,						sizeof(bool8      ) },
 
 	{ 'NPIP', npServerIP,									sizeof(npServerIP ) },
 	{ 'NPNM', npName,										sizeof(npName     ) },

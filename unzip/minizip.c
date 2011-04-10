@@ -1,8 +1,12 @@
 /*
    minizip.c
-   Version 1.01e, February 12th, 2005
+   Version 1.01h, December 28th, 2009
 
-   Copyright (C) 1998-2005 Gilles Vollant
+   Copyright (C) 1998-2009 Gilles Vollant
+
+Changes:
+   Aug 3, 2006.     jg.    support storing files with out paths. (-j)
+   Aug 3, 2006.     jg.    files with paths should not have leading slashes.
 */
 
 #include <stdio.h>
@@ -44,9 +48,9 @@ uLong filetime(f, tmzip, dt)
   {
       FILETIME ftLocal;
       HANDLE hFind;
-      WIN32_FIND_DATA  ff32;
+      WIN32_FIND_DATAA ff32;
 
-      hFind = FindFirstFile(f,&ff32);
+      hFind = FindFirstFileA(f,&ff32);
       if (hFind != INVALID_HANDLE_VALUE)
       {
         FileTimeToLocalFileTime(&(ff32.ftLastWriteTime),&ftLocal);
@@ -129,18 +133,20 @@ int check_exist_file(filename)
 
 void do_banner()
 {
-    printf("MiniZip 1.01b, demo of zLib + Zip package written by Gilles Vollant\n");
-    printf("more info at http://www.winimage.com/zLibDll/unzip.html\n\n");
+    printf("MiniZip 1.01e-jg, demo of zLib + Zip package written by Gilles Vollant\n");
+    printf("minor updates, jg.\n");
+    printf("more info at http://www.winimage.com/zLibDll/minizip.html\n\n");
 }
 
 void do_help()
 {
-    printf("Usage : minizip [-o] [-a] [-0 to -9] [-p password] file.zip [files_to_add]\n\n" \
+    printf("Usage : minizip [-o] [-a] [-0 to -9] [-p password] [-j] file.zip [files_to_add]\n\n" \
            "  -o  Overwrite existing file.zip\n" \
            "  -a  Append to existing file.zip\n" \
            "  -0  Store only\n" \
            "  -1  Compress faster\n" \
-           "  -9  Compress better\n\n");
+           "  -9  Compress better\n" \
+           "  -j  exclude path. store only the file name.\n\n");
 }
 
 /* calculate the CRC32 of a file,
@@ -179,7 +185,7 @@ int getFileCrc(const char* filenameinzip,void*buf,unsigned long size_buf,unsigne
         fclose(fin);
 
     *result_crc=calculate_crc;
-    printf("file %s crc %x\n",filenameinzip,calculate_crc);
+    printf("file %s crc %lx\n",filenameinzip,calculate_crc);
     return err;
 }
 
@@ -190,6 +196,7 @@ int main(argc,argv)
     int i;
     int opt_overwrite=0;
     int opt_compress_level=Z_DEFAULT_COMPRESSION;
+    int opt_exclude_path=0;
     int zipfilenamearg = 0;
     char filename_try[MAXFILENAME+16];
     int zipok;
@@ -222,6 +229,8 @@ int main(argc,argv)
                         opt_overwrite = 2;
                     if ((c>='0') && (c<='9'))
                         opt_compress_level = c-'0';
+                    if ((c=='j') || (c=='J'))
+                        opt_exclude_path = 1;
 
                     if (((c=='p') || (c=='P')) && (i+1<argc))
                     {
@@ -231,8 +240,12 @@ int main(argc,argv)
                 }
             }
             else
+            {
                 if (zipfilenamearg == 0)
+                {
                     zipfilenamearg = i ;
+                }
+            }
         }
     }
 
@@ -245,7 +258,9 @@ int main(argc,argv)
     }
 
     if (zipfilenamearg==0)
+    {
         zipok=0;
+    }
     else
     {
         int i,len;
@@ -329,6 +344,7 @@ int main(argc,argv)
                 FILE * fin;
                 int size_read;
                 const char* filenameinzip = argv[i];
+                const char *savefilenameinzip;
                 zip_fileinfo zi;
                 unsigned long crcFile=0;
 
@@ -348,7 +364,34 @@ int main(argc,argv)
                 if ((password != NULL) && (err==ZIP_OK))
                     err = getFileCrc(filenameinzip,buf,size_buf,&crcFile);
 
-                err = zipOpenNewFileInZip3(zf,filenameinzip,&zi,
+                /*the path name saved, should not include a leading slash. */
+                /*if it did, windows/xp and dynazip couldn't read the zip file. */
+                savefilenameinzip = filenameinzip;
+                while( savefilenameinzip[0] == '\\' || savefilenameinzip[0] == '/' )
+                {
+                    savefilenameinzip++;
+                }
+
+                /*should the zip file contain any path at all?*/
+                if( opt_exclude_path )
+                {
+                    const char *tmpptr;
+                    const char *lastslash = 0;
+                    for( tmpptr = savefilenameinzip; *tmpptr; tmpptr++)
+                    {
+                        if( *tmpptr == '\\' || *tmpptr == '/')
+                        {
+                            lastslash = tmpptr;
+                        }
+                    }
+                    if( lastslash != NULL )
+                    {
+                        savefilenameinzip = lastslash+1; // base filename follows last slash.
+                    }
+                }
+
+                /**/
+                err = zipOpenNewFileInZip3(zf,savefilenameinzip,&zi,
                                  NULL,0,NULL,0,NULL /* comment*/,
                                  (opt_compress_level != 0) ? Z_DEFLATED : 0,
                                  opt_compress_level,0,
