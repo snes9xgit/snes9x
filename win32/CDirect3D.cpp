@@ -305,6 +305,14 @@ void CDirect3D::DeInitialize()
 	DestroyDrawSurface();
 	SetShader(NULL);
 
+	if(cgContext) {
+		cgDestroyContext(cgContext);
+		cgContext = NULL;
+	}
+
+	if(cgAvailable)
+		cgD3D9SetDevice(NULL);
+
 	if(vertexBuffer) {
 		vertexBuffer->Release();
 		vertexBuffer = NULL;
@@ -320,21 +328,14 @@ void CDirect3D::DeInitialize()
 		pD3D = NULL;
 	}
 
-	if(cgContext) {
-		cgDestroyContext(cgContext);
-		cgContext = NULL;
-	}
-
-	if(cgAvailable)
-		cgD3D9SetDevice(NULL);
-
 	init_done = false;
 	afterRenderWidth = 0;
 	afterRenderHeight = 0;
 	quadTextureSize = 0;
 	fullscreen = false;
 	filterScale = 0;
-	unloadCgLibrary();
+	if(cgAvailable)
+		unloadCgLibrary();
 	cgAvailable = false;
 }
 
@@ -943,6 +944,10 @@ bool CDirect3D::ResetDevice()
 	//release prior to reset
 	DestroyDrawSurface();
 
+	if(cgAvailable) {
+		cgD3D9SetDevice(NULL);
+	}
+
 	if(effect)
 		effect->OnLostDevice();
 
@@ -974,6 +979,10 @@ bool CDirect3D::ResetDevice()
 
 	if(effect)
 		effect->OnResetDevice();
+
+	if(cgAvailable) {
+		cgD3D9SetDevice(pDevice);
+	}
 
 	if(GUI.BilinearFilter) {
 		pDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);

@@ -318,7 +318,8 @@ void COpenGL::DeInitialize()
 	afterRenderHeight = 0;
 	shaderFunctionsLoaded = false;
 	shader_type = OGL_SHADER_NONE;
-	unloadCgLibrary();
+	if(cgAvailable)
+		unloadCgLibrary();
 	cgAvailable = false;
 }
 
