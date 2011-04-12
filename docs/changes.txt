@@ -27,7 +27,7 @@ Snes9x 1.53
 - Removed remaining outdated asm code.                      (zones)
 - JMA 64 bit support.                                       (kode54, Nach, friedrich.goepel)
 - GTK+, Win32, Mac: Added optional Hi-Res blending.         (BearOso, OV2, zones)
-- GTK+, Win32: Support for bSNES-style XML shaders.         (BearOso, OV2)
+- GTK+, Win32: Support for bsnes-style XML shaders.         (BearOso, OV2)
 - Win32: Full unicode support.                              (OV2)
 - Win32: Restored OpenGL mode.                              (OV2)
 - Win32: x64 version.                                       (OV2)
@@ -53,6 +53,21 @@ Snes9x 1.53
 - Mac  : Fixed gliches in open/save dialogs on 10.6.        (zones)
 - Mac  : Fixed display configuration in windowed mode.      (zones)
 - Unix : Fixed segfault and hang-up with -DNOSOUND.         (zones)
+- GTK+ : Added ability to set specific folders for SRAM, 
+  patches, snapshots, etc.                                  (BearOso)
+- GTK+ : Fixed many permissions issues with config folders. (BearOso)
+- GTK+ : Updated compatibility with latest GTK+ and 
+  GtkBuilder. Added experimental support for GTK+ 3.x.      (BearOso)
+- GTK+ : Updated software output to use cairo and added the 
+  ability to use bilinear-filtering with it.                (BearOso)
+- GTK+ : Fixed issues where cheats wouldn't stay enabled.   (BearOso)
+- GTK+ : Fixed focus issue when there is no window manager. (BearOso)
+- GTK+ : Fixed X Visual incompatibilities and expose 
+  problems in the Xv and OpenGL outputs.                    (BearOso)
+- GTK+ : Fixed vsync with new X Server and NVIDIA drivers.  (BearOso)
+- GTK+ : Added "Reduce input lag" option to OpenGL output.  (BearOso)
+- GTK+ : Added a visual indication of the expected video 
+  refresh rate for the currently selected sound input rate. (BearOso)
 
 Snes9x 1.52
 - IMPORTANT NOTICE: The structure of savestates (also known
