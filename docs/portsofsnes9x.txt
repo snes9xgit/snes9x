@@ -74,7 +74,7 @@ HOW TO GET IT RUNNING:
 * iOS (iPhone/iPod Touch) ONLY!!!: Jailbreaking your firmware
 
 Android: It appears you can just download from the Android app-store thingy and
-run it from there :) Be sure to copy over your ROMs/saves/etc though.
+run it from there :) Be sure to copy over your ROMs, saves, etc though.
 
 iOS: You’ll have to jailbreak your firmware and install the Cydia app
 installer. Then you’ll have to install the BigBoss repository within Cydia and
