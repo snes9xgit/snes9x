@@ -1,11 +1,12 @@
 These are all the known ports of Snes9X to other consoles/handhelds/etc as of
 2011/04/19. They are all supported and welcomed on the official Snes9X site.
 
-**If you know of anyone who is currently working on a port of Snes9X, please
-have them go to the Snes9X forums (http://www.snes9x.com/phpbb2/) and have
-them register an account there. After that, speak to Ryan and/or Jerremy so
-you can be let into the devs area and the git so you can have access to the
-most current code, collaborate with the other developers, etc.**
+**If you know of anyone who is currently working on a port of Snes9X, or if you
+have some interest in making a port, please have them go to the Snes9X forums
+(http://www.snes9x.com/phpbb2/) and have them register an account there. After
+that, speak to Ryan and/or Jerremy so you can be let into the devs area and the
+git so you can have access to the most current code, collaborate with the other
+developers, etc.**
 
 Ports and how to get them running are as follows:
 
