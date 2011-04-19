@@ -5,17 +5,22 @@ Homepage/forum: http://www.retroemu.com/forum/
 Maintainer: Zack
 
 HOW TO GET IT RUNNING:
+*DISCLAIMER* You will have to do some Googling, including but not limited to:
+* Downgrading/upgrading your firmware
+* Checking if your PSP-2000 series can use Pandora's Battery
+* Checking if your PSP-3000 series can use the DaveeFTW Downgrader
+* Creating Pandora's Battery
+* Finding the hacks, HENs, CFWs, etc and how to use/install them
+
 1. Make sure your PSP is hackable in some way. This means:
-* PSP-1000 series and certain PSP-2000 series (Google for compatibility) can
-use Pandora Battery
-* PSP-2000 series that can't be Pandoraized (Google for compatibility), most
-PSP-3000 series, and PSP Gos are hackable via other means (DaveeFTW Downgrader,
-etc)
+* PSP-1000 series and certain PSP-2000 series can use Pandora Battery
+* PSP-2000 series that can't use Pandora Battery, most PSP-3000 series, and PSP
+Gos are hackable via other means (DaveeFTW Downgrader, etc)
 
 2. Make sure your PSP has custom firmware or a HEN that's useable (you'll have
-to upgrade/downgrade the firmware as necessary). Google for these CFWs, HENs,
-and installations. (Hint: I personally prefer 5.50 GEN-D3 on the Pandora-able
-PSPs; 6.20 or 6.35 PRO-B4 or better on the non-Pandora-able PSPs.)
+to upgrade/downgrade the firmware as necessary). (Hint: I personally prefer
+5.50 GEN-D3 on the Pandora-able PSPs; 6.20 or 6.35 PRO-B4 or better on the
+non-Pandora-able PSPs.)
 
 3. When that's done, be sure to put the Snes9X Euphoria in /PSP/GAME on your
 PSP's memory stick or internal memory (PSP Go only).
@@ -27,11 +32,13 @@ Homepage/forum: http://code.google.com/p/snes9x-gx
 Maintainer: Tantric
 
 HOW TO GET IT RUNNING:
-Wii: You will need the latest Homebrew Channel installed on your Wii. Use
-Google for installation instructions and to find the HBC.
-In addition, there appears to be a channel for Snes9X GX; again, use Google for
-installation instructions.
-Gamecube: You might need a modchip; search Google.
+*DISCLAIMER* You will have to do some Googling, including but not limited to:
+* Finding the latest Homebrew Channel installer
+* Finding a modchip for your GameCube and installing it
+
+Wii: You will need the latest Homebrew Channel installed on your Wii.
+In addition, there appears to be a channel for Snes9X GX.
+Gamecube: You might need a modchip.
 
 *Android and iOS (Apple iPhone/iPod touch) version of Snes9X*
 Name: Snes9X EX
@@ -40,14 +47,16 @@ Homepage/forum: http://www.explusalpha.com/home/snes9x-ex
 Maintainer: Rakashazi (on the Snes9X forums)
 
 HOW TO GET IT RUNNING:
+*DISCLAIMER* You will have to do some Googling, including but not limited to:
+* iOS (iPhone/iPod Touch) ONLY!!!: Jailbreaking your firmware
+
 Android: It appears you can just download from the Android app-store thingy and
 run it from there :)
-iOS: You'll have to jailbreak your firmware (use Google) and install the Cydia
-app installer. Then you'll have to install the BigBoss repository within Cydia
-and search for Snes9X EX; you may also want to search for the sshd and all
-needed stuff for that, as it's the only way you can put the ROMs onto your
-iPhone/iPod Touch. After that you should be able to download and run from there
-:)
+iOS: You'll have to jailbreak your firmware and install the Cydia app
+installer. Then you'll have to install the BigBoss repository within Cydia and
+search for Snes9X EX; you may also want to search for the sshd and all needed
+stuff for that, as it's the only way you can put the ROMs onto your iPhone/iPod
+Touch. After that you should be able to download and run from there :)
 
 *PS3 version of Snes9X*
 Name: Snes9X PS3
