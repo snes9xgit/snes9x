@@ -97,6 +97,7 @@ HOW TO GET IT RUNNING:
 
 You’ll have to install a HEN/Jailbreaker/CFW/etc on your PS3 (you might have to
 upgrade or downgrade your PS3’s firmware as needed). After that, it should be
-as simple as copy the emulator/ROMs over to the PS3 and it should work :)
+as simple as copy the emulator, ROMs, saves, etc over to the PS3 and it should
+work :)
 
 Updated most recently by: 2011/4/19 adventure_of_link
