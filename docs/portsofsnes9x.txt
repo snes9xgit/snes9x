@@ -79,7 +79,7 @@ run it from there :) Be sure to copy over your ROMs/saves/etc though.
 iOS: You’ll have to jailbreak your firmware and install the Cydia app
 installer. Then you’ll have to install the BigBoss repository within Cydia and
 search for Snes9X EX; you may also want to search for the sshd and all needed 
-stuff for that, as it’s the only way you can put the ROMs/saves/etc onto your
+stuff for that, as it’s the only way you can put the ROMs, saves, etc onto your
 iPhone/iPod Touch. After that you should be able to download and run from there
 :)
 
