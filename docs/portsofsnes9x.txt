@@ -6,7 +6,7 @@ have some interest in making a port, please have them go to the Snes9X forums
 (http://www.snes9x.com/phpbb2/) and have them register an account there. After
 that, speak to Ryan and/or Jerremy so you can be let into the devs area and the
 git so you can have access to the most current code, collaborate with the other
-developers, etc.**
+developers, make the port officialized, etc.**
 
 Ports and how to get them running are as follows:
 
