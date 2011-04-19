@@ -1566,25 +1566,10 @@ static void debug_process_command (char *Line)
 		printf("HC event tracing %s.\n", Settings.TraceHCEvent ? "enabled" : "disabled");
 	}
 
-/*
 	if (*Line == 'A')
-	{
-		APU.Flags ^= TRACE_FLAG;
+		spc_core->debug_toggle_trace();
 
-		if (APU.Flags & TRACE_FLAG)
-		{
-			printf("APU tracing enabled.\n");
-			if (apu_trace == NULL)
-				apu_trace = fopen("aputrace.log", "wb");
-		}
-		else
-		{
-			printf("APU tracing disabled.\n");
-			fclose(apu_trace);
-			apu_trace = NULL;
-		}
-	}
-
+/*
 	if (*Line == 'B')
 	{
 		Settings.TraceSoundDSP = !Settings.TraceSoundDSP;
@@ -2621,6 +2606,11 @@ void S9xTraceFormattedMessage (const char *s, ...)
 
 		S9xTraceMessage(msg);
 	}
+}
+
+void S9xPrintHVPosition (char *s)
+{
+	sprintf(s, "HC:%04ld VC:%03ld FC:%02d", (long) CPU.Cycles, (long) CPU.V_Counter, IPPU.FrameCount);
 }
 
 #endif
