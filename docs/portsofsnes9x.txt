@@ -33,10 +33,10 @@ to upgrade/downgrade the firmware as necessary). (Hint: I personally prefer
 5.50 GEN-D3 on the Pandora-able PSPs; 6.20 or 6.35 PRO-B4 or better on the
 non-Pandora-able PSPs.)
 
-3. When that's done, be sure to put the Snes9X Euphoria folder in /PSP/GAME on
-your PSP's memory stick (PSP-1000/2000/3000 series) or internal memory (PSP Go
-only). Be sure to copy the ROMs into the ROMs folder, saves into the saves
-folder, and cheats into the cheats folder.
+3. When that’s done, be sure to put the Snes9X Euphoria folder in /PSP/GAME on
+your PSP’s memory stick (PSP-1000/2000/3000 series) or internal memory
+(PSP Go). Be sure to copy the ROMs into the roms folder, saves (*.srm, etc)
+into the saves folder, and cheats into the cheats folder.
 
 *Wii/Gamecube version of Snes9X*
 Name: Snes9X GX
@@ -63,7 +63,7 @@ installer from the Homebrew Channel, and you'll be good to go!
 
 Gamecube: You might need a modchip.
 
-*Android and iOS (Apple iPhone/iPod touch) version of Snes9X*
+*Android and iOS (Apple iPhone/iPod Touch) version of Snes9X*
 Name: Snes9X EX
 Latest Version: 1.3.22
 Homepage/forum: http://www.explusalpha.com/home/snes9x-ex
@@ -76,11 +76,12 @@ HOW TO GET IT RUNNING:
 Android: It appears you can just download from the Android app-store thingy and
 run it from there :) Be sure to copy over your ROMs/saves/etc though.
 
-iOS: You'll have to jailbreak your firmware and install the Cydia app
-installer. Then you'll have to install the BigBoss repository within Cydia and
-search for Snes9X EX; you may also want to search for the sshd and all needed
-stuff for that, as it's the only way you can put the ROMs onto your iPhone/iPod
-Touch. After that you should be able to download and run from there :)
+iOS: You’ll have to jailbreak your firmware and install the Cydia app
+installer. Then you’ll have to install the BigBoss repository within Cydia and
+search for Snes9X EX; you may also want to search for the sshd and all needed 
+stuff for that, as it’s the only way you can put the ROMs/saves/etc onto your
+iPhone/iPod Touch. After that you should be able to download and run from there
+:)
 
 *PS3 version of Snes9X*
 Name: Snes9X PS3
@@ -92,9 +93,10 @@ Maintainer: Squarepusher
 HOW TO GET IT RUNNING:
 *DISCLAIMER* You will have to do some Googling, including but not limited to:
 * Finding a HEN/Jailbreaker/CFW/etc onto your PS3 and installing it
+* (if necessary) Downgrading/Upgrading your PS3's firmware
 
-You'll have to install a HEN/Jailbreaker/CFW/etc on your PS3. After that, it
-should be as simple as copy the emulator/ROMs over to the PS3 and it should
-work :)
+You’ll have to install a HEN/Jailbreaker/CFW/etc on your PS3 (you might have to
+upgrade or downgrade your PS3’s firmware as needed). After that, it should be
+as simple as copy the emulator/ROMs over to the PS3 and it should work :)
 
 Updated most recently by: 2011/4/19 adventure_of_link
