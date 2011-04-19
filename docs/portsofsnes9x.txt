@@ -1,3 +1,14 @@
+These are all the known ports of Snes9X to other consoles/handhelds/etc as of
+2011/04/19. They are all supported and welcomed on the official Snes9X site.
+
+**If you know of anyone who is currently working on a port of Snes9X, please
+have them go to the Snes9X forums (http://www.snes9x.com/phpbb2/) and have
+them register an account there. After that, speak to Ryan and/or Jerremy so
+you can be let into the devs area and the git so you can have access to the
+most current code, collaborate with the other developers, etc.**
+
+Ports and how to get them running are as follows:
+
 *PSP Version of Snes9X*
 Name: Snes9X Euphoria
 Latest version: R5 Beta
@@ -22,8 +33,10 @@ to upgrade/downgrade the firmware as necessary). (Hint: I personally prefer
 5.50 GEN-D3 on the Pandora-able PSPs; 6.20 or 6.35 PRO-B4 or better on the
 non-Pandora-able PSPs.)
 
-3. When that's done, be sure to put the Snes9X Euphoria in /PSP/GAME on your
-PSP's memory stick or internal memory (PSP Go only).
+3. When that's done, be sure to put the Snes9X Euphoria folder in /PSP/GAME on
+your PSP's memory stick (PSP-1000/2000/3000 series) or internal memory (PSP Go
+only). Be sure to copy the ROMs into the ROMs folder, saves into the saves
+folder, and cheats into the cheats folder.
 
 *Wii/Gamecube version of Snes9X*
 Name: Snes9X GX
@@ -33,11 +46,21 @@ Maintainer: Tantric
 
 HOW TO GET IT RUNNING:
 *DISCLAIMER* You will have to do some Googling, including but not limited to:
-* Finding the latest Homebrew Channel installer
+* Finding the latest Homebrew Channel, Snes9X GX Channel, and/or IOS58
+installers and installing them
 * Finding a modchip for your GameCube and installing it
 
-Wii: You will need the latest Homebrew Channel installed on your Wii.
-In addition, there appears to be a channel for Snes9X GX.
+Wii: You will need the latest Homebrew Channel installed on your Wii. After
+that, copy and paste the apps folder onto the root of your SD card; same goes
+for the snes9xgx folder. After that, copy over any ROMs you have to the
+\snes9xgx\roms folder, save files (*.srm, etc) to the \snes9xgx\saves folder,
+and cheats to the \snes9xgx\cheats folder.
+
+In addition, there appears to be a channel for Snes9X GX; you will need the
+Homebrew Channel installed and you MUST be on System Menu 4.3 so you can be on
+IOS58 (or use the IOS58 installer). After that, you should be able to run the
+installer from the Homebrew Channel, and you'll be good to go! 
+
 Gamecube: You might need a modchip.
 
 *Android and iOS (Apple iPhone/iPod touch) version of Snes9X*
@@ -51,7 +74,8 @@ HOW TO GET IT RUNNING:
 * iOS (iPhone/iPod Touch) ONLY!!!: Jailbreaking your firmware
 
 Android: It appears you can just download from the Android app-store thingy and
-run it from there :)
+run it from there :) Be sure to copy over your ROMs/saves/etc though.
+
 iOS: You'll have to jailbreak your firmware and install the Cydia app
 installer. Then you'll have to install the BigBoss repository within Cydia and
 search for Snes9X EX; you may also want to search for the sshd and all needed
@@ -66,9 +90,11 @@ reason, you may have to Google for the latest version)
 Maintainer: Squarepusher
 
 HOW TO GET IT RUNNING:
-You'll have to install a HEN/Jailbreaker/CFW/etc on your PS3 (use Google for
-more information). After that, it should be as simple as copy the emulator/ROMs
-over to the PS3 and it should work :)
+*DISCLAIMER* You will have to do some Googling, including but not limited to:
+* Finding a HEN/Jailbreaker/CFW/etc onto your PS3 and installing it
 
+You'll have to install a HEN/Jailbreaker/CFW/etc on your PS3. After that, it
+should be as simple as copy the emulator/ROMs over to the PS3 and it should
+work :)
 
 Updated most recently by: 2011/4/19 adventure_of_link
