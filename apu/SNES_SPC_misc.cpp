@@ -443,6 +443,8 @@ void SNES_SPC::debug_toggle_trace( void )
 	}
 }
 
+bool SNES_SPC::debug_is_enabled( void ) { return debug_trace; }
+
 void SNES_SPC::debug_do_trace( int a, int x, int y, uint8_t const *pc, uint8_t *sp, int psw, int c, int nz, int dp )
 {
 	char	msg[512];

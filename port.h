@@ -249,6 +249,7 @@ typedef signed int			int32;
 typedef unsigned int		uint32;
 #endif
 typedef unsigned char		uint8_t;
+typedef signed char         int8_t;
 typedef signed __int64		int64;
 typedef unsigned __int64	uint64;
 typedef int					socklen_t;

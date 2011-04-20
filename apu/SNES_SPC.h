@@ -124,6 +124,7 @@ public:
 
 #ifdef DEBUGGER
 	void	debug_toggle_trace( void );
+	bool    debug_is_enabled( void );
 	void	debug_do_trace( int, int, int, uint8_t const *, uint8_t *, int, int, int, int );
 	void	debug_op_print( char *, int, int, int, uint8_t const *, uint8_t *, int, int, int, int );
 	void	debug_io_print( char * );
