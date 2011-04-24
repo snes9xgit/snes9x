@@ -1,5 +1,5 @@
 These are all the known ports of Snes9X to other consoles/handhelds/etc as of
-2011/04/19. They are all supported and welcomed on the official Snes9X site.
+2011/04/24. They are all supported and welcomed on the official Snes9X site.
 
 **If you know of anyone who is currently working on a port of Snes9X, or if you
 have some interest in making a port, please have them go to the Snes9X forums
@@ -101,4 +101,18 @@ upgrade or downgrade your PS3’s firmware as needed). After that, it should be
 as simple as copy the emulator, ROMs, saves, etc over to the PS3 and it should
 work :)
 
-Updated most recently by: 2011/4/19 adventure_of_link
+*X-Box Version of Snes9X*
+Name: Snes9xbox
+Latest Version: V2 (V3 should be out soon)
+Homepage/forum: http://forums.xbox-scene.com/index.php?showforum=96
+
+HOW TO GET IT RUNNING:
+*DISCLAIMER* You will need to do some Googling, including but not limited to:
+* Finding a softmod (hack) or a modchip and installing/using it
+* Finding a replacement dashboard such as XBMC
+
+Really, it's not hard. Read the readme, and use a softmod or modchip and a
+replacement dashboard. After that's installed, it should be as simple as
+copying over the emulator, ROMs, saves, etc to the X-Box and it should work.
+
+Updated most recently by: 2011/4/24 adventure_of_link
