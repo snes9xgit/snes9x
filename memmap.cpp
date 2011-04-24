@@ -3546,7 +3546,8 @@ void CMemory::ApplyROMFixes (void)
 			match_na ("NBA Hangtime")							|| // NBA Hang Time
 			match_na ("MSPACMAN")								|| // Ms Pacman
 			match_na ("THE MASK")								|| // The Mask
-			match_na ("PRIMAL RAGE"))							   // Primal Rage
+			match_na ("PRIMAL RAGE")							|| // Primal Rage
+			match_na ("DOOM TROOPERS"))							   // Doom Troopers
 			Timings.APUAllowTimeOverflow = TRUE;
 	}
 
