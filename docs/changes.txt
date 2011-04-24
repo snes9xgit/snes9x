@@ -13,6 +13,7 @@ Snes9x 1.53
 - Fixed Dual Orb 2 sound glitch.                            (byuu)
 - New APU timing hack, fixes various games that exhibit
   problems with Blargg's SNES_SPC library.                  (OV2)
+- Fixed the problem that echo buffer breaks IPL ROM.        (zones, OV2)
 - Fixed movie snapshot unfreeze inconsistency.              (gocha)
 - Faster config file saving.                                (OV2)
 - Fixed BlockInvalidVRAMAccess config file option.
