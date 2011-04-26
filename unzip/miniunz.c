@@ -1,8 +1,8 @@
 /*
    miniunz.c
-   Version 1.01e, February 12th, 2005
+   Version 1.01h, December 28th, 2009
 
-   Copyright (C) 1998-2005 Gilles Vollant
+   Copyright (C) 1998-2009 Gilles Vollant
 */
 
 
@@ -112,6 +112,11 @@ int makedir (newdir)
     return 0;
 
   buffer = (char*)malloc(len+1);
+  if (buffer==NULL)
+    {
+      printf("Error allocating memory\n");
+      return UNZ_INTERNALERROR;
+    }
   strcpy(buffer,newdir);
 
   if (buffer[len-1] == '/') {
@@ -209,6 +214,11 @@ int do_list(uf)
               string_method="Defl:X";
             else if ((iLevel==2) || (iLevel==3))
               string_method="Defl:F"; /* 2:fast , 3 : extra fast*/
+        }
+        else
+        if (file_info.compression_method==Z_BZIP2ED)
+        {
+              string_method="BZip2 ";
         }
         else
             string_method="Unkn. ";
@@ -470,6 +480,7 @@ int main(argc,argv)
     const char *password=NULL;
     char filename_try[MAXFILENAME+16] = "";
     int i;
+    int ret_value=0;
     int opt_do_list=0;
     int opt_do_extract=1;
     int opt_do_extract_withoutpath=0;
@@ -564,7 +575,7 @@ int main(argc,argv)
     printf("%s opened\n",filename_try);
 
     if (opt_do_list==1)
-        return do_list(uf);
+        ret_value = do_list(uf);
     else if (opt_do_extract==1)
     {
         if (opt_extractdir && chdir(dirname)) 
@@ -574,12 +585,13 @@ int main(argc,argv)
         }
 
         if (filename_to_extract == NULL)
-            return do_extract(uf,opt_do_extract_withoutpath,opt_overwrite,password);
+            ret_value = do_extract(uf,opt_do_extract_withoutpath,opt_overwrite,password);
         else
-            return do_extract_onefile(uf,filename_to_extract,
+            ret_value = do_extract_onefile(uf,filename_to_extract,
                                       opt_do_extract_withoutpath,opt_overwrite,password);
     }
-    unzCloseCurrentFile(uf);
 
-    return 0;
+    unzClose(uf);
+
+    return ret_value ;
 }

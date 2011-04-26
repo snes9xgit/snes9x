@@ -17,11 +17,12 @@
 
   (c) Copyright 2002 - 2010  Brad Jorsch (anomie@users.sourceforge.net),
                              Nach (n-a-c-h@users.sourceforge.net),
-                             zones (kasumitokoduck@yahoo.com)
+
+  (c) Copyright 2002 - 2011  zones (kasumitokoduck@yahoo.com)
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2010  BearOso,
+  (c) Copyright 2009 - 2011  BearOso,
                              OV2
 
 
@@ -130,7 +131,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2010  BearOso
+  (c) Copyright 2004 - 2011  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -138,11 +139,11 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2010  OV2
+  (c) Copyright 2009 - 2011  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
-  (c) Copyright 2001 - 2010  zones
+  (c) Copyright 2001 - 2011  zones
 
 
   Specific ports contains the works of other authors. See headers in
@@ -179,7 +180,7 @@
 
   Snes9x for Mac OS X
 
-  (c) Copyright 2001 - 2010  zones
+  (c) Copyright 2001 - 2011  zones
   (c) Copyright 2002 - 2005  107
   (c) Copyright 2002         PB1400c
   (c) Copyright 2004         Alexander and Sander
@@ -193,6 +194,65 @@
 
 #define	kMBXSoundEmulation	1
 #define	kMBXWholeEmulation	2
+
+@interface MusicBoxController : NSObject
+{
+	IBOutlet id	window;
+	IBOutlet id	gametitle;
+	IBOutlet id	disclosure;
+	IBOutlet id	rewind;
+	IBOutlet id	indicator;
+	IBOutlet id	led;
+
+	float		mbxClosedHeight,
+				mbxOpenedHeight;
+
+	NSTimer		*timer;
+	pthread_t	mbxThread;
+}
+
+- (id) init;
+- (void) dealloc;
+- (void) windowWillClose: (NSNotification *) aNotification;
+- (NSWindow *) window;
+- (IBAction) handlePauseButton: (id) sender;
+- (IBAction) handleRewindButton: (id) sender;
+- (IBAction) handleEffectButton: (id) sender;
+- (IBAction) handleChannelButton: (id) sender;
+- (IBAction) handleDisclosureButton: (id) sender;
+- (void) updateIndicator: (NSTimer *) aTimer;
+
+@end
+
+@interface MusicBoxIndicatorView : NSView
+{
+	float		mbxOffsetX,
+				mbxOffsetY,
+				mbxBarWidth,
+				mbxBarHeight,
+				mbxBarSpace,
+				mbxLRSpace,
+				mbxRightBarX,
+				yyscale;
+
+	float		mbxViewWidth,
+				mbxViewHeight,
+				mbxMarginX,
+				mbxMarginY;
+
+	short		prevLMax[8],
+				prevRMax[8],
+				prevLVol[8],
+				prevRVol[8];
+
+	long long	barTimeL[8],
+				barTimeR[8];
+}
+
+- (id) initWithFrame: (NSRect) frame;
+- (void) drawRect: (NSRect) rect;
+
+@end
 
 extern volatile Boolean	mboxPause;
 

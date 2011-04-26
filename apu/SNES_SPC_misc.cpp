@@ -70,7 +70,15 @@ blargg_err_t SNES_SPC::init()
 	}
 
 	allow_time_overflow = false;
-	
+
+	dsp.rom = m.rom;
+	dsp.hi_ram = m.hi_ram;
+
+#ifdef DEBUGGER
+	apu_trace = NULL;
+	debug_trace = false;
+#endif
+
 	#if SPC_LESS_ACCURATE
 		memcpy( reg_times, reg_times_, sizeof reg_times );
 	#endif
@@ -141,7 +149,7 @@ void SNES_SPC::load_regs( uint8_t const in [reg_count] )
 // and timer counts. Copies these to proper registers.
 void SNES_SPC::ram_loaded()
 {
-	m.rom_enabled = 0;
+	m.rom_enabled = dsp.rom_enabled = 0;
 	load_regs( &RAM [0xF0] );
 	
 	// Put STOP instruction around memory to catch PC underflow/overflow
@@ -413,3 +421,435 @@ int SNES_SPC::dsp_envx_value( int ch )
 {
 	return dsp.envx_value( ch );
 }
+
+//// Snes9x debugger
+
+#ifdef DEBUGGER
+
+void SNES_SPC::debug_toggle_trace( void )
+{
+	debug_trace = !debug_trace;
+
+	if (debug_trace)
+	{
+		printf("APU tracing enabled.\n");
+		ENSURE_TRACE_OPEN(apu_trace, "apu_trace.log", "wb")
+	}
+	else
+	{
+		printf("APU tracing disabled.\n");
+		fclose(apu_trace);
+		apu_trace = NULL;
+	}
+}
+
+bool SNES_SPC::debug_is_enabled( void ) { return debug_trace; }
+
+void SNES_SPC::debug_do_trace( int a, int x, int y, uint8_t const *pc, uint8_t *sp, int psw, int c, int nz, int dp )
+{
+	char	msg[512];
+
+	ENSURE_TRACE_OPEN(apu_trace, "apu_trace.log", "a")
+
+	debug_op_print(msg, a, x, y, pc, sp, psw, c, nz, dp);
+	fprintf(apu_trace, "%s  ", msg);
+	debug_io_print(msg);
+	fprintf(apu_trace, "%s  ", msg);
+	S9xPrintHVPosition(msg);
+	fprintf(apu_trace, "%s\n", msg);
+}
+
+void SNES_SPC::debug_op_print( char *buffer, int a, int x, int y, uint8_t const *pc, uint8_t *sp, int psw, int c, int nz, int dp )
+{
+	static char	mnemonics[256][20] =
+	{
+		"NOP",
+		"TCALL 0",
+		"SET1 $%02X.0",
+		"BBS $%02X.0,$%04X",
+		"OR A,$%02X",
+		"OR A,!$%04X",
+		"OR A,(X)",
+		"OR A,[$%02X+X]",
+		"OR A,#$%02X",
+		"OR $%02X,$%02X",
+		"OR1 C,$%04X.%d",
+		"ASL $%02X",
+		"MOV !$%04X,Y",
+		"PUSH PSW",
+		"TSET1 !$%04X",
+		"BRK",
+		"BPL $%04X",
+		"TCALL 1",
+		"CLR1 $%02X.0",
+		"BBC $%02X.0,$%04X",
+		"OR A,$%02X+X",
+		"OR A,!$%04X+X",
+		"OR A,!$%04X+Y",
+		"OR A,[$%02X]+Y",
+		"OR $%02X,#$%02X",
+		"OR (X),(Y)",
+		"DECW $%02X",
+		"ASL $%02X+X",
+		"ASL A",
+		"DEC X",
+		"CMP X,!$%04X",
+		"JMP [!$%04X+X]",
+		"CLRP",
+		"TCALL 2",
+		"SET1 $%02X.1",
+		"BBS $%02X.1,$%04X",
+		"AND A,$%02X",
+		"AND A,!$%04X",
+		"AND A,(X)",
+		"AND A,[$%02X+X]",
+		"AND A,#$%02X",
+		"AND $%02X,$%02X",
+		"OR1 C,/$%04X.%d",
+		"ROL $%02X",
+		"ROL !$%04X",
+		"PUSH A",
+		"CBNE $%02X,$%04X",
+		"BRA $%04X",
+		"BMI $%04X",
+		"TCALL 3",
+		"CLR1 $%02X.1",
+		"BBC $%02X.1,$%04X",
+		"AND A,$%02X+X",
+		"AND A,!$%04X+X",
+		"AND A,!$%04X+Y",
+		"AND A,[$%02X]+Y",
+		"AND $%02X,#$%02X",
+		"AND (X),(Y)",
+		"INCW $%02X",
+		"ROL $%02X+X",
+		"ROL A",
+		"INC X",
+		"CMP X,$%02X",
+		"CALL !$%04X",
+		"SETP",
+		"TCALL 4",
+		"SET1 $%02X.2",
+		"BBS $%02X.2,$%04X",
+		"EOR A,$%02X",
+		"EOR A,!$%04X",
+		"EOR A,(X)",
+		"EOR A,[$%02X+X]",
+		"EOR A,#$%02X",
+		"EOR $%02X,$%02X",
+		"AND1 C,$%04X.%d",
+		"LSR $%02X",
+		"LSR !$%04X",
+		"PUSH X",
+		"TCLR1 !$%04X",
+		"PCALL $%02X",
+		"BVC $%04X",
+		"TCALL 5",
+		"CLR1 $%02X.2",
+		"BBC $%02X.2,$%04X",
+		"EOR A,$%02X+X",
+		"EOR A,!$%04X+X",
+		"EOR A,!$%04X+Y",
+		"EOR A,[$%02X]+Y",
+		"EOR $%02X,#$%02X",
+		"EOR (X),(Y)",
+		"CMPW YA,$%02X",
+		"LSR $%02X+X",
+		"LSR A",
+		"MOV X,A",
+		"CMP Y,!$%04X",
+		"JMP !$%04X",
+		"CLRC",
+		"TCALL 6",
+		"SET1 $%02X.3",
+		"BBS $%02X.3,$%04X",
+		"CMP A,$%02X",
+		"CMP A,!$%04X",
+		"CMP A,(X)",
+		"CMP A,[$%02X+X]",
+		"CMP A,#$%02X",
+		"CMP $%02X,$%02X",
+		"AND1 C,/$%04X.%d",
+		"ROR $%02X",
+		"ROR !$%04X",
+		"PUSH Y",
+		"DBNZ $%02X,$%04X",
+		"RET",
+		"BVS $%04X",
+		"TCALL 7",
+		"CLR1 $%02X.3",
+		"BBC $%02X.3,$%04X",
+		"CMP A,$%02X+X",
+		"CMP A,!$%04X+X",
+		"CMP A,!$%04X+Y",
+		"CMP A,[$%02X]+Y",
+		"CMP $%02X,#$%02X",
+		"CMP (X),(Y)",
+		"ADDW YA,$%02X",
+		"ROR $%02X+X",
+		"ROR A",
+		"MOV A,X",
+		"CMP Y,$%02X",
+		"RET1",
+		"SETC",
+		"TCALL 8",
+		"SET1 $%02X.4",
+		"BBS $%02X.4,$%04X",
+		"ADC A,$%02X",
+		"ADC A,!$%04X",
+		"ADC A,(X)",
+		"ADC A,[$%02X+X]",
+		"ADC A,#$%02X",
+		"ADC $%02X,$%02X",
+		"EOR1 C,$%04X.%d",
+		"DEC $%02X",
+		"DEC !$%04X",
+		"MOV Y,#$%02X",
+		"POP PSW",
+		"MOV $%02X,#$%02X",
+		"BCC $%04X",
+		"TCALL 9",
+		"CLR1 $%02X.4",
+		"BBC $%02X.4,$%04X",
+		"ADC A,$%02X+X",
+		"ADC A,!$%04X+X",
+		"ADC A,!$%04X+Y",
+		"ADC A,[$%02X]+Y",
+		"ADC $%02X,#$%02X",
+		"ADC (X),(Y)",
+		"SUBW YA,$%02X",
+		"DEC $%02X+X",
+		"DEC A",
+		"MOV X,SP",
+		"DIV YA,X",
+		"XCN A",
+		"EI",
+		"TCALL 10",
+		"SET1 $%02X.5",
+		"BBS $%02X.5,$%04X",
+		"SBC A,$%02X",
+		"SBC A,!$%04X",
+		"SBC A,(X)",
+		"SBC A,[$%02X+X]",
+		"SBC A,#$%02X",
+		"SBC $%02X,$%02X",
+		"MOV1 C,$%04X.%d",
+		"INC $%02X",
+		"INC !$%04X",
+		"CMP Y,#$%02X",
+		"POP A",
+		"MOV (X)+,A",
+		"BCS $%04X",
+		"TCALL 11",
+		"CLR1 $%02X.5",
+		"BBC $%02X.5,$%04X",
+		"SBC A,$%02X+X",
+		"SBC A,!$%04X+X",
+		"SBC A,!$%04X+Y",
+		"SBC A,[$%02X]+Y",
+		"SBC $%02X,#$%02X",
+		"SBC (X),(Y)",
+		"MOVW YA,$%02X",
+		"INC $%02X+X",
+		"INC A",
+		"MOV SP,X",
+		"DAS A",
+		"MOV A,(X)+",
+		"DI",
+		"TCALL 12",
+		"SET1 $%02X.6",
+		"BBS $%02X.6,$%04X",
+		"MOV $%02X,A",
+		"MOV !$%04X,A",
+		"MOV (X),A",
+		"MOV [$%02X+X],A",
+		"CMP X,#$%02X",
+		"MOV !$%04X,X",
+		"MOV1 $%04X.%d,C",
+		"MOV $%02X,Y",
+		"ASL !$%04X",
+		"MOV X,#$%02X",
+		"POP X",
+		"MUL YA",
+		"BNE $%04X",
+		"TCALL 13",
+		"CLR1 $%02X.6",
+		"BBC $%02X.6,$%04X",
+		"MOV $%02X+X,A",
+		"MOV !$%04X+X,A",
+		"MOV !$%04X+Y,A",
+		"MOV [$%02X]+Y,A",
+		"MOV $%02X,X",
+		"MOV $%02X+Y,X",
+		"MOVW $%02X,YA",
+		"MOV $%02X+X,Y",
+		"DEC Y",
+		"MOV A,Y",
+		"CBNE $%02X+X,$%04X",
+		"DAA A",
+		"CLRV",
+		"TCALL 14",
+		"SET1 $%02X.7",
+		"BBS $%02X.7,$%04X",
+		"MOV A,$%02X",
+		"MOV A,!$%04X",
+		"MOV A,(X)",
+		"MOV A,[$%02X+X]",
+		"MOV A,#$%02X",
+		"MOV X,!$%04X",
+		"NOT1 $%04X.%d",
+		"MOV Y,$%02X",
+		"MOV Y,!$%04X",
+		"NOTC",
+		"POP Y",
+		"SLEEP",
+		"BEQ $%04X",
+		"TCALL 15",
+		"CLR1 $%02X.7",
+		"BBC $%02X.7,$%04X",
+		"MOV A,$%02X+X",
+		"MOV A,!$%04X+X",
+		"MOV A,!$%04X+Y",
+		"MOV A,[$%02X]+Y",
+		"MOV X,$%02X",
+		"MOV X,$%02X+Y",
+		"MOV $%02X,$%02X",
+		"MOV Y,$%02X+X",
+		"INC Y",
+		"MOV Y,A",
+		"DBNZ Y,$%04X",
+		"STOP"
+	};
+
+	static int modes[256] =
+	{
+		2, 2, 0, 5, 0, 1, 2, 0, 0, 3, 6, 0, 1, 2, 1, 2,
+		7, 2, 0, 5, 0, 1, 1, 0, 4, 2, 0, 0, 2, 2, 1, 1,
+		2, 2, 0, 5, 0, 1, 2, 0, 0, 3, 6, 0, 1, 2, 5, 7,
+		7, 2, 0, 5, 0, 1, 1, 0, 4, 2, 0, 0, 2, 2, 0, 1,
+		2, 2, 0, 5, 0, 1, 2, 0, 0, 3, 6, 0, 1, 2, 1, 0,
+		7, 2, 0, 5, 0, 1, 1, 0, 4, 2, 0, 0, 2, 2, 1, 1,
+		2, 2, 0, 5, 0, 1, 2, 0, 0, 3, 6, 0, 1, 2, 5, 2,
+		7, 2, 0, 5, 0, 1, 1, 0, 4, 2, 0, 0, 2, 2, 0, 2,
+		2, 2, 0, 5, 0, 1, 2, 0, 0, 3, 6, 0, 1, 0, 2, 4,
+		7, 2, 0, 5, 0, 1, 1, 0, 4, 2, 0, 0, 2, 2, 2, 2,
+		2, 2, 0, 5, 0, 1, 2, 0, 0, 3, 6, 0, 1, 0, 2, 2,
+		7, 2, 0, 5, 0, 1, 1, 0, 4, 2, 0, 0, 2, 2, 2, 2,
+		2, 2, 0, 5, 0, 1, 2, 0, 0, 1, 6, 0, 1, 0, 2, 2,
+		7, 2, 0, 5, 0, 1, 1, 0, 0, 0, 0, 0, 2, 2, 5, 2,
+		2, 2, 0, 5, 0, 1, 2, 0, 0, 1, 6, 0, 1, 2, 2, 2,
+		7, 2, 0, 5, 0, 1, 1, 0, 0, 0, 3, 0, 2, 2, 7, 2
+	};
+
+	static int modesToBytes[] =
+	{
+		2, 3, 1, 3, 3, 3, 3, 2
+	};
+
+	int const	n80 = 0x80; // nz
+	int const	p20 = 0x20; // dp
+	int const	z02 = 0x02; // nz
+	int const	c01 = 0x01; // c
+
+	#define GET_PC()	(pc - ram)
+	#define GET_SP()	(sp - 0x101 - ram)
+	#define GET_PSW( out )\
+	{\
+		out = psw & ~(n80 | p20 | z02 | c01);\
+		out |= c  >> 8 & c01;\
+		out |= dp >> 3 & p20;\
+		out |= ((nz >> 4) | nz) & n80;\
+		if ( !(uint8_t) nz ) out |= z02;\
+	}
+
+	uint8_t const	*ram = RAM;
+
+	int		addr;
+	int		tsp, tpsw;
+	uint8_t	d0, d1, d2;
+
+	addr = GET_PC();
+	tsp  = GET_SP();
+	GET_PSW(tpsw);
+
+	d0 = *pc;
+	d1 = (addr < 0xffff) ? *(pc + 1) : 0;
+	d2 = (addr < 0xfffe) ? *(pc + 2) : 0;
+
+	int		mode  = modes[d0];
+	int		bytes = modesToBytes[mode];
+	char	mnem[100];
+
+	switch (bytes)
+	{
+		case 1:
+			sprintf(buffer, "%04X %02X       ",     addr, d0);
+			break;
+
+		case 2:
+			sprintf(buffer, "%04X %02X %02X    ",   addr, d0, d1);
+			break;
+
+		case 3:
+			sprintf(buffer, "%04X %02X %02X %02X ", addr, d0, d1, d2);
+			break;
+	}
+
+	switch (mode)
+	{
+		case 0:
+			sprintf(mnem, mnemonics[d0], d1);
+			break;
+
+		case 1:
+			sprintf(mnem, mnemonics[d0], d1 + (d2 << 8));
+			break;
+
+		case 2:
+			strcpy (mnem, mnemonics[d0]);
+			break;
+
+		case 3:
+			sprintf(mnem, mnemonics[d0], d2, d1);
+			break;
+
+		case 4:
+			sprintf(mnem, mnemonics[d0], d2, d1);
+			break;
+
+		case 5:
+			sprintf(mnem, mnemonics[d0], d1, addr + 3 + (int8_t) d2);
+			break;
+
+		case 6:
+			sprintf(mnem, mnemonics[d0], (d1 + (d2 << 8)) & 0x1fff, d2 >> 5);
+			break;
+
+		case 7:
+			sprintf(mnem, mnemonics[d0], addr + 2 + (int8_t) d1);
+			break;
+	}
+
+	sprintf(buffer, "%s %-20s A:%02X X:%02X Y:%02X S:%02X P:%c%c%c%c%c%c%c%c ROM:%d",
+		buffer, mnem, a, x, y, tsp,
+		(tpsw & 0x80) ? 'N' : 'n',
+		(tpsw & 0x40) ? 'V' : 'v',
+		(tpsw & 0x20) ? 'P' : 'p',
+		(tpsw & 0x10) ? 'B' : 'b',
+		(tpsw & 0x08) ? 'H' : 'h',
+		(tpsw & 0x04) ? 'I' : 'i',
+		(tpsw & 0x02) ? 'Z' : 'z',
+		(tpsw & 0x01) ? 'C' : 'c',
+		m.rom_enabled ? 1 : 0);
+}
+
+void SNES_SPC::debug_io_print( char *buffer )
+{
+	sprintf(buffer, "i/o %02X/%02X %02X/%02X %02X/%02X %02X/%02X",
+		m.smp_regs[1][r_cpuio0], m.smp_regs[0][r_cpuio0],
+		m.smp_regs[1][r_cpuio1], m.smp_regs[0][r_cpuio1],
+		m.smp_regs[1][r_cpuio2], m.smp_regs[0][r_cpuio2],
+		m.smp_regs[1][r_cpuio3], m.smp_regs[0][r_cpuio3]);
+}
+
+#endif

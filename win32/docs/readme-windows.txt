@@ -8,7 +8,7 @@ Files included in the Snes9x archive:
   changes.txt
   snes9x-license.txt
 
-version 1.52  January, 2010
+version 1.53  April, 2011
 Home page: http://www.snes9x.com/
 
 
@@ -91,8 +91,8 @@ allows you to browse your computer to locate the directory where you have stored
 your SNES games. Single-click and then press Load to load and start the game.
 
 SNES ROM images come in lots of different formats. Snes9x supports zipped ROMs
-as long as there is only 1 per zip file. Also Snes9x can open gzip/jma
-compressed file.
+as long as there is only 1 per zip file. Also Snes9x can open gzip and jma
+compressed files.
 
 Game Color System
 -----------------
@@ -155,13 +155,22 @@ experience.
 
 Software
 --------
-You will need access to SNES ROM images in .smc, .sfc, .fig, etc., format
-otherwise you will have nothing to run! Some home-brewed ROM images can be
-downloaded from http://www.zophar.com/.
+You will need access to SNES ROM images otherwise you will have nothing to run!
+Some home-brewed ROM images can be downloaded from http://www.zophar.com/.
 Please note, it is illegal in most countries to have commercial ROM images
 without also owning the actual SNES ROM cartridges, and even then you may be
 liable under various EULAs.
 
+
+CG Shaders
+--------
+If you want to use CG Shaders in Snex9x for windows you need to install the
+CG Toolkit from nvidia's developer zone:
+http://developer.nvidia.com/object/cg_download.html
+
+CG shaders work in both D3D and OpenGL. Various shaders can be found in
+Themaister's Emulator Shader Pack:
+https://github.com/Themaister/Emulator-Shader-Pack
 
 
 Controllers Support
@@ -658,8 +667,7 @@ What's Emulated?
   envelope processing, echo, pitch modulation and digital FIR sound filter.
 - SRAM, a battery-backed RAM.
 - All background modes, 0 to 7.
-- All screen resolutions, 256x224, 256x239, 512x224, 512x239, 512x448 and
-  512x478.
+- All screen resolutions including interlace mode.
 - Pseudo hi-res mode.
 - 8x8, 16x8 and 16x16 tile sizes, flipped in either direction.
 - 32x32, 32x64, 64x32 and 64x64 screen tile sizes.
@@ -806,4 +814,4 @@ Capcom is a trademark of Capcom Co., Ltd.
 Gary Henderson
 
 Edited for Windows port by: zones (kasumitokoduck@yahoo.com)
-Updated most recently by: 2010/01/01 zones
+Updated most recently by: 2011/04/11 zones

@@ -7,6 +7,12 @@
 #include "SPC_DSP.h"
 #include "blargg_endian.h"
 
+#ifdef DEBUGGER
+#include "snes9x.h"
+#include "display.h"
+#include "debug.h"
+#endif
+
 struct SNES_SPC {
 public:
 	typedef BOOST::uint8_t uint8_t;
@@ -113,6 +119,16 @@ public:
 	void    dsp_set_stereo_switch( int );
 	uint8_t dsp_reg_value( int, int );
 	int     dsp_envx_value( int );
+
+//// Snes9x Debugger
+
+#ifdef DEBUGGER
+	void	debug_toggle_trace( void );
+	bool    debug_is_enabled( void );
+	void	debug_do_trace( int, int, int, uint8_t const *, uint8_t *, int, int, int, int );
+	void	debug_op_print( char *, int, int, int, uint8_t const *, uint8_t *, int, int, int, int );
+	void	debug_io_print( char * );
+#endif
 
 public:
 	BLARGG_DISABLE_NOTHROW
@@ -263,6 +279,11 @@ private:
 
 // Snes9x timing hack
 	bool allow_time_overflow;
+// Snes9x debugger
+#ifdef DEBUGGER
+	FILE *apu_trace;
+	bool debug_trace;
+#endif
 };
 
 #include <assert.h>

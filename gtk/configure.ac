@@ -146,6 +146,8 @@ else
   CFLAGS="$CFLAGS -fomit-frame-pointer"
 fi
 
+LIBS="$LIBS -lX11 -ldl -lXext"
+
 ZSNESFX='#ZSNESFX=yes'
 ZSNESC4='#ZSNESC4=yes'
 ASMCPU=''
@@ -186,7 +188,7 @@ if test yes = "$with_opengl" ; then
     AC_CHECK_LIB(GL,glGetString,[
         OPENGL=yes
         CFLAGS="$CFLAGS -DUSE_OPENGL"
-        LIBS="-lGL"
+        LIBS="$LIBS -lGL"
     ],[
         OPENGL=0
     ])

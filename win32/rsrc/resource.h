@@ -484,13 +484,14 @@
 #define ID_WINDOW_SIZE_2X               40170
 #define ID_WINDOW_SIZE_3X               40171
 #define ID_WINDOW_SIZE_4X               40172
+#define ID_DEBUG_APU_TRACE              40173
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        151
-#define _APS_NEXT_COMMAND_VALUE         40173
+#define _APS_NEXT_COMMAND_VALUE         40174
 #define _APS_NEXT_CONTROL_VALUE         3018
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

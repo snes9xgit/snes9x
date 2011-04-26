@@ -218,7 +218,13 @@ loop:
 	PROFILE_TIMER_LOOP( 0xEB, pc [1], 2 );
 	PROFILE_TIMER_LOOP( 0xE4, pc [1], 2 );
 	*/
-	
+
+#ifdef DEBUGGER
+	if (debug_trace)
+		debug_do_trace(a, x, y, pc, sp, psw, c, nz, dp);
+#endif
+
+
 	// TODO: if PC is at end of memory, this will get wrong operand (very obscure)
 	data = *++pc;
 	switch ( opcode )

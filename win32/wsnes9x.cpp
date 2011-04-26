@@ -17,11 +17,12 @@
 
   (c) Copyright 2002 - 2010  Brad Jorsch (anomie@users.sourceforge.net),
                              Nach (n-a-c-h@users.sourceforge.net),
-                             zones (kasumitokoduck@yahoo.com)
+
+  (c) Copyright 2002 - 2011  zones (kasumitokoduck@yahoo.com)
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2010  BearOso,
+  (c) Copyright 2009 - 2011  BearOso,
                              OV2
 
 
@@ -130,7 +131,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2010  BearOso
+  (c) Copyright 2004 - 2011  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -138,11 +139,11 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2010  OV2
+  (c) Copyright 2009 - 2011  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
-  (c) Copyright 2001 - 2010  zones
+  (c) Copyright 2001 - 2011  zones
 
 
   Specific ports contains the works of other authors. See headers in
@@ -2231,6 +2232,9 @@ LRESULT CALLBACK WinProc(
 			ICPU.FrameAdvanceCount = 1;
 			Settings.Paused = FALSE;
 			break;
+		case ID_DEBUG_APU_TRACE:
+			spc_core->debug_toggle_trace();
+			break;
 #endif
 		case IDM_ROM_INFO:
 			RestoreGUIDisplay ();
@@ -2578,6 +2582,7 @@ BOOL WinInit( HINSTANCE hInstance)
 	if(GUI.hMenu) {
 		InsertMenu(GUI.hMenu,ID_OPTIONS_SETTINGS,MF_BYCOMMAND | MF_STRING | MF_ENABLED,ID_DEBUG_FRAME_ADVANCE,TEXT("&Debug Frame Advance"));
 		InsertMenu(GUI.hMenu,ID_OPTIONS_SETTINGS,MF_BYCOMMAND | MF_STRING | MF_ENABLED,ID_DEBUG_TRACE,TEXT("&Trace"));
+		InsertMenu(GUI.hMenu,ID_OPTIONS_SETTINGS,MF_BYCOMMAND | MF_STRING | MF_ENABLED,ID_DEBUG_APU_TRACE,TEXT("&APU Trace"));
 		InsertMenu(GUI.hMenu,ID_OPTIONS_SETTINGS,MF_BYCOMMAND | MF_SEPARATOR | MF_ENABLED,NULL,NULL);
 	}
 #endif
@@ -3755,6 +3760,8 @@ static void CheckMenuStates ()
 #ifdef DEBUGGER
     mii.fState = (CPU.Flags & TRACE_FLAG) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_DEBUG_TRACE, FALSE, &mii);
+	mii.fState = (spc_core->debug_is_enabled()) ? MFS_CHECKED : MFS_UNCHECKED;
+    SetMenuItemInfo (GUI.hMenu, ID_DEBUG_APU_TRACE, FALSE, &mii);
 #endif
 
 	mii.fState = (!Settings.StopEmulation) ? MFS_ENABLED : MFS_DISABLED;

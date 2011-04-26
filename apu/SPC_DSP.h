@@ -67,9 +67,11 @@ public:
 
 // Snes9x Accessor
 
-	int  stereo_switch;
-	int  take_spc_snapshot;
-	void (*spc_snapshot_callback) (void);
+	int     stereo_switch;
+	int     take_spc_snapshot;
+	int     rom_enabled;   // mirror
+	uint8_t *rom, *hi_ram; // mirror
+	void    (*spc_snapshot_callback) (void);
 
 	void    set_spc_snapshot_callback( void (*callback) (void) );
 	void    dump_spc_snapshot( void );

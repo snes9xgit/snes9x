@@ -1,0 +1,1666 @@
+# Перевод Snes9x на русский язык.
+# Copyright (C) 2010 Brandon Wright
+# This file is distributed under the same license as the snes9x package.
+# Sergey Basalaev <sbasalaev@gmail.com>, 2010.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: snes9x 1.52\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-04-12 22:37+0700\n"
+"PO-Revision-Date: 2011-04-12 22:54+0600\n"
+"Last-Translator: Sergey Basalaev <sbasalaev@gmail.com>\n"
+"Language-Team: Russian <ru@li.org>\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/snes9x.ui:7
+msgid "Snes9x"
+msgstr "Snes9x"
+
+#: src/snes9x.ui:24
+msgid "_File"
+msgstr "_Файл"
+
+#: src/snes9x.ui:30
+msgid "_Open ROM Image..."
+msgstr "_Открыть образ ROM..."
+
+#: src/snes9x.ui:42
+msgid "Open Recent"
+msgstr "Открыть недавние"
+
+#: src/snes9x.ui:53
+msgid "Open with _NetPlay..."
+msgstr "Открыть с _NetPlay..."
+
+#: src/snes9x.ui:55
+msgid "Open a ROM to use with NetPlay"
+msgstr "Открыть ROM, чтобы использовать с NetPlay"
+
+#: src/snes9x.ui:65
+msgid "Open _MultiCart..."
+msgstr "Открыть _MultiCart..."
+
+#: src/snes9x.ui:78
+msgid "_Load State"
+msgstr "_Загрузить состояние"
+
+#: src/snes9x.ui:86
+#: src/snes9x.ui:183
+msgid "Slot _0"
+msgstr "Слот _0"
+
+#: src/snes9x.ui:94
+#: src/snes9x.ui:191
+msgid "Slot _1"
+msgstr "Слот _1"
+
+#: src/snes9x.ui:102
+#: src/snes9x.ui:199
+msgid "Slot _2"
+msgstr "Слот _2"
+
+#: src/snes9x.ui:110
+#: src/snes9x.ui:207
+msgid "Slot _3"
+msgstr "Слот _3"
+
+#: src/snes9x.ui:118
+#: src/snes9x.ui:215
+msgid "Slot _4"
+msgstr "Слот _4"
+
+#: src/snes9x.ui:126
+#: src/snes9x.ui:223
+msgid "Slot _5"
+msgstr "Слот _5"
+
+#: src/snes9x.ui:134
+#: src/snes9x.ui:231
+msgid "Slot _6"
+msgstr "Слот _6"
+
+#: src/snes9x.ui:142
+#: src/snes9x.ui:239
+msgid "Slot _7"
+msgstr "Слот _7"
+
+#: src/snes9x.ui:150
+#: src/snes9x.ui:247
+msgid "Slot _8"
+msgstr "Слот _8"
+
+#: src/snes9x.ui:163
+msgid "From _File..."
+msgstr "Из _файла..."
+
+#: src/snes9x.ui:175
+msgid "_Save State"
+msgstr "_Сохранить состояние"
+
+#: src/snes9x.ui:260
+msgid "To _File..."
+msgstr "В _файл..."
+
+#: src/snes9x.ui:276
+msgid "Save SPC..."
+msgstr "Сохранить SPC..."
+
+#: src/snes9x.ui:291
+msgid "Show ROM _Info..."
+msgstr "_Информация о ROM..."
+
+#: src/snes9x.ui:306
+msgid "_Quit"
+msgstr "В_ыход"
+
+#: src/snes9x.ui:321
+msgid "_Emulation"
+msgstr "_Эмуляция"
+
+#: src/snes9x.ui:327
+msgid "Run / _Continue"
+msgstr "_Старт / Продолжить"
+
+#: src/snes9x.ui:337
+msgid "_Pause"
+msgstr "_Приостановить"
+
+#: src/snes9x.ui:353
+msgid "Load _Movie..."
+msgstr "Загрузить _видео..."
+
+#: src/snes9x.ui:364
+msgid "R_ecord Movie..."
+msgstr "_Запись видео..."
+
+#: src/snes9x.ui:375
+msgid "_Stop Recording"
+msgstr "_Остановить запись"
+
+#: src/snes9x.ui:386
+msgid "_Jump to Frame..."
+msgstr "Перейти на _кадр..."
+
+#: src/snes9x.ui:402
+msgid "Sy_nc Clients"
+msgstr "Си_нхронизировать клиенты"
+
+#: src/snes9x.ui:417
+msgid "Reset"
+msgstr "Питание"
+
+#: src/snes9x.ui:428
+msgid "Soft _Reset"
+msgstr "С_брос"
+
+#: src/snes9x.ui:443
+msgid "_View"
+msgstr "_Вид"
+
+#: src/snes9x.ui:450
+msgid "_Hide Menu"
+msgstr "Скрыть _меню"
+
+#: src/snes9x.ui:461
+msgid "_Status Bar"
+msgstr "_Строка состояния"
+
+#: src/snes9x.ui:473
+msgid "_Change Size"
+msgstr "_Изменить размер"
+
+#: src/snes9x.ui:485
+msgid "Exact Pixels"
+msgstr "Точные пикселы"
+
+#: src/snes9x.ui:492
+msgid "_1x"
+msgstr "_1x"
+
+#: src/snes9x.ui:500
+msgid "_2x"
+msgstr "_2x"
+
+#: src/snes9x.ui:508
+msgid "_3x"
+msgstr "_3x"
+
+#: src/snes9x.ui:516
+msgid "_4x"
+msgstr "_4x"
+
+#: src/snes9x.ui:524
+msgid "_5x"
+msgstr "_5x"
+
+#: src/snes9x.ui:538
+msgid "Correct Aspect"
+msgstr "Правильное соотношение"
+
+#: src/snes9x.ui:545
+msgid "1x"
+msgstr "1x"
+
+#: src/snes9x.ui:553
+msgid "2x"
+msgstr "2x"
+
+#: src/snes9x.ui:561
+msgid "3x"
+msgstr "3x"
+
+#: src/snes9x.ui:569
+msgid "4x"
+msgstr "4x"
+
+#: src/snes9x.ui:577
+msgid "5x"
+msgstr "5x"
+
+#: src/snes9x.ui:593
+msgid "_Fullscreen"
+msgstr "_Полный экран"
+
+#: src/snes9x.ui:608
+msgid "_Options"
+msgstr "_Опции"
+
+#: src/snes9x.ui:615
+msgid "Controller Ports"
+msgstr "Порты контроллера"
+
+#: src/snes9x.ui:622
+msgid "SNES Port 1"
+msgstr "Порт SNES 1"
+
+#: src/snes9x.ui:630
+#: src/snes9x.ui:669
+msgid "Joypad"
+msgstr "Джойстик"
+
+#: src/snes9x.ui:638
+#: src/snes9x.ui:677
+msgid "Mouse"
+msgstr "Мышь"
+
+#: src/snes9x.ui:647
+#: src/snes9x.ui:695
+msgid "Superscope"
+msgstr "Superscope"
+
+#: src/snes9x.ui:661
+msgid "SNES Port 2"
+msgstr "Порт SNES 2"
+
+#: src/snes9x.ui:686
+msgid "Multitap"
+msgstr "Multitap"
+
+#: src/snes9x.ui:719
+msgid "_Cheats..."
+msgstr "_Читы..."
+
+#: src/snes9x.ui:732
+msgid "_Preferences..."
+msgstr "_Настройки..."
+
+#: src/snes9x.ui:781
+msgid "Snes9x Preferences"
+msgstr "Настройки Snes9x"
+
+#: src/snes9x.ui:838
+msgid "Use fullscreen on ROM open"
+msgstr "Полный экран после открытия ROM"
+
+#: src/snes9x.ui:842
+msgid "Go to fullscreen mode immediately after opening a ROM"
+msgstr "Переключаться на полный экран сразу после открытия ROM'а"
+
+#: src/snes9x.ui:854
+msgid "Show frame rate"
+msgstr "Показывать частоту кадров"
+
+#: src/snes9x.ui:869
+msgid "Use overscanned height"
+msgstr "Показывать расширенную высоту"
+
+#: src/snes9x.ui:873
+msgid "Use SNES extended height. Will probably cause letterboxing"
+msgstr "Использовать расширенную высоту SNES. Может вызвать чёрные полосы сверху и снизу."
+
+#: src/snes9x.ui:889
+msgid "Change fullscreen resolution:"
+msgstr "Разрешение полного экрана:"
+
+#: src/snes9x.ui:893
+msgid "Changes the screen resolution when running Snes9x in fullscreen mode"
+msgstr "Изменяет разрешение экрана при переходе Snes9x в полноэкранный режим"
+
+#: src/snes9x.ui:932
+msgid "<b>Basic Settings</b>"
+msgstr "<b>Основные настройки</b>"
+
+#: src/snes9x.ui:959
+msgid "Scale image to fit window"
+msgstr "Растягивать изображение во всё окно"
+
+#: src/snes9x.ui:963
+msgid "Scales the image so no black bars are present"
+msgstr "Растягивать изображение, чтобы не оставалось чёрных полос"
+
+#: src/snes9x.ui:979
+msgid "Maintain aspect-ratio:"
+msgstr "Соотношение сторон:"
+
+#: src/snes9x.ui:983
+msgid "Scales the image as large as possible without distortion"
+msgstr "Растягивает изображение насколько возможно без искажений"
+
+#: src/snes9x.ui:1020
+msgid "Use "
+msgstr "Использовать "
+
+#: src/snes9x.ui:1024
+msgid "Allows scaling and filtering to use multiple processors"
+msgstr "Позволяет процессам масштабирования и фильтрации использовать несколько процессоров"
+
+#: src/snes9x.ui:1050
+msgid "threads for filtering and scaling"
+msgstr "потоков для фильтрации и масштабирования"
+
+#: src/snes9x.ui:1069
+msgid "High-resolution effect:"
+msgstr "Эффект высокого разрешения:"
+
+#: src/snes9x.ui:1105
+msgid "Apply scaling filter:"
+msgstr "Применять фильтр масштабирования:"
+
+#: src/snes9x.ui:1143
+msgid "<b>Image Adjustments</b>"
+msgstr "<b>Регулировка изображения</b>"
+
+#: src/snes9x.ui:1179
+msgid "Video preset:"
+msgstr "Предустановка видео:"
+
+#: src/snes9x.ui:1191
+msgid "Composite"
+msgstr "Композитная"
+
+#: src/snes9x.ui:1204
+msgid "S-Video"
+msgstr "S-Video"
+
+#: src/snes9x.ui:1217
+msgid "RGB"
+msgstr "RGB"
+
+#: src/snes9x.ui:1230
+msgid "Monochrome"
+msgstr "Монохромная"
+
+#: src/snes9x.ui:1265
+msgid "Artifacts:"
+msgstr "Помехи:"
+
+#: src/snes9x.ui:1278
+msgid "Sharpness:"
+msgstr "Резкость:"
+
+#: src/snes9x.ui:1291
+msgid "Brightness:"
+msgstr "Яркость:"
+
+#: src/snes9x.ui:1304
+msgid "Contrast:"
+msgstr "Контраст:"
+
+#: src/snes9x.ui:1317
+msgid "Saturation:"
+msgstr "Насыщенность:"
+
+#: src/snes9x.ui:1330
+msgid "Hue:"
+msgstr "Тон:"
+
+#: src/snes9x.ui:1519
+msgid "Gamma:"
+msgstr "Гамма:"
+
+#: src/snes9x.ui:1532
+msgid "Fringing:"
+msgstr "Окантовка:"
+
+#: src/snes9x.ui:1545
+msgid "Bleed:"
+msgstr "Края:"
+
+#: src/snes9x.ui:1558
+msgid "Resolution:"
+msgstr "Разрешение:"
+
+#: src/snes9x.ui:1583
+msgid "Merge odd and even fields"
+msgstr "Совместить чётные и нечётные поля"
+
+#: src/snes9x.ui:1601
+#: src/snes9x.ui:1665
+msgid "Scanline intensity:"
+msgstr "Плотность сканлиний:"
+
+#: src/snes9x.ui:1636
+msgid "<b>NTSC Filter</b>"
+msgstr "<b>Фильтр NTSC</b>"
+
+#: src/snes9x.ui:1695
+msgid "<b>Scanline Filter</b>"
+msgstr "<b>Фильтр сканлиний</b>"
+
+#: src/snes9x.ui:1740
+msgid "Bilinear-filter output"
+msgstr "Билинейная фильтрация вывода"
+
+#: src/snes9x.ui:1758
+msgid "Sync to vertical blank"
+msgstr "Синхронизировать с VBlank"
+
+#: src/snes9x.ui:1762
+msgid "Sync the image to the vertical retrace to stop tearing"
+msgstr "Синхронизировать изображение с обратным ходом вертикальной развёртки, чтобы изображение не рвалось"
+
+#: src/snes9x.ui:1774
+msgid "Reduce input lag"
+msgstr "Уменьшить лаг ввода"
+
+#: src/snes9x.ui:1778
+msgid "Sync the program with the video output after every displayed frame to reduce input latency"
+msgstr "Синхронизировать программу с выводом видео после каждого кадра для уменьшения задержки ввода"
+
+#: src/snes9x.ui:1787
+msgid "Allow non-power-of-two textures"
+msgstr "Позволить текстуры не-степени-двойки"
+
+#: src/snes9x.ui:1791
+msgid "Prevents edge artifacts, but can slow performance"
+msgstr "Предотвращает помехи по краям, но может снизить производительность"
+
+#: src/snes9x.ui:1800
+msgid "Use pixel-buffer objects"
+msgstr "Использовать объекты буферов пикселей"
+
+#: src/snes9x.ui:1805
+msgid "Can be faster or slower depending on drivers"
+msgstr "Может быть быстрее или медленнее в зависимости от драйверов"
+
+#: src/snes9x.ui:1821
+msgid "Different formats can yield highly different performance"
+msgstr "Разные форматы могут дать очень разную производительность"
+
+#: src/snes9x.ui:1827
+msgid "Pixel-buffer format:"
+msgstr "Формат буфера пикселей:"
+
+#: src/snes9x.ui:1864
+msgid "Use GLSL shader:"
+msgstr "Использовать шейдер GLSL:"
+
+#: src/snes9x.ui:1889
+#: src/snes9x.ui:2679
+#: src/snes9x.ui:2694
+#: src/snes9x.ui:2711
+#: src/snes9x.ui:2728
+#: src/snes9x.ui:2745
+#: src/snes9x.ui:6552
+msgid "Browse..."
+msgstr "Обзор..."
+
+#: src/snes9x.ui:1915
+msgid "Force an inverted byte-ordering"
+msgstr "Требовать обратный порядок байтов"
+
+#: src/snes9x.ui:1919
+msgid "Forces a swapped byte-ordering for cases where the system's endian is used instead of the video card"
+msgstr "Устанавливает обратный порядок байтов в случае, когда используется порядок байтов системы, а не видеокарты"
+
+#: src/snes9x.ui:1938
+msgid "<b>Hardware Acceleration</b>"
+msgstr "<b>Аппаратное ускорение</b>"
+
+#: src/snes9x.ui:1969
+msgid "Display"
+msgstr "Видео"
+
+#: src/snes9x.ui:2016
+msgid "Sound driver:"
+msgstr "Звуковой драйвер:"
+
+#: src/snes9x.ui:2050
+msgid "Synchronize with sound"
+msgstr "Синхронизировать со звуком"
+
+#: src/snes9x.ui:2054
+msgid "Base emulation speed on the rate sound is output"
+msgstr "Корректировать скорость эмуляции по частоте звука"
+
+#: src/snes9x.ui:2065
+msgid "Mute sound output"
+msgstr "Отключить звук"
+
+#: src/snes9x.ui:2069
+msgid "Disables output of sound"
+msgstr "Запрещает вывод звука"
+
+#: src/snes9x.ui:2081
+msgid "Stereo"
+msgstr "Стерео"
+
+#: src/snes9x.ui:2085
+msgid "Output two channels, left and right"
+msgstr "Вывод на два канала, левый и правый"
+
+#: src/snes9x.ui:2106
+msgid "Playback rate:"
+msgstr "Частота воспроизведения:"
+
+#: src/snes9x.ui:2133
+msgid "milliseconds"
+msgstr "миллисекунд"
+
+#: src/snes9x.ui:2154
+msgid "Buffer size:"
+msgstr "Размер буфера:"
+
+#: src/snes9x.ui:2167
+msgid "Input rate:"
+msgstr "Частота входа:"
+
+#: src/snes9x.ui:2179
+msgid "Adjust to produce more or less data. Decrease the rate if experiencing crackling. Increase the rate if experiencing frame-rate stuttering. Best used with the \"Synchronize with sound\" option"
+msgstr "Измените для увеличения или уменьшения потока данных. Уменьшите частоту, если наблюдается треск. Увеличьте частоту, если наблюдается заикание. Лучше всего использовать с опцией «Синхронизировать со звуком»"
+
+#: src/snes9x.ui:2223
+msgid "Video rate:"
+msgstr "Частота видео:"
+
+#: src/snes9x.ui:2234
+msgid "label"
+msgstr "label"
+
+#: src/snes9x.ui:2256
+msgid "<b>Sound Settings</b>"
+msgstr "<b>Настройки звука</b>"
+
+#: src/snes9x.ui:2284
+#: src/snes9x.ui:5553
+msgid "Sound"
+msgstr "Звук"
+
+#: src/snes9x.ui:2335
+msgid "Frameskip:"
+msgstr "Пропуск кадров:"
+
+#: src/snes9x.ui:2368
+msgid "Block invalid VRAM access"
+msgstr "Блокировать некорректный доступ к VRAM"
+
+#: src/snes9x.ui:2380
+msgid "Allow opposing dpad directions"
+msgstr "Разрешать противоположные направления"
+
+#: src/snes9x.ui:2384
+msgid "Let left and right or up and down be pressed at the same time"
+msgstr "Позволять влево и вправо или вверх и вниз быть нажатыми одновременно"
+
+#: src/snes9x.ui:2398
+msgid "<b>Accuracy</b>"
+msgstr "<b>Точность</b>"
+
+#: src/snes9x.ui:2425
+msgid "Pause emulation when switching away from Snes9x"
+msgstr "Приостанавливать эмуляцию при переключении на другое окно"
+
+#: src/snes9x.ui:2442
+msgid "The ESC key should:"
+msgstr "Клавиша ESC должна:"
+
+#: src/snes9x.ui:2477
+msgid "<b>Window Switching</b>"
+msgstr "<b>Смена окон</b>"
+
+#: src/snes9x.ui:2503
+msgid "Prevent the screensaver from activating"
+msgstr "Предотвращать запуск хранителя экрана"
+
+#: src/snes9x.ui:2520
+msgid "<b>Screensaver</b>"
+msgstr "<b>Хранитель экрана</b>"
+
+#: src/snes9x.ui:2554
+#: src/snes9x.ui:4439
+msgid "Emulation"
+msgstr "Эмуляция"
+
+#: src/snes9x.ui:2764
+msgid "SRAM:"
+msgstr "SRAM:"
+
+#: src/snes9x.ui:2774
+msgid "Save states:"
+msgstr "Состояния:"
+
+#: src/snes9x.ui:2786
+msgid "Cheats:"
+msgstr "Читы:"
+
+#: src/snes9x.ui:2798
+msgid "Patches:"
+msgstr "Патчи:"
+
+#: src/snes9x.ui:2810
+msgid "Exports:"
+msgstr "Экспорты:"
+
+#: src/snes9x.ui:2831
+msgid "<b>Game Data Locations</b>"
+msgstr "<b>данных игры</b>"
+
+#: src/snes9x.ui:2858
+msgid "Save SRAM:"
+msgstr "Сохранять SRAM:"
+
+#: src/snes9x.ui:2869
+msgid "Automatically save the game's SRAM at this interval. Setting this to 0 will only save when quitting or changing ROMs"
+msgstr "Автоматически сохранять память игры через указанный интервал времени. Когда установлено в 0, сохранение будет производиться при выходе или смене ROM'а"
+
+#: src/snes9x.ui:2882
+msgid "seconds after change"
+msgstr "секунд после изменения"
+
+#: src/snes9x.ui:2896
+msgid "<b>Automatic Saving</b>"
+msgstr "<b>Автоматическое сохранение</b>"
+
+#: src/snes9x.ui:2926
+msgid "Files"
+msgstr "Файлы"
+
+#: src/snes9x.ui:2954
+msgid "<b>Joypad:</b>"
+msgstr "<b>Джойстик:</b>"
+
+#: src/snes9x.ui:2991
+msgid "_Reset"
+msgstr "_Сбросить"
+
+#: src/snes9x.ui:3016
+msgid "Swap with:"
+msgstr "Поменять с:"
+
+#: src/snes9x.ui:3041
+msgid "_Swap"
+msgstr "_Поменять"
+
+#: src/snes9x.ui:3061
+msgid "Use modifier keys (CTRL, SHIFT, ALT) directly"
+msgstr "Использовать клавиши-модификаторы (CTRL, SHIFT, ALT) напрямую"
+
+#: src/snes9x.ui:3065
+msgid "Allow using modifier keys as independent keys instead of modifiers"
+msgstr "Позволить использование клавиш-модификаторов, как независимых клавиш"
+
+#: src/snes9x.ui:3096
+msgid "Up"
+msgstr "Вверх"
+
+#: src/snes9x.ui:3107
+msgid "Down"
+msgstr "Вниз"
+
+#: src/snes9x.ui:3120
+msgid "Left"
+msgstr "Налево"
+
+#: src/snes9x.ui:3133
+msgid "Right"
+msgstr "Направо"
+
+#: src/snes9x.ui:3146
+msgid "Start"
+msgstr "Start"
+
+#: src/snes9x.ui:3159
+msgid "Select"
+msgstr "Select"
+
+#: src/snes9x.ui:3272
+#: src/snes9x.ui:3467
+#: src/snes9x.ui:3648
+msgid "A"
+msgstr "A"
+
+#: src/snes9x.ui:3283
+#: src/snes9x.ui:3478
+#: src/snes9x.ui:3659
+msgid "B"
+msgstr "B"
+
+#: src/snes9x.ui:3296
+#: src/snes9x.ui:3491
+#: src/snes9x.ui:3672
+msgid "X"
+msgstr "X"
+
+#: src/snes9x.ui:3309
+#: src/snes9x.ui:3504
+#: src/snes9x.ui:3685
+msgid "Y"
+msgstr "Y"
+
+#: src/snes9x.ui:3322
+#: src/snes9x.ui:3517
+#: src/snes9x.ui:3698
+msgid "L"
+msgstr "L"
+
+#: src/snes9x.ui:3335
+#: src/snes9x.ui:3530
+#: src/snes9x.ui:3711
+msgid "R"
+msgstr "R"
+
+#: src/snes9x.ui:3442
+msgid "Buttons"
+msgstr "Кнопки"
+
+#: src/snes9x.ui:3819
+msgid "<b>Sticky</b>"
+msgstr "<b>Залипающие</b>"
+
+#: src/snes9x.ui:3834
+msgid "<b>Turbo</b>"
+msgstr "<b>Турбо</b>"
+
+#: src/snes9x.ui:3852
+msgid "Turbo / Sticky Buttons"
+msgstr "Турбо и залипающие кнопки"
+
+#: src/snes9x.ui:3884
+msgid "Set new axis bindings at:"
+msgstr "Установить новый привязки осей на:"
+
+#: src/snes9x.ui:3896
+msgid "Changes the amount a joystick should be tilted to register a button press"
+msgstr "Изменяет величину отклонения джойстика, чтобы зафиксировать нажатие кнопки"
+
+#: src/snes9x.ui:3910
+msgid "percent"
+msgstr "процентах"
+
+#: src/snes9x.ui:3926
+msgid "<b>Joystick Axis Threshold</b>"
+msgstr "<b>Порог осей джойстика</b>"
+
+#: src/snes9x.ui:3958
+msgid "Center all axes on all joysticks and press Calibrate."
+msgstr "Установите все оси на всех джойстиках по центру и нажмите Калибровать."
+
+#: src/snes9x.ui:3972
+msgid "Cali_brate"
+msgstr "Кали_бровать"
+
+#: src/snes9x.ui:4004
+msgid "<b>Calibration</b>"
+msgstr "<b>Калибровка</b>"
+
+#: src/snes9x.ui:4022
+msgid "Joystick Options"
+msgstr "Настройки джойстика"
+
+#: src/snes9x.ui:4037
+#: src/snes9x.ui:5755
+msgid ""
+"<small>Click an entry and then press the desired keys or joystick button\n"
+"<i>Escape</i>: Move to next<i>  Shift-Escape</i>: Clear selected</small>"
+msgstr ""
+"<small>Щёлкните в поле и нажмите желаемые клавиши на клавиатуре или джойстике\n"
+"<i>Escape</i>: Перейти к следующему<i>  Shift-Escape</i>: Очистить выбранное</small>"
+
+#: src/snes9x.ui:4068
+msgid "Joypads"
+msgstr "Джойстики"
+
+#: src/snes9x.ui:4093
+msgid "<b>Snes9x Emulator Shortcut Keys</b>"
+msgstr "<b>Привязки клавиш эмулятора Snes9x</b>"
+
+#: src/snes9x.ui:4140
+msgid "Soft reset"
+msgstr "Сброс"
+
+#: src/snes9x.ui:4153
+msgid "Hardware reset"
+msgstr "Питание"
+
+#: src/snes9x.ui:4166
+msgid "Increase frame time"
+msgstr "Увеличить время кадра"
+
+#: src/snes9x.ui:4179
+msgid "Decrease frame time"
+msgstr "Уменьшить время кадра"
+
+#: src/snes9x.ui:4192
+msgid "Increase frame rate"
+msgstr "Увеличить частоту кадров"
+
+#: src/snes9x.ui:4205
+msgid "Decrease frame rate"
+msgstr "Уменьшить частоту кадров"
+
+#: src/snes9x.ui:4218
+msgid "Pause"
+msgstr "Приостановить"
+
+#: src/snes9x.ui:4231
+msgid "Toggle turbo"
+msgstr "Переключить турбо"
+
+#: src/snes9x.ui:4244
+msgid "Enable turbo"
+msgstr "Включить турбо"
+
+#: src/snes9x.ui:4258
+msgid "Open ROM"
+msgstr "Открыть ROM"
+
+#: src/snes9x.ui:4269
+msgid "Quit Snes9x"
+msgstr "Выйти из Snes9x"
+
+#: src/snes9x.ui:4468
+msgid "Toggle BG layer 0"
+msgstr "Переключить задний слой 1"
+
+#: src/snes9x.ui:4479
+msgid "Toggle BG layer 1"
+msgstr "Переключить задний слой 1"
+
+#: src/snes9x.ui:4492
+msgid "Toggle BG layer 2"
+msgstr "Переключить задний слой 2"
+
+#: src/snes9x.ui:4505
+msgid "Toggle BG layer 3"
+msgstr "Переключить задний слой 3"
+
+#: src/snes9x.ui:4518
+msgid "Toggle sprites"
+msgstr "Переключить спрайты"
+
+#: src/snes9x.ui:4531
+msgid "BG layering hack"
+msgstr "Хак слоёв заднего фона"
+
+#: src/snes9x.ui:4544
+msgid "Screenshot"
+msgstr "Снимок экрана"
+
+#: src/snes9x.ui:4557
+msgid "Toggle fullscreen"
+msgstr "Переключить полный экран"
+
+#: src/snes9x.ui:4688
+msgid "Graphics"
+msgstr "Графика"
+
+#: src/snes9x.ui:4718
+msgid "<b>Quick save state</b>"
+msgstr "<b>Быстрое сохранение</b>"
+
+#: src/snes9x.ui:4732
+msgid "<b>Quick load state</b>"
+msgstr "<b>Быстрая загрузка</b>"
+
+#: src/snes9x.ui:4746
+#: src/snes9x.ui:4865
+msgid "Slot 1"
+msgstr "Слот 1"
+
+#: src/snes9x.ui:4759
+#: src/snes9x.ui:4850
+msgid "Slot 0"
+msgstr "Слот 0"
+
+#: src/snes9x.ui:4772
+#: src/snes9x.ui:4880
+msgid "Slot 2"
+msgstr "Слот 2"
+
+#: src/snes9x.ui:4785
+#: src/snes9x.ui:4895
+msgid "Slot 3"
+msgstr "Слот 3"
+
+#: src/snes9x.ui:4798
+#: src/snes9x.ui:4910
+msgid "Slot 4"
+msgstr "Слот 4"
+
+#: src/snes9x.ui:4811
+#: src/snes9x.ui:4925
+msgid "Slot 5"
+msgstr "Слот 5"
+
+#: src/snes9x.ui:4824
+#: src/snes9x.ui:4940
+msgid "Slot 6"
+msgstr "Слот 6"
+
+#: src/snes9x.ui:4837
+#: src/snes9x.ui:4955
+msgid "Slot 7"
+msgstr "Слот 7"
+
+#: src/snes9x.ui:4970
+#: src/snes9x.ui:4985
+msgid "Slot 8"
+msgstr "Слот 8"
+
+#: src/snes9x.ui:5276
+msgid "Save States"
+msgstr "Состояния"
+
+#: src/snes9x.ui:5306
+msgid "Toggle sound channel 0"
+msgstr "Переключить звуковой канал 0"
+
+#: src/snes9x.ui:5317
+msgid "Toggle sound channel 1"
+msgstr "Переключить звуковой канал 1"
+
+#: src/snes9x.ui:5330
+msgid "Toggle sound channel 2"
+msgstr "Переключить звуковой канал 2"
+
+#: src/snes9x.ui:5343
+msgid "Toggle sound channel 3"
+msgstr "Переключить звуковой канал 3"
+
+#: src/snes9x.ui:5356
+msgid "Toggle sound channel 4"
+msgstr "Переключить звуковой канал 4"
+
+#: src/snes9x.ui:5369
+msgid "Toggle sound channel 5"
+msgstr "Переключить звуковой канал 5"
+
+#: src/snes9x.ui:5382
+msgid "Toggle sound channel 6"
+msgstr "Переключить звуковой канал 6"
+
+#: src/snes9x.ui:5395
+msgid "Toggle sound channel 7"
+msgstr "Переключить звуковой канал 7"
+
+#: src/snes9x.ui:5408
+msgid "Toggle all sound channels"
+msgstr "Переключить все звуковые каналы"
+
+#: src/snes9x.ui:5574
+msgid "Seek to frame"
+msgstr "Перейти на фрейм"
+
+#: src/snes9x.ui:5588
+msgid "Load Movie"
+msgstr "Загрузить видео"
+
+#: src/snes9x.ui:5602
+msgid "Stop movie recording"
+msgstr "Остановить запись видео"
+
+#: src/snes9x.ui:5616
+msgid "Begin movie recording"
+msgstr "Начать запись видео"
+
+#: src/snes9x.ui:5630
+msgid "Save SPC"
+msgstr "Сохранить SPC"
+
+#: src/snes9x.ui:5709
+msgid "Swap controllers 1 & 2"
+msgstr "Поменять местами контроллеры 1 и 2"
+
+#: src/snes9x.ui:5740
+msgid "Misc"
+msgstr "Ещё"
+
+#: src/snes9x.ui:5787
+msgid "Shortcuts"
+msgstr "Клавиши"
+
+#: src/snes9x.ui:5894
+msgid "Advance to Frame"
+msgstr "Перейти на кадр"
+
+#: src/snes9x.ui:5914
+msgid "The current frame in the movie is"
+msgstr "Текущий кадр видео"
+
+#: src/snes9x.ui:5931
+msgid "Fast-forward to frame"
+msgstr "Перемотать на кадр"
+
+#: src/snes9x.ui:6348
+msgid "Snes9x Cheats"
+msgstr "Читы Snes9x"
+
+#: src/snes9x.ui:6389
+msgid "Code:"
+msgstr "Код:"
+
+#: src/snes9x.ui:6413
+msgid "Description:"
+msgstr "Описание:"
+
+#: src/snes9x.ui:6513
+msgid "Snes9x NetPlay"
+msgstr "Snes9x NetPlay"
+
+#: src/snes9x.ui:6543
+msgid "The game chosen will be loaded before connecting. This field can be blank if the server will send the ROM image"
+msgstr "Выбранная игра будет загружена перед соединением. Это поле может быть пустым, если сервер посылает образ ROM"
+
+#: src/snes9x.ui:6572
+msgid "Clear entry"
+msgstr "Очистить запись"
+
+#: src/snes9x.ui:6590
+msgid "<b>ROM Image</b>"
+msgstr "<b>Образ ROM</b>"
+
+#: src/snes9x.ui:6615
+msgid "Connect to another computer"
+msgstr "Соединиться с другим копьютером"
+
+#: src/snes9x.ui:6619
+msgid "Connect to another computer that is running Snes9x NetPlay as a server"
+msgstr "Соединиться с другим компьютером, на котором запущен сервер Snes9x NetPlay"
+
+#: src/snes9x.ui:6635
+msgid "Name or IP address:"
+msgstr "Имя или адрес IP:"
+
+#: src/snes9x.ui:6646
+msgid "Domain name or internet protocol address of a remote computer"
+msgstr "Доменное имя или адрес IP удалённого компьютера"
+
+#: src/snes9x.ui:6655
+msgid "Port:"
+msgstr "Порт:"
+
+#: src/snes9x.ui:6666
+msgid "Connect to specified TCP port on remote computer"
+msgstr "Соединиться с указанным портом TCP на удалённом компьютере"
+
+#: src/snes9x.ui:6683
+msgid "Act as a server"
+msgstr "Быть сервером"
+
+#: src/snes9x.ui:6687
+msgid "Host a game on this computer as Player 1, requiring extra throughput to support multitple users"
+msgstr "Запускать игру на этом компьютере как Игрок 1, требует дополнительной настройки для поддержки нескольких пользователей"
+
+#: src/snes9x.ui:6704
+msgid "<b>Server</b>"
+msgstr "<b>Сервер</b>"
+
+#: src/snes9x.ui:6730
+msgid "Sync using reset"
+msgstr "Синхронизировать через сброс"
+
+#: src/snes9x.ui:6734
+msgid "Reset the game when players join instead of transferring potentially unreliable freeze states"
+msgstr "Сбрасывать игру, когда игроки присоединяются вместо того, чтобы отсылать потенциально ненадёжные состояния"
+
+#: src/snes9x.ui:6744
+msgid "Send ROM image to clients"
+msgstr "Посылать образы ROM клиентам"
+
+#: src/snes9x.ui:6748
+msgid "Send the running game image to players instead of requiring them to have their own copies"
+msgstr "Посылать образы игры игрокам, вместо того чтобы требовать от них иметь собственные копии"
+
+#: src/snes9x.ui:6763
+msgid "Default port:"
+msgstr "Порт по умолчанию:"
+
+#: src/snes9x.ui:6774
+msgid "TCP port used as a connection point for remote clients"
+msgstr "Порт TCP, используемый для соединения с удалёнными клиентами"
+
+#: src/snes9x.ui:6797
+msgid "Ask server to pause when"
+msgstr "Просить сервер приостановиться при отставании на"
+
+#: src/snes9x.ui:6820
+msgid "frames behind"
+msgstr "фреймов"
+
+#: src/snes9x.ui:6840
+msgid "<b>Settings</b>"
+msgstr "<b>Настройки</b>"
+
+#: src/snes9x.ui:6903
+msgid "Open Multiple ROM Images (MultiCart)"
+msgstr "Открыть несколько образов ROM (MultiCart)"
+
+#: src/snes9x.ui:6921
+msgid "Slot A:"
+msgstr "Слот A:"
+
+#: src/snes9x.ui:6931
+msgid "Select an Image for Slot A"
+msgstr "Выберите образ для слота A"
+
+#: src/snes9x.ui:6950
+msgid "Slot B:"
+msgstr "Слот B:"
+
+#: src/snes9x.ui:6960
+msgid "Select an Image for Slot B"
+msgstr "Выберите образ для слота B"
+
+#: src/snes9x.ui:7224
+msgid ""
+"  Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.\n"
+"\n"
+"  (c) Copyright 1996 - 2002  Gary Henderson (gary.henderson@ntlworld.com),\n"
+"                             Jerremy Koot (jkoot@snes9x.com)\n"
+"\n"
+"  (c) Copyright 2002 - 2004  Matthew Kendora\n"
+"\n"
+"  (c) Copyright 2002 - 2005  Peter Bortas (peter@bortas.org)\n"
+"\n"
+"  (c) Copyright 2004 - 2005  Joel Yliluoma (http://iki.fi/bisqwit/)\n"
+"\n"
+"  (c) Copyright 2001 - 2006  John Weidman (jweidman@slip.net)\n"
+"\n"
+"  (c) Copyright 2002 - 2006  funkyass (funkyass@spam.shaw.ca),\n"
+"                             Kris Bleakley (codeviolation@hotmail.com)\n"
+"\n"
+"  (c) Copyright 2002 - 2010  Brad Jorsch (anomie@users.sourceforge.net),\n"
+"                             Nach (n-a-c-h@users.sourceforge.net),\n"
+"\n"
+"  (c) Copyright 2002 - 2011  zones (kasumitokoduck@yahoo.com)\n"
+"\n"
+"  (c) Copyright 2006 - 2007  nitsuja\n"
+"\n"
+"  (c) Copyright 2009 - 2011  BearOso,\n"
+"                             OV2\n"
+"\n"
+"\n"
+"  BS-X C emulator code\n"
+"  (c) Copyright 2005 - 2006  Dreamer Nom,\n"
+"                             zones\n"
+"\n"
+"  C4 x86 assembler and some C emulation code\n"
+"  (c) Copyright 2000 - 2003  _Demo_ (_demo_@zsnes.com),\n"
+"                             Nach,\n"
+"                             zsKnight (zsknight@zsnes.com)\n"
+"\n"
+"  C4 C++ code\n"
+"  (c) Copyright 2003 - 2006  Brad Jorsch,\n"
+"                             Nach\n"
+"\n"
+"  DSP-1 emulator code\n"
+"  (c) Copyright 1998 - 2006  _Demo_,\n"
+"                             Andreas Naive (andreasnaive@gmail.com),\n"
+"                             Gary Henderson,\n"
+"                             Ivar (ivar@snes9x.com),\n"
+"                             John Weidman,\n"
+"                             Kris Bleakley,\n"
+"                             Matthew Kendora,\n"
+"                             Nach,\n"
+"                             neviksti (neviksti@hotmail.com)\n"
+"\n"
+"  DSP-2 emulator code\n"
+"  (c) Copyright 2003         John Weidman,\n"
+"                             Kris Bleakley,\n"
+"                             Lord Nightmare (lord_nightmare@users.sourceforge.net),\n"
+"                             Matthew Kendora,\n"
+"                             neviksti\n"
+"\n"
+"  DSP-3 emulator code\n"
+"  (c) Copyright 2003 - 2006  John Weidman,\n"
+"                             Kris Bleakley,\n"
+"                             Lancer,\n"
+"                             z80 gaiden\n"
+"\n"
+"  DSP-4 emulator code\n"
+"  (c) Copyright 2004 - 2006  Dreamer Nom,\n"
+"                             John Weidman,\n"
+"                             Kris Bleakley,\n"
+"                             Nach,\n"
+"                             z80 gaiden\n"
+"\n"
+"  OBC1 emulator code\n"
+"  (c) Copyright 2001 - 2004  zsKnight,\n"
+"                             pagefault (pagefault@zsnes.com),\n"
+"                             Kris Bleakley\n"
+"                             Ported from x86 assembler to C by sanmaiwashi\n"
+"\n"
+"  SPC7110 and RTC C++ emulator code used in 1.39-1.51\n"
+"  (c) Copyright 2002         Matthew Kendora with research by\n"
+"                             zsKnight,\n"
+"                             John Weidman,\n"
+"                             Dark Force\n"
+"\n"
+"  SPC7110 and RTC C++ emulator code used in 1.52+\n"
+"  (c) Copyright 2009         byuu,\n"
+"                             neviksti\n"
+"\n"
+"  S-DD1 C emulator code\n"
+"  (c) Copyright 2003         Brad Jorsch with research by\n"
+"                             Andreas Naive,\n"
+"                             John Weidman\n"
+"\n"
+"  S-RTC C emulator code\n"
+"  (c) Copyright 2001 - 2006  byuu,\n"
+"                             John Weidman\n"
+"\n"
+"  ST010 C++ emulator code\n"
+"  (c) Copyright 2003         Feather,\n"
+"                             John Weidman,\n"
+"                             Kris Bleakley,\n"
+"                             Matthew Kendora\n"
+"\n"
+"  Super FX x86 assembler emulator code\n"
+"  (c) Copyright 1998 - 2003  _Demo_,\n"
+"                             pagefault,\n"
+"                             zsKnight\n"
+"\n"
+"  Super FX C emulator code\n"
+"  (c) Copyright 1997 - 1999  Ivar,\n"
+"                             Gary Henderson,\n"
+"                             John Weidman\n"
+"\n"
+"  Sound emulator code used in 1.5-1.51\n"
+"  (c) Copyright 1998 - 2003  Brad Martin\n"
+"  (c) Copyright 1998 - 2006  Charles Bilyue'\n"
+"\n"
+"  Sound emulator code used in 1.52+\n"
+"  (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)\n"
+"\n"
+"  SH assembler code partly based on x86 assembler code\n"
+"  (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)\n"
+"\n"
+"  2xSaI filter\n"
+"  (c) Copyright 1999 - 2001  Derek Liauw Kie Fa\n"
+"\n"
+"  HQ2x, HQ3x, HQ4x filters\n"
+"  (c) Copyright 2003         Maxim Stepin (maxim@hiend3d.com)\n"
+"\n"
+"  NTSC filter\n"
+"  (c) Copyright 2006 - 2007  Shay Green\n"
+"\n"
+"  GTK+ GUI code\n"
+"  (c) Copyright 2004 - 2011  BearOso\n"
+"\n"
+"  Win32 GUI code\n"
+"  (c) Copyright 2003 - 2006  blip,\n"
+"                             funkyass,\n"
+"                             Matthew Kendora,\n"
+"                             Nach,\n"
+"                             nitsuja\n"
+"  (c) Copyright 2009 - 2011  OV2\n"
+"\n"
+"  Mac OS GUI code\n"
+"  (c) Copyright 1998 - 2001  John Stiles\n"
+"  (c) Copyright 2001 - 2011  zones\n"
+"\n"
+"\n"
+"  Specific ports contains the works of other authors. See headers in\n"
+"  individual files.\n"
+"\n"
+"\n"
+"  Snes9x homepage: http://www.snes9x.com/\n"
+"\n"
+"  Permission to use, copy, modify and/or distribute Snes9x in both binary\n"
+"  and source form, for non-commercial purposes, is hereby granted without\n"
+"  fee, providing that this license information and copyright notice appear\n"
+"  with all copies and any derived work.\n"
+"\n"
+"  This software is provided 'as-is', without any express or implied\n"
+"  warranty. In no event shall the authors be held liable for any damages\n"
+"  arising from the use of this software or it's derivatives.\n"
+"\n"
+"  Snes9x is freeware for PERSONAL USE only. Commercial users should\n"
+"  seek permission of the copyright holders first. Commercial use includes,\n"
+"  but is not limited to, charging money for Snes9x or software derived from\n"
+"  Snes9x, including Snes9x or derivatives in commercial game bundles, and/or\n"
+"  using Snes9x as a promotion for your commercial product.\n"
+"\n"
+"  The copyright holders request that bug fixes and improvements to the code\n"
+"  should be forwarded to them so everyone can benefit from the modifications\n"
+"  in future versions.\n"
+"\n"
+"  Super NES and Super Nintendo Entertainment System are trademarks of\n"
+"  Nintendo Co., Limited and its subsidiary companies."
+msgstr ""
+"  Snes9x - Портативный эмулятор Super Nintendo Entertainment System (TM).\n"
+"\n"
+"  (c) Copyright 1996 - 2002  Gary Henderson (gary.henderson@ntlworld.com),\n"
+"                             Jerremy Koot (jkoot@snes9x.com)\n"
+"\n"
+"  (c) Copyright 2002 - 2004  Matthew Kendora\n"
+"\n"
+"  (c) Copyright 2002 - 2005  Peter Bortas (peter@bortas.org)\n"
+"\n"
+"  (c) Copyright 2004 - 2005  Joel Yliluoma (http://iki.fi/bisqwit/)\n"
+"\n"
+"  (c) Copyright 2001 - 2006  John Weidman (jweidman@slip.net)\n"
+"\n"
+"  (c) Copyright 2002 - 2006  funkyass (funkyass@spam.shaw.ca),\n"
+"                             Kris Bleakley (codeviolation@hotmail.com)\n"
+"\n"
+"  (c) Copyright 2002 - 2010  Brad Jorsch (anomie@users.sourceforge.net),\n"
+"                             Nach (n-a-c-h@users.sourceforge.net),\n"
+"\n"
+"  (c) Copyright 2002 - 2011  zones (kasumitokoduck@yahoo.com)\n"
+"\n"
+"  (c) Copyright 2006 - 2007  nitsuja\n"
+"\n"
+"  (c) Copyright 2009 - 2011  BearOso,\n"
+"                             OV2\n"
+"\n"
+"\n"
+"  BS-X C emulator code\n"
+"  (c) Copyright 2005 - 2006  Dreamer Nom,\n"
+"                             zones\n"
+"\n"
+"  C4 x86 assembler and some C emulation code\n"
+"  (c) Copyright 2000 - 2003  _Demo_ (_demo_@zsnes.com),\n"
+"                             Nach,\n"
+"                             zsKnight (zsknight@zsnes.com)\n"
+"\n"
+"  C4 C++ code\n"
+"  (c) Copyright 2003 - 2006  Brad Jorsch,\n"
+"                             Nach\n"
+"\n"
+"  DSP-1 emulator code\n"
+"  (c) Copyright 1998 - 2006  _Demo_,\n"
+"                             Andreas Naive (andreasnaive@gmail.com),\n"
+"                             Gary Henderson,\n"
+"                             Ivar (ivar@snes9x.com),\n"
+"                             John Weidman,\n"
+"                             Kris Bleakley,\n"
+"                             Matthew Kendora,\n"
+"                             Nach,\n"
+"                             neviksti (neviksti@hotmail.com)\n"
+"\n"
+"  DSP-2 emulator code\n"
+"  (c) Copyright 2003         John Weidman,\n"
+"                             Kris Bleakley,\n"
+"                             Lord Nightmare (lord_nightmare@users.sourceforge.net),\n"
+"                             Matthew Kendora,\n"
+"                             neviksti\n"
+"\n"
+"  DSP-3 emulator code\n"
+"  (c) Copyright 2003 - 2006  John Weidman,\n"
+"                             Kris Bleakley,\n"
+"                             Lancer,\n"
+"                             z80 gaiden\n"
+"\n"
+"  DSP-4 emulator code\n"
+"  (c) Copyright 2004 - 2006  Dreamer Nom,\n"
+"                             John Weidman,\n"
+"                             Kris Bleakley,\n"
+"                             Nach,\n"
+"                             z80 gaiden\n"
+"\n"
+"  OBC1 emulator code\n"
+"  (c) Copyright 2001 - 2004  zsKnight,\n"
+"                             pagefault (pagefault@zsnes.com),\n"
+"                             Kris Bleakley\n"
+"                             Ported from x86 assembler to C by sanmaiwashi\n"
+"\n"
+"  SPC7110 and RTC C++ emulator code used in 1.39-1.51\n"
+"  (c) Copyright 2002         Matthew Kendora with research by\n"
+"                             zsKnight,\n"
+"                             John Weidman,\n"
+"                             Dark Force\n"
+"\n"
+"  SPC7110 and RTC C++ emulator code used in 1.52+\n"
+"  (c) Copyright 2009         byuu,\n"
+"                             neviksti\n"
+"\n"
+"  S-DD1 C emulator code\n"
+"  (c) Copyright 2003         Brad Jorsch with research by\n"
+"                             Andreas Naive,\n"
+"                             John Weidman\n"
+"\n"
+"  S-RTC C emulator code\n"
+"  (c) Copyright 2001 - 2006  byuu,\n"
+"                             John Weidman\n"
+"\n"
+"  ST010 C++ emulator code\n"
+"  (c) Copyright 2003         Feather,\n"
+"                             John Weidman,\n"
+"                             Kris Bleakley,\n"
+"                             Matthew Kendora\n"
+"\n"
+"  Super FX x86 assembler emulator code\n"
+"  (c) Copyright 1998 - 2003  _Demo_,\n"
+"                             pagefault,\n"
+"                             zsKnight\n"
+"\n"
+"  Super FX C emulator code\n"
+"  (c) Copyright 1997 - 1999  Ivar,\n"
+"                             Gary Henderson,\n"
+"                             John Weidman\n"
+"\n"
+"  Sound emulator code used in 1.5-1.51\n"
+"  (c) Copyright 1998 - 2003  Brad Martin\n"
+"  (c) Copyright 1998 - 2006  Charles Bilyue'\n"
+"\n"
+"  Sound emulator code used in 1.52+\n"
+"  (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)\n"
+"\n"
+"  SH assembler code partly based on x86 assembler code\n"
+"  (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)\n"
+"\n"
+"  2xSaI filter\n"
+"  (c) Copyright 1999 - 2001  Derek Liauw Kie Fa\n"
+"\n"
+"  HQ2x, HQ3x, HQ4x filters\n"
+"  (c) Copyright 2003         Maxim Stepin (maxim@hiend3d.com)\n"
+"\n"
+"  NTSC filter\n"
+"  (c) Copyright 2006 - 2007  Shay Green\n"
+"\n"
+"  GTK+ GUI code\n"
+"  (c) Copyright 2004 - 2011  BearOso\n"
+"\n"
+"  Win32 GUI code\n"
+"  (c) Copyright 2003 - 2006  blip,\n"
+"                             funkyass,\n"
+"                             Matthew Kendora,\n"
+"                             Nach,\n"
+"                             nitsuja\n"
+"  (c) Copyright 2009 - 2011  OV2\n"
+"\n"
+"  Mac OS GUI code\n"
+"  (c) Copyright 1998 - 2001  John Stiles\n"
+"  (c) Copyright 2001 - 2011  zones\n"
+"\n"
+"\n"
+"  Specific ports contains the works of other authors. See headers in\n"
+"  individual files.\n"
+"\n"
+"\n"
+"  Snes9x homepage: http://www.snes9x.com/\n"
+"\n"
+"  Permission to use, copy, modify and/or distribute Snes9x in both binary\n"
+"  and source form, for non-commercial purposes, is hereby granted without\n"
+"  fee, providing that this license information and copyright notice appear\n"
+"  with all copies and any derived work.\n"
+"\n"
+"  This software is provided 'as-is', without any express or implied\n"
+"  warranty. In no event shall the authors be held liable for any damages\n"
+"  arising from the use of this software or it's derivatives.\n"
+"\n"
+"  Snes9x is freeware for PERSONAL USE only. Commercial users should\n"
+"  seek permission of the copyright holders first. Commercial use includes,\n"
+"  but is not limited to, charging money for Snes9x or software derived from\n"
+"  Snes9x, including Snes9x or derivatives in commercial game bundles, and/or\n"
+"  using Snes9x as a promotion for your commercial product.\n"
+"\n"
+"  The copyright holders request that bug fixes and improvements to the code\n"
+"  should be forwarded to them so everyone can benefit from the modifications\n"
+"  in future versions.\n"
+"\n"
+"  Super NES and Super Nintendo Entertainment System are trademarks of\n"
+"  Nintendo Co., Limited and its subsidiary companies."
+
+#: src/snes9x.ui:7402
+msgid "About Snes9x"
+msgstr "О программе Snes9x"
+
+#: src/snes9x.ui:7435
+msgid "label106"
+msgstr "label106"
+
+#~ msgid ""
+#~ "8:7 Square pixels\n"
+#~ "4:3 SNES correct aspect"
+#~ msgstr ""
+#~ "8:7 Квадратные пикселы\n"
+#~ "4:3 правильное соотношение SNES"
+
+#~ msgid "Force SNES-hires output"
+#~ msgstr "Вывод при высоком разрешении"
+
+#~ msgid ""
+#~ "Detects frames that are not output by Snes9x in hires, and scales them"
+#~ msgstr ""
+#~ "Определяет кадры, не выводимые Snes9x при высоком разрешении, и "
+#~ "масштабирует их"
+
+#~ msgid ""
+#~ "None\n"
+#~ "SuperEagle\n"
+#~ "2xSaI\n"
+#~ "Super2xSaI\n"
+#~ "hq2x\n"
+#~ "hq3x\n"
+#~ "hq4x\n"
+#~ "EPX\n"
+#~ "EPX Smooth\n"
+#~ "Blargg's NTSC\n"
+#~ "Scanlines"
+#~ msgstr ""
+#~ "Нет\n"
+#~ "SuperEagle\n"
+#~ "2xSaI\n"
+#~ "Super2xSaI\n"
+#~ "hq2x\n"
+#~ "hq3x\n"
+#~ "hq4x\n"
+#~ "EPX\n"
+#~ "EPX Smooth\n"
+#~ "Blargg's NTSC\n"
+#~ "Сканлинии"
+
+#~ msgid ""
+#~ "0%\n"
+#~ "12.5%\n"
+#~ "25%\n"
+#~ "50%\n"
+#~ "100%"
+#~ msgstr ""
+#~ "0%\n"
+#~ "12.5%\n"
+#~ "25%\n"
+#~ "50%\n"
+#~ "100%"
+
+#~ msgid ""
+#~ "12.5%\n"
+#~ "25%\n"
+#~ "50%\n"
+#~ "100%"
+#~ msgstr ""
+#~ "12.5%\n"
+#~ "25%\n"
+#~ "50%\n"
+#~ "100%"
+
+#~ msgid "Smoothens (blurs) the image"
+#~ msgstr "Сглаживает изображение"
+
+#~ msgid ""
+#~ "16-bit (GL_BGRA)\n"
+#~ "24-bit (GL_RGB)\n"
+#~ "32-bit (GL_BGRA)"
+#~ msgstr ""
+#~ "16-bit (GL_BGRA)\n"
+#~ "24-bit (GL_RGB)\n"
+#~ "32-bit (GL_BGRA)"
+
+#~ msgid ""
+#~ "48000 hz\n"
+#~ "44100 hz\n"
+#~ "32000 hz (SNES Default)\n"
+#~ "22050 hz\n"
+#~ "16000 hz\n"
+#~ "11025 hz\n"
+#~ "8000 hz\n"
+#~ "0 hz"
+#~ msgstr ""
+#~ "48000 гц\n"
+#~ "44100 гц\n"
+#~ "32000 гц (SNES по умолчанию)\n"
+#~ "22050 гц\n"
+#~ "16000 гц\n"
+#~ "11025 гц\n"
+#~ "8000 гц\n"
+#~ "0 гц"
+
+#~ msgid ""
+#~ "Automatic\n"
+#~ "0\n"
+#~ "1\n"
+#~ "2\n"
+#~ "3\n"
+#~ "4\n"
+#~ "5\n"
+#~ "6\n"
+#~ "7\n"
+#~ "8\n"
+#~ "9"
+#~ msgstr ""
+#~ "Автоматически\n"
+#~ "0\n"
+#~ "1\n"
+#~ "2\n"
+#~ "3\n"
+#~ "4\n"
+#~ "5\n"
+#~ "6\n"
+#~ "7\n"
+#~ "8\n"
+#~ "9"
+
+#~ msgid "Enable HDMA"
+#~ msgstr "Разрешить HDMA"
+
+#~ msgid "Enable HDMA. Required feature for compatibility with some games"
+#~ msgstr ""
+#~ "Разрешить HDMA. Требуемая опция для совместимости с некоторыми играми"
+
+#~ msgid ""
+#~ "Toggle the menu bar\n"
+#~ "Exit fullscreen mode\n"
+#~ "Quit Snes9x"
+#~ msgstr ""
+#~ "Переключать строку меню\n"
+#~ "Выключать полноэкранный режим\n"
+#~ "Закрывать Snes9x"
+
+#~ msgid "ROM folder"
+#~ msgstr "Папке ROM'a"
+
+#~ msgid "Store data in the same folder as the ROM file used"
+#~ msgstr "Сохранять данные в той же папке, что и используемый ROM"
+
+#~ msgid "Snes9x configuration folder"
+#~ msgstr "Папке настроек Snes9x"
+
+#~ msgid "Store data in $HOME/.snes9x/sram"
+#~ msgstr "Сохранять данные в $HOME/.snes9x/sram"
+
+#~ msgid "Custom folder:"
+#~ msgstr "Своей папке:"
+
+#~ msgid "Save data in:"
+#~ msgstr "Сохранять данные в:"
+
+#~ msgid "Version Info"
+#~ msgstr "Информация"
+
+#~ msgid "Type:"
+#~ msgstr "Тип:"
+
+#~ msgid ""
+#~ "Game Genie\n"
+#~ "Pro Action Replay\n"
+#~ "Goldfinger"
+#~ msgstr ""
+#~ "Game Genie\n"
+#~ "Pro Action Replay\n"
+#~ "Goldfinger"

@@ -17,11 +17,12 @@
 
   (c) Copyright 2002 - 2010  Brad Jorsch (anomie@users.sourceforge.net),
                              Nach (n-a-c-h@users.sourceforge.net),
-                             zones (kasumitokoduck@yahoo.com)
+
+  (c) Copyright 2002 - 2011  zones (kasumitokoduck@yahoo.com)
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2010  BearOso,
+  (c) Copyright 2009 - 2011  BearOso,
                              OV2
 
 
@@ -130,7 +131,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2010  BearOso
+  (c) Copyright 2004 - 2011  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -138,11 +139,11 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2010  OV2
+  (c) Copyright 2009 - 2011  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
-  (c) Copyright 2001 - 2010  zones
+  (c) Copyright 2001 - 2011  zones
 
 
   Specific ports contains the works of other authors. See headers in
@@ -1565,25 +1566,10 @@ static void debug_process_command (char *Line)
 		printf("HC event tracing %s.\n", Settings.TraceHCEvent ? "enabled" : "disabled");
 	}
 
-/*
 	if (*Line == 'A')
-	{
-		APU.Flags ^= TRACE_FLAG;
+		spc_core->debug_toggle_trace();
 
-		if (APU.Flags & TRACE_FLAG)
-		{
-			printf("APU tracing enabled.\n");
-			if (apu_trace == NULL)
-				apu_trace = fopen("aputrace.log", "wb");
-		}
-		else
-		{
-			printf("APU tracing disabled.\n");
-			fclose(apu_trace);
-			apu_trace = NULL;
-		}
-	}
-
+/*
 	if (*Line == 'B')
 	{
 		Settings.TraceSoundDSP = !Settings.TraceSoundDSP;
@@ -2620,6 +2606,11 @@ void S9xTraceFormattedMessage (const char *s, ...)
 
 		S9xTraceMessage(msg);
 	}
+}
+
+void S9xPrintHVPosition (char *s)
+{
+	sprintf(s, "HC:%04ld VC:%03ld FC:%02d", (long) CPU.Cycles, (long) CPU.V_Counter, IPPU.FrameCount);
 }
 
 #endif

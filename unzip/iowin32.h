@@ -2,9 +2,9 @@
    files using zlib + zip or unzip API
    This IO API version uses the Win32 API (for Microsoft Windows)
 
-   Version 1.01e, February 12th, 2005
+   Version 1.01h, December 28th, 2009
 
-   Copyright (C) 1998-2005 Gilles Vollant
+   Copyright (C) 1998-2009 Gilles Vollant
 */
 
 #include <windows.h>
