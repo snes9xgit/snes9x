@@ -3547,6 +3547,7 @@ void CMemory::ApplyROMFixes (void)
 			match_na ("MSPACMAN")								|| // Ms Pacman
 			match_na ("THE MASK")								|| // The Mask
 			match_na ("PRIMAL RAGE")							|| // Primal Rage
+			match_na ("PORKY PIGS HAUNTED")						||
 			match_na ("DOOM TROOPERS"))							   // Doom Troopers
 			Timings.APUAllowTimeOverflow = TRUE;
 	}
