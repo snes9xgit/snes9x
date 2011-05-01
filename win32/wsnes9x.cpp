@@ -1351,7 +1351,7 @@ static bool DoOpenRomDialog(TCHAR filename [_MAX_PATH], bool noCustomDlg = false
 		_tfullpath(szPathName, S9xGetDirectoryT(ROM_DIR), MAX_PATH);
 
 		// a limited strcat that doesn't mind null characters
-#define strcat0(to,from) do{memcpy(to,from,sizeof(from)-1);to+=sizeof(from)-1;}while(false)
+#define strcat0(to,from) do{memcpy(to,from,sizeof(from)-1);to+=(sizeof(from)/sizeof(TCHAR))-1;}while(false)
 
 		// make filter string using entries in valid_ext
 		TCHAR lpfilter [8192] = {0};
