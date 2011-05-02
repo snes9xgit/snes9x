@@ -294,8 +294,6 @@ bool CDirect3D::Initialize(HWND hWnd)
 
 	init_done = true;
 
-	SetViewport();
-
 	ApplyDisplayChanges();
 
 	return true;
@@ -731,15 +729,15 @@ void CDirect3D::Render(SSurface Src)
 		drawSurface->UnlockRect(0);
 	}
 
+	if(!GUI.Stretch||GUI.AspectRatio)
+		pDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
+
 	//if the output size of the render method changes we need to update the viewport
 	if(afterRenderHeight != dstRect.bottom || afterRenderWidth != dstRect.right) {
 		afterRenderHeight = dstRect.bottom;
 		afterRenderWidth = dstRect.right;
 		SetViewport();
 	}
-
-	if(!GUI.Stretch||GUI.AspectRatio)
-		pDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
 
 	pDevice->BeginScene();
 
@@ -927,7 +925,6 @@ bool CDirect3D::ChangeRenderSize(unsigned int newWidth, unsigned int newHeight)
 	if(!ResetDevice())
 		return false;
 
-	SetViewport();
 	return true;
 }
 
@@ -1000,6 +997,9 @@ bool CDirect3D::ResetDevice()
 	
 	//recreate the surface
 	CreateDrawSurface();
+
+	SetViewport();
+
 	return true;
 }
 
@@ -1042,7 +1042,7 @@ bool CDirect3D::SetFullscreen(bool fullscreen)
 
 	//present here to get a fullscreen blank even if no rendering is done
 	pDevice->Present(NULL,NULL,NULL,NULL);
-	SetupVertices();
+
 	return true;
 }
 

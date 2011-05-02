@@ -1351,7 +1351,7 @@ static bool DoOpenRomDialog(TCHAR filename [_MAX_PATH], bool noCustomDlg = false
 		_tfullpath(szPathName, S9xGetDirectoryT(ROM_DIR), MAX_PATH);
 
 		// a limited strcat that doesn't mind null characters
-#define strcat0(to,from) do{memcpy(to,from,sizeof(from)-1);to+=sizeof(from)-1;}while(false)
+#define strcat0(to,from) do{memcpy(to,from,sizeof(from)-1);to+=(sizeof(from)/sizeof(TCHAR))-1;}while(false)
 
 		// make filter string using entries in valid_ext
 		TCHAR lpfilter [8192] = {0};
@@ -5843,7 +5843,7 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 						tvi.hItem=hTemp;
 						TreeView_GetItem(dirList, &tvi);
 
-						if(_tcsstr(blah, temp) != 0)
+						if(_tcsicmp(blah, temp) != 0)
 						{
 							do
 							{
@@ -5854,7 +5854,7 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 								tvi.hItem=hTemp;
 								TreeView_GetItem(dirList, &tvi);
 							}
-							while((hTemp != NULL) && (_tcsstr(blah, temp) != 0));
+							while((hTemp != NULL) && (_tcsicmp(blah, temp) != 0));
 
 							if(hTemp!=NULL)
 							{
@@ -5888,11 +5888,12 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 					{
 						LVFINDINFO lvfi;
 						ZeroMemory(&lvfi, sizeof(LVFINDINFO));
-						TCHAR tmp[_MAX_PATH];
-						TCHAR *tmp2;
-						lstrcpy(tmp,_tFromChar(Memory.ROMFilename));
+						TCHAR filename[_MAX_PATH];
+						TCHAR *tmp, *tmp2;
+						lstrcpy(filename,_tFromChar(Memory.ROMFilename));
+						tmp = filename;
 						while(tmp2=_tcsstr(tmp, TEXT("\\")))
-							tmp2=tmp2+1;
+							tmp=tmp2+sizeof(TCHAR);
 
 						lvfi.flags=LVFI_STRING;
 						lvfi.psz=tmp2;
@@ -6640,8 +6641,7 @@ bool RegisterProgid() {
 
 	_stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\%s"),SNES9XWPROGID);
 	REGCREATEKEY(HKEY_CURRENT_USER, szRegKey)
-	int test = lstrlen(SNES9XWPROGIDDESC) + 1;
-	REGSETVALUE(hKey,NULL,REG_SZ,SNES9XWPROGIDDESC,22)
+	REGSETVALUE(hKey,NULL,REG_SZ,SNES9XWPROGIDDESC,(lstrlen(SNES9XWPROGIDDESC) + 1) * sizeof(TCHAR))
 	RegCloseKey(hKey);
 
 	_stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\%s\\DefaultIcon"),SNES9XWPROGID);
