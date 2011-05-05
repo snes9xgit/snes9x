@@ -385,7 +385,7 @@ const char *S9xGetFilenameInc (const char *e, enum s9x_getdirtype dirtype)
     do {
         _snprintf(filename, sizeof(filename), "%s\\%s%03d%s", d, fname, i, e);
         i++;
-    } while(_access (filename, 0) == 0 && i!=0);
+    } while(_taccess (_tFromChar(filename), 0) == 0 && i!=0);
 
     return (filename);
 }
