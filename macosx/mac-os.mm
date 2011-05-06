@@ -3187,6 +3187,10 @@ static void Initialize (void)
 
 	printf("OS: %x  QuickTime: %x\n\n", (unsigned) systemVersion, (unsigned) qtVersion);
 
+#ifdef ZLIB
+	printf("zlib header version: %s\n\n", ZLIB_VERSION);
+#endif
+
 	NSApplicationLoad();
 
 	ZeroMemory(&Settings, sizeof(Settings));

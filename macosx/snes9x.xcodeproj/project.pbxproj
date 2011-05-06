@@ -210,7 +210,6 @@
 		CF047E0D109D0E0600FD0754 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF05677E0CF9971000C7877C /* QuartzCore.framework */; };
 		CF047E0E109D0E0600FD0754 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C108DD0386806001A80002 /* QuickTime.framework */; };
 		CF047E0F109D0E0600FD0754 /* libHIDUtilities_u.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA3D2F580A26085800BDACCC /* libHIDUtilities_u.a */; };
-		CF047E10109D0E0600FD0754 /* libz_u.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CF10B8EF0F63BF8A009C81CD /* libz_u.a */; };
 		CF05668E0CF98E7E00C7877C /* 65c816.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE0615A0526CCB900A80003 /* 65c816.h */; };
 		CF0566910CF98E7E00C7877C /* bsx.h in Headers */ = {isa = PBXBuildFile; fileRef = EA2F381A09B17E9E0078DCA7 /* bsx.h */; };
 		CF0566920CF98E7E00C7877C /* c4.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE061600526CCB900A80003 /* c4.h */; };
@@ -393,7 +392,6 @@
 		CF05675E0CF98E7E00C7877C /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5FC76BD03873BBF01A80002 /* IOKit.framework */; };
 		CF0567600CF98E7E00C7877C /* libHIDUtilities_u.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA3D2F580A26085800BDACCC /* libHIDUtilities_u.a */; };
 		CF0567810CF9971000C7877C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF05677E0CF9971000C7877C /* QuartzCore.framework */; };
-		CF10B8F20F63BF8A009C81CD /* libz_u.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CF10B8EF0F63BF8A009C81CD /* libz_u.a */; };
 		CF14733E132DA4E1000D0F91 /* Snes9x.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF14733C132DA4E1000D0F91 /* Snes9x.xib */; };
 		CF14733F132DA4E1000D0F91 /* Snes9x.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF14733C132DA4E1000D0F91 /* Snes9x.xib */; };
 		CF147340132DA4E1000D0F91 /* Snes9x.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF14733C132DA4E1000D0F91 /* Snes9x.xib */; };
@@ -599,7 +597,6 @@
 		CF2F46E61095EE72007D33FA /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA8FA89603D294C000A80004 /* OpenGL.framework */; };
 		CF2F46E81095EE72007D33FA /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C108DD0386806001A80002 /* QuickTime.framework */; };
 		CF2F46E91095EE72007D33FA /* libHIDUtilities_u.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA3D2F580A26085800BDACCC /* libHIDUtilities_u.a */; };
-		CF2F46EA1095EE72007D33FA /* libz_u.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CF10B8EF0F63BF8A009C81CD /* libz_u.a */; };
 		CF37575E10A6AEA1001BF7C5 /* apu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF37574C10A6AEA1001BF7C5 /* apu.cpp */; };
 		CF37575F10A6AEA1001BF7C5 /* apu.h in Headers */ = {isa = PBXBuildFile; fileRef = CF37574D10A6AEA1001BF7C5 /* apu.h */; };
 		CF37576010A6AEA1001BF7C5 /* blargg_common.h in Headers */ = {isa = PBXBuildFile; fileRef = CF37574E10A6AEA1001BF7C5 /* blargg_common.h */; };
@@ -651,6 +648,15 @@
 		CF37579110A6AEA1001BF7C5 /* SPC_DSP.h in Headers */ = {isa = PBXBuildFile; fileRef = CF37575B10A6AEA1001BF7C5 /* SPC_DSP.h */; };
 		CF37579210A6AEA1001BF7C5 /* SPC_Filter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF37575C10A6AEA1001BF7C5 /* SPC_Filter.cpp */; };
 		CF37579310A6AEA1001BF7C5 /* SPC_Filter.h in Headers */ = {isa = PBXBuildFile; fileRef = CF37575D10A6AEA1001BF7C5 /* SPC_Filter.h */; };
+		CF3E424A1372D48F0077DE32 /* libz_u.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CF3E42491372D48F0077DE32 /* libz_u.a */; };
+		CF3E424B1372D48F0077DE32 /* libz_u.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CF3E42491372D48F0077DE32 /* libz_u.a */; };
+		CF3E424C1372D48F0077DE32 /* libz_u.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CF3E42491372D48F0077DE32 /* libz_u.a */; };
+		CF3E45BF137349960077DE32 /* zconf.h in Headers */ = {isa = PBXBuildFile; fileRef = CF3E45BD137349960077DE32 /* zconf.h */; };
+		CF3E45C1137349960077DE32 /* zconf.h in Headers */ = {isa = PBXBuildFile; fileRef = CF3E45BD137349960077DE32 /* zconf.h */; };
+		CF3E45C3137349960077DE32 /* zconf.h in Headers */ = {isa = PBXBuildFile; fileRef = CF3E45BD137349960077DE32 /* zconf.h */; };
+		CF3E45D113734A920077DE32 /* zlib.h in Headers */ = {isa = PBXBuildFile; fileRef = CF3E45D013734A920077DE32 /* zlib.h */; };
+		CF3E45D213734A920077DE32 /* zlib.h in Headers */ = {isa = PBXBuildFile; fileRef = CF3E45D013734A920077DE32 /* zlib.h */; };
+		CF3E45D313734A920077DE32 /* zlib.h in Headers */ = {isa = PBXBuildFile; fileRef = CF3E45D013734A920077DE32 /* zlib.h */; };
 		CF46BEAA133E2559005A17A5 /* musicbox.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF46BEA8133E2559005A17A5 /* musicbox.xib */; };
 		CF46BEAB133E2559005A17A5 /* musicbox.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF46BEA8133E2559005A17A5 /* musicbox.xib */; };
 		CF46BEAC133E2559005A17A5 /* musicbox.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF46BEA8133E2559005A17A5 /* musicbox.xib */; };
@@ -710,7 +716,6 @@
 		CF047E17109D0E0600FD0754 /* Info_i386.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info_i386.plist; sourceTree = "<group>"; };
 		CF0567660CF98E7E00C7877C /* Snes9x.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Snes9x.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CF05677E0CF9971000C7877C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = /System/Library/Frameworks/QuartzCore.framework; sourceTree = "<absolute>"; };
-		CF10B8EF0F63BF8A009C81CD /* libz_u.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libz_u.a; sourceTree = "<group>"; };
 		CF14733D132DA4E1000D0F91 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/Snes9x.xib; sourceTree = "<group>"; };
 		CF2CFFD30F10F2C000B8B35E /* spc7110emu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = spc7110emu.cpp; sourceTree = "<group>"; };
 		CF2CFFD40F10F2C000B8B35E /* spc7110dec.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = spc7110dec.cpp; sourceTree = "<group>"; };
@@ -735,6 +740,9 @@
 		CF37575B10A6AEA1001BF7C5 /* SPC_DSP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPC_DSP.h; sourceTree = "<group>"; };
 		CF37575C10A6AEA1001BF7C5 /* SPC_Filter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SPC_Filter.cpp; sourceTree = "<group>"; };
 		CF37575D10A6AEA1001BF7C5 /* SPC_Filter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPC_Filter.h; sourceTree = "<group>"; };
+		CF3E42491372D48F0077DE32 /* libz_u.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libz_u.a; sourceTree = "<group>"; };
+		CF3E45BD137349960077DE32 /* zconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = zconf.h; sourceTree = "<group>"; };
+		CF3E45D013734A920077DE32 /* zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = zlib.h; sourceTree = "<group>"; };
 		CF46BEA9133E2559005A17A5 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/musicbox.xib; sourceTree = "<group>"; };
 		CF46BEAD133E256D005A17A5 /* musicbox_pause.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = musicbox_pause.png; sourceTree = "<group>"; };
 		CF4B7C420CF841580080E643 /* icons.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icons.png; sourceTree = "<group>"; };
@@ -968,7 +976,7 @@
 				CF047E0D109D0E0600FD0754 /* QuartzCore.framework in Frameworks */,
 				CF047E0E109D0E0600FD0754 /* QuickTime.framework in Frameworks */,
 				CF047E0F109D0E0600FD0754 /* libHIDUtilities_u.a in Frameworks */,
-				CF047E10109D0E0600FD0754 /* libz_u.a in Frameworks */,
+				CF3E424B1372D48F0077DE32 /* libz_u.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -988,7 +996,7 @@
 				CF0567810CF9971000C7877C /* QuartzCore.framework in Frameworks */,
 				CF05675B0CF98E7E00C7877C /* QuickTime.framework in Frameworks */,
 				CF0567600CF98E7E00C7877C /* libHIDUtilities_u.a in Frameworks */,
-				CF10B8F20F63BF8A009C81CD /* libz_u.a in Frameworks */,
+				CF3E424A1372D48F0077DE32 /* libz_u.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1007,7 +1015,7 @@
 				CF2F46E61095EE72007D33FA /* OpenGL.framework in Frameworks */,
 				CF2F46E81095EE72007D33FA /* QuickTime.framework in Frameworks */,
 				CF2F46E91095EE72007D33FA /* libHIDUtilities_u.a in Frameworks */,
-				CF2F46EA1095EE72007D33FA /* libz_u.a in Frameworks */,
+				CF3E424C1372D48F0077DE32 /* libz_u.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1283,6 +1291,8 @@
 				EAECB68304AC7FCE00A80003 /* mac-prefix.h */,
 				EAD978980555059300E8BBFD /* mac-global_prefix.h */,
 				EA362C3E086119D100FBE476 /* HID_Utilities_External.h */,
+				CF3E45BD137349960077DE32 /* zconf.h */,
+				CF3E45D013734A920077DE32 /* zlib.h */,
 				EACDDBB004D6A89700A80003 /* mac-appleevent.cpp */,
 				EADE6347052E5C4300A80003 /* mac-audio.mm */,
 				EAECB67004AC7FCE00A80003 /* mac-cart.mm */,
@@ -1330,7 +1340,7 @@
 				CF46BEA8133E2559005A17A5 /* musicbox.xib */,
 				EA3BEAA80A28386500A8FAE5 /* Snes9x Help */,
 				EA3D2F580A26085800BDACCC /* libHIDUtilities_u.a */,
-				CF10B8EF0F63BF8A009C81CD /* libz_u.a */,
+				CF3E42491372D48F0077DE32 /* libz_u.a */,
 				EA3D301C0A260A4D00BDACCC /* Info.plist */,
 				CF047E17109D0E0600FD0754 /* Info_i386.plist */,
 				CF2F47C41095F093007D33FA /* Info_ppc.plist */,
@@ -1455,6 +1465,8 @@
 				CF047D97109D0E0600FD0754 /* mac-prefix.h in Headers */,
 				CF047D98109D0E0600FD0754 /* mac-global_prefix.h in Headers */,
 				CF047D99109D0E0600FD0754 /* HID_Utilities_External.h in Headers */,
+				CF3E45C1137349960077DE32 /* zconf.h in Headers */,
+				CF3E45D213734A920077DE32 /* zlib.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1572,6 +1584,8 @@
 				CF0566EC0CF98E7E00C7877C /* mac-prefix.h in Headers */,
 				CF0566ED0CF98E7E00C7877C /* mac-global_prefix.h in Headers */,
 				CF0566EE0CF98E7E00C7877C /* HID_Utilities_External.h in Headers */,
+				CF3E45BF137349960077DE32 /* zconf.h in Headers */,
+				CF3E45D113734A920077DE32 /* zlib.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1689,6 +1703,8 @@
 				CF2F46711095EE72007D33FA /* mac-prefix.h in Headers */,
 				CF2F46721095EE72007D33FA /* mac-global_prefix.h in Headers */,
 				CF2F46731095EE72007D33FA /* HID_Utilities_External.h in Headers */,
+				CF3E45C3137349960077DE32 /* zconf.h in Headers */,
+				CF3E45D313734A920077DE32 /* zlib.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2257,7 +2273,11 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = Info.plist;
-				LIBRARY_SEARCH_PATHS = .;
+				LIBRARY_SEARCH_PATHS = (
+					.,
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
 				PRODUCT_NAME = Snes9x;
 				WARNING_CFLAGS = "-Wfloat-equal";
 			};
@@ -2300,7 +2320,11 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = Info_ppc.plist;
-				LIBRARY_SEARCH_PATHS = .;
+				LIBRARY_SEARCH_PATHS = (
+					.,
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.3;
 				OTHER_LDFLAGS = (
 					"-weak_framework",
@@ -2350,7 +2374,11 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = Info_i386.plist;
-				LIBRARY_SEARCH_PATHS = .;
+				LIBRARY_SEARCH_PATHS = (
+					.,
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OTHER_CFLAGS = (
 					"-fomit-frame-pointer",
@@ -2397,7 +2425,11 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = Info_i386.plist;
-				LIBRARY_SEARCH_PATHS = .;
+				LIBRARY_SEARCH_PATHS = (
+					.,
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				PRODUCT_NAME = "Snes9x (i386)";
 				WARNING_CFLAGS = "-Wfloat-equal";
@@ -2436,7 +2468,11 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = Info.plist;
-				LIBRARY_SEARCH_PATHS = .;
+				LIBRARY_SEARCH_PATHS = (
+					.,
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
 				OTHER_CFLAGS = (
 					"-fomit-frame-pointer",
 					"-fast",
@@ -2485,7 +2521,11 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = Info_ppc.plist;
-				LIBRARY_SEARCH_PATHS = .;
+				LIBRARY_SEARCH_PATHS = (
+					.,
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.3;
 				OTHER_CFLAGS = (
 					"-mcpu=G3",
