@@ -3506,6 +3506,7 @@ void FreezeUnfreeze (int slot, bool8 freeze)
 #endif
 
     _splitpath (Memory.ROMFilename, drive, dir, fname, ext);
+	strcpy(filename, "");
     static char *digits = "t123456789";
 	for(int oldDir = 0; oldDir <= 1; oldDir++)
 	{

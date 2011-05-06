@@ -181,6 +181,9 @@
 #define _TFWOPEN_H
 
 #include <stdio.h>
+#include <io.h>
+#include <string.h>
+#include <tchar.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -188,6 +191,16 @@ extern "C" {
 
 FILE *_tfwopen(const char *filename, const char *mode );
 int _twremove(const char *filename );
+int _twopen(const char *filename, int oflag, int pmode);
+int _twaccess(const char *_Filename, int _AccessMode);
+int _twrename(const char *_OldFilename, const char *_NewFilename);
+int _twunlink(const char *_Filename);
+int _twchdir(const char *_Path);
+int _twmkdir(const char *_Path);
+int _twrmdir(const char *_Path);
+void _twsplitpath(const char *_FullPath, char *_Drive, char *_Dir, char *_Filename, char *_Ext);
+void _twmakepath(char *_Path, const char *_Drive, const char *_Dir, const char *_Filename, const char *_Ext);
+char *_twcsrchr(const char *_Str, int _Ch);
 
 #ifdef __cplusplus
 }
@@ -256,7 +269,24 @@ public:
 #endif // __cplusplus
 
 #define fopen _tfwopen
-#define remove _twremove
+#undef remove
+__inline int remove(const char *filename) {
+	return _twremove(filename);
+}
+#undef open
+__inline int open(const char *filename, int oflag, int pmode) {
+	return _twopen(filename, oflag, pmode);
+}
+#define _access _twaccess
+#define _rename _twrename
+#define _unlink _twunlink
+#define _chdir _twchdir
+#define _mkdir _twmkdir
+#define _rmdir _twrmdir
+#define _splitpath _twsplitpath
+#define _makepath _twmakepath
+//#define strrchr _twcsrchr
+
 #endif // _TFWOPEN_H
 
 #endif 
