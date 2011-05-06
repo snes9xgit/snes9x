@@ -3512,7 +3512,7 @@ void FreezeUnfreeze (int slot, bool8 freeze)
 	{
 		for(int zmv = 0; zmv <= 1; zmv++)
 		{
-		    if((!oldDir && !zmv) || (!freeze && _access (filename, 0) != 0 && slot < 10))
+		    if((!oldDir && !zmv) || (!freeze && _taccess (_tFromChar(filename), 0) != 0 && slot < 10))
 			{
 				if(!zmv)
 					sprintf (ext, ".%03d", slot);
