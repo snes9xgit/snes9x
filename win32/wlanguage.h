@@ -272,7 +272,6 @@
 #define HOTKEYS_LABEL_2_5 TEXT("Sprites Layer")
 #define HOTKEYS_LABEL_2_6 TEXT("Clipping Windows")
 #define HOTKEYS_LABEL_2_7 TEXT("Transparency")
-#define HOTKEYS_LABEL_2_8 TEXT("HDMA Emulation")
 #define HOTKEYS_LABEL_2_10 TEXT("Switch Controllers")
 #define HOTKEYS_LABEL_2_11 TEXT("Joypad Swap")
 #define HOTKEYS_LABEL_2_12 TEXT("Reset Game")
@@ -396,7 +395,6 @@
 #define WINPROC_TURBOMODE_ON "Fast-Forward Activated"
 #define WINPROC_TURBOMODE_OFF "Fast-Forward Deactivated"
 #define WINPROC_TURBOMODE_TEXT "Fast-Forward"
-#define WINPROC_HDMA_TEXT "HDMA emulation"
 #define WINPROC_BG1 "BG#1" //Background Layers
 #define WINPROC_BG2 "BG#2"
 #define WINPROC_BG3 "BG#3"

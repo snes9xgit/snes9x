@@ -1454,11 +1454,11 @@ LRESULT CALLBACK WinProc(
 	case WM_CUSTKEYUP:
 		{
 			int modifiers = 0;
-			if(GetAsyncKeyState(VK_MENU))
+			if(GetAsyncKeyState(VK_MENU) || wParam == VK_MENU)
 				modifiers |= CUSTKEY_ALT_MASK;
-			if(GetAsyncKeyState(VK_CONTROL))
+			if(GetAsyncKeyState(VK_CONTROL)|| wParam == VK_CONTROL)
 				modifiers |= CUSTKEY_CTRL_MASK;
-			if(GetAsyncKeyState(VK_SHIFT))
+			if(GetAsyncKeyState(VK_SHIFT)|| wParam == VK_SHIFT)
 				modifiers |= CUSTKEY_SHIFT_MASK;
 
 			if(wParam == CustomKeys.FastForward.key
@@ -2687,7 +2687,11 @@ VOID CALLBACK HotkeyTimer( UINT idEvent, UINT uMsg, DWORD dwUser, DWORD dw1, DWO
 						PostMessage(GUI.hWnd, WM_CUSTKEYDOWN, (WPARAM)(i),(LPARAM)(NULL));
 				}
 				else
-					joyState[i] = 0;
+					if(joyState[i])
+					{
+						joyState[i] = 0;
+						PostMessage(GUI.hWnd, WM_CUSTKEYUP, (WPARAM)(i),(LPARAM)(NULL));
+					}
 			}
 			counter++;
 		}
@@ -7765,7 +7769,8 @@ static void set_hotkeyinfo(HWND hDlg)
 		SendDlgItemMessage(hDlg,IDC_HOTKEY5,WM_USER+44,CustomKeys.BGL5.key,CustomKeys.BGL5.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY6,WM_USER+44,CustomKeys.ClippingWindows.key,CustomKeys.ClippingWindows.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY7,WM_USER+44,CustomKeys.Transparency.key,CustomKeys.Transparency.modifiers);
-//		SendDlgItemMessage(hDlg,IDC_HOTKEY8,WM_USER+44,CustomKeys.HDMA.key,CustomKeys.HDMA.modifiers);
+		SendDlgItemMessage(hDlg,IDC_HOTKEY8,WM_USER+44,0,0);
+		SendDlgItemMessage(hDlg,IDC_HOTKEY9,WM_USER+44,0,0);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY10,WM_USER+44,CustomKeys.SwitchControllers.key,CustomKeys.SwitchControllers.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY11,WM_USER+44,CustomKeys.JoypadSwap.key,CustomKeys.JoypadSwap.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY12,WM_USER+44,CustomKeys.ResetGame.key,CustomKeys.ResetGame.modifiers);
@@ -7829,7 +7834,7 @@ static void set_hotkeyinfo(HWND hDlg)
 		SetDlgItemText(hDlg,IDC_LABEL_HK5,HOTKEYS_LABEL_2_5);
 		SetDlgItemText(hDlg,IDC_LABEL_HK6,HOTKEYS_LABEL_2_6);
 		SetDlgItemText(hDlg,IDC_LABEL_HK7,HOTKEYS_LABEL_2_7);
-		SetDlgItemText(hDlg,IDC_LABEL_HK8,HOTKEYS_LABEL_2_8);
+		SetDlgItemText(hDlg,IDC_LABEL_HK8,INPUTCONFIG_LABEL_UNUSED);
 		SetDlgItemText(hDlg,IDC_LABEL_HK9,INPUTCONFIG_LABEL_UNUSED);
 		SetDlgItemText(hDlg,IDC_LABEL_HK10,HOTKEYS_LABEL_2_10);
 		SetDlgItemText(hDlg,IDC_LABEL_HK11,HOTKEYS_LABEL_2_11);
@@ -10188,8 +10193,6 @@ static void set_movieinfo(const TCHAR* path, HWND hDlg)
 
 //		if(m.SyncFlags & MOVIE_SYNC_DATA_EXISTS)
 		{
-			SendDlgItemMessage(hDlg,IDC_ALLOWLEFTRIGHT,BM_SETCHECK,    (m.SyncFlags & MOVIE_SYNC_LEFTRIGHT)!=0  ? (WPARAM)BST_CHECKED : (WPARAM)BST_UNCHECKED, 0);
-			SendDlgItemMessage(hDlg,IDC_SYNC_TO_SOUND_CPU,BM_SETCHECK, (m.SyncFlags & MOVIE_SYNC_SYNCSOUND)!=0  ? (WPARAM)BST_CHECKED : (WPARAM)BST_UNCHECKED, 0);
 	//		SetWindowText(GetDlgItem(hDlg, IDC_LOADEDFROMMOVIE), _T(MOVIE_LABEL_SYNC_DATA_FROM_MOVIE));
 		}
 
@@ -10330,10 +10333,6 @@ INT_PTR CALLBACK DlgOpenMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		{
 			switch(LOWORD(wParam))
 			{
-			case IDC_ALLOWLEFTRIGHT:
-			case IDC_SYNC_TO_SOUND_CPU:
-				SetWindowText(GetDlgItem(hDlg, IDC_LOADEDFROMMOVIE), TEXT(""));
-				break;
 			case IDC_BROWSE_MOVIE:
 				{
 					OPENFILENAME  ofn;
@@ -10389,8 +10388,6 @@ INT_PTR CALLBACK DlgOpenMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					GetDlgItemText(hDlg, IDC_MOVIE_PATH, op->Path, MAX_PATH);
 					SetCurrentDirectory(movieDirectory);
 				}
-				Settings.UpAndDown = IsDlgButtonChecked(hDlg, IDC_ALLOWLEFTRIGHT);
-				Settings.SoundSync = IsDlgButtonChecked(hDlg, IDC_SYNC_TO_SOUND_CPU);
 				EndDialog(hDlg, 1);
 				return true;
 
@@ -10457,10 +10454,6 @@ INT_PTR CALLBACK DlgCreateMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 				_tmakepath (filename, TEXT(""), TEXT(""), fname, TEXT("smv"));
 				SetWindowText(GetDlgItem(hDlg, IDC_MOVIE_PATH), filename);
 			}
-
-			SendDlgItemMessage(hDlg,IDC_ALLOWLEFTRIGHT,BM_SETCHECK, Settings.UpAndDown ? (WPARAM)BST_CHECKED : (WPARAM)BST_UNCHECKED, 0);
-			SendDlgItemMessage(hDlg,IDC_SYNC_TO_SOUND_CPU,BM_SETCHECK, Settings.SoundSync ? (WPARAM)BST_CHECKED : (WPARAM)BST_UNCHECKED, 0);
-			SetWindowText(GetDlgItem(hDlg, IDC_LOADEDFROMMOVIE), _T(""));
 
 			//EnableWindow(GetDlgItem(hDlg, IDC_SYNC_TO_SOUND_CPU), Settings.SoundDriver<1||Settings.SoundDriver>3); // can't sync sound to CPU unless using "Snes9x DirectSound" driver
 
@@ -10540,12 +10533,7 @@ INT_PTR CALLBACK DlgCreateMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 					else
 						GUI.MovieStartFromReset = FALSE;
 
-					Settings.UpAndDown = IsDlgButtonChecked(hDlg, IDC_ALLOWLEFTRIGHT);
-					Settings.SoundSync = IsDlgButtonChecked(hDlg, IDC_SYNC_TO_SOUND_CPU);
-
 					op->SyncFlags = MOVIE_SYNC_DATA_EXISTS | MOVIE_SYNC_HASROMINFO;
-					if(Settings.UpAndDown) op->SyncFlags |= MOVIE_SYNC_LEFTRIGHT;
-					if(Settings.SoundSync) op->SyncFlags |= MOVIE_SYNC_SYNCSOUND;
 
 					if(IsDlgButtonChecked(hDlg, IDC_CLEARSRAM) && IsDlgButtonChecked(hDlg, IDC_RECORD_RESET) && existsSRAM())
 					{
