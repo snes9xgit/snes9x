@@ -270,11 +270,11 @@ public:
 
 #define fopen _tfwopen
 #undef remove
-__inline int remove(const char *filename) {
+__forceinline int remove(const char *filename) {
 	return _twremove(filename);
 }
 #undef open
-__inline int open(const char *filename, int oflag, int pmode) {
+__forceinline int open(const char *filename, int oflag, int pmode) {
 	return _twopen(filename, oflag, pmode);
 }
 #define _access _twaccess

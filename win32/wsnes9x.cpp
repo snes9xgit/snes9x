@@ -5520,7 +5520,7 @@ INT_PTR CALLBACK DlgMultiROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 		SetCurrentDirectory(S9xGetDirectoryT(BIOS_DIR));
 		_tfullpath(path, TEXT("stbios.bin"), MAX_PATH);
 		SetDlgItemText(hDlg, IDC_MULTICART_BIOSEDIT, path);
-		FILE* ftemp = fopen(_tToChar(path), "rb");
+		FILE* ftemp = _tfopen(path, TEXT("rb"));
 		if(ftemp)
 		{
 			fclose(ftemp);
