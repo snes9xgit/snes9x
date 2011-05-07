@@ -203,4 +203,8 @@ extern "C" int _twremove(const char *filename ) {
 	return _wremove(Utf8ToWide(filename));
 }
 
+extern "C" int _twopen(const char *filename, int oflag, int pmode) {
+  return _wopen(Utf8ToWide(filename), oflag, pmode);
+}
+
 #endif // UNICODE

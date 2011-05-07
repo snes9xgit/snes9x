@@ -188,6 +188,7 @@ extern "C" {
 
 FILE *_tfwopen(const char *filename, const char *mode );
 int _twremove(const char *filename );
+int _twopen(const char *filename, int oflag, int pmode);
 
 #ifdef __cplusplus
 }
@@ -256,7 +257,14 @@ public:
 #endif // __cplusplus
 
 #define fopen _tfwopen
-#define remove _twremove
+#undef remove
+__forceinline int remove(const char *filename) {
+  return _twremove(filename);
+}
+#undef open
+__forceinline int open(const char *filename, int oflag, int pmode) {
+  return _twopen(filename, oflag, pmode);
+}
 #endif // _TFWOPEN_H
 
 #endif 
