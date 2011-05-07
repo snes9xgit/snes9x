@@ -997,11 +997,10 @@ void WinRegisterConfigItems()
 #undef ADDT3
 #undef ADDTN
 #undef ADD2T2
-	AddBool2C("Joypads:Background", GUI.BackgroundKeyGamekeys, true, "on to detect game keypresses while window is inactive, if PauseWhenInactive = FALSE.");
+	AddBool2C("Input:Background", GUI.BackgroundInput, false, "on to detect game keypresses and hotkeys while window is inactive, if PauseWhenInactive = FALSE.");
 #undef CATEGORY
 #define	CATEGORY "Controls\\Win\\Hotkeys"
 	AddBool2C("Handler:Joystick", GUI.JoystickHotkeys, true, "on to detect game controller buttons assigned to hotkeys. May impact performance.");
-	AddBool2C("Handler:Background", GUI.BackgroundKeyHotkeys, false, "on to detect keyboard hotkeys when in the background. May impact performance and decrease responsiveness.");
 #define ADD(x) AddVKey("Key:" #x , CustomKeys.x.key, CustomKeys.x.key); AddVKMod("Mods:" #x, CustomKeys.x.modifiers, CustomKeys.x.modifiers)
 #define ADDN(x,n2) AddVKey("Key:" #n2, CustomKeys.x.key, CustomKeys.x.key); AddVKMod("Mods:" #n2, CustomKeys.x.modifiers, CustomKeys.x.modifiers)
 	ADD(SpeedUp); ADD(SpeedDown); ADD(Pause); ADD(FrameAdvance);

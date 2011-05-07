@@ -277,7 +277,7 @@ INT_PTR CALLBACK DlgCreateMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 INT_PTR CALLBACK DlgOpenMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 HRESULT CALLBACK EnumModesCallback( LPDDSURFACEDESC lpDDSurfaceDesc, LPVOID lpContext);
 
-INT_PTR CALLBACK test(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+VOID CALLBACK HotkeyTimer( UINT idEvent, UINT uMsg, DWORD dwUser, DWORD dw1, DWORD dw2);
 
 #define NOTKNOWN "Unknown Company "
 #define HEADER_SIZE 512
@@ -1440,7 +1440,7 @@ LRESULT CALLBACK WinProc(
 		DragAcceptFiles(hWnd, TRUE);
 		return 0;
 	case WM_KEYDOWN:
-		if(GUI.BackgroundKeyHotkeys)
+		if(GUI.BackgroundInput && !GUI.InactivePause)
 			break;
 	case WM_CUSTKEYDOWN:
 	case WM_SYSKEYDOWN:
@@ -1753,6 +1753,12 @@ LRESULT CALLBACK WinProc(
 			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_KEYCUSTOM), hWnd, DlgHotkeyConfig);
             RestoreSNESDisplay ();
             break;
+
+		case ID_EMULATION_BACKGROUNDINPUT:
+			GUI.BackgroundInput = !GUI.BackgroundInput;
+			if(!GUI.hHotkeyTimer)
+				GUI.hHotkeyTimer = timeSetEvent (32, 0, (LPTIMECALLBACK)HotkeyTimer, 0, TIME_PERIODIC);
+			break;
 
 		case ID_FILE_LOADMULTICART:
 			{
@@ -2669,7 +2675,7 @@ VOID CALLBACK HotkeyTimer( UINT idEvent, UINT uMsg, DWORD dwUser, DWORD dw1, DWO
 			}
 			counter++;
 		}
-		if(GUI.BackgroundKeyHotkeys)
+		if(GUI.BackgroundInput && !GUI.InactivePause)
 		{
 			static int counter = 0;
 			static uint32 joyState [256];
@@ -3270,7 +3276,7 @@ int WINAPI WinMain(
     Settings.StopEmulation = TRUE;
     GUI.hFrameTimer = timeSetEvent (20, 0, (LPTIMECALLBACK)FrameTimer, 0, TIME_PERIODIC);
 
-	if(GUI.JoystickHotkeys || GUI.BackgroundKeyHotkeys)
+	if(GUI.JoystickHotkeys || GUI.BackgroundInput)
 	    GUI.hHotkeyTimer = timeSetEvent (32, 0, (LPTIMECALLBACK)HotkeyTimer, 0, TIME_PERIODIC);
 	else
 		GUI.hHotkeyTimer = 0;
@@ -3791,6 +3797,9 @@ static void CheckMenuStates ()
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL7, FALSE, &mii);
 	mii.fState = (GUI.SoundChannelEnable & (1 << 7)) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL8, FALSE, &mii);
+
+	mii.fState = GUI.BackgroundInput ? MFS_CHECKED : MFS_UNCHECKED;
+	SetMenuItemInfo (GUI.hMenu, ID_EMULATION_BACKGROUNDINPUT, FALSE, &mii);
 
 	UINT validFlag;
 	enum controllers controller[2];
