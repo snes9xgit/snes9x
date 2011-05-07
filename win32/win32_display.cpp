@@ -256,7 +256,6 @@ bool WinDisplayReset(void)
 	if(S9xDisplayOutput->Initialize(GUI.hWnd)) {
 		S9xGraphicsDeinit();
 		S9xSetWinPixelFormat ();
-		S9xInitUpdate();
 		S9xGraphicsInit();
 		return true;
 	} else {

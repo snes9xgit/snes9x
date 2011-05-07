@@ -2342,9 +2342,9 @@ LRESULT CALLBACK WinProc(
 		S9xClearPause(PAUSE_MENU);
 		break;
 	case WM_DISPLAYCHANGE:
-		if (!GUI.FullScreen)
+		if (!GUI.FullScreen && !(Settings.ForcedPause & PAUSE_TOGGLE_FULL_SCREEN))
 		{
-			//WinDisplayReset();
+			WinDisplayReset();
 		}
 		break;
 	case WM_MOUSEMOVE:
