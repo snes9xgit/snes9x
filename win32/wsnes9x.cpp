@@ -1431,7 +1431,7 @@ LRESULT CALLBACK WinProc(
     unsigned int i;
     //bool showFPS;
 #ifdef NETPLAY_SUPPORT
-    char hostname [100];
+    TCHAR hostname [100];
 #endif
     switch (uMsg)
     {
@@ -1866,7 +1866,7 @@ LRESULT CALLBACK WinProc(
 
 				S9xSetPause (PAUSE_NETPLAY_CONNECT);
 
-                if (!S9xNPConnectToServer (hostname, Settings.Port,
+				if (!S9xNPConnectToServer (_tToChar(hostname), Settings.Port,
 					Memory.ROMName))
                 {
                     S9xClearPause (PAUSE_NETPLAY_CONNECT);
