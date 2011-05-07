@@ -3547,7 +3547,9 @@ void CMemory::ApplyROMFixes (void)
 			match_na ("MSPACMAN")								|| // Ms Pacman
 			match_na ("THE MASK")								|| // The Mask
 			match_na ("PRIMAL RAGE")							|| // Primal Rage
-			match_na ("PORKY PIGS HAUNTED")						||
+			match_na ("PORKY PIGS HAUNTED")						|| // Porky Pig's Haunted Holiday
+			match_na ("Big Sky Trooper")						|| // Big Sky Trooper
+			match_id ("A35")									|| // Mechwarrior 3050 / Battle Tech 3050
 			match_na ("DOOM TROOPERS"))							   // Doom Troopers
 			Timings.APUAllowTimeOverflow = TRUE;
 	}
