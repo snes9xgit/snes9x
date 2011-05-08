@@ -4834,7 +4834,7 @@ INT_PTR CALLBACK DlgInfoProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				case 14:strcat(romtext, "Unknown region 14");break;
 				default:strcat(romtext, "Unknown region 15");break;
 				}
-				SendDlgItemMessageA(hDlg, IDC_ROM_DATA, WM_SETTEXT, 0, (LPARAM)romtext);
+				SendDlgItemMessage(hDlg, IDC_ROM_DATA, WM_SETTEXT, 0, (LPARAM)((TCHAR *)_tFromChar(romtext)));
 				break;
 			}
 			case WM_CTLCOLORSTATIC:

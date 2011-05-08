@@ -320,6 +320,8 @@ struct sGUI {
 	TCHAR D3DshaderFileName[MAX_PATH];
 	TCHAR OGLshaderFileName[MAX_PATH];
 
+	bool OGLdisablePBOs;
+
     bool IgnoreNextMouseMove;
     RECT window_size;
 	bool window_maximized;

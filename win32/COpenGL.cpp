@@ -604,6 +604,9 @@ void COpenGL::EnumModes(std::vector<dMode> *modeVector)
 
 bool COpenGL::LoadPBOFunctions()
 {
+	if(GUI.OGLdisablePBOs)
+		return false;
+
 	if(pboFunctionsLoaded)
 		return true;
 
