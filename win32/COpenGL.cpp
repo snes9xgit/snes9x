@@ -210,6 +210,7 @@ COpenGL::COpenGL(void)
 	cgContext = NULL;
 	cgVertexProgram = cgFragmentProgram = NULL;
 	cgAvailable = false;
+	frameCount = 0;
 }
 
 COpenGL::~COpenGL(void)
@@ -452,6 +453,7 @@ void COpenGL::Render(SSurface Src)
 		float outputSize[2] = {(float)(GUI.Stretch?windowSize.right:afterRenderWidth),
 							(float)(GUI.Stretch?windowSize.bottom:afterRenderHeight) };
 		float textureSize[2] = { (float)quadTextureSize, (float)quadTextureSize };
+		float frameCnt = (float)++frameCount;
 
 		if(shader_type == OGL_SHADER_GLSL) {
 			location = glGetUniformLocation (shaderProgram, "rubyInputSize");
@@ -474,12 +476,21 @@ void COpenGL::Render(SSurface Src)
 		cgGLSetParameter2fv(cgp,floats);\
 }\
 
+#define setProgram1f(program,varname,val)\
+{\
+	CGparameter cgp = cgGetNamedParameter(program, varname);\
+	if(cgp)\
+		cgGLSetParameter1f(cgp,val);\
+}\
+
 			setProgram2fv(cgFragmentProgram,"IN.video_size",inputSize);
 			setProgram2fv(cgFragmentProgram,"IN.texture_size",textureSize);
 			setProgram2fv(cgFragmentProgram,"IN.output_size",outputSize);
+			setProgram1f(cgFragmentProgram,"IN.frame_count",frameCnt);
 			setProgram2fv(cgVertexProgram,"IN.video_size",inputSize);
 			setProgram2fv(cgVertexProgram,"IN.texture_size",textureSize);
 			setProgram2fv(cgVertexProgram,"IN.output_size",outputSize);
+			setProgram1f(cgVertexProgram,"IN.frame_count",frameCnt);
 		}
     }
 

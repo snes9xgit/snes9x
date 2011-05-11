@@ -221,6 +221,7 @@ CDirect3D::CDirect3D()
 	shaderTimer = 1.0f;
 	shaderTimeStart = 0;
 	shaderTimeElapsed = 0;
+	frameCount = 0;
 	cgContext = NULL;
 	cgVertexProgram = cgFragmentProgram = NULL;
 	cgAvailable = false;
@@ -649,11 +650,13 @@ void CDirect3D::SetShaderVars()
 		D3DXVECTOR2 videoSize;
 		D3DXVECTOR2 textureSize;
 		D3DXVECTOR2 outputSize;
+		float frameCnt;
 		videoSize.x = (float)afterRenderWidth;
 		videoSize.y = (float)afterRenderHeight;
 		textureSize.x = textureSize.y = (float)quadTextureSize;
 		outputSize.x = GUI.Stretch?(float)dPresentParams.BackBufferWidth:(float)afterRenderWidth;
 		outputSize.y = GUI.Stretch?(float)dPresentParams.BackBufferHeight:(float)afterRenderHeight;
+		frameCnt = (float)++frameCount;
 
 #define setProgramUniform(program,varname,floats)\
 {\
@@ -665,10 +668,13 @@ void CDirect3D::SetShaderVars()
 		setProgramUniform(cgFragmentProgram,"IN.video_size",&videoSize);
 		setProgramUniform(cgFragmentProgram,"IN.texture_size",&textureSize);
 		setProgramUniform(cgFragmentProgram,"IN.output_size",&outputSize);
+		setProgramUniform(cgFragmentProgram,"IN.frame_count",&frameCnt);
 
 		setProgramUniform(cgVertexProgram,"IN.video_size",&videoSize);
 		setProgramUniform(cgVertexProgram,"IN.texture_size",&textureSize);
 		setProgramUniform(cgVertexProgram,"IN.output_size",&outputSize);
+		setProgramUniform(cgVertexProgram,"IN.frame_count",&frameCnt);
+
 	}
 }
 

@@ -230,6 +230,7 @@ private:
 	float shaderTimer;
 	int shaderTimeStart;
 	int shaderTimeElapsed;
+	int frameCount;
 
 	bool BlankTexture(LPDIRECT3DTEXTURE9 texture);
 	void CreateDrawSurface();

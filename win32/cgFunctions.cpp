@@ -204,6 +204,7 @@ CGD3DSU cgD3D9SetUniform = NULL;
 //cggl.dll
 CGGLSSMP cgGLSetStateMatrixParameter = NULL;
 CGGLSP2FV cgGLSetParameter2fv = NULL;
+CGGLSP1F cgGLSetParameter1f = NULL;
 CGGLGLP cgGLGetLatestProfile = NULL;
 CGGLEP cgGLEnableProfile = NULL;
 CGGLDP cgGLDisableProfile = NULL;
@@ -248,6 +249,7 @@ bool loadCgFunctions()
 	//cggl.dll
 	cgGLSetStateMatrixParameter = (CGGLSSMP)GetProcAddress(hCgGLDll,"cgGLSetStateMatrixParameter");
 	cgGLSetParameter2fv = (CGGLSP2FV)GetProcAddress(hCgGLDll,"cgGLSetParameter2fv");
+	cgGLSetParameter1f = (CGGLSP1F)GetProcAddress(hCgGLDll,"cgGLSetParameter1f");
 	cgGLGetLatestProfile = (CGGLGLP)GetProcAddress(hCgGLDll,"cgGLGetLatestProfile");
 	cgGLEnableProfile = (CGGLEP)GetProcAddress(hCgGLDll,"cgGLEnableProfile");
 	cgGLDisableProfile = (CGGLDP)GetProcAddress(hCgGLDll,"cgGLDisableProfile");
@@ -277,6 +279,7 @@ bool loadCgFunctions()
 		//cggl.dll
 		!cgGLSetStateMatrixParameter ||
 		!cgGLSetParameter2fv ||
+		!cgGLSetParameter1f ||
 		!cgGLGetLatestProfile ||
 		!cgGLEnableProfile ||
 		!cgGLDisableProfile ||

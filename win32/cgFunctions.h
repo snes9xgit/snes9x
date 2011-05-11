@@ -227,6 +227,8 @@ extern CGD3DSU cgD3D9SetUniform;
 //cggl.dll
 typedef CGGL_API void (CGGLENTRY *CGGLSSMP)(CGparameter param, CGGLenum matrix, CGGLenum transform);
 extern CGGLSSMP cgGLSetStateMatrixParameter;
+typedef CGGL_API void (CGGLENTRY *CGGLSP1F)(CGparameter param, float x);
+extern CGGLSP1F cgGLSetParameter1f;
 typedef CGGL_API void (CGGLENTRY *CGGLSP2FV)(CGparameter param, const float *v);
 extern CGGLSP2FV cgGLSetParameter2fv;
 typedef CGGL_API CGprofile (CGGLENTRY *CGGLGLP)(CGGLenum profile_type);

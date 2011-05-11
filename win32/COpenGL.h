@@ -202,6 +202,8 @@ private:
     GLfloat				texcoords[8];
 	unsigned char *		noPboBuffer;
 
+	int frameCount;
+
 	bool initDone;
 	bool fullscreen;
 	unsigned int quadTextureSize;
