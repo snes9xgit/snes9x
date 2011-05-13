@@ -8741,8 +8741,8 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				{
 					uint32 j, k;
 					long index;
-					TCHAR buffer[4];
-					TCHAR buffer2[4];
+					char buffer[4];
+					char buffer2[4];
 					POINT point;
 					switch(HIWORD(wParam))
 					{
@@ -8758,18 +8758,18 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						index = SendMessageA((HWND)lParam,(UINT) EM_CHARFROMPOS, 0, (LPARAM) ((point.x&0x0000FFFF) | (((point.y&0x0000FFFF))<<16)));
 
 						k=0;
-						for(j=0; j<lstrlen(buffer);j++)
+						for(j=0; j<strlen(buffer);j++)
 						{
-							if( (buffer[j]>=TEXT('0') && buffer[j]<=TEXT('9')) || (buffer[j]>=TEXT('A') && buffer[j]<=TEXT('F')) || buffer[j]==TEXT('$'))
+							if( (buffer[j]>='0' && buffer[j]<='9') || (buffer[j]>='A' && buffer[j]<='F') || buffer[j]=='$')
 							{
 								buffer2[k]=buffer[j];
 								k++;
 							}
 							else index --;
 						}
-						buffer2[k]=TEXT('\0');
+						buffer2[k]='\0';
 
-						if(has_sel&&!new_sel&&0!=lstrlen(buffer2))
+						if(has_sel&&!new_sel&&0!=strlen(buffer2))
 							SetDlgItemTextA(hDlg, IDC_CHEAT_CODE, "");
 
 						if(new_sel!=0)
@@ -8780,7 +8780,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						SendMessageA((HWND)lParam,  (UINT) EM_SETSEL, (WPARAM) (index), index);
 
 						SendMessageA(GetDlgItem(hDlg, IDC_CHEAT_ADDRESS), WM_GETTEXT, 7,(LPARAM)buffer);
-						if(lstrlen(buffer2)!=0 && lstrlen(buffer) !=0)
+						if(strlen(buffer2)!=0 && strlen(buffer) !=0)
 						{
 							if(has_sel)
 								EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), true);
