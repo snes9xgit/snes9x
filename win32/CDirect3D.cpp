@@ -423,23 +423,6 @@ bool CDirect3D::SetShaderCG(const TCHAR *file)
 	if(cgVertexProgram) {
 		hr = cgD3D9LoadProgram(cgVertexProgram,true,0);
 		hr = cgD3D9BindProgram(cgVertexProgram);
-
-		D3DXMATRIX matWorld;
-		D3DXMATRIX matView;
-		D3DXMATRIX matProj;
-		D3DXMATRIX mvp;
-
-		pDevice->GetTransform(D3DTS_WORLD,&matWorld);
-		pDevice->GetTransform(D3DTS_VIEW,&matView);
-		pDevice->GetTransform(D3DTS_PROJECTION,&matProj);
-
-		mvp = matWorld * matView * matProj;
-		D3DXMatrixTranspose(&mvp,&mvp);
-
-		CGparameter cgpModelViewProj = cgGetNamedParameter(cgVertexProgram, "modelViewProj");
-
-		if(cgpModelViewProj)
-			cgD3D9SetUniformMatrix(cgpModelViewProj,&mvp);
 	}
 	if(cgFragmentProgram) {
 		hr = cgD3D9LoadProgram(cgFragmentProgram,false,0);
@@ -605,7 +588,7 @@ bool CDirect3D::SetShaderHLSL(const TCHAR *file)
 	return true;
 }
 
-void CDirect3D::SetShaderVars()
+void CDirect3D::SetShaderVars(bool setMatrix)
 {
 	if(shader_type == D3D_SHADER_HLSL) {
 		D3DXVECTOR4 rubyTextureSize;
@@ -675,6 +658,24 @@ void CDirect3D::SetShaderVars()
 		setProgramUniform(cgVertexProgram,"IN.output_size",&outputSize);
 		setProgramUniform(cgVertexProgram,"IN.frame_count",&frameCnt);
 
+		if(setMatrix) {
+			D3DXMATRIX matWorld;
+			D3DXMATRIX matView;
+			D3DXMATRIX matProj;
+			D3DXMATRIX mvp;
+
+			pDevice->GetTransform(D3DTS_WORLD,&matWorld);
+			pDevice->GetTransform(D3DTS_VIEW,&matView);
+			pDevice->GetTransform(D3DTS_PROJECTION,&matProj);
+
+			mvp = matWorld * matView * matProj;
+			D3DXMatrixTranspose(&mvp,&mvp);
+
+			CGparameter cgpModelViewProj = cgGetNamedParameter(cgVertexProgram, "modelViewProj");
+
+			if(cgpModelViewProj)
+				cgD3D9SetUniformMatrix(cgpModelViewProj,&mvp);
+		}
 	}
 }
 
@@ -895,6 +896,8 @@ void CDirect3D::SetViewport()
 	pDevice->SetTransform(D3DTS_WORLD,&matIdentity);
 	pDevice->SetTransform(D3DTS_VIEW,&matIdentity);
 	pDevice->SetTransform(D3DTS_PROJECTION,&matProjection);
+
+	SetShaderVars(true);
 
 	RECT drawRect = CalculateDisplayRect(afterRenderWidth,afterRenderHeight,dPresentParams.BackBufferWidth,dPresentParams.BackBufferHeight);
 	D3DVIEWPORT9 viewport;

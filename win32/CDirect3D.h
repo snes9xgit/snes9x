@@ -239,7 +239,7 @@ private:
 	void SetViewport();
 	void SetupVertices();
 	bool ResetDevice();
-	void SetShaderVars();
+	void SetShaderVars(bool setMatrix = false);
 	bool SetShader(const TCHAR *file);
 	bool SetShaderHLSL(const TCHAR *file);
 	void checkForCgError(const char *situation);
