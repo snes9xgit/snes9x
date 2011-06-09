@@ -6783,10 +6783,8 @@ void MakeExtFile(void)
 	out.open("Valid.Ext");
 
 	out<<"N"   <<endl<<"smcN"<<endl<<"zipY"<<endl<<"gzY" <<endl<<"swcN"<<endl<<"figN"<<endl;
-	out<<"058N"<<endl<<"078N"<<endl<<"japN"<<endl<<"usaN"<<endl<<"048N"<<endl;
-	out<<"eurN"<<endl<<"sfcN"<<endl<<"1N"  <<endl<<"mgdN"<<endl<<"ufoN"<<endl;
-	out<<"binN"<<endl<<"gd3N"<<endl<<"mghN"<<endl<<"gd7N"<<endl<<"ausN"<<endl;
-	out<<"dx2N"<<endl<<"aN"<<endl<<"jmaY";
+	out<<"sfcN"<<endl;
+	out<<"jmaY";
 	out.close();
 	SetFileAttributes(TEXT("Valid.Ext"), FILE_ATTRIBUTE_ARCHIVE|FILE_ATTRIBUTE_READONLY);
 };
