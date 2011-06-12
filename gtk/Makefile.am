@@ -8,7 +8,7 @@ snes9x_gtk_CXXFLAGS = -fno-exceptions -fno-rtti
 endif
 noinst_LIBRARIES =
 
-INCLUDES = -I$(top_srcdir) -I.. -DSNES9XLOCALEDIR=\""$(snes9xlocaledir)"\"
+INCLUDES = -I../apu/bapu -I$(top_srcdir) -I.. -DSNES9XLOCALEDIR=\""$(snes9xlocaledir)"\"
 
 CLEANFILES = \
     src/gtk_snes9x_ui.cpp \
@@ -123,8 +123,14 @@ snes9x_gtk_SOURCES += \
     ../apu/SNES_SPC.cpp \
     ../apu/SNES_SPC_misc.cpp \
     ../apu/SNES_SPC_state.cpp \
-    ../apu/SPC_DSP.cpp \
     ../apu/SPC_Filter.cpp
+    
+# Byuu's APU
+snes9x_gtk_SOURCES += \
+    ../apu/bapu/dsp/dsp.cpp \
+    ../apu/bapu/dsp/serialization.cpp \
+    ../apu/bapu/dsp/SPC_DSP.cpp \
+    ../apu/bapu/smp/smp.cpp 
 
 # DSP
 snes9x_gtk_SOURCES += \

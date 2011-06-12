@@ -183,6 +183,7 @@
 #include "display.h"
 #include "linear_resampler.h"
 #include "hermite_resampler.h"
+#include "snes/snes.hpp"
 
 #define APU_DEFAULT_INPUT_RATE		32000
 #define APU_MINIMUM_SAMPLE_COUNT	512
@@ -194,6 +195,11 @@
 #define APU_DEFAULT_RESAMPLER		HermiteResampler
 
 SNES_SPC	*spc_core = NULL;
+
+namespace SNES
+{
+	CPU	cpu;
+}
 
 static uint8 APUROM[64] =
 {
