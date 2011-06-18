@@ -23,10 +23,12 @@ public:
 
     void enter ()
     {
+        return;
     }
 
     void port_write (uint8 port, uint8 data)
     {
+
     }
 
     uint8 port_read (uint8 port)

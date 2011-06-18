@@ -42,8 +42,6 @@ void SMP::enter() {
 void SMP::power() {
 #ifdef BSNES
   Processor::frequency = system.apu_frequency();
-#else
-  Processor::frequency = 1025600;
 #endif
 
   Processor::clock = 0;

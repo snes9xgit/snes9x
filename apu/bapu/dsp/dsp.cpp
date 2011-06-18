@@ -18,12 +18,6 @@ void DSP::synchronize_smp() {
 void DSP::enter() {
   spc_dsp.run(1);
   step(24);
-
-/*  signed count = spc_dsp.sample_count();
-  if(count > 0) {
-    for(unsigned n = 0; n < count; n += 2) audio.sample(samplebuffer[n + 0], samplebuffer[n + 1]);
-    spc_dsp.set_output(samplebuffer, 8192);
-  } */
 }
 
 uint8 DSP::read(uint8 addr) {
@@ -37,12 +31,10 @@ void DSP::write(uint8 addr, uint8 data) {
 void DSP::power() {
   spc_dsp.init(smp.apuram);
   spc_dsp.reset();
-  spc_dsp.set_output(samplebuffer, 8192);
 }
 
 void DSP::reset() {
   spc_dsp.soft_reset();
-  spc_dsp.set_output(samplebuffer, 8192);
 }
 
 void DSP::channel_enable(unsigned channel, bool enable) {

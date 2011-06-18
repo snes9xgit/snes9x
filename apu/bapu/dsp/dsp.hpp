@@ -17,9 +17,9 @@ public:
 
   DSP();
 
-private:
   SPC_DSP spc_dsp;
-  int16 samplebuffer[8192];
+
+private:
   bool channel_enabled[8];
 };
 

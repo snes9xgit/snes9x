@@ -180,7 +180,6 @@
 #define _APU_H_
 
 #include "snes9x.h"
-#include "SNES_SPC.h"
 
 typedef void (*apu_callback) (void *);
 
@@ -213,7 +212,5 @@ void S9xFinalizeSamples (void);
 void S9xClearSamples (void);
 bool8 S9xMixSamples (uint8 *, int);
 void S9xSetSamplesAvailableCallback (apu_callback, void *);
-
-extern SNES_SPC	*spc_core;
 
 #endif

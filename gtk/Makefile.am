@@ -119,11 +119,7 @@ endif
 
 # APU
 snes9x_gtk_SOURCES += \
-    ../apu/apu.cpp \
-    ../apu/SNES_SPC.cpp \
-    ../apu/SNES_SPC_misc.cpp \
-    ../apu/SNES_SPC_state.cpp \
-    ../apu/SPC_Filter.cpp
+    ../apu/apu.cpp 
     
 # Byuu's APU
 snes9x_gtk_SOURCES += \

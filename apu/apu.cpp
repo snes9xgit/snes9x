@@ -175,14 +175,13 @@
   Nintendo Co., Limited and its subsidiary companies.
  ***********************************************************************************/
 
-
 #include <math.h>
 #include "snes9x.h"
 #include "apu.h"
 #include "snapshot.h"
 #include "display.h"
-#include "linear_resampler.h"
 #include "hermite_resampler.h"
+
 #include "snes/snes.hpp"
 
 #define APU_DEFAULT_INPUT_RATE		32000
@@ -192,26 +191,11 @@
 #define APU_DENOMINATOR_NTSC		328125
 #define APU_NUMERATOR_PAL			34176
 #define APU_DENOMINATOR_PAL			709379
-#define APU_DEFAULT_RESAMPLER		HermiteResampler
-
-SNES_SPC	*spc_core = NULL;
 
 namespace SNES
 {
 	CPU	cpu;
 }
-
-static uint8 APUROM[64] =
-{
-	0xCD, 0xEF, 0xBD, 0xE8, 0x00, 0xC6, 0x1D, 0xD0,
-	0xFC, 0x8F, 0xAA, 0xF4, 0x8F, 0xBB, 0xF5, 0x78,
-	0xCC, 0xF4, 0xD0, 0xFB, 0x2F, 0x19, 0xEB, 0xF4,
-	0xD0, 0xFC, 0x7E, 0xF4, 0xD0, 0x0B, 0xE4, 0xF5,
-	0xCB, 0xF4, 0xD7, 0x00, 0xFC, 0xD0, 0xF3, 0xAB,
-	0x01, 0x10, 0xEF, 0x7E, 0xF4, 0x10, 0xEB, 0xBA,
-	0xF6, 0xDA, 0x00, 0xBA, 0xF4, 0xC4, 0xF4, 0xDD,
-	0x5D, 0xD0, 0xDB, 0x1F, 0x00, 0x00, 0xC0, 0xFF
-};
 
 namespace spc
 {
@@ -233,8 +217,8 @@ namespace spc
 	static int32		reference_time;
 	static uint32		remainder;
 
-	static const int	timing_hack_numerator   = SNES_SPC::tempo_unit;
-	static int			timing_hack_denominator = SNES_SPC::tempo_unit;
+	static const int	timing_hack_numerator   = 256;
+	static int			timing_hack_denominator = 256;
 	/* Set these to NTSC for now. Will change to PAL in S9xAPUTimingSetSpeedup
 	   if necessary on game load. */
 	static uint32		ratio_numerator = APU_NUMERATOR_NTSC;
@@ -360,11 +344,12 @@ int S9xGetSampleCount (void)
 	return (spc::resampler->avail() >> (Settings.Stereo ? 0 : 1));
 }
 
+/* TODO: Attach */
 void S9xFinalizeSamples (void)
 {
 	if (!Settings.Mute)
 	{
-		if (!spc::resampler->push((short *) spc::landing_buffer, spc_core->sample_count()))
+		if (!spc::resampler->push((short *) spc::landing_buffer, SNES::dsp.spc_dsp.sample_count ()))
 		{
 			/* We weren't able to process the entire buffer. Potential overrun. */
 			spc::sound_in_sync = FALSE;
@@ -382,7 +367,7 @@ void S9xFinalizeSamples (void)
 	else
 		spc::sound_in_sync = FALSE;
 
-	spc_core->set_output((SNES_SPC::sample_t *) spc::landing_buffer, spc::buffer_size >> 1);
+	SNES::dsp.spc_dsp.set_output((SNES::SPC_DSP::sample_t *) spc::landing_buffer, spc::buffer_size >> 1);
 }
 
 void S9xLandSamples (void)
@@ -458,7 +443,7 @@ bool8 S9xInitSound (int buffer_ms, int lag_ms)
 	   arguments. Use 2x in the resampler for buffer leveling with SoundSync */
 	if (!spc::resampler)
 	{
-		spc::resampler = new APU_DEFAULT_RESAMPLER(spc::buffer_size >> (Settings.SoundSync ? 0 : 1));
+		spc::resampler = new HermiteResampler(spc::buffer_size >> (Settings.SoundSync ? 0 : 1));
 		if (!spc::resampler)
 		{
 			delete[] spc::landing_buffer;
@@ -468,7 +453,7 @@ bool8 S9xInitSound (int buffer_ms, int lag_ms)
 	else
 		spc::resampler->resize(spc::buffer_size >> (Settings.SoundSync ? 0 : 1));
 
-	spc_core->set_output((SNES_SPC::sample_t *) spc::landing_buffer, spc::buffer_size >> 1);
+	SNES::dsp.spc_dsp.set_output ((SNES::SPC_DSP::sample_t *) spc::landing_buffer, spc::buffer_size >> 1);
 
 	UpdatePlaybackRate();
 
@@ -479,7 +464,8 @@ bool8 S9xInitSound (int buffer_ms, int lag_ms)
 
 void S9xSetSoundControl (uint8 voice_switch)
 {
-	spc_core->dsp_set_stereo_switch(voice_switch << 8 | voice_switch);
+	/*
+	spc_core->dsp_set_stereo_switch(voice_switch << 8 | voice_switch); */
 }
 
 void S9xSetSoundMute (bool8 mute)
@@ -491,7 +477,8 @@ void S9xSetSoundMute (bool8 mute)
 
 void S9xDumpSPCSnapshot (void)
 {
-	spc_core->dsp_dump_spc_snapshot();
+/* No SPC dumping ATM in byuu SMP */
+/*	spc_core->dsp_dump_spc_snapshot(); */
 }
 
 static void SPCSnapshotCallback (void)
@@ -502,15 +489,6 @@ static void SPCSnapshotCallback (void)
 
 bool8 S9xInitAPU (void)
 {
-	spc_core = new SNES_SPC;
-	if (!spc_core)
-		return (FALSE);
-
-	spc_core->init();
-	spc_core->init_rom(APUROM);
-
-	spc_core->dsp_set_spc_snapshot_callback(SPCSnapshotCallback);
-
 	spc::landing_buffer = NULL;
 	spc::shrink_buffer  = NULL;
 	spc::resampler      = NULL;
@@ -520,12 +498,6 @@ bool8 S9xInitAPU (void)
 
 void S9xDeinitAPU (void)
 {
-	if (spc_core)
-	{
-		delete spc_core;
-		spc_core = NULL;
-	}
-
 	if (spc::resampler)
 	{
 		delete spc::resampler;
@@ -559,12 +531,14 @@ static inline int S9xAPUGetClockRemainder (int32 cpucycles)
 
 uint8 S9xAPUReadPort (int port)
 {
-	return ((uint8) spc_core->read_port(S9xAPUGetClock(CPU.Cycles), port));
+	S9xAPUExecute ();
+	return ((uint8) SNES::smp.port_read (port & 3));
 }
 
 void S9xAPUWritePort (int port, uint8 byte)
 {
-	spc_core->write_port(S9xAPUGetClock(CPU.Cycles), port, byte);
+	S9xAPUExecute ();
+	SNES::smp.port_write (port & 3, byte);
 }
 
 void S9xAPUSetReferenceTime (int32 cpucycles)
@@ -574,8 +548,8 @@ void S9xAPUSetReferenceTime (int32 cpucycles)
 
 void S9xAPUExecute (void)
 {
-	/* Accumulate partial APU cycles */
-	spc_core->end_frame(S9xAPUGetClock(CPU.Cycles));
+	SNES::smp.clock -= S9xAPUGetClock (CPU.Cycles);
+	SNES::smp.enter ();
 
 	spc::remainder = S9xAPUGetClockRemainder(CPU.Cycles);
 
@@ -586,7 +560,7 @@ void S9xAPUEndScanline (void)
 {
 	S9xAPUExecute();
 
-	if (spc_core->sample_count() >= APU_MINIMUM_SAMPLE_BLOCK || !spc::sound_in_sync)
+	if (SNES::dsp.spc_dsp.sample_count() >= APU_MINIMUM_SAMPLE_BLOCK || !spc::sound_in_sync)
 		S9xLandSamples();
 }
 
@@ -595,8 +569,7 @@ void S9xAPUTimingSetSpeedup (int ticks)
 	if (ticks != 0)
 		printf("APU speedup hack: %d\n", ticks);
 
-	spc::timing_hack_denominator = SNES_SPC::tempo_unit - ticks;
-	spc_core->set_tempo(spc::timing_hack_denominator);
+	spc::timing_hack_denominator = 256 - ticks;
 
 	spc::ratio_numerator = Settings.PAL ? APU_NUMERATOR_PAL : APU_NUMERATOR_NTSC;
 	spc::ratio_denominator = Settings.PAL ? APU_DENOMINATOR_PAL : APU_DENOMINATOR_NTSC;
@@ -610,15 +583,18 @@ void S9xAPUAllowTimeOverflow (bool allow)
 	if (allow)
 		printf("APU time overflow allowed\n");
 
-	spc_core->spc_allow_time_overflow(allow);
+	/* spc_core->spc_allow_time_overflow(allow); */
 }
 
 void S9xResetAPU (void)
 {
 	spc::reference_time = 0;
 	spc::remainder = 0;
-	spc_core->reset();
-	spc_core->set_output((SNES_SPC::sample_t *) spc::landing_buffer, spc::buffer_size >> 1);
+
+	SNES::cpu.frequency = Settings.PAL ? PAL_MASTER_CLOCK : NTSC_MASTER_CLOCK;
+	SNES::smp.power ();
+	SNES::dsp.power ();
+	SNES::dsp.spc_dsp.set_output ((SNES::SPC_DSP::sample_t *) spc::landing_buffer, spc::buffer_size >> 1);
 
 	spc::resampler->clear();
 }
@@ -627,38 +603,27 @@ void S9xSoftResetAPU (void)
 {
 	spc::reference_time = 0;
 	spc::remainder = 0;
-	spc_core->soft_reset();
-	spc_core->set_output((SNES_SPC::sample_t *) spc::landing_buffer, spc::buffer_size >> 1);
+	SNES::smp.reset ();
+	SNES::dsp.reset ();
+	SNES::dsp.spc_dsp.set_output ((SNES::SPC_DSP::sample_t *) spc::landing_buffer, spc::buffer_size >> 1);
 
 	spc::resampler->clear();
 }
 
-static void from_apu_to_state (uint8 **buf, void *var, size_t size)
-{
-	memcpy(*buf, var, size);
-	*buf += size;
-}
-
-static void to_apu_from_state (uint8 **buf, void *var, size_t size)
-{
-	memcpy(var, *buf, size);
-	*buf += size;
-}
-
 void S9xAPUSaveState (uint8 *block)
 {
-	uint8	*ptr = block;
+/*	uint8	*ptr = block;
 
 	spc_core->copy_state(&ptr, from_apu_to_state);
 
 	SET_LE32(ptr, spc::reference_time);
 	ptr += sizeof(int32);
-	SET_LE32(ptr, spc::remainder);
+	SET_LE32(ptr, spc::remainder); */
 }
 
 void S9xAPULoadState (uint8 *block)
 {
-	uint8	*ptr = block;
+	/*uint8	*ptr = block;
 
 	S9xResetAPU();
 
@@ -666,5 +631,5 @@ void S9xAPULoadState (uint8 *block)
 
 	spc::reference_time = GET_LE32(ptr);
 	ptr += sizeof(int32);
-	spc::remainder = GET_LE32(ptr);
+	spc::remainder = GET_LE32(ptr); */
 }
