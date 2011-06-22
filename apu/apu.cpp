@@ -538,7 +538,7 @@ uint8 S9xAPUReadPort (int port)
 void S9xAPUWritePort (int port, uint8 byte)
 {
 	S9xAPUExecute ();
-	SNES::smp.port_write (port & 3, byte);
+	SNES::cpu.port_write (port & 3, byte);
 }
 
 void S9xAPUSetReferenceTime (int32 cpucycles)
@@ -591,6 +591,7 @@ void S9xResetAPU (void)
 	spc::reference_time = 0;
 	spc::remainder = 0;
 
+	SNES::cpu.reset ();
 	SNES::cpu.frequency = Settings.PAL ? PAL_MASTER_CLOCK : NTSC_MASTER_CLOCK;
 	SNES::smp.power ();
 	SNES::dsp.power ();
@@ -603,6 +604,7 @@ void S9xSoftResetAPU (void)
 {
 	spc::reference_time = 0;
 	spc::remainder = 0;
+	SNES::cpu.reset ();
 	SNES::smp.reset ();
 	SNES::dsp.reset ();
 	SNES::dsp.spc_dsp.set_output ((SNES::SPC_DSP::sample_t *) spc::landing_buffer, spc::buffer_size >> 1);

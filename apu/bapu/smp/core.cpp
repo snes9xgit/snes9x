@@ -3,7 +3,11 @@ void SMP::tick() {
   timer1.tick();
   timer2.tick();
 
+#ifdef BSNES
   clock += cycle_step_cpu;
+#else
+  clock++;
+#endif
   dsp.clock -= 24;
   synchronize_dsp();
 }
@@ -71,7 +75,11 @@ void SMP::op_step() {
   timer1.tick(cycle_count_table[opcode]);
   timer2.tick(cycle_count_table[opcode]);
 
+#ifdef BSNES
   clock += cycle_table_cpu[opcode];
+#else
+  clock += cycle_count_table[opcode];
+#endif
   dsp.clock -= cycle_table_dsp[opcode];
   synchronize_dsp();
 

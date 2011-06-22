@@ -20,11 +20,13 @@ namespace SNES {
 #include "timing.cpp"
 
 void SMP::synchronize_cpu() {
+#ifdef BSNES
   if(CPU::Threaded == true) {
   //if(clock >= 0 && scheduler.sync != Scheduler::SynchronizeMode::All) co_switch(cpu.thread);
   } else {
     while(clock >= 0) cpu.enter();
   }
+#endif
 }
 
 void SMP::synchronize_dsp() {

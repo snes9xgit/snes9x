@@ -1,6 +1,8 @@
 #ifndef __SNES_HPP
 #define __SNES_HPP
 
+#define CYCLE_ACCURATE
+
 #include "snes9x.h"
 
 #define alwaysinline inline
@@ -12,35 +14,42 @@ namespace SNES
 struct Processor
 {
     unsigned frequency;
-    int64 clock;
+    int clock;
 };
+
+#include "smp/smp.hpp"
+#include "dsp/dsp.hpp"
 
 class CPU
 {
 public:
     enum { Threaded = false };
     int frequency;
+    uint8 registers[4];
 
-    void enter ()
+    inline void enter ()
     {
         return;
     }
 
-    void port_write (uint8 port, uint8 data)
+    inline void reset ()
     {
-
+        registers[0] = registers[1] = registers[2] = registers[3] = 0;
     }
 
-    uint8 port_read (uint8 port)
+    inline void port_write (uint8 port, uint8 data)
     {
-        return 0;
+        registers[port & 3] = data;
+    }
+
+    inline uint8 port_read (uint8 port)
+    {
+       // printf ("APU Read %2x from port %d\n", registers[port & 3], port & 3);
+        return registers[port & 3];
     }
 };
 
 extern CPU cpu;
-
-#include "smp/smp.hpp"
-#include "dsp/dsp.hpp"
 
 } /* namespace SNES */
 
