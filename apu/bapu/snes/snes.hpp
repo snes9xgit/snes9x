@@ -49,7 +49,6 @@ public:
 
     alwaysinline uint8 port_read (uint8 port)
     {
-       // printf ("APU Read %2x from port %d\n", registers[port & 3], port & 3);
         return registers[port & 3];
     }
 };
