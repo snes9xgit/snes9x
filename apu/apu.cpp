@@ -464,8 +464,7 @@ bool8 S9xInitSound (int buffer_ms, int lag_ms)
 
 void S9xSetSoundControl (uint8 voice_switch)
 {
-	/*
-	spc_core->dsp_set_stereo_switch(voice_switch << 8 | voice_switch); */
+	SNES::dsp.spc_dsp.set_stereo_switch (voice_switch << 8 | voice_switch);
 }
 
 void S9xSetSoundMute (bool8 mute)
@@ -477,7 +476,7 @@ void S9xSetSoundMute (bool8 mute)
 
 void S9xDumpSPCSnapshot (void)
 {
-/* No SPC dumping ATM in byuu SMP */
+/* TODO: SPC dumping */
 /*	spc_core->dsp_dump_spc_snapshot(); */
 }
 
@@ -578,14 +577,6 @@ void S9xAPUTimingSetSpeedup (int ticks)
 	UpdatePlaybackRate();
 }
 
-void S9xAPUAllowTimeOverflow (bool allow)
-{
-	if (allow)
-		printf("APU time overflow allowed\n");
-
-	/* spc_core->spc_allow_time_overflow(allow); */
-}
-
 void S9xResetAPU (void)
 {
 	spc::reference_time = 0;
@@ -614,6 +605,7 @@ void S9xSoftResetAPU (void)
 
 void S9xAPUSaveState (uint8 *block)
 {
+//	TODO: Save states
 /*	uint8	*ptr = block;
 
 	spc_core->copy_state(&ptr, from_apu_to_state);
@@ -625,7 +617,7 @@ void S9xAPUSaveState (uint8 *block)
 
 void S9xAPULoadState (uint8 *block)
 {
-	/*uint8	*ptr = block;
+/*	uint8	*ptr = block;
 
 	S9xResetAPU();
 

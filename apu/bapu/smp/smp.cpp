@@ -1,4 +1,8 @@
+#ifndef SNES9X
 #define CYCLE_ACCURATE
+#else
+#undef CYCLE_ACCURATE
+#endif
 
 #include <snes/snes.hpp>
 
@@ -20,7 +24,7 @@ namespace SNES {
 #include "timing.cpp"
 
 void SMP::synchronize_cpu() {
-#ifdef BSNES
+#ifndef SNES9X
   if(CPU::Threaded == true) {
   //if(clock >= 0 && scheduler.sync != Scheduler::SynchronizeMode::All) co_switch(cpu.thread);
   } else {
@@ -42,7 +46,7 @@ void SMP::enter() {
 }
 
 void SMP::power() {
-#ifdef BSNES
+#ifndef SNES9X
   Processor::frequency = system.apu_frequency();
 #endif
 
@@ -92,7 +96,7 @@ void SMP::reset() {
   timer0.stage3_ticks = timer1.stage3_ticks = timer2.stage3_ticks = 0;
 }
 
-#ifdef BSNES
+#ifndef SNES9X
 void SMP::serialize(serializer &s) {
   Processor::serialize(s);
 

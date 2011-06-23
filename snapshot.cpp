@@ -2278,7 +2278,7 @@ static void UnfreezeStructFromCopy (void *sbase, FreezeData *fields, int num_fie
 
 bool8 S9xSPCDump (const char *filename)
 {
-	/* No SPC dumping in byuu SMP */
+	/* TODO: No SPC dumping in byuu SMP */
 	/*
 	FILE	*fs;
 	uint8	buf[SNES_SPC::spc_file_size];
