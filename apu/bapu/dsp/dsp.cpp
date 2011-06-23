@@ -7,19 +7,6 @@ DSP dsp;
 
 #include "SPC_DSP.cpp"
 
-void DSP::step(unsigned clocks) {
-  clock += clocks;
-}
-
-void DSP::synchronize_smp() {
-  while(clock >= 0) smp.enter();
-}
-
-void DSP::enter() {
-  spc_dsp.run(1);
-  step(24);
-}
-
 uint8 DSP::read(uint8 addr) {
   return spc_dsp.read(addr);
 }

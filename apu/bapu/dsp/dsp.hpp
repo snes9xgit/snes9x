@@ -3,13 +3,11 @@
 class DSP : public Processor {
 public:
   enum { Threaded = false };
-  alwaysinline void step(unsigned clocks);
   alwaysinline void synchronize_smp();
 
   uint8 read(uint8 addr);
   void write(uint8 addr, uint8 data);
 
-  void enter();
   void power();
   void reset();
 

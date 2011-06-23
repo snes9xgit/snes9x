@@ -34,11 +34,13 @@ void SMP::synchronize_cpu() {
 }
 
 void SMP::synchronize_dsp() {
+#ifndef SNES9X
   if(DSP::Threaded == true) {
   //if(dsp.clock < 0 && scheduler.sync != Scheduler::SynchronizeMode::All) co_switch(dsp.thread);
   } else {
     while(dsp.clock < 0) dsp.enter();
   }
+#endif
 }
 
 void SMP::enter() {

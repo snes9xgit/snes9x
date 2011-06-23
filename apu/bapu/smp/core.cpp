@@ -5,11 +5,12 @@ void SMP::tick() {
 
 #ifndef SNES9X
   clock += cycle_step_cpu;
-#else
-  clock++;
-#endif
   dsp.clock -= 24;
   synchronize_dsp();
+#else
+  clock++;
+  dsp.spc_dsp.run(1);
+#endif
 }
 
 void SMP::op_io() {
@@ -77,11 +78,13 @@ void SMP::op_step() {
 
 #ifndef SNES9X
   clock += cycle_table_cpu[opcode];
-#else
-  clock += cycle_count_table[opcode];
-#endif
   dsp.clock -= cycle_table_dsp[opcode];
   synchronize_dsp();
+#else
+  clock += cycle_count_table[opcode];
+  dsp.spc_dsp.run(cycle_count_table[opcode]);
+#endif
+
 
   #endif
 }
