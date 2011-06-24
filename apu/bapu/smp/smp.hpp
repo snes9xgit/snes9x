@@ -19,6 +19,9 @@ public:
 
 #ifndef SNES9X
   void serialize(serializer&);
+#else
+  void load_state(uint8 **);
+  void save_state(uint8 **);
 #endif
   SMP();
   ~SMP();

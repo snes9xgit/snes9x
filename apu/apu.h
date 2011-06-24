@@ -183,7 +183,7 @@
 
 typedef void (*apu_callback) (void *);
 
-#define SPC_SAVE_STATE_BLOCK_SIZE	(SNES_SPC::state_size + 8)
+#define SPC_SAVE_STATE_BLOCK_SIZE	(1024 * 65)
 
 bool8 S9xInitAPU (void);
 void S9xDeinitAPU (void);

@@ -24,7 +24,7 @@ namespace SNES
 struct Processor
 {
     unsigned frequency;
-    int clock;
+    int32 clock;
 };
 
 #include "smp/smp.hpp"

@@ -10,6 +10,9 @@ public:
     spc_dsp.write(addr, data);
   }
 
+  void save_state(uint8 **);
+  void load_state(uint8 **);
+
   void power();
   void reset();
 

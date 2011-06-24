@@ -194,6 +194,8 @@
 
 namespace SNES
 {
+#include "dsp/blargg_endian.h"
+
 	CPU	cpu;
 }
 
@@ -229,8 +231,6 @@ static void EightBitize (uint8 *, int);
 static void DeStereo (uint8 *, int);
 static void ReverseStereo (uint8 *, int);
 static void UpdatePlaybackRate (void);
-static void from_apu_to_state (uint8 **, void *, size_t);
-static void to_apu_from_state (uint8 **, void *, size_t);
 static void SPCSnapshotCallback (void);
 static inline int S9xAPUGetClock (int32);
 static inline int S9xAPUGetClockRemainder (int32);
@@ -605,25 +605,30 @@ void S9xSoftResetAPU (void)
 
 void S9xAPUSaveState (uint8 *block)
 {
-//	TODO: Save states
-/*	uint8	*ptr = block;
+	uint8	*ptr = block;
 
-	spc_core->copy_state(&ptr, from_apu_to_state);
+	SNES::smp.save_state (&ptr);
+	SNES::dsp.save_state (&ptr);
 
-	SET_LE32(ptr, spc::reference_time);
+	SNES::set_le32(ptr, spc::reference_time);
 	ptr += sizeof(int32);
-	SET_LE32(ptr, spc::remainder); */
+	SNES::set_le32(ptr, spc::remainder);
+	ptr += sizeof(int32);
+	memcpy (ptr, SNES::cpu.registers, 4);
 }
 
 void S9xAPULoadState (uint8 *block)
 {
-/*	uint8	*ptr = block;
+	uint8	*ptr = block;
 
 	S9xResetAPU();
 
-	spc_core->copy_state(&ptr, to_apu_from_state);
+	SNES::smp.load_state (&ptr);
+	SNES::dsp.load_state (&ptr);
 
-	spc::reference_time = GET_LE32(ptr);
+	spc::reference_time = SNES::get_le32(ptr);
 	ptr += sizeof(int32);
-	spc::remainder = GET_LE32(ptr); */
+	spc::remainder = SNES::get_le32(ptr);
+	ptr += sizeof(int32);
+	memcpy (SNES::cpu.registers, ptr, 4);
 }

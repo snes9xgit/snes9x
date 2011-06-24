@@ -124,9 +124,9 @@ snes9x_gtk_SOURCES += \
 # Byuu's APU
 snes9x_gtk_SOURCES += \
     ../apu/bapu/dsp/dsp.cpp \
-    ../apu/bapu/dsp/serialization.cpp \
     ../apu/bapu/dsp/SPC_DSP.cpp \
-    ../apu/bapu/smp/smp.cpp 
+    ../apu/bapu/smp/smp.cpp \
+    ../apu/bapu/smp/smp_state.cpp
 
 # DSP
 snes9x_gtk_SOURCES += \
