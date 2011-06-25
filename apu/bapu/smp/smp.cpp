@@ -1,8 +1,4 @@
-#ifndef SNES9X
 #define CYCLE_ACCURATE
-#else
-#undef CYCLE_ACCURATE
-#endif
 
 #include <snes/snes.hpp>
 

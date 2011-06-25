@@ -28,7 +28,7 @@ struct Processor
 };
 
 #include "smp/smp.hpp"
-#include "dsp/dsp.hpp"
+#include "dsp/sdsp.hpp"
 
 class CPU
 {
