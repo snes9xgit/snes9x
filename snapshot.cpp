@@ -2275,29 +2275,3 @@ static void UnfreezeStructFromCopy (void *sbase, FreezeData *fields, int num_fie
 		}
 	}
 }
-
-bool8 S9xSPCDump (const char *filename)
-{
-	/* TODO: No SPC dumping in byuu SMP */
-	/*
-	FILE	*fs;
-	uint8	buf[SNES_SPC::spc_file_size];
-	size_t	ignore;
-
-	fs = fopen(filename, "wb");
-	if (!fs)
-		return (FALSE);
-
-	S9xSetSoundMute(TRUE);
-
-	spc_core->init_header(buf);
-	spc_core->save_spc(buf);
-
-	ignore = fwrite(buf, SNES_SPC::spc_file_size, 1, fs);
-
-	fclose(fs);
-
-	S9xSetSoundMute(FALSE);
-	*/
-	return (TRUE);
-}

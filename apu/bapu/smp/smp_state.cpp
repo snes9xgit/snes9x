@@ -1,8 +1,74 @@
 #include "snes/snes.hpp"
+#include <stdio.h>
+
+typedef struct spc_file {
+  uint8 header[33];
+  uint8 idtag[3];
+  uint8 version_minor;
+
+  uint8 pc_low;
+  uint8 pc_high;
+  uint8 a;
+  uint8 x;
+  uint8 y;
+  uint8 psw;
+  uint8 sp;
+  uint8 unused_a[2];
+
+  uint8 id666[210];
+
+  uint8 apuram[65536];
+  uint8 dsp_registers[128];
+  uint8 unused_b[64];
+  uint8 iplrom[64];
+} spc_file;
 
 namespace SNES {
 
 #include "dsp/blargg_endian.h"
+
+void SMP::save_spc (uint8 *block) {
+  spc_file out;
+
+  const char *header = "SNES-SPC700 Sound File Data v0.30";
+  memcpy (out.header, header, 33);
+  out.idtag[0] = out.idtag[1] = 26;
+  out.idtag[2] = 27;
+  out.version_minor = 30;
+
+  out.pc_low = regs.pc & 0xff;
+  out.pc_high = (regs.pc >> 8) & 0xff;
+  out.a = regs.a;
+  out.x = regs.x;
+  out.y = regs.y;
+  out.psw = (uint8) ((unsigned) regs.p);
+  out.sp = regs.sp;
+  out.unused_a[0] = out.unused_a[1] = 0;
+
+  memset (out.id666, 0, 210);
+  memcpy (out.apuram, apuram, 65536);
+
+  for (int i = 0xf2; i <= 0xf7; i++)
+  {
+      out.apuram[i] = mmio_read (i);
+  }
+
+  for (int i = 0xfd; i <= 0xff; i++)
+  {
+      out.apuram[i] = mmio_read (i);
+  }
+
+  for (int i = 0; i < 128; i++)
+  {
+      out.dsp_registers[i] = dsp.read (i);
+  }
+
+  memset (out.unused_b, 0, 64);
+  memcpy (out.iplrom, iplrom, 64);
+
+  memcpy (block, &out, 66048);
+}
+
 
 void SMP::save_state(uint8 **block) {
   uint8 *ptr = *block;
@@ -116,4 +182,4 @@ void SMP::load_state(uint8 **block) {
   *block = ptr;
 }
 
-}
+} /* namespace SNES */

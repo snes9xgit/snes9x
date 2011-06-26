@@ -476,8 +476,8 @@ void S9xSetSoundMute (bool8 mute)
 
 void S9xDumpSPCSnapshot (void)
 {
-/* TODO: SPC dumping */
-/*	spc_core->dsp_dump_spc_snapshot(); */
+	SNES::dsp.spc_dsp.dump_spc_snapshot();
+
 }
 
 static void SPCSnapshotCallback (void)
@@ -491,6 +491,8 @@ bool8 S9xInitAPU (void)
 	spc::landing_buffer = NULL;
 	spc::shrink_buffer  = NULL;
 	spc::resampler      = NULL;
+
+	SNES::dsp.spc_dsp.set_spc_snapshot_callback(SPCSnapshotCallback);
 
 	return (TRUE);
 }
@@ -631,4 +633,27 @@ void S9xAPULoadState (uint8 *block)
 	spc::remainder = SNES::get_le32(ptr);
 	ptr += sizeof(int32);
 	memcpy (SNES::cpu.registers, ptr, 4);
+}
+
+bool8 S9xSPCDump (const char *filename)
+{
+	FILE	*fs;
+	uint8	buf[SPC_FILE_SIZE];
+	size_t	ignore;
+
+	fs = fopen(filename, "wb");
+	if (!fs)
+		return (FALSE);
+
+	S9xSetSoundMute(TRUE);
+
+	SNES::smp.save_spc (buf);
+
+	ignore = fwrite(buf, SPC_FILE_SIZE, 1, fs);
+
+	fclose(fs);
+
+	S9xSetSoundMute(FALSE);
+
+	return (TRUE);
 }
