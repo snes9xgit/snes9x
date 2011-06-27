@@ -11,11 +11,13 @@ void DSP::power()
 {
   spc_dsp.init(smp.apuram);
   spc_dsp.reset();
+  clock = 0;
 }
 
 void DSP::reset()
 {
   spc_dsp.soft_reset();
+  clock = 0;
 }
 
 static void from_dsp_to_state (uint8 **buf, void *var, size_t size)
@@ -42,6 +44,7 @@ void DSP::load_state (uint8 **ptr)
 
 DSP::DSP()
 {
+	clock = 0;
 }
 
 }
