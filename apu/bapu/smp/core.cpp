@@ -9,7 +9,7 @@ void SMP::tick() {
   synchronize_dsp();
 #else
   clock++;
-  dsp.spc_dsp.run(1);
+  dsp.clock++;
 #endif
 }
 
@@ -82,7 +82,7 @@ void SMP::op_step() {
   synchronize_dsp();
 #else
   clock += cycle_count_table[opcode];
-  dsp.spc_dsp.run(cycle_count_table[opcode]);
+  dsp.clock += cycle_count_table[opcode];
 #endif
 
 
