@@ -367,7 +367,7 @@ void S9xFinalizeSamples (void)
 	else
 		spc::sound_in_sync = FALSE;
 
-	SNES::dsp.spc_dsp.set_output((SNES::SPC_DSP::sample_t *) spc::landing_buffer, spc::buffer_size >> 1);
+	SNES::dsp.spc_dsp.set_output((SNES::SPC_DSP::sample_t *) spc::landing_buffer, spc::buffer_size);
 }
 
 void S9xLandSamples (void)
@@ -453,7 +453,7 @@ bool8 S9xInitSound (int buffer_ms, int lag_ms)
 	else
 		spc::resampler->resize(spc::buffer_size >> (Settings.SoundSync ? 0 : 1));
 
-	SNES::dsp.spc_dsp.set_output ((SNES::SPC_DSP::sample_t *) spc::landing_buffer, spc::buffer_size >> 1);
+	SNES::dsp.spc_dsp.set_output ((SNES::SPC_DSP::sample_t *) spc::landing_buffer, spc::buffer_size);
 
 	UpdatePlaybackRate();
 
