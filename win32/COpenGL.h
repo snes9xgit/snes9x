@@ -183,6 +183,7 @@
 #include <windows.h>
 #include <gl\gl.h>
 #include "cgFunctions.h"
+#include "CGLCG.h"
 
 #include "glext.h"
 #include "wglext.h"
@@ -218,6 +219,8 @@ private:
 	CGprogram cgVertexProgram, cgFragmentProgram;
 	current_ogl_shader_type shader_type;
 	bool cgAvailable;
+
+	CGLCG *cgShader;
 
 	GLuint shaderProgram;
     GLuint vertexShader;

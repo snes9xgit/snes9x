@@ -272,27 +272,27 @@ void WinDisplayApplyChanges()
 RECT CalculateDisplayRect(unsigned int sourceWidth,unsigned int sourceHeight,
 						  unsigned int displayWidth,unsigned int displayHeight)
 {
-	float xFactor;
-	float yFactor;
-	float minFactor;
-	float renderWidthCalc,renderHeightCalc;
+	double xFactor;
+	double yFactor;
+	double minFactor;
+	double renderWidthCalc,renderHeightCalc;
 	int hExtend = GUI.HeightExtend ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT;
-	float snesAspect = (float)GUI.AspectWidth/hExtend;
+	double snesAspect = (double)GUI.AspectWidth/hExtend;
 	RECT drawRect;
 
 	if(GUI.Stretch) {
 		if(GUI.AspectRatio) {
 			//fix for hi-res images with FILTER_NONE
 			//where we need to correct the aspect ratio
-			renderWidthCalc = (float)sourceWidth;
-			renderHeightCalc = (float)sourceHeight;
+			renderWidthCalc = (double)sourceWidth;
+			renderHeightCalc = (double)sourceHeight;
 			if(renderWidthCalc/renderHeightCalc>snesAspect)
 				renderWidthCalc = renderHeightCalc * snesAspect;
 			else if(renderWidthCalc/renderHeightCalc<snesAspect)
 				renderHeightCalc = renderWidthCalc / snesAspect;
 
-			xFactor = (float)displayWidth / renderWidthCalc;
-			yFactor = (float)displayHeight / renderHeightCalc;
+			xFactor = (double)displayWidth / renderWidthCalc;
+			yFactor = (double)displayHeight / renderHeightCalc;
 			minFactor = xFactor < yFactor ? xFactor : yFactor;
 
 			drawRect.right = (LONG)(renderWidthCalc * minFactor);

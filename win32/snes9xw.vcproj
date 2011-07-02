@@ -3130,6 +3130,14 @@
 				Name="VideoDriver"
 				>
 				<File
+					RelativePath=".\CCGShader.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CCGShader.h"
+					>
+				</File>
+				<File
 					RelativePath=".\CDirect3D.cpp"
 					>
 				</File>
@@ -3207,6 +3215,14 @@
 				</File>
 				<File
 					RelativePath=".\cgFunctions.h"
+					>
+				</File>
+				<File
+					RelativePath=".\CGLCG.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CGLCG.h"
 					>
 				</File>
 				<File

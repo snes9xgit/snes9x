@@ -211,6 +211,10 @@ CGGLDP cgGLDisableProfile = NULL;
 CGGLSOO cgGLSetOptimalOptions = NULL;
 CGGLLP cgGLLoadProgram = NULL;
 CGGLBP cgGLBindProgram = NULL;
+CGGLSTP cgGLSetTextureParameter = NULL;
+CGGLETP cgGLEnableTextureParameter = NULL;
+CGGLSPP cgGLSetParameterPointer = NULL;
+CGGLECS cgGLEnableClientState = NULL;
 
 bool loadCgFunctions()
 {
@@ -256,6 +260,10 @@ bool loadCgFunctions()
 	cgGLSetOptimalOptions = (CGGLSOO)GetProcAddress(hCgGLDll,"cgGLSetOptimalOptions");
 	cgGLLoadProgram = (CGGLLP)GetProcAddress(hCgGLDll,"cgGLLoadProgram");
 	cgGLBindProgram = (CGGLBP)GetProcAddress(hCgGLDll,"cgGLBindProgram");
+	cgGLSetTextureParameter = (CGGLSTP)GetProcAddress(hCgGLDll,"cgGLSetTextureParameter");
+	cgGLEnableTextureParameter = (CGGLETP)GetProcAddress(hCgGLDll,"cgGLEnableTextureParameter");
+	cgGLSetParameterPointer = (CGGLSPP)GetProcAddress(hCgGLDll,"cgGLSetParameterPointer");
+	cgGLEnableClientState = (CGGLECS)GetProcAddress(hCgGLDll,"cgGLEnableClientState");
 
 	if(
 		//cg.dll
@@ -285,7 +293,11 @@ bool loadCgFunctions()
 		!cgGLDisableProfile ||
 		!cgGLSetOptimalOptions ||
 		!cgGLLoadProgram ||
-		!cgGLBindProgram) {
+		!cgGLBindProgram ||
+		!cgGLSetTextureParameter ||
+		!cgGLEnableTextureParameter ||
+		!cgGLSetParameterPointer ||
+		!cgGLEnableClientState) {
 			unloadCgLibrary();
 			return false;
 	}

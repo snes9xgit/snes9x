@@ -243,7 +243,14 @@ typedef CGGL_API void (CGGLENTRY *CGGLLP)(CGprogram program);
 extern CGGLLP cgGLLoadProgram;
 typedef CGGL_API void (CGGLENTRY *CGGLBP)(CGprogram program);
 extern CGGLBP cgGLBindProgram;
-
+typedef CGGL_API void (CGGLENTRY *CGGLSTP)(CGparameter param, GLuint texobj);
+extern CGGLSTP cgGLSetTextureParameter;
+typedef CGGL_API void (CGGLENTRY *CGGLETP)(CGparameter param);
+extern CGGLETP cgGLEnableTextureParameter;
+typedef CGGL_API void (CGGLENTRY *CGGLSPP)(CGparameter param, GLint fsize, GLenum type, GLsizei stride, const GLvoid *pointer);
+extern CGGLSPP cgGLSetParameterPointer;
+typedef CGGL_API void (CGGLENTRY *CGGLECS)(CGparameter param);
+extern CGGLECS cgGLEnableClientState;
 
 
 //cgfunctions.cpp
