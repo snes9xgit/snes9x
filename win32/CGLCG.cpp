@@ -24,16 +24,21 @@ CGLCG::CGLCG(CGcontext cgContext)
 	ClearPasses();
 	LoadFBOFunctions();
 	frameCnt=0;
+	prevTex=0;
 }
 
 CGLCG::~CGLCG(void)
 {
+	LoadShader(NULL);
 }
 
 void CGLCG::ClearPasses()
 {
+	/* clean up cg programs, fbos and textures from all regular passes
+	   pass 0 is the orignal texture, so ignore that
+	*/
 	if(shaderPasses.size()>1) {
-		for(std::vector<shaderPass>::iterator it=(shaderPasses.begin()+1);it!=shaderPasses.end();it++) {
+		for(glPassVector::iterator it=(shaderPasses.begin()+1);it!=shaderPasses.end();it++) {
 			if(it->cgFragmentProgram)
 				cgDestroyProgram(it->cgFragmentProgram);
 			if(it->cgVertexProgram)
@@ -44,12 +49,13 @@ void CGLCG::ClearPasses()
 				glDeleteTextures(1,&it->tex);
 		}
 	}
-	for(std::vector<lookupTexture>::iterator it=lookupTextures.begin();it!=lookupTextures.end();it++) {
+	for(glLutVector::iterator it=lookupTextures.begin();it!=lookupTextures.end();it++) {
 		if(it->tex)
 			glDeleteTextures(1,&it->tex);
 	}
 	shaderPasses.clear();
 	lookupTextures.clear();
+
 	shaderLoaded = false;
 }
 
@@ -120,6 +126,11 @@ bool CGLCG::LoadShader(const TCHAR *shaderFile)
 
 	ClearPasses();
 
+	if(prevTex) {
+		glDeleteTextures(1,&prevTex);
+		prevTex=0;
+	}
+
 	if (shaderFile == NULL || *shaderFile==TEXT('\0'))
 		return true;
 
@@ -138,13 +149,25 @@ bool CGLCG::LoadShader(const TCHAR *shaderFile)
 	cgGLSetOptimalOptions(vertexProfile);
 	cgGLSetOptimalOptions(fragmentProfile);
 
+	/* insert dummy pass that will contain the original texture
+	*/
 	shaderPasses.push_back(shaderPass());
 
-	for(std::vector<CCGShader::shaderPass>::iterator it=cgShader.shaderPasses.begin();it!=cgShader.shaderPasses.end();it++) {
-		shaderPasses.push_back(shaderPass());
-		shaderPass &pass = shaderPasses.back();
+	for(CCGShader::passVector::iterator it=cgShader.shaderPasses.begin();
+			it!=cgShader.shaderPasses.end();it++) {
+		shaderPass pass;
+
 		pass.scaleParams = it->scaleParams;
-		pass.linearFilter = (pass.scaleParams.scaleTypeX==CG_SCALE_NONE && !it->filterSet)?GUI.BilinearFilter:it->linearFilter;
+		/* if this is the last pass (the only one that can have CG_SCALE_NONE)
+		   and no filter has been set use the GUI setting
+		*/
+		if(pass.scaleParams.scaleTypeX==CG_SCALE_NONE && !it->filterSet) {
+			pass.linearFilter = GUI.BilinearFilter;
+		} else {
+			pass.linearFilter = it->linearFilter;
+		}
+
+		// paths in the meta file can be relative
 		_tfullpath(tempPath,_tFromChar(it->cgShaderFile),MAX_PATH);
 		char *fileContents = ReadShaderFileContents(tempPath);
 		if(!fileContents)
@@ -167,6 +190,9 @@ bool CGLCG::LoadShader(const TCHAR *shaderFile)
 		cgGLLoadProgram(pass.cgVertexProgram);
 		cgGLLoadProgram(pass.cgFragmentProgram);
 
+		/* generate framebuffer and texture for this pass and apply
+		   default texture settings
+		*/
 		glGenFramebuffers(1,&pass.fbo);
 		glGenTextures(1,&pass.tex);
 		glBindTexture(GL_TEXTURE_2D,pass.tex);
@@ -174,19 +200,26 @@ bool CGLCG::LoadShader(const TCHAR *shaderFile)
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+		shaderPasses.push_back(pass);
 	}
 
-	for(std::vector<CCGShader::lookupTexture>::iterator it=cgShader.lookupTextures.begin();it!=cgShader.lookupTextures.end();it++) {
-		lookupTextures.push_back(lookupTexture());
-		lookupTexture &tex = lookupTextures.back();
+	for(std::vector<CCGShader::lookupTexture>::iterator it=cgShader.lookupTextures.begin();it!=cgShader.lookupTextures.end();it++) {		
+		lookupTexture tex;
 		strcpy(tex.id,it->id);
+
+		/* generate texture for the lut and apply specified filter setting
+		*/
 		glGenTextures(1,&tex.tex);
 		glBindTexture(GL_TEXTURE_2D,tex.tex);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, it->linearfilter?GL_LINEAR:GL_NEAREST);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, it->linearfilter?GL_LINEAR:GL_NEAREST);
+
 		_tfullpath(tempPath,_tFromChar(it->texturePath),MAX_PATH);
+
+		// simple file extension png/tga decision
 		int strLen = strlen(it->texturePath);
 		if(strLen>4) {
 			if(!strcasecmp(&it->texturePath[strLen-4],".png")) {
@@ -207,14 +240,26 @@ bool CGLCG::LoadShader(const TCHAR *shaderFile)
 						stga.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, stga.data);
 				}
 			}
-
 		}
+		lookupTextures.push_back(tex);
 	}
 
+	/* enable texture unit 1 for the lookup textures
+	*/
 	glClientActiveTexture(GL_TEXTURE1);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glTexCoordPointer(2,GL_FLOAT,0,lut_coords);
 	glClientActiveTexture(GL_TEXTURE0);
+
+	/* generate a texture that we can swap with the original texture
+	   and pass back to the main opengl code
+	*/
+	glGenTextures(1,&prevTex);
+	glBindTexture(GL_TEXTURE_2D,prevTex);
+	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,512,512,0,GL_RGB,GL_UNSIGNED_SHORT_5_6_5,NULL);
+	glBindTexture(GL_TEXTURE_2D,0);
+	prevTexSize.x = prevTexSize.y = prevTexImageSize.x = prevTexImageSize.y = 0;
+	memset(prevTexCoords,0,sizeof(prevTexCoords));
 
 	shaderLoaded = true;
 	
@@ -226,6 +271,7 @@ void CGLCG::setTexCoords(int pass,xySize inputSize,xySize textureSize,bool topdo
 	float tX = inputSize.x / textureSize.x;
 	float tY = inputSize.y / textureSize.y;
 
+	// last pass uses top-down coordinates, all others bottom-up
 	if(topdown) {
 		shaderPasses[pass].texcoords[0] = 0.0f;
 		shaderPasses[pass].texcoords[1] = tY;
@@ -249,7 +295,7 @@ void CGLCG::setTexCoords(int pass,xySize inputSize,xySize textureSize,bool topdo
 	glTexCoordPointer(2, GL_FLOAT, 0, shaderPasses[pass].texcoords);
 }
 
-void CGLCG::Render(GLuint origTex, xySize textureSize, xySize inputSize, xySize viewportSize, xySize windowSize)
+void CGLCG::Render(GLuint &origTex, xySize textureSize, xySize inputSize, xySize viewportSize, xySize windowSize)
 {
 	GLenum error;
 	frameCnt++;
@@ -264,10 +310,14 @@ void CGLCG::Render(GLuint origTex, xySize textureSize, xySize inputSize, xySize 
 	cgGLEnableProfile(vertexProfile);
 	cgGLEnableProfile(fragmentProfile);	
 
+	/* set up our dummy pass for easier loop code
+	*/
 	shaderPasses[0].tex = origTex;
 	shaderPasses[0].outputSize = inputSize;
 	shaderPasses[0].textureSize = textureSize;
 
+	/* loop through all real passes
+	*/
 	for(int i=1;i<shaderPasses.size();i++) {
 		switch(shaderPasses[i].scaleParams.scaleTypeX) {
 			case CG_SCALE_ABSOLUTE:
@@ -295,46 +345,90 @@ void CGLCG::Render(GLuint origTex, xySize textureSize, xySize inputSize, xySize 
 			default:
 				shaderPasses[i].outputSize.y = viewportSize.y;
 		}
+		/* use next power of two in both directions
+		*/
 		float texSize = npot(max(shaderPasses[i].outputSize.x,shaderPasses[i].outputSize.y));
 		shaderPasses[i].textureSize.x = shaderPasses[i].textureSize.y = texSize;
+
+		/* set size of output texture
+		*/
 		glBindTexture(GL_TEXTURE_2D,shaderPasses[i].tex);
-		glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,(unsigned int)shaderPasses[i].textureSize.x,(unsigned int)shaderPasses[i].textureSize.y,0,GL_RGBA,GL_UNSIGNED_INT_8_8_8_8,NULL);
+		glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,(unsigned int)shaderPasses[i].textureSize.x,
+			(unsigned int)shaderPasses[i].textureSize.y,0,GL_RGBA,GL_UNSIGNED_INT_8_8_8_8,NULL);
+
+		/* viewport determines the area we render into the output texture
+		*/
 		glViewport(0,0,shaderPasses[i].outputSize.x,shaderPasses[i].outputSize.y);
+
+		/* set up framebuffer and attach output texture
+		*/
 		glBindFramebuffer(GL_FRAMEBUFFER,shaderPasses[i].fbo);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, shaderPasses[i].tex, 0);
-		GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+		/* set up input texture (output of previous pass) and apply filter settings
+		*/
 		glBindTexture(GL_TEXTURE_2D,shaderPasses[i-1].tex);
 		glPixelStorei(GL_UNPACK_ROW_LENGTH, (GLint)shaderPasses[i-1].textureSize.x);
-		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, shaderPasses[i].linearFilter?GL_LINEAR:GL_NEAREST);
-		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, shaderPasses[i].linearFilter?GL_LINEAR:GL_NEAREST);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+			shaderPasses[i].linearFilter?GL_LINEAR:GL_NEAREST);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+			shaderPasses[i].linearFilter?GL_LINEAR:GL_NEAREST);
+
+		/* calculate tex coords first since we pass them to the shader
+		*/
 		setTexCoords(i,shaderPasses[i-1].outputSize,shaderPasses[i-1].textureSize);
+
 		setShaderVars(i);
+
 		cgGLBindProgram(shaderPasses[i].cgVertexProgram);
 		cgGLBindProgram(shaderPasses[i].cgFragmentProgram);
+
 		glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		glDrawArrays (GL_QUADS, 0, 4);
 
 	}
+
+	/* disable framebuffer
+	*/
 	glBindFramebuffer(GL_FRAMEBUFFER,0);
+
+	/* switch original and prev texture and make sure the
+	   new original texture has the same size as the old one
+	*/
+	origTex = prevTex;
+	prevTex = shaderPasses[0].tex;
+	prevTexSize.x = textureSize.x;
+	prevTexSize.y = textureSize.y;
+	prevTexImageSize.x = inputSize.x;
+	prevTexImageSize.y = inputSize.y;
+	memcpy(prevTexCoords,shaderPasses[1].texcoords,sizeof(prevTexCoords));
+	glBindTexture(GL_TEXTURE_2D,origTex);
+	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,textureSize.x,textureSize.y,0,GL_RGB,GL_UNSIGNED_SHORT_5_6_5,NULL);
+
+	/* bind output of last pass to be rendered on the backbuffer
+	*/
 	glBindTexture(GL_TEXTURE_2D,shaderPasses.back().tex);
 	glPixelStorei(GL_UNPACK_ROW_LENGTH, (GLint)shaderPasses.back().textureSize.x);
+
+	/* calculate and apply viewport and texture coordinates to
+	   that will be used in the main ogl code
+	*/
 	RECT displayRect=CalculateDisplayRect(shaderPasses.back().outputSize.x,shaderPasses.back().outputSize.y,windowSize.x,windowSize.y);
 	glViewport(displayRect.left,windowSize.y-displayRect.bottom,displayRect.right-displayRect.left,displayRect.bottom-displayRect.top);	
 	setTexCoords(shaderPasses.size()-1,shaderPasses.back().outputSize,shaderPasses.back().textureSize,true);
 
+	/* render to backbuffer without shaders
+	*/
 	cgGLDisableProfile(vertexProfile);
 	cgGLDisableProfile(fragmentProfile);
 }
 
 void CGLCG::setShaderVars(int pass)
 {
-	float inputSize[2] = {shaderPasses[pass-1].outputSize.x,shaderPasses[pass-1].outputSize.y};
-	float textureSize[2] = {shaderPasses[pass-1].textureSize.x,shaderPasses[pass-1].textureSize.y};
-	float outputSize[2] = {shaderPasses[pass].outputSize.x,shaderPasses[pass].outputSize.y};
-
+	/* mvp paramater
+	*/
 	CGparameter cgpModelViewProj = cgGetNamedParameter(shaderPasses[pass].cgVertexProgram, "modelViewProj");
-
 	cgGLSetStateMatrixParameter(cgpModelViewProj, CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY);
 
 #define setProgram2fv(pass,varname,floats)\
@@ -375,34 +469,54 @@ void CGLCG::setShaderVars(int pass)
 	}\
 }\
 
+	/* IN paramater
+	*/
+	float inputSize[2] = {shaderPasses[pass-1].outputSize.x,shaderPasses[pass-1].outputSize.y};
+	float textureSize[2] = {shaderPasses[pass-1].textureSize.x,shaderPasses[pass-1].textureSize.y};
+	float outputSize[2] = {shaderPasses[pass].outputSize.x,shaderPasses[pass].outputSize.y};
 
 	setProgram2fv(pass,"IN.video_size",inputSize);
 	setProgram2fv(pass,"IN.texture_size",textureSize);
 	setProgram2fv(pass,"IN.output_size",outputSize);
 	setProgram1f(pass,"IN.frame_count",(float)frameCnt);
 
-	float video_Size[2] = {shaderPasses[0].outputSize.x,shaderPasses[0].outputSize.y};
-	float texture_Size[2] = {shaderPasses[0].textureSize.x,shaderPasses[0].textureSize.y};
+	/* ORIG parameter
+	*/
+	float orig_videoSize[2] = {shaderPasses[0].outputSize.x,shaderPasses[0].outputSize.y};
+	float orig_textureSize[2] = {shaderPasses[0].textureSize.x,shaderPasses[0].textureSize.y};
 	
-
-	setProgram2fv(pass,"ORIG.video_size",video_Size);
-	setProgram2fv(pass,"ORIG.texture_size",texture_Size);
+	setProgram2fv(pass,"ORIG.video_size",orig_videoSize);
+	setProgram2fv(pass,"ORIG.texture_size",orig_textureSize);
 	setTextureParameter(pass,"ORIG.texture",shaderPasses[0].tex);
 	setTexCoordsParameter(pass,"ORIG.tex_coord",shaderPasses[1].texcoords);
 
+	/* PREV parameter
+	*/
+	float prev_videoSize[2] = {prevTexImageSize.x,prevTexImageSize.y};
+	float prev_textureSize[2] = {prevTexSize.x,prevTexSize.y};
+
+	setProgram2fv(pass,"PREV.video_size",prev_videoSize);
+	setProgram2fv(pass,"PREV.texture_size",prev_textureSize);
+	setTextureParameter(pass,"PREV.texture",prevTex);
+	setTexCoordsParameter(pass,"PREV.tex_coord",prevTexCoords);
+
+	/* LUT parameters
+	*/
 	for(int i=0;i<lookupTextures.size();i++) {
 		setTextureParameter(pass,lookupTextures[i].id,lookupTextures[i].tex);
 	}
 
-	if(pass>1) {
+	/* PASSX parameters, only for third pass and up
+	*/
+	if(pass>2) {
 		for(int i=1;i<pass-1;i++) {
 			char varname[100];
-			float video_Size[2] = {shaderPasses[i].outputSize.x,shaderPasses[i].outputSize.y};
-			float texture_Size[2] = {shaderPasses[i].textureSize.x,shaderPasses[i].textureSize.y};
+			float pass_videoSize[2] = {shaderPasses[i].outputSize.x,shaderPasses[i].outputSize.y};
+			float pass_textureSize[2] = {shaderPasses[i].textureSize.x,shaderPasses[i].textureSize.y};
 			sprintf(varname,"PASS%d.video_size",i);
-			setProgram2fv(pass,varname,video_Size);
+			setProgram2fv(pass,varname,pass_videoSize);
 			sprintf(varname,"PASS%d.texture_size",i);
-			setProgram2fv(pass,varname,texture_Size);
+			setProgram2fv(pass,varname,pass_textureSize);
 			sprintf(varname,"PASS%d.texture",i);
 			setTextureParameter(pass,varname,shaderPasses[i].tex);
 			sprintf(varname,"PASS%d.tex_coord",i);

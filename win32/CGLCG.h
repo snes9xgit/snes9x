@@ -51,8 +51,10 @@ private:
 		_lookupTexture() {tex=NULL;}
 	} lookupTexture;
 
-	std::vector<shaderPass> shaderPasses;
-	std::vector<lookupTexture> lookupTextures;
+	typedef std::vector<shaderPass> glPassVector;
+	typedef std::vector<lookupTexture> glLutVector;
+	glPassVector shaderPasses;
+	glLutVector lookupTextures;
 
 	bool fboFunctionsLoaded;
 	bool shaderLoaded;
@@ -66,6 +68,10 @@ private:
 	CGcontext cgContext;
 	int frameCnt;
 	static const GLfloat lut_coords[8];
+	GLuint prevTex;
+	xySize prevTexSize;
+	xySize prevTexImageSize;
+	GLfloat	prevTexCoords[8];
 
 
 	PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;
@@ -80,7 +86,7 @@ public:
 	~CGLCG(void);
 
 	bool LoadShader(const TCHAR *shaderFile);
-	void Render(GLuint origTex, xySize textureSize, xySize inputSize, xySize viewportSize, xySize windowSize);
+	void Render(GLuint &origTex, xySize textureSize, xySize inputSize, xySize viewportSize, xySize windowSize);
 	void ClearPasses();	
 };
 

@@ -289,8 +289,7 @@ bool COpenGL::Initialize(HWND hWnd)
 		cgShader = new CGLCG(cgContext);
 	}
 
-	GetClientRect(hWnd,&windowRect);
-	ChangeRenderSize(windowRect.right,windowRect.bottom);
+	ApplyDisplayChanges();
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -322,13 +321,13 @@ void COpenGL::DeInitialize()
 	afterRenderHeight = 0;
 	shaderFunctionsLoaded = false;
 	shader_type = OGL_SHADER_NONE;
-	if(cgAvailable)
-		unloadCgLibrary();
-	cgAvailable = false;
 	if(cgShader) {
 		delete cgShader;
 		cgShader = NULL;
 	}
+	if(cgAvailable)
+		unloadCgLibrary();
+	cgAvailable = false;
 }
 
 void COpenGL::CreateDrawSurface()
@@ -350,6 +349,7 @@ void COpenGL::CreateDrawSurface()
 			glGenBuffers(1,&drawBuffer);
 			glBindBuffer(GL_PIXEL_UNPACK_BUFFER,drawBuffer);
 			glBufferData(GL_PIXEL_UNPACK_BUFFER,quadTextureSize*quadTextureSize*2,NULL,GL_STREAM_DRAW);
+			glBindBuffer(GL_PIXEL_UNPACK_BUFFER,0);
 		} else {
 			noPboBuffer = new BYTE[quadTextureSize*quadTextureSize*2];
 		}
@@ -357,7 +357,6 @@ void COpenGL::CreateDrawSurface()
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 	}
-	ApplyDisplayChanges();
 }
 
 void COpenGL::DestroyDrawSurface()
@@ -450,13 +449,7 @@ void COpenGL::Render(SSurface Src)
 		afterRenderHeight = dstRect.bottom;
 		afterRenderWidth = dstRect.right;
 
-		/* disable UNPACK_BUFFER, since ApplyDisplayChanges can lead to texture
-		   calls in the cg shader class which are not allowed */
-		if(pboFunctionsLoaded)
-			glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-		ApplyDisplayChanges();
-		if(pboFunctionsLoaded)
-			glBindBuffer(GL_PIXEL_UNPACK_BUFFER, drawBuffer);
+		ChangeRenderSize(0,0);
 	}
 
 	glBindTexture(GL_TEXTURE_2D,drawTexture);
@@ -518,7 +511,13 @@ void COpenGL::Render(SSurface Src)
 
 bool COpenGL::ChangeRenderSize(unsigned int newWidth, unsigned int newHeight)
 {
-	RECT displayRect=CalculateDisplayRect(afterRenderWidth,afterRenderHeight,newWidth,newHeight);
+	RECT displayRect, windowSize;
+	if(newWidth==0||newHeight==0) {
+		GetClientRect(hWnd,&windowSize);
+		newWidth = windowSize.right;
+		newHeight = windowSize.bottom;
+	}
+	displayRect=CalculateDisplayRect(afterRenderWidth,afterRenderHeight,newWidth,newHeight);
 	glViewport(displayRect.left,newHeight-displayRect.bottom,displayRect.right-displayRect.left,displayRect.bottom-displayRect.top);
 	SetupVertices();
 	return true;
@@ -534,9 +533,7 @@ bool COpenGL::ApplyDisplayChanges(void)
 	else
 		SetShaders(NULL);
 
-	RECT windowSize;
-	GetClientRect(hWnd,&windowSize);
-	ChangeRenderSize(windowSize.right,windowSize.bottom);
+	ChangeRenderSize(0,0);
 	return true;
 }
 

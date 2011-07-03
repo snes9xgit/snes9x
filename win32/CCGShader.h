@@ -36,8 +36,10 @@ public:
 	~CCGShader(void);
 	bool LoadShader(const char *path);
 
-	std::vector<shaderPass> shaderPasses;
-	std::vector<lookupTexture> lookupTextures;
+	typedef std::vector<shaderPass> passVector;
+	typedef std::vector<lookupTexture> lutVector;
+	passVector shaderPasses;
+	lutVector lookupTextures;
 };
 
 #endif
