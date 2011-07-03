@@ -266,7 +266,7 @@ void CGLCG::Render(GLuint origTex, xySize textureSize, xySize inputSize, xySize 
 
 	shaderPasses[0].tex = origTex;
 	shaderPasses[0].outputSize = inputSize;
-	shaderPasses[0].textureSize = textureSize;	
+	shaderPasses[0].textureSize = textureSize;
 
 	for(int i=1;i<shaderPasses.size();i++) {
 		switch(shaderPasses[i].scaleParams.scaleTypeX) {
@@ -297,12 +297,8 @@ void CGLCG::Render(GLuint origTex, xySize textureSize, xySize inputSize, xySize 
 		}
 		float texSize = npot(max(shaderPasses[i].outputSize.x,shaderPasses[i].outputSize.y));
 		shaderPasses[i].textureSize.x = shaderPasses[i].textureSize.y = texSize;
-		setShaderVars(i);
-		setTexCoords(i,shaderPasses[i-1].outputSize,shaderPasses[i-1].textureSize);
-		cgGLBindProgram(shaderPasses[i].cgVertexProgram);
-		cgGLBindProgram(shaderPasses[i].cgFragmentProgram);
 		glBindTexture(GL_TEXTURE_2D,shaderPasses[i].tex);
-		glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,(unsigned int)shaderPasses[i].textureSize.x,(unsigned int)shaderPasses[i].textureSize.y,0,GL_RGB,GL_UNSIGNED_SHORT_5_6_5,NULL);
+		glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,(unsigned int)shaderPasses[i].textureSize.x,(unsigned int)shaderPasses[i].textureSize.y,0,GL_RGBA,GL_UNSIGNED_INT_8_8_8_8,NULL);
 		glViewport(0,0,shaderPasses[i].outputSize.x,shaderPasses[i].outputSize.y);
 		glBindFramebuffer(GL_FRAMEBUFFER,shaderPasses[i].fbo);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, shaderPasses[i].tex, 0);
@@ -310,7 +306,11 @@ void CGLCG::Render(GLuint origTex, xySize textureSize, xySize inputSize, xySize 
 		glBindTexture(GL_TEXTURE_2D,shaderPasses[i-1].tex);
 		glPixelStorei(GL_UNPACK_ROW_LENGTH, (GLint)shaderPasses[i-1].textureSize.x);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, shaderPasses[i].linearFilter?GL_LINEAR:GL_NEAREST);
-        glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, shaderPasses[i].linearFilter?GL_LINEAR:GL_NEAREST);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, shaderPasses[i].linearFilter?GL_LINEAR:GL_NEAREST);
+		setTexCoords(i,shaderPasses[i-1].outputSize,shaderPasses[i-1].textureSize);
+		setShaderVars(i);
+		cgGLBindProgram(shaderPasses[i].cgVertexProgram);
+		cgGLBindProgram(shaderPasses[i].cgFragmentProgram);
 		glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		glDrawArrays (GL_QUADS, 0, 4);
@@ -382,13 +382,13 @@ void CGLCG::setShaderVars(int pass)
 	setProgram1f(pass,"IN.frame_count",(float)frameCnt);
 
 	float video_Size[2] = {shaderPasses[0].outputSize.x,shaderPasses[0].outputSize.y};
-	float texture_Size[2] = {shaderPasses[0].textureSize.x,shaderPasses[0].outputSize.y};
+	float texture_Size[2] = {shaderPasses[0].textureSize.x,shaderPasses[0].textureSize.y};
 	
 
 	setProgram2fv(pass,"ORIG.video_size",video_Size);
 	setProgram2fv(pass,"ORIG.texture_size",texture_Size);
 	setTextureParameter(pass,"ORIG.texture",shaderPasses[0].tex);
-	setTexCoordsParameter(pass,"ORIG.tex_coord",shaderPasses[0].texcoords);
+	setTexCoordsParameter(pass,"ORIG.tex_coord",shaderPasses[1].texcoords);
 
 	for(int i=0;i<lookupTextures.size();i++) {
 		setTextureParameter(pass,lookupTextures[i].id,lookupTextures[i].tex);
@@ -398,15 +398,15 @@ void CGLCG::setShaderVars(int pass)
 		for(int i=1;i<pass-1;i++) {
 			char varname[100];
 			float video_Size[2] = {shaderPasses[i].outputSize.x,shaderPasses[i].outputSize.y};
-			float texture_Size[2] = {shaderPasses[i].textureSize.x,shaderPasses[i].outputSize.y};
+			float texture_Size[2] = {shaderPasses[i].textureSize.x,shaderPasses[i].textureSize.y};
 			sprintf(varname,"PASS%d.video_size",i);
-			setProgram2fv(i,varname,video_Size);
+			setProgram2fv(pass,varname,video_Size);
 			sprintf(varname,"PASS%d.texture_size",i);
-			setProgram2fv(i,varname,texture_Size);
+			setProgram2fv(pass,varname,texture_Size);
 			sprintf(varname,"PASS%d.texture",i);
-			setTextureParameter(i,varname,shaderPasses[i].tex);
+			setTextureParameter(pass,varname,shaderPasses[i].tex);
 			sprintf(varname,"PASS%d.tex_coord",i);
-			setTexCoordsParameter(i,varname,shaderPasses[i].texcoords);
+			setTexCoordsParameter(pass,varname,shaderPasses[i+1].texcoords);
 		}
 	}
 }

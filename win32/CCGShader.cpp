@@ -115,5 +115,7 @@ bool CCGShader::LoadShader(const char *path)
 		id = strtok(NULL,";");
 	}
 
+	free(shaderIds);
+
 	return true;
 }

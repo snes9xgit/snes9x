@@ -449,7 +449,14 @@ void COpenGL::Render(SSurface Src)
 	if(afterRenderHeight != dstRect.bottom || afterRenderWidth != dstRect.right) {
 		afterRenderHeight = dstRect.bottom;
 		afterRenderWidth = dstRect.right;
+
+		/* disable UNPACK_BUFFER, since ApplyDisplayChanges can lead to texture
+		   calls in the cg shader class which are not allowed */
+		if(pboFunctionsLoaded)
+			glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 		ApplyDisplayChanges();
+		if(pboFunctionsLoaded)
+			glBindBuffer(GL_PIXEL_UNPACK_BUFFER, drawBuffer);
 	}
 
 	glBindTexture(GL_TEXTURE_2D,drawTexture);
