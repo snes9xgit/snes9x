@@ -617,6 +617,8 @@ void S9xAPUSaveState (uint8 *block)
 	ptr += sizeof(int32);
 	SNES::set_le32(ptr, spc::remainder);
 	ptr += sizeof(int32);
+	SNES::set_le32(ptr, SNES::dsp.clock);
+	ptr += sizeof(int32);
 	memcpy (ptr, SNES::cpu.registers, 4);
 }
 
@@ -632,6 +634,8 @@ void S9xAPULoadState (uint8 *block)
 	spc::reference_time = SNES::get_le32(ptr);
 	ptr += sizeof(int32);
 	spc::remainder = SNES::get_le32(ptr);
+	ptr += sizeof(int32);
+	SNES::dsp.clock = SNES::get_le32(ptr);
 	ptr += sizeof(int32);
 	memcpy (SNES::cpu.registers, ptr, 4);
 }

@@ -93,7 +93,7 @@ public:
   Timer<128> timer1;
   Timer< 16> timer2;
 
-  void tick();
+  alwaysinline void tick();
   alwaysinline void op_io();
   debugvirtual alwaysinline uint8 op_read(uint16 addr);
   debugvirtual alwaysinline void op_write(uint16 addr, uint8 data);
