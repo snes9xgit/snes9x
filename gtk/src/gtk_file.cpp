@@ -157,6 +157,7 @@ S9xGetDirectory (enum s9x_getdirtype dirtype)
         case SCREENSHOT_DIR:
         case SPC_DIR:
             sprintf (path, "%s", gui_config->export_directory);
+            break;
 
         default:
             path[0] = '\0';

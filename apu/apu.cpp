@@ -492,8 +492,6 @@ bool8 S9xInitAPU (void)
 	spc::shrink_buffer  = NULL;
 	spc::resampler      = NULL;
 
-	SNES::dsp.spc_dsp.set_spc_snapshot_callback(SPCSnapshotCallback);
-
 	return (TRUE);
 }
 
@@ -590,6 +588,7 @@ void S9xResetAPU (void)
 	SNES::smp.power ();
 	SNES::dsp.power ();
 	SNES::dsp.spc_dsp.set_output ((SNES::SPC_DSP::sample_t *) spc::landing_buffer, spc::buffer_size >> 1);
+	SNES::dsp.spc_dsp.set_spc_snapshot_callback(SPCSnapshotCallback);
 
 	spc::resampler->clear();
 }

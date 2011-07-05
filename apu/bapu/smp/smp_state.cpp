@@ -48,7 +48,7 @@ void SMP::save_spc (uint8 *block) {
   memset (out.id666, 0, 210);
   memcpy (out.apuram, apuram, 65536);
 
-  for (int i = 0xf2; i <= 0xf7; i++)
+  for (int i = 0xf2; i <= 0xf9; i++)
   {
       out.apuram[i] = mmio_read (i);
   }
