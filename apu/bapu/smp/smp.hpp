@@ -85,15 +85,15 @@ public:
     uint8 stage2_ticks;
     uint8 stage3_ticks;
 
-    void tick();
-    void tick(unsigned clocks);
+    inline void tick();
+    inline void tick(unsigned clocks);
   };
 
   Timer<128> timer0;
   Timer<128> timer1;
   Timer< 16> timer2;
 
-  alwaysinline void tick();
+  inline void tick();
   alwaysinline void op_io();
   debugvirtual alwaysinline uint8 op_read(uint16 addr);
   debugvirtual alwaysinline void op_write(uint16 addr, uint8 data);
