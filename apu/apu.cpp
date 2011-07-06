@@ -630,6 +630,8 @@ void S9xAPULoadState (uint8 *block)
 	SNES::smp.load_state (&ptr);
 	SNES::dsp.load_state (&ptr);
 
+	SNES::dsp.spc_dsp.set_output ((SNES::SPC_DSP::sample_t *) spc::landing_buffer, spc::buffer_size >> 1);
+
 	spc::reference_time = SNES::get_le32(ptr);
 	ptr += sizeof(int32);
 	spc::remainder = SNES::get_le32(ptr);
