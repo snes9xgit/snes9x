@@ -941,6 +941,8 @@ static bool8 is_SufamiTurbo_BIOS (uint8 *, uint32);
 static bool8 is_SufamiTurbo_Cart (uint8 *, uint32);
 static bool8 is_SameGame_BIOS (uint8 *, uint32);
 static bool8 is_SameGame_Add_On (uint8 *, uint32);
+static bool8 is_GNEXT_BIOS (uint8 *, uint32);
+static bool8 is_GNEXT_Add_On (uint8 *, uint32);
 static uint32 caCRC32 (uint8 *, uint32, uint32 crc32 = 0xffffffff);
 static uint32 ReadUPSPointer (const uint8 *, unsigned &, unsigned);
 static bool8 ReadUPSPatch (Reader *, long, int32 &);
@@ -1232,6 +1234,22 @@ static bool8 is_SameGame_BIOS (uint8 *data, uint32 size)
 }
 
 static bool8 is_SameGame_Add_On (uint8 *data, uint32 size)
+{
+	if (size == 0x80000)
+		return (TRUE);
+	else
+		return (FALSE);
+}
+
+static bool8 is_GNEXT_BIOS (uint8 *data, uint32 size)
+{
+	if (size == 0x180000 && strncmp((char *) (data + 0x7fc0), "SFC SDGUNDAMGNEXT", 17) == 0)
+		return (TRUE);
+	else
+		return (FALSE);
+}
+
+static bool8 is_GNEXT_Add_On (uint8 *data, uint32 size)
 {
 	if (size == 0x80000)
 		return (TRUE);
@@ -1756,6 +1774,9 @@ bool8 CMemory::LoadMultiCart (const char *cartA, const char *cartB)
 		else
 		if (is_SameGame_BIOS(ROM, Multi.cartSizeA))
 			Multi.cartType = 3;
+		else
+		if (is_GNEXT_BIOS(ROM, Multi.cartSizeA))
+			Multi.cartType = 5;
 	}
 	else
 	if (Multi.cartSizeB)
@@ -1774,6 +1795,10 @@ bool8 CMemory::LoadMultiCart (const char *cartA, const char *cartB)
 
 		case 3:
 			r = LoadSameGame(cartA, cartB);
+			break;
+
+		case 5:
+			r = LoadGNEXT(cartA, cartB);
 			break;
 
 		default:
@@ -1910,6 +1935,43 @@ bool8 CMemory::LoadSameGame (const char *cartA, const char *cartB)
 
 	LoROM = FALSE;
 	HiROM = TRUE;
+	CalculatedSize = Multi.cartSizeA;
+
+	return (TRUE);
+}
+
+bool8 CMemory::LoadGNEXT (const char *cartA, const char *cartB)
+{
+	Multi.cartOffsetA = 0;
+	Multi.cartOffsetB = 0x400000;
+	Multi.sramA = SRAM;
+	Multi.sramB = NULL;
+
+	Multi.sramSizeA = ROM[0x7fd8];
+	Multi.sramMaskA = Multi.sramSizeA ? ((1 << (Multi.sramSizeA + 3)) * 128 - 1) : 0;
+	Multi.sramSizeB = 0;
+	Multi.sramMaskB = 0;
+
+	if (!Settings.NoPatch)
+		CheckForAnyPatch(cartA, HeaderCount != 0, Multi.cartSizeA);
+
+	strcpy(Multi.fileNameA, cartA);
+
+	if (cartB && cartB[0])
+		Multi.cartSizeB = FileLoader(ROM + Multi.cartOffsetB, cartB, MAX_ROM_SIZE - Multi.cartOffsetB);
+
+	if (Multi.cartSizeB)
+	{
+		if (!is_GNEXT_Add_On(ROM + Multi.cartOffsetB, Multi.cartSizeB))
+			Multi.cartSizeB = 0;
+		else
+			strcpy(Multi.fileNameB, cartB);
+	}
+
+	strcpy(ROMFilename, Multi.fileNameA);
+
+	LoROM = TRUE;
+	HiROM = FALSE;
 	CalculatedSize = Multi.cartSizeA;
 
 	return (TRUE);
@@ -2461,7 +2523,12 @@ void CMemory::InitROM (void)
 			Map_SuperFXLoROMMap();
 		else
 		if (Settings.SA1)
-			Map_SA1LoROMMap();
+		{
+			if (Multi.cartType == 5)
+				Map_GNEXTSA1LoROMMap();
+			else
+				Map_SA1LoROMMap();
+		}
 		else
 		if (Settings.SDD1)
 			Map_SDD1LoROMMap();
@@ -3118,6 +3185,51 @@ void CMemory::Map_SA1LoROMMap (void)
 
 	for (int c = 0x40; c < 0x80; c++)
 		map_space(c, c, 0x0000, 0xffff, SRAM + (c & 1) * 0x10000);
+
+	map_WRAM();
+
+	map_WriteProtectROM();
+
+	// Now copy the map and correct it for the SA1 CPU.
+	memmove((void *) SA1.Map, (void *) Map, sizeof(Map));
+	memmove((void *) SA1.WriteMap, (void *) WriteMap, sizeof(WriteMap));
+
+	// SA-1 Banks 00->3f and 80->bf
+	for (int c = 0x000; c < 0x400; c += 0x10)
+	{
+		SA1.Map[c + 0] = SA1.Map[c + 0x800] = FillRAM + 0x3000;
+		SA1.Map[c + 1] = SA1.Map[c + 0x801] = (uint8 *) MAP_NONE;
+		SA1.WriteMap[c + 0] = SA1.WriteMap[c + 0x800] = FillRAM + 0x3000;
+		SA1.WriteMap[c + 1] = SA1.WriteMap[c + 0x801] = (uint8 *) MAP_NONE;
+	}
+
+	// SA-1 Banks 60->6f
+	for (int c = 0x600; c < 0x700; c++)
+		SA1.Map[c] = SA1.WriteMap[c] = (uint8 *) MAP_BWRAM_BITMAP;
+
+	BWRAM = SRAM;
+}
+
+void CMemory::Map_GNEXTSA1LoROMMap (void)
+{
+	printf("Map_GNEXTSA1LoROMMap\n");
+	map_System();
+
+	map_lorom_offset(0x00, 0x3f, 0x8000, 0xffff, Multi.cartSizeA, Multi.cartOffsetA);
+	map_lorom_offset(0x80, 0xbf, 0x8000, 0xffff, Multi.cartSizeA, Multi.cartOffsetA);
+
+	map_hirom_offset(0xc0, 0xff, 0x0000, 0xffff, Multi.cartSizeA, Multi.cartOffsetA);
+
+	map_space(0x00, 0x3f, 0x3000, 0x3fff, FillRAM);
+	map_space(0x80, 0xbf, 0x3000, 0x3fff, FillRAM);
+	map_index(0x00, 0x3f, 0x6000, 0x7fff, MAP_BWRAM, MAP_TYPE_I_O);
+	map_index(0x80, 0xbf, 0x6000, 0x7fff, MAP_BWRAM, MAP_TYPE_I_O);
+
+	for (int c = 0x40; c < 0x80; c++)
+		map_space(c, c, 0x0000, 0xffff, SRAM + (c & 1) * 0x10000);
+
+	// FIXME: untested!
+	map_hirom_offset(0x70, 0x7f, 0x0000, 0xffff, Multi.cartSizeB, Multi.cartOffsetB);
 
 	map_WRAM();
 

@@ -277,6 +277,7 @@ struct CMemory
 	bool8	LoadMultiCart (const char *, const char *);
 	bool8	LoadSufamiTurbo (const char *, const char *);
 	bool8	LoadSameGame (const char *, const char *);
+	bool8	LoadGNEXT (const char *, const char *);
 	bool8	LoadSRAM (const char *);
 	bool8	SaveSRAM (const char *);
 	void	ClearSRAM (bool8 onlyNonSavedSRAM = 0);
@@ -317,6 +318,7 @@ struct CMemory
 	void	Map_SetaDSPLoROMMap (void);
 	void	Map_SDD1LoROMMap (void);
 	void	Map_SA1LoROMMap (void);
+	void	Map_GNEXTSA1LoROMMap (void);
 	void	Map_HiROMMap (void);
 	void	Map_ExtendedHiROMMap (void);
 	void	Map_SameGameHiROMMap (void);
