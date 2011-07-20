@@ -1557,6 +1557,8 @@ again:
 	CalculatedSize = (totalFileSize / 0x2000) * 0x2000;
 
 	if (CalculatedSize > 0x400000 &&
+		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x3423 && // exclude SA-1
+		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x3523 &&
 		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x4332 && // exclude S-DD1
 		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x4532 &&
 		(ROM[0xffd5] + (ROM[0xffd6] << 8)) != 0xF93a && // exclude SPC7110
