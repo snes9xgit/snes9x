@@ -5553,8 +5553,6 @@ INT_PTR CALLBACK DlgMultiROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 			case IDOK:
 				GetDlgItemText(hDlg, IDC_MULTICART_EDITA, multiRomA, MAX_PATH);
 				GetDlgItemText(hDlg, IDC_MULTICART_EDITB, multiRomB, MAX_PATH);
-				if(*multiRomA) _tfullpath(multiRomA, multiRomA, MAX_PATH);
-				if(*multiRomB) _tfullpath(multiRomB, multiRomB, MAX_PATH);
 				EndDialog(hDlg, 1);
 				return true;
 			case IDCANCEL:
@@ -5563,21 +5561,17 @@ INT_PTR CALLBACK DlgMultiROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 			case IDC_MULTICART_SWAP:
 				GetDlgItemText(hDlg, IDC_MULTICART_EDITA, rom2, MAX_PATH);
 				GetDlgItemText(hDlg, IDC_MULTICART_EDITB, rom1, MAX_PATH);
-				if(*rom1) _tfullpath(rom1, rom1, MAX_PATH);
-				if(*rom2) _tfullpath(rom2, rom2, MAX_PATH);
 				SetDlgItemText(hDlg, IDC_MULTICART_EDITA, rom1);
 				SetDlgItemText(hDlg, IDC_MULTICART_EDITB, rom2);
 				break;
 			case IDC_MULTICART_BROWSEA:
 				if(!DoOpenRomDialog(rom1, true))
 					break;
-				_tfullpath(rom1, rom1, MAX_PATH);
 				SetDlgItemText(hDlg, IDC_MULTICART_EDITA, rom1);
 				break;
 			case IDC_MULTICART_BROWSEB:
 				if(!DoOpenRomDialog(rom2, true))
 					break;
-				_tfullpath(rom2, rom2, MAX_PATH);
 				SetDlgItemText(hDlg, IDC_MULTICART_EDITB, rom2);
 				break;
 			case IDC_MULTICART_CLEARA:
