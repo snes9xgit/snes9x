@@ -1,5 +1,5 @@
 These are all the known ports of Snes9X to other consoles/handhelds/etc as of
-2011/04/24. They are all supported and welcomed on the official Snes9X site.
+2011/08/26. They are all supported and welcomed on the official Snes9X site.
 
 **If you know of anyone who is currently working on a port of Snes9X, or if you
 have some interest in making a port, please have them go to the Snes9X forums
@@ -14,30 +14,36 @@ Ports and how to get them running are as follows:
 Name: Snes9X Euphoria
 Latest version: R5 Beta
 Homepage/forum: http://www.retroemu.com/forum/
-Maintainer: Zack
+Maintainer: Open due to Zack discontinuing the port; he has made the source code
+available. If you are interested in taking over the project or starting a new port
+from scratch, let Ryan and/or Jerremy know ASAP.
 
 HOW TO GET IT RUNNING:
 *DISCLAIMER* You will have to do some Googling, including but not limited to:
 * Downgrading/upgrading your firmware
 * Checking if your PSP-2000 series can use Pandora's Battery
-* Checking if your PSP-3000 series can use the DaveeFTW Downgrader
+* Checking if your PSP-3000 series can use DaveeFTW's and/or some1's Downgrader
 * Creating Pandora's Battery
 * Finding the hacks, HENs, CFWs, etc and how to use/install them
 
 1. Make sure your PSP is hackable in some way. This means:
 * PSP-1000 series and certain PSP-2000 series can use Pandora Battery
 * PSP-2000 series that can't use Pandora Battery, most PSP-3000 series, and PSP
-Gos are hackable via other means (DaveeFTW Downgrader, etc)
+Gos are hackable via other means (DaveeFTW's and/or some1's Downgrader, etc)
 
 2. Make sure your PSP has custom firmware or a HEN that's useable (you'll have
 to upgrade/downgrade the firmware as necessary). (Hint: I personally prefer
-5.50 GEN-D3 on the Pandora-able PSPs; 6.20 or 6.35 PRO-B4 or better on the
+5.50 GEN-D3 on the Pandora-able PSPs; latest version of 6.20 or 6.35 PRO CFW on the
 non-Pandora-able PSPs.)
 
 3. When that’s done, be sure to put the Snes9X Euphoria folder in /PSP/GAME on
 your PSP’s memory stick (PSP-1000/2000/3000 series) or internal memory
 (PSP Go). Be sure to copy the ROMs into the roms folder, saves (*.srm, etc)
 into the saves folder, and cheats into the cheats folder.
+
+Note: as of right now, there is no one to maintain the PSP port; I am leaving these
+instructions up just in case someone wants to take it over, and you can use these
+tips to get other homebrews going.
 
 *Wii/Gamecube version of Snes9X*
 Name: Snes9X GX
@@ -66,7 +72,7 @@ Gamecube: You might need a modchip.
 
 *Android and iOS (Apple iPhone/iPod Touch) version of Snes9X*
 Name: Snes9X EX
-Latest Version: 1.3.23
+Latest Version: 1.4.2
 Homepage/forum: http://www.explusalpha.com/home/snes9x-ex
 Maintainer: Rakashazi (on the Snes9X forums)
 
@@ -74,8 +80,13 @@ HOW TO GET IT RUNNING:
 *DISCLAIMER* You will have to do some Googling, including but not limited to:
 * iOS (iPhone/iPod Touch) ONLY!!!: Jailbreaking your firmware
 
-Android: It appears you can just download from the Android app-store thingy and
-run it from there :) Be sure to copy over your ROMs, saves, etc though.
+Android: It appears you can just download from the Android Marketplace and run
+it from there :) Be sure to copy over your ROMs, saves, etc though.
+
+UPDATE from SparroHawc: Yup, the app store download works great - no need to root
+the phone, and you can browse the contents of the phone's filesystem to find the 
+ROMs anywhere. The saves, I believe, will be put in the same directory as the
+loaded ROM.
 
 iOS: You’ll have to jailbreak your firmware and install the Cydia app
 installer. Then you’ll have to install the BigBoss repository within Cydia and
