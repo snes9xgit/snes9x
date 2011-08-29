@@ -14,40 +14,43 @@ Ports and how to get them running are as follows:
 Name: Snes9X Euphoria
 Latest version: R5 Beta
 Homepage/forum: http://www.retroemu.com/forum/
-Maintainer: Open due to Zack discontinuing the port; he has made the source code
-available. If you are interested in taking over the project or starting a new port
-from scratch, let Ryan and/or Jerremy know ASAP.
+Maintainer: Open due to Zack discontinuing the port; he has made the source
+code available. If you are interested in taking over the project or starting a
+new port from scratch, let Ryan and/or Jerremy know ASAP.
 
 HOW TO GET IT RUNNING:
 *DISCLAIMER* You will have to do some Googling, including but not limited to:
 * Downgrading/upgrading your firmware
 * Checking if your PSP-2000 series can use Pandora's Battery
 * Checking if your PSP-3000 series can use DaveeFTW's and/or some1's Downgrader
-* Creating Pandora's Battery
+* Creating Pandora's Battery (as needed)
 * Finding the hacks, HENs, CFWs, etc and how to use/install them
 
 1. Make sure your PSP is hackable in some way. This means:
-* PSP-1000 series and certain PSP-2000 series can use Pandora Battery
-* PSP-2000 series that can't use Pandora Battery, most PSP-3000 series, and PSP
-Gos are hackable via other means (DaveeFTW's and/or some1's Downgrader, etc)
+* All PSP-1000 series and certain PSP-2000 series can use Pandora Battery; this
+would be considered fully hackable.
+* PSP-2000 series that can't use Pandora Battery, just about all PSP-3000
+series, and PSP Gos are hackable via other means (DaveeFTW's and/or some1's
+Downgrader, etc); this would be considered partially hackable. 
 
 2. Make sure your PSP has custom firmware or a HEN that's useable (you'll have
 to upgrade/downgrade the firmware as necessary). (Hint: I personally prefer
-5.50 GEN-D3 on the Pandora-able PSPs; latest version of 6.20 or 6.35 PRO CFW on the
-non-Pandora-able PSPs.)
+5.50 GEN-D3 if your PSP can use Pandora Battery; latest version of 6.20 or
+6.35 PRO CFW if your PSP can't use Pandora Battery (if you can't downgrade past
+6.35, then you should be able to use 6.39 and/or 6.60 PRO).)
 
 3. When that’s done, be sure to put the Snes9X Euphoria folder in /PSP/GAME on
 your PSP’s memory stick (PSP-1000/2000/3000 series) or internal memory
 (PSP Go). Be sure to copy the ROMs into the roms folder, saves (*.srm, etc)
 into the saves folder, and cheats into the cheats folder.
 
-Note: as of right now, there is no one to maintain the PSP port; I am leaving these
-instructions up just in case someone wants to take it over, and you can use these
-tips to get other homebrews going.
+Note: as of right now, there is no one to maintain the PSP port; I am leaving
+these instructions up just in case someone wants to take it over, and you can
+use these tips to get other homebrews going.
 
 *Wii/Gamecube version of Snes9X*
 Name: Snes9X GX
-Latest Version: 4.2.7
+Latest Version: 4.2.8
 Homepage/forum: http://code.google.com/p/snes9x-gx
 Maintainer: Tantric
 
