@@ -56,8 +56,9 @@ Maintainer: Tantric
 
 HOW TO GET IT RUNNING:
 *DISCLAIMER* You will have to do some Googling, including but not limited to:
-* Finding the latest Homebrew Channel, Snes9X GX Channel, and/or IOS58
-installers and installing them
+* Finding and installing the latest versions of: Homebrew Channel, Snes9X GX
+Channel (optional), and/or IOS58 installer (also optional; this is to make the
+Snes9X GX channel work) 
 * Finding a modchip for your GameCube and installing it
 
 Wii: You will need the latest Homebrew Channel installed on your Wii. After
