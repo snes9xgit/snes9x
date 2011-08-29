@@ -1,5 +1,5 @@
 These are all the known ports of Snes9X to other consoles/handhelds/etc as of
-2011/08/26. They are all supported and welcomed on the official Snes9X site.
+2011/08/28. They are all supported and welcomed on the official Snes9X site.
 
 **If you know of anyone who is currently working on a port of Snes9X, or if you
 have some interest in making a port, please have them go to the Snes9X forums
@@ -130,4 +130,4 @@ Really, it's not hard. Read the readme, and use a softmod or modchip and a
 replacement dashboard. After that's installed, it should be as simple as
 copying over the emulator, ROMs, saves, etc to the X-Box and it should work.
 
-Updated most recently by: 2011/4/24 adventure_of_link
+Updated most recently by: 2011/8/28 adventure_of_link
