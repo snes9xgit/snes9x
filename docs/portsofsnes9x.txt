@@ -13,7 +13,7 @@ Ports and how to get them running are as follows:
 *PSP Version of Snes9X*
 Name: Snes9X Euphoria
 Latest version: R5 Beta
-Homepage/forum: http://www.retroemu.com/forum/
+Homepage/forum: http://code.google.com/p/snes9x-euphoria/
 Maintainer: Open due to Zack discontinuing the port; he has made the source
 code available. If you are interested in taking over the project or starting a
 new port from scratch, let Ryan and/or Jerremy know ASAP.
