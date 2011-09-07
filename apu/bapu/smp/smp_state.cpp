@@ -118,10 +118,16 @@ void SMP::save_state(uint8 **block) {
 
   INT32(timer2.enable);
   INT32(timer2.target);
-
   INT32(timer2.stage1_ticks);
   INT32(timer2.stage2_ticks);
   INT32(timer2.stage3_ticks);
+
+  INT32(rd);
+  INT32(wr);
+  INT32(dp);
+  INT32(sp);
+  INT32(ya);
+  INT32(bit);
 
   *block = ptr;
 }
@@ -174,10 +180,16 @@ void SMP::load_state(uint8 **block) {
 
   INT32(timer2.enable);
   INT32(timer2.target);
-
   INT32(timer2.stage1_ticks);
   INT32(timer2.stage2_ticks);
   INT32(timer2.stage3_ticks);
+
+  INT32(rd);
+  INT32(wr);
+  INT32(dp);
+  INT32(sp);
+  INT32(ya);
+  INT32(bit);
 
   *block = ptr;
 }

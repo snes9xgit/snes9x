@@ -625,12 +625,8 @@ void S9xAPULoadState (uint8 *block)
 {
 	uint8	*ptr = block;
 
-	S9xResetAPU();
-
 	SNES::smp.load_state (&ptr);
 	SNES::dsp.load_state (&ptr);
-
-	SNES::dsp.spc_dsp.set_output ((SNES::SPC_DSP::sample_t *) spc::landing_buffer, spc::buffer_size >> 1);
 
 	spc::reference_time = SNES::get_le32(ptr);
 	ptr += sizeof(int32);
@@ -655,7 +651,8 @@ bool8 S9xSPCDump (const char *filename)
 
 	SNES::smp.save_spc (buf);
 
-	ignore = fwrite(buf, SPC_FILE_SIZE, 1, fs);
+	if ((ignore = fwrite(buf, SPC_FILE_SIZE, 1, fs)) <= 0)
+		fprintf (stderr, "Couldn't write file %s.\n", filename);
 
 	fclose(fs);
 

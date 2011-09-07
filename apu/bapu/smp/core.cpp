@@ -44,7 +44,6 @@ void SMP::op_step() {
   #define op_writeaddr(addr, data) op_write(addr, data)
   #define op_readstack() op_read(0x0100 | ++regs.sp)
   #define op_writestack(data) op_write(0x0100 | regs.sp--, data)
-  static unsigned rd, wr, dp, sp, ya, bit;
 
   #if defined(CYCLE_ACCURATE)
 
