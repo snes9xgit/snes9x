@@ -716,8 +716,9 @@ void COpenGL::checkForCgError(const char *situation)
 bool COpenGL::SetShadersCG(const TCHAR *file)
 {
 	if(!cgAvailable) {
-		MessageBox(NULL, TEXT("The CG runtime is unavailable, CG shaders will not run.\nConsult the snes9x readme for information on how to obtain the runtime."), TEXT("CG Error"),
-			MB_OK|MB_ICONEXCLAMATION);
+		if(file)
+			MessageBox(NULL, TEXT("The CG runtime is unavailable, CG shaders will not run.\nConsult the snes9x readme for information on how to obtain the runtime."), TEXT("CG Error"),
+				MB_OK|MB_ICONEXCLAMATION);
         return false;
     }
 
