@@ -96,7 +96,9 @@ public:
   Timer< 16> timer2;
 
   inline void tick();
+  inline void tick(unsigned clocks);
   alwaysinline void op_io();
+  alwaysinline void op_io(unsigned clocks);
   debugvirtual alwaysinline uint8 op_read(uint16 addr);
   debugvirtual alwaysinline void op_write(uint16 addr, uint8 data);
   debugvirtual alwaysinline void op_step();

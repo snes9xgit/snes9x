@@ -13,10 +13,23 @@ void SMP::tick() {
 #endif
 }
 
+void SMP::tick(unsigned clocks) {
+  timer0.tick(clocks);
+  timer1.tick(clocks);
+  timer2.tick(clocks);
+
+  clock += clocks;
+  dsp.clock += clocks;
+}
+
 void SMP::op_io() {
   #if defined(CYCLE_ACCURATE)
   tick();
   #endif
+}
+
+void SMP::op_io(unsigned clocks) {
+  tick(clocks);
 }
 
 uint8 SMP::op_read(uint16 addr) {

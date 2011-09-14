@@ -1,99 +1,63 @@
 case 0xbc: {
-  switch(opcode_cycle++) {
-  case 1:
-    op_io();
-    regs.a = op_inc(regs.a);
-    opcode_cycle = 0;
-    break;
-  }
+  op_io();
+  regs.a = op_inc(regs.a);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x3d: {
-  switch(opcode_cycle++) {
-  case 1:
-    op_io();
-    regs.x = op_inc(regs.x);
-    opcode_cycle = 0;
-    break;
-  }
+  op_io();
+  regs.x = op_inc(regs.x);
+  opcode_cycle = 0;
   break;
 }
 
 case 0xfc: {
-  switch(opcode_cycle++) {
-  case 1:
-    op_io();
-    regs.y = op_inc(regs.y);
-    opcode_cycle = 0;
-    break;
-  }
+  op_io();
+  regs.y = op_inc(regs.y);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x9c: {
-  switch(opcode_cycle++) {
-  case 1:
-    op_io();
-    regs.a = op_dec(regs.a);
-    opcode_cycle = 0;
-    break;
-  }
+  op_io();
+  regs.a = op_dec(regs.a);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x1d: {
-  switch(opcode_cycle++) {
-  case 1:
-    op_io();
-    regs.x = op_dec(regs.x);
-    opcode_cycle = 0;
-    break;
-  }
+  op_io();
+  regs.x = op_dec(regs.x);
+  opcode_cycle = 0;
   break;
 }
 
 case 0xdc: {
-  switch(opcode_cycle++) {
-  case 1:
-    op_io();
-    regs.y = op_dec(regs.y);
-    opcode_cycle = 0;
-    break;
-  }
+  op_io();
+  regs.y = op_dec(regs.y);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x1c: {
-  switch(opcode_cycle++) {
-  case 1:
-    op_io();
-    regs.a = op_asl(regs.a);
-    opcode_cycle = 0;
-    break;
-  }
+  op_io();
+  regs.a = op_asl(regs.a);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x5c: {
-  switch(opcode_cycle++) {
-  case 1:
-    op_io();
-    regs.a = op_lsr(regs.a);
-    opcode_cycle = 0;
-    break;
-  }
+  op_io();
+  regs.a = op_lsr(regs.a);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x3c: {
-  switch(opcode_cycle++) {
-  case 1:
-    op_io();
-    regs.a = op_rol(regs.a);
-    opcode_cycle = 0;
-    break;
-  }
+  op_io();
+  regs.a = op_rol(regs.a);
+  opcode_cycle = 0;
   break;
 }
 
