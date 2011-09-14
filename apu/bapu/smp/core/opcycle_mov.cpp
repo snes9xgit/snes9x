@@ -1,112 +1,76 @@
 case 0x7d: {
-  switch(opcode_cycle++) {
-  case 1:
-    op_io();
-    regs.a = regs.x;
-    regs.p.n = !!(regs.a & 0x80);
-    regs.p.z = (regs.a == 0);
-    opcode_cycle = 0;
-    break;
-  }
+  op_io();
+  regs.a = regs.x;
+  regs.p.n = !!(regs.a & 0x80);
+  regs.p.z = (regs.a == 0);
+  opcode_cycle = 0;
   break;
 }
 
 case 0xdd: {
-  switch(opcode_cycle++) {
-  case 1:
-    op_io();
-    regs.a = regs.y;
-    regs.p.n = !!(regs.a & 0x80);
-    regs.p.z = (regs.a == 0);
-    opcode_cycle = 0;
-    break;
-  }
+  op_io();
+  regs.a = regs.y;
+  regs.p.n = !!(regs.a & 0x80);
+  regs.p.z = (regs.a == 0);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x5d: {
-  switch(opcode_cycle++) {
-  case 1:
-    op_io();
-    regs.x = regs.a;
-    regs.p.n = !!(regs.x & 0x80);
-    regs.p.z = (regs.x == 0);
-    opcode_cycle = 0;
-    break;
-  }
+  op_io();
+  regs.x = regs.a;
+  regs.p.n = !!(regs.x & 0x80);
+  regs.p.z = (regs.x == 0);
+  opcode_cycle = 0;
   break;
 }
 
 case 0xfd: {
-  switch(opcode_cycle++) {
-  case 1:
-    op_io();
-    regs.y = regs.a;
-    regs.p.n = !!(regs.y & 0x80);
-    regs.p.z = (regs.y == 0);
-    opcode_cycle = 0;
-    break;
-  }
+  op_io();
+  regs.y = regs.a;
+  regs.p.n = !!(regs.y & 0x80);
+  regs.p.z = (regs.y == 0);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x9d: {
-  switch(opcode_cycle++) {
-  case 1:
-    op_io();
-    regs.x = regs.sp;
-    regs.p.n = !!(regs.x & 0x80);
-    regs.p.z = (regs.x == 0);
-    opcode_cycle = 0;
-    break;
-  }
+  op_io();
+  regs.x = regs.sp;
+  regs.p.n = !!(regs.x & 0x80);
+  regs.p.z = (regs.x == 0);
+  opcode_cycle = 0;
   break;
 }
 
 case 0xbd: {
-  switch(opcode_cycle++) {
-  case 1:
-    op_io();
-    regs.sp = regs.x;
-    opcode_cycle = 0;
-    break;
-  }
+  op_io();
+  regs.sp = regs.x;
+  opcode_cycle = 0;
   break;
 }
 
 case 0xe8: {
-  switch(opcode_cycle++) {
-  case 1:
-    regs.a = op_readpc();
-    regs.p.n = !!(regs.a & 0x80);
-    regs.p.z = (regs.a == 0);
-    opcode_cycle = 0;
-    break;
-  }
+  regs.a = op_readpc();
+  regs.p.n = !!(regs.a & 0x80);
+  regs.p.z = (regs.a == 0);
+  opcode_cycle = 0;
   break;
 }
 
 case 0xcd: {
-  switch(opcode_cycle++) {
-  case 1:
-    regs.x = op_readpc();
-    regs.p.n = !!(regs.x & 0x80);
-    regs.p.z = (regs.x == 0);
-    opcode_cycle = 0;
-    break;
-  }
+  regs.x = op_readpc();
+  regs.p.n = !!(regs.x & 0x80);
+  regs.p.z = (regs.x == 0);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x8d: {
-  switch(opcode_cycle++) {
-  case 1:
-    regs.y = op_readpc();
-    regs.p.n = !!(regs.y & 0x80);
-    regs.p.z = (regs.y == 0);
-    opcode_cycle = 0;
-    break;
-  }
+  regs.y = op_readpc();
+  regs.p.n = !!(regs.y & 0x80);
+  regs.p.z = (regs.y == 0);
+  opcode_cycle = 0;
   break;
 }
 
