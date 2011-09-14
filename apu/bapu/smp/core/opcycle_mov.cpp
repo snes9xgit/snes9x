@@ -96,8 +96,6 @@ case 0xbf: {
     break;
   case 2:
     regs.a = op_readdp(regs.x++);
-    break;
-  case 3:
     op_io();
     regs.p.n = !!(regs.a & 0x80);
     regs.p.z = (regs.a == 0);
@@ -156,11 +154,9 @@ case 0xf4: {
   switch(opcode_cycle++) {
   case 1:
     sp = op_readpc();
-    break;
-  case 2:
     op_io();
     break;
-  case 3:
+  case 2:
     regs.a = op_readdp(sp + regs.x);
     regs.p.n = !!(regs.a & 0x80);
     regs.p.z = (regs.a == 0);
@@ -174,11 +170,9 @@ case 0xf9: {
   switch(opcode_cycle++) {
   case 1:
     sp = op_readpc();
-    break;
-  case 2:
     op_io();
     break;
-  case 3:
+  case 2:
     regs.x = op_readdp(sp + regs.y);
     regs.p.n = !!(regs.x & 0x80);
     regs.p.z = (regs.x == 0);
@@ -192,11 +186,9 @@ case 0xfb: {
   switch(opcode_cycle++) {
   case 1:
     sp = op_readpc();
-    break;
-  case 2:
     op_io();
     break;
-  case 3:
+  case 2:
     regs.y = op_readdp(sp + regs.x);
     regs.p.n = !!(regs.y & 0x80);
     regs.p.z = (regs.y == 0);
@@ -228,11 +220,9 @@ case 0xe9: {
   switch(opcode_cycle++) {
   case 1:
     sp  = op_readpc();
-    break;
-  case 2:
     sp |= op_readpc() << 8;
     break;
-  case 3:
+  case 2:
     regs.x = op_readaddr(sp);
     regs.p.n = !!(regs.x & 0x80);
     regs.p.z = (regs.x == 0);
@@ -246,11 +236,9 @@ case 0xec: {
   switch(opcode_cycle++) {
   case 1:
     sp  = op_readpc();
-    break;
-  case 2:
     sp |= op_readpc() << 8;
     break;
-  case 3:
+  case 2:
     regs.y = op_readaddr(sp);
     regs.p.n = !!(regs.y & 0x80);
     regs.p.z = (regs.y == 0);
@@ -264,14 +252,10 @@ case 0xf5: {
   switch(opcode_cycle++) {
   case 1:
     sp  = op_readpc();
-    break;
-  case 2:
     sp |= op_readpc() << 8;
-    break;
-  case 3:
     op_io();
     break;
-  case 4:
+  case 2:
     regs.a = op_readaddr(sp + regs.x);
     regs.p.n = !!(regs.a & 0x80);
     regs.p.z = (regs.a == 0);
@@ -285,14 +269,10 @@ case 0xf6: {
   switch(opcode_cycle++) {
   case 1:
     sp  = op_readpc();
-    break;
-  case 2:
     sp |= op_readpc() << 8;
-    break;
-  case 3:
     op_io();
     break;
-  case 4:
+  case 2:
     regs.a = op_readaddr(sp + regs.y);
     regs.p.n = !!(regs.a & 0x80);
     regs.p.z = (regs.a == 0);
@@ -306,17 +286,15 @@ case 0xe7: {
   switch(opcode_cycle++) {
   case 1:
     dp = op_readpc() + regs.x;
-    break;
-  case 2:
     op_io();
     break;
-  case 3:
+  case 2:
     sp  = op_readdp(dp);
     break;
-  case 4:
+  case 3:
     sp |= op_readdp(dp + 1) << 8;
     break;
-  case 5:
+  case 4:
     regs.a = op_readaddr(sp);
     regs.p.n = !!(regs.a & 0x80);
     regs.p.z = (regs.a == 0);
@@ -330,17 +308,15 @@ case 0xf7: {
   switch(opcode_cycle++) {
   case 1:
     dp = op_readpc();
-    break;
-  case 2:
     op_io();
     break;
-  case 3:
+  case 2:
     sp  = op_readdp(dp);
     break;
-  case 4:
+  case 3:
     sp |= op_readdp(dp + 1) << 8;
     break;
-  case 5:
+  case 4:
     regs.a = op_readaddr(sp + regs.y);
     regs.p.n = !!(regs.a & 0x80);
     regs.p.z = (regs.a == 0);
@@ -373,14 +349,12 @@ case 0x8f: {
   switch(opcode_cycle++) {
   case 1:
     rd = op_readpc();
-    break;
-  case 2:
     dp = op_readpc();
     break;
-  case 3:
+  case 2:
     op_readdp(dp);
     break;
-  case 4:
+  case 3:
     op_writedp(dp, rd);
     opcode_cycle = 0;
     break;
@@ -407,12 +381,8 @@ case 0xc6: {
 case 0xaf: {
   switch(opcode_cycle++) {
   case 1:
-    op_io();
-    break;
+    op_io(2);
   case 2:
-    op_io();
-    break;
-  case 3:
     op_writedp(regs.x++, regs.a);
     opcode_cycle = 0;
     break;
@@ -472,15 +442,13 @@ case 0xd4: {
   switch(opcode_cycle++) {
   case 1:
     dp  = op_readpc();
-    break;
-  case 2:
     op_io();
     dp += regs.x;
     break;
-  case 3:
+  case 2:
     op_readdp(dp);
     break;
-  case 4:
+  case 3:
     op_writedp(dp, regs.a);
     opcode_cycle = 0;
     break;
@@ -492,15 +460,13 @@ case 0xd9: {
   switch(opcode_cycle++) {
   case 1:
     dp  = op_readpc();
-    break;
-  case 2:
     op_io();
     dp += regs.y;
     break;
-  case 3:
+  case 2:
     op_readdp(dp);
     break;
-  case 4:
+  case 3:
     op_writedp(dp, regs.x);
     opcode_cycle = 0;
     break;
@@ -512,15 +478,13 @@ case 0xdb: {
   switch(opcode_cycle++) {
   case 1:
     dp  = op_readpc();
-    break;
-  case 2:
     op_io();
     dp += regs.x;
     break;
-  case 3:
+  case 2:
     op_readdp(dp);
     break;
-  case 4:
+  case 3:
     op_writedp(dp, regs.y);
     opcode_cycle = 0;
     break;
@@ -589,18 +553,14 @@ case 0xd5: {
   switch(opcode_cycle++) {
   case 1:
     dp  = op_readpc();
-    break;
-  case 2:
     dp |= op_readpc() << 8;
-    break;
-  case 3:
     op_io();
     dp += regs.x;
     break;
-  case 4:
+  case 2:
     op_readaddr(dp);
     break;
-  case 5:
+  case 3:
     op_writeaddr(dp, regs.a);
     opcode_cycle = 0;
     break;
@@ -612,18 +572,14 @@ case 0xd6: {
   switch(opcode_cycle++) {
   case 1:
     dp  = op_readpc();
-    break;
-  case 2:
     dp |= op_readpc() << 8;
-    break;
-  case 3:
     op_io();
     dp += regs.y;
     break;
-  case 4:
+  case 2:
     op_readaddr(dp);
     break;
-  case 5:
+  case 3:
     op_writeaddr(dp, regs.a);
     opcode_cycle = 0;
     break;
@@ -635,21 +591,19 @@ case 0xc7: {
   switch(opcode_cycle++) {
   case 1:
     sp  = op_readpc();
-    break;
-  case 2:
     op_io();
     sp += regs.x;
     break;
-  case 3:
+  case 2:
     dp  = op_readdp(sp);
     break;
-  case 4:
+  case 3:
     dp |= op_readdp(sp + 1) << 8;
     break;
-  case 5:
+  case 4:
     op_readaddr(dp);
     break;
-  case 6:
+  case 5:
     op_writeaddr(dp, regs.a);
     opcode_cycle = 0;
     break;
@@ -667,15 +621,13 @@ case 0xd7: {
     break;
   case 3:
     dp |= op_readdp(sp + 1) << 8;
-    break;
-  case 4:
     op_io();
     dp += regs.y;
     break;
-  case 5:
+  case 4:
     op_readaddr(dp);
     break;
-  case 6:
+  case 5:
     op_writeaddr(dp, regs.a);
     opcode_cycle = 0;
     break;
@@ -690,11 +642,9 @@ case 0xba: {
     break;
   case 2:
     regs.a = op_readdp(sp);
-    break;
-  case 3:
     op_io();
     break;
-  case 4:
+  case 3:
     regs.y = op_readdp(sp + 1);
     regs.p.n = !!(regs.ya & 0x8000);
     regs.p.z = (regs.ya == 0);
@@ -727,11 +677,9 @@ case 0xaa: {
   switch(opcode_cycle++) {
   case 1:
     sp  = op_readpc();
-    break;
-  case 2:
     sp |= op_readpc() << 8;
     break;
-  case 3:
+  case 2:
     bit = sp >> 13;
     sp &= 0x1fff;
     rd = op_readaddr(sp);
@@ -746,21 +694,17 @@ case 0xca: {
   switch(opcode_cycle++) {
   case 1:
     dp  = op_readpc();
-    break;
-  case 2:
     dp |= op_readpc() << 8;
     break;
-  case 3:
+  case 2:
     bit = dp >> 13;
     dp &= 0x1fff;
     rd = op_readaddr(dp);
     if(regs.p.c)rd |=  (1 << bit);
     else        rd &= ~(1 << bit);
-    break;
-  case 4:
     op_io();
     break;
-  case 5:
+  case 3:
     op_writeaddr(dp, rd);
     opcode_cycle = 0;
     break;
