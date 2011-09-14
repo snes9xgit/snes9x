@@ -73,442 +73,226 @@ case 0x7c: {
 }
 
 case 0xab: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    rd = op_readdp(dp);
-    break;
-  case 3:
-    rd = op_inc(rd);
-    op_writedp(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  rd = op_readdp(dp);
+  rd = op_inc(rd);
+  op_writedp(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x8b: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    rd = op_readdp(dp);
-    break;
-  case 3:
-    rd = op_dec(rd);
-    op_writedp(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  rd = op_readdp(dp);
+  rd = op_dec(rd);
+  op_writedp(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x0b: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    rd = op_readdp(dp);
-    break;
-  case 3:
-    rd = op_asl(rd);
-    op_writedp(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  rd = op_readdp(dp);
+  rd = op_asl(rd);
+  op_writedp(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x4b: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    rd = op_readdp(dp);
-    break;
-  case 3:
-    rd = op_lsr(rd);
-    op_writedp(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  rd = op_readdp(dp);
+  rd = op_lsr(rd);
+  op_writedp(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x2b: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    rd = op_readdp(dp);
-    break;
-  case 3:
-    rd = op_rol(rd);
-    op_writedp(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  rd = op_readdp(dp);
+  rd = op_rol(rd);
+  op_writedp(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x6b: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    rd = op_readdp(dp);
-    break;
-  case 3:
-    rd = op_ror(rd);
-    op_writedp(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  rd = op_readdp(dp);
+  rd = op_ror(rd);
+  op_writedp(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0xbb: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    op_io();
-    break;
-  case 3:
-    rd = op_readdp(dp + regs.x);
-    break;
-  case 4:
-    rd = op_inc(rd);
-    op_writedp(dp + regs.x, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  op_io();
+  rd = op_readdp(dp + regs.x);
+  rd = op_inc(rd);
+  op_writedp(dp + regs.x, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x9b: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    op_io();
-    break;
-  case 3:
-    rd = op_readdp(dp + regs.x);
-    break;
-  case 4:
-    rd = op_dec(rd);
-    op_writedp(dp + regs.x, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  op_io();
+  rd = op_readdp(dp + regs.x);
+  rd = op_dec(rd);
+  op_writedp(dp + regs.x, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x1b: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    op_io();
-    break;
-  case 3:
-    rd = op_readdp(dp + regs.x);
-    break;
-  case 4:
-    rd = op_asl(rd);
-    op_writedp(dp + regs.x, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  op_io();
+  rd = op_readdp(dp + regs.x);
+  rd = op_asl(rd);
+  op_writedp(dp + regs.x, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x5b: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    op_io();
-    break;
-  case 3:
-    rd = op_readdp(dp + regs.x);
-    break;
-  case 4:
-    rd = op_lsr(rd);
-    op_writedp(dp + regs.x, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  op_io();
+  rd = op_readdp(dp + regs.x);
+  rd = op_lsr(rd);
+  op_writedp(dp + regs.x, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x3b: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    op_io();
-    break;
-  case 3:
-    rd = op_readdp(dp + regs.x);
-    break;
-  case 4:
-    rd = op_rol(rd);
-    op_writedp(dp + regs.x, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  op_io();
+  rd = op_readdp(dp + regs.x);
+  rd = op_rol(rd);
+  op_writedp(dp + regs.x, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x7b: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    op_io();
-    break;
-  case 3:
-    rd = op_readdp(dp + regs.x);
-    break;
-  case 4:
-    rd = op_ror(rd);
-    op_writedp(dp + regs.x, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  op_io();
+  rd = op_readdp(dp + regs.x);
+  rd = op_ror(rd);
+  op_writedp(dp + regs.x, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0xac: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp  = op_readpc();
-    break;
-  case 2:
-    dp |= op_readpc() << 8;
-    break;
-  case 3:
-    rd = op_readaddr(dp);
-    break;
-  case 4:
-    rd = op_inc(rd);
-    op_writeaddr(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp  = op_readpc();
+  dp |= op_readpc() << 8;
+  rd = op_readaddr(dp);
+  rd = op_inc(rd);
+  op_writeaddr(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x8c: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp  = op_readpc();
-    break;
-  case 2:
-    dp |= op_readpc() << 8;
-    break;
-  case 3:
-    rd = op_readaddr(dp);
-    break;
-  case 4:
-    rd = op_dec(rd);
-    op_writeaddr(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp  = op_readpc();
+  dp |= op_readpc() << 8;
+  rd = op_readaddr(dp);
+  rd = op_dec(rd);
+  op_writeaddr(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x0c: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp  = op_readpc();
-    break;
-  case 2:
-    dp |= op_readpc() << 8;
-    break;
-  case 3:
-    rd = op_readaddr(dp);
-    break;
-  case 4:
-    rd = op_asl(rd);
-    op_writeaddr(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp  = op_readpc();
+  dp |= op_readpc() << 8;
+  rd = op_readaddr(dp);
+  rd = op_asl(rd);
+  op_writeaddr(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x4c: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp  = op_readpc();
-    break;
-  case 2:
-    dp |= op_readpc() << 8;
-    break;
-  case 3:
-    rd = op_readaddr(dp);
-    break;
-  case 4:
-    rd = op_lsr(rd);
-    op_writeaddr(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp  = op_readpc();
+  dp |= op_readpc() << 8;
+  rd = op_readaddr(dp);
+  rd = op_lsr(rd);
+  op_writeaddr(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x2c: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp  = op_readpc();
-    break;
-  case 2:
-    dp |= op_readpc() << 8;
-    break;
-  case 3:
-    rd = op_readaddr(dp);
-    break;
-  case 4:
-    rd = op_rol(rd);
-    op_writeaddr(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp  = op_readpc();
+  dp |= op_readpc() << 8;
+  rd = op_readaddr(dp);
+  rd = op_rol(rd);
+  op_writeaddr(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x6c: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp  = op_readpc();
-    break;
-  case 2:
-    dp |= op_readpc() << 8;
-    break;
-  case 3:
-    rd = op_readaddr(dp);
-    break;
-  case 4:
-    rd = op_ror(rd);
-    op_writeaddr(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp  = op_readpc();
+  dp |= op_readpc() << 8;
+  rd = op_readaddr(dp);
+  rd = op_ror(rd);
+  op_writeaddr(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x0e: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp  = op_readpc();
-    break;
-  case 2:
-    dp |= op_readpc() << 8;
-    break;
-  case 3:
-    rd = op_readaddr(dp);
-    regs.p.n = !!((regs.a - rd) & 0x80);
-    regs.p.z = ((regs.a - rd) == 0);
-    break;
-  case 4:
-    op_readaddr(dp);
-    break;
-  case 5:
-    op_writeaddr(dp, rd | regs.a);
-    opcode_cycle = 0;
-    break;
-  }
+  dp  = op_readpc();
+  dp |= op_readpc() << 8;
+  rd = op_readaddr(dp);
+  regs.p.n = !!((regs.a - rd) & 0x80);
+  regs.p.z = ((regs.a - rd) == 0);
+  op_readaddr(dp);
+  op_writeaddr(dp, rd | regs.a);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x4e: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp  = op_readpc();
-    break;
-  case 2:
-    dp |= op_readpc() << 8;
-    break;
-  case 3:
-    rd = op_readaddr(dp);
-    regs.p.n = !!((regs.a - rd) & 0x80);
-    regs.p.z = ((regs.a - rd) == 0);
-    break;
-  case 4:
-    op_readaddr(dp);
-    break;
-  case 5:
-    op_writeaddr(dp, rd &~ regs.a);
-    opcode_cycle = 0;
-    break;
-  }
+  dp  = op_readpc();
+  dp |= op_readpc() << 8;
+  rd = op_readaddr(dp);
+  regs.p.n = !!((regs.a - rd) & 0x80);
+  regs.p.z = ((regs.a - rd) == 0);
+  op_readaddr(dp);
+  op_writeaddr(dp, rd &~ regs.a);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x3a: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    rd = op_readdp(dp);
-    rd++;
-    break;
-  case 3:
-    op_writedp(dp++, rd);
-    break;
-  case 4:
-    rd += op_readdp(dp) << 8;
-    break;
-  case 5:
-    op_writedp(dp, rd >> 8);
-    regs.p.n = !!(rd & 0x8000);
-    regs.p.z = (rd == 0);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  rd = op_readdp(dp);
+  rd++;
+  op_writedp(dp++, rd);
+  rd += op_readdp(dp) << 8;
+  op_writedp(dp, rd >> 8);
+  regs.p.n = !!(rd & 0x8000);
+  regs.p.z = (rd == 0);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x1a: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    rd = op_readdp(dp);
-    rd--;
-    break;
-  case 3:
-    op_writedp(dp++, rd);
-    break;
-  case 4:
-    rd += op_readdp(dp) << 8;
-    break;
-  case 5:
-    op_writedp(dp, rd >> 8);
-    regs.p.n = !!(rd & 0x8000);
-    regs.p.z = (rd == 0);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  rd = op_readdp(dp);
+  rd--;
+  op_writedp(dp++, rd);
+  rd += op_readdp(dp) << 8;
+  op_writedp(dp, rd >> 8);
+  regs.p.n = !!(rd & 0x8000);
+  regs.p.z = (rd == 0);
+  opcode_cycle = 0;
   break;
 }
 

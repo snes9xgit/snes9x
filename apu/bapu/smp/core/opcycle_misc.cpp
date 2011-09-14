@@ -108,288 +108,153 @@ case 0xa0: {
 }
 
 case 0xc0: {
-  switch(opcode_cycle++) {
-  case 1:
-    op_io();
-    break;
-  case 2:
-    op_io();
-    regs.p.i = 0;
-    opcode_cycle = 0;
-    break;
-  }
+  op_io(2);
+  regs.p.i = 0;
+  opcode_cycle = 0;
   break;
 }
 
 case 0x02: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    rd = op_readdp(dp);
-    break;
-  case 3:
-    rd |=  0x01;
-    op_writedp(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  rd = op_readdp(dp);
+  rd |=  0x01;
+  op_writedp(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x12: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    rd = op_readdp(dp);
-    break;
-  case 3:
-    rd &= ~0x01;
-    op_writedp(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  rd = op_readdp(dp);
+  rd &= ~0x01;
+  op_writedp(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x22: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    rd = op_readdp(dp);
-    break;
-  case 3:
-    rd |=  0x02;
-    op_writedp(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  rd = op_readdp(dp);
+  rd |=  0x02;
+  op_writedp(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x32: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    rd = op_readdp(dp);
-    break;
-  case 3:
-    rd &= ~0x02;
-    op_writedp(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  rd = op_readdp(dp);
+  rd &= ~0x02;
+  op_writedp(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x42: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    rd = op_readdp(dp);
-    break;
-  case 3:
-    rd |=  0x04;
-    op_writedp(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  rd = op_readdp(dp);
+  rd |=  0x04;
+  op_writedp(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x52: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    rd = op_readdp(dp);
-    break;
-  case 3:
-    rd &= ~0x04;
-    op_writedp(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  rd = op_readdp(dp);
+  rd &= ~0x04;
+  op_writedp(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x62: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    rd = op_readdp(dp);
-    break;
-  case 3:
-    rd |=  0x08;
-    op_writedp(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  rd = op_readdp(dp);
+  rd |=  0x08;
+  op_writedp(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x72: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    rd = op_readdp(dp);
-    break;
-  case 3:
-    rd &= ~0x08;
-    op_writedp(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  rd = op_readdp(dp);
+  rd &= ~0x08;
+  op_writedp(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x82: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    rd = op_readdp(dp);
-    break;
-  case 3:
-    rd |=  0x10;
-    op_writedp(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  rd = op_readdp(dp);
+  rd |=  0x10;
+  op_writedp(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0x92: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    rd = op_readdp(dp);
-    break;
-  case 3:
-    rd &= ~0x10;
-    op_writedp(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  rd = op_readdp(dp);
+  rd &= ~0x10;
+  op_writedp(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0xa2: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    rd = op_readdp(dp);
-    break;
-  case 3:
-    rd |=  0x20;
-    op_writedp(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  rd = op_readdp(dp);
+  rd |=  0x20;
+  op_writedp(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0xb2: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    rd = op_readdp(dp);
-    break;
-  case 3:
-    rd &= ~0x20;
-    op_writedp(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  rd = op_readdp(dp);
+  rd &= ~0x20;
+  op_writedp(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0xc2: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    rd = op_readdp(dp);
-    break;
-  case 3:
-    rd |=  0x40;
-    op_writedp(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  rd = op_readdp(dp);
+  rd |=  0x40;
+  op_writedp(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0xd2: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    rd = op_readdp(dp);
-    break;
-  case 3:
-    rd &= ~0x40;
-    op_writedp(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  rd = op_readdp(dp);
+  rd &= ~0x40;
+  op_writedp(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0xe2: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    rd = op_readdp(dp);
-    break;
-  case 3:
-    rd |=  0x80;
-    op_writedp(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  rd = op_readdp(dp);
+  rd |=  0x80;
+  op_writedp(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
 case 0xf2: {
-  switch(opcode_cycle++) {
-  case 1:
-    dp = op_readpc();
-    break;
-  case 2:
-    rd = op_readdp(dp);
-    break;
-  case 3:
-    rd &= ~0x80;
-    op_writedp(dp, rd);
-    opcode_cycle = 0;
-    break;
-  }
+  dp = op_readpc();
+  rd = op_readdp(dp);
+  rd &= ~0x80;
+  op_writedp(dp, rd);
+  opcode_cycle = 0;
   break;
 }
 
