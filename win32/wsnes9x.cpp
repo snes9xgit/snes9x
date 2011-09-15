@@ -3501,10 +3501,7 @@ loop_exit:
 
 void FreezeUnfreeze (int slot, bool8 freeze)
 {
-    static char filename [_MAX_PATH + 1];
-    char drive [_MAX_DRIVE + 1];
-    char dir [_MAX_DIR + 1];
-    char fname [_MAX_FNAME + 1];
+    const char *filename;
     char ext [_MAX_EXT + 1];
 
 #ifdef NETPLAY_SUPPORT
@@ -3516,30 +3513,8 @@ void FreezeUnfreeze (int slot, bool8 freeze)
     }
 #endif
 
-    _splitpath (Memory.ROMFilename, drive, dir, fname, ext);
-    static char *digits = "t123456789";
-	for(int oldDir = 0; oldDir <= 1; oldDir++)
-	{
-		for(int zmv = 0; zmv <= 1; zmv++)
-		{
-		    if((!oldDir && !zmv) || (!freeze && _taccess (_tFromChar(filename), 0) != 0 && slot < 10))
-			{
-				if(!zmv)
-					sprintf (ext, ".%03d", slot);
-				else
-					sprintf (ext, ".zs%c", digits [slot]);
-				if (GUI.FreezeFileDir [0])
-				{
-					strcpy (filename, oldDir ? S9xGetDirectory(ROMFILENAME_DIR) : S9xGetDirectory(SNAPSHOT_DIR));
-					strcat (filename, "\\");
-					strcat (filename, fname);
-					strcat (filename, ext);
-				}
-				else
-					_makepath (filename, drive, dir, fname, ext);
-			}
-		}
-	}
+	snprintf(ext, _MAX_EXT, ".%03d", slot);
+	filename = S9xGetFilename(ext,SNAPSHOT_DIR);
 
     S9xSetPause (PAUSE_FREEZE_FILE);
 
