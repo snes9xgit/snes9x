@@ -3,7 +3,6 @@ case 0x7d: {
   regs.a = regs.x;
   regs.p.n = !!(regs.a & 0x80);
   regs.p.z = (regs.a == 0);
-  opcode_cycle = 0;
   break;
 }
 
@@ -12,7 +11,6 @@ case 0xdd: {
   regs.a = regs.y;
   regs.p.n = !!(regs.a & 0x80);
   regs.p.z = (regs.a == 0);
-  opcode_cycle = 0;
   break;
 }
 
@@ -21,7 +19,6 @@ case 0x5d: {
   regs.x = regs.a;
   regs.p.n = !!(regs.x & 0x80);
   regs.p.z = (regs.x == 0);
-  opcode_cycle = 0;
   break;
 }
 
@@ -30,7 +27,6 @@ case 0xfd: {
   regs.y = regs.a;
   regs.p.n = !!(regs.y & 0x80);
   regs.p.z = (regs.y == 0);
-  opcode_cycle = 0;
   break;
 }
 
@@ -39,14 +35,12 @@ case 0x9d: {
   regs.x = regs.sp;
   regs.p.n = !!(regs.x & 0x80);
   regs.p.z = (regs.x == 0);
-  opcode_cycle = 0;
   break;
 }
 
 case 0xbd: {
   op_io();
   regs.sp = regs.x;
-  opcode_cycle = 0;
   break;
 }
 
@@ -54,7 +48,6 @@ case 0xe8: {
   regs.a = op_readpc();
   regs.p.n = !!(regs.a & 0x80);
   regs.p.z = (regs.a == 0);
-  opcode_cycle = 0;
   break;
 }
 
@@ -62,7 +55,6 @@ case 0xcd: {
   regs.x = op_readpc();
   regs.p.n = !!(regs.x & 0x80);
   regs.p.z = (regs.x == 0);
-  opcode_cycle = 0;
   break;
 }
 
@@ -70,12 +62,11 @@ case 0x8d: {
   regs.y = op_readpc();
   regs.p.n = !!(regs.y & 0x80);
   regs.p.z = (regs.y == 0);
-  opcode_cycle = 0;
   break;
 }
 
 case 0xe6: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     op_io();
     break;
@@ -90,7 +81,7 @@ case 0xe6: {
 }
 
 case 0xbf: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     op_io();
     break;
@@ -106,7 +97,7 @@ case 0xbf: {
 }
 
 case 0xe4: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     sp = op_readpc();
     break;
@@ -121,7 +112,7 @@ case 0xe4: {
 }
 
 case 0xf8: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     sp = op_readpc();
     break;
@@ -136,7 +127,7 @@ case 0xf8: {
 }
 
 case 0xeb: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     sp = op_readpc();
     break;
@@ -151,7 +142,7 @@ case 0xeb: {
 }
 
 case 0xf4: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     sp = op_readpc();
     op_io();
@@ -167,7 +158,7 @@ case 0xf4: {
 }
 
 case 0xf9: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     sp = op_readpc();
     op_io();
@@ -183,7 +174,7 @@ case 0xf9: {
 }
 
 case 0xfb: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     sp = op_readpc();
     op_io();
@@ -199,7 +190,7 @@ case 0xfb: {
 }
 
 case 0xe5: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     sp  = op_readpc();
     break;
@@ -217,7 +208,7 @@ case 0xe5: {
 }
 
 case 0xe9: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     sp  = op_readpc();
     sp |= op_readpc() << 8;
@@ -233,7 +224,7 @@ case 0xe9: {
 }
 
 case 0xec: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     sp  = op_readpc();
     sp |= op_readpc() << 8;
@@ -249,7 +240,7 @@ case 0xec: {
 }
 
 case 0xf5: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     sp  = op_readpc();
     sp |= op_readpc() << 8;
@@ -266,7 +257,7 @@ case 0xf5: {
 }
 
 case 0xf6: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     sp  = op_readpc();
     sp |= op_readpc() << 8;
@@ -283,7 +274,7 @@ case 0xf6: {
 }
 
 case 0xe7: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     dp = op_readpc() + regs.x;
     op_io();
@@ -305,7 +296,7 @@ case 0xe7: {
 }
 
 case 0xf7: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     dp = op_readpc();
     op_io();
@@ -327,7 +318,7 @@ case 0xf7: {
 }
 
 case 0xfa: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     sp = op_readpc();
     break;
@@ -346,7 +337,7 @@ case 0xfa: {
 }
 
 case 0x8f: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     rd = op_readpc();
     dp = op_readpc();
@@ -363,7 +354,7 @@ case 0x8f: {
 }
 
 case 0xc6: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     op_io();
     break;
@@ -379,7 +370,7 @@ case 0xc6: {
 }
 
 case 0xaf: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     op_io(2);
   case 2:
@@ -391,7 +382,7 @@ case 0xaf: {
 }
 
 case 0xc4: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     dp = op_readpc();
     break;
@@ -407,7 +398,7 @@ case 0xc4: {
 }
 
 case 0xd8: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     dp = op_readpc();
     break;
@@ -423,7 +414,7 @@ case 0xd8: {
 }
 
 case 0xcb: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     dp = op_readpc();
     break;
@@ -439,7 +430,7 @@ case 0xcb: {
 }
 
 case 0xd4: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     dp  = op_readpc();
     op_io();
@@ -457,7 +448,7 @@ case 0xd4: {
 }
 
 case 0xd9: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     dp  = op_readpc();
     op_io();
@@ -475,7 +466,7 @@ case 0xd9: {
 }
 
 case 0xdb: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     dp  = op_readpc();
     op_io();
@@ -493,7 +484,7 @@ case 0xdb: {
 }
 
 case 0xc5: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     dp  = op_readpc();
     break;
@@ -512,7 +503,7 @@ case 0xc5: {
 }
 
 case 0xc9: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     dp  = op_readpc();
     break;
@@ -531,7 +522,7 @@ case 0xc9: {
 }
 
 case 0xcc: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     dp  = op_readpc();
     break;
@@ -550,7 +541,7 @@ case 0xcc: {
 }
 
 case 0xd5: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     dp  = op_readpc();
     dp |= op_readpc() << 8;
@@ -569,7 +560,7 @@ case 0xd5: {
 }
 
 case 0xd6: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     dp  = op_readpc();
     dp |= op_readpc() << 8;
@@ -588,7 +579,7 @@ case 0xd6: {
 }
 
 case 0xc7: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     sp  = op_readpc();
     op_io();
@@ -612,7 +603,7 @@ case 0xc7: {
 }
 
 case 0xd7: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     sp  = op_readpc();
     break;
@@ -636,7 +627,7 @@ case 0xd7: {
 }
 
 case 0xba: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     sp = op_readpc();
     break;
@@ -655,7 +646,7 @@ case 0xba: {
 }
 
 case 0xda: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     dp = op_readpc();
     break;
@@ -674,7 +665,7 @@ case 0xda: {
 }
 
 case 0xaa: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     sp  = op_readpc();
     sp |= op_readpc() << 8;
@@ -691,7 +682,7 @@ case 0xaa: {
 }
 
 case 0xca: {
-  switch(opcode_cycle++) {
+  switch(++opcode_cycle) {
   case 1:
     dp  = op_readpc();
     dp |= op_readpc() << 8;

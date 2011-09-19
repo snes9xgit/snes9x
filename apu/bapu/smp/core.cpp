@@ -60,10 +60,11 @@ void SMP::op_step() {
 
   #if defined(CYCLE_ACCURATE)
 
-  if(opcode_cycle == 0) {
+  if(opcode_cycle == 0)
     opcode_number = op_readpc();
-    opcode_cycle++;
-  } else switch(opcode_number) {
+//    opcode_cycle++;
+
+  switch(opcode_number) {
     #include "core/opcycle_misc.cpp"
     #include "core/opcycle_mov.cpp"
     #include "core/opcycle_pc.cpp"

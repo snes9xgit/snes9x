@@ -1,20 +1,17 @@
 case 0x00: {
   op_io();
-  opcode_cycle = 0;
   break;
 }
 
 case 0xef: {
   op_io(2);
   regs.pc--;
-  opcode_cycle = 0;
   break;
 }
 
 case 0xff: {
   op_io(2);
   regs.pc--;
-  opcode_cycle = 0;
   break;
 }
 
@@ -23,7 +20,6 @@ case 0x9f: {
   regs.a = (regs.a >> 4) | (regs.a << 4);
   regs.p.n = !!(regs.a & 0x80);
   regs.p.z = (regs.a == 0);
-  opcode_cycle = 0;
   break;
 }
 
@@ -38,7 +34,6 @@ case 0xdf: {
   }
   regs.p.n = !!(regs.a & 0x80);
   regs.p.z = (regs.a == 0);
-  opcode_cycle = 0;
   break;
 }
 
@@ -53,35 +48,30 @@ case 0xbe: {
   }
   regs.p.n = !!(regs.a & 0x80);
   regs.p.z = (regs.a == 0);
-  opcode_cycle = 0;
   break;
 }
 
 case 0x60: {
   op_io();
   regs.p.c = 0;
-  opcode_cycle = 0;
   break;
 }
 
 case 0x20: {
   op_io();
   regs.p.p = 0;
-  opcode_cycle = 0;
   break;
 }
 
 case 0x80: {
   op_io();
   regs.p.c = 1;
-  opcode_cycle = 0;
   break;
 }
 
 case 0x40: {
   op_io();
   regs.p.p = 1;
-  opcode_cycle = 0;
   break;
 }
 
@@ -89,28 +79,24 @@ case 0xe0: {
   op_io();
   regs.p.v = 0;
   regs.p.h = 0;
-  opcode_cycle = 0;
   break;
 }
 
 case 0xed: {
   op_io(2);
   regs.p.c = !regs.p.c;
-  opcode_cycle = 0;
   break;
 }
 
 case 0xa0: {
   op_io(2);
   regs.p.i = 1;
-  opcode_cycle = 0;
   break;
 }
 
 case 0xc0: {
   op_io(2);
   regs.p.i = 0;
-  opcode_cycle = 0;
   break;
 }
 
@@ -119,7 +105,6 @@ case 0x02: {
   rd = op_readdp(dp);
   rd |=  0x01;
   op_writedp(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -128,7 +113,6 @@ case 0x12: {
   rd = op_readdp(dp);
   rd &= ~0x01;
   op_writedp(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -137,7 +121,6 @@ case 0x22: {
   rd = op_readdp(dp);
   rd |=  0x02;
   op_writedp(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -146,7 +129,6 @@ case 0x32: {
   rd = op_readdp(dp);
   rd &= ~0x02;
   op_writedp(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -155,7 +137,6 @@ case 0x42: {
   rd = op_readdp(dp);
   rd |=  0x04;
   op_writedp(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -164,7 +145,6 @@ case 0x52: {
   rd = op_readdp(dp);
   rd &= ~0x04;
   op_writedp(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -173,7 +153,6 @@ case 0x62: {
   rd = op_readdp(dp);
   rd |=  0x08;
   op_writedp(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -182,7 +161,6 @@ case 0x72: {
   rd = op_readdp(dp);
   rd &= ~0x08;
   op_writedp(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -191,7 +169,6 @@ case 0x82: {
   rd = op_readdp(dp);
   rd |=  0x10;
   op_writedp(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -200,7 +177,6 @@ case 0x92: {
   rd = op_readdp(dp);
   rd &= ~0x10;
   op_writedp(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -209,7 +185,6 @@ case 0xa2: {
   rd = op_readdp(dp);
   rd |=  0x20;
   op_writedp(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -218,7 +193,6 @@ case 0xb2: {
   rd = op_readdp(dp);
   rd &= ~0x20;
   op_writedp(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -227,7 +201,6 @@ case 0xc2: {
   rd = op_readdp(dp);
   rd |=  0x40;
   op_writedp(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -236,7 +209,6 @@ case 0xd2: {
   rd = op_readdp(dp);
   rd &= ~0x40;
   op_writedp(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -245,7 +217,6 @@ case 0xe2: {
   rd = op_readdp(dp);
   rd |=  0x80;
   op_writedp(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -254,63 +225,54 @@ case 0xf2: {
   rd = op_readdp(dp);
   rd &= ~0x80;
   op_writedp(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
 case 0x2d: {
   op_io(2);
   op_writestack(regs.a);
-  opcode_cycle = 0;
   break;
 }
 
 case 0x4d: {
   op_io(2);
   op_writestack(regs.x);
-  opcode_cycle = 0;
   break;
 }
 
 case 0x6d: {
   op_io(2);
   op_writestack(regs.y);
-  opcode_cycle = 0;
   break;
 }
 
 case 0x0d: {
   op_io(2);
   op_writestack(regs.p);
-  opcode_cycle = 0;
   break;
 }
 
 case 0xae: {
   op_io(2);
   regs.a = op_readstack();
-  opcode_cycle = 0;
   break;
 }
 
 case 0xce: {
   op_io(2);
   regs.x = op_readstack();
-  opcode_cycle = 0;
   break;
 }
 
 case 0xee: {
   op_io(2);
   regs.y = op_readstack();
-  opcode_cycle = 0;
   break;
 }
 
 case 0x8e: {
   op_io(2);
   regs.p = op_readstack();
-  opcode_cycle = 0;
   break;
 }
 
@@ -322,7 +284,6 @@ case 0xcf: {
   //result is set based on y (high-byte) only
   regs.p.n = !!(regs.y & 0x80);
   regs.p.z = (regs.y == 0);
-  opcode_cycle = 0;
   break;
 }
 
@@ -345,7 +306,6 @@ case 0x9e: {
   //result is set based on a (quotient) only
   regs.p.n = !!(regs.a & 0x80);
   regs.p.z = (regs.a == 0);
-  opcode_cycle = 0;
   break;
 }
 

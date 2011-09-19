@@ -1,75 +1,61 @@
 case 0xbc: {
   op_io();
   regs.a = op_inc(regs.a);
-  opcode_cycle = 0;
   break;
 }
 
 case 0x3d: {
   op_io();
   regs.x = op_inc(regs.x);
-  opcode_cycle = 0;
   break;
 }
 
 case 0xfc: {
   op_io();
   regs.y = op_inc(regs.y);
-  opcode_cycle = 0;
   break;
 }
 
 case 0x9c: {
   op_io();
   regs.a = op_dec(regs.a);
-  opcode_cycle = 0;
   break;
 }
 
 case 0x1d: {
   op_io();
   regs.x = op_dec(regs.x);
-  opcode_cycle = 0;
   break;
 }
 
 case 0xdc: {
   op_io();
   regs.y = op_dec(regs.y);
-  opcode_cycle = 0;
   break;
 }
 
 case 0x1c: {
   op_io();
   regs.a = op_asl(regs.a);
-  opcode_cycle = 0;
   break;
 }
 
 case 0x5c: {
   op_io();
   regs.a = op_lsr(regs.a);
-  opcode_cycle = 0;
   break;
 }
 
 case 0x3c: {
   op_io();
   regs.a = op_rol(regs.a);
-  opcode_cycle = 0;
   break;
 }
 
 case 0x7c: {
-  switch(opcode_cycle++) {
-  case 1:
-    op_io();
-    regs.a = op_ror(regs.a);
-    opcode_cycle = 0;
+  op_io();
+  regs.a = op_ror(regs.a);
     break;
-  }
-  break;
 }
 
 case 0xab: {
@@ -77,7 +63,6 @@ case 0xab: {
   rd = op_readdp(dp);
   rd = op_inc(rd);
   op_writedp(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -86,7 +71,6 @@ case 0x8b: {
   rd = op_readdp(dp);
   rd = op_dec(rd);
   op_writedp(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -95,7 +79,6 @@ case 0x0b: {
   rd = op_readdp(dp);
   rd = op_asl(rd);
   op_writedp(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -104,7 +87,6 @@ case 0x4b: {
   rd = op_readdp(dp);
   rd = op_lsr(rd);
   op_writedp(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -113,7 +95,6 @@ case 0x2b: {
   rd = op_readdp(dp);
   rd = op_rol(rd);
   op_writedp(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -122,7 +103,6 @@ case 0x6b: {
   rd = op_readdp(dp);
   rd = op_ror(rd);
   op_writedp(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -132,7 +112,6 @@ case 0xbb: {
   rd = op_readdp(dp + regs.x);
   rd = op_inc(rd);
   op_writedp(dp + regs.x, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -142,7 +121,6 @@ case 0x9b: {
   rd = op_readdp(dp + regs.x);
   rd = op_dec(rd);
   op_writedp(dp + regs.x, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -152,7 +130,6 @@ case 0x1b: {
   rd = op_readdp(dp + regs.x);
   rd = op_asl(rd);
   op_writedp(dp + regs.x, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -162,7 +139,6 @@ case 0x5b: {
   rd = op_readdp(dp + regs.x);
   rd = op_lsr(rd);
   op_writedp(dp + regs.x, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -172,7 +148,6 @@ case 0x3b: {
   rd = op_readdp(dp + regs.x);
   rd = op_rol(rd);
   op_writedp(dp + regs.x, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -182,7 +157,6 @@ case 0x7b: {
   rd = op_readdp(dp + regs.x);
   rd = op_ror(rd);
   op_writedp(dp + regs.x, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -192,7 +166,6 @@ case 0xac: {
   rd = op_readaddr(dp);
   rd = op_inc(rd);
   op_writeaddr(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -202,7 +175,6 @@ case 0x8c: {
   rd = op_readaddr(dp);
   rd = op_dec(rd);
   op_writeaddr(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -212,7 +184,6 @@ case 0x0c: {
   rd = op_readaddr(dp);
   rd = op_asl(rd);
   op_writeaddr(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -222,7 +193,6 @@ case 0x4c: {
   rd = op_readaddr(dp);
   rd = op_lsr(rd);
   op_writeaddr(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -232,7 +202,6 @@ case 0x2c: {
   rd = op_readaddr(dp);
   rd = op_rol(rd);
   op_writeaddr(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -242,7 +211,6 @@ case 0x6c: {
   rd = op_readaddr(dp);
   rd = op_ror(rd);
   op_writeaddr(dp, rd);
-  opcode_cycle = 0;
   break;
 }
 
@@ -254,7 +222,6 @@ case 0x0e: {
   regs.p.z = ((regs.a - rd) == 0);
   op_readaddr(dp);
   op_writeaddr(dp, rd | regs.a);
-  opcode_cycle = 0;
   break;
 }
 
@@ -266,7 +233,6 @@ case 0x4e: {
   regs.p.z = ((regs.a - rd) == 0);
   op_readaddr(dp);
   op_writeaddr(dp, rd &~ regs.a);
-  opcode_cycle = 0;
   break;
 }
 
@@ -279,7 +245,6 @@ case 0x3a: {
   op_writedp(dp, rd >> 8);
   regs.p.n = !!(rd & 0x8000);
   regs.p.z = (rd == 0);
-  opcode_cycle = 0;
   break;
 }
 
@@ -292,7 +257,6 @@ case 0x1a: {
   op_writedp(dp, rd >> 8);
   regs.p.n = !!(rd & 0x8000);
   regs.p.z = (rd == 0);
-  opcode_cycle = 0;
   break;
 }
 

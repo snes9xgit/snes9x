@@ -1,81 +1,72 @@
 case 0x2f: {
   rd = op_readpc();
-  if(0){ opcode_cycle = 0; break; }
+  if(0){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
 case 0xf0: {
   rd = op_readpc();
-  if(!regs.p.z){ opcode_cycle = 0; break; }
+  if(!regs.p.z){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
 case 0xd0: {
   rd = op_readpc();
-  if(regs.p.z){ opcode_cycle = 0; break; }
+  if(regs.p.z){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
 case 0xb0: {
   rd = op_readpc();
-  if(!regs.p.c){ opcode_cycle = 0; break; }
+  if(!regs.p.c){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
 case 0x90: {
   rd = op_readpc();
-  if(regs.p.c){ opcode_cycle = 0; break; }
+  if(regs.p.c){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
 case 0x70: {
   rd = op_readpc();
-  if(!regs.p.v){ opcode_cycle = 0; break; }
+  if(!regs.p.v){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
 case 0x50: {
   rd = op_readpc();
-  if(regs.p.v){ opcode_cycle = 0; break; }
+  if(regs.p.v){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
 case 0x30: {
   rd = op_readpc();
-  if(!regs.p.n){ opcode_cycle = 0; break; }
+  if(!regs.p.n){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
 case 0x10: {
   rd = op_readpc();
-  if(regs.p.n){ opcode_cycle = 0; break; }
+  if(regs.p.n){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -84,10 +75,9 @@ case 0x03: {
   sp = op_readdp(dp);
   rd = op_readpc();
   op_io();
-  if((sp & 0x01) != 0x01){ opcode_cycle = 0; break; }
+  if((sp & 0x01) != 0x01){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -96,10 +86,9 @@ case 0x13: {
   sp = op_readdp(dp);
   rd = op_readpc();
   op_io();
-  if((sp & 0x01) == 0x01){ opcode_cycle = 0; break; }
+  if((sp & 0x01) == 0x01){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -108,10 +97,9 @@ case 0x23: {
   sp = op_readdp(dp);
   rd = op_readpc();
   op_io();
-  if((sp & 0x02) != 0x02){ opcode_cycle = 0; break; }
+  if((sp & 0x02) != 0x02){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -120,10 +108,9 @@ case 0x33: {
   sp = op_readdp(dp);
   rd = op_readpc();
   op_io();
-  if((sp & 0x02) == 0x02){ opcode_cycle = 0; break; }
+  if((sp & 0x02) == 0x02){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -132,10 +119,9 @@ case 0x43: {
   sp = op_readdp(dp);
   rd = op_readpc();
   op_io();
-  if((sp & 0x04) != 0x04){ opcode_cycle = 0; break; }
+  if((sp & 0x04) != 0x04){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -144,10 +130,9 @@ case 0x53: {
   sp = op_readdp(dp);
   rd = op_readpc();
   op_io();
-  if((sp & 0x04) == 0x04){ opcode_cycle = 0; break; }
+  if((sp & 0x04) == 0x04){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -156,10 +141,9 @@ case 0x63: {
   sp = op_readdp(dp);
   rd = op_readpc();
   op_io();
-  if((sp & 0x08) != 0x08){ opcode_cycle = 0; break; }
+  if((sp & 0x08) != 0x08){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -168,10 +152,9 @@ case 0x73: {
   sp = op_readdp(dp);
   rd = op_readpc();
   op_io();
-  if((sp & 0x08) == 0x08){ opcode_cycle = 0; break; }
+  if((sp & 0x08) == 0x08){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -180,10 +163,9 @@ case 0x83: {
   sp = op_readdp(dp);
   rd = op_readpc();
   op_io();
-  if((sp & 0x10) != 0x10){ opcode_cycle = 0; break; }
+  if((sp & 0x10) != 0x10){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -192,10 +174,9 @@ case 0x93: {
   sp = op_readdp(dp);
   rd = op_readpc();
   op_io();
-  if((sp & 0x10) == 0x10){ opcode_cycle = 0; break; }
+  if((sp & 0x10) == 0x10){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -204,10 +185,9 @@ case 0xa3: {
   sp = op_readdp(dp);
   rd = op_readpc();
   op_io();
-  if((sp & 0x20) != 0x20){ opcode_cycle = 0; break; }
+  if((sp & 0x20) != 0x20){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -216,10 +196,9 @@ case 0xb3: {
   sp = op_readdp(dp);
   rd = op_readpc();
   op_io();
-  if((sp & 0x20) == 0x20){ opcode_cycle = 0; break; }
+  if((sp & 0x20) == 0x20){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -228,10 +207,9 @@ case 0xc3: {
   sp = op_readdp(dp);
   rd = op_readpc();
   op_io();
-  if((sp & 0x40) != 0x40){ opcode_cycle = 0; break; }
+  if((sp & 0x40) != 0x40){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -240,10 +218,9 @@ case 0xd3: {
   sp = op_readdp(dp);
   rd = op_readpc();
   op_io();
-  if((sp & 0x40) == 0x40){ opcode_cycle = 0; break; }
+  if((sp & 0x40) == 0x40){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -252,10 +229,9 @@ case 0xe3: {
   sp = op_readdp(dp);
   rd = op_readpc();
   op_io();
-  if((sp & 0x80) != 0x80){ opcode_cycle = 0; break; }
+  if((sp & 0x80) != 0x80){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -264,10 +240,9 @@ case 0xf3: {
   sp = op_readdp(dp);
   rd = op_readpc();
   op_io();
-  if((sp & 0x80) == 0x80){ opcode_cycle = 0; break; }
+  if((sp & 0x80) == 0x80){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -276,10 +251,9 @@ case 0x2e: {
   sp = op_readdp(dp);
   rd = op_readpc();
   op_io();
-  if(regs.a == sp){ opcode_cycle = 0; break; }
+  if(regs.a == sp){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -289,10 +263,9 @@ case 0xde: {
   sp = op_readdp(dp + regs.x);
   rd = op_readpc();
   op_io();
-  if(regs.a == sp){ opcode_cycle = 0; break; }
+  if(regs.a == sp){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -301,10 +274,9 @@ case 0x6e: {
   wr = op_readdp(dp);
   op_writedp(dp, --wr);
   rd = op_readpc();
-  if(wr == 0x00){ opcode_cycle = 0; break; }
+  if(wr == 0x00){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -313,10 +285,9 @@ case 0xfe: {
   op_io();
   regs.y--;
   op_io();
-  if(regs.y == 0x00){ opcode_cycle = 0; break; }
+  if(regs.y == 0x00){ break; }
   op_io(2);
   regs.pc += (int8)rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -324,7 +295,6 @@ case 0x5f: {
   rd  = op_readpc();
   rd |= op_readpc() << 8;
   regs.pc = rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -336,7 +306,6 @@ case 0x1f: {
   rd  = op_readaddr(dp);
   rd |= op_readaddr(dp + 1) << 8;
   regs.pc = rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -347,7 +316,6 @@ case 0x3f: {
   op_writestack(regs.pc >> 8);
   op_writestack(regs.pc);
   regs.pc = rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -357,7 +325,6 @@ case 0x4f: {
   op_writestack(regs.pc >> 8);
   op_writestack(regs.pc);
   regs.pc = 0xff00 | rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -369,7 +336,6 @@ case 0x01: {
   op_writestack(regs.pc >> 8);
   op_writestack(regs.pc);
   regs.pc = rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -381,7 +347,6 @@ case 0x11: {
   op_writestack(regs.pc >> 8);
   op_writestack(regs.pc);
   regs.pc = rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -393,7 +358,6 @@ case 0x21: {
   op_writestack(regs.pc >> 8);
   op_writestack(regs.pc);
   regs.pc = rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -405,7 +369,6 @@ case 0x31: {
   op_writestack(regs.pc >> 8);
   op_writestack(regs.pc);
   regs.pc = rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -417,7 +380,6 @@ case 0x41: {
   op_writestack(regs.pc >> 8);
   op_writestack(regs.pc);
   regs.pc = rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -429,7 +391,6 @@ case 0x51: {
   op_writestack(regs.pc >> 8);
   op_writestack(regs.pc);
   regs.pc = rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -441,7 +402,6 @@ case 0x61: {
   op_writestack(regs.pc >> 8);
   op_writestack(regs.pc);
   regs.pc = rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -453,7 +413,6 @@ case 0x71: {
   op_writestack(regs.pc >> 8);
   op_writestack(regs.pc);
   regs.pc = rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -465,7 +424,6 @@ case 0x81: {
   op_writestack(regs.pc >> 8);
   op_writestack(regs.pc);
   regs.pc = rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -477,7 +435,6 @@ case 0x91: {
   op_writestack(regs.pc >> 8);
   op_writestack(regs.pc);
   regs.pc = rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -489,7 +446,6 @@ case 0xa1: {
   op_writestack(regs.pc >> 8);
   op_writestack(regs.pc);
   regs.pc = rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -501,7 +457,6 @@ case 0xb1: {
   op_writestack(regs.pc >> 8);
   op_writestack(regs.pc);
   regs.pc = rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -513,7 +468,6 @@ case 0xc1: {
   op_writestack(regs.pc >> 8);
   op_writestack(regs.pc);
   regs.pc = rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -525,7 +479,6 @@ case 0xd1: {
   op_writestack(regs.pc >> 8);
   op_writestack(regs.pc);
   regs.pc = rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -537,7 +490,6 @@ case 0xe1: {
   op_writestack(regs.pc >> 8);
   op_writestack(regs.pc);
   regs.pc = rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -549,7 +501,6 @@ case 0xf1: {
   op_writestack(regs.pc >> 8);
   op_writestack(regs.pc);
   regs.pc = rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -563,7 +514,6 @@ case 0x0f: {
   regs.pc = rd;
   regs.p.b = 1;
   regs.p.i = 0;
-  opcode_cycle = 0;
   break;
 }
 
@@ -572,7 +522,6 @@ case 0x6f: {
   rd |= op_readstack() << 8;
   op_io(2);
   regs.pc = rd;
-  opcode_cycle = 0;
   break;
 }
 
@@ -582,7 +531,6 @@ case 0x7f: {
   rd |= op_readstack() << 8;
   op_io(2);
   regs.pc = rd;
-  opcode_cycle = 0;
   break;
 }
 
