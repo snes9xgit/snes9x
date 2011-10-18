@@ -1,4 +1,5 @@
 #define CYCLE_ACCURATE
+#define PSEUDO_CYCLE
 
 #include <snes/snes.hpp>
 

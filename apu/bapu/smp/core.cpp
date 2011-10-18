@@ -59,12 +59,25 @@ void SMP::op_step() {
   #define op_writestack(data) op_write(0x0100 | regs.sp--, data)
 
   #if defined(CYCLE_ACCURATE)
+  #if defined(PSEUDO_CYCLE)
 
   if(opcode_cycle == 0)
     opcode_number = op_readpc();
-//    opcode_cycle++;
 
   switch(opcode_number) {
+    #include "core/oppseudo_misc.cpp"
+    #include "core/oppseudo_mov.cpp"
+    #include "core/oppseudo_pc.cpp"
+    #include "core/oppseudo_read.cpp"
+    #include "core/oppseudo_rmw.cpp"
+  }
+
+  #else
+
+  if(opcode_cycle == 0) {
+    opcode_number = op_readpc();
+    opcode_cycle++;
+  } else switch(opcode_number) {
     #include "core/opcycle_misc.cpp"
     #include "core/opcycle_mov.cpp"
     #include "core/opcycle_pc.cpp"
@@ -72,6 +85,7 @@ void SMP::op_step() {
     #include "core/opcycle_rmw.cpp"
   }
 
+  #endif // defined(PSEUDO_CYCLE)
   #else
 
   unsigned opcode = op_readpc();
@@ -98,8 +112,7 @@ void SMP::op_step() {
   dsp.clock += cycle_count_table[opcode];
 #endif
 
-
-  #endif
+  #endif // defined(CYCLE_ACCURATE)
 }
 
 const unsigned SMP::cycle_count_table[256] = {
