@@ -2242,43 +2242,37 @@ void S9xDrawCrosshair (const char *crosshair, uint8 fgcolor, uint8 bgcolor, int1
 	fg = get_crosshair_color(fgcolor);
 	bg = get_crosshair_color(bgcolor);
 
-	// XXX: FIXME: why does it crash without this on Linux port? There are no out-of-bound writes without it...
-#if (defined(__unix) || defined(__linux) || defined(__sun) || defined(__DJGPP))
-	if (x >= 0 && y >= 0)
-#endif
+	uint16	*s = GFX.Screen + y * (int32)GFX.RealPPL + x;
+
+	for (r = 0; r < 15 * rx; r++, s += GFX.RealPPL - 15 * cx)
 	{
-		uint16	*s = GFX.Screen + y * GFX.RealPPL + x;
-
-		for (r = 0; r < 15 * rx; r++, s += GFX.RealPPL - 15 * cx)
+		if (y + r < 0)
 		{
-			if (y + r < 0)
-			{
-				s += 15 * cx;
+			s += 15 * cx;
+			continue;
+		}
+
+		if (y + r >= H)
+			break;
+
+		for (c = 0; c < 15 * cx; c++, s++)
+		{
+			if (x + c < 0 || s < GFX.Screen)
 				continue;
-			}
 
-			if (y + r >= H)
-				break;
-
-			for (c = 0; c < 15 * cx; c++, s++)
+			if (x + c >= W)
 			{
-				if (x + c < 0 || s < GFX.Screen)
-					continue;
-
-				if (x + c >= W)
-				{
-					s += 15 * cx - c;
-					break;
-				}
-
-				uint8	p = crosshair[(r / rx) * 15 + (c / cx)];
-
-				if (p == '#' && fgcolor)
-					*s = (fgcolor & 0x10) ? COLOR_ADD1_2(fg, *s) : fg;
-				else
-				if (p == '.' && bgcolor)
-					*s = (bgcolor & 0x10) ? COLOR_ADD1_2(*s, bg) : bg;
+				s += 15 * cx - c;
+				break;
 			}
+
+			uint8	p = crosshair[(r / rx) * 15 + (c / cx)];
+
+			if (p == '#' && fgcolor)
+				*s = (fgcolor & 0x10) ? COLOR_ADD1_2(fg, *s) : fg;
+			else
+			if (p == '.' && bgcolor)
+				*s = (bgcolor & 0x10) ? COLOR_ADD1_2(*s, bg) : bg;
 		}
 	}
 }
