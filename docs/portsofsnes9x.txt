@@ -76,7 +76,7 @@ Gamecube: You might need a modchip.
 
 *Android and iOS (Apple iPhone/iPod Touch) version of Snes9X*
 Name: Snes9X EX
-Latest Version: 1.4.2
+Latest Version: 1.4.2 (iOS); 1.4.7.1 (Android)
 Homepage/forum: http://www.explusalpha.com/home/snes9x-ex
 Maintainer: Rakashazi
 
@@ -87,8 +87,8 @@ HOW TO GET IT RUNNING:
 Android: Due to the Android Marketplace unfairly taking down Snes9X EX, you
 will have to visit Rakashazi's website and download the apk either using your
 PC (you'll have to connect the Android to your computer, mount the SD card,
-then copy the apk to it) or using your Android, then run package installer
-(or easy installer is fine too) to install the app.
+then copy the apk to it) or your Android, then run package installer
+(or easy installer is fine too) on your Android to install the app.
 
 iOS: You’ll have to jailbreak your firmware and install the Cydia app
 installer. Then you’ll have to install the BigBoss repository within Cydia and
@@ -132,4 +132,4 @@ Really, it's not hard. Read the readme, and use a softmod or modchip and a
 replacement dashboard. After that's installed, it should be as simple as
 copying over the emulator, ROMs, saves, etc to the X-Box and it should work.
 
-Updated most recently by: 2011/8/28 adventure_of_link
+Updated most recently by: 2011/11/2 adventure_of_link
