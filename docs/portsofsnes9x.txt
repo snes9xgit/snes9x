@@ -78,19 +78,17 @@ Gamecube: You might need a modchip.
 Name: Snes9X EX
 Latest Version: 1.4.2
 Homepage/forum: http://www.explusalpha.com/home/snes9x-ex
-Maintainer: Rakashazi (on the Snes9X forums)
+Maintainer: Rakashazi
 
 HOW TO GET IT RUNNING:
 *DISCLAIMER* You will have to do some Googling, including but not limited to:
 * iOS (iPhone/iPod Touch) ONLY!!!: Jailbreaking your firmware
 
-Android: It appears you can just download from the Android Marketplace and run
-it from there :) Be sure to copy over your ROMs, saves, etc though.
-
-UPDATE from SparroHawc: Yup, the app store download works great - no need to root
-the phone, and you can browse the contents of the phone's filesystem to find the 
-ROMs anywhere. The saves, I believe, will be put in the same directory as the
-loaded ROM.
+Android: Due to the Android Marketplace unfairly taking down Snes9X EX, you
+will have to visit Rakashazi's website and download the apk either using your
+PC (you'll have to connect the Android to your computer, mount the SD card,
+then copy the apk to it) or using your Android, then run package installer
+(or easy installer is fine too) to install the app.
 
 iOS: You’ll have to jailbreak your firmware and install the Cydia app
 installer. Then you’ll have to install the BigBoss repository within Cydia and
@@ -98,6 +96,10 @@ search for Snes9X EX; you may also want to search for the sshd and all needed
 stuff for that, as it’s the only way you can put the ROMs, saves, etc onto your
 iPhone/iPod Touch. After that you should be able to download and run from there
 :)
+
+Hint: a more detailed description of copying your ROMs/saves/etc over to the
+iOS device can be found here:
+http://snes9x.com/phpbb2/viewtopic.php?t=5107
 
 *PS3 version of Snes9X*
 Name: Snes9X PS3
