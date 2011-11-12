@@ -289,7 +289,7 @@ Nintendo is a trade mark.")
 #define HOTKEYS_LABEL_3_11 TEXT("Turbo Right mode")
 #define HOTKEYS_LABEL_3_12 TEXT("Turbo Down mode")
 //#define HOTKEYS_LABEL_4_12 "Interpolate Mode 7"
-//#define HOTKEYS_LABEL_4_13 "BG Layering hack"
+#define HOTKEYS_LABEL_4_13 TEXT("Quit Snes9x")
 
 // gaming buttons and axes
 #define GAMEDEVICE_JOYNUMPREFIX "(J%x)" // don't change this

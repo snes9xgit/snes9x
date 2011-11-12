@@ -562,6 +562,7 @@ struct SCustomKeys CustomKeys = {
 	 {0,0}}, // Select save slot 9
 	{'R',CUSTKEY_CTRL_MASK|CUSTKEY_SHIFT_MASK}, // Reset Game
 	{0,0}, // Toggle Cheats
+	{0,0},
 };
 
 
@@ -1224,6 +1225,11 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 
 				S9xReportControllers();
 			}
+		}
+		if(wParam == CustomKeys.QuitS9X.key
+		&& modifiers == CustomKeys.QuitS9X.modifiers)
+		{
+			PostMessage(GUI.hWnd,WM_CLOSE,(WPARAM)NULL,(LPARAM)(NULL));
 		}
 		//if(wParam == CustomKeys.BGLHack.key
 		//&& modifiers == CustomKeys.BGLHack.modifiers)
@@ -7775,7 +7781,7 @@ static void set_hotkeyinfo(HWND hDlg)
 			SendDlgItemMessage(hDlg,IDC_HOTKEY1+i,WM_USER+44,CustomKeys.SelectSave[i].key,CustomKeys.SelectSave[i].modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY11,WM_USER+44,0,0);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY12,WM_USER+44,0,0);
-		SendDlgItemMessage(hDlg,IDC_HOTKEY13,WM_USER+44,0,0);
+		SendDlgItemMessage(hDlg,IDC_HOTKEY13,WM_USER+44,CustomKeys.QuitS9X.key,CustomKeys.QuitS9X.modifiers);
 		break;
 	}
 
@@ -7843,8 +7849,9 @@ static void set_hotkeyinfo(HWND hDlg)
 			_stprintf(temp, TEXT("Select Slot %d"), i);
 			SetDlgItemText(hDlg,IDC_LABEL_HK1+i,temp);
 		}
-		for(int i = 10 ; i < 13 ; i++)
+		for(int i = 10 ; i < 12 ; i++)
 			SetDlgItemText(hDlg,IDC_LABEL_HK1+i,INPUTCONFIG_LABEL_UNUSED);
+		SetDlgItemText(hDlg,IDC_LABEL_HK13,HOTKEYS_LABEL_4_13);
 
 		break;
 	}
@@ -8003,6 +8010,7 @@ switch(msg)
 			if(index == 0) CustomKeys.SaveScreenShot.key = wParam,    CustomKeys.SaveScreenShot.modifiers = modifiers;
 			if(index == 1) CustomKeys.ToggleCheats.key = wParam,    CustomKeys.ToggleCheats.modifiers = modifiers;
 //			if(index == 3) CustomKeys.BGLHack.key = wParam,  CustomKeys.BGLHack.modifiers = modifiers;
+			if(index == 3) CustomKeys.QuitS9X.key = wParam,  CustomKeys.QuitS9X.modifiers = modifiers;
 			break;
 
 		case IDC_SLOTPLUS:

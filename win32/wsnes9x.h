@@ -465,6 +465,7 @@ struct SCustomKeys {
 	SCustomKey SelectSave [10];
 	SCustomKey ResetGame;
 	SCustomKey ToggleCheats;
+	SCustomKey QuitS9X;
 };
 
 struct SJoypad {
