@@ -182,6 +182,7 @@
 #include <string>
 #include <algorithm>
 #include <assert.h>
+#include <ctype.h>
 
 #include "snes9x.h"
 #include "memmap.h"
