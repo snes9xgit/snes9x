@@ -3897,7 +3897,7 @@ static bool8 ReadBPSPatch (Reader *r, long, int32 &rom_size)
 
 	if(target_size > CMemory::MAX_ROM_SIZE) { delete[] data; return false; }  //applying this patch will overflow Memory.ROM buffer
 
-	enum : uint32 { SourceRead, TargetRead, SourceCopy, TargetCopy };
+	enum { SourceRead, TargetRead, SourceCopy, TargetCopy };
 	uint32 outputOffset = 0, sourceRelativeOffset = 0, targetRelativeOffset = 0;
 
 	uint8 *patched_rom = new uint8[target_size];
@@ -3908,7 +3908,7 @@ static bool8 ReadBPSPatch (Reader *r, long, int32 &rom_size)
 		uint32 mode = length & 3;
 		length = (length >> 2) + 1;
 
-		switch(mode) {
+		switch((int)mode) {
 			case SourceRead:
 				while(length--) patched_rom[outputOffset++] = Memory.ROM[outputOffset];
 				break;
