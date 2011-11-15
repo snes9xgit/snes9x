@@ -187,21 +187,21 @@
 //#define REG_KEY_VER  "1.31"
 
 #define DISCLAIMER_TEXT        TEXT("Snes9X v%s for Windows.\r\n\
-        (c) Copyright 1996 - 2002  Gary Henderson and Jerremy Koot (jkoot@snes9x.com)\r\n\
-        (c) Copyright 2002 - 2004  Matthew Kendora\r\n\
-        (c) Copyright 2002 - 2005  Peter Bortas\r\n\
-        (c) Copyright 2004 - 2005  Joel Yliluoma\r\n\
-        (c) Copyright 2001 - 2006  John Weidman\r\n\
-        (c) Copyright 2002 - 2010  Brad Jorsch, funkyass, Kris Bleakley, Nach, zones\r\n\
-		(c) Copyright 2006 - 2007  nitsuja\r\n\
-        (c) Copyright 2009 - 2011  BearOso, OV2\r\n\r\n\
-        Windows Port Authors: Matthew Kendora, funkyass, nitsuja, Nach, blip, OV2.\r\n\r\n\
-		Snes9X is a Super Nintendo Entertainment System\r\n\
-		emulator that allows you to play most games designed\r\n\
-		for the SNES on your PC.\r\n\r\n\
-		Please visit http://www.snes9x.com for\r\n\
-		up-to-the-minute information and help on Snes9X.\r\n\r\n\
-		Nintendo is a trade mark.")
+(c) Copyright 1996 - 2002  Gary Henderson and Jerremy Koot (jkoot@snes9x.com)\r\n\
+(c) Copyright 2002 - 2004  Matthew Kendora\r\n\
+(c) Copyright 2002 - 2005  Peter Bortas\r\n\
+(c) Copyright 2004 - 2005  Joel Yliluoma\r\n\
+(c) Copyright 2001 - 2006  John Weidman\r\n\
+(c) Copyright 2002 - 2010  Brad Jorsch, funkyass, Kris Bleakley, Nach, zones\r\n\
+(c) Copyright 2006 - 2007  nitsuja\r\n\
+(c) Copyright 2009 - 2011  BearOso, OV2\r\n\r\n\
+Windows Port Authors: Matthew Kendora, funkyass, nitsuja, Nach, blip, OV2.\r\n\r\n\
+Snes9X is a Super Nintendo Entertainment System\r\n\
+emulator that allows you to play most games designed\r\n\
+for the SNES on your PC.\r\n\r\n\
+Please visit http://www.snes9x.com for\r\n\
+up-to-the-minute information and help on Snes9X.\r\n\r\n\
+Nintendo is a trade mark.")
 
 
 #define APP_NAME TEXT("Snes9x")
