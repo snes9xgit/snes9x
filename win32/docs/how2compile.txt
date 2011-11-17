@@ -8,6 +8,8 @@ NOTE: Unicode support requires a special zlib build - see the end of the zlib en
   your own project file for earlier MSVC versions
 
 - A recent DirectX SDK. The official binary is compiled against the June 2008 SDK.
+  Note that as of the June 2010 release of the DirectX SDK, DirectDraw (which is 
+  necessary to compile) has been removed.
 
 - zlib(optional) - The release binaries are built against a static zlib compiled
   against VC's multi-threaded C runtime and renamed to zlibmt.lib, to avoid linker conflicts.
