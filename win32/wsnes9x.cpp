@@ -5104,6 +5104,7 @@ void rominfo(const TCHAR *filename, TCHAR *namebuffer, TCHAR *sizebuffer)
 	lstrcpy(namebuffer, ROM_ITEM_DESCNOTAVAILABLE);
 	lstrcpy(sizebuffer, TEXT("? Mbits"));
 
+#ifdef ZLIB
 	if(IsCompressed(filename))
 	{
 		unzFile uf = unzOpen(_tToChar(filename));
@@ -5143,6 +5144,7 @@ void rominfo(const TCHAR *filename, TCHAR *namebuffer, TCHAR *sizebuffer)
 		}
 		return;
 	}
+#endif
 
 	struct _stat filestats;
 	_tstat(filename, &filestats);
