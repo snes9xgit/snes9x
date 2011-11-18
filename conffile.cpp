@@ -280,7 +280,7 @@ void ConfigFile::LoadFile(Reader *r, const char *name){
         }
         key=l.substr(0,i); ConfigEntry::trim(key);
 		val=l.substr(i+1); comment = ConfigEntry::trimCommented(val);
-        if(val[0]=='"' && *val.rbegin()=='"') val=val.substr(1, val.size()-2);
+		if(val.size() > 0 && val[0]=='"' && *val.rbegin()=='"') val=val.substr(1, val.size()-2);
 
         ConfigEntry e(line, section, key, val);
 		e.comment = comment;
