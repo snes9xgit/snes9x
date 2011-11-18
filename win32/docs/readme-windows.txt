@@ -46,13 +46,13 @@ The original Snes9x project was founded by Gary Henderson and Jerremy Koot as a
 collaboration of their earlier attempts at SNES emulation (Snes96 and Snes97.)
 Over the years the project has grown and has collected some of the greatest
 talent in the emulation community (at least of the SNES variety) some of which
-have been listed in the credits section, others have helped but have been loss
+have been listed in the credits section, others have helped but have been lost
 in the course of time.
 
 Why Emulate the SNES?
 ---------------------
 Well, there are many reasons for this. The main reason is for nostalgic
-purposes. In this day and age, it's hard to find an SNES and many good games.
+purposes. In this day and age, it's hard to find a SNES and many good games.
 Plus, many of us over the course of time have lost our beloved consoles (may
 they R.I.P) but still have our original carts. With no other means to play them,
 we turn to emulators. Besides this there are many conveniences of doing this on
@@ -114,8 +114,8 @@ is displayed. This will help to find out what the problem is.
 
 These colors do NOT signify whether a game will work or not. It is just a means
 for reference so we can understand what may or may not be a problem. Most often
-the problem with games that don't work it's because they are corrupt or are a
-bad dump and should be redumped.
+the problem with games that don't work is that they are corrupt or are a bad dump 
+and should be redumped.
 
 SNES Joypad Emulation
 ---------------------
@@ -148,7 +148,7 @@ DirectX 6.1b or later.
 DirectSound capable sound card.
 
 Certain games use added hardware which will require a faster machine. The specs
-listed above is the minimum to use Snes9x in any playable form. It is
+listed above are the minimum to use Snes9x in any playable form. It is
 recommended that you get a semi-modern machine with a 800MHz CPU if you want
 good results. A 1GHz CPU is recommended for those that want a near perfect
 experience.
@@ -255,7 +255,7 @@ intent - ideal for saving your game just before a tricky bit!
 
 Freeze files and SRAM files are normally written to and read from the folder
 called Saves where your snes9x.exe is located, but sometimes this is not
-desirable or possible, especially if it’s a CD-ROM, which is of course is
+desirable or possible, especially if it's a CD-ROM, which of course is
 usually read-only! You can change the folder where Snes9x saves and loads freeze
 and SRAM files using the Settings Dialog, available from the Options menu.
 
@@ -349,7 +349,7 @@ Snes9x also allows new cheats to be found using the Search for New Cheats
 dialog, again available from the Cheats menu. The easiest way to describe the
 dialog is to walk through an example.
 
-Let’s give ourselves infinite health and lives on Ocean's Addams Family platform
+Let's give ourselves infinite health and lives on Ocean's Addams Family platform
 game:
 
 Load up the game; keep pressing the start button (Return key by default) to skip
@@ -361,8 +361,8 @@ Launch the Cheat Search dialog for the first time; Alt+A is its accelerator.
 Press the Reset button just in case you've used the dialog before, leave the
 Search Type and Data Size radio boxes at their default values and press OK.
 
-Play the game for a while until you loose a life by just keep walking into
-baddies, when the game restarts and the life counter displays 4, launch the
+Play the game for a while until you loose a life by just keeping walking into
+baddies; when the game restarts and the life counter displays 4, launch the
 Cheat Search dialog again but this time press the Search button rather than
 Reset. The number of items in the list will reduce, each line shows a memory
 location, its current value and its previous value; what we're looking for is
@@ -394,7 +394,7 @@ the counter back to the value you chose!
 If the memory location you add a cheat on proves to be wrong, just go to the
 Cheat Code Editor dialog and delete the incorrect entry.
 
-Now let’s try and find the Addams Family health counter. While two hearts are
+Now let's try and find the Addams Family health counter. While two hearts are
 displayed on the screen, visit the Cheat Search dialog and press the Reset
 button followed by OK. Play the game until you loose a heart by touching a
 baddie, then visit the Cheat Search dialog again.
@@ -406,7 +406,7 @@ with.
 
 Look at address line 7E00C3, its current value is 1 and its previous value was
 2. Scrolling through the list doesn't reveal any other likely memory locations,
-so let’s try our luck. Click on the 7E00C3 line, press the Add Cheat button and
+so let's try our luck. Click on the 7E00C3 line, press the Add Cheat button and
 type in a new value of say 4 into the dialog that appears and press OK. Press OK
 on the Search for New Cheats dialog to return to the game.
 
@@ -428,9 +428,9 @@ Movie support allows you to record your actions while playing a game. This can
 be used for your own personal playback or to show other people that you can do
 something without them having to be around when you did it.
 
-Recording the Movie
--------------------
-Simply click File menu and click on Movie. Click the Record button. Here you can
+Recording a Movie
+-----------------
+Simply click the File menu and click on Movie. Click the Record button. Here you can
 decide when to start recording. If you want to record from the very start of a
 game, click on 'Record from reset.' If you want to start recording from where
 you are already in a game, click 'Record from now.' You can also choose which
@@ -438,14 +438,14 @@ controllers to record. If you are playing by yourself leave joypad 1 as the only
 one selected. The more controllers you choose to record the larger the file size
 will be.
 
-Playing Back the Movie
-----------------------
+Playing Back a Movie
+--------------------
 To play back a movie you recorded, click File menu, Movie, Play and select the
 file to play. Make sure the movie was recorded with the same ROM that you have
 loaded.
 
-Re-recording the Movie
-----------------------
+Re-recording a Movie
+--------------------
 If you make a mistake while recording a movie, there is a movie re-record
 function. Simply create a freeze file anytime while recording. If you want to
 re-record, load the freeze file and it will bring up the message 'movie
@@ -625,8 +625,8 @@ Snes9x:
   Hayazashi Nidan Morita Shougi    Seta-11
   Hayazashi Nidan Morita Shougi 2  Seta-18
 
-Problems with Sounds
---------------------
+Problems with Sound
+-------------------
 No sound coming from any SNES game using Snes9x? Could be any or all of these:
 
 - If all sound menu options are grayed out, or an error dialog about Snes9x not
