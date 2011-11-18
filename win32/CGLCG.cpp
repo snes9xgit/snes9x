@@ -525,6 +525,7 @@ void CGLCG::setShaderVars(int pass)
 	}
 }
 
+#ifdef HAVE_LIBPNG
 bool CGLCG::loadPngImage(const TCHAR *name, int &outWidth, int &outHeight, bool &outHasAlpha, GLubyte **outData) {
     png_structp png_ptr;
     png_infop info_ptr;
@@ -644,6 +645,12 @@ bool CGLCG::loadPngImage(const TCHAR *name, int &outWidth, int &outHeight, bool 
     /* That's it */
     return true;
 }
+#else
+bool CGLCG::loadPngImage(const TCHAR *name, int &outWidth, int &outHeight, bool &outHasAlpha, GLubyte **outData) {
+	/* No PNG support */
+	return false;
+}
+#endif
 
 bool CGLCG::loadTGA(const TCHAR *filename, STGA& tgaFile)
 {
