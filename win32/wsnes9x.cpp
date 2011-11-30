@@ -1316,7 +1316,7 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 	switch (wParam)
 	{
 		case VK_ESCAPE:
-			if(GUI.outputMethod==DIRECT3D && GUI.FullScreen && !GUI.EmulateFullscreen)
+			if(GUI.outputMethod!=DIRECTDRAW && GUI.FullScreen && !GUI.EmulateFullscreen)
 				ToggleFullScreen();
 			else
 				if (GetMenu (GUI.hWnd) == NULL)
