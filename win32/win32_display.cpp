@@ -557,7 +557,8 @@ void SaveMainWinPos()
 	wndPlacement.length = sizeof(WINDOWPLACEMENT);
 	GetWindowPlacement(GUI.hWnd,&wndPlacement);
 	GUI.window_maximized = wndPlacement.showCmd == SW_SHOWMAXIMIZED;
-	GUI.window_size = wndPlacement.rcNormalPosition;
+	if(!GUI.FullScreen && !GUI.EmulatedFullscreen)
+		GUI.window_size = wndPlacement.rcNormalPosition;
 }
 
 void RestoreMainWinPos()
