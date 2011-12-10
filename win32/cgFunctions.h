@@ -205,6 +205,26 @@ typedef CG_API CGprogram (CGENTRY *CGCP)(CGcontext context, CGenum program_type,
 extern CGCP cgCreateProgram;
 typedef CG_API void (CGENTRY *CGDP)(CGprogram program);
 extern CGDP cgDestroyProgram;
+typedef CG_API unsigned long (CGENTRY *CGGPRI)(CGparameter param);
+extern CGGPRI cgGetParameterResourceIndex;
+typedef CG_API CGparameter (CGENTRY *CGGFP)(CGprogram program, CGenum name_space);
+extern CGGFP cgGetFirstParameter;
+typedef CG_API CGparameter (CGENTRY *CGGNEP)(CGparameter current);
+extern CGGNEP cgGetNextParameter;
+typedef CG_API CGenum (CGENTRY *CGGPD)(CGparameter param);
+extern CGGPD cgGetParameterDirection;
+typedef CG_API const char * (CGENTRY *CGGPS)(CGparameter param);
+extern CGGPS cgGetParameterSemantic;
+typedef CG_API const char * (CGENTRY *CGGRS)(CGresource resource);
+extern CGGRS cgGetResourceString;
+typedef CG_API CGenum (CGENTRY *CGGPV)(CGparameter param);
+extern CGGPV cgGetParameterVariability;
+typedef CG_API CGtype (CGENTRY *CGGPT)(CGparameter param);
+extern CGGPT cgGetParameterType;
+typedef CG_API CGparameter (CGENTRY *CGGFSP)(CGparameter param);
+extern CGGFSP cgGetFirstStructParameter;
+typedef CG_API const char * (CGENTRY *CGGPN)(CGparameter param);
+extern CGGPN cgGetParameterName;
 
 //cgD3D9.dll
 typedef CGD3D9DLL_API HRESULT (CGD3D9ENTRY *CGD3DSD)(IDirect3DDevice9 *pDevice);
@@ -223,6 +243,12 @@ typedef CGD3D9DLL_API HRESULT (CGD3D9ENTRY *CGD3DSUM)(CGparameter param, const D
 extern CGD3DSUM cgD3D9SetUniformMatrix;
 typedef CGD3D9DLL_API HRESULT (CGD3D9ENTRY *CGD3DSU)(CGparameter param, const void *floats);
 extern CGD3DSU cgD3D9SetUniform;
+typedef CGD3D9DLL_API HRESULT (CGD3D9ENTRY *CGD3DST)(CGparameter param, IDirect3DBaseTexture9 *tex);
+extern CGD3DST cgD3D9SetTexture;
+typedef CGD3D9DLL_API CGbool (CGD3D9ENTRY *CGD3DGVD)(CGprogram prog, D3DVERTEXELEMENT9 decl[MAXD3DDECLLENGTH]);
+extern CGD3DGVD cgD3D9GetVertexDeclaration;
+typedef CGD3D9DLL_API HRESULT (CGD3D9ENTRY *CGD3DSSS)(CGparameter param, D3DSAMPLERSTATETYPE type, DWORD value);
+extern CGD3DSSS cgD3D9SetSamplerState;
 
 //cggl.dll
 typedef CGGL_API void (CGGLENTRY *CGGLSSMP)(CGparameter param, CGGLenum matrix, CGGLenum transform);
@@ -251,7 +277,8 @@ typedef CGGL_API void (CGGLENTRY *CGGLSPP)(CGparameter param, GLint fsize, GLenu
 extern CGGLSPP cgGLSetParameterPointer;
 typedef CGGL_API void (CGGLENTRY *CGGLECS)(CGparameter param);
 extern CGGLECS cgGLEnableClientState;
-
+typedef CGGL_API void (CGGLENTRY *CGGLDCS)(CGparameter param);
+extern CGGLDCS cgGLDisableClientState;
 
 //cgfunctions.cpp
 bool loadCgFunctions();

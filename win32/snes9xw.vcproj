@@ -3138,6 +3138,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\CD3DCG.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CD3DCG.h"
+					>
+				</File>
+				<File
 					RelativePath=".\CDirect3D.cpp"
 					>
 				</File>
