@@ -546,6 +546,8 @@ void CD3DCG::Render(LPDIRECT3DTEXTURE9 &origTex, D3DXVECTOR2 textureSize,
 		pDevice->SetVertexDeclaration(shaderPasses[i].vertexDeclaration);
 		setVertexStream(shaderPasses[i].vertexBuffer,
 			shaderPasses[i-1].outputSize,shaderPasses[i-1].textureSize,shaderPasses[i].outputSize);
+		pDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_BORDER);
+		pDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_BORDER);
 		pDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, shaderPasses[i].linearFilter?D3DTEXF_LINEAR:D3DTEXF_POINT);
 		pDevice->SetSamplerState(0, D3DSAMP_MINFILTER, shaderPasses[i].linearFilter?D3DTEXF_LINEAR:D3DTEXF_POINT);
 
