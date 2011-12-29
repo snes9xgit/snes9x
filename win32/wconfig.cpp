@@ -861,7 +861,7 @@ void WinRegisterConfigItems()
 	AddBoolC("DisplayFrameCount", Settings.DisplayMovieFrame, true, "true to show the frame count when a movie is playing");
 #undef CATEGORY
 #define CATEGORY "Display\\Win"
-	AddUIntC("OutputMethod", GUI.outputMethod, 1, "0=DirectDraw, 1=Direct3D");
+	AddUIntC("OutputMethod", GUI.outputMethod, 1, "0=DirectDraw, 1=Direct3D, 2=OpenGL");
 	AddUIntC("FilterType", GUI.Scale, 0, filterString);
 	AddUIntC("FilterHiRes", GUI.ScaleHiRes, 0, filterString2);
 	AddBoolC("BlendHiRes", GUI.BlendHiRes, true, "true to horizontally blend Hi-Res images (better transparency effect on filters that do not account for this)");
