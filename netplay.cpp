@@ -350,6 +350,7 @@ on the remote machine on this port?");
 		     errno
 #endif
 		     );
+            S9xNPSetError(buf);
             S9xNPDisconnect ();
         }
 	return (FALSE);
