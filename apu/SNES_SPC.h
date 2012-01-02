@@ -120,6 +120,8 @@ public:
 	uint8_t dsp_reg_value( int, int );
 	int     dsp_envx_value( int );
 
+    uint8_t *apuram();
+
 //// Snes9x Debugger
 
 #ifdef DEBUGGER
@@ -312,5 +314,7 @@ inline bool SNES_SPC::check_kon() { return dsp.check_kon(); }
 #endif
 
 inline void SNES_SPC::spc_allow_time_overflow( bool allow ) { allow_time_overflow = allow; }
+
+inline SNES_SPC::uint8_t * SNES_SPC::apuram() { return m.ram.ram; }
 
 #endif

@@ -183,24 +183,24 @@
 #include "unzip.h"
 #endif
 #include "snes9x.h"
-#include "reader.h"
+#include "stream.h"
 
 
 // Generic constructor/destructor
 
-Reader::Reader (void)
+Stream::Stream (void)
 {
 	return;
 }
 
-Reader::~Reader (void)
+Stream::~Stream (void)
 {
 	return;
 }
 
 // Generic getline function, based on gets. Reimlpement if you can do better.
 
-char * Reader::getline (void)
+char * Stream::getline (void)
 {
 	bool		eof;
 	std::string	ret;
@@ -212,7 +212,7 @@ char * Reader::getline (void)
 	return (strdup(ret.c_str()));
 }
 
-std::string Reader::getline (bool &eof)
+std::string Stream::getline (bool &eof)
 {
 	char		buf[1024];
 	std::string	ret;
@@ -235,50 +235,81 @@ std::string Reader::getline (bool &eof)
 	return (ret);
 }
 
-// snes9x.h STREAM reader
+// snes9x.h FSTREAM Stream
 
-fReader::fReader (STREAM f)
+fStream::fStream (FSTREAM f)
 {
 	fp = f;
 }
 
-fReader::~fReader (void)
+fStream::~fStream (void)
 {
+    CLOSE_FSTREAM(fp);
 	return;
 }
 
-int fReader::get_char (void)
+int fStream::get_char (void)
 {
-	return (GETC_STREAM(fp));
+	return (GETC_FSTREAM(fp));
 }
 
-char * fReader::gets (char *buf, size_t len)
+char * fStream::gets (char *buf, size_t len)
 {
-	return (GETS_STREAM(buf, len, fp));
+	return (GETS_FSTREAM(buf, len, fp));
 }
 
-size_t fReader::read (char *buf, size_t len)
+size_t fStream::read (void *buf, size_t len)
 {
-	return (READ_STREAM(buf, len, fp));
+	return (READ_FSTREAM(buf, len, fp));
 }
 
-// unzip reader
+size_t fStream::write (void *buf, size_t len)
+{
+    return (WRITE_FSTREAM(buf, len, fp));
+}
+
+size_t fStream::pos (void)
+{
+    return (FIND_FSTREAM(fp));
+}
+
+size_t fStream::size (void)
+{
+    size_t sz;
+    REVERT_FSTREAM(fp,0L,SEEK_END);
+    sz = FIND_FSTREAM(fp);
+    REVERT_FSTREAM(fp,0L,SEEK_SET);
+    return sz;
+}
+
+int fStream::revert (size_t from, size_t offset)
+{
+    return (REVERT_FSTREAM(fp, from, offset));
+}
+
+void fStream::closeStream()
+{
+    CLOSE_FSTREAM(fp);
+    delete this;
+}
+
+// unzip Stream
 
 #ifdef UNZIP_SUPPORT
 
-unzReader::unzReader (unzFile &v)
+unzStream::unzStream (unzFile &v)
 {
 	file = v;
 	head = NULL;
 	numbytes = 0;
 }
 
-unzReader::~unzReader (void)
+unzStream::~unzStream (void)
 {
 	return;
 }
 
-int unzReader::get_char (void)
+int unzStream::get_char (void)
 {
 	unsigned char	c;
 
@@ -297,7 +328,7 @@ int unzReader::get_char (void)
 	return ((int) c);
 }
 
-char * unzReader::gets (char *buf, size_t len)
+char * unzStream::gets (char *buf, size_t len)
 {
 	size_t	i;
 	int		c;
@@ -322,7 +353,7 @@ char * unzReader::gets (char *buf, size_t len)
 	return (buf);
 }
 
-size_t unzReader::read (char *buf, size_t len)
+size_t unzStream::read (void *buf, size_t len)
 {
 	if (len == 0)
 		return (len);
@@ -344,11 +375,219 @@ size_t unzReader::read (char *buf, size_t len)
 		numbytes = 0;
 	}
 
-	int	l = unzReadCurrentFile(file, buf + numread, len - numread);
+	int	l = unzReadCurrentFile(file, (uint8 *)buf + numread, len - numread);
 	if (l > 0)
 		numread += l;
 
 	return (numread);
 }
 
+// not supported
+size_t unzStream::write (void *buf, size_t len)
+{
+    return (0);
+}
+
+size_t unzStream::pos (void)
+{
+    return (unztell(file));
+}
+
+size_t unzStream::size (void)
+{
+    unz_file_info	info;
+    unzGetCurrentFileInfo(file,&info,NULL,0,NULL,0,NULL,0);
+    return info.uncompressed_size;
+}
+
+// not supported
+int unzStream::revert (size_t from, size_t offset)
+{
+    return -1;
+}
+
+void unzStream::closeStream()
+{
+    unzCloseCurrentFile(file);
+    delete this;
+}
+
 #endif
+
+// memory Stream
+
+memStream::memStream (uint8 *source, size_t sourceSize)
+{
+	mem = head = source;
+    msize = remaining = sourceSize;
+    readonly = false;
+}
+
+memStream::memStream (const uint8 *source, size_t sourceSize)
+{
+	mem = head = const_cast<uint8 *>(source);
+    msize = remaining = sourceSize;
+    readonly = true;
+}
+
+memStream::~memStream (void)
+{
+	return;
+}
+
+int memStream::get_char (void)
+{
+    if(!remaining)
+        return EOF;
+
+    remaining--;
+	return *head++;
+}
+
+char * memStream::gets (char *buf, size_t len)
+{
+    size_t	i;
+	int		c;
+
+	for (i = 0; i < len - 1; i++)
+	{
+		c = get_char();
+		if (c == EOF)
+		{
+			if (i == 0)
+				return (NULL);
+			break;
+		}
+
+		buf[i] = (char) c;
+		if (buf[i] == '\n')
+			break;
+	}
+
+	buf[i] = '\0';
+
+	return (buf);
+}
+
+size_t memStream::read (void *buf, size_t len)
+{
+    size_t bytes = len < remaining ? len : remaining;
+    memcpy(buf,head,bytes);
+    head += bytes;
+    remaining -= bytes;
+
+	return bytes;
+}
+
+size_t memStream::write (void *buf, size_t len)
+{
+    if(readonly)
+        return 0;
+
+    size_t bytes = len < remaining ? len : remaining;
+    memcpy(head,buf,bytes);
+    head += bytes;
+    remaining -= bytes;
+
+	return bytes;
+}
+
+size_t memStream::pos (void)
+{
+    return msize - remaining;
+}
+
+size_t memStream::size (void)
+{
+    return msize;
+}
+
+int memStream::revert (size_t from, size_t offset)
+{
+    size_t pos = from + offset;
+
+    if(pos > msize)
+        return -1;
+
+    head = mem + pos;
+    remaining = msize - pos;
+
+    return 0;
+}
+
+void memStream::closeStream()
+{
+    delete [] mem;
+    delete this;
+}
+
+// dummy Stream
+
+nulStream::nulStream (void)
+{
+	bytes_written = 0;
+}
+
+nulStream::~nulStream (void)
+{
+	return;
+}
+
+int nulStream::get_char (void)
+{
+    return 0;
+}
+
+char * nulStream::gets (char *buf, size_t len)
+{
+	*buf = '\0';
+	return NULL;
+}
+
+size_t nulStream::read (void *buf, size_t len)
+{
+	return 0;
+}
+
+size_t nulStream::write (void *buf, size_t len)
+{
+    bytes_written += len;
+	return len;
+}
+
+size_t nulStream::pos (void)
+{
+    return 0;
+}
+
+size_t nulStream::size (void)
+{
+    return bytes_written;
+}
+
+int nulStream::revert (size_t from, size_t offset)
+{
+    bytes_written = from + offset;
+    return 0;
+}
+
+void nulStream::closeStream()
+{
+    delete this;
+}
+
+Stream *openStreamFromFSTREAM(const char* filename, const char* mode)
+{
+    FSTREAM f = OPEN_FSTREAM(filename,mode);
+    if(!f)
+        return NULL;
+    return new fStream(f);
+}
+
+Stream *reopenStreamFromFd(int fd, const char* mode)
+{
+    FSTREAM f = REOPEN_FSTREAM(fd,mode);
+    if(!f)
+        return NULL;
+    return new fStream(f);
+}

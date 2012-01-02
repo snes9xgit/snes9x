@@ -197,7 +197,6 @@
 #include "controls.h"
 #include "cheats.h"
 #include "movie.h"
-#include "reader.h"
 #include "display.h"
 
 #ifndef SET_UI_COLOR
@@ -945,9 +944,9 @@ static bool8 is_GNEXT_BIOS (uint8 *, uint32);
 static bool8 is_GNEXT_Add_On (uint8 *, uint32);
 static uint32 caCRC32 (uint8 *, uint32, uint32 crc32 = 0xffffffff);
 static uint32 ReadUPSPointer (const uint8 *, unsigned &, unsigned);
-static bool8 ReadUPSPatch (Reader *, long, int32 &);
-static long ReadInt (Reader *, unsigned);
-static bool8 ReadIPSPatch (Reader *, long, int32 &);
+static bool8 ReadUPSPatch (Stream *, long, int32 &);
+static long ReadInt (Stream *, unsigned);
+static bool8 ReadIPSPatch (Stream *, long, int32 &);
 #ifdef UNZIP_SUPPORT
 static int unzFindExtension (unzFile &, const char *, bool restart = TRUE, bool print = TRUE);
 #endif
@@ -1352,7 +1351,7 @@ int CMemory::ScoreLoROM (bool8 skip_header, int32 romoff)
 	return (score);
 }
 
-uint32 CMemory::HeaderRemove (uint32 size, int32 &headerCount, uint8 *buf)
+uint32 CMemory::HeaderRemove (uint32 size, uint8 *buf)
 {
 	uint32	calc_size = (size / 0x2000) * 0x2000;
 
@@ -1373,20 +1372,20 @@ uint32 CMemory::HeaderRemove (uint32 size, int32 &headerCount, uint8 *buf)
 		}
 
 		memmove(buf, buf + 512, calc_size);
-		headerCount++;
+		HeaderCount++;
 		size -= 512;
 	}
 
 	return (size);
 }
 
-uint32 CMemory::FileLoader (uint8 *buffer, const char *filename, int32 maxsize)
+uint32 CMemory::FileLoader (uint8 *buffer, const char *filename, uint32 maxsize)
 {
 	// <- ROM size without header
 	// ** Memory.HeaderCount
 	// ** Memory.ROMFilename
 
-	int32	totalSize = 0;
+	uint32	totalSize = 0;
     char	fname[PATH_MAX + 1];
     char	drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], name[_MAX_FNAME + 1], exts[_MAX_EXT + 1];
 	char	*ext;
@@ -1415,7 +1414,7 @@ uint32 CMemory::FileLoader (uint8 *buffer, const char *filename, int32 maxsize)
 		case FILE_ZIP:
 		{
 		#ifdef UNZIP_SUPPORT
-			if (!LoadZip(fname, &totalSize, &HeaderCount, buffer))
+			if (!LoadZip(fname, &totalSize, buffer))
 			{
 			 	S9xMessage(S9X_ERROR, S9X_ROM_INFO, "Invalid Zip archive.");
 				return (0);
@@ -1439,7 +1438,7 @@ uint32 CMemory::FileLoader (uint8 *buffer, const char *filename, int32 maxsize)
 				return (0);
 			}
 
-			totalSize = HeaderRemove(size, HeaderCount, buffer);
+			totalSize = HeaderRemove(size, buffer);
 
 			strcpy(ROMFilename, fname);
 		#else
@@ -1468,7 +1467,7 @@ uint32 CMemory::FileLoader (uint8 *buffer, const char *filename, int32 maxsize)
 				size = READ_STREAM(ptr, maxsize + 0x200 - (ptr - buffer), fp);
 				CLOSE_STREAM(fp);
 
-				size = HeaderRemove(size, HeaderCount, ptr);
+				size = HeaderRemove(size, ptr);
 				totalSize += size;
 				ptr += size;
 
@@ -1511,31 +1510,55 @@ uint32 CMemory::FileLoader (uint8 *buffer, const char *filename, int32 maxsize)
 	return ((uint32) totalSize);
 }
 
+bool8 CMemory::LoadROMMem (const uint8 *source, uint32 sourceSize)
+{
+    if(!source || sourceSize > MAX_ROM_SIZE)
+        return FALSE;
+
+    strcpy(ROMFilename,"MemoryROM");
+
+    do
+    {
+        memset(ROM,0, MAX_ROM_SIZE);
+	    memset(&Multi, 0,sizeof(Multi));
+        memcpy(ROM,source,sourceSize);
+    }
+    while(!LoadROMInt(sourceSize));
+
+    return TRUE;
+}
+
 bool8 CMemory::LoadROM (const char *filename)
 {
-	int	retry_count = 0;
+    if(!filename || !*filename)
+        return FALSE;
 
-	if (!filename || !*filename)
-		return (FALSE);
+    int32 totalFileSize;
 
-	ZeroMemory(ROM, MAX_ROM_SIZE);
-	ZeroMemory(&Multi, sizeof(Multi));
- 
-again:
+    do
+    {
+        memset(ROM,0, MAX_ROM_SIZE);
+	    memset(&Multi, 0,sizeof(Multi));
+        totalFileSize = FileLoader(ROM, filename, MAX_ROM_SIZE);
+
+        if (!totalFileSize)
+		    return (FALSE);
+    }
+    while(!LoadROMInt(totalFileSize));
+
+    return TRUE;
+}
+
+bool8 CMemory::LoadROMInt (int32 ROMfillSize)
+{
 	Settings.DisplayColor = BUILD_PIXEL(31, 31, 31);
 	SET_UI_COLOR(255, 255, 255);
 
 	CalculatedSize = 0;
 	ExtendedFormat = NOPE;
 
-	int32 totalFileSize;
-
-	totalFileSize = FileLoader(ROM, filename, MAX_ROM_SIZE);
-	if (!totalFileSize)
-		return (FALSE);
-
 	if (!Settings.NoPatch)
-		CheckForAnyPatch(filename, HeaderCount != 0, totalFileSize);
+		CheckForAnyPatch(ROMFilename, HeaderCount != 0, ROMfillSize);
 
 	int	hi_score, lo_score;
 
@@ -1546,15 +1569,15 @@ again:
 		((hi_score >  lo_score && ScoreHiROM(TRUE) > hi_score) ||
 		 (hi_score <= lo_score && ScoreLoROM(TRUE) > lo_score)))
 	{
-		memmove(ROM, ROM + 512, totalFileSize - 512);
-		totalFileSize -= 512;
+		memmove(ROM, ROM + 512, ROMfillSize - 512);
+		ROMfillSize -= 512;
 		S9xMessage(S9X_INFO, S9X_HEADER_WARNING, "Try 'force no-header' option if the game doesn't work");
 		// modifying ROM, so we need to rescore
 		hi_score = ScoreHiROM(FALSE);
 		lo_score = ScoreLoROM(FALSE);
 	}
 
-	CalculatedSize = (totalFileSize / 0x2000) * 0x2000;
+	CalculatedSize = (ROMfillSize / 0x2000) * 0x2000;
 
 	if (CalculatedSize > 0x400000 &&
 		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x3423 && // exclude SA-1
@@ -1571,7 +1594,7 @@ again:
 		((ROM[0xfffc] + (ROM[0xfffd] << 8)) < 0x8000))
 	{
 		if (!Settings.ForceInterleaved && !Settings.ForceNotInterleaved)
-			S9xDeinterleaveType1(totalFileSize, ROM);
+			S9xDeinterleaveType1(ROMfillSize, ROM);
 	}
 
 	// CalculatedSize is now set, so rescore
@@ -1699,14 +1722,10 @@ again:
 		if ((HiROM && (lo_score >= hi_score || hi_score < 0)) ||
 			(LoROM && (hi_score >  lo_score || lo_score < 0)))
 		{
-			if (retry_count == 0)
-			{
-				S9xMessage(S9X_INFO, S9X_ROM_CONFUSING_FORMAT_INFO, "ROM lied about its type! Trying again.");
-				Settings.ForceNotInterleaved = TRUE;
-				Settings.ForceInterleaved = FALSE;
-				retry_count++;
-				goto again;
-			}
+			S9xMessage(S9X_INFO, S9X_ROM_CONFUSING_FORMAT_INFO, "ROM lied about its type! Trying again.");
+			Settings.ForceNotInterleaved = TRUE;
+			Settings.ForceInterleaved = FALSE;
+            return (FALSE);
 		}
     }
 
@@ -1726,9 +1745,9 @@ again:
 		}
 	}
 
-	if (strncmp(LastRomFilename, filename, PATH_MAX + 1))
+	if (strncmp(LastRomFilename, ROMFilename, PATH_MAX + 1))
 	{
-		strncpy(LastRomFilename, filename, PATH_MAX + 1);
+		strncpy(LastRomFilename, ROMFilename, PATH_MAX + 1);
 		LastRomFilename[PATH_MAX] = 0;
 	}
 
@@ -3775,7 +3794,7 @@ static uint32 XPSdecode (const uint8 *data, unsigned &addr, unsigned size)
 //no-header patching errors that result in IPS patches having a 50/50 chance of
 //being applied correctly.
 
-static bool8 ReadUPSPatch (Reader *r, long, int32 &rom_size)
+static bool8 ReadUPSPatch (Stream *r, long, int32 &rom_size)
 {
 	//Reader lacks size() and rewind(), so we need to read in the file to get its size
 	uint8 *data = new uint8[8 * 1024 * 1024];  //allocate a lot of memory, better safe than sorry ...
@@ -3857,7 +3876,7 @@ static bool8 ReadUPSPatch (Reader *r, long, int32 &rom_size)
 //
 // logic taken from http://byuu.org/programming/bps and the accompanying source
 //
-static bool8 ReadBPSPatch (Reader *r, long, int32 &rom_size)
+static bool8 ReadBPSPatch (Stream *r, long, int32 &rom_size)
 {
 	uint8 *data = new uint8[8 * 1024 * 1024];  //allocate a lot of memory, better safe than sorry ...
 	uint32 size = 0;
@@ -3948,7 +3967,7 @@ static bool8 ReadBPSPatch (Reader *r, long, int32 &rom_size)
 	}
 }
 
-static long ReadInt (Reader *r, unsigned nbytes)
+static long ReadInt (Stream *r, unsigned nbytes)
 {
 	long	v = 0;
 
@@ -3963,7 +3982,7 @@ static long ReadInt (Reader *r, unsigned nbytes)
 	return (v);
 }
 
-static bool8 ReadIPSPatch (Reader *r, long offset, int32 &rom_size)
+static bool8 ReadIPSPatch (Stream *r, long offset, int32 &rom_size)
 {
 	const int32	IPS_EOF = 0x00454F46l;
 	int32		ofs;
@@ -4082,7 +4101,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 	if (Settings.NoPatch)
 		return;
 
-	STREAM		patch_file  = NULL;
+	FSTREAM		patch_file  = NULL;
 	uint32		i;
 	long		offset = header ? 512 : 0;
 	int			ret;
@@ -4095,12 +4114,12 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 	// BPS
 	_makepath(fname, drive, dir, name, "bps");
 
-	if ((patch_file = OPEN_STREAM(fname, "rb")) != NULL)
+	if ((patch_file = OPEN_FSTREAM(fname, "rb")) != NULL)
 	{
 		printf("Using BPS patch %s", fname);
 
-		ret = ReadBPSPatch(new fReader(patch_file), 0, rom_size);
-		CLOSE_STREAM(patch_file);
+		ret = ReadBPSPatch(new fStream(patch_file), 0, rom_size);
+        CLOSE_FSTREAM(patch_file);
 
 		if (ret)
 		{
@@ -4122,7 +4141,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 			{
 				printf(" in %s", rom_filename);
 
-				ret = ReadBPSPatch(new unzReader(file), offset, rom_size);
+				ret = ReadBPSPatch(new unzStream(file), offset, rom_size);
 				unzCloseCurrentFile(file);
 
 				if (ret)
@@ -4136,12 +4155,12 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 
 	n = S9xGetFilename(".bps", IPS_DIR);
 
-	if ((patch_file = OPEN_STREAM(n, "rb")) != NULL)
+	if ((patch_file = OPEN_FSTREAM(n, "rb")) != NULL)
 	{
 		printf("Using BPS patch %s", n);
 
-		ret = ReadBPSPatch(new fReader(patch_file), 0, rom_size);
-		CLOSE_STREAM(patch_file);
+		ret = ReadBPSPatch(new fStream(patch_file), 0, rom_size);
+        CLOSE_FSTREAM(patch_file);
 
 		if (ret)
 		{
@@ -4156,12 +4175,12 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 
 	_makepath(fname, drive, dir, name, "ups");
 
-	if ((patch_file = OPEN_STREAM(fname, "rb")) != NULL)
+	if ((patch_file = OPEN_FSTREAM(fname, "rb")) != NULL)
 	{
 		printf("Using UPS patch %s", fname);
 
-		ret = ReadUPSPatch(new fReader(patch_file), 0, rom_size);
-		CLOSE_STREAM(patch_file);
+		ret = ReadUPSPatch(new fStream(patch_file), 0, rom_size);
+        CLOSE_FSTREAM(patch_file);
 
 		if (ret)
 		{
@@ -4183,7 +4202,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 			{
 				printf(" in %s", rom_filename);
 
-				ret = ReadUPSPatch(new unzReader(file), offset, rom_size);
+				ret = ReadUPSPatch(new unzStream(file), offset, rom_size);
 				unzCloseCurrentFile(file);
 
 				if (ret)
@@ -4197,12 +4216,12 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 
 	n = S9xGetFilename(".ups", IPS_DIR);
 
-	if ((patch_file = OPEN_STREAM(n, "rb")) != NULL)
+	if ((patch_file = OPEN_FSTREAM(n, "rb")) != NULL)
 	{
 		printf("Using UPS patch %s", n);
 
-		ret = ReadUPSPatch(new fReader(patch_file), 0, rom_size);
-		CLOSE_STREAM(patch_file);
+		ret = ReadUPSPatch(new fStream(patch_file), 0, rom_size);
+        CLOSE_FSTREAM(patch_file);
 
 		if (ret)
 		{
@@ -4217,12 +4236,12 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 
 	_makepath(fname, drive, dir, name, "ips");
 
-	if ((patch_file = OPEN_STREAM(fname, "rb")) != NULL)
+	if ((patch_file = OPEN_FSTREAM(fname, "rb")) != NULL)
 	{
 		printf("Using IPS patch %s", fname);
 
-		ret = ReadIPSPatch(new fReader(patch_file), offset, rom_size);
-		CLOSE_STREAM(patch_file);
+		ret = ReadIPSPatch(new fStream(patch_file), offset, rom_size);
+        CLOSE_FSTREAM(patch_file);
 
 		if (ret)
 		{
@@ -4243,13 +4262,13 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 			snprintf(ips, 8, "%03d.ips", i);
 			_makepath(fname, drive, dir, name, ips);
 
-			if (!(patch_file = OPEN_STREAM(fname, "rb")))
+			if (!(patch_file = OPEN_FSTREAM(fname, "rb")))
 				break;
 
 			printf("Using IPS patch %s", fname);
 
-			ret = ReadIPSPatch(new fReader(patch_file), offset, rom_size);
-			CLOSE_STREAM(patch_file);
+			ret = ReadIPSPatch(new fStream(patch_file), offset, rom_size);
+            CLOSE_FSTREAM(patch_file);
 
 			if (ret)
 			{
@@ -4279,13 +4298,13 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 				break;
 			_makepath(fname, drive, dir, name, ips);
 
-			if (!(patch_file = OPEN_STREAM(fname, "rb")))
+			if (!(patch_file = OPEN_FSTREAM(fname, "rb")))
 				break;
 
 			printf("Using IPS patch %s", fname);
 
-			ret = ReadIPSPatch(new fReader(patch_file), offset, rom_size);
-			CLOSE_STREAM(patch_file);
+			ret = ReadIPSPatch(new fStream(patch_file), offset, rom_size);
+            CLOSE_FSTREAM(patch_file);
 
 			if (ret)
 			{
@@ -4313,13 +4332,13 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 			snprintf(ips, 4, "ip%d", i);
 			_makepath(fname, drive, dir, name, ips);
 
-			if (!(patch_file = OPEN_STREAM(fname, "rb")))
+			if (!(patch_file = OPEN_FSTREAM(fname, "rb")))
 				break;
 
 			printf("Using IPS patch %s", fname);
 
-			ret = ReadIPSPatch(new fReader(patch_file), offset, rom_size);
-			CLOSE_STREAM(patch_file);
+			ret = ReadIPSPatch(new fStream(patch_file), offset, rom_size);
+            CLOSE_FSTREAM(patch_file);
 
 			if (ret)
 			{
@@ -4348,7 +4367,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 			{
 				printf(" in %s", rom_filename);
 
-				ret = ReadIPSPatch(new unzReader(file), offset, rom_size);
+				ret = ReadIPSPatch(new unzStream(file), offset, rom_size);
 				unzCloseCurrentFile(file);
 
 				if (ret)
@@ -4375,7 +4394,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 
 					printf(" in %s", rom_filename);
 
-					ret = ReadIPSPatch(new unzReader(file), offset, rom_size);
+					ret = ReadIPSPatch(new unzStream(file), offset, rom_size);
 					unzCloseCurrentFile(file);
 
 					if (ret)
@@ -4409,7 +4428,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 
 					printf(" in %s", rom_filename);
 
-					ret = ReadIPSPatch(new unzReader(file), offset, rom_size);
+					ret = ReadIPSPatch(new unzStream(file), offset, rom_size);
 					unzCloseCurrentFile(file);
 
 					if (ret)
@@ -4441,7 +4460,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 
 					printf(" in %s", rom_filename);
 
-					ret = ReadIPSPatch(new unzReader(file), offset, rom_size);
+					ret = ReadIPSPatch(new unzStream(file), offset, rom_size);
 					unzCloseCurrentFile(file);
 
 					if (ret)
@@ -4470,12 +4489,12 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 
 	n = S9xGetFilename(".ips", IPS_DIR);
 
-	if ((patch_file = OPEN_STREAM(n, "rb")) != NULL)
+	if ((patch_file = OPEN_FSTREAM(n, "rb")) != NULL)
 	{
 		printf("Using IPS patch %s", n);
 
-		ret = ReadIPSPatch(new fReader(patch_file), offset, rom_size);
-		CLOSE_STREAM(patch_file);
+		ret = ReadIPSPatch(new fStream(patch_file), offset, rom_size);
+        CLOSE_FSTREAM(patch_file);
 
 		if (ret)
 		{
@@ -4496,13 +4515,13 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 			snprintf(ips, 9, ".%03d.ips", i);
 			n = S9xGetFilename(ips, IPS_DIR);
 
-			if (!(patch_file = OPEN_STREAM(n, "rb")))
+			if (!(patch_file = OPEN_FSTREAM(n, "rb")))
 				break;
 
 			printf("Using IPS patch %s", n);
 
-			ret = ReadIPSPatch(new fReader(patch_file), offset, rom_size);
-			CLOSE_STREAM(patch_file);
+			ret = ReadIPSPatch(new fStream(patch_file), offset, rom_size);
+            CLOSE_FSTREAM(patch_file);
 
 			if (ret)
 			{
@@ -4532,13 +4551,13 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 				break;
 			n = S9xGetFilename(ips, IPS_DIR);
 
-			if (!(patch_file = OPEN_STREAM(n, "rb")))
+			if (!(patch_file = OPEN_FSTREAM(n, "rb")))
 				break;
 
 			printf("Using IPS patch %s", n);
 
-			ret = ReadIPSPatch(new fReader(patch_file), offset, rom_size);
-			CLOSE_STREAM(patch_file);
+			ret = ReadIPSPatch(new fStream(patch_file), offset, rom_size);
+            CLOSE_FSTREAM(patch_file);
 
 			if (ret)
 			{
@@ -4566,13 +4585,13 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 			snprintf(ips, 5, ".ip%d", i);
 			n = S9xGetFilename(ips, IPS_DIR);
 
-			if (!(patch_file = OPEN_STREAM(n, "rb")))
+			if (!(patch_file = OPEN_FSTREAM(n, "rb")))
 				break;
 
 			printf("Using IPS patch %s", n);
 
-			ret = ReadIPSPatch(new fReader(patch_file), offset, rom_size);
-			CLOSE_STREAM(patch_file);
+			ret = ReadIPSPatch(new fStream(patch_file), offset, rom_size);
+            CLOSE_FSTREAM(patch_file);
 
 			if (ret)
 			{

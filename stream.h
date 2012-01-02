@@ -176,46 +176,65 @@
  ***********************************************************************************/
 
 
-#ifndef _READER_H_
-#define _READER_H_
+#ifndef _STREAM_H_
+#define _STREAM_H_
 
-class Reader
+#include <string>
+
+class Stream
 {
 	public:
-		Reader (void);
-		virtual ~Reader (void);
+		Stream (void);
+		virtual ~Stream (void);
 		virtual int get_char (void) = 0;
 		virtual char * gets (char *, size_t) = 0;
 		virtual char * getline (void);	// free() when done
 		virtual std::string getline (bool &);
-		virtual size_t read (char *, size_t) = 0;
+		virtual size_t read (void *, size_t) = 0;
+        virtual size_t write (void *, size_t) = 0;
+        virtual size_t pos (void) = 0;
+        virtual size_t size (void) = 0;
+        virtual int revert (size_t from, size_t offset) = 0;
+        virtual void closeStream() = 0;
 };
 
-class fReader : public Reader
+class fStream : public Stream
 {
 	public:
-		fReader (STREAM);
-		virtual ~fReader (void);
+		fStream (FSTREAM);
+		virtual ~fStream (void);
 		virtual int get_char (void);
 		virtual char * gets (char *, size_t);
-		virtual size_t read (char *, size_t);
+		virtual size_t read (void *, size_t);
+        virtual size_t write (void *, size_t);
+        virtual size_t pos (void);
+        virtual size_t size (void);
+        virtual int revert (size_t from, size_t offset);
+        virtual void closeStream();
 
 	private:
-		STREAM	fp;
+		FSTREAM	fp;
 };
 
 #ifdef UNZIP_SUPPORT
 
+#include "unzip.h"
+
 #define unz_BUFFSIZ	1024
 
-class unzReader : public Reader
+class unzStream : public Stream
 {
 	public:
-		unzReader (unzFile &);
-		virtual ~unzReader (void);
+		unzStream (unzFile &);
+		virtual ~unzStream (void);
 		virtual int get_char (void);
 		virtual char * gets (char *, size_t);
-		virtual size_t read (char *, size_t);
+		virtual size_t read (void *, size_t);
+        virtual size_t write (void *, size_t);
+        virtual size_t pos (void);
+        virtual size_t size (void);
+        virtual int revert (size_t from, size_t offset);
+        virtual void closeStream();
 
 	private:
 		unzFile	file;
@@ -225,5 +244,53 @@ class unzReader : public Reader
 };
 
 #endif
+
+class memStream : public Stream
+{
+	public:
+        memStream (uint8 *,size_t);
+        memStream (const uint8 *,size_t);
+		virtual ~memStream (void);
+		virtual int get_char (void);
+		virtual char * gets (char *, size_t);
+		virtual size_t read (void *, size_t);
+        virtual size_t write (void *, size_t);
+        virtual size_t pos (void);
+        virtual size_t size (void);
+        virtual int revert (size_t from, size_t offset);
+        virtual void closeStream();
+
+	private:
+		uint8   *mem;
+        size_t  msize;
+        size_t  remaining;
+		uint8	*head;
+        bool    readonly;
+};
+
+/* dummy stream that always reads 0 and writes nowhere
+   but counts bytes written
+*/
+class nulStream : public Stream
+{
+	public:
+        nulStream (void);
+		virtual ~nulStream (void);
+        virtual int get_char (void);
+        virtual char * gets (char *, size_t);
+		virtual size_t read (void *, size_t);
+        virtual size_t write (void *, size_t);
+        virtual size_t pos (void);
+        virtual size_t size (void);
+        virtual int revert (size_t from, size_t offset);
+        virtual void closeStream();
+
+    private:
+        size_t  bytes_written;
+};
+
+Stream *openStreamFromFSTREAM(const char* filename, const char* mode);
+Stream *reopenStreamFromFd(int fd, const char* mode);
+
 
 #endif
