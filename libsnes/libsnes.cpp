@@ -53,6 +53,21 @@ void snes_set_environment(snes_environment_t cb)
    environ_cb = cb;
 }
 
+static void set_environ_timing()
+{
+   if (environ_cb)
+   {
+      snes_system_timing timing;
+      timing.sample_rate = 32040.5;
+      if (!Settings.PAL)
+         timing.fps = 21477272.0 / 357366.0;
+      else
+         timing.fps = 21281370.0 / 425568.0;
+
+      environ_cb(SNES_ENVIRONMENT_SET_TIMING, &timing);
+   }
+}
+
 static void S9xAudioCallback(void*)
 {
    // Just pick a big buffer. We won't use it all.
@@ -137,10 +152,20 @@ void snes_cheat_set(unsigned, bool, const char*)
 {}
 
 bool snes_load_cartridge_bsx_slotted(
-      const char *, const uint8_t *, unsigned,
-      const char *, const uint8_t *, unsigned
+      const char *, const uint8_t *rom_data, unsigned rom_size,
+      const char *, const uint8_t *bsx_data, unsigned bsx_size
       )
 {
+   int loaded = Memory.LoadMultiCartMem(rom_data, rom_size, bsx_data, bsx_size, NULL, NULL);
+
+   if (!loaded)
+   {
+      fprintf(stderr, "[libsnes]: Sufami Turbo Rom loading failed...\n");
+      return false;
+   }
+
+   set_environ_timing();
+
    return false;
 }
 
@@ -153,12 +178,22 @@ bool snes_load_cartridge_bsx(
 }
 
 bool snes_load_cartridge_sufami_turbo(
-      const char *, const uint8_t *, unsigned,
-      const char *, const uint8_t *, unsigned,
-      const char *, const uint8_t *, unsigned
+      const char *, const uint8_t *rom_data, unsigned rom_size,
+      const char *, const uint8_t *sta_data, unsigned sta_size,
+      const char *, const uint8_t *stb_data, unsigned stb_size
       )
 {
-   return false;
+   int loaded = Memory.LoadMultiCartMem(sta_data, sta_size, stb_data, stb_size, rom_data, rom_size);
+
+   if (!loaded)
+   {
+      fprintf(stderr, "[libsnes]: Sufami Turbo Rom loading failed...\n");
+      return false;
+   }
+
+   set_environ_timing();
+   
+   return true;
 }
 
 bool snes_load_cartridge_super_game_boy(
@@ -435,17 +470,7 @@ bool snes_load_cartridge_normal(const char *, const uint8_t *rom_data, unsigned 
       return false;
    }
 
-   if (environ_cb)
-   {
-      snes_system_timing timing;
-      timing.sample_rate = 32040.5;
-      if (!Settings.PAL)
-         timing.fps = 21477272.0 / 357366.0;
-      else
-         timing.fps = 21281370.0 / 425568.0;
-
-      environ_cb(SNES_ENVIRONMENT_SET_TIMING, &timing);
-   }
+   set_environ_timing();
    
    return true;
 }
@@ -476,9 +501,13 @@ uint8_t* snes_get_memory_data(unsigned type)
    uint8_t* data;
 
    switch(type) {
+      case SNES_MEMORY_SUFAMI_TURBO_A_RAM:
       case SNES_MEMORY_CARTRIDGE_RAM:
          data = Memory.SRAM;
 		 break;
+      case SNES_MEMORY_SUFAMI_TURBO_B_RAM:
+         data = Multi.sramB;
+         break;
 	  case SNES_MEMORY_CARTRIDGE_RTC:
 	     data = RTCData.reg;
          break;
@@ -515,11 +544,15 @@ unsigned snes_get_memory_size(unsigned type)
    unsigned size;
 
    switch(type) {
+      case SNES_MEMORY_SUFAMI_TURBO_A_RAM:
       case SNES_MEMORY_CARTRIDGE_RAM:
          size = (unsigned) (Memory.SRAMSize ? (1 << (Memory.SRAMSize + 3)) * 128 : 0);
          if (size > 0x20000)
 		    size = 0x20000;
 		 break;
+      case SNES_MEMORY_SUFAMI_TURBO_B_RAM:
+         size = (unsigned) (Multi.cartType && Multi.sramSizeB ? (1 << (Multi.sramSizeB + 3)) * 128 : 0);
+         break;
 	  case SNES_MEMORY_CARTRIDGE_RTC:
 		 size = (Settings.SRTC || Settings.SPC7110RTC)?20:0;
 		 break;

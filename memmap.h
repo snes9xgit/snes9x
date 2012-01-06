@@ -277,10 +277,12 @@ struct CMemory
     bool8   LoadROMMem (const uint8 *, uint32);
 	bool8	LoadROM (const char *);
     bool8	LoadROMInt (int32);
+    bool8   LoadMultiCartMem (const uint8 *, uint32, const uint8 *, uint32, const uint8 *, uint32);
 	bool8	LoadMultiCart (const char *, const char *);
-	bool8	LoadSufamiTurbo (const char *, const char *);
-	bool8	LoadSameGame (const char *, const char *);
-	bool8	LoadGNEXT (const char *, const char *);
+    bool8	LoadMultiCartInt ();
+	bool8	LoadSufamiTurbo ();
+	bool8	LoadSameGame ();
+	bool8	LoadGNEXT ();
 	bool8	LoadSRAM (const char *);
 	bool8	SaveSRAM (const char *);
 	void	ClearSRAM (bool8 onlyNonSavedSRAM = 0);

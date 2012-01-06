@@ -936,12 +936,12 @@ static void S9xDeinterleaveType1 (int, uint8 *);
 static void S9xDeinterleaveType2 (int, uint8 *);
 static void S9xDeinterleaveGD24 (int, uint8 *);
 static bool8 allASCII (uint8 *, int);
-static bool8 is_SufamiTurbo_BIOS (uint8 *, uint32);
-static bool8 is_SufamiTurbo_Cart (uint8 *, uint32);
-static bool8 is_SameGame_BIOS (uint8 *, uint32);
-static bool8 is_SameGame_Add_On (uint8 *, uint32);
-static bool8 is_GNEXT_BIOS (uint8 *, uint32);
-static bool8 is_GNEXT_Add_On (uint8 *, uint32);
+static bool8 is_SufamiTurbo_BIOS (const uint8 *, uint32);
+static bool8 is_SufamiTurbo_Cart (const uint8 *, uint32);
+static bool8 is_SameGame_BIOS (const uint8 *, uint32);
+static bool8 is_SameGame_Add_On (const uint8 *, uint32);
+static bool8 is_GNEXT_BIOS (const uint8 *, uint32);
+static bool8 is_GNEXT_Add_On (const uint8 *, uint32);
 static uint32 caCRC32 (uint8 *, uint32, uint32 crc32 = 0xffffffff);
 static uint32 ReadUPSPointer (const uint8 *, unsigned &, unsigned);
 static bool8 ReadUPSPatch (Stream *, long, int32 &);
@@ -1206,7 +1206,7 @@ static bool8 allASCII (uint8 *b, int size)
 	return (TRUE);
 }
 
-static bool8 is_SufamiTurbo_BIOS (uint8 *data, uint32 size)
+static bool8 is_SufamiTurbo_BIOS (const uint8 *data, uint32 size)
 {
 	if (size == 0x40000 &&
 		strncmp((char *) data, "BANDAI SFC-ADX", 14) == 0 && strncmp((char * ) (data + 0x10), "SFC-ADX BACKUP", 14) == 0)
@@ -1215,7 +1215,7 @@ static bool8 is_SufamiTurbo_BIOS (uint8 *data, uint32 size)
 		return (FALSE);
 }
 
-static bool8 is_SufamiTurbo_Cart (uint8 *data, uint32 size)
+static bool8 is_SufamiTurbo_Cart (const uint8 *data, uint32 size)
 {
 	if (size >= 0x80000 && size <= 0x100000 &&
 		strncmp((char *) data, "BANDAI SFC-ADX", 14) == 0 && strncmp((char * ) (data + 0x10), "SFC-ADX BACKUP", 14) != 0)
@@ -1224,7 +1224,7 @@ static bool8 is_SufamiTurbo_Cart (uint8 *data, uint32 size)
 		return (FALSE);
 }
 
-static bool8 is_SameGame_BIOS (uint8 *data, uint32 size)
+static bool8 is_SameGame_BIOS (const uint8 *data, uint32 size)
 {
 	if (size == 0x100000 && strncmp((char *) (data + 0xffc0), "Same Game Tsume Game", 20) == 0)
 		return (TRUE);
@@ -1232,7 +1232,7 @@ static bool8 is_SameGame_BIOS (uint8 *data, uint32 size)
 		return (FALSE);
 }
 
-static bool8 is_SameGame_Add_On (uint8 *data, uint32 size)
+static bool8 is_SameGame_Add_On (const uint8 *data, uint32 size)
 {
 	if (size == 0x80000)
 		return (TRUE);
@@ -1240,7 +1240,7 @@ static bool8 is_SameGame_Add_On (uint8 *data, uint32 size)
 		return (FALSE);
 }
 
-static bool8 is_GNEXT_BIOS (uint8 *data, uint32 size)
+static bool8 is_GNEXT_BIOS (const uint8 *data, uint32 size)
 {
 	if (size == 0x180000 && strncmp((char *) (data + 0x7fc0), "SFC SDGUNDAMGNEXT", 17) == 0)
 		return (TRUE);
@@ -1248,7 +1248,7 @@ static bool8 is_GNEXT_BIOS (uint8 *data, uint32 size)
 		return (FALSE);
 }
 
-static bool8 is_GNEXT_Add_On (uint8 *data, uint32 size)
+static bool8 is_GNEXT_Add_On (const uint8 *data, uint32 size)
 {
 	if (size == 0x80000)
 		return (TRUE);
@@ -1543,6 +1543,9 @@ bool8 CMemory::LoadROM (const char *filename)
 
         if (!totalFileSize)
 		    return (FALSE);
+
+        if (!Settings.NoPatch)
+		    CheckForAnyPatch(filename, HeaderCount != 0, totalFileSize);
     }
     while(!LoadROMInt(totalFileSize));
 
@@ -1556,9 +1559,6 @@ bool8 CMemory::LoadROMInt (int32 ROMfillSize)
 
 	CalculatedSize = 0;
 	ExtendedFormat = NOPE;
-
-	if (!Settings.NoPatch)
-		CheckForAnyPatch(ROMFilename, HeaderCount != 0, ROMfillSize);
 
 	int	hi_score, lo_score;
 
@@ -1766,60 +1766,144 @@ bool8 CMemory::LoadROMInt (int32 ROMfillSize)
     return (TRUE);
 }
 
+bool8 CMemory::LoadMultiCartMem (const uint8 *sourceA, uint32 sourceASize,
+                                 const uint8 *sourceB, uint32 sourceBSize,
+                                 const uint8 *bios, uint32 biosSize)
+{
+    uint32 offset = 0;
+    ZeroMemory(ROM, MAX_ROM_SIZE);
+	ZeroMemory(&Multi, sizeof(Multi));
+
+    if(bios) {
+        if(!is_SufamiTurbo_BIOS(bios,biosSize))
+            return FALSE;
+
+        memcpy(ROM,bios,biosSize);
+        offset+=biosSize;
+    }
+
+    if(sourceA) {
+        memcpy(ROM + offset,sourceA,sourceASize);
+        Multi.cartOffsetA = offset;
+        Multi.cartSizeA = sourceASize;
+        offset += sourceASize;
+        strcpy(Multi.fileNameA,"MemCartA");
+    }
+
+    if(sourceB) {
+        memcpy(ROM + offset,sourceB,sourceBSize);
+        Multi.cartOffsetB = offset;
+        Multi.cartSizeB = sourceBSize;
+        offset += sourceBSize;
+        strcpy(Multi.fileNameB,"MemCartB");
+    }
+
+    return LoadMultiCartInt();
+}
+
 bool8 CMemory::LoadMultiCart (const char *cartA, const char *cartB)
 {
-	bool8	r = TRUE;
-
-	ZeroMemory(ROM, MAX_ROM_SIZE);
+    ZeroMemory(ROM, MAX_ROM_SIZE);
 	ZeroMemory(&Multi, sizeof(Multi));
 
 	Settings.DisplayColor = BUILD_PIXEL(31, 31, 31);
 	SET_UI_COLOR(255, 255, 255);
 
-	CalculatedSize = 0;
-	ExtendedFormat = NOPE;
+    if (cartB && cartB[0])
+		Multi.cartSizeB = FileLoader(ROM, cartB, MAX_ROM_SIZE);
+
+    if (Multi.cartSizeB) {
+        strcpy(Multi.fileNameB, cartB);
+
+        if(!Settings.NoPatch)
+		    CheckForAnyPatch(cartB, HeaderCount != 0, Multi.cartSizeB);
+
+        Multi.cartOffsetB = 0x400000;
+        memcpy(ROM + Multi.cartOffsetB,ROM,Multi.cartSizeB);
+    }
 
 	if (cartA && cartA[0])
 		Multi.cartSizeA = FileLoader(ROM, cartA, MAX_ROM_SIZE);
 
-	if (Multi.cartSizeA == 0)
-	{
-		if (cartB && cartB[0])
-			Multi.cartSizeB = FileLoader(ROM, cartB, MAX_ROM_SIZE);
-	}
+    if (Multi.cartSizeA) {
+        strcpy(Multi.fileNameA, cartA);
+
+        if(!Settings.NoPatch)
+		    CheckForAnyPatch(cartA, HeaderCount != 0, Multi.cartSizeA);
+    }
+
+    return LoadMultiCartInt();
+}
+
+bool8 CMemory::LoadMultiCartInt ()
+{
+	bool8	r = TRUE;
+
+	CalculatedSize = 0;
+	ExtendedFormat = NOPE;
 
 	if (Multi.cartSizeA)
 	{
-		if (is_SufamiTurbo_Cart(ROM, Multi.cartSizeA))
+        if (is_SufamiTurbo_Cart(ROM + Multi.cartOffsetA, Multi.cartSizeA))
 			Multi.cartType = 4;
 		else
-		if (is_SameGame_BIOS(ROM, Multi.cartSizeA))
+		if (is_SameGame_BIOS(ROM + Multi.cartOffsetA, Multi.cartSizeA))
 			Multi.cartType = 3;
 		else
-		if (is_GNEXT_BIOS(ROM, Multi.cartSizeA))
+		if (is_GNEXT_BIOS(ROM + Multi.cartOffsetA, Multi.cartSizeA))
 			Multi.cartType = 5;
 	}
 	else
 	if (Multi.cartSizeB)
 	{
-		if (is_SufamiTurbo_Cart(ROM, Multi.cartSizeB))
+        if (is_SufamiTurbo_Cart(ROM + Multi.cartOffsetB, Multi.cartSizeB))
 			Multi.cartType = 4;
 	}
 	else
 		Multi.cartType = 4; // assuming BIOS only
 
+
+    if(Multi.cartType == 4 && Multi.cartOffsetA == 0) { // try to load bios from file
+        Multi.cartOffsetA = 0x40000;
+        if(Multi.cartSizeA)
+            memmove(ROM + Multi.cartOffsetA,ROM,Multi.cartOffsetB - Multi.cartOffsetA);
+        else // clear cart A so the bios can detect that it's not present
+            memset(ROM,0,Multi.cartOffsetB);
+        
+        FILE	*fp;
+	    size_t	size;
+	    char	path[PATH_MAX + 1];
+
+	    strcpy(path, S9xGetDirectory(BIOS_DIR));
+	    strcat(path, SLASH_STR);
+	    strcat(path, "STBIOS.bin");
+
+	    fp = fopen(path, "rb");
+	    if (fp)
+	    {
+		    size = fread((void *) ROM, 1, 0x40000, fp);
+		    fclose(fp);
+		    if (!is_SufamiTurbo_BIOS(ROM, size))
+			    return (FALSE);
+	    }
+	    else
+		    return (FALSE);
+
+        strcpy(ROMFilename, path);
+    }
+
 	switch (Multi.cartType)
 	{
 		case 4:
-			r = LoadSufamiTurbo(cartA, cartB);
+			r = LoadSufamiTurbo();
 			break;
 
 		case 3:
-			r = LoadSameGame(cartA, cartB);
+			r = LoadSameGame();
 			break;
 
 		case 5:
-			r = LoadGNEXT(cartA, cartB);
+			r = LoadGNEXT();
 			break;
 
 		default:
@@ -1831,6 +1915,12 @@ bool8 CMemory::LoadMultiCart (const char *cartA, const char *cartB)
 		ZeroMemory(&Multi, sizeof(Multi));
 		return (FALSE);
 	}
+
+    if (Multi.cartSizeA)
+		strcpy(ROMFilename, Multi.fileNameA);
+	else
+	if (Multi.cartSizeB)
+		strcpy(ROMFilename, Multi.fileNameB);
 
 	ZeroMemory(&SNESGameFixes, sizeof(SNESGameFixes));
 	SNESGameFixes.SRAMInitialValue = 0x60;
@@ -1847,10 +1937,8 @@ bool8 CMemory::LoadMultiCart (const char *cartA, const char *cartB)
 	return (TRUE);
 }
 
-bool8 CMemory::LoadSufamiTurbo (const char *cartA, const char *cartB)
+bool8 CMemory::LoadSufamiTurbo ()
 {
-	Multi.cartOffsetA = 0x100000;
-	Multi.cartOffsetB = 0x200000;
 	Multi.sramA = SRAM;
 	Multi.sramB = SRAM + 0x10000;
 
@@ -1858,64 +1946,19 @@ bool8 CMemory::LoadSufamiTurbo (const char *cartA, const char *cartB)
 	{
 		Multi.sramSizeA = 4; // ROM[0x37]?
 		Multi.sramMaskA = Multi.sramSizeA ? ((1 << (Multi.sramSizeA + 3)) * 128 - 1) : 0;
-
-		if (!Settings.NoPatch)
-			CheckForAnyPatch(cartA, HeaderCount != 0, Multi.cartSizeA);
-
-		strcpy(Multi.fileNameA, cartA);
-		memcpy(ROM + Multi.cartOffsetA, ROM, Multi.cartSizeA);
 	}
 
-	if (Multi.cartSizeA && !Multi.cartSizeB)
+	if (Multi.cartSizeB)
 	{
-		if (cartB && cartB[0])
-			Multi.cartSizeB = FileLoader(ROM, cartB, MAX_ROM_SIZE);
-
-		if (Multi.cartSizeB)
-		{
-			if (!is_SufamiTurbo_Cart(ROM, Multi.cartSizeB))
-				Multi.cartSizeB = 0;
-		}
+        if (!is_SufamiTurbo_Cart(ROM + Multi.cartOffsetB, Multi.cartSizeB))
+			Multi.cartSizeB = 0;
 	}
 
 	if (Multi.cartSizeB)
 	{
 		Multi.sramSizeB = 4; // ROM[0x37]?
 		Multi.sramMaskB = Multi.sramSizeB ? ((1 << (Multi.sramSizeB + 3)) * 128 - 1) : 0;
-
-		if (!Settings.NoPatch)
-			CheckForAnyPatch(cartB, HeaderCount != 0, Multi.cartSizeB);
-
-		strcpy(Multi.fileNameB, cartB);
-		memcpy(ROM + Multi.cartOffsetB, ROM, Multi.cartSizeB);
 	}
-
-	FILE	*fp;
-	size_t	size;
-	char	path[PATH_MAX + 1];
-
-	strcpy(path, S9xGetDirectory(BIOS_DIR));
-	strcat(path, SLASH_STR);
-	strcat(path, "STBIOS.bin");
-
-	fp = fopen(path, "rb");
-	if (fp)
-	{
-		size = fread((void *) ROM, 1, 0x40000, fp);
-		fclose(fp);
-		if (!is_SufamiTurbo_BIOS(ROM, size))
-			return (FALSE);
-	}
-	else
-		return (FALSE);
-
-	if (Multi.cartSizeA)
-		strcpy(ROMFilename, Multi.fileNameA);
-	else
-	if (Multi.cartSizeB)
-		strcpy(ROMFilename, Multi.fileNameB);
-	else
-		strcpy(ROMFilename, path);
 
 	LoROM = TRUE;
 	HiROM = FALSE;
@@ -1924,10 +1967,8 @@ bool8 CMemory::LoadSufamiTurbo (const char *cartA, const char *cartB)
 	return (TRUE);
 }
 
-bool8 CMemory::LoadSameGame (const char *cartA, const char *cartB)
+bool8 CMemory::LoadSameGame ()
 {
-	Multi.cartOffsetA = 0;
-	Multi.cartOffsetB = 0x200000;
 	Multi.sramA = SRAM;
 	Multi.sramB = NULL;
 
@@ -1936,23 +1977,11 @@ bool8 CMemory::LoadSameGame (const char *cartA, const char *cartB)
 	Multi.sramSizeB = 0;
 	Multi.sramMaskB = 0;
 
-	if (!Settings.NoPatch)
-		CheckForAnyPatch(cartA, HeaderCount != 0, Multi.cartSizeA);
-
-	strcpy(Multi.fileNameA, cartA);
-
-	if (cartB && cartB[0])
-		Multi.cartSizeB = FileLoader(ROM + Multi.cartOffsetB, cartB, MAX_ROM_SIZE - Multi.cartOffsetB);
-
 	if (Multi.cartSizeB)
 	{
 		if (!is_SameGame_Add_On(ROM + Multi.cartOffsetB, Multi.cartSizeB))
 			Multi.cartSizeB = 0;
-		else
-			strcpy(Multi.fileNameB, cartB);
 	}
-
-	strcpy(ROMFilename, Multi.fileNameA);
 
 	LoROM = FALSE;
 	HiROM = TRUE;
@@ -1961,10 +1990,8 @@ bool8 CMemory::LoadSameGame (const char *cartA, const char *cartB)
 	return (TRUE);
 }
 
-bool8 CMemory::LoadGNEXT (const char *cartA, const char *cartB)
+bool8 CMemory::LoadGNEXT ()
 {
-	Multi.cartOffsetA = 0;
-	Multi.cartOffsetB = 0x400000;
 	Multi.sramA = SRAM;
 	Multi.sramB = NULL;
 
@@ -1973,23 +2000,11 @@ bool8 CMemory::LoadGNEXT (const char *cartA, const char *cartB)
 	Multi.sramSizeB = 0;
 	Multi.sramMaskB = 0;
 
-	if (!Settings.NoPatch)
-		CheckForAnyPatch(cartA, HeaderCount != 0, Multi.cartSizeA);
-
-	strcpy(Multi.fileNameA, cartA);
-
-	if (cartB && cartB[0])
-		Multi.cartSizeB = FileLoader(ROM + Multi.cartOffsetB, cartB, MAX_ROM_SIZE - Multi.cartOffsetB);
-
 	if (Multi.cartSizeB)
 	{
 		if (!is_GNEXT_Add_On(ROM + Multi.cartOffsetB, Multi.cartSizeB))
 			Multi.cartSizeB = 0;
-		else
-			strcpy(Multi.fileNameB, cartB);
 	}
-
-	strcpy(ROMFilename, Multi.fileNameA);
 
 	LoROM = TRUE;
 	HiROM = FALSE;
