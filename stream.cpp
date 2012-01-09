@@ -244,7 +244,6 @@ fStream::fStream (FSTREAM f)
 
 fStream::~fStream (void)
 {
-    CLOSE_FSTREAM(fp);
 	return;
 }
 
