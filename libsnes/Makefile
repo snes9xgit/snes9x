@@ -2,12 +2,12 @@ ifeq ($(platform),)
 platform = unix
 ifeq ($(shell uname -a),)
    platform = win
+else ifneq ($(findstring Darwin,$(shell uname -a)),)
+   platform = osx
 else ifneq ($(findstring MINGW,$(shell uname -a)),)
    platform = win
 else ifneq ($(findstring win,$(shell uname -a)),)
    platform = win
-else ifneq ($(findstring Darwin,$(shell uname -a)),)
-   platform = osx
 endif
 endif
 
