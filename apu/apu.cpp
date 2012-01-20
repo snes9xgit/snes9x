@@ -637,6 +637,118 @@ void S9xAPULoadState (uint8 *block)
 	memcpy (SNES::cpu.registers, ptr, 4);
 }
 
+static void to_var_from_buf (uint8 **buf, void *var, size_t size)
+{
+  memcpy(var, *buf, size);
+  *buf += size;
+}
+
+#undef IF_0_THEN_256
+#define IF_0_THEN_256( n ) ((uint8_t) ((n) - 1) + 1)
+void S9xAPULoadBlarggState(uint8 *oldblock)
+{
+    uint8	*ptr = oldblock;
+
+    SNES::SPC_State_Copier copier(&ptr,to_var_from_buf);
+
+    copier.copy(SNES::smp.apuram,0x10000); // RAM
+
+    uint8_t regs_in [0x10];
+    uint8_t regs [0x10];
+    uint16_t pc, spc_time, dsp_time;
+    uint8_t a,x,y,psw,sp;
+
+    copier.copy(regs,0x10); // REGS
+    copier.copy(regs_in,0x10); // REGS_IN
+
+    // CPU Regs
+    pc = copier.copy_int( 0, sizeof(uint16_t) );
+    a = copier.copy_int( 0, sizeof(uint8_t) );
+    x = copier.copy_int( 0, sizeof(uint8_t) );
+    y = copier.copy_int( 0, sizeof(uint8_t) );
+    psw = copier.copy_int( 0, sizeof(uint8_t) );
+    sp = copier.copy_int( 0, sizeof(uint8_t) );
+    copier.extra();
+
+    // times
+    spc_time = copier.copy_int( 0, sizeof(uint16_t) );
+    dsp_time = copier.copy_int( 0, sizeof(uint16_t) );
+
+    int cur_time = S9xAPUGetClock(CPU.Cycles);
+
+    // spc_time is absolute, dsp_time is relative
+    // smp.clock is relative, dsp.clock relative but counting upwards
+    SNES::smp.clock = spc_time - cur_time;
+    SNES::dsp.clock = -1 * dsp_time;
+
+    // DSP
+    SNES::dsp.load_state(&ptr);
+
+    // Timers
+    uint16_t next_time[3];
+    uint8_t divider[3], counter[3];
+    for ( int i = 0; i < 3; i++ )
+    {
+	    next_time[i] = copier.copy_int( 0, sizeof(uint16_t) );
+	    divider[i] = copier.copy_int( 0, sizeof(uint8_t) );
+	    counter[i] = copier.copy_int( 0, sizeof(uint8_t) );
+	    copier.extra();
+    }
+    // construct timers out of available parts from blargg smp
+    SNES::smp.timer0.enable = regs[1] >> 0 & 1;                 // regs[1] = CONTROL
+    SNES::smp.timer0.target = IF_0_THEN_256(regs[10]);          // regs[10+i] = TiTARGET
+    // blargg counts time, get ticks through timer frequency
+    // (assume tempo = 256)
+    SNES::smp.timer0.stage1_ticks = 128 - (next_time[0] - cur_time) / 128;
+    SNES::smp.timer0.stage2_ticks = divider[0];
+    SNES::smp.timer0.stage3_ticks = counter[0];
+
+    SNES::smp.timer1.enable = regs[1] >> 1 & 1;
+    SNES::smp.timer1.target = IF_0_THEN_256(regs[11]);
+    SNES::smp.timer1.stage1_ticks = 128 - (next_time[1] - cur_time) / 128;
+    SNES::smp.timer1.stage2_ticks = divider[0];
+    SNES::smp.timer1.stage3_ticks = counter[0];
+
+    SNES::smp.timer2.enable = regs[1] >> 2 & 1;
+    SNES::smp.timer2.target = IF_0_THEN_256(regs[12]);
+    SNES::smp.timer2.stage1_ticks = 16 - (next_time[2] - cur_time) / 16;
+    SNES::smp.timer2.stage2_ticks = divider[0];
+    SNES::smp.timer2.stage3_ticks = counter[0];
+
+    copier.extra();
+
+    SNES::smp.opcode_number = 0;
+    SNES::smp.opcode_cycle = 0;
+
+    SNES::smp.regs.pc = pc;
+    SNES::smp.regs.sp = sp;
+    SNES::smp.regs.a = a;
+    SNES::smp.regs.x = x;
+    SNES::smp.regs.y = y;
+
+    // blargg's psw has same layout as byuu's flags
+    SNES::smp.regs.p = psw;
+
+    // blargg doesn't explicitly store iplrom_enable
+    SNES::smp.status.iplrom_enable = regs[1] & 0x80;
+
+    SNES::smp.status.dsp_addr = regs[2];
+
+    SNES::smp.status.ram00f8 = regs_in[8];
+    SNES::smp.status.ram00f9 = regs_in[9];
+
+    // default to 0 - we are on an opcode boundary, shouldn't matter
+    SNES::smp.rd=SNES::smp.wr=SNES::smp.dp=SNES::smp.sp=SNES::smp.ya=SNES::smp.bit=0;
+
+    spc::reference_time = SNES::get_le32(ptr);
+    ptr += sizeof(int32);
+    spc::remainder = SNES::get_le32(ptr);
+    ptr += sizeof(int32);
+
+    // blargg stores CPUIx in regs_in
+    memcpy (SNES::cpu.registers, regs_in + 4, 4);
+}
+
 bool8 S9xSPCDump (const char *filename)
 {
 	FILE	*fs;
