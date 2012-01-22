@@ -135,6 +135,8 @@ FMOD_RESULT F_CALLBACK CFMODEx::FMODExStreamCallback(
 
 	LeaveCriticalSection(&GUI.SoundCritSect);
 
+    SetEvent(GUI.SoundSyncEvent);
+
     return FMOD_OK;
 }
 #endif

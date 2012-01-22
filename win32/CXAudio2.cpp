@@ -308,6 +308,7 @@ pBufferContext		-	unused
 void CXAudio2::OnBufferEnd(void *pBufferContext)
 {
 	InterlockedDecrement(&bufferCount);
+    SetEvent(GUI.SoundSyncEvent);
 }
 
 /*  CXAudio2::PushBuffer

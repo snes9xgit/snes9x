@@ -986,6 +986,7 @@ void InitSnes9X( void)
 	GFX.Screen = (uint16*)(ScreenBuffer);
 
 	InitializeCriticalSection(&GUI.SoundCritSect);
+    GUI.SoundSyncEvent = CreateEvent(NULL,TRUE,TRUE,NULL);
 	CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
 
     S9xInitAPU();
@@ -1005,6 +1006,7 @@ void DeinitS9x()
 		delete [] ScreenBuf;
 
 	DeleteCriticalSection(&GUI.SoundCritSect);
+    CloseHandle(GUI.SoundSyncEvent);
 	CoUninitialize();
 	if(GUI.GunSight)
 		DestroyCursor(GUI.GunSight);//= LoadCursor (hInstance, MAKEINTRESOURCE (IDC_CURSOR_SCOPE));

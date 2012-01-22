@@ -369,6 +369,7 @@ struct sGUI {
 	bool Mute;
 	// used for sync sound synchronization
 	CRITICAL_SECTION SoundCritSect;
+    HANDLE SoundSyncEvent;
 
     TCHAR RomDir [_MAX_PATH];
     TCHAR ScreensDir [_MAX_PATH];

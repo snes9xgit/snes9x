@@ -3304,7 +3304,6 @@ int WINAPI WinMain(
 	ChangeInputDevice();
 
 	DWORD lastTime = timeGetTime();
-	DWORD sSyncTime,sSyncWaited;
 
     MSG msg;
 
@@ -3421,15 +3420,10 @@ int WINAPI WinMain(
 			{
 				ProcessInput();
 
-				sSyncTime=timeGetTime();
-
 				while(!S9xSyncSound()) {
-					Sleep(2);
-					sSyncWaited=timeGetTime();
-					if(sSyncWaited-sSyncTime > 1000) {
-						S9xClearSamples();
-						break;
-					}
+                    ResetEvent(GUI.SoundSyncEvent);
+                    if(WaitForSingleObject(GUI.SoundSyncEvent,1000) != WAIT_OBJECT_0)
+                        S9xClearSamples();
 				}
 
 				S9xMainLoop();

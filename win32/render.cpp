@@ -2624,7 +2624,7 @@ void RenderBlarggNTSCRgb( SSurface Src, SSurface Dst, RECT *rect)
 void RenderBlarggNTSC( SSurface Src, SSurface Dst, RECT *rect)
 {
 	SetRect(rect, 256, 239, 2);
-	rect->right = 604;
+	rect->right = SNES_NTSC_OUT_WIDTH(256);
 
 	const unsigned int srcRowPixels = Src.Pitch/2;
 
