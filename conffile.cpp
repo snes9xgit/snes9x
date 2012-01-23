@@ -427,7 +427,7 @@ string ConfigFile::GetString(const char *key, string def){
 
 char *ConfigFile::GetString(const char *key, char *out, uint32 outlen){
     if(!Exists(key)) return NULL;
-    ZeroMemory(out, outlen);
+    memset(out, 0, outlen);
     string o=Get(key);
     if(outlen>0){
         outlen--;

@@ -424,7 +424,7 @@ s9xcommand_t S9xGetPortCommandT (const char *name)
 {
 	s9xcommand_t	cmd;
 
-    ZeroMemory(&cmd, sizeof(cmd));
+    memset(&cmd, 0, sizeof(cmd));
     cmd.type = S9xBadMapping;
 
 	return (cmd);

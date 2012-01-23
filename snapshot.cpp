@@ -2061,7 +2061,7 @@ static int UnfreezeBlock (STREAM stream, const char *name, uint8 *block, int siz
 		len = size;
 	}
 
-	ZeroMemory(block, size);
+	memset(block, 0, size);
 
 	if (READ_STREAM(block, len, stream) != len)
 	{

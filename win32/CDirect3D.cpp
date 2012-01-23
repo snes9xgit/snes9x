@@ -262,7 +262,7 @@ bool CDirect3D::Initialize(HWND hWnd)
 		return false;
 	}
 
-	ZeroMemory(&dPresentParams, sizeof(dPresentParams));
+	memset(&dPresentParams, 0, sizeof(dPresentParams));
 	dPresentParams.hDeviceWindow = hWnd;
     dPresentParams.Windowed = true;
 	dPresentParams.BackBufferCount = GUI.DoubleBuffered?2:1;

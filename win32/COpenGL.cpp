@@ -596,7 +596,7 @@ void COpenGL::EnumModes(std::vector<dMode> *modeVector)
 		if (!(dd.StateFlags & DISPLAY_DEVICE_MIRRORING_DRIVER) && (dd.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE))
 		{
 			DEVMODE dm;
-			ZeroMemory(&dm, sizeof(dm));
+			memset(&dm, 0, sizeof(dm));
 			dm.dmSize = sizeof(dm);
 			iMode = 0;
 			while(EnumDisplaySettings(dd.DeviceName,iMode,&dm)) {

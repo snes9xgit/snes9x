@@ -216,7 +216,7 @@ static uint16 get_crosshair_color (uint8);
 bool8 S9xGraphicsInit (void)
 {
 	S9xInitTileRenderer();
-	ZeroMemory(BlackColourMap, 256 * sizeof(uint16));
+	memset(BlackColourMap, 0, 256 * sizeof(uint16));
 
 #ifdef GFX_MULTI_FORMAT
 	if (GFX.BuildPixel == NULL)
@@ -246,7 +246,7 @@ bool8 S9xGraphicsInit (void)
 	}
 
     // Lookup table for color addition
-	ZeroMemory(GFX.X2, 0x10000 * sizeof(uint16));
+	memset(GFX.X2, 0, 0x10000 * sizeof(uint16));
 	for (uint32 r = 0; r <= MAX_RED; r++)
 	{
 		uint32	r2 = r << 1;
@@ -272,7 +272,7 @@ bool8 S9xGraphicsInit (void)
 	}
 
 	// Lookup table for 1/2 color subtraction
-	ZeroMemory(GFX.ZERO, 0x10000 * sizeof(uint16));
+	memset(GFX.ZERO, 0, 0x10000 * sizeof(uint16));
 	for (uint32 r = 0; r <= MAX_RED; r++)
 	{
 		uint32	r2 = r;
@@ -387,8 +387,8 @@ void S9xStartScreenRefresh (void)
 		PPU.RecomputeClipWindows = TRUE;
 		IPPU.PreviousLine = IPPU.CurrentLine = 0;
 
-		ZeroMemory(GFX.ZBuffer, GFX.ScreenSize);
-		ZeroMemory(GFX.SubZBuffer, GFX.ScreenSize);
+		memset(GFX.ZBuffer, 0, GFX.ScreenSize);
+		memset(GFX.SubZBuffer, 0, GFX.ScreenSize);
 	}
 
 	if (++IPPU.FrameCount % Memory.ROMFramesPerSecond == 0)
@@ -810,7 +810,7 @@ static void SetupOBJ (void)
 	if (!PPU.OAMPriorityRotation || !(PPU.OAMFlip & PPU.OAMAddr & 1)) // normal case
 	{
 		uint8	LineOBJ[SNES_HEIGHT_EXTENDED];
-		ZeroMemory(LineOBJ, sizeof(LineOBJ));
+		memset(LineOBJ, 0, sizeof(LineOBJ));
 
 		for (int i = 0; i < SNES_HEIGHT_EXTENDED; i++)
 		{
@@ -887,7 +887,7 @@ static void SetupOBJ (void)
 	{
 		// First, find out which sprites are on which lines
 		uint8	OBJOnLine[SNES_HEIGHT_EXTENDED][128];
-		ZeroMemory(OBJOnLine, sizeof(OBJOnLine));
+		memset(OBJOnLine, 0, sizeof(OBJOnLine));
 
 		for (S = 0; S < 128; S++)
 		{

@@ -1400,7 +1400,7 @@ static bool DoOpenRomDialog(TCHAR filename [_MAX_PATH], bool noCustomDlg = false
 		strcat0(lpfilterptr, FILE_INFO_ANY_FILE_TYPE);
 		strcat0(lpfilterptr, TEXT("\0*.*\0\0"));
 
-		ZeroMemory((LPVOID)&ofn, sizeof(OPENFILENAME));
+		memset((LPVOID)&ofn, 0, sizeof(OPENFILENAME));
 		ofn.lStructSize = sizeof(OPENFILENAME);
 		ofn.hwndOwner = GUI.hWnd;
 		ofn.lpstrFilter = lpfilter;
@@ -1523,7 +1523,7 @@ LRESULT CALLBACK WinProc(
 
 				szFileName[0] = TEXT('\0');
 
-				ZeroMemory( (LPVOID)&ofn, sizeof(OPENFILENAME) );
+				memset( (LPVOID)&ofn, 0, sizeof(OPENFILENAME) );
 				ofn.lStructSize = sizeof(OPENFILENAME);
 				ofn.hwndOwner = GUI.hWnd;
 				ofn.lpstrFilter = FILE_INFO_AVI_FILE_TYPE TEXT("\0*.avi\0") FILE_INFO_ANY_FILE_TYPE TEXT("\0*.*\0\0");
@@ -2564,7 +2564,7 @@ LRESULT CALLBACK WinProc(
 BOOL WinInit( HINSTANCE hInstance)
 {
     WNDCLASSEX wndclass;
-	ZeroMemory(&wndclass, sizeof(wndclass));
+	memset(&wndclass, 0, sizeof(wndclass));
 	wndclass.cbSize = sizeof(wndclass);
 
     wndclass.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
@@ -3568,7 +3568,7 @@ static void CheckMenuStates ()
     MENUITEMINFO mii;
     unsigned int i;
 
-    ZeroMemory( &mii, sizeof( mii));
+    memset( &mii, 0, sizeof( mii));
     mii.cbSize = sizeof( mii);
     mii.fMask = MIIM_STATE;
 
@@ -3818,7 +3818,7 @@ static void CheckMenuStates ()
 	mii.fState = !Settings.StopEmulation ? MFS_ENABLED : MFS_DISABLED;
 	SetMenuItemInfo (GUI.hMenu, ID_FILE_AVI_RECORDING, FALSE, &mii);
   
-	ZeroMemory(&mii, sizeof(mii));
+	memset(&mii, 0, sizeof(mii));
 	mii.cbSize = sizeof(mii);
 	mii.fMask = MIIM_STRING;
 
@@ -4955,7 +4955,7 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 					LPMALLOC lpm=NULL;
 					LPITEMIDLIST iidl=NULL;
 					BROWSEINFO bi;
-					ZeroMemory(&bi, sizeof(BROWSEINFO));
+					memset(&bi, 0, sizeof(BROWSEINFO));
 					TCHAR path[MAX_PATH];
 					_tfullpath(path, paths[which], MAX_PATH);
 					TCHAR title[]=SETTINGS_TITLE_SELECTFOLDER;
@@ -5283,7 +5283,7 @@ void GetPathFromTree( HWND hDlg, UINT tree, TCHAR* selected, HTREEITEM hItem)
 	TVITEM tv;
 	TCHAR temp[MAX_PATH];
 	temp[0]=('\0');
-	ZeroMemory(&tv, sizeof(TVITEM));
+	memset(&tv, 0, sizeof(TVITEM));
 	HTREEITEM hTreeTemp=hItem;
 
 	if(tv.iImage==7)
@@ -5292,7 +5292,7 @@ void GetPathFromTree( HWND hDlg, UINT tree, TCHAR* selected, HTREEITEM hItem)
 		tv.hItem=hTreeTemp;
 		tv.iImage=6;
 		TreeView_SetItem(GetDlgItem(hDlg, tree),&tv);
-		ZeroMemory(&tv, sizeof(TVITEM));
+		memset(&tv, 0, sizeof(TVITEM));
 	}
 
 	tv.mask=TVIF_HANDLE|TVIF_TEXT;
@@ -5350,7 +5350,7 @@ void ExpandDir(TCHAR * selected, HTREEITEM hParent, HWND hDlg)
 {
 	TCHAR temp[MAX_PATH];
 	WIN32_FIND_DATA wfd;
-	ZeroMemory(&wfd, sizeof(WIN32_FIND_DATA));
+	memset(&wfd, 0, sizeof(WIN32_FIND_DATA));
 	lstrcat(selected, TEXT("\\*"));
 	HANDLE hFind=FindFirstFile(selected,&wfd);
 	selected[(lstrlen(selected)-1)]=TEXT('\0');
@@ -5363,7 +5363,7 @@ void ExpandDir(TCHAR * selected, HTREEITEM hParent, HWND hDlg)
 			{
 				//skip these, add the rest.
 				TV_INSERTSTRUCT tvis;
-				ZeroMemory(&tvis, sizeof(TV_INSERTSTRUCT));
+				memset(&tvis, 0, sizeof(TV_INSERTSTRUCT));
 				tvis.hParent=hParent;
 				tvis.hInsertAfter=TVI_SORT;
 				tvis.item.mask = TVIF_STATE | TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE;
@@ -5381,7 +5381,7 @@ void ExpandDir(TCHAR * selected, HTREEITEM hParent, HWND hDlg)
 
 				bool subdir=false;
 				WIN32_FIND_DATA wfd2;
-				ZeroMemory(&wfd2, sizeof(WIN32_FIND_DATA));
+				memset(&wfd2, 0, sizeof(WIN32_FIND_DATA));
 				HANDLE hFind2=FindFirstFile(temp,&wfd2);
 				do
 				{
@@ -5398,7 +5398,7 @@ void ExpandDir(TCHAR * selected, HTREEITEM hParent, HWND hDlg)
 				if(subdir)
 				{
 					TV_INSERTSTRUCT tvis;
-					ZeroMemory(&tvis, sizeof(TV_INSERTSTRUCT));
+					memset(&tvis, 0, sizeof(TV_INSERTSTRUCT));
 					tvis.hParent=hNewTree;
 					tvis.hInsertAfter=TVI_SORT;
 					TreeView_InsertItem(GetDlgItem(hDlg, IDC_ROM_DIR),&tvis);
@@ -5426,7 +5426,7 @@ void ListFilesFromFolder(HWND hDlg, RomDataList** prdl)
 	TCHAR temp[MAX_PATH];
 	TCHAR selected[MAX_PATH]; // directory path
 	temp[0]='\0';
-	ZeroMemory(&tv, sizeof(TVITEM));
+	memset(&tv, 0, sizeof(TVITEM));
 	HTREEITEM hTreeItem=TreeView_GetSelection(GetDlgItem(hDlg, IDC_ROM_DIR));
 
 	GetPathFromTree(hDlg, IDC_ROM_DIR, selected, hTreeItem);
@@ -5438,7 +5438,7 @@ void ListFilesFromFolder(HWND hDlg, RomDataList** prdl)
 	//Add items here.
 
 	WIN32_FIND_DATA wfd;
-	ZeroMemory(&wfd, sizeof(WIN32_FIND_DATA));
+	memset(&wfd, 0, sizeof(WIN32_FIND_DATA));
 
 	lstrcat(selected, TEXT("\\*"));
 
@@ -5451,7 +5451,7 @@ void ListFilesFromFolder(HWND hDlg, RomDataList** prdl)
 		if(ExtensionIsValid(wfd.cFileName))
 		{
 			RomDataList* newitem=new RomDataList;
-			ZeroMemory(newitem, sizeof(RomDataList));
+			memset(newitem, 0, sizeof(RomDataList));
 			newitem->fname=new TCHAR[1+lstrlen(wfd.cFileName)];
 			lstrcpy(newitem->fname, wfd.cFileName);
 
@@ -5595,7 +5595,7 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 			RECT listRect;
 			WNDCLASSEX wcex;
 			TCHAR tempclassname[]=TEXT("S9xSplitter");
-			ZeroMemory(&wcex, sizeof(WNDCLASSEX));
+			memset(&wcex, 0, sizeof(WNDCLASSEX));
 			wcex.cbSize=sizeof(WNDCLASSEX);
 			wcex.hInstance=g_hInst;
 			wcex.lpfnWndProc=DlgChildSplitProc;
@@ -5617,7 +5617,7 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 
 			LVCOLUMN col;
 			static const LPTSTR temp1 = ROM_COLUMN_FILENAME;
-			ZeroMemory(&col, sizeof(LVCOLUMN));
+			memset(&col, 0, sizeof(LVCOLUMN));
 			col.mask=LVCF_FMT|LVCF_ORDER|LVCF_TEXT|LVCF_WIDTH;
 			col.fmt=LVCFMT_LEFT;
 			col.iOrder=0;
@@ -5628,7 +5628,7 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 			ListView_InsertColumn(romList,    0,   &col);
 
 			static const LPTSTR temp2 = ROM_COLUMN_DESCRIPTION;
-			ZeroMemory(&col, sizeof(LVCOLUMN));
+			memset(&col, 0, sizeof(LVCOLUMN));
 			col.mask=LVCF_FMT|LVCF_ORDER|LVCF_TEXT|LVCF_WIDTH|LVCF_SUBITEM;
 			col.fmt=LVCFMT_LEFT;
 			col.iOrder=1;
@@ -5641,7 +5641,7 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 
 
 			static const LPTSTR temp3 = ROM_COLUMN_SIZE;
-			ZeroMemory(&col, sizeof(LVCOLUMN));
+			memset(&col, 0, sizeof(LVCOLUMN));
 			col.mask=LVCF_FMT|LVCF_ORDER|LVCF_TEXT|LVCF_WIDTH|LVCF_SUBITEM;
 			col.fmt=LVCFMT_LEFT;
 			col.iOrder=2;
@@ -5729,7 +5729,7 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 						driveName[2]='\0';
 
 						TVINSERTSTRUCT tvis;
-						ZeroMemory(&tvis, sizeof(TVINSERTSTRUCT));
+						memset(&tvis, 0, sizeof(TVINSERTSTRUCT));
 
 						tvis.hParent=NULL;
 						tvis.hInsertAfter=TVI_ROOT;
@@ -5760,7 +5760,7 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 						if(driveType==DRIVE_REMOVABLE || driveType == DRIVE_CDROM || driveType == DRIVE_UNKNOWN)
 						{
 								TV_INSERTSTRUCT tvis;
-								ZeroMemory(&tvis, sizeof(TV_INSERTSTRUCT));
+								memset(&tvis, 0, sizeof(TV_INSERTSTRUCT));
 								tvis.hParent=hTwee;
 								tvis.hInsertAfter=TVI_SORT;
 								TreeView_InsertItem(dirList,&tvis);
@@ -5769,7 +5769,7 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 						else
 						{
 							WIN32_FIND_DATA wfd2;
-							ZeroMemory(&wfd2, sizeof(WIN32_FIND_DATA));
+							memset(&wfd2, 0, sizeof(WIN32_FIND_DATA));
 							HANDLE hFind2=FindFirstFile(temp,&wfd2);
 							do
 							{
@@ -5786,7 +5786,7 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 							if(subdir)
 							{
 								TV_INSERTSTRUCT tvis;
-								ZeroMemory(&tvis, sizeof(TV_INSERTSTRUCT));
+								memset(&tvis, 0, sizeof(TV_INSERTSTRUCT));
 								tvis.hParent=hTwee;
 								tvis.hInsertAfter=TVI_SORT;
 								TreeView_InsertItem(dirList,&tvis);
@@ -5816,7 +5816,7 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 							temp2 = temp3;
 
 						TVITEM tvi;
-						ZeroMemory(&tvi, sizeof(TVITEM));
+						memset(&tvi, 0, sizeof(TVITEM));
 						tvi.mask=TVIF_TEXT;
 						tvi.pszText=blah;
 						tvi.cchTextMax=MAX_PATH;
@@ -5872,7 +5872,7 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 					if(Memory.ROMFilename[0]!='\0')
 					{
 						LVFINDINFO lvfi;
-						ZeroMemory(&lvfi, sizeof(LVFINDINFO));
+						memset(&lvfi, 0, sizeof(LVFINDINFO));
 						TCHAR filename[_MAX_PATH];
 						TCHAR *tmp, *tmp2;
 						lstrcpy(filename,_tFromChar(Memory.ROMFilename));
@@ -5995,7 +5995,7 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 			case IDOK:
 				{
 					LVITEM lvi;
-					ZeroMemory(&lvi, sizeof(LVITEM));
+					memset(&lvi, 0, sizeof(LVITEM));
 					//get selections
 					int list_index = selectionMarkOverride == -1 ? ListView_GetSelectionMark(romList) : selectionMarkOverride;
 					if(list_index!=-1 && (int)SendMessage(romList, LVM_GETNEXTITEM, (WPARAM)-1, LVNI_SELECTED)!=-1)
@@ -6013,7 +6013,7 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 
 						HTREEITEM hTreeTemp=TreeView_GetSelection(dirList);
 						TVITEM tv;
-						ZeroMemory(&tv, sizeof(TVITEM));
+						memset(&tv, 0, sizeof(TVITEM));
 
 						tv.mask=TVIF_HANDLE|TVIF_TEXT;
 						tv.hItem=hTreeTemp;
@@ -6309,7 +6309,7 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 							else
 							{
 								TVITEM tv;
-								ZeroMemory(&tv, sizeof(TVITEM));
+								memset(&tv, 0, sizeof(TVITEM));
 								HTREEITEM hTreeTemp=nmTv->itemNew.hItem;
 
 								if(tv.iImage==6)
@@ -6322,7 +6322,7 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 
 
 								TV_INSERTSTRUCT tvis;
-								ZeroMemory(&tvis, sizeof(TV_INSERTSTRUCT));
+								memset(&tvis, 0, sizeof(TV_INSERTSTRUCT));
 								tvis.hParent=nmTv->itemNew.hItem;
 								tvis.hInsertAfter=TVI_SORT;
 								TreeView_InsertItem(dirList,&tvis);
@@ -6696,7 +6696,7 @@ void LoadExts(void)
 	ExtList* curr;
 	valid_ext=new ExtList;
 	curr=valid_ext;
-	ZeroMemory(curr, sizeof(ExtList));
+	memset(curr, 0, sizeof(ExtList));
 	ifstream in;
 
 #if (((defined(_MSC_VER) && _MSC_VER >= 1300)) || defined(__MINGW32__))
@@ -6728,7 +6728,7 @@ void LoadExts(void)
 		{
 			curr->next=new ExtList;
 			curr=curr->next;
-			ZeroMemory(curr, sizeof(ExtList));
+			memset(curr, 0, sizeof(ExtList));
 			if(_strnicmp(buffer+strlen(buffer)-1, "Y", 1)==0)
 				curr->compressed=true;
 			if(strlen(buffer)>1)
@@ -7232,7 +7232,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			break;
 		case IDC_SHADER_HLSL_BROWSE:
 			GetDlgItemText(hDlg,IDC_SHADER_HLSL_FILE,openFileName,MAX_PATH);
-			ZeroMemory((LPVOID)&ofn, sizeof(OPENFILENAME));
+			memset((LPVOID)&ofn, 0, sizeof(OPENFILENAME));
 
 			ofn.lStructSize = sizeof(OPENFILENAME);
 			ofn.hwndOwner = hDlg;
@@ -7251,7 +7251,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			break;
 		case IDC_SHADER_GLSL_BROWSE:
 			GetDlgItemText(hDlg,IDC_SHADER_GLSL_FILE,openFileName,MAX_PATH);
-			ZeroMemory((LPVOID)&ofn, sizeof(OPENFILENAME));
+			memset((LPVOID)&ofn, 0, sizeof(OPENFILENAME));
 
 			ofn.lStructSize = sizeof(OPENFILENAME);
 			ofn.hwndOwner = hDlg;
@@ -8108,7 +8108,7 @@ int* index;
 DWORD* state;
 }CheatTracker;
 
-#define ITEM_QUERY(a, b, c, d, e)  ZeroMemory(&a, sizeof(LV_ITEM)); \
+#define ITEM_QUERY(a, b, c, d, e)  memset(&a, 0, sizeof(LV_ITEM)); \
 						a.iItem= ListView_GetSelectionMark(GetDlgItem(hDlg, b)); \
 						a.iSubItem=c; \
 						a.mask=LVIF_TEXT; \
@@ -8138,7 +8138,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			LVCOLUMN col;
 			TCHAR temp[32];
 			lstrcpy(temp,SEARCH_COLUMN_ADDRESS);
-			ZeroMemory(&col, sizeof(LVCOLUMN));
+			memset(&col, 0, sizeof(LVCOLUMN));
 			col.mask=LVCF_FMT|LVCF_ORDER|LVCF_TEXT|LVCF_WIDTH;
 			col.fmt=LVCFMT_LEFT;
 			col.iOrder=0;
@@ -8149,7 +8149,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			ListView_InsertColumn(GetDlgItem(hDlg,IDC_CHEAT_LIST),    0,   &col);
 
 			lstrcpy(temp,SEARCH_COLUMN_VALUE);
-			ZeroMemory(&col, sizeof(LVCOLUMN));
+			memset(&col, 0, sizeof(LVCOLUMN));
 			col.mask=LVCF_FMT|LVCF_ORDER|LVCF_TEXT|LVCF_WIDTH|LVCF_SUBITEM;
 			col.fmt=LVCFMT_LEFT;
 			col.iOrder=1;
@@ -8161,7 +8161,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			ListView_InsertColumn(GetDlgItem(hDlg,IDC_CHEAT_LIST),    1,   &col);
 
 			lstrcpy(temp,SEARCH_COLUMN_DESCRIPTION);
-			ZeroMemory(&col, sizeof(LVCOLUMN));
+			memset(&col, 0, sizeof(LVCOLUMN));
 			col.mask=LVCF_FMT|LVCF_ORDER|LVCF_TEXT|LVCF_WIDTH|LVCF_SUBITEM;
 			col.fmt=LVCFMT_LEFT;
 			col.iOrder=2;
@@ -8182,7 +8182,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				int curr_idx=-1;
 				_stprintf(buffer, TEXT("%06X"), Cheat.c[counter].address);
 				LVITEM lvi;
-				ZeroMemory(&lvi, sizeof(LVITEM));
+				memset(&lvi, 0, sizeof(LVITEM));
 				lvi.mask=LVIF_TEXT;
 				lvi.pszText=buffer;
 				lvi.cchTextMax=7;
@@ -8199,7 +8199,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				ct.state[counter]=Untouched;
 
 				_stprintf(buffer, TEXT("%02X"), Cheat.c[counter].byte);
-				ZeroMemory(&lvi, sizeof(LVITEM));
+				memset(&lvi, 0, sizeof(LVITEM));
 				lvi.iItem=curr_idx;
 				lvi.iSubItem=1;
 				lvi.mask=LVIF_TEXT;
@@ -8208,7 +8208,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				SendDlgItemMessage(hDlg,IDC_CHEAT_LIST, LVM_SETITEM, 0, (LPARAM)&lvi);
 
 				lstrcpy(buffer,_tFromChar(Cheat.c[counter].name));
-				ZeroMemory(&lvi, sizeof(LVITEM));
+				memset(&lvi, 0, sizeof(LVITEM));
 				lvi.iItem=curr_idx;
 				lvi.iSubItem=2;
 				lvi.mask=LVIF_TEXT;
@@ -8336,7 +8336,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 							int curr_idx=-1;
 							_stprintf(buffer, TEXT("%06X"), addy);
 							LVITEM lvi;
-							ZeroMemory(&lvi, sizeof(LVITEM));
+							memset(&lvi, 0, sizeof(LVITEM));
 							lvi.mask=LVIF_TEXT;
 							lvi.pszText=buffer;
 							lvi.cchTextMax=6;
@@ -8352,7 +8352,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 
 							_stprintf(buffer, TEXT("%02X"), byte[j]);
-							ZeroMemory(&lvi, sizeof(LVITEM));
+							memset(&lvi, 0, sizeof(LVITEM));
 							lvi.iItem=curr_idx;
 							lvi.iSubItem=1;
 							lvi.mask=LVIF_TEXT;
@@ -8363,7 +8363,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 							GetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, tempDesc, 23);
 
-							ZeroMemory(&lvi, sizeof(LVITEM));
+							memset(&lvi, 0, sizeof(LVITEM));
 							lvi.iItem=curr_idx;
 							lvi.iSubItem=2;
 							lvi.mask=LVIF_TEXT;
@@ -8387,7 +8387,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 						int curr_idx=-1;
 						LVITEM lvi;
-						ZeroMemory(&lvi, sizeof(LVITEM));
+						memset(&lvi, 0, sizeof(LVITEM));
 						lvi.mask=LVIF_TEXT;
 						lvi.pszText=buffer;
 						lvi.cchTextMax=6;
@@ -8402,7 +8402,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 						_stprintf(buffer2, TEXT("%02X"), byte);
 
-						ZeroMemory(&lvi, sizeof(LVITEM));
+						memset(&lvi, 0, sizeof(LVITEM));
 						lvi.iItem=curr_idx;
 						lvi.iSubItem=1;
 						lvi.mask=LVIF_TEXT;
@@ -8412,7 +8412,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 						GetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, tempDesc, 23);
 
-						ZeroMemory(&lvi, sizeof(LVITEM));
+						memset(&lvi, 0, sizeof(LVITEM));
 						lvi.iItem=curr_idx;
 						lvi.iSubItem=2;
 						lvi.mask=LVIF_TEXT;
@@ -8465,7 +8465,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 //							int curr_idx=-1;
 							_stprintf(buffer, TEXT("%06X"), addy);
 							LVITEM lvi;
-							ZeroMemory(&lvi, sizeof(LVITEM));
+							memset(&lvi, 0, sizeof(LVITEM));
 							lvi.mask=LVIF_TEXT;
 							lvi.pszText=buffer;
 							lvi.cchTextMax=6;
@@ -8473,7 +8473,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 							ListView_SetItem(GetDlgItem(hDlg,IDC_CHEAT_LIST), &lvi);
 
 							_stprintf(buffer, TEXT("%02X"), byte[j]);
-							ZeroMemory(&lvi, sizeof(LVITEM));
+							memset(&lvi, 0, sizeof(LVITEM));
 							lvi.iItem=sel_idx;
 							lvi.iSubItem=1;
 							lvi.mask=LVIF_TEXT;
@@ -8483,7 +8483,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 							GetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, temp, 23);
 
-							ZeroMemory(&lvi, sizeof(LVITEM));
+							memset(&lvi, 0, sizeof(LVITEM));
 							lvi.iItem=sel_idx;
 							lvi.iSubItem=2;
 							lvi.mask=LVIF_TEXT;
@@ -8511,7 +8511,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 //						int curr_idx=-1;
 						LVITEM lvi;
-						ZeroMemory(&lvi, sizeof(LVITEM));
+						memset(&lvi, 0, sizeof(LVITEM));
 						lvi.mask=LVIF_TEXT;
 						lvi.pszText=buffer;
 						lvi.cchTextMax=6;
@@ -8529,7 +8529,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 						_stprintf(buffer, TEXT("%02X"), byte);
 
-						ZeroMemory(&lvi, sizeof(LVITEM));
+						memset(&lvi, 0, sizeof(LVITEM));
 						lvi.iItem=sel_idx;
 						lvi.iSubItem=1;
 						lvi.mask=LVIF_TEXT;
@@ -8539,7 +8539,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 						GetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, temp, 23);
 
-						ZeroMemory(&lvi, sizeof(LVITEM));
+						memset(&lvi, 0, sizeof(LVITEM));
 						lvi.iItem=sel_idx;
 						lvi.iSubItem=2;
 						lvi.mask=LVIF_TEXT;
@@ -8794,7 +8794,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 										TCHAR buf[25];
 										LV_ITEM lvi;
-										ZeroMemory(&lvi, sizeof(LV_ITEM));
+										memset(&lvi, 0, sizeof(LV_ITEM));
 										lvi.iItem= k;
 										lvi.mask=LVIF_TEXT;
 										lvi.pszText=buf;
@@ -8805,7 +8805,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 										ScanAddress(lvi.pszText, scanned);
 										Cheat.c[l].address = scanned;
 
-										ZeroMemory(&lvi, sizeof(LV_ITEM));
+										memset(&lvi, 0, sizeof(LV_ITEM));
 										lvi.iItem= k;
 										lvi.iSubItem=1;
 										lvi.mask=LVIF_TEXT;
@@ -8817,7 +8817,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 										_stscanf(lvi.pszText, TEXT("%02X"), &scanned);
 										Cheat.c[l].byte = (uint8)(scanned & 0xff);
 
-										ZeroMemory(&lvi, sizeof(LV_ITEM));
+										memset(&lvi, 0, sizeof(LV_ITEM));
 										lvi.iItem= k;
 										lvi.iSubItem=2;
 										lvi.mask=LVIF_TEXT;
@@ -8843,7 +8843,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 								bool8 enabled;
 								TCHAR buf[25];
 								LV_ITEM lvi;
-								ZeroMemory(&lvi, sizeof(LV_ITEM));
+								memset(&lvi, 0, sizeof(LV_ITEM));
 								lvi.iItem= k;
 								lvi.mask=LVIF_TEXT;
 								lvi.pszText=buf;
@@ -8854,7 +8854,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 								ScanAddress(lvi.pszText, scanned);
 								address = scanned;
 
-								ZeroMemory(&lvi, sizeof(LV_ITEM));
+								memset(&lvi, 0, sizeof(LV_ITEM));
 								lvi.iItem= k;
 								lvi.iSubItem=1;
 								lvi.mask=LVIF_TEXT;
@@ -8870,7 +8870,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 								S9xAddCheat(enabled,true,address,byte);
 
-								ZeroMemory(&lvi, sizeof(LV_ITEM));
+								memset(&lvi, 0, sizeof(LV_ITEM));
 								lvi.iItem= k;
 								lvi.iSubItem=2;
 								lvi.mask=LVIF_TEXT;
@@ -9080,7 +9080,7 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 			LVCOLUMN col;
 			TCHAR temp[32];
 			lstrcpy(temp,TEXT("Address"));
-			ZeroMemory(&col, sizeof(LVCOLUMN));
+			memset(&col, 0, sizeof(LVCOLUMN));
 			col.mask=LVCF_FMT|LVCF_ORDER|LVCF_TEXT|LVCF_WIDTH;
 			col.fmt=LVCFMT_LEFT;
 			col.iOrder=0;
@@ -9091,7 +9091,7 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 			ListView_InsertColumn(GetDlgItem(hDlg,IDC_ADDYS),   0,   &col);
 
 			lstrcpy(temp,TEXT("Curr. Value"));
-			ZeroMemory(&col, sizeof(LVCOLUMN));
+			memset(&col, 0, sizeof(LVCOLUMN));
 			col.mask=LVCF_FMT|LVCF_ORDER|LVCF_TEXT|LVCF_WIDTH|LVCF_SUBITEM;
 			col.fmt=LVCFMT_LEFT;
 			col.iOrder=1;
@@ -9103,7 +9103,7 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 			ListView_InsertColumn(GetDlgItem(hDlg,IDC_ADDYS),    1,   &col);
 
 			lstrcpy(temp,TEXT("Prev. Value"));
-			ZeroMemory(&col, sizeof(LVCOLUMN));
+			memset(&col, 0, sizeof(LVCOLUMN));
 			col.mask=LVCF_FMT|LVCF_ORDER|LVCF_TEXT|LVCF_WIDTH|LVCF_SUBITEM;
 			col.fmt=LVCFMT_LEFT;
 			col.iOrder=2;
@@ -9495,7 +9495,7 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 //					int idx=-1;
 					LVITEM lvi;
 					static TCHAR buf[12]; // the following code assumes this variable is static, I think
-					ZeroMemory(&cht, sizeof(struct SCheat));
+					memset(&cht, 0, sizeof(struct SCheat));
 
 					//retrieve and convert to SCheat
 
@@ -9652,7 +9652,7 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 					lstrcpy(szFileName, TEXT("watches"));
 					_tfullpath(szPathName, S9xGetDirectoryT(CHEAT_DIR), MAX_PATH);
 
-					ZeroMemory( (LPVOID)&ofn, sizeof(OPENFILENAME) );
+					memset( (LPVOID)&ofn, 0, sizeof(OPENFILENAME) );
 					ofn.lStructSize = sizeof(OPENFILENAME);
 					ofn.hwndOwner = GUI.hWnd;
 					ofn.lpstrFilter = FILE_INFO_TXT_FILE_TYPE TEXT("\0*.txt\0") FILE_INFO_ANY_FILE_TYPE TEXT("\0*.*\0\0");
@@ -9711,7 +9711,7 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 					lstrcpy(szFileName, TEXT("watches"));
 					_tfullpath(szPathName, S9xGetDirectoryT(CHEAT_DIR), MAX_PATH);
 
-					ZeroMemory( (LPVOID)&ofn, sizeof(OPENFILENAME) );
+					memset( (LPVOID)&ofn, 0, sizeof(OPENFILENAME) );
 					ofn.lStructSize = sizeof(OPENFILENAME);
 					ofn.hwndOwner = GUI.hWnd;
 					ofn.lpstrFilter = FILE_INFO_TXT_FILE_TYPE TEXT("\0*.txt\0") FILE_INFO_ANY_FILE_TYPE TEXT("\0*.*\0\0");
@@ -10002,7 +10002,7 @@ INT_PTR CALLBACK DlgCheatSearchAdd(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 					TCHAR buf[23];
 					int temp=new_cheat->size;
 					S9xCheatDataSize tmp = S9X_8_BITS;
-					ZeroMemory(new_cheat, sizeof(struct SCheat));
+					memset(new_cheat, 0, sizeof(struct SCheat));
 					new_cheat->size=temp;
 					GetDlgItemText(hDlg, IDC_NC_ADDRESS, buf, 7);
 					ScanAddress(buf, new_cheat->address);
@@ -10321,7 +10321,7 @@ INT_PTR CALLBACK DlgOpenMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 					szFileName[0] = TEXT('\0');
 
-					ZeroMemory( (LPVOID)&ofn, sizeof(OPENFILENAME) );
+					memset( (LPVOID)&ofn, 0, sizeof(OPENFILENAME) );
 					ofn.lStructSize = sizeof(OPENFILENAME);
 					ofn.hwndOwner = hDlg;
 					ofn.lpstrFilter = MOVIE_FILETYPE_DESCRIPTION TEXT("\0*.smv\0") FILE_INFO_ANY_FILE_TYPE TEXT("\0*.*\0\0");
@@ -10468,7 +10468,7 @@ INT_PTR CALLBACK DlgCreateMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 
 					szFileName[0] = TEXT('\0');
 
-					ZeroMemory( (LPVOID)&ofn, sizeof(OPENFILENAME) );
+					memset( (LPVOID)&ofn, 0, sizeof(OPENFILENAME) );
 					ofn.lStructSize = sizeof(OPENFILENAME);
 					ofn.hwndOwner = hDlg;
 					ofn.lpstrFilter = MOVIE_FILETYPE_DESCRIPTION TEXT("\0*.smv\0") FILE_INFO_ANY_FILE_TYPE TEXT("\0*.*\0\0");

@@ -296,7 +296,6 @@ typedef unsigned long long	uint64;
 #endif
 
 #ifndef __WIN32__
-#define ZeroMemory(a, b)	memset((a), 0, (b))
 void _splitpath (const char *, char *, char *, char *, char *);
 void _makepath (char *, const char *, const char *, const char *, const char *);
 #define S9xDisplayString	DisplayStringFromBottom

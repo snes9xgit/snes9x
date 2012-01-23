@@ -1555,7 +1555,7 @@ int main (int argc, char **argv)
 	snprintf(default_dir, PATH_MAX + 1, "%s%s%s", getenv("HOME"), SLASH_STR, ".snes9x");
 	s9x_base_dir = default_dir;
 
-	ZeroMemory(&Settings, sizeof(Settings));
+	memset(&Settings, 0, sizeof(Settings));
 	Settings.MouseMaster = TRUE;
 	Settings.SuperScopeMaster = TRUE;
 	Settings.JustifierMaster = TRUE;
@@ -1594,7 +1594,7 @@ int main (int argc, char **argv)
 	unixSettings.SoundBufferSize = 100;
 	unixSettings.SoundFragmentSize = 2048;
 
-	ZeroMemory(&so, sizeof(so));
+	memset(&so, 0, sizeof(so));
 
 	CPU.Flags = 0;
 

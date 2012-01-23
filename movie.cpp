@@ -412,14 +412,14 @@ static void reset_controllers (void)
 		MovieSetJoypad(i, 0);
 
 	uint8 clearedMouse[MOUSE_DATA_SIZE];
-	ZeroMemory(clearedMouse, MOUSE_DATA_SIZE);
+	memset(clearedMouse, 0, MOUSE_DATA_SIZE);
 	clearedMouse[4] = 1;
 
 	uint8 clearedScope[SCOPE_DATA_SIZE];
-	ZeroMemory(clearedScope, SCOPE_DATA_SIZE);
+	memset(clearedScope, 0, SCOPE_DATA_SIZE);
 
 	uint8 clearedJustifier[JUSTIFIER_DATA_SIZE];
-	ZeroMemory(clearedJustifier, JUSTIFIER_DATA_SIZE);
+	memset(clearedJustifier, 0, JUSTIFIER_DATA_SIZE);
 
 	for (int p = 0; p < 2; p++)
 	{
@@ -614,7 +614,7 @@ static void write_movie_header (FILE *fd, SMovie *movie)
 {
 	uint8	buf[SMV_HEADER_SIZE], *ptr = buf;
 
-	ZeroMemory(buf, sizeof(buf));
+	memset(buf, 0, sizeof(buf));
 
 	Write32(SMV_MAGIC, ptr);
 	Write32(SMV_VERSION, ptr);
@@ -963,7 +963,7 @@ int S9xMovieGetInfo (const char *filename, struct MovieInfo *info)
 
 	flush_movie();
 
-	ZeroMemory(info, sizeof(*info));
+	memset(info, 0, sizeof(*info));
 
 	if (!(fd = fopen(filename, "rb")))
 		return (FILE_NOT_FOUND);
@@ -1092,7 +1092,7 @@ void S9xMovieUpdateOnReset (void)
 
 void S9xMovieInit (void)
 {
-	ZeroMemory(&Movie, sizeof(Movie));
+	memset(&Movie, 0, sizeof(Movie));
 	Movie.State = MOVIE_STATE_NONE;
 }
 
