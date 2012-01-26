@@ -2318,7 +2318,7 @@ void CMemory::InitROM (void)
 	Settings.SETA = 0;
 	Settings.SRTC = FALSE;
 	Settings.BS = FALSE;
-	
+
 	SuperFX.nRomBanks = CalculatedSize >> 15;
 
 	//// Parse ROM header and read ROM informatoin
@@ -3318,7 +3318,7 @@ void CMemory::Map_SPC7110HiROMMap (void)
 	map_System();
 
 	map_index(0x00, 0x00, 0x6000, 0x7fff, MAP_HIROM_SRAM, MAP_TYPE_RAM);
-	map_hirom(0x00, 0x0f, 0x8000, 0xffff, CalculatedSize);	
+	map_hirom(0x00, 0x0f, 0x8000, 0xffff, CalculatedSize);
 	map_index(0x30, 0x30, 0x6000, 0x7fff, MAP_HIROM_SRAM, MAP_TYPE_RAM);
 	map_index(0x50, 0x50, 0x0000, 0xffff, MAP_SPC7110_DRAM, MAP_TYPE_ROM);
 	map_hirom(0x80, 0x8f, 0x8000, 0xffff, CalculatedSize);
@@ -3613,14 +3613,13 @@ void CMemory::ApplyROMFixes (void)
 	//// APU timing hacks :(
 
 	Timings.APUSpeedup = 0;
-	Timings.APUAllowTimeOverflow = FALSE;
 
 	if (!Settings.DisableGameSpecificHacks)
 	{
 		if (match_id("AVCJ"))                                      // Rendering Ranger R2
-			Timings.APUSpeedup = 4;
+			Timings.APUSpeedup = 2;
 
-		if (match_na("GAIA GENSOUKI 1 JPN")                     || // Gaia Gensouki
+/*		if (match_na("GAIA GENSOUKI 1 JPN")                     || // Gaia Gensouki
 			match_id("JG  ")                                    || // Illusion of Gaia
 			match_id("CQ  ")                                    || // Stunt Race FX
 			match_na("SOULBLADER - 1")                          || // Soul Blader
@@ -3654,22 +3653,10 @@ void CMemory::ApplyROMFixes (void)
 			match_nn("Parlor")                                  || // Parlor mini/2/3/4/5/6/7, Parlor Parlor!/2/3/4/5
 			match_na("HEIWA Parlor!Mini8")                      || // Parlor mini 8
 			match_nn("SANKYO Fever! \xCC\xA8\xB0\xCA\xDE\xB0!"))   // SANKYO Fever! Fever!
-			Timings.APUSpeedup = 1;
-
-		if (match_na ("EARTHWORM JIM 2")						|| // Earthworm Jim 2
-			match_na ("NBA Hangtime")							|| // NBA Hang Time
-			match_na ("MSPACMAN")								|| // Ms Pacman
-			match_na ("THE MASK")								|| // The Mask
-			match_na ("PRIMAL RAGE")							|| // Primal Rage
-			match_na ("PORKY PIGS HAUNTED")						|| // Porky Pig's Haunted Holiday
-			match_na ("Big Sky Trooper")						|| // Big Sky Trooper
-			match_id ("A35")									|| // Mechwarrior 3050 / Battle Tech 3050
-			match_na ("DOOM TROOPERS"))							   // Doom Troopers
-			Timings.APUAllowTimeOverflow = TRUE;
+			Timings.APUSpeedup = 1; */
 	}
 
 	S9xAPUTimingSetSpeedup(Timings.APUSpeedup);
-	S9xAPUAllowTimeOverflow(Timings.APUAllowTimeOverflow);
 
 	//// Other timing hacks :(
 

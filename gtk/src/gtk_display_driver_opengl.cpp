@@ -905,14 +905,17 @@ S9xOpenGLDisplayDriver::swap_control (int enable)
         queried = TRUE;
     }
 
-    if (glSwapInterval)
-    {
-        glSwapInterval (enable);
-    }
-
     if (glXSwapIntervalEXT)
     {
+        if (glSwapInterval)
+            glSwapInterval (0);
+
         glXSwapIntervalEXT (display, xwindow, enable);
+    }
+
+    else if (glSwapInterval)
+    {
+        glSwapInterval (enable);
     }
 
     return;

@@ -342,15 +342,6 @@ if test yes = "$with_jma_decomp"; then
    JMA=yes
 fi
 
-dnl FIXME: There is a third case (OLD) that is missed with this.
-if test yes = "$with_newblend"; then
-   CFLAGS="$CFLAGS -DNEW_COLOUR_BLENDING"
-else
-   #OLD_COLOUR_BLENDING hasn't been default for a while
-   # SYSDEFINES="$SYSDEFINES"' -DOLD_COLOUR_BLENDING'
-   :
-fi
-
 if test yes = "$with_zlib"; then
   AC_CHECK_HEADERS(zlib.h)
   AC_CHECK_LIB(z, gzread, [
@@ -432,7 +423,7 @@ if test $ac_cv_my_sar_int8 = yes && \
   CFLAGS="$CFLAGS -DRIGHTSHIFT_IS_SAR"
 fi
 
-CFLAGS="$CFLAGS -DCPU_SHUTDOWN -DSPC700_SHUTDOWN -DNO_INLINE_SET_GET -DUNZIP_SUPPORT -DSPC700_C -I. -I.. -I../unzip"
+CFLAGS="$CFLAGS -DUNZIP_SUPPORT -DSPC700_C -I. -I.. -I../unzip"
 
 CXXFLAGS="$CFLAGS"
 

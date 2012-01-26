@@ -221,7 +221,6 @@ event_motion_notify (GtkWidget      *widget,
                      gpointer       user_data)
 {
     Snes9xWindow *window = (Snes9xWindow *) user_data;
-    int          c_width, c_height;
 
     if (!window->config->rom_loaded ||
         window->last_width <= 0     ||
@@ -229,9 +228,6 @@ event_motion_notify (GtkWidget      *widget,
     {
         return FALSE;
     }
-
-    c_width = window->get_width ();
-    c_height = window->get_height ();
 
     window->mouse_loc_x = (uint16)
         ((int) (event->x) - window->mouse_region_x) * 256 /
