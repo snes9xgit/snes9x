@@ -51,7 +51,7 @@ main (int argc, char *argv[])
     bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
     textdomain (GETTEXT_PACKAGE);
 
-    ZeroMemory (&Settings, sizeof (Settings));
+    memset (&Settings, 0, sizeof (Settings));
 
     /* Allow original config file for backend settings */
     S9xLoadConfigFiles (argv, argc);
