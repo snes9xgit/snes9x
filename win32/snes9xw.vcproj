@@ -158,7 +158,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\snes9x"
+				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\apu\bapu"
 				PreprocessorDefinitions="NDEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;FMODEX_SUPPORT;NETPLAY_SUPPORT"
 				StringPooling="true"
 				RuntimeLibrary="0"
@@ -255,7 +255,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\snes9x"
+				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\apu\bapu"
 				PreprocessorDefinitions="_DEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;FMODEX_SUPPORT;NETPLAY_SUPPORT;D3D_DEBUG_INFO"
 				RuntimeLibrary="1"
 				StructMemberAlignment="0"
@@ -354,7 +354,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\snes9x"
+				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\apu\bapu"
 				PreprocessorDefinitions="_DEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;FMODEX_SUPPORT;NETPLAY_SUPPORT;D3D_DEBUG_INFO"
 				RuntimeLibrary="1"
 				StructMemberAlignment="0"
@@ -453,7 +453,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)&quot;;&quot;$(ProjectDir)..\&quot;;&quot;$(ProjectDir)..\..\&quot;;&quot;$(ProjectDir)..\..\zLib&quot;;&quot;$(ProjectDir)..\unzip&quot;;&quot;$(ProjectDir)..\..\FMOD\api\inc&quot;;&quot;$(ProjectDir)..\..\libPNG\src&quot;;&quot;$(ProjectDir)..\snes9x&quot;"
+				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\apu\bapu"
 				PreprocessorDefinitions="_DEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;FMODEX_SUPPORT;NETPLAY_SUPPORT;D3D_DEBUG_INFO"
 				RuntimeLibrary="1"
 				StructMemberAlignment="0"
@@ -553,7 +553,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)&quot;;&quot;$(ProjectDir)..\&quot;;&quot;$(ProjectDir)..\..\&quot;;&quot;$(ProjectDir)..\..\zLib&quot;;&quot;$(ProjectDir)..\unzip&quot;;&quot;$(ProjectDir)..\..\FMOD\api\inc&quot;;&quot;$(ProjectDir)..\..\libPNG\src&quot;;&quot;$(ProjectDir)..\snes9x&quot;"
+				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\apu\bapu"
 				PreprocessorDefinitions="_DEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;FMODEX_SUPPORT;NETPLAY_SUPPORT;D3D_DEBUG_INFO"
 				RuntimeLibrary="1"
 				StructMemberAlignment="0"
@@ -660,7 +660,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\snes9x"
+				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\apu\bapu"
 				PreprocessorDefinitions="NDEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;FMODEX_SUPPORT;NETPLAY_SUPPORT"
 				StringPooling="true"
 				RuntimeLibrary="0"
@@ -765,7 +765,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\snes9x"
+				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\apu\bapu"
 				PreprocessorDefinitions="NDEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;FMODEX_SUPPORT;NETPLAY_SUPPORT"
 				StringPooling="true"
 				RuntimeLibrary="0"
@@ -4513,375 +4513,71 @@
 			<File
 				RelativePath="..\apu\apu.h"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\apu\blargg_common.h"
+				RelativePath="..\apu\hermite_resampler.h"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\apu\blargg_config.h"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\apu\blargg_endian.h"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\apu\blargg_source.h"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\apu\resampler.h"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\apu\ring_buffer.h"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\apu\SNES_SPC.cpp"
+				RelativePath="..\apu\bapu\snes\snes.hpp"
 				>
 			</File>
-			<File
-				RelativePath="..\apu\SNES_SPC.h"
+			<Filter
+				Name="DSP"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
+				<File
+					RelativePath="..\apu\bapu\dsp\blargg_common.h"
 					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|x64"
+				</File>
+				<File
+					RelativePath="..\apu\bapu\dsp\blargg_config.h"
 					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|Win32"
+				</File>
+				<File
+					RelativePath="..\apu\bapu\dsp\blargg_endian.h"
 					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|x64"
+				</File>
+				<File
+					RelativePath="..\apu\bapu\dsp\blargg_source.h"
 					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\apu\SNES_SPC_misc.cpp"
+				</File>
+				<File
+					RelativePath="..\apu\bapu\dsp\sdsp.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\apu\bapu\dsp\sdsp.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\apu\bapu\dsp\SPC_DSP.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\apu\bapu\dsp\SPC_DSP.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="SMP"
 				>
-			</File>
-			<File
-				RelativePath="..\apu\SNES_SPC_state.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\apu\SPC_CPU.h"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
+				<File
+					RelativePath="..\apu\bapu\smp\smp.cpp"
 					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|x64"
+				</File>
+				<File
+					RelativePath="..\apu\bapu\smp\smp_state.cpp"
 					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\apu\SPC_DSP.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\apu\SPC_DSP.h"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\apu\SPC_Filter.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\apu\SPC_Filter.h"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|x64"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-			</File>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Filter"

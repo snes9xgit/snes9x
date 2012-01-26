@@ -198,6 +198,7 @@ void S9xAPUSetReferenceTime (int32);
 void S9xAPUTimingSetSpeedup (int);
 void S9xAPUAllowTimeOverflow (bool);
 void S9xAPULoadState (uint8 *);
+void S9xAPULoadBlarggState(uint8 *oldblock);
 void S9xAPUSaveState (uint8 *);
 void S9xDumpSPCSnapshot (void);
 bool8 S9xSPCDump (const char *);

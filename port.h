@@ -248,10 +248,16 @@ typedef signed int			int32;
 #endif
 typedef unsigned int		uint32;
 #endif
-typedef unsigned char		uint8_t;
-typedef signed char         int8_t;
 typedef signed __int64		int64;
 typedef unsigned __int64	uint64;
+typedef int8                int8_t;
+typedef uint8       		uint8_t;
+typedef int16       		int16_t;
+typedef uint16      		uint16_t;
+typedef int32		    	int32_t;
+typedef uint32      		uint32_t;
+typedef int64               int64_t;
+typedef uint64              uint64_t;
 typedef int					socklen_t;
 #else	// __WIN32__
 typedef signed char			int8;
