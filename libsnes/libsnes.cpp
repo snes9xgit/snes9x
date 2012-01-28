@@ -170,11 +170,14 @@ bool snes_load_cartridge_bsx_slotted(
 }
 
 bool snes_load_cartridge_bsx(
-      const char *, const uint8_t *, unsigned,
-      const char *, const uint8_t *, unsigned
+      const char *rom_xml, const uint8_t *rom_data, unsigned rom_size,
+      const char *bsx_xml, const uint8_t *bsx_data, unsigned bsx_size
       )
 {
-   return false;
+   if(bsx_data==NULL)
+       return snes_load_cartridge_normal(rom_xml,rom_data,rom_size);
+   memcpy(Memory.BIOSROM,rom_data,rom_size);
+   return snes_load_cartridge_normal(bsx_xml,bsx_data,bsx_size);
 }
 
 bool snes_load_cartridge_sufami_turbo(
@@ -668,20 +671,19 @@ bool8 S9xContinueUpdate(int width, int height)
    return S9xDeinitUpdate(width, height);
 }
 
-
 // Dummy functions that should probably be implemented correctly later.
 void S9xParsePortConfig(ConfigFile&, int) {}
 void S9xSyncSpeed() {}
 //void S9xPollPointer(int, short*, short*) {}
 const char* S9xStringInput(const char* in) { return in; }
 const char* S9xGetFilename(const char* in, s9x_getdirtype) { return in; }
-const char* S9xGetDirectory(s9x_getdirtype) { return NULL; }
+const char* S9xGetDirectory(s9x_getdirtype) { return ""; }
 void S9xInitInputDevices() {}
-const char* S9xChooseFilename(unsigned char) { return NULL; }
+const char* S9xChooseFilename(unsigned char) { return ""; }
 void S9xHandlePortCommand(s9xcommand_t, short, short) {}
 bool S9xPollButton(unsigned int, bool*) { return false; }
 void S9xToggleSoundChannel(int) {}
-const char* S9xGetFilenameInc(const char* in, s9x_getdirtype) { return NULL; }
+const char* S9xGetFilenameInc(const char* in, s9x_getdirtype) { return ""; }
 const char* S9xBasename(const char* in) { return in; }
 bool8 S9xInitUpdate() { return TRUE; }
 void S9xExtraUsage() {}

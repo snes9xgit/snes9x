@@ -1023,11 +1023,19 @@ static bool8 BSX_LoadBIOS (void)
 	return (r);
 }
 
+static bool8 is_BSX_BIOS (const uint8 *data, uint32 size)
+{
+	if (size == BIOS_SIZE && strncmp((char *) (data + 0x7FC0), "Satellaview BS-X     ", 21) == 0)
+		return (TRUE);
+	else
+		return (FALSE);
+}
+
 void S9xInitBSX (void)
 {
 	Settings.BS = FALSE;
 
-	if (!memcmp(&Memory.ROM[0x7FC0], "Satellaview BS-X     ", 21))
+    if (is_BSX_BIOS(Memory.ROM,Memory.CalculatedSize))
 	{
 		// BS-X itself
 
@@ -1074,7 +1082,7 @@ void S9xInitBSX (void)
 
 			BSX.bootup = Settings.BSXBootup;
 
-			if (!BSX_LoadBIOS())
+			if (!BSX_LoadBIOS() && !is_BSX_BIOS(BIOSROM,BIOS_SIZE))
 			{
 				BSX.bootup = FALSE;
 				memset(BIOSROM, 0, BIOS_SIZE);
