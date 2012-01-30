@@ -104,7 +104,7 @@ msgstr ""
 
 #: ../src/gtk_preferences.cpp:388
 msgid " Only barebones features enabled<i>"
-msgstr ""
+msgstr " Fonctionnalités de base seulement<i>"
 
 #: ../src/gtk_preferences.cpp:391
 msgid " OpenGL"
@@ -179,7 +179,7 @@ msgstr "Erreur à l'ouverture de %s\n"
 
 #: ../src/gtk_s9xwindow.cpp:767
 msgid "Couldn't load files."
-msgstr "Impossible de charger les fichiers"
+msgstr "Impossible de charger les fichiers."
 
 #: ../src/gtk_s9xwindow.cpp:799
 msgid "Open SNES Movie"
@@ -321,9 +321,9 @@ msgid ""
 "24-bit (GL_RGB)\n"
 "32-bit (GL_BGRA)"
 msgstr ""
-"16-bit (GL_BVRA)\n"
-"24-bit (GL_RVB)\n"
-"32-bit (GL_BVRA)"
+"16-bits (GL_BVRA)\n"
+"24-bits (GL_RVB)\n"
+"32-bits (GL_BVRA)"
 
 #: ../src/snes9x.glade.h:15
 msgid "1x"
@@ -506,7 +506,7 @@ msgstr "Autoriser les filtres à utiliser plusieurs processeurs"
 
 #: ../src/snes9x.glade.h:61
 msgid "Apply scaling filter:"
-msgstr "Appliquer un filtre:"
+msgstr "Appliquer un filtre d'agrandissement:"
 
 #: ../src/snes9x.glade.h:62
 msgid "Artifacts:"
@@ -703,7 +703,7 @@ msgstr "Bas"
 
 #: ../src/snes9x.glade.h:113
 msgid "Emulation"
-msgstr "Emulation"
+msgstr "Émulation"
 
 #: ../src/snes9x.glade.h:114
 msgid "Enable HDMA"
@@ -735,7 +735,7 @@ msgstr "Forcer la sortie Hires"
 
 #: ../src/snes9x.glade.h:121
 msgid "Force an inverted byte-ordering"
-msgstr ""
+msgstr "Inverser l'ordre des octets"
 
 #: ../src/snes9x.glade.h:122
 msgid ""
@@ -783,7 +783,7 @@ msgid ""
 "Host a game on this computer as Player 1, requiring extra throughput to "
 "support multitple users"
 msgstr ""
-"Héberger une partie sur cet ordinateur en temps que 'Joueur 1' requiert un "
+"Héberger une partie sur cet ordinateur en tant que 'Joueur 1'; requiert un "
 "débit plus important pour supporter plusieurs utilisateurs"
 
 #: ../src/snes9x.glade.h:134
@@ -946,7 +946,7 @@ msgstr "Désactiver l'écran de veille"
 
 #: ../src/snes9x.glade.h:178
 msgid "Prevents edge artifacts, but can slow performance"
-msgstr "Empêche les artefacts des bords, mais peut ralentir le jeu"
+msgstr "Empêche les artefacts de bords, mais peut ralentir le jeu"
 
 #: ../src/snes9x.glade.h:179
 msgid "Quit Snes9x"
@@ -1084,7 +1084,7 @@ msgstr "Raccourcis"
 
 #: ../src/snes9x.glade.h:212
 msgid "Show ROM _Info..."
-msgstr "Afficher les _Information de l'image ROM..."
+msgstr "Afficher les _Informations de l'image ROM..."
 
 #: ../src/snes9x.glade.h:213
 msgid "Show frame rate"
@@ -1378,7 +1378,7 @@ msgstr "Utiliser "
 
 #: ../src/snes9x.glade.h:285
 msgid "Use SNES extended height. Will probably cause letterboxing"
-msgstr ""
+msgstr "Utiliser la hauteur étendue SNES. Peut causer l'effet letterbox"
 
 #: ../src/snes9x.glade.h:286
 msgid "Use fullscreen on ROM open"
@@ -1567,7 +1567,7 @@ msgstr "threads pour le filtrage et le zoom"
 #~ "au mieux à la SNES"
 
 #~ msgid "Outputs at 16 bits per sample instead of 8 bits. More accurate sound"
-#~ msgstr "Sortie en 16 bits par échantillon au lieu de 8. Son plus précis"
+#~ msgstr "Sortie en 16 bits par échantillon plutôt que 8. Son plus précis"
 
 #~ msgid "Reverse stereo"
 #~ msgstr "Stéréo inversée"
