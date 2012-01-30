@@ -321,9 +321,9 @@ msgid ""
 "24-bit (GL_RGB)\n"
 "32-bit (GL_BGRA)"
 msgstr ""
-"16-bits (GL_BVRA)\n"
-"24-bits (GL_RVB)\n"
-"32-bits (GL_BVRA)"
+"16-bits (GL_BGRA)\n"
+"24-bits (GL_RGB)\n"
+"32-bits (GL_BGRA)"
 
 #: ../src/snes9x.glade.h:15
 msgid "1x"
