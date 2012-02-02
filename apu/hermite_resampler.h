@@ -34,10 +34,10 @@ class HermiteResampler : public Resampler
             a2 =  mu3       -  mu2;
             a3 =  3 * mu2   - (mu3 << 1);
 
-            return (a0 * b) +
+            return ((a0 * b) +
                    ((a1 * m0) >> 15) +
                    ((a2 * m1) >> 15) +
-                   (a3 * c) >> 15;
+                    (a3 * c)) >> 15;
         }
 
     public:
