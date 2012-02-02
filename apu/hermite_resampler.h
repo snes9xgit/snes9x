@@ -19,27 +19,25 @@ class HermiteResampler : public Resampler
         int   r_left[4], r_right[4];
 
         static inline int32
-        hermite (uint32 mu1, int32 a, int32 b, int32 c, int32 d)
+        hermite (int32 mu1, int32 a, int32 b, int32 c, int32 d)
         {
-            uint32 mu2, mu3, m0, m1, a0, a1, a2, a3;
+            int32 mu2, mu3, m0, m1, a0, a1, a2, a3;
 
             mu2 = (mu1 * mu1) >> 15;
             mu3 = (mu2 * mu1) >> 15;
 
-            m0 = (c - a + 32768) << 14;
-            m1 = (d - b + 32768) << 14;
+            m0 = (c - a) << 14;
+            m1 = (d - b) << 14;
 
             a0 = (mu3 << 1) - (3 * mu2) + (1 << 15);
             a1 =  mu3       - (mu2 << 1) + mu1;
             a2 =  mu3       -  mu2;
             a3 =  3 * mu2   - (mu3 << 1);
 
-            return (int32) ((
-              (a0 * (b + 32768)) +
-              ((a1 * m0) >> 15) +
-              ((a2 * m1) >> 15) +
-              (a3 * (c + 32768))
-              ) >> 15) - 32768;
+            return (a0 * b) +
+                   ((a1 * m0) >> 15) +
+                   ((a2 * m1) >> 15) +
+                   (a3 * c) >> 15;
         }
 
     public:
@@ -55,7 +53,7 @@ class HermiteResampler : public Resampler
         void
         time_ratio (double ratio)
         {
-            r_step = (1 << 15) * ratio;
+            r_step = (1 << 16) * ratio;
             clear ();
         }
 
@@ -63,7 +61,7 @@ class HermiteResampler : public Resampler
         clear (void)
         {
             ring_buffer::clear ();
-            r_frac = (1 << 15);
+            r_frac = (1 << 16);
             r_left [0] = r_left [1] = r_left [2] = r_left [3] = 0;
             r_right[0] = r_right[1] = r_right[2] = r_right[3] = 0;
         }
@@ -83,11 +81,11 @@ class HermiteResampler : public Resampler
                 int s_right = internal_buffer[i_position + 1];
                 int hermite_val;
 
-                while (r_frac <= (1 << 15) && o_position < num_samples)
+                while (r_frac <= (1 << 16) && o_position < num_samples)
                 {
-                    hermite_val = hermite (r_frac, r_left [0], r_left [1], r_left [2], r_left [3]);
+                    hermite_val = hermite (r_frac >> 1, r_left [0], r_left [1], r_left [2], r_left [3]);
                     data[o_position]     = SHORT_CLAMP (hermite_val);
-                    hermite_val = hermite (r_frac, r_right[0], r_right[1], r_right[2], r_right[3]);
+                    hermite_val = hermite (r_frac >> 1, r_right[0], r_right[1], r_right[2], r_right[3]);
                     data[o_position + 1] = SHORT_CLAMP (hermite_val);
 
                     o_position += 2;
@@ -95,7 +93,7 @@ class HermiteResampler : public Resampler
                     r_frac += r_step;
                 }
 
-                if (r_frac > (1 << 15))
+                if (r_frac > (1 << 16))
                 {
                     r_left [0] = r_left [1];
                     r_left [1] = r_left [2];
@@ -107,7 +105,7 @@ class HermiteResampler : public Resampler
                     r_right[2] = r_right[3];
                     r_right[3] = s_right;
 
-                    r_frac -= (1 << 15);
+                    r_frac -= (1 << 16);
 
                     i_position += 2;
                     if (i_position >= max_samples)
@@ -125,7 +123,7 @@ class HermiteResampler : public Resampler
         inline int
         avail (void)
         {
-            return ((((uint32) size) << 13) - r_frac) / r_step * 2;
+            return ((((uint32) size) << 14) - r_frac) / r_step * 2;
         }
 };
 
