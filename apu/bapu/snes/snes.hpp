@@ -27,8 +27,8 @@ struct Processor
     int32 clock;
 };
 
-#include "smp/smp.hpp"
-#include "dsp/sdsp.hpp"
+#include "../smp/smp.hpp"
+#include "../dsp/sdsp.hpp"
 
 class CPU
 {
