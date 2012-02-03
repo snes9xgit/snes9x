@@ -194,7 +194,7 @@
 
 namespace SNES
 {
-#include "dsp/blargg_endian.h"
+#include "bapu/dsp/blargg_endian.h"
 
 	CPU	cpu;
 }
