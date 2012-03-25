@@ -159,7 +159,7 @@ snes9x_gtk_SOURCES += \
     ../dma.cpp \
     ../snes9x.cpp \
     ../globals.cpp \
-    ../reader.cpp \
+    ../stream.cpp \
     ../conffile.cpp \
     ../bsx.cpp \
     ../logger.cpp \

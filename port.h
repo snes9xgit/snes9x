@@ -202,7 +202,9 @@
 #define RIGHTSHIFT_int8_IS_SAR
 #define RIGHTSHIFT_int16_IS_SAR
 #define RIGHTSHIFT_int32_IS_SAR
+#ifndef __WIN32_LIBSNES__
 #define SNES_JOY_READ_CALLBACKS
+#endif //__WIN32_LIBSNES__
 #endif
 
 #ifdef __MACOSX__
@@ -227,27 +229,12 @@ typedef uint64_t			uint64;
 #else	// HAVE_STDINT_H
 #ifdef __WIN32__
 typedef intptr_t			pint;
-#else	// __WIN32__
-#ifdef PTR_NOT_INT
-typedef long				pint;
-#else
-typedef int					pint;
-#endif
-#endif	// __WIN32__
-#ifdef __WIN32__
-#ifdef __BORLANDC__
-#include <systypes.h>
-#else
 typedef signed char			int8;
 typedef unsigned char		uint8;
 typedef signed short		int16;
 typedef unsigned short		uint16;
-#ifndef WSAAP
-// winsock2.h typedefs int32 as well
-typedef signed int			int32;
-#endif
+typedef signed int     		int32;
 typedef unsigned int		uint32;
-#endif
 typedef signed __int64		int64;
 typedef unsigned __int64	uint64;
 typedef int8                int8_t;
@@ -272,6 +259,11 @@ __extension__
 #endif
 typedef long long			int64;
 typedef unsigned long long	uint64;
+#ifdef PTR_NOT_INT
+typedef long				pint;
+#else   // __PTR_NOT_INT
+typedef int					pint;
+#endif  // __PTR_NOT_INT
 #endif	//  __WIN32__
 #endif	// HAVE_STDINT_H
 #endif	// snes9x_types_defined
@@ -305,15 +297,19 @@ typedef unsigned long long	uint64;
 void _splitpath (const char *, char *, char *, char *, char *);
 void _makepath (char *, const char *, const char *, const char *, const char *);
 #define S9xDisplayString	DisplayStringFromBottom
-#else
+#else   // __WIN32__
 #define snprintf _snprintf
 #define strcasecmp	stricmp
 #define strncasecmp	strnicmp
+#ifndef __WIN32_LIBSNES__
 void WinDisplayStringFromBottom(const char *string, int linesFromBottom, int pixelsFromLeft, bool allowWrap);
 #define S9xDisplayString	WinDisplayStringFromBottom
 void SetInfoDlgColor(unsigned char, unsigned char, unsigned char);
 #define SET_UI_COLOR(r,g,b) SetInfoDlgColor(r,g,b)
-#endif
+#else   // __WIN32_LIBSNES__
+#define S9xDisplayString	DisplayStringFromBottom
+#endif  // __WIN32_LIBSNES__
+#endif  // __WIN32__
 
 #ifdef __DJGPP
 #define SLASH_STR	"\\"

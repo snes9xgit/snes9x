@@ -176,179 +176,121 @@
  ***********************************************************************************/
 
 
-// Abstract the details of reading from zip files versus FILE *'s.
+#ifndef _STREAM_H_
+#define _STREAM_H_
 
 #include <string>
+
+class Stream
+{
+	public:
+		Stream (void);
+		virtual ~Stream (void);
+		virtual int get_char (void) = 0;
+		virtual char * gets (char *, size_t) = 0;
+		virtual char * getline (void);	// free() when done
+		virtual std::string getline (bool &);
+		virtual size_t read (void *, size_t) = 0;
+        virtual size_t write (void *, size_t) = 0;
+        virtual size_t pos (void) = 0;
+        virtual size_t size (void) = 0;
+        virtual int revert (size_t from, size_t offset) = 0;
+        virtual void closeStream() = 0;
+};
+
+class fStream : public Stream
+{
+	public:
+		fStream (FSTREAM);
+		virtual ~fStream (void);
+		virtual int get_char (void);
+		virtual char * gets (char *, size_t);
+		virtual size_t read (void *, size_t);
+        virtual size_t write (void *, size_t);
+        virtual size_t pos (void);
+        virtual size_t size (void);
+        virtual int revert (size_t from, size_t offset);
+        virtual void closeStream();
+
+	private:
+		FSTREAM	fp;
+};
+
 #ifdef UNZIP_SUPPORT
+
 #include "unzip.h"
+
+#define unz_BUFFSIZ	1024
+
+class unzStream : public Stream
+{
+	public:
+		unzStream (unzFile &);
+		virtual ~unzStream (void);
+		virtual int get_char (void);
+		virtual char * gets (char *, size_t);
+		virtual size_t read (void *, size_t);
+        virtual size_t write (void *, size_t);
+        virtual size_t pos (void);
+        virtual size_t size (void);
+        virtual int revert (size_t from, size_t offset);
+        virtual void closeStream();
+
+	private:
+		unzFile	file;
+		char	buffer[unz_BUFFSIZ];
+		char	*head;
+		size_t	numbytes;
+};
+
 #endif
-#include "snes9x.h"
-#include "reader.h"
 
-
-// Generic constructor/destructor
-
-Reader::Reader (void)
+class memStream : public Stream
 {
-	return;
-}
+	public:
+        memStream (uint8 *,size_t);
+        memStream (const uint8 *,size_t);
+		virtual ~memStream (void);
+		virtual int get_char (void);
+		virtual char * gets (char *, size_t);
+		virtual size_t read (void *, size_t);
+        virtual size_t write (void *, size_t);
+        virtual size_t pos (void);
+        virtual size_t size (void);
+        virtual int revert (size_t from, size_t offset);
+        virtual void closeStream();
 
-Reader::~Reader (void)
+	private:
+		uint8   *mem;
+        size_t  msize;
+        size_t  remaining;
+		uint8	*head;
+        bool    readonly;
+};
+
+/* dummy stream that always reads 0 and writes nowhere
+   but counts bytes written
+*/
+class nulStream : public Stream
 {
-	return;
-}
+	public:
+        nulStream (void);
+		virtual ~nulStream (void);
+        virtual int get_char (void);
+        virtual char * gets (char *, size_t);
+		virtual size_t read (void *, size_t);
+        virtual size_t write (void *, size_t);
+        virtual size_t pos (void);
+        virtual size_t size (void);
+        virtual int revert (size_t from, size_t offset);
+        virtual void closeStream();
 
-// Generic getline function, based on gets. Reimlpement if you can do better.
+    private:
+        size_t  bytes_written;
+};
 
-char * Reader::getline (void)
-{
-	bool		eof;
-	std::string	ret;
+Stream *openStreamFromFSTREAM(const char* filename, const char* mode);
+Stream *reopenStreamFromFd(int fd, const char* mode);
 
-	ret = getline(eof);
-	if (ret.size() == 0 && eof)
-		return (NULL);
-
-	return (strdup(ret.c_str()));
-}
-
-std::string Reader::getline (bool &eof)
-{
-	char		buf[1024];
-	std::string	ret;
-
-	eof = false;
-	ret.clear();
-
-	do
-	{
-		if (gets(buf, sizeof(buf)) == NULL)
-		{
-			eof = true;
-			break;
-		}
-
-		ret.append(buf);
-	}
-	while (*ret.rbegin() != '\n');
-
-	return (ret);
-}
-
-// snes9x.h STREAM reader
-
-fReader::fReader (STREAM f)
-{
-	fp = f;
-}
-
-fReader::~fReader (void)
-{
-	return;
-}
-
-int fReader::get_char (void)
-{
-	return (GETC_STREAM(fp));
-}
-
-char * fReader::gets (char *buf, size_t len)
-{
-	return (GETS_STREAM(buf, len, fp));
-}
-
-size_t fReader::read (char *buf, size_t len)
-{
-	return (READ_STREAM(buf, len, fp));
-}
-
-// unzip reader
-
-#ifdef UNZIP_SUPPORT
-
-unzReader::unzReader (unzFile &v)
-{
-	file = v;
-	head = NULL;
-	numbytes = 0;
-}
-
-unzReader::~unzReader (void)
-{
-	return;
-}
-
-int unzReader::get_char (void)
-{
-	unsigned char	c;
-
-	if (numbytes <= 0)
-	{
-		numbytes = unzReadCurrentFile(file, buffer, unz_BUFFSIZ);
-		if (numbytes <= 0)
-			return (EOF);
-		head = buffer;
-	}
-
-	c = *head;
-	head++;
-	numbytes--;
-
-	return ((int) c);
-}
-
-char * unzReader::gets (char *buf, size_t len)
-{
-	size_t	i;
-	int		c;
-
-	for (i = 0; i < len - 1; i++)
-	{
-		c = get_char();
-		if (c == EOF)
-		{
-			if (i == 0)
-				return (NULL);
-			break;
-		}
-
-		buf[i] = (char) c;
-		if (buf[i] == '\n')
-			break;
-	}
-
-	buf[i] = '\0';
-
-	return (buf);
-}
-
-size_t unzReader::read (char *buf, size_t len)
-{
-	if (len == 0)
-		return (len);
-
-	if (len <= numbytes)
-	{
-		memcpy(buf, head, len);
-		numbytes -= len;
-		head += len;
-		return (len);
-	}
-
-	size_t	numread = 0;
-	if (numbytes > 0)
-	{
-		memcpy(buf, head, numbytes);
-		numread += numbytes;
-		head = NULL;
-		numbytes = 0;
-	}
-
-	int	l = unzReadCurrentFile(file, buf + numread, len - numread);
-	if (l > 0)
-		numread += l;
-
-	return (numread);
-}
 
 #endif

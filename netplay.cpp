@@ -189,6 +189,8 @@
 #include <memory.h>
 #include <sys/types.h>
 
+#include "snes9x.h"
+
 #ifdef __WIN32__
 	#include <winsock.h>
 	#include <process.h>
@@ -222,7 +224,6 @@
 #include <semaphore.h>
 #endif
 
-#include "snes9x.h"
 #include "memmap.h"
 #include "netplay.h"
 #include "snapshot.h"
