@@ -1171,6 +1171,7 @@ void S9xResetSaveTimer (bool8 dontsave)
 
 uint32 S9xFreezeSize()
 {
+    if(Settings.StopEmulation) return 0;
     nulStream stream;
     S9xFreezeToStream(&stream);
     return stream.size();
