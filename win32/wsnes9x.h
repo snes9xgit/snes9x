@@ -339,7 +339,7 @@ struct sGUI {
     HACCEL Accelerators;
     bool NeedDepthConvert;
     bool DepthConverted;
-    bool BGR;
+
     bool TurboModeToggle;
 	bool InactivePause;
 	bool CustomRomOpen;
@@ -395,6 +395,11 @@ struct sGUI {
 	long FrameCount;
     long LastFrameCount;
     unsigned long IdleCount;
+
+    // rewinding
+    bool rewinding;
+    unsigned int rewindBufferSize;
+    unsigned int rewindGranularity;
 };
 
 //TURBO masks
@@ -467,6 +472,7 @@ struct SCustomKeys {
 	SCustomKey ResetGame;
 	SCustomKey ToggleCheats;
 	SCustomKey QuitS9X;
+    SCustomKey Rewind;
 };
 
 struct SJoypad {

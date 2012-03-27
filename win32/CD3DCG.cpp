@@ -683,6 +683,8 @@ void CD3DCG::setShaderVars(int pass)
 	setProgramUniform(pass,"IN.texture_size",&textureSize);
 	setProgramUniform(pass,"IN.output_size",&outputSize);
 	setProgramUniform(pass,"IN.frame_count",&frameCnt);
+    float frameDirection = GUI.rewinding?-1.0f:1.0f;
+    setProgramUniform(pass,"IN.frame_direction",&frameDirection);
 
 	/* ORIG parameter
 	*/

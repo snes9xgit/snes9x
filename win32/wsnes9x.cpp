@@ -213,6 +213,7 @@
 #include "../conffile.h"
 #include "AVIOutput.h"
 #include "InputCustom.h"
+#include "StateManager.h"
 #include <vector>
 
 #if (((defined(_MSC_VER) && _MSC_VER >= 1300)) || defined(__MINGW32__))
@@ -563,6 +564,7 @@ struct SCustomKeys CustomKeys = {
 	{'R',CUSTKEY_CTRL_MASK|CUSTKEY_SHIFT_MASK}, // Reset Game
 	{0,0}, // Toggle Cheats
 	{0,0},
+    {'R',0}, // Rewind
 };
 
 
@@ -610,7 +612,7 @@ struct OpenMovieParams
 
 
 
-
+StateManager stateMan;
 
 std::vector<dMode> dm;
 /*****************************************************************************/
@@ -1231,6 +1233,13 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 		{
 			PostMessage(GUI.hWnd,WM_CLOSE,(WPARAM)NULL,(LPARAM)(NULL));
 		}
+        if(wParam == CustomKeys.Rewind.key
+		&& modifiers == CustomKeys.Rewind.modifiers)
+		{
+            if(!GUI.rewinding)
+                S9xMessage (S9X_INFO, 0, GUI.rewindBufferSize?WINPROC_REWINDING_TEXT:WINPROC_REWINDING_DISABLED);
+            GUI.rewinding = true;
+        }
 		//if(wParam == CustomKeys.BGLHack.key
 		//&& modifiers == CustomKeys.BGLHack.modifiers)
 		//{
@@ -1479,6 +1488,12 @@ LRESULT CALLBACK WinProc(
 			{
 				GUI.superscope_pause = 0;
 			}
+            if(wParam == CustomKeys.Rewind.key
+		    && modifiers == CustomKeys.Rewind.modifiers)
+		    {
+                GUI.rewinding = false;
+            }
+
 		}
 		break;
 
@@ -3242,6 +3257,7 @@ int WINAPI WinMain(
 	InitRenderFilters();
 
     GUI.ControlForced = 0xff;
+    GUI.rewinding = false;
 
     S9xSetRecentGames ();
 
@@ -3425,6 +3441,19 @@ int WINAPI WinMain(
                     if(WaitForSingleObject(GUI.SoundSyncEvent,1000) != WAIT_OBJECT_0)
                         S9xClearSamples();
 				}
+
+                if(GUI.rewindBufferSize
+#ifdef NETPLAY_SUPPORT
+                    &&!Settings.NetPlay
+#endif
+                    ) {
+                    if(GUI.rewinding) {
+                        GUI.rewinding = stateMan.pop();
+                    } else {
+                        if(IPPU.TotalEmulatedFrames % GUI.rewindGranularity == 0)
+                            stateMan.push();
+                    }
+                }
 
 				S9xMainLoop();
 				GUI.FrameCount++;
@@ -3887,6 +3916,8 @@ static bool LoadROM(const TCHAR *filename) {
 		else
 			S9xNPServerQueueSendingLoadROMRequest (Memory.ROMName);
 #endif
+        if(GUI.rewindBufferSize)
+            stateMan.init(GUI.rewindBufferSize * 1024 * 1024);
 	}
 
 	if(GUI.ControllerOption == SNES_SUPERSCOPE)
@@ -4909,6 +4940,10 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 			SendDlgItemMessage(hDlg, IDC_SPIN_MAX_SKIP,UDM_SETPOS,0, Settings.AutoMaxSkipFrames);
 			SendDlgItemMessage(hDlg, IDC_SPIN_TURBO_SKIP, UDM_SETRANGE, 0, MAKELPARAM((short)600, (short)0));
 			SendDlgItemMessage(hDlg, IDC_SPIN_TURBO_SKIP,UDM_SETPOS,0, Settings.TurboSkipFrames);
+            SendDlgItemMessage(hDlg, IDC_REWIND_BUFFER_SPIN, UDM_SETRANGE, 0, MAKELPARAM((short)4000, (short)0));
+            SendDlgItemMessage(hDlg, IDC_REWIND_BUFFER_SPIN,UDM_SETPOS,0, GUI.rewindBufferSize);
+            SendDlgItemMessage(hDlg, IDC_REWIND_GRANULARITY_SPIN, UDM_SETRANGE, 0, MAKELPARAM((short)300, (short)1));
+            SendDlgItemMessage(hDlg, IDC_REWIND_GRANULARITY_SPIN,UDM_SETPOS,0, GUI.rewindGranularity);
 			CheckDlgButton(hDlg,IDC_TOGGLE_TURBO,GUI.TurboModeToggle ? BST_CHECKED : BST_UNCHECKED);
 			CheckDlgButton(hDlg,IDC_INACTIVE_PAUSE,GUI.InactivePause ? BST_CHECKED : BST_UNCHECKED);
 			CheckDlgButton(hDlg,IDC_CUSTOMROMOPEN,GUI.CustomRomOpen ? BST_CHECKED : BST_UNCHECKED);
@@ -5001,6 +5036,13 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 					Settings.TurboSkipFrames=SendDlgItemMessage(hDlg, IDC_SPIN_TURBO_SKIP, UDM_GETPOS, 0,0);
 					Settings.AutoMaxSkipFrames=SendDlgItemMessage(hDlg, IDC_SPIN_MAX_SKIP, UDM_GETPOS, 0,0);
 					Settings.AutoSaveDelay=SendDlgItemMessage(hDlg, IDC_SRAM_SPIN, UDM_GETPOS, 0,0);
+                    GUI.rewindGranularity = SendDlgItemMessage(hDlg, IDC_REWIND_GRANULARITY_SPIN, UDM_GETPOS, 0,0);
+                    if(GUI.rewindGranularity==0) GUI.rewindGranularity = 1;
+                    unsigned int newRewindBufSize = SendDlgItemMessage(hDlg, IDC_REWIND_BUFFER_SPIN, UDM_GETPOS, 0,0);
+                    if(GUI.rewindBufferSize != newRewindBufSize) {
+                        GUI.rewindBufferSize = newRewindBufSize;
+                        stateMan.init(GUI.rewindBufferSize * 1024 * 1024);
+                    }
 
 					WinSaveConfigFile();
 				}
@@ -7749,7 +7791,7 @@ static void set_hotkeyinfo(HWND hDlg)
 		SendDlgItemMessage(hDlg,IDC_HOTKEY6,WM_USER+44,CustomKeys.ClippingWindows.key,CustomKeys.ClippingWindows.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY7,WM_USER+44,CustomKeys.Transparency.key,CustomKeys.Transparency.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY8,WM_USER+44,0,0);
-		SendDlgItemMessage(hDlg,IDC_HOTKEY9,WM_USER+44,0,0);
+		SendDlgItemMessage(hDlg,IDC_HOTKEY9,WM_USER+44,CustomKeys.Rewind.key,CustomKeys.Rewind.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY10,WM_USER+44,CustomKeys.SwitchControllers.key,CustomKeys.SwitchControllers.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY11,WM_USER+44,CustomKeys.JoypadSwap.key,CustomKeys.JoypadSwap.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY12,WM_USER+44,CustomKeys.ResetGame.key,CustomKeys.ResetGame.modifiers);
@@ -7814,7 +7856,7 @@ static void set_hotkeyinfo(HWND hDlg)
 		SetDlgItemText(hDlg,IDC_LABEL_HK6,HOTKEYS_LABEL_2_6);
 		SetDlgItemText(hDlg,IDC_LABEL_HK7,HOTKEYS_LABEL_2_7);
 		SetDlgItemText(hDlg,IDC_LABEL_HK8,INPUTCONFIG_LABEL_UNUSED);
-		SetDlgItemText(hDlg,IDC_LABEL_HK9,INPUTCONFIG_LABEL_UNUSED);
+		SetDlgItemText(hDlg,IDC_LABEL_HK9,HOTKEYS_LABEL_2_9);
 		SetDlgItemText(hDlg,IDC_LABEL_HK10,HOTKEYS_LABEL_2_10);
 		SetDlgItemText(hDlg,IDC_LABEL_HK11,HOTKEYS_LABEL_2_11);
 		SetDlgItemText(hDlg,IDC_LABEL_HK12,HOTKEYS_LABEL_2_12);
@@ -7979,7 +8021,7 @@ switch(msg)
 			break;
 		case IDC_HOTKEY9:
 			if(index == 0) CustomKeys.ScopePause.key = wParam, CustomKeys.ScopePause.modifiers = modifiers;
-			//if(index == 1) CustomKeys.GLCube.key = wParam,      CustomKeys.GLCube.modifiers = modifiers;
+            if(index == 1) CustomKeys.Rewind.key = wParam,      CustomKeys.Rewind.modifiers = modifiers;
 			if(index == 2) CustomKeys.TurboLeft.key = wParam,    CustomKeys.TurboLeft.modifiers = modifiers;
 			if(index == 3) CustomKeys.SelectSave[8].key = wParam,	CustomKeys.SelectSave[8].modifiers = modifiers;
 			break;

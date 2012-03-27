@@ -667,6 +667,7 @@ void CGLCG::setShaderVars(int pass)
 	setProgram2fv(pass,"IN.texture_size",textureSize);
 	setProgram2fv(pass,"IN.output_size",outputSize);
 	setProgram1f(pass,"IN.frame_count",(float)frameCnt);
+    setProgram1f(pass,"IN.frame_direction",GUI.rewinding?-1.0f:1.0f);
 
 	/* ORIG parameter
 	*/

@@ -272,6 +272,7 @@ Nintendo is a trade mark.")
 #define HOTKEYS_LABEL_2_5 TEXT("Sprites Layer")
 #define HOTKEYS_LABEL_2_6 TEXT("Clipping Windows")
 #define HOTKEYS_LABEL_2_7 TEXT("Transparency")
+#define HOTKEYS_LABEL_2_9 TEXT("Rewind")
 #define HOTKEYS_LABEL_2_10 TEXT("Switch Controllers")
 #define HOTKEYS_LABEL_2_11 TEXT("Joypad Swap")
 #define HOTKEYS_LABEL_2_12 TEXT("Reset Game")
@@ -444,6 +445,8 @@ Nintendo is a trade mark.")
 #define WINPROC_DISCONNECT "Disconnect from the NetPlay server first."
 #define WINPROC_NET_RESTART "Your game will be reset after the ROM has been sent due to\nyour 'Sync Using Reset Game' setting.\n\n"
 #define WINPROC_SYNC_SND "Sync sound"
+#define WINPROC_REWINDING_TEXT "Rewinding"
+#define WINPROC_REWINDING_DISABLED "Rewind is disabled"
 
 //Emulator Settings
 

@@ -81,7 +81,11 @@
 #define IDC_HEADER                      1067
 #define IDC_HIRESAVI                    1067
 #define IDC_ROMLIST                     1068
+#define IDC_REWIND_BUFFER               1068
 #define IDC_MEM_TYPE                    1069
+#define IDC_REWIND_BUFFER_SPIN          1069
+#define IDC_REWIND_GRANULARITY          1070
+#define IDC_REWIND_GRANULARITY_SPIN     1071
 #define IDC_HOSTNAME                    1086
 #define IDC_PORTNUMBER                  1087
 #define IDC_CLEARHISTORY                1088
@@ -226,12 +230,17 @@
 #define IDC_LABEL_UP4                   1183
 #define IDC_PORTNUMBLOCK                1184
 #define IDC_LABEL_UP5                   1184
+#define IDC_LABEL_RBUFFER               1184
 #define IDC_CLIENTSETTINGSBLOCK         1185
 #define IDC_LABEL_UP6                   1185
+#define IDC_LABEL_RBUFFER_TEXT          1185
 #define IDC_SERVERSETTINGSBLOCK         1186
 #define IDC_LABEL_UP7                   1186
+#define IDC_LABEL_RGRANU                1186
 #define IDC_LABEL_PORTNUM               1187
 #define IDC_LABEL_UP8                   1187
+#define IDC_LABEL_RBUFFER_TEXT2         1187
+#define IDC_LABEL_GRANU_TEXT            1187
 #define IDC_LABEL_PAUSEINTERVAL         1188
 #define IDC_LABEL_UP9                   1188
 #define IDC_LABEL_PAUSEINTERVAL_TEXT    1189
@@ -485,7 +494,7 @@
 #define ID_WINDOW_SIZE_3X               40171
 #define ID_WINDOW_SIZE_4X               40172
 #define ID_DEBUG_APU_TRACE              40173
-#define ID_EMULATION_BACKGROUNDINPUT	40174
+#define ID_EMULATION_BACKGROUNDINPUT    40174
 
 // Next default values for new objects
 // 

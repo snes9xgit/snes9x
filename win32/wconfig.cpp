@@ -798,6 +798,7 @@ void WinPostLoad(ConfigFile& conf)
 	for(i=0;i<8;i++) Joypad[i+8].Enabled = Joypad[i].Enabled;
 	if(GUI.MaxRecentGames < 1) GUI.MaxRecentGames = 1;
 	if(GUI.MaxRecentGames > MAX_RECENT_GAMES_LIST_SIZE) GUI.MaxRecentGames = MAX_RECENT_GAMES_LIST_SIZE;
+    if(GUI.rewindGranularity==0) GUI.rewindGranularity = 1;
 	bool gap = false;
 	for(i=0;i<MAX_RECENT_GAMES_LIST_SIZE;i++) // remove gaps in recent games list
 	{
@@ -905,6 +906,8 @@ void WinRegisterConfigItems()
 	AddUIntC("MessageDisplayTime", Settings.InitialInfoStringTimeout, 120, "display length of messages, in frames. set to 0 to disable all message text");
 #undef CATEGORY
 #define CATEGORY "Settings\\Win"
+    AddUIntC("RewindBufferSize", GUI.rewindBufferSize, 0, "rewind buffer size in MB - 0 disables rewind support");
+    AddUIntC("RewindGranularity", GUI.rewindGranularity, 1, "rewind granularity - rewind takes a snapshot each x frames");
 	AddBoolC("PauseWhenInactive", GUI.InactivePause, TRUE, "true to pause Snes9x when it is not the active window");
 	AddBoolC("CustomRomOpenDialog", GUI.CustomRomOpen, false, "false to use standard Windows open dialog for the ROM open dialog");
 	AddBoolC("AVIHiRes", GUI.AVIHiRes, false, "true to record AVI in Hi-Res scale");
@@ -1015,7 +1018,7 @@ void WinRegisterConfigItems()
 	ADD(ClippingWindows); /*ADD(BGLHack);*/ ADD(Transparency); /*ADD(HDMA)*/; /*ADD(GLCube);*/
 	/*ADD(InterpMode7);*/ ADD(JoypadSwap); ADD(SwitchControllers); ADD(ResetGame); ADD(ToggleCheats);
 	ADD(TurboA); ADD(TurboB); ADD(TurboY); ADD(TurboX); ADD(TurboL); ADD(TurboR); ADD(TurboStart); ADD(TurboSelect); ADD(TurboUp); ADD(TurboDown); ADD(TurboLeft); ADD(TurboRight);
-	ADD(QuitS9X);
+	ADD(QuitS9X);ADD(Rewind);
 #undef ADD
 #undef ADDN
 #undef CATEGORY
