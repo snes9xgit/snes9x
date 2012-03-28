@@ -1771,8 +1771,8 @@ bool8 CMemory::LoadMultiCartMem (const uint8 *sourceA, uint32 sourceASize,
                                  const uint8 *bios, uint32 biosSize)
 {
     uint32 offset = 0;
-    ZeroMemory(ROM, MAX_ROM_SIZE);
-	ZeroMemory(&Multi, sizeof(Multi));
+    memset(ROM, 0, MAX_ROM_SIZE);
+	memset(&Multi, 0, sizeof(Multi));
 
     if(bios) {
         if(!is_SufamiTurbo_BIOS(bios,biosSize))
@@ -1803,8 +1803,8 @@ bool8 CMemory::LoadMultiCartMem (const uint8 *sourceA, uint32 sourceASize,
 
 bool8 CMemory::LoadMultiCart (const char *cartA, const char *cartB)
 {
-    ZeroMemory(ROM, MAX_ROM_SIZE);
-	ZeroMemory(&Multi, sizeof(Multi));
+    memset(ROM, 0, MAX_ROM_SIZE);
+	memset(&Multi, 0, sizeof(Multi));
 
 	Settings.DisplayColor = BUILD_PIXEL(31, 31, 31);
 	SET_UI_COLOR(255, 255, 255);
@@ -1922,7 +1922,7 @@ bool8 CMemory::LoadMultiCartInt ()
 	if (Multi.cartSizeB)
 		strcpy(ROMFilename, Multi.fileNameB);
 
-	ZeroMemory(&SNESGameFixes, sizeof(SNESGameFixes));
+	memset(&SNESGameFixes, 0, sizeof(SNESGameFixes));
 	SNESGameFixes.SRAMInitialValue = 0x60;
 
 	S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
