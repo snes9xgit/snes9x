@@ -462,6 +462,8 @@ const char * S9xParseDisplayConfig (ConfigFile &conf, int pass)
 		keymaps.push_back(strpair_t("M00:Pointer",      "Pointer Mouse1+Superscope+Justifier1"));
 		keymaps.push_back(strpair_t("K00:grave",        "Superscope ToggleTurbo"));
 		keymaps.push_back(strpair_t("K00:slash",        "Superscope Pause"));
+
+		keymaps.push_back(strpair_t("K00:r",            "Rewind"));
 	}
 
 	GUI.no_repeat = !conf.GetBool("Unix/X11::SetKeyRepeat", TRUE);

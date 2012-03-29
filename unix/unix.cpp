@@ -222,6 +222,7 @@
 #ifdef DEBUGGER
 #include "debug.h"
 #endif
+#include "statemanager.h"
 
 #ifdef NETPLAY_SUPPORT
 #ifdef _DEBUG
@@ -232,6 +233,8 @@
 typedef std::pair<std::string, std::string>	strpair_t;
 
 ConfigFile::secvec_t	keymaps;
+
+StateManager stateMan;
 
 #define FIXED_POINT				0x10000
 #define FIXED_POINT_SHIFT		16
@@ -275,6 +278,8 @@ struct SUnixSettings
 	bool8	ThreadSound;
 	uint32	SoundBufferSize;
 	uint32	SoundFragmentSize;
+	uint32	rewindBufferSize;
+	uint32	rewindGranularity;
 };
 
 struct SoundStatus
@@ -289,6 +294,8 @@ struct SoundStatus
 
 static SUnixSettings	unixSettings;
 static SoundStatus		so;
+
+static bool8	rewinding;
 
 #ifndef NOSOUND
 static uint8			Buf[SOUND_BUFFER_SIZE];
@@ -436,6 +443,10 @@ void S9xExtraUsage (void)
 	S9xMessage(S9X_INFO, S9X_USAGE, "                                frames (use with -dumpstreams)");
 	S9xMessage(S9X_INFO, S9X_USAGE, "");
 
+	S9xMessage(S9X_INFO, S9X_USAGE, "-rwbuffersize                   Rewind buffer size in MB");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-rwgranularity                  Rewind granularity in frames");
+	S9xMessage(S9X_INFO, S9X_USAGE, "");
+
 	S9xExtraDisplayUsage();
 }
 
@@ -534,6 +545,22 @@ void S9xParseArg (char **argv, int &i, int argc)
 	else
 	if (!strcasecmp(argv[i], "-dumpmaxframes"))
 		Settings.DumpStreamsMaxFrames = atoi(argv[++i]);
+	else
+	if (!strcasecmp(argv[i], "-rwbuffersize"))
+	{
+		if (i + 1 < argc)
+			unixSettings.rewindBufferSize = atoi(argv[++i]);
+		else
+			S9xUsage();
+	}
+	else
+	if (!strcasecmp(argv[i], "-rwgranularity"))
+	{
+		if (i + 1 < argc)
+			unixSettings.rewindGranularity = atoi(argv[++i]);
+		else
+			S9xUsage();
+	}
 	else
 		S9xParseDisplayArg(argv, i, argc);
 }
@@ -1138,6 +1165,13 @@ s9xcommand_t S9xGetPortCommandT (const char *n)
 
 			return (cmd);
 		}
+	} else
+	if (!strcmp(n,"Rewind"))
+	{
+		cmd.type = S9xButtonPort;
+		cmd.port[1] = 2;
+
+		return (cmd);
 	}
 
 	return (S9xGetDisplayCommandT(n));
@@ -1168,6 +1202,9 @@ char * S9xGetPortCommandName (s9xcommand_t cmd)
 					x += " ToggleMeta";
 					x += (int) cmd.port[3];
 					return (strdup(x.c_str()));
+
+				case 2:
+					return (strdup("Rewind"));
 			}
 
 			break;
@@ -1203,6 +1240,10 @@ void S9xHandlePortCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 				case 1:
 					if (data1)
 						js_mod[cmd.port[2]] ^=  cmd.port[3];
+					break;
+				
+				case 2:
+					rewinding = (bool8) data1;
 					break;
 			}
 
@@ -1594,7 +1635,12 @@ int main (int argc, char **argv)
 	unixSettings.SoundBufferSize = 100;
 	unixSettings.SoundFragmentSize = 2048;
 
+	unixSettings.rewindBufferSize = 0;
+	unixSettings.rewindGranularity = 1;
+
 	memset(&so, 0, sizeof(so));
+
+	rewinding = false;
 
 	CPU.Flags = 0;
 
@@ -1733,6 +1779,8 @@ int main (int argc, char **argv)
 	{
 		NetPlay.MaxFrameSkip = 10;
 
+		unixSettings.rewindBufferSize = 0;
+
 		if (!S9xNPConnectToServer(Settings.ServerName, Settings.Port, Memory.ROMName))
 		{
 			fprintf(stderr, "Failed to connect to server %s on port %d.\n", Settings.ServerName, Settings.Port);
@@ -1759,12 +1807,18 @@ int main (int argc, char **argv)
 		CPU.Flags |= flags;
 	}
 	else
-	if (snapshot_filename)
 	{
-		uint32	flags = CPU.Flags & (DEBUG_MODE_FLAG | TRACE_FLAG);
-		if (!S9xUnfreezeGame(snapshot_filename))
-			exit(1);
-		CPU.Flags |= flags;
+		if (snapshot_filename)
+		{
+			uint32	flags = CPU.Flags & (DEBUG_MODE_FLAG | TRACE_FLAG);
+			if (!S9xUnfreezeGame(snapshot_filename))
+				exit(1);
+			CPU.Flags |= flags;
+		}
+		if (unixSettings.rewindBufferSize)
+		{
+			stateMan.init(unixSettings.rewindBufferSize * 1024 * 1024);
+		}
 	}
 
 	S9xGraphicsMode();
@@ -1822,7 +1876,14 @@ int main (int argc, char **argv)
 	#else
 		if (!Settings.Paused)
 	#endif
+		{
+			if(rewinding)
+				rewinding = stateMan.pop();
+			else if(IPPU.TotalEmulatedFrames % unixSettings.rewindGranularity == 0)
+				stateMan.push();
+			
 			S9xMainLoop();
+		}
 
 	#ifdef NETPLAY_SUPPORT
 		if (NP_Activated)

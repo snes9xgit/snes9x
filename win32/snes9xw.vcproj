@@ -2867,6 +2867,14 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\statemanager.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\statemanager.h"
+				>
+			</File>
+			<File
 				RelativePath="..\stream.cpp"
 				>
 			</File>
@@ -3020,14 +3028,6 @@
 			</File>
 			<File
 				RelativePath=".\render.h"
-				>
-			</File>
-			<File
-				RelativePath=".\StateManager.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\StateManager.h"
 				>
 			</File>
 			<File

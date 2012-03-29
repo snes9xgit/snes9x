@@ -211,9 +211,9 @@
 #include "../movie.h"
 #include "../controls.h"
 #include "../conffile.h"
+#include "../statemanager.h"
 #include "AVIOutput.h"
 #include "InputCustom.h"
-#include "StateManager.h"
 #include <vector>
 
 #if (((defined(_MSC_VER) && _MSC_VER >= 1300)) || defined(__MINGW32__))

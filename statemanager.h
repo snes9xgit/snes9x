@@ -1,7 +1,7 @@
 #ifndef STATEMANAGER_H
 #define STATEMANAGER_H
 
-/*  Snapshot Manager Class that records snapshot data for rewinding
+/*  State Manager Class that records snapshot data for rewinding
     mostly based on SSNES's rewind code by Themaister
 */
 
