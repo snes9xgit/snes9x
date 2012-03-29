@@ -2065,7 +2065,9 @@ static int UnfreezeBlock (STREAM stream, const char *name, uint8 *block, int siz
 	if (l != 11 || strncmp(buffer, name, 3) != 0 || buffer[3] != ':')
 	{
 	err:
+#ifdef DEBUGGER
 		fprintf(stdout, "absent: %s(%d); next: '%.11s'\n", name, size, buffer);
+#endif
 		REVERT_STREAM(stream, FIND_STREAM(stream) - l, 0);
 		return (WRONG_FORMAT);
 	}
