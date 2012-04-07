@@ -718,6 +718,40 @@ S9xMergeHires (void *buffer,
     return;
 }
 
+static void
+S9xBlendHires (void *buffer, int pitch, int &width, int &height)
+{
+    uint16 tmp[512];
+
+    if (width < 512)
+    {
+        width <<= 1;
+
+        for (int y = 0; y < height; y++)
+        {
+            uint16 *input = (uint16 *) ((uint8 *) buffer + y * pitch);
+
+            tmp[0] = input[0];
+            for (int x = 1; x < width; x++)
+                tmp[x] = AVERAGE_1555 (input[(x - 1) >> 1], input[(x >> 1)]);
+
+            memcpy (input, tmp, width << 1);
+        }
+    }
+    else for (int y = 0; y < height; y++)
+    {
+        uint16 *input = (uint16 *) ((uint8 *) buffer + y * pitch);
+
+        tmp[0] = input[0];
+        for (int x = 1; x < width; x++)
+            tmp[x] = AVERAGE_1555 (input[x - 1], input[x]);
+
+        memcpy (input, tmp, pitch);
+    }
+
+    return;
+}
+
 void
 filter_2x (void *src,
            int src_pitch,
