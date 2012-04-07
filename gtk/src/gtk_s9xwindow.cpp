@@ -976,6 +976,8 @@ Snes9xWindow::try_open_rom (const char *filename)
     }
     else
     {
+        const char *groups[] = { "cartridge", NULL };
+
         GtkRecentData recent_data =
         {
                 NULL,
@@ -983,7 +985,7 @@ Snes9xWindow::try_open_rom (const char *filename)
                 (gchar *) "application/x-snes-rom",
                 (gchar *) "Snes9x",
                 NULL,
-                NULL,
+                (gchar **) groups,
                 FALSE
         };
         gchar *u_filename;
@@ -1833,7 +1835,7 @@ Snes9xWindow::show (void)
         GtkRecentFilter *filter = gtk_recent_filter_new ();
         GtkRecentChooser *chooser = GTK_RECENT_CHOOSER (recent_menu);
 
-        gtk_recent_filter_add_application (filter, "Snes9x");
+        gtk_recent_filter_add_group (filter, "cartridge");
         gtk_recent_chooser_set_local_only (chooser, TRUE);
         gtk_recent_chooser_set_show_icons (chooser, FALSE);
         gtk_recent_chooser_set_sort_type (chooser, GTK_RECENT_SORT_MRU);
