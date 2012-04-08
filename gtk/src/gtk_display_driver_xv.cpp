@@ -443,16 +443,10 @@ S9xXVDisplayDriver::init (void)
         }
     }
 
-    XSetWindowAttributes window_attr;
     xcolormap = XCreateColormap (display,
                                 GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (drawing_area)),
                                 vi->visual,
                                 AllocNone);
-
-    window_attr.colormap = xcolormap;
-    window_attr.border_pixel = 0;
-    window_attr.event_mask = StructureNotifyMask | ExposureMask | PropertyChangeMask;
-    window_attr.background_pixmap = None;
 
     create_window (1, 1);
     gdk_window_hide (gdk_window);
