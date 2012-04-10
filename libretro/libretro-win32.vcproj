@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="libsnes-win32"
+	Name="libretro-win32"
 	ProjectGUID="{4A2A7544-0547-4539-8B53-047FB9A15C75}"
 	RootNamespace="libsneswin32"
 	Keyword="Win32Proj"
@@ -64,9 +64,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\snes.dll"
+				OutputFile="$(OutDir)\libretro.dll"
 				LinkIncremental="2"
-				ModuleDefinitionFile="libsnes.def"
+				ModuleDefinitionFile="libretro.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -139,9 +139,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\snes.dll"
+				OutputFile="$(OutDir)\libretro.dll"
 				LinkIncremental="2"
-				ModuleDefinitionFile="libsnes.def"
+				ModuleDefinitionFile="libretro.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="17"
@@ -216,9 +216,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\snes.dll"
+				OutputFile="$(OutDir)\libretro.dll"
 				LinkIncremental="1"
-				ModuleDefinitionFile="libsnes.def"
+				ModuleDefinitionFile="libretro.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -297,9 +297,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\snes.dll"
+				OutputFile="$(OutDir)\libretro.dll"
 				LinkIncremental="1"
-				ModuleDefinitionFile="libsnes.def"
+				ModuleDefinitionFile="libretro.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -765,18 +765,18 @@
 			</Filter>
 		</Filter>
 		<Filter
-			Name="libsnes"
+			Name="libretro"
 			>
 			<File
-				RelativePath=".\libsnes.cpp"
+				RelativePath=".\libretro.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\libsnes.def"
+				RelativePath=".\libretro.def"
 				>
 			</File>
 			<File
-				RelativePath=".\libsnes.hpp"
+				RelativePath=".\libretro.h"
 				>
 			</File>
 		</Filter>
