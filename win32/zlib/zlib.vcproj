@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="zlib"
 	ProjectGUID="{99E9817A-4605-44AF-8433-7048F0EC1859}"
 	RootNamespace="zlib"
@@ -44,6 +44,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="..\..\..\zlib"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -66,6 +67,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				AdditionalDependencies="..\..\..\zlib\contrib\masmx86\match686.obj ..\..\..\zlib\contrib\masmx86\inffas32.obj"
 				OutputFile="$(OutDir)\zlibdmt.lib"
 			/>
 			<Tool
@@ -110,7 +112,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
+				AdditionalIncludeDirectories="..\..\..\zlib"
+				PreprocessorDefinitions="WIN32;_DEBUG;ASMV;ASMINF;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -132,6 +135,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				AdditionalDependencies="..\..\..\zlib\contrib\masmx64\gvmat64.obj ..\..\..\zlib\contrib\masmx64\inffasx64.obj "
 				OutputFile="$(OutDir)\zlibdmtx64.lib"
 			/>
 			<Tool
@@ -177,6 +181,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="..\..\..\zlib"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -197,6 +202,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				AdditionalDependencies="..\..\..\zlib\contrib\masmx86\match686.obj ..\..\..\zlib\contrib\masmx86\inffas32.obj"
 				OutputFile="$(OutDir)\zlibmt.lib"
 			/>
 			<Tool
@@ -243,6 +249,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="..\..\..\zlib"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -263,6 +270,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				AdditionalDependencies="..\..\..\zlib\contrib\masmx64\gvmat64.obj ..\..\..\zlib\contrib\masmx64\inffasx64.obj "
 				OutputFile="$(OutDir)\zlibmtx64.lib"
 			/>
 			<Tool
@@ -306,7 +314,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
+				AdditionalIncludeDirectories="..\..\..\zlib"
+				PreprocessorDefinitions="WIN32;_DEBUG;ASMV;ASMINF;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -328,6 +337,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				AdditionalDependencies="..\..\..\zlib\contrib\masmx86\match686.obj ..\..\..\zlib\contrib\masmx86\inffas32.obj"
 				OutputFile="$(OutDir)\zlibdmtu.lib"
 			/>
 			<Tool
@@ -372,7 +382,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
+				AdditionalIncludeDirectories="..\..\..\zlib"
+				PreprocessorDefinitions="WIN32;_DEBUG;ASMV;ASMINF;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -394,6 +405,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				AdditionalDependencies="..\..\..\zlib\contrib\masmx64\gvmat64.obj ..\..\..\zlib\contrib\masmx64\inffasx64.obj "
 				OutputFile="$(OutDir)\zlibdmtux64.lib"
 			/>
 			<Tool
@@ -439,7 +451,8 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
+				AdditionalIncludeDirectories="..\..\..\zlib"
+				PreprocessorDefinitions="WIN32;NDEBUG;ASMV;ASMINF;_WINDOWS"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -459,6 +472,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				AdditionalDependencies="..\..\..\zlib\contrib\masmx86\match686.obj ..\..\..\zlib\contrib\masmx86\inffas32.obj"
 				OutputFile="$(OutDir)\zlibmtu.lib"
 			/>
 			<Tool
@@ -505,7 +519,8 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
+				AdditionalIncludeDirectories="..\..\..\zlib"
+				PreprocessorDefinitions="WIN32;NDEBUG;ASMV;ASMINF;_WINDOWS"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -525,6 +540,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				AdditionalDependencies="..\..\..\zlib\contrib\masmx64\gvmat64.obj ..\..\..\zlib\contrib\masmx64\inffasx64.obj "
 				OutputFile="$(OutDir)\zlibmtux64.lib"
 			/>
 			<Tool
@@ -587,6 +603,42 @@
 			<File
 				RelativePath="..\..\..\zlib\infback.c"
 				>
+			</File>
+			<File
+				RelativePath="..\..\..\zlib\contrib\masmx64\inffas8664.c"
+				>
+				<FileConfiguration
+					Name="LIB Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="LIB Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="LIB Debug S9xUnicode|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="LIB Release S9xUnicode|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\zlib\inffast.c"
