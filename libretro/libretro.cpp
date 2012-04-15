@@ -93,6 +93,7 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
     info->geometry.base_height = SNES_HEIGHT;
     info->geometry.max_width = MAX_SNES_WIDTH;
     info->geometry.max_height = MAX_SNES_HEIGHT;
+    info->geometry.aspect_ratio = 4.0 / 3.0;
     info->timing.sample_rate = 32040.5;
     info->timing.fps = retro_get_region() == RETRO_REGION_NTSC ? 21477272.0 / 357366.0 : 21281370.0 / 425568.0;
 }
