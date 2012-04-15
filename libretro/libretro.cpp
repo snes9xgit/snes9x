@@ -581,17 +581,17 @@ size_t retro_serialize_size()
    return S9xFreezeSize();
 }
 
-bool retro_serialize(uint8_t *data, unsigned size)
+bool retro_serialize(void *data, size_t size)
 { 
-   if (S9xFreezeGameMem(data,size) == FALSE)
+   if (S9xFreezeGameMem((uint8_t*)data,size) == FALSE)
       return false;
 
    return true;
 }
 
-bool retro_unserialize(const uint8_t* data, unsigned size)
+bool retro_unserialize(const void* data, size_t size)
 { 
-   if (S9xUnfreezeGameMem(data,size) != SUCCESS)
+   if (S9xUnfreezeGameMem((const uint8_t*)data,size) != SUCCESS)
       return false;
    return true;
 }
