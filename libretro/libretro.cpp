@@ -609,6 +609,21 @@ bool8 S9xDeinitUpdate(int width, int height)
          height = SNES_HEIGHT;
       }
    }
+   else
+   {
+      if (height > SNES_HEIGHT_EXTENDED)
+      {
+         if (height < SNES_HEIGHT_EXTENDED << 1)
+             memset(GFX.Screen + (GFX.Pitch >> 1) * height,0,GFX.Pitch * ((SNES_HEIGHT_EXTENDED << 1) - height));
+         height = SNES_HEIGHT_EXTENDED << 1;
+      }
+      else
+      {
+         if (height < SNES_HEIGHT_EXTENDED)
+            memset(GFX.Screen + (GFX.Pitch >> 1) * height,0,GFX.Pitch * (SNES_HEIGHT_EXTENDED - height));
+         height = SNES_HEIGHT_EXTENDED;
+      }
+   }
 
    s9x_video_cb(GFX.Screen, width, height, GFX.Pitch);
    return TRUE;
