@@ -69,9 +69,6 @@ static void S9xAudioCallback(void*)
    size_t avail = S9xGetSampleCount();
    S9xMixSamples((uint8*)audio_buf, avail);
    s9x_audio_batch_cb(audio_buf,avail >> 1);
-
-   /*for (size_t i = 0; i < avail; i+=2)
-      s9x_audio_cb((uint16_t)audio_buf[i], (uint16_t)audio_buf[i + 1]);*/
 }
 
 void retro_get_system_info(struct retro_system_info *info)
@@ -514,18 +511,6 @@ void* retro_get_memory_data(unsigned type)
      case RETRO_MEMORY_SYSTEM_RAM:
         data = Memory.RAM;
        break;
-     /*case SNES_MEMORY_APURAM:
-        data = SNES::smp.apuram;
-       break;
-     case SNES_MEMORY_VRAM:
-        data = Memory.VRAM;
-       break;
-     case SNES_MEMORY_CGRAM:
-        data = (uint8_t*)PPU.CGDATA;
-       break;
-     case SNES_MEMORY_OAM:
-        data = PPU.OAMData;
-       break;*/
 	  default:
 	     data = NULL;
 		 break;
@@ -559,16 +544,6 @@ size_t retro_get_memory_size(unsigned type)
      case RETRO_MEMORY_SYSTEM_RAM:
        size = 128 * 1024;
       break;
-     /*case SNES_MEMORY_VRAM:
-     case SNES_MEMORY_APURAM:
-       size = 64 * 1024;
-      break;
-     case SNES_MEMORY_CGRAM:
-       size = 512;
-      break;
-     case SNES_MEMORY_OAM:
-       size = 512 + 32;
-      break;*/
 	  default:
 	     size = 0;
 		 break;
@@ -638,7 +613,6 @@ bool8 S9xContinueUpdate(int width, int height)
 // Dummy functions that should probably be implemented correctly later.
 void S9xParsePortConfig(ConfigFile&, int) {}
 void S9xSyncSpeed() {}
-//void S9xPollPointer(int, short*, short*) {}
 const char* S9xStringInput(const char* in) { return in; }
 const char* S9xGetFilename(const char* in, s9x_getdirtype) { return in; }
 const char* S9xGetDirectory(s9x_getdirtype) { return ""; }
