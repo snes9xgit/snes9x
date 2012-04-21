@@ -1,4 +1,4 @@
-#include "libsnes.hpp"
+#include "libretro.h"
 
 #include "snes9x.h"
 #include "memmap.h"
@@ -22,51 +22,42 @@
 #include <fcntl.h>
 
 
-static snes_video_refresh_t s9x_video_cb = NULL;
-static snes_audio_sample_t s9x_audio_cb = NULL;
-static snes_input_poll_t s9x_poller_cb = NULL;
-static snes_input_state_t s9x_input_state_cb = NULL;
+static retro_video_refresh_t s9x_video_cb = NULL;
+static retro_audio_sample_t s9x_audio_cb = NULL;
+static retro_audio_sample_batch_t s9x_audio_batch_cb = NULL;
+static retro_input_poll_t s9x_poller_cb = NULL;
+static retro_input_state_t s9x_input_state_cb = NULL;
 
-void snes_set_video_refresh(snes_video_refresh_t cb)
+void retro_set_video_refresh(retro_video_refresh_t cb)
 {
    s9x_video_cb = cb;
 }
 
-void snes_set_audio_sample(snes_audio_sample_t cb)
+void retro_set_audio_sample(retro_audio_sample_t cb)
 {
    s9x_audio_cb = cb;
 }
 
-void snes_set_input_poll(snes_input_poll_t cb)
+void retro_set_audio_sample_batch(retro_audio_sample_batch_t cb)
+{
+    s9x_audio_batch_cb = cb;
+}
+
+void retro_set_input_poll(retro_input_poll_t cb)
 {
    s9x_poller_cb = cb;
 }
 
-void snes_set_input_state(snes_input_state_t cb)
+void retro_set_input_state(retro_input_state_t cb)
 {
    s9x_input_state_cb = cb;
 }
 
-static snes_environment_t environ_cb;
+static retro_environment_t environ_cb;
 static bool use_overscan;
-void snes_set_environment(snes_environment_t cb)
+void retro_set_environment(retro_environment_t cb)
 {
    environ_cb = cb;
-}
-
-static void set_environ_timing()
-{
-   if (environ_cb)
-   {
-      snes_system_timing timing;
-      timing.sample_rate = 32040.5;
-      if (!Settings.PAL)
-         timing.fps = 21477272.0 / 357366.0;
-      else
-         timing.fps = 21281370.0 / 425568.0;
-
-      environ_cb(SNES_ENVIRONMENT_SET_TIMING, &timing);
-   }
 }
 
 static void S9xAudioCallback(void*)
@@ -77,154 +68,170 @@ static void S9xAudioCallback(void*)
    S9xFinalizeSamples();
    size_t avail = S9xGetSampleCount();
    S9xMixSamples((uint8*)audio_buf, avail);
-   for (size_t i = 0; i < avail; i+=2)
-      s9x_audio_cb((uint16_t)audio_buf[i], (uint16_t)audio_buf[i + 1]);
+   s9x_audio_batch_cb(audio_buf,avail >> 1);
 }
 
-const char *snes_library_id()
+void retro_get_system_info(struct retro_system_info *info)
+{
+    memset(info,0,sizeof(retro_system_info));
+
+    info->library_name = "SNES9x";
+    info->library_version = VERSION;
+    info->valid_extensions = "smc|sfc|zip|gz|swc|fig|jma";
+    info->need_fullpath = false;
+    info->block_extract = false;    
+}
+
+void retro_get_system_av_info(struct retro_system_av_info *info)
+{
+    memset(info,0,sizeof(retro_system_av_info));
+
+    info->geometry.base_width = SNES_WIDTH;
+    info->geometry.base_height = SNES_HEIGHT;
+    info->geometry.max_width = MAX_SNES_WIDTH;
+    info->geometry.max_height = MAX_SNES_HEIGHT;
+    info->geometry.aspect_ratio = 4.0 / 3.0;
+    info->timing.sample_rate = 32040.5;
+    info->timing.fps = retro_get_region() == RETRO_REGION_NTSC ? 21477272.0 / 357366.0 : 21281370.0 / 425568.0;
+}
+
+const char *retro_library_id()
 {
    return "SNES9x v" VERSION;
 }
 
-unsigned snes_library_revision_major()
+unsigned retro_api_version()
 {
-   return 1;
+   return RETRO_API_VERSION;
 }
 
-unsigned snes_library_revision_minor()
-{
-   return 3;
-}
 
-void snes_power()
+void retro_reset()
 {
-   S9xReset();
-}
-
-void snes_reset()
-{
-   S9xMovieUpdateOnReset();
-   if (S9xMoviePlaying())
-   {
-      S9xMovieStop(true);
-   }
    S9xSoftReset();
 }
 
 static unsigned snes_devices[2];
-void snes_set_controller_port_device(bool in_port, unsigned device)
+void retro_set_controller_port_device(unsigned port, unsigned device)
 {
-   int port = in_port == SNES_PORT_1 ? 0 : 1;
    switch (device)
    {
-      case SNES_DEVICE_JOYPAD:
+      case RETRO_DEVICE_JOYPAD:
          S9xSetController(port, CTL_JOYPAD, 0, 0, 0, 0);
-         snes_devices[port] = SNES_DEVICE_JOYPAD;
+         snes_devices[port] = RETRO_DEVICE_JOYPAD;
          break;
-      case SNES_DEVICE_MULTITAP:
+      case RETRO_DEVICE_JOYPAD_MULTITAP:
          S9xSetController(port, CTL_MP5, 1, 2, 3, 4);
-         snes_devices[port] = SNES_DEVICE_MULTITAP;
+         snes_devices[port] = RETRO_DEVICE_JOYPAD_MULTITAP;
          break;
-      case SNES_DEVICE_MOUSE:
+      case RETRO_DEVICE_MOUSE:
          S9xSetController(port, CTL_MOUSE, 0, 0, 0, 0);
-         snes_devices[port] = SNES_DEVICE_MOUSE;
+         snes_devices[port] = RETRO_DEVICE_MOUSE;
          break;
-      case SNES_DEVICE_SUPER_SCOPE:
+      case RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE:
          S9xSetController(port, CTL_SUPERSCOPE, 0, 0, 0, 0);
-         snes_devices[port] = SNES_DEVICE_SUPER_SCOPE;
+         snes_devices[port] = RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE;
          break;
-      case SNES_DEVICE_JUSTIFIER:
+      case RETRO_DEVICE_LIGHTGUN_JUSTIFIER:
          S9xSetController(port, CTL_JUSTIFIER, 0, 0, 0, 0);
-         snes_devices[port] = SNES_DEVICE_JUSTIFIER;
+         snes_devices[port] = RETRO_DEVICE_LIGHTGUN_JUSTIFIER;
          break;
-      case SNES_DEVICE_JUSTIFIERS:
+      case RETRO_DEVICE_LIGHTGUN_JUSTIFIERS:
          S9xSetController(port, CTL_JUSTIFIER, 1, 0, 0, 0);
-         snes_devices[port] = SNES_DEVICE_JUSTIFIERS;
+         snes_devices[port] = RETRO_DEVICE_LIGHTGUN_JUSTIFIERS;
          break;
       default:
-         fprintf(stderr, "[libsnes]: Invalid device!\n");
+         fprintf(stderr, "[libretro]: Invalid device!\n");
    }
 }
 
-void snes_cheat_reset()
+void retro_cheat_reset()
 {}
 
-void snes_cheat_set(unsigned, bool, const char*)
+void retro_cheat_set(unsigned, bool, const char*)
 {}
 
-bool snes_load_cartridge_bsx_slotted(
-      const char *, const uint8_t *rom_data, unsigned rom_size,
-      const char *, const uint8_t *bsx_data, unsigned bsx_size
-      )
+bool retro_load_game(const struct retro_game_info *game)
 {
-   int loaded = Memory.LoadMultiCartMem(rom_data, rom_size, bsx_data, bsx_size, NULL, NULL);
+   int loaded = 0;
+
+   if(game->data == NULL && game->size == NULL && game->path != NULL)
+      loaded = Memory.LoadROM(game->path);
+   else
+      loaded = Memory.LoadROMMem((const uint8_t*)game->data ,game->size);
 
    if (!loaded)
    {
-      fprintf(stderr, "[libsnes]: Sufami Turbo Rom loading failed...\n");
-      return false;
+      fprintf(stderr, "[libretro]: Rom loading failed...\n");
    }
-
-   set_environ_timing();
-
-   return false;
-}
-
-bool snes_load_cartridge_bsx(
-      const char *rom_xml, const uint8_t *rom_data, unsigned rom_size,
-      const char *bsx_xml, const uint8_t *bsx_data, unsigned bsx_size
-      )
-{
-   if(bsx_data==NULL)
-       return snes_load_cartridge_normal(rom_xml,rom_data,rom_size);
-   memcpy(Memory.BIOSROM,rom_data,rom_size);
-   return snes_load_cartridge_normal(bsx_xml,bsx_data,bsx_size);
-}
-
-bool snes_load_cartridge_sufami_turbo(
-      const char *, const uint8_t *rom_data, unsigned rom_size,
-      const char *, const uint8_t *sta_data, unsigned sta_size,
-      const char *, const uint8_t *stb_data, unsigned stb_size
-      )
-{
-   int loaded = Memory.LoadMultiCartMem(sta_data, sta_size, stb_data, stb_size, rom_data, rom_size);
-
-   if (!loaded)
-   {
-      fprintf(stderr, "[libsnes]: Sufami Turbo Rom loading failed...\n");
-      return false;
-   }
-
-   set_environ_timing();
    
-   return true;
+   return loaded;
 }
 
-bool snes_load_cartridge_super_game_boy(
-      const char *, const uint8_t *, unsigned,
-      const char *, const uint8_t *, unsigned 
-      )
-{
-   return false;
+void retro_unload_game(void)
+{}
+
+bool retro_load_game_special(unsigned game_type,
+      const struct retro_game_info *info, size_t num_info) {
+
+  int loaded = 0;
+  switch (game_type) {
+     case RETRO_GAME_TYPE_BSX:
+       
+       if(num_info == 1) {
+          loaded = Memory.LoadROMMem((const uint8_t*)info[0].data,info[0].size);
+       } else if(num_info == 2) {
+          memcpy(Memory.BIOSROM,(const uint8_t*)info[0].data,info[0].size);
+          loaded = Memory.LoadROMMem((const uint8_t*)info[1].data,info[1].size);
+       }
+
+       if (!loaded)
+       {
+          fprintf(stderr, "[libretro]: BSX Rom loading failed...\n");
+       }
+
+       return loaded;
+       
+     case RETRO_GAME_TYPE_BSX_SLOTTED:
+
+       if(num_info == 2)
+           loaded = Memory.LoadMultiCartMem((const uint8_t*)info[0].data, info[0].size,
+                        (const uint8_t*)info[1].data, info[1].size, NULL, NULL);
+
+       if (!loaded)
+       {
+          fprintf(stderr, "[libretro]: Multirom loading failed...\n");
+       }
+
+       return loaded;
+
+     case RETRO_GAME_TYPE_SUFAMI_TURBO:
+
+       if(num_info == 3)
+           loaded = Memory.LoadMultiCartMem((const uint8_t*)info[1].data, info[1].size,
+                        (const uint8_t*)info[2].data, info[2].size, (const uint8_t*)info[0].data, info[0].size);
+
+       if (!loaded)
+       {
+          fprintf(stderr, "[libretro]: Sufami Turbo Rom loading failed...\n");
+       }
+
+       return loaded;
+
+     default:
+       return false;
+  }
 }
 
 static void map_buttons();
 
 
-void snes_init()
+void retro_init()
 {
    if (environ_cb)
    {
-      if (!environ_cb(SNES_ENVIRONMENT_GET_OVERSCAN, &use_overscan))
+      if (!environ_cb(RETRO_ENVIRONMENT_GET_OVERSCAN, &use_overscan))
          use_overscan = false;
-
-      if (use_overscan)
-      {
-         snes_geometry geom = {256, 239, 512, 512};
-         environ_cb(SNES_ENVIRONMENT_SET_GEOMETRY, &geom);
-         unsigned pitch = 1024;
-         environ_cb(SNES_ENVIRONMENT_SET_PITCH, &pitch);
-      }
    }
 
    memset(&Settings, 0, sizeof(Settings));
@@ -261,7 +268,7 @@ void snes_init()
    {
       Memory.Deinit();
       S9xDeinitAPU();
-      fprintf(stderr, "[libsnes]: Failed to init Memory or APU.\n");
+      fprintf(stderr, "[libretro]: Failed to init Memory or APU.\n");
       exit(1);
    }
 
@@ -270,15 +277,15 @@ void snes_init()
    S9xSetSamplesAvailableCallback(S9xAudioCallback, NULL);
 
    S9xSetRenderPixelFormat(RGB555);
-   GFX.Pitch = use_overscan ? 1024 : 2048;
-   GFX.Screen = (uint16*) calloc(1, GFX.Pitch * 512 * sizeof(uint16));
+   GFX.Pitch = MAX_SNES_WIDTH * sizeof(uint16);
+   GFX.Screen = (uint16*) calloc(1, GFX.Pitch * MAX_SNES_HEIGHT);
    S9xGraphicsInit();
 
    S9xInitInputDevices();
    for (int i = 0; i < 2; i++)
    {
       S9xSetController(i, CTL_JOYPAD, i, 0, 0, 0);
-      snes_devices[i] = SNES_DEVICE_JOYPAD;
+      snes_devices[i] = RETRO_DEVICE_JOYPAD;
    }
 
    S9xUnmapAllControls();
@@ -295,41 +302,41 @@ void snes_init()
 #define PAD_4 4
 #define PAD_5 5
 
-#define BTN_B SNES_DEVICE_ID_JOYPAD_B
-#define BTN_Y SNES_DEVICE_ID_JOYPAD_Y
-#define BTN_SELECT SNES_DEVICE_ID_JOYPAD_SELECT
-#define BTN_START SNES_DEVICE_ID_JOYPAD_START
-#define BTN_UP SNES_DEVICE_ID_JOYPAD_UP
-#define BTN_DOWN SNES_DEVICE_ID_JOYPAD_DOWN
-#define BTN_LEFT SNES_DEVICE_ID_JOYPAD_LEFT
-#define BTN_RIGHT SNES_DEVICE_ID_JOYPAD_RIGHT
-#define BTN_A SNES_DEVICE_ID_JOYPAD_A
-#define BTN_X SNES_DEVICE_ID_JOYPAD_X
-#define BTN_L SNES_DEVICE_ID_JOYPAD_L
-#define BTN_R SNES_DEVICE_ID_JOYPAD_R
+#define BTN_B RETRO_DEVICE_ID_JOYPAD_B
+#define BTN_Y RETRO_DEVICE_ID_JOYPAD_Y
+#define BTN_SELECT RETRO_DEVICE_ID_JOYPAD_SELECT
+#define BTN_START RETRO_DEVICE_ID_JOYPAD_START
+#define BTN_UP RETRO_DEVICE_ID_JOYPAD_UP
+#define BTN_DOWN RETRO_DEVICE_ID_JOYPAD_DOWN
+#define BTN_LEFT RETRO_DEVICE_ID_JOYPAD_LEFT
+#define BTN_RIGHT RETRO_DEVICE_ID_JOYPAD_RIGHT
+#define BTN_A RETRO_DEVICE_ID_JOYPAD_A
+#define BTN_X RETRO_DEVICE_ID_JOYPAD_X
+#define BTN_L RETRO_DEVICE_ID_JOYPAD_L
+#define BTN_R RETRO_DEVICE_ID_JOYPAD_R
 #define BTN_FIRST BTN_B
 #define BTN_LAST BTN_R
 
-#define MOUSE_X SNES_DEVICE_ID_MOUSE_X
-#define MOUSE_Y SNES_DEVICE_ID_MOUSE_Y
-#define MOUSE_LEFT SNES_DEVICE_ID_MOUSE_LEFT
-#define MOUSE_RIGHT SNES_DEVICE_ID_MOUSE_RIGHT
+#define MOUSE_X RETRO_DEVICE_ID_MOUSE_X
+#define MOUSE_Y RETRO_DEVICE_ID_MOUSE_Y
+#define MOUSE_LEFT RETRO_DEVICE_ID_MOUSE_LEFT
+#define MOUSE_RIGHT RETRO_DEVICE_ID_MOUSE_RIGHT
 #define MOUSE_FIRST MOUSE_X
 #define MOUSE_LAST MOUSE_RIGHT
 
-#define SCOPE_X SNES_DEVICE_ID_SUPER_SCOPE_X
-#define SCOPE_Y SNES_DEVICE_ID_SUPER_SCOPE_Y
-#define SCOPE_TRIGGER SNES_DEVICE_ID_SUPER_SCOPE_TRIGGER
-#define SCOPE_CURSOR SNES_DEVICE_ID_SUPER_SCOPE_CURSOR
-#define SCOPE_TURBO SNES_DEVICE_ID_SUPER_SCOPE_TURBO
-#define SCOPE_PAUSE SNES_DEVICE_ID_SUPER_SCOPE_PAUSE
+#define SCOPE_X RETRO_DEVICE_ID_SUPER_SCOPE_X
+#define SCOPE_Y RETRO_DEVICE_ID_SUPER_SCOPE_Y
+#define SCOPE_TRIGGER RETRO_DEVICE_ID_LIGHTGUN_TRIGGER
+#define SCOPE_CURSOR RETRO_DEVICE_ID_LIGHTGUN_CURSOR
+#define SCOPE_TURBO RETRO_DEVICE_ID_LIGHTGUN_TURBO
+#define SCOPE_PAUSE RETRO_DEVICE_ID_LIGHTGUN_PAUSE
 #define SCOPE_FIRST SCOPE_X
 #define SCOPE_LAST SCOPE_PAUSE
 
-#define JUSTIFIER_X SNES_DEVICE_ID_JUSTIFIER_X
-#define JUSTIFIER_Y SNES_DEVICE_ID_JUSTIFIER_Y
-#define JUSTIFIER_TRIGGER SNES_DEVICE_ID_JUSTIFIER_TRIGGER
-#define JUSTIFIER_START SNES_DEVICE_ID_JUSTIFIER_START
+#define JUSTIFIER_X RETRO_DEVICE_ID_JUSTIFIER_X
+#define JUSTIFIER_Y RETRO_DEVICE_ID_JUSTIFIER_Y
+#define JUSTIFIER_TRIGGER RETRO_DEVICE_ID_LIGHTGUN_TRIGGER
+#define JUSTIFIER_START RETRO_DEVICE_ID_LIGHTGUN_PAUSE
 #define JUSTIFIER_FIRST JUSTIFIER_X
 #define JUSTIFIER_LAST JUSTIFIER_START
 
@@ -407,7 +414,7 @@ static void map_buttons()
 
 }
 
-// libsnes uses relative values for analogue devices. 
+// libretro uses relative values for analogue devices. 
 // S9x seems to use absolute values, but do convert these into relative values in the core. (Why?!)
 // Hack around it. :)
 static int16_t snes_mouse_state[2][2] = {{0}, {0}};
@@ -416,77 +423,63 @@ static int16_t snes_justifier_state[2][2] = {{0}, {0}};
 static void report_buttons()
 {
    int _x, _y;
-   for (int port = SNES_PORT_1; port <= SNES_PORT_2; port++)
+   for (int port = 0; port <= 1; port++)
    {
       switch (snes_devices[port])
       {
-         case SNES_DEVICE_JOYPAD:
+         case RETRO_DEVICE_JOYPAD:
             for (int i = BTN_FIRST; i <= BTN_LAST; i++)
-               S9xReportButton(MAKE_BUTTON(port + 1, i), s9x_input_state_cb(port == SNES_PORT_2, SNES_DEVICE_JOYPAD, 0, i));
+               S9xReportButton(MAKE_BUTTON(port + 1, i), s9x_input_state_cb(port, RETRO_DEVICE_JOYPAD, 0, i));
             break;
 
-         case SNES_DEVICE_MULTITAP:
+         case RETRO_DEVICE_JOYPAD_MULTITAP:
             for (int j = 0; j < 4; j++)
                for (int i = BTN_FIRST; i <= BTN_LAST; i++)
-                  S9xReportButton(MAKE_BUTTON(j + 2, i), s9x_input_state_cb(port == SNES_PORT_2, SNES_DEVICE_MULTITAP, j, i));
+                  S9xReportButton(MAKE_BUTTON(j + 2, i), s9x_input_state_cb(port, RETRO_DEVICE_JOYPAD_MULTITAP, j, i));
             break;
 
-         case SNES_DEVICE_MOUSE:
-            _x = s9x_input_state_cb(port == SNES_PORT_2, SNES_DEVICE_MOUSE, 0, SNES_DEVICE_ID_MOUSE_X);
-            _y = s9x_input_state_cb(port == SNES_PORT_2, SNES_DEVICE_MOUSE, 0, SNES_DEVICE_ID_MOUSE_Y);
+         case RETRO_DEVICE_MOUSE:
+            _x = s9x_input_state_cb(port, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_X);
+            _y = s9x_input_state_cb(port, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_Y);
             snes_mouse_state[port][0] += _x;
             snes_mouse_state[port][1] += _y;
             S9xReportPointer(BTN_POINTER + port, snes_mouse_state[port][0], snes_mouse_state[port][1]);
             for (int i = MOUSE_LEFT; i <= MOUSE_LAST; i++)
-               S9xReportButton(MAKE_BUTTON(port + 1, i), s9x_input_state_cb(port == SNES_PORT_2, SNES_DEVICE_MOUSE, 0, i));
+               S9xReportButton(MAKE_BUTTON(port + 1, i), s9x_input_state_cb(port, RETRO_DEVICE_MOUSE, 0, i));
             break;
 
-         case SNES_DEVICE_SUPER_SCOPE:
-            snes_scope_state[0] += s9x_input_state_cb(port == SNES_PORT_2, SNES_DEVICE_SUPER_SCOPE, 0, SNES_DEVICE_ID_SUPER_SCOPE_X);
-            snes_scope_state[1] += s9x_input_state_cb(port == SNES_PORT_2, SNES_DEVICE_SUPER_SCOPE, 0, SNES_DEVICE_ID_SUPER_SCOPE_Y);
+         case RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE:
+            snes_scope_state[0] += s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE, 0, RETRO_DEVICE_ID_LIGHTGUN_X);
+            snes_scope_state[1] += s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE, 0, RETRO_DEVICE_ID_LIGHTGUN_Y);
             S9xReportPointer(BTN_POINTER, snes_scope_state[0], snes_scope_state[1]);
             for (int i = SCOPE_TRIGGER; i <= SCOPE_LAST; i++)
-               S9xReportButton(MAKE_BUTTON(port + 1, i), s9x_input_state_cb(port == SNES_PORT_2, SNES_DEVICE_SUPER_SCOPE, 0, i));
+               S9xReportButton(MAKE_BUTTON(port + 1, i), s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE, 0, i));
             break;
 
-         case SNES_DEVICE_JUSTIFIER:
-         case SNES_DEVICE_JUSTIFIERS:
-            snes_justifier_state[0][0] += s9x_input_state_cb(port == SNES_PORT_2, SNES_DEVICE_JUSTIFIER, 0, SNES_DEVICE_ID_JUSTIFIER_X);
-            snes_justifier_state[0][1] += s9x_input_state_cb(port == SNES_PORT_2, SNES_DEVICE_JUSTIFIER, 0, SNES_DEVICE_ID_JUSTIFIER_Y);
+         case RETRO_DEVICE_LIGHTGUN_JUSTIFIER:
+         case RETRO_DEVICE_LIGHTGUN_JUSTIFIERS:
+            snes_justifier_state[0][0] += s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN_JUSTIFIER, 0, RETRO_DEVICE_ID_LIGHTGUN_X);
+            snes_justifier_state[0][1] += s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN_JUSTIFIER, 0, RETRO_DEVICE_ID_LIGHTGUN_Y);
             S9xReportPointer(BTN_POINTER, snes_justifier_state[0][0], snes_justifier_state[0][1]);
             for (int i = JUSTIFIER_TRIGGER; i <= JUSTIFIER_LAST; i++)
-               S9xReportButton(MAKE_BUTTON(port + 1, i), s9x_input_state_cb(port == SNES_PORT_2, SNES_DEVICE_JUSTIFIER, 0, i));
+               S9xReportButton(MAKE_BUTTON(port + 1, i), s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN_JUSTIFIER, 0, i));
             break;
             
          default:
-            fprintf(stderr, "[libsnes]: Unknown device...\n");
+            fprintf(stderr, "[libretro]: Unknown device...\n");
 
       }
    }
 }
 
-bool snes_load_cartridge_normal(const char *, const uint8_t *rom_data, unsigned rom_size)
-{
-   int loaded = Memory.LoadROMMem(rom_data,rom_size);
-   if (!loaded)
-   {
-      fprintf(stderr, "[libsnes]: Rom loading failed...\n");
-      return false;
-   }
-
-   set_environ_timing();
-   
-   return true;
-}
-
-void snes_run()
+void retro_run()
 {
    s9x_poller_cb();
    report_buttons();
    S9xMainLoop();
 }
 
-void snes_term()
+void retro_deinit()
 {
    S9xDeinitAPU();
    Memory.Deinit();
@@ -495,40 +488,28 @@ void snes_term()
 }
 
 
-bool snes_get_region()
+unsigned retro_get_region()
 { 
-   return Settings.PAL ? SNES_REGION_PAL : SNES_REGION_NTSC; 
+   return Settings.PAL ? RETRO_REGION_PAL : RETRO_REGION_NTSC; 
 }
 
-uint8_t* snes_get_memory_data(unsigned type)
+void* retro_get_memory_data(unsigned type)
 {
-   uint8_t* data;
+   void* data;
 
    switch(type) {
-      case SNES_MEMORY_SUFAMI_TURBO_A_RAM:
-      case SNES_MEMORY_CARTRIDGE_RAM:
+      case RETRO_MEMORY_SNES_SUFAMI_TURBO_A_RAM:
+      case RETRO_MEMORY_SAVE_RAM:
          data = Memory.SRAM;
 		 break;
-      case SNES_MEMORY_SUFAMI_TURBO_B_RAM:
+      case RETRO_MEMORY_SNES_SUFAMI_TURBO_B_RAM:
          data = Multi.sramB;
          break;
-	  case SNES_MEMORY_CARTRIDGE_RTC:
+	  case RETRO_MEMORY_RTC:
 	     data = RTCData.reg;
          break;
-     case SNES_MEMORY_WRAM:
+     case RETRO_MEMORY_SYSTEM_RAM:
         data = Memory.RAM;
-       break;
-     case SNES_MEMORY_APURAM:
-        data = SNES::smp.apuram;
-       break;
-     case SNES_MEMORY_VRAM:
-        data = Memory.VRAM;
-       break;
-     case SNES_MEMORY_CGRAM:
-        data = (uint8_t*)PPU.CGDATA;
-       break;
-     case SNES_MEMORY_OAM:
-        data = PPU.OAMData;
        break;
 	  default:
 	     data = NULL;
@@ -538,40 +519,30 @@ uint8_t* snes_get_memory_data(unsigned type)
    return data;
 }
 
-void snes_unload_cartridge()
+void retro_unload_cartridge()
 {
 
 }
 
-unsigned snes_get_memory_size(unsigned type)
+size_t retro_get_memory_size(unsigned type)
 {
-   unsigned size;
+   size_t size;
 
    switch(type) {
-      case SNES_MEMORY_SUFAMI_TURBO_A_RAM:
-      case SNES_MEMORY_CARTRIDGE_RAM:
+      case RETRO_MEMORY_SNES_SUFAMI_TURBO_A_RAM:
+      case RETRO_MEMORY_SAVE_RAM:
          size = (unsigned) (Memory.SRAMSize ? (1 << (Memory.SRAMSize + 3)) * 128 : 0);
          if (size > 0x20000)
 		    size = 0x20000;
 		 break;
-      case SNES_MEMORY_SUFAMI_TURBO_B_RAM:
+      case RETRO_MEMORY_SNES_SUFAMI_TURBO_B_RAM:
          size = (unsigned) (Multi.cartType && Multi.sramSizeB ? (1 << (Multi.sramSizeB + 3)) * 128 : 0);
          break;
-	  case SNES_MEMORY_CARTRIDGE_RTC:
+	  case RETRO_MEMORY_RTC:
 		 size = (Settings.SRTC || Settings.SPC7110RTC)?20:0;
 		 break;
-     case SNES_MEMORY_WRAM:
+     case RETRO_MEMORY_SYSTEM_RAM:
        size = 128 * 1024;
-      break;
-     case SNES_MEMORY_VRAM:
-     case SNES_MEMORY_APURAM:
-       size = 64 * 1024;
-      break;
-     case SNES_MEMORY_CGRAM:
-       size = 512;
-      break;
-     case SNES_MEMORY_OAM:
-       size = 512 + 32;
       break;
 	  default:
 	     size = 0;
@@ -581,89 +552,56 @@ unsigned snes_get_memory_size(unsigned type)
    return size;
 }
 
-void snes_set_cartridge_basename(const char*)
-{}
-
-unsigned snes_serialize_size()
+size_t retro_serialize_size()
 {
    return S9xFreezeSize();
 }
 
-bool snes_serialize(uint8_t *data, unsigned size)
+bool retro_serialize(void *data, size_t size)
 { 
-   if (S9xFreezeGameMem(data,size) == FALSE)
+   if (S9xFreezeGameMem((uint8_t*)data,size) == FALSE)
       return false;
 
    return true;
 }
 
-bool snes_unserialize(const uint8_t* data, unsigned size)
+bool retro_unserialize(const void* data, size_t size)
 { 
-   if (S9xUnfreezeGameMem(data,size) != SUCCESS)
+   if (S9xUnfreezeGameMem((const uint8_t*)data,size) != SUCCESS)
       return false;
    return true;
-}
-
-// Pitch 2048 -> 1024, only done once per res-change.
-static void pack_frame(uint16_t *frame, int width, int height)
-{
-   for (int y = 1; y < height; y++)
-   {
-      uint16_t *src = frame + y * 1024;
-      uint16_t *dst = frame + y * 512;
-
-      memcpy(dst, src, width * sizeof(uint16_t));
-   }
-}
-
-// Pitch 1024 -> 2048, only done once per res-change.
-static void stretch_frame(uint16_t *frame, int width, int height)
-{
-   for (int y = height - 1; y >= 0; y--)
-   {
-      uint16_t *src = frame + y * 512;
-      uint16_t *dst = frame + y * 1024;
-
-      memcpy(dst, src, width * sizeof(uint16_t));
-   }
 }
 
 bool8 S9xDeinitUpdate(int width, int height)
 {
-   if (use_overscan)
+   if (!use_overscan)
    {
-      if (height == 224)
+      if (height >= SNES_HEIGHT << 1)
       {
-         memmove(GFX.Screen + (GFX.Pitch / 2) * 7, GFX.Screen, GFX.Pitch * height);
-         memset(GFX.Screen, 0x00, GFX.Pitch * 7);
-         memset(GFX.Screen + (GFX.Pitch / 2) * (7 + 224), 0, GFX.Pitch * 8);
-         height = 239;
-      }
-      else if (height == 448)
-      {
-         memmove(GFX.Screen + (GFX.Pitch / 2) * 15, GFX.Screen, GFX.Pitch * height);
-         memset(GFX.Screen, 0x00, GFX.Pitch * 15);
-         memset(GFX.Screen + (GFX.Pitch / 2) * (15 + 224), 0x00, GFX.Pitch * 17);
-         height = 478;
-      }
-   }
-   else // libsnes classic behavior
-   {
-      if (height == 448 || height == 478)
-      {
-         if (GFX.Pitch == 2048)
-            pack_frame(GFX.Screen, width, height);
-         GFX.Pitch = 1024;
+         height = SNES_HEIGHT << 1;
       }
       else
       {
-         if (GFX.Pitch == 1024)
-            stretch_frame(GFX.Screen, width, height);
-         GFX.Pitch = 2048;
+         height = SNES_HEIGHT;
+      }
+   }
+   else
+   {
+      if (height > SNES_HEIGHT_EXTENDED)
+      {
+         if (height < SNES_HEIGHT_EXTENDED << 1)
+             memset(GFX.Screen + (GFX.Pitch >> 1) * height,0,GFX.Pitch * ((SNES_HEIGHT_EXTENDED << 1) - height));
+         height = SNES_HEIGHT_EXTENDED << 1;
+      }
+      else
+      {
+         if (height < SNES_HEIGHT_EXTENDED)
+            memset(GFX.Screen + (GFX.Pitch >> 1) * height,0,GFX.Pitch * (SNES_HEIGHT_EXTENDED - height));
+         height = SNES_HEIGHT_EXTENDED;
       }
    }
 
-   s9x_video_cb(GFX.Screen, width, height);
+   s9x_video_cb(GFX.Screen, width, height, GFX.Pitch);
    return TRUE;
 }
 
@@ -675,7 +613,6 @@ bool8 S9xContinueUpdate(int width, int height)
 // Dummy functions that should probably be implemented correctly later.
 void S9xParsePortConfig(ConfigFile&, int) {}
 void S9xSyncSpeed() {}
-//void S9xPollPointer(int, short*, short*) {}
 const char* S9xStringInput(const char* in) { return in; }
 const char* S9xGetFilename(const char* in, s9x_getdirtype) { return in; }
 const char* S9xGetDirectory(s9x_getdirtype) { return ""; }

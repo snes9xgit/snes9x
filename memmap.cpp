@@ -2167,9 +2167,6 @@ bool8 CMemory::SaveSRAM (const char *filename)
 			size_t	ignore;
 			ignore = fwrite((char *) Multi.sramB, size, 1, file);
 			fclose(file);
-		#ifdef __linux
-			ignore = chown(name, getuid(), getgid());
-		#endif
 		}
 
 		strcpy(ROMFilename, temp);
@@ -2187,9 +2184,6 @@ bool8 CMemory::SaveSRAM (const char *filename)
 			size_t	ignore;
 			ignore = fwrite((char *) SRAM, size, 1, file);
 			fclose(file);
-		#ifdef __linux
-			ignore = chown(sramName, getuid(), getgid());
-		#endif
 
 			if (Settings.SRTC || Settings.SPC7110RTC)
 				SaveSRTC();
