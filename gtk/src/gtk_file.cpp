@@ -311,13 +311,7 @@ S9xOpenSnapshotFile (const char *fname, bool8 read_only, STREAM *file)
     {
         if ((*file = OPEN_STREAM (filename, "wb")))
         {
-            if (chown (filename, getuid (), getgid ()) < 0)
-            {
-                fprintf (stderr, "Couldn't set ownership of file.\n");
-                return (FALSE);
-            }
-            else
-                return (TRUE);
+            return (TRUE);
         }
         else
         {
