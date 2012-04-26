@@ -877,23 +877,24 @@ filter_scanlines (void *src_buffer,
                   int height)
 {
     register int x, y;
+    register uint16 *src, *dst_a, *dst_b;
 
     uint8 shift = scanline_shifts[gui_config->scanline_filter_intensity];
 
+    src = (uint16 *) src_buffer;
+    dst_a = (uint16 *) dst_buffer;
+    dst_b = ((uint16 *) dst_buffer) + (dst_pitch >> 1);
+
     for (y = 0; y < height; y++)
     {
-        register uint16 *src   = (uint16 *) ((uint8 *) src_buffer + y * src_pitch);
-        register uint16 *dst_a = (uint16 *) ((uint8 *) dst_buffer + (y * 2) * dst_pitch);
-        register uint16 *dst_b = (uint16 *) ((uint8 *) dst_buffer + ((y * 2) + 1) * dst_pitch);
-
         for (x = 0; x < width; x++)
         {
             register uint8 rs, gs, bs, /* Source components */
                            rh, gh, bh; /* High (bright) components */
 
-            rs = ((*(src + x) >> 10) & 0x1f);
-            gs = ((*(src + x) >> 5)  & 0x1f);
-            bs = ((*(src + x))       & 0x1f);
+            rs = ((src[x] >> 10) & 0x1f);
+            gs = ((src[x] >> 5)  & 0x1f);
+            bs = ((src[x])       & 0x1f);
 
             rh = rs + (rs >> shift);
             gh = gs + (gs >> shift);
@@ -903,11 +904,15 @@ filter_scanlines (void *src_buffer,
             gh = (gh > 31) ? 31 : gh;
             bh = (bh > 31) ? 31 : bh;
 
-            *(dst_a + x) = (rh << 10) | (gh << 5) | (bh);
-            *(dst_b + x) = ((rs + rs - rh) << 10) |
-                           ((gs + gs - gh) << 5)  |
-                           (bs + bs - bh);
+            dst_a[x] = (rh << 10) + (gh << 5) + (bh);
+            dst_b[x] = ((rs + rs - rh) << 10) +
+                       ((gs + gs - gh) << 5)  +
+                        (bs + bs - bh);
         }
+
+        src += src_pitch >> 1;
+        dst_a += dst_pitch;
+        dst_b += dst_pitch;
     }
 
     return;
