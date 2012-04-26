@@ -90,7 +90,7 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
     info->geometry.base_height = SNES_HEIGHT;
     info->geometry.max_width = MAX_SNES_WIDTH;
     info->geometry.max_height = MAX_SNES_HEIGHT;
-    info->geometry.aspect_ratio = 4.0 / 3.0;
+    info->geometry.aspect_ratio = 4.0f / 3.0f;
     info->timing.sample_rate = 32040.5;
     info->timing.fps = retro_get_region() == RETRO_REGION_NTSC ? 21477272.0 / 357366.0 : 21281370.0 / 425568.0;
 }
@@ -510,7 +510,10 @@ void* retro_get_memory_data(unsigned type)
          break;
      case RETRO_MEMORY_SYSTEM_RAM:
         data = Memory.RAM;
-       break;
+        break;
+     case RETRO_MEMORY_VIDEO_RAM:
+        data = Memory.VRAM;
+        break;
 	  default:
 	     data = NULL;
 		 break;
@@ -541,9 +544,12 @@ size_t retro_get_memory_size(unsigned type)
 	  case RETRO_MEMORY_RTC:
 		 size = (Settings.SRTC || Settings.SPC7110RTC)?20:0;
 		 break;
-     case RETRO_MEMORY_SYSTEM_RAM:
-       size = 128 * 1024;
-      break;
+      case RETRO_MEMORY_SYSTEM_RAM:
+         size = 128 * 1024;
+         break;
+      case RETRO_MEMORY_VIDEO_RAM:
+         size = 64 * 1024;
+         break;
 	  default:
 	     size = 0;
 		 break;
