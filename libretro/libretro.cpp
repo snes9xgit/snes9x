@@ -21,7 +21,6 @@
 #include <sys/types.h>
 #include <fcntl.h>
 
-
 static retro_video_refresh_t s9x_video_cb = NULL;
 static retro_audio_sample_t s9x_audio_cb = NULL;
 static retro_audio_sample_batch_t s9x_audio_batch_cb = NULL;
@@ -54,7 +53,8 @@ void retro_set_input_state(retro_input_state_t cb)
 }
 
 static retro_environment_t environ_cb;
-static bool use_overscan;
+static bool use_overscan = false;
+static bool rom_loaded = false;
 void retro_set_environment(retro_environment_t cb)
 {
    environ_cb = cb;
@@ -153,19 +153,18 @@ void retro_cheat_set(unsigned, bool, const char*)
 
 bool retro_load_game(const struct retro_game_info *game)
 {
-   int loaded = 0;
 
    if(game->data == NULL && game->size == NULL && game->path != NULL)
-      loaded = Memory.LoadROM(game->path);
+      rom_loaded = Memory.LoadROM(game->path);
    else
-      loaded = Memory.LoadROMMem((const uint8_t*)game->data ,game->size);
+      rom_loaded = Memory.LoadROMMem((const uint8_t*)game->data ,game->size);
 
-   if (!loaded)
+   if (!rom_loaded)
    {
       fprintf(stderr, "[libretro]: Rom loading failed...\n");
    }
    
-   return loaded;
+   return rom_loaded;
 }
 
 void retro_unload_game(void)
@@ -174,53 +173,55 @@ void retro_unload_game(void)
 bool retro_load_game_special(unsigned game_type,
       const struct retro_game_info *info, size_t num_info) {
 
-  int loaded = 0;
   switch (game_type) {
      case RETRO_GAME_TYPE_BSX:
        
        if(num_info == 1) {
-          loaded = Memory.LoadROMMem((const uint8_t*)info[0].data,info[0].size);
+          rom_loaded = Memory.LoadROMMem((const uint8_t*)info[0].data,info[0].size);
        } else if(num_info == 2) {
           memcpy(Memory.BIOSROM,(const uint8_t*)info[0].data,info[0].size);
-          loaded = Memory.LoadROMMem((const uint8_t*)info[1].data,info[1].size);
+          rom_loaded = Memory.LoadROMMem((const uint8_t*)info[1].data,info[1].size);
        }
 
-       if (!loaded)
+       if (!rom_loaded)
        {
           fprintf(stderr, "[libretro]: BSX Rom loading failed...\n");
        }
 
-       return loaded;
+       break;
        
      case RETRO_GAME_TYPE_BSX_SLOTTED:
 
        if(num_info == 2)
-           loaded = Memory.LoadMultiCartMem((const uint8_t*)info[0].data, info[0].size,
+           rom_loaded = Memory.LoadMultiCartMem((const uint8_t*)info[0].data, info[0].size,
                         (const uint8_t*)info[1].data, info[1].size, NULL, NULL);
 
-       if (!loaded)
+       if (!rom_loaded)
        {
           fprintf(stderr, "[libretro]: Multirom loading failed...\n");
        }
 
-       return loaded;
+       break;
 
      case RETRO_GAME_TYPE_SUFAMI_TURBO:
 
        if(num_info == 3)
-           loaded = Memory.LoadMultiCartMem((const uint8_t*)info[1].data, info[1].size,
+           rom_loaded = Memory.LoadMultiCartMem((const uint8_t*)info[1].data, info[1].size,
                         (const uint8_t*)info[2].data, info[2].size, (const uint8_t*)info[0].data, info[0].size);
 
-       if (!loaded)
+       if (!rom_loaded)
        {
           fprintf(stderr, "[libretro]: Sufami Turbo Rom loading failed...\n");
        }
 
-       return loaded;
+       break;
 
      default:
-       return false;
+       rom_loaded = false;
+       break;
   }
+
+  return rom_loaded;
 }
 
 static void map_buttons();
@@ -251,13 +252,10 @@ void retro_init()
    Settings.InitialInfoStringTimeout = 120;
    Settings.HDMATimingHack = 100;
    Settings.BlockInvalidVRAMAccessMaster = TRUE;
-   Settings.StopEmulation = TRUE;
    Settings.WrongMovieStateProtection = TRUE;
    Settings.DumpStreamsMaxFrames = -1;
    Settings.StretchScreenshots = 0;
    Settings.SnapshotScreenshots = FALSE;
-   Settings.SkipFrames = AUTO_FRAMERATE;
-   Settings.TurboSkipFrames = 15;
    Settings.CartAName[0] = 0;
    Settings.CartBName[0] = 0;
    Settings.AutoSaveDelay = 1;
@@ -560,7 +558,7 @@ size_t retro_get_memory_size(unsigned type)
 
 size_t retro_serialize_size()
 {
-   return S9xFreezeSize();
+   return rom_loaded ? S9xFreezeSize() : 0;
 }
 
 bool retro_serialize(void *data, size_t size)
