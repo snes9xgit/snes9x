@@ -776,7 +776,7 @@ bool CGLCG::loadPngImage(const TCHAR *name, int &outWidth, int &outHeight, bool 
     info_ptr = png_create_info_struct(png_ptr);
     if (info_ptr == NULL) {
         fclose(fp);
-        png_destroy_read_struct(&png_ptr, png_infopp_NULL, png_infopp_NULL);
+        png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
         return false;
     }
 
@@ -792,7 +792,7 @@ bool CGLCG::loadPngImage(const TCHAR *name, int &outWidth, int &outHeight, bool 
     if (setjmp(png_jmpbuf(png_ptr))) {
         /* Free all of the memory associated
          * with the png_ptr and info_ptr */
-        png_destroy_read_struct(&png_ptr, &info_ptr, png_infopp_NULL);
+        png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
         fclose(fp);
         /* If we get here, we had a
          * problem reading the file */
@@ -826,11 +826,11 @@ bool CGLCG::loadPngImage(const TCHAR *name, int &outWidth, int &outHeight, bool 
      * PNG_TRANSFORM_EXPAND forces to
      *  expand a palette into RGB
      */
-    png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_PACKING | PNG_TRANSFORM_EXPAND, png_voidp_NULL);
+    png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_PACKING | PNG_TRANSFORM_EXPAND, (png_voidp)NULL);
 
-    outWidth = info_ptr->width;
-    outHeight = info_ptr->height;
-    switch (info_ptr->color_type) {
+    outWidth = png_get_image_width(png_ptr, info_ptr);
+    outHeight = png_get_image_height(png_ptr, info_ptr);
+    switch (png_get_color_type(png_ptr, info_ptr)) {
         case PNG_COLOR_TYPE_RGBA:
             outHasAlpha = true;
             break;
@@ -853,7 +853,7 @@ bool CGLCG::loadPngImage(const TCHAR *name, int &outWidth, int &outHeight, bool 
 
     /* Clean up after the read,
      * and free any memory allocated */
-    png_destroy_read_struct(&png_ptr, &info_ptr, png_infopp_NULL);
+    png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 
     /* Close the file */
     fclose(fp);
