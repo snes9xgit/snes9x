@@ -278,10 +278,9 @@ static inline void S9xCheckInterrupts (void)
 	if (CPU.IRQLine && thisIRQ)
 		CPU.IRQTransition = TRUE;
 
-    int32	htimepos = PPU.HTimerEnabled ? PPU.HTimerPosition : 10;
-
-	if (thisIRQ)
+	if (PPU.HTimerEnabled)
 	{
+		int32	htimepos = PPU.HTimerPosition;
 		if (CPU.Cycles >= Timings.H_Max && htimepos < CPU.PrevCycles)
 			htimepos += Timings.H_Max;
 
@@ -292,7 +291,7 @@ static inline void S9xCheckInterrupts (void)
 	if (PPU.VTimerEnabled)
 	{
 		int32	vcounter = CPU.V_Counter;
-        if (htimepos >= Timings.H_Max)
+        if (CPU.Cycles >= Timings.H_Max && (!PPU.HTimerEnabled || PPU.HTimerPosition < CPU.PrevCycles))
 			vcounter++;
 
 		if (vcounter != PPU.VTimerPosition)
