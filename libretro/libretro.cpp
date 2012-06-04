@@ -259,6 +259,7 @@ void retro_init()
    Settings.CartAName[0] = 0;
    Settings.CartBName[0] = 0;
    Settings.AutoSaveDelay = 1;
+   Settings.DontSaveOopsSnapshot = TRUE;
 
    CPU.Flags = 0;
 
