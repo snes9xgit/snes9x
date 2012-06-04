@@ -87,7 +87,7 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
     memset(info,0,sizeof(retro_system_av_info));
 
     info->geometry.base_width = SNES_WIDTH;
-    info->geometry.base_height = SNES_HEIGHT;
+    info->geometry.base_height = use_overscan ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT;
     info->geometry.max_width = MAX_SNES_WIDTH;
     info->geometry.max_height = MAX_SNES_HEIGHT;
     info->geometry.aspect_ratio = 4.0f / 3.0f;
