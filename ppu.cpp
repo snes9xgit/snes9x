@@ -1498,6 +1498,11 @@ void S9xSetCPU (uint8 Byte, uint16 Address)
 					Timings.NMITriggerPos = CPU.Cycles + 6 + 6;
 				}
 
+                #ifdef DEBUGGER
+	                S9xTraceFormattedMessage("--- IRQ Timer Enable HTimer:%d Pos:%04d  VTimer:%d Pos:%03d",
+		                PPU.HTimerEnabled, PPU.HTimerPosition, PPU.VTimerEnabled, PPU.VTimerPosition);
+                #endif
+
 				break;
 
 			case 0x4201: // WRIO

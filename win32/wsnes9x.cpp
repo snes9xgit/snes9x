@@ -5041,7 +5041,7 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
                     unsigned int newRewindBufSize = SendDlgItemMessage(hDlg, IDC_REWIND_BUFFER_SPIN, UDM_GETPOS, 0,0);
                     if(GUI.rewindBufferSize != newRewindBufSize) {
                         GUI.rewindBufferSize = newRewindBufSize;
-                        stateMan.init(GUI.rewindBufferSize * 1024 * 1024);
+                        if(!Settings.StopEmulation) stateMan.init(GUI.rewindBufferSize * 1024 * 1024);
                     }
 
 					WinSaveConfigFile();
