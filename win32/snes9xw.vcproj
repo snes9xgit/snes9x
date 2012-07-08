@@ -56,7 +56,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\snes9x"
+				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\apu\bapu"
 				PreprocessorDefinitions="NDEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;FMODEX_SUPPORT;NETPLAY_SUPPORT"
 				StringPooling="true"
 				RuntimeLibrary="0"
