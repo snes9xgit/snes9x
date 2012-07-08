@@ -183,6 +183,7 @@
 #include <windows.h>
 #include <gl\gl.h>
 #include "cgFunctions.h"
+#include "CGLCG.h"
 
 #include "glext.h"
 #include "wglext.h"
@@ -202,6 +203,8 @@ private:
     GLfloat				texcoords[8];
 	unsigned char *		noPboBuffer;
 
+	int frameCount;
+
 	bool initDone;
 	bool fullscreen;
 	unsigned int quadTextureSize;
@@ -216,6 +219,8 @@ private:
 	CGprogram cgVertexProgram, cgFragmentProgram;
 	current_ogl_shader_type shader_type;
 	bool cgAvailable;
+
+	CGLCG *cgShader;
 
 	GLuint shaderProgram;
     GLuint vertexShader;

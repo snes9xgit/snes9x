@@ -1498,6 +1498,11 @@ void S9xSetCPU (uint8 Byte, uint16 Address)
 					Timings.NMITriggerPos = CPU.Cycles + 6 + 6;
 				}
 
+                #ifdef DEBUGGER
+	                S9xTraceFormattedMessage("--- IRQ Timer Enable HTimer:%d Pos:%04d  VTimer:%d Pos:%03d",
+		                PPU.HTimerEnabled, PPU.HTimerPosition, PPU.VTimerEnabled, PPU.VTimerPosition);
+                #endif
+
 				break;
 
 			case 0x4201: // WRIO
@@ -1872,7 +1877,7 @@ void S9xSoftResetPPU (void)
 	PPU.OAMReadFlip = 0;
 	PPU.OAMTileAddress = 0;
 	PPU.OAMWriteRegister = 0;
-	ZeroMemory(PPU.OAMData, 512 + 32);
+	memset(PPU.OAMData, 0, 512 + 32);
 
 	PPU.FirstSprite = 0;
 	PPU.LastSprite = 127;
@@ -1947,13 +1952,13 @@ void S9xSoftResetPPU (void)
 	IPPU.ColorsChanged = TRUE;
 	IPPU.OBJChanged = TRUE;
 	IPPU.DirectColourMapsNeedRebuild = TRUE;
-	ZeroMemory(IPPU.TileCached[TILE_2BIT], MAX_2BIT_TILES);
-	ZeroMemory(IPPU.TileCached[TILE_4BIT], MAX_4BIT_TILES);
-	ZeroMemory(IPPU.TileCached[TILE_8BIT], MAX_8BIT_TILES);
-	ZeroMemory(IPPU.TileCached[TILE_2BIT_EVEN], MAX_2BIT_TILES);
-	ZeroMemory(IPPU.TileCached[TILE_2BIT_ODD],  MAX_2BIT_TILES);
-	ZeroMemory(IPPU.TileCached[TILE_4BIT_EVEN], MAX_4BIT_TILES);
-	ZeroMemory(IPPU.TileCached[TILE_4BIT_ODD],  MAX_4BIT_TILES);
+	memset(IPPU.TileCached[TILE_2BIT], 0, MAX_2BIT_TILES);
+	memset(IPPU.TileCached[TILE_4BIT], 0, MAX_4BIT_TILES);
+	memset(IPPU.TileCached[TILE_8BIT], 0, MAX_8BIT_TILES);
+	memset(IPPU.TileCached[TILE_2BIT_EVEN], 0, MAX_2BIT_TILES);
+	memset(IPPU.TileCached[TILE_2BIT_ODD], 0,  MAX_2BIT_TILES);
+	memset(IPPU.TileCached[TILE_4BIT_EVEN], 0, MAX_4BIT_TILES);
+	memset(IPPU.TileCached[TILE_4BIT_ODD], 0,  MAX_4BIT_TILES);
 	IPPU.VRAMReadBuffer = 0; // XXX: FIXME: anything better?
 	IPPU.Interlace = FALSE;
 	IPPU.InterlaceOBJ = FALSE;
@@ -1978,11 +1983,11 @@ void S9xSoftResetPPU (void)
 
 	for (int c = 0; c < 0x8000; c += 0x100)
 		memset(&Memory.FillRAM[c], c >> 8, 0x100);
-	ZeroMemory(&Memory.FillRAM[0x2100], 0x100);
-	ZeroMemory(&Memory.FillRAM[0x4200], 0x100);
-	ZeroMemory(&Memory.FillRAM[0x4000], 0x100);
+	memset(&Memory.FillRAM[0x2100], 0, 0x100);
+	memset(&Memory.FillRAM[0x4200], 0, 0x100);
+	memset(&Memory.FillRAM[0x4000], 0, 0x100);
 	// For BS Suttehakkun 2...
-	ZeroMemory(&Memory.FillRAM[0x1000], 0x1000);
+	memset(&Memory.FillRAM[0x1000], 0, 0x1000);
 
 	Memory.FillRAM[0x4201] = Memory.FillRAM[0x4213] = 0xff;
 }

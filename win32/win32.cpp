@@ -641,7 +641,7 @@ bool S9xGetState (WORD KeyIdent)
 	if(KeyIdent == 0 || KeyIdent == VK_ESCAPE) // if it's the 'disabled' key, it's never pressed
 		return true;
 
-	if(!GUI.BackgroundKeyGamekeys && GUI.hWnd != GetActiveWindow())
+	if(!GUI.BackgroundInput && GUI.hWnd != GetForegroundWindow())
 		return true;
 
     if (KeyIdent & 0x8000) // if it's a joystick 'key':
@@ -986,6 +986,7 @@ void InitSnes9X( void)
 	GFX.Screen = (uint16*)(ScreenBuffer);
 
 	InitializeCriticalSection(&GUI.SoundCritSect);
+    GUI.SoundSyncEvent = CreateEvent(NULL,TRUE,TRUE,NULL);
 	CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
 
     S9xInitAPU();
@@ -1005,6 +1006,7 @@ void DeinitS9x()
 		delete [] ScreenBuf;
 
 	DeleteCriticalSection(&GUI.SoundCritSect);
+    CloseHandle(GUI.SoundSyncEvent);
 	CoUninitialize();
 	if(GUI.GunSight)
 		DestroyCursor(GUI.GunSight);//= LoadCursor (hInstance, MAKEINTRESOURCE (IDC_CURSOR_SCOPE));

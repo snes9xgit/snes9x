@@ -216,7 +216,7 @@ static uint16 get_crosshair_color (uint8);
 bool8 S9xGraphicsInit (void)
 {
 	S9xInitTileRenderer();
-	ZeroMemory(BlackColourMap, 256 * sizeof(uint16));
+	memset(BlackColourMap, 0, 256 * sizeof(uint16));
 
 #ifdef GFX_MULTI_FORMAT
 	if (GFX.BuildPixel == NULL)
@@ -246,7 +246,7 @@ bool8 S9xGraphicsInit (void)
 	}
 
     // Lookup table for color addition
-	ZeroMemory(GFX.X2, 0x10000 * sizeof(uint16));
+	memset(GFX.X2, 0, 0x10000 * sizeof(uint16));
 	for (uint32 r = 0; r <= MAX_RED; r++)
 	{
 		uint32	r2 = r << 1;
@@ -272,7 +272,7 @@ bool8 S9xGraphicsInit (void)
 	}
 
 	// Lookup table for 1/2 color subtraction
-	ZeroMemory(GFX.ZERO, 0x10000 * sizeof(uint16));
+	memset(GFX.ZERO, 0, 0x10000 * sizeof(uint16));
 	for (uint32 r = 0; r <= MAX_RED; r++)
 	{
 		uint32	r2 = r;
@@ -387,8 +387,8 @@ void S9xStartScreenRefresh (void)
 		PPU.RecomputeClipWindows = TRUE;
 		IPPU.PreviousLine = IPPU.CurrentLine = 0;
 
-		ZeroMemory(GFX.ZBuffer, GFX.ScreenSize);
-		ZeroMemory(GFX.SubZBuffer, GFX.ScreenSize);
+		memset(GFX.ZBuffer, 0, GFX.ScreenSize);
+		memset(GFX.SubZBuffer, 0, GFX.ScreenSize);
 	}
 
 	if (++IPPU.FrameCount % Memory.ROMFramesPerSecond == 0)
@@ -709,7 +709,7 @@ void S9xUpdateScreen (void)
 				IPPU.RenderedScreenWidth = 512;
 			}
 
-			if (!IPPU.DoubleHeightPixels && IPPU.Interlace)
+			if (!IPPU.DoubleHeightPixels && IPPU.Interlace && (PPU.BGMode == 5 || PPU.BGMode == 6))
 			{
 				IPPU.DoubleHeightPixels = TRUE;
 				IPPU.RenderedScreenHeight = PPU.ScreenHeight << 1;
@@ -718,16 +718,6 @@ void S9xUpdateScreen (void)
 
 				for (register int32 y = (int32) GFX.StartY - 1; y >= 0; y--)
 					memmove(GFX.Screen + y * GFX.PPL, GFX.Screen + y * GFX.RealPPL, IPPU.RenderedScreenWidth * sizeof(uint16));
-			}
-			else if (IPPU.DoubleHeightPixels && !IPPU.Interlace)
-			{
-				for (register int32 y = 0; y < (int32) GFX.StartY; y++)
-					memmove(GFX.Screen + y * GFX.RealPPL, GFX.Screen + y * GFX.PPL, IPPU.RenderedScreenWidth * sizeof(uint16));
-
-				IPPU.DoubleHeightPixels = FALSE;
-				IPPU.RenderedScreenHeight = PPU.ScreenHeight;
-				GFX.PPL = GFX.RealPPL;
-				GFX.DoInterlace = 0;
 			}
 		}
 
@@ -820,7 +810,7 @@ static void SetupOBJ (void)
 	if (!PPU.OAMPriorityRotation || !(PPU.OAMFlip & PPU.OAMAddr & 1)) // normal case
 	{
 		uint8	LineOBJ[SNES_HEIGHT_EXTENDED];
-		ZeroMemory(LineOBJ, sizeof(LineOBJ));
+		memset(LineOBJ, 0, sizeof(LineOBJ));
 
 		for (int i = 0; i < SNES_HEIGHT_EXTENDED; i++)
 		{
@@ -897,7 +887,7 @@ static void SetupOBJ (void)
 	{
 		// First, find out which sprites are on which lines
 		uint8	OBJOnLine[SNES_HEIGHT_EXTENDED][128];
-		ZeroMemory(OBJOnLine, sizeof(OBJOnLine));
+		memset(OBJOnLine, 0, sizeof(OBJOnLine));
 
 		for (S = 0; S < 128; S++)
 		{
@@ -2252,43 +2242,37 @@ void S9xDrawCrosshair (const char *crosshair, uint8 fgcolor, uint8 bgcolor, int1
 	fg = get_crosshair_color(fgcolor);
 	bg = get_crosshair_color(bgcolor);
 
-	// XXX: FIXME: why does it crash without this on Linux port? There are no out-of-bound writes without it...
-#if (defined(__unix) || defined(__linux) || defined(__sun) || defined(__DJGPP))
-	if (x >= 0 && y >= 0)
-#endif
+	uint16	*s = GFX.Screen + y * (int32)GFX.RealPPL + x;
+
+	for (r = 0; r < 15 * rx; r++, s += GFX.RealPPL - 15 * cx)
 	{
-		uint16	*s = GFX.Screen + y * GFX.RealPPL + x;
-
-		for (r = 0; r < 15 * rx; r++, s += GFX.RealPPL - 15 * cx)
+		if (y + r < 0)
 		{
-			if (y + r < 0)
-			{
-				s += 15 * cx;
+			s += 15 * cx;
+			continue;
+		}
+
+		if (y + r >= H)
+			break;
+
+		for (c = 0; c < 15 * cx; c++, s++)
+		{
+			if (x + c < 0 || s < GFX.Screen)
 				continue;
-			}
 
-			if (y + r >= H)
-				break;
-
-			for (c = 0; c < 15 * cx; c++, s++)
+			if (x + c >= W)
 			{
-				if (x + c < 0 || s < GFX.Screen)
-					continue;
-
-				if (x + c >= W)
-				{
-					s += 15 * cx - c;
-					break;
-				}
-
-				uint8	p = crosshair[(r / rx) * 15 + (c / cx)];
-
-				if (p == '#' && fgcolor)
-					*s = (fgcolor & 0x10) ? COLOR_ADD1_2(fg, *s) : fg;
-				else
-				if (p == '.' && bgcolor)
-					*s = (bgcolor & 0x10) ? COLOR_ADD1_2(*s, bg) : bg;
+				s += 15 * cx - c;
+				break;
 			}
+
+			uint8	p = crosshair[(r / rx) * 15 + (c / cx)];
+
+			if (p == '#' && fgcolor)
+				*s = (fgcolor & 0x10) ? COLOR_ADD1_2(fg, *s) : fg;
+			else
+			if (p == '.' && bgcolor)
+				*s = (bgcolor & 0x10) ? COLOR_ADD1_2(*s, bg) : bg;
 		}
 	}
 }

@@ -489,7 +489,8 @@ void CDirectSound::MixSound()
 			S9xMixSamples(B2,(Settings.SixteenBitSound?S2>>1:S2));
 		}
 		LeaveCriticalSection(&GUI.SoundCritSect);
-		
+
+		SetEvent(GUI.SoundSyncEvent);
 
         hResult = lpDSB -> Unlock (B1, S1, B2, S2);
         if (!SUCCEEDED(hResult))

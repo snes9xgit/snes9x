@@ -186,10 +186,13 @@ static void S9xSetByteFree (uint8, uint32);
 
 static uint8 S9xGetByteFree (uint32 address)
 {
-	uint32	Cycles = CPU.Cycles;
+	int32	Cycles = CPU.Cycles;
+    int32   NextEvent = CPU.NextEvent;
 	uint8	byte;
 
+    CPU.NextEvent = 0x7FFFFFFF;
 	byte = S9xGetByte(address);
+    CPU.NextEvent = NextEvent;
 	CPU.Cycles = Cycles;
 
 	return (byte);
@@ -197,9 +200,12 @@ static uint8 S9xGetByteFree (uint32 address)
 
 static void S9xSetByteFree (uint8 byte, uint32 address)
 {
-	uint32	Cycles = CPU.Cycles;
+	int32	Cycles = CPU.Cycles;
+    int32  NextEvent = CPU.NextEvent;
 
+    CPU.NextEvent = 0x7FFFFFFF;
 	S9xSetByte(byte, address);
+    CPU.NextEvent = NextEvent;
 	CPU.Cycles = Cycles;
 }
 
@@ -368,7 +374,7 @@ bool8 S9xSaveCheatFile (const char *filename)
 
 	for (uint32 i = 0; i < Cheat.num_cheats; i++)
 	{
-		ZeroMemory(data, 28);
+		memset(data, 0, 28);
 
 		if (i == 0)
 		{

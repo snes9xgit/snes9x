@@ -798,6 +798,7 @@ void WinPostLoad(ConfigFile& conf)
 	for(i=0;i<8;i++) Joypad[i+8].Enabled = Joypad[i].Enabled;
 	if(GUI.MaxRecentGames < 1) GUI.MaxRecentGames = 1;
 	if(GUI.MaxRecentGames > MAX_RECENT_GAMES_LIST_SIZE) GUI.MaxRecentGames = MAX_RECENT_GAMES_LIST_SIZE;
+    if(GUI.rewindGranularity==0) GUI.rewindGranularity = 1;
 	bool gap = false;
 	for(i=0;i<MAX_RECENT_GAMES_LIST_SIZE;i++) // remove gaps in recent games list
 	{
@@ -861,13 +862,14 @@ void WinRegisterConfigItems()
 	AddBoolC("DisplayFrameCount", Settings.DisplayMovieFrame, true, "true to show the frame count when a movie is playing");
 #undef CATEGORY
 #define CATEGORY "Display\\Win"
-	AddUIntC("OutputMethod", GUI.outputMethod, 1, "0=DirectDraw, 1=Direct3D");
+	AddUIntC("OutputMethod", GUI.outputMethod, 1, "0=DirectDraw, 1=Direct3D, 2=OpenGL");
 	AddUIntC("FilterType", GUI.Scale, 0, filterString);
 	AddUIntC("FilterHiRes", GUI.ScaleHiRes, 0, filterString2);
 	AddBoolC("BlendHiRes", GUI.BlendHiRes, true, "true to horizontally blend Hi-Res images (better transparency effect on filters that do not account for this)");
 	AddBoolC("ShaderEnabled", GUI.shaderEnabled, false, "true to use pixel shader (if supported by output method)");
 	AddStringC("Direct3D:D3DShader", GUI.D3DshaderFileName, MAX_PATH, "", "shader filename for Direct3D mode (HLSL effect file or CG shader");
 	AddStringC("OpenGL:OGLShader", GUI.OGLshaderFileName, MAX_PATH, "", "shader filename for OpenGL mode (bsnes-style XML shader or CG shader)");
+	AddBoolC("OpenGL:DisablePBOs", GUI.OGLdisablePBOs, false, "do not use PBOs in OpenGL mode, even if the video card supports them");
 	AddBoolC("ExtendHeight", GUI.HeightExtend, false, "true to display an extra 15 pixels at the bottom, which few games use. Also increases AVI output size from 256x224 to 256x240.");
 	AddBoolC("AlwaysCenterImage", GUI.AlwaysCenterImage,false, "true to center the image even if larger than window");
 	AddIntC("Window:Width", GUI.window_size.right, 512, "256=1x, 512=2x, 768=3x, 1024=4x, etc. (usually)");
@@ -904,6 +906,8 @@ void WinRegisterConfigItems()
 	AddUIntC("MessageDisplayTime", Settings.InitialInfoStringTimeout, 120, "display length of messages, in frames. set to 0 to disable all message text");
 #undef CATEGORY
 #define CATEGORY "Settings\\Win"
+    AddUIntC("RewindBufferSize", GUI.rewindBufferSize, 0, "rewind buffer size in MB - 0 disables rewind support");
+    AddUIntC("RewindGranularity", GUI.rewindGranularity, 1, "rewind granularity - rewind takes a snapshot each x frames");
 	AddBoolC("PauseWhenInactive", GUI.InactivePause, TRUE, "true to pause Snes9x when it is not the active window");
 	AddBoolC("CustomRomOpenDialog", GUI.CustomRomOpen, false, "false to use standard Windows open dialog for the ROM open dialog");
 	AddBoolC("AVIHiRes", GUI.AVIHiRes, false, "true to record AVI in Hi-Res scale");
@@ -997,11 +1001,10 @@ void WinRegisterConfigItems()
 #undef ADDT3
 #undef ADDTN
 #undef ADD2T2
-	AddBool2C("Joypads:Background", GUI.BackgroundKeyGamekeys, true, "on to detect game keypresses while window is inactive, if PauseWhenInactive = FALSE.");
+	AddBool2C("Input:Background", GUI.BackgroundInput, false, "on to detect game keypresses and hotkeys while window is inactive, if PauseWhenInactive = FALSE.");
 #undef CATEGORY
 #define	CATEGORY "Controls\\Win\\Hotkeys"
 	AddBool2C("Handler:Joystick", GUI.JoystickHotkeys, true, "on to detect game controller buttons assigned to hotkeys. May impact performance.");
-	AddBool2C("Handler:Background", GUI.BackgroundKeyHotkeys, false, "on to detect keyboard hotkeys when in the background. May impact performance and decrease responsiveness.");
 #define ADD(x) AddVKey("Key:" #x , CustomKeys.x.key, CustomKeys.x.key); AddVKMod("Mods:" #x, CustomKeys.x.modifiers, CustomKeys.x.modifiers)
 #define ADDN(x,n2) AddVKey("Key:" #n2, CustomKeys.x.key, CustomKeys.x.key); AddVKMod("Mods:" #n2, CustomKeys.x.modifiers, CustomKeys.x.modifiers)
 	ADD(SpeedUp); ADD(SpeedDown); ADD(Pause); ADD(FrameAdvance);
@@ -1015,6 +1018,7 @@ void WinRegisterConfigItems()
 	ADD(ClippingWindows); /*ADD(BGLHack);*/ ADD(Transparency); /*ADD(HDMA)*/; /*ADD(GLCube);*/
 	/*ADD(InterpMode7);*/ ADD(JoypadSwap); ADD(SwitchControllers); ADD(ResetGame); ADD(ToggleCheats);
 	ADD(TurboA); ADD(TurboB); ADD(TurboY); ADD(TurboX); ADD(TurboL); ADD(TurboR); ADD(TurboStart); ADD(TurboSelect); ADD(TurboUp); ADD(TurboDown); ADD(TurboLeft); ADD(TurboRight);
+	ADD(QuitS9X);ADD(Rewind);
 #undef ADD
 #undef ADDN
 #undef CATEGORY

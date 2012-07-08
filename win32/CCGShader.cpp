@@ -174,181 +174,124 @@
   Super NES and Super Nintendo Entertainment System are trademarks of
   Nintendo Co., Limited and its subsidiary companies.
  ***********************************************************************************/
+#include "CCGShader.h"
+#include "../conffile.h"
 
-
-// Abstract the details of reading from zip files versus FILE *'s.
-
-#include <string>
-#ifdef UNZIP_SUPPORT
-#include "unzip.h"
-#endif
-#include "snes9x.h"
-#include "reader.h"
-
-
-// Generic constructor/destructor
-
-Reader::Reader (void)
+CCGShader::CCGShader(void)
 {
-	return;
+
 }
 
-Reader::~Reader (void)
+CCGShader::~CCGShader(void)
 {
-	return;
 }
 
-// Generic getline function, based on gets. Reimlpement if you can do better.
-
-char * Reader::getline (void)
+cgScaleType CCGShader::scaleStringToEnum(const char *scale)
 {
-	bool		eof;
-	std::string	ret;
-
-	ret = getline(eof);
-	if (ret.size() == 0 && eof)
-		return (NULL);
-
-	return (strdup(ret.c_str()));
+	if(!strcasecmp(scale,"source")) {
+		return CG_SCALE_SOURCE;
+	} else if(!strcasecmp(scale,"viewport")) {
+		return CG_SCALE_VIEWPORT;
+	} else if(!strcasecmp(scale,"absolute")) {
+		return CG_SCALE_ABSOLUTE;
+	} else {
+		return CG_SCALE_NONE;
+	}
 }
 
-std::string Reader::getline (bool &eof)
+bool CCGShader::LoadShader(const char *path)
 {
-	char		buf[1024];
-	std::string	ret;
+	ConfigFile conf;
+	int shaderCount;
+	char keyName[100];
 
-	eof = false;
-	ret.clear();
+	shaderPasses.clear();
+	lookupTextures.clear();
 
-	do
-	{
-		if (gets(buf, sizeof(buf)) == NULL)
-		{
-			eof = true;
-			break;
+	if(strlen(path)<4 || strcasecmp(&path[strlen(path)-4],".cgp")) {
+		shaderPass pass;
+		pass.scaleParams.scaleTypeX = CG_SCALE_NONE;
+		pass.scaleParams.scaleTypeY = CG_SCALE_NONE;
+		pass.linearFilter = false;
+		pass.filterSet = false;
+		strcpy(pass.cgShaderFile,path);
+		shaderPasses.push_back(pass);
+		return true;
+	} else {
+		conf.LoadFile(path);
+	}	
+
+	shaderCount = conf.GetInt("::shaders",0);
+
+	if(shaderCount<1)
+		return false;
+
+	for(int i=0;i<shaderCount;i++) {
+		shaderPass pass;
+		sprintf(keyName,"::filter_linear%u",i);
+		pass.linearFilter = conf.GetBool(keyName);
+		pass.filterSet = conf.Exists(keyName);
+
+		sprintf(keyName,"::scale_type%u",i);
+		const char *scaleType = conf.GetString(keyName,"");
+		if(!strcasecmp(scaleType,"")) {
+			sprintf(keyName,"::scale_type_x%u",i);
+			const char *scaleTypeX = conf.GetString(keyName,"");
+			if(*scaleTypeX=='\0' && (i!=(shaderCount-1)))
+				scaleTypeX = "source";
+			pass.scaleParams.scaleTypeX = scaleStringToEnum(scaleTypeX);
+			sprintf(keyName,"::scale_type_y%u",i);
+			const char *scaleTypeY = conf.GetString(keyName,"");
+			if(*scaleTypeY=='\0' && (i!=(shaderCount-1)))
+				scaleTypeY = "source";
+			pass.scaleParams.scaleTypeY = scaleStringToEnum(scaleTypeY);
+		} else {
+			cgScaleType sType = scaleStringToEnum(scaleType);
+			pass.scaleParams.scaleTypeX = sType;
+			pass.scaleParams.scaleTypeY = sType;
 		}
 
-		ret.append(buf);
-	}
-	while (*ret.rbegin() != '\n');
+		sprintf(keyName,"::scale%u",i);
+		const char *scaleFloat = conf.GetString(keyName,"");
+		int scaleInt = conf.GetInt(keyName,0);
+		if(!strcasecmp(scaleFloat,"")) {
+			sprintf(keyName,"::scale_x%u",i);
+			const char *scaleFloatX = conf.GetString(keyName,"1.0");
+			pass.scaleParams.scaleX = atof(scaleFloatX);
+			pass.scaleParams.absX = conf.GetInt(keyName,1);
+			sprintf(keyName,"::scale_y%u",i);
+			const char *scaleFloatY = conf.GetString(keyName,"1.0");
+			pass.scaleParams.scaleY = atof(scaleFloatY);
+			pass.scaleParams.absY = conf.GetInt(keyName,1);
 
-	return (ret);
-}
-
-// snes9x.h STREAM reader
-
-fReader::fReader (STREAM f)
-{
-	fp = f;
-}
-
-fReader::~fReader (void)
-{
-	return;
-}
-
-int fReader::get_char (void)
-{
-	return (GETC_STREAM(fp));
-}
-
-char * fReader::gets (char *buf, size_t len)
-{
-	return (GETS_STREAM(buf, len, fp));
-}
-
-size_t fReader::read (char *buf, size_t len)
-{
-	return (READ_STREAM(buf, len, fp));
-}
-
-// unzip reader
-
-#ifdef UNZIP_SUPPORT
-
-unzReader::unzReader (unzFile &v)
-{
-	file = v;
-	head = NULL;
-	numbytes = 0;
-}
-
-unzReader::~unzReader (void)
-{
-	return;
-}
-
-int unzReader::get_char (void)
-{
-	unsigned char	c;
-
-	if (numbytes <= 0)
-	{
-		numbytes = unzReadCurrentFile(file, buffer, unz_BUFFSIZ);
-		if (numbytes <= 0)
-			return (EOF);
-		head = buffer;
-	}
-
-	c = *head;
-	head++;
-	numbytes--;
-
-	return ((int) c);
-}
-
-char * unzReader::gets (char *buf, size_t len)
-{
-	size_t	i;
-	int		c;
-
-	for (i = 0; i < len - 1; i++)
-	{
-		c = get_char();
-		if (c == EOF)
-		{
-			if (i == 0)
-				return (NULL);
-			break;
+		} else {
+			float floatval = atof(scaleFloat);
+			pass.scaleParams.scaleX = floatval;
+			pass.scaleParams.absX = scaleInt;
+			pass.scaleParams.scaleY = floatval;
+			pass.scaleParams.absY = scaleInt;
 		}
 
-		buf[i] = (char) c;
-		if (buf[i] == '\n')
-			break;
+		sprintf(keyName,"::shader%u",i);
+		strcpy(pass.cgShaderFile,conf.GetString(keyName,""));
+		shaderPasses.push_back(pass);
 	}
 
-	buf[i] = '\0';
+	char *shaderIds = conf.GetStringDup("::textures","");
 
-	return (buf);
+	char *id = strtok(shaderIds,";");
+	while(id!=NULL) {
+		lookupTexture tex;
+		sprintf(keyName,"::%s",id);
+		strcpy(tex.id,id);
+		strcpy(tex.texturePath,conf.GetString(keyName,""));
+		sprintf(keyName,"::%s_linear",id);
+		tex.linearfilter = conf.GetBool(keyName,true);
+		lookupTextures.push_back(tex);
+		id = strtok(NULL,";");
+	}
+
+	free(shaderIds);
+
+	return true;
 }
-
-size_t unzReader::read (char *buf, size_t len)
-{
-	if (len == 0)
-		return (len);
-
-	if (len <= numbytes)
-	{
-		memcpy(buf, head, len);
-		numbytes -= len;
-		head += len;
-		return (len);
-	}
-
-	size_t	numread = 0;
-	if (numbytes > 0)
-	{
-		memcpy(buf, head, numbytes);
-		numread += numbytes;
-		head = NULL;
-		numbytes = 0;
-	}
-
-	int	l = unzReadCurrentFile(file, buf + numread, len - numread);
-	if (l > 0)
-		numread += l;
-
-	return (numread);
-}
-
-#endif

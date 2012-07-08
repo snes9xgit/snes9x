@@ -187,21 +187,21 @@
 //#define REG_KEY_VER  "1.31"
 
 #define DISCLAIMER_TEXT        TEXT("Snes9X v%s for Windows.\r\n\
-        (c) Copyright 1996 - 2002  Gary Henderson and Jerremy Koot (jkoot@snes9x.com)\r\n\
-        (c) Copyright 2002 - 2004  Matthew Kendora\r\n\
-        (c) Copyright 2002 - 2005  Peter Bortas\r\n\
-        (c) Copyright 2004 - 2005  Joel Yliluoma\r\n\
-        (c) Copyright 2001 - 2006  John Weidman\r\n\
-        (c) Copyright 2002 - 2010  Brad Jorsch, funkyass, Kris Bleakley, Nach, zones\r\n\
-		(c) Copyright 2006 - 2007  nitsuja\r\n\
-        (c) Copyright 2009 - 2011  BearOso, OV2\r\n\r\n\
-        Windows Port Authors: Matthew Kendora, funkyass, nitsuja, Nach, blip, OV2.\r\n\r\n\
-		Snes9X is a Super Nintendo Entertainment System\r\n\
-		emulator that allows you to play most games designed\r\n\
-		for the SNES on your PC.\r\n\r\n\
-		Please visit http://www.snes9x.com for\r\n\
-		up-to-the-minute information and help on Snes9X.\r\n\r\n\
-		Nintendo is a trade mark.")
+(c) Copyright 1996 - 2002  Gary Henderson and Jerremy Koot (jkoot@snes9x.com)\r\n\
+(c) Copyright 2002 - 2004  Matthew Kendora\r\n\
+(c) Copyright 2002 - 2005  Peter Bortas\r\n\
+(c) Copyright 2004 - 2005  Joel Yliluoma\r\n\
+(c) Copyright 2001 - 2006  John Weidman\r\n\
+(c) Copyright 2002 - 2010  Brad Jorsch, funkyass, Kris Bleakley, Nach, zones\r\n\
+(c) Copyright 2006 - 2007  nitsuja\r\n\
+(c) Copyright 2009 - 2011  BearOso, OV2\r\n\r\n\
+Windows Port Authors: Matthew Kendora, funkyass, nitsuja, Nach, blip, OV2.\r\n\r\n\
+Snes9X is a Super Nintendo Entertainment System\r\n\
+emulator that allows you to play most games designed\r\n\
+for the SNES on your PC.\r\n\r\n\
+Please visit http://www.snes9x.com for\r\n\
+up-to-the-minute information and help on Snes9X.\r\n\r\n\
+Nintendo is a trade mark.")
 
 
 #define APP_NAME TEXT("Snes9x")
@@ -272,7 +272,7 @@
 #define HOTKEYS_LABEL_2_5 TEXT("Sprites Layer")
 #define HOTKEYS_LABEL_2_6 TEXT("Clipping Windows")
 #define HOTKEYS_LABEL_2_7 TEXT("Transparency")
-#define HOTKEYS_LABEL_2_8 TEXT("HDMA Emulation")
+#define HOTKEYS_LABEL_2_9 TEXT("Rewind")
 #define HOTKEYS_LABEL_2_10 TEXT("Switch Controllers")
 #define HOTKEYS_LABEL_2_11 TEXT("Joypad Swap")
 #define HOTKEYS_LABEL_2_12 TEXT("Reset Game")
@@ -290,7 +290,7 @@
 #define HOTKEYS_LABEL_3_11 TEXT("Turbo Right mode")
 #define HOTKEYS_LABEL_3_12 TEXT("Turbo Down mode")
 //#define HOTKEYS_LABEL_4_12 "Interpolate Mode 7"
-//#define HOTKEYS_LABEL_4_13 "BG Layering hack"
+#define HOTKEYS_LABEL_4_13 TEXT("Quit Snes9x")
 
 // gaming buttons and axes
 #define GAMEDEVICE_JOYNUMPREFIX "(J%x)" // don't change this
@@ -396,7 +396,6 @@
 #define WINPROC_TURBOMODE_ON "Fast-Forward Activated"
 #define WINPROC_TURBOMODE_OFF "Fast-Forward Deactivated"
 #define WINPROC_TURBOMODE_TEXT "Fast-Forward"
-#define WINPROC_HDMA_TEXT "HDMA emulation"
 #define WINPROC_BG1 "BG#1" //Background Layers
 #define WINPROC_BG2 "BG#2"
 #define WINPROC_BG3 "BG#3"
@@ -446,6 +445,8 @@
 #define WINPROC_DISCONNECT "Disconnect from the NetPlay server first."
 #define WINPROC_NET_RESTART "Your game will be reset after the ROM has been sent due to\nyour 'Sync Using Reset Game' setting.\n\n"
 #define WINPROC_SYNC_SND "Sync sound"
+#define WINPROC_REWINDING_TEXT "Rewinding"
+#define WINPROC_REWINDING_DISABLED "Rewind is disabled"
 
 //Emulator Settings
 

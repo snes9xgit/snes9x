@@ -554,7 +554,7 @@ void CDirectDraw::Render(SSurface Src)
 
 	if(!dDinitialized) return;
 
-	ZeroMemory(&caps,sizeof(DDSCAPS));
+	memset(&caps, 0,sizeof(DDSCAPS));
 	caps.dwCaps = DDSCAPS_BACKBUFFER;
 
 	if (lpDDSPrimary2->GetAttachedSurface (&caps, &pDDSurface) != DD_OK ||
@@ -676,7 +676,7 @@ void CDirectDraw::Render(SSurface Src)
 
 	lpDDSurface2->Unlock (Dst.Surface);
 
-	ZeroMemory(&caps,sizeof(DDSCAPS));
+	memset(&caps, 0,sizeof(DDSCAPS));
 	caps.dwCaps = DDSCAPS_BACKBUFFER;
 
 	if (lpDDSPrimary2->GetAttachedSurface (&caps, &pDDSurface) != DD_OK ||

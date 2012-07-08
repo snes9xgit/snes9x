@@ -198,6 +198,13 @@
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 #endif
 
+const D3DVERTEXELEMENT9 CDirect3D::vertexElems[4] = {
+		{0, 0,  D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
+		{0, 12, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0},
+		{0, 20, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 1},
+		D3DDECL_END()
+	};
+
 /* CDirect3D::CDirect3D()
 sets default values for the variables
 */
@@ -221,9 +228,11 @@ CDirect3D::CDirect3D()
 	shaderTimer = 1.0f;
 	shaderTimeStart = 0;
 	shaderTimeElapsed = 0;
+	frameCount = 0;
 	cgContext = NULL;
-	cgVertexProgram = cgFragmentProgram = NULL;
 	cgAvailable = false;
+	cgShader = NULL;
+	vertexDeclaration = NULL;
 }
 
 /* CDirect3D::~CDirect3D()
@@ -253,7 +262,7 @@ bool CDirect3D::Initialize(HWND hWnd)
 		return false;
 	}
 
-	ZeroMemory(&dPresentParams, sizeof(dPresentParams));
+	memset(&dPresentParams, 0, sizeof(dPresentParams));
 	dPresentParams.hDeviceWindow = hWnd;
     dPresentParams.Windowed = true;
 	dPresentParams.BackBufferCount = GUI.DoubleBuffered?2:1;
@@ -272,9 +281,15 @@ bool CDirect3D::Initialize(HWND hWnd)
 		return false;
 	}
 
-	hr = pDevice->CreateVertexBuffer(sizeof(triangleStripVertices),D3DUSAGE_WRITEONLY,FVF_COORDS_TEX,D3DPOOL_MANAGED,&vertexBuffer,NULL);
+	hr = pDevice->CreateVertexBuffer(sizeof(vertexStream),D3DUSAGE_WRITEONLY,0,D3DPOOL_MANAGED,&vertexBuffer,NULL);
 	if(FAILED(hr)) {
 		DXTRACE_ERR_MSGBOX(TEXT("Error creating vertex buffer"), hr);
+		return false;
+	}
+
+	hr = pDevice->CreateVertexDeclaration(vertexElems,&vertexDeclaration);
+	if(FAILED(hr)) {
+		DXTRACE_ERR_MSGBOX(TEXT("Error creating vertex declaration"), hr);
 		return false;
 	}
 
@@ -286,9 +301,13 @@ bool CDirect3D::Initialize(HWND hWnd)
 		if(FAILED(hr)) {
 			DXTRACE_ERR_MSGBOX(TEXT("Error setting cg device"), hr);
 		}
+		cgShader = new CD3DCG(cgContext,pDevice);
 	}
 
 	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+	pDevice->SetRenderState( D3DRS_ZENABLE, FALSE);
+	pDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_BORDER);
+	pDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_BORDER);
 
 	pDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
 
@@ -305,17 +324,25 @@ void CDirect3D::DeInitialize()
 	DestroyDrawSurface();
 	SetShader(NULL);
 
+	if(cgShader) {
+		delete cgShader;
+		cgShader = NULL;
+	}
 	if(cgContext) {
 		cgDestroyContext(cgContext);
 		cgContext = NULL;
 	}
-
 	if(cgAvailable)
 		cgD3D9SetDevice(NULL);
 
 	if(vertexBuffer) {
 		vertexBuffer->Release();
 		vertexBuffer = NULL;
+	}
+
+	if(vertexDeclaration) {
+		vertexDeclaration->Release();
+		vertexDeclaration = NULL;
 	}
 
 	if( pDevice ) {
@@ -344,7 +371,9 @@ bool CDirect3D::SetShader(const TCHAR *file)
 	SetShaderCG(NULL);
 	SetShaderHLSL(NULL);
 	shader_type = D3D_SHADER_NONE;
-	if(file!=NULL && lstrlen(file)>3 && _tcsncicmp(&file[lstrlen(file)-3],TEXT(".cg"),3)==0) {
+	if(file!=NULL &&
+		(lstrlen(file)>3 && _tcsncicmp(&file[lstrlen(file)-3],TEXT(".cg"),3)==0) ||
+		(lstrlen(file)>4 && _tcsncicmp(&file[lstrlen(file)-4],TEXT(".cgp"),4)==0)){
 		return SetShaderCG(file);
 	} else {
 		return SetShaderHLSL(file);
@@ -373,78 +402,15 @@ void CDirect3D::checkForCgError(const char *situation)
 
 bool CDirect3D::SetShaderCG(const TCHAR *file)
 {
-	TCHAR errorMsg[MAX_PATH + 50];
-	HRESULT hr;
-
-	if(cgFragmentProgram) {
-		cgDestroyProgram(cgFragmentProgram);
-		cgFragmentProgram = NULL;
-	}
-	if(cgVertexProgram) {
-		cgDestroyProgram(cgVertexProgram);
-		cgVertexProgram = NULL;
-	}
-
-	if (file == NULL || *file==TEXT('\0'))
-		return true;
-
 	if(!cgAvailable) {
-		MessageBox(NULL, TEXT("The CG runtime is unavailable, CG shaders will not run.\nConsult the snes9x readme for information on how to obtain the runtime."), TEXT("CG Error"),
-			MB_OK|MB_ICONEXCLAMATION);
+		if(file)
+			MessageBox(NULL, TEXT("The CG runtime is unavailable, CG shaders will not run.\nConsult the snes9x readme for information on how to obtain the runtime."), TEXT("CG Error"),
+				MB_OK|MB_ICONEXCLAMATION);
         return false;
     }
 
-	CGprofile vertexProfile = cgD3D9GetLatestVertexProfile();
-	CGprofile pixelProfile = cgD3D9GetLatestPixelProfile();
-
-	const char** vertexOptions = cgD3D9GetOptimalOptions(vertexProfile);
-	const char** pixelOptions = cgD3D9GetOptimalOptions(pixelProfile);
-
-	char *fileContents = ReadShaderFileContents(file);
-	if(!fileContents)
+	if(!cgShader->LoadShader(file))
 		return false;
-
-	cgVertexProgram = cgCreateProgram( cgContext, CG_SOURCE, fileContents,
-						vertexProfile, "main_vertex", vertexOptions);
-
-	checkForCgError("Compiling vertex program");
-
-	cgFragmentProgram = cgCreateProgram( cgContext, CG_SOURCE, fileContents,
-						pixelProfile, "main_fragment", pixelOptions);
-
-	checkForCgError("Compiling fragment program");
-
-	delete [] fileContents;
-
-	if(!cgVertexProgram || !cgFragmentProgram) {
-		return false;
-	}
-
-	if(cgVertexProgram) {
-		hr = cgD3D9LoadProgram(cgVertexProgram,true,0);
-		hr = cgD3D9BindProgram(cgVertexProgram);
-
-		D3DXMATRIX matWorld;
-		D3DXMATRIX matView;
-		D3DXMATRIX matProj;
-		D3DXMATRIX mvp;
-
-		pDevice->GetTransform(D3DTS_WORLD,&matWorld);
-		pDevice->GetTransform(D3DTS_VIEW,&matView);
-		pDevice->GetTransform(D3DTS_PROJECTION,&matProj);
-
-		mvp = matWorld * matView * matProj;
-		D3DXMatrixTranspose(&mvp,&mvp);
-
-		CGparameter cgpModelViewProj = cgGetNamedParameter(cgVertexProgram, "modelViewProj");
-
-		if(cgpModelViewProj)
-			cgD3D9SetUniformMatrix(cgpModelViewProj,&mvp);
-	}
-	if(cgFragmentProgram) {
-		hr = cgD3D9LoadProgram(cgFragmentProgram,false,0);
-		hr = cgD3D9BindProgram(cgFragmentProgram);
-	}
 
 	shader_type = D3D_SHADER_CG;
 
@@ -605,7 +571,7 @@ bool CDirect3D::SetShaderHLSL(const TCHAR *file)
 	return true;
 }
 
-void CDirect3D::SetShaderVars()
+void CDirect3D::SetShaderVars(bool setMatrix)
 {
 	if(shader_type == D3D_SHADER_HLSL) {
 		D3DXVECTOR4 rubyTextureSize;
@@ -645,16 +611,19 @@ void CDirect3D::SetShaderVars()
 				effect->SetTexture( rubyLUTName, rubyLUT[i] );
 			}
 		}
-	} else if(shader_type == D3D_SHADER_CG) {
+	}/* else if(shader_type == D3D_SHADER_CG) {
 
 		D3DXVECTOR2 videoSize;
 		D3DXVECTOR2 textureSize;
 		D3DXVECTOR2 outputSize;
+		float frameCnt;
 		videoSize.x = (float)afterRenderWidth;
 		videoSize.y = (float)afterRenderHeight;
 		textureSize.x = textureSize.y = (float)quadTextureSize;
 		outputSize.x = GUI.Stretch?(float)dPresentParams.BackBufferWidth:(float)afterRenderWidth;
 		outputSize.y = GUI.Stretch?(float)dPresentParams.BackBufferHeight:(float)afterRenderHeight;
+		frameCnt = (float)++frameCount;
+		videoSize = textureSize;
 
 #define setProgramUniform(program,varname,floats)\
 {\
@@ -666,11 +635,32 @@ void CDirect3D::SetShaderVars()
 		setProgramUniform(cgFragmentProgram,"IN.video_size",&videoSize);
 		setProgramUniform(cgFragmentProgram,"IN.texture_size",&textureSize);
 		setProgramUniform(cgFragmentProgram,"IN.output_size",&outputSize);
+		setProgramUniform(cgFragmentProgram,"IN.frame_count",&frameCnt);
 
 		setProgramUniform(cgVertexProgram,"IN.video_size",&videoSize);
 		setProgramUniform(cgVertexProgram,"IN.texture_size",&textureSize);
 		setProgramUniform(cgVertexProgram,"IN.output_size",&outputSize);
-	}
+		setProgramUniform(cgVertexProgram,"IN.frame_count",&frameCnt);
+
+		if(setMatrix) {
+			D3DXMATRIX matWorld;
+			D3DXMATRIX matView;
+			D3DXMATRIX matProj;
+			D3DXMATRIX mvp;
+
+			pDevice->GetTransform(D3DTS_WORLD,&matWorld);
+			pDevice->GetTransform(D3DTS_VIEW,&matView);
+			pDevice->GetTransform(D3DTS_PROJECTION,&matProj);
+
+			mvp = matWorld * matView * matProj;
+			D3DXMatrixTranspose(&mvp,&mvp);
+
+			CGparameter cgpModelViewProj = cgGetNamedParameter(cgVertexProgram, "modelViewProj");
+
+			if(cgpModelViewProj)
+				cgD3D9SetUniformMatrix(cgpModelViewProj,&mvp);
+		}
+	}*/
 }
 
 /*  CDirect3D::Render
@@ -739,22 +729,16 @@ void CDirect3D::Render(SSurface Src)
 		SetViewport();
 	}
 
-	pDevice->BeginScene();
-
 	pDevice->SetTexture(0, drawSurface);
-	pDevice->SetFVF(FVF_COORDS_TEX);
+	pDevice->SetVertexDeclaration(vertexDeclaration);
 	pDevice->SetStreamSource(0,vertexBuffer,0,sizeof(VERTEX));
 
-	SetShaderVars();
-
-	if(shader_type == D3D_SHADER_CG) {
-		cgD3D9BindProgram(cgFragmentProgram);
-		cgD3D9BindProgram(cgVertexProgram);
-	}
-
 	if (shader_type == D3D_SHADER_HLSL) {
-		UINT passes;
+		SetShaderVars();
+		SetFiltering();
 
+		UINT passes;
+		pDevice->BeginScene();
 		hr = effect->Begin(&passes, 0);
 		for(UINT pass = 0; pass < passes; pass++ ) {
 			effect->BeginPass(pass);
@@ -762,11 +746,30 @@ void CDirect3D::Render(SSurface Src)
 			effect->EndPass();
 		}
 		effect->End();
-	} else {
-		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,0,2);
-	}
+		pDevice->EndScene();
 
-    pDevice->EndScene();
+	} else {
+		if(shader_type == D3D_SHADER_CG) {
+			RECT displayRect;
+			//Get maximum rect respecting AR setting
+			displayRect=CalculateDisplayRect(dPresentParams.BackBufferWidth,dPresentParams.BackBufferHeight,
+											dPresentParams.BackBufferWidth,dPresentParams.BackBufferHeight);
+			cgShader->Render(drawSurface,
+				D3DXVECTOR2((float)quadTextureSize, (float)quadTextureSize),
+				D3DXVECTOR2((float)afterRenderWidth, (float)afterRenderHeight),
+				D3DXVECTOR2((float)(displayRect.right - displayRect.left),
+									(float)(displayRect.bottom - displayRect.top)),
+				D3DXVECTOR2((float)dPresentParams.BackBufferWidth, (float)dPresentParams.BackBufferHeight));
+		}
+
+		SetFiltering();
+
+		pDevice->SetVertexDeclaration(vertexDeclaration);
+
+		pDevice->BeginScene();
+		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,0,2);
+		pDevice->EndScene();
+	}
 
 	pDevice->Present(NULL, NULL, NULL, NULL);
 
@@ -870,13 +873,18 @@ void CDirect3D::SetupVertices()
 	float tX = (float)afterRenderWidth / (float)quadTextureSize;
 	float tY = (float)afterRenderHeight / (float)quadTextureSize;
 
-	triangleStripVertices[0] = VERTEX(0.0f,0.0f,0.0f,0.0f,tY);
-	triangleStripVertices[1] = VERTEX(0.0f,1.0f,0.0f,0.0f,0.0f);
-	triangleStripVertices[2] = VERTEX(1.0f,0.0f,0.0f,tX,tY);
-	triangleStripVertices[3] = VERTEX(1.0f,1.0f,0.0f,tX,0.0f);
+	vertexStream[0] = VERTEX(0.0f,0.0f,0.0f,0.0f,tY,0.0f,0.0f);
+	vertexStream[1] = VERTEX(0.0f,1.0f,0.0f,0.0f,0.0f,0.0f,0.0f);
+	vertexStream[2] = VERTEX(1.0f,0.0f,0.0f,tX,tY,0.0f,0.0f);
+	vertexStream[3] = VERTEX(1.0f,1.0f,0.0f,tX,0.0f,0.0f,0.0f);
+	for(int i=0;i<4;i++) {
+		vertexStream[i].x -= 0.5f / (float)dPresentParams.BackBufferWidth;
+		vertexStream[i].y += 0.5f / (float)dPresentParams.BackBufferHeight;
+	}
+
 
 	HRESULT hr = vertexBuffer->Lock(0,0,&pLockedVertexBuffer,NULL);
-	memcpy(pLockedVertexBuffer,triangleStripVertices,sizeof(triangleStripVertices));
+	memcpy(pLockedVertexBuffer,vertexStream,sizeof(vertexStream));
 	vertexBuffer->Unlock();
 }
 
@@ -890,6 +898,8 @@ void CDirect3D::SetViewport()
 	pDevice->SetTransform(D3DTS_WORLD,&matIdentity);
 	pDevice->SetTransform(D3DTS_VIEW,&matIdentity);
 	pDevice->SetTransform(D3DTS_PROJECTION,&matProjection);
+
+	SetShaderVars(true);
 
 	RECT drawRect = CalculateDisplayRect(afterRenderWidth,afterRenderHeight,dPresentParams.BackBufferWidth,dPresentParams.BackBufferHeight);
 	D3DVIEWPORT9 viewport;
@@ -944,6 +954,7 @@ bool CDirect3D::ResetDevice()
 	DestroyDrawSurface();
 
 	if(cgAvailable) {
+		cgShader->OnLostDevice();
 		cgD3D9SetDevice(NULL);
 	}
 
@@ -981,14 +992,7 @@ bool CDirect3D::ResetDevice()
 
 	if(cgAvailable) {
 		cgD3D9SetDevice(pDevice);
-	}
-
-	if(GUI.BilinearFilter) {
-		pDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-		pDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
-	} else {
-		pDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
-		pDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_POINT);
+		cgShader->OnResetDevice();
 	}
 
 	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
@@ -1102,4 +1106,15 @@ bool CDirect3D::ApplyDisplayChanges(void)
 		SetShader(NULL);
 
 	return ChangeRenderSize(0,0);
+}
+
+void CDirect3D::SetFiltering()
+{
+	if(GUI.BilinearFilter) {
+		pDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+		pDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+	} else {
+		pDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
+		pDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_POINT);
+	}
 }

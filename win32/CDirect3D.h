@@ -185,6 +185,7 @@
 #include <windows.h>
 
 #include "cgFunctions.h"
+#include "CD3DCG.h"
 
 #include "render.h"
 #include "wsnes9x.h"
@@ -195,9 +196,10 @@
 typedef struct _VERTEX {
 		float x, y, z;
 		float tx, ty;
+		float lutx, luty;
 		_VERTEX() {}
-		_VERTEX(float x,float y,float z,float tx,float ty) {
-			this->x=x;this->y=y;this->z=z;this->tx=tx;this->ty=ty;
+		_VERTEX(float x,float y,float z,float tx,float ty,float lutx, float luty) {
+			this->x=x;this->y=y;this->z=z;this->tx=tx;this->ty=ty;this->lutx=lutx;this->luty=luty;
 		}
 } VERTEX; //our custom vertex with a constuctor for easier assignment
 
@@ -218,18 +220,23 @@ private:
 	unsigned int quadTextureSize;						//size of the texture (only multiples of 2)
 	bool fullscreen;									//are we currently displaying in fullscreen mode
 	
-	VERTEX triangleStripVertices[4];					//the 4 vertices that make up our display rectangle
+	VERTEX vertexStream[4];								//the 4 vertices that make up our display rectangle
+
+	static const D3DVERTEXELEMENT9 vertexElems[4];
+	LPDIRECT3DVERTEXDECLARATION9 vertexDeclaration;
 
 	LPD3DXEFFECT            effect;
 	LPDIRECT3DTEXTURE9      rubyLUT[MAX_SHADER_TEXTURES];
 	CGcontext cgContext;
-	CGprogram cgVertexProgram, cgFragmentProgram;
 	current_d3d_shader_type shader_type;
 	bool cgAvailable;
+
+	CD3DCG *cgShader;
 
 	float shaderTimer;
 	int shaderTimeStart;
 	int shaderTimeElapsed;
+	int frameCount;
 
 	bool BlankTexture(LPDIRECT3DTEXTURE9 texture);
 	void CreateDrawSurface();
@@ -238,7 +245,8 @@ private:
 	void SetViewport();
 	void SetupVertices();
 	bool ResetDevice();
-	void SetShaderVars();
+	void SetFiltering();
+	void SetShaderVars(bool setMatrix = false);
 	bool SetShader(const TCHAR *file);
 	bool SetShaderHLSL(const TCHAR *file);
 	void checkForCgError(const char *situation);

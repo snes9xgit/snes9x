@@ -1169,6 +1169,21 @@ void S9xResetSaveTimer (bool8 dontsave)
 	t = time(NULL);
 }
 
+uint32 S9xFreezeSize()
+{
+    nulStream stream;
+    S9xFreezeToStream(&stream);
+    return stream.size();
+}
+
+bool8 S9xFreezeGameMem (uint8 *buf, uint32 bufSize)
+{
+    memStream mStream(buf, bufSize);
+	S9xFreezeToStream(&mStream);
+
+	return (TRUE);
+}
+
 bool8 S9xFreezeGame (const char *filename)
 {
 	STREAM	stream = NULL;
@@ -1192,6 +1207,14 @@ bool8 S9xFreezeGame (const char *filename)
 	}
 
 	return (FALSE);
+}
+
+int S9xUnfreezeGameMem (const uint8 *buf, uint32 bufSize)
+{
+    memStream stream(buf, bufSize);
+	int result = S9xUnfreezeFromStream(&stream);
+
+	return result;
 }
 
 bool8 S9xUnfreezeGame (const char *filename)
@@ -1626,7 +1649,11 @@ int S9xUnfreezeFromStream (STREAM stream)
 
 		memcpy(Memory.FillRAM, local_fillram, 0x8000);
 
-		S9xAPULoadState(local_apu_sound);
+        if(version < SNAPSHOT_VERSION_BAPU) {
+            printf("Using Blargg APU snapshot loading (snapshot version %d, current is %d)\n...", version, SNAPSHOT_VERSION);
+            S9xAPULoadBlarggState(local_apu_sound);
+        } else
+		    S9xAPULoadState(local_apu_sound);
 
 		struct SControlSnapshot	ctl_snap;
 		UnfreezeStructFromCopy(&ctl_snap, SnapControls, COUNT(SnapControls), local_control_data, version);
@@ -1678,7 +1705,7 @@ int S9xUnfreezeFromStream (STREAM stream)
 		if (local_bsx_data)
 			UnfreezeStructFromCopy(&BSX, SnapBSX, COUNT(SnapBSX), local_bsx_data, version);
 
-		if (version < SNAPSHOT_VERSION)
+		if (version < SNAPSHOT_VERSION_IRQ)
 		{
 			printf("Converting old snapshot version %d to %d\n...", version, SNAPSHOT_VERSION);
 
@@ -2037,7 +2064,9 @@ static int UnfreezeBlock (STREAM stream, const char *name, uint8 *block, int siz
 	if (l != 11 || strncmp(buffer, name, 3) != 0 || buffer[3] != ':')
 	{
 	err:
+#ifdef DEBUGGER
 		fprintf(stdout, "absent: %s(%d); next: '%.11s'\n", name, size, buffer);
+#endif
 		REVERT_STREAM(stream, FIND_STREAM(stream) - l, 0);
 		return (WRONG_FORMAT);
 	}
@@ -2061,7 +2090,7 @@ static int UnfreezeBlock (STREAM stream, const char *name, uint8 *block, int siz
 		len = size;
 	}
 
-	ZeroMemory(block, size);
+	memset(block, 0, size);
 
 	if (READ_STREAM(block, len, stream) != len)
 	{
@@ -2274,28 +2303,4 @@ static void UnfreezeStructFromCopy (void *sbase, FreezeData *fields, int num_fie
 			*((pint *) (addr)) = (pint) (relativeTo + relativeAddr);
 		}
 	}
-}
-
-bool8 S9xSPCDump (const char *filename)
-{
-	FILE	*fs;
-	uint8	buf[SNES_SPC::spc_file_size];
-	size_t	ignore;
-
-	fs = fopen(filename, "wb");
-	if (!fs)
-		return (FALSE);
-
-	S9xSetSoundMute(TRUE);
-
-	spc_core->init_header(buf);
-	spc_core->save_spc(buf);
-
-	ignore = fwrite(buf, SNES_SPC::spc_file_size, 1, fs);
-
-	fclose(fs);
-
-	S9xSetSoundMute(FALSE);
-
-	return (TRUE);
 }

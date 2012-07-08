@@ -180,7 +180,9 @@
 #define _SNAPSHOT_H_
 
 #define SNAPSHOT_MAGIC			"#!s9xsnp"
-#define SNAPSHOT_VERSION		7
+#define SNAPSHOT_VERSION_IRQ    7
+#define SNAPSHOT_VERSION_BAPU   8
+#define SNAPSHOT_VERSION		8
 
 #define SUCCESS					1
 #define WRONG_FORMAT			(-1)
@@ -192,9 +194,11 @@
 
 void S9xResetSaveTimer (bool8);
 bool8 S9xFreezeGame (const char *);
+uint32 S9xFreezeSize (void);
+bool8 S9xFreezeGameMem (uint8 *,uint32);
 bool8 S9xUnfreezeGame (const char *);
+int S9xUnfreezeGameMem (const uint8 *,uint32);
 void S9xFreezeToStream (STREAM);
 int	 S9xUnfreezeFromStream (STREAM);
-bool8 S9xSPCDump (const char *);
 
 #endif

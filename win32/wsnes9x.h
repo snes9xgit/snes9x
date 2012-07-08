@@ -320,6 +320,8 @@ struct sGUI {
 	TCHAR D3DshaderFileName[MAX_PATH];
 	TCHAR OGLshaderFileName[MAX_PATH];
 
+	bool OGLdisablePBOs;
+
     bool IgnoreNextMouseMove;
     RECT window_size;
 	bool window_maximized;
@@ -337,7 +339,7 @@ struct sGUI {
     HACCEL Accelerators;
     bool NeedDepthConvert;
     bool DepthConverted;
-    bool BGR;
+
     bool TurboModeToggle;
 	bool InactivePause;
 	bool CustomRomOpen;
@@ -353,7 +355,7 @@ struct sGUI {
 	int  ControllerOption;
 	int  ValidControllerOptions;
 	int  SoundChannelEnable;
-	bool BackgroundKeyHotkeys, BackgroundKeyGamekeys;
+	bool BackgroundInput;
 	bool JoystickHotkeys;
 	bool MovieClearSRAM;
 	bool MovieStartFromReset;
@@ -367,6 +369,7 @@ struct sGUI {
 	bool Mute;
 	// used for sync sound synchronization
 	CRITICAL_SECTION SoundCritSect;
+    HANDLE SoundSyncEvent;
 
     TCHAR RomDir [_MAX_PATH];
     TCHAR ScreensDir [_MAX_PATH];
@@ -392,6 +395,11 @@ struct sGUI {
 	long FrameCount;
     long LastFrameCount;
     unsigned long IdleCount;
+
+    // rewinding
+    bool rewinding;
+    unsigned int rewindBufferSize;
+    unsigned int rewindGranularity;
 };
 
 //TURBO masks
@@ -463,6 +471,8 @@ struct SCustomKeys {
 	SCustomKey SelectSave [10];
 	SCustomKey ResetGame;
 	SCustomKey ToggleCheats;
+	SCustomKey QuitS9X;
+    SCustomKey Rewind;
 };
 
 struct SJoypad {

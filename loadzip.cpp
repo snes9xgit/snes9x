@@ -185,10 +185,9 @@
 #include "memmap.h"
 
 
-bool8 LoadZip (const char *zipname, int32 *TotalFileSize, int32 *headers, uint8 *buffer)
+bool8 LoadZip (const char *zipname, uint32 *TotalFileSize, uint8 *buffer)
 {
 	*TotalFileSize = 0;
-	*headers = 0;
 
 	unzFile	file = unzOpen(zipname);
 	if (file == NULL)
@@ -196,7 +195,7 @@ bool8 LoadZip (const char *zipname, int32 *TotalFileSize, int32 *headers, uint8 
 
 	// find largest file in zip file (under MAX_ROM_SIZE) or a file with extension .1
 	char	filename[132];
-	int		filesize = 0;
+	uint32	filesize = 0;
 	int		port = unzGoToFirstFile(file);
 
 	unz_file_info	info;
@@ -212,7 +211,7 @@ bool8 LoadZip (const char *zipname, int32 *TotalFileSize, int32 *headers, uint8 
 			continue;
 		}
 
-		if ((int) info.uncompressed_size > filesize)
+		if (info.uncompressed_size > filesize)
 		{
 			strcpy(filename, name);
 			filesize = info.uncompressed_size;
@@ -259,7 +258,7 @@ bool8 LoadZip (const char *zipname, int32 *TotalFileSize, int32 *headers, uint8 
 	{
 		assert(info.uncompressed_size <= CMemory::MAX_ROM_SIZE + 512);
 
-		int	FileSize = info.uncompressed_size;
+		uint32 FileSize = info.uncompressed_size;
 		int	l = unzReadCurrentFile(file, ptr, FileSize);
 
 		if (unzCloseCurrentFile(file) == UNZ_CRCERROR)
@@ -274,7 +273,7 @@ bool8 LoadZip (const char *zipname, int32 *TotalFileSize, int32 *headers, uint8 
 			return (FALSE);
 		}
 
-		FileSize = (int) Memory.HeaderRemove((uint32) FileSize, *headers, ptr);
+		FileSize = Memory.HeaderRemove(FileSize, ptr);
 		ptr += FileSize;
 		*TotalFileSize += FileSize;
 

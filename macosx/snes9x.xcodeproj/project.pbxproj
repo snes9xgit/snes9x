@@ -36,7 +36,7 @@
 		CF047D54109D0E0600FD0754 /* pixform.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE061C60526CCB900A80003 /* pixform.h */; };
 		CF047D55109D0E0600FD0754 /* port.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE061C70526CCB900A80003 /* port.h */; };
 		CF047D56109D0E0600FD0754 /* ppu.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE061C90526CCB900A80003 /* ppu.h */; };
-		CF047D57109D0E0600FD0754 /* reader.h in Headers */ = {isa = PBXBuildFile; fileRef = EA809E9708F8D70D0072CDFB /* reader.h */; };
+		CF047D57109D0E0600FD0754 /* stream.h in Headers */ = {isa = PBXBuildFile; fileRef = EA809E9708F8D70D0072CDFB /* stream.h */; };
 		CF047D58109D0E0600FD0754 /* sa1.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE061CC0526CCB900A80003 /* sa1.h */; };
 		CF047D59109D0E0600FD0754 /* sar.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE061CE0526CCB900A80003 /* sar.h */; };
 		CF047D5A109D0E0600FD0754 /* screenshot.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE061D00526CCB900A80003 /* screenshot.h */; };
@@ -145,7 +145,7 @@
 		CF047DC9109D0E0600FD0754 /* movie.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA813E9A066F50A5004F99B5 /* movie.cpp */; };
 		CF047DCA109D0E0600FD0754 /* obc1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE061C30526CCB900A80003 /* obc1.cpp */; };
 		CF047DCB109D0E0600FD0754 /* ppu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE061C80526CCB900A80003 /* ppu.cpp */; };
-		CF047DCC109D0E0600FD0754 /* reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA809E9F08F8D7530072CDFB /* reader.cpp */; };
+		CF047DCC109D0E0600FD0754 /* stream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA809E9F08F8D7530072CDFB /* stream.cpp */; };
 		CF047DCD109D0E0600FD0754 /* sa1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE061CB0526CCB900A80003 /* sa1.cpp */; };
 		CF047DCE109D0E0600FD0754 /* sa1cpu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE061CD0526CCB900A80003 /* sa1cpu.cpp */; };
 		CF047DCF109D0E0600FD0754 /* sdd1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE061D10526CCB900A80003 /* sdd1.cpp */; };
@@ -237,7 +237,7 @@
 		CF0566A90CF98E7E00C7877C /* pixform.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE061C60526CCB900A80003 /* pixform.h */; };
 		CF0566AA0CF98E7E00C7877C /* port.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE061C70526CCB900A80003 /* port.h */; };
 		CF0566AB0CF98E7E00C7877C /* ppu.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE061C90526CCB900A80003 /* ppu.h */; };
-		CF0566AC0CF98E7E00C7877C /* reader.h in Headers */ = {isa = PBXBuildFile; fileRef = EA809E9708F8D70D0072CDFB /* reader.h */; };
+		CF0566AC0CF98E7E00C7877C /* stream.h in Headers */ = {isa = PBXBuildFile; fileRef = EA809E9708F8D70D0072CDFB /* stream.h */; };
 		CF0566AD0CF98E7E00C7877C /* sa1.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE061CC0526CCB900A80003 /* sa1.h */; };
 		CF0566AE0CF98E7E00C7877C /* sar.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE061CE0526CCB900A80003 /* sar.h */; };
 		CF0566AF0CF98E7E00C7877C /* screenshot.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE061D00526CCB900A80003 /* screenshot.h */; };
@@ -333,7 +333,7 @@
 		CF0567180CF98E7E00C7877C /* movie.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA813E9A066F50A5004F99B5 /* movie.cpp */; };
 		CF0567190CF98E7E00C7877C /* obc1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE061C30526CCB900A80003 /* obc1.cpp */; };
 		CF05671A0CF98E7E00C7877C /* ppu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE061C80526CCB900A80003 /* ppu.cpp */; };
-		CF05671B0CF98E7E00C7877C /* reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA809E9F08F8D7530072CDFB /* reader.cpp */; };
+		CF05671B0CF98E7E00C7877C /* stream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA809E9F08F8D7530072CDFB /* stream.cpp */; };
 		CF05671C0CF98E7E00C7877C /* sa1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE061CB0526CCB900A80003 /* sa1.cpp */; };
 		CF05671D0CF98E7E00C7877C /* sa1cpu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE061CD0526CCB900A80003 /* sa1cpu.cpp */; };
 		CF05671E0CF98E7E00C7877C /* sdd1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE061D10526CCB900A80003 /* sdd1.cpp */; };
@@ -424,7 +424,7 @@
 		CF2F462E1095EE72007D33FA /* pixform.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE061C60526CCB900A80003 /* pixform.h */; };
 		CF2F462F1095EE72007D33FA /* port.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE061C70526CCB900A80003 /* port.h */; };
 		CF2F46301095EE72007D33FA /* ppu.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE061C90526CCB900A80003 /* ppu.h */; };
-		CF2F46311095EE72007D33FA /* reader.h in Headers */ = {isa = PBXBuildFile; fileRef = EA809E9708F8D70D0072CDFB /* reader.h */; };
+		CF2F46311095EE72007D33FA /* stream.h in Headers */ = {isa = PBXBuildFile; fileRef = EA809E9708F8D70D0072CDFB /* stream.h */; };
 		CF2F46321095EE72007D33FA /* sa1.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE061CC0526CCB900A80003 /* sa1.h */; };
 		CF2F46331095EE72007D33FA /* sar.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE061CE0526CCB900A80003 /* sar.h */; };
 		CF2F46341095EE72007D33FA /* screenshot.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE061D00526CCB900A80003 /* screenshot.h */; };
@@ -533,7 +533,7 @@
 		CF2F46A31095EE72007D33FA /* movie.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA813E9A066F50A5004F99B5 /* movie.cpp */; };
 		CF2F46A41095EE72007D33FA /* obc1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE061C30526CCB900A80003 /* obc1.cpp */; };
 		CF2F46A51095EE72007D33FA /* ppu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE061C80526CCB900A80003 /* ppu.cpp */; };
-		CF2F46A61095EE72007D33FA /* reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA809E9F08F8D7530072CDFB /* reader.cpp */; };
+		CF2F46A61095EE72007D33FA /* stream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA809E9F08F8D7530072CDFB /* stream.cpp */; };
 		CF2F46A71095EE72007D33FA /* sa1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE061CB0526CCB900A80003 /* sa1.cpp */; };
 		CF2F46A81095EE72007D33FA /* sa1cpu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE061CD0526CCB900A80003 /* sa1cpu.cpp */; };
 		CF2F46A91095EE72007D33FA /* sdd1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE061D10526CCB900A80003 /* sdd1.cpp */; };
@@ -817,11 +817,11 @@
 		EA6E6C0E08F9734500CB3555 /* debug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = debug.h; sourceTree = "<group>"; };
 		EA809E9308F8D6C40072CDFB /* controls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = controls.h; sourceTree = "<group>"; };
 		EA809E9508F8D6E00072CDFB /* language.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = language.h; sourceTree = "<group>"; };
-		EA809E9708F8D70D0072CDFB /* reader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = reader.h; sourceTree = "<group>"; };
+		EA809E9708F8D70D0072CDFB /* stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stream.h; sourceTree = "<group>"; };
 		EA809E9908F8D7240072CDFB /* controls.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = controls.cpp; sourceTree = "<group>"; };
 		EA809E9B08F8D72C0072CDFB /* crosshairs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = crosshairs.cpp; sourceTree = "<group>"; };
 		EA809E9D08F8D73A0072CDFB /* crosshairs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crosshairs.h; sourceTree = "<group>"; };
-		EA809E9F08F8D7530072CDFB /* reader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = reader.cpp; sourceTree = "<group>"; };
+		EA809E9F08F8D7530072CDFB /* stream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = stream.cpp; sourceTree = "<group>"; };
 		EA809F9D08F8F2190072CDFB /* mac-controls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "mac-controls.h"; sourceTree = "<group>"; };
 		EA809FA108F8F2420072CDFB /* mac-controls.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = "mac-controls.cpp"; sourceTree = "<group>"; };
 		EA813E86066F5076004F99B5 /* movie.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = movie.h; sourceTree = "<group>"; };
@@ -1179,7 +1179,7 @@
 				EAE061C60526CCB900A80003 /* pixform.h */,
 				EAE061C70526CCB900A80003 /* port.h */,
 				EAE061C90526CCB900A80003 /* ppu.h */,
-				EA809E9708F8D70D0072CDFB /* reader.h */,
+				EA809E9708F8D70D0072CDFB /* stream.h */,
 				EAE061CC0526CCB900A80003 /* sa1.h */,
 				EAE061CE0526CCB900A80003 /* sar.h */,
 				EAE061D00526CCB900A80003 /* screenshot.h */,
@@ -1222,7 +1222,7 @@
 				EA813E9A066F50A5004F99B5 /* movie.cpp */,
 				EAE061C30526CCB900A80003 /* obc1.cpp */,
 				EAE061C80526CCB900A80003 /* ppu.cpp */,
-				EA809E9F08F8D7530072CDFB /* reader.cpp */,
+				EA809E9F08F8D7530072CDFB /* stream.cpp */,
 				EAE061CB0526CCB900A80003 /* sa1.cpp */,
 				EAE061CD0526CCB900A80003 /* sa1cpu.cpp */,
 				EAE061D10526CCB900A80003 /* sdd1.cpp */,
@@ -1384,7 +1384,7 @@
 				CF047D54109D0E0600FD0754 /* pixform.h in Headers */,
 				CF047D55109D0E0600FD0754 /* port.h in Headers */,
 				CF047D56109D0E0600FD0754 /* ppu.h in Headers */,
-				CF047D57109D0E0600FD0754 /* reader.h in Headers */,
+				CF047D57109D0E0600FD0754 /* stream.h in Headers */,
 				CF047D58109D0E0600FD0754 /* sa1.h in Headers */,
 				CF047D59109D0E0600FD0754 /* sar.h in Headers */,
 				CF047D5A109D0E0600FD0754 /* screenshot.h in Headers */,
@@ -1503,7 +1503,7 @@
 				CF0566A90CF98E7E00C7877C /* pixform.h in Headers */,
 				CF0566AA0CF98E7E00C7877C /* port.h in Headers */,
 				CF0566AB0CF98E7E00C7877C /* ppu.h in Headers */,
-				CF0566AC0CF98E7E00C7877C /* reader.h in Headers */,
+				CF0566AC0CF98E7E00C7877C /* stream.h in Headers */,
 				CF0566AD0CF98E7E00C7877C /* sa1.h in Headers */,
 				CF0566AE0CF98E7E00C7877C /* sar.h in Headers */,
 				CF0566AF0CF98E7E00C7877C /* screenshot.h in Headers */,
@@ -1622,7 +1622,7 @@
 				CF2F462E1095EE72007D33FA /* pixform.h in Headers */,
 				CF2F462F1095EE72007D33FA /* port.h in Headers */,
 				CF2F46301095EE72007D33FA /* ppu.h in Headers */,
-				CF2F46311095EE72007D33FA /* reader.h in Headers */,
+				CF2F46311095EE72007D33FA /* stream.h in Headers */,
 				CF2F46321095EE72007D33FA /* sa1.h in Headers */,
 				CF2F46331095EE72007D33FA /* sar.h in Headers */,
 				CF2F46341095EE72007D33FA /* screenshot.h in Headers */,
@@ -1938,7 +1938,7 @@
 				CF047DC9109D0E0600FD0754 /* movie.cpp in Sources */,
 				CF047DCA109D0E0600FD0754 /* obc1.cpp in Sources */,
 				CF047DCB109D0E0600FD0754 /* ppu.cpp in Sources */,
-				CF047DCC109D0E0600FD0754 /* reader.cpp in Sources */,
+				CF047DCC109D0E0600FD0754 /* stream.cpp in Sources */,
 				CF047DCD109D0E0600FD0754 /* sa1.cpp in Sources */,
 				CF047DCE109D0E0600FD0754 /* sa1cpu.cpp in Sources */,
 				CF047DCF109D0E0600FD0754 /* sdd1.cpp in Sources */,
@@ -2033,7 +2033,7 @@
 				CF0567180CF98E7E00C7877C /* movie.cpp in Sources */,
 				CF0567190CF98E7E00C7877C /* obc1.cpp in Sources */,
 				CF05671A0CF98E7E00C7877C /* ppu.cpp in Sources */,
-				CF05671B0CF98E7E00C7877C /* reader.cpp in Sources */,
+				CF05671B0CF98E7E00C7877C /* stream.cpp in Sources */,
 				CF05671C0CF98E7E00C7877C /* sa1.cpp in Sources */,
 				CF05671D0CF98E7E00C7877C /* sa1cpu.cpp in Sources */,
 				CF05671E0CF98E7E00C7877C /* sdd1.cpp in Sources */,
@@ -2128,7 +2128,7 @@
 				CF2F46A31095EE72007D33FA /* movie.cpp in Sources */,
 				CF2F46A41095EE72007D33FA /* obc1.cpp in Sources */,
 				CF2F46A51095EE72007D33FA /* ppu.cpp in Sources */,
-				CF2F46A61095EE72007D33FA /* reader.cpp in Sources */,
+				CF2F46A61095EE72007D33FA /* stream.cpp in Sources */,
 				CF2F46A71095EE72007D33FA /* sa1.cpp in Sources */,
 				CF2F46A81095EE72007D33FA /* sa1cpu.cpp in Sources */,
 				CF2F46A91095EE72007D33FA /* sdd1.cpp in Sources */,

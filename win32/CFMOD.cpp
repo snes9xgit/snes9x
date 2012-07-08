@@ -357,6 +357,8 @@ F_CALLBACKAPI CFMOD::FMODStreamCallback (FSOUND_STREAM *stream, void *buff, int 
 
 	LeaveCriticalSection(&GUI.SoundCritSect);
 
+    SetEvent(GUI.SoundSyncEvent);
+
 		
 
 #if defined (FSOUND_LOADRAW)
