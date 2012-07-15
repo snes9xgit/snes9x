@@ -3023,6 +3023,22 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ram_search.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ram_search.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ramwatch.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ramwatch.h"
+				>
+			</File>
+			<File
 				RelativePath=".\render.cpp"
 				>
 			</File>

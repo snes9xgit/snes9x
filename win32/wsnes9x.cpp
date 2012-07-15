@@ -214,6 +214,8 @@
 #include "../statemanager.h"
 #include "AVIOutput.h"
 #include "InputCustom.h"
+#include "ram_search.h"
+#include "ramwatch.h"
 #include <vector>
 
 #if (((defined(_MSC_VER) && _MSC_VER >= 1300)) || defined(__MINGW32__))
@@ -280,6 +282,9 @@ INT_PTR CALLBACK DlgOpenMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 HRESULT CALLBACK EnumModesCallback( LPDDSURFACEDESC lpDDSurfaceDesc, LPVOID lpContext);
 
 VOID CALLBACK HotkeyTimer( UINT idEvent, UINT uMsg, DWORD dwUser, DWORD dw1, DWORD dw2);
+
+extern HWND RamSearchHWnd;
+extern LRESULT CALLBACK RamSearchProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 #define NOTKNOWN "Unknown Company "
 #define HEADER_SIZE 512
@@ -2218,6 +2223,23 @@ LRESULT CALLBACK WinProc(
 			S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
 			RestoreSNESDisplay ();
 			break;
+		case ID_RAM_SEARCH:
+			if(!RamSearchHWnd)
+			{
+				reset_address_info();
+				RamSearchHWnd = CreateDialog(GUI.hInstance, MAKEINTRESOURCE(IDD_RAMSEARCH), hWnd, (DLGPROC) RamSearchProc);
+			}
+			else
+				SetForegroundWindow(RamSearchHWnd);
+			break;
+		case ID_RAM_WATCH:
+			if(!RamWatchHWnd)
+			{
+				RamWatchHWnd = CreateDialog(GUI.hInstance, MAKEINTRESOURCE(IDD_RAMWATCH), hWnd, (DLGPROC) RamWatchProc);
+			}
+			else
+				SetForegroundWindow(RamWatchHWnd);
+			break;
 		case ID_CHEAT_APPLY:
 			Settings.ApplyCheats = !Settings.ApplyCheats;
 			if (!Settings.ApplyCheats){
@@ -3335,6 +3357,16 @@ int WINAPI WinMain(
             if (!GetMessage (&msg, NULL, 0, 0))
                 goto loop_exit; // got WM_QUIT
 
+			// do not process non-modal dialog messages
+			if (RamSearchHWnd && IsDialogMessage(RamSearchHWnd, &msg))
+				continue;
+
+			if (RamWatchHWnd && IsDialogMessage(RamWatchHWnd, &msg)) {
+				if(msg.message == WM_KEYDOWN) // send keydown messages to the dialog (for accelerators, and also needed for the Alt key to work)
+					SendMessage(RamWatchHWnd, msg.message, msg.wParam, msg.lParam);
+				continue;
+			}
+
             if (!TranslateAccelerator (GUI.hWnd, GUI.Accelerators, &msg))
             {
                 TranslateMessage (&msg);
@@ -3456,6 +3488,7 @@ int WINAPI WinMain(
                 }
 
 				S9xMainLoop();
+				Update_RAM_Search(); // Update_RAM_Watch() is also called.
 				GUI.FrameCount++;
 			}
 
@@ -3651,6 +3684,15 @@ static void CheckMenuStates ()
     SetMenuItemInfo (GUI.hMenu, ID_CHEAT_ENTER, FALSE, &mii);
     SetMenuItemInfo (GUI.hMenu, ID_CHEAT_SEARCH_MODAL, FALSE, &mii);
 	SetMenuItemInfo (GUI.hMenu, IDM_ROM_INFO, FALSE, &mii);
+
+	mii.fState = RamWatchHWnd ? MFS_CHECKED : MFS_UNCHECKED;
+	if (Settings.StopEmulation || GUI.FullScreen)
+		mii.fState |= MFS_DISABLED;
+	SetMenuItemInfo (GUI.hMenu, ID_RAM_WATCH, FALSE, &mii);
+	mii.fState = RamSearchHWnd ? MFS_CHECKED : MFS_UNCHECKED;
+	if (Settings.StopEmulation || GUI.FullScreen)
+		mii.fState |= MFS_DISABLED;
+	SetMenuItemInfo (GUI.hMenu, ID_RAM_SEARCH, FALSE, &mii);
 
 	if (GUI.FullScreen)
         mii.fState |= MFS_DISABLED;
@@ -8963,18 +9005,6 @@ static inline int CheatCount(int byteSub)
 	return b;
 }
 
-
-struct ICheat
-{
-    uint32  address;
-    uint32  new_val;
-    uint32  saved_val;
-	int		size;
-    bool8   enabled;
-    bool8   saved;
-    char    name [22];
-	int format;
-};
 
 bool TestRange(int val_type, S9xCheatDataSize bytes,  uint32 value)
 {

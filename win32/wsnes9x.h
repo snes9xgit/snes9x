@@ -205,6 +205,7 @@
 #include <dsound.h>
 #endif
 #include "rsrc/resource.h"
+#include "../port.h"
 
 #define COUNT(a) (sizeof (a) / sizeof (a[0]))
 #define GUI_VERSION 1008
@@ -547,6 +548,18 @@ enum
 	SNES_MULTIPLAYER8,
 	SNES_JUSTIFIER_2,
 	SNES_MAX_CONTROLLER_OPTIONS
+};
+
+struct ICheat
+{
+    uint32  address;
+    uint32  new_val;
+    uint32  saved_val;
+	int		size;
+    bool8   enabled;
+    bool8   saved;
+    char    name [22];
+	int format;
 };
 
 /*****************************************************************************/
