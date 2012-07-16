@@ -9613,16 +9613,7 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 					}
 					cht.format=val_type;
 					//invoke dialog
-					if(!DialogBoxParam(g_hInst, MAKEINTRESOURCE(IDD_CHEAT_FROM_SEARCH), hDlg, DlgCheatSearchAdd, (LPARAM)&cht))
-					{
-						int p;
-						for(p=0; p<cht.size; p++)
-						{
-							S9xAddCheat(TRUE, cht.saved, cht.address +p, ((cht.new_val>>(8*p))&0xFF));
-							//add cheat
-							strcpy(Cheat.c[Cheat.num_cheats-1].name, cht.name);
-						}
-					}
+					DialogBoxParam(g_hInst, MAKEINTRESOURCE(IDD_CHEAT_FROM_SEARCH), hDlg, DlgCheatSearchAdd, (LPARAM)&cht);
 				}
 				break;
 			case IDC_C_RESET:
@@ -10132,8 +10123,11 @@ INT_PTR CALLBACK DlgCheatSearchAdd(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 						strncpy(new_cheat->name,_tToChar(tempBuf),22);
 
 						new_cheat->enabled=TRUE;
-						S9xAddCheat(new_cheat->enabled,new_cheat->saved_val,new_cheat->address,new_cheat->new_val);
-						strcpy(Cheat.c[Cheat.num_cheats-1].name,new_cheat->name);
+						for(int byteIndex = 0; byteIndex < new_cheat->size; byteIndex++)
+						{
+							S9xAddCheat(new_cheat->enabled,new_cheat->saved_val,new_cheat->address+byteIndex,(new_cheat->new_val>>(8*byteIndex))&0xFF);
+							strcpy(Cheat.c[Cheat.num_cheats-1].name,new_cheat->name);
+						}
 						ret=0;
 					}
 				}
