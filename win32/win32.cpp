@@ -611,16 +611,28 @@ void S9xSyncSpeed( void)
 
 const char *S9xBasename (const char *f)
 {
-    const char *p;
-    if ((p = strrchr (f, '/')) != NULL || (p = strrchr (f, '\\')) != NULL)
-	return (p + 1);
+	const char *p = f;
+	const char *last = p;
+	const char *slash;
 
-#ifdef __DJGPP
-    if (p = _tcsrchr (f, SLASH_CHAR))
-	return (p + 1);
+	// search rightmost separator
+	while ((slash = strchr (p, '/')) != NULL || (slash = strchr (p, '\\')) != NULL)
+	{
+		p = slash + 1;
+
+#ifdef UNICODE
+		// update always; UTF-8 doesn't have a problem between ASCII character and multi-byte character.
+		last = p;
+#else
+		// update if it's not a trailer byte of a double-byte character.
+		if (CharPrev(f, p) == slash)
+		{
+			last = p;
+		}
 #endif
+	}
 
-    return (f);
+	return last;
 }
 
 bool8 S9xReadMousePosition (int which, int &x, int &y, uint32 &buttons)
