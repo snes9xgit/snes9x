@@ -61,6 +61,7 @@ HWND RamWatchHWnd;
 #define hWnd GUI.hWnd
 #define hInst GUI.hInstance
 static TCHAR Str_Tmp [1024];
+static char Str_Tmp_Char [1024];
 
 void init_list_box(HWND Box, const TCHAR* Strs[], int numColumns, int *columnWidths); //initializes the ram search and/or ram watch listbox
 
@@ -426,29 +427,33 @@ void OpenRWRecentFile(int memwRFileNumber)
 		}
 		return;
 	}
-	const TCHAR DELIM = TEXT('\t');
+	const char DELIM = '\t';
 	AddressWatcher Temp;
-	TCHAR mode;
-	_fgetts(Str_Tmp,1024,WatchFile);
-	_stscanf(Str_Tmp,TEXT("%c%*s"),&mode);
+	char mode;
+	fgets(Str_Tmp_Char,1024,WatchFile);
+	sscanf(Str_Tmp_Char,"%c%*s",&mode);
 	int WatchAdd;
-	_fgetts(Str_Tmp,1024,WatchFile);
-	_stscanf(Str_Tmp,TEXT("%d%*s"),&WatchAdd);
+	fgets(Str_Tmp_Char,1024,WatchFile);
+	sscanf(Str_Tmp_Char,"%d%*s",&WatchAdd);
 	WatchAdd+=WatchCount;
 	for (int i = WatchCount; i < WatchAdd; i++)
 	{
-		TCHAR TempAddressStr[11];
+		char TempAddressStr[11];
+		char TempSize;
+		char TempType;
 		while (i < 0)
 			i++;
 		do {
-			_fgetts(Str_Tmp,1024,WatchFile);
-		} while (Str_Tmp[0] == TEXT('\n'));
-		_stscanf(Str_Tmp,TEXT("%*05X%*c%6s%*c%c%*c%c%*c%d"),TempAddressStr,&(Temp.Size),&(Temp.Type),&(Temp.WrongEndian));
-		Temp.Address = DisplayToRWInternalAddress(TempAddressStr);
+			fgets(Str_Tmp_Char,1024,WatchFile);
+		} while (Str_Tmp_Char[0] == '\n');
+		sscanf(Str_Tmp_Char,"%*05X%*c%6s%*c%c%*c%c%*c%d",TempAddressStr,&TempSize,&TempType,&(Temp.WrongEndian));
+		Temp.Address = DisplayToRWInternalAddress(_tFromChar(TempAddressStr));
+		Temp.Size = TempSize;
+		Temp.Type = TempType;
 		Temp.WrongEndian = 0;
-		TCHAR *Comment = _tcsrchr(Str_Tmp,DELIM) + 1;
-		*_tcsrchr(Comment,TEXT('\n')) = TEXT('\0');
-		InsertWatch(Temp,Comment);
+		char *Comment = strrchr(Str_Tmp_Char,DELIM) + 1;
+		*strrchr(Comment,'\n') = '\0';
+		InsertWatch(Temp,_tFromChar(Comment));
 	}
 
 	fclose(WatchFile);
@@ -533,16 +538,16 @@ bool Save_Watches()
 	{
 		FILE *WatchFile = _tfopen(Str_Tmp,TEXT("r+b"));
 		if (!WatchFile) WatchFile = _tfopen(Str_Tmp,TEXT("w+b"));
-		_fputtc(TEXT('\n'),WatchFile);
+		fputc('\n',WatchFile);
 		lstrcpy(currentWatch,Str_Tmp);
 		RWAddRecentFile(currentWatch);
-		_stprintf(Str_Tmp,TEXT("%d\n"),WatchCount);
-		_fputts(Str_Tmp,WatchFile);
-		const TCHAR DELIM = TEXT('\t');
+		sprintf(Str_Tmp_Char,"%d\n",WatchCount);
+		fputs(Str_Tmp_Char,WatchFile);
+		const char DELIM = '\t';
 		for (int i = 0; i < WatchCount; i++)
 		{
-			_stprintf(Str_Tmp,TEXT("%05X%c%-6s%c%c%c%c%c%d%c%s\n"),i,DELIM,RWInternalToDisplayAddress(rswatches[i].Address),DELIM,rswatches[i].Size,DELIM,rswatches[i].Type,DELIM,rswatches[i].WrongEndian,DELIM,rswatches[i].comment);
-			_fputts(Str_Tmp,WatchFile);
+			sprintf(Str_Tmp_Char,"%05X%c%-6s%c%c%c%c%c%d%c%s\n",i,DELIM,_tToChar(RWInternalToDisplayAddress(rswatches[i].Address)),DELIM,rswatches[i].Size,DELIM,rswatches[i].Type,DELIM,rswatches[i].WrongEndian,DELIM,_tToChar(rswatches[i].comment));
+			fputs(Str_Tmp_Char,WatchFile);
 		}
 		
 		fclose(WatchFile);
@@ -564,14 +569,14 @@ if (currentWatch[0] == NULL) //If there is no currently loaded file, run to Save
 		lstrcpy(Str_Tmp,currentWatch);
 		FILE *WatchFile = _tfopen(Str_Tmp,TEXT("r+b"));
 		if (!WatchFile) WatchFile = _tfopen(Str_Tmp,TEXT("w+b"));
-		_fputtc(TEXT('\n'),WatchFile);
-		_stprintf(Str_Tmp,TEXT("%d\n"),WatchCount);
-		_fputts(Str_Tmp,WatchFile);
-		const TCHAR DELIM = TEXT('\t');
+		fputc('\n',WatchFile);
+		sprintf(Str_Tmp_Char,"%d\n",WatchCount);
+		fputs(Str_Tmp_Char,WatchFile);
+		const char DELIM = '\t';
 		for (int i = 0; i < WatchCount; i++)
 		{
-			_stprintf(Str_Tmp,TEXT("%05X%c%-6s%c%c%c%c%c%d%c%s\n"),i,DELIM,RWInternalToDisplayAddress(rswatches[i].Address),DELIM,rswatches[i].Size,DELIM,rswatches[i].Type,DELIM,rswatches[i].WrongEndian,DELIM,rswatches[i].comment);
-			_fputts(Str_Tmp,WatchFile);
+			sprintf(Str_Tmp_Char,"%05X%c%-6s%c%c%c%c%c%d%c%s\n",i,DELIM,_tToChar(RWInternalToDisplayAddress(rswatches[i].Address)),DELIM,rswatches[i].Size,DELIM,rswatches[i].Type,DELIM,rswatches[i].WrongEndian,DELIM,_tToChar(rswatches[i].comment));
+			fputs(Str_Tmp_Char,WatchFile);
 		}
 		fclose(WatchFile);
 		RWfileChanged=false;
@@ -580,7 +585,7 @@ if (currentWatch[0] == NULL) //If there is no currently loaded file, run to Save
 
 bool Load_Watches(bool clear, const TCHAR* filename)
 {
-	const TCHAR DELIM = TEXT('\t');
+	const char DELIM = '\t';
 	FILE* WatchFile = _tfopen(filename,TEXT("rb"));
 	if (!WatchFile)
 	{
@@ -598,27 +603,31 @@ bool Load_Watches(bool clear, const TCHAR* filename)
 	lstrcpy(currentWatch,filename);
 	RWAddRecentFile(currentWatch);
 	AddressWatcher Temp;
-	TCHAR mode;
-	_fgetts(Str_Tmp,1024,WatchFile);
-	_stscanf(Str_Tmp,TEXT("%c%*s"),&mode);
+	char mode;
+	fgets(Str_Tmp_Char,1024,WatchFile);
+	sscanf(Str_Tmp_Char,"%c%*s",&mode);
 	int WatchAdd;
-	_fgetts(Str_Tmp,1024,WatchFile);
-	_stscanf(Str_Tmp,TEXT("%d%*s"),&WatchAdd);
+	fgets(Str_Tmp_Char,1024,WatchFile);
+	sscanf(Str_Tmp_Char,"%d%*s",&WatchAdd);
 	WatchAdd+=WatchCount;
 	for (int i = WatchCount; i < WatchAdd; i++)
 	{
-		TCHAR TempAddressStr[11];
+		char TempAddressStr[11];
+		char TempSize;
+		char TempType;
 		while (i < 0)
 			i++;
 		do {
-			_fgetts(Str_Tmp,1024,WatchFile);
-		} while (Str_Tmp[0] == TEXT('\n'));
-		_stscanf(Str_Tmp,TEXT("%*05X%*c%6s%*c%c%*c%c%*c%d"),TempAddressStr,&(Temp.Size),&(Temp.Type),&(Temp.WrongEndian));
-		Temp.Address = DisplayToRWInternalAddress(TempAddressStr);
+			fgets(Str_Tmp_Char,1024,WatchFile);
+		} while (Str_Tmp_Char[0] == '\n');
+		sscanf(Str_Tmp_Char,"%*05X%*c%6s%*c%c%*c%c%*c%d",TempAddressStr,&TempSize,&TempType,&(Temp.WrongEndian));
+		Temp.Address = DisplayToRWInternalAddress(_tFromChar(TempAddressStr));
+		Temp.Size = TempSize;
+		Temp.Type = TempType;
 		Temp.WrongEndian = 0;
-		TCHAR *Comment = _tcsrchr(Str_Tmp,DELIM) + 1;
-		*_tcsrchr(Comment,TEXT('\n')) = TEXT('\0');
-		InsertWatch(Temp,Comment);
+		char *Comment = strrchr(Str_Tmp_Char,DELIM) + 1;
+		*strrchr(Comment,'\n') = '\0';
+		InsertWatch(Temp,_tFromChar(Comment));
 	}
 	
 	fclose(WatchFile);
