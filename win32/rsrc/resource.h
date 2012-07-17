@@ -560,7 +560,7 @@
 #define ID_RAM_SEARCH                   45008
 #define ID_RAM_WATCH                    45009
 #define RW_MENU_FIRST_RECENT_FILE       45010
-#define RW_MENU_LAST_RECENT_FILE        45011
+#define RW_MENU_LAST_RECENT_FILE        45030
 #define IDM_MEMORY                      45031
 
 // Next default values for new objects
