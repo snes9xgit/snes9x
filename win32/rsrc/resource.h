@@ -42,6 +42,7 @@
 #define IDD_EDITWATCH                   502
 #define IDD_PROMPT                      503
 #define IDR_RWACCELERATOR               504
+#define IDD_MEM_VIEW                    505
 #define IDC_DRIVER                      1001
 #define IDC_BUFLEN                      1002
 #define IDC_RATE                        1003
@@ -407,6 +408,14 @@
 #define IDC_PROMPT_TEXT2                5037
 #define IDC_PROMPT_EDIT                 5038
 #define IDC_WATCHES_GROUP               5039
+#define IDC_GO                          5040
+#define IDC_TEXTDUMP                    5041
+#define IDC_MEMVIEWBOX                  5042
+//#define IDC_ADDRESS                     5043
+#define IDC_RAWDUMP                     5044
+#define IDC_REGION                      5045
+#define IDC_VIEWMODE                    5046
+#define IDC_DUMPALL                     5047
 #define ID_FILE_EXIT                    40001
 #define ID_WINDOW_HIDEMENUBAR           40004
 #define ID_FILE_AVI_RECORDING           40005
@@ -552,6 +561,7 @@
 #define ID_RAM_WATCH                    45009
 #define RW_MENU_FIRST_RECENT_FILE       45010
 #define RW_MENU_LAST_RECENT_FILE        45011
+#define IDM_MEMORY                      45031
 
 // Next default values for new objects
 // 

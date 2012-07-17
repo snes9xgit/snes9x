@@ -3015,11 +3015,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CWindow.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CWindow.h"
+				>
+			</File>
+			<File
 				RelativePath=".\InputCustom.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\InputCustom.h"
+				>
+			</File>
+			<File
+				RelativePath=".\memView.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\memView.h"
 				>
 			</File>
 			<File

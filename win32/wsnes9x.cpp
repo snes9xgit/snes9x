@@ -214,6 +214,8 @@
 #include "../statemanager.h"
 #include "AVIOutput.h"
 #include "InputCustom.h"
+#include "CWindow.h"
+#include "memView.h"
 #include "ram_search.h"
 #include "ramwatch.h"
 #include <vector>
@@ -2240,6 +2242,12 @@ LRESULT CALLBACK WinProc(
 			else
 				SetForegroundWindow(RamWatchHWnd);
 			break;
+		case IDM_MEMORY:
+			if (!RegWndClass(TEXT("MemView_ViewBox"), MemView_ViewBoxProc, 0, sizeof(CMemView*)))
+				return 0;
+
+			OpenToolWindow(new CMemView());
+			return 0;
 		case ID_CHEAT_APPLY:
 			Settings.ApplyCheats = !Settings.ApplyCheats;
 			if (!Settings.ApplyCheats){
@@ -3488,7 +3496,7 @@ int WINAPI WinMain(
                 }
 
 				S9xMainLoop();
-				Update_RAM_Search(); // Update_RAM_Watch() is also called.
+				UpdateToolWindows();
 				GUI.FrameCount++;
 			}
 
@@ -3512,6 +3520,8 @@ int WINAPI WinMain(
     }
 
 loop_exit:
+
+	CloseAllToolWindows();
 
 	Settings.StopEmulation = TRUE;
 
@@ -3559,6 +3569,13 @@ loop_exit:
 		_CrtDumpMemoryLeaks();
 #endif
 		return msg.wParam;
+}
+
+void UpdateToolWindows()
+{
+	Update_RAM_Search();	//Update_RAM_Watch() is also called
+
+	RefreshAllToolWindows();
 }
 
 void FreezeUnfreeze (int slot, bool8 freeze)
