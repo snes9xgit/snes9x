@@ -122,6 +122,9 @@ extern "C" {
 #define ZLIB_FILEFUNC_MODE_EXISTING (4)
 #define ZLIB_FILEFUNC_MODE_CREATE   (8)
 
+#ifndef OF
+#define OF(x) x
+#endif
 
 #ifndef ZCALLBACK
  #if (defined(WIN32) || defined(_WIN32) || defined (WINDOWS) || defined (_WINDOWS)) && defined(CALLBACK) && defined (USEWINDOWS_CALLBACK)
