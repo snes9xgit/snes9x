@@ -29,7 +29,7 @@ extern HWND RamSearchHWnd;
 void ResetResults();
 void CloseRamWindows(); //Close the Ram Search & Watch windows when rom closes
 void ReopenRamWindows(); //Reopen them when a new Rom is loaded
-void Update_RAM_Search(); //keeps RAM values up to date in the search and watch windows
+void Update_RAM_Search(bool DoAutoSearch); //keeps RAM values up to date in the search and watch windows
 
 
 #define RW_VIRTUAL_ADDR_SHIFT	24

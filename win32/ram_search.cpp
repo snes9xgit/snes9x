@@ -1277,13 +1277,15 @@ LRESULT CustomDraw (LPARAM lParam)
 	return CDRF_DODEFAULT;
 }
 
-void Update_RAM_Search() //keeps RAM values up to date in the search and watch windows
+void Update_RAM_Search(bool DoAutoSearch) //keeps RAM values up to date in the search and watch windows
 {
+	DoAutoSearch &= AutoSearch;
+
 	if(disableRamSearchUpdate)
 		return;
 
 	int prevValuesNeededUpdate;
-	if (AutoSearch && !ResultCount)
+	if (DoAutoSearch && !ResultCount)
 	{
 		if(!AutoSearchAutoRetry)
 		{
@@ -1309,7 +1311,7 @@ void Update_RAM_Search() //keeps RAM values up to date in the search and watch w
 			signal_new_frame();
 		}
 
-		if (AutoSearch && ResultCount)
+		if (DoAutoSearch && ResultCount)
 		{
 			//Clear_Sound_Buffer();
 			if(!rs_val_valid)

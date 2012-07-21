@@ -3514,7 +3514,7 @@ int WINAPI WinMain(
                 }
 
 				S9xMainLoop();
-				UpdateToolWindows();
+				UpdateToolWindows(true);
 				GUI.FrameCount++;
 			}
 
@@ -3589,9 +3589,9 @@ loop_exit:
 		return msg.wParam;
 }
 
-void UpdateToolWindows()
+void UpdateToolWindows(bool frameAdvance)
 {
-	Update_RAM_Search();	//Update_RAM_Watch() is also called
+	Update_RAM_Search(frameAdvance);	//Update_RAM_Watch() is also called
 
 	RefreshAllToolWindows();
 }
