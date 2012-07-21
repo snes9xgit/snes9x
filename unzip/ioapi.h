@@ -21,6 +21,9 @@
 #define ZLIB_FILEFUNC_MODE_EXISTING (4)
 #define ZLIB_FILEFUNC_MODE_CREATE   (8)
 
+#ifndef OF
+#define OF(x) x
+#endif
 
 #ifndef ZCALLBACK
 
