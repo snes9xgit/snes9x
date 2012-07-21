@@ -2842,6 +2842,9 @@ static void EnsureInputDisplayUpdated()
 		WinRefreshDisplay();
 }
 
+DWORD guiUpdateFrequency = 50;
+DWORD lastGUIUpdateTime = 0;
+
 // for "frame advance skips non-input frames" feature
 void S9xOnSNESPadRead()
 {
@@ -2875,6 +2878,14 @@ void S9xOnSNESPadRead()
 				{
 					TranslateMessage (&msg);
 					DispatchMessage (&msg);
+				}
+
+				DWORD lastTime = timeGetTime();
+				if (lastTime - lastGUIUpdateTime >= guiUpdateFrequency)
+				{
+					UpdateToolWindows();
+					InvalidateRect(GUI.hWnd, NULL, FALSE);
+					lastGUIUpdateTime = lastTime;
 				}
 			}
 
@@ -3380,6 +3391,13 @@ int WINAPI WinMain(
                 TranslateMessage (&msg);
                 DispatchMessage (&msg);
             }
+
+			DWORD lastTime = timeGetTime();
+			if (lastTime - lastGUIUpdateTime >= guiUpdateFrequency) {
+				UpdateToolWindows();
+				InvalidateRect(GUI.hWnd, NULL, FALSE);
+				lastGUIUpdateTime = lastTime;
+			}
 
 			S9xSetSoundMute(GUI.Mute || Settings.ForcedPause || (Settings.Paused && (!Settings.FrameAdvance || GUI.FAMute)));
         }
