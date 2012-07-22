@@ -4567,7 +4567,7 @@ INT_PTR CALLBACK DlgInfoProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		{
 			char temp[100];
 			char romtext[4096];
-			sprintf(romtext, "File: %s\r\nName: %s\r\n", Memory.ROMFilename, Memory.ROMName);
+			sprintf(romtext, "File: %s\r\nName: %s\r\n", Memory.ROMFilename, Memory.RawROMName);
 			sprintf(temp, "Speed: %02X/%s\r\nROM Map: %s\r\nType: %02x\r\n", Memory.ROMSpeed, ((Memory.ROMSpeed&0x10)!=0)?"FastROM":"SlowROM",(Memory.HiROM)?"HiROM":"LoROM",Memory.ROMType);
 			strcat(romtext, temp);
 			strcat(romtext, "Kart contents: ");
@@ -4918,7 +4918,7 @@ INT_PTR CALLBACK DlgInfoProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				case 14:strcat(romtext, "Unknown region 14");break;
 				default:strcat(romtext, "Unknown region 15");break;
 				}
-				SendDlgItemMessage(hDlg, IDC_ROM_DATA, WM_SETTEXT, 0, (LPARAM)((TCHAR *)_tFromChar(romtext)));
+                SendDlgItemMessage(hDlg, IDC_ROM_DATA, WM_SETTEXT, 0, (LPARAM)((TCHAR *)_tFromMS932(romtext)));
 				break;
 			}
 			case WM_CTLCOLORSTATIC:
@@ -5322,7 +5322,7 @@ void rominfo(const TCHAR *filename, TCHAR *namebuffer, TCHAR *sizebuffer)
 				if (InfoScore((char *)HeaderBuffer) > 1)
 				{
 					EHi = true;
-					_tcsncpy(namebuffer, _tFromChar((char *)HeaderBuffer), 21);
+					_tcsncpy(namebuffer, _tFromMS932((char *)HeaderBuffer), 21);
 				}
 			}
 
@@ -5340,7 +5340,7 @@ void rominfo(const TCHAR *filename, TCHAR *namebuffer, TCHAR *sizebuffer)
 					ROMFile.read(HiHead, INFO_LEN);
 					int HiScore = InfoScore(HiHead);
 
-					_tcsncpy(namebuffer, _tFromChar(LoScore > HiScore ? LoHead : HiHead), 21);
+					_tcsncpy(namebuffer, _tFromMS932(LoScore > HiScore ? LoHead : HiHead), 21);
 
 					if (filestats.st_size - HeaderSize >= 0x20000)
 					{
@@ -5350,7 +5350,7 @@ void rominfo(const TCHAR *filename, TCHAR *namebuffer, TCHAR *sizebuffer)
 
 						if (IntLScore > LoScore && IntLScore > HiScore)
 						{
-							_tcsncpy(namebuffer, _tFromChar(LoHead), 21);
+							_tcsncpy(namebuffer, _tFromMS932(LoHead), 21);
 						}
 					}
 				}
@@ -5359,7 +5359,7 @@ void rominfo(const TCHAR *filename, TCHAR *namebuffer, TCHAR *sizebuffer)
 					char buf[21];
 					ROMFile.seekg(0x7FC0 + HeaderSize, ios::beg);
 					ROMFile.read(buf, 21);
-					_tcsncpy(namebuffer,_tFromChar(buf),21);
+					_tcsncpy(namebuffer,_tFromMS932(buf),21);
 				}
 			}
 			ROMFile.close();

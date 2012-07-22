@@ -217,9 +217,11 @@
 #ifdef UNICODE
 #define _tToChar WideToUtf8
 #define _tFromChar Utf8ToWide
+#define _tFromMS932 MS932ToWide
 #else
 #define _tToChar
 #define _tFromChar
+#define _tFromMS932
 #endif
 
 /****************************************************************************/
