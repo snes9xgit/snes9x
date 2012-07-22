@@ -614,10 +614,25 @@ const char *S9xBasename (const char *f)
 	const char *p = f;
 	const char *last = p;
 	const char *slash;
+	const char *backslash;
 
 	// search rightmost separator
-	while ((slash = strchr (p, '/')) != NULL || (slash = strchr (p, '\\')) != NULL)
+	while (true)
 	{
+		slash = strchr (p, '/');
+		backslash = strchr (p, '\\');
+		if (backslash != NULL)
+		{
+			if (slash == NULL || slash > backslash)
+			{
+				slash = backslash;
+			}
+		}
+		if (slash == NULL)
+		{
+			break;
+		}
+
 		p = slash + 1;
 
 #ifdef UNICODE
