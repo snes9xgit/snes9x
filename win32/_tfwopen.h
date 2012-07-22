@@ -215,6 +215,15 @@ public:
 	operator char *() { return utf8Chars; }
 };
 
+class MS932ToWide {
+private:
+   wchar_t *wideChars;
+public:
+   MS932ToWide(const char *ms932Chars);
+   ~MS932ToWide() { delete [] wideChars; }
+   operator wchar_t *() { return wideChars; }
+};
+
 namespace std {
 class u8nifstream: public std::ifstream
 {

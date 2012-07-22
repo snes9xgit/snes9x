@@ -5245,7 +5245,7 @@ void rominfo(const TCHAR *filename, TCHAR *namebuffer, TCHAR *sizebuffer)
 				if (InfoScore((char *)HeaderBuffer) > 1)
 				{
 					EHi = true;
-					_tcsncpy(namebuffer, _tFromChar((char *)HeaderBuffer), 21);
+					_tcsncpy(namebuffer, _tFromMS932((char *)HeaderBuffer), 21);
 				}
 			}
 
@@ -5263,7 +5263,7 @@ void rominfo(const TCHAR *filename, TCHAR *namebuffer, TCHAR *sizebuffer)
 					ROMFile.read(HiHead, INFO_LEN);
 					int HiScore = InfoScore(HiHead);
 
-					_tcsncpy(namebuffer, _tFromChar(LoScore > HiScore ? LoHead : HiHead), 21);
+					_tcsncpy(namebuffer, _tFromMS932(LoScore > HiScore ? LoHead : HiHead), 21);
 
 					if (filestats.st_size - HeaderSize >= 0x20000)
 					{
@@ -5273,7 +5273,7 @@ void rominfo(const TCHAR *filename, TCHAR *namebuffer, TCHAR *sizebuffer)
 
 						if (IntLScore > LoScore && IntLScore > HiScore)
 						{
-							_tcsncpy(namebuffer, _tFromChar(LoHead), 21);
+							_tcsncpy(namebuffer, _tFromMS932(LoHead), 21);
 						}
 					}
 				}
@@ -5282,7 +5282,7 @@ void rominfo(const TCHAR *filename, TCHAR *namebuffer, TCHAR *sizebuffer)
 					char buf[21];
 					ROMFile.seekg(0x7FC0 + HeaderSize, ios::beg);
 					ROMFile.read(buf, 21);
-					_tcsncpy(namebuffer,_tFromChar(buf),21);
+					_tcsncpy(namebuffer,_tFromMS932(buf),21);
 				}
 			}
 			ROMFile.close();

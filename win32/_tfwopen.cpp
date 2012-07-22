@@ -192,6 +192,12 @@ WideToUtf8::WideToUtf8(const wchar_t *wideChars) {
 	WideCharToMultiByte(CP_UTF8,0,wideChars,-1,utf8Chars,requiredChars,NULL,NULL);
 }
 
+MS932ToWide::MS932ToWide(const char *ms932Chars) {
+   int requiredChars = MultiByteToWideChar(932,0,ms932Chars,-1,wideChars,0);
+   wideChars = new wchar_t[requiredChars];
+   MultiByteToWideChar(932,0,ms932Chars,-1,wideChars,requiredChars);
+}
+
 extern "C" FILE *_tfwopen(const char *filename, const char *mode ) {
 	wchar_t mode_w[30];
 	lstrcpyn(mode_w,Utf8ToWide(mode),29);
