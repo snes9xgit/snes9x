@@ -283,7 +283,7 @@ size_t fStream::size (void)
 
 int fStream::revert (size_t from, size_t offset)
 {
-    return (REVERT_FSTREAM(fp, from, offset));
+    return (REVERT_FSTREAM(fp, offset, from));
 }
 
 void fStream::closeStream()
