@@ -283,6 +283,11 @@ INT_PTR CALLBACK DlgCreateMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 INT_PTR CALLBACK DlgOpenMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 HRESULT CALLBACK EnumModesCallback( LPDDSURFACEDESC lpDDSurfaceDesc, LPVOID lpContext);
 
+#ifdef HAVE_LUA
+LRESULT CALLBACK LuaScriptProc(HWND, UINT, WPARAM, LPARAM);
+std::vector<HWND> LuaScriptHWnds;
+#endif // HAVE_LUA
+
 VOID CALLBACK HotkeyTimer( UINT idEvent, UINT uMsg, DWORD dwUser, DWORD dw1, DWORD dw2);
 
 extern HWND RamSearchHWnd;
@@ -1527,6 +1532,22 @@ LRESULT CALLBACK WinProc(
 	case WM_COMMAND:
 		switch (wParam & 0xffff)
 		{
+#ifdef HAVE_LUA
+		case IDC_NEW_LUA_SCRIPT: 
+			{
+				if(LuaScriptHWnds.size() < 16)
+				{
+					CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_LUA), GUI.hWnd, (DLGPROC) LuaScriptProc);
+				}
+			}
+			break;
+		case IDC_CLOSE_LUA_SCRIPTS:
+			{
+				for(int i=(int)LuaScriptHWnds.size()-1; i>=0; i--)
+					SendMessage(LuaScriptHWnds[i], WM_CLOSE, 0,0);
+			}
+			break;
+#endif
 		case ID_FILE_AVI_RECORDING:
 			if (!GUI.AVIOut)
 				PostMessage(GUI.hWnd, WM_COMMAND, ID_FILE_WRITE_AVI, NULL);
@@ -3862,6 +3883,17 @@ static void CheckMenuStates ()
 
 	mii.fState = (S9xMovieActive () && !Settings.StopEmulation) ? MFS_ENABLED : MFS_DISABLED;
     SetMenuItemInfo (GUI.hMenu, ID_FILE_MOVIE_STOP, FALSE, &mii);
+
+#ifdef HAVE_LUA
+	mii.fState = 0;
+	SetMenuItemInfo (GUI.hMenu, IDC_NEW_LUA_SCRIPT, FALSE, &mii);
+	mii.fState = (LuaScriptHWnds.size() > 0 ? 0 : MFS_DISABLED);
+	SetMenuItemInfo (GUI.hMenu, IDC_CLOSE_LUA_SCRIPTS, FALSE, &mii);
+#else
+	mii.fState = MFS_DISABLED;
+	SetMenuItemInfo (GUI.hMenu, IDC_NEW_LUA_SCRIPT, FALSE, &mii);
+	SetMenuItemInfo (GUI.hMenu, IDC_CLOSE_LUA_SCRIPTS, FALSE, &mii);
+#endif
 
 	mii.fState = (GUI.SoundChannelEnable & (1 << 0)) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL1, FALSE, &mii);

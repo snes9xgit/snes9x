@@ -716,6 +716,21 @@ BEGIN
     PUSHBUTTON      "Dump All",IDC_DUMPALL,369,18,48,14
 END
 
+IDD_LUA DIALOGEX 0, 0, 270, 150
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_POPUP | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Lua Script"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    PUSHBUTTON      "Browse...",IDC_BUTTON_LUABROWSE,7,31,48,16
+    PUSHBUTTON      "Run",IDC_BUTTON_LUARUN,213,31,50,16
+    PUSHBUTTON      "Stop",IDC_BUTTON_LUASTOP,160,31,50,16
+    EDITTEXT        IDC_EDIT_LUAPATH,7,16,256,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_LUACONSOLE,7,61,256,81,ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | WS_VSCROLL
+    LTEXT           "Output Console",IDC_STATIC,7,51,51,8
+    LTEXT           "Script File",IDC_STATIC,7,7,32,8
+    PUSHBUTTON      "Edit",IDC_BUTTON_LUAEDIT,58,31,46,16
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -997,6 +1012,12 @@ BEGIN
         MENUITEM "Movie Stop",                  ID_FILE_MOVIE_STOP
         MENUITEM SEPARATOR
         MENUITEM "AVI Recording",               ID_FILE_AVI_RECORDING
+        MENUITEM SEPARATOR
+        POPUP "Lua Scripting"
+        BEGIN
+            MENUITEM "New Lua Script Window...",    IDC_NEW_LUA_SCRIPT, GRAYED
+            MENUITEM "Close All Script Windows",    IDC_CLOSE_LUA_SCRIPTS, GRAYED
+        END
         MENUITEM SEPARATOR
         MENUITEM "&Reset Game",                 ID_FILE_RESET
         MENUITEM "E&xit\tAlt+F4",               ID_FILE_EXIT

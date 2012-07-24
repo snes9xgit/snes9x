@@ -43,6 +43,7 @@
 #define IDD_PROMPT                      503
 #define IDR_RWACCELERATOR               504
 #define IDD_MEM_VIEW                    505
+#define IDD_LUA                         506
 #define IDC_DRIVER                      1001
 #define IDC_BUFLEN                      1002
 #define IDC_RATE                        1003
@@ -416,6 +417,15 @@
 #define IDC_REGION                      5045
 #define IDC_VIEWMODE                    5046
 #define IDC_DUMPALL                     5047
+#define IDC_BUTTON_LUARUN               5048
+#define IDC_BUTTON_LUASTOP              5049
+#define IDC_LUACONSOLE                  5050
+#define IDC_BUTTON_LUAEDIT              5051
+#define IDC_NOTIFY_SUBSERVIENT          5052
+#define IDC_EDIT_LUAPATH                5053
+#define IDC_BUTTON_LUABROWSE            5054
+#define IDC_NEW_LUA_SCRIPT              5055
+#define IDC_CLOSE_LUA_SCRIPTS           5056
 #define ID_FILE_EXIT                    40001
 #define ID_WINDOW_HIDEMENUBAR           40004
 #define ID_FILE_AVI_RECORDING           40005

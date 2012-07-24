@@ -56,8 +56,8 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\apu\bapu"
-				PreprocessorDefinitions="NDEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;FMODEX_SUPPORT;NETPLAY_SUPPORT"
+				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\apu\bapu;$(ProjectDir)..\..\lua"
+				PreprocessorDefinitions="NDEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;FMODEX_SUPPORT;NETPLAY_SUPPORT;HAVE_LUA"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				StructMemberAlignment="0"
@@ -85,12 +85,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libpngmt.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibmt.lib msxml2.lib"
+				AdditionalDependencies="lua51.lib libpngmt.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibmt.lib msxml2.lib"
 				OutputFile=".\snes9x.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\FMOD\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx_x64\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx\api\lib&quot;;&quot;$(ProjectDir)..\i386&quot;;&quot;$(ProjectDir)..\..\zlib\lib&quot;;&quot;$(ProjectDir)..\..\libPNG\lib&quot;"
-				DelayLoadDLLs="fmod.dll;fmodex.dll"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\FMOD\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx_x64\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx\api\lib&quot;;&quot;$(ProjectDir)..\i386&quot;;&quot;$(ProjectDir)..\..\zlib\lib&quot;;&quot;$(ProjectDir)..\..\libPNG\lib&quot;;&quot;$(ProjectDir)..\..\lua\win32&quot;"
+				DelayLoadDLLs="fmod.dll;fmodex.dll;lua51.dll"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(IntDir)/snes9x.pdb"
 				SubSystem="2"
@@ -158,8 +158,8 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\apu\bapu"
-				PreprocessorDefinitions="NDEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;FMODEX_SUPPORT;NETPLAY_SUPPORT"
+				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\apu\bapu;$(ProjectDir)..\..\lua"
+				PreprocessorDefinitions="NDEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;FMODEX_SUPPORT;NETPLAY_SUPPORT;HAVE_LUA"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				StructMemberAlignment="0"
@@ -187,12 +187,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libpngmtx64.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibmtx64.lib msxml2.lib"
+				AdditionalDependencies="lua51.lib libpngmtx64.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibmtx64.lib msxml2.lib"
 				OutputFile=".\snes9x-x64.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\FMOD\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx_x64\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx\api\lib&quot;;&quot;$(ProjectDir)..\i386&quot;;&quot;$(ProjectDir)..\..\zlib\lib&quot;;&quot;$(ProjectDir)..\..\libPNG\lib&quot;"
-				DelayLoadDLLs="fmod.dll;fmodex.dll"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\FMOD\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx_x64\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx\api\lib&quot;;&quot;$(ProjectDir)..\i386&quot;;&quot;$(ProjectDir)..\..\zlib\lib&quot;;&quot;$(ProjectDir)..\..\libPNG\lib&quot;;&quot;$(ProjectDir)..\..\lua\x64&quot;"
+				DelayLoadDLLs="fmod.dll;fmodex.dll;lua51.dll"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(IntDir)/snes9x-x64.pdb"
 				SubSystem="2"
@@ -255,8 +255,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\apu\bapu"
-				PreprocessorDefinitions="_DEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;FMODEX_SUPPORT;NETPLAY_SUPPORT;D3D_DEBUG_INFO"
+				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\apu\bapu;$(ProjectDir)..\..\lua"
+				PreprocessorDefinitions="_DEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;FMODEX_SUPPORT;NETPLAY_SUPPORT;D3D_DEBUG_INFO;HAVE_LUA"
 				RuntimeLibrary="1"
 				StructMemberAlignment="0"
 				UsePrecompiledHeader="0"
@@ -284,13 +284,13 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libpngdmt.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibdmt.lib msxml2.lib"
+				AdditionalDependencies="lua51.lib libpngdmt.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibdmt.lib msxml2.lib"
 				OutputFile=".\snes9x-debug.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\FMOD\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx_x64\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx\api\lib&quot;;&quot;$(ProjectDir)..\i386&quot;;&quot;$(ProjectDir)..\..\zlib\lib&quot;;&quot;$(ProjectDir)..\..\libPNG\lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\FMOD\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx_x64\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx\api\lib&quot;;&quot;$(ProjectDir)..\i386&quot;;&quot;$(ProjectDir)..\..\zlib\lib&quot;;&quot;$(ProjectDir)..\..\libPNG\lib&quot;;&quot;$(ProjectDir)..\..\lua\win32&quot;"
 				EnableUAC="false"
-				DelayLoadDLLs="fmod.dll;fmodex.dll"
+				DelayLoadDLLs="fmod.dll;fmodex.dll;lua51.dll"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(IntDir)/snes9x-debug.pdb"
 				GenerateMapFile="false"
@@ -354,8 +354,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\apu\bapu"
-				PreprocessorDefinitions="_DEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;FMODEX_SUPPORT;NETPLAY_SUPPORT;D3D_DEBUG_INFO"
+				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\apu\bapu;$(ProjectDir)..\..\lua"
+				PreprocessorDefinitions="_DEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;FMODEX_SUPPORT;NETPLAY_SUPPORT;D3D_DEBUG_INFO;HAVE_LUA"
 				RuntimeLibrary="1"
 				StructMemberAlignment="0"
 				UsePrecompiledHeader="0"
@@ -383,13 +383,13 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libpngdmtx64.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibdmtx64.lib msxml2.lib"
+				AdditionalDependencies="lua51.lib libpngdmtx64.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibdmtx64.lib msxml2.lib"
 				OutputFile=".\snes9x-debug-x64.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\FMOD\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx_x64\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx\api\lib&quot;;&quot;$(ProjectDir)..\i386&quot;;&quot;$(ProjectDir)..\..\zlib\lib&quot;;&quot;$(ProjectDir)..\..\libPNG\lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\FMOD\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx_x64\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx\api\lib&quot;;&quot;$(ProjectDir)..\i386&quot;;&quot;$(ProjectDir)..\..\zlib\lib&quot;;&quot;$(ProjectDir)..\..\libPNG\lib&quot;;&quot;$(ProjectDir)..\..\lua\x64&quot;"
 				EnableUAC="false"
-				DelayLoadDLLs="fmodex64.dll"
+				DelayLoadDLLs="fmodex64.dll;lua51.dll"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(IntDir)/snes9x-debug-x64.pdb"
 				GenerateMapFile="false"
@@ -453,8 +453,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\apu\bapu"
-				PreprocessorDefinitions="_DEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;FMODEX_SUPPORT;NETPLAY_SUPPORT;D3D_DEBUG_INFO"
+				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\apu\bapu;$(ProjectDir)..\..\lua"
+				PreprocessorDefinitions="_DEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;FMODEX_SUPPORT;NETPLAY_SUPPORT;D3D_DEBUG_INFO;HAVE_LUA"
 				RuntimeLibrary="1"
 				StructMemberAlignment="0"
 				UsePrecompiledHeader="0"
@@ -482,13 +482,13 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libpngdmtu.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibdmtu.lib msxml2.lib"
+				AdditionalDependencies="lua51.lib libpngdmtu.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibdmtu.lib msxml2.lib"
 				OutputFile=".\snes9x-debug.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\FMOD\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx_x64\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx\api\lib&quot;;&quot;$(ProjectDir)..\i386&quot;;&quot;$(ProjectDir)..\..\zlib\lib&quot;;&quot;$(ProjectDir)..\..\libPNG\lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\FMOD\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx_x64\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx\api\lib&quot;;&quot;$(ProjectDir)..\i386&quot;;&quot;$(ProjectDir)..\..\zlib\lib&quot;;&quot;$(ProjectDir)..\..\libPNG\lib&quot;;&quot;$(ProjectDir)..\..\lua\win32&quot;"
 				EnableUAC="false"
-				DelayLoadDLLs="fmod.dll;fmodex.dll"
+				DelayLoadDLLs="fmod.dll;fmodex.dll;lua51.dll"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(IntDir)/snes9x-debug.pdb"
 				GenerateMapFile="false"
@@ -553,8 +553,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\apu\bapu"
-				PreprocessorDefinitions="_DEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;FMODEX_SUPPORT;NETPLAY_SUPPORT;D3D_DEBUG_INFO"
+				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\apu\bapu;$(ProjectDir)..\..\lua"
+				PreprocessorDefinitions="_DEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;FMODEX_SUPPORT;NETPLAY_SUPPORT;D3D_DEBUG_INFO;HAVE_LUA"
 				RuntimeLibrary="1"
 				StructMemberAlignment="0"
 				UsePrecompiledHeader="0"
@@ -583,13 +583,13 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libpngdmtux64.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibdmtux64.lib msxml2.lib"
+				AdditionalDependencies="lua51.lib libpngdmtux64.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibdmtux64.lib msxml2.lib"
 				OutputFile=".\snes9x-debug-x64.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\FMOD\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx_x64\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx\api\lib&quot;;&quot;$(ProjectDir)..\i386&quot;;&quot;$(ProjectDir)..\..\zlib\lib&quot;;&quot;$(ProjectDir)..\..\libPNG\lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\FMOD\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx_x64\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx\api\lib&quot;;&quot;$(ProjectDir)..\i386&quot;;&quot;$(ProjectDir)..\..\zlib\lib&quot;;&quot;$(ProjectDir)..\..\libPNG\lib&quot;;&quot;$(ProjectDir)..\..\lua\x64&quot;"
 				EnableUAC="false"
-				DelayLoadDLLs="fmodex64.dll"
+				DelayLoadDLLs="fmodex64.dll;lua51.dll"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(IntDir)/snes9x-debug-x64.pdb"
 				GenerateMapFile="false"
@@ -660,8 +660,8 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\apu\bapu"
-				PreprocessorDefinitions="NDEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;FMODEX_SUPPORT;NETPLAY_SUPPORT"
+				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\apu\bapu;$(ProjectDir)..\..\lua"
+				PreprocessorDefinitions="NDEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;FMODEX_SUPPORT;NETPLAY_SUPPORT;HAVE_LUA"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				StructMemberAlignment="0"
@@ -690,12 +690,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libpngmtu.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibmtu.lib msxml2.lib"
+				AdditionalDependencies="lua51.lib libpngmtu.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibmtu.lib msxml2.lib"
 				OutputFile=".\snes9x.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\FMOD\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx_x64\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx\api\lib&quot;;&quot;$(ProjectDir)..\i386&quot;;&quot;$(ProjectDir)..\..\zlib\lib&quot;;&quot;$(ProjectDir)..\..\libPNG\lib&quot;"
-				DelayLoadDLLs="fmod.dll;fmodex.dll"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\FMOD\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx_x64\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx\api\lib&quot;;&quot;$(ProjectDir)..\i386&quot;;&quot;$(ProjectDir)..\..\zlib\lib&quot;;&quot;$(ProjectDir)..\..\libPNG\lib&quot;;&quot;$(ProjectDir)..\..\lua\win32&quot;"
+				DelayLoadDLLs="fmod.dll;fmodex.dll;lua51.dll"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(IntDir)/snes9x.pdb"
 				SubSystem="2"
@@ -765,8 +765,8 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\apu\bapu"
-				PreprocessorDefinitions="NDEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;FMODEX_SUPPORT;NETPLAY_SUPPORT"
+				AdditionalIncludeDirectories="$(ProjectDir),$(ProjectDir)..\,$(ProjectDir)..\..\,$(ProjectDir)..\..\zLib,$(ProjectDir)..\unzip,$(ProjectDir)..\..\FMOD\api\inc,$(ProjectDir)..\..\libPNG\src,$(ProjectDir)..\apu\bapu;$(ProjectDir)..\..\lua"
+				PreprocessorDefinitions="NDEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;FMODEX_SUPPORT;NETPLAY_SUPPORT;HAVE_LUA"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				StructMemberAlignment="0"
@@ -795,12 +795,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libpngmtux64.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibmtux64.lib msxml2.lib"
+				AdditionalDependencies="lua51.lib libpngmtux64.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibmtux64.lib msxml2.lib"
 				OutputFile=".\snes9x-x64.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\FMOD\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx_x64\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx\api\lib&quot;;&quot;$(ProjectDir)..\i386&quot;;&quot;$(ProjectDir)..\..\zlib\lib&quot;;&quot;$(ProjectDir)..\..\libPNG\lib&quot;"
-				DelayLoadDLLs="fmod.dll;fmodex64.dll"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\FMOD\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx_x64\api\lib&quot;;&quot;$(ProjectDir)..\..\FMODEx\api\lib&quot;;&quot;$(ProjectDir)..\i386&quot;;&quot;$(ProjectDir)..\..\zlib\lib&quot;;&quot;$(ProjectDir)..\..\libPNG\lib&quot;;&quot;$(ProjectDir)..\..\lua\x64&quot;"
+				DelayLoadDLLs="fmod.dll;fmodex64.dll;lua51.dll"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(IntDir)/snes9x-x64.pdb"
 				SubSystem="2"
@@ -1773,6 +1773,14 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\lua-engine.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\lua-engine.h"
+				>
 			</File>
 			<File
 				RelativePath="..\memmap.cpp"
@@ -3028,6 +3036,10 @@
 			</File>
 			<File
 				RelativePath=".\InputCustom.h"
+				>
+			</File>
+			<File
+				RelativePath=".\luaconsole.cpp"
 				>
 			</File>
 			<File
