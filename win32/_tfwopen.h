@@ -236,6 +236,24 @@ public:
    operator wchar_t *() { return wideChars; }
 };
 
+class AnsiToWide {
+private:
+	wchar_t *wideChars;
+public:
+	AnsiToWide(const char *ansiChars);
+	~AnsiToWide() { delete [] wideChars; }
+	operator wchar_t *() { return wideChars; }
+};
+
+class WideToAnsi {
+private:
+	char *ansiChars;
+public:
+	WideToAnsi(const wchar_t *wideChars);
+	~WideToAnsi() { delete [] ansiChars; }
+	operator char *() { return ansiChars; }
+};
+
 namespace std {
 class u8nifstream: public std::ifstream
 {

@@ -198,6 +198,18 @@ MS932ToWide::MS932ToWide(const char *ms932Chars) {
    MultiByteToWideChar(932,0,ms932Chars,-1,wideChars,requiredChars);
 }
 
+AnsiToWide::AnsiToWide(const char *ansiChars) {
+	int requiredChars = MultiByteToWideChar(CP_ACP,0,ansiChars,-1,wideChars,0);
+	wideChars = new wchar_t[requiredChars];
+	MultiByteToWideChar(CP_ACP,0,ansiChars,-1,wideChars,requiredChars);
+}
+
+WideToAnsi::WideToAnsi(const wchar_t *wideChars) {
+	int requiredChars = WideCharToMultiByte(CP_ACP,0,wideChars,-1,ansiChars,0,NULL,NULL);
+	ansiChars = new char[requiredChars];
+	WideCharToMultiByte(CP_ACP,0,wideChars,-1,ansiChars,requiredChars,NULL,NULL);
+}
+
 extern "C" FILE *_tfwopen(const char *filename, const char *mode ) {
 	wchar_t mode_w[30];
 	lstrcpyn(mode_w,Utf8ToWide(mode),29);

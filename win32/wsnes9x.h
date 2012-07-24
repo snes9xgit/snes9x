@@ -218,10 +218,14 @@
 #define _tToChar WideToUtf8
 #define _tFromChar Utf8ToWide
 #define _tFromMS932 MS932ToWide
+#define _tToAnsi WideToAnsi
+#define _tFromAnsi AnsiToWide
 #else
 #define _tToChar
 #define _tFromChar
 #define _tFromMS932
+#define _tToAnsi
+#define _tFromAnsi
 #endif
 
 /****************************************************************************/
