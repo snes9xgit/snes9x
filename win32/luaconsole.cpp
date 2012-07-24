@@ -89,7 +89,7 @@ int WINAPI FileSysWatcher (LPVOID arg)
 	{
 		TCHAR filename [1024], directory [1024];
 
-		lstrcpyn(filename, _tFromChar(info.filename.c_str()), 1024);
+		lstrcpyn(filename, _tFromAnsi(info.filename.c_str()), 1024);
 		filename[1023] = 0;
 		lstrcpy(directory, filename);
 		TCHAR* slash = _tcsrchr(directory, TEXT('/'));
@@ -219,7 +219,7 @@ HWND IsScriptFileOpen(const TCHAR* Path)
 	{
 		LuaPerWindowInfo& info = iter->second;
 		TCHAR filenameString[1024];
-		lstrcpyn(filenameString, _tFromChar(info.filename.c_str()), 1024);
+		lstrcpyn(filenameString, _tFromAnsi(info.filename.c_str()), 1024);
 		const TCHAR *filename = filenameString;
 		const TCHAR* pathPtr = Path;
 
@@ -269,7 +269,7 @@ void PrintToWindowConsole(int hDlgAsInt, const char* str)
 	LuaPerWindowInfo& info = LuaWindowInfo[hDlg];
 
 	{
-		SendMessage(hConsole, EM_REPLACESEL, false, (LPARAM)((const TCHAR*)_tFromChar(str)));
+		SendMessage(hConsole, EM_REPLACESEL, false, (LPARAM)((const TCHAR*)_tFromAnsi(str)));
 	}
 }
 
@@ -342,7 +342,7 @@ void UpdateFileEntered(HWND hDlg)
 	if(exists)
 	{
 		LuaPerWindowInfo& info = LuaWindowInfo[hDlg];
-		info.filename = _tToChar(LogicalName);
+		info.filename = _tToAnsi(LogicalName);
 
 		TCHAR* slash = _tcsrchr(LogicalName, TEXT('/'));
 		slash = std::max(slash, _tcsrchr(LogicalName, TEXT('\\')));
@@ -580,7 +580,7 @@ LRESULT CALLBACK LuaScriptProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				{
 					LuaPerWindowInfo& info = LuaWindowInfo[hDlg];
 					TCHAR Str_Tmp [1024]; // shadow added because the global one is unreliable
-					lstrcpy(Str_Tmp,_tFromChar(info.filename.c_str()));
+					lstrcpy(Str_Tmp,_tFromAnsi(info.filename.c_str()));
 					SendDlgItemMessage(hDlg,IDC_EDIT_LUAPATH,WM_GETTEXT,(WPARAM)512,(LPARAM)Str_Tmp);
 					TCHAR* bar = _tcschr(Str_Tmp, TEXT('|'));
 					if(bar) *bar = TEXT('\0');
@@ -597,7 +597,7 @@ LRESULT CALLBACK LuaScriptProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				{
 					LuaPerWindowInfo& info = LuaWindowInfo[hDlg];
 					TCHAR Str_Tmp [1024]; // shadow added because the global one is unreliable
-					lstrcpy(Str_Tmp,_tFromChar(info.filename.c_str()));
+					lstrcpy(Str_Tmp,_tFromAnsi(info.filename.c_str()));
 					SendDlgItemMessage(hDlg,IDC_EDIT_LUAPATH,WM_GETTEXT,(WPARAM)512,(LPARAM)Str_Tmp);
 					TCHAR LogicalName[1024], PhysicalName[1024];
 //					bool exists = ObtainFile(Str_Tmp, LogicalName, PhysicalName, TEXT("luaview"), s_nonLuaExtensions, sizeof(s_nonLuaExtensions)/sizeof(*s_nonLuaExtensions));
@@ -652,14 +652,14 @@ LRESULT CALLBACK LuaScriptProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 						SetActiveWindow(g_hWnd);
 
 					LuaPerWindowInfo& info = LuaWindowInfo[hDlg];
-					lstrcpy(Str_Tmp,_tFromChar(info.filename.c_str()));
+					lstrcpy(Str_Tmp,_tFromAnsi(info.filename.c_str()));
 					TCHAR LogicalName[1024], PhysicalName[1024];
 //					bool exists = ObtainFile(Str_Tmp, LogicalName, PhysicalName, TEXT("luarun"), s_nonLuaExtensions, sizeof(s_nonLuaExtensions)/sizeof(*s_nonLuaExtensions));
 					_sntprintf(LogicalName, MAX_PATH, TEXT("%s"), Str_Tmp);
 					_sntprintf(PhysicalName, MAX_PATH, TEXT("%s"), Str_Tmp);
 					Update_Recent_Script(LogicalName, info.subservient);
 					if(DemandLua())
-						RunLuaScriptFile((int)hDlg, _tToChar(PhysicalName));
+						RunLuaScriptFile((int)hDlg, _tToAnsi(PhysicalName));
 				}	break;
 				case IDC_BUTTON_LUASTOP:
 				{
@@ -792,8 +792,8 @@ const char* OpenLuaScript(const char* filename, const char* extraDirToCheck, boo
 		// make the filename absolute before loading
 		TCHAR tfilenameString[1024];
 		TCHAR *tfilename = tfilenameString;
-		lstrcpyn(tfilename, _tFromChar(filename), 1024);
-		tfilename = (TCHAR*)MakeScriptPathAbsolute(tfilename, _tFromChar(extraDirToCheck));
+		lstrcpyn(tfilename, _tFromAnsi(filename), 1024);
+		tfilename = (TCHAR*)MakeScriptPathAbsolute(tfilename, _tFromAnsi(extraDirToCheck));
 
 		// now check if it's already open and load it if it isn't
 		HWND IsScriptFileOpen(const TCHAR* Path);
@@ -804,7 +804,7 @@ const char* OpenLuaScript(const char* filename, const char* extraDirToCheck, boo
 
 			HWND hDlg = CreateDialog(g_hInstance, MAKEINTRESOURCE(IDD_LUA), g_hWnd, (DLGPROC) LuaScriptProc);
 			SendMessage(hDlg,WM_COMMAND,IDC_NOTIFY_SUBSERVIENT,TRUE);
-			SendDlgItemMessage(hDlg,IDC_EDIT_LUAPATH,WM_SETTEXT,0,(LPARAM)((const TCHAR*)_tFromChar(filename)));
+			SendDlgItemMessage(hDlg,IDC_EDIT_LUAPATH,WM_SETTEXT,0,(LPARAM)tfilename);
 //			DialogsOpen++;
 
 			SetActiveWindow(prevWindow);

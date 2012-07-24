@@ -423,7 +423,7 @@ static int doPopup(lua_State* L, const char* deftype, const char* deficon)
 //		while (ShowCursor(false) >= 0);
 //		while (ShowCursor(true) < 0);
 //	}
-	int ianswer = MessageBox((HWND)uid, _tFromChar(str), _tFromChar(titles[iicon]), etypes[itype] | eicons[iicon]);
+	int ianswer = MessageBoxA((HWND)uid, str, titles[iicon], etypes[itype] | eicons[iicon]);
 	EnableWindow(g_hWnd, true);
 //	DialogsOpen--;
 	switch(ianswer)
