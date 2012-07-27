@@ -305,7 +305,7 @@ static __forceinline int open(const char *filename, int oflag, int pmode) {
 	return _twopen(filename, oflag, pmode);
 }
 #define _access _twaccess
-#define _rename _twrename
+#define rename _twrename
 #define _unlink _twunlink
 #define _chdir _twchdir
 #define _mkdir _twmkdir
