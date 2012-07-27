@@ -176,10 +176,10 @@
 
 
 
+#ifdef UNICODE
+
 #ifndef _TFWOPEN_H
 #define _TFWOPEN_H
-
-#ifdef UNICODE
 
 #include <stdio.h>
 #include <io.h>
@@ -353,20 +353,6 @@ static __forceinline int open(const char *filename, int oflag, int pmode) {
 #define _makepath _twmakepath
 //#define strrchr _twcsrchr
 
-#else
-
-#define fopenA fopen
-#define openA open
-#define _accessA _access
-#define renameA rename
-#define _unlinkA _unlink
-#define _chdirA _chdir
-#define _mkdirA _mkdir
-#define _rmdirA _rmdir
-#define _splitpathA _splitpath
-#define _makepathA _makepath
-//#define strrchrA strrchr
+#endif // _TFWOPEN_H
 
 #endif 
-
-#endif // _TFWOPEN_H
