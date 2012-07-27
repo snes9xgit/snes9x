@@ -16,6 +16,21 @@
 #include "win32/wsnes9x.h"
 
 #define g_hWnd GUI.hWnd
+
+#ifdef UNICODE
+#define fopen fopenA
+#define open openA
+#define _access _accessA
+#define rename renameA
+#define _unlink _unlinkA
+#define _chdir _chdirA
+#define _mkdir _mkdirA
+#define _rmdir _rmdirA
+#define _splitpath _splitpathA
+#define _makepath _makepathA
+//#define strrchr strrchrA
+#endif
+
 #endif
 
 // the emulator must provide these so that we can implement
