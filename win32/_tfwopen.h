@@ -297,51 +297,51 @@ public:
 #define ifstream u8nifstream
 #endif // __cplusplus
 
-static __forceinline FILE *fopenA(const char *filename, const char *mode) {
+__forceinline static FILE *fopenA(const char *filename, const char *mode) {
 	return fopen(filename, mode);
 }
-static __forceinline int removeA(const char *filename) {
+__forceinline static int removeA(const char *filename) {
 	return remove(filename);
 }
-static __forceinline int openA(const char *filename, int oflag, int pmode) {
+__forceinline static int openA(const char *filename, int oflag, int pmode) {
 	return open(filename, oflag, pmode);
 }
-static __forceinline int _accessA(const char *path, int mode) {
+__forceinline static int _accessA(const char *path, int mode) {
 	return _access(path, mode);
 }
-static __forceinline int renameA(const char *oldname, const char *newname) {
+__forceinline static int renameA(const char *oldname, const char *newname) {
 	return rename(oldname, newname);
 }
-static __forceinline int _unlinkA(const char *filename) {
+__forceinline static int _unlinkA(const char *filename) {
 	return _unlink(filename);
 }
-static __forceinline int _chdirA(const char *dirname) {
+__forceinline static int _chdirA(const char *dirname) {
 	return _chdir(dirname);
 }
-static __forceinline int _mkdirA(const char *dirname) {
+__forceinline static int _mkdirA(const char *dirname) {
 	return _mkdir(dirname);
 }
-static __forceinline int _rmdirA(const char *dirname) {
+__forceinline static int _rmdirA(const char *dirname) {
 	return _rmdir(dirname);
 }
-static __forceinline void _splitpathA(const char *path, char *drive, char *dir, char *fname, char *ext) {
+__forceinline static void _splitpathA(const char *path, char *drive, char *dir, char *fname, char *ext) {
 	_splitpath(path, drive, dir, fname, ext);
 }
-static __forceinline void _makepathA(char *path, const char *drive, const char *dir, const char *fname, const char *ext) {
+__forceinline static void _makepathA(char *path, const char *drive, const char *dir, const char *fname, const char *ext) {
 	_makepath(path, drive, dir, fname, ext);
 }
-//static __forceinline char *strrchrA(const char *str, int c) {
+//__forceinline static char *strrchrA(const char *str, int c) {
 //	return strrchr(str, c);
 //}
 
 #define fopen _tfwopen
 #undef remove
-static __forceinline int remove(const char *filename) {
-	return _twremove(filename);
+__forceinline static int remove(const char *filename) {
+  return _twremove(filename);
 }
 #undef open
-static __forceinline int open(const char *filename, int oflag, int pmode) {
-	return _twopen(filename, oflag, pmode);
+__forceinline static int open(const char *filename, int oflag, int pmode) {
+  return _twopen(filename, oflag, pmode);
 }
 #define _access _twaccess
 #define rename _twrename
