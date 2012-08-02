@@ -272,6 +272,7 @@ Nintendo is a trade mark.")
 #define HOTKEYS_LABEL_2_5 TEXT("Sprites Layer")
 #define HOTKEYS_LABEL_2_6 TEXT("Clipping Windows")
 #define HOTKEYS_LABEL_2_7 TEXT("Transparency")
+#define HOTKEYS_LABEL_2_8 TEXT("fast forward toggle")
 #define HOTKEYS_LABEL_2_9 TEXT("Rewind")
 #define HOTKEYS_LABEL_2_10 TEXT("Switch Controllers")
 #define HOTKEYS_LABEL_2_11 TEXT("Joypad Swap")
@@ -459,7 +460,6 @@ Nintendo is a trade mark.")
 #define EMUSET_LABEL_SMAX_TEXT TEXT("frames in auto-frame rate mode")
 #define EMUSET_LABEL_STURBO TEXT("Skip Rendering")
 #define EMUSET_LABEL_STURBO_TEXT TEXT("frames in fast-forward mode")
-#define EMUSET_TOGGLE_TURBO TEXT("Toggled fast-forward mode")
 
 //Netplay Options
 

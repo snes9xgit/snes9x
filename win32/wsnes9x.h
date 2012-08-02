@@ -338,7 +338,6 @@ struct sGUI {
     bool NeedDepthConvert;
     bool DepthConverted;
 
-    bool TurboModeToggle;
 	bool InactivePause;
 	bool CustomRomOpen;
     bool FASkipsNonInput;
@@ -446,6 +445,7 @@ struct SCustomKeys {
 	SCustomKey Save [10];
 	SCustomKey Load [10];
 	SCustomKey FastForward;
+	SCustomKey FastForwardToggle;
 	SCustomKey ShowPressed;
 	SCustomKey SaveScreenShot;
 	SCustomKey SlotPlus;
