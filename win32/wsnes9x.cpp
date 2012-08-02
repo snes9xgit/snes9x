@@ -533,6 +533,7 @@ struct SCustomKeys CustomKeys = {
 	 {VK_F9,0},
 	 {VK_F10,0}},
 	{VK_TAB,0}, // fast forward (TAB)
+	{0,0}, // fast forward toggle
 	{/*VK_OEM_COMMA*/0xBC,0}, // show pressed keys/buttons (,)
 	{VK_F12,0}, // save screenshot (F12)
 	{0,0}, // slot plus (disabled by default)
@@ -1058,22 +1059,25 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 		{
 			if(Settings.SPC7110RTC)
 				return 1;
-			if (GUI.TurboModeToggle)
-			{
-				Settings.TurboMode ^= TRUE;
-				if (Settings.TurboMode)
-					S9xMessage (S9X_INFO, S9X_TURBO_MODE,
-					WINPROC_TURBOMODE_ON);
-				else
-					S9xMessage (S9X_INFO, S9X_TURBO_MODE,
-					WINPROC_TURBOMODE_OFF);
-			}
+
+			if(!Settings.TurboMode)
+				S9xMessage (S9X_INFO, S9X_TURBO_MODE, WINPROC_TURBOMODE_TEXT);
+			Settings.TurboMode = TRUE;
+			hitHotKey = true;
+		}
+		if(wParam == CustomKeys.FastForwardToggle.key
+		&& modifiers == CustomKeys.FastForwardToggle.modifiers)
+		{
+			if(Settings.SPC7110RTC)
+				return 1;
+
+			Settings.TurboMode ^= TRUE;
+			if (Settings.TurboMode)
+				S9xMessage (S9X_INFO, S9X_TURBO_MODE,
+				WINPROC_TURBOMODE_ON);
 			else
-			{
-				if(!Settings.TurboMode)
-					S9xMessage (S9X_INFO, S9X_TURBO_MODE, WINPROC_TURBOMODE_TEXT);
-				Settings.TurboMode = TRUE;
-			}
+				S9xMessage (S9X_INFO, S9X_TURBO_MODE,
+				WINPROC_TURBOMODE_OFF);
 			hitHotKey = true;
 		}
 		if(wParam == CustomKeys.ShowPressed.key
@@ -1492,8 +1496,7 @@ LRESULT CALLBACK WinProc(
 			if(wParam == CustomKeys.FastForward.key
 			&& modifiers == CustomKeys.FastForward.modifiers)
 			{
-				if (!GUI.TurboModeToggle)
-					Settings.TurboMode = FALSE;
+				Settings.TurboMode = FALSE;
 			}
 			if(wParam == CustomKeys.ScopePause.key
 			&& modifiers == CustomKeys.ScopePause.modifiers)
@@ -5053,7 +5056,6 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
             SendDlgItemMessage(hDlg, IDC_REWIND_BUFFER_SPIN,UDM_SETPOS,0, GUI.rewindBufferSize);
             SendDlgItemMessage(hDlg, IDC_REWIND_GRANULARITY_SPIN, UDM_SETRANGE, 0, MAKELPARAM((short)300, (short)1));
             SendDlgItemMessage(hDlg, IDC_REWIND_GRANULARITY_SPIN,UDM_SETPOS,0, GUI.rewindGranularity);
-			CheckDlgButton(hDlg,IDC_TOGGLE_TURBO,GUI.TurboModeToggle ? BST_CHECKED : BST_UNCHECKED);
 			CheckDlgButton(hDlg,IDC_INACTIVE_PAUSE,GUI.InactivePause ? BST_CHECKED : BST_UNCHECKED);
 			CheckDlgButton(hDlg,IDC_CUSTOMROMOPEN,GUI.CustomRomOpen ? BST_CHECKED : BST_UNCHECKED);
 			CheckDlgButton(hDlg,IDC_HIRESAVI,GUI.AVIHiRes ? BST_CHECKED : BST_UNCHECKED);
@@ -5137,7 +5139,6 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 					lstrcpy(GUI.PatchDir,paths[inum++]);
 					lstrcpy(GUI.BiosDir,paths[inum++]);
 
-					GUI.TurboModeToggle = (BST_CHECKED==IsDlgButtonChecked(hDlg, IDC_TOGGLE_TURBO));
 					GUI.InactivePause = (BST_CHECKED==IsDlgButtonChecked(hDlg, IDC_INACTIVE_PAUSE));
 					GUI.CustomRomOpen = (BST_CHECKED==IsDlgButtonChecked(hDlg, IDC_CUSTOMROMOPEN));
 					GUI.AVIHiRes = (BST_CHECKED==IsDlgButtonChecked(hDlg, IDC_HIRESAVI));
@@ -7899,7 +7900,7 @@ static void set_hotkeyinfo(HWND hDlg)
 		SendDlgItemMessage(hDlg,IDC_HOTKEY5,WM_USER+44,CustomKeys.BGL5.key,CustomKeys.BGL5.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY6,WM_USER+44,CustomKeys.ClippingWindows.key,CustomKeys.ClippingWindows.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY7,WM_USER+44,CustomKeys.Transparency.key,CustomKeys.Transparency.modifiers);
-		SendDlgItemMessage(hDlg,IDC_HOTKEY8,WM_USER+44,0,0);
+		SendDlgItemMessage(hDlg,IDC_HOTKEY8,WM_USER+44,CustomKeys.FastForwardToggle.key,CustomKeys.FastForwardToggle.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY9,WM_USER+44,CustomKeys.Rewind.key,CustomKeys.Rewind.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY10,WM_USER+44,CustomKeys.SwitchControllers.key,CustomKeys.SwitchControllers.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY11,WM_USER+44,CustomKeys.JoypadSwap.key,CustomKeys.JoypadSwap.modifiers);
@@ -7964,7 +7965,7 @@ static void set_hotkeyinfo(HWND hDlg)
 		SetDlgItemText(hDlg,IDC_LABEL_HK5,HOTKEYS_LABEL_2_5);
 		SetDlgItemText(hDlg,IDC_LABEL_HK6,HOTKEYS_LABEL_2_6);
 		SetDlgItemText(hDlg,IDC_LABEL_HK7,HOTKEYS_LABEL_2_7);
-		SetDlgItemText(hDlg,IDC_LABEL_HK8,INPUTCONFIG_LABEL_UNUSED);
+		SetDlgItemText(hDlg,IDC_LABEL_HK8,HOTKEYS_LABEL_2_8);
 		SetDlgItemText(hDlg,IDC_LABEL_HK9,HOTKEYS_LABEL_2_9);
 		SetDlgItemText(hDlg,IDC_LABEL_HK10,HOTKEYS_LABEL_2_10);
 		SetDlgItemText(hDlg,IDC_LABEL_HK11,HOTKEYS_LABEL_2_11);
@@ -8124,7 +8125,7 @@ switch(msg)
 			break;
 		case IDC_HOTKEY8:
 			if(index == 0) CustomKeys.ScopeTurbo.key = wParam,  CustomKeys.ScopeTurbo.modifiers = modifiers;
-//			if(index == 1) CustomKeys.HDMA.key = wParam,       CustomKeys.HDMA.modifiers = modifiers;
+			if(index == 1) CustomKeys.FastForwardToggle.key = wParam, CustomKeys.FastForwardToggle.modifiers = modifiers;
 			if(index == 2) CustomKeys.TurboSelect.key = wParam,    CustomKeys.TurboSelect.modifiers = modifiers;
 			if(index == 3) CustomKeys.SelectSave[7].key = wParam,	CustomKeys.SelectSave[7].modifiers = modifiers;
 			break;

@@ -75,7 +75,6 @@
 #define IDC_AUTO_SAVE_DELAY             1057
 #define IDC_MAX_SKIP                    1058
 #define IDC_TURBO_SKIP                  1059
-#define IDC_TOGGLE_TURBO                1060
 #define IDC_SRAM_SPIN                   1061
 #define IDC_SPIN_MAX_SKIP               1062
 #define IDC_SPIN_TURBO_SKIP             1063
