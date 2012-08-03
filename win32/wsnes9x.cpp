@@ -5033,7 +5033,6 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 		WinRefreshDisplay();
 		{
 			SetWindowText(hDlg, EMUSET_TITLE);
-			SetDlgItemText(hDlg, IDC_TOGGLE_TURBO, EMUSET_TOGGLE_TURBO);
 			SetDlgItemText(hDlg, IDC_LABEL_FREEZE, EMUSET_LABEL_DIRECTORY);
 			SetDlgItemText(hDlg, IDOK, BUTTON_OK);
 			SetDlgItemText(hDlg, IDCANCEL, BUTTON_CANCEL);

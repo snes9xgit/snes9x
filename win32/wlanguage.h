@@ -460,7 +460,6 @@ Nintendo is a trade mark.")
 #define EMUSET_LABEL_SMAX_TEXT TEXT("frames in auto-frame rate mode")
 #define EMUSET_LABEL_STURBO TEXT("Skip Rendering")
 #define EMUSET_LABEL_STURBO_TEXT TEXT("frames in fast-forward mode")
-#define EMUSET_TOGGLE_TURBO TEXT("Toggled fast-forward mode")
 
 //Netplay Options
 
