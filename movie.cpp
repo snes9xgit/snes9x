@@ -1188,8 +1188,8 @@ void S9xUpdateFrameCounter (int offset)
 		*GFX.FrameDisplayString = 0;
 	else
 	if (Movie.State == MOVIE_STATE_RECORD)
-		sprintf(GFX.FrameDisplayString, "Recording frame: %d%s",
-			max(0, (int) (Movie.CurrentFrame + offset)), pad_read || !Settings.MovieNotifyIgnored ? "" : " (ignored)");
+		sprintf(GFX.FrameDisplayString, "Recording frame: %d",
+			max(0, (int) (Movie.CurrentFrame + offset)));
 	else
 	if (Movie.State == MOVIE_STATE_PLAY)
 		sprintf(GFX.FrameDisplayString, "Playing frame: %d / %d",

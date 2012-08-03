@@ -425,7 +425,6 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.TurboMode                  =  conf.GetBool("Settings::TurboMode",                 false);
 	Settings.TurboSkipFrames            =  conf.GetUInt("Settings::TurboFrameSkip",            15);
 	Settings.MovieTruncate              =  conf.GetBool("Settings::MovieTruncateAtEnd",        false);
-	Settings.MovieNotifyIgnored         =  conf.GetBool("Settings::MovieNotifyIgnored",        false);
 	Settings.WrongMovieStateProtection  =  conf.GetBool("Settings::WrongMovieStateProtection", true);
 	Settings.StretchScreenshots         =  conf.GetInt ("Settings::StretchScreenshots",        1);
 	Settings.SnapshotScreenshots        =  conf.GetBool("Settings::SnapshotScreenshots",       true);
