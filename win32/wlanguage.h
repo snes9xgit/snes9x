@@ -498,7 +498,6 @@ Nintendo is a trade mark.")
 #define MOVIE_ERR_WRONG_FORMAT TEXT("The movie file is corrupt or in the wrong format.")
 #define MOVIE_ERR_WRONG_VERSION_SHORT TEXT("Unsupported movie version.")
 #define MOVIE_ERR_WRONG_VERSION MOVIE_ERR_WRONG_VERSION_SHORT TEXT(" You need a different version of Snes9x to play this movie.")
-#define MOVIE_ERR_NOFRAMETOGGLE "No movie; can't toggle frame count"
 #define MOVIE_ERR_NOREADONLYTOGGLE "No movie; can't toggle read-only"
 #define MOVIE_LABEL_AUTHORINFO TEXT("Author Info:")
 #define MOVIE_LABEL_ERRORINFO TEXT("Error Info:")

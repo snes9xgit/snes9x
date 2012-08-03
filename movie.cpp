@@ -178,6 +178,7 @@
 //  Input recording/playback code
 //  (c) Copyright 2004 blip
 
+#include <math.h>
 #ifndef __WIN32__
 #include <unistd.h>
 #endif
@@ -1199,4 +1200,13 @@ void S9xUpdateFrameCounter (int offset)
 		sprintf(GFX.FrameDisplayString, "%s frame: %d", Settings.NetPlayServer ? "Server" : "Client",
 			max(0, (int) (NetPlay.FrameCount + offset)));
 #endif
+	else
+	{
+		int frame = max(0, (int) (IPPU.TotalEmulatedFrames + offset));
+		double totalseconds = frame / 60.0;
+		int hour = (int)(totalseconds / 3600);
+		int minute = (int)(totalseconds / 60);
+		double second = fmod(totalseconds, 60.0);
+		sprintf(GFX.FrameDisplayString, "Frame: %d (%d:%02d:%05.2f)", frame, hour, minute, second);
+	}
 }
