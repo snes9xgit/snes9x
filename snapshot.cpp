@@ -341,6 +341,12 @@ struct SnapshotScreenshotInfo
 	uint8	Data[MAX_SNES_WIDTH * MAX_SNES_HEIGHT * 3];
 };
 
+struct SnapshotRRExtraInfo
+{
+	uint32	TotalEmulatedFrames;    // IPPU.TotalEmulatedFrames
+	uint32	PadIgnoredFrames;       // IPPU.PadIgnoredFrames
+};
+
 static struct Obsolete
 {
 	uint8	CPU_IRQActive;
@@ -1142,6 +1148,15 @@ static FreezeData	SnapMovie[] =
 	INT_ENTRY(6, MovieInputDataSize)
 };
 
+#undef STRUCT
+#define STRUCT	struct SnapshotRRExtraInfo
+
+static FreezeData	SnapRRExtra[] =
+{
+	INT_ENTRY(8, TotalEmulatedFrames),
+	INT_ENTRY(8, PadIgnoredFrames)
+};
+
 static int UnfreezeBlock (STREAM, const char *, uint8 *, int);
 static int UnfreezeBlockCopy (STREAM, const char *, uint8 **, int);
 static int UnfreezeStruct (STREAM, const char *, void *, FreezeData *, int, int);
@@ -1431,6 +1446,11 @@ void S9xFreezeToStream (STREAM stream)
 		}
 	}
 
+	struct SnapshotRRExtraInfo rri;
+	rri.TotalEmulatedFrames = IPPU.TotalEmulatedFrames;
+	rri.PadIgnoredFrames = IPPU.PadIgnoredFrames;
+	FreezeStruct(stream, "JXQ", &rri, SnapRRExtra, COUNT(SnapRRExtra));
+
 	S9xSetSoundMute(FALSE);
 
 	delete [] soundsnapshot;
@@ -1484,6 +1504,7 @@ int S9xUnfreezeFromStream (STREAM stream)
 	uint8	*local_bsx_data      = NULL;
 	uint8	*local_screenshot    = NULL;
 	uint8	*local_movie_data    = NULL;
+	uint8	*local_rr_extra      = NULL;
 
 	do
 	{
@@ -1619,6 +1640,8 @@ int S9xUnfreezeFromStream (STREAM stream)
 					break;
 			}
 		}
+
+		UnfreezeStructCopy(stream, "JXQ", &local_rr_extra, SnapRRExtra, COUNT(SnapRRExtra), version);
 
 		result = SUCCESS;
 	} while (false);
@@ -1856,6 +1879,19 @@ int S9xUnfreezeFromStream (STREAM stream)
 				memset(GFX.Screen + y * GFX.RealPPL, 0, GFX.RealPPL * 2);
 		}
 
+		if (local_rr_extra)
+		{
+			SnapshotRRExtraInfo	*rri = new SnapshotRRExtraInfo;
+
+			UnfreezeStructFromCopy(rri, SnapRRExtra, COUNT(SnapRRExtra), local_rr_extra, version);
+
+			IPPU.TotalEmulatedFrames = rri->TotalEmulatedFrames;
+			IPPU.PadIgnoredFrames = rri->PadIgnoredFrames;
+			S9xUpdateFrameCounter(-1);
+
+			delete rri;
+		}
+
 		S9xSetSoundMute(FALSE);
 	}
 
@@ -1886,6 +1922,7 @@ int S9xUnfreezeFromStream (STREAM stream)
 	if (local_bsx_data)			delete [] local_bsx_data;
 	if (local_screenshot)		delete [] local_screenshot;
 	if (local_movie_data)		delete [] local_movie_data;
+	if (local_rr_extra)			delete [] local_rr_extra;
 
 	return (result);
 }
