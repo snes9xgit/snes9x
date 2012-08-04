@@ -416,6 +416,7 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.DisplayWatchedAddresses    =  conf.GetBool("Display::DisplayWatchedAddresses",    false);
 	Settings.DisplayPressedKeys         =  conf.GetBool("Display::DisplayInput",               false);
 	Settings.DisplayMovieFrame          =  conf.GetBool("Display::DisplayFrameCount",          false);
+	Settings.DisplayLagFrame            =  conf.GetBool("Display::DisplayLagFrameCount",       false);
 	Settings.AutoDisplayMessages        =  conf.GetBool("Display::MessagesInImage",            true);
 	Settings.InitialInfoStringTimeout   =  conf.GetInt ("Display::MessageDisplayTime",         120);
 

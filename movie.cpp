@@ -1209,4 +1209,11 @@ void S9xUpdateFrameCounter (int offset)
 		double second = fmod(totalseconds, 60.0);
 		sprintf(GFX.FrameDisplayString, "Frame: %d (%d:%02d:%05.2f)", frame, hour, minute, second);
 	}
+
+	if (Settings.DisplayLagFrame)
+	{
+		char LagFrameDisplayString[64];
+		sprintf(LagFrameDisplayString, " | %d", IPPU.PadIgnoredFrames);
+		strcat(GFX.FrameDisplayString, LagFrameDisplayString);
+	}
 }

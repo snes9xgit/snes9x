@@ -860,6 +860,7 @@ void WinRegisterConfigItems()
 	AddBool2C("FrameRate", Settings.DisplayFrameRate, false, "on to display the framerate (will be inaccurate if AutoMaxSkipFrames is too small)");
 	AddBoolC("DisplayInput", Settings.DisplayPressedKeys, false, "true to show which buttons are pressed");
 	AddBoolC("DisplayFrameCount", Settings.DisplayMovieFrame, true, "true to show the frame count when a movie is playing");
+	AddBoolC("DisplayLagFrameCount", Settings.DisplayLagFrame, true, "true to show the lag frame count");
 #undef CATEGORY
 #define CATEGORY "Display\\Win"
 	AddUIntC("OutputMethod", GUI.outputMethod, 1, "0=DirectDraw, 1=Direct3D, 2=OpenGL");
