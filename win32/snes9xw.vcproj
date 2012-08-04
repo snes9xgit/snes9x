@@ -85,7 +85,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="lua51.lib libpngmt.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibmt.lib msxml2.lib"
+				AdditionalDependencies="lua51.lib libpngmt.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibmt.lib msxml2.lib shlwapi.lib"
 				OutputFile=".\snes9x.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -187,7 +187,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="lua51.lib libpngmtx64.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibmtx64.lib msxml2.lib"
+				AdditionalDependencies="lua51.lib libpngmtx64.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibmtx64.lib msxml2.lib shlwapi.lib"
 				OutputFile=".\snes9x-x64.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -284,7 +284,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="lua51.lib libpngdmt.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibdmt.lib msxml2.lib"
+				AdditionalDependencies="lua51.lib libpngdmt.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibdmt.lib msxml2.lib shlwapi.lib"
 				OutputFile=".\snes9x-debug.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -383,7 +383,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="lua51.lib libpngdmtx64.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibdmtx64.lib msxml2.lib"
+				AdditionalDependencies="lua51.lib libpngdmtx64.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibdmtx64.lib msxml2.lib shlwapi.lib"
 				OutputFile=".\snes9x-debug-x64.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -482,7 +482,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="lua51.lib libpngdmtu.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibdmtu.lib msxml2.lib"
+				AdditionalDependencies="lua51.lib libpngdmtu.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibdmtu.lib msxml2.lib shlwapi.lib"
 				OutputFile=".\snes9x-debug.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -583,7 +583,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="lua51.lib libpngdmtux64.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibdmtux64.lib msxml2.lib"
+				AdditionalDependencies="lua51.lib libpngdmtux64.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibdmtux64.lib msxml2.lib shlwapi.lib"
 				OutputFile=".\snes9x-debug-x64.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -690,7 +690,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="lua51.lib libpngmtu.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibmtu.lib msxml2.lib"
+				AdditionalDependencies="lua51.lib libpngmtu.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibmtu.lib msxml2.lib shlwapi.lib"
 				OutputFile=".\snes9x.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -795,7 +795,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="lua51.lib libpngmtux64.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibmtux64.lib msxml2.lib"
+				AdditionalDependencies="lua51.lib libpngmtux64.lib comctl32.lib winmm.lib opengl32.lib glu32.lib wsock32.lib ddraw.lib dsound.lib dxguid.lib delayimp.lib vfw32.lib zlibmtux64.lib msxml2.lib shlwapi.lib"
 				OutputFile=".\snes9x-x64.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

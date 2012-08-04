@@ -195,6 +195,7 @@
 
 #include <shlobj.h>
 #include <objidl.h>
+#include <shlwapi.h>
 #include <Shobjidl.h>
 
 #include "wsnes9x.h"
@@ -674,6 +675,38 @@ static void absToRel(TCHAR* relPath, const TCHAR* absPath, const TCHAR* baseDir)
 		relPath[0]=TEXT('.'); relPath[1]=TEXT('\\');
 		lstrcpy(relPath+2, relative);
 	}
+}
+
+BOOL SendMenuCommand (UINT uID)
+{
+	MENUITEMINFO mii;
+
+	CheckMenuStates();
+
+	mii.cbSize = sizeof(mii);
+	mii.fMask  = MIIM_STATE;
+	if (!GetMenuItemInfo(GUI.hMenu, uID, FALSE, &mii))
+		return FALSE;
+	if (!(mii.fState & MFS_DISABLED))
+		return SendMessage(GUI.hWnd, WM_COMMAND, (WPARAM)(uID),(LPARAM)(NULL));
+	else
+		return FALSE;
+}
+
+BOOL PostMenuCommand (UINT uID)
+{
+	MENUITEMINFO mii;
+
+	CheckMenuStates();
+
+	mii.cbSize = sizeof(mii);
+	mii.fMask  = MIIM_STATE;
+	if (!GetMenuItemInfo(GUI.hMenu, uID, FALSE, &mii))
+		return FALSE;
+	if (!(mii.fState & MFS_DISABLED))
+		return PostMessage(GUI.hWnd, WM_COMMAND, (WPARAM)(uID),(LPARAM)(NULL));
+	else
+		return FALSE;
 }
 
 void S9xMouseOn ()
@@ -1436,6 +1469,77 @@ static bool DoOpenRomDialog(TCHAR filename [_MAX_PATH], bool noCustomDlg = false
 	}
 }
 
+bool WinMoviePlay(LPCTSTR filename)
+{
+	struct MovieInfo info;
+	int err;
+
+	if (Settings.StopEmulation) {
+		SendMenuCommand(ID_FILE_LOAD_GAME);
+		if (Settings.StopEmulation)
+			return false;
+	}
+
+	err = S9xMovieGetInfo(_tToChar(filename), &info);
+	if (err != SUCCESS) {
+		TCHAR* err_string = MOVIE_ERR_COULD_NOT_OPEN;
+		switch(err)
+		{
+		case FILE_NOT_FOUND:
+			err_string = MOVIE_ERR_NOT_FOUND_SHORT;
+			break;
+		case WRONG_FORMAT:
+			err_string = MOVIE_ERR_WRONG_FORMAT_SHORT;
+			break;
+		case WRONG_VERSION:
+			err_string = MOVIE_ERR_WRONG_VERSION_SHORT;
+			break;
+		}
+		S9xSetInfoString(_tToChar(err_string));
+		return false;
+	}
+
+	while (info.ROMCRC32 != Memory.ROMCRC32 || strcmp(info.ROMName, Memory.RawROMName) != 0) {
+		TCHAR temp[512];
+		wsprintf(temp, TEXT("Movie's ROM: crc32=%08X, name=%s\nCurrent ROM: crc32=%08X, name=%s\n\nstill want to play the movie?"),
+			info.ROMCRC32, _tFromMS932(info.ROMName), Memory.ROMCRC32, _tFromMS932(Memory.RawROMName));
+		int sel = MessageBox(GUI.hWnd, temp, SNES9X_INFO, MB_ABORTRETRYIGNORE|MB_ICONQUESTION);
+		switch (sel) {
+		case IDABORT:
+			return false;
+		case IDRETRY:
+			SendMenuCommand(ID_FILE_LOAD_GAME);
+			if (Settings.StopEmulation)
+				return false;
+			break;
+		default:
+			goto romcheck_exit;
+		}
+	}
+	romcheck_exit:
+
+	S9xMovieOpen (_tToChar(filename), GUI.MovieReadOnly);
+	if(err != SUCCESS)
+	{
+		TCHAR* err_string = MOVIE_ERR_COULD_NOT_OPEN;
+		switch(err)
+		{
+		case FILE_NOT_FOUND:
+			err_string = MOVIE_ERR_NOT_FOUND_SHORT;
+			break;
+		case WRONG_FORMAT:
+			err_string = MOVIE_ERR_WRONG_FORMAT_SHORT;
+			break;
+		case WRONG_VERSION:
+			err_string = MOVIE_ERR_WRONG_VERSION_SHORT;
+			break;
+		}
+		S9xSetInfoString(_tToChar(err_string));
+		return false;
+	}
+	return true;
+}
+
 TCHAR multiRomA [MAX_PATH] = {0}; // lazy, should put in sGUI and add init to {0} somewhere
 TCHAR multiRomB [MAX_PATH] = {0};
 
@@ -1515,9 +1619,14 @@ LRESULT CALLBACK WinProc(
 		if (fileCount == 1) {
 			DragQueryFile(hDrop, 0, droppedFile, PATH_MAX);
 
+			LPCTSTR ext = PathFindExtension(droppedFile);
 			if (ExtensionIsValid(droppedFile)) {
 				LoadROM(droppedFile);
-			} else {
+			}
+			else if (lstrcmpi(ext, TEXT(".smv")) == 0) {
+				WinMoviePlay(droppedFile);
+			}
+			else {
 				S9xMessage(S9X_ERROR, S9X_ROM_INFO, "Unknown file extension.");
 			}
 		}
