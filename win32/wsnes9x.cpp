@@ -1626,6 +1626,25 @@ LRESULT CALLBACK WinProc(
 			else if (lstrcmpi(ext, TEXT(".smv")) == 0) {
 				WinMoviePlay(droppedFile);
 			}
+			else if (lstrcmpi(ext, TEXT(".lua")) == 0) {
+				if(LuaScriptHWnds.size() < 16)
+				{
+					TCHAR temp [1024];
+					lstrcpy(temp, droppedFile);
+					HWND IsScriptFileOpen(const TCHAR* Path);
+					if(!IsScriptFileOpen(temp))
+					{
+						HWND hDlg = CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_LUA), hWnd, (DLGPROC) LuaScriptProc);
+						SendDlgItemMessage(hDlg,IDC_EDIT_LUAPATH,WM_SETTEXT,0,(LPARAM)temp);
+					}
+				}
+			}
+			else if (lstrcmpi(ext, TEXT(".wch")) == 0) {
+				if (!Settings.StopEmulation) {
+					SendMenuCommand(ID_RAM_WATCH);
+					Load_Watches(true, droppedFile);
+				}
+			}
 			else {
 				S9xMessage(S9X_ERROR, S9X_ROM_INFO, "Unknown file extension.");
 			}
