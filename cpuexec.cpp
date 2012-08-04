@@ -188,11 +188,15 @@
 #include "missing.h"
 #endif
 
+static inline void StartS9xMainLoop (void);
+static inline void EndS9xMainLoop (void);
 static inline void S9xReschedule (void);
 
 
 void S9xMainLoop (void)
 {
+	StartS9xMainLoop();
+
 	for (;;)
 	{
 		if (CPU.NMILine)
@@ -308,6 +312,26 @@ void S9xMainLoop (void)
 		S9xSyncSpeed();
 		CPU.Flags &= ~SCAN_KEYS_FLAG;
 	}
+
+	EndS9xMainLoop();
+}
+
+static inline void StartS9xMainLoop (void)
+{
+	extern bool8 pad_read, pad_read_last;
+	pad_read_last = pad_read;
+	pad_read      = FALSE;
+
+	IPPU.InMainLoop = TRUE;
+}
+
+static inline void EndS9xMainLoop (void)
+{
+	extern bool8 pad_read;
+	if(!pad_read)
+		IPPU.PadIgnoredFrames++;
+
+	IPPU.InMainLoop = FALSE;
 }
 
 static inline void S9xReschedule (void)
