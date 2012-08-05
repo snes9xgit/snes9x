@@ -2,6 +2,7 @@
 #ifdef HAVE_LUA
 
 #include "port.h"
+#include "snes9x.h"
 #include "lua-engine.h"
 #include <assert.h>
 #include <vector>
@@ -319,7 +320,7 @@ DEFINE_LUA_FUNCTION(emu_registerexit, "func")
 	lua_setfield(L, LUA_REGISTRYINDEX, luaCallIDStrings[LUACALL_BEFOREEXIT]);
 	StopScriptIfFinished(luaStateToUIDMap[L]);
 	return 1;
-}/*
+}
 DEFINE_LUA_FUNCTION(emu_registerstart, "func")
 {
 	if (!lua_isnil(L,1))
@@ -329,11 +330,11 @@ DEFINE_LUA_FUNCTION(emu_registerstart, "func")
 	lua_insert(L,1);
 	lua_pushvalue(L,-1); // copy the function so we can also call it
 	lua_setfield(L, LUA_REGISTRYINDEX, luaCallIDStrings[LUACALL_ONSTART]);
-	if (!lua_isnil(L,-1) && ((Genesis_Started)||(SegaCD_Started)||(_32X_Started)))
+	if (!lua_isnil(L,-1) && !Settings.StopEmulation)
 		lua_call(L,0,0); // call the function now since the game has already started and this start function hasn't been called yet
 	StopScriptIfFinished(luaStateToUIDMap[L]);
 	return 1;
-}*/
+}
 DEFINE_LUA_FUNCTION(gui_register, "func")
 {
 	if (!lua_isnil(L,1))
@@ -3688,10 +3689,10 @@ static const struct luaL_reg emulib [] =
 //	{"lagged", emu_lagged},
 //	{"emulating", emu_emulating},
 //	{"atframeboundary", emu_atframeboundary},
-//	{"registerbefore", emu_registerbefore},
-//	{"registerafter", emu_registerafter},
-//	{"registerstart", emu_registerstart},
-//	{"registerexit", emu_registerexit},
+	{"registerbefore", emu_registerbefore},
+	{"registerafter", emu_registerafter},
+	{"registerstart", emu_registerstart},
+	{"registerexit", emu_registerexit},
 	{"persistglobalvariables", emu_persistglobalvariables},
 //	{"message", emu_message},
 	{"print", print}, // sure, why not

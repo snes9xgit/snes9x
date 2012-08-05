@@ -183,6 +183,7 @@
 #include "apu/apu.h"
 #include "fxemu.h"
 #include "snapshot.h"
+#include "lua-engine.h"
 #ifdef DEBUGGER
 #include "debug.h"
 #include "missing.h"
@@ -322,6 +323,10 @@ static inline void StartS9xMainLoop (void)
 	pad_read_last = pad_read;
 	pad_read      = FALSE;
 
+#ifdef HAVE_LUA
+	CallRegisteredLuaFunctions(LUACALL_BEFOREEMULATION);
+#endif
+
 	IPPU.InMainLoop = TRUE;
 }
 
@@ -330,6 +335,10 @@ static inline void EndS9xMainLoop (void)
 	extern bool8 pad_read;
 	if(!pad_read)
 		IPPU.PadIgnoredFrames++;
+
+#ifdef HAVE_LUA
+	CallRegisteredLuaFunctions(LUACALL_AFTEREMULATION);
+#endif
 
 	IPPU.InMainLoop = FALSE;
 }

@@ -213,6 +213,7 @@
 #include "../controls.h"
 #include "../conffile.h"
 #include "../statemanager.h"
+#include "../lua-engine.h"
 #include "AVIOutput.h"
 #include "InputCustom.h"
 #include "CWindow.h"
@@ -3686,6 +3687,9 @@ int WINAPI WinMain(
 
 loop_exit:
 
+#ifdef HAVE_LUA
+	StopAllLuaScripts();
+#endif
 	CloseAllToolWindows();
 
 	Settings.StopEmulation = TRUE;
