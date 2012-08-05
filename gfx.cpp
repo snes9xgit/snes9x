@@ -186,6 +186,7 @@
 #include "screenshot.h"
 #include "font.h"
 #include "display.h"
+#include "lua-engine.h"
 
 extern struct SCheatData		Cheat;
 extern struct SLineData			LineData[240];
@@ -433,6 +434,9 @@ void S9xEndScreenRefresh (void)
 			if (Settings.AutoDisplayMessages)
 				S9xDisplayMessages(GFX.Screen, GFX.RealPPL, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight, 1);
 
+#ifdef HAVE_LUA
+	CallRegisteredLuaFunctions(LUACALL_AFTEREMULATIONGUI);
+#endif
 			S9xDeinitUpdate(IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight);
 		}
 	}

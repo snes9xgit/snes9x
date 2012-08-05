@@ -3,6 +3,7 @@
 
 #include "port.h"
 #include "snes9x.h"
+#include "display.h"
 #include "lua-engine.h"
 #include <assert.h>
 #include <vector>
@@ -1020,14 +1021,14 @@ DEFINE_LUA_FUNCTION(print, "...")
 }
 
 
-/*
+
 DEFINE_LUA_FUNCTION(emu_message, "str")
 {
 	const char* str = toCString(L);
-	osd->addLine(str);
+	S9xSetInfoString(str);
 	return 0;
 }
-*/
+
 
 // provides an easy way to copy a table from Lua
 // (simple assignment only makes an alias, but sometimes an independent table is desired)
@@ -3694,7 +3695,7 @@ static const struct luaL_reg emulib [] =
 	{"registerstart", emu_registerstart},
 	{"registerexit", emu_registerexit},
 	{"persistglobalvariables", emu_persistglobalvariables},
-//	{"message", emu_message},
+	{"message", emu_message},
 	{"print", print}, // sure, why not
 	{"openscript", emu_openscript},
 //	{"loadrom", emu_loadrom},

@@ -183,6 +183,7 @@
 #include "../snes9x.h"
 #include "../ppu.h"
 #include "../font.h"
+#include "../lua-engine.h"
 #include "wsnes9x.h"
 #include "win32_display.h"
 #include "CDirect3D.h"
@@ -220,6 +221,10 @@ void WinRefreshDisplay(void)
 {
 	if(!Src.Width)
 		return;
+
+#ifdef HAVE_LUA
+	CallRegisteredLuaFunctions(LUACALL_AFTEREMULATIONGUI);
+#endif
 
 	SelectRenderMethod ();
 
