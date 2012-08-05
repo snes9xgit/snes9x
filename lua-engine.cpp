@@ -4,6 +4,8 @@
 #include "port.h"
 #include "snes9x.h"
 #include "display.h"
+#include "ppu.h"
+#include "movie.h"
 #include "lua-engine.h"
 #include <assert.h>
 #include <vector>
@@ -3052,32 +3054,37 @@ DEFINE_LUA_FUNCTION(gens_loadrom, "filename")
     return 0;
 }
 */
-/*DEFINE_LUA_FUNCTION(emu_getframecount, "")
+DEFINE_LUA_FUNCTION(emu_getframecount, "")
 {
-	lua_pushinteger(L, currFrameCounter);
+	int offset = 1;
+	if (S9xMovieActive())
+		lua_pushinteger(L, S9xMovieGetFrameCounter() + offset);
+	else
+		lua_pushinteger(L, IPPU.TotalEmulatedFrames + offset);
 	return 1;
 }
 DEFINE_LUA_FUNCTION(emu_getlagcount, "")
 {
-	lua_pushinteger(L, pcejin.lagFrameCounter);
+	lua_pushinteger(L, IPPU.PadIgnoredFrames);
 	return 1;
 }
 DEFINE_LUA_FUNCTION(emu_lagged, "")
 {
-	lua_pushboolean(L, pcejin.isLagFrame);
+	extern bool8 pad_read;
+	lua_pushboolean(L, !pad_read);
 	return 1;
 }
-DEFINE_LUA_FUNCTION(gens_emulating, "")
+DEFINE_LUA_FUNCTION(emu_emulating, "")
 {
-	lua_pushboolean(L, Genesis_Started||SegaCD_Started||_32X_Started);
+	lua_pushboolean(L, !Settings.StopEmulation);
 	return 1;
 }
-DEFINE_LUA_FUNCTION(gens_atframeboundary, "")
+DEFINE_LUA_FUNCTION(emu_atframeboundary, "")
 {
-	lua_pushboolean(L, !Inside_Frame);
+	lua_pushboolean(L, !IPPU.InMainLoop);
 	return 1;
 }
-DEFINE_LUA_FUNCTION(movie_getlength, "")
+/*DEFINE_LUA_FUNCTION(movie_getlength, "")
 {
 	lua_pushinteger(L, currMovieData.records.size());
 	return 1;
@@ -3685,11 +3692,11 @@ static const struct luaL_reg emulib [] =
 //	{"emulateframefast", emu_emulateframefast},
 //	{"emulateframeinvisible", emu_emulateframeinvisible},
 //	{"redraw", emu_redraw},
-//	{"framecount", emu_getframecount},
-//	{"lagcount", emu_getlagcount},
-//	{"lagged", emu_lagged},
-//	{"emulating", emu_emulating},
-//	{"atframeboundary", emu_atframeboundary},
+	{"framecount", emu_getframecount},
+	{"lagcount", emu_getlagcount},
+	{"lagged", emu_lagged},
+	{"emulating", emu_emulating},
+	{"atframeboundary", emu_atframeboundary},
 	{"registerbefore", emu_registerbefore},
 	{"registerafter", emu_registerafter},
 	{"registerstart", emu_registerstart},
@@ -3822,7 +3829,7 @@ static const struct luaL_reg movielib [] =
 //	{"rerecordcounting", emu_rerecordcounting},
 //	{"readonly", movie_getreadonly},
 //	{"setreadonly", movie_setreadonly},
-//	{"framecount", emu_getframecount}, // for those familiar with other emulators that have movie.framecount() instead of emulatorname.framecount()
+	{"framecount", emu_getframecount}, // for those familiar with other emulators that have movie.framecount() instead of emulatorname.framecount()
 
 //	{"play", movie_play},
 //	{"replay", movie_replay},
