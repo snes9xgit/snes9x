@@ -22,16 +22,27 @@
 #define g_hWnd GUI.hWnd
 
 #ifdef UNICODE
+#undef fopen
 #define fopen fopenA
+#undef open
 #define open openA
+#undef _access
 #define _access _accessA
+#undef rename
 #define rename renameA
+#undef _unlink
 #define _unlink _unlinkA
+#undef _chdir
 #define _chdir _chdirA
+#undef _mkdir
 #define _mkdir _mkdirA
+#undef _rmdir
 #define _rmdir _rmdirA
+#undef _splitpath
 #define _splitpath _splitpathA
+#undef _makepath
 #define _makepath _makepathA
+//#undef strrchr
 //#define strrchr strrchrA
 #endif
 
