@@ -84,9 +84,9 @@ struct LuaContextInfo {
 	bool ranExit; // used to prevent a registered exit callback from ever getting called more than once
 	bool guiFuncsNeedDeferring; // true whenever GUI drawing would be cleared by the next emulation update before it would be visible, and thus needs to be deferred until after the next emulation update
 	int numDeferredGUIFuncs; // number of deferred function calls accumulated, used to impose an arbitrary limit to avoid running out of memory
-	bool ranFrameAdvance; // false if gens.frameadvance() hasn't been called yet
+	bool ranFrameAdvance; // false if emu.frameadvance() hasn't been called yet
 	int transparencyModifier; // values less than 255 will scale down the opacity of whatever the GUI renders, values greater than 255 will increase the opacity of anything transparent the GUI renders
-	SpeedMode speedMode; // determines how gens.frameadvance() acts
+	SpeedMode speedMode; // determines how emu.frameadvance() acts
 	char panicMessage [72]; // a message to print if the script terminates due to panic being set
 	std::string lastFilename; // path to where the script last ran from so that restart can work (note: storing the script in memory instead would not be useful because we always want the most up-to-date script from file)
 	std::string nextFilename; // path to where the script should run from next, mainly used in case the restart flag is true
@@ -527,11 +527,20 @@ static bool luaValueContentsDiffer(lua_State* L, int idx1, int idx2)
 }
 
 
+void Get_State_File_Name(char *name)
+{
+	int slot = 1;
+	char drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], def[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
+
+	_splitpath(Memory.ROMFilename, drive, dir, def, ext);
+	sprintf(name, "%s%s%s.%03d", S9xGetDirectory(SNAPSHOT_DIR), SLASH_STR, def, slot);
+}
+
 // fills output with the path
 // also returns a pointer to the first character in the filename (non-directory) part of the path
 static char* ConstructScriptSaveDataPath(char* output, int bufferSize, LuaContextInfo& info)
 {
-//	Get_State_File_Name(output); TODO
+	Get_State_File_Name(output);
 	char* slash1 = strrchr(output, '\\');
 	char* slash2 = strrchr(output, '/');
 	if(slash1) slash1[1] = '\0';
@@ -546,7 +555,7 @@ static char* ConstructScriptSaveDataPath(char* output, int bufferSize, LuaContex
 	return rv;
 }
 
-// gens.persistglobalvariables({
+// emu.persistglobalvariables({
 //   variable1 = defaultvalue1,
 //   variable2 = defaultvalue2,
 //   etc
@@ -626,7 +635,7 @@ DEFINE_LUA_FUNCTION(emu_persistglobalvariables, "variabletable")
 			}
 			else
 			{
-				luaL_error(L, "'%s' = '%s' entries are not allowed in the table passed to gens.persistglobalvariables()", lua_typename(L,keyType), lua_typename(L,valueType));
+				luaL_error(L, "'%s' = '%s' entries are not allowed in the table passed to emu.persistglobalvariables()", lua_typename(L,keyType), lua_typename(L,valueType));
 			}
 
 			int varNameIndex = valueIndex;
@@ -1299,7 +1308,7 @@ DEFINE_LUA_FUNCTION(bitbit, "whichbit")
 	BRET(rv);
 }
 
-//int gens_wait(lua_State* L);
+//int emu_wait(lua_State* L);
 
 void indicateBusy(lua_State* L, bool busy)
 {
@@ -1365,7 +1374,7 @@ void LuaRescueHook(lua_State* L, lua_Debug *dbg)
 			// but we don't trust their judgement completely,
 			// so periodically update the main loop so they have a chance to manually stop it
 			info.worryCount = 0;
-//			gens_wait(L);
+//			emu_wait(L);
 			info.stopWorrying = true;
 		}
 		return;
@@ -1464,9 +1473,9 @@ bool FailVerifyAtFrameBoundary(lua_State* L, const char* funcName, int unstarted
 /*
 // acts similar to normal emulation update
 // except without the user being able to activate emulator commands
-DEFINE_LUA_FUNCTION(gens_emulateframe, "")
+DEFINE_LUA_FUNCTION(emu_emulateframe, "")
 {
-	if(FailVerifyAtFrameBoundary(L, "gens.emulateframe", 0,1))
+	if(FailVerifyAtFrameBoundary(L, "emu.emulateframe", 0,1))
 		return 0;
 
 	Update_Emulation_One(HWnd);
@@ -1478,9 +1487,9 @@ DEFINE_LUA_FUNCTION(gens_emulateframe, "")
 
 // acts as a fast-forward emulation update that still renders every frame
 // and the user is unable to activate emulator commands during it
-DEFINE_LUA_FUNCTION(gens_emulateframefastnoskipping, "")
+DEFINE_LUA_FUNCTION(emu_emulateframefastnoskipping, "")
 {
-	if(FailVerifyAtFrameBoundary(L, "gens.emulateframefastnoskipping", 0,1))
+	if(FailVerifyAtFrameBoundary(L, "emu.emulateframefastnoskipping", 0,1))
 		return 0;
 
 	Update_Emulation_One_Before(HWnd);
@@ -1494,9 +1503,9 @@ DEFINE_LUA_FUNCTION(gens_emulateframefastnoskipping, "")
 
 // acts as a (very) fast-forward emulation update
 // where the user is unable to activate emulator commands
-DEFINE_LUA_FUNCTION(gens_emulateframefast, "")
+DEFINE_LUA_FUNCTION(emu_emulateframefast, "")
 {
-	if(FailVerifyAtFrameBoundary(L, "gens.emulateframefast", 0,1))
+	if(FailVerifyAtFrameBoundary(L, "emu.emulateframefast", 0,1))
 		return 0;
 
 	disableVideoLatencyCompensationCount = VideoLatencyCompensation + 1;
@@ -1529,9 +1538,9 @@ DEFINE_LUA_FUNCTION(gens_emulateframefast, "")
 // it should leave no trace of having been called,
 // so you can do things like generate future emulation states every frame
 // while the user continues to see and hear normal emulation
-DEFINE_LUA_FUNCTION(gens_emulateframeinvisible, "")
+DEFINE_LUA_FUNCTION(emu_emulateframeinvisible, "")
 {
-	if(FailVerifyAtFrameBoundary(L, "gens.emulateframeinvisible", 0,1))
+	if(FailVerifyAtFrameBoundary(L, "emu.emulateframeinvisible", 0,1))
 		return 0;
 
 	int oldDisableSound2 = disableSound2;
@@ -1555,7 +1564,7 @@ DEFINE_LUA_FUNCTION(gens_emulateframeinvisible, "")
 	return 0;
 }
 
-DEFINE_LUA_FUNCTION(gens_speedmode, "mode")
+DEFINE_LUA_FUNCTION(emu_speedmode, "mode")
 {
 	SpeedMode newSpeedMode = SPEEDMODE_NORMAL;
 	if(lua_isnumber(L,1))
@@ -1579,11 +1588,11 @@ DEFINE_LUA_FUNCTION(gens_speedmode, "mode")
 	return 0;
 }
 
-// tells Gens to wait while the script is doing calculations
-// can call this periodically instead of gens.frameadvance
+// tells the emulator to wait while the script is doing calculations
+// can call this periodically instead of emu.frameadvance
 // note that the user can use hotkeys at this time
-// (e.g. a savestate could possibly get loaded before gens.wait() returns)
-DEFINE_LUA_FUNCTION(gens_wait, "")
+// (e.g. a savestate could possibly get loaded before emu.wait() returns)
+DEFINE_LUA_FUNCTION(emu_wait, "")
 {
 	LuaContextInfo& info = GetCurrentInfo();
 
@@ -1607,10 +1616,10 @@ DEFINE_LUA_FUNCTION(gens_wait, "")
 
 
 /*
-DEFINE_LUA_FUNCTION(gens_frameadvance, "")
+DEFINE_LUA_FUNCTION(emu_frameadvance, "")
 {
-	if(FailVerifyAtFrameBoundary(L, "gens.frameadvance", 0,1))
-		return gens_wait(L);
+	if(FailVerifyAtFrameBoundary(L, "emu.frameadvance", 0,1))
+		return emu_wait(L);
 
 	int uid = luaStateToUIDMap[L];
 	LuaContextInfo& info = GetCurrentInfo();
@@ -1632,23 +1641,23 @@ DEFINE_LUA_FUNCTION(gens_frameadvance, "")
 		case SPEEDMODE_NOTHROTTLE:
 			while(!Step_Gens_MainLoop(Paused!=0, false) && !info.panic);
 			if(!(FastForwardKeyDown && (GetActiveWindow()==HWnd || BackgroundInput)))
-				gens_emulateframefastnoskipping(L);
+				emu_emulateframefastnoskipping(L);
 			else
-				gens_emulateframefast(L);
+				emu_emulateframefast(L);
 			break;
 		case SPEEDMODE_TURBO:
 			while(!Step_Gens_MainLoop(Paused!=0, false) && !info.panic);
-			gens_emulateframefast(L);
+			emu_emulateframefast(L);
 			break;
 		case SPEEDMODE_MAXIMUM:
 			while(!Step_Gens_MainLoop(Paused!=0, false) && !info.panic);
-			gens_emulateframeinvisible(L);
+			emu_emulateframeinvisible(L);
 			break;
 	}
 	return 0;
 }
 
-DEFINE_LUA_FUNCTION(gens_pause, "")
+DEFINE_LUA_FUNCTION(emu_pause, "")
 {
 	LuaContextInfo& info = GetCurrentInfo();
 
@@ -1656,14 +1665,14 @@ DEFINE_LUA_FUNCTION(gens_pause, "")
 	while(!Step_Gens_MainLoop(true, false) && !info.panic);
 
 	// allow the user to not have to manually unpause
-	// after restarting a script that used gens.pause()
+	// after restarting a script that used emu.pause()
 	if(info.panic)
 		Paused = 0;
 
 	return 0;
 }
 
-DEFINE_LUA_FUNCTION(gens_unpause, "")
+DEFINE_LUA_FUNCTION(emu_unpause, "")
 {
 	LuaContextInfo& info = GetCurrentInfo();
 
@@ -1671,7 +1680,7 @@ DEFINE_LUA_FUNCTION(gens_unpause, "")
 	return 0;
 }
 
-DEFINE_LUA_FUNCTION(gens_redraw, "")
+DEFINE_LUA_FUNCTION(emu_redraw, "")
 {
 	Show_Genesis_Screen();
 	worry(L,250);
@@ -2525,8 +2534,8 @@ DEFINE_LUA_FUNCTION(gui_parsecolor, "color")
 DEFINE_LUA_FUNCTION(gui_text, "x,y,str[,color=\"white\"[,outline=\"black\"]]")
 {
 	if(DeferGUIFuncIfNeeded(L))
-		return 0; // we have to wait until later to call this function because gens hasn't emulated the next frame yet
-		          // (the only way to avoid this deferring is to be in a gui.register or gens.registerafter callback)
+		return 0; // we have to wait until later to call this function because the emulator hasn't emulated the next frame yet
+		          // (the only way to avoid this deferring is to be in a gui.register or emu.registerafter callback)
 
 	int x = luaL_checkinteger(L,1) & 0xFFFF;
 	int y = luaL_checkinteger(L,2) & 0xFFFF;
@@ -3052,7 +3061,7 @@ DEFINE_LUA_FUNCTION(emu_openscript, "filename")
     return 0;
 }
 /*
-DEFINE_LUA_FUNCTION(gens_loadrom, "filename")
+DEFINE_LUA_FUNCTION(emu_loadrom, "filename")
 {
 	struct Temp { Temp() {EnableStopAllLuaScripts(false);} ~Temp() {EnableStopAllLuaScripts(true);}} dontStopScriptsHere;
 	const char* filename = lua_isstring(L,1) ? lua_tostring(L,1) : NULL;
