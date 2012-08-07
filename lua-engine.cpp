@@ -6,6 +6,7 @@
 #include "display.h"
 #include "ppu.h"
 #include "movie.h"
+#include "snapshot.h"
 #include "lua-engine.h"
 #include <assert.h>
 #include <vector>
@@ -47,6 +48,10 @@
 #endif
 
 #endif
+
+// TODO remove if not necessary
+bool g_disableStatestateWarnings = false;
+bool g_onlyCallSavestateCallbacks = false;
 
 // the emulator must provide these so that we can implement
 // the various functions the user can call from their lua script
@@ -527,13 +532,12 @@ static bool luaValueContentsDiffer(lua_State* L, int idx1, int idx2)
 }
 
 
-void Get_State_File_Name(char *name)
+void Get_State_File_Name(char *name, int stateNumber = 0)
 {
-	int slot = 1;
 	char drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], def[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
 
 	_splitpath(Memory.ROMFilename, drive, dir, def, ext);
-	sprintf(name, "%s%s%s.%03d", S9xGetDirectory(SNAPSHOT_DIR), SLASH_STR, def, slot);
+	sprintf(name, "%s%s%s.%03d", S9xGetDirectory(SNAPSHOT_DIR), SLASH_STR, def, stateNumber);
 }
 
 // fills output with the path
@@ -1445,8 +1449,8 @@ void printfToOutput(const char* fmt, ...)
 }
 
 bool FailVerifyAtFrameBoundary(lua_State* L, const char* funcName, int unstartedSeverity=2, int inframeSeverity=2)
-{//TODO
-/*	if (!((Genesis_Started)||(SegaCD_Started)||(_32X_Started)))
+{
+	if (Settings.StopEmulation)
 	{
 		static const char* msg = "cannot call %s() when emulation has not started.";
 		switch(unstartedSeverity)
@@ -1457,7 +1461,7 @@ bool FailVerifyAtFrameBoundary(lua_State* L, const char* funcName, int unstarted
 		}
 		return true;
 	}
-	if(Inside_Frame)
+	if(IPPU.InMainLoop)
 	{
 		static const char* msg = "cannot call %s() inside an emulation frame.";
 		switch(inframeSeverity)
@@ -1467,7 +1471,7 @@ bool FailVerifyAtFrameBoundary(lua_State* L, const char* funcName, int unstarted
 		default: case 2: luaL_error(L, msg, funcName); break;
 		}
 		return true;
-	}*/
+	}
 	return false;
 }
 /*
@@ -1959,7 +1963,13 @@ DEFINE_LUA_FUNCTION(memory_setregister, "cpu_dot_registername_string,value")
 }
 
 
-/*DEFINE_LUA_FUNCTION(state_create, "[location]")
+struct StateData
+{
+	uint8 *buffer;
+	size_t size;
+};
+
+DEFINE_LUA_FUNCTION(state_create, "[location]")
 {
 	if(lua_isnumber(L,1))
 	{
@@ -1969,15 +1979,25 @@ DEFINE_LUA_FUNCTION(memory_setregister, "cpu_dot_registername_string,value")
 		return 1;
 	}
 
-	int len = 0x200000;//GENESIS_STATE_LENGTH;
-//	if (SegaCD_Started) len += SEGACD_LENGTH_EX;
-//	if (_32X_Started) len += G32X_LENGTH_EX;
-//	if (!((Genesis_Started)||(SegaCD_Started)||(_32X_Started)))
-//		len += std::max(SEGACD_LENGTH_EX, G32X_LENGTH_EX);
+	// allocate a pointer to an in-memory/anonymous savestate
+	StateData** ppStateData = (StateData**)lua_newuserdata(L, sizeof(StateData*));
+	*ppStateData = new StateData();
+	if (*ppStateData == NULL)
+	{
+		luaL_error(L, "memory allocation error.");
+	}
 
-	// allocate the in-memory/anonymous savestate
-	unsigned char* stateBuffer = (unsigned char*)lua_newuserdata(L, len + 16); // 16 is for performance alignment reasons
-	stateBuffer[0] = 0;
+	StateData& stateData = **ppStateData;
+	stateData.size = 0x40;
+	stateData.buffer = (uint8 *)malloc(stateData.size);
+	if (stateData.buffer == NULL)
+	{
+		delete (*ppStateData);
+		luaL_error(L, "memory allocation error.");
+	}
+
+	luaL_getmetatable(L, "StateData*");
+	lua_setmetatable(L, -2);
 
 	return 1;
 }
@@ -1993,15 +2013,15 @@ DEFINE_LUA_FUNCTION(state_save, "location[,option]")
 	const char* option = (lua_type(L,2) == LUA_TSTRING) ? lua_tostring(L,2) : NULL;
 	if(option)
 	{
-//		if(!stricmp(option, "quiet")) // I'm not sure if saving can generate warning messages, but we might as well support suppressing them should they turn out to exist
-//			g_disableStatestateWarnings = true;
-//		else if(!stricmp(option, "scriptdataonly"))
-//			g_onlyCallSavestateCallbacks = true;
+		if(!stricmp(option, "quiet")) // I'm not sure if saving can generate warning messages, but we might as well support suppressing them should they turn out to exist
+			g_disableStatestateWarnings = true;
+		else if(!stricmp(option, "scriptdataonly"))
+			g_onlyCallSavestateCallbacks = true;
 	}
-//	struct Scope { ~Scope(){ g_disableStatestateWarnings = false; g_onlyCallSavestateCallbacks = false; } } scope; // needs to run even if the following code throws an exception... maybe I should have put this in a "finally" block instead, but this project seems to have something against using the "try" statement
+	struct Scope { ~Scope(){ g_disableStatestateWarnings = false; g_onlyCallSavestateCallbacks = false; } } scope; // needs to run even if the following code throws an exception... maybe I should have put this in a "finally" block instead, but this project seems to have something against using the "try" statement
 
-//	if(!g_onlyCallSavestateCallbacks && FailVerifyAtFrameBoundary(L, "savestate.save", 2,2))
-//		return 0;
+	if(!g_onlyCallSavestateCallbacks && FailVerifyAtFrameBoundary(L, "savestate.save", 2,2))
+		return 0;
 
 	int type = lua_type(L,1);
 	switch(type)
@@ -2009,21 +2029,26 @@ DEFINE_LUA_FUNCTION(state_save, "location[,option]")
 		case LUA_TNUMBER: // numbered save file
 		default:
 		{
-			CurrentState = luaL_checkinteger(L,1);
-	//NEWTODO		MDFNSS_Save(NULL, NULL, (uint32 *)VTBuffer[VTBackBuffer], (MDFN_Rect *)VTLineWidths[VTBackBuffer]);
-		//	Set_Current_State(stateNumber, false,false);
-		//	char Name [1024] = {0};
-		//	Get_State_File_Name(Name);
-		//	Save_State(Name);
+			int stateNumber = luaL_checkinteger(L,1);
+			char Name [1024] = {0};
+			Get_State_File_Name(Name, stateNumber);
+			S9xFreezeGame(Name);
 		}	return 0;
 		case LUA_TUSERDATA: // in-memory save slot
 		{
-			unsigned char* stateBuffer = (unsigned char*)lua_touserdata(L,1);
-			if(stateBuffer)
+			StateData& stateData = **((StateData**)luaL_checkudata(L, 1, "StateData*"));
+			uint32 stateSizeNeeded = S9xFreezeSize();
+			if (stateData.size < stateSizeNeeded)
 			{
-				stateBuffer += ((16 - (int)stateBuffer) & 15); // for performance alignment reasons
-//				Save_State_To_Buffer(stateBuffer);
+				uint8 *newBuffer = (uint8 *)realloc(stateData.buffer, stateSizeNeeded);
+				if (newBuffer == NULL)
+				{
+					luaL_error(L, "memory allocation error.");
+				}
+				stateData.buffer = newBuffer;
+				stateData.size = stateSizeNeeded;
 			}
+			S9xFreezeGameMem(stateData.buffer, stateData.size);
 		}	return 0;
 	}
 }
@@ -2039,17 +2064,17 @@ DEFINE_LUA_FUNCTION(state_load, "location[,option]")
 	const char* option = (lua_type(L,2) == LUA_TSTRING) ? lua_tostring(L,2) : NULL;
 	if(option)
 	{
-//		if(!stricmp(option, "quiet"))
-//			g_disableStatestateWarnings = true;
-//		else if(!stricmp(option, "scriptdataonly"))
-//			g_onlyCallSavestateCallbacks = true;
+		if(!stricmp(option, "quiet"))
+			g_disableStatestateWarnings = true;
+		else if(!stricmp(option, "scriptdataonly"))
+			g_onlyCallSavestateCallbacks = true;
 	}
-//	struct Scope { ~Scope(){ g_disableStatestateWarnings = false; g_onlyCallSavestateCallbacks = false; } } scope; // needs to run even if the following code throws an exception... maybe I should have put this in a "finally" block instead, but this project seems to have something against using the "try" statement
+	struct Scope { ~Scope(){ g_disableStatestateWarnings = false; g_onlyCallSavestateCallbacks = false; } } scope; // needs to run even if the following code throws an exception... maybe I should have put this in a "finally" block instead, but this project seems to have something against using the "try" statement
 
-//	if(!g_onlyCallSavestateCallbacks && FailVerifyAtFrameBoundary(L, "savestate.load", 2,2))
-//		return 0;
+	if(!g_onlyCallSavestateCallbacks && FailVerifyAtFrameBoundary(L, "savestate.load", 2,2))
+		return 0;
 
-//	g_disableStatestateWarnings = lua_toboolean(L,2) != 0;
+	g_disableStatestateWarnings = lua_toboolean(L,2) != 0;
 
 	int type = lua_type(L,1);
 	switch(type)
@@ -2058,27 +2083,22 @@ DEFINE_LUA_FUNCTION(state_load, "location[,option]")
 		default:
 		{
 			LuaContextInfo& info = GetCurrentInfo();
-//			if(info.rerecordCountingDisabled)
-//				SkipNextRerecordIncrement = true;
-			CurrentState = luaL_checkinteger(L,1);
-//nEWTODO
-//			MDFNSS_Load(NULL, NULL);
-//			Set_Current_State(stateNumber, false,!g_disableStatestateWarnings);
-//			char Name [1024] = {0};
-//			Get_State_File_Name(Name);
-//			Load_State(Name);
+			int stateNumber = luaL_checkinteger(L,1);
+
+			char Name [1024] = {0};
+			Get_State_File_Name(Name, stateNumber);
+			bool8 prevRerecordCountSkip = S9xMovieGetRerecordCountSkip();
+			S9xMovieSetRerecordCountSkip(info.rerecordCountingDisabled);
+			S9xUnfreezeGame(Name);
+			S9xMovieSetRerecordCountSkip(prevRerecordCountSkip);
 		}	return 0;
 		case LUA_TUSERDATA: // in-memory save slot
 		{
-			unsigned char* stateBuffer = (unsigned char*)lua_touserdata(L,1);
-			if(stateBuffer)
-			{
-				stateBuffer += ((16 - (int)stateBuffer) & 15); // for performance alignment reasons
-//				if(stateBuffer[0])
-//					Load_State_From_Buffer(stateBuffer);
-//				else // the first byte of a valid savestate is never 0
-//					luaL_error(L, "attempted to load an anonymous savestate before saving it");
-			}
+			StateData& stateData = **((StateData**)luaL_checkudata(L, 1, "StateData*"));
+			if(stateData.buffer[0])
+				S9xUnfreezeGameMem(stateData.buffer, stateData.size);
+			else // the first byte of a valid savestate is never 0 (snes9x: it should start with "#!s9xsnp")
+				luaL_error(L, "attempted to load an anonymous savestate before saving it");
 		}	return 0;
 	}
 }
@@ -2096,56 +2116,55 @@ DEFINE_LUA_FUNCTION(state_load, "location[,option]")
 // chooses whether or not to load the scriptdata instead of always loading it,
 // and also to provide a nicer interface for loading scriptdata
 // without needing to trigger savestate loading first
-//DEFINE_LUA_FUNCTION(state_loadscriptdata, "location")
-//{
-//	int type = lua_type(L,1);
-//	switch(type)
-//	{
-//		case LUA_TNUMBER: // numbered save file
-//		default:
-//		{
-//			int stateNumber = luaL_checkinteger(L,1);
-//			Set_Current_State(stateNumber, false,false);
-//			char Name [1024] = {0};
-//			Get_State_File_Name(Name);
-//			{
-//				LuaSaveData saveData;
-//
-//				char luaSaveFilename [512];
-//				strncpy(luaSaveFilename, Name, 512);
-//				luaSaveFilename[512-(1+strlen(".luasav"))] = '\0';
-//				strcat(luaSaveFilename, ".luasav");
-//				FILE* luaSaveFile = fopen(luaSaveFilename, "rb");
-//				if(luaSaveFile)
-//				{
-//					saveData.ImportRecords(luaSaveFile);
-//					fclose(luaSaveFile);
-//
-//					int uid = luaStateToUIDMap[L];
-//					LuaContextInfo& info = GetCurrentInfo();
-//
-//					lua_settop(L, 0);
-//					saveData.LoadRecord(uid, info.dataLoadKey, (unsigned int)-1);
-//					return lua_gettop(L);
-//				}
-//			}
-//		}	return 0;
-//		case LUA_TUSERDATA: // in-memory save slot
-//		{	// there can be no user data associated with those, at least not yet
-//		}	return 0;
-//	}
-//}
+DEFINE_LUA_FUNCTION(state_loadscriptdata, "location")
+{
+	int type = lua_type(L,1);
+	switch(type)
+	{
+		case LUA_TNUMBER: // numbered save file
+		default:
+		{
+			int stateNumber = luaL_checkinteger(L,1);
+			char Name [1024] = {0};
+			Get_State_File_Name(Name, stateNumber);
+			{
+				LuaSaveData saveData;
+
+				char luaSaveFilename [512];
+				strncpy(luaSaveFilename, Name, 512);
+				luaSaveFilename[512-(1+strlen(".luasav"))] = '\0';
+				strcat(luaSaveFilename, ".luasav");
+				FILE* luaSaveFile = fopen(luaSaveFilename, "rb");
+				if(luaSaveFile)
+				{
+					saveData.ImportRecords(luaSaveFile);
+					fclose(luaSaveFile);
+
+					int uid = luaStateToUIDMap[L];
+					LuaContextInfo& info = GetCurrentInfo();
+
+					lua_settop(L, 0);
+					saveData.LoadRecord(uid, info.dataLoadKey, (unsigned int)-1);
+					return lua_gettop(L);
+				}
+			}
+		}	return 0;
+		case LUA_TUSERDATA: // in-memory save slot
+		{	// there can be no user data associated with those, at least not yet
+		}	return 0;
+	}
+}
 
 // savestate.savescriptdata(location)
 // same as savestate.save(location, "scriptdataonly")
 // only provided for consistency with savestate.loadscriptdata(location)
-/*DEFINE_LUA_FUNCTION(state_savescriptdata, "location")
+DEFINE_LUA_FUNCTION(state_savescriptdata, "location")
 {
 	lua_settop(L, 1);
 	lua_pushstring(L, "scriptdataonly");
 	return state_save(L);
 }
-*/
+
 
 //joypad lib
 
@@ -3123,7 +3142,7 @@ DEFINE_LUA_FUNCTION(movie_setrerecordcount, "")
 {
 	MainMovie.NbRerecords = luaL_checkinteger(L, 1);
 	return 0;
-}
+}*/
 DEFINE_LUA_FUNCTION(emu_rerecordcounting, "[enabled]")
 {
 	LuaContextInfo& info = GetCurrentInfo();
@@ -3140,7 +3159,7 @@ DEFINE_LUA_FUNCTION(emu_rerecordcounting, "[enabled]")
 		return 0;
 	}
 }
-DEFINE_LUA_FUNCTION(movie_getreadonly, "")
+/*DEFINE_LUA_FUNCTION(movie_getreadonly, "")
 {
 	lua_pushboolean(L, movie_readonly);
 	return 1;
@@ -3700,6 +3719,18 @@ static const struct luaL_reg aggcustom [] =
 	{NULL, NULL}
 };*/
 
+static int gcStateData(lua_State *L)
+{
+	StateData** ppStateData = (StateData**)luaL_checkudata(L, 1, "StateData*");
+	if ((*ppStateData)->buffer != NULL)
+	{
+		free((*ppStateData)->buffer);
+	}
+	delete (*ppStateData);
+	*ppStateData = NULL;
+	return 0;
+}
+
 static const struct luaL_reg emulib [] =
 {
 //	{"frameadvance", emu_frameadvance},
@@ -3761,13 +3792,13 @@ static const struct luaL_reg guilib [] =
 };
 static const struct luaL_reg statelib [] =
 {
-//	{"create", state_create},
-//	{"save", state_save},
-//	{"load", state_load},
-//	{"loadscriptdata", state_loadscriptdata},
-//	{"savescriptdata", state_savescriptdata},
-//	{"registersave", state_registersave},
-//	{"registerload", state_registerload},
+	{"create", state_create},
+	{"save", state_save},
+	{"load", state_load},
+	{"loadscriptdata", state_loadscriptdata},
+	{"savescriptdata", state_savescriptdata},
+	{"registersave", state_registersave},
+	{"registerload", state_registerload},
 	{NULL, NULL}
 };
 static const struct luaL_reg memorylib [] =
@@ -3846,7 +3877,7 @@ static const struct luaL_reg movielib [] =
 //	{"rerecordcount", movie_rerecordcount},
 //	{"setrerecordcount", movie_setrerecordcount},
 
-//	{"rerecordcounting", emu_rerecordcounting},
+	{"rerecordcounting", emu_rerecordcounting},
 //	{"readonly", movie_getreadonly},
 //	{"setreadonly", movie_setreadonly},
 	{"framecount", emu_getframecount}, // for those familiar with other emulators that have movie.framecount() instead of emulatorname.framecount()
@@ -4107,6 +4138,12 @@ void registerLibs(lua_State* L)
 		lua_newtable(L);
 		lua_setfield(L, LUA_REGISTRYINDEX, luaMemHookTypeStrings[i]);
 	}
+
+	// register type
+	luaL_newmetatable(L, "StateData*");
+	lua_pushcfunction(L, gcStateData);
+	lua_setfield(L, -2, "__gc");
+	lua_pop(L, 1);
 }
 
 void ResetInfo(LuaContextInfo& info)
