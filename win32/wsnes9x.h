@@ -198,10 +198,6 @@
 #include <mmsystem.h>
 #ifndef __BORLANDC__
 
-#ifndef __MINGW32__
-#include <afxres.h>
-#endif
-
 #include <dsound.h>
 #endif
 #include "rsrc/resource.h"
