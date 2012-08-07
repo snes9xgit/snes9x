@@ -336,11 +336,11 @@ static inline void EndS9xMainLoop (void)
 	if(!pad_read)
 		IPPU.PadIgnoredFrames++;
 
+	IPPU.InMainLoop = FALSE;
+
 #ifdef HAVE_LUA
 	CallRegisteredLuaFunctions(LUACALL_AFTEREMULATION);
 #endif
-
-	IPPU.InMainLoop = FALSE;
 }
 
 static inline void S9xReschedule (void)
