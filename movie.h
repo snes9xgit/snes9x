@@ -240,6 +240,8 @@ uint8 S9xMovieControllers (void);
 uint32 S9xMovieGetId (void);
 uint32 S9xMovieGetLength (void);
 uint32 S9xMovieGetFrameCounter (void);
+uint32 S9xMovieGetRerecordCount (void);
+uint32 S9xMovieSetRerecordCount (uint32 newRerecordCount);
 
 uint16 MovieGetJoypad (int);
 void MovieSetJoypad (int, uint16);

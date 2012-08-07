@@ -236,6 +236,7 @@ struct SMovie
 	uint32	CurrentSample;
 	uint32	BytesPerSample;
 	uint32	RerecordCount;
+	bool8	SkipRerecordCount;
 	bool8	ReadOnly;
 	uint8	PortType[2];
 	int8	PortIDs[2][4];
@@ -735,7 +736,8 @@ int S9xMovieUnfreeze (uint8 *buf, uint32 size)
 		Movie.MaxFrame      = max_frame;
 		Movie.CurrentSample = current_sample;
 		Movie.MaxSample     = max_sample;
-		Movie.RerecordCount++;
+		if (!Movie.SkipRerecordCount)
+			Movie.RerecordCount++;
 
 		store_movie_settings();
 
@@ -843,6 +845,8 @@ int S9xMovieOpen (const char *filename, bool8 read_only)
 	strncpy(Movie.Filename, filename, PATH_MAX + 1);
 	Movie.Filename[PATH_MAX] = 0;
 
+	Movie.SkipRerecordCount = FALSE;
+
 	change_state(MOVIE_STATE_PLAY);
 
 	S9xUpdateFrameCounter(-1);
@@ -873,6 +877,7 @@ int S9xMovieCreate (const char *filename, uint8 controllers_mask, uint8 opts, co
 
 	Movie.MovieId              = (uint32) time(NULL);
 	Movie.RerecordCount        = 0;
+	Movie.SkipRerecordCount    = FALSE;
 	Movie.MaxFrame             = 0;
 	Movie.MaxSample            = 0;
 	Movie.SaveStateOffset      = SMV_HEADER_SIZE + (sizeof(uint16) * metadata_length) + SMV_EXTRAROMINFO_SIZE;
@@ -1160,6 +1165,44 @@ uint32 S9xMovieGetFrameCounter (void)
 	if (!S9xMovieActive())
 		return (0);
 	return (Movie.CurrentFrame);
+}
+
+uint32 S9xMovieGetRerecordCount (void)
+{
+	if(!S9xMovieActive())
+		return (0);
+
+	return (Movie.RerecordCount);
+}
+
+uint32 S9xMovieSetRerecordCount (uint32 newRerecordCount)
+{
+	uint32 oldRerecordCount = 0;
+	if(!S9xMovieActive())
+		return (0);
+
+	oldRerecordCount = Movie.RerecordCount;
+	Movie.RerecordCount = newRerecordCount;
+	return (oldRerecordCount);
+}
+
+bool8 S9xMovieGetRerecordCountSkip (void)
+{
+	if(!S9xMovieActive())
+		return (FALSE);
+
+	return (Movie.SkipRerecordCount);
+}
+
+bool8 S9xMovieSetRerecordCountSkip (bool8 newSkipRerecordCount)
+{
+	bool8 oldSkipRerecordCount = FALSE;
+	if(!S9xMovieActive())
+		return (FALSE);
+
+	oldSkipRerecordCount = Movie.SkipRerecordCount;
+	Movie.SkipRerecordCount = newSkipRerecordCount;
+	return (oldSkipRerecordCount);
 }
 
 void S9xMovieToggleRecState (void)
