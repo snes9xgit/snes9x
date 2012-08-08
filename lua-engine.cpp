@@ -1988,7 +1988,7 @@ DEFINE_LUA_FUNCTION(state_create, "[location]")
 	}
 
 	StateData& stateData = **ppStateData;
-	stateData.size = 0x40;
+	stateData.size = 0x200000;
 	stateData.buffer = (uint8 *)malloc(stateData.size);
 	if (stateData.buffer == NULL)
 	{
