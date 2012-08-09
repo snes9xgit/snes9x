@@ -1519,7 +1519,7 @@ bool WinMoviePlay(LPCTSTR filename)
 	}
 	romcheck_exit:
 
-	S9xMovieOpen (_tToChar(filename), GUI.MovieReadOnly);
+	err = S9xMovieOpen (_tToChar(filename), GUI.MovieReadOnly);
 	if(err != SUCCESS)
 	{
 		TCHAR* err_string = MOVIE_ERR_COULD_NOT_OPEN;
