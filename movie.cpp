@@ -1146,6 +1146,13 @@ bool8 S9xMovieReadOnly (void)
 	return (Movie.ReadOnly);
 }
 
+bool8 S9xMovieSetReadOnly (bool8 readonly)
+{
+	bool8 oldReadOnly = S9xMovieReadOnly();
+	Movie.ReadOnly = readonly;
+	return oldReadOnly;
+}
+
 uint32 S9xMovieGetId (void)
 {
 	if (!S9xMovieActive())
@@ -1203,6 +1210,13 @@ bool8 S9xMovieSetRerecordCountSkip (bool8 newSkipRerecordCount)
 	oldSkipRerecordCount = Movie.SkipRerecordCount;
 	Movie.SkipRerecordCount = newSkipRerecordCount;
 	return (oldSkipRerecordCount);
+}
+
+const char *S9xMovieGetFilename (void)
+{
+	if(!S9xMovieActive())
+		return "";
+	return Movie.Filename;
 }
 
 void S9xMovieToggleRecState (void)

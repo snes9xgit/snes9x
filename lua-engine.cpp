@@ -15,7 +15,7 @@
 #include <algorithm>
 #include "zlib.h"
 
-#ifdef _WIN32
+#ifdef __WIN32__
 #define NOMINMAX
 #include <windows.h>
 #include "win32/wsnes9x.h"
@@ -446,7 +446,7 @@ static int doPopup(lua_State* L, const char* deftype, const char* deficon)
 
 	static const char * const titles [] = {"Notice", "Question", "Warning", "Error"};
 	const char* answer = "ok";
-#ifdef _WIN32
+#ifdef __WIN32__
 	static const int etypes [] = {MB_OK, MB_YESNO, MB_YESNOCANCEL, MB_OKCANCEL, MB_ABORTRETRYIGNORE};
 	static const int eicons [] = {MB_ICONINFORMATION, MB_ICONQUESTION, MB_ICONWARNING, MB_ICONERROR};
 //	DialogsOpen++;
@@ -1269,7 +1269,7 @@ bool luabitop_validate(lua_State *L) // originally named as luaopen_bit
   if (b != (UBits)1437217655L || BAD_SAR) {  /* Perform a simple self-test. */
     const char *msg = "compiled with incompatible luaconf.h";
 #ifdef LUA_NUMBER_DOUBLE
-#ifdef _WIN32
+#ifdef __WIN32__
     if (b == (UBits)1610612736L)
       msg = "use D3DCREATE_FPU_PRESERVE with DirectX";
 #endif
@@ -1340,7 +1340,7 @@ void indicateBusy(lua_State* L, bool busy)
 		lua_pop(L, 1);
 	}
 */
-#ifdef _WIN32
+#ifdef __WIN32__
 	int uid = luaStateToUIDMap[L];
 	HWND hDlg = (HWND)uid;
 	TCHAR str [1024];
@@ -1393,7 +1393,7 @@ void LuaRescueHook(lua_State* L, lua_Debug *dbg)
 		if(!info.panic)
 		{
 //			Clear_Sound_Buffer();
-#if defined(ASK_USER_ON_FREEZE) && defined(_WIN32)
+#if defined(ASK_USER_ON_FREEZE) && defined(__WIN32__)
 			DialogsOpen++;
 			int answer = MessageBox(HWnd, "A Lua script has been running for quite a while. Maybe it is in an infinite loop.\n\nWould you like to stop the script?\n\n(Yes to stop it now,\n No to keep running and not ask again,\n Cancel to keep running but ask again later)", "Lua Alert", MB_YESNOCANCEL | MB_DEFBUTTON3 | MB_ICONASTERISK);
 			DialogsOpen--;
@@ -3113,26 +3113,26 @@ DEFINE_LUA_FUNCTION(emu_atframeboundary, "")
 	lua_pushboolean(L, !IPPU.InMainLoop);
 	return 1;
 }
-/*DEFINE_LUA_FUNCTION(movie_getlength, "")
+DEFINE_LUA_FUNCTION(movie_getlength, "")
 {
-	lua_pushinteger(L, currMovieData.records.size());
+	lua_pushinteger(L, S9xMovieGetLength());
 	return 1;
 }
 DEFINE_LUA_FUNCTION(movie_isactive, "")
 {
-	lua_pushboolean(L, movieMode != MOVIEMODE_INACTIVE);
+	lua_pushboolean(L, S9xMovieActive());
 	return 1;
 }
 DEFINE_LUA_FUNCTION(movie_rerecordcount, "")
 {
-	lua_pushinteger(L, currMovieData.rerecordCount);
+	lua_pushinteger(L, S9xMovieGetRerecordCount());
 	return 1;
-}/*
+}
 DEFINE_LUA_FUNCTION(movie_setrerecordcount, "")
 {
-	MainMovie.NbRerecords = luaL_checkinteger(L, 1);
+	S9xMovieSetRerecordCount(luaL_checkinteger(L, 1));
 	return 0;
-}*/
+}
 DEFINE_LUA_FUNCTION(emu_rerecordcounting, "[enabled]")
 {
 	LuaContextInfo& info = GetCurrentInfo();
@@ -3149,56 +3149,52 @@ DEFINE_LUA_FUNCTION(emu_rerecordcounting, "[enabled]")
 		return 0;
 	}
 }
-/*DEFINE_LUA_FUNCTION(movie_getreadonly, "")
+DEFINE_LUA_FUNCTION(movie_getreadonly, "")
 {
-	lua_pushboolean(L, movie_readonly);
+#ifdef __WIN32__
+	if (S9xMovieActive())
+		lua_pushboolean(L, S9xMovieReadOnly());
+	else
+		lua_pushboolean(L, GUI.MovieReadOnly);
+#else
+	lua_pushboolean(L, S9xMovieReadOnly());
+#endif
 	return 1;
 }
 DEFINE_LUA_FUNCTION(movie_setreadonly, "readonly")
 {
 	int readonly = lua_toboolean(L,1) ? 1 : 0;
-	if(!movie_readonly)
-		movie_readonly = true;
-	else
-		movie_readonly = false;
-//	else if(!movie_readonly)
-//		luaL_error(L, "movie.setreadonly failed: write permission denied");
-
+	S9xMovieSetReadOnly(readonly);
+#ifdef __WIN32__
+	GUI.MovieReadOnly = readonly;
+#endif
 	return 0;
 }
 DEFINE_LUA_FUNCTION(movie_isrecording, "")
 {
-	lua_pushboolean(L, movieMode == MOVIEMODE_RECORD);
+	lua_pushboolean(L, S9xMovieRecording());
 	return 1;
 }
 DEFINE_LUA_FUNCTION(movie_isplaying, "")
 {
-	lua_pushboolean(L, movieMode == MOVIEMODE_PLAY);
+	lua_pushboolean(L, S9xMoviePlaying());
 	return 1;
 }
 DEFINE_LUA_FUNCTION(movie_getmode, "")
 {
-	switch(movieMode)
-	{
-	case MOVIEMODE_PLAY:
-		lua_pushstring(L, "playback");
-		break;
-	case MOVIEMODE_RECORD:
-		lua_pushstring(L, "record");
-		break;
-	case MOVIEMODE_INACTIVE:
+	if (!S9xMovieActive())
 		lua_pushstring(L, "inactive");
-		break;
-	default:
+	else if (S9xMoviePlaying())
+		lua_pushstring(L, "playback");
+	else if (S9xMovieRecording())
+		lua_pushstring(L, "record");
+	else
 		lua_pushnil(L);
-		break;
-	}
 	return 1;
 }
 DEFINE_LUA_FUNCTION(movie_getname, "")
 {
-	extern char curMovieFilename[512];
-	lua_pushstring(L, curMovieFilename);
+	lua_pushstring(L, S9xMovieGetFilename());
 	return 1;
 }
 // movie.play() -- plays a movie of the user's choice
@@ -3206,35 +3202,54 @@ DEFINE_LUA_FUNCTION(movie_getname, "")
 // throws an error (with a description) if for whatever reason the movie couldn't be played
 DEFINE_LUA_FUNCTION(movie_play, "[filename]")
 {
+#ifdef __WIN32__
+	bool8 readonly = GUI.MovieReadOnly;
+#else
+	bool8 readonly = FALSE;
+#endif
 	const char* filename = lua_isstring(L,1) ? lua_tostring(L,1) : NULL;
-	FCEUI_LoadMovie(filename, true, false, 0);
-//	const char* errorMsg = 
-//	if(errorMsg)
-//		luaL_error(L, errorMsg);
+	int err = S9xMovieOpen (filename, readonly);
+	if(err != SUCCESS)
+	{
+		char* errorMsg = "Could not open movie file.";
+		switch(err)
+		{
+		case FILE_NOT_FOUND:
+			errorMsg = "File not found.";
+			break;
+		case WRONG_FORMAT:
+			errorMsg = "Unrecognized format.";
+			break;
+		case WRONG_VERSION:
+			errorMsg = "Unsupported movie version.";
+			break;
+		}
+		luaL_error(L, errorMsg);
+		return false;
+	}
     return 0;
 }
-DEFINE_LUA_FUNCTION(movie_replay, "")
+/*DEFINE_LUA_FUNCTION(movie_replay, "")
 {
 	if(MainMovie.File)
 		GensReplayMovie();
 	else
 		luaL_error(L, "it is invalid to call movie.replay when no movie open.");
     return 0;
-}
+}*/
 DEFINE_LUA_FUNCTION(movie_close, "")
 {
-	
-	FCEUI_StopMovie();
+	S9xMovieShutdown();
 	return 0;
 }
 
-DEFINE_LUA_FUNCTION(sound_clear, "")
+/*DEFINE_LUA_FUNCTION(sound_clear, "")
 {
 //	Clear_Sound_Buffer();
 	return 0;
 }*/
 
-#ifdef _WIN32
+#ifdef __WIN32__
 const char* s_keyToName[256] =
 {
 	NULL,
@@ -3348,7 +3363,7 @@ DEFINE_LUA_FUNCTION(input_getcurrentinputstatus, "")
 {
 	lua_newtable(L);
 
-#ifdef _WIN32
+#ifdef __WIN32__
 	// keyboard and mouse button status
 	{
 		int BackgroundInput = 0;//TODO
@@ -3857,31 +3872,31 @@ static const struct luaL_reg inputlib [] =
 };
 static const struct luaL_reg movielib [] =
 {
-//	{"active", movie_isactive},
-//	{"recording", movie_isrecording},
-//	{"playing", movie_isplaying},
-//	{"mode", movie_getmode},
+	{"active", movie_isactive},
+	{"recording", movie_isrecording},
+	{"playing", movie_isplaying},
+	{"mode", movie_getmode},
 
-//	{"length", movie_getlength},
-//	{"name", movie_getname},
-//	{"rerecordcount", movie_rerecordcount},
-//	{"setrerecordcount", movie_setrerecordcount},
+	{"length", movie_getlength},
+	{"name", movie_getname},
+	{"rerecordcount", movie_rerecordcount},
+	{"setrerecordcount", movie_setrerecordcount},
 
 	{"rerecordcounting", emu_rerecordcounting},
-//	{"readonly", movie_getreadonly},
-//	{"setreadonly", movie_setreadonly},
+	{"readonly", movie_getreadonly},
+	{"setreadonly", movie_setreadonly},
 	{"framecount", emu_getframecount}, // for those familiar with other emulators that have movie.framecount() instead of emulatorname.framecount()
 
-//	{"play", movie_play},
+	{"play", movie_play},
 //	{"replay", movie_replay},
-//	{"stop", movie_close},
+	{"stop", movie_close},
 
 	// alternative names
-//	{"open", movie_play},
-//	{"close", movie_close},
-//	{"getname", movie_getname},
-//	{"playback", movie_play},
-//	{"getreadonly", movie_getreadonly},
+	{"open", movie_play},
+	{"close", movie_close},
+	{"getname", movie_getname},
+	{"playback", movie_play},
+	{"getreadonly", movie_getreadonly},
 	{NULL, NULL}
 };
 static const struct luaL_reg soundlib [] =
@@ -4883,7 +4898,7 @@ static int s_dbg_dataSize = 0;
 
 
 // can't remember what the best way of doing this is...
-#if defined(i386) || defined(__i386) || defined(__i386__) || defined(M_I86) || defined(_M_IX86) || defined(_WIN32)
+#if defined(i386) || defined(__i386) || defined(__i386__) || defined(M_I86) || defined(_M_IX86) || defined(__WIN32__)
 	#define IS_LITTLE_ENDIAN
 #endif
 
