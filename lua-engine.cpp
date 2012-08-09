@@ -1690,14 +1690,16 @@ DEFINE_LUA_FUNCTION(emu_redraw, "")
 	return 0;
 }
 */
-//uint32 PCEDBG_MemPeek(uint32 A, unsigned int bsize, bool hl, bool logical)
 
-//NEWTODO all this
-/*DEFINE_LUA_FUNCTION(memory_readbyte, "address")
+
+extern uint8 S9xGetByteFree (uint32);
+extern void S9xSetByteFree (uint8, uint32);
+
+DEFINE_LUA_FUNCTION(memory_readbyte, "address")
 {
 	int address = lua_tointeger(L,1);
 
-	unsigned char value = (unsigned char)(MDFN_IEN_VB::MemRead8(dummytimestamp,address) & 0xFF);
+	uint8 value = S9xGetByteFree(address);
 	lua_settop(L,0);
 	lua_pushinteger(L, value);
 	return 1; // we return the number of return values
@@ -1705,15 +1707,16 @@ DEFINE_LUA_FUNCTION(emu_redraw, "")
 DEFINE_LUA_FUNCTION(memory_readbytesigned, "address")
 {
 	int address = lua_tointeger(L,1);
-	signed char value = (signed char)(MDFN_IEN_VB::MemRead8(dummytimestamp,address) & 0xFF);
+	uint8 value = S9xGetByteFree(address);
 	lua_settop(L,0);
-	lua_pushinteger(L, value);
+	lua_pushinteger(L, *(int8*)&value);
 	return 1;
 }
 DEFINE_LUA_FUNCTION(memory_readword, "address")
 {
 	int address = lua_tointeger(L,1);
-	unsigned short value = (unsigned short)(MDFN_IEN_VB::MemRead16(dummytimestamp,address) & 0xFFFF);
+	uint16 value = S9xGetByteFree(address);
+	value += S9xGetByteFree(address + 1) << 8;
 	lua_settop(L,0);
 	lua_pushinteger(L, value);
 	return 1;
@@ -1721,74 +1724,58 @@ DEFINE_LUA_FUNCTION(memory_readword, "address")
 DEFINE_LUA_FUNCTION(memory_readwordsigned, "address")
 {
 	int address = lua_tointeger(L,1);
-	signed short value = (signed short)(MDFN_IEN_VB::MemRead16(dummytimestamp,address) & 0xFFFF);
+	uint16 value = S9xGetByteFree(address);
+	value += S9xGetByteFree(address + 1) << 8;
 	lua_settop(L,0);
-	lua_pushinteger(L, value);
+	lua_pushinteger(L, *(int16*)&value);
 	return 1;
 }
 DEFINE_LUA_FUNCTION(memory_readdword, "address")
 {
-	//int address = luaL_checkinteger(L,1);
-	//unsigned long value = (unsigned long)(PCEDBG_MemPeek(address, 2, true, false));
-	//lua_settop(L,0);
-	//lua_pushinteger(L, value);
+	int address = luaL_checkinteger(L,1);
+	uint32 value = S9xGetByteFree(address);
+	value += S9xGetByteFree(address + 1) << 8;
+	value += S9xGetByteFree(address + 2) << 16;
+	value += S9xGetByteFree(address + 3) << 24;
+	lua_settop(L,0);
+	lua_pushinteger(L, value);
 	return 1;
 }
 DEFINE_LUA_FUNCTION(memory_readdwordsigned, "address")
 {
-	//int address = luaL_checkinteger(L,1);
-	//signed long value = (signed long)(PCEDBG_MemPeek(address, 2, true, false));
-	//lua_settop(L,0);
-	//lua_pushinteger(L, value);
+	int address = luaL_checkinteger(L,1);
+	uint32 value = S9xGetByteFree(address);
+	value += S9xGetByteFree(address + 1) << 8;
+	value += S9xGetByteFree(address + 2) << 16;
+	value += S9xGetByteFree(address + 3) << 24;
+	lua_settop(L,0);
+	lua_pushinteger(L, *(int32*)&value);
 	return 1;
-}*/
-
-//extern uint8 BaseRAM[32768];
-//extern writefunc PCEWrite[0x100];
-
-/*void memWrite(int Address, int Length, unsigned char* Buffer) {
-
-	while(Length--)
-	{
-		Address &= 0x1FFFFF;
-
-		uint8 wmpr = Address >> 13;
-
-//		PCEWrite[wmpr](Address, *Buffer);
-
-		Address++;
-		Buffer++;
-	}
 }
 
 DEFINE_LUA_FUNCTION(memory_writebyte, "address,value")
 {
 	int address = lua_tointeger(L,1);
-	unsigned char value = (unsigned char)(lua_tointeger(L,2) & 0xFF);
-
-	//unsigned char* Buffer = &value;
-
-	//int Length=1;
-
-	//memWrite(Address, Length, Buffer);
-
-	MDFN_IEN_VB::MemWrite8(dummytimestamp,address,value);
-
+	uint8 value = (uint8)(lua_tointeger(L,2) & 0xFF);
+	S9xSetByteFree(value, address);
 	return 0;
 }
 DEFINE_LUA_FUNCTION(memory_writeword, "address,value")
 {
 	int address = lua_tointeger(L,1);
-	unsigned short value = (unsigned short)(lua_tointeger(L,2) & 0xFFFF);
-
-	MDFN_IEN_VB::MemWrite16(dummytimestamp,address,value);
+	uint16 value = (uint16)(lua_tointeger(L,2) & 0xFFFF);
+	S9xSetByteFree(value & 0xFF, address);
+	S9xSetByteFree((value >> 8) & 0xFF, address + 1);
 	return 0;
 }
 DEFINE_LUA_FUNCTION(memory_writedword, "address,value")
 {
 	int address = luaL_checkinteger(L,1);
-	unsigned long value = (unsigned long)(luaL_checkinteger(L,2));
-//	_MMU_write32<ARMCPU_ARM9>(address, value);
+	uint32 value = (uint32)(luaL_checkinteger(L,2));
+	S9xSetByteFree(value & 0xFF, address);
+	S9xSetByteFree((value >> 8) & 0xFF, address + 1);
+	S9xSetByteFree((value >> 16) & 0xFF, address + 2);
+	S9xSetByteFree((value >> 24) & 0xFF, address + 3);
 	return 0;
 }
 
@@ -1811,9 +1798,8 @@ DEFINE_LUA_FUNCTION(memory_readbyterange, "address,length")
 	{
 //		if(IsHardwareAddressValid(a))
 //		{
-		//NEWTODO
-//			unsigned char value = (unsigned char)(PCEDBG_MemPeek(address, 1, true, false) & 0xFF);
-//			lua_pushinteger(L, value);
+			uint8 value = S9xGetByteFree(a);
+			lua_pushinteger(L, value);
 			lua_rawseti(L, -2, n);
 //		}
 		// else leave the value nil
@@ -1822,7 +1808,7 @@ DEFINE_LUA_FUNCTION(memory_readbyterange, "address,length")
 	return 1;
 }
 
-DEFINE_LUA_FUNCTION(memory_isvalid, "address")
+/*DEFINE_LUA_FUNCTION(memory_isvalid, "address")
 {
 	int address = luaL_checkinteger(L,1);
 	lua_settop(L,0);
@@ -3807,31 +3793,31 @@ static const struct luaL_reg statelib [] =
 };
 static const struct luaL_reg memorylib [] =
 {
-	//{"readbyte", memory_readbyte},
-	//{"readbytesigned", memory_readbytesigned},
-	//{"readword", memory_readword},
-	//{"readwordsigned", memory_readwordsigned},
-	//{"readdword", memory_readdword},
-	//{"readdwordsigned", memory_readdwordsigned},
-	//{"readbyterange", memory_readbyterange},
-	//{"writebyte", memory_writebyte},
-	//{"writeword", memory_writeword},
-	//{"writedword", memory_writedword},
+	{"readbyte", memory_readbyte},
+	{"readbytesigned", memory_readbytesigned},
+	{"readword", memory_readword},
+	{"readwordsigned", memory_readwordsigned},
+	{"readdword", memory_readdword},
+	{"readdwordsigned", memory_readdwordsigned},
+	{"readbyterange", memory_readbyterange},
+	{"writebyte", memory_writebyte},
+	{"writeword", memory_writeword},
+	{"writedword", memory_writedword},
 //	{"isvalid", memory_isvalid},
 //	{"getregister", memory_getregister},
 //	{"setregister", memory_setregister},
 	// alternate naming scheme for word and double-word and unsigned
-	//{"readbyteunsigned", memory_readbyte},
-	//{"readwordunsigned", memory_readword},
-//	{"readdwordunsigned", memory_readdword},
-	//{"readshort", memory_readword},
-	//{"readshortunsigned", memory_readword},
-	//{"readshortsigned", memory_readwordsigned},
-//	{"readlong", memory_readdword},
-//	{"readlongunsigned", memory_readdword},
-//	{"readlongsigned", memory_readdwordsigned},
-	//{"writeshort", memory_writeword},
-//	{"writelong", memory_writedword},
+	{"readbyteunsigned", memory_readbyte},
+	{"readwordunsigned", memory_readword},
+	{"readdwordunsigned", memory_readdword},
+	{"readshort", memory_readword},
+	{"readshortunsigned", memory_readword},
+	{"readshortsigned", memory_readwordsigned},
+	{"readlong", memory_readdword},
+	{"readlongunsigned", memory_readdword},
+	{"readlongsigned", memory_readdwordsigned},
+	{"writeshort", memory_writeword},
+	{"writelong", memory_writedword},
 
 	// memory hooks
 //	{"registerwrite", memory_registerwrite},

@@ -180,11 +180,11 @@
 #include "memmap.h"
 #include "cheats.h"
 
-static uint8 S9xGetByteFree (uint32);
-static void S9xSetByteFree (uint8, uint32);
+uint8 S9xGetByteFree (uint32);
+void S9xSetByteFree (uint8, uint32);
 
 
-static uint8 S9xGetByteFree (uint32 address)
+uint8 S9xGetByteFree (uint32 address)
 {
 	int32	Cycles = CPU.Cycles;
     int32   NextEvent = CPU.NextEvent;
@@ -198,7 +198,7 @@ static uint8 S9xGetByteFree (uint32 address)
 	return (byte);
 }
 
-static void S9xSetByteFree (uint8 byte, uint32 address)
+void S9xSetByteFree (uint8 byte, uint32 address)
 {
 	int32	Cycles = CPU.Cycles;
     int32  NextEvent = CPU.NextEvent;
