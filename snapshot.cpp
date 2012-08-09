@@ -190,6 +190,9 @@
 #include "movie.h"
 #include "display.h"
 #include "language.h"
+#ifdef HAVE_LUA
+#include "lua-engine.h"
+#endif
 
 #ifndef min
 #define min(a,b)	(((a) < (b)) ? (a) : (b))
@@ -1203,6 +1206,48 @@ bool8 S9xFreezeGame (const char *filename)
 {
 	STREAM	stream = NULL;
 
+#ifdef HAVE_LUA
+	// parse state number
+	int filenameLen = strlen(filename);
+	bool numberedState = false;
+	int stateNumber;
+	if (filenameLen >= 4)
+	{
+		numberedState = (filename[filenameLen - 4] == '.') && isdigit(filename[filenameLen - 3]) && isdigit(filename[filenameLen - 2]) && isdigit(filename[filenameLen - 1]);
+		if (numberedState)
+		{
+			stateNumber = strtol(&filename[filenameLen - 3], NULL, 10);
+		}
+	}
+
+	if (numberedState) {
+		LuaSaveData saveData;
+		CallRegisteredLuaSaveFunctions(stateNumber, saveData);
+
+		char luaSaveFilename [MAX_PATH];
+		strncpy(luaSaveFilename, filename, MAX_PATH);
+		luaSaveFilename[MAX_PATH-(1+7/*strlen(".luasav")*/)] = '\0';
+		strcat(luaSaveFilename, ".luasav");
+		if(saveData.recordList)
+		{
+			FILE* luaSaveFile = fopen(luaSaveFilename, "wb");
+			if(luaSaveFile)
+			{
+				saveData.ExportRecords(luaSaveFile);
+				fclose(luaSaveFile);
+			}
+		}
+		else
+		{
+			unlink(luaSaveFilename);
+		}
+	}
+
+	extern bool g_onlyCallSavestateCallbacks;
+	if(g_onlyCallSavestateCallbacks)
+		return TRUE;
+#endif
+
 	if (S9xOpenSnapshotFile(filename, FALSE, &stream))
 	{
 		S9xFreezeToStream(stream);
@@ -1294,6 +1339,38 @@ bool8 S9xUnfreezeGame (const char *filename)
 			sprintf(String, SAVE_INFO_LOAD " %s", base);
 
 		S9xMessage(S9X_INFO, S9X_FREEZE_FILE_INFO, String);
+
+#ifdef HAVE_LUA
+	// parse state number
+	int filenameLen = strlen(filename);
+	bool numberedState = false;
+	int stateNumber;
+	if (filenameLen >= 4)
+	{
+		numberedState = (filename[filenameLen - 4] == '.') && isdigit(filename[filenameLen - 3]) && isdigit(filename[filenameLen - 2]) && isdigit(filename[filenameLen - 1]);
+		if (numberedState)
+		{
+			stateNumber = strtol(&filename[filenameLen - 3], NULL, 10);
+		}
+	}
+
+	if (numberedState) {
+		LuaSaveData saveData;
+
+		char luaSaveFilename [MAX_PATH];
+		strncpy(luaSaveFilename, filename, MAX_PATH);
+		luaSaveFilename[MAX_PATH-(1+7/*strlen(".luasav")*/)] = '\0';
+		strcat(luaSaveFilename, ".luasav");
+		FILE* luaSaveFile = fopen(luaSaveFilename, "rb");
+		if(luaSaveFile)
+		{
+			saveData.ImportRecords(luaSaveFile);
+			fclose(luaSaveFile);
+		}
+
+		CallRegisteredLuaLoadFunctions(stateNumber, saveData);
+	}
+#endif
 
 		return (TRUE);
 	}

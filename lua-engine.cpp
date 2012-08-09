@@ -49,7 +49,6 @@
 
 #endif
 
-// TODO remove if not necessary
 bool g_disableStatestateWarnings = false;
 bool g_onlyCallSavestateCallbacks = false;
 
@@ -2094,9 +2093,14 @@ DEFINE_LUA_FUNCTION(state_load, "location[,option]")
 		}	return 0;
 		case LUA_TUSERDATA: // in-memory save slot
 		{
+			LuaContextInfo& info = GetCurrentInfo();
 			StateData& stateData = **((StateData**)luaL_checkudata(L, 1, "StateData*"));
-			if(stateData.buffer[0])
+			if(stateData.buffer[0]){
+				bool8 prevRerecordCountSkip = S9xMovieGetRerecordCountSkip();
+				S9xMovieSetRerecordCountSkip(info.rerecordCountingDisabled);
 				S9xUnfreezeGameMem(stateData.buffer, stateData.size);
+				S9xMovieSetRerecordCountSkip(prevRerecordCountSkip);
+			}
 			else // the first byte of a valid savestate is never 0 (snes9x: it should start with "#!s9xsnp")
 				luaL_error(L, "attempted to load an anonymous savestate before saving it");
 		}	return 0;
