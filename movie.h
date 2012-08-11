@@ -248,7 +248,7 @@ bool8 S9xMovieSetRerecordCountSkip (bool8 newSkipRerecordCount);
 const char *S9xMovieGetFilename (void);
 
 uint16 MovieGetJoypad (int);
-void MovieSetJoypad (int, uint16);
+void MovieSetJoypad (int, uint16, uint16 mask = ~0);
 bool MovieGetMouse (int, uint8 d[MOUSE_DATA_SIZE]);
 void MovieSetMouse (int, uint8 d[MOUSE_DATA_SIZE], bool);
 bool MovieGetScope (int, uint8 d[SCOPE_DATA_SIZE]);

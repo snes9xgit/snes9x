@@ -2156,33 +2156,6 @@ DEFINE_LUA_FUNCTION(state_savescriptdata, "location")
 }
 
 
-//joypad lib
-
-static const char *button_mappings[] = {
-"I","II","Select","Run","Up","Right","Down","Left"
-};
-
-// table joypad.read(int which = 1)
-//
-//  Reads the joypads as inputted by the user.
-/*static int joy_get(lua_State *L) {
-
-	lua_newtable(L);
-
-	int which = luaL_checkinteger(L,1)-1;
-	
-	int i;
-	for (i = 0; i < 8; i++) {
-		if (pcejin.pads[which] & (1<<i)) {
-			lua_pushinteger(L,1);
-			lua_setfield(L, -2, button_mappings[i]);
-		}
-	}
-	
-	return 1;
-}*/
-
-/*
 static const struct ButtonDesc
 {
 	unsigned short controllerNum;
@@ -2191,46 +2164,102 @@ static const struct ButtonDesc
 }
 s_buttonDescs [] =
 {
-	{1, 0, "up"},
-	{1, 1, "down"},
-	{1, 2, "left"},
-	{1, 3, "right"},
-	{1, 4, "A"},
-	{1, 5, "B"},
-	{1, 6, "C"},
-	{1, 7, "start"},
-	{1, 32, "X"},
-	{1, 33, "Y"},
-	{1, 34, "Z"},
-	{1, 35, "mode"},
-	{2, 24, "up"},
-	{2, 25, "down"},
-	{2, 26, "left"},
-	{2, 27, "right"},
-	{2, 28, "A"},
-	{2, 29, "B"},
-	{2, 30, "C"},
-	{2, 31, "start"},
-	{2, 36, "X"},
-	{2, 37, "Y"},
-	{2, 38, "Z"},
-	{2, 39, "mode"},
-	{0x1B, 8, "up"},
-	{0x1B, 9, "down"},
-	{0x1B, 10, "left"},
-	{0x1B, 11, "right"},
-	{0x1B, 12, "A"},
-	{0x1B, 13, "B"},
-	{0x1B, 14, "C"},
-	{0x1B, 15, "start"},
-	{0x1C, 16, "up"},
-	{0x1C, 17, "down"},
-	{0x1C, 18, "left"},
-	{0x1C, 19, "right"},
-	{0x1C, 20, "A"},
-	{0x1C, 21, "B"},
-	{0x1C, 22, "C"},
-	{0x1C, 23, "start"},
+	{1, 4, "R"},
+	{1, 5, "L"},
+	{1, 6, "X"},
+	{1, 7, "A"},
+	{1, 8, "right"},
+	{1, 9, "left"},
+	{1, 10, "down"},
+	{1, 11, "up"},
+	{1, 12, "start"},
+	{1, 13, "select"},
+	{1, 14, "Y"},
+	{1, 15, "B"},
+	{2, 4, "R"},
+	{2, 5, "L"},
+	{2, 6, "X"},
+	{2, 7, "A"},
+	{2, 8, "right"},
+	{2, 9, "left"},
+	{2, 10, "down"},
+	{2, 11, "up"},
+	{2, 12, "start"},
+	{2, 13, "select"},
+	{2, 14, "Y"},
+	{2, 15, "B"},
+	{3, 4, "R"},
+	{3, 5, "L"},
+	{3, 6, "X"},
+	{3, 7, "A"},
+	{3, 8, "right"},
+	{3, 9, "left"},
+	{3, 10, "down"},
+	{3, 11, "up"},
+	{3, 12, "start"},
+	{3, 13, "select"},
+	{3, 14, "Y"},
+	{3, 15, "B"},
+	{4, 4, "R"},
+	{4, 5, "L"},
+	{4, 6, "X"},
+	{4, 7, "A"},
+	{4, 8, "right"},
+	{4, 9, "left"},
+	{4, 10, "down"},
+	{4, 11, "up"},
+	{4, 12, "start"},
+	{4, 13, "select"},
+	{4, 14, "Y"},
+	{4, 15, "B"},
+	{5, 4, "R"},
+	{5, 5, "L"},
+	{5, 6, "X"},
+	{5, 7, "A"},
+	{5, 8, "right"},
+	{5, 9, "left"},
+	{5, 10, "down"},
+	{5, 11, "up"},
+	{5, 12, "start"},
+	{5, 13, "select"},
+	{5, 14, "Y"},
+	{5, 15, "B"},
+	{6, 4, "R"},
+	{6, 5, "L"},
+	{6, 6, "X"},
+	{6, 7, "A"},
+	{6, 8, "right"},
+	{6, 9, "left"},
+	{6, 10, "down"},
+	{6, 11, "up"},
+	{6, 12, "start"},
+	{6, 13, "select"},
+	{6, 14, "Y"},
+	{6, 15, "B"},
+	{7, 4, "R"},
+	{7, 5, "L"},
+	{7, 6, "X"},
+	{7, 7, "A"},
+	{7, 8, "right"},
+	{7, 9, "left"},
+	{7, 10, "down"},
+	{7, 11, "up"},
+	{7, 12, "start"},
+	{7, 13, "select"},
+	{7, 14, "Y"},
+	{7, 15, "B"},
+	{8, 4, "R"},
+	{8, 5, "L"},
+	{8, 6, "X"},
+	{8, 7, "A"},
+	{8, 8, "right"},
+	{8, 9, "left"},
+	{8, 10, "down"},
+	{8, 11, "up"},
+	{8, 12, "start"},
+	{8, 13, "select"},
+	{8, 14, "Y"},
+	{8, 15, "B"},
 };
 
 int joy_getArgControllerNum(lua_State* L, int& index)
@@ -2239,19 +2268,7 @@ int joy_getArgControllerNum(lua_State* L, int& index)
 	int type = lua_type(L,index);
 	if(type == LUA_TSTRING || type == LUA_TNUMBER)
 	{
-		controllerNumber = 0;
-		if(type == LUA_TSTRING)
-		{
-			const char* str = lua_tostring(L,index);
-			if(!stricmp(str, "1C"))
-				controllerNumber = 0x1C;
-			else if(!stricmp(str, "1B"))
-				controllerNumber = 0x1B;
-			else if(!stricmp(str, "1A"))
-				controllerNumber = 0x1A;
-		}
-		if(!controllerNumber)
-			controllerNumber = luaL_checkinteger(L,index);
+		controllerNumber = luaL_checkinteger(L,index);
 		index++;
 	}
 	else
@@ -2260,45 +2277,24 @@ int joy_getArgControllerNum(lua_State* L, int& index)
 		controllerNumber = 1;
 	}
 
-	if(controllerNumber == 0x1A)
-		controllerNumber = 1;
-	if(controllerNumber != 1 && controllerNumber != 2 && controllerNumber != 0x1B && controllerNumber != 0x1C)
-		luaL_error(L, "controller number must be 1, 2, '1B', or '1C'");
+	if(controllerNumber < 1 || controllerNumber > 8)
+		luaL_error(L, "controller number must be within the range 1 to 8");
 
 	return controllerNumber;
 }
-*/
 
-static const struct ButtonDesc
-{
-	unsigned short controllerNum;
-	unsigned short bit;
-	const char* name;
-}
-
-s_buttonDescs [] =
-{
-	{1, 0, "I"},
-	{1, 1, "II"},
-	{1, 2, "Select"},
-	{1, 3, "Run"},
-	{1, 4, "Up"},
-	{1, 5, "Right"},
-	{1, 6, "Down"},
-	{1, 7, "Left"},
-};
 
 // joypad.set(controllerNum = 1, inputTable)
-// controllerNum can be 1, 2, '1B', or '1C'
-/*DEFINE_LUA_FUNCTION(joy_set, "[controller=1,]inputtable")
+// controllerNum can be within the range 1 to 8
+DEFINE_LUA_FUNCTION(joy_set, "[controller=1,]inputtable")
 {
 	int index = 1;
-	int controllerNumber = 1;//joy_getArgControllerNum(L, index);
+	int controllerNumber = joy_getArgControllerNum(L, index);
 
 	luaL_checktype(L, index, LUA_TTABLE);
 
-	int input = ~0;
-	int mask = 0;
+	uint32 input = 0;
+	uint32 mask = 0;
 
 	for(int i = 0; i < sizeof(s_buttonDescs)/sizeof(*s_buttonDescs); i++)
 	{
@@ -2309,25 +2305,22 @@ s_buttonDescs [] =
 			if (!lua_isnil(L,-1))
 			{
 				bool pressed = lua_toboolean(L,-1) != 0;
-				int bitmask = ((long long)1 << bd.bit);
+				uint32 bitmask = ((uint32)1 << bd.bit);
 				if(pressed)
-					input &= ~bitmask;
-				else
 					input |= bitmask;
+				else
+					input &= ~bitmask;
 				mask |= bitmask;
 			}
 			lua_pop(L,1);
 		}
 	}
-	pcejin.pads[0]=mask;
-
-//	SetNextInputCondensed(input, mask);
-
+	MovieSetJoypad(controllerNumber - 1, input, mask);
 	return 0;
-}*/
-/*
+}
+
 // joypad.get(controllerNum = 1)
-// controllerNum can be 1, 2, '1B', or '1C'
+// controllerNum can be within the range 1 to 8
 int joy_get_internal(lua_State* L, bool reportUp, bool reportDown)
 {
 	int index = 1;
@@ -2335,14 +2328,14 @@ int joy_get_internal(lua_State* L, bool reportUp, bool reportDown)
 
 	lua_newtable(L);
 
-	long long input = GetCurrentInputCondensed();
+	uint32 input = MovieGetJoypad(controllerNumber - 1);
 
 	for(int i = 0; i < sizeof(s_buttonDescs)/sizeof(*s_buttonDescs); i++)
 	{
 		const ButtonDesc& bd = s_buttonDescs[i];
 		if(bd.controllerNum == controllerNumber)
 		{
-			bool pressed = (input & ((long long)1<<bd.bit)) == 0;
+			bool pressed = (input & ((uint32)1<<bd.bit)) != 0;
 			if((pressed && reportDown) || (!pressed && reportUp))
 			{
 				lua_pushboolean(L, pressed);
@@ -2352,7 +2345,7 @@ int joy_get_internal(lua_State* L, bool reportUp, bool reportDown)
 	}
 
 	return 1;
-}/*
+}
 // joypad.get(int controllerNumber = 1)
 // returns a table of every game button,
 // true meaning currently-held and false meaning not-currently-held
@@ -2375,8 +2368,8 @@ DEFINE_LUA_FUNCTION(joy_getup, "[controller=1]")
 }
 
 // joypad.peek(controllerNum = 1)
-// controllerNum can be 1, 2, '1B', or '1C'
-int joy_peek_internal(lua_State* L, bool reportUp, bool reportDown)
+// controllerNum can be within the range 1 to 8
+/*int joy_peek_internal(lua_State* L, bool reportUp, bool reportDown)
 {
 	int index = 1;
 	int controllerNumber = joy_getArgControllerNum(L, index);
@@ -2421,9 +2414,9 @@ DEFINE_LUA_FUNCTION(joy_peekdown, "[controller=1]")
 DEFINE_LUA_FUNCTION(joy_peekup, "[controller=1]")
 {
 	return joy_peek_internal(L, true, false);
-}
+}*/
 
-*/
+
 static const struct ColorMapping
 {
 	const char* name;
@@ -3847,18 +3840,18 @@ static const struct luaL_reg memorylib [] =
 };
 static const struct luaL_reg joylib [] =
 {
-//	{"get", joy_get},
-//	{"getdown", joy_getdown},
-//	{"getup", joy_getup},
+	{"get", joy_get},
+	{"getdown", joy_getdown},
+	{"getup", joy_getup},
 //	{"peek", joy_peek},
 //	{"peekdown", joy_peekdown},
 //	{"peekup", joy_peekup},
-//	{"set", joy_set},
+	{"set", joy_set},
 	// alternative names
-//	{"read", joy_get},
-//	{"write", joy_set},
-//	{"readdown", joy_getdown},
-//	{"readup", joy_getup},
+	{"read", joy_get},
+	{"write", joy_set},
+	{"readdown", joy_getdown},
+	{"readup", joy_getup},
 	{NULL, NULL}
 };
 static const struct luaL_reg inputlib [] =

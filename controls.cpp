@@ -3588,12 +3588,13 @@ uint16 MovieGetJoypad (int i)
 	return (joypad[i].buttons);
 }
 
-void MovieSetJoypad (int i, uint16 buttons)
+void MovieSetJoypad (int i, uint16 buttons, uint16 mask)
 {
 	if (i < 0 || i > 7)
 		return;
 
-	joypad[i].buttons = buttons;
+	joypad[i].buttons &= ~mask;
+	joypad[i].buttons |= buttons;
 }
 
 bool MovieGetMouse (int i, uint8 out[5])
