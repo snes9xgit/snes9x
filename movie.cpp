@@ -265,7 +265,7 @@ static void		restore_movie_settings (void);
 static int		bytes_per_sample (void);
 static void		reserve_buffer_space (uint32);
 static void		reset_controllers (void);
-static void		read_frame_controller_data (bool, void (*resetFunc)() = S9xSoftReset);
+static void		read_frame_controller_data (bool, void (*resetFunc)() = NULL);
 static void		write_frame_controller_data (void);
 static void		flush_movie (void);
 static void		truncate_movie (void);
@@ -434,12 +434,10 @@ static void reset_controllers (void)
 static void read_frame_controller_data (bool addFrame, void (*resetFunc)())
 {
 	if (Movie.CurrentFrame >= Movie.MaxFrame || Movie.CurrentSample >= Movie.MaxSample)
-	{
 		return;
-	}
 
 	// reset code check
-	if (Movie.InputBufferPtr[0] == 0xff)
+	while (Movie.InputBufferPtr[0] == 0xff)
 	{
 		bool reset = true;
 		for (int i = 1; i < (int) Movie.BytesPerSample; i++)
@@ -456,7 +454,8 @@ static void read_frame_controller_data (bool addFrame, void (*resetFunc)())
 			Movie.InputBufferPtr += Movie.BytesPerSample;
 			if (resetFunc != (void(*)())NULL)
 				(*resetFunc)();
-			return;
+			if (Movie.CurrentFrame >= Movie.MaxFrame || Movie.CurrentSample >= Movie.MaxSample)
+				return;
 		}
 	}
 
@@ -1103,6 +1102,14 @@ void S9xMovieUpdateOnReset (void)
 	}
 }
 
+static bool movie_reset_processed = false;
+static void MovieOnReset(void)
+{
+	Movie.CurrentSample++;
+	Movie.CurrentFrame++; // it must be called at frame boundary
+	S9xSoftReset();
+}
+
 // apply the next input without changing any movie states
 void MovieApplyNextInput(void)
 {
@@ -1110,7 +1117,13 @@ void MovieApplyNextInput(void)
 		return;
 
 	uint8 *InputBufferPtr = Movie.InputBufferPtr;
-	read_frame_controller_data(false, NULL);
+	do
+	{
+		movie_reset_processed = false;
+		read_frame_controller_data(false, MovieOnReset);
+		if (movie_reset_processed)
+			InputBufferPtr = Movie.InputBufferPtr;
+	} while (movie_reset_processed);
 	Movie.InputBufferPtr = InputBufferPtr;
 }
 
