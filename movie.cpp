@@ -1102,6 +1102,17 @@ void S9xMovieUpdateOnReset (void)
 	}
 }
 
+// apply the next input without changing any movie states
+void MovieApplyNextInput(void)
+{
+	if (Movie.State != MOVIE_STATE_PLAY)
+		return;
+
+	uint8 *InputBufferPtr = Movie.InputBufferPtr;
+	read_frame_controller_data(false, NULL);
+	Movie.InputBufferPtr = InputBufferPtr;
+}
+
 void S9xMovieInit (void)
 {
 	memset(&Movie, 0, sizeof(Movie));

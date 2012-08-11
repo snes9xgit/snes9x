@@ -183,6 +183,7 @@
 #include "apu/apu.h"
 #include "fxemu.h"
 #include "snapshot.h"
+#include "movie.h"
 #include "lua-engine.h"
 #ifdef DEBUGGER
 #include "debug.h"
@@ -322,6 +323,8 @@ static inline void StartS9xMainLoop (void)
 	extern bool8 pad_read, pad_read_last;
 	pad_read_last = pad_read;
 	pad_read      = FALSE;
+
+	MovieApplyNextInput();
 
 #ifdef HAVE_LUA
 	CallRegisteredLuaFunctions(LUACALL_BEFOREEMULATION);

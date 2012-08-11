@@ -681,6 +681,7 @@ DEFINE_LUA_FUNCTION(emu_persistglobalvariables, "variabletable")
 }
 
 static const char* deferredGUIIDString = "lazygui";
+static const char* deferredJoySetIDString = "lazyjoy";
 
 // store the most recent C function call from Lua (and all its arguments)
 // for later evaluation
@@ -2292,6 +2293,16 @@ DEFINE_LUA_FUNCTION(joy_set, "[controller=1,]inputtable")
 	int controllerNumber = joy_getArgControllerNum(L, index);
 
 	luaL_checktype(L, index, LUA_TTABLE);
+
+	if (S9xMoviePlaying()) // don't allow tampering with a playing movie's input
+		return 0; // (although it might be useful sometimes...)
+
+	if (IPPU.InMainLoop)
+	{
+		// defer this function until when we are processing input
+		DeferFunctionCall(L, deferredJoySetIDString);
+		return 0;
+	}
 
 	uint32 input = 0;
 	uint32 mask = 0;
@@ -4233,6 +4244,8 @@ void RunLuaScriptFile(int uid, const char* filenameCStr)
 		// deferred evaluation table
 		lua_newtable(L);
 		lua_setfield(L, LUA_REGISTRYINDEX, deferredGUIIDString);
+		lua_newtable(L);
+		lua_setfield(L, LUA_REGISTRYINDEX, deferredJoySetIDString);
 
 		info.started = true;
 		RefreshScriptStartedStatus();
@@ -4748,6 +4761,8 @@ void CallRegisteredLuaFunctions(LuaCallID calltype)
 				info.guiFuncsNeedDeferring = false;
 			if(calltype == LUACALL_AFTEREMULATIONGUI)
 				CallDeferredFunctions(L, deferredGUIIDString);
+			if(calltype == LUACALL_BEFOREEMULATION)
+				CallDeferredFunctions(L, deferredJoySetIDString);
 
 			lua_settop(L, 0);
 			lua_getfield(L, LUA_REGISTRYINDEX, idstring);

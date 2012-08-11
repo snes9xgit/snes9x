@@ -255,5 +255,6 @@ bool MovieGetScope (int, uint8 d[SCOPE_DATA_SIZE]);
 void MovieSetScope (int, uint8 d[SCOPE_DATA_SIZE]);
 bool MovieGetJustifier (int, uint8 d[JUSTIFIER_DATA_SIZE]);
 void MovieSetJustifier (int, uint8 d[JUSTIFIER_DATA_SIZE]);
+void MovieApplyNextInput(void);
 
 #endif
