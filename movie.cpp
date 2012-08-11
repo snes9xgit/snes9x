@@ -841,10 +841,6 @@ int S9xMovieOpen (const char *filename, bool8 read_only)
 	size_t	ignore;
 	ignore = fread(Movie.InputBufferPtr, 1, Movie.BytesPerSample * (Movie.MaxSample + 1), fd);
 
-	// read "baseline" controller data
-	if (Movie.MaxSample && Movie.MaxFrame)
-		read_frame_controller_data(true);
-
 	Movie.CurrentFrame  = 0;
 	Movie.CurrentSample = 0;
 	Movie.ReadOnly      = read_only;
@@ -854,6 +850,10 @@ int S9xMovieOpen (const char *filename, bool8 read_only)
 	Movie.SkipRerecordCount = FALSE;
 
 	change_state(MOVIE_STATE_PLAY);
+
+	// read "baseline" controller data
+	if (Movie.MaxSample && Movie.MaxFrame)
+		read_frame_controller_data(true);
 
 	S9xUpdateFrameCounter(-1);
 
@@ -945,11 +945,9 @@ int S9xMovieCreate (const char *filename, uint8 controllers_mask, uint8 opts, co
 		Movie.ControllerDataOffset++;
 	}
 
-	// write "baseline" controller data
 	Movie.File           = fd;
 	Movie.BytesPerSample = bytes_per_sample();
 	Movie.InputBufferPtr = Movie.InputBuffer;
-	write_frame_controller_data();
 
 	Movie.CurrentFrame  = 0;
 	Movie.CurrentSample = 0;
@@ -958,6 +956,9 @@ int S9xMovieCreate (const char *filename, uint8 controllers_mask, uint8 opts, co
 	Movie.Filename[PATH_MAX] = 0;
 
 	change_state(MOVIE_STATE_RECORD);
+
+	// write "baseline" controller data
+	write_frame_controller_data();
 
 	S9xUpdateFrameCounter(-1);
 
