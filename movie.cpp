@@ -265,7 +265,7 @@ static void		restore_movie_settings (void);
 static int		bytes_per_sample (void);
 static void		reserve_buffer_space (uint32);
 static void		reset_controllers (void);
-static void		read_frame_controller_data (bool);
+static void		read_frame_controller_data (bool, void (*resetFunc)() = S9xSoftReset);
 static void		write_frame_controller_data (void);
 static void		flush_movie (void);
 static void		truncate_movie (void);
@@ -431,8 +431,13 @@ static void reset_controllers (void)
 	}
 }
 
-static void read_frame_controller_data (bool addFrame)
+static void read_frame_controller_data (bool addFrame, void (*resetFunc)())
 {
+	if (Movie.CurrentFrame >= Movie.MaxFrame || Movie.CurrentSample >= Movie.MaxSample)
+	{
+		return;
+	}
+
 	// reset code check
 	if (Movie.InputBufferPtr[0] == 0xff)
 	{
@@ -449,7 +454,8 @@ static void read_frame_controller_data (bool addFrame)
 		if (reset)
 		{
 			Movie.InputBufferPtr += Movie.BytesPerSample;
-			S9xSoftReset();
+			if (resetFunc != (void(*)())NULL)
+				(*resetFunc)();
 			return;
 		}
 	}
