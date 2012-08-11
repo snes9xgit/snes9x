@@ -265,7 +265,7 @@ static void		restore_movie_settings (void);
 static int		bytes_per_sample (void);
 static void		reserve_buffer_space (uint32);
 static void		reset_controllers (void);
-static void		read_frame_controller_data (bool, void (*resetFunc)() = NULL);
+static void		read_frame_controller_data (bool, void (*resetFunc)() = S9xSoftReset);
 static void		write_frame_controller_data (void);
 static void		flush_movie (void);
 static void		truncate_movie (void);
@@ -1109,7 +1109,7 @@ void MovieApplyNextInput(void)
 		return;
 
 	uint8 *InputBufferPtr = Movie.InputBufferPtr;
-	read_frame_controller_data(false, S9xSoftReset);
+	read_frame_controller_data(false, NULL);
 	Movie.InputBufferPtr = InputBufferPtr;
 }
 
