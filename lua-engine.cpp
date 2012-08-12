@@ -516,6 +516,19 @@ static const char* FilenameFromPath(const char* path)
 	return rv;
 }
 
+void TrimFilenameFromPath(char* path)
+{
+	char* slash1 = strrchr(path, '\\');
+	char* slash2 = strrchr(path, '/');
+	char* slash = slash1;
+	if (slash == NULL || slash2 > slash) {
+		slash = slash2;
+	}
+	if (slash != NULL) {
+		*(slash + 1) = '\0';
+	}
+}
+
 
 static void toCStringConverter(lua_State* L, int i, char*& ptr, int& remaining);
 
@@ -4443,6 +4456,12 @@ void RunLuaScriptFile(int uid, const char* filenameCStr)
 #endif
 
 	info.nextFilename = filenameCStr;
+
+	// TODO: store script's current directory into LuaContextInfo
+	static char dirnameCStr[MAX_PATH];
+	strcpy(dirnameCStr, filenameCStr);
+	TrimFilenameFromPath(dirnameCStr);
+	chdir(dirnameCStr);
 
 	if(info.running)
 	{
