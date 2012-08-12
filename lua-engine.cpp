@@ -2543,10 +2543,10 @@ DEFINE_LUA_FUNCTION(gui_parsecolor, "color")
 static inline void blend32(uint32 *dstPixel, uint32 color)
 {
 	uint8 *dst = (uint8*) dstPixel;
-	int r = (color & 0xFF000000) >> 24;
-	int g = (color & 0x00FF0000) >> 16;
-	int b = (color & 0x0000FF00) >> 8;
-	int a = color & 0x000000FF;
+	uint8 r = (color & 0xFF000000) >> 24;
+	uint8 g = (color & 0x00FF0000) >> 16;
+	uint8 b = (color & 0x0000FF00) >> 8;
+	uint8 a = color & 0x000000FF;
 
 	if (a == 255) {
 		// direct copy
@@ -2560,14 +2560,16 @@ static inline void blend32(uint32 *dstPixel, uint32 color)
 	}
 	else {
 		// alpha-blending
+		// http://en.wikipedia.org/wiki/Alpha_compositing
 		uint8 bo = dst[0];
 		uint8 go = dst[1];
 		uint8 ro = dst[2];
 		uint8 ao = dst[3];
-        dst[0] = (((b - bo) * a + (bo << 8)) >> 8);
-        dst[1] = (((g - go) * a + (go << 8)) >> 8);
-        dst[2] = (((r - ro) * a + (ro << 8)) >> 8);
-        dst[3] =  ((a + ao) - ((a * ao + 0xFF) >> 8));
+		uint8 aof = (ao * (255 - a)) / 255;
+		dst[3] = a + aof;
+		dst[0] = (b * a + bo * aof) / dst[3];
+		dst[1] = (g * a + go * aof) / dst[3];
+		dst[2] = (r * a + ro * aof) / dst[3];
 	}
 }
 
