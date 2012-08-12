@@ -2708,128 +2708,102 @@ static void gui_drawline_internal(int x1, int y1, int x2, int y2, bool lastPixel
 	}
 }
 
+#define LuaFontWidth    3
+#define LuaFontHeight   6
 static const uint8 Small_Font_Data[] =
 {
 #define I +0,
 #define a +1
 #define b +2
 #define c +4
-#define d +8
-#define e +16
 //  !"#$%&'
-           I     c     I   b   d   I           I      d    I a b       I     c     I     c     I
-           I     c     I   b   d   I   b   d   I    c d e  I a b     e I   b   d   I     c     I
-           I     c     I           I a b c d e I  b        I       d   I   b c     I           I
-           I     c     I           I   b   d   I  b c      I     c     I   b       I           I
-           I     c     I           I a b c d e I      d e  I   b       I a   c   e I           I
-           I           I           I   b   d   I        e  I a     d e I a     d   I           I
-           I     c     I           I           I  b c d    I       d e I   b c   e I           I
-           I           I           I           I    c      I           I           I           I
+      I   b   I a   c I a   c I   b c I a     I   b   I   b   I
+      I   b   I a   c I a b c I a b   I     c I a   c I   b   I
+      I   b   I       I a   c I   b   I   b   I   b   I       I
+      I       I       I a b c I   b c I a     I a   c I       I
+      I   b   I       I a   c I a b   I     c I   b c I       I
+      I       I       I       I       I       I       I       I
 // ()*+,-./
-        e  I   b       I           I           I           I           I           I        e  I
-      d    I     c     I  b     e  I     c     I           I           I           I        e  I
-      d    I     c     I    c d    I     c     I           I           I           I      d    I
-      d    I     c     I  b c d e  I a b c d e I           I  b c d e  I           I      d    I
-      d    I     c     I    c d    I     c     I           I           I           I    c      I
-      d    I     c     I  b     e  I     c     I      d    I           I    c d    I    c      I
-      d    I     c     I           I           I      d    I           I    c d    I  b        I
-        e  I   b       I           I           I    c      I           I           I  b        I
+  b   I   b   I       I       I       I       I       I     c I
+a     I     c I   b   I   b   I       I       I       I   b   I
+a     I     c I a b c I a b c I       I a b c I       I   b   I
+a     I     c I   b   I   b   I   b   I       I       I a     I
+  b   I   b   I a   c I       I   b   I       I   b   I a     I
+      I       I       I       I a     I       I       I       I
 // 01234567
-    c d    I      d    I    c d    I    c d    I  b     e  I  b c d e  I    c d    I  b c d e  I
-  b     e  I    c d    I  b     e  I  b     e  I  b     e  I  b        I  b     e  I        e  I
-  b     e  I      d    I        e  I        e  I  b     e  I  b        I  b        I      d    I
-  b     e  I      d    I      d    I    c d    I  b c d e  I  b c d    I  b c d    I      d    I
-  b     e  I      d    I    c      I        e  I        e  I        e  I  b     e  I    c      I
-  b     e  I      d    I  b        I  b     e  I        e  I        e  I  b     e  I    c      I
-    c d    I    c d e  I  b c d e  I    c d    I        e  I  b c d    I    c d    I  b        I
-           I           I           I           I           I           I           I           I
+  b   I   b   I a b   I a b   I   b   I a b c I   b   I a b c I
+a   c I a b   I     c I     c I a     I a     I a     I     c I
+a   c I   b   I   b   I a b   I a   c I a b   I a b   I   b   I
+a   c I   b   I a     I     c I a b c I     c I a   c I   b   I
+  b   I   b   I a b c I a b   I     c I a b   I   b   I   b   I
+      I       I       I       I       I       I       I       I
 // 89:;<=>?
-    c d    I    c d    I           I           I        e  I           I  b        I    c d    I
-  b     e  I  b     e  I           I           I      d    I           I    c      I  b     e  I
-  b     e  I  b     e  I    c d    I      d    I    c      I  b c d e  I      d    I        e  I
-    c d    I    c d e  I    c d    I      d    I  b        I           I        e  I      d    I
-  b     e  I        e  I           I           I    c      I  b c d e  I      d    I    c      I
-  b     e  I  b     e  I    c d    I      d    I      d    I           I    c      I           I
-    c d    I    c d    I    c d    I      d    I        e  I           I  b        I    c      I
-           I           I           I    c      I           I           I           I           I
+  b   I   b   I       I       I     c I       I a     I a b   I
+a   c I a   c I   b   I       I   b   I a b c I   b   I     c I
+  b   I   b c I       I   b   I a     I       I     c I   b   I
+a   c I     c I       I       I   b   I a b c I   b   I       I
+  b   I   b   I   b   I   b   I     c I       I a     I   b   I
+      I       I       I a     I       I       I       I       I
 // @ABCDEFG
-   b c d   I    c d    I  b c d    I    c d    I  b c d    I  b c d e  I  b c d e  I    c d    I
- a       e I  b     e  I  b     e  I  b     e  I  b     e  I  b        I  b        I  b     e  I
- a     d e I  b     e  I  b     e  I  b        I  b     e  I  b        I  b        I  b        I
- a   c   e I  b c d e  I  b c d    I  b        I  b     e  I  b c d    I  b c d    I  b        I
- a     d e I  b     e  I  b     e  I  b        I  b     e  I  b        I  b        I  b   d e  I
- a         I  b     e  I  b     e  I  b     e  I  b     e  I  b        I  b        I  b     e  I
-   b c d e I  b     e  I  b c d    I    c d    I  b c d    I  b c d e  I  b        I    c d e  I
-           I           I           I           I           I           I           I           I
+  b   I   b   I a b   I   b c I a b   I a b c I a b c I   b c I
+  b c I a   c I a   c I a     I a   c I a     I a     I a     I
+a   c I a b c I a b   I a     I a   c I a b   I a b   I a   c I
+  b c I a   c I a   c I a     I a   c I a     I a     I a   c I
+      I a   c I a b   I   b c I a b   I a b c I a     I   b c I
+      I       I       I       I       I       I       I       I
 // HIJKlMNO
-  b     e  I   b c d   I        e  I  b     e  I  b        I a       e I  b     e  I  b c d e  I
-  b     e  I     c     I        e  I  b     e  I  b        I a b   d e I  b c   e  I  b     e  I
-  b     e  I     c     I        e  I  b   d    I  b        I a   c   e I  b   d e  I  b     e  I
-  b c d e  I     c     I        e  I  b c      I  b        I a   c   e I  b     e  I  b     e  I
-  b     e  I     c     I        e  I  b   d    I  b        I a       e I  b     e  I  b     e  I
-  b     e  I     c     I  b     e  I  b     e  I  b        I a       e I  b     e  I  b     e  I
-  b     e  I   b c d   I    c d    I  b     e  I  b c d e  I a       e I  b     e  I  b c d e  I
-           I           I           I           I           I           I           I           I
+a   c I   b   I     c I a   c I a     I a   c I a b   I a b c I
+a   c I   b   I     c I a   c I a     I a b c I a   c I a   c I
+a b c I   b   I     c I a b   I a     I a   c I a   c I a   c I
+a   c I   b   I a   c I a   c I a     I a   c I a   c I a   c I
+a   c I   b   I   b   I a   c I a b c I a   c I a   c I a b c I
+      I       I       I       I       I       I       I       I
 // PQRSTUVW
-  b c d    I    c d    I  b c d    I    c d e  I a b c d e I  b     e  I a       e I a       e I
-  b     e  I  b     e  I  b     e  I  b        I     c     I  b     e  I a       e I a       e I
-  b     e  I  b     e  I  b     e  I  b        I     c     I  b     e  I a       e I a       e I
-  b c d    I  b     e  I  b c d    I    c d    I     c     I  b     e  I a       e I a       e I
-  b        I  b     e  I  b     e  I        e  I     c     I  b     e  I   b   d   I a   c   e I
-  b        I  b     e  I  b     e  I        e  I     c     I  b     e  I   b   d   I a b   d e I
-  b        I    c d    I  b     e  I  b c d    I     c     I    c d    I     c     I a       e I
-           I      d e  I           I           I           I           I           I           I
+a b   I a b c I a b   I   b c I a b c I a   c I a   c I a   c I
+a   c I a   c I a   c I a     I   b   I a   c I a   c I a   c I
+a b   I a   c I a b   I   b   I   b   I a   c I a   c I a   c I
+a     I a   c I a   c I     c I   b   I a   c I   b   I a b c I
+a     I a b c I a   c I a b   I   b   I a b c I   b   I a   c I
+      I     c I       I       I       I       I       I       I
 // XYZ[\]^_
- a       e I a       e I a b c d e I      d e  I  b        I   b c     I     c     I           I
- a       e I a       e I         e I      d    I  b        I     c     I   b   d   I           I
-   b   d   I a       e I       d   I      d    I    c      I     c     I           I           I
-     c     I   b   d   I     c     I      d    I    c      I     c     I           I           I
-   b   d   I     c     I   b       I      d    I      d    I     c     I           I           I
- a       e I     c     I a         I      d    I      d    I     c     I           I           I
- a       e I     c     I a b c d e I      d    I        e  I     c     I           I           I
-           I           I           I      d e  I        e  I   b c     I           I a b c d e I
+a   c I a   c I a b c I   b c I a     I a b   I   b   I       I
+a   c I a   c I     c I   b   I   b   I   b   I a   c I       I
+  b   I   b   I   b   I   b   I   b   I   b   I       I       I
+a   c I   b   I a     I   b   I     c I   b   I       I       I
+a   c I   b   I a b c I   b c I     c I a b   I       I a b c I
+      I       I       I       I       I       I       I       I
 // `abcdefg
-  b        I           I  b        I           I        e  I           I      d e  I           I
-    c      I           I  b        I           I        e  I           I    c      I           I
-           I    c d    I  b        I    c d    I        e  I    c d    I    c      I    c d e  I
-           I        e  I  b c d    I  b     e  I    c d e  I  b     e  I  b c d    I  b     e  I
-           I    c d e  I  b     e  I  b        I  b     e  I  b c d e  I    c      I  b     e  I
-           I  b     e  I  b     e  I  b        I  b     e  I  b        I    c      I    c d e  I
-           I    c d e  I  b c d    I    c d e  I    c d e  I    c d e  I    c      I        e  I
-           I           I           I           I           I           I           I    c d    I
+a     I       I a     I       I     c I       I   b c I       I
+  b   I   b c I a     I   b c I     c I   b c I a     I   b c I
+      I a   c I a b   I a     I   b c I a b c I a b   I a   c I
+      I a   c I a   c I a     I a   c I a     I a     I   b c I
+      I   b c I a b   I   b c I   b c I   b c I a     I     c I
+      I       I       I       I       I       I       I a b   I
 // hijklmno
-  b        I           I           I  b        I     c     I           I           I           I
-  b        I     c     I     c     I  b        I     c     I           I           I           I
-  b        I           I           I  b        I     c     I a b c d   I  b c d    I    c d    I
-  b c d    I     c     I     c     I  b   d e  I     c     I a   c   e I  b     e  I  b     e  I
-  b     e  I     c     I     c     I  b c      I     c     I a   c   e I  b     e  I  b     e  I
-  b     e  I     c     I     c     I  b   d    I     c     I a   c   e I  b     e  I  b     e  I
-  b     e  I     c     I     c     I  b     e  I     c     I a       e I  b     e  I    c d    I
-           I           I   b       I           I           I           I           I           I
+a     I   b   I   b   I a     I   b   I       I       I       I
+a     I       I       I a     I   b   I a   c I a b   I   b   I
+a b   I   b   I   b   I a   c I   b   I a b c I a   c I a   c I
+a   c I   b   I   b   I a b   I   b   I a   c I a   c I a   c I
+a   c I   b   I   b   I a   c I     c I a   c I a   c I   b   I
+      I       I a     I       I       I       I       I       I
 // pqrstuvw
-           I           I           I           I     c     I           I           I           I
-           I           I           I           I     c     I           I           I           I
-  b c d    I    c d e  I  b c d    I    c d e  I   b c d   I  b     e  I  b     e  I a       e I
-  b     e  I  b     e  I  b     e  I  b        I     c     I  b     e  I  b     e  I a       e I
-  b     e  I  b     e  I  b        I    c d    I     c     I  b     e  I  b     e  I a   c   e I
-  b c d    I    c d e  I  b        I        e  I     c     I  b     e  I    c d    I a b   d e I
-  b        I        e  I  b        I  b c d    I       d   I    c d e  I    c d    I a       e I
-  b        I        e  I           I           I           I           I           I           I
+      I       I       I       I   b   I       I       I       I
+  b   I   b   I a   c I   b c I a b c I a   c I a   c I a   c I
+a   c I a   c I a b   I a     I   b   I a   c I a   c I a   c I
+a b   I   b c I a     I   b c I   b   I a   c I a   c I a b c I
+a     I     c I a     I a b   I     c I   b c I   b   I a   c I
+a     I     c I       I       I       I       I       I       I
 // xyz{|}~
-           I           I           I      d e  I     c     I   b c     I           I           I
-           I           I           I      d    I     c     I     c     I           I   b   d   I
-  b     e  I  b     e  I  b c d e  I      d    I     c     I     c     I    c   e  I a   c   e I
-    c d    I  b     e  I        e  I    c d    I     c     I     c d   I  b   d    I a       e I
-    c d    I  b     e  I    c d    I    c d    I     c     I     c d   I           I   b   d   I
-  b     e  I    c d e  I  b        I      d    I     c     I     c     I           I     c     I
-  b     e  I        e  I  b c d e  I      d    I     c     I     c     I           I           I
-           I  b c d    I           I      d e  I     c     I   b c     I           I           I
+      I       I       I   b c I   b   I a b   I a b   I       I
+a   c I a   c I a b c I   b   I   b   I   b   I     c I   b   I
+  b   I a   c I   b   I a b   I       I   b c I       I a   c I
+a   c I   b   I a     I   b   I   b   I   b   I       I a b c I
+a   c I   b   I a b c I   b c I   b   I a b   I       I       I
+      I a     I       I       I       I       I       I       I
 #undef I
 #undef a
 #undef b
 #undef c
-#undef d
-#undef e
 };
 
 template<int dxdx, int dydy, int dxdy, int dydx>
@@ -2869,20 +2843,20 @@ static void PutTextInternal (const char *str, int len, short x, short y, int col
 			if(dydy)
 			{
 				x = origX;
-				y += 10 * dydy;
+				y += (LuaFontHeight + 2) * dydy;
 			}
 			else
 			{
 				y = origY;
-				x += 10 * dxdy;
+				x += (LuaFontHeight + 2) * dxdy;
 			}
 			continue;
 		}
 		else if(c == '\t') // just in case
 		{
 			const int tabSpace = 8;
-			x += (tabSpace-(((x-origX)/5)%tabSpace))*5*dxdx;
-			y += (tabSpace-(((y-origY)/5)%tabSpace))*5*dydx;
+			x += (tabSpace-(((x-origX)/(LuaFontWidth+1))%tabSpace))*(LuaFontWidth+1)*dxdx;
+			y += (tabSpace-(((y-origY)/(LuaFontWidth+1))%tabSpace))*(LuaFontWidth+1)*dydx;
 			continue;
 		}
 		c -= 32;
@@ -2891,23 +2865,23 @@ static void PutTextInternal (const char *str, int len, short x, short y, int col
 
 		if(c)
 		{
-			const uint8* Cur_Glyph = (const unsigned char*)&Small_Font_Data + (c%8)+((c/8)*64);
-			for(int y2 = -1; y2 < 10; y2++)
+			const uint8* Cur_Glyph = (const unsigned char*)&Small_Font_Data + (c%8)+((c/8)*(8*LuaFontHeight));
+			for(int y2 = -1; y2 < (LuaFontHeight + 2); y2++)
 			{
-				for(int x2 = -1; x2 < 6; x2++)
+				for(int x2 = -1; x2 < (LuaFontWidth + 1); x2++)
 				{
-					bool on = y2 >= 0 && y2 < 8 && (Cur_Glyph[y2*8] & (1 << x2));
+					bool on = y2 >= 0 && y2 < LuaFontHeight && (Cur_Glyph[y2*8] & (1 << x2));
 					if(on)
 					{
 						gui_drawpixel_checked(x+x2*dxdx+y2*dxdy, y+y2*dydy+x2*dydx, color);
 					}
 					else if(backOpac)
 					{
-						for(int y3 = std::max(0,y2-1); y3 <= std::min(7,y2+1); y3++)
+						for(int y3 = std::max(0,y2-1); y3 <= std::min(LuaFontHeight-1,y2+1); y3++)
 						{
-							for(int x3 = std::max(0,x2-1); x3 <= std::min(4,x2+1); x3++)
+							for(int x3 = std::max(0,x2-1); x3 <= std::min(LuaFontWidth-1,x2+1); x3++)
 							{
-								on |= y3 >= 0 && y3 < 8 && (Cur_Glyph[y3*8] & (1 << x3));
+								on |= y3 >= 0 && y3 < LuaFontHeight && (Cur_Glyph[y3*8] & (1 << x3));
 								if (on)
 									goto draw_outline; // speedup?
 							}
@@ -2922,8 +2896,8 @@ draw_outline:
 			}
 		}
 
-		x += 6*dxdx;
-		y += 6*dydx;
+		x += (LuaFontWidth+1)*dxdx;
+		y += (LuaFontWidth+1)*dydx;
 		len--;
 	}
 }
