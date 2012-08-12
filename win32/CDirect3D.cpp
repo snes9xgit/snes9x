@@ -191,6 +191,10 @@
 #include "../filter/hq2x.h"
 #include "../filter/2xsai.h"
 
+#ifdef HAVE_LUA
+#include "../lua-engine.h"
+#endif
+
 #ifndef max
 #define max(a, b) (((a) > (b)) ? (a) : (b))
 #endif
@@ -714,6 +718,9 @@ void CDirect3D::Render(SSurface Src)
 		if(!Settings.AutoDisplayMessages) {
 			WinSetCustomDisplaySurface((void *)Dst.Surface, Dst.Pitch/2, dstRect.right-dstRect.left, dstRect.bottom-dstRect.top, GetFilterScale(CurrentScale));
 			S9xDisplayMessages ((uint16*)Dst.Surface, Dst.Pitch/2, dstRect.right-dstRect.left, dstRect.bottom-dstRect.top, GetFilterScale(CurrentScale));
+#ifdef HAVE_LUA
+			DrawLuaGuiToScreen(Dst.Surface, dstRect.right-dstRect.left, dstRect.bottom-dstRect.top, 16, Dst.Pitch);
+#endif
 		}
 
 		drawSurface->UnlockRect(0);

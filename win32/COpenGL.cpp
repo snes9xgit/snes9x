@@ -188,6 +188,9 @@
 #include "../filter/hq2x.h"
 #include "../filter/2xsai.h"
 
+#ifdef HAVE_LUA
+#include "../lua-engine.h"
+#endif
 
 COpenGL::COpenGL(void)
 {
@@ -440,6 +443,7 @@ void COpenGL::Render(SSurface Src)
 	if(!Settings.AutoDisplayMessages) {
 		WinSetCustomDisplaySurface((void *)Dst.Surface, Dst.Pitch/2, dstRect.right-dstRect.left, dstRect.bottom-dstRect.top, GetFilterScale(CurrentScale));
 		S9xDisplayMessages ((uint16*)Dst.Surface, Dst.Pitch/2, dstRect.right-dstRect.left, dstRect.bottom-dstRect.top, GetFilterScale(CurrentScale));
+		DrawLuaGuiToScreen(Dst.Surface, dstRect.right-dstRect.left, dstRect.bottom-dstRect.top, 16, Dst.Pitch);
 	}
 
 	if(pboFunctionsLoaded)

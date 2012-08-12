@@ -191,6 +191,10 @@
 #include "../filter/hq2x.h"
 #include "../filter/2xsai.h"
 
+#ifdef HAVE_LUA
+#include "../lua-engine.h"
+#endif
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -604,6 +608,9 @@ void CDirectDraw::Render(SSurface Src)
 	if(!Settings.AutoDisplayMessages) {
 		WinSetCustomDisplaySurface((void *)Dst.Surface, (Dst.Pitch*8/GUI.ScreenDepth), srcRect.right-srcRect.left, srcRect.bottom-srcRect.top, GetFilterScale(CurrentScale));
 		S9xDisplayMessages ((uint16*)Dst.Surface, Dst.Pitch/2, srcRect.right-srcRect.left, srcRect.bottom-srcRect.top, GetFilterScale(CurrentScale));
+#ifdef HAVE_LUA
+		DrawLuaGuiToScreen(Dst.Surface, srcRect.right-srcRect.left, srcRect.bottom-srcRect.top, GUI.ScreenDepth, Dst.Pitch);
+#endif
 	}
 
 	RECT lastRect = SizeHistory [GUI.FlipCounter % GUI.NumFlipFrames];

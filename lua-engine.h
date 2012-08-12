@@ -91,7 +91,8 @@ void RestartAllLuaScripts();
 void EnableStopAllLuaScripts(bool enable);
 void DontWorryLua();
 
-
+void DrawLuaGuiToScreen(void *s, int width, int height, int bpp, int pitch, bool clear = true);
+void ClearLuaGui(void);
 
 #endif
 
