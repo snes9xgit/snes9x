@@ -3461,9 +3461,11 @@ static FORCEINLINE uint8 CalcBlend8(uint8 dst, uint8 src, uint8 alpha)
 static FORCEINLINE void ParseColor16(uint8 *src, uint8 *r, uint8 *g, uint8 *b, uint8 *a)
 {
 	uint16 color = *(uint16*)src;
-	*b = ( color        & 31) << 3;
-	*g = ((color >>  5) & 63) << 2;
-	*r = ((color >> 11) & 31) << 3;
+	uint32 rv, gv, bv;
+	DECOMPOSE_PIXEL(color, rv, gv, bv);
+	*b = bv << 3;
+	*g = gv << 3;
+	*r = rv << 3;
 	if (a != NULL)
 		*a = 255;
 }
@@ -3488,7 +3490,7 @@ static FORCEINLINE void ParseColor32(uint8 *src, uint8 *r, uint8 *g, uint8 *b, u
 
 static FORCEINLINE void WriteColor16(uint8 *dst, uint8 r, uint8 g, uint8 b)
 {
-	*(uint16*)dst = ((r >> 3) << 11) | ((g >> 2) << 5) | (b >> 3);
+	*(uint16*)dst = BUILD_PIXEL(r >> 3, g >> 3, b >> 3);
 }
 
 static FORCEINLINE void WriteColor24(uint8 *dst, uint8 r, uint8 g, uint8 b)
