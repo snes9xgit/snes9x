@@ -1065,7 +1065,7 @@ DEFINE_LUA_FUNCTION(emu_message, "str")
 
 	static char msg[1024];
 	strncpy(msg, str, 1024);
-	msg[1024] = '\0';
+	msg[1023] = '\0';
 
 	S9xSetInfoString(msg);
 	return 0;
