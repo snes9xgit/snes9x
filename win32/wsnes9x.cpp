@@ -1541,6 +1541,77 @@ bool WinMoviePlay(LPCTSTR filename)
 	return true;
 }
 
+void ClientToSNESScreen(LPPOINT lpPoint, bool clip)
+{
+	RECT clientRect;
+	GetClientRect(GUI.hWnd, &clientRect);
+
+	RECT filterRect;
+	bool hires = IPPU.RenderedScreenWidth > SNES_WIDTH;
+	if (hires)
+		GetFilterRect(GUI.ScaleHiRes, &filterRect);
+	else
+		GetFilterRect(GUI.Scale, &filterRect);
+
+	int orgsizex, orgsizey;
+	int sizex, sizey;
+	int startx, starty;
+
+	orgsizex = IPPU.RenderedScreenWidth;
+	orgsizey = IPPU.RenderedScreenHeight;
+
+	if (GUI.Stretch)
+	{
+		if (GUI.AspectRatio)
+		{
+			int aspectsizex = GUI.AspectWidth;
+			int aspectsizey = GUI.HeightExtend ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT;
+			if (aspectsizex * clientRect.bottom > clientRect.right * aspectsizey)
+			{
+				sizex = clientRect.right;
+				sizey = sizex * aspectsizey / aspectsizex;
+			}
+			else
+			{
+				sizey = clientRect.bottom;
+				sizex = sizey * aspectsizex / aspectsizey;
+			}
+		}
+		else
+		{
+			sizex = clientRect.right;
+			sizey = clientRect.bottom;
+		}
+	}
+	else
+	{
+		sizex = filterRect.right;
+		sizey = filterRect.bottom;
+	}
+
+	startx = (clientRect.right - sizex) / 2;
+	starty = (clientRect.bottom - sizey) / 2;
+	if (!GUI.AlwaysCenterImage)
+	{
+		startx = 0;
+		starty = 0;
+	}
+
+	lpPoint->x = (lpPoint->x - startx) * orgsizex / sizex;
+	lpPoint->y = (lpPoint->y - starty) * orgsizey / sizey;
+
+	if (clip)
+	{
+		lpPoint->x = max(0, min(orgsizex - 1, lpPoint->x));
+		lpPoint->y = max(0, min(orgsizey - 1, lpPoint->y));
+	}
+
+	if (orgsizex > SNES_WIDTH)
+		lpPoint->x /= 2;
+	if (orgsizey > SNES_HEIGHT_EXTENDED)
+		lpPoint->y /= 2;
+}
+
 TCHAR multiRomA [MAX_PATH] = {0}; // lazy, should put in sGUI and add init to {0} somewhere
 TCHAR multiRomB [MAX_PATH] = {0};
 
@@ -2557,13 +2628,9 @@ LRESULT CALLBACK WinProc(
 			SetCursor (GUI.Arrow);
 			break;
 		}
-		// Lo-word of lparam is xpos, hi-word is ypos
+
 //		if (!GUI.IgnoreNextMouseMove)
 		{
-			//POINT p;
-			//p.x = GET_X_LPARAM(lParam);
-			//p.y = GET_Y_LPARAM(lParam);
-			//ClientToScreen (GUI.hWnd, &p);
 			if ((!Settings.ForcedPause && !Settings.StopEmulation &&
 				!(Settings.Paused && !Settings.FrameAdvance)) &&
 				(GUI.ControllerOption==SNES_MOUSE || GUI.ControllerOption==SNES_MOUSE_SWAPPED)
@@ -2573,97 +2640,12 @@ LRESULT CALLBACK WinProc(
 			}
 			else if (GUI.ControllerOption==SNES_SUPERSCOPE || GUI.ControllerOption==SNES_JUSTIFIER || GUI.ControllerOption==SNES_JUSTIFIER_2)
 			{
-				RECT size;
-				GetClientRect (GUI.hWnd, &size);
-				if(!(GUI.Scale)&&!(GUI.Stretch))
-				{
-					int x,y, startx, starty;
-					x=GET_X_LPARAM(lParam);
-					y=GET_Y_LPARAM(lParam);
-
-//					int theight;
-//					(IPPU.RenderedScreenHeight> 256)? theight= SNES_HEIGHT_EXTENDED<<1: theight = SNES_HEIGHT_EXTENDED;
-					int theight = GUI.HeightExtend ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT;
-					if(IPPU.RenderedScreenHeight > SNES_HEIGHT_EXTENDED) theight <<= 1;
-
-					startx= size.right-IPPU.RenderedScreenWidth;
-					startx/=2;
-					starty= size.bottom-theight;
-					starty/=2;
-
-					if(x<startx)
-						GUI.MouseX=0;
-					else if(x>(startx+IPPU.RenderedScreenWidth))
-						GUI.MouseX=IPPU.RenderedScreenWidth;
-					else GUI.MouseX=x-startx;
-
-					if(y<starty)
-						GUI.MouseY=0;
-					else if(y>(starty+theight))
-						GUI.MouseY=theight;
-					else GUI.MouseY=y-starty;
-				}
-				else if(!(GUI.Stretch))
-				{
-					int x,y, startx, starty, sizex, sizey;
-					x=GET_X_LPARAM(lParam);
-					y=GET_Y_LPARAM(lParam);
-
-					if (IPPU.RenderedScreenWidth>256)
-						sizex=IPPU.RenderedScreenWidth;
-					else sizex=IPPU.RenderedScreenWidth*2;
-
-					int theight = GUI.HeightExtend ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT;
-					sizey = (IPPU.RenderedScreenHeight > SNES_HEIGHT_EXTENDED) ? theight : (theight << 1);
-
-					startx= size.right-sizex;
-					startx/=2;
-					starty= size.bottom-sizey;
-					starty/=2;
-					if(x<startx)
-						GUI.MouseX=0;
-					else if(x>(startx+sizex))
-						GUI.MouseX=sizex;
-					else GUI.MouseX=x-startx;
-
-					if(y<starty)
-						GUI.MouseY=0;
-					else if(y>(starty+sizey))
-						GUI.MouseY=sizey;
-					else GUI.MouseY=y-starty;
-
-					GUI.MouseX=(GUI.MouseX*IPPU.RenderedScreenWidth)/sizex;
-					GUI.MouseY=(GUI.MouseY*IPPU.RenderedScreenHeight)/sizey;
-				}
-				else
-				{
-					int sizex = IPPU.RenderedScreenWidth;
-					int sizey = GUI.HeightExtend ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT;
-					sizey = (IPPU.RenderedScreenHeight > SNES_HEIGHT_EXTENDED) ? (sizey << 1) : sizey;
-					int width = size.right, height = size.bottom, xdiff = 0, ydiff = 0;
-					if(GUI.AspectRatio)
-					{
-						if(width > sizex*height/sizey)
-						{
-							xdiff = width - sizex*height/sizey;
-							width -= xdiff;
-							xdiff >>= 1;
-						}
-						else if(height > sizey*width/sizex)
-						{
-							ydiff = height - sizey*width/sizex;
-							height -= ydiff;
-							ydiff >>= 1;
-						}
-					}
-					GUI.MouseX=(GET_X_LPARAM(lParam)-xdiff)*sizex/width;
-					GUI.MouseY=(GET_Y_LPARAM(lParam)-ydiff)*sizey/height;
-				}
-			}
-			else
-			{
-//				GUI.MouseX = p.x;
-//				GUI.MouseY = p.y;
+				POINT point;
+				point.x = GET_X_LPARAM(lParam);
+				point.y = GET_Y_LPARAM(lParam);
+				ClientToSNESScreen(&point, true);
+				GUI.MouseX = point.x;
+				GUI.MouseY = point.y;
 			}
 		}
 //		else

@@ -180,8 +180,8 @@
 #ifndef IS9XDISPLAYOUTPUT_H
 #define IS9XDISPLAYOUTPUT_H
 #include "../port.h"
-#include "render.h"
 #include "wsnes9x.h"
+#include "render.h"
 #include <vector>
 
 /* IS9xDisplayOutput

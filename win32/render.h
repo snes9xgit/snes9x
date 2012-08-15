@@ -194,6 +194,8 @@ struct SSurface {
 
 void RenderMethod(SSurface Src, SSurface Dst, RECT *);
 
+void GetFilterRect(RenderFilter filterID, LPRECT filterRect);
+
 void SelectRenderMethod();
 void InitRenderFilters();
 
