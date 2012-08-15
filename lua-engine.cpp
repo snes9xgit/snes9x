@@ -1673,19 +1673,19 @@ DEFINE_LUA_FUNCTION(emu_frameadvance, "")
 			break;
 	}
 	return 0;
-}
+}*/
 
 DEFINE_LUA_FUNCTION(emu_pause, "")
 {
 	LuaContextInfo& info = GetCurrentInfo();
 
-	Paused = 1;
-	while(!Step_Gens_MainLoop(true, false) && !info.panic);
+	Settings.Paused = TRUE;
+	//while(!Step_Gens_MainLoop(true, false) && !info.panic);
 
 	// allow the user to not have to manually unpause
 	// after restarting a script that used emu.pause()
 	if(info.panic)
-		Paused = 0;
+		Settings.Paused = FALSE;
 
 	return 0;
 }
@@ -1694,11 +1694,11 @@ DEFINE_LUA_FUNCTION(emu_unpause, "")
 {
 	LuaContextInfo& info = GetCurrentInfo();
 
-	Paused = 0;
+	Settings.Paused = FALSE;
 	return 0;
 }
 
-DEFINE_LUA_FUNCTION(emu_redraw, "")
+/*DEFINE_LUA_FUNCTION(emu_redraw, "")
 {
 	Show_Genesis_Screen();
 	worry(L,250);
@@ -4014,8 +4014,8 @@ static const struct luaL_reg emulib [] =
 //	{"frameadvance", emu_frameadvance},
 //	{"speedmode", emu_speedmode},
 //	{"wait", emu_wait},
-//	{"pause", emu_pause},
-//	{"unpause", emu_unpause},
+	{"pause", emu_pause},
+	{"unpause", emu_unpause},
 //	{"emulateframe", emu_emulateframe},
 	//{"emulateframefastnoskipping", emu_emulateframefastnoskipping}, // removed from library because probably nobody would notice the difference from emu_emulateframe
 //	{"emulateframefast", emu_emulateframefast},
