@@ -1722,7 +1722,7 @@ DEFINE_LUA_FUNCTION(memory_readbyte, "address")
 DEFINE_LUA_FUNCTION(memory_readbytesigned, "address")
 {
 	int address = lua_tointeger(L,1);
-	uint8 value = S9xGetByteFree(address);
+	int8 value = S9xGetByteFree(address);
 	lua_settop(L,0);
 	lua_pushinteger(L, *(int8*)&value);
 	return 1;
@@ -1731,7 +1731,7 @@ DEFINE_LUA_FUNCTION(memory_readword, "address")
 {
 	int address = lua_tointeger(L,1);
 	uint16 value = S9xGetByteFree(address);
-	value += S9xGetByteFree(address + 1) << 8;
+	value |= S9xGetByteFree(address + 1) << 8;
 	lua_settop(L,0);
 	lua_pushinteger(L, value);
 	return 1;
@@ -1739,8 +1739,8 @@ DEFINE_LUA_FUNCTION(memory_readword, "address")
 DEFINE_LUA_FUNCTION(memory_readwordsigned, "address")
 {
 	int address = lua_tointeger(L,1);
-	uint16 value = S9xGetByteFree(address);
-	value += S9xGetByteFree(address + 1) << 8;
+	int16 value = S9xGetByteFree(address);
+	value |= S9xGetByteFree(address + 1) << 8;
 	lua_settop(L,0);
 	lua_pushinteger(L, *(int16*)&value);
 	return 1;
@@ -1749,9 +1749,9 @@ DEFINE_LUA_FUNCTION(memory_readdword, "address")
 {
 	int address = luaL_checkinteger(L,1);
 	uint32 value = S9xGetByteFree(address);
-	value += S9xGetByteFree(address + 1) << 8;
-	value += S9xGetByteFree(address + 2) << 16;
-	value += S9xGetByteFree(address + 3) << 24;
+	value |= S9xGetByteFree(address + 1) << 8;
+	value |= S9xGetByteFree(address + 2) << 16;
+	value |= S9xGetByteFree(address + 3) << 24;
 	lua_settop(L,0);
 	lua_pushinteger(L, value);
 	return 1;
@@ -1759,10 +1759,10 @@ DEFINE_LUA_FUNCTION(memory_readdword, "address")
 DEFINE_LUA_FUNCTION(memory_readdwordsigned, "address")
 {
 	int address = luaL_checkinteger(L,1);
-	uint32 value = S9xGetByteFree(address);
-	value += S9xGetByteFree(address + 1) << 8;
-	value += S9xGetByteFree(address + 2) << 16;
-	value += S9xGetByteFree(address + 3) << 24;
+	int32 value = S9xGetByteFree(address);
+	value |= S9xGetByteFree(address + 1) << 8;
+	value |= S9xGetByteFree(address + 2) << 16;
+	value |= S9xGetByteFree(address + 3) << 24;
 	lua_settop(L,0);
 	lua_pushinteger(L, *(int32*)&value);
 	return 1;
@@ -3984,6 +3984,145 @@ DEFINE_LUA_FUNCTION(input_getup, "")
 }
 
 
+#include "../apu/bapu/snes/snes.hpp"
+#if defined(DEBUGGER)
+	extern SNES::SMPDebugger SNES::smp;
+#else
+	extern SNES::SMP SNES::smp;
+#endif
+#define APURAM  SNES::smp.apuram
+
+DEFINE_LUA_FUNCTION(apu_readbyte, "address")
+{
+	int address = lua_tointeger(L,1);
+	if (address < 0x0000 || address > 0xFFFF)
+		luaL_error(L, "address %xh out of range", address);
+	uint8 value = APURAM[address];
+	lua_settop(L,0);
+	lua_pushinteger(L, value);
+	return 1; // we return the number of return values
+}
+DEFINE_LUA_FUNCTION(apu_readbytesigned, "address")
+{
+	int address = lua_tointeger(L,1);
+	if (address < 0x0000 || address > 0xFFFF)
+		luaL_error(L, "address %xh out of range", address);
+	int8 value = APURAM[address];
+	lua_settop(L,0);
+	lua_pushinteger(L, value);
+	return 1;
+}
+DEFINE_LUA_FUNCTION(apu_readword, "address")
+{
+	int address = lua_tointeger(L,1);
+	if (address < 0x0000 || (address + 1) > 0xFFFF)
+		luaL_error(L, "address %xh out of range", address);
+	uint16 value = APURAM[address];
+	value |= APURAM[address + 1] << 8;
+	lua_settop(L,0);
+	lua_pushinteger(L, value);
+	return 1;
+}
+DEFINE_LUA_FUNCTION(apu_readwordsigned, "address")
+{
+	int address = lua_tointeger(L,1);
+	if (address < 0x0000 || (address + 1) > 0xFFFF)
+		luaL_error(L, "address %xh out of range", address);
+	int16 value = APURAM[address];
+	value |= APURAM[address + 1] << 8;
+	lua_settop(L,0);
+	lua_pushinteger(L, value);
+	return 1;
+}
+DEFINE_LUA_FUNCTION(apu_readdword, "address")
+{
+	int address = luaL_checkinteger(L,1);
+	if (address < 0x0000 || (address + 3) > 0xFFFF)
+		luaL_error(L, "address %xh out of range", address);
+	uint32 value = APURAM[address];
+	value |= APURAM[address + 1] << 8;
+	value |= APURAM[address + 2] << 16;
+	value |= APURAM[address + 3] << 24;
+	lua_settop(L,0);
+	lua_pushinteger(L, value);
+	return 1;
+}
+DEFINE_LUA_FUNCTION(apu_readdwordsigned, "address")
+{
+	int address = luaL_checkinteger(L,1);
+	if (address < 0x0000 || (address + 3) > 0xFFFF)
+		luaL_error(L, "address %xh out of range", address);
+	int32 value = APURAM[address];
+	value |= APURAM[address + 1] << 8;
+	value |= APURAM[address + 2] << 16;
+	value |= APURAM[address + 3] << 24;
+	lua_settop(L,0);
+	lua_pushinteger(L, value);
+	return 1;
+}
+
+DEFINE_LUA_FUNCTION(apu_writebyte, "address,value")
+{
+	int address = lua_tointeger(L,1);
+	if (address < 0x0000 || address > 0xFFFF)
+		luaL_error(L, "address %xh out of range", address);
+	uint8 value = (uint8)(lua_tointeger(L,2) & 0xFF);
+	APURAM[address] = value;
+	return 0;
+}
+DEFINE_LUA_FUNCTION(apu_writeword, "address,value")
+{
+	int address = lua_tointeger(L,1);
+	if (address < 0x0000 || (address + 1) > 0xFFFF)
+		luaL_error(L, "address %xh out of range", address);
+	uint16 value = (uint16)(lua_tointeger(L,2) & 0xFFFF);
+	APURAM[address] = value & 0xFF;
+	APURAM[address + 1] = (value >> 8) & 0xFF;
+	return 0;
+}
+DEFINE_LUA_FUNCTION(apu_writedword, "address,value")
+{
+	int address = luaL_checkinteger(L,1);
+	if (address < 0x0000 || (address + 3) > 0xFFFF)
+		luaL_error(L, "address %xh out of range", address);
+	uint32 value = (uint32)(luaL_checkinteger(L,2));
+	APURAM[address] = value & 0xFF;
+	APURAM[address + 1] = (value >> 8) & 0xFF;
+	APURAM[address + 2] = (value >> 16) & 0xFF;
+	APURAM[address + 3] = (value >> 24) & 0xFF;
+	return 0;
+}
+
+DEFINE_LUA_FUNCTION(apu_readbyterange, "address,length")
+{
+	int address = luaL_checkinteger(L,1);
+	int length = luaL_checkinteger(L,2);
+
+	if(length < 0)
+	{
+		address += length;
+		length = -length;
+	}
+
+	// push the array
+	lua_createtable(L, abs(length), 0);
+
+	// put all the values into the (1-based) array
+	for(int a = address, n = 1; n <= length; a++, n++)
+	{
+		if(a >= 0x0000 && a <= 0xFFFF)
+		{
+			uint8 value = APURAM[a];
+			lua_pushinteger(L, value);
+			lua_rawseti(L, -2, n);
+		}
+		// else leave the value nil
+	}
+
+	return 1;
+}
+
+
 // resets our "worry" counter of the Lua state
 int dontworry(LuaContextInfo& info)
 {
@@ -4115,6 +4254,33 @@ static const struct luaL_reg memorylib [] =
 //	{"register", memory_registerwrite},
 //	{"registerrun", memory_registerexec},
 //	{"registerexecute", memory_registerexec},
+
+	{NULL, NULL}
+};
+static const struct luaL_reg apulib [] =
+{
+	{"readbyte", apu_readbyte},
+	{"readbytesigned", apu_readbytesigned},
+	{"readword", apu_readword},
+	{"readwordsigned", apu_readwordsigned},
+	{"readdword", apu_readdword},
+	{"readdwordsigned", apu_readdwordsigned},
+	{"readbyterange", apu_readbyterange},
+	{"writebyte", apu_writebyte},
+	{"writeword", apu_writeword},
+	{"writedword", apu_writedword},
+	// alternate naming scheme for word and double-word and unsigned
+	{"readbyteunsigned", apu_readbyte},
+	{"readwordunsigned", apu_readword},
+	{"readdwordunsigned", apu_readdword},
+	{"readshort", apu_readword},
+	{"readshortunsigned", apu_readword},
+	{"readshortsigned", apu_readwordsigned},
+	{"readlong", apu_readdword},
+	{"readlongunsigned", apu_readdword},
+	{"readlongsigned", apu_readdwordsigned},
+	{"writeshort", apu_writeword},
+	{"writelong", apu_writedword},
 
 	{NULL, NULL}
 };
@@ -4330,6 +4496,7 @@ void registerLibs(lua_State* L)
 	//luaL_register(L, "stylus", styluslib);
 	luaL_register(L, "savestate", statelib);
 	luaL_register(L, "memory", memorylib);
+	luaL_register(L, "apu", apulib);
 	luaL_register(L, "joypad", joylib); // for game input
 	luaL_register(L, "input", inputlib); // for user input
 	luaL_register(L, "movie", movielib);
