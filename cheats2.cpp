@@ -191,7 +191,7 @@ uint8 S9xGetByteFree (uint32 address)
 	uint8	byte;
 
     CPU.NextEvent = 0x7FFFFFFF;
-	byte = S9xGetByte(address);
+	byte = S9xGetByteQuiet(address);
     CPU.NextEvent = NextEvent;
 	CPU.Cycles = Cycles;
 
@@ -204,7 +204,7 @@ void S9xSetByteFree (uint8 byte, uint32 address)
     int32  NextEvent = CPU.NextEvent;
 
     CPU.NextEvent = 0x7FFFFFFF;
-	S9xSetByte(byte, address);
+	S9xSetByteQuiet(byte, address);
     CPU.NextEvent = NextEvent;
 	CPU.Cycles = Cycles;
 }

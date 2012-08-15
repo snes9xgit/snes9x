@@ -297,6 +297,10 @@ void S9xMainLoop (void)
 				Opcodes = S9xOpcodesSlow;
 		}
 
+#ifdef HAVE_LUA
+		CallRegisteredLuaMemHook(Registers.PBPC, ICPU.S9xOpLengths[Op], Op, LUAMEMHOOK_EXEC);
+#endif
+
 		Registers.PCw++;
 		(*Opcodes[Op].S9xOpcode)();
 

@@ -284,23 +284,23 @@ LuaMemHookType MatchHookTypeToCPU(lua_State* L, LuaMemHookType hookType)
 	if(cpunameIndex)
 	{
 		const char* cpuName = lua_tostring(L, cpunameIndex);
-		if(!stricmp(cpuName, "sub") || !stricmp(cpuName, "s68k"))
-			cpuID = 1;
+		//if(stricmp(cpuName, "sa1") == 0)
+		//	cpuID = 1;
 		lua_remove(L, cpunameIndex);
 	}
 
 	switch(cpuID)
 	{
-	case 0: // m68k:
+	case 0: // 65c816:
 		return hookType;
 
-	case 1: // s68k:
-		switch(hookType)
-		{
-		case LUAMEMHOOK_WRITE: return LUAMEMHOOK_WRITE_SUB;
-		case LUAMEMHOOK_READ: return LUAMEMHOOK_READ_SUB;
-		case LUAMEMHOOK_EXEC: return LUAMEMHOOK_EXEC_SUB;
-		}
+//	case 1: // sa1:
+//		switch(hookType)
+//		{
+//		case LUAMEMHOOK_WRITE: return LUAMEMHOOK_WRITE_SUB;
+//		case LUAMEMHOOK_READ: return LUAMEMHOOK_READ_SUB;
+//		case LUAMEMHOOK_EXEC: return LUAMEMHOOK_EXEC_SUB;
+//		}
 	}
 	return hookType;
 }
@@ -4232,13 +4232,13 @@ static const struct luaL_reg memorylib [] =
 	{"writelong", memory_writedword},
 
 	// memory hooks
-//	{"registerwrite", memory_registerwrite},
-//	{"registerread", memory_registerread},
-//	{"registerexec", memory_registerexec},
+	{"registerwrite", memory_registerwrite},
+	{"registerread", memory_registerread},
+	{"registerexec", memory_registerexec},
 	// alternate names
-//	{"register", memory_registerwrite},
-//	{"registerrun", memory_registerexec},
-//	{"registerexecute", memory_registerexec},
+	{"register", memory_registerwrite},
+	{"registerrun", memory_registerexec},
+	{"registerexecute", memory_registerexec},
 
 	{NULL, NULL}
 };
@@ -5158,8 +5158,10 @@ void CallRegisteredLuaMemHook(unsigned int address, int size, unsigned int value
 	// (on my system that consistently took 200 ms total in the former case and 350 ms total in the latter case)
 	if(hookedRegions[hookType].NotEmpty())
 	{
-		if((hookType <= LUAMEMHOOK_EXEC) && (address >= 0xE00000))
-			address |= 0xFF0000; // account for mirroring of RAM
+		// TODO: add more mirroring
+		if(address >= 0x0000 && address <= 0x1FFF)
+			address |= 0x7E0000; // account for mirroring of LowRAM
+
 		if(hookedRegions[hookType].Contains(address, size))
 			CallRegisteredLuaMemHook_LuaMatch(address, size, value, hookType); // something has hooked this specific address
 	}

@@ -179,6 +179,10 @@
 #include "snes9x.h"
 #include "memmap.h"
 
+#ifdef HAVE_LUA
+#include "lua-engine.h"
+#endif
+
 #define CPU								SA1
 #define ICPU							SA1
 #define Registers						SA1Registers
@@ -326,6 +330,10 @@ void S9xSA1MainLoop (void)
 			SA1Registers.PBPC = oldPC;
 			Opcodes = S9xSA1OpcodesSlow;
 		}
+
+#ifdef HAVE_LUA
+		CallRegisteredLuaMemHook(SA1Registers.PBPC, SA1.S9xOpLengths[Op], Op, LUAMEMHOOK_EXEC);
+#endif
 
 		Registers.PCw++;
 		(*Opcodes[Op].S9xOpcode)();
