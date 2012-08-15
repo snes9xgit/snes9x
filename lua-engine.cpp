@@ -1840,46 +1840,32 @@ struct registerPointerMap
 
 #define RPM_ENTRY(name,var) {name, (unsigned int*)&var, sizeof(var)},
 
-registerPointerMap m68kPointerMap [] = {
-/*	RPM_ENTRY("a0", main68k_context.areg[0])
-	RPM_ENTRY("a1", main68k_context.areg[1])
-	RPM_ENTRY("a2", main68k_context.areg[2])
-	RPM_ENTRY("a3", main68k_context.areg[3])
-	RPM_ENTRY("a4", main68k_context.areg[4])
-	RPM_ENTRY("a5", main68k_context.areg[5])
-	RPM_ENTRY("a6", main68k_context.areg[6])
-	RPM_ENTRY("a7", main68k_context.areg[7])
-	RPM_ENTRY("d0", main68k_context.dreg[0])
-	RPM_ENTRY("d1", main68k_context.dreg[1])
-	RPM_ENTRY("d2", main68k_context.dreg[2])
-	RPM_ENTRY("d3", main68k_context.dreg[3])
-	RPM_ENTRY("d4", main68k_context.dreg[4])
-	RPM_ENTRY("d5", main68k_context.dreg[5])
-	RPM_ENTRY("d6", main68k_context.dreg[6])
-	RPM_ENTRY("d7", main68k_context.dreg[7])
-	RPM_ENTRY("pc", main68k_context.pc)
-	RPM_ENTRY("sr", main68k_context.sr)*/
+registerPointerMap a65c816PointerMap [] = {
+	RPM_ENTRY("db", Registers.DB)
+	RPM_ENTRY("p", Registers.PL)
+	RPM_ENTRY("e", Registers.PH) // 1bit flag
+	RPM_ENTRY("a", Registers.A.W)
+	RPM_ENTRY("d", Registers.D.W)
+	RPM_ENTRY("s", Registers.S.W)
+	RPM_ENTRY("x", Registers.X.W)
+	RPM_ENTRY("y", Registers.Y.W)
+	RPM_ENTRY("pb", Registers.PB)
+	RPM_ENTRY("pc", Registers.PCw)
+	RPM_ENTRY("pbpc", Registers.PBPC)
 	{}
 };
-registerPointerMap s68kPointerMap [] = {/*
-	RPM_ENTRY("a0", sub68k_context.areg[0])
-	RPM_ENTRY("a1", sub68k_context.areg[1])
-	RPM_ENTRY("a2", sub68k_context.areg[2])
-	RPM_ENTRY("a3", sub68k_context.areg[3])
-	RPM_ENTRY("a4", sub68k_context.areg[4])
-	RPM_ENTRY("a5", sub68k_context.areg[5])
-	RPM_ENTRY("a6", sub68k_context.areg[6])
-	RPM_ENTRY("a7", sub68k_context.areg[7])
-	RPM_ENTRY("d0", sub68k_context.dreg[0])
-	RPM_ENTRY("d1", sub68k_context.dreg[1])
-	RPM_ENTRY("d2", sub68k_context.dreg[2])
-	RPM_ENTRY("d3", sub68k_context.dreg[3])
-	RPM_ENTRY("d4", sub68k_context.dreg[4])
-	RPM_ENTRY("d5", sub68k_context.dreg[5])
-	RPM_ENTRY("d6", sub68k_context.dreg[6])
-	RPM_ENTRY("d7", sub68k_context.dreg[7])
-	RPM_ENTRY("pc", sub68k_context.pc)
-	RPM_ENTRY("sr", sub68k_context.sr)*/
+registerPointerMap sa1PointerMap [] = {
+	RPM_ENTRY("db", SA1Registers.DB)
+	RPM_ENTRY("p", SA1Registers.PL)
+	RPM_ENTRY("e", SA1Registers.PH) // 1bit flag
+	RPM_ENTRY("a", SA1Registers.A.W)
+	RPM_ENTRY("d", SA1Registers.D.W)
+	RPM_ENTRY("s", SA1Registers.S.W)
+	RPM_ENTRY("x", SA1Registers.X.W)
+	RPM_ENTRY("y", SA1Registers.Y.W)
+	RPM_ENTRY("pb", SA1Registers.PB)
+	RPM_ENTRY("pc", SA1Registers.PCw)
+	RPM_ENTRY("pbpc", SA1Registers.PBPC)
 	{}
 };
 
@@ -1890,11 +1876,10 @@ struct cpuToRegisterMap
 }
 cpuToRegisterMaps [] =
 {
-	{"m68k.", m68kPointerMap},
-	{"main.", m68kPointerMap},
-	{"s68k.", s68kPointerMap},
-	{"sub.",  s68kPointerMap},
-	{"", m68kPointerMap},
+	{"65c816.", a65c816PointerMap},
+	{"main.", a65c816PointerMap},
+	{"sa1.", sa1PointerMap},
+	{"", a65c816PointerMap},
 };
 
 
@@ -1916,9 +1901,9 @@ DEFINE_LUA_FUNCTION(memory_getregister, "cpu_dot_registername_string")
 				{
 					switch(rpm.dataSize)
 					{ default:
-					case 1: lua_pushinteger(L, *(unsigned char*)rpm.pointer); break;
-					case 2: lua_pushinteger(L, *(unsigned short*)rpm.pointer); break;
-					case 4: lua_pushinteger(L, *(unsigned long*)rpm.pointer); break;
+					case 1: lua_pushinteger(L, *(uint8*)rpm.pointer); break;
+					case 2: lua_pushinteger(L, *(uint16*)rpm.pointer); break;
+					case 4: lua_pushinteger(L, *(uint32*)rpm.pointer); break;
 					}
 					return 1;
 				}
@@ -1949,9 +1934,9 @@ DEFINE_LUA_FUNCTION(memory_setregister, "cpu_dot_registername_string,value")
 				{
 					switch(rpm.dataSize)
 					{ default:
-					case 1: *(unsigned char*)rpm.pointer = (unsigned char)(value & 0xFF); break;
-					case 2: *(unsigned short*)rpm.pointer = (unsigned short)(value & 0xFFFF); break;
-					case 4: *(unsigned long*)rpm.pointer = value; break;
+					case 1: *(uint8*)rpm.pointer = (uint8)(value & 0xFF); break;
+					case 2: *(uint16*)rpm.pointer = (uint16)(value & 0xFFFF); break;
+					case 4: *(uint32*)rpm.pointer = value; break;
 					}
 					return 0;
 				}
@@ -4231,8 +4216,8 @@ static const struct luaL_reg memorylib [] =
 	{"writeword", memory_writeword},
 	{"writedword", memory_writedword},
 //	{"isvalid", memory_isvalid},
-//	{"getregister", memory_getregister},
-//	{"setregister", memory_setregister},
+	{"getregister", memory_getregister},
+	{"setregister", memory_setregister},
 	// alternate naming scheme for word and double-word and unsigned
 	{"readbyteunsigned", memory_readbyte},
 	{"readwordunsigned", memory_readword},
