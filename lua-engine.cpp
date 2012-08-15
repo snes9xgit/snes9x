@@ -20,6 +20,7 @@
 #define NOMINMAX
 #include <windows.h>
 #include "win32/wsnes9x.h"
+#include "win32/render.h"
 
 #define g_hWnd GUI.hWnd
 
@@ -3499,12 +3500,12 @@ static FORCEINLINE void WriteColor32(uint8 *dst, uint8 r, uint8 g, uint8 b)
 void DrawLuaGuiToScreen(void *s, int width, int height, int bpp, int pitch, bool clear)
 {
 	if (width % SNES_WIDTH != 0) {
-		assert(width % SNES_WIDTH == 0);
+		//assert(width % SNES_WIDTH == 0);
 		return;
 	}
 
 	if (height % SNES_HEIGHT != 0 && height % SNES_HEIGHT_EXTENDED != 0) {
-		assert(height % SNES_HEIGHT == 0 || height % SNES_HEIGHT_EXTENDED == 0);
+		//assert(height % SNES_HEIGHT == 0 || height % SNES_HEIGHT_EXTENDED == 0);
 		return;
 	}
 
@@ -3888,14 +3889,14 @@ const char* s_keyToName[256] =
 //   if the user is holding the W key and the left mouse button
 //   and has the mouse at the bottom-right corner of the game screen,
 //   then this would return {W=true, leftclick=true, xmouse=319, ymouse=223}
-DEFINE_LUA_FUNCTION(input_getcurrentinputstatus, "")
+int input_getcurrentinputstatus(lua_State* L, bool reportUp, bool reportDown)
 {
 	lua_newtable(L);
 
 #ifdef __WIN32__
 	// keyboard and mouse button status
 	{
-		int BackgroundInput = 0;//TODO
+		int BackgroundInput = GUI.BackgroundInput;
 
 		unsigned char keys [256];
 		if(!BackgroundInput)
@@ -3905,7 +3906,8 @@ DEFINE_LUA_FUNCTION(input_getcurrentinputstatus, "")
 				for(int i = 1; i < 255; i++)
 				{
 					int mask = (i == VK_CAPITAL || i == VK_NUMLOCK || i == VK_SCROLL) ? 0x01 : 0x80;
-					if(keys[i] & mask)
+					int active = keys[i] & mask;
+					if((active && reportDown) || (!active && reportUp))
 					{
 						const char* name = s_keyToName[i];
 						if(name)
@@ -3929,7 +3931,7 @@ DEFINE_LUA_FUNCTION(input_getcurrentinputstatus, "")
 						active = GetKeyState(i) & 0x01;
 					else
 						active = GetAsyncKeyState(i) & 0x8000;
-					if(active)
+					if((active && reportDown) || (!active && reportUp))
 					{
 						lua_pushboolean(L, true);
 						lua_setfield(L, -2, name);
@@ -3940,23 +3942,14 @@ DEFINE_LUA_FUNCTION(input_getcurrentinputstatus, "")
 	}
 	// mouse position in game screen pixel coordinates
 	{
-/*		POINT point;
-		RECT rect, srcRectUnused;
-		float xRatioUnused, yRatioUnused;
-		int depUnused;
+		POINT point;
 		GetCursorPos(&point);
-		ScreenToClient(MainWindow->getHWnd(), &point);
-		GetClientRect(MainWindow->getHWnd(), &rect);
-		void CalculateDrawArea(int Render_Mode, RECT& RectDest, RECT& RectSrc, float& Ratio_X, float& Ratio_Y, int& Dep);
-		CalculateDrawArea(Full_Screen ? Render_FS : Render_W, rect, srcRectUnused, xRatioUnused, yRatioUnused, depUnused);
-		int xres = ((VDP_Reg.Set4 & 0x1) || Debug || !Game || !FrameCount) ? 320 : 256;
-		int yres = ((VDP_Reg.Set2 & 0x8) && !(Debug || !Game || !FrameCount)) ? 240 : 224;
-		int x = ((point.x - rect.left) * xres) / std::max(1, rect.right - rect.left);
-		int y = ((point.y - rect.top) * yres) / std::max(1, rect.bottom - rect.top);*/
-		int x = 0, y = 0;
-		lua_pushinteger(L, x);
+		ScreenToClient(GUI.hWnd, &point);
+		extern void ClientToSNESScreen(LPPOINT lpPoint, bool clip);
+		ClientToSNESScreen(&point, false);
+		lua_pushinteger(L, point.x);
 		lua_setfield(L, -2, "xmouse");
-		lua_pushinteger(L, y);
+		lua_pushinteger(L, point.y);
 		lua_setfield(L, -2, "ymouse");
 	}
 #else
@@ -3964,6 +3957,24 @@ DEFINE_LUA_FUNCTION(input_getcurrentinputstatus, "")
 #endif
 
 	return 1;
+}
+// input.get()
+// returns a table of every keyboard button,
+DEFINE_LUA_FUNCTION(input_get, "")
+{
+	return input_getcurrentinputstatus(L, true, true);
+}
+// input.getdown()
+// returns a table of every keyboard button that is currently held
+DEFINE_LUA_FUNCTION(input_getdown, "")
+{
+	return input_getcurrentinputstatus(L, false, true);
+}
+// input.getup()
+// returns a table of every keyboard button that is not currently held
+DEFINE_LUA_FUNCTION(input_getup, "")
+{
+	return input_getcurrentinputstatus(L, true, false);
 }
 
 
@@ -4119,11 +4130,15 @@ static const struct luaL_reg joylib [] =
 };
 static const struct luaL_reg inputlib [] =
 {
-	{"get", input_getcurrentinputstatus},
+	{"get", input_get},
+	{"getdown", input_getdown},
+	{"getup", input_getup},
 	{"registerhotkey", input_registerhotkey},
 	{"popup", input_popup},
 	// alternative names
-	{"read", input_getcurrentinputstatus},
+	{"read", input_get},
+	{"readdown", input_getdown},
+	{"readup", input_getup},
 	{NULL, NULL}
 };
 static const struct luaL_reg movielib [] =
