@@ -1062,7 +1062,12 @@ DEFINE_LUA_FUNCTION(print, "...")
 DEFINE_LUA_FUNCTION(emu_message, "str")
 {
 	const char* str = toCString(L);
-	S9xSetInfoString(str);
+
+	static char msg[1024];
+	strncpy(msg, str, 1024);
+	msg[1024] = '\0';
+
+	S9xSetInfoString(msg);
 	return 0;
 }
 
