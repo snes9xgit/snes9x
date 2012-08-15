@@ -3912,7 +3912,7 @@ int input_getcurrentinputstatus(lua_State* L, bool reportUp, bool reportDown)
 						const char* name = s_keyToName[i];
 						if(name)
 						{
-							lua_pushboolean(L, true);
+							lua_pushboolean(L, active);
 							lua_setfield(L, -2, name);
 						}
 					}
@@ -3933,7 +3933,7 @@ int input_getcurrentinputstatus(lua_State* L, bool reportUp, bool reportDown)
 						active = GetAsyncKeyState(i) & 0x8000;
 					if((active && reportDown) || (!active && reportUp))
 					{
-						lua_pushboolean(L, true);
+						lua_pushboolean(L, active);
 						lua_setfield(L, -2, name);
 					}
 				}
