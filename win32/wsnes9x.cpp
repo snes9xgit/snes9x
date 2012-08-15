@@ -1698,6 +1698,7 @@ LRESULT CALLBACK WinProc(
 			else if (lstrcmpi(ext, TEXT(".smv")) == 0) {
 				WinMoviePlay(droppedFile);
 			}
+#ifdef HAVE_LUA
 			else if (lstrcmpi(ext, TEXT(".lua")) == 0) {
 				if(LuaScriptHWnds.size() < 16)
 				{
@@ -1711,6 +1712,7 @@ LRESULT CALLBACK WinProc(
 					}
 				}
 			}
+#endif
 			else if (lstrcmpi(ext, TEXT(".wch")) == 0) {
 				if (!Settings.StopEmulation) {
 					SendMenuCommand(ID_RAM_WATCH);

@@ -19,6 +19,7 @@
 #ifdef __WIN32__
 #define NOMINMAX
 #include <windows.h>
+#include <direct.h>
 #include "win32/wsnes9x.h"
 #include "win32/render.h"
 
@@ -4481,7 +4482,7 @@ void RunLuaScriptFile(int uid, const char* filenameCStr)
 	static char dirnameCStr[MAX_PATH];
 	strcpy(dirnameCStr, filenameCStr);
 	TrimFilenameFromPath(dirnameCStr);
-	chdir(dirnameCStr);
+	_chdir(dirnameCStr);
 
 	if(info.running)
 	{
