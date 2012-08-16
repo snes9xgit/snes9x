@@ -534,6 +534,8 @@ Nintendo is a trade mark.")
 #define SEARCH_COLUMN_ADDRESS TEXT("Address")
 #define SEARCH_COLUMN_VALUE TEXT("Value")
 #define SEARCH_COLUMN_DESCRIPTION TEXT("Description")
+#define CHEAT_COLUMN_CODE TEXT("Code")
+#define CHEAT_COLUMN_DESCRIPTION TEXT("Description")
 
 // ROM dialog
 

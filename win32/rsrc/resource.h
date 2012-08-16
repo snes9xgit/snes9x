@@ -160,11 +160,11 @@
 #define IDC_JPTOGGLE                    1126
 #define IDC_LOCALVIDMEM                 1126
 #define IDC_VSYNC                       1126
-#define IDC_CHEAT_DESCRIPTION           1127
+#define IDC_CHEAT_NAME                  1127
 #define IDC_KEYBOARD                    1127
 #define IDC_ALLOWLEFTRIGHT              1127
-#define IDC_CHEAT_ADDRESS               1128
-#define IDC_CHEAT_BYTE                  1129
+#define IDC_CHEAT_DEC                   1128
+#define IDC_CHEAT_HEX                   1129
 #define IDC_ADD_CHEAT                   1130
 #define IDC_CHEAT_LIST                  1131
 #define IDC_PICTURE                     1132
@@ -253,13 +253,9 @@
 #define IDC_LABEL_UP10                  1189
 #define IDC_LABEL_MAXSKIP               1190
 #define IDC_LABEL_UP11                  1190
-#define IDC_LABEL_CHEAT_CODE            1191
 #define IDC_LABEL_UP12                  1191
-#define IDC_LABEL_CHEAT_DESCRIPTION     1192
 #define IDC_LABEL_UP13                  1192
-#define IDC_LABEL_CHEAT_ADDRESS         1193
 #define IDC_LABEL_UP14                  1193
-#define IDC_LABEL_CHEAT_BYTE            1194
 #define IDC_LABEL_UP15                  1194
 #define IDC_LABEL_SERVERADDY            1195
 #define IDC_LABEL_UP16                  1195
@@ -368,6 +364,7 @@
 #define IDC_SHADER_HLSL_BROWSE          3016
 #define IDC_SHADER_GROUP                3017
 #define IDC_SHADER_GLSL_BROWSE          3018
+#define IDC_CHEAT_SYNTAX                3018
 #define IDC_RAMLIST                     5000
 //#define IDC_C_SEARCH                    5001
 #define IDC_C_ADDCHEAT                  5002
@@ -578,7 +575,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        151
 #define _APS_NEXT_COMMAND_VALUE         40175
-#define _APS_NEXT_CONTROL_VALUE         3018
+#define _APS_NEXT_CONTROL_VALUE         3019
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

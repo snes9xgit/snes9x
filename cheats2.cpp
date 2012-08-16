@@ -180,6 +180,10 @@
 #include "memmap.h"
 #include "cheats.h"
 
+#include <string>
+#include <sstream>
+#include <algorithm>
+
 uint8 S9xGetByteFree (uint32);
 void S9xSetByteFree (uint8, uint32);
 
@@ -223,69 +227,151 @@ void S9xInitCheatData (void)
 	Cheat.FillRAM = Memory.FillRAM;
 }
 
-void S9xAddCheat (bool8 enable, bool8 save_current_value, uint32 address, uint8 byte)
+bool S9xIsValidCheatCode(const char *codestring)
 {
-	if (Cheat.num_cheats < sizeof(Cheat.c) / sizeof(Cheat.c[0]))
+	std::string codes(codestring);
+
+	if (codes.empty() || codes[codes.length() - 1] == '+')
+		return false; // std::getline cannot handle this case
+
+	std::istringstream iss(codes);
+	std::string code;
+	while(std::getline(iss, code, '+'))
 	{
-		Cheat.c[Cheat.num_cheats].address = address;
-		Cheat.c[Cheat.num_cheats].byte = byte;
-		Cheat.c[Cheat.num_cheats].enabled = enable;
-
-		if (save_current_value)
+		uint32 address;
+		uint8 byte;
+		if (S9xProActionReplayToRaw(code.c_str(), address, byte) != NULL &&
+			S9xGameGenieToRaw(code.c_str(), address, byte) != NULL)
 		{
-			Cheat.c[Cheat.num_cheats].saved_byte = S9xGetByteFree(address);
-			Cheat.c[Cheat.num_cheats].saved = TRUE;
-		}
+			uint8 bytes[3];
+			uint8 num_bytes;
 
-		Cheat.num_cheats++;
+			if (S9xGoldFingerToRaw(code.c_str(), address, num_bytes, bytes) != NULL)
+				return false; // invalid format
+		}
+	}
+	return true;
+}
+
+static inline bool S9xCompileCheat(struct SCheatItem& cheat, bool8 save_current_value)
+{
+	std::string codes(cheat.code);
+	std::vector<SCheat> cheatVector;
+
+	if (codes.empty() || codes[codes.length() - 1] == '+')
+		return false; // std::getline cannot handle this case
+
+	std::istringstream iss(codes);
+	std::string code;
+	while(std::getline(iss, code, '+'))
+	{
+		SCheat c;
+		if (S9xProActionReplayToRaw(code.c_str(), c.address, c.byte) == NULL ||
+			S9xGameGenieToRaw(code.c_str(), c.address, c.byte) == NULL)
+		{
+			c.saved = save_current_value;
+			if (c.saved) {
+				c.saved_byte = S9xGetByteFree(c.address);
+			}
+			cheatVector.push_back(c);
+		}
+		else
+		{
+			uint32 address;
+			uint8 bytes[3];
+			uint8 num_bytes;
+
+			if (S9xGoldFingerToRaw(code.c_str(), address, num_bytes, bytes) == NULL)
+			{
+				for (int i = 0; i < num_bytes; i++)
+				{
+					c.address = address + i;
+					c.byte = bytes[i];
+					c.saved = save_current_value;
+					if (c.saved) {
+						c.saved_byte = S9xGetByteFree(c.address);
+					}
+					cheatVector.push_back(c);
+				}
+			}
+			else
+				return false; // invalid format
+		}
+	}
+	cheat.c.clear();
+	copy(cheatVector.begin(), cheatVector.end(), std::back_inserter(cheat.c));
+	return true;
+}
+
+void S9xAddCheat (bool8 enable, bool8 save_current_value, const char *code, const char *name)
+{
+	struct SCheatItem cheat;
+	cheat.code = code;
+	cheat.name = name;
+	cheat.enabled = enable;
+	if (S9xCompileCheat(cheat, save_current_value))
+		Cheat.c.push_back(cheat);
+}
+
+void S9xAddCheat (bool8 enable, bool8 save_current_value, uint32 address, uint8 byte, const char *name)
+{
+	if (address >= 0x000000 && address <= 0xFFFFFF) {
+		char code[10];
+		sprintf(code, "%06X:%02X", address, byte);
+		S9xAddCheat(enable, save_current_value, code, name);
 	}
 }
 
 void S9xDeleteCheat (uint32 which1)
 {
-	if (which1 < Cheat.num_cheats)
+	std::vector<SCheatItem>::iterator iter = Cheat.c.begin();
+	std::advance(iter, which1);
+	if (which1 < Cheat.c.size())
 	{
 		if (Cheat.c[which1].enabled)
 			S9xRemoveCheat(which1);
-
-		memmove(&Cheat.c[which1], &Cheat.c[which1 + 1], sizeof(Cheat.c[0]) * (Cheat.num_cheats - which1 - 1));
-
-		Cheat.num_cheats--;
+		Cheat.c.erase(iter);
 	}
 }
 
 void S9xDeleteCheats (void)
 {
 	S9xRemoveCheats();
-	Cheat.num_cheats = 0;
+	Cheat.c.clear();
 }
 
 void S9xRemoveCheat (uint32 which1)
 {
-	if (Cheat.c[which1].saved)
+	std::vector<SCheat>::iterator iter = Cheat.c[which1].c.begin();
+	while (iter != Cheat.c[which1].c.end())
 	{
-		uint32	address = Cheat.c[which1].address;
+		SCheat& c = *iter;
+		if (c.saved)
+		{
+			uint32	address = c.address;
 
-		int		block = (address & 0xffffff) >> MEMMAP_SHIFT;
-		uint8	*ptr = Memory.Map[block];
+			int		block = (address & 0xffffff) >> MEMMAP_SHIFT;
+			uint8	*ptr = Memory.Map[block];
 
-		if (ptr >= (uint8 *) CMemory::MAP_LAST)
-			*(ptr + (address & 0xffff)) = Cheat.c[which1].saved_byte;
-		else
-			S9xSetByteFree(Cheat.c[which1].saved_byte, address);
+			if (ptr >= (uint8 *) CMemory::MAP_LAST)
+				*(ptr + (address & 0xffff)) = c.saved_byte;
+			else
+				S9xSetByteFree(c.saved_byte, address);
+		}
+		iter++;
 	}
 }
 
 void S9xRemoveCheats (void)
 {
-	for (uint32 i = 0; i < Cheat.num_cheats; i++)
+	for (uint32 i = 0; i < Cheat.c.size(); i++)
 		if (Cheat.c[i].enabled)
 			S9xRemoveCheat(i);
 }
 
 void S9xEnableCheat (uint32 which1)
 {
-	if (which1 < Cheat.num_cheats && !Cheat.c[which1].enabled)
+	if (which1 < Cheat.c.size() && !Cheat.c[which1].enabled)
 	{
 		Cheat.c[which1].enabled = TRUE;
 		S9xApplyCheat(which1);
@@ -294,62 +380,222 @@ void S9xEnableCheat (uint32 which1)
 
 void S9xDisableCheat (uint32 which1)
 {
-	if (which1 < Cheat.num_cheats && Cheat.c[which1].enabled)
+	if (which1 < Cheat.c.size() && Cheat.c[which1].enabled)
 	{
 		S9xRemoveCheat(which1);
 		Cheat.c[which1].enabled = FALSE;
 	}
 }
 
-void S9xApplyCheat (uint32 which1)
+void S9xApplyCheat (uint32 which1, bool8 force_save_current_value)
 {
-	uint32	address = Cheat.c[which1].address;
-
-	if (!Cheat.c[which1].saved)
+	std::vector<SCheat>::iterator iter = Cheat.c[which1].c.begin();
+	while (iter != Cheat.c[which1].c.end())
 	{
-		Cheat.c[which1].saved_byte = S9xGetByteFree(address);
-		Cheat.c[which1].saved = TRUE;
+		SCheat& c = *iter;
+		uint32	address = c.address;
+
+		if (force_save_current_value)
+		{
+			c.saved_byte = S9xGetByteFree(address);
+			c.saved = TRUE;
+		}
+
+		int		block = (address & 0xffffff) >> MEMMAP_SHIFT;
+		uint8	*ptr = Memory.Map[block];
+
+		if (ptr >= (uint8 *) CMemory::MAP_LAST)
+			*(ptr + (address & 0xffff)) = c.byte;
+		else
+			S9xSetByteFree(c.byte, address);
+
+		iter++;
 	}
-
-	int		block = (address & 0xffffff) >> MEMMAP_SHIFT;
-	uint8	*ptr = Memory.Map[block];
-
-	if (ptr >= (uint8 *) CMemory::MAP_LAST)
-		*(ptr + (address & 0xffff)) = Cheat.c[which1].byte;
-	else
-		S9xSetByteFree(Cheat.c[which1].byte, address);
 }
 
-void S9xApplyCheats (void)
+void S9xApplyCheats (bool8 force_save_current_value)
 {
 	if (Settings.ApplyCheats)
 	{
-		for (uint32 i = 0; i < Cheat.num_cheats; i++)
+		for (uint32 i = 0; i < Cheat.c.size(); i++)
 			if (Cheat.c[i].enabled)
-				S9xApplyCheat(i);
+				S9xApplyCheat(i, force_save_current_value);
 	}
 }
 
-bool8 S9xLoadCheatFile (const char *filename)
+std::string& string_replace (std::string& str, const std::string& from, const std::string& to)
+{
+	std::string::size_type pos = 0;
+	while (pos = str.find(from, pos), pos != std::string::npos) {
+		str.replace(pos, from.length(), to);
+		pos += to.length();
+	}
+	return str;
+}
+
+std::string csv_escape(const std::string &token, bool quoteAlways = false)
+{
+	std::string res(token);
+	bool needsQuote = false;
+	if (res.find("\"", 0) != std::string::npos) {
+		needsQuote = true;
+		string_replace(res, "\"", "\"\"");
+	}
+	if (res.find(",", 0) != std::string::npos ||
+		res.find("\n", 0) != std::string::npos) {
+		needsQuote = true;
+	}
+	if (needsQuote || quoteAlways) {
+		res.insert(0, "\"");
+		res.append("\"");
+	}
+	return res;
+}
+
+
+std::string csv_unescape(const std::string &token)
+{
+	std::string res(token);
+	if (res.length() >= 2 && res[0] == '\"' && res[res.length() - 1] == '\"') {
+		res.erase(res.length() - 1, 1);
+		res.erase(0, 1);
+	}
+	string_replace(res, "\"\"", "\"");
+	return res;
+}
+
+std::vector<std::string> csv_split(const std::string &str, bool *valid = NULL)
+{
+	std::vector<std::string> res;
+
+	if (valid != NULL) {
+		*valid = true;
+	}
+
+	std::string::size_type start = 0;
+	std::string::size_type current = 0;
+	std::string::size_type found;
+	bool insideQuote = false;
+	while ((found = str.find_first_of(",\"", current)) != std::string::npos) {
+		char c = str[found];
+		if (c == '\"') {
+			if (insideQuote) {
+				if (str[found + 1] == '\"') {
+					found++; // skip the next quote
+				}
+				else {
+					if (valid != NULL && str[found + 1] != ',' && str[found + 1] != '\0' && str[found + 1] != '\r' && str[found + 1] != '\n') {
+						*valid = false;
+					}
+					insideQuote = false;
+				}
+			}
+			else {
+				if (valid != NULL && found > 0 && str[found - 1] != ',' && str[found - 1] != '\r' && str[found - 1] != '\n') {
+					*valid = false;
+				}
+				insideQuote = true;
+			}
+		}
+		else if (c == ',') {
+			if (!insideQuote) {
+				res.push_back(std::string(str, start, found - start));
+				start = found + 1;
+			}
+		}
+		current = found + 1;
+	}
+	res.push_back(std::string(str, start, str.size() - start));
+
+	if (valid != NULL && insideQuote) {
+		*valid = false;
+	}
+
+	for (int i = 0; i < res.size(); i++) {
+		res[i] = csv_unescape(res[i]);
+	}
+	return res;
+}
+
+std::string csv_join(std::vector<std::string> &v, bool quoteAlways = false)
+{
+	std::string res;
+
+	std::vector<std::string>::iterator iter = v.begin();
+	bool first = true;
+	while(iter != v.end())
+	{
+		if (first) {
+			first = false;
+		}
+		else {
+			res.append(",");
+		}
+
+		res.append(csv_escape(*iter, quoteAlways));
+		iter++;
+	}
+	return res;
+}
+
+bool8 IsOldCheatFile (const char *filename)
 {
 	FILE	*fs;
-	uint8	data[28];
-
-	Cheat.num_cheats = 0;
 
 	fs = fopen(filename, "rb");
 	if (!fs)
 		return (FALSE);
 
-	while (fread((void *) data, 1, 28, fs) == 28)
+	int c = fgetc(fs);
+	fclose(fs);
+
+	return ((c & ~(4 | 8)) == 0);
+}
+
+bool8 S9xLoadCheatFile (const char *filename)
+{
+	FILE	*fs;
+	char	data[1024];
+
+	if (IsOldCheatFile(filename))
+		return S9xLoadCheatFileOld(filename);
+
+	Cheat.c.clear();
+
+	fs = fopen(filename, "r");
+	if (!fs)
+		return (FALSE);
+
+	while (fgets(data, 1024, fs) != NULL)
 	{
-		Cheat.c[Cheat.num_cheats].enabled = (data[0] & 4) == 0;
-		Cheat.c[Cheat.num_cheats].byte = data[1];
-		Cheat.c[Cheat.num_cheats].address = data[2] | (data[3] << 8) |  (data[4] << 16);
-		Cheat.c[Cheat.num_cheats].saved_byte = data[5];
-		Cheat.c[Cheat.num_cheats].saved = (data[0] & 8) != 0;
-		memmove(Cheat.c[Cheat.num_cheats].name, &data[8], 20);
-		Cheat.c[Cheat.num_cheats++].name[20] = 0;
+		data[strlen(data) - 1] = '\0'; // erase newline
+
+		std::vector<std::string> v = csv_split(std::string(data));
+		if (v.size() != 3) {
+			fclose(fs);
+			return (FALSE);
+		}
+
+		struct SCheatItem c;
+		if (v[0] == "enabled") {
+			c.enabled = TRUE;
+		}
+		else if (v[0] == "disabled") {
+			c.enabled = FALSE;
+		}
+		else {
+			fclose(fs);
+			return (FALSE);
+		}
+		c.code = v[1];
+		c.name = v[2];
+
+		if (!S9xCompileCheat(c, FALSE))
+		{
+			fclose(fs);
+			return (FALSE);
+		}
+		Cheat.c.push_back(c);
 	}
 
 	fclose(fs);
@@ -357,46 +603,83 @@ bool8 S9xLoadCheatFile (const char *filename)
 	return (TRUE);
 }
 
+bool8 S9xLoadCheatFileOld (const char *filename)
+{
+	FILE	*fs;
+	uint8	data[28];
+
+	Cheat.c.clear();
+
+	fs = fopen(filename, "rb");
+	if (!fs)
+		return (FALSE);
+
+	while (fread((void *) data, 1, 28, fs) == 28)
+	{
+		struct SCheatItem c;
+		uint32 address;
+		uint8 byte;
+		uint8 saved_byte;
+		bool8 saved;
+		c.enabled = (data[0] & 4) == 0;
+		byte = data[1];
+		address = data[2] | (data[3] << 8) |  (data[4] << 16);
+		saved_byte = data[5];
+		saved = (data[0] & 8) != 0;
+
+		char code[10];
+		char name[22];
+		sprintf(code, "%06X%02X", address, byte);
+		memmove(name, &data[8], 20);
+		name[20] = '\0';
+		c.code = code;
+		c.name = name;
+
+		if (!S9xCompileCheat(c, FALSE))
+		{
+			fclose(fs);
+			return (FALSE);
+		}
+
+		std::vector<SCheat>::iterator iter = c.c.begin();
+		while (iter != c.c.end())
+		{
+			iter->saved_byte = saved_byte;
+			iter->saved = saved;
+			iter++;
+		}
+
+		Cheat.c.push_back(c);
+	}
+
+	fclose(fs);
+
+	S9xSaveCheatFile(filename);
+	return (TRUE);
+}
+
 bool8 S9xSaveCheatFile (const char *filename)
 {
-	if (Cheat.num_cheats == 0)
+	if (Cheat.c.size() == 0)
 	{
 		remove(filename);
 		return (TRUE);
 	}
 
 	FILE	*fs;
-	uint8	data[28];
 
-	fs = fopen(filename, "wb");
+	fs = fopen(filename, "w");
 	if (!fs)
 		return (FALSE);
 
-	for (uint32 i = 0; i < Cheat.num_cheats; i++)
+	for (uint32 i = 0; i < Cheat.c.size(); i++)
 	{
-		memset(data, 0, 28);
-
-		if (i == 0)
-		{
-			data[6] = 254;
-			data[7] = 252;
-		}
-
-		if (!Cheat.c[i].enabled)
-			data[0] |= 4;
-
-		if (Cheat.c[i].saved)
-			data[0] |= 8;
-
-		data[1] = Cheat.c[i].byte;
-		data[2] = (uint8) (Cheat.c[i].address >> 0);
-		data[3] = (uint8) (Cheat.c[i].address >> 8);
-		data[4] = (uint8) (Cheat.c[i].address >> 16);
-		data[5] = Cheat.c[i].saved_byte;
-
-		memmove(&data[8], Cheat.c[i].name, 19);
-
-		if (fwrite(data, 28, 1, fs) != 1)
+		struct SCheatItem& c = Cheat.c[i];
+		std::vector<std::string> v;
+		v.push_back(c.enabled ? "enabled" : "disabled");
+		v.push_back(c.code);
+		v.push_back(c.name);
+		if (fprintf(fs, "%s\n", csv_join(v, true).c_str()) < 0)
 		{
 			fclose(fs);
 			return (FALSE);

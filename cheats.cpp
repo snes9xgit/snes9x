@@ -223,21 +223,38 @@ static bool8 S9xAllHex (const char *code, int len)
 
 const char * S9xProActionReplayToRaw (const char *code, uint32 &address, uint8 &byte)
 {
-	uint32	data = 0;
+	bool valid = false;
+	int len = strlen(code);
+	if (len == 9 && S9xAllHex(code, 6) && *(code + 6) == ':' && S9xAllHex(code + 7, 2)) {
+		uint32 address_, byte_;
+		*(char*)(code + 6) = '\0';
+		if (sscanf(code, "%x", &address_) == 1 && sscanf(code + 7, "%x", &byte_) == 1) {
+			address = address_;
+			byte = (uint8) byte_;
+			valid = true;
+		}
+		*(char*)(code + 6) = ':';
+	}
+	else if (len == 8 && S9xAllHex(code, 8)) {
+		uint32 data;
+		if (sscanf(code, "%x", &data) == 1) {
+			address = data >> 8;
+			byte = (uint8) data;
+			valid = true;
+		}
+	}
 
-	if (strlen(code) != 8 || !S9xAllHex(code, 8) || sscanf(code, "%x", &data) != 1)
+	if (valid)
+		return (NULL);
+	else
 		return ("Invalid Pro Action Replay code - should be 8 hex digits in length.");
-
-	address = data >> 8;
-	byte = (uint8) data;
-
-	return (NULL);
 }
 
-const char * S9xGoldFingerToRaw (const char *code, uint32 &address, bool8 &sram, uint8 &num_bytes, uint8 bytes[3])
+const char * S9xGoldFingerToRaw (const char *code, uint32 &address, uint8 &num_bytes, uint8 bytes[3])
 {
 	char	tmp[15];
 	int		i;
+	bool8	sram;
 
 	if (strlen(code) != 14)
 		return ("Invalid Gold Finger code - should be 14 hex digits in length.");
@@ -246,6 +263,10 @@ const char * S9xGoldFingerToRaw (const char *code, uint32 &address, bool8 &sram,
 	tmp[5] = 0;
 	if (sscanf(tmp, "%x", &address) != 1)
 		return ("Invalid Gold Finger code.");
+
+	sram = code[13] == '1';
+	if (sram)
+		return ("Unsupported Gold Finger code - writing to SRAM is not supported.");
 
 	for (i = 0; i < 3; i++)
 	{
@@ -259,7 +280,6 @@ const char * S9xGoldFingerToRaw (const char *code, uint32 &address, bool8 &sram,
 	}
 
 	num_bytes = i;
-	sram = code[13] == '1';
 
 	return (NULL);
 }

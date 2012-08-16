@@ -1759,7 +1759,7 @@ bool8 CMemory::LoadROMInt (int32 ROMfillSize)
 	InitROM();
 
 	S9xInitCheatData();
-	S9xApplyCheats();
+	S9xApplyCheats(FALSE);
 
 	S9xReset();
 
@@ -1930,7 +1930,7 @@ bool8 CMemory::LoadMultiCartInt ()
 	InitROM();
 
 	S9xInitCheatData();
-	S9xApplyCheats();
+	S9xApplyCheats(FALSE);
 
 	S9xReset();
 

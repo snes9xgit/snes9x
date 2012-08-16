@@ -224,6 +224,22 @@
 #define _tFromAnsi
 #endif
 
+#include <string>
+#include <sstream>
+namespace std {
+#ifndef tstring
+#ifdef UNICODE
+	typedef wstring tstring;
+	typedef wstringbuf tstringbuf;
+	typedef wstringstream tstringstream;
+#else
+	typedef string tstring;
+	typedef stringbuf tstringbuf;
+	typedef stringstream tstringstream;
+#endif
+#endif
+}
+
 /****************************************************************************/
 inline static void Log (const char *str)
 {

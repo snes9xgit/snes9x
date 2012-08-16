@@ -179,22 +179,28 @@
 #ifndef _CHEATS_H_
 #define _CHEATS_H_
 
-#define MAX_CHEATS	150
+#include <vector>
+#include <string>
 
 struct SCheat
 {
 	uint32	address;
 	uint8	byte;
 	uint8	saved_byte;
-	bool8	enabled;
 	bool8	saved;
-	char	name[22];
+};
+
+struct SCheatItem
+{
+	std::vector<SCheat> c;
+	std::string code;
+	std::string name;
+	bool8 enabled;
 };
 
 struct SCheatData
 {
-	struct SCheat c[MAX_CHEATS];
-	uint32	num_cheats;
+	std::vector<SCheatItem> c;
 	uint8	CWRAM[0x20000];
 	uint8	CSRAM[0x10000];
 	uint8	CIRAM[0x2000];
@@ -236,18 +242,22 @@ typedef enum
 extern SCheatData	Cheat;
 extern Watch		watches[16];
 
-void S9xApplyCheat (uint32);
-void S9xApplyCheats (void);
+void S9xApplyCheat (uint32, bool8 = TRUE);
+void S9xApplyCheats (bool8 = TRUE);
 void S9xRemoveCheat (uint32);
 void S9xRemoveCheats (void);
 void S9xDeleteCheat (uint32);
 void S9xDeleteCheats (void);
 void S9xEnableCheat (uint32);
 void S9xDisableCheat (uint32);
-void S9xAddCheat (bool8, bool8, uint32, uint8);
+bool S9xIsValidCheatCode(const char *);
+void S9xAddCheat (bool8, bool8, const char *, const char *);
+void S9xAddCheat (bool8, bool8, uint32, uint8, const char * = "");
 void S9xInitCheatData (void);
 void S9xInitWatchedAddress (void);
+bool8 IsOldCheatFile (const char *);
 bool8 S9xLoadCheatFile (const char *);
+bool8 S9xLoadCheatFileOld (const char *);
 bool8 S9xSaveCheatFile (const char *);
 
 void S9xStartCheatSearch (SCheatData *);
@@ -258,6 +268,6 @@ void S9xOutputCheatSearchResults (SCheatData *);
 
 const char * S9xGameGenieToRaw (const char *, uint32 &, uint8 &);
 const char * S9xProActionReplayToRaw (const char *, uint32 &, uint8 &);
-const char * S9xGoldFingerToRaw (const char *, uint32 &, bool8 &, uint8 &, uint8 bytes[3]);
+const char * S9xGoldFingerToRaw (const char *, uint32 &, uint8 &, uint8 bytes[3]);
 
 #endif

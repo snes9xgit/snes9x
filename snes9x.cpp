@@ -788,11 +788,10 @@ char * S9xParseArgs (char **argv, int argc)
 				{
 					uint32		address;
 					uint8		bytes[3];
-					bool8		sram;
 					uint8		num_bytes;
 					const char	*error;
 
-					if ((error = S9xGoldFingerToRaw(argv[++i], address, sram, num_bytes, bytes)) == NULL)
+					if ((error = S9xGoldFingerToRaw(argv[++i], address, num_bytes, bytes)) == NULL)
 					{
 						for (int c = 0; c < num_bytes; c++)
 							S9xAddCheat(TRUE, FALSE, address + c, bytes[c]);
