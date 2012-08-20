@@ -3007,13 +3007,16 @@ void S9xOnSNESPadRead()
 					DispatchMessage (&msg);
 				}
 
-				DWORD lastTime = timeGetTime();
-				if (lastTime - lastGUIUpdateTime >= guiUpdateFrequency)
+				if (!Settings.StopEmulation && (Settings.Paused || Settings.ForcedPause))
 				{
-					UpdateToolWindows();
-					S9xUpdateFrameCounter();
-					InvalidateRect(GUI.hWnd, NULL, FALSE);
-					lastGUIUpdateTime = lastTime;
+					DWORD lastTime = timeGetTime();
+					if (lastTime - lastGUIUpdateTime >= guiUpdateFrequency)
+					{
+						UpdateToolWindows();
+						S9xUpdateFrameCounter();
+						InvalidateRect(GUI.hWnd, NULL, FALSE);
+						lastGUIUpdateTime = lastTime;
+					}
 				}
 			}
 
@@ -3520,12 +3523,15 @@ int WINAPI WinMain(
                 DispatchMessage (&msg);
             }
 
-			DWORD lastTime = timeGetTime();
-			if (lastTime - lastGUIUpdateTime >= guiUpdateFrequency) {
-				UpdateToolWindows();
-				S9xUpdateFrameCounter();
-				InvalidateRect(GUI.hWnd, NULL, FALSE);
-				lastGUIUpdateTime = lastTime;
+			if (!Settings.StopEmulation && (Settings.Paused || Settings.ForcedPause))
+			{
+				DWORD lastTime = timeGetTime();
+				if (lastTime - lastGUIUpdateTime >= guiUpdateFrequency) {
+					UpdateToolWindows();
+					S9xUpdateFrameCounter();
+					InvalidateRect(GUI.hWnd, NULL, FALSE);
+					lastGUIUpdateTime = lastTime;
+				}
 			}
 
 			S9xSetSoundMute(GUI.Mute || Settings.ForcedPause || (Settings.Paused && (!Settings.FrameAdvance || GUI.FAMute)));
