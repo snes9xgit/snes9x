@@ -422,7 +422,7 @@ void CD3DCG::ensureTextureSize(LPDIRECT3DTEXTURE9 &tex, D3DXVECTOR2 &texSize,
 			tex->Release();
 
 		hr = pDevice->CreateTexture(
-			wantedSize.x, wantedSize.y,
+			(UINT)wantedSize.x, (UINT)wantedSize.y,
 			1, // 1 level, no mipmaps
 			renderTarget?D3DUSAGE_RENDERTARGET:0,
 			renderTarget?D3DFMT_X8R8G8B8:D3DFMT_R5G6B5,
@@ -563,7 +563,7 @@ void CD3DCG::Render(LPDIRECT3DTEXTURE9 &origTex, D3DXVECTOR2 textureSize,
 		
 		/* viewport defines output size
 		*/
-		setViewport(0,0,shaderPasses[i].outputSize.x,shaderPasses[i].outputSize.y);
+		setViewport(0,0,(DWORD)shaderPasses[i].outputSize.x,(DWORD)shaderPasses[i].outputSize.y);
 
 		pDevice->BeginScene();
 		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,0,2);
@@ -598,11 +598,11 @@ void CD3DCG::Render(LPDIRECT3DTEXTURE9 &origTex, D3DXVECTOR2 textureSize,
 	pDevice->SetTexture(0, shaderPasses.back().tex);
 	pDevice->SetRenderTarget(0,pBackBuffer);
 	pBackBuffer->Release();
-	RECT displayRect=CalculateDisplayRect(shaderPasses.back().outputSize.x,shaderPasses.back().outputSize.y,windowSize.x,windowSize.y);
+	RECT displayRect=CalculateDisplayRect((unsigned int)shaderPasses.back().outputSize.x,(unsigned int)shaderPasses.back().outputSize.y,(unsigned int)windowSize.x,(unsigned int)windowSize.y);
 	setViewport(displayRect.left,displayRect.top,displayRect.right - displayRect.left,displayRect.bottom - displayRect.top);
 	setVertexStream(shaderPasses.back().vertexBuffer,
 		shaderPasses.back().outputSize,shaderPasses.back().textureSize,
-		D3DXVECTOR2(displayRect.right - displayRect.left,displayRect.bottom - displayRect.top));
+		D3DXVECTOR2((FLOAT)(displayRect.right - displayRect.left),(FLOAT)(displayRect.bottom - displayRect.top)));
 	pDevice->SetVertexShader(NULL);
 	pDevice->SetPixelShader(NULL);
 }

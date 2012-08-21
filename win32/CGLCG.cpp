@@ -536,7 +536,7 @@ void CGLCG::Render(GLuint &origTex, xySize textureSize, xySize inputSize, xySize
 
 		/* viewport determines the area we render into the output texture
 		*/
-		glViewport(0,0,shaderPasses[i].outputSize.x,shaderPasses[i].outputSize.y);
+		glViewport(0,0,(GLsizei)shaderPasses[i].outputSize.x,(GLsizei)shaderPasses[i].outputSize.y);
 
 		/* set up framebuffer and attach output texture
 		*/
@@ -590,7 +590,7 @@ void CGLCG::Render(GLuint &origTex, xySize textureSize, xySize inputSize, xySize
 	memcpy(pass.texCoords,shaderPasses[1].texcoords,sizeof(pass.texCoords));
 	prevPasses.push_front(pass);
 	glBindTexture(GL_TEXTURE_2D,origTex);
-	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,textureSize.x,textureSize.y,0,GL_RGB,GL_UNSIGNED_SHORT_5_6_5,NULL);
+	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,(GLsizei)textureSize.x,(GLsizei)textureSize.y,0,GL_RGB,GL_UNSIGNED_SHORT_5_6_5,NULL);
 
 	/* bind output of last pass to be rendered on the backbuffer
 	*/
@@ -600,8 +600,8 @@ void CGLCG::Render(GLuint &origTex, xySize textureSize, xySize inputSize, xySize
 	/* calculate and apply viewport and texture coordinates to
 	   that will be used in the main ogl code
 	*/
-	RECT displayRect=CalculateDisplayRect(shaderPasses.back().outputSize.x,shaderPasses.back().outputSize.y,windowSize.x,windowSize.y);
-	glViewport(displayRect.left,windowSize.y-displayRect.bottom,displayRect.right-displayRect.left,displayRect.bottom-displayRect.top);	
+	RECT displayRect=CalculateDisplayRect((unsigned int)shaderPasses.back().outputSize.x,(unsigned int)shaderPasses.back().outputSize.y,(unsigned int)windowSize.x,(unsigned int)windowSize.y);
+	glViewport(displayRect.left,(GLint)(windowSize.y-displayRect.bottom),displayRect.right-displayRect.left,displayRect.bottom-displayRect.top);	
 	setTexCoords(shaderPasses.size()-1,shaderPasses.back().outputSize,shaderPasses.back().textureSize,true);
 
 	/* render to backbuffer without shaders
