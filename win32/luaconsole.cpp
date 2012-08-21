@@ -699,6 +699,10 @@ LRESULT CALLBACK LuaScriptProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 		}	break;
 
 		case WM_CLOSE:
+			DestroyWindow(hDlg);
+			return true;
+
+		case WM_DESTROY:
 		{
 			LuaPerWindowInfo& info = LuaWindowInfo[hDlg];
 
@@ -818,6 +822,14 @@ const char* OpenLuaScript(const char* filename, const char* extraDirToCheck, boo
 	else return "Too many script windows are already open.";
 
 	return NULL;
+}
+
+void CloseAllLuaWindows()
+{
+	for (int i = 0; i < LuaScriptHWnds.size(); i++)
+	{
+		SendMessage(LuaScriptHWnds[i], WM_CLOSE, 0, 0);
+	}
 }
 
 #endif // HAVE_LUA

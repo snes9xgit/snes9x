@@ -3674,9 +3674,6 @@ int WINAPI WinMain(
 
 loop_exit:
 
-#ifdef HAVE_LUA
-	StopAllLuaScripts();
-#endif
 	CloseAllToolWindows();
 
 	Settings.StopEmulation = TRUE;
