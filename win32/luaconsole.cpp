@@ -824,12 +824,4 @@ const char* OpenLuaScript(const char* filename, const char* extraDirToCheck, boo
 	return NULL;
 }
 
-void CloseAllLuaWindows()
-{
-	for (int i = 0; i < LuaScriptHWnds.size(); i++)
-	{
-		SendMessage(LuaScriptHWnds[i], WM_CLOSE, 0, 0);
-	}
-}
-
 #endif // HAVE_LUA
