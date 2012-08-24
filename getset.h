@@ -875,27 +875,35 @@ inline void S9xSetWordQuiet (uint16 Word, uint32 Address, enum s9xwrap_t w = WRA
 inline uint8 S9xGetByte (uint32 Address)
 {
 	uint8 byte = S9xGetByteQuiet(Address);
+#ifdef HAVE_LUA
 	CallRegisteredLuaMemHook(Address, 1, byte, LUAMEMHOOK_READ);
+#endif
 	return (byte);
 }
 
 inline uint16 S9xGetWord (uint32 Address, enum s9xwrap_t w = WRAP_NONE)
 {
 	uint16 word = S9xGetWordQuiet(Address, w);
+#ifdef HAVE_LUA
 	CallRegisteredLuaMemHook(Address, 2, word, LUAMEMHOOK_READ);
+#endif
 	return (word);
 }
 
 inline void S9xSetByte (uint8 Byte, uint32 Address)
 {
 	S9xSetByteQuiet(Byte, Address);
+#ifdef HAVE_LUA
 	CallRegisteredLuaMemHook(Address, 1, Byte, LUAMEMHOOK_WRITE);
+#endif
 }
 
 inline void S9xSetWord (uint16 Word, uint32 Address, enum s9xwrap_t w = WRAP_NONE, enum s9xwriteorder_t o = WRITE_01)
 {
 	S9xSetWordQuiet(Word, Address, w, o);
+#ifdef HAVE_LUA
 	CallRegisteredLuaMemHook(Address, 2, Word, LUAMEMHOOK_WRITE);
+#endif
 }
 
 inline void S9xSetPCBase (uint32 Address)
