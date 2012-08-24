@@ -4157,14 +4157,14 @@ DEFINE_LUA_FUNCTION(movie_play, "[filename]")
 	}
     return 0;
 }
-/*DEFINE_LUA_FUNCTION(movie_replay, "")
+DEFINE_LUA_FUNCTION(movie_replay, "")
 {
-	if(MainMovie.File)
-		GensReplayMovie();
-	else
-		luaL_error(L, "it is invalid to call movie.replay when no movie open.");
-    return 0;
-}*/
+	if(!S9xMovieActive())
+		return 0;
+	lua_settop(L, 0);
+	movie_getname(L);
+	return movie_play(L);
+}
 DEFINE_LUA_FUNCTION(movie_close, "")
 {
 	S9xMovieShutdown();
@@ -4720,7 +4720,7 @@ static const struct luaL_reg movielib [] =
 	{"framecount", emu_getframecount}, // for those familiar with other emulators that have movie.framecount() instead of emulatorname.framecount()
 
 	{"play", movie_play},
-//	{"replay", movie_replay},
+	{"replay", movie_replay},
 	{"stop", movie_close},
 
 	// alternative names
