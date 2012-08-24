@@ -235,6 +235,7 @@ int S9xMovieUnfreeze (uint8 *, uint32);
 bool8 S9xMovieActive (void);
 bool8 S9xMoviePlaying (void);
 bool8 S9xMovieRecording (void);
+bool8 S9xMovieFinished (void);
 bool8 S9xMovieReadOnly (void);
 bool8 S9xMovieSetReadOnly (bool8 readonly);
 uint8 S9xMovieControllers (void);

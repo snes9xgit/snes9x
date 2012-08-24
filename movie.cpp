@@ -210,7 +210,8 @@ enum MovieState
 {
 	MOVIE_STATE_NONE = 0,
 	MOVIE_STATE_PLAY,
-	MOVIE_STATE_RECORD
+	MOVIE_STATE_RECORD,
+	MOVIE_STATE_FINISHED
 };
 
 struct SMovie
@@ -274,6 +275,7 @@ static int		read_movie_extrarominfo (FILE *, SMovie *);
 static void		write_movie_header (FILE *, SMovie *);
 static void		write_movie_extrarominfo (FILE *, SMovie *);
 static void		change_state (MovieState);
+static void		finish_playback (void);
 
 // HACK: reduce movie size by not storing changes that can only affect polled input in the movie for these types,
 //       because currently no port sets these types to polling
@@ -675,11 +677,22 @@ static void change_state (MovieState new_state)
 		fclose(Movie.File);
 		Movie.File = NULL;
 
-		if (S9xMoviePlaying() || S9xMovieRecording())
+		if (S9xMovieActive())
 			restore_previous_settings();
 	}
 
+	if (new_state == MOVIE_STATE_FINISHED)
+	{
+		truncate_movie();
+	}
+
 	Movie.State = new_state;
+}
+
+static void finish_playback (void)
+{
+	change_state(MOVIE_STATE_FINISHED);
+	S9xMessage(S9X_INFO, S9X_MOVIE_INFO, MOVIE_INFO_END);
 }
 
 void S9xMovieFreeze (uint8 **buf, uint32 *size)
@@ -711,10 +724,21 @@ void S9xMovieFreeze (uint8 **buf, uint32 *size)
 int S9xMovieUnfreeze (uint8 *buf, uint32 size)
 {
 	if (!S9xMovieActive())
-		return (FILE_NOT_FOUND);
+	{
+		return (SUCCESS);
+	}
+
+	// not a movie snapshot
+	if (buf == NULL)
+	{
+		finish_playback();
+		return (SUCCESS);
+	}
 
 	if (size < sizeof(Movie.MovieId) + sizeof(Movie.CurrentFrame) + sizeof(Movie.MaxFrame) + sizeof(Movie.CurrentSample) + sizeof(Movie.MaxSample))
+	{
 		return (WRONG_FORMAT);
+	}
 
 	uint8	*ptr = buf;
 
@@ -724,14 +748,26 @@ int S9xMovieUnfreeze (uint8 *buf, uint32 size)
 	uint32	current_sample = Read32(ptr);
 	uint32	max_sample     = Read32(ptr);
 	uint32	space_needed   = (Movie.BytesPerSample * (max_sample + 1));
+	uint32	space_played   = (Movie.BytesPerSample * (current_sample + 1));
 
-	if (current_frame > max_frame || current_sample > max_sample || space_needed > size)
+	// (current_frame > max_frame) is legal, because of "finished" state
+	if (current_sample > max_sample || space_needed > size)
 		return (WRONG_MOVIE_SNAPSHOT);
 
+	// complex TAS logic for loadstate
+	// fully conforms to the savestate logic documented in the Laws of TAS
+	// http://tasvideos.org/LawsOfTAS/OnSavestates.html
+
 	if (Settings.WrongMovieStateProtection)
-		if (movie_id != Movie.MovieId)
-			if (max_frame < Movie.MaxFrame || max_sample < Movie.MaxSample || memcmp(Movie.InputBuffer, ptr, space_needed))
-				return (WRONG_MOVIE_SNAPSHOT);
+		if (movie_id != Movie.MovieId) {
+			return (WRONG_MOVIE_SNAPSHOT);
+		}
+
+	if (Settings.WrongMovieStateProtection)
+		if (Movie.ReadOnly) {
+			if (current_frame <= Movie.MaxFrame && current_sample <= Movie.MaxSample && memcmp(Movie.InputBuffer, ptr, space_played) != 0)
+				return (SNAPSHOT_INCONSISTENT);
+		}
 
 	if (!Movie.ReadOnly)
 	{
@@ -754,18 +790,21 @@ int S9xMovieUnfreeze (uint8 *buf, uint32 size)
 	}
 	else
 	{
-      uint32   space_processed = (Movie.BytesPerSample * (current_sample + 1));
-      if (current_frame > Movie.MaxFrame || current_sample > Movie.MaxSample || memcmp(Movie.InputBuffer, ptr, space_processed))
-			return (SNAPSHOT_INCONSISTENT);
-
 		change_state(MOVIE_STATE_PLAY);
 
 		Movie.CurrentFrame  = current_frame;
 		Movie.CurrentSample = current_sample;
 	}
 
-	Movie.InputBufferPtr = Movie.InputBuffer + (Movie.BytesPerSample * Movie.CurrentSample);
-	read_frame_controller_data(true);
+	if (Movie.CurrentFrame <= Movie.MaxFrame && Movie.CurrentSample <= Movie.MaxSample)
+	{
+		Movie.InputBufferPtr = Movie.InputBuffer + (Movie.BytesPerSample * Movie.CurrentSample);
+		read_frame_controller_data(true);
+	}
+	else
+	{
+		finish_playback();
+	}
 
 	return (SUCCESS);
 }
@@ -1037,8 +1076,11 @@ void S9xMovieUpdate (bool addFrame)
 		{
 			if (Movie.CurrentFrame >= Movie.MaxFrame || Movie.CurrentSample >= Movie.MaxSample)
 			{
-				change_state(MOVIE_STATE_NONE);
-				S9xMessage(S9X_INFO, S9X_MOVIE_INFO, MOVIE_INFO_END);
+				finish_playback();
+				if (addFrame) {
+					S9xUpdateFrameCounter();
+					Movie.CurrentFrame++;
+				}
 				return;
 			}
 			else
@@ -1073,6 +1115,16 @@ void S9xMovieUpdate (bool addFrame)
 
 			size_t	ignore;
 			ignore = fwrite((Movie.InputBufferPtr - Movie.BytesPerSample), 1, Movie.BytesPerSample, Movie.File);
+
+			break;
+		}
+
+		case MOVIE_STATE_FINISHED:
+		{
+			if (addFrame) {
+				S9xUpdateFrameCounter();
+				Movie.CurrentFrame++;
+			}
 
 			break;
 		}
@@ -1163,6 +1215,11 @@ bool8 S9xMoviePlaying (void)
 bool8 S9xMovieRecording (void)
 {
 	return (Movie.State == MOVIE_STATE_RECORD);
+}
+
+bool8 S9xMovieFinished (void)
+{
+	return (Movie.State == MOVIE_STATE_FINISHED);
 }
 
 uint8 S9xMovieControllers (void)
@@ -1281,6 +1338,10 @@ void S9xUpdateFrameCounter (int offset)
 	else
 	if (Movie.State == MOVIE_STATE_PLAY)
 		sprintf(GFX.FrameDisplayString, "Playing frame: %d / %d",
+			max(0, (int) (Movie.CurrentFrame + offset)), Movie.MaxFrame);
+	else
+	if (Movie.State == MOVIE_STATE_FINISHED)
+		sprintf(GFX.FrameDisplayString, "Playing frame: %d / %d (finished)",
 			max(0, (int) (Movie.CurrentFrame + offset)), Movie.MaxFrame);
 #ifdef NETPLAY_SUPPORT
 	else
