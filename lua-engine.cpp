@@ -3715,6 +3715,8 @@ DEFINE_LUA_FUNCTION(movie_getmode, "")
 		lua_pushstring(L, "playback");
 	else if (S9xMovieRecording())
 		lua_pushstring(L, "record");
+	else if (S9xMovieFinished())
+		lua_pushstring(L, "finished");
 	else
 		lua_pushnil(L);
 	return 1;
