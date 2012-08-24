@@ -187,6 +187,14 @@
 
 bool8 S9xDoScreenshot (int width, int height)
 {
+	const char	*fname;
+
+	fname = S9xGetFilenameInc(".png", SCREENSHOT_DIR);
+	return S9xDoScreenshot(fname, width, height);
+}
+
+bool8 S9xDoScreenshot (const char *fname, int width, int height)
+{
 	Settings.TakeScreenshot = FALSE;
 
 #ifdef HAVE_LIBPNG
@@ -195,9 +203,6 @@ bool8 S9xDoScreenshot (int width, int height)
 	png_infop	info_ptr;
 	png_color_8	sig_bit;
 	int			imgwidth, imgheight;
-	const char	*fname;
-
-	fname = S9xGetFilenameInc(".png", SCREENSHOT_DIR);
 
 	fp = fopen(fname, "wb");
 	if (!fp)

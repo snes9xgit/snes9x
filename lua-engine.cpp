@@ -8,6 +8,7 @@
 #include "movie.h"
 #include "snapshot.h"
 #include "pixform.h"
+#include "screenshot.h"
 #include "lua-engine.h"
 #include <assert.h>
 #include <vector>
@@ -3427,6 +3428,21 @@ DEFINE_LUA_FUNCTION(gui_gdoverlay, "[dx=0,dy=0,]gdimage[,sx=0,sy=0,width,height]
 	return 0;
 }
 
+DEFINE_LUA_FUNCTION(gui_savescreenshot, "[filename]")
+{
+	bool8 result;
+	if (lua_type(L,1) == LUA_TSTRING)
+	{
+		result = S9xDoScreenshot(lua_tostring(L,1), IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight);
+	}
+	else
+	{
+		result = S9xDoScreenshot(IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight);
+	}
+	lua_pushboolean(L, result);
+	return 1;
+}
+
 static FORCEINLINE uint8 CalcBlend8(uint8 dst, uint8 src, uint8 alpha)
 {
 	if (alpha == 0)
@@ -4179,6 +4195,7 @@ static const struct luaL_reg guilib [] =
 	{"parsecolor", gui_parsecolor},
 	{"gdscreenshot", gui_gdscreenshot},
 	{"gdoverlay", gui_gdoverlay},
+	{"savescreenshot", gui_savescreenshot},
 //	{"redraw", emu_redraw}, // some people might think of this as more of a GUI function
 	// alternative names
 	{"drawtext", gui_text},
