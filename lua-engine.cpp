@@ -9,6 +9,7 @@
 #include "snapshot.h"
 #include "pixform.h"
 #include "screenshot.h"
+#include "controls.h"
 #include "lua-engine.h"
 #include <assert.h>
 #include <vector>
@@ -2263,6 +2264,163 @@ s_buttonDescs [] =
 	{8, 15, "B"},
 };
 
+// string joypad.gettype(int port = 1)
+//
+//  Returns the type of controller at the given physical port index 1 or 2
+//  (port is the same as "which" for other input functions, unless there's a multitap)
+//  possible return values are "joypad", "mouse", "superscope", "justifier", "justifiers", "multitap", "none"
+DEFINE_LUA_FUNCTION(joy_gettype, "[port=1]")
+{
+	int port = 0;
+	if (lua_type(L, 1) == LUA_TNUMBER)
+	{
+		port = luaL_checkinteger(L, 1) - 1;
+	}
+
+	controllers controller;
+	int8 ids[4];
+	S9xGetController(port, &controller, &ids[0], &ids[1], &ids[2], &ids[3]);
+
+	switch(controller)
+	{
+		default:
+		case CTL_NONE: lua_pushliteral(L, "none"); break;
+		case CTL_JOYPAD: lua_pushliteral(L, "joypad"); break;
+		case CTL_MOUSE: lua_pushliteral(L, "mouse"); break;
+		case CTL_SUPERSCOPE: lua_pushliteral(L, "superscope"); break;
+		case CTL_JUSTIFIER: lua_pushstring(L, ids[0] ? "justifiers" : "justifier"); break;
+		case CTL_MP5: lua_pushliteral(L, "multitap"); break;
+	}
+	return 1;
+}
+
+// joypad.settype(int port = 1, string typename)
+//
+//  Sets the type of controller at the given physical port index 1 or 2
+//  (port is the same as "which" for other input functions, unless there's a multitap)
+//  The SNES sees a new controller type get plugged in instantly.
+//  note that it's an error to call this command while a movie is active.
+//  note that a superscope must be plugged into port 2 for it to work, and other peripherals might have similar sorts of requirements
+//  valid types are "joypad", "mouse", "superscope", "justifier", "justifiers", "multitap", "none"
+DEFINE_LUA_FUNCTION(joy_settype, "[port=1,]typename")
+{
+	if (S9xMovieActive())
+		luaL_error(L, "joypad.settype() cannot be called while a movie is active.");
+
+	int port = 0;
+	int index = 1;
+	if (lua_type(L, index) == LUA_TNUMBER)
+	{
+		port = luaL_checkinteger(L, index) - 1;
+		index++;
+	}
+	const char* type = luaL_checkstring(L, index);
+
+	controllers controller;
+	int8 ids[4];
+	S9xGetController(port, &controller, &ids[0], &ids[1], &ids[2], &ids[3]);
+
+	if(!strcmp(type, "joypad"))
+	{
+		controller = CTL_JOYPAD;
+		ids[0] = port;
+	}
+	else if(!strcmp(type, "mouse"))
+	{
+		controller = CTL_MOUSE;
+		ids[0] = port;
+	}
+	else if(!strcmp(type, "superscope"))
+	{
+		controller = CTL_SUPERSCOPE;
+		ids[0] = 0;
+	}
+	else if(!strcmp(type, "justifier"))
+	{
+		controller = CTL_JUSTIFIER;
+		ids[0] = 0;
+	}
+	else if(!strcmp(type, "justifiers"))
+	{
+		controller = CTL_JUSTIFIER;
+		ids[0] = 1;
+	}
+	else if(!strcmp(type, "multitap"))
+	{
+		controller = CTL_MP5;
+		if(port == 0)
+		{
+			ids[0] = 0;
+			ids[1] = 1;
+			ids[2] = 2;
+			ids[3] = 3;
+		}
+	}
+	else
+		controller = CTL_NONE;
+
+	Settings.MouseMaster = true;
+	Settings.JustifierMaster = true;
+	Settings.SuperScopeMaster = true;
+	Settings.MultiPlayer5Master = true;
+
+	S9xSetController(port, controller, ids[0],ids[1],ids[2],ids[3]);
+
+	Settings.MultiPlayer5Master = false;
+	Settings.SuperScopeMaster = false;
+	Settings.JustifierMaster = false;
+	Settings.MouseMaster = false;
+
+	// now fix emulation settings and controller ids for multitap
+	S9xGetController(0, &controller, &ids[0],&ids[1],&ids[2],&ids[3]);
+	int max0id = std::max((signed char)0, std::max(ids[0], std::max(ids[1], std::max(ids[2], ids[3]))));
+	if(controller == CTL_MOUSE) Settings.MouseMaster = true;
+	if(controller == CTL_JUSTIFIER) Settings.JustifierMaster = true;
+	if(controller == CTL_SUPERSCOPE) Settings.SuperScopeMaster = true;
+	if(controller == CTL_MP5) Settings.MultiPlayer5Master = true;
+	controllers controller2;
+	S9xGetController(1, &controller2, &ids[0],&ids[1],&ids[2],&ids[3]);
+	if(controller2 == CTL_MOUSE) Settings.MouseMaster = true;
+	if(controller2 == CTL_JUSTIFIER) Settings.JustifierMaster = true;
+	if(controller2 == CTL_SUPERSCOPE) Settings.SuperScopeMaster = true;
+	if(controller2 == CTL_MP5) Settings.MultiPlayer5Master = true;
+	if((controller2 == CTL_JOYPAD && controller == CTL_MP5) || controller2 == CTL_MP5)
+	{
+		ids[0] = max0id + 1;
+		if(controller2 == CTL_MP5)
+		{
+			ids[1] = max0id + 2;
+			ids[2] = max0id + 3;
+			ids[3] = max0id + 4;
+		}
+		S9xSetController(port, controller2, ids[0],ids[1],ids[2],ids[3]);
+	}
+
+#ifdef __WIN32__
+	// support only limited combination of peripherals
+	extern void ChangeInputDevice(void);
+	if(!strcmp(type, "mouse") && port == 0)
+		GUI.ControllerOption = SNES_MOUSE;
+	else if(!strcmp(type, "mouse") && port == 1)
+		GUI.ControllerOption = SNES_MOUSE_SWAPPED;
+	else if(!strcmp(type, "superscope"))
+		GUI.ControllerOption = SNES_SUPERSCOPE;
+	else if(!strcmp(type, "justifier"))
+		GUI.ControllerOption = SNES_JUSTIFIER;
+	else if(!strcmp(type, "justifiers"))
+		GUI.ControllerOption = SNES_JUSTIFIER_2;
+	else if(!strcmp(type, "multitap") && port == 0)
+		GUI.ControllerOption = SNES_MULTIPLAYER8;
+	else if(!strcmp(type, "multitap") && port == 1)
+		GUI.ControllerOption = SNES_MULTIPLAYER5;
+	else
+		GUI.ControllerOption = SNES_JOYPAD;
+	ChangeInputDevice();
+#endif
+
+	return 0;
+}
+
 int joy_getArgControllerNum(lua_State* L, int& index)
 {
 	int controllerNumber;
@@ -2285,6 +2443,32 @@ int joy_getArgControllerNum(lua_State* L, int& index)
 }
 
 
+// PERIPHERAL_SUPPORT
+#define SNESMOUSE_LEFT  0x40
+#define SNESMOUSE_RIGHT 0x80
+#define SUPERSCOPE_FIRE       0x80
+#define SUPERSCOPE_CURSOR     0x40
+#define SUPERSCOPE_TURBO      0x20
+#define SUPERSCOPE_PAUSE      0x10
+#define SUPERSCOPE_OFFSCREEN  0x02
+#define JUSTIFIER_TRIGGER    0x80
+#define JUSTIFIER_START      0x20
+#define JUSTIFIER_SELECT     0x08
+#define JUSTIFIER_OFFSCREEN  0x02
+#define JUSTIFIER2_TRIGGER   0x40
+#define JUSTIFIER2_START     0x10
+#define JUSTIFIER2_SELECT    0x04
+#define JUSTIFIER2_OFFSCREEN 0x01
+#define MOUSE_DATA_SIZE	5
+#define SCOPE_DATA_SIZE	6
+#define JUSTIFIER_DATA_SIZE	11
+bool MovieGetMouse(int i, uint8 out [MOUSE_DATA_SIZE]);
+bool MovieGetScope(int i, uint8 out [SCOPE_DATA_SIZE]);
+bool MovieGetJustifier(int i, uint8 out [JUSTIFIER_DATA_SIZE]);
+void AddCommandTransformAxis(controllers type, int idx, int16 val, bool8 axis);
+void AddCommandTransformButton(controllers type, int idx, bool8 on, uint8 mask);
+void ClearCommandTransforms();
+
 // joypad.set(controllerNum = 1, inputTable)
 // controllerNum can be within the range 1 to 8
 DEFINE_LUA_FUNCTION(joy_set, "[controller=1,]inputtable")
@@ -2292,7 +2476,9 @@ DEFINE_LUA_FUNCTION(joy_set, "[controller=1,]inputtable")
 	int index = 1;
 	int controllerNumber = joy_getArgControllerNum(L, index);
 
-	luaL_checktype(L, index, LUA_TTABLE);
+	// And the table of buttons.
+	int tableIndex = lua_istable(L, 1) ? 1 : 2;
+	luaL_checktype(L, tableIndex, LUA_TTABLE);
 
 	if (S9xMoviePlaying()) // don't allow tampering with a playing movie's input
 		return 0; // (although it might be useful sometimes...)
@@ -2304,29 +2490,57 @@ DEFINE_LUA_FUNCTION(joy_set, "[controller=1,]inputtable")
 		return 0;
 	}
 
-	uint32 input = 0;
-	uint32 mask = 0;
+	controllers con = CTL_JOYPAD;
+	int8 ids[4];
+	if(controllerNumber <= 2) // could be a peripheral in ports 1 or 2, let's check
+		S9xGetController(controllerNumber - 1, &con, &ids[0], &ids[1], &ids[2], &ids[3]);
 
-	for(int i = 0; i < sizeof(s_buttonDescs)/sizeof(*s_buttonDescs); i++)
+	switch(con)
 	{
-		const ButtonDesc& bd = s_buttonDescs[i];
-		if(bd.controllerNum == controllerNumber)
+	default: // joypad
 		{
-			lua_getfield(L, index, bd.name);
-			if (!lua_isnil(L,-1))
+			uint32 input = 0;
+			uint32 mask = 0;
+
+			for(int i = 0; i < sizeof(s_buttonDescs)/sizeof(*s_buttonDescs); i++)
 			{
-				bool pressed = lua_toboolean(L,-1) != 0;
-				uint32 bitmask = ((uint32)1 << bd.bit);
-				if(pressed)
-					input |= bitmask;
-				else
-					input &= ~bitmask;
-				mask |= bitmask;
+				const ButtonDesc& bd = s_buttonDescs[i];
+				if(bd.controllerNum == controllerNumber)
+				{
+					lua_getfield(L, index, bd.name);
+					if (!lua_isnil(L,-1))
+					{
+						bool pressed = lua_toboolean(L,-1) != 0;
+						uint32 bitmask = ((uint32)1 << bd.bit);
+						if(pressed)
+							input |= bitmask;
+						else
+							input &= ~bitmask;
+						mask |= bitmask;
+					}
+					lua_pop(L,1);
+				}
 			}
-			lua_pop(L,1);
+			MovieSetJoypad(controllerNumber - 1, input, mask);
 		}
+		break;
+	case CTL_MOUSE:
+		{
+			// TODO NYI
+		}
+		break;
+	case CTL_SUPERSCOPE:
+		{
+			// TODO NYI
+		}
+		break;
+	case CTL_JUSTIFIER:
+		{
+			// TODO NYI
+		}
+		break;
 	}
-	MovieSetJoypad(controllerNumber - 1, input, mask);
+
 	return 0;
 }
 
@@ -2339,20 +2553,189 @@ int joy_get_internal(lua_State* L, bool reportUp, bool reportDown)
 
 	lua_newtable(L);
 
-	uint32 input = MovieGetJoypad(controllerNumber - 1);
+	controllers controller = CTL_JOYPAD;
+	int8 ids[4];
+	if(controllerNumber <= 2) // could be a peripheral in ports 1 or 2, let's check
+		S9xGetController(controllerNumber - 1, &controller, &ids[0], &ids[1], &ids[2], &ids[3]);
 
-	for(int i = 0; i < sizeof(s_buttonDescs)/sizeof(*s_buttonDescs); i++)
+	bool pressed;
+	switch(controller)
 	{
-		const ButtonDesc& bd = s_buttonDescs[i];
-		if(bd.controllerNum == controllerNumber)
+	default: // joypad
 		{
-			bool pressed = (input & ((uint32)1<<bd.bit)) != 0;
-			if((pressed && reportDown) || (!pressed && reportUp))
+			uint32 input = MovieGetJoypad(controllerNumber - 1);
+
+			for(int i = 0; i < sizeof(s_buttonDescs)/sizeof(*s_buttonDescs); i++)
 			{
-				lua_pushboolean(L, pressed);
-				lua_setfield(L, -2, bd.name);
+				const ButtonDesc& bd = s_buttonDescs[i];
+				if(bd.controllerNum == controllerNumber)
+				{
+					pressed = (input & ((uint32)1<<bd.bit)) != 0;
+					if((pressed && reportDown) || (!pressed && reportUp))
+					{
+						lua_pushboolean(L, pressed);
+						lua_setfield(L, -2, bd.name);
+					}
+				}
 			}
 		}
+		break;
+	case CTL_MOUSE:
+		{
+			uint8 buf [MOUSE_DATA_SIZE] = {0};
+			if(MovieGetMouse(controllerNumber - 1, buf))
+			{
+				int16 x = ((uint16*)buf)[0];
+				int16 y = ((uint16*)buf)[1];
+				uint8 buttons = buf[4];
+
+				// set table with mouse status
+				lua_pushinteger(L,x);     // note: the mouse does not really have x and y coordinates.
+				lua_setfield(L, -2, "x"); //       so, these coordinates are "referenceless",
+				lua_pushinteger(L,y);     //       they don't make sense except considering the difference
+				lua_setfield(L, -2, "y"); //       between them and their previous value.
+				pressed = buttons & SNESMOUSE_LEFT;
+				if((pressed && reportDown) || (!pressed && reportUp))
+				{
+					lua_pushboolean(L, pressed);
+					lua_setfield(L, -2, "left");
+				}
+				pressed = buttons & SNESMOUSE_RIGHT;
+				if((pressed && reportDown) || (!pressed && reportUp))
+				{
+					lua_pushboolean(L, pressed);
+					lua_setfield(L, -2, "right");
+				}
+			}
+		}
+		break;
+	case CTL_SUPERSCOPE:
+		{
+			uint8 buf [SCOPE_DATA_SIZE] = {0};
+			if(MovieGetScope(controllerNumber - 1, buf))
+			{
+				int16 x = ((uint16*)buf)[0];
+				int16 y = ((uint16*)buf)[1];
+				uint8 buttons = buf[4];
+
+				// set table with super scope status
+				lua_pushinteger(L, x);
+				lua_setfield(L, -2, "x");
+				lua_pushinteger(L, y);
+				lua_setfield(L, -2, "y");
+				pressed = buttons & SUPERSCOPE_FIRE;
+				if((pressed && reportDown) || (!pressed && reportUp))
+				{
+					lua_pushboolean(L, pressed);
+					lua_setfield(L, -2, "fire");
+				}
+				pressed = buttons & SUPERSCOPE_CURSOR;
+				if((pressed && reportDown) || (!pressed && reportUp))
+				{
+					lua_pushboolean(L, pressed);
+					lua_setfield(L, -2, "cursor");
+				}
+				pressed = buttons & SUPERSCOPE_TURBO;
+				if((pressed && reportDown) || (!pressed && reportUp))
+				{
+					lua_pushboolean(L, pressed);
+					lua_setfield(L, -2, "turbo");
+				}
+				pressed = buttons & SUPERSCOPE_PAUSE;
+				if((pressed && reportDown) || (!pressed && reportUp))
+				{
+					lua_pushboolean(L, pressed);
+					lua_setfield(L, -2, "pause");
+				}
+				pressed = buttons & SUPERSCOPE_OFFSCREEN;
+				if((pressed && reportDown) || (!pressed && reportUp))
+				{
+					lua_pushboolean(L, pressed);
+					lua_setfield(L, -2, "offscreen");
+				}
+			}
+		}
+		break;
+	case CTL_JUSTIFIER:
+		{
+			uint8 buf [JUSTIFIER_DATA_SIZE] = {0};
+			if(MovieGetJustifier(controllerNumber - 1, buf))
+			{
+				bool weHaveTwoJustifiers = (ids[0] == 1);
+				int16 x1 = ((uint16*)buf)[0];
+				int16 y1 = ((uint16*)buf)[2];
+				uint8 buttons = buf[8];
+				bool8 offscreen1 = buf[9];
+
+				// set table with justifier status
+				lua_pushinteger(L, x1);
+				lua_setfield(L, -2, "x");
+				lua_pushinteger(L, y1);
+				lua_setfield(L, -2, "y");
+				pressed = buttons & JUSTIFIER_TRIGGER;
+				if((pressed && reportDown) || (!pressed && reportUp))
+				{
+					lua_pushboolean(L, pressed);
+					lua_setfield(L, -2, "trigger");
+				}
+				pressed = buttons & JUSTIFIER_START;
+				if((pressed && reportDown) || (!pressed && reportUp))
+				{
+					lua_pushboolean(L, pressed);
+					lua_setfield(L, -2, "start");
+				}
+				pressed = buttons & JUSTIFIER_SELECT;
+				if((pressed && reportDown) || (!pressed && reportUp))
+				{
+					lua_pushboolean(L, pressed);
+					lua_setfield(L, -2, "select");
+				}
+				pressed = offscreen1;
+				if((pressed && reportDown) || (!pressed && reportUp))
+				{
+					lua_pushboolean(L, pressed);
+					lua_setfield(L, -2, "offscreen");
+				}
+
+				if(weHaveTwoJustifiers)
+				{
+					int16 x2 = ((uint16*)buf)[1];
+					int16 y2 = ((uint16*)buf)[3];
+					bool8 offscreen2 = buf[10];
+
+					// also set table with the second justifier's status
+					lua_pushinteger(L, x2);
+					lua_setfield(L, -2, "x2");
+					lua_pushinteger(L, y2);
+					lua_setfield(L, -2, "y2");
+					pressed = buttons & JUSTIFIER2_TRIGGER;
+					if((pressed && reportDown) || (!pressed && reportUp))
+					{
+						lua_pushboolean(L, pressed);
+						lua_setfield(L, -2, "trigger2");
+					}
+					pressed = buttons & JUSTIFIER2_START;
+					if((pressed && reportDown) || (!pressed && reportUp))
+					{
+						lua_pushboolean(L, pressed);
+						lua_setfield(L, -2, "start2");
+					}
+					pressed = buttons & JUSTIFIER2_SELECT;
+					if((pressed && reportDown) || (!pressed && reportUp))
+					{
+						lua_pushboolean(L, pressed);
+						lua_setfield(L, -2, "select2");
+					}
+					pressed = buttons & offscreen2;
+					if((pressed && reportDown) || (!pressed && reportUp))
+					{
+						lua_pushboolean(L, pressed);
+						lua_setfield(L, -2, "offscreen2");
+					}
+				}
+			}
+		}
+		break;
 	}
 
 	return 1;
@@ -3602,7 +3985,7 @@ static void GetCurrentScriptDir(char* buffer, int bufLen)
 
 DEFINE_LUA_FUNCTION(emu_openscript, "filename")
 {
-#ifdef WIN32
+#ifdef __WIN32__
 	char curScriptDir[1024]; GetCurrentScriptDir(curScriptDir, 1024); // make sure we can always find scripts that are in the same directory as the current script
 	const char* filename = lua_isstring(L,1) ? lua_tostring(L,1) : NULL;
 	extern const char* OpenLuaScript(const char* filename, const char* extraDirToCheck, bool makeSubservient);
@@ -4297,6 +4680,8 @@ static const struct luaL_reg joylib [] =
 //	{"peekdown", joy_peekdown},
 //	{"peekup", joy_peekup},
 	{"set", joy_set},
+	{"gettype", joy_gettype},
+	{"settype", joy_settype},
 	// alternative names
 	{"read", joy_get},
 	{"write", joy_set},
