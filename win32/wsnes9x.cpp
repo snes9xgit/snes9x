@@ -3013,7 +3013,7 @@ void S9xOnSNESPadRead()
 					if (lastTime - lastGUIUpdateTime >= guiUpdateFrequency)
 					{
 						UpdateToolWindows();
-						S9xUpdateFrameCounter();
+						S9xUpdateFrameCounter(-1);
 						InvalidateRect(GUI.hWnd, NULL, FALSE);
 						lastGUIUpdateTime = lastTime;
 					}
@@ -3528,7 +3528,7 @@ int WINAPI WinMain(
 				DWORD lastTime = timeGetTime();
 				if (lastTime - lastGUIUpdateTime >= guiUpdateFrequency) {
 					UpdateToolWindows();
-					S9xUpdateFrameCounter();
+					S9xUpdateFrameCounter(-1);
 					InvalidateRect(GUI.hWnd, NULL, FALSE);
 					lastGUIUpdateTime = lastTime;
 				}
