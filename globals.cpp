@@ -180,10 +180,10 @@
 #include "memmap.h"
 #include "dma.h"
 #include "apu/apu.h"
+#include "cheats.h"
 #include "fxinst.h"
 #include "fxemu.h"
 #include "srtc.h"
-#include "cheats.h"
 #ifdef NETPLAY_SUPPORT
 #include "netplay.h"
 #endif

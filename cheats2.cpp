@@ -183,6 +183,7 @@
 #include <string>
 #include <sstream>
 #include <algorithm>
+#include <iterator>
 
 uint8 S9xGetByteFree (uint32);
 void S9xSetByteFree (uint8, uint32);
