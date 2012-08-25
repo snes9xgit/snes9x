@@ -1150,14 +1150,12 @@ void S9xMovieUpdateOnReset (void)
 	}
 }
 
-static uint8 *LastInputBufferPtr;
 static bool8 movie_reset_processed = false;
 static void MovieOnReset(void)
 {
 	Movie.CurrentSample++;
 	Movie.CurrentFrame++; // it must be called at frame boundary
 	S9xSoftReset();
-	LastInputBufferPtr = Movie.InputBufferPtr;
 	movie_reset_processed = true;
 }
 
@@ -1167,14 +1165,16 @@ void MovieApplyNextInput(void)
 	if (Movie.State != MOVIE_STATE_PLAY)
 		return;
 
-	LastInputBufferPtr = Movie.InputBufferPtr;
+	uint8 *InputBufferPtr = Movie.InputBufferPtr;
 	do
 	{
 		movie_reset_processed = false;
 		if (Movie.CurrentFrame < Movie.MaxFrame && Movie.CurrentSample < Movie.MaxSample)
 			read_frame_controller_data(false, MovieOnReset);
+		if (movie_reset_processed)
+			InputBufferPtr = Movie.InputBufferPtr;
 	} while (movie_reset_processed);
-	Movie.InputBufferPtr = LastInputBufferPtr;
+	Movie.InputBufferPtr = InputBufferPtr;
 }
 
 void S9xMovieInit (void)
