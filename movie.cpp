@@ -435,9 +435,6 @@ static void reset_controllers (void)
 
 static void read_frame_controller_data (bool addFrame, void (*resetFunc)())
 {
-	if (Movie.CurrentFrame >= Movie.MaxFrame || Movie.CurrentSample >= Movie.MaxSample)
-		return;
-
 	// reset code check
 	while (Movie.InputBufferPtr[0] == 0xff)
 	{
@@ -456,8 +453,7 @@ static void read_frame_controller_data (bool addFrame, void (*resetFunc)())
 			Movie.InputBufferPtr += Movie.BytesPerSample;
 			if (resetFunc != (void(*)())NULL)
 				(*resetFunc)();
-			if (Movie.CurrentFrame >= Movie.MaxFrame || Movie.CurrentSample >= Movie.MaxSample)
-				return;
+			return;
 		}
 	}
 
@@ -1154,12 +1150,15 @@ void S9xMovieUpdateOnReset (void)
 	}
 }
 
-static bool movie_reset_processed = false;
+static uint8 *LastInputBufferPtr;
+static bool8 movie_reset_processed = false;
 static void MovieOnReset(void)
 {
 	Movie.CurrentSample++;
 	Movie.CurrentFrame++; // it must be called at frame boundary
 	S9xSoftReset();
+	LastInputBufferPtr = Movie.InputBufferPtr;
+	movie_reset_processed = true;
 }
 
 // apply the next input without changing any movie states
@@ -1168,15 +1167,14 @@ void MovieApplyNextInput(void)
 	if (Movie.State != MOVIE_STATE_PLAY)
 		return;
 
-	uint8 *InputBufferPtr = Movie.InputBufferPtr;
+	LastInputBufferPtr = Movie.InputBufferPtr;
 	do
 	{
 		movie_reset_processed = false;
-		read_frame_controller_data(false, MovieOnReset);
-		if (movie_reset_processed)
-			InputBufferPtr = Movie.InputBufferPtr;
+		if (Movie.CurrentFrame < Movie.MaxFrame && Movie.CurrentSample < Movie.MaxSample)
+			read_frame_controller_data(false, MovieOnReset);
 	} while (movie_reset_processed);
-	Movie.InputBufferPtr = InputBufferPtr;
+	Movie.InputBufferPtr = LastInputBufferPtr;
 }
 
 void S9xMovieInit (void)
