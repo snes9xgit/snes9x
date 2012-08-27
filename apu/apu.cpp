@@ -227,32 +227,113 @@ namespace spc
 	static uint32		ratio_denominator = APU_DENOMINATOR_NTSC;
 }
 
+static void EightBitize (uint8 *, int);
+static void DeStereo (uint8 *, int);
+static void ReverseStereo (uint8 *, int);
 static void UpdatePlaybackRate (void);
 static void SPCSnapshotCallback (void);
 static inline int S9xAPUGetClock (int32);
 static inline int S9xAPUGetClockRemainder (int32);
 
 
+static void EightBitize (uint8 *buffer, int sample_count)
+{
+	uint8	*buf8  = (uint8 *) buffer;
+	int16	*buf16 = (int16 *) buffer;
+
+	for (int i = 0; i < sample_count; i++)
+		buf8[i] = (uint8) ((buf16[i] / 256) + 128);
+}
+
+static void DeStereo (uint8 *buffer, int sample_count)
+{
+	int16	*buf = (int16 *) buffer;
+	int32	s1, s2;
+
+	for (int i = 0; i < sample_count >> 1; i++)
+	{
+		s1 = (int32) buf[2 * i];
+		s2 = (int32) buf[2 * i + 1];
+		buf[i] = (int16) ((s1 + s2) >> 1);
+	}
+}
+
+static void ReverseStereo (uint8 *src_buffer, int sample_count)
+{
+	int16	*buffer = (int16 *) src_buffer;
+
+	for (int i = 0; i < sample_count; i += 2)
+	{
+		buffer[i + 1] ^= buffer[i];
+		buffer[i] ^= buffer[i + 1];
+		buffer[i + 1] ^= buffer[i];
+	}
+}
+
 bool8 S9xMixSamples (uint8 *buffer, int sample_count)
 {
 	static int	shrink_buffer_size = -1;
 	uint8		*dest;
 
-	dest = buffer;
-
-	if (spc::resampler->avail() >= (sample_count + spc::lag))
+	if (!Settings.SixteenBitSound || !Settings.Stereo)
 	{
-		spc::resampler->read((short *) dest, sample_count);
-		if (spc::lag == spc::lag_master)
-			spc::lag = 0;
+		/* We still need both stereo samples for generating the mono sample */
+		if (!Settings.Stereo)
+			sample_count <<= 1;
+
+		/* We still have to generate 16-bit samples for bit-dropping, too */
+		if (shrink_buffer_size < (sample_count << 1))
+		{
+			delete[] spc::shrink_buffer;
+			spc::shrink_buffer = new uint8[sample_count << 1];
+			shrink_buffer_size = sample_count << 1;
+		}
+
+		dest = spc::shrink_buffer;
+	}
+	else
+		dest = buffer;
+
+	if (Settings.Mute)
+	{
+		memset(dest, 0, sample_count << 1);
+		spc::resampler->clear();
+
+		return (FALSE);
 	}
 	else
 	{
-		memset(buffer, (Settings.SixteenBitSound ? 0 : 128), (sample_count << (Settings.SixteenBitSound ? 1 : 0)) >> (Settings.Stereo ? 0 : 1));
-		if (spc::lag == 0)
-			spc::lag = spc::lag_master;
+		if (spc::resampler->avail() >= (sample_count + spc::lag))
+		{
+			spc::resampler->read((short *) dest, sample_count);
+			if (spc::lag == spc::lag_master)
+				spc::lag = 0;
+		}
+		else
+		{
+			memset(buffer, (Settings.SixteenBitSound ? 0 : 128), (sample_count << (Settings.SixteenBitSound ? 1 : 0)) >> (Settings.Stereo ? 0 : 1));
+			if (spc::lag == 0)
+				spc::lag = spc::lag_master;
 
-		return (FALSE);
+			return (FALSE);
+		}
+	}
+
+	if (Settings.ReverseStereo && Settings.Stereo)
+		ReverseStereo(dest, sample_count);
+
+	if (!Settings.Stereo || !Settings.SixteenBitSound)
+	{
+		if (!Settings.Stereo)
+		{
+			DeStereo(dest, sample_count);
+			sample_count >>= 1;
+		}
+
+		if (!Settings.SixteenBitSound)
+			EightBitize(dest, sample_count);
+
+		memcpy(buffer, dest, (sample_count << (Settings.SixteenBitSound ? 1 : 0)));
 	}
 
 	return (TRUE);
@@ -266,15 +347,21 @@ int S9xGetSampleCount (void)
 /* TODO: Attach */
 void S9xFinalizeSamples (void)
 {
-	if (!spc::resampler->push((short *) spc::landing_buffer, SNES::dsp.spc_dsp.sample_count ()))
+	if (!Settings.Mute)
 	{
-		/* We weren't able to process the entire buffer. Potential overrun. */
-		spc::sound_in_sync = FALSE;
+		if (!spc::resampler->push((short *) spc::landing_buffer, SNES::dsp.spc_dsp.sample_count ()))
+		{
+			/* We weren't able to process the entire buffer. Potential overrun. */
+			spc::sound_in_sync = FALSE;
 
-		if (Settings.SoundSync && !Settings.TurboMode)
-			return;
+			if (Settings.SoundSync && !Settings.TurboMode)
+				return;
+		}
 	}
 
+	if (!Settings.SoundSync || Settings.TurboMode || Settings.Mute)
+		spc::sound_in_sync = TRUE;
+	else
 	if (spc::resampler->space_empty() >= spc::resampler->space_filled())
 		spc::sound_in_sync = TRUE;
 	else
