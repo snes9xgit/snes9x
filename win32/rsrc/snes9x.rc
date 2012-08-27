@@ -1003,6 +1003,7 @@ BEGIN
             MENUITEM "Sa&ve S-RAM Data",            ID_FILE_SAVE_SRAM_DATA
         END
         MENUITEM "ROM Information...",          IDM_ROM_INFO
+        MENUITEM "File Association...",         ID_FILE_ASSOCIATION
         MENUITEM SEPARATOR
         MENUITEM "Movie Play...",               ID_FILE_MOVIE_PLAY
         MENUITEM "Movie Record...",             ID_FILE_MOVIE_RECORD
