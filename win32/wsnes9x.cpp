@@ -5229,6 +5229,7 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 					bi.lpszTitle=title;
 					bi.lpfn = SetSelProc;
 					bi.lParam = (LPARAM)(LPCSTR) path;
+                    bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE | BIF_EDITBOX;
 					iidl=SHBrowseForFolder(&bi);
 					if(iidl) SHGetPathFromIDList(iidl, path);
 
