@@ -9451,6 +9451,7 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 						enable=false;
 					}
 					EnableWindow(GetDlgItem(hDlg, IDC_C_ADD), enable);
+                    EnableWindow(GetDlgItem(hDlg, IDC_C_WATCH), enable);
 				}
 				// allow typing in an address to jump to it
 				else if(nmh->hwndFrom == GetDlgItem(hDlg, IDC_ADDYS) && nmh->code == (UINT)LVN_ODFINDITEM)
