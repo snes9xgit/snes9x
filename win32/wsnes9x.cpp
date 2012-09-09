@@ -6770,31 +6770,21 @@ void SetInfoDlgColor(unsigned char r, unsigned char g, unsigned char b)
 bool RegisterProgid() {
 	LONG	regResult;
 	TCHAR	szRegKey[PATH_MAX];
-	TCHAR	szExeName[PATH_MAX];
+	TCHAR	szExePath[PATH_MAX];
+    TCHAR   *szExeName;
 	HKEY	hKey;
 
 	szRegKey[PATH_MAX-1]=TEXT('\0');
-	GetModuleFileName(NULL, szExeName, PATH_MAX);
+	GetModuleFileName(NULL, szExePath, PATH_MAX);
+    szExeName = PathFindFileName(szExePath);
 
-	_stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\%s"),SNES9XWPROGID);
-	REGCREATEKEY(HKEY_CURRENT_USER, szRegKey)
-	REGSETVALUE(hKey,NULL,REG_SZ,SNES9XWPROGIDDESC,(lstrlen(SNES9XWPROGIDDESC) + 1) * sizeof(TCHAR))
+    _stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\Applications\\%s"),szExeName);
+	REGCREATEKEY(HKEY_CURRENT_USER,szRegKey)
 	RegCloseKey(hKey);
 
-	_stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\%s\\DefaultIcon"),SNES9XWPROGID);
+    _stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\Applications\\%s\\shell\\open\\command"),szExeName);
 	REGCREATEKEY(HKEY_CURRENT_USER,szRegKey)
-	_stprintf_s(szRegKey,PATH_MAX-1,TEXT("%s,0"),szExeName);
-	REGSETVALUE(hKey,NULL,REG_SZ,szRegKey,(lstrlen(szRegKey) + 1) * sizeof(TCHAR))
-	RegCloseKey(hKey);
-
-	_stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\%s\\shell"),SNES9XWPROGID);
-	REGCREATEKEY(HKEY_CURRENT_USER,szRegKey)
-	REGSETVALUE(hKey,NULL,REG_SZ,TEXT("open"),5 * sizeof(TCHAR))
-	RegCloseKey(hKey);
-
-	_stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\%s\\shell\\open\\command"),SNES9XWPROGID);
-	REGCREATEKEY(HKEY_CURRENT_USER,szRegKey)
-	_stprintf_s(szRegKey,PATH_MAX-1,TEXT("\"%s\" \"%%L\""),szExeName);
+	_stprintf_s(szRegKey,PATH_MAX-1,TEXT("\"%s\" \"%%L\""),szExePath);
 	REGSETVALUE(hKey,NULL,REG_SZ,szRegKey,(lstrlen(szRegKey) + 1) * sizeof(TCHAR))
 	RegCloseKey(hKey);
 
@@ -6804,11 +6794,15 @@ bool RegisterProgid() {
 bool RegisterExt(TCHAR *ext) {
 	LONG	regResult;
 	TCHAR	szRegKey[PATH_MAX];
+    TCHAR	szExePath[PATH_MAX];
+    TCHAR   *szExeName;
 	HKEY	hKey;
 
-	_stprintf(szRegKey,TEXT("Software\\Classes\\.%s\\OpenWithProgids"),ext);
+    GetModuleFileName(NULL, szExePath, PATH_MAX);
+    szExeName = PathFindFileName(szExePath);
+
+	_stprintf(szRegKey,TEXT("Software\\Classes\\.%s\\OpenWithList\\%s"),ext,szExeName);
 	REGCREATEKEY(HKEY_CURRENT_USER,szRegKey)
-	REGSETVALUE(hKey,SNES9XWPROGID,REG_NONE,NULL,NULL)
 	RegCloseKey(hKey);
 
 	return true;
