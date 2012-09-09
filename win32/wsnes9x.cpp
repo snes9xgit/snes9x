@@ -6756,6 +6756,8 @@ void SetInfoDlgColor(unsigned char r, unsigned char g, unsigned char b)
 
 #define SNES9XWPROGID TEXT("Snes9x.Win32")
 #define SNES9XWPROGIDDESC TEXT("Snes9x ROM")
+#define SNES9XWAPPDESC TEXT("Snes9x is a portable, freeware Super Nintendo Entertainment System (SNES) emulator.")
+#define SNES9XWAPPNAME TEXT("Snes9x")
 #define REGCREATEKEY(key,subkey) \
 	if(regResult=RegCreateKeyEx(key, subkey,\
 					0, NULL, REG_OPTION_NON_VOLATILE, KEY_SET_VALUE , NULL , &hKey, NULL ) != ERROR_SUCCESS){\
@@ -6778,6 +6780,43 @@ bool RegisterProgid() {
 	GetModuleFileName(NULL, szExePath, PATH_MAX);
     szExeName = PathFindFileName(szExePath);
 
+    /* Register ProgID (for use in Default Programs)
+    */
+    _stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\%s"),SNES9XWPROGID);
+    REGCREATEKEY(HKEY_CURRENT_USER, szRegKey)
+    REGSETVALUE(hKey,NULL,REG_SZ,SNES9XWPROGIDDESC,(lstrlen(SNES9XWPROGIDDESC) + 1) * sizeof(TCHAR))
+    RegCloseKey(hKey);
+
+    _stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\%s\\DefaultIcon"),SNES9XWPROGID);
+    REGCREATEKEY(HKEY_CURRENT_USER,szRegKey)
+    _stprintf_s(szRegKey,PATH_MAX-1,TEXT("%s,0"),szExeName);
+    REGSETVALUE(hKey,NULL,REG_SZ,szRegKey,(lstrlen(szRegKey) + 1) * sizeof(TCHAR))
+    RegCloseKey(hKey);
+
+    _stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\%s\\shell"),SNES9XWPROGID);
+    REGCREATEKEY(HKEY_CURRENT_USER,szRegKey)
+    REGSETVALUE(hKey,NULL,REG_SZ,TEXT("open"),5 * sizeof(TCHAR))
+    RegCloseKey(hKey);
+
+    _stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\%s\\shell\\open\\command"),SNES9XWPROGID);
+    REGCREATEKEY(HKEY_CURRENT_USER,szRegKey)
+    _stprintf_s(szRegKey,PATH_MAX-1,TEXT("\"%s\" \"%%L\""),szExePath);
+    REGSETVALUE(hKey,NULL,REG_SZ,szRegKey,(lstrlen(szRegKey) + 1) * sizeof(TCHAR))
+    RegCloseKey(hKey);
+
+    /* Register Capabilities (for Default Programs)
+    */
+    REGCREATEKEY(HKEY_CURRENT_USER,TEXT("SOFTWARE\\Snes9x\\Capabilities"))
+    REGSETVALUE(hKey,TEXT("ApplicationDescription"),REG_SZ,SNES9XWAPPDESC,(lstrlen(SNES9XWAPPDESC) + 1) * sizeof(TCHAR))
+    REGSETVALUE(hKey,TEXT("ApplicationName"),REG_SZ,SNES9XWAPPNAME,(lstrlen(SNES9XWAPPNAME) + 1) * sizeof(TCHAR))
+    RegCloseKey(hKey);
+
+    REGCREATEKEY(HKEY_CURRENT_USER,TEXT("SOFTWARE\\RegisteredApplications"))
+    REGSETVALUE(hKey,TEXT("Snes9x"),REG_SZ,TEXT("SOFTWARE\\Snes9x\\Capabilities"),(lstrlen(TEXT("SOFTWARE\\Snes9x\\Capabilities")) + 1) * sizeof(TCHAR))
+    RegCloseKey(hKey);
+
+    /* Register under Applications for use in OpenWithList
+    */
     _stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\Applications\\%s"),szExeName);
 	REGCREATEKEY(HKEY_CURRENT_USER,szRegKey)
 	RegCloseKey(hKey);
@@ -6798,9 +6837,21 @@ bool RegisterExt(TCHAR *ext) {
     TCHAR   *szExeName;
 	HKEY	hKey;
 
+    if(!ext || ext==TEXT('\0'))
+        return false;
+
     GetModuleFileName(NULL, szExePath, PATH_MAX);
     szExeName = PathFindFileName(szExePath);
 
+    /* Register .ext as S9x capability (for Default Programs)
+    */
+    REGCREATEKEY(HKEY_CURRENT_USER,TEXT("SOFTWARE\\Snes9x\\Capabilities\\FileAssociations"))
+	_stprintf_s(szRegKey,PATH_MAX-1,TEXT(".%s"),ext);
+	REGSETVALUE(hKey,szRegKey,REG_SZ,SNES9XWPROGID,(lstrlen(SNES9XWPROGID) + 1) * sizeof(TCHAR))
+	RegCloseKey(hKey);
+
+    /* Register in OpenWithList - will not be taken as default icon, necessary for Jump List
+    */
 	_stprintf(szRegKey,TEXT("Software\\Classes\\.%s\\OpenWithList\\%s"),ext,szExeName);
 	REGCREATEKEY(HKEY_CURRENT_USER,szRegKey)
 	RegCloseKey(hKey);
@@ -6900,7 +6951,7 @@ void MakeExtFile(void)
 	ofstream out;
 	out.open("Valid.Ext");
 
-	out<<"N"   <<endl<<"smcN"<<endl<<"zipY"<<endl<<"gzY" <<endl<<"swcN"<<endl<<"figN"<<endl;
+	out<<"smcN"<<endl<<"zipY"<<endl<<"gzY" <<endl<<"swcN"<<endl<<"figN"<<endl;
 	out<<"sfcN"<<endl;
 	out<<"jmaY";
 	out.close();
