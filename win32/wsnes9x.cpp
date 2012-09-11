@@ -322,8 +322,6 @@ HINSTANCE g_hInst;
 #include "../debug.h"
 #endif
 
-static const char *rom_filename = NULL;
-
 struct SJoypad Joypad[16] = {
     {
         true,					/* Joypad 1 enabled */
@@ -3338,6 +3336,7 @@ int WINAPI WinMain(
 				   LPSTR lpCmdLine,
 				   int nCmdShow)
 {
+    char cmdLine[MAX_PATH];
 	Settings.StopEmulation = TRUE;
 
 	SetCurrentDirectory(S9xGetDirectoryT(DEFAULT_DIR));
@@ -3356,7 +3355,9 @@ int WINAPI WinMain(
 
 	ConfigFile::SetAlphaSort(false);
 	ConfigFile::SetTimeSort(false);
-    rom_filename = WinParseCommandLineAndLoadConfigFile (lpCmdLine);
+
+    strcpy(cmdLine,_tToChar(GetCommandLine()));
+    const char *rom_filename = WinParseCommandLineAndLoadConfigFile (cmdLine);
     WinSaveConfigFile ();
 	WinLockConfigFile ();
 
