@@ -298,7 +298,7 @@ static bool	try_save(const char	*fname,	ConfigFile &conf){
 	return false;
 }
 
-static char rom_filename [MAX_PATH] = {0,};
+static char rom_filename [MAX_PATH] = {0};
 
 static bool S9xSaveConfigFile(ConfigFile &conf){
 
@@ -359,7 +359,7 @@ const char*	WinParseCommandLineAndLoadConfigFile (char *line)
 	static char	*parameters	[MAX_PARAMETERS];
 	int	count =	0;
 
-	parameters [count++] = "Snes9X";
+	//parameters [count++] = "Snes9X";
 
 	while (count < MAX_PARAMETERS && *p)
 	{
