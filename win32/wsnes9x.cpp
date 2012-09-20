@@ -655,8 +655,6 @@ void WinSetDefaultValues ();
 void WinLockConfigFile ();
 void WinUnlockConfigFile ();
 void WinCleanupConfigData ();
-bool RegisterProgid();
-void RegisterExts();
 
 #include "../ppu.h"
 #include "../snapshot.h"
@@ -2516,13 +2514,6 @@ LRESULT CALLBACK WinProc(
 			RestoreGUIDisplay ();
 			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_ROM_INFO), hWnd, DlgInfoProc);
 			RestoreSNESDisplay ();
-			break;
-		case ID_FILE_ASSOCIATION:
-			if (MessageBox(GUI.hWnd, TEXT("Do you want to associate extensions with Snes9x?"), SNES9X_INFO, MB_YESNO | MB_ICONQUESTION) == IDYES)
-			{
-				RegisterProgid();
-				RegisterExts();
-			}
 			break;
 		default:
 			if ((wParam & 0xffff) >= 0xFF00)
@@ -7017,6 +7008,8 @@ void LoadExts(void)
 	curr=valid_ext;
 	valid_ext=valid_ext->next;
 	delete curr;
+	RegisterProgid();
+	RegisterExts();
 }
 
 void MakeExtFile(void)
