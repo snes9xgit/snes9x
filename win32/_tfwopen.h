@@ -215,13 +215,22 @@ public:
 	operator char *() { return utf8Chars; }
 };
 
-class MS932ToWide {
+class CPToWide {
 private:
    wchar_t *wideChars;
 public:
-   MS932ToWide(const char *ms932Chars);
-   ~MS932ToWide() { delete [] wideChars; }
+   CPToWide(const char *chars, unsigned int cp);
+   ~CPToWide() { delete [] wideChars; }
    operator wchar_t *() { return wideChars; }
+};
+
+class WideToCP {
+private:
+	char *cpchars;
+public:
+	WideToCP(const wchar_t *wideChars, unsigned int cp);
+	~WideToCP() { delete [] cpchars; }
+	operator char *() { return cpchars; }
 };
 
 namespace std {

@@ -3015,6 +3015,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CXML.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CXML.h"
+				>
+			</File>
+			<File
 				RelativePath=".\InputCustom.cpp"
 				>
 			</File>
