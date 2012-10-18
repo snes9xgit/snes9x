@@ -2628,7 +2628,7 @@ void RenderBlarggNTSC( SSurface Src, SSurface Dst, RECT *rect)
 
 	const unsigned int srcRowPixels = Src.Pitch/2;
 
-	if(Src.Height > SNES_HEIGHT_EXTENDED || Src.Width == 512)
+	if(Src.Width == 512)
 		snes_ntsc_blit_hires( ntsc, (unsigned short *)Src.Surface, srcRowPixels, 0,Src.Width, Src.Height, Dst.Surface, Dst.Pitch );
 	else
 		snes_ntsc_blit( ntsc, (unsigned short *)Src.Surface, srcRowPixels, 0,Src.Width, Src.Height, Dst.Surface, Dst.Pitch );
