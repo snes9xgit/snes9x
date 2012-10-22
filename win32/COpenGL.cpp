@@ -428,7 +428,7 @@ void COpenGL::Render(SSurface Src)
 
 	if(pboFunctionsLoaded) {
 		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, drawBuffer);
-		Dst.Surface = (unsigned char *)glMapBuffer(GL_PIXEL_UNPACK_BUFFER,GL_WRITE_ONLY);
+		Dst.Surface = (unsigned char *)glMapBuffer(GL_PIXEL_UNPACK_BUFFER,GL_READ_WRITE);
 	} else {
 		Dst.Surface = noPboBuffer;
 	}
