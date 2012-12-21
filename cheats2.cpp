@@ -553,6 +553,21 @@ bool8 IsOldCheatFile (const char *filename)
 	return ((c & ~(4 | 8)) == 0);
 }
 
+void trimLastNewline(char *str)
+{
+	size_t len = strlen(str);
+	while (len > 0)
+	{
+		const char c = str[len - 1];
+		if (c != '\n' && c != '\r')
+		{
+			break;
+		}
+		len--;
+		str[len] = '\0';
+	}
+}
+
 bool8 S9xLoadCheatFile (const char *filename)
 {
 	FILE	*fs;
@@ -569,7 +584,7 @@ bool8 S9xLoadCheatFile (const char *filename)
 
 	while (fgets(data, 1024, fs) != NULL)
 	{
-		data[strlen(data) - 1] = '\0'; // erase newline
+		trimLastNewline(data);
 
 		std::vector<std::string> v = csv_split(std::string(data));
 		if (v.size() != 3) {
