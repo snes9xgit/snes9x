@@ -1987,13 +1987,8 @@ DEFINE_LUA_FUNCTION(state_create, "[location]")
 	}
 
 	StateData& stateData = **ppStateData;
-	stateData.size = 0x200000;
-	stateData.buffer = (uint8 *)malloc(stateData.size);
-	if (stateData.buffer == NULL)
-	{
-		delete (*ppStateData);
-		luaL_error(L, "memory allocation error.");
-	}
+	stateData.size = 0;
+	stateData.buffer = NULL;
 
 	luaL_getmetatable(L, "StateData*");
 	lua_setmetatable(L, -2);
@@ -2037,16 +2032,31 @@ DEFINE_LUA_FUNCTION(state_save, "location[,option]")
 		{
 			StateData& stateData = **((StateData**)luaL_checkudata(L, 1, "StateData*"));
 			uint32 stateSizeNeeded = S9xFreezeSize();
-			if (stateData.size < stateSizeNeeded)
+
+			// memory allocation
+			uint8 *newBuffer = NULL;
+			if (stateData.buffer == NULL)
 			{
-				uint8 *newBuffer = (uint8 *)realloc(stateData.buffer, stateSizeNeeded);
+				newBuffer = (uint8 *)malloc(stateSizeNeeded);
 				if (newBuffer == NULL)
 				{
 					luaL_error(L, "memory allocation error.");
 				}
+			}
+			else if (stateData.size < stateSizeNeeded)
+			{
+				newBuffer = (uint8 *)realloc(stateData.buffer, stateSizeNeeded);
+				if (newBuffer == NULL)
+				{
+					luaL_error(L, "memory allocation error.");
+				}
+			}
+			if (newBuffer != NULL)
+			{
 				stateData.buffer = newBuffer;
 				stateData.size = stateSizeNeeded;
 			}
+
 			S9xFreezeGameMem(stateData.buffer, stateData.size);
 		}	return 0;
 	}
@@ -2095,7 +2105,7 @@ DEFINE_LUA_FUNCTION(state_load, "location[,option]")
 		{
 			LuaContextInfo& info = GetCurrentInfo();
 			StateData& stateData = **((StateData**)luaL_checkudata(L, 1, "StateData*"));
-			if(stateData.buffer[0]){
+			if(stateData.buffer != NULL && stateData.buffer[0]){
 				bool8 prevRerecordCountSkip = S9xMovieGetRerecordCountSkip();
 				S9xMovieSetRerecordCountSkip(info.rerecordCountingDisabled);
 				S9xUnfreezeGameMem(stateData.buffer, stateData.size);
