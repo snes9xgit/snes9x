@@ -698,7 +698,7 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 	}
 
 #define IS_BLANK_TILE() \
-	(BG.Buffered[TileNumber] == BLANK_TILE)
+	( ( (Tile & H_FLIP) ? BG.BufferedFlip[TileNumber] : BG.Buffered[TileNumber]) == BLANK_TILE)
 
 #define SELECT_PALETTE() \
 	if (BG.DirectColourMode) \
