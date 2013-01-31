@@ -1,5 +1,6 @@
 #include "CXML.h"
 #include <windows.h>
+#include <stdio.h>
 #include "_tfwopen.h"
 #ifndef UNICODE
 #define _tFromTCHAR(x) CPToWide(x,CP_ACP)

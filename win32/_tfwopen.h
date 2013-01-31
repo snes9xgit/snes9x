@@ -175,10 +175,10 @@
  ***********************************************************************************/
 
 
-
-#ifdef UNICODE
 #ifndef _TFWOPEN_H
 #define _TFWOPEN_H
+
+#ifdef UNICODE
 
 #include <stdio.h>
 
@@ -194,8 +194,9 @@ int _twopen(const char *filename, int oflag, int pmode);
 }
 #endif
 
+#endif // UNICODE
+
 #ifdef __cplusplus
-#include <fstream>
 
 class Utf8ToWide {
 private:
@@ -232,6 +233,12 @@ public:
 	~WideToCP() { delete [] cpchars; }
 	operator char *() { return cpchars; }
 };
+
+#endif // __cplusplus
+
+#ifdef UNICODE
+#ifdef __cplusplus
+#include <fstream>
 
 namespace std {
 class u8nifstream: public std::ifstream
@@ -283,6 +290,7 @@ __forceinline static int remove(const char *filename) {
 __forceinline static int open(const char *filename, int oflag, int pmode) {
   return _twopen(filename, oflag, pmode);
 }
-#endif // _TFWOPEN_H
 
-#endif 
+#endif // UNICODE
+
+#endif // _TFWOPEN_H

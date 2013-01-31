@@ -176,7 +176,6 @@
 
 
 
-#ifdef UNICODE
 #include <windows.h>
 #include "_tfwopen.h"
 
@@ -203,6 +202,8 @@ WideToCP::WideToCP(const wchar_t *wideChars, unsigned int cp) {
 	cpchars = new char[requiredChars];
 	WideCharToMultiByte(cp,0,wideChars,-1,cpchars,requiredChars,NULL,NULL);
 }
+
+#ifdef UNICODE
 
 extern "C" FILE *_tfwopen(const char *filename, const char *mode ) {
 	wchar_t mode_w[30];
