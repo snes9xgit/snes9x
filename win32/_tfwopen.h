@@ -175,11 +175,10 @@
  ***********************************************************************************/
 
 
-
-#ifdef UNICODE
-
 #ifndef _TFWOPEN_H
 #define _TFWOPEN_H
+
+#ifdef UNICODE
 
 #include <stdio.h>
 #include <io.h>
@@ -208,8 +207,9 @@ char *_twcsrchr(const char *_Str, int _Ch);
 }
 #endif
 
+#endif // UNICODE
+
 #ifdef __cplusplus
-#include <fstream>
 
 class Utf8ToWide {
 private:
@@ -229,32 +229,29 @@ public:
 	operator char *() { return utf8Chars; }
 };
 
-class MS932ToWide {
+class CPToWide {
 private:
    wchar_t *wideChars;
 public:
-   MS932ToWide(const char *ms932Chars);
-   ~MS932ToWide() { delete [] wideChars; }
+   CPToWide(const char *chars, unsigned int cp);
+   ~CPToWide() { delete [] wideChars; }
    operator wchar_t *() { return wideChars; }
 };
 
-class AnsiToWide {
+class WideToCP {
 private:
-	wchar_t *wideChars;
+	char *cpchars;
 public:
-	AnsiToWide(const char *ansiChars);
-	~AnsiToWide() { delete [] wideChars; }
-	operator wchar_t *() { return wideChars; }
+	WideToCP(const wchar_t *wideChars, unsigned int cp);
+	~WideToCP() { delete [] cpchars; }
+	operator char *() { return cpchars; }
 };
 
-class WideToAnsi {
-private:
-	char *ansiChars;
-public:
-	WideToAnsi(const wchar_t *wideChars);
-	~WideToAnsi() { delete [] ansiChars; }
-	operator char *() { return ansiChars; }
-};
+#endif // __cplusplus
+
+#ifdef UNICODE
+#ifdef __cplusplus
+#include <fstream>
 
 namespace std {
 class u8nifstream: public std::ifstream
@@ -353,6 +350,6 @@ __forceinline static int open(const char *filename, int oflag, int pmode) {
 #define _makepath _twmakepath
 //#define strrchr _twcsrchr
 
-#endif // _TFWOPEN_H
+#endif // UNICODE
 
-#endif 
+#endif // _TFWOPEN_H

@@ -176,7 +176,6 @@
 
 
 
-#ifdef UNICODE
 #include <windows.h>
 #include "_tfwopen.h"
 
@@ -192,23 +191,19 @@ WideToUtf8::WideToUtf8(const wchar_t *wideChars) {
 	WideCharToMultiByte(CP_UTF8,0,wideChars,-1,utf8Chars,requiredChars,NULL,NULL);
 }
 
-MS932ToWide::MS932ToWide(const char *ms932Chars) {
-   int requiredChars = MultiByteToWideChar(932,0,ms932Chars,-1,wideChars,0);
+CPToWide::CPToWide(const char *chars, unsigned int cp) {
+   int requiredChars = MultiByteToWideChar(cp,0,chars,-1,wideChars,0);
    wideChars = new wchar_t[requiredChars];
-   MultiByteToWideChar(932,0,ms932Chars,-1,wideChars,requiredChars);
+   MultiByteToWideChar(cp,0,chars,-1,wideChars,requiredChars);
 }
 
-AnsiToWide::AnsiToWide(const char *ansiChars) {
-	int requiredChars = MultiByteToWideChar(CP_ACP,0,ansiChars,-1,wideChars,0);
-	wideChars = new wchar_t[requiredChars];
-	MultiByteToWideChar(CP_ACP,0,ansiChars,-1,wideChars,requiredChars);
+WideToCP::WideToCP(const wchar_t *wideChars, unsigned int cp) {
+	int requiredChars = WideCharToMultiByte(cp,0,wideChars,-1,cpchars,0,NULL,NULL);
+	cpchars = new char[requiredChars];
+	WideCharToMultiByte(cp,0,wideChars,-1,cpchars,requiredChars,NULL,NULL);
 }
 
-WideToAnsi::WideToAnsi(const wchar_t *wideChars) {
-	int requiredChars = WideCharToMultiByte(CP_ACP,0,wideChars,-1,ansiChars,0,NULL,NULL);
-	ansiChars = new char[requiredChars];
-	WideCharToMultiByte(CP_ACP,0,wideChars,-1,ansiChars,requiredChars,NULL,NULL);
-}
+#ifdef UNICODE
 
 extern "C" FILE *_tfwopen(const char *filename, const char *mode ) {
 	wchar_t mode_w[30];

@@ -213,9 +213,9 @@
 #ifdef UNICODE
 #define _tToChar WideToUtf8
 #define _tFromChar Utf8ToWide
-#define _tFromMS932 MS932ToWide
-#define _tToAnsi WideToAnsi
-#define _tFromAnsi AnsiToWide
+#define _tFromMS932(x) CPToWide(x,932)
+#define _tToAnsi(x) WideToCP(x,CP_ACP)
+#define _tFromAnsi(x) CPToWide(x,CP_ACP)
 #else
 #define _tToChar
 #define _tFromChar
