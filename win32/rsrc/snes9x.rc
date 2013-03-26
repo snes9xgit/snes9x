@@ -791,6 +791,7 @@ BEGIN
         END
         POPUP "&Save Game Position"
         BEGIN
+            MENUITEM "Slot #&0",                    ID_FILE_SAVE0
             MENUITEM "Slot #&1",                    ID_FILE_SAVE1
             MENUITEM "Slot #&2",                    ID_FILE_SAVE2
             MENUITEM "Slot #&3",                    ID_FILE_SAVE3
@@ -803,6 +804,7 @@ BEGIN
         END
         POPUP "&Load Game Position"
         BEGIN
+            MENUITEM "Slot #&0",                    ID_FILE_LOAD0
             MENUITEM "Slot #&1",                    ID_FILE_LOAD1
             MENUITEM "Slot #&2",                    ID_FILE_LOAD2
             MENUITEM "Slot #&3",                    ID_FILE_LOAD3

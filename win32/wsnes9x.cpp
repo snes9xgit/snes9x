@@ -2247,59 +2247,65 @@ LRESULT CALLBACK WinProc(
 			Settings.FrameAdvance = false;
 			GUI.FrameAdvanceJustPressed = 0;
 			break;
-		case ID_FILE_LOAD1:
+        case ID_FILE_LOAD0:
 			FreezeUnfreeze (0, FALSE);
 			break;
-		case ID_FILE_LOAD2:
+		case ID_FILE_LOAD1:
 			FreezeUnfreeze (1, FALSE);
 			break;
-		case ID_FILE_LOAD3:
+		case ID_FILE_LOAD2:
 			FreezeUnfreeze (2, FALSE);
 			break;
-		case ID_FILE_LOAD4:
+		case ID_FILE_LOAD3:
 			FreezeUnfreeze (3, FALSE);
 			break;
-		case ID_FILE_LOAD5:
+		case ID_FILE_LOAD4:
 			FreezeUnfreeze (4, FALSE);
 			break;
-		case ID_FILE_LOAD6:
+		case ID_FILE_LOAD5:
 			FreezeUnfreeze (5, FALSE);
 			break;
-		case ID_FILE_LOAD7:
+		case ID_FILE_LOAD6:
 			FreezeUnfreeze (6, FALSE);
 			break;
-		case ID_FILE_LOAD8:
+		case ID_FILE_LOAD7:
 			FreezeUnfreeze (7, FALSE);
 			break;
-		case ID_FILE_LOAD9:
+		case ID_FILE_LOAD8:
 			FreezeUnfreeze (8, FALSE);
 			break;
-		case ID_FILE_SAVE1:
-			FreezeUnfreeze (0, TRUE);
+		case ID_FILE_LOAD9:
+			FreezeUnfreeze (9, FALSE);
 			break;
-		case ID_FILE_SAVE2:
+        case ID_FILE_SAVE0:
+            FreezeUnfreeze (0, TRUE);
+			break;
+		case ID_FILE_SAVE1:
 			FreezeUnfreeze (1, TRUE);
 			break;
-		case ID_FILE_SAVE3:
+		case ID_FILE_SAVE2:
 			FreezeUnfreeze (2, TRUE);
 			break;
-		case ID_FILE_SAVE4:
+		case ID_FILE_SAVE3:
 			FreezeUnfreeze (3, TRUE);
 			break;
-		case ID_FILE_SAVE5:
+		case ID_FILE_SAVE4:
 			FreezeUnfreeze (4, TRUE);
 			break;
-		case ID_FILE_SAVE6:
+		case ID_FILE_SAVE5:
 			FreezeUnfreeze (5, TRUE);
 			break;
-		case ID_FILE_SAVE7:
+		case ID_FILE_SAVE6:
 			FreezeUnfreeze (6, TRUE);
 			break;
-		case ID_FILE_SAVE8:
+		case ID_FILE_SAVE7:
 			FreezeUnfreeze (7, TRUE);
 			break;
-		case ID_FILE_SAVE9:
+		case ID_FILE_SAVE8:
 			FreezeUnfreeze (8, TRUE);
+			break;
+		case ID_FILE_SAVE9:
+			FreezeUnfreeze (9, TRUE);
 			break;
 		case ID_CHEAT_ENTER:
 			RestoreGUIDisplay ();
