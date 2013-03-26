@@ -332,6 +332,8 @@ bool CD3DCG::LoadShader(const TCHAR *shaderFile)
 			pass.linearFilter = it->linearFilter;
 		}
 
+        pass.frameCounterMod = it->frameCounterMod;
+
 		// paths in the meta file can be relative
 		_tfullpath(tempPath,_tFromChar(it->cgShaderFile),MAX_PATH);
 		char *fileContents = ReadShaderFileContents(tempPath);
@@ -682,7 +684,10 @@ void CD3DCG::setShaderVars(int pass)
 	setProgramUniform(pass,"IN.video_size",&inputSize);
 	setProgramUniform(pass,"IN.texture_size",&textureSize);
 	setProgramUniform(pass,"IN.output_size",&outputSize);
-	setProgramUniform(pass,"IN.frame_count",&frameCnt);
+    float shaderFrameCnt = frameCnt;
+    if(shaderPasses[pass].frameCounterMod)
+        shaderFrameCnt = (float)(frameCnt % shaderPasses[pass].frameCounterMod);
+	setProgramUniform(pass,"IN.frame_count",&shaderFrameCnt);
     float frameDirection = GUI.rewinding?-1.0f:1.0f;
     setProgramUniform(pass,"IN.frame_direction",&frameDirection);
 

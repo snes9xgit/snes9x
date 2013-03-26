@@ -344,6 +344,8 @@ bool CGLCG::LoadShader(const TCHAR *shaderFile)
 			pass.linearFilter = it->linearFilter;
 		}
 
+        pass.frameCounterMod = it->frameCounterMod;
+
 		// paths in the meta file can be relative
 		_tfullpath(tempPath,_tFromChar(it->cgShaderFile),MAX_PATH);
 		char *fileContents = ReadShaderFileContents(tempPath);
@@ -666,7 +668,10 @@ void CGLCG::setShaderVars(int pass)
 	setProgram2fv(pass,"IN.video_size",inputSize);
 	setProgram2fv(pass,"IN.texture_size",textureSize);
 	setProgram2fv(pass,"IN.output_size",outputSize);
-	setProgram1f(pass,"IN.frame_count",(float)frameCnt);
+    unsigned int shaderFrameCnt = frameCnt;
+    if(shaderPasses[pass].frameCounterMod)
+        shaderFrameCnt %= shaderPasses[pass].frameCounterMod;
+	setProgram1f(pass,"IN.frame_count",(float)shaderFrameCnt);
     setProgram1f(pass,"IN.frame_direction",GUI.rewinding?-1.0f:1.0f);
 
 	/* ORIG parameter

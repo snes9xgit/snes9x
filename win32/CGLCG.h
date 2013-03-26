@@ -212,6 +212,7 @@ private:
 	typedef struct _shaderPass {
 		cgScaleParams scaleParams;
 		bool linearFilter;
+        unsigned frameCounterMod;
 		CGprogram cgVertexProgram, cgFragmentProgram;
 		GLuint tex;
 		GLuint fbo;
@@ -256,7 +257,7 @@ private:
 	bool loadTGA(const TCHAR *filename, STGA& tgaFile);
 
 	CGcontext cgContext;
-	int frameCnt;
+	unsigned int frameCnt;
 	static const GLfloat lut_coords[8];
 
 

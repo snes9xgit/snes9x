@@ -200,6 +200,7 @@ public:
 		cgScaleParams scaleParams;
 		bool linearFilter;
 		bool filterSet;
+        unsigned frameCounterMod;
 		char cgShaderFile[PATH_MAX];
 	} shaderPass;
 	typedef struct _lookupTexture {

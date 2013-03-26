@@ -197,6 +197,7 @@ private:
 	typedef struct _shaderPass {
 		cgScaleParams scaleParams;
 		bool linearFilter;
+        unsigned int frameCounterMod;
 		CGprogram cgVertexProgram, cgFragmentProgram;
 		LPDIRECT3DTEXTURE9    tex;
 		LPDIRECT3DVERTEXBUFFER9 vertexBuffer;
@@ -247,7 +248,7 @@ private:
 
 	LPDIRECT3DDEVICE9     pDevice;
 	CGcontext cgContext;
-	float frameCnt;
+	unsigned int frameCnt;
 	D3DXMATRIX mvp;
 
 public:
