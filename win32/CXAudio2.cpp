@@ -390,10 +390,8 @@ void CXAudio2::ProcessSound()
 	BYTE * curBuffer;
 
 	UINT32 availableSamples;
-	UINT32 availableBytes;
 
 	availableSamples = S9xGetSampleCount();
-	availableBytes = availableSamples * (Settings.SixteenBitSound ? 2 : 1);
 
 	while(availableSamples > singleBufferSamples && bufferCount < blockCount) {
 		curBuffer = soundBuffer + writeOffset;
@@ -401,5 +399,6 @@ void CXAudio2::ProcessSound()
 		PushBuffer(singleBufferBytes,curBuffer,NULL);
 		writeOffset+=singleBufferBytes;
 		writeOffset%=sum_bufferSize;
+        availableSamples -= singleBufferSamples;
 	}
 }
