@@ -334,6 +334,8 @@ bool CD3DCG::LoadShader(const TCHAR *shaderFile)
 
         pass.frameCounterMod = it->frameCounterMod;
 
+        pass.useFloatTex = it->floatFbo;
+
 		// paths in the meta file can be relative
 		_tfullpath(tempPath,_tFromChar(it->cgShaderFile),MAX_PATH);
 		char *fileContents = ReadShaderFileContents(tempPath);
@@ -415,7 +417,7 @@ bool CD3DCG::LoadShader(const TCHAR *shaderFile)
 }
 
 void CD3DCG::ensureTextureSize(LPDIRECT3DTEXTURE9 &tex, D3DXVECTOR2 &texSize,
-							   D3DXVECTOR2 wantedSize,bool renderTarget)
+							   D3DXVECTOR2 wantedSize,bool renderTarget,bool useFloat)
 {
 	HRESULT hr;
 
@@ -427,7 +429,7 @@ void CD3DCG::ensureTextureSize(LPDIRECT3DTEXTURE9 &tex, D3DXVECTOR2 &texSize,
 			wantedSize.x, wantedSize.y,
 			1, // 1 level, no mipmaps
 			renderTarget?D3DUSAGE_RENDERTARGET:0,
-			renderTarget?D3DFMT_X8R8G8B8:D3DFMT_R5G6B5,
+            renderTarget?(useFloat?D3DFMT_A32B32G32R32F:D3DFMT_X8R8G8B8):D3DFMT_R5G6B5,
 			renderTarget?D3DPOOL_DEFAULT:D3DPOOL_MANAGED, // render targets cannot be managed
 			&tex,
 			NULL );
@@ -536,7 +538,7 @@ void CD3DCG::Render(LPDIRECT3DTEXTURE9 &origTex, D3DXVECTOR2 textureSize,
 		/* make sure the render target exists and has an appropriate size,
 		   then set as current render target with last pass as source
 		*/
-		ensureTextureSize(shaderPasses[i].tex,shaderPasses[i].textureSize,D3DXVECTOR2(texSize,texSize),true);
+		ensureTextureSize(shaderPasses[i].tex,shaderPasses[i].textureSize,D3DXVECTOR2(texSize,texSize),true,shaderPasses[i].useFloatTex);
 		shaderPasses[i].tex->GetSurfaceLevel(0,&pRenderSurface);
 		pDevice->SetTexture(0, shaderPasses[i-1].tex);
 		pDevice->SetRenderTarget(0,pRenderSurface);

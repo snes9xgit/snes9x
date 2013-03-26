@@ -200,6 +200,7 @@ public:
 		cgScaleParams scaleParams;
 		bool linearFilter;
 		bool filterSet;
+        bool floatFbo;
         unsigned frameCounterMod;
 		char cgShaderFile[PATH_MAX];
 	} shaderPass;

@@ -346,6 +346,8 @@ bool CGLCG::LoadShader(const TCHAR *shaderFile)
 
         pass.frameCounterMod = it->frameCounterMod;
 
+        pass.floatFbo = it->floatFbo;
+
 		// paths in the meta file can be relative
 		_tfullpath(tempPath,_tFromChar(it->cgShaderFile),MAX_PATH);
 		char *fileContents = ReadShaderFileContents(tempPath);
@@ -533,7 +535,7 @@ void CGLCG::Render(GLuint &origTex, xySize textureSize, xySize inputSize, xySize
 		/* set size of output texture
 		*/
 		glBindTexture(GL_TEXTURE_2D,shaderPasses[i].tex);
-		glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,(unsigned int)shaderPasses[i].textureSize.x,
+        glTexImage2D(GL_TEXTURE_2D,0,(shaderPasses[i].floatFbo?GL_RGBA32F:GL_RGBA),(unsigned int)shaderPasses[i].textureSize.x,
 			(unsigned int)shaderPasses[i].textureSize.y,0,GL_RGBA,GL_UNSIGNED_INT_8_8_8_8,NULL);
 
 		/* viewport determines the area we render into the output texture

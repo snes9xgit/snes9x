@@ -213,6 +213,7 @@ private:
 		cgScaleParams scaleParams;
 		bool linearFilter;
         unsigned frameCounterMod;
+        bool floatFbo;
 		CGprogram cgVertexProgram, cgFragmentProgram;
 		GLuint tex;
 		GLuint fbo;
