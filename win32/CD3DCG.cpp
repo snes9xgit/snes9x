@@ -429,7 +429,7 @@ void CD3DCG::ensureTextureSize(LPDIRECT3DTEXTURE9 &tex, D3DXVECTOR2 &texSize,
 			wantedSize.x, wantedSize.y,
 			1, // 1 level, no mipmaps
 			renderTarget?D3DUSAGE_RENDERTARGET:0,
-            renderTarget?(useFloat?D3DFMT_A32B32G32R32F:D3DFMT_X8R8G8B8):D3DFMT_R5G6B5,
+            renderTarget?(useFloat?D3DFMT_A32B32G32R32F:D3DFMT_A8R8G8B8):D3DFMT_R5G6B5,
 			renderTarget?D3DPOOL_DEFAULT:D3DPOOL_MANAGED, // render targets cannot be managed
 			&tex,
 			NULL );
@@ -569,6 +569,8 @@ void CD3DCG::Render(LPDIRECT3DTEXTURE9 &origTex, D3DXVECTOR2 textureSize,
 		*/
 		setViewport(0,0,shaderPasses[i].outputSize.x,shaderPasses[i].outputSize.y);
 
+        pDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
+
 		pDevice->BeginScene();
 		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,0,2);
 		pDevice->EndScene();
@@ -663,12 +665,20 @@ void CD3DCG::setShaderVars(int pass)
 #define setTextureParameter(pass,varname,val,linear)\
 {\
 	CGparameter cgpf = cgGetNamedParameter(shaderPasses[pass].cgFragmentProgram, varname);\
+    CGparameter cgpv = cgGetNamedParameter(shaderPasses[pass].cgVertexProgram, varname);\
 	if(cgpf) {\
 		cgD3D9SetTexture(cgpf,val);\
 		cgD3D9SetSamplerState(cgpf, D3DSAMP_ADDRESSU, D3DTADDRESS_BORDER);\
 		cgD3D9SetSamplerState(cgpf, D3DSAMP_ADDRESSV, D3DTADDRESS_BORDER);\
 		cgD3D9SetSamplerState(cgpf, D3DSAMP_MINFILTER, linear?D3DTEXF_LINEAR:D3DTEXF_POINT);\
 		cgD3D9SetSamplerState(cgpf, D3DSAMP_MAGFILTER, linear?D3DTEXF_LINEAR:D3DTEXF_POINT);\
+	}\
+    if(cgpv) {\
+		cgD3D9SetTexture(cgpv,val);\
+		cgD3D9SetSamplerState(cgpv, D3DSAMP_ADDRESSU, D3DTADDRESS_BORDER);\
+		cgD3D9SetSamplerState(cgpv, D3DSAMP_ADDRESSV, D3DTADDRESS_BORDER);\
+		cgD3D9SetSamplerState(cgpv, D3DSAMP_MINFILTER, linear?D3DTEXF_LINEAR:D3DTEXF_POINT);\
+		cgD3D9SetSamplerState(cgpv, D3DSAMP_MAGFILTER, linear?D3DTEXF_LINEAR:D3DTEXF_POINT);\
 	}\
 }\
 
