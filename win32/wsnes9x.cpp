@@ -282,6 +282,8 @@ HRESULT CALLBACK EnumModesCallback( LPDDSURFACEDESC lpDDSurfaceDesc, LPVOID lpCo
 
 VOID CALLBACK HotkeyTimer( UINT idEvent, UINT uMsg, DWORD dwUser, DWORD dw1, DWORD dw2);
 
+void S9xDetectJoypads();
+
 #define NOTKNOWN "Unknown Company "
 #define HEADER_SIZE 512
 #define INFO_LEN (0xFF - 0xC0)
@@ -2685,6 +2687,9 @@ LRESULT CALLBACK WinProc(
 #endif
 		break;
 #endif
+    case WM_DEVICECHANGE:
+        S9xDetectJoypads();
+        break;
     }
     return DefWindowProc (hWnd, uMsg, wParam, lParam);
 }

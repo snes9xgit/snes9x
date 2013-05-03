@@ -980,6 +980,13 @@ void S9xWinScanJoypads ()
 #endif
 }
 
+void S9xDetectJoypads()
+{
+    for (int C = 0; C != 16; C ++)
+        Joystick[C].Attached = joyGetDevCaps (JOYSTICKID1+C, &Joystick[C].Caps,
+                                              sizeof( JOYCAPS)) == JOYERR_NOERROR;
+}
+
 void InitSnes9X( void)
 {
 #ifdef DEBUGGER
@@ -1023,9 +1030,7 @@ void InitSnes9X( void)
 
 	S9xMovieInit ();
 
-    for (int C = 0; C != 16; C ++)
-        Joystick[C].Attached = joyGetDevCaps (JOYSTICKID1+C, &Joystick[C].Caps,
-                                              sizeof( JOYCAPS)) == JOYERR_NOERROR;
+    S9xDetectJoypads();
 }
 void DeinitS9x()
 {
