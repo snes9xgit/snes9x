@@ -1,22 +1,22 @@
 case 0x7d: {
   op_io();
-  regs.endian.a = regs.x;
-  regs.p.n = !!(regs.endian.a & 0x80);
-  regs.p.z = (regs.endian.a == 0);
+  regs.B.a = regs.x;
+  regs.p.n = !!(regs.B.a & 0x80);
+  regs.p.z = (regs.B.a == 0);
   break;
 }
 
 case 0xdd: {
   op_io();
-  regs.endian.a = regs.endian.y;
-  regs.p.n = !!(regs.endian.a & 0x80);
-  regs.p.z = (regs.endian.a == 0);
+  regs.B.a = regs.B.y;
+  regs.p.n = !!(regs.B.a & 0x80);
+  regs.p.z = (regs.B.a == 0);
   break;
 }
 
 case 0x5d: {
   op_io();
-  regs.x = regs.endian.a;
+  regs.x = regs.B.a;
   regs.p.n = !!(regs.x & 0x80);
   regs.p.z = (regs.x == 0);
   break;
@@ -24,9 +24,9 @@ case 0x5d: {
 
 case 0xfd: {
   op_io();
-  regs.endian.y = regs.endian.a;
-  regs.p.n = !!(regs.endian.y & 0x80);
-  regs.p.z = (regs.endian.y == 0);
+  regs.B.y = regs.B.a;
+  regs.p.n = !!(regs.B.y & 0x80);
+  regs.p.z = (regs.B.y == 0);
   break;
 }
 
@@ -45,9 +45,9 @@ case 0xbd: {
 }
 
 case 0xe8: {
-  regs.endian.a = op_readpc();
-  regs.p.n = !!(regs.endian.a & 0x80);
-  regs.p.z = (regs.endian.a == 0);
+  regs.B.a = op_readpc();
+  regs.p.n = !!(regs.B.a & 0x80);
+  regs.p.z = (regs.B.a == 0);
   break;
 }
 
@@ -59,9 +59,9 @@ case 0xcd: {
 }
 
 case 0x8d: {
-  regs.endian.y = op_readpc();
-  regs.p.n = !!(regs.endian.y & 0x80);
-  regs.p.z = (regs.endian.y == 0);
+  regs.B.y = op_readpc();
+  regs.p.n = !!(regs.B.y & 0x80);
+  regs.p.z = (regs.B.y == 0);
   break;
 }
 
@@ -71,9 +71,9 @@ case 0xe6: {
     op_io();
     break;
   case 2:
-    regs.endian.a = op_readdp(regs.x);
-    regs.p.n = !!(regs.endian.a & 0x80);
-    regs.p.z = (regs.endian.a == 0);
+    regs.B.a = op_readdp(regs.x);
+    regs.p.n = !!(regs.B.a & 0x80);
+    regs.p.z = (regs.B.a == 0);
     opcode_cycle = 0;
     break;
   }
@@ -86,10 +86,10 @@ case 0xbf: {
     op_io();
     break;
   case 2:
-    regs.endian.a = op_readdp(regs.x++);
+    regs.B.a = op_readdp(regs.x++);
     op_io();
-    regs.p.n = !!(regs.endian.a & 0x80);
-    regs.p.z = (regs.endian.a == 0);
+    regs.p.n = !!(regs.B.a & 0x80);
+    regs.p.z = (regs.B.a == 0);
     opcode_cycle = 0;
     break;
   }
@@ -102,9 +102,9 @@ case 0xe4: {
     sp = op_readpc();
     break;
   case 2:
-    regs.endian.a = op_readdp(sp);
-    regs.p.n = !!(regs.endian.a & 0x80);
-    regs.p.z = (regs.endian.a == 0);
+    regs.B.a = op_readdp(sp);
+    regs.p.n = !!(regs.B.a & 0x80);
+    regs.p.z = (regs.B.a == 0);
     opcode_cycle = 0;
     break;
   }
@@ -132,9 +132,9 @@ case 0xeb: {
     sp = op_readpc();
     break;
   case 2:
-    regs.endian.y = op_readdp(sp);
-    regs.p.n = !!(regs.endian.y & 0x80);
-    regs.p.z = (regs.endian.y == 0);
+    regs.B.y = op_readdp(sp);
+    regs.p.n = !!(regs.B.y & 0x80);
+    regs.p.z = (regs.B.y == 0);
     opcode_cycle = 0;
     break;
   }
@@ -148,9 +148,9 @@ case 0xf4: {
     op_io();
     break;
   case 2:
-    regs.endian.a = op_readdp(sp + regs.x);
-    regs.p.n = !!(regs.endian.a & 0x80);
-    regs.p.z = (regs.endian.a == 0);
+    regs.B.a = op_readdp(sp + regs.x);
+    regs.p.n = !!(regs.B.a & 0x80);
+    regs.p.z = (regs.B.a == 0);
     opcode_cycle = 0;
     break;
   }
@@ -164,7 +164,7 @@ case 0xf9: {
     op_io();
     break;
   case 2:
-    regs.x = op_readdp(sp + regs.endian.y);
+    regs.x = op_readdp(sp + regs.B.y);
     regs.p.n = !!(regs.x & 0x80);
     regs.p.z = (regs.x == 0);
     opcode_cycle = 0;
@@ -180,9 +180,9 @@ case 0xfb: {
     op_io();
     break;
   case 2:
-    regs.endian.y = op_readdp(sp + regs.x);
-    regs.p.n = !!(regs.endian.y & 0x80);
-    regs.p.z = (regs.endian.y == 0);
+    regs.B.y = op_readdp(sp + regs.x);
+    regs.p.n = !!(regs.B.y & 0x80);
+    regs.p.z = (regs.B.y == 0);
     opcode_cycle = 0;
     break;
   }
@@ -198,9 +198,9 @@ case 0xe5: {
     sp |= op_readpc() << 8;
     break;
   case 3:
-    regs.endian.a = op_readaddr(sp);
-    regs.p.n = !!(regs.endian.a & 0x80);
-    regs.p.z = (regs.endian.a == 0);
+    regs.B.a = op_readaddr(sp);
+    regs.p.n = !!(regs.B.a & 0x80);
+    regs.p.z = (regs.B.a == 0);
     opcode_cycle = 0;
     break;
   }
@@ -230,9 +230,9 @@ case 0xec: {
     sp |= op_readpc() << 8;
     break;
   case 2:
-    regs.endian.y = op_readaddr(sp);
-    regs.p.n = !!(regs.endian.y & 0x80);
-    regs.p.z = (regs.endian.y == 0);
+    regs.B.y = op_readaddr(sp);
+    regs.p.n = !!(regs.B.y & 0x80);
+    regs.p.z = (regs.B.y == 0);
     opcode_cycle = 0;
     break;
   }
@@ -247,9 +247,9 @@ case 0xf5: {
     op_io();
     break;
   case 2:
-    regs.endian.a = op_readaddr(sp + regs.x);
-    regs.p.n = !!(regs.endian.a & 0x80);
-    regs.p.z = (regs.endian.a == 0);
+    regs.B.a = op_readaddr(sp + regs.x);
+    regs.p.n = !!(regs.B.a & 0x80);
+    regs.p.z = (regs.B.a == 0);
     opcode_cycle = 0;
     break;
   }
@@ -264,9 +264,9 @@ case 0xf6: {
     op_io();
     break;
   case 2:
-    regs.endian.a = op_readaddr(sp + regs.endian.y);
-    regs.p.n = !!(regs.endian.a & 0x80);
-    regs.p.z = (regs.endian.a == 0);
+    regs.B.a = op_readaddr(sp + regs.B.y);
+    regs.p.n = !!(regs.B.a & 0x80);
+    regs.p.z = (regs.B.a == 0);
     opcode_cycle = 0;
     break;
   }
@@ -286,9 +286,9 @@ case 0xe7: {
     sp |= op_readdp(dp + 1) << 8;
     break;
   case 4:
-    regs.endian.a = op_readaddr(sp);
-    regs.p.n = !!(regs.endian.a & 0x80);
-    regs.p.z = (regs.endian.a == 0);
+    regs.B.a = op_readaddr(sp);
+    regs.p.n = !!(regs.B.a & 0x80);
+    regs.p.z = (regs.B.a == 0);
     opcode_cycle = 0;
     break;
   }
@@ -308,9 +308,9 @@ case 0xf7: {
     sp |= op_readdp(dp + 1) << 8;
     break;
   case 4:
-    regs.endian.a = op_readaddr(sp + regs.endian.y);
-    regs.p.n = !!(regs.endian.a & 0x80);
-    regs.p.z = (regs.endian.a == 0);
+    regs.B.a = op_readaddr(sp + regs.B.y);
+    regs.p.n = !!(regs.B.a & 0x80);
+    regs.p.z = (regs.B.a == 0);
     opcode_cycle = 0;
     break;
   }
@@ -362,7 +362,7 @@ case 0xc6: {
     op_readdp(regs.x);
     break;
   case 3:
-    op_writedp(regs.x, regs.endian.a);
+    op_writedp(regs.x, regs.B.a);
     opcode_cycle = 0;
     break;
   }
@@ -374,7 +374,7 @@ case 0xaf: {
   case 1:
     op_io(2);
   case 2:
-    op_writedp(regs.x++, regs.endian.a);
+    op_writedp(regs.x++, regs.B.a);
     opcode_cycle = 0;
     break;
   }
@@ -390,7 +390,7 @@ case 0xc4: {
     op_readdp(dp);
     break;
   case 3:
-    op_writedp(dp, regs.endian.a);
+    op_writedp(dp, regs.B.a);
     opcode_cycle = 0;
     break;
   }
@@ -422,7 +422,7 @@ case 0xcb: {
     op_readdp(dp);
     break;
   case 3:
-    op_writedp(dp, regs.endian.y);
+    op_writedp(dp, regs.B.y);
     opcode_cycle = 0;
     break;
   }
@@ -440,7 +440,7 @@ case 0xd4: {
     op_readdp(dp);
     break;
   case 3:
-    op_writedp(dp, regs.endian.a);
+    op_writedp(dp, regs.B.a);
     opcode_cycle = 0;
     break;
   }
@@ -452,7 +452,7 @@ case 0xd9: {
   case 1:
     dp  = op_readpc();
     op_io();
-    dp += regs.endian.y;
+    dp += regs.B.y;
     break;
   case 2:
     op_readdp(dp);
@@ -476,7 +476,7 @@ case 0xdb: {
     op_readdp(dp);
     break;
   case 3:
-    op_writedp(dp, regs.endian.y);
+    op_writedp(dp, regs.B.y);
     opcode_cycle = 0;
     break;
   }
@@ -495,7 +495,7 @@ case 0xc5: {
     op_readaddr(dp);
     break;
   case 4:
-    op_writeaddr(dp, regs.endian.a);
+    op_writeaddr(dp, regs.B.a);
     opcode_cycle = 0;
     break;
   }
@@ -533,7 +533,7 @@ case 0xcc: {
     op_readaddr(dp);
     break;
   case 4:
-    op_writeaddr(dp, regs.endian.y);
+    op_writeaddr(dp, regs.B.y);
     opcode_cycle = 0;
     break;
   }
@@ -552,7 +552,7 @@ case 0xd5: {
     op_readaddr(dp);
     break;
   case 3:
-    op_writeaddr(dp, regs.endian.a);
+    op_writeaddr(dp, regs.B.a);
     opcode_cycle = 0;
     break;
   }
@@ -565,13 +565,13 @@ case 0xd6: {
     dp  = op_readpc();
     dp |= op_readpc() << 8;
     op_io();
-    dp += regs.endian.y;
+    dp += regs.B.y;
     break;
   case 2:
     op_readaddr(dp);
     break;
   case 3:
-    op_writeaddr(dp, regs.endian.a);
+    op_writeaddr(dp, regs.B.a);
     opcode_cycle = 0;
     break;
   }
@@ -595,7 +595,7 @@ case 0xc7: {
     op_readaddr(dp);
     break;
   case 5:
-    op_writeaddr(dp, regs.endian.a);
+    op_writeaddr(dp, regs.B.a);
     opcode_cycle = 0;
     break;
   }
@@ -613,13 +613,13 @@ case 0xd7: {
   case 3:
     dp |= op_readdp(sp + 1) << 8;
     op_io();
-    dp += regs.endian.y;
+    dp += regs.B.y;
     break;
   case 4:
     op_readaddr(dp);
     break;
   case 5:
-    op_writeaddr(dp, regs.endian.a);
+    op_writeaddr(dp, regs.B.a);
     opcode_cycle = 0;
     break;
   }
@@ -632,11 +632,11 @@ case 0xba: {
     sp = op_readpc();
     break;
   case 2:
-    regs.endian.a = op_readdp(sp);
+    regs.B.a = op_readdp(sp);
     op_io();
     break;
   case 3:
-    regs.endian.y = op_readdp(sp + 1);
+    regs.B.y = op_readdp(sp + 1);
     regs.p.n = !!(regs.ya & 0x8000);
     regs.p.z = (regs.ya == 0);
     opcode_cycle = 0;
@@ -654,10 +654,10 @@ case 0xda: {
     op_readdp(dp);
     break;
   case 3:
-    op_writedp(dp,     regs.endian.a);
+    op_writedp(dp,     regs.B.a);
     break;
   case 4:
-    op_writedp(dp + 1, regs.endian.y);
+    op_writedp(dp + 1, regs.B.y);
     opcode_cycle = 0;
     break;
   }

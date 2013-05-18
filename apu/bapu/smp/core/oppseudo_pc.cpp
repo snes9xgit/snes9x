@@ -251,7 +251,7 @@ case 0x2e: {
   sp = op_readdp(dp);
   rd = op_readpc();
   op_io();
-  if(regs.endian.a == sp){ break; }
+  if(regs.B.a == sp){ break; }
   op_io(2);
   regs.pc += (int8)rd;
   break;
@@ -263,7 +263,7 @@ case 0xde: {
   sp = op_readdp(dp + regs.x);
   rd = op_readpc();
   op_io();
-  if(regs.endian.a == sp){ break; }
+  if(regs.B.a == sp){ break; }
   op_io(2);
   regs.pc += (int8)rd;
   break;
@@ -283,9 +283,9 @@ case 0x6e: {
 case 0xfe: {
   rd = op_readpc();
   op_io();
-  regs.endian.y--;
+  regs.B.y--;
   op_io();
-  if(regs.endian.y == 0x00){ break; }
+  if(regs.B.y == 0x00){ break; }
   op_io(2);
   regs.pc += (int8)rd;
   break;

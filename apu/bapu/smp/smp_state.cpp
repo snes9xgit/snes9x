@@ -38,9 +38,9 @@ void SMP::save_spc (uint8 *block) {
 
   out.pc_low = regs.pc & 0xff;
   out.pc_high = (regs.pc >> 8) & 0xff;
-  out.a = regs.endian.a;
+  out.a = regs.B.a;
   out.x = regs.x;
-  out.y = regs.endian.y;
+  out.y = regs.B.y;
   out.psw = (uint8) ((unsigned) regs.p);
   out.sp = regs.sp;
   out.unused_a[0] = out.unused_a[1] = 0;
@@ -84,9 +84,9 @@ void SMP::save_state(uint8 **block) {
 
   INT32(regs.pc);
   INT32(regs.sp);
-  INT32(regs.endian.a);
+  INT32(regs.B.a);
   INT32(regs.x);
-  INT32(regs.endian.y);
+  INT32(regs.B.y);
 
   INT32(regs.p.n);
   INT32(regs.p.v);
@@ -146,9 +146,9 @@ void SMP::load_state(uint8 **block) {
 
   INT32(regs.pc);
   INT32(regs.sp);
-  INT32(regs.endian.a);
+  INT32(regs.B.a);
   INT32(regs.x);
-  INT32(regs.endian.y);
+  INT32(regs.B.y);
 
   INT32(regs.p.n);
   INT32(regs.p.v);

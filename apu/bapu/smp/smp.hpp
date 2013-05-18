@@ -58,9 +58,9 @@ public:
     union {
       uint16 ya;
 #ifndef __BIG_ENDIAN__
-      struct { uint8 a, y; } endian;
+      struct { uint8 a, y; } B;
 #else
-      struct { uint8 y, a; } endian;
+      struct { uint8 y, a; } B;
 #endif
     };
     uint8 x;
