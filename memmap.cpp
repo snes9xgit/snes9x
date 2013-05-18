@@ -188,6 +188,8 @@
 #include "jma/s9x-jma.h"
 #endif
 
+#include <ctype.h>
+
 #include "snes9x.h"
 #include "memmap.h"
 #include "apu/apu.h"
