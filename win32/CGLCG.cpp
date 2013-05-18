@@ -409,7 +409,7 @@ bool CGLCG::LoadShader(const TCHAR *shaderFile)
 				GLubyte *texData;
 				if(loadPngImage(tempPath,width,height,hasAlpha,&texData)) {
 					glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
-					glTexImage2D(GL_TEXTURE_2D, 0, hasAlpha ? 4 : 3, width,
+					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width,
 						height, 0, hasAlpha ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, texData);
 					free(texData);
 				}
@@ -417,7 +417,7 @@ bool CGLCG::LoadShader(const TCHAR *shaderFile)
 				STGA stga;
 				if(loadTGA(tempPath,stga)) {
 					glPixelStorei(GL_UNPACK_ROW_LENGTH, stga.width);
-					glTexImage2D(GL_TEXTURE_2D, 0, 4, stga.width,
+					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, stga.width,
 						stga.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, stga.data);
 				}
 			}
