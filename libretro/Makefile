@@ -28,8 +28,17 @@ else ifeq ($(platform), ios)
    fpic := -fPIC
    SHARED := -dynamiclib
 
+	CC = clang -arch armv7 -isysroot $(IOSSDK)
 	CXX = clang++ -arch armv7 -isysroot $(IOSSDK)
 	CXXFLAGS += -DIOS
+else ifeq ($(platform), qnx)
+	TARGET := $(TARGET_NAME)_libretro_qnx.so
+	fpic := -fPIC
+   SHARED := -shared -Wl,--version-script=link.T
+	CC = qcc -Vgcc_notarmv7le
+	CC = QCC -Vgcc_notarmv7le_cpp
+	AR = QCC -Vgcc_ntoarmv7le
+	CXXFLAGS += -D__BLACKBERRY_QNX__
 else ifeq ($(platform), ps3)
    TARGET := $(TARGET_NAME)_libretro_ps3.a
    CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
