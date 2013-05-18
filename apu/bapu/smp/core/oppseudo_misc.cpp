@@ -17,37 +17,37 @@ case 0xff: {
 
 case 0x9f: {
   op_io(4);
-  regs.a = (regs.a >> 4) | (regs.a << 4);
-  regs.p.n = !!(regs.a & 0x80);
-  regs.p.z = (regs.a == 0);
+  regs.endian.a = (regs.endian.a >> 4) | (regs.endian.a << 4);
+  regs.p.n = !!(regs.endian.a & 0x80);
+  regs.p.z = (regs.endian.a == 0);
   break;
 }
 
 case 0xdf: {
   op_io(2);
-  if(regs.p.c || (regs.a) > 0x99) {
-    regs.a += 0x60;
+  if(regs.p.c || (regs.endian.a) > 0x99) {
+    regs.endian.a += 0x60;
     regs.p.c = 1;
   }
-  if(regs.p.h || (regs.a & 15) > 0x09) {
-    regs.a += 0x06;
+  if(regs.p.h || (regs.endian.a & 15) > 0x09) {
+    regs.endian.a += 0x06;
   }
-  regs.p.n = !!(regs.a & 0x80);
-  regs.p.z = (regs.a == 0);
+  regs.p.n = !!(regs.endian.a & 0x80);
+  regs.p.z = (regs.endian.a == 0);
   break;
 }
 
 case 0xbe: {
   op_io(2);
-  if(!regs.p.c || (regs.a) > 0x99) {
-    regs.a -= 0x60;
+  if(!regs.p.c || (regs.endian.a) > 0x99) {
+    regs.endian.a -= 0x60;
     regs.p.c = 0;
   }
-  if(!regs.p.h || (regs.a & 15) > 0x09) {
-    regs.a -= 0x06;
+  if(!regs.p.h || (regs.endian.a & 15) > 0x09) {
+    regs.endian.a -= 0x06;
   }
-  regs.p.n = !!(regs.a & 0x80);
-  regs.p.z = (regs.a == 0);
+  regs.p.n = !!(regs.endian.a & 0x80);
+  regs.p.z = (regs.endian.a == 0);
   break;
 }
 
@@ -230,7 +230,7 @@ case 0xf2: {
 
 case 0x2d: {
   op_io(2);
-  op_writestack(regs.a);
+  op_writestack(regs.endian.a);
   break;
 }
 
@@ -242,7 +242,7 @@ case 0x4d: {
 
 case 0x6d: {
   op_io(2);
-  op_writestack(regs.y);
+  op_writestack(regs.endian.y);
   break;
 }
 
@@ -254,7 +254,7 @@ case 0x0d: {
 
 case 0xae: {
   op_io(2);
-  regs.a = op_readstack();
+  regs.endian.a = op_readstack();
   break;
 }
 
@@ -266,7 +266,7 @@ case 0xce: {
 
 case 0xee: {
   op_io(2);
-  regs.y = op_readstack();
+  regs.endian.y = op_readstack();
   break;
 }
 
@@ -278,12 +278,12 @@ case 0x8e: {
 
 case 0xcf: {
   op_io(8);
-  ya = regs.y * regs.a;
-  regs.a = ya;
-  regs.y = ya >> 8;
+  ya = regs.endian.y * regs.endian.a;
+  regs.endian.a = ya;
+  regs.endian.y = ya >> 8;
   //result is set based on y (high-byte) only
-  regs.p.n = !!(regs.y & 0x80);
-  regs.p.z = (regs.y == 0);
+  regs.p.n = !!(regs.endian.y & 0x80);
+  regs.p.z = (regs.endian.y == 0);
   break;
 }
 
@@ -291,21 +291,21 @@ case 0x9e: {
   op_io(11);
   ya = regs.ya;
   //overflow set if quotient >= 256
-  regs.p.v = !!(regs.y >= regs.x);
-  regs.p.h = !!((regs.y & 15) >= (regs.x & 15));
-  if(regs.y < (regs.x << 1)) {
+  regs.p.v = !!(regs.endian.y >= regs.x);
+  regs.p.h = !!((regs.endian.y & 15) >= (regs.x & 15));
+  if(regs.endian.y < (regs.x << 1)) {
     //if quotient is <= 511 (will fit into 9-bit result)
-    regs.a = ya / regs.x;
-    regs.y = ya % regs.x;
+    regs.endian.a = ya / regs.x;
+    regs.endian.y = ya % regs.x;
   } else {
-    //otherwise, the quotient won't fit into regs.p.v + regs.a
+    //otherwise, the quotient won't fit into regs.p.v + regs.endian.a
     //this emulates the odd behavior of the S-SMP in this case
-    regs.a = 255    - (ya - (regs.x << 9)) / (256 - regs.x);
-    regs.y = regs.x + (ya - (regs.x << 9)) % (256 - regs.x);
+    regs.endian.a = 255    - (ya - (regs.x << 9)) / (256 - regs.x);
+    regs.endian.y = regs.x + (ya - (regs.x << 9)) % (256 - regs.x);
   }
   //result is set based on a (quotient) only
-  regs.p.n = !!(regs.a & 0x80);
-  regs.p.z = (regs.a == 0);
+  regs.p.n = !!(regs.endian.a & 0x80);
+  regs.p.z = (regs.endian.a == 0);
   break;
 }
 

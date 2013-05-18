@@ -13,47 +13,69 @@ endif
 
 CXX        = g++
 CC         = gcc
+TARGET_NAME = snes9x
 
 ifeq ($(platform), unix)
-   TARGET := libretro.so
+   TARGET := $(TARGET_NAME)_libretro.so
    fpic := -fPIC
    SHARED := -shared -Wl,--version-script=link.T
 else ifeq ($(platform), osx)
-   TARGET := libretro.dylib
+   TARGET := $(TARGET_NAME)_libretro.dylib
    fpic := -fPIC
    SHARED := -dynamiclib
+else ifeq ($(platform), ios)
+   TARGET := $(TARGET_NAME)_libretro_ios.dylib
+   fpic := -fPIC
+   SHARED := -dynamiclib
+
+	CC = clang -arch armv7 -isysroot $(IOSSDK)
+	CXX = clang++ -arch armv7 -isysroot $(IOSSDK)
+	CXXFLAGS += -DIOS
+else ifeq ($(platform), qnx)
+	TARGET := $(TARGET_NAME)_libretro_qnx.so
+	fpic := -fPIC
+   SHARED := -shared -Wl,--version-script=link.T
+	CC = qcc -Vgcc_notarmv7le
+	CC = QCC -Vgcc_notarmv7le_cpp
+	AR = QCC -Vgcc_ntoarmv7le
+	CXXFLAGS += -D__BLACKBERRY_QNX__
 else ifeq ($(platform), ps3)
-   TARGET := libretro_ps3.a
+   TARGET := $(TARGET_NAME)_libretro_ps3.a
    CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
    CXX = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-g++.exe
    AR = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-ar.exe
-   CFLAGS += -DBLARGG_BIG_ENDIAN=1 -D__ppc__
+   CXXFLAGS += -DBLARGG_BIG_ENDIAN=1 -D__ppc__
+	STATIC_LINKING = 1
 else ifeq ($(platform), sncps3)
-   TARGET := libretro_ps3.a
+   TARGET := $(TARGET_NAME)_libretro_ps3.a
    CC = $(CELL_SDK)/host-win32/sn/bin/ps3ppusnc.exe
    CXX = $(CELL_SDK)/host-win32/sn/bin/ps3ppusnc.exe
    AR = $(CELL_SDK)/host-win32/sn/bin/ps3snarl.exe
-   CFLAGS += -DBLARGG_BIG_ENDIAN=1 -D__ppc__
+   CXXFLAGS += -DBLARGG_BIG_ENDIAN=1 -D__ppc__
+	STATIC_LINKING = 1
 else ifeq ($(platform), psl1ght)
-   TARGET := libretro_psl1ght.a
+   TARGET := $(TARGET_NAME)_libretro_psl1ght.a
    CC = $(PS3DEV)/ppu/bin/ppu-gcc$(EXE_EXT)
    CXX = $(PS3DEV)/ppu/bin/ppu-g++$(EXE_EXT)
    AR = $(PS3DEV)/ppu/bin/ppu-ar$(EXE_EXT)
-   CFLAGS += -DBLARGG_BIG_ENDIAN=1 -D__ppc__
+   CXXFLAGS += -DBLARGG_BIG_ENDIAN=1 -D__ppc__
+	STATIC_LINKING = 1
 else ifeq ($(platform), xenon)
-   TARGET := libretro_xenon360.a
+   TARGET := $(TARGET_NAME)_libretro_xenon360.a
    CC = xenon-gcc$(EXE_EXT)
    CXX = xenon-g++$(EXE_EXT)
    AR = xenon-ar$(EXE_EXT)
-   CFLAGS += -D__LIBXENON__ -m32 -D__ppc__
+   CXXFLAGS += -D__LIBXENON__ -m32 -D__ppc__
+	STATIC_LINKING = 1
 else ifeq ($(platform), wii)
-   TARGET := libretro_wii.a
+   TARGET := $(TARGET_NAME)_libretro_wii.a
    CC = $(DEVKITPPC)/bin/powerpc-eabi-gcc$(EXE_EXT)
    CXX = $(DEVKITPPC)/bin/powerpc-eabi-g++$(EXE_EXT)
    AR = $(DEVKITPPC)/bin/powerpc-eabi-ar$(EXE_EXT)
-   CFLAGS += -DGEKKO -mrvl -mcpu=750 -meabi -mhard-float -DBLARGG_BIG_ENDIAN=1 -D__ppc__
+   CXXFLAGS += -DGEKKO -mrvl -mcpu=750 -meabi -mhard-float -DBLARGG_BIG_ENDIAN=1 -D__ppc__
+	STATIC_LINKING = 1
 else
-   TARGET := libretro.dll
+   TARGET := $(TARGET_NAME)_libretro.dll
    CC = gcc
    CXX = g++
    SHARED := -shared -static-libgcc -static-libstdc++ -s -Wl,--version-script=link.T
@@ -79,15 +101,7 @@ CFLAGS     = $(CXXFLAGS)
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
-ifeq ($(platform), ps3)
-	$(AR) rcs $@ $(OBJECTS)
-else ifeq ($(platform), sncps3)
-	$(AR) rcs $@ $(OBJECTS)
-else ifeq ($(platform), psl1ght)
-	$(AR) rcs $@ $(OBJECTS)
-else ifeq ($(platform), xenon)
-	$(AR) rcs $@ $(OBJECTS)
-else ifeq ($(platform), wii)
+ifeq ($(STATIC_LINKING), 1)
 	$(AR) rcs $@ $(OBJECTS)
 else
 	$(CXX) $(fpic) $(SHARED) $(INCLUDES) -o $@ $(OBJECTS) -lm
