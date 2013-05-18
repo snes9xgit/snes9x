@@ -722,9 +722,9 @@ void S9xAPULoadBlarggState(uint8 *oldblock)
 
     SNES::smp.regs.pc = pc;
     SNES::smp.regs.sp = sp;
-    SNES::smp.regs.a = a;
+    SNES::smp.regs.endian.a = a;
     SNES::smp.regs.x = x;
-    SNES::smp.regs.y = y;
+    SNES::smp.regs.endian.y = y;
 
     // blargg's psw has same layout as byuu's flags
     SNES::smp.regs.p = psw;

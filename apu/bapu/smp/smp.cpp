@@ -73,9 +73,9 @@ void SMP::reset() {
 
   regs.pc = 0xffc0;
   regs.sp = 0xef;
-  regs.a = 0x00;
+  regs.endian.a = 0x00;
   regs.x = 0x00;
-  regs.y = 0x00;
+  regs.endian.y = 0x00;
   regs.p = 0x02;
 
   //$00f1
