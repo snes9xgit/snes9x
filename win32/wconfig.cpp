@@ -268,11 +268,6 @@ void WinSetDefaultValues ()
 	// CPU options
 	Settings.Paused	= false;
 
-	// ROM image and peripheral	options
-	Settings.MultiPlayer5Master	= false;
-	Settings.SuperScopeMaster =	false;
-	Settings.MouseMaster = false;
-
 #ifdef NETPLAY_SUPPORT
 	Settings.Port =	1996;
 	NetPlay.MaxFrameSkip = 10;

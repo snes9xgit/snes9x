@@ -730,64 +730,47 @@ void ChangeInputDevice(void)
 	Settings.SuperScopeMaster = false;
 	Settings.MultiPlayer5Master = false;
 
-	CheckMenuItem(GUI.hMenu, IDM_ENABLE_MULTITAP, MFS_UNCHECKED);
-	CheckMenuItem(GUI.hMenu, IDM_JUSTIFIER, MFS_UNCHECKED);
-	CheckMenuItem(GUI.hMenu, IDM_MOUSE_TOGGLE, MFS_UNCHECKED);
-	CheckMenuItem(GUI.hMenu, IDM_SCOPE_TOGGLE, MFS_UNCHECKED);
-	CheckMenuItem(GUI.hMenu, IDM_MOUSE_SWAPPED, MFS_UNCHECKED);
-	CheckMenuItem(GUI.hMenu, IDM_JUSTIFIERS, MFS_UNCHECKED);
-	CheckMenuItem(GUI.hMenu, IDM_MULTITAP8, MFS_UNCHECKED);
-	CheckMenuItem(GUI.hMenu, IDM_SNES_JOYPAD, MFS_UNCHECKED);
-
 	switch(GUI.ControllerOption)
 	{
 	case SNES_MOUSE:
 		Settings.MouseMaster = true;
 		S9xSetController(0, CTL_MOUSE,      0, 0, 0, 0);
 		S9xSetController(1, CTL_JOYPAD,     1, 0, 0, 0);
-		CheckMenuItem(GUI.hMenu, IDM_MOUSE_TOGGLE, MFS_CHECKED);
 		break;
 	case SNES_MOUSE_SWAPPED:
 		Settings.MouseMaster = true;
 		S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
 		S9xSetController(1, CTL_MOUSE,      1, 0, 0, 0);
-		CheckMenuItem(GUI.hMenu, IDM_MOUSE_SWAPPED, MFS_CHECKED);
 		break;
 	case SNES_SUPERSCOPE:
 		Settings.SuperScopeMaster = true;
 		S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
 		S9xSetController(1, CTL_SUPERSCOPE, 0, 0, 0, 0);
-		CheckMenuItem(GUI.hMenu, IDM_SCOPE_TOGGLE, MFS_CHECKED);
 		break;
 	case SNES_MULTIPLAYER5:
 		Settings.MultiPlayer5Master = true;
 		S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
 		S9xSetController(1, CTL_MP5,        1, 2, 3, 4);
-		CheckMenuItem(GUI.hMenu, IDM_ENABLE_MULTITAP, MFS_CHECKED);
 		break;
 	case SNES_MULTIPLAYER8:
 		Settings.MultiPlayer5Master = true;
 		S9xSetController(0, CTL_MP5,        0, 1, 2, 3);
 		S9xSetController(1, CTL_MP5,        4, 5, 6, 7);
-		CheckMenuItem(GUI.hMenu, IDM_ENABLE_MULTITAP, MFS_CHECKED);
 		break;
 	case SNES_JUSTIFIER:
 		Settings.JustifierMaster = true;
 		S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
 		S9xSetController(1, CTL_JUSTIFIER,  0, 0, 0, 0);
-		CheckMenuItem(GUI.hMenu, IDM_JUSTIFIER, MFS_CHECKED);
 		break;
 	case SNES_JUSTIFIER_2:
 		Settings.JustifierMaster = true;
 		S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
 		S9xSetController(1, CTL_JUSTIFIER,  1, 0, 0, 0);
-		CheckMenuItem(GUI.hMenu, IDM_JUSTIFIERS, MFS_CHECKED);
 		break;
 	default:
 	case SNES_JOYPAD:
 		S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
 		S9xSetController(1, CTL_JOYPAD,     1, 0, 0, 0);
-		CheckMenuItem(GUI.hMenu, IDM_SNES_JOYPAD, MFS_CHECKED);
 		break;
 	}
 
@@ -3367,6 +3350,8 @@ int WINAPI WinMain(
 	ConfigFile::SetAlphaSort(false);
 	ConfigFile::SetTimeSort(false);
 
+    ChangeInputDevice();
+
     strcpy(cmdLine,_tToChar(GetCommandLine()));
     const char *rom_filename = WinParseCommandLineAndLoadConfigFile (cmdLine);
     WinSaveConfigFile ();
@@ -3441,7 +3426,6 @@ int WINAPI WinMain(
 
 	S9xUnmapAllControls();
 	S9xSetupDefaultKeymap();
-	ChangeInputDevice();
 
 	DWORD lastTime = timeGetTime();
 
