@@ -94,4 +94,4 @@ snes9x: $(OBJECTS)
 	cp $*.obj $*.o
 
 clean:
-	rm -f $(OBJECTS)
+	rm -f $(OBJECTS) snes9x
