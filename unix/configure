@@ -622,6 +622,7 @@ ac_includes_default="\
 
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
+S9XSHM
 S9XJMA
 S9XZIP
 S9XNETPLAY
@@ -709,6 +710,7 @@ enable_gzip
 enable_zip
 enable_jma
 enable_screenshot
+enable_shm
 with_x
 enable_sound
 '
@@ -1355,6 +1357,7 @@ Optional Features:
   --enable-jma            enable JMA support (default: yes)
   --enable-screenshot     enable screenshot support through libpng (default:
                           yes)
+  --enable-shm            support shared-memory if available (default: yes)
   --enable-sound          enable sound if available (default: yes)
 
 Optional Packages:
@@ -4937,6 +4940,113 @@ $as_echo "$as_me: WARNING: libpng not found. Build without screenshot support." 
 	fi
 fi
 
+# Enable shared-memory support if available
+
+if ${snes9x_cv_Xext+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+	ac_fn_cxx_check_header_compile "$LINENO" "X11/extensions/XShm.h" "ac_cv_header_X11_extensions_XShm_h" "#include <X11/Xlib.h>
+"
+if test "x$ac_cv_header_X11_extensions_XShm_h" = xyes; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for XShmAttach in -lXext" >&5
+$as_echo_n "checking for XShmAttach in -lXext... " >&6; }
+if ${ac_cv_lib_Xext_XShmAttach+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lXext  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char XShmAttach ();
+int
+main ()
+{
+return XShmAttach ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  ac_cv_lib_Xext_XShmAttach=yes
+else
+  ac_cv_lib_Xext_XShmAttach=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_Xext_XShmAttach" >&5
+$as_echo "$ac_cv_lib_Xext_XShmAttach" >&6; }
+if test "x$ac_cv_lib_Xext_XShmAttach" = xyes; then :
+  snes9x_cv_Xext="yes"
+else
+  snes9x_cv_Xext="no"
+fi
+
+else
+  snes9x_cv_Xext="no"
+fi
+
+
+
+fi
+
+
+# Check whether --enable-shm was given.
+if test "${enable_shm+set}" = set; then :
+  enableval=$enable_shm;
+else
+  enable_shm="yes"
+fi
+
+
+if test "x$enable_shm" = "xyes"; then
+	ac_fn_cxx_check_header_mongrel "$LINENO" "sys/ipc.h" "ac_cv_header_sys_ipc_h" "$ac_includes_default"
+if test "x$ac_cv_header_sys_ipc_h" = xyes; then :
+  snes9x_have_ipc_h="yes"
+else
+  snes9x_have_ipc_h="no"
+fi
+
+
+	ac_fn_cxx_check_header_mongrel "$LINENO" "sys/shm.h" "ac_cv_header_sys_shm_h" "$ac_includes_default"
+if test "x$ac_cv_header_sys_shm_h" = xyes; then :
+  snes9x_have_shm_h="yes"
+else
+  snes9x_have_shm_h="no"
+fi
+
+
+
+	if test "x$snes9x_cv_Xext" = "xno"; then
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: libXext not found : shared-memory will not be used" >&5
+$as_echo "$as_me: WARNING: libXext not found : shared-memory will not be used" >&2;}
+	fi
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if shared-memory support is available" >&5
+$as_echo_n "checking if shared-memory support is available... " >&6; }
+	if test "x$snes9x_have_ipc_h" = "xyes" \
+	  && test "x$snes9x_have_shm_h" = "xyes" \
+	  && test "x$snes9x_cv_Xext" = "xyes"; then
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+		S9XSHM="S9XSHM=1"
+		S9XLIBS="$S9XLIBS -lXext"
+	else
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+		enable_shm="no"
+	fi
+fi
+
 # Check for functions
 
 ac_fn_cxx_check_func "$LINENO" "mkstemp" "ac_cv_func_mkstemp"
@@ -5636,7 +5746,7 @@ if test "x$no_x" = "xyes"; then
 	as_fn_error $? "X11 is required." "$LINENO" 5
 else
 	S9XFLGS="$S9XFLGS $X_CFLAGS"
-	S9XLIBS="$S9XLIBS $X_PRE_LIBS -lX11 -lXext $X_LIBS $X_EXTRA_LIBS"
+	S9XLIBS="$S9XLIBS $X_PRE_LIBS -lX11 $X_LIBS $X_EXTRA_LIBS"
 fi
 
 # Check for headers
@@ -6045,6 +6155,8 @@ S9XLIBS="`echo \"$S9XLIBS\" | sed -e 's/  */ /g'`"
 S9XFLGS="`echo \"$S9XFLGS\" | sed -e 's/^  *//'`"
 S9XDEFS="`echo \"$S9XDEFS\" | sed -e 's/^  *//'`"
 S9XLIBS="`echo \"$S9XLIBS\" | sed -e 's/^  *//'`"
+S9XSHM="`echo \"$S9XSHM\" | sed -e 's/^  *//'`"
+
 
 
 
@@ -6074,6 +6186,7 @@ GZIP support......... $enable_gzip
 ZIP support.......... $enable_zip
 JMA support.......... $enable_jma
 debugger............. $enable_debugger
+shared-memory support $enable_shm
 
 EOF
 
