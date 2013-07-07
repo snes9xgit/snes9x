@@ -341,15 +341,40 @@ void SetInfoDlgColor(unsigned char, unsigned char, unsigned char);
 #define MSB_FIRST
 #endif
 
+union WORD
+{
+    uint8 u8[2];
+    int16 s16;
+};
+
+static inline int16 READ_WORD(uint8 *in)
+{
+    union WORD out;
+
+#if defined(LSB_FIRST)
+    out.u8[0] = in[0];
+    out.u8[1] = in[1];
+#else
+    out.u8[0] = in[1];
+    out.u8[1] = in[0];
+#endif
+
+    return (out.s16);
+}
+
+static inline uint32 READ_WORD(uint16 *in)
+{
+    uint32 out = *in;
+    return out;
+}
+
 #ifdef FAST_LSB_WORD_ACCESS
-#define READ_WORD(s)		(*(uint16 *) (s))
 #define READ_3WORD(s)		(*(uint32 *) (s) & 0x00ffffff)
 #define READ_DWORD(s)		(*(uint32 *) (s))
 #define WRITE_WORD(s, d)	*(uint16 *) (s) = (d)
 #define WRITE_3WORD(s, d)	*(uint16 *) (s) = (uint16) (d), *((uint8 *) (s) + 2) = (uint8) ((d) >> 16)
 #define WRITE_DWORD(s, d)	*(uint32 *) (s) = (d)
 #else
-#define READ_WORD(s)		(*(uint8 *) (s) | (*((uint8 *) (s) + 1) << 8))
 #define READ_3WORD(s)		(*(uint8 *) (s) | (*((uint8 *) (s) + 1) << 8) | (*((uint8 *) (s) + 2) << 16))
 #define READ_DWORD(s)		(*(uint8 *) (s) | (*((uint8 *) (s) + 1) << 8) | (*((uint8 *) (s) + 2) << 16) | (*((uint8 *) (s) + 3) << 24))
 #define WRITE_WORD(s, d)	*(uint8 *) (s) = (uint8) (d), *((uint8 *) (s) + 1) = (uint8) ((d) >> 8)

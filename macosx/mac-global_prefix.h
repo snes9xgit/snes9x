@@ -189,7 +189,6 @@
  ***********************************************************************************/
 
 
-#undef	READ_WORD(s)
 #undef	READ_3WORD(s)
 #undef	READ_DWORD(s)
 #undef	WRITE_WORD(s, d)
