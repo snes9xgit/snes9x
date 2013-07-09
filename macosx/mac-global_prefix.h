@@ -190,7 +190,6 @@
 
 
 #undef	READ_DWORD(s)
-#undef	WRITE_3WORD(s, d)
 #undef	WRITE_DWORD(s, d)
 
 #define ZLIB
