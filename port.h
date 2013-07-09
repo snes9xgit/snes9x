@@ -368,16 +368,28 @@ static inline uint32 READ_WORD(uint16 *in)
     return out;
 }
 
+static inline void WRITE_WORD(uint8 *out, int16 in)
+{
+    union WORD tmp;
+
+    tmp.s16 = in;
+#if defined(LSB_FIRST)
+    out[0] = tmp.u8[0];
+    out[1] = tmp.u8[1];
+#else
+    out[0] = tmp.u8[1];
+    out[1] = tmp.u8[0];
+#endif
+}
+
 #ifdef FAST_LSB_WORD_ACCESS
 #define READ_3WORD(s)		(*(uint32 *) (s) & 0x00ffffff)
 #define READ_DWORD(s)		(*(uint32 *) (s))
-#define WRITE_WORD(s, d)	*(uint16 *) (s) = (d)
 #define WRITE_3WORD(s, d)	*(uint16 *) (s) = (uint16) (d), *((uint8 *) (s) + 2) = (uint8) ((d) >> 16)
 #define WRITE_DWORD(s, d)	*(uint32 *) (s) = (d)
 #else
 #define READ_3WORD(s)		(*(uint8 *) (s) | (*((uint8 *) (s) + 1) << 8) | (*((uint8 *) (s) + 2) << 16))
 #define READ_DWORD(s)		(*(uint8 *) (s) | (*((uint8 *) (s) + 1) << 8) | (*((uint8 *) (s) + 2) << 16) | (*((uint8 *) (s) + 3) << 24))
-#define WRITE_WORD(s, d)	*(uint8 *) (s) = (uint8) (d), *((uint8 *) (s) + 1) = (uint8) ((d) >> 8)
 #define WRITE_3WORD(s, d)	*(uint8 *) (s) = (uint8) (d), *((uint8 *) (s) + 1) = (uint8) ((d) >> 8), *((uint8 *) (s) + 2) = (uint8) ((d) >> 16)
 #define WRITE_DWORD(s, d)	*(uint8 *) (s) = (uint8) (d), *((uint8 *) (s) + 1) = (uint8) ((d) >> 8), *((uint8 *) (s) + 2) = (uint8) ((d) >> 16), *((uint8 *) (s) + 3) = (uint8) ((d) >> 24)
 #endif
