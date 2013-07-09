@@ -189,8 +189,6 @@
  ***********************************************************************************/
 
 
-#undef	WRITE_DWORD(s, d)
-
 #define ZLIB
 #define UNZIP_SUPPORT
 #define	JMA_SUPPORT

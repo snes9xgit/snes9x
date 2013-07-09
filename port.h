@@ -442,11 +442,23 @@ static inline uint32 READ_DWORD(uint8 *in)
     return (out.u32);
 }
 
-#ifdef FAST_LSB_WORD_ACCESS
-#define WRITE_DWORD(s, d)	*(uint32 *) (s) = (d)
+static inline void WRITE_DWORD(uint8 *out, uint32 in)
+{
+    union DWORD tmp;
+
+    tmp.u32 = in;
+#if defined(LSB_FIRST)
+    out[0] = tmp.u8[0];
+    out[1] = tmp.u8[1];
+    out[2] = tmp.u8[2];
+    out[3] = tmp.u8[3];
 #else
-#define WRITE_DWORD(s, d)	*(uint8 *) (s) = (uint8) (d), *((uint8 *) (s) + 1) = (uint8) ((d) >> 8), *((uint8 *) (s) + 2) = (uint8) ((d) >> 16), *((uint8 *) (s) + 3) = (uint8) ((d) >> 24)
+    out[0] = tmp.u8[3];
+    out[1] = tmp.u8[2];
+    out[2] = tmp.u8[1];
+    out[3] = tmp.u8[0];
 #endif
+}
 
 #define SWAP_WORD(s)		(s) = (((s) & 0xff) <<  8) | (((s) & 0xff00) >> 8)
 #define SWAP_DWORD(s)		(s) = (((s) & 0xff) << 24) | (((s) & 0xff00) << 8) | (((s) & 0xff0000) >> 8) | (((s) & 0xff000000) >> 24)
