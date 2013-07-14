@@ -74,6 +74,28 @@ else ifeq ($(platform), wii)
    AR = $(DEVKITPPC)/bin/powerpc-eabi-ar$(EXE_EXT)
    CXXFLAGS += -DGEKKO -mrvl -mcpu=750 -meabi -mhard-float -DBLARGG_BIG_ENDIAN=1 -D__ppc__
 	STATIC_LINKING = 1
+else ifneq (,$(findstring armv,$(platform)))
+   TARGET := $(TARGET_NAME)_libretro.so
+   SHARED := -shared -Wl,--no-undefined
+   fpic := -fPIC
+   CC = gcc
+   CXX = g++
+ifneq (,$(findstring cortexa8,$(platform)))
+   CXXFLAGS += -marm -mcpu=cortex-a8
+else ifneq (,$(findstring cortexa9,$(platform)))
+   CXXFLAGS += -marm -mcpu=cortex-a9
+endif
+   CXXFLAGS += -marm
+ifneq (,$(findstring neon,$(platform)))
+   CXXFLAGS += -mfpu=neon
+   HAVE_NEON = 1
+endif
+ifneq (,$(findstring softfloat,$(platform)))
+   CXXFLAGS += -mfloat-abi=softfp
+else ifneq (,$(findstring hardfloat,$(platform)))
+   CXXFLAGS += -mfloat-abi=hard
+endif
+   CXXFLAGS += -DARM
 else
    TARGET := $(TARGET_NAME)_libretro.dll
    CC = gcc
