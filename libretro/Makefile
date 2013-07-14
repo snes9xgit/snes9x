@@ -31,6 +31,7 @@ else ifeq ($(platform), ios)
 	CC = clang -arch armv7 -isysroot $(IOSSDK)
 	CXX = clang++ -arch armv7 -isysroot $(IOSSDK)
 	CXXFLAGS += -DIOS
+   CXXFLAGS += -DARM
 else ifeq ($(platform), qnx)
 	TARGET := $(TARGET_NAME)_libretro_qnx.so
 	fpic := -fPIC
@@ -39,6 +40,7 @@ else ifeq ($(platform), qnx)
 	CC = QCC -Vgcc_notarmv7le_cpp
 	AR = QCC -Vgcc_ntoarmv7le
 	CXXFLAGS += -D__BLACKBERRY_QNX__
+   CXXFLAGS += -DARM
 else ifeq ($(platform), ps3)
    TARGET := $(TARGET_NAME)_libretro_ps3.a
    CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
