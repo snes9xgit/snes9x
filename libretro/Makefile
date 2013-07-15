@@ -31,6 +31,7 @@ else ifeq ($(platform), ios)
 	CC = clang -arch armv7 -isysroot $(IOSSDK)
 	CXX = clang++ -arch armv7 -isysroot $(IOSSDK)
 	CXXFLAGS += -DIOS
+   CXXFLAGS += -DARM
 else ifeq ($(platform), qnx)
 	TARGET := $(TARGET_NAME)_libretro_qnx.so
 	fpic := -fPIC
@@ -39,6 +40,7 @@ else ifeq ($(platform), qnx)
 	CC = QCC -Vgcc_notarmv7le_cpp
 	AR = QCC -Vgcc_ntoarmv7le
 	CXXFLAGS += -D__BLACKBERRY_QNX__
+   CXXFLAGS += -DARM
 else ifeq ($(platform), ps3)
    TARGET := $(TARGET_NAME)_libretro_ps3.a
    CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
@@ -74,6 +76,28 @@ else ifeq ($(platform), wii)
    AR = $(DEVKITPPC)/bin/powerpc-eabi-ar$(EXE_EXT)
    CXXFLAGS += -DGEKKO -mrvl -mcpu=750 -meabi -mhard-float -DBLARGG_BIG_ENDIAN=1 -D__ppc__
 	STATIC_LINKING = 1
+else ifneq (,$(findstring armv,$(platform)))
+   TARGET := $(TARGET_NAME)_libretro.so
+   SHARED := -shared -Wl,--no-undefined
+   fpic := -fPIC
+   CC = gcc
+   CXX = g++
+ifneq (,$(findstring cortexa8,$(platform)))
+   CXXFLAGS += -marm -mcpu=cortex-a8
+else ifneq (,$(findstring cortexa9,$(platform)))
+   CXXFLAGS += -marm -mcpu=cortex-a9
+endif
+   CXXFLAGS += -marm
+ifneq (,$(findstring neon,$(platform)))
+   CXXFLAGS += -mfpu=neon
+   HAVE_NEON = 1
+endif
+ifneq (,$(findstring softfloat,$(platform)))
+   CXXFLAGS += -mfloat-abi=softfp
+else ifneq (,$(findstring hardfloat,$(platform)))
+   CXXFLAGS += -mfloat-abi=hard
+endif
+   CXXFLAGS += -DARM
 else
    TARGET := $(TARGET_NAME)_libretro.dll
    CC = gcc
