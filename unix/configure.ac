@@ -70,6 +70,8 @@ fi
 
 # Test what compiler flags we should use.
 
+# If cross-compiling, we need to disable some tests
+if test "x$cross_compiling" == "xno"; then
 AC_ARG_ENABLE([debug],
 	[AS_HELP_STRING([--enable-debug],
 		[leave debug information in the final binary (default: no)])],
@@ -105,6 +107,7 @@ AC_S9X_COMPILER_FLAG([-pedantic],             [pedantic])
 AC_S9X_COMPILER_FLAG([-Wall],                 [Wall])
 AC_S9X_COMPILER_FLAG([-W],                    [W])
 AC_S9X_COMPILER_FLAG([-Wno-unused-parameter], [Wno_unused_parameter])
+fi # fi not cross-compiling
 
 # Check if the OS is Linux.
 
@@ -332,6 +335,8 @@ AC_CHECK_HEADERS([unistd.h sys/socket.h])
 
 # Check whether the size of pointer is int.
 
+# If cross-compiling, we need to disable some tests
+if test "x$cross_compiling" == "xno"; then
 if test "x$snes9x_have_stdint_h" = "x"; then
 	AC_MSG_CHECKING([whether the size of pointer is int])
 	
@@ -413,6 +418,7 @@ if test "x$snes9x_sar_int8" = "xyes" -a "x$snes9x_sar_int16" = "xyes" -a "x$snes
 	S9XDEFS="`echo \"$S9XDEFS\" | sed -e 's/-DRIGHTSHIFT_int64_IS_SAR//'`"
 	S9XDEFS="$S9XDEFS -DRIGHTSHIFT_IS_SAR"
 fi
+fi # fi not cross-compiling
 
 # Check if we have sound code for this platform.
 

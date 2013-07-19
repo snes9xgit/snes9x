@@ -3416,6 +3416,8 @@ fi
 
 # Test what compiler flags we should use.
 
+# If cross-compiling, we need to disable some tests
+if test "x$cross_compiling" == "xno"; then
 # Check whether --enable-debug was given.
 if test "${enable_debug+set}" = set; then :
   enableval=$enable_debug;
@@ -4269,6 +4271,7 @@ $as_echo "no" >&6; }
 
 	fi
 
+fi # fi not cross-compiling
 
 # Check if the OS is Linux.
 
@@ -5797,6 +5800,8 @@ done
 
 # Check whether the size of pointer is int.
 
+# If cross-compiling, we need to disable some tests
+if test "x$cross_compiling" == "xno"; then
 if test "x$snes9x_have_stdint_h" = "x"; then
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the size of pointer is int" >&5
 $as_echo_n "checking whether the size of pointer is int... " >&6; }
@@ -6104,6 +6109,7 @@ if test "x$snes9x_sar_int8" = "xyes" -a "x$snes9x_sar_int16" = "xyes" -a "x$snes
 	S9XDEFS="`echo \"$S9XDEFS\" | sed -e 's/-DRIGHTSHIFT_int64_IS_SAR//'`"
 	S9XDEFS="$S9XDEFS -DRIGHTSHIFT_IS_SAR"
 fi
+fi # fi not cross-compiling
 
 # Check if we have sound code for this platform.
 
