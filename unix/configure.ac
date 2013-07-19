@@ -262,7 +262,8 @@ AC_CACHE_VAL([snes9x_cv_Xext],
 	AC_CHECK_HEADER([X11/extensions/XShm.h],
 		[AC_CHECK_LIB([Xext], [XShmAttach],
 			[snes9x_cv_Xext="yes"],
-			[snes9x_cv_Xext="no"])],
+			[snes9x_cv_Xext="no"],
+			[-lX11 -lxcb -lXau -lXdmcp])],
 		[snes9x_cv_Xext="no"],[#include <X11/Xlib.h>])
 ])
 
@@ -303,6 +304,7 @@ AC_CHECK_FUNC([mkstemp],
 
 # Check X11
 
+LIBS="-lxcb -lXau -lXdmcp"
 AC_PATH_XTRA
 if test "x$no_x" = "xyes"; then
 	AC_MSG_ERROR([X11 is required.])
