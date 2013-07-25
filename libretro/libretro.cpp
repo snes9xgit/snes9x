@@ -58,6 +58,64 @@ static bool rom_loaded = false;
 void retro_set_environment(retro_environment_t cb)
 {
    environ_cb = cb;
+   
+   struct retro_variable variables[] = {
+      { "layer_1", "Show layer 1; Yes|No" },
+      { "layer_2", "Show layer 2; Yes|No" },
+      { "layer_3", "Show layer 3; Yes|No" },
+      { "layer_4", "Show layer 4; Yes|No" },
+      { "layer_5", "Show sprite layer; Yes|No" },
+      { "gfx_clip", "Enable graphic clip windows; Yes|No" },
+      { "gfx_transp", "Enable transparency effects; Yes|No" },
+      { "sndchan_1", "Enable sound channel 1; Yes|No" },
+      { "sndchan_2", "Enable sound channel 2; Yes|No" },
+      { "sndchan_3", "Enable sound channel 3; Yes|No" },
+      { "sndchan_4", "Enable sound channel 4; Yes|No" },
+      { "sndchan_5", "Enable sound channel 5; Yes|No" },
+      { "sndchan_6", "Enable sound channel 6; Yes|No" },
+      { "sndchan_7", "Enable sound channel 7; Yes|No" },
+      { "sndchan_8", "Enable sound channel 8; Yes|No" },
+      { NULL, NULL },
+   };
+   
+   environ_cb(RETRO_ENVIRONMENT_SET_VARIABLES, variables);
+}
+
+static void update_variables(void)
+{
+   char key[10];
+   struct retro_variable var;
+   
+   var.key=key;
+   
+   int disabled_channels=0;
+   strcpy(key, "sndchan_x");
+   for (int i=0;i<8;i++)
+   {
+      key[8]='1'+i;
+      var.value=NULL;
+      if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value && var.value[0]=='N') disabled_channels|=1<<i;
+   }
+   S9xSetSoundControl(disabled_channels^0xFF);
+   
+   int disabled_layers=0;
+   strcpy(key, "layer_x");
+   for (int i=0;i<5;i++)
+   {
+      key[6]='1'+i;
+      var.value=NULL;
+      if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value && var.value[0]=='N') disabled_layers|=1<<i;
+   }
+   Settings.BG_Forced=disabled_layers;
+   
+   //for some reason, Transparency seems to control both the fixed color and the windowing registers?
+   var.key="gfx_clip";
+   var.value=NULL;
+   Settings.DisableGraphicWindows=(environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value && var.value[0]=='N');
+   
+   var.key="gfx_transp";
+   var.value=NULL;
+   Settings.Transparency=!(environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value && var.value[0]=='N');
 }
 
 static void S9xAudioCallback(void*)
@@ -483,6 +541,10 @@ static void report_buttons()
 
 void retro_run()
 {
+   bool updated = false;
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
+      update_variables();
+   
    s9x_poller_cb();
    report_buttons();
    S9xMainLoop();
