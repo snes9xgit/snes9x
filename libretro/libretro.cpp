@@ -60,6 +60,9 @@ void retro_set_environment(retro_environment_t cb)
    environ_cb = cb;
    
    struct retro_variable variables[] = {
+      // These variable names and possible values constitute an ABI with ZMZ (ZSNES Libretro player).
+      // Changing "Show layer 1" is fine, but don't change "layer_1"/etc or the Yes|No ones.
+      // Adding more variables and rearranging them is safe.
       { "layer_1", "Show layer 1; Yes|No" },
       { "layer_2", "Show layer 2; Yes|No" },
       { "layer_3", "Show layer 3; Yes|No" },
