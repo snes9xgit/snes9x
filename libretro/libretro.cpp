@@ -228,8 +228,12 @@ void retro_cheat_set(unsigned index, bool enabled, const char *code)
    uint32 address;
    uint8 val;
    
+   bool8 sram;
+   uint8 bytes[3];//used only by GoldFinger, ignored for now
+   
    if (S9xGameGenieToRaw(code, address, val)!=NULL &&
-       S9xProActionReplayToRaw(code, address, val)!=NULL)
+       S9xProActionReplayToRaw(code, address, val)!=NULL &&
+       S9xGoldFingerToRaw(code, address, sram, val, bytes)!=NULL)
    { // bad code, ignore
       return;
    }
