@@ -218,15 +218,38 @@ void retro_set_controller_port_device(unsigned port, unsigned device)
 }
 
 void retro_cheat_reset()
-{}
+{
+   S9xDeleteCheats();
+   S9xApplyCheats();
+}
 
-void retro_cheat_set(unsigned, bool, const char*)
-{}
+void retro_cheat_set(unsigned index, bool enabled, const char *code)
+{
+   uint32 address;
+   uint8 val;
+   
+   if (S9xGameGenieToRaw(code, address, val)!=NULL &&
+       S9xProActionReplayToRaw(code, address, val)!=NULL)
+   { // bad code, ignore
+      return;
+   }
+   if (index>Cheat.num_cheats) return; // cheat added in weird order, ignore
+   if (index==Cheat.num_cheats) Cheat.num_cheats++;
+   
+   Cheat.c[index].address = address;
+   Cheat.c[index].byte = val;
+   Cheat.c[index].enabled = enabled;
+   
+   Cheat.c[index].saved = FALSE; // it'll be saved next time cheats run anyways
+   
+   Settings.ApplyCheats=true;
+   S9xApplyCheats();
+}
 
 bool retro_load_game(const struct retro_game_info *game)
 {
 
-   if(game->data == NULL && game->size == NULL && game->path != NULL)
+   if(game->data == NULL && game->size == 0 && game->path != NULL)
       rom_loaded = Memory.LoadROM(game->path);
    else
       rom_loaded = Memory.LoadROMMem((const uint8_t*)game->data ,game->size);
@@ -266,7 +289,7 @@ bool retro_load_game_special(unsigned game_type,
 
        if(num_info == 2)
            rom_loaded = Memory.LoadMultiCartMem((const uint8_t*)info[0].data, info[0].size,
-                        (const uint8_t*)info[1].data, info[1].size, NULL, NULL);
+                        (const uint8_t*)info[1].data, info[1].size, NULL, 0);
 
        if (!rom_loaded)
        {
