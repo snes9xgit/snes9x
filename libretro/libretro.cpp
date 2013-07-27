@@ -189,11 +189,11 @@ void retro_set_controller_port_device(unsigned port, unsigned device)
    switch (device)
    {
       case RETRO_DEVICE_JOYPAD:
-         S9xSetController(port, CTL_JOYPAD, port, 0, 0, 0);
+         S9xSetController(port, CTL_JOYPAD, port*4, 0, 0, 0);
          snes_devices[port] = RETRO_DEVICE_JOYPAD;
          break;
       case RETRO_DEVICE_JOYPAD_MULTITAP:
-         S9xSetController(port, CTL_MP5, 1, 2, 3, 4);
+         S9xSetController(port, CTL_MP5, port*4+0, port*4+1, port*4+2, port*4+3);
          snes_devices[port] = RETRO_DEVICE_JOYPAD_MULTITAP;
          break;
       case RETRO_DEVICE_MOUSE:
@@ -526,13 +526,13 @@ static void report_buttons()
       {
          case RETRO_DEVICE_JOYPAD:
             for (int i = BTN_FIRST; i <= BTN_LAST; i++)
-               S9xReportButton(MAKE_BUTTON(port + 1, i), s9x_input_state_cb(port, RETRO_DEVICE_JOYPAD, 0, i));
+               S9xReportButton(MAKE_BUTTON(port*4 + 1, i), s9x_input_state_cb(port, RETRO_DEVICE_JOYPAD, 0, i));
             break;
 
          case RETRO_DEVICE_JOYPAD_MULTITAP:
             for (int j = 0; j < 4; j++)
                for (int i = BTN_FIRST; i <= BTN_LAST; i++)
-                  S9xReportButton(MAKE_BUTTON(j + 2, i), s9x_input_state_cb(port, RETRO_DEVICE_JOYPAD_MULTITAP, j, i));
+                  S9xReportButton(MAKE_BUTTON(port*4 + j + 1, i), s9x_input_state_cb(port, RETRO_DEVICE_JOYPAD_MULTITAP, j, i));
             break;
 
          case RETRO_DEVICE_MOUSE:
