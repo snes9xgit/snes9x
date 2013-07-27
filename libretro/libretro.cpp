@@ -189,7 +189,7 @@ void retro_set_controller_port_device(unsigned port, unsigned device)
    switch (device)
    {
       case RETRO_DEVICE_JOYPAD:
-         S9xSetController(port, CTL_JOYPAD, 0, 0, 0, 0);
+         S9xSetController(port, CTL_JOYPAD, port, 0, 0, 0);
          snes_devices[port] = RETRO_DEVICE_JOYPAD;
          break;
       case RETRO_DEVICE_JOYPAD_MULTITAP:
