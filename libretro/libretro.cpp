@@ -233,7 +233,7 @@ void retro_cheat_set(unsigned index, bool enabled, const char *code)
    
    if (S9xGameGenieToRaw(code, address, val)!=NULL &&
        S9xProActionReplayToRaw(code, address, val)!=NULL &&
-       S9xGoldFingerToRaw(code, address, sram, val, bytes)!=NULL)
+       S9xGoldFingerToRaw(code, address, &sram, val, bytes)!=NULL)
    { // bad code, ignore
       return;
    }
