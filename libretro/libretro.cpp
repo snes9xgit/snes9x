@@ -233,7 +233,7 @@ void retro_cheat_set(unsigned index, bool enabled, const char *code)
    
    if (S9xGameGenieToRaw(code, address, val)!=NULL &&
        S9xProActionReplayToRaw(code, address, val)!=NULL &&
-       S9xGoldFingerToRaw(code, address, &sram, val, bytes)!=NULL)
+       S9xGoldFingerToRaw(code, address, sram, val, bytes)!=NULL)
    { // bad code, ignore
       return;
    }
@@ -252,7 +252,6 @@ void retro_cheat_set(unsigned index, bool enabled, const char *code)
 
 bool retro_load_game(const struct retro_game_info *game)
 {
-
    if(game->data == NULL && game->size == 0 && game->path != NULL)
       rom_loaded = Memory.LoadROM(game->path);
    else
