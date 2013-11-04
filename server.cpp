@@ -535,7 +535,7 @@ void S9xNPProcessClient (int c)
 
             len = 7 + 1 + 1 + 4 + strlen (NPServer.ROMName) + 1;
 
-            delete data;
+            delete[] data;
             ptr = data = new uint8 [len];
             *ptr++ = NP_SERV_MAGIC;
             *ptr++ = NPServer.Clients [c].SendSequenceNum++;
@@ -563,7 +563,7 @@ void S9xNPProcessClient (int c)
                 S9xNPShutdownClient (c, TRUE);
                 return;
             }
-            delete data;
+            delete[] data;
 #ifdef NP_DEBUG
             printf ("SERVER: Waiting for a response from the client @%ld...\n", S9xGetMilliTime () - START);
 #endif
@@ -1292,21 +1292,21 @@ void S9xNPSendROMLoadRequest (const char *filename)
 
     for (int i = NP_ONE_CLIENT; i < NP_MAX_CLIENTS; i++)
     {
-	if (NPServer.Clients [i].SaidHello)
-	{
+        if (NPServer.Clients [i].SaidHello)
+        {
 #ifdef NP_DEBUG
             printf ("SERVER: Sending load ROM requesting to player %d @%ld\n", i + 1, S9xGetMilliTime () - START);
 #endif
             sprintf (NetPlay.WarningMsg, "SERVER: sending ROM load request to player %d...", i + 1);
             S9xNPSetAction (NetPlay.WarningMsg, TRUE);
             data [1] = NPServer.Clients [i].SendSequenceNum++;
-	    if (!S9xNPSSendData (NPServer.Clients [i].Socket, data, len))
+            if (!S9xNPSSendData (NPServer.Clients [i].Socket, data, len))
             {
-		S9xNPShutdownClient (i, TRUE);
+                S9xNPShutdownClient (i, TRUE);
             }
         }
     }
-    delete data;
+    delete[] data;
 }
 
 void S9xNPSendSRAMToAllClients ()
