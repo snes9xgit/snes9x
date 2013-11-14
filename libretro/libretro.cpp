@@ -585,6 +585,8 @@ void retro_deinit()
    Memory.Deinit();
    S9xGraphicsDeinit();
    S9xUnmapAllControls();
+   
+   free(GFX.Screen);
 }
 
 
