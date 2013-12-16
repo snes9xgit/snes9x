@@ -21,6 +21,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 
+static retro_log_printf_t log_cb = NULL;
 static retro_video_refresh_t s9x_video_cb = NULL;
 static retro_audio_sample_t s9x_audio_cb = NULL;
 static retro_audio_sample_batch_t s9x_audio_batch_cb = NULL;
@@ -213,7 +214,8 @@ void retro_set_controller_port_device(unsigned port, unsigned device)
          snes_devices[port] = RETRO_DEVICE_LIGHTGUN_JUSTIFIERS;
          break;
       default:
-         fprintf(stderr, "[libretro]: Invalid device!\n");
+         if (log_cb)
+            log_cb(RETRO_LOG_ERROR, "[libretro]: Invalid device.\n");
    }
 }
 
@@ -257,10 +259,8 @@ bool retro_load_game(const struct retro_game_info *game)
    else
       rom_loaded = Memory.LoadROMMem((const uint8_t*)game->data ,game->size);
 
-   if (!rom_loaded)
-   {
-      fprintf(stderr, "[libretro]: Rom loading failed...\n");
-   }
+   if (!rom_loaded && log_cb)
+      log_cb(RETRO_LOG_ERROR, "[libretro]: Rom loading failed...\n");
    
    return rom_loaded;
 }
@@ -281,10 +281,8 @@ bool retro_load_game_special(unsigned game_type,
           rom_loaded = Memory.LoadROMMem((const uint8_t*)info[1].data,info[1].size);
        }
 
-       if (!rom_loaded)
-       {
-          fprintf(stderr, "[libretro]: BSX Rom loading failed...\n");
-       }
+       if (!rom_loaded && log_cb)
+          log_cb(RETRO_LOG_ERROR, "[libretro]: BSX ROM loading failed...\n");
 
        break;
        
@@ -294,10 +292,8 @@ bool retro_load_game_special(unsigned game_type,
            rom_loaded = Memory.LoadMultiCartMem((const uint8_t*)info[0].data, info[0].size,
                         (const uint8_t*)info[1].data, info[1].size, NULL, 0);
 
-       if (!rom_loaded)
-       {
-          fprintf(stderr, "[libretro]: Multirom loading failed...\n");
-       }
+       if (!rom_loaded && log_cb)
+          log_cb(RETRO_LOG_ERROR, "[libretro]: Multirom loading failed...\n");
 
        break;
 
@@ -307,10 +303,8 @@ bool retro_load_game_special(unsigned game_type,
            rom_loaded = Memory.LoadMultiCartMem((const uint8_t*)info[1].data, info[1].size,
                         (const uint8_t*)info[2].data, info[2].size, (const uint8_t*)info[0].data, info[0].size);
 
-       if (!rom_loaded)
-       {
-          fprintf(stderr, "[libretro]: Sufami Turbo Rom loading failed...\n");
-       }
+       if (!rom_loaded && log_cb)
+          log_cb(RETRO_LOG_ERROR, "[libretro]: Sufami Turbo ROM loading failed...\n");
 
        break;
 
@@ -327,11 +321,16 @@ static void map_buttons();
 
 void retro_init()
 {
+   struct retro_log_callback log;
    if (environ_cb)
    {
       if (!environ_cb(RETRO_ENVIRONMENT_GET_OVERSCAN, &use_overscan))
          use_overscan = false;
    }
+
+   environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &log);
+   if (log.log)
+      log_cb = log.log;
 
    memset(&Settings, 0, sizeof(Settings));
    Settings.MouseMaster = TRUE;
@@ -365,7 +364,9 @@ void retro_init()
    {
       Memory.Deinit();
       S9xDeinitAPU();
-      fprintf(stderr, "[libretro]: Failed to init Memory or APU.\n");
+
+      if (log_cb)
+         log_cb(RETRO_LOG_ERROR, "[libretro]: Failed to init Memory or APU.\n");
       exit(1);
    }
 
@@ -562,7 +563,8 @@ static void report_buttons()
             break;
             
          default:
-            fprintf(stderr, "[libretro]: Unknown device...\n");
+            if (log_cb)
+               log_cb(RETRO_LOG_ERROR, "[libretro]: Unknown device...\n");
 
       }
    }
