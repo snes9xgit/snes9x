@@ -23,7 +23,7 @@
 #ifndef LIBRETRO_H__
 #define LIBRETRO_H__
 
-#include <stdint.h>
+#include "port.h"
 #include <stddef.h>
 #include <limits.h>
 
