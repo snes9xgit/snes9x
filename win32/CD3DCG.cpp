@@ -675,9 +675,9 @@ void CD3DCG::setShaderVars(int pass)
 	}\
     if(cgpv) {\
 		cgD3D9SetTexture(cgpv,val);\
-		cgD3D9SetSamplerState(cgpv, D3DSAMP_ADDRESSU, D3DTADDRESS_BORDER);\
+		/*cgD3D9SetSamplerState(cgpv, D3DSAMP_ADDRESSU, D3DTADDRESS_BORDER);\
 		cgD3D9SetSamplerState(cgpv, D3DSAMP_ADDRESSV, D3DTADDRESS_BORDER);\
-		/*cgD3D9SetSamplerState(cgpv, D3DSAMP_MINFILTER, linear?D3DTEXF_LINEAR:D3DTEXF_POINT);\
+		cgD3D9SetSamplerState(cgpv, D3DSAMP_MINFILTER, linear?D3DTEXF_LINEAR:D3DTEXF_POINT);\
 		cgD3D9SetSamplerState(cgpv, D3DSAMP_MAGFILTER, linear?D3DTEXF_LINEAR:D3DTEXF_POINT);*/\
 	}\
 }\
