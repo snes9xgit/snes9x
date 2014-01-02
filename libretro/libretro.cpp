@@ -328,9 +328,10 @@ void retro_init()
          use_overscan = false;
    }
 
-   environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &log);
-   if (log.log)
+   if (environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &log))
       log_cb = log.log;
+   else
+      log_cb = NULL;
 
    memset(&Settings, 0, sizeof(Settings));
    Settings.MouseMaster = TRUE;
