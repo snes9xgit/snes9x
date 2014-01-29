@@ -179,6 +179,9 @@
 #ifndef _DISPLAY_H_
 #define _DISPLAY_H_
 
+#include "port.h"
+#include "snes9x.h"
+
 enum s9x_getdirtype
 {
 	DEFAULT_DIR = 0,
