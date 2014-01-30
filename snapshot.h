@@ -179,6 +179,8 @@
 #ifndef _SNAPSHOT_H_
 #define _SNAPSHOT_H_
 
+#include "snes9x.h"
+
 #define SNAPSHOT_MAGIC			"#!s9xsnp"
 #define SNAPSHOT_VERSION_IRQ    7
 #define SNAPSHOT_VERSION_BAPU   8

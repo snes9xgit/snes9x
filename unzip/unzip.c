@@ -1013,9 +1013,9 @@ local int unzlocal_CheckCurrentFileCoherencyHeader (s,piSizeVar,
         err=UNZ_BADZIPFILE;
 
     if ((err==UNZ_OK) && (s->cur_file_info.compression_method!=0) &&
-/* #ifdef HAVE_BZIP2 */
+#ifdef HAVE_BZIP2
                          (s->cur_file_info.compression_method!=Z_BZIP2ED) &&
-/* #endif */
+#endif
                          (s->cur_file_info.compression_method!=Z_DEFLATED))
         err=UNZ_BADZIPFILE;
 
@@ -1130,9 +1130,9 @@ extern int ZEXPORT unzOpenCurrentFile3 (file, method, level, raw, password)
     }
 
     if ((s->cur_file_info.compression_method!=0) &&
-/* #ifdef HAVE_BZIP2 */
+#ifdef HAVE_BZIP2
         (s->cur_file_info.compression_method!=Z_BZIP2ED) &&
-/* #endif */
+#endif
         (s->cur_file_info.compression_method!=Z_DEFLATED))
         err=UNZ_BADZIPFILE;
 
@@ -1146,10 +1146,10 @@ extern int ZEXPORT unzOpenCurrentFile3 (file, method, level, raw, password)
 
     pfile_in_zip_read_info->stream.total_out = 0;
 
+#ifdef HAVE_BZIP2
     if ((s->cur_file_info.compression_method==Z_BZIP2ED) &&
         (!raw))
     {
-#ifdef HAVE_BZIP2
       pfile_in_zip_read_info->bstream.bzalloc = (void *(*) (void *, int, int))0;
       pfile_in_zip_read_info->bstream.bzfree = (free_func)0;
       pfile_in_zip_read_info->bstream.opaque = (voidpf)0;
@@ -1169,11 +1169,9 @@ extern int ZEXPORT unzOpenCurrentFile3 (file, method, level, raw, password)
         TRYFREE(pfile_in_zip_read_info);
         return err;
       }
-#else
-      pfile_in_zip_read_info->raw=1;
-#endif
     }
     else
+#endif
     if ((s->cur_file_info.compression_method==Z_DEFLATED) &&
         (!raw))
     {
@@ -1385,10 +1383,10 @@ extern int ZEXPORT unzReadCurrentFile  (file, buf, len)
             pfile_in_zip_read_info->stream.total_out += uDoCopy;
             iRead += uDoCopy;
         }
+#ifdef HAVE_BZIP2
         else
         if (pfile_in_zip_read_info->compression_method==Z_BZIP2ED)
         {
-#ifdef HAVE_BZIP2
             uLong uTotalOutBefore,uTotalOutAfter;
             const Bytef *bufBefore;
             uLong uOutThis;
@@ -1430,8 +1428,8 @@ extern int ZEXPORT unzReadCurrentFile  (file, buf, len)
                 return (iRead==0) ? UNZ_EOF : iRead;
             if (err!=BZ_OK)
                 break;
-#endif
         }
+#endif
         else
         {
             uLong uTotalOutBefore,uTotalOutAfter;
