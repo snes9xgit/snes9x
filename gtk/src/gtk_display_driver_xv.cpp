@@ -47,6 +47,8 @@ S9xXVDisplayDriver::resize_window (int width, int height)
     XSync (display, False);
 
     gdk_window_show (gdk_window);
+    output_window_width = width;
+    output_window_height = height;
 
     return;
 }
