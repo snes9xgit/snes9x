@@ -727,16 +727,10 @@ S9xOpenGLDisplayDriver::refresh (int width, int height)
 void
 S9xOpenGLDisplayDriver::resize_window (int width, int height)
 {
-    XWindowChanges changes;
-
-    changes.width = width;
-    changes.height = height;
-    XConfigureWindow (display, xwindow, CWWidth | CWHeight, &changes);
-    XSync (display, False);
-
-    gdk_window_show (gdk_window);
-    output_window_width = width;
-    output_window_height = height;
+    g_object_unref (gdk_window);
+    XDestroyWindow (display, xwindow);
+    create_window (width, height);
+    glXMakeCurrent (display, xwindow, glx_context);
 
     return;
 }
