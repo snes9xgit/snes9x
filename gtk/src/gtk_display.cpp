@@ -718,6 +718,7 @@ S9xMergeHires (void *buffer,
     return;
 }
 
+#if 0
 static void
 S9xBlendHires (void *buffer, int pitch, int &width, int &height)
 {
@@ -751,6 +752,7 @@ S9xBlendHires (void *buffer, int pitch, int &width, int &height)
 
     return;
 }
+#endif
 
 void
 filter_2x (void *src,

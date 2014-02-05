@@ -87,7 +87,7 @@ class JoyDevice
 
     private:
         void poll_events (void);
-        void add_event (int parameter, int state);
+        void add_event (unsigned int parameter, unsigned int state);
 
 };
 #endif

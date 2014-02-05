@@ -469,7 +469,7 @@ JoyDevice::~JoyDevice (void)
 }
 
 void
-JoyDevice::add_event (int parameter, int state)
+JoyDevice::add_event (unsigned int parameter, unsigned int state)
 {
     JoyEvent event = { parameter, state };
 

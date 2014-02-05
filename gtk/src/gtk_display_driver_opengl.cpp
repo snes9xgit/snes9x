@@ -318,16 +318,22 @@ S9xOpenGLDisplayDriver::update (int width, int height)
     if (using_shaders)
     {
         GLint location;
+        float inputSize[2];
+        float outputSize[2];
+        float textureSize[2];
 
-        float inputSize[2] = { width, height };
+        inputSize[0] = width;
+        inputSize[1] = height;
         location = glGetUniformLocation (program, "rubyInputSize");
         glUniform2fv (location, 1, inputSize);
 
-        float outputSize[2] = {w , h };
+        outputSize[0] = w;
+        outputSize[1] = h;
         location = glGetUniformLocation (program, "rubyOutputSize");
         glUniform2fv (location, 1, outputSize);
 
-        float textureSize[2] = { texture_width, texture_height };
+        textureSize[0] = texture_width;
+        textureSize[1] = texture_height;
         location = glGetUniformLocation (program, "rubyTextureSize");
         glUniform2fv (location, 1, textureSize);
     }
