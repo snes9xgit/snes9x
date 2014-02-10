@@ -465,8 +465,11 @@ S9xOpenROMDialog (void)
         filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
         directory =
             gtk_file_chooser_get_current_folder (GTK_FILE_CHOOSER (dialog));
-        strncpy (gui_config->last_directory, directory, PATH_MAX);
-        g_free (directory);
+        if (directory)
+        {
+            strncpy (gui_config->last_directory, directory, PATH_MAX);
+            g_free (directory);
+        }
     }
 
     else
