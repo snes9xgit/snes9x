@@ -619,6 +619,9 @@ void S9xAPUSaveState (uint8 *block)
 	SNES::set_le32(ptr, SNES::dsp.clock);
 	ptr += sizeof(int32);
 	memcpy (ptr, SNES::cpu.registers, 4);
+	ptr += sizeof(int32);
+
+	memset (ptr, 0, SPC_SAVE_STATE_BLOCK_SIZE-(ptr-block));
 }
 
 void S9xAPULoadState (uint8 *block)
