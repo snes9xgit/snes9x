@@ -168,11 +168,6 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
     info->timing.fps = retro_get_region() == RETRO_REGION_NTSC ? 21477272.0 / 357366.0 : 21281370.0 / 425568.0;
 }
 
-const char *retro_library_id()
-{
-   return "SNES9x v" VERSION;
-}
-
 unsigned retro_api_version()
 {
    return RETRO_API_VERSION;
@@ -625,11 +620,6 @@ void* retro_get_memory_data(unsigned type)
    }
 
    return data;
-}
-
-void retro_unload_cartridge()
-{
-
 }
 
 size_t retro_get_memory_size(unsigned type)
