@@ -62,6 +62,7 @@ class Snes9xWindow : public GtkBuilderWindow
         void reset_screensaver (void);
         void update_accels (void);
         void toggle_ui (void);
+        void resize_to_multiple (int factor);
         void resize_viewport (int width, int height);
         void expose (GdkEventExpose *event, cairo_t *cr);
 

@@ -307,7 +307,7 @@ event_fullscreen (GtkWidget *widget, gpointer data)
 static void
 event_exact_pixels_1x (GtkWidget *widget, gpointer data)
 {
-    ((Snes9xWindow *) data)->resize_viewport (256, 224);
+    ((Snes9xWindow *) data)->resize_to_multiple (1);
 
     return;
 }
@@ -315,7 +315,7 @@ event_exact_pixels_1x (GtkWidget *widget, gpointer data)
 static void
 event_exact_pixels_2x (GtkWidget *widget, gpointer data)
 {
-    ((Snes9xWindow *) data)->resize_viewport (256 * 2, 224 * 2);
+    ((Snes9xWindow *) data)->resize_to_multiple (2);
 
     return;
 }
@@ -323,7 +323,7 @@ event_exact_pixels_2x (GtkWidget *widget, gpointer data)
 static void
 event_exact_pixels_3x (GtkWidget *widget, gpointer data)
 {
-    ((Snes9xWindow *) data)->resize_viewport (256 * 3, 224 * 3);
+    ((Snes9xWindow *) data)->resize_to_multiple (3);
 
     return;
 }
@@ -331,7 +331,7 @@ event_exact_pixels_3x (GtkWidget *widget, gpointer data)
 static void
 event_exact_pixels_4x (GtkWidget *widget, gpointer data)
 {
-    ((Snes9xWindow *) data)->resize_viewport (256 * 4, 224 * 4);
+    ((Snes9xWindow *) data)->resize_to_multiple (4);
 
     return;
 }
@@ -339,47 +339,7 @@ event_exact_pixels_4x (GtkWidget *widget, gpointer data)
 static void
 event_exact_pixels_5x (GtkWidget *widget, gpointer data)
 {
-    ((Snes9xWindow *) data)->resize_viewport (256 * 5, 224 * 5);
-
-    return;
-}
-
-static void
-event_correct_aspect_1x (GtkWidget *widget, gpointer data)
-{
-    ((Snes9xWindow *) data)->resize_viewport (224 * 4 / 3, 224);
-
-    return;
-}
-
-static void
-event_correct_aspect_2x (GtkWidget *widget, gpointer data)
-{
-    ((Snes9xWindow *) data)->resize_viewport (224 * 4 * 2 / 3, 224 * 2);
-
-    return;
-}
-
-static void
-event_correct_aspect_3x (GtkWidget *widget, gpointer data)
-{
-    ((Snes9xWindow *) data)->resize_viewport (224 * 4 * 3 / 3, 224 * 3);
-
-    return;
-}
-
-static void
-event_correct_aspect_4x (GtkWidget *widget, gpointer data)
-{
-    ((Snes9xWindow *) data)->resize_viewport (224 * 4 * 4 / 3, 224 * 4);
-
-    return;
-}
-
-static void
-event_correct_aspect_5x (GtkWidget *widget, gpointer data)
-{
-    ((Snes9xWindow *) data)->resize_viewport (224 * 4 * 5 / 3, 224 * 5);
+    ((Snes9xWindow *) data)->resize_to_multiple (5);
 
     return;
 }
@@ -626,11 +586,6 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
         { "exact_3x", G_CALLBACK (event_exact_pixels_3x) },
         { "exact_4x", G_CALLBACK (event_exact_pixels_4x) },
         { "exact_5x", G_CALLBACK (event_exact_pixels_5x) },
-        { "correct_1x", G_CALLBACK (event_correct_aspect_1x) },
-        { "correct_2x", G_CALLBACK (event_correct_aspect_2x) },
-        { "correct_3x", G_CALLBACK (event_correct_aspect_3x) },
-        { "correct_4x", G_CALLBACK (event_correct_aspect_4x) },
-        { "correct_5x", G_CALLBACK (event_correct_aspect_5x) },
         { "open_multicart", G_CALLBACK (event_open_multicart) },
 
         { NULL, NULL }
@@ -2041,6 +1996,17 @@ Snes9xWindow::update_accels (void)
 
     /* Special UI assignment */
     set_menu_item_accel_to_binding ("hide_ui", "Escape Key");
+
+    return;
+}
+
+void
+Snes9xWindow::resize_to_multiple (int factor)
+{
+    int h = (config->overscan ? 240 : 224) * factor;
+    int w = h * S9xGetAspect ();
+
+    resize_viewport (w, h);
 
     return;
 }
