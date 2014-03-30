@@ -100,10 +100,7 @@ event_toggle_interface (GtkWidget *widget, gpointer data)
 static gboolean
 event_show_statusbar (GtkWidget *widget, gpointer data)
 {
-    Snes9xWindow *window = (Snes9xWindow *) data;
-
-    window->config->statusbar_visible = !window->config->statusbar_visible;
-    window->configure_widgets ();
+    ((Snes9xWindow *) data)->toggle_statusbar ();
 
     return TRUE;
 }
@@ -1732,6 +1729,35 @@ Snes9xWindow::draw_background (int x, int y, int w, int h)
 }
 
 void
+Snes9xWindow::toggle_statusbar (void)
+{
+    GtkWidget     *item;
+    GtkAllocation allocation;
+    int           width = 0;
+    int           height = 0;
+
+    item = get_widget ("menubar");
+    gtk_widget_get_allocation (item, &allocation);
+    height += gtk_widget_get_visible (item) ? allocation.height : 0;
+
+    item = get_widget ("drawingarea");
+    gtk_widget_get_allocation (item, &allocation);
+    height += allocation.height;
+    width = allocation.width;
+
+    config->statusbar_visible = !config->statusbar_visible;
+    configure_widgets ();
+
+    item = get_widget ("statusbar");
+    gtk_widget_get_allocation (item, &allocation);
+    height += gtk_widget_get_visible (item) ? allocation.height : 0;
+
+    resize (width, height);
+
+    return;
+}
+
+void
 Snes9xWindow::resize_viewport (int width, int height)
 {
     GtkWidget     *item;
@@ -2003,7 +2029,7 @@ Snes9xWindow::update_accels (void)
 void
 Snes9xWindow::resize_to_multiple (int factor)
 {
-    int h = (config->overscan ? 240 : 224) * factor;
+    int h = (config->overscan ? 239 : 224) * factor;
     int w = h * S9xGetAspect ();
 
     resize_viewport (w, h);

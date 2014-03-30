@@ -63,7 +63,7 @@ S9xSetEndianess (int type)
 double
 S9xGetAspect (void)
 {
-    double native_aspect = 256.0 / (gui_config->overscan ? 240.0 : 224.0);
+    double native_aspect = 256.0 / (gui_config->overscan ? 239.0 : 224.0);
     double aspect;
 
     switch (gui_config->aspect_ratio)
