@@ -2030,7 +2030,7 @@ void
 Snes9xWindow::resize_to_multiple (int factor)
 {
     int h = (config->overscan ? 239 : 224) * factor;
-    int w = h * S9xGetAspect ();
+    int w = h * S9xGetAspect () + 0.5;
 
     resize_viewport (w, h);
 
