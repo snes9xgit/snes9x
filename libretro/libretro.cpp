@@ -23,6 +23,21 @@
 #include <sys/types.h>
 #include <fcntl.h>
 
+// Special memory types.
+#define RETRO_MEMORY_SNES_BSX_RAM             ((1 << 8) | RETRO_MEMORY_SAVE_RAM)
+#define RETRO_MEMORY_SNES_BSX_PRAM            ((2 << 8) | RETRO_MEMORY_SAVE_RAM)
+#define RETRO_MEMORY_SNES_SUFAMI_TURBO_A_RAM  ((3 << 8) | RETRO_MEMORY_SAVE_RAM)
+#define RETRO_MEMORY_SNES_SUFAMI_TURBO_B_RAM  ((4 << 8) | RETRO_MEMORY_SAVE_RAM)
+#define RETRO_MEMORY_SNES_GAME_BOY_RAM        ((5 << 8) | RETRO_MEMORY_SAVE_RAM)
+#define RETRO_MEMORY_SNES_GAME_BOY_RTC        ((6 << 8) | RETRO_MEMORY_RTC)
+
+// Special game types passed into retro_load_game_special().
+// Only used when multiple ROMs are required.
+#define RETRO_GAME_TYPE_BSX             0x101
+#define RETRO_GAME_TYPE_BSX_SLOTTED     0x102
+#define RETRO_GAME_TYPE_SUFAMI_TURBO    0x103
+#define RETRO_GAME_TYPE_SUPER_GAME_BOY  0x104
+
 static retro_log_printf_t log_cb = NULL;
 static retro_video_refresh_t s9x_video_cb = NULL;
 static retro_audio_sample_t s9x_audio_cb = NULL;
@@ -83,7 +98,40 @@ void retro_set_environment(retro_environment_t cb)
       { "s9x_sndchan_8", "Enable sound channel 8; Yes|No" },
       { NULL, NULL },
    };
-   
+
+   static const retro_subsystem_memory_info sufami_a_memory[] = {
+      { "srm", RETRO_MEMORY_SNES_SUFAMI_TURBO_A_RAM },
+   };
+
+   static const retro_subsystem_memory_info sufami_b_memory[] = {
+      { "srm", RETRO_MEMORY_SNES_SUFAMI_TURBO_B_RAM },
+   };
+
+   static const struct retro_subsystem_rom_info sufami_roms[] = {
+      { "Sufami A", "sfc|smc", false, false, false, sufami_a_memory, 1 },
+      { "Sufami B", "sfc|smc", false, false, false, sufami_b_memory, 1 },
+      { "Sufami BIOS", "sfc|smc", false, false, true, NULL, 0 },
+   };
+
+   static const retro_subsystem_memory_info bsx_memory[] = {
+      { "srm", RETRO_MEMORY_SNES_BSX_RAM },
+      { "psrm", RETRO_MEMORY_SNES_BSX_PRAM },
+   };
+
+   static const struct retro_subsystem_rom_info bsx_roms[] = {
+      { "BSX ROM", "bs", false, false, true, bsx_memory, 2 },
+      { "BSX BIOS", "sfc|smc", false, false, true, NULL, 0 },
+   };
+
+   // OR in 0x1000 on types to remain ABI compat with the older-style retro_load_game_special().
+   static const struct retro_subsystem_info subsystems[] = {
+      { "Sufami Turbo", "sufami", sufami_roms, 3, RETRO_GAME_TYPE_SUFAMI_TURBO | 0x1000 }, // Sufami Turbo
+      { "BSX", "bsx", bsx_roms, 2, RETRO_GAME_TYPE_BSX | 0x1000 }, // BSX
+      { "BSX slotted", "bsxslot", bsx_roms, 2, RETRO_GAME_TYPE_BSX_SLOTTED | 0x1000 }, // BSX slotted
+      { NULL },
+   };
+
+   environ_cb(RETRO_ENVIRONMENT_SET_SUBSYSTEM_INFO, (void*)subsystems);
    environ_cb(RETRO_ENVIRONMENT_SET_VARIABLES, variables);
 }
 
