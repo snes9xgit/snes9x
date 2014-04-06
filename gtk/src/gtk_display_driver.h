@@ -6,6 +6,7 @@
 class S9xDisplayDriver
 {
     public:
+        virtual ~S9xDisplayDriver() {}
         virtual void refresh (int width, int height) = 0;
         virtual int init (void) = 0;
         virtual void deinit (void) = 0;

@@ -1519,10 +1519,8 @@ bool8 CMemory::LoadROMMem (const uint8 *source, uint32 sourceSize)
 
     strcpy(ROMFilename,"MemoryROM");
 
-    int counter=0;
     do
     {
-        if (++counter>5) return FALSE;//if we keep failing, just give up after a while or we'll loop forever.
         memset(ROM,0, MAX_ROM_SIZE);
         memset(&Multi, 0,sizeof(Multi));
         memcpy(ROM,source,sourceSize);
@@ -1539,10 +1537,8 @@ bool8 CMemory::LoadROM (const char *filename)
 
     int32 totalFileSize;
 
-    int counter=0;
     do
     {
-        if (++counter>5) return FALSE;
         memset(ROM,0, MAX_ROM_SIZE);
         memset(&Multi, 0,sizeof(Multi));
         totalFileSize = FileLoader(ROM, filename, MAX_ROM_SIZE);

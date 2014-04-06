@@ -635,7 +635,7 @@ bool8 S9xLoadROMImage (const TCHAR *string);
 static void EnableServer (bool8 enable);
 #endif
 void WinDeleteRecentGamesList ();
-const char* WinParseCommandLineAndLoadConfigFile (char *line);
+const TCHAR* WinParseCommandLineAndLoadConfigFile (TCHAR *line);
 void WinRegisterConfigItems ();
 void WinSaveConfigFile ();
 void WinSetDefaultValues ();
@@ -3330,7 +3330,6 @@ int WINAPI WinMain(
 				   LPSTR lpCmdLine,
 				   int nCmdShow)
 {
-    char cmdLine[MAX_PATH];
 	Settings.StopEmulation = TRUE;
 
 	SetCurrentDirectory(S9xGetDirectoryT(DEFAULT_DIR));
@@ -3352,8 +3351,7 @@ int WINAPI WinMain(
 
     ChangeInputDevice();
 
-    strcpy(cmdLine,_tToChar(GetCommandLine()));
-    const char *rom_filename = WinParseCommandLineAndLoadConfigFile (cmdLine);
+    const TCHAR *rom_filename = WinParseCommandLineAndLoadConfigFile (GetCommandLine());
     WinSaveConfigFile ();
 	WinLockConfigFile ();
 
@@ -3422,7 +3420,7 @@ int WINAPI WinMain(
     }
 
 	if(rom_filename)
-		LoadROM(_tFromChar(rom_filename));
+		LoadROM(rom_filename);
 
 	S9xUnmapAllControls();
 	S9xSetupDefaultKeymap();

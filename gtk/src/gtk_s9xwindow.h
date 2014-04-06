@@ -53,6 +53,7 @@ class Snes9xWindow : public GtkBuilderWindow
         void show (void);
         void show_status_message (const char *message);
         void update_statusbar (void);
+        void toggle_statusbar (void);
         void draw_background (int x = -1, int y = -1, int w = -1, int h = -1);
         void draw_background (cairo_t *cr);
         void set_menu_item_selected (const char *name);
@@ -62,6 +63,7 @@ class Snes9xWindow : public GtkBuilderWindow
         void reset_screensaver (void);
         void update_accels (void);
         void toggle_ui (void);
+        void resize_to_multiple (int factor);
         void resize_viewport (int width, int height);
         void expose (GdkEventExpose *event, cairo_t *cr);
 

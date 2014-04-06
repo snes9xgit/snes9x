@@ -6,6 +6,7 @@
 class S9xSoundDriver
 {
     public:
+        virtual ~S9xSoundDriver () {}
         virtual void init (void) = 0;
         virtual void terminate (void) = 0;
         virtual bool8 open_device (void) = 0;
