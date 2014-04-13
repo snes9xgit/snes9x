@@ -35,6 +35,11 @@
 #define RETRO_GAME_TYPE_BSX_SLOTTED     0x102
 #define RETRO_GAME_TYPE_SUFAMI_TURBO    0x103
 
+#define RETRO_DEVICE_JOYPAD_MULTITAP       RETRO_DEVICE_SUBCLASS(RETRO_DEVICE_JOYPAD, 0)
+#define RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE  RETRO_DEVICE_SUBCLASS(RETRO_DEVICE_LIGHTGUN, 0)
+#define RETRO_DEVICE_LIGHTGUN_JUSTIFIER    RETRO_DEVICE_SUBCLASS(RETRO_DEVICE_LIGHTGUN, 1)
+#define RETRO_DEVICE_LIGHTGUN_JUSTIFIERS   RETRO_DEVICE_SUBCLASS(RETRO_DEVICE_LIGHTGUN, 2)
+
 static retro_log_printf_t log_cb = NULL;
 static retro_video_refresh_t s9x_video_cb = NULL;
 static retro_audio_sample_t s9x_audio_cb = NULL;
@@ -128,8 +133,29 @@ void retro_set_environment(retro_environment_t cb)
       { NULL },
    };
 
+   static const struct retro_controller_description port_1[] = {
+      { "SNES Joypad", RETRO_DEVICE_JOYPAD },
+      { "SNES Mouse", RETRO_DEVICE_MOUSE },
+   };
+
+   static const struct retro_controller_description port_2[] = {
+      { "SNES Joypad", RETRO_DEVICE_JOYPAD },
+      { "SNES Mouse", RETRO_DEVICE_MOUSE },
+      { "Multitap", RETRO_DEVICE_JOYPAD_MULTITAP },
+      { "SuperScope", RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE },
+      { "Justifier", RETRO_DEVICE_LIGHTGUN_JUSTIFIER },
+      { "Justifiers", RETRO_DEVICE_LIGHTGUN_JUSTIFIERS },
+   };
+
+   static const struct retro_controller_info ports[] = {
+      { port_1, 2 },
+      { port_2, 6 },
+      { 0 },
+   };
+
    environ_cb(RETRO_ENVIRONMENT_SET_SUBSYSTEM_INFO, (void*)subsystems);
    environ_cb(RETRO_ENVIRONMENT_SET_VARIABLES, variables);
+   environ_cb(RETRO_ENVIRONMENT_SET_CONTROLLER_INFO, (void*)ports);
 }
 
 static void update_variables(void)
@@ -482,6 +508,7 @@ void retro_init()
 
 #define BTN_POINTER (BTN_LAST + 1)
 #define BTN_POINTER2 (BTN_POINTER + 1)
+
 
 static void map_buttons()
 {
