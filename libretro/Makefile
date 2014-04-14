@@ -4,6 +4,10 @@ ifeq ($(platform),)
       platform = win
    else ifneq ($(findstring Darwin,$(shell uname -a)),)
       platform = osx
+		arch = intel
+   ifeq ($(shell uname -p),powerpc)
+	   arch = ppc
+	endif
    else ifneq ($(findstring MINGW,$(shell uname -a)),)
       platform = win
    else ifneq ($(findstring win,$(shell uname -a)),)
@@ -21,8 +25,14 @@ ifeq ($(platform), unix)
    SHARED := -shared -Wl,--version-script=link.T
 else ifeq ($(platform), osx)
    TARGET := $(TARGET_NAME)_libretro.dylib
-   fpic := -fPIC -mmacosx-version-min=10.6
+   fpic := -fPIC
    SHARED := -dynamiclib
+
+ifeq ($(arch),ppc)
+   CXXFLAGS += -DBLARGG_BIG_ENDIAN=1 -D__ppc__
+else
+   fpic += -mmacosx-version-min=10.6
+endif
 else ifeq ($(platform), ios)
    TARGET := $(TARGET_NAME)_libretro_ios.dylib
    fpic := -fPIC
