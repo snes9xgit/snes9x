@@ -4,7 +4,7 @@ ifeq ($(platform),)
       platform = win
    else ifneq ($(findstring Darwin,$(shell uname -a)),)
       platform = osx
-		arch = intel
+	arch = intel
    ifeq ($(shell uname -p),powerpc)
 	   arch = ppc
 	endif
@@ -27,6 +27,11 @@ else ifeq ($(platform), osx)
    TARGET := $(TARGET_NAME)_libretro.dylib
    fpic := -fPIC
    SHARED := -dynamiclib
+
+   arch = intel
+ifeq ($(shell uname -p),powerpc)
+   arch = ppc
+endif
 
 ifeq ($(arch),ppc)
    CXXFLAGS += -DBLARGG_BIG_ENDIAN=1 -D__ppc__
