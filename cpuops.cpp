@@ -3475,6 +3475,7 @@ static void OpDB (void)
 {
 	Registers.PCw--;
 	CPU.Flags |= DEBUG_MODE_FLAG | HALTED_FLAG;
+	AddCycles(ONE_CYCLE);
 }
 
 /* WDM (Reserved S9xOpcode) ************************************************ */
