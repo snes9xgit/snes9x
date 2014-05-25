@@ -708,7 +708,7 @@ bool8 S9xDeinitUpdate(int width, int height)
 
 bool8 S9xContinueUpdate(int width, int height)
 {
-   return S9xDeinitUpdate(width, height);
+   return true;
 }
 
 // Dummy functions that should probably be implemented correctly later.
