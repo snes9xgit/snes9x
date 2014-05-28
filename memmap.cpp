@@ -3324,15 +3324,12 @@ void CMemory::Map_SA1LoROMMap (void)
 		map_space(c, c, 0x0000, 0xffff, SRAM + (c & 1) * 0x10000, false);
 
 #ifdef __LIBRETRO__
-	if (auto_export_map)
-	{
-		struct retro_memory_descriptor desc = {0};
-		desc.ptr=SRAM;
-		desc.start=0x400000;
-		desc.select=0xC00000;
-		desc.disconnect=0xFE0000;
-		S9xAppendMapping(&desc);
-	}
+	struct retro_memory_descriptor desc = {0};
+	desc.ptr=SRAM;
+	desc.start=0x400000;
+	desc.select=0xC00000;
+	desc.disconnect=0xFE0000;
+	S9xAppendMapping(&desc);
 #endif
 
 	map_WRAM();
@@ -3378,15 +3375,12 @@ void CMemory::Map_GNEXTSA1LoROMMap (void)
 		map_space(c, c, 0x0000, 0xffff, SRAM + (c & 1) * 0x10000, false);
 
 #ifdef __LIBRETRO__
-	if (auto_export_map)
-	{
-		struct retro_memory_descriptor desc = {0};
-		desc.ptr=SRAM;
-		desc.start=0x400000;
-		desc.select=0xC00000;
-		desc.disconnect=0xFE0000;
-		S9xAppendMapping(&desc);
-	}
+	struct retro_memory_descriptor desc = {0};
+	desc.ptr=SRAM;
+	desc.start=0x400000;
+	desc.select=0xC00000;
+	desc.disconnect=0xFE0000;
+	S9xAppendMapping(&desc);
 #endif
 
 	// FIXME: untested!
