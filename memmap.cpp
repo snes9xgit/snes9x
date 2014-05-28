@@ -2763,7 +2763,7 @@ uint32 CMemory::map_mirror (uint32 size, uint32 pos)
 		return (mask + map_mirror(size - mask, pos - mask));
 }
 
-void CMemory::map_lorom (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, uint32 size)
+void CMemory::map_lorom (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, uint32 size, bool auto_export_map)
 {
 	uint32	c, i, p, addr;
 
@@ -2780,18 +2780,21 @@ void CMemory::map_lorom (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 add
 	}
 
 #ifdef __LIBRETRO__
-	struct retro_memory_descriptor desc = {0};
-	desc.flags=RETRO_MEMDESC_CONST;
-	desc.ptr=ROM;
-	desc.start=bank_s<<16 | addr_s;
-	desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
-	desc.disconnect=0x8000;
-	desc.len=size;
-	S9xAppendMapping(&desc);
+	if (auto_export_map)
+	{
+		struct retro_memory_descriptor desc = {0};
+		desc.flags=RETRO_MEMDESC_CONST;
+		desc.ptr=ROM;
+		desc.start=bank_s<<16 | addr_s;
+		desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
+		desc.disconnect=0x8000;
+		desc.len=size;
+		S9xAppendMapping(&desc);
+	}
 #endif
 }
 
-void CMemory::map_hirom (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, uint32 size)
+void CMemory::map_hirom (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, uint32 size, bool auto_export_map)
 {
 	uint32	c, i, p, addr;
 
@@ -2808,17 +2811,20 @@ void CMemory::map_hirom (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 add
 	}
 
 #ifdef __LIBRETRO__
-	struct retro_memory_descriptor desc = {0};
-	desc.flags=RETRO_MEMDESC_CONST;
-	desc.ptr=ROM;
-	desc.start=bank_s<<16 | addr_s;
-	desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
-	desc.len=size;
-	S9xAppendMapping(&desc);
+	if (auto_export_map)
+	{
+		struct retro_memory_descriptor desc = {0};
+		desc.flags=RETRO_MEMDESC_CONST;
+		desc.ptr=ROM;
+		desc.start=bank_s<<16 | addr_s;
+		desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
+		desc.len=size;
+		S9xAppendMapping(&desc);
+	}
 #endif
 }
 
-void CMemory::map_lorom_offset (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, uint32 size, uint32 offset)
+void CMemory::map_lorom_offset (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, uint32 size, uint32 offset, bool auto_export_map)
 {
 	uint32	c, i, p, addr;
 
@@ -2835,19 +2841,22 @@ void CMemory::map_lorom_offset (uint32 bank_s, uint32 bank_e, uint32 addr_s, uin
 	}
 
 #ifdef __LIBRETRO__
-	struct retro_memory_descriptor desc = {0};
-	desc.flags=RETRO_MEMDESC_CONST;
-	desc.ptr=ROM;
-	desc.offset=offset;
-	desc.start=bank_s<<16 | addr_s;
-	desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
-	desc.disconnect=0x8000;
-	desc.len=size;
-	S9xAppendMapping(&desc);
+	if (auto_export_map)
+	{
+		struct retro_memory_descriptor desc = {0};
+		desc.flags=RETRO_MEMDESC_CONST;
+		desc.ptr=ROM;
+		desc.offset=offset;
+		desc.start=bank_s<<16 | addr_s;
+		desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
+		desc.disconnect=0x8000;
+		desc.len=size;
+		S9xAppendMapping(&desc);
+	}
 #endif
 }
 
-void CMemory::map_hirom_offset (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, uint32 size, uint32 offset)
+void CMemory::map_hirom_offset (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, uint32 size, uint32 offset, bool auto_export_map)
 {
 	uint32	c, i, p, addr;
 
@@ -2863,18 +2872,21 @@ void CMemory::map_hirom_offset (uint32 bank_s, uint32 bank_e, uint32 addr_s, uin
 		}
 	}
 #ifdef __LIBRETRO__
-	struct retro_memory_descriptor desc = {0};
-	desc.flags=RETRO_MEMDESC_CONST;
-	desc.ptr=ROM;
-	desc.offset=offset;
-	desc.start=bank_s<<16 | addr_s;
-	desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
-	desc.len=size;
-	S9xAppendMapping(&desc);
+	if (auto_export_map)
+	{
+		struct retro_memory_descriptor desc = {0};
+		desc.flags=RETRO_MEMDESC_CONST;
+		desc.ptr=ROM;
+		desc.offset=offset;
+		desc.start=bank_s<<16 | addr_s;
+		desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
+		desc.len=size;
+		S9xAppendMapping(&desc);
+	}
 #endif
 }
 
-void CMemory::map_space (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, uint8 *data)
+void CMemory::map_space (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, uint8 *data, bool auto_export_map)
 {
 	uint32	c, i, p;
 
@@ -2889,15 +2901,18 @@ void CMemory::map_space (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 add
 		}
 	}
 #ifdef __LIBRETRO__
-	struct retro_memory_descriptor desc = {0};
-	desc.ptr=data;
-	desc.start=bank_s<<16 | addr_s;
-	desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
-	S9xAppendMapping(&desc);
+	if (auto_export_map)
+	{
+		struct retro_memory_descriptor desc = {0};
+		desc.ptr=data;
+		desc.start=bank_s<<16 | addr_s;
+		desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
+		S9xAppendMapping(&desc);
+	}
 #endif
 }
 
-void CMemory::map_index (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, int index, int type)
+void CMemory::map_index (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, int index, int type, bool auto_export_map)
 {
 	uint32	c, i, p;
 	bool8	isROM, isRAM;
@@ -2916,35 +2931,38 @@ void CMemory::map_index (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 add
 		}
 	}
 #ifdef __LIBRETRO__
-	struct retro_memory_descriptor desc = {0};
-	desc.start=bank_s<<16 | addr_s;
-	desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
-	if (type==MAP_LOROM_SRAM || type==MAP_SA1RAM)
+	if (auto_export_map)
 	{
-		desc.ptr=Memory.SRAM;
-		desc.disconnect=0x8000;
-		desc.len=Memory.SRAMMask+1;
-		S9xAppendMapping(&desc);
-	}
-	if (type==MAP_LOROM_SRAM_B)
-	{
-		desc.ptr=Multi.sramB;
-		desc.disconnect=0x8000;
-		desc.len=Multi.sramMaskB+1;
-		S9xAppendMapping(&desc);
-	}
-	if (type==MAP_HIROM_SRAM || type==MAP_RONLY_SRAM)
-	{
-		desc.ptr=Memory.SRAM;
-		desc.disconnect=0x00E000;
-		desc.len=Memory.SRAMMask+1;
-		S9xAppendMapping(&desc);
-	}
-	if (type==MAP_BWRAM)
-	{
-		desc.ptr=Memory.BWRAM;
-		desc.disconnect=0xFFE000;
-		S9xAppendMapping(&desc);
+		struct retro_memory_descriptor desc = {0};
+		desc.start=bank_s<<16 | addr_s;
+		desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
+		if (type==MAP_LOROM_SRAM || type==MAP_SA1RAM)
+		{
+			desc.ptr=Memory.SRAM;
+			desc.disconnect=0x8000;
+			desc.len=Memory.SRAMMask+1;
+			S9xAppendMapping(&desc);
+		}
+		if (type==MAP_LOROM_SRAM_B)
+		{
+			desc.ptr=Multi.sramB;
+			desc.disconnect=0x8000;
+			desc.len=Multi.sramMaskB+1;
+			S9xAppendMapping(&desc);
+		}
+		if (type==MAP_HIROM_SRAM || type==MAP_RONLY_SRAM)
+		{
+			desc.ptr=Memory.SRAM;
+			desc.disconnect=0x00E000;
+			desc.len=Memory.SRAMMask+1;
+			S9xAppendMapping(&desc);
+		}
+		if (type==MAP_BWRAM)
+		{
+			desc.ptr=Memory.BWRAM;
+			desc.disconnect=0xFFE000;
+			S9xAppendMapping(&desc);
+		}
 	}
 #endif
 }
@@ -3303,7 +3321,19 @@ void CMemory::Map_SA1LoROMMap (void)
 	map_index(0x80, 0xbf, 0x6000, 0x7fff, MAP_BWRAM, MAP_TYPE_I_O);
 
 	for (int c = 0x40; c < 0x80; c++)
-		map_space(c, c, 0x0000, 0xffff, SRAM + (c & 1) * 0x10000);
+		map_space(c, c, 0x0000, 0xffff, SRAM + (c & 1) * 0x10000, false);
+
+#ifdef __LIBRETRO__
+	if (auto_export_map)
+	{
+		struct retro_memory_descriptor desc = {0};
+		desc.ptr=SRAM;
+		desc.start=0x400000;
+		desc.select=0xC00000;
+		desc.disconnect=0xFE0000;
+		S9xAppendMapping(&desc);
+	}
+#endif
 
 	map_WRAM();
 
@@ -3339,13 +3369,25 @@ void CMemory::Map_GNEXTSA1LoROMMap (void)
 
 	map_hirom_offset(0xc0, 0xff, 0x0000, 0xffff, Multi.cartSizeA, Multi.cartOffsetA);
 
-	map_space(0x00, 0x3f, 0x3000, 0x3fff, FillRAM);
 	map_space(0x80, 0xbf, 0x3000, 0x3fff, FillRAM);
-	map_index(0x00, 0x3f, 0x6000, 0x7fff, MAP_BWRAM, MAP_TYPE_I_O);
+	map_space(0x00, 0x3f, 0x3000, 0x3fff, FillRAM);
 	map_index(0x80, 0xbf, 0x6000, 0x7fff, MAP_BWRAM, MAP_TYPE_I_O);
+	map_index(0x00, 0x3f, 0x6000, 0x7fff, MAP_BWRAM, MAP_TYPE_I_O);
 
 	for (int c = 0x40; c < 0x80; c++)
-		map_space(c, c, 0x0000, 0xffff, SRAM + (c & 1) * 0x10000);
+		map_space(c, c, 0x0000, 0xffff, SRAM + (c & 1) * 0x10000, false);
+
+#ifdef __LIBRETRO__
+	if (auto_export_map)
+	{
+		struct retro_memory_descriptor desc = {0};
+		desc.ptr=SRAM;
+		desc.start=0x400000;
+		desc.select=0xC00000;
+		desc.disconnect=0xFE0000;
+		S9xAppendMapping(&desc);
+	}
+#endif
 
 	// FIXME: untested!
 	map_hirom_offset(0x70, 0x7f, 0x0000, 0xffff, Multi.cartSizeB, Multi.cartOffsetB);

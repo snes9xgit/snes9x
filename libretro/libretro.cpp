@@ -320,12 +320,13 @@ void retro_cheat_set(unsigned index, bool enabled, const char *code)
    S9xApplyCheats();
 }
 
-static struct retro_memory_descriptor memorydesc[64];
+#define MAX_MAPS 256
+static struct retro_memory_descriptor memorydesc[MAX_MAPS];
 static unsigned memorydesc_c;
 void S9xAppendMapping(struct retro_memory_descriptor * desc)
 {
 	//do it backwards - snes9x defines the last one to win, while we define the first one to win
-	memcpy(&memorydesc[64 - (++memorydesc_c)], desc, sizeof(struct retro_memory_descriptor));
+	memcpy(&memorydesc[MAX_MAPS - (++memorydesc_c)], desc, sizeof(struct retro_memory_descriptor));
 }
 
 bool retro_load_game(const struct retro_game_info *game)
@@ -340,7 +341,7 @@ bool retro_load_game(const struct retro_game_info *game)
    if (!rom_loaded && log_cb)
       log_cb(RETRO_LOG_ERROR, "[libretro]: Rom loading failed...\n");
    
-   struct retro_memory_map map={ memorydesc+64-memorydesc_c, memorydesc_c };
+   struct retro_memory_map map={ memorydesc+MAX_MAPS-memorydesc_c, memorydesc_c };
    if (rom_loaded) environ_cb(RETRO_ENVIRONMENT_SET_MEMORY_MAPS, &map);
    
    return rom_loaded;
@@ -396,7 +397,7 @@ bool retro_load_game_special(unsigned game_type,
        break;
   }
   
-  struct retro_memory_map map={ memorydesc+64-memorydesc_c, memorydesc_c };
+  struct retro_memory_map map={ memorydesc+MAX_MAPS-memorydesc_c, memorydesc_c };
   if (rom_loaded) environ_cb(RETRO_ENVIRONMENT_SET_MEMORY_MAPS, &map);
 
   return rom_loaded;
