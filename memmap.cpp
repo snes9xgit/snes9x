@@ -2917,57 +2917,35 @@ void CMemory::map_index (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 add
 	}
 #ifdef __LIBRETRO__
 	struct retro_memory_descriptor desc = {0};
-	desc.flags=RETRO_MEMDESC_CONST;
-	desc.ptr=NULL;//this function maps funky stuff like hardware regs, but also various SRAM
-//the following should be handled:
-/*
-		case CMemory::MAP_LOROM_SRAM:
-			if (Memory.SRAMMask)
-			{
-				*(Memory.SRAM + ((((Address & 0xff0000) >> 1) | (Address & 0x7fff)) & Memory.SRAMMask)) = Byte;
-				CPU.SRAMModified = TRUE;
-			}
-
-			addCyclesInMemoryAccess;
-			return;
-
-		case CMemory::MAP_LOROM_SRAM_B:
-			if (Multi.sramMaskB)
-			{
-				*(Multi.sramB + ((((Address & 0xff0000) >> 1) | (Address & 0x7fff)) & Multi.sramMaskB)) = Byte;
-				CPU.SRAMModified = TRUE;
-			}
-
-			addCyclesInMemoryAccess;
-			return;
-
-		case CMemory::MAP_HIROM_SRAM:
-			if (Memory.SRAMMask)
-			{
-				*(Memory.SRAM + (((Address & 0x7fff) - 0x6000 + ((Address & 0xf0000) >> 3)) & Memory.SRAMMask)) = Byte;
-				CPU.SRAMModified = TRUE;
-			}
-
-			addCyclesInMemoryAccess;
-			return;
-
-		case CMemory::MAP_BWRAM:
-			*(Memory.BWRAM + ((Address & 0x7fff) - 0x6000)) = Byte;
-			CPU.SRAMModified = TRUE;
-			addCyclesInMemoryAccess;
-			return;
-
-		case CMemory::MAP_SA1RAM:
-			*(Memory.SRAM + (Address & 0xffff)) = Byte;
-			addCyclesInMemoryAccess;
-			return;
-*/
-	desc.offset=0;//
-	desc.start=0;//
-	desc.select=0;//
-	desc.disconnect=0;//
-	desc.len=0;//
-	//S9xAppendMapping(&desc);
+	desc.start=bank_s<<16 | addr_s;
+	desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
+	if (type==MAP_LOROM_SRAM || type==MAP_SA1RAM)
+	{
+		desc.ptr=Memory.SRAM;
+		desc.disconnect=0x8000;
+		desc.len=Memory.SRAMMask+1;
+		S9xAppendMapping(&desc);
+	}
+	if (type==MAP_LOROM_SRAM_B)
+	{
+		desc.ptr=Multi.sramB;
+		desc.disconnect=0x8000;
+		desc.len=Multi.sramMaskB+1;
+		S9xAppendMapping(&desc);
+	}
+	if (type==MAP_HIROM_SRAM || type==MAP_RONLY_SRAM)
+	{
+		desc.ptr=Memory.SRAM;
+		desc.disconnect=0xF8E000;
+		desc.len=Memory.SRAMMask+1;
+		S9xAppendMapping(&desc);
+	}
+	if (type==MAP_BWRAM)
+	{
+		desc.ptr=Memory.BWRAM;
+		desc.disconnect=0xFFE000;
+		S9xAppendMapping(&desc);
+	}
 #endif
 }
 
