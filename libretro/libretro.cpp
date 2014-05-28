@@ -320,7 +320,7 @@ void retro_cheat_set(unsigned index, bool enabled, const char *code)
    S9xApplyCheats();
 }
 
-#define MAX_MAPS 256
+#define MAX_MAPS 32
 static struct retro_memory_descriptor memorydesc[MAX_MAPS];
 static unsigned memorydesc_c;
 void S9xAppendMapping(struct retro_memory_descriptor * desc)

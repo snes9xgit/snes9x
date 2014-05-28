@@ -642,12 +642,11 @@ enum retro_mod
                                            // Even if special device types are set in the libretro core, libretro should only poll input based on the base input device types.
 #define RETRO_ENVIRONMENT_SET_MEMORY_MAPS (36 | RETRO_ENVIRONMENT_EXPERIMENTAL)
                                            // const struct retro_memory_map * --
-                                           // This environment call lets a libretro core tell the frontend about the memory maps
-                                           // emulated by this core. This can be used to implement, for example, cheats.
+                                           // This environment call lets a libretro core tell the frontend about the memory maps this
+                                           // core emulates. This can be used to implement, for example, cheats in a core-agnostic way.
                                            //
                                            // Should only be used by emulators; it doesn't make much sense for anything else.
-                                           //
-                                           // It is highly recommended to expose all relevant pointers through retro_get_memory_* as well.
+                                           // It is recommended to expose all relevant pointers through retro_get_memory_* as well.
                                            //
                                            // Can be called from retro_init and retro_load_game.
                                            //
@@ -657,7 +656,7 @@ enum retro_mod
 #define RETRO_MEMDESC_ALIGNED   (1 << 2) // All memory access in this area is aligned to their own size, and no non-power-of-two sized data exists.
 struct retro_memory_descriptor {
    uint64_t flags;
-   
+
    //Pointer to the start of the relevant ROM or RAM chip.
    //It's strongly recommended to use 'offset' if possible, rather than doing math on the pointer.
    //If the same byte is mapped my multiple descriptors, their descriptors must have the same pointer.
@@ -666,28 +665,28 @@ struct retro_memory_descriptor {
    //It's recommended to minimize the number of descriptors if possible, but not mandatory.
    void * ptr;
    size_t offset;
-   
+
    //This is the location in the emulated address space where the mapping starts.
    size_t start;
-   
+
    //Which bits must be same as in 'start' for this mapping to apply.
    //The first memory descriptor to claim a certain byte is the one that applies.
    //A bit which is set in 'start' must also be set in this.
    //Can be zero, in which case each byte is assumed mapped exactly once. In this case, 'len' must be a power of two.
    size_t select;
-   
+
    //If this is nonzero, the set bits are assumed not connected to the memory chip's address pins.
    size_t disconnect;
-   
+
    //This one tells the size of the current memory area.
    //If, after start+disconnect are applied, the address is higher than this, the highest bit of the address is cleared.
    //If the address is still too high, the next highest bit is cleared.
    //Can be zero, in which case it's assumed to be infinite (as limited by 'select' and 'disconnect').
    size_t len;
-   
+
    //To go from emulated address to physical address, the following order applies:
    //Subtract 'start', pick off 'disconnect', apply 'len', add 'offset'.
-   
+
    //The address space name must consist of only a-zA-Z0-9_-, should be as short as feasible (maximum length is 8 plus the NUL),
    // and may not be any other address space plus one or more 0-9A-F at the end.
    //However, multiple memory descriptors for the same address space is allowed, and the address
