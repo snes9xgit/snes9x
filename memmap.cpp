@@ -2907,6 +2907,7 @@ void CMemory::map_space (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 add
 		desc.ptr=data;
 		desc.start=bank_s<<16 | addr_s;
 		desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
+		desc.disconnect=0xFF0000;
 		S9xAppendMapping(&desc);
 	}
 #endif
