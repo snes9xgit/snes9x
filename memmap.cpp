@@ -2787,7 +2787,7 @@ void CMemory::map_lorom (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 add
 	desc.start=0;//
 	desc.select=0x8000;
 	desc.len=0;//
-	S9xAppendMapping(&desc);
+	//S9xAppendMapping(&desc);
 #endif
 }
 
@@ -2816,7 +2816,7 @@ void CMemory::map_hirom (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 add
 	desc.select=0;//
 	desc.disconnect=0;
 	desc.len=0;//
-	S9xAppendMapping(&desc);
+	//S9xAppendMapping(&desc);
 #endif
 }
 
@@ -2845,7 +2845,7 @@ void CMemory::map_lorom_offset (uint32 bank_s, uint32 bank_e, uint32 addr_s, uin
 	desc.select=0;//
 	desc.disconnect=0x8000;
 	desc.len=0;//
-	S9xAppendMapping(&desc);
+	//S9xAppendMapping(&desc);
 #endif
 }
 
@@ -2873,7 +2873,7 @@ void CMemory::map_hirom_offset (uint32 bank_s, uint32 bank_e, uint32 addr_s, uin
 	desc.select=0;//
 	desc.disconnect=0x0000;
 	desc.len=0;//
-	S9xAppendMapping(&desc);
+	//S9xAppendMapping(&desc);
 #endif
 }
 
@@ -2896,11 +2896,11 @@ void CMemory::map_space (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 add
 	desc.flags=0;
 	desc.ptr=data;
 	desc.offset=0;
-	if (data == RAM+0x10000) { desc.ptr=RAM; desc.offset=0x10000; }
-	desc.start=0;//
-	desc.select=0;//
-	desc.disconnect=0;//
-	desc.len=0;//
+	desc.start=bank_s<<16 | addr_s;
+	desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
+	desc.disconnect=0;
+	desc.len=0;
+if (bank_s==0x7e || bank_s==0x7f)
 	S9xAppendMapping(&desc);
 #endif
 }
@@ -2975,7 +2975,7 @@ void CMemory::map_index (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 add
 	desc.select=0;//
 	desc.disconnect=0;//
 	desc.len=0;//
-	S9xAppendMapping(&desc);
+	//S9xAppendMapping(&desc);
 #endif
 }
 
@@ -2993,8 +2993,8 @@ void CMemory::map_System (void)
 void CMemory::map_WRAM (void)
 {
 	// will overwrite others
-	map_space(0x7e, 0x7e, 0x0000, 0xffff, RAM);
 	map_space(0x7f, 0x7f, 0x0000, 0xffff, RAM + 0x10000);
+	map_space(0x7e, 0x7e, 0x0000, 0xffff, RAM);
 }
 
 void CMemory::map_LoROMSRAM (void)

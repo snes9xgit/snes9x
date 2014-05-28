@@ -328,19 +328,6 @@ void S9xAppendMapping(struct retro_memory_descriptor * desc)
 	memcpy(&memorydesc[64 - (++memorydesc_c)], desc, sizeof(struct retro_memory_descriptor));
 }
 
-//#define RETRO_MEMDESC_CONST (1 << 0)
-//struct retro_memory_descriptor {
-//   uint64_t flags;
-//   void * ptr;
-//   size_t offset;
-//   size_t start;
-//   size_t select;
-//   size_t disconnect;
-//   size_t len;
-//   const char * addrspace;
-//};
-//void S9xAppendMapping(struct retro_memory_descriptor desc);
-
 bool retro_load_game(const struct retro_game_info *game)
 {
    memorydesc_c = 0;

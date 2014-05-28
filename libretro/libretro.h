@@ -663,6 +663,7 @@ struct retro_memory_descriptor {
    //If the same byte is mapped my multiple descriptors, their descriptors must have the same pointer.
    //If 'start' does not point to the first byte in the pointer, put the difference in 'offset' instead.
    //May be NULL if there's nothing usable here (e.g. hardware registers and open bus). No flags should be set if the pointer is NULL.
+   //It's recommended to minimize the number of descriptors if possible, but not mandatory.
    void * ptr;
    size_t offset;
    
