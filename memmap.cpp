@@ -2936,7 +2936,7 @@ void CMemory::map_index (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 add
 	if (type==MAP_HIROM_SRAM || type==MAP_RONLY_SRAM)
 	{
 		desc.ptr=Memory.SRAM;
-		desc.disconnect=0xF8E000;
+		desc.disconnect=0x00E000;
 		desc.len=Memory.SRAMMask+1;
 		S9xAppendMapping(&desc);
 	}
