@@ -201,6 +201,11 @@
 #include "movie.h"
 #include "display.h"
 
+#ifdef __LIBRETRO__
+#include "libretro.h"
+void S9xAppendMapping(struct retro_memory_descriptor * desc);
+#endif
+
 #ifndef SET_UI_COLOR
 #define SET_UI_COLOR(r, g, b) ;
 #endif
@@ -2773,6 +2778,17 @@ void CMemory::map_lorom (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 add
 			BlockIsRAM[p] = FALSE;
 		}
 	}
+
+#ifdef __LIBRETRO__
+	struct retro_memory_descriptor desc = {0};
+	desc.flags=RETRO_MEMDESC_CONST;
+	desc.ptr=ROM;
+	desc.offset=0;//
+	desc.start=0;//
+	desc.select=0x8000;
+	desc.len=0;//
+	S9xAppendMapping(&desc);
+#endif
 }
 
 void CMemory::map_hirom (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, uint32 size)
@@ -2790,6 +2806,18 @@ void CMemory::map_hirom (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 add
 			BlockIsRAM[p] = FALSE;
 		}
 	}
+
+#ifdef __LIBRETRO__
+	struct retro_memory_descriptor desc = {0};
+	desc.flags=RETRO_MEMDESC_CONST;
+	desc.ptr=ROM;
+	desc.offset=0;//
+	desc.start=0;//
+	desc.select=0;//
+	desc.disconnect=0;
+	desc.len=0;//
+	S9xAppendMapping(&desc);
+#endif
 }
 
 void CMemory::map_lorom_offset (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, uint32 size, uint32 offset)
@@ -2807,6 +2835,18 @@ void CMemory::map_lorom_offset (uint32 bank_s, uint32 bank_e, uint32 addr_s, uin
 			BlockIsRAM[p] = FALSE;
 		}
 	}
+
+#ifdef __LIBRETRO__
+	struct retro_memory_descriptor desc = {0};
+	desc.flags=RETRO_MEMDESC_CONST;
+	desc.ptr=ROM;
+	desc.offset=0;//
+	desc.start=0;//
+	desc.select=0;//
+	desc.disconnect=0x8000;
+	desc.len=0;//
+	S9xAppendMapping(&desc);
+#endif
 }
 
 void CMemory::map_hirom_offset (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, uint32 size, uint32 offset)
@@ -2824,6 +2864,17 @@ void CMemory::map_hirom_offset (uint32 bank_s, uint32 bank_e, uint32 addr_s, uin
 			BlockIsRAM[p] = FALSE;
 		}
 	}
+#ifdef __LIBRETRO__
+	struct retro_memory_descriptor desc = {0};
+	desc.flags=RETRO_MEMDESC_CONST;
+	desc.ptr=ROM;
+	desc.offset=0;//
+	desc.start=0;//
+	desc.select=0;//
+	desc.disconnect=0x0000;
+	desc.len=0;//
+	S9xAppendMapping(&desc);
+#endif
 }
 
 void CMemory::map_space (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, uint8 *data)
@@ -2840,6 +2891,18 @@ void CMemory::map_space (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 add
 			BlockIsRAM[p] = TRUE;
 		}
 	}
+#ifdef __LIBRETRO__
+	struct retro_memory_descriptor desc = {0};
+	desc.flags=0;
+	desc.ptr=data;
+	desc.offset=0;
+	if (data == RAM+0x10000) { desc.ptr=RAM; desc.offset=0x10000; }
+	desc.start=0;//
+	desc.select=0;//
+	desc.disconnect=0;//
+	desc.len=0;//
+	S9xAppendMapping(&desc);
+#endif
 }
 
 void CMemory::map_index (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, int index, int type)
@@ -2860,6 +2923,60 @@ void CMemory::map_index (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 add
 			BlockIsRAM[p] = isRAM;
 		}
 	}
+#ifdef __LIBRETRO__
+	struct retro_memory_descriptor desc = {0};
+	desc.flags=RETRO_MEMDESC_CONST;
+	desc.ptr=NULL;//this function maps funky stuff like hardware regs, but also various SRAM
+//the following should be handled:
+/*
+		case CMemory::MAP_LOROM_SRAM:
+			if (Memory.SRAMMask)
+			{
+				*(Memory.SRAM + ((((Address & 0xff0000) >> 1) | (Address & 0x7fff)) & Memory.SRAMMask)) = Byte;
+				CPU.SRAMModified = TRUE;
+			}
+
+			addCyclesInMemoryAccess;
+			return;
+
+		case CMemory::MAP_LOROM_SRAM_B:
+			if (Multi.sramMaskB)
+			{
+				*(Multi.sramB + ((((Address & 0xff0000) >> 1) | (Address & 0x7fff)) & Multi.sramMaskB)) = Byte;
+				CPU.SRAMModified = TRUE;
+			}
+
+			addCyclesInMemoryAccess;
+			return;
+
+		case CMemory::MAP_HIROM_SRAM:
+			if (Memory.SRAMMask)
+			{
+				*(Memory.SRAM + (((Address & 0x7fff) - 0x6000 + ((Address & 0xf0000) >> 3)) & Memory.SRAMMask)) = Byte;
+				CPU.SRAMModified = TRUE;
+			}
+
+			addCyclesInMemoryAccess;
+			return;
+
+		case CMemory::MAP_BWRAM:
+			*(Memory.BWRAM + ((Address & 0x7fff) - 0x6000)) = Byte;
+			CPU.SRAMModified = TRUE;
+			addCyclesInMemoryAccess;
+			return;
+
+		case CMemory::MAP_SA1RAM:
+			*(Memory.SRAM + (Address & 0xffff)) = Byte;
+			addCyclesInMemoryAccess;
+			return;
+*/
+	desc.offset=0;//
+	desc.start=0;//
+	desc.select=0;//
+	desc.disconnect=0;//
+	desc.len=0;//
+	S9xAppendMapping(&desc);
+#endif
 }
 
 void CMemory::map_System (void)

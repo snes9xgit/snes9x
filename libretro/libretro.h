@@ -658,7 +658,9 @@ enum retro_mod
 struct retro_memory_descriptor {
    uint64_t flags;
    
-   //Pointer to the start of the relevant ROM or RAM chip. Do not do math on this; the frontend may group things with identical pointers together.
+   //Pointer to the start of the relevant ROM or RAM chip.
+   //It's strongly recommended to use 'offset' if possible, rather than doing math on the pointer.
+   //If the same byte is mapped my multiple descriptors, their descriptors must have the same pointer.
    //If 'start' does not point to the first byte in the pointer, put the difference in 'offset' instead.
    //May be NULL if there's nothing usable here (e.g. hardware registers and open bus). No flags should be set if the pointer is NULL.
    void * ptr;
