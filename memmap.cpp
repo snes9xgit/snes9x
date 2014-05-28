@@ -2960,8 +2960,8 @@ void CMemory::map_index (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 add
 		}
 		if (type==MAP_BWRAM)
 		{
-			desc.ptr=Memory.BWRAM;
-			desc.disconnect=0xFFE000;
+			desc.ptr=Memory.SRAM;//this one varies, but we can't use variable maps in this system.
+			desc.disconnect=0xFFE000;//It's the same as SRAM, anyways. Let's point it to there and let the front ignore it.
 			S9xAppendMapping(&desc);
 		}
 	}
@@ -3316,10 +3316,10 @@ void CMemory::Map_SA1LoROMMap (void)
 
 	map_hirom_offset(0xc0, 0xff, 0x0000, 0xffff, CalculatedSize, 0);
 
-	map_index(0x80, 0xbf, 0x6000, 0x7fff, MAP_BWRAM, MAP_TYPE_I_O);
-	map_index(0x00, 0x3f, 0x6000, 0x7fff, MAP_BWRAM, MAP_TYPE_I_O);
 	map_space(0x80, 0xbf, 0x3000, 0x3fff, FillRAM);
 	map_space(0x00, 0x3f, 0x3000, 0x3fff, FillRAM);
+	map_index(0x80, 0xbf, 0x6000, 0x7fff, MAP_BWRAM, MAP_TYPE_I_O);
+	map_index(0x00, 0x3f, 0x6000, 0x7fff, MAP_BWRAM, MAP_TYPE_I_O);
 
 	for (int c = 0x40; c < 0x80; c++)
 		map_space(c, c, 0x0000, 0xffff, SRAM + (c & 1) * 0x10000, false);
