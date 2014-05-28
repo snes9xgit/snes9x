@@ -2921,7 +2921,6 @@ void CMemory::map_index (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 add
 	desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
 	if (type==MAP_LOROM_SRAM || type==MAP_SA1RAM)
 	{
-puts("BBB");
 		desc.ptr=Memory.SRAM;
 		desc.disconnect=0x8000;
 		desc.len=Memory.SRAMMask+1;
