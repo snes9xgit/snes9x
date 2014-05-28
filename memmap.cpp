@@ -2783,11 +2783,11 @@ void CMemory::map_lorom (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 add
 	struct retro_memory_descriptor desc = {0};
 	desc.flags=RETRO_MEMDESC_CONST;
 	desc.ptr=ROM;
-	desc.offset=0;//
-	desc.start=0;//
-	desc.select=0x8000;
-	desc.len=0;//
-	//S9xAppendMapping(&desc);
+	desc.start=bank_s<<16 | addr_s;
+	desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
+	desc.disconnect=0x8000;
+	desc.len=size;
+	S9xAppendMapping(&desc);
 #endif
 }
 
@@ -2811,12 +2811,10 @@ void CMemory::map_hirom (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 add
 	struct retro_memory_descriptor desc = {0};
 	desc.flags=RETRO_MEMDESC_CONST;
 	desc.ptr=ROM;
-	desc.offset=0;//
-	desc.start=0;//
-	desc.select=0;//
-	desc.disconnect=0;
-	desc.len=0;//
-	//S9xAppendMapping(&desc);
+	desc.start=bank_s<<16 | addr_s;
+	desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
+	desc.len=size;
+	S9xAppendMapping(&desc);
 #endif
 }
 
@@ -2840,12 +2838,12 @@ void CMemory::map_lorom_offset (uint32 bank_s, uint32 bank_e, uint32 addr_s, uin
 	struct retro_memory_descriptor desc = {0};
 	desc.flags=RETRO_MEMDESC_CONST;
 	desc.ptr=ROM;
-	desc.offset=0;//
-	desc.start=0;//
-	desc.select=0;//
+	desc.offset=offset;
+	desc.start=bank_s<<16 | addr_s;
+	desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
 	desc.disconnect=0x8000;
-	desc.len=0;//
-	//S9xAppendMapping(&desc);
+	desc.len=size;
+	S9xAppendMapping(&desc);
 #endif
 }
 
@@ -2868,12 +2866,11 @@ void CMemory::map_hirom_offset (uint32 bank_s, uint32 bank_e, uint32 addr_s, uin
 	struct retro_memory_descriptor desc = {0};
 	desc.flags=RETRO_MEMDESC_CONST;
 	desc.ptr=ROM;
-	desc.offset=0;//
-	desc.start=0;//
-	desc.select=0;//
-	desc.disconnect=0x0000;
-	desc.len=0;//
-	//S9xAppendMapping(&desc);
+	desc.offset=offset;
+	desc.start=bank_s<<16 | addr_s;
+	desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
+	desc.len=size;
+	S9xAppendMapping(&desc);
 #endif
 }
 
@@ -2893,14 +2890,9 @@ void CMemory::map_space (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 add
 	}
 #ifdef __LIBRETRO__
 	struct retro_memory_descriptor desc = {0};
-	desc.flags=0;
 	desc.ptr=data;
-	desc.offset=0;
 	desc.start=bank_s<<16 | addr_s;
 	desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
-	desc.disconnect=0;
-	desc.len=0;
-if (bank_s==0x7e || bank_s==0x7f)
 	S9xAppendMapping(&desc);
 #endif
 }
