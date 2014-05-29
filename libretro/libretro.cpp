@@ -182,36 +182,41 @@ void retro_reset()
 static unsigned snes_devices[2];
 void retro_set_controller_port_device(unsigned port, unsigned device)
 {
-   switch (device)
+   if(port < 2)
    {
-      case RETRO_DEVICE_JOYPAD:
-         S9xSetController(port, CTL_JOYPAD, port*4, 0, 0, 0);
-         snes_devices[port] = RETRO_DEVICE_JOYPAD;
-         break;
-      case RETRO_DEVICE_JOYPAD_MULTITAP:
-         S9xSetController(port, CTL_MP5, port*4+0, port*4+1, port*4+2, port*4+3);
-         snes_devices[port] = RETRO_DEVICE_JOYPAD_MULTITAP;
-         break;
-      case RETRO_DEVICE_MOUSE:
-         S9xSetController(port, CTL_MOUSE, 0, 0, 0, 0);
-         snes_devices[port] = RETRO_DEVICE_MOUSE;
-         break;
-      case RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE:
-         S9xSetController(port, CTL_SUPERSCOPE, 0, 0, 0, 0);
-         snes_devices[port] = RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE;
-         break;
-      case RETRO_DEVICE_LIGHTGUN_JUSTIFIER:
-         S9xSetController(port, CTL_JUSTIFIER, 0, 0, 0, 0);
-         snes_devices[port] = RETRO_DEVICE_LIGHTGUN_JUSTIFIER;
-         break;
-      case RETRO_DEVICE_LIGHTGUN_JUSTIFIERS:
-         S9xSetController(port, CTL_JUSTIFIER, 1, 0, 0, 0);
-         snes_devices[port] = RETRO_DEVICE_LIGHTGUN_JUSTIFIERS;
-         break;
-      default:
-         if (log_cb)
-            log_cb(RETRO_LOG_ERROR, "[libretro]: Invalid device.\n");
+       switch (device)
+       {
+          case RETRO_DEVICE_JOYPAD:
+             S9xSetController(port, CTL_JOYPAD, port*4, 0, 0, 0);
+             snes_devices[port] = RETRO_DEVICE_JOYPAD;
+             break;
+          case RETRO_DEVICE_JOYPAD_MULTITAP:
+             S9xSetController(port, CTL_MP5, port*4+0, port*4+1, port*4+2, port*4+3);
+             snes_devices[port] = RETRO_DEVICE_JOYPAD_MULTITAP;
+             break;
+          case RETRO_DEVICE_MOUSE:
+             S9xSetController(port, CTL_MOUSE, 0, 0, 0, 0);
+             snes_devices[port] = RETRO_DEVICE_MOUSE;
+             break;
+          case RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE:
+             S9xSetController(port, CTL_SUPERSCOPE, 0, 0, 0, 0);
+             snes_devices[port] = RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE;
+             break;
+          case RETRO_DEVICE_LIGHTGUN_JUSTIFIER:
+             S9xSetController(port, CTL_JUSTIFIER, 0, 0, 0, 0);
+             snes_devices[port] = RETRO_DEVICE_LIGHTGUN_JUSTIFIER;
+             break;
+          case RETRO_DEVICE_LIGHTGUN_JUSTIFIERS:
+             S9xSetController(port, CTL_JUSTIFIER, 1, 0, 0, 0);
+             snes_devices[port] = RETRO_DEVICE_LIGHTGUN_JUSTIFIERS;
+             break;
+          default:
+             if (log_cb)
+                log_cb(RETRO_LOG_ERROR, "[libretro]: Invalid device (%d).\n", device);
+       }
    }
+   else if(device != RETRO_DEVICE_NONE)
+       log_cb(RETRO_LOG_INFO, "[libretro]: Nonexistent Port (%d).\n", port);
 }
 
 void retro_cheat_reset()
