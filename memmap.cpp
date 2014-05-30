@@ -3330,6 +3330,7 @@ void CMemory::Map_SA1LoROMMap (void)
 	desc.start=0x400000;
 	desc.select=0xC00000;
 	desc.disconnect=0xFE0000;
+	desc.len=0x20000;
 	S9xAppendMapping(&desc);
 #endif
 
