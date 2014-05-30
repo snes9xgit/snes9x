@@ -2816,7 +2816,7 @@ void CMemory::map_hirom (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 add
 		struct retro_memory_descriptor desc = {0};
 		desc.flags=RETRO_MEMDESC_CONST;
 		desc.ptr=ROM;
-		desc.offset=map_mirror(size, bank_s<<16 | addr_s);
+		desc.offset=map_mirror(size, addr_s);
 		desc.start=bank_s<<16 | addr_s;
 		desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
 		desc.len=size - desc.offset;
@@ -2878,7 +2878,7 @@ void CMemory::map_hirom_offset (uint32 bank_s, uint32 bank_e, uint32 addr_s, uin
 		struct retro_memory_descriptor desc = {0};
 		desc.flags=RETRO_MEMDESC_CONST;
 		desc.ptr=ROM;
-		desc.offset=map_mirror(size, offset + (bank_s<<16 | addr_s));
+		desc.offset=map_mirror(size, offset + addr_s);
 		desc.start=bank_s<<16 | addr_s;
 		desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
 		desc.len=size;
