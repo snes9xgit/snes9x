@@ -21,6 +21,23 @@
 #include <sys/types.h>
 #include <fcntl.h>
 
+#define RETRO_DEVICE_JOYPAD_MULTITAP        ((1 << 8) | RETRO_DEVICE_JOYPAD)
+#define RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE   ((1 << 8) | RETRO_DEVICE_LIGHTGUN)
+#define RETRO_DEVICE_LIGHTGUN_JUSTIFIER     ((2 << 8) | RETRO_DEVICE_LIGHTGUN)
+#define RETRO_DEVICE_LIGHTGUN_JUSTIFIERS    ((3 << 8) | RETRO_DEVICE_LIGHTGUN)
+
+#define RETRO_MEMORY_SNES_BSX_RAM             ((1 << 8) | RETRO_MEMORY_SAVE_RAM)
+#define RETRO_MEMORY_SNES_BSX_PRAM            ((2 << 8) | RETRO_MEMORY_SAVE_RAM)
+#define RETRO_MEMORY_SNES_SUFAMI_TURBO_A_RAM  ((3 << 8) | RETRO_MEMORY_SAVE_RAM)
+#define RETRO_MEMORY_SNES_SUFAMI_TURBO_B_RAM  ((4 << 8) | RETRO_MEMORY_SAVE_RAM)
+#define RETRO_MEMORY_SNES_GAME_BOY_RAM        ((5 << 8) | RETRO_MEMORY_SAVE_RAM)
+#define RETRO_MEMORY_SNES_GAME_BOY_RTC        ((6 << 8) | RETRO_MEMORY_RTC)
+
+#define RETRO_GAME_TYPE_BSX             0x101
+#define RETRO_GAME_TYPE_BSX_SLOTTED     0x102
+#define RETRO_GAME_TYPE_SUFAMI_TURBO    0x103
+#define RETRO_GAME_TYPE_SUPER_GAME_BOY  0x104
+
 static retro_log_printf_t log_cb = NULL;
 static retro_video_refresh_t s9x_video_cb = NULL;
 static retro_audio_sample_t s9x_audio_cb = NULL;
@@ -60,7 +77,7 @@ void retro_set_environment(retro_environment_t cb)
 {
    environ_cb = cb;
    
-   struct retro_variable variables[] = {
+   const struct retro_variable variables[] = {
       // These variable names and possible values constitute an ABI with ZMZ (ZSNES Libretro player).
       // Changing "Show layer 1" is fine, but don't change "layer_1"/etc or the possible values ("Yes|No").
       // Adding more variables and rearranging them is safe.
@@ -82,7 +99,29 @@ void retro_set_environment(retro_environment_t cb)
       { NULL, NULL },
    };
    
-   environ_cb(RETRO_ENVIRONMENT_SET_VARIABLES, variables);
+   environ_cb(RETRO_ENVIRONMENT_SET_VARIABLES, (void *)variables);
+
+   static const struct retro_controller_description port_1[] = {
+      { "SNES Joypad", RETRO_DEVICE_JOYPAD },
+      { "SNES Mouse", RETRO_DEVICE_MOUSE },
+      { "Multitap", RETRO_DEVICE_JOYPAD_MULTITAP },
+   };
+
+   static const struct retro_controller_description port_2[] = {
+      { "SNES Joypad", RETRO_DEVICE_JOYPAD },
+      { "SNES Mouse", RETRO_DEVICE_MOUSE },
+      { "Multitap", RETRO_DEVICE_JOYPAD_MULTITAP },
+      { "SuperScope", RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE },
+      { "Justifier", RETRO_DEVICE_LIGHTGUN_JUSTIFIER },
+   };
+
+   const struct retro_controller_info ports[] = {
+      { port_1, 3 },
+      { port_2, 5 },
+      { 0 },
+   };
+
+   environ_cb(RETRO_ENVIRONMENT_SET_CONTROLLER_INFO, (void*)ports);
 }
 
 static void update_variables(void)
@@ -184,14 +223,15 @@ void retro_set_controller_port_device(unsigned port, unsigned device)
 {
    if(port < 2)
    {
+       int offset = snes_devices[0] == RETRO_DEVICE_JOYPAD_MULTITAP ? 4 : 1;
        switch (device)
        {
           case RETRO_DEVICE_JOYPAD:
-             S9xSetController(port, CTL_JOYPAD, port*4, 0, 0, 0);
+             S9xSetController(port, CTL_JOYPAD, port * offset, 0, 0, 0);
              snes_devices[port] = RETRO_DEVICE_JOYPAD;
              break;
           case RETRO_DEVICE_JOYPAD_MULTITAP:
-             S9xSetController(port, CTL_MP5, port*4+0, port*4+1, port*4+2, port*4+3);
+             S9xSetController(port, CTL_MP5, port * offset, port * offset + 1, port * offset + 2, port * offset + 3);
              snes_devices[port] = RETRO_DEVICE_JOYPAD_MULTITAP;
              break;
           case RETRO_DEVICE_MOUSE:
@@ -206,14 +246,12 @@ void retro_set_controller_port_device(unsigned port, unsigned device)
              S9xSetController(port, CTL_JUSTIFIER, 0, 0, 0, 0);
              snes_devices[port] = RETRO_DEVICE_LIGHTGUN_JUSTIFIER;
              break;
-          case RETRO_DEVICE_LIGHTGUN_JUSTIFIERS:
-             S9xSetController(port, CTL_JUSTIFIER, 1, 0, 0, 0);
-             snes_devices[port] = RETRO_DEVICE_LIGHTGUN_JUSTIFIERS;
-             break;
           default:
              if (log_cb)
                 log_cb(RETRO_LOG_ERROR, "[libretro]: Invalid device (%d).\n", device);
        }
+       if (!port)
+          retro_set_controller_port_device(1, snes_devices[1]);
    }
    else if(device != RETRO_DEVICE_NONE)
        log_cb(RETRO_LOG_INFO, "[libretro]: Nonexistent Port (%d).\n", port);
@@ -521,19 +559,20 @@ static int16_t snes_justifier_state[2][2] = {{0}, {0}};
 static void report_buttons()
 {
    int _x, _y;
+   int offset = snes_devices[0] == RETRO_DEVICE_JOYPAD_MULTITAP ? 4 : 1;
    for (int port = 0; port <= 1; port++)
    {
       switch (snes_devices[port])
       {
          case RETRO_DEVICE_JOYPAD:
             for (int i = BTN_FIRST; i <= BTN_LAST; i++)
-               S9xReportButton(MAKE_BUTTON(port*4 + 1, i), s9x_input_state_cb(port, RETRO_DEVICE_JOYPAD, 0, i));
+               S9xReportButton(MAKE_BUTTON(port * offset + 1, i), s9x_input_state_cb(port * offset, RETRO_DEVICE_JOYPAD, 0, i));
             break;
 
          case RETRO_DEVICE_JOYPAD_MULTITAP:
             for (int j = 0; j < 4; j++)
                for (int i = BTN_FIRST; i <= BTN_LAST; i++)
-                  S9xReportButton(MAKE_BUTTON(port*4 + j + 1, i), s9x_input_state_cb(port, RETRO_DEVICE_JOYPAD_MULTITAP, j, i));
+                  S9xReportButton(MAKE_BUTTON(port * offset + j + 1, i), s9x_input_state_cb(port * offset + j, RETRO_DEVICE_JOYPAD, 0, i));
             break;
 
          case RETRO_DEVICE_MOUSE:
@@ -547,20 +586,20 @@ static void report_buttons()
             break;
 
          case RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE:
-            snes_scope_state[0] += s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE, 0, RETRO_DEVICE_ID_LIGHTGUN_X);
-            snes_scope_state[1] += s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE, 0, RETRO_DEVICE_ID_LIGHTGUN_Y);
+            snes_scope_state[0] += s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_X);
+            snes_scope_state[1] += s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_Y);
             S9xReportPointer(BTN_POINTER, snes_scope_state[0], snes_scope_state[1]);
             for (int i = SCOPE_TRIGGER; i <= SCOPE_LAST; i++)
-               S9xReportButton(MAKE_BUTTON(port + 1, i), s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE, 0, i));
+               S9xReportButton(MAKE_BUTTON(2, i), s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN, 0, i));
             break;
 
          case RETRO_DEVICE_LIGHTGUN_JUSTIFIER:
          case RETRO_DEVICE_LIGHTGUN_JUSTIFIERS:
-            snes_justifier_state[0][0] += s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN_JUSTIFIER, 0, RETRO_DEVICE_ID_LIGHTGUN_X);
-            snes_justifier_state[0][1] += s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN_JUSTIFIER, 0, RETRO_DEVICE_ID_LIGHTGUN_Y);
+            snes_justifier_state[0][0] += s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_X);
+            snes_justifier_state[0][1] += s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_Y);
             S9xReportPointer(BTN_POINTER, snes_justifier_state[0][0], snes_justifier_state[0][1]);
             for (int i = JUSTIFIER_TRIGGER; i <= JUSTIFIER_LAST; i++)
-               S9xReportButton(MAKE_BUTTON(port + 1, i), s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN_JUSTIFIER, 0, i));
+               S9xReportButton(MAKE_BUTTON(2, i), s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN, 0, i));
             break;
             
          default:
