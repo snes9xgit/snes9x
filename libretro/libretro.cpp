@@ -707,9 +707,9 @@ void* retro_get_memory_data(unsigned type)
      case RETRO_MEMORY_VIDEO_RAM:
         data = Memory.VRAM;
         break;
-     case RETRO_MEMORY_ROM:
-        data = Memory.ROM;
-        break;
+     //case RETRO_MEMORY_ROM:
+     //   data = Memory.ROM;
+     //   break;
 	  default:
 	     data = NULL;
 		 break;
@@ -741,9 +741,9 @@ size_t retro_get_memory_size(unsigned type)
       case RETRO_MEMORY_VIDEO_RAM:
          size = 64 * 1024;
          break;
-      case RETRO_MEMORY_ROM:
-         size = Memory.CalculatedSize;
-         break;
+      //case RETRO_MEMORY_ROM:
+      //   size = Memory.CalculatedSize;
+      //   break;
 	  default:
 	     size = 0;
 		 break;
