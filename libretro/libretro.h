@@ -138,10 +138,13 @@ extern "C" {
 #define RETRO_DEVICE_ID_ANALOG_Y         1
 
 // Id values for MOUSE.
-#define RETRO_DEVICE_ID_MOUSE_X      0
-#define RETRO_DEVICE_ID_MOUSE_Y      1
-#define RETRO_DEVICE_ID_MOUSE_LEFT   2
-#define RETRO_DEVICE_ID_MOUSE_RIGHT  3
+#define RETRO_DEVICE_ID_MOUSE_X          0
+#define RETRO_DEVICE_ID_MOUSE_Y          1
+#define RETRO_DEVICE_ID_MOUSE_LEFT       2
+#define RETRO_DEVICE_ID_MOUSE_RIGHT      3
+#define RETRO_DEVICE_ID_MOUSE_WHEELUP    4
+#define RETRO_DEVICE_ID_MOUSE_WHEELDOWN  5
+#define RETRO_DEVICE_ID_MOUSE_MIDDLE     6
 
 // Id values for LIGHTGUN types.
 #define RETRO_DEVICE_ID_LIGHTGUN_X        0
@@ -179,9 +182,6 @@ extern "C" {
 
 // Video ram lets a frontend peek into a game systems video RAM (VRAM).
 #define RETRO_MEMORY_VIDEO_RAM   3
-
-// ROM lets a frontend poke a game system's main program.
-#define RETRO_MEMORY_ROM         4
 
 // Keysyms used for ID in input state callback when polling RETRO_KEYBOARD.
 enum retro_key
@@ -388,16 +388,11 @@ enum retro_mod
                                            // It can be used by the frontend to potentially warn
                                            // about too demanding implementations.
                                            //
-                                           // The levels are "floating", but roughly defined as:
-                                           // 0: Low-powered embedded devices such as Raspberry Pi
-                                           // 1: 6th generation consoles, such as Wii/Xbox 1, and phones, tablets, etc.
-                                           // 2: 7th generation consoles, such as PS3/360, with sub-par CPUs.
-                                           // 3: Modern desktop/laptops with reasonably powerful CPUs.
-                                           // 4: High-end desktops with very powerful CPUs.
+                                           // The levels are "floating".
                                            //
                                            // This function can be called on a per-game basis,
                                            // as certain games an implementation can play might be
-                                           // particularily demanding.
+                                           // particularly demanding.
                                            // If called, it should be called in retro_load_game().
                                            //
 #define RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY 9
@@ -589,7 +584,7 @@ enum retro_mod
                                            // This should *only* be used if the core is completely altering the internal resolutions, aspect ratios, timings, sampling rate, etc.
                                            // Calling this can require a full reinitialization of video/audio drivers in the frontend,
                                            // so it is important to call it very sparingly, and usually only with the users explicit consent.
-                                           // An eventual driver reinit will happen so that video and audio callbacks
+                                           // An eventual driver reinitialize will happen so that video and audio callbacks
                                            // happening after this call within the same retro_run() call will target the newly initialized driver.
                                            //
                                            // This callback makes it possible to support configurable resolutions in games, which can be useful to
@@ -1092,7 +1087,7 @@ struct retro_frame_time_callback
 // it should implement context_destroy callback.
 // If called, all GPU resources must be reinitialized.
 // Usually called when frontend reinits video driver.
-// Also called first time video driver is initialized, allowing libretro core to init resources.
+// Also called first time video driver is initialized, allowing libretro core to initialize resources.
 typedef void (*retro_hw_context_reset_t)(void);
 // Gets current framebuffer which is to be rendered to. Could change every frame potentially.
 typedef uintptr_t (*retro_hw_get_current_framebuffer_t)(void);
@@ -1102,11 +1097,12 @@ typedef retro_proc_address_t (*retro_hw_get_proc_address_t)(const char *sym);
 
 enum retro_hw_context_type
 {
-   RETRO_HW_CONTEXT_NONE = 0,
-   RETRO_HW_CONTEXT_OPENGL, // OpenGL 2.x. Latest version available before 3.x+. Driver can choose to use latest compatibility context.
-   RETRO_HW_CONTEXT_OPENGLES2, // GLES 2.0
-   RETRO_HW_CONTEXT_OPENGL_CORE, // Modern desktop core GL context. Use major/minor fields to set GL version.
-   RETRO_HW_CONTEXT_OPENGLES3, // GLES 3.0
+   RETRO_HW_CONTEXT_NONE             = 0,
+   RETRO_HW_CONTEXT_OPENGL           = 1, // OpenGL 2.x. Driver can choose to use latest compatibility context.
+   RETRO_HW_CONTEXT_OPENGLES2        = 2, // GLES 2.0
+   RETRO_HW_CONTEXT_OPENGL_CORE      = 3, // Modern desktop core GL context. Use version_major/version_minor fields to set GL version.
+   RETRO_HW_CONTEXT_OPENGLES3        = 4, // GLES 3.0
+   RETRO_HW_CONTEXT_OPENGLES_VERSION = 5, // GLES 3.1+. Set version_major/version_minor. For GLES2 and GLES3, use the corresponding enums directly.
 
    RETRO_HW_CONTEXT_DUMMY = INT_MAX
 };
@@ -1114,20 +1110,39 @@ enum retro_hw_context_type
 struct retro_hw_render_callback
 {
    enum retro_hw_context_type context_type; // Which API to use. Set by libretro core.
-   retro_hw_context_reset_t context_reset; // Called when a context has been created or when it has been reset.
+
+   // Called when a context has been created or when it has been reset.
+   // An OpenGL context is only valid after context_reset() has been called.
+   //
+   // When context_reset is called, OpenGL resources in the libretro implementation are guaranteed to be invalid.
+   // It is possible that context_reset is called multiple times during an application lifecycle.
+   // If context_reset is called without any notification (context_destroy),
+   // the OpenGL context was lost and resources should just be recreated
+   // without any attempt to "free" old resources.
+   retro_hw_context_reset_t context_reset;
+
    retro_hw_get_current_framebuffer_t get_current_framebuffer; // Set by frontend.
    retro_hw_get_proc_address_t get_proc_address; // Set by frontend.
    bool depth; // Set if render buffers should have depth component attached.
    bool stencil; // Set if stencil buffers should be attached.
    // If depth and stencil are true, a packed 24/8 buffer will be added. Only attaching stencil is invalid and will be ignored.
    bool bottom_left_origin; // Use conventional bottom-left origin convention. Is false, standard libretro top-left origin semantics are used.
-   unsigned version_major; // Major version number for core GL context.
-   unsigned version_minor; // Minor version number for core GL context.
+   unsigned version_major; // Major version number for core GL context or GLES 3.1+.
+   unsigned version_minor; // Minor version number for core GL context or GLES 3.1+.
 
    bool cache_context; // If this is true, the frontend will go very far to avoid resetting context in scenarios like toggling fullscreen, etc.
    // The reset callback might still be called in extreme situations such as if the context is lost beyond recovery.
    // For optimal stability, set this to false, and allow context to be reset at any time.
-   retro_hw_context_reset_t context_destroy; // A callback to be called before the context is destroyed. Resources can be deinitialized at this step. This can be set to NULL, in which resources will just be destroyed without any notification.
+
+   retro_hw_context_reset_t context_destroy; // A callback to be called before the context is destroyed in a controlled way by the frontend.
+   // OpenGL resources can be deinitialized cleanly at this step.
+   // context_destroy can be set to NULL, in which resources will just be destroyed without any notification.
+   //
+   // Even when context_destroy is non-NULL, it is possible that context_reset is called without any destroy notification.
+   // This happens if context is lost by external factors (such as notified by GL_ARB_robustness).
+   // In this case, the context is assumed to be already dead,
+   // and the libretro implementation must not try to free any OpenGL resources in the subsequent context_reset.
+
    bool debug_context; // Creates a debug context.
 };
 
