@@ -494,7 +494,7 @@ void InitRenderFilters(void)
 	#define	Mask_3	0xF800	// 11111 000000 00000
 	#define CONVERT_16_TO_32(pixel) \
         (((((pixel) >> 11)        ) << /*RedShift+3*/  19) | \
-         ((((pixel) >> 6)   & 0x1f) << /*GreenShift+3*/11) | \
+         ((((pixel) >> 5)   & 0x3f) << /*GreenShift+2*/10) | \
           (((pixel)         & 0x1f) << /*BlueShift+3*/ 3))
 	#define NUMBITS (16)
 #else

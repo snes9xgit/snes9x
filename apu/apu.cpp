@@ -619,6 +619,9 @@ void S9xAPUSaveState (uint8 *block)
 	SNES::set_le32(ptr, SNES::dsp.clock);
 	ptr += sizeof(int32);
 	memcpy (ptr, SNES::cpu.registers, 4);
+	ptr += sizeof(int32);
+
+	memset (ptr, 0, SPC_SAVE_STATE_BLOCK_SIZE-(ptr-block));
 }
 
 void S9xAPULoadState (uint8 *block)
@@ -722,9 +725,9 @@ void S9xAPULoadBlarggState(uint8 *oldblock)
 
     SNES::smp.regs.pc = pc;
     SNES::smp.regs.sp = sp;
-    SNES::smp.regs.a = a;
+    SNES::smp.regs.B.a = a;
     SNES::smp.regs.x = x;
-    SNES::smp.regs.y = y;
+    SNES::smp.regs.B.y = y;
 
     // blargg's psw has same layout as byuu's flags
     SNES::smp.regs.p = psw;

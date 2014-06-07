@@ -292,9 +292,10 @@ std::vector<HWND> LuaScriptHWnds;
 
 VOID CALLBACK HotkeyTimer( UINT idEvent, UINT uMsg, DWORD dwUser, DWORD dw1, DWORD dw2);
 
+void S9xDetectJoypads();
+
 extern HWND RamSearchHWnd;
 extern LRESULT CALLBACK RamSearchProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
 #define NOTKNOWN "Unknown Company "
 #define HEADER_SIZE 512
 #define INFO_LEN (0xFF - 0xC0)
@@ -646,7 +647,7 @@ bool8 S9xLoadROMImage (const TCHAR *string);
 static void EnableServer (bool8 enable);
 #endif
 void WinDeleteRecentGamesList ();
-const char* WinParseCommandLineAndLoadConfigFile (char *line);
+const TCHAR* WinParseCommandLineAndLoadConfigFile (TCHAR *line);
 void WinRegisterConfigItems ();
 void WinSaveConfigFile ();
 void WinSetDefaultValues ();
@@ -741,64 +742,47 @@ void ChangeInputDevice(void)
 	Settings.SuperScopeMaster = false;
 	Settings.MultiPlayer5Master = false;
 
-	CheckMenuItem(GUI.hMenu, IDM_ENABLE_MULTITAP, MFS_UNCHECKED);
-	CheckMenuItem(GUI.hMenu, IDM_JUSTIFIER, MFS_UNCHECKED);
-	CheckMenuItem(GUI.hMenu, IDM_MOUSE_TOGGLE, MFS_UNCHECKED);
-	CheckMenuItem(GUI.hMenu, IDM_SCOPE_TOGGLE, MFS_UNCHECKED);
-	CheckMenuItem(GUI.hMenu, IDM_MOUSE_SWAPPED, MFS_UNCHECKED);
-	CheckMenuItem(GUI.hMenu, IDM_JUSTIFIERS, MFS_UNCHECKED);
-	CheckMenuItem(GUI.hMenu, IDM_MULTITAP8, MFS_UNCHECKED);
-	CheckMenuItem(GUI.hMenu, IDM_SNES_JOYPAD, MFS_UNCHECKED);
-
 	switch(GUI.ControllerOption)
 	{
 	case SNES_MOUSE:
 		Settings.MouseMaster = true;
 		S9xSetController(0, CTL_MOUSE,      0, 0, 0, 0);
 		S9xSetController(1, CTL_JOYPAD,     1, 0, 0, 0);
-		CheckMenuItem(GUI.hMenu, IDM_MOUSE_TOGGLE, MFS_CHECKED);
 		break;
 	case SNES_MOUSE_SWAPPED:
 		Settings.MouseMaster = true;
 		S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
 		S9xSetController(1, CTL_MOUSE,      1, 0, 0, 0);
-		CheckMenuItem(GUI.hMenu, IDM_MOUSE_SWAPPED, MFS_CHECKED);
 		break;
 	case SNES_SUPERSCOPE:
 		Settings.SuperScopeMaster = true;
 		S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
 		S9xSetController(1, CTL_SUPERSCOPE, 0, 0, 0, 0);
-		CheckMenuItem(GUI.hMenu, IDM_SCOPE_TOGGLE, MFS_CHECKED);
 		break;
 	case SNES_MULTIPLAYER5:
 		Settings.MultiPlayer5Master = true;
 		S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
 		S9xSetController(1, CTL_MP5,        1, 2, 3, 4);
-		CheckMenuItem(GUI.hMenu, IDM_ENABLE_MULTITAP, MFS_CHECKED);
 		break;
 	case SNES_MULTIPLAYER8:
 		Settings.MultiPlayer5Master = true;
 		S9xSetController(0, CTL_MP5,        0, 1, 2, 3);
 		S9xSetController(1, CTL_MP5,        4, 5, 6, 7);
-		CheckMenuItem(GUI.hMenu, IDM_ENABLE_MULTITAP, MFS_CHECKED);
 		break;
 	case SNES_JUSTIFIER:
 		Settings.JustifierMaster = true;
 		S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
 		S9xSetController(1, CTL_JUSTIFIER,  0, 0, 0, 0);
-		CheckMenuItem(GUI.hMenu, IDM_JUSTIFIER, MFS_CHECKED);
 		break;
 	case SNES_JUSTIFIER_2:
 		Settings.JustifierMaster = true;
 		S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
 		S9xSetController(1, CTL_JUSTIFIER,  1, 0, 0, 0);
-		CheckMenuItem(GUI.hMenu, IDM_JUSTIFIERS, MFS_CHECKED);
 		break;
 	default:
 	case SNES_JOYPAD:
 		S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
 		S9xSetController(1, CTL_JOYPAD,     1, 0, 0, 0);
-		CheckMenuItem(GUI.hMenu, IDM_SNES_JOYPAD, MFS_CHECKED);
 		break;
 	}
 
@@ -2361,59 +2345,65 @@ LRESULT CALLBACK WinProc(
 			Settings.FrameAdvance = false;
 			GUI.FrameAdvanceJustPressed = 0;
 			break;
-		case ID_FILE_LOAD1:
+        case ID_FILE_LOAD0:
 			FreezeUnfreeze (0, FALSE);
 			break;
-		case ID_FILE_LOAD2:
+		case ID_FILE_LOAD1:
 			FreezeUnfreeze (1, FALSE);
 			break;
-		case ID_FILE_LOAD3:
+		case ID_FILE_LOAD2:
 			FreezeUnfreeze (2, FALSE);
 			break;
-		case ID_FILE_LOAD4:
+		case ID_FILE_LOAD3:
 			FreezeUnfreeze (3, FALSE);
 			break;
-		case ID_FILE_LOAD5:
+		case ID_FILE_LOAD4:
 			FreezeUnfreeze (4, FALSE);
 			break;
-		case ID_FILE_LOAD6:
+		case ID_FILE_LOAD5:
 			FreezeUnfreeze (5, FALSE);
 			break;
-		case ID_FILE_LOAD7:
+		case ID_FILE_LOAD6:
 			FreezeUnfreeze (6, FALSE);
 			break;
-		case ID_FILE_LOAD8:
+		case ID_FILE_LOAD7:
 			FreezeUnfreeze (7, FALSE);
 			break;
-		case ID_FILE_LOAD9:
+		case ID_FILE_LOAD8:
 			FreezeUnfreeze (8, FALSE);
 			break;
-		case ID_FILE_SAVE1:
-			FreezeUnfreeze (0, TRUE);
+		case ID_FILE_LOAD9:
+			FreezeUnfreeze (9, FALSE);
 			break;
-		case ID_FILE_SAVE2:
+        case ID_FILE_SAVE0:
+            FreezeUnfreeze (0, TRUE);
+			break;
+		case ID_FILE_SAVE1:
 			FreezeUnfreeze (1, TRUE);
 			break;
-		case ID_FILE_SAVE3:
+		case ID_FILE_SAVE2:
 			FreezeUnfreeze (2, TRUE);
 			break;
-		case ID_FILE_SAVE4:
+		case ID_FILE_SAVE3:
 			FreezeUnfreeze (3, TRUE);
 			break;
-		case ID_FILE_SAVE5:
+		case ID_FILE_SAVE4:
 			FreezeUnfreeze (4, TRUE);
 			break;
-		case ID_FILE_SAVE6:
+		case ID_FILE_SAVE5:
 			FreezeUnfreeze (5, TRUE);
 			break;
-		case ID_FILE_SAVE7:
+		case ID_FILE_SAVE6:
 			FreezeUnfreeze (6, TRUE);
 			break;
-		case ID_FILE_SAVE8:
+		case ID_FILE_SAVE7:
 			FreezeUnfreeze (7, TRUE);
 			break;
-		case ID_FILE_SAVE9:
+		case ID_FILE_SAVE8:
 			FreezeUnfreeze (8, TRUE);
+			break;
+		case ID_FILE_SAVE9:
+			FreezeUnfreeze (9, TRUE);
 			break;
 		case ID_CHEAT_ENTER:
 			RestoreGUIDisplay ();
@@ -2724,6 +2714,9 @@ LRESULT CALLBACK WinProc(
 #endif
 		break;
 #endif
+    case WM_DEVICECHANGE:
+        S9xDetectJoypads();
+        break;
     }
     return DefWindowProc (hWnd, uMsg, wParam, lParam);
 }
@@ -3396,7 +3389,6 @@ int WINAPI WinMain(
 				   LPSTR lpCmdLine,
 				   int nCmdShow)
 {
-    char cmdLine[MAX_PATH];
 	Settings.StopEmulation = TRUE;
 
 	SetCurrentDirectory(S9xGetDirectoryT(DEFAULT_DIR));
@@ -3416,8 +3408,9 @@ int WINAPI WinMain(
 	ConfigFile::SetAlphaSort(false);
 	ConfigFile::SetTimeSort(false);
 
-    strcpy(cmdLine,_tToChar(GetCommandLine()));
-    const char *rom_filename = WinParseCommandLineAndLoadConfigFile (cmdLine);
+    ChangeInputDevice();
+
+    const TCHAR *rom_filename = WinParseCommandLineAndLoadConfigFile (GetCommandLine());
     WinSaveConfigFile ();
 	WinLockConfigFile ();
 
@@ -3486,11 +3479,10 @@ int WINAPI WinMain(
     }
 
 	if(rom_filename)
-		LoadROM(_tFromChar(rom_filename));
+		LoadROM(rom_filename);
 
 	S9xUnmapAllControls();
 	S9xSetupDefaultKeymap();
-	ChangeInputDevice();
 
 	DWORD lastTime = timeGetTime();
 
@@ -10620,8 +10612,10 @@ void S9xPostRomInit()
 	if(!S9xMovieActive() && !startingMovie)
 	{
 		// revert previously forced control
-		if(GUI.ControlForced!=0xff)
+        if(GUI.ControlForced!=0xff) {
 			GUI.ControllerOption = GUI.ControlForced;
+            ChangeInputDevice();
+        }
 		int prevController = GUI.ControllerOption;
 		GUI.ValidControllerOptions = 0xFFFF;
 
@@ -10704,10 +10698,10 @@ void S9xPostRomInit()
 					GUI.ValidControllerOptions = (1<<SNES_MOUSE_SWAPPED) | (1<<SNES_MULTIPLAYER5) | (1<<SNES_JOYPAD);
 					break;
 			}
+            ChangeInputDevice();
 		}
 
 		// update menu and remember what (if anything) the control was forced from
-		ChangeInputDevice();
 		GUI.ControlForced = prevController;
 	}
 

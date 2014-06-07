@@ -344,6 +344,10 @@ bool CGLCG::LoadShader(const TCHAR *shaderFile)
 			pass.linearFilter = it->linearFilter;
 		}
 
+        pass.frameCounterMod = it->frameCounterMod;
+
+        pass.floatFbo = it->floatFbo;
+
 		// paths in the meta file can be relative
 		_tfullpath(tempPath,_tFromChar(it->cgShaderFile),MAX_PATH);
 		char *fileContents = ReadShaderFileContents(tempPath);
@@ -405,7 +409,7 @@ bool CGLCG::LoadShader(const TCHAR *shaderFile)
 				GLubyte *texData;
 				if(loadPngImage(tempPath,width,height,hasAlpha,&texData)) {
 					glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
-					glTexImage2D(GL_TEXTURE_2D, 0, hasAlpha ? 4 : 3, width,
+					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width,
 						height, 0, hasAlpha ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, texData);
 					free(texData);
 				}
@@ -413,7 +417,7 @@ bool CGLCG::LoadShader(const TCHAR *shaderFile)
 				STGA stga;
 				if(loadTGA(tempPath,stga)) {
 					glPixelStorei(GL_UNPACK_ROW_LENGTH, stga.width);
-					glTexImage2D(GL_TEXTURE_2D, 0, 4, stga.width,
+					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, stga.width,
 						stga.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, stga.data);
 				}
 			}
@@ -531,7 +535,7 @@ void CGLCG::Render(GLuint &origTex, xySize textureSize, xySize inputSize, xySize
 		/* set size of output texture
 		*/
 		glBindTexture(GL_TEXTURE_2D,shaderPasses[i].tex);
-		glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,(unsigned int)shaderPasses[i].textureSize.x,
+        glTexImage2D(GL_TEXTURE_2D,0,(shaderPasses[i].floatFbo?GL_RGBA32F:GL_RGBA),(unsigned int)shaderPasses[i].textureSize.x,
 			(unsigned int)shaderPasses[i].textureSize.y,0,GL_RGBA,GL_UNSIGNED_INT_8_8_8_8,NULL);
 
 		/* viewport determines the area we render into the output texture
@@ -666,7 +670,10 @@ void CGLCG::setShaderVars(int pass)
 	setProgram2fv(pass,"IN.video_size",inputSize);
 	setProgram2fv(pass,"IN.texture_size",textureSize);
 	setProgram2fv(pass,"IN.output_size",outputSize);
-	setProgram1f(pass,"IN.frame_count",(float)frameCnt);
+    unsigned int shaderFrameCnt = frameCnt;
+    if(shaderPasses[pass].frameCounterMod)
+        shaderFrameCnt %= shaderPasses[pass].frameCounterMod;
+	setProgram1f(pass,"IN.frame_count",(float)shaderFrameCnt);
     setProgram1f(pass,"IN.frame_direction",GUI.rewinding?-1.0f:1.0f);
 
 	/* ORIG parameter

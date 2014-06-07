@@ -34,8 +34,6 @@ retro_load_game
 retro_unload_game
 retro_load_game_special
 
-retro_unload_cartridge
-
 retro_get_region
 retro_get_memory_data
 retro_get_memory_size

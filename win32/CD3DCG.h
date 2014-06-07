@@ -197,6 +197,8 @@ private:
 	typedef struct _shaderPass {
 		cgScaleParams scaleParams;
 		bool linearFilter;
+        bool useFloatTex;
+        unsigned int frameCounterMod;
 		CGprogram cgVertexProgram, cgFragmentProgram;
 		LPDIRECT3DTEXTURE9    tex;
 		LPDIRECT3DVERTEXBUFFER9 vertexBuffer;
@@ -240,14 +242,14 @@ private:
 	void setVertexStream(IDirect3DVertexBuffer9 *vertexBuffer,D3DXVECTOR2 inputSize,D3DXVECTOR2 textureSize,D3DXVECTOR2 outputSize);
 	void setViewport(DWORD x, DWORD y, DWORD width, DWORD height);
 	void setShaderVars(int pass);
-	void ensureTextureSize(LPDIRECT3DTEXTURE9 &tex, D3DXVECTOR2 &texSize, D3DXVECTOR2 wantedSize,bool renderTarget);
+	void ensureTextureSize(LPDIRECT3DTEXTURE9 &tex, D3DXVECTOR2 &texSize, D3DXVECTOR2 wantedSize,bool renderTarget, bool useFloat = false);
 	void fillParameterMap(std::vector<parameterEntry> &map, CGparameter param);
 	void setupVertexDeclaration(shaderPass &pass);
 	void calculateMatrix();
 
 	LPDIRECT3DDEVICE9     pDevice;
 	CGcontext cgContext;
-	float frameCnt;
+	unsigned int frameCnt;
 	D3DXMATRIX mvp;
 
 public:

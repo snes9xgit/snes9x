@@ -332,6 +332,10 @@ bool CD3DCG::LoadShader(const TCHAR *shaderFile)
 			pass.linearFilter = it->linearFilter;
 		}
 
+        pass.frameCounterMod = it->frameCounterMod;
+
+        pass.useFloatTex = it->floatFbo;
+
 		// paths in the meta file can be relative
 		_tfullpath(tempPath,_tFromChar(it->cgShaderFile),MAX_PATH);
 		char *fileContents = ReadShaderFileContents(tempPath);
@@ -413,7 +417,7 @@ bool CD3DCG::LoadShader(const TCHAR *shaderFile)
 }
 
 void CD3DCG::ensureTextureSize(LPDIRECT3DTEXTURE9 &tex, D3DXVECTOR2 &texSize,
-							   D3DXVECTOR2 wantedSize,bool renderTarget)
+							   D3DXVECTOR2 wantedSize,bool renderTarget,bool useFloat)
 {
 	HRESULT hr;
 
@@ -425,7 +429,7 @@ void CD3DCG::ensureTextureSize(LPDIRECT3DTEXTURE9 &tex, D3DXVECTOR2 &texSize,
 			(UINT)wantedSize.x, (UINT)wantedSize.y,
 			1, // 1 level, no mipmaps
 			renderTarget?D3DUSAGE_RENDERTARGET:0,
-			renderTarget?D3DFMT_X8R8G8B8:D3DFMT_R5G6B5,
+            renderTarget?(useFloat?D3DFMT_A32B32G32R32F:D3DFMT_A8R8G8B8):D3DFMT_R5G6B5,
 			renderTarget?D3DPOOL_DEFAULT:D3DPOOL_MANAGED, // render targets cannot be managed
 			&tex,
 			NULL );
@@ -534,7 +538,7 @@ void CD3DCG::Render(LPDIRECT3DTEXTURE9 &origTex, D3DXVECTOR2 textureSize,
 		/* make sure the render target exists and has an appropriate size,
 		   then set as current render target with last pass as source
 		*/
-		ensureTextureSize(shaderPasses[i].tex,shaderPasses[i].textureSize,D3DXVECTOR2(texSize,texSize),true);
+		ensureTextureSize(shaderPasses[i].tex,shaderPasses[i].textureSize,D3DXVECTOR2(texSize,texSize),true,shaderPasses[i].useFloatTex);
 		shaderPasses[i].tex->GetSurfaceLevel(0,&pRenderSurface);
 		pDevice->SetTexture(0, shaderPasses[i-1].tex);
 		pDevice->SetRenderTarget(0,pRenderSurface);
@@ -564,6 +568,8 @@ void CD3DCG::Render(LPDIRECT3DTEXTURE9 &origTex, D3DXVECTOR2 textureSize,
 		/* viewport defines output size
 		*/
 		setViewport(0,0,(DWORD)shaderPasses[i].outputSize.x,(DWORD)shaderPasses[i].outputSize.y);
+
+        pDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
 
 		pDevice->BeginScene();
 		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,0,2);
@@ -659,12 +665,20 @@ void CD3DCG::setShaderVars(int pass)
 #define setTextureParameter(pass,varname,val,linear)\
 {\
 	CGparameter cgpf = cgGetNamedParameter(shaderPasses[pass].cgFragmentProgram, varname);\
+    CGparameter cgpv = cgGetNamedParameter(shaderPasses[pass].cgVertexProgram, varname);\
 	if(cgpf) {\
 		cgD3D9SetTexture(cgpf,val);\
 		cgD3D9SetSamplerState(cgpf, D3DSAMP_ADDRESSU, D3DTADDRESS_BORDER);\
 		cgD3D9SetSamplerState(cgpf, D3DSAMP_ADDRESSV, D3DTADDRESS_BORDER);\
 		cgD3D9SetSamplerState(cgpf, D3DSAMP_MINFILTER, linear?D3DTEXF_LINEAR:D3DTEXF_POINT);\
 		cgD3D9SetSamplerState(cgpf, D3DSAMP_MAGFILTER, linear?D3DTEXF_LINEAR:D3DTEXF_POINT);\
+	}\
+    if(cgpv) {\
+		cgD3D9SetTexture(cgpv,val);\
+		/*cgD3D9SetSamplerState(cgpv, D3DSAMP_ADDRESSU, D3DTADDRESS_BORDER);\
+		cgD3D9SetSamplerState(cgpv, D3DSAMP_ADDRESSV, D3DTADDRESS_BORDER);\
+		cgD3D9SetSamplerState(cgpv, D3DSAMP_MINFILTER, linear?D3DTEXF_LINEAR:D3DTEXF_POINT);\
+		cgD3D9SetSamplerState(cgpv, D3DSAMP_MAGFILTER, linear?D3DTEXF_LINEAR:D3DTEXF_POINT);*/\
 	}\
 }\
 
@@ -682,7 +696,10 @@ void CD3DCG::setShaderVars(int pass)
 	setProgramUniform(pass,"IN.video_size",&inputSize);
 	setProgramUniform(pass,"IN.texture_size",&textureSize);
 	setProgramUniform(pass,"IN.output_size",&outputSize);
-	setProgramUniform(pass,"IN.frame_count",&frameCnt);
+    float shaderFrameCnt = frameCnt;
+    if(shaderPasses[pass].frameCounterMod)
+        shaderFrameCnt = (float)(frameCnt % shaderPasses[pass].frameCounterMod);
+	setProgramUniform(pass,"IN.frame_count",&shaderFrameCnt);
     float frameDirection = GUI.rewinding?-1.0f:1.0f;
     setProgramUniform(pass,"IN.frame_direction",&frameDirection);
 

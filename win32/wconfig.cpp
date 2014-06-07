@@ -268,11 +268,6 @@ void WinSetDefaultValues ()
 	// CPU options
 	Settings.Paused	= false;
 
-	// ROM image and peripheral	options
-	Settings.MultiPlayer5Master	= false;
-	Settings.SuperScopeMaster =	false;
-	Settings.MouseMaster = false;
-
 #ifdef NETPLAY_SUPPORT
 	Settings.Port =	1996;
 	NetPlay.MaxFrameSkip = 10;
@@ -297,8 +292,6 @@ static bool	try_save(const char	*fname,	ConfigFile &conf){
 	}
 	return false;
 }
-
-static char rom_filename [MAX_PATH] = {0};
 
 static bool S9xSaveConfigFile(ConfigFile &conf){
 
@@ -349,18 +342,30 @@ static inline char *SkipSpaces (char *p)
 	return (p);
 }
 
-const char*	WinParseCommandLineAndLoadConfigFile (char *line)
+const TCHAR*	WinParseCommandLineAndLoadConfigFile (TCHAR *line)
 {
 	// Break the command line up into an array of string pointers, each	pointer
 	// points at a separate	word or	character sequence enclosed	in quotes.
 
+    int count = 0;
+    static TCHAR return_filename[MAX_PATH];
+
+#ifdef UNICODE
+    // split params into argv
+	TCHAR **params = CommandLineToArgvW(line, &count);
+
+    // convert all parameters to utf8
+	char **parameters = new char*[count];
+    for(int i = 0; i < count; i++) {
+        int requiredChars = WideCharToMultiByte(CP_UTF8, 0, params[i], -1, NULL, 0, NULL, NULL);
+	    parameters[i] = new char[requiredChars];
+	    WideCharToMultiByte(CP_UTF8, 0, params[i], -1, parameters[i], requiredChars, NULL, NULL);
+    }
+    LocalFree(params);
+#else
 #define	MAX_PARAMETERS 100
 	char *p	= line;
-	static char	*parameters	[MAX_PARAMETERS];
-	int	count =	0;
-
-	//parameters [count++] = "Snes9X";
-
+	char *parameters[MAX_PARAMETERS];
 	while (count < MAX_PARAMETERS && *p)
 	{
 		p =	SkipSpaces (p);
@@ -392,6 +397,7 @@ const char*	WinParseCommandLineAndLoadConfigFile (char *line)
 			}
 	}
 
+#endif
 	configMutex = CreateMutex(NULL, FALSE, TEXT("Snes9xConfigMutex"));
 	int times = 0;
 	DWORD waitVal = WAIT_TIMEOUT;
@@ -432,12 +438,19 @@ const char*	WinParseCommandLineAndLoadConfigFile (char *line)
 	CloseHandle(configMutex);
 
 	const char* rf = S9xParseArgs (parameters, count);
-	/*if(rf)
-		strcpy(rom_filename, rf);
-	else
-		rom_filename[0] = '\0';*/
 
-	return rf;
+    if(rf) // save rom_filename as TCHAR if available
+        lstrcpy(return_filename, _tFromChar(rf));
+
+#ifdef UNICODE
+    // free parameters
+    for(int i = 0; i < count; i++) {
+        delete [] parameters[i];
+    }
+    delete [] parameters;
+#endif
+
+    return rf ? return_filename : NULL;
 }
 
 #define S(x) GAMEDEVICE_VK_##x
@@ -960,7 +973,6 @@ void WinRegisterConfigItems()
 	AddBoolC("Cheat", Settings.ApplyCheats, true, "true to allow enabled cheats to be applied");
 	AddInvBoolC("Patch", Settings.NoPatch, true, "true to allow IPS/UPS patches to be applied (\"soft patching\")");
 	AddBoolC("BS", Settings.BS, false, "Broadcast Satellaview emulation");
-	AddStringC("Filename", rom_filename, MAX_PATH, "", "filename of ROM to run when Snes9x opens");
 #undef CATEGORY
 #ifdef NETPLAY_SUPPORT
 #define	CATEGORY "Netplay"

@@ -63,10 +63,26 @@ S9xSetEndianess (int type)
 double
 S9xGetAspect (void)
 {
-    if (gui_config->aspect_ratio)
-        return (4.0 / 3.0);
-    else
-        return (8.0 / 7.0);
+    double native_aspect = 256.0 / (gui_config->overscan ? 239.0 : 224.0);
+    double aspect;
+
+    switch (gui_config->aspect_ratio)
+    {
+        case 0: /* Square pixels */
+            aspect = native_aspect;
+            break;
+
+        case 1: /* 4:3 */
+            aspect = native_aspect * 7 / 6;
+            break;
+
+        case 2:
+        default: /* Correct */
+            aspect = native_aspect * 8 / 7;
+            break;
+    }
+
+    return aspect;
 }
 
 void
@@ -84,17 +100,18 @@ S9xApplyAspect (int &s_width,  /* Output: x */
     {
         if (gui_config->maintain_aspect_ratio)
         {
-            w = s_height * snes_aspect;
+            w = s_height * snes_aspect + 0.5;
             h = s_height;
             x = (d_width - w) / 2;
             y = (d_height - s_height) / 2;
         }
         else
         {
-            x = (d_width - s_width) / 2;
-            y = (d_height - s_height) / 2;
             w = s_width;
             h = s_height;
+            x = (d_width - w) / 2;
+            y = (d_height - h) / 2;
+
         }
     }
 
@@ -104,18 +121,20 @@ S9xApplyAspect (int &s_width,  /* Output: x */
     {
         if (screen_aspect > snes_aspect)
         {
-            x = (d_width - (int) (d_height * snes_aspect)) / 2;
-            y = 0;
-            w = (int) (d_height * snes_aspect);
+            w = d_height * snes_aspect + 0.5;
             h = d_height;
+            x = (d_width - w) / 2;
+            y = 0;
+
         }
 
         else
         {
-            x = 0;
-            y = (d_height - (int) (d_width / snes_aspect)) / 2;
             w = d_width;
-            h = (int) (d_width / snes_aspect);
+            h = d_width / snes_aspect + 0.5;
+            x = 0;
+            y = (d_height - h) / 2;
+
         }
     }
 
@@ -718,6 +737,7 @@ S9xMergeHires (void *buffer,
     return;
 }
 
+#if 0
 static void
 S9xBlendHires (void *buffer, int pitch, int &width, int &height)
 {
@@ -751,6 +771,7 @@ S9xBlendHires (void *buffer, int pitch, int &width, int &height)
 
     return;
 }
+#endif
 
 void
 filter_2x (void *src,

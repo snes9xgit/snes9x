@@ -188,6 +188,8 @@
 #include "jma/s9x-jma.h"
 #endif
 
+#include <ctype.h>
+
 #include "snes9x.h"
 #include "memmap.h"
 #include "apu/apu.h"
@@ -1520,7 +1522,7 @@ bool8 CMemory::LoadROMMem (const uint8 *source, uint32 sourceSize)
     do
     {
         memset(ROM,0, MAX_ROM_SIZE);
-	    memset(&Multi, 0,sizeof(Multi));
+        memset(&Multi, 0,sizeof(Multi));
         memcpy(ROM,source,sourceSize);
     }
     while(!LoadROMInt(sourceSize));
@@ -1538,14 +1540,14 @@ bool8 CMemory::LoadROM (const char *filename)
     do
     {
         memset(ROM,0, MAX_ROM_SIZE);
-	    memset(&Multi, 0,sizeof(Multi));
+        memset(&Multi, 0,sizeof(Multi));
         totalFileSize = FileLoader(ROM, filename, MAX_ROM_SIZE);
 
         if (!totalFileSize)
-		    return (FALSE);
+            return (FALSE);
 
         if (!Settings.NoPatch)
-		    CheckForAnyPatch(filename, HeaderCount != 0, totalFileSize);
+            CheckForAnyPatch(filename, HeaderCount != 0, totalFileSize);
     }
     while(!LoadROMInt(totalFileSize));
 
@@ -3371,7 +3373,7 @@ uint16 CMemory::checksum_calc_sum (uint8 *data, uint32 length)
 uint16 CMemory::checksum_mirror_sum (uint8 *start, uint32 &length, uint32 mask)
 {
 	// from NSRT
-	while (!(length & mask))
+	while (!(length & mask) && mask)
 		mask >>= 1;
 
 	uint16	part1 = checksum_calc_sum(start, mask);

@@ -274,6 +274,13 @@ bool CCGShader::LoadShader(const char *path)
 
 		sprintf(keyName,"::shader%u",i);
 		strcpy(pass.cgShaderFile,conf.GetString(keyName,""));
+
+        sprintf(keyName,"::frame_count_mod%u",i);
+        pass.frameCounterMod = conf.GetInt(keyName,0);
+
+        sprintf(keyName,"::float_framebuffer%u",i);
+        pass.floatFbo = conf.GetBool(keyName);
+
 		shaderPasses.push_back(pass);
 	}
 
