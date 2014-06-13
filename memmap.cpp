@@ -203,7 +203,7 @@
 
 #ifdef __LIBRETRO__
 #include "libretro.h"
-void S9xAppendMapping(struct retro_memory_descriptor * desc);
+void S9xAppendMapping(struct retro_memory_descriptor *desc);
 #endif
 
 #ifndef SET_UI_COLOR
@@ -2983,20 +2983,20 @@ void CMemory::map_System (void)
 void CMemory::map_WRAM (void)
 {
 	// will overwrite others
-	map_space(0x7f, 0x7f, 0x0000, 0xffff, RAM + 0x10000);
 	map_space(0x7e, 0x7e, 0x0000, 0xffff, RAM);
+	map_space(0x7f, 0x7f, 0x0000, 0xffff, RAM + 0x10000);
 }
 
 void CMemory::map_LoROMSRAM (void)
 {
-	map_index(0xf0, 0xff, 0x0000, 0x7fff, MAP_LOROM_SRAM, MAP_TYPE_RAM);
 	map_index(0x70, 0x7f, 0x0000, 0x7fff, MAP_LOROM_SRAM, MAP_TYPE_RAM);
+	map_index(0xf0, 0xff, 0x0000, 0x7fff, MAP_LOROM_SRAM, MAP_TYPE_RAM);
 }
 
 void CMemory::map_HiROMSRAM (void)
 {
-	map_index(0xa0, 0xbf, 0x6000, 0x7fff, MAP_HIROM_SRAM, MAP_TYPE_RAM);
 	map_index(0x20, 0x3f, 0x6000, 0x7fff, MAP_HIROM_SRAM, MAP_TYPE_RAM);
+	map_index(0xa0, 0xbf, 0x6000, 0x7fff, MAP_HIROM_SRAM, MAP_TYPE_RAM);
 }
 
 void CMemory::map_DSP (void)
@@ -3127,8 +3127,8 @@ void CMemory::Map_NoMAD1LoROMMap (void)
 	map_lorom(0x80, 0xbf, 0x8000, 0xffff, CalculatedSize);
 	map_lorom(0xc0, 0xff, 0x0000, 0xffff, CalculatedSize);
 
-	map_index(0xf0, 0xff, 0x0000, 0xffff, MAP_LOROM_SRAM, MAP_TYPE_RAM);
 	map_index(0x70, 0x7f, 0x0000, 0xffff, MAP_LOROM_SRAM, MAP_TYPE_RAM);
+	map_index(0xf0, 0xff, 0x0000, 0xffff, MAP_LOROM_SRAM, MAP_TYPE_RAM);
 
 	map_WRAM();
 
@@ -3179,10 +3179,10 @@ void CMemory::Map_SRAM512KLoROMMap (void)
 	map_lorom(0x80, 0xbf, 0x8000, 0xffff, CalculatedSize);
 	map_lorom(0xc0, 0xff, 0x0000, 0xffff, CalculatedSize);
 
-	map_space(0x73, 0x73, 0x0000, 0xffff, SRAM + 0x18000);
-	map_space(0x72, 0x72, 0x0000, 0xffff, SRAM + 0x10000);
-	map_space(0x71, 0x71, 0x0000, 0xffff, SRAM + 0x8000);
 	map_space(0x70, 0x70, 0x0000, 0xffff, SRAM);
+	map_space(0x71, 0x71, 0x0000, 0xffff, SRAM + 0x8000);
+	map_space(0x72, 0x72, 0x0000, 0xffff, SRAM + 0x10000);
+	map_space(0x73, 0x73, 0x0000, 0xffff, SRAM + 0x18000);
 
 	map_WRAM();
 
@@ -3203,14 +3203,14 @@ void CMemory::Map_SufamiTurboLoROMMap (void)
 
 	if (Multi.sramSizeA)
 	{
-		map_index(0xe0, 0xe3, 0x8000, 0xffff, MAP_LOROM_SRAM, MAP_TYPE_RAM);
 		map_index(0x60, 0x63, 0x8000, 0xffff, MAP_LOROM_SRAM, MAP_TYPE_RAM);
+		map_index(0xe0, 0xe3, 0x8000, 0xffff, MAP_LOROM_SRAM, MAP_TYPE_RAM);
 	}
 
 	if (Multi.sramSizeB)
 	{
-		map_index(0xf0, 0xf3, 0x8000, 0xffff, MAP_LOROM_SRAM_B, MAP_TYPE_RAM);
 		map_index(0x70, 0x73, 0x8000, 0xffff, MAP_LOROM_SRAM_B, MAP_TYPE_RAM);
+		map_index(0xf0, 0xf3, 0x8000, 0xffff, MAP_LOROM_SRAM_B, MAP_TYPE_RAM);
 	}
 
 	map_WRAM();
@@ -3234,7 +3234,7 @@ void CMemory::Map_SufamiTurboPseudoLoROMMap (void)
 	// I don't care :P
 	map_space(0x60, 0x63, 0x8000, 0xffff, SRAM - 0x8000);
 	map_space(0xe0, 0xe3, 0x8000, 0xffff, SRAM - 0x8000);
-	map_space(0x70, 0x73, 0x8000, 0xffff, SRAM + 0x4000 - 0x8000, false);
+	map_space(0x70, 0x73, 0x8000, 0xffff, SRAM + 0x4000 - 0x8000, false);//these two seem to duplicate the above ones
 	map_space(0xf0, 0xf3, 0x8000, 0xffff, SRAM + 0x4000 - 0x8000, false);
 
 	map_WRAM();
@@ -3263,8 +3263,8 @@ void CMemory::Map_SuperFXLoROMMap (void)
 
 	map_space(0x00, 0x3f, 0x6000, 0x7fff, SRAM - 0x6000);
 	map_space(0x80, 0xbf, 0x6000, 0x7fff, SRAM - 0x6000);
-	map_space(0x71, 0x71, 0x0000, 0xffff, SRAM + 0x10000);
 	map_space(0x70, 0x70, 0x0000, 0xffff, SRAM);
+	map_space(0x71, 0x71, 0x0000, 0xffff, SRAM + 0x10000);
 
 	map_WRAM();
 
@@ -3317,23 +3317,13 @@ void CMemory::Map_SA1LoROMMap (void)
 
 	map_hirom_offset(0xc0, 0xff, 0x0000, 0xffff, CalculatedSize, 0);
 
-	map_space(0x80, 0xbf, 0x3000, 0x3fff, FillRAM);
 	map_space(0x00, 0x3f, 0x3000, 0x3fff, FillRAM);
-	map_index(0x80, 0xbf, 0x6000, 0x7fff, MAP_BWRAM, MAP_TYPE_I_O);
+	map_space(0x80, 0xbf, 0x3000, 0x3fff, FillRAM);
 	map_index(0x00, 0x3f, 0x6000, 0x7fff, MAP_BWRAM, MAP_TYPE_I_O);
+	map_index(0x80, 0xbf, 0x6000, 0x7fff, MAP_BWRAM, MAP_TYPE_I_O);
 
 	for (int c = 0x40; c < 0x80; c++)
-		map_space(c, c, 0x0000, 0xffff, SRAM + (c & 1) * 0x10000, false);
-
-#ifdef __LIBRETRO__
-	struct retro_memory_descriptor desc = {0};
-	desc.ptr=SRAM;
-	desc.start=0x400000;
-	desc.select=0xC00000;
-	desc.disconnect=0xFE0000;
-	desc.len=0x20000;
-	S9xAppendMapping(&desc);
-#endif
+		map_space(c, c, 0x0000, 0xffff, SRAM + (c & 1) * 0x10000);
 
 	map_WRAM();
 
@@ -3369,22 +3359,13 @@ void CMemory::Map_GNEXTSA1LoROMMap (void)
 
 	map_hirom_offset(0xc0, 0xff, 0x0000, 0xffff, Multi.cartSizeA, Multi.cartOffsetA);
 
-	map_space(0x80, 0xbf, 0x3000, 0x3fff, FillRAM);
 	map_space(0x00, 0x3f, 0x3000, 0x3fff, FillRAM);
-	map_index(0x80, 0xbf, 0x6000, 0x7fff, MAP_BWRAM, MAP_TYPE_I_O);
+	map_space(0x80, 0xbf, 0x3000, 0x3fff, FillRAM);
 	map_index(0x00, 0x3f, 0x6000, 0x7fff, MAP_BWRAM, MAP_TYPE_I_O);
+	map_index(0x80, 0xbf, 0x6000, 0x7fff, MAP_BWRAM, MAP_TYPE_I_O);
 
 	for (int c = 0x40; c < 0x80; c++)
-		map_space(c, c, 0x0000, 0xffff, SRAM + (c & 1) * 0x10000, false);
-
-#ifdef __LIBRETRO__
-	struct retro_memory_descriptor desc = {0};
-	desc.ptr=SRAM;
-	desc.start=0x400000;
-	desc.select=0xC00000;
-	desc.disconnect=0xFE0000;
-	S9xAppendMapping(&desc);
-#endif
+		map_space(c, c, 0x0000, 0xffff, SRAM + (c & 1) * 0x10000);
 
 	// FIXME: untested!
 	map_hirom_offset(0x70, 0x7f, 0x0000, 0xffff, Multi.cartSizeB, Multi.cartOffsetB);

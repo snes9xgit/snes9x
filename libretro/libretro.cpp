@@ -320,13 +320,47 @@ void retro_cheat_set(unsigned index, bool enabled, const char *code)
    S9xApplyCheats();
 }
 
-#define MAX_MAPS 32
+#define MAX_MAPS 256
 static struct retro_memory_descriptor memorydesc[MAX_MAPS];
 static unsigned memorydesc_c;
-void S9xAppendMapping(struct retro_memory_descriptor * desc)
+
+static bool merge_mapping()
+{
+	if (memorydesc_c==1) return false;//can't merge the only one
+	struct retro_memory_descriptor * a=&memorydesc[MAX_MAPS - (memorydesc_c-1)];
+	struct retro_memory_descriptor * b=&memorydesc[MAX_MAPS - memorydesc_c];
+//printf("test %x/%x\n",a->start,b->start);
+	if (a->flags != b->flags) return false;
+	if (a->disconnect != b->disconnect) return false;
+	if (a->len != b->len) return false;
+	if (a->addrspace || b->addrspace) return false;//we don't use these
+	if (((char*)a->ptr)+a->offset==((char*)b->ptr)+b->offset && a->select==b->select)
+	{
+//printf("merge/mirror\n");
+		a->select&=~(a->start^b->start);
+		memorydesc_c--;
+		return true;
+	}
+	uint32 len=a->len;
+	if (!len) len=(0x1000000 - a->select);
+	if (len && ((len-1) & (len | a->disconnect))==0 && ((char*)a->ptr)+a->offset+len == ((char*)b->ptr)+b->offset)
+	{
+//printf("merge/consec\n");
+		a->select &=~ len;
+		a->disconnect &=~ len;
+		memorydesc_c--;
+		return true;
+	}
+//printf("nomerge\n");
+	return false;
+}
+
+void S9xAppendMapping(struct retro_memory_descriptor *desc)
 {
 	//do it backwards - snes9x defines the last one to win, while we define the first one to win
+	printf("add %x\n",desc->start);
 	memcpy(&memorydesc[MAX_MAPS - (++memorydesc_c)], desc, sizeof(struct retro_memory_descriptor));
+	while (merge_mapping()) {}
 }
 
 bool retro_load_game(const struct retro_game_info *game)
