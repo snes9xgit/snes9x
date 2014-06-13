@@ -202,7 +202,7 @@
 #include "display.h"
 
 #ifdef __LIBRETRO__
-#include "libretro.h"
+#include "libretro/libretro.h"
 void S9xAppendMapping(struct retro_memory_descriptor *desc);
 #endif
 
