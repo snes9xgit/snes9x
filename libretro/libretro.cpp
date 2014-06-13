@@ -358,7 +358,7 @@ static bool merge_mapping()
 void S9xAppendMapping(struct retro_memory_descriptor *desc)
 {
 	//do it backwards - snes9x defines the last one to win, while we define the first one to win
-	printf("add %x\n",desc->start);
+	//printf("add %x\n",desc->start);
 	memcpy(&memorydesc[MAX_MAPS - (++memorydesc_c)], desc, sizeof(struct retro_memory_descriptor));
 	while (merge_mapping()) {}
 }
