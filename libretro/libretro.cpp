@@ -439,8 +439,14 @@ bool retro_load_game_special(unsigned game_type,
 
 static void map_buttons();
 
+static void check_system_specs(void)
+{
+   /* TODO - might have to variably set performance level based on SuperFX/SA-1/etc */
+   unsigned level = 12;
+   environ_cb(RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL, &level);
+}
 
-void retro_init()
+void retro_init(void)
 {
    struct retro_log_callback log;
    if (environ_cb)
@@ -509,7 +515,7 @@ void retro_init()
 
    S9xUnmapAllControls();
    map_buttons();
-
+   check_system_specs();
 }
 
 #define MAP_BUTTON(id, name) S9xMapButton((id), S9xGetCommandT((name)), false)
