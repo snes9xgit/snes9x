@@ -264,6 +264,7 @@ enum RenderFilter{
 
 	FILTER_SIMPLE4X,
 	FILTER_HQ4X,
+    FILTER_4XBRZ,
 
 	NUM_FILTERS
 };
