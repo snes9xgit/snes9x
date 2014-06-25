@@ -212,6 +212,8 @@ template<int T> void RenderHQ2X (SSurface Src, SSurface Dst, RECT *rect);
 template<int T> void RenderHQ3X (SSurface Src, SSurface Dst, RECT *rect);
 void RenderLQ3XB (SSurface Src, SSurface Dst, RECT *rect);
 void RenderHQ4X (SSurface Src, SSurface Dst, RECT *rect);
+void Render2xBRZ(SSurface Src, SSurface Dst, RECT* rect);
+void Render3xBRZ(SSurface Src, SSurface Dst, RECT* rect);
 void Render4xBRZ(SSurface Src, SSurface Dst, RECT* rect);
 void RenderEPXA (SSurface Src, SSurface Dst, RECT *);
 void RenderEPXB (SSurface Src, SSurface Dst, RECT *);
@@ -227,6 +229,7 @@ void RenderBlarggNTSCRgb(SSurface Src, SSurface Dst, RECT *);
 void RenderBlarggNTSC(SSurface Src, SSurface Dst, RECT *);
 void RenderMergeHires(void *src, int srcPitch , void* dst, int dstPitch, unsigned int width, unsigned int height);
 void InitLUTsWin32(void);
+void RenderxBRZ(SSurface Src, SSurface Dst, RECT* rect, int scalingFactor);
 // Contains the pointer to the now active render method
 typedef void (*TRenderMethod)( SSurface Src, SSurface Dst, RECT *);
 TRenderMethod _RenderMethod = RenderPlain;
@@ -296,6 +299,7 @@ TRenderMethod FilterToMethod(RenderFilter filterID)
         case FILTER_EPXA:       return RenderEPXA;
         case FILTER_EPXB:       return RenderEPXB;
         case FILTER_EPXC:       return RenderEPXC;
+        case FILTER_2XBRZ:      return Render2xBRZ;
         case FILTER_SIMPLE3X:   return RenderSimple3X;
         case FILTER_TVMODE3X:   return RenderTVMode3X;
         case FILTER_DOTMATRIX3X:return RenderDotMatrix3X;
@@ -304,6 +308,7 @@ TRenderMethod FilterToMethod(RenderFilter filterID)
         case FILTER_HQ3XBOLD:   return RenderHQ3X<FILTER_HQ3XBOLD>;
         case FILTER_LQ3XBOLD:   return RenderLQ3XB;
         case FILTER_EPX3:       return RenderEPX3;
+        case FILTER_3XBRZ:      return Render3xBRZ;
 		case FILTER_BLARGGCOMP: return RenderBlarggNTSCComposite;
 		case FILTER_BLARGGSVID: return RenderBlarggNTSCSvideo;
 		case FILTER_BLARGGRGB:  return RenderBlarggNTSCRgb;
@@ -335,6 +340,7 @@ const char* GetFilterName(RenderFilter filterID)
 		case FILTER_EPXA: return "EPX A";
 		case FILTER_EPXB: return "EPX B";
 		case FILTER_EPXC: return "EPX C";
+        case FILTER_2XBRZ: return "2xBRZ";
 		case FILTER_SIMPLE3X: return "Simple 3X";
 		case FILTER_TVMODE3X: return "TV Mode 3X";
 		case FILTER_DOTMATRIX3X: return "Dot Matrix 3X";
@@ -343,6 +349,7 @@ const char* GetFilterName(RenderFilter filterID)
 		case FILTER_HQ3XBOLD: return "hq3xBold";
 		case FILTER_LQ3XBOLD: return "lq3xBold";
 		case FILTER_EPX3: return "EPX3";
+        case FILTER_3XBRZ: return "3xBRZ";
 		case FILTER_SIMPLE4X: return "Simple 4X";
 		case FILTER_HQ4X: return "hq4x";
         case FILTER_4XBRZ: return "4xBRZ";
@@ -371,6 +378,7 @@ int GetFilterScale(RenderFilter filterID)
 		case FILTER_BLARGGCOMP:
 		case FILTER_BLARGGSVID:
 		case FILTER_BLARGGRGB:
+        case FILTER_3XBRZ:
 			return 3;
 		case FILTER_SIMPLE4X:
 		case FILTER_HQ4X:
@@ -394,6 +402,8 @@ bool GetFilterHiResSupport(RenderFilter filterID)
 		case FILTER_SIMPLE3X:
 		case FILTER_SIMPLE4X:
 		case FILTER_HQ4X:
+        case FILTER_2XBRZ:
+        case FILTER_3XBRZ:
         case FILTER_4XBRZ:
 			return true;
 
@@ -488,7 +498,7 @@ void InitRenderFilters(void)
 
     SYSTEM_INFO sysinfo;
     GetSystemInfo( &sysinfo );
-    num_xbrz_threads = sysinfo.dwNumberOfProcessors * 2;
+    num_xbrz_threads = sysinfo.dwNumberOfProcessors;
     if(!xbrz_thread_sync_data) {
         xbrz_thread_sync_data = new xbrz_thread_data[num_xbrz_threads];
         xbrz_sync_handles = new HANDLE[num_xbrz_threads];
@@ -2706,10 +2716,10 @@ DWORD WINAPI ThreadProc_XBRZ(VOID * pParam)
         SetEvent(thread_data->xbrz_sync_event);
         WaitForSingleObject(thread_data->xbrz_start_event, INFINITE);
 
-        if (xbrz_thread_data::src->Height > SNES_HEIGHT_EXTENDED)
-		    trgHeight /= 2;
-	    if (xbrz_thread_data::src->Width == 512)
-		    trgWidth /= 2;
+        trgHeight = SNES_HEIGHT_EXTENDED * xbrz_thread_data::scalingFactor;
+        if (xbrz_thread_data::src->Height % SNES_HEIGHT == 0)
+            trgHeight = SNES_HEIGHT * xbrz_thread_data::scalingFactor;
+		trgWidth = SNES_WIDTH * xbrz_thread_data::scalingFactor;
         stretchImage32To16(&xbrzBuffer[0], xbrz_thread_data::src->Width * xbrz_thread_data::scalingFactor, xbrz_thread_data::src->Height * xbrz_thread_data::scalingFactor,
                            reinterpret_cast<uint16_t*>(xbrz_thread_data::dstPtr), trgWidth, trgHeight, xbrz_thread_data::dst->Pitch, thread_data->yFirst * xbrz_thread_data::scalingFactor, thread_data->yLast * xbrz_thread_data::scalingFactor);
         SetEvent(thread_data->xbrz_sync_event);
@@ -2717,9 +2727,24 @@ DWORD WINAPI ThreadProc_XBRZ(VOID * pParam)
 	return 0;
 }
 
+void Render2xBRZ(SSurface Src, SSurface Dst, RECT* rect)
+{
+    RenderxBRZ(Src, Dst, rect, 2);
+}
+
+void Render3xBRZ(SSurface Src, SSurface Dst, RECT* rect)
+{
+    RenderxBRZ(Src, Dst, rect, 3);
+}
+
 void Render4xBRZ(SSurface Src, SSurface Dst, RECT* rect)
 {
-    xbrz_thread_data::scalingFactor = 4;
+    RenderxBRZ(Src, Dst, rect, 4);
+}
+
+void RenderxBRZ(SSurface Src, SSurface Dst, RECT* rect, int scalingFactor)
+{
+    xbrz_thread_data::scalingFactor = scalingFactor;
     
 	xbrz_thread_data::dstPtr = Dst.Surface;
     SetRect(rect, SNES_WIDTH, SNES_HEIGHT_EXTENDED, xbrz_thread_data::scalingFactor);
