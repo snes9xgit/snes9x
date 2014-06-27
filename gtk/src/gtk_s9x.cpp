@@ -9,6 +9,8 @@
 #include "gtk_sound.h"
 #include "gtk_display.h"
 
+#include "statemanager.h"
+
 #ifdef NETPLAY_SUPPORT
 #include "gtk_netplay.h"
 #endif
@@ -23,6 +25,7 @@ static gboolean S9xScreenSaverCheckFunc (gpointer data);
 
 Snes9xWindow          *top_level;
 Snes9xConfig          *gui_config;
+StateManager          stateMan;
 static struct timeval next_frame_time = { 0, 0 };
 static struct timeval now;
 static int            needs_fullscreening = FALSE;
@@ -217,6 +220,12 @@ S9xOpenROM (const char *rom_filename)
     }
 
     CPU.Flags = flags;
+    
+    if (gui_config->rewindBufferSize)
+    {
+        printf("Setting buffer size to %u\n", gui_config->rewindBufferSize * 1024 * 1024);
+        stateMan.init(gui_config->rewindBufferSize * 1024 * 1024);
+    }
 
     S9xROMLoaded ();
 
@@ -356,6 +365,12 @@ S9xIdleFunc (gpointer data)
     if (!S9xNetplayPush ())
     {
 #endif
+        
+    if(top_level->user_rewind)
+        top_level->user_rewind = stateMan.pop();
+    else if(IPPU.TotalEmulatedFrames % gui_config->rewindGranularity == 0)
+        stateMan.push();
+        
     S9xMainLoop ();
     S9xMixSound ();
 

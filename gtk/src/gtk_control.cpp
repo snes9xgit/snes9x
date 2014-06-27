@@ -89,6 +89,7 @@ const BindingLink b_links[] =
         { "b_load_movie",          "LoadMovie" },
         { "b_seek_to_frame",       "GTK_seek_to_frame" },
         { "b_swap_controllers",    "GTK_swap_controllers" },
+        { "b_rewind",              "GTK_rewind"        },
 
         { NULL, NULL }
 };
@@ -193,6 +194,8 @@ S9xHandlePortCommand (s9xcommand_t cmd, int16 data1, int16 data2)
     {
         if (cmd.port[0] == PORT_QUIT)
             quit_binding_down = TRUE;
+        else if (cmd.port[0] == PORT_REWIND)
+            top_level->user_rewind = TRUE;
     }
 
     if (data1 == FALSE) /* Release */
@@ -223,6 +226,11 @@ S9xHandlePortCommand (s9xcommand_t cmd, int16 data1, int16 data2)
                 top_level->pause_from_user ();
             else
                 top_level->unpause_from_user ();
+        }
+
+        else if (cmd.port[0] == PORT_REWIND)
+        {
+            top_level->user_rewind = FALSE;
         }
 
         else if (cmd.port[0] == PORT_SEEK_TO_FRAME)
@@ -305,6 +313,11 @@ S9xGetPortCommandT (const char *name)
     else if (!strcasecmp (name, "GTK_swap_controllers"))
     {
         cmd.port[0] = PORT_SWAP_CONTROLLERS;
+    }
+
+    else if (!strcasecmp (name, "GTK_rewind"))
+    {
+        cmd.port[0] = PORT_REWIND;
     }
 
     else

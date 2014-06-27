@@ -174,6 +174,9 @@ Snes9xConfig::load_defaults (void)
     netplay_last_host [0] = '\0';
     netplay_last_port = 6096;
     modal_dialogs = 1;
+    
+    rewindGranularity = 5;
+    rewindBufferSize = 150;
 
 #ifdef USE_OPENGL
     sync_to_vblank = 1;

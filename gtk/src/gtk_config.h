@@ -132,6 +132,9 @@ class Snes9xConfig
 
         int            pointer_is_visible;
         struct timeval pointer_timestamp;
+        
+        unsigned int   rewindGranularity;
+        unsigned int   rewindBufferSize;
 
 #ifdef USE_XRANDR
         XRRScreenConfiguration *xrr_config;
