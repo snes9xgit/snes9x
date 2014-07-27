@@ -100,17 +100,18 @@ S9xApplyAspect (int &s_width,  /* Output: x */
     {
         if (gui_config->maintain_aspect_ratio)
         {
-            w = s_height * snes_aspect;
+            w = s_height * snes_aspect + 0.5;
             h = s_height;
             x = (d_width - w) / 2;
             y = (d_height - s_height) / 2;
         }
         else
         {
-            x = (d_width - s_width) / 2;
-            y = (d_height - s_height) / 2;
             w = s_width;
             h = s_height;
+            x = (d_width - w) / 2;
+            y = (d_height - h) / 2;
+
         }
     }
 
@@ -120,18 +121,20 @@ S9xApplyAspect (int &s_width,  /* Output: x */
     {
         if (screen_aspect > snes_aspect)
         {
-            x = (d_width - (int) (d_height * snes_aspect)) / 2;
-            y = 0;
-            w = (int) (d_height * snes_aspect);
+            w = d_height * snes_aspect + 0.5;
             h = d_height;
+            x = (d_width - w) / 2;
+            y = 0;
+
         }
 
         else
         {
-            x = 0;
-            y = (d_height - (int) (d_width / snes_aspect)) / 2;
             w = d_width;
-            h = (int) (d_width / snes_aspect);
+            h = d_width / snes_aspect + 0.5;
+            x = 0;
+            y = (d_height - h) / 2;
+
         }
     }
 

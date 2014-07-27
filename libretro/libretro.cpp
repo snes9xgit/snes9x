@@ -23,22 +23,23 @@
 #include <sys/types.h>
 #include <fcntl.h>
 
-// Special memory types.
-#define RETRO_MEMORY_SNES_BSX_RAM             ((1 << 8) | RETRO_MEMORY_SAVE_RAM)
-#define RETRO_MEMORY_SNES_BSX_PRAM            ((2 << 8) | RETRO_MEMORY_SAVE_RAM)
-#define RETRO_MEMORY_SNES_SUFAMI_TURBO_A_RAM  ((3 << 8) | RETRO_MEMORY_SAVE_RAM)
-#define RETRO_MEMORY_SNES_SUFAMI_TURBO_B_RAM  ((4 << 8) | RETRO_MEMORY_SAVE_RAM)
+#define RETRO_DEVICE_JOYPAD_MULTITAP ((1 << 8) | RETRO_DEVICE_JOYPAD)
+#define RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE ((1 << 8) | RETRO_DEVICE_LIGHTGUN)
+#define RETRO_DEVICE_LIGHTGUN_JUSTIFIER ((2 << 8) | RETRO_DEVICE_LIGHTGUN)
+#define RETRO_DEVICE_LIGHTGUN_JUSTIFIERS ((3 << 8) | RETRO_DEVICE_LIGHTGUN)
 
-// Special game types passed into retro_load_game_special().
-// Only used when multiple ROMs are required.
+#define RETRO_MEMORY_SNES_BSX_RAM ((1 << 8) | RETRO_MEMORY_SAVE_RAM)
+#define RETRO_MEMORY_SNES_BSX_PRAM ((2 << 8) | RETRO_MEMORY_SAVE_RAM)
+#define RETRO_MEMORY_SNES_SUFAMI_TURBO_A_RAM ((3 << 8) | RETRO_MEMORY_SAVE_RAM)
+#define RETRO_MEMORY_SNES_SUFAMI_TURBO_B_RAM ((4 << 8) | RETRO_MEMORY_SAVE_RAM)
+#define RETRO_MEMORY_SNES_GAME_BOY_RAM ((5 << 8) | RETRO_MEMORY_SAVE_RAM)
+#define RETRO_MEMORY_SNES_GAME_BOY_RTC ((6 << 8) | RETRO_MEMORY_RTC)
+
 #define RETRO_GAME_TYPE_BSX             0x101
 #define RETRO_GAME_TYPE_BSX_SLOTTED     0x102
 #define RETRO_GAME_TYPE_SUFAMI_TURBO    0x103
+#define RETRO_GAME_TYPE_SUPER_GAME_BOY  0x104
 
-#define RETRO_DEVICE_JOYPAD_MULTITAP       RETRO_DEVICE_SUBCLASS(RETRO_DEVICE_JOYPAD, 0)
-#define RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE  RETRO_DEVICE_SUBCLASS(RETRO_DEVICE_LIGHTGUN, 0)
-#define RETRO_DEVICE_LIGHTGUN_JUSTIFIER    RETRO_DEVICE_SUBCLASS(RETRO_DEVICE_LIGHTGUN, 1)
-#define RETRO_DEVICE_LIGHTGUN_JUSTIFIERS   RETRO_DEVICE_SUBCLASS(RETRO_DEVICE_LIGHTGUN, 2)
 
 static retro_log_printf_t log_cb = NULL;
 static retro_video_refresh_t s9x_video_cb = NULL;
@@ -101,41 +102,12 @@ void retro_set_environment(retro_environment_t cb)
       { NULL, NULL },
    };
 
-   static const retro_subsystem_memory_info sufami_a_memory[] = {
-      { "srm", RETRO_MEMORY_SNES_SUFAMI_TURBO_A_RAM },
-   };
-
-   static const retro_subsystem_memory_info sufami_b_memory[] = {
-      { "srm", RETRO_MEMORY_SNES_SUFAMI_TURBO_B_RAM },
-   };
-
-   static const struct retro_subsystem_rom_info sufami_roms[] = {
-      { "Sufami A", "sfc|smc", false, false, false, sufami_a_memory, 1 },
-      { "Sufami B", "sfc|smc", false, false, false, sufami_b_memory, 1 },
-      { "Sufami BIOS", "sfc|smc", false, false, true, NULL, 0 },
-   };
-
-   static const retro_subsystem_memory_info bsx_memory[] = {
-      { "srm", RETRO_MEMORY_SNES_BSX_RAM },
-      { "psrm", RETRO_MEMORY_SNES_BSX_PRAM },
-   };
-
-   static const struct retro_subsystem_rom_info bsx_roms[] = {
-      { "BSX ROM", "bs", false, false, true, bsx_memory, 2 },
-      { "BSX BIOS", "sfc|smc", false, false, true, NULL, 0 },
-   };
-
-   // OR in 0x1000 on types to remain ABI compat with the older-style retro_load_game_special().
-   static const struct retro_subsystem_info subsystems[] = {
-      { "Sufami Turbo", "sufami", sufami_roms, 3, RETRO_GAME_TYPE_SUFAMI_TURBO | 0x1000 }, // Sufami Turbo
-      { "BSX", "bsx", bsx_roms, 2, RETRO_GAME_TYPE_BSX | 0x1000 }, // BSX
-      { "BSX slotted", "bsxslot", bsx_roms, 2, RETRO_GAME_TYPE_BSX_SLOTTED | 0x1000 }, // BSX slotted
-      { NULL },
-   };
+   environ_cb(RETRO_ENVIRONMENT_SET_VARIABLES, variables);
 
    static const struct retro_controller_description port_1[] = {
       { "SNES Joypad", RETRO_DEVICE_JOYPAD },
       { "SNES Mouse", RETRO_DEVICE_MOUSE },
+      { "Multitap", RETRO_DEVICE_JOYPAD_MULTITAP },
    };
 
    static const struct retro_controller_description port_2[] = {
@@ -144,17 +116,14 @@ void retro_set_environment(retro_environment_t cb)
       { "Multitap", RETRO_DEVICE_JOYPAD_MULTITAP },
       { "SuperScope", RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE },
       { "Justifier", RETRO_DEVICE_LIGHTGUN_JUSTIFIER },
-      { "Justifiers", RETRO_DEVICE_LIGHTGUN_JUSTIFIERS },
    };
 
    static const struct retro_controller_info ports[] = {
-      { port_1, 2 },
-      { port_2, 6 },
+      { port_1, 3 },
+      { port_2, 5 },
       { 0 },
    };
 
-   environ_cb(RETRO_ENVIRONMENT_SET_SUBSYSTEM_INFO, (void*)subsystems);
-   environ_cb(RETRO_ENVIRONMENT_SET_VARIABLES, variables);
    environ_cb(RETRO_ENVIRONMENT_SET_CONTROLLER_INFO, (void*)ports);
 }
 
@@ -255,36 +224,40 @@ void retro_reset()
 static unsigned snes_devices[2];
 void retro_set_controller_port_device(unsigned port, unsigned device)
 {
-   switch (device)
+   if (port < 2)
    {
-      case RETRO_DEVICE_JOYPAD:
-         S9xSetController(port, CTL_JOYPAD, port*4, 0, 0, 0);
-         snes_devices[port] = RETRO_DEVICE_JOYPAD;
-         break;
-      case RETRO_DEVICE_JOYPAD_MULTITAP:
-         S9xSetController(port, CTL_MP5, port*4+0, port*4+1, port*4+2, port*4+3);
-         snes_devices[port] = RETRO_DEVICE_JOYPAD_MULTITAP;
-         break;
-      case RETRO_DEVICE_MOUSE:
-         S9xSetController(port, CTL_MOUSE, 0, 0, 0, 0);
-         snes_devices[port] = RETRO_DEVICE_MOUSE;
-         break;
-      case RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE:
-         S9xSetController(port, CTL_SUPERSCOPE, 0, 0, 0, 0);
-         snes_devices[port] = RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE;
-         break;
-      case RETRO_DEVICE_LIGHTGUN_JUSTIFIER:
-         S9xSetController(port, CTL_JUSTIFIER, 0, 0, 0, 0);
-         snes_devices[port] = RETRO_DEVICE_LIGHTGUN_JUSTIFIER;
-         break;
-      case RETRO_DEVICE_LIGHTGUN_JUSTIFIERS:
-         S9xSetController(port, CTL_JUSTIFIER, 1, 0, 0, 0);
-         snes_devices[port] = RETRO_DEVICE_LIGHTGUN_JUSTIFIERS;
-         break;
-      default:
-         if (log_cb)
-            log_cb(RETRO_LOG_ERROR, "[libretro]: Invalid device.\n");
+      int offset = snes_devices[0] == RETRO_DEVICE_JOYPAD_MULTITAP ? 4 : 1;
+      switch (device)
+      {
+         case RETRO_DEVICE_JOYPAD:
+            S9xSetController(port, CTL_JOYPAD, port * offset, 0, 0, 0);
+            snes_devices[port] = RETRO_DEVICE_JOYPAD;
+            break;
+         case RETRO_DEVICE_JOYPAD_MULTITAP:
+            S9xSetController(port, CTL_MP5, port * offset, port * offset + 1, port * offset + 2, port * offset + 3);
+            snes_devices[port] = RETRO_DEVICE_JOYPAD_MULTITAP;
+            break;
+         case RETRO_DEVICE_MOUSE:
+            S9xSetController(port, CTL_MOUSE, 0, 0, 0, 0);
+            snes_devices[port] = RETRO_DEVICE_MOUSE;
+            break;
+         case RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE:
+            S9xSetController(port, CTL_SUPERSCOPE, 0, 0, 0, 0);
+            snes_devices[port] = RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE;
+            break;
+         case RETRO_DEVICE_LIGHTGUN_JUSTIFIER:
+            S9xSetController(port, CTL_JUSTIFIER, 0, 0, 0, 0);
+            snes_devices[port] = RETRO_DEVICE_LIGHTGUN_JUSTIFIER;
+            break;
+         default:
+            if (log_cb)
+               log_cb(RETRO_LOG_ERROR, "[libretro]: Invalid device.\n");
+      }
+      if (!port)
+         retro_set_controller_port_device(1, snes_devices[1]);
    }
+   else if(device != RETRO_DEVICE_NONE)
+      log_cb(RETRO_LOG_INFO, "[libretro]: Nonexistent Port (%d).\n", port);
 }
 
 void retro_cheat_reset()
@@ -649,19 +622,20 @@ static int16_t snes_justifier_state[2][2] = {{0}, {0}};
 static void report_buttons()
 {
    int _x, _y;
+   int offset = snes_devices[0] == RETRO_DEVICE_JOYPAD_MULTITAP ? 4 : 1;
    for (int port = 0; port <= 1; port++)
    {
       switch (snes_devices[port])
       {
          case RETRO_DEVICE_JOYPAD:
             for (int i = BTN_FIRST; i <= BTN_LAST; i++)
-               S9xReportButton(MAKE_BUTTON(port*4 + 1, i), s9x_input_state_cb(port, RETRO_DEVICE_JOYPAD, 0, i));
+               S9xReportButton(MAKE_BUTTON(port * offset + 1, i), s9x_input_state_cb(port * offset, RETRO_DEVICE_JOYPAD, 0, i));
             break;
 
          case RETRO_DEVICE_JOYPAD_MULTITAP:
             for (int j = 0; j < 4; j++)
                for (int i = BTN_FIRST; i <= BTN_LAST; i++)
-                  S9xReportButton(MAKE_BUTTON(port*4 + j + 1, i), s9x_input_state_cb(port, RETRO_DEVICE_JOYPAD_MULTITAP, j, i));
+                     S9xReportButton(MAKE_BUTTON(port * offset + j + 1, i), s9x_input_state_cb(port * offset + j, RETRO_DEVICE_JOYPAD, 0, i));
             break;
 
          case RETRO_DEVICE_MOUSE:
@@ -679,7 +653,7 @@ static void report_buttons()
             snes_scope_state[1] += s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE, 0, RETRO_DEVICE_ID_LIGHTGUN_Y);
             S9xReportPointer(BTN_POINTER, snes_scope_state[0], snes_scope_state[1]);
             for (int i = SCOPE_TRIGGER; i <= SCOPE_LAST; i++)
-               S9xReportButton(MAKE_BUTTON(port + 1, i), s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE, 0, i));
+                S9xReportButton(MAKE_BUTTON(2, i), s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN, 0, i));
             break;
 
          case RETRO_DEVICE_LIGHTGUN_JUSTIFIER:
@@ -688,7 +662,7 @@ static void report_buttons()
             snes_justifier_state[0][1] += s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN_JUSTIFIER, 0, RETRO_DEVICE_ID_LIGHTGUN_Y);
             S9xReportPointer(BTN_POINTER, snes_justifier_state[0][0], snes_justifier_state[0][1]);
             for (int i = JUSTIFIER_TRIGGER; i <= JUSTIFIER_LAST; i++)
-               S9xReportButton(MAKE_BUTTON(port + 1, i), s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN_JUSTIFIER, 0, i));
+               S9xReportButton(MAKE_BUTTON(2, i), s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN, 0, i));
             break;
             
          default:

@@ -10880,8 +10880,10 @@ void S9xPostRomInit()
 	if(!S9xMovieActive() && !startingMovie)
 	{
 		// revert previously forced control
-		if(GUI.ControlForced!=0xff)
+        if(GUI.ControlForced!=0xff) {
 			GUI.ControllerOption = GUI.ControlForced;
+            ChangeInputDevice();
+        }
 		int prevController = GUI.ControllerOption;
 		GUI.ValidControllerOptions = 0xFFFF;
 
@@ -10964,10 +10966,10 @@ void S9xPostRomInit()
 					GUI.ValidControllerOptions = (1<<SNES_MOUSE_SWAPPED) | (1<<SNES_MULTIPLAYER5) | (1<<SNES_JOYPAD);
 					break;
 			}
+            ChangeInputDevice();
 		}
 
 		// update menu and remember what (if anything) the control was forced from
-		ChangeInputDevice();
 		GUI.ControlForced = prevController;
 	}
 

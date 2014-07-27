@@ -4698,6 +4698,18 @@
 				RelativePath=".\snes_ntsc_impl.h"
 				>
 			</File>
+			<File
+				RelativePath="..\filter\xbrz-config.h"
+				>
+			</File>
+			<File
+				RelativePath="..\filter\xbrz.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\filter\xbrz.h"
+				>
+			</File>
 		</Filter>
 		<File
 			RelativePath=".\snes9x.cfg"
