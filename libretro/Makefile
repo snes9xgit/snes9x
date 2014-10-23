@@ -39,7 +39,10 @@ endif
 
 ifeq ($(arch),ppc)
    CXXFLAGS += -DBLARGG_BIG_ENDIAN=1 -D__ppc__
-else
+endif
+   OSXVER = `sw_vers -productVersion | cut -d. -f 2`
+   OSX_LT_MAVERICKS = `(( $(OSXVER) <= 9)) && echo "YES"`
+ifeq ($(OSX_LT_MAVERICKS),"YES")
    fpic += -mmacosx-version-min=10.6
 endif
 else ifeq ($(platform), ios)
@@ -47,13 +50,17 @@ else ifeq ($(platform), ios)
    fpic := -fPIC
    SHARED := -dynamiclib
 
+ifeq ($(IOSSDK),)
+   IOSSDK := $(shell xcrun -sdk iphoneos -show-sdk-path)
+endif
+
 	CC = clang -arch armv7 -isysroot $(IOSSDK)
 	CXX = clang++ -arch armv7 -isysroot $(IOSSDK)
 	CXXFLAGS += -DIOS
    CXXFLAGS += -DARM
-OSXVER_MINOR = `sw_vers -productVersion | cut -c 4`
-ifneq ($(OSXVER_MINOR),9)
-   echo "OSX version is not Mavericks, applying -miphoneos-version-min=5.0"
+   OSXVER = `sw_vers -productVersion | cut -d. -f 2`
+   OSX_LT_MAVERICKS = `(( $(OSXVER) <= 9)) && echo "YES"`
+ifeq ($(OSX_LT_MAVERICKS),"YES")
    CC += -miphoneos-version-min=5.0
    CXX += -miphoneos-version-min=5.0
    CFLAGS += -miphoneos-version-min=5.0
