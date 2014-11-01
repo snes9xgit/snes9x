@@ -140,9 +140,11 @@ else
    CXXFLAGS += -D__WIN32__ -D__WIN32_LIBSNES__
 endif
 
-OBJECTS    = ../apu/apu.o ../apu/bapu/dsp/sdsp.o ../apu/bapu/dsp/SPC_DSP.o ../apu/bapu/smp/smp.o ../apu/bapu/smp/smp_state.o ../bsx.o ../c4.o ../c4emu.o ../cheats.o ../cheats2.o ../clip.o ../conffile.o ../controls.o ../cpu.o ../cpuexec.o ../cpuops.o ../crosshairs.o ../dma.o ../dsp.o ../dsp1.o ../dsp2.o ../dsp3.o ../dsp4.o ../fxinst.o ../fxemu.o ../gfx.o ../globals.o ../logger.o ../memmap.o ../movie.o ../obc1.o ../ppu.o ../stream.o ../sa1.o ../sa1cpu.o ../screenshot.o ../sdd1.o ../sdd1emu.o ../seta.o ../seta010.o ../seta011.o ../seta018.o ../snapshot.o ../snes9x.o ../spc7110.o ../srtc.o ../tile.o libretro.o
+CORE_DIR := ..
 
-INCLUDES   = -I. -I.. -I../apu/ -I../apu/bapu
+include Makefile.common
+
+OBJECTS := $(SOURCES_CXX:.cpp=.o) $(SOURCES_C:.c=.o)
 
 ifeq ($(platform), sncps3)
    WARNINGS_DEFINES =
@@ -162,14 +164,14 @@ $(TARGET): $(OBJECTS)
 ifeq ($(STATIC_LINKING), 1)
 	$(AR) rcs $@ $(OBJECTS)
 else
-	$(CXX) $(fpic) $(SHARED) $(INCLUDES) -o $@ $(OBJECTS) $(LIBM)
+	$(CXX) $(fpic) $(SHARED) $(INCFLAGS) -o $@ $(OBJECTS) $(LIBM)
 endif
 
 %.o: %.cpp 
-	$(CXX) $(INCLUDES) $(CXXFLAGS) -c -o $@ $<
+	$(CXX) $(INCFLAGS) $(CXXFLAGS) -c -o $@ $<
 
 %.o: %.c
-	$(CC) $(INCLUDES) $(CFLAGS) -c -o $@ $<
+	$(CC) $(INCFLAGS) $(CFLAGS) -c -o $@ $<
 
 clean:
 	rm -f $(OBJECTS) $(TARGET)
