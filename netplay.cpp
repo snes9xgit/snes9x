@@ -294,23 +294,22 @@ bool8 S9xNPConnect ()
     S9xNPSetAction ("Looking up server's hostname...");
     if ((int) (addr = inet_addr (NetPlay.ServerHostName)) == -1)
     {
-	if ((hostinfo = gethostbyname (NetPlay.ServerHostName)))
-	{
-	    memcpy ((char *)&address.sin_addr, hostinfo->h_addr,
-		    hostinfo->h_length);
-	}
-	else
-	{
-            S9xNPSetError ("\
-Unable to look up server's IP address from hostname.\n\n\
-Unknown hostname or may be your nameserver isn't set\n\
-up correctly?");
-	    return (FALSE);
-	}
+        if ((hostinfo = gethostbyname (NetPlay.ServerHostName)))
+        {
+            memcpy ((char *)&address.sin_addr, hostinfo->h_addr,
+            hostinfo->h_length);
+        }
+        else
+        {
+            S9xNPSetError ("Unable to look up server's IP address from hostname.\n\n\"
+                           "Unknown hostname or may be your nameserver isn't set\n\"
+                           "up correctly?");
+            return (FALSE);
+        }
     }
     else
     {
-	memcpy ((char *)&address.sin_addr, &addr, sizeof (addr));
+        memcpy ((char *)&address.sin_addr, &addr, sizeof (addr));
     }
 
 #ifdef NP_DEBUG
@@ -320,7 +319,7 @@ up correctly?");
     if ((NetPlay.Socket = socket (AF_INET, SOCK_STREAM, 0)) < 0)
     {
         S9xNPSetError ("Creating network socket failed.");
-	return (FALSE);
+        return (FALSE);
     }
 
 #ifdef NP_DEBUG
@@ -334,27 +333,26 @@ up correctly?");
 #ifdef __WIN32__
         if (WSAGetLastError () == WSAECONNREFUSED)
 #else
-	if (errno == ECONNREFUSED)
+        if (errno == ECONNREFUSED)
 #endif
         {
-            S9xNPSetError ("\
-Connection to remote server socket refused:\n\n\
-Is there actually a Snes9X NetPlay server running\n\
-on the remote machine on this port?");
+            S9xNPSetError ("Connection to remote server socket refused:\n\n\"
+                           "Is there actually a Snes9X NetPlay server running\n\"
+                           "on the remote machine on this port?");
         }
         else
         {
             sprintf (buf, "Connection to server failed with error number %d",
 #ifdef __WIN32__
-                     WSAGetLastError ()
+            WSAGetLastError ()
 #else
-		     errno
+            errno
 #endif
-		     );
+            );
             S9xNPSetError(buf);
             S9xNPDisconnect ();
         }
-	return (FALSE);
+        return (FALSE);
     }
     NetPlay.Connected = TRUE;
 
@@ -385,11 +383,11 @@ on the remote machine on this port?");
     if (!S9xNPSendData (NetPlay.Socket, tmp, len))
     {
         S9xNPSetError ("Sending 'HELLO' message failed.");
-	S9xNPDisconnect ();
-	delete tmp;
-	return (FALSE);
+        S9xNPDisconnect ();
+        delete[] tmp;
+        return (FALSE);
     }
-    delete tmp;
+    delete[] tmp;
 
 #ifdef NP_DEBUG
     printf ("CLIENT: Waiting for 'WELCOME' reply from server @%ld...\n", S9xGetMilliTime () - START);
@@ -403,8 +401,8 @@ on the remote machine on this port?");
         (header [2] & 0x1f) != NP_SERV_HELLO)
     {
         S9xNPSetError ("Error in 'HELLO' reply packet received from server.");
-	S9xNPDisconnect ();
-	return (FALSE);
+        S9xNPDisconnect ();
+        return (FALSE);
     }
 #ifdef NP_DEBUG
     printf ("CLIENT: Got 'WELCOME' reply @%ld\n", S9xGetMilliTime () - START);
@@ -413,25 +411,24 @@ on the remote machine on this port?");
     if (len > 256)
     {
         S9xNPSetError ("Error in 'HELLO' reply packet received from server.");
-	S9xNPDisconnect ();
-	return (FALSE);
+        S9xNPDisconnect ();
+        return (FALSE);
     }
     uint8 *data = new uint8 [len];
     if (!S9xNPGetData (NetPlay.Socket, data, len - 7))
     {
         S9xNPSetError ("Error in 'HELLO' reply packet received from server.");
-        delete data;
-	S9xNPDisconnect ();
-	return (FALSE);
+        delete[] data;
+        S9xNPDisconnect ();
+        return (FALSE);
     }
 
     if (data [0] != NP_VERSION)
     {
-        S9xNPSetError ("\
-The Snes9X NetPlay server implements a different\n\
-version of the protocol. Disconnecting.");
-        delete data;
-	S9xNPDisconnect ();
+        S9xNPSetError ("The Snes9X NetPlay server implements a different\n\"
+                       "version of the protocol. Disconnecting.");
+        delete[] data;
+        S9xNPDisconnect ();
         return (FALSE);
     }
 
@@ -442,13 +439,13 @@ version of the protocol. Disconnecting.");
     {
         if (!S9xNPLoadROMDialog ((char *) data + 4 + 2))
         {
-            delete data;
+            delete[] data;
             S9xNPDisconnect ();
             return (FALSE);
         }
     }
     NetPlay.Player = data [1];
-    delete data;
+    delete[] data;
 
     NetPlay.PendingWait4Sync = TRUE;
     Settings.NetPlay = TRUE;
@@ -477,9 +474,9 @@ bool8 S9xNPSendReady (uint8 op)
 
     if (!S9xNPSendData (NetPlay.Socket, ready, 7))
     {
-	S9xNPDisconnect ();
+        S9xNPDisconnect ();
         S9xNPSetError ("Sending 'READY' message failed.");
-	return (FALSE);
+        return (FALSE);
     }
 
     return (TRUE);
@@ -501,8 +498,8 @@ bool8 S9xNPSendPause (bool8 paused)
     if (!S9xNPSendData (NetPlay.Socket, pause, 7))
     {
         S9xNPSetError ("Sending 'PAUSE' message failed.");
-	S9xNPDisconnect ();
-	return (FALSE);
+        S9xNPDisconnect ();
+        return (FALSE);
     }
 
     return (TRUE);
@@ -539,7 +536,9 @@ void S9xNPClientLoop (void *)
                 }
             }
             else
+            {
                 S9xNPDisconnect ();
+            }
         }
     }
     else
@@ -585,7 +584,7 @@ bool8 S9xNPWaitForHeartBeatDelay (uint32 time_msec)
     if (!S9xNPWaitForHeartBeat())
     {
         S9xNPDisconnect();
-	return FALSE;
+        return FALSE;
     }
 
     return TRUE;
@@ -629,15 +628,15 @@ bool8 S9xNPWaitForHeartBeat ()
             }
             NetPlay.Frame [NetPlay.JoypadWriteInd] = READ_LONG (&header [3]);
 
-			int i;
+            int i;
 
-			for (i = 0; i < num; i++)
+            for (i = 0; i < num; i++)
                 NetPlay.Joypads [NetPlay.JoypadWriteInd][i] = READ_LONG (&header [3 + 4 + i * sizeof (uint32)]);
 
-			for (i = 0; i < NP_MAX_CLIENTS; i++)
-				NetPlay.JoypadsReady [NetPlay.JoypadWriteInd][i] = TRUE;
+            for (i = 0; i < NP_MAX_CLIENTS; i++)
+                NetPlay.JoypadsReady [NetPlay.JoypadWriteInd][i] = TRUE;
 
-			NetPlay.Paused = (header [2] & 0x20) != 0;
+            NetPlay.Paused = (header [2] & 0x20) != 0;
 
             NetPlay.JoypadWriteInd = (NetPlay.JoypadWriteInd + 1) % NP_JOYPAD_HIST_SIZE;
 
@@ -651,24 +650,24 @@ bool8 S9xNPWaitForHeartBeat ()
         else
         {
             uint32 len = READ_LONG (&header [3]);
-	    switch (header [2] & 0x1f)
-	    {
-	    case NP_SERV_RESET:
+            switch (header [2] & 0x1f)
+            {
+            case NP_SERV_RESET:
 #ifdef NP_DEBUG
                 printf ("CLIENT: RESET received @%ld\n", S9xGetMilliTime () - START);
 #endif
                 S9xNPDiscardHeartbeats ();
-		S9xReset ();
+                S9xReset ();
                 NetPlay.FrameCount = READ_LONG (&header [3]);
                 S9xNPResetJoypadReadPos ();
                 S9xNPSendReady ();
                 break;
-	    case NP_SERV_PAUSE:
+            case NP_SERV_PAUSE:
                 NetPlay.Paused = (header [2] & 0x20) != 0;
-				if (NetPlay.Paused)
-					S9xNPSetWarning("CLIENT: Server has paused.");
-				else
-					S9xNPSetWarning("CLIENT: Server has resumed.");
+                if (NetPlay.Paused)
+                    S9xNPSetWarning("CLIENT: Server has paused.");
+                else
+                    S9xNPSetWarning("CLIENT: Server has resumed.");
                 break;
             case NP_SERV_LOAD_ROM:
 #ifdef NP_DEBUG
@@ -708,8 +707,8 @@ bool8 S9xNPWaitForHeartBeat ()
 #endif
                 S9xNPDisconnect ();
                 return (FALSE);
-	    }
-	}
+            }
+        }
     }
 
     S9xNPDisconnect ();
@@ -740,7 +739,7 @@ bool8 S9xNPLoadROMDialog (const char *rom_name)
 #endif
 
 #else
-	NetPlay.Answer = TRUE;
+    NetPlay.Answer = TRUE;
 #endif
 
     return (NetPlay.Answer);
@@ -754,7 +753,7 @@ bool8 S9xNPLoadROM (uint32 len)
     if (!S9xNPGetData (NetPlay.Socket, data, len))
     {
         S9xNPSetError ("Error while receiving ROM name.");
-        delete data;
+        delete[] data;
         S9xNPDisconnect ();
         return (FALSE);
     }
@@ -763,11 +762,11 @@ bool8 S9xNPLoadROM (uint32 len)
     if (!S9xNPLoadROMDialog ((char *) data))
     {
         S9xNPSetError ("Disconnected from NetPlay server because you are playing a different game!");
-        delete data;
+        delete[] data;
         S9xNPDisconnect ();
         return (FALSE);
     }
-    delete data;
+    delete[] data;
     return (TRUE);
 }
 
@@ -850,7 +849,7 @@ void S9xNPGetSRAMData (uint32 len)
         S9xNPSetError ("Error while receiving S-RAM data from server.");
         S9xNPDisconnect ();
     }
-	S9xNPSetAction ("", TRUE);
+    S9xNPSetAction ("", TRUE);
 }
 
 void S9xNPGetFreezeFile (uint32 len)
@@ -878,10 +877,10 @@ void S9xNPGetFreezeFile (uint32 len)
     {
         S9xNPSetError ("Error while receiving freeze file from server.");
         S9xNPDisconnect ();
-        delete data;
+        delete[] data;
         return;
     }
-	S9xNPSetAction ("", TRUE);
+    S9xNPSetAction ("", TRUE);
 
     //FIXME: Setting umask here wouldn't hurt.
     FILE *file;
@@ -902,7 +901,7 @@ void S9xNPGetFreezeFile (uint32 len)
             {
                 fclose(file);
 #ifndef __WIN32__
-		/* We need .s96 extension, else .s96 is addded by unix code */
+                /* We need .s96 extension, else .s96 is added by unix code */
                 char buf[PATH_MAX +1 ];
 
                 strncpy(buf, fname, PATH_MAX);
@@ -915,32 +914,40 @@ void S9xNPGetFreezeFile (uint32 len)
                 if (!S9xUnfreezeGame (fname))
 #endif
                     S9xNPSetError ("Unable to load freeze file just received.");
-            } else {
+            }
+            else
+            {
                 S9xNPSetError ("Failed to write to temporary freeze file.");
                 fclose(file);
             }
-        } else
+        }
+        else
+        {
             S9xNPSetError ("Failed to create temporary freeze file.");
+        }
         remove (fname);
-    } else
+    }
+    else
+    {
         S9xNPSetError ("Unable to get name for temporary freeze file.");
-    delete data;
+    }
+
+    delete[] data;
 }
 
 uint32 S9xNPGetJoypad (int which1)
 {
     if (Settings.NetPlay && which1 < 8)
-	{
+    {
 #ifdef NP_DEBUG
-		if(!NetPlay.JoypadsReady [NetPlay.JoypadReadInd][which1])
-		{
+        if(!NetPlay.JoypadsReady [NetPlay.JoypadReadInd][which1])
+        {
             S9xNPSetWarning ("Missing input from server!");
-		}
+        }
 #endif
-		NetPlay.JoypadsReady [NetPlay.JoypadReadInd][which1] = FALSE;
-
-		return (NetPlay.Joypads [NetPlay.JoypadReadInd][which1]);
-	}
+        NetPlay.JoypadsReady [NetPlay.JoypadReadInd][which1] = FALSE;
+        return (NetPlay.Joypads [NetPlay.JoypadReadInd][which1]);
+    }
 
     return (0);
 }
@@ -995,8 +1002,8 @@ bool8 S9xNPSendJoypadUpdate (uint32 joypad)
     if (!S9xNPSendData (NetPlay.Socket, data, 7))
     {
         S9xNPSetError ("Error while sending joypad data server.");
-	S9xNPDisconnect ();
-	return (FALSE);
+        S9xNPDisconnect ();
+        return (FALSE);
     }
     return (TRUE);
 }
@@ -1028,30 +1035,32 @@ bool8 S9xNPSendData (int socket, const uint8 *data, int length)
         if (num_bytes > 512)
             num_bytes = 512;
 
-	int sent = write (socket, (char *) ptr, num_bytes);
-	if (sent < 0)
-	{
-	    if (errno == EINTR
+    int sent = write (socket, (char *) ptr, num_bytes);
+    if (sent < 0)
+    {
+        if (errno == EINTR
 #ifdef EAGAIN
-		|| errno == EAGAIN
+        || errno == EAGAIN
 #endif
 #ifdef EWOULDBLOCK
-		|| errno == EWOULDBLOCK
+        || errno == EWOULDBLOCK
 #endif
-		)
-            {
+        )
+        {
 #ifdef NP_DEBUG
-                printf ("CLIENT: EINTR, EAGAIN or EWOULDBLOCK while sending data @%ld\n", S9xGetMilliTime () - START);
+            printf ("CLIENT: EINTR, EAGAIN or EWOULDBLOCK while sending data @%ld\n", S9xGetMilliTime () - START);
 #endif
-		continue;
-            }
-	    return (FALSE);
-	}
-	else
-	if (sent == 0)
-	    return (FALSE);
-	len -= sent;
-	ptr += sent;
+            continue;
+        }
+        return (FALSE);
+    }
+    else if (sent == 0)
+    {
+        return (FALSE);
+    }
+
+    len -= sent;
+    ptr += sent;
 
         NetPlay.PercentageComplete = (uint8) (((length - len) * 100) / length);
     } while (len > 0);
@@ -1084,26 +1093,28 @@ bool8 S9xNPGetData (int socket, uint8 *data, int length)
         int got = read (socket, (char *) ptr, num_bytes);
         if (got < 0)
         {
-	    if (errno == EINTR
+            if (errno == EINTR
 #ifdef EAGAIN
-		|| errno == EAGAIN
+            || errno == EAGAIN
 #endif
 #ifdef EWOULDBLOCK
-		|| errno == EWOULDBLOCK
+            || errno == EWOULDBLOCK
 #endif
 #ifdef WSAEWOULDBLOCK
-                || errno == WSAEWOULDBLOCK
+            || errno == WSAEWOULDBLOCK
 #endif
-		)
+            )
             {
 #ifdef NP_DEBUG
                 printf ("CLIENT: EINTR, EAGAIN or EWOULDBLOCK while receiving data @%ld\n", S9xGetMilliTime () - START);
 #endif
-		continue;
+                continue;
             }
 #ifdef WSAEMSGSIZE
             if (errno != WSAEMSGSIZE)
+            {
                 return (FALSE);
+            }
             else
             {
                 got = num_bytes;
@@ -1115,9 +1126,10 @@ bool8 S9xNPGetData (int socket, uint8 *data, int length)
             return (FALSE);
 #endif
         }
-        else
-        if (got == 0)
+        else if (got == 0)
+        {
             return (FALSE);
+        }
 
         len -= got;
         ptr += got;

@@ -3360,7 +3360,7 @@ void S9xSetControllerCrosshair (enum crosscontrols ctl, int8 idx, const char *fg
 
 		for (i = 0; i < 16; i++)
 		{
-			for (j = 0; color_names[i][j] && fg[j] == color_names[i][j]; j++) ;
+			for (j = 0; color_names[i][j] && fg[j] == color_names[i][j]; j++)
 				if (isalnum(fg[j]))
 					continue;
 
@@ -3387,7 +3387,7 @@ void S9xSetControllerCrosshair (enum crosscontrols ctl, int8 idx, const char *fg
 
 		for (i = 0; i < 16; i++)
 		{
-			for (j = 0; color_names[i][j] && bg[j] == color_names[i][j]; j++) ;
+			for (j = 0; color_names[i][j] && bg[j] == color_names[i][j]; j++)
 				if (isalnum(bg[j]))
 					continue;
 
