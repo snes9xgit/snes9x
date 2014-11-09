@@ -1,0 +1,10 @@
+Package: com.yourcompany.testmotherfuckah
+Name: testmotherfuckah
+Depends: 
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: An awesome library of some sort!!
+Maintainer: squarepusher
+Author: squarepusher
+Section: System
+Tag: role::developer
