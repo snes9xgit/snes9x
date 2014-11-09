@@ -15,12 +15,15 @@ ifeq ($(platform),)
    endif
 endif
 
+CXX_INCDIRS :=
+
 ifeq ($(platform), osx)
 _LATEST_SDK := $(shell xcrun -sdk iphoneos -show-sdk-version)
 else
 _SDK_DIR := $(THEOS)/sdks
 _IOS_SDKS := $(sort $(patsubst $(_SDK_DIR)/iPhoneOS%.sdk,%,$(wildcard $(_SDK_DIR)/iPhoneOS*.sdk)))
 _LATEST_SDK := $(word $(words $(_IOS_SDKS)),$(_IOS_SDKS))
+CXX_INCDIRS += -I$(_SDK_DIR)/iPhoneOS$(_LATEST_SDK).sdk/usr/include/c++/4.2.1
 endif
 
 SDKVERSION := $(_LATEST_SDK)
@@ -36,7 +39,7 @@ ${LIBRARY_NAME}_FILES = $(SOURCES_CXX) $(SOURCES_C)
 
 COMMON_FLAGS = -DIOS -DARM -D__LIBRETRO__ -DHAVE_STRINGS_H -DHAVE_STDINT_H -DRIGHTSHIFT_IS_SAR $(INCFLAGS) -I$(THEOS_INCLUDE_PATH) -Wno-error
 
-$(LIBRARY_NAME)_CFLAGS += $(COMMON_FLAGS)
-$(LIBRARY_NAME)_CXXFLAGS += $(COMMON_FLAGS)
+$(LIBRARY_NAME)_CFLAGS += $(COMMON_FLAGS) $(CXX_INCDIRS)
+$(LIBRARY_NAME)_CXXFLAGS += $(COMMON_FLAGS) $(CXX_INCDIRS)
 
 include $(THEOS_MAKE_PATH)/library.mk
