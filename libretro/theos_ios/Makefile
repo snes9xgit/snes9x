@@ -17,17 +17,10 @@ endif
 
 CXX_INCDIRS :=
 
-ifeq ($(platform), osx)
-_LATEST_SDK := $(shell xcrun -sdk iphoneos -show-sdk-version)
-else
-_SDK_DIR := $(THEOS)/sdks
-_IOS_SDKS := $(sort $(patsubst $(_SDK_DIR)/iPhoneOS%.sdk,%,$(wildcard $(_SDK_DIR)/iPhoneOS*.sdk)))
-_LATEST_SDK := $(word $(words $(_IOS_SDKS)),$(_IOS_SDKS))
-CXX_INCDIRS += -I$(_SDK_DIR)/iPhoneOS$(_LATEST_SDK).sdk/usr/include/c++/4.2.1
-endif
-
-SDKVERSION := $(_LATEST_SDK)
+IOSVERSION = 5.0
+TARGET = iphone:$(IOSVERSION):$(IOSVERSION)
 ARCHS = armv7 armv7s
+TARGET_IPHONEOS_DEPLOYMENT_VERSION=$(IOSVERSION)
 include $(THEOS)/makefiles/common.mk
 
 LIBRARY_NAME = snes9x_libretro_ios
