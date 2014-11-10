@@ -18,7 +18,7 @@ endif
 CXX_INCDIRS :=
 
 DEPLOYMENT_IOSVERSION = 5.0
-TARGET = iphone:latest:latest
+TARGET = iphone:latest:$(DEPLOYMENT_IOSVERSION)
 ARCHS = armv7 armv7s
 TARGET_IPHONEOS_DEPLOYMENT_VERSION=$(DEPLOYMENT_IOSVERSION)
 include $(THEOS)/makefiles/common.mk
