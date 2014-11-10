@@ -1,10 +1,10 @@
-Package: com.yourcompany.testmotherfuckah
-Name: testmotherfuckah
+Package: com.libretro.snes9x
+Name: snes9x
 Depends: 
 Version: 0.0.1
 Architecture: iphoneos-arm
-Description: An awesome library of some sort!!
-Maintainer: squarepusher
-Author: squarepusher
+Description: Libretro iOS core of SNES9x
+Maintainer: libretro
+Author: libretro
 Section: System
 Tag: role::developer
