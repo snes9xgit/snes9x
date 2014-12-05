@@ -84,6 +84,7 @@ void retro_set_environment(retro_environment_t cb)
       // These variable names and possible values constitute an ABI with ZMZ (ZSNES Libretro player).
       // Changing "Show layer 1" is fine, but don't change "layer_1"/etc or the possible values ("Yes|No").
       // Adding more variables and rearranging them is safe.
+      { "snes9x_overclock", "SuperFX Overclock; disabled|40MHz|60MHz|80MHz|100MHz" },
       { "snes9x_layer_1", "Show layer 1; Yes|No" },
       { "snes9x_layer_2", "Show layer 2; Yes|No" },
       { "snes9x_layer_3", "Show layer 3; Yes|No" },
@@ -127,15 +128,50 @@ void retro_set_environment(retro_environment_t cb)
    environ_cb(RETRO_ENVIRONMENT_SET_CONTROLLER_INFO, (void*)ports);
 }
 
+extern void S9xResetSuperFX(void);
+
 static void update_variables(void)
 {
+   bool reset_sfx = false;
    char key[14];
    struct retro_variable var;
-   
-   var.key=key;
+   var.key = "snes9x_overclock";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
+   {
+      fprintf(stderr, "value: %s\n", var.value);
+      if (strcmp(var.value, "disabled") == 0)
+      {
+         Settings.SuperFXSpeedPerLine = 0.417 * 10.5e6;
+         reset_sfx = true;
+      }
+      else if (strcmp(var.value, "40MHz") == 0)
+      {
+         Settings.SuperFXSpeedPerLine = 0.417 * 40.5e6;
+         reset_sfx = true;
+      }
+      else if (strcmp(var.value, "60MHz") == 0)
+      {
+         Settings.SuperFXSpeedPerLine = 0.417 * 60.5e6;
+         reset_sfx = true;
+      }
+      else if (strcmp(var.value, "80MHz") == 0)
+      {
+         Settings.SuperFXSpeedPerLine = 0.417 * 80.5e6;
+         reset_sfx = true;
+      }
+      else if (strcmp(var.value, "100MHz") == 0)
+      {
+         Settings.SuperFXSpeedPerLine = 0.417 * 100.5e6;
+         reset_sfx = true;
+      }
+   }
+
    
    int disabled_channels=0;
    strcpy(key, "snes9x_sndchan_x");
+   var.key=key;
    for (int i=0;i<8;i++)
    {
       key[strlen("snes9x_sndchan_")]='1'+i;
@@ -143,6 +179,7 @@ static void update_variables(void)
       if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value && var.value[0]=='N') disabled_channels|=1<<i;
    }
    S9xSetSoundControl(disabled_channels^0xFF);
+
    
    int disabled_layers=0;
    strcpy(key, "snes9x_layer_x");
@@ -162,6 +199,9 @@ static void update_variables(void)
    var.key="snes9x_gfx_transp";
    var.value=NULL;
    Settings.Transparency=!(environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value && var.value[0]=='N');
+
+   if (reset_sfx)
+      S9xResetSuperFX();
 }
 
 static void S9xAudioCallback(void*)
@@ -510,6 +550,7 @@ void retro_init(void)
       log_cb = NULL;
 
    memset(&Settings, 0, sizeof(Settings));
+   Settings.SuperFXSpeedPerLine = 0.417 * 10.5e6;
    Settings.MouseMaster = TRUE;
    Settings.SuperScopeMaster = TRUE;
    Settings.JustifierMaster = TRUE;

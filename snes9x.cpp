@@ -378,6 +378,8 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	if (Settings.ForceLoROM)
 		Settings.ForceHiROM = false;
 
+   Settings.SuperFXSpeedPerLine = 0.417 * 10.5e6;
+
 	Settings.ForcePAL   = conf.GetBool("ROM::PAL",  false);
 	Settings.ForceNTSC  = conf.GetBool("ROM::NTSC", false);
 	if (Settings.ForcePAL)
