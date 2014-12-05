@@ -228,19 +228,7 @@ void retro_get_system_info(struct retro_system_info *info)
 
 void retro_get_system_av_info(struct retro_system_av_info *info)
 {
-    int pixel_format = RGB555;
-    if(environ_cb) {
-        pixel_format = RGB565;
-        enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
-        if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
-            pixel_format = RGB555;
-    }
-    S9xGraphicsDeinit();
-    S9xSetRenderPixelFormat(pixel_format);
-    S9xGraphicsInit();
-
     memset(info,0,sizeof(retro_system_av_info));
-
     info->geometry.base_width = SNES_WIDTH;
     info->geometry.base_height = use_overscan ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT;
     info->geometry.max_width = MAX_SNES_WIDTH;
@@ -459,6 +447,17 @@ bool retro_load_game(const struct retro_game_info *game)
       rom_loaded = Memory.LoadROM(game->path);
    else
       rom_loaded = Memory.LoadROMMem((const uint8_t*)game->data ,game->size);
+
+   int pixel_format = RGB555;
+   if(environ_cb) {
+       pixel_format = RGB565;
+       enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
+       if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
+           pixel_format = RGB555;
+   }
+   S9xGraphicsDeinit();
+   S9xSetRenderPixelFormat(pixel_format);
+   S9xGraphicsInit();
 
    if (!rom_loaded && log_cb)
       log_cb(RETRO_LOG_ERROR, "[libretro]: Rom loading failed...\n");
