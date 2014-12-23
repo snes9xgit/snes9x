@@ -1,3 +1,5 @@
+DEBUG = 0
+
 ifeq ($(platform),)
 	platform = unix
 	ifeq ($(shell uname -a),)
@@ -87,7 +89,7 @@ else ifeq ($(platform), qnx)
 	fpic := -fPIC
 	SHARED := -shared -Wl,--version-script=link.T
 	CC = qcc -Vgcc_notarmv7le
-	CC = QCC -Vgcc_notarmv7le_cpp
+	CXX = QCC -Vgcc_notarmv7le_cpp
 	AR = QCC -Vgcc_ntoarmv7le
 	CXXFLAGS += -D__BLACKBERRY_QNX__
 	CXXFLAGS += -DARM
@@ -173,6 +175,14 @@ endif
 
 CORE_DIR := ..
 
+ifeq ($(DEBUG), 1)
+   CXXFLAGS += -O0 -g
+   CFLAGS += -O0 -g
+else
+   CXXFLAGS += -O3 -DNDEBUG
+   CFLAGS += -O3 -DNDEBUG
+endif
+
 include Makefile.common
 
 OBJECTS := $(SOURCES_CXX:.cpp=.o) $(SOURCES_C:.c=.o)
@@ -185,7 +195,7 @@ else
 	CODE_DEFINES = -fomit-frame-pointer
 endif
 
-CXXFLAGS	+= -O3 $(CODE_DEFINES) -fno-exceptions -fno-rtti -pedantic $(WARNINGS_DEFINES) $(fpic)
+CXXFLAGS	+= $(CODE_DEFINES) -fno-exceptions -fno-rtti -pedantic $(WARNINGS_DEFINES) $(fpic)
 CXXFLAGS	+= -DHAVE_STRINGS_H -DHAVE_STDINT_H -DRIGHTSHIFT_IS_SAR -D__LIBRETRO__
 CFLAGS		= $(CXXFLAGS)
 
