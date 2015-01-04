@@ -188,6 +188,13 @@
 #include "missing.h"
 #endif
 
+//#define CPU_OPCODE_INSTRUMENTATION
+
+/* Pipe the output to :
+ * | grep -B1 EXEC=NMI | grep -v EXEC=NMI | grep EXEC= | sort | uniq -c | sort -nr
+ *
+ */
+
 static inline void S9xReschedule (void);
 
 
@@ -208,6 +215,9 @@ void S9xMainLoop (void)
 				}
 
 				S9xOpcode_NMI();
+#ifdef CPU_OPCODE_INSTRUMENTATION
+            puts("** EXEC=NMI");
+#endif
 			}
 		}
 
@@ -291,6 +301,9 @@ void S9xMainLoop (void)
 				Opcodes = S9xOpcodesSlow;
 		}
 
+#ifdef CPU_OPCODE_INSTRUMENTATION
+      printf("EXEC=%.6X\n",Registers.PBPC);
+#endif
 		Registers.PCw++;
 		(*Opcodes[Op].S9xOpcode)();
 
