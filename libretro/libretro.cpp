@@ -140,7 +140,6 @@ static void update_variables(void)
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
    {
-      //fprintf(stderr, "value: %s\n", var.value);
       if (strcmp(var.value, "disabled") == 0)
       {
          Settings.SuperFXSpeedPerLine = 0.417 * 10.5e6;
