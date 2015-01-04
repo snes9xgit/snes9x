@@ -133,7 +133,7 @@ extern void S9xResetSuperFX(void);
 static void update_variables(void)
 {
    bool reset_sfx = false;
-   char key[14];
+   char key[256];
    struct retro_variable var;
    var.key = "snes9x_overclock";
    var.value = NULL;
