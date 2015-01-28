@@ -484,6 +484,13 @@ Snes9xConfig::set_option (const char *name, const char *value)
         if (scale_method >= NUM_FILTERS - 3)
             scale_method = 0;
 #endif /* USE_HQ2X */
+#ifdef USE_XBRZ
+        if (scale_method >= NUM_FILTERS)
+            scale_method = 0;
+#else
+        if (scale_method >= NUM_FILTERS - 3)
+            scale_method = 0;
+#endif /* USE_XBRZ */
     }
     else if (!strcasecmp (name, "multithreading"))
     {

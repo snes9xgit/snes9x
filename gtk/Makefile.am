@@ -61,6 +61,14 @@ snes9x_gtk_SOURCES += \
     ../filter/hq2x.h
 endif
 
+if XBRZ
+snes9x_gtk_SOURCES += \
+    src/filter_xbrz.cpp\
+    src/filter_xbrz.h\
+    ../filter/xbrz.cpp \
+    ../filter/xbrz.h
+endif
+
 if PORTAUDIO
 snes9x_gtk_SOURCES += \
     src/gtk_sound_driver_portaudio.cpp \

@@ -1049,6 +1049,13 @@ Snes9xPreferences::show (void)
     combo_box_append (GTK_COMBO_BOX (combo), _("HQ4x"));
 #endif
 
+#ifdef USE_XBRZ
+    combo = get_widget ("scale_method_combo");
+    combo_box_append (GTK_COMBO_BOX (combo), _("2xBRZ"));
+    combo_box_append (GTK_COMBO_BOX (combo), _("3xBRZ"));
+    combo_box_append (GTK_COMBO_BOX (combo), _("4xBRZ"));
+#endif
+
     combo = get_widget ("hw_accel");
     combo_box_append (GTK_COMBO_BOX (combo),
                       _("None - Use software scaler"));

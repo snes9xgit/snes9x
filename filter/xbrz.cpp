@@ -16,6 +16,9 @@
 #include "xbrz.h"
 #include <cassert>
 #include <algorithm>
+#ifdef unix
+  #include <cmath>
+#endif
 
 namespace
 {
@@ -612,9 +615,11 @@ void scalePixel(const Kernel_3x3& ker,
 #define h get_h<rotDeg>(ker)
 #define i get_i<rotDeg>(ker)
 
-#ifndef NDEBUG
+#ifdef WIN32
+# ifndef NDEBUG
     if (breakIntoDebugger)
         __debugbreak(); //__asm int 3;
+# endif
 #endif
 
     const unsigned char blend = rotateBlendInfo<rotDeg>(blendInfo);
