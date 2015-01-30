@@ -252,7 +252,7 @@ void xBRZ(uint8 *srcPtr, uint32 srcPitch, uint8 *dstPtr, uint32 dstPitch, int wi
     copyImage16To32(reinterpret_cast<const uint16_t*>(srcPtr), width, height, srcPitch,
         &renderBuffer[0], 0, height);
 
-    xbrz::scale(scalingFactor, &renderBuffer[0], &xbrzBuffer[0], width, height, xbrz::ScalerCfg(), 0, height);
+    xbrz::scale(scalingFactor, &renderBuffer[0], &xbrzBuffer[0], width, height, xbrz::RGB, xbrz::ScalerCfg(), 0, height);
 
     stretchImage32To16(&xbrzBuffer[0], width * scalingFactor, height * scalingFactor,
                        reinterpret_cast<uint16_t*>(dstPtr), trgWidth, trgHeight, dstPitch, 0, height * scalingFactor);
