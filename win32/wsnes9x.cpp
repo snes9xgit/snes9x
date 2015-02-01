@@ -4025,7 +4025,12 @@ static bool LoadROM(const TCHAR *filename) {
 			S9xNPServerQueueSendingLoadROMRequest (Memory.ROMName);
 #endif
         if(GUI.rewindBufferSize)
+		{
+		#if !_WIN64
+			if (GUI.rewindBufferSize > 1024) GUI.rewindBufferSize = 1024;
+		#endif
             stateMan.init(GUI.rewindBufferSize * 1024 * 1024);
+		}
 	}
 
 	if(GUI.ControllerOption == SNES_SUPERSCOPE)
