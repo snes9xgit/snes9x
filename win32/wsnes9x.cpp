@@ -10080,9 +10080,9 @@ INT_PTR CALLBACK DlgCheatSearchAdd(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 				memset(buf,0,sizeof(TCHAR) * 12);
 				_stprintf(buf, TEXT("%u"), new_cheat->saved_val);
 				SetDlgItemText(hDlg, IDC_NC_PREVVAL, buf);
-				SetWindowLong(GetDlgItem(hDlg, IDC_NC_NEWVAL), GWL_STYLE, ES_NUMBER |GetWindowLong(GetDlgItem(hDlg, IDC_NC_NEWVAL),GWL_STYLE));
-				SetWindowLong(GetDlgItem(hDlg, IDC_NC_CURRVAL), GWL_STYLE, ES_NUMBER |GetWindowLong(GetDlgItem(hDlg, IDC_NC_CURRVAL),GWL_STYLE));
-				SetWindowLong(GetDlgItem(hDlg, IDC_NC_PREVVAL), GWL_STYLE, ES_NUMBER |GetWindowLong(GetDlgItem(hDlg, IDC_NC_PREVVAL),GWL_STYLE));
+				SetWindowLongPtr(GetDlgItem(hDlg, IDC_NC_NEWVAL), GWL_STYLE, ES_NUMBER |GetWindowLongPtr(GetDlgItem(hDlg, IDC_NC_NEWVAL),GWL_STYLE));
+				SetWindowLongPtr(GetDlgItem(hDlg, IDC_NC_CURRVAL), GWL_STYLE, ES_NUMBER |GetWindowLongPtr(GetDlgItem(hDlg, IDC_NC_CURRVAL),GWL_STYLE));
+				SetWindowLongPtr(GetDlgItem(hDlg, IDC_NC_PREVVAL), GWL_STYLE, ES_NUMBER |GetWindowLongPtr(GetDlgItem(hDlg, IDC_NC_PREVVAL),GWL_STYLE));
 				if(new_cheat->size==1)
 				{
 					SendDlgItemMessage(hDlg, IDC_NC_CURRVAL,EM_SETLIMITTEXT, 3, 0);

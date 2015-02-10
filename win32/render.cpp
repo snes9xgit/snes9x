@@ -183,6 +183,7 @@
  * Video output filters for the Windows port.
  */
 
+#include <algorithm>
 #include "../port.h"
 #include "wsnes9x.h"
 #include "../snes9x.h"
@@ -2712,7 +2713,7 @@ DWORD WINAPI ThreadProc_XBRZ(VOID * pParam)
         SetEvent(thread_data->xbrz_sync_event);
         WaitForSingleObject(thread_data->xbrz_start_event, INFINITE);
 
-        xbrz::scale(thread_data->scalingFactor, &renderBuffer[0], &xbrzBuffer[0], xbrz_thread_data::src->Width, xbrz_thread_data::src->Height, xbrz::ScalerCfg(), thread_data->yFirst, thread_data->yLast);
+        xbrz::scale(thread_data->scalingFactor, &renderBuffer[0], &xbrzBuffer[0], xbrz_thread_data::src->Width, xbrz_thread_data::src->Height, xbrz::ColorFormat::RGB, xbrz::ScalerCfg(), thread_data->yFirst, thread_data->yLast);
         SetEvent(thread_data->xbrz_sync_event);
         WaitForSingleObject(thread_data->xbrz_start_event, INFINITE);
 

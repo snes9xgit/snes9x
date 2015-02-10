@@ -833,12 +833,12 @@ HWND CreateInputCustom(HWND hwndParent)
 }
 InputCust * GetInputCustom(HWND hwnd)
 {
-	return (InputCust *)GetWindowLong(hwnd, 0);
+	return (InputCust *)GetWindowLongPtr(hwnd, 0);
 }
 
 void SetInputCustom(HWND hwnd, InputCust *icp)
 {
-    SetWindowLong(hwnd, 0, (LONG)icp);
+    SetWindowLongPtr(hwnd, 0, (LONG_PTR)icp);
 }
 
 LRESULT InputCustom_OnPaint(InputCust *ccp, WPARAM wParam, LPARAM lParam)
