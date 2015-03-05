@@ -197,6 +197,7 @@
 #include <objidl.h>
 #include <shlwapi.h>
 #include <Shobjidl.h>
+#include <dbt.h>
 
 #include "wsnes9x.h"
 #include "win32_sound.h"
@@ -2671,7 +2672,8 @@ LRESULT CALLBACK WinProc(
 		break;
 #endif
     case WM_DEVICECHANGE:
-        S9xDetectJoypads();
+        if(wParam == DBT_DEVICEARRIVAL || wParam == DBT_DEVICEREMOVECOMPLETE)
+            S9xDetectJoypads();
         break;
     }
     return DefWindowProc (hWnd, uMsg, wParam, lParam);
@@ -4023,7 +4025,12 @@ static bool LoadROM(const TCHAR *filename) {
 			S9xNPServerQueueSendingLoadROMRequest (Memory.ROMName);
 #endif
         if(GUI.rewindBufferSize)
+		{
+		#if !_WIN64
+			if (GUI.rewindBufferSize > 1024) GUI.rewindBufferSize = 1024;
+		#endif
             stateMan.init(GUI.rewindBufferSize * 1024 * 1024);
+		}
 	}
 
 	if(GUI.ControllerOption == SNES_SUPERSCOPE)
