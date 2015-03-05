@@ -370,7 +370,7 @@ CToolBar::~CToolBar()
 
 void CToolBar::Show(bool bShow)
 {
-	DWORD style = GetWindowLong(hWnd, GWL_STYLE);
+	LONG_PTR style = GetWindowLongPtr(hWnd, GWL_STYLE);
 
 	if (bShow)
 	{
@@ -383,7 +383,7 @@ void CToolBar::Show(bool bShow)
 		style &= ~WS_VISIBLE;
 	}
 
-	SetWindowLong(hWnd, GWL_STYLE, style);
+	SetWindowLongPtr(hWnd, GWL_STYLE, style);
 }
 
 void CToolBar::OnSize()
