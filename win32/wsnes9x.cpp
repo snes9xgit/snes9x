@@ -197,6 +197,7 @@
 #include <objidl.h>
 #include <shlwapi.h>
 #include <Shobjidl.h>
+#include <dbt.h>
 
 #include "wsnes9x.h"
 #include "win32_sound.h"
@@ -2715,7 +2716,8 @@ LRESULT CALLBACK WinProc(
 		break;
 #endif
     case WM_DEVICECHANGE:
-        S9xDetectJoypads();
+        if(wParam == DBT_DEVICEARRIVAL || wParam == DBT_DEVICEREMOVECOMPLETE)
+            S9xDetectJoypads();
         break;
     }
     return DefWindowProc (hWnd, uMsg, wParam, lParam);
@@ -4133,7 +4135,12 @@ static bool LoadROM(const TCHAR *filename) {
 			S9xNPServerQueueSendingLoadROMRequest (Memory.ROMName);
 #endif
         if(GUI.rewindBufferSize)
+		{
+		#if !_WIN64
+			if (GUI.rewindBufferSize > 1024) GUI.rewindBufferSize = 1024;
+		#endif
             stateMan.init(GUI.rewindBufferSize * 1024 * 1024);
+		}
 	}
 
 	if(GUI.ControllerOption == SNES_SUPERSCOPE)
@@ -9789,9 +9796,9 @@ INT_PTR CALLBACK DlgCheatSearchAdd(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 				memset(buf,0,sizeof(TCHAR) * 12);
 				_stprintf(buf, TEXT("%u"), new_cheat->saved_val);
 				SetDlgItemText(hDlg, IDC_NC_PREVVAL, buf);
-				SetWindowLong(GetDlgItem(hDlg, IDC_NC_NEWVAL), GWL_STYLE, ES_NUMBER |GetWindowLong(GetDlgItem(hDlg, IDC_NC_NEWVAL),GWL_STYLE));
-				SetWindowLong(GetDlgItem(hDlg, IDC_NC_CURRVAL), GWL_STYLE, ES_NUMBER |GetWindowLong(GetDlgItem(hDlg, IDC_NC_CURRVAL),GWL_STYLE));
-				SetWindowLong(GetDlgItem(hDlg, IDC_NC_PREVVAL), GWL_STYLE, ES_NUMBER |GetWindowLong(GetDlgItem(hDlg, IDC_NC_PREVVAL),GWL_STYLE));
+				SetWindowLongPtr(GetDlgItem(hDlg, IDC_NC_NEWVAL), GWL_STYLE, ES_NUMBER |GetWindowLongPtr(GetDlgItem(hDlg, IDC_NC_NEWVAL),GWL_STYLE));
+				SetWindowLongPtr(GetDlgItem(hDlg, IDC_NC_CURRVAL), GWL_STYLE, ES_NUMBER |GetWindowLongPtr(GetDlgItem(hDlg, IDC_NC_CURRVAL),GWL_STYLE));
+				SetWindowLongPtr(GetDlgItem(hDlg, IDC_NC_PREVVAL), GWL_STYLE, ES_NUMBER |GetWindowLongPtr(GetDlgItem(hDlg, IDC_NC_PREVVAL),GWL_STYLE));
 				if(new_cheat->size==1)
 				{
 					SendDlgItemMessage(hDlg, IDC_NC_CURRVAL,EM_SETLIMITTEXT, 3, 0);
