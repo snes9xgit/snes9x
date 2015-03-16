@@ -3,6 +3,7 @@
 #ifndef LUA_SCRIPT_H
 #define LUA_SCRIPT_H
 
+#include "jma/portable.h"
 
 void OpenLuaContext(int uid, void(*print)(int uid, const char* str) = 0, void(*onstart)(int uid) = 0, void(*onstop)(int uid, bool statusOK) = 0);
 void RunLuaScriptFile(int uid, const char* filename);
