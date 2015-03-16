@@ -101,9 +101,9 @@ fi
 
 AC_S9X_COMPILER_FLAG([-fno-exceptions],       [no_exceptions])
 AC_S9X_COMPILER_FLAG([-fno-rtti],             [no_rtti])
-#AC_S9X_COMPILER_FLAG([-pedantic],             [pedantic])
-#AC_S9X_COMPILER_FLAG([-Wall],                 [Wall])
-#AC_S9X_COMPILER_FLAG([-W],                    [W])
+AC_S9X_COMPILER_FLAG([-pedantic],             [pedantic])
+AC_S9X_COMPILER_FLAG([-Wall],                 [Wall])
+AC_S9X_COMPILER_FLAG([-W],                    [W])
 AC_S9X_COMPILER_FLAG([-Wno-unused-parameter], [Wno_unused_parameter])
 
 # Check if the OS is Linux.
@@ -226,30 +226,6 @@ AC_ARG_ENABLE([jma],
 if test "x$enable_jma" = "xyes"; then
 	S9XJMA="S9XJMA=1"
 	S9XDEFS="$S9XDEFS -DJMA_SUPPORT"
-fi
-
-# Enable lua support through liblua.
-
-AC_CACHE_VAL([snes9x_cv_liblua],
-[
-	AC_CHECK_HEADER([lua.h],
-		[AC_CHECK_LIB([lua], [lua_load], [snes9x_cv_liblua="yes"], [snes9x_cv_liblua="no"])],
-		[snes9x_cv_liblua="no"])
-])
-
-AC_ARG_ENABLE([lua],
-	[AS_HELP_STRING([--enable-lua],
-		[enable lua support through liblua (default: yes)])],
-	[], [enable_lua="yes"])
-
-if test "x$enable_lua" = "xyes"; then
-	if test "x$snes9x_cv_liblua" = "xyes"; then
-		S9XDEFS="$S9XDEFS -DHAVE_LUA"
-		S9XLIBS="$S9XLIBS -llua"
-	else
-		AC_MSG_WARN([liblua not found. Build without lua support.])
-		enable_lua="no"
-	fi
 fi
 
 # Enable screenshot support through libpng.
@@ -460,7 +436,6 @@ libs................. $S9XLIBS
 
 features:
 sound support........ $enable_sound
-lua support.......... $enable_lua
 screenshot support... $enable_screenshot
 netplay support...... $enable_netplay
 gamepad support...... $enable_gamepad

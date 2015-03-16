@@ -52,24 +52,6 @@
 //#define strrchr strrchrA
 #endif
 
-#else // __WIN32
-
-#define FORCEINLINE __inline__ __attribute__((always_inline))
-#define ENSURE_FORCEINLINE __attribute__((always_inline)) // inline or die
-
-int vscprintf (const char * format, va_list pargs)
-{ 
-    int retval; 
-    va_list argcopy;
-    va_copy(argcopy, pargs); 
-    retval = vsnprintf(NULL, 0, format, argcopy); 
-    va_end(argcopy); 
-    return retval;
-}
-
-#define MAX_PATH PATH_MAX
-#define _chdir chdir
-
 #endif
 
 bool g_disableStatestateWarnings = false;
@@ -207,7 +189,7 @@ static const char* luaCallIDStrings [] =
 	"CALL_HOTKEY_15",
 	"CALL_HOTKEY_16",
 };
-static int _makeSureWeHaveTheRightNumberOfStrings [sizeof(luaCallIDStrings)/sizeof(*luaCallIDStrings) == LUACALL_COUNT ? 1 : 0];
+static const int _makeSureWeHaveTheRightNumberOfStrings [sizeof(luaCallIDStrings)/sizeof(*luaCallIDStrings) == LUACALL_COUNT ? 1 : 0];
 
 static const char* luaMemHookTypeStrings [] =
 {
@@ -219,7 +201,7 @@ static const char* luaMemHookTypeStrings [] =
 	"MEMHOOK_READ_SUB",
 	"MEMHOOK_EXEC_SUB",
 };
-static int _makeSureWeHaveTheRightNumberOfStrings2 [sizeof(luaMemHookTypeStrings)/sizeof(*luaMemHookTypeStrings) == LUAMEMHOOK_COUNT ? 1 : 0];
+static const int _makeSureWeHaveTheRightNumberOfStrings2 [sizeof(luaMemHookTypeStrings)/sizeof(*luaMemHookTypeStrings) == LUAMEMHOOK_COUNT ? 1 : 0];
 
 void StopScriptIfFinished(int uid, bool justReturned = false);
 void SetSaveKey(LuaContextInfo& info, const char* key);
@@ -795,8 +777,6 @@ void CallDeferredFunctions(lua_State* L, const char* idstring)
 
 bool DeferGUIFuncIfNeeded(lua_State* L)
 {
-	return false;
-
 	LuaContextInfo& info = GetCurrentInfo();
 	if(info.speedMode == SPEEDMODE_MAXIMUM)
 	{
@@ -1667,9 +1647,9 @@ DEFINE_LUA_FUNCTION(emu_wait, "")
 
 
 
+/*
 DEFINE_LUA_FUNCTION(emu_frameadvance, "")
 {
-/*
 	if(FailVerifyAtFrameBoundary(L, "emu.frameadvance", 0,1))
 		return emu_wait(L);
 
@@ -1706,12 +1686,8 @@ DEFINE_LUA_FUNCTION(emu_frameadvance, "")
 			emu_emulateframeinvisible(L);
 			break;
 	}
-	*/
-	S9xMainLoop();
-	S9xProcessEvents(FALSE);
-
 	return 0;
-}
+}*/
 
 DEFINE_LUA_FUNCTION(emu_pause, "")
 {
@@ -4582,7 +4558,7 @@ static int gcStateData(lua_State *L)
 
 static const struct luaL_reg emulib [] =
 {
-	{"frameadvance", emu_frameadvance},
+//	{"frameadvance", emu_frameadvance},
 //	{"speedmode", emu_speedmode},
 //	{"wait", emu_wait},
 	{"pause", emu_pause},
@@ -5470,13 +5446,11 @@ struct TieredRegion
 
 		bool Contains(unsigned int address, int size) const
 		{
-			/*
 			std::vector<Island>::const_iterator iter = islands.begin();
 			std::vector<Island>::const_iterator end = islands.end();
 			for(; iter != end; ++iter)
 				if(iter->Contains(address, size))
 					return true;
-			*/
 			return false;
 		}
 	};
@@ -5496,7 +5470,7 @@ struct TieredRegion
 
 	TieredRegion()
 	{
-		//Calculate(std::vector<unsigned int>());
+		Calculate(std::vector<unsigned int>());
 	}
 
 	__forceinline int NotEmpty()

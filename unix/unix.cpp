@@ -176,7 +176,6 @@
  ***********************************************************************************/
 
 
-#include <iostream>
 #include <stdlib.h>
 #include <unistd.h>
 #include <ctype.h>
@@ -230,8 +229,6 @@
 #define NP_DEBUG 2
 #endif
 #endif
-
-#include "../lua-engine.h"
 
 typedef std::pair<std::string, std::string>	strpair_t;
 
@@ -1589,22 +1586,6 @@ static void sigbrkhandler (int)
 }
 #endif
 
-
-void PrintToWindowConsole(int uid, const char* str)
-{
-	std::cerr << uid << ": " << str << std::endl;
-}
-
-void OnStart(int uid)
-{
-	std::cerr << "Started context " << uid << "." << std::endl;
-}
-
-void OnStop(int uid, bool statusOK)
-{
-	std::cerr << "Stopped context " << uid << ": " << statusOK << "." << std::endl;
-}
-
 int main (int argc, char **argv)
 {
 	if (argc < 2)
@@ -1855,14 +1836,6 @@ int main (int argc, char **argv)
 #ifdef NETPLAY_SUPPORT
 	bool8	NP_Activated = Settings.NetPlay;
 #endif
-
-	int context = 0;
-	
-        OpenLuaContext(context, PrintToWindowConsole, OnStart, OnStop);
-        RunLuaScriptFile(context, "test.lua");
-	CloseLuaContext(context);
-
-	return (0);
 
 	while (1)
 	{
