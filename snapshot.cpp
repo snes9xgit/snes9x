@@ -194,11 +194,6 @@
 #include "lua-engine.h"
 #endif
 
-// Hack: MAX_PATH is not defined on unix.
-#ifndef MAX_PATH
-#define MAX_PATH PATH_MAX
-#endif
-
 #ifndef min
 #define min(a,b)	(((a) < (b)) ? (a) : (b))
 #endif
