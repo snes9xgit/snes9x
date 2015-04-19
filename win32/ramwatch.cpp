@@ -14,6 +14,7 @@
 #include <windows.h>
 #include <commctrl.h>
 #include <string>
+#include <algorithm>
 
 #ifdef UNICODE
 #define _tToChar WideToUtf8
