@@ -2,7 +2,7 @@ Control input names are completely defined by the individual ports. This
 document is intended to collect the rules for all ports.
 
 The various meta-characters in the rules are:
-  #     - A number. The range is detemined by the context
+  #     - A number. The range is determined by the context
   ##    - A two-digit number (i.e. with leading zeros)
   [...] - Something optional
   (...) - For grouping with |

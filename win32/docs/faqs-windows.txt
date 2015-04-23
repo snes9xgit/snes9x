@@ -10,7 +10,7 @@ probably won't, happen. On our first section of this mystical journey you shall
 see various frequently asked questions, as well as their answers!
 
 The majority of the things in this FAQ are based off the Windows port of Snes9x.
-While some of the information is relevant to most, or all, ports, no gaurantees
+While some of the information is relevant to most, or all, ports, no guarantees
 are made that what is said will be accurate for all versions.
 
 --------------------------------------------------------------------------------
@@ -41,7 +41,7 @@ Q: Why doesn't Snes9x support transparencies?
   A: It does! Make sure the "Transparency" box is checked in the settings menu.
 
 Q: I recently purchased a gamepad controller. Will it work on Snes9x?
-  A: More than likely yes. Any USB compatable controller will work. Generally
+  A: More than likely yes. Any USB compatible controller will work. Generally
 this means any controller made within the past 7 years or so. If you are having
 problems consider updating drivers and recalibrating your controller.
 
@@ -110,12 +110,12 @@ some games require specific options to keep "right". First, make sure that
 Hi-res support is selected in the option menus, that option can slow down
 performance on slower machines, although it is now on by default. Second, it is
 recommended your filter option is set to anything except "none." "Simple 2X" is
-a good choice. Note: In the event the "Hi-res" option is greyed out, make sure
+a good choice. Note: In the event the "Hi-res" option is grayed out, make sure
 your display resolution is at least 512 x 480.
 
 Q: Why can't I press many buttons at once? Especially in Chrono Trigger.
   A: Most standard keyboards (There are a few exceptions, though only a few) can
-only output so much data to the compter at a time. As such your computer is
+only output so much data to the computer at a time. As such your computer is
 often unable to carry-out the instructions you have given it. There are
 solutions abound, of course, and here they are now: Lovely recommendation one is
 to rearrange the keymapping in Snes9x so that all the necessary buttons are on a
@@ -124,7 +124,7 @@ The draw back to this is that if you set "a" to jump and shoot you will be
 unable to jump without shooting, or shoot without jumping, until you change it
 back. The super sexy recommendation number 2 is to set the ctrl and alt keys to
 some of the necessary buttons. The draw back to this is that often these buttons
-can cause problems if used in tandum with other keys, due to Windows shortcuts.
+can cause problems if used in tandem with other keys, due to Windows shortcuts.
 You may, for instance, be using alt to jump and while in midair hit f4 to load a
 savestate... That will close the program, which is bad. Finally, and the method
 I personally recommend, is to purchase a gamepad. The draw backs to this are
@@ -251,10 +251,10 @@ have a question worthy of this vast tome of knowledge please leave it in the
 return again next time with an even greater FAQ.
 
 I would like to take the time to thank the vast plethora of people who have
-helped me conjur this machination of goodness. However, in the annals of time I
-have probably forgotten many of those who have given me advice, defintions,
-technologial information and cookies. It would be unfair to only mention the
-small portion of names I remember from an excessivley long and ever-expanding
+helped me conjure this machination of goodness. However, in the annals of time I
+have probably forgotten many of those who have given me advice, definitions,
+technological information and cookies. It would be unfair to only mention the
+small portion of names I remember from an excessively long and ever-expanding
 list. As such, I won't. Toodles.
 
 Knowledge is power; Learn it well
