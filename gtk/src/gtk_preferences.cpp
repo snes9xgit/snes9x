@@ -646,6 +646,7 @@ Snes9xPreferences::move_settings_to_dialog (void)
     else
         set_entry_text ("export_directory", config->export_directory);
 
+    set_combo ("quicksave_ext",             Settings.QuickSaveExtension);
     set_combo ("resolution_combo",          config->xrr_index);
     set_combo ("scale_method_combo",        config->scale_method);
     set_entry_value ("save_sram_after_sec", Settings.AutoSaveDelay);
@@ -868,6 +869,8 @@ Snes9xPreferences::get_settings_from_dialog (void)
         config->cheat_directory[0] = '\0';
     if (!strcmp (config->export_directory, SAME_GAME))
         config->export_directory[0] = '\0';
+
+    Settings.QuickSaveExtension = get_combo ("quicksave_ext");
 
     if (strcmp (safety_sram_directory, config->sram_directory) && config->rom_loaded)
     {

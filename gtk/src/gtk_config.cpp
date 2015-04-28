@@ -209,6 +209,7 @@ Snes9xConfig::load_defaults (void)
     Settings.SoundSync = 1;
     Settings.HDMATimingHack = 100;
     Settings.ApplyCheats = 1;
+    Settings.QuickSaveExtension = SNES_SSEXT_CLASSIC;
 
 #ifdef NETPLAY_SUPPORT
     Settings.NetPlay = FALSE;
@@ -364,6 +365,7 @@ Snes9xConfig::save_config_file (void)
     xml_out_int (xml, "playback_rate", gui_config->sound_playback_rate);
     xml_out_int (xml, "block_invalid_vram_access", Settings.BlockInvalidVRAMAccessMaster);
     xml_out_int (xml, "upanddown", Settings.UpAndDown);
+    xml_out_int (xml, "quicksave_ext", Settings.QuickSaveExtension);
 
     xmlTextWriterEndElement (xml); /* preferences */
 
@@ -566,6 +568,10 @@ Snes9xConfig::set_option (const char *name, const char *value)
     else if (!strcasecmp (name, "save_sram_after_secs"))
     {
         Settings.AutoSaveDelay = atoi (value);
+    }
+    else if (!strcasecmp (name, "quicksave_ext"))
+    {
+        Settings.QuickSaveExtension = atoi (value);
     }
     else if (!strcasecmp (name, "pause_emulation_on_switch"))
     {

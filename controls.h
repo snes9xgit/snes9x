@@ -451,4 +451,9 @@ struct SControlSnapshot
 void S9xControlPreSaveState (struct SControlSnapshot *s);
 void S9xControlPostLoadState (struct SControlSnapshot *s);
 
+// Functions for quick saves
+
+void S9xQuickSaveSlot (int slot);
+void S9xQuickLoadSlot (int slot);
+
 #endif

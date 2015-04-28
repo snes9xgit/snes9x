@@ -990,6 +990,7 @@ Snes9xWindow::load_state_dialog ()
     gtk_file_filter_add_pattern (filter, "*.sst");
     gtk_file_filter_add_pattern (filter, "*.zst");
     gtk_file_filter_add_pattern (filter, "*.ZST");
+    gtk_file_filter_add_pattern (filter, "*.frz");
     gtk_file_filter_add_pattern (filter, "*.000");
     gtk_file_filter_add_pattern (filter, "*.001");
     gtk_file_filter_add_pattern (filter, "*.002");
@@ -1113,6 +1114,7 @@ Snes9xWindow::save_state_dialog ()
     gtk_file_filter_add_pattern (filter, "*.sst");
     gtk_file_filter_add_pattern (filter, "*.zst");
     gtk_file_filter_add_pattern (filter, "*.ZST");
+    gtk_file_filter_add_pattern (filter, "*.frz");
     gtk_file_filter_add_pattern (filter, "*.000");
     gtk_file_filter_add_pattern (filter, "*.001");
     gtk_file_filter_add_pattern (filter, "*.002");

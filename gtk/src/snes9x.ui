@@ -102,6 +102,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -263,6 +264,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -383,6 +385,7 @@
                     <property name="has_default">True</property>
                     <property name="receives_default">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                    <property name="use_action_appearance">False</property>
                     <property name="use_stock">True</property>
                     <signal name="clicked" handler="add_code" swapped="no"/>
                   </object>
@@ -399,6 +402,7 @@
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                    <property name="use_action_appearance">False</property>
                     <property name="use_stock">True</property>
                     <signal name="clicked" handler="remove_code" swapped="no"/>
                   </object>
@@ -455,6 +459,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -472,6 +477,7 @@
                 <property name="has_default">True</property>
                 <property name="receives_default">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -817,6 +823,23 @@
       </row>
     </data>
   </object>
+  <object class="GtkListStore" id="liststore16">
+    <columns>
+      <!-- column-name item -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">Classic (.001, .002, .003, ...)</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Freeze (.00.frz, .01.frz, .02.frz, ...)</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">ZSNES (.zst, .zs1, .zs2, .zs3, ...)</col>
+      </row>
+    </data>
+  </object>
   <object class="GtkListStore" id="liststore2">
     <columns>
       <!-- column-name item -->
@@ -1035,6 +1058,7 @@
               <object class="GtkMenuItem" id="file_menu_item">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">_File</property>
                 <property name="use_underline">True</property>
                 <child type="submenu">
@@ -1045,6 +1069,7 @@
                         <property name="label" translatable="yes">_Open ROM Image...</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="image">image2</property>
                         <property name="use_stock">False</property>
@@ -1056,6 +1081,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">Open Recent</property>
                         <property name="use_underline">True</property>
                       </object>
@@ -1072,6 +1098,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Open a ROM to use with NetPlay</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="image">image3</property>
                         <property name="use_stock">False</property>
@@ -1082,6 +1109,7 @@
                       <object class="GtkMenuItem" id="open_multicart_item">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">Open _MultiCart...</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="open_multicart" swapped="no"/>
@@ -1097,6 +1125,7 @@
                       <object class="GtkMenuItem" id="load_state_item">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">_Load State</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_load_state_item_activate" swapped="no"/>
@@ -1107,6 +1136,7 @@
                               <object class="GtkMenuItem" id="load_state_0">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="label" translatable="yes">Slot _0</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="load_save_state" swapped="no"/>
@@ -1116,6 +1146,7 @@
                               <object class="GtkMenuItem" id="load_state_1">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="label" translatable="yes">Slot _1</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="load_save_state" swapped="no"/>
@@ -1125,6 +1156,7 @@
                               <object class="GtkMenuItem" id="load_state_2">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="label" translatable="yes">Slot _2</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="load_save_state" swapped="no"/>
@@ -1134,6 +1166,7 @@
                               <object class="GtkMenuItem" id="load_state_3">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="label" translatable="yes">Slot _3</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="load_save_state" swapped="no"/>
@@ -1143,6 +1176,7 @@
                               <object class="GtkMenuItem" id="load_state_4">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="label" translatable="yes">Slot _4</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="load_save_state" swapped="no"/>
@@ -1152,6 +1186,7 @@
                               <object class="GtkMenuItem" id="load_state_5">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="label" translatable="yes">Slot _5</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="load_save_state" swapped="no"/>
@@ -1161,6 +1196,7 @@
                               <object class="GtkMenuItem" id="load_state_6">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="label" translatable="yes">Slot _6</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="load_save_state" swapped="no"/>
@@ -1170,6 +1206,7 @@
                               <object class="GtkMenuItem" id="load_state_7">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="label" translatable="yes">Slot _7</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="load_save_state" swapped="no"/>
@@ -1179,6 +1216,7 @@
                               <object class="GtkMenuItem" id="load_state_8">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="label" translatable="yes">Slot _8</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="load_save_state" swapped="no"/>
@@ -1194,6 +1232,7 @@
                               <object class="GtkMenuItem" id="from_file1">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="label" translatable="yes">From _File...</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="load_state_file" swapped="no"/>
@@ -1207,6 +1246,7 @@
                       <object class="GtkMenuItem" id="save_state_item">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">_Save State</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_save_state_item_activate" swapped="no"/>
@@ -1217,6 +1257,7 @@
                               <object class="GtkMenuItem" id="save_state_0">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="label" translatable="yes">Slot _0</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="save_save_state" swapped="no"/>
@@ -1226,6 +1267,7 @@
                               <object class="GtkMenuItem" id="save_state_1">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="label" translatable="yes">Slot _1</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="save_save_state" swapped="no"/>
@@ -1235,6 +1277,7 @@
                               <object class="GtkMenuItem" id="save_state_2">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="label" translatable="yes">Slot _2</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="save_save_state" swapped="no"/>
@@ -1244,6 +1287,7 @@
                               <object class="GtkMenuItem" id="save_state_3">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="label" translatable="yes">Slot _3</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="save_save_state" swapped="no"/>
@@ -1253,6 +1297,7 @@
                               <object class="GtkMenuItem" id="save_state_4">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="label" translatable="yes">Slot _4</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="save_save_state" swapped="no"/>
@@ -1262,6 +1307,7 @@
                               <object class="GtkMenuItem" id="save_state_5">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="label" translatable="yes">Slot _5</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="save_save_state" swapped="no"/>
@@ -1271,6 +1317,7 @@
                               <object class="GtkMenuItem" id="save_state_6">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="label" translatable="yes">Slot _6</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="save_save_state" swapped="no"/>
@@ -1280,6 +1327,7 @@
                               <object class="GtkMenuItem" id="save_state_7">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="label" translatable="yes">Slot _7</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="save_save_state" swapped="no"/>
@@ -1289,6 +1337,7 @@
                               <object class="GtkMenuItem" id="save_state_8">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="label" translatable="yes">Slot _8</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="save_save_state" swapped="no"/>
@@ -1304,6 +1353,7 @@
                               <object class="GtkMenuItem" id="to_file1">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="label" translatable="yes">To _File...</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="save_state_file" swapped="no"/>
@@ -1324,6 +1374,7 @@
                         <property name="label" translatable="yes">Save SPC...</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="image">image4</property>
                         <property name="use_stock">False</property>
@@ -1341,6 +1392,7 @@
                         <property name="label" translatable="yes">Show ROM _Info...</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="image">image5</property>
                         <property name="use_stock">False</property>
@@ -1358,6 +1410,7 @@
                         <property name="label" translatable="yes">_Quit</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="image">image18</property>
                         <property name="use_stock">False</property>
@@ -1372,6 +1425,7 @@
               <object class="GtkMenuItem" id="emulation_menu_item">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">_Emulation</property>
                 <property name="use_underline">True</property>
                 <child type="submenu">
@@ -1382,6 +1436,7 @@
                         <property name="label" translatable="yes">Run / _Continue</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="image">image6</property>
                         <property name="use_stock">False</property>
@@ -1393,6 +1448,7 @@
                         <property name="label" translatable="yes">_Pause</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="image">image7</property>
                         <property name="use_stock">False</property>
@@ -1412,6 +1468,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="image">image8</property>
                         <property name="use_stock">False</property>
@@ -1424,6 +1481,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="image">image19</property>
                         <property name="use_stock">False</property>
@@ -1436,6 +1494,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="image">image9</property>
                         <property name="use_stock">False</property>
@@ -1448,6 +1507,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="image">image10</property>
                         <property name="use_stock">False</property>
@@ -1465,6 +1525,7 @@
                         <property name="label" translatable="yes">Sy_nc Clients</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="image">image11</property>
                         <property name="use_stock">False</property>
@@ -1483,6 +1544,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="image">image12</property>
                         <property name="use_stock">False</property>
@@ -1494,6 +1556,7 @@
                         <property name="label" translatable="yes">Soft _Reset</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="image">image13</property>
                         <property name="use_stock">False</property>
@@ -1508,6 +1571,7 @@
               <object class="GtkMenuItem" id="view_menu">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">_View</property>
                 <property name="use_underline">True</property>
                 <signal name="activate" handler="on_view_menu_activate" swapped="no"/>
@@ -1519,6 +1583,7 @@
                         <property name="label" translatable="yes">_Hide Menu</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="image">image14</property>
                         <property name="use_stock">False</property>
@@ -1529,6 +1594,7 @@
                       <object class="GtkCheckMenuItem" id="show_statusbar_item">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">_Status Bar</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="show_statusbar" swapped="no"/>
@@ -1545,6 +1611,7 @@
                         <property name="label" translatable="yes">_Change Size</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="image">image17</property>
                         <property name="use_stock">False</property>
@@ -1556,6 +1623,7 @@
                               <object class="GtkMenuItem" id="exact_pixels_1x_item">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="label" translatable="yes">_1x</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="exact_1x" swapped="no"/>
@@ -1565,6 +1633,7 @@
                               <object class="GtkMenuItem" id="exact_pixels_2x_item">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="label" translatable="yes">_2x</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="exact_2x" swapped="no"/>
@@ -1574,6 +1643,7 @@
                               <object class="GtkMenuItem" id="exact_pixels_3x_item">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="label" translatable="yes">_3x</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="exact_3x" swapped="no"/>
@@ -1583,6 +1653,7 @@
                               <object class="GtkMenuItem" id="exact_pixels_4x_item">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="label" translatable="yes">_4x</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="exact_4x" swapped="no"/>
@@ -1592,6 +1663,7 @@
                               <object class="GtkMenuItem" id="exact_pixels_5x_item">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="label" translatable="yes">_5x</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="exact_5x" swapped="no"/>
@@ -1612,6 +1684,7 @@
                         <property name="label" translatable="yes">_Fullscreen</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="image">image15</property>
                         <property name="use_stock">False</property>
@@ -1626,6 +1699,7 @@
               <object class="GtkMenuItem" id="options_menu_item">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">_Options</property>
                 <property name="use_underline">True</property>
                 <child type="submenu">
@@ -1635,6 +1709,7 @@
                       <object class="GtkMenuItem" id="controller_ports_item">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">Controller Ports</property>
                         <property name="use_underline">True</property>
                         <child type="submenu">
@@ -1644,6 +1719,7 @@
                               <object class="GtkMenuItem" id="snes_port_1">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="label" translatable="yes">SNES Port 1</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="on_snes_port_1_activate" swapped="no"/>
@@ -1654,6 +1730,7 @@
                                       <object class="GtkRadioMenuItem" id="joypad1">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
+                                        <property name="use_action_appearance">False</property>
                                         <property name="label" translatable="yes">Joypad</property>
                                         <property name="use_underline">True</property>
                                         <signal name="activate" handler="on_port_activate" swapped="no"/>
@@ -1663,6 +1740,7 @@
                                       <object class="GtkRadioMenuItem" id="mouse1">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
+                                        <property name="use_action_appearance">False</property>
                                         <property name="label" translatable="yes">Mouse</property>
                                         <property name="use_underline">True</property>
                                         <property name="group">joypad1</property>
@@ -1673,6 +1751,7 @@
                                       <object class="GtkRadioMenuItem" id="superscope1">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
+                                        <property name="use_action_appearance">False</property>
                                         <property name="label" translatable="yes">Superscope</property>
                                         <property name="use_underline">True</property>
                                         <property name="active">True</property>
@@ -1688,6 +1767,7 @@
                               <object class="GtkMenuItem" id="snes_port_2">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="use_action_appearance">False</property>
                                 <property name="label" translatable="yes">SNES Port 2</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="on_snes_port_2_activate" swapped="no"/>
@@ -1698,6 +1778,7 @@
                                       <object class="GtkRadioMenuItem" id="joypad2">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
+                                        <property name="use_action_appearance">False</property>
                                         <property name="label" translatable="yes">Joypad</property>
                                         <property name="use_underline">True</property>
                                         <signal name="activate" handler="on_port_activate" swapped="no"/>
@@ -1707,6 +1788,7 @@
                                       <object class="GtkRadioMenuItem" id="mouse2">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
+                                        <property name="use_action_appearance">False</property>
                                         <property name="label" translatable="yes">Mouse</property>
                                         <property name="use_underline">True</property>
                                         <property name="group">joypad2</property>
@@ -1717,6 +1799,7 @@
                                       <object class="GtkRadioMenuItem" id="multitap2">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
+                                        <property name="use_action_appearance">False</property>
                                         <property name="label" translatable="yes">Multitap</property>
                                         <property name="use_underline">True</property>
                                         <property name="group">joypad2</property>
@@ -1727,6 +1810,7 @@
                                       <object class="GtkRadioMenuItem" id="superscope2">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
+                                        <property name="use_action_appearance">False</property>
                                         <property name="label" translatable="yes">Superscope</property>
                                         <property name="use_underline">True</property>
                                         <property name="active">True</property>
@@ -1753,6 +1837,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">_Cheats...</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="open_cheats" swapped="no"/>
@@ -1770,6 +1855,7 @@
                         <property name="label" translatable="yes">_Preferences...</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="image">image16</property>
                         <property name="use_stock">False</property>
@@ -1843,6 +1929,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -1857,6 +1944,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -1986,6 +2074,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -2001,6 +2090,7 @@
                 <property name="can_focus">True</property>
                 <property name="has_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -2063,6 +2153,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <property name="use_action_appearance">False</property>
                             <signal name="clicked" handler="browse_clicked" swapped="no"/>
                           </object>
                           <packing>
@@ -2076,6 +2167,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <property name="use_action_appearance">False</property>
                             <signal name="clicked" handler="clear_clicked" swapped="no"/>
                             <child>
                               <object class="GtkImage" id="image26">
@@ -2135,6 +2227,7 @@
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
                             <property name="tooltip_text" translatable="yes">Connect to another computer that is running Snes9x NetPlay as a server</property>
+                            <property name="use_action_appearance">False</property>
                             <property name="active">True</property>
                             <property name="draw_indicator">True</property>
                           </object>
@@ -2223,6 +2316,7 @@
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
                             <property name="tooltip_text" translatable="yes">Host a game on this computer as Player 1, requiring extra throughput to support multitple users</property>
+                            <property name="use_action_appearance">False</property>
                             <property name="active">True</property>
                             <property name="draw_indicator">True</property>
                             <property name="group">connect_radio</property>
@@ -2277,6 +2371,7 @@
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
                             <property name="tooltip_text" translatable="yes">Reset the game when players join instead of transferring potentially unreliable freeze states</property>
+                            <property name="use_action_appearance">False</property>
                             <property name="draw_indicator">True</property>
                           </object>
                           <packing>
@@ -2292,6 +2387,7 @@
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
                             <property name="tooltip_text" translatable="yes">Send the running game image to players instead of requiring them to have their own copies</property>
+                            <property name="use_action_appearance">False</property>
                             <property name="draw_indicator">True</property>
                           </object>
                           <packing>
@@ -2456,6 +2552,7 @@
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">False</property>
+                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -2471,6 +2568,7 @@
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">False</property>
+                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
                 <signal name="clicked" handler="on_apply_clicked" swapped="no"/>
               </object>
@@ -2487,6 +2585,7 @@
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">False</property>
+                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -2501,6 +2600,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
                 <signal name="clicked" handler="about_clicked" swapped="no"/>
               </object>
@@ -2573,6 +2673,7 @@
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">False</property>
                                             <property name="tooltip_text" translatable="yes">Go to fullscreen mode immediately after opening a ROM</property>
+                                            <property name="use_action_appearance">False</property>
                                             <property name="use_underline">True</property>
                                             <property name="draw_indicator">True</property>
                                           </object>
@@ -2588,6 +2689,7 @@
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">False</property>
+                                            <property name="use_action_appearance">False</property>
                                             <property name="use_underline">True</property>
                                             <property name="draw_indicator">True</property>
                                           </object>
@@ -2604,6 +2706,7 @@
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">False</property>
                                             <property name="tooltip_text" translatable="yes">Use SNES extended height. Will probably cause letterboxing</property>
+                                            <property name="use_action_appearance">False</property>
                                             <property name="use_underline">True</property>
                                             <property name="draw_indicator">True</property>
                                           </object>
@@ -2625,6 +2728,7 @@
                                                 <property name="can_focus">True</property>
                                                 <property name="receives_default">False</property>
                                                 <property name="tooltip_text" translatable="yes">Changes the screen resolution when running Snes9x in fullscreen mode</property>
+                                                <property name="use_action_appearance">False</property>
                                                 <property name="use_underline">True</property>
                                                 <property name="draw_indicator">True</property>
                                               </object>
@@ -2703,6 +2807,7 @@
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">False</property>
                                             <property name="tooltip_text" translatable="yes">Scales the image so no black bars are present</property>
+                                            <property name="use_action_appearance">False</property>
                                             <property name="use_underline">True</property>
                                             <property name="draw_indicator">True</property>
                                           </object>
@@ -2762,6 +2867,7 @@
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">False</property>
                                             <property name="tooltip_text" translatable="yes">Scales the image as large as possible without distortion</property>
+                                            <property name="use_action_appearance">False</property>
                                             <property name="use_underline">True</property>
                                             <property name="draw_indicator">True</property>
                                           </object>
@@ -2783,6 +2889,7 @@
                                                 <property name="can_focus">True</property>
                                                 <property name="receives_default">False</property>
                                                 <property name="tooltip_text" translatable="yes">Allows scaling and filtering to use multiple processors</property>
+                                                <property name="use_action_appearance">False</property>
                                                 <property name="use_underline">True</property>
                                                 <property name="draw_indicator">True</property>
                                               </object>
@@ -2983,6 +3090,7 @@
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">True</property>
+                                                    <property name="use_action_appearance">False</property>
                                                     <signal name="clicked" handler="ntsc_composite_preset" swapped="no"/>
                                                   </object>
                                                   <packing>
@@ -2997,6 +3105,7 @@
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">True</property>
+                                                    <property name="use_action_appearance">False</property>
                                                     <signal name="clicked" handler="ntsc_svideo_preset" swapped="no"/>
                                                   </object>
                                                   <packing>
@@ -3011,6 +3120,7 @@
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">True</property>
+                                                    <property name="use_action_appearance">False</property>
                                                     <signal name="clicked" handler="ntsc_rgb_preset" swapped="no"/>
                                                   </object>
                                                   <packing>
@@ -3025,6 +3135,7 @@
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">True</property>
+                                                    <property name="use_action_appearance">False</property>
                                                     <signal name="clicked" handler="ntsc_monochrome_preset" swapped="no"/>
                                                   </object>
                                                   <packing>
@@ -3417,6 +3528,7 @@
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">False</property>
+                                            <property name="use_action_appearance">False</property>
                                             <property name="draw_indicator">True</property>
                                           </object>
                                           <packing>
@@ -3600,6 +3712,7 @@
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">False</property>
+                                            <property name="use_action_appearance">False</property>
                                             <property name="use_underline">True</property>
                                             <property name="draw_indicator">True</property>
                                           </object>
@@ -3622,6 +3735,7 @@
                                                 <property name="can_focus">True</property>
                                                 <property name="receives_default">False</property>
                                                 <property name="tooltip_text" translatable="yes">Sync the image to the vertical retrace to stop tearing</property>
+                                                <property name="use_action_appearance">False</property>
                                                 <property name="use_underline">True</property>
                                                 <property name="draw_indicator">True</property>
                                               </object>
@@ -3638,6 +3752,7 @@
                                                 <property name="can_focus">True</property>
                                                 <property name="receives_default">False</property>
                                                 <property name="tooltip_text" translatable="yes">Sync the program with the video output after every displayed frame to reduce input latency</property>
+                                                <property name="use_action_appearance">False</property>
                                                 <property name="draw_indicator">True</property>
                                               </object>
                                               <packing>
@@ -3653,6 +3768,7 @@
                                                 <property name="can_focus">True</property>
                                                 <property name="receives_default">False</property>
                                                 <property name="tooltip_text" translatable="yes">Prevents edge artifacts, but can slow performance</property>
+                                                <property name="use_action_appearance">False</property>
                                                 <property name="draw_indicator">True</property>
                                               </object>
                                               <packing>
@@ -3669,6 +3785,7 @@
                                                 <property name="receives_default">False</property>
                                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                                 <property name="tooltip_text" translatable="yes">Can be faster or slower depending on drivers</property>
+                                                <property name="use_action_appearance">False</property>
                                                 <property name="draw_indicator">True</property>
                                               </object>
                                               <packing>
@@ -3742,6 +3859,7 @@
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">False</property>
+                                                    <property name="use_action_appearance">False</property>
                                                     <property name="xalign">0</property>
                                                     <property name="draw_indicator">True</property>
                                                   </object>
@@ -3774,6 +3892,7 @@
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">True</property>
+                                                    <property name="use_action_appearance">False</property>
                                                     <signal name="clicked" handler="shader_select" swapped="no"/>
                                                   </object>
                                                   <packing>
@@ -3807,6 +3926,7 @@
                                                 <property name="can_focus">True</property>
                                                 <property name="receives_default">False</property>
                                                 <property name="tooltip_text" translatable="yes">Forces a swapped byte-ordering for cases where the system's endian is used instead of the video card</property>
+                                                <property name="use_action_appearance">False</property>
                                                 <property name="draw_indicator">True</property>
                                               </object>
                                               <packing>
@@ -3960,6 +4080,7 @@
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">False</property>
                                         <property name="tooltip_text" translatable="yes">Base emulation speed on the rate sound is output</property>
+                                        <property name="use_action_appearance">False</property>
                                         <property name="draw_indicator">True</property>
                                       </object>
                                       <packing>
@@ -3975,6 +4096,7 @@
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">False</property>
                                         <property name="tooltip_text" translatable="yes">Disables output of sound</property>
+                                        <property name="use_action_appearance">False</property>
                                         <property name="use_underline">True</property>
                                         <property name="draw_indicator">True</property>
                                       </object>
@@ -3991,6 +4113,7 @@
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">False</property>
                                         <property name="tooltip_text" translatable="yes">Output two channels, left and right</property>
+                                        <property name="use_action_appearance">False</property>
                                         <property name="use_underline">True</property>
                                         <property name="draw_indicator">True</property>
                                       </object>
@@ -4017,7 +4140,7 @@
                                           </object>
                                           <packing>
                                             <property name="x_options">GTK_FILL</property>
-                                            <property name="y_options"/>
+                                            <property name="y_options"></property>
                                           </packing>
                                         </child>
                                         <child>
@@ -4313,6 +4436,7 @@
                                             <property name="label" translatable="yes">Block invalid VRAM access</property>
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">False</property>
+                                            <property name="use_action_appearance">False</property>
                                             <property name="draw_indicator">True</property>
                                           </object>
                                           <packing>
@@ -4328,6 +4452,7 @@
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">False</property>
                                             <property name="tooltip_text" translatable="yes">Let left and right or up and down be pressed at the same time</property>
+                                            <property name="use_action_appearance">False</property>
                                             <property name="draw_indicator">True</property>
                                           </object>
                                           <packing>
@@ -4379,6 +4504,7 @@
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">False</property>
+                                            <property name="use_action_appearance">False</property>
                                             <property name="draw_indicator">True</property>
                                           </object>
                                           <packing>
@@ -4471,6 +4597,7 @@
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">False</property>
+                                            <property name="use_action_appearance">False</property>
                                             <property name="draw_indicator">True</property>
                                           </object>
                                           <packing>
@@ -4687,13 +4814,14 @@
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
+                                        <property name="use_action_appearance">False</property>
                                         <signal name="clicked" handler="game_data_browse" swapped="no"/>
                                       </object>
                                       <packing>
                                         <property name="left_attach">2</property>
                                         <property name="right_attach">3</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -4702,6 +4830,7 @@
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
+                                        <property name="use_action_appearance">False</property>
                                         <signal name="clicked" handler="game_data_browse" swapped="no"/>
                                       </object>
                                       <packing>
@@ -4710,7 +4839,7 @@
                                         <property name="top_attach">1</property>
                                         <property name="bottom_attach">2</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -4719,6 +4848,7 @@
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
+                                        <property name="use_action_appearance">False</property>
                                         <signal name="clicked" handler="game_data_browse" swapped="no"/>
                                       </object>
                                       <packing>
@@ -4727,7 +4857,7 @@
                                         <property name="top_attach">2</property>
                                         <property name="bottom_attach">3</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -4736,6 +4866,7 @@
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
+                                        <property name="use_action_appearance">False</property>
                                         <signal name="clicked" handler="game_data_browse" swapped="no"/>
                                       </object>
                                       <packing>
@@ -4744,7 +4875,7 @@
                                         <property name="top_attach">3</property>
                                         <property name="bottom_attach">4</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -4753,6 +4884,7 @@
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
+                                        <property name="use_action_appearance">False</property>
                                         <signal name="clicked" handler="game_data_browse" swapped="no"/>
                                       </object>
                                       <packing>
@@ -4761,7 +4893,7 @@
                                         <property name="top_attach">4</property>
                                         <property name="bottom_attach">5</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -4937,6 +5069,72 @@
                         <property name="position">1</property>
                       </packing>
                     </child>
+                    <child>
+                      <object class="GtkFrame" id="frame14">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label_xalign">0</property>
+                        <property name="shadow_type">none</property>
+                        <child>
+                          <object class="GtkAlignment" id="alignment20">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="top_padding">5</property>
+                            <property name="left_padding">12</property>
+                            <child>
+                              <object class="GtkHBox" id="ssext_box">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="spacing">20</property>
+                                <child>
+                                  <object class="GtkLabel" id="label158">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label" translatable="yes">Quick save states extension:</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkComboBox" id="quicksave_ext">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="model">liststore16</property>
+                                    <child>
+                                      <object class="GtkCellRendererText" id="cellrenderertext15"/>
+                                      <attributes>
+                                        <attribute name="text">0</attribute>
+                                      </attributes>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child type="label">
+                          <object class="GtkLabel" id="label152">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">&lt;b&gt;Miscelaneous&lt;/b&gt;</property>
+                            <property name="use_markup">True</property>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
                   </object>
                   <packing>
                     <property name="position">3</property>
@@ -5038,6 +5236,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <property name="use_action_appearance">False</property>
                             <property name="use_underline">True</property>
                             <signal name="clicked" handler="reset_current_joypad" swapped="no"/>
                           </object>
@@ -5094,6 +5293,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <property name="use_action_appearance">False</property>
                             <property name="use_underline">True</property>
                             <signal name="clicked" handler="swap_with" swapped="no"/>
                           </object>
@@ -5117,6 +5317,7 @@
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="tooltip_text" translatable="yes">Allow using modifier keys as independent keys instead of modifiers</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                       </object>
@@ -5154,7 +5355,7 @@
                                   </object>
                                   <packing>
                                     <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"/>
+                                    <property name="y_options"></property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5168,7 +5369,7 @@
                                     <property name="top_attach">1</property>
                                     <property name="bottom_attach">2</property>
                                     <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"/>
+                                    <property name="y_options"></property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5182,7 +5383,7 @@
                                     <property name="top_attach">2</property>
                                     <property name="bottom_attach">3</property>
                                     <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"/>
+                                    <property name="y_options"></property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5196,7 +5397,7 @@
                                     <property name="top_attach">3</property>
                                     <property name="bottom_attach">4</property>
                                     <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"/>
+                                    <property name="y_options"></property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5210,7 +5411,7 @@
                                     <property name="top_attach">4</property>
                                     <property name="bottom_attach">5</property>
                                     <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"/>
+                                    <property name="y_options"></property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5224,7 +5425,7 @@
                                     <property name="top_attach">5</property>
                                     <property name="bottom_attach">6</property>
                                     <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"/>
+                                    <property name="y_options"></property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5363,7 +5564,7 @@
                                   </object>
                                   <packing>
                                     <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"/>
+                                    <property name="y_options"></property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5377,7 +5578,7 @@
                                     <property name="top_attach">1</property>
                                     <property name="bottom_attach">2</property>
                                     <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"/>
+                                    <property name="y_options"></property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5391,7 +5592,7 @@
                                     <property name="top_attach">2</property>
                                     <property name="bottom_attach">3</property>
                                     <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"/>
+                                    <property name="y_options"></property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5405,7 +5606,7 @@
                                     <property name="top_attach">3</property>
                                     <property name="bottom_attach">4</property>
                                     <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"/>
+                                    <property name="y_options"></property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5419,7 +5620,7 @@
                                     <property name="top_attach">4</property>
                                     <property name="bottom_attach">5</property>
                                     <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"/>
+                                    <property name="y_options"></property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5433,7 +5634,7 @@
                                     <property name="top_attach">5</property>
                                     <property name="bottom_attach">6</property>
                                     <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"/>
+                                    <property name="y_options"></property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5593,7 +5794,7 @@
                                   </object>
                                   <packing>
                                     <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"/>
+                                    <property name="y_options"></property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5607,7 +5808,7 @@
                                     <property name="top_attach">1</property>
                                     <property name="bottom_attach">2</property>
                                     <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"/>
+                                    <property name="y_options"></property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5621,7 +5822,7 @@
                                     <property name="top_attach">2</property>
                                     <property name="bottom_attach">3</property>
                                     <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"/>
+                                    <property name="y_options"></property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5635,7 +5836,7 @@
                                     <property name="top_attach">3</property>
                                     <property name="bottom_attach">4</property>
                                     <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"/>
+                                    <property name="y_options"></property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5649,7 +5850,7 @@
                                     <property name="top_attach">4</property>
                                     <property name="bottom_attach">5</property>
                                     <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"/>
+                                    <property name="y_options"></property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5663,7 +5864,7 @@
                                     <property name="top_attach">5</property>
                                     <property name="bottom_attach">6</property>
                                     <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"/>
+                                    <property name="y_options"></property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5805,7 +6006,7 @@
                                   </object>
                                   <packing>
                                     <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"/>
+                                    <property name="y_options"></property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5819,7 +6020,7 @@
                                     <property name="top_attach">1</property>
                                     <property name="bottom_attach">2</property>
                                     <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"/>
+                                    <property name="y_options"></property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5833,7 +6034,7 @@
                                     <property name="top_attach">2</property>
                                     <property name="bottom_attach">3</property>
                                     <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"/>
+                                    <property name="y_options"></property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5847,7 +6048,7 @@
                                     <property name="top_attach">3</property>
                                     <property name="bottom_attach">4</property>
                                     <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"/>
+                                    <property name="y_options"></property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5861,7 +6062,7 @@
                                     <property name="top_attach">4</property>
                                     <property name="bottom_attach">5</property>
                                     <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"/>
+                                    <property name="y_options"></property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5875,7 +6076,7 @@
                                     <property name="top_attach">5</property>
                                     <property name="bottom_attach">6</property>
                                     <property name="x_options">GTK_FILL</property>
-                                    <property name="y_options"/>
+                                    <property name="y_options"></property>
                                   </packing>
                                 </child>
                                 <child>
@@ -6009,8 +6210,8 @@
                               <packing>
                                 <property name="left_attach">1</property>
                                 <property name="right_attach">2</property>
-                                <property name="x_options"/>
-                                <property name="y_options"/>
+                                <property name="x_options"></property>
+                                <property name="y_options"></property>
                               </packing>
                             </child>
                             <child>
@@ -6023,8 +6224,8 @@
                                 <property name="justify">center</property>
                               </object>
                               <packing>
-                                <property name="x_options"/>
-                                <property name="y_options"/>
+                                <property name="x_options"></property>
+                                <property name="y_options"></property>
                               </packing>
                             </child>
                           </object>
@@ -6179,6 +6380,7 @@
                                                 <property name="can_focus">True</property>
                                                 <property name="receives_default">True</property>
                                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                                <property name="use_action_appearance">False</property>
                                                 <property name="use_underline">True</property>
                                                 <signal name="clicked" handler="calibrate" swapped="no"/>
                                               </object>
@@ -6367,7 +6569,7 @@
                                         <property name="top_attach">9</property>
                                         <property name="bottom_attach">10</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -6381,7 +6583,7 @@
                                         <property name="top_attach">8</property>
                                         <property name="bottom_attach">9</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -6395,7 +6597,7 @@
                                         <property name="top_attach">7</property>
                                         <property name="bottom_attach">8</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -6409,7 +6611,7 @@
                                         <property name="top_attach">6</property>
                                         <property name="bottom_attach">7</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -6423,7 +6625,7 @@
                                         <property name="top_attach">5</property>
                                         <property name="bottom_attach">6</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -6437,7 +6639,7 @@
                                         <property name="top_attach">4</property>
                                         <property name="bottom_attach">5</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -6451,7 +6653,7 @@
                                         <property name="top_attach">3</property>
                                         <property name="bottom_attach">4</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -6465,7 +6667,7 @@
                                         <property name="top_attach">2</property>
                                         <property name="bottom_attach">3</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -6479,7 +6681,7 @@
                                         <property name="top_attach">1</property>
                                         <property name="bottom_attach">2</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -6492,7 +6694,7 @@
                                       </object>
                                       <packing>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -6751,7 +6953,7 @@
                                       </object>
                                       <packing>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -6765,7 +6967,7 @@
                                         <property name="top_attach">1</property>
                                         <property name="bottom_attach">2</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -6779,7 +6981,7 @@
                                         <property name="top_attach">2</property>
                                         <property name="bottom_attach">3</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -6793,7 +6995,7 @@
                                         <property name="top_attach">3</property>
                                         <property name="bottom_attach">4</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -6807,7 +7009,7 @@
                                         <property name="top_attach">4</property>
                                         <property name="bottom_attach">5</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -6821,7 +7023,7 @@
                                         <property name="top_attach">5</property>
                                         <property name="bottom_attach">6</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -6835,7 +7037,7 @@
                                         <property name="top_attach">6</property>
                                         <property name="bottom_attach">7</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -6849,7 +7051,7 @@
                                         <property name="top_attach">7</property>
                                         <property name="bottom_attach">8</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7046,8 +7248,8 @@
                                       </object>
                                       <packing>
                                         <property name="right_attach">2</property>
-                                        <property name="x_options"/>
-                                        <property name="y_options"/>
+                                        <property name="x_options"></property>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7061,8 +7263,8 @@
                                       <packing>
                                         <property name="left_attach">2</property>
                                         <property name="right_attach">4</property>
-                                        <property name="x_options"/>
-                                        <property name="y_options"/>
+                                        <property name="x_options"></property>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7075,8 +7277,8 @@
                                       <packing>
                                         <property name="top_attach">2</property>
                                         <property name="bottom_attach">3</property>
-                                        <property name="x_options"/>
-                                        <property name="y_options"/>
+                                        <property name="x_options"></property>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7089,8 +7291,8 @@
                                       <packing>
                                         <property name="top_attach">1</property>
                                         <property name="bottom_attach">2</property>
-                                        <property name="x_options"/>
-                                        <property name="y_options"/>
+                                        <property name="x_options"></property>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7103,8 +7305,8 @@
                                       <packing>
                                         <property name="top_attach">3</property>
                                         <property name="bottom_attach">4</property>
-                                        <property name="x_options"/>
-                                        <property name="y_options"/>
+                                        <property name="x_options"></property>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7117,8 +7319,8 @@
                                       <packing>
                                         <property name="top_attach">4</property>
                                         <property name="bottom_attach">5</property>
-                                        <property name="x_options"/>
-                                        <property name="y_options"/>
+                                        <property name="x_options"></property>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7131,8 +7333,8 @@
                                       <packing>
                                         <property name="top_attach">5</property>
                                         <property name="bottom_attach">6</property>
-                                        <property name="x_options"/>
-                                        <property name="y_options"/>
+                                        <property name="x_options"></property>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7145,8 +7347,8 @@
                                       <packing>
                                         <property name="top_attach">6</property>
                                         <property name="bottom_attach">7</property>
-                                        <property name="x_options"/>
-                                        <property name="y_options"/>
+                                        <property name="x_options"></property>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7159,8 +7361,8 @@
                                       <packing>
                                         <property name="top_attach">7</property>
                                         <property name="bottom_attach">8</property>
-                                        <property name="x_options"/>
-                                        <property name="y_options"/>
+                                        <property name="x_options"></property>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7173,8 +7375,8 @@
                                       <packing>
                                         <property name="top_attach">8</property>
                                         <property name="bottom_attach">9</property>
-                                        <property name="x_options"/>
-                                        <property name="y_options"/>
+                                        <property name="x_options"></property>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7189,8 +7391,8 @@
                                         <property name="right_attach">3</property>
                                         <property name="top_attach">1</property>
                                         <property name="bottom_attach">2</property>
-                                        <property name="x_options"/>
-                                        <property name="y_options"/>
+                                        <property name="x_options"></property>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7205,8 +7407,8 @@
                                         <property name="right_attach">3</property>
                                         <property name="top_attach">2</property>
                                         <property name="bottom_attach">3</property>
-                                        <property name="x_options"/>
-                                        <property name="y_options"/>
+                                        <property name="x_options"></property>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7221,8 +7423,8 @@
                                         <property name="right_attach">3</property>
                                         <property name="top_attach">3</property>
                                         <property name="bottom_attach">4</property>
-                                        <property name="x_options"/>
-                                        <property name="y_options"/>
+                                        <property name="x_options"></property>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7237,8 +7439,8 @@
                                         <property name="right_attach">3</property>
                                         <property name="top_attach">4</property>
                                         <property name="bottom_attach">5</property>
-                                        <property name="x_options"/>
-                                        <property name="y_options"/>
+                                        <property name="x_options"></property>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7253,8 +7455,8 @@
                                         <property name="right_attach">3</property>
                                         <property name="top_attach">5</property>
                                         <property name="bottom_attach">6</property>
-                                        <property name="x_options"/>
-                                        <property name="y_options"/>
+                                        <property name="x_options"></property>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7269,8 +7471,8 @@
                                         <property name="right_attach">3</property>
                                         <property name="top_attach">6</property>
                                         <property name="bottom_attach">7</property>
-                                        <property name="x_options"/>
-                                        <property name="y_options"/>
+                                        <property name="x_options"></property>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7285,8 +7487,8 @@
                                         <property name="right_attach">3</property>
                                         <property name="top_attach">7</property>
                                         <property name="bottom_attach">8</property>
-                                        <property name="x_options"/>
-                                        <property name="y_options"/>
+                                        <property name="x_options"></property>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7301,8 +7503,8 @@
                                         <property name="right_attach">3</property>
                                         <property name="top_attach">8</property>
                                         <property name="bottom_attach">9</property>
-                                        <property name="x_options"/>
-                                        <property name="y_options"/>
+                                        <property name="x_options"></property>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7317,8 +7519,8 @@
                                         <property name="right_attach">3</property>
                                         <property name="top_attach">9</property>
                                         <property name="bottom_attach">10</property>
-                                        <property name="x_options"/>
-                                        <property name="y_options"/>
+                                        <property name="x_options"></property>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7331,8 +7533,8 @@
                                       <packing>
                                         <property name="top_attach">9</property>
                                         <property name="bottom_attach">10</property>
-                                        <property name="x_options"/>
-                                        <property name="y_options"/>
+                                        <property name="x_options"></property>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7727,7 +7929,7 @@
                                       </object>
                                       <packing>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7741,7 +7943,7 @@
                                         <property name="top_attach">1</property>
                                         <property name="bottom_attach">2</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7755,7 +7957,7 @@
                                         <property name="top_attach">2</property>
                                         <property name="bottom_attach">3</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7769,7 +7971,7 @@
                                         <property name="top_attach">3</property>
                                         <property name="bottom_attach">4</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7783,7 +7985,7 @@
                                         <property name="top_attach">4</property>
                                         <property name="bottom_attach">5</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7797,7 +7999,7 @@
                                         <property name="top_attach">5</property>
                                         <property name="bottom_attach">6</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7811,7 +8013,7 @@
                                         <property name="top_attach">6</property>
                                         <property name="bottom_attach">7</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7825,7 +8027,7 @@
                                         <property name="top_attach">7</property>
                                         <property name="bottom_attach">8</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -7839,7 +8041,7 @@
                                         <property name="top_attach">8</property>
                                         <property name="bottom_attach">9</property>
                                         <property name="x_options">GTK_FILL</property>
-                                        <property name="y_options"/>
+                                        <property name="y_options"></property>
                                       </packing>
                                     </child>
                                     <child>
@@ -8044,7 +8246,7 @@
                                 <property name="top_attach">4</property>
                                 <property name="bottom_attach">5</property>
                                 <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"/>
+                                <property name="y_options"></property>
                               </packing>
                             </child>
                             <child>
@@ -8059,7 +8261,7 @@
                                 <property name="top_attach">3</property>
                                 <property name="bottom_attach">4</property>
                                 <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"/>
+                                <property name="y_options"></property>
                               </packing>
                             </child>
                             <child>
@@ -8074,7 +8276,7 @@
                                 <property name="top_attach">2</property>
                                 <property name="bottom_attach">3</property>
                                 <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"/>
+                                <property name="y_options"></property>
                               </packing>
                             </child>
                             <child>
@@ -8089,7 +8291,7 @@
                                 <property name="top_attach">1</property>
                                 <property name="bottom_attach">2</property>
                                 <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"/>
+                                <property name="y_options"></property>
                               </packing>
                             </child>
                             <child>
@@ -8102,7 +8304,7 @@
                               </object>
                               <packing>
                                 <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"/>
+                                <property name="y_options"></property>
                               </packing>
                             </child>
                             <child>
@@ -8204,7 +8406,7 @@
                                 <property name="top_attach">5</property>
                                 <property name="bottom_attach">6</property>
                                 <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"/>
+                                <property name="y_options"></property>
                               </packing>
                             </child>
                             <child>

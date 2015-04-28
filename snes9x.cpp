@@ -431,6 +431,7 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.SnapshotScreenshots        =  conf.GetBool("Settings::SnapshotScreenshots",       true);
 	Settings.DontSaveOopsSnapshot       =  conf.GetBool("Settings::DontSaveOopsSnapshot",      false);
 	Settings.AutoSaveDelay              =  conf.GetUInt("Settings::AutoSaveDelay",             0);
+	Settings.QuickSaveExtension         =  conf.GetUInt("Settings::QuickSaveExtension",        SNES_SSEXT_CLASSIC);
 
 	if (conf.Exists("Settings::FrameTime"))
 		Settings.FrameTimePAL = Settings.FrameTimeNTSC = conf.GetUInt("Settings::FrameTime", 16667);

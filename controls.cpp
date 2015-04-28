@@ -2361,23 +2361,8 @@ void S9xApplyCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 					case QuickLoad008:
 					case QuickLoad009:
 					case QuickLoad010:
-					{
-						char	filename[PATH_MAX + 1];
-						char	drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], def[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
-
-						_splitpath(Memory.ROMFilename, drive, dir, def, ext);
-						snprintf(filename, PATH_MAX + 1, "%s%s%s.%03d", S9xGetDirectory(SNAPSHOT_DIR), SLASH_STR, def, i - QuickLoad000);
-
-						if (S9xUnfreezeGame(filename))
-						{
-							sprintf(buf, "%s.%03d loaded", def, i - QuickLoad000);
-							S9xSetInfoString(buf);
-						}
-						else
-							S9xMessage(S9X_ERROR, S9X_FREEZE_FILE_NOT_FOUND, "Freeze file not found");
-
+						S9xQuickLoadSlot(i - QuickLoad000);
 						break;
-					}
 
 					case QuickSave000:
 					case QuickSave001:
@@ -2390,19 +2375,8 @@ void S9xApplyCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 					case QuickSave008:
 					case QuickSave009:
 					case QuickSave010:
-					{
-						char	filename[PATH_MAX + 1];
-						char	drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], def[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
-
-						_splitpath(Memory.ROMFilename, drive, dir, def, ext);
-						snprintf(filename, PATH_MAX + 1, "%s%s%s.%03d", S9xGetDirectory(SNAPSHOT_DIR), SLASH_STR, def, i - QuickSave000);
-
-						sprintf(buf, "%s.%03d saved", def, i - QuickSave000);
-						S9xSetInfoString(buf);
-
-						S9xFreezeGame(filename);
+						S9xQuickSaveSlot(i - QuickSave000);
 						break;
-					}
 
 					case SaveSPC:
 						S9xDumpSPCSnapshot();
@@ -3690,4 +3664,86 @@ void MovieSetJustifier (int i, uint8 in[11])
 	justifier.buttons      = *ptr++;
 	justifier.offscreen[0] = *ptr++;
 	justifier.offscreen[1] = *ptr;
+}
+
+const char *zsnes_digits = "t123456789";
+
+int
+QuickSaveGetPattern(char *ext_pattern) 
+{
+  switch (Settings.QuickSaveExtension) {
+	case SNES_SSEXT_CLASSIC:
+		strcpy(ext_pattern, SNES_SSEXT_PATTERN_CLASSIC);
+		break;
+	case SNES_SSEXT_FRZ:
+		strcpy(ext_pattern, SNES_SSEXT_PATTERN_FRZ);
+		break;
+	case SNES_SSEXT_ZSNES:
+		strcpy(ext_pattern, SNES_SSEXT_PATTERN_ZSNES);
+		break;
+	default:
+		S9xMessage (S9X_ERROR, S9X_WRONG_FORMAT, "Invalid quick save extension pattern");
+		return -1;
+  }
+  return 0;
+}
+
+void 
+QuickSaveGetFileName(char *filename, char *ext_pattern, char *def, int slot) 
+{
+	sprintf (filename, ext_pattern,
+		S9xGetDirectory (SNAPSHOT_DIR), SLASH_STR, def, 
+		Settings.QuickSaveExtension == SNES_SSEXT_ZSNES? zsnes_digits[slot] : slot);
+}
+
+void
+S9xQuickSaveSlot (int slot)
+{
+	char def[PATH_MAX];
+	char filename[PATH_MAX];
+	char drive[_MAX_DRIVE];
+	char dir[_MAX_DIR];
+	char ext[_MAX_EXT];
+	char ext_pattern[PATH_MAX];
+
+	_splitpath (Memory.ROMFilename, drive, dir, def, ext);
+
+	if (QuickSaveGetPattern(ext_pattern) == -1)
+		return;
+
+	QuickSaveGetFileName(filename, ext_pattern, def, slot);
+
+	if (S9xFreezeGame (filename))
+	{
+		sprintf (buf, "%s saved", S9xBasename(filename));
+		S9xSetInfoString (buf);
+	}
+}
+
+void
+S9xQuickLoadSlot (int slot)
+{
+	char def[PATH_MAX];
+	char filename[PATH_MAX];
+	char drive[_MAX_DRIVE];
+	char dir[_MAX_DIR];
+	char ext[_MAX_EXT];
+	char ext_pattern[PATH_MAX];
+
+	_splitpath (Memory.ROMFilename, drive, dir, def, ext);
+
+	if (QuickSaveGetPattern(ext_pattern) == -1)
+		return;
+
+	QuickSaveGetFileName(filename, ext_pattern, def, slot);
+
+	if (S9xUnfreezeGame (filename))
+	{
+		sprintf (buf, "%s loaded", S9xBasename(filename));
+		S9xSetInfoString (buf);
+	}
+	else
+	{
+		S9xMessage (S9X_ERROR, S9X_FREEZE_FILE_NOT_FOUND, "Quick save file not found");
+	}
 }

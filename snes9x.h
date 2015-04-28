@@ -271,6 +271,14 @@
 #define SNES_Y_MASK			(1 << 14)
 #define SNES_B_MASK			(1 << 15)
 
+#define SNES_SSEXT_CLASSIC  0
+#define SNES_SSEXT_FRZ      1
+#define SNES_SSEXT_ZSNES    2
+
+#define SNES_SSEXT_PATTERN_CLASSIC "%s%s%s.%03d"
+#define SNES_SSEXT_PATTERN_FRZ     "%s%s%s.%02x.frz"
+#define SNES_SSEXT_PATTERN_ZSNES   "%s%s%s.zs%c"
+
 #define DEBUG_MODE_FLAG		(1 <<  0)	// debugger
 #define TRACE_FLAG			(1 <<  1)	// debugger
 #define SINGLE_STEP_FLAG	(1 <<  2)	// debugger
@@ -448,6 +456,8 @@ struct SSettings
 	bool8	UpAndDown;
 
 	bool8	OpenGLEnable;
+
+	uint16 QuickSaveExtension;
 };
 
 struct SSNESGameFixes
