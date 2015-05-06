@@ -5419,7 +5419,38 @@ struct TieredRegion
 		{
 			unsigned int start;
 			unsigned int end;
-			__forceinline bool Contains(unsigned int address, int size) const { return address < end && address+size > start; }
+
+			bool Contains(unsigned int address, int size, unsigned int & mirrored_address) const
+			{
+				uint8 * ptr = S9xGetMemPointer(address);
+				uint8 * start_ptr = S9xGetMemPointer(start);
+				if (ptr != NULL && start_ptr != NULL)
+				{
+					// note: start and end must points to the same memory region (i.e. RAM, SRAM, ROM, etc.)
+					uint8 * end_ptr = start_ptr + (end - start);
+					if (ptr < end_ptr && ptr + size > start_ptr)
+					{
+						mirrored_address = start + (ptr - start_ptr);
+						return true;
+					}
+					else
+					{
+						return false;
+					}
+				}
+				else
+				{
+					if (address < end && address + size > start)
+					{
+						mirrored_address = address;
+						return true;
+					}
+					else
+					{
+						return false;
+					}
+				}
+			}
 		};
 		std::vector<Island> islands;
 
@@ -5444,27 +5475,25 @@ struct TieredRegion
 			}
 		}
 
-		bool Contains(unsigned int address, int size) const
+		bool Contains(unsigned int address, int size, unsigned int & mirrored_address) const
 		{
 			std::vector<Island>::const_iterator iter = islands.begin();
 			std::vector<Island>::const_iterator end = islands.end();
 			for(; iter != end; ++iter)
-				if(iter->Contains(address, size))
+				if(iter->Contains(address, size, mirrored_address))
 					return true;
 			return false;
 		}
 	};
 
-	Region<0xFFFFFFFF> broad;
-	Region<0x1000> mid;
+	//Region<0xFFFFFFFF> broad;
+	//Region<0x1000> mid;
 	Region<0> narrow;
 
 	void Calculate(std::vector<unsigned int>& bytes)
 	{
 		std::sort(bytes.begin(), bytes.end());
 
-		broad.Calculate(bytes);
-		mid.Calculate(bytes);
 		narrow.Calculate(bytes);
 	}
 
@@ -5475,15 +5504,13 @@ struct TieredRegion
 
 	__forceinline int NotEmpty()
 	{
-		return broad.islands.size();
+		return narrow.islands.size();
 	}
 
 	// note: it is illegal to call this if NotEmpty() returns 0
-	__forceinline bool Contains(unsigned int address, int size)
+	__forceinline bool Contains(unsigned int address, int size, unsigned int & mirrored_address)
 	{
-		return broad.islands[0].Contains(address,size) &&
-		       mid.Contains(address,size) &&
-			   narrow.Contains(address,size);
+		return narrow.Contains(address,size,mirrored_address);
 	}
 };
 TieredRegion hookedRegions [LUAMEMHOOK_COUNT];
@@ -5584,12 +5611,9 @@ void CallRegisteredLuaMemHook(unsigned int address, int size, unsigned int value
 	// (on my system that consistently took 200 ms total in the former case and 350 ms total in the latter case)
 	if(hookedRegions[hookType].NotEmpty())
 	{
-		// TODO: add more mirroring
-		if(address >= 0x0000 && address <= 0x1FFF)
-			address |= 0x7E0000; // account for mirroring of LowRAM
-
-		if(hookedRegions[hookType].Contains(address, size))
-			CallRegisteredLuaMemHook_LuaMatch(address, size, value, hookType); // something has hooked this specific address
+		unsigned int mirrored_address;
+		if(hookedRegions[hookType].Contains(address, size, mirrored_address))
+			CallRegisteredLuaMemHook_LuaMatch(mirrored_address, size, value, hookType); // something has hooked this specific address
 	}
 }
 
