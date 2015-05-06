@@ -735,6 +735,9 @@ bool8 S9xDoDMA (uint8 Channel)
 							do
 							{
 								Work = *(base + p);
+#ifdef HAVE_LUA
+								CallRegisteredLuaMemHook((d->ABank << 16) + d->AAddress, 1, Work, LUAMEMHOOK_READ);
+#endif
 								REGISTER_2104(Work);
 								UPDATE_COUNTERS;
 							} while (--count > 0);
@@ -747,6 +750,9 @@ bool8 S9xDoDMA (uint8 Channel)
 								do
 								{
 									Work = *(base + p);
+#ifdef HAVE_LUA
+									CallRegisteredLuaMemHook((d->ABank << 16) + d->AAddress, 1, Work, LUAMEMHOOK_READ);
+#endif
 									REGISTER_2118_linear(Work);
 									UPDATE_COUNTERS;
 								} while (--count > 0);
@@ -756,6 +762,9 @@ bool8 S9xDoDMA (uint8 Channel)
 								do
 								{
 									Work = *(base + p);
+#ifdef HAVE_LUA
+									CallRegisteredLuaMemHook((d->ABank << 16) + d->AAddress, 1, Work, LUAMEMHOOK_READ);
+#endif
 									REGISTER_2118_tile(Work);
 									UPDATE_COUNTERS;
 								} while (--count > 0);
@@ -769,6 +778,9 @@ bool8 S9xDoDMA (uint8 Channel)
 								do
 								{
 									Work = *(base + p);
+#ifdef HAVE_LUA
+									CallRegisteredLuaMemHook((d->ABank << 16) + d->AAddress, 1, Work, LUAMEMHOOK_READ);
+#endif
 									REGISTER_2119_linear(Work);
 									UPDATE_COUNTERS;
 								} while (--count > 0);
@@ -778,6 +790,9 @@ bool8 S9xDoDMA (uint8 Channel)
 								do
 								{
 									Work = *(base + p);
+#ifdef HAVE_LUA
+									CallRegisteredLuaMemHook((d->ABank << 16) + d->AAddress, 1, Work, LUAMEMHOOK_READ);
+#endif
 									REGISTER_2119_tile(Work);
 									UPDATE_COUNTERS;
 								} while (--count > 0);
@@ -789,6 +804,9 @@ bool8 S9xDoDMA (uint8 Channel)
 							do
 							{
 								Work = *(base + p);
+#ifdef HAVE_LUA
+									CallRegisteredLuaMemHook((d->ABank << 16) + d->AAddress, 1, Work, LUAMEMHOOK_READ);
+#endif
 								REGISTER_2122(Work);
 								UPDATE_COUNTERS;
 							} while (--count > 0);
@@ -801,6 +819,9 @@ bool8 S9xDoDMA (uint8 Channel)
 								do
 								{
 									Work = *(base + p);
+#ifdef HAVE_LUA
+									CallRegisteredLuaMemHook((d->ABank << 16) + d->AAddress, 1, Work, LUAMEMHOOK_READ);
+#endif
 									REGISTER_2180(Work);
 									UPDATE_COUNTERS;
 								} while (--count > 0);
@@ -819,6 +840,9 @@ bool8 S9xDoDMA (uint8 Channel)
 							do
 							{
 								Work = *(base + p);
+#ifdef HAVE_LUA
+								CallRegisteredLuaMemHook((d->ABank << 16) + d->AAddress, 1, Work, LUAMEMHOOK_READ);
+#endif
 								S9xSetPPU(Work, 0x2100 + d->BAddress);
 								UPDATE_COUNTERS;
 							} while (--count > 0);
@@ -840,12 +864,18 @@ bool8 S9xDoDMA (uint8 Channel)
 								while (count > 1)
 								{
 									Work = *(base + p);
+#ifdef HAVE_LUA
+									CallRegisteredLuaMemHook((d->ABank << 16) + d->AAddress, 1, Work, LUAMEMHOOK_READ);
+#endif
 									REGISTER_2118_linear(Work);
 									UPDATE_COUNTERS;
 									count--;
 
 								case 1:
 									Work = *(base + p);
+#ifdef HAVE_LUA
+									CallRegisteredLuaMemHook((d->ABank << 16) + d->AAddress, 1, Work, LUAMEMHOOK_READ);
+#endif
 									REGISTER_2119_linear(Work);
 									UPDATE_COUNTERS;
 									count--;
@@ -855,6 +885,9 @@ bool8 S9xDoDMA (uint8 Channel)
 							if (count == 1)
 							{
 								Work = *(base + p);
+#ifdef HAVE_LUA
+								CallRegisteredLuaMemHook((d->ABank << 16) + d->AAddress, 1, Work, LUAMEMHOOK_READ);
+#endif
 								REGISTER_2118_linear(Work);
 								UPDATE_COUNTERS;
 								b = 1;
@@ -870,12 +903,18 @@ bool8 S9xDoDMA (uint8 Channel)
 								while (count > 1)
 								{
 									Work = *(base + p);
+#ifdef HAVE_LUA
+									CallRegisteredLuaMemHook((d->ABank << 16) + d->AAddress, 1, Work, LUAMEMHOOK_READ);
+#endif
 									REGISTER_2118_tile(Work);
 									UPDATE_COUNTERS;
 									count--;
 
 								case 1:
 									Work = *(base + p);
+#ifdef HAVE_LUA
+									CallRegisteredLuaMemHook((d->ABank << 16) + d->AAddress, 1, Work, LUAMEMHOOK_READ);
+#endif
 									REGISTER_2119_tile(Work);
 									UPDATE_COUNTERS;
 									count--;
@@ -885,6 +924,9 @@ bool8 S9xDoDMA (uint8 Channel)
 							if (count == 1)
 							{
 								Work = *(base + p);
+#ifdef HAVE_LUA
+								CallRegisteredLuaMemHook((d->ABank << 16) + d->AAddress, 1, Work, LUAMEMHOOK_READ);
+#endif
 								REGISTER_2118_tile(Work);
 								UPDATE_COUNTERS;
 								b = 1;
@@ -902,12 +944,18 @@ bool8 S9xDoDMA (uint8 Channel)
 							while (count > 1)
 							{
 								Work = *(base + p);
+#ifdef HAVE_LUA
+								CallRegisteredLuaMemHook((d->ABank << 16) + d->AAddress, 1, Work, LUAMEMHOOK_READ);
+#endif
 								S9xSetPPU(Work, 0x2100 + d->BAddress);
 								UPDATE_COUNTERS;
 								count--;
 
 							case 1:
 								Work = *(base + p);
+#ifdef HAVE_LUA
+								CallRegisteredLuaMemHook((d->ABank << 16) + d->AAddress, 1, Work, LUAMEMHOOK_READ);
+#endif
 								S9xSetPPU(Work, 0x2101 + d->BAddress);
 								UPDATE_COUNTERS;
 								count--;
@@ -917,6 +965,9 @@ bool8 S9xDoDMA (uint8 Channel)
 						if (count == 1)
 						{
 							Work = *(base + p);
+#ifdef HAVE_LUA
+							CallRegisteredLuaMemHook((d->ABank << 16) + d->AAddress, 1, Work, LUAMEMHOOK_READ);
+#endif
 							S9xSetPPU(Work, 0x2100 + d->BAddress);
 							UPDATE_COUNTERS;
 							b = 1;
@@ -934,6 +985,9 @@ bool8 S9xDoDMA (uint8 Channel)
 						do
 						{
 							Work = *(base + p);
+#ifdef HAVE_LUA
+							CallRegisteredLuaMemHook((d->ABank << 16) + d->AAddress, 1, Work, LUAMEMHOOK_READ);
+#endif
 							S9xSetPPU(Work, 0x2100 + d->BAddress);
 							UPDATE_COUNTERS;
 							if (--count <= 0)
@@ -944,6 +998,9 @@ bool8 S9xDoDMA (uint8 Channel)
 
 						case 1:
 							Work = *(base + p);
+#ifdef HAVE_LUA
+							CallRegisteredLuaMemHook((d->ABank << 16) + d->AAddress, 1, Work, LUAMEMHOOK_READ);
+#endif
 							S9xSetPPU(Work, 0x2100 + d->BAddress);
 							UPDATE_COUNTERS;
 							if (--count <= 0)
@@ -954,6 +1011,9 @@ bool8 S9xDoDMA (uint8 Channel)
 
 						case 2:
 							Work = *(base + p);
+#ifdef HAVE_LUA
+							CallRegisteredLuaMemHook((d->ABank << 16) + d->AAddress, 1, Work, LUAMEMHOOK_READ);
+#endif
 							S9xSetPPU(Work, 0x2101 + d->BAddress);
 							UPDATE_COUNTERS;
 							if (--count <= 0)
@@ -964,6 +1024,9 @@ bool8 S9xDoDMA (uint8 Channel)
 
 						case 3:
 							Work = *(base + p);
+#ifdef HAVE_LUA
+							CallRegisteredLuaMemHook((d->ABank << 16) + d->AAddress, 1, Work, LUAMEMHOOK_READ);
+#endif
 							S9xSetPPU(Work, 0x2101 + d->BAddress);
 							UPDATE_COUNTERS;
 							if (--count <= 0)
@@ -983,6 +1046,9 @@ bool8 S9xDoDMA (uint8 Channel)
 						do
 						{
 							Work = *(base + p);
+#ifdef HAVE_LUA
+							CallRegisteredLuaMemHook((d->ABank << 16) + d->AAddress, 1, Work, LUAMEMHOOK_READ);
+#endif
 							S9xSetPPU(Work, 0x2100 + d->BAddress);
 							UPDATE_COUNTERS;
 							if (--count <= 0)
@@ -993,6 +1059,9 @@ bool8 S9xDoDMA (uint8 Channel)
 
 						case 1:
 							Work = *(base + p);
+#ifdef HAVE_LUA
+							CallRegisteredLuaMemHook((d->ABank << 16) + d->AAddress, 1, Work, LUAMEMHOOK_READ);
+#endif
 							S9xSetPPU(Work, 0x2101 + d->BAddress);
 							UPDATE_COUNTERS;
 							if (--count <= 0)
@@ -1003,6 +1072,9 @@ bool8 S9xDoDMA (uint8 Channel)
 
 						case 2:
 							Work = *(base + p);
+#ifdef HAVE_LUA
+							CallRegisteredLuaMemHook((d->ABank << 16) + d->AAddress, 1, Work, LUAMEMHOOK_READ);
+#endif
 							S9xSetPPU(Work, 0x2102 + d->BAddress);
 							UPDATE_COUNTERS;
 							if (--count <= 0)
@@ -1013,6 +1085,9 @@ bool8 S9xDoDMA (uint8 Channel)
 
 						case 3:
 							Work = *(base + p);
+#ifdef HAVE_LUA
+							CallRegisteredLuaMemHook((d->ABank << 16) + d->AAddress, 1, Work, LUAMEMHOOK_READ);
+#endif
 							S9xSetPPU(Work, 0x2103 + d->BAddress);
 							UPDATE_COUNTERS;
 							if (--count <= 0)
@@ -1614,11 +1689,17 @@ uint8 S9xDoHDMA (uint8 byte)
 							switch (p->TransferMode)
 							{
 								case 0:
+#ifdef HAVE_LUA
+									CallRegisteredLuaMemHook(ShiftedIBank + IAddr, 1, *HDMAMemPointers[d], LUAMEMHOOK_READ);
+#endif
 									S9xSetPPU(*HDMAMemPointers[d]++, 0x2100 + p->BAddress);
 									ADD_CYCLES(SLOW_ONE_CYCLE);
 									break;
 
 								case 5:
+#ifdef HAVE_LUA
+									CallRegisteredLuaMemHook(ShiftedIBank + IAddr, 2, *(uint16*)HDMAMemPointers[d], LUAMEMHOOK_READ);
+#endif
 									S9xSetPPU(*(HDMAMemPointers[d] + 0), 0x2100 + p->BAddress);
 									ADD_CYCLES(SLOW_ONE_CYCLE);
 									S9xSetPPU(*(HDMAMemPointers[d] + 1), 0x2101 + p->BAddress);
@@ -1626,6 +1707,9 @@ uint8 S9xDoHDMA (uint8 byte)
 									HDMAMemPointers[d] += 2;
 									/* fall through */
 								case 1:
+#ifdef HAVE_LUA
+									CallRegisteredLuaMemHook(ShiftedIBank + IAddr + (p->TransferMode == 5 ? 2 : 0), 2, *(uint16*)HDMAMemPointers[d], LUAMEMHOOK_READ);
+#endif
 									S9xSetPPU(*(HDMAMemPointers[d] + 0), 0x2100 + p->BAddress);
 									ADD_CYCLES(SLOW_ONE_CYCLE);
 									S9xSetPPU(*(HDMAMemPointers[d] + 1), 0x2101 + p->BAddress);
@@ -1635,6 +1719,9 @@ uint8 S9xDoHDMA (uint8 byte)
 
 								case 2:
 								case 6:
+#ifdef HAVE_LUA
+									CallRegisteredLuaMemHook(ShiftedIBank + IAddr, 2, *(uint16*)HDMAMemPointers[d], LUAMEMHOOK_READ);
+#endif
 									S9xSetPPU(*(HDMAMemPointers[d] + 0), 0x2100 + p->BAddress);
 									ADD_CYCLES(SLOW_ONE_CYCLE);
 									S9xSetPPU(*(HDMAMemPointers[d] + 1), 0x2100 + p->BAddress);
@@ -1644,6 +1731,9 @@ uint8 S9xDoHDMA (uint8 byte)
 
 								case 3:
 								case 7:
+#ifdef HAVE_LUA
+									CallRegisteredLuaMemHook(ShiftedIBank + IAddr, 4, *(uint32*)HDMAMemPointers[d], LUAMEMHOOK_READ);
+#endif
 									S9xSetPPU(*(HDMAMemPointers[d] + 0), 0x2100 + p->BAddress);
 									ADD_CYCLES(SLOW_ONE_CYCLE);
 									S9xSetPPU(*(HDMAMemPointers[d] + 1), 0x2100 + p->BAddress);
@@ -1656,6 +1746,9 @@ uint8 S9xDoHDMA (uint8 byte)
 									break;
 
 								case 4:
+#ifdef HAVE_LUA
+									CallRegisteredLuaMemHook(ShiftedIBank + IAddr, 4, *(uint32*)HDMAMemPointers[d], LUAMEMHOOK_READ);
+#endif
 									S9xSetPPU(*(HDMAMemPointers[d] + 0), 0x2100 + p->BAddress);
 									ADD_CYCLES(SLOW_ONE_CYCLE);
 									S9xSetPPU(*(HDMAMemPointers[d] + 1), 0x2101 + p->BAddress);
