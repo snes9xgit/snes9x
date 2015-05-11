@@ -1,6 +1,6 @@
 This lists the available commands, excluding the ones you get back from
 S9xGetAllSnes9xCommands(). The various meta-characters are:
-  #     - A number. The range is detemined by the context
+  #     - A number. The range is determined by the context
   ##    - A two-digit number (i.e. with leading zeros)
   [...] - Something optional
   (...) - For grouping with |
@@ -82,7 +82,7 @@ is released each subcommand is 'released'.
 
 There are also press-only multis, defined as "+{...}". These act just like
 regular multis, with two differences: the multi is only run when you press
-the button (release isignored), and each subcommand must be prefixed with
+the button (release is ignored), and each subcommand must be prefixed with
 '+' or '-' to indicate whether the the subcommand should be pressed or
 released.
 
