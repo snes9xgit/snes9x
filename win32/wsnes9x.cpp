@@ -303,6 +303,7 @@ extern LRESULT CALLBACK RamSearchProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
 
 #define WM_CUSTKEYDOWN	(WM_USER+50)
 #define WM_CUSTKEYUP	(WM_USER+51)
+#define WM_SCANJOYPADS  (WM_APP+10)
 
 #ifdef UNICODE
 #define S9XW_SHARD_PATH SHARD_PATHW
@@ -2717,7 +2718,10 @@ LRESULT CALLBACK WinProc(
 #endif
     case WM_DEVICECHANGE:
         if(wParam == DBT_DEVICEARRIVAL || wParam == DBT_DEVICEREMOVECOMPLETE || wParam == DBT_DEVNODES_CHANGED)
-            S9xDetectJoypads();
+            PostMessage(hWnd, WM_SCANJOYPADS, 0, 0);
+        break;
+    case WM_SCANJOYPADS:
+        S9xDetectJoypads();
         break;
     }
     return DefWindowProc (hWnd, uMsg, wParam, lParam);
@@ -2824,28 +2828,32 @@ VOID CALLBACK HotkeyTimer( UINT idEvent, UINT uMsg, DWORD dwUser, DWORD dw1, DWO
 		if(GUI.JoystickHotkeys)
 		{
 			static int counter = 0;
-			static uint32 joyState [256];
-			for(int i = 0 ; i < 255 ; i++)
-			{
-				if(counter%2 && !joyState[i])
-					continue;
+			static uint32 joyState[6][53];
+            for(int j = 0 ; j < 6 ; j++)
+            {
+			    for(int i = 0 ; i < 53 ; i++)
+			    {
+                    if(counter%2 && !joyState[j][i])
+					    continue;
 
-				bool active = !S9xGetState(0x8000|i);
-				if(active)
-				{
-					if(joyState[i] < ULONG_MAX) // 0xffffffffUL
-						joyState[i]++;
-					if(joyState[i] == 1 || joyState[i] >= 12)
-						PostMessage(GUI.hWnd, WM_CUSTKEYDOWN, (WPARAM)(0x8000|i),(LPARAM)(NULL));
-				}
-				else
-					if(joyState[i])
-					{
-						joyState[i] = 0;
-						PostMessage(GUI.hWnd, WM_CUSTKEYUP, (WPARAM)(0x8000|i),(LPARAM)(NULL));
-					}
-			}
-			counter++;
+                    WPARAM wp = (WPARAM)(0x8000 | (j << 8) | i);
+				    bool active = !S9xGetState(wp);
+				    if(active)
+				    {
+					    if(joyState[j][i] < ULONG_MAX) // 0xffffffffUL
+						    joyState[j][i]++;
+					    if(joyState[j][i] == 1 || joyState[j][i] >= 12)
+						    PostMessage(GUI.hWnd, WM_CUSTKEYDOWN, wp,(LPARAM)(NULL));
+				    }
+				    else
+					    if(joyState[j][i])
+					    {
+						    joyState[j][i] = 0;
+						    PostMessage(GUI.hWnd, WM_CUSTKEYUP, wp,(LPARAM)(NULL));
+					    }
+			    }
+            }
+            counter++;
 		}
 		if(GUI.BackgroundInput && !GUI.InactivePause)
 		{

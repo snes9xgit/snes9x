@@ -2,43 +2,43 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Emu">
-      <UniqueIdentifier>{0f66f525-3a1d-4bdf-ae07-21b393479997}</UniqueIdentifier>
+      <UniqueIdentifier>{b5cc2f0d-48b1-4098-aa80-012bf2fde91c}</UniqueIdentifier>
     </Filter>
     <Filter Include="UnZip">
-      <UniqueIdentifier>{12f9671c-3bfb-424b-a4f0-e62c621b388b}</UniqueIdentifier>
+      <UniqueIdentifier>{0b1ceca6-986b-428d-8ee4-d8d3be362583}</UniqueIdentifier>
     </Filter>
     <Filter Include="GUI">
-      <UniqueIdentifier>{4b28c808-c29b-486d-a54d-f5ae53ca3796}</UniqueIdentifier>
+      <UniqueIdentifier>{4a13e328-4b79-48a2-a44d-27a1a4f90fbd}</UniqueIdentifier>
     </Filter>
     <Filter Include="GUI\SoundDriver">
-      <UniqueIdentifier>{0c9135f7-8f43-4cb2-aaba-4eca1f0fdabb}</UniqueIdentifier>
+      <UniqueIdentifier>{d81dd266-2f83-4551-9c18-067319834423}</UniqueIdentifier>
     </Filter>
     <Filter Include="GUI\VideoDriver">
-      <UniqueIdentifier>{3787a2cb-e5f9-4966-9e5b-bbeaa97bc210}</UniqueIdentifier>
+      <UniqueIdentifier>{a94f817d-5513-4c45-909f-b75c01f63b0c}</UniqueIdentifier>
     </Filter>
     <Filter Include="i386">
-      <UniqueIdentifier>{71e52dec-e471-4927-b2ed-d778bdb52dc8}</UniqueIdentifier>
+      <UniqueIdentifier>{f48483e9-ed1d-4820-bc4f-17815191dc2c}</UniqueIdentifier>
     </Filter>
     <Filter Include="JMA">
-      <UniqueIdentifier>{fc2fe1b4-e761-4e4a-a255-4ce5939c94a8}</UniqueIdentifier>
+      <UniqueIdentifier>{a9636c94-51c1-43d0-8e46-8d6656c7bb5d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Resource">
-      <UniqueIdentifier>{e4205615-04d9-45b8-9e70-f4e773cb001b}</UniqueIdentifier>
+      <UniqueIdentifier>{c472b700-ff23-4b8f-8a72-4a78a18e2d13}</UniqueIdentifier>
     </Filter>
     <Filter Include="Resource\Other">
-      <UniqueIdentifier>{c56b746a-6beb-4cc8-836c-6ba9eb24661f}</UniqueIdentifier>
+      <UniqueIdentifier>{e5bb2083-fb8f-4e6c-9251-157682aefb6f}</UniqueIdentifier>
     </Filter>
     <Filter Include="APU">
-      <UniqueIdentifier>{663c255b-ecf9-4641-91dd-55310b636a14}</UniqueIdentifier>
+      <UniqueIdentifier>{e7997c6a-3a7d-42ed-b170-e6d16a508e41}</UniqueIdentifier>
     </Filter>
     <Filter Include="APU\DSP">
-      <UniqueIdentifier>{85fc7b59-0cd5-419c-91c8-a480a1864ec4}</UniqueIdentifier>
+      <UniqueIdentifier>{0bea040f-0040-4c3e-b9f1-9a9dbb482ba1}</UniqueIdentifier>
     </Filter>
     <Filter Include="APU\SMP">
-      <UniqueIdentifier>{80cc600b-e675-4c1c-a883-ec302840cd9a}</UniqueIdentifier>
+      <UniqueIdentifier>{861c8d5b-0f2f-4097-9c87-290bf0334b0c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Filter">
-      <UniqueIdentifier>{fde5c68f-9dee-45a3-b942-60c2d3455f96}</UniqueIdentifier>
+      <UniqueIdentifier>{1e3e39fd-b2d2-4c3f-83b2-b5731ab8deee}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
