@@ -725,6 +725,33 @@ void S9xMouseOn ()
 	}
 }
 
+void ControllerOptionsFromControllers()
+{
+   enum controllers controller[2];
+   int8 ids[4];
+   S9xGetController(0, &controller[0], &ids[0], &ids[1], &ids[2], &ids[3]);
+   S9xGetController(1, &controller[1], &ids[0], &ids[1], &ids[2], &ids[3]);
+
+   GUI.ControllerOption = SNES_JOYPAD;
+
+   if (controller[0] == CTL_JOYPAD && controller[1] == CTL_JOYPAD)
+      GUI.ControllerOption = SNES_JOYPAD;
+   else if (controller[0] == CTL_JOYPAD && controller[1] == CTL_MP5)
+      GUI.ControllerOption = SNES_MULTIPLAYER5;
+   else if (controller[0] == CTL_MP5 && controller[1] == CTL_MP5)
+      GUI.ControllerOption = SNES_MULTIPLAYER8;
+   else if (controller[0] == CTL_MOUSE && controller[1] == CTL_JOYPAD)
+      GUI.ControllerOption = SNES_MOUSE;
+   else if (controller[0] == CTL_JOYPAD && controller[1] == CTL_MOUSE)
+      GUI.ControllerOption = SNES_MOUSE_SWAPPED;
+   else if (controller[0] == CTL_JOYPAD && controller[1] == CTL_SUPERSCOPE)
+      GUI.ControllerOption = SNES_SUPERSCOPE;
+   else if (controller[0] == CTL_JOYPAD && controller[1] == CTL_JUSTIFIER && !ids[0])
+      GUI.ControllerOption = SNES_JUSTIFIER;
+   else if (controller[0] == CTL_JOYPAD && controller[1] == CTL_JUSTIFIER && ids[0])
+      GUI.ControllerOption = SNES_JUSTIFIER_2;
+}
+
 void ChangeInputDevice(void)
 {
 	Settings.MouseMaster = false;
@@ -3365,6 +3392,8 @@ int WINAPI WinMain(
     WinSaveConfigFile ();
 	WinLockConfigFile ();
 
+    ControllerOptionsFromControllers();
+
     WinInit (hInstance);
 	if(GUI.HideMenu)
 	{
@@ -3923,41 +3952,38 @@ static void CheckMenuStates ()
 	SetMenuItemInfo (GUI.hMenu, ID_EMULATION_BACKGROUNDINPUT, FALSE, &mii);
 
 	UINT validFlag;
-	enum controllers controller[2];
-	int8 ids[4];
-	S9xGetController(0, &controller[0], &ids[0],&ids[1],&ids[2],&ids[3]);
-	S9xGetController(1, &controller[1], &ids[0],&ids[1],&ids[2],&ids[3]);
+    ControllerOptionsFromControllers();
 
 	validFlag = (((1<<SNES_JOYPAD) & GUI.ValidControllerOptions) && (!S9xMovieActive() || !S9xMovieGetFrameCounter())) ? MFS_ENABLED : MFS_DISABLED;
-	mii.fState = validFlag|((controller[0] == CTL_JOYPAD && controller[1] == CTL_JOYPAD) ? MFS_CHECKED : MFS_UNCHECKED);
+    mii.fState = validFlag | (GUI.ControllerOption == SNES_JOYPAD ? MFS_CHECKED : MFS_UNCHECKED);
     SetMenuItemInfo (GUI.hMenu, IDM_SNES_JOYPAD, FALSE, &mii);
 
 	validFlag = (((1<<SNES_MULTIPLAYER5) & GUI.ValidControllerOptions) && (!S9xMovieActive() || !S9xMovieGetFrameCounter())) ? MFS_ENABLED : MFS_DISABLED;
-	mii.fState = validFlag|((controller[0] == CTL_JOYPAD && controller[1] == CTL_MP5) ? MFS_CHECKED : MFS_UNCHECKED);
+    mii.fState = validFlag | (GUI.ControllerOption == SNES_MULTIPLAYER5 ? MFS_CHECKED : MFS_UNCHECKED);
     SetMenuItemInfo (GUI.hMenu, IDM_ENABLE_MULTITAP, FALSE, &mii);
 
 	validFlag = (((1<<SNES_MULTIPLAYER8) & GUI.ValidControllerOptions) && (!S9xMovieActive() || !S9xMovieGetFrameCounter())) ? MFS_ENABLED : MFS_DISABLED;
-	mii.fState = validFlag|((controller[0] == CTL_MP5 && controller[1] == CTL_MP5) ? MFS_CHECKED : MFS_UNCHECKED);
+    mii.fState = validFlag | (GUI.ControllerOption == SNES_MULTIPLAYER8 ? MFS_CHECKED : MFS_UNCHECKED);
     SetMenuItemInfo (GUI.hMenu, IDM_MULTITAP8, FALSE, &mii);
 
 	validFlag = (((1<<SNES_MOUSE) & GUI.ValidControllerOptions) && (!S9xMovieActive() || !S9xMovieGetFrameCounter())) ? MFS_ENABLED : MFS_DISABLED;
-	mii.fState = validFlag|((controller[0] == CTL_MOUSE && controller[1] == CTL_JOYPAD) ? MFS_CHECKED : MFS_UNCHECKED);
+    mii.fState = validFlag | (GUI.ControllerOption == SNES_MOUSE ? MFS_CHECKED : MFS_UNCHECKED);
     SetMenuItemInfo (GUI.hMenu, IDM_MOUSE_TOGGLE, FALSE, &mii);
 
 	validFlag = (((1<<SNES_MOUSE_SWAPPED) & GUI.ValidControllerOptions) && (!S9xMovieActive() || !S9xMovieGetFrameCounter())) ? MFS_ENABLED : MFS_DISABLED;
-	mii.fState = validFlag|((controller[0] == CTL_JOYPAD && controller[1] == CTL_MOUSE) ? MFS_CHECKED : MFS_UNCHECKED);
+    mii.fState = validFlag | (GUI.ControllerOption == SNES_MOUSE_SWAPPED ? MFS_CHECKED : MFS_UNCHECKED);
     SetMenuItemInfo (GUI.hMenu, IDM_MOUSE_SWAPPED, FALSE, &mii);
 
 	validFlag = (((1<<SNES_SUPERSCOPE) & GUI.ValidControllerOptions) && (!S9xMovieActive() || !S9xMovieGetFrameCounter())) ? MFS_ENABLED : MFS_DISABLED;
-	mii.fState = validFlag|((controller[0] == CTL_JOYPAD && controller[1] == CTL_SUPERSCOPE) ? MFS_CHECKED : MFS_UNCHECKED);
+    mii.fState = validFlag | (GUI.ControllerOption == SNES_SUPERSCOPE ? MFS_CHECKED : MFS_UNCHECKED);
     SetMenuItemInfo (GUI.hMenu, IDM_SCOPE_TOGGLE, FALSE, &mii);
 
 	validFlag = (((1<<SNES_JUSTIFIER) & GUI.ValidControllerOptions) && (!S9xMovieActive() || !S9xMovieGetFrameCounter())) ? MFS_ENABLED : MFS_DISABLED;
-	mii.fState = validFlag|((controller[0] == CTL_JOYPAD && controller[1] == CTL_JUSTIFIER && !ids[0]) ? MFS_CHECKED : MFS_UNCHECKED);
+    mii.fState = validFlag | (GUI.ControllerOption == SNES_JUSTIFIER ? MFS_CHECKED : MFS_UNCHECKED);
     SetMenuItemInfo (GUI.hMenu, IDM_JUSTIFIER, FALSE, &mii);
 
 	validFlag = (((1<<SNES_JUSTIFIER_2) & GUI.ValidControllerOptions) && (!S9xMovieActive() || !S9xMovieGetFrameCounter())) ? MFS_ENABLED : MFS_DISABLED;
-	mii.fState = validFlag|((controller[0] == CTL_JOYPAD && controller[1] == CTL_JUSTIFIER && ids[0]) ? MFS_CHECKED : MFS_UNCHECKED);
+    mii.fState = validFlag | (GUI.ControllerOption == SNES_JUSTIFIER_2 ? MFS_CHECKED : MFS_UNCHECKED);
     SetMenuItemInfo (GUI.hMenu, IDM_JUSTIFIERS, FALSE, &mii);
 
 	mii.fState = !Settings.StopEmulation ? MFS_ENABLED : MFS_DISABLED;
