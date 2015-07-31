@@ -1,4 +1,5 @@
 DEBUG = 0
+HAVE_EXCEPTIONS = 0
 
 ifeq ($(platform),)
 	platform = unix
@@ -93,6 +94,7 @@ else ifeq ($(platform), qnx)
 	AR = QCC -Vgcc_ntoarmv7le
 	CXXFLAGS += -D__BLACKBERRY_QNX__
 	CXXFLAGS += -DARM
+	HAVE_EXCEPTIONS = 1
 
 # PS3
 else ifeq ($(platform), ps3)
@@ -195,7 +197,11 @@ else
 	CODE_DEFINES = -fomit-frame-pointer
 endif
 
-CXXFLAGS	+= $(CODE_DEFINES) -fno-exceptions -fno-rtti -pedantic $(WARNINGS_DEFINES) $(fpic)
+ifneq ($(HAVE_EXCEPTIONS), 1)
+CXXFLAGS += -fno-exceptions
+endif
+
+CXXFLAGS	+= $(CODE_DEFINES) -fno-rtti -pedantic $(WARNINGS_DEFINES) $(fpic)
 CXXFLAGS	+= -DHAVE_STRINGS_H -DHAVE_STDINT_H -DRIGHTSHIFT_IS_SAR -D__LIBRETRO__
 CFLAGS		= $(CXXFLAGS)
 
