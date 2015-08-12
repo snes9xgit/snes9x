@@ -985,6 +985,31 @@ get_filter_scale (int &width, int &height)
             break;
 #endif /* USE_HQ2X */
 
+#ifdef USE_XBRZ
+        case FILTER_4XBRZ:
+            if (((width * 4) <= S9xDisplayDriver::scaled_max_width) &&
+                ((height * 4) <= S9xDisplayDriver::scaled_max_height))
+            {
+                width *= 4;
+                height *= 4;
+                break;
+            }
+
+        case FILTER_3XBRZ:
+            if (width * 3 <= S9xDisplayDriver::scaled_max_width &&
+                    height * 3 <= S9xDisplayDriver::scaled_max_height)
+            {
+                width *= 3;
+                height *= 3;
+                break;
+            }
+
+        case FILTER_2XBRZ:
+            width *= 2;
+            height *= 2;
+            break;
+#endif /* USE_XBRZ */
+
         case FILTER_SIMPLE4X:
             if (((width * 4) <= S9xDisplayDriver::scaled_max_width) &&
                 ((height * 4) <= S9xDisplayDriver::scaled_max_height))
@@ -1118,6 +1143,42 @@ internal_filter (uint8 *src_buffer,
 
             break;
 #endif /* USE_HQ2X */
+
+#ifdef USE_XBRZ
+        case FILTER_4XBRZ:
+
+            filter_4xBRZ (src_buffer,
+                     src_pitch,
+                     dst_buffer,
+                     dst_pitch,
+                     width,
+                     height);
+
+            break;
+
+        case FILTER_3XBRZ:
+
+            filter_3xBRZ (src_buffer,
+                     src_pitch,
+                     dst_buffer,
+                     dst_pitch,
+                     width,
+                     height);
+
+            break;
+
+        case FILTER_2XBRZ:
+
+            filter_2xBRZ (src_buffer,
+                 src_pitch,
+                 dst_buffer,
+                 dst_pitch,
+                 width,
+                 height);
+
+            break;
+#endif /* USE_XBRZ */
+
 
         case FILTER_SIMPLE4X:
 
@@ -1778,7 +1839,6 @@ S9xInitDisplay (int argc, char **argv)
 #ifdef USE_HQ2X
     S9xBlitHQ2xFilterInit ();
 #endif /* USE_HQ2SX */
-
     S9xQueryDrivers ();
     S9xInitDriver ();
     S9xGraphicsInit ();

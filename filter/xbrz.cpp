@@ -16,7 +16,11 @@
 #include "xbrz.h"
 #include <cassert>
 #include <algorithm>
+#ifdef unix
+  #include <cmath>
+#endif
 #include <vector>
+
 
 namespace
 {
@@ -654,9 +658,11 @@ void blendPixel(const Kernel_3x3& ker,
 #define h get_h<rotDeg>(ker)
 #define i get_i<rotDeg>(ker)
 
-#ifndef NDEBUG
+#ifdef WIN32
+# ifndef NDEBUG
     if (breakIntoDebugger)
         __debugbreak(); //__asm int 3;
+# endif
 #endif
 
     const unsigned char blend = rotateBlendInfo<rotDeg>(blendInfo);
@@ -1173,7 +1179,11 @@ void xbrz::scale(size_t factor, const uint32_t* src, uint32_t* trg, int srcWidth
 {
     switch (colFmt)
     {
-        case ColorFormat::ARGB:
+#ifdef WIN32
+        case ColorFormat::ARGB:// not Standard C++.
+#else
+        case ARGB:
+#endif
             switch (factor)
             {
                 case 2:
@@ -1185,9 +1195,13 @@ void xbrz::scale(size_t factor, const uint32_t* src, uint32_t* trg, int srcWidth
                 case 5:
                     return scaleImage<Scaler5x, ColorDistanceARGB>(src, trg, srcWidth, srcHeight, cfg, yFirst, yLast);
             }
-			break;
+            break;
 
-        case ColorFormat::RGB:
+#ifdef WIN32
+        case ColorFormat::RGB:// not Standard C++.
+#else
+        case RGB:
+#endif
             switch (factor)
             {
                 case 2:
@@ -1199,7 +1213,7 @@ void xbrz::scale(size_t factor, const uint32_t* src, uint32_t* trg, int srcWidth
                 case 5:
                     return scaleImage<Scaler5x, ColorDistanceRGB>(src, trg, srcWidth, srcHeight, cfg, yFirst, yLast);
             }
-			break;
+            break;
     }
     assert(false);
 }
@@ -1209,10 +1223,18 @@ bool xbrz::equalColorTest(uint32_t col1, uint32_t col2, ColorFormat colFmt, doub
 {
     switch (colFmt)
     {
-        case ColorFormat::ARGB:
+#ifdef WIN32
+        case ColorFormat::ARGB: // not Standard C++.
+#else
+        case ARGB:
+#endif
             return ColorDistanceARGB::dist(col1, col2, luminanceWeight) < equalColorTolerance;
 
-        case ColorFormat::RGB:
+#ifdef WIN32
+        case ColorFormat::RGB:// not Standard C++.
+#else
+        case RGB:
+#endif
             return ColorDistanceRGB::dist(col1, col2, luminanceWeight) < equalColorTolerance;
     }
     assert(false);
