@@ -65,6 +65,8 @@ const BindingLink b_links[] =
         { "b_save_6",              "QuickSave006"      },
         { "b_save_7",              "QuickSave007"      },
         { "b_save_8",              "QuickSave008"      },
+        { "b_save_9",              "QuickSave009"      },
+        { "b_save_c",              "GTK_QuickSave00c"  },
         { "b_load_0",              "QuickLoad000"      },
         { "b_load_1",              "QuickLoad001"      },
         { "b_load_2",              "QuickLoad002"      },
@@ -74,6 +76,11 @@ const BindingLink b_links[] =
         { "b_load_6",              "QuickLoad006"      },
         { "b_load_7",              "QuickLoad007"      },
         { "b_load_8",              "QuickLoad008"      },
+        { "b_load_9",              "QuickLoad009"      },
+        { "b_load_c",              "GTK_QuickLoad00c"  },
+        { "b_load_o",              "GTK_QuickLoad00o"  },
+        { "b_next_slot",           "GTK_NextSlot"      },
+        { "b_prev_slot",           "GTK_PrevSlot"      },
         { "b_sound_channel_0",     "SoundChannel0"     },
         { "b_sound_channel_1",     "SoundChannel1"     },
         { "b_sound_channel_2",     "SoundChannel2"     },
@@ -100,9 +107,9 @@ const int b_breaks[] =
         24, /* End of turbo/sticky buttons */
         35, /* End of base emulator buttons */
         43, /* End of Graphic options */
-        61, /* End of save/load states */
-        70, /* End of sound buttons */
-        76, /* End of miscellaneous buttons */
+        68, /* End of save/load states */
+        77, /* End of sound buttons */
+        83, /* End of miscellaneous buttons */
         -1
 };
 
@@ -235,6 +242,18 @@ S9xHandlePortCommand (s9xcommand_t cmd, int16 data1, int16 data2)
             swap_controllers_1_2 ();
         }
 
+        else if (cmd.port[0] == PORT_CURRENT_SLOT_SAVE) {
+            top_level->save_current_slot ();
+        } else if (cmd.port[0] == PORT_CURRENT_SLOT_LOAD) {
+            top_level->load_current_slot ();
+        } else if (cmd.port[0] == PORT_OLD_SLOT_LOAD) {
+            top_level->load_old_slot ();
+        } else if (cmd.port[0] == PORT_CURRENT_SLOT_NEXT) {
+            top_level->change_current_slot (+1);
+        } else if (cmd.port[0] == PORT_CURRENT_SLOT_PREV) {
+            top_level->change_current_slot (-1);
+        }
+
         else if (cmd.port[0] == PORT_QUIT)
         {
             if (quit_binding_down)
@@ -305,6 +324,18 @@ S9xGetPortCommandT (const char *name)
     else if (!strcasecmp (name, "GTK_swap_controllers"))
     {
         cmd.port[0] = PORT_SWAP_CONTROLLERS;
+    }
+
+    else if (!strcasecmp (name, "GTK_QuickSave00c")) {
+        cmd.port[0] = PORT_CURRENT_SLOT_SAVE;
+    } else if (!strcasecmp (name, "GTK_QuickLoad00c")) {
+        cmd.port[0] = PORT_CURRENT_SLOT_LOAD;
+    } else if (!strcasecmp (name, "GTK_QuickLoad00o")) {
+        cmd.port[0] = PORT_OLD_SLOT_LOAD;
+    } else if (!strcasecmp (name, "GTK_NextSlot")) {
+        cmd.port[0] = PORT_CURRENT_SLOT_NEXT;
+    } else if (!strcasecmp (name, "GTK_PrevSlot")) {
+        cmd.port[0] = PORT_CURRENT_SLOT_PREV;
     }
 
     else

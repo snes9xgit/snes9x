@@ -49,6 +49,11 @@ class Snes9xWindow : public GtkBuilderWindow
         void open_multicart_dialog (void);
         void show_rom_info (void);
 
+        void change_current_slot (int off);
+        void save_current_slot (void);
+        void load_current_slot (void);
+        void load_old_slot (void);
+
         /* GTK-base-related functions */
         void show (void);
         void show_status_message (const char *message);

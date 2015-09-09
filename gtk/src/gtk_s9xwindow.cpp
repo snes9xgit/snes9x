@@ -24,6 +24,13 @@
 #include "gtk_netplay.h"
 #endif
 
+
+#define MAX_SLOTS 10
+static int currentSlot = 0;
+static char buf[128];
+
+
+
 static gboolean
 event_main_window_delete (GtkWidget *widget,
                           GdkEvent  *event,
@@ -400,13 +407,38 @@ event_hard_reset (GtkWidget *widget, gpointer data)
     return;
 }
 
+
+
+static void change_slot (int off) {
+    currentSlot = (currentSlot + off + MAX_SLOTS) % MAX_SLOTS;
+    sprintf (buf, "selected %d", currentSlot);
+    S9xSetInfoString (buf);
+}
+
+static void
+event_change_slot (GtkWidget *widget, gpointer data)
+{
+    char *name = (char *) gtk_buildable_get_name (GTK_BUILDABLE (widget));
+    int off;
+    if (name[5] == 'n') {
+        off = 1;
+    } else {
+        off = -1;
+    }
+    change_slot (off);
+}
+
 static void
 event_save_state (GtkWidget *widget, gpointer data)
 {
     int  slot;
     char *name = (char *) gtk_buildable_get_name (GTK_BUILDABLE (widget));
 
-    slot = atoi (&(name[11]));
+    if (name[11] == 'c') {
+        slot = currentSlot;
+    } else {
+        slot = atol (&(name[11]));
+    }
 
     S9xQuickSaveSlot (slot);
 
@@ -427,7 +459,13 @@ event_load_state (GtkWidget *widget, gpointer data)
     int  slot;
     char *name = (char *) gtk_buildable_get_name (GTK_BUILDABLE (widget));
 
-    slot = atoi (&(name[11]));
+    if (name[11] == 'c') {
+        slot = currentSlot;
+    } else if (name[11] == 'o') {
+        slot = OLD_SLOT_NUM;
+    } else {
+        slot = atol (&(name[11]));
+    }
 
     S9xQuickLoadSlot (slot);
 
@@ -556,6 +594,7 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
         { "on_reset_item_activate", G_CALLBACK (event_reset) },
         { "hard_reset", G_CALLBACK (event_hard_reset) },
         { "on_port_activate", G_CALLBACK (event_port) },
+        { "change_slot", G_CALLBACK (event_change_slot) },
         { "load_save_state", G_CALLBACK (event_load_state) },
         { "load_state_file", G_CALLBACK (event_load_state_file) },
         { "save_save_state", G_CALLBACK (event_save_state) },
@@ -973,6 +1012,10 @@ Snes9xWindow::try_open_rom (const char *filename)
         this->unpause_from_user ();
 
     }
+
+    currentSlot = S9xPickSlot();
+    sprintf (buf, "selected %d", currentSlot);
+    S9xSetInfoString (buf);
 
     this->unpause_from_focus_change ();
 
@@ -1407,6 +1450,21 @@ Snes9xWindow::show_rom_info (void)
     return;
 }
 
+
+void Snes9xWindow::change_current_slot (int off) {
+    change_slot(off);
+}
+void Snes9xWindow::save_current_slot () {
+    S9xQuickSaveSlot (currentSlot);
+}
+void Snes9xWindow::load_current_slot () {
+    S9xQuickLoadSlot (currentSlot);
+}
+void Snes9xWindow::load_old_slot () {
+    S9xQuickLoadSlot (OLD_SLOT_NUM);
+}
+
+
 void
 Snes9xWindow::configure_widgets (void)
 {
@@ -1414,6 +1472,7 @@ Snes9xWindow::configure_widgets (void)
     enable_widget ("pause_item", config->rom_loaded);
     enable_widget ("reset_item", config->rom_loaded);
     enable_widget ("controller_ports_item", config->rom_loaded);
+    enable_widget ("current_slot", config->rom_loaded);
     enable_widget ("load_state_item", config->rom_loaded);
     enable_widget ("save_state_item", config->rom_loaded);
     enable_widget ("save_spc_item", config->rom_loaded);
@@ -1911,6 +1970,7 @@ Snes9xWindow::update_accels (void)
     set_menu_item_accel_to_binding ("save_state_6", "QuickSave006");
     set_menu_item_accel_to_binding ("save_state_7", "QuickSave007");
     set_menu_item_accel_to_binding ("save_state_8", "QuickSave008");
+    set_menu_item_accel_to_binding ("save_state_9", "QuickSave009");
     set_menu_item_accel_to_binding ("load_state_0", "QuickLoad000");
     set_menu_item_accel_to_binding ("load_state_1", "QuickLoad001");
     set_menu_item_accel_to_binding ("load_state_2", "QuickLoad002");
@@ -1920,6 +1980,12 @@ Snes9xWindow::update_accels (void)
     set_menu_item_accel_to_binding ("load_state_6", "QuickLoad006");
     set_menu_item_accel_to_binding ("load_state_7", "QuickLoad007");
     set_menu_item_accel_to_binding ("load_state_8", "QuickLoad008");
+    set_menu_item_accel_to_binding ("load_state_9", "QuickLoad009");
+    set_menu_item_accel_to_binding ("slot_next", "GTK_NextSlot");
+    set_menu_item_accel_to_binding ("slot_prev", "GTK_PrevSlot");
+    set_menu_item_accel_to_binding ("load_state_c", "GTK_QuickLoad00c");
+    set_menu_item_accel_to_binding ("load_state_o", "GTK_QuickLoad00o");
+    set_menu_item_accel_to_binding ("save_state_c", "GTK_QuickSave00c");
     set_menu_item_accel_to_binding ("pause_item", "GTK_pause");
     set_menu_item_accel_to_binding ("save_spc_item", "GTK_save_spc");
     set_menu_item_accel_to_binding ("open_rom_item", "GTK_open_rom");

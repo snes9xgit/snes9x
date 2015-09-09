@@ -3,6 +3,7 @@
 #include <errno.h>
 
 #include "gtk_s9x.h"
+#include "gtk_file.h"
 
 static char buf[256];
 
@@ -484,30 +485,79 @@ S9xOpenROMDialog (void)
     return filename;
 }
 
+
+bool loadedOld = false;
+
 /* QuickSave/Load from S9x base controls.cpp */
 void
 S9xQuickSaveSlot (int slot)
 {
     char def[PATH_MAX];
     char filename[PATH_MAX];
+    char oldname[PATH_MAX];
     char drive[_MAX_DRIVE];
     char dir[_MAX_DIR];
     char ext[_MAX_EXT];
+    struct stat st;
+    bool savedOld = false;
+
+    if (slot < 0) { return; }
 
     _splitpath (Memory.ROMFilename, drive, dir, def, ext);
 
     sprintf (filename, "%s%s%s.%03d",
              S9xGetDirectory (SNAPSHOT_DIR), SLASH_STR, def,
              slot);
+    if (!loadedOld && stat(filename, &st) == 0) {
+        strcpy(oldname, filename);
+        sprintf (&(oldname[strlen(oldname) - 3]), "old");
+        rename(filename, oldname);
+        savedOld = true;
+    }
+    loadedOld = false;
 
     if (S9xFreezeGame (filename))
     {
-        sprintf (buf, "%s.%03d saved", def, slot);
+        sprintf (buf, "saved %d%c", slot, (savedOld ? '+' : ' '));
 
         S9xSetInfoString (buf);
     }
 
     return;
+}
+
+int S9xPickSlot () {
+    char def[PATH_MAX];
+    char filename[PATH_MAX];
+    char drive[_MAX_DRIVE];
+    char dir[_MAX_DIR];
+    char ext[_MAX_EXT];
+    int baselen;
+    struct timespec t = {0,0};
+    struct stat st;
+    int last = 0;
+
+    _splitpath (Memory.ROMFilename, drive, dir, def, ext);
+    sprintf (filename, "%s%s%s.",
+             S9xGetDirectory (SNAPSHOT_DIR), SLASH_STR, def);
+    baselen = strnlen(filename, PATH_MAX);
+
+    for (int i = 0; i < 1000; ++i) {
+        sprintf(&filename[baselen], "%03d", i);
+        if (stat(filename, &st) != 0) {
+            if (i < 10)
+                continue;
+            else
+                break;
+        }
+        if (t.tv_sec < st.st_mtim.tv_sec ||
+                (t.tv_sec == st.st_mtim.tv_sec &&
+                t.tv_nsec < st.st_mtim.tv_nsec)) {
+            t = st.st_mtim;
+            last = i;
+        }
+    }
+    return last;
 }
 
 void
@@ -518,16 +568,28 @@ S9xQuickLoadSlot (int slot)
     char drive[_MAX_DRIVE];
     char dir[_MAX_DIR];
     char ext[_MAX_EXT];
+    char num[4];
 
     _splitpath (Memory.ROMFilename, drive, dir, def, ext);
 
-    sprintf (filename, "%s%s%s.%03d",
-             S9xGetDirectory (SNAPSHOT_DIR), SLASH_STR, def,
-             slot);
+    loadedOld = false;
+    if (slot >= 0) {
+        sprintf (filename, "%s%s%s.%03d",
+               S9xGetDirectory (SNAPSHOT_DIR), SLASH_STR, def, slot);
+        sprintf (num, "%d", slot);
+    } else if (slot == OLD_SLOT_NUM) {
+        sprintf (filename, "%s%s%s.old",
+               S9xGetDirectory (SNAPSHOT_DIR), SLASH_STR, def);
+        sprintf (num, "old");
+        loadedOld = true;
+    } else {
+        return;
+    }
+
 
     if (S9xUnfreezeGame (filename))
     {
-        sprintf (buf, "%s.%03d loaded", def, slot);
+        sprintf (buf, "loaded %s", num);
         S9xSetInfoString (buf);
     }
     else

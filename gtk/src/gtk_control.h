@@ -26,6 +26,11 @@
 #define PORT_SEEK_TO_FRAME      5
 #define PORT_QUIT               6
 #define PORT_SWAP_CONTROLLERS   7
+#define PORT_CURRENT_SLOT_SAVE  8
+#define PORT_CURRENT_SLOT_LOAD  9
+#define PORT_CURRENT_SLOT_NEXT  10
+#define PORT_CURRENT_SLOT_PREV  11
+#define PORT_OLD_SLOT_LOAD      12
 
 typedef struct BindingLink
 {
@@ -37,7 +42,7 @@ typedef struct BindingLink
 extern const BindingLink b_links[];
 extern const int b_breaks[];
 #define NUM_JOYPAD_LINKS 24
-#define NUM_EMU_LINKS    52
+#define NUM_EMU_LINKS    59
 
 typedef struct JoypadBinding
 {
