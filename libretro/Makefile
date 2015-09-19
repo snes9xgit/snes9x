@@ -88,7 +88,7 @@ else ifeq ($(platform), qnx)
 	fpic := -fPIC
 	SHARED := -shared -Wl,--version-script=link.T
 	CC = qcc -Vgcc_notarmv7le
-	CXX = QCC -Vgcc_notarmv7le_cpp
+	CXX = QCC -Vgcc_notarmv7le
 	AR = QCC -Vgcc_ntoarmv7le
 	CXXFLAGS += -D__BLACKBERRY_QNX__
 	CXXFLAGS += -DARM
