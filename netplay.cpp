@@ -301,8 +301,8 @@ bool8 S9xNPConnect ()
         }
         else
         {
-            S9xNPSetError ("Unable to look up server's IP address from hostname.\n\n\"
-                           "Unknown hostname or may be your nameserver isn't set\n\"
+            S9xNPSetError ("Unable to look up server's IP address from hostname.\n\n"
+                           "Unknown hostname or may be your nameserver isn't set\n"
                            "up correctly?");
             return (FALSE);
         }
@@ -336,8 +336,8 @@ bool8 S9xNPConnect ()
         if (errno == ECONNREFUSED)
 #endif
         {
-            S9xNPSetError ("Connection to remote server socket refused:\n\n\"
-                           "Is there actually a Snes9X NetPlay server running\n\"
+            S9xNPSetError ("Connection to remote server socket refused:\n\n"
+                           "Is there actually a Snes9X NetPlay server running\n"
                            "on the remote machine on this port?");
         }
         else
@@ -425,7 +425,7 @@ bool8 S9xNPConnect ()
 
     if (data [0] != NP_VERSION)
     {
-        S9xNPSetError ("The Snes9X NetPlay server implements a different\n\"
+        S9xNPSetError ("The Snes9X NetPlay server implements a different\n"
                        "version of the protocol. Disconnecting.");
         delete[] data;
         S9xNPDisconnect ();
