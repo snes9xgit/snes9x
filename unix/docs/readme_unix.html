@@ -620,6 +620,24 @@
 		<p>
 			configure takes several arguments. Further documentation about this is available by running <code>./configure --help</code>.
 		</p>
+		<h3>Cross-compiling Snes9x</h3>
+		<p>
+			If you want to cross-compile for &lt;arch&gt;, you'll need:
+		</p>
+		<ul>
+			<li>- a cross-compiling environment for this architecture (a cross-compiler like &lt;arch&gt;-linux-gnu-gcc/g++, binutils:&lt;arch&gt; and libc/libstdc++:&lt;arch&gt;)</li>
+			<li>- every &lt;arch&gt;-flavored library and its -dev package (like libx11-6:&lt;arch&gt; and libx11-dev:&lt;arch&gt;)</li>
+			<li>- to adjust library and include search directories thanks to LDFLAGS and CPPFLAGS environment variables</li>
+		</ul>
+		<p>
+			Typically, you'll run:<br>
+		<ul>
+			<li><code>LDFLAGS="-L/usr/lib/&lt;arch&gt;-linux-gnu -L/lib/&lt;arch&gt;-linux-gnu" CPPFLAGS=-I/usr/include ./configure --host=&lt;arch&gt;-linux-gnu</li>
+			<li>make</li></code>
+		</ul>
+		<p>
+			Concerning CPPFLAGS, it is used when looking for header presence and usability. I first used CXXFLAGS but it doesn't seems to be used by the configure script.
+		</p>
 		<h2>Compatibility</h2>
 		<h3>Compatibility with Other Ports</h3>
 		<p>

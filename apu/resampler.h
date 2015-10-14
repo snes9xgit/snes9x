@@ -17,7 +17,9 @@ class Resampler : public ring_buffer
         {
         }
 
-        ~Resampler ()
+        /* Every base class must have its destructor virtual
+            [-Wdelete-non-virtual-dtor] */
+        virtual ~Resampler ()
         {
         }
 

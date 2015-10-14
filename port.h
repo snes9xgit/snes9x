@@ -341,21 +341,124 @@ void SetInfoDlgColor(unsigned char, unsigned char, unsigned char);
 #define MSB_FIRST
 #endif
 
-#ifdef FAST_LSB_WORD_ACCESS
-#define READ_WORD(s)		(*(uint16 *) (s))
-#define READ_3WORD(s)		(*(uint32 *) (s) & 0x00ffffff)
-#define READ_DWORD(s)		(*(uint32 *) (s))
-#define WRITE_WORD(s, d)	*(uint16 *) (s) = (d)
-#define WRITE_3WORD(s, d)	*(uint16 *) (s) = (uint16) (d), *((uint8 *) (s) + 2) = (uint8) ((d) >> 16)
-#define WRITE_DWORD(s, d)	*(uint32 *) (s) = (d)
+union WORD
+{
+    uint8 u8[2];
+    int16 s16;
+};
+
+static inline int16 READ_WORD(uint8 *in)
+{
+    union WORD out;
+
+#if defined(LSB_FIRST)
+    out.u8[0] = in[0];
+    out.u8[1] = in[1];
 #else
-#define READ_WORD(s)		(*(uint8 *) (s) | (*((uint8 *) (s) + 1) << 8))
-#define READ_3WORD(s)		(*(uint8 *) (s) | (*((uint8 *) (s) + 1) << 8) | (*((uint8 *) (s) + 2) << 16))
-#define READ_DWORD(s)		(*(uint8 *) (s) | (*((uint8 *) (s) + 1) << 8) | (*((uint8 *) (s) + 2) << 16) | (*((uint8 *) (s) + 3) << 24))
-#define WRITE_WORD(s, d)	*(uint8 *) (s) = (uint8) (d), *((uint8 *) (s) + 1) = (uint8) ((d) >> 8)
-#define WRITE_3WORD(s, d)	*(uint8 *) (s) = (uint8) (d), *((uint8 *) (s) + 1) = (uint8) ((d) >> 8), *((uint8 *) (s) + 2) = (uint8) ((d) >> 16)
-#define WRITE_DWORD(s, d)	*(uint8 *) (s) = (uint8) (d), *((uint8 *) (s) + 1) = (uint8) ((d) >> 8), *((uint8 *) (s) + 2) = (uint8) ((d) >> 16), *((uint8 *) (s) + 3) = (uint8) ((d) >> 24)
+    out.u8[0] = in[1];
+    out.u8[1] = in[0];
 #endif
+
+    return (out.s16);
+}
+
+static inline uint32 READ_WORD(uint16 *in)
+{
+    uint32 out = *in;
+    return out;
+}
+
+static inline void WRITE_WORD(uint8 *out, int16 in)
+{
+    union WORD tmp;
+
+    tmp.s16 = in;
+#if defined(LSB_FIRST)
+    out[0] = tmp.u8[0];
+    out[1] = tmp.u8[1];
+#else
+    out[0] = tmp.u8[1];
+    out[1] = tmp.u8[0];
+#endif
+}
+
+union DWORD
+{
+    uint8  u8[4];
+    uint32 u32;
+};
+
+static inline uint32 READ_3WORD(uint8 *in)
+{
+    union DWORD out;
+
+#if defined(LSB_FIRST)
+    out.u8[0] = in[0];
+    out.u8[1] = in[1];
+    out.u8[2] = in[2];
+    out.u8[3] = 0;
+#else
+    out.u8[0] = 0;
+    out.u8[1] = in[2];
+    out.u8[2] = in[1];
+    out.u8[3] = in[0];
+#endif
+
+    return (out.u32);
+}
+
+static inline void WRITE_3WORD(uint8 *out, uint32 in)
+{
+    union DWORD tmp;
+
+    tmp.u32 = in;
+#if defined(LSB_FIRST)
+    out[0] = tmp.u8[0];
+    out[1] = tmp.u8[1];
+    out[2] = tmp.u8[2];
+#else
+    out[0] = tmp.u8[2];
+    out[1] = tmp.u8[1];
+    out[2] = tmp.u8[0];
+#endif
+}
+
+static inline uint32 READ_DWORD(uint8 *in)
+{
+    union DWORD out;
+
+#if defined(LSB_FIRST)
+    out.u8[0] = in[0];
+    out.u8[1] = in[1];
+    out.u8[2] = in[2];
+    out.u8[3] = in[3];
+#else
+    out.u8[0] = in[3];
+    out.u8[1] = in[2];
+    out.u8[2] = in[1];
+    out.u8[3] = in[0];
+#endif
+
+    return (out.u32);
+}
+
+static inline void WRITE_DWORD(uint8 *out, uint32 in)
+{
+    union DWORD tmp;
+
+    tmp.u32 = in;
+#if defined(LSB_FIRST)
+    out[0] = tmp.u8[0];
+    out[1] = tmp.u8[1];
+    out[2] = tmp.u8[2];
+    out[3] = tmp.u8[3];
+#else
+    out[0] = tmp.u8[3];
+    out[1] = tmp.u8[2];
+    out[2] = tmp.u8[1];
+    out[3] = tmp.u8[0];
+#endif
+}
 
 #define SWAP_WORD(s)		(s) = (((s) & 0xff) <<  8) | (((s) & 0xff00) >> 8)
 #define SWAP_DWORD(s)		(s) = (((s) & 0xff) << 24) | (((s) & 0xff00) << 8) | (((s) & 0xff0000) >> 8) | (((s) & 0xff000000) >> 24)

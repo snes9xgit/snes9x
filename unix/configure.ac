@@ -70,6 +70,8 @@ fi
 
 # Test what compiler flags we should use.
 
+# If cross-compiling, we need to disable some tests
+if test "x$cross_compiling" == "xno"; then
 AC_ARG_ENABLE([debug],
 	[AS_HELP_STRING([--enable-debug],
 		[leave debug information in the final binary (default: no)])],
@@ -105,6 +107,7 @@ AC_S9X_COMPILER_FLAG([-pedantic],             [pedantic])
 AC_S9X_COMPILER_FLAG([-Wall],                 [Wall])
 AC_S9X_COMPILER_FLAG([-W],                    [W])
 AC_S9X_COMPILER_FLAG([-Wno-unused-parameter], [Wno_unused_parameter])
+fi # fi not cross-compiling
 
 # Check if the OS is Linux.
 
@@ -252,6 +255,46 @@ if test "x$enable_screenshot" = "xyes"; then
 	fi
 fi
 
+# Enable shared-memory support if available
+
+AC_CACHE_VAL([snes9x_cv_Xext],
+[
+	AC_CHECK_HEADER([X11/extensions/XShm.h],
+		[AC_CHECK_LIB([Xext], [XShmAttach],
+			[snes9x_cv_Xext="yes"],
+			[snes9x_cv_Xext="no"],
+			[-lX11 -lxcb -lXau -lXdmcp])],
+		[snes9x_cv_Xext="no"],[#include <X11/Xlib.h>])
+])
+
+AC_ARG_ENABLE([shm],
+	[AS_HELP_STRING([--enable-shm],
+		[support shared-memory if available (default: yes)])],
+	[], [enable_shm="yes"])
+
+if test "x$enable_shm" = "xyes"; then
+	AC_CHECK_HEADER([sys/ipc.h],
+		[snes9x_have_ipc_h="yes"], [snes9x_have_ipc_h="no"])
+	AC_CHECK_HEADER([sys/shm.h],
+		[snes9x_have_shm_h="yes"], [snes9x_have_shm_h="no"])
+
+	if test "x$snes9x_cv_Xext" = "xno"; then
+		AC_MSG_WARN([libXext not found : shared-memory will not be used])
+	fi
+
+	AC_MSG_CHECKING([if shared-memory support is available])
+	if test "x$snes9x_have_ipc_h" = "xyes" \
+	  && test "x$snes9x_have_shm_h" = "xyes" \
+	  && test "x$snes9x_cv_Xext" = "xyes"; then
+		AC_MSG_RESULT([yes])
+		S9XSHM="S9XSHM=1"
+		S9XLIBS="$S9XLIBS -lXext"
+	else
+		AC_MSG_RESULT([no])
+		enable_shm="no"
+	fi
+fi
+
 # Check for functions
 
 AC_CHECK_FUNC([mkstemp],
@@ -261,12 +304,13 @@ AC_CHECK_FUNC([mkstemp],
 
 # Check X11
 
+LIBS="-lxcb -lXau -lXdmcp"
 AC_PATH_XTRA
 if test "x$no_x" = "xyes"; then
 	AC_MSG_ERROR([X11 is required.])
 else
 	S9XFLGS="$S9XFLGS $X_CFLAGS"
-	S9XLIBS="$S9XLIBS $X_PRE_LIBS -lX11 -lXext $X_LIBS $X_EXTRA_LIBS"
+	S9XLIBS="$S9XLIBS $X_PRE_LIBS -lX11 $X_LIBS $X_EXTRA_LIBS"
 fi
 
 # Check for headers
@@ -293,6 +337,8 @@ AC_CHECK_HEADERS([unistd.h sys/socket.h])
 
 # Check whether the size of pointer is int.
 
+# If cross-compiling, we need to disable some tests
+if test "x$cross_compiling" == "xno"; then
 if test "x$snes9x_have_stdint_h" = "x"; then
 	AC_MSG_CHECKING([whether the size of pointer is int])
 	
@@ -374,6 +420,7 @@ if test "x$snes9x_sar_int8" = "xyes" -a "x$snes9x_sar_int16" = "xyes" -a "x$snes
 	S9XDEFS="`echo \"$S9XDEFS\" | sed -e 's/-DRIGHTSHIFT_int64_IS_SAR//'`"
 	S9XDEFS="$S9XDEFS -DRIGHTSHIFT_IS_SAR"
 fi
+fi # fi not cross-compiling
 
 # Check if we have sound code for this platform.
 
@@ -414,6 +461,7 @@ S9XLIBS="`echo \"$S9XLIBS\" | sed -e 's/  */ /g'`"
 S9XFLGS="`echo \"$S9XFLGS\" | sed -e 's/^  *//'`"
 S9XDEFS="`echo \"$S9XDEFS\" | sed -e 's/^  *//'`"
 S9XLIBS="`echo \"$S9XLIBS\" | sed -e 's/^  *//'`"
+S9XSHM="`echo \"$S9XSHM\" | sed -e 's/^  *//'`"
 
 AC_SUBST(S9XFLGS)
 AC_SUBST(S9XDEFS)
@@ -422,6 +470,7 @@ AC_SUBST(S9XDEBUGGER)
 AC_SUBST(S9XNETPLAY)
 AC_SUBST(S9XZIP)
 AC_SUBST(S9XJMA)
+AC_SUBST(S9XSHM)
 
 rm config.info 2>/dev/null
 
@@ -443,6 +492,7 @@ GZIP support......... $enable_gzip
 ZIP support.......... $enable_zip
 JMA support.......... $enable_jma
 debugger............. $enable_debugger
+shared-memory support $enable_shm
 
 EOF
 
