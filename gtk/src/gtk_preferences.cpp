@@ -228,8 +228,8 @@ event_shader_select (GtkButton *widget, gpointer data)
     dialog = gtk_file_chooser_dialog_new ("Select Shader File",
                                           window->get_window (),
                                           GTK_FILE_CHOOSER_ACTION_OPEN,
-                                          GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                          GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                          "_Cancel", GTK_RESPONSE_CANCEL,
+                                          "_Open", GTK_RESPONSE_ACCEPT,
                                           NULL);
 
     if (strcmp (gui_config->last_directory, ""))
@@ -291,8 +291,8 @@ event_game_data_browse (GtkButton *widget, gpointer data)
     dialog = gtk_file_chooser_dialog_new ("Select directory",
                                           window->get_window (),
                                           GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
-                                          GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                          GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                          "_Cancel", GTK_RESPONSE_CANCEL,
+                                          "_Open", GTK_RESPONSE_ACCEPT,
                                           NULL);
 
     if (strcmp (gui_config->last_directory, ""))
@@ -973,8 +973,8 @@ Snes9xPreferences::browse_folder_dialog (void)
     dialog = gtk_file_chooser_dialog_new (_("Select Folder"),
                                           GTK_WINDOW (this->window),
                                           GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
-                                          GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                          GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                          "_Cancel", GTK_RESPONSE_CANCEL,
+                                          "_Open", GTK_RESPONSE_ACCEPT,
                                           NULL);
 
     gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (dialog),
