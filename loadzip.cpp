@@ -267,7 +267,7 @@ bool8 LoadZip (const char *zipname, uint32 *TotalFileSize, uint8 *buffer)
 			return (FALSE);
 		}
 
-		if (l <= 0 || l != FileSize)
+		if (l <= 0 || l != (int)FileSize)
 		{
 			unzClose(file);
 			return (FALSE);

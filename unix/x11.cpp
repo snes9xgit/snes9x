@@ -189,6 +189,7 @@
 #include <sys/ioctl.h>
 
 #include <X11/Xlib.h>
+#include <X11/XKBlib.h>
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
 #include <X11/cursorfont.h>
@@ -1045,7 +1046,7 @@ void S9xProcessEvents (bool8 block)
 				S9xReportButton(((event.xkey.state & (ShiftMask | Mod1Mask | ControlMask | Mod4Mask)) << 8) | event.xkey.keycode, event.type == KeyPress);
 			#if 1
 				{
-					KeyCode	kc = XKeysymToKeycode(GUI.display, XKeycodeToKeysym(GUI.display, event.xkey.keycode, 0));
+					KeyCode	kc = XKeysymToKeycode(GUI.display, XkbKeycodeToKeysym(GUI.display, event.xkey.keycode, 0, event.xkey.state & ShiftMask ? 1 : 0));
 					if (event.xkey.keycode != kc)
 						S9xReportButton(((event.xkey.state & (ShiftMask | Mod1Mask | ControlMask | Mod4Mask)) << 8) | kc, event.type == KeyPress);
 				}
