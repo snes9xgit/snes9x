@@ -79,7 +79,7 @@ static bool rom_loaded = false;
 void retro_set_environment(retro_environment_t cb)
 {
    environ_cb = cb;
-   
+
    struct retro_variable variables[] = {
       // These variable names and possible values constitute an ABI with ZMZ (ZSNES Libretro player).
       // Changing "Show layer 1" is fine, but don't change "layer_1"/etc or the possible values ("Yes|No").
@@ -167,7 +167,7 @@ static void update_variables(void)
       }
    }
 
-   
+
    int disabled_channels=0;
    strcpy(key, "snes9x_sndchan_x");
    var.key=key;
@@ -179,7 +179,7 @@ static void update_variables(void)
    }
    S9xSetSoundControl(disabled_channels^0xFF);
 
-   
+
    int disabled_layers=0;
    strcpy(key, "snes9x_layer_x");
    for (int i=0;i<5;i++)
@@ -189,12 +189,12 @@ static void update_variables(void)
       if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value && var.value[0]=='N') disabled_layers|=1<<i;
    }
    Settings.BG_Forced=disabled_layers;
-   
+
    //for some reason, Transparency seems to control both the fixed color and the windowing registers?
    var.key="snes9x_gfx_clip";
    var.value=NULL;
    Settings.DisableGraphicWindows=(environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value && var.value[0]=='N');
-   
+
    var.key="snes9x_gfx_transp";
    var.value=NULL;
    Settings.Transparency=!(environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value && var.value[0]=='N');
@@ -222,7 +222,7 @@ void retro_get_system_info(struct retro_system_info *info)
     info->library_version = VERSION;
     info->valid_extensions = "smc|sfc|swc|fig";
     info->need_fullpath = false;
-    info->block_extract = false;    
+    info->block_extract = false;
 }
 
 void retro_get_system_av_info(struct retro_system_av_info *info)
@@ -297,10 +297,10 @@ void retro_cheat_set(unsigned index, bool enabled, const char *code)
 {
    uint32 address;
    uint8 val;
-   
+
    bool8 sram;
    uint8 bytes[3];//used only by GoldFinger, ignored for now
-   
+
    if (S9xGameGenieToRaw(code, address, val)!=NULL &&
        S9xProActionReplayToRaw(code, address, val)!=NULL &&
        S9xGoldFingerToRaw(code, address, sram, val, bytes)!=NULL)
@@ -309,13 +309,13 @@ void retro_cheat_set(unsigned index, bool enabled, const char *code)
    }
    if (index>Cheat.num_cheats) return; // cheat added in weird order, ignore
    if (index==Cheat.num_cheats) Cheat.num_cheats++;
-   
+
    Cheat.c[index].address = address;
    Cheat.c[index].byte = val;
    Cheat.c[index].enabled = enabled;
-   
+
    Cheat.c[index].saved = FALSE; // it'll be saved next time cheats run anyways
-   
+
    Settings.ApplyCheats=true;
    S9xApplyCheats();
 }
@@ -441,7 +441,7 @@ bool retro_load_game(const struct retro_game_info *game)
 {
    init_descriptors();
    memorydesc_c = 0;
-   
+
    if(game->data == NULL && game->size == 0 && game->path != NULL)
       rom_loaded = Memory.LoadROM(game->path);
    else
@@ -460,10 +460,10 @@ bool retro_load_game(const struct retro_game_info *game)
 
    if (!rom_loaded && log_cb)
       log_cb(RETRO_LOG_ERROR, "[libretro]: Rom loading failed...\n");
-   
+
    struct retro_memory_map map={ memorydesc+MAX_MAPS-memorydesc_c, memorydesc_c };
    if (rom_loaded) environ_cb(RETRO_ENVIRONMENT_SET_MEMORY_MAPS, &map);
-   
+
    return rom_loaded;
 }
 
@@ -475,10 +475,10 @@ bool retro_load_game_special(unsigned game_type,
 
    init_descriptors();
   memorydesc_c = 0;
-  
+
   switch (game_type) {
      case RETRO_GAME_TYPE_BSX:
-       
+
        if(num_info == 1) {
           rom_loaded = Memory.LoadROMMem((const uint8_t*)info[0].data,info[0].size);
        } else if(num_info == 2) {
@@ -490,7 +490,7 @@ bool retro_load_game_special(unsigned game_type,
           log_cb(RETRO_LOG_ERROR, "[libretro]: BSX ROM loading failed...\n");
 
        break;
-       
+
      case RETRO_GAME_TYPE_BSX_SLOTTED:
 
        if(num_info == 2)
@@ -517,7 +517,7 @@ bool retro_load_game_special(unsigned game_type,
        rom_loaded = false;
        break;
   }
-  
+
   struct retro_memory_map map={ memorydesc+MAX_MAPS-memorydesc_c, memorydesc_c };
   if (rom_loaded) environ_cb(RETRO_ENVIRONMENT_SET_MEMORY_MAPS, &map);
 
@@ -649,6 +649,7 @@ void retro_init(void)
 #define JUSTIFIER_X RETRO_DEVICE_ID_JUSTIFIER_X
 #define JUSTIFIER_Y RETRO_DEVICE_ID_JUSTIFIER_Y
 #define JUSTIFIER_TRIGGER RETRO_DEVICE_ID_LIGHTGUN_TRIGGER
+#define JUSTIFIER_OFFSCREEN RETRO_DEVICE_ID_LIGHTGUN_TURBO
 #define JUSTIFIER_START RETRO_DEVICE_ID_LIGHTGUN_PAUSE
 #define JUSTIFIER_FIRST JUSTIFIER_X
 #define JUSTIFIER_LAST JUSTIFIER_START
@@ -684,7 +685,7 @@ static void map_buttons()
    MAP_BUTTON(MAKE_BUTTON(PAD_2, BTN_R), "Joypad2 R");
    MAP_BUTTON(MAKE_BUTTON(PAD_2, BTN_LEFT), "Joypad2 Left");
    MAP_BUTTON(MAKE_BUTTON(PAD_2, BTN_RIGHT), "Joypad2 Right");
-   MAP_BUTTON(MAKE_BUTTON(PAD_2, BTN_UP), "{Joypad2 Up,Superscope ToggleTurbo}");
+   MAP_BUTTON(MAKE_BUTTON(PAD_2, BTN_UP), "{Joypad2 Up,Superscope ToggleTurbo,Justifier1 AimOffscreen}");
    MAP_BUTTON(MAKE_BUTTON(PAD_2, BTN_DOWN), "{Joypad2 Down,Superscope Pause}");
 
    MAP_BUTTON(MAKE_BUTTON(PAD_3, BTN_A), "Joypad3 A");
@@ -728,7 +729,7 @@ static void map_buttons()
 
 }
 
-// libretro uses relative values for analogue devices. 
+// libretro uses relative values for analogue devices.
 // S9x seems to use absolute values, but do convert these into relative values in the core. (Why?!)
 // Hack around it. :)
 static int16_t snes_mouse_state[2][2] = {{0}, {0}};
@@ -766,6 +767,10 @@ static void report_buttons()
          case RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE:
             snes_scope_state[0] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE, 0, RETRO_DEVICE_ID_LIGHTGUN_X);
             snes_scope_state[1] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE, 0, RETRO_DEVICE_ID_LIGHTGUN_Y);
+            if (snes_scope_state[0] < 0) snes_scope_state[0] = 0;
+            else if (snes_scope_state[0] > (SNES_WIDTH-1)) snes_scope_state[0] = SNES_WIDTH-1;
+            if (snes_scope_state[1] < 0) snes_scope_state[1] = 0;
+            else if (snes_scope_state[1] > (SNES_HEIGHT-1)) snes_scope_state[1] = SNES_HEIGHT-1;
             S9xReportPointer(BTN_POINTER, snes_scope_state[0], snes_scope_state[1]);
             for (int i = SCOPE_TRIGGER; i <= SCOPE_LAST; i++)
                 S9xReportButton(MAKE_BUTTON(2, i), input_state_cb(port, RETRO_DEVICE_LIGHTGUN, 0, i));
@@ -773,13 +778,17 @@ static void report_buttons()
 
          case RETRO_DEVICE_LIGHTGUN_JUSTIFIER:
          case RETRO_DEVICE_LIGHTGUN_JUSTIFIERS:
-            snes_justifier_state[0][0] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_JUSTIFIER, 0, RETRO_DEVICE_ID_LIGHTGUN_X);
-            snes_justifier_state[0][1] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_JUSTIFIER, 0, RETRO_DEVICE_ID_LIGHTGUN_Y);
-            S9xReportPointer(BTN_POINTER, snes_justifier_state[0][0], snes_justifier_state[0][1]);
+            snes_justifier_state[port][0] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_JUSTIFIER, 0, RETRO_DEVICE_ID_LIGHTGUN_X);
+            snes_justifier_state[port][1] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_JUSTIFIER, 0, RETRO_DEVICE_ID_LIGHTGUN_Y);
+            if (snes_justifier_state[port][0] < 0) snes_justifier_state[port][0] = 0;
+            else if (snes_justifier_state[port][0] > (SNES_WIDTH-1)) snes_justifier_state[port][0] = SNES_WIDTH-1;
+            if (snes_justifier_state[port][1] < 0) snes_justifier_state[port][1] = 0;
+            else if (snes_justifier_state[port][1] > (SNES_HEIGHT-1)) snes_justifier_state[port][1] = SNES_HEIGHT-1;
+            S9xReportPointer(BTN_POINTER, snes_justifier_state[port][0], snes_justifier_state[port][1]);
             for (int i = JUSTIFIER_TRIGGER; i <= JUSTIFIER_LAST; i++)
                S9xReportButton(MAKE_BUTTON(2, i), input_state_cb(port, RETRO_DEVICE_LIGHTGUN, 0, i));
             break;
-            
+
          default:
             if (log_cb)
                log_cb(RETRO_LOG_ERROR, "[libretro]: Unknown device...\n");
@@ -793,7 +802,7 @@ void retro_run()
    bool updated = false;
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
       update_variables();
-   
+
    poll_cb();
    report_buttons();
    S9xMainLoop();
@@ -805,14 +814,14 @@ void retro_deinit()
    Memory.Deinit();
    S9xGraphicsDeinit();
    S9xUnmapAllControls();
-   
+
    free(GFX.Screen);
 }
 
 
 unsigned retro_get_region()
-{ 
-   return Settings.PAL ? RETRO_REGION_PAL : RETRO_REGION_NTSC; 
+{
+   return Settings.PAL ? RETRO_REGION_PAL : RETRO_REGION_NTSC;
 }
 
 void* retro_get_memory_data(unsigned type)
@@ -887,7 +896,7 @@ size_t retro_serialize_size()
 }
 
 bool retro_serialize(void *data, size_t size)
-{ 
+{
    if (S9xFreezeGameMem((uint8_t*)data,size) == FALSE)
       return false;
 
@@ -895,7 +904,7 @@ bool retro_serialize(void *data, size_t size)
 }
 
 bool retro_unserialize(const void* data, size_t size)
-{ 
+{
    if (S9xUnfreezeGameMem((const uint8_t*)data,size) != SUCCESS)
       return false;
    return true;
@@ -963,8 +972,8 @@ void S9xExit() {}
 bool S9xPollPointer(unsigned int, short*, short*) { return false; }
 const char *S9xChooseMovieFilename(unsigned char) { return NULL; }
 
-bool8 S9xOpenSnapshotFile(const char* filepath, bool8 read_only, STREAM *file) 
-{ 
+bool8 S9xOpenSnapshotFile(const char* filepath, bool8 read_only, STREAM *file)
+{
    if(read_only)
    {
       if((*file = OPEN_STREAM(filepath, "rb")) != 0)
@@ -982,12 +991,12 @@ bool8 S9xOpenSnapshotFile(const char* filepath, bool8 read_only, STREAM *file)
    return (FALSE);
 }
 
-void S9xCloseSnapshotFile(STREAM file) 
+void S9xCloseSnapshotFile(STREAM file)
 {
    CLOSE_STREAM(file);
 }
 
-void S9xAutoSaveSRAM() 
+void S9xAutoSaveSRAM()
 {
    return;
 }
