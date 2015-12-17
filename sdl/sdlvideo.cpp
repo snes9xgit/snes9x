@@ -52,6 +52,11 @@
 
 #include "sdl_snes9x.h"
 
+// grkenn - opengl backend
+#ifdef USE_OPENGL
+	#include <SDL/SDL_opengl.h>
+#endif
+
 struct GUIData
 {
 	SDL_Surface             *sdl_screen;
@@ -59,7 +64,15 @@ struct GUIData
 	uint8			*blit_screen;
 	uint32			blit_screen_pitch;
 	int			video_mode;
+
         bool8                   fullscreen;
+        bool8                   double_buffer;
+#ifdef USE_OPENGL
+        bool8                   opengl;
+	GLint			gl_filter;
+	GLuint			texture;
+	GLuint			displaylist;
+#endif
 };
 static struct GUIData	GUI;
 
@@ -96,7 +109,12 @@ static void Repaint (bool8);
 
 void S9xExtraDisplayUsage (void)
 {
-	S9xMessage(S9X_INFO, S9X_USAGE, "-fullscreen                     fullscreen mode (without scaling)");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-fullscreen                     fullscreen mode");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-double_buffer                  SDL double-buffering");
+#ifdef USE_OPENGL
+	S9xMessage(S9X_INFO, S9X_USAGE, "-opengl                         opengl scaling (no filter)");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-opengl_linear                  opengl scaling (bilinear)");
+#endif
 	S9xMessage(S9X_INFO, S9X_USAGE, "");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-v1                             Video mode: Blocky (default)");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-v2                             Video mode: TV");
@@ -111,6 +129,23 @@ void S9xExtraDisplayUsage (void)
 
 void S9xParseDisplayArg (char **argv, int &i, int argc)
 {
+#ifdef USE_OPENGL
+	if (!strncasecmp(argv[i], "-opengl", 7))
+	{
+		GUI.opengl = TRUE;
+		GUI.gl_filter = GL_NEAREST;
+		if (!strncasecmp(argv[i], "-opengl_linear", 14))
+		{
+			GUI.gl_filter = GL_LINEAR;
+		}
+	}
+	else
+#endif
+	if (!strncasecmp(argv[i], "-double_buffer", 14))
+	{
+		GUI.double_buffer = TRUE;
+	}
+	else
 	if (!strncasecmp(argv[i], "-fullscreen", 11))
         {
                 GUI.fullscreen = TRUE;
@@ -186,11 +221,17 @@ void S9xInitDisplay (int argc, char **argv)
 	 * FIXME: The secreen size should be flexible
 	 * FIXME: Check if the SDL screen is really in RGB565 mode. screen->fmt	
 	 */	
+	// grkenn - mode flags should be either OPENGL or (hwsurface with (double-buffer or none))
+#ifdef USE_OPENGL
+	int MODE_FLAGS = (GUI.opengl == TRUE ? SDL_OPENGL : SDL_HWSURFACE | (GUI.double_buffer == TRUE ? SDL_DOUBLEBUF : 0));
+#else
+	int MODE_FLAGS = SDL_HWSURFACE | (GUI.double_buffer == TRUE ? SDL_DOUBLEBUF : 0);
+#endif
         if (GUI.fullscreen == TRUE)
         {
-                GUI.sdl_screen = SDL_SetVideoMode(0, 0, 16, SDL_FULLSCREEN);
+                GUI.sdl_screen = SDL_SetVideoMode(0, 0, 16, SDL_FULLSCREEN | MODE_FLAGS);
         } else {
-                GUI.sdl_screen = SDL_SetVideoMode(SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2, 16, 0);
+                GUI.sdl_screen = SDL_SetVideoMode(SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2, 16, MODE_FLAGS);
         }
 
         if (GUI.sdl_screen == NULL)
@@ -198,6 +239,18 @@ void S9xInitDisplay (int argc, char **argv)
 		printf("Unable to set video mode: %s\n", SDL_GetError());
 		exit(1);
         }
+
+	// grkenn - set up opengl params
+#ifdef USE_OPENGL
+	if (GUI.opengl == TRUE)
+	{
+    		SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
+    		SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 6 );
+    		SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5 );
+    		SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 0 );
+    		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, (GUI.double_buffer == TRUE) );
+	}
+#endif
 
 	/*
 	 * domaemon
@@ -233,16 +286,99 @@ static void SetupImage (void)
 {
 	TakedownImage();
 
+	// FIXME: grkenn - SDL offers nice methods for creating (possibly hw-accel)
+	//  drawing surfaces, we should use those instead of a raw buffer o' bytes
+
 	// domaemon: The whole unix code basically assumes output=(original * 2);
 	// This way the code can handle the SNES filters, which does the 2X.
-	GFX.Pitch = SNES_WIDTH * 2 * 2;
-	GUI.snes_buffer = (uint8 *) calloc(GFX.Pitch * ((SNES_HEIGHT_EXTENDED + 4) * 2), 1);
+	int SNES_FULL_WIDTH = SNES_WIDTH * 2;
+	int SNES_FULL_HEIGHT = (SNES_HEIGHT_EXTENDED + 4) * 2;
+	GFX.Pitch = SNES_FULL_WIDTH * 2;
+	GUI.snes_buffer = (uint8 *) calloc(GFX.Pitch * SNES_FULL_HEIGHT, 1);
 	if (!GUI.snes_buffer)
 		FatalError("Failed to allocate GUI.snes_buffer.");
 
 	// domaemon: Add 2 lines before drawing.
 	GFX.Screen = (uint16 *) (GUI.snes_buffer + (GFX.Pitch * 2 * 2));
 
+#ifdef USE_OPENGL
+	if (GUI.opengl == TRUE)
+	{
+		// enable GL texturing
+		glEnable(GL_TEXTURE_2D);
+		// create opengl texture
+		glGenTextures(1, &GUI.texture);
+		// attach to texture
+		glBindTexture(GL_TEXTURE_2D, GUI.texture);
+		// set texture parameters
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GUI.gl_filter); // Filter modes
+    		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GUI.gl_filter);
+    		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+    		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
+
+		// Compute next-highest power-of-2 for holding SNES buffer output
+		int tex_width = 1;
+		while(tex_width < SNES_FULL_WIDTH) tex_width *= 2;
+		int tex_height = 1;
+		while(tex_height < SNES_FULL_HEIGHT) tex_width *= 2;
+
+		// Fill the texture with empty data first
+		uint16 *empty = (uint16 *)calloc(tex_width*tex_height,sizeof(uint16));
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tex_width, tex_height, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, empty);
+		free(empty);
+
+		// Setup screen view based on display size.
+		// Set the clear color to all black (0, 0, 0)
+		glClearColor(0.0f,0.0f,0.0f,1.0f);
+
+		SDL_Surface *screen = SDL_GetVideoSurface();
+		glViewport(0,0,screen->w,screen->h);
+		glMatrixMode(GL_PROJECTION);
+		//glLoadIdentity();
+		// Compute the actual screen aspect ratio, and letter/pillarbox glOrtho to fit.
+		double screenAspect = (double)screen->w/screen->h;
+		double snesAspect = (double)SNES_FULL_WIDTH/SNES_FULL_HEIGHT;
+
+		GLuint x_off=0,y_off=0;
+
+		if (screenAspect > snesAspect)
+		{
+			// widescreen monitor, 4:3 snes
+			//  match height, scale width
+			glOrtho(0,SNES_FULL_HEIGHT*screenAspect,SNES_FULL_HEIGHT,0,-1.0f,1.0f);
+			x_off=((SNES_FULL_HEIGHT*screenAspect)-SNES_FULL_WIDTH) / 2;
+		} else {
+			// narrow monitor, 4:3 snes
+			//  match width, scale height
+	// grkenn FIXME: TODO: this calculation is wrong wrong wrong
+			glOrtho(0,SNES_FULL_WIDTH,SNES_FULL_WIDTH*screenAspect,0,-1.0f,1.0f);
+			y_off = ((SNES_FULL_WIDTH*screenAspect)-SNES_FULL_HEIGHT) / 2;
+		}
+		
+		glMatrixMode(GL_MODELVIEW);
+		//glLoadIdentity();
+
+		// Create the display list to draw to the screen.
+		GUI.displaylist = glGenLists(1);
+		glNewList(GUI.displaylist,GL_COMPILE);
+			// clear screen
+			glClear(GL_COLOR_BUFFER_BIT);
+			glBegin(GL_QUADS);
+				glTexCoord2f(0,0);
+				glVertex2i(x_off,y_off);
+				glTexCoord2f(1,0);
+				glVertex2i(x_off+SNES_FULL_WIDTH,y_off);
+				glTexCoord2f(1,1);
+				glVertex2i(x_off+SNES_FULL_WIDTH,y_off+SNES_FULL_HEIGHT);
+				glTexCoord2f(0,1);
+				glVertex2i(x_off,y_off+SNES_FULL_HEIGHT);
+			glEnd();
+		glEndList();
+
+		// All set!
+	}
+	else
+#endif
 	if (GUI.fullscreen == TRUE)
 	{
 		int offset_height_pix;
@@ -326,6 +462,15 @@ void S9xPutImage (int width, int height)
 	// domaemon: this is place where the rendering buffer size should be changed?
 	blitFn((uint8 *) GFX.Screen, GFX.Pitch, GUI.blit_screen, GUI.blit_screen_pitch, width, height);
 
+	//  grkenn: TODO: no idea.  But I did put opengl code here so that's something : )
+#ifdef USE_OPENGL
+	if (GUI.opengl)
+	{
+		// update texture
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, (uint8 *) GFX.Screen);
+	}
+#endif
+
 	// domaemon: does the height change on the fly?
 	if (height < prevHeight)
 	{
@@ -346,6 +491,10 @@ void S9xPutImage (int width, int height)
 
 static void Repaint (bool8 isFrameBoundry)
 {
+#ifdef USE_OPENGL
+	if (GUI.opengl)	{ glCallList(GUI.displaylist); SDL_GL_SwapBuffers(); }
+	else
+#endif
         SDL_Flip(GUI.sdl_screen);
 }
 

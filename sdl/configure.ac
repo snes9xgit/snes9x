@@ -111,6 +111,21 @@ AC_S9X_COMPILER_FLAG([-Wall],                 [Wall])
 AC_S9X_COMPILER_FLAG([-W],                    [W])
 AC_S9X_COMPILER_FLAG([-Wno-unused-parameter], [Wno_unused_parameter])
 
+# Enable OpenGL backend
+
+S9XOPENGL="#S9XOPENGL=1"
+
+AC_ARG_ENABLE([opengl],
+	[AS_HELP_STRING([--enable-opengl],
+		[enable opengl (default: yes)])],
+	[], [enable_opengl="yes"])
+
+if test "x$enable_opengl" = "xyes"; then
+	S9XOPENGL="S9XOPENGL=1"
+	S9XDEFS="$S9XDEFS -DUSE_OPENGL"
+	S9XLIBS="$S9XLIBS -lGL"
+fi
+
 # Enable debugger.
 
 S9XDEBUGGER="#S9XDEBUGGER=1"
@@ -389,6 +404,7 @@ defines.............. $S9XDEFS
 libs................. $S9XLIBS
 
 features:
+opengl support....... $enable_opengl
 screenshot support... $enable_screenshot
 netplay support...... $enable_netplay
 GZIP support......... $enable_gzip
