@@ -133,9 +133,11 @@ void S9xParseDisplayArg (char **argv, int &i, int argc)
 	if (!strncasecmp(argv[i], "-opengl", 7))
 	{
 		GUI.opengl = TRUE;
+                printf ("Using OPENGL backend.\n");
 		GUI.gl_filter = GL_NEAREST;
 		if (!strncasecmp(argv[i], "-opengl_linear", 14))
 		{
+                	printf ("\tGL_LINEAR filter selected.\n");
 			GUI.gl_filter = GL_LINEAR;
 		}
 	}
@@ -149,7 +151,7 @@ void S9xParseDisplayArg (char **argv, int &i, int argc)
 	if (!strncasecmp(argv[i], "-fullscreen", 11))
         {
                 GUI.fullscreen = TRUE;
-                printf ("Entering fullscreen mode (without scaling).\n");
+                printf ("Entering fullscreen mode.\n");
         }
         else
 	if (!strncasecmp(argv[i], "-v", 2))
@@ -278,6 +280,21 @@ static void TakedownImage (void)
 		free(GUI.snes_buffer);
 		GUI.snes_buffer = NULL;
 	}
+
+#ifdef USE_OPENGL
+	if (GUI.opengl == TRUE)
+	{
+		if (GUI.texture) {
+			glDeleteTextures(1,&GUI.texture);
+			GUI.texture=0;
+		}
+		if (GUI.displaylist)
+		{
+			glDeleteLists(GUI.displaylist,1);
+			GUI.displaylist = 0;
+		}
+	}
+#endif
 
 	S9xGraphicsDeinit();
 }
@@ -466,7 +483,7 @@ void S9xPutImage (int width, int height)
 #ifdef USE_OPENGL
 	if (GUI.opengl)
 	{
-		// update texture
+		// update GL texture
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, (uint8 *) GFX.Screen);
 	}
 #endif
