@@ -1,0 +1,808 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en-US">
+	<head>
+		<meta http-equiv="content-type" content="text/html;charset=iso-8859-1">
+		<meta http-equiv="content-style-type" content="text/css">
+		<meta name="description" content="Snes9x for Unix">
+		<style type="text/css">
+			<!-- ul { list-style-type:none } h2 { margin-top:3em } h3 { margin-top:3em } -->
+		</style>
+		<title>Snes9x for Unix</title>
+	</head>
+	<body>
+		<div style="text-align:center"><h1>Snes9x for Unix</h1></div>
+		<h2>Introduction</h2>
+		<h3>What is Snes9x?</h3>
+		<p>
+			Snes9x is a portable, freeware Super Nintendo Entertainment System (SNES) emulator. It basically allows you to play most games designed for the SNES and Super Famicom Nintendo game systems on your Mac, Linux, Windows and so on. The games include some real gems that were only ever released in Japan.
+		</p>
+		<p>
+			The original Snes9x project was founded by Gary Henderson and Jerremy Koot as a collaboration of their earlier attempts at SNES emulation (Snes96 and Snes97.) Over the years the project has grown and has collected some of the greatest talent in the emulation community (at least of the SNES variety) some of which have been listed in the credits section, others have helped but have been loss in the course of time.
+		</p>
+		<h3>Why Emulate the SNES?</h3>
+		<p>
+			Well, there are many reasons for this. The main reason is for nostalgic purposes. In this day and age, it's hard to find an SNES and many good games. Plus, many of us over the course of time have lost our beloved consoles (may they R.I.P) but still have our original carts. With no other means to play them, we turn to emulators. Besides this there are many conveniences of doing this on the computer instead of dragging out your old system.
+		</p>
+		<h4>Advantages consist of :</h4>
+		<ul style="list-style-type:disc">
+			<li>ability to save in any location of the game, despite how the game was designed. It's amazingly useful when you don't want to redo the same level over and over.</li>
+			<li>built-in peripherals. This is anything from multi-taps, to super scopes, to cheat devices.</li>
+			<li>ability to rip sprites and music for your own personal use.</li>
+			<li>easier to organize and no stacks of cartridges.</li>
+			<li>filters can be used to enhance graphics and sounds on old games.</li>
+		</ul>
+		<h4>As with all things there are disadvantages though :</h4>
+		<ul style="list-style-type:disc">
+			<li>if you have an ancient computer, you aren't likely to get a playable experience.</li>
+			<li>some games are still unemulated (though this a very tiny minority.)</li>
+			<li>the emulator can be difficult for new users to configure.</li>
+		</ul>
+		<h2>Getting Started</h2>
+		<p>
+			Usage:
+		</p>
+		<ul>
+			<li><code>snes9x [options] &lt;ROM image file&gt;</code></li>
+		</ul>
+		<p>
+			Use <code>-help</code> option to see available options.
+		</p> 
+		<p>
+			SNES ROM images come in lots of different formats. Snes9x supports zipped ROMs as long as there is only 1 per zip file. Also Snes9x can open gzip and jma compressed files.
+		</p>
+		<h3>Game Color System</h3>
+		<p>
+			By default, Snes9x displays the ROM information when a ROM is first loaded. Depending on the colors used you can tell whether or not a ROM is a good working ROM, or if it's been altered or is corrupted.
+		</p>
+		<ul>
+			<li><table summary="text color">
+				<tbody>
+					<tr valign="top">
+						<td style="width:15em">white</td>
+						<td>the ROM should be a perfect working copy.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">green</td>
+						<td>the ROM is mode 1 interleaved.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">orange</td>
+						<td>the ROM is mode 2 interleaved.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">aqua</td>
+						<td>the ROM is Game Doctor 24M interleaved.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">yellow</td>
+						<td>the ROM has probably been altered. Either it's a translation, PD ROM, hacked, or possibly a bad ROM. It may also be an overdumped ROM.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">red</td>
+						<td>the ROM is definitely hacked and that a proper version should be exist. Some ROM Tools such as NSRT can also fix these ROMs.</td>
+					</tr>
+				</tbody>
+			</table></li>
+		</ul>
+		<p>
+			When asking for help on the Snes9x forums, please list the color and CRC32 that is displayed. This will help to find out what the problem is.
+		</p>
+		<p>
+			These colors do NOT signify whether a game will work or not. It is just a means for reference so we can understand what may or may not be a problem. Most often the problem with games that don't work it's because they are corrupt or are a bad dump and should be redumped.
+		</p>
+		<h3>SNES Joypad Emulation</h3>
+		<p>
+			The default key mapping for joypad 1 is as follows:
+		</p>
+		<ul>
+			<li><table summary="default key mapping 1P">
+				<tbody>
+					<tr valign="top">
+						<td style="width:15em">U or Up</td>
+						<td>Up direction</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">J or Down</td>
+						<td>Down direction</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">H or Left</td>
+						<td>Left direction</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">K or Right</td>
+						<td>Right direction</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">D</td>
+						<td>A button</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">C</td>
+						<td>B button</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">S</td>
+						<td>X button</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">X</td>
+						<td>Y button</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">A</td>
+						<td>L button</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Z</td>
+						<td>R button</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Space</td>
+						<td>Select button</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Return</td>
+						<td>Start button</td>
+					</tr>
+				</tbody>
+			</table></li>
+		</ul>
+		<p>
+			And the default key mapping for joypad 2 is as follows:
+		</p>
+		<ul>
+			<li><table summary="default key mapping 2P">
+				<tbody>
+					<tr valign="top">
+						<td style="width:15em">Keypad 8</td>
+						<td>Up direction</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Keypad 2</td>
+						<td>Down direction</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Keypad 4</td>
+						<td>Left direction</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Keypad 6</td>
+						<td>Right direction</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Page Up</td>
+						<td>A button</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Page Down</td>
+						<td>B button</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Home</td>
+						<td>X button</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">End</td>
+						<td>Y button</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Insert</td>
+						<td>L button</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Delete</td>
+						<td>R button</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Keypad +</td>
+						<td>Select button</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Keypad Enter</td>
+						<td>Start button</td>
+					</tr>
+				</tbody>
+			</table></li>
+		</ul>
+		<h3>Pausing and Quitting the Game</h3>
+		<p>
+			Don't forget how to pause the game and quit Snes9x.
+		</p>
+		<ul>
+			<li><table summary="essential keys">
+				<tbody>
+					<tr valign="top">
+						<td style="width:15em">ESC</td>
+						<td>quits Snes9x.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Pause or Scroll Lock</td>
+						<td>pauses the game.</td>
+					</tr>
+				</tbody>
+			</table></li>
+		</ul>
+		<h2>Requirements</h2>
+		<h3>System Requirements</h3>
+		<p>
+			Relatively fast CPU like Pentium 2 or PowerPC G3 300MHz or higher, and 16MB memory or more.<br>
+			Certain games use added hardware which will require a faster machine. The specs listed above is the minimum to use Snes9x in any playable form. It is recommended that you get a semi-modern machine with a 800MHz CPU if you want good results. A 1GHz CPU is recommended for those that want a near perfect experience.
+		</p>
+		<p>
+			X Window System with 15, 16, 24 or 32-bit color depth. For maximum emulation speed, have the X server switched to 15 or 16-bit.
+		</p>
+		<h3>Software</h3>
+		<p>
+			You will need access to SNES ROM images otherwise you will have nothing to run! Some home-brewed ROM images can be downloaded from <a href="http://www.zophar.com/">http://www.zophar.com/</a>.<br>
+			Please note, it is illegal in most countries to have commercial ROM images without also owning the actual SNES ROM cartridges, and even then you may be liable under various EULAs.
+		</p>
+		<h2>Controllers Support</h2>
+		<h3>Input Devices</h3>
+		<p>
+			The real SNES has two ports to connect input devices. Usually 1P and 2P SNES joypads are connected but various devices and adopters can be plugged.
+		</p>
+		<p>
+			Use <code>-port1</code> and/or <code>-port2</code> options to specify which input device to be emulated in each port.
+		</p>
+		<ul>
+			<li><table summary="input devices">
+				<tbody>
+					<tr valign="top">
+						<td style="width:15em">Multi Player 5</td>
+						<td>known as Multi Tap; a five player adapter, allowing up to five people to play at once on games that supported it.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">SNES Mouse</td>
+						<td>a 2-button mouse, originally supplied with a paint program.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Super Scope</td>
+						<td>a light-gun; it used infrared to provide wireless communication between the gun and the console unit.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Justifier</td>
+						<td>a gun similar to Super Scope, supported with one gun-shooting game.</td>
+					</tr>
+				</tbody>
+			</table></li>
+		</ul>
+		<p>
+			Snes9x can emulate those input devices with the keyboard and mouse. The default mapping is as follows:
+		</p>
+		<ul>
+			<li><table summary="input device key mapping">
+				<tbody>
+					<tr valign="top">
+						<td style="width:15em">Mouse Left</td>
+						<td>SNES Mouse Left button / SuperScope Fire button / Justifier trigger</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Mouse Right</td>
+						<td>SNES Mouse Right button / SuperScope Cursor button / Justifier Start button</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Mouse Center</td>
+						<td>when you want to shot offscreen, fire with pressing this button.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">`</td>
+						<td>SuperScope Turbo toggle switch</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">/</td>
+						<td>SuperScope Pause button</td>
+					</tr>
+				</tbody>
+			</table></li>
+		</ul>
+		<h2>Peripherals Support</h2>
+		<h3>Satellaview</h3>
+		<p>
+			Snes9x partially emulates Satellaview system, so-called BS-X. To play BS games or read BS magazines with the BS-X base cartridge, do the following.
+		</p>
+		<ul style="list-style-type:disc">
+			<li>If you have .srm files of BS games which were created by Snes9x 1.43 or earlier, trash them first.</li>
+			<li>Prepare the BS-X ROM image. Make sure the file is uncompressed and doesn't have a header.</li>
+			<li>Rename the BS-X ROM image to 'BS-X.bin'.</li>
+			<li>Put BS-X.bin in the proper directory. ~/.snes9x/bios by default.</li>
+			<li>Launch BS-X.bin as you usually play SNES games.</li>
+			<li>Set your name and gender.</li>
+			<li>Launch a BS game. The game is launched for the first time and its .srm doesn't exist, so BS-X.srm is loaded instead.</li>
+			<li>Once you launched the game, its .srm is created and loaded from the next time.</li>
+		</ul>
+		<p>
+			If you launch a BS game for the first time without BS-X.srm, maybe the game doesn't work properly.<br>
+			To boot up BS games from BS-X town, use <code>-bsxbootup</code> option.
+		</p>
+		<h3>Sufami Turbo</h3>
+		<p>
+			To play Sufami Turbo games, do the following.
+		</p>
+		<ul style="list-style-type:disc">
+			<li>Prepare the Sufami Turbo base cartridge ROM image. Make sure the file is uncompressed and doesn't have a header.</li>
+			<li>Rename the base cartridge ROM image to 'STBIOS.bin'.</li>
+			<li>Put STBIOS.bin in the proper directory. ~/.snes9x/bios by default.</li>
+			<li>Use <code>-multi</code>, <code>-carta</code> and <code>-cartb</code> options to play games.
+			<dl>
+				<dt><code>-multi</code></dt>
+				<dd>BIOS only</dd>
+				<dt><code>-multi -carta game1.smc</code></dt>
+				<dd>BIOS + game1.smc in Slot A</dd>
+				<dt><code>-multi -cartb game2.smc</code></dt>
+				<dd>BIOS + game2.smc in Slot B</dd>
+				<dt><code>-multi -carta game1.smc -cartb game2.smc</code></dt>
+				<dd>BIOS + game1.smc in Slot A + game2.smc in Slot B</dd>
+			</dl></li>
+		</ul>
+		<p>
+			Note that the base cartridge can initialize SRAM for only the game in slot A, so you have to set every game in slot A and launch at least once.<br>
+			If no games are set in the slots, only the base cartridge runs.<br>
+			If you have a combined ROM image, split it to each games and the base cartridge. NSRT will help you.
+		</p>
+		<h3>Other Multiple Cartridge Games</h3>
+		<p>
+			Use <code>-multi</code> option as follows:
+		</p>
+		<ul>
+			<li><code>-multi -carta maincart.smc -cartb addon.smc</code></li>
+		</ul>
+		<p>
+			Currently supported: Same Game
+		</p>
+		<h2>Game Saving</h2>
+		<p>
+			Many SNES games take a very long time to complete from start to finish, so they allowed your progress to be saved at the predefined places chosen by the game designers. The game cartridge contains a battery-backed RAM, known as SRAM, and your save data remain in this SRAM until the battery shutoff.
+		</p>
+		<p>
+			Snes9x has two methods for saving games. One is the same as of the real SNES shown above; emulating SRAM. The SRAM contents are saved into a file (.srm) so you don't need to be worried about the battery shutoff. The other is more convenient way than the real SNES; 'freezing' or 'snapshotting' the game. It means saving the whole game state anywhere you want, beyond the game designers' intent - ideal for saving your game just before a tricky bit!
+		</p>
+		<h3>Using the SRAM File</h3>
+		<p>
+			It's easy enough, just save the game as you do with the real SNES. Snes9x outputs the contents of the emulated SRAM into a file (.srm) when you load a new game or quit Snes9x. This file is automatically loaded the next time you play the game. Files are stored in ~/.snes9x/sram by default.
+		</p>
+		<h3>Freezing and Defrosting the Game State</h3>
+		<p>
+			Snes9x provides 9 slots for freezing the whole of your game state. During the game, press Shift + F1 to F9 to save the state, and just F1 to F9 to load it again later. Files are stored in ~/.snes9x/savestate by default.
+		</p>
+		<h3>Real-Time Clock Emulation</h3>
+		<p>
+			Some games have a battery-backed real-time clock (RTC) in their cartridge to bring a real-time event in the game. Snes9x saves the state of RTC into a file (.rtc), stored in ~/.snes9x/sram by default, and also into a freeze file.<br>
+			Note that because it's a 'real-time' clock, when these files are loaded, the emulated clock is automatically advanced in reference to your system's time and date.
+		</p>
+		<h3>Fool-Proof System</h3>
+		<p>
+			If you quit the game by error without saving your long-time progress, try to press F10 key and find '.oops' file in the same directory as freeze files. It's a freeze file automatically generated if you don't save anything for a long time.
+		</p>
+		<h2>Cheat Support</h2>
+		<p>
+			Cheat codes allow you to cheat at games. They might give you more lives, infinite health, enable special powers normally only activated when a special item is found, and etc. Three major formats are well-known: Game Genie, Pro-Action Reply (PAR) and Gold Finger. Many existing codes can be found via Internet.
+		</p>
+		<p>
+			Snes9x supports all the three formats. Cheats are saved in .cht files and are automatically loaded the next time a game with the same filename is loaded.
+		</p>
+		<p>
+			Technically, a cheat code consists of two elements; an address in SNES memory map where you want to overwrite, and a value which is overwritten on the address.<br>
+			Beware of cheat codes designed for a ROM from a different region compared to the one you are playing or for a different version of the ROM; the source of the cheats should tell you which region and for which version of the game they were designed for. If you use a code designed for a different region or version of your game, the game might crash or do other weird things because the cheat address might be different between regions and versions.
+		</p>
+		<h3>How to Enter Cheat Code</h3>
+		<p>
+			Use <code>-gamegenie</code>, <code>-actionreplay</code> and <code>-goldfinger</code> options to enter your cheat code. Files are stored in ~/.snes9x/cheat by default.
+		</p>
+		<h2>Movie Support</h2>
+		<p>
+			Movie support allows you to record your actions while playing a game. This can be used for your own personal playback or to show other people that you can do something without them having to be around when you did it.
+		</p>
+		<h3>Recording the Movie</h3>
+		<p>
+			Press Shift + 1 to begin recording and Shift + 2 to stop recording. Also you can use <code>-recordmovie</code> option to record from the start of the game.
+		</p>
+		<h3>Playing Back the Movie</h3>
+		<p>
+			Press Shift + 3 and enter the movie filename (.smv) to play the movie. Also you can use <code>-playmovie</code> option to play the movie recorded from the start of the game.
+		</p>
+		<h2>Miscellaneous</h2>
+		<h3>Where the Files are Stored</h3>
+		<p>
+			By default, ~/.snes9x is used to load/save files related to Snes9x. The subdirectories Snes9x refers to are as follows:
+		</p>
+		<ul>
+			<li><table summary="directories">
+				<tbody>
+					<tr valign="top">
+						<td style="width:15em">rom</td>
+						<td>ROM image files</td>
+					</tr>
+						<tr valign="top">
+						<td style="width:15em">sram</td>
+						<td>SRAM files (.srm), RTC files (.rtc)</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">savestate</td>
+						<td>freeze (snapshot, savestate) files</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">screenshot</td>
+						<td>screenshot files</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">spc</td>
+						<td>SPC files (.spc)</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">cheat</td>
+						<td>cheat files (.cht)</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">patch</td>
+						<td>IPS files (.ips)</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">bios</td>
+						<td>BIOS image files</td>
+					</tr>
+				</tbody>
+			</table></li>
+		</ul>
+		<h3>Using IPS or UPS Patch</h3>
+		<p>
+			Snes9x automatically patches without overwriting the ROM image.
+		</p>
+		<ul style="list-style-type:disc">
+			<li>Put the IPS or UPS file into the proper directory. ~/.snes9x/patch by default.</li>
+			<li>Rename the name to the same as the ROM image (except extension, it is '.ips' or '.ups').</li>
+			<li>(IPS only) If you want to use multiple IPS files at a time, set their extensions to '.000.ips', '.001.ips', ...</li>
+			<li>Open and load the ROM image.</li>
+		</ul>
+		<h3>SPC File Dumping</h3>
+		<p>
+			SPC file (.spc) is the freeze state of only sound part, so it is known as SNES music data file. Dump the SPC file by Snes9x and play the file by SPC players.
+		</p>
+		<p>
+			Press Alt/Control + F1 to dump a SPC file. It's stored in ~/.snes9x/spc by default.<br>
+			Note that the actual dumping occurs at the next note-on event so that you can dump the BGM from just the beginning.
+		</p>
+		<h3>Additional Keyboard Controls</h3>
+		<p>
+			Snes9x has various functions to play games with fun. The default mapping is as follows:
+		</p>
+		<ul>
+			<li><table summary="special keys">
+				<tbody>
+					<tr valign="top">
+						<td style="width:15em">Control + Shift + ESC</td>
+						<td>hardware reset as you turn off and on the power switch.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Shift + ESC</td>
+						<td>software reset as you press the reset button.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">F12</td>
+						<td>saves the freeze file you specify.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">F11</td>
+						<td>loads the freeze file you specify.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Shift + F1-F9</td>
+						<td>quickly saves a freeze file into the slot 1-9.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">F1-F9</td>
+						<td>quickly loads a freeze file from the slot 1-9.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">F10</td>
+						<td>tries to load the fool-proof freeze file you specify.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Alt/Control + F1</td>
+						<td>dumps a SPC file.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Print Screen</td>
+						<td>takes a screenshot.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Shift + 1</td>
+						<td>begins recording a movie.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Shift + 2</td>
+						<td>ends recording a movie.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Shift + 3</td>
+						<td>plays the movie you specify.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Tab</td>
+						<td>turbo mode while pressing.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Shift + Tab</td>
+						<td>toggles turbo mode on/off.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">=</td>
+						<td>increases frame skip rate / switches to auto-frame rate adjustment.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">-</td>
+						<td>decreases frame skip rate / switches to auto-frame rate adjustment.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Shift + =</td>
+						<td>increases frame time in 1ms steps: works only with auto-frame rate adjustment.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Shift + -</td>
+						<td>decreases frame time in 1ms steps: works only with auto-frame rate adjustment.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Alt + =</td>
+						<td>increases frame skip rate in turbo mode.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Alt + -</td>
+						<td>decreases frame skip rate in turbo mode.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Control + =</td>
+						<td>increases speed in turbo mode.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Control + -</td>
+						<td>decreases speed in turbo mode.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">6</td>
+						<td>toggles swapping of joypad one and two.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Alt/Control + F4-F11</td>
+						<td>toggles sound channel 1-8 on/off.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Alt/Control + F12</td>
+						<td>enables all sound channels.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">1-4</td>
+						<td>toggles background 1-4 on/off.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">5</td>
+						<td>toggles sprites on/off.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">9</td>
+						<td>(not recommended) toggles transparency effects on/off.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">Backspace</td>
+						<td>(not recommended) toggles emulation of graphics window effects on/off.</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:15em">0</td>
+						<td>(not recommended) toggles H-DMA emulation on/off.</td>
+					</tr>
+				</tbody>
+			</table></li>
+		</ul>
+		<h3>Gamepad Support</h3>
+		<p>
+			The Linux port makes use of the v1.x joystick kernel drivers written by Vojtech Pavlik to allow the use of a wide variety of different gamepad types to control SNES games.<br>
+			If you are still using the older versions of the drivers, you can download the latest driver version from <a href="http://atrey.karlin.mff.cuni.cz/%7Evojtech/joystick/">http://atrey.karlin.mff.cuni.cz/~vojtech/joystick/</a>.<br>
+			Refer to the documentation that comes with the drivers to enable support for your type of gamepad in Snes9x.
+		</p>
+		<h3>Configuring Settings and Key Mapping</h3>
+		<p>
+			The Unix port of Snes9x reads the preferences file snes9x.conf when launching, if it exists.<br>
+			To make your snes9x.conf, copy the template file snes9x.conf.default, rename it to 'snes9x.conf', put it in the proper directory (~/.snes9x by default), and edit it as you like. The document control-inputs.txt will help you to edit the keyboard/gamepad mapping.
+		</p>
+		<h3>Building Snes9x from Source</h3>
+		<p>
+			The source release of Snes9x comes with a configure file that will try to make a Makefile suitable for your system. To invoke it go into the snes9x/unix directory inside the distribution:<br>
+		</p>
+		<ul>
+			<li><code>cd snes9x-1.xx-src/snes9x/unix</code></li>
+		</ul>
+		<p>
+			Then run configure and finish with running make if it went well.
+		</p>
+		<ul>
+			<li><code>./configure<br>
+			make</code></li>
+		</ul>
+		<p>
+			configure takes several arguments. Further documentation about this is available by running <code>./configure --help</code>.
+		</p>
+		<h2>Compatibility</h2>
+		<h3>Compatibility with Other Ports</h3>
+		<p>
+			All the files generated by Snes9x are compatible between platforms, except for the extension of the freeze files.
+		</p>
+		<h3>Compatibility with Other SNES Emulators</h3>
+		<p>
+			Cheat files (.cht) are common between Snes9x and ZSNES. RTC files (.rtc) are common between Snes9x and bsnes. SRAM files (.srm) should be common among all SNES emulators.
+		</p>
+		<h2>Problems</h2>
+		<h3>Problems with ROMs</h3>
+		<p>
+			If Snes9x just displays a black screen for over 10 seconds after you've loaded a ROM image, then one of the following could be true:
+		</p>
+		<ul style="list-style-type:disc">
+			<li>You just loaded some random ROM image and it isn't even a SNES game or you only have part of the image. Snes9x only emulates games designed for the Super NES, not NES, or Master System, or Game Boy, or &lt;insert your favorite old games system here&gt;.</li>
+			<li>Someone has edited the Nintendo ROM information area inside the ROM image and Snes9x can't work out what format the ROM image is in. Try playing around with the ROM format options.</li>
+			<li>The ROM image is corrupt. If you're loading from CD, I know it might sound silly, but is the CD dirty? Clean, unhacked ROM images will display [checksum ok] when first loaded, corrupt or hacked ROMs display [bad checksum].</li>
+			<li>The original SNES ROM cartridge had additional hardware inside that is not emulated yet and might never be.</li>
+			<li>You might be using a file that is compressed in a way Snes9x does not understand.</li>
+		</ul>
+		<p>
+			The following ROMs are known to currently not to work with any version of Snes9x:
+		</p>
+		<ul>
+			<li><table summary="not emulated chips">
+				<tbody>
+					<tr valign="top">
+						<td style="width:18em">SD Gundam GX</td>
+						<td>DSP-3</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:18em">Hayazashi Nidan Morita Shougi</td>
+						<td>Seta-11</td>
+					</tr>
+					<tr valign="top">
+						<td style="width:18em">Hayazashi Nidan Morita Shougi 2</td>
+						<td>Seta-18</td>
+					</tr>
+				</tbody>
+			</table></li>
+		</ul>
+		<h3>Problems with Sounds</h3>
+		<p>
+			If you hear crackling noise during the game, try these options to eliminate the noise.
+		</p>
+		<ul>
+			<li><dl>
+			<dt><code>-buffersize</code></dt>
+			<dd>Sound generating buffer size in millisecond. Larger value will be safe from crackling noise, but may cause lag.</dd>
+			<dt><code>-fragmentsize</code></dt>
+			<dd>Fragment size of the system sound driver in byte. It must be a power of 2, and must be the value the driver accepts.</dd>
+			<dt><code>-soundsync</code></dt>
+			<dd>When this option is on, Snes9x tries and ensures all available samples are buffered so there are no overruns.</dd>
+			<dt><code>-inputrate</code></dt>
+			<dd>Adjusts the sound rate through resampling. For every <code>-inputrate</code> samples generated by the SNES, <code>-playbackrate</code> samples will be produced.</dd>
+			</dl></li>
+		</ul>
+		<h2>Technical Information</h2>
+		<h3>What's Emulated?</h3>
+		<ul style="list-style-type:disc">
+			<li>65c816 main CPU.</li>
+			<li>Variable length machine cycles.</li>
+			<li>8 channel DMA and H-DMA.</li>
+			<li>H-IRQ, V-IRQ and NMI.</li>
+			<li>Sony SPC700 sound CPU.</li>
+			<li>Sound DSP, with eight 16-bit, stereo channels, compressed samples, hardware envelope processing, echo, pitch modulation and digital FIR sound filter.</li>
+			<li>SRAM, a battery-backed RAM.</li>
+			<li>All background modes, 0 to 7.</li>
+			<li>All screen resolutions including interlace mode.</li>
+			<li>Pseudo hi-res mode.</li>
+			<li>8x8, 16x8 and 16x16 tile sizes, flipped in either direction.</li>
+			<li>32x32, 32x64, 64x32 and 64x64 screen tile sizes.</li>
+			<li>Vertical and horizontal offset-per-tile.</li>
+			<li>128 8x8, 16x16, 32x32 and 64x64 sprites, flipped in either direction.</li>
+			<li>Sub-screen and fixed color blending effects.</li>
+			<li>Mosaic effects.</li>
+			<li>Mode 7 screen rotation, scaling and screen flipping.</li>
+			<li>Single and dual graphic clip windows, with all four logic combination modes.</li>
+			<li>Color blending effects only inside or outside a window.</li>
+			<li>Palette changes during frame.</li>
+			<li>Direct color mode - uses tile and palette-group data directly as RGB value.</li>
+			<li>SNES Mouse.</li>
+			<li>Super Scope, emulated using computer mouse.</li>
+			<li>Justifier, by Konami, similar to the Super Scope and used only in Lethal Enforcers.</li>
+			<li>Multi Player 5, allowing up to five people to play games simultaneously on games that support that many players.</li>
+			<li>Super FX, a fast RISC CPU used in several games.</li>
+			<li>SA-1, a faster version of main CPU with some functions, used in several games.</li>
+			<li>DSP-1, a custom chip used in several games, mainly racing games.</li>
+			<li>DSP-2, a custom chip used only in Dungeon Master.</li>
+			<li>DSP-4, a custom chip used only in Top Gear 3000.</li>
+			<li>C4, a sprite scaler/rotator/line drawer/simple maths co-processor chip used only in Megaman X2 and X3.</li>
+			<li>Seta-10, a custom chip used only in F1 Race of Champions 2.</li>
+			<li>OBC1, a sprite management chip used only in Metal Combat.</li>
+			<li>S-DD1, a data decompression chip used only in Star Ocean and Street Fighter 2 Alpha.</li>
+			<li>SPC7110, similar in use to S-DD1, used in a few Hadoson games.</li>
+			<li>S-RTC, a real-time clock chip, used only in Dai Kaijyu Monogatari 2.</li>
+			<li>Satellaview and BS-X, only partially.</li>
+		</ul>
+		<h3>What's Not?</h3>
+		<ul style="list-style-type:disc">
+			<li>Exact sub-cycle timings of communication among most of parts - main CPU, sound CPU, DMA, H-DMA, IRQ, NMI, and so on. Snes9x cannot run games that require severe timings!</li>
+			<li>Any other odd chips that manufactures sometimes placed inside the cartridge to enhance games and as a nice side-effect, also act as an anti-piracy measure. (DSP-3, Seta-11 and Seta-18, as examples)</li>
+			<li>The expansion slot found in many carts.</li>
+		</ul>
+		<h3>Custom Chips</h3>
+		<h4>Super FX</h4>
+		<p>
+			The Super FX is a 10.5/21MHz RISC CPU developed by Argonaut Software used as a game enhancer by several game titles. Released SNES Super FX games included Yoshi's Island, Doom, Winter Gold, Dirt Trax FX, StarFox, Stunt Race FX and Vortex.
+		</p>
+		<h4>SA-1</h4>
+		<p>
+			The SA-1 is a fast, custom 65c816 8/16-bit processor, the same as inside the SNES itself, but clocked at 10MHz compared to a maximum of 3.58MHz for the CPU inside the SNES. The SA-1 isn't just a CPU; it also contains some extra circuits developed by Nintendo which includes some very fast RAM, a memory mapper, DMA and, several real-time timers.
+		</p>
+		<h4>C4</h4>
+		<p>
+			The C4 is custom Capcom chip used only in the Megaman X2 and Megaman X3 games. It can scale and rotate images, draw line-vector objects and do some simple maths to rotate them.
+		</p>
+		<h4>S-DD1</h4>
+		<p>
+			The S-DD1 is a custom data decompression chip that can decompress data in real-time as the SNES DMA's data from the ROM to RAM. Only two games use the chip: Star Ocean and Street Fighter Alpha 2.
+		</p>
+		<h4>SPC7110</h4>
+		<p>
+			The SPC7110 is a compression and memory mapping chip. It provides a few extra features as well. It functions as an RTC interface, and has a multiply/divide unit that has more precision than the SNES. The SPC7110 is found only in 4 games: Super Power League 4, Far East of Eden Zero, Far East of Eden Zero - Shounen Jump no Shou and Momotaro Dentetsu Happy.
+		</p>
+		<h4>Others</h4>
+		<p>
+			Other known custom chips: DSP-1, DSP-2, DSP-3, DSP-4, Seta-10, Seta-11, Seta-18, OBC1 and S-RTC.
+		</p>
+		<h2>Credits</h2>
+		<ul style="list-style-type:disc">
+			<li>Jerremy Koot for all his hard work on previous versions of Snes96, Snes97 and Snes9x.</li>
+			<li>Ivar for the original Super FX C emulation, DSP-1 emulation work and information on both chips.</li>
+			<li>zsKnight and _Demo_ for the Intel Super FX assembler, DSP-1 and C4 emulation code.</li>
+			<li>zsKnight and _Demo_ for all the other ideas and code I've nicked off them; they've nicked lots of my ideas and information too!</li>
+			<li>John Weidman and Darkforce for the S-RTC emulation information and code.</li>
+			<li>Kreed and Maxim Stepin for excellent image enhancer routines.</li>
+			<li>Nose000 for code changes to support various Japanese SNES games.</li>
+			<li>Neill Corlett for the IPS patching support code.</li>
+			<li>DiskDude's SNES Kart v1.6 document for the Game Genie(TM) and Pro-Action Replay cheat system information.</li>
+			<li>Lord ESNES for some nice chats and generally useful stuff.</li>
+			<li>Lee Hyde (lee@jlp1.demon.co.uk) for his quest for sound information and the Windows 95 icon.</li>
+			<li>Shawn Hargreaves for the rather good Allegro 3.0 DOS library.</li>
+			<li>Robert Grubbs for the SideWinder information - although I didn't use his actual driver in the end.</li>
+			<li>Steve Snake for his insights into SNES sound sample decompression.</li>
+			<li>Vojtech Pavlik for the Linux joystick driver patches.</li>
+			<li>Maciej Babinski for the basics of Linux's DGA X server extensions.</li>
+			<li>Alexander Larsson for the GGI Linux port code.</li>
+			<li>Harald Fielker for the original sound interpolation code (never used directly due to problems).</li>
+			<li>Takehiro TOMINAGA for many speed up suggestions and bug fixes.</li>
+			<li>Predicador for the Windows icon.</li>
+			<li>Lindsey Dubb for the mode 7 bi-linear filter code and the improved color addition and subtraction code.</li>
+			<li>Anti Resonance for his super-human efforts to help get his fast sound CPU core and sound DSP core working in Snes9x.</li>
+			<li>Brad Martin and TRAC for better and refined sound emulation.</li>
+			<li>ernstp and entonne for patches and testing on Linux PPC.</li>
+			<li>byuu for the most exact timing information and tons of the newest technical findings.</li>
+			<li>Blargg for the most accurate timings between sound CPU and DSP and exact sound emulation codes.</li>
+			<li>pagefault, TRAC, Dark Force, byuu, and others who have donated ideas and/or code to the project.</li>
+		</ul>
+		<div style="margin-top:3em"><p>
+			Nintendo is a trademark.<br>
+			Super NES, Super Famicon, Super Scope and Super FX are trademarks of Nintendo.<br>
+			Sufami Turbo is a trademark of Bandai Co., Ltd.<br>
+			Game Genie is a trademark of Lewis Galoob Toys, Inc.<br>
+			Pro Action Replay is a trademark of Datel Inc.<br>
+			Macintosh, Mac and Mac OS X are trademarks of Apple Computer, Inc.<br>
+			UNIX is a trademark of The Open Group.<br>
+			Linux is a trademark of Linus Torvalds.<br>
+			Windows is a trademark of Microsoft Corp.<br>
+			Intel is a trademark of Intel Corp.<br>
+			PowerPC is a trademark of International Business Machines Corp.<br>
+			Sony is a trademark of Sony Corp.<br>
+			Konami and Justifier are trademarks of Konami Corp.<br>
+			Hudson is a trademark of Husdon Soft Co., Ltd.<br>
+			Capcom is a trademark of Capcom Co., Ltd.
+		</p></div>
+		<div style="margin-top:3em"><p>
+			Gary Henderson
+		</p></div>
+		<p>
+			Edited for Unix port by: zones (kasumitokoduck@yahoo.com)<br>
+			Updated most recently by: 2011/04/10 zones
+		</p>
+	</body>
+</html>
