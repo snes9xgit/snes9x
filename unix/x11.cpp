@@ -239,6 +239,9 @@ struct GUIData
 	int				mouse_y;
 	bool8			mod1_pressed;
 	bool8			no_repeat;
+	bool8			fullscreen;
+	int			x_offset;
+	int			y_offset;
 #ifdef MITSHM
 	XShmSegmentInfo	sm_info;
 	bool8			use_shared_memory;
@@ -293,6 +296,8 @@ void S9xExtraDisplayUsage (void)
 
 	S9xMessage(S9X_INFO, S9X_USAGE, "-setrepeat                      Allow altering keyboard auto-repeat");
 	S9xMessage(S9X_INFO, S9X_USAGE, "");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-fullscreen                     Switch to full-screen on start");
+	S9xMessage(S9X_INFO, S9X_USAGE, "");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-v1                             Video mode: Blocky (default)");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-v2                             Video mode: TV");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-v3                             Video mode: Smooth");
@@ -308,6 +313,9 @@ void S9xParseDisplayArg (char **argv, int &i, int argc)
 {
 	if (!strcasecmp(argv[i], "-setrepeat"))
 		GUI.no_repeat = FALSE;
+	else
+	if (!strcasecmp(argv[i], "-fullscreen"))
+		GUI.fullscreen = TRUE;
 	else
 	if (!strncasecmp(argv[i], "-v", 2))
 	{
@@ -467,6 +475,7 @@ const char * S9xParseDisplayConfig (ConfigFile &conf, int pass)
 	}
 
 	GUI.no_repeat = !conf.GetBool("Unix/X11::SetKeyRepeat", TRUE);
+	GUI.fullscreen = conf.GetBool("Unix/X11::Fullscreen", TRUE);
 
 	if (conf.Exists("Unix/X11::VideoMode"))
 	{
@@ -569,16 +578,51 @@ void S9xInitDisplay (int argc, char **argv)
 	S9xBlit2xSaIFilterInit();
 	S9xBlitHQ2xFilterInit();
 
+	/* Set up parameters for creating the window */
 	XSetWindowAttributes	attrib;
 
 	memset(&attrib, 0, sizeof(attrib));
 	attrib.background_pixel = BlackPixelOfScreen(GUI.screen);
 	attrib.colormap = XCreateColormap(GUI.display, RootWindowOfScreen(GUI.screen), GUI.visual, AllocNone);
 
-	GUI.window = XCreateWindow(GUI.display, RootWindowOfScreen(GUI.screen),
+	/* Try to switch to Fullscreen. */
+	if (GUI.fullscreen == TRUE)
+	{
+		/* Create the window with maximum screen width,height positioned at 0,0. */
+		GUI.window = XCreateWindow(GUI.display, RootWindowOfScreen(GUI.screen),
+							0, 0,
+							WidthOfScreen(GUI.screen), HeightOfScreen(GUI.screen), 0
+							GUI.depth, InputOutput, GUI.visual, CWBackPixel | CWColormap, &attrib);
+
+		/* Try to tell the Window Manager not to decorate this window. */
+		Atom wm_state   = XInternAtom (display, "_NET_WM_STATE", true );
+		Atom wm_fullscreen = XInternAtom (display, "_NET_WM_STATE_FULLSCREEN", true );
+
+		XChangeProperty(display, window, wm_state, XA_ATOM, 32, PropModeReplace, (unsigned char *)&wm_fullscreen, 1);
+
+		/* Last: position the output window in the center of the screen. */
+		GUI.x_offset = (WidthOfScreen(GUI.screen) - SNES_WIDTH * 2) / 2;
+		GUI.y_offset = (HeightOfScreen(GUI.screen) - SNES_HEIGHT_EXTENDED * 2) / 2;
+	} else {
+		/* Create the window. */
+		GUI.window = XCreateWindow(GUI.display, RootWindowOfScreen(GUI.screen),
 							   (WidthOfScreen(GUI.screen) - SNES_WIDTH * 2) / 2, (HeightOfScreen(GUI.screen) - SNES_HEIGHT_EXTENDED * 2) / 2,
 							   SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2, 0, GUI.depth, InputOutput, GUI.visual, CWBackPixel | CWColormap, &attrib);
 
+		/* Tell the Window Manager that we do not wish to be resizable */
+		XSizeHints	Hints;
+		memset((void *) &Hints, 0, sizeof(XSizeHints));
+
+		Hints.flags      = PSize | PMinSize | PMaxSize;
+		Hints.min_width  = Hints.max_width  = Hints.base_width  = SNES_WIDTH * 2;
+		Hints.min_height = Hints.max_height = Hints.base_height = SNES_HEIGHT_EXTENDED * 2;
+		XSetWMNormalHints(GUI.display, GUI.window, &Hints);
+
+		/* Last: Windowed SNES is not drawn with any offsets. */
+		GUI.x_offset = GUI.y_offset = 0;
+	}
+
+	/* Load UI cursors */
 	static XColor	bg, fg;
 	static char		data[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 	Pixmap			bitmap;
@@ -590,22 +634,18 @@ void S9xInitDisplay (int argc, char **argv)
 
 	GUI.gc = DefaultGCOfScreen(GUI.screen);
 
-	XSizeHints	Hints;
+	/* Other window-manager hints */
 	XWMHints	WMHints;
-
-	memset((void *) &Hints, 0, sizeof(XSizeHints));
 	memset((void *) &WMHints, 0, sizeof(XWMHints));
 
-	Hints.flags      = PSize | PMinSize | PMaxSize;
-	Hints.min_width  = Hints.max_width  = Hints.base_width  = SNES_WIDTH * 2;
-	Hints.min_height = Hints.max_height = Hints.base_height = SNES_HEIGHT_EXTENDED * 2;
-	WMHints.input    = True;
+	/* Rely on the Window Manager to provide us with keyboard input */
 	WMHints.flags    = InputHint;
+	WMHints.input    = True;
 
 	XSetWMHints(GUI.display, GUI.window, &WMHints);
-	XSetWMNormalHints(GUI.display, GUI.window, &Hints);
 	XSelectInput(GUI.display, GUI.window, FocusChangeMask | ExposureMask | KeyPressMask | KeyReleaseMask | StructureNotifyMask | ButtonPressMask | ButtonReleaseMask);
 
+	/* Bring up our window (and put it in foreground) */
 	XMapRaised(GUI.display, GUI.window);
 	XClearWindow(GUI.display, GUI.window);
 
@@ -969,12 +1009,13 @@ static void Repaint (bool8 isFrameBoundry)
 #ifdef MITSHM
 	if (GUI.use_shared_memory)
 	{
-		XShmPutImage(GUI.display, GUI.window, GUI.gc, GUI.image, 0, 0, 0, 0, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2, False);
+		XShmPutImage(GUI.display, GUI.window, GUI.gc, GUI.image, 0, 0, GUI.x_offset, GUI.y_offset, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2, False);
+		// TODO: Is calling XSync necessary here, given that XQueryPointer (below) states that it "syncs X server" too?
 		XSync(GUI.display, False);
 	}
 	else
 #endif
-		XPutImage(GUI.display, GUI.window, GUI.gc, GUI.image, 0, 0, 0, 0, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2);
+		XPutImage(GUI.display, GUI.window, GUI.gc, GUI.image, 0, 0, GUI.x_offset, GUI.y_offset, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2);
 
 	Window			root, child;
 	int				root_x, root_y, x, y;
