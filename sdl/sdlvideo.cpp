@@ -1,4 +1,4 @@
-/***********************************************************************************
+/*
   Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
 
   See CREDITS file to find the copyright owners of this file.
@@ -145,6 +145,7 @@ void S9xParseDisplayArg (char **argv, int &i, int argc)
 #endif
 	if (!strncasecmp(argv[i], "-double_buffer", 14))
 	{
+                printf ("Enable double buffer.\n");
 		GUI.double_buffer = TRUE;
 	}
 	else
@@ -224,10 +225,9 @@ void S9xInitDisplay (int argc, char **argv)
 	 * FIXME: Check if the SDL screen is really in RGB565 mode. screen->fmt	
 	 */	
 	// grkenn - mode flags should be either OPENGL or (hwsurface with (double-buffer or none))
-#ifdef USE_OPENGL
-	int MODE_FLAGS = (GUI.opengl == TRUE ? SDL_OPENGL : SDL_HWSURFACE | (GUI.double_buffer == TRUE ? SDL_DOUBLEBUF : 0));
-#else
 	int MODE_FLAGS = SDL_HWSURFACE | (GUI.double_buffer == TRUE ? SDL_DOUBLEBUF : 0);
+#ifdef USE_OPENGL
+	MODE_FLAGS = (GUI.opengl == TRUE ? SDL_OPENGL : MODE_FLAGS);
 #endif
         if (GUI.fullscreen == TRUE)
         {
@@ -240,7 +240,9 @@ void S9xInitDisplay (int argc, char **argv)
 	{
 		printf("Unable to set video mode: %s\n", SDL_GetError());
 		exit(1);
-        }
+        } else {
+		printf("Allocated screen of size %dx%d\n",GUI.sdl_screen->w,GUI.sdl_screen->h);
+	}
 
 	// grkenn - set up opengl params
 #ifdef USE_OPENGL
@@ -284,6 +286,7 @@ static void TakedownImage (void)
 #ifdef USE_OPENGL
 	if (GUI.opengl == TRUE)
 	{
+		if (GUI.blit_screen) free(GUI.blit_screen);
 		if (GUI.texture) {
 			glDeleteTextures(1,&GUI.texture);
 			GUI.texture=0;
@@ -327,22 +330,26 @@ static void SetupImage (void)
 		glGenTextures(1, &GUI.texture);
 		// attach to texture
 		glBindTexture(GL_TEXTURE_2D, GUI.texture);
-		// set texture parameters
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GUI.gl_filter); // Filter modes
-    		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GUI.gl_filter);
-    		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
-    		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
 
 		// Compute next-highest power-of-2 for holding SNES buffer output
 		int tex_width = 1;
 		while(tex_width < SNES_FULL_WIDTH) tex_width *= 2;
 		int tex_height = 1;
-		while(tex_height < SNES_FULL_HEIGHT) tex_width *= 2;
+		while(tex_height < SNES_FULL_HEIGHT) tex_height *= 2;
+
+		printf("\tUsing PowerOf2 texture %dx%d\n",tex_width,tex_height);
 
 		// Fill the texture with empty data first
 		uint16 *empty = (uint16 *)calloc(tex_width*tex_height,sizeof(uint16));
+		//for (int q=0;q<tex_width*tex_height;q++) empty[q] = rand();
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tex_width, tex_height, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, empty);
 		free(empty);
+
+		// set texture parameters
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GUI.gl_filter); // Filter modes
+    		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GUI.gl_filter);
+    		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+    		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
 
 		// Setup screen view based on display size.
 		// Set the clear color to all black (0, 0, 0)
@@ -355,22 +362,30 @@ static void SetupImage (void)
 		// Compute the actual screen aspect ratio, and letter/pillarbox glOrtho to fit.
 		double screenAspect = (double)screen->w/screen->h;
 		double snesAspect = (double)SNES_FULL_WIDTH/SNES_FULL_HEIGHT;
+		double ratio = screenAspect / snesAspect;
 
-		GLuint x_off=0,y_off=0;
+		GLuint x_off=0,y_off=0,win_w=SNES_FULL_WIDTH,win_h=SNES_FULL_HEIGHT;
 
+		printf("\tScreen (%dx%d) aspect %f vs SNES (%d,%d) aspect %f (ratio %f)\n",screen->w,screen->h,screenAspect,SNES_FULL_WIDTH,SNES_FULL_HEIGHT,snesAspect,ratio);
 		if (screenAspect > snesAspect)
 		{
 			// widescreen monitor, 4:3 snes
 			//  match height, scale width
-			glOrtho(0,SNES_FULL_HEIGHT*screenAspect,SNES_FULL_HEIGHT,0,-1.0f,1.0f);
-			x_off=((SNES_FULL_HEIGHT*screenAspect)-SNES_FULL_WIDTH) / 2;
+			win_w *= ratio;
+			x_off=(win_w - SNES_FULL_WIDTH) / 2;
 		} else {
 			// narrow monitor, 4:3 snes
 			//  match width, scale height
-	// grkenn FIXME: TODO: this calculation is wrong wrong wrong
-			glOrtho(0,SNES_FULL_WIDTH,SNES_FULL_WIDTH*screenAspect,0,-1.0f,1.0f);
-			y_off = ((SNES_FULL_WIDTH*screenAspect)-SNES_FULL_HEIGHT) / 2;
+			win_h /= ratio;
+			y_off = (win_h - SNES_FULL_HEIGHT) / 2;
 		}
+if (win_w < SNES_FULL_WIDTH || win_h < SNES_FULL_HEIGHT) {
+printf("oops");
+exit(1);
+}
+		glOrtho(0,win_w,win_h,0,-1.0f,1.0f);
+		printf("\tUsing size %dx%d with offset (%d,%d)\n",
+			win_w,win_h,x_off,y_off);
 		
 		glMatrixMode(GL_MODELVIEW);
 		//glLoadIdentity();
@@ -383,14 +398,18 @@ static void SetupImage (void)
 			glBegin(GL_QUADS);
 				glTexCoord2f(0,0);
 				glVertex2i(x_off,y_off);
-				glTexCoord2f(1,0);
+				glTexCoord2f((double)SNES_FULL_WIDTH / tex_width,0);
 				glVertex2i(x_off+SNES_FULL_WIDTH,y_off);
-				glTexCoord2f(1,1);
+				glTexCoord2f((double)SNES_FULL_WIDTH / tex_width,(double)SNES_FULL_HEIGHT / tex_height);
 				glVertex2i(x_off+SNES_FULL_WIDTH,y_off+SNES_FULL_HEIGHT);
-				glTexCoord2f(0,1);
+				glTexCoord2f(0,(double)SNES_FULL_HEIGHT / tex_height);
 				glVertex2i(x_off,y_off+SNES_FULL_HEIGHT);
 			glEnd();
 		glEndList();
+
+		// finally, a local texture to render to
+		GUI.blit_screen       = (uint8 *) calloc(SNES_FULL_WIDTH*SNES_FULL_HEIGHT,sizeof(uint16));
+		GUI.blit_screen_pitch = SNES_FULL_WIDTH * 2; // window size =(*2); 2 byte pir pixel =(*2)
 
 		// All set!
 	}
@@ -479,14 +498,6 @@ void S9xPutImage (int width, int height)
 	// domaemon: this is place where the rendering buffer size should be changed?
 	blitFn((uint8 *) GFX.Screen, GFX.Pitch, GUI.blit_screen, GUI.blit_screen_pitch, width, height);
 
-	//  grkenn: TODO: no idea.  But I did put opengl code here so that's something : )
-#ifdef USE_OPENGL
-	if (GUI.opengl)
-	{
-		// update GL texture
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, (uint8 *) GFX.Screen);
-	}
-#endif
 
 	// domaemon: does the height change on the fly?
 	if (height < prevHeight)
@@ -499,6 +510,16 @@ void S9xPutImage (int width, int height)
 				*d++ = 0;
 		}
 	}
+
+#ifdef USE_OPENGL
+	//  grkenn: TODO: no idea.  But I did put opengl code here so that's something : )
+	if (GUI.opengl)
+	{
+		// update GL texture
+//printf("Redrawing %d to %d\n",width,height);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, SNES_WIDTH*2, SNES_HEIGHT_EXTENDED*2, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, (uint16 *) GUI.blit_screen);
+	}
+#endif
 
 	Repaint(TRUE);
 
