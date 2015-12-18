@@ -190,6 +190,7 @@
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <X11/Xatom.h>
 #include <X11/keysym.h>
 #include <X11/cursorfont.h>
 
@@ -591,14 +592,14 @@ void S9xInitDisplay (int argc, char **argv)
 		/* Create the window with maximum screen width,height positioned at 0,0. */
 		GUI.window = XCreateWindow(GUI.display, RootWindowOfScreen(GUI.screen),
 							0, 0,
-							WidthOfScreen(GUI.screen), HeightOfScreen(GUI.screen), 0
+							WidthOfScreen(GUI.screen), HeightOfScreen(GUI.screen), 0,
 							GUI.depth, InputOutput, GUI.visual, CWBackPixel | CWColormap, &attrib);
 
 		/* Try to tell the Window Manager not to decorate this window. */
-		Atom wm_state   = XInternAtom (display, "_NET_WM_STATE", true );
-		Atom wm_fullscreen = XInternAtom (display, "_NET_WM_STATE_FULLSCREEN", true );
+		Atom wm_state   = XInternAtom (GUI.display, "_NET_WM_STATE", true );
+		Atom wm_fullscreen = XInternAtom (GUI.display, "_NET_WM_STATE_FULLSCREEN", true );
 
-		XChangeProperty(display, window, wm_state, XA_ATOM, 32, PropModeReplace, (unsigned char *)&wm_fullscreen, 1);
+		XChangeProperty(GUI.display, GUI.window, wm_state, XA_ATOM, 32, PropModeReplace, (unsigned char *)&wm_fullscreen, 1);
 
 		/* Last: position the output window in the center of the screen. */
 		GUI.x_offset = (WidthOfScreen(GUI.screen) - SNES_WIDTH * 2) / 2;
@@ -674,10 +675,13 @@ void S9xInitDisplay (int argc, char **argv)
 
 void S9xDeinitDisplay (void)
 {
-	S9xTextMode();
 	TakedownImage();
-	XSync(GUI.display, False);
-	XCloseDisplay(GUI.display);
+	if (GUI.display != NULL)
+	{
+		S9xTextMode();
+		XSync(GUI.display, False);
+		XCloseDisplay(GUI.display);
+	}
 	S9xBlitFilterDeinit();
 	S9xBlit2xSaIFilterDeinit();
 	S9xBlitHQ2xFilterDeinit();
