@@ -1442,7 +1442,10 @@ bool8 S9xOpenSoundDevice (void)
 
 	so.sound_fd = open(sound_device, O_WRONLY | O_NONBLOCK);
 	if (so.sound_fd == -1)
+	{
+		fprintf(stderr, "ERROR: Failed to open sound device %s for writing.\n", sound_device);
 		return (FALSE);
+	}
 
 	J = log2(unixSettings.SoundFragmentSize) | (3 << 16);
 	if (ioctl(so.sound_fd, SNDCTL_DSP_SETFRAGMENT, &J) == -1)
