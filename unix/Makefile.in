@@ -12,7 +12,6 @@ OBJECTS    = ../apu/apu.o ../apu/bapu/dsp/sdsp.o ../apu/bapu/dsp/SPC_DSP.o ../ap
 DEFS       = -DMITSHM
 
 ifdef S9XXVIDEO
-OBJECTS	+= x11-driver-display-xv.o
 DEFS	+= -DUSE_XVIDEO
 LIBS	+= -lXv
 endif

@@ -200,6 +200,10 @@
 #include <X11/extensions/XShm.h>
 #endif
 
+#ifdef USE_XVIDEO
+#include <X11/extensions/Xv.h>
+#endif
+
 #include "snes9x.h"
 #include "memmap.h"
 #include "ppu.h"
@@ -246,6 +250,9 @@ struct GUIData
 #ifdef MITSHM
 	XShmSegmentInfo	sm_info;
 	bool8			use_shared_memory;
+#endif
+#ifdef USE_XVIDEO
+	bool8			use_xvideo;
 #endif
 };
 
@@ -298,6 +305,9 @@ void S9xExtraDisplayUsage (void)
 	S9xMessage(S9X_INFO, S9X_USAGE, "-setrepeat                      Allow altering keyboard auto-repeat");
 	S9xMessage(S9X_INFO, S9X_USAGE, "");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-fullscreen                     Switch to full-screen on start");
+#ifdef USE_XVIDEO
+	S9xMessage(S9X_INFO, S9X_USAGE, "-xvideo                         Xv hardware-accelerated scaling");
+#endif
 	S9xMessage(S9X_INFO, S9X_USAGE, "");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-v1                             Video mode: Blocky (default)");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-v2                             Video mode: TV");
@@ -318,6 +328,11 @@ void S9xParseDisplayArg (char **argv, int &i, int argc)
 	if (!strcasecmp(argv[i], "-fullscreen"))
 		GUI.fullscreen = TRUE;
 	else
+#ifdef USE_XVIDEO
+	if (!strcasecmp(argv[i], "-xvideo"))
+		GUI.use_xvideo = TRUE;
+	else
+#endif	
 	if (!strncasecmp(argv[i], "-v", 2))
 	{
 		switch (argv[i][2])
@@ -476,7 +491,10 @@ const char * S9xParseDisplayConfig (ConfigFile &conf, int pass)
 	}
 
 	GUI.no_repeat = !conf.GetBool("Unix/X11::SetKeyRepeat", TRUE);
-	GUI.fullscreen = conf.GetBool("Unix/X11::Fullscreen", TRUE);
+	GUI.fullscreen = conf.GetBool("Unix/X11::Fullscreen", FALSE);
+#ifdef USE_XVIDEO
+	GUI.use_xvideo = conf.GetBool("Unix/X11::Xvideo", FALSE);
+#endif
 
 	if (conf.Exists("Unix/X11::VideoMode"))
 	{
@@ -729,6 +747,12 @@ static void TakedownImage (void)
 static void SetupImage (void)
 {
 	TakedownImage();
+
+#ifdef USE_XVIDEO
+	if (GUI.use_xvideo)
+	{
+	}
+#endif
 
 #ifdef MITSHM
 	GUI.use_shared_memory = TRUE;
