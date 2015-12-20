@@ -626,6 +626,7 @@ S9XJMA
 S9XZIP
 S9XNETPLAY
 S9XDEBUGGER
+S9XXVIDEO
 S9XLIBS
 S9XDEFS
 S9XFLGS
@@ -5998,6 +5999,8 @@ if test "x$snes9x_sar_int8" = "xyes" -a "x$snes9x_sar_int16" = "xyes" -a "x$snes
 fi
 
 # Check if we can build with XVideo acceleration support
+S9XXVIDEO="#S9XXVIDEO=1"
+
 # Check whether --enable-xvideo was given.
 if test "${enable_xvideo+set}" = set; then :
   enableval=$enable_xvideo;
@@ -6012,8 +6015,7 @@ if test "x$enable_xvideo" = "xyes"; then
 if test "x$ac_cv_header_X11_extensions_Xv_h" = xyes; then :
 
 		enable_xvideo="yes"
-		S9XDEFS="$S9XDEFS -DUSE_XVIDEO"
-		S9XLIBS="$S9XLIBS -lXv"
+		S9XXVIDEO="S9XXVIDEO=1"
 
 fi
 
@@ -6070,6 +6072,7 @@ S9XLIBS="`echo \"$S9XLIBS\" | sed -e 's/  */ /g'`"
 S9XFLGS="`echo \"$S9XFLGS\" | sed -e 's/^  *//'`"
 S9XDEFS="`echo \"$S9XDEFS\" | sed -e 's/^  *//'`"
 S9XLIBS="`echo \"$S9XLIBS\" | sed -e 's/^  *//'`"
+
 
 
 

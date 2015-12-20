@@ -376,6 +376,8 @@ if test "x$snes9x_sar_int8" = "xyes" -a "x$snes9x_sar_int16" = "xyes" -a "x$snes
 fi
 
 # Check if we can build with XVideo acceleration support
+S9XXVIDEO="#S9XXVIDEO=1"
+
 AC_ARG_ENABLE([xvideo],
 	[AS_HELP_STRING([--enable-xvideo],
 		[enable XVideo if available (default: yes)])],
@@ -386,8 +388,7 @@ if test "x$enable_xvideo" = "xyes"; then
 	AC_CHECK_HEADER([X11/extensions/Xv.h],
 	[
 		enable_xvideo="yes"
-		S9XDEFS="$S9XDEFS -DUSE_XVIDEO"
-		S9XLIBS="$S9XLIBS -lXv"
+		S9XXVIDEO="S9XXVIDEO=1"
 	])
 fi
 
@@ -434,6 +435,7 @@ S9XLIBS="`echo \"$S9XLIBS\" | sed -e 's/^  *//'`"
 AC_SUBST(S9XFLGS)
 AC_SUBST(S9XDEFS)
 AC_SUBST(S9XLIBS)
+AC_SUBST(S9XXVIDEO)
 AC_SUBST(S9XDEBUGGER)
 AC_SUBST(S9XNETPLAY)
 AC_SUBST(S9XZIP)

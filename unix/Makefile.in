@@ -1,3 +1,4 @@
+@S9XXVIDEO@
 @S9XDEBUGGER@
 @S9XNETPLAY@
 @S9XZIP@
@@ -9,6 +10,12 @@ BUILDDIR   = .
 
 OBJECTS    = ../apu/apu.o ../apu/bapu/dsp/sdsp.o ../apu/bapu/dsp/SPC_DSP.o ../apu/bapu/smp/smp.o ../apu/bapu/smp/smp_state.o ../bsx.o ../c4.o ../c4emu.o ../cheats.o ../cheats2.o ../clip.o ../conffile.o ../controls.o ../cpu.o ../cpuexec.o ../cpuops.o ../crosshairs.o ../dma.o ../dsp.o ../dsp1.o ../dsp2.o ../dsp3.o ../dsp4.o ../fxinst.o ../fxemu.o ../gfx.o ../globals.o ../logger.o ../memmap.o ../movie.o ../obc1.o ../ppu.o ../stream.o ../sa1.o ../sa1cpu.o ../screenshot.o ../sdd1.o ../sdd1emu.o ../seta.o ../seta010.o ../seta011.o ../seta018.o ../snapshot.o ../snes9x.o ../spc7110.o ../srtc.o ../tile.o ../filter/2xsai.o ../filter/blit.o ../filter/epx.o ../filter/hq2x.o ../filter/snes_ntsc.o ../statemanager.o unix.o x11.o
 DEFS       = -DMITSHM
+
+ifdef S9XXVIDEO
+OBJECTS	+= x11-driver-display-xv.o
+DEFS	+= -DUSE_XVIDEO
+LIBS	+= -lXv
+endif
 
 ifdef S9XDEBUGGER
 OBJECTS   += ../debug.o ../fxdbg.o
