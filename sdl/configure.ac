@@ -2,7 +2,7 @@ AC_PREREQ([2.60])
 AC_INIT([Snes9x], [1.53], [], [snes9x])
 AC_REVISION([$Revision: 1.53 $])
 
-AC_CONFIG_SRCDIR([unix.cpp])
+AC_CONFIG_SRCDIR([sdlmain.cpp])
 
 AC_CANONICAL_TARGET
 
@@ -85,59 +85,45 @@ else
 	AC_S9X_COMPILER_FLAG([-fomit-frame-pointer], [omit_frame_pointer])
 fi
 
-AC_ARG_ENABLE([mtune],
-	[AS_HELP_STRING([--enable-mtune],
-		[use the specified value for the -mtune/-mcpu flag (default: no)])],
-	[], [enable_mtune="no"])
+# <domaemon>: --enable-neon
 
-if test "x$enable_mtune" != "xno"; then
-	AC_S9X_COMPILER_FLAG([-mtune="$enable_mtune"], [mtune],
+AC_ARG_ENABLE([neon],
+	[AS_HELP_STRING([--enable-neon],
+		[use the optimisation flag to enable NEON instructions (default: no)])],
+	[], [enable_neon="no"])
+
+if test "x$enable_neon" != "xno"; then
+	AC_S9X_COMPILER_FLAG(["-mfpu=neon"], [mfpu],
 	[
-		AC_MSG_WARN([-mtune failed, trying -mcpu...])
-		AC_S9X_COMPILER_FLAG([-mcpu="$enable_mtune"], [mcpu],
-			[AC_MSG_ERROR([Please specify a working value for --enable-mtune.])])
+		AC_MSG_ERROR(["NEON optimisation flag was not accepted."])
 	])
+
+	AC_S9X_COMPILER_FLAG(["-Wa,-march=armv7a"],		[march])
+	AC_S9X_COMPILER_FLAG(["-fprefetch-loop-arrays"],	[prefetch])
 fi
 
-AC_S9X_COMPILER_FLAG([-fno-exceptions],       [no_exceptions])
+# </domaemon>
+
+AC_S9X_COMPILER_FLAG([-fno-exceptions],	      [no_exceptions])
 AC_S9X_COMPILER_FLAG([-fno-rtti],             [no_rtti])
 AC_S9X_COMPILER_FLAG([-pedantic],             [pedantic])
 AC_S9X_COMPILER_FLAG([-Wall],                 [Wall])
 AC_S9X_COMPILER_FLAG([-W],                    [W])
 AC_S9X_COMPILER_FLAG([-Wno-unused-parameter], [Wno_unused_parameter])
 
-# Check if the OS is Linux.
+# Enable OpenGL backend
 
-AC_MSG_CHECKING([whether the OS is Linux])
+S9XOPENGL="#S9XOPENGL=1"
 
-AC_CACHE_VAL([snes9x_cv_linux_os],
-[
-	case "$target" in
-		*-*-linux*)
-			snes9x_cv_linux_os="yes"
-			;;
-		*)
-			snes9x_cv_linux_os="no"
-			;;
-	esac
-])
+AC_ARG_ENABLE([opengl],
+	[AS_HELP_STRING([--enable-opengl],
+		[enable opengl (default: yes)])],
+	[], [enable_opengl="yes"])
 
-AC_MSG_RESULT([$snes9x_cv_linux_os])
-
-# Enable gamepad support on Linux.
-
-AC_ARG_ENABLE([gamepad],
-	[AS_HELP_STRING([--enable-gamepad],
-		[enable gamepad support if available (default: yes)])],
-	[], [enable_gamepad="yes"])
-
-if test "x$enable_gamepad" = "xyes"; then
-	if test "x$snes9x_cv_linux_os" = "xyes"; then
-		S9XDEFS="$S9XDEFS -DJOYSTICK_SUPPORT"
-	else
-		AC_MSG_WARN([Your OS is not Linux. Build without gamepad support.])
-		enable_gamepad="no"
-	fi
+if test "x$enable_opengl" = "xyes"; then
+	S9XOPENGL="S9XOPENGL=1"
+	S9XDEFS="$S9XDEFS -DUSE_OPENGL"
+	S9XLIBS="$S9XLIBS -lGL"
 fi
 
 # Enable debugger.
@@ -259,15 +245,26 @@ AC_CHECK_FUNC([mkstemp],
 	S9XDEFS="$S9XDEFS -DHAVE_MKSTEMP"
 ])
 
-# Check X11
+# <domaemon>: Check SDL, messy.
 
-AC_PATH_XTRA
-if test "x$no_x" = "xyes"; then
-	AC_MSG_ERROR([X11 is required.])
+AC_CACHE_VAL([snes9x_cv_sdl],
+[
+	AC_CHECK_HEADER([SDL/SDL.h],
+		[AC_CHECK_LIB([SDL], [SDL_Init], [snes9x_cv_sdl="yes"], [snes9x_cv_sdl="no"])],
+		[snes9x_cv_sdl="no"])
+])
+
+if test "x$snes9x_cv_sdl" = "xyes"; then
+  	S9XFLGS="$S9XFLGS `sdl-config --cflags`"
+	S9XLIBS="$S9XLIBS `sdl-config --libs`"
 else
-	S9XFLGS="$S9XFLGS $X_CFLAGS"
-	S9XLIBS="$S9XLIBS $X_PRE_LIBS -lX11 -lXext $X_LIBS $X_EXTRA_LIBS"
+	AC_MSG_ERROR([SDL is required.])
 fi
+
+###
+
+
+# </domaemon>
 
 # Check for headers
 
@@ -375,50 +372,6 @@ if test "x$snes9x_sar_int8" = "xyes" -a "x$snes9x_sar_int16" = "xyes" -a "x$snes
 	S9XDEFS="$S9XDEFS -DRIGHTSHIFT_IS_SAR"
 fi
 
-# Check if we can build with Xvideo acceleration support
-AC_ARG_ENABLE([xvideo],
-	[AS_HELP_STRING([--enable-xvideo],
-		[enable Xvideo if available (default: yes)])],
-	[], [enable_xvideo="yes"])
-
-if test "x$enable_xvideo" = "xyes"; then
-	enable_xvideo="no"
-	AC_CHECK_HEADER([X11/extensions/Xv.h],
-	[
-		enable_xvideo="yes"
-		S9XLIBS="$S9XLIBS -lXv"
-		S9XDEFS="$S9XDEFS -DUSE_XVIDEO"
-	])
-fi
-
-# Check if we have sound code for this platform.
-
-AC_ARG_ENABLE([sound],
-	[AS_HELP_STRING([--enable-sound],
-		[enable sound if available (default: yes)])],
-	[], [enable_sound="yes"])
-
-if test "x$enable_sound" = "xyes"; then
-	AC_MSG_CHECKING([whether sound is supported on this platform])
-	if test "x$snes9x_cv_linux_os" = "xyes"; then
-		AC_MSG_RESULT([yes])
-	else
-		AC_MSG_RESULT([no])
-		AC_MSG_WARN([Your OS is not Linux. Build without sound support.])
-		enable_sound="no"
-	fi
-fi
-
-if test "x$enable_sound" = "xyes"; then
-	AC_CHECK_HEADER([pthread.h],
-	[
-		S9XDEFS="$S9XDEFS -DUSE_THREADS"
-		S9XLIBS="$S9XLIBS -lpthread"
-	])
-else
-	S9XDEFS="$S9XDEFS -DNOSOUND"
-fi
-
 # Output.
 
 S9XFLGS="$CXXFLAGS $CPPFLAGS $LDFLAGS $S9XFLGS"
@@ -434,7 +387,6 @@ S9XLIBS="`echo \"$S9XLIBS\" | sed -e 's/^  *//'`"
 AC_SUBST(S9XFLGS)
 AC_SUBST(S9XDEFS)
 AC_SUBST(S9XLIBS)
-AC_SUBST(S9XXVIDEO)
 AC_SUBST(S9XDEBUGGER)
 AC_SUBST(S9XNETPLAY)
 AC_SUBST(S9XZIP)
@@ -452,11 +404,9 @@ defines.............. $S9XDEFS
 libs................. $S9XLIBS
 
 features:
-Xvideo support....... $enable_xvideo
-sound support........ $enable_sound
+opengl support....... $enable_opengl
 screenshot support... $enable_screenshot
 netplay support...... $enable_netplay
-gamepad support...... $enable_gamepad
 GZIP support......... $enable_gzip
 ZIP support.......... $enable_zip
 JMA support.......... $enable_jma

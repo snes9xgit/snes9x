@@ -583,7 +583,7 @@ PACKAGE_STRING='Snes9x 1.53'
 PACKAGE_BUGREPORT=''
 PACKAGE_URL=''
 
-ac_unique_file="unix.cpp"
+ac_unique_file="sdlmain.cpp"
 # Factoring default headers for most tests.
 ac_includes_default="\
 #include <stdio.h>
@@ -626,15 +626,9 @@ S9XJMA
 S9XZIP
 S9XNETPLAY
 S9XDEBUGGER
-S9XXVIDEO
 S9XLIBS
 S9XDEFS
 S9XFLGS
-X_EXTRA_LIBS
-X_LIBS
-X_PRE_LIBS
-X_CFLAGS
-XMKMF
 EGREP
 GREP
 CXXCPP
@@ -702,17 +696,14 @@ ac_subst_files=''
 ac_user_opts='
 enable_option_checking
 enable_debug
-enable_mtune
-enable_gamepad
+enable_neon
+enable_opengl
 enable_debugger
 enable_netplay
 enable_gzip
 enable_zip
 enable_jma
 enable_screenshot
-with_x
-enable_xvideo
-enable_sound
 '
       ac_precious_vars='build_alias
 host_alias
@@ -725,8 +716,7 @@ CPPFLAGS
 CXX
 CXXFLAGS
 CCC
-CXXCPP
-XMKMF'
+CXXCPP'
 
 
 # Initialize some variables set by options.
@@ -1324,10 +1314,6 @@ _ACEOF
 
   cat <<\_ACEOF
 
-X features:
-  --x-includes=DIR    X include files are in DIR
-  --x-libraries=DIR   X library files are in DIR
-
 System types:
   --build=BUILD     configure for building on BUILD [guessed]
   --host=HOST       cross-compile to build programs to run on HOST [BUILD]
@@ -1347,9 +1333,9 @@ Optional Features:
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --enable-debug          leave debug information in the final binary
                           (default: no)
-  --enable-mtune          use the specified value for the -mtune/-mcpu flag
-                          (default: no)
-  --enable-gamepad        enable gamepad support if available (default: yes)
+  --enable-neon           use the optimisation flag to enable NEON
+                          instructions (default: no)
+  --enable-opengl         enable opengl (default: yes)
   --enable-debugger       enable debugger (default: no)
   --enable-netplay        enable netplay support (default: no)
   --enable-gzip           enable GZIP support through zlib (default: yes)
@@ -1357,13 +1343,6 @@ Optional Features:
   --enable-jma            enable JMA support (default: yes)
   --enable-screenshot     enable screenshot support through libpng (default:
                           yes)
-  --enable-xvideo         enable Xvideo if available (default: yes)
-  --enable-sound          enable sound if available (default: yes)
-
-Optional Packages:
-  --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
-  --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
-  --with-x                use the X Window System
 
 Some influential environment variables:
   CC          C compiler command
@@ -1376,7 +1355,6 @@ Some influential environment variables:
   CXX         C++ compiler command
   CXXFLAGS    C++ compiler flags
   CXXCPP      C++ preprocessor
-  XMKMF       Path to xmkmf, Makefile generator for X Window System
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -3783,25 +3761,27 @@ $as_echo "no" >&6; }
 
 fi
 
-# Check whether --enable-mtune was given.
-if test "${enable_mtune+set}" = set; then :
-  enableval=$enable_mtune;
+# <domaemon>: --enable-neon
+
+# Check whether --enable-neon was given.
+if test "${enable_neon+set}" = set; then :
+  enableval=$enable_neon;
 else
-  enable_mtune="no"
+  enable_neon="no"
 fi
 
 
-if test "x$enable_mtune" != "xno"; then
+if test "x$enable_neon" != "xno"; then
 
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether g++ accepts -mtune=\"$enable_mtune\"" >&5
-$as_echo_n "checking whether g++ accepts -mtune=\"$enable_mtune\"... " >&6; }
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether g++ accepts \"-mfpu=neon\"" >&5
+$as_echo_n "checking whether g++ accepts \"-mfpu=neon\"... " >&6; }
 
-	if ${snes9x_cv_option_mtune+:} false; then :
+	if ${snes9x_cv_option_mfpu+:} false; then :
   $as_echo_n "(cached) " >&6
 else
 
 		OLD_CXXFLAGS="$CXXFLAGS"
-		CXXFLAGS="$OLD_CXXFLAGS -mtune="$enable_mtune""
+		CXXFLAGS="$OLD_CXXFLAGS "-mfpu=neon""
 
 		if test "$cross_compiling" = yes; then :
   { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
@@ -3827,9 +3807,9 @@ else
 
 _ACEOF
 if ac_fn_cxx_try_run "$LINENO"; then :
-  snes9x_cv_option_mtune="yes"
+  snes9x_cv_option_mfpu="yes"
 else
-  snes9x_cv_option_mtune="no"
+  snes9x_cv_option_mfpu="no"
 fi
 rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
@@ -3841,26 +3821,29 @@ fi
 
 	CXXFLAGS="$OLD_CXXFLAGS"
 
-	if test "x$snes9x_cv_option_mtune" = "xyes"; then
-		S9XFLGS="$S9XFLGS -mtune="$enable_mtune""
+	if test "x$snes9x_cv_option_mfpu" = "xyes"; then
+		S9XFLGS="$S9XFLGS "-mfpu=neon""
 		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 	else
 		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: -mtune failed, trying -mcpu..." >&5
-$as_echo "$as_me: WARNING: -mtune failed, trying -mcpu..." >&2;}
+		as_fn_error $? "\"NEON optimisation flag was not accepted.\"" "$LINENO" 5
 
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether g++ accepts -mcpu=\"$enable_mtune\"" >&5
-$as_echo_n "checking whether g++ accepts -mcpu=\"$enable_mtune\"... " >&6; }
+	fi
 
-	if ${snes9x_cv_option_mcpu+:} false; then :
+
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether g++ accepts \"-Wa,-march=armv7a\"" >&5
+$as_echo_n "checking whether g++ accepts \"-Wa,-march=armv7a\"... " >&6; }
+
+	if ${snes9x_cv_option_march+:} false; then :
   $as_echo_n "(cached) " >&6
 else
 
 		OLD_CXXFLAGS="$CXXFLAGS"
-		CXXFLAGS="$OLD_CXXFLAGS -mcpu="$enable_mtune""
+		CXXFLAGS="$OLD_CXXFLAGS "-Wa,-march=armv7a""
 
 		if test "$cross_compiling" = yes; then :
   { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
@@ -3886,9 +3869,9 @@ else
 
 _ACEOF
 if ac_fn_cxx_try_run "$LINENO"; then :
-  snes9x_cv_option_mcpu="yes"
+  snes9x_cv_option_march="yes"
 else
-  snes9x_cv_option_mcpu="no"
+  snes9x_cv_option_march="no"
 fi
 rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
@@ -3900,20 +3883,78 @@ fi
 
 	CXXFLAGS="$OLD_CXXFLAGS"
 
-	if test "x$snes9x_cv_option_mcpu" = "xyes"; then
-		S9XFLGS="$S9XFLGS -mcpu="$enable_mtune""
+	if test "x$snes9x_cv_option_march" = "xyes"; then
+		S9XFLGS="$S9XFLGS "-Wa,-march=armv7a""
 		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 	else
 		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-		as_fn_error $? "Please specify a working value for --enable-mtune." "$LINENO" 5
+
 	fi
 
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether g++ accepts \"-fprefetch-loop-arrays\"" >&5
+$as_echo_n "checking whether g++ accepts \"-fprefetch-loop-arrays\"... " >&6; }
+
+	if ${snes9x_cv_option_prefetch+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+		OLD_CXXFLAGS="$CXXFLAGS"
+		CXXFLAGS="$OLD_CXXFLAGS "-fprefetch-loop-arrays""
+
+		if test "$cross_compiling" = yes; then :
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "cannot run test program while cross compiling
+See \`config.log' for more details" "$LINENO" 5; }
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+			int	foo;
+
+			int	main (int argc, char **argv)
+			{
+				/* The following code triggs gcc:s generation of aline opcodes,
+				   which some versions of as does not support. */
+
+				if (argc > 0)
+					argc = 0;
+
+				return (argc);
+			}
+
+_ACEOF
+if ac_fn_cxx_try_run "$LINENO"; then :
+  snes9x_cv_option_prefetch="yes"
+else
+  snes9x_cv_option_prefetch="no"
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+
+fi
+
+
+	CXXFLAGS="$OLD_CXXFLAGS"
+
+	if test "x$snes9x_cv_option_prefetch" = "xyes"; then
+		S9XFLGS="$S9XFLGS "-fprefetch-loop-arrays""
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	else
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
 
 	fi
 
 fi
+
+# </domaemon>
 
 
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether g++ accepts -fno-exceptions" >&5
@@ -4270,48 +4311,22 @@ $as_echo "no" >&6; }
 	fi
 
 
-# Check if the OS is Linux.
+# Enable OpenGL backend
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the OS is Linux" >&5
-$as_echo_n "checking whether the OS is Linux... " >&6; }
+S9XOPENGL="#S9XOPENGL=1"
 
-if ${snes9x_cv_linux_os+:} false; then :
-  $as_echo_n "(cached) " >&6
+# Check whether --enable-opengl was given.
+if test "${enable_opengl+set}" = set; then :
+  enableval=$enable_opengl;
 else
-
-	case "$target" in
-		*-*-linux*)
-			snes9x_cv_linux_os="yes"
-			;;
-		*)
-			snes9x_cv_linux_os="no"
-			;;
-	esac
-
+  enable_opengl="yes"
 fi
 
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $snes9x_cv_linux_os" >&5
-$as_echo "$snes9x_cv_linux_os" >&6; }
-
-# Enable gamepad support on Linux.
-
-# Check whether --enable-gamepad was given.
-if test "${enable_gamepad+set}" = set; then :
-  enableval=$enable_gamepad;
-else
-  enable_gamepad="yes"
-fi
-
-
-if test "x$enable_gamepad" = "xyes"; then
-	if test "x$snes9x_cv_linux_os" = "xyes"; then
-		S9XDEFS="$S9XDEFS -DJOYSTICK_SUPPORT"
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Your OS is not Linux. Build without gamepad support." >&5
-$as_echo "$as_me: WARNING: Your OS is not Linux. Build without gamepad support." >&2;}
-		enable_gamepad="no"
-	fi
+if test "x$enable_opengl" = "xyes"; then
+	S9XOPENGL="S9XOPENGL=1"
+	S9XDEFS="$S9XDEFS -DUSE_OPENGL"
+	S9XLIBS="$S9XLIBS -lGL"
 fi
 
 # Enable debugger.
@@ -4950,306 +4965,21 @@ if test "x$ac_cv_func_mkstemp" = xyes; then :
 fi
 
 
-# Check X11
+# <domaemon>: Check SDL, messy.
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for X" >&5
-$as_echo_n "checking for X... " >&6; }
-
-
-# Check whether --with-x was given.
-if test "${with_x+set}" = set; then :
-  withval=$with_x;
-fi
-
-# $have_x is `yes', `no', `disabled', or empty when we do not yet know.
-if test "x$with_x" = xno; then
-  # The user explicitly disabled X.
-  have_x=disabled
-else
-  case $x_includes,$x_libraries in #(
-    *\'*) as_fn_error $? "cannot use X directory names containing '" "$LINENO" 5;; #(
-    *,NONE | NONE,*) if ${ac_cv_have_x+:} false; then :
+if ${snes9x_cv_sdl+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  # One or both of the vars are not set, and there is no cached value.
-ac_x_includes=no ac_x_libraries=no
-rm -f -r conftest.dir
-if mkdir conftest.dir; then
-  cd conftest.dir
-  cat >Imakefile <<'_ACEOF'
-incroot:
-	@echo incroot='${INCROOT}'
-usrlibdir:
-	@echo usrlibdir='${USRLIBDIR}'
-libdir:
-	@echo libdir='${LIBDIR}'
-_ACEOF
-  if (export CC; ${XMKMF-xmkmf}) >/dev/null 2>/dev/null && test -f Makefile; then
-    # GNU make sometimes prints "make[1]: Entering ...", which would confuse us.
-    for ac_var in incroot usrlibdir libdir; do
-      eval "ac_im_$ac_var=\`\${MAKE-make} $ac_var 2>/dev/null | sed -n 's/^$ac_var=//p'\`"
-    done
-    # Open Windows xmkmf reportedly sets LIBDIR instead of USRLIBDIR.
-    for ac_extension in a so sl dylib la dll; do
-      if test ! -f "$ac_im_usrlibdir/libX11.$ac_extension" &&
-	 test -f "$ac_im_libdir/libX11.$ac_extension"; then
-	ac_im_usrlibdir=$ac_im_libdir; break
-      fi
-    done
-    # Screen out bogus values from the imake configuration.  They are
-    # bogus both because they are the default anyway, and because
-    # using them would break gcc on systems where it needs fixed includes.
-    case $ac_im_incroot in
-	/usr/include) ac_x_includes= ;;
-	*) test -f "$ac_im_incroot/X11/Xos.h" && ac_x_includes=$ac_im_incroot;;
-    esac
-    case $ac_im_usrlibdir in
-	/usr/lib | /usr/lib64 | /lib | /lib64) ;;
-	*) test -d "$ac_im_usrlibdir" && ac_x_libraries=$ac_im_usrlibdir ;;
-    esac
-  fi
-  cd ..
-  rm -f -r conftest.dir
-fi
 
-# Standard set of common directories for X headers.
-# Check X11 before X11Rn because it is often a symlink to the current release.
-ac_x_header_dirs='
-/usr/X11/include
-/usr/X11R7/include
-/usr/X11R6/include
-/usr/X11R5/include
-/usr/X11R4/include
-
-/usr/include/X11
-/usr/include/X11R7
-/usr/include/X11R6
-/usr/include/X11R5
-/usr/include/X11R4
-
-/usr/local/X11/include
-/usr/local/X11R7/include
-/usr/local/X11R6/include
-/usr/local/X11R5/include
-/usr/local/X11R4/include
-
-/usr/local/include/X11
-/usr/local/include/X11R7
-/usr/local/include/X11R6
-/usr/local/include/X11R5
-/usr/local/include/X11R4
-
-/usr/X386/include
-/usr/x386/include
-/usr/XFree86/include/X11
-
-/usr/include
-/usr/local/include
-/usr/unsupported/include
-/usr/athena/include
-/usr/local/x11r5/include
-/usr/lpp/Xamples/include
-
-/usr/openwin/include
-/usr/openwin/share/include'
-
-if test "$ac_x_includes" = no; then
-  # Guess where to find include files, by looking for Xlib.h.
-  # First, try using that file with no special directory specified.
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <X11/Xlib.h>
-_ACEOF
-if ac_fn_cxx_try_cpp "$LINENO"; then :
-  # We can compile using X headers with no special include directory.
-ac_x_includes=
-else
-  for ac_dir in $ac_x_header_dirs; do
-  if test -r "$ac_dir/X11/Xlib.h"; then
-    ac_x_includes=$ac_dir
-    break
-  fi
-done
-fi
-rm -f conftest.err conftest.i conftest.$ac_ext
-fi # $ac_x_includes = no
-
-if test "$ac_x_libraries" = no; then
-  # Check for the libraries.
-  # See if we find them without any special options.
-  # Don't add to $LIBS permanently.
-  ac_save_LIBS=$LIBS
-  LIBS="-lX11 $LIBS"
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <X11/Xlib.h>
-int
-main ()
-{
-XrmInitialize ()
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  LIBS=$ac_save_LIBS
-# We can link X programs with no special library path.
-ac_x_libraries=
-else
-  LIBS=$ac_save_LIBS
-for ac_dir in `$as_echo "$ac_x_includes $ac_x_header_dirs" | sed s/include/lib/g`
-do
-  # Don't even attempt the hair of trying to link an X program!
-  for ac_extension in a so sl dylib la dll; do
-    if test -r "$ac_dir/libX11.$ac_extension"; then
-      ac_x_libraries=$ac_dir
-      break 2
-    fi
-  done
-done
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-fi # $ac_x_libraries = no
-
-case $ac_x_includes,$ac_x_libraries in #(
-  no,* | *,no | *\'*)
-    # Didn't find X, or a directory has "'" in its name.
-    ac_cv_have_x="have_x=no";; #(
-  *)
-    # Record where we found X for the cache.
-    ac_cv_have_x="have_x=yes\
-	ac_x_includes='$ac_x_includes'\
-	ac_x_libraries='$ac_x_libraries'"
-esac
-fi
-;; #(
-    *) have_x=yes;;
-  esac
-  eval "$ac_cv_have_x"
-fi # $with_x != no
-
-if test "$have_x" != yes; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $have_x" >&5
-$as_echo "$have_x" >&6; }
-  no_x=yes
-else
-  # If each of the values was on the command line, it overrides each guess.
-  test "x$x_includes" = xNONE && x_includes=$ac_x_includes
-  test "x$x_libraries" = xNONE && x_libraries=$ac_x_libraries
-  # Update the cache value to reflect the command line values.
-  ac_cv_have_x="have_x=yes\
-	ac_x_includes='$x_includes'\
-	ac_x_libraries='$x_libraries'"
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: libraries $x_libraries, headers $x_includes" >&5
-$as_echo "libraries $x_libraries, headers $x_includes" >&6; }
-fi
-
-if test "$no_x" = yes; then
-  # Not all programs may use this symbol, but it does not hurt to define it.
-
-$as_echo "#define X_DISPLAY_MISSING 1" >>confdefs.h
-
-  X_CFLAGS= X_PRE_LIBS= X_LIBS= X_EXTRA_LIBS=
-else
-  if test -n "$x_includes"; then
-    X_CFLAGS="$X_CFLAGS -I$x_includes"
-  fi
-
-  # It would also be nice to do this for all -L options, not just this one.
-  if test -n "$x_libraries"; then
-    X_LIBS="$X_LIBS -L$x_libraries"
-    # For Solaris; some versions of Sun CC require a space after -R and
-    # others require no space.  Words are not sufficient . . . .
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether -R must be followed by a space" >&5
-$as_echo_n "checking whether -R must be followed by a space... " >&6; }
-    ac_xsave_LIBS=$LIBS; LIBS="$LIBS -R$x_libraries"
-    ac_xsave_cxx_werror_flag=$ac_cxx_werror_flag
-    ac_cxx_werror_flag=yes
-    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-int
-main ()
-{
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-       X_LIBS="$X_LIBS -R$x_libraries"
-else
-  LIBS="$ac_xsave_LIBS -R $x_libraries"
-       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-int
-main ()
-{
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-	  X_LIBS="$X_LIBS -R $x_libraries"
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: neither works" >&5
-$as_echo "neither works" >&6; }
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-    ac_cxx_werror_flag=$ac_xsave_cxx_werror_flag
-    LIBS=$ac_xsave_LIBS
-  fi
-
-  # Check for system-dependent libraries X programs must link with.
-  # Do this before checking for the system-independent R6 libraries
-  # (-lICE), since we may need -lsocket or whatever for X linking.
-
-  if test "$ISC" = yes; then
-    X_EXTRA_LIBS="$X_EXTRA_LIBS -lnsl_s -linet"
-  else
-    # Martyn Johnson says this is needed for Ultrix, if the X
-    # libraries were built with DECnet support.  And Karl Berry says
-    # the Alpha needs dnet_stub (dnet does not exist).
-    ac_xsave_LIBS="$LIBS"; LIBS="$LIBS $X_LIBS -lX11"
-    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char XOpenDisplay ();
-int
-main ()
-{
-return XOpenDisplay ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for dnet_ntoa in -ldnet" >&5
-$as_echo_n "checking for dnet_ntoa in -ldnet... " >&6; }
-if ${ac_cv_lib_dnet_dnet_ntoa+:} false; then :
+	ac_fn_cxx_check_header_mongrel "$LINENO" "SDL/SDL.h" "ac_cv_header_SDL_SDL_h" "$ac_includes_default"
+if test "x$ac_cv_header_SDL_SDL_h" = xyes; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SDL_Init in -lSDL" >&5
+$as_echo_n "checking for SDL_Init in -lSDL... " >&6; }
+if ${ac_cv_lib_SDL_SDL_Init+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-ldnet  $LIBS"
+LIBS="-lSDL  $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -5259,388 +4989,52 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 #ifdef __cplusplus
 extern "C"
 #endif
-char dnet_ntoa ();
+char SDL_Init ();
 int
 main ()
 {
-return dnet_ntoa ();
+return SDL_Init ();
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_cxx_try_link "$LINENO"; then :
-  ac_cv_lib_dnet_dnet_ntoa=yes
+  ac_cv_lib_SDL_SDL_Init=yes
 else
-  ac_cv_lib_dnet_dnet_ntoa=no
+  ac_cv_lib_SDL_SDL_Init=no
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_dnet_dnet_ntoa" >&5
-$as_echo "$ac_cv_lib_dnet_dnet_ntoa" >&6; }
-if test "x$ac_cv_lib_dnet_dnet_ntoa" = xyes; then :
-  X_EXTRA_LIBS="$X_EXTRA_LIBS -ldnet"
-fi
-
-    if test $ac_cv_lib_dnet_dnet_ntoa = no; then
-      { $as_echo "$as_me:${as_lineno-$LINENO}: checking for dnet_ntoa in -ldnet_stub" >&5
-$as_echo_n "checking for dnet_ntoa in -ldnet_stub... " >&6; }
-if ${ac_cv_lib_dnet_stub_dnet_ntoa+:} false; then :
-  $as_echo_n "(cached) " >&6
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_SDL_SDL_Init" >&5
+$as_echo "$ac_cv_lib_SDL_SDL_Init" >&6; }
+if test "x$ac_cv_lib_SDL_SDL_Init" = xyes; then :
+  snes9x_cv_sdl="yes"
 else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-ldnet_stub  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
+  snes9x_cv_sdl="no"
+fi
 
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char dnet_ntoa ();
-int
-main ()
-{
-return dnet_ntoa ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  ac_cv_lib_dnet_stub_dnet_ntoa=yes
 else
-  ac_cv_lib_dnet_stub_dnet_ntoa=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_dnet_stub_dnet_ntoa" >&5
-$as_echo "$ac_cv_lib_dnet_stub_dnet_ntoa" >&6; }
-if test "x$ac_cv_lib_dnet_stub_dnet_ntoa" = xyes; then :
-  X_EXTRA_LIBS="$X_EXTRA_LIBS -ldnet_stub"
+  snes9x_cv_sdl="no"
 fi
 
-    fi
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-    LIBS="$ac_xsave_LIBS"
 
-    # msh@cis.ufl.edu says -lnsl (and -lsocket) are needed for his 386/AT,
-    # to get the SysV transport functions.
-    # Chad R. Larson says the Pyramis MIS-ES running DC/OSx (SVR4)
-    # needs -lnsl.
-    # The nsl library prevents programs from opening the X display
-    # on Irix 5.2, according to T.E. Dickey.
-    # The functions gethostbyname, getservbyname, and inet_addr are
-    # in -lbsd on LynxOS 3.0.1/i386, according to Lars Hecking.
-    ac_fn_cxx_check_func "$LINENO" "gethostbyname" "ac_cv_func_gethostbyname"
-if test "x$ac_cv_func_gethostbyname" = xyes; then :
 
 fi
 
-    if test $ac_cv_func_gethostbyname = no; then
-      { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gethostbyname in -lnsl" >&5
-$as_echo_n "checking for gethostbyname in -lnsl... " >&6; }
-if ${ac_cv_lib_nsl_gethostbyname+:} false; then :
-  $as_echo_n "(cached) " >&6
+
+if test "x$snes9x_cv_sdl" = "xyes"; then
+  	S9XFLGS="$S9XFLGS `sdl-config --cflags`"
+	S9XLIBS="$S9XLIBS `sdl-config --libs`"
 else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lnsl  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char gethostbyname ();
-int
-main ()
-{
-return gethostbyname ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  ac_cv_lib_nsl_gethostbyname=yes
-else
-  ac_cv_lib_nsl_gethostbyname=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_nsl_gethostbyname" >&5
-$as_echo "$ac_cv_lib_nsl_gethostbyname" >&6; }
-if test "x$ac_cv_lib_nsl_gethostbyname" = xyes; then :
-  X_EXTRA_LIBS="$X_EXTRA_LIBS -lnsl"
+	as_fn_error $? "SDL is required." "$LINENO" 5
 fi
 
-      if test $ac_cv_lib_nsl_gethostbyname = no; then
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for gethostbyname in -lbsd" >&5
-$as_echo_n "checking for gethostbyname in -lbsd... " >&6; }
-if ${ac_cv_lib_bsd_gethostbyname+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lbsd  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
+###
 
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char gethostbyname ();
-int
-main ()
-{
-return gethostbyname ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  ac_cv_lib_bsd_gethostbyname=yes
-else
-  ac_cv_lib_bsd_gethostbyname=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_bsd_gethostbyname" >&5
-$as_echo "$ac_cv_lib_bsd_gethostbyname" >&6; }
-if test "x$ac_cv_lib_bsd_gethostbyname" = xyes; then :
-  X_EXTRA_LIBS="$X_EXTRA_LIBS -lbsd"
-fi
 
-      fi
-    fi
-
-    # lieder@skyler.mavd.honeywell.com says without -lsocket,
-    # socket/setsockopt and other routines are undefined under SCO ODT
-    # 2.0.  But -lsocket is broken on IRIX 5.2 (and is not necessary
-    # on later versions), says Simon Leinen: it contains gethostby*
-    # variants that don't use the name server (or something).  -lsocket
-    # must be given before -lnsl if both are needed.  We assume that
-    # if connect needs -lnsl, so does gethostbyname.
-    ac_fn_cxx_check_func "$LINENO" "connect" "ac_cv_func_connect"
-if test "x$ac_cv_func_connect" = xyes; then :
-
-fi
-
-    if test $ac_cv_func_connect = no; then
-      { $as_echo "$as_me:${as_lineno-$LINENO}: checking for connect in -lsocket" >&5
-$as_echo_n "checking for connect in -lsocket... " >&6; }
-if ${ac_cv_lib_socket_connect+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lsocket $X_EXTRA_LIBS $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char connect ();
-int
-main ()
-{
-return connect ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  ac_cv_lib_socket_connect=yes
-else
-  ac_cv_lib_socket_connect=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_socket_connect" >&5
-$as_echo "$ac_cv_lib_socket_connect" >&6; }
-if test "x$ac_cv_lib_socket_connect" = xyes; then :
-  X_EXTRA_LIBS="-lsocket $X_EXTRA_LIBS"
-fi
-
-    fi
-
-    # Guillermo Gomez says -lposix is necessary on A/UX.
-    ac_fn_cxx_check_func "$LINENO" "remove" "ac_cv_func_remove"
-if test "x$ac_cv_func_remove" = xyes; then :
-
-fi
-
-    if test $ac_cv_func_remove = no; then
-      { $as_echo "$as_me:${as_lineno-$LINENO}: checking for remove in -lposix" >&5
-$as_echo_n "checking for remove in -lposix... " >&6; }
-if ${ac_cv_lib_posix_remove+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lposix  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char remove ();
-int
-main ()
-{
-return remove ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  ac_cv_lib_posix_remove=yes
-else
-  ac_cv_lib_posix_remove=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_posix_remove" >&5
-$as_echo "$ac_cv_lib_posix_remove" >&6; }
-if test "x$ac_cv_lib_posix_remove" = xyes; then :
-  X_EXTRA_LIBS="$X_EXTRA_LIBS -lposix"
-fi
-
-    fi
-
-    # BSDI BSD/OS 2.1 needs -lipc for XOpenDisplay.
-    ac_fn_cxx_check_func "$LINENO" "shmat" "ac_cv_func_shmat"
-if test "x$ac_cv_func_shmat" = xyes; then :
-
-fi
-
-    if test $ac_cv_func_shmat = no; then
-      { $as_echo "$as_me:${as_lineno-$LINENO}: checking for shmat in -lipc" >&5
-$as_echo_n "checking for shmat in -lipc... " >&6; }
-if ${ac_cv_lib_ipc_shmat+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lipc  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char shmat ();
-int
-main ()
-{
-return shmat ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  ac_cv_lib_ipc_shmat=yes
-else
-  ac_cv_lib_ipc_shmat=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_ipc_shmat" >&5
-$as_echo "$ac_cv_lib_ipc_shmat" >&6; }
-if test "x$ac_cv_lib_ipc_shmat" = xyes; then :
-  X_EXTRA_LIBS="$X_EXTRA_LIBS -lipc"
-fi
-
-    fi
-  fi
-
-  # Check for libraries that X11R6 Xt/Xaw programs need.
-  ac_save_LDFLAGS=$LDFLAGS
-  test -n "$x_libraries" && LDFLAGS="$LDFLAGS -L$x_libraries"
-  # SM needs ICE to (dynamically) link under SunOS 4.x (so we have to
-  # check for ICE first), but we must link in the order -lSM -lICE or
-  # we get undefined symbols.  So assume we have SM if we have ICE.
-  # These have to be linked with before -lX11, unlike the other
-  # libraries we check for below, so use a different variable.
-  # John Interrante, Karl Berry
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for IceConnectionNumber in -lICE" >&5
-$as_echo_n "checking for IceConnectionNumber in -lICE... " >&6; }
-if ${ac_cv_lib_ICE_IceConnectionNumber+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lICE $X_EXTRA_LIBS $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char IceConnectionNumber ();
-int
-main ()
-{
-return IceConnectionNumber ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  ac_cv_lib_ICE_IceConnectionNumber=yes
-else
-  ac_cv_lib_ICE_IceConnectionNumber=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_ICE_IceConnectionNumber" >&5
-$as_echo "$ac_cv_lib_ICE_IceConnectionNumber" >&6; }
-if test "x$ac_cv_lib_ICE_IceConnectionNumber" = xyes; then :
-  X_PRE_LIBS="$X_PRE_LIBS -lSM -lICE"
-fi
-
-  LDFLAGS=$ac_save_LDFLAGS
-
-fi
-
-if test "x$no_x" = "xyes"; then
-	as_fn_error $? "X11 is required." "$LINENO" 5
-else
-	S9XFLGS="$S9XFLGS $X_CFLAGS"
-	S9XLIBS="$S9XLIBS $X_PRE_LIBS -lX11 -lXext $X_LIBS $X_EXTRA_LIBS"
-fi
+# </domaemon>
 
 # Check for headers
 
@@ -5998,68 +5392,6 @@ if test "x$snes9x_sar_int8" = "xyes" -a "x$snes9x_sar_int16" = "xyes" -a "x$snes
 	S9XDEFS="$S9XDEFS -DRIGHTSHIFT_IS_SAR"
 fi
 
-# Check if we can build with Xvideo acceleration support
-# Check whether --enable-xvideo was given.
-if test "${enable_xvideo+set}" = set; then :
-  enableval=$enable_xvideo;
-else
-  enable_xvideo="yes"
-fi
-
-
-if test "x$enable_xvideo" = "xyes"; then
-	enable_xvideo="no"
-	ac_fn_cxx_check_header_mongrel "$LINENO" "X11/extensions/Xv.h" "ac_cv_header_X11_extensions_Xv_h" "$ac_includes_default"
-if test "x$ac_cv_header_X11_extensions_Xv_h" = xyes; then :
-
-		enable_xvideo="yes"
-		S9XLIBS="$S9XLIBS -lXv"
-		S9XDEFS="$S9XDEFS -DUSE_XVIDEO"
-
-fi
-
-
-fi
-
-# Check if we have sound code for this platform.
-
-# Check whether --enable-sound was given.
-if test "${enable_sound+set}" = set; then :
-  enableval=$enable_sound;
-else
-  enable_sound="yes"
-fi
-
-
-if test "x$enable_sound" = "xyes"; then
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether sound is supported on this platform" >&5
-$as_echo_n "checking whether sound is supported on this platform... " >&6; }
-	if test "x$snes9x_cv_linux_os" = "xyes"; then
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-	else
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Your OS is not Linux. Build without sound support." >&5
-$as_echo "$as_me: WARNING: Your OS is not Linux. Build without sound support." >&2;}
-		enable_sound="no"
-	fi
-fi
-
-if test "x$enable_sound" = "xyes"; then
-	ac_fn_cxx_check_header_mongrel "$LINENO" "pthread.h" "ac_cv_header_pthread_h" "$ac_includes_default"
-if test "x$ac_cv_header_pthread_h" = xyes; then :
-
-		S9XDEFS="$S9XDEFS -DUSE_THREADS"
-		S9XLIBS="$S9XLIBS -lpthread"
-
-fi
-
-
-else
-	S9XDEFS="$S9XDEFS -DNOSOUND"
-fi
-
 # Output.
 
 S9XFLGS="$CXXFLAGS $CPPFLAGS $LDFLAGS $S9XFLGS"
@@ -6071,7 +5403,6 @@ S9XLIBS="`echo \"$S9XLIBS\" | sed -e 's/  */ /g'`"
 S9XFLGS="`echo \"$S9XFLGS\" | sed -e 's/^  *//'`"
 S9XDEFS="`echo \"$S9XDEFS\" | sed -e 's/^  *//'`"
 S9XLIBS="`echo \"$S9XLIBS\" | sed -e 's/^  *//'`"
-
 
 
 
@@ -6093,11 +5424,9 @@ defines.............. $S9XDEFS
 libs................. $S9XLIBS
 
 features:
-Xvideo support....... $enable_xvideo
-sound support........ $enable_sound
+opengl support....... $enable_opengl
 screenshot support... $enable_screenshot
 netplay support...... $enable_netplay
-gamepad support...... $enable_gamepad
 GZIP support......... $enable_gzip
 ZIP support.......... $enable_zip
 JMA support.......... $enable_jma

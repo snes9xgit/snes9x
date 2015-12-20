@@ -1,0 +1,113 @@
+Control-input for snes9x-sdl 
+makoto.sugano@gmail.com
+
+This document is based on snes9x/doc/control*
+It is recommended to read controls.txt and control-inputs.txt
+to gain the basic understandings over how the control inputs are handled in 
+general in sne9x.
+
+Compared to the snes9x/unix/x11.cpp, the supported inputs are 
+reduced in snes9x-sdl by default. This is to simplify the design and the make
+the porting to other platforms even easier. Additionally, keyboard identifier 
+has been changed to ease the SDL coding.
+
+The following features are either removed or not tested.
+
+- Joystick MOD keys.
+- Mouse pointer input.
+- Port specific commands
+
+The following features are added/modified on the unix/x11.cpp 
+
++ <keyname> is now SDL_keysym (see the /usr/include/SDL/SDL_keysym.h).
+
+================================================================================
+Unix/SDL
+================================================================================
+
+Joystick Input:
+
+  Jxx:Hat{Up,Down,Left,Right}          Hats direction on joystick xx.
+  Jxx:Axis#                            Axis # on joystick xx. Axis0 may be
+                                       Up/Down, and Axis1 Left/Right.
+  Jxx:B#                               Button # on joystick xx.
+
+Keyboard Input:
+
+  K00:<keyname>              Key names are as recognized by SDL_keysym.
+  K00:<mods>+<keyname>       Keyboard modifiers are S=Shift, C=Control,
+                             A=Alt, M=Meta. Combine them in order,
+                             i.e. all 4 would be "SCAM".
+
+Pointer Input:
+
+  M00:Pointer                Map the mouse pointer. If someone has a mouse
+  M00:B#                     Mouse buttons.
+
+================================================================================
+S9xMapButton/S9xMapAxis/S9xMapPointer ID structure
+================================================================================
+
+MapButton ID is a 32bit integer value to inform the button ID to the snes9x engine
+from the frontend.
+
+=== S9xMapButton (id, command, poll); Keyboard and Joystick. ===
+
+id is a 32 bit integer that follows the below protocol.
+
+|AB|CD|EF|GH|
+
+switch A (4 bit)
+ case 0: keyboard device
+ case 8: joystick device
+
+switch B (4 bit)
+ case 0: the 1st keyboard/joystick
+ case 1: the 2nd joystick
+...
+ case 7: the 8th joystick
+
+#if (keyboard)
+
+ switch ABCD (16 bit)
+  case KMOD_x: MOD key masks.
+
+ switch FGH (12 bit)
+  case SDLK_a: SDL_keysym (e.g. SDLK_a)
+
+#elif (joystick)
+
+ switch FGH (12 bit)
+  event.jbutton.button (0, 1, 2...)
+
+#endif
+
+=== S9xMapAxis (id, command, poll); Joystick only. ===
+
+id is a 32 bit integer that follows the below protocol.
+
+|AB|CD|EF|GH|
+
+switch A (4 bit)
+ case 8: J device
+
+switch B (4 bit)
+ case 0: the 1st joystick
+ case 1: the 2nd joystick
+...
+ case 7: the 8th joystick
+
+switch E (upper 1 bit)
+ case 8: Axis mode
+
+switch FGH (12 bit)
+ case d: event.jaxis.axis (left/right or up/down)
+
+=== S9xMapPointer (id, command, poll); Mouse only. ===
+
+switch A (4 bit)
+ case 4: M device
+
+switch B (4 bit)
+ case 0: the 1st mouse
+

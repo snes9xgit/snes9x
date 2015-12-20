@@ -2,7 +2,7 @@
   Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
 
   (c) Copyright 1996 - 2002  Gary Henderson (gary.henderson@ntlworld.com),
-                             Jerremy Koot (jkoot@snes9x.com)
+				Jerremy Koot (jkoot@snes9x.com)
 
   (c) Copyright 2002 - 2004  Matthew Kendora
 
@@ -13,103 +13,103 @@
   (c) Copyright 2001 - 2006  John Weidman (jweidman@slip.net)
 
   (c) Copyright 2002 - 2006  funkyass (funkyass@spam.shaw.ca),
-                             Kris Bleakley (codeviolation@hotmail.com)
+				Kris Bleakley (codeviolation@hotmail.com)
 
   (c) Copyright 2002 - 2010  Brad Jorsch (anomie@users.sourceforge.net),
-                             Nach (n-a-c-h@users.sourceforge.net),
+				Nach (n-a-c-h@users.sourceforge.net),
 
   (c) Copyright 2002 - 2011  zones (kasumitokoduck@yahoo.com)
 
   (c) Copyright 2006 - 2007  nitsuja
 
   (c) Copyright 2009 - 2011  BearOso,
-                             OV2
+				OV2
 
 
   BS-X C emulator code
   (c) Copyright 2005 - 2006  Dreamer Nom,
-                             zones
+				zones
 
   C4 x86 assembler and some C emulation code
   (c) Copyright 2000 - 2003  _Demo_ (_demo_@zsnes.com),
-                             Nach,
-                             zsKnight (zsknight@zsnes.com)
+				Nach,
+				zsKnight (zsknight@zsnes.com)
 
   C4 C++ code
   (c) Copyright 2003 - 2006  Brad Jorsch,
-                             Nach
+				Nach
 
   DSP-1 emulator code
   (c) Copyright 1998 - 2006  _Demo_,
-                             Andreas Naive (andreasnaive@gmail.com),
-                             Gary Henderson,
-                             Ivar (ivar@snes9x.com),
-                             John Weidman,
-                             Kris Bleakley,
-                             Matthew Kendora,
-                             Nach,
-                             neviksti (neviksti@hotmail.com)
+				Andreas Naive (andreasnaive@gmail.com),
+				Gary Henderson,
+				Ivar (ivar@snes9x.com),
+				John Weidman,
+				Kris Bleakley,
+				Matthew Kendora,
+				Nach,
+				neviksti (neviksti@hotmail.com)
 
   DSP-2 emulator code
-  (c) Copyright 2003         John Weidman,
-                             Kris Bleakley,
-                             Lord Nightmare (lord_nightmare@users.sourceforge.net),
-                             Matthew Kendora,
-                             neviksti
+  (c) Copyright 2003	 John Weidman,
+				Kris Bleakley,
+				Lord Nightmare (lord_nightmare@users.sourceforge.net),
+				Matthew Kendora,
+				neviksti
 
   DSP-3 emulator code
   (c) Copyright 2003 - 2006  John Weidman,
-                             Kris Bleakley,
-                             Lancer,
-                             z80 gaiden
+				Kris Bleakley,
+				Lancer,
+				z80 gaiden
 
   DSP-4 emulator code
   (c) Copyright 2004 - 2006  Dreamer Nom,
-                             John Weidman,
-                             Kris Bleakley,
-                             Nach,
-                             z80 gaiden
+				John Weidman,
+				Kris Bleakley,
+				Nach,
+				z80 gaiden
 
   OBC1 emulator code
   (c) Copyright 2001 - 2004  zsKnight,
-                             pagefault (pagefault@zsnes.com),
-                             Kris Bleakley
-                             Ported from x86 assembler to C by sanmaiwashi
+				pagefault (pagefault@zsnes.com),
+				Kris Bleakley
+				Ported from x86 assembler to C by sanmaiwashi
 
   SPC7110 and RTC C++ emulator code used in 1.39-1.51
-  (c) Copyright 2002         Matthew Kendora with research by
-                             zsKnight,
-                             John Weidman,
-                             Dark Force
+  (c) Copyright 2002	 Matthew Kendora with research by
+				zsKnight,
+				John Weidman,
+				Dark Force
 
   SPC7110 and RTC C++ emulator code used in 1.52+
-  (c) Copyright 2009         byuu,
-                             neviksti
+  (c) Copyright 2009	 byuu,
+				neviksti
 
   S-DD1 C emulator code
-  (c) Copyright 2003         Brad Jorsch with research by
-                             Andreas Naive,
-                             John Weidman
+  (c) Copyright 2003	 Brad Jorsch with research by
+				Andreas Naive,
+				John Weidman
 
   S-RTC C emulator code
   (c) Copyright 2001 - 2006  byuu,
-                             John Weidman
+				John Weidman
 
   ST010 C++ emulator code
-  (c) Copyright 2003         Feather,
-                             John Weidman,
-                             Kris Bleakley,
-                             Matthew Kendora
+  (c) Copyright 2003	 Feather,
+				John Weidman,
+				Kris Bleakley,
+				Matthew Kendora
 
   Super FX x86 assembler emulator code
   (c) Copyright 1998 - 2003  _Demo_,
-                             pagefault,
-                             zsKnight
+				pagefault,
+				zsKnight
 
   Super FX C emulator code
   (c) Copyright 1997 - 1999  Ivar,
-                             Gary Henderson,
-                             John Weidman
+				Gary Henderson,
+				John Weidman
 
   Sound emulator code used in 1.5-1.51
   (c) Copyright 1998 - 2003  Brad Martin
@@ -125,7 +125,7 @@
   (c) Copyright 1999 - 2001  Derek Liauw Kie Fa
 
   HQ2x, HQ3x, HQ4x filters
-  (c) Copyright 2003         Maxim Stepin (maxim@hiend3d.com)
+  (c) Copyright 2003	 Maxim Stepin (maxim@hiend3d.com)
 
   NTSC filter
   (c) Copyright 2006 - 2007  Shay Green
@@ -135,10 +135,10 @@
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
-                             funkyass,
-                             Matthew Kendora,
-                             Nach,
-                             nitsuja
+				funkyass,
+				Matthew Kendora,
+				Nach,
+				nitsuja
   (c) Copyright 2009 - 2011  OV2
 
   Mac OS GUI code
@@ -190,6 +190,7 @@
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <X11/Xatom.h>
 #include <X11/keysym.h>
 #include <X11/cursorfont.h>
 
@@ -197,6 +198,10 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <X11/extensions/XShm.h>
+#endif
+
+#ifdef USE_XVIDEO
+#include <X11/extensions/Xv.h>
 #endif
 
 #include "snes9x.h"
@@ -239,9 +244,15 @@ struct GUIData
 	int				mouse_y;
 	bool8			mod1_pressed;
 	bool8			no_repeat;
+	bool8			fullscreen;
+	int			x_offset;
+	int			y_offset;
 #ifdef MITSHM
 	XShmSegmentInfo	sm_info;
 	bool8			use_shared_memory;
+#endif
+#ifdef USE_XVIDEO
+	bool8			use_xvideo;
 #endif
 };
 
@@ -293,6 +304,11 @@ void S9xExtraDisplayUsage (void)
 
 	S9xMessage(S9X_INFO, S9X_USAGE, "-setrepeat                      Allow altering keyboard auto-repeat");
 	S9xMessage(S9X_INFO, S9X_USAGE, "");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-fullscreen                     Switch to full-screen on start");
+#ifdef USE_XVIDEO
+	S9xMessage(S9X_INFO, S9X_USAGE, "-xvideo                         Xv hardware-accelerated scaling");
+#endif
+	S9xMessage(S9X_INFO, S9X_USAGE, "");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-v1                             Video mode: Blocky (default)");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-v2                             Video mode: TV");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-v3                             Video mode: Smooth");
@@ -309,6 +325,14 @@ void S9xParseDisplayArg (char **argv, int &i, int argc)
 	if (!strcasecmp(argv[i], "-setrepeat"))
 		GUI.no_repeat = FALSE;
 	else
+	if (!strcasecmp(argv[i], "-fullscreen"))
+		GUI.fullscreen = TRUE;
+	else
+#ifdef USE_XVIDEO
+	if (!strcasecmp(argv[i], "-xvideo"))
+		GUI.use_xvideo = TRUE;
+	else
+#endif	
 	if (!strncasecmp(argv[i], "-v", 2))
 	{
 		switch (argv[i][2])
@@ -334,139 +358,143 @@ const char * S9xParseDisplayConfig (ConfigFile &conf, int pass)
 
 	if (!conf.GetBool("Unix::ClearAllControls", false))
 	{
-		keymaps.push_back(strpair_t("K00:k",            "Joypad1 Right"));
-		keymaps.push_back(strpair_t("K00:Right",        "Joypad1 Right"));
-		keymaps.push_back(strpair_t("K00:h",            "Joypad1 Left"));
-		keymaps.push_back(strpair_t("K00:Left",         "Joypad1 Left"));
-		keymaps.push_back(strpair_t("K00:j",            "Joypad1 Down"));
-		keymaps.push_back(strpair_t("K00:n",            "Joypad1 Down"));
-		keymaps.push_back(strpair_t("K00:Down",         "Joypad1 Down"));
-		keymaps.push_back(strpair_t("K00:u",            "Joypad1 Up"));
-		keymaps.push_back(strpair_t("K00:Up",           "Joypad1 Up"));
-		keymaps.push_back(strpair_t("K00:Return",       "Joypad1 Start"));
-		keymaps.push_back(strpair_t("K00:space",        "Joypad1 Select"));
-		keymaps.push_back(strpair_t("K00:S+d",          "Joypad1 ToggleTurbo A"));
-		keymaps.push_back(strpair_t("K00:C+d",          "Joypad1 ToggleSticky A"));
-		keymaps.push_back(strpair_t("K00:d",            "Joypad1 A"));
-		keymaps.push_back(strpair_t("K00:S+c",          "Joypad1 ToggleTurbo B"));
-		keymaps.push_back(strpair_t("K00:C+c",          "Joypad1 ToggleSticky B"));
-		keymaps.push_back(strpair_t("K00:c",            "Joypad1 B"));
-		keymaps.push_back(strpair_t("K00:S+s",          "Joypad1 ToggleTurbo X"));
-		keymaps.push_back(strpair_t("K00:C+s",          "Joypad1 ToggleSticky X"));
-		keymaps.push_back(strpair_t("K00:s",            "Joypad1 X"));
-		keymaps.push_back(strpair_t("K00:S+x",          "Joypad1 ToggleTurbo Y"));
-		keymaps.push_back(strpair_t("K00:C+x",          "Joypad1 ToggleSticky Y"));
-		keymaps.push_back(strpair_t("K00:x",            "Joypad1 Y"));
-		keymaps.push_back(strpair_t("K00:S+a",          "Joypad1 ToggleTurbo L"));
-		keymaps.push_back(strpair_t("K00:S+v",          "Joypad1 ToggleTurbo L"));
-		keymaps.push_back(strpair_t("K00:C+a",          "Joypad1 ToggleSticky L"));
-		keymaps.push_back(strpair_t("K00:C+v",          "Joypad1 ToggleSticky L"));
-		keymaps.push_back(strpair_t("K00:a",            "Joypad1 L"));
-		keymaps.push_back(strpair_t("K00:v",            "Joypad1 L"));
-		keymaps.push_back(strpair_t("K00:S+z",          "Joypad1 ToggleTurbo R"));
-		keymaps.push_back(strpair_t("K00:C+z",          "Joypad1 ToggleSticky R"));
-		keymaps.push_back(strpair_t("K00:z",            "Joypad1 R"));
+		keymaps.push_back(strpair_t("K00:k",		"Joypad1 Right"));
+		keymaps.push_back(strpair_t("K00:Right",	"Joypad1 Right"));
+		keymaps.push_back(strpair_t("K00:h",		"Joypad1 Left"));
+		keymaps.push_back(strpair_t("K00:Left",	 "Joypad1 Left"));
+		keymaps.push_back(strpair_t("K00:j",		"Joypad1 Down"));
+		keymaps.push_back(strpair_t("K00:n",		"Joypad1 Down"));
+		keymaps.push_back(strpair_t("K00:Down",	 "Joypad1 Down"));
+		keymaps.push_back(strpair_t("K00:u",		"Joypad1 Up"));
+		keymaps.push_back(strpair_t("K00:Up",		"Joypad1 Up"));
+		keymaps.push_back(strpair_t("K00:Return",	"Joypad1 Start"));
+		keymaps.push_back(strpair_t("K00:space",	"Joypad1 Select"));
+		keymaps.push_back(strpair_t("K00:S+d",	  "Joypad1 ToggleTurbo A"));
+		keymaps.push_back(strpair_t("K00:C+d",	  "Joypad1 ToggleSticky A"));
+		keymaps.push_back(strpair_t("K00:d",		"Joypad1 A"));
+		keymaps.push_back(strpair_t("K00:S+c",	  "Joypad1 ToggleTurbo B"));
+		keymaps.push_back(strpair_t("K00:C+c",	  "Joypad1 ToggleSticky B"));
+		keymaps.push_back(strpair_t("K00:c",		"Joypad1 B"));
+		keymaps.push_back(strpair_t("K00:S+s",	  "Joypad1 ToggleTurbo X"));
+		keymaps.push_back(strpair_t("K00:C+s",	  "Joypad1 ToggleSticky X"));
+		keymaps.push_back(strpair_t("K00:s",		"Joypad1 X"));
+		keymaps.push_back(strpair_t("K00:S+x",	  "Joypad1 ToggleTurbo Y"));
+		keymaps.push_back(strpair_t("K00:C+x",	  "Joypad1 ToggleSticky Y"));
+		keymaps.push_back(strpair_t("K00:x",		"Joypad1 Y"));
+		keymaps.push_back(strpair_t("K00:S+a",	  "Joypad1 ToggleTurbo L"));
+		keymaps.push_back(strpair_t("K00:S+v",	  "Joypad1 ToggleTurbo L"));
+		keymaps.push_back(strpair_t("K00:C+a",	  "Joypad1 ToggleSticky L"));
+		keymaps.push_back(strpair_t("K00:C+v",	  "Joypad1 ToggleSticky L"));
+		keymaps.push_back(strpair_t("K00:a",		"Joypad1 L"));
+		keymaps.push_back(strpair_t("K00:v",		"Joypad1 L"));
+		keymaps.push_back(strpair_t("K00:S+z",	  "Joypad1 ToggleTurbo R"));
+		keymaps.push_back(strpair_t("K00:C+z",	  "Joypad1 ToggleSticky R"));
+		keymaps.push_back(strpair_t("K00:z",		"Joypad1 R"));
 
-		keymaps.push_back(strpair_t("K00:KP_Left",      "Joypad2 Left"));
-		keymaps.push_back(strpair_t("K00:KP_Right",     "Joypad2 Right"));
-		keymaps.push_back(strpair_t("K00:KP_Up",        "Joypad2 Up"));
-		keymaps.push_back(strpair_t("K00:KP_Down",      "Joypad2 Down"));
-		keymaps.push_back(strpair_t("K00:KP_Enter",     "Joypad2 Start"));
-		keymaps.push_back(strpair_t("K00:KP_Add",       "Joypad2 Select"));
-		keymaps.push_back(strpair_t("K00:Prior",        "Joypad2 A"));
-		keymaps.push_back(strpair_t("K00:Next",         "Joypad2 B"));
-		keymaps.push_back(strpair_t("K00:Home",         "Joypad2 X"));
-		keymaps.push_back(strpair_t("K00:End",          "Joypad2 Y"));
-		keymaps.push_back(strpair_t("K00:Insert",       "Joypad2 L"));
-		keymaps.push_back(strpair_t("K00:Delete",       "Joypad2 R"));
+		keymaps.push_back(strpair_t("K00:KP_Left",	"Joypad2 Left"));
+		keymaps.push_back(strpair_t("K00:KP_Right",	"Joypad2 Right"));
+		keymaps.push_back(strpair_t("K00:KP_Up",	"Joypad2 Up"));
+		keymaps.push_back(strpair_t("K00:KP_Down",	"Joypad2 Down"));
+		keymaps.push_back(strpair_t("K00:KP_Enter",	"Joypad2 Start"));
+		keymaps.push_back(strpair_t("K00:KP_Add",	"Joypad2 Select"));
+		keymaps.push_back(strpair_t("K00:Prior",	"Joypad2 A"));
+		keymaps.push_back(strpair_t("K00:Next",	 "Joypad2 B"));
+		keymaps.push_back(strpair_t("K00:Home",	 "Joypad2 X"));
+		keymaps.push_back(strpair_t("K00:End",	  "Joypad2 Y"));
+		keymaps.push_back(strpair_t("K00:Insert",	"Joypad2 L"));
+		keymaps.push_back(strpair_t("K00:Delete",	"Joypad2 R"));
 
-		keymaps.push_back(strpair_t("K00:A+F4",         "SoundChannel0"));
-		keymaps.push_back(strpair_t("K00:C+F4",         "SoundChannel0"));
-		keymaps.push_back(strpair_t("K00:A+F5",         "SoundChannel1"));
-		keymaps.push_back(strpair_t("K00:C+F5",         "SoundChannel1"));
-		keymaps.push_back(strpair_t("K00:A+F6",         "SoundChannel2"));
-		keymaps.push_back(strpair_t("K00:C+F6",         "SoundChannel2"));
-		keymaps.push_back(strpair_t("K00:A+F7",         "SoundChannel3"));
-		keymaps.push_back(strpair_t("K00:C+F7",         "SoundChannel3"));
-		keymaps.push_back(strpair_t("K00:A+F8",         "SoundChannel4"));
-		keymaps.push_back(strpair_t("K00:C+F8",         "SoundChannel4"));
-		keymaps.push_back(strpair_t("K00:A+F9",         "SoundChannel5"));
-		keymaps.push_back(strpair_t("K00:C+F9",         "SoundChannel5"));
-		keymaps.push_back(strpair_t("K00:A+F10",        "SoundChannel6"));
-		keymaps.push_back(strpair_t("K00:C+F10",        "SoundChannel6"));
-		keymaps.push_back(strpair_t("K00:A+F11",        "SoundChannel7"));
-		keymaps.push_back(strpair_t("K00:C+F11",        "SoundChannel7"));
-		keymaps.push_back(strpair_t("K00:A+F12",        "SoundChannelsOn"));
-		keymaps.push_back(strpair_t("K00:C+F12",        "SoundChannelsOn"));
+		keymaps.push_back(strpair_t("K00:A+F4",	 "SoundChannel0"));
+		keymaps.push_back(strpair_t("K00:C+F4",	 "SoundChannel0"));
+		keymaps.push_back(strpair_t("K00:A+F5",	 "SoundChannel1"));
+		keymaps.push_back(strpair_t("K00:C+F5",	 "SoundChannel1"));
+		keymaps.push_back(strpair_t("K00:A+F6",	 "SoundChannel2"));
+		keymaps.push_back(strpair_t("K00:C+F6",	 "SoundChannel2"));
+		keymaps.push_back(strpair_t("K00:A+F7",	 "SoundChannel3"));
+		keymaps.push_back(strpair_t("K00:C+F7",	 "SoundChannel3"));
+		keymaps.push_back(strpair_t("K00:A+F8",	 "SoundChannel4"));
+		keymaps.push_back(strpair_t("K00:C+F8",	 "SoundChannel4"));
+		keymaps.push_back(strpair_t("K00:A+F9",	 "SoundChannel5"));
+		keymaps.push_back(strpair_t("K00:C+F9",	 "SoundChannel5"));
+		keymaps.push_back(strpair_t("K00:A+F10",	"SoundChannel6"));
+		keymaps.push_back(strpair_t("K00:C+F10",	"SoundChannel6"));
+		keymaps.push_back(strpair_t("K00:A+F11",	"SoundChannel7"));
+		keymaps.push_back(strpair_t("K00:C+F11",	"SoundChannel7"));
+		keymaps.push_back(strpair_t("K00:A+F12",	"SoundChannelsOn"));
+		keymaps.push_back(strpair_t("K00:C+F12",	"SoundChannelsOn"));
 
-		keymaps.push_back(strpair_t("K00:S+1",          "BeginRecordingMovie"));
-		keymaps.push_back(strpair_t("K00:S+2",          "EndRecordingMovie"));
-		keymaps.push_back(strpair_t("K00:S+3",          "LoadMovie"));
-		keymaps.push_back(strpair_t("K00:A+F1",         "SaveSPC"));
-		keymaps.push_back(strpair_t("K00:C+F1",         "SaveSPC"));
-		keymaps.push_back(strpair_t("K00:F10",          "LoadOopsFile"));
-		keymaps.push_back(strpair_t("K00:A+F2",         "LoadFreezeFile"));
-		keymaps.push_back(strpair_t("K00:C+F2",         "LoadFreezeFile"));
-		keymaps.push_back(strpair_t("K00:F11",          "LoadFreezeFile"));
-		keymaps.push_back(strpair_t("K00:A+F3",         "SaveFreezeFile"));
-		keymaps.push_back(strpair_t("K00:C+F3",         "SaveFreezeFile"));
-		keymaps.push_back(strpair_t("K00:F12",          "SaveFreezeFile"));
-		keymaps.push_back(strpair_t("K00:F1",           "QuickLoad000"));
-		keymaps.push_back(strpair_t("K00:F2",           "QuickLoad001"));
-		keymaps.push_back(strpair_t("K00:F3",           "QuickLoad002"));
-		keymaps.push_back(strpair_t("K00:F4",           "QuickLoad003"));
-		keymaps.push_back(strpair_t("K00:F5",           "QuickLoad004"));
-		keymaps.push_back(strpair_t("K00:F6",           "QuickLoad005"));
-		keymaps.push_back(strpair_t("K00:F7",           "QuickLoad006"));
-		keymaps.push_back(strpair_t("K00:F8",           "QuickLoad007"));
-		keymaps.push_back(strpair_t("K00:F9",           "QuickLoad008"));
-		keymaps.push_back(strpair_t("K00:S+F1",         "QuickSave000"));
-		keymaps.push_back(strpair_t("K00:S+F2",         "QuickSave001"));
-		keymaps.push_back(strpair_t("K00:S+F3",         "QuickSave002"));
-		keymaps.push_back(strpair_t("K00:S+F4",         "QuickSave003"));
-		keymaps.push_back(strpair_t("K00:S+F5",         "QuickSave004"));
-		keymaps.push_back(strpair_t("K00:S+F6",         "QuickSave005"));
-		keymaps.push_back(strpair_t("K00:S+F7",         "QuickSave006"));
-		keymaps.push_back(strpair_t("K00:S+F8",         "QuickSave007"));
-		keymaps.push_back(strpair_t("K00:S+F9",         "QuickSave008"));
+		keymaps.push_back(strpair_t("K00:S+1",	  "BeginRecordingMovie"));
+		keymaps.push_back(strpair_t("K00:S+2",	  "EndRecordingMovie"));
+		keymaps.push_back(strpair_t("K00:S+3",	  "LoadMovie"));
+		keymaps.push_back(strpair_t("K00:A+F1",	 "SaveSPC"));
+		keymaps.push_back(strpair_t("K00:C+F1",	 "SaveSPC"));
+		keymaps.push_back(strpair_t("K00:F10",	  "LoadOopsFile"));
+		keymaps.push_back(strpair_t("K00:A+F2",	 "LoadFreezeFile"));
+		keymaps.push_back(strpair_t("K00:C+F2",	 "LoadFreezeFile"));
+		keymaps.push_back(strpair_t("K00:F11",	  "LoadFreezeFile"));
+		keymaps.push_back(strpair_t("K00:A+F3",	 "SaveFreezeFile"));
+		keymaps.push_back(strpair_t("K00:C+F3",	 "SaveFreezeFile"));
+		keymaps.push_back(strpair_t("K00:F12",	  "SaveFreezeFile"));
+		keymaps.push_back(strpair_t("K00:F1",		"QuickLoad000"));
+		keymaps.push_back(strpair_t("K00:F2",		"QuickLoad001"));
+		keymaps.push_back(strpair_t("K00:F3",		"QuickLoad002"));
+		keymaps.push_back(strpair_t("K00:F4",		"QuickLoad003"));
+		keymaps.push_back(strpair_t("K00:F5",		"QuickLoad004"));
+		keymaps.push_back(strpair_t("K00:F6",		"QuickLoad005"));
+		keymaps.push_back(strpair_t("K00:F7",		"QuickLoad006"));
+		keymaps.push_back(strpair_t("K00:F8",		"QuickLoad007"));
+		keymaps.push_back(strpair_t("K00:F9",		"QuickLoad008"));
+		keymaps.push_back(strpair_t("K00:S+F1",	 "QuickSave000"));
+		keymaps.push_back(strpair_t("K00:S+F2",	 "QuickSave001"));
+		keymaps.push_back(strpair_t("K00:S+F3",	 "QuickSave002"));
+		keymaps.push_back(strpair_t("K00:S+F4",	 "QuickSave003"));
+		keymaps.push_back(strpair_t("K00:S+F5",	 "QuickSave004"));
+		keymaps.push_back(strpair_t("K00:S+F6",	 "QuickSave005"));
+		keymaps.push_back(strpair_t("K00:S+F7",	 "QuickSave006"));
+		keymaps.push_back(strpair_t("K00:S+F8",	 "QuickSave007"));
+		keymaps.push_back(strpair_t("K00:S+F9",	 "QuickSave008"));
 
 		keymaps.push_back(strpair_t("K00:Scroll_Lock",  "Pause"));
-		keymaps.push_back(strpair_t("K00:CS+Escape",    "Reset"));
-		keymaps.push_back(strpair_t("K00:S+Escape",     "SoftReset"));
-		keymaps.push_back(strpair_t("K00:Escape",       "ExitEmu"));
-		keymaps.push_back(strpair_t("K00:Tab",          "EmuTurbo"));
-		keymaps.push_back(strpair_t("K00:S+Tab",        "ToggleEmuTurbo"));
-		keymaps.push_back(strpair_t("K00:A+equal",      "IncEmuTurbo"));
-		keymaps.push_back(strpair_t("K00:A+minus",      "DecEmuTurbo"));
-		keymaps.push_back(strpair_t("K00:C+equal",      "IncTurboSpeed"));
-		keymaps.push_back(strpair_t("K00:C+minus",      "DecTurboSpeed"));
-		keymaps.push_back(strpair_t("K00:equal",        "IncFrameRate"));
-		keymaps.push_back(strpair_t("K00:minus",        "DecFrameRate"));
-		keymaps.push_back(strpair_t("K00:S+equal",      "IncFrameTime"));
-		keymaps.push_back(strpair_t("K00:S+minus",      "DecFrameTime"));
-		keymaps.push_back(strpair_t("K00:6",            "SwapJoypads"));
-		keymaps.push_back(strpair_t("K00:Print",        "Screenshot"));
+		keymaps.push_back(strpair_t("K00:CS+Escape",	"Reset"));
+		keymaps.push_back(strpair_t("K00:S+Escape",	"SoftReset"));
+		keymaps.push_back(strpair_t("K00:Escape",	"ExitEmu"));
+		keymaps.push_back(strpair_t("K00:Tab",	  "EmuTurbo"));
+		keymaps.push_back(strpair_t("K00:S+Tab",	"ToggleEmuTurbo"));
+		keymaps.push_back(strpair_t("K00:A+equal",	"IncEmuTurbo"));
+		keymaps.push_back(strpair_t("K00:A+minus",	"DecEmuTurbo"));
+		keymaps.push_back(strpair_t("K00:C+equal",	"IncTurboSpeed"));
+		keymaps.push_back(strpair_t("K00:C+minus",	"DecTurboSpeed"));
+		keymaps.push_back(strpair_t("K00:equal",	"IncFrameRate"));
+		keymaps.push_back(strpair_t("K00:minus",	"DecFrameRate"));
+		keymaps.push_back(strpair_t("K00:S+equal",	"IncFrameTime"));
+		keymaps.push_back(strpair_t("K00:S+minus",	"DecFrameTime"));
+		keymaps.push_back(strpair_t("K00:6",		"SwapJoypads"));
+		keymaps.push_back(strpair_t("K00:Print",	"Screenshot"));
 
-		keymaps.push_back(strpair_t("K00:1",            "ToggleBG0"));
-		keymaps.push_back(strpair_t("K00:2",            "ToggleBG1"));
-		keymaps.push_back(strpair_t("K00:3",            "ToggleBG2"));
-		keymaps.push_back(strpair_t("K00:4",            "ToggleBG3"));
-		keymaps.push_back(strpair_t("K00:5",            "ToggleSprites"));
-		keymaps.push_back(strpair_t("K00:9",            "ToggleTransparency"));
-		keymaps.push_back(strpair_t("K00:BackSpace",    "ClipWindows"));
-		keymaps.push_back(strpair_t("K00:A+Escape",     "Debugger"));
+		keymaps.push_back(strpair_t("K00:1",		"ToggleBG0"));
+		keymaps.push_back(strpair_t("K00:2",		"ToggleBG1"));
+		keymaps.push_back(strpair_t("K00:3",		"ToggleBG2"));
+		keymaps.push_back(strpair_t("K00:4",		"ToggleBG3"));
+		keymaps.push_back(strpair_t("K00:5",		"ToggleSprites"));
+		keymaps.push_back(strpair_t("K00:9",		"ToggleTransparency"));
+		keymaps.push_back(strpair_t("K00:BackSpace",	"ClipWindows"));
+		keymaps.push_back(strpair_t("K00:A+Escape",	"Debugger"));
 
-		keymaps.push_back(strpair_t("M00:B0",           "{Mouse1 L,Superscope Fire,Justifier1 Trigger}"));
-		keymaps.push_back(strpair_t("M00:B1",           "{Justifier1 AimOffscreen Trigger,Superscope AimOffscreen}"));
-		keymaps.push_back(strpair_t("M00:B2",           "{Mouse1 R,Superscope Cursor,Justifier1 Start}"));
-		keymaps.push_back(strpair_t("M00:Pointer",      "Pointer Mouse1+Superscope+Justifier1"));
-		keymaps.push_back(strpair_t("K00:grave",        "Superscope ToggleTurbo"));
-		keymaps.push_back(strpair_t("K00:slash",        "Superscope Pause"));
+		keymaps.push_back(strpair_t("M00:B0",		"{Mouse1 L,Superscope Fire,Justifier1 Trigger}"));
+		keymaps.push_back(strpair_t("M00:B1",		"{Justifier1 AimOffscreen Trigger,Superscope AimOffscreen}"));
+		keymaps.push_back(strpair_t("M00:B2",		"{Mouse1 R,Superscope Cursor,Justifier1 Start}"));
+		keymaps.push_back(strpair_t("M00:Pointer",	"Pointer Mouse1+Superscope+Justifier1"));
+		keymaps.push_back(strpair_t("K00:grave",	"Superscope ToggleTurbo"));
+		keymaps.push_back(strpair_t("K00:slash",	"Superscope Pause"));
 
-		keymaps.push_back(strpair_t("K00:r",            "Rewind"));
+		keymaps.push_back(strpair_t("K00:r",		"Rewind"));
 	}
 
 	GUI.no_repeat = !conf.GetBool("Unix/X11::SetKeyRepeat", TRUE);
+	GUI.fullscreen = conf.GetBool("Unix/X11::Fullscreen", FALSE);
+#ifdef USE_XVIDEO
+	GUI.use_xvideo = conf.GetBool("Unix/X11::Xvideo", FALSE);
+#endif
 
 	if (conf.Exists("Unix/X11::VideoMode"))
 	{
@@ -500,9 +528,9 @@ void S9xInitDisplay (int argc, char **argv)
 	if (GUI.display == NULL)
 		FatalError("Failed to connect to X server.");
 
-	GUI.screen     = DefaultScreenOfDisplay(GUI.display);
+	GUI.screen	= DefaultScreenOfDisplay(GUI.display);
 	GUI.screen_num = XScreenNumberOfScreen(GUI.screen);
-	GUI.visual     = DefaultVisualOfScreen(GUI.screen);
+	GUI.visual	= DefaultVisualOfScreen(GUI.screen);
 
 	XVisualInfo	plate, *matches;
 	int			count;
@@ -516,12 +544,12 @@ void S9xInitDisplay (int argc, char **argv)
 	if ((GUI.depth != 15 && GUI.depth != 16 && GUI.depth != 24) || (matches[0].c_class != TrueColor))
 		FatalError("Requiers 15, 16, 24 or 32-bit color depth supporting TrueColor.");
 
-	GUI.red_shift   = ffs(matches[0].red_mask)   - 1;
+	GUI.red_shift	= ffs(matches[0].red_mask)	- 1;
 	GUI.green_shift = ffs(matches[0].green_mask) - 1;
 	GUI.blue_shift  = ffs(matches[0].blue_mask)  - 1;
-	GUI.red_size    = matches[0].red_mask   >> GUI.red_shift;
+	GUI.red_size	= matches[0].red_mask	>> GUI.red_shift;
 	GUI.green_size  = matches[0].green_mask >> GUI.green_shift;
-	GUI.blue_size   = matches[0].blue_mask  >> GUI.blue_shift;
+	GUI.blue_size	= matches[0].blue_mask  >> GUI.blue_shift;
 	if (GUI.depth == 16 && GUI.green_size == 63)
 		GUI.green_shift++;
 
@@ -569,16 +597,51 @@ void S9xInitDisplay (int argc, char **argv)
 	S9xBlit2xSaIFilterInit();
 	S9xBlitHQ2xFilterInit();
 
+	/* Set up parameters for creating the window */
 	XSetWindowAttributes	attrib;
 
 	memset(&attrib, 0, sizeof(attrib));
 	attrib.background_pixel = BlackPixelOfScreen(GUI.screen);
 	attrib.colormap = XCreateColormap(GUI.display, RootWindowOfScreen(GUI.screen), GUI.visual, AllocNone);
 
-	GUI.window = XCreateWindow(GUI.display, RootWindowOfScreen(GUI.screen),
-							   (WidthOfScreen(GUI.screen) - SNES_WIDTH * 2) / 2, (HeightOfScreen(GUI.screen) - SNES_HEIGHT_EXTENDED * 2) / 2,
-							   SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2, 0, GUI.depth, InputOutput, GUI.visual, CWBackPixel | CWColormap, &attrib);
+	/* Try to switch to Fullscreen. */
+	if (GUI.fullscreen == TRUE)
+	{
+		/* Create the window with maximum screen width,height positioned at 0,0. */
+		GUI.window = XCreateWindow(GUI.display, RootWindowOfScreen(GUI.screen),
+							0, 0,
+							WidthOfScreen(GUI.screen), HeightOfScreen(GUI.screen), 0,
+							GUI.depth, InputOutput, GUI.visual, CWBackPixel | CWColormap, &attrib);
 
+		/* Try to tell the Window Manager not to decorate this window. */
+		Atom wm_state	= XInternAtom (GUI.display, "_NET_WM_STATE", true );
+		Atom wm_fullscreen = XInternAtom (GUI.display, "_NET_WM_STATE_FULLSCREEN", true );
+
+		XChangeProperty(GUI.display, GUI.window, wm_state, XA_ATOM, 32, PropModeReplace, (unsigned char *)&wm_fullscreen, 1);
+
+		/* Last: position the output window in the center of the screen. */
+		GUI.x_offset = (WidthOfScreen(GUI.screen) - SNES_WIDTH * 2) / 2;
+		GUI.y_offset = (HeightOfScreen(GUI.screen) - SNES_HEIGHT_EXTENDED * 2) / 2;
+	} else {
+		/* Create the window. */
+		GUI.window = XCreateWindow(GUI.display, RootWindowOfScreen(GUI.screen),
+								(WidthOfScreen(GUI.screen) - SNES_WIDTH * 2) / 2, (HeightOfScreen(GUI.screen) - SNES_HEIGHT_EXTENDED * 2) / 2,
+								SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2, 0, GUI.depth, InputOutput, GUI.visual, CWBackPixel | CWColormap, &attrib);
+
+		/* Tell the Window Manager that we do not wish to be resizable */
+		XSizeHints	Hints;
+		memset((void *) &Hints, 0, sizeof(XSizeHints));
+
+		Hints.flags	= PSize | PMinSize | PMaxSize;
+		Hints.min_width  = Hints.max_width  = Hints.base_width  = SNES_WIDTH * 2;
+		Hints.min_height = Hints.max_height = Hints.base_height = SNES_HEIGHT_EXTENDED * 2;
+		XSetWMNormalHints(GUI.display, GUI.window, &Hints);
+
+		/* Last: Windowed SNES is not drawn with any offsets. */
+		GUI.x_offset = GUI.y_offset = 0;
+	}
+
+	/* Load UI cursors */
 	static XColor	bg, fg;
 	static char		data[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 	Pixmap			bitmap;
@@ -590,22 +653,18 @@ void S9xInitDisplay (int argc, char **argv)
 
 	GUI.gc = DefaultGCOfScreen(GUI.screen);
 
-	XSizeHints	Hints;
+	/* Other window-manager hints */
 	XWMHints	WMHints;
-
-	memset((void *) &Hints, 0, sizeof(XSizeHints));
 	memset((void *) &WMHints, 0, sizeof(XWMHints));
 
-	Hints.flags      = PSize | PMinSize | PMaxSize;
-	Hints.min_width  = Hints.max_width  = Hints.base_width  = SNES_WIDTH * 2;
-	Hints.min_height = Hints.max_height = Hints.base_height = SNES_HEIGHT_EXTENDED * 2;
-	WMHints.input    = True;
-	WMHints.flags    = InputHint;
+	/* Rely on the Window Manager to provide us with keyboard input */
+	WMHints.flags	= InputHint;
+	WMHints.input	= True;
 
 	XSetWMHints(GUI.display, GUI.window, &WMHints);
-	XSetWMNormalHints(GUI.display, GUI.window, &Hints);
 	XSelectInput(GUI.display, GUI.window, FocusChangeMask | ExposureMask | KeyPressMask | KeyReleaseMask | StructureNotifyMask | ButtonPressMask | ButtonReleaseMask);
 
+	/* Bring up our window (and put it in foreground) */
 	XMapRaised(GUI.display, GUI.window);
 	XClearWindow(GUI.display, GUI.window);
 
@@ -634,10 +693,13 @@ void S9xInitDisplay (int argc, char **argv)
 
 void S9xDeinitDisplay (void)
 {
-	S9xTextMode();
 	TakedownImage();
-	XSync(GUI.display, False);
-	XCloseDisplay(GUI.display);
+	if (GUI.display != NULL)
+	{
+		S9xTextMode();
+		XSync(GUI.display, False);
+		XCloseDisplay(GUI.display);
+	}
 	S9xBlitFilterDeinit();
 	S9xBlit2xSaIFilterDeinit();
 	S9xBlitHQ2xFilterDeinit();
@@ -685,6 +747,12 @@ static void TakedownImage (void)
 static void SetupImage (void)
 {
 	TakedownImage();
+
+#ifdef USE_XVIDEO
+	if (GUI.use_xvideo)
+	{
+	}
+#endif
 
 #ifdef MITSHM
 	GUI.use_shared_memory = TRUE;
@@ -767,14 +835,14 @@ static void SetupImage (void)
 	if (GUI.depth == 15 || GUI.depth == 16)
 	{
 		GUI.blit_screen_pitch = GUI.image->bytes_per_line;
-		GUI.blit_screen       = (uint8 *) GUI.image->data;
-		GUI.need_convert      = FALSE;
+		GUI.blit_screen	= (uint8 *) GUI.image->data;
+		GUI.need_convert	= FALSE;
 	}
 	else
 	{
 		GUI.blit_screen_pitch = (SNES_WIDTH * 2) * 2;
-		GUI.blit_screen       = GUI.filter_buffer;
-		GUI.need_convert      = TRUE;
+		GUI.blit_screen	= GUI.filter_buffer;
+		GUI.need_convert	= TRUE;
 	}
 
 	S9xGraphicsInit();
@@ -969,12 +1037,13 @@ static void Repaint (bool8 isFrameBoundry)
 #ifdef MITSHM
 	if (GUI.use_shared_memory)
 	{
-		XShmPutImage(GUI.display, GUI.window, GUI.gc, GUI.image, 0, 0, 0, 0, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2, False);
+		XShmPutImage(GUI.display, GUI.window, GUI.gc, GUI.image, 0, 0, GUI.x_offset, GUI.y_offset, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2, False);
+		// TODO: Is calling XSync necessary here, given that XQueryPointer (below) states that it "syncs X server" too?
 		XSync(GUI.display, False);
 	}
 	else
 #endif
-		XPutImage(GUI.display, GUI.window, GUI.gc, GUI.image, 0, 0, 0, 0, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2);
+		XPutImage(GUI.display, GUI.window, GUI.gc, GUI.image, 0, 0, GUI.x_offset, GUI.y_offset, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2);
 
 	Window			root, child;
 	int				root_x, root_y, x, y;
@@ -1158,13 +1227,13 @@ s9xcommand_t S9xGetDisplayCommandT (const char *n)
 {
 	s9xcommand_t	cmd;
 
-	cmd.type         = S9xBadMapping;
+	cmd.type	 = S9xBadMapping;
 	cmd.multi_press  = 0;
 	cmd.button_norpt = 0;
-	cmd.port[0]      = 0xff;
-	cmd.port[1]      = 0;
-	cmd.port[2]      = 0;
-	cmd.port[3]      = 0;
+	cmd.port[0]	= 0xff;
+	cmd.port[1]	= 0;
+	cmd.port[2]	= 0;
+	cmd.port[3]	= 0;
 
 	return (cmd);
 }
@@ -1207,10 +1276,10 @@ bool8 S9xMapDisplayInput (const char *n, s9xcommand_t *cmd)
 				{
 					switch (n[i])
 					{
-						case 'S': d |= ShiftMask   << 8; break;
+						case 'S': d |= ShiftMask	<< 8; break;
 						case 'C': d |= ControlMask << 8; break;
-						case 'A': d |= Mod1Mask    << 8; break;
-						case 'M': d |= Mod4Mask    << 8; break;
+						case 'A': d |= Mod1Mask	<< 8; break;
+						case 'M': d |= Mod4Mask	<< 8; break;
 						default:  goto unrecog;
 					}
 				}
