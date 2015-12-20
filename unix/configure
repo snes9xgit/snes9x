@@ -1357,7 +1357,7 @@ Optional Features:
   --enable-jma            enable JMA support (default: yes)
   --enable-screenshot     enable screenshot support through libpng (default:
                           yes)
-  --enable-xvideo         enable XVideo if available (default: yes)
+  --enable-xvideo         enable Xvideo if available (default: yes)
   --enable-sound          enable sound if available (default: yes)
 
 Optional Packages:
@@ -5998,9 +5998,7 @@ if test "x$snes9x_sar_int8" = "xyes" -a "x$snes9x_sar_int16" = "xyes" -a "x$snes
 	S9XDEFS="$S9XDEFS -DRIGHTSHIFT_IS_SAR"
 fi
 
-# Check if we can build with XVideo acceleration support
-S9XXVIDEO="#S9XXVIDEO=1"
-
+# Check if we can build with Xvideo acceleration support
 # Check whether --enable-xvideo was given.
 if test "${enable_xvideo+set}" = set; then :
   enableval=$enable_xvideo;
@@ -6015,7 +6013,8 @@ if test "x$enable_xvideo" = "xyes"; then
 if test "x$ac_cv_header_X11_extensions_Xv_h" = xyes; then :
 
 		enable_xvideo="yes"
-		S9XXVIDEO="S9XXVIDEO=1"
+		S9XLIBS="$S9XLIBS -lXv"
+		S9XDEFS="$S9XDEFS -DUSE_XVIDEO"
 
 fi
 
@@ -6094,7 +6093,7 @@ defines.............. $S9XDEFS
 libs................. $S9XLIBS
 
 features:
-XVideo support....... $enable_xvideo
+Xvideo support....... $enable_xvideo
 sound support........ $enable_sound
 screenshot support... $enable_screenshot
 netplay support...... $enable_netplay
