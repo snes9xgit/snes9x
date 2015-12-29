@@ -848,9 +848,45 @@ void S9xInitDisplay (int argc, char **argv)
 
 		XChangeProperty(GUI.display, GUI.window, wm_state, XA_ATOM, 32, PropModeReplace, (unsigned char *)&wm_fullscreen, 1);
 
-		/* Last: position the output window in the center of the screen. */
-		GUI.x_offset = (WidthOfScreen(GUI.screen) - SNES_WIDTH * 2) / 2;
-		GUI.y_offset = (HeightOfScreen(GUI.screen) - SNES_HEIGHT_EXTENDED * 2) / 2;
+#ifdef USE_XVIDEO
+		if (GUI.use_xvideo)
+		{
+			// Compute the maximum screen size for scaling xvideo window.
+			double screenAspect = (double)WidthOfScreen(GUI.screen) / HeightOfScreen(GUI.screen);
+			double snesAspect = (double)SNES_WIDTH / SNES_HEIGHT_EXTENDED;
+			double ratio = screenAspect / snesAspect;
+
+			printf("\tScreen (%dx%d) aspect %f vs SNES (%dx%d) aspect %f (ratio: %f)\n",
+				WidthOfScreen(GUI.screen),HeightOfScreen(GUI.screen),screenAspect,
+				SNES_WIDTH,SNES_HEIGHT_EXTENDED,snesAspect,
+				ratio);
+
+			// Set some defaults
+			GUI.scale_w = WidthOfScreen(GUI.screen);
+			GUI.scale_h = HeightOfScreen(GUI.screen);
+
+			// Correct aspect ratio
+			if (screenAspect > snesAspect)
+			{
+				// widescreen monitor, 4:3 snes
+				//  match height, scale width
+				GUI.scale_w /= ratio;
+				GUI.x_offset = (WidthOfScreen(GUI.screen) - GUI.scale_w) / 2;
+			} else {
+				// narrow monitor, 4:3 snes
+				//  match width, scale height
+				GUI.scale_h *= ratio;
+				GUI.y_offset = (HeightOfScreen(GUI.screen) - GUI.scale_h) / 2;
+			}
+			printf("\tUsing size %dx%d with offset (%d,%d)\n",GUI.scale_w,GUI.scale_h,GUI.x_offset,GUI.y_offset);
+		}
+		else
+#endif
+		{
+			/* Last: position the output window in the center of the screen. */
+			GUI.x_offset = (WidthOfScreen(GUI.screen) - SNES_WIDTH * 2) / 2;
+			GUI.y_offset = (HeightOfScreen(GUI.screen) - SNES_HEIGHT_EXTENDED * 2) / 2;
+		}
 	} else {
 		/* Create the window. */
 		GUI.window = XCreateWindow(GUI.display, RootWindowOfScreen(GUI.screen),
@@ -868,6 +904,10 @@ void S9xInitDisplay (int argc, char **argv)
 
 		/* Last: Windowed SNES is not drawn with any offsets. */
 		GUI.x_offset = GUI.y_offset = 0;
+#ifdef USE_XVIDEO
+		GUI.scale_w = SNES_WIDTH * 2;
+		GUI.scale_h = SNES_HEIGHT_EXTENDED * 2;
+#endif
 	}
 
 	/* Load UI cursors */
@@ -1511,15 +1551,13 @@ static void Repaint (bool8 isFrameBoundry)
 		{
 			XvShmPutImage(GUI.display, GUI.xv_port, GUI.window, GUI.gc, GUI.image->xvimage,
 				0, 0, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2,
-				GUI.x_offset, GUI.y_offset, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2, False);
-				//GUI.x_offset, GUI.y_offset, GUI.scale_w, GUI.scale_h, False);
+				GUI.x_offset, GUI.y_offset, GUI.scale_w, GUI.scale_h, False);
 		}
 		else
 #endif
 		XvPutImage(GUI.display, GUI.xv_port, GUI.window, GUI.gc, GUI.image->xvimage,
 			0, 0, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2,
-			GUI.x_offset, GUI.y_offset, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2);
-			//GUI.x_offset, GUI.y_offset, GUI.scale_w, GUI.scale_h);
+			GUI.x_offset, GUI.y_offset, GUI.scale_w, GUI.scale_h);
 	}
 	else
 #endif
