@@ -210,6 +210,17 @@
 #include "blit.h"
 #include "display.h"
 
+// Wrapper struct to make generic XvImage vs XImage
+struct Image
+{
+	XImage*	ximage;
+	char *data;
+
+	uint32 height;
+	uint32 bits_per_pixel;
+	uint32 bytes_per_line;
+};
+
 struct GUIData
 {
 	Display			*display;
@@ -227,7 +238,7 @@ struct GUIData
 	uint32			green_size;
 	uint32			blue_size;
 	Window			window;
-	XImage			*image;
+	Image			*image;
 	uint8			*snes_buffer;
 	uint8			*filter_buffer;
 	uint8			*blit_screen;
@@ -285,7 +296,9 @@ static int ErrorHandler (Display *, XErrorEvent *);
 static bool8 CheckForPendingXEvents (Display *);
 static void SetXRepeat (bool8);
 static void SetupImage (void);
+static void SetupXImage (void);
 static void TakedownImage (void);
+static void TakedownXImage (void);
 static void Repaint (bool8);
 static void Convert16To24 (int, int);
 static void Convert16To24Packed (int, int);
@@ -537,44 +550,7 @@ void S9xInitDisplay (int argc, char **argv)
 
 	XFree(matches);
 
-	switch (GUI.depth)
-	{
-		default:
-		case 32:
-		case 24:
-			S9xSetRenderPixelFormat(RGB555);
-			GUI.pixel_format = 555;
-			break;
-
-		case 16:
-			if (GUI.red_size != GUI.green_size || GUI.blue_size != GUI.green_size)
-			{
-				// 565 format
-				if (GUI.green_shift > GUI.blue_shift && GUI.green_shift > GUI.red_shift)
-					S9xSetRenderPixelFormat(GBR565);
-				else
-				if (GUI.red_shift > GUI.blue_shift)
-					S9xSetRenderPixelFormat(RGB565);
-				else
-					S9xSetRenderPixelFormat(BGR565);
-
-				GUI.pixel_format = 565;
-				break;
-			}
-			// FALL ...
-		case 15:
-			if (GUI.green_shift > GUI.blue_shift && GUI.green_shift > GUI.red_shift)
-				S9xSetRenderPixelFormat(GBR555);
-			else
-			if (GUI.red_shift > GUI.blue_shift)
-				S9xSetRenderPixelFormat(RGB555);
-			else
-				S9xSetRenderPixelFormat(BGR555);
-
-			GUI.pixel_format = 555;
-			break;
-	}
-
+	// Init various scale-filters
 	S9xBlitFilterInit();
 	S9xBlit2xSaIFilterInit();
 	S9xBlitHQ2xFilterInit();
@@ -651,6 +627,44 @@ void S9xInitDisplay (int argc, char **argv)
 	XMapRaised(GUI.display, GUI.window);
 	XClearWindow(GUI.display, GUI.window);
 
+	switch (GUI.depth)
+	{
+		default:
+		case 32:
+		case 24:
+			S9xSetRenderPixelFormat(RGB555);
+			GUI.pixel_format = 555;
+			break;
+
+		case 16:
+			if (GUI.red_size != GUI.green_size || GUI.blue_size != GUI.green_size)
+			{
+				// 565 format
+				if (GUI.green_shift > GUI.blue_shift && GUI.green_shift > GUI.red_shift)
+					S9xSetRenderPixelFormat(GBR565);
+				else
+				if (GUI.red_shift > GUI.blue_shift)
+					S9xSetRenderPixelFormat(RGB565);
+				else
+					S9xSetRenderPixelFormat(BGR565);
+
+				GUI.pixel_format = 565;
+				break;
+			}
+			// FALL ...
+		case 15:
+			if (GUI.green_shift > GUI.blue_shift && GUI.green_shift > GUI.red_shift)
+				S9xSetRenderPixelFormat(GBR555);
+			else
+			if (GUI.red_shift > GUI.blue_shift)
+				S9xSetRenderPixelFormat(RGB555);
+			else
+				S9xSetRenderPixelFormat(BGR555);
+
+			GUI.pixel_format = 555;
+			break;
+	}
+
 	SetupImage();
 
 	switch (GUI.depth)
@@ -672,6 +686,8 @@ void S9xInitDisplay (int argc, char **argv)
 			GUI.bytes_per_pixel = 2;
 			break;
 	}
+
+	printf("Using internal pixel format %d\n",GUI.pixel_format);
 }
 
 void S9xDeinitDisplay (void)
@@ -704,100 +720,50 @@ static void TakedownImage (void)
 
 	if (GUI.image)
 	{
+		TakedownXImage();
+
+		free(GUI.image);
+		GUI.image = NULL;
+	}
+
+	S9xGraphicsDeinit();
+}
+
+static void TakedownXImage (void)
+{
+	if (GUI.image->ximage)
+	{
 	#ifdef MITSHM
 		if (GUI.use_shared_memory)
 		{
 			XShmDetach(GUI.display, &GUI.sm_info);
-			GUI.image->data = NULL;
-			XDestroyImage(GUI.image);
+			GUI.image->ximage->data = NULL;
+			XDestroyImage(GUI.image->ximage);
 			if (GUI.sm_info.shmaddr)
 				shmdt(GUI.sm_info.shmaddr);
 			if (GUI.sm_info.shmid >= 0)
 				shmctl(GUI.sm_info.shmid, IPC_RMID, 0);
-			GUI.image = NULL;
+			GUI.image->ximage = NULL;
 		}
 		else
 	#endif
 		{
-			XDestroyImage(GUI.image);
-			GUI.image = NULL;
+			XDestroyImage(GUI.image->ximage);
+			GUI.image->ximage = NULL;
 		}
 	}
-
-	S9xGraphicsDeinit();
 }
 
 static void SetupImage (void)
 {
 	TakedownImage();
 
-#ifdef MITSHM
-	GUI.use_shared_memory = TRUE;
+	// Create new image struct
+	GUI.image = (Image *) calloc(sizeof(Image), 1);
 
-	int		major, minor;
-	Bool	shared;
+	SetupXImage();
 
-	if (!XShmQueryVersion(GUI.display, &major, &minor, &shared) || !shared)
-		GUI.image = NULL;
-	else
-		GUI.image = XShmCreateImage(GUI.display, GUI.visual, GUI.depth, ZPixmap, NULL, &GUI.sm_info, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2);
-
-	if (!GUI.image)
-		GUI.use_shared_memory = FALSE;
-	else
-	{
-		GUI.sm_info.shmid = shmget(IPC_PRIVATE, GUI.image->bytes_per_line * GUI.image->height, IPC_CREAT | 0777);
-		if (GUI.sm_info.shmid < 0)
-		{
-			XDestroyImage(GUI.image);
-			GUI.use_shared_memory = FALSE;
-		}
-		else
-		{
-			GUI.image->data = GUI.sm_info.shmaddr = (char *) shmat(GUI.sm_info.shmid, 0, 0);
-			if (!GUI.image->data)
-			{
-				XDestroyImage(GUI.image);
-				shmctl(GUI.sm_info.shmid, IPC_RMID, 0);
-				GUI.use_shared_memory = FALSE;
-			}
-			else
-			{
-				GUI.sm_info.readOnly = False;
-
-				XSetErrorHandler(ErrorHandler);
-				XShmAttach(GUI.display, &GUI.sm_info);
-				XSync(GUI.display, False);
-
-				// X Error handler might clear GUI.use_shared_memory if XShmAttach failed.
-				if (!GUI.use_shared_memory)
-				{
-					XDestroyImage(GUI.image);
-					shmdt(GUI.sm_info.shmaddr);
-					shmctl(GUI.sm_info.shmid, IPC_RMID, 0);
-				}
-			}
-		}
-	}
-
-	if (!GUI.use_shared_memory)
-	{
-		fprintf(stderr, "use_shared_memory failed, switching to XPutImage.\n");
-#endif
-		GUI.image = XCreateImage(GUI.display, GUI.visual, GUI.depth, ZPixmap, 0, NULL, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2, BitmapUnit(GUI.display), 0);
-		GUI.image->data = (char *) malloc(GUI.image->bytes_per_line * GUI.image->height);
-		if (!GUI.image || !GUI.image->data)
-			FatalError("XCreateImage failed.");
-#ifdef MITSHM
-	}
-#endif
-
-#ifdef LSB_FIRST
-	GUI.image->byte_order = LSBFirst;
-#else
-	GUI.image->byte_order = MSBFirst;
-#endif
-
+	// Setup SNES buffers
 	GFX.Pitch = SNES_WIDTH * 2 * 2;
 	GUI.snes_buffer = (uint8 *) calloc(GFX.Pitch * ((SNES_HEIGHT_EXTENDED + 4) * 2), 1);
 	if (!GUI.snes_buffer)
@@ -821,8 +787,91 @@ static void SetupImage (void)
 		GUI.blit_screen       = GUI.filter_buffer;
 		GUI.need_convert      = TRUE;
 	}
+	if (GUI.need_convert) { printf("\tImage conversion needed before blit.\n"); }
 
 	S9xGraphicsInit();
+}
+
+static void SetupXImage (void)
+{
+#ifdef MITSHM
+	GUI.use_shared_memory = TRUE;
+
+	int		major, minor;
+	Bool	shared;
+
+	if (!XShmQueryVersion(GUI.display, &major, &minor, &shared) || !shared)
+		GUI.image->ximage = NULL;
+	else
+		GUI.image->ximage = XShmCreateImage(GUI.display, GUI.visual, GUI.depth, ZPixmap, NULL, &GUI.sm_info, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2);
+
+	if (!GUI.image->ximage)
+		GUI.use_shared_memory = FALSE;
+	else
+	{
+		// set main Image struct vars
+		GUI.image->height = GUI.image->ximage->height;
+		GUI.image->bytes_per_line = GUI.image->ximage->bytes_per_line;
+
+		GUI.sm_info.shmid = shmget(IPC_PRIVATE, GUI.image->bytes_per_line * GUI.image->height, IPC_CREAT | 0777);
+		if (GUI.sm_info.shmid < 0)
+		{
+			XDestroyImage(GUI.image->ximage);
+			GUI.use_shared_memory = FALSE;
+		}
+		else
+		{
+			GUI.image->ximage->data = GUI.sm_info.shmaddr = (char *) shmat(GUI.sm_info.shmid, 0, 0);
+			if (!GUI.image->ximage->data)
+			{
+				XDestroyImage(GUI.image->ximage);
+				shmctl(GUI.sm_info.shmid, IPC_RMID, 0);
+				GUI.use_shared_memory = FALSE;
+			}
+			else
+			{
+				GUI.sm_info.readOnly = False;
+
+				XSetErrorHandler(ErrorHandler);
+				XShmAttach(GUI.display, &GUI.sm_info);
+				XSync(GUI.display, False);
+
+				// X Error handler might clear GUI.use_shared_memory if XShmAttach failed.
+				if (!GUI.use_shared_memory)
+				{
+					XDestroyImage(GUI.image->ximage);
+					shmdt(GUI.sm_info.shmaddr);
+					shmctl(GUI.sm_info.shmid, IPC_RMID, 0);
+				}
+			}
+		}
+	}
+
+	if (!GUI.use_shared_memory)
+	{
+		fprintf(stderr, "use_shared_memory failed, switching to XPutImage.\n");
+#endif
+		GUI.image->ximage = XCreateImage(GUI.display, GUI.visual, GUI.depth, ZPixmap, 0, NULL, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2, BitmapUnit(GUI.display), 0);
+		// set main Image struct vars
+		GUI.image->height = GUI.image->ximage->height;
+		GUI.image->bytes_per_line = GUI.image->ximage->bytes_per_line;
+
+		GUI.image->ximage->data = (char *) malloc(GUI.image->bytes_per_line * GUI.image->height);
+		if (!GUI.image->ximage || !GUI.image->ximage->data)
+			FatalError("XCreateImage failed.");
+#ifdef MITSHM
+	}
+#endif
+
+	// Set final values
+	GUI.image->bits_per_pixel = GUI.image->ximage->bits_per_pixel;
+	GUI.image->data = GUI.image->ximage->data;
+
+#ifdef LSB_FIRST
+	GUI.image->ximage->byte_order = LSBFirst;
+#else
+	GUI.image->ximage->byte_order = MSBFirst;
+#endif
 }
 
 void S9xPutImage (int width, int height)
@@ -1014,12 +1063,12 @@ static void Repaint (bool8 isFrameBoundry)
 #ifdef MITSHM
 	if (GUI.use_shared_memory)
 	{
-		XShmPutImage(GUI.display, GUI.window, GUI.gc, GUI.image, 0, 0, GUI.x_offset, GUI.y_offset, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2, False);
+		XShmPutImage(GUI.display, GUI.window, GUI.gc, GUI.image->ximage, 0, 0, GUI.x_offset, GUI.y_offset, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2, False);
 		XSync(GUI.display, False);
 	}
 	else
 #endif
-		XPutImage(GUI.display, GUI.window, GUI.gc, GUI.image, 0, 0, GUI.x_offset, GUI.y_offset, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2);
+		XPutImage(GUI.display, GUI.window, GUI.gc, GUI.image->ximage, 0, 0, GUI.x_offset, GUI.y_offset, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2);
 
 	Window			root, child;
 	int				root_x, root_y, x, y;
