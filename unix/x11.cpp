@@ -276,6 +276,9 @@ struct GUIData
 	int				scale_w;
 	int				scale_h;
 
+	bool8			maxaspect;
+	int			imageHeight;
+
 	int				xv_format;
 	int				xv_bpp;
 	unsigned char		y_table[1 << 15];
@@ -345,6 +348,7 @@ void S9xExtraDisplayUsage (void)
 	S9xMessage(S9X_INFO, S9X_USAGE, "-fullscreen                     Switch to full-screen on start");
 #ifdef USE_XVIDEO
 	S9xMessage(S9X_INFO, S9X_USAGE, "-xvideo                         Hardware accelerated scaling");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-maxaspect                      Try to fill the display, in fullscreen");
 #endif
 	S9xMessage(S9X_INFO, S9X_USAGE, "");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-v1                             Video mode: Blocky (default)");
@@ -369,6 +373,9 @@ void S9xParseDisplayArg (char **argv, int &i, int argc)
 #ifdef USE_XVIDEO
 	if (!strcasecmp(argv[i], "-xvideo"))
 		GUI.use_xvideo = TRUE;
+	else
+	if (!strcasecmp(argv[i], "-maxaspect")
+		GUI.maxaspect = TRUE;
 	else
 #endif
 	if (!strncasecmp(argv[i], "-v", 2))
@@ -532,6 +539,7 @@ const char * S9xParseDisplayConfig (ConfigFile &conf, int pass)
 	GUI.fullscreen = conf.GetBool("Unix/X11::Fullscreen", FALSE);
 #ifdef USE_XVIDEO
 	GUI.use_xvideo = conf.GetBool("Unix/X11::Xvideo", FALSE);
+	GUI.use_xvideo = conf.GetBool("Unix/X11::MaxAspect", FALSE);
 #endif
 
 	if (conf.Exists("Unix/X11::VideoMode"))
@@ -845,33 +853,39 @@ void S9xInitDisplay (int argc, char **argv)
 #ifdef USE_XVIDEO
 		if (GUI.use_xvideo)
 		{
-			// Compute the maximum screen size for scaling xvideo window.
-			double screenAspect = (double)WidthOfScreen(GUI.screen) / HeightOfScreen(GUI.screen);
-			double snesAspect = (double)SNES_WIDTH / SNES_HEIGHT_EXTENDED;
-			double ratio = screenAspect / snesAspect;
-
-			printf("\tScreen (%dx%d) aspect %f vs SNES (%dx%d) aspect %f (ratio: %f)\n",
-				WidthOfScreen(GUI.screen),HeightOfScreen(GUI.screen),screenAspect,
-				SNES_WIDTH,SNES_HEIGHT_EXTENDED,snesAspect,
-				ratio);
-
 			// Set some defaults
 			GUI.scale_w = WidthOfScreen(GUI.screen);
 			GUI.scale_h = HeightOfScreen(GUI.screen);
 
-			// Correct aspect ratio
-			if (screenAspect > snesAspect)
+			GUI.imageHeight = SNES_HEIGHT_EXTENDED * 2;
+
+			if (! GUI.maxaspect)
 			{
-				// widescreen monitor, 4:3 snes
-				//  match height, scale width
-				GUI.scale_w /= ratio;
-				GUI.x_offset = (WidthOfScreen(GUI.screen) - GUI.scale_w) / 2;
-			} else {
-				// narrow monitor, 4:3 snes
-				//  match width, scale height
-				GUI.scale_h *= ratio;
-				GUI.y_offset = (HeightOfScreen(GUI.screen) - GUI.scale_h) / 2;
+				// Compute the maximum screen size for scaling xvideo window.
+				double screenAspect = (double)WidthOfScreen(GUI.screen) / HeightOfScreen(GUI.screen);
+				double snesAspect = (double)SNES_WIDTH / SNES_HEIGHT_EXTENDED;
+				double ratio = screenAspect / snesAspect;
+
+				printf("\tScreen (%dx%d) aspect %f vs SNES (%dx%d) aspect %f (ratio: %f)\n",
+					WidthOfScreen(GUI.screen),HeightOfScreen(GUI.screen),screenAspect,
+					SNES_WIDTH,SNES_HEIGHT_EXTENDED,snesAspect,
+					ratio);
+
+				// Correct aspect ratio
+				if (screenAspect > snesAspect)
+				{
+					// widescreen monitor, 4:3 snes
+					//  match height, scale width
+					GUI.scale_w /= ratio;
+					GUI.x_offset = (WidthOfScreen(GUI.screen) - GUI.scale_w) / 2;
+				} else {
+					// narrow monitor, 4:3 snes
+					//  match width, scale height
+					GUI.scale_h *= ratio;
+					GUI.y_offset = (HeightOfScreen(GUI.screen) - GUI.scale_h) / 2;
+				}
 			}
+
 			printf("\tUsing size %dx%d with offset (%d,%d)\n",GUI.scale_w,GUI.scale_h,GUI.x_offset,GUI.y_offset);
 		}
 		else
@@ -1401,6 +1415,10 @@ void S9xPutImage (int width, int height)
 		}
 	}
 
+	// Change the image height if we are in maxaspect mode
+	if (GUI.maxaspect && GUI.fullscreen)
+		GUI.imageHeight = height * 2;
+
 #ifdef USE_XVIDEO
 	if (GUI.use_xvideo && (GUI.xv_format == FOURCC_YUY2))
 	{
@@ -1559,13 +1577,13 @@ static void Repaint (bool8 isFrameBoundry)
 		if (GUI.use_shared_memory)
 		{
 			XvShmPutImage(GUI.display, GUI.xv_port, GUI.window, GUI.gc, GUI.image->xvimage,
-				0, 0, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2,
+				0, 0, SNES_WIDTH * 2, GUI.imageHeight,
 				GUI.x_offset, GUI.y_offset, GUI.scale_w, GUI.scale_h, False);
 		}
 		else
 #endif
 		XvPutImage(GUI.display, GUI.xv_port, GUI.window, GUI.gc, GUI.image->xvimage,
-			0, 0, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2,
+			0, 0, SNES_WIDTH * 2, GUI.imageHeight,
 			GUI.x_offset, GUI.y_offset, GUI.scale_w, GUI.scale_h);
 	}
 	else
