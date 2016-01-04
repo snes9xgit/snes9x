@@ -310,6 +310,7 @@ static pthread_mutex_t	mutex;
 static uint8		js_mod[8]     = { 0, 0, 0, 0, 0, 0, 0, 0 };
 static int			js_fd[8]      = { -1, -1, -1, -1, -1, -1, -1, -1 };
 static const char	*js_device[8] = { "/dev/js0", "/dev/js1", "/dev/js2", "/dev/js3", "/dev/js4", "/dev/js5", "/dev/js6", "/dev/js7" };
+static bool8		js_unplugged[8] = { FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE };
 #endif
 
 #ifdef NETPLAY_SUPPORT
@@ -1236,12 +1237,12 @@ void S9xHandlePortCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 					else
 						js_mod[cmd.port[2]] &= ~cmd.port[3];
 					break;
-				
+
 				case 1:
 					if (data1)
 						js_mod[cmd.port[2]] ^=  cmd.port[3];
 					break;
-				
+
 				case 2:
 					rewinding = (bool8) data1;
 					break;
@@ -1368,11 +1369,25 @@ static void ReadJoysticks (void)
 #ifdef JSIOCGVERSION
 	struct js_event	js_ev;
 
-	for (int i = 0; i < 8 && js_fd[i] >= 0; i++)
+	for (int i = 0; i < 8; i++)
 	{
+		// Try to reopen unplugged sticks
+		if (js_unplugged[i])
+		{
+			js_fd[i] = open(js_device[i], O_RDONLY | O_NONBLOCK);
+			if (js_fd[i] >= 0)
+			{
+				fprintf(stderr,"Joystick %d reconnected.\n",i);
+				js_unplugged[i] = FALSE;
+			}
+		}
+
+		// skip sticks without valid file desc
+		if (js_fd[i] < 0) continue;
+
 		while (read(js_fd[i], &js_ev, sizeof(struct js_event)) == sizeof(struct js_event))
 		{
-			switch (js_ev.type & ~JS_EVENT_INIT)
+			switch (js_ev.type)
 			{
 				case JS_EVENT_AXIS:
 					S9xReportAxis(0x8000c000 | (i << 24) | js_ev.number, js_ev.value);
@@ -1380,9 +1395,29 @@ static void ReadJoysticks (void)
 					break;
 
 				case JS_EVENT_BUTTON:
+				case JS_EVENT_BUTTON | JS_EVENT_INIT:
 					S9xReportButton(0x80004000 | (i << 24) | js_ev.number, js_ev.value);
 					S9xReportButton(0x80000000 | (i << 24) | (js_mod[i] << 16) | js_ev.number, js_ev.value);
 					break;
+			}
+		}
+
+		/* EAGAIN is returned when the queue is empty */
+		if (errno != EAGAIN) {
+			// Error reading joystick.
+			fprintf(stderr,"Error reading joystick %d!\n",i);
+
+			// Mark for reconnect attempt.
+			js_unplugged[i] = TRUE;
+
+			for (unsigned int j = 0; j < 16; j++)
+			{
+				// Center all axis
+				S9xReportAxis(0x8000c000 | (i << 24) | j, 0);
+				S9xReportAxis(0x80008000 | (i << 24) | (js_mod[i] << 16) | j, 0);
+				// Unpress all buttons.
+				S9xReportButton(0x80004000 | (i << 24) | j, 0);
+				S9xReportButton(0x80000000 | (i << 24) | (js_mod[i] << 16) | j, 0);
 			}
 		}
 	}
@@ -1884,7 +1919,7 @@ int main (int argc, char **argv)
 				rewinding = stateMan.pop();
 			else if(IPPU.TotalEmulatedFrames % unixSettings.rewindGranularity == 0)
 				stateMan.push();
-			
+
 			S9xMainLoop();
 		}
 
