@@ -374,7 +374,7 @@ void S9xParseDisplayArg (char **argv, int &i, int argc)
 	if (!strcasecmp(argv[i], "-xvideo"))
 		GUI.use_xvideo = TRUE;
 	else
-	if (!strcasecmp(argv[i], "-maxaspect")
+	if (!strcasecmp(argv[i], "-maxaspect"))
 		GUI.maxaspect = TRUE;
 	else
 #endif
@@ -539,7 +539,7 @@ const char * S9xParseDisplayConfig (ConfigFile &conf, int pass)
 	GUI.fullscreen = conf.GetBool("Unix/X11::Fullscreen", FALSE);
 #ifdef USE_XVIDEO
 	GUI.use_xvideo = conf.GetBool("Unix/X11::Xvideo", FALSE);
-	GUI.use_xvideo = conf.GetBool("Unix/X11::MaxAspect", FALSE);
+	GUI.maxaspect = conf.GetBool("Unix/X11::MaxAspect", FALSE);
 #endif
 
 	if (conf.Exists("Unix/X11::VideoMode"))
