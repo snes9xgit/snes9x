@@ -190,8 +190,15 @@
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <X11/Xatom.h>
 #include <X11/keysym.h>
 #include <X11/cursorfont.h>
+
+#ifdef USE_XVIDEO
+#include <X11/extensions/Xvlib.h>
+
+#define FOURCC_YUY2 0x32595559
+#endif
 
 #ifdef MITSHM
 #include <sys/ipc.h>
@@ -208,6 +215,27 @@
 #include "conffile.h"
 #include "blit.h"
 #include "display.h"
+
+// Wrapper struct to make generic XvImage vs XImage
+struct Image
+{
+#ifdef USE_XVIDEO
+	union
+	{
+		XvImage*	xvimage;
+#endif
+		XImage*	ximage;
+#ifdef USE_XVIDEO
+	};
+#endif
+
+	char *data;
+
+	uint32 height;
+	uint32 data_size;
+	uint32 bits_per_pixel;
+	uint32 bytes_per_line;
+};
 
 struct GUIData
 {
@@ -226,7 +254,7 @@ struct GUIData
 	uint32			green_size;
 	uint32			blue_size;
 	Window			window;
-	XImage			*image;
+	Image			*image;
 	uint8			*snes_buffer;
 	uint8			*filter_buffer;
 	uint8			*blit_screen;
@@ -239,6 +267,24 @@ struct GUIData
 	int				mouse_y;
 	bool8			mod1_pressed;
 	bool8			no_repeat;
+	bool8			fullscreen;
+	int				x_offset;
+	int				y_offset;
+#ifdef USE_XVIDEO
+	bool8			use_xvideo;
+	int				xv_port;
+	int				scale_w;
+	int				scale_h;
+
+	bool8			maxaspect;
+	int			imageHeight;
+
+	int				xv_format;
+	int				xv_bpp;
+	unsigned char		y_table[1 << 15];
+	unsigned char		u_table[1 << 15];
+	unsigned char		v_table[1 << 15];
+#endif
 #ifdef MITSHM
 	XShmSegmentInfo	sm_info;
 	bool8			use_shared_memory;
@@ -282,6 +328,12 @@ static bool8 CheckForPendingXEvents (Display *);
 static void SetXRepeat (bool8);
 static void SetupImage (void);
 static void TakedownImage (void);
+static void SetupXImage (void);
+static void TakedownXImage (void);
+#ifdef USE_XVIDEO
+static void SetupXvImage (void);
+static void TakedownXvImage (void);
+#endif
 static void Repaint (bool8);
 static void Convert16To24 (int, int);
 static void Convert16To24Packed (int, int);
@@ -292,6 +344,12 @@ void S9xExtraDisplayUsage (void)
 	/*                               12345678901234567890123456789012345678901234567890123456789012345678901234567890 */
 
 	S9xMessage(S9X_INFO, S9X_USAGE, "-setrepeat                      Allow altering keyboard auto-repeat");
+	S9xMessage(S9X_INFO, S9X_USAGE, "");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-fullscreen                     Switch to full-screen on start");
+#ifdef USE_XVIDEO
+	S9xMessage(S9X_INFO, S9X_USAGE, "-xvideo                         Hardware accelerated scaling");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-maxaspect                      Try to fill the display, in fullscreen");
+#endif
 	S9xMessage(S9X_INFO, S9X_USAGE, "");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-v1                             Video mode: Blocky (default)");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-v2                             Video mode: TV");
@@ -309,6 +367,17 @@ void S9xParseDisplayArg (char **argv, int &i, int argc)
 	if (!strcasecmp(argv[i], "-setrepeat"))
 		GUI.no_repeat = FALSE;
 	else
+	if (!strcasecmp(argv[i], "-fullscreen"))
+		GUI.fullscreen = TRUE;
+	else
+#ifdef USE_XVIDEO
+	if (!strcasecmp(argv[i], "-xvideo"))
+		GUI.use_xvideo = TRUE;
+	else
+	if (!strcasecmp(argv[i], "-maxaspect"))
+		GUI.maxaspect = TRUE;
+	else
+#endif
 	if (!strncasecmp(argv[i], "-v", 2))
 	{
 		switch (argv[i][2])
@@ -467,6 +536,11 @@ const char * S9xParseDisplayConfig (ConfigFile &conf, int pass)
 	}
 
 	GUI.no_repeat = !conf.GetBool("Unix/X11::SetKeyRepeat", TRUE);
+	GUI.fullscreen = conf.GetBool("Unix/X11::Fullscreen", FALSE);
+#ifdef USE_XVIDEO
+	GUI.use_xvideo = conf.GetBool("Unix/X11::Xvideo", FALSE);
+	GUI.maxaspect = conf.GetBool("Unix/X11::MaxAspect", FALSE);
+#endif
 
 	if (conf.Exists("Unix/X11::VideoMode"))
 	{
@@ -493,6 +567,234 @@ static int ErrorHandler (Display *display, XErrorEvent *event)
 #endif
 	return (0);
 }
+
+#ifdef USE_XVIDEO
+static int get_inv_shift (uint32 mask, int bpp)
+{
+    int i;
+
+    // Find mask
+    for (i = 0; (i < bpp) && !(mask & (1 << i)); i++) {};
+
+    // Find start of mask
+    for (; (i < bpp) && (mask & (1 << i)); i++) {};
+
+    return (bpp - i);
+}
+
+static unsigned char CLAMP (int v, int min, int max)
+{
+	if (v < min) return min;
+	if (v > max) return max;
+	return v;
+}
+
+static bool8 SetupXvideo()
+{
+	int ret;
+
+	// Init xv_port
+	GUI.xv_port = -1;
+
+	/////////////////////
+	// Check that Xvideo extension seems OK
+	unsigned int p_version, p_release, p_request_base, p_event_base, p_error_base;
+	ret = XvQueryExtension(GUI.display,
+		&p_version, &p_release, &p_request_base,
+		&p_event_base, &p_error_base);
+	if (ret != Success) { fprintf(stderr,"XvQueryExtension error\n"); return FALSE; }
+	printf("XvExtension version %i.%i\n",p_version,p_release);
+
+	/////////////////////
+	// Get info about the Adaptors available for this window
+	unsigned int	p_num_adaptors;
+	XvAdaptorInfo*	ai;
+	ret = XvQueryAdaptors(GUI.display, GUI.window, &p_num_adaptors, &ai);
+
+	if (ret != Success || p_num_adaptors == 0) {
+		fprintf(stderr,"XvQueryAdaptors error.");
+		return FALSE;
+	}
+	printf("XvQueryAdaptors: %d adaptor(s) found.\n",p_num_adaptors);
+
+	unsigned int minAdaptor = 0, maxAdaptor = p_num_adaptors;
+	// Allow user to force adaptor choice
+	/* if (adaptor >= 0 && adaptor < p_num_adaptors)
+	{
+		if (verbose) std::cout << "Forcing adaptor " << adaptor << ", '" << ai[adaptor].name << "'" << std::endl;
+		minAdaptor = adaptor;
+		maxAdaptor = adaptor + 1;
+	} */
+
+	/////////////////////
+	// Iterate through list of available adaptors.
+	//  Grab a port if we can.
+	for (unsigned int i = minAdaptor; i < maxAdaptor && GUI.xv_port < 0; i++)
+	{
+		// We need to find one supporting XvInputMask and XvImageMask.
+		if (! (ai[i].type & XvImageMask)) continue;
+		if (! (ai[i].type & XvInputMask)) continue;
+
+		printf("\tAdaptor #%d: [%s]: %ld port(s) available.\n", i, ai[i].name, ai[i].num_ports);
+
+		// Get encodings available here
+		//  AFAIK all ports on an adapter share the same encodings info.
+		unsigned int encodings;
+		XvEncodingInfo	*ei;
+		ret = XvQueryEncodings(GUI.display, ai[i].base_id, &encodings, &ei);
+		if (ret != Success || encodings == 0) {
+	                fprintf(stderr,"XvQueryEncodings error.");
+			continue;
+		}
+
+		// Ensure the XV_IMAGE encoding available has sufficient width/height for us.
+		bool8 can_fit = FALSE;
+		for (unsigned int j = 0; j < encodings; j++)
+		{
+			if (strcmp(ei[j].name,"XV_IMAGE")) continue;
+			if (ei[j].width >= SNES_WIDTH * 2 &&
+				ei[j].height >= SNES_HEIGHT_EXTENDED * 2)
+			{
+				can_fit = TRUE;
+				break;
+			}
+		}
+		XvFreeEncodingInfo(ei);
+
+		if (can_fit == FALSE)
+		{
+			fprintf(stderr,"\tDid not find XV_IMAGE encoding with enough max size\n");
+			continue;
+		}
+
+		// Phew. If we've made it this far, we can try to choose it for our output port.
+		for (unsigned int p = ai[i].base_id; p < ai[i].base_id+ai[i].num_ports; p++)
+		{
+			ret = XvGrabPort(GUI.display, p, CurrentTime);
+			if (ret == Success)
+			{
+				printf("\tSuccessfully bound to Xv port %d\n",p);
+				GUI.xv_port = p;
+				break;
+			} else {
+				fprintf(stderr,"\tXvGrabPort port %d fail.\n",p);
+			}
+		}
+	}
+	XvFreeAdaptorInfo(ai);
+
+	/////////////////////
+	// Bail out here if we haven't managed to bind to any port.
+	if (GUI.xv_port < 0)
+	{
+		fprintf(stderr,"No suitable xv_port found in any Adaptors.\n");
+		return FALSE;
+	}
+
+	// Xv ports can have Attributes (hue, saturation, etc)
+	/* Set XV_AUTOPAINT_COLORKEY _only_ if available */
+	int num_attrs;
+	XvAttribute*	port_attr;
+	port_attr = XvQueryPortAttributes (GUI.display, GUI.xv_port, &num_attrs);
+
+	for (int i = 0; i < num_attrs; i++)
+	{
+		if (!strcmp (port_attr[i].name, "XV_AUTOPAINT_COLORKEY"))
+		{
+			Atom colorkey = None;
+
+			colorkey = XInternAtom (GUI.display, "XV_AUTOPAINT_COLORKEY", True);
+			if (colorkey != None)
+			{
+				XvSetPortAttribute (GUI.display, GUI.xv_port, colorkey, 1);
+				printf("\tSet XV_AUTOPAINT_COLORKEY.\n");
+			}
+		}
+	}
+	XFree(port_attr);
+
+	// Now we need to find to find the image format to use for output.
+	//  There are two steps to this:
+	//    Prefer an XvRGB version of lowest bitdepth.
+	//  If that's not available use YUY2
+	int	formats;
+	XvImageFormatValues*	fo;
+	fo = XvListImageFormats(GUI.display, GUI.xv_port, &formats);
+	if (formats == 0)
+	{
+		fprintf(stderr,"No valid image formats for Xv port!");
+		return FALSE;
+	}
+
+	/* Ok time to search for a good Format */
+	GUI.xv_format = FOURCC_YUY2;
+	GUI.xv_bpp = 0x7FFFFFFF;
+
+	for (int i = 0; i < formats; i++)
+	{
+		if (fo[i].id == 0x3 || fo[i].type == XvRGB)
+		{
+			if (fo[i].bits_per_pixel < GUI.xv_bpp)
+			{
+				GUI.xv_format = fo[i].id;
+				GUI.xv_bpp = fo[i].bits_per_pixel;
+				GUI.bytes_per_pixel = (GUI.xv_bpp == 15) ? 2 : GUI.xv_bpp >> 3;
+				GUI.depth = fo[i].depth;
+
+				GUI.red_shift = get_inv_shift (fo[i].red_mask, GUI.xv_bpp);
+				GUI.green_shift = get_inv_shift (fo[i].green_mask, GUI.xv_bpp);
+				GUI.blue_shift = get_inv_shift (fo[i].blue_mask, GUI.xv_bpp);
+
+				/* Check for red-blue inversion on SiliconMotion drivers */
+				if (fo[i].red_mask  == 0x001f &&
+					fo[i].blue_mask == 0x7c00)
+				{
+					int copy = GUI.red_shift;
+					GUI.red_shift = GUI.blue_shift;
+					GUI.blue_shift = copy;
+				}
+
+				/* on big-endian Xv still seems to like LSB order */
+				/*if (config->force_inverted_byte_order)
+					S9xSetEndianess (ENDIAN_MSB);
+				else
+					S9xSetEndianess (ENDIAN_LSB); */
+			}
+		}
+	}
+	free (fo);
+
+	if (GUI.xv_format != FOURCC_YUY2)
+	{
+		printf("Selected XvRGB format: %d bpp\n",GUI.xv_bpp);
+	} else {
+		// use YUY2
+		printf("Fallback to YUY2 format.\n");
+		GUI.depth = 15;
+
+		/* Build a table for yuv conversion */
+		for (unsigned int color = 0; color < (1 << 15); color++)
+		{
+			int r, g, b;
+			int y, u, v;
+
+			r = (color & 0x7c00) >> 7;
+			g = (color & 0x03e0) >> 2;
+			b = (color & 0x001F) << 3;
+
+			y = (int) ((0.257  * ((double) r)) + (0.504  * ((double) g)) + (0.098  * ((double) b)) + 16.0);
+			u = (int) ((-0.148 * ((double) r)) + (-0.291 * ((double) g)) + (0.439  * ((double) b)) + 128.0);
+			v = (int) ((0.439  * ((double) r)) + (-0.368 * ((double) g)) + (-0.071 * ((double) b)) + 128.0);
+
+			GUI.y_table[color] = CLAMP (y, 0, 255);
+			GUI.u_table[color] = CLAMP (u, 0, 255);
+			GUI.v_table[color] = CLAMP (v, 0, 255);
+		}
+	}
+
+	return TRUE;
+}
+#endif
 
 void S9xInitDisplay (int argc, char **argv)
 {
@@ -526,6 +828,145 @@ void S9xInitDisplay (int argc, char **argv)
 		GUI.green_shift++;
 
 	XFree(matches);
+
+	// Init various scale-filters
+	S9xBlitFilterInit();
+	S9xBlit2xSaIFilterInit();
+	S9xBlitHQ2xFilterInit();
+
+	/* Set up parameters for creating the window */
+	XSetWindowAttributes	attrib;
+
+	memset(&attrib, 0, sizeof(attrib));
+	attrib.background_pixel = BlackPixelOfScreen(GUI.screen);
+	attrib.colormap = XCreateColormap(GUI.display, RootWindowOfScreen(GUI.screen), GUI.visual, AllocNone);
+
+	/* Try to switch to Fullscreen. */
+	if (GUI.fullscreen == TRUE)
+	{
+		/* Create the window with maximum screen width,height positioned at 0,0. */
+		GUI.window = XCreateWindow(GUI.display, RootWindowOfScreen(GUI.screen),
+							0, 0,
+							WidthOfScreen(GUI.screen), HeightOfScreen(GUI.screen), 0,
+							GUI.depth, InputOutput, GUI.visual, CWBackPixel | CWColormap, &attrib);
+
+#ifdef USE_XVIDEO
+		if (GUI.use_xvideo)
+		{
+			// Set some defaults
+			GUI.scale_w = WidthOfScreen(GUI.screen);
+			GUI.scale_h = HeightOfScreen(GUI.screen);
+
+			GUI.imageHeight = SNES_HEIGHT_EXTENDED * 2;
+
+			if (! GUI.maxaspect)
+			{
+				// Compute the maximum screen size for scaling xvideo window.
+				double screenAspect = (double)WidthOfScreen(GUI.screen) / HeightOfScreen(GUI.screen);
+				double snesAspect = (double)SNES_WIDTH / SNES_HEIGHT_EXTENDED;
+				double ratio = screenAspect / snesAspect;
+
+				printf("\tScreen (%dx%d) aspect %f vs SNES (%dx%d) aspect %f (ratio: %f)\n",
+					WidthOfScreen(GUI.screen),HeightOfScreen(GUI.screen),screenAspect,
+					SNES_WIDTH,SNES_HEIGHT_EXTENDED,snesAspect,
+					ratio);
+
+				// Correct aspect ratio
+				if (screenAspect > snesAspect)
+				{
+					// widescreen monitor, 4:3 snes
+					//  match height, scale width
+					GUI.scale_w /= ratio;
+					GUI.x_offset = (WidthOfScreen(GUI.screen) - GUI.scale_w) / 2;
+				} else {
+					// narrow monitor, 4:3 snes
+					//  match width, scale height
+					GUI.scale_h *= ratio;
+					GUI.y_offset = (HeightOfScreen(GUI.screen) - GUI.scale_h) / 2;
+				}
+			}
+
+			printf("\tUsing size %dx%d with offset (%d,%d)\n",GUI.scale_w,GUI.scale_h,GUI.x_offset,GUI.y_offset);
+		}
+		else
+#endif
+		{
+			/* Last: position the output window in the center of the screen. */
+			GUI.x_offset = (WidthOfScreen(GUI.screen) - SNES_WIDTH * 2) / 2;
+			GUI.y_offset = (HeightOfScreen(GUI.screen) - SNES_HEIGHT_EXTENDED * 2) / 2;
+		}
+	} else {
+		/* Create the window. */
+		GUI.window = XCreateWindow(GUI.display, RootWindowOfScreen(GUI.screen),
+								   (WidthOfScreen(GUI.screen) - SNES_WIDTH * 2) / 2, (HeightOfScreen(GUI.screen) - SNES_HEIGHT_EXTENDED * 2) / 2,
+								   SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2, 0, GUI.depth, InputOutput, GUI.visual, CWBackPixel | CWColormap, &attrib);
+
+		/* Tell the Window Manager that we do not wish to be resizable */
+		XSizeHints      Hints;
+		memset((void *) &Hints, 0, sizeof(XSizeHints));
+
+		Hints.flags      = PSize | PMinSize | PMaxSize;
+		Hints.min_width  = Hints.max_width  = Hints.base_width  = SNES_WIDTH * 2;
+		Hints.min_height = Hints.max_height = Hints.base_height = SNES_HEIGHT_EXTENDED * 2;
+		XSetWMNormalHints(GUI.display, GUI.window, &Hints);
+
+		/* Last: Windowed SNES is not drawn with any offsets. */
+		GUI.x_offset = GUI.y_offset = 0;
+#ifdef USE_XVIDEO
+		GUI.scale_w = SNES_WIDTH * 2;
+		GUI.scale_h = SNES_HEIGHT_EXTENDED * 2;
+#endif
+	}
+
+	/* Load UI cursors */
+	static XColor	bg, fg;
+	static char		data[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+	Pixmap			bitmap;
+
+	bitmap = XCreateBitmapFromData(GUI.display, GUI.window, data, 8, 8);
+	GUI.point_cursor = XCreatePixmapCursor(GUI.display, bitmap, bitmap, &fg, &bg, 0, 0);
+	XDefineCursor(GUI.display, GUI.window, GUI.point_cursor);
+	GUI.cross_hair_cursor = XCreateFontCursor(GUI.display, XC_crosshair);
+
+	GUI.gc = DefaultGCOfScreen(GUI.screen);
+
+	/* Other window-manager hints */
+	XWMHints	WMHints;
+
+	memset((void *) &WMHints, 0, sizeof(XWMHints));
+
+	/* Rely on the Window Manager to provide us with keyboard input */
+	WMHints.input    = True;
+	WMHints.flags    = InputHint;
+
+	XSetWMHints(GUI.display, GUI.window, &WMHints);
+	XSelectInput(GUI.display, GUI.window, FocusChangeMask | ExposureMask | KeyPressMask | KeyReleaseMask | StructureNotifyMask | ButtonPressMask | ButtonReleaseMask);
+
+	/* Bring up our window (and put it in foreground) */
+	XMapRaised(GUI.display, GUI.window);
+	XClearWindow(GUI.display, GUI.window);
+
+	// Wait for map
+	XEvent event;
+	do {
+		XNextEvent(GUI.display, &event);
+	} while (event.type != MapNotify || event.xmap.event != GUI.window);
+
+	if (GUI.fullscreen)
+	{
+		/* Try to tell the Window Manager not to decorate this window. */
+		Atom wm_state   = XInternAtom (GUI.display, "_NET_WM_STATE", true );
+		Atom wm_fullscreen = XInternAtom (GUI.display, "_NET_WM_STATE_FULLSCREEN", true );
+
+		XChangeProperty(GUI.display, GUI.window, wm_state, XA_ATOM, 32, PropModeReplace, (unsigned char *)&wm_fullscreen, 1);
+	}
+
+#ifdef USE_XVIDEO
+	if (GUI.use_xvideo)
+	{
+		GUI.use_xvideo = SetupXvideo();
+	}
+#endif
 
 	switch (GUI.depth)
 	{
@@ -565,50 +1006,6 @@ void S9xInitDisplay (int argc, char **argv)
 			break;
 	}
 
-	S9xBlitFilterInit();
-	S9xBlit2xSaIFilterInit();
-	S9xBlitHQ2xFilterInit();
-
-	XSetWindowAttributes	attrib;
-
-	memset(&attrib, 0, sizeof(attrib));
-	attrib.background_pixel = BlackPixelOfScreen(GUI.screen);
-	attrib.colormap = XCreateColormap(GUI.display, RootWindowOfScreen(GUI.screen), GUI.visual, AllocNone);
-
-	GUI.window = XCreateWindow(GUI.display, RootWindowOfScreen(GUI.screen),
-							   (WidthOfScreen(GUI.screen) - SNES_WIDTH * 2) / 2, (HeightOfScreen(GUI.screen) - SNES_HEIGHT_EXTENDED * 2) / 2,
-							   SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2, 0, GUI.depth, InputOutput, GUI.visual, CWBackPixel | CWColormap, &attrib);
-
-	static XColor	bg, fg;
-	static char		data[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-	Pixmap			bitmap;
-
-	bitmap = XCreateBitmapFromData(GUI.display, GUI.window, data, 8, 8);
-	GUI.point_cursor = XCreatePixmapCursor(GUI.display, bitmap, bitmap, &fg, &bg, 0, 0);
-	XDefineCursor(GUI.display, GUI.window, GUI.point_cursor);
-	GUI.cross_hair_cursor = XCreateFontCursor(GUI.display, XC_crosshair);
-
-	GUI.gc = DefaultGCOfScreen(GUI.screen);
-
-	XSizeHints	Hints;
-	XWMHints	WMHints;
-
-	memset((void *) &Hints, 0, sizeof(XSizeHints));
-	memset((void *) &WMHints, 0, sizeof(XWMHints));
-
-	Hints.flags      = PSize | PMinSize | PMaxSize;
-	Hints.min_width  = Hints.max_width  = Hints.base_width  = SNES_WIDTH * 2;
-	Hints.min_height = Hints.max_height = Hints.base_height = SNES_HEIGHT_EXTENDED * 2;
-	WMHints.input    = True;
-	WMHints.flags    = InputHint;
-
-	XSetWMHints(GUI.display, GUI.window, &WMHints);
-	XSetWMNormalHints(GUI.display, GUI.window, &Hints);
-	XSelectInput(GUI.display, GUI.window, FocusChangeMask | ExposureMask | KeyPressMask | KeyReleaseMask | StructureNotifyMask | ButtonPressMask | ButtonReleaseMask);
-
-	XMapRaised(GUI.display, GUI.window);
-	XClearWindow(GUI.display, GUI.window);
-
 	SetupImage();
 
 	switch (GUI.depth)
@@ -630,17 +1027,75 @@ void S9xInitDisplay (int argc, char **argv)
 			GUI.bytes_per_pixel = 2;
 			break;
 	}
+
+	printf("Using internal pixel format %d\n",GUI.pixel_format);
 }
 
 void S9xDeinitDisplay (void)
 {
-	S9xTextMode();
 	TakedownImage();
-	XSync(GUI.display, False);
-	XCloseDisplay(GUI.display);
+	if (GUI.display != NULL)
+	{
+#ifdef USE_XVIDEO
+		if (GUI.use_xvideo)
+		{
+			XvUngrabPort(GUI.display,GUI.xv_port,CurrentTime);
+		}
+#endif
+		S9xTextMode();
+		XSync(GUI.display, False);
+		XCloseDisplay(GUI.display);
+	}
 	S9xBlitFilterDeinit();
 	S9xBlit2xSaIFilterDeinit();
 	S9xBlitHQ2xFilterDeinit();
+}
+
+static void SetupImage (void)
+{
+	TakedownImage();
+
+	// Create new image struct
+	GUI.image = (Image *) calloc(sizeof(Image), 1);
+
+#ifdef USE_XVIDEO
+	if (GUI.use_xvideo)
+		SetupXvImage();
+	if (!GUI.use_xvideo)
+#endif
+		SetupXImage();
+
+	// Setup SNES buffers
+	GFX.Pitch = SNES_WIDTH * 2 * 2;
+	GUI.snes_buffer = (uint8 *) calloc(GFX.Pitch * ((SNES_HEIGHT_EXTENDED + 4) * 2), 1);
+	if (!GUI.snes_buffer)
+		FatalError("Failed to allocate GUI.snes_buffer.");
+
+	GFX.Screen = (uint16 *) (GUI.snes_buffer + (GFX.Pitch * 2 * 2));
+
+	GUI.filter_buffer = (uint8 *) calloc((SNES_WIDTH * 2) * 2 * (SNES_HEIGHT_EXTENDED * 2), 1);
+	if (!GUI.filter_buffer)
+		FatalError("Failed to allocate GUI.filter_buffer.");
+
+#ifdef USE_XVIDEO
+	if ((GUI.depth == 15 || GUI.depth == 16) && GUI.xv_format != FOURCC_YUY2)
+#else
+	if (GUI.depth == 15 || GUI.depth == 16)
+#endif
+	{
+		GUI.blit_screen_pitch = GUI.image->bytes_per_line;
+		GUI.blit_screen       = (uint8 *) GUI.image->data;
+		GUI.need_convert      = FALSE;
+	}
+	else
+	{
+		GUI.blit_screen_pitch = (SNES_WIDTH * 2) * 2;
+		GUI.blit_screen       = GUI.filter_buffer;
+		GUI.need_convert      = TRUE;
+	}
+	if (GUI.need_convert) { printf("\tImage conversion needed before blit.\n"); }
+
+	S9xGraphicsInit();
 }
 
 static void TakedownImage (void)
@@ -659,33 +1114,22 @@ static void TakedownImage (void)
 
 	if (GUI.image)
 	{
-	#ifdef MITSHM
-		if (GUI.use_shared_memory)
-		{
-			XShmDetach(GUI.display, &GUI.sm_info);
-			GUI.image->data = NULL;
-			XDestroyImage(GUI.image);
-			if (GUI.sm_info.shmaddr)
-				shmdt(GUI.sm_info.shmaddr);
-			if (GUI.sm_info.shmid >= 0)
-				shmctl(GUI.sm_info.shmid, IPC_RMID, 0);
-			GUI.image = NULL;
-		}
+#ifdef USE_XVIDEO
+		if (GUI.use_xvideo)
+			TakedownXvImage();
 		else
-	#endif
-		{
-			XDestroyImage(GUI.image);
-			GUI.image = NULL;
-		}
+#endif
+			TakedownXImage();
+
+		free(GUI.image);
+		GUI.image = NULL;
 	}
 
 	S9xGraphicsDeinit();
 }
 
-static void SetupImage (void)
+static void SetupXImage (void)
 {
-	TakedownImage();
-
 #ifdef MITSHM
 	GUI.use_shared_memory = TRUE;
 
@@ -693,26 +1137,31 @@ static void SetupImage (void)
 	Bool	shared;
 
 	if (!XShmQueryVersion(GUI.display, &major, &minor, &shared) || !shared)
-		GUI.image = NULL;
+		GUI.image->ximage = NULL;
 	else
-		GUI.image = XShmCreateImage(GUI.display, GUI.visual, GUI.depth, ZPixmap, NULL, &GUI.sm_info, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2);
+		GUI.image->ximage = XShmCreateImage(GUI.display, GUI.visual, GUI.depth, ZPixmap, NULL, &GUI.sm_info, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2);
 
-	if (!GUI.image)
+	if (!GUI.image->ximage)
 		GUI.use_shared_memory = FALSE;
 	else
 	{
-		GUI.sm_info.shmid = shmget(IPC_PRIVATE, GUI.image->bytes_per_line * GUI.image->height, IPC_CREAT | 0777);
+		// set main Image struct vars
+		GUI.image->height = GUI.image->ximage->height;
+		GUI.image->bytes_per_line = GUI.image->ximage->bytes_per_line;
+		GUI.image->data_size = GUI.image->bytes_per_line * GUI.image->height;
+
+		GUI.sm_info.shmid = shmget(IPC_PRIVATE, GUI.image->data_size, IPC_CREAT | 0777);
 		if (GUI.sm_info.shmid < 0)
 		{
-			XDestroyImage(GUI.image);
+			XDestroyImage(GUI.image->ximage);
 			GUI.use_shared_memory = FALSE;
 		}
 		else
 		{
-			GUI.image->data = GUI.sm_info.shmaddr = (char *) shmat(GUI.sm_info.shmid, 0, 0);
-			if (!GUI.image->data)
+			GUI.image->ximage->data = GUI.sm_info.shmaddr = (char *) shmat(GUI.sm_info.shmid, 0, 0);
+			if (!GUI.image->ximage->data)
 			{
-				XDestroyImage(GUI.image);
+				XDestroyImage(GUI.image->ximage);
 				shmctl(GUI.sm_info.shmid, IPC_RMID, 0);
 				GUI.use_shared_memory = FALSE;
 			}
@@ -727,10 +1176,11 @@ static void SetupImage (void)
 				// X Error handler might clear GUI.use_shared_memory if XShmAttach failed.
 				if (!GUI.use_shared_memory)
 				{
-					XDestroyImage(GUI.image);
+					XDestroyImage(GUI.image->ximage);
 					shmdt(GUI.sm_info.shmaddr);
 					shmctl(GUI.sm_info.shmid, IPC_RMID, 0);
-				}
+				} else
+					printf("Created XShmImage, size %d\n",GUI.image->data_size);
 			}
 		}
 	}
@@ -739,46 +1189,164 @@ static void SetupImage (void)
 	{
 		fprintf(stderr, "use_shared_memory failed, switching to XPutImage.\n");
 #endif
-		GUI.image = XCreateImage(GUI.display, GUI.visual, GUI.depth, ZPixmap, 0, NULL, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2, BitmapUnit(GUI.display), 0);
-		GUI.image->data = (char *) malloc(GUI.image->bytes_per_line * GUI.image->height);
-		if (!GUI.image || !GUI.image->data)
+		GUI.image->ximage = XCreateImage(GUI.display, GUI.visual, GUI.depth, ZPixmap, 0, NULL, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2, BitmapUnit(GUI.display), 0);
+		// set main Image struct vars
+		GUI.image->height = GUI.image->ximage->height;
+		GUI.image->bytes_per_line = GUI.image->ximage->bytes_per_line;
+		GUI.image->data_size = GUI.image->bytes_per_line * GUI.image->height;
+
+		GUI.image->ximage->data = (char *) malloc(GUI.image->data_size);
+		if (!GUI.image->ximage || !GUI.image->ximage->data)
 			FatalError("XCreateImage failed.");
+		printf("Created XImage, size %d\n",GUI.image->data_size);
 #ifdef MITSHM
 	}
 #endif
 
+	// Set final values
+	GUI.image->bits_per_pixel = GUI.image->ximage->bits_per_pixel;
+	GUI.image->data = GUI.image->ximage->data;
+
 #ifdef LSB_FIRST
-	GUI.image->byte_order = LSBFirst;
+	GUI.image->ximage->byte_order = LSBFirst;
 #else
-	GUI.image->byte_order = MSBFirst;
+	GUI.image->ximage->byte_order = MSBFirst;
 #endif
+}
 
-	GFX.Pitch = SNES_WIDTH * 2 * 2;
-	GUI.snes_buffer = (uint8 *) calloc(GFX.Pitch * ((SNES_HEIGHT_EXTENDED + 4) * 2), 1);
-	if (!GUI.snes_buffer)
-		FatalError("Failed to allocate GUI.snes_buffer.");
-
-	GFX.Screen = (uint16 *) (GUI.snes_buffer + (GFX.Pitch * 2 * 2));
-
-	GUI.filter_buffer = (uint8 *) calloc((SNES_WIDTH * 2) * 2 * (SNES_HEIGHT_EXTENDED * 2), 1);
-	if (!GUI.filter_buffer)
-		FatalError("Failed to allocate GUI.filter_buffer.");
-
-	if (GUI.depth == 15 || GUI.depth == 16)
+static void TakedownXImage (void)
+{
+	if (GUI.image->ximage)
 	{
-		GUI.blit_screen_pitch = GUI.image->bytes_per_line;
-		GUI.blit_screen       = (uint8 *) GUI.image->data;
-		GUI.need_convert      = FALSE;
+	#ifdef MITSHM
+		if (GUI.use_shared_memory)
+		{
+			XShmDetach(GUI.display, &GUI.sm_info);
+			GUI.image->ximage->data = NULL;
+			XDestroyImage(GUI.image->ximage);
+			if (GUI.sm_info.shmaddr)
+				shmdt(GUI.sm_info.shmaddr);
+			if (GUI.sm_info.shmid >= 0)
+				shmctl(GUI.sm_info.shmid, IPC_RMID, 0);
+			GUI.image->ximage = NULL;
+		}
+		else
+	#endif
+		{
+			XDestroyImage(GUI.image->ximage);
+			GUI.image->ximage = NULL;
+		}
 	}
+}
+
+#ifdef USE_XVIDEO
+static void SetupXvImage (void)
+{
+#ifdef MITSHM
+	GUI.use_shared_memory = TRUE;
+
+	int		major, minor;
+	Bool	shared;
+
+	if (!XShmQueryVersion(GUI.display, &major, &minor, &shared) || !shared)
+		GUI.image->xvimage = NULL;
+	else
+		GUI.image->xvimage = XvShmCreateImage(GUI.display, GUI.xv_port, GUI.xv_format, NULL, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2, &GUI.sm_info);
+
+	if (!GUI.image->xvimage)
+		GUI.use_shared_memory = FALSE;
 	else
 	{
-		GUI.blit_screen_pitch = (SNES_WIDTH * 2) * 2;
-		GUI.blit_screen       = GUI.filter_buffer;
-		GUI.need_convert      = TRUE;
+		GUI.image->height = SNES_HEIGHT_EXTENDED * 2;
+		GUI.image->data_size = GUI.image->xvimage->data_size;
+		GUI.image->bytes_per_line = GUI.image->data_size / GUI.image->height;
+		GUI.sm_info.shmid = shmget(IPC_PRIVATE, GUI.image->data_size, IPC_CREAT | 0777);
+		if (GUI.sm_info.shmid < 0)
+		{
+			XFree(GUI.image->xvimage);
+			GUI.use_shared_memory = FALSE;
+		}
+		else
+		{
+			GUI.image->xvimage->data = GUI.sm_info.shmaddr = (char *) shmat(GUI.sm_info.shmid, 0, 0);
+			if (!GUI.image->xvimage->data)
+			{
+				XFree(GUI.image->xvimage);
+				shmctl(GUI.sm_info.shmid, IPC_RMID, 0);
+				GUI.use_shared_memory = FALSE;
+			}
+			else
+			{
+				GUI.sm_info.readOnly = False;
+
+				XSetErrorHandler(ErrorHandler);
+				XShmAttach(GUI.display, &GUI.sm_info);
+				XSync(GUI.display, False);
+
+				// X Error handler might clear GUI.use_shared_memory if XShmAttach failed.
+				if (!GUI.use_shared_memory)
+				{
+					XFree(GUI.image->xvimage);
+					shmdt(GUI.sm_info.shmaddr);
+					shmctl(GUI.sm_info.shmid, IPC_RMID, 0);
+				} else
+					printf("Created XvShmImage, size %d\n",GUI.image->data_size);
+			}
+		}
 	}
 
-	S9xGraphicsInit();
+	if (!GUI.use_shared_memory)
+	{
+		fprintf(stderr, "use_shared_memory failed, switching to XvPutImage.\n");
+#endif
+		GUI.image->xvimage = XvCreateImage(GUI.display, GUI.xv_port, GUI.xv_format, NULL, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2);
+		GUI.image->height = SNES_HEIGHT_EXTENDED * 2;
+		GUI.image->data_size = GUI.image->xvimage->data_size;
+		GUI.image->bytes_per_line = GUI.image->data_size / GUI.image->height;
+
+		GUI.image->xvimage->data = (char *) malloc(GUI.image->data_size);
+		if (!GUI.image->xvimage || !GUI.image->xvimage->data)
+		{
+			fprintf(stderr, "XvCreateImage failed, falling back to software blit.\n");
+			GUI.use_xvideo = FALSE;
+			return;
+		}
+		printf("Created XvImage, size %d\n",GUI.image->data_size);
+#ifdef MITSHM
+	}
+#endif
+	// Set final values
+	GUI.image->bits_per_pixel = GUI.xv_bpp;
+	GUI.image->data = GUI.image->xvimage->data;
 }
+
+static void TakedownXvImage (void)
+{
+	if (GUI.image->xvimage)
+	{
+	#ifdef MITSHM
+		if (GUI.use_shared_memory)
+		{
+			XShmDetach(GUI.display, &GUI.sm_info);
+			GUI.image->xvimage->data = NULL;
+			XFree(GUI.image->xvimage);
+			if (GUI.sm_info.shmaddr)
+				shmdt(GUI.sm_info.shmaddr);
+			if (GUI.sm_info.shmid >= 0)
+				shmctl(GUI.sm_info.shmid, IPC_RMID, 0);
+			GUI.image->xvimage = NULL;
+		}
+		else
+	#endif
+		{
+			free(GUI.image->xvimage->data);
+			//GUI.image->xvimage->data = NULL;
+			XFree(GUI.image->xvimage);
+			GUI.image->xvimage = NULL;
+		}
+	}
+}
+#endif
 
 void S9xPutImage (int width, int height)
 {
@@ -834,7 +1402,6 @@ void S9xPutImage (int width, int height)
 		copyHeight = height;
 		blitFn = S9xBlitPixSimple1x1;
 	}
-
 	blitFn((uint8 *) GFX.Screen, GFX.Pitch, GUI.blit_screen, GUI.blit_screen_pitch, width, height);
 
 	if (height < prevHeight)
@@ -848,6 +1415,43 @@ void S9xPutImage (int width, int height)
 		}
 	}
 
+	// Change the image height if we are in maxaspect mode
+	if (GUI.maxaspect && GUI.fullscreen)
+		GUI.imageHeight = height * 2;
+
+#ifdef USE_XVIDEO
+	if (GUI.use_xvideo && (GUI.xv_format == FOURCC_YUY2))
+	{
+		uint16 *s = (uint16 *)GUI.blit_screen;
+		uint8 *d = (uint8 *)GUI.image->data;
+
+		// convert GUI.blit_screen and copy to XV image
+		for (int y = 0; y < SNES_HEIGHT_EXTENDED * 2; y++)
+		{
+			for (int x = 0; x < SNES_WIDTH * 2; x += 2)
+			{
+				// Read two RGB pxls
+				//  TODO: there is an assumption of endianness here...
+				// ALSO todo:  The 0x7FFF works around some issue with S9xPutChar, where
+				//  despite asking for RGB555 in InitImage, it insists on drawing with RGB565 instead.
+				//  This may discolor messages but at least it doesn't overflow yuv-tables and crash.
+				unsigned short rgb1 = (*s & 0x7FFF); s++;
+				unsigned short rgb2 = (*s & 0x7FFF); s++;
+
+				// put two YUYV pxls
+				// lum1
+				*d = GUI.y_table[rgb1]; d++;
+				// U
+				*d = (GUI.u_table[rgb1] + GUI.u_table[rgb2]) / 2; d++;
+				// lum2
+				*d = GUI.y_table[rgb2]; d++;
+				// V
+				*d = (GUI.v_table[rgb1] + GUI.v_table[rgb2]) / 2; d++;
+			}
+		}
+	}
+	else
+#endif
 	if (GUI.need_convert)
 	{
 		if (GUI.bytes_per_pixel == 3)
@@ -966,15 +1570,33 @@ static void Convert16To24Packed (int width, int height)
 
 static void Repaint (bool8 isFrameBoundry)
 {
+#ifdef USE_XVIDEO
+	if (GUI.use_xvideo)
+	{
+#ifdef MITSHM
+		if (GUI.use_shared_memory)
+		{
+			XvShmPutImage(GUI.display, GUI.xv_port, GUI.window, GUI.gc, GUI.image->xvimage,
+				0, 0, SNES_WIDTH * 2, GUI.imageHeight,
+				GUI.x_offset, GUI.y_offset, GUI.scale_w, GUI.scale_h, False);
+		}
+		else
+#endif
+		XvPutImage(GUI.display, GUI.xv_port, GUI.window, GUI.gc, GUI.image->xvimage,
+			0, 0, SNES_WIDTH * 2, GUI.imageHeight,
+			GUI.x_offset, GUI.y_offset, GUI.scale_w, GUI.scale_h);
+	}
+	else
+#endif
 #ifdef MITSHM
 	if (GUI.use_shared_memory)
 	{
-		XShmPutImage(GUI.display, GUI.window, GUI.gc, GUI.image, 0, 0, 0, 0, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2, False);
+		XShmPutImage(GUI.display, GUI.window, GUI.gc, GUI.image->ximage, 0, 0, GUI.x_offset, GUI.y_offset, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2, False);
 		XSync(GUI.display, False);
 	}
 	else
 #endif
-		XPutImage(GUI.display, GUI.window, GUI.gc, GUI.image, 0, 0, 0, 0, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2);
+		XPutImage(GUI.display, GUI.window, GUI.gc, GUI.image->ximage, 0, 0, GUI.x_offset, GUI.y_offset, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2);
 
 	Window			root, child;
 	int				root_x, root_y, x, y;
