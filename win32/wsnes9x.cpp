@@ -3698,7 +3698,7 @@ int WINAPI WinMain(
         {
             if (--GUI.CursorTimer == 0)
             {
-				if(!Settings.SuperScopeMaster)
+                if (GUI.ControllerOption != SNES_SUPERSCOPE && GUI.ControllerOption != SNES_JUSTIFIER && GUI.ControllerOption != SNES_JUSTIFIER_2)
                     SetCursor (NULL);
             }
         }

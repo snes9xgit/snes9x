@@ -15,7 +15,6 @@
 #include "gtk_s9x.h"
 #include "gtk_preferences.h"
 #include "gtk_icon.h"
-#include "gtk_splash.h"
 #include "gtk_display.h"
 #include "gtk_file.h"
 #include "gtk_sound.h"
@@ -140,7 +139,7 @@ event_drawingarea_draw (GtkWidget *widget,
                         cairo_t   *cr,
                         gpointer  data)
 {
-    ((Snes9xWindow *) data)->expose (NULL, cr);
+    ((Snes9xWindow *) data)->expose ();
 
     return FALSE;
 }
@@ -153,7 +152,7 @@ event_drawingarea_expose (GtkWidget      *widget,
                           GdkEventExpose *event,
                           gpointer       data)
 {
-    ((Snes9xWindow *) data)->expose (event, NULL);
+    ((Snes9xWindow *) data)->expose ();
 
     return FALSE;
 }
@@ -601,8 +600,6 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
     focused                = 1;
     paused_from_focus_loss = 0;
 
-    splash = gdk_pixbuf_new_from_inline (-1, image_splash, FALSE, NULL);
-
     if (gtk_icon_theme_has_icon (gtk_icon_theme_get_default (), "snes9x"))
     {
         gtk_window_set_default_icon_name ("snes9x");
@@ -669,8 +666,10 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
     return;
 }
 
+extern const gtk_splash_t gtk_splash;
+
 void
-Snes9xWindow::expose (GdkEventExpose *event, cairo_t *cr)
+Snes9xWindow::expose (void)
 {
     if ((!config->rom_loaded || last_width < 0) && last_width != SIZE_FLAG_DIRTY)
     {
@@ -680,13 +679,28 @@ Snes9xWindow::expose (GdkEventExpose *event, cairo_t *cr)
             config->window_height = get_height ();
         }
 
-        if (!cr)
-            draw_background (event->area.x,
-                             event->area.y,
-                             event->area.width,
-                             event->area.height);
-        else
-            draw_background (cr);
+        /* Load splash image (RGB24) into Snes9x buffer (RGB15) */
+        last_width = 256;
+        last_height = 224;
+
+        uint16 *screen_ptr = GFX.Screen;
+        const unsigned char *splash_ptr = gtk_splash.pixel_data;
+
+        for (int y = 0; y < 224; y++, screen_ptr += (GFX.Pitch / 2))
+        {
+            for (int x = 0; x < 256; x++)
+            {
+                unsigned int red = *splash_ptr++;
+                unsigned int green = *splash_ptr++;
+                unsigned int blue = *splash_ptr++;
+
+                screen_ptr[x] = ((red   & 0xF8) << 7) +
+                                ((green & 0xF8) << 2) +
+                                ((blue  & 0xF8) >> 3);
+            }
+        }
+
+        S9xDeinitUpdate (last_width, last_height);
     }
     else
     {
@@ -1621,109 +1635,6 @@ Snes9xWindow::leave_fullscreen_mode (void)
     config->fullscreen = 0;
 
     configure_widgets ();
-
-    return;
-}
-
-void
-Snes9xWindow::draw_background (cairo_t *cr)
-{
-    GtkWidget       *widget = GTK_WIDGET (drawing_area);
-    GdkColor        sel;
-    GtkAllocation   allocation;
-    cairo_pattern_t *pattern;
-
-    gtk_widget_get_allocation (widget, &allocation);
-
-    cairo_save (cr);
-
-#ifdef USE_GTK3
-    GdkRGBA rgba;
-    gtk_style_context_get_background_color (gtk_widget_get_style_context (widget), GTK_STATE_FLAG_SELECTED, &rgba);
-    sel.red = rgba.red * 65535;
-    sel.green = rgba.green * 65535;
-    sel.blue = rgba.blue * 65535;
-#else
-    sel = gtk_widget_get_style (widget)->bg[GTK_STATE_SELECTED];
-#endif
-
-    pattern = cairo_pattern_create_linear (0.0,
-                                           0.0,
-                                           0.0,
-                                           (double) allocation.height);
-
-    cairo_pattern_add_color_stop_rgb (pattern,
-                                      0.0,
-                                      (double) sel.red   * 1.0 / 65535,
-                                      (double) sel.green * 1.0 / 65535,
-                                      (double) sel.blue  * 1.0 / 65535);
-    cairo_pattern_add_color_stop_rgb (pattern,
-                                      1.0,
-                                      (double) sel.red   * 0.6 / 65535,
-                                      (double) sel.green * 0.6 / 65535,
-                                      (double) sel.blue  * 0.6 / 65535);
-
-    cairo_set_source (cr, pattern);
-
-    cairo_paint (cr);
-
-    cairo_restore (cr);
-
-    /* Put the Snes9x logo in the center */
-    gdk_cairo_set_source_pixbuf (cr, splash,
-                                 (allocation.width - gdk_pixbuf_get_width (splash)) / 2,
-                                 (allocation.height - gdk_pixbuf_get_height (splash)) / 2);
-
-    cairo_rectangle (cr,
-                     (allocation.width - gdk_pixbuf_get_width (splash)) / 2,
-                     (allocation.height - gdk_pixbuf_get_height (splash)) / 2,
-                     gdk_pixbuf_get_width (splash),
-                     gdk_pixbuf_get_height (splash));
-    cairo_fill (cr);
-
-    cairo_pattern_destroy (pattern);
-
-    return;
-}
-
-void
-Snes9xWindow::draw_background (int x, int y, int w, int h)
-{
-    cairo_t         *cr = NULL;
-    GdkWindow       *gdk_window = gtk_widget_get_window (GTK_WIDGET (drawing_area));
-
-    if (x >= 0)
-    {
-        GdkRectangle rect;
-
-        rect.x = x;
-        rect.y = y;
-        rect.width = w;
-        rect.height = h;
-
-        gdk_window_begin_paint_rect (gdk_window, &rect);
-
-        cr = gdk_cairo_create (gdk_window);
-
-        cairo_rectangle (cr,
-                         (double) x,
-                         (double) y,
-                         (double) w,
-                         (double) h);
-
-        cairo_clip (cr);
-
-        draw_background (cr);
-        gdk_window_end_paint (gdk_window);
-    }
-    else
-    {
-        cr = gdk_cairo_create (gdk_window);
-
-        draw_background (cr);
-    }
-
-    cairo_destroy (cr);
 
     return;
 }

@@ -44,6 +44,7 @@ main (int argc, char *argv[])
 
     g_thread_init (NULL);
     gdk_threads_init ();
+    gdk_threads_enter ();
 
     gtk_init (&argc, &argv);
 
@@ -126,7 +127,7 @@ main (int argc, char *argv[])
     gtk_window_present (top_level->get_window ());
 
     gtk_main ();
-
+    gdk_threads_leave ();
     return 0;
 }
 
@@ -427,6 +428,20 @@ S9xParseArg (char **argv, int &i, int argc)
                 gui_config->scale_method = FILTER_HQ4X;
             }
 #endif /* USE_HQ2X */
+#ifdef USE_XBRZ
+            else if (!strcasecmp (argv[i], "2xbrz"))
+            {
+                gui_config->scale_method = FILTER_2XBRZ;
+            }
+            else if (!strcasecmp (argv[i], "3xbrz"))
+            {
+                gui_config->scale_method = FILTER_3XBRZ;
+            }
+            else if (!strcasecmp (argv[i], "4xbrz"))
+            {
+                gui_config->scale_method = FILTER_4XBRZ;
+            }
+#endif /* USE_XBRZ */
             else if (!strcasecmp (argv[i], "epx"))
             {
                 gui_config->scale_method = FILTER_EPX;
@@ -764,7 +779,7 @@ S9xExtraUsage (void)
     printf ("GTK port options:\n"
             "-filter [option]               Use a filter to scale the image.\n"
             "                               [option] is one of: none supereagle 2xsai\n"
-            "                               super2xsai hq2x hq3x hq4x epx ntsc\n"
+            "                               super2xsai hq2x hq3x hq4x 2xbrz 3xbrz 4xbrz epx ntsc\n"
             "\n"
             "-mutesound                     Disables sound output.\n");
     return;

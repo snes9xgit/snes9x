@@ -49,7 +49,7 @@ snes9x_gtk_SOURCES = \
     src/gtk_s9xwindow.h \
     src/gtk_sound.cpp \
     src/gtk_sound.h \
-    src/gtk_splash.h \
+    src/gtk_splash.cpp \
     src/snes_ntsc_config.h \
     src/snes_ntsc.h \
     src/snes_ntsc_impl.h \
@@ -59,6 +59,14 @@ if HQ2X
 snes9x_gtk_SOURCES += \
     ../filter/hq2x.cpp \
     ../filter/hq2x.h
+endif
+
+if XBRZ
+snes9x_gtk_SOURCES += \
+    src/filter_xbrz.cpp\
+    src/filter_xbrz.h\
+    ../filter/xbrz.cpp \
+    ../filter/xbrz.h
 endif
 
 if PORTAUDIO
@@ -119,8 +127,8 @@ endif
 
 # APU
 snes9x_gtk_SOURCES += \
-    ../apu/apu.cpp 
-    
+    ../apu/apu.cpp
+
 # Byuu's APU
 snes9x_gtk_SOURCES += \
     ../apu/bapu/dsp/sdsp.cpp \
@@ -134,7 +142,7 @@ snes9x_gtk_SOURCES += \
     ../dsp1.cpp \
     ../dsp2.cpp \
     ../dsp3.cpp \
-    ../dsp4.cpp 
+    ../dsp4.cpp
 
 # Base
 snes9x_gtk_SOURCES += \

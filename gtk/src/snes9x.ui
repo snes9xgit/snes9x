@@ -1796,7 +1796,6 @@
             <property name="can_focus">False</property>
             <property name="events">GDK_EXPOSURE_MASK | GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_STRUCTURE_MASK | GDK_SUBSTRUCTURE_MASK</property>
             <signal name="button-press-event" handler="drawingarea_button_press" swapped="no"/>
-            <signal name="expose-event" handler="on_drawingarea_expose" swapped="no"/>
             <signal name="button-release-event" handler="drawingarea_button_release" swapped="no"/>
             <signal name="motion-notify-event" handler="drawingarea_motion_notify" swapped="no"/>
             <signal name="size-allocate" handler="size_allocate" swapped="no"/>

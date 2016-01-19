@@ -104,6 +104,12 @@ AC_ARG_WITH(hq2x,
   [],
   [with_hq2x=yes])
 
+AC_ARG_WITH(xbrz, 
+  [AS_HELP_STRING([--with(out)-xbrz],
+    [Enable support for the xBRZ filter (default: with)])],
+  [],
+  [with_xbrz=yes])
+
 AC_ARG_WITH(netplay,
   [AS_HELP_STRING([--with(out)-netplay],
     [Enable netplay support (default: without)])],
@@ -310,6 +316,13 @@ else
     HQ2X=0
 fi
 
+if test yes = "$with_xbrz" ; then
+    XBRZ=yes
+    CFLAGS="$CFLAGS -DUSE_XBRZ"
+else
+    XBRZ=0
+fi
+
 CFLAGS="$CFLAGS $GTK_CFLAGS $GLIB_CFLAGS $LIBXML_CFLAGS $PORTAUDIO_CFLAGS $LIBPNG_CFLAGS $SDL_CFLAGS $XV_CFLAGS $XRANDR_CFLAGS $ALSA_CFLAGS $PULSEAUDIO_CFLAGS"
 LIBS="$LIBS $GTK_LIBS $GLIB_LIBS $LIBXML_LIBS $PORTAUDIO_LIBS $LIBPNG_LIBS $SDL_LIBS $XV_LIBS $XRANDR_LIBS $ALSA_LIBS $PULSEAUDIO_LIBS"
 
@@ -444,6 +457,7 @@ AM_CONDITIONAL(SDL, [test yes = "$GTKJOY"])
 AM_CONDITIONAL(ALSA, [test yes = "$ALSA"])
 AM_CONDITIONAL(PULSEAUDIO, [test yes = "$PULSEAUDIO"])
 AM_CONDITIONAL(HQ2X, [test yes = "$HQ2X"])
+AM_CONDITIONAL(XBRZ, [test yes = "$XBRZ"])
 
 AC_SUBST(NASM)
 AC_SUBST(NASM_FLAGS)
@@ -526,4 +540,8 @@ fi
 
 if ! test yes = "$HQ2X"; then
     echo "HQ2x filter compilation is disabled."
+fi
+
+if ! test yes = "$XBRZ"; then
+    echo "xBRZ filter compilation is disabled."
 fi
