@@ -502,11 +502,11 @@ event_about_clicked (GtkButton *widget, gpointer data)
 #endif
     version_string += "</i>";
 
-    gtk_label_set_label (GTK_LABEL (about_dialog->get_widget ("version_string_label")),
-                         version_string.c_str ());
+    GtkLabel *version_string_label = GTK_LABEL (about_dialog->get_widget ("version_string_label"));
+    gtk_label_set_label (version_string_label, version_string.c_str ());
+    gtk_label_set_justify (version_string_label, GTK_JUSTIFY_LEFT);
 
-    gtk_image_set_from_pixbuf (GTK_IMAGE (about_dialog->get_widget ("preferences_splash")),
-                               top_level->splash);
+    gtk_widget_hide (about_dialog->get_widget ("preferences_splash"));
 
     monospace = pango_font_description_from_string ("Monospace 7");
 #ifdef USE_GTK3
