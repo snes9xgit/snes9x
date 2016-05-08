@@ -18,8 +18,8 @@ ifeq ($(platform),)
 	endif
 endif
 
-CXX			= g++
-CC			= gcc
+CXX			?= g++
+CC			?= gcc
 TARGET_NAME	= snes9x
 LIBM		= -lm
 
@@ -157,8 +157,8 @@ else ifneq (,$(findstring armv,$(platform)))
 	TARGET := $(TARGET_NAME)_libretro.so
 	SHARED := -shared -Wl,--no-undefined
 	fpic := -fPIC
-	CC = gcc
-	CXX = g++
+	CC ?= gcc
+	CXX ?= g++
 	ifneq (,$(findstring cortexa8,$(platform)))
 		CXXFLAGS += -marm -mcpu=cortex-a8
 	else ifneq (,$(findstring cortexa9,$(platform)))
