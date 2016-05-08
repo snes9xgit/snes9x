@@ -14,60 +14,63 @@
 #include "display.h"
 #include "conffile.h"
 #include <stdio.h>
-#ifndef __WIN32__
+#ifdef _WIN32
+#include <direct.h>
+#else
 #include <unistd.h>
 #endif
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
 
-#define RETRO_DEVICE_JOYPAD_MULTITAP        ((1 << 8) | RETRO_DEVICE_JOYPAD)
-#define RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE   ((1 << 8) | RETRO_DEVICE_LIGHTGUN)
-#define RETRO_DEVICE_LIGHTGUN_JUSTIFIER     ((2 << 8) | RETRO_DEVICE_LIGHTGUN)
-#define RETRO_DEVICE_LIGHTGUN_JUSTIFIERS    ((3 << 8) | RETRO_DEVICE_LIGHTGUN)
+#define RETRO_DEVICE_JOYPAD_MULTITAP ((1 << 8) | RETRO_DEVICE_JOYPAD)
+#define RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE ((1 << 8) | RETRO_DEVICE_LIGHTGUN)
+#define RETRO_DEVICE_LIGHTGUN_JUSTIFIER ((2 << 8) | RETRO_DEVICE_LIGHTGUN)
+#define RETRO_DEVICE_LIGHTGUN_JUSTIFIERS ((3 << 8) | RETRO_DEVICE_LIGHTGUN)
 
-#define RETRO_MEMORY_SNES_BSX_RAM             ((1 << 8) | RETRO_MEMORY_SAVE_RAM)
-#define RETRO_MEMORY_SNES_BSX_PRAM            ((2 << 8) | RETRO_MEMORY_SAVE_RAM)
-#define RETRO_MEMORY_SNES_SUFAMI_TURBO_A_RAM  ((3 << 8) | RETRO_MEMORY_SAVE_RAM)
-#define RETRO_MEMORY_SNES_SUFAMI_TURBO_B_RAM  ((4 << 8) | RETRO_MEMORY_SAVE_RAM)
-#define RETRO_MEMORY_SNES_GAME_BOY_RAM        ((5 << 8) | RETRO_MEMORY_SAVE_RAM)
-#define RETRO_MEMORY_SNES_GAME_BOY_RTC        ((6 << 8) | RETRO_MEMORY_RTC)
+#define RETRO_MEMORY_SNES_BSX_RAM ((1 << 8) | RETRO_MEMORY_SAVE_RAM)
+#define RETRO_MEMORY_SNES_BSX_PRAM ((2 << 8) | RETRO_MEMORY_SAVE_RAM)
+#define RETRO_MEMORY_SNES_SUFAMI_TURBO_A_RAM ((3 << 8) | RETRO_MEMORY_SAVE_RAM)
+#define RETRO_MEMORY_SNES_SUFAMI_TURBO_B_RAM ((4 << 8) | RETRO_MEMORY_SAVE_RAM)
+#define RETRO_MEMORY_SNES_GAME_BOY_RAM ((5 << 8) | RETRO_MEMORY_SAVE_RAM)
+#define RETRO_MEMORY_SNES_GAME_BOY_RTC ((6 << 8) | RETRO_MEMORY_RTC)
 
 #define RETRO_GAME_TYPE_BSX             0x101
 #define RETRO_GAME_TYPE_BSX_SLOTTED     0x102
 #define RETRO_GAME_TYPE_SUFAMI_TURBO    0x103
 #define RETRO_GAME_TYPE_SUPER_GAME_BOY  0x104
 
+
 static retro_log_printf_t log_cb = NULL;
-static retro_video_refresh_t s9x_video_cb = NULL;
-static retro_audio_sample_t s9x_audio_cb = NULL;
-static retro_audio_sample_batch_t s9x_audio_batch_cb = NULL;
-static retro_input_poll_t s9x_poller_cb = NULL;
-static retro_input_state_t s9x_input_state_cb = NULL;
+static retro_video_refresh_t video_cb = NULL;
+static retro_audio_sample_t audio_cb = NULL;
+static retro_audio_sample_batch_t audio_batch_cb = NULL;
+static retro_input_poll_t poll_cb = NULL;
+static retro_input_state_t input_state_cb = NULL;
 
 void retro_set_video_refresh(retro_video_refresh_t cb)
 {
-   s9x_video_cb = cb;
+   video_cb = cb;
 }
 
 void retro_set_audio_sample(retro_audio_sample_t cb)
 {
-   s9x_audio_cb = cb;
+   audio_cb = cb;
 }
 
 void retro_set_audio_sample_batch(retro_audio_sample_batch_t cb)
 {
-    s9x_audio_batch_cb = cb;
+    audio_batch_cb = cb;
 }
 
 void retro_set_input_poll(retro_input_poll_t cb)
 {
-   s9x_poller_cb = cb;
+   poll_cb = cb;
 }
 
 void retro_set_input_state(retro_input_state_t cb)
 {
-   s9x_input_state_cb = cb;
+   input_state_cb = cb;
 }
 
 static retro_environment_t environ_cb;
@@ -76,30 +79,31 @@ static bool rom_loaded = false;
 void retro_set_environment(retro_environment_t cb)
 {
    environ_cb = cb;
-   
-   const struct retro_variable variables[] = {
+
+   struct retro_variable variables[] = {
       // These variable names and possible values constitute an ABI with ZMZ (ZSNES Libretro player).
       // Changing "Show layer 1" is fine, but don't change "layer_1"/etc or the possible values ("Yes|No").
       // Adding more variables and rearranging them is safe.
-      { "s9x_layer_1", "Show layer 1; Yes|No" },
-      { "s9x_layer_2", "Show layer 2; Yes|No" },
-      { "s9x_layer_3", "Show layer 3; Yes|No" },
-      { "s9x_layer_4", "Show layer 4; Yes|No" },
-      { "s9x_layer_5", "Show sprite layer; Yes|No" },
-      { "s9x_gfx_clip", "Enable graphic clip windows; Yes|No" },
-      { "s9x_gfx_transp", "Enable transparency effects; Yes|No" },
-      { "s9x_sndchan_1", "Enable sound channel 1; Yes|No" },
-      { "s9x_sndchan_2", "Enable sound channel 2; Yes|No" },
-      { "s9x_sndchan_3", "Enable sound channel 3; Yes|No" },
-      { "s9x_sndchan_4", "Enable sound channel 4; Yes|No" },
-      { "s9x_sndchan_5", "Enable sound channel 5; Yes|No" },
-      { "s9x_sndchan_6", "Enable sound channel 6; Yes|No" },
-      { "s9x_sndchan_7", "Enable sound channel 7; Yes|No" },
-      { "s9x_sndchan_8", "Enable sound channel 8; Yes|No" },
+      { "snes9x_overclock", "SuperFX Overclock; disabled|40MHz|60MHz|80MHz|100MHz" },
+      { "snes9x_layer_1", "Show layer 1; Yes|No" },
+      { "snes9x_layer_2", "Show layer 2; Yes|No" },
+      { "snes9x_layer_3", "Show layer 3; Yes|No" },
+      { "snes9x_layer_4", "Show layer 4; Yes|No" },
+      { "snes9x_layer_5", "Show sprite layer; Yes|No" },
+      { "snes9x_gfx_clip", "Enable graphic clip windows; Yes|No" },
+      { "snes9x_gfx_transp", "Enable transparency effects; Yes|No" },
+      { "snes9x_sndchan_1", "Enable sound channel 1; Yes|No" },
+      { "snes9x_sndchan_2", "Enable sound channel 2; Yes|No" },
+      { "snes9x_sndchan_3", "Enable sound channel 3; Yes|No" },
+      { "snes9x_sndchan_4", "Enable sound channel 4; Yes|No" },
+      { "snes9x_sndchan_5", "Enable sound channel 5; Yes|No" },
+      { "snes9x_sndchan_6", "Enable sound channel 6; Yes|No" },
+      { "snes9x_sndchan_7", "Enable sound channel 7; Yes|No" },
+      { "snes9x_sndchan_8", "Enable sound channel 8; Yes|No" },
       { NULL, NULL },
    };
-   
-   environ_cb(RETRO_ENVIRONMENT_SET_VARIABLES, (void *)variables);
+
+   environ_cb(RETRO_ENVIRONMENT_SET_VARIABLES, variables);
 
    static const struct retro_controller_description port_1[] = {
       { "SNES Joypad", RETRO_DEVICE_JOYPAD },
@@ -115,7 +119,7 @@ void retro_set_environment(retro_environment_t cb)
       { "Justifier", RETRO_DEVICE_LIGHTGUN_JUSTIFIER },
    };
 
-   const struct retro_controller_info ports[] = {
+   static const struct retro_controller_info ports[] = {
       { port_1, 3 },
       { port_2, 5 },
       { 0 },
@@ -124,41 +128,79 @@ void retro_set_environment(retro_environment_t cb)
    environ_cb(RETRO_ENVIRONMENT_SET_CONTROLLER_INFO, (void*)ports);
 }
 
+extern void S9xResetSuperFX(void);
+
 static void update_variables(void)
 {
-   char key[14];
+   bool reset_sfx = false;
+   char key[256];
    struct retro_variable var;
-   
-   var.key=key;
-   
+   var.key = "snes9x_overclock";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
+   {
+      if (strcmp(var.value, "disabled") == 0)
+      {
+         Settings.SuperFXSpeedPerLine = 0.417 * 10.5e6;
+         reset_sfx = true;
+      }
+      else if (strcmp(var.value, "40MHz") == 0)
+      {
+         Settings.SuperFXSpeedPerLine = 0.417 * 40.5e6;
+         reset_sfx = true;
+      }
+      else if (strcmp(var.value, "60MHz") == 0)
+      {
+         Settings.SuperFXSpeedPerLine = 0.417 * 60.5e6;
+         reset_sfx = true;
+      }
+      else if (strcmp(var.value, "80MHz") == 0)
+      {
+         Settings.SuperFXSpeedPerLine = 0.417 * 80.5e6;
+         reset_sfx = true;
+      }
+      else if (strcmp(var.value, "100MHz") == 0)
+      {
+         Settings.SuperFXSpeedPerLine = 0.417 * 100.5e6;
+         reset_sfx = true;
+      }
+   }
+
+
    int disabled_channels=0;
-   strcpy(key, "s9x_sndchan_x");
+   strcpy(key, "snes9x_sndchan_x");
+   var.key=key;
    for (int i=0;i<8;i++)
    {
-      key[strlen("s9x_sndchan_")]='1'+i;
+      key[strlen("snes9x_sndchan_")]='1'+i;
       var.value=NULL;
       if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value && var.value[0]=='N') disabled_channels|=1<<i;
    }
    S9xSetSoundControl(disabled_channels^0xFF);
-   
+
+
    int disabled_layers=0;
-   strcpy(key, "s9x_layer_x");
+   strcpy(key, "snes9x_layer_x");
    for (int i=0;i<5;i++)
    {
-      key[strlen("s9x_layer_")]='1'+i;
+      key[strlen("snes9x_layer_")]='1'+i;
       var.value=NULL;
       if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value && var.value[0]=='N') disabled_layers|=1<<i;
    }
    Settings.BG_Forced=disabled_layers;
-   
+
    //for some reason, Transparency seems to control both the fixed color and the windowing registers?
-   var.key="s9x_gfx_clip";
+   var.key="snes9x_gfx_clip";
    var.value=NULL;
    Settings.DisableGraphicWindows=(environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value && var.value[0]=='N');
-   
-   var.key="s9x_gfx_transp";
+
+   var.key="snes9x_gfx_transp";
    var.value=NULL;
    Settings.Transparency=!(environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value && var.value[0]=='N');
+
+   if (reset_sfx)
+      S9xResetSuperFX();
 }
 
 static void S9xAudioCallback(void*)
@@ -169,35 +211,23 @@ static void S9xAudioCallback(void*)
    S9xFinalizeSamples();
    size_t avail = S9xGetSampleCount();
    S9xMixSamples((uint8*)audio_buf, avail);
-   s9x_audio_batch_cb(audio_buf,avail >> 1);
+   audio_batch_cb(audio_buf,avail >> 1);
 }
 
 void retro_get_system_info(struct retro_system_info *info)
 {
     memset(info,0,sizeof(retro_system_info));
 
-    info->library_name = "SNES9x";
+    info->library_name = "Snes9x";
     info->library_version = VERSION;
     info->valid_extensions = "smc|sfc|swc|fig";
     info->need_fullpath = false;
-    info->block_extract = false;    
+    info->block_extract = false;
 }
 
 void retro_get_system_av_info(struct retro_system_av_info *info)
 {
-    int pixel_format = RGB555;
-    if(environ_cb) {
-        pixel_format = RGB565;
-        enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
-        if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
-            pixel_format = RGB555;
-    }
-    S9xGraphicsDeinit();
-    S9xSetRenderPixelFormat(pixel_format);
-    S9xGraphicsInit();
-
     memset(info,0,sizeof(retro_system_av_info));
-
     info->geometry.base_width = SNES_WIDTH;
     info->geometry.base_height = use_overscan ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT;
     info->geometry.max_width = MAX_SNES_WIDTH;
@@ -221,40 +251,40 @@ void retro_reset()
 static unsigned snes_devices[2];
 void retro_set_controller_port_device(unsigned port, unsigned device)
 {
-   if(port < 2)
+   if (port < 2)
    {
-       int offset = snes_devices[0] == RETRO_DEVICE_JOYPAD_MULTITAP ? 4 : 1;
-       switch (device)
-       {
-          case RETRO_DEVICE_JOYPAD:
-             S9xSetController(port, CTL_JOYPAD, port * offset, 0, 0, 0);
-             snes_devices[port] = RETRO_DEVICE_JOYPAD;
-             break;
-          case RETRO_DEVICE_JOYPAD_MULTITAP:
-             S9xSetController(port, CTL_MP5, port * offset, port * offset + 1, port * offset + 2, port * offset + 3);
-             snes_devices[port] = RETRO_DEVICE_JOYPAD_MULTITAP;
-             break;
-          case RETRO_DEVICE_MOUSE:
-             S9xSetController(port, CTL_MOUSE, 0, 0, 0, 0);
-             snes_devices[port] = RETRO_DEVICE_MOUSE;
-             break;
-          case RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE:
-             S9xSetController(port, CTL_SUPERSCOPE, 0, 0, 0, 0);
-             snes_devices[port] = RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE;
-             break;
-          case RETRO_DEVICE_LIGHTGUN_JUSTIFIER:
-             S9xSetController(port, CTL_JUSTIFIER, 0, 0, 0, 0);
-             snes_devices[port] = RETRO_DEVICE_LIGHTGUN_JUSTIFIER;
-             break;
-          default:
-             if (log_cb)
-                log_cb(RETRO_LOG_ERROR, "[libretro]: Invalid device (%d).\n", device);
-       }
-       if (!port)
-          retro_set_controller_port_device(1, snes_devices[1]);
+      int offset = snes_devices[0] == RETRO_DEVICE_JOYPAD_MULTITAP ? 4 : 1;
+      switch (device)
+      {
+         case RETRO_DEVICE_JOYPAD:
+            S9xSetController(port, CTL_JOYPAD, port * offset, 0, 0, 0);
+            snes_devices[port] = RETRO_DEVICE_JOYPAD;
+            break;
+         case RETRO_DEVICE_JOYPAD_MULTITAP:
+            S9xSetController(port, CTL_MP5, port * offset, port * offset + 1, port * offset + 2, port * offset + 3);
+            snes_devices[port] = RETRO_DEVICE_JOYPAD_MULTITAP;
+            break;
+         case RETRO_DEVICE_MOUSE:
+            S9xSetController(port, CTL_MOUSE, 0, 0, 0, 0);
+            snes_devices[port] = RETRO_DEVICE_MOUSE;
+            break;
+         case RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE:
+            S9xSetController(port, CTL_SUPERSCOPE, 0, 0, 0, 0);
+            snes_devices[port] = RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE;
+            break;
+         case RETRO_DEVICE_LIGHTGUN_JUSTIFIER:
+            S9xSetController(port, CTL_JUSTIFIER, 0, 0, 0, 0);
+            snes_devices[port] = RETRO_DEVICE_LIGHTGUN_JUSTIFIER;
+            break;
+         default:
+            if (log_cb)
+               log_cb(RETRO_LOG_ERROR, "[libretro]: Invalid device.\n");
+      }
+      if (!port)
+         retro_set_controller_port_device(1, snes_devices[1]);
    }
    else if(device != RETRO_DEVICE_NONE)
-       log_cb(RETRO_LOG_INFO, "[libretro]: Nonexistent Port (%d).\n", port);
+      log_cb(RETRO_LOG_INFO, "[libretro]: Nonexistent Port (%d).\n", port);
 }
 
 void retro_cheat_reset()
@@ -267,10 +297,10 @@ void retro_cheat_set(unsigned index, bool enabled, const char *code)
 {
    uint32 address;
    uint8 val;
-   
+
    bool8 sram;
    uint8 bytes[3];//used only by GoldFinger, ignored for now
-   
+
    if (S9xGameGenieToRaw(code, address, val)!=NULL &&
        S9xProActionReplayToRaw(code, address, val)!=NULL &&
        S9xGoldFingerToRaw(code, address, sram, val, bytes)!=NULL)
@@ -279,27 +309,161 @@ void retro_cheat_set(unsigned index, bool enabled, const char *code)
    }
    if (index>Cheat.num_cheats) return; // cheat added in weird order, ignore
    if (index==Cheat.num_cheats) Cheat.num_cheats++;
-   
+
    Cheat.c[index].address = address;
    Cheat.c[index].byte = val;
    Cheat.c[index].enabled = enabled;
-   
+
    Cheat.c[index].saved = FALSE; // it'll be saved next time cheats run anyways
-   
+
    Settings.ApplyCheats=true;
    S9xApplyCheats();
 }
 
+#define MAX_MAPS 32
+static struct retro_memory_descriptor memorydesc[MAX_MAPS];
+static unsigned memorydesc_c;
+
+static bool merge_mapping()
+{
+	if (memorydesc_c==1) return false;//can't merge the only one
+	struct retro_memory_descriptor * a=&memorydesc[MAX_MAPS - (memorydesc_c-1)];
+	struct retro_memory_descriptor * b=&memorydesc[MAX_MAPS - memorydesc_c];
+//printf("test %x/%x\n",a->start,b->start);
+	if (a->flags != b->flags) return false;
+	if (a->disconnect != b->disconnect) return false;
+	if (a->len != b->len) return false;
+	if (a->addrspace || b->addrspace) return false;//we don't use these
+	if (((char*)a->ptr)+a->offset==((char*)b->ptr)+b->offset && a->select==b->select)
+	{
+//printf("merge/mirror\n");
+		a->select&=~(a->start^b->start);
+		memorydesc_c--;
+		return true;
+	}
+	uint32 len=a->len;
+	if (!len) len=(0x1000000 - a->select);
+	if (len && ((len-1) & (len | a->disconnect))==0 && ((char*)a->ptr)+a->offset+len == ((char*)b->ptr)+b->offset)
+	{
+//printf("merge/consec\n");
+		a->select &=~ len;
+		a->disconnect &=~ len;
+		memorydesc_c--;
+		return true;
+	}
+//printf("nomerge\n");
+	return false;
+}
+
+void S9xAppendMapping(struct retro_memory_descriptor *desc)
+{
+	//do it backwards - snes9x defines the last one to win, while we define the first one to win
+	//printf("add %x\n",desc->start);
+	memcpy(&memorydesc[MAX_MAPS - (++memorydesc_c)], desc, sizeof(struct retro_memory_descriptor));
+	while (merge_mapping()) {}
+}
+
+static void init_descriptors(void)
+{
+   struct retro_input_descriptor desc[] = {
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT,  "D-Pad Left" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP,    "D-Pad Up" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN,  "D-Pad Down" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT, "D-Pad Right" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B,     "B" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A,     "A" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X,     "X" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_Y,     "Y" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L,     "L" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R,     "R" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT,   "Select" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START,    "Start" },
+
+      { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT,  "D-Pad Left" },
+      { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP,    "D-Pad Up" },
+      { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN,  "D-Pad Down" },
+      { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT, "D-Pad Right" },
+      { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B,     "B" },
+      { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A,     "A" },
+      { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X,     "X" },
+      { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_Y,     "Y" },
+      { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L,     "L" },
+      { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R,     "R" },
+      { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT,   "Select" },
+      { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START,    "Start" },
+
+      { 2, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT,  "D-Pad Left" },
+      { 2, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP,    "D-Pad Up" },
+      { 2, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN,  "D-Pad Down" },
+      { 2, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT, "D-Pad Right" },
+      { 2, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B,     "B" },
+      { 2, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A,     "A" },
+      { 2, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X,     "X" },
+      { 2, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_Y,     "Y" },
+      { 2, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L,     "L" },
+      { 2, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R,     "R" },
+      { 2, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT,   "Select" },
+      { 2, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START,    "Start" },
+
+      { 3, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT,  "D-Pad Left" },
+      { 3, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP,    "D-Pad Up" },
+      { 3, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN,  "D-Pad Down" },
+      { 3, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT, "D-Pad Right" },
+      { 3, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B,     "B" },
+      { 3, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A,     "A" },
+      { 3, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X,     "X" },
+      { 3, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_Y,     "Y" },
+      { 3, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L,     "L" },
+      { 3, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R,     "R" },
+      { 3, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT,   "Select" },
+      { 3, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START,    "Start" },
+
+      { 4, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT,  "D-Pad Left" },
+      { 4, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP,    "D-Pad Up" },
+      { 4, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN,  "D-Pad Down" },
+      { 4, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT, "D-Pad Right" },
+      { 4, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B,     "B" },
+      { 4, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A,     "A" },
+      { 4, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X,     "X" },
+      { 4, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_Y,     "Y" },
+      { 4, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L,     "L" },
+      { 4, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R,     "R" },
+      { 4, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT,   "Select" },
+      { 4, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START,    "Start" },
+
+      { 0 },
+   };
+
+   environ_cb(RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS, desc);
+}
+
 bool retro_load_game(const struct retro_game_info *game)
 {
+   init_descriptors();
+   memorydesc_c = 0;
+
    if(game->data == NULL && game->size == 0 && game->path != NULL)
       rom_loaded = Memory.LoadROM(game->path);
    else
       rom_loaded = Memory.LoadROMMem((const uint8_t*)game->data ,game->size);
 
+   int pixel_format = RGB555;
+   if(environ_cb) {
+       pixel_format = RGB565;
+       enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
+       if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
+           pixel_format = RGB555;
+   }
+   S9xGraphicsDeinit();
+   S9xSetRenderPixelFormat(pixel_format);
+   S9xGraphicsInit();
+
    if (!rom_loaded && log_cb)
       log_cb(RETRO_LOG_ERROR, "[libretro]: Rom loading failed...\n");
-   
+
+   struct retro_memory_map map={ memorydesc+MAX_MAPS-memorydesc_c, memorydesc_c };
+   if (rom_loaded) environ_cb(RETRO_ENVIRONMENT_SET_MEMORY_MAPS, &map);
+
    return rom_loaded;
 }
 
@@ -309,9 +473,12 @@ void retro_unload_game(void)
 bool retro_load_game_special(unsigned game_type,
       const struct retro_game_info *info, size_t num_info) {
 
+   init_descriptors();
+  memorydesc_c = 0;
+
   switch (game_type) {
      case RETRO_GAME_TYPE_BSX:
-       
+
        if(num_info == 1) {
           rom_loaded = Memory.LoadROMMem((const uint8_t*)info[0].data,info[0].size);
        } else if(num_info == 2) {
@@ -323,7 +490,7 @@ bool retro_load_game_special(unsigned game_type,
           log_cb(RETRO_LOG_ERROR, "[libretro]: BSX ROM loading failed...\n");
 
        break;
-       
+
      case RETRO_GAME_TYPE_BSX_SLOTTED:
 
        if(num_info == 2)
@@ -351,13 +518,22 @@ bool retro_load_game_special(unsigned game_type,
        break;
   }
 
+  struct retro_memory_map map={ memorydesc+MAX_MAPS-memorydesc_c, memorydesc_c };
+  if (rom_loaded) environ_cb(RETRO_ENVIRONMENT_SET_MEMORY_MAPS, &map);
+
   return rom_loaded;
 }
 
 static void map_buttons();
 
+static void check_system_specs(void)
+{
+   /* TODO - might have to variably set performance level based on SuperFX/SA-1/etc */
+   unsigned level = 12;
+   environ_cb(RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL, &level);
+}
 
-void retro_init()
+void retro_init(void)
 {
    struct retro_log_callback log;
    if (environ_cb)
@@ -372,6 +548,7 @@ void retro_init()
       log_cb = NULL;
 
    memset(&Settings, 0, sizeof(Settings));
+   Settings.SuperFXSpeedPerLine = 0.417 * 10.5e6;
    Settings.MouseMaster = TRUE;
    Settings.SuperScopeMaster = TRUE;
    Settings.JustifierMaster = TRUE;
@@ -426,7 +603,7 @@ void retro_init()
 
    S9xUnmapAllControls();
    map_buttons();
-
+   check_system_specs();
 }
 
 #define MAP_BUTTON(id, name) S9xMapButton((id), S9xGetCommandT((name)), false)
@@ -472,12 +649,14 @@ void retro_init()
 #define JUSTIFIER_X RETRO_DEVICE_ID_JUSTIFIER_X
 #define JUSTIFIER_Y RETRO_DEVICE_ID_JUSTIFIER_Y
 #define JUSTIFIER_TRIGGER RETRO_DEVICE_ID_LIGHTGUN_TRIGGER
+#define JUSTIFIER_OFFSCREEN RETRO_DEVICE_ID_LIGHTGUN_TURBO
 #define JUSTIFIER_START RETRO_DEVICE_ID_LIGHTGUN_PAUSE
 #define JUSTIFIER_FIRST JUSTIFIER_X
 #define JUSTIFIER_LAST JUSTIFIER_START
 
 #define BTN_POINTER (BTN_LAST + 1)
 #define BTN_POINTER2 (BTN_POINTER + 1)
+
 
 static void map_buttons()
 {
@@ -506,7 +685,7 @@ static void map_buttons()
    MAP_BUTTON(MAKE_BUTTON(PAD_2, BTN_R), "Joypad2 R");
    MAP_BUTTON(MAKE_BUTTON(PAD_2, BTN_LEFT), "Joypad2 Left");
    MAP_BUTTON(MAKE_BUTTON(PAD_2, BTN_RIGHT), "Joypad2 Right");
-   MAP_BUTTON(MAKE_BUTTON(PAD_2, BTN_UP), "{Joypad2 Up,Superscope ToggleTurbo}");
+   MAP_BUTTON(MAKE_BUTTON(PAD_2, BTN_UP), "{Joypad2 Up,Superscope ToggleTurbo,Justifier1 AimOffscreen}");
    MAP_BUTTON(MAKE_BUTTON(PAD_2, BTN_DOWN), "{Joypad2 Down,Superscope Pause}");
 
    MAP_BUTTON(MAKE_BUTTON(PAD_3, BTN_A), "Joypad3 A");
@@ -550,7 +729,7 @@ static void map_buttons()
 
 }
 
-// libretro uses relative values for analogue devices. 
+// libretro uses relative values for analogue devices.
 // S9x seems to use absolute values, but do convert these into relative values in the core. (Why?!)
 // Hack around it. :)
 static int16_t snes_mouse_state[2][2] = {{0}, {0}};
@@ -566,42 +745,50 @@ static void report_buttons()
       {
          case RETRO_DEVICE_JOYPAD:
             for (int i = BTN_FIRST; i <= BTN_LAST; i++)
-               S9xReportButton(MAKE_BUTTON(port * offset + 1, i), s9x_input_state_cb(port * offset, RETRO_DEVICE_JOYPAD, 0, i));
+               S9xReportButton(MAKE_BUTTON(port * offset + 1, i), input_state_cb(port * offset, RETRO_DEVICE_JOYPAD, 0, i));
             break;
 
          case RETRO_DEVICE_JOYPAD_MULTITAP:
             for (int j = 0; j < 4; j++)
                for (int i = BTN_FIRST; i <= BTN_LAST; i++)
-                  S9xReportButton(MAKE_BUTTON(port * offset + j + 1, i), s9x_input_state_cb(port * offset + j, RETRO_DEVICE_JOYPAD, 0, i));
+                     S9xReportButton(MAKE_BUTTON(port * offset + j + 1, i), input_state_cb(port * offset + j, RETRO_DEVICE_JOYPAD, 0, i));
             break;
 
          case RETRO_DEVICE_MOUSE:
-            _x = s9x_input_state_cb(port, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_X);
-            _y = s9x_input_state_cb(port, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_Y);
+            _x = input_state_cb(port, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_X);
+            _y = input_state_cb(port, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_Y);
             snes_mouse_state[port][0] += _x;
             snes_mouse_state[port][1] += _y;
             S9xReportPointer(BTN_POINTER + port, snes_mouse_state[port][0], snes_mouse_state[port][1]);
             for (int i = MOUSE_LEFT; i <= MOUSE_LAST; i++)
-               S9xReportButton(MAKE_BUTTON(port + 1, i), s9x_input_state_cb(port, RETRO_DEVICE_MOUSE, 0, i));
+               S9xReportButton(MAKE_BUTTON(port + 1, i), input_state_cb(port, RETRO_DEVICE_MOUSE, 0, i));
             break;
 
          case RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE:
-            snes_scope_state[0] += s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_X);
-            snes_scope_state[1] += s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_Y);
+            snes_scope_state[0] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE, 0, RETRO_DEVICE_ID_LIGHTGUN_X);
+            snes_scope_state[1] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE, 0, RETRO_DEVICE_ID_LIGHTGUN_Y);
+            if (snes_scope_state[0] < 0) snes_scope_state[0] = 0;
+            else if (snes_scope_state[0] > (SNES_WIDTH-1)) snes_scope_state[0] = SNES_WIDTH-1;
+            if (snes_scope_state[1] < 0) snes_scope_state[1] = 0;
+            else if (snes_scope_state[1] > (SNES_HEIGHT-1)) snes_scope_state[1] = SNES_HEIGHT-1;
             S9xReportPointer(BTN_POINTER, snes_scope_state[0], snes_scope_state[1]);
             for (int i = SCOPE_TRIGGER; i <= SCOPE_LAST; i++)
-               S9xReportButton(MAKE_BUTTON(2, i), s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN, 0, i));
+                S9xReportButton(MAKE_BUTTON(2, i), input_state_cb(port, RETRO_DEVICE_LIGHTGUN, 0, i));
             break;
 
          case RETRO_DEVICE_LIGHTGUN_JUSTIFIER:
          case RETRO_DEVICE_LIGHTGUN_JUSTIFIERS:
-            snes_justifier_state[0][0] += s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_X);
-            snes_justifier_state[0][1] += s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_Y);
-            S9xReportPointer(BTN_POINTER, snes_justifier_state[0][0], snes_justifier_state[0][1]);
+            snes_justifier_state[port][0] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_JUSTIFIER, 0, RETRO_DEVICE_ID_LIGHTGUN_X);
+            snes_justifier_state[port][1] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_JUSTIFIER, 0, RETRO_DEVICE_ID_LIGHTGUN_Y);
+            if (snes_justifier_state[port][0] < 0) snes_justifier_state[port][0] = 0;
+            else if (snes_justifier_state[port][0] > (SNES_WIDTH-1)) snes_justifier_state[port][0] = SNES_WIDTH-1;
+            if (snes_justifier_state[port][1] < 0) snes_justifier_state[port][1] = 0;
+            else if (snes_justifier_state[port][1] > (SNES_HEIGHT-1)) snes_justifier_state[port][1] = SNES_HEIGHT-1;
+            S9xReportPointer(BTN_POINTER, snes_justifier_state[port][0], snes_justifier_state[port][1]);
             for (int i = JUSTIFIER_TRIGGER; i <= JUSTIFIER_LAST; i++)
-               S9xReportButton(MAKE_BUTTON(2, i), s9x_input_state_cb(port, RETRO_DEVICE_LIGHTGUN, 0, i));
+               S9xReportButton(MAKE_BUTTON(2, i), input_state_cb(port, RETRO_DEVICE_LIGHTGUN, 0, i));
             break;
-            
+
          default:
             if (log_cb)
                log_cb(RETRO_LOG_ERROR, "[libretro]: Unknown device...\n");
@@ -615,8 +802,8 @@ void retro_run()
    bool updated = false;
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
       update_variables();
-   
-   s9x_poller_cb();
+
+   poll_cb();
    report_buttons();
    S9xMainLoop();
 }
@@ -627,14 +814,14 @@ void retro_deinit()
    Memory.Deinit();
    S9xGraphicsDeinit();
    S9xUnmapAllControls();
-   
+
    free(GFX.Screen);
 }
 
 
 unsigned retro_get_region()
-{ 
-   return Settings.PAL ? RETRO_REGION_PAL : RETRO_REGION_NTSC; 
+{
+   return Settings.PAL ? RETRO_REGION_PAL : RETRO_REGION_NTSC;
 }
 
 void* retro_get_memory_data(unsigned type)
@@ -658,6 +845,9 @@ void* retro_get_memory_data(unsigned type)
      case RETRO_MEMORY_VIDEO_RAM:
         data = Memory.VRAM;
         break;
+     //case RETRO_MEMORY_ROM:
+     //   data = Memory.ROM;
+     //   break;
 	  default:
 	     data = NULL;
 		 break;
@@ -689,6 +879,9 @@ size_t retro_get_memory_size(unsigned type)
       case RETRO_MEMORY_VIDEO_RAM:
          size = 64 * 1024;
          break;
+      //case RETRO_MEMORY_ROM:
+      //   size = Memory.CalculatedSize;
+      //   break;
 	  default:
 	     size = 0;
 		 break;
@@ -703,7 +896,7 @@ size_t retro_serialize_size()
 }
 
 bool retro_serialize(void *data, size_t size)
-{ 
+{
    if (S9xFreezeGameMem((uint8_t*)data,size) == FALSE)
       return false;
 
@@ -711,7 +904,7 @@ bool retro_serialize(void *data, size_t size)
 }
 
 bool retro_unserialize(const void* data, size_t size)
-{ 
+{
    if (S9xUnfreezeGameMem((const uint8_t*)data,size) != SUCCESS)
       return false;
    return true;
@@ -746,13 +939,13 @@ bool8 S9xDeinitUpdate(int width, int height)
       }
    }
 
-   s9x_video_cb(GFX.Screen, width, height, GFX.Pitch);
+   video_cb(GFX.Screen, width, height, GFX.Pitch);
    return TRUE;
 }
 
 bool8 S9xContinueUpdate(int width, int height)
 {
-   return true;
+   return S9xDeinitUpdate(width, height);
 }
 
 // Dummy functions that should probably be implemented correctly later.
@@ -779,8 +972,8 @@ void S9xExit() {}
 bool S9xPollPointer(unsigned int, short*, short*) { return false; }
 const char *S9xChooseMovieFilename(unsigned char) { return NULL; }
 
-bool8 S9xOpenSnapshotFile(const char* filepath, bool8 read_only, STREAM *file) 
-{ 
+bool8 S9xOpenSnapshotFile(const char* filepath, bool8 read_only, STREAM *file)
+{
    if(read_only)
    {
       if((*file = OPEN_STREAM(filepath, "rb")) != 0)
@@ -798,12 +991,12 @@ bool8 S9xOpenSnapshotFile(const char* filepath, bool8 read_only, STREAM *file)
    return (FALSE);
 }
 
-void S9xCloseSnapshotFile(STREAM file) 
+void S9xCloseSnapshotFile(STREAM file)
 {
    CLOSE_STREAM(file);
 }
 
-void S9xAutoSaveSRAM() 
+void S9xAutoSaveSRAM()
 {
    return;
 }

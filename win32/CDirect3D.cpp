@@ -179,7 +179,7 @@
 #pragma comment( lib, "d3dx9" )
 #pragma comment( lib, "DxErr" )
 
-#include "cdirect3d.h"
+#include "CDirect3D.h"
 #include "win32_display.h"
 #include "../snes9x.h"
 #include "../gfx.h"

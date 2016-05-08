@@ -200,7 +200,7 @@ void S9xInitSuperFX (void)
 void S9xResetSuperFX (void)
 {
 	// FIXME: Snes9x can't execute CPU and SuperFX at a time. Don't ask me what is 0.417 :P
-	SuperFX.speedPerLine = (uint32) (0.417 * 10.5e6 * ((1.0 / (float) Memory.ROMFramesPerSecond) / ((float) (Timings.V_Max))));
+   SuperFX.speedPerLine = (uint32) (Settings.SuperFXSpeedPerLine * ((1.0f / Memory.ROMFramesPerSecond) / ((float) (Timings.V_Max))));
 	SuperFX.oneLineDone = FALSE;
 	SuperFX.vFlags = 0;
 	CPU.IRQExternal = FALSE;

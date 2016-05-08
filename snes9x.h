@@ -395,6 +395,7 @@ struct SSettings
 
 	bool8	SupportHiRes;
 	bool8	Transparency;
+   float SuperFXSpeedPerLine;
 	uint8	BG_Forced;
 	bool8	DisableGraphicWindows;
 

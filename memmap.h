@@ -295,12 +295,12 @@ struct CMemory
 	void	InitROM (void);
 
 	uint32	map_mirror (uint32, uint32);
-	void	map_lorom (uint32, uint32, uint32, uint32, uint32);
-	void	map_hirom (uint32, uint32, uint32, uint32, uint32);
-	void	map_lorom_offset (uint32, uint32, uint32, uint32, uint32, uint32);
-	void	map_hirom_offset (uint32, uint32, uint32, uint32, uint32, uint32);
-	void	map_space (uint32, uint32, uint32, uint32, uint8 *);
-	void	map_index (uint32, uint32, uint32, uint32, int, int);
+	void	map_lorom (uint32, uint32, uint32, uint32, uint32, bool = true);
+	void	map_hirom (uint32, uint32, uint32, uint32, uint32, bool = true);
+	void	map_lorom_offset (uint32, uint32, uint32, uint32, uint32, uint32, bool = true);
+	void	map_hirom_offset (uint32, uint32, uint32, uint32, uint32, uint32, bool = true);
+	void	map_space (uint32, uint32, uint32, uint32, uint8 *, bool = true);
+	void	map_index (uint32, uint32, uint32, uint32, int, int, bool = true);
 	void	map_System (void);
 	void	map_WRAM (void);
 	void	map_LoROMSRAM (void);

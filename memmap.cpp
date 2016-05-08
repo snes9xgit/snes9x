@@ -201,6 +201,11 @@
 #include "movie.h"
 #include "display.h"
 
+#ifdef __LIBRETRO__
+#include "libretro/libretro.h"
+void S9xAppendMapping(struct retro_memory_descriptor *desc);
+#endif
+
 #ifndef SET_UI_COLOR
 #define SET_UI_COLOR(r, g, b) ;
 #endif
@@ -2527,6 +2532,9 @@ void CMemory::InitROM (void)
 	Map_Initialize();
 	CalculatedChecksum = 0;
 
+	// SRAM size
+	SRAMMask = SRAMSize ? ((1 << (SRAMSize + 3)) * 128) - 1 : 0;
+
 	if (HiROM)
     {
 		if (Settings.BS)
@@ -2657,9 +2665,6 @@ void CMemory::InitROM (void)
 		*p = 0;
 	}
 
-	// SRAM size
-	SRAMMask = SRAMSize ? ((1 << (SRAMSize + 3)) * 128) - 1 : 0;
-
 	// checksum
 	if (!isChecksumOK || ((uint32) CalculatedSize > (uint32) (((1 << (ROMSize - 7)) * 128) * 1024)))
 	{
@@ -2758,7 +2763,7 @@ uint32 CMemory::map_mirror (uint32 size, uint32 pos)
 		return (mask + map_mirror(size - mask, pos - mask));
 }
 
-void CMemory::map_lorom (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, uint32 size)
+void CMemory::map_lorom (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, uint32 size, bool auto_export_map)
 {
 	uint32	c, i, p, addr;
 
@@ -2773,9 +2778,23 @@ void CMemory::map_lorom (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 add
 			BlockIsRAM[p] = FALSE;
 		}
 	}
+
+#ifdef __LIBRETRO__
+	if (auto_export_map)
+	{
+		struct retro_memory_descriptor desc = {0};
+		desc.flags=RETRO_MEMDESC_CONST;
+		desc.ptr=ROM;
+		desc.start=bank_s<<16 | addr_s;
+		desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
+		desc.disconnect=0x8000;
+		desc.len=size;
+		S9xAppendMapping(&desc);
+	}
+#endif
 }
 
-void CMemory::map_hirom (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, uint32 size)
+void CMemory::map_hirom (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, uint32 size, bool auto_export_map)
 {
 	uint32	c, i, p, addr;
 
@@ -2790,9 +2809,23 @@ void CMemory::map_hirom (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 add
 			BlockIsRAM[p] = FALSE;
 		}
 	}
+
+#ifdef __LIBRETRO__
+	if (auto_export_map)
+	{
+		struct retro_memory_descriptor desc = {0};
+		desc.flags=RETRO_MEMDESC_CONST;
+		desc.ptr=ROM;
+		desc.offset=map_mirror(size, addr_s);
+		desc.start=bank_s<<16 | addr_s;
+		desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
+		desc.len=size - desc.offset;
+		S9xAppendMapping(&desc);
+	}
+#endif
 }
 
-void CMemory::map_lorom_offset (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, uint32 size, uint32 offset)
+void CMemory::map_lorom_offset (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, uint32 size, uint32 offset, bool auto_export_map)
 {
 	uint32	c, i, p, addr;
 
@@ -2807,9 +2840,24 @@ void CMemory::map_lorom_offset (uint32 bank_s, uint32 bank_e, uint32 addr_s, uin
 			BlockIsRAM[p] = FALSE;
 		}
 	}
+
+#ifdef __LIBRETRO__
+	if (auto_export_map)
+	{
+		struct retro_memory_descriptor desc = {0};
+		desc.flags=RETRO_MEMDESC_CONST;
+		desc.ptr=ROM;
+		desc.offset=offset;
+		desc.start=bank_s<<16 | addr_s;
+		desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
+		desc.disconnect=0x8000;
+		desc.len=size;
+		S9xAppendMapping(&desc);
+	}
+#endif
 }
 
-void CMemory::map_hirom_offset (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, uint32 size, uint32 offset)
+void CMemory::map_hirom_offset (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, uint32 size, uint32 offset, bool auto_export_map)
 {
 	uint32	c, i, p, addr;
 
@@ -2824,9 +2872,22 @@ void CMemory::map_hirom_offset (uint32 bank_s, uint32 bank_e, uint32 addr_s, uin
 			BlockIsRAM[p] = FALSE;
 		}
 	}
+#ifdef __LIBRETRO__
+	if (auto_export_map)
+	{
+		struct retro_memory_descriptor desc = {0};
+		desc.flags=RETRO_MEMDESC_CONST;
+		desc.ptr=ROM;
+		desc.offset=map_mirror(size, offset + addr_s);
+		desc.start=bank_s<<16 | addr_s;
+		desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
+		desc.len=size;
+		S9xAppendMapping(&desc);
+	}
+#endif
 }
 
-void CMemory::map_space (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, uint8 *data)
+void CMemory::map_space (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, uint8 *data, bool auto_export_map)
 {
 	uint32	c, i, p;
 
@@ -2840,9 +2901,20 @@ void CMemory::map_space (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 add
 			BlockIsRAM[p] = TRUE;
 		}
 	}
+#ifdef __LIBRETRO__
+	if (auto_export_map)
+	{
+		struct retro_memory_descriptor desc = {0};
+		desc.ptr=data;
+		desc.start=bank_s<<16 | addr_s;
+		desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
+		desc.disconnect=0xFF0000;
+		S9xAppendMapping(&desc);
+	}
+#endif
 }
 
-void CMemory::map_index (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, int index, int type)
+void CMemory::map_index (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 addr_e, int index, int type, bool auto_export_map)
 {
 	uint32	c, i, p;
 	bool8	isROM, isRAM;
@@ -2860,6 +2932,41 @@ void CMemory::map_index (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 add
 			BlockIsRAM[p] = isRAM;
 		}
 	}
+#ifdef __LIBRETRO__
+	if (auto_export_map)
+	{
+		struct retro_memory_descriptor desc = {0};
+		desc.start=bank_s<<16 | addr_s;
+		desc.select=(bank_s<<16 | addr_s) ^ (bank_e<<16 | addr_e) ^ 0xFFFFFF;
+		if (type==MAP_LOROM_SRAM || type==MAP_SA1RAM)
+		{
+			desc.ptr=Memory.SRAM;
+			desc.disconnect=0x8000;
+			desc.len=Memory.SRAMMask+1;
+			S9xAppendMapping(&desc);
+		}
+		if (type==MAP_LOROM_SRAM_B)
+		{
+			desc.ptr=Multi.sramB;
+			desc.disconnect=0x8000;
+			desc.len=Multi.sramMaskB+1;
+			S9xAppendMapping(&desc);
+		}
+		if (type==MAP_HIROM_SRAM || type==MAP_RONLY_SRAM)
+		{
+			desc.ptr=Memory.SRAM;
+			desc.disconnect=0x00E000;
+			desc.len=Memory.SRAMMask+1;
+			S9xAppendMapping(&desc);
+		}
+		if (type==MAP_BWRAM)
+		{
+			desc.ptr=Memory.SRAM;//this one varies, but we can't use variable maps in this system.
+			desc.disconnect=0xFFE000;//It's the same as SRAM, anyways. Let's point it to there and let the front ignore it.
+			S9xAppendMapping(&desc);
+		}
+	}
+#endif
 }
 
 void CMemory::map_System (void)
@@ -3127,8 +3234,8 @@ void CMemory::Map_SufamiTurboPseudoLoROMMap (void)
 	// I don't care :P
 	map_space(0x60, 0x63, 0x8000, 0xffff, SRAM - 0x8000);
 	map_space(0xe0, 0xe3, 0x8000, 0xffff, SRAM - 0x8000);
-	map_space(0x70, 0x73, 0x8000, 0xffff, SRAM + 0x4000 - 0x8000);
-	map_space(0xf0, 0xf3, 0x8000, 0xffff, SRAM + 0x4000 - 0x8000);
+	map_space(0x70, 0x73, 0x8000, 0xffff, SRAM + 0x4000 - 0x8000, false);//these two seem to duplicate the above ones in
+	map_space(0xf0, 0xf3, 0x8000, 0xffff, SRAM + 0x4000 - 0x8000, false);//way that makes the duplicates hard to find.
 
 	map_WRAM();
 
