@@ -119,6 +119,7 @@ class Snes9xConfig
         /* Operational */
         int           sound_driver;
         int           mute_sound;
+        int           mute_sound_turbo;
         int           sound_buffer_size;
         int           sound_playback_rate;
         int           sound_input_rate;

@@ -660,6 +660,7 @@ Snes9xPreferences::move_settings_to_dialog (void)
     set_check ("pause_emulation_on_switch", config->pause_emulation_on_switch);
     set_spin  ("num_threads",               config->num_threads);
     set_check ("mute_sound_check",          config->mute_sound);
+    set_check ("mute_sound_turbo_check",    config->mute_sound_turbo);
     set_spin  ("sound_buffer_size",         config->sound_buffer_size);
     set_slider ("sound_input_rate",         config->sound_input_rate);
     set_check ("sync_sound",                Settings.SoundSync);
@@ -815,6 +816,7 @@ Snes9xPreferences::get_settings_from_dialog (void)
     config->sound_input_rate          = get_slider ("sound_input_rate");
     Settings.SoundSync                = get_check ("sync_sound");
     config->mute_sound                = get_check ("mute_sound_check");
+    config->mute_sound_turbo          = get_check ("mute_sound_turbo_check");
 
     store_ntsc_settings ();
     config->ntsc_scanline_intensity   = get_combo ("ntsc_scanline_intensity");

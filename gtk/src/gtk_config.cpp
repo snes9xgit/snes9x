@@ -139,6 +139,7 @@ Snes9xConfig::load_defaults (void)
     pause_emulation_on_switch = 0;
     num_threads = 2;
     mute_sound = FALSE;
+    mute_sound_turbo = FALSE;
     fullscreen = FALSE;
     ui_visible = TRUE;
     statusbar_visible = FALSE;
@@ -348,6 +349,7 @@ Snes9xConfig::save_config_file (void)
     xml_out_string (xml, "netplay_last_host", netplay_last_host);
 
     xml_out_int (xml, "mute_sound", mute_sound);
+    xml_out_int (xml, "mute_sound_turbo", mute_sound_turbo);
     xml_out_int (xml, "sound_buffer_size", sound_buffer_size);
     xml_out_int (xml, "sound_driver", sound_driver);
     xml_out_int (xml, "sound_input_rate", sound_input_rate);
@@ -597,6 +599,10 @@ Snes9xConfig::set_option (const char *name, const char *value)
     else if (!strcasecmp (name, "mute_sound"))
     {
         mute_sound = atoi (value);
+    }
+    else if (!strcasecmp (name, "mute_sound_turbo"))
+    {
+        mute_sound_turbo = atoi (value);
     }
     else if (!strcasecmp (name, "16bit_sound"))
     {

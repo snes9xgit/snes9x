@@ -358,6 +358,22 @@ S9xIdleFunc (gpointer data)
     {
 #endif
     S9xMainLoop ();
+
+    static int muted_from_turbo = FALSE;
+    static int mute_saved_state = FALSE;
+
+    if (Settings.TurboMode && !muted_from_turbo && gui_config->mute_sound_turbo)
+    {
+        muted_from_turbo = TRUE;
+        mute_saved_state = Settings.Mute;
+    }
+
+    if (!Settings.TurboMode && muted_from_turbo)
+    {
+        muted_from_turbo = FALSE;
+        Settings.Mute = mute_saved_state;
+    }
+
     S9xMixSound ();
 
 #ifdef NETPLAY_SUPPORT
