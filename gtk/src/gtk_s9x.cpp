@@ -357,7 +357,6 @@ S9xIdleFunc (gpointer data)
     if (!S9xNetplayPush ())
     {
 #endif
-    S9xMainLoop ();
 
     static int muted_from_turbo = FALSE;
     static int mute_saved_state = FALSE;
@@ -366,6 +365,7 @@ S9xIdleFunc (gpointer data)
     {
         muted_from_turbo = TRUE;
         mute_saved_state = Settings.Mute;
+        S9xSetSoundMute (TRUE);
     }
 
     if (!Settings.TurboMode && muted_from_turbo)
@@ -373,6 +373,9 @@ S9xIdleFunc (gpointer data)
         muted_from_turbo = FALSE;
         Settings.Mute = mute_saved_state;
     }
+
+
+    S9xMainLoop ();
 
     S9xMixSound ();
 
