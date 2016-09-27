@@ -392,7 +392,7 @@ bool ConfigFile::SaveTo(const char *filename){
 
 	if(ferror(fp))
 	{
-		fp = fp;
+		printf ("Error writing config file %s\n", filename);
 	}
 
     fclose(fp);

@@ -1140,7 +1140,7 @@ static void DSP3_OP10 (void)
 		DSP3_Reset();
 	else
 		// absorb 2 bytes
-		DSP3.DR = DSP3.DR;
+		DSP3.DR = DSP3.DR; // FIXME?
 }
 
 /*

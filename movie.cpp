@@ -822,7 +822,10 @@ int S9xMovieOpen (const char *filename, bool8 read_only)
 	}
 
 	if (fseek(fd, Movie.ControllerDataOffset, SEEK_SET))
+	{
+		fclose(fd);
 		return (WRONG_FORMAT);
+	}
 
 	Movie.File           = fd;
 	Movie.BytesPerSample = bytes_per_sample();
@@ -970,7 +973,10 @@ int S9xMovieGetInfo (const char *filename, struct MovieInfo *info)
 
 	result = read_movie_header(fd, &local_movie);
 	if (result != SUCCESS)
+	{
+		fclose(fd);
 		return (result);
+	}
 
 	info->TimeCreated     = (time_t) local_movie.MovieId;
 	info->Version         = local_movie.Version;

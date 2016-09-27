@@ -2051,7 +2051,6 @@ void S9xApplyCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 			{
 				uint16	r, s, t, st;
 
-				s = t = st = 0;
 				r = cmd.button.joypad.buttons;
 				st = r & joypad[cmd.button.joypad.idx].togglestick & joypad[cmd.button.joypad.idx].toggleturbo;
 				r ^= st;
@@ -2123,7 +2122,7 @@ void S9xApplyCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 
 			if (data1)
 				mouse[cmd.button.mouse.idx].buttons |=  i;
-			else 
+			else
 				mouse[cmd.button.mouse.idx].buttons &= ~i;
 
 			return;

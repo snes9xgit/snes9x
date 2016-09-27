@@ -314,7 +314,7 @@ S9xXVDisplayDriver::init (void)
     {
         if (!strcmp (port_attr[i].name, "XV_AUTOPAINT_COLORKEY"))
         {
-            Atom colorkey = None;
+            Atom colorkey;
 
             colorkey = XInternAtom (display, "XV_AUTOPAINT_COLORKEY", True);
             if (colorkey != None)

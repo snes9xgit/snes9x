@@ -535,7 +535,7 @@ void S9xNPProcessClient (int c)
 
             len = 7 + 1 + 1 + 4 + strlen (NPServer.ROMName) + 1;
 
-            delete data;
+            delete[] data;
             ptr = data = new uint8 [len];
             *ptr++ = NP_SERV_MAGIC;
             *ptr++ = NPServer.Clients [c].SendSequenceNum++;
@@ -563,7 +563,7 @@ void S9xNPProcessClient (int c)
                 S9xNPShutdownClient (c, TRUE);
                 return;
             }
-            delete data;
+            delete[] data;
 #ifdef NP_DEBUG
             printf ("SERVER: Waiting for a response from the client @%ld...\n", S9xGetMilliTime () - START);
 #endif
@@ -1306,7 +1306,7 @@ void S9xNPSendROMLoadRequest (const char *filename)
             }
         }
     }
-    delete data;
+    delete[] data;
 }
 
 void S9xNPSendSRAMToAllClients ()

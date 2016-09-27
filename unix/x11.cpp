@@ -701,7 +701,7 @@ static bool8 SetupXvideo()
 	{
 		if (!strcmp (port_attr[i].name, "XV_AUTOPAINT_COLORKEY"))
 		{
-			Atom colorkey = None;
+			Atom colorkey;
 
 			colorkey = XInternAtom (GUI.display, "XV_AUTOPAINT_COLORKEY", True);
 			if (colorkey != None)

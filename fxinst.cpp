@@ -893,7 +893,7 @@ static void fx_plot_2bit (void)
 #endif
 
 	if (GSU.vPlotOptionReg & 0x02)
-		c = (x ^ y) & 1 ? (uint8) (GSU.vColorReg >> 4) : (uint8) GSU.vColorReg;
+		c = ((x ^ y) & 1) ? (uint8) (GSU.vColorReg >> 4) : (uint8) GSU.vColorReg;
 	else
 		c = (uint8) GSU.vColorReg;
 
@@ -957,7 +957,7 @@ static void fx_plot_4bit (void)
 #endif
 
 	if (GSU.vPlotOptionReg & 0x02)
-		c = (x ^ y) & 1 ? (uint8) (GSU.vColorReg >> 4) : (uint8) GSU.vColorReg;
+		c = ((x ^ y) & 1) ? (uint8) (GSU.vColorReg >> 4) : (uint8) GSU.vColorReg;
 	else
 		c = (uint8) GSU.vColorReg;
 
@@ -1172,7 +1172,7 @@ static void fx_cmode (void)
 {
 	GSU.vPlotOptionReg = SREG;
 
-	if (GSU.vPlotOptionReg & 0x10)		
+	if (GSU.vPlotOptionReg & 0x10)
 		GSU.vScreenHeight = 256; // OBJ Mode (for drawing into sprites)
 	else
 		GSU.vScreenHeight = GSU.vScreenRealHeight;

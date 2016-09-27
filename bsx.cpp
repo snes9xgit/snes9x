@@ -358,12 +358,10 @@ static void BSX_Map_MMC (void)
 
 static void BSX_Map_FlashIO (void)
 {
-	int	c;
-
 	if (BSX.MMC[0x0C] || BSX.MMC[0x0D])
 	{
 		// Bank C0:0000, 2AAA, 5555, FF00-FF1F
-		for (c = 0; c < 16; c++)
+		for (int c = 0; c < 16; c++)
 		{
 			Map[c + 0xC00] = (uint8 *) MAP_BSX;
 			BlockIsRAM[c + 0xC00] = TRUE;
@@ -833,7 +831,7 @@ uint8 S9xGetBSXPPU (uint16 address)
 
 		// Data register? (r/w)
 		case 0x2192:
-			t = BSX.PPU[0x2192 - BSXPPUBASE];
+			// t = BSX.PPU[0x2192 - BSXPPUBASE];
 
 			// test
 			t = BSX.test2192[BSX.out_index++];

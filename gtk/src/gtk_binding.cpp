@@ -154,9 +154,9 @@ Binding::get_axis (void)
 GdkModifierType
 Binding::get_gdk_modifiers (void)
 {
-    return (GdkModifierType) ((BINDING_CTRL  & value ? GDK_CONTROL_MASK : 0) |
-                              (BINDING_ALT   & value ? GDK_MOD1_MASK    : 0) |
-                              (BINDING_SHIFT & value ? GDK_SHIFT_MASK   : 0));
+    return (GdkModifierType) (((BINDING_CTRL  & value) ? GDK_CONTROL_MASK : 0) |
+                              ((BINDING_ALT   & value) ? GDK_MOD1_MASK    : 0) |
+                              ((BINDING_SHIFT & value) ? GDK_SHIFT_MASK   : 0));
 }
 
 bool
@@ -192,9 +192,10 @@ Binding::to_string (char *str)
 
         else
         {
+            memset (buf, 0, 256);
             strncpy (buf,
                      keyval_name,
-                     256);
+                     255);
         }
 
         while ((c = strstr (buf, "_")))
@@ -203,9 +204,9 @@ Binding::to_string (char *str)
         }
 
         sprintf (str, _("Keyboard %s%s%s%s"),
-                 value & BINDING_SHIFT ? "Shift+" : "",
-                 value & BINDING_CTRL  ? "Ctrl+"  : "",
-                 value & BINDING_ALT   ? "Alt+"   : "",
+                 (value & BINDING_SHIFT) ? "Shift+" : "",
+                 (value & BINDING_CTRL)  ? "Ctrl+"  : "",
+                 (value & BINDING_ALT)   ? "Alt+"   : "",
                  buf);
     }
 
@@ -213,14 +214,14 @@ Binding::to_string (char *str)
     {
         if ((get_key ()) >= 512)
             sprintf (buf,
-                     _("Axis #%d %s %d%%"),
+                     _("Axis #%u %s %u%%"),
                      get_axis (),
                      is_positive () ? "+" : "-",
                      get_threshold ());
         else
-            sprintf (buf, _("Button %d"), get_key ());
+            sprintf (buf, _("Button %u"), get_key ());
 
-        sprintf (str, _("Joystick %d %s"), get_device (), buf);
+        sprintf (str, _("Joystick %u %s"), get_device (), buf);
     }
 
     else

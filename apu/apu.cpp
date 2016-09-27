@@ -746,7 +746,6 @@ void S9xAPULoadBlarggState(uint8 *oldblock)
     spc::reference_time = SNES::get_le32(ptr);
     ptr += sizeof(int32);
     spc::remainder = SNES::get_le32(ptr);
-    ptr += sizeof(int32);
 
     // blargg stores CPUIx in regs_in
     memcpy (SNES::cpu.registers, regs_in + 4, 4);
@@ -766,8 +765,12 @@ bool8 S9xSPCDump (const char *filename)
 
 	SNES::smp.save_spc (buf);
 
-	if ((ignore = fwrite(buf, SPC_FILE_SIZE, 1, fs)) <= 0)
+	ignore = fwrite (buf, SPC_FILE_SIZE, 1, fs);
+
+	if (ignore == 0)
+	{
 		fprintf (stderr, "Couldn't write file %s.\n", filename);
+	}
 
 	fclose(fs);
 
