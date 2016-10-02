@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2011  BearOso,
+  (c) Copyright 2009 - 2016  BearOso,
                              OV2
 
 
@@ -131,7 +131,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2011  BearOso
+  (c) Copyright 2004 - 2016  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -194,7 +194,7 @@
 (c) Copyright 2001 - 2006  John Weidman\r\n\
 (c) Copyright 2002 - 2010  Brad Jorsch, funkyass, Kris Bleakley, Nach, zones\r\n\
 (c) Copyright 2006 - 2007  nitsuja\r\n\
-(c) Copyright 2009 - 2011  BearOso, OV2\r\n\r\n\
+(c) Copyright 2009 - 2016  BearOso, OV2\r\n\r\n\
 Windows Port Authors: Matthew Kendora, funkyass, nitsuja, Nach, blip, OV2.\r\n\r\n\
 Snes9X is a Super Nintendo Entertainment System\r\n\
 emulator that allows you to play most games designed\r\n\
