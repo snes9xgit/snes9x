@@ -10,9 +10,6 @@
 #include "gtk_s9x.h"
 #include "gtk_builder_window.h"
 
-#define SIZE_FLAG_NO_DRAWING     -1
-#define SIZE_FLAG_DIRTY          -2
-
 class Snes9xWindow : public GtkBuilderWindow
 {
     public:

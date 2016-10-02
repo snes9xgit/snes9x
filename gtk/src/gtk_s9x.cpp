@@ -230,8 +230,6 @@ S9xROMLoaded (void)
     gui_config->rom_loaded = TRUE;
     top_level->configure_widgets ();
 
-    top_level->last_width = top_level->last_height = SIZE_FLAG_DIRTY;
-
     if (gui_config->full_screen_on_open)
     {
         Settings.Paused = FALSE;

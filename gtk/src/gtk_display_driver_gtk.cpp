@@ -28,12 +28,6 @@ S9xGTKDisplayDriver::update (int width, int height)
     c_width = allocation.width;
     c_height = allocation.height;
 
-    if (width == SIZE_FLAG_DIRTY)
-    {
-        this->clear ();
-        return;
-    }
-
     if (width <= 0)
         return;
 

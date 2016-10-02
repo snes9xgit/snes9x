@@ -921,14 +921,11 @@ Snes9xPreferences::get_settings_from_dialog (void)
     {
         S9xReinitDisplay ();
     }
-    else
-    {
-        S9xDisplayReconfigure ();
-        S9xDisplayRefresh (top_level->last_width, top_level->last_height);
 
-        if (config->rom_loaded)
-            S9xDeinitUpdate (top_level->last_width, top_level->last_height);
-    }
+    S9xDisplayReconfigure ();
+    S9xDisplayRefresh (top_level->last_width, top_level->last_height);
+
+    S9xDeinitUpdate (top_level->last_width, top_level->last_height);
 
     top_level->configure_widgets ();
 
