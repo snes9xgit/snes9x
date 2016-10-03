@@ -116,14 +116,16 @@ S9xOpenGLDisplayDriver::update (int width, int height)
     void  *pboMemory = NULL;
     int   x, y, w, h;
 
-    if (width <= 0)
-    {
-        gdk_window_hide (gdk_window);
-        return;
-    }
-
     GtkAllocation allocation;
     gtk_widget_get_allocation (drawing_area, &allocation);
+
+#if GTK_CHECK_VERSION(3,10,0)
+    int gdk_scale_factor = gdk_window_get_scale_factor (gdk_window);
+
+    allocation.width *= gdk_scale_factor;
+    allocation.height *= gdk_scale_factor;
+
+#endif
 
     if (output_window_width  != allocation.width ||
         output_window_height != allocation.height)

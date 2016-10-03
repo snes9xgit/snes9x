@@ -95,14 +95,16 @@ S9xXVDisplayDriver::update (int width, int height)
     GtkAllocation allocation;
 
     gtk_widget_get_allocation (drawing_area, &allocation);
+#if GTK_CHECK_VERSION(3,10,0)
+    int gdk_scale_factor = gdk_window_get_scale_factor (gdk_window);
+
+    allocation.width *= gdk_scale_factor;
+    allocation.height *= gdk_scale_factor;
+
+#endif
+
     current_width = allocation.width;
     current_height = allocation.height;
-
-    if (width <= 0)
-    {
-        gdk_window_hide (gdk_window);
-        return;
-    }
 
     if (output_window_width  != current_width ||
         output_window_height != current_height)
@@ -514,6 +516,13 @@ S9xXVDisplayDriver::clear (void)
     GC   xgc = XDefaultGC (display, XDefaultScreen (display));
 
     gtk_widget_get_allocation (drawing_area, &allocation);
+#if GTK_CHECK_VERSION(3,10,0)
+    int gdk_scale_factor = gdk_window_get_scale_factor (gdk_window);
+
+    allocation.width *= gdk_scale_factor;
+    allocation.height *= gdk_scale_factor;
+
+#endif
     width = allocation.width;
     height = allocation.height;
 
