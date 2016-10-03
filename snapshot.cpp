@@ -1443,7 +1443,7 @@ int S9xUnfreezeFromStream (STREAM stream)
 	char	buffer[PATH_MAX + 1];
 
 	len = strlen(SNAPSHOT_MAGIC) + 1 + 4 + 1;
-	if (READ_STREAM(buffer, len, stream) != len)
+	if ((int)READ_STREAM(buffer, len, stream) != len)
 		return (WRONG_FORMAT);
 
 	if (strncmp(buffer, SNAPSHOT_MAGIC, strlen(SNAPSHOT_MAGIC)) != 0)
@@ -2092,7 +2092,7 @@ static int UnfreezeBlock (STREAM stream, const char *name, uint8 *block, int siz
 
 	memset(block, 0, size);
 
-	if (READ_STREAM(block, len, stream) != len)
+	if ((int)READ_STREAM(block, len, stream) != len)
 	{
 		REVERT_STREAM(stream, rewind, 0);
 		return (WRONG_FORMAT);

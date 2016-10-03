@@ -945,7 +945,6 @@ static bool8 is_SameGame_Add_On (const uint8 *, uint32);
 static bool8 is_GNEXT_BIOS (const uint8 *, uint32);
 static bool8 is_GNEXT_Add_On (const uint8 *, uint32);
 static uint32 caCRC32 (uint8 *, uint32, uint32 crc32 = 0xffffffff);
-static uint32 ReadUPSPointer (const uint8 *, unsigned &, unsigned);
 static bool8 ReadUPSPatch (Stream *, long, int32 &);
 static long ReadInt (Stream *, unsigned);
 static bool8 ReadIPSPatch (Stream *, long, int32 &);
@@ -2018,13 +2017,12 @@ bool8 CMemory::LoadGNEXT ()
 bool8 CMemory::LoadSRTC (void)
 {
 	FILE	*fp;
-	size_t	ignore;
 
 	fp = fopen(S9xGetFilename(".rtc", SRAM_DIR), "rb");
 	if (!fp)
 		return (FALSE);
 
-	ignore = fread(RTCData.reg, 1, 20, fp);
+	fread(RTCData.reg, 1, 20, fp);
 	fclose(fp);
 
 	return (TRUE);
@@ -2033,13 +2031,12 @@ bool8 CMemory::LoadSRTC (void)
 bool8 CMemory::SaveSRTC (void)
 {
 	FILE	*fp;
-	size_t	ignore;
 
 	fp = fopen(S9xGetFilename(".rtc", SRAM_DIR), "wb");
 	if (!fp)
 		return (FALSE);
 
-	ignore = fwrite(RTCData.reg, 1, 20, fp);
+	fwrite(RTCData.reg, 1, 20, fp);
 	fclose(fp);
 
 	return (TRUE);
@@ -2166,8 +2163,7 @@ bool8 CMemory::SaveSRAM (const char *filename)
 		file = fopen(name, "wb");
 		if (file)
 		{
-			size_t	ignore;
-			ignore = fwrite((char *) Multi.sramB, size, 1, file);
+			fwrite((char *) Multi.sramB, size, 1, file);
 			fclose(file);
 		}
 
@@ -2183,8 +2179,6 @@ bool8 CMemory::SaveSRAM (const char *filename)
 		file = fopen(sramName, "wb");
 		if (file)
 		{
-			size_t	ignore;
-			ignore = fwrite((char *) SRAM, size, 1, file);
 			fclose(file);
 
 			if (Settings.SRTC || Settings.SPC7110RTC)
