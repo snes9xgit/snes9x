@@ -1415,18 +1415,18 @@ void S9xPutImage (int width, int height)
 		}
 	}
 
-	// Change the image height if we are in maxaspect mode
-	if (GUI.maxaspect && GUI.fullscreen)
+#ifdef USE_XVIDEO
+	// Adjust source blit region if SNES would only fill half the screen.
+	if (height <= SNES_HEIGHT_EXTENDED)
 		GUI.imageHeight = height * 2;
 
-#ifdef USE_XVIDEO
 	if (GUI.use_xvideo && (GUI.xv_format == FOURCC_YUY2))
 	{
 		uint16 *s = (uint16 *)GUI.blit_screen;
 		uint8 *d = (uint8 *)GUI.image->data;
 
 		// convert GUI.blit_screen and copy to XV image
-		for (int y = 0; y < SNES_HEIGHT_EXTENDED * 2; y++)
+		for (int y = 0; y < copyHeight; y++)
 		{
 			for (int x = 0; x < SNES_WIDTH * 2; x += 2)
 			{
