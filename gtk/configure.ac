@@ -1,4 +1,4 @@
-AC_INIT([snes9x-gtk], 1.53)
+AC_INIT([snes9x-gtk], 1.54)
 
 if test -z "$CFLAGS"; then
     CFLAGS="-Os -pipe"
