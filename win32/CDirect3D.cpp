@@ -180,7 +180,6 @@
 
 #pragma comment( lib, "d3d9" )
 #pragma comment( lib, "d3dx9" )
-#pragma comment( lib, "DxErr" )
 
 #include "cdirect3d.h"
 #include "win32_display.h"
@@ -191,6 +190,8 @@
 #include <Dxerr.h>
 #include <commctrl.h>
 #include "CXML.h"
+
+
 
 #include "../filter/hq2x.h"
 #include "../filter/2xsai.h"
