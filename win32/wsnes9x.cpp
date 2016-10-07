@@ -7541,6 +7541,7 @@ checkUpdateFilterBox2:
 					   default: case 2: filter = FILTER_SIMPLE2X; break;
 								case 3: filter = FILTER_SIMPLE3X; break;
 								case 4: filter = FILTER_SIMPLE4X; break;
+								case 5: case 6: filter = FILTER_SIMPLE4X; break;
 							}
 							strcpy(textOriginal, GetFilterName(filter));
 						}

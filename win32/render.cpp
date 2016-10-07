@@ -219,6 +219,8 @@ void RenderHQ4X (SSurface Src, SSurface Dst, RECT *rect);
 void Render2xBRZ(SSurface Src, SSurface Dst, RECT* rect);
 void Render3xBRZ(SSurface Src, SSurface Dst, RECT* rect);
 void Render4xBRZ(SSurface Src, SSurface Dst, RECT* rect);
+void Render5xBRZ(SSurface Src, SSurface Dst, RECT* rect);
+void Render6xBRZ(SSurface Src, SSurface Dst, RECT* rect);
 void RenderEPXA (SSurface Src, SSurface Dst, RECT *);
 void RenderEPXB (SSurface Src, SSurface Dst, RECT *);
 void RenderEPXC (SSurface Src, SSurface Dst, RECT *);
@@ -319,6 +321,8 @@ TRenderMethod FilterToMethod(RenderFilter filterID)
 		case FILTER_SIMPLE4X:	return RenderSimple4X;
 		case FILTER_HQ4X:		return RenderHQ4X;
         case FILTER_4XBRZ:      return Render4xBRZ;
+		case FILTER_5XBRZ:      return Render5xBRZ;
+		case FILTER_6XBRZ:      return Render6xBRZ;
 	}
 }
 
@@ -357,6 +361,8 @@ const char* GetFilterName(RenderFilter filterID)
 		case FILTER_SIMPLE4X: return "Simple 4X";
 		case FILTER_HQ4X: return "hq4x";
         case FILTER_4XBRZ: return "4xBRZ";
+		case FILTER_5XBRZ: return "5xBRZ";
+		case FILTER_6XBRZ: return "6xBRZ";
 	}
 }
 
@@ -388,6 +394,10 @@ int GetFilterScale(RenderFilter filterID)
 		case FILTER_HQ4X:
         case FILTER_4XBRZ:
 			return 4;
+        case FILTER_5XBRZ:
+			return 5;
+        case FILTER_6XBRZ:
+			return 6;
 	}
 }
 
@@ -409,6 +419,8 @@ bool GetFilterHiResSupport(RenderFilter filterID)
         case FILTER_2XBRZ:
         case FILTER_3XBRZ:
         case FILTER_4XBRZ:
+		case FILTER_5XBRZ:
+		case FILTER_6XBRZ:
 			return true;
 
 		default:
@@ -2744,6 +2756,16 @@ void Render3xBRZ(SSurface Src, SSurface Dst, RECT* rect)
 void Render4xBRZ(SSurface Src, SSurface Dst, RECT* rect)
 {
     RenderxBRZ(Src, Dst, rect, 4);
+}
+
+void Render5xBRZ(SSurface Src, SSurface Dst, RECT* rect)
+{
+    RenderxBRZ(Src, Dst, rect, 5);
+}
+
+void Render6xBRZ(SSurface Src, SSurface Dst, RECT* rect)
+{
+    RenderxBRZ(Src, Dst, rect, 6);
 }
 
 void RenderxBRZ(SSurface Src, SSurface Dst, RECT* rect, int scalingFactor)
