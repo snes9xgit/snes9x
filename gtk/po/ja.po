@@ -1790,7 +1790,10 @@ msgid ""
 "  (c) Copyright 1998 - 2006  Charles Bilyue'\n"
 "\n"
 "  Sound emulator code used in 1.52+\n"
-"  (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)\n"
+"  (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
+
+  S-SMP emulator code used in 1.54+
+  (c) Copyright 2016         byuu\n"
 "\n"
 "  SH assembler code partly based on x86 assembler code\n"
 "  (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)\n"
