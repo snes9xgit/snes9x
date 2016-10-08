@@ -189,6 +189,8 @@
 #define IsHiRes(x) ((x.Height > SNES_HEIGHT_EXTENDED || x.Width == 512))
 #define CurrentScale (IsHiRes(Src) ? GUI.ScaleHiRes : GUI.Scale)
 
+#define IS_SLASH(x) ((x) == TEXT('\\') || (x) == TEXT('/'))
+
 void WinRefreshDisplay(void);
 void S9xSetWinPixelFormat ();
 void SwitchToGDI();
@@ -209,5 +211,6 @@ void WinSetCustomDisplaySurface(void *screen, int ppl, int width, int height, in
 template<typename screenPtrType>
 void WinDisplayStringInBuffer (const char *string, int linesFromBottom, int pixelsFromLeft, bool allowWrap);
 char *ReadShaderFileContents(const TCHAR *filename);
+void ReduceToPath(TCHAR *filename);
 
 #endif

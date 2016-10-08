@@ -451,6 +451,16 @@ char *ReadShaderFileContents(const TCHAR *filename)
 
 }
 
+void ReduceToPath(TCHAR *filename)
+{
+    for (int i = lstrlen(filename); i >= 0; i--) {
+        if (IS_SLASH(filename[i])) {
+            filename[i] = TEXT('\0');
+            break;
+        }
+    }
+}
+
 // TODO: abstract the following functions in some way - only necessary for directdraw
 
 /* DirectDraw only begin */
