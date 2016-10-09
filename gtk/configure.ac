@@ -9,7 +9,7 @@ fi
 
 EXTRA_FLAGS="-Wall -W -pedantic -Wno-unused-parameter -Wno-unused-but-set-variable"
 CFLAGS="$CFLAGS $EXTRA_FLAGS"
-CXXFLAGS="$CXXFLAGS $EXTRA_FLAGS"
+CXXFLAGS="$CXXFLAGS $EXTRA_FLAGS -std=c++11"
 
 AC_PROG_CC
 AC_PROG_CXX
