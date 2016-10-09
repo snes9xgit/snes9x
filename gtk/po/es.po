@@ -949,6 +949,12 @@ msgstr "Bloquear acceso invalido a la VRAM"
 msgid "Allow opposing dpad directions"
 msgstr "Permitir direcciones opuestas en el mando"
 
+msgid "Rewind buffer size (MB):"
+msgstr "Tamaño del Búfer rebobinado (MB):"
+
+msgid "Number of frames between rewind snapshots:"
+msgstr "Número de cuadros entre actualizaciones rebobinado:"
+
 #: gtk/src/snes9x.ui:4345
 msgid "Let left and right or up and down be pressed at the same time"
 msgstr ""
