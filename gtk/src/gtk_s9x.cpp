@@ -222,10 +222,10 @@ S9xOpenROM (const char *rom_filename)
 
     CPU.Flags = flags;
 
-    if (gui_config->rewindBufferSize)
+    if (gui_config->rewind_buffer_size)
     {
-        printf("Setting buffer size to %u\n", gui_config->rewindBufferSize * 1024 * 1024);
-        stateMan.init(gui_config->rewindBufferSize * 1024 * 1024);
+        printf ("Using rewind buffer of %uMB\n", gui_config->rewind_buffer_size);
+        stateMan.init (gui_config->rewind_buffer_size * 1024 * 1024);
     }
 
     S9xROMLoaded ();
@@ -367,7 +367,7 @@ S9xIdleFunc (gpointer data)
 
     if(top_level->user_rewind)
         top_level->user_rewind = stateMan.pop();
-    else if(IPPU.TotalEmulatedFrames % gui_config->rewindGranularity == 0)
+    else if(IPPU.TotalEmulatedFrames % gui_config->rewind_granularity == 0)
         stateMan.push();
 
     static int muted_from_turbo = FALSE;
