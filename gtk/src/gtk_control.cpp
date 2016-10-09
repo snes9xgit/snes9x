@@ -103,7 +103,7 @@ const int b_breaks[] =
         43, /* End of Graphic options */
         61, /* End of save/load states */
         70, /* End of sound buttons */
-        76, /* End of miscellaneous buttons */
+        77, /* End of miscellaneous buttons */
         -1
 };
 
