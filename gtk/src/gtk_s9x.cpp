@@ -222,10 +222,9 @@ S9xOpenROM (const char *rom_filename)
 
     CPU.Flags = flags;
 
-    if (gui_config->rewind_buffer_size)
+    if (stateMan.init (gui_config->rewind_buffer_size * 1024 * 1024))
     {
         printf ("Using rewind buffer of %uMB\n", gui_config->rewind_buffer_size);
-        stateMan.init (gui_config->rewind_buffer_size * 1024 * 1024);
     }
 
     S9xROMLoaded ();
