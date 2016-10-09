@@ -664,6 +664,8 @@ Snes9xPreferences::move_settings_to_dialog (void)
     set_spin  ("sound_buffer_size",         config->sound_buffer_size);
     set_slider ("sound_input_rate",         config->sound_input_rate);
     set_check ("sync_sound",                Settings.SoundSync);
+    set_spin  ("rewind_buffer_size",        config->rewind_buffer_size);
+    set_spin  ("rewind_granularity",        config->rewind_granularity);
 
     int num_sound_drivers = 0;
 #ifdef USE_PORTAUDIO
@@ -826,6 +828,8 @@ Snes9xPreferences::get_settings_from_dialog (void)
     config->num_threads               = get_spin ("num_threads");
     config->default_esc_behavior      = get_combo ("default_esc_behavior");
     config->prevent_screensaver       = get_check ("prevent_screensaver");
+    config->rewind_buffer_size        = get_spin ("rewind_buffer_size");
+    config->rewind_granularity        = get_spin ("rewind_granularity");
 
 #ifdef USE_JOYSTICK
     config->joystick_threshold        = get_spin ("joystick_threshold");

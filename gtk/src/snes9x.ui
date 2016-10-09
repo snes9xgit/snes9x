@@ -216,6 +216,20 @@
     <property name="step_increment">1</property>
     <property name="page_increment">1</property>
   </object>
+  <object class="GtkAdjustment" id="rewind_buffer_adjustment">
+    <property name="lower">0</property>
+    <property name="upper">2000</property>
+    <property name="value">0</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">1</property>
+  </object>
+  <object class="GtkAdjustment" id="rewind_granularity_adjustment">
+    <property name="lower">1</property>
+    <property name="upper">600</property>
+    <property name="value">5</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">1</property>
+  </object>
   <object class="GtkAdjustment" id="adjustment7">
     <property name="lower">-1</property>
     <property name="upper">1</property>
@@ -4351,6 +4365,90 @@
                                             <property name="position">2</property>
                                           </packing>
                                         </child>
+<child>
+  <object class="GtkHBox" id="rewind_buffer_hbox">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="spacing">10</property>
+    <child>
+      <object class="GtkLabel" id="rewind_buffer_label">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Rewind buffer size (MB):</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">False</property>
+        <property name="position">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkSpinButton" id="rewind_buffer_size">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="primary_icon_activatable">False</property>
+        <property name="secondary_icon_activatable">False</property>
+        <property name="primary_icon_sensitive">True</property>
+        <property name="secondary_icon_sensitive">True</property>
+        <property name="adjustment">rewind_buffer_adjustment</property>
+        <property name="snap_to_ticks">True</property>
+        <property name="numeric">True</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">1</property>
+      </packing>
+    </child>
+  </object>
+  <packing>
+    <property name="expand">False</property>
+    <property name="fill">False</property>
+    <property name="position">3</property>
+  </packing>
+</child>
+<child>
+  <object class="GtkHBox" id="rewind_granularity_hbox">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="spacing">10</property>
+    <child>
+      <object class="GtkLabel" id="rewind_granularity_label">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Number of frames between rewind snapshots:</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">False</property>
+        <property name="position">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkSpinButton" id="rewind_granularity">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="primary_icon_activatable">False</property>
+        <property name="secondary_icon_activatable">False</property>
+        <property name="primary_icon_sensitive">True</property>
+        <property name="secondary_icon_sensitive">True</property>
+        <property name="adjustment">rewind_granularity_adjustment</property>
+        <property name="snap_to_ticks">True</property>
+        <property name="numeric">True</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">1</property>
+      </packing>
+    </child>
+  </object>
+  <packing>
+    <property name="expand">False</property>
+    <property name="fill">False</property>
+    <property name="position">4</property>
+  </packing>
+</child>
                                       </object>
                                     </child>
                                   </object>
