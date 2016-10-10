@@ -1,3 +1,18 @@
+Snes9x 1.54
+- Changed the S-SMP core module to one written by byuu.     (byuu, BearOso)
+  This has the effect of increased accuracy, fewer
+  speed hacks, but also regresses a few speed-hack games.
+- Improved IRQ emulation in several cases.                  (OV2)
+- Added rewind support.                                     (OV2)
+- Updated libretro port.                                    (OV2, libretro team)
+- GTK+, Windows: Added xBRZ filter                          (Zenju, OV2, nmagre)
+- GTK+: Fixed several issues with GTK+3.                    (BearOso)
+- GTK+: Added extra aspect ratio options.                   (BearOso)
+- GTK+: Added option to mute sound when using turbo mode.   (BearOso)
+- GTK+: Fixed expose handling to reduce overdraw and        (BearOso)
+  improve performance.
+- Unix: Added Xv support and fixed several bugs.            (greg-kennedy)
+ 
 Snes9x 1.53
 
 - Rebuilt IRQ handling.                                     (zones)

@@ -746,6 +746,8 @@ S9xOpenGLDisplayDriver::create_window (int width, int height)
     window_attr.colormap = xcolormap;
     window_attr.border_pixel = 0;
     window_attr.event_mask = StructureNotifyMask | ExposureMask;
+    window_attr.do_not_propagate_mask = 0;
+    window_attr.save_under = False;
     window_attr.background_pixmap = None;
 
     xwindow = XCreateWindow (display,
@@ -758,7 +760,7 @@ S9xOpenGLDisplayDriver::create_window (int width, int height)
                              vi->depth,
                              InputOutput,
                              vi->visual,
-                             CWColormap | CWBorderPixel | CWBackPixmap | CWEventMask,
+                             CWColormap | CWBorderPixel | CWBackPixmap | CWEventMask | CWSaveUnder | CWDontPropagate,
                              &window_attr);
     XSync (display, False);
 
