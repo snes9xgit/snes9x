@@ -11,6 +11,7 @@ Snes9x 1.54
 - GTK+: Added option to mute sound when using turbo mode.   (BearOso)
 - GTK+: Fixed expose handling to reduce overdraw and        (BearOso)
   improve performance.
+- GTK+: Updated and universalized Spanish translation.      (jristz)
 - Unix: Added Xv support and fixed several bugs.            (greg-kennedy)
  
 Snes9x 1.53
