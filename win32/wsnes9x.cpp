@@ -7890,6 +7890,7 @@ switch(msg)
 		case IDC_DWNLEFT:
 			Joypad[index].Left_Down = wParam;
 
+            break;
 		case IDC_DWNRIGHT:
 			Joypad[index].Right_Down = wParam;
 
