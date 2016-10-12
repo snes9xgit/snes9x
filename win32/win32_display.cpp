@@ -591,12 +591,13 @@ void ToggleFullScreen ()
 {
     S9xSetPause (PAUSE_TOGGLE_FULL_SCREEN);
 
+    SaveMainWinPos();
+
 	if(GUI.EmulateFullscreen) {
 		HMONITOR hm;
 		MONITORINFO mi;
 		GUI.EmulatedFullscreen = !GUI.EmulatedFullscreen;
 		if(GUI.EmulatedFullscreen) {
-			SaveMainWinPos();
 			if(GetMenu(GUI.hWnd)!=NULL)
 				SetMenu(GUI.hWnd,NULL);
 			SetWindowLongPtr (GUI.hWnd, GWL_STYLE, WS_POPUP|WS_VISIBLE);
@@ -614,7 +615,6 @@ void ToggleFullScreen ()
 	} else {
 		GUI.FullScreen = !GUI.FullScreen;
 		if(GUI.FullScreen) {
-			SaveMainWinPos();
 			if(GetMenu(GUI.hWnd)!=NULL)
 				SetMenu(GUI.hWnd,NULL);
 			SetWindowLongPtr (GUI.hWnd, GWL_STYLE, WS_POPUP|WS_VISIBLE);
