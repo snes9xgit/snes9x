@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2011  BearOso,
+  (c) Copyright 2009 - 2016  BearOso,
                              OV2
 
 
@@ -118,6 +118,9 @@
   Sound emulator code used in 1.52+
   (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
 
+  S-SMP emulator code used in 1.54+
+  (c) Copyright 2016         byuu
+
   SH assembler code partly based on x86 assembler code
   (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
 
@@ -131,7 +134,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2011  BearOso
+  (c) Copyright 2004 - 2016  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -139,7 +142,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2011  OV2
+  (c) Copyright 2009 - 2016  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -283,8 +286,6 @@ void CD3DCG::checkForCgError(const char *situation)
 	}
 }
 
-#define IS_SLASH(x) ((x) == TEXT('\\') || (x) == TEXT('/'))
-
 bool CD3DCG::LoadShader(const TCHAR *shaderFile)
 {
 	CCGShader cgShader;
@@ -298,13 +299,8 @@ bool CD3DCG::LoadShader(const TCHAR *shaderFile)
 	if (shaderFile == NULL || *shaderFile==TEXT('\0'))
 		return true;
 
-	lstrcpy(shaderPath,shaderFile);
-	for(int i=lstrlen(shaderPath); i>=0; i--){
-		if(IS_SLASH(shaderPath[i])){
-			shaderPath[i]=TEXT('\0');
-			break;
-		}
-	}
+	lstrcpy(shaderPath, shaderFile);
+    ReduceToPath(shaderPath);
 
 	SetCurrentDirectory(shaderPath);
 	if(!cgShader.LoadShader(_tToChar(shaderFile)))
@@ -342,6 +338,10 @@ bool CD3DCG::LoadShader(const TCHAR *shaderFile)
 		if(!fileContents)
 			return false;
 
+        // individual shader might include files, these should be relative to shader
+        ReduceToPath(tempPath);
+        SetCurrentDirectory(tempPath);
+
 		pass.cgVertexProgram = cgCreateProgram( cgContext, CG_SOURCE, fileContents,
 						vertexProfile, "main_vertex", vertexOptions);
 
@@ -351,6 +351,9 @@ bool CD3DCG::LoadShader(const TCHAR *shaderFile)
 						pixelProfile, "main_fragment", pixelOptions);
 
 		checkForCgError("Compiling fragment program");
+
+        // set path back for next pass
+        SetCurrentDirectory(shaderPath);
 
 		delete [] fileContents;
 		if(!pass.cgVertexProgram || !pass.cgFragmentProgram) {

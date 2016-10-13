@@ -139,6 +139,7 @@ Snes9xConfig::load_defaults (void)
     pause_emulation_on_switch = 0;
     num_threads = 2;
     mute_sound = FALSE;
+    mute_sound_turbo = FALSE;
     fullscreen = FALSE;
     ui_visible = TRUE;
     statusbar_visible = FALSE;
@@ -174,6 +175,9 @@ Snes9xConfig::load_defaults (void)
     netplay_last_host [0] = '\0';
     netplay_last_port = 6096;
     modal_dialogs = 1;
+
+    rewind_granularity = 5;
+    rewind_buffer_size = 0;
 
 #ifdef USE_OPENGL
     sync_to_vblank = 1;
@@ -324,6 +328,9 @@ Snes9xConfig::save_config_file (void)
     xml_out_int (xml, "hw_accel", hw_accel);
     xml_out_int (xml, "bilinear_filter", bilinear_filter);
 
+    xml_out_int (xml, "rewind_buffer_size", rewind_buffer_size);
+    xml_out_int (xml, "rewind_granularity", rewind_granularity);
+
 #ifdef USE_OPENGL
     xml_out_int (xml, "sync_to_vblank", sync_to_vblank);
     xml_out_int (xml, "sync_every_frame", sync_every_frame);
@@ -348,6 +355,7 @@ Snes9xConfig::save_config_file (void)
     xml_out_string (xml, "netplay_last_host", netplay_last_host);
 
     xml_out_int (xml, "mute_sound", mute_sound);
+    xml_out_int (xml, "mute_sound_turbo", mute_sound_turbo);
     xml_out_int (xml, "sound_buffer_size", sound_buffer_size);
     xml_out_int (xml, "sound_driver", sound_driver);
     xml_out_int (xml, "sound_input_rate", sound_input_rate);
@@ -598,6 +606,10 @@ Snes9xConfig::set_option (const char *name, const char *value)
     {
         mute_sound = atoi (value);
     }
+    else if (!strcasecmp (name, "mute_sound_turbo"))
+    {
+        mute_sound_turbo = atoi (value);
+    }
     else if (!strcasecmp (name, "16bit_sound"))
     {
         Settings.SixteenBitSound = atoi (value);
@@ -831,6 +843,14 @@ Snes9xConfig::set_option (const char *name, const char *value)
     else if (!strcasecmp (name, "sound_sync"))
     {
         Settings.SoundSync = atoi (value) ? 1 : 0;
+    }
+    else if (!strcasecmp (name, "rewind_buffer_size"))
+    {
+        rewind_buffer_size = CLAMP (atoi (value), 0, 2000);
+    }
+    else if (!strcasecmp (name, "rewind_granularity"))
+    {
+        rewind_granularity = CLAMP (atoi (value), 0, 600);
     }
     else
     {

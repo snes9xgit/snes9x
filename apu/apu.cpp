@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2011  BearOso,
+  (c) Copyright 2009 - 2016  BearOso,
                              OV2
 
 
@@ -118,6 +118,9 @@
   Sound emulator code used in 1.52+
   (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
 
+  S-SMP emulator code used in 1.54+
+  (c) Copyright 2016         byuu
+
   SH assembler code partly based on x86 assembler code
   (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
 
@@ -131,7 +134,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2011  BearOso
+  (c) Copyright 2004 - 2016  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -139,7 +142,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2011  OV2
+  (c) Copyright 2009 - 2016  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -746,7 +749,6 @@ void S9xAPULoadBlarggState(uint8 *oldblock)
     spc::reference_time = SNES::get_le32(ptr);
     ptr += sizeof(int32);
     spc::remainder = SNES::get_le32(ptr);
-    ptr += sizeof(int32);
 
     // blargg stores CPUIx in regs_in
     memcpy (SNES::cpu.registers, regs_in + 4, 4);
@@ -766,8 +768,12 @@ bool8 S9xSPCDump (const char *filename)
 
 	SNES::smp.save_spc (buf);
 
-	if ((ignore = fwrite(buf, SPC_FILE_SIZE, 1, fs)) <= 0)
+	ignore = fwrite (buf, SPC_FILE_SIZE, 1, fs);
+
+	if (ignore == 0)
+	{
 		fprintf (stderr, "Couldn't write file %s.\n", filename);
+	}
 
 	fclose(fs);
 

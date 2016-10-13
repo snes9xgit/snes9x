@@ -10,9 +10,6 @@
 #include "gtk_s9x.h"
 #include "gtk_builder_window.h"
 
-#define SIZE_FLAG_NO_DRAWING     -1
-#define SIZE_FLAG_DIRTY          -2
-
 class Snes9xWindow : public GtkBuilderWindow
 {
     public:
@@ -67,6 +64,7 @@ class Snes9xWindow : public GtkBuilderWindow
 
         Snes9xConfig   *config;
         int            user_pause, sys_pause;
+        int            user_rewind;
         int            last_width, last_height;
         int            mouse_region_x, mouse_region_y;
         int            mouse_region_width, mouse_region_height;

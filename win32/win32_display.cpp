@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2011  BearOso,
+  (c) Copyright 2009 - 2016  BearOso,
                              OV2
 
 
@@ -118,6 +118,9 @@
   Sound emulator code used in 1.52+
   (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
 
+  S-SMP emulator code used in 1.54+
+  (c) Copyright 2016         byuu
+
   SH assembler code partly based on x86 assembler code
   (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
 
@@ -131,7 +134,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2011  BearOso
+  (c) Copyright 2004 - 2016  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -139,7 +142,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2011  OV2
+  (c) Copyright 2009 - 2016  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -453,6 +456,16 @@ char *ReadShaderFileContents(const TCHAR *filename)
 
 }
 
+void ReduceToPath(TCHAR *filename)
+{
+    for (int i = lstrlen(filename); i >= 0; i--) {
+        if (IS_SLASH(filename[i])) {
+            filename[i] = TEXT('\0');
+            break;
+        }
+    }
+}
+
 // TODO: abstract the following functions in some way - only necessary for directdraw
 
 /* DirectDraw only begin */
@@ -583,12 +596,13 @@ void ToggleFullScreen ()
 {
     S9xSetPause (PAUSE_TOGGLE_FULL_SCREEN);
 
+    SaveMainWinPos();
+
 	if(GUI.EmulateFullscreen) {
 		HMONITOR hm;
 		MONITORINFO mi;
 		GUI.EmulatedFullscreen = !GUI.EmulatedFullscreen;
 		if(GUI.EmulatedFullscreen) {
-			SaveMainWinPos();
 			if(GetMenu(GUI.hWnd)!=NULL)
 				SetMenu(GUI.hWnd,NULL);
 			SetWindowLongPtr (GUI.hWnd, GWL_STYLE, WS_POPUP|WS_VISIBLE);
@@ -606,7 +620,6 @@ void ToggleFullScreen ()
 	} else {
 		GUI.FullScreen = !GUI.FullScreen;
 		if(GUI.FullScreen) {
-			SaveMainWinPos();
 			if(GetMenu(GUI.hWnd)!=NULL)
 				SetMenu(GUI.hWnd,NULL);
 			SetWindowLongPtr (GUI.hWnd, GWL_STYLE, WS_POPUP|WS_VISIBLE);

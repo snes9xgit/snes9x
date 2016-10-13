@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2011  BearOso,
+  (c) Copyright 2009 - 2016  BearOso,
                              OV2
 
 
@@ -118,6 +118,9 @@
   Sound emulator code used in 1.52+
   (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
 
+  S-SMP emulator code used in 1.54+
+  (c) Copyright 2016         byuu
+
   SH assembler code partly based on x86 assembler code
   (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
 
@@ -131,7 +134,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2011  BearOso
+  (c) Copyright 2004 - 2016  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -139,7 +142,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2011  OV2
+  (c) Copyright 2009 - 2016  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -216,6 +219,8 @@ void RenderHQ4X (SSurface Src, SSurface Dst, RECT *rect);
 void Render2xBRZ(SSurface Src, SSurface Dst, RECT* rect);
 void Render3xBRZ(SSurface Src, SSurface Dst, RECT* rect);
 void Render4xBRZ(SSurface Src, SSurface Dst, RECT* rect);
+void Render5xBRZ(SSurface Src, SSurface Dst, RECT* rect);
+void Render6xBRZ(SSurface Src, SSurface Dst, RECT* rect);
 void RenderEPXA (SSurface Src, SSurface Dst, RECT *);
 void RenderEPXB (SSurface Src, SSurface Dst, RECT *);
 void RenderEPXC (SSurface Src, SSurface Dst, RECT *);
@@ -316,6 +321,8 @@ TRenderMethod FilterToMethod(RenderFilter filterID)
 		case FILTER_SIMPLE4X:	return RenderSimple4X;
 		case FILTER_HQ4X:		return RenderHQ4X;
         case FILTER_4XBRZ:      return Render4xBRZ;
+		case FILTER_5XBRZ:      return Render5xBRZ;
+		case FILTER_6XBRZ:      return Render6xBRZ;
 	}
 }
 
@@ -354,6 +361,8 @@ const char* GetFilterName(RenderFilter filterID)
 		case FILTER_SIMPLE4X: return "Simple 4X";
 		case FILTER_HQ4X: return "hq4x";
         case FILTER_4XBRZ: return "4xBRZ";
+		case FILTER_5XBRZ: return "5xBRZ";
+		case FILTER_6XBRZ: return "6xBRZ";
 	}
 }
 
@@ -385,6 +394,10 @@ int GetFilterScale(RenderFilter filterID)
 		case FILTER_HQ4X:
         case FILTER_4XBRZ:
 			return 4;
+        case FILTER_5XBRZ:
+			return 5;
+        case FILTER_6XBRZ:
+			return 6;
 	}
 }
 
@@ -406,6 +419,8 @@ bool GetFilterHiResSupport(RenderFilter filterID)
         case FILTER_2XBRZ:
         case FILTER_3XBRZ:
         case FILTER_4XBRZ:
+		case FILTER_5XBRZ:
+		case FILTER_6XBRZ:
 			return true;
 
 		default:
@@ -2771,6 +2786,16 @@ void Render3xBRZ(SSurface Src, SSurface Dst, RECT* rect)
 void Render4xBRZ(SSurface Src, SSurface Dst, RECT* rect)
 {
     RenderxBRZ(Src, Dst, rect, 4);
+}
+
+void Render5xBRZ(SSurface Src, SSurface Dst, RECT* rect)
+{
+    RenderxBRZ(Src, Dst, rect, 5);
+}
+
+void Render6xBRZ(SSurface Src, SSurface Dst, RECT* rect)
+{
+    RenderxBRZ(Src, Dst, rect, 6);
 }
 
 void RenderxBRZ(SSurface Src, SSurface Dst, RECT* rect, int scalingFactor)

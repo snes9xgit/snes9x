@@ -255,6 +255,9 @@
     <ClInclude Include="..\filter\xbrz.h">
       <Filter>Filter</Filter>
     </ClInclude>
+    <ClInclude Include="dxerr.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\bsx.cpp">
@@ -565,6 +568,9 @@
     </ClCompile>
     <ClCompile Include="..\filter\xbrz.cpp">
       <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="dxerr.cpp">
+      <Filter>GUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -588,6 +588,7 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
     };
 
     user_pause             = 0;
+    user_rewind            = 0;
     sys_pause              = 0;
     last_width             = -1;
     last_height            = -1;
@@ -671,7 +672,7 @@ extern const gtk_splash_t gtk_splash;
 void
 Snes9xWindow::expose (void)
 {
-    if ((!config->rom_loaded || last_width < 0) && last_width != SIZE_FLAG_DIRTY)
+    if (last_width < 0)
     {
         if (!(config->fullscreen) && !(maximized_state))
         {
@@ -699,28 +700,23 @@ Snes9xWindow::expose (void)
                                 ((blue  & 0xF8) >> 3);
             }
         }
+   }
 
-        S9xDeinitUpdate (last_width, last_height);
-    }
-    else
+    S9xDisplayRefresh (last_width, last_height);
+
+    if (!(config->fullscreen))
     {
-        if (last_width > 0 || !is_paused ())
-            S9xDisplayRefresh (last_width, last_height);
+        config->window_width = get_width ();
+        config->window_height = get_height ();
+    }
 
-        if (!(config->fullscreen))
-        {
-            config->window_width = get_width ();
-            config->window_height = get_height ();
-        }
-
-        if (is_paused ()
+    if (is_paused ()
 #ifdef NETPLAY_SUPPORT
-                || NetPlay.Paused
+            || NetPlay.Paused
 #endif
-        )
-        {
-            S9xDeinitUpdate (last_width, last_height);
-        }
+    )
+    {
+        S9xDeinitUpdate (last_width, last_height);
     }
 
     return;

@@ -9,6 +9,8 @@
 #include "gtk_sound.h"
 #include "gtk_display.h"
 
+#include "statemanager.h"
+
 #ifdef NETPLAY_SUPPORT
 #include "gtk_netplay.h"
 #endif
@@ -23,6 +25,7 @@ static gboolean S9xScreenSaverCheckFunc (gpointer data);
 
 Snes9xWindow          *top_level;
 Snes9xConfig          *gui_config;
+StateManager          stateMan;
 static struct timeval next_frame_time = { 0, 0 };
 static struct timeval now;
 static int            needs_fullscreening = FALSE;
@@ -219,6 +222,11 @@ S9xOpenROM (const char *rom_filename)
 
     CPU.Flags = flags;
 
+    if (stateMan.init (gui_config->rewind_buffer_size * 1024 * 1024))
+    {
+        printf ("Using rewind buffer of %uMB\n", gui_config->rewind_buffer_size);
+    }
+
     S9xROMLoaded ();
 
     return 0;
@@ -229,8 +237,6 @@ S9xROMLoaded (void)
 {
     gui_config->rom_loaded = TRUE;
     top_level->configure_widgets ();
-
-    top_level->last_width = top_level->last_height = SIZE_FLAG_DIRTY;
 
     if (gui_config->full_screen_on_open)
     {
@@ -357,7 +363,30 @@ S9xIdleFunc (gpointer data)
     if (!S9xNetplayPush ())
     {
 #endif
+
+    if(top_level->user_rewind)
+        top_level->user_rewind = stateMan.pop();
+    else if(IPPU.TotalEmulatedFrames % gui_config->rewind_granularity == 0)
+        stateMan.push();
+
+    static int muted_from_turbo = FALSE;
+    static int mute_saved_state = FALSE;
+
+    if (Settings.TurboMode && !muted_from_turbo && gui_config->mute_sound_turbo)
+    {
+        muted_from_turbo = TRUE;
+        mute_saved_state = Settings.Mute;
+        S9xSetSoundMute (TRUE);
+    }
+
+    if (!Settings.TurboMode && muted_from_turbo)
+    {
+        muted_from_turbo = FALSE;
+        Settings.Mute = mute_saved_state;
+    }
+
     S9xMainLoop ();
+
     S9xMixSound ();
 
 #ifdef NETPLAY_SUPPORT

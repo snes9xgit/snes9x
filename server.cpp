@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2011  BearOso,
+  (c) Copyright 2009 - 2016  BearOso,
                              OV2
 
 
@@ -118,6 +118,9 @@
   Sound emulator code used in 1.52+
   (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
 
+  S-SMP emulator code used in 1.54+
+  (c) Copyright 2016         byuu
+
   SH assembler code partly based on x86 assembler code
   (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
 
@@ -131,7 +134,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2011  BearOso
+  (c) Copyright 2004 - 2016  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -139,7 +142,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2011  OV2
+  (c) Copyright 2009 - 2016  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -535,7 +538,7 @@ void S9xNPProcessClient (int c)
 
             len = 7 + 1 + 1 + 4 + strlen (NPServer.ROMName) + 1;
 
-            delete data;
+            delete[] data;
             ptr = data = new uint8 [len];
             *ptr++ = NP_SERV_MAGIC;
             *ptr++ = NPServer.Clients [c].SendSequenceNum++;
@@ -563,7 +566,7 @@ void S9xNPProcessClient (int c)
                 S9xNPShutdownClient (c, TRUE);
                 return;
             }
-            delete data;
+            delete[] data;
 #ifdef NP_DEBUG
             printf ("SERVER: Waiting for a response from the client @%ld...\n", S9xGetMilliTime () - START);
 #endif
@@ -1306,7 +1309,7 @@ void S9xNPSendROMLoadRequest (const char *filename)
             }
         }
     }
-    delete data;
+    delete[] data;
 }
 
 void S9xNPSendSRAMToAllClients ()

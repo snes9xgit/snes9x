@@ -1,4 +1,4 @@
-AC_INIT([snes9x-gtk], 1.53)
+AC_INIT([snes9x-gtk], 1.54)
 
 if test -z "$CFLAGS"; then
     CFLAGS="-Os -pipe"
@@ -7,9 +7,9 @@ if test -z "$CXXFLAGS"; then
     CXXFLAGS="$CFLAGS"
 fi
 
-EXTRA_FLAGS="-Wall -W -pedantic -Wno-unused-parameter"
+EXTRA_FLAGS="-Wall -W -pedantic -Wno-unused-parameter -Wno-unused-but-set-variable"
 CFLAGS="$CFLAGS $EXTRA_FLAGS"
-CXXFLAGS="$CXXFLAGS $EXTRA_FLAGS"
+CXXFLAGS="$CXXFLAGS $EXTRA_FLAGS -std=c++11"
 
 AC_PROG_CC
 AC_PROG_CXX

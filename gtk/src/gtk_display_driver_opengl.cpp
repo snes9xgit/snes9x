@@ -116,14 +116,16 @@ S9xOpenGLDisplayDriver::update (int width, int height)
     void  *pboMemory = NULL;
     int   x, y, w, h;
 
-    if (width <= 0)
-    {
-        gdk_window_hide (gdk_window);
-        return;
-    }
-
     GtkAllocation allocation;
     gtk_widget_get_allocation (drawing_area, &allocation);
+
+#if GTK_CHECK_VERSION(3,10,0)
+    int gdk_scale_factor = gdk_window_get_scale_factor (gdk_window);
+
+    allocation.width *= gdk_scale_factor;
+    allocation.height *= gdk_scale_factor;
+
+#endif
 
     if (output_window_width  != allocation.width ||
         output_window_height != allocation.height)
@@ -722,11 +724,6 @@ S9xOpenGLDisplayDriver::opengl_defaults (void)
 void
 S9xOpenGLDisplayDriver::refresh (int width, int height)
 {
-    if (!config->rom_loaded)
-    {
-        gdk_window_hide (gdk_window);
-    }
-
     return;
 }
 
@@ -749,6 +746,8 @@ S9xOpenGLDisplayDriver::create_window (int width, int height)
     window_attr.colormap = xcolormap;
     window_attr.border_pixel = 0;
     window_attr.event_mask = StructureNotifyMask | ExposureMask;
+    window_attr.do_not_propagate_mask = 0;
+    window_attr.save_under = False;
     window_attr.background_pixmap = None;
 
     xwindow = XCreateWindow (display,
@@ -761,7 +760,7 @@ S9xOpenGLDisplayDriver::create_window (int width, int height)
                              vi->depth,
                              InputOutput,
                              vi->visual,
-                             CWColormap | CWBorderPixel | CWBackPixmap | CWEventMask,
+                             CWColormap | CWBorderPixel | CWBackPixmap | CWEventMask | CWSaveUnder | CWDontPropagate,
                              &window_attr);
     XSync (display, False);
 

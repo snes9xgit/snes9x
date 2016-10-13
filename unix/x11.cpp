@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2011  BearOso,
+  (c) Copyright 2009 - 2016  BearOso,
                              OV2
 
 
@@ -118,6 +118,9 @@
   Sound emulator code used in 1.52+
   (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
 
+  S-SMP emulator code used in 1.54+
+  (c) Copyright 2016         byuu
+
   SH assembler code partly based on x86 assembler code
   (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
 
@@ -131,7 +134,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2011  BearOso
+  (c) Copyright 2004 - 2016  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -139,7 +142,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2011  OV2
+  (c) Copyright 2009 - 2016  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -701,7 +704,7 @@ static bool8 SetupXvideo()
 	{
 		if (!strcmp (port_attr[i].name, "XV_AUTOPAINT_COLORKEY"))
 		{
-			Atom colorkey = None;
+			Atom colorkey;
 
 			colorkey = XInternAtom (GUI.display, "XV_AUTOPAINT_COLORKEY", True);
 			if (colorkey != None)
@@ -1415,18 +1418,18 @@ void S9xPutImage (int width, int height)
 		}
 	}
 
-	// Change the image height if we are in maxaspect mode
-	if (GUI.maxaspect && GUI.fullscreen)
+#ifdef USE_XVIDEO
+	// Adjust source blit region if SNES would only fill half the screen.
+	if (height <= SNES_HEIGHT_EXTENDED)
 		GUI.imageHeight = height * 2;
 
-#ifdef USE_XVIDEO
 	if (GUI.use_xvideo && (GUI.xv_format == FOURCC_YUY2))
 	{
 		uint16 *s = (uint16 *)GUI.blit_screen;
 		uint8 *d = (uint8 *)GUI.image->data;
 
 		// convert GUI.blit_screen and copy to XV image
-		for (int y = 0; y < SNES_HEIGHT_EXTENDED * 2; y++)
+		for (int y = 0; y < copyHeight; y++)
 		{
 			for (int x = 0; x < SNES_WIDTH * 2; x += 2)
 			{
