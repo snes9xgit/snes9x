@@ -1,3 +1,8 @@
+Snes9x 1.54.1
+- GTK+: Properly use --std=c++11 when compiling xBRZ.       (BearOso)
+- Win32: Save window position when toggling fullscreen.     (OV2)
+- Win32: Do not assign down-left binding to down-right.     (OV2)
+
 Snes9x 1.54
 - Changed the S-SMP core module to one written by byuu.     (byuu, BearOso)
   This has the effect of increased accuracy, fewer
