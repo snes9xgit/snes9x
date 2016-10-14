@@ -8,7 +8,7 @@ Files included in the Snes9x archive:
   changes.txt
   snes9x-license.txt
 
-version 1.54  October, 2016
+version 1.54.1  October, 2016
 Home page: http://www.snes9x.com/
 
 
