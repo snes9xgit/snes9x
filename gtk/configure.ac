@@ -1,5 +1,7 @@
 AC_INIT([snes9x-gtk], 1.54)
 
+AC_CONFIG_MACRO_DIR([macros])
+
 if test -z "$CFLAGS"; then
     CFLAGS="-Os -pipe"
 fi
@@ -9,12 +11,14 @@ fi
 
 EXTRA_FLAGS="-Wall -W -pedantic -Wno-unused-parameter -Wno-unused-but-set-variable"
 CFLAGS="$CFLAGS $EXTRA_FLAGS"
-CXXFLAGS="$CXXFLAGS $EXTRA_FLAGS -std=c++11"
+CXXFLAGS="$CXXFLAGS $EXTRA_FLAGS"
 
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_RANLIB
 AC_LANG_CPLUSPLUS
+
+AX_CXX_COMPILE_STDCXX([11], [noext], [optional])
 
 AC_PROG_INSTALL
 AM_INIT_AUTOMAKE([foreign subdir-objects])
