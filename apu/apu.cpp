@@ -148,6 +148,9 @@
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
 
+  Sound emulator code compilation fixes
+  (c) Copyright 2013 - 2016  Daniel De Matteis (UNDER NO CIRCUMSTANCE 
+           WILL COMMERCIAL RIGHTS EVER BE APPROPRIATED TO ANY PARTY)
 
   Specific ports contains the works of other authors. See headers in
   individual files.
