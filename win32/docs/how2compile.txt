@@ -2,14 +2,14 @@ Various software and tools are required to compile Snes9x on Windows:
 
 NOTE: Unicode support requires a special zlib build - see the end of the zlib entry
 
-- Microsoft Visual C++ 7.1 or Microsoft Visual C++ 6.0 SP5 with the
-  latest Platform SDK, to compile all the C++ source code.
-  The current official binary is compiled with Visual Studio 2008, you'll have to create
-  your own project file for earlier MSVC versions
+- The current official binary is compiled with Visual Studio 2015, you'll have to create
+  your own project file for earlier MSVC versions. VS2015 will automatically ask to install
+  the correct Windows SDK Version (7.1A)
 
-- A recent DirectX SDK. The official binary is compiled against the June 2008 SDK.
+- A recent DirectX SDK. The official binary is compiled against the August 2009 SDK.
   Note that as of the June 2010 release of the DirectX SDK, DirectDraw (which is 
   necessary to compile) has been removed.
+  https://www.microsoft.com/en-us/download/details.aspx?id=23549
 
 - zlib (optional) - The release binaries are built against a static zlib compiled
   against VC's multi-threaded C runtime and renamed to zlibmt.lib, to avoid linker conflicts.
