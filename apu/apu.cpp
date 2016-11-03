@@ -336,10 +336,19 @@ bool8 S9xMixSamples (uint8 *buffer, int sample_count)
 			{
 				if (msu::resampler->avail() >= sample_count)
 				{
-					uint8 *msu_sample = new uint8[sizeof(dest)];
+					uint8 *msu_sample = new uint8[sample_count * 2];
 					msu::resampler->read((short *)msu_sample, sample_count);
-					for(uint32 i = 0; i < sizeof(dest); ++i)
-						dest[i] += msu_sample[i];
+					for (uint32 i = 0; i < sample_count * 2; i += 2)
+					{
+						int16 s1, s2;
+						((uint8 *)&s1)[0] = dest[i];
+						((uint8 *)&s1)[1] = dest[i + 1];
+						((uint8 *)&s2)[0] = dest[i];
+						((uint8 *)&s2)[1] = dest[i + 1];
+						s1 += s2;
+						dest[i] = ((uint8 *)&s1)[0];
+						dest[i+1] = ((uint8 *)&s1)[1];
+					}
 				}
 			}
 		}
@@ -481,7 +490,7 @@ bool8 S9xInitSound (int buffer_ms, int lag_ms)
 	if (Settings.SixteenBitSound)
 		spc::buffer_size <<= 1;
 	if (Settings.MSU1)
-		msu::buffer_size = buffer_ms * 44100 / 1000;
+		msu::buffer_size = (buffer_ms * 44100 / 1000) << 2; // 16-bit, Stereo
 
 	printf("Sound buffer size: %d (%d samples)\n", spc::buffer_size, sample_count);
 
