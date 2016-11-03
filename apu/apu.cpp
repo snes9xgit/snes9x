@@ -456,7 +456,7 @@ static void UpdatePlaybackRate (void)
 
 	if (Settings.MSU1)
 	{
-		time_ratio = 44100.0 / Settings.SoundPlaybackRate;
+		time_ratio = 44100.0 / Settings.SoundPlaybackRate * (Settings.SoundInputRate / 32040.5);
 		msu::resampler->time_ratio(time_ratio);
 	}
 }
@@ -482,7 +482,7 @@ bool8 S9xInitSound (int buffer_ms, int lag_ms)
 		spc::buffer_size <<= 1;
 	if (Settings.SixteenBitSound)
 		spc::buffer_size <<= 1;
-	msu::buffer_size = (buffer_ms * 44100 / 1000) << 2; // Always 16-bit, Stereo
+	msu::buffer_size = ((buffer_ms * 44100 / 1000) << 2) * 441000 / 320405; // Always 16-bit, Stereo
 
 	printf("Sound buffer size: %d (%d samples)\n", spc::buffer_size, sample_count);
 
