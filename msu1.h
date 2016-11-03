@@ -216,7 +216,7 @@ enum SMSU1_FLAG : uint8 {
 extern struct SMSU1	MSU1;
 
 void S9xMSU1Init(void);
-void S9xMSU1Execute(void);
+void S9xMSU1Generate(int sample_count);
 uint8 S9xMSU1ReadPort(int port);
 void S9xMSU1WritePort(int port, uint8 byte);
 uint16 S9xMSU1Samples(void);
