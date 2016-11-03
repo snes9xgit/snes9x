@@ -343,8 +343,8 @@ bool8 S9xMixSamples (uint8 *buffer, int sample_count)
 						int16 s1, s2;
 						((uint8 *)&s1)[0] = dest[i];
 						((uint8 *)&s1)[1] = dest[i + 1];
-						((uint8 *)&s2)[0] = dest[i];
-						((uint8 *)&s2)[1] = dest[i + 1];
+						((uint8 *)&s2)[0] = msu_sample[i];
+						((uint8 *)&s2)[1] = msu_sample[i + 1];
 						s1 += s2;
 						dest[i] = ((uint8 *)&s1)[0];
 						dest[i+1] = ((uint8 *)&s1)[1];
