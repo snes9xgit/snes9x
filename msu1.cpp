@@ -233,25 +233,10 @@ void S9xMSU1Init(void)
 
 void S9xMSU1Execute(void)
 {
-	static long long hitcount = 0;
-	//return; // Dummy out for now because it's broken
-	while ((bufPos < bufEnd) && (MSU1.MSU1_STATUS & AudioPlaying))
+	while (((uintptr_t)bufPos < (uintptr_t)bufEnd) && (MSU1.MSU1_STATUS & AudioPlaying))
 	{
-		hitcount++;
-		if (audioFile.good())
+		if (audioFile.is_open())
 		{
-			audioPos += 2;
-			int16 sample = 0;
-			((uint8 *)&sample)[0] = audioFile.get();
-			((uint8 *)&sample)[1] = audioFile.get();
-			
-			sample = (double)sample * (double)MSU1.MSU1_VOLUME / 255.0;
-
-			*bufPos = ((uint8 *)&sample)[0];
-			*(bufPos + 1) = ((uint8 *)&sample)[1];
-
-			bufPos += 2;
-
 			if (audioFile.eof())
 			{
 				if (MSU1.MSU1_STATUS & AudioRepeating)
@@ -266,10 +251,21 @@ void S9xMSU1Execute(void)
 					return;
 				}
 			}
+
+			int16 sample = 0;
+			audioFile.get(((char *)&sample), 2);
+			
+			sample = (double)sample * (double)MSU1.MSU1_VOLUME / 255.0;
+
+			*(bufPos++) = sample;
+
+			audioPos += 2;
 		}
 		else
 		{
-			MSU1.MSU1_STATUS &= ~AudioPlaying;
+			MSU1.MSU1_STATUS &= ~(AudioPlaying | AudioRepeating);
+			audioFile.seekg(8);
+			return;
 		}
 	}
 }

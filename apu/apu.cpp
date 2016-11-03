@@ -338,17 +338,8 @@ bool8 S9xMixSamples (uint8 *buffer, int sample_count)
 				{
 					uint8 *msu_sample = new uint8[sample_count * 2];
 					msu::resampler->read((short *)msu_sample, sample_count);
-					for (uint32 i = 0; i < sample_count * 2; i += 2)
-					{
-						int16 s1, s2;
-						((uint8 *)&s1)[0] = dest[i];
-						((uint8 *)&s1)[1] = dest[i + 1];
-						((uint8 *)&s2)[0] = msu_sample[i];
-						((uint8 *)&s2)[1] = msu_sample[i + 1];
-						s1 += s2;
-						dest[i] = ((uint8 *)&s1)[0];
-						dest[i+1] = ((uint8 *)&s1)[1];
-					}
+					for (uint32 i = 0; i < sample_count; ++i)
+						*((int16*)(dest+(i * 2))) += *((int16*)(msu_sample+(i * 2)));
 				}
 			}
 		}
@@ -401,9 +392,16 @@ void S9xFinalizeSamples (void)
 				return;
 		}
 
-		if (Settings.MSU1 && !msu::resampler->push((short *) msu::landing_buffer, S9xMSU1Samples()))
+		if (Settings.MSU1)
 		{
+			S9xMSU1Execute();
+			if (!msu::resampler->push((short *)msu::landing_buffer, S9xMSU1Samples()))
+			{
+				spc::sound_in_sync = FALSE;
 
+				if (Settings.SoundSync && !Settings.TurboMode)
+					return;
+			}
 		}
 	}
 
@@ -489,8 +487,7 @@ bool8 S9xInitSound (int buffer_ms, int lag_ms)
 		spc::buffer_size <<= 1;
 	if (Settings.SixteenBitSound)
 		spc::buffer_size <<= 1;
-	if (Settings.MSU1)
-		msu::buffer_size = (buffer_ms * 44100 / 1000) << 2; // 16-bit, Stereo
+	msu::buffer_size = (buffer_ms * 44100 / 1000) << 2; // Always 16-bit, Stereo
 
 	printf("Sound buffer size: %d (%d samples)\n", spc::buffer_size, sample_count);
 
@@ -652,8 +649,6 @@ void S9xAPUEndScanline (void)
 {
 	S9xAPUExecute();
 	SNES::dsp.synchronize();
-
-	S9xMSU1Execute();
 
 	if (SNES::dsp.spc_dsp.sample_count() >= APU_MINIMUM_SAMPLE_BLOCK || !spc::sound_in_sync)
 		S9xLandSamples();
