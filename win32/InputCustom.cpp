@@ -959,17 +959,36 @@ static LRESULT CALLBACK InputCustomWndProc(HWND hwnd, UINT msg, WPARAM wParam, L
 		return 1;
 	case WM_USER+45:
 	case WM_KEYDOWN:
-		TranslateKey(wParam,temp);
-		col = CheckButtonKey(wParam);
+    {
+        UINT scancode = (lParam & 0x00ff0000) >> 16;
+        int extended = (lParam & 0x01000000) != 0;
 
-		icp->crForeGnd = ((~col) & 0x00ffffff);
-		icp->crBackGnd = col;
-		SetWindowText(hwnd,_tFromChar(temp));
-		InvalidateRect(icp->hwnd, NULL, FALSE);
-		UpdateWindow(icp->hwnd);
-		SendMessage(pappy,WM_USER+43,wParam,(LPARAM)hwnd);
+        switch (wParam) {
+        case VK_SHIFT:
+            wParam = MapVirtualKey(scancode, MAPVK_VSC_TO_VK_EX);
+            break;
+        case VK_CONTROL:
+            wParam = extended ? VK_RCONTROL : VK_LCONTROL;
+            break;
+        case VK_MENU:
+            wParam = extended ? VK_RMENU : VK_LMENU;
+            break;
+        default:
+            break;
+        }
 
-		break;
+        TranslateKey(wParam, temp);
+        col = CheckButtonKey(wParam);
+
+        icp->crForeGnd = ((~col) & 0x00ffffff);
+        icp->crBackGnd = col;
+        SetWindowText(hwnd, _tFromChar(temp));
+        InvalidateRect(icp->hwnd, NULL, FALSE);
+        UpdateWindow(icp->hwnd);
+        SendMessage(pappy, WM_USER + 43, wParam, (LPARAM)hwnd);
+
+        break;
+    }
 	case WM_USER+44:
 
 		TranslateKey(wParam,temp);
