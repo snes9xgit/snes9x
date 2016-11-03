@@ -201,6 +201,7 @@
 #endif
 
 #include <ctype.h>
+#include <sys/stat.h>
 
 #include "snes9x.h"
 #include "memmap.h"
@@ -1889,7 +1890,7 @@ bool8 CMemory::LoadMultiCartInt ()
             memmove(ROM + Multi.cartOffsetA, ROM, Multi.cartSizeA + Multi.cartSizeB);
         else if(Multi.cartOffsetB) // clear cart A so the bios can detect that it's not present
             memset(ROM, 0, Multi.cartOffsetB);
-        
+
         FILE	*fp;
 	    size_t	size;
 	    char	path[PATH_MAX + 1];
