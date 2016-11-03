@@ -1270,6 +1270,12 @@ static bool8 is_GNEXT_Add_On (const uint8 *data, uint32 size)
 		return (FALSE);
 }
 
+static bool8 MsuRomExists (void)
+{
+	struct stat buf;
+	return (stat(S9xGetFilename(".msu", ROMFILENAME_DIR), &buf) == 0);
+}
+
 int CMemory::ScoreHiROM (bool8 skip_header, int32 romoff)
 {
 	uint8	*buf = ROM + 0xff00 + romoff + (skip_header ? 0x200 : 0);
@@ -2360,6 +2366,7 @@ void CMemory::InitROM (void)
 	Settings.SETA = 0;
 	Settings.SRTC = FALSE;
 	Settings.BS = FALSE;
+	Settings.MSU1 = FALSE;
 
 	SuperFX.nRomBanks = CalculatedSize >> 15;
 
@@ -2533,6 +2540,9 @@ void CMemory::InitROM (void)
 			Settings.C4 = TRUE;
 			break;
 	}
+
+	// MSU1
+	Settings.MSU1 = MsuRomExists();
 
 	//// Map memory and calculate checksum
 
@@ -3486,7 +3496,7 @@ const char * CMemory::KartContents (void)
 	static char			str[64];
 	static const char	*contents[3] = { "ROM", "ROM+RAM", "ROM+RAM+BAT" };
 
-	char	chip[16];
+	char	chip[20];
 
 	if (ROMType == 0 && !Settings.BS)
 		return ("ROM");
@@ -3531,6 +3541,9 @@ const char * CMemory::KartContents (void)
 		sprintf(chip, "+DSP-%d", Settings.DSP);
 	else
 		strcpy(chip, "");
+
+	if (Settings.MSU1)
+		sprintf(chip + strlen(chip), "+MSU-1");
 
 	sprintf(str, "%s%s", contents[(ROMType & 0xf) % 3], chip);
 

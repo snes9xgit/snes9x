@@ -344,6 +344,9 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 		S9xTraceFormattedMessage("--- HDMA PPU %04X -> %02X", Address, Byte);
 #endif
 
+	if (Settings.MSU1 && (Address & 0xfff8) == 0x2000) // MSU-1
+		S9xMSU1WritePort(Address & 7, Byte);
+	else
 	if ((Address & 0xffc0) == 0x2140) // APUIO0, APUIO1, APUIO2, APUIO3
 		// write_port will run the APU until given clock before writing value
 		S9xAPUWritePort(Address & 3, Byte);
@@ -1095,7 +1098,9 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 uint8 S9xGetPPU (uint16 Address)
 {
 	// MAP_PPU: $2000-$3FFF
-
+	if (Settings.MSU1 && (Address & 0xfff8) == 0x2000)
+		return (S9xMSU1ReadPort(Address & 7));
+	else
 	if (Address < 0x2100)
 		return (OpenBus);
 
@@ -1125,7 +1130,6 @@ uint8 S9xGetPPU (uint16 Address)
 	if ((Address & 0xffc0) == 0x2140) // APUIO0, APUIO1, APUIO2, APUIO3
 		// read_port will run the APU until given APU time before reading value
 		return (S9xAPUReadPort(Address & 3));
-	else
 	if (Address <= 0x2183)
     {
 		uint8	byte;

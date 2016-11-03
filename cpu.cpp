@@ -312,6 +312,8 @@ void S9xReset (void)
 		S9xResetOBC1();
 	if (Settings.SRTC)
 		S9xResetSRTC();
+	if (Settings.MSU1)
+		S9xMSU1Init();
 
 	S9xInitCheatData();
 }
@@ -346,6 +348,8 @@ void S9xSoftReset (void)
 		S9xResetOBC1();
 	if (Settings.SRTC)
 		S9xResetSRTC();
+	if (Settings.MSU1)
+		S9xMSU1Init();
 
 	S9xInitCheatData();
 }
