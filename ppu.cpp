@@ -1130,6 +1130,7 @@ uint8 S9xGetPPU (uint16 Address)
 	if ((Address & 0xffc0) == 0x2140) // APUIO0, APUIO1, APUIO2, APUIO3
 		// read_port will run the APU until given APU time before reading value
 		return (S9xAPUReadPort(Address & 3));
+	else
 	if (Address <= 0x2183)
     {
 		uint8	byte;
