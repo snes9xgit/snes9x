@@ -199,6 +199,7 @@ std::ifstream dataFile, audioFile;
 uint32 dataPos, audioPos, audioResumePos, audioLoopPos;
 uint16 audioTrack, audioResumeTrack;
 char fName[64];
+uint32 partial_samples;
 
 // Sample buffer
 int16 *bufPos, *bufBegin, *bufEnd;
@@ -222,6 +223,8 @@ void S9xMSU1Init(void)
 	bufBegin			= 0;
 	bufEnd				= 0;
 
+	partial_samples = 0;
+
 	if (dataFile.is_open())
 		dataFile.close();
 
@@ -231,26 +234,27 @@ void S9xMSU1Init(void)
 	dataFile.open(S9xGetFilename(".msu", ROMFILENAME_DIR), std::ios::in | std::ios::binary);
 }
 
-void S9xMSU1Execute(void)
+void S9xMSU1Generate(int sample_count)
 {
-	static long long hitcount = 0;
-	//return; // Dummy out for now because it's broken
-	while ((bufPos < bufEnd) && (MSU1.MSU1_STATUS & AudioPlaying))
+	partial_samples += 441000 * sample_count;
+
+	while ((bufPos < bufEnd) && (MSU1.MSU1_STATUS & AudioPlaying) && partial_samples > 320405)
 	{
-		hitcount++;
 		if (audioFile.good())
 		{
 			audioPos += 2;
 			int16 sample = 0;
 			((uint8 *)&sample)[0] = audioFile.get();
 			((uint8 *)&sample)[1] = audioFile.get();
-			
+
 			sample = (double)sample * (double)MSU1.MSU1_VOLUME / 255.0;
 
 			*bufPos = ((uint8 *)&sample)[0];
 			*(bufPos + 1) = ((uint8 *)&sample)[1];
 
 			bufPos += 2;
+
+			partial_samples -= 320405;
 
 			if (audioFile.eof())
 			{

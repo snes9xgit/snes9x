@@ -383,7 +383,13 @@ void S9xFinalizeSamples (void)
 {
 	if (!Settings.Mute)
 	{
-		if (!spc::resampler->push((short *) spc::landing_buffer, SNES::dsp.spc_dsp.sample_count ()))
+		if (Settings.MSU1)
+		{
+			S9xMSU1Generate (SNES::dsp.spc_dsp.sample_count());
+			msu::resampler->push((short *) msu::landing_buffer, S9xMSU1Samples());
+		}
+
+		if (!spc::resampler->push((short *) spc::landing_buffer, SNES::dsp.spc_dsp.sample_count()))
 		{
 			/* We weren't able to process the entire buffer. Potential overrun. */
 			spc::sound_in_sync = FALSE;
@@ -391,12 +397,8 @@ void S9xFinalizeSamples (void)
 			if (Settings.SoundSync && !Settings.TurboMode)
 				return;
 		}
-
-		if (Settings.MSU1 && !msu::resampler->push((short *) msu::landing_buffer, S9xMSU1Samples()))
-		{
-
-		}
 	}
+
 
 	if (!Settings.SoundSync || Settings.TurboMode || Settings.Mute)
 		spc::sound_in_sync = TRUE;
@@ -648,8 +650,6 @@ void S9xAPUEndScanline (void)
 {
 	S9xAPUExecute();
 	SNES::dsp.synchronize();
-
-	S9xMSU1Execute();
 
 	if (SNES::dsp.spc_dsp.sample_count() >= APU_MINIMUM_SAMPLE_BLOCK || !spc::sound_in_sync)
 		S9xLandSamples();
