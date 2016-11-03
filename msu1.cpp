@@ -236,12 +236,24 @@ void S9xMSU1Init(void)
 
 void S9xMSU1Generate(int sample_count)
 {
+	static uint32 hitcount = 0;
 	partial_samples += 441000 * sample_count;
 
 	while (((uintptr_t)bufPos < (uintptr_t)bufEnd) && (MSU1.MSU1_STATUS & AudioPlaying) && partial_samples > 320405)
 	{
 		if (audioFile.is_open())
 		{
+			int16 sample;
+			if (audioFile.read((char *)&sample, 2).good())
+			{
+				hitcount++;
+				sample = (double)sample * (double)MSU1.MSU1_VOLUME / 255.0;
+
+				*(bufPos++) = sample;
+				audioPos += 2;
+				partial_samples -= 320405;
+			}
+			else
 			if (audioFile.eof())
 			{
 				if (MSU1.MSU1_STATUS & AudioRepeating)
@@ -256,20 +268,15 @@ void S9xMSU1Generate(int sample_count)
 					return;
 				}
 			}
-
-			int16 sample = 0;
-			audioFile.get(((char *)&sample), 2);
-			
-			sample = (double)sample * (double)MSU1.MSU1_VOLUME / 255.0;
-
-			*(bufPos++) = sample;
-			audioPos += 2;
-			partial_samples -= 320405;
+			else
+			{
+				MSU1.MSU1_STATUS &= ~(AudioPlaying | AudioRepeating);
+				return;
+			}
 		}
 		else
 		{
 			MSU1.MSU1_STATUS &= ~(AudioPlaying | AudioRepeating);
-			audioFile.seekg(8);
 			return;
 		}
 	}
@@ -336,7 +343,7 @@ void S9xMSU1WritePort(int port, uint8 byte)
 		fName[strlen(fName) - 4] = '\0';
 		sprintf(fName, "%s-%d.pcm", fName, audioTrack);
 
-		audioFile.open(fName);
+		audioFile.open(fName, std::ios::in | std::ios::binary);
 		if (audioFile.is_open() && audioFile.good())
 		{
 			MSU1.MSU1_STATUS |= AudioError;
