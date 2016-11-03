@@ -234,7 +234,7 @@ bool CXAudio2::InitXAudio2(void)
 
 	HRESULT hr;
 	if ( FAILED(hr = XAudio2Create( &pXAudio2, 0 , XAUDIO2_DEFAULT_PROCESSOR ) ) ) {
-		DXTRACE_ERR_MSGBOX(TEXT("Unable to create XAudio2 object."),hr);
+		DXTRACE_ERR_MSGBOX(L"Unable to create XAudio2 object.",hr);
 		MessageBox (GUI.hWnd, TEXT("\
 Unable to initialize XAudio2. You will not be able to hear any\n\
 sound effects or music while playing.\n\n\
@@ -257,7 +257,7 @@ bool CXAudio2::InitVoices(void)
 	HRESULT hr;
 	if ( FAILED(hr = pXAudio2->CreateMasteringVoice( &pMasterVoice, (Settings.Stereo?2:1),
 		Settings.SoundPlaybackRate, 0, 0 , NULL ) ) ) {
-			DXTRACE_ERR_MSGBOX(TEXT("Unable to create mastering voice."),hr);
+			DXTRACE_ERR_MSGBOX(L"Unable to create mastering voice.",hr);
 			return false;
 	}
 
@@ -272,7 +272,7 @@ bool CXAudio2::InitVoices(void)
 
 	if( FAILED(hr = pXAudio2->CreateSourceVoice(&pSourceVoice, (WAVEFORMATEX*)&wfx,
 		XAUDIO2_VOICE_NOSRC , XAUDIO2_DEFAULT_FREQ_RATIO, this, NULL, NULL ) ) ) {
-			DXTRACE_ERR_MSGBOX(TEXT("Unable to create source voice."),hr);
+			DXTRACE_ERR_MSGBOX(L"Unable to create source voice.",hr);
 			return false;
 	}
 
