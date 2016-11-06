@@ -355,7 +355,8 @@ bool CXAudio2::SetupSound()
 	blockCount = 8;
 	UINT32 blockTime = GUI.SoundBufferSize / blockCount;
 
-	singleBufferSamples = (Settings.SoundPlaybackRate * blockTime * (Settings.Stereo ? 2 : 1)) / 1000;
+	singleBufferSamples = (Settings.SoundPlaybackRate * blockTime) / 1000;
+    singleBufferSamples *= (Settings.Stereo ? 2 : 1);
 	singleBufferBytes = singleBufferSamples * (Settings.SixteenBitSound ? 2 : 1);
 	sum_bufferSize = singleBufferBytes * blockCount;
 
