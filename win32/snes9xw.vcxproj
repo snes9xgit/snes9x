@@ -677,6 +677,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </CustomBuild>
+    <ClInclude Include="..\msu1.h" />
     <ClInclude Include="..\statemanager.h" />
     <CustomBuild Include="..\stream.h" />
     <CustomBuild Include="..\tile.h" />
@@ -777,6 +778,7 @@
     <ClCompile Include="..\logger.cpp" />
     <ClCompile Include="..\memmap.cpp" />
     <ClCompile Include="..\movie.cpp" />
+    <ClCompile Include="..\msu1.cpp" />
     <ClCompile Include="..\netplay.cpp" />
     <ClCompile Include="..\obc1.cpp" />
     <ClCompile Include="..\ppu.cpp" />
