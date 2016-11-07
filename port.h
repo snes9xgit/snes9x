@@ -325,7 +325,7 @@ void SetInfoDlgColor(unsigned char, unsigned char, unsigned char);
 #endif  // __WIN32_LIBSNES__
 #endif  // __WIN32__
 
-#ifdef __DJGPP
+#if defined(__DJGPP) || defined(__WIN32__)
 #define SLASH_STR	"\\"
 #define SLASH_CHAR	'\\'
 #else
