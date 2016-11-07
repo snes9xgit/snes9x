@@ -200,7 +200,6 @@
 
 std::ifstream dataFile, audioFile;
 uint32 audioLoopPos;
-char fName[64];
 uint32 partial_samples;
 
 // Sample buffer
@@ -213,13 +212,11 @@ bool AudioOpen()
 	if (audioFile.is_open())
 		audioFile.close();
 
-	// This is an ugly hack... need to see if there's a better way to get the base name without extension
-	sprintf(fName, "%s", S9xGetFilename(".msu", ROMFILENAME_DIR));
-	fName[strlen(fName) - 4] = '\0';
-	sprintf(fName, "%s-%d.pcm", fName, MSU1.MSU1_CURRENT_TRACK);
+	char ext[_MAX_EXT];
+	snprintf(ext, _MAX_EXT, "-%d.pcm", MSU1.MSU1_CURRENT_TRACK);
 
 	audioFile.clear();
-	audioFile.open(fName, std::ios::in | std::ios::binary);
+	audioFile.open(S9xGetFilename(ext, ROMFILENAME_DIR), std::ios::in | std::ios::binary);
 	if (audioFile.good())
 	{
 		if (audioFile.get() != 'M')
