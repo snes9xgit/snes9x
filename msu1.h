@@ -197,10 +197,15 @@
 struct SMSU1
 {
 	uint8	MSU1_STATUS;
-	uint32	MSU1_SEEK;
-	uint16	MSU1_TRACK;
+	uint32	MSU1_DATA_SEEK;
+	uint32	MSU1_DATA_POS;
+	uint16	MSU1_TRACK_SEEK;
+	uint16	MSU1_CURRENT_TRACK;
+	uint32	MSU1_RESUME_TRACK;
 	uint8	MSU1_VOLUME;
 	uint8	MSU1_CONTROL;
+	uint32	MSU1_AUDIO_POS;
+	uint32	MSU1_RESUME_POS;
 };
 
 enum SMSU1_FLAG : uint8 {
@@ -213,6 +218,12 @@ enum SMSU1_FLAG : uint8 {
 	DataBusy		= 0x80,
 };
 
+enum SMSU1_CMD : uint8 {
+	Play			= 0x01,
+	Repeat			= 0x02,
+	Resume			= 0x04,
+};
+
 extern struct SMSU1	MSU1;
 
 void S9xMSU1Init(void);
@@ -221,5 +232,6 @@ uint8 S9xMSU1ReadPort(int port);
 void S9xMSU1WritePort(int port, uint8 byte);
 uint16 S9xMSU1Samples(void);
 void S9xMSU1SetOutput(int16 *out, int size);
+void S9xMSU1PostLoadState(void);
 
 #endif

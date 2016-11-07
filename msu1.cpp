@@ -199,29 +199,70 @@
 #define APU_DEFAULT_INPUT_RATE		32000
 
 std::ifstream dataFile, audioFile;
-uint32 dataPos, audioPos, audioResumePos, audioLoopPos;
-uint16 audioTrack, audioResumeTrack;
+uint32 audioLoopPos;
 char fName[64];
 uint32 partial_samples;
-bool audioResume;
 
 // Sample buffer
 int16 *bufPos, *bufBegin, *bufEnd;
 
+bool AudioOpen()
+{
+	MSU1.MSU1_STATUS |= AudioError;
+
+	if (audioFile.is_open())
+		audioFile.close();
+
+	// This is an ugly hack... need to see if there's a better way to get the base name without extension
+	sprintf(fName, "%s", S9xGetFilename(".msu", ROMFILENAME_DIR));
+	fName[strlen(fName) - 4] = '\0';
+	sprintf(fName, "%s-%d.pcm", fName, MSU1.MSU1_CURRENT_TRACK);
+
+	audioFile.clear();
+	audioFile.open(fName, std::ios::in | std::ios::binary);
+	if (audioFile.good())
+	{
+		if (audioFile.get() != 'M')
+			return false;
+		if (audioFile.get() != 'S')
+			return false;
+		if (audioFile.get() != 'U')
+			return false;
+		if (audioFile.get() != '1')
+			return false;
+
+		audioFile.read((char *)&audioLoopPos, 4);
+		audioLoopPos <<= 2;
+		audioLoopPos += 8;
+	}
+
+	MSU1.MSU1_STATUS &= ~AudioError;
+	return true;
+}
+
+bool DataOpen()
+{
+	if (dataFile.is_open())
+		dataFile.close();
+
+	dataFile.clear();
+	dataFile.open(S9xGetFilename(".msu", ROMFILENAME_DIR), std::ios::in | std::ios::binary);
+	return dataFile.is_open();
+}
+
 void S9xMSU1Init(void)
 {
-	MSU1.MSU1_STATUS	= 0;
-	MSU1.MSU1_SEEK		= 0;
-	MSU1.MSU1_TRACK		= 0;
-	MSU1.MSU1_VOLUME	= 0;
-	MSU1.MSU1_CONTROL	= 0;
+	MSU1.MSU1_STATUS		= 0;
+	MSU1.MSU1_DATA_SEEK		= 0;
+	MSU1.MSU1_DATA_POS		= 0;
+	MSU1.MSU1_TRACK_SEEK	= 0;
+	MSU1.MSU1_CURRENT_TRACK = 0;
+	MSU1.MSU1_RESUME_TRACK	= 0;
+	MSU1.MSU1_VOLUME		= 0;
+	MSU1.MSU1_CONTROL		= 0;
+	MSU1.MSU1_AUDIO_POS		= 0;
+	MSU1.MSU1_RESUME_POS	= 0;
 
-	dataPos				= 0;
-	audioPos			= 0;
-	audioResumePos		= 0;
-
-	audioTrack			= 0;
-	audioResumeTrack	= 0;
 
 	bufPos				= 0;
 	bufBegin			= 0;
@@ -235,7 +276,7 @@ void S9xMSU1Init(void)
 	if (audioFile.is_open())
 		audioFile.close();
 
-	dataFile.open(S9xGetFilename(".msu", ROMFILENAME_DIR), std::ios::in | std::ios::binary);
+	DataOpen();
 }
 
 void S9xMSU1Generate(int sample_count)
@@ -249,26 +290,26 @@ void S9xMSU1Generate(int sample_count)
 			int16 sample;
 			if (audioFile.read((char *)&sample, 2).good())
 			{
-				sample = (double)sample * (double)MSU1.MSU1_VOLUME / 255.0;
+				sample = (int16)((double)sample * (double)MSU1.MSU1_VOLUME / 255.0);
 
 				*(bufPos++) = sample;
-				audioPos += 2;
+				MSU1.MSU1_AUDIO_POS += 2;
 				partial_samples -= 320405;
 			}
 			else
 			if (audioFile.eof())
 			{
-				sample = (double)sample * (double)MSU1.MSU1_VOLUME / 255.0;
+				sample = (int16)((double)sample * (double)MSU1.MSU1_VOLUME / 255.0);
 
 				*(bufPos++) = sample;
-				audioPos += 2;
+				MSU1.MSU1_AUDIO_POS += 2;
 				partial_samples -= 320405;
 
 				if (MSU1.MSU1_STATUS & AudioRepeating)
 				{
 					audioFile.clear();
-					audioPos = audioLoopPos;
-					audioFile.seekg(audioPos);
+					MSU1.MSU1_AUDIO_POS = audioLoopPos;
+					audioFile.seekg(MSU1.MSU1_AUDIO_POS);
 				}
 				else
 				{
@@ -304,6 +345,7 @@ uint8 S9xMSU1ReadPort(int port)
 			return 0;
 		if (dataFile.fail() || dataFile.bad() || dataFile.eof())
 			return 0;
+		MSU1.MSU1_DATA_POS++;
 		return dataFile.get();
 	case 2:
 		return 'S';
@@ -318,6 +360,8 @@ uint8 S9xMSU1ReadPort(int port)
 	case 7:
 		return '1';
 	}
+
+	return 0;
 }
 
 
@@ -326,82 +370,44 @@ void S9xMSU1WritePort(int port, uint8 byte)
 	switch (port)
 	{
 	case 0:
-		((uint8 *)(&MSU1.MSU1_SEEK))[0] = byte;
+		((uint8 *)(&MSU1.MSU1_DATA_SEEK))[0] = byte;
 		break;
 	case 1:
-		((uint8 *)(&MSU1.MSU1_SEEK))[1] = byte;
+		((uint8 *)(&MSU1.MSU1_DATA_SEEK))[1] = byte;
 		break;
 	case 2:
-		((uint8 *)(&MSU1.MSU1_SEEK))[2] = byte;
+		((uint8 *)(&MSU1.MSU1_DATA_SEEK))[2] = byte;
 		break;
 	case 3:
-		((uint8 *)(&MSU1.MSU1_SEEK))[3] = byte;
-		dataPos = MSU1.MSU1_SEEK;
+		((uint8 *)(&MSU1.MSU1_DATA_SEEK))[3] = byte;
+		MSU1.MSU1_DATA_POS = MSU1.MSU1_DATA_SEEK;
 		if(dataFile.good())
-			dataFile.seekg(dataPos);
+			dataFile.seekg(MSU1.MSU1_DATA_POS);
 		break;
 	case 4:
-		((uint8 *)(&MSU1.MSU1_TRACK))[0] = byte;
+		((uint8 *)(&MSU1.MSU1_TRACK_SEEK))[0] = byte;
 		break;
 	case 5:
-		((uint8 *)(&MSU1.MSU1_TRACK))[1] = byte;
-		audioTrack = MSU1.MSU1_TRACK;
-		if (audioFile.is_open())
-			audioFile.close();
+		((uint8 *)(&MSU1.MSU1_TRACK_SEEK))[1] = byte;
+		MSU1.MSU1_CURRENT_TRACK = MSU1.MSU1_TRACK_SEEK;
 
-		// This is an ugly hack... need to see if there's a better way to get the base name without extension
-		sprintf(fName, "%s", S9xGetFilename(".msu", ROMFILENAME_DIR));
-		fName[strlen(fName) - 4] = '\0';
-		sprintf(fName, "%s-%d.pcm", fName, audioTrack);
+		MSU1.MSU1_STATUS &= ~AudioPlaying;
+		MSU1.MSU1_STATUS &= ~AudioRepeating;
 
-		audioFile.clear();
-		audioFile.open(fName, std::ios::in | std::ios::binary);
-		if (audioFile.is_open())
+		if (AudioOpen())
 		{
-			MSU1.MSU1_STATUS |= AudioError;
-
-			if (audioFile.get() != 'M')
-				break;
-			if (audioFile.get() != 'S')
-				break;
-			if (audioFile.get() != 'U')
-				break;
-			if (audioFile.get() != '1')
-				break;
-
-			audioFile.read((char *)&audioLoopPos, 4);
-			audioLoopPos <<= 2;
-			audioLoopPos += 8;
-
-			MSU1.MSU1_STATUS &= ~AudioPlaying;
-			MSU1.MSU1_STATUS &= ~AudioRepeating;
-
-			if (audioResume)
+			if (MSU1.MSU1_CURRENT_TRACK == MSU1.MSU1_RESUME_TRACK)
 			{
-				audioResumeTrack = audioTrack;
-				audioResumePos = audioPos;
-				audioResume = FALSE;
+				MSU1.MSU1_AUDIO_POS = MSU1.MSU1_RESUME_POS;
+				MSU1.MSU1_RESUME_POS = 0;
+				MSU1.MSU1_RESUME_TRACK = ~0;
 			}
 			else
 			{
-				if (audioTrack == audioResumeTrack)
-				{
-					audioPos = audioResumePos;
-					audioResumeTrack = 0xFFFF;
-					audioResumePos = 0;
-				}
-				else
-					audioPos = 8;
+				MSU1.MSU1_AUDIO_POS = 8;
 			}
 
-			audioFile.seekg(audioPos);
-
-			MSU1.MSU1_STATUS &= ~AudioError;
-		}
-		else
-		{
-			char *e = strerror(errno);
-			MSU1.MSU1_STATUS |= AudioError;
+			audioFile.seekg(MSU1.MSU1_AUDIO_POS);
 		}
 		break;
 	case 6:
@@ -413,11 +419,10 @@ void S9xMSU1WritePort(int port, uint8 byte)
 
 		MSU1.MSU1_STATUS = (MSU1.MSU1_STATUS & ~0x30) | ((byte & 0x03) << 4);
 
-		audioResume = ((byte & 0x05) == 0x05);
-		if (byte & 0x04)
+		if ((byte & (Play | Resume) == Resume))
 		{
-			audioResumeTrack = audioTrack;
-			audioResumePos = audioPos;
+			MSU1.MSU1_RESUME_TRACK = MSU1.MSU1_CURRENT_TRACK;
+			MSU1.MSU1_RESUME_POS = MSU1.MSU1_AUDIO_POS;
 		}
 		break;
 	}
@@ -432,4 +437,36 @@ void S9xMSU1SetOutput(int16 * out, int size)
 {
 	bufPos = bufBegin = out;
 	bufEnd = out + size;
+}
+
+void S9xMSU1PostLoadState(void)
+{
+	if (DataOpen())
+	{
+		dataFile.seekg(MSU1.MSU1_DATA_POS);
+	}
+
+	if (MSU1.MSU1_STATUS & AudioPlaying)
+	{
+		if (AudioOpen())
+		{
+			audioFile.seekg(4);
+			audioFile.read((char *)&audioLoopPos, 4);
+			audioLoopPos <<= 2;
+			audioLoopPos += 8;
+
+			audioFile.seekg(MSU1.MSU1_AUDIO_POS);
+		}
+		else
+		{
+			MSU1.MSU1_STATUS &= ~(AudioPlaying | AudioRepeating);
+			MSU1.MSU1_STATUS |= AudioError;
+		}
+	}
+
+	bufPos = 0;
+	bufBegin = 0;
+	bufEnd = 0;
+
+	partial_samples = 0;
 }
