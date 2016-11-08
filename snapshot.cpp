@@ -1636,8 +1636,6 @@ int S9xUnfreezeFromStream (STREAM stream)
 		uint32 old_flags     = CPU.Flags;
 		uint32 sa1_old_flags = SA1.Flags;
 
-		S9xSetSoundMute(TRUE);
-
 		S9xReset();
 
 		UnfreezeStructFromCopy(&CPU, SnapCPU, COUNT(SnapCPU), local_cpu, version);
@@ -1863,8 +1861,6 @@ int S9xUnfreezeFromStream (STREAM stream)
 			for (uint32 y = 0; y < (uint32) (IMAGE_HEIGHT); y++)
 				memset(GFX.Screen + y * GFX.RealPPL, 0, GFX.RealPPL * 2);
 		}
-
-		S9xSetSoundMute(FALSE);
 	}
 
 	if (local_cpu)				delete [] local_cpu;
