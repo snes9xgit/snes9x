@@ -222,7 +222,7 @@ static const uint8	flashcard[20] =
 {
 	0x4D, 0x00, 0x50, 0x00,	// vendor id
 	0x00, 0x00,				// ?
-	0x2A, 0x00,				// 2MB Flash (1MB = 0x2A)
+	0x1A, 0x00,				// 2MB Flash (1MB = 0x2A)
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
@@ -674,27 +674,17 @@ static void BSX_Map (void)
 static uint8 BSX_Get_Bypass_FlashIO (uint16 offset)
 {
 	if (BSX.MMC[0x02])
-		return (MapROM[offset]);
+		return (MapROM[offset & 0x0FFFFF]);
 	else
-	{
-		if (offset < 0x8000)
-			return (MapROM[offset]);
-		else
-			return (MapROM[offset - 0x8000]);
-	}
+		return (MapROM[(offset & 0x0F0000) >> 1 | (offset & 0x7FFF)]);
 }
 
 static void BSX_Set_Bypass_FlashIO (uint16 offset, uint8 byte)
 {
 	if (BSX.MMC[0x02])
-		MapROM[offset] = byte;
+		MapROM[offset & 0x0FFFFF] = byte;
 	else
-	{
-		if (offset < 0x8000)
-			MapROM[offset] = byte;
-		else
-			MapROM[offset - 0x8000] = byte;
-	}
+		MapROM[(offset & 0x0F0000) >> 1 | (offset & 0x7FFF)] = byte;
 }
 
 uint8 S9xGetBSX (uint32 address)
@@ -708,39 +698,53 @@ uint8 S9xGetBSX (uint32 address)
 		return (BSX.MMC[bank]);
 
 	// Flash IO
-	if (bank == 0xC0)
+	if (bank >= 0xC0)
 	{
 		// default: read-through mode
-		t = BSX_Get_Bypass_FlashIO(offset);
+		t = BSX_Get_Bypass_FlashIO(address);
 
 		// note: may be more registers, purposes unknown
 		switch (offset)
 		{
-			case 0x0002:
-				if (BSX.flash_enable)
-					t = 0x80; // status register?
-				break;
+		case 0x0002:
+		case 0x8002:
+			if (BSX.flash_bsr)
+				t = 0xC0; // Page Status Register
+			break;
 
-			case 0x5555:
-				if (BSX.flash_enable)
-					t = 0x80; // ???
-				break;
+		case 0x0004:
+		case 0x8004:
+			if (BSX.flash_gsr)
+				t = 0x82; // Global Status Register
+			break;
 
-			case 0xFF00:
-			case 0xFF02:
-			case 0xFF04:
-			case 0xFF06:
-			case 0xFF08:
-			case 0xFF0A:
-			case 0xFF0C:
-			case 0xFF0E:
-			case 0xFF10:
-			case 0xFF12:
-				// return flash vendor information
-				if (BSX.read_enable)
-					t = flashcard[offset - 0xFF00];
-				break;
+		case 0x5555:
+			if (BSX.flash_enable)
+				t = 0x80; // ???
+			break;
+
+		case 0xFF00:
+		case 0xFF02:
+		case 0xFF04:
+		case 0xFF06:
+		case 0xFF08:
+		case 0xFF0A:
+		case 0xFF0C:
+		case 0xFF0E:
+		case 0xFF10:
+		case 0xFF12:
+			// return flash vendor information
+			if (BSX.read_enable)
+				t = flashcard[offset - 0xFF00];
+			break;
 		}
+
+		if (BSX.flash_csr)
+		{
+			t = 0x80; // Compatible Status Register
+			BSX.flash_csr = false;
+		}
+
 	}
 
 	return (t);
@@ -760,75 +764,115 @@ void S9xSetBSX (uint8 byte, uint32 address)
 	}
 
 	// Flash IO
-	if (bank == 0xC0)
+	if (bank >= 0xC0)
 	{
-		BSX.old_write = BSX.new_write;
-		BSX.new_write = address;
-
-		// ???: double writes to the desired address will bypass
-		// flash registers
-		if (BSX.old_write == BSX.new_write && BSX.write_enable)
+		// Write to Flash
+		if (BSX.write_enable)
 		{
-			BSX_Set_Bypass_FlashIO(offset, byte);
+			BSX_Set_Bypass_FlashIO(address, byte);
+			//MapROM[address & 0x3FFFFF] = byte;
+			BSX.write_enable = false;
 			return;
 		}
 
-		// flash command handling
-		// note: incomplete
-		switch (offset)
-		{
-			case 0x0000:
-				BSX.flash_command <<= 8;
-				BSX.flash_command |= byte;
-				if ((BSX.flash_command & 0xFFFF) == 0x38D0)
-				{
-					// retrieve information about the flash card
-					BSX.flash_enable = TRUE;
-					BSX.read_enable  = TRUE;
-				}
-				break;
+		// Flash Command Handling
+		if (BSX.MMC[0xC]) {
+			//Memory Pack Type 1 & 3 & 4
+			BSX.flash_command <<= 8;
+			BSX.flash_command |= byte;
 
-			case 0x2AAA:
-				BSX.flash_command <<= 8;
-				BSX.flash_command |= byte;
-				break;
+			switch (BSX.flash_command & 0xFF)
+			{
+				case 0x00:
+				case 0xFF:
+					//Reset to normal
+					BSX.flash_enable = false;
+					BSX.flash_bsr = false;
+					BSX.flash_csr = false;
+					BSX.flash_gsr = false;
+					BSX.read_enable = false;
+					BSX.write_enable = false;
+					BSX.flash_cmd_done = true;
+					break;
 
-			case 0x5555:
-				BSX.flash_command <<= 8;
-				BSX.flash_command |= byte;
+				case 0x10:
+				case 0x40:
+					//Write Byte
+					BSX.flash_enable = false;
+					BSX.flash_bsr = false;
+					BSX.flash_csr = true;
+					BSX.flash_gsr = false;
+					BSX.read_enable = false;
+					BSX.write_enable = true;
+					BSX.flash_cmd_done = true;
+					break;
 
-				switch (BSX.flash_command & 0xFFFFFF)
-				{
-					case 0xAA55F0:
-						// turn off flash i/o
-						BSX.flash_enable = FALSE;
-						BSX.write_enable = FALSE;
-						BSX.read_enable  = FALSE;
-						break;
+				case 0x50:
+					//Clear Status Register
+					BSX.flash_enable = false;
+					BSX.flash_bsr = false;
+					BSX.flash_csr = false;
+					BSX.flash_gsr = false;
+					BSX.flash_cmd_done = true;
+					break;
 
-					case 0xAA55A0:
-						// enable writing to flash
-						BSX.old_write = 0;
-						BSX.new_write = 0;
-						BSX.flash_enable = TRUE;
-						BSX.write_enable = TRUE;
-						BSX_Map();
-						break;
+				case 0x70:
+					//Read CSR
+					BSX.flash_enable = false;
+					BSX.flash_bsr = false;
+					BSX.flash_csr = true;
+					BSX.flash_gsr = false;
+					BSX.read_enable = false;
+					BSX.write_enable = false;
+					BSX.flash_cmd_done = true;
+					break;
 
-					case 0xAA5570:
-						// turn on write-protection
-						BSX.write_enable = FALSE;
-						BSX_Map();
-						break;
+				case 0x71:
+					//Read Extended Status Registers (Page and Global)
+					BSX.flash_enable = false;
+					BSX.flash_bsr = true;
+					BSX.flash_csr = false;
+					BSX.flash_gsr = true;
+					BSX.read_enable = false;
+					BSX.write_enable = false;
+					BSX.flash_cmd_done = true;
+					break;
 
-					case 0xAA5580:
-					case 0xAA5510:
-						// ???
-						break;
+				case 0x75:
+					//Show Page Buffer / Vendor Info
+					BSX.flash_csr = false;
+					BSX.read_enable = true;
+					BSX.flash_cmd_done = true;
+					break;
 
-				}
+				case 0xD0:
+					//DO COMMAND
+					switch (BSX.flash_command & 0xFFFF)
+					{
+						case 0x20D0: //Block Erase
+							uint32 x;
+							for (x = 0; x < 0x10000; x++) {
+								BSX_Set_Bypass_FlashIO(((address & 0xFF0000) + x), 0xFF);
+								//MapROM[((address & 0xFF0000) - 0xC00000) + x] = 0xFF;
+							}
+							break;
 
-				break;
+						case 0xA7D0: //Chip Erase (ONLY IN TYPE 1 AND 4)
+							if ((flashcard[6] & 0xF0) == 0x10 || (flashcard[6] & 0xF0) == 0x40)
+							{
+								uint32 x;
+								for (x = 0; x < FLASH_SIZE; x++) {
+									BSX_Set_Bypass_FlashIO(x, 0xFF);
+									//MapROM[x] = 0xFF;
+								}
+							}
+							break;
+
+						case 0x38D0: //Flashcart Reset
+							break;
+					}
+					break;
+			}
 		}
 	}
 }

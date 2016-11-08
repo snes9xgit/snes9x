@@ -199,6 +199,11 @@ struct SBSX
 	uint8	MMC[16];
 	uint8	prevMMC[16];
 	uint8	test2192[32];
+
+	bool	flash_csr;
+	bool	flash_gsr;
+	bool	flash_bsr;
+	bool	flash_cmd_done;
 };
 
 extern struct SBSX	BSX;
