@@ -416,7 +416,7 @@ void S9xMSU1WritePort(int port, uint8 byte)
 
 		MSU1.MSU1_STATUS = (MSU1.MSU1_STATUS & ~0x30) | ((byte & 0x03) << 4);
 
-		if ((byte & (Play | Resume) == Resume))
+		if ((byte & (Play | Resume)) == Resume)
 		{
 			MSU1.MSU1_RESUME_TRACK = MSU1.MSU1_CURRENT_TRACK;
 			MSU1.MSU1_RESUME_POS = MSU1.MSU1_AUDIO_POS;
