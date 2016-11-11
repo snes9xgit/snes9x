@@ -192,7 +192,11 @@
 
 #include <assert.h>
 #include <ctype.h>
+#ifdef SYSTEM_ZIP
+#include <minizip/unzip.h>
+#else
 #include "unzip/unzip.h"
+#endif
 #include "snes9x.h"
 #include "memmap.h"
 
