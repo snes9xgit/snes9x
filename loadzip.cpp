@@ -261,7 +261,7 @@ bool8 LoadZip (const char *zipname, uint32 *TotalFileSize, uint8 *buffer)
 	uint8	*ptr = buffer;
 	bool8	more = FALSE;
 
-	unzLocateFile(file, filename, 1);
+	unzLocateFile(file, filename, NULL);
 	unzGetCurrentFileInfo(file, &info, filename, 128, NULL, 0, NULL, 0);
 
 	if (unzOpenCurrentFile(file) != UNZ_OK)
@@ -283,7 +283,7 @@ bool8 LoadZip (const char *zipname, uint32 *TotalFileSize, uint8 *buffer)
 			return (FALSE);
 		}
 
-		if (l <= 0 || l != FileSize)
+		if (l <= 0 || l != (int) FileSize)
 		{
 			unzClose(file);
 			return (FALSE);
@@ -321,7 +321,7 @@ bool8 LoadZip (const char *zipname, uint32 *TotalFileSize, uint8 *buffer)
 
 		if (more)
 		{
-			if (unzLocateFile(file, filename, 1) != UNZ_OK ||
+			if (unzLocateFile(file, filename, NULL) != UNZ_OK ||
 				unzGetCurrentFileInfo(file, &info, filename, 128, NULL, 0, NULL, 0) != UNZ_OK ||
 				unzOpenCurrentFile(file) != UNZ_OK)
 				break;
