@@ -193,7 +193,11 @@
 #include <assert.h>
 
 #ifdef UNZIP_SUPPORT
-#include "unzip/unzip.h"
+#  ifdef SYSTEM_ZIP
+#    include <minizip/unzip.h>
+#  else
+#    include "unzip/unzip.h"
+#  endif
 #endif
 
 #ifdef JMA_SUPPORT

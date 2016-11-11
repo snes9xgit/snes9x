@@ -196,12 +196,16 @@ snes9x_gtk_SOURCES += \
     ../server.cpp
 endif
 
+
 # Zip support is nonconfigurable.
 snes9x_gtk_SOURCES += \
-    ../loadzip.cpp \
+    ../loadzip.cpp
+if ! SYSTEM_ZIP
+snes9x_gtk_SOURCES += \
     ../unzip/unzip.c \
     ../unzip/ioapi.c \
     ../unzip/zip.c
+endif
 UNZIPDEFINES=-DUNZIP_SUPPORT
 
 if JMA

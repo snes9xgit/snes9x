@@ -192,7 +192,11 @@
 
 #include <string>
 #ifdef UNZIP_SUPPORT
-#include "unzip.h"
+#  ifdef SYSTEM_ZIP
+#    include <minizip/unzip.h>
+#  else
+#    include "unzip.h"
+#  endif
 #endif
 #include "snes9x.h"
 #include "stream.h"

@@ -138,6 +138,12 @@ AC_ARG_WITH(zlib,
   [],
   [with_zlib=yes])
 
+AC_ARG_WITH(system-zip,
+  [AS_HELP_STRING([--with(out)-system-zip],
+    [Use system zip])],
+  [],
+  [system_zip=check])
+
 AC_ARG_WITH(screenshot,
   [AS_HELP_STRING([--with(out)-screenshot],
     [Screenshot support through libpng if available (default: with)])],
@@ -313,6 +319,25 @@ if test yes = "$with_screenshot"; then
     ])
 fi
 
+SYSTEM_ZIP=0
+SYSTEM_ZIP_CFLAGS=""
+SYSTEM_ZIP_LIBS=""
+ZIP_CFLAGS="-I../unzip"
+if test no != "$with_system_zip" && test yes = "$with_zlib" ; then
+    PKG_CHECK_MODULES([SYSTEM_ZIP],[minizip],[
+	ZIP_CFLAGS=""
+	SYSTEM_ZIP=yes
+	CFLAGS="$CFLAGS $SYSTEM_ZIP_CFLAGS -DSYSTEM_ZIP"
+	LIBS="$LIBS $SYSTEM_ZIP_LIBS"
+    ],[
+	if test check = "$with_system_zip"; then
+	    AC_MSG_WARN(Cannot find SYSTEM_ZIP)
+	else
+	    AC_MSG_ERROR(--with-system-zip given but cannot find proper zlib)
+	fi
+    ])
+fi
+
 if test yes = "$with_hq2x" ; then
     HQ2X=yes
     CFLAGS="$CFLAGS -DUSE_HQ2X"
@@ -440,7 +465,7 @@ if test $ac_cv_my_sar_int8 = yes && \
   CFLAGS="$CFLAGS -DRIGHTSHIFT_IS_SAR"
 fi
 
-CFLAGS="$CFLAGS -DUNZIP_SUPPORT -DSPC700_C -I. -I.. -I../unzip"
+CFLAGS="$CFLAGS -DUNZIP_SUPPORT -DSPC700_C -I. -I.. $ZIP_CFLAGS"
 
 CXXFLAGS="$CFLAGS"
 
@@ -462,6 +487,7 @@ AM_CONDITIONAL(ALSA, [test yes = "$ALSA"])
 AM_CONDITIONAL(PULSEAUDIO, [test yes = "$PULSEAUDIO"])
 AM_CONDITIONAL(HQ2X, [test yes = "$HQ2X"])
 AM_CONDITIONAL(XBRZ, [test yes = "$XBRZ"])
+AM_CONDITIONAL(SYSTEM_ZIP, [test yes = "$SYSTEM_ZIP"])
 
 AC_SUBST(NASM)
 AC_SUBST(NASM_FLAGS)

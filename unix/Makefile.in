@@ -2,6 +2,7 @@
 @S9XNETPLAY@
 @S9XZIP@
 @S9XJMA@
+@S9X_SYSTEM_ZIP@
 
 # Fairly good and special-char-safe descriptor of the os being built on.
 OS         = `uname -s -r -m|sed \"s/ /-/g\"|tr \"[A-Z]\" \"[a-z]\"|tr \"/()\" \"___\"`
@@ -19,7 +20,11 @@ OBJECTS   += ../netplay.o ../server.o
 endif
 
 ifdef S9XZIP
-OBJECTS   += ../loadzip.o ../unzip/ioapi.o ../unzip/unzip.o
+OBJECTS   += ../loadzip.o
+ifndef SYSTEM_ZIP
+OBJECTS   += ../unzip/ioapi.o ../unzip/unzip.o
+INCLUDES   = -I../unzip/
+endif
 endif
 
 ifdef S9XJMA
@@ -29,7 +34,7 @@ endif
 CCC        = @CXX@
 CC         = @CC@
 GASM       = @CXX@
-INCLUDES   = -I. -I.. -I../apu/ -I../apu/bapu -I../unzip/ -I../jma/ -I../filter/
+INCLUDES   += -I. -I.. -I../apu/ -I../apu/bapu -I../jma/ -I../filter/
 
 CCFLAGS    = @S9XFLGS@ @S9XDEFS@ $(DEFS)
 CFLAGS     = $(CCFLAGS)
