@@ -272,7 +272,7 @@ bool CDirect3D::Initialize(HWND hWnd)
 
 	pD3D = Direct3DCreate9(D3D_SDK_VERSION);
 	if(pD3D == NULL) {
-		DXTRACE_ERR_MSGBOX(TEXT(L"Error creating initial D3D9 object"), 0);
+		DXTRACE_ERR_MSGBOX(TEXT("Error creating initial D3D9 object"), 0);
 		return false;
 	}
 
@@ -290,19 +290,19 @@ bool CDirect3D::Initialize(HWND hWnd)
 					  &dPresentParams,
                       &pDevice);
 	if(FAILED(hr)) {
-		DXTRACE_ERR_MSGBOX(TEXT(L"Error creating D3D9 device"), hr);
+		DXTRACE_ERR_MSGBOX(TEXT("Error creating D3D9 device"), hr);
 		return false;
 	}
 
 	hr = pDevice->CreateVertexBuffer(sizeof(vertexStream),D3DUSAGE_WRITEONLY,0,D3DPOOL_MANAGED,&vertexBuffer,NULL);
 	if(FAILED(hr)) {
-		DXTRACE_ERR_MSGBOX(TEXT(L"Error creating vertex buffer"), hr);
+		DXTRACE_ERR_MSGBOX(TEXT("Error creating vertex buffer"), hr);
 		return false;
 	}
 
 	hr = pDevice->CreateVertexDeclaration(vertexElems,&vertexDeclaration);
 	if(FAILED(hr)) {
-		DXTRACE_ERR_MSGBOX(TEXT(L"Error creating vertex declaration"), hr);
+		DXTRACE_ERR_MSGBOX(TEXT("Error creating vertex declaration"), hr);
 		return false;
 	}
 
@@ -312,7 +312,7 @@ bool CDirect3D::Initialize(HWND hWnd)
 		cgContext = cgCreateContext();
 		hr = cgD3D9SetDevice(pDevice);
 		if(FAILED(hr)) {
-			DXTRACE_ERR_MSGBOX(TEXT(L"Error setting cg device"), hr);
+			DXTRACE_ERR_MSGBOX(TEXT("Error setting cg device"), hr);
 		}
 		cgShader = new CD3DCG(cgContext,pDevice);
 	}
@@ -650,14 +650,14 @@ void CDirect3D::Render(SSurface Src)
 				ResetDevice();
 				return;
 			default:
-				DXTRACE_ERR_MSGBOX( TEXT(L"Internal driver error"), hr);
+				DXTRACE_ERR_MSGBOX( TEXT("Internal driver error"), hr);
 				return;
 		}
 	}
 
 	//BlankTexture(drawSurface);
 	if(FAILED(hr = drawSurface->LockRect(0, &lr, NULL, 0))) {
-		DXTRACE_ERR_MSGBOX( TEXT(L"Unable to lock texture"), hr);
+		DXTRACE_ERR_MSGBOX( TEXT("Unable to lock texture"), hr);
 		return;
 	} else {
 		Dst.Surface = (unsigned char *)lr.pBits;
@@ -757,7 +757,7 @@ void CDirect3D::CreateDrawSurface()
 			NULL );
 
 		if(FAILED(hr)) {
-			DXTRACE_ERR_MSGBOX(TEXT(L"Error while creating texture"), hr);
+			DXTRACE_ERR_MSGBOX(TEXT("Error while creating texture"), hr);
 			return;
 		}
 	}
@@ -787,7 +787,7 @@ bool CDirect3D::BlankTexture(LPDIRECT3DTEXTURE9 texture)
 	HRESULT hr;
 
 	if(FAILED(hr = texture->LockRect(0, &lr, NULL, 0))) {
-		DXTRACE_ERR_MSGBOX( TEXT(L"Unable to lock texture"), hr);
+		DXTRACE_ERR_MSGBOX( TEXT("Unable to lock texture"), hr);
 		return false;
 	} else {
 		memset(lr.pBits, 0, lr.Pitch * quadTextureSize);
@@ -938,7 +938,7 @@ bool CDirect3D::ResetDevice()
 	}
 
 	if(FAILED(hr = pDevice->Reset(&dPresentParams))) {
-		DXTRACE_ERR(TEXT(L"Unable to reset device"), hr);
+		DXTRACE_ERR(TEXT("Unable to reset device"), hr);
 		return false;
 	}
 
