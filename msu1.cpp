@@ -157,6 +157,9 @@
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
+  MSU-1 code
+  (c) Copyright 2016         qwertymodo
+
 
   Specific ports contains the works of other authors. See headers in
   individual files.
@@ -187,231 +190,278 @@
   Nintendo Co., Limited and its subsidiary companies.
  ***********************************************************************************/
 
+#include "snes9x.h"
+#include "display.h"
+#include "msu1.h"
+#include <fstream>
+#include <cerrno>
 
-#include "CXAudio2.h"
-#include "../snes9x.h"
-#include "../apu/apu.h"
-#include "wsnes9x.h"
-#include <process.h>
-#include <Dxerr.h>
+std::ifstream dataFile, audioFile;
+uint32 audioLoopPos;
+uint32 partial_samples;
 
-/* CXAudio2
-	Implements audio output through XAudio2.
-	Basic idea: one master voice and one source voice are created;
-	the source voice consumes buffers queued by PushBuffer, plays them through
-	the master voice and calls OnBufferEnd after each buffer.
-	ProcessSound copies new samples into the buffer and queues them for playback.
-*/
+// Sample buffer
+int16 *bufPos, *bufBegin, *bufEnd;
 
-/*  Construction/Destruction
-*/
-CXAudio2::CXAudio2(void)
+bool AudioOpen()
 {
-	pXAudio2 = NULL;
-	pSourceVoice = NULL;
-	pMasterVoice = NULL;
+	MSU1.MSU1_STATUS |= AudioError;
 
-	sum_bufferSize = singleBufferBytes \
-		= singleBufferSamples = blockCount = 0;
-	soundBuffer = NULL;
-	initDone = false;
-}
+	if (audioFile.is_open())
+		audioFile.close();
 
-CXAudio2::~CXAudio2(void)
-{
-	DeInitXAudio2();
-}
+	char ext[_MAX_EXT];
+	snprintf(ext, _MAX_EXT, "-%d.pcm", MSU1.MSU1_CURRENT_TRACK);
 
-/*  CXAudio2::InitXAudio2
-initializes the XAudio2 object
------
-returns true if successful, false otherwise
-*/
-bool CXAudio2::InitXAudio2(void)
-{
-	if(initDone)
-		return true;
+	audioFile.clear();
+	audioFile.open(S9xGetFilename(ext, ROMFILENAME_DIR), std::ios::in | std::ios::binary);
+	if (audioFile.good())
+	{
+		if (audioFile.get() != 'M')
+			return false;
+		if (audioFile.get() != 'S')
+			return false;
+		if (audioFile.get() != 'U')
+			return false;
+		if (audioFile.get() != '1')
+			return false;
 
-	HRESULT hr;
-	if ( FAILED(hr = XAudio2Create( &pXAudio2, 0 , XAUDIO2_DEFAULT_PROCESSOR ) ) ) {
-		DXTRACE_ERR_MSGBOX(TEXT(L"Unable to create XAudio2 object."),hr);
-		MessageBox (GUI.hWnd, TEXT("\
-Unable to initialize XAudio2. You will not be able to hear any\n\
-sound effects or music while playing.\n\n\
-This is usually caused by not having a recent DirectX release installed."),
-			TEXT("Snes9X - Unable to Initialize XAudio2"),
-            MB_OK | MB_ICONWARNING);
-		return false;
+		audioFile.read((char *)&audioLoopPos, 4);
+		audioLoopPos <<= 2;
+		audioLoopPos += 8;
 	}
-	initDone = true;
+
+	MSU1.MSU1_STATUS &= ~AudioError;
 	return true;
 }
 
-/*  CXAudio2::InitVoices
-initializes the voice objects with the current audio settings
------
-returns true if successful, false otherwise
-*/
-bool CXAudio2::InitVoices(void)
+bool DataOpen()
 {
-	HRESULT hr;
-	if ( FAILED(hr = pXAudio2->CreateMasteringVoice( &pMasterVoice, (Settings.Stereo?2:1),
-		Settings.SoundPlaybackRate, 0, 0 , NULL ) ) ) {
-			DXTRACE_ERR_MSGBOX(TEXT(L"Unable to create mastering voice."),hr);
-			return false;
-	}
+	if (dataFile.is_open())
+		dataFile.close();
 
-	WAVEFORMATEX wfx;
-	wfx.wFormatTag = WAVE_FORMAT_PCM;
-    wfx.nChannels = Settings.Stereo ? 2 : 1;
-    wfx.nSamplesPerSec = Settings.SoundPlaybackRate;
-    wfx.nBlockAlign = (Settings.SixteenBitSound ? 2 : 1) * (Settings.Stereo ? 2 : 1);
-    wfx.wBitsPerSample = Settings.SixteenBitSound ? 16 : 8;
-    wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * wfx.nBlockAlign;
-    wfx.cbSize = 0;
-
-	if( FAILED(hr = pXAudio2->CreateSourceVoice(&pSourceVoice, (WAVEFORMATEX*)&wfx,
-		XAUDIO2_VOICE_NOSRC , XAUDIO2_DEFAULT_FREQ_RATIO, this, NULL, NULL ) ) ) {
-			DXTRACE_ERR_MSGBOX(TEXT(L"Unable to create source voice."),hr);
-			return false;
-	}
-
-	return true;
+	dataFile.clear();
+	dataFile.open(S9xGetFilename(".msu", ROMFILENAME_DIR), std::ios::in | std::ios::binary);
+	return dataFile.is_open();
 }
 
-/*  CXAudio2::DeInitXAudio2
-deinitializes all objects
-*/
-void CXAudio2::DeInitXAudio2(void)
+void S9xMSU1Init(void)
 {
-	initDone = false;
-	DeInitVoices();	
-	if(pXAudio2) {
-		pXAudio2->Release();
-		pXAudio2 = NULL;
+	MSU1.MSU1_STATUS		= 0;
+	MSU1.MSU1_DATA_SEEK		= 0;
+	MSU1.MSU1_DATA_POS		= 0;
+	MSU1.MSU1_TRACK_SEEK	= 0;
+	MSU1.MSU1_CURRENT_TRACK = 0;
+	MSU1.MSU1_RESUME_TRACK	= 0;
+	MSU1.MSU1_VOLUME		= 0;
+	MSU1.MSU1_CONTROL		= 0;
+	MSU1.MSU1_AUDIO_POS		= 0;
+	MSU1.MSU1_RESUME_POS	= 0;
+
+
+	bufPos				= 0;
+	bufBegin			= 0;
+	bufEnd				= 0;
+
+	partial_samples = 0;
+
+	if (dataFile.is_open())
+		dataFile.close();
+
+	if (audioFile.is_open())
+		audioFile.close();
+
+	DataOpen();
+}
+
+void S9xMSU1Generate(int sample_count)
+{
+	partial_samples += 441000 * sample_count;
+
+	while (((uintptr_t)bufPos < (uintptr_t)bufEnd) && (MSU1.MSU1_STATUS & AudioPlaying) && partial_samples > 320405)
+	{
+		if (audioFile.is_open())
+		{
+			int16 sample;
+			if (audioFile.read((char *)&sample, 2).good())
+			{
+				sample = (int16)((double)sample * (double)MSU1.MSU1_VOLUME / 255.0);
+
+				*(bufPos++) = sample;
+				MSU1.MSU1_AUDIO_POS += 2;
+				partial_samples -= 320405;
+			}
+			else
+			if (audioFile.eof())
+			{
+				sample = (int16)((double)sample * (double)MSU1.MSU1_VOLUME / 255.0);
+
+				*(bufPos++) = sample;
+				MSU1.MSU1_AUDIO_POS += 2;
+				partial_samples -= 320405;
+
+				if (MSU1.MSU1_STATUS & AudioRepeating)
+				{
+					audioFile.clear();
+					MSU1.MSU1_AUDIO_POS = audioLoopPos;
+					audioFile.seekg(MSU1.MSU1_AUDIO_POS);
+				}
+				else
+				{
+					MSU1.MSU1_STATUS &= ~(AudioPlaying | AudioRepeating);
+					audioFile.clear();
+					audioFile.seekg(8);
+					return;
+				}
+			}
+			else
+			{
+				MSU1.MSU1_STATUS &= ~(AudioPlaying | AudioRepeating);
+				return;
+			}
+		}
+		else
+		{
+			MSU1.MSU1_STATUS &= ~(AudioPlaying | AudioRepeating);
+			return;
+		}
 	}
 }
 
-/*  CXAudio2::DeInitVoices
-deinitializes the voice objects and buffers
-*/
-void CXAudio2::DeInitVoices(void)
+
+uint8 S9xMSU1ReadPort(int port)
 {
-	if(pSourceVoice) {
-		StopPlayback();
-		pSourceVoice->DestroyVoice();
-		pSourceVoice = NULL;
-	}
-	if(pMasterVoice) {
-		pMasterVoice->DestroyVoice();
-		pMasterVoice = NULL;
-	}
-	if(soundBuffer) {
-		delete [] soundBuffer;
-		soundBuffer = NULL;
-	}
-}
-
-/*  CXAudio2::OnBufferEnd
-callback function called by the source voice
-IN:
-pBufferContext		-	unused
-*/
-void CXAudio2::OnBufferEnd(void *pBufferContext)
-{
-	InterlockedDecrement(&bufferCount);
-    SetEvent(GUI.SoundSyncEvent);
-}
-
-/*  CXAudio2::PushBuffer
-pushes one buffer onto the source voice playback queue
-IN:
-AudioBytes		-	size of the buffer
-pAudioData		-	pointer to the buffer
-pContext		-	context passed to the callback, currently unused
-*/
-void CXAudio2::PushBuffer(UINT32 AudioBytes,BYTE *pAudioData,void *pContext)
-{
-	XAUDIO2_BUFFER xa2buffer={0};
-	xa2buffer.AudioBytes=AudioBytes;
-	xa2buffer.pAudioData=pAudioData;
-	xa2buffer.pContext=pContext;
-	InterlockedIncrement(&bufferCount);
-	pSourceVoice->SubmitSourceBuffer(&xa2buffer);
-}
-
-/*  CXAudio2::SetupSound
-applies current sound settings by recreating the voice objects and buffers
------
-returns true if successful, false otherwise
-*/
-bool CXAudio2::SetupSound()
-{
-	if(!initDone)
-		return false;
-
-	DeInitVoices();
-
-	blockCount = 8;
-	UINT32 blockTime = GUI.SoundBufferSize / blockCount;
-
-	singleBufferSamples = (Settings.SoundPlaybackRate * blockTime) / 1000;
-    singleBufferSamples *= (Settings.Stereo ? 2 : 1);
-	singleBufferBytes = singleBufferSamples * (Settings.SixteenBitSound ? 2 : 1);
-	sum_bufferSize = singleBufferBytes * blockCount;
-
-    if (InitVoices())
-    {
-		soundBuffer = new uint8[sum_bufferSize];
-		writeOffset = 0;
-    }
-	else {
-		DeInitVoices();
-		return false;
+	switch (port)
+	{
+	case 0:
+		return MSU1.MSU1_STATUS;
+	case 1:
+		if (MSU1.MSU1_STATUS & DataBusy)
+			return 0;
+		if (dataFile.fail() || dataFile.bad() || dataFile.eof())
+			return 0;
+		MSU1.MSU1_DATA_POS++;
+		return dataFile.get();
+	case 2:
+		return 'S';
+	case 3:
+		return '-';
+	case 4:
+		return 'M';
+	case 5:
+		return 'S';
+	case 6:
+		return 'U';
+	case 7:
+		return '1';
 	}
 
-	bufferCount = 0;
-
-	BeginPlayback();
-
-    return true;
+	return 0;
 }
 
-void CXAudio2::BeginPlayback()
+
+void S9xMSU1WritePort(int port, uint8 byte)
 {
-	pSourceVoice->Start(0);
-}
+	switch (port)
+	{
+	case 0:
+		((uint8 *)(&MSU1.MSU1_DATA_SEEK))[0] = byte;
+		break;
+	case 1:
+		((uint8 *)(&MSU1.MSU1_DATA_SEEK))[1] = byte;
+		break;
+	case 2:
+		((uint8 *)(&MSU1.MSU1_DATA_SEEK))[2] = byte;
+		break;
+	case 3:
+		((uint8 *)(&MSU1.MSU1_DATA_SEEK))[3] = byte;
+		MSU1.MSU1_DATA_POS = MSU1.MSU1_DATA_SEEK;
+		if(dataFile.good())
+			dataFile.seekg(MSU1.MSU1_DATA_POS);
+		break;
+	case 4:
+		((uint8 *)(&MSU1.MSU1_TRACK_SEEK))[0] = byte;
+		break;
+	case 5:
+		((uint8 *)(&MSU1.MSU1_TRACK_SEEK))[1] = byte;
+		MSU1.MSU1_CURRENT_TRACK = MSU1.MSU1_TRACK_SEEK;
 
-void CXAudio2::StopPlayback()
-{
-	pSourceVoice->Stop(0);
-}
+		MSU1.MSU1_STATUS &= ~AudioPlaying;
+		MSU1.MSU1_STATUS &= ~AudioRepeating;
 
-/*  CXAudio2::ProcessSound
-The mixing function called by the sound core when new samples are available.
-SoundBuffer is divided into blockCount blocks. If there are enought available samples and a free block,
-the block is filled and queued to the source voice. bufferCount is increased by pushbuffer and decreased by
-the OnBufferComplete callback.
-*/
-void CXAudio2::ProcessSound()
-{
-	S9xFinalizeSamples();
+		if (AudioOpen())
+		{
+			if (MSU1.MSU1_CURRENT_TRACK == MSU1.MSU1_RESUME_TRACK)
+			{
+				MSU1.MSU1_AUDIO_POS = MSU1.MSU1_RESUME_POS;
+				MSU1.MSU1_RESUME_POS = 0;
+				MSU1.MSU1_RESUME_TRACK = ~0;
+			}
+			else
+			{
+				MSU1.MSU1_AUDIO_POS = 8;
+			}
 
-	if(!initDone)
-		return;
+			audioFile.seekg(MSU1.MSU1_AUDIO_POS);
+		}
+		break;
+	case 6:
+		MSU1.MSU1_VOLUME = byte;
+		break;
+	case 7:
+		if (MSU1.MSU1_STATUS & (AudioBusy | AudioError))
+			break;
 
-	BYTE * curBuffer;
+		MSU1.MSU1_STATUS = (MSU1.MSU1_STATUS & ~0x30) | ((byte & 0x03) << 4);
 
-	UINT32 availableSamples;
-
-	availableSamples = S9xGetSampleCount();
-
-	while(availableSamples > singleBufferSamples && bufferCount < blockCount) {
-		curBuffer = soundBuffer + writeOffset;
-		S9xMixSamples(curBuffer,singleBufferSamples);
-		PushBuffer(singleBufferBytes,curBuffer,NULL);
-		writeOffset+=singleBufferBytes;
-		writeOffset%=sum_bufferSize;
-        availableSamples -= singleBufferSamples;
+		if ((byte & (Play | Resume)) == Resume)
+		{
+			MSU1.MSU1_RESUME_TRACK = MSU1.MSU1_CURRENT_TRACK;
+			MSU1.MSU1_RESUME_POS = MSU1.MSU1_AUDIO_POS;
+		}
+		break;
 	}
+}
+
+uint16 S9xMSU1Samples(void)
+{
+	return bufPos - bufBegin;
+}
+
+void S9xMSU1SetOutput(int16 * out, int size)
+{
+	bufPos = bufBegin = out;
+	bufEnd = out + size;
+}
+
+void S9xMSU1PostLoadState(void)
+{
+	if (DataOpen())
+	{
+		dataFile.seekg(MSU1.MSU1_DATA_POS);
+	}
+
+	if (MSU1.MSU1_STATUS & AudioPlaying)
+	{
+		if (AudioOpen())
+		{
+			audioFile.seekg(4);
+			audioFile.read((char *)&audioLoopPos, 4);
+			audioLoopPos <<= 2;
+			audioLoopPos += 8;
+
+			audioFile.seekg(MSU1.MSU1_AUDIO_POS);
+		}
+		else
+		{
+			MSU1.MSU1_STATUS &= ~(AudioPlaying | AudioRepeating);
+			MSU1.MSU1_STATUS |= AudioError;
+		}
+	}
+
+	bufPos = 0;
+	bufBegin = 0;
+	bufEnd = 0;
+
+	partial_samples = 0;
 }

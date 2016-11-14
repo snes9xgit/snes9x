@@ -232,6 +232,7 @@ struct SSPC7110Snapshot	s7snap;
 struct SSRTCSnapshot	srtcsnap;
 struct SRTCData			RTCData;
 struct SBSX				BSX;
+struct SMSU1			MSU1;
 struct SMulti			Multi;
 struct SSettings		Settings;
 struct SSNESGameFixes	SNESGameFixes;

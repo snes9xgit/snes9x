@@ -136,6 +136,11 @@ snes9x_gtk_SOURCES += \
     ../apu/bapu/smp/smp.cpp \
     ../apu/bapu/smp/smp_state.cpp
 
+# MSU1
+snes9x_gtk_SOURCES += \
+    ../msu1.cpp \
+    ../msu1.h
+
 # DSP
 snes9x_gtk_SOURCES += \
     ../dsp.cpp \
