@@ -1231,8 +1231,20 @@ static bool8 is_SufamiTurbo_Cart (const uint8 *data, uint32 size)
 
 static bool8 is_SameGame_BIOS (const uint8 *data, uint32 size)
 {
-	if (size == 0x100000 && strncmp((char *) (data + 0xffc0), "Same Game Tsume Game", 20) == 0)
+	if ((data[0x7FB2] == 0x5A) && (data[0x7FB5] != 0x20) && (data[0x7FDA] == 0x33))
+	{
+		Memory.LoROM = TRUE;
+		Memory.HiROM = FALSE;
+
 		return (TRUE);
+	}
+	else if ((data[0xFFB2] == 0x5A) && (data[0xFFB5] != 0x20) && (data[0xFFDA] == 0x33))
+	{
+		Memory.LoROM = FALSE;
+		Memory.HiROM = TRUE;
+
+		return (TRUE);
+	}
 	else
 		return (FALSE);
 }
@@ -1977,19 +1989,15 @@ bool8 CMemory::LoadSameGame ()
 	Multi.sramA = SRAM;
 	Multi.sramB = NULL;
 
-	Multi.sramSizeA = ROM[0xffd8];
+	if (LoROM)
+		Multi.sramSizeA = ROM[0x7fd8];
+	else
+		Multi.sramSizeA = ROM[0xffd8];
+
 	Multi.sramMaskA = Multi.sramSizeA ? ((1 << (Multi.sramSizeA + 3)) * 128 - 1) : 0;
 	Multi.sramSizeB = 0;
 	Multi.sramMaskB = 0;
 
-	if (Multi.cartSizeB)
-	{
-		if (!is_SameGame_Add_On(ROM + Multi.cartOffsetB, Multi.cartSizeB))
-			Multi.cartSizeB = 0;
-	}
-
-	LoROM = FALSE;
-	HiROM = TRUE;
 	CalculatedSize = Multi.cartSizeA;
 
 	return (TRUE);
@@ -2542,7 +2550,7 @@ void CMemory::InitROM (void)
 			Map_ExtendedHiROMMap();
 		else
 		if (Multi.cartType == 3)
-			Map_SameGameHiROMMap();
+			Map_BSCartHiROMMap();
 		else
 			Map_HiROMMap();
     }
@@ -2573,6 +2581,13 @@ void CMemory::InitROM (void)
 		else
 		if (strncmp(ROMName, "WANDERERS FROM YS", 17) == 0)
 			Map_NoMAD1LoROMMap();
+		else
+		if (Multi.cartType == 3)
+			if (strncmp(ROMName, "SOUND NOVEL-TCOOL", 17) == 0 ||
+				strncmp(ROMName, "DERBY STALLION 96", 17) == 0)
+				Map_BSCartLoROMMap(1);
+			else
+				Map_BSCartLoROMMap(0);
 		else
 		if (strncmp(ROMName, "SOUND NOVEL-TCOOL", 17) == 0 ||
 			strncmp(ROMName, "DERBY STALLION 96", 17) == 0)
@@ -3358,6 +3373,70 @@ void CMemory::Map_SPC7110HiROMMap (void)
 	map_hirom_offset(0xc0, 0xcf, 0x0000, 0xffff, CalculatedSize, 0);
 	map_index(0xd0, 0xff, 0x0000, 0xffff, MAP_SPC7110_ROM,  MAP_TYPE_ROM);
 
+	map_WRAM();
+
+	map_WriteProtectROM();
+}
+
+void CMemory::Map_BSCartLoROMMap(uint8 mapping)
+{
+	printf("Map_BSCartLoROMMap\n");
+
+	BSX.MMC[0x02] = 0x00;
+	BSX.MMC[0x0C] = 0x80;
+
+	map_System();
+
+	if (mapping)
+	{
+		map_lorom_offset(0x00, 0x1f, 0x8000, 0xffff, 0x100000, 0);
+		map_lorom_offset(0x20, 0x3f, 0x8000, 0xffff, 0x100000, 0x100000);
+		map_lorom_offset(0x80, 0x9f, 0x8000, 0xffff, 0x100000, 0x200000);
+		map_lorom_offset(0xa0, 0xbf, 0x8000, 0xffff, 0x100000, 0x100000);
+	}
+	else
+	{
+		map_lorom(0x00, 0x3f, 0x8000, 0xffff, CalculatedSize);
+		map_lorom(0x40, 0x7f, 0x0000, 0x7fff, CalculatedSize);
+		map_lorom(0x80, 0xbf, 0x8000, 0xffff, CalculatedSize);
+		map_lorom(0xc0, 0xff, 0x0000, 0x7fff, CalculatedSize);
+	}
+
+	map_LoROMSRAM();
+	map_index(0xc0, 0xef, 0x0000, 0x7fff, MAP_BSX, MAP_TYPE_RAM);
+	map_index(0xc0, 0xef, 0x8000, 0xffff, MAP_BSX, MAP_TYPE_RAM);
+	map_WRAM();
+
+	map_WriteProtectROM();
+}
+
+void CMemory::Map_BSCartHiROMMap(void)
+{
+	printf("Map_BSCartHiROMMap\n");
+
+	BSX.MMC[0x02] = 0x80;
+	BSX.MMC[0x0C] = 0x80;
+
+	map_System();
+	map_hirom_offset(0x00, 0x1f, 0x8000, 0xffff, Multi.cartSizeA, Multi.cartOffsetA);
+	map_hirom_offset(0x20, 0x3f, 0x8000, 0xffff, Multi.cartSizeB, Multi.cartOffsetB);
+	map_hirom_offset(0x40, 0x5f, 0x0000, 0xffff, Multi.cartSizeA, Multi.cartOffsetA);
+	map_hirom_offset(0x60, 0x7f, 0x0000, 0xffff, Multi.cartSizeB, Multi.cartOffsetB);
+	map_hirom_offset(0x80, 0x9f, 0x8000, 0xffff, Multi.cartSizeA, Multi.cartOffsetA);
+	map_hirom_offset(0xa0, 0xbf, 0x8000, 0xffff, Multi.cartSizeB, Multi.cartOffsetB);
+	map_hirom_offset(0xc0, 0xdf, 0x0000, 0xffff, Multi.cartSizeA, Multi.cartOffsetA);
+
+	if ((ROM[Multi.cartOffsetB + 0xFF00] == 0x4D)
+		&& (ROM[Multi.cartOffsetB + 0xFF02] == 0x50)
+		&& ((ROM[Multi.cartOffsetB + 0xFF06] & 0xF0) == 0x70))
+	{
+		//Type 7 Memory Pack detection - if detected, emulate it as Mask ROM
+		map_hirom_offset(0xe0, 0xff, 0x0000, 0xffff, Multi.cartSizeB, Multi.cartOffsetB);
+	}
+	else
+		map_index(0xe0, 0xff, 0x0000, 0xffff, MAP_BSX, MAP_TYPE_RAM);
+
+	map_HiROMSRAM();
 	map_WRAM();
 
 	map_WriteProtectROM();

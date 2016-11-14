@@ -331,6 +331,8 @@ struct CMemory
 	void	Map_ExtendedHiROMMap (void);
 	void	Map_SameGameHiROMMap (void);
 	void	Map_SPC7110HiROMMap (void);
+	void	Map_BSCartLoROMMap(uint8);
+	void	Map_BSCartHiROMMap(void);
 
 	uint16	checksum_calc_sum (uint8 *, uint32);
 	uint16	checksum_mirror_sum (uint8 *, uint32 &, uint32 mask = 0x800000);
