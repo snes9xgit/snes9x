@@ -222,6 +222,7 @@
     <ClInclude Include="..\messages.h" />
     <ClInclude Include="..\missing.h" />
     <ClInclude Include="..\movie.h" />
+    <ClInclude Include="..\msu1.h" />
     <ClInclude Include="..\netplay.h" />
     <ClInclude Include="..\obc1.h" />
     <ClInclude Include="..\pixform.h" />
@@ -274,6 +275,7 @@
     <ClCompile Include="..\logger.cpp" />
     <ClCompile Include="..\memmap.cpp" />
     <ClCompile Include="..\movie.cpp" />
+    <ClCompile Include="..\msu1.cpp" />
     <ClCompile Include="..\netplay.cpp" />
     <ClCompile Include="..\obc1.cpp" />
     <ClCompile Include="..\ppu.cpp" />
