@@ -180,6 +180,9 @@
     <ClInclude Include="libretro.h">
       <Filter>libretro</Filter>
     </ClInclude>
+    <ClInclude Include="..\msu1.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\bsx.cpp">
@@ -337,6 +340,9 @@
     </ClCompile>
     <ClCompile Include="libretro.cpp">
       <Filter>libretro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\msu1.cpp">
+      <Filter>s9x-source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
