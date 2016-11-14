@@ -231,10 +231,12 @@ bool AudioOpen()
 		audioFile.read((char *)&audioLoopPos, 4);
 		audioLoopPos <<= 2;
 		audioLoopPos += 8;
+
+		MSU1.MSU1_STATUS &= ~AudioError;
+		return true;
 	}
 
-	MSU1.MSU1_STATUS &= ~AudioError;
-	return true;
+	return false;
 }
 
 bool DataOpen()
