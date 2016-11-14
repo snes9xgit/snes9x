@@ -46,4 +46,5 @@ SOURCES_CXX := $(CORE_DIR)/apu/apu.cpp \
 				 $(CORE_DIR)/spc7110.cpp \
 				 $(CORE_DIR)/srtc.cpp \
 				 $(CORE_DIR)/tile.cpp \
+                                 $(CORE_DIR)/msu1.cpp \
 				 $(CORE_DIR)/libretro/libretro.cpp

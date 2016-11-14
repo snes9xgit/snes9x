@@ -196,8 +196,6 @@
 #include <fstream>
 #include <cerrno>
 
-#define APU_DEFAULT_INPUT_RATE		32000
-
 std::ifstream dataFile, audioFile;
 uint32 audioLoopPos;
 uint32 partial_samples;
