@@ -3403,8 +3403,7 @@ void CMemory::Map_BSCartLoROMMap(uint8 mapping)
 	}
 
 	map_LoROMSRAM();
-	map_index(0xc0, 0xef, 0x0000, 0x7fff, MAP_BSX, MAP_TYPE_RAM);
-	map_index(0xc0, 0xef, 0x8000, 0xffff, MAP_BSX, MAP_TYPE_RAM);
+	map_index(0xc0, 0xef, 0x0000, 0xffff, MAP_BSX, MAP_TYPE_RAM);
 	map_WRAM();
 
 	map_WriteProtectROM();

@@ -671,7 +671,7 @@ static void BSX_Map (void)
 	Memory.map_WriteProtectROM();
 }
 
-static uint8 BSX_Get_Bypass_FlashIO (uint16 offset)
+static uint8 BSX_Get_Bypass_FlashIO (uint32 offset)
 {
 	MapROM = FlashROM = Memory.ROM + Multi.cartOffsetB;
 
@@ -681,7 +681,7 @@ static uint8 BSX_Get_Bypass_FlashIO (uint16 offset)
 		return (MapROM[(offset & 0x1F0000) >> 1 | (offset & 0x7FFF)]);
 }
 
-static void BSX_Set_Bypass_FlashIO (uint16 offset, uint8 byte)
+static void BSX_Set_Bypass_FlashIO (uint32 offset, uint8 byte)
 {
 	MapROM = FlashROM = Memory.ROM + Multi.cartOffsetB;
 
@@ -856,8 +856,8 @@ void S9xSetBSX (uint8 byte, uint32 address)
 						case 0x20D0: //Block Erase
 							uint32 x;
 							for (x = 0; x < 0x10000; x++) {
-								BSX_Set_Bypass_FlashIO(((address & 0xFF0000) + x), 0xFF);
-								//MapROM[((address & 0xFF0000) - 0xC00000) + x] = 0xFF;
+								//BSX_Set_Bypass_FlashIO(((address & 0xFF0000) + x), 0xFF);
+								MapROM[(address & 0x0F0000) + x] = 0xFF;
 							}
 							break;
 
@@ -866,8 +866,8 @@ void S9xSetBSX (uint8 byte, uint32 address)
 							{
 								uint32 x;
 								for (x = 0; x < FLASH_SIZE; x++) {
-									BSX_Set_Bypass_FlashIO(x, 0xFF);
-									//MapROM[x] = 0xFF;
+									//BSX_Set_Bypass_FlashIO(x, 0xFF);
+									MapROM[x] = 0xFF;
 								}
 							}
 							break;
