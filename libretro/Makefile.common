@@ -37,6 +37,7 @@ SOURCES_CXX := $(CORE_DIR)/apu/apu.cpp \
 				 $(CORE_DIR)/stream.cpp \
 				 $(CORE_DIR)/sa1.cpp \
 				 $(CORE_DIR)/sa1cpu.cpp \
+				 $(CORE_DIR)/screenshot.cpp \
 				 $(CORE_DIR)/sdd1.cpp \
 				 $(CORE_DIR)/sdd1emu.cpp \
 				 $(CORE_DIR)/seta.cpp \
