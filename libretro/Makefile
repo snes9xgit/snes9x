@@ -167,6 +167,8 @@ else ifneq (,$(findstring armv,$(platform)))
 		CXXFLAGS += -marm -mcpu=cortex-a8
 	else ifneq (,$(findstring cortexa9,$(platform)))
 		CXXFLAGS += -marm -mcpu=cortex-a9
+	else ifneq (,$(findstring cortexa53,$(platform)))
+		CXXFLAGS += -marm -mcpu=cortex-a53
 	endif
 	CXXFLAGS += -marm
 	ifneq (,$(findstring neon,$(platform)))
