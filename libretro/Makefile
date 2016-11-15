@@ -180,6 +180,14 @@ else ifneq (,$(findstring armv,$(platform)))
 	endif
 	CXXFLAGS += -DARM
 
+# Android
+else ifneq (,$(findstring android,$(platform)))
+	TARGET := $(TARGET_NAME)_libretro_android.so
+	SHARED := -shared -Wl,--no-undefined -march=armv7-a -Wl,--fix-cortex-a8
+	fpic := -fPIC
+	CXXFLAGS += -marm -march=armv7-a -mfloat-abi=softfp -mfpu=neon -DANDROID -DARM
+	HAVE_NEON = 1
+
 # Windows
 else
 	TARGET := $(TARGET_NAME)_libretro.dll
