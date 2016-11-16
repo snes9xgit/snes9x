@@ -686,9 +686,9 @@ static void BSX_Set_Bypass_FlashIO (uint32 offset, uint8 byte)
 	MapROM = FlashROM = Memory.ROM + Multi.cartOffsetB;
 
 	if (BSX.MMC[0x02])
-		MapROM[offset & 0x0FFFFF] = byte;
+		MapROM[offset & 0x0FFFFF] = MapROM[offset & 0x0FFFFF] & byte;
 	else
-		MapROM[(offset & 0x1F0000) >> 1 | (offset & 0x7FFF)] = byte;
+		MapROM[(offset & 0x1F0000) >> 1 | (offset & 0x7FFF)] = MapROM[(offset & 0x1F0000) >> 1 | (offset & 0x7FFF)] & byte;
 }
 
 uint8 S9xGetBSX (uint32 address)
@@ -857,7 +857,10 @@ void S9xSetBSX (uint8 byte, uint32 address)
 							uint32 x;
 							for (x = 0; x < 0x10000; x++) {
 								//BSX_Set_Bypass_FlashIO(((address & 0xFF0000) + x), 0xFF);
-								MapROM[(address & 0x0F0000) + x] = 0xFF;
+								if (BSX.MMC[0x02])
+									MapROM[(address & 0x0F0000) + x] = 0xFF;
+								else
+									MapROM[((address & 0x1E0000) >> 1) + x] = 0xFF;
 							}
 							break;
 
