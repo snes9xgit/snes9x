@@ -193,6 +193,7 @@
 #include "snes9x.h"
 #include "display.h"
 #include "msu1.h"
+#include "apu/bapu/dsp/blargg_endian.h"
 #include <fstream>
 #include <cerrno>
 
@@ -229,6 +230,7 @@ bool AudioOpen()
 			return false;
 
 		audioFile.read((char *)&audioLoopPos, 4);
+		audioLoopPos = GET_LE32(&audioLoopPos);
 		audioLoopPos <<= 2;
 		audioLoopPos += 8;
 
@@ -289,7 +291,7 @@ void S9xMSU1Generate(int sample_count)
 			int16 sample;
 			if (audioFile.read((char *)&sample, 2).good())
 			{
-				sample = (int16)((double)sample * (double)MSU1.MSU1_VOLUME / 255.0);
+				sample = (int16)((double)(int16)GET_LE16(&sample) * (double)MSU1.MSU1_VOLUME / 255.0);
 
 				*(bufPos++) = sample;
 				MSU1.MSU1_AUDIO_POS += 2;
@@ -298,7 +300,7 @@ void S9xMSU1Generate(int sample_count)
 			else
 			if (audioFile.eof())
 			{
-				sample = (int16)((double)sample * (double)MSU1.MSU1_VOLUME / 255.0);
+				sample = (int16)((double)(int16)GET_LE16(&sample) * (double)MSU1.MSU1_VOLUME / 255.0);
 
 				*(bufPos++) = sample;
 				MSU1.MSU1_AUDIO_POS += 2;
@@ -369,25 +371,31 @@ void S9xMSU1WritePort(int port, uint8 byte)
 	switch (port)
 	{
 	case 0:
-		((uint8 *)(&MSU1.MSU1_DATA_SEEK))[0] = byte;
+		MSU1.MSU1_DATA_SEEK &= 0xFFFFFF00;
+		MSU1.MSU1_DATA_SEEK |= byte << 0;
 		break;
 	case 1:
-		((uint8 *)(&MSU1.MSU1_DATA_SEEK))[1] = byte;
+		MSU1.MSU1_DATA_SEEK &= 0xFFFF00FF;
+		MSU1.MSU1_DATA_SEEK |= byte << 8;
 		break;
 	case 2:
-		((uint8 *)(&MSU1.MSU1_DATA_SEEK))[2] = byte;
+		MSU1.MSU1_DATA_SEEK &= 0xFF00FFFF;
+		MSU1.MSU1_DATA_SEEK |= byte << 16;
 		break;
 	case 3:
-		((uint8 *)(&MSU1.MSU1_DATA_SEEK))[3] = byte;
+		MSU1.MSU1_DATA_SEEK &= 0x00FFFFFF;
+		MSU1.MSU1_DATA_SEEK |= byte << 24;
 		MSU1.MSU1_DATA_POS = MSU1.MSU1_DATA_SEEK;
 		if(dataFile.good())
 			dataFile.seekg(MSU1.MSU1_DATA_POS);
 		break;
 	case 4:
-		((uint8 *)(&MSU1.MSU1_TRACK_SEEK))[0] = byte;
+		MSU1.MSU1_TRACK_SEEK &= 0xFF00;
+		MSU1.MSU1_TRACK_SEEK |= byte;
 		break;
 	case 5:
-		((uint8 *)(&MSU1.MSU1_TRACK_SEEK))[1] = byte;
+		MSU1.MSU1_TRACK_SEEK &= 0x00FF;
+		MSU1.MSU1_TRACK_SEEK |= (byte << 8);
 		MSU1.MSU1_CURRENT_TRACK = MSU1.MSU1_TRACK_SEEK;
 
 		MSU1.MSU1_STATUS &= ~AudioPlaying;
@@ -451,6 +459,7 @@ void S9xMSU1PostLoadState(void)
 		{
 			audioFile.seekg(4);
 			audioFile.read((char *)&audioLoopPos, 4);
+			audioLoopPos = GET_LE32(&audioLoopPos);
 			audioLoopPos <<= 2;
 			audioLoopPos += 8;
 
