@@ -337,7 +337,7 @@ static void S9xSetSA1MemMap (uint32 which1, uint8 map)
 			}
 			else
 			{
-				offset = ((((map & 0x80) ? map : which1) & 7) - 4) * 0x100000 + (c << 11) - 0x8000;
+				offset = (((map & 0x80) ? (map - 4) : which1) & 7) * 0x100000 + (c << 11) - 0x8000;
 				block = Memory.ROM + Multi.cartOffsetB + offset;
 			}			
 		}
