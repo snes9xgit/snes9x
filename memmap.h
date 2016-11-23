@@ -291,6 +291,7 @@ struct CMemory
 	void	ClearSRAM (bool8 onlyNonSavedSRAM = 0);
 	bool8	LoadSRTC (void);
 	bool8	SaveSRTC (void);
+	bool8	SaveMPAK (const char *);
 
 	char *	Safe (const char *);
 	char *	SafeANK (const char *);

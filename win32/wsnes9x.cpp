@@ -2239,6 +2239,17 @@ LRESULT CALLBACK WinProc(
 			if(!success)
 				S9xMessage(S9X_ERROR, S9X_FREEZE_FILE_INFO, SRM_SAVE_FAILED);
 		}	break;
+		case ID_SAVEMEMPACK: {
+			const char *filename = S9xGetFilenameInc(".bs", SRAM_DIR);
+			bool8 success = Memory.SaveMPAK(filename);
+			if (!success)
+				S9xMessage(S9X_ERROR, 0, MPAK_SAVE_FAILED);
+			else
+			{
+				sprintf(String, "Saved Memory Pack %s", filename);
+				S9xMessage(S9X_INFO, 0, String);
+			}
+		}	break;
 		case ID_FILE_RESET:
 #ifdef NETPLAY_SUPPORT
 			if (Settings.NetPlayServer)

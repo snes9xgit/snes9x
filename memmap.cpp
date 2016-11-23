@@ -2210,6 +2210,32 @@ bool8 CMemory::SaveSRAM (const char *filename)
 	return (FALSE);
 }
 
+bool8 CMemory::SaveMPAK (const char *filename)
+{
+	if (Settings.BS || (Multi.cartSizeB && (Multi.cartType == 3)))
+	{
+		FILE	*file;
+		int		size;
+		char	mempakName[PATH_MAX + 1];
+
+		strcpy(mempakName, filename);
+		size = 0x100000;
+		if (size)
+		{
+			file = fopen(mempakName, "wb");
+			if (file)
+			{
+				size_t	ignore;
+				ignore = fwrite((char *)Memory.ROM + Multi.cartOffsetB, size, 1, file);
+				fclose(file);
+
+				return (TRUE);
+			}
+		}
+	}
+	return (FALSE);
+}
+
 // initialization
 
 static uint32 caCRC32 (uint8 *array, uint32 size, uint32 crc32)

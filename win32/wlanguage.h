@@ -588,6 +588,8 @@ Nintendo is a trade mark.")
 
 #define INFO_SAVE_SPC "Saving SPC Data."
 
+#define MPAK_SAVE_FAILED "Failed to save Memory Pack."
+
 #define CHEATS_INFO_ENABLED "Cheats enabled."
 #define CHEATS_INFO_DISABLED "Cheats disabled."
 #define CHEATS_INFO_ENABLED_NONE "Cheats enabled. (None are active.)"
