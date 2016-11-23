@@ -943,9 +943,9 @@ static void S9xDeinterleaveGD24 (int, uint8 *);
 static bool8 allASCII (uint8 *, int);
 static bool8 is_SufamiTurbo_BIOS (const uint8 *, uint32);
 static bool8 is_SufamiTurbo_Cart (const uint8 *, uint32);
-static bool8 is_SameGame_BIOS (const uint8 *, uint32);
+static bool8 is_BSCart_BIOS (const uint8 *, uint32);
 static bool8 is_SameGame_Add_On (const uint8 *, uint32);
-static bool8 is_GNEXT_BIOS (const uint8 *, uint32);
+static bool8 is_BSCartSA1_BIOS(const uint8 *, uint32);
 static bool8 is_GNEXT_Add_On (const uint8 *, uint32);
 static uint32 caCRC32 (uint8 *, uint32, uint32 crc32 = 0xffffffff);
 static uint32 ReadUPSPointer (const uint8 *, unsigned &, unsigned);
@@ -1229,7 +1229,7 @@ static bool8 is_SufamiTurbo_Cart (const uint8 *data, uint32 size)
 		return (FALSE);
 }
 
-static bool8 is_SameGame_BIOS (const uint8 *data, uint32 size)
+static bool8 is_BSCart_BIOS(const uint8 *data, uint32 size)
 {
 	if ((data[0x7FB2] == 0x5A) && (data[0x7FB5] != 0x20) && (data[0x7FDA] == 0x33))
 	{
@@ -1257,9 +1257,14 @@ static bool8 is_SameGame_Add_On (const uint8 *data, uint32 size)
 		return (FALSE);
 }
 
-static bool8 is_GNEXT_BIOS (const uint8 *data, uint32 size)
+static bool8 is_BSCartSA1_BIOS (const uint8 *data, uint32 size)
 {
-	if (size == 0x180000 && strncmp((char *) (data + 0x7fc0), "SFC SDGUNDAMGNEXT", 17) == 0)
+	//Same basic check as BSCart
+	if (!is_BSCart_BIOS(data, size))
+		return (FALSE);
+
+	//Checks if the game is Itoi's Bass Fishing No. 1 (ZBPJ) or SD Gundam G-NEXT (ZX3J)
+	if (strncmp((char *)(data + 0x7fb2), "ZBPJ", 4) == 0 || strncmp((char *)(data + 0x7fb2), "ZX3J", 4) == 0)
 		return (TRUE);
 	else
 		return (FALSE);
@@ -1864,11 +1869,11 @@ bool8 CMemory::LoadMultiCartInt ()
         if (is_SufamiTurbo_Cart(ROM + Multi.cartOffsetA, Multi.cartSizeA))
 			Multi.cartType = 4;
 		else
-		if (is_SameGame_BIOS(ROM + Multi.cartOffsetA, Multi.cartSizeA))
-			Multi.cartType = 3;
-		else
-		if (is_GNEXT_BIOS(ROM + Multi.cartOffsetA, Multi.cartSizeA))
+		if (is_BSCartSA1_BIOS(ROM + Multi.cartOffsetA, Multi.cartSizeA))
 			Multi.cartType = 5;
+		else
+		if (is_BSCart_BIOS(ROM + Multi.cartOffsetA, Multi.cartSizeA))
+			Multi.cartType = 3;		
 	}
 	else
 	if (Multi.cartSizeB)
@@ -1916,11 +1921,8 @@ bool8 CMemory::LoadMultiCartInt ()
 			break;
 
 		case 3:
-			r = LoadSameGame();
-			break;
-
 		case 5:
-			r = LoadGNEXT();
+			r = LoadBSCart();
 			break;
 
 		default:
@@ -1984,7 +1986,7 @@ bool8 CMemory::LoadSufamiTurbo ()
 	return (TRUE);
 }
 
-bool8 CMemory::LoadSameGame ()
+bool8 CMemory::LoadBSCart ()
 {
 	Multi.sramA = SRAM;
 	Multi.sramB = NULL;
@@ -2568,7 +2570,7 @@ void CMemory::InitROM (void)
 		if (Settings.SA1)
 		{
 			if (Multi.cartType == 5)
-				Map_GNEXTSA1LoROMMap();
+				Map_BSSA1LoROMMap();
 			else
 				Map_SA1LoROMMap();
 		}
@@ -3260,9 +3262,9 @@ void CMemory::Map_SA1LoROMMap (void)
 	BWRAM = SRAM;
 }
 
-void CMemory::Map_GNEXTSA1LoROMMap (void)
+void CMemory::Map_BSSA1LoROMMap(void)
 {
-	printf("Map_GNEXTSA1LoROMMap\n");
+	printf("Map_BSSA1LoROMMap\n");
 	map_System();
 
 	map_lorom_offset(0x00, 0x3f, 0x8000, 0xffff, Multi.cartSizeA, Multi.cartOffsetA);
@@ -3277,9 +3279,6 @@ void CMemory::Map_GNEXTSA1LoROMMap (void)
 
 	for (int c = 0x40; c < 0x80; c++)
 		map_space(c, c, 0x0000, 0xffff, SRAM + (c & 1) * 0x10000);
-
-	// FIXME: untested!
-	map_hirom_offset(0x70, 0x7f, 0x0000, 0xffff, Multi.cartSizeB, Multi.cartOffsetB);
 
 	map_WRAM();
 
@@ -3333,26 +3332,6 @@ void CMemory::Map_ExtendedHiROMMap (void)
 	map_hirom_offset(0x40, 0x7f, 0x0000, 0xffff, CalculatedSize - 0x400000, 0x400000);
 	map_hirom_offset(0x80, 0xbf, 0x8000, 0xffff, 0x400000, 0);
 	map_hirom_offset(0xc0, 0xff, 0x0000, 0xffff, 0x400000, 0);
-
-	map_HiROMSRAM();
-	map_WRAM();
-
-	map_WriteProtectROM();
-}
-
-void CMemory::Map_SameGameHiROMMap (void)
-{
-	printf("Map_SameGameHiROMMap\n");
-	map_System();
-
-	map_hirom_offset(0x00, 0x1f, 0x8000, 0xffff, Multi.cartSizeA, Multi.cartOffsetA);
-	map_hirom_offset(0x20, 0x3f, 0x8000, 0xffff, Multi.cartSizeB, Multi.cartOffsetB);
-	map_hirom_offset(0x40, 0x5f, 0x0000, 0xffff, Multi.cartSizeA, Multi.cartOffsetA);
-	map_hirom_offset(0x60, 0x7f, 0x0000, 0xffff, Multi.cartSizeB, Multi.cartOffsetB);
-	map_hirom_offset(0x80, 0x9f, 0x8000, 0xffff, Multi.cartSizeA, Multi.cartOffsetA);
-	map_hirom_offset(0xa0, 0xbf, 0x8000, 0xffff, Multi.cartSizeB, Multi.cartOffsetB);
-	map_hirom_offset(0xc0, 0xdf, 0x0000, 0xffff, Multi.cartSizeA, Multi.cartOffsetA);
-	map_hirom_offset(0xe0, 0xff, 0x0000, 0xffff, Multi.cartSizeB, Multi.cartOffsetB);
 
 	map_HiROMSRAM();
 	map_WRAM();
@@ -3433,7 +3412,9 @@ void CMemory::Map_BSCartHiROMMap(void)
 		map_hirom_offset(0xe0, 0xff, 0x0000, 0xffff, Multi.cartSizeB, Multi.cartOffsetB);
 	}
 	else
+	{
 		map_index(0xe0, 0xff, 0x0000, 0xffff, MAP_BSX, MAP_TYPE_RAM);
+	}
 
 	map_HiROMSRAM();
 	map_WRAM();
