@@ -2002,11 +2002,11 @@ bool8 CMemory::LoadBSCart ()
 
 	CalculatedSize = Multi.cartSizeA;
 
-	if (Multi.cartSizeB == 0 && Multi.cartSizeA <= (MAX_ROM_SIZE - 0x100000))
+	if (Multi.cartSizeB == 0 && Multi.cartSizeA <= (MAX_ROM_SIZE - 0x100000 - Multi.cartOffsetA))
 	{
 		//Initialize 1MB Empty Memory Pack only if cart B is cleared
 		//It does not make a Memory Pack if game is loaded like a normal ROM
-		Multi.cartOffsetB = CalculatedSize;
+		Multi.cartOffsetB = Multi.cartOffsetA + CalculatedSize;
 		Multi.cartSizeB = 0x100000;
 		memset(Memory.ROM + Multi.cartOffsetB, 0xFF, 0x100000);
 	}
