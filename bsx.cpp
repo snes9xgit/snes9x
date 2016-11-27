@@ -199,7 +199,7 @@
 //#define BSX_DEBUG
 
 #define BIOS_SIZE	0x100000
-#define FLASH_SIZE	0x200000
+#define FLASH_SIZE	0x100000
 #define PSRAM_SIZE	0x80000
 
 #define Map			Memory.Map
@@ -231,7 +231,7 @@ static const uint8	flashcard[20] =
 {
 	0x4D, 0x00, 0x50, 0x00,	// vendor id
 	0x00, 0x00,				// ?
-	0x2B, 0x00,				// 2MB Flash (1MB = 0x2A)
+	0x1A, 0x00,				// 2MB Flash (1MB = 0x2A)
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
@@ -417,13 +417,22 @@ static void map_psram_mirror_sub (uint32 bank)
 	{
 		for (c = 0; c < 0x100; c += 16)
 		{
-			for (i = c; i < c + 8; i++)
-				Map[i + bank] = &PSRAM[(c << 11) % PSRAM_SIZE];
+			if ((bank & 0x7F) >= 0x40)
+			{
+				for (i = c; i < c + 8; i++)
+					Map[i + bank] = &PSRAM[(c << 11) % PSRAM_SIZE];
+
+				for (i = c; i < c + 8; i++)
+				{
+					BlockIsRAM[i + bank] = TRUE;
+					BlockIsROM[i + bank] = FALSE;
+				}
+			}
 
 			for (i = c + 8; i < c + 16; i++)
 				Map[i + bank] = &PSRAM[(c << 11) % PSRAM_SIZE] - 0x8000;
 
-			for (i = c; i < c + 16; i++)
+			for (i = c + 8; i < c + 16; i++)
 			{
 				BlockIsRAM[i + bank] = TRUE;
 				BlockIsROM[i + bank] = FALSE;
@@ -432,42 +441,126 @@ static void map_psram_mirror_sub (uint32 bank)
 	}
 }
 
-static void BSX_Map_PSRAM (void)
+static void BSX_Map_PSRAM(void)
 {
-	int	c;
+	int	c, i;
 
-	// Banks 70->77:0000-FFFF
-	// FIXME: could be toggled by $03
-	for (c = 0; c < 0x80; c++)
+	if (!BSX.MMC[0x02])
 	{
-		Map[c + 0x700] = &PSRAM[((c & 0x70) << 12) % PSRAM_SIZE];
-		BlockIsRAM[c + 0x700] = TRUE;
-		BlockIsROM[c + 0x700] = FALSE;
-	}
+		//LoROM Mode
+		if (!BSX.MMC[0x05] && !BSX.MMC[0x06])
+		{
+			//Map PSRAM to 00-0F/80-8F
+			if (BSX.MMC[0x03])
+				map_psram_mirror_sub(0x00);
 
-	// Banks 20->3F:6000-7FFF mirrors 70->77:6000-7FFF
-	for (c = 0x200; c < 0x400; c += 16)
+			if (BSX.MMC[0x04])
+				map_psram_mirror_sub(0x80);
+		}
+		else if (BSX.MMC[0x05] && !BSX.MMC[0x06])
+		{
+			//Map PSRAM to 20-2F/A0-AF
+			if (BSX.MMC[0x03])
+				map_psram_mirror_sub(0x20);
+
+			if (BSX.MMC[0x04])
+				map_psram_mirror_sub(0xA0);
+		}
+		else if (!BSX.MMC[0x05] && BSX.MMC[0x06])
+		{
+			//Map PSRAM to 40-4F/C0-CF
+			if (BSX.MMC[0x03])
+				map_psram_mirror_sub(0x40);
+
+			if (BSX.MMC[0x04])
+				map_psram_mirror_sub(0xC0);
+		}
+		else
+		{
+			//Map PSRAM to 60-6F/E0-EF
+			if (BSX.MMC[0x03])
+				map_psram_mirror_sub(0x60);
+
+			if (BSX.MMC[0x04])
+				map_psram_mirror_sub(0xE0);
+		}
+
+		//Map PSRAM to 70-7D/F0-FF
+		if (BSX.MMC[0x03])
+			map_psram_mirror_sub(0x70);
+
+		if (BSX.MMC[0x04])
+			map_psram_mirror_sub(0xF0);
+	}
+	else
 	{
-		Map[c + 6] = &PSRAM[((c & 0x70) << 12) % PSRAM_SIZE];
-		Map[c + 7] = &PSRAM[((c & 0x70) << 12) % PSRAM_SIZE];
-		BlockIsRAM[c + 6] = TRUE;
-		BlockIsRAM[c + 7] = TRUE;
-		BlockIsROM[c + 6] = FALSE;
-		BlockIsROM[c + 7] = FALSE;
+		//HiROM Mode
+		if (!BSX.MMC[0x05] && !BSX.MMC[0x06])
+		{
+			//Map PSRAM to 40-47/C0-C7
+			if (BSX.MMC[0x03])
+				map_psram_mirror_sub(0x40);
+
+			if (BSX.MMC[0x04])
+				map_psram_mirror_sub(0xC0);
+
+		}
+		else if (BSX.MMC[0x05] && !BSX.MMC[0x06])
+		{
+			//Map PSRAM to 50-57/D0-D7
+			if (BSX.MMC[0x03])
+				map_psram_mirror_sub(0x50);
+
+			if (BSX.MMC[0x04])
+				map_psram_mirror_sub(0xD0);
+		}
+		else if (!BSX.MMC[0x05] && BSX.MMC[0x06])
+		{
+			//Map PSRAM to 60-67/E0-E7
+			if (BSX.MMC[0x03])
+				map_psram_mirror_sub(0x60);
+
+			if (BSX.MMC[0x04])
+				map_psram_mirror_sub(0xE0);
+		}
+		else
+		{
+			//Map PSRAM to 70-77/F0-F7
+			if (BSX.MMC[0x03])
+				map_psram_mirror_sub(0x70);
+
+			if (BSX.MMC[0x04])
+				map_psram_mirror_sub(0xF0);
+		}
+
+		if (BSX.MMC[0x03])
+		{
+			//Map PSRAM to 20->3F:6000-7FFF
+			for (c = 0x200; c < 0x400; c += 16)
+			{
+				Map[c + 6] = &PSRAM[((c & 0x70) << 12) % PSRAM_SIZE];
+				Map[c + 7] = &PSRAM[((c & 0x70) << 12) % PSRAM_SIZE];
+				BlockIsRAM[c + 6] = TRUE;
+				BlockIsRAM[c + 7] = TRUE;
+				BlockIsROM[c + 6] = FALSE;
+				BlockIsROM[c + 7] = FALSE;
+			}
+		}
+
+		if (BSX.MMC[0x04])
+		{
+			//Map PSRAM to A0->BF:6000-7FFF
+			for (c = 0xA00; c < 0xC00; c += 16)
+			{
+				Map[c + 6] = &PSRAM[((c & 0x70) << 12) % PSRAM_SIZE];
+				Map[c + 7] = &PSRAM[((c & 0x70) << 12) % PSRAM_SIZE];
+				BlockIsRAM[c + 6] = TRUE;
+				BlockIsRAM[c + 7] = TRUE;
+				BlockIsROM[c + 6] = FALSE;
+				BlockIsROM[c + 7] = FALSE;
+			}
+		}
 	}
-
-	if (!BSX.MMC[0x05])
-		// Banks 40->4F:0000-FFFF mirrors 70->77:0000-7FFF
-		map_psram_mirror_sub(0x40);
-
-	if (!BSX.MMC[0x06])
-		// Banks 50->5F:0000-FFFF mirrors 70->77:0000-7FFF
-		map_psram_mirror_sub(0x50);
-
-	// FIXME
-	if (!BSX.MMC[0x03])
-		// Banks 60->6F:0000-FFFF mirrors 70->77:0000-7FFF (?)
-		map_psram_mirror_sub(0x60);
 }
 
 static void BSX_Map_BIOS (void)
@@ -562,28 +655,8 @@ static void BSX_Map (void)
 
 	memcpy(BSX.prevMMC, BSX.MMC, sizeof(BSX.MMC));
 
-	// Do a quick bank change
-	if (BSX.dirty2 && !BSX.dirty)
-	{
-		BSX_Map_Dirty();
-		BSX_Map_BIOS();
-
-		BSX.dirty2 = FALSE;
-
-		Memory.map_WriteProtectROM();
-		return;
-	}
-
-	if (BSX.MMC[0x01])
-	{
-		MapROM = PSRAM;
-		FlashSize = PSRAM_SIZE;
-	}
-	else
-	{
-		MapROM = FlashROM;
-		FlashSize = FLASH_SIZE;
-	}
+	MapROM = FlashROM;
+	FlashSize = FLASH_SIZE;
 
 	BSX_Map_SNES();
 
@@ -592,12 +665,12 @@ static void BSX_Map (void)
 	else
 		BSX_Map_LoROM();
 
+	BSX_Map_FlashIO();
 	BSX_Map_PSRAM();
 	BSX_Map_SRAM();
 	BSX_Map_RAM();
 
 	BSX_Map_BIOS();
-	BSX_Map_FlashIO();
 	BSX_Map_MMC();
 
 	// Monitor new register changes
@@ -607,30 +680,24 @@ static void BSX_Map (void)
 	Memory.map_WriteProtectROM();
 }
 
-static uint8 BSX_Get_Bypass_FlashIO (uint16 offset)
+static uint8 BSX_Get_Bypass_FlashIO (uint32 offset)
 {
+	MapROM = FlashROM = Memory.ROM + Multi.cartOffsetB;
+
 	if (BSX.MMC[0x02])
-		return (MapROM[offset]);
+		return (MapROM[offset & 0x0FFFFF]);
 	else
-	{
-		if (offset < 0x8000)
-			return (MapROM[offset]);
-		else
-			return (MapROM[offset - 0x8000]);
-	}
+		return (MapROM[(offset & 0x1F0000) >> 1 | (offset & 0x7FFF)]);
 }
 
-static void BSX_Set_Bypass_FlashIO (uint16 offset, uint8 byte)
+static void BSX_Set_Bypass_FlashIO (uint32 offset, uint8 byte)
 {
+	MapROM = FlashROM = Memory.ROM + Multi.cartOffsetB;
+
 	if (BSX.MMC[0x02])
-		MapROM[offset] = byte;
+		MapROM[offset & 0x0FFFFF] = MapROM[offset & 0x0FFFFF] & byte;
 	else
-	{
-		if (offset < 0x8000)
-			MapROM[offset] = byte;
-		else
-			MapROM[offset - 0x8000] = byte;
-	}
+		MapROM[(offset & 0x1F0000) >> 1 | (offset & 0x7FFF)] = MapROM[(offset & 0x1F0000) >> 1 | (offset & 0x7FFF)] & byte;
 }
 
 uint8 S9xGetBSX (uint32 address)
@@ -640,43 +707,57 @@ uint8 S9xGetBSX (uint32 address)
 	uint8	t = 0;
 
 	// MMC
-	if ((bank >= 0x01 && bank <= 0x0E) && (offset == 0x5000))
+	if ((bank >= 0x01 && bank <= 0x0E))
 		return (BSX.MMC[bank]);
 
 	// Flash IO
-	if (bank == 0xC0)
+	if (bank >= 0xC0)
 	{
 		// default: read-through mode
-		t = BSX_Get_Bypass_FlashIO(offset);
+		t = BSX_Get_Bypass_FlashIO(address);
 
 		// note: may be more registers, purposes unknown
 		switch (offset)
 		{
-			case 0x0002:
-				if (BSX.flash_enable)
-					t = 0x80; // status register?
-				break;
+		case 0x0002:
+		case 0x8002:
+			if (BSX.flash_bsr)
+				t = 0xC0; // Page Status Register
+			break;
 
-			case 0x5555:
-				if (BSX.flash_enable)
-					t = 0x80; // ???
-				break;
+		case 0x0004:
+		case 0x8004:
+			if (BSX.flash_gsr)
+				t = 0x82; // Global Status Register
+			break;
 
-			case 0xFF00:
-			case 0xFF02:
-			case 0xFF04:
-			case 0xFF06:
-			case 0xFF08:
-			case 0xFF0A:
-			case 0xFF0C:
-			case 0xFF0E:
-			case 0xFF10:
-			case 0xFF12:
-				// return flash vendor information
-				if (BSX.read_enable)
-					t = flashcard[offset - 0xFF00];
-				break;
+		case 0x5555:
+			if (BSX.flash_enable)
+				t = 0x80; // ???
+			break;
+
+		case 0xFF00:
+		case 0xFF02:
+		case 0xFF04:
+		case 0xFF06:
+		case 0xFF08:
+		case 0xFF0A:
+		case 0xFF0C:
+		case 0xFF0E:
+		case 0xFF10:
+		case 0xFF12:
+			// return flash vendor information
+			if (BSX.read_enable)
+				t = flashcard[offset - 0xFF00];
+			break;
 		}
+
+		if (BSX.flash_csr)
+		{
+			t = 0x80; // Compatible Status Register
+			BSX.flash_csr = false;
+		}
+
 	}
 
 	return (t);
@@ -688,115 +769,126 @@ void S9xSetBSX (uint8 byte, uint32 address)
 	uint16	offset = address & 0xFFFF;
 
 	// MMC
-	if ((bank >= 0x01 && bank <= 0x0E) && (offset == 0x5000))
+	if ((bank >= 0x01 && bank <= 0x0E))
 	{
-		switch (bank)
-		{
-			case 0x01:
-			case 0x02:
-			case 0x03:
-			case 0x04:
-			case 0x05:
-			case 0x06:
-			case 0x09:
-			case 0x0A:
-			case 0x0B:
-			case 0x0C:
-			case 0x0D:
-				if (BSX.MMC[bank] != byte)
-				{
-					BSX.MMC[bank] = byte;
-					BSX.dirty = TRUE;
-				}
-				break;
-
-			case 0x07:
-			case 0x08:
-				if (BSX.MMC[bank] != byte)
-				{
-					BSX.MMC[bank] = byte;
-					BSX.dirty2 = TRUE;
-				}
-				break;
-
-			case 0x0E:
-				BSX.MMC[bank] = byte;
-				if (byte && (BSX.dirty || BSX.dirty2))
-					BSX_Map();
-				break;
-		}
+		BSX.MMC[bank] = byte;
+		if (bank == 0x0E)
+			BSX_Map();
 	}
 
 	// Flash IO
-	if (bank == 0xC0)
+	if (bank >= 0xC0)
 	{
-		BSX.old_write = BSX.new_write;
-		BSX.new_write = address;
-
-		// ???: double writes to the desired address will bypass
-		// flash registers
-		if (BSX.old_write == BSX.new_write && BSX.write_enable)
+		// Write to Flash
+		if (BSX.write_enable)
 		{
-			BSX_Set_Bypass_FlashIO(offset, byte);
+			BSX_Set_Bypass_FlashIO(address, byte);
+			//MapROM[address & 0x3FFFFF] = byte;
+			BSX.write_enable = false;
 			return;
 		}
 
-		// flash command handling
-		// note: incomplete
-		switch (offset)
-		{
-			case 0x0000:
-				BSX.flash_command <<= 8;
-				BSX.flash_command |= byte;
-				if ((BSX.flash_command & 0xFFFF) == 0x38D0)
-				{
-					// retrieve information about the flash card
-					BSX.flash_enable = TRUE;
-					BSX.read_enable  = TRUE;
-				}
-				break;
+		// Flash Command Handling
+		if (BSX.MMC[0xC]) {
+			//Memory Pack Type 1 & 3 & 4
+			BSX.flash_command <<= 8;
+			BSX.flash_command |= byte;
 
-			case 0x2AAA:
-				BSX.flash_command <<= 8;
-				BSX.flash_command |= byte;
-				break;
+			switch (BSX.flash_command & 0xFF)
+			{
+				case 0x00:
+				case 0xFF:
+					//Reset to normal
+					BSX.flash_enable = false;
+					BSX.flash_bsr = false;
+					BSX.flash_csr = false;
+					BSX.flash_gsr = false;
+					BSX.read_enable = false;
+					BSX.write_enable = false;
+					BSX.flash_cmd_done = true;
+					break;
 
-			case 0x5555:
-				BSX.flash_command <<= 8;
-				BSX.flash_command |= byte;
+				case 0x10:
+				case 0x40:
+					//Write Byte
+					BSX.flash_enable = false;
+					BSX.flash_bsr = false;
+					BSX.flash_csr = true;
+					BSX.flash_gsr = false;
+					BSX.read_enable = false;
+					BSX.write_enable = true;
+					BSX.flash_cmd_done = true;
+					break;
 
-				switch (BSX.flash_command & 0xFFFFFF)
-				{
-					case 0xAA55F0:
-						// turn off flash i/o
-						BSX.flash_enable = FALSE;
-						BSX.write_enable = FALSE;
-						BSX.read_enable  = FALSE;
-						break;
+				case 0x50:
+					//Clear Status Register
+					BSX.flash_enable = false;
+					BSX.flash_bsr = false;
+					BSX.flash_csr = false;
+					BSX.flash_gsr = false;
+					BSX.flash_cmd_done = true;
+					break;
 
-					case 0xAA55A0:
-						// enable writing to flash
-						BSX.old_write = 0;
-						BSX.new_write = 0;
-						BSX.flash_enable = TRUE;
-						BSX.write_enable = TRUE;
-						BSX_Map();
-						break;
+				case 0x70:
+					//Read CSR
+					BSX.flash_enable = false;
+					BSX.flash_bsr = false;
+					BSX.flash_csr = true;
+					BSX.flash_gsr = false;
+					BSX.read_enable = false;
+					BSX.write_enable = false;
+					BSX.flash_cmd_done = true;
+					break;
 
-					case 0xAA5570:
-						// turn on write-protection
-						BSX.write_enable = FALSE;
-						BSX_Map();
-						break;
+				case 0x71:
+					//Read Extended Status Registers (Page and Global)
+					BSX.flash_enable = false;
+					BSX.flash_bsr = true;
+					BSX.flash_csr = false;
+					BSX.flash_gsr = true;
+					BSX.read_enable = false;
+					BSX.write_enable = false;
+					BSX.flash_cmd_done = true;
+					break;
 
-					case 0xAA5580:
-					case 0xAA5510:
-						// ???
-						break;
+				case 0x75:
+					//Show Page Buffer / Vendor Info
+					BSX.flash_csr = false;
+					BSX.read_enable = true;
+					BSX.flash_cmd_done = true;
+					break;
 
-				}
+				case 0xD0:
+					//DO COMMAND
+					switch (BSX.flash_command & 0xFFFF)
+					{
+						case 0x20D0: //Block Erase
+							uint32 x;
+							for (x = 0; x < 0x10000; x++) {
+								//BSX_Set_Bypass_FlashIO(((address & 0xFF0000) + x), 0xFF);
+								if (BSX.MMC[0x02])
+									MapROM[(address & 0x0F0000) + x] = 0xFF;
+								else
+									MapROM[((address & 0x1E0000) >> 1) + x] = 0xFF;
+							}
+							break;
 
-				break;
+						case 0xA7D0: //Chip Erase (ONLY IN TYPE 1 AND 4)
+							if ((flashcard[6] & 0xF0) == 0x10 || (flashcard[6] & 0xF0) == 0x40)
+							{
+								uint32 x;
+								for (x = 0; x < FLASH_SIZE; x++) {
+									//BSX_Set_Bypass_FlashIO(x, 0xFF);
+									MapROM[x] = 0xFF;
+								}
+							}
+							break;
+
+						case 0x38D0: //Flashcart Reset
+							break;
+					}
+					break;
+			}
 		}
 	}
 }
@@ -1082,7 +1174,7 @@ void S9xInitBSX (void)
 			uint8	*header = r1 ? Memory.ROM + 0x7FC0 : Memory.ROM + 0xFFC0;
 
 			FlashMode = (header[0x18] & 0xEF) == 0x20 ? FALSE : TRUE;
-			FlashSize = (header[0x19] & 0x20) ? PSRAM_SIZE : FLASH_SIZE;
+			FlashSize = FLASH_SIZE;
 
 #ifdef BSX_DEBUG
 			for (int i = 0; i <= 0x1F; i++)
@@ -1145,32 +1237,11 @@ void S9xResetBSX (void)
 	memset(BSX.output, 0, sizeof(BSX.output));
 
 	// starting from the bios
-	if (BSX.bootup)
-		BSX.MMC[0x07] = BSX.MMC[0x08] = 0x80;
-	else
-	{
-		BSX.MMC[0x02] = FlashMode ? 0x80: 0;
+	BSX.MMC[0x02] = BSX.MMC[0x03] = BSX.MMC[0x05] = BSX.MMC[0x06] = 0x80;
+	BSX.MMC[0x09] = BSX.MMC[0x0B] = 0x80;
 
-		// per bios: run from psram or flash card
-		if (FlashSize == PSRAM_SIZE)
-		{
-			memcpy(PSRAM, FlashROM, PSRAM_SIZE);
-
-			BSX.MMC[0x01] = 0x80;
-			BSX.MMC[0x03] = 0x80;
-			BSX.MMC[0x04] = 0x80;
-			BSX.MMC[0x0C] = 0x80;
-			BSX.MMC[0x0D] = 0x80;
-		}
-		else
-		{
-			BSX.MMC[0x03] = 0x80;
-			BSX.MMC[0x05] = 0x80;
-			BSX.MMC[0x06] = 0x80;
-		}
-
-		BSX.MMC[0x0E] = 0x80;
-	}
+	BSX.MMC[0x07] = BSX.MMC[0x08] = 0x80;
+	BSX.MMC[0x0E] = 0x80;
 
 	BSX_Map();
 }
