@@ -244,7 +244,7 @@
       <Filter>GUI</Filter>
     </ClInclude>
     <ClInclude Include="..\msu1.h">
-      <Filter>Emu</Filter>
+      <Filter>APU</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -543,7 +543,7 @@
       <Filter>GUI</Filter>
     </ClCompile>
     <ClCompile Include="..\msu1.cpp">
-      <Filter>Emu</Filter>
+      <Filter>APU</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
