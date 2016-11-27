@@ -2016,7 +2016,7 @@ LRESULT CALLBACK WinProc(
 				{
 					char localhostname [256];
 					gethostname(localhostname,256);
-					_stprintf(localhostmsg, TEXT("Your host name is: %s\nYour port number is: %d"), _tFromChar(localhostname), Settings.Port);
+					_stprintf(localhostmsg, TEXT("Your host name is: %s\nYour port number is: %d"), (TCHAR *)_tFromChar(localhostname), Settings.Port);
 					MessageBox(GUI.hWnd,localhostmsg,TEXT("Note"),MB_OK);
 				}
 			}
@@ -2434,7 +2434,7 @@ LRESULT CALLBACK WinProc(
 					{
 
 						if (!LoadROM(GUI.RecentGames [i])) {
-							sprintf (String, ERR_ROM_NOT_FOUND, _tToChar(GUI.RecentGames [i]));
+							sprintf (String, ERR_ROM_NOT_FOUND, (char *)_tToChar(GUI.RecentGames [i]));
 							S9xMessage (S9X_ERROR, S9X_ROM_NOT_FOUND, String);
 							S9xRemoveFromRecentGames(i);
 						}
@@ -2705,7 +2705,7 @@ LRESULT CALLBACK WinProc(
 		{
 			TCHAR buf [NP_MAX_ACTION_LEN + 10];
 
-			_stprintf (buf, TEXT("%s %3d%%"), _tFromChar(NetPlay.ActionMsg), (int) lParam);
+			_stprintf (buf, TEXT("%s %3d%%"), (TCHAR *)_tFromChar(NetPlay.ActionMsg), (int) lParam);
 			SetWindowText (GUI.hWnd, buf);
 		}
 #if 0
@@ -5026,7 +5026,7 @@ INT_PTR CALLBACK DlgInfoProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				{
 					SetTextColor((HDC)wParam, GUI.InfoColor);
 					SetBkColor((HDC)wParam, RGB(0,0,0));
-					return (BOOL)GetStockObject( BLACK_BRUSH );
+					return (INT_PTR)GetStockObject( BLACK_BRUSH );
 				}
 				break;
 			case WM_PAINT:
@@ -10441,7 +10441,7 @@ static void set_movieinfo(const TCHAR* path, HWND hDlg)
 
 			if(m.SyncFlags & MOVIE_SYNC_HASROMINFO)
 			{
-				_stprintf(str, MOVIE_INFO_MOVIEROM MOVIE_INFO_ROMINFO, m.ROMCRC32, _tFromChar(m.ROMName));
+				_stprintf(str, MOVIE_INFO_MOVIEROM MOVIE_INFO_ROMINFO, m.ROMCRC32, (TCHAR *)_tFromChar(m.ROMName));
 				SetWindowText(GetDlgItem(hDlg, IDC_MOVIEROMINFO), str);
 			}
 			else
@@ -10451,7 +10451,7 @@ static void set_movieinfo(const TCHAR* path, HWND hDlg)
 			}
 
 			bool mismatch = (m.SyncFlags & MOVIE_SYNC_HASROMINFO) && m.ROMCRC32 != Memory.ROMCRC32;
-			_stprintf(str, MOVIE_INFO_CURRENTROM MOVIE_INFO_ROMINFO TEXT("%s"), Memory.ROMCRC32, _tFromChar(Memory.ROMName), mismatch?MOVIE_INFO_MISMATCH:TEXT(""));
+			_stprintf(str, MOVIE_INFO_CURRENTROM MOVIE_INFO_ROMINFO TEXT("%s"), Memory.ROMCRC32, (TCHAR *)_tFromChar(Memory.ROMName), mismatch?MOVIE_INFO_MISMATCH:TEXT(""));
 			SetWindowText(GetDlgItem(hDlg, IDC_CURRENTROMINFO), str);
 
 			_stprintf(str, TEXT("%s"), mismatch?MOVIE_WARNING_MISMATCH:MOVIE_WARNING_OK);
@@ -10517,7 +10517,7 @@ static void set_movieinfo(const TCHAR* path, HWND hDlg)
 			// no movie loaded
 			SetWindowText(GetDlgItem(hDlg, IDC_MOVIEROMINFO), dirStr);
 
-			_stprintf(str, MOVIE_INFO_CURRENTROM MOVIE_INFO_ROMINFO, Memory.ROMCRC32, _tFromChar(Memory.ROMName));
+			_stprintf(str, MOVIE_INFO_CURRENTROM MOVIE_INFO_ROMINFO, Memory.ROMCRC32, (TCHAR *)_tFromChar(Memory.ROMName));
 			SetWindowText(GetDlgItem(hDlg, IDC_CURRENTROMINFO), str);
 		}
 
