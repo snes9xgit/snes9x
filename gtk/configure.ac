@@ -331,9 +331,9 @@ if test no != "$with_system_zip" && test yes = "$with_zlib" ; then
 	LIBS="$LIBS $SYSTEM_ZIP_LIBS"
     ],[
 	if test check = "$with_system_zip"; then
-	    AC_MSG_WARN(Cannot find SYSTEM_ZIP)
+	    AC_MSG_WARN(Cannot find system minizip library)
 	else
-	    AC_MSG_ERROR(--with-system-zip given but cannot find proper zlib)
+	    AC_MSG_ERROR(--with-system-zip given but cannot find system minizip library)
 	fi
     ])
 fi

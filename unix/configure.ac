@@ -222,9 +222,9 @@ if test "x$enable_zip" = "xyes"; then
 			fi
 			S9XDEFS="$S9XDEFS -DSYSTEM_ZIP",
 			if test "x${with_system_zip}" != "xcheck"; then
-				AC_MSG_ERROR([--with-system-zip requested but no proper zlib found.])
+				AC_MSG_ERROR([--with-system-zip requested but no proper minizip lib found.])
 			else
-				AC_MSG_WARN([zlib not found. Build without SYSTEM_ZIP support.])
+				AC_MSG_WARN([minizip not found. Build without SYSTEM_ZIP support.])
 			fi
 		)
 	else
