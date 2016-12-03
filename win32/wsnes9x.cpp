@@ -3704,7 +3704,7 @@ loop_exit:
 
 void FreezeUnfreeze (int slot, bool8 freeze)
 {
-    const char *filename;
+    char filename[_MAX_PATH +1];
     char ext [_MAX_EXT + 1];
 
 #ifdef NETPLAY_SUPPORT
@@ -3717,7 +3717,7 @@ void FreezeUnfreeze (int slot, bool8 freeze)
 #endif
 
 	snprintf(ext, _MAX_EXT, ".%03d", slot);
-	filename = S9xGetFilename(ext,SNAPSHOT_DIR);
+	strcpy(filename, S9xGetFilename(ext, SNAPSHOT_DIR));
 
     S9xSetPause (PAUSE_FREEZE_FILE);
 
