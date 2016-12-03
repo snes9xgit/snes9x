@@ -226,6 +226,7 @@ enum SMSU1_CMD {
 
 extern struct SMSU1	MSU1;
 
+STREAM S9xMSU1OpenFile(char *msu_ext);
 void S9xMSU1Init(void);
 void S9xMSU1Generate(int sample_count);
 uint8 S9xMSU1ReadPort(int port);

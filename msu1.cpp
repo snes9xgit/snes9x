@@ -207,6 +207,76 @@ uint32 partial_samples;
 // Sample buffer
 int16 *bufPos, *bufBegin, *bufEnd;
 
+#ifdef UNZIP_SUPPORT
+static int unzFindExtension(unzFile &file, const char *ext, bool restart = TRUE, bool print = TRUE)
+{
+    unz_file_info	info;
+    int				port, l = strlen(ext);
+
+    if (restart)
+        port = unzGoToFirstFile(file);
+    else
+        port = unzGoToNextFile(file);
+
+    while (port == UNZ_OK)
+    {
+        int		len;
+        char	name[132];
+
+        unzGetCurrentFileInfo(file, &info, name, 128, NULL, 0, NULL, 0);
+        len = strlen(name);
+
+        if (len >= l + 1 && strcasecmp(name + len - l, ext) == 0 && unzOpenCurrentFile(file) == UNZ_OK)
+        {
+            if (print)
+                printf("Using msu file %s", name);
+
+            return (port);
+        }
+
+        port = unzGoToNextFile(file);
+    }
+
+    return (port);
+}
+#endif
+
+STREAM S9xMSU1OpenFile(char *msu_ext)
+{
+    const char *filename = S9xGetFilename(msu_ext, ROMFILENAME_DIR);
+    STREAM file = OPEN_STREAM(filename, "rb");
+    if (file)
+        printf("Using msu file %s.\n", filename);
+
+#ifdef UNZIP_SUPPORT
+    // look for msu file in .msu.zip if not found in rom dir
+    if (!file)
+    {
+        const char *zip_filename = S9xGetFilename(".msu.zip", ROMFILENAME_DIR);
+        if (zip_filename)
+        {
+            unzFile	unzFile = unzOpen(zip_filename);
+            if (unzFile)
+            {
+                int	port = unzFindExtension(unzFile, msu_ext);
+                if (port == UNZ_OK)
+                {
+                    printf(" in %s.\n", zip_filename);
+                    file = new unzStream(unzFile);
+                }
+                else
+                    unzCloseCurrentFile(unzFile);
+            }
+        }
+    }
+#endif
+
+    if(!file)
+        printf("Unable to find msu file %s.\n", filename);
+
+    return file;
+}
+
 bool AudioOpen()
 {
 	MSU1.MSU1_STATUS |= AudioError;
@@ -220,7 +290,7 @@ bool AudioOpen()
 	char ext[_MAX_EXT];
 	snprintf(ext, _MAX_EXT, "-%d.pcm", MSU1.MSU1_CURRENT_TRACK);
 
-    audioStream = OPEN_STREAM(S9xGetFilename(ext, ROMFILENAME_DIR), "rb");
+    audioStream = S9xMSU1OpenFile(ext);
 	if (audioStream)
 	{
 		if (GETC_STREAM(audioStream) != 'M')
@@ -252,7 +322,7 @@ bool DataOpen()
         dataStream = NULL;
     }
 
-    dataStream = OPEN_STREAM(S9xGetFilename(".msu", ROMFILENAME_DIR), "rb");
+    dataStream = S9xMSU1OpenFile(".msu");
 	return dataStream != NULL;
 }
 
