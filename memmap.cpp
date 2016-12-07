@@ -1275,12 +1275,6 @@ static bool8 is_GNEXT_Add_On (const uint8 *data, uint32 size)
 		return (FALSE);
 }
 
-static bool8 MsuRomExists (void)
-{
-	struct stat buf;
-	return (stat(S9xGetFilename(".msu", ROMFILENAME_DIR), &buf) == 0);
-}
-
 int CMemory::ScoreHiROM (bool8 skip_header, int32 romoff)
 {
 	uint8	*buf = ROM + 0xff00 + romoff + (skip_header ? 0x200 : 0);
@@ -2547,7 +2541,7 @@ void CMemory::InitROM (void)
 	}
 
 	// MSU1
-	Settings.MSU1 = MsuRomExists();
+	Settings.MSU1 = S9xMSU1ROMExists();
 
 	//// Map memory and calculate checksum
 

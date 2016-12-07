@@ -251,7 +251,7 @@ bool DataOpen()
 	return dataFile.is_open();
 }
 
-void S9xMSU1Init(void)
+void S9xResetMSU(void)
 {
 	MSU1.MSU1_STATUS		= 0;
 	MSU1.MSU1_DATA_SEEK		= 0;
@@ -277,7 +277,19 @@ void S9xMSU1Init(void)
 	if (audioFile.is_open())
 		audioFile.close();
 
+	Settings.MSU1 = S9xMSU1ROMExists();
+}
+
+void S9xMSU1Init(void)
+{
+	S9xResetMSU();
 	DataOpen();
+}
+
+bool S9xMSU1ROMExists(void)
+{
+	struct stat buf;
+	return (stat(S9xGetFilename(".msu", ROMFILENAME_DIR), &buf) == 0);
 }
 
 void S9xMSU1Generate(int sample_count)

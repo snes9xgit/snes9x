@@ -226,7 +226,9 @@ enum SMSU1_CMD {
 
 extern struct SMSU1	MSU1;
 
+void S9xResetMSU(void);
 void S9xMSU1Init(void);
+bool S9xMSU1ROMExists(void);
 void S9xMSU1Generate(int sample_count);
 uint8 S9xMSU1ReadPort(int port);
 void S9xMSU1WritePort(int port, uint8 byte);
