@@ -807,7 +807,9 @@ int S9xMovieOpen (const char *filename, bool8 read_only)
 	restore_movie_settings();
 
 	lseek(fn, Movie.SaveStateOffset, SEEK_SET);
-	stream = REOPEN_STREAM(fn, "rb");
+
+    // reopen stream to access as gzipped data
+    stream = REOPEN_STREAM(fn, "rb");
 	if (!stream)
 		return (FILE_NOT_FOUND);
 
@@ -820,7 +822,11 @@ int S9xMovieOpen (const char *filename, bool8 read_only)
 	else
 		result = S9xUnfreezeFromStream(stream);
 
-	CLOSE_STREAM(stream);
+    // do not close stream but close FILE *
+    // (msvcrt will try to close all open FILE *handles on exit - if we do CLOSE_STREAM here
+    //  the underlying file will be closed by zlib, causing problems when msvcrt tries to do it)
+    delete stream;
+    fclose(fd);
 
 	if (result != SUCCESS)
 		return (result);
