@@ -1,3 +1,2 @@
 version=3
-http://code.google.com/p/snes9x-gtk/downloads/list \
-  http://snes9x-gtk.googlecode.com/files/snes9x-([0-9.]+)-src\.tar\.bz2
+https://github.com/snes9xgit/snes9x/tags .*/(\d\S+)\.tar\.gz
