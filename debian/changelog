@@ -1,6 +1,6 @@
-snes9x (1:1.54-0) unstable; urgency=medium
+snes9x (1:1.54.1-0) unstable; urgency=medium
 
-  * update version 1.54
+  * update version 1.54.1
 
  -- Ivan Wu <wuyifan@deepin.com>  Thu, 08 Dec 2016 09:59:50 +0800
 

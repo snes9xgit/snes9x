@@ -5,12 +5,16 @@
 
 override_dh_auto_configure:
 	dh_auto_configure --sourcedirectory=unix -- --enable-netplay
+	cd gtk && ./autogen.sh
+	dh_auto_configure --sourcedirectory=gtk -- --bindir=/usr/games --with-gtk3
 
 override_dh_auto_build:
 	dh_auto_build --sourcedirectory=unix
-	cd unix && $(MAKE) clean
-	dh_auto_configure --sourcedirectory=gtk -- --bindir=/usr/games --with-gtk3
 	dh_auto_build --sourcedirectory=gtk
+
+override_dh_clean:
+	dh_clean --sourcedirectory=unix
+	dh_clean --sourcedirectory=gtk
 
 override_dh_install:
 	dh_install
