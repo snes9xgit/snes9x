@@ -1,0 +1,374 @@
+snes9x (1:1.54-0) unstable; urgency=medium
+
+  * update version 1.54
+
+ -- Ivan Wu <wuyifan@deepin.com>  Thu, 08 Dec 2016 09:59:50 +0800
+
+snes9x (1:1.53-0pub6) trusty; urgency=medium
+
+  * Rebuild with new pango
+  * Build-Depend on autotools-dev
+  * Bump standards-version to 3.9.5
+
+ -- Sergey Basalaev <sbasalaev@gmail.com>  Fri, 31 Jan 2014 22:54:57 +0700
+
+snes9x (1:1.53-0pub5) quantal; urgency=low
+
+  * Drop conflict with snes9x-gtk-l10n-ru
+  * Bump standards-version to 3.9.3
+
+ -- Sergey Basalaev <sbasalaev@gmail.com>  Sat, 13 Oct 2012 01:42:38 +0700
+
+snes9x (1:1.53-0pub4) oneiric; urgency=low
+
+  * Add conflict with snes9x-gtk-l10n-ru for smooth upgrade from PUB oneiric
+
+ -- Sergey Basalaev <sbasalaev@gmail.com>  Mon, 10 Oct 2011 14:57:40 +0700
+
+snes9x (1:1.53-0pub3) oneiric; urgency=low
+
+  * [patch] potfiles.patch:
+    + Fixes build of translations
+
+ -- Sergey Basalaev <sbasalaev@gmail.com>  Sun, 09 Oct 2011 16:20:36 +0700
+
+snes9x (1:1.53-0pub1) oneiric; urgency=low
+
+  * New upstream release
+  * debian/rules: build with gtk3
+
+ -- Sergey Basalaev <sbasalaev@gmail.com>  Thu, 06 Oct 2011 12:15:10 +0700
+
+snes9x (1:1.52-1) unstable; urgency=low
+
+  * QA upload.
+  * New upstream release (Closes: #432922, #472764).
+  * Switch to dpkg-source 3.0 (quilt) format and drop dpatch.
+  * Switch to dh 7.
+  * Wrap, sort, and cleanup Build-Depends (Closes: #575861).
+  * Fix typo in Build-Depends (Closes: #573708).
+  * Enable screenshot support (Closes: #563581).
+  * Drop unrequired patches.
+  * Drop unused debian/snes9x-opengl.* files.
+  * Bump Standards-Version to 3.8.4.
+  * Add Homepage field.
+  * Add snes9x-gtk package for GTK+ port.
+
+ -- Benjamin Drung <bdrung@ubuntu.com>  Tue, 30 Mar 2010 13:41:46 +0200
+
+snes9x (1:1.5-1) unstable; urgency=medium
+
+  * New Upstream
+    * Adds AMD64 Support. (Closes: #384404)
+  * Remove all previous patches. They are incorporated in Upstream,
+    overridden or useless.
+  * Drop -opengl package. Upstream currently does not support the OpenGL
+    version. There is still hope for 1.51.
+
+ -- Alain Schroeder <alain@debian.org>  Sun, 20 Oct 2006 14:55:39 +0100
+
+snes9x (1.43-3) unstable; urgency=medium
+
+  * Replace build-dependency on xlibs-dev with an explicit
+    build-dependency on each required package. (Closes: #346932)
+  * Depend on xlibmesa-gl-dev | libgl-dev, xlibmesa-glu-dev | libglu-dev
+    instead of xlibmesa-dev, which no longer exists. (Closes: #327307)
+  * Thanks to Steinar H. Gunderson for the two above. (Closes: #349230)
+  * There still is no good OpenGL Patch. I gave up on it. Anybody?
+  * Remove snes9x-1.43-src/snes9x/config.cache for clean sources.
+
+ -- Alain Schroeder <alain@debian.org>  Sun, 22 Jan 2006 18:55:46 +0100
+
+snes9x (1.43-2) unstable; urgency=low
+
+  * Fix build on AMD64 (closes: #297287)
+  * Add missing Build-Deps (closes: #322456)
+  * Fix build on !i386 (closes: #322455)
+  * Add OpenGL patch (closes: #138416, #286123)
+
+ -- Alain Schroeder <alain@debian.org>  Wed,  7 Sep 2005 13:31:07 +0200
+
+snes9x (1.43-1) experimental; urgency=low
+
+  * New Upstream.
+  * Dropped keymap patch due to heavy changes in the source.
+  * Added a patch from Jeff Williams so joystick axis can be chosen freely.
+
+ -- Alain Schroeder <alain@debian.org>  Sat,  8 Jan 2005 17:29:32 +0100
+
+snes9x (1.42-2) unstable; urgency=low
+
+  * Fix Build-Dependencies: xlib6g-dev => xlibs-dev (closes: #228374)
+
+ -- Alain Schroeder <alain@debian.org>  Tue, 24 Feb 2004 23:18:23 +0100
+
+snes9x (1.42-1) unstable; urgency=low
+
+  * "Mario In Detox" Release
+  * New Upstream (closes: #212720)
+  * Dropped SVGA and Glide Version, because they are no longer supported by
+    upstream.
+  * Included Patch from Terran Melconian <terran@consistent.org> to support
+    more than two joypads (closes: #195764)
+    *** Patchfile: 01_4joypads
+  * Include better keymap (closes: #181864, #181865)
+  * The copyright file is more readable now.
+  * Reworked the complete build system using dpatch. Now all patches
+    have their own files.
+    *** 02_fix_ntsc_help: Fix ntsc help message
+    *** 03_fix_loading_some_roms: Fix some ROM loading anomalies
+    *** 10_keymap: Allow keymap modification
+  * OpenGL Target is still included, since people reported to me, that it
+    works fine with their NVidia cards - it does not work with my card though
+
+ -- Alain Schroeder <alain@debian.org>  Sun,  4 Jan 2004 01:12:08 +0100
+
+snes9x (1.39-8) unstable; urgency=low
+
+  * Exclude DGA specific defines, if we build for 3dfx (Closes: #144463).
+  * Add the OpenGL Version again, since at least on nVidia cards it works
+    fine. (Closes: #145750)
+  * Thrown away some useless stuff from the OpenGL's README.Debian.
+
+ -- Alain Schroeder <alain@debian.org>  Sun,  5 May 2002 20:42:02 +0200
+
+snes9x (1.39-7) unstable; urgency=high
+
+  * Removed the OpenGL Version, since it didn't work. I swear it worked
+    earlier - it was much slower than the X11 Version, but it worked.
+  * Urgency high to get it into woody.
+  * Removed s9xserver manpage from the debian directory - it's just useless
+    data at the moment.
+
+ -- Alain Schroeder <alain@debian.org>  Sat, 20 Apr 2002 12:31:02 +0200
+
+snes9x (1.39-6) unstable; urgency=low
+
+  * I partially applied a patch from Brad, which caused a big mess. I reversed
+    it and applied another patch from Brad to fix the problem in tile.cpp
+    without the big mess.
+
+ -- Alain Schroeder <alain@debian.org>  Thu, 14 Mar 2002 13:21:57 +0100
+
+snes9x (1.39-5) unstable; urgency=low
+
+  * Fix check for MSB_FIRST in 2xsai.cpp and unix/unix.cpp (Fixes building
+    on big endian machines).
+  * All packages now depend on snes9x-common with the same version number.
+
+ -- Alain Schroeder <alain@debian.org>  Wed, 13 Mar 2002 14:45:25 +0100
+
+snes9x (1.39-4) unstable; urgency=low
+
+  * Applied another patch from andi <andi@fischlustig.de> to fix big endian
+    issues with the image processing filters and make it use MSB_FIRST.
+    (2xsai.cpp)
+  * Fix a typo with GETS_STREAM und GETC_STREAM, which I introduced, while
+    applying Brads Patches. (snes9x.h)
+  * Fixed output, if /usr/share/snes9x/snes9x.ctl was loaded - it reported
+    another file was loaded. (controls.cpp)
+  * Fixed typo in debian/Makefile, so the svgalib uses the svgalib keymap
+    (Thanks to Brad).
+  * Also changed -mpentium to -mcpu=pentium in debian/rules (Thanks to Brad).
+  * Added much more from Brad Jorsch <anomie@users.sourceforge.net> patch:
+    * Snapshot the when exit/load snapshot/reset is pressed. (cpu.cpp,
+      snapshot.cpp, snapshot.h, unix/unix.cpp)
+    * Calculate PPU.FirstSprite differently.                 (ppu.cpp, ppu.h)
+    * translate some fixes from i386/cpuops.S to cpuops.cpp.
+    * Fix loading certain types of ROMs from a zip file. (loadzip.cpp)
+    * Fix some tile bugs. (tile.cpp)
+    * Don't open Sounddevice, if sound is disabled. (unix/unix.cpp)
+    * Support IPS Patches (memmap.cpp)
+  * Modified the search in zip files for IPS Patches, so snes9x now test
+    every file.
+
+ -- Alain Schroeder <alain@debian.org>  Tue, 12 Mar 2002 15:32:24 +0100
+
+snes9x (1.39-3) unstable; urgency=low
+
+  * Added a patch from Brad Jorsch <anomie@users.sourceforge.net> to allow the
+    modification of keymaps. The patch itself was modified to allow the use
+    without all the other changes from Brads big patch. (Closes: #70801)
+  * Added new options to manpages.
+  * Revamped copyright, since Brad's patches are under GPL (with addition to
+    allow the use with snes9x).
+  * Added snes9x.ctl from Brad's patch to /usr/share/snes9x.
+  * Applied a patch from andi <andi@fischlustig.de> to fix sound issues on 
+    big endian machines.
+
+ -- Alain Schroeder <alain@debian.org>  Mon, 18 Feb 2002 21:57:10 +0100
+
+snes9x (1.39-2) unstable; urgency=low
+
+  * Removed debian/osnes9x-x dir, which was some odd survival of my first
+    attempts of a opengl package. (Closes: #126269)
+  * Fixed i386 asm code to build again. (Closes: #126268)
+    - Just renamed the jumppoint end to ends - it seems nasm reserved "end"
+      for itself
+
+ -- Alain Schroeder <alain@debian.org>  Sun, 23 Dec 2001 16:02:18 +0100
+
+snes9x (1.39-1) unstable; urgency=low
+
+  * New Upstream (Mainly small fixes, improved DSP-1 code, SuperFX code
+    updates and new and shiny OpenGL output).
+  * Fixed building on all non i386 architectures again (Closes: #111637).
+  * New OpenGL package "snes9x-opengl", which hopefully works as expected - I
+    can't test it right now, since I'm stuck with my old laptop.
+  * Add Glide package "snes9x-fx", while I'm at it. Can somebody please test
+    this, since I do not have a 3dfx Voodoo card?
+
+ -- Alain Schroeder <alain@parkautomat.net>  Tue,  9 Oct 2001 23:48:11 +0200
+
+snes9x (1.37c-5) unstable; urgency=low
+
+  * Added -ohires Parameter, which behaves as -hires did before (x11 only).
+    Closes #92696
+  * Brought manpages up to date.
+
+ -- Alain Schroeder <alain@debian.org>  Fri, 13 Apr 2001 15:29:00 +0200
+ 
+snes9x (1.37c-4) unstable; urgency=low
+
+  * Fixed building on architectures other than i386.
+
+ -- Alain Schroeder <alain@debian.org>  Mon,  9 Apr 2001 01:59:48 +0200
+
+snes9x (1.37c-3) unstable; urgency=low
+
+  * Added HARDWARE.TXT to documentation.
+  * Make sure manpage snes9x-server.1 is not included in the other 
+    packages. Closes: #92621
+  * Few fixes in Building Process...
+  * Marked svgalibg1-dev as i386 only in Build-Depends
+
+ -- Alain Schroeder <alain@debian.org>  Sat,  7 Apr 2001 21:29:44 +0200
+
+snes9x (1.37c-2) unstable; urgency=low
+
+  * Added a Patch from Brad that makes hitting Shift+Esc resetting the
+    emulator. (Closes: #89111)
+
+ -- Alain Schroeder <alain@debian.org>  Sun, 11 Mar 2001 16:45:36 +0100
+
+snes9x (1.37c-1) unstable; urgency=low
+
+  * New Upstream release (Details in /usr/share/doc/snes9x-x/changelog.gz)
+  * Reorganized building
+  * Removed s9xserver since, build is broken in 1.37c. Switched suggests
+    to conflicts to s9xserver. I hope this will be resolved by upstream
+    soon.
+ 
+ -- Alain Schroeder <alain@debian.org>  Fri,  8 Mar 2001 14:58:18 +0100
+
+snes9x (1.29-5) unstable; urgency=low
+
+  * Changed the maintainer field, too.
+
+ -- Alain Schroeder <alain@debian.org>  Sun, 25 Feb 2001 23:58:40 +0100
+ 
+snes9x (1.29-4) unstable; urgency=low
+
+  * New Maintainer, closes #87152
+
+ -- Alain Schroeder <alain@debian.org>  Fri, 23 Feb 2001 15:23:14 +0100
+ 
+snes9x (1.29-3) unstable; urgency=low
+
+  * Orphaning package
+
+ -- Sean 'Shaleh' Perry <shaleh@debian.org>  Tue, 20 Feb 2001 15:55:52 -0800
+
+snes9x (1.29-2) unstable; urgency=low
+
+  * Bug fix release
+  * I believe that the DGA issue reported in #38606 is fixed in new versions
+  * unable to contact upstream, snes9x.com has been dead for a few days
+    seems the patch from 67262 works and helps the emu out
+  * I believe I have included the needed fixes for noni386 compilation
+  * Closes: #38606, #58497, #67262
+
+ -- Sean 'Shaleh' Perry <shaleh@debian.org>  Tue, 18 Jul 2000 12:05:13 -0700
+
+snes9x (1.29-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Sean 'Shaleh' Perry <shaleh@debian.org>  Fri, 12 May 2000 13:36:58 -0700
+
+snes9x (1.26-2) frozen unstable; urgency=low
+
+  * Fixes for compilation issues with new compilers
+
+ -- Sean E. Perry <shaleh@debian.org>  Fri, 12 May 2000 13:29:20 -0700
+
+snes9x (1.26-1) unstable; urgency=low
+
+  * New upstream release and a new maintainer
+  * I believe this upload breaks non-intel arches, please someone test this
+    yes I know that Makefile.m68k is not in the src tree
+  * added -DGNU_SOURCE to Makefile.linux
+
+ -- Sean E. Perry <shaleh@debian.org>  Fri, 19 Nov 1999 00:17:36 -0800
+
+snes9x (1.19a-1.1) unstable; urgency=low
+
+  * NMU with permission of maintainer
+  * #define _GNU_SOURCE in snap[orig|shot].cpp for glibc2.1
+  * improved debian/rules for arch specific building, old rules
+    are present in the source as rules.old
+  * SVGA packages and manpages are not useful for m68k and probably all
+    other non-x86 arches, thus build them only for i386
+  * added weird patch to unix code to make it compilable on i386 and m68k
+    other arches please chose their weirdness...
+
+ -- Christian T. Steigies <cts@debian.org>  Wed,  3 Nov 1999 20:57:34 +0100
+
+snes9x (1.19a-1) unstable; urgency=low
+
+  * New upstream. Closes: #32980
+  * Now installs X binary in /usr/bin instead of /usr/X11R6/bin
+  * Removed hardcoded pentium compiler option. Closes: #33044, #35682
+
+ -- Stephen Crowley <crow@debian.org>  Fri,  2 Jul 1999 07:49:06 -0500
+
+snes9x (1.18e-1) unstable; urgency=low
+
+  * New upstream.
+  * Compiled with joystick support. closes: #27737, #32674
+
+ -- Stephen Crowley <crow@debian.org>  Mon, 15 Mar 1999 16:06:50 -0600
+
+snes9x (1.16a-2) unstable; urgency=low
+
+  * Removed Suggests: suidmanager
+  * Removed suidregister junk from postinst.
+
+ -- Stephen Crowley <crow@debian.org>  Tue,  5 Jan 1999 16:59:42 -0600
+
+snes9x (1.16a-1) frozen unstable; urgency=low
+
+  * Cleaned up postinst and added "Suggests: suidmanager" to snes9x-svga. Closes bug #31223
+  * New upstream version. Mostly bug fixes. 
+
+ -- Stephen Crowley <crow@debian.org>  Mon, 28 Dec 1998 03:48:08 -0600
+
+snes9x (1.15-1) unstable; urgency=low
+
+  * New upstream vesion.
+
+ -- Stephen Crowley <crow@debian.org>  Thu, 10 Dec 1998 09:53:33 -0600
+
+snes9x (1.10-1) unstable; urgency=low
+
+  * Manpages
+  * Binaries are no longer suid root by default
+  * New upstream version
+
+ -- Stephen Crowley <crow@debian.org>  Sat, 10 Oct 1998 13:40:24 -0500
+
+snes9x (1.05-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Stephen Crowley <crow@debian.org>  Sun, 13 Sep 1998 21:18:27 -0500

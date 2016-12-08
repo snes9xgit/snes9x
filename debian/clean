@@ -1,0 +1,5 @@
+unix/config.info
+unix/config.log
+unix/config.status
+unix/Makefile
+unix/snes9x

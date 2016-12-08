@@ -1,0 +1,371 @@
+.TH SNES9X 1 "04 JAN 2004" "Debian Project" "Debian Linux"
+.SH NAME
+snes9x \- Super Nintendo Entertainment System emulator
+.SH SYNOPSIS
+.B snes9x
+[\-so] [\-sound] [\-ns] [\-nosound] [\-sk #] [\-soundskip #] [\-ra #] [\-ratio #]
+[\-h #] [\-cycles #] [\-nh] [\-nodma] [\-ha] [\-hdma] [\-n] [\-nospeedhacks]
+[\-sh] [\-speedhacks] [\-p] [\-pal] [\-ntsc] [\-f #] [\-frameskip #] [\-fh] [\-hr]
+[\-hirom] [\-fl] [\-lr] [\-lorom] [\-hd] [\-header] [\-he] [\-nhd] [\-noheader]
+[\-t] [\-trace] [\-L] [\-layering] [\-nl] [\-nolayering] [\-O]
+[\-tileredraw] [\-no] [\-lineredraw] [\-tr] [\-transparency] [\-nt]
+[\-notransparency] [\-hi] [\-hires] [\-16] [\-sixteen] [\-displayframerate]
+[\-dfr] [\-s] [\-sw] [\-swapjoypads] [\-i] [\-interleaved] [\-i2] [\-interleaved2]
+[\-ni] [\-nointerleave] [\-noirq] [\-nw] [\-nowindows] [\-windows] [\-gg <code>]
+[\-gamegenie <code>] [\-ar <code>] [\-actionreplay <code>] [\-gf <code>]
+[\-goldfinger <code>] [\-ft #] [\-frametime #] [\-e] [\-echo] [\-ne] [\-noecho]
+[\-r #] [\-sq #] [\-soundquality #] [\-st] [\-stereo] [\-mono] [\-ex] [\-envx]
+[\-nc] [\-nsc] [\-nosamplecaching] [\-nmv] [\-nomastervolume] [\-sy] [\-soundsync]
+[\-sy2] [\-soundsync2] [\-is] [\-interpolatedsound] [\-ts] [\-threadsound] [\-alt]
+[\-altsampledecode] [\-nosfx] [\-nosuperfx] [\-sfx] [\-superfx] [\-dsp1]
+[\-nodsp1] [\-nmp] [\-nomultiplayer5] [\-mp] [\-multiplayer5] [\-mo] [\-mouse]
+[\-nm] [\-nomouse] [\-ss] [\-superscope] [\-nss] [\-nosuperscope]
+.\" Netplay support
+[\-po #] [\-port #] [\-srv <servername>] [\-server <servername>] [\-net]
+.\" STORM ???
+.\" [-nosecondjoy] [-showfps] [-hicolor] [-minimal] [-ahiunit]
+.\" Options, that depend on different output (X11, etc)
+[\-y]
+.\" New Keymap
+[\-keymap <keymap>] [\-turbospeed #]
+
+.SH DESCRIPTION
+Snes9x is a portable, freeware Super Nintendo Entertainment System (SNES)
+emulator. It basically allows you to play most games designed for the SNES
+and Super Famicom Nintendo game systems on your PC or Workstation; they
+include some real gems that were only ever released in Japan.
+.SS OPTIONS
+.TP
+.I \-so, \-sound
+Enable sound CPU emulation and sound output. (Default)
+.TP
+.I \-ns, \-nosound
+Disable sound CPU emulation and sound output, useful for the few ROMs
+where sound emulation causes them to lock up due to timing errors.
+.TP
+.I \-sk <0\-3>, \-soundskip <0\-3>
+Sound CPU skip-waiting method. ONLY USED IF SOUND IS DISABLED. Default: 0
+.TP
+.I \-ra 1+, \-ratio 1+
+Ratio of 65c816 to SPC700 instructions. Default of 2 is fine for most
+games, but 3 gets Fifa 96 and games written by the software house Human
+working. 5 gets The Empire Strikes Back working. There will be others.
+Default: 2
+.TP
+.I \-h <0\-200), \-cycles <0\-200>
+Percentage of CPU cycles to execute per scan line, decrease value to
+increase emulation frame rate. Most ROMs work with a value of 85 or above.
+Default: 100
+.TP
+.I \-nh, \-nohdma
+Turn off the H-DMA emulation. Pressing '0' during a game toggles H-DMA on
+and off.
+.TP
+.I \-ha, \-hdma
+Turn on the H-DMA emulation. Pressing '0' during a game toggles H-DMA on
+and off. (Default)
+.TP
+.I \-n, \-nospeedhacks
+Turn off a couple of speed hacks. The hacks boost the speed of many ROMs
+but cause problems a few ROMs.
+.TP
+.I \-sh, \-speedhacks
+Turn on a couple of speed hacks. The hacks boost the speed of many ROMs
+but cause problems a few ROMs. (Default)
+.TP
+.I \-p, \-pal
+Fool ROM into thinking this is a PAL SNES system and adjust frame time
+to 20ms (50 frames per second)
+.TP
+.I \-ntsc
+Fool ROM into thinking this is a NTSC SNES system and adjust frame time
+to 16.7ms (60 frames per second)
+.TP
+.I \-f <count>, \-frameskip <count>
+Set this value to deliberately fix the frame skip rate and disable auto-
+speed regulation. Use a larger value faster emulation but more jerky
+movement and a smaller value for smooth but slower screen updates.
+Use '+' and '-' keys to modify the value during a game.
+deal for some Super FX games that confuse the auto-adjust code or
+for games that deliberately flash the screen every alternate frame.
+.TP
+.I \-fh, \-hr, \-hirom
+Force Hi-ROM memory map for ROMs where the Hi-ROM header test fails.
+.TP
+.I \-fl, \-lr, \-lorom
+Force Lo-ROM memory map for ROMs where the Hi-ROM header test fails
+.TP
+.I \-hd, \-header, \-he
+Force the detection of a ROM image header. Some ROM images have been
+hand-edited to remove unused space from the end of the file; if the
+resultant image size is not a multiple of 32k then Snes9x can't
+auto-detect the presense of a 512 byte ROM image header.
+.TP
+.I \-nhd, \-noheader
+Force Snes9x into thinking no ROM image header is present. See \-header
+above.
+.TP
+.I \-l, \-layering
+Swap background layer priorities from background involved in sub-screen
+addition/subtraction. Can improve some games play-ability - no need to
+constantly toggle background layers on and off to read text/see maps,
+etc. Toggle feature on and off during game by pressing '8'.
+Not used if transparency effects are enabled.
+.TP
+.I \-nl, \-nolayering
+Swap background layer priorities from background involved in sub-screen
+addition/subtraction. Can improve some games play-ability - no need to
+constantly toggle background layers on and off to read text/see maps,
+etc. Toggle feature on and off during game by pressing '8'.
+Not used if transparency effects are enabled.
+.TP
+.I \-tr, \-transparency
+Enable transparency effects, also enables 16-bit screen mode selection.
+Transparency effects are automatically enabled if the depth of your X
+server is 15 or greater.
+.TP
+.I \-nt, \-notransparency
+Disable transparency effects.
+.TP
+.I \-hi, \-hires
+Enable support for SNES hi-res. and interlace modes. USE ONLY IF GAME
+REQUIRES IT (FEW DO) BECAUSE IT REALLY SLOWS DOWN THE EMULATOR. The window
+size will be doubled.
+.TP
+.I \-y, \-interpolate
+Enables 'TV mode', hires support, 16-bit internal rendering and
+transparency effects. TV mode scales the SNES image by x2 by inserting an
+extra blended pixel between each SNES pixel and 80% brightness 'scan-lines'
+between each horizontal line. The result looks very nice but needs a fast
+machine. Use with the full-screen X mode and a 15 or 16 depth X server,
+or the SVGA port for fastest operation.
+.TP
+.I \-sc, \-scale
+Stretch the SNES display to fit the whole of the computer display.
+Linux X Window System full-screen mode or SVGA port only. Use only if you
+have a very fast machine.
+.TP
+.I \-16, \-sixteen
+Enable 16-bit internal screen rendering, allows palette changes but no
+transparency effects.
+.TP
+.I \-dfr, \-displayframerate
+Displays the current framerate in the left bottom corner.
+.TP
+.I \-s, \-sw, \-swapjoypads
+Swaps the both joypads.
+.TP
+.I \-i, \-interleaved
+Force interleaved ROM image format.
+.TP
+.I \-i2, \-interleaved2
+Force alternate interleaved format (i.e. most Super FX games).
+.TP
+.I \-ni, \-nointerleaved
+Force non interleaved ROM image format.
+.TP
+.I \-noirq
+Disables IRQs. Ignores SNES' IRQs. Do not use it. It is implemented mainly
+for debugging.
+.TP
+.I \-nw, \-nowindows
+Disable graphics windows emulation. Use 'backspace' key during a game to
+toggle the emulation on and off.
+.TP
+.I \-windows
+Enable graphics windows emulation. Use 'backspace' key during a game to
+toggle the emulation on and off. (Default)
+.TP
+.I \-gg <code>, \-gamegenie <code>
+Supply a Game Genie code for the current ROM. Up to 10 codes can be in
+affect at once. Game Genie codes for many SNES games are available from:
+.B http://game-genie.nvc.cc.ca.us
+.TP
+.I \-ar <code>, \-actionreplay <code>
+Supply a Pro-Action Reply code for the current ROM. Up to 10 codes can be in
+affect at once. At the moment, codes which alter RAM do not work.
+.TP
+.I \-gf <code>, \-goldfinger <code>
+Supply a Gold Finger code for the current ROM. Up to 10 codes can be in
+affect at once.
+.TP
+.I \-ft <time_in_ms>, \-frametime <time_in_ms>
+If auto-adjust frame skip option is in effect, then the emulator will try
+to maintain a constant game and music speed locked to this value by skipping
+the rendering of some frames or waiting until the required time is reached.
+Increase the value to slow down games, decrease it to speed up games.
+During a game the value can be adjusted in millisecond steps by
+Pressing Shift '-' or Shift '+'. Default: 16.6ms NTSC games and
+20ms for PAL games
+.TP
+.I \-e, \-echo
+Turn on sound echo and FIR filter effects. Processing these effects can
+really slow down a non-MMX Pentium machine due to the number of calculations
+required to implement these features. (Default)
+.TP
+.I \-ne, \-noecho
+Turn off sound echo and FIR filter effects. Processing these effects can
+really slow down a non-MMX Pentium machine due to the number of calculations
+required to implement these features.
+.TP
+.I \-r <0-7>, \-sq <0-7>, \-soundquality <0-7>
+Sound playback rate/quality:
+.nf
+0 	disable sound
+1  	8192
+2  	11025
+3  	16500
+4  	22050 (default)
+5 	29300
+6  	36600
+7  	44000
+.fi
+.TP
+.I \-st, \-stereo
+Enable stereo sound output.
+.TP
+.I \-mono
+Enable mono sound output. Faster, but doesn't sound as nice.
+.TP
+.I \-ex, \-envx
+Enable volume envelope height reading by the sound CPU. Can cure sound
+repeat problems with some games (e.g. Mortal Kombat series), while causing
+others to lock if enabled (eg. Bomberman series).
+.TP
+.I \-nc, \-nsc, \-nosamplecaching
+Disable decompressed sound sample caching. Decompressing samples takes time,
+slowing down the emulator. Normally the decompressed samples are saved just
+in case they need to be played again, but the way samples are stored and
+played on the SNES, it can result in a click sound or distortion when
+caching samples with loops in them.
+.TP
+.I \-nmv, \-nomastervolume
+Disable emulation of the sound DSP master volume control. Some ROMs set
+the volume level very low requiring you to turn up the volume level of
+your speakers introducing more background noise. Use this option to
+always have the master volume set on full and to by-pass a bug which
+prevents the music and sound effects being heard on Turrican.
+.TP
+.I \-sy, \-soundsync
+Uses another method to sync the game and the actual sound.
+.TP
+.I \-sy2, \-soundsync2
+Uses yet another method to sync the game and the actual sound.
+.TP
+.I \-is, \-interpolatedsound
+Enable sound interpolation.
+.TP
+.I \-ts, \-threadsound
+If this option is given, snes9x uses generates another thread, which
+handles the sound.
+.TP
+.I \-alt, \-altsampledecode
+If given, Snes9x uses an alternative method to decode the sound.
+.TP
+.I \-nosfx, \-nosuperfx
+Forces snes9x to disable SuperFX emulation.
+By default snes9x autodetectes if it is needed.
+.TP
+.I \-sfx, \-superfx
+Forces snes9x to enable SuperFX emulation.
+By default snes9x autodetectes if it is needed.
+.TP
+.I \-nodsp1
+Forces snes9x to disable DSP1 emulation.
+By default snes9x autodetectes if it is needed.
+.TP
+.I \-dsp1
+Forces snes9x to enable DSP1 emulation.
+By default snes9x autodetectes if it is needed.
+.TP
+.I \-nmp, \-nomultiplayer5
+Disables Multiplayer TAP Support.
+.TP
+.I \-mp, \-multiplayer5
+Enables Multiplayer TAP Support.
+.TP
+.I \-nm, \-nomouse
+Disable mouse emulation.
+.TP
+.I \-mo, \-mouse
+Enable mouse emulation.
+.TP
+.I \-nss, \-nosuperscope
+Disable SuperScope emulation.
+.TP
+.I \-ss, \-superscope
+Enable SuperScope emulation.
+.TP
+.I \-po <port>, \-port <port>
+Specify what port to connect to.
+Default: 6096
+.TP
+.I \-srv <hostname>, \-server <hostname>
+Name of the s9xserver to connect to.
+.TP
+.I \-net
+Enable Netplay.
+.TP
+.I \-l <freezegame>, \-loadsnapshot <freezegame>
+Load snapshot file and restart game from saved position.
+.TP
+.I \-nojoy
+Disable joystick support.
+.TP
+.I \-joydev1 <device>
+Supply device for joypad number 1.
+.TP
+.I \-joydev2 <device>
+Supply device for joypad number 2.
+.TP
+.I \-joydev3 <device>
+Supply device for joypad number 3.
+.TP
+.I \-joydev4 <device>
+Supply device for joypad number 4.
+.TP
+.I \-joymap1 <8 numbers>
+You can assign the buttons by giving eight number from 0 to 7. Default Map
+is: 0 1 2 3 4 5 6 7, which corresponds to A B X Y TL TR Start Select.
+.TP
+.I \-joymap2 <8 numbers>
+You can assign the buttons by giving eight number from 0 to 7. Default Map
+is: 0 1 2 3 4 5 6 7, which corresponds to A B X Y TL TR Start Select.
+.TP
+.I \-joymap3 <8 numbers>
+You can assign the buttons by giving eight number from 0 to 7. Default Map
+is: 0 1 2 3 4 5 6 7, which corresponds to A B X Y TL TR Start Select.
+.TP
+.I \-joymap4 <8 numbers>
+You can assign the buttons by giving eight number from 0 to 7. Default Map
+is: 0 1 2 3 4 5 6 7, which corresponds to A B X Y TL TR Start Select.
+.TP
+.I \-nms, \-nomodeswitch
+The Linux X Windows System port can change the screen resolution when
+switching to full-screen mode so the SNES display fills the whole screen.
+Specify this option to stop it if causes you problems.
+.TP
+.I \-fs, \-fullscreen
+Starts up Snes9x in Fullscreen, if possible.
+.TP
+.I \-b size, \-bs size, \-buffersize size
+Sound playback buffer size in bytes 128-4096.
+.TP
+.I \-keymap <keymap.ctl>
+Use another keymap. Snes9x tries to load various keymaps, if no parameter is 
+given: /path/to/rom/romname.ctl (if you used a zip file, it looks inside),
+~/.snes96_snapshots/romname.ctl, /path/to/rom/snes9x.ctl,
+~/.snes96_snapshots/snes9x.ctl and if it still hasn't found one
+/usr/share/snes9x/snes9x.ctl.
+.SH SEE ALSO
+.BR gsnes9x (1),
+.BR osnes9x (1),
+.BR ssnes9x (1),
+.\".BR s9xserver (1)
+.SH AUTHOR
+Snes9x was written by Gary Henderson and Jerremy Koot. It also includes code
+from Ivar (Ivar@snes9x.com), zsKnight and _Demo_ and many others.
+This manual page was written by Stephen Crowley <crow@debian.org>,
+for the Debian GNU/Linux system (but may be used by others). It has been
+brought up to date by Alain Schroeder <alain@debian.org>.
+
