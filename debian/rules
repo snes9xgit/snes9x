@@ -6,7 +6,7 @@
 override_dh_auto_configure:
 	dh_auto_configure --sourcedirectory=unix -- --enable-netplay
 	cd gtk && ./autogen.sh
-	dh_auto_configure --sourcedirectory=gtk -- --bindir=/usr/games --with-gtk3
+	dh_auto_configure --sourcedirectory=gtk -- --bindir=/usr/games --with-gtk3 --with-netplay
 
 override_dh_auto_build:
 	dh_auto_build --sourcedirectory=unix
