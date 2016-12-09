@@ -197,8 +197,6 @@
 #include <fstream>
 #include <sys/stat.h>
 
-#define APU_DEFAULT_INPUT_RATE		32000
-
 std::ifstream dataFile, audioFile;
 uint32 audioLoopPos;
 uint32 partial_samples;
@@ -294,9 +292,9 @@ bool S9xMSU1ROMExists(void)
 
 void S9xMSU1Generate(int sample_count)
 {
-	partial_samples += 441000 * sample_count;
+	partial_samples += 44100 * sample_count;
 
-	while (((uintptr_t)bufPos < (uintptr_t)bufEnd) && (MSU1.MSU1_STATUS & AudioPlaying) && partial_samples > 320405)
+	while (((uintptr_t)bufPos < (uintptr_t)bufEnd) && (MSU1.MSU1_STATUS & AudioPlaying) && partial_samples > 32040)
 	{
 		if (audioFile.is_open())
 		{
@@ -307,7 +305,7 @@ void S9xMSU1Generate(int sample_count)
 
 				*(bufPos++) = sample;
 				MSU1.MSU1_AUDIO_POS += 2;
-				partial_samples -= 320405;
+				partial_samples -= 32040;
 			}
 			else
 			if (audioFile.eof())
@@ -316,7 +314,7 @@ void S9xMSU1Generate(int sample_count)
 
 				*(bufPos++) = sample;
 				MSU1.MSU1_AUDIO_POS += 2;
-				partial_samples -= 320405;
+				partial_samples -= 32040;
 
 				if (MSU1.MSU1_STATUS & AudioRepeating)
 				{
