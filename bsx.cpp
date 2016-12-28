@@ -981,10 +981,10 @@ uint8 S9xBSXGetRTC (void)
 	BSX.test2192[10] = BSX_RTC.seconds = tmr->tm_sec;
 	BSX.test2192[11] = BSX_RTC.minutes = tmr->tm_min;
 	BSX.test2192[12] = BSX_RTC.hours = tmr->tm_hour;
-	BSX.test2192[13] = BSX_RTC.dayweek = (tmr->tm_wday)++;
+	BSX.test2192[13] = BSX_RTC.dayweek = (tmr->tm_wday) + 1;
 	BSX.test2192[14] = BSX_RTC.day = tmr->tm_mday;
-	BSX.test2192[15] = BSX_RTC.month = (tmr->tm_mon)++;
-	BSX_RTC.year = tmr->tm_year;
+	BSX.test2192[15] = BSX_RTC.month = (tmr->tm_mon) + 1;
+	BSX_RTC.year = tmr->tm_year + 1900;
 	BSX.test2192[16] = (BSX_RTC.year) & 0xFF;
 	BSX.test2192[17] = (BSX_RTC.year) >> 8;
 
