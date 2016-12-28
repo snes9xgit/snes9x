@@ -394,6 +394,7 @@ struct sGUI {
     TCHAR SRAMFileDir [_MAX_PATH];
     TCHAR PatchDir [_MAX_PATH];
     TCHAR BiosDir [_MAX_PATH];
+	TCHAR SatDir [_MAX_PATH];
 	bool LockDirectories;
 
     TCHAR RecentGames [MAX_RECENT_GAMES_LIST_SIZE][MAX_PATH];

@@ -353,6 +353,10 @@ const TCHAR *S9xGetDirectoryT (enum s9x_getdirtype dirtype)
 		  rv = GUI.FreezeFileDir;
 		  break;
 
+	  case SAT_DIR:
+		  rv = GUI.SatDir;
+		  break;
+
 	  case ROMFILENAME_DIR: {
 			static TCHAR filename [PATH_MAX];
 			lstrcpy(filename, _tFromChar(Memory.ROMFilename));
