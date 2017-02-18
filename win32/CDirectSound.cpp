@@ -314,7 +314,8 @@ bool CDirectSound::InitSoundBuffer()
 	blockCount = 4;
 	blockTime = GUI.SoundBufferSize / blockCount;
 
-	blockSamples = (Settings.SoundPlaybackRate * blockTime * (Settings.Stereo ? 2 : 1)) / 1000;
+	blockSamples = (Settings.SoundPlaybackRate * blockTime) / 1000;
+    blockSamples *= (Settings.Stereo ? 2 : 1);
 	blockSize = blockSamples * (Settings.SixteenBitSound ? 2 : 1);
 	bufferSize = blockSize * blockCount;
 

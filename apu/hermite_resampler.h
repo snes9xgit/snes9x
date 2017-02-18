@@ -4,6 +4,7 @@
 #define __HERMITE_RESAMPLER_H
 
 #include "resampler.h"
+#include <assert.h>
 
 #undef CLAMP
 #undef SHORT_CLAMP
@@ -66,6 +67,7 @@ class HermiteResampler : public Resampler
         void
         read (short *data, int num_samples)
         {
+            assert((num_samples & 1) == 0); // resampler always processes both stereo samples
             int i_position = start >> 1;
             int max_samples = buffer_size >> 1;
             short *internal_buffer = (short *) buffer;

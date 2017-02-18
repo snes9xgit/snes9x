@@ -157,6 +157,9 @@
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
+  MSU-1 code
+  (c) Copyright 2016         qwertymodo
+
 
   Specific ports contains the works of other authors. See headers in
   individual files.
@@ -187,191 +190,301 @@
   Nintendo Co., Limited and its subsidiary companies.
  ***********************************************************************************/
 
+#include "snes9x.h"
+#include "display.h"
+#include "msu1.h"
+#include "apu/bapu/dsp/blargg_endian.h"
+#include <fstream>
+#include <sys/stat.h>
 
-#ifndef _PORT_H_
-#define _PORT_H_
+std::ifstream dataFile, audioFile;
+uint32 audioLoopPos;
+uint32 partial_samples;
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <limits.h>
-#ifndef __LIBRETRO__
-#include <memory.h>
-#endif
-#include <time.h>
-#include <string.h>
-#ifdef HAVE_STRINGS_H
-#include <strings.h>
-#endif
-#include <sys/types.h>
+// Sample buffer
+int16 *bufPos, *bufBegin, *bufEnd;
 
-#ifdef __WIN32__
-#define NOMINMAX
-#include <windows.h>
-#endif
+bool AudioOpen()
+{
+	MSU1.MSU1_STATUS |= AudioError;
 
-#define GFX_MULTI_FORMAT
+	if (audioFile.is_open())
+		audioFile.close();
 
-#ifdef __WIN32__
-//#define RIGHTSHIFT_IS_SAR
-#define RIGHTSHIFT_int8_IS_SAR
-#define RIGHTSHIFT_int16_IS_SAR
-#define RIGHTSHIFT_int32_IS_SAR
-#ifndef __WIN32_LIBSNES__
-#define SNES_JOY_READ_CALLBACKS
-#endif //__WIN32_LIBSNES__
-#endif
+	char ext[_MAX_EXT];
+	snprintf(ext, _MAX_EXT, "-%d.pcm", MSU1.MSU1_CURRENT_TRACK);
 
-#ifdef __MACOSX__
-#undef GFX_MULTI_FORMAT
-#define PIXEL_FORMAT RGB555
-#endif
+	audioFile.clear();
+	audioFile.open(S9xGetFilename(ext, ROMFILENAME_DIR), std::ios::in | std::ios::binary);
+	if (audioFile.good())
+	{
+		if (audioFile.get() != 'M')
+			return false;
+		if (audioFile.get() != 'S')
+			return false;
+		if (audioFile.get() != 'U')
+			return false;
+		if (audioFile.get() != '1')
+			return false;
 
-#ifndef snes9x_types_defined
-#define snes9x_types_defined
-typedef unsigned char		bool8;
-#ifdef HAVE_STDINT_H
-#include <stdint.h>
-typedef intptr_t			pint;
-typedef int8_t				int8;
-typedef uint8_t				uint8;
-typedef int16_t				int16;
-typedef uint16_t			uint16;
-typedef int32_t				int32;
-typedef uint32_t			uint32;
-typedef int64_t				int64;
-typedef uint64_t			uint64;
-#else	// HAVE_STDINT_H
-#ifdef __WIN32__
-typedef intptr_t			pint;
-typedef signed char			int8;
-typedef unsigned char		uint8;
-typedef signed short		int16;
-typedef unsigned short		uint16;
-typedef signed int     		int32;
-typedef unsigned int		uint32;
-typedef signed __int64		int64;
-typedef unsigned __int64	uint64;
-typedef int8                int8_t;
-typedef uint8       		uint8_t;
-typedef int16       		int16_t;
-typedef uint16      		uint16_t;
-typedef int32		    	int32_t;
-typedef uint32      		uint32_t;
-typedef int64               int64_t;
-typedef uint64              uint64_t;
-typedef int					socklen_t;
-#else	// __WIN32__
-typedef signed char			int8;
-typedef unsigned char		uint8;
-typedef signed short		int16;
-typedef unsigned short		uint16;
-typedef signed int			int32;
-typedef unsigned int		uint32;
-#ifdef __GNUC__
-// long long is not part of ISO C++ 
-__extension__
-#endif
-typedef long long			int64;
-typedef unsigned long long	uint64;
-#ifdef PTR_NOT_INT
-typedef long				pint;
-#else   // __PTR_NOT_INT
-typedef int					pint;
-#endif  // __PTR_NOT_INT
-#endif	//  __WIN32__
-#endif	// HAVE_STDINT_H
-#endif	// snes9x_types_defined
+		audioFile.read((char *)&audioLoopPos, 4);
+		audioLoopPos = GET_LE32(&audioLoopPos);
+		audioLoopPos <<= 2;
+		audioLoopPos += 8;
 
-#ifndef TRUE
-#define TRUE	1
-#endif
-#ifndef FALSE
-#define FALSE	0
-#endif
+		MSU1.MSU1_STATUS &= ~AudioError;
+		return true;
+	}
 
-#define START_EXTERN_C	extern "C" {
-#define END_EXTERN_C	}
+	return false;
+}
 
-#ifndef __WIN32__
-#ifndef PATH_MAX
-#define PATH_MAX	1024
-#endif
-#define _MAX_DRIVE	1
-#define _MAX_DIR	PATH_MAX
-#define _MAX_FNAME	PATH_MAX
-#define _MAX_EXT	PATH_MAX
-#define _MAX_PATH	PATH_MAX
-#else
-#ifndef PATH_MAX
-#define PATH_MAX	_MAX_PATH
-#endif
-#endif
+bool DataOpen()
+{
+	if (dataFile.is_open())
+		dataFile.close();
 
-#ifndef __WIN32__
-void _splitpath (const char *, char *, char *, char *, char *);
-void _makepath (char *, const char *, const char *, const char *, const char *);
-#define S9xDisplayString	DisplayStringFromBottom
-#else   // __WIN32__
-#define snprintf _snprintf
-#define strcasecmp	stricmp
-#define strncasecmp	strnicmp
-#ifndef __WIN32_LIBSNES__
-void WinDisplayStringFromBottom(const char *string, int linesFromBottom, int pixelsFromLeft, bool allowWrap);
-#define S9xDisplayString	WinDisplayStringFromBottom
-void SetInfoDlgColor(unsigned char, unsigned char, unsigned char);
-#define SET_UI_COLOR(r,g,b) SetInfoDlgColor(r,g,b)
-#else   // __WIN32_LIBSNES__
-#define S9xDisplayString	DisplayStringFromBottom
-#endif  // __WIN32_LIBSNES__
-#endif  // __WIN32__
+	dataFile.clear();
+	dataFile.open(S9xGetFilename(".msu", ROMFILENAME_DIR), std::ios::in | std::ios::binary);
+	return dataFile.is_open();
+}
 
-#if defined(__DJGPP) || defined(__WIN32__)
-#define SLASH_STR	"\\"
-#define SLASH_CHAR	'\\'
-#else
-#define SLASH_STR	"/"
-#define SLASH_CHAR	'/'
-#endif
+void S9xResetMSU(void)
+{
+	MSU1.MSU1_STATUS		= 0;
+	MSU1.MSU1_DATA_SEEK		= 0;
+	MSU1.MSU1_DATA_POS		= 0;
+	MSU1.MSU1_TRACK_SEEK	= 0;
+	MSU1.MSU1_CURRENT_TRACK = 0;
+	MSU1.MSU1_RESUME_TRACK	= 0;
+	MSU1.MSU1_VOLUME		= 0;
+	MSU1.MSU1_CONTROL		= 0;
+	MSU1.MSU1_AUDIO_POS		= 0;
+	MSU1.MSU1_RESUME_POS	= 0;
 
-#ifndef SIG_PF
-#define SIG_PF	void (*) (int)
-#endif
 
-#ifdef __linux
-#define TITLE "Snes9x: Linux"
-#define SYS_CONFIG_FILE "/etc/snes9x/snes9x.conf"
-#endif
+	bufPos				= 0;
+	bufBegin			= 0;
+	bufEnd				= 0;
 
-#ifndef TITLE
-#define TITLE "Snes9x"
-#endif
+	partial_samples = 0;
 
-#if defined(__i386__) || defined(__i486__) || defined(__i586__) || defined(__i686__) || defined(__x86_64__) || defined(__alpha__) || defined(__MIPSEL__) || defined(_M_IX86) || defined(_M_X64) || defined(_XBOX1) || defined(ARM) || defined(ANDROID)
-#define LSB_FIRST
-#define FAST_LSB_WORD_ACCESS
-#else
-#define MSB_FIRST
-#endif
+	if (dataFile.is_open())
+		dataFile.close();
 
-#ifdef FAST_LSB_WORD_ACCESS
-#define READ_WORD(s)		(*(uint16 *) (s))
-#define READ_3WORD(s)		(*(uint32 *) (s) & 0x00ffffff)
-#define READ_DWORD(s)		(*(uint32 *) (s))
-#define WRITE_WORD(s, d)	*(uint16 *) (s) = (d)
-#define WRITE_3WORD(s, d)	*(uint16 *) (s) = (uint16) (d), *((uint8 *) (s) + 2) = (uint8) ((d) >> 16)
-#define WRITE_DWORD(s, d)	*(uint32 *) (s) = (d)
-#else
-#define READ_WORD(s)		(*(uint8 *) (s) | (*((uint8 *) (s) + 1) << 8))
-#define READ_3WORD(s)		(*(uint8 *) (s) | (*((uint8 *) (s) + 1) << 8) | (*((uint8 *) (s) + 2) << 16))
-#define READ_DWORD(s)		(*(uint8 *) (s) | (*((uint8 *) (s) + 1) << 8) | (*((uint8 *) (s) + 2) << 16) | (*((uint8 *) (s) + 3) << 24))
-#define WRITE_WORD(s, d)	*(uint8 *) (s) = (uint8) (d), *((uint8 *) (s) + 1) = (uint8) ((d) >> 8)
-#define WRITE_3WORD(s, d)	*(uint8 *) (s) = (uint8) (d), *((uint8 *) (s) + 1) = (uint8) ((d) >> 8), *((uint8 *) (s) + 2) = (uint8) ((d) >> 16)
-#define WRITE_DWORD(s, d)	*(uint8 *) (s) = (uint8) (d), *((uint8 *) (s) + 1) = (uint8) ((d) >> 8), *((uint8 *) (s) + 2) = (uint8) ((d) >> 16), *((uint8 *) (s) + 3) = (uint8) ((d) >> 24)
-#endif
+	if (audioFile.is_open())
+		audioFile.close();
 
-#define SWAP_WORD(s)		(s) = (((s) & 0xff) <<  8) | (((s) & 0xff00) >> 8)
-#define SWAP_DWORD(s)		(s) = (((s) & 0xff) << 24) | (((s) & 0xff00) << 8) | (((s) & 0xff0000) >> 8) | (((s) & 0xff000000) >> 24)
+	Settings.MSU1 = S9xMSU1ROMExists();
+}
 
-#include "pixform.h"
+void S9xMSU1Init(void)
+{
+	S9xResetMSU();
+	DataOpen();
+}
 
-#endif
+bool S9xMSU1ROMExists(void)
+{
+	struct stat buf;
+	return (stat(S9xGetFilename(".msu", ROMFILENAME_DIR), &buf) == 0);
+}
+
+void S9xMSU1Generate(int sample_count)
+{
+	partial_samples += 44100 * sample_count;
+
+	while (((uintptr_t)bufPos < (uintptr_t)bufEnd) && (MSU1.MSU1_STATUS & AudioPlaying) && partial_samples > 32040)
+	{
+		if (audioFile.is_open())
+		{
+			int16 sample;
+			if (audioFile.read((char *)&sample, 2).good())
+			{
+				sample = (int16)((double)(int16)GET_LE16(&sample) * (double)MSU1.MSU1_VOLUME / 255.0);
+
+				*(bufPos++) = sample;
+				MSU1.MSU1_AUDIO_POS += 2;
+				partial_samples -= 32040;
+			}
+			else
+			if (audioFile.eof())
+			{
+				sample = (int16)((double)(int16)GET_LE16(&sample) * (double)MSU1.MSU1_VOLUME / 255.0);
+
+				*(bufPos++) = sample;
+				MSU1.MSU1_AUDIO_POS += 2;
+				partial_samples -= 32040;
+
+				if (MSU1.MSU1_STATUS & AudioRepeating)
+				{
+					audioFile.clear();
+					MSU1.MSU1_AUDIO_POS = audioLoopPos;
+					audioFile.seekg(MSU1.MSU1_AUDIO_POS);
+				}
+				else
+				{
+					MSU1.MSU1_STATUS &= ~(AudioPlaying | AudioRepeating);
+					audioFile.clear();
+					audioFile.seekg(8);
+					return;
+				}
+			}
+			else
+			{
+				MSU1.MSU1_STATUS &= ~(AudioPlaying | AudioRepeating);
+				return;
+			}
+		}
+		else
+		{
+			MSU1.MSU1_STATUS &= ~(AudioPlaying | AudioRepeating);
+			return;
+		}
+	}
+}
+
+
+uint8 S9xMSU1ReadPort(int port)
+{
+	switch (port)
+	{
+	case 0:
+		return MSU1.MSU1_STATUS;
+	case 1:
+		if (MSU1.MSU1_STATUS & DataBusy)
+			return 0;
+		if (dataFile.fail() || dataFile.bad() || dataFile.eof())
+			return 0;
+		MSU1.MSU1_DATA_POS++;
+		return dataFile.get();
+	case 2:
+		return 'S';
+	case 3:
+		return '-';
+	case 4:
+		return 'M';
+	case 5:
+		return 'S';
+	case 6:
+		return 'U';
+	case 7:
+		return '1';
+	}
+
+	return 0;
+}
+
+
+void S9xMSU1WritePort(int port, uint8 byte)
+{
+	switch (port)
+	{
+	case 0:
+		MSU1.MSU1_DATA_SEEK &= 0xFFFFFF00;
+		MSU1.MSU1_DATA_SEEK |= byte << 0;
+		break;
+	case 1:
+		MSU1.MSU1_DATA_SEEK &= 0xFFFF00FF;
+		MSU1.MSU1_DATA_SEEK |= byte << 8;
+		break;
+	case 2:
+		MSU1.MSU1_DATA_SEEK &= 0xFF00FFFF;
+		MSU1.MSU1_DATA_SEEK |= byte << 16;
+		break;
+	case 3:
+		MSU1.MSU1_DATA_SEEK &= 0x00FFFFFF;
+		MSU1.MSU1_DATA_SEEK |= byte << 24;
+		MSU1.MSU1_DATA_POS = MSU1.MSU1_DATA_SEEK;
+		if(dataFile.good())
+			dataFile.seekg(MSU1.MSU1_DATA_POS);
+		break;
+	case 4:
+		MSU1.MSU1_TRACK_SEEK &= 0xFF00;
+		MSU1.MSU1_TRACK_SEEK |= byte;
+		break;
+	case 5:
+		MSU1.MSU1_TRACK_SEEK &= 0x00FF;
+		MSU1.MSU1_TRACK_SEEK |= (byte << 8);
+		MSU1.MSU1_CURRENT_TRACK = MSU1.MSU1_TRACK_SEEK;
+
+		MSU1.MSU1_STATUS &= ~AudioPlaying;
+		MSU1.MSU1_STATUS &= ~AudioRepeating;
+
+		if (AudioOpen())
+		{
+			if (MSU1.MSU1_CURRENT_TRACK == MSU1.MSU1_RESUME_TRACK)
+			{
+				MSU1.MSU1_AUDIO_POS = MSU1.MSU1_RESUME_POS;
+				MSU1.MSU1_RESUME_POS = 0;
+				MSU1.MSU1_RESUME_TRACK = ~0;
+			}
+			else
+			{
+				MSU1.MSU1_AUDIO_POS = 8;
+			}
+
+			audioFile.seekg(MSU1.MSU1_AUDIO_POS);
+		}
+		break;
+	case 6:
+		MSU1.MSU1_VOLUME = byte;
+		break;
+	case 7:
+		if (MSU1.MSU1_STATUS & (AudioBusy | AudioError))
+			break;
+
+		MSU1.MSU1_STATUS = (MSU1.MSU1_STATUS & ~0x30) | ((byte & 0x03) << 4);
+
+		if ((byte & (Play | Resume)) == Resume)
+		{
+			MSU1.MSU1_RESUME_TRACK = MSU1.MSU1_CURRENT_TRACK;
+			MSU1.MSU1_RESUME_POS = MSU1.MSU1_AUDIO_POS;
+		}
+		break;
+	}
+}
+
+uint16 S9xMSU1Samples(void)
+{
+	return bufPos - bufBegin;
+}
+
+void S9xMSU1SetOutput(int16 * out, int size)
+{
+	bufPos = bufBegin = out;
+	bufEnd = out + size;
+}
+
+void S9xMSU1PostLoadState(void)
+{
+	if (DataOpen())
+	{
+		dataFile.seekg(MSU1.MSU1_DATA_POS);
+	}
+
+	if (MSU1.MSU1_STATUS & AudioPlaying)
+	{
+		if (AudioOpen())
+		{
+			audioFile.seekg(4);
+			audioFile.read((char *)&audioLoopPos, 4);
+			audioLoopPos = GET_LE32(&audioLoopPos);
+			audioLoopPos <<= 2;
+			audioLoopPos += 8;
+
+			audioFile.seekg(MSU1.MSU1_AUDIO_POS);
+		}
+		else
+		{
+			MSU1.MSU1_STATUS &= ~(AudioPlaying | AudioRepeating);
+			MSU1.MSU1_STATUS |= AudioError;
+		}
+	}
+
+	bufPos = 0;
+	bufBegin = 0;
+	bufEnd = 0;
+
+	partial_samples = 0;
+}

@@ -716,14 +716,15 @@ IDB_HIDDENFOLDER        BITMAP                  "hiddir.bmp"
 // remains consistent on all systems.
 IDI_ICON1               ICON                    "icon1.ico"
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,5,3,0
- PRODUCTVERSION 1,5,3,0
+ FILEVERSION 1,5,4,1
+ PRODUCTVERSION 1,5,4,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -822,6 +823,7 @@ BEGIN
             MENUITEM "S&ave SPC Data",              ID_FILE_SAVE_SPC_DATA
             MENUITEM "Save Screenshot",             ID_SAVESCREENSHOT
             MENUITEM "Sa&ve S-RAM Data",            ID_FILE_SAVE_SRAM_DATA
+	        MENUITEM "Save Memory Pack",            ID_SAVEMEMPACK
         END
         MENUITEM "ROM Information...",          IDM_ROM_INFO
         MENUITEM SEPARATOR

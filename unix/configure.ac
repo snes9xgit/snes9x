@@ -201,16 +201,43 @@ AC_ARG_ENABLE([zip],
 		[enable ZIP support through zlib (default: yes)])],
 	[], [enable_zip="yes"])
 
+S9X_SYSTEM_ZIP="#SYSTEM_ZIP=1"
+
+AC_ARG_WITH([system-zip],
+	[AS_HELP_STRING([--with-system-zip],
+		[Use system zip (default: check)])],
+	[], [with_system_zip="check"])
+
 if test "x$enable_zip" = "xyes"; then
-	if test "x$snes9x_cv_zlib" = "xyes"; then
-		S9XZIP="S9XZIP=1"
-		S9XDEFS="$S9XDEFS -DUNZIP_SUPPORT"
-		if test "x$enable_gzip" = "xno"; then 
-			S9XLIBS="$S9XLIBS -lz"
-		fi
+	if test "x$with_system_zip" != "xno"; then
+		PKG_CHECK_MODULES(
+			SYSTEM_ZIP,
+			minizip,
+			S9XZIP="S9XZIP=1"
+			S9XDEFS="$S9XDEFS -DUNZIP_SUPPORT"
+			S9X_SYSTEM_ZIP="SYSTEM_ZIP=1"
+			S9XLIBS="$S9XLIBS $SYSTEM_ZIP_LIBS"
+			if test "x$enable_gzip" = "xno"; then
+				S9XLIBS="$S9XLIBS -lz"
+			fi
+			S9XDEFS="$S9XDEFS -DSYSTEM_ZIP",
+			if test "x${with_system_zip}" != "xcheck"; then
+				AC_MSG_ERROR([--with-system-zip requested but no proper minizip lib found.])
+			else
+				AC_MSG_WARN([minizip not found. Build without SYSTEM_ZIP support.])
+			fi
+		)
 	else
-		AC_MSG_WARN([zlib not found. Build without ZIP support.])
-		enable_zip="no"
+		if test "x$snes9x_cv_zlib" = "xyes"; then
+			S9XZIP="S9XZIP=1"
+			S9XDEFS="$S9XDEFS -DUNZIP_SUPPORT"
+			if test "x$enable_gzip" = "xno"; then
+				S9XLIBS="$S9XLIBS -lz"
+			fi
+		else
+			AC_MSG_WARN([zlib not found. Build without ZIP support.])
+			enable_zip="no"
+		fi
 	fi
 fi
 
@@ -427,9 +454,11 @@ S9XLIBS="$LIBS $S9XLIBS"
 S9XFLGS="`echo \"$S9XFLGS\" | sed -e 's/  */ /g'`"
 S9XDEFS="`echo \"$S9XDEFS\" | sed -e 's/  */ /g'`"
 S9XLIBS="`echo \"$S9XLIBS\" | sed -e 's/  */ /g'`"
+S9X_SYSTEM_ZIP="`echo \"$S9X_SYSTEM_ZIP\" | sed -e 's/  */ /g'`"
 S9XFLGS="`echo \"$S9XFLGS\" | sed -e 's/^  *//'`"
 S9XDEFS="`echo \"$S9XDEFS\" | sed -e 's/^  *//'`"
 S9XLIBS="`echo \"$S9XLIBS\" | sed -e 's/^  *//'`"
+S9X_SYSTEM_ZIP="`echo \"$S9X_SYSTEM_ZIP\" | sed -e 's/^  *//'`"
 
 AC_SUBST(S9XFLGS)
 AC_SUBST(S9XDEFS)
@@ -439,6 +468,7 @@ AC_SUBST(S9XDEBUGGER)
 AC_SUBST(S9XNETPLAY)
 AC_SUBST(S9XZIP)
 AC_SUBST(S9XJMA)
+AC_SUBST(S9X_SYSTEM_ZIP)
 
 rm config.info 2>/dev/null
 
@@ -459,6 +489,7 @@ netplay support...... $enable_netplay
 gamepad support...... $enable_gamepad
 GZIP support......... $enable_gzip
 ZIP support.......... $enable_zip
+SYSTEM_ZIP........... $with_system_zip
 JMA support.......... $enable_jma
 debugger............. $enable_debugger
 

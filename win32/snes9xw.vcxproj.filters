@@ -243,6 +243,9 @@
     <ClInclude Include="dxerr.h">
       <Filter>GUI</Filter>
     </ClInclude>
+    <ClInclude Include="..\msu1.h">
+      <Filter>APU</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\bsx.cpp">
@@ -538,6 +541,9 @@
     </ClCompile>
     <ClCompile Include="dxerr.cpp">
       <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\msu1.cpp">
+      <Filter>APU</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

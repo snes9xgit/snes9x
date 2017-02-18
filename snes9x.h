@@ -377,6 +377,7 @@ struct SSettings
 	bool8	BS;
 	bool8	BSXItself;
 	bool8	BSXBootup;
+	bool8	MSU1;
 	bool8	MouseMaster;
 	bool8	SuperScopeMaster;
 	bool8	JustifierMaster;

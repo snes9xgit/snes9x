@@ -157,6 +157,9 @@
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
+  MSU-1 code
+  (c) Copyright 2016         qwertymodo
+
 
   Specific ports contains the works of other authors. See headers in
   individual files.
@@ -187,191 +190,50 @@
   Nintendo Co., Limited and its subsidiary companies.
  ***********************************************************************************/
 
+#ifndef _MSU1_H_
+#define _MSU1_H_
+#include "snes9x.h"
 
-#ifndef _PORT_H_
-#define _PORT_H_
+struct SMSU1
+{
+	uint8	MSU1_STATUS;
+	uint32	MSU1_DATA_SEEK;
+	uint32	MSU1_DATA_POS;
+	uint16	MSU1_TRACK_SEEK;
+	uint16	MSU1_CURRENT_TRACK;
+	uint32	MSU1_RESUME_TRACK;
+	uint8	MSU1_VOLUME;
+	uint8	MSU1_CONTROL;
+	uint32	MSU1_AUDIO_POS;
+	uint32	MSU1_RESUME_POS;
+};
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <limits.h>
-#ifndef __LIBRETRO__
-#include <memory.h>
-#endif
-#include <time.h>
-#include <string.h>
-#ifdef HAVE_STRINGS_H
-#include <strings.h>
-#endif
-#include <sys/types.h>
+enum SMSU1_FLAG {
+	Revision		= 0x02,	//max: 0x07
+	AudioResume		= 0x04,
+	AudioError		= 0x08,
+	AudioPlaying		= 0x10,
+	AudioRepeating		= 0x20,
+	AudioBusy		= 0x40,
+	DataBusy		= 0x80
+};
 
-#ifdef __WIN32__
-#define NOMINMAX
-#include <windows.h>
-#endif
+enum SMSU1_CMD {
+	Play			= 0x01,
+	Repeat			= 0x02,
+	Resume			= 0x04
+};
 
-#define GFX_MULTI_FORMAT
+extern struct SMSU1	MSU1;
 
-#ifdef __WIN32__
-//#define RIGHTSHIFT_IS_SAR
-#define RIGHTSHIFT_int8_IS_SAR
-#define RIGHTSHIFT_int16_IS_SAR
-#define RIGHTSHIFT_int32_IS_SAR
-#ifndef __WIN32_LIBSNES__
-#define SNES_JOY_READ_CALLBACKS
-#endif //__WIN32_LIBSNES__
-#endif
-
-#ifdef __MACOSX__
-#undef GFX_MULTI_FORMAT
-#define PIXEL_FORMAT RGB555
-#endif
-
-#ifndef snes9x_types_defined
-#define snes9x_types_defined
-typedef unsigned char		bool8;
-#ifdef HAVE_STDINT_H
-#include <stdint.h>
-typedef intptr_t			pint;
-typedef int8_t				int8;
-typedef uint8_t				uint8;
-typedef int16_t				int16;
-typedef uint16_t			uint16;
-typedef int32_t				int32;
-typedef uint32_t			uint32;
-typedef int64_t				int64;
-typedef uint64_t			uint64;
-#else	// HAVE_STDINT_H
-#ifdef __WIN32__
-typedef intptr_t			pint;
-typedef signed char			int8;
-typedef unsigned char		uint8;
-typedef signed short		int16;
-typedef unsigned short		uint16;
-typedef signed int     		int32;
-typedef unsigned int		uint32;
-typedef signed __int64		int64;
-typedef unsigned __int64	uint64;
-typedef int8                int8_t;
-typedef uint8       		uint8_t;
-typedef int16       		int16_t;
-typedef uint16      		uint16_t;
-typedef int32		    	int32_t;
-typedef uint32      		uint32_t;
-typedef int64               int64_t;
-typedef uint64              uint64_t;
-typedef int					socklen_t;
-#else	// __WIN32__
-typedef signed char			int8;
-typedef unsigned char		uint8;
-typedef signed short		int16;
-typedef unsigned short		uint16;
-typedef signed int			int32;
-typedef unsigned int		uint32;
-#ifdef __GNUC__
-// long long is not part of ISO C++ 
-__extension__
-#endif
-typedef long long			int64;
-typedef unsigned long long	uint64;
-#ifdef PTR_NOT_INT
-typedef long				pint;
-#else   // __PTR_NOT_INT
-typedef int					pint;
-#endif  // __PTR_NOT_INT
-#endif	//  __WIN32__
-#endif	// HAVE_STDINT_H
-#endif	// snes9x_types_defined
-
-#ifndef TRUE
-#define TRUE	1
-#endif
-#ifndef FALSE
-#define FALSE	0
-#endif
-
-#define START_EXTERN_C	extern "C" {
-#define END_EXTERN_C	}
-
-#ifndef __WIN32__
-#ifndef PATH_MAX
-#define PATH_MAX	1024
-#endif
-#define _MAX_DRIVE	1
-#define _MAX_DIR	PATH_MAX
-#define _MAX_FNAME	PATH_MAX
-#define _MAX_EXT	PATH_MAX
-#define _MAX_PATH	PATH_MAX
-#else
-#ifndef PATH_MAX
-#define PATH_MAX	_MAX_PATH
-#endif
-#endif
-
-#ifndef __WIN32__
-void _splitpath (const char *, char *, char *, char *, char *);
-void _makepath (char *, const char *, const char *, const char *, const char *);
-#define S9xDisplayString	DisplayStringFromBottom
-#else   // __WIN32__
-#define snprintf _snprintf
-#define strcasecmp	stricmp
-#define strncasecmp	strnicmp
-#ifndef __WIN32_LIBSNES__
-void WinDisplayStringFromBottom(const char *string, int linesFromBottom, int pixelsFromLeft, bool allowWrap);
-#define S9xDisplayString	WinDisplayStringFromBottom
-void SetInfoDlgColor(unsigned char, unsigned char, unsigned char);
-#define SET_UI_COLOR(r,g,b) SetInfoDlgColor(r,g,b)
-#else   // __WIN32_LIBSNES__
-#define S9xDisplayString	DisplayStringFromBottom
-#endif  // __WIN32_LIBSNES__
-#endif  // __WIN32__
-
-#if defined(__DJGPP) || defined(__WIN32__)
-#define SLASH_STR	"\\"
-#define SLASH_CHAR	'\\'
-#else
-#define SLASH_STR	"/"
-#define SLASH_CHAR	'/'
-#endif
-
-#ifndef SIG_PF
-#define SIG_PF	void (*) (int)
-#endif
-
-#ifdef __linux
-#define TITLE "Snes9x: Linux"
-#define SYS_CONFIG_FILE "/etc/snes9x/snes9x.conf"
-#endif
-
-#ifndef TITLE
-#define TITLE "Snes9x"
-#endif
-
-#if defined(__i386__) || defined(__i486__) || defined(__i586__) || defined(__i686__) || defined(__x86_64__) || defined(__alpha__) || defined(__MIPSEL__) || defined(_M_IX86) || defined(_M_X64) || defined(_XBOX1) || defined(ARM) || defined(ANDROID)
-#define LSB_FIRST
-#define FAST_LSB_WORD_ACCESS
-#else
-#define MSB_FIRST
-#endif
-
-#ifdef FAST_LSB_WORD_ACCESS
-#define READ_WORD(s)		(*(uint16 *) (s))
-#define READ_3WORD(s)		(*(uint32 *) (s) & 0x00ffffff)
-#define READ_DWORD(s)		(*(uint32 *) (s))
-#define WRITE_WORD(s, d)	*(uint16 *) (s) = (d)
-#define WRITE_3WORD(s, d)	*(uint16 *) (s) = (uint16) (d), *((uint8 *) (s) + 2) = (uint8) ((d) >> 16)
-#define WRITE_DWORD(s, d)	*(uint32 *) (s) = (d)
-#else
-#define READ_WORD(s)		(*(uint8 *) (s) | (*((uint8 *) (s) + 1) << 8))
-#define READ_3WORD(s)		(*(uint8 *) (s) | (*((uint8 *) (s) + 1) << 8) | (*((uint8 *) (s) + 2) << 16))
-#define READ_DWORD(s)		(*(uint8 *) (s) | (*((uint8 *) (s) + 1) << 8) | (*((uint8 *) (s) + 2) << 16) | (*((uint8 *) (s) + 3) << 24))
-#define WRITE_WORD(s, d)	*(uint8 *) (s) = (uint8) (d), *((uint8 *) (s) + 1) = (uint8) ((d) >> 8)
-#define WRITE_3WORD(s, d)	*(uint8 *) (s) = (uint8) (d), *((uint8 *) (s) + 1) = (uint8) ((d) >> 8), *((uint8 *) (s) + 2) = (uint8) ((d) >> 16)
-#define WRITE_DWORD(s, d)	*(uint8 *) (s) = (uint8) (d), *((uint8 *) (s) + 1) = (uint8) ((d) >> 8), *((uint8 *) (s) + 2) = (uint8) ((d) >> 16), *((uint8 *) (s) + 3) = (uint8) ((d) >> 24)
-#endif
-
-#define SWAP_WORD(s)		(s) = (((s) & 0xff) <<  8) | (((s) & 0xff00) >> 8)
-#define SWAP_DWORD(s)		(s) = (((s) & 0xff) << 24) | (((s) & 0xff00) << 8) | (((s) & 0xff0000) >> 8) | (((s) & 0xff000000) >> 24)
-
-#include "pixform.h"
+void S9xResetMSU(void);
+void S9xMSU1Init(void);
+bool S9xMSU1ROMExists(void);
+void S9xMSU1Generate(int sample_count);
+uint8 S9xMSU1ReadPort(int port);
+void S9xMSU1WritePort(int port, uint8 byte);
+uint16 S9xMSU1Samples(void);
+void S9xMSU1SetOutput(int16 *out, int size);
+void S9xMSU1PostLoadState(void);
 
 #endif

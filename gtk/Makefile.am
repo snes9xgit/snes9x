@@ -136,6 +136,11 @@ snes9x_gtk_SOURCES += \
     ../apu/bapu/smp/smp.cpp \
     ../apu/bapu/smp/smp_state.cpp
 
+# MSU1
+snes9x_gtk_SOURCES += \
+    ../msu1.cpp \
+    ../msu1.h
+
 # DSP
 snes9x_gtk_SOURCES += \
     ../dsp.cpp \
@@ -196,12 +201,16 @@ snes9x_gtk_SOURCES += \
     ../server.cpp
 endif
 
+
 # Zip support is nonconfigurable.
 snes9x_gtk_SOURCES += \
-    ../loadzip.cpp \
+    ../loadzip.cpp
+if ! SYSTEM_ZIP
+snes9x_gtk_SOURCES += \
     ../unzip/unzip.c \
     ../unzip/ioapi.c \
     ../unzip/zip.c
+endif
 UNZIPDEFINES=-DUNZIP_SUPPORT
 
 if JMA
