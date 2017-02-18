@@ -77,9 +77,12 @@ bool CFMODEx::InitFMODEx()
         case WIN_FMODEX_ASIO_DRIVER:
             fr = fmodSystem->setOutput(FMOD_OUTPUTTYPE_ASIO);
             break;
+
+#if FMOD_VERSION <= 0x00043100
 		case WIN_FMODEX_OPENAL_DRIVER:
             fr = fmodSystem->setOutput(FMOD_OUTPUTTYPE_OPENAL);
             break;
+#endif
     }
 
     fr = fmodSystem->init(2,FMOD_INIT_NORMAL,0);
