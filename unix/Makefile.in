@@ -52,7 +52,7 @@ configure: configure.ac
 	exit 1
 
 snes9x: $(OBJECTS)
-	$(CCC) $(INCLUDES) -o $@ $(OBJECTS) -lm @S9XLIBS@
+	$(CCC) $(LDFLAGS) $(INCLUDES) -o $@ $(OBJECTS) -lm @S9XLIBS@
 
 ../jma/s9x-jma.o: ../jma/s9x-jma.cpp
 	$(CCC) $(INCLUDES) -c $(CCFLAGS) -fexceptions $*.cpp -o $@
