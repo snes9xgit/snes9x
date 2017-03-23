@@ -49,9 +49,7 @@ Temporary Items
 *.suo
 *.user
 *.obj
+win32/.vs
 win32/_Debug
 win32/_Intermediate
 win32/_Release
-win32/.vs
-win32/*.suo
-win32/.vs/smbutil_i/v14/.suo
