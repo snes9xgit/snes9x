@@ -53,3 +53,11 @@ win32/.vs
 win32/_Output
 win32/_Intermediate
 *.exe
+win32/Valid.Ext
+win32/snes9x.conf
+*.srm
+win32/stderr.txt
+win32/stdout.txt
+win32/Saves
+win32/Cheats
+win32/Roms
