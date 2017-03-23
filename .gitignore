@@ -50,6 +50,5 @@ Temporary Items
 *.user
 *.obj
 win32/.vs
-win32/_Debug
+win32/_Output
 win32/_Intermediate
-win32/_Release
