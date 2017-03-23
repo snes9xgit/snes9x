@@ -45,14 +45,20 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Visual Studio generated files
 *.db
 *.suo
 *.user
 *.obj
 win32/.vs
+
+# Visual studio build files
 win32/_Output
 win32/_Intermediate
 *.exe
+
+# snes9x program generated files
 win32/Valid.Ext
 win32/snes9x.conf
 *.srm
