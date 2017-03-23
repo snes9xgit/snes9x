@@ -52,3 +52,4 @@ Temporary Items
 win32/.vs
 win32/_Output
 win32/_Intermediate
+*.exe
