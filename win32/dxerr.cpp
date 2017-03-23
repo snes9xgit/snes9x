@@ -7305,7 +7305,7 @@ HRESULT WINAPI DXTraceW( _In_z_ const WCHAR* strFile, _In_ DWORD dwLine, _In_ HR
     swprintf_s( strBufferLine, 128, L"%lu", dwLine );
     if( strFile )
     {
-       swprintf_s( strBuffer, BUFFER_SIZE, L"%ls(%ls): ", strFile, strBufferLine );
+       swprintf_s( strBuffer, BUFFER_SIZE, L"%s(%s): ", strFile, strBufferLine );
        OutputDebugStringW( strBuffer );
     }
 
@@ -7316,8 +7316,8 @@ HRESULT WINAPI DXTraceW( _In_z_ const WCHAR* strFile, _In_ DWORD dwLine, _In_ HR
         OutputDebugStringW( L" " );
     }
 
-    swprintf_s( strBufferError, 256, L"%ls (0x%0.8x)", DXGetErrorStringW(hr), hr );
-    swprintf_s( strBuffer, BUFFER_SIZE, L"hr=%ls", strBufferError );
+    swprintf_s( strBufferError, 256, L"%s (0x%0.8x)", DXGetErrorStringW(hr), hr );
+    swprintf_s( strBuffer, BUFFER_SIZE, L"hr=%s", strBufferError );
     OutputDebugStringW( strBuffer );
 
     OutputDebugStringW( L"\n" );
@@ -7333,9 +7333,9 @@ HRESULT WINAPI DXTraceW( _In_z_ const WCHAR* strFile, _In_ DWORD dwLine, _In_ HR
         WCHAR strBufferMsg[1024];
         wcscpy_s( strBufferMsg, 1024, L"" );
         if( nMsgLen > 0 )
-            swprintf_s( strBufferMsg, 1024, L"Calling: %ls\n", strMsg );
+            swprintf_s( strBufferMsg, 1024, L"Calling: %s\n", strMsg );
 
-        swprintf_s( strBuffer, BUFFER_SIZE, L"File: %ls\nLine: %ls\nError Code: %ls\n%lsDo you want to debug the application?",
+        swprintf_s( strBuffer, BUFFER_SIZE, L"File: %s\nLine: %s\nError Code: %s\n%sDo you want to debug the application?",
                     strBufferFile, strBufferLine, strBufferError, strBufferMsg );
 
         int nResult = MessageBoxW( GetForegroundWindow(), strBuffer, L"Unexpected error encountered", MB_YESNO | MB_ICONERROR );
@@ -7349,6 +7349,9 @@ HRESULT WINAPI DXTraceW( _In_z_ const WCHAR* strFile, _In_ DWORD dwLine, _In_ HR
     return hr;
 }
 //-----------------------------------------------------------------------------
+
+#undef CHK_ERR
+#undef CHK_ERRA
 
 #define  CHK_ERRA(hrchk) \
         case hrchk: \
@@ -7825,7 +7828,7 @@ HRESULT WINAPI DXTraceA(_In_z_ const char* strFile, _In_ DWORD dwLine, _In_ HRES
     sprintf_s(strBufferLine, 128, "%lu", dwLine);
     if (strFile)
     {
-        sprintf_s(strBuffer, BUFFER_SIZE, "%ls(%ls): ", strFile, strBufferLine);
+        sprintf_s(strBuffer, BUFFER_SIZE, "%s(%s): ", strFile, strBufferLine);
         OutputDebugStringA(strBuffer);
     }
 
@@ -7837,7 +7840,7 @@ HRESULT WINAPI DXTraceA(_In_z_ const char* strFile, _In_ DWORD dwLine, _In_ HRES
     }
 
     sprintf_s(strBufferError, 256, "%ls (0x%0.8x)", DXGetErrorStringW(hr), hr);
-    sprintf_s(strBuffer, BUFFER_SIZE, "hr=%ls", strBufferError);
+    sprintf_s(strBuffer, BUFFER_SIZE, "hr=%s", strBufferError);
     OutputDebugStringA(strBuffer);
 
     OutputDebugStringA("\n");
@@ -7853,9 +7856,9 @@ HRESULT WINAPI DXTraceA(_In_z_ const char* strFile, _In_ DWORD dwLine, _In_ HRES
         char strBufferMsg[1024];
         strcpy_s(strBufferMsg, 1024, "");
         if (nMsgLen > 0)
-            sprintf_s(strBufferMsg, 1024, "Calling: %ls\n", strMsg);
+            sprintf_s(strBufferMsg, 1024, "Calling: %s\n", strMsg);
 
-        sprintf_s(strBuffer, BUFFER_SIZE, "File: %ls\nLine: %ls\nError Code: %ls\n%lsDo you want to debug the application?",
+        sprintf_s(strBuffer, BUFFER_SIZE, "File: %s\nLine: %s\nError Code: %s\n%sDo you want to debug the application?",
             strBufferFile, strBufferLine, strBufferError, strBufferMsg);
 
         int nResult = MessageBoxA(GetForegroundWindow(), strBuffer, "Unexpected error encountered", MB_YESNO | MB_ICONERROR);
