@@ -51,6 +51,7 @@ Temporary Items
 *.suo
 *.user
 *.obj
+*.aps
 win32/.vs
 
 # Visual studio build files
@@ -67,3 +68,7 @@ win32/stdout.txt
 win32/Saves
 win32/Cheats
 win32/Roms
+win32/Screenshots
+win32/Movies
+win32/SPCs
+win32/BIOS
