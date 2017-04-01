@@ -360,3 +360,16 @@ __pycache__/
 *.xsd.cs
 
 # End of https://www.gitignore.io/api/c,c++,visualstudio
+
+# snes9x program-generated files
+win32/snes9x.conf
+win32/Valid.Ext
+win32/stdout.txt
+win32/stderr.txt
+win32/Roms
+win32/Saves
+win32/Cheats
+win32/Screenshots
+win32/Movies
+win32/SPCs
+win32/BIOS
