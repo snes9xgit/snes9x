@@ -202,12 +202,9 @@
 
 void WinRefreshDisplay(void);
 void S9xSetWinPixelFormat ();
-void SwitchToGDI();
 void SaveMainWinPos();
 void RestoreMainWinPos();
 void ToggleFullScreen ();
-void RestoreGUIDisplay ();
-void RestoreSNESDisplay ();
 void WinChangeWindowSize(unsigned int newWidth, unsigned int newHeight);
 bool WinDisplayReset(void);
 void WinDisplayApplyChanges();

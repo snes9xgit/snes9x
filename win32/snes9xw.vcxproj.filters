@@ -111,9 +111,6 @@
     <ClInclude Include="CD3DCG.h">
       <Filter>GUI\VideoDriver</Filter>
     </ClInclude>
-    <ClInclude Include="CDirectDraw.h">
-      <Filter>GUI\VideoDriver</Filter>
-    </ClInclude>
     <ClInclude Include="cgFunctions.h">
       <Filter>GUI\VideoDriver</Filter>
     </ClInclude>
@@ -465,9 +462,6 @@
       <Filter>GUI\VideoDriver</Filter>
     </ClCompile>
     <ClCompile Include="CDirect3D.cpp">
-      <Filter>GUI\VideoDriver</Filter>
-    </ClCompile>
-    <ClCompile Include="CDirectDraw.cpp">
       <Filter>GUI\VideoDriver</Filter>
     </ClCompile>
     <ClCompile Include="cgFunctions.cpp">
