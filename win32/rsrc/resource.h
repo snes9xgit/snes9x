@@ -151,7 +151,6 @@
 #define IDC_HIRESLABEL                  1125
 #define IDC_CLEAR_CHEATS                1126
 #define IDC_JPTOGGLE                    1126
-#define IDC_LOCALVIDMEM                 1126
 #define IDC_VSYNC                       1126
 #define IDC_CHEAT_DESCRIPTION           1127
 #define IDC_KEYBOARD                    1127
