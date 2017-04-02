@@ -203,6 +203,8 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
+#if DIRECTDRAW_DEFINED
+
 class CDirectDraw: public IS9xDisplayOutput
 {
 public:	
@@ -246,5 +248,7 @@ public:
 	CDirectDraw();
 	virtual ~CDirectDraw();
 };
+
+#endif
 
 #endif // !defined(CDIRECTDRAW_H_INCLUDED)

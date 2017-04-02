@@ -187,8 +187,7 @@
   Nintendo Co., Limited and its subsidiary companies.
  ***********************************************************************************/
 
-
-
+#if DIRECTDRAW_DEFINED
 
 // CDirectDraw.cpp: implementation of the CDirectDraw class.
 //
@@ -897,3 +896,4 @@ void CDirectDraw::EnumModes(std::vector<dMode> *modeVector)
 	lpDD->EnumDisplayModes(DDEDM_REFRESHRATES,NULL,(void *)modeVector,(LPDDENUMMODESCALLBACK)EnumModesCallback);
 }
 
+#endif
