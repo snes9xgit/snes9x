@@ -17,7 +17,9 @@
 #include <algorithm>
 
 #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
+#if DIRECTDRAW_DEFINED
 #include <ddraw.h>
+#endif
 #include <d3d9.h>
 #include <dsound.h>
 
@@ -3012,6 +3014,7 @@ const WCHAR* WINAPI DXGetErrorStringW( _In_ HRESULT hr )
 // -------------------------------------------------------------
 // ddraw.h error codes
 // -------------------------------------------------------------
+#if DIRECTDRAW_DEFINED
         CHK_ERRA(DDERR_ALREADYINITIALIZED)
         CHK_ERRA(DDERR_CANNOTATTACHSURFACE)
         CHK_ERRA(DDERR_CANNOTDETACHSURFACE)
@@ -3130,6 +3133,7 @@ const WCHAR* WINAPI DXGetErrorStringW( _In_ HRESULT hr )
         CHK_ERRA(DDERR_NOMONITORINFORMATION)
         CHK_ERRA(DDERR_NODRIVERSUPPORT)
         CHK_ERRA(DDERR_DEVICEDOESNTOWNSURFACE)
+#endif
 
 // -------------------------------------------------------------
 // dinput.h error codes
@@ -6392,7 +6396,7 @@ const char* WINAPI DXGetErrorStringA(_In_ HRESULT hr)
             CHK_ERR_WIN32A(ERROR_IPSEC_IKE_NEG_STATUS_END)
 
 #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
-
+#if DIRECTDRAW_DEFINED
             // -------------------------------------------------------------
             // ddraw.h error codes
             // -------------------------------------------------------------
@@ -6514,7 +6518,7 @@ const char* WINAPI DXGetErrorStringA(_In_ HRESULT hr)
             CHK_ERRA(DDERR_NOMONITORINFORMATION)
             CHK_ERRA(DDERR_NODRIVERSUPPORT)
             CHK_ERRA(DDERR_DEVICEDOESNTOWNSURFACE)
-
+#endif
             // -------------------------------------------------------------
             // dinput.h error codes
             // -------------------------------------------------------------
@@ -6860,7 +6864,7 @@ void WINAPI DXGetErrorDescriptionW( _In_ HRESULT hr, _Out_cap_(count) WCHAR* des
 // Commmented out codes are actually alises for other codes
 
 #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
-
+#if DIRECTDRAW_DEFINED
 // -------------------------------------------------------------
 // ddraw.h error codes
 // -------------------------------------------------------------
@@ -6982,7 +6986,7 @@ void WINAPI DXGetErrorDescriptionW( _In_ HRESULT hr, _Out_cap_(count) WCHAR* des
         CHK_ERR(DDERR_NOMONITORINFORMATION, "The monitor does not have EDID data.")
         CHK_ERR(DDERR_NODRIVERSUPPORT, "The driver does not enumerate display mode refresh rates.")
         CHK_ERR(DDERR_DEVICEDOESNTOWNSURFACE, "Surfaces created by one direct draw device cannot be used directly by another direct draw device.")
-
+#endif
 
 // -------------------------------------------------------------
 // dinput.h error codes
@@ -7383,7 +7387,7 @@ void WINAPI DXGetErrorDescriptionA(_In_ HRESULT hr, _Out_cap_(count) char* desc,
         // Commmented out codes are actually alises for other codes
 
 #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
-
+#if DIRECTDRAW_DEFINED
         // -------------------------------------------------------------
         // ddraw.h error codes
         // -------------------------------------------------------------
@@ -7505,7 +7509,7 @@ void WINAPI DXGetErrorDescriptionA(_In_ HRESULT hr, _Out_cap_(count) char* desc,
             CHK_ERR(DDERR_NOMONITORINFORMATION, "The monitor does not have EDID data.")
             CHK_ERR(DDERR_NODRIVERSUPPORT, "The driver does not enumerate display mode refresh rates.")
             CHK_ERR(DDERR_DEVICEDOESNTOWNSURFACE, "Surfaces created by one direct draw device cannot be used directly by another direct draw device.")
-
+#endif
 
             // -------------------------------------------------------------
             // dinput.h error codes

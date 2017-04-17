@@ -224,7 +224,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>comctl32.lib;winmm.lib;opengl32.lib;glu32.lib;wsock32.lib;ddraw.lib;dsound.lib;dxguid.lib;delayimp.lib;vfw32.lib;msxml2.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>comctl32.lib;winmm.lib;opengl32.lib;glu32.lib;wsock32.lib;dsound.lib;dxguid.lib;delayimp.lib;vfw32.lib;msxml2.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\FMOD\api\lib;$(ProjectDir)..\..\FMODEx_x64\api\lib;$(ProjectDir)..\..\FMODEx\api\lib;$(ProjectDir)..\i386;$(ProjectDir)..\..\zlib\lib;$(ProjectDir)..\..\libPNG\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DelayLoadDLLs>fmod.dll;fmodex.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
@@ -273,7 +273,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>comctl32.lib;winmm.lib;opengl32.lib;glu32.lib;wsock32.lib;ddraw.lib;dsound.lib;dxguid.lib;delayimp.lib;vfw32.lib;msxml2.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>comctl32.lib;winmm.lib;opengl32.lib;glu32.lib;wsock32.lib;dsound.lib;dxguid.lib;delayimp.lib;vfw32.lib;msxml2.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\FMOD\api\lib;$(ProjectDir)..\..\FMODEx_x64\api\lib;$(ProjectDir)..\..\FMODEx\api\lib;$(ProjectDir)..\i386;$(ProjectDir)..\..\zlib\lib;$(ProjectDir)..\..\libPNG\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DelayLoadDLLs>fmod.dll;fmodex64.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
@@ -317,7 +317,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>comctl32.lib;winmm.lib;opengl32.lib;glu32.lib;wsock32.lib;ddraw.lib;dsound.lib;dxguid.lib;delayimp.lib;vfw32.lib;msxml2.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>comctl32.lib;winmm.lib;opengl32.lib;glu32.lib;wsock32.lib;dsound.lib;dxguid.lib;delayimp.lib;vfw32.lib;msxml2.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\FMOD\api\lib;$(ProjectDir)..\..\FMODEx_x64\api\lib;$(ProjectDir)..\..\FMODEx\api\lib;$(ProjectDir)..\i386;$(ProjectDir)..\..\zlib\lib;$(ProjectDir)..\..\libPNG\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EnableUAC>false</EnableUAC>
@@ -363,7 +363,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>comctl32.lib;winmm.lib;opengl32.lib;glu32.lib;wsock32.lib;ddraw.lib;dsound.lib;dxguid.lib;delayimp.lib;vfw32.lib;msxml2.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>comctl32.lib;winmm.lib;opengl32.lib;glu32.lib;wsock32.lib;dsound.lib;dxguid.lib;delayimp.lib;vfw32.lib;msxml2.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\FMOD\api\lib;$(ProjectDir)..\..\FMODEx_x64\api\lib;$(ProjectDir)..\..\FMODEx\api\lib;$(ProjectDir)..\i386;$(ProjectDir)..\..\zlib\lib;$(ProjectDir)..\..\libPNG\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EnableUAC>false</EnableUAC>
@@ -409,7 +409,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>comctl32.lib;winmm.lib;opengl32.lib;glu32.lib;wsock32.lib;ddraw.lib;dsound.lib;dxguid.lib;delayimp.lib;vfw32.lib;msxml2.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>comctl32.lib;winmm.lib;opengl32.lib;glu32.lib;wsock32.lib;dsound.lib;dxguid.lib;delayimp.lib;vfw32.lib;msxml2.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\FMOD\api\lib;$(ProjectDir)..\..\FMODEx_x64\api\lib;$(ProjectDir)..\..\FMODEx\api\lib;$(ProjectDir)..\i386;$(ProjectDir)..\..\zlib\lib;$(ProjectDir)..\..\libPNG\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EnableUAC>false</EnableUAC>
@@ -456,7 +456,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>comctl32.lib;winmm.lib;opengl32.lib;glu32.lib;wsock32.lib;ddraw.lib;dsound.lib;dxguid.lib;delayimp.lib;vfw32.lib;msxml2.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>comctl32.lib;winmm.lib;opengl32.lib;glu32.lib;wsock32.lib;dsound.lib;dxguid.lib;delayimp.lib;vfw32.lib;msxml2.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\FMOD\api\lib;$(ProjectDir)..\..\FMODEx_x64\api\lib;$(ProjectDir)..\..\FMODEx\api\lib;$(ProjectDir)..\i386;$(ProjectDir)..\..\zlib\lib;$(ProjectDir)..\..\libPNG\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EnableUAC>false</EnableUAC>
@@ -509,7 +509,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>comctl32.lib;winmm.lib;opengl32.lib;glu32.lib;wsock32.lib;ddraw.lib;dsound.lib;dxguid.lib;delayimp.lib;vfw32.lib;msxml2.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>comctl32.lib;winmm.lib;opengl32.lib;glu32.lib;wsock32.lib;dsound.lib;dxguid.lib;delayimp.lib;vfw32.lib;msxml2.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\FMOD\api\lib;$(ProjectDir)..\..\FMODEx_x64\api\lib;$(ProjectDir)..\..\FMODEx\api\lib;$(ProjectDir)..\i386;$(ProjectDir)..\..\zlib\lib;$(ProjectDir)..\..\libPNG\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DelayLoadDLLs>fmod.dll;fmodex.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
@@ -560,7 +560,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>comctl32.lib;winmm.lib;opengl32.lib;glu32.lib;wsock32.lib;ddraw.lib;dsound.lib;dxguid.lib;delayimp.lib;vfw32.lib;msxml2.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>comctl32.lib;winmm.lib;opengl32.lib;glu32.lib;wsock32.lib;dsound.lib;dxguid.lib;delayimp.lib;vfw32.lib;msxml2.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\FMOD\api\lib;$(ProjectDir)..\..\FMODEx_x64\api\lib;$(ProjectDir)..\..\FMODEx\api\lib;$(ProjectDir)..\i386;$(ProjectDir)..\..\zlib\lib;$(ProjectDir)..\..\libPNG\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DelayLoadDLLs>fmod.dll;fmodex64.dll;%(DelayLoadDLLs)</DelayLoadDLLs>

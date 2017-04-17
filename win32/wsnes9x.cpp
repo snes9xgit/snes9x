@@ -609,7 +609,9 @@ static uint32 FrameTimings[] = {
 struct sLanguages Languages[] = {
 	{ IDR_MENU_US,
 		TEXT("Failed to initialize currently selected display output!\n Try switching to a different output method in the display settings."),
+#if DIRECTDRAW_DEFINED
 		TEXT("DirectDraw failed to set the selected display mode!"),
+#endif
 		TEXT("DirectSound failed to initialize; no sound will be played."),
 		TEXT("These settings won't take effect until you restart the emulator."),
 		TEXT("The frame timer failed to initialize, please do NOT select the automatic framerate option or Snes9X will crash!")}
@@ -1386,7 +1388,11 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 	switch (wParam)
 	{
 		case VK_ESCAPE:
-			if(GUI.outputMethod!=DIRECTDRAW && GUI.FullScreen && !GUI.EmulateFullscreen)
+			if(
+#if DIRECTDRAW_DEFINED
+                GUI.outputMethod!=DIRECTDRAW && 
+#endif
+                GUI.FullScreen && !GUI.EmulateFullscreen)
 				ToggleFullScreen();
 			else
 				if (GetMenu (GUI.hWnd) == NULL)
@@ -7330,7 +7336,9 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 		EnableWindow(GetDlgItem(hDlg, IDC_ASPECT), GUI.Stretch);
 
+#if DIRECTDRAW_DEFINED
 		SendDlgItemMessage(hDlg,IDC_OUTPUTMETHOD,CB_ADDSTRING,0,(LPARAM)TEXT("DirectDraw"));
+#endif
 		SendDlgItemMessage(hDlg,IDC_OUTPUTMETHOD,CB_ADDSTRING,0,(LPARAM)TEXT("Direct3D"));
 		SendDlgItemMessage(hDlg,IDC_OUTPUTMETHOD,CB_ADDSTRING,0,(LPARAM)TEXT("OpenGL"));
 		SendDlgItemMessage(hDlg,IDC_OUTPUTMETHOD,CB_SETCURSEL,(WPARAM)GUI.outputMethod,0);

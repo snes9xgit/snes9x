@@ -198,7 +198,9 @@
 #include "wsnes9x.h"
 #include "win32_display.h"
 #include "CDirect3D.h"
+#if DIRECTDRAW_DEFINED
 #include "CDirectDraw.h"
+#endif
 #include "COpenGL.h"
 #include "IS9xDisplayOutput.h"
 
@@ -207,7 +209,9 @@
 
 // available display output methods
 CDirect3D Direct3D;
+#if DIRECTDRAW_DEFINED
 CDirectDraw DirectDraw;
+#endif
 COpenGL OpenGL;
 SSurface Src = {0};
 extern BYTE *ScreenBufferBlend;
@@ -258,9 +262,11 @@ bool WinDisplayReset(void)
 		case DIRECT3D:
 			S9xDisplayOutput = &Direct3D;
 			break;
+#if DIRECTDRAW_DEFINED
 		case DIRECTDRAW:
 			S9xDisplayOutput = &DirectDraw;
 			break;
+#endif
 		case OPENGL:
 			S9xDisplayOutput = &OpenGL;
 			break;
@@ -473,9 +479,9 @@ void ReduceToPath(TCHAR *filename)
 // TODO: abstract the following functions in some way - only necessary for directdraw
 
 /* DirectDraw only begin */
-
 void SwitchToGDI()
 {
+#if DIRECTDRAW_DEFINED
 	if(GUI.outputMethod!=DIRECTDRAW)
 		return;
 
@@ -483,10 +489,12 @@ void SwitchToGDI()
     DirectDraw.lpDD->FlipToGDISurface();
     GUI.FlipCounter = 0;
     DirectDraw.lpDDSPrimary2->SetPalette (NULL);
+#endif
 }
 
 static void ClearSurface (LPDIRECTDRAWSURFACE2 lpDDSurface)
 {
+#if DIRECTDRAW_DEFINED
     DDBLTFX fx;
 
     memset (&fx, 0, sizeof (fx));
@@ -494,11 +502,12 @@ static void ClearSurface (LPDIRECTDRAWSURFACE2 lpDDSurface)
 
     while (lpDDSurface->Blt (NULL, DirectDraw.lpDDSPrimary2, NULL, DDBLT_WAIT, NULL) == DDERR_SURFACELOST)
         lpDDSurface->Restore ();
+#endif
 }
 
 void UpdateBackBuffer()
 {
-
+#if DIRECTDRAW_DEFINED
     if (GUI.outputMethod==DIRECTDRAW && GUI.FullScreen)
     {
         SwitchToGDI();
@@ -536,10 +545,12 @@ void UpdateBackBuffer()
         if (GetMenu( GUI.hWnd) != NULL)
             DrawMenuBar (GUI.hWnd);
     }
+#endif
 }
 
 void RestoreGUIDisplay ()
 {
+#if DIRECTDRAW_DEFINED
 	if(GUI.outputMethod!=DIRECTDRAW)
 		return;
 
@@ -555,10 +566,12 @@ void RestoreGUIDisplay ()
     }
     SwitchToGDI();
     S9xClearPause (PAUSE_RESTORE_GUI);
+#endif
 }
 
 void RestoreSNESDisplay ()
 {
+#if DIRECTDRAW_DEFINED
 	if(GUI.outputMethod!=DIRECTDRAW)
 		return;
 
@@ -569,6 +582,7 @@ void RestoreSNESDisplay ()
     }
 
     UpdateBackBuffer();
+#endif
 }
 
 /* DirectDraw only end */
