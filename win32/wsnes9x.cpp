@@ -609,9 +609,7 @@ static uint32 FrameTimings[] = {
 struct sLanguages Languages[] = {
 	{ IDR_MENU_US,
 		TEXT("Failed to initialize currently selected display output!\n Try switching to a different output method in the display settings."),
-#if DIRECTDRAW_DEFINED
 		TEXT("DirectDraw failed to set the selected display mode!"),
-#endif
 		TEXT("DirectSound failed to initialize; no sound will be played."),
 		TEXT("These settings won't take effect until you restart the emulator."),
 		TEXT("The frame timer failed to initialize, please do NOT select the automatic framerate option or Snes9X will crash!")}
@@ -1389,9 +1387,7 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 	{
 		case VK_ESCAPE:
 			if(
-#if DIRECTDRAW_DEFINED
                 GUI.outputMethod!=DIRECTDRAW && 
-#endif
                 GUI.FullScreen && !GUI.EmulateFullscreen)
 				ToggleFullScreen();
 			else
@@ -7228,146 +7224,162 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 
 	case WM_INITDIALOG:
-		WinRefreshDisplay();
+    {
+        WinRefreshDisplay();
 
-		CreateToolTip(IDC_EMUFULLSCREEN,hDlg,TEXT("Emulate fullscreen by creating a window that spans the entire screen when going fullscreen"));
-		CreateToolTip(IDC_AUTOFRAME,hDlg,TEXT("Try to achieve 50/60 fps by limiting the speed and skipping at most 'max skipped frames'"));
-		CreateToolTip(IDC_MAXSKIP,hDlg,TEXT("Try to achieve 50/60 fps by limiting the speed and skipping at most 'max skipped frames'"));
-		CreateToolTip(IDC_FIXEDSKIP,hDlg,TEXT("Always skip a fixed number of frames - no speed limit"));
-		CreateToolTip(IDC_SKIPCOUNT,hDlg,TEXT("Always skip a fixed number of frames - no speed limit"));
-		CreateToolTip(IDC_HIRES,hDlg,TEXT("Support the hi-res mode that a few games use, otherwise render them in low-res"));
-		CreateToolTip(IDC_HEIGHT_EXTEND,hDlg,TEXT("Display an extra 15 pixels at the bottom, which few games use. Also increases AVI output size from 256x224 to 256x240"));
-		CreateToolTip(IDC_MESSAGES_IN_IMAGE,hDlg,TEXT("Draw text inside the SNES image (will get into AVIs, screenshots, and filters)"));
+        CreateToolTip(IDC_EMUFULLSCREEN, hDlg, TEXT("Emulate fullscreen by creating a window that spans the entire screen when going fullscreen"));
+        CreateToolTip(IDC_AUTOFRAME, hDlg, TEXT("Try to achieve 50/60 fps by limiting the speed and skipping at most 'max skipped frames'"));
+        CreateToolTip(IDC_MAXSKIP, hDlg, TEXT("Try to achieve 50/60 fps by limiting the speed and skipping at most 'max skipped frames'"));
+        CreateToolTip(IDC_FIXEDSKIP, hDlg, TEXT("Always skip a fixed number of frames - no speed limit"));
+        CreateToolTip(IDC_SKIPCOUNT, hDlg, TEXT("Always skip a fixed number of frames - no speed limit"));
+        CreateToolTip(IDC_HIRES, hDlg, TEXT("Support the hi-res mode that a few games use, otherwise render them in low-res"));
+        CreateToolTip(IDC_HEIGHT_EXTEND, hDlg, TEXT("Display an extra 15 pixels at the bottom, which few games use. Also increases AVI output size from 256x224 to 256x240"));
+        CreateToolTip(IDC_MESSAGES_IN_IMAGE, hDlg, TEXT("Draw text inside the SNES image (will get into AVIs, screenshots, and filters)"));
 
-		prevOutputMethod = GUI.outputMethod;
-		prevScale = GUI.Scale;
-		prevScaleHiRes = GUI.ScaleHiRes;
-		prevPPL = GFX.RealPPL;
-		prevStretch = GUI.Stretch;
-		prevBilinearFilter = GUI.BilinearFilter;
-		prevAspectRatio = GUI.AspectRatio;
-		prevAspectWidth = GUI.AspectWidth;
-		prevHeightExtend = GUI.HeightExtend;
-		prevAutoDisplayMessages = Settings.AutoDisplayMessages != 0;
-		prevShaderEnabled = GUI.shaderEnabled;
-		prevBlendHires = GUI.BlendHiRes;
-		lstrcpy(prevD3DShaderFile,GUI.D3DshaderFileName);
-		lstrcpy(prevOGLShaderFile,GUI.OGLshaderFileName);
+        prevOutputMethod = GUI.outputMethod;
+        prevScale = GUI.Scale;
+        prevScaleHiRes = GUI.ScaleHiRes;
+        prevPPL = GFX.RealPPL;
+        prevStretch = GUI.Stretch;
+        prevBilinearFilter = GUI.BilinearFilter;
+        prevAspectRatio = GUI.AspectRatio;
+        prevAspectWidth = GUI.AspectWidth;
+        prevHeightExtend = GUI.HeightExtend;
+        prevAutoDisplayMessages = Settings.AutoDisplayMessages != 0;
+        prevShaderEnabled = GUI.shaderEnabled;
+        prevBlendHires = GUI.BlendHiRes;
+        lstrcpy(prevD3DShaderFile, GUI.D3DshaderFileName);
+        lstrcpy(prevOGLShaderFile, GUI.OGLshaderFileName);
 
 
-		_stprintf(s,TEXT("Current: %dx%d %dbit %dHz"),GUI.FullscreenMode.width,GUI.FullscreenMode.height,GUI.FullscreenMode.depth,GUI.FullscreenMode.rate);
-		SendDlgItemMessage(hDlg,IDC_CURRMODE,WM_SETTEXT,0,(LPARAM)s);
+        _stprintf(s, TEXT("Current: %dx%d %dbit %dHz"), GUI.FullscreenMode.width, GUI.FullscreenMode.height, GUI.FullscreenMode.depth, GUI.FullscreenMode.rate);
+        SendDlgItemMessage(hDlg, IDC_CURRMODE, WM_SETTEXT, 0, (LPARAM)s);
 
-		if(GUI.DoubleBuffered)
-			SendDlgItemMessage(hDlg, IDC_DBLBUFFER, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
-		if(GUI.Vsync)
-			SendDlgItemMessage(hDlg, IDC_VSYNC, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
-		SendDlgItemMessage(hDlg,IDC_FRAMERATESKIPSLIDER,TBM_SETRANGE,(WPARAM)true,(LPARAM)MAKELONG(0,9));
-		if(Settings.SkipFrames!=AUTO_FRAMERATE)
-			SendDlgItemMessage(hDlg,IDC_FRAMERATESKIPSLIDER,TBM_SETPOS,(WPARAM)true,(LPARAM)Settings.SkipFrames);
-		EnableWindow(GetDlgItem(hDlg, IDC_TRANS), TRUE);
-		if(Settings.Transparency)
-			SendDlgItemMessage(hDlg, IDC_TRANS, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
+        if (GUI.DoubleBuffered)
+            SendDlgItemMessage(hDlg, IDC_DBLBUFFER, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
+        if (GUI.Vsync)
+            SendDlgItemMessage(hDlg, IDC_VSYNC, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
+        SendDlgItemMessage(hDlg, IDC_FRAMERATESKIPSLIDER, TBM_SETRANGE, (WPARAM)true, (LPARAM)MAKELONG(0, 9));
+        if (Settings.SkipFrames != AUTO_FRAMERATE)
+            SendDlgItemMessage(hDlg, IDC_FRAMERATESKIPSLIDER, TBM_SETPOS, (WPARAM)true, (LPARAM)Settings.SkipFrames);
+        EnableWindow(GetDlgItem(hDlg, IDC_TRANS), TRUE);
+        if (Settings.Transparency)
+            SendDlgItemMessage(hDlg, IDC_TRANS, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
 
-		if(Settings.SupportHiRes)
-			SendDlgItemMessage(hDlg, IDC_HIRES, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
-		if(GUI.BlendHiRes)
-			SendDlgItemMessage(hDlg, IDC_HIRESBLEND, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
-		if(GUI.HeightExtend)
-			SendDlgItemMessage(hDlg, IDC_HEIGHT_EXTEND, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
-		if(Settings.AutoDisplayMessages)
-			SendDlgItemMessage(hDlg, IDC_MESSAGES_IN_IMAGE, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
-		if(Settings.SkipFrames==AUTO_FRAMERATE)
-			SendDlgItemMessage(hDlg, IDC_AUTOFRAME, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
-		if(GUI.Stretch)
-		{
-			SendDlgItemMessage(hDlg, IDC_STRETCH, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
-		}
+        if (Settings.SupportHiRes)
+            SendDlgItemMessage(hDlg, IDC_HIRES, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
+        if (GUI.BlendHiRes)
+            SendDlgItemMessage(hDlg, IDC_HIRESBLEND, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
+        if (GUI.HeightExtend)
+            SendDlgItemMessage(hDlg, IDC_HEIGHT_EXTEND, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
+        if (Settings.AutoDisplayMessages)
+            SendDlgItemMessage(hDlg, IDC_MESSAGES_IN_IMAGE, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
+        if (Settings.SkipFrames == AUTO_FRAMERATE)
+            SendDlgItemMessage(hDlg, IDC_AUTOFRAME, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
+        if (GUI.Stretch)
+        {
+            SendDlgItemMessage(hDlg, IDC_STRETCH, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
+        }
 
-		if(GUI.AspectRatio)
-			SendDlgItemMessage(hDlg, IDC_ASPECT, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
-		SendDlgItemMessage(hDlg,IDC_ASPECTDROP,CB_ADDSTRING,0,(LPARAM)TEXT("8:7"));
-		SendDlgItemMessage(hDlg,IDC_ASPECTDROP,CB_ADDSTRING,0,(LPARAM)TEXT("4:3"));
-		switch(GUI.AspectWidth) {
-			case 256:
-				SendDlgItemMessage(hDlg,IDC_ASPECTDROP,CB_SETCURSEL,(WPARAM)0,0);
-				break;
-			case 299:
-				SendDlgItemMessage(hDlg,IDC_ASPECTDROP,CB_SETCURSEL,(WPARAM)1,0);
-				break;
-			default:
-				SendDlgItemMessage(hDlg,IDC_ASPECTDROP,CB_ADDSTRING,0,(LPARAM)TEXT("Custom"));
-				SendDlgItemMessage(hDlg,IDC_ASPECTDROP,CB_SETCURSEL,(WPARAM)2,0);
-				break;
-		}
+        if (GUI.AspectRatio)
+            SendDlgItemMessage(hDlg, IDC_ASPECT, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
+        SendDlgItemMessage(hDlg, IDC_ASPECTDROP, CB_ADDSTRING, 0, (LPARAM)TEXT("8:7"));
+        SendDlgItemMessage(hDlg, IDC_ASPECTDROP, CB_ADDSTRING, 0, (LPARAM)TEXT("4:3"));
+        switch (GUI.AspectWidth) {
+        case 256:
+            SendDlgItemMessage(hDlg, IDC_ASPECTDROP, CB_SETCURSEL, (WPARAM)0, 0);
+            break;
+        case 299:
+            SendDlgItemMessage(hDlg, IDC_ASPECTDROP, CB_SETCURSEL, (WPARAM)1, 0);
+            break;
+        default:
+            SendDlgItemMessage(hDlg, IDC_ASPECTDROP, CB_ADDSTRING, 0, (LPARAM)TEXT("Custom"));
+            SendDlgItemMessage(hDlg, IDC_ASPECTDROP, CB_SETCURSEL, (WPARAM)2, 0);
+            break;
+        }
 
-		if(GUI.FullScreen || GUI.EmulatedFullscreen)
-			SendDlgItemMessage(hDlg, IDC_FULLSCREEN, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
-		if(GUI.EmulateFullscreen)
-			SendDlgItemMessage(hDlg, IDC_EMUFULLSCREEN, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
-		if(GUI.BilinearFilter)
-			SendDlgItemMessage(hDlg,IDC_BILINEAR, BM_SETCHECK, (WPARAM)BST_CHECKED,0);
-		if(Settings.DisplayFrameRate)
-			SendDlgItemMessage(hDlg, IDC_SHOWFPS, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
+        if (GUI.FullScreen || GUI.EmulatedFullscreen)
+            SendDlgItemMessage(hDlg, IDC_FULLSCREEN, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
+        if (GUI.EmulateFullscreen)
+            SendDlgItemMessage(hDlg, IDC_EMUFULLSCREEN, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
+        if (GUI.BilinearFilter)
+            SendDlgItemMessage(hDlg, IDC_BILINEAR, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
+        if (Settings.DisplayFrameRate)
+            SendDlgItemMessage(hDlg, IDC_SHOWFPS, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
 
-		if(Settings.SkipFrames==AUTO_FRAMERATE) {
-			SendDlgItemMessage(hDlg, IDC_AUTOFRAME, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
-			EnableWindow(GetDlgItem(hDlg, IDC_SKIPCOUNT),FALSE);
-		} else {
-			SendDlgItemMessage(hDlg, IDC_FIXEDSKIP, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
-			EnableWindow(GetDlgItem(hDlg, IDC_MAXSKIP),FALSE);
-		}
-		SendDlgItemMessage(hDlg, IDC_SPIN_MAX_SKIP_DISP, UDM_SETRANGE, 0, MAKELPARAM((short)59, (short)0));
-		SendDlgItemMessage(hDlg, IDC_SPIN_MAX_SKIP_DISP, UDM_SETPOS,0, Settings.AutoMaxSkipFrames);
-		SendDlgItemMessage(hDlg, IDC_SPIN_MAX_SKIP_DISP_FIXED, UDM_SETRANGE, 0, MAKELPARAM((short)59, (short)0));
-		SendDlgItemMessage(hDlg, IDC_SPIN_MAX_SKIP_DISP_FIXED, UDM_SETPOS,0, Settings.SkipFrames==AUTO_FRAMERATE?0:Settings.SkipFrames);
+        if (Settings.SkipFrames == AUTO_FRAMERATE) {
+            SendDlgItemMessage(hDlg, IDC_AUTOFRAME, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
+            EnableWindow(GetDlgItem(hDlg, IDC_SKIPCOUNT), FALSE);
+        }
+        else {
+            SendDlgItemMessage(hDlg, IDC_FIXEDSKIP, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
+            EnableWindow(GetDlgItem(hDlg, IDC_MAXSKIP), FALSE);
+        }
+        SendDlgItemMessage(hDlg, IDC_SPIN_MAX_SKIP_DISP, UDM_SETRANGE, 0, MAKELPARAM((short)59, (short)0));
+        SendDlgItemMessage(hDlg, IDC_SPIN_MAX_SKIP_DISP, UDM_SETPOS, 0, Settings.AutoMaxSkipFrames);
+        SendDlgItemMessage(hDlg, IDC_SPIN_MAX_SKIP_DISP_FIXED, UDM_SETRANGE, 0, MAKELPARAM((short)59, (short)0));
+        SendDlgItemMessage(hDlg, IDC_SPIN_MAX_SKIP_DISP_FIXED, UDM_SETPOS, 0, Settings.SkipFrames == AUTO_FRAMERATE ? 0 : Settings.SkipFrames);
 
-		if(GUI.shaderEnabled) {
-			SendDlgItemMessage(hDlg, IDC_SHADER_ENABLED, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
-			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_HLSL_FILE),TRUE);
-			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_HLSL_BROWSE),TRUE);
-			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_FILE),TRUE);
-			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_BROWSE),TRUE);
-		}
-		SetDlgItemText(hDlg,IDC_SHADER_HLSL_FILE,GUI.D3DshaderFileName);
-		SetDlgItemText(hDlg,IDC_SHADER_GLSL_FILE,GUI.OGLshaderFileName);
+        if (GUI.shaderEnabled) {
+            SendDlgItemMessage(hDlg, IDC_SHADER_ENABLED, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
+            EnableWindow(GetDlgItem(hDlg, IDC_SHADER_HLSL_FILE), TRUE);
+            EnableWindow(GetDlgItem(hDlg, IDC_SHADER_HLSL_BROWSE), TRUE);
+            EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_FILE), TRUE);
+            EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_BROWSE), TRUE);
+        }
+        SetDlgItemText(hDlg, IDC_SHADER_HLSL_FILE, GUI.D3DshaderFileName);
+        SetDlgItemText(hDlg, IDC_SHADER_GLSL_FILE, GUI.OGLshaderFileName);
 
-		lpfnOldWndProc = (WNDPROC)SetWindowLongPtr(GetDlgItem(hDlg,IDC_SHADER_GROUP),GWLP_WNDPROC,(LONG_PTR)GroupBoxCheckBoxTitle);
+        lpfnOldWndProc = (WNDPROC)SetWindowLongPtr(GetDlgItem(hDlg, IDC_SHADER_GROUP), GWLP_WNDPROC, (LONG_PTR)GroupBoxCheckBoxTitle);
 
-		EnableWindow(GetDlgItem(hDlg, IDC_ASPECT), GUI.Stretch);
+        EnableWindow(GetDlgItem(hDlg, IDC_ASPECT), GUI.Stretch);
 
-#if DIRECTDRAW_DEFINED
-		SendDlgItemMessage(hDlg,IDC_OUTPUTMETHOD,CB_ADDSTRING,0,(LPARAM)TEXT("DirectDraw"));
+        // add output method to droplist with itemdata set to their enum value
+        int inserted_index = -1;
+#if DIRECTDRAW_SUPPORT
+        inserted_index = SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_ADDSTRING, 0, (LPARAM)TEXT("DirectDraw"));
+        SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_SETITEMDATA, inserted_index, DIRECTDRAW);
 #endif
-		SendDlgItemMessage(hDlg,IDC_OUTPUTMETHOD,CB_ADDSTRING,0,(LPARAM)TEXT("Direct3D"));
-		SendDlgItemMessage(hDlg,IDC_OUTPUTMETHOD,CB_ADDSTRING,0,(LPARAM)TEXT("OpenGL"));
-		SendDlgItemMessage(hDlg,IDC_OUTPUTMETHOD,CB_SETCURSEL,(WPARAM)GUI.outputMethod,0);
-		// add all the GUI.Scale filters to the combo box
-		for(int filter = 0 ; filter < (int)NUM_FILTERS ; filter++)
-		{
-			strcpy(temp,GetFilterName((RenderFilter)filter));
-			SendDlgItemMessageA(hDlg,IDC_FILTERBOX,CB_ADDSTRING,0,(LPARAM) (LPCTSTR)temp);
-		}
-		for(int filter = 0, hiResPos = 0 ; filter < (int)NUM_FILTERS ; filter++)
-		{
-			if(GetFilterHiResSupport((RenderFilter)filter))
-			{
-				strcpy(temp,GetFilterName((RenderFilter)filter));
-				SendDlgItemMessageA(hDlg,IDC_FILTERBOX2,CB_ADDSTRING,0,(LPARAM) (LPCTSTR)temp);
-				if(GUI.ScaleHiRes==filter)
-					SendDlgItemMessage(hDlg,IDC_FILTERBOX2,CB_SETCURSEL,(WPARAM)hiResPos,0);
-				hiResPos++;
-			}
-		}
+        inserted_index = SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_ADDSTRING, 0, (LPARAM)TEXT("Direct3D"));
+        SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_SETITEMDATA, inserted_index, DIRECT3D);
+        inserted_index = SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_ADDSTRING, 0, (LPARAM)TEXT("OpenGL"));
+        SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_SETITEMDATA, inserted_index, OPENGL);
 
-		SendDlgItemMessage(hDlg,IDC_FILTERBOX,CB_SETCURSEL,(WPARAM)GUI.Scale,0);
+        // select item with corresponding itemdata
+        int item_count = SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_GETCOUNT, 0, 0);
+        for (int index = 0; index < item_count; index++) {
+            int item_data = SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_GETITEMDATA, index, 0);
+            if (item_data == GUI.outputMethod)
+                SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_SETCURSEL, index, 0);
+        }
 
-		UpdateModeComboBox(GetDlgItem(hDlg,IDC_RESOLUTION));
+        // add all the GUI.Scale filters to the combo box
+        for (int filter = 0; filter < (int)NUM_FILTERS; filter++)
+        {
+            strcpy(temp, GetFilterName((RenderFilter)filter));
+            SendDlgItemMessageA(hDlg, IDC_FILTERBOX, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)temp);
+        }
+        for (int filter = 0, hiResPos = 0; filter < (int)NUM_FILTERS; filter++)
+        {
+            if (GetFilterHiResSupport((RenderFilter)filter))
+            {
+                strcpy(temp, GetFilterName((RenderFilter)filter));
+                SendDlgItemMessageA(hDlg, IDC_FILTERBOX2, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)temp);
+                if (GUI.ScaleHiRes == filter)
+                    SendDlgItemMessage(hDlg, IDC_FILTERBOX2, CB_SETCURSEL, (WPARAM)hiResPos, 0);
+                hiResPos++;
+            }
+        }
 
-		// have to start focus on something like this or Escape won't exit the dialog
-		SetFocus(hDlg);
+        SendDlgItemMessage(hDlg, IDC_FILTERBOX, CB_SETCURSEL, (WPARAM)GUI.Scale, 0);
 
-		break;
+        UpdateModeComboBox(GetDlgItem(hDlg, IDC_RESOLUTION));
+
+        // have to start focus on something like this or Escape won't exit the dialog
+        SetFocus(hDlg);
+
+        break;
+    }
 	case WM_CLOSE:
 	case WM_DESTROY:
 		break;
@@ -7477,7 +7489,8 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			break;
 		case IDC_OUTPUTMETHOD:
 			if(HIWORD(wParam)==CBN_SELCHANGE) {
-				OutputMethod newOut = (OutputMethod)SendDlgItemMessage(hDlg,IDC_OUTPUTMETHOD,CB_GETCURSEL,0,0);
+                int index = SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_GETCURSEL, 0, 0);
+				OutputMethod newOut = (OutputMethod)SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_GETITEMDATA, index, 0);
 				if(GUI.outputMethod==newOut)
 					break;
 				if(GUI.FullScreen)

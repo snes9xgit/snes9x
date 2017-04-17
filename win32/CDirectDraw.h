@@ -203,7 +203,7 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
-#if DIRECTDRAW_DEFINED
+#if DIRECTDRAW_SUPPORT
 
 class CDirectDraw: public IS9xDisplayOutput
 {

@@ -287,12 +287,8 @@ enum RenderFilter{
 };
 
 enum OutputMethod {
-#if DIRECTDRAW_DEFINED
 	DIRECTDRAW = 0,
 	DIRECT3D,
-#else
-    DIRECT3D = 0,
-#endif
 	OPENGL
 };
 
@@ -334,9 +330,7 @@ struct sGUI {
 	bool EmulateFullscreen;
 	bool EmulatedFullscreen;
 	bool BilinearFilter;
-#if DIRECTDRAW_DEFINED
 	bool LocalVidMem;
-#endif
 	bool Vsync;	
 	bool shaderEnabled;
 	TCHAR D3DshaderFileName[MAX_PATH];
@@ -441,9 +435,7 @@ struct sGUI {
 struct sLanguages {
     int idMenu;
     TCHAR *errInitDD;
-#if DIRECTDRAW_DEFINED
     TCHAR *errModeDD;
-#endif
     TCHAR *errInitDS;
     TCHAR *ApplyNeedRestart;
     TCHAR *errFrameTimer;

@@ -198,7 +198,7 @@
 #include "wsnes9x.h"
 #include "win32_display.h"
 #include "CDirect3D.h"
-#if DIRECTDRAW_DEFINED
+#if DIRECTDRAW_SUPPORT
 #include "CDirectDraw.h"
 #endif
 #include "COpenGL.h"
@@ -209,7 +209,7 @@
 
 // available display output methods
 CDirect3D Direct3D;
-#if DIRECTDRAW_DEFINED
+#if DIRECTDRAW_SUPPORT
 CDirectDraw DirectDraw;
 #endif
 COpenGL OpenGL;
@@ -262,7 +262,7 @@ bool WinDisplayReset(void)
 		case DIRECT3D:
 			S9xDisplayOutput = &Direct3D;
 			break;
-#if DIRECTDRAW_DEFINED
+#if DIRECTDRAW_SUPPORT
 		case DIRECTDRAW:
 			S9xDisplayOutput = &DirectDraw;
 			break;
@@ -481,7 +481,7 @@ void ReduceToPath(TCHAR *filename)
 /* DirectDraw only begin */
 void SwitchToGDI()
 {
-#if DIRECTDRAW_DEFINED
+#if DIRECTDRAW_SUPPORT
 	if(GUI.outputMethod!=DIRECTDRAW)
 		return;
 
@@ -494,7 +494,7 @@ void SwitchToGDI()
 
 static void ClearSurface (LPDIRECTDRAWSURFACE2 lpDDSurface)
 {
-#if DIRECTDRAW_DEFINED
+#if DIRECTDRAW_SUPPORT
     DDBLTFX fx;
 
     memset (&fx, 0, sizeof (fx));
@@ -507,7 +507,7 @@ static void ClearSurface (LPDIRECTDRAWSURFACE2 lpDDSurface)
 
 void UpdateBackBuffer()
 {
-#if DIRECTDRAW_DEFINED
+#if DIRECTDRAW_SUPPORT
     if (GUI.outputMethod==DIRECTDRAW && GUI.FullScreen)
     {
         SwitchToGDI();
@@ -550,7 +550,7 @@ void UpdateBackBuffer()
 
 void RestoreGUIDisplay ()
 {
-#if DIRECTDRAW_DEFINED
+#if DIRECTDRAW_SUPPORT
 	if(GUI.outputMethod!=DIRECTDRAW)
 		return;
 
@@ -571,7 +571,7 @@ void RestoreGUIDisplay ()
 
 void RestoreSNESDisplay ()
 {
-#if DIRECTDRAW_DEFINED
+#if DIRECTDRAW_SUPPORT
 	if(GUI.outputMethod!=DIRECTDRAW)
 		return;
 

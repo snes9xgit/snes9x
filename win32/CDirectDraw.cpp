@@ -187,7 +187,7 @@
   Nintendo Co., Limited and its subsidiary companies.
  ***********************************************************************************/
 
-#if DIRECTDRAW_DEFINED
+#if DIRECTDRAW_SUPPORT
 
 // CDirectDraw.cpp: implementation of the CDirectDraw class.
 //

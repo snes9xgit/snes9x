@@ -17,7 +17,7 @@
 #include <algorithm>
 
 #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
-#if DIRECTDRAW_DEFINED
+#if DIRECTDRAW_SUPPORT
 #include <ddraw.h>
 #endif
 #include <d3d9.h>
@@ -3014,7 +3014,7 @@ const WCHAR* WINAPI DXGetErrorStringW( _In_ HRESULT hr )
 // -------------------------------------------------------------
 // ddraw.h error codes
 // -------------------------------------------------------------
-#if DIRECTDRAW_DEFINED
+#if DIRECTDRAW_SUPPORT
         CHK_ERRA(DDERR_ALREADYINITIALIZED)
         CHK_ERRA(DDERR_CANNOTATTACHSURFACE)
         CHK_ERRA(DDERR_CANNOTDETACHSURFACE)
@@ -6396,7 +6396,7 @@ const char* WINAPI DXGetErrorStringA(_In_ HRESULT hr)
             CHK_ERR_WIN32A(ERROR_IPSEC_IKE_NEG_STATUS_END)
 
 #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
-#if DIRECTDRAW_DEFINED
+#if DIRECTDRAW_SUPPORT
             // -------------------------------------------------------------
             // ddraw.h error codes
             // -------------------------------------------------------------
@@ -6864,7 +6864,7 @@ void WINAPI DXGetErrorDescriptionW( _In_ HRESULT hr, _Out_cap_(count) WCHAR* des
 // Commmented out codes are actually alises for other codes
 
 #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
-#if DIRECTDRAW_DEFINED
+#if DIRECTDRAW_SUPPORT
 // -------------------------------------------------------------
 // ddraw.h error codes
 // -------------------------------------------------------------
@@ -7387,7 +7387,7 @@ void WINAPI DXGetErrorDescriptionA(_In_ HRESULT hr, _Out_cap_(count) char* desc,
         // Commmented out codes are actually alises for other codes
 
 #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
-#if DIRECTDRAW_DEFINED
+#if DIRECTDRAW_SUPPORT
         // -------------------------------------------------------------
         // ddraw.h error codes
         // -------------------------------------------------------------
