@@ -5089,7 +5089,7 @@ INT_PTR CALLBACK DlgAboutProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 }
 INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	static TCHAR paths[8][MAX_PATH];
+	static TCHAR paths[9][MAX_PATH];
 	static int which = 0;
 	switch(msg)
 	{
@@ -5140,6 +5140,8 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 			SendDlgItemMessage(hDlg,IDC_DIRCOMBO,CB_ADDSTRING,0,(LPARAM)(LPCTSTR)SETTINGS_OPTION_DIRECTORY_PATCHESANDCHEATS);
 			lstrcpy(paths[inum++],GUI.BiosDir);
 			SendDlgItemMessage(hDlg,IDC_DIRCOMBO,CB_ADDSTRING,0,(LPARAM)(LPCTSTR)SETTINGS_OPTION_DIRECTORY_BIOS);
+			lstrcpy(paths[inum++],GUI.SatDir);
+			SendDlgItemMessage(hDlg,IDC_DIRCOMBO,CB_ADDSTRING,0,(LPARAM)(LPCTSTR)SETTINGS_OPTION_DIRECTORY_SATDATA);
 
 			SendDlgItemMessage(hDlg,IDC_DIRCOMBO,CB_SETCURSEL,(WPARAM)0,0);
  			SetDlgItemText(hDlg, IDC_CUSTOM_FOLDER_FIELD, paths[0]);
@@ -5202,6 +5204,7 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 					lstrcpy(GUI.SRAMFileDir,paths[inum++]);
 					lstrcpy(GUI.PatchDir,paths[inum++]);
 					lstrcpy(GUI.BiosDir,paths[inum++]);
+					lstrcpy(GUI.SatDir,paths[inum++]);
 
 					GUI.InactivePause = (BST_CHECKED==IsDlgButtonChecked(hDlg, IDC_INACTIVE_PAUSE));
 					GUI.CustomRomOpen = (BST_CHECKED==IsDlgButtonChecked(hDlg, IDC_CUSTOMROMOPEN));

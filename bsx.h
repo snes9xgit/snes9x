@@ -213,6 +213,16 @@ struct SBSX
 	bool	flash_gsr;
 	bool	flash_bsr;
 	bool	flash_cmd_done;
+
+	std::ifstream	sat_stream1;
+	std::ifstream	sat_stream2;
+
+	bool	sat_pf_latch1_enable, sat_dt_latch1_enable;
+	bool	sat_pf_latch2_enable, sat_dt_latch2_enable;
+
+	bool	sat_stream1_loaded, sat_stream2_loaded;
+	bool	sat_stream1_first, sat_stream2_first;
+	uint8	sat_stream1_count, sat_stream2_count;
 };
 
 extern struct SBSX	BSX;

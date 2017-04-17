@@ -207,6 +207,7 @@ enum s9x_getdirtype
 	IPS_DIR,
 	BIOS_DIR,
 	LOG_DIR,
+	SAT_DIR,
 	LAST_DIR
 };
 

@@ -218,6 +218,10 @@
 
 struct SBSX_RTC
 {
+	int year;
+	int month;
+	int dayweek;
+	int day;
 	int	hours;
 	int	minutes;
 	int	seconds;
@@ -893,6 +897,105 @@ void S9xSetBSX (uint8 byte, uint32 address)
 	}
 }
 
+void S9xBSXSetStream1 (uint8 count)
+{
+	if (BSX.sat_stream1.is_open()) BSX.sat_stream1.close(); //If Stream1 already opened for one file: Close it.
+
+	char path[PATH_MAX + 1], name[PATH_MAX + 1];
+
+	strcpy(path, S9xGetDirectory(SAT_DIR));
+	strcat(path, SLASH_STR);
+	
+	snprintf(name, PATH_MAX + 1, "BSX%04X-%d.bin", (BSX.PPU[0x2188 - BSXPPUBASE] | (BSX.PPU[0x2189 - BSXPPUBASE] * 256)), count); //BSXHHHH-DDD.bin
+	strcat(path, name);
+
+	BSX.sat_stream1.clear();
+	BSX.sat_stream1.open(path, std::ios::in | std::ios::binary);
+	if (BSX.sat_stream1.good())
+	{
+		BSX.sat_stream1.seekg(0, BSX.sat_stream1.end);
+		long str1size = BSX.sat_stream1.tellg();
+		BSX.sat_stream1.seekg(0, BSX.sat_stream1.beg);
+		float QueueSize = str1size / 22.;
+		BSX.PPU[0x218A - BSXPPUBASE] = (uint8)(ceil(QueueSize));
+		BSX.PPU[0x218D - BSXPPUBASE] = 0;
+		BSX.sat_stream1_first = TRUE;
+		BSX.sat_stream1_loaded = TRUE;
+	}
+	else
+	{
+		BSX.sat_stream1_loaded = FALSE;
+	}
+}
+
+void S9xBSXSetStream2 (uint8 count)
+{
+	if (BSX.sat_stream2.is_open()) BSX.sat_stream2.close(); //If Stream1 already opened for one file: Close it.
+
+	char path[PATH_MAX + 1], name[PATH_MAX + 1];
+
+	strcpy(path, S9xGetDirectory(SAT_DIR));
+	strcat(path, SLASH_STR);
+
+	snprintf(name, PATH_MAX + 1, "BSX%04X-%d.bin", (BSX.PPU[0x218E - BSXPPUBASE] | (BSX.PPU[0x218F - BSXPPUBASE] * 256)), count); //BSXHHHH-DDD.bin
+	strcat(path, name);
+
+	BSX.sat_stream2.clear();
+	BSX.sat_stream2.open(path, std::ios::in | std::ios::binary);
+	if (BSX.sat_stream2.good())
+	{
+		BSX.sat_stream2.seekg(0, BSX.sat_stream2.end);
+		long str2size = BSX.sat_stream2.tellg();
+		BSX.sat_stream2.seekg(0, BSX.sat_stream2.beg);
+		float QueueSize = str2size / 22.;
+		BSX.PPU[0x2190 - BSXPPUBASE] = (uint8)(ceil(QueueSize));
+		BSX.PPU[0x2193 - BSXPPUBASE] = 0;
+		BSX.sat_stream2_first = TRUE;
+		BSX.sat_stream2_loaded = TRUE;
+	}
+	else
+	{
+		BSX.sat_stream2_loaded = FALSE;
+	}
+}
+
+uint8 S9xBSXGetRTC (void)
+{
+	//Get Time
+	time_t		t;
+	struct tm	*tmr;
+
+	time(&t);
+	tmr = localtime(&t);
+
+	BSX.test2192[0] = 0x00;
+	BSX.test2192[1] = 0x00;
+	BSX.test2192[2] = 0x00;
+	BSX.test2192[3] = 0x00;
+	BSX.test2192[4] = 0x10;
+	BSX.test2192[5] = 0x01;
+	BSX.test2192[6] = 0x01;
+	BSX.test2192[7] = 0x00;
+	BSX.test2192[8] = 0x00;
+	BSX.test2192[9] = 0x00;
+	BSX.test2192[10] = BSX_RTC.seconds = tmr->tm_sec;
+	BSX.test2192[11] = BSX_RTC.minutes = tmr->tm_min;
+	BSX.test2192[12] = BSX_RTC.hours = tmr->tm_hour;
+	BSX.test2192[13] = BSX_RTC.dayweek = (tmr->tm_wday) + 1;
+	BSX.test2192[14] = BSX_RTC.day = tmr->tm_mday;
+	BSX.test2192[15] = BSX_RTC.month = (tmr->tm_mon) + 1;
+	BSX_RTC.year = tmr->tm_year + 1900;
+	BSX.test2192[16] = (BSX_RTC.year) & 0xFF;
+	BSX.test2192[17] = (BSX_RTC.year) >> 8;
+
+	t = BSX.test2192[BSX.out_index++];
+
+	if (BSX.out_index > 22)
+		BSX.out_index = 0;
+
+	return t;
+}
+
 uint8 S9xGetBSXPPU (uint16 address)
 {
 	uint8	t;
@@ -900,95 +1003,255 @@ uint8 S9xGetBSXPPU (uint16 address)
 	// known read registers
 	switch (address)
 	{
-		// Test register low? (r/w)
+		//Stream 1
+		// Logical Channel 1 + Data Structure (R/W)
 		case 0x2188:
 			t = BSX.PPU[0x2188 - BSXPPUBASE];
 			break;
 
-		// Test register high? (r/w)
+		// Logical Channel 2 (R/W) [6bit]
 		case 0x2189:
 			t = BSX.PPU[0x2189 - BSXPPUBASE];
 			break;
 
+		// Prefix Count (R)
 		case 0x218A:
-			t = BSX.PPU[0x218A - BSXPPUBASE];
+			if (!BSX.sat_pf_latch1_enable || !BSX.sat_dt_latch1_enable)
+			{
+				t = 0;
+				break;
+			}
+
+			if (BSX.PPU[0x2188 - BSXPPUBASE] == 0 && BSX.PPU[0x2189 - BSXPPUBASE] == 0)
+			{
+				t = 1;
+				break;
+			}
+
+			if (BSX.PPU[0x218A - BSXPPUBASE] <= 0)
+			{
+				BSX.sat_stream1_count++;
+				S9xBSXSetStream1(BSX.sat_stream1_count - 1);
+			}
+
+			if (!BSX.sat_stream1_loaded && (BSX.sat_stream1_count - 1) > 0)
+			{
+				BSX.sat_stream1_count = 1;
+				S9xBSXSetStream1(BSX.sat_stream1_count - 1);
+			}
+
+			if (BSX.sat_stream1_loaded)
+				t = BSX.PPU[0x218A - BSXPPUBASE];
+			else
+				t = 0;
 			break;
 
+		// Prefix Latch (R/W)
+		case 0x218B:
+			if (BSX.sat_pf_latch1_enable)
+			{
+				if (BSX.PPU[0x2188 - BSXPPUBASE] == 0 && BSX.PPU[0x2189 - BSXPPUBASE] == 0)
+				{
+					BSX.PPU[0x218B - BSXPPUBASE] = 0x90;
+				}
+
+				if (BSX.sat_stream1_loaded)
+				{
+					uint8 temp = 0;
+					if (BSX.sat_stream1_first)
+					{
+						// First packet
+						temp |= 0x10;
+						BSX.sat_stream1_first = FALSE;
+					}
+
+					BSX.PPU[0x218A - BSXPPUBASE]--;
+
+					if (BSX.PPU[0x218A - BSXPPUBASE] == 0)
+					{
+						//Last packet
+						temp |= 0x80;
+					}
+
+					BSX.PPU[0x218B - BSXPPUBASE] = temp;
+				}
+
+				BSX.PPU[0x218D - BSXPPUBASE] |= BSX.PPU[0x218B - BSXPPUBASE];
+				t = BSX.PPU[0x218B - BSXPPUBASE];
+			}
+			else
+			{
+				t = 0;
+			}
+			break;
+
+		// Data Latch (R/W)
 		case 0x218C:
-			t = BSX.PPU[0x218C - BSXPPUBASE];
+			if (BSX.sat_dt_latch1_enable)
+			{
+				if (BSX.PPU[0x2188 - BSXPPUBASE] == 0 && BSX.PPU[0x2189 - BSXPPUBASE] == 0)
+				{
+					BSX.PPU[0x218C - BSXPPUBASE] = S9xBSXGetRTC();
+				}
+				else if (BSX.sat_stream1_loaded)
+				{
+					if (BSX.sat_stream1.eof())
+						BSX.PPU[0x218C - BSXPPUBASE] = 0xFF;
+					else
+						BSX.PPU[0x218C - BSXPPUBASE] = BSX.sat_stream1.get();
+				}
+				t = BSX.PPU[0x218C - BSXPPUBASE];
+			}
+			else
+			{
+				t = 0;
+			}
 			break;
 
-		// Transmission number low? (r/w)
+		// OR gate (R)
+		case 0x218D:
+			t = BSX.PPU[0x218D - BSXPPUBASE];
+			BSX.PPU[0x218D - BSXPPUBASE] = 0;
+			break;
+
+		//Stream 2
+		// Logical Channel 1 + Data Structure (R/W)
 		case 0x218E:
 			t = BSX.PPU[0x218E - BSXPPUBASE];
 			break;
 
-		// Transmission number high? (r/w)
+		// Logical Channel 2 (R/W) [6bit]
 		case 0x218F:
 			t = BSX.PPU[0x218F - BSXPPUBASE];
 			break;
 
-		// Status register? (r)
+		// Prefix Count (R)
 		case 0x2190:
-			t = BSX.PPU[0x2190 - BSXPPUBASE];
+			if (!BSX.sat_pf_latch2_enable || !BSX.sat_dt_latch2_enable)
+			{
+				t = 0;
+				break;
+			}
+
+			if (BSX.PPU[0x218E - BSXPPUBASE] == 0 && BSX.PPU[0x218F - BSXPPUBASE] == 0)
+			{
+				t = 1;
+				break;
+			}
+
+			if (BSX.PPU[0x2190 - BSXPPUBASE] <= 0)
+			{
+				BSX.sat_stream2_count++;
+				S9xBSXSetStream2(BSX.sat_stream2_count - 1);
+			}
+
+			if (!BSX.sat_stream2_loaded && (BSX.sat_stream2_count - 1) > 0)
+			{
+				BSX.sat_stream2_count = 1;
+				S9xBSXSetStream2(BSX.sat_stream2_count - 1);
+			}
+
+			if (BSX.sat_stream2_loaded)
+				t = BSX.PPU[0x2190 - BSXPPUBASE];
+			else
+				t = 0;
 			break;
 
-		// Data register? (r/w)
+		// Prefix Latch (R/W)
+		case 0x2191:
+			if (BSX.sat_pf_latch2_enable)
+			{
+				if (BSX.PPU[0x218E - BSXPPUBASE] == 0 && BSX.PPU[0x218F - BSXPPUBASE] == 0)
+				{
+					BSX.PPU[0x2191 - BSXPPUBASE] = 0x90;
+				}
+
+				if (BSX.sat_stream2_loaded)
+				{
+					uint8 temp = 0;
+					if (BSX.sat_stream2_first)
+					{
+						// First packet
+						temp |= 0x10;
+						BSX.sat_stream2_first = FALSE;
+					}
+
+					BSX.PPU[0x2190 - BSXPPUBASE]--;
+
+					if (BSX.PPU[0x2190 - BSXPPUBASE] == 0)
+					{
+						//Last packet
+						temp |= 0x80;
+					}
+
+					BSX.PPU[0x2191 - BSXPPUBASE] = temp;
+				}
+
+				BSX.PPU[0x2193 - BSXPPUBASE] |= BSX.PPU[0x2191 - BSXPPUBASE];
+				t = BSX.PPU[0x2191 - BSXPPUBASE];
+			}
+			else
+			{
+				t = 0;
+			}
+			break;
+
+		// Data Latch (R/W)
 		case 0x2192:
-			// t = BSX.PPU[0x2192 - BSXPPUBASE];
-
-			// test
-			t = BSX.test2192[BSX.out_index++];
-			if (BSX.out_index == 32)
-				BSX.out_index = 0;
-
-			BSX_RTC.ticks++;
-			if (BSX_RTC.ticks >= 1000)
+			if (BSX.sat_dt_latch2_enable)
 			{
-				BSX_RTC.ticks = 0;
-				BSX_RTC.seconds++;
+				if (BSX.PPU[0x218E - BSXPPUBASE] == 0 && BSX.PPU[0x218F - BSXPPUBASE] == 0)
+				{
+					BSX.PPU[0x2192 - BSXPPUBASE] = S9xBSXGetRTC();
+				}
+				else if (BSX.sat_stream2_loaded)
+				{
+					if (BSX.sat_stream2.eof())
+						BSX.PPU[0x2192 - BSXPPUBASE] = 0xFF;
+					else
+						BSX.PPU[0x2192 - BSXPPUBASE] = BSX.sat_stream2.get();
+				}
+				t = BSX.PPU[0x2192 - BSXPPUBASE];
 			}
-			if (BSX_RTC.seconds >= 60)
+			else
 			{
-				BSX_RTC.seconds = 0;
-				BSX_RTC.minutes++;
+				t = 0;
 			}
-			if (BSX_RTC.minutes >= 60)
-			{
-				BSX_RTC.minutes = 0;
-				BSX_RTC.hours++;
-			}
-			if (BSX_RTC.hours >= 24)
-				BSX_RTC.hours = 0;
-
-			BSX.test2192[10] = BSX_RTC.seconds;
-			BSX.test2192[11] = BSX_RTC.minutes;
-			BSX.test2192[12] = BSX_RTC.hours;
-
 			break;
 
-		// Transmission status? (r/w)
+		// OR gate (R)
 		case 0x2193:
-			// Data ready when bits 2/3 clear?
-			t = BSX.PPU[0x2193 - BSXPPUBASE] & ~0x0C;
+			t = BSX.PPU[0x2193 - BSXPPUBASE];
+			BSX.PPU[0x2193 - BSXPPUBASE] = 0;
 			break;
 
-		// Reset? (r/w)
+		//Other
+		// Satellaview LED / Stream Enable (R/W) [4bit]
 		case 0x2194:
 			t = BSX.PPU[0x2194 - BSXPPUBASE];
 			break;
 
-		// Unknown (r)
+		// Unknown
+		case 0x2195:
+			t = BSX.PPU[0x2195 - BSXPPUBASE];
+			break;
+
+		// Satellaview Status (R)
 		case 0x2196:
 			t = BSX.PPU[0x2196 - BSXPPUBASE];
 			break;
 
-		// Unknown (r/w)
+		// Soundlink Settings (R/W)
 		case 0x2197:
 			t = BSX.PPU[0x2197 - BSXPPUBASE];
 			break;
 
-		// Modem protocol? (r/w)
+		// Serial I/O - Serial Number (R/W)
+		case 0x2198:
+			t = BSX.PPU[0x2198 - BSXPPUBASE];
+			break;
+
+		// Serial I/O - Unknown (R/W)
 		case 0x2199:
 			t = BSX.PPU[0x2199 - BSXPPUBASE];
 			break;
@@ -1006,77 +1269,81 @@ void S9xSetBSXPPU (uint8 byte, uint16 address)
 	// known write registers
 	switch (address)
 	{
-		// Test register low? (r/w)
+		//Stream 1
+		// Logical Channel 1 + Data Structure (R/W)
 		case 0x2188:
+			if (BSX.PPU[0x2188 - BSXPPUBASE] == byte)
+			{
+				BSX.sat_stream1_count = 0;
+			}
 			BSX.PPU[0x2188 - BSXPPUBASE] = byte;
 			break;
 
-		// Test register high? (r/w)
+		// Logical Channel 2 (R/W) [6bit]
 		case 0x2189:
-			BSX.PPU[0x2189 - BSXPPUBASE] = byte;
+			if (BSX.PPU[0x2188 - BSXPPUBASE] == (byte & 0x3F))
+			{
+				BSX.sat_stream1_count = 0;
+			}
+			BSX.PPU[0x2189 - BSXPPUBASE] = byte & 0x3F;
 			break;
 
-		case 0x218A:
-			BSX.PPU[0x218A - BSXPPUBASE] = byte;
-			break;
-
+		// Prefix Latch (R/W)
 		case 0x218B:
-			BSX.PPU[0x218B - BSXPPUBASE] = byte;
+			BSX.sat_pf_latch1_enable = (byte != 0);
 			break;
 
+		// Data Latch (R/W)
 		case 0x218C:
-			BSX.PPU[0x218C - BSXPPUBASE] = byte;
+			if (BSX.PPU[0x2188 - BSXPPUBASE] == 0 && BSX.PPU[0x2189 - BSXPPUBASE] == 0)
+			{
+				BSX.out_index = 0;
+			}
+			BSX.sat_dt_latch1_enable = (byte != 0);
 			break;
 
-		// Transmission number low? (r/w)
+		//Stream 2
+		// Logical Channel 1 + Data Structure (R/W)
 		case 0x218E:
+			if (BSX.PPU[0x218E - BSXPPUBASE] == byte)
+			{
+				BSX.sat_stream2_count = 0;
+			}
 			BSX.PPU[0x218E - BSXPPUBASE] = byte;
 			break;
 
-		// Transmission number high? (r/w)
+		// Logical Channel 2 (R/W) [6bit]
 		case 0x218F:
-			BSX.PPU[0x218F - BSXPPUBASE] = byte;
-
-			// ?
-			BSX.PPU[0x218E - BSXPPUBASE] >>= 1;
-			BSX.PPU[0x218E - BSXPPUBASE] = BSX.PPU[0x218F - BSXPPUBASE] - BSX.PPU[0x218E - BSXPPUBASE];
-			BSX.PPU[0x218F - BSXPPUBASE] >>= 1;
-
-			BSX.PPU[0x2190 - BSXPPUBASE] = 0x80; // ?
+			if (BSX.PPU[0x218F - BSXPPUBASE] == (byte & 0x3F))
+			{
+				BSX.sat_stream2_count = 0;
+			}
+			BSX.PPU[0x218F - BSXPPUBASE] = byte & 0x3F;
 			break;
 
-		// Strobe assert? (w)
+		// Prefix Latch (R/W)
 		case 0x2191:
-			BSX.PPU[0x2191 - BSXPPUBASE] = byte;
-			BSX.out_index = 0;
+			BSX.sat_pf_latch2_enable = (byte != 0);
 			break;
 
-		// Data register? (r/w)
+		// Data Latch (R/W)
 		case 0x2192:
-			BSX.PPU[0x2192 - BSXPPUBASE] = 0x01; // ?
-			BSX.PPU[0x2190 - BSXPPUBASE] = 0x80; // ?
+			if (BSX.PPU[0x218E - BSXPPUBASE] == 0 && BSX.PPU[0x218F - BSXPPUBASE] == 0)
+			{
+				BSX.out_index = 0;
+			}
+			BSX.sat_dt_latch2_enable = (byte != 0);
 			break;
 
-		// Transmission status? (r/w)
-		case 0x2193:
-			BSX.PPU[0x2193 - BSXPPUBASE] = byte;
-			break;
-
-		// Reset? (r/w)
+		//Other
+		// Satellaview LED / Stream Enable (R/W) [4bit]
 		case 0x2194:
-			BSX.PPU[0x2194 - BSXPPUBASE] = byte;
+			BSX.PPU[0x2194 - BSXPPUBASE] = byte & 0x0F;
 			break;
 
-		// Unknown (r/w)
+		// Soundlink Settings (R/W)
 		case 0x2197:
 			BSX.PPU[0x2197 - BSXPPUBASE] = byte;
-			break;
-
-		// Modem protocol? (r/w)
-		case 0x2199:
-			// Lots of modem strings written here when
-			// connection is lost or no uplink established
-			BSX.PPU[0x2199 - BSXPPUBASE] = byte;
 			break;
 	}
 }
@@ -1196,7 +1463,7 @@ void S9xInitBSX (void)
 	{
 		MapROM = NULL;
 		FlashROM = Memory.ROM;
-
+		/*
 		time_t		t;
 		struct tm	*tmr;
 
@@ -1211,6 +1478,7 @@ void S9xInitBSX (void)
 #ifdef BSX_DEBUG
 		printf("BS: Current Time: %02d:%02d:%02d\n",  BSX_RTC.hours, BSX_RTC.minutes, BSX_RTC.seconds);
 #endif
+		*/
 		SNESGameFixes.SRAMInitialValue = 0x00;
 	}
 }
@@ -1242,6 +1510,14 @@ void S9xResetBSX (void)
 
 	BSX.MMC[0x07] = BSX.MMC[0x08] = 0x80;
 	BSX.MMC[0x0E] = 0x80;
+
+	// stream reset
+	BSX.sat_pf_latch1_enable, BSX.sat_dt_latch1_enable = FALSE;
+	BSX.sat_pf_latch2_enable, BSX.sat_dt_latch2_enable = FALSE;
+
+	BSX.sat_stream1_loaded, BSX.sat_stream2_loaded = FALSE;
+	BSX.sat_stream1_first, BSX.sat_stream2_first = FALSE;
+	BSX.sat_stream1_count, BSX.sat_stream2_count = 0;
 
 	BSX_Map();
 }
