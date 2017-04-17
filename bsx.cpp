@@ -899,7 +899,8 @@ void S9xSetBSX (uint8 byte, uint32 address)
 
 void S9xBSXSetStream1 (uint8 count)
 {
-	if (BSX.sat_stream1.is_open()) BSX.sat_stream1.close(); //If Stream1 already opened for one file: Close it.
+    if (BSX.sat_stream1.is_open())
+        BSX.sat_stream1.close(); //If Stream1 already opened for one file: Close it.
 
 	char path[PATH_MAX + 1], name[PATH_MAX + 1];
 
@@ -930,7 +931,8 @@ void S9xBSXSetStream1 (uint8 count)
 
 void S9xBSXSetStream2 (uint8 count)
 {
-	if (BSX.sat_stream2.is_open()) BSX.sat_stream2.close(); //If Stream1 already opened for one file: Close it.
+    if (BSX.sat_stream2.is_open())
+        BSX.sat_stream2.close(); //If Stream1 already opened for one file: Close it.
 
 	char path[PATH_MAX + 1], name[PATH_MAX + 1];
 
@@ -1519,7 +1521,14 @@ void S9xResetBSX (void)
 	BSX.sat_stream1_first, BSX.sat_stream2_first = FALSE;
 	BSX.sat_stream1_count, BSX.sat_stream2_count = 0;
 
-	BSX_Map();
+    if (BSX.sat_stream1.is_open())
+        BSX.sat_stream1.close();
+
+    if (BSX.sat_stream2.is_open())
+        BSX.sat_stream2.close();
+
+    if (Settings.BS)
+	    BSX_Map();
 }
 
 void S9xBSXPostLoadState (void)
