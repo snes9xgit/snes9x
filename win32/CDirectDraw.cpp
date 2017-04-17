@@ -188,6 +188,7 @@
  ***********************************************************************************/
 
 #if DIRECTDRAW_SUPPORT
+#pragma comment( lib, "ddraw" )
 
 // CDirectDraw.cpp: implementation of the CDirectDraw class.
 //
