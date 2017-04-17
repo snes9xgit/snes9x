@@ -191,6 +191,8 @@
 #ifndef _BSX_H_
 #define _BSX_H_
 
+#include <fstream>
+
 struct SBSX
 {
 	bool8	dirty;			// Changed register values
