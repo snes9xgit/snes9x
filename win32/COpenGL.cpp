@@ -219,11 +219,7 @@ COpenGL::COpenGL(void)
 	shaderProgram = 0;
     vertexShader = 0;
     fragmentShader = 0;
-	cgContext = NULL;
-	cgVertexProgram = cgFragmentProgram = NULL;
-	cgAvailable = false;
 	frameCount = 0;
-	cgShader = NULL;
 }
 
 COpenGL::~COpenGL(void)
@@ -295,12 +291,6 @@ bool COpenGL::Initialize(HWND hWnd)
 	glVertexPointer(2, GL_FLOAT, 0, vertices);
 	glTexCoordPointer(2, GL_FLOAT, 0, texcoords);
 
-	cgAvailable = loadCgFunctions();
-	if(cgAvailable) {
-		cgContext = cgCreateContext();
-		cgShader = new CGLCG(cgContext);
-	}
-
 	ApplyDisplayChanges();
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
@@ -333,13 +323,6 @@ void COpenGL::DeInitialize()
 	afterRenderHeight = 0;
 	shaderFunctionsLoaded = false;
 	shader_type = OGL_SHADER_NONE;
-	if(cgShader) {
-		delete cgShader;
-		cgShader = NULL;
-	}
-	if(cgAvailable)
-		unloadCgLibrary();
-	cgAvailable = false;
 }
 
 void COpenGL::CreateDrawSurface()
@@ -491,17 +474,6 @@ void COpenGL::Render(SSurface Src)
 
 			location = glGetUniformLocation (shaderProgram, "rubyTextureSize");
 			glUniform2fv (location, 1, textureSize);
-		} else if(shader_type == OGL_SHADER_CG) {
-			xySize inputSize = { (float)afterRenderWidth, (float)afterRenderHeight };
-			RECT windowSize, displayRect;
-			GetClientRect(hWnd,&windowSize);
-			xySize xywindowSize = { (double)windowSize.right, (double)windowSize.bottom };
-			//Get maximum rect respecting AR setting
-			displayRect=CalculateDisplayRect(windowSize.right,windowSize.bottom,windowSize.right,windowSize.bottom);
-			xySize viewportSize = { (double)(displayRect.right - displayRect.left),
-				                    (double)(displayRect.bottom - displayRect.top) };
-			xySize textureSize = { (double)quadTextureSize, (double)quadTextureSize };
-			cgShader->Render(drawTexture, textureSize, inputSize, viewportSize, xywindowSize);
 		}
     }
 
@@ -693,53 +665,9 @@ bool COpenGL::LoadShaderFunctions()
 
 bool COpenGL::SetShaders(const TCHAR *file)
 {
-	SetShadersCG(NULL);
 	SetShadersGLSL(NULL);
 	shader_type = OGL_SHADER_NONE;
-	if(file!=NULL && (
-		(lstrlen(file)>3 && _tcsncicmp(&file[lstrlen(file)-3],TEXT(".cg"),3)==0) ||
-		(lstrlen(file)>4 && _tcsncicmp(&file[lstrlen(file)-4],TEXT(".cgp"),4)==0))) {
-		return SetShadersCG(file);
-	} else {
-		return SetShadersGLSL(file);
-	}
-}
-
-void COpenGL::checkForCgError(const char *situation)
-{
-	char buffer[4096];
-	CGerror error = cgGetError();
-	const char *string = cgGetErrorString(error);
-
-	if (error != CG_NO_ERROR) {
-		sprintf(buffer,
-			  "Situation: %s\n"
-			  "Error: %s\n\n"
-			  "Cg compiler output...\n", situation, string);
-		MessageBoxA(0, buffer,
-				  "Cg error", MB_OK|MB_ICONEXCLAMATION);
-		if (error == CG_COMPILER_ERROR) {
-			MessageBoxA(0, cgGetLastListing(cgContext),
-					  "Cg compilation error", MB_OK|MB_ICONEXCLAMATION);
-		}
-	}
-}
-
-bool COpenGL::SetShadersCG(const TCHAR *file)
-{
-	if(!cgAvailable) {
-		if(file)
-			MessageBox(NULL, TEXT("The CG runtime is unavailable, CG shaders will not run.\nConsult the snes9x readme for information on how to obtain the runtime."), TEXT("CG Error"),
-				MB_OK|MB_ICONEXCLAMATION);
-        return false;
-    }
-
-	if(!cgShader->LoadShader(file))
-		return false;
-
-	shader_type = OGL_SHADER_CG;
-
-	return true;
+	return SetShadersGLSL(file);
 }
 
 bool COpenGL::SetShadersGLSL(const TCHAR *glslFileName)
