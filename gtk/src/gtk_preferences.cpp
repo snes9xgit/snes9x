@@ -19,21 +19,20 @@ gboolean
 snes9x_preferences_open (GtkWidget *widget,
                          gpointer  data)
 {
-    Snes9xPreferences *preferences;
     Snes9xWindow      *window = ((Snes9xWindow *) data);
     Snes9xConfig      *config = window->config;
 
     window->pause_from_focus_change ();
 
-    preferences = new Snes9xPreferences (config);
-    gtk_window_set_transient_for (preferences->get_window (),
+    Snes9xPreferences preferences (config);
+    gtk_window_set_transient_for (preferences.get_window (),
                                   window->get_window ());
 
 #ifdef USE_JOYSTICK
     config->set_joystick_mode (JOY_MODE_GLOBAL);
 #endif
 
-    preferences->show ();
+    preferences.show ();
     window->unpause_from_focus_change ();
 
 #ifdef USE_JOYSTICK
@@ -42,8 +41,6 @@ snes9x_preferences_open (GtkWidget *widget,
 
     config->reconfigure ();
     window->update_accels ();
-
-    delete preferences;
 
     return TRUE;
 }
