@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Snes9X\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-03 03:09-0400\n"
-"PO-Revision-Date: 2016-08-03 04:22-0400\n"
-"Last-Translator: Pablo Lezaeta <prflr88@gmail.com>\n"
+"POT-Creation-Date: 2017-25-04 03:40-0300\n"
+"PO-Revision-Date: 2017-25-04 03:40-0300\n"
+"Last-Translator: Pablo Lezaeta Reyes <prflr88@gmail.com>\n"
 "Language-Team: Spanish / Español\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -305,11 +305,11 @@ msgstr "Abrir Reciente"
 
 #: gtk/src/snes9x.ui:1071
 msgid "Open with _NetPlay..."
-msgstr "Abrir con el juego e_n red..."
+msgstr "Abrir con juego e_n red..."
 
 #: gtk/src/snes9x.ui:1074
 msgid "Open a ROM to use with NetPlay"
-msgstr "Abrir imagen ROM para usar con juego en red"
+msgstr "Abrir la ROM para usar con juego en red"
 
 #: gtk/src/snes9x.ui:1085
 msgid "Open _MultiCart..."
@@ -437,23 +437,23 @@ msgstr "_Cambiar tamaño"
 
 #: gtk/src/snes9x.ui:1559
 msgid "_1x"
-msgstr "_1x"
+msgstr "_1 x"
 
 #: gtk/src/snes9x.ui:1568
 msgid "_2x"
-msgstr "_2x"
+msgstr "_2 x"
 
 #: gtk/src/snes9x.ui:1577
 msgid "_3x"
-msgstr "_3x"
+msgstr "_3 x"
 
 #: gtk/src/snes9x.ui:1586
 msgid "_4x"
-msgstr "_4x"
+msgstr "_4 x"
 
 #: gtk/src/snes9x.ui:1595
 msgid "_5x"
-msgstr "_5x"
+msgstr "_5 x"
 
 #: gtk/src/snes9x.ui:1612
 msgid "_Fullscreen"
@@ -501,7 +501,7 @@ msgstr "_Preferencias..."
 
 #: gtk/src/snes9x.ui:1826
 msgid "Open Multiple ROM Images (MultiCart)"
-msgstr "Abrir múltiples imágenes ROM (Multicartucho)"
+msgstr "Abrir múltiples imágened ROM (Multicartucho)"
 
 #: gtk/src/snes9x.ui:1889
 msgid "Slot A:"
@@ -529,7 +529,7 @@ msgid ""
 "the server will send the ROM image"
 msgstr ""
 "El juego seleccionado será cargado antes de conectarse. Este campo debe "
-"dejarse en blanco si el servidor envía la ROM"
+"estar en blanco si el servidor envía la ROM"
 
 #: gtk/src/snes9x.ui:2061 gtk/src/snes9x.ui:3772 gtk/src/snes9x.ui:4701
 #: gtk/src/snes9x.ui:4716 gtk/src/snes9x.ui:4733 gtk/src/snes9x.ui:4750
@@ -552,7 +552,7 @@ msgstr "Conectar a otro equipo"
 #: gtk/src/snes9x.ui:2136
 msgid "Connect to another computer that is running Snes9x NetPlay as a server"
 msgstr ""
-"Conectar a otro equipo que este ejecutando el juego en red de Snes9xcomo "
+"Conectar a otro equipo que este ejecutando el juego en red de Snes9x como "
 "servidor"
 
 #: gtk/src/snes9x.ui:2156
@@ -725,7 +725,7 @@ msgstr "S-Video"
 
 #: gtk/src/snes9x.ui:3009
 msgid "RGB"
-msgstr "RGB o RVA"
+msgstr "RVA (RGB)"
 
 #: gtk/src/snes9x.ui:3023
 msgid "Monochrome"
@@ -825,7 +825,7 @@ msgstr "Usar objetos del búfer de píxeles"
 
 #: gtk/src/snes9x.ui:3670
 msgid "Can be faster or slower depending on drivers"
-msgstr "Puede ser más rápido o más lento dependiendo de los conductores"
+msgstr "Puede ser más rápido o más lento dependiendo de los controladores"
 
 #: gtk/src/snes9x.ui:3690
 msgid "Different formats can yield highly different performance"
@@ -841,7 +841,7 @@ msgstr "Usar sombras GLSL:"
 
 #: gtk/src/snes9x.ui:3804
 msgid "Force an inverted byte-ordering"
-msgstr "Forzar una orden de bytes invertido"
+msgstr "Fuerza una orden de bytes invertido"
 
 #: gtk/src/snes9x.ui:3808
 msgid ""
@@ -1192,7 +1192,7 @@ msgstr "Aumentar los tiempos de los cuadros"
 
 #: gtk/src/snes9x.ui:6421
 msgid "Decrease frame time"
-msgstr "Disminuir los riempos de los cuadros"
+msgstr "Disminuir los tiempos de los cuadros"
 
 #: gtk/src/snes9x.ui:6435
 msgid "Increase frame rate"
@@ -1224,19 +1224,18 @@ msgstr "Alternar capa BG 0"
 
 #: gtk/src/snes9x.ui:6777
 msgid "Toggle BG layer 1"
-msgstr "Alternar capa BG 1"
-
+msgstr "Alternar capa de fondo 1"
 #: gtk/src/snes9x.ui:6791
 msgid "Toggle BG layer 2"
-msgstr "Alternar capa BG 2"
+msgstr "Alternar capa de fondo 2"
 
 #: gtk/src/snes9x.ui:6805
 msgid "Toggle BG layer 3"
-msgstr "Alternar capa BG 3"
+msgstr "Alternar capa de fondo 3"
 
 #: gtk/src/snes9x.ui:6819
 msgid "Toggle sprites"
-msgstr "Alternar sprites"
+msgstr "Alternar «sprites»"
 
 #: gtk/src/snes9x.ui:6833
 msgid "BG layering hack"
@@ -1304,35 +1303,35 @@ msgstr "Estados guardados"
 
 #: gtk/src/snes9x.ui:7741
 msgid "Toggle sound channel 0"
-msgstr "Alternar canal de Sonido 0"
+msgstr "Alternar canal de sonido 0"
 
 #: gtk/src/snes9x.ui:7753
 msgid "Toggle sound channel 1"
-msgstr "Alternar canal de Sonido 1"
+msgstr "Alternar canal de sonido 1"
 
 #: gtk/src/snes9x.ui:7767
 msgid "Toggle sound channel 2"
-msgstr "Alternar canal de Sonido 2"
+msgstr "Alternar canal de sonido 2"
 
 #: gtk/src/snes9x.ui:7781
 msgid "Toggle sound channel 3"
-msgstr "Alternar canal de Sonido 3"
+msgstr "Alternar canal de sonido 3"
 
 #: gtk/src/snes9x.ui:7795
 msgid "Toggle sound channel 4"
-msgstr "Alternar canal de Sonido 4"
+msgstr "Alternar canal de sonido 4"
 
 #: gtk/src/snes9x.ui:7809
 msgid "Toggle sound channel 5"
-msgstr "Alternar canal de Sonido 5"
+msgstr "Alternar canal de sonido 5"
 
 #: gtk/src/snes9x.ui:7823
 msgid "Toggle sound channel 6"
-msgstr "Alternar canal de Sonido 6"
+msgstr "Alternar canal de sonido 6"
 
 #: gtk/src/snes9x.ui:7837
 msgid "Toggle sound channel 7"
-msgstr "Alternar canal de Sonido 7"
+msgstr "Alternar canal de sonido 7"
 
 #: gtk/src/snes9x.ui:7851
 msgid "Toggle all sound channels"
@@ -1584,12 +1583,12 @@ msgstr ""
 "\n"
 "  (C) Derechos de autor 2006-2007 nitsuja\n"
 "\n"
-"  (C) Derechos de autor 2009-2011 BearOso,\n"
+"  (C) Derechos de autor 2009-2016 BearOso,\n"
 "                             OV2\n"
 "\n"
-"  (C) Derechos de autor 2011 - 2016  Hans-Kristian Arntzen,\n"
+"  (C) Derechos de autor 2011-2016  Hans-Kristian Arntzen,\n"
 "                             Daniel De Matteis\n"
-"                             (Under no circumstances will commercial rights be given)\n"
+"                       (Bajo ninguna circunstancia se darán derechos comerciales)\n"
 "\n"
 "\n"
 "  Código emulador de BS-X C\n"
@@ -1716,10 +1715,10 @@ msgstr ""
 "  (C) Derechos de autor 1998-2001 John Stiles\n"
 "  (C) Derechos de autor 2001-2011 zones\n"
 "\n"
-"  Libretro port\n"
-"  (c) Derechos de autor 2011 - 2016  Hans-Kristian Arntzen,\n"
+"  Puerto Libretro\n"
+"  (C) Derechos de autor 2011-2016  Hans-Kristian Arntzen,\n"
 "                             Daniel De Matteis\n"
-"                             (Under no circumstances will commercial rights be given)\n"
+"                       (Bajo ninguna circunstancia se darán derechos comerciales)\n"
 "\n"
 "  Puertos específicos contienen el trabajo de otros autores. Véase las "
 "cabeceras de\n"
@@ -1804,12 +1803,12 @@ msgid "Rotate all axes to their maximum values, then press OK"
 msgstr "Ruede todos los ejes hasta su máximo valor, entonces presione Ok/Aceptar"
 
 msgid "GTK port version: "
-msgstr "Puerto de la version gtk: "
+msgstr "Puerto de la version GTK: "
 
 msgid "English localization by Brandon Wright"
 msgstr ""
-"Localización al inglés por Brandon Wright/nLocalización al español por "
-"INUKAZE, Jristz"
+"Localización al inglés por Brandon Wright"
+"\nLocalización al español por INUKAZE, Jristz"
 
 msgid ""
 "\n"
@@ -1908,6 +1907,9 @@ msgstr "%sAnfitrión del juego en red - %s"
 msgid "Paused - "
 msgstr "Pausado -"
 
+msgid " - Saved"
+msgstr " - Guardado"
+
 msgid "%s%s on NetPlay %s:%d - Player %d"
 msgstr "%s%s en juego en red %s:%d - Jugador %d"
 
@@ -1943,7 +1945,7 @@ msgstr ""
 "<i>Suma de verificación cumplida: </i> %04X\n"
 "<i>Suma de verificación actual: </i> %04X\n"
 "<i>Vídeo: </i> %s\n"
-"<i>CRC32: </i> %08X\n"
+"<i>Suma CRC32: </i> %08X\n"
 "<i>Revisión: </i> %s<b><i>%s</i></b>"
 
 msgid ""
@@ -1982,6 +1984,9 @@ msgstr "El mismo lugar que el juego actual"
 msgid "saved"
 msgstr "guardado"
 
+msgid "loaded"
+msgstr "cargado"
+
 msgid "Mbits"
 msgstr " Mbits"
 
@@ -1993,6 +1998,18 @@ msgstr "Calibrado completado"
 
 msgid "Current joystick centers has been saved"
 msgstr "Los centros de ejes del mando fueron guardados"
+
+msgid "Super NES Emulator"
+msgstr "Emulador de Super NES"
+
+msgid "Tab"
+msgstr "Mayús"
+
+msgid "snes9x"
+msgstr "Snes9x"
+
+msgid "Rewind"
+msgstr "Rebobinar"
 
 #~ msgid "bad option name: %s\n"
 #~ msgstr "Nombre de opcion mala: %s\n"
