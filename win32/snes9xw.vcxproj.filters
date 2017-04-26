@@ -105,19 +105,7 @@
     <ClInclude Include="IS9xSoundOutput.h">
       <Filter>GUI\SoundDriver</Filter>
     </ClInclude>
-    <ClInclude Include="CCGShader.h">
-      <Filter>GUI\VideoDriver</Filter>
-    </ClInclude>
-    <ClInclude Include="CD3DCG.h">
-      <Filter>GUI\VideoDriver</Filter>
-    </ClInclude>
     <ClInclude Include="CDirectDraw.h">
-      <Filter>GUI\VideoDriver</Filter>
-    </ClInclude>
-    <ClInclude Include="cgFunctions.h">
-      <Filter>GUI\VideoDriver</Filter>
-    </ClInclude>
-    <ClInclude Include="CGLCG.h">
       <Filter>GUI\VideoDriver</Filter>
     </ClInclude>
     <ClInclude Include="COpenGL.h">
@@ -458,22 +446,10 @@
     <ClCompile Include="CXAudio2.cpp">
       <Filter>GUI\SoundDriver</Filter>
     </ClCompile>
-    <ClCompile Include="CCGShader.cpp">
-      <Filter>GUI\VideoDriver</Filter>
-    </ClCompile>
-    <ClCompile Include="CD3DCG.cpp">
-      <Filter>GUI\VideoDriver</Filter>
-    </ClCompile>
     <ClCompile Include="CDirect3D.cpp">
       <Filter>GUI\VideoDriver</Filter>
     </ClCompile>
     <ClCompile Include="CDirectDraw.cpp">
-      <Filter>GUI\VideoDriver</Filter>
-    </ClCompile>
-    <ClCompile Include="cgFunctions.cpp">
-      <Filter>GUI\VideoDriver</Filter>
-    </ClCompile>
-    <ClCompile Include="CGLCG.cpp">
       <Filter>GUI\VideoDriver</Filter>
     </ClCompile>
     <ClCompile Include="COpenGL.cpp">

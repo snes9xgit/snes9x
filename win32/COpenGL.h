@@ -194,14 +194,12 @@
 
 #include <windows.h>
 #include <gl\gl.h>
-#include "cgFunctions.h"
-#include "CGLCG.h"
 
 #include "glext.h"
 #include "wglext.h"
 #include "IS9xDisplayOutput.h"
 
-enum current_ogl_shader_type { OGL_SHADER_NONE, OGL_SHADER_GLSL, OGL_SHADER_CG };
+enum current_ogl_shader_type { OGL_SHADER_NONE, OGL_SHADER_GLSL };
 
 class COpenGL : public IS9xDisplayOutput
 {
@@ -227,12 +225,7 @@ private:
 
 	bool pboFunctionsLoaded;
 
-	CGcontext cgContext;
-	CGprogram cgVertexProgram, cgFragmentProgram;
 	current_ogl_shader_type shader_type;
-	bool cgAvailable;
-
-	CGLCG *cgShader;
 
 	GLuint shaderProgram;
     GLuint vertexShader;
@@ -264,8 +257,6 @@ private:
 	PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
 
 	bool SetShaders(const TCHAR *file);
-	void checkForCgError(const char *situation);
-	bool SetShadersCG(const TCHAR *file);
 	bool SetShadersGLSL(const TCHAR *glslFileName);
 	bool LoadShaderFunctions();
 	bool LoadPBOFunctions();

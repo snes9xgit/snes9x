@@ -214,7 +214,6 @@
 #include "wsnes9x.h"
 #include "win32_sound.h"
 #include "win32_display.h"
-#include "CCGShader.h"
 #include "../snes9x.h"
 #include "../memmap.h"
 #include "../cpuexec.h"
