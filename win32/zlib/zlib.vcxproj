@@ -38,51 +38,51 @@
     <ProjectGuid>{99E9817A-4605-44AF-8433-7048F0EC1859}</ProjectGuid>
     <RootNamespace>zlib</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>7.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v140_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v140_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v140_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v140_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v140_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v140_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v140_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v140_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -174,11 +174,11 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Lib>
-      <AdditionalDependencies>$(IntDir)match686.obj;$(IntDir)inffas32.obj;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <PreBuildEvent>
-      <Command>ml /Fo "$(IntDir)match686.obj" /coff /Zi /c "$(ProjectDir)..\..\..\zlib\contrib\masmx86\match686.asm"
-ml /Fo "$(IntDir)inffas32.obj" /coff /Zi /c "$(ProjectDir)..\..\..\zlib\contrib\masmx86\inffas32.asm"</Command>
+      <Command>
+      </Command>
       <Message>
       </Message>
     </PreBuildEvent>
@@ -204,11 +204,11 @@ ml /Fo "$(IntDir)inffas32.obj" /coff /Zi /c "$(ProjectDir)..\..\..\zlib\contrib\
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Lib>
-      <AdditionalDependencies>$(IntDir)gvmat64.obj;$(IntDir)inffasx64.obj;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <PreBuildEvent>
-      <Command>ml64 /Fo "$(IntDir)gvmat64.obj" /Zi /c  "..\..\..\zlib\contrib\masmx64\gvmat64.asm"
-ml64 /Fo "$(IntDir)inffasx64.obj" /Zi /c  "..\..\..\zlib\contrib\masmx64\inffasx64.asm"</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -226,11 +226,11 @@ ml64 /Fo "$(IntDir)inffasx64.obj" /Zi /c  "..\..\..\zlib\contrib\masmx64\inffasx
       <ForcedIncludeFiles>$(ProjectDir)..\_tfwopen.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>$(IntDir)match686.obj;$(IntDir)inffas32.obj;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <PreBuildEvent>
-      <Command>ml /Fo "$(IntDir)match686.obj" /coff /Zi /c "$(ProjectDir)..\..\..\zlib\contrib\masmx86\match686.asm"
-ml /Fo "$(IntDir)inffas32.obj" /coff /Zi /c "$(ProjectDir)..\..\..\zlib\contrib\masmx86\inffas32.asm"</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>
@@ -255,11 +255,11 @@ ml /Fo "$(IntDir)inffas32.obj" /coff /Zi /c "$(ProjectDir)..\..\..\zlib\contrib\
       <ForcedIncludeFiles>$(ProjectDir)..\_tfwopen.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>$(IntDir)gvmat64.obj;$(IntDir)inffasx64.obj;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <PreBuildEvent>
-      <Command>ml64 /Fo "$(IntDir)gvmat64.obj" /Zi /c  "..\..\..\zlib\contrib\masmx64\gvmat64.asm"
-ml64 /Fo "$(IntDir)inffasx64.obj" /Zi /c  "..\..\..\zlib\contrib\masmx64\inffasx64.asm"</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">
@@ -280,11 +280,11 @@ ml64 /Fo "$(IntDir)inffasx64.obj" /Zi /c  "..\..\..\zlib\contrib\masmx64\inffasx
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Lib>
-      <AdditionalDependencies>$(IntDir)match686.obj;$(IntDir)inffas32.obj;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <PreBuildEvent>
-      <Command>ml /Fo "$(IntDir)match686.obj" /coff /Zi /c "$(ProjectDir)..\..\..\zlib\contrib\masmx86\match686.asm"
-ml /Fo "$(IntDir)inffas32.obj" /coff /Zi /c "$(ProjectDir)..\..\..\zlib\contrib\masmx86\inffas32.asm"</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>
@@ -312,11 +312,11 @@ ml /Fo "$(IntDir)inffas32.obj" /coff /Zi /c "$(ProjectDir)..\..\..\zlib\contrib\
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Lib>
-      <AdditionalDependencies>$(IntDir)gvmat64.obj;$(IntDir)inffasx64.obj;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <PreBuildEvent>
-      <Command>ml64 /Fo "$(IntDir)gvmat64.obj" /Zi /c  "..\..\..\zlib\contrib\masmx64\gvmat64.asm"
-ml64 /Fo "$(IntDir)inffasx64.obj" /Zi /c  "..\..\..\zlib\contrib\masmx64\inffasx64.asm"</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">
@@ -334,11 +334,11 @@ ml64 /Fo "$(IntDir)inffasx64.obj" /Zi /c  "..\..\..\zlib\contrib\masmx64\inffasx
       <ForcedIncludeFiles>$(ProjectDir)..\_tfwopen.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>$(IntDir)match686.obj;$(IntDir)inffas32.obj;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <PreBuildEvent>
-      <Command>ml /Fo "$(IntDir)match686.obj" /coff /Zi /c "$(ProjectDir)..\..\..\zlib\contrib\masmx86\match686.asm"
-ml /Fo "$(IntDir)inffas32.obj" /coff /Zi /c "$(ProjectDir)..\..\..\zlib\contrib\masmx86\inffas32.asm"</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>
@@ -363,11 +363,11 @@ ml /Fo "$(IntDir)inffas32.obj" /coff /Zi /c "$(ProjectDir)..\..\..\zlib\contrib\
       <ForcedIncludeFiles>$(ProjectDir)..\_tfwopen.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>$(IntDir)gvmat64.obj;$(IntDir)inffasx64.obj;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <PreBuildEvent>
-      <Command>ml64 /Fo "$(IntDir)gvmat64.obj" /Zi /c  "..\..\..\zlib\contrib\masmx64\gvmat64.asm"
-ml64 /Fo "$(IntDir)inffasx64.obj" /Zi /c  "..\..\..\zlib\contrib\masmx64\inffasx64.asm"</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
