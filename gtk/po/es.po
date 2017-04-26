@@ -501,7 +501,7 @@ msgstr "_Preferencias..."
 
 #: gtk/src/snes9x.ui:1826
 msgid "Open Multiple ROM Images (MultiCart)"
-msgstr "Abrir múltiples imágened ROM (Multicartucho)"
+msgstr "Abrir múltiples imágenes ROM (Multicartucho)"
 
 #: gtk/src/snes9x.ui:1889
 msgid "Slot A:"
