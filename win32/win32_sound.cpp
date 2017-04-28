@@ -194,30 +194,12 @@
 #include "CDirectSound.h"
 #include "CXAudio2.h"
 #include "win32_sound.h"
-// FMOD and FMOD Ex cannot be used at the same time
-#ifdef FMOD_SUPPORT
-#include "CFMOD.h"
-#pragma comment(linker,"/DEFAULTLIB:fmodvc.lib")
-#elif defined FMODEX_SUPPORT
-#include "CFMODEx.h"
-#if defined(_WIN64)
-#pragma comment(linker,"/DEFAULTLIB:fmodex64_vc.lib")
-#else
-#pragma comment(linker,"/DEFAULTLIB:fmodex_vc.lib")
-#endif // _WIN64
-#endif // FMODEX_SUPPORT
 
 #define CLAMP(x, low, high) (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
 
 // available sound output methods
 CDirectSound S9xDirectSound;
 CXAudio2 S9xXAudio2;
-// FMOD and FMOD Ex cannot be used at the same time
-#ifdef FMOD_SUPPORT
-CFMOD S9xFMOD;
-#elif defined FMODEX_SUPPORT
-CFMODEx S9xFMODEx;
-#endif
 
 // Interface used to access the sound output
 IS9xSoundOutput *S9xSoundOutput = &S9xXAudio2;
@@ -261,19 +243,6 @@ bool8 S9xOpenSoundDevice ()
 		case WIN_SNES9X_DIRECT_SOUND_DRIVER:
 			S9xSoundOutput = &S9xDirectSound;
 			break;
-#ifdef FMOD_SUPPORT
-		case WIN_FMOD_DIRECT_SOUND_DRIVER:
-		case WIN_FMOD_WAVE_SOUND_DRIVER:
-		case WIN_FMOD_A3D_SOUND_DRIVER:
-			S9xSoundOutput = &S9xFMOD;
-			break;
-#elif defined FMODEX_SUPPORT
-		case WIN_FMODEX_DEFAULT_DRIVER:
-		case WIN_FMODEX_ASIO_DRIVER:
-		case WIN_FMODEX_OPENAL_DRIVER:
-			S9xSoundOutput = &S9xFMODEx;
-			break;
-#endif
 		case WIN_XAUDIO2_SOUND_DRIVER:
 			S9xSoundOutput = &S9xXAudio2;
 			break;

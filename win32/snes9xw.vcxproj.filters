@@ -96,9 +96,6 @@
     <ClInclude Include="CDirectSound.h">
       <Filter>GUI\SoundDriver</Filter>
     </ClInclude>
-    <ClInclude Include="CFMODEx.h">
-      <Filter>GUI\SoundDriver</Filter>
-    </ClInclude>
     <ClInclude Include="CXAudio2.h">
       <Filter>GUI\SoundDriver</Filter>
     </ClInclude>
@@ -449,12 +446,6 @@
     <ClCompile Include="CDirectSound.cpp">
       <Filter>GUI\SoundDriver</Filter>
     </ClCompile>
-    <ClCompile Include="CFMOD.cpp">
-      <Filter>GUI\SoundDriver</Filter>
-    </ClCompile>
-    <ClCompile Include="CFMODEx.cpp">
-      <Filter>GUI\SoundDriver</Filter>
-    </ClCompile>
     <ClCompile Include="CXAudio2.cpp">
       <Filter>GUI\SoundDriver</Filter>
     </ClCompile>
@@ -740,9 +731,6 @@
     </CustomBuild>
     <CustomBuild Include="..\tile.h">
       <Filter>Emu</Filter>
-    </CustomBuild>
-    <CustomBuild Include="CFMOD.h">
-      <Filter>GUI\SoundDriver</Filter>
     </CustomBuild>
     <CustomBuild Include="CDirect3D.h">
       <Filter>GUI\VideoDriver</Filter>
