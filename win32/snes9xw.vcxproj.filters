@@ -243,6 +243,9 @@
     <ClInclude Include="..\msu1.h">
       <Filter>APU</Filter>
     </ClInclude>
+    <ClInclude Include="cgMini.h">
+      <Filter>GUI\VideoDriver</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\bsx.cpp">

@@ -19,10 +19,6 @@ NOTE: Unicode support requires a special zlib build - see the end of the zlib en
   a libpng project that builds appropriately.
   (the libpng directory should reside at win32/../../libpng, i.e. 2 directories up)
 
-- CG Toolkit - Enables CG Shader support. This can be downloaded from nvidia's CG toolkit page:
-  http://developer.nvidia.com/object/cg_download.html
-  Only the header files are required to compile.
-
 - To compile Snes9x:
     Start up VS2017.
     Load the Snes9x solution.

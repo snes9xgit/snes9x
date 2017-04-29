@@ -192,6 +192,13 @@
 #ifndef CGFUNCTIONS_H
 #define CGFUNCTIONS_H
 
+/* uncomment this if you have the cg toolkit installed and want its headers to be used
+   http://developer.nvidia.com/object/cg_download.html
+*/
+//#define HAVE_CG_INCLUDES
+
+#ifdef HAVE_CG_INCLUDES
+
 #define CG_EXPLICIT
 #define CGD3D9_EXPLICIT
 #define CGGL_EXPLICIT
@@ -199,6 +206,12 @@
 #include <cg/cg.h>
 #include <cg/cgd3d9.h>
 #include <cg/cggl.h>
+
+#else
+
+#include "cgMini.h"
+
+#endif
 
 //cg.dll
 typedef CG_API CGcontext (CGENTRY *CGCC)(void);
