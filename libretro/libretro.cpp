@@ -14,7 +14,9 @@
 #include "display.h"
 #include "conffile.h"
 #include <stdio.h>
-#ifndef __WIN32__
+#ifdef _WIN32
+#include <direct.h>
+#else
 #include <unistd.h>
 #endif
 #include <sys/stat.h>
