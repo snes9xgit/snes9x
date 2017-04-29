@@ -254,8 +254,10 @@ StateManager stateMan;
 #define SOUND_BUFFER_SIZE		(1024 * 16)
 #define SOUND_BUFFER_SIZE_MASK	(SOUND_BUFFER_SIZE - 1)
 
+#ifndef NOSOUND
 static volatile bool8	block_signal         = FALSE;
 static volatile bool8	block_generate_sound = FALSE;
+#endif
 
 static const char	*sound_device = NULL;
 
@@ -338,7 +340,9 @@ bool S9xDisplayPollButton (uint32, bool *);
 bool S9xDisplayPollAxis (uint32, int16 *);
 bool S9xDisplayPollPointer (uint32, int16 *, int16 *);
 
+#ifndef NOSOUND
 static long log2 (long);
+#endif
 static void SoundTrigger (void);
 static void InitTimer (void);
 static void NSRTControllerSetup (void);
@@ -412,6 +416,7 @@ void _makepath (char *path, const char *, const char *dir, const char *fname, co
 	}
 }
 
+#ifndef NOSOUND
 static long log2 (long num)
 {
 	long	n = 0;
@@ -421,6 +426,7 @@ static long log2 (long num)
 
 	return (n);
 }
+#endif
 
 void S9xExtraUsage (void)
 {
