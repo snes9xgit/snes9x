@@ -825,8 +825,8 @@ Snes9xWindow::open_movie_dialog (bool readonly)
         dialog = gtk_file_chooser_dialog_new (_("Open SNES Movie"),
                                               GTK_WINDOW (this->window),
                                               GTK_FILE_CHOOSER_ACTION_OPEN,
-                                              GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                              GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                              "_Cancel", GTK_RESPONSE_CANCEL,
+                                              "_Open", GTK_RESPONSE_ACCEPT,
                                               NULL);
     }
     else
@@ -844,8 +844,8 @@ Snes9xWindow::open_movie_dialog (bool readonly)
         dialog = gtk_file_chooser_dialog_new (_("New SNES Movie"),
                                               GTK_WINDOW (this->window),
                                               GTK_FILE_CHOOSER_ACTION_SAVE,
-                                              GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                              GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                              "_Cancel", GTK_RESPONSE_CANCEL,
+                                              "_Open", GTK_RESPONSE_ACCEPT,
                                               NULL);
 
         gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (dialog),
@@ -988,8 +988,8 @@ Snes9xWindow::load_state_dialog ()
     dialog = gtk_file_chooser_dialog_new (_("Load Saved State"),
                                           GTK_WINDOW (this->window),
                                           GTK_FILE_CHOOSER_ACTION_OPEN,
-                                          GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                          GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                          "_Cancel", GTK_RESPONSE_CANCEL,
+                                          "_Open", GTK_RESPONSE_ACCEPT,
                                           NULL);
 
     gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (dialog),
@@ -1109,8 +1109,8 @@ Snes9xWindow::save_state_dialog ()
     dialog = gtk_file_chooser_dialog_new (_("Save State"),
                                           GTK_WINDOW (this->window),
                                           GTK_FILE_CHOOSER_ACTION_SAVE,
-                                          GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                          GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+                                          "_Cancel", GTK_RESPONSE_CANCEL,
+                                          "_Save", GTK_RESPONSE_ACCEPT,
                                           NULL);
 
     gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (dialog),
@@ -1186,8 +1186,8 @@ Snes9xWindow::save_spc_dialog ()
     dialog = gtk_file_chooser_dialog_new (_("Save SPC file..."),
                                           GTK_WINDOW (this->window),
                                           GTK_FILE_CHOOSER_ACTION_SAVE,
-                                          GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                          GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+                                          "_Cancel", GTK_RESPONSE_CANCEL,
+                                          "_Save", GTK_RESPONSE_ACCEPT,
                                           NULL);
 
     gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (dialog),
