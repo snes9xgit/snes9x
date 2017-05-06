@@ -1,3 +1,8 @@
+Snes9x 1.55
+- Added support for the MSU-1 coprocessor.                  (qwertymodo)
+- Added support for BS-X Satellaview data files.            (LuigiBlood)
+- GTK+: Allow use of XDG config directory.                  (BearOso)
+
 Snes9x 1.54.1
 - GTK+: Properly use --std=c++11 when compiling xBRZ.       (BearOso)
 - Win32: Save window position when toggling fullscreen.     (OV2)
