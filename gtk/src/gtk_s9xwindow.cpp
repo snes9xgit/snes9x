@@ -1009,6 +1009,7 @@ Snes9xWindow::load_state_dialog ()
     gtk_file_filter_add_pattern (filter, "*.006");
     gtk_file_filter_add_pattern (filter, "*.007");
     gtk_file_filter_add_pattern (filter, "*.008");
+    gtk_file_filter_add_pattern (filter, "*.009");
     gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (dialog), filter);
 
     filter = gtk_file_filter_new ();
@@ -1132,6 +1133,7 @@ Snes9xWindow::save_state_dialog ()
     gtk_file_filter_add_pattern (filter, "*.006");
     gtk_file_filter_add_pattern (filter, "*.007");
     gtk_file_filter_add_pattern (filter, "*.008");
+    gtk_file_filter_add_pattern (filter, "*.009");
     gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (dialog), filter);
 
     filter = gtk_file_filter_new ();
@@ -1907,6 +1909,7 @@ Snes9xWindow::update_accels (void)
     set_menu_item_accel_to_binding ("save_state_6", "QuickSave006");
     set_menu_item_accel_to_binding ("save_state_7", "QuickSave007");
     set_menu_item_accel_to_binding ("save_state_8", "QuickSave008");
+    set_menu_item_accel_to_binding ("save_state_9", "QuickSave009");
     set_menu_item_accel_to_binding ("load_state_0", "QuickLoad000");
     set_menu_item_accel_to_binding ("load_state_1", "QuickLoad001");
     set_menu_item_accel_to_binding ("load_state_2", "QuickLoad002");
@@ -1916,6 +1919,7 @@ Snes9xWindow::update_accels (void)
     set_menu_item_accel_to_binding ("load_state_6", "QuickLoad006");
     set_menu_item_accel_to_binding ("load_state_7", "QuickLoad007");
     set_menu_item_accel_to_binding ("load_state_8", "QuickLoad008");
+    set_menu_item_accel_to_binding ("load_state_9", "QuickLoad009");
     set_menu_item_accel_to_binding ("pause_item", "GTK_pause");
     set_menu_item_accel_to_binding ("save_spc_item", "GTK_save_spc");
     set_menu_item_accel_to_binding ("open_rom_item", "GTK_open_rom");
