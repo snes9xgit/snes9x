@@ -41,7 +41,7 @@ get_config_dir (void)
 
     /* Find config directory */
     home_dir = getenv ("HOME");
-    xdg_config_dir = getenv ("XDG_CONFIG_DIR");
+    xdg_config_dir = getenv ("XDG_CONFIG_HOME");
 
     if (!home_dir && !xdg_config_dir)
     {
