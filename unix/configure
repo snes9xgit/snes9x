@@ -719,6 +719,7 @@ enable_jma
 enable_screenshot
 with_x
 enable_xvideo
+enable_xinerama
 enable_sound
 '
       ac_precious_vars='build_alias
@@ -1370,6 +1371,7 @@ Optional Features:
   --enable-screenshot     enable screenshot support through libpng (default:
                           yes)
   --enable-xvideo         enable Xvideo if available (default: yes)
+  --enable-xinerama       enable Xinerama if available (default: yes)
   --enable-sound          enable sound if available (default: yes)
 
 Optional Packages:
@@ -6267,6 +6269,29 @@ fi
 
 fi
 
+# Check if we can build with Xinerama multi-monitor support
+# Check whether --enable-xinerama was given.
+if test "${enable_xinerama+set}" = set; then :
+  enableval=$enable_xinerama;
+else
+  enable_xinerama="yes"
+fi
+
+
+if test "x$enable_xinerama" = "xyes"; then
+	enable_xinerama="no"
+	ac_fn_cxx_check_header_mongrel "$LINENO" "X11/extensions/Xinerama.h" "ac_cv_header_X11_extensions_Xinerama_h" "$ac_includes_default"
+if test "x$ac_cv_header_X11_extensions_Xinerama_h" = xyes; then :
+
+		enable_xinerama="yes"
+		S9XLIBS="$S9XLIBS -lXinerama"
+		S9XDEFS="$S9XDEFS -DUSE_XINERAMA"
+
+fi
+
+
+fi
+
 # Check if we have sound code for this platform.
 
 # Check whether --enable-sound was given.
@@ -6343,6 +6368,7 @@ libs................. $S9XLIBS
 
 features:
 Xvideo support....... $enable_xvideo
+Xinerama support..... $enable_xinerama
 sound support........ $enable_sound
 screenshot support... $enable_screenshot
 netplay support...... $enable_netplay

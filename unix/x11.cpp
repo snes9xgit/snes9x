@@ -212,6 +212,10 @@
 #define FOURCC_YUY2 0x32595559
 #endif
 
+#ifdef USE_XINERAMA
+#include <X11/extensions/Xinerama.h>
+#endif
+
 #ifdef MITSHM
 #include <sys/ipc.h>
 #include <sys/shm.h>
@@ -297,6 +301,9 @@ struct GUIData
 	unsigned char		u_table[1 << 15];
 	unsigned char		v_table[1 << 15];
 #endif
+#ifdef USE_XINERAMA
+    uint32 xinerama_head;
+#endif
 #ifdef MITSHM
 	XShmSegmentInfo	sm_info;
 	bool8			use_shared_memory;
@@ -362,6 +369,9 @@ void S9xExtraDisplayUsage (void)
 	S9xMessage(S9X_INFO, S9X_USAGE, "-xvideo                         Hardware accelerated scaling");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-maxaspect                      Try to fill the display, in fullscreen");
 #endif
+#ifdef USE_XINERAMA
+	S9xMessage(S9X_INFO, S9X_USAGE, "-xineramahead                   Xinerama head number for multi-monitor setups");
+#endif
 	S9xMessage(S9X_INFO, S9X_USAGE, "");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-v1                             Video mode: Blocky (default)");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-v2                             Video mode: TV");
@@ -388,6 +398,16 @@ void S9xParseDisplayArg (char **argv, int &i, int argc)
 	else
 	if (!strcasecmp(argv[i], "-maxaspect"))
 		GUI.maxaspect = TRUE;
+	else
+#endif
+#ifdef USE_XINERAMA
+	if (!strcasecmp(argv[i], "-xineramahead"))
+	{
+		if (i + 1 < argc)
+			GUI.xinerama_head = atoi(argv[++i]);
+		else
+			S9xUsage();
+	}
 	else
 #endif
 	if (!strncasecmp(argv[i], "-v", 2))
@@ -552,6 +572,9 @@ const char * S9xParseDisplayConfig (ConfigFile &conf, int pass)
 #ifdef USE_XVIDEO
 	GUI.use_xvideo = conf.GetBool("Unix/X11::Xvideo", FALSE);
 	GUI.maxaspect = conf.GetBool("Unix/X11::MaxAspect", FALSE);
+#endif
+#ifdef USE_XINERAMA
+    GUI.xinerama_head = conf.GetUInt("Unix/X11::XineramaHead", 0);
 #endif
 
 	if (conf.Exists("Unix/X11::VideoMode"))
@@ -853,33 +876,80 @@ void S9xInitDisplay (int argc, char **argv)
 	attrib.background_pixel = BlackPixelOfScreen(GUI.screen);
 	attrib.colormap = XCreateColormap(GUI.display, RootWindowOfScreen(GUI.screen), GUI.visual, AllocNone);
 
+	int screen_left = 0, screen_top = 0;
+	int screen_w = WidthOfScreen(GUI.screen), screen_h = HeightOfScreen(GUI.screen);
+
+#ifdef USE_XINERAMA
+	int heads = 0;
+	XineramaScreenInfo* si = 0;
+
+	int useless1, useless2;
+	if (!XineramaQueryExtension(GUI.display, &useless1, &useless2)) {
+		puts("Xinerama is not available");
+		goto xinerama_end;
+	}
+
+	if (!XineramaIsActive(GUI.display)) {
+		puts("Xinerama is not active");
+		goto xinerama_end;
+	}
+
+	si = XineramaQueryScreens(GUI.display, &heads);
+	if (!si) {
+		puts("XineramaQueryScreens failed");
+		goto xinerama_end;
+	}
+
+	if (GUI.xinerama_head >= heads) {
+		printf("Invalid xinerama head id (expected 0-%d, got %u)\n", heads - 1, GUI.xinerama_head);
+		goto xinerama_end;
+	}
+
+	si = &si[GUI.xinerama_head];
+	screen_left = si->x_org;
+	screen_top = si->y_org;
+	screen_w = si->width;
+	screen_h = si->height;
+
+	printf("Selected xinerama head %u (%d,%d %dx%d)\n", GUI.xinerama_head, screen_left, screen_top, screen_w, screen_h);
+
+xinerama_end:
+#endif
+
+	XSizeHints      Hints;
+	memset((void *) &Hints, 0, sizeof(XSizeHints));
+
 	/* Try to switch to Fullscreen. */
 	if (GUI.fullscreen == TRUE)
 	{
+		Hints.flags = PPosition;
+		Hints.x     = screen_left;
+		Hints.y     = screen_top;
+
 		/* Create the window with maximum screen width,height positioned at 0,0. */
 		GUI.window = XCreateWindow(GUI.display, RootWindowOfScreen(GUI.screen),
-							0, 0,
-							WidthOfScreen(GUI.screen), HeightOfScreen(GUI.screen), 0,
+							Hints.x, Hints.y,
+							screen_w, screen_h, 0,
 							GUI.depth, InputOutput, GUI.visual, CWBackPixel | CWColormap, &attrib);
 
 #ifdef USE_XVIDEO
 		if (GUI.use_xvideo)
 		{
 			// Set some defaults
-			GUI.scale_w = WidthOfScreen(GUI.screen);
-			GUI.scale_h = HeightOfScreen(GUI.screen);
+			GUI.scale_w = screen_w;
+			GUI.scale_h = screen_h;
 
 			GUI.imageHeight = SNES_HEIGHT_EXTENDED * 2;
 
 			if (! GUI.maxaspect)
 			{
 				// Compute the maximum screen size for scaling xvideo window.
-				double screenAspect = (double)WidthOfScreen(GUI.screen) / HeightOfScreen(GUI.screen);
+				double screenAspect = (double)screen_w / screen_h;
 				double snesAspect = (double)SNES_WIDTH / SNES_HEIGHT_EXTENDED;
 				double ratio = screenAspect / snesAspect;
 
 				printf("\tScreen (%dx%d) aspect %f vs SNES (%dx%d) aspect %f (ratio: %f)\n",
-					WidthOfScreen(GUI.screen),HeightOfScreen(GUI.screen),screenAspect,
+					screen_w,screen_h,screenAspect,
 					SNES_WIDTH,SNES_HEIGHT_EXTENDED,snesAspect,
 					ratio);
 
@@ -889,12 +959,12 @@ void S9xInitDisplay (int argc, char **argv)
 					// widescreen monitor, 4:3 snes
 					//  match height, scale width
 					GUI.scale_w /= ratio;
-					GUI.x_offset = (WidthOfScreen(GUI.screen) - GUI.scale_w) / 2;
+					GUI.x_offset = (screen_w - GUI.scale_w) / 2;
 				} else {
 					// narrow monitor, 4:3 snes
 					//  match width, scale height
 					GUI.scale_h *= ratio;
-					GUI.y_offset = (HeightOfScreen(GUI.screen) - GUI.scale_h) / 2;
+					GUI.y_offset = (screen_h - GUI.scale_h) / 2;
 				}
 			}
 
@@ -904,23 +974,21 @@ void S9xInitDisplay (int argc, char **argv)
 #endif
 		{
 			/* Last: position the output window in the center of the screen. */
-			GUI.x_offset = (WidthOfScreen(GUI.screen) - SNES_WIDTH * 2) / 2;
-			GUI.y_offset = (HeightOfScreen(GUI.screen) - SNES_HEIGHT_EXTENDED * 2) / 2;
+			GUI.x_offset = (screen_w - SNES_WIDTH * 2) / 2;
+			GUI.y_offset = (screen_h - SNES_HEIGHT_EXTENDED * 2) / 2;
 		}
 	} else {
-		/* Create the window. */
-		GUI.window = XCreateWindow(GUI.display, RootWindowOfScreen(GUI.screen),
-								   (WidthOfScreen(GUI.screen) - SNES_WIDTH * 2) / 2, (HeightOfScreen(GUI.screen) - SNES_HEIGHT_EXTENDED * 2) / 2,
-								   SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2, 0, GUI.depth, InputOutput, GUI.visual, CWBackPixel | CWColormap, &attrib);
-
 		/* Tell the Window Manager that we do not wish to be resizable */
-		XSizeHints      Hints;
-		memset((void *) &Hints, 0, sizeof(XSizeHints));
-
-		Hints.flags      = PSize | PMinSize | PMaxSize;
+		Hints.flags      = PSize | PMinSize | PMaxSize | PPosition;
+		Hints.x          = screen_left + (screen_w - SNES_WIDTH * 2) / 2;
+		Hints.y          = screen_top + (screen_h - SNES_HEIGHT_EXTENDED * 2) / 2;
 		Hints.min_width  = Hints.max_width  = Hints.base_width  = SNES_WIDTH * 2;
 		Hints.min_height = Hints.max_height = Hints.base_height = SNES_HEIGHT_EXTENDED * 2;
-		XSetWMNormalHints(GUI.display, GUI.window, &Hints);
+
+		/* Create the window. */
+		GUI.window = XCreateWindow(GUI.display, RootWindowOfScreen(GUI.screen),
+								   Hints.x, Hints.y,
+								   SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2, 0, GUI.depth, InputOutput, GUI.visual, CWBackPixel | CWColormap, &attrib);
 
 		/* Last: Windowed SNES is not drawn with any offsets. */
 		GUI.x_offset = GUI.y_offset = 0;
@@ -929,6 +997,8 @@ void S9xInitDisplay (int argc, char **argv)
 		GUI.scale_h = SNES_HEIGHT_EXTENDED * 2;
 #endif
 	}
+
+	XSetWMNormalHints(GUI.display, GUI.window, &Hints);
 
 	/* Load UI cursors */
 	static XColor	bg, fg;
