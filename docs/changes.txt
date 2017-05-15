@@ -1,6 +1,8 @@
 Snes9x 1.55
 - Added support for the MSU-1 coprocessor.                  (qwertymodo)
-- Added support for BS-X Satellaview data files.            (LuigiBlood)
+- Added support for BS-X Satellaview memory packs and data  (LuigiBlood)
+  files.                                                    
+- Improved BS-X memory mapping accuracy.                    (LuigiBlood)
 - GTK+: Allow use of XDG config directory.                  (BearOso)
 
 Snes9x 1.54.1
