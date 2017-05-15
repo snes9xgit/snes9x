@@ -217,7 +217,7 @@ msgstr "Salir del modo pantalla completa"
 
 #: gtk/src/snes9x.ui:909 gtk/src/snes9x.ui:6518
 msgid "Quit Snes9x"
-msgstr "Salir de snes9x"
+msgstr "Salir de Snes9x"
 
 #: gtk/src/snes9x.ui:920
 msgid "Automatic"
@@ -301,7 +301,7 @@ msgstr "Abrir imagen R_OM..."
 
 #: gtk/src/snes9x.ui:1059
 msgid "Open Recent"
-msgstr "Abrir Reciente"
+msgstr "Abrir reciente"
 
 #: gtk/src/snes9x.ui:1071
 msgid "Open with _NetPlay..."
@@ -313,11 +313,11 @@ msgstr "Abrir la ROM para usar con juego en red"
 
 #: gtk/src/snes9x.ui:1085
 msgid "Open _MultiCart..."
-msgstr "Abrir _Multicartucho..."
+msgstr "Abrir _multicartucho..."
 
 #: gtk/src/snes9x.ui:1100
 msgid "_Load State"
-msgstr "_Cargar Estado"
+msgstr "_Cargar estado"
 
 #: gtk/src/snes9x.ui:1110 gtk/src/snes9x.ui:1220
 msgid "Slot _0"
@@ -401,11 +401,11 @@ msgstr "Grabar víd_eo..."
 
 #: gtk/src/snes9x.ui:1435
 msgid "_Stop Recording"
-msgstr "_Detener Grabación"
+msgstr "_Detener grabación"
 
 #: gtk/src/snes9x.ui:1447
 msgid "_Jump to Frame..."
-msgstr "_Ir al Cuadro..."
+msgstr "_Ir al cuadro..."
 
 #: gtk/src/snes9x.ui:1465
 msgid "Sy_nc Clients"
@@ -457,7 +457,7 @@ msgstr "_5 x"
 
 #: gtk/src/snes9x.ui:1612
 msgid "_Fullscreen"
-msgstr "_Pantall completa"
+msgstr "_Pantalla completa"
 
 #: gtk/src/snes9x.ui:1629
 msgid "_Options"
@@ -501,7 +501,7 @@ msgstr "_Preferencias..."
 
 #: gtk/src/snes9x.ui:1826
 msgid "Open Multiple ROM Images (MultiCart)"
-msgstr "Abrir múltiples imágenes ROM (Multicartucho)"
+msgstr "Abrir múltiples imágenes ROM (multicartucho)"
 
 #: gtk/src/snes9x.ui:1889
 msgid "Slot A:"
@@ -589,7 +589,7 @@ msgstr "<b>Servidor</b>"
 
 #: gtk/src/snes9x.ui:2274
 msgid "Sync using reset"
-msgstr "Reiniciar para sincronizar"
+msgstr "Sincronizar usando reiniciar"
 
 #: gtk/src/snes9x.ui:2278
 msgid ""
@@ -905,7 +905,7 @@ msgstr "milisegundos"
 
 #: gtk/src/snes9x.ui:4088
 msgid "Buffer size:"
-msgstr "Tamaño del Búfer:"
+msgstr "Tamaño del búfer:"
 
 #: gtk/src/snes9x.ui:4102
 msgid "Input rate:"
@@ -943,17 +943,17 @@ msgstr "Salto de cuadro:"
 
 #: gtk/src/snes9x.ui:4328
 msgid "Block invalid VRAM access"
-msgstr "Bloquear acceso invalido a la VRAM"
+msgstr "Bloquear accesos no validos a la VRAM"
 
 #: gtk/src/snes9x.ui:4341
 msgid "Allow opposing dpad directions"
 msgstr "Permitir direcciones opuestas en el mando"
 
 msgid "Rewind buffer size (MB):"
-msgstr "Tamaño del Búfer rebobinado (MB):"
+msgstr "Tamaño del búfer de rebobinado (MB):"
 
 msgid "Number of frames between rewind snapshots:"
-msgstr "Número de cuadros entre actualizaciones rebobinado:"
+msgstr "Número de cuadros entre instantáneas rebobinadas:"
 
 #: gtk/src/snes9x.ui:4345
 msgid "Let left and right or up and down be pressed at the same time"
@@ -1220,7 +1220,7 @@ msgstr "Abrir ROM"
 
 #: gtk/src/snes9x.ui:6765
 msgid "Toggle BG layer 0"
-msgstr "Alternar capa BG 0"
+msgstr "Alternar capa de fondo 0"
 
 #: gtk/src/snes9x.ui:6777
 msgid "Toggle BG layer 1"
@@ -1239,7 +1239,7 @@ msgstr "Alternar «sprites»"
 
 #: gtk/src/snes9x.ui:6833
 msgid "BG layering hack"
-msgstr "Hack de capas BG"
+msgstr "Hack de capas de fondo"
 
 #: gtk/src/snes9x.ui:6847
 msgid "Screenshot"
@@ -1296,6 +1296,9 @@ msgstr "Ranura 7"
 #: gtk/src/snes9x.ui:7328 gtk/src/snes9x.ui:7344
 msgid "Slot 8"
 msgstr "Ranura 8"
+
+msgid "Slot 9"
+msgstr "Ranura 9"
 
 #: gtk/src/snes9x.ui:7708
 msgid "Save States"
@@ -1802,13 +1805,14 @@ msgstr "Sin descripción"
 msgid "Rotate all axes to their maximum values, then press OK"
 msgstr "Ruede todos los ejes hasta su máximo valor, entonces presione Ok/Aceptar"
 
-msgid "GTK port version: "
-msgstr "Puerto de la version GTK: "
+msgid "GTK+ port version: "
+msgstr "Puerto de la version GTK+: "
 
 msgid "English localization by Brandon Wright"
 msgstr ""
 "Localización al inglés por Brandon Wright"
 "\nLocalización al español por INUKAZE, Jristz"
+"\n"
 
 msgid ""
 "\n"
@@ -1832,14 +1836,8 @@ msgstr " Mando"
 msgid " NetPlay"
 msgstr " Juego en red"
 
-msgid ""
-"</i>\n"
-"\n"
-"Snes9x version: "
-msgstr ""
-"</i>\n"
-"\n"
-"Versión de Snes9x: "
+msgid "Snes9x version: "
+msgstr "Versión de Snes9x: "
 
 msgid "Select Folder"
 msgstr "Seleccione una carpeta"
