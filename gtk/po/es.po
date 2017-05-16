@@ -1812,7 +1812,6 @@ msgid "English localization by Brandon Wright"
 msgstr ""
 "Localización al inglés por Brandon Wright"
 "\nLocalización al español por INUKAZE, Jristz"
-"\n"
 
 msgid ""
 "\n"
