@@ -1887,7 +1887,7 @@ bool8 CMemory::LoadMultiCartInt ()
 			Multi.cartType = 5;
 		else
 		if (is_BSCart_BIOS(ROM + Multi.cartOffsetA, Multi.cartSizeA))
-			Multi.cartType = 3;		
+			Multi.cartType = 3;
 	}
 	else
 	if (Multi.cartSizeB)
@@ -3765,6 +3765,8 @@ void CMemory::ApplyROMFixes (void)
 	if (!Settings.DisableGameSpecificHacks)
 	{
 		if (match_id("AVCJ"))                                      // Rendering Ranger R2
+			Timings.APUSpeedup = 2;
+		if (match_na("CIRCUIT USA"))
 			Timings.APUSpeedup = 2;
 
 /*		if (match_na("GAIA GENSOUKI 1 JPN")                     || // Gaia Gensouki
