@@ -2955,8 +2955,15 @@ void CMemory::map_WRAM (void)
 
 void CMemory::map_LoROMSRAM (void)
 {
-	map_index(0x70, 0x7f, 0x0000, 0x7fff, MAP_LOROM_SRAM, MAP_TYPE_RAM);
-	map_index(0xf0, 0xff, 0x0000, 0x7fff, MAP_LOROM_SRAM, MAP_TYPE_RAM);
+        uint32 hi;
+
+        if (ROMSize >= 10)
+            hi = 0xffff;
+        else
+            hi = 0x7fff;
+
+	map_index(0x70, 0x7f, 0x0000, hi, MAP_LOROM_SRAM, MAP_TYPE_RAM);
+	map_index(0xf0, 0xff, 0x0000, hi, MAP_LOROM_SRAM, MAP_TYPE_RAM);
 }
 
 void CMemory::map_HiROMSRAM (void)
