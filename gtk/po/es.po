@@ -2015,7 +2015,7 @@ msgid "HiROM"
 msgstr "Rom HI"
 
 msgid "LoROM"
-msgstr" Rom Lo"
+msgstr "Rom Lo"
 
 #~ msgid "bad option name: %s\n"
 #~ msgstr "Nombre de opcion mala: %s\n"
