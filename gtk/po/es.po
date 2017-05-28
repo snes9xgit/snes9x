@@ -468,7 +468,7 @@ msgid "Controller Ports"
 msgstr "Control de mandos"
 
 #: gtk/src/snes9x.ui:1647
-msgid "SNES 1"
+msgid "SNES Port 1"
 msgstr "Mando SNES 1"
 
 #: gtk/src/snes9x.ui:1657 gtk/src/snes9x.ui:1701
