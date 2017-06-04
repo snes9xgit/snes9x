@@ -647,7 +647,8 @@ void CDirect3D::Render(SSurface Src)
 			case D3DERR_DEVICELOST:		//do no rendering until device is restored
 				return;
 			case D3DERR_DEVICENOTRESET: //we can reset now
-				ResetDevice();
+                if(!IsIconic(dPresentParams.hDeviceWindow))
+				    ResetDevice();
 				return;
 			default:
 				DXTRACE_ERR_MSGBOX(TEXT("Internal driver error"), hr);
