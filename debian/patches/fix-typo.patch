@@ -1,0 +1,26 @@
+Description: <fix typo>
+ TODO: Put a short summary on the line above and replace this paragraph
+ with a longer explanation of this change. Complete the meta-information
+ with other relevant fields (see below for details). To make it easier, the
+ information below has been extracted from the changelog. Adjust it or drop
+ it.
+ .
+ snes9x (1:1.54.1-0) unstable; urgency=medium
+ .
+   * update version 1.54.1
+Author: Ivan Wu <wuyifan@deepin.com>
+
+---
+fix typo
+
+--- snes9x-1.54.1.orig/language.h
++++ snes9x-1.54.1/language.h
+@@ -199,7 +199,7 @@
+ #define SAVE_INFO_LOAD					"Loaded"
+ #define SAVE_INFO_OOPS					"Auto-saving 'oops' snapshot"
+ #define SAVE_ERR_WRONG_FORMAT			"File not in Snes9x snapshot format"
+-#define SAVE_ERR_WRONG_VERSION			"Incompatable snapshot version"
++#define SAVE_ERR_WRONG_VERSION			"Incompatible snapshot version"
+ #define SAVE_ERR_ROM_NOT_FOUND			"ROM image \"%s\" for snapshot not found"
+ #define SAVE_ERR_SAVE_NOT_FOUND			"Snapshot %s does not exist"
+ 

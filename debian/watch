@@ -1,0 +1,2 @@
+version=3
+https://github.com/snes9xgit/snes9x/tags .*/(\d\S+)\.tar\.gz

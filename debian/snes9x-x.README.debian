@@ -1,0 +1,25 @@
+snes9x for DEBIAN
+-----------------
+
+If you want users to have audio while running snes9x you must add
+them to the audio group, e.g. "addgroup joe audio".
+
+Also, if you want fullscreen video modes in X you will have to add
+the user which will be running the binaries to the kmem group. But
+you should be aware that this is a huge security concern as this
+user will have unrestricted access to the machine's entire memory through
+/dev/mem. But then again you should trust anyone with local acccess
+to your machine anyway.
+
+example "addgroup bob kmem"
+
+NETPLAY
+-------
+
+The newest version of snes9x has broken netplay support. While the clients
+support Netplay, there is no server.
+
+OpenGL, GGI, SVGA Versions
+--------------------------
+The new Upstream does not support any of these Versions anymore. At least
+the OpenGL version is expected to come back soon.

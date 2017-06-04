@@ -1,0 +1,39 @@
+Source: snes9x
+Section: non-free/games
+Priority: optional
+Build-Depends: debhelper (>= 7.0.50~), autotools-dev,
+               intltool (>= 0.40.1),
+               libgl1-mesa-dev | libgl-dev,
+               libglu1-mesa-dev | libglu-dev,
+               libgtk-3-dev,
+               libpulse-dev,
+               libsdl1.2-dev,
+               libx11-dev,
+               libxml2-dev,
+               libxv-dev,
+               portaudio19-dev
+Maintainer: Debian QA Group <packages@qa.debian.org>
+Homepage: http://www.snes9x.com/
+Standards-Version: 3.9.5
+
+Package: snes9x-x
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Conflicts: snes9x-common, snes9x-server, snes9x-fx, snes9x-svga, snes9x-opengl
+Suggests: zsnes
+Description: X binaries for snes9x - Super NES Emulator
+ Snes9x is a portable, freeware Super Nintendo Entertainment System (SNES)
+ emulator. It basically allows you to play most games designed for the SNES
+ and Super Famicom Nintendo game systems on your PC or Workstation; they
+ include some real gems that were only ever released in Japan.
+
+Package: snes9x-gtk
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: GTK+ port of Snes9x - Super NES Emulator
+ Snes9x is a portable, freeware Super Nintendo Entertainment System (SNES)
+ emulator. It basically allows you to play most games designed for the SNES
+ and Super Famicom Nintendo game systems on your PC or Workstation; they
+ include some real gems that were only ever released in Japan.
+ .
+ This package contains a graphical user interface using GTK+.
