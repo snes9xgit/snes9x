@@ -762,6 +762,7 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 	if (!(Tile & (V_FLIP | H_FLIP))) \
 	{ \
 		bp = pCache + BPSTART; \
+		uint32 OffsetInLine = Offset % GFX.RealPPL; \
 		for (l = LineCount; l > 0; l--, bp += 8 * PITCH, Offset += GFX.PPL) \
 		{ \
 			DRAW_PIXEL(0, Pix = bp[0]); \
@@ -778,6 +779,7 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 	if (!(Tile & V_FLIP)) \
 	{ \
 		bp = pCache + BPSTART; \
+		uint32 OffsetInLine = Offset % GFX.RealPPL; \
 		for (l = LineCount; l > 0; l--, bp += 8 * PITCH, Offset += GFX.PPL) \
 		{ \
 			DRAW_PIXEL(0, Pix = bp[7]); \
@@ -794,6 +796,7 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 	if (!(Tile & H_FLIP)) \
 	{ \
 		bp = pCache + 56 - BPSTART; \
+		uint32 OffsetInLine = Offset % GFX.RealPPL; \
 		for (l = LineCount; l > 0; l--, bp -= 8 * PITCH, Offset += GFX.PPL) \
 		{ \
 			DRAW_PIXEL(0, Pix = bp[0]); \
@@ -809,6 +812,7 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 	else \
 	{ \
 		bp = pCache + 56 - BPSTART; \
+		uint32 OffsetInLine = Offset % GFX.RealPPL; \
 		for (l = LineCount; l > 0; l--, bp -= 8 * PITCH, Offset += GFX.PPL) \
 		{ \
 			DRAW_PIXEL(0, Pix = bp[7]); \
@@ -853,6 +857,7 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 	if (!(Tile & (V_FLIP | H_FLIP))) \
 	{ \
 		bp = pCache + BPSTART; \
+		uint32 OffsetInLine = Offset % GFX.RealPPL; \
 		for (l = LineCount; l > 0; l--, bp += 8 * PITCH, Offset += GFX.PPL) \
 		{ \
 			w = Width; \
@@ -873,6 +878,7 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 	if (!(Tile & V_FLIP)) \
 	{ \
 		bp = pCache + BPSTART; \
+		uint32 OffsetInLine = Offset % GFX.RealPPL; \
 		for (l = LineCount; l > 0; l--, bp += 8 * PITCH, Offset += GFX.PPL) \
 		{ \
 			w = Width; \
@@ -893,6 +899,7 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 	if (!(Tile & H_FLIP)) \
 	{ \
 		bp = pCache + 56 - BPSTART; \
+		uint32 OffsetInLine = Offset % GFX.RealPPL; \
 		for (l = LineCount; l > 0; l--, bp -= 8 * PITCH, Offset += GFX.PPL) \
 		{ \
 			w = Width; \
@@ -912,6 +919,7 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 	else \
 	{ \
 		bp = pCache + 56 - BPSTART; \
+		uint32 OffsetInLine = Offset % GFX.RealPPL; \
 		for (l = LineCount; l > 0; l--, bp -= 8 * PITCH, Offset += GFX.PPL) \
 		{ \
 			w = Width; \
@@ -968,6 +976,7 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 	\
 	if (Pix) \
 	{ \
+		uint32 OffsetInLine = Offset % GFX.RealPPL; \
 		for (l = LineCount; l > 0; l--, Offset += GFX.PPL) \
 		{ \
 			for (w = Width - 1; w >= 0; w--) \
@@ -1004,6 +1013,7 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 	GFX.RealScreenColors = IPPU.ScreenColors; \
 	GFX.ScreenColors = GFX.ClipColors ? BlackColourMap : GFX.RealScreenColors; \
 	\
+	uint32 OffsetInLine = Offset % GFX.RealPPL; \
 	for (l = GFX.StartY; l <= GFX.EndY; l++, Offset += GFX.PPL) \
 	{ \
 		for (x = Left; x < Right; x++) \
@@ -1064,6 +1074,7 @@ extern struct SLineMatrixData	LineMatrixData[240];
 	uint32	Offset = GFX.StartY * GFX.PPL; \
 	struct SLineMatrixData	*l = &LineMatrixData[GFX.StartY]; \
 	\
+	uint32 OffsetInLine = Offset % GFX.RealPPL; \
 	for (uint32 Line = GFX.StartY; Line <= GFX.EndY; Line++, Offset += GFX.PPL, l++) \
 	{ \
 		int	yy, starty; \
@@ -1179,6 +1190,7 @@ extern struct SLineMatrixData	LineMatrixData[240];
 	uint32	Offset = StartY * GFX.PPL; \
 	struct SLineMatrixData	*l = &LineMatrixData[StartY]; \
 	\
+	uint32 OffsetInLine = Offset % GFX.RealPPL; \
 	for (uint32 Line = StartY; Line <= GFX.EndY; Line += VMosaic, Offset += VMosaic * GFX.PPL, l += VMosaic) \
 	{ \
 		if (Line + VMosaic > GFX.EndY) \
@@ -1401,8 +1413,11 @@ extern struct SLineMatrixData	LineMatrixData[240];
 #define DRAW_PIXEL_H2x1(N, M) \
 	if (Z1 > GFX.DB[Offset + 2 * N] && (M)) \
 	{ \
-		GFX.S[Offset + 2 * N] = MATH((GFX.ClipColors ? 0 : GFX.SubScreen[Offset + 2 * N]), GFX.RealScreenColors[Pix], GFX.SubZBuffer[Offset + 2 * N]); \
 		GFX.S[Offset + 2 * N + 1] = MATH(GFX.ScreenColors[Pix], GFX.SubScreen[Offset + 2 * N], GFX.SubZBuffer[Offset + 2 * N]); \
+		if ((OffsetInLine + 2 * N ) != (SNES_WIDTH - 1) << 1) \
+			GFX.S[Offset + 2 * N + 2] = MATH((GFX.ClipColors ? 0 : GFX.SubScreen[Offset + 2 * N + 2]), GFX.RealScreenColors[Pix], GFX.SubZBuffer[Offset + 2 * N]); \
+		if ((OffsetInLine + 2 * N) == 0) \
+			GFX.S[Offset + 2 * N] = MATH((GFX.ClipColors ? 0 : GFX.SubScreen[Offset + 2 * N]), GFX.RealScreenColors[Pix], GFX.SubZBuffer[Offset + 2 * N]); \
 		GFX.DB[Offset + 2 * N] = GFX.DB[Offset + 2 * N + 1] = Z2; \
 	}
 
