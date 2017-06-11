@@ -210,6 +210,7 @@
 #include "AVIOutput.h"
 #include "wlanguage.h"
 
+#include <shlwapi.h>
 #include <direct.h>
 
 #include <io.h>
@@ -300,6 +301,7 @@ static bool startDirectoryValid = false;
 
 const TCHAR *S9xGetDirectoryT (enum s9x_getdirtype dirtype)
 {
+    static TCHAR filename[PATH_MAX];
 	if(!startDirectoryValid)
 	{
 		// directory of the executable's location:
@@ -313,8 +315,6 @@ const TCHAR *S9xGetDirectoryT (enum s9x_getdirtype dirtype)
 
 		startDirectoryValid = true;
 	}
-
-	SetCurrentDirectory(startDirectory); // makes sure relative paths are relative to the application's location
 
 	const TCHAR* rv = startDirectory;
 
@@ -358,7 +358,6 @@ const TCHAR *S9xGetDirectoryT (enum s9x_getdirtype dirtype)
 		  break;
 
 	  case ROMFILENAME_DIR: {
-			static TCHAR filename [PATH_MAX];
 			lstrcpy(filename, _tFromChar(Memory.ROMFilename));
 			if(!filename[0])
 				rv = GUI.RomDir;
@@ -371,6 +370,13 @@ const TCHAR *S9xGetDirectoryT (enum s9x_getdirtype dirtype)
 			rv = filename;
 		}
 		break;
+    }
+
+    if (PathIsRelative(rv)) {
+        TCHAR temp_container[PATH_MAX];
+        _sntprintf(temp_container, PATH_MAX, TEXT("%s\\%s"), startDirectory, rv);
+        GetFullPathName(temp_container, PATH_MAX, filename, NULL);
+        rv = temp_container;
     }
 
 	_tmkdir(rv);
