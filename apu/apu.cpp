@@ -462,7 +462,7 @@ static void UpdatePlaybackRate (void)
 
 	if (Settings.MSU1)
 	{
-		time_ratio = (44100.0 / Settings.SoundPlaybackRate) * (Settings.SoundInputRate / 32040);
+		time_ratio = (44100.0 / Settings.SoundPlaybackRate) * (Settings.SoundInputRate / 32040.0);
 		msu::resampler->time_ratio(time_ratio);
 	}
 }
