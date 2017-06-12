@@ -438,6 +438,7 @@ int unzStream::revert (size_t from, size_t offset)
     else // outside of buffer, reset file and read until pos
     {
         unzGoToFilePos(file, &unz_file_start_pos);
+        unzOpenCurrentFile(file); // necessary to reopen after seek
         int times_to_read = target_pos / unz_BUFFSIZ + 1;
         for( int i = 0; i < times_to_read; i++)
         {
