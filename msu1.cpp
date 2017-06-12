@@ -361,7 +361,6 @@ void S9xResetMSU(void)
 
 void S9xMSU1Init(void)
 {
-	S9xResetMSU();
 	DataOpen();
 }
 
