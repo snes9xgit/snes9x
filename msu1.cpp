@@ -197,37 +197,110 @@
 #include <fstream>
 #include <sys/stat.h>
 
-std::ifstream dataFile, audioFile;
+STREAM dataStream = NULL;
+STREAM audioStream = NULL;
 uint32 audioLoopPos;
 uint32 partial_samples;
 
 // Sample buffer
 int16 *bufPos, *bufBegin, *bufEnd;
 
+#ifdef UNZIP_SUPPORT
+static int unzFindExtension(unzFile &file, const char *ext, bool restart = TRUE, bool print = TRUE)
+{
+    unz_file_info	info;
+    int				port, l = strlen(ext);
+
+    if (restart)
+        port = unzGoToFirstFile(file);
+    else
+        port = unzGoToNextFile(file);
+
+    while (port == UNZ_OK)
+    {
+        int		len;
+        char	name[132];
+
+        unzGetCurrentFileInfo(file, &info, name, 128, NULL, 0, NULL, 0);
+        len = strlen(name);
+
+        if (len >= l + 1 && strcasecmp(name + len - l, ext) == 0 && unzOpenCurrentFile(file) == UNZ_OK)
+        {
+            if (print)
+                printf("Using msu file %s", name);
+
+            return (port);
+        }
+
+        port = unzGoToNextFile(file);
+    }
+
+    return (port);
+}
+#endif
+
+STREAM S9xMSU1OpenFile(char *msu_ext)
+{
+    const char *filename = S9xGetFilename(msu_ext, ROMFILENAME_DIR);
+    STREAM file = OPEN_STREAM(filename, "rb");
+    if (file)
+        printf("Using msu file %s.\n", filename);
+
+#ifdef UNZIP_SUPPORT
+    // look for msu file in .msu.zip if not found in rom dir
+    if (!file)
+    {
+        const char *zip_filename = S9xGetFilename(".msu.zip", ROMFILENAME_DIR);
+        if (zip_filename)
+        {
+            unzFile	unzFile = unzOpen(zip_filename);
+            if (unzFile)
+            {
+                int	port = unzFindExtension(unzFile, msu_ext);
+                if (port == UNZ_OK)
+                {
+                    printf(" in %s.\n", zip_filename);
+                    file = new unzStream(unzFile);
+                }
+                else
+                    unzCloseCurrentFile(unzFile);
+            }
+        }
+    }
+#endif
+
+    if(!file)
+        printf("Unable to find msu file %s.\n", filename);
+
+    return file;
+}
+
 bool AudioOpen()
 {
 	MSU1.MSU1_STATUS |= AudioError;
 
-	if (audioFile.is_open())
-		audioFile.close();
+    if (audioStream)
+    {
+        CLOSE_STREAM(audioStream);
+        audioStream = NULL;
+    }
 
 	char ext[_MAX_EXT];
 	snprintf(ext, _MAX_EXT, "-%d.pcm", MSU1.MSU1_CURRENT_TRACK);
 
-	audioFile.clear();
-	audioFile.open(S9xGetFilename(ext, ROMFILENAME_DIR), std::ios::in | std::ios::binary);
-	if (audioFile.good())
+    audioStream = S9xMSU1OpenFile(ext);
+	if (audioStream)
 	{
-		if (audioFile.get() != 'M')
+		if (GETC_STREAM(audioStream) != 'M')
 			return false;
-		if (audioFile.get() != 'S')
+		if (GETC_STREAM(audioStream) != 'S')
 			return false;
-		if (audioFile.get() != 'U')
+		if (GETC_STREAM(audioStream) != 'U')
 			return false;
-		if (audioFile.get() != '1')
+		if (GETC_STREAM(audioStream) != '1')
 			return false;
 
-		audioFile.read((char *)&audioLoopPos, 4);
+        READ_STREAM((char *)&audioLoopPos, 4, audioStream);
 		audioLoopPos = GET_LE32(&audioLoopPos);
 		audioLoopPos <<= 2;
 		audioLoopPos += 8;
@@ -241,12 +314,14 @@ bool AudioOpen()
 
 bool DataOpen()
 {
-	if (dataFile.is_open())
-		dataFile.close();
+    if (dataStream)
+    {
+        CLOSE_STREAM(dataStream);
+        dataStream = NULL;
+    }
 
-	dataFile.clear();
-	dataFile.open(S9xGetFilename(".msu", ROMFILENAME_DIR), std::ios::in | std::ios::binary);
-	return dataFile.is_open();
+    dataStream = S9xMSU1OpenFile(".msu");
+	return dataStream != NULL;
 }
 
 void S9xResetMSU(void)
@@ -269,11 +344,17 @@ void S9xResetMSU(void)
 
 	partial_samples = 0;
 
-	if (dataFile.is_open())
-		dataFile.close();
+    if (dataStream)
+    {
+        CLOSE_STREAM(dataStream);
+        dataStream = NULL;
+    }
 
-	if (audioFile.is_open())
-		audioFile.close();
+    if (audioStream)
+    {
+        CLOSE_STREAM(audioStream);
+        audioStream = NULL;
+    }
 
 	Settings.MSU1 = S9xMSU1ROMExists();
 }
@@ -286,8 +367,12 @@ void S9xMSU1Init(void)
 
 bool S9xMSU1ROMExists(void)
 {
-	struct stat buf;
-	return (stat(S9xGetFilename(".msu", ROMFILENAME_DIR), &buf) == 0);
+    struct stat buf;
+    STREAM s = S9xMSU1OpenFile(".msu");
+    bool8 exists = (s != NULL);
+    if(s)
+        CLOSE_STREAM(s);
+    return exists;
 }
 
 void S9xMSU1Generate(int sample_count)
@@ -296,10 +381,11 @@ void S9xMSU1Generate(int sample_count)
 
 	while (((uintptr_t)bufPos < (uintptr_t)bufEnd) && (MSU1.MSU1_STATUS & AudioPlaying) && partial_samples > 32040)
 	{
-		if (audioFile.is_open())
+		if (audioStream)
 		{
 			int16 sample;
-			if (audioFile.read((char *)&sample, 2).good())
+            int bytes_read = READ_STREAM((char *)&sample, 2, audioStream);
+			if (bytes_read == 2)
 			{
 				sample = (int16)((double)(int16)GET_LE16(&sample) * (double)MSU1.MSU1_VOLUME / 255.0);
 
@@ -308,7 +394,7 @@ void S9xMSU1Generate(int sample_count)
 				partial_samples -= 32040;
 			}
 			else
-			if (audioFile.eof())
+			if (bytes_read >= 0)
 			{
 				sample = (int16)((double)(int16)GET_LE16(&sample) * (double)MSU1.MSU1_VOLUME / 255.0);
 
@@ -318,15 +404,13 @@ void S9xMSU1Generate(int sample_count)
 
 				if (MSU1.MSU1_STATUS & AudioRepeating)
 				{
-					audioFile.clear();
 					MSU1.MSU1_AUDIO_POS = audioLoopPos;
-					audioFile.seekg(MSU1.MSU1_AUDIO_POS);
+                    REVERT_STREAM(audioStream, MSU1.MSU1_AUDIO_POS, 0);
 				}
 				else
 				{
 					MSU1.MSU1_STATUS &= ~(AudioPlaying | AudioRepeating);
-					audioFile.clear();
-					audioFile.seekg(8);
+                    REVERT_STREAM(audioStream, 8, 0);
 					return;
 				}
 			}
@@ -352,12 +436,19 @@ uint8 S9xMSU1ReadPort(int port)
 	case 0:
 		return MSU1.MSU1_STATUS;
 	case 1:
-		if (MSU1.MSU1_STATUS & DataBusy)
-			return 0;
-		if (dataFile.fail() || dataFile.bad() || dataFile.eof())
-			return 0;
-		MSU1.MSU1_DATA_POS++;
-		return dataFile.get();
+    {
+        if (MSU1.MSU1_STATUS & DataBusy)
+            return 0;
+        if (!dataStream)
+            return 0;
+        int data = GETC_STREAM(dataStream);
+        if (data >= 0)
+        {
+            MSU1.MSU1_DATA_POS++;
+            return data;
+        }
+        return 0;
+    }
 	case 2:
 		return 'S';
 	case 3:
@@ -396,8 +487,10 @@ void S9xMSU1WritePort(int port, uint8 byte)
 		MSU1.MSU1_DATA_SEEK &= 0x00FFFFFF;
 		MSU1.MSU1_DATA_SEEK |= byte << 24;
 		MSU1.MSU1_DATA_POS = MSU1.MSU1_DATA_SEEK;
-		if(dataFile.good())
-			dataFile.seekg(MSU1.MSU1_DATA_POS);
+        if (dataStream)
+        {
+            REVERT_STREAM(dataStream, MSU1.MSU1_DATA_POS, 0);
+        }
 		break;
 	case 4:
 		MSU1.MSU1_TRACK_SEEK &= 0xFF00;
@@ -424,7 +517,7 @@ void S9xMSU1WritePort(int port, uint8 byte)
 				MSU1.MSU1_AUDIO_POS = 8;
 			}
 
-			audioFile.seekg(MSU1.MSU1_AUDIO_POS);
+            REVERT_STREAM(audioStream, MSU1.MSU1_AUDIO_POS, 0);
 		}
 		break;
 	case 6:
@@ -460,20 +553,20 @@ void S9xMSU1PostLoadState(void)
 {
 	if (DataOpen())
 	{
-		dataFile.seekg(MSU1.MSU1_DATA_POS);
+        REVERT_STREAM(dataStream, MSU1.MSU1_DATA_POS, 0);
 	}
 
 	if (MSU1.MSU1_STATUS & AudioPlaying)
 	{
 		if (AudioOpen())
 		{
-			audioFile.seekg(4);
-			audioFile.read((char *)&audioLoopPos, 4);
+            REVERT_STREAM(audioStream, 4, 0);
+            READ_STREAM((char *)&audioLoopPos, 4, audioStream);
 			audioLoopPos = GET_LE32(&audioLoopPos);
 			audioLoopPos <<= 2;
 			audioLoopPos += 8;
 
-			audioFile.seekg(MSU1.MSU1_AUDIO_POS);
+            REVERT_STREAM(audioStream, MSU1.MSU1_AUDIO_POS, 0);
 		}
 		else
 		{
