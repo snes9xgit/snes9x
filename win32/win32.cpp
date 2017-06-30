@@ -376,7 +376,7 @@ const TCHAR *S9xGetDirectoryT (enum s9x_getdirtype dirtype)
         TCHAR temp_container[PATH_MAX];
         _sntprintf(temp_container, PATH_MAX, TEXT("%s\\%s"), startDirectory, rv);
         GetFullPathName(temp_container, PATH_MAX, filename, NULL);
-        rv = temp_container;
+        rv = filename;
     }
 
 	_tmkdir(rv);
