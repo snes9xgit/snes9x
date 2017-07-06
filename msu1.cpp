@@ -200,7 +200,7 @@
 STREAM dataStream = NULL;
 STREAM audioStream = NULL;
 uint32 audioLoopPos;
-uint32 partial_samples;
+size_t partial_samples;
 
 // Sample buffer
 int16 *bufPos, *bufBegin, *bufEnd;
@@ -374,13 +374,13 @@ bool S9xMSU1ROMExists(void)
     return exists;
 }
 
-void S9xMSU1Generate(int sample_count)
+void S9xMSU1Generate(size_t sample_count)
 {
-	partial_samples += 44100 * sample_count;
+	partial_samples += 4410 * sample_count;
 
-	while (((uintptr_t)bufPos < (uintptr_t)bufEnd) && (MSU1.MSU1_STATUS & AudioPlaying) && partial_samples > 32040)
+	while (((uintptr_t)bufPos < (uintptr_t)bufEnd) && partial_samples > 3204)
 	{
-		if (audioStream)
+		if (MSU1.MSU1_STATUS & AudioPlaying && audioStream)
 		{
 			int16 sample;
             int bytes_read = READ_STREAM((char *)&sample, 2, audioStream);
@@ -390,7 +390,7 @@ void S9xMSU1Generate(int sample_count)
 
 				*(bufPos++) = sample;
 				MSU1.MSU1_AUDIO_POS += 2;
-				partial_samples -= 32040;
+				partial_samples -= 3204;
 			}
 			else
 			if (bytes_read >= 0)
@@ -399,7 +399,7 @@ void S9xMSU1Generate(int sample_count)
 
 				*(bufPos++) = sample;
 				MSU1.MSU1_AUDIO_POS += 2;
-				partial_samples -= 32040;
+				partial_samples -= 3204;
 
 				if (MSU1.MSU1_STATUS & AudioRepeating)
 				{
@@ -410,25 +410,24 @@ void S9xMSU1Generate(int sample_count)
 				{
 					MSU1.MSU1_STATUS &= ~(AudioPlaying | AudioRepeating);
                     REVERT_STREAM(audioStream, 8, 0);
-					return;
 				}
 			}
 			else
 			{
 				MSU1.MSU1_STATUS &= ~(AudioPlaying | AudioRepeating);
-				return;
 			}
 		}
 		else
 		{
 			MSU1.MSU1_STATUS &= ~(AudioPlaying | AudioRepeating);
-			return;
+			partial_samples -= 3204;
+			*(bufPos++) = 0;
 		}
 	}
 }
 
 
-uint8 S9xMSU1ReadPort(int port)
+uint8 S9xMSU1ReadPort(uint8 port)
 {
 	switch (port)
 	{
@@ -466,7 +465,7 @@ uint8 S9xMSU1ReadPort(int port)
 }
 
 
-void S9xMSU1WritePort(int port, uint8 byte)
+void S9xMSU1WritePort(uint8 port, uint8 byte)
 {
 	switch (port)
 	{
@@ -537,12 +536,12 @@ void S9xMSU1WritePort(int port, uint8 byte)
 	}
 }
 
-uint16 S9xMSU1Samples(void)
+size_t S9xMSU1Samples(void)
 {
 	return bufPos - bufBegin;
 }
 
-void S9xMSU1SetOutput(int16 * out, int size)
+void S9xMSU1SetOutput(int16 * out, size_t size)
 {
 	bufPos = bufBegin = out;
 	bufEnd = out + size;

@@ -231,11 +231,11 @@ void S9xMSU1Init(void);
 bool S9xMSU1ROMExists(void);
 STREAM S9xMSU1OpenFile(char *msu_ext);
 void S9xMSU1Init(void);
-void S9xMSU1Generate(int sample_count);
-uint8 S9xMSU1ReadPort(int port);
-void S9xMSU1WritePort(int port, uint8 byte);
-uint16 S9xMSU1Samples(void);
-void S9xMSU1SetOutput(int16 *out, int size);
+void S9xMSU1Generate(size_t sample_count);
+uint8 S9xMSU1ReadPort(uint8 port);
+void S9xMSU1WritePort(uint8 port, uint8 byte);
+size_t S9xMSU1Samples(void);
+void S9xMSU1SetOutput(int16 *out, size_t size);
 void S9xMSU1PostLoadState(void);
 
 #endif

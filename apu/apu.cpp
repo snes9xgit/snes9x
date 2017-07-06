@@ -385,6 +385,7 @@ void S9xFinalizeSamples (void)
 	{
 		if (Settings.MSU1)
 		{
+			S9xMSU1SetOutput((int16 *)msu::landing_buffer, msu::buffer_size);
 			S9xMSU1Generate(SNES::dsp.spc_dsp.sample_count());
 			if (!msu::resampler->push((short *)msu::landing_buffer, S9xMSU1Samples()))
 			{
@@ -415,9 +416,6 @@ void S9xFinalizeSamples (void)
 		spc::sound_in_sync = FALSE;
 
 	SNES::dsp.spc_dsp.set_output((SNES::SPC_DSP::sample_t *) spc::landing_buffer, spc::buffer_size);
-
-	if (Settings.MSU1)
-		S9xMSU1SetOutput((int16 *)msu::landing_buffer, msu::buffer_size);
 }
 
 void S9xLandSamples (void)
@@ -488,7 +486,7 @@ bool8 S9xInitSound (int buffer_ms, int lag_ms)
 		spc::buffer_size <<= 1;
 	if (Settings.SixteenBitSound)
 		spc::buffer_size <<= 1;
-	msu::buffer_size = ((buffer_ms * 44100 / 1000) * 44100 / 32040) << 2; // Always 16-bit, Stereo
+	msu::buffer_size = sample_count << 2; // Always 16-bit, Stereo
 
 	printf("Sound buffer size: %d (%d samples)\n", spc::buffer_size, sample_count);
 
