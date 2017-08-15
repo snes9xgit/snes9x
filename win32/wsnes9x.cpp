@@ -638,7 +638,9 @@ void DoAVIOpen(const TCHAR* filename);
 void DoAVIClose(int reason);
 void RestoreGUIDisplay ();
 void RestoreSNESDisplay ();
-void FreezeUnfreeze (int slot, bool8 freeze);
+void FreezeUnfreezeDialog(bool8 freeze);
+void FreezeUnfreezeSlot(int slot, bool8 freeze);
+void FreezeUnfreeze (const char *filename, bool8 freeze);
 void CheckDirectoryIsWritable (const char *filename);
 static void CheckMenuStates ();
 static void ResetFrameTimer ();
@@ -984,13 +986,13 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 				if(wParam == CustomKeys.Save[i].key
 				&& modifiers == CustomKeys.Save[i].modifiers)
 				{
-					FreezeUnfreeze (i, true);
+					FreezeUnfreezeSlot (i, true);
 					hitHotKey = true;
 				}
 				if(wParam == CustomKeys.Load[i].key
 				&& modifiers == CustomKeys.Load[i].modifiers)
 				{
-					FreezeUnfreeze (i, false);
+					FreezeUnfreezeSlot (i, false);
 					hitHotKey = true;
 				}
 			}
@@ -998,13 +1000,13 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 			if(wParam == CustomKeys.SlotSave.key
 			&& modifiers == CustomKeys.SlotSave.modifiers)
 			{
-				FreezeUnfreeze (GUI.CurrentSaveSlot, true);
+				FreezeUnfreezeSlot (GUI.CurrentSaveSlot, true);
 				hitHotKey = true;
 			}
 			if(wParam == CustomKeys.SlotLoad.key
 			&& modifiers == CustomKeys.SlotLoad.modifiers)
 			{
-				FreezeUnfreeze (GUI.CurrentSaveSlot, false);
+				FreezeUnfreezeSlot (GUI.CurrentSaveSlot, false);
 				hitHotKey = true;
 			}
 			if(wParam == CustomKeys.SlotPlus.key
@@ -2287,65 +2289,71 @@ LRESULT CALLBACK WinProc(
 			GUI.FrameAdvanceJustPressed = 0;
 			break;
         case ID_FILE_LOAD0:
-			FreezeUnfreeze (0, FALSE);
+			FreezeUnfreezeSlot (0, FALSE);
 			break;
 		case ID_FILE_LOAD1:
-			FreezeUnfreeze (1, FALSE);
+			FreezeUnfreezeSlot (1, FALSE);
 			break;
 		case ID_FILE_LOAD2:
-			FreezeUnfreeze (2, FALSE);
+			FreezeUnfreezeSlot (2, FALSE);
 			break;
 		case ID_FILE_LOAD3:
-			FreezeUnfreeze (3, FALSE);
+			FreezeUnfreezeSlot (3, FALSE);
 			break;
 		case ID_FILE_LOAD4:
-			FreezeUnfreeze (4, FALSE);
+			FreezeUnfreezeSlot (4, FALSE);
 			break;
 		case ID_FILE_LOAD5:
-			FreezeUnfreeze (5, FALSE);
+			FreezeUnfreezeSlot (5, FALSE);
 			break;
 		case ID_FILE_LOAD6:
-			FreezeUnfreeze (6, FALSE);
+			FreezeUnfreezeSlot (6, FALSE);
 			break;
 		case ID_FILE_LOAD7:
-			FreezeUnfreeze (7, FALSE);
+			FreezeUnfreezeSlot (7, FALSE);
 			break;
 		case ID_FILE_LOAD8:
-			FreezeUnfreeze (8, FALSE);
+			FreezeUnfreezeSlot (8, FALSE);
 			break;
 		case ID_FILE_LOAD9:
-			FreezeUnfreeze (9, FALSE);
+			FreezeUnfreezeSlot (9, FALSE);
 			break;
+        case ID_FILE_LOAD_FILE:
+            FreezeUnfreezeDialog(FALSE);
+            break;
         case ID_FILE_SAVE0:
-            FreezeUnfreeze (0, TRUE);
+            FreezeUnfreezeSlot (0, TRUE);
 			break;
 		case ID_FILE_SAVE1:
-			FreezeUnfreeze (1, TRUE);
+			FreezeUnfreezeSlot (1, TRUE);
 			break;
 		case ID_FILE_SAVE2:
-			FreezeUnfreeze (2, TRUE);
+			FreezeUnfreezeSlot (2, TRUE);
 			break;
 		case ID_FILE_SAVE3:
-			FreezeUnfreeze (3, TRUE);
+			FreezeUnfreezeSlot (3, TRUE);
 			break;
 		case ID_FILE_SAVE4:
-			FreezeUnfreeze (4, TRUE);
+			FreezeUnfreezeSlot (4, TRUE);
 			break;
 		case ID_FILE_SAVE5:
-			FreezeUnfreeze (5, TRUE);
+			FreezeUnfreezeSlot (5, TRUE);
 			break;
 		case ID_FILE_SAVE6:
-			FreezeUnfreeze (6, TRUE);
+			FreezeUnfreezeSlot (6, TRUE);
 			break;
 		case ID_FILE_SAVE7:
-			FreezeUnfreeze (7, TRUE);
+			FreezeUnfreezeSlot (7, TRUE);
 			break;
 		case ID_FILE_SAVE8:
-			FreezeUnfreeze (8, TRUE);
+			FreezeUnfreezeSlot (8, TRUE);
 			break;
 		case ID_FILE_SAVE9:
-			FreezeUnfreeze (9, TRUE);
+			FreezeUnfreezeSlot (9, TRUE);
 			break;
+        case ID_FILE_SAVE_FILE:
+            FreezeUnfreezeDialog(TRUE);
+            break;
 		case ID_CHEAT_ENTER:
 			RestoreGUIDisplay ();
 			S9xRemoveCheats ();
@@ -3704,11 +3712,49 @@ loop_exit:
 		return msg.wParam;
 }
 
-void FreezeUnfreeze (int slot, bool8 freeze)
+void FreezeUnfreezeDialog(bool8 freeze)
 {
-    char filename[_MAX_PATH +1];
-    char ext [_MAX_EXT + 1];
+    TCHAR filename[MAX_PATH];
+    OPENFILENAME ofn;
 
+    *filename = TEXT('\0');
+    memset((LPVOID)&ofn, 0, sizeof(OPENFILENAME));
+
+    ofn.lStructSize = sizeof(OPENFILENAME);
+    ofn.hwndOwner = GUI.hWnd;
+    ofn.lpstrFilter = TEXT("State files\0*.state;*.frz;*.0*\0All Files\0*.*\0\0");
+    ofn.lpstrFile = filename;
+    ofn.lpstrInitialDir = S9xGetDirectoryT(SNAPSHOT_DIR);
+    ofn.lpstrTitle = TEXT("Select State");
+    ofn.lpstrDefExt = TEXT("state");
+    ofn.nMaxFile = MAX_PATH;
+
+    if (freeze) {
+        ofn.Flags = OFN_OVERWRITEPROMPT;
+        if (GetSaveFileName(&ofn)) {
+            FreezeUnfreeze(_tToChar(ofn.lpstrFile), freeze);
+        }
+    } else {
+        ofn.Flags = OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+        if (GetOpenFileName(&ofn)) {
+            FreezeUnfreeze(_tToChar(ofn.lpstrFile), freeze);
+        }
+    }
+}
+
+void FreezeUnfreezeSlot(int slot, bool8 freeze)
+{
+    char filename[_MAX_PATH + 1];
+    char ext[_MAX_EXT + 1];
+
+    snprintf(ext, _MAX_EXT, ".%03d", slot);
+    strcpy(filename, S9xGetFilename(ext, SNAPSHOT_DIR));
+
+    FreezeUnfreeze(filename, freeze);
+}
+
+void FreezeUnfreeze (const char *filename, bool8 freeze)
+{
 #ifdef NETPLAY_SUPPORT
     if (!freeze && Settings.NetPlay && !Settings.NetPlayServer)
     {
@@ -3717,9 +3763,6 @@ void FreezeUnfreeze (int slot, bool8 freeze)
         return;
     }
 #endif
-
-	snprintf(ext, _MAX_EXT, ".%03d", slot);
-	strcpy(filename, S9xGetFilename(ext, SNAPSHOT_DIR));
 
     S9xSetPause (PAUSE_FREEZE_FILE);
 

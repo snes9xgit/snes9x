@@ -497,13 +497,15 @@
 #define ID_DEBUG_APU_TRACE              40173
 #define ID_EMULATION_BACKGROUNDINPUT    40174
 #define ID_SAVEMEMPACK                  40175
+#define ID_FILE_SAVE_FILE               40176
+#define ID_FILE_LOAD_FILE               40177
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        151
-#define _APS_NEXT_COMMAND_VALUE         40176
+#define _APS_NEXT_COMMAND_VALUE         40178
 #define _APS_NEXT_CONTROL_VALUE         3018
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

@@ -28,6 +28,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 
 IDC_CURSOR_SCOPE        CURSOR                  "nodrop.cur"
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Accelerator
@@ -802,6 +803,7 @@ BEGIN
             MENUITEM "Slot #&7",                    ID_FILE_SAVE7
             MENUITEM "Slot #&8",                    ID_FILE_SAVE8
             MENUITEM "Slot #&9",                    ID_FILE_SAVE9
+            MENUITEM "&Select File",                ID_FILE_SAVE_FILE
         END
         POPUP "&Load Game Position"
         BEGIN
@@ -815,6 +817,7 @@ BEGIN
             MENUITEM "Slot #&7",                    ID_FILE_LOAD7
             MENUITEM "Slot #&8",                    ID_FILE_LOAD8
             MENUITEM "Slot #&9",                    ID_FILE_LOAD9
+            MENUITEM "&Select File",                ID_FILE_LOAD_FILE
         END
         MENUITEM "Load MultiCart...",           ID_FILE_LOADMULTICART
         MENUITEM SEPARATOR
