@@ -191,6 +191,7 @@
  ***********************************************************************************/
 
 #include "snes9x.h"
+#include "memmap.h"
 #include "display.h"
 #include "msu1.h"
 #include "apu/bapu/dsp/blargg_endian.h"
@@ -380,21 +381,29 @@ void S9xMSU1Init(void)
 
 bool S9xMSU1ROMExists(void)
 {
-    struct stat buf;
     STREAM s = S9xMSU1OpenFile(".msu");
 	if (s)
 	{
 		CLOSE_STREAM(s);
 		return true;
 	}
+#ifdef UNZIP_SUPPORT
+	char ext[_MAX_EXT + 1];
+	_splitpath(Memory.ROMFilename, nullptr, nullptr, nullptr, ext);
+	if (!strcasecmp(ext, ".msu1"))
+		return true;
 
-	s = S9xMSU1OpenFile("msu1.rom");
-	if (s)
+	unzFile unzFile = unzOpen(S9xGetFilename(".msu1", ROMFILENAME_DIR));
+
+	if(!unzFile)
+		unzFile = unzOpen(S9xGetFilename(".msu1", IPS_DIR));
+
+	if (unzFile)
 	{
-		CLOSE_STREAM(s);
+		unzCloseCurrentFile(unzFile);
 		return true;
 	}
-        
+#endif
     return false;
 }
 
