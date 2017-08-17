@@ -224,7 +224,7 @@ static int unzFindExtension(unzFile &file, const char *ext, bool restart = TRUE,
         unzGetCurrentFileInfo(file, &info, name, 128, NULL, 0, NULL, 0);
         len = strlen(name);
 
-        if (len >= l + 1 && strcasecmp(name + len - l, ext) == 0 && unzOpenCurrentFile(file) == UNZ_OK)
+        if (len >= l && strcasecmp(name + len - l, ext) == 0 && unzOpenCurrentFile(file) == UNZ_OK)
         {
             if (print)
                 printf("Using msu file %s", name);
@@ -247,24 +247,28 @@ STREAM S9xMSU1OpenFile(char *msu_ext)
         printf("Using msu file %s.\n", filename);
 
 #ifdef UNZIP_SUPPORT
-    // look for msu file in .msu.zip if not found in rom dir
+    // look for msu file in .msu1 (Mercurial Magic pack) or .msu.zip if not found in rom dir
     if (!file)
     {
         const char *zip_filename = S9xGetFilename(".msu.zip", ROMFILENAME_DIR);
-        if (zip_filename)
+		unzFile	unzFile = unzOpen(zip_filename);
+
+		if (!unzFile)
+		{
+			zip_filename = S9xGetFilename(".msu1", ROMFILENAME_DIR);
+			unzFile = unzOpen(zip_filename);
+		}
+
+        if (unzFile)
         {
-            unzFile	unzFile = unzOpen(zip_filename);
-            if (unzFile)
+            int	port = unzFindExtension(unzFile, msu_ext);
+            if (port == UNZ_OK)
             {
-                int	port = unzFindExtension(unzFile, msu_ext);
-                if (port == UNZ_OK)
-                {
-                    printf(" in %s.\n", zip_filename);
-                    file = new unzStream(unzFile);
-                }
-                else
-                    unzCloseCurrentFile(unzFile);
+                printf(" in %s.\n", zip_filename);
+                file = new unzStream(unzFile);
             }
+            else
+                unzCloseCurrentFile(unzFile);
         }
     }
 #endif
@@ -321,6 +325,10 @@ bool DataOpen()
     }
 
     dataStream = S9xMSU1OpenFile(".msu");
+
+	if(!dataStream)
+		dataStream = S9xMSU1OpenFile("msu1.rom");
+
 	return dataStream != NULL;
 }
 
@@ -368,10 +376,20 @@ bool S9xMSU1ROMExists(void)
 {
     struct stat buf;
     STREAM s = S9xMSU1OpenFile(".msu");
-    bool8 exists = (s != NULL);
-    if(s)
-        CLOSE_STREAM(s);
-    return exists;
+	if (s)
+	{
+		CLOSE_STREAM(s);
+		return true;
+	}
+
+	s = S9xMSU1OpenFile("msu1.rom");
+	if (s)
+	{
+		CLOSE_STREAM(s);
+		return true;
+	}
+        
+    return false;
 }
 
 void S9xMSU1Generate(size_t sample_count)
