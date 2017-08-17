@@ -4261,6 +4261,13 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 	_makepath(fname, drive, dir, name, "msu1");
 	unzFile msu1file = unzOpen(fname);
 
+	if (!msu1file)
+	{
+		_snprintf(fname, sizeof(fname), "%s" SLASH_STR "%s%s",
+			S9xGetDirectory(IPS_DIR), name, ".msu1");
+		msu1file = unzOpen(fname);
+	}
+
 	if (msu1file)
 	{
 		int	port = unzFindExtension(msu1file, "bps");

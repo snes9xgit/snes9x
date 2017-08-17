@@ -259,6 +259,12 @@ STREAM S9xMSU1OpenFile(char *msu_ext)
 			unzFile = unzOpen(zip_filename);
 		}
 
+		if (!unzFile)
+		{
+			zip_filename = S9xGetFilename(".msu1", IPS_DIR);
+			unzFile = unzOpen(zip_filename);
+		}
+
         if (unzFile)
         {
             int	port = unzFindExtension(unzFile, msu_ext);
