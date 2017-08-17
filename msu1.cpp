@@ -206,10 +206,10 @@ size_t partial_samples;
 int16 *bufPos, *bufBegin, *bufEnd;
 
 #ifdef UNZIP_SUPPORT
-static int unzFindExtension(unzFile &file, const char *ext, bool restart = TRUE, bool print = TRUE)
+static int unzFindExtension(unzFile &file, const char *ext, bool restart = TRUE, bool print = TRUE, bool allowExact = FALSE)
 {
     unz_file_info	info;
-    int				port, l = strlen(ext);
+    int				port, l = strlen(ext), e = allowExact ? 0 : 1;
 
     if (restart)
         port = unzGoToFirstFile(file);
@@ -224,7 +224,7 @@ static int unzFindExtension(unzFile &file, const char *ext, bool restart = TRUE,
         unzGetCurrentFileInfo(file, &info, name, 128, NULL, 0, NULL, 0);
         len = strlen(name);
 
-        if (len >= l && strcasecmp(name + len - l, ext) == 0 && unzOpenCurrentFile(file) == UNZ_OK)
+        if (len >= l + e && strcasecmp(name + len - l, ext) == 0 && unzOpenCurrentFile(file) == UNZ_OK)
         {
             if (print)
                 printf("Using msu file %s", name);
@@ -267,7 +267,7 @@ STREAM S9xMSU1OpenFile(char *msu_ext)
 
         if (unzFile)
         {
-            int	port = unzFindExtension(unzFile, msu_ext);
+            int	port = unzFindExtension(unzFile, msu_ext, true, true, true);
             if (port == UNZ_OK)
             {
                 printf(" in %s.\n", zip_filename);
