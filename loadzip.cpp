@@ -209,7 +209,7 @@ bool8 LoadZip (const char *zipname, uint32 *TotalFileSize, uint8 *buffer)
 	if (file == NULL)
 		return (FALSE);
 
-	// find largest file in zip file (under MAX_ROM_SIZE) or a file with extension .1
+	// find largest file in zip file (under MAX_ROM_SIZE) or a file with extension .1, or a file named program.rom
 	char	filename[132];
 	uint32	filesize = 0;
 	int		port = unzGoToFirstFile(file);
@@ -241,10 +241,19 @@ bool8 LoadZip (const char *zipname, uint32 *TotalFileSize, uint8 *buffer)
 			break;
 		}
 
+		if (strncasecmp(name, "program.rom", 11) == 0)
+		{
+			strcpy(filename, name);
+			filesize = info.uncompressed_size;
+			break;
+		}
+
 		port = unzGoToNextFile(file);
 	}
 
-	if (!(port == UNZ_END_OF_LIST_OF_FILE || port == UNZ_OK) || filesize == 0)
+	int len = strlen(zipname);
+	if (!(port == UNZ_END_OF_LIST_OF_FILE || port == UNZ_OK) || filesize == 0 ||
+		(len > 5 && strcasecmp(zipname + len - 5, ".msu1") == 0 && strcasecmp(filename, "program.rom") != 0))
 	{
 		assert(unzClose(file) == UNZ_OK);
 		return (FALSE);

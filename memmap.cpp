@@ -1439,7 +1439,7 @@ uint32 CMemory::FileLoader (uint8 *buffer, const char *filename, uint32 maxsize)
 	_makepath(fname, drive, dir, name, exts);
 
 	int	nFormat = FILE_DEFAULT;
-	if (strcasecmp(ext, "zip") == 0)
+	if (strcasecmp(ext, "zip") == 0 || strcasecmp(ext, "msu1") == 0)
 		nFormat = FILE_ZIP;
 	else
 	if (strcasecmp(ext, "jma") == 0)
@@ -4258,31 +4258,34 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 
 #ifdef UNZIP_SUPPORT
 	// Mercurial Magic (MSU-1 distribution pack)
-	_makepath(fname, drive, dir, name, "msu1");
-	unzFile msu1file = unzOpen(fname);
-
-	if (!msu1file)
+	if (strcasecmp(ext, "msu1") && strcasecmp(ext, ".msu1"))
 	{
-		_snprintf(fname, sizeof(fname), "%s" SLASH_STR "%s%s",
-			S9xGetDirectory(IPS_DIR), name, ".msu1");
-		msu1file = unzOpen(fname);
-	}
+		_makepath(fname, drive, dir, name, "msu1");
+		unzFile msu1file = unzOpen(fname);
 
-	if (msu1file)
-	{
-		int	port = unzFindExtension(msu1file, "bps");
-		if (port == UNZ_OK)
+		if (!msu1file)
 		{
-			printf(" in %s", fname);
+			_snprintf(fname, sizeof(fname), "%s" SLASH_STR "%s%s",
+				S9xGetDirectory(IPS_DIR), name, ".msu1");
+			msu1file = unzOpen(fname);
+		}
 
-			Stream *s = new unzStream(msu1file);
-			ret = ReadBPSPatch(s, offset, rom_size);
-			s->closeStream();
+		if (msu1file)
+		{
+			int	port = unzFindExtension(msu1file, "bps");
+			if (port == UNZ_OK)
+			{
+				printf(" in %s", fname);
 
-			if (ret)
-				printf("!\n");
-			else
-				printf(" failed!\n");
+				Stream *s = new unzStream(msu1file);
+				ret = ReadBPSPatch(s, offset, rom_size);
+				s->closeStream();
+
+				if (ret)
+					printf("!\n");
+				else
+					printf(" failed!\n");
+			}
 		}
 	}
 
