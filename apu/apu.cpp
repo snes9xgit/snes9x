@@ -341,6 +341,8 @@ bool8 S9xMixSamples (uint8 *buffer, int sample_count)
 					for (uint32 i = 0; i < sample_count; ++i)
 						*((int16*)(dest+(i * 2))) += *((int16*)(msu_sample+(i * 2)));
 				}
+				else // should never occur
+					assert(0);
 			}
 		}
 		else
@@ -381,21 +383,10 @@ int S9xGetSampleCount (void)
 /* TODO: Attach */
 void S9xFinalizeSamples (void)
 {
+	bool generate_msu1 = false;
+
 	if (!Settings.Mute)
 	{
-		if (Settings.MSU1)
-		{
-			S9xMSU1SetOutput((int16 *)msu::landing_buffer, msu::buffer_size);
-			S9xMSU1Generate(SNES::dsp.spc_dsp.sample_count());
-			if (!msu::resampler->push((short *)msu::landing_buffer, S9xMSU1Samples()))
-			{
-				//spc::sound_in_sync = FALSE;
-
-				//if (Settings.SoundSync && !Settings.TurboMode)
-					//return;
-			}
-		}
-
 		if (!spc::resampler->push((short *)spc::landing_buffer, SNES::dsp.spc_dsp.sample_count()))
 		{
 			/* We weren't able to process the entire buffer. Potential overrun. */
@@ -403,6 +394,20 @@ void S9xFinalizeSamples (void)
 
 			if (Settings.SoundSync && !Settings.TurboMode)
 				return;
+		}
+		// only generate msu1 if we really consumed the dsp samples (sample_count() resets at end of function),
+		// otherwise we will generate multiple times for the same samples
+		if (Settings.MSU1)
+			generate_msu1 = true;
+	}
+
+	if (generate_msu1)
+	{
+		S9xMSU1SetOutput((int16 *)msu::landing_buffer, msu::buffer_size);
+		S9xMSU1Generate(SNES::dsp.spc_dsp.sample_count());
+		if (!msu::resampler->push((short *)msu::landing_buffer, S9xMSU1Samples()))
+		{
+
 		}
 	}
 
