@@ -383,10 +383,12 @@ int S9xGetSampleCount (void)
 /* TODO: Attach */
 void S9xFinalizeSamples (void)
 {
-	bool generate_msu1 = false, drop_current_msu1_samples = false;
+	bool drop_current_msu1_samples = true;
 
 	if (!Settings.Mute)
 	{
+		drop_current_msu1_samples = false;
+
 		if (!spc::resampler->push((short *)spc::landing_buffer, SNES::dsp.spc_dsp.sample_count()))
 		{
 			/* We weren't able to process the entire buffer. Potential overrun. */
@@ -398,12 +400,12 @@ void S9xFinalizeSamples (void)
 			// since we drop the current dsp samples we also want to drop generated msu1 samples
 			drop_current_msu1_samples = true;
 		}
-		// only generate msu1 if we really consumed the dsp samples (sample_count() resets at end of function),
-		// otherwise we will generate multiple times for the same samples
-		generate_msu1 = true;
 	}
 
-	if (Settings.MSU1 && generate_msu1)
+	// only generate msu1 if we really consumed the dsp samples (sample_count() resets at end of function),
+	// otherwise we will generate multiple times for the same samples - so this needs to be after all early
+	// function returns
+	if (Settings.MSU1)
 	{
 		// generate the same number of msu1 samples as dsp samples were generated
 		S9xMSU1SetOutput((int16 *)msu::landing_buffer, msu::buffer_size);
