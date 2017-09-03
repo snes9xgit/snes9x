@@ -248,17 +248,11 @@ STREAM S9xMSU1OpenFile(char *msu_ext)
         printf("Using msu file %s.\n", filename);
 
 #ifdef UNZIP_SUPPORT
-    // look for msu file in .msu1 (Mercurial Magic pack) or .msu.zip if not found in rom dir
+    // look for msu1 pack file in the rom or patch dir if msu data file not found in rom dir
     if (!file)
     {
-        const char *zip_filename = S9xGetFilename(".msu.zip", ROMFILENAME_DIR);
+        const char *zip_filename = S9xGetFilename(".msu1", ROMFILENAME_DIR);
 		unzFile	unzFile = unzOpen(zip_filename);
-
-		if (!unzFile)
-		{
-			zip_filename = S9xGetFilename(".msu1", ROMFILENAME_DIR);
-			unzFile = unzOpen(zip_filename);
-		}
 
 		if (!unzFile)
 		{
