@@ -383,7 +383,7 @@ int S9xGetSampleCount (void)
 /* TODO: Attach */
 void S9xFinalizeSamples (void)
 {
-	bool generate_msu1 = false;
+	bool generate_msu1 = false, drop_current_msu1_samples = false;
 
 	if (!Settings.Mute)
 	{
@@ -394,20 +394,24 @@ void S9xFinalizeSamples (void)
 
 			if (Settings.SoundSync && !Settings.TurboMode)
 				return;
+
+			// since we drop the current dsp samples we also want to drop generated msu1 samples
+			drop_current_msu1_samples = true;
 		}
 		// only generate msu1 if we really consumed the dsp samples (sample_count() resets at end of function),
 		// otherwise we will generate multiple times for the same samples
-		if (Settings.MSU1)
-			generate_msu1 = true;
+		generate_msu1 = true;
 	}
 
-	if (generate_msu1)
+	if (Settings.MSU1 && generate_msu1)
 	{
+		// generate the same number of msu1 samples as dsp samples were generated
 		S9xMSU1SetOutput((int16 *)msu::landing_buffer, msu::buffer_size);
 		S9xMSU1Generate(SNES::dsp.spc_dsp.sample_count());
-		if (!msu::resampler->push((short *)msu::landing_buffer, S9xMSU1Samples()))
+		if (!drop_current_msu1_samples && !msu::resampler->push((short *)msu::landing_buffer, S9xMSU1Samples()))
 		{
-
+			// should not occur, msu buffer is larger and we drop msu samples if spc buffer overruns
+			assert(0);
 		}
 	}
 
@@ -491,7 +495,7 @@ bool8 S9xInitSound (int buffer_ms, int lag_ms)
 		spc::buffer_size <<= 1;
 	if (Settings.SixteenBitSound)
 		spc::buffer_size <<= 1;
-	msu::buffer_size = sample_count << 2; // Always 16-bit, Stereo
+	msu::buffer_size = (int)((sample_count << 2) * 1.5); // Always 16-bit, Stereo; 1.5 to never overflow before dsp buffer
 
 	printf("Sound buffer size: %d (%d samples)\n", spc::buffer_size, sample_count);
 
