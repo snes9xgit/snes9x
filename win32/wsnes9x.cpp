@@ -7063,10 +7063,17 @@ void MakeExtFile(void)
 	ofstream out;
 	out.open("Valid.Ext");
 
-	out<<"smcN"<<endl<<"zipY"<<endl<<"gzY" <<endl<<"swcN"<<endl<<"figN"<<endl;
+	out<<"smcN"<<endl;
+#ifdef UNZIP_SUPPORT
+	out<<"zipY"<<endl;
+	out<<"msu1Y"<<endl;
+#endif
+	out<<"gzY"<<endl;
+	out<<"swcN"<<endl;
+	out<<"figN"<<endl;
 	out<<"sfcN"<<endl;
 	out<<"bsN"<<endl;
-	out<<"jmaY";
+	out<<"jmaY"<<endl;
 	out.close();
 	SetFileAttributes(TEXT("Valid.Ext"), FILE_ATTRIBUTE_ARCHIVE|FILE_ATTRIBUTE_READONLY);
 };

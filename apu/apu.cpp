@@ -245,6 +245,8 @@ namespace msu
 	static int			buffer_size;
 	static uint8		*landing_buffer = NULL;
 	static Resampler	*resampler		= NULL;
+	static int			resample_buffer_size	= -1;
+	static uint8		*resample_buffer		= NULL;
 }
 
 static void EightBitize (uint8 *, int);
@@ -314,6 +316,13 @@ bool8 S9xMixSamples (uint8 *buffer, int sample_count)
 	else
 		dest = buffer;
 
+	if (Settings.MSU1 && msu::resample_buffer_size < (sample_count << 1))
+	{
+		delete[] msu::resample_buffer;
+		msu::resample_buffer = new uint8[sample_count << 1];
+		msu::resample_buffer_size = sample_count << 1;
+	}
+
 	if (Settings.Mute)
 	{
 		memset(dest, 0, sample_count << 1);
@@ -336,10 +345,9 @@ bool8 S9xMixSamples (uint8 *buffer, int sample_count)
 			{
 				if (msu::resampler->avail() >= sample_count)
 				{
-					uint8 *msu_sample = new uint8[sample_count * 2];
-					msu::resampler->read((short *)msu_sample, sample_count);
+					msu::resampler->read((short *)msu::resample_buffer, sample_count);
 					for (uint32 i = 0; i < sample_count; ++i)
-						*((int16*)(dest+(i * 2))) += *((int16*)(msu_sample+(i * 2)));
+						*((int16*)(dest+(i * 2))) += *((int16*)(msu::resample_buffer +(i * 2)));
 				}
 				else // should never occur
 					assert(0);
@@ -613,6 +621,12 @@ void S9xDeinitAPU (void)
 	{
 		delete[] msu::landing_buffer;
 		msu::landing_buffer = NULL;
+	}
+
+	if (msu::resample_buffer)
+	{
+		delete[] msu::resample_buffer;
+		msu::resample_buffer = NULL;
 	}
 }
 
