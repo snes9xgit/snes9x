@@ -951,7 +951,8 @@ void WinRegisterConfigItems()
 	AddStringC("Dir:SPCs", GUI.SPCDir, _MAX_PATH, ".\\SPCs", "directory where SPCs will be saved");
 	AddStringC("Dir:Savestates", GUI.FreezeFileDir, _MAX_PATH, ".\\Saves", "directory where savestates will be created and loaded from");
 	AddStringC("Dir:SRAM", GUI.SRAMFileDir, _MAX_PATH, ".\\Saves", "directory where battery saves will be created and loaded from");
-	AddStringC("Dir:Patches", GUI.PatchDir, _MAX_PATH, ".\\Cheats", "directory in which ROM patches (.ips files) and cheats (.cht files) will be looked for");
+	AddStringC("Dir:Cheats", GUI.CheatDir, _MAX_PATH, ".\\Cheats", "directory in which cheats (.cht files) will be looked for");
+	AddStringC("Dir:Patches", GUI.PatchDir, _MAX_PATH, ".\\Patches", "directory in which ROM patches (.ips/.bps/.ups files) will be looked for");
 	AddStringC("Dir:Bios", GUI.BiosDir, _MAX_PATH, ".\\BIOS", "directory where BIOS files (such as \"BS-X.bios\") will be located");
 	AddStringC("Dir:SatData", GUI.SatDir, _MAX_PATH, ".\\SatData", "directory where Satellaview Signal Data files will be located");
 	AddBoolC("Dir:Lock", GUI.LockDirectories, false, "true to prevent Snes9x from changing configured directories when you browse to a new location");

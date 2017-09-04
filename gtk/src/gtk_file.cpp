@@ -142,7 +142,7 @@ S9xGetDirectory (enum s9x_getdirtype dirtype)
             sprintf (path, "%s", gui_config->savestate_directory);
             break;
 
-        case IPS_DIR:
+        case PATCH_DIR:
             sprintf (path, "%s", gui_config->patch_directory);
             break;
 

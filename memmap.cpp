@@ -4280,7 +4280,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 	}
 #endif
 
-	n = S9xGetFilename(".bps", IPS_DIR);
+	n = S9xGetFilename(".bps", PATCH_DIR);
 
 	if ((patch_file = OPEN_FSTREAM(n, "rb")) != NULL)
 	{
@@ -4344,7 +4344,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 	}
 #endif
 
-	n = S9xGetFilename(".ups", IPS_DIR);
+	n = S9xGetFilename(".ups", PATCH_DIR);
 
 	if ((patch_file = OPEN_FSTREAM(n, "rb")) != NULL)
 	{
@@ -4626,7 +4626,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 	}
 #endif
 
-	n = S9xGetFilename(".ips", IPS_DIR);
+	n = S9xGetFilename(".ips", PATCH_DIR);
 
 	if ((patch_file = OPEN_FSTREAM(n, "rb")) != NULL)
 	{
@@ -4653,7 +4653,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 		do
 		{
 			snprintf(ips, 9, ".%03d.ips", i);
-			n = S9xGetFilename(ips, IPS_DIR);
+			n = S9xGetFilename(ips, PATCH_DIR);
 
 			if (!(patch_file = OPEN_FSTREAM(n, "rb")))
 				break;
@@ -4690,7 +4690,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 			snprintf(ips, _MAX_EXT + 3, ".ips%d", i);
 			if (strlen(ips) > _MAX_EXT + 1)
 				break;
-			n = S9xGetFilename(ips, IPS_DIR);
+			n = S9xGetFilename(ips, PATCH_DIR);
 
 			if (!(patch_file = OPEN_FSTREAM(n, "rb")))
 				break;
@@ -4725,7 +4725,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 		do
 		{
 			snprintf(ips, 5, ".ip%d", i);
-			n = S9xGetFilename(ips, IPS_DIR);
+			n = S9xGetFilename(ips, PATCH_DIR);
 
 			if (!(patch_file = OPEN_FSTREAM(n, "rb")))
 				break;

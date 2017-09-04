@@ -261,7 +261,7 @@ STREAM S9xMSU1OpenFile(char *msu_ext, bool skip_unpacked)
 
 		if (!unzFile)
 		{
-			zip_filename = S9xGetFilename(".msu1", IPS_DIR);
+			zip_filename = S9xGetFilename(".msu1", PATCH_DIR);
 			unzFile = unzOpen(zip_filename);
 		}
 
@@ -395,7 +395,7 @@ bool S9xMSU1ROMExists(void)
 	unzFile unzFile = unzOpen(S9xGetFilename(".msu1", ROMFILENAME_DIR));
 
 	if(!unzFile)
-		unzFile = unzOpen(S9xGetFilename(".msu1", IPS_DIR));
+		unzFile = unzOpen(S9xGetFilename(".msu1", PATCH_DIR));
 
 	if (unzFile)
 	{

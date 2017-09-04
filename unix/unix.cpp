@@ -278,7 +278,7 @@ static const char	dirNames[13][32] =
 	"screenshot",	// SCREENSHOT_DIR
 	"spc",			// SPC_DIR
 	"cheat",		// CHEAT_DIR
-	"patch",		// IPS_DIR
+	"patch",		// PATCH_DIR
 	"bios",			// BIOS_DIR
 	"log",			// LOG_DIR
 	""

@@ -204,7 +204,7 @@ enum s9x_getdirtype
 	SCREENSHOT_DIR,
 	SPC_DIR,
 	CHEAT_DIR,
-	IPS_DIR,
+	PATCH_DIR,
 	BIOS_DIR,
 	LOG_DIR,
 	SAT_DIR,
