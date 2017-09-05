@@ -191,6 +191,7 @@
  ***********************************************************************************/
 
 #include "snes9x.h"
+#include "memmap.h"
 #include "display.h"
 #include "msu1.h"
 #include "apu/bapu/dsp/blargg_endian.h"
@@ -206,10 +207,10 @@ size_t partial_samples;
 int16 *bufPos, *bufBegin, *bufEnd;
 
 #ifdef UNZIP_SUPPORT
-static int unzFindExtension(unzFile &file, const char *ext, bool restart = TRUE, bool print = TRUE)
+static int unzFindExtension(unzFile &file, const char *ext, bool restart = TRUE, bool print = TRUE, bool allowExact = FALSE)
 {
     unz_file_info	info;
-    int				port, l = strlen(ext);
+    int				port, l = strlen(ext), e = allowExact ? 0 : 1;
 
     if (restart)
         port = unzGoToFirstFile(file);
@@ -224,7 +225,7 @@ static int unzFindExtension(unzFile &file, const char *ext, bool restart = TRUE,
         unzGetCurrentFileInfo(file, &info, name, 128, NULL, 0, NULL, 0);
         len = strlen(name);
 
-        if (len >= l + 1 && strcasecmp(name + len - l, ext) == 0 && unzOpenCurrentFile(file) == UNZ_OK)
+        if (len >= l + e && strcasecmp(name + len - l, ext) == 0 && unzOpenCurrentFile(file) == UNZ_OK)
         {
             if (print)
                 printf("Using msu file %s", name);
@@ -247,24 +248,28 @@ STREAM S9xMSU1OpenFile(char *msu_ext)
         printf("Using msu file %s.\n", filename);
 
 #ifdef UNZIP_SUPPORT
-    // look for msu file in .msu.zip if not found in rom dir
+    // look for msu1 pack file in the rom or patch dir if msu data file not found in rom dir
     if (!file)
     {
-        const char *zip_filename = S9xGetFilename(".msu.zip", ROMFILENAME_DIR);
-        if (zip_filename)
+        const char *zip_filename = S9xGetFilename(".msu1", ROMFILENAME_DIR);
+		unzFile	unzFile = unzOpen(zip_filename);
+
+		if (!unzFile)
+		{
+			zip_filename = S9xGetFilename(".msu1", IPS_DIR);
+			unzFile = unzOpen(zip_filename);
+		}
+
+        if (unzFile)
         {
-            unzFile	unzFile = unzOpen(zip_filename);
-            if (unzFile)
+            int	port = unzFindExtension(unzFile, msu_ext, true, true, true);
+            if (port == UNZ_OK)
             {
-                int	port = unzFindExtension(unzFile, msu_ext);
-                if (port == UNZ_OK)
-                {
-                    printf(" in %s.\n", zip_filename);
-                    file = new unzStream(unzFile);
-                }
-                else
-                    unzCloseCurrentFile(unzFile);
+                printf(" in %s.\n", zip_filename);
+                file = new unzStream(unzFile);
             }
+            else
+                unzCloseCurrentFile(unzFile);
         }
     }
 #endif
@@ -321,6 +326,10 @@ bool DataOpen()
     }
 
     dataStream = S9xMSU1OpenFile(".msu");
+
+	if(!dataStream)
+		dataStream = S9xMSU1OpenFile("msu1.rom");
+
 	return dataStream != NULL;
 }
 
@@ -366,12 +375,30 @@ void S9xMSU1Init(void)
 
 bool S9xMSU1ROMExists(void)
 {
-    struct stat buf;
     STREAM s = S9xMSU1OpenFile(".msu");
-    bool8 exists = (s != NULL);
-    if(s)
-        CLOSE_STREAM(s);
-    return exists;
+	if (s)
+	{
+		CLOSE_STREAM(s);
+		return true;
+	}
+#ifdef UNZIP_SUPPORT
+	char ext[_MAX_EXT + 1];
+	_splitpath(Memory.ROMFilename, nullptr, nullptr, nullptr, ext);
+	if (!strcasecmp(ext, ".msu1"))
+		return true;
+
+	unzFile unzFile = unzOpen(S9xGetFilename(".msu1", ROMFILENAME_DIR));
+
+	if(!unzFile)
+		unzFile = unzOpen(S9xGetFilename(".msu1", IPS_DIR));
+
+	if (unzFile)
+	{
+		unzCloseCurrentFile(unzFile);
+		return true;
+	}
+#endif
+    return false;
 }
 
 void S9xMSU1Generate(size_t sample_count)

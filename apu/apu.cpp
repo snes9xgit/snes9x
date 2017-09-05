@@ -245,6 +245,8 @@ namespace msu
 	static int			buffer_size;
 	static uint8		*landing_buffer = NULL;
 	static Resampler	*resampler		= NULL;
+	static int			resample_buffer_size	= -1;
+	static uint8		*resample_buffer		= NULL;
 }
 
 static void EightBitize (uint8 *, int);
@@ -314,6 +316,13 @@ bool8 S9xMixSamples (uint8 *buffer, int sample_count)
 	else
 		dest = buffer;
 
+	if (Settings.MSU1 && msu::resample_buffer_size < (sample_count << 1))
+	{
+		delete[] msu::resample_buffer;
+		msu::resample_buffer = new uint8[sample_count << 1];
+		msu::resample_buffer_size = sample_count << 1;
+	}
+
 	if (Settings.Mute)
 	{
 		memset(dest, 0, sample_count << 1);
@@ -336,11 +345,12 @@ bool8 S9xMixSamples (uint8 *buffer, int sample_count)
 			{
 				if (msu::resampler->avail() >= sample_count)
 				{
-					uint8 *msu_sample = new uint8[sample_count * 2];
-					msu::resampler->read((short *)msu_sample, sample_count);
+					msu::resampler->read((short *)msu::resample_buffer, sample_count);
 					for (uint32 i = 0; i < sample_count; ++i)
-						*((int16*)(dest+(i * 2))) += *((int16*)(msu_sample+(i * 2)));
+						*((int16*)(dest+(i * 2))) += *((int16*)(msu::resample_buffer +(i * 2)));
 				}
+				else // should never occur
+					assert(0);
 			}
 		}
 		else
@@ -381,20 +391,11 @@ int S9xGetSampleCount (void)
 /* TODO: Attach */
 void S9xFinalizeSamples (void)
 {
+	bool drop_current_msu1_samples = true;
+
 	if (!Settings.Mute)
 	{
-		if (Settings.MSU1)
-		{
-			S9xMSU1SetOutput((int16 *)msu::landing_buffer, msu::buffer_size);
-			S9xMSU1Generate(SNES::dsp.spc_dsp.sample_count());
-			if (!msu::resampler->push((short *)msu::landing_buffer, S9xMSU1Samples()))
-			{
-				//spc::sound_in_sync = FALSE;
-
-				//if (Settings.SoundSync && !Settings.TurboMode)
-					//return;
-			}
-		}
+		drop_current_msu1_samples = false;
 
 		if (!spc::resampler->push((short *)spc::landing_buffer, SNES::dsp.spc_dsp.sample_count()))
 		{
@@ -403,6 +404,24 @@ void S9xFinalizeSamples (void)
 
 			if (Settings.SoundSync && !Settings.TurboMode)
 				return;
+
+			// since we drop the current dsp samples we also want to drop generated msu1 samples
+			drop_current_msu1_samples = true;
+		}
+	}
+
+	// only generate msu1 if we really consumed the dsp samples (sample_count() resets at end of function),
+	// otherwise we will generate multiple times for the same samples - so this needs to be after all early
+	// function returns
+	if (Settings.MSU1)
+	{
+		// generate the same number of msu1 samples as dsp samples were generated
+		S9xMSU1SetOutput((int16 *)msu::landing_buffer, msu::buffer_size);
+		S9xMSU1Generate(SNES::dsp.spc_dsp.sample_count());
+		if (!drop_current_msu1_samples && !msu::resampler->push((short *)msu::landing_buffer, S9xMSU1Samples()))
+		{
+			// should not occur, msu buffer is larger and we drop msu samples if spc buffer overruns
+			assert(0);
 		}
 	}
 
@@ -486,7 +505,7 @@ bool8 S9xInitSound (int buffer_ms, int lag_ms)
 		spc::buffer_size <<= 1;
 	if (Settings.SixteenBitSound)
 		spc::buffer_size <<= 1;
-	msu::buffer_size = sample_count << 2; // Always 16-bit, Stereo
+	msu::buffer_size = (int)((sample_count << 2) * 1.5); // Always 16-bit, Stereo; 1.5 to never overflow before dsp buffer
 
 	printf("Sound buffer size: %d (%d samples)\n", spc::buffer_size, sample_count);
 
@@ -602,6 +621,12 @@ void S9xDeinitAPU (void)
 	{
 		delete[] msu::landing_buffer;
 		msu::landing_buffer = NULL;
+	}
+
+	if (msu::resample_buffer)
+	{
+		delete[] msu::resample_buffer;
+		msu::resample_buffer = NULL;
 	}
 }
 
