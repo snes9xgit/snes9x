@@ -33,7 +33,8 @@ _splitpath (const char *path, char *drive, char *dir, char *fname, char *ext)
     char *slash = strrchr ((char *) path, SLASH_CHAR);
     char *dot   = strrchr ((char *) path, '.');
 
-    *drive = '\0';
+    if (drive)
+        *drive = '\0';
 
     if (dot && slash && dot < slash)
     {
@@ -42,33 +43,44 @@ _splitpath (const char *path, char *drive, char *dir, char *fname, char *ext)
 
     if (!slash)
     {
-        *dir = '\0';
-        strcpy (fname, path);
+        if (dir)
+            *dir = '\0';
+        if (fname)
+            strcpy (fname, path);
 
         if (dot)
         {
-            fname[dot - path] = '\0';
-            strcpy (ext, dot + 1);
+            if (fname)
+                fname[dot - path] = '\0';
+            if (ext)
+                strcpy (ext, dot + 1);
         }
         else
         {
-            *ext = '\0';
+            if (ext)
+                *ext = '\0';
         }
     }
     else
     {
-        strcpy (dir, path);
-        dir[slash - path] = '\0';
-        strcpy (fname, slash + 1);
+        if (dir) {
+            strcpy (dir, path);
+            dir[slash - path] = '\0';
+        }
+        if (fname)
+            strcpy (fname, slash + 1);
 
         if (dot)
         {
-            fname[(dot - slash) - 1] = '\0';
-            strcpy (ext, dot + 1);
+            if (fname)
+                fname[(dot - slash) - 1] = '\0';
+            if (ext)
+                strcpy (ext, dot + 1);
         }
         else
         {
-            *ext = '\0';
+            if (ext)
+                *ext = '\0';
         }
     }
 

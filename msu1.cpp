@@ -388,7 +388,7 @@ bool S9xMSU1ROMExists(void)
 	}
 #ifdef UNZIP_SUPPORT
 	char ext[_MAX_EXT + 1];
-	_splitpath(Memory.ROMFilename, nullptr, nullptr, nullptr, ext);
+	_splitpath(Memory.ROMFilename, NULL, NULL, NULL, ext);
 	if (!strcasecmp(ext, ".msu1"))
 		return true;
 
