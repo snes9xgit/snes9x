@@ -229,7 +229,7 @@ extern struct SMSU1	MSU1;
 void S9xResetMSU(void);
 void S9xMSU1Init(void);
 bool S9xMSU1ROMExists(void);
-STREAM S9xMSU1OpenFile(char *msu_ext, bool skip_unpacked = FALSE);
+STREAM S9xMSU1OpenFile(const char *msu_ext, bool skip_unpacked = FALSE);
 void S9xMSU1Init(void);
 void S9xMSU1Generate(size_t sample_count);
 uint8 S9xMSU1ReadPort(uint8 port);

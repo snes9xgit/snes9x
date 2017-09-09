@@ -240,7 +240,7 @@ static int unzFindExtension(unzFile &file, const char *ext, bool restart = TRUE,
 }
 #endif
 
-STREAM S9xMSU1OpenFile(char *msu_ext, bool skip_unpacked)
+STREAM S9xMSU1OpenFile(const char *msu_ext, bool skip_unpacked)
 {
     const char *filename = S9xGetFilename(msu_ext, ROMFILENAME_DIR);
 	STREAM file = 0;
