@@ -4754,34 +4754,19 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 
 #ifdef UNZIP_SUPPORT
 	// Mercurial Magic (MSU-1 distribution pack)
-	if (strcasecmp(ext, "msu1") && strcasecmp(ext, ".msu1"))
+	if (strcasecmp(ext, "msu1") && strcasecmp(ext, ".msu1"))	// ROM was *NOT* loaded from a .msu1 pack
 	{
-		_makepath(fname, drive, dir, name, "msu1");
-		unzFile msu1file = unzOpen(fname);
-
-		if (!msu1file)
+		Stream *s = S9xMSU1OpenFile("patch.bps", TRUE);
+		if (s)
 		{
-			_snprintf(fname, sizeof(fname), "%s" SLASH_STR "%s%s",
-				S9xGetDirectory(IPS_DIR), name, ".msu1");
-			msu1file = unzOpen(fname);
-		}
+			printf("Using BPS patch %s.msu1", name);
+			ret = ReadBPSPatch(s, offset, rom_size);
+			s->closeStream();
 
-		if (msu1file)
-		{
-			int	port = unzFindExtension(msu1file, "bps");
-			if (port == UNZ_OK)
-			{
-				printf(" in %s", fname);
-
-				Stream *s = new unzStream(msu1file);
-				ret = ReadBPSPatch(s, offset, rom_size);
-				s->closeStream();
-
-				if (ret)
-					printf("!\n");
-				else
-					printf(" failed!\n");
-			}
+			if (ret)
+				printf("!\n");
+			else
+				printf(" failed!\n");
 		}
 	}
 #endif

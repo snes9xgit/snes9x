@@ -240,12 +240,17 @@ static int unzFindExtension(unzFile &file, const char *ext, bool restart = TRUE,
 }
 #endif
 
-STREAM S9xMSU1OpenFile(char *msu_ext)
+STREAM S9xMSU1OpenFile(char *msu_ext, bool skip_unpacked)
 {
     const char *filename = S9xGetFilename(msu_ext, ROMFILENAME_DIR);
-    STREAM file = OPEN_STREAM(filename, "rb");
-    if (file)
-        printf("Using msu file %s.\n", filename);
+	STREAM file = 0;
+
+	if (!skip_unpacked)
+	{
+		file = OPEN_STREAM(filename, "rb");
+		if (file)
+			printf("Using msu file %s.\n", filename);
+	}
 
 #ifdef UNZIP_SUPPORT
     // look for msu1 pack file in the rom or patch dir if msu data file not found in rom dir
