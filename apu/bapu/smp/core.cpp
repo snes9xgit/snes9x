@@ -51,8 +51,8 @@ void SMP::op_write(uint16 addr, uint8 data) {
 
 void SMP::op_step() {
   #define op_readpc() op_read(regs.pc++)
-  #define op_readdp(addr) op_read((regs.p.p << 8) + (addr & 0xff))
-  #define op_writedp(addr, data) op_write((regs.p.p << 8) + (addr & 0xff), data)
+  #define op_readdp(addr) op_read((regs.p.p << 8) + ((addr) & 0xff))
+  #define op_writedp(addr, data) op_write((regs.p.p << 8) + ((addr) & 0xff), data)
   #define op_readaddr(addr) op_read(addr)
   #define op_writeaddr(addr, data) op_write(addr, data)
   #define op_readstack() op_read(0x0100 | ++regs.sp)

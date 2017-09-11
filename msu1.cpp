@@ -240,7 +240,7 @@ static int unzFindExtension(unzFile &file, const char *ext, bool restart = TRUE,
 }
 #endif
 
-STREAM S9xMSU1OpenFile(char *msu_ext, bool skip_unpacked)
+STREAM S9xMSU1OpenFile(const char *msu_ext, bool skip_unpacked)
 {
     const char *filename = S9xGetFilename(msu_ext, ROMFILENAME_DIR);
 	STREAM file = 0;
@@ -388,7 +388,7 @@ bool S9xMSU1ROMExists(void)
 	}
 #ifdef UNZIP_SUPPORT
 	char ext[_MAX_EXT + 1];
-	_splitpath(Memory.ROMFilename, nullptr, nullptr, nullptr, ext);
+	_splitpath(Memory.ROMFilename, NULL, NULL, NULL, ext);
 	if (!strcasecmp(ext, ".msu1"))
 		return true;
 

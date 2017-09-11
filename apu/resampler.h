@@ -17,7 +17,7 @@ class Resampler : public ring_buffer
         {
         }
 
-        ~Resampler ()
+        virtual ~Resampler ()
         {
         }
 
