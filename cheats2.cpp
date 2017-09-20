@@ -22,8 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2011  BearOso,
+  (c) Copyright 2009 - 2016  BearOso,
                              OV2
+
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -118,6 +122,9 @@
   Sound emulator code used in 1.52+
   (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
 
+  S-SMP emulator code used in 1.54+
+  (c) Copyright 2016         byuu
+
   SH assembler code partly based on x86 assembler code
   (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
 
@@ -131,7 +138,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2011  BearOso
+  (c) Copyright 2004 - 2016  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -139,11 +146,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2011  OV2
+  (c) Copyright 2009 - 2016  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -186,10 +198,13 @@ static void S9xSetByteFree (uint8, uint32);
 
 static uint8 S9xGetByteFree (uint32 address)
 {
-	uint32	Cycles = CPU.Cycles;
+	int32	Cycles = CPU.Cycles;
+    int32   NextEvent = CPU.NextEvent;
 	uint8	byte;
 
+    CPU.NextEvent = 0x7FFFFFFF;
 	byte = S9xGetByte(address);
+    CPU.NextEvent = NextEvent;
 	CPU.Cycles = Cycles;
 
 	return (byte);
@@ -197,9 +212,12 @@ static uint8 S9xGetByteFree (uint32 address)
 
 static void S9xSetByteFree (uint8 byte, uint32 address)
 {
-	uint32	Cycles = CPU.Cycles;
+	int32	Cycles = CPU.Cycles;
+    int32  NextEvent = CPU.NextEvent;
 
+    CPU.NextEvent = 0x7FFFFFFF;
 	S9xSetByte(byte, address);
+    CPU.NextEvent = NextEvent;
 	CPU.Cycles = Cycles;
 }
 
@@ -368,7 +386,7 @@ bool8 S9xSaveCheatFile (const char *filename)
 
 	for (uint32 i = 0; i < Cheat.num_cheats; i++)
 	{
-		ZeroMemory(data, 28);
+		memset(data, 0, 28);
 
 		if (i == 0)
 		{

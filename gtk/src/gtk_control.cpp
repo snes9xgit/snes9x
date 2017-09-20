@@ -65,6 +65,7 @@ const BindingLink b_links[] =
         { "b_save_6",              "QuickSave006"      },
         { "b_save_7",              "QuickSave007"      },
         { "b_save_8",              "QuickSave008"      },
+        { "b_save_9",              "QuickSave009"      },
         { "b_load_0",              "QuickLoad000"      },
         { "b_load_1",              "QuickLoad001"      },
         { "b_load_2",              "QuickLoad002"      },
@@ -74,6 +75,7 @@ const BindingLink b_links[] =
         { "b_load_6",              "QuickLoad006"      },
         { "b_load_7",              "QuickLoad007"      },
         { "b_load_8",              "QuickLoad008"      },
+        { "b_load_9",              "QuickLoad009"      },
         { "b_sound_channel_0",     "SoundChannel0"     },
         { "b_sound_channel_1",     "SoundChannel1"     },
         { "b_sound_channel_2",     "SoundChannel2"     },
@@ -89,6 +91,7 @@ const BindingLink b_links[] =
         { "b_load_movie",          "LoadMovie" },
         { "b_seek_to_frame",       "GTK_seek_to_frame" },
         { "b_swap_controllers",    "GTK_swap_controllers" },
+        { "b_rewind",              "GTK_rewind"        },
 
         { NULL, NULL }
 };
@@ -100,9 +103,9 @@ const int b_breaks[] =
         24, /* End of turbo/sticky buttons */
         35, /* End of base emulator buttons */
         43, /* End of Graphic options */
-        61, /* End of save/load states */
-        70, /* End of sound buttons */
-        76, /* End of miscellaneous buttons */
+        63, /* End of save/load states */
+        72, /* End of sound buttons */
+        79, /* End of miscellaneous buttons */
         -1
 };
 
@@ -193,6 +196,8 @@ S9xHandlePortCommand (s9xcommand_t cmd, int16 data1, int16 data2)
     {
         if (cmd.port[0] == PORT_QUIT)
             quit_binding_down = TRUE;
+        else if (cmd.port[0] == PORT_REWIND)
+            top_level->user_rewind = TRUE;
     }
 
     if (data1 == FALSE) /* Release */
@@ -223,6 +228,11 @@ S9xHandlePortCommand (s9xcommand_t cmd, int16 data1, int16 data2)
                 top_level->pause_from_user ();
             else
                 top_level->unpause_from_user ();
+        }
+
+        else if (cmd.port[0] == PORT_REWIND)
+        {
+            top_level->user_rewind = FALSE;
         }
 
         else if (cmd.port[0] == PORT_SEEK_TO_FRAME)
@@ -305,6 +315,11 @@ S9xGetPortCommandT (const char *name)
     else if (!strcasecmp (name, "GTK_swap_controllers"))
     {
         cmd.port[0] = PORT_SWAP_CONTROLLERS;
+    }
+
+    else if (!strcasecmp (name, "GTK_rewind"))
+    {
+        cmd.port[0] = PORT_REWIND;
     }
 
     else
@@ -469,7 +484,7 @@ JoyDevice::~JoyDevice (void)
 }
 
 void
-JoyDevice::add_event (int parameter, int state)
+JoyDevice::add_event (unsigned int parameter, unsigned int state)
 {
     JoyEvent event = { parameter, state };
 

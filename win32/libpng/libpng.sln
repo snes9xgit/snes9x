@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libpng", "libpng.vcxproj", "{95804E5F-B69E-4E2A-925E-52FAFC19EDBF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "..\zlib\zlib.vcxproj", "{99E9817A-4605-44AF-8433-7048F0EC1859}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug Unicode|x64 = Debug Unicode|x64
+		Debug Unicode|x86 = Debug Unicode|x86
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release Unicode|x64 = Release Unicode|x64
+		Release Unicode|x86 = Release Unicode|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{95804E5F-B69E-4E2A-925E-52FAFC19EDBF}.Debug Unicode|x64.ActiveCfg = Debug Unicode|x64
+		{95804E5F-B69E-4E2A-925E-52FAFC19EDBF}.Debug Unicode|x64.Build.0 = Debug Unicode|x64
+		{95804E5F-B69E-4E2A-925E-52FAFC19EDBF}.Debug Unicode|x86.ActiveCfg = Debug Unicode|Win32
+		{95804E5F-B69E-4E2A-925E-52FAFC19EDBF}.Debug Unicode|x86.Build.0 = Debug Unicode|Win32
+		{95804E5F-B69E-4E2A-925E-52FAFC19EDBF}.Debug|x64.ActiveCfg = Debug|x64
+		{95804E5F-B69E-4E2A-925E-52FAFC19EDBF}.Debug|x64.Build.0 = Debug|x64
+		{95804E5F-B69E-4E2A-925E-52FAFC19EDBF}.Debug|x86.ActiveCfg = Debug|Win32
+		{95804E5F-B69E-4E2A-925E-52FAFC19EDBF}.Debug|x86.Build.0 = Debug|Win32
+		{95804E5F-B69E-4E2A-925E-52FAFC19EDBF}.Release Unicode|x64.ActiveCfg = Release Unicode|x64
+		{95804E5F-B69E-4E2A-925E-52FAFC19EDBF}.Release Unicode|x64.Build.0 = Release Unicode|x64
+		{95804E5F-B69E-4E2A-925E-52FAFC19EDBF}.Release Unicode|x86.ActiveCfg = Release Unicode|Win32
+		{95804E5F-B69E-4E2A-925E-52FAFC19EDBF}.Release Unicode|x86.Build.0 = Release Unicode|Win32
+		{95804E5F-B69E-4E2A-925E-52FAFC19EDBF}.Release|x64.ActiveCfg = Release|x64
+		{95804E5F-B69E-4E2A-925E-52FAFC19EDBF}.Release|x64.Build.0 = Release|x64
+		{95804E5F-B69E-4E2A-925E-52FAFC19EDBF}.Release|x86.ActiveCfg = Release|Win32
+		{95804E5F-B69E-4E2A-925E-52FAFC19EDBF}.Release|x86.Build.0 = Release|Win32
+		{99E9817A-4605-44AF-8433-7048F0EC1859}.Debug Unicode|x64.ActiveCfg = Debug Unicode|x64
+		{99E9817A-4605-44AF-8433-7048F0EC1859}.Debug Unicode|x64.Build.0 = Debug Unicode|x64
+		{99E9817A-4605-44AF-8433-7048F0EC1859}.Debug Unicode|x86.ActiveCfg = Debug Unicode|Win32
+		{99E9817A-4605-44AF-8433-7048F0EC1859}.Debug Unicode|x86.Build.0 = Debug Unicode|Win32
+		{99E9817A-4605-44AF-8433-7048F0EC1859}.Debug|x64.ActiveCfg = Debug|x64
+		{99E9817A-4605-44AF-8433-7048F0EC1859}.Debug|x64.Build.0 = Debug|x64
+		{99E9817A-4605-44AF-8433-7048F0EC1859}.Debug|x86.ActiveCfg = Debug|Win32
+		{99E9817A-4605-44AF-8433-7048F0EC1859}.Debug|x86.Build.0 = Debug|Win32
+		{99E9817A-4605-44AF-8433-7048F0EC1859}.Release Unicode|x64.ActiveCfg = Release Unicode|x64
+		{99E9817A-4605-44AF-8433-7048F0EC1859}.Release Unicode|x64.Build.0 = Release Unicode|x64
+		{99E9817A-4605-44AF-8433-7048F0EC1859}.Release Unicode|x86.ActiveCfg = Release Unicode|Win32
+		{99E9817A-4605-44AF-8433-7048F0EC1859}.Release Unicode|x86.Build.0 = Release Unicode|Win32
+		{99E9817A-4605-44AF-8433-7048F0EC1859}.Release|x64.ActiveCfg = Release|x64
+		{99E9817A-4605-44AF-8433-7048F0EC1859}.Release|x64.Build.0 = Release|x64
+		{99E9817A-4605-44AF-8433-7048F0EC1859}.Release|x86.ActiveCfg = Release|Win32
+		{99E9817A-4605-44AF-8433-7048F0EC1859}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

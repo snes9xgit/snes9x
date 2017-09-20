@@ -22,8 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2011  BearOso,
+  (c) Copyright 2009 - 2016  BearOso,
                              OV2
+
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -118,6 +122,9 @@
   Sound emulator code used in 1.52+
   (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
 
+  S-SMP emulator code used in 1.54+
+  (c) Copyright 2016         byuu
+
   SH assembler code partly based on x86 assembler code
   (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
 
@@ -131,7 +138,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2011  BearOso
+  (c) Copyright 2004 - 2016  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -139,11 +146,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2011  OV2
+  (c) Copyright 2009 - 2016  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -222,6 +234,7 @@
 #ifdef DEBUGGER
 #include "debug.h"
 #endif
+#include "statemanager.h"
 
 #ifdef NETPLAY_SUPPORT
 #ifdef _DEBUG
@@ -232,6 +245,8 @@
 typedef std::pair<std::string, std::string>	strpair_t;
 
 ConfigFile::secvec_t	keymaps;
+
+StateManager stateMan;
 
 #define FIXED_POINT				0x10000
 #define FIXED_POINT_SHIFT		16
@@ -263,7 +278,7 @@ static const char	dirNames[13][32] =
 	"screenshot",	// SCREENSHOT_DIR
 	"spc",			// SPC_DIR
 	"cheat",		// CHEAT_DIR
-	"patch",		// IPS_DIR
+	"patch",		// PATCH_DIR
 	"bios",			// BIOS_DIR
 	"log",			// LOG_DIR
 	""
@@ -275,6 +290,8 @@ struct SUnixSettings
 	bool8	ThreadSound;
 	uint32	SoundBufferSize;
 	uint32	SoundFragmentSize;
+	uint32	rewindBufferSize;
+	uint32	rewindGranularity;
 };
 
 struct SoundStatus
@@ -290,6 +307,8 @@ struct SoundStatus
 static SUnixSettings	unixSettings;
 static SoundStatus		so;
 
+static bool8	rewinding;
+
 #ifndef NOSOUND
 static uint8			Buf[SOUND_BUFFER_SIZE];
 #endif
@@ -303,6 +322,7 @@ static pthread_mutex_t	mutex;
 static uint8		js_mod[8]     = { 0, 0, 0, 0, 0, 0, 0, 0 };
 static int			js_fd[8]      = { -1, -1, -1, -1, -1, -1, -1, -1 };
 static const char	*js_device[8] = { "/dev/js0", "/dev/js1", "/dev/js2", "/dev/js3", "/dev/js4", "/dev/js5", "/dev/js6", "/dev/js7" };
+static bool8		js_unplugged[8] = { FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE };
 #endif
 
 #ifdef NETPLAY_SUPPORT
@@ -436,6 +456,10 @@ void S9xExtraUsage (void)
 	S9xMessage(S9X_INFO, S9X_USAGE, "                                frames (use with -dumpstreams)");
 	S9xMessage(S9X_INFO, S9X_USAGE, "");
 
+	S9xMessage(S9X_INFO, S9X_USAGE, "-rwbuffersize                   Rewind buffer size in MB");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-rwgranularity                  Rewind granularity in frames");
+	S9xMessage(S9X_INFO, S9X_USAGE, "");
+
 	S9xExtraDisplayUsage();
 }
 
@@ -534,6 +558,22 @@ void S9xParseArg (char **argv, int &i, int argc)
 	else
 	if (!strcasecmp(argv[i], "-dumpmaxframes"))
 		Settings.DumpStreamsMaxFrames = atoi(argv[++i]);
+	else
+	if (!strcasecmp(argv[i], "-rwbuffersize"))
+	{
+		if (i + 1 < argc)
+			unixSettings.rewindBufferSize = atoi(argv[++i]);
+		else
+			S9xUsage();
+	}
+	else
+	if (!strcasecmp(argv[i], "-rwgranularity"))
+	{
+		if (i + 1 < argc)
+			unixSettings.rewindGranularity = atoi(argv[++i]);
+		else
+			S9xUsage();
+	}
 	else
 		S9xParseDisplayArg(argv, i, argc);
 }
@@ -1138,6 +1178,13 @@ s9xcommand_t S9xGetPortCommandT (const char *n)
 
 			return (cmd);
 		}
+	} else
+	if (!strcmp(n,"Rewind"))
+	{
+		cmd.type = S9xButtonPort;
+		cmd.port[1] = 2;
+
+		return (cmd);
 	}
 
 	return (S9xGetDisplayCommandT(n));
@@ -1168,6 +1215,9 @@ char * S9xGetPortCommandName (s9xcommand_t cmd)
 					x += " ToggleMeta";
 					x += (int) cmd.port[3];
 					return (strdup(x.c_str()));
+
+				case 2:
+					return (strdup("Rewind"));
 			}
 
 			break;
@@ -1199,10 +1249,14 @@ void S9xHandlePortCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 					else
 						js_mod[cmd.port[2]] &= ~cmd.port[3];
 					break;
-				
+
 				case 1:
 					if (data1)
 						js_mod[cmd.port[2]] ^=  cmd.port[3];
+					break;
+
+				case 2:
+					rewinding = (bool8) data1;
 					break;
 			}
 
@@ -1327,11 +1381,25 @@ static void ReadJoysticks (void)
 #ifdef JSIOCGVERSION
 	struct js_event	js_ev;
 
-	for (int i = 0; i < 8 && js_fd[i] >= 0; i++)
+	for (int i = 0; i < 8; i++)
 	{
+		// Try to reopen unplugged sticks
+		if (js_unplugged[i])
+		{
+			js_fd[i] = open(js_device[i], O_RDONLY | O_NONBLOCK);
+			if (js_fd[i] >= 0)
+			{
+				fprintf(stderr,"Joystick %d reconnected.\n",i);
+				js_unplugged[i] = FALSE;
+			}
+		}
+
+		// skip sticks without valid file desc
+		if (js_fd[i] < 0) continue;
+
 		while (read(js_fd[i], &js_ev, sizeof(struct js_event)) == sizeof(struct js_event))
 		{
-			switch (js_ev.type & ~JS_EVENT_INIT)
+			switch (js_ev.type)
 			{
 				case JS_EVENT_AXIS:
 					S9xReportAxis(0x8000c000 | (i << 24) | js_ev.number, js_ev.value);
@@ -1339,9 +1407,29 @@ static void ReadJoysticks (void)
 					break;
 
 				case JS_EVENT_BUTTON:
+				case JS_EVENT_BUTTON | JS_EVENT_INIT:
 					S9xReportButton(0x80004000 | (i << 24) | js_ev.number, js_ev.value);
 					S9xReportButton(0x80000000 | (i << 24) | (js_mod[i] << 16) | js_ev.number, js_ev.value);
 					break;
+			}
+		}
+
+		/* EAGAIN is returned when the queue is empty */
+		if (errno != EAGAIN) {
+			// Error reading joystick.
+			fprintf(stderr,"Error reading joystick %d!\n",i);
+
+			// Mark for reconnect attempt.
+			js_unplugged[i] = TRUE;
+
+			for (unsigned int j = 0; j < 16; j++)
+			{
+				// Center all axis
+				S9xReportAxis(0x8000c000 | (i << 24) | j, 0);
+				S9xReportAxis(0x80008000 | (i << 24) | (js_mod[i] << 16) | j, 0);
+				// Unpress all buttons.
+				S9xReportButton(0x80004000 | (i << 24) | j, 0);
+				S9xReportButton(0x80000000 | (i << 24) | (js_mod[i] << 16) | j, 0);
 			}
 		}
 	}
@@ -1401,7 +1489,10 @@ bool8 S9xOpenSoundDevice (void)
 
 	so.sound_fd = open(sound_device, O_WRONLY | O_NONBLOCK);
 	if (so.sound_fd == -1)
+	{
+		fprintf(stderr, "ERROR: Failed to open sound device %s for writing.\n\t(Try loading snd-pcm-oss module?)\n", sound_device);
 		return (FALSE);
+	}
 
 	J = log2(unixSettings.SoundFragmentSize) | (3 << 16);
 	if (ioctl(so.sound_fd, SNDCTL_DSP_SETFRAGMENT, &J) == -1)
@@ -1555,7 +1646,7 @@ int main (int argc, char **argv)
 	snprintf(default_dir, PATH_MAX + 1, "%s%s%s", getenv("HOME"), SLASH_STR, ".snes9x");
 	s9x_base_dir = default_dir;
 
-	ZeroMemory(&Settings, sizeof(Settings));
+	memset(&Settings, 0, sizeof(Settings));
 	Settings.MouseMaster = TRUE;
 	Settings.SuperScopeMaster = TRUE;
 	Settings.JustifierMaster = TRUE;
@@ -1594,7 +1685,12 @@ int main (int argc, char **argv)
 	unixSettings.SoundBufferSize = 100;
 	unixSettings.SoundFragmentSize = 2048;
 
-	ZeroMemory(&so, sizeof(so));
+	unixSettings.rewindBufferSize = 0;
+	unixSettings.rewindGranularity = 1;
+
+	memset(&so, 0, sizeof(so));
+
+	rewinding = false;
 
 	CPU.Flags = 0;
 
@@ -1733,6 +1829,8 @@ int main (int argc, char **argv)
 	{
 		NetPlay.MaxFrameSkip = 10;
 
+		unixSettings.rewindBufferSize = 0;
+
 		if (!S9xNPConnectToServer(Settings.ServerName, Settings.Port, Memory.ROMName))
 		{
 			fprintf(stderr, "Failed to connect to server %s on port %d.\n", Settings.ServerName, Settings.Port);
@@ -1759,12 +1857,18 @@ int main (int argc, char **argv)
 		CPU.Flags |= flags;
 	}
 	else
-	if (snapshot_filename)
 	{
-		uint32	flags = CPU.Flags & (DEBUG_MODE_FLAG | TRACE_FLAG);
-		if (!S9xUnfreezeGame(snapshot_filename))
-			exit(1);
-		CPU.Flags |= flags;
+		if (snapshot_filename)
+		{
+			uint32	flags = CPU.Flags & (DEBUG_MODE_FLAG | TRACE_FLAG);
+			if (!S9xUnfreezeGame(snapshot_filename))
+				exit(1);
+			CPU.Flags |= flags;
+		}
+		if (unixSettings.rewindBufferSize)
+		{
+			stateMan.init(unixSettings.rewindBufferSize * 1024 * 1024);
+		}
 	}
 
 	S9xGraphicsMode();
@@ -1822,7 +1926,14 @@ int main (int argc, char **argv)
 	#else
 		if (!Settings.Paused)
 	#endif
+		{
+			if(rewinding)
+				rewinding = stateMan.pop();
+			else if(IPPU.TotalEmulatedFrames % unixSettings.rewindGranularity == 0)
+				stateMan.push();
+
 			S9xMainLoop();
+		}
 
 	#ifdef NETPLAY_SUPPORT
 		if (NP_Activated)

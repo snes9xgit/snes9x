@@ -22,8 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2011  BearOso,
+  (c) Copyright 2009 - 2016  BearOso,
                              OV2
+
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -118,6 +122,9 @@
   Sound emulator code used in 1.52+
   (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
 
+  S-SMP emulator code used in 1.54+
+  (c) Copyright 2016         byuu
+
   SH assembler code partly based on x86 assembler code
   (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
 
@@ -131,7 +138,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2011  BearOso
+  (c) Copyright 2004 - 2016  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -139,11 +146,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2011  OV2
+  (c) Copyright 2009 - 2016  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -198,10 +210,6 @@
 #include <mmsystem.h>
 #ifndef __BORLANDC__
 
-#ifndef __MINGW32__
-#include <afxres.h>
-#endif
-
 #include <dsound.h>
 #endif
 #include "rsrc/resource.h"
@@ -216,9 +224,11 @@
 #ifdef UNICODE
 #define _tToChar WideToUtf8
 #define _tFromChar Utf8ToWide
+#define _tFromMS932(x) CPToWide(x,932)
 #else
 #define _tToChar
 #define _tFromChar
+#define _tFromMS932
 #endif
 
 /****************************************************************************/
@@ -266,6 +276,12 @@ enum RenderFilter{
 
 	FILTER_SIMPLE4X,
 	FILTER_HQ4X,
+
+    FILTER_2XBRZ,
+    FILTER_3XBRZ,
+    FILTER_4XBRZ,
+	FILTER_5XBRZ,
+	FILTER_6XBRZ,
 
 	NUM_FILTERS
 };
@@ -339,8 +355,7 @@ struct sGUI {
     HACCEL Accelerators;
     bool NeedDepthConvert;
     bool DepthConverted;
-    bool BGR;
-    bool TurboModeToggle;
+
 	bool InactivePause;
 	bool CustomRomOpen;
     bool FASkipsNonInput;
@@ -369,6 +384,7 @@ struct sGUI {
 	bool Mute;
 	// used for sync sound synchronization
 	CRITICAL_SECTION SoundCritSect;
+    HANDLE SoundSyncEvent;
 
     TCHAR RomDir [_MAX_PATH];
     TCHAR ScreensDir [_MAX_PATH];
@@ -377,7 +393,9 @@ struct sGUI {
     TCHAR FreezeFileDir [_MAX_PATH];
     TCHAR SRAMFileDir [_MAX_PATH];
     TCHAR PatchDir [_MAX_PATH];
+	TCHAR CheatDir [_MAX_PATH];
     TCHAR BiosDir [_MAX_PATH];
+	TCHAR SatDir [_MAX_PATH];
 	bool LockDirectories;
 
     TCHAR RecentGames [MAX_RECENT_GAMES_LIST_SIZE][MAX_PATH];
@@ -394,6 +412,11 @@ struct sGUI {
 	long FrameCount;
     long LastFrameCount;
     unsigned long IdleCount;
+
+    // rewinding
+    bool rewinding;
+    unsigned int rewindBufferSize;
+    unsigned int rewindGranularity;
 };
 
 //TURBO masks
@@ -442,6 +465,7 @@ struct SCustomKeys {
 	SCustomKey Save [10];
 	SCustomKey Load [10];
 	SCustomKey FastForward;
+	SCustomKey FastForwardToggle;
 	SCustomKey ShowPressed;
 	SCustomKey SaveScreenShot;
 	SCustomKey SlotPlus;
@@ -465,6 +489,8 @@ struct SCustomKeys {
 	SCustomKey SelectSave [10];
 	SCustomKey ResetGame;
 	SCustomKey ToggleCheats;
+	SCustomKey QuitS9X;
+    SCustomKey Rewind;
 };
 
 struct SJoypad {

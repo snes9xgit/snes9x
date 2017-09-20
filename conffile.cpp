@@ -22,8 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2011  BearOso,
+  (c) Copyright 2009 - 2016  BearOso,
                              OV2
+
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -118,6 +122,9 @@
   Sound emulator code used in 1.52+
   (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
 
+  S-SMP emulator code used in 1.54+
+  (c) Copyright 2016         byuu
+
   SH assembler code partly based on x86 assembler code
   (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
 
@@ -131,7 +138,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2011  BearOso
+  (c) Copyright 2004 - 2016  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -139,11 +146,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2011  OV2
+  (c) Copyright 2009 - 2016  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -209,16 +221,16 @@ void ConfigFile::Clear(void){
 }
 
 bool ConfigFile::LoadFile(const char *filename){
-    STREAM s;
+    FSTREAM s;
     bool ret=false;
     const char *n, *n2;
 
-    if((s=OPEN_STREAM(filename, "r"))){
+    if((s=OPEN_FSTREAM(filename, "r"))){
         n=filename;
         n2=strrchr(n, '/'); if(n2!=NULL) n=n2+1;
         n2=strrchr(n, '\\'); if(n2!=NULL) n=n2+1;
-        LoadFile(new fReader(s), n);
-        CLOSE_STREAM(s);
+        LoadFile(new fStream(s), n);
+        CLOSE_FSTREAM(s);
         ret = true;
     } else {
         fprintf(stderr, "Couldn't open conffile ");
@@ -228,7 +240,7 @@ bool ConfigFile::LoadFile(const char *filename){
 }
 
 
-void ConfigFile::LoadFile(Reader *r, const char *name){
+void ConfigFile::LoadFile(Stream *r, const char *name){
 	curConfigFile = this;
     string l, key, val;
     string section;
@@ -280,7 +292,7 @@ void ConfigFile::LoadFile(Reader *r, const char *name){
         }
         key=l.substr(0,i); ConfigEntry::trim(key);
 		val=l.substr(i+1); comment = ConfigEntry::trimCommented(val);
-        if(val[0]=='"' && *val.rbegin()=='"') val=val.substr(1, val.size()-2);
+		if(val.size() > 0 && val[0]=='"' && *val.rbegin()=='"') val=val.substr(1, val.size()-2);
 
         ConfigEntry e(line, section, key, val);
 		e.comment = comment;
@@ -392,7 +404,7 @@ bool ConfigFile::SaveTo(const char *filename){
 
 	if(ferror(fp))
 	{
-		fp = fp;
+		printf ("Error writing config file %s\n", filename);
 	}
 
     fclose(fp);
@@ -427,7 +439,7 @@ string ConfigFile::GetString(const char *key, string def){
 
 char *ConfigFile::GetString(const char *key, char *out, uint32 outlen){
     if(!Exists(key)) return NULL;
-    ZeroMemory(out, outlen);
+    memset(out, 0, outlen);
     string o=Get(key);
     if(outlen>0){
         outlen--;

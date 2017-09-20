@@ -22,8 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2011  BearOso,
+  (c) Copyright 2009 - 2016  BearOso,
                              OV2
+
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -118,6 +122,9 @@
   Sound emulator code used in 1.52+
   (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
 
+  S-SMP emulator code used in 1.54+
+  (c) Copyright 2016         byuu
+
   SH assembler code partly based on x86 assembler code
   (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
 
@@ -131,7 +138,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2011  BearOso
+  (c) Copyright 2004 - 2016  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -139,11 +146,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2011  OV2
+  (c) Copyright 2009 - 2016  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -186,7 +198,9 @@
 #include "wsnes9x.h"
 #include "win32_display.h"
 #include "CDirect3D.h"
+#if DIRECTDRAW_SUPPORT
 #include "CDirectDraw.h"
+#endif
 #include "COpenGL.h"
 #include "IS9xDisplayOutput.h"
 
@@ -195,7 +209,9 @@
 
 // available display output methods
 CDirect3D Direct3D;
+#if DIRECTDRAW_SUPPORT
 CDirectDraw DirectDraw;
+#endif
 COpenGL OpenGL;
 SSurface Src = {0};
 extern BYTE *ScreenBufferBlend;
@@ -246,9 +262,11 @@ bool WinDisplayReset(void)
 		case DIRECT3D:
 			S9xDisplayOutput = &Direct3D;
 			break;
+#if DIRECTDRAW_SUPPORT
 		case DIRECTDRAW:
 			S9xDisplayOutput = &DirectDraw;
 			break;
+#endif
 		case OPENGL:
 			S9xDisplayOutput = &OpenGL;
 			break;
@@ -272,27 +290,27 @@ void WinDisplayApplyChanges()
 RECT CalculateDisplayRect(unsigned int sourceWidth,unsigned int sourceHeight,
 						  unsigned int displayWidth,unsigned int displayHeight)
 {
-	float xFactor;
-	float yFactor;
-	float minFactor;
-	float renderWidthCalc,renderHeightCalc;
+	double xFactor;
+	double yFactor;
+	double minFactor;
+	double renderWidthCalc,renderHeightCalc;
 	int hExtend = GUI.HeightExtend ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT;
-	float snesAspect = (float)GUI.AspectWidth/hExtend;
+	double snesAspect = (double)GUI.AspectWidth/hExtend;
 	RECT drawRect;
 
 	if(GUI.Stretch) {
 		if(GUI.AspectRatio) {
 			//fix for hi-res images with FILTER_NONE
 			//where we need to correct the aspect ratio
-			renderWidthCalc = (float)sourceWidth;
-			renderHeightCalc = (float)sourceHeight;
+			renderWidthCalc = (double)sourceWidth;
+			renderHeightCalc = (double)sourceHeight;
 			if(renderWidthCalc/renderHeightCalc>snesAspect)
 				renderWidthCalc = renderHeightCalc * snesAspect;
 			else if(renderWidthCalc/renderHeightCalc<snesAspect)
 				renderHeightCalc = renderWidthCalc / snesAspect;
 
-			xFactor = (float)displayWidth / renderWidthCalc;
-			yFactor = (float)displayHeight / renderHeightCalc;
+			xFactor = (double)displayWidth / renderWidthCalc;
+			yFactor = (double)displayHeight / renderHeightCalc;
 			minFactor = xFactor < yFactor ? xFactor : yFactor;
 
 			drawRect.right = (LONG)(renderWidthCalc * minFactor);
@@ -448,12 +466,22 @@ char *ReadShaderFileContents(const TCHAR *filename)
 
 }
 
+void ReduceToPath(TCHAR *filename)
+{
+    for (int i = lstrlen(filename); i >= 0; i--) {
+        if (IS_SLASH(filename[i])) {
+            filename[i] = TEXT('\0');
+            break;
+        }
+    }
+}
+
 // TODO: abstract the following functions in some way - only necessary for directdraw
 
 /* DirectDraw only begin */
-
 void SwitchToGDI()
 {
+#if DIRECTDRAW_SUPPORT
 	if(GUI.outputMethod!=DIRECTDRAW)
 		return;
 
@@ -461,10 +489,12 @@ void SwitchToGDI()
     DirectDraw.lpDD->FlipToGDISurface();
     GUI.FlipCounter = 0;
     DirectDraw.lpDDSPrimary2->SetPalette (NULL);
+#endif
 }
 
 static void ClearSurface (LPDIRECTDRAWSURFACE2 lpDDSurface)
 {
+#if DIRECTDRAW_SUPPORT
     DDBLTFX fx;
 
     memset (&fx, 0, sizeof (fx));
@@ -472,11 +502,12 @@ static void ClearSurface (LPDIRECTDRAWSURFACE2 lpDDSurface)
 
     while (lpDDSurface->Blt (NULL, DirectDraw.lpDDSPrimary2, NULL, DDBLT_WAIT, NULL) == DDERR_SURFACELOST)
         lpDDSurface->Restore ();
+#endif
 }
 
 void UpdateBackBuffer()
 {
-
+#if DIRECTDRAW_SUPPORT
     if (GUI.outputMethod==DIRECTDRAW && GUI.FullScreen)
     {
         SwitchToGDI();
@@ -514,10 +545,12 @@ void UpdateBackBuffer()
         if (GetMenu( GUI.hWnd) != NULL)
             DrawMenuBar (GUI.hWnd);
     }
+#endif
 }
 
 void RestoreGUIDisplay ()
 {
+#if DIRECTDRAW_SUPPORT
 	if(GUI.outputMethod!=DIRECTDRAW)
 		return;
 
@@ -533,10 +566,12 @@ void RestoreGUIDisplay ()
     }
     SwitchToGDI();
     S9xClearPause (PAUSE_RESTORE_GUI);
+#endif
 }
 
 void RestoreSNESDisplay ()
 {
+#if DIRECTDRAW_SUPPORT
 	if(GUI.outputMethod!=DIRECTDRAW)
 		return;
 
@@ -547,6 +582,7 @@ void RestoreSNESDisplay ()
     }
 
     UpdateBackBuffer();
+#endif
 }
 
 /* DirectDraw only end */
@@ -557,7 +593,8 @@ void SaveMainWinPos()
 	wndPlacement.length = sizeof(WINDOWPLACEMENT);
 	GetWindowPlacement(GUI.hWnd,&wndPlacement);
 	GUI.window_maximized = wndPlacement.showCmd == SW_SHOWMAXIMIZED;
-	GUI.window_size = wndPlacement.rcNormalPosition;
+	if(!GUI.FullScreen && !GUI.EmulatedFullscreen)
+		GUI.window_size = wndPlacement.rcNormalPosition;
 }
 
 void RestoreMainWinPos()
@@ -577,21 +614,22 @@ void ToggleFullScreen ()
 {
     S9xSetPause (PAUSE_TOGGLE_FULL_SCREEN);
 
+    SaveMainWinPos();
+
 	if(GUI.EmulateFullscreen) {
 		HMONITOR hm;
 		MONITORINFO mi;
 		GUI.EmulatedFullscreen = !GUI.EmulatedFullscreen;
 		if(GUI.EmulatedFullscreen) {
-			SaveMainWinPos();
 			if(GetMenu(GUI.hWnd)!=NULL)
 				SetMenu(GUI.hWnd,NULL);
-			SetWindowLong (GUI.hWnd, GWL_STYLE, WS_POPUP|WS_VISIBLE);
+			SetWindowLongPtr (GUI.hWnd, GWL_STYLE, WS_POPUP|WS_VISIBLE);
 			hm = MonitorFromWindow(GUI.hWnd,MONITOR_DEFAULTTONEAREST);
 			mi.cbSize = sizeof(mi);
 			GetMonitorInfo(hm,&mi);
 			SetWindowPos (GUI.hWnd, HWND_TOP, mi.rcMonitor.left, mi.rcMonitor.top, mi.rcMonitor.right - mi.rcMonitor.left, mi.rcMonitor.bottom - mi.rcMonitor.top, SWP_DRAWFRAME|SWP_FRAMECHANGED);
 		} else {
-			SetWindowLong( GUI.hWnd, GWL_STYLE, WS_POPUPWINDOW|WS_CAPTION|
+			SetWindowLongPtr( GUI.hWnd, GWL_STYLE, WS_POPUPWINDOW|WS_CAPTION|
                    WS_THICKFRAME|WS_VISIBLE|WS_MINIMIZEBOX|WS_MAXIMIZEBOX);
 			SetMenu(GUI.hWnd,GUI.hMenu);
 			SetWindowPos (GUI.hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE|SWP_DRAWFRAME|SWP_FRAMECHANGED);
@@ -600,16 +638,15 @@ void ToggleFullScreen ()
 	} else {
 		GUI.FullScreen = !GUI.FullScreen;
 		if(GUI.FullScreen) {
-			SaveMainWinPos();
 			if(GetMenu(GUI.hWnd)!=NULL)
 				SetMenu(GUI.hWnd,NULL);
-			SetWindowLong (GUI.hWnd, GWL_STYLE, WS_POPUP|WS_VISIBLE);
+			SetWindowLongPtr (GUI.hWnd, GWL_STYLE, WS_POPUP|WS_VISIBLE);
 			SetWindowPos (GUI.hWnd, HWND_TOPMOST, 0, 0, GUI.FullscreenMode.width, GUI.FullscreenMode.height, SWP_DRAWFRAME|SWP_FRAMECHANGED);
 			if(!S9xDisplayOutput->SetFullscreen(true))
 				GUI.FullScreen = false;
 		}
 		if(!GUI.FullScreen) {
-			SetWindowLong( GUI.hWnd, GWL_STYLE, WS_POPUPWINDOW|WS_CAPTION|
+			SetWindowLongPtr( GUI.hWnd, GWL_STYLE, WS_POPUPWINDOW|WS_CAPTION|
                    WS_THICKFRAME|WS_VISIBLE|WS_MINIMIZEBOX|WS_MAXIMIZEBOX);
 			SetMenu(GUI.hWnd,GUI.hMenu);
 			S9xDisplayOutput->SetFullscreen(false);

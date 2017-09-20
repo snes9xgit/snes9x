@@ -22,8 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2011  BearOso,
+  (c) Copyright 2009 - 2016  BearOso,
                              OV2
+
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -118,6 +122,9 @@
   Sound emulator code used in 1.52+
   (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
 
+  S-SMP emulator code used in 1.54+
+  (c) Copyright 2016         byuu
+
   SH assembler code partly based on x86 assembler code
   (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
 
@@ -131,7 +138,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2011  BearOso
+  (c) Copyright 2004 - 2016  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -139,11 +146,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2011  OV2
+  (c) Copyright 2009 - 2016  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -183,6 +195,7 @@
  * Video output filters for the Windows port.
  */
 
+#include <algorithm>
 #include "../port.h"
 #include "wsnes9x.h"
 #include "../snes9x.h"
@@ -195,6 +208,9 @@
 #include "../filter/2xsai.h"
 #include "../filter/hq2x.h"
 #include "snes_ntsc.h"
+#include "../filter/xbrz.h"
+#include <vector>
+#include <intrin.h>
 
 // Private Prototypes, should not be called directly
 void RenderPlain (SSurface Src, SSurface Dst, RECT *);
@@ -209,6 +225,11 @@ template<int T> void RenderHQ2X (SSurface Src, SSurface Dst, RECT *rect);
 template<int T> void RenderHQ3X (SSurface Src, SSurface Dst, RECT *rect);
 void RenderLQ3XB (SSurface Src, SSurface Dst, RECT *rect);
 void RenderHQ4X (SSurface Src, SSurface Dst, RECT *rect);
+void Render2xBRZ(SSurface Src, SSurface Dst, RECT* rect);
+void Render3xBRZ(SSurface Src, SSurface Dst, RECT* rect);
+void Render4xBRZ(SSurface Src, SSurface Dst, RECT* rect);
+void Render5xBRZ(SSurface Src, SSurface Dst, RECT* rect);
+void Render6xBRZ(SSurface Src, SSurface Dst, RECT* rect);
 void RenderEPXA (SSurface Src, SSurface Dst, RECT *);
 void RenderEPXB (SSurface Src, SSurface Dst, RECT *);
 void RenderEPXC (SSurface Src, SSurface Dst, RECT *);
@@ -223,6 +244,7 @@ void RenderBlarggNTSCRgb(SSurface Src, SSurface Dst, RECT *);
 void RenderBlarggNTSC(SSurface Src, SSurface Dst, RECT *);
 void RenderMergeHires(void *src, int srcPitch , void* dst, int dstPitch, unsigned int width, unsigned int height);
 void InitLUTsWin32(void);
+void RenderxBRZ(SSurface Src, SSurface Dst, RECT* rect, int scalingFactor);
 // Contains the pointer to the now active render method
 typedef void (*TRenderMethod)( SSurface Src, SSurface Dst, RECT *);
 TRenderMethod _RenderMethod = RenderPlain;
@@ -249,6 +271,30 @@ enum BlarggMode { UNINITIALIZED,BLARGGCOMPOSITE,BLARGGSVIDEO,BLARGGRGB };
 snes_ntsc_t *ntsc = NULL;
 BlarggMode blarggMode = UNINITIALIZED;
 
+int num_xbrz_threads = 4;
+
+struct xbrz_thread_data {
+    HANDLE xbrz_start_event;
+    HANDLE xbrz_sync_event;
+    HANDLE thread_handle;
+    static int scalingFactor;
+    static SSurface *src;
+    static SSurface *dst;
+    static uint8* dstPtr;
+    int yFirst;
+    int yLast;
+};
+xbrz_thread_data *xbrz_thread_sync_data;
+
+int xbrz_thread_data::scalingFactor = 4;
+SSurface *xbrz_thread_data::src = NULL;
+SSurface *xbrz_thread_data::dst = NULL;
+uint8 *xbrz_thread_data::dstPtr = NULL;
+
+HANDLE *xbrz_sync_handles;
+
+DWORD WINAPI ThreadProc_XBRZ(VOID * pParam);
+
 TRenderMethod FilterToMethod(RenderFilter filterID)
 {
 	switch(filterID)
@@ -268,6 +314,7 @@ TRenderMethod FilterToMethod(RenderFilter filterID)
         case FILTER_EPXA:       return RenderEPXA;
         case FILTER_EPXB:       return RenderEPXB;
         case FILTER_EPXC:       return RenderEPXC;
+        case FILTER_2XBRZ:      return Render2xBRZ;
         case FILTER_SIMPLE3X:   return RenderSimple3X;
         case FILTER_TVMODE3X:   return RenderTVMode3X;
         case FILTER_DOTMATRIX3X:return RenderDotMatrix3X;
@@ -276,11 +323,15 @@ TRenderMethod FilterToMethod(RenderFilter filterID)
         case FILTER_HQ3XBOLD:   return RenderHQ3X<FILTER_HQ3XBOLD>;
         case FILTER_LQ3XBOLD:   return RenderLQ3XB;
         case FILTER_EPX3:       return RenderEPX3;
+        case FILTER_3XBRZ:      return Render3xBRZ;
 		case FILTER_BLARGGCOMP: return RenderBlarggNTSCComposite;
 		case FILTER_BLARGGSVID: return RenderBlarggNTSCSvideo;
 		case FILTER_BLARGGRGB:  return RenderBlarggNTSCRgb;
 		case FILTER_SIMPLE4X:	return RenderSimple4X;
 		case FILTER_HQ4X:		return RenderHQ4X;
+        case FILTER_4XBRZ:      return Render4xBRZ;
+		case FILTER_5XBRZ:      return Render5xBRZ;
+		case FILTER_6XBRZ:      return Render6xBRZ;
 	}
 }
 
@@ -306,6 +357,7 @@ const char* GetFilterName(RenderFilter filterID)
 		case FILTER_EPXA: return "EPX A";
 		case FILTER_EPXB: return "EPX B";
 		case FILTER_EPXC: return "EPX C";
+        case FILTER_2XBRZ: return "2xBRZ";
 		case FILTER_SIMPLE3X: return "Simple 3X";
 		case FILTER_TVMODE3X: return "TV Mode 3X";
 		case FILTER_DOTMATRIX3X: return "Dot Matrix 3X";
@@ -314,8 +366,12 @@ const char* GetFilterName(RenderFilter filterID)
 		case FILTER_HQ3XBOLD: return "hq3xBold";
 		case FILTER_LQ3XBOLD: return "lq3xBold";
 		case FILTER_EPX3: return "EPX3";
+        case FILTER_3XBRZ: return "3xBRZ";
 		case FILTER_SIMPLE4X: return "Simple 4X";
 		case FILTER_HQ4X: return "hq4x";
+        case FILTER_4XBRZ: return "4xBRZ";
+		case FILTER_5XBRZ: return "5xBRZ";
+		case FILTER_6XBRZ: return "6xBRZ";
 	}
 }
 
@@ -341,10 +397,16 @@ int GetFilterScale(RenderFilter filterID)
 		case FILTER_BLARGGCOMP:
 		case FILTER_BLARGGSVID:
 		case FILTER_BLARGGRGB:
+        case FILTER_3XBRZ:
 			return 3;
 		case FILTER_SIMPLE4X:
 		case FILTER_HQ4X:
+        case FILTER_4XBRZ:
 			return 4;
+        case FILTER_5XBRZ:
+			return 5;
+        case FILTER_6XBRZ:
+			return 6;
 	}
 }
 
@@ -363,6 +425,11 @@ bool GetFilterHiResSupport(RenderFilter filterID)
 		case FILTER_SIMPLE3X:
 		case FILTER_SIMPLE4X:
 		case FILTER_HQ4X:
+        case FILTER_2XBRZ:
+        case FILTER_3XBRZ:
+        case FILTER_4XBRZ:
+		case FILTER_5XBRZ:
+		case FILTER_6XBRZ:
 			return true;
 
 		default:
@@ -453,6 +520,20 @@ void InitRenderFilters(void)
 		BlendBuffer = BlendBuf + EXT_OFFSET;
 		memset(BlendBuf, 0, EXT_PITCH * EXT_HEIGHT);
 	}
+
+    SYSTEM_INFO sysinfo;
+    GetSystemInfo( &sysinfo );
+    num_xbrz_threads = sysinfo.dwNumberOfProcessors;
+    if(!xbrz_thread_sync_data) {
+        xbrz_thread_sync_data = new xbrz_thread_data[num_xbrz_threads];
+        xbrz_sync_handles = new HANDLE[num_xbrz_threads];
+        for(int i = 0; i < num_xbrz_threads; i++) {
+            xbrz_thread_sync_data[i].xbrz_start_event = CreateEvent(NULL, FALSE, FALSE, NULL);
+            xbrz_thread_sync_data[i].xbrz_sync_event = CreateEvent(NULL, FALSE, FALSE, NULL);
+            xbrz_thread_sync_data[i].thread_handle = CreateThread(NULL, 0, ThreadProc_XBRZ, &xbrz_thread_sync_data[i], 0, NULL);
+            xbrz_sync_handles[i] = xbrz_thread_sync_data[i].xbrz_sync_event;
+        }
+    }
 }
 
 #define R5G6B5 // windows port uses RGB565
@@ -464,9 +545,13 @@ void InitRenderFilters(void)
 	#define	Mask_3	0xF800	// 11111 000000 00000
 	#define CONVERT_16_TO_32(pixel) \
         (((((pixel) >> 11)        ) << /*RedShift+3*/  19) | \
-         ((((pixel) >> 6)   & 0x1f) << /*GreenShift+3*/11) | \
+         ((((pixel) >> 5)   & 0x3f) << /*GreenShift+2*/10) | \
           (((pixel)         & 0x1f) << /*BlueShift+3*/ 3))
 	#define NUMBITS (16)
+    #define CONVERT_32_TO_16(pixel) \
+        (((((pixel) & 0xf80000) >> 8) | \
+          (((pixel) & 0xfc00)   >> 5) | \
+          (((pixel) & 0xf8)     >> 3)) & 0xffff)
 #else
 	#define	Mask_2	0x03E0	// 00000 11111 00000
 	#define	Mask13	0x7C1F	// 11111 00000 11111
@@ -477,6 +562,10 @@ void InitRenderFilters(void)
          ((((pixel) >> 5)   & 0x1f) << /*GreenShift+3*/11) | \
           (((pixel)         & 0x1f) << /*BlueShift+3*/ 3))
 	#define NUMBITS (15)
+    #define CONVERT_32_TO_16(pixel) \
+        (((((pixel) & 0xf80000) >> 9) | \
+          (((pixel) & 0xf800)   >> 6) | \
+          (((pixel) & 0xf8)     >> 3)) & 0xffff)
 #endif
 
 static int	RGBtoYUV[1<<NUMBITS];
@@ -2588,6 +2677,146 @@ void RenderSimple4X( SSurface Src, SSurface Dst, RECT *rect)
 	}
 }
 
+/*#################### XBRZ support ####################*/
+
+//copy image and convert from RGB565/555 to ARGB
+inline
+void copyImage16To32(const uint16_t* src, int width, int height, int srcPitch,
+                     uint32_t* trg, int yFirst, int yLast)
+{
+    yFirst = std::max(yFirst, 0);
+    yLast  = std::min(yLast, height);
+    if (yFirst >= yLast || height <= 0 || width <= 0) return;
+
+    for (int y = yFirst; y < yLast; ++y)
+    {
+        uint32_t* trgLine = trg + y * width;
+        const uint16_t* srcLine = reinterpret_cast<const uint16_t*>(reinterpret_cast<const char*>(src) + y * srcPitch);
+
+        for (int x = 0; x < width; ++x)
+            trgLine[x] = CONVERT_16_TO_32(srcLine[x]);
+    }
+}
+
+
+//stretch image and convert from ARGB to RGB565/555
+inline
+void stretchImage32To16(const uint32_t* src, int srcWidth, int srcHeight,
+                        uint16_t* trg, int trgWidth, int trgHeight, int trgPitch,
+                        int yFirst, int yLast)
+{
+    yFirst = std::max(yFirst, 0);
+    yLast  = std::min(yLast, trgHeight);
+    if (yFirst >= yLast || srcHeight <= 0 || srcWidth <= 0) return;
+
+    for (int y = yFirst; y < yLast; ++y)
+    {
+        uint16_t* trgLine = reinterpret_cast<uint16_t*>(reinterpret_cast<char*>(trg) + y * trgPitch);
+        const int ySrc = srcHeight * y / trgHeight;
+        const uint32_t* srcLine = src + ySrc * srcWidth;
+        for (int x = 0; x < trgWidth; ++x)
+        {
+            const int xSrc = srcWidth * x / trgWidth;
+            trgLine[x] = CONVERT_32_TO_16(srcLine[xSrc]);
+        }
+    }
+}
+
+std::vector<uint32_t> renderBuffer; //raw image
+std::vector<uint32_t> xbrzBuffer;   //scaled image
+
+DWORD WINAPI ThreadProc_XBRZ(VOID * pParam)
+{
+	xbrz_thread_data *thread_data = (xbrz_thread_data *)pParam;
+    while(true) {
+        WaitForSingleObject(thread_data->xbrz_start_event, INFINITE);
+        int trgWidth  = xbrz_thread_data::src->Width  * xbrz_thread_data::scalingFactor;
+	    int trgHeight = xbrz_thread_data::src->Height * xbrz_thread_data::scalingFactor;
+        copyImage16To32(reinterpret_cast<const uint16_t*>(thread_data->src->Surface), xbrz_thread_data::src->Width, xbrz_thread_data::src->Height, xbrz_thread_data::src->Pitch,
+            &renderBuffer[0], thread_data->yFirst, thread_data->yLast);
+        SetEvent(thread_data->xbrz_sync_event);
+        WaitForSingleObject(thread_data->xbrz_start_event, INFINITE);
+
+        xbrz::scale(thread_data->scalingFactor, &renderBuffer[0], &xbrzBuffer[0], xbrz_thread_data::src->Width, xbrz_thread_data::src->Height, xbrz::ColorFormat::RGB, xbrz::ScalerCfg(), thread_data->yFirst, thread_data->yLast);
+        SetEvent(thread_data->xbrz_sync_event);
+        WaitForSingleObject(thread_data->xbrz_start_event, INFINITE);
+
+        trgHeight = SNES_HEIGHT_EXTENDED * xbrz_thread_data::scalingFactor;
+        if (xbrz_thread_data::src->Height % SNES_HEIGHT == 0)
+            trgHeight = SNES_HEIGHT * xbrz_thread_data::scalingFactor;
+		trgWidth = SNES_WIDTH * xbrz_thread_data::scalingFactor;
+        stretchImage32To16(&xbrzBuffer[0], xbrz_thread_data::src->Width * xbrz_thread_data::scalingFactor, xbrz_thread_data::src->Height * xbrz_thread_data::scalingFactor,
+                           reinterpret_cast<uint16_t*>(xbrz_thread_data::dstPtr), trgWidth, trgHeight, xbrz_thread_data::dst->Pitch, thread_data->yFirst * xbrz_thread_data::scalingFactor, thread_data->yLast * xbrz_thread_data::scalingFactor);
+        SetEvent(thread_data->xbrz_sync_event);
+    }
+	return 0;
+}
+
+void Render2xBRZ(SSurface Src, SSurface Dst, RECT* rect)
+{
+    RenderxBRZ(Src, Dst, rect, 2);
+}
+
+void Render3xBRZ(SSurface Src, SSurface Dst, RECT* rect)
+{
+    RenderxBRZ(Src, Dst, rect, 3);
+}
+
+void Render4xBRZ(SSurface Src, SSurface Dst, RECT* rect)
+{
+    RenderxBRZ(Src, Dst, rect, 4);
+}
+
+void Render5xBRZ(SSurface Src, SSurface Dst, RECT* rect)
+{
+    RenderxBRZ(Src, Dst, rect, 5);
+}
+
+void Render6xBRZ(SSurface Src, SSurface Dst, RECT* rect)
+{
+    RenderxBRZ(Src, Dst, rect, 6);
+}
+
+void RenderxBRZ(SSurface Src, SSurface Dst, RECT* rect, int scalingFactor)
+{
+    xbrz_thread_data::scalingFactor = scalingFactor;
+    
+	xbrz_thread_data::dstPtr = Dst.Surface;
+    SetRect(rect, SNES_WIDTH, SNES_HEIGHT_EXTENDED, xbrz_thread_data::scalingFactor);
+    xbrz_thread_data::dstPtr += rect->top * Dst.Pitch + rect->left * sizeof(uint16_t);
+
+    if (Src.Width  <= 0 || Src.Height <= 0)
+        return;
+
+    renderBuffer.resize(Src.Width * Src.Height);
+    xbrzBuffer.resize(renderBuffer.size() * xbrz_thread_data::scalingFactor * xbrz_thread_data::scalingFactor);
+
+    xbrz_thread_data::src = &Src;
+    xbrz_thread_data::dst = &Dst;
+    
+    // init + convert run
+    int ySlice = Src.Height / num_xbrz_threads;
+    for(int i = 0; i < num_xbrz_threads; i++) {
+        xbrz_thread_sync_data[i].yFirst = ySlice * i;
+        xbrz_thread_sync_data[i].yLast = (i == num_xbrz_threads - 1) ? Src.Height : ySlice * i + ySlice;
+        SetEvent(xbrz_thread_sync_data[i].xbrz_start_event);
+    }
+    WaitForMultipleObjects(num_xbrz_threads, xbrz_sync_handles, TRUE, INFINITE);
+
+    // xbrz run
+    for(int i = 0; i < num_xbrz_threads; i++) {
+        SetEvent(xbrz_thread_sync_data[i].xbrz_start_event);
+    }
+    WaitForMultipleObjects(num_xbrz_threads, xbrz_sync_handles, TRUE, INFINITE);
+
+    // convert run
+    for(int i = 0; i < num_xbrz_threads; i++) {
+        SetEvent(xbrz_thread_sync_data[i].xbrz_start_event);
+    }
+    WaitForMultipleObjects(num_xbrz_threads, xbrz_sync_handles, TRUE, INFINITE);
+}
+/*#################### /XBRZ support ####################*/
+
 void RenderBlarggNTSCComposite( SSurface Src, SSurface Dst, RECT *rect)
 {
 	if(blarggMode!=BLARGGCOMPOSITE) {
@@ -2624,11 +2853,11 @@ void RenderBlarggNTSCRgb( SSurface Src, SSurface Dst, RECT *rect)
 void RenderBlarggNTSC( SSurface Src, SSurface Dst, RECT *rect)
 {
 	SetRect(rect, 256, 239, 2);
-	rect->right = 604;
+	rect->right = SNES_NTSC_OUT_WIDTH(256);
 
 	const unsigned int srcRowPixels = Src.Pitch/2;
 
-	if(Src.Height > SNES_HEIGHT_EXTENDED || Src.Width == 512)
+	if(Src.Width == 512)
 		snes_ntsc_blit_hires( ntsc, (unsigned short *)Src.Surface, srcRowPixels, 0,Src.Width, Src.Height, Dst.Surface, Dst.Pitch );
 	else
 		snes_ntsc_blit( ntsc, (unsigned short *)Src.Surface, srcRowPixels, 0,Src.Width, Src.Height, Dst.Surface, Dst.Pitch );

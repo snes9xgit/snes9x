@@ -22,8 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2011  BearOso,
+  (c) Copyright 2009 - 2016  BearOso,
                              OV2
+
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -118,6 +122,9 @@
   Sound emulator code used in 1.52+
   (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
 
+  S-SMP emulator code used in 1.54+
+  (c) Copyright 2016         byuu
+
   SH assembler code partly based on x86 assembler code
   (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
 
@@ -131,7 +138,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2011  BearOso
+  (c) Copyright 2004 - 2016  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -139,11 +146,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2011  OV2
+  (c) Copyright 2009 - 2016  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -185,6 +197,7 @@
 #include <windows.h>
 
 #include "cgFunctions.h"
+#include "CD3DCG.h"
 
 #include "render.h"
 #include "wsnes9x.h"
@@ -195,9 +208,10 @@
 typedef struct _VERTEX {
 		float x, y, z;
 		float tx, ty;
+		float lutx, luty;
 		_VERTEX() {}
-		_VERTEX(float x,float y,float z,float tx,float ty) {
-			this->x=x;this->y=y;this->z=z;this->tx=tx;this->ty=ty;
+		_VERTEX(float x,float y,float z,float tx,float ty,float lutx, float luty) {
+			this->x=x;this->y=y;this->z=z;this->tx=tx;this->ty=ty;this->lutx=lutx;this->luty=luty;
 		}
 } VERTEX; //our custom vertex with a constuctor for easier assignment
 
@@ -218,14 +232,18 @@ private:
 	unsigned int quadTextureSize;						//size of the texture (only multiples of 2)
 	bool fullscreen;									//are we currently displaying in fullscreen mode
 	
-	VERTEX triangleStripVertices[4];					//the 4 vertices that make up our display rectangle
+	VERTEX vertexStream[4];								//the 4 vertices that make up our display rectangle
+
+	static const D3DVERTEXELEMENT9 vertexElems[4];
+	LPDIRECT3DVERTEXDECLARATION9 vertexDeclaration;
 
 	LPD3DXEFFECT            effect;
 	LPDIRECT3DTEXTURE9      rubyLUT[MAX_SHADER_TEXTURES];
 	CGcontext cgContext;
-	CGprogram cgVertexProgram, cgFragmentProgram;
 	current_d3d_shader_type shader_type;
 	bool cgAvailable;
+
+	CD3DCG *cgShader;
 
 	float shaderTimer;
 	int shaderTimeStart;
@@ -239,6 +257,7 @@ private:
 	void SetViewport();
 	void SetupVertices();
 	bool ResetDevice();
+	void SetFiltering();
 	void SetShaderVars(bool setMatrix = false);
 	bool SetShader(const TCHAR *file);
 	bool SetShaderHLSL(const TCHAR *file);

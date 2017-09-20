@@ -2,48 +2,26 @@ Various software and tools are required to compile Snes9x on Windows:
 
 NOTE: Unicode support requires a special zlib build - see the end of the zlib entry
 
-- Microsoft Visual C++ 7.1 or Microsoft Visual C++ 6.0 SP5 with the
-  latest Platform SDK, to compile all the C++ source code.
-  The current official binary is compiled with Visual Studio 2008, you'll have to create
-  your own project file for earlier MSVC versions
+- The current official binary is compiled with Visual Studio 2017, you'll have to create
+  your own project file for earlier MSVC versions. VS2017 will automatically ask to install
+  the correct Windows SDK Version (7.1A)
 
-- A recent DirectX SDK. The official binary is compiled against the June 2008 SDK.
+- A recent DirectX SDK. The official binary is compiled against the August 2009 SDK.
+  Note that as of the June 2010 release of the DirectX SDK, DirectDraw has been removed
+  (DirectDraw is disabled by default, DIRECTDRAW_SUPPORT enables it)
+  https://www.microsoft.com/en-us/download/details.aspx?id=23549
 
-- zlib(optional) - The release binaries are built against a static zlib compiled
-  against VC's multi-threaded C runtime and renamed to zlibmt.lib, to avoid linker conflicts.
-  removing ZLIB from the preprocessor definitions and zlibmt.lib from the library
-  listing will disable zip support.
-  (the zlib directory should reside at win32/../../zlib, i.e. 2 directories up, the
-  lib file is expected in win32/../../zlib/lib)
-  If you want to build snes9x with unicode support you can use the project file in win32\zlib
-  to compile zlib - if you want to use the project files supplied with zlib you have to add
-  _tfwopen.h to their force include list
+- zlib (optional, ZLIB define, enabled by default) - the default solution includes a zlib
+  project that builds appropriately (force includes _tfwopen.h for unicode support in s9x).
+  (the zlib directory should reside at win32/../../zlib, i.e. 2 directories up)
 
-- libpng(optional) - Like zlib, this is a renamed libpng.lib, built against the same
-  C runtime for the same reasons. Building your own is as simple as changing the runtime
-  used by libpng's own project files, compiling, renaming the result to libpngmt.lib
-  HAVE_LIBPNG is the define used to include this code, used for screenshots.
+- libpng (optional, HAVE_LIBPNG define, enabled by default) - the default solution includes
+  a libpng project that builds appropriately.
   (the libpng directory should reside at win32/../../libpng, i.e. 2 directories up)
 
-- fmod(optional) - Versions 3.20 and above. Used to provide extra sound output
-  options that increases hardware compatibility with some PC hardware.
-  Version 3.33 broke A3D support on some hardware so I reverted back to
-  version 3.20. However, I'm told 3.40, just released at time of writing,  fixes the problem.
-  Download from www.fmod.org Unpack into a temp folder and copy the API
-  sub-folder contents into win32/../../fmod. Disable fmod support by removing the
-  FMOD_SUPPORT from the Preprocessor Definitions text box.
-
-- fmod ex(optional) - Used to provide extra sound output. Cannot be used at the same time as
-  normal FMOD support. Disable fmod support by removing the FMODEX_SUPPORT from the Preprocessor
-  Definitions text box.
-
-- CG Toolkit - Enables CG Shader support. This can be downloaded from nvidia's CG toolkit page:
-  http://developer.nvidia.com/object/cg_download.html
-  Only the header files are required to compile.
-
 - To compile Snes9x:
-    Start up Visual C++.
-    Load the Snes9x project file.
+    Start up VS2017.
+    Load the Snes9x solution.
     Select the desired configuration and build.
     The Release configuration may build significantly slower than Debug.
     Then you can run it.

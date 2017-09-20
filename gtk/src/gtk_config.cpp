@@ -15,25 +15,67 @@
 #include "gtk_sound.h"
 #include "gtk_display.h"
 
+static int
+directory_exists (const char *directory)
+{
+    DIR *dir;
+
+    dir = opendir (directory);
+
+    if (dir)
+    {
+        closedir (dir);
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
 char *
 get_config_dir (void)
 {
-    char *homedir, *configdir;
+    char *home_dir = NULL,
+         *classic_config_dir = NULL,
+         *xdg_config_dir = NULL,
+         *xdg_snes9x_dir = NULL;
 
     /* Find config directory */
-    homedir = getenv ("HOME");
+    home_dir = getenv ("HOME");
+    xdg_config_dir = getenv ("XDG_CONFIG_HOME");
 
-    if (!homedir)
+    if (!home_dir && !xdg_config_dir)
     {
-        configdir = strdup (".snes9x");
+        return strdup (".snes9x");
+    }
+
+    if (!xdg_config_dir)
+    {
+        xdg_snes9x_dir = (char *) malloc (strlen (home_dir) + 16);
+        sprintf (xdg_snes9x_dir, "%s/.config/snes9x", home_dir);
     }
     else
     {
-        configdir =  (char *) malloc (strlen (homedir) + 9);
-        sprintf (configdir, "%s/.snes9x", homedir);
+        xdg_snes9x_dir = (char *) malloc (strlen (xdg_config_dir) + 9);
+        sprintf (xdg_snes9x_dir, "%s/snes9x", xdg_config_dir);
     }
 
-    return configdir;
+    classic_config_dir =  (char *) malloc (strlen (home_dir) + 9);
+    sprintf (classic_config_dir, "%s/.snes9x", home_dir);
+
+    char *config_dir;
+
+    if (directory_exists (classic_config_dir) && !directory_exists(xdg_snes9x_dir))
+    {
+        free (xdg_snes9x_dir);
+        config_dir =  classic_config_dir;
+    }
+    else
+    {
+        free (classic_config_dir);
+        config_dir = xdg_snes9x_dir;
+    }
+
+    return config_dir;
 }
 
 char *
@@ -139,6 +181,7 @@ Snes9xConfig::load_defaults (void)
     pause_emulation_on_switch = 0;
     num_threads = 2;
     mute_sound = FALSE;
+    mute_sound_turbo = FALSE;
     fullscreen = FALSE;
     ui_visible = TRUE;
     statusbar_visible = FALSE;
@@ -174,6 +217,9 @@ Snes9xConfig::load_defaults (void)
     netplay_last_host [0] = '\0';
     netplay_last_port = 6096;
     modal_dialogs = 1;
+
+    rewind_granularity = 5;
+    rewind_buffer_size = 0;
 
 #ifdef USE_OPENGL
     sync_to_vblank = 1;
@@ -324,6 +370,9 @@ Snes9xConfig::save_config_file (void)
     xml_out_int (xml, "hw_accel", hw_accel);
     xml_out_int (xml, "bilinear_filter", bilinear_filter);
 
+    xml_out_int (xml, "rewind_buffer_size", rewind_buffer_size);
+    xml_out_int (xml, "rewind_granularity", rewind_granularity);
+
 #ifdef USE_OPENGL
     xml_out_int (xml, "sync_to_vblank", sync_to_vblank);
     xml_out_int (xml, "sync_every_frame", sync_every_frame);
@@ -348,6 +397,7 @@ Snes9xConfig::save_config_file (void)
     xml_out_string (xml, "netplay_last_host", netplay_last_host);
 
     xml_out_int (xml, "mute_sound", mute_sound);
+    xml_out_int (xml, "mute_sound_turbo", mute_sound_turbo);
     xml_out_int (xml, "sound_buffer_size", sound_buffer_size);
     xml_out_int (xml, "sound_driver", sound_driver);
     xml_out_int (xml, "sound_input_rate", sound_input_rate);
@@ -484,6 +534,13 @@ Snes9xConfig::set_option (const char *name, const char *value)
         if (scale_method >= NUM_FILTERS - 3)
             scale_method = 0;
 #endif /* USE_HQ2X */
+#ifdef USE_XBRZ
+        if (scale_method >= NUM_FILTERS)
+            scale_method = 0;
+#else
+        if (scale_method >= NUM_FILTERS - 3)
+            scale_method = 0;
+#endif /* USE_XBRZ */
     }
     else if (!strcasecmp (name, "multithreading"))
     {
@@ -590,6 +647,10 @@ Snes9xConfig::set_option (const char *name, const char *value)
     else if (!strcasecmp (name, "mute_sound"))
     {
         mute_sound = atoi (value);
+    }
+    else if (!strcasecmp (name, "mute_sound_turbo"))
+    {
+        mute_sound_turbo = atoi (value);
     }
     else if (!strcasecmp (name, "16bit_sound"))
     {
@@ -824,6 +885,14 @@ Snes9xConfig::set_option (const char *name, const char *value)
     else if (!strcasecmp (name, "sound_sync"))
     {
         Settings.SoundSync = atoi (value) ? 1 : 0;
+    }
+    else if (!strcasecmp (name, "rewind_buffer_size"))
+    {
+        rewind_buffer_size = CLAMP (atoi (value), 0, 2000);
+    }
+    else if (!strcasecmp (name, "rewind_granularity"))
+    {
+        rewind_granularity = CLAMP (atoi (value), 0, 600);
     }
     else
     {

@@ -22,8 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2011  BearOso,
+  (c) Copyright 2009 - 2016  BearOso,
                              OV2
+
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -118,6 +122,9 @@
   Sound emulator code used in 1.52+
   (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
 
+  S-SMP emulator code used in 1.54+
+  (c) Copyright 2016         byuu
+
   SH assembler code partly based on x86 assembler code
   (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
 
@@ -131,7 +138,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2011  BearOso
+  (c) Copyright 2004 - 2016  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -139,11 +146,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2011  OV2
+  (c) Copyright 2009 - 2016  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -268,11 +280,6 @@ void WinSetDefaultValues ()
 	// CPU options
 	Settings.Paused	= false;
 
-	// ROM image and peripheral	options
-	Settings.MultiPlayer5Master	= false;
-	Settings.SuperScopeMaster =	false;
-	Settings.MouseMaster = false;
-
 #ifdef NETPLAY_SUPPORT
 	Settings.Port =	1996;
 	NetPlay.MaxFrameSkip = 10;
@@ -297,8 +304,6 @@ static bool	try_save(const char	*fname,	ConfigFile &conf){
 	}
 	return false;
 }
-
-static char rom_filename [MAX_PATH] = {0,};
 
 static bool S9xSaveConfigFile(ConfigFile &conf){
 
@@ -349,18 +354,30 @@ static inline char *SkipSpaces (char *p)
 	return (p);
 }
 
-const char*	WinParseCommandLineAndLoadConfigFile (char *line)
+const TCHAR*	WinParseCommandLineAndLoadConfigFile (TCHAR *line)
 {
 	// Break the command line up into an array of string pointers, each	pointer
 	// points at a separate	word or	character sequence enclosed	in quotes.
 
+    int count = 0;
+    static TCHAR return_filename[MAX_PATH];
+
+#ifdef UNICODE
+    // split params into argv
+	TCHAR **params = CommandLineToArgvW(line, &count);
+
+    // convert all parameters to utf8
+	char **parameters = new char*[count];
+    for(int i = 0; i < count; i++) {
+        int requiredChars = WideCharToMultiByte(CP_UTF8, 0, params[i], -1, NULL, 0, NULL, NULL);
+	    parameters[i] = new char[requiredChars];
+	    WideCharToMultiByte(CP_UTF8, 0, params[i], -1, parameters[i], requiredChars, NULL, NULL);
+    }
+    LocalFree(params);
+#else
 #define	MAX_PARAMETERS 100
 	char *p	= line;
-	static char	*parameters	[MAX_PARAMETERS];
-	int	count =	0;
-
-	parameters [count++] = "Snes9X";
-
+	char *parameters[MAX_PARAMETERS];
 	while (count < MAX_PARAMETERS && *p)
 	{
 		p =	SkipSpaces (p);
@@ -392,6 +409,7 @@ const char*	WinParseCommandLineAndLoadConfigFile (char *line)
 			}
 	}
 
+#endif
 	configMutex = CreateMutex(NULL, FALSE, TEXT("Snes9xConfigMutex"));
 	int times = 0;
 	DWORD waitVal = WAIT_TIMEOUT;
@@ -432,12 +450,19 @@ const char*	WinParseCommandLineAndLoadConfigFile (char *line)
 	CloseHandle(configMutex);
 
 	const char* rf = S9xParseArgs (parameters, count);
-	/*if(rf)
-		strcpy(rom_filename, rf);
-	else
-		rom_filename[0] = '\0';*/
 
-	return rf;
+    if(rf) // save rom_filename as TCHAR if available
+        lstrcpy(return_filename, _tFromChar(rf));
+
+#ifdef UNICODE
+    // free parameters
+    for(int i = 0; i < count; i++) {
+        delete [] parameters[i];
+    }
+    delete [] parameters;
+#endif
+
+    return rf ? return_filename : NULL;
 }
 
 #define S(x) GAMEDEVICE_VK_##x
@@ -798,6 +823,7 @@ void WinPostLoad(ConfigFile& conf)
 	for(i=0;i<8;i++) Joypad[i+8].Enabled = Joypad[i].Enabled;
 	if(GUI.MaxRecentGames < 1) GUI.MaxRecentGames = 1;
 	if(GUI.MaxRecentGames > MAX_RECENT_GAMES_LIST_SIZE) GUI.MaxRecentGames = MAX_RECENT_GAMES_LIST_SIZE;
+    if(GUI.rewindGranularity==0) GUI.rewindGranularity = 1;
 	bool gap = false;
 	for(i=0;i<MAX_RECENT_GAMES_LIST_SIZE;i++) // remove gaps in recent games list
 	{
@@ -861,7 +887,7 @@ void WinRegisterConfigItems()
 	AddBoolC("DisplayFrameCount", Settings.DisplayMovieFrame, true, "true to show the frame count when a movie is playing");
 #undef CATEGORY
 #define CATEGORY "Display\\Win"
-	AddUIntC("OutputMethod", GUI.outputMethod, 1, "0=DirectDraw, 1=Direct3D");
+	AddUIntC("OutputMethod", GUI.outputMethod, 1, "0=DirectDraw, 1=Direct3D, 2=OpenGL");
 	AddUIntC("FilterType", GUI.Scale, 0, filterString);
 	AddUIntC("FilterHiRes", GUI.ScaleHiRes, 0, filterString2);
 	AddBoolC("BlendHiRes", GUI.BlendHiRes, true, "true to horizontally blend Hi-Res images (better transparency effect on filters that do not account for this)");
@@ -905,10 +931,11 @@ void WinRegisterConfigItems()
 	AddUIntC("MessageDisplayTime", Settings.InitialInfoStringTimeout, 120, "display length of messages, in frames. set to 0 to disable all message text");
 #undef CATEGORY
 #define CATEGORY "Settings\\Win"
+    AddUIntC("RewindBufferSize", GUI.rewindBufferSize, 0, "rewind buffer size in MB - 0 disables rewind support");
+    AddUIntC("RewindGranularity", GUI.rewindGranularity, 1, "rewind granularity - rewind takes a snapshot each x frames");
 	AddBoolC("PauseWhenInactive", GUI.InactivePause, TRUE, "true to pause Snes9x when it is not the active window");
 	AddBoolC("CustomRomOpenDialog", GUI.CustomRomOpen, false, "false to use standard Windows open dialog for the ROM open dialog");
 	AddBoolC("AVIHiRes", GUI.AVIHiRes, false, "true to record AVI in Hi-Res scale");
-	AddBoolC("ToggledTurbo", GUI.TurboModeToggle, FALSE, "true to allow fast-forward to stay on without holding the turbo button");
 //	AddUIntC("Language", GUI.Language, 0, "0=English, 1=Nederlands"); // NYI
 	AddBoolC("FrameAdvanceSkipsNonInput", GUI.FASkipsNonInput, false, "causes frame advance to fast-forward past frames where the game is definitely not checking input, such as during lag or loading time. EXPERIMENTAL");
 	AddBool("MovieDefaultClearSRAM", GUI.MovieClearSRAM, false);
@@ -924,8 +951,10 @@ void WinRegisterConfigItems()
 	AddStringC("Dir:SPCs", GUI.SPCDir, _MAX_PATH, ".\\SPCs", "directory where SPCs will be saved");
 	AddStringC("Dir:Savestates", GUI.FreezeFileDir, _MAX_PATH, ".\\Saves", "directory where savestates will be created and loaded from");
 	AddStringC("Dir:SRAM", GUI.SRAMFileDir, _MAX_PATH, ".\\Saves", "directory where battery saves will be created and loaded from");
-	AddStringC("Dir:Patches", GUI.PatchDir, _MAX_PATH, ".\\Cheats", "directory in which ROM patches (.ips files) and cheats (.cht files) will be looked for");
+	AddStringC("Dir:Cheats", GUI.CheatDir, _MAX_PATH, ".\\Cheats", "directory in which cheats (.cht files) will be looked for");
+	AddStringC("Dir:Patches", GUI.PatchDir, _MAX_PATH, ".\\Patches", "directory in which ROM patches (.ips/.bps/.ups files) will be looked for");
 	AddStringC("Dir:Bios", GUI.BiosDir, _MAX_PATH, ".\\BIOS", "directory where BIOS files (such as \"BS-X.bios\") will be located");
+	AddStringC("Dir:SatData", GUI.SatDir, _MAX_PATH, ".\\SatData", "directory where Satellaview Signal Data files will be located");
 	AddBoolC("Dir:Lock", GUI.LockDirectories, false, "true to prevent Snes9x from changing configured directories when you browse to a new location");
 	#define ADD(n) AddString("Rom:RecentGame" #n, GUI.RecentGames[n-1], MAX_PATH, "")
 		ADD(1);  ADD(2);  ADD(3);  ADD(4);  ADD(5);  ADD(6);  ADD(7);  ADD(8);
@@ -947,7 +976,7 @@ void WinRegisterConfigItems()
 	AddBoolC("Mute", GUI.Mute, false, "true to mute sound output (does not disable the sound CPU)");
 #undef CATEGORY
 #define	CATEGORY "Sound\\Win"
-	AddUIntC("SoundDriver", GUI.SoundDriver, 4, "0=Snes9xDirectSound, 4=XAudio2 (recommended), 5=FMOD Default, 6=FMOD ASIO, 7=FMOD OpenAL");
+	AddUIntC("SoundDriver", GUI.SoundDriver, 4, "0=Snes9xDirectSound, 4=XAudio2 (recommended)");
 	AddUIntC("BufferSize", GUI.SoundBufferSize, 64, "sound buffer size in ms - determines the internal and output sound buffer sizes. actual mixing is done every SoundBufferSize/4 samples");
 	AddBoolC("MuteFrameAdvance", GUI.FAMute, false, "true to prevent Snes9x from outputting sound when the Frame Advance command is in use");
 #undef CATEGORY
@@ -958,7 +987,6 @@ void WinRegisterConfigItems()
 	AddBoolC("Cheat", Settings.ApplyCheats, true, "true to allow enabled cheats to be applied");
 	AddInvBoolC("Patch", Settings.NoPatch, true, "true to allow IPS/UPS patches to be applied (\"soft patching\")");
 	AddBoolC("BS", Settings.BS, false, "Broadcast Satellaview emulation");
-	AddStringC("Filename", rom_filename, MAX_PATH, "", "filename of ROM to run when Snes9x opens");
 #undef CATEGORY
 #ifdef NETPLAY_SUPPORT
 #define	CATEGORY "Netplay"
@@ -1006,7 +1034,7 @@ void WinRegisterConfigItems()
 #define ADDN(x,n2) AddVKey("Key:" #n2, CustomKeys.x.key, CustomKeys.x.key); AddVKMod("Mods:" #n2, CustomKeys.x.modifiers, CustomKeys.x.modifiers)
 	ADD(SpeedUp); ADD(SpeedDown); ADD(Pause); ADD(FrameAdvance);
 	ADD(SkipUp); ADD(SkipDown); ADD(ScopeTurbo); ADD(ScopePause);
-	ADD(FrameCount); ADD(ReadOnly); ADD(FastForward); ADD(ShowPressed);
+	ADD(FrameCount); ADD(ReadOnly); ADD(FastForward); ADD(FastForwardToggle); ADD(ShowPressed);
 	ADDN(Save[0],SaveSlot0); ADDN(Save[1],SaveSlot1); ADDN(Save[2],SaveSlot2); ADDN(Save[3],SaveSlot3); ADDN(Save[4],SaveSlot4); ADDN(Save[5],SaveSlot5); ADDN(Save[6],SaveSlot6); ADDN(Save[7],SaveSlot7); ADDN(Save[8],SaveSlot8); ADDN(Save[9],SaveSlot9);
 	ADDN(Load[0],LoadSlot0); ADDN(Load[1],LoadSlot1); ADDN(Load[2],LoadSlot2); ADDN(Load[3],LoadSlot3); ADDN(Load[4],LoadSlot4); ADDN(Load[5],LoadSlot5); ADDN(Load[6],LoadSlot6); ADDN(Load[7],LoadSlot7); ADDN(Load[8],LoadSlot8); ADDN(Load[9],LoadSlot9);
 	ADDN(SelectSave[0],SelectSlot0); ADDN(SelectSave[1],SelectSlot1); ADDN(SelectSave[2],SelectSlot2); ADDN(SelectSave[3],SelectSlot3); ADDN(SelectSave[4],SelectSlot4); ADDN(SelectSave[5],SelectSlot5); ADDN(SelectSave[6],SelectSlot6); ADDN(SelectSave[7],SelectSlot7); ADDN(SelectSave[8],SelectSlot8); ADDN(SelectSave[9],SelectSlot9);
@@ -1015,6 +1043,7 @@ void WinRegisterConfigItems()
 	ADD(ClippingWindows); /*ADD(BGLHack);*/ ADD(Transparency); /*ADD(HDMA)*/; /*ADD(GLCube);*/
 	/*ADD(InterpMode7);*/ ADD(JoypadSwap); ADD(SwitchControllers); ADD(ResetGame); ADD(ToggleCheats);
 	ADD(TurboA); ADD(TurboB); ADD(TurboY); ADD(TurboX); ADD(TurboL); ADD(TurboR); ADD(TurboStart); ADD(TurboSelect); ADD(TurboUp); ADD(TurboDown); ADD(TurboLeft); ADD(TurboRight);
+	ADD(QuitS9X);ADD(Rewind);
 #undef ADD
 #undef ADDN
 #undef CATEGORY

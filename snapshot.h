@@ -22,8 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2011  BearOso,
+  (c) Copyright 2009 - 2016  BearOso,
                              OV2
+
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -118,6 +122,9 @@
   Sound emulator code used in 1.52+
   (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
 
+  S-SMP emulator code used in 1.54+
+  (c) Copyright 2016         byuu
+
   SH assembler code partly based on x86 assembler code
   (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
 
@@ -131,7 +138,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2011  BearOso
+  (c) Copyright 2004 - 2016  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -139,11 +146,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2011  OV2
+  (c) Copyright 2009 - 2016  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -179,8 +191,12 @@
 #ifndef _SNAPSHOT_H_
 #define _SNAPSHOT_H_
 
+#include "snes9x.h"
+
 #define SNAPSHOT_MAGIC			"#!s9xsnp"
-#define SNAPSHOT_VERSION		7
+#define SNAPSHOT_VERSION_IRQ    7
+#define SNAPSHOT_VERSION_BAPU   8
+#define SNAPSHOT_VERSION		9
 
 #define SUCCESS					1
 #define WRONG_FORMAT			(-1)
@@ -192,9 +208,11 @@
 
 void S9xResetSaveTimer (bool8);
 bool8 S9xFreezeGame (const char *);
+uint32 S9xFreezeSize (void);
+bool8 S9xFreezeGameMem (uint8 *,uint32);
 bool8 S9xUnfreezeGame (const char *);
+int S9xUnfreezeGameMem (const uint8 *,uint32);
 void S9xFreezeToStream (STREAM);
 int	 S9xUnfreezeFromStream (STREAM);
-bool8 S9xSPCDump (const char *);
 
 #endif

@@ -142,7 +142,7 @@ S9xGetDirectory (enum s9x_getdirtype dirtype)
             sprintf (path, "%s", gui_config->savestate_directory);
             break;
 
-        case IPS_DIR:
+        case PATCH_DIR:
             sprintf (path, "%s", gui_config->patch_directory);
             break;
 
@@ -157,6 +157,7 @@ S9xGetDirectory (enum s9x_getdirtype dirtype)
         case SCREENSHOT_DIR:
         case SPC_DIR:
             sprintf (path, "%s", gui_config->export_directory);
+            break;
 
         default:
             path[0] = '\0';
@@ -310,13 +311,7 @@ S9xOpenSnapshotFile (const char *fname, bool8 read_only, STREAM *file)
     {
         if ((*file = OPEN_STREAM (filename, "wb")))
         {
-            if (chown (filename, getuid (), getgid ()) < 0)
-            {
-                fprintf (stderr, "Couldn't set ownership of file.\n");
-                return (FALSE);
-            }
-            else
-                return (TRUE);
+            return (TRUE);
         }
         else
         {
@@ -427,7 +422,7 @@ S9xOpenROMDialog (void)
     {
             "*.smc", "*.SMC", "*.fig", "*.FIG", "*.sfc", "*.SFC",
             "*.jma", "*.JMA", "*.zip", "*.ZIP", "*.gd3", "*.GD3",
-            "*.swc", "*.SWC", "*.gz" , "*.GZ",
+            "*.swc", "*.SWC", "*.gz" , "*.GZ", "*.bs", "*.BS",
             NULL
     };
 
@@ -470,8 +465,11 @@ S9xOpenROMDialog (void)
         filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
         directory =
             gtk_file_chooser_get_current_folder (GTK_FILE_CHOOSER (dialog));
-        strncpy (gui_config->last_directory, directory, PATH_MAX);
-        g_free (directory);
+        if (directory)
+        {
+            strncpy (gui_config->last_directory, directory, PATH_MAX);
+            g_free (directory);
+        }
     }
 
     else

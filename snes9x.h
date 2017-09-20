@@ -22,8 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2011  BearOso,
+  (c) Copyright 2009 - 2016  BearOso,
                              OV2
+
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -118,6 +122,9 @@
   Sound emulator code used in 1.52+
   (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
 
+  S-SMP emulator code used in 1.54+
+  (c) Copyright 2016         byuu
+
   SH assembler code partly based on x86 assembler code
   (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
 
@@ -131,7 +138,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2011  BearOso
+  (c) Copyright 2004 - 2016  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -139,11 +146,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2011  OV2
+  (c) Copyright 2009 - 2016  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -180,7 +192,7 @@
 #define _SNES9X_H_
 
 #ifndef VERSION
-#define VERSION	"1.53"
+#define VERSION	"1.55"
 #endif
 
 #include "port.h"
@@ -189,28 +201,41 @@
 
 #ifdef ZLIB
 #include <zlib.h>
-#define STREAM					gzFile
-#define READ_STREAM(p, l, s)	gzread(s, p, l)
-#define WRITE_STREAM(p, l, s)	gzwrite(s, p, l)
-#define GETS_STREAM(p, l, s)	gzgets(s, p, l)
-#define GETC_STREAM(s)			gzgetc(s)
-#define OPEN_STREAM(f, m)		gzopen(f, m)
-#define REOPEN_STREAM(f, m)		gzdopen(f, m)
-#define FIND_STREAM(f)			gztell(f)
-#define REVERT_STREAM(f, o, s)	gzseek(f, o, s)
-#define CLOSE_STREAM(s)			gzclose(s)
+#define FSTREAM					gzFile
+#define READ_FSTREAM(p, l, s)	gzread(s, p, l)
+#define WRITE_FSTREAM(p, l, s)	gzwrite(s, p, l)
+#define GETS_FSTREAM(p, l, s)	gzgets(s, p, l)
+#define GETC_FSTREAM(s)			gzgetc(s)
+#define OPEN_FSTREAM(f, m)		gzopen(f, m)
+#define REOPEN_FSTREAM(f, m)		gzdopen(f, m)
+#define FIND_FSTREAM(f)			gztell(f)
+#define REVERT_FSTREAM(s, o, p)	gzseek(s, o, p)
+#define CLOSE_FSTREAM(s)			gzclose(s)
 #else
-#define STREAM					FILE *
-#define READ_STREAM(p, l, s)	fread(p, 1, l, s)
-#define WRITE_STREAM(p, l, s)	fwrite(p, 1, l, s)
-#define GETS_STREAM(p, l, s)	fgets(p, l, s)
-#define GETC_STREAM(s)			fgetc(s)
-#define OPEN_STREAM(f, m)		fopen(f, m)
-#define REOPEN_STREAM(f, m)		fdopen(f, m)
-#define FIND_STREAM(f)			ftell(f)
-#define REVERT_STREAM(f, o, s)	fseek(f, o, s)
-#define CLOSE_STREAM(s)			fclose(s)
+#define FSTREAM					FILE *
+#define READ_FSTREAM(p, l, s)	fread(p, 1, l, s)
+#define WRITE_FSTREAM(p, l, s)	fwrite(p, 1, l, s)
+#define GETS_FSTREAM(p, l, s)	fgets(p, l, s)
+#define GETC_FSTREAM(s)			fgetc(s)
+#define OPEN_FSTREAM(f, m)		fopen(f, m)
+#define REOPEN_FSTREAM(f, m)		fdopen(f, m)
+#define FIND_FSTREAM(s)			ftell(s)
+#define REVERT_FSTREAM(s, o, p)	fseek(s, o, p)
+#define CLOSE_FSTREAM(s)			fclose(s)
 #endif
+
+#include "stream.h"
+
+#define STREAM					Stream *
+#define READ_STREAM(p, l, s)	s->read(p,l)
+#define WRITE_STREAM(p, l, s)	s->write(p,l)
+#define GETS_STREAM(p, l, s)	s->gets(p,l)
+#define GETC_STREAM(s)			s->get_char()
+#define OPEN_STREAM(f, m)		openStreamFromFSTREAM(f, m)
+#define REOPEN_STREAM(f, m)		reopenStreamFromFd(f, m)
+#define FIND_STREAM(s)			s->pos()
+#define REVERT_STREAM(s, o, p)	s->revert(p, o)
+#define CLOSE_STREAM(s)			s->closeStream()
 
 #define SNES_WIDTH					256
 #define SNES_HEIGHT					224
@@ -352,6 +377,7 @@ struct SSettings
 	bool8	BS;
 	bool8	BSXItself;
 	bool8	BSXBootup;
+	bool8	MSU1;
 	bool8	MouseMaster;
 	bool8	SuperScopeMaster;
 	bool8	JustifierMaster;

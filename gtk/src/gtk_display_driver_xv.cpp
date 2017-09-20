@@ -39,14 +39,9 @@ S9xXVDisplayDriver::S9xXVDisplayDriver (Snes9xWindow *window,
 void
 S9xXVDisplayDriver::resize_window (int width, int height)
 {
-    XWindowChanges changes;
-
-    changes.width = width;
-    changes.height = height;
-    XConfigureWindow (display, xwindow, CWWidth | CWHeight, &changes);
-    XSync (display, False);
-
-    gdk_window_show (gdk_window);
+    g_object_unref (gdk_window);
+    XDestroyWindow (display, xwindow);
+    create_window (width, height);
 
     return;
 }
@@ -100,14 +95,16 @@ S9xXVDisplayDriver::update (int width, int height)
     GtkAllocation allocation;
 
     gtk_widget_get_allocation (drawing_area, &allocation);
+#if GTK_CHECK_VERSION(3,10,0)
+    int gdk_scale_factor = gdk_window_get_scale_factor (gdk_window);
+
+    allocation.width *= gdk_scale_factor;
+    allocation.height *= gdk_scale_factor;
+
+#endif
+
     current_width = allocation.width;
     current_height = allocation.height;
-
-    if (width <= 0)
-    {
-        gdk_window_hide (gdk_window);
-        return;
-    }
 
     if (output_window_width  != current_width ||
         output_window_height != current_height)
@@ -319,7 +316,7 @@ S9xXVDisplayDriver::init (void)
     {
         if (!strcmp (port_attr[i].name, "XV_AUTOPAINT_COLORKEY"))
         {
-            Atom colorkey = None;
+            Atom colorkey;
 
             colorkey = XInternAtom (display, "XV_AUTOPAINT_COLORKEY", True);
             if (colorkey != None)
@@ -443,16 +440,10 @@ S9xXVDisplayDriver::init (void)
         }
     }
 
-    XSetWindowAttributes window_attr;
     xcolormap = XCreateColormap (display,
                                 GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (drawing_area)),
                                 vi->visual,
                                 AllocNone);
-
-    window_attr.colormap = xcolormap;
-    window_attr.border_pixel = 0;
-    window_attr.event_mask = StructureNotifyMask | ExposureMask | PropertyChangeMask;
-    window_attr.background_pixmap = None;
 
     create_window (1, 1);
     gdk_window_hide (gdk_window);
@@ -525,6 +516,13 @@ S9xXVDisplayDriver::clear (void)
     GC   xgc = XDefaultGC (display, XDefaultScreen (display));
 
     gtk_widget_get_allocation (drawing_area, &allocation);
+#if GTK_CHECK_VERSION(3,10,0)
+    int gdk_scale_factor = gdk_window_get_scale_factor (gdk_window);
+
+    allocation.width *= gdk_scale_factor;
+    allocation.height *= gdk_scale_factor;
+
+#endif
     width = allocation.width;
     height = allocation.height;
 
@@ -567,12 +565,6 @@ S9xXVDisplayDriver::clear (void)
 void
 S9xXVDisplayDriver::refresh (int width, int height)
 {
-    if (!config->rom_loaded)
-    {
-        gdk_window_hide (gdk_window);
-        return;
-    }
-
     clear ();
 
     return;

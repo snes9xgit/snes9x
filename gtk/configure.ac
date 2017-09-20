@@ -1,4 +1,6 @@
-AC_INIT([snes9x-gtk], 1.53)
+AC_INIT([snes9x-gtk], 1.55)
+
+AC_CONFIG_MACRO_DIR([macros])
 
 if test -z "$CFLAGS"; then
     CFLAGS="-Os -pipe"
@@ -7,7 +9,7 @@ if test -z "$CXXFLAGS"; then
     CXXFLAGS="$CFLAGS"
 fi
 
-EXTRA_FLAGS="-Wall -W -pedantic -Wno-unused-parameter"
+EXTRA_FLAGS="-Wall -W -pedantic -Wno-unused-parameter -Wno-unused-but-set-variable"
 CFLAGS="$CFLAGS $EXTRA_FLAGS"
 CXXFLAGS="$CXXFLAGS $EXTRA_FLAGS"
 
@@ -15,6 +17,8 @@ AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_RANLIB
 AC_LANG_CPLUSPLUS
+
+AX_CXX_COMPILE_STDCXX([11], [noext], [optional])
 
 AC_PROG_INSTALL
 AM_INIT_AUTOMAKE([foreign subdir-objects])
@@ -104,6 +108,12 @@ AC_ARG_WITH(hq2x,
   [],
   [with_hq2x=yes])
 
+AC_ARG_WITH(xbrz, 
+  [AS_HELP_STRING([--with(out)-xbrz],
+    [Enable support for the xBRZ filter (default: with)])],
+  [],
+  [with_xbrz=yes])
+
 AC_ARG_WITH(netplay,
   [AS_HELP_STRING([--with(out)-netplay],
     [Enable netplay support (default: without)])],
@@ -127,6 +137,12 @@ AC_ARG_WITH(zlib,
     [Support gzip decompression])],
   [],
   [with_zlib=yes])
+
+AC_ARG_WITH(system-zip,
+  [AS_HELP_STRING([--with(out)-system-zip],
+    [Use system zip])],
+  [],
+  [system_zip=check])
 
 AC_ARG_WITH(screenshot,
   [AS_HELP_STRING([--with(out)-screenshot],
@@ -303,11 +319,37 @@ if test yes = "$with_screenshot"; then
     ])
 fi
 
+SYSTEM_ZIP=0
+SYSTEM_ZIP_CFLAGS=""
+SYSTEM_ZIP_LIBS=""
+ZIP_CFLAGS="-I../unzip"
+if test no != "$with_system_zip" && test yes = "$with_zlib" ; then
+    PKG_CHECK_MODULES([SYSTEM_ZIP],[minizip],[
+	ZIP_CFLAGS=""
+	SYSTEM_ZIP=yes
+	CFLAGS="$CFLAGS $SYSTEM_ZIP_CFLAGS -DSYSTEM_ZIP"
+	LIBS="$LIBS $SYSTEM_ZIP_LIBS"
+    ],[
+	if test check = "$with_system_zip"; then
+	    AC_MSG_WARN(Cannot find system minizip library)
+	else
+	    AC_MSG_ERROR(--with-system-zip given but cannot find system minizip library)
+	fi
+    ])
+fi
+
 if test yes = "$with_hq2x" ; then
     HQ2X=yes
     CFLAGS="$CFLAGS -DUSE_HQ2X"
 else
     HQ2X=0
+fi
+
+if test yes = "$with_xbrz" ; then
+    XBRZ=yes
+    CFLAGS="$CFLAGS -DUSE_XBRZ"
+else
+    XBRZ=0
 fi
 
 CFLAGS="$CFLAGS $GTK_CFLAGS $GLIB_CFLAGS $LIBXML_CFLAGS $PORTAUDIO_CFLAGS $LIBPNG_CFLAGS $SDL_CFLAGS $XV_CFLAGS $XRANDR_CFLAGS $ALSA_CFLAGS $PULSEAUDIO_CFLAGS"
@@ -340,15 +382,6 @@ dnl Enable jma decompression (nachs own format)
 if test yes = "$with_jma_decomp"; then
    CFLAGS="$CFLAGS -DJMA_SUPPORT"
    JMA=yes
-fi
-
-dnl FIXME: There is a third case (OLD) that is missed with this.
-if test yes = "$with_newblend"; then
-   CFLAGS="$CFLAGS -DNEW_COLOUR_BLENDING"
-else
-   #OLD_COLOUR_BLENDING hasn't been default for a while
-   # SYSDEFINES="$SYSDEFINES"' -DOLD_COLOUR_BLENDING'
-   :
 fi
 
 if test yes = "$with_zlib"; then
@@ -432,7 +465,7 @@ if test $ac_cv_my_sar_int8 = yes && \
   CFLAGS="$CFLAGS -DRIGHTSHIFT_IS_SAR"
 fi
 
-CFLAGS="$CFLAGS -DCPU_SHUTDOWN -DSPC700_SHUTDOWN -DNO_INLINE_SET_GET -DUNZIP_SUPPORT -DSPC700_C -I. -I.. -I../unzip"
+CFLAGS="$CFLAGS -DUNZIP_SUPPORT -DSPC700_C -I. -I.. $ZIP_CFLAGS"
 
 CXXFLAGS="$CFLAGS"
 
@@ -453,6 +486,8 @@ AM_CONDITIONAL(SDL, [test yes = "$GTKJOY"])
 AM_CONDITIONAL(ALSA, [test yes = "$ALSA"])
 AM_CONDITIONAL(PULSEAUDIO, [test yes = "$PULSEAUDIO"])
 AM_CONDITIONAL(HQ2X, [test yes = "$HQ2X"])
+AM_CONDITIONAL(XBRZ, [test yes = "$XBRZ"])
+AM_CONDITIONAL(SYSTEM_ZIP, [test yes = "$SYSTEM_ZIP"])
 
 AC_SUBST(NASM)
 AC_SUBST(NASM_FLAGS)
@@ -535,4 +570,8 @@ fi
 
 if ! test yes = "$HQ2X"; then
     echo "HQ2x filter compilation is disabled."
+fi
+
+if ! test yes = "$XBRZ"; then
+    echo "xBRZ filter compilation is disabled."
 fi

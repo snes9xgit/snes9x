@@ -22,8 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2011  BearOso,
+  (c) Copyright 2009 - 2016  BearOso,
                              OV2
+
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -118,6 +122,9 @@
   Sound emulator code used in 1.52+
   (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
 
+  S-SMP emulator code used in 1.54+
+  (c) Copyright 2016         byuu
+
   SH assembler code partly based on x86 assembler code
   (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
 
@@ -131,7 +138,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2011  BearOso
+  (c) Copyright 2004 - 2016  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -139,11 +146,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2011  OV2
+  (c) Copyright 2009 - 2016  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -182,6 +194,7 @@
 #include <string>
 #include <algorithm>
 #include <assert.h>
+#include <ctype.h>
 
 #include "snes9x.h"
 #include "memmap.h"
@@ -623,7 +636,7 @@ void S9xUnmapAllControls (void)
 	if (!(superscope.crosshair.set & 4))
 		superscope.crosshair.bg  = 1;
 
-	ZeroMemory(pseudobuttons, sizeof(pseudobuttons));
+	memset(pseudobuttons, 0, sizeof(pseudobuttons));
 
 	turbo_time = 1;
 }
@@ -1240,7 +1253,7 @@ s9xcommand_t S9xGetCommandT (const char *name)
 	int				i, j;
 	const char		*s;
 
-	ZeroMemory(&cmd, sizeof(cmd));
+	memset(&cmd, 0, sizeof(cmd));
 	cmd.type         = S9xBadMapping;
 	cmd.multi_press  = 0;
 	cmd.button_norpt = 0;
@@ -2050,7 +2063,6 @@ void S9xApplyCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 			{
 				uint16	r, s, t, st;
 
-				s = t = st = 0;
 				r = cmd.button.joypad.buttons;
 				st = r & joypad[cmd.button.joypad.idx].togglestick & joypad[cmd.button.joypad.idx].toggleturbo;
 				r ^= st;
@@ -2122,7 +2134,7 @@ void S9xApplyCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 
 			if (data1)
 				mouse[cmd.button.mouse.idx].buttons |=  i;
-			else 
+			else
 				mouse[cmd.button.mouse.idx].buttons &= ~i;
 
 			return;
@@ -2867,8 +2879,9 @@ void S9xSetJoypadLatch (bool latch)
 			switch (i = curcontrollers[n])
 			{
 				case MP5:
-					for (int j = 0, k = mp5[n].pads[j]; j < 4; k = mp5[n].pads[++j])
+					for (int j = 0, k; j < 4; ++j)
 					{
+						k = mp5[n].pads[j];
 						if (k == NONE)
 							continue;
 						do_polling(k);
@@ -3158,8 +3171,9 @@ void S9xControlEOF (void)
 		switch (i = curcontrollers[n])
 		{
 			case MP5:
-				for (j = 0, i = mp5[n].pads[j]; j < 4; i = mp5[n].pads[++j])
+				for (j = 0; j < 4; ++j)
 				{
+					i = mp5[n].pads[j];
 					if (i == NONE)
 						continue;
 
@@ -3449,7 +3463,7 @@ void S9xGetControllerCrosshair (enum crosscontrols ctl, int8 *idx, const char **
 
 void S9xControlPreSaveState (struct SControlSnapshot *s)
 {
-	ZeroMemory(s, sizeof(*s));
+	memset(s, 0, sizeof(*s));
 	s->ver = 3;
 
 	for (int j = 0; j < 2; j++)

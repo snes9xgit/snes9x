@@ -22,8 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2011  BearOso,
+  (c) Copyright 2009 - 2016  BearOso,
                              OV2
+
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -118,6 +122,9 @@
   Sound emulator code used in 1.52+
   (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
 
+  S-SMP emulator code used in 1.54+
+  (c) Copyright 2016         byuu
+
   SH assembler code partly based on x86 assembler code
   (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
 
@@ -131,7 +138,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2011  BearOso
+  (c) Copyright 2004 - 2016  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -139,11 +146,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2011  OV2
+  (c) Copyright 2009 - 2016  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -192,6 +204,16 @@ CGGES cgGetErrorString = NULL;
 CGGLL cgGetLastListing = NULL;
 CGCP cgCreateProgram = NULL;
 CGDP cgDestroyProgram = NULL;
+CGGPRI cgGetParameterResourceIndex = NULL;
+CGGFP cgGetFirstParameter = NULL;
+CGGNEP cgGetNextParameter = NULL;
+CGGPD cgGetParameterDirection = NULL;
+CGGPS cgGetParameterSemantic = NULL;
+CGGRS cgGetResourceString = NULL;
+CGGPV cgGetParameterVariability = NULL;
+CGGPT cgGetParameterType = NULL;
+CGGFSP cgGetFirstStructParameter = NULL;
+CGGPN cgGetParameterName = NULL;
 //cgD3D9.dll
 CGD3DSD cgD3D9SetDevice = NULL;
 CGD3DBP cgD3D9BindProgram = NULL;
@@ -201,6 +223,9 @@ CGD3DGOO cgD3D9GetOptimalOptions = NULL;
 CGD3DLP cgD3D9LoadProgram = NULL;
 CGD3DSUM cgD3D9SetUniformMatrix = NULL;
 CGD3DSU cgD3D9SetUniform = NULL;
+CGD3DST cgD3D9SetTexture = NULL;
+CGD3DGVD cgD3D9GetVertexDeclaration = NULL;
+CGD3DSSS cgD3D9SetSamplerState = NULL;
 //cggl.dll
 CGGLSSMP cgGLSetStateMatrixParameter = NULL;
 CGGLSP2FV cgGLSetParameter2fv = NULL;
@@ -211,6 +236,11 @@ CGGLDP cgGLDisableProfile = NULL;
 CGGLSOO cgGLSetOptimalOptions = NULL;
 CGGLLP cgGLLoadProgram = NULL;
 CGGLBP cgGLBindProgram = NULL;
+CGGLSTP cgGLSetTextureParameter = NULL;
+CGGLETP cgGLEnableTextureParameter = NULL;
+CGGLSPP cgGLSetParameterPointer = NULL;
+CGGLECS cgGLEnableClientState = NULL;
+CGGLDCS cgGLDisableClientState = NULL;
 
 bool loadCgFunctions()
 {
@@ -237,6 +267,16 @@ bool loadCgFunctions()
 	cgGetLastListing = (CGGLL)GetProcAddress(hCgDll,"cgGetLastListing");
 	cgCreateProgram = (CGCP)GetProcAddress(hCgDll,"cgCreateProgram");
 	cgDestroyProgram = (CGDP)GetProcAddress(hCgDll,"cgDestroyProgram");
+	cgGetParameterResourceIndex = (CGGPRI)GetProcAddress(hCgDll,"cgGetParameterResourceIndex");
+	cgGetFirstParameter = (CGGFP)GetProcAddress(hCgDll,"cgGetFirstParameter");
+	cgGetNextParameter = (CGGNEP)GetProcAddress(hCgDll,"cgGetNextParameter");
+	cgGetParameterDirection = (CGGPD)GetProcAddress(hCgDll,"cgGetParameterDirection");
+	cgGetParameterSemantic = (CGGPS)GetProcAddress(hCgDll,"cgGetParameterSemantic");
+	cgGetResourceString = (CGGRS)GetProcAddress(hCgDll,"cgGetResourceString");
+	cgGetParameterVariability = (CGGPV)GetProcAddress(hCgDll,"cgGetParameterVariability");
+	cgGetParameterType = (CGGPT)GetProcAddress(hCgDll,"cgGetParameterType");
+	cgGetFirstStructParameter = (CGGFSP)GetProcAddress(hCgDll,"cgGetFirstStructParameter");
+	cgGetParameterName = (CGGPN)GetProcAddress(hCgDll,"cgGetParameterName");
 	//cgD3D9.dll
 	cgD3D9SetDevice = (CGD3DSD)GetProcAddress(hCgD3D9Dll,"cgD3D9SetDevice");
 	cgD3D9BindProgram = (CGD3DBP)GetProcAddress(hCgD3D9Dll,"cgD3D9BindProgram");
@@ -246,6 +286,9 @@ bool loadCgFunctions()
 	cgD3D9LoadProgram = (CGD3DLP)GetProcAddress(hCgD3D9Dll,"cgD3D9LoadProgram");
 	cgD3D9SetUniformMatrix = (CGD3DSUM)GetProcAddress(hCgD3D9Dll,"cgD3D9SetUniformMatrix");
 	cgD3D9SetUniform = (CGD3DSU)GetProcAddress(hCgD3D9Dll,"cgD3D9SetUniform");
+	cgD3D9SetTexture = (CGD3DST)GetProcAddress(hCgD3D9Dll,"cgD3D9SetTexture");
+	cgD3D9GetVertexDeclaration = (CGD3DGVD)GetProcAddress(hCgD3D9Dll,"cgD3D9GetVertexDeclaration");
+	cgD3D9SetSamplerState = (CGD3DSSS)GetProcAddress(hCgD3D9Dll,"cgD3D9SetSamplerState");
 	//cggl.dll
 	cgGLSetStateMatrixParameter = (CGGLSSMP)GetProcAddress(hCgGLDll,"cgGLSetStateMatrixParameter");
 	cgGLSetParameter2fv = (CGGLSP2FV)GetProcAddress(hCgGLDll,"cgGLSetParameter2fv");
@@ -256,6 +299,11 @@ bool loadCgFunctions()
 	cgGLSetOptimalOptions = (CGGLSOO)GetProcAddress(hCgGLDll,"cgGLSetOptimalOptions");
 	cgGLLoadProgram = (CGGLLP)GetProcAddress(hCgGLDll,"cgGLLoadProgram");
 	cgGLBindProgram = (CGGLBP)GetProcAddress(hCgGLDll,"cgGLBindProgram");
+	cgGLSetTextureParameter = (CGGLSTP)GetProcAddress(hCgGLDll,"cgGLSetTextureParameter");
+	cgGLEnableTextureParameter = (CGGLETP)GetProcAddress(hCgGLDll,"cgGLEnableTextureParameter");
+	cgGLSetParameterPointer = (CGGLSPP)GetProcAddress(hCgGLDll,"cgGLSetParameterPointer");
+	cgGLEnableClientState = (CGGLECS)GetProcAddress(hCgGLDll,"cgGLEnableClientState");
+	cgGLDisableClientState = (CGGLDCS)GetProcAddress(hCgGLDll,"cgGLDisableClientState");
 
 	if(
 		//cg.dll
@@ -267,6 +315,16 @@ bool loadCgFunctions()
 		!cgGetLastListing ||
 		!cgCreateProgram ||
 		!cgDestroyProgram ||
+		!cgGetParameterResourceIndex ||
+		!cgGetFirstParameter ||
+		!cgGetNextParameter ||
+		!cgGetParameterDirection ||
+		!cgGetParameterSemantic ||
+		!cgGetResourceString ||
+		!cgGetParameterVariability ||
+		!cgGetParameterType ||
+		!cgGetFirstStructParameter ||
+		!cgGetParameterName ||
 		//cgD3D9.dll
 		!cgD3D9SetDevice ||
 		!cgD3D9BindProgram ||
@@ -276,6 +334,9 @@ bool loadCgFunctions()
 		!cgD3D9LoadProgram ||
 		!cgD3D9SetUniformMatrix ||
 		!cgD3D9SetUniform ||
+		!cgD3D9SetTexture ||
+		!cgD3D9GetVertexDeclaration ||
+		!cgD3D9SetSamplerState ||
 		//cggl.dll
 		!cgGLSetStateMatrixParameter ||
 		!cgGLSetParameter2fv ||
@@ -285,7 +346,12 @@ bool loadCgFunctions()
 		!cgGLDisableProfile ||
 		!cgGLSetOptimalOptions ||
 		!cgGLLoadProgram ||
-		!cgGLBindProgram) {
+		!cgGLBindProgram ||
+		!cgGLSetTextureParameter ||
+		!cgGLEnableTextureParameter ||
+		!cgGLSetParameterPointer ||
+		!cgGLEnableClientState ||
+		!cgGLDisableClientState) {
 			unloadCgLibrary();
 			return false;
 	}
@@ -313,6 +379,16 @@ void unloadCgLibrary()
 	cgGetLastListing = NULL;
 	cgCreateProgram = NULL;
 	cgDestroyProgram = NULL;
+	cgGetParameterResourceIndex = NULL;
+	cgGetFirstParameter = NULL;
+	cgGetNextParameter = NULL;
+	cgGetParameterDirection = NULL;
+	cgGetParameterSemantic = NULL;
+	cgGetResourceString = NULL;
+	cgGetParameterVariability = NULL;
+	cgGetParameterType = NULL;
+	cgGetFirstStructParameter = NULL;
+	cgGetParameterName = NULL;
 	//cgD3D9.dll
 	cgD3D9SetDevice = NULL;
 	cgD3D9BindProgram = NULL;
@@ -322,6 +398,9 @@ void unloadCgLibrary()
 	cgD3D9LoadProgram = NULL;
 	cgD3D9SetUniformMatrix = NULL;
 	cgD3D9SetUniform = NULL;
+	cgD3D9SetTexture = NULL;
+	cgD3D9GetVertexDeclaration = NULL;
+	cgD3D9SetSamplerState = NULL;
 	//cggl.dll
 	cgGLSetStateMatrixParameter = NULL;
 	cgGLSetParameter2fv = NULL;
@@ -331,4 +410,6 @@ void unloadCgLibrary()
 	cgGLSetOptimalOptions = NULL;
 	cgGLLoadProgram = NULL;
 	cgGLBindProgram = NULL;
+	cgGLEnableClientState = NULL;
+	cgGLDisableClientState = NULL;
 }

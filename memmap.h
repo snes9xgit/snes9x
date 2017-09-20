@@ -22,8 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2011  BearOso,
+  (c) Copyright 2009 - 2016  BearOso,
                              OV2
+
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -118,6 +122,9 @@
   Sound emulator code used in 1.52+
   (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
 
+  S-SMP emulator code used in 1.54+
+  (c) Copyright 2016         byuu
+
   SH assembler code partly based on x86 assembler code
   (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
 
@@ -131,7 +138,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2011  BearOso
+  (c) Copyright 2004 - 2016  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -139,11 +146,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2011  OV2
+  (c) Copyright 2009 - 2016  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -271,17 +283,24 @@ struct CMemory
 
 	int		ScoreHiROM (bool8, int32 romoff = 0);
 	int		ScoreLoROM (bool8, int32 romoff = 0);
-	uint32	HeaderRemove (uint32, int32 &, uint8 *);
-	uint32	FileLoader (uint8 *, const char *, int32);
+	uint32	HeaderRemove (uint32, uint8 *);
+	uint32	FileLoader (uint8 *, const char *, uint32);
+    uint32  MemLoader (uint8 *, const char*, uint32);
+    bool8   LoadROMMem (const uint8 *, uint32);
 	bool8	LoadROM (const char *);
+    bool8	LoadROMInt (int32);
+    bool8   LoadMultiCartMem (const uint8 *, uint32, const uint8 *, uint32, const uint8 *, uint32);
 	bool8	LoadMultiCart (const char *, const char *);
-	bool8	LoadSufamiTurbo (const char *, const char *);
-	bool8	LoadSameGame (const char *, const char *);
+    bool8	LoadMultiCartInt ();
+	bool8	LoadSufamiTurbo ();
+	bool8	LoadBSCart ();
+	bool8	LoadGNEXT ();
 	bool8	LoadSRAM (const char *);
 	bool8	SaveSRAM (const char *);
 	void	ClearSRAM (bool8 onlyNonSavedSRAM = 0);
 	bool8	LoadSRTC (void);
 	bool8	SaveSRTC (void);
+	bool8	SaveMPAK (const char *);
 
 	char *	Safe (const char *);
 	char *	SafeANK (const char *);
@@ -317,10 +336,12 @@ struct CMemory
 	void	Map_SetaDSPLoROMMap (void);
 	void	Map_SDD1LoROMMap (void);
 	void	Map_SA1LoROMMap (void);
+	void	Map_BSSA1LoROMMap (void);
 	void	Map_HiROMMap (void);
 	void	Map_ExtendedHiROMMap (void);
-	void	Map_SameGameHiROMMap (void);
 	void	Map_SPC7110HiROMMap (void);
+	void	Map_BSCartLoROMMap(uint8);
+	void	Map_BSCartHiROMMap(void);
 
 	uint16	checksum_calc_sum (uint8 *, uint32);
 	uint16	checksum_mirror_sum (uint8 *, uint32 &, uint32 mask = 0x800000);
@@ -359,7 +380,7 @@ extern CMemory	Memory;
 extern SMulti	Multi;
 
 void S9xAutoSaveSRAM (void);
-bool8 LoadZip(const char *, int32 *, int32 *, uint8 *);
+bool8 LoadZip(const char *, uint32 *, uint8 *);
 
 enum s9xwrap_t
 {

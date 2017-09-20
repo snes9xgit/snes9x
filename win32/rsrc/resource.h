@@ -68,7 +68,6 @@
 #define IDC_AUTO_SAVE_DELAY             1057
 #define IDC_MAX_SKIP                    1058
 #define IDC_TURBO_SKIP                  1059
-#define IDC_TOGGLE_TURBO                1060
 #define IDC_SRAM_SPIN                   1061
 #define IDC_SPIN_MAX_SKIP               1062
 #define IDC_SPIN_TURBO_SKIP             1063
@@ -81,7 +80,11 @@
 #define IDC_HEADER                      1067
 #define IDC_HIRESAVI                    1067
 #define IDC_ROMLIST                     1068
+#define IDC_REWIND_BUFFER               1068
 #define IDC_MEM_TYPE                    1069
+#define IDC_REWIND_BUFFER_SPIN          1069
+#define IDC_REWIND_GRANULARITY          1070
+#define IDC_REWIND_GRANULARITY_SPIN     1071
 #define IDC_HOSTNAME                    1086
 #define IDC_PORTNUMBER                  1087
 #define IDC_CLEARHISTORY                1088
@@ -226,12 +229,17 @@
 #define IDC_LABEL_UP4                   1183
 #define IDC_PORTNUMBLOCK                1184
 #define IDC_LABEL_UP5                   1184
+#define IDC_LABEL_RBUFFER               1184
 #define IDC_CLIENTSETTINGSBLOCK         1185
 #define IDC_LABEL_UP6                   1185
+#define IDC_LABEL_RBUFFER_TEXT          1185
 #define IDC_SERVERSETTINGSBLOCK         1186
 #define IDC_LABEL_UP7                   1186
+#define IDC_LABEL_RGRANU                1186
 #define IDC_LABEL_PORTNUM               1187
 #define IDC_LABEL_UP8                   1187
+#define IDC_LABEL_RBUFFER_TEXT2         1187
+#define IDC_LABEL_GRANU_TEXT            1187
 #define IDC_LABEL_PAUSEINTERVAL         1188
 #define IDC_LABEL_UP9                   1188
 #define IDC_LABEL_PAUSEINTERVAL_TEXT    1189
@@ -373,15 +381,17 @@
 #define ID_SOUND_22050HZ                40035
 #define ID_SOUND_44100HZ                40036
 #define ID_SOUND_30000HZ                40037
-#define ID_FILE_SAVE1                   40045
-#define ID_FILE_SAVE2                   40046
-#define ID_FILE_SAVE3                   40047
-#define ID_FILE_SAVE4                   40048
-#define ID_FILE_SAVE5                   40049
-#define ID_FILE_SAVE6                   40050
-#define ID_FILE_SAVE7                   40051
-#define ID_FILE_SAVE8                   40052
-#define ID_FILE_SAVE9                   40053
+#define ID_FILE_SAVE0                   40043
+#define ID_FILE_SAVE1                   40044
+#define ID_FILE_SAVE2                   40045
+#define ID_FILE_SAVE3                   40046
+#define ID_FILE_SAVE4                   40047
+#define ID_FILE_SAVE5                   40048
+#define ID_FILE_SAVE6                   40049
+#define ID_FILE_SAVE7                   40050
+#define ID_FILE_SAVE8                   40051
+#define ID_FILE_SAVE9                   40052
+#define ID_FILE_LOAD0                   40053
 #define ID_FILE_LOAD1                   40054
 #define ID_FILE_LOAD2                   40055
 #define ID_FILE_LOAD3                   40056
@@ -485,14 +495,17 @@
 #define ID_WINDOW_SIZE_3X               40171
 #define ID_WINDOW_SIZE_4X               40172
 #define ID_DEBUG_APU_TRACE              40173
-#define ID_EMULATION_BACKGROUNDINPUT	40174
+#define ID_EMULATION_BACKGROUNDINPUT    40174
+#define ID_SAVEMEMPACK                  40175
+#define ID_FILE_SAVE_FILE               40176
+#define ID_FILE_LOAD_FILE               40177
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        151
-#define _APS_NEXT_COMMAND_VALUE         40175
+#define _APS_NEXT_COMMAND_VALUE         40178
 #define _APS_NEXT_CONTROL_VALUE         3018
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

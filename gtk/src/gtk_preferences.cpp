@@ -19,21 +19,20 @@ gboolean
 snes9x_preferences_open (GtkWidget *widget,
                          gpointer  data)
 {
-    Snes9xPreferences *preferences;
     Snes9xWindow      *window = ((Snes9xWindow *) data);
     Snes9xConfig      *config = window->config;
 
     window->pause_from_focus_change ();
 
-    preferences = new Snes9xPreferences (config);
-    gtk_window_set_transient_for (preferences->get_window (),
+    Snes9xPreferences preferences (config);
+    gtk_window_set_transient_for (preferences.get_window (),
                                   window->get_window ());
 
 #ifdef USE_JOYSTICK
     config->set_joystick_mode (JOY_MODE_GLOBAL);
 #endif
 
-    preferences->show ();
+    preferences.show ();
     window->unpause_from_focus_change ();
 
 #ifdef USE_JOYSTICK
@@ -42,8 +41,6 @@ snes9x_preferences_open (GtkWidget *widget,
 
     config->reconfigure ();
     window->update_accels ();
-
-    delete preferences;
 
     return TRUE;
 }
@@ -502,11 +499,11 @@ event_about_clicked (GtkButton *widget, gpointer data)
 #endif
     version_string += "</i>";
 
-    gtk_label_set_label (GTK_LABEL (about_dialog->get_widget ("version_string_label")),
-                         version_string.c_str ());
+    GtkLabel *version_string_label = GTK_LABEL (about_dialog->get_widget ("version_string_label"));
+    gtk_label_set_label (version_string_label, version_string.c_str ());
+    gtk_label_set_justify (version_string_label, GTK_JUSTIFY_LEFT);
 
-    gtk_image_set_from_pixbuf (GTK_IMAGE (about_dialog->get_widget ("preferences_splash")),
-                               top_level->splash);
+    gtk_widget_hide (about_dialog->get_widget ("preferences_splash"));
 
     monospace = pango_font_description_from_string ("Monospace 7");
 #ifdef USE_GTK3
@@ -660,9 +657,12 @@ Snes9xPreferences::move_settings_to_dialog (void)
     set_check ("pause_emulation_on_switch", config->pause_emulation_on_switch);
     set_spin  ("num_threads",               config->num_threads);
     set_check ("mute_sound_check",          config->mute_sound);
+    set_check ("mute_sound_turbo_check",    config->mute_sound_turbo);
     set_spin  ("sound_buffer_size",         config->sound_buffer_size);
     set_slider ("sound_input_rate",         config->sound_input_rate);
     set_check ("sync_sound",                Settings.SoundSync);
+    set_spin  ("rewind_buffer_size",        config->rewind_buffer_size);
+    set_spin  ("rewind_granularity",        config->rewind_granularity);
 
     int num_sound_drivers = 0;
 #ifdef USE_PORTAUDIO
@@ -815,6 +815,7 @@ Snes9xPreferences::get_settings_from_dialog (void)
     config->sound_input_rate          = get_slider ("sound_input_rate");
     Settings.SoundSync                = get_check ("sync_sound");
     config->mute_sound                = get_check ("mute_sound_check");
+    config->mute_sound_turbo          = get_check ("mute_sound_turbo_check");
 
     store_ntsc_settings ();
     config->ntsc_scanline_intensity   = get_combo ("ntsc_scanline_intensity");
@@ -824,6 +825,8 @@ Snes9xPreferences::get_settings_from_dialog (void)
     config->num_threads               = get_spin ("num_threads");
     config->default_esc_behavior      = get_combo ("default_esc_behavior");
     config->prevent_screensaver       = get_check ("prevent_screensaver");
+    config->rewind_buffer_size        = get_spin ("rewind_buffer_size");
+    config->rewind_granularity        = get_spin ("rewind_granularity");
 
 #ifdef USE_JOYSTICK
     config->joystick_threshold        = get_spin ("joystick_threshold");
@@ -919,14 +922,11 @@ Snes9xPreferences::get_settings_from_dialog (void)
     {
         S9xReinitDisplay ();
     }
-    else
-    {
-        S9xDisplayReconfigure ();
-        S9xDisplayRefresh (top_level->last_width, top_level->last_height);
 
-        if (config->rom_loaded)
-            S9xDeinitUpdate (top_level->last_width, top_level->last_height);
-    }
+    S9xDisplayReconfigure ();
+    S9xDisplayRefresh (top_level->last_width, top_level->last_height);
+
+    S9xDeinitUpdate (top_level->last_width, top_level->last_height);
 
     top_level->configure_widgets ();
 
@@ -1047,6 +1047,13 @@ Snes9xPreferences::show (void)
     combo_box_append (GTK_COMBO_BOX (combo), _("HQ2x"));
     combo_box_append (GTK_COMBO_BOX (combo), _("HQ3x"));
     combo_box_append (GTK_COMBO_BOX (combo), _("HQ4x"));
+#endif
+
+#ifdef USE_XBRZ
+    combo = get_widget ("scale_method_combo");
+    combo_box_append (GTK_COMBO_BOX (combo), _("2xBRZ"));
+    combo_box_append (GTK_COMBO_BOX (combo), _("3xBRZ"));
+    combo_box_append (GTK_COMBO_BOX (combo), _("4xBRZ"));
 #endif
 
     combo = get_widget ("hw_accel");

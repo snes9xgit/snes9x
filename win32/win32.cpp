@@ -22,8 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2011  BearOso,
+  (c) Copyright 2009 - 2016  BearOso,
                              OV2
+
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -118,6 +122,9 @@
   Sound emulator code used in 1.52+
   (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
 
+  S-SMP emulator code used in 1.54+
+  (c) Copyright 2016         byuu
+
   SH assembler code partly based on x86 assembler code
   (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
 
@@ -131,7 +138,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2011  BearOso
+  (c) Copyright 2004 - 2016  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -139,11 +146,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2011  OV2
+  (c) Copyright 2009 - 2016  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -198,6 +210,7 @@
 #include "AVIOutput.h"
 #include "wlanguage.h"
 
+#include <shlwapi.h>
 #include <direct.h>
 
 #include <io.h>
@@ -288,6 +301,7 @@ static bool startDirectoryValid = false;
 
 const TCHAR *S9xGetDirectoryT (enum s9x_getdirtype dirtype)
 {
+    static TCHAR filename[PATH_MAX];
 	if(!startDirectoryValid)
 	{
 		// directory of the executable's location:
@@ -301,8 +315,6 @@ const TCHAR *S9xGetDirectoryT (enum s9x_getdirtype dirtype)
 
 		startDirectoryValid = true;
 	}
-
-	SetCurrentDirectory(startDirectory); // makes sure relative paths are relative to the application's location
 
 	const TCHAR* rv = startDirectory;
 
@@ -332,17 +344,23 @@ const TCHAR *S9xGetDirectoryT (enum s9x_getdirtype dirtype)
 		  rv = GUI.SPCDir;
 		  break;
 
-	  case IPS_DIR:
-	  case CHEAT_DIR:
+	  case PATCH_DIR:
 		  rv = GUI.PatchDir;
+		  break;
+
+	  case CHEAT_DIR:
+		  rv = GUI.CheatDir;
 		  break;
 
 	  case SNAPSHOT_DIR:
 		  rv = GUI.FreezeFileDir;
 		  break;
 
+	  case SAT_DIR:
+		  rv = GUI.SatDir;
+		  break;
+
 	  case ROMFILENAME_DIR: {
-			static TCHAR filename [PATH_MAX];
 			lstrcpy(filename, _tFromChar(Memory.ROMFilename));
 			if(!filename[0])
 				rv = GUI.RomDir;
@@ -355,6 +373,13 @@ const TCHAR *S9xGetDirectoryT (enum s9x_getdirtype dirtype)
 			rv = filename;
 		}
 		break;
+    }
+
+    if (PathIsRelative(rv)) {
+        TCHAR temp_container[PATH_MAX];
+        _sntprintf(temp_container, PATH_MAX, TEXT("%s\\%s"), startDirectory, rv);
+        GetFullPathName(temp_container, PATH_MAX, filename, NULL);
+        rv = filename;
     }
 
 	_tmkdir(rv);
@@ -611,16 +636,43 @@ void S9xSyncSpeed( void)
 
 const char *S9xBasename (const char *f)
 {
-    const char *p;
-    if ((p = strrchr (f, '/')) != NULL || (p = strrchr (f, '\\')) != NULL)
-	return (p + 1);
+	const char *p = f;
+	const char *last = p;
+	const char *slash;
+	const char *backslash;
 
-#ifdef __DJGPP
-    if (p = _tcsrchr (f, SLASH_CHAR))
-	return (p + 1);
+	// search rightmost separator
+	while (true)
+	{
+		slash = strchr (p, '/');
+		backslash = strchr (p, '\\');
+		if (backslash != NULL)
+		{
+			if (slash == NULL || slash > backslash)
+			{
+				slash = backslash;
+			}
+		}
+		if (slash == NULL)
+		{
+			break;
+		}
+
+		p = slash + 1;
+
+#ifdef UNICODE
+		// update always; UTF-8 doesn't have a problem between ASCII character and multi-byte character.
+		last = p;
+#else
+		// update if it's not a trailer byte of a double-byte character.
+		if (CharPrev(f, p) == slash)
+		{
+			last = p;
+		}
 #endif
+	}
 
-    return (f);
+	return last;
 }
 
 bool8 S9xReadMousePosition (int which, int &x, int &y, uint32 &buttons)
@@ -953,6 +1005,13 @@ void S9xWinScanJoypads ()
 #endif
 }
 
+void S9xDetectJoypads()
+{
+    for (int C = 0; C != 16; C ++)
+        Joystick[C].Attached = joyGetDevCaps (JOYSTICKID1+C, &Joystick[C].Caps,
+                                              sizeof( JOYCAPS)) == JOYERR_NOERROR;
+}
+
 void InitSnes9X( void)
 {
 #ifdef DEBUGGER
@@ -986,6 +1045,7 @@ void InitSnes9X( void)
 	GFX.Screen = (uint16*)(ScreenBuffer);
 
 	InitializeCriticalSection(&GUI.SoundCritSect);
+    GUI.SoundSyncEvent = CreateEvent(NULL,TRUE,TRUE,NULL);
 	CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
 
     S9xInitAPU();
@@ -995,9 +1055,7 @@ void InitSnes9X( void)
 
 	S9xMovieInit ();
 
-    for (int C = 0; C != 16; C ++)
-        Joystick[C].Attached = joyGetDevCaps (JOYSTICKID1+C, &Joystick[C].Caps,
-                                              sizeof( JOYCAPS)) == JOYERR_NOERROR;
+    S9xDetectJoypads();
 }
 void DeinitS9x()
 {
@@ -1005,6 +1063,7 @@ void DeinitS9x()
 		delete [] ScreenBuf;
 
 	DeleteCriticalSection(&GUI.SoundCritSect);
+    CloseHandle(GUI.SoundSyncEvent);
 	CoUninitialize();
 	if(GUI.GunSight)
 		DestroyCursor(GUI.GunSight);//= LoadCursor (hInstance, MAKEINTRESOURCE (IDC_CURSOR_SCOPE));

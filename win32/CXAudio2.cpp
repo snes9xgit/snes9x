@@ -22,8 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2011  BearOso,
+  (c) Copyright 2009 - 2016  BearOso,
                              OV2
+
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -118,6 +122,9 @@
   Sound emulator code used in 1.52+
   (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
 
+  S-SMP emulator code used in 1.54+
+  (c) Copyright 2016         byuu
+
   SH assembler code partly based on x86 assembler code
   (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
 
@@ -131,7 +138,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2011  BearOso
+  (c) Copyright 2004 - 2016  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -139,11 +146,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2011  OV2
+  (c) Copyright 2009 - 2016  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -308,6 +320,7 @@ pBufferContext		-	unused
 void CXAudio2::OnBufferEnd(void *pBufferContext)
 {
 	InterlockedDecrement(&bufferCount);
+    SetEvent(GUI.SoundSyncEvent);
 }
 
 /*  CXAudio2::PushBuffer
@@ -342,7 +355,8 @@ bool CXAudio2::SetupSound()
 	blockCount = 8;
 	UINT32 blockTime = GUI.SoundBufferSize / blockCount;
 
-	singleBufferSamples = (Settings.SoundPlaybackRate * blockTime * (Settings.Stereo ? 2 : 1)) / 1000;
+	singleBufferSamples = (Settings.SoundPlaybackRate * blockTime) / 1000;
+    singleBufferSamples *= (Settings.Stereo ? 2 : 1);
 	singleBufferBytes = singleBufferSamples * (Settings.SixteenBitSound ? 2 : 1);
 	sum_bufferSize = singleBufferBytes * blockCount;
 
@@ -389,10 +403,8 @@ void CXAudio2::ProcessSound()
 	BYTE * curBuffer;
 
 	UINT32 availableSamples;
-	UINT32 availableBytes;
 
 	availableSamples = S9xGetSampleCount();
-	availableBytes = availableSamples * (Settings.SixteenBitSound ? 2 : 1);
 
 	while(availableSamples > singleBufferSamples && bufferCount < blockCount) {
 		curBuffer = soundBuffer + writeOffset;
@@ -400,5 +412,6 @@ void CXAudio2::ProcessSound()
 		PushBuffer(singleBufferBytes,curBuffer,NULL);
 		writeOffset+=singleBufferBytes;
 		writeOffset%=sum_bufferSize;
+        availableSamples -= singleBufferSamples;
 	}
 }

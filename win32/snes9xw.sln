@@ -1,36 +1,51 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Snes9X", "snes9xw.vcproj", "{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.7
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "snes9x", "snes9xw.vcxproj", "{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libpng", "libpng\libpng.vcxproj", "{95804E5F-B69E-4E2A-925E-52FAFC19EDBF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "zlib\zlib.vcxproj", "{99E9817A-4605-44AF-8433-7048F0EC1859}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CF69CC6C-E1F2-41C3-A82C-D9C58127DD98}"
+	ProjectSection(SolutionItems) = preProject
+		..\.gitignore = ..\.gitignore
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug Unicode|Win32 = Debug Unicode|Win32
 		Debug Unicode|x64 = Debug Unicode|x64
-		Debug|Win32 = Debug|Win32
-		Debug|x64 = Debug|x64
 		Release Unicode|Win32 = Release Unicode|Win32
 		Release Unicode|x64 = Release Unicode|x64
-		Release|Win32 = Release|Win32
-		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}.Debug Unicode|Win32.ActiveCfg = Debug Unicode|Win32
 		{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}.Debug Unicode|Win32.Build.0 = Debug Unicode|Win32
 		{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}.Debug Unicode|x64.ActiveCfg = Debug Unicode|x64
 		{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}.Debug Unicode|x64.Build.0 = Debug Unicode|x64
-		{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}.Debug|Win32.ActiveCfg = Debug|Win32
-		{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}.Debug|Win32.Build.0 = Debug|Win32
-		{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}.Debug|x64.ActiveCfg = Debug|x64
-		{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}.Debug|x64.Build.0 = Debug|x64
 		{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}.Release Unicode|Win32.ActiveCfg = Release Unicode|Win32
 		{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}.Release Unicode|Win32.Build.0 = Release Unicode|Win32
 		{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}.Release Unicode|x64.ActiveCfg = Release Unicode|x64
 		{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}.Release Unicode|x64.Build.0 = Release Unicode|x64
-		{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}.Release|Win32.ActiveCfg = Release|Win32
-		{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}.Release|Win32.Build.0 = Release|Win32
-		{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}.Release|x64.ActiveCfg = Release|x64
-		{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}.Release|x64.Build.0 = Release|x64
+		{95804E5F-B69E-4E2A-925E-52FAFC19EDBF}.Debug Unicode|Win32.ActiveCfg = Debug Unicode|Win32
+		{95804E5F-B69E-4E2A-925E-52FAFC19EDBF}.Debug Unicode|Win32.Build.0 = Debug Unicode|Win32
+		{95804E5F-B69E-4E2A-925E-52FAFC19EDBF}.Debug Unicode|x64.ActiveCfg = Debug Unicode|x64
+		{95804E5F-B69E-4E2A-925E-52FAFC19EDBF}.Debug Unicode|x64.Build.0 = Debug Unicode|x64
+		{95804E5F-B69E-4E2A-925E-52FAFC19EDBF}.Release Unicode|Win32.ActiveCfg = Release Unicode|Win32
+		{95804E5F-B69E-4E2A-925E-52FAFC19EDBF}.Release Unicode|Win32.Build.0 = Release Unicode|Win32
+		{95804E5F-B69E-4E2A-925E-52FAFC19EDBF}.Release Unicode|x64.ActiveCfg = Release Unicode|x64
+		{95804E5F-B69E-4E2A-925E-52FAFC19EDBF}.Release Unicode|x64.Build.0 = Release Unicode|x64
+		{99E9817A-4605-44AF-8433-7048F0EC1859}.Debug Unicode|Win32.ActiveCfg = Debug Unicode|Win32
+		{99E9817A-4605-44AF-8433-7048F0EC1859}.Debug Unicode|Win32.Build.0 = Debug Unicode|Win32
+		{99E9817A-4605-44AF-8433-7048F0EC1859}.Debug Unicode|x64.ActiveCfg = Debug Unicode|x64
+		{99E9817A-4605-44AF-8433-7048F0EC1859}.Debug Unicode|x64.Build.0 = Debug Unicode|x64
+		{99E9817A-4605-44AF-8433-7048F0EC1859}.Release Unicode|Win32.ActiveCfg = Release Unicode|Win32
+		{99E9817A-4605-44AF-8433-7048F0EC1859}.Release Unicode|Win32.Build.0 = Release Unicode|Win32
+		{99E9817A-4605-44AF-8433-7048F0EC1859}.Release Unicode|x64.ActiveCfg = Release Unicode|x64
+		{99E9817A-4605-44AF-8433-7048F0EC1859}.Release Unicode|x64.Build.0 = Release Unicode|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

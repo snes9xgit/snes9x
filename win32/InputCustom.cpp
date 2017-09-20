@@ -22,8 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2011  BearOso,
+  (c) Copyright 2009 - 2016  BearOso,
                              OV2
+
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -118,6 +122,9 @@
   Sound emulator code used in 1.52+
   (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
 
+  S-SMP emulator code used in 1.54+
+  (c) Copyright 2016         byuu
+
   SH assembler code partly based on x86 assembler code
   (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
 
@@ -131,7 +138,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2011  BearOso
+  (c) Copyright 2004 - 2016  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -139,11 +146,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2011  OV2
+  (c) Copyright 2009 - 2016  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -688,6 +700,8 @@ int GetNumHotKeysAssignedTo (WORD Key, int modifiers)
 		if(MATCHES_KEY(TurboDown))         count++;
 		if(MATCHES_KEY(ResetGame))         count++;
 		if(MATCHES_KEY(ToggleCheats))      count++;
+        if(MATCHES_KEY(QuitS9X))      count++;
+        if(MATCHES_KEY(Rewind))      count++;
 
 		#undef MATCHES_KEY
 	}
@@ -831,12 +845,12 @@ HWND CreateInputCustom(HWND hwndParent)
 }
 InputCust * GetInputCustom(HWND hwnd)
 {
-	return (InputCust *)GetWindowLong(hwnd, 0);
+	return (InputCust *)GetWindowLongPtr(hwnd, 0);
 }
 
 void SetInputCustom(HWND hwnd, InputCust *icp)
 {
-    SetWindowLong(hwnd, 0, (LONG)icp);
+    SetWindowLongPtr(hwnd, 0, (LONG_PTR)icp);
 }
 
 LRESULT InputCustom_OnPaint(InputCust *ccp, WPARAM wParam, LPARAM lParam)
@@ -945,17 +959,36 @@ static LRESULT CALLBACK InputCustomWndProc(HWND hwnd, UINT msg, WPARAM wParam, L
 		return 1;
 	case WM_USER+45:
 	case WM_KEYDOWN:
-		TranslateKey(wParam,temp);
-		col = CheckButtonKey(wParam);
+    {
+        UINT scancode = (lParam & 0x00ff0000) >> 16;
+        int extended = (lParam & 0x01000000) != 0;
 
-		icp->crForeGnd = ((~col) & 0x00ffffff);
-		icp->crBackGnd = col;
-		SetWindowText(hwnd,_tFromChar(temp));
-		InvalidateRect(icp->hwnd, NULL, FALSE);
-		UpdateWindow(icp->hwnd);
-		SendMessage(pappy,WM_USER+43,wParam,(LPARAM)hwnd);
+        switch (wParam) {
+        case VK_SHIFT:
+            wParam = MapVirtualKey(scancode, MAPVK_VSC_TO_VK_EX);
+            break;
+        case VK_CONTROL:
+            wParam = extended ? VK_RCONTROL : VK_LCONTROL;
+            break;
+        case VK_MENU:
+            wParam = extended ? VK_RMENU : VK_LMENU;
+            break;
+        default:
+            break;
+        }
 
-		break;
+        TranslateKey(wParam, temp);
+        col = CheckButtonKey(wParam);
+
+        icp->crForeGnd = ((~col) & 0x00ffffff);
+        icp->crBackGnd = col;
+        SetWindowText(hwnd, _tFromChar(temp));
+        InvalidateRect(icp->hwnd, NULL, FALSE);
+        UpdateWindow(icp->hwnd);
+        SendMessage(pappy, WM_USER + 43, wParam, (LPARAM)hwnd);
+
+        break;
+    }
 	case WM_USER+44:
 
 		TranslateKey(wParam,temp);

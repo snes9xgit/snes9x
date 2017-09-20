@@ -1,0 +1,348 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="s9x-source">
+      <UniqueIdentifier>{11448d42-5e46-4e58-b0be-8cb4b3b52ec0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="s9x-source\APU">
+      <UniqueIdentifier>{dff4c5c7-1360-4c70-9a67-f5457847b1e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="s9x-source\APU\SMP">
+      <UniqueIdentifier>{d36ce584-8d5f-421c-9e1c-219a937e23c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="s9x-source\APU\DSP">
+      <UniqueIdentifier>{bb8b70ce-cd5a-45ab-848c-5c5379190802}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libretro">
+      <UniqueIdentifier>{7445db59-72e6-42a3-963c-c352087333b1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\65c816.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bsx.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\c4.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cheats.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\conffile.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\controls.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpuaddr.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpuexec.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpumacro.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpuops.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\crosshairs.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\debug.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\display.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dma.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dsp.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\font.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fxemu.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fxinst.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\getset.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gfx.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\language.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\logger.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\memmap.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\messages.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\missing.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\movie.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\netplay.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\obc1.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pixform.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\port.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ppu.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sa1.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sar.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\screenshot.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sdd1.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sdd1emu.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\seta.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\snapshot.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\snes9x.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\spc7110.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\srtc.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stream.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tile.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\apu\apu.h">
+      <Filter>s9x-source\APU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\apu\hermite_resampler.h">
+      <Filter>s9x-source\APU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\apu\resampler.h">
+      <Filter>s9x-source\APU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\apu\ring_buffer.h">
+      <Filter>s9x-source\APU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\apu\bapu\dsp\blargg_common.h">
+      <Filter>s9x-source\APU\DSP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\apu\bapu\dsp\blargg_config.h">
+      <Filter>s9x-source\APU\DSP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\apu\bapu\dsp\blargg_endian.h">
+      <Filter>s9x-source\APU\DSP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\apu\bapu\dsp\blargg_source.h">
+      <Filter>s9x-source\APU\DSP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\apu\bapu\dsp\sdsp.hpp">
+      <Filter>s9x-source\APU\DSP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\apu\bapu\dsp\SPC_DSP.h">
+      <Filter>s9x-source\APU\DSP</Filter>
+    </ClInclude>
+    <ClInclude Include="libretro.h">
+      <Filter>libretro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\msu1.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\bsx.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\c4.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\c4emu.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cheats.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cheats2.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\clip.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\conffile.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\controls.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpu.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpuexec.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpuops.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\crosshairs.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\debug.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dma.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dsp.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dsp1.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dsp2.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dsp3.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dsp4.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fxemu.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fxinst.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\gfx.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\globals.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\loadzip.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\logger.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\memmap.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\movie.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\netplay.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\obc1.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ppu.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sa1.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sa1cpu.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\screenshot.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sdd1.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sdd1emu.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\server.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\seta.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\seta010.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\seta011.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\seta018.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\snapshot.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\snes9x.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spc7110.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\srtc.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stream.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tile.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\apu\apu.cpp">
+      <Filter>s9x-source\APU</Filter>
+    </ClCompile>
+    <ClCompile Include="..\apu\bapu\smp\smp.cpp">
+      <Filter>s9x-source\APU\SMP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\apu\bapu\smp\smp_state.cpp">
+      <Filter>s9x-source\APU\SMP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\apu\bapu\dsp\sdsp.cpp">
+      <Filter>s9x-source\APU\DSP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\apu\bapu\dsp\SPC_DSP.cpp">
+      <Filter>s9x-source\APU\DSP</Filter>
+    </ClCompile>
+    <ClCompile Include="libretro.cpp">
+      <Filter>libretro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\msu1.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

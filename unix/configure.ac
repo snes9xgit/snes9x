@@ -1,6 +1,6 @@
 AC_PREREQ([2.60])
-AC_INIT([Snes9x], [1.53], [], [snes9x])
-AC_REVISION([$Revision: 1.53 $])
+AC_INIT([Snes9x], [1.55], [], [snes9x])
+AC_REVISION([$Revision: 1.55 $])
 
 AC_CONFIG_SRCDIR([unix.cpp])
 
@@ -201,16 +201,43 @@ AC_ARG_ENABLE([zip],
 		[enable ZIP support through zlib (default: yes)])],
 	[], [enable_zip="yes"])
 
+S9X_SYSTEM_ZIP="#SYSTEM_ZIP=1"
+
+AC_ARG_WITH([system-zip],
+	[AS_HELP_STRING([--with-system-zip],
+		[Use system zip (default: check)])],
+	[], [with_system_zip="check"])
+
 if test "x$enable_zip" = "xyes"; then
-	if test "x$snes9x_cv_zlib" = "xyes"; then
-		S9XZIP="S9XZIP=1"
-		S9XDEFS="$S9XDEFS -DUNZIP_SUPPORT"
-		if test "x$enable_gzip" = "xno"; then 
-			S9XLIBS="$S9XLIBS -lz"
-		fi
+	if test "x$with_system_zip" != "xno"; then
+		PKG_CHECK_MODULES(
+			SYSTEM_ZIP,
+			minizip,
+			S9XZIP="S9XZIP=1"
+			S9XDEFS="$S9XDEFS -DUNZIP_SUPPORT"
+			S9X_SYSTEM_ZIP="SYSTEM_ZIP=1"
+			S9XLIBS="$S9XLIBS $SYSTEM_ZIP_LIBS"
+			if test "x$enable_gzip" = "xno"; then
+				S9XLIBS="$S9XLIBS -lz"
+			fi
+			S9XDEFS="$S9XDEFS -DSYSTEM_ZIP",
+			if test "x${with_system_zip}" != "xcheck"; then
+				AC_MSG_ERROR([--with-system-zip requested but no proper minizip lib found.])
+			else
+				AC_MSG_WARN([minizip not found. Build without SYSTEM_ZIP support.])
+			fi
+		)
 	else
-		AC_MSG_WARN([zlib not found. Build without ZIP support.])
-		enable_zip="no"
+		if test "x$snes9x_cv_zlib" = "xyes"; then
+			S9XZIP="S9XZIP=1"
+			S9XDEFS="$S9XDEFS -DUNZIP_SUPPORT"
+			if test "x$enable_gzip" = "xno"; then
+				S9XLIBS="$S9XLIBS -lz"
+			fi
+		else
+			AC_MSG_WARN([zlib not found. Build without ZIP support.])
+			enable_zip="no"
+		fi
 	fi
 fi
 
@@ -375,6 +402,22 @@ if test "x$snes9x_sar_int8" = "xyes" -a "x$snes9x_sar_int16" = "xyes" -a "x$snes
 	S9XDEFS="$S9XDEFS -DRIGHTSHIFT_IS_SAR"
 fi
 
+# Check if we can build with Xvideo acceleration support
+AC_ARG_ENABLE([xvideo],
+	[AS_HELP_STRING([--enable-xvideo],
+		[enable Xvideo if available (default: yes)])],
+	[], [enable_xvideo="yes"])
+
+if test "x$enable_xvideo" = "xyes"; then
+	enable_xvideo="no"
+	AC_CHECK_HEADER([X11/extensions/Xv.h],
+	[
+		enable_xvideo="yes"
+		S9XLIBS="$S9XLIBS -lXv"
+		S9XDEFS="$S9XDEFS -DUSE_XVIDEO"
+	])
+fi
+
 # Check if we have sound code for this platform.
 
 AC_ARG_ENABLE([sound],
@@ -405,23 +448,27 @@ fi
 
 # Output.
 
-S9XFLGS="$CXXFLAGS $CPPFLAGS $LDFLAGS $S9XFLGS"
+S9XFLGS="$CXXFLAGS $CPPFLAGS $S9XFLGS"
 S9XLIBS="$LIBS $S9XLIBS"
 
 S9XFLGS="`echo \"$S9XFLGS\" | sed -e 's/  */ /g'`"
 S9XDEFS="`echo \"$S9XDEFS\" | sed -e 's/  */ /g'`"
 S9XLIBS="`echo \"$S9XLIBS\" | sed -e 's/  */ /g'`"
+S9X_SYSTEM_ZIP="`echo \"$S9X_SYSTEM_ZIP\" | sed -e 's/  */ /g'`"
 S9XFLGS="`echo \"$S9XFLGS\" | sed -e 's/^  *//'`"
 S9XDEFS="`echo \"$S9XDEFS\" | sed -e 's/^  *//'`"
 S9XLIBS="`echo \"$S9XLIBS\" | sed -e 's/^  *//'`"
+S9X_SYSTEM_ZIP="`echo \"$S9X_SYSTEM_ZIP\" | sed -e 's/^  *//'`"
 
 AC_SUBST(S9XFLGS)
 AC_SUBST(S9XDEFS)
 AC_SUBST(S9XLIBS)
+AC_SUBST(S9XXVIDEO)
 AC_SUBST(S9XDEBUGGER)
 AC_SUBST(S9XNETPLAY)
 AC_SUBST(S9XZIP)
 AC_SUBST(S9XJMA)
+AC_SUBST(S9X_SYSTEM_ZIP)
 
 rm config.info 2>/dev/null
 
@@ -435,12 +482,14 @@ defines.............. $S9XDEFS
 libs................. $S9XLIBS
 
 features:
+Xvideo support....... $enable_xvideo
 sound support........ $enable_sound
 screenshot support... $enable_screenshot
 netplay support...... $enable_netplay
 gamepad support...... $enable_gamepad
 GZIP support......... $enable_gzip
 ZIP support.......... $enable_zip
+SYSTEM_ZIP........... $with_system_zip
 JMA support.......... $enable_jma
 debugger............. $enable_debugger
 

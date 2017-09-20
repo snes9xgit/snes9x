@@ -24,6 +24,10 @@
   (c) Copyright 2009 - 2010  BearOso,
                              OV2
 
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
+
 
   BS-X C emulator code
   (c) Copyright 2005 - 2006  Dreamer Nom,
@@ -117,6 +121,9 @@
   Sound emulator code used in 1.52+
   (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
 
+  S-SMP emulator code used in 1.54+
+  (c) Copyright 2016         byuu
+
   SH assembler code partly based on x86 assembler code
   (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
 
@@ -175,10 +182,10 @@
  ***********************************************************************************/
 
 
-
-#ifdef UNICODE
 #ifndef _TFWOPEN_H
 #define _TFWOPEN_H
+
+#ifdef UNICODE
 
 #include <stdio.h>
 
@@ -194,8 +201,9 @@ int _twopen(const char *filename, int oflag, int pmode);
 }
 #endif
 
+#endif // UNICODE
+
 #ifdef __cplusplus
-#include <fstream>
 
 class Utf8ToWide {
 private:
@@ -214,6 +222,30 @@ public:
 	~WideToUtf8() { delete [] utf8Chars; }
 	operator char *() { return utf8Chars; }
 };
+
+class CPToWide {
+private:
+   wchar_t *wideChars;
+public:
+   CPToWide(const char *chars, unsigned int cp);
+   ~CPToWide() { delete [] wideChars; }
+   operator wchar_t *() { return wideChars; }
+};
+
+class WideToCP {
+private:
+	char *cpchars;
+public:
+	WideToCP(const wchar_t *wideChars, unsigned int cp);
+	~WideToCP() { delete [] cpchars; }
+	operator char *() { return cpchars; }
+};
+
+#endif // __cplusplus
+
+#ifdef UNICODE
+#ifdef __cplusplus
+#include <fstream>
 
 namespace std {
 class u8nifstream: public std::ifstream
@@ -258,13 +290,14 @@ public:
 
 #define fopen _tfwopen
 #undef remove
-__forceinline int remove(const char *filename) {
+__forceinline static int remove(const char *filename) {
   return _twremove(filename);
 }
 #undef open
-__forceinline int open(const char *filename, int oflag, int pmode) {
+__forceinline static int open(const char *filename, int oflag, int pmode) {
   return _twopen(filename, oflag, pmode);
 }
-#endif // _TFWOPEN_H
 
-#endif 
+#endif // UNICODE
+
+#endif // _TFWOPEN_H

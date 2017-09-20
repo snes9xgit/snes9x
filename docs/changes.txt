@@ -1,3 +1,48 @@
+Snes9x 1.55
+- Added support for the MSU-1 coprocessor.                  (qwertymodo)
+- Added support for BS-X Satellaview memory packs and data  (LuigiBlood)
+  files.                                                    
+- Improved BS-X memory mapping accuracy.                    (LuigiBlood)
+- GTK+: Allow use of XDG config directory.                  (BearOso)
+
+Snes9x 1.54.1
+- GTK+: Properly use --std=c++11 when compiling xBRZ.       (BearOso)
+- Win32: Save window position when toggling fullscreen.     (OV2)
+- Win32: Do not assign down-left binding to down-right.     (OV2)
+
+Snes9x 1.54
+- Changed the S-SMP core module to one written by byuu.     (byuu, BearOso)
+  This has the effect of increased accuracy, fewer
+  speed hacks, but also regresses a few speed-hack games.
+- Improved IRQ emulation in several cases.                  (OV2)
+- Added rewind support.                                     (Themaister, OV2)
+- Included libretro port.                                   (OV2, libretro team)
+- Added bps soft-patching support                           (OV2)
+- Fixed MMC bank register bit 7, restored 64mbit ExLoRom
+  map                                                       (FuSoYa)
+- GTK+, Windows: Added xBRZ filter                          (Zenju, OV2, nmagre)
+- GTK+: Fixed several issues with GTK+3.                    (BearOso)
+- GTK+: Added extra aspect ratio options.                   (BearOso)
+- GTK+: Added option to mute sound when using turbo mode.   (BearOso)
+- GTK+: Fixed expose handling to reduce overdraw and        (BearOso)
+  improve performance.
+- GTK+: Updated and universalized Spanish translation.      (jristz)
+- Unix: Added Xv support and fixed several bugs.            (greg-kennedy)
+- Win32: Added CG meta shader support                       (OV2, Themaister)
+- Win32: Added support to detect joypad changes             (OV2)
+- Win32: Fixed unicode command line parameters,
+  Fixed controller command line parameters                  (OV2)
+- Win32: Added quit hotkey                                  (OV2)
+- Win32: Fixed custom rom dialog                            (OV2)
+- Win32: Fixed various cheat dialog issues                  (gocha, OV2)
+- Win32: Added hotkey for fast forward toggling             (gocha)
+- Win32: Added drag and drop support for movies             (gocha)
+- Win32: Fixed blargg filter for regular width hires        (OV2)
+- Win32: Fixed snapshot loading from unicode paths          (OV2)
+- Win32: Changed open-with file-association method, should
+  no longer change explorer icons for otherwise
+  unassociated extensions; removed legacy extensions        (OV2)
+
 Snes9x 1.53
 
 - Rebuilt IRQ handling.                                     (zones)

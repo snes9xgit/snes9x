@@ -28,12 +28,6 @@ S9xGTKDisplayDriver::update (int width, int height)
     c_width = allocation.width;
     c_height = allocation.height;
 
-    if (width == SIZE_FLAG_DIRTY)
-    {
-        this->clear ();
-        return;
-    }
-
     if (width <= 0)
         return;
 
@@ -83,7 +77,7 @@ S9xGTKDisplayDriver::output (void *src,
         gdk_buffer_width = width;
         gdk_buffer_height = height;
 
-        gdk_pixbuf_unref (pixbuf);
+        g_object_unref (pixbuf);
 
         padded_buffer[2] = realloc (padded_buffer[2],
                                     gdk_buffer_width * gdk_buffer_height * 3);
@@ -195,7 +189,7 @@ S9xGTKDisplayDriver::deinit (void)
     free (buffer[0]);
     free (buffer[1]);
 
-    gdk_pixbuf_unref (pixbuf);
+    g_object_unref (pixbuf);
     free (padded_buffer[2]);
 
     return;

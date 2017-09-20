@@ -1,0 +1,794 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Emu">
+      <UniqueIdentifier>{b5cc2f0d-48b1-4098-aa80-012bf2fde91c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UnZip">
+      <UniqueIdentifier>{0b1ceca6-986b-428d-8ee4-d8d3be362583}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI">
+      <UniqueIdentifier>{4a13e328-4b79-48a2-a44d-27a1a4f90fbd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI\SoundDriver">
+      <UniqueIdentifier>{d81dd266-2f83-4551-9c18-067319834423}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI\VideoDriver">
+      <UniqueIdentifier>{a94f817d-5513-4c45-909f-b75c01f63b0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="i386">
+      <UniqueIdentifier>{f48483e9-ed1d-4820-bc4f-17815191dc2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JMA">
+      <UniqueIdentifier>{a9636c94-51c1-43d0-8e46-8d6656c7bb5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{c472b700-ff23-4b8f-8a72-4a78a18e2d13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource\Other">
+      <UniqueIdentifier>{e5bb2083-fb8f-4e6c-9251-157682aefb6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="APU">
+      <UniqueIdentifier>{e7997c6a-3a7d-42ed-b170-e6d16a508e41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="APU\DSP">
+      <UniqueIdentifier>{0bea040f-0040-4c3e-b9f1-9a9dbb482ba1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="APU\SMP">
+      <UniqueIdentifier>{861c8d5b-0f2f-4097-9c87-290bf0334b0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Filter">
+      <UniqueIdentifier>{1e3e39fd-b2d2-4c3f-83b2-b5731ab8deee}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="globals.h">
+      <Filter>Emu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\statemanager.h">
+      <Filter>Emu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\unzip\crypt.h">
+      <Filter>UnZip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\unzip\ioapi.h">
+      <Filter>UnZip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\unzip\iowin32.h">
+      <Filter>UnZip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\unzip\mztools.h">
+      <Filter>UnZip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\unzip\unzip.h">
+      <Filter>UnZip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\unzip\zip.h">
+      <Filter>UnZip</Filter>
+    </ClInclude>
+    <ClInclude Include="_tfwopen.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="AVIOutput.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="CXML.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="InputCustom.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="render.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="win32_display.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="win32_sound.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="wlanguage.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="wsnes9x.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="CDirectSound.h">
+      <Filter>GUI\SoundDriver</Filter>
+    </ClInclude>
+    <ClInclude Include="CXAudio2.h">
+      <Filter>GUI\SoundDriver</Filter>
+    </ClInclude>
+    <ClInclude Include="IS9xSoundOutput.h">
+      <Filter>GUI\SoundDriver</Filter>
+    </ClInclude>
+    <ClInclude Include="CCGShader.h">
+      <Filter>GUI\VideoDriver</Filter>
+    </ClInclude>
+    <ClInclude Include="CD3DCG.h">
+      <Filter>GUI\VideoDriver</Filter>
+    </ClInclude>
+    <ClInclude Include="CDirectDraw.h">
+      <Filter>GUI\VideoDriver</Filter>
+    </ClInclude>
+    <ClInclude Include="cgFunctions.h">
+      <Filter>GUI\VideoDriver</Filter>
+    </ClInclude>
+    <ClInclude Include="CGLCG.h">
+      <Filter>GUI\VideoDriver</Filter>
+    </ClInclude>
+    <ClInclude Include="COpenGL.h">
+      <Filter>GUI\VideoDriver</Filter>
+    </ClInclude>
+    <ClInclude Include="IS9xDisplayOutput.h">
+      <Filter>GUI\VideoDriver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\jma\7z.h">
+      <Filter>JMA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\jma\aribitcd.h">
+      <Filter>JMA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\jma\ariconst.h">
+      <Filter>JMA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\jma\ariprice.h">
+      <Filter>JMA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\jma\btreecd.h">
+      <Filter>JMA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\jma\crc32.h">
+      <Filter>JMA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\jma\iiostrm.h">
+      <Filter>JMA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\jma\inbyte.h">
+      <Filter>JMA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\jma\jma.h">
+      <Filter>JMA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\jma\lencoder.h">
+      <Filter>JMA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\jma\litcoder.h">
+      <Filter>JMA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\jma\lzma.h">
+      <Filter>JMA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\jma\lzmadec.h">
+      <Filter>JMA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\jma\portable.h">
+      <Filter>JMA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\jma\rcdefs.h">
+      <Filter>JMA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\jma\rngcoder.h">
+      <Filter>JMA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\jma\s9x-jma.h">
+      <Filter>JMA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\jma\winout.h">
+      <Filter>JMA</Filter>
+    </ClInclude>
+    <ClInclude Include="rsrc\resource.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\apu\apu.h">
+      <Filter>APU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\apu\hermite_resampler.h">
+      <Filter>APU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\apu\resampler.h">
+      <Filter>APU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\apu\ring_buffer.h">
+      <Filter>APU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\apu\bapu\snes\snes.hpp">
+      <Filter>APU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\apu\bapu\dsp\blargg_common.h">
+      <Filter>APU\DSP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\apu\bapu\dsp\blargg_config.h">
+      <Filter>APU\DSP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\apu\bapu\dsp\blargg_endian.h">
+      <Filter>APU\DSP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\apu\bapu\dsp\blargg_source.h">
+      <Filter>APU\DSP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\apu\bapu\dsp\sdsp.hpp">
+      <Filter>APU\DSP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\apu\bapu\dsp\SPC_DSP.h">
+      <Filter>APU\DSP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filter\2xsai.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filter\blit.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filter\epx.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="snes_ntsc.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="snes_ntsc_config.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="snes_ntsc_impl.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filter\xbrz-config.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filter\xbrz.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="dxerr.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\msu1.h">
+      <Filter>APU</Filter>
+    </ClInclude>
+    <ClInclude Include="cgMini.h">
+      <Filter>GUI\VideoDriver</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\bsx.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\c4.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\c4emu.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cheats.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cheats2.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\clip.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\conffile.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\controls.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpu.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpuexec.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpuops.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\crosshairs.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\debug.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dma.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dsp.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dsp1.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dsp2.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dsp3.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dsp4.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fxdbg.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fxemu.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fxinst.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\gfx.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\globals.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\loadzip.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\logger.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\memmap.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\movie.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\netplay.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\obc1.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ppu.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sa1.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sa1cpu.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\screenshot.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sdd1.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sdd1emu.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\server.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\seta.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\seta010.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\seta011.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\seta018.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\snapshot.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\snes9x.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spc7110.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spc7110dec.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\spc7110emu.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\srtc.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\srtcemu.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\statemanager.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stream.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tile.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\unzip\ioapi.c">
+      <Filter>UnZip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\unzip\iowin32.c">
+      <Filter>UnZip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\unzip\mztools.c">
+      <Filter>UnZip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\unzip\unzip.c">
+      <Filter>UnZip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\unzip\zip.c">
+      <Filter>UnZip</Filter>
+    </ClCompile>
+    <ClCompile Include="_tfwopen.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="AVIOutput.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="CXML.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="InputCustom.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="render.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="wconfig.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="win32.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="win32_display.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="win32_sound.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="wsnes9x.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="CDirectSound.cpp">
+      <Filter>GUI\SoundDriver</Filter>
+    </ClCompile>
+    <ClCompile Include="CXAudio2.cpp">
+      <Filter>GUI\SoundDriver</Filter>
+    </ClCompile>
+    <ClCompile Include="CCGShader.cpp">
+      <Filter>GUI\VideoDriver</Filter>
+    </ClCompile>
+    <ClCompile Include="CD3DCG.cpp">
+      <Filter>GUI\VideoDriver</Filter>
+    </ClCompile>
+    <ClCompile Include="CDirect3D.cpp">
+      <Filter>GUI\VideoDriver</Filter>
+    </ClCompile>
+    <ClCompile Include="CDirectDraw.cpp">
+      <Filter>GUI\VideoDriver</Filter>
+    </ClCompile>
+    <ClCompile Include="cgFunctions.cpp">
+      <Filter>GUI\VideoDriver</Filter>
+    </ClCompile>
+    <ClCompile Include="CGLCG.cpp">
+      <Filter>GUI\VideoDriver</Filter>
+    </ClCompile>
+    <ClCompile Include="COpenGL.cpp">
+      <Filter>GUI\VideoDriver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\jma\7zlzma.cpp">
+      <Filter>JMA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\jma\crc32.cpp">
+      <Filter>JMA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\jma\iiostrm.cpp">
+      <Filter>JMA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\jma\inbyte.cpp">
+      <Filter>JMA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\jma\jma.cpp">
+      <Filter>JMA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\jma\lzma.cpp">
+      <Filter>JMA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\jma\lzmadec.cpp">
+      <Filter>JMA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\jma\s9x-jma.cpp">
+      <Filter>JMA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\jma\winout.cpp">
+      <Filter>JMA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\apu\apu.cpp">
+      <Filter>APU</Filter>
+    </ClCompile>
+    <ClCompile Include="..\apu\bapu\dsp\sdsp.cpp">
+      <Filter>APU\DSP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\apu\bapu\dsp\SPC_DSP.cpp">
+      <Filter>APU\DSP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\apu\bapu\smp\smp.cpp">
+      <Filter>APU\SMP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\apu\bapu\smp\smp_state.cpp">
+      <Filter>APU\SMP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\filter\2xsai.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\filter\blit.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\filter\epx.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\filter\hq2x.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="snes_ntsc.c">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\filter\xbrz.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="dxerr.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\msu1.cpp">
+      <Filter>APU</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="rsrc\nodrop.cur">
+      <Filter>Resource\Other</Filter>
+    </None>
+    <None Include="rsrc\rt_manif.bin">
+      <Filter>Resource\Other</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\jma\license.txt">
+      <Filter>JMA</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="rsrc\snes9x.rc">
+      <Filter>Resource</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="rsrc\cdd.bmp">
+      <Filter>Resource\Other</Filter>
+    </Image>
+    <Image Include="rsrc\closedfold.bmp">
+      <Filter>Resource\Other</Filter>
+    </Image>
+    <Image Include="rsrc\hd.bmp">
+      <Filter>Resource\Other</Filter>
+    </Image>
+    <Image Include="rsrc\hiddir.bmp">
+      <Filter>Resource\Other</Filter>
+    </Image>
+    <Image Include="rsrc\icon1.ico">
+      <Filter>Resource\Other</Filter>
+    </Image>
+    <Image Include="rsrc\nd.bmp">
+      <Filter>Resource\Other</Filter>
+    </Image>
+    <Image Include="rsrc\openfold.bmp">
+      <Filter>Resource\Other</Filter>
+    </Image>
+    <Image Include="rsrc\pad.bmp">
+      <Filter>Resource\Other</Filter>
+    </Image>
+    <Image Include="rsrc\ram.bmp">
+      <Filter>Resource\Other</Filter>
+    </Image>
+    <Image Include="rsrc\rd.bmp">
+      <Filter>Resource\Other</Filter>
+    </Image>
+    <Image Include="rsrc\rodir.bmp">
+      <Filter>Resource\Other</Filter>
+    </Image>
+    <Image Include="rsrc\ud.bmp">
+      <Filter>Resource\Other</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\65c816.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\bsx.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\c4.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\cheats.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\conffile.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\controls.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\cpuaddr.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\cpuexec.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\cpumacro.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\cpuops.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\crosshairs.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\debug.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\display.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\dma.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\dsp.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\font.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\fxemu.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\fxinst.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\getset.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\gfx.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\language.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\logger.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\memmap.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\messages.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\missing.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\movie.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\netplay.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\obc1.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\pixform.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\port.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\ppu.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\sa1.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\sar.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\screenshot.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\sdd1.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\sdd1emu.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\seta.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\snapshot.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\snes9x.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\spc7110.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\spc7110dec.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\spc7110emu.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\srtc.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\srtcemu.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\stream.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\tile.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="CDirect3D.h">
+      <Filter>GUI\VideoDriver</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\c4.asm">
+      <Filter>i386</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\c4.obj">
+      <Filter>i386</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\fxemu2.asm">
+      <Filter>i386</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\fxemu2.obj">
+      <Filter>i386</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\fxemu2b.asm">
+      <Filter>i386</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\fxemu2b.obj">
+      <Filter>i386</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\fxemu2c.asm">
+      <Filter>i386</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\fxemu2c.obj">
+      <Filter>i386</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\fxtable.asm">
+      <Filter>i386</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\fxtable.obj">
+      <Filter>i386</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\sfxproc.asm">
+      <Filter>i386</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\sfxproc.obj">
+      <Filter>i386</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\zsnes.asm">
+      <Filter>i386</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\zsnes.obj">
+      <Filter>i386</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\zsnesc4.asm">
+      <Filter>i386</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\zsnesc4.obj">
+      <Filter>i386</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\filter\hq2x.h">
+      <Filter>Filter</Filter>
+    </CustomBuild>
+    <CustomBuild Include="snes9x.cfg" />
+  </ItemGroup>
+</Project>

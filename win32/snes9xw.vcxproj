@@ -1,0 +1,687 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug Unicode|Win32">
+      <Configuration>Debug Unicode</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug Unicode|x64">
+      <Configuration>Debug Unicode</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release Unicode|Win32">
+      <Configuration>Release Unicode</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release Unicode|x64">
+      <Configuration>Release Unicode</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>snes9x</ProjectName>
+    <ProjectGuid>{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}</ProjectGuid>
+    <RootNamespace>Snes9X</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141_xp</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141_xp</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141_xp</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141_xp</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)</OutDir>
+    <IntDir>$(SolutionDir)_Intermediate\$(ProjectName)\$(Configuration)\$(PlatformTarget)\</IntDir>
+    <TargetName>$(ProjectName)-debug</TargetName>
+    <IncludePath>$(DXSDK_DIR)include;$(CG_INC_PATH);$(IncludePath)</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\$(PlatformTarget);$(CG_LIB_PATH);$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <TargetName>$(ProjectName)-debug-x64</TargetName>
+    <IncludePath>$(DXSDK_DIR)include;$(CG_INC_PATH);$(IncludePath)</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\$(PlatformTarget);$(CG_LIB64_PATH);$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)</OutDir>
+    <IntDir>$(SolutionDir)_Intermediate\$(ProjectName)\$(Configuration)\$(PlatformTarget)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)</OutDir>
+    <IntDir>$(SolutionDir)_Intermediate\$(ProjectName)\$(Configuration)\$(PlatformTarget)\</IntDir>
+    <TargetName>$(ProjectName)</TargetName>
+    <IncludePath>$(DXSDK_DIR)include;$(CG_INC_PATH);$(IncludePath)</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\$(PlatformTarget);$(CG_LIB_PATH);$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <TargetName>$(ProjectName)-x64</TargetName>
+    <IncludePath>$(DXSDK_DIR)include;$(CG_INC_PATH);$(IncludePath)</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\$(PlatformTarget);$(CG_LIB64_PATH);$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)</OutDir>
+    <IntDir>$(SolutionDir)_Intermediate\$(ProjectName)\$(Configuration)\$(PlatformTarget)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Debug/snes9xw.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)..\..\zLib;$(ProjectDir)..\unzip;$(ProjectDir)..\..\libpng\;$(ProjectDir)..\apu\bapu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;D3D_DEBUG_INFO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <PrecompiledHeader />
+      <PrecompiledHeaderOutputFile>$(IntDir)</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level2</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <ForcedIncludeFiles>_tfwopen.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>comctl32.lib;winmm.lib;opengl32.lib;glu32.lib;wsock32.lib;dsound.lib;dxguid.lib;delayimp.lib;vfw32.lib;msxml2.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <EnableUAC>false</EnableUAC>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(IntDir)$(ProjectName).pdb</ProgramDatabaseFile>
+      <GenerateMapFile>false</GenerateMapFile>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+      <Profile>true</Profile>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>X64</TargetEnvironment>
+      <TypeLibraryName>.\Debug/snes9xw.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)..\..\zLib;$(ProjectDir)..\unzip;$(ProjectDir)..\..\libpng\;$(ProjectDir)..\apu\bapu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;D3D_DEBUG_INFO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <PrecompiledHeader />
+      <PrecompiledHeaderOutputFile>$(IntDir)</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level2</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <ForcedIncludeFiles>_tfwopen.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>comctl32.lib;winmm.lib;opengl32.lib;glu32.lib;wsock32.lib;dsound.lib;dxguid.lib;delayimp.lib;vfw32.lib;msxml2.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <EnableUAC>false</EnableUAC>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(IntDir)$(ProjectName).pdb</ProgramDatabaseFile>
+      <GenerateMapFile>false</GenerateMapFile>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX64</TargetMachine>
+      <Profile>false</Profile>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Release/snes9xw.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>Full</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)..\..\zLib;$(ProjectDir)..\unzip;$(ProjectDir)..\..\libpng\;$(ProjectDir)..\apu\bapu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>$(IntDir)</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level2</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <ForcedIncludeFiles>_tfwopen.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>comctl32.lib;winmm.lib;opengl32.lib;glu32.lib;wsock32.lib;dsound.lib;dxguid.lib;delayimp.lib;vfw32.lib;msxml2.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(IntDir)$(ProjectName).pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+      <Profile>true</Profile>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>X64</TargetEnvironment>
+      <TypeLibraryName>.\Release/snes9xw.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>Full</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)..\..\zLib;$(ProjectDir)..\unzip;$(ProjectDir)..\..\libpng\;$(ProjectDir)..\apu\bapu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>$(IntDir)</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <WarningLevel>Level2</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <ForcedIncludeFiles>_tfwopen.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>comctl32.lib;winmm.lib;opengl32.lib;glu32.lib;wsock32.lib;dsound.lib;dxguid.lib;delayimp.lib;vfw32.lib;msxml2.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(IntDir)$(ProjectName).pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX64</TargetMachine>
+      <Profile>false</Profile>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\65c816.h" />
+    <ClInclude Include="..\apu\apu.h" />
+    <ClInclude Include="..\apu\bapu\dsp\blargg_common.h" />
+    <ClInclude Include="..\apu\bapu\dsp\blargg_config.h" />
+    <ClInclude Include="..\apu\bapu\dsp\blargg_endian.h" />
+    <ClInclude Include="..\apu\bapu\dsp\blargg_source.h" />
+    <ClInclude Include="..\apu\bapu\dsp\sdsp.hpp" />
+    <ClInclude Include="..\apu\bapu\dsp\SPC_DSP.h" />
+    <ClInclude Include="..\apu\bapu\snes\snes.hpp" />
+    <ClInclude Include="..\apu\hermite_resampler.h" />
+    <ClInclude Include="..\apu\resampler.h" />
+    <ClInclude Include="..\apu\ring_buffer.h" />
+    <CustomBuild Include="..\bsx.h" />
+    <CustomBuild Include="..\c4.h" />
+    <CustomBuild Include="..\cheats.h" />
+    <CustomBuild Include="..\conffile.h" />
+    <CustomBuild Include="..\controls.h" />
+    <CustomBuild Include="..\cpuaddr.h" />
+    <CustomBuild Include="..\cpuexec.h" />
+    <CustomBuild Include="..\cpumacro.h" />
+    <CustomBuild Include="..\cpuops.h" />
+    <CustomBuild Include="..\crosshairs.h" />
+    <CustomBuild Include="..\debug.h" />
+    <CustomBuild Include="..\display.h" />
+    <CustomBuild Include="..\dma.h" />
+    <CustomBuild Include="..\dsp.h" />
+    <ClInclude Include="..\filter\2xsai.h" />
+    <ClInclude Include="..\filter\blit.h" />
+    <ClInclude Include="..\filter\epx.h" />
+    <CustomBuild Include="..\filter\hq2x.h" />
+    <ClInclude Include="..\filter\xbrz-config.h" />
+    <ClInclude Include="..\filter\xbrz.h" />
+    <CustomBuild Include="..\font.h" />
+    <CustomBuild Include="..\fxemu.h" />
+    <CustomBuild Include="..\fxinst.h" />
+    <CustomBuild Include="..\getset.h" />
+    <CustomBuild Include="..\gfx.h" />
+    <ClInclude Include="..\jma\7z.h" />
+    <ClInclude Include="..\jma\aribitcd.h" />
+    <ClInclude Include="..\jma\ariconst.h" />
+    <ClInclude Include="..\jma\ariprice.h" />
+    <ClInclude Include="..\jma\btreecd.h" />
+    <ClInclude Include="..\jma\crc32.h" />
+    <ClInclude Include="..\jma\iiostrm.h" />
+    <ClInclude Include="..\jma\inbyte.h" />
+    <ClInclude Include="..\jma\jma.h" />
+    <ClInclude Include="..\jma\lencoder.h" />
+    <ClInclude Include="..\jma\litcoder.h" />
+    <ClInclude Include="..\jma\lzma.h" />
+    <ClInclude Include="..\jma\lzmadec.h" />
+    <ClInclude Include="..\jma\portable.h" />
+    <ClInclude Include="..\jma\rcdefs.h" />
+    <ClInclude Include="..\jma\rngcoder.h" />
+    <ClInclude Include="..\jma\s9x-jma.h" />
+    <ClInclude Include="..\jma\winout.h" />
+    <CustomBuild Include="..\language.h" />
+    <CustomBuild Include="..\logger.h" />
+    <CustomBuild Include="..\memmap.h" />
+    <CustomBuild Include="..\messages.h" />
+    <CustomBuild Include="..\missing.h" />
+    <CustomBuild Include="..\movie.h" />
+    <CustomBuild Include="..\netplay.h" />
+    <CustomBuild Include="..\obc1.h" />
+    <CustomBuild Include="..\pixform.h" />
+    <CustomBuild Include="..\port.h" />
+    <CustomBuild Include="..\ppu.h" />
+    <CustomBuild Include="..\sa1.h" />
+    <CustomBuild Include="..\sar.h" />
+    <CustomBuild Include="..\screenshot.h" />
+    <CustomBuild Include="..\sdd1.h" />
+    <CustomBuild Include="..\sdd1emu.h" />
+    <CustomBuild Include="..\seta.h" />
+    <CustomBuild Include="..\snapshot.h" />
+    <CustomBuild Include="..\snes9x.h" />
+    <CustomBuild Include="..\spc7110.h" />
+    <CustomBuild Include="..\spc7110dec.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\spc7110emu.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\srtc.h" />
+    <CustomBuild Include="..\srtcemu.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <ClInclude Include="..\msu1.h" />
+    <ClInclude Include="..\statemanager.h" />
+    <CustomBuild Include="..\stream.h" />
+    <CustomBuild Include="..\tile.h" />
+    <ClInclude Include="..\unzip\crypt.h" />
+    <ClInclude Include="..\unzip\ioapi.h" />
+    <ClInclude Include="..\unzip\iowin32.h" />
+    <ClInclude Include="..\unzip\mztools.h" />
+    <ClInclude Include="..\unzip\unzip.h" />
+    <ClInclude Include="..\unzip\zip.h" />
+    <ClInclude Include="AVIOutput.h" />
+    <ClInclude Include="CCGShader.h" />
+    <ClInclude Include="CD3DCG.h" />
+    <CustomBuild Include="CDirect3D.h" />
+    <ClInclude Include="CDirectDraw.h" />
+    <ClInclude Include="CDirectSound.h" />
+    <ClInclude Include="cgFunctions.h" />
+    <ClInclude Include="CGLCG.h" />
+    <ClInclude Include="cgMini.h" />
+    <ClInclude Include="COpenGL.h" />
+    <ClInclude Include="CXAudio2.h" />
+    <ClInclude Include="CXML.h" />
+    <ClInclude Include="dxerr.h" />
+    <ClInclude Include="globals.h" />
+    <ClInclude Include="InputCustom.h" />
+    <ClInclude Include="IS9xDisplayOutput.h" />
+    <ClInclude Include="IS9xSoundOutput.h" />
+    <ClInclude Include="render.h" />
+    <ClInclude Include="rsrc\resource.h" />
+    <ClInclude Include="snes_ntsc.h" />
+    <ClInclude Include="snes_ntsc_config.h" />
+    <ClInclude Include="snes_ntsc_impl.h" />
+    <ClInclude Include="win32_display.h" />
+    <ClInclude Include="win32_sound.h" />
+    <ClInclude Include="wlanguage.h" />
+    <ClInclude Include="wsnes9x.h" />
+    <ClInclude Include="_tfwopen.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\apu\apu.cpp" />
+    <ClCompile Include="..\apu\bapu\dsp\sdsp.cpp" />
+    <ClCompile Include="..\apu\bapu\dsp\SPC_DSP.cpp" />
+    <ClCompile Include="..\apu\bapu\smp\smp.cpp" />
+    <ClCompile Include="..\apu\bapu\smp\smp_state.cpp" />
+    <ClCompile Include="..\bsx.cpp" />
+    <ClCompile Include="..\c4.cpp" />
+    <ClCompile Include="..\c4emu.cpp" />
+    <ClCompile Include="..\cheats.cpp" />
+    <ClCompile Include="..\cheats2.cpp" />
+    <ClCompile Include="..\clip.cpp" />
+    <ClCompile Include="..\conffile.cpp" />
+    <ClCompile Include="..\controls.cpp" />
+    <ClCompile Include="..\cpu.cpp" />
+    <ClCompile Include="..\cpuexec.cpp" />
+    <ClCompile Include="..\cpuops.cpp" />
+    <ClCompile Include="..\crosshairs.cpp" />
+    <ClCompile Include="..\debug.cpp" />
+    <ClCompile Include="..\dma.cpp" />
+    <ClCompile Include="..\dsp.cpp" />
+    <ClCompile Include="..\dsp1.cpp" />
+    <ClCompile Include="..\dsp2.cpp" />
+    <ClCompile Include="..\dsp3.cpp" />
+    <ClCompile Include="..\dsp4.cpp" />
+    <ClCompile Include="..\filter\2xsai.cpp" />
+    <ClCompile Include="..\filter\blit.cpp" />
+    <ClCompile Include="..\filter\epx.cpp" />
+    <ClCompile Include="..\filter\hq2x.cpp" />
+    <ClCompile Include="..\filter\xbrz.cpp" />
+    <ClCompile Include="..\fxdbg.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\fxemu.cpp" />
+    <ClCompile Include="..\fxinst.cpp" />
+    <ClCompile Include="..\gfx.cpp" />
+    <ClCompile Include="..\globals.cpp">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">Default</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">Default</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\jma\7zlzma.cpp" />
+    <ClCompile Include="..\jma\crc32.cpp" />
+    <ClCompile Include="..\jma\iiostrm.cpp" />
+    <ClCompile Include="..\jma\inbyte.cpp" />
+    <ClCompile Include="..\jma\jma.cpp" />
+    <ClCompile Include="..\jma\lzma.cpp" />
+    <ClCompile Include="..\jma\lzmadec.cpp" />
+    <ClCompile Include="..\jma\s9x-jma.cpp" />
+    <ClCompile Include="..\jma\winout.cpp" />
+    <ClCompile Include="..\loadzip.cpp" />
+    <ClCompile Include="..\logger.cpp" />
+    <ClCompile Include="..\memmap.cpp" />
+    <ClCompile Include="..\movie.cpp" />
+    <ClCompile Include="..\msu1.cpp" />
+    <ClCompile Include="..\netplay.cpp" />
+    <ClCompile Include="..\obc1.cpp" />
+    <ClCompile Include="..\ppu.cpp" />
+    <ClCompile Include="..\sa1.cpp" />
+    <ClCompile Include="..\sa1cpu.cpp" />
+    <ClCompile Include="..\screenshot.cpp" />
+    <ClCompile Include="..\sdd1.cpp" />
+    <ClCompile Include="..\sdd1emu.cpp" />
+    <ClCompile Include="..\server.cpp" />
+    <ClCompile Include="..\seta.cpp" />
+    <ClCompile Include="..\seta010.cpp" />
+    <ClCompile Include="..\seta011.cpp" />
+    <ClCompile Include="..\seta018.cpp" />
+    <ClCompile Include="..\snapshot.cpp" />
+    <ClCompile Include="..\snes9x.cpp" />
+    <ClCompile Include="..\spc7110.cpp" />
+    <ClCompile Include="..\spc7110dec.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\spc7110emu.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\srtc.cpp" />
+    <ClCompile Include="..\srtcemu.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\statemanager.cpp" />
+    <ClCompile Include="..\stream.cpp" />
+    <ClCompile Include="..\tile.cpp" />
+    <ClCompile Include="..\unzip\ioapi.c" />
+    <ClCompile Include="..\unzip\iowin32.c" />
+    <ClCompile Include="..\unzip\mztools.c" />
+    <ClCompile Include="..\unzip\unzip.c" />
+    <ClCompile Include="..\unzip\zip.c" />
+    <ClCompile Include="AVIOutput.cpp" />
+    <ClCompile Include="CCGShader.cpp" />
+    <ClCompile Include="CD3DCG.cpp" />
+    <ClCompile Include="CDirect3D.cpp" />
+    <ClCompile Include="CDirectDraw.cpp" />
+    <ClCompile Include="CDirectSound.cpp" />
+    <ClCompile Include="cgFunctions.cpp" />
+    <ClCompile Include="CGLCG.cpp" />
+    <ClCompile Include="COpenGL.cpp" />
+    <ClCompile Include="CXAudio2.cpp" />
+    <ClCompile Include="CXML.cpp" />
+    <ClCompile Include="dxerr.cpp" />
+    <ClCompile Include="InputCustom.cpp" />
+    <ClCompile Include="render.cpp" />
+    <ClCompile Include="snes_ntsc.c" />
+    <ClCompile Include="wconfig.cpp" />
+    <ClCompile Include="win32.cpp" />
+    <ClCompile Include="win32_display.cpp" />
+    <ClCompile Include="win32_sound.cpp" />
+    <ClCompile Include="wsnes9x.cpp" />
+    <ClCompile Include="_tfwopen.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\i386\c4.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\fxemu2.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\fxemu2b.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\fxemu2c.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\fxtable.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\sfxproc.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\zsnes.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\zsnesc4.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <None Include="rsrc\nodrop.cur" />
+    <None Include="rsrc\rt_manif.bin" />
+    <CustomBuild Include="snes9x.cfg">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\i386\c4.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\fxemu2.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\fxemu2b.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\fxemu2c.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\fxtable.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\sfxproc.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\zsnes.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\i386\zsnesc4.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\jma\license.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="rsrc\snes9x.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="rsrc\cdd.bmp" />
+    <Image Include="rsrc\closedfold.bmp" />
+    <Image Include="rsrc\hd.bmp" />
+    <Image Include="rsrc\hiddir.bmp" />
+    <Image Include="rsrc\icon1.ico" />
+    <Image Include="rsrc\nd.bmp" />
+    <Image Include="rsrc\openfold.bmp" />
+    <Image Include="rsrc\pad.bmp" />
+    <Image Include="rsrc\ram.bmp" />
+    <Image Include="rsrc\rd.bmp" />
+    <Image Include="rsrc\rodir.bmp" />
+    <Image Include="rsrc\ud.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="libpng\libpng.vcxproj">
+      <Project>{95804e5f-b69e-4e2a-925e-52fafc19edbf}</Project>
+    </ProjectReference>
+    <ProjectReference Include="zlib\zlib.vcxproj">
+      <Project>{99e9817a-4605-44af-8433-7048f0ec1859}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

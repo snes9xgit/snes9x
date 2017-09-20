@@ -24,6 +24,10 @@
   (c) Copyright 2009 - 2010  BearOso,
                              OV2
 
+  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
+
 
   BS-X C emulator code
   (c) Copyright 2005 - 2006  Dreamer Nom,
@@ -117,6 +121,9 @@
   Sound emulator code used in 1.52+
   (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
 
+  S-SMP emulator code used in 1.54+
+  (c) Copyright 2016         byuu
+
   SH assembler code partly based on x86 assembler code
   (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
 
@@ -176,7 +183,6 @@
 
 
 
-#ifdef UNICODE
 #include <windows.h>
 #include "_tfwopen.h"
 
@@ -191,6 +197,20 @@ WideToUtf8::WideToUtf8(const wchar_t *wideChars) {
 	utf8Chars = new char[requiredChars];
 	WideCharToMultiByte(CP_UTF8,0,wideChars,-1,utf8Chars,requiredChars,NULL,NULL);
 }
+
+CPToWide::CPToWide(const char *chars, unsigned int cp) {
+   int requiredChars = MultiByteToWideChar(cp,0,chars,-1,wideChars,0);
+   wideChars = new wchar_t[requiredChars];
+   MultiByteToWideChar(cp,0,chars,-1,wideChars,requiredChars);
+}
+
+WideToCP::WideToCP(const wchar_t *wideChars, unsigned int cp) {
+	int requiredChars = WideCharToMultiByte(cp,0,wideChars,-1,cpchars,0,NULL,NULL);
+	cpchars = new char[requiredChars];
+	WideCharToMultiByte(cp,0,wideChars,-1,cpchars,requiredChars,NULL,NULL);
+}
+
+#ifdef UNICODE
 
 extern "C" FILE *_tfwopen(const char *filename, const char *mode ) {
 	wchar_t mode_w[30];

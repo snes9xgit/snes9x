@@ -215,11 +215,13 @@ int do_list(uf)
             else if ((iLevel==2) || (iLevel==3))
               string_method="Defl:F"; /* 2:fast , 3 : extra fast*/
         }
+#ifdef HAVE_BZIP2
         else
         if (file_info.compression_method==Z_BZIP2ED)
         {
               string_method="BZip2 ";
         }
+#endif
         else
             string_method="Unkn. ";
 

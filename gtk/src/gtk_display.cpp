@@ -63,10 +63,26 @@ S9xSetEndianess (int type)
 double
 S9xGetAspect (void)
 {
-    if (gui_config->aspect_ratio)
-        return (4.0 / 3.0);
-    else
-        return (8.0 / 7.0);
+    double native_aspect = 256.0 / (gui_config->overscan ? 239.0 : 224.0);
+    double aspect;
+
+    switch (gui_config->aspect_ratio)
+    {
+        case 0: /* Square pixels */
+            aspect = native_aspect;
+            break;
+
+        case 1: /* 4:3 */
+            aspect = native_aspect * 7 / 6;
+            break;
+
+        case 2:
+        default: /* Correct */
+            aspect = native_aspect * 8 / 7;
+            break;
+    }
+
+    return aspect;
 }
 
 void
@@ -84,17 +100,18 @@ S9xApplyAspect (int &s_width,  /* Output: x */
     {
         if (gui_config->maintain_aspect_ratio)
         {
-            w = s_height * snes_aspect;
+            w = s_height * snes_aspect + 0.5;
             h = s_height;
             x = (d_width - w) / 2;
             y = (d_height - s_height) / 2;
         }
         else
         {
-            x = (d_width - s_width) / 2;
-            y = (d_height - s_height) / 2;
             w = s_width;
             h = s_height;
+            x = (d_width - w) / 2;
+            y = (d_height - h) / 2;
+
         }
     }
 
@@ -104,18 +121,20 @@ S9xApplyAspect (int &s_width,  /* Output: x */
     {
         if (screen_aspect > snes_aspect)
         {
-            x = (d_width - (int) (d_height * snes_aspect)) / 2;
-            y = 0;
-            w = (int) (d_height * snes_aspect);
+            w = d_height * snes_aspect + 0.5;
             h = d_height;
+            x = (d_width - w) / 2;
+            y = 0;
+
         }
 
         else
         {
-            x = 0;
-            y = (d_height - (int) (d_width / snes_aspect)) / 2;
             w = d_width;
-            h = (int) (d_width / snes_aspect);
+            h = d_width / snes_aspect + 0.5;
+            x = 0;
+            y = (d_height - h) / 2;
+
         }
     }
 
@@ -718,6 +737,42 @@ S9xMergeHires (void *buffer,
     return;
 }
 
+#if 0
+static void
+S9xBlendHires (void *buffer, int pitch, int &width, int &height)
+{
+    uint16 tmp[512];
+
+    if (width < 512)
+    {
+        width <<= 1;
+
+        for (int y = 0; y < height; y++)
+        {
+            uint16 *input = (uint16 *) ((uint8 *) buffer + y * pitch);
+
+            tmp[0] = input[0];
+            for (int x = 1; x < width; x++)
+                tmp[x] = AVERAGE_1555 (input[(x - 1) >> 1], input[(x >> 1)]);
+
+            memcpy (input, tmp, width << 1);
+        }
+    }
+    else for (int y = 0; y < height; y++)
+    {
+        uint16 *input = (uint16 *) ((uint8 *) buffer + y * pitch);
+
+        tmp[0] = input[0];
+        for (int x = 1; x < width; x++)
+            tmp[x] = AVERAGE_1555 (input[x - 1], input[x]);
+
+        memcpy (input, tmp, pitch);
+    }
+
+    return;
+}
+#endif
+
 void
 filter_2x (void *src,
            int src_pitch,
@@ -843,23 +898,24 @@ filter_scanlines (void *src_buffer,
                   int height)
 {
     register int x, y;
+    register uint16 *src, *dst_a, *dst_b;
 
     uint8 shift = scanline_shifts[gui_config->scanline_filter_intensity];
 
+    src = (uint16 *) src_buffer;
+    dst_a = (uint16 *) dst_buffer;
+    dst_b = ((uint16 *) dst_buffer) + (dst_pitch >> 1);
+
     for (y = 0; y < height; y++)
     {
-        register uint16 *src   = (uint16 *) ((uint8 *) src_buffer + y * src_pitch);
-        register uint16 *dst_a = (uint16 *) ((uint8 *) dst_buffer + (y * 2) * dst_pitch);
-        register uint16 *dst_b = (uint16 *) ((uint8 *) dst_buffer + ((y * 2) + 1) * dst_pitch);
-
         for (x = 0; x < width; x++)
         {
             register uint8 rs, gs, bs, /* Source components */
                            rh, gh, bh; /* High (bright) components */
 
-            rs = ((*(src + x) >> 10) & 0x1f);
-            gs = ((*(src + x) >> 5)  & 0x1f);
-            bs = ((*(src + x))       & 0x1f);
+            rs = ((src[x] >> 10) & 0x1f);
+            gs = ((src[x] >> 5)  & 0x1f);
+            bs = ((src[x])       & 0x1f);
 
             rh = rs + (rs >> shift);
             gh = gs + (gs >> shift);
@@ -869,11 +925,15 @@ filter_scanlines (void *src_buffer,
             gh = (gh > 31) ? 31 : gh;
             bh = (bh > 31) ? 31 : bh;
 
-            *(dst_a + x) = (rh << 10) | (gh << 5) | (bh);
-            *(dst_b + x) = ((rs + rs - rh) << 10) |
-                           ((gs + gs - gh) << 5)  |
-                           (bs + bs - bh);
+            dst_a[x] = (rh << 10) + (gh << 5) + (bh);
+            dst_b[x] = ((rs + rs - rh) << 10) +
+                       ((gs + gs - gh) << 5)  +
+                        (bs + bs - bh);
         }
+
+        src += src_pitch >> 1;
+        dst_a += dst_pitch;
+        dst_b += dst_pitch;
     }
 
     return;
@@ -924,6 +984,31 @@ get_filter_scale (int &width, int &height)
             height *= 2;
             break;
 #endif /* USE_HQ2X */
+
+#ifdef USE_XBRZ
+        case FILTER_4XBRZ:
+            if (((width * 4) <= S9xDisplayDriver::scaled_max_width) &&
+                ((height * 4) <= S9xDisplayDriver::scaled_max_height))
+            {
+                width *= 4;
+                height *= 4;
+                break;
+            }
+
+        case FILTER_3XBRZ:
+            if (width * 3 <= S9xDisplayDriver::scaled_max_width &&
+                    height * 3 <= S9xDisplayDriver::scaled_max_height)
+            {
+                width *= 3;
+                height *= 3;
+                break;
+            }
+
+        case FILTER_2XBRZ:
+            width *= 2;
+            height *= 2;
+            break;
+#endif /* USE_XBRZ */
 
         case FILTER_SIMPLE4X:
             if (((width * 4) <= S9xDisplayDriver::scaled_max_width) &&
@@ -1058,6 +1143,42 @@ internal_filter (uint8 *src_buffer,
 
             break;
 #endif /* USE_HQ2X */
+
+#ifdef USE_XBRZ
+        case FILTER_4XBRZ:
+
+            filter_4xBRZ (src_buffer,
+                     src_pitch,
+                     dst_buffer,
+                     dst_pitch,
+                     width,
+                     height);
+
+            break;
+
+        case FILTER_3XBRZ:
+
+            filter_3xBRZ (src_buffer,
+                     src_pitch,
+                     dst_buffer,
+                     dst_pitch,
+                     width,
+                     height);
+
+            break;
+
+        case FILTER_2XBRZ:
+
+            filter_2xBRZ (src_buffer,
+                 src_pitch,
+                 dst_buffer,
+                 dst_pitch,
+                 width,
+                 height);
+
+            break;
+#endif /* USE_XBRZ */
+
 
         case FILTER_SIMPLE4X:
 
@@ -1718,7 +1839,6 @@ S9xInitDisplay (int argc, char **argv)
 #ifdef USE_HQ2X
     S9xBlitHQ2xFilterInit ();
 #endif /* USE_HQ2SX */
-
     S9xQueryDrivers ();
     S9xInitDriver ();
     S9xGraphicsInit ();

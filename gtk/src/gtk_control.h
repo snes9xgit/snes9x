@@ -26,6 +26,7 @@
 #define PORT_SEEK_TO_FRAME      5
 #define PORT_QUIT               6
 #define PORT_SWAP_CONTROLLERS   7
+#define PORT_REWIND             8
 
 typedef struct BindingLink
 {
@@ -37,7 +38,7 @@ typedef struct BindingLink
 extern const BindingLink b_links[];
 extern const int b_breaks[];
 #define NUM_JOYPAD_LINKS 24
-#define NUM_EMU_LINKS    52
+#define NUM_EMU_LINKS    55
 
 typedef struct JoypadBinding
 {
@@ -87,7 +88,7 @@ class JoyDevice
 
     private:
         void poll_events (void);
-        void add_event (int parameter, int state);
+        void add_event (unsigned int parameter, unsigned int state);
 
 };
 #endif
