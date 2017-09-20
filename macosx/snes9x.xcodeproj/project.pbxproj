@@ -1091,7 +1091,8 @@
 				CF37575A10A6AEA1001BF7C5 /* SPC_DSP.cpp */,
 				CF37575C10A6AEA1001BF7C5 /* SPC_Filter.cpp */,
 			);
-			path = apu;
+			name = apu;
+			path = macosx/apu;
 			sourceTree = "<group>";
 		};
 		CF5553B00EA24C36005957E4 /* filter */ = {
