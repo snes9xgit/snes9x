@@ -183,6 +183,8 @@
 #include "display.h"
 #include "linear_resampler.h"
 #include "hermite_resampler.h"
+#include "SNES_SPC.h"
+
 
 #define APU_DEFAULT_INPUT_RATE		32000
 #define APU_MINIMUM_SAMPLE_COUNT	512
@@ -661,4 +663,32 @@ void S9xAPULoadState (uint8 *block)
 	spc::reference_time = GET_LE32(ptr);
 	ptr += sizeof(int32);
 	spc::remainder = GET_LE32(ptr);
+}
+
+bool8 S9xSPCDump (const char *filename)
+{
+	FILE	*fs;
+	uint8	buf[SPC_FILE_SIZE];
+	size_t	ignore;
+    
+	fs = fopen(filename, "wb");
+	if (!fs)
+		return (FALSE);
+    
+	S9xSetSoundMute(TRUE);
+    
+	spc_core->save_spc (buf);
+    
+	ignore = fwrite (buf, SPC_FILE_SIZE, 1, fs);
+    
+	if (ignore == 0)
+	{
+		fprintf (stderr, "Couldn't write file %s.\n", filename);
+	}
+    
+	fclose(fs);
+    
+	S9xSetSoundMute(FALSE);
+    
+	return (TRUE);
 }
