@@ -32,6 +32,7 @@
 //#include <d3d11_1.h>
 
 #if !defined(WINAPI_FAMILY) || WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP
+#include <d2d1.h>
 #include <wincodec.h>
 #include <d2derr.h>
 #include <dwrite.h>
