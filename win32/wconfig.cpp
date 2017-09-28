@@ -986,6 +986,7 @@ void WinRegisterConfigItems()
 #define	CATEGORY "ROM"
 	AddBoolC("Cheat", Settings.ApplyCheats, true, "true to allow enabled cheats to be applied");
 	AddInvBoolC("Patch", Settings.NoPatch, true, "true to allow IPS/UPS patches to be applied (\"soft patching\")");
+	AddBoolC("IgnorePatchChecksum", Settings.IgnorePatchChecksum, false, "true to allow BPS patches to be applied even if the checksum fails");
 	AddBoolC("BS", Settings.BS, false, "Broadcast Satellaview emulation");
 #undef CATEGORY
 #ifdef NETPLAY_SUPPORT

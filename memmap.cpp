@@ -3950,7 +3950,7 @@ static bool8 ReadUPSPatch (Stream *r, long, int32 &rom_size)
 	uint32 py_crc32 = (data[size -  8] << 0) + (data[size -  7] << 8) + (data[size -  6] << 16) + (data[size -  5] << 24);
 	uint32 pp_crc32 = (data[size -  4] << 0) + (data[size -  3] << 8) + (data[size -  2] << 16) + (data[size -  1] << 24);
 	if(patch_crc32 != pp_crc32) { delete[] data; return false; }  //patch is corrupted
-	if((rom_crc32 != px_crc32) && (rom_crc32 != py_crc32)) { delete[] data; return false; }  //patch is for a different ROM
+	if(!Settings.IgnorePatchChecksum && (rom_crc32 != px_crc32) && (rom_crc32 != py_crc32)) { delete[] data; return false; }  //patch is for a different ROM
 
 	uint32 px_size = XPSdecode(data, addr, size);
 	uint32 py_size = XPSdecode(data, addr, size);
@@ -3977,7 +3977,8 @@ static bool8 ReadUPSPatch (Stream *r, long, int32 &rom_size)
 	delete[] data;
 
 	uint32 out_crc32 = caCRC32(Memory.ROM, rom_size);
-	if(((rom_crc32 == px_crc32) && (out_crc32 == py_crc32))
+	if(Settings.IgnorePatchChecksum
+	|| ((rom_crc32 == px_crc32) && (out_crc32 == py_crc32))
 	|| ((rom_crc32 == py_crc32) && (out_crc32 == px_crc32))
 	) {
 		return true;
@@ -4032,7 +4033,7 @@ static bool8 ReadBPSPatch (Stream *r, long, int32 &rom_size)
 	uint32 target_crc32 = (data[size -  8] << 0) + (data[size -  7] << 8) + (data[size -  6] << 16) + (data[size -  5] << 24);
 	uint32 pp_crc32 = (data[size -  4] << 0) + (data[size -  3] << 8) + (data[size -  2] << 16) + (data[size -  1] << 24);
 	if(patch_crc32 != pp_crc32) { delete[] data; return false; }  //patch is corrupted
-	if(rom_crc32 != source_crc32) { delete[] data; return false; }  //patch is for a different ROM
+	if(!Settings.IgnorePatchChecksum && rom_crc32 != source_crc32) { delete[] data; return false; }  //patch is for a different ROM
 
 	uint32 source_size = XPSdecode(data, addr, size);
 	uint32 target_size = XPSdecode(data, addr, size);
@@ -4083,7 +4084,7 @@ static bool8 ReadBPSPatch (Stream *r, long, int32 &rom_size)
 	delete[] data;
 
 	uint32 out_crc32 = caCRC32(patched_rom, target_size);
-	if(out_crc32 == target_crc32) {
+	if(Settings.IgnorePatchChecksum || out_crc32 == target_crc32) {
 		memcpy(Memory.ROM, patched_rom, target_size);
 		rom_size = target_size;
 		delete[] patched_rom;
