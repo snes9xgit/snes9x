@@ -724,8 +724,8 @@ IDI_ICON1               ICON                    "icon1.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,5,4,1
- PRODUCTVERSION 1,5,4,1
+ FILEVERSION 1,5,5,0
+ PRODUCTVERSION 1,5,5,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -744,7 +744,7 @@ BEGIN
             VALUE "FileDescription", "Snes9X"
             VALUE "FileVersion", "1.55"
             VALUE "InternalName", "Snes9X"
-            VALUE "LegalCopyright", "Copyright  1996-2016"
+            VALUE "LegalCopyright", "Copyright  1996-2017"
             VALUE "OriginalFilename", "Snes9X.exe"
             VALUE "ProductName", "Snes9X SNES Emulator"
             VALUE "ProductVersion", "1.55"
