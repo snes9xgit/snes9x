@@ -384,6 +384,7 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.ForceInterleaveGD24        =  conf.GetBool("ROM::InterleaveGD24",                 false);
 	Settings.ApplyCheats                =  conf.GetBool("ROM::Cheat",                          false);
 	Settings.NoPatch                    = !conf.GetBool("ROM::Patch",                          true);
+	Settings.IgnorePatchChecksum        =  conf.GetBool("ROM::IgnorePatchChecksum",            false);
 
 	Settings.ForceLoROM = conf.GetBool("ROM::LoROM", false);
 	Settings.ForceHiROM = conf.GetBool("ROM::HiROM", false);

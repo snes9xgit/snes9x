@@ -2,13 +2,12 @@ Snes9x: The Portable Super Nintendo Entertainment System Emulator
 =================================================================
 Files included in the Snes9x archive:
   Snes9x.exe
-  fmod.dll
   readme-windows.txt
   faqs-windows.txt
   changes.txt
   snes9x-license.txt
 
-version 1.55  May, 2017
+version 1.55  October, 2017
 Home page: http://www.snes9x.com/
 
 
@@ -80,9 +79,8 @@ Getting Started
 ===============
 
 Launch Snes9x using the Windows explorer to locate the directory where you
-un-zipped the snes9x.exe and the fmod.dll files and double-click on the
-snes9x.exe executable. You could create a shortcut to Snes9x and drag that icon
-out onto your desktop.
+un-zipped the snes9x.exe files and double-click on the snes9x.exe executable.
+You could create a shortcut to Snes9x and drag that icon out onto your desktop.
 
 Loading Games
 -------------
@@ -141,11 +139,8 @@ Requirements
 
 System Requirements
 -------------------
-Windows 98/2000/XP/Vista/7.
-DirectX 6.1b or later.
-300MHz processor BARE MINIMUM (1GHz+ rec for best settings.)
-16MB RAM BARE MINIMUM.
-DirectSound capable sound card.
+Windows XP and up.
+DirectX 9.
 
 Certain games use added hardware which will require a faster machine. The specs
 listed above are the minimum to use Snes9x in any playable form. It is
@@ -171,7 +166,8 @@ http://developer.nvidia.com/object/cg_download.html
 CG shaders work in both D3D and OpenGL. Various shaders can be found in
 Themaister's Emulator Shader Pack:
 https://github.com/Themaister/Emulator-Shader-Pack
-
+You can also try the shaders in the libretro common-shaders repository:
+https://github.com/libretro/common-shaders
 
 Controllers Support
 ===================
@@ -455,8 +451,18 @@ accidentally alter it, check 'Open as read only' when you go to play it.
 
 
 
+MSU1 Support
+===============
+MSU1 is supported in either Mercurial Magic (MSU-1 distribution pack) format, or
+by placing the .msu/.pcm files next to the rom file itself.
+
+
+
 Netplay Support
 ===============
+
+NOTE 2017 OV2: netplay has not been maintained and tested in a long time, so it
+might be broken.
 
 Netplay support allows up to five players to sit in front of different computers
 and simultaneously play the same game, or just watch someone else play a game.
@@ -518,13 +524,14 @@ multi-player games on the SNES) sync the game to sound samples finishing.
 Miscellaneous
 =============
 
-Using IPS or UPS Patch
+Using IPS/UPS/BPS Patch
 ----------------------
 Snes9x automatically patches without overwriting the ROM image.
 
-- Put the IPS or UPS file into the same folder as the ROM image.
+- Put the IPS/UPS/BPS file into the same folder as the ROM image or in the folder
+  configured as patch folder
 - Rename the name to the same as the ROM image (except extension, it is '.ips'
-  or '.ups').
+  or '.ups' or '.bps').
 - (IPS only) If you want to use multiple IPS files at a time, set their
   extensions to '.000.ips', '.001.ips', ...
 - Open and load the ROM image.
@@ -639,11 +646,6 @@ No sound coming from any SNES game using Snes9x? Could be any or all of these:
   which case you will need to stop that application and then restart Snes9x. It
   is possible to switch WinAmp to use DirectSound, in which case both Snes9x and
   WinAmp output can be heard at the same time.
-  If your sound card isn't supported by DirectX very well (or not at all) you
-  will have to use FMOD's WAVE output option; but WAVE output introduces a 0.15s
-  delay between Snes9x generating sample data and you hearing it. Select FMOD's
-  WAVE output by choosing the 'FMOD Windows Multimedia' sound driver option from
-  the Sound Settings dialog.
 - The sound card's volume level might be set too low. Snes9x doesn't alter the
   card's master volume level so you might need to adjust it using the sound
   card's mixer/volume controls usually available from the task bar or start
@@ -813,5 +815,4 @@ Capcom is a trademark of Capcom Co., Ltd.
 
 Gary Henderson
 
-Edited for Windows port by: zones (kasumitokoduck@yahoo.com)
-Updated most recently by: 2011/04/11 zones
+Updated most recently by: 2017/10/01 OV2

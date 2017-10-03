@@ -393,6 +393,7 @@ struct sGUI {
     TCHAR FreezeFileDir [_MAX_PATH];
     TCHAR SRAMFileDir [_MAX_PATH];
     TCHAR PatchDir [_MAX_PATH];
+	TCHAR CheatDir [_MAX_PATH];
     TCHAR BiosDir [_MAX_PATH];
 	TCHAR SatDir [_MAX_PATH];
 	bool LockDirectories;

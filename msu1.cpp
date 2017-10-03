@@ -240,12 +240,17 @@ static int unzFindExtension(unzFile &file, const char *ext, bool restart = TRUE,
 }
 #endif
 
-STREAM S9xMSU1OpenFile(char *msu_ext)
+STREAM S9xMSU1OpenFile(const char *msu_ext, bool skip_unpacked)
 {
     const char *filename = S9xGetFilename(msu_ext, ROMFILENAME_DIR);
-    STREAM file = OPEN_STREAM(filename, "rb");
-    if (file)
-        printf("Using msu file %s.\n", filename);
+	STREAM file = 0;
+
+	if (!skip_unpacked)
+	{
+		file = OPEN_STREAM(filename, "rb");
+		if (file)
+			printf("Using msu file %s.\n", filename);
+	}
 
 #ifdef UNZIP_SUPPORT
     // look for msu1 pack file in the rom or patch dir if msu data file not found in rom dir
@@ -256,7 +261,7 @@ STREAM S9xMSU1OpenFile(char *msu_ext)
 
 		if (!unzFile)
 		{
-			zip_filename = S9xGetFilename(".msu1", IPS_DIR);
+			zip_filename = S9xGetFilename(".msu1", PATCH_DIR);
 			unzFile = unzOpen(zip_filename);
 		}
 
@@ -382,15 +387,15 @@ bool S9xMSU1ROMExists(void)
 		return true;
 	}
 #ifdef UNZIP_SUPPORT
-	char ext[_MAX_EXT + 1];
-	_splitpath(Memory.ROMFilename, nullptr, nullptr, nullptr, ext);
+	char drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], def[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
+	_splitpath(Memory.ROMFilename, drive, dir, def, ext);
 	if (!strcasecmp(ext, ".msu1"))
 		return true;
 
 	unzFile unzFile = unzOpen(S9xGetFilename(".msu1", ROMFILENAME_DIR));
 
 	if(!unzFile)
-		unzFile = unzOpen(S9xGetFilename(".msu1", IPS_DIR));
+		unzFile = unzOpen(S9xGetFilename(".msu1", PATCH_DIR));
 
 	if (unzFile)
 	{

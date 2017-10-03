@@ -456,6 +456,7 @@ struct SSettings
 
 	bool8	ApplyCheats;
 	bool8	NoPatch;
+	bool8	IgnorePatchChecksum;
 	int32	AutoSaveDelay;
 	bool8	DontSaveOopsSnapshot;
 	bool8	UpAndDown;

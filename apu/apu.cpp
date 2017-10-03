@@ -500,11 +500,7 @@ bool8 S9xInitSound (int buffer_ms, int lag_ms)
 	if (sample_count < APU_MINIMUM_SAMPLE_COUNT)
 		sample_count = APU_MINIMUM_SAMPLE_COUNT;
 
-	spc::buffer_size = sample_count;
-	if (Settings.Stereo)
-		spc::buffer_size <<= 1;
-	if (Settings.SixteenBitSound)
-		spc::buffer_size <<= 1;
+	spc::buffer_size = sample_count << 2;
 	msu::buffer_size = (int)((sample_count << 2) * 1.5); // Always 16-bit, Stereo; 1.5 to never overflow before dsp buffer
 
 	printf("Sound buffer size: %d (%d samples)\n", spc::buffer_size, sample_count);

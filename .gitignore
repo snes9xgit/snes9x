@@ -1,4 +1,4 @@
-# snes9x program-generated files
+# Files that can arise when using snes9x
 win32/snes9x.conf
 win32/Valid.Ext
 win32/stdout.txt
@@ -10,6 +10,23 @@ win32/Screenshots
 win32/Movies
 win32/SPCs
 win32/BIOS
+*.smc
+*.sfc
+*.fig
+*.srm
+*.00[0123456789]
+*.oops
+*.ips
+*.ups
+*.bps
+*.avi
+*.shader
+*.cg
+*.cgp
+*.smv
+*.cht
+*.rtc
+
 
 # Included libraries in OS X that should not be ignored.
 !macosx/libz_u.a

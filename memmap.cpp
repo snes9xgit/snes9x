@@ -3950,7 +3950,7 @@ static bool8 ReadUPSPatch (Stream *r, long, int32 &rom_size)
 	uint32 py_crc32 = (data[size -  8] << 0) + (data[size -  7] << 8) + (data[size -  6] << 16) + (data[size -  5] << 24);
 	uint32 pp_crc32 = (data[size -  4] << 0) + (data[size -  3] << 8) + (data[size -  2] << 16) + (data[size -  1] << 24);
 	if(patch_crc32 != pp_crc32) { delete[] data; return false; }  //patch is corrupted
-	if((rom_crc32 != px_crc32) && (rom_crc32 != py_crc32)) { delete[] data; return false; }  //patch is for a different ROM
+	if(!Settings.IgnorePatchChecksum && (rom_crc32 != px_crc32) && (rom_crc32 != py_crc32)) { delete[] data; return false; }  //patch is for a different ROM
 
 	uint32 px_size = XPSdecode(data, addr, size);
 	uint32 py_size = XPSdecode(data, addr, size);
@@ -3977,7 +3977,8 @@ static bool8 ReadUPSPatch (Stream *r, long, int32 &rom_size)
 	delete[] data;
 
 	uint32 out_crc32 = caCRC32(Memory.ROM, rom_size);
-	if(((rom_crc32 == px_crc32) && (out_crc32 == py_crc32))
+	if(Settings.IgnorePatchChecksum
+	|| ((rom_crc32 == px_crc32) && (out_crc32 == py_crc32))
 	|| ((rom_crc32 == py_crc32) && (out_crc32 == px_crc32))
 	) {
 		return true;
@@ -4032,7 +4033,7 @@ static bool8 ReadBPSPatch (Stream *r, long, int32 &rom_size)
 	uint32 target_crc32 = (data[size -  8] << 0) + (data[size -  7] << 8) + (data[size -  6] << 16) + (data[size -  5] << 24);
 	uint32 pp_crc32 = (data[size -  4] << 0) + (data[size -  3] << 8) + (data[size -  2] << 16) + (data[size -  1] << 24);
 	if(patch_crc32 != pp_crc32) { delete[] data; return false; }  //patch is corrupted
-	if(rom_crc32 != source_crc32) { delete[] data; return false; }  //patch is for a different ROM
+	if(!Settings.IgnorePatchChecksum && rom_crc32 != source_crc32) { delete[] data; return false; }  //patch is for a different ROM
 
 	uint32 source_size = XPSdecode(data, addr, size);
 	uint32 target_size = XPSdecode(data, addr, size);
@@ -4054,7 +4055,10 @@ static bool8 ReadBPSPatch (Stream *r, long, int32 &rom_size)
 
 		switch((int)mode) {
 			case SourceRead:
-				while(length--) patched_rom[outputOffset++] = Memory.ROM[outputOffset];
+				while(length--) {
+					patched_rom[outputOffset] = Memory.ROM[outputOffset];
+					outputOffset++;
+				}
 				break;
 			case TargetRead:
 				while(length--) patched_rom[outputOffset++] = data[addr++];
@@ -4080,7 +4084,7 @@ static bool8 ReadBPSPatch (Stream *r, long, int32 &rom_size)
 	delete[] data;
 
 	uint32 out_crc32 = caCRC32(patched_rom, target_size);
-	if(out_crc32 == target_crc32) {
+	if(Settings.IgnorePatchChecksum || out_crc32 == target_crc32) {
 		memcpy(Memory.ROM, patched_rom, target_size);
 		rom_size = target_size;
 		delete[] patched_rom;
@@ -4280,7 +4284,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 	}
 #endif
 
-	n = S9xGetFilename(".bps", IPS_DIR);
+	n = S9xGetFilename(".bps", PATCH_DIR);
 
 	if ((patch_file = OPEN_FSTREAM(n, "rb")) != NULL)
 	{
@@ -4344,7 +4348,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 	}
 #endif
 
-	n = S9xGetFilename(".ups", IPS_DIR);
+	n = S9xGetFilename(".ups", PATCH_DIR);
 
 	if ((patch_file = OPEN_FSTREAM(n, "rb")) != NULL)
 	{
@@ -4626,7 +4630,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 	}
 #endif
 
-	n = S9xGetFilename(".ips", IPS_DIR);
+	n = S9xGetFilename(".ips", PATCH_DIR);
 
 	if ((patch_file = OPEN_FSTREAM(n, "rb")) != NULL)
 	{
@@ -4653,7 +4657,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 		do
 		{
 			snprintf(ips, 9, ".%03d.ips", i);
-			n = S9xGetFilename(ips, IPS_DIR);
+			n = S9xGetFilename(ips, PATCH_DIR);
 
 			if (!(patch_file = OPEN_FSTREAM(n, "rb")))
 				break;
@@ -4690,7 +4694,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 			snprintf(ips, _MAX_EXT + 3, ".ips%d", i);
 			if (strlen(ips) > _MAX_EXT + 1)
 				break;
-			n = S9xGetFilename(ips, IPS_DIR);
+			n = S9xGetFilename(ips, PATCH_DIR);
 
 			if (!(patch_file = OPEN_FSTREAM(n, "rb")))
 				break;
@@ -4725,7 +4729,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 		do
 		{
 			snprintf(ips, 5, ".ip%d", i);
-			n = S9xGetFilename(ips, IPS_DIR);
+			n = S9xGetFilename(ips, PATCH_DIR);
 
 			if (!(patch_file = OPEN_FSTREAM(n, "rb")))
 				break;
@@ -4754,34 +4758,19 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 
 #ifdef UNZIP_SUPPORT
 	// Mercurial Magic (MSU-1 distribution pack)
-	if (strcasecmp(ext, "msu1") && strcasecmp(ext, ".msu1"))
+	if (strcasecmp(ext, "msu1") && strcasecmp(ext, ".msu1"))	// ROM was *NOT* loaded from a .msu1 pack
 	{
-		_makepath(fname, drive, dir, name, "msu1");
-		unzFile msu1file = unzOpen(fname);
-
-		if (!msu1file)
+		Stream *s = S9xMSU1OpenFile("patch.bps", TRUE);
+		if (s)
 		{
-			_snprintf(fname, sizeof(fname), "%s" SLASH_STR "%s%s",
-				S9xGetDirectory(IPS_DIR), name, ".msu1");
-			msu1file = unzOpen(fname);
-		}
+			printf("Using BPS patch %s.msu1", name);
+			ret = ReadBPSPatch(s, offset, rom_size);
+			s->closeStream();
 
-		if (msu1file)
-		{
-			int	port = unzFindExtension(msu1file, "bps");
-			if (port == UNZ_OK)
-			{
-				printf(" in %s", fname);
-
-				Stream *s = new unzStream(msu1file);
-				ret = ReadBPSPatch(s, offset, rom_size);
-				s->closeStream();
-
-				if (ret)
-					printf("!\n");
-				else
-					printf(" failed!\n");
-			}
+			if (ret)
+				printf("!\n");
+			else
+				printf(" failed!\n");
 		}
 	}
 #endif

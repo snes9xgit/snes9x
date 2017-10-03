@@ -5134,7 +5134,7 @@ INT_PTR CALLBACK DlgAboutProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 }
 INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	static TCHAR paths[9][MAX_PATH];
+	static TCHAR paths[10][MAX_PATH];
 	static int which = 0;
 	switch(msg)
 	{
@@ -5182,7 +5182,9 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 			lstrcpy(paths[inum++],GUI.SRAMFileDir);
 			SendDlgItemMessage(hDlg,IDC_DIRCOMBO,CB_ADDSTRING,0,(LPARAM)(LPCTSTR)SETTINGS_OPTION_DIRECTORY_SRAM);
 			lstrcpy(paths[inum++],GUI.PatchDir);
-			SendDlgItemMessage(hDlg,IDC_DIRCOMBO,CB_ADDSTRING,0,(LPARAM)(LPCTSTR)SETTINGS_OPTION_DIRECTORY_PATCHESANDCHEATS);
+			SendDlgItemMessage(hDlg,IDC_DIRCOMBO,CB_ADDSTRING,0,(LPARAM)(LPCTSTR)SETTINGS_OPTION_DIRECTORY_PATCHES);
+			lstrcpy(paths[inum++], GUI.CheatDir);
+			SendDlgItemMessage(hDlg, IDC_DIRCOMBO, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)SETTINGS_OPTION_DIRECTORY_CHEATS);
 			lstrcpy(paths[inum++],GUI.BiosDir);
 			SendDlgItemMessage(hDlg,IDC_DIRCOMBO,CB_ADDSTRING,0,(LPARAM)(LPCTSTR)SETTINGS_OPTION_DIRECTORY_BIOS);
 			lstrcpy(paths[inum++],GUI.SatDir);
@@ -5248,6 +5250,7 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 					lstrcpy(GUI.FreezeFileDir,paths[inum++]);
 					lstrcpy(GUI.SRAMFileDir,paths[inum++]);
 					lstrcpy(GUI.PatchDir,paths[inum++]);
+					lstrcpy(GUI.CheatDir, paths[inum++]);
 					lstrcpy(GUI.BiosDir,paths[inum++]);
 					lstrcpy(GUI.SatDir,paths[inum++]);
 

@@ -344,9 +344,12 @@ const TCHAR *S9xGetDirectoryT (enum s9x_getdirtype dirtype)
 		  rv = GUI.SPCDir;
 		  break;
 
-	  case IPS_DIR:
-	  case CHEAT_DIR:
+	  case PATCH_DIR:
 		  rv = GUI.PatchDir;
+		  break;
+
+	  case CHEAT_DIR:
+		  rv = GUI.CheatDir;
 		  break;
 
 	  case SNAPSHOT_DIR:
