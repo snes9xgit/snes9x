@@ -149,10 +149,7 @@ S9xNetplayStartServer (void)
     NPServer.SyncByReset = gui_config->netplay_sync_reset;
     NPServer.SendROMImageOnConnect = gui_config->netplay_send_rom;
 
-    npthread = g_thread_create (S9xNetplayServerThread,
-                                NULL,
-                                TRUE,
-                                NULL);
+    npthread = g_thread_new (NULL, S9xNetplayServerThread, NULL);
 
     /* Sleep to let the server create itself */
     usleep (10000);
