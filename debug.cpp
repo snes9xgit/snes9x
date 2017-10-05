@@ -1578,8 +1578,9 @@ static void debug_process_command (char *Line)
 		printf("HC event tracing %s.\n", Settings.TraceHCEvent ? "enabled" : "disabled");
 	}
 
-	if (*Line == 'A')
-		spc_core->debug_toggle_trace();
+	// TODO: reactivate once APU debugger works again
+	/*if (*Line == 'A')
+		spc_core->debug_toggle_trace();*/
 
 /*
 	if (*Line == 'B')

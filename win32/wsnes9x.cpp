@@ -2424,7 +2424,8 @@ LRESULT CALLBACK WinProc(
 			Settings.Paused = FALSE;
 			break;
 		case ID_DEBUG_APU_TRACE:
-			spc_core->debug_toggle_trace();
+			// TODO: reactivate once APU debugger works again
+			//spc_core->debug_toggle_trace();
 			break;
 #endif
 		case IDM_ROM_INFO:
@@ -3994,7 +3995,9 @@ static void CheckMenuStates ()
 #ifdef DEBUGGER
     mii.fState = (CPU.Flags & TRACE_FLAG) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_DEBUG_TRACE, FALSE, &mii);
-	mii.fState = (spc_core->debug_is_enabled()) ? MFS_CHECKED : MFS_UNCHECKED;
+	// TODO: reactivate once APU debugger works again
+	//mii.fState = (spc_core->debug_is_enabled()) ? MFS_CHECKED : MFS_UNCHECKED;
+	mii.fState = MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_DEBUG_APU_TRACE, FALSE, &mii);
 #endif
 
