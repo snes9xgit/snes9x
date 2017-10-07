@@ -299,6 +299,7 @@
     <ClInclude Include="..\apu\bapu\dsp\blargg_source.h" />
     <ClInclude Include="..\apu\bapu\dsp\sdsp.hpp" />
     <ClInclude Include="..\apu\bapu\dsp\SPC_DSP.h" />
+    <ClInclude Include="..\apu\bapu\smp\smp.hpp" />
     <ClInclude Include="..\apu\bapu\snes\snes.hpp" />
     <ClInclude Include="..\apu\hermite_resampler.h" />
     <ClInclude Include="..\apu\resampler.h" />

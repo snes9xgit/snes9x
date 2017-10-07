@@ -1,7 +1,7 @@
 #define CYCLE_ACCURATE
 #define PSEUDO_CYCLE
 
-#include <snes/snes.hpp>
+#include "snes/snes.hpp"
 
 #define SMP_CPP
 namespace SNES {

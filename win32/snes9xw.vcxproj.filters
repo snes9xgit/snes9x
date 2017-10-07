@@ -246,6 +246,9 @@
     <ClInclude Include="cgMini.h">
       <Filter>GUI\VideoDriver</Filter>
     </ClInclude>
+    <ClInclude Include="..\apu\bapu\smp\smp.hpp">
+      <Filter>APU\SMP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\bsx.cpp">
