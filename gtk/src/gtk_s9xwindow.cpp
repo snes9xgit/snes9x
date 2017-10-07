@@ -607,8 +607,14 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
     }
     else
     {
-        icon = gdk_pixbuf_new_from_inline (-1, app_icon, FALSE, NULL);
-        gtk_window_set_default_icon (icon);
+        GdkPixbufLoader *loader = gdk_pixbuf_loader_new ();
+        if (gdk_pixbuf_loader_write (loader, (const guchar *)app_icon, sizeof (app_icon), NULL) &&
+            gdk_pixbuf_loader_close (loader, NULL) &&
+            (icon = gdk_pixbuf_loader_get_pixbuf (loader)))
+        {
+            gtk_window_set_default_icon (icon);
+        }
+        g_object_unref(loader);
     }
 
     drawing_area = GTK_DRAWING_AREA (get_widget ("drawingarea"));

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Snes9X\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-25-04 03:40-0300\n"
-"PO-Revision-Date: 2017-25-04 03:40-0300\n"
+"PO-Revision-Date: 2017-26-08 02:55-0300\n"
 "Last-Translator: Pablo Lezaeta Reyes <prflr88@gmail.com>\n"
 "Language-Team: Spanish / Español\n"
 "Language: es\n"
@@ -354,6 +354,9 @@ msgstr "Ranura _7"
 #: gtk/src/snes9x.ui:1182 gtk/src/snes9x.ui:1292
 msgid "Slot _8"
 msgstr "Ranura _8"
+
+msgid "Slot _9"
+msgstr "Ranura _9"
 
 #: gtk/src/snes9x.ui:1197
 msgid "From _File..."
