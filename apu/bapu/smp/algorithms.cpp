@@ -1,3 +1,8 @@
+#include "snes/snes.hpp"
+
+namespace SNES
+{
+
 uint8 SMP::op_adc(uint8 x, uint8 y) {
   int r = x + y + regs.p.c;
   regs.p.n = r & 0x80;
@@ -119,4 +124,6 @@ uint8 SMP::op_ror(uint8 x) {
   regs.p.n = x & 0x80;
   regs.p.z = x == 0;
   return x;
+}
+
 }

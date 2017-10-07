@@ -542,6 +542,9 @@
     <ClCompile Include="..\msu1.cpp">
       <Filter>APU</Filter>
     </ClCompile>
+    <ClCompile Include="..\apu\bapu\smp\algorithms.cpp">
+      <Filter>APU\SMP</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="rsrc\nodrop.cur">

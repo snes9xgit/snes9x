@@ -1,3 +1,9 @@
+#ifndef __SMP_HPP
+#define __SMP_HPP
+
+namespace SNES
+{
+
 class SMP : public Processor {
 public:
   static const uint8 iplrom[64];
@@ -107,21 +113,21 @@ public:
   unsigned cycle_table_dsp[256];
   uint64 cycle_step_cpu;
 
-  inline uint8  op_adc (uint8  x, uint8  y);
-  inline uint16 op_addw(uint16 x, uint16 y);
-  inline uint8  op_and (uint8  x, uint8  y);
-  inline uint8  op_cmp (uint8  x, uint8  y);
-  inline uint16 op_cmpw(uint16 x, uint16 y);
-  inline uint8  op_eor (uint8  x, uint8  y);
-  inline uint8  op_inc (uint8  x);
-  inline uint8  op_dec (uint8  x);
-  inline uint8  op_or  (uint8  x, uint8  y);
-  inline uint8  op_sbc (uint8  x, uint8  y);
-  inline uint16 op_subw(uint16 x, uint16 y);
-  inline uint8  op_asl (uint8  x);
-  inline uint8  op_lsr (uint8  x);
-  inline uint8  op_rol (uint8  x);
-  inline uint8  op_ror (uint8  x);
+  uint8  op_adc (uint8  x, uint8  y);
+  uint16 op_addw(uint16 x, uint16 y);
+  uint8  op_and (uint8  x, uint8  y);
+  uint8  op_cmp (uint8  x, uint8  y);
+  uint16 op_cmpw(uint16 x, uint16 y);
+  uint8  op_eor (uint8  x, uint8  y);
+  uint8  op_inc (uint8  x);
+  uint8  op_dec (uint8  x);
+  uint8  op_or  (uint8  x, uint8  y);
+  uint8  op_sbc (uint8  x, uint8  y);
+  uint16 op_subw(uint16 x, uint16 y);
+  uint8  op_asl (uint8  x);
+  uint8  op_lsr (uint8  x);
+  uint8  op_rol (uint8  x);
+  uint8  op_ror (uint8  x);
 };
 
 #if defined(DEBUGGER)
@@ -130,3 +136,7 @@ public:
 #else
   extern SMP smp;
 #endif
+
+}
+
+#endif // !__SMP_HPP

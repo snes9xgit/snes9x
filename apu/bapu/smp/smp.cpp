@@ -2,6 +2,7 @@
 #define PSEUDO_CYCLE
 
 #include "snes/snes.hpp"
+#include "smp.hpp"
 
 #define SMP_CPP
 namespace SNES {
@@ -14,7 +15,6 @@ namespace SNES {
   SMP smp;
 #endif
 
-#include "algorithms.cpp"
 #include "core.cpp"
 #include "iplrom.cpp"
 #include "memory.cpp"

@@ -27,7 +27,12 @@ struct Processor
     int32 clock;
 };
 
+}
+
 #include "../smp/smp.hpp"
+
+namespace SNES
+{
 #include "../dsp/sdsp.hpp"
 
 class CPU
