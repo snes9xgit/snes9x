@@ -129,14 +129,16 @@ public:
   uint8  op_rol (uint8  x);
   uint8  op_ror (uint8  x);
 };
+}
 
+namespace SNES
+{
 #if defined(DEBUGGER)
   #include "debugger/debugger.hpp"
   extern SMPDebugger smp;
 #else
   extern SMP smp;
 #endif
-
 }
 
 #endif // !__SMP_HPP

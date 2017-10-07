@@ -1,3 +1,12 @@
+#ifndef __SMPDEBUGGER_HPP
+#define __SMPDEBUGGER_HPP
+
+#include <string.h>
+#include "smp\smp.hpp"
+using namespace std;
+
+namespace SNES
+{
 class SMPDebugger : public SMP, public ChipDebugger {
 public:
   bool property(unsigned id, string &name, string &value);
@@ -25,3 +34,6 @@ public:
   inline uint8 disassemble_read(uint16 addr);
   inline uint16 relb(int8 offset, int op_len);
 };
+}
+
+#endif // !__SMPDEBUGGER_HPP
