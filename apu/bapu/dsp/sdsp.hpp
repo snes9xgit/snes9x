@@ -1,6 +1,11 @@
+#ifndef __SDSP_HPP
+#define __SDSP_HPP
+
 #include "SPC_DSP.h"
 #include <stdio.h>
 
+namespace SNES
+{
 class DSP : public Processor {
 public:
   inline uint8 read(uint8 addr) {
@@ -32,3 +37,6 @@ public:
 };
 
 extern DSP dsp;
+}
+
+#endif

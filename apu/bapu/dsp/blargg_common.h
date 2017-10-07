@@ -10,11 +10,7 @@
 #include <assert.h>
 #include <limits.h>
 
-#undef BLARGG_COMMON_H
-// allow blargg_config.h to #include blargg_common.h
 #include "blargg_config.h"
-#ifndef BLARGG_COMMON_H
-#define BLARGG_COMMON_H
 
 // BLARGG_RESTRICT: equivalent to restrict, where supported
 #if defined (__GNUC__) || _MSC_VER >= 1100
@@ -158,7 +154,7 @@ public:
 			typedef struct see_blargg_common_h int8_t;
 			typedef struct see_blargg_common_h uint8_t;
 		#endif
-		
+
 		#if USHRT_MAX == 0xFFFF
 			typedef short           int16_t;
 			typedef unsigned short  uint16_t;
@@ -167,7 +163,7 @@ public:
 			typedef struct see_blargg_common_h int16_t;
 			typedef struct see_blargg_common_h uint16_t;
 		#endif
-		
+
 		#if ULONG_MAX == 0xFFFFFFFF
 			typedef long            int32_t;
 			typedef unsigned long   uint32_t;
@@ -182,5 +178,4 @@ public:
 	};
 #endif
 
-#endif
 #endif

@@ -31,6 +31,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA */
 #define GET_LE16A( addr )       GET_LE16( addr )
 #define SET_LE16A( addr, data ) SET_LE16( addr, data )
 
+namespace SNES
+{
 static BOOST::uint8_t const initial_regs [SPC_DSP::register_count] =
 {
 	0x45,0x8B,0x5A,0x9A,0xE4,0x82,0x1B,0x78,0x00,0x00,0xAA,0x96,0x89,0x0E,0xE0,0x80,
@@ -1060,4 +1062,5 @@ SPC_DSP::uint8_t SPC_DSP::reg_value( int ch, int addr )
 int SPC_DSP::envx_value( int ch )
 {
 	return m.voices[ch].env;
+}
 }

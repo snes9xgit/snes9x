@@ -30,10 +30,10 @@ struct Processor
 }
 
 #include "../smp/smp.hpp"
+#include "../dsp/sdsp.hpp"
 
 namespace SNES
 {
-#include "../dsp/sdsp.hpp"
 
 class CPU
 {
