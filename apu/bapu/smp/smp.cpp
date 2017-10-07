@@ -77,18 +77,13 @@ namespace SNES {
 #define op_writestack(data) op_write(0x0100 | regs.sp--, data)
 
 #if defined(CYCLE_ACCURATE)
+
+#define OPCODE_FOR_SWITCH opcode_number
+
 #if defined(PSEUDO_CYCLE)
 
       if (opcode_cycle == 0)
           opcode_number = op_readpc();
-
-      switch (opcode_number) {
-#include "core/oppseudo_misc.cpp"
-#include "core/oppseudo_mov.cpp"
-#include "core/oppseudo_pc.cpp"
-#include "core/oppseudo_read.cpp"
-#include "core/oppseudo_rmw.cpp"
-      }
 
 #else
 
@@ -96,25 +91,29 @@ namespace SNES {
           opcode_number = op_readpc();
           opcode_cycle++;
       }
-      else switch (opcode_number) {
-#include "core/opcycle_misc.cpp"
-#include "core/opcycle_mov.cpp"
-#include "core/opcycle_pc.cpp"
-#include "core/opcycle_read.cpp"
-#include "core/opcycle_rmw.cpp"
-      }
+      else
 
 #endif // defined(PSEUDO_CYCLE)
 #else
 
+#define OPCODE_FOR_SWITCH opcode
+
       unsigned opcode = op_readpc();
-      switch (opcode) {
-#include "core/op_misc.cpp"
-#include "core/op_mov.cpp"
-#include "core/op_pc.cpp"
-#include "core/op_read.cpp"
-#include "core/op_rmw.cpp"
+
+#endif
+
+
+      switch (OPCODE_FOR_SWITCH) {
+#include "core/oppseudo_misc.cpp"
+#include "core/oppseudo_mov.cpp"
+#include "core/oppseudo_pc.cpp"
+#include "core/oppseudo_read.cpp"
+#include "core/oppseudo_rmw.cpp"
       }
+
+#undef OPCODE_FOR_SWITCH
+
+#if !defined (CYCLE_ACCURATE)
 
       //TODO: untaken branches should consume less cycles
 
