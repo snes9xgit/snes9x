@@ -2957,12 +2957,12 @@ void CMemory::map_LoROMSRAM (void)
 {
         uint32 hi;
 
-        if (ROMSize >= 10)
-            hi = 0xffff;
-        else
+        if (ROMSize > 11 || SRAMSize > 5)
             hi = 0x7fff;
+        else
+            hi = 0xffff;
 
-	map_index(0x70, 0x7f, 0x0000, hi, MAP_LOROM_SRAM, MAP_TYPE_RAM);
+	map_index(0x70, 0x7d, 0x0000, hi, MAP_LOROM_SRAM, MAP_TYPE_RAM);
 	map_index(0xf0, 0xff, 0x0000, hi, MAP_LOROM_SRAM, MAP_TYPE_RAM);
 }
 
