@@ -464,7 +464,7 @@ uint8 S9xMSU1ReadPort(uint8 port)
 	switch (port)
 	{
 	case 0:
-		return MSU1.MSU1_STATUS;
+		return MSU1.MSU1_STATUS | MSU1_REVISION;
 	case 1:
     {
         if (MSU1.MSU1_STATUS & DataBusy)

@@ -194,6 +194,8 @@
 #define _MSU1_H_
 #include "snes9x.h"
 
+#define MSU1_REVISION 0x02
+
 struct SMSU1
 {
 	uint8	MSU1_STATUS;
@@ -209,8 +211,7 @@ struct SMSU1
 };
 
 enum SMSU1_FLAG {
-	Revision		= 0x02,	//max: 0x07
-	AudioResume		= 0x04,
+	Revision		= 0x07,	// bitmask, not the actual version number
 	AudioError		= 0x08,
 	AudioPlaying		= 0x10,
 	AudioRepeating		= 0x20,
