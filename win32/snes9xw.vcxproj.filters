@@ -539,6 +539,9 @@
     <ClCompile Include="..\msu1.cpp">
       <Filter>APU</Filter>
     </ClCompile>
+    <ClCompile Include="DumpAtEnd.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="rsrc\nodrop.cur">

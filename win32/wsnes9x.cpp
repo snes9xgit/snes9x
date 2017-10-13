@@ -244,13 +244,6 @@
 #include "wlanguage.h"
 #include "../language.h"
 
-//uncomment to find memory leaks, with a line in WinMain
-//#define CHECK_MEMORY_LEAKS
-
-#ifdef CHECK_MEMORY_LEAKS
-	#include <crtdbg.h>
-#endif
-
 #include <commctrl.h>
 #include <io.h>
 #include <time.h>
