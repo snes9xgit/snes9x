@@ -326,6 +326,7 @@ HANDLE SoundEvent;
 ExtList* valid_ext=NULL;
 void MakeExtFile(void);
 void LoadExts(void);
+void ClearExts(void);
 static bool ExtensionIsValid(const TCHAR *filename);
 
 extern FILE *trace_fs;
@@ -3702,15 +3703,16 @@ loop_exit:
 
 	Memory.Deinit();
 
-		S9xGraphicsDeinit();
-		S9xDeinitAPU();
-		WinDeleteRecentGamesList ();
-		DeinitS9x();
+	ClearExts();
 
-#ifdef CHECK_MEMORY_LEAKS
-		_CrtDumpMemoryLeaks();
-#endif
-		return msg.wParam;
+	DeInitRenderFilters();
+
+	S9xGraphicsDeinit();
+	S9xDeinitAPU();
+	WinDeleteRecentGamesList ();
+	DeinitS9x();
+
+	return msg.wParam;
 }
 
 void FreezeUnfreezeDialog(bool8 freeze)
@@ -7048,7 +7050,7 @@ void LoadExts(void)
 				curr->compressed=true;
 			if(strlen(buffer)>1)
 			{
-				curr->extension=new TCHAR[strlen(buffer)-1];
+				curr->extension=new TCHAR[strlen(buffer)];
 				_tcsncpy(curr->extension, _tFromChar(buffer), strlen(buffer)-1);
 				curr->extension[strlen(buffer)-1]='\0';
 			}

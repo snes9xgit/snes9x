@@ -333,7 +333,8 @@ static bool try_load_config_file (const char *fname, ConfigFile &conf)
 	if (fp)
 	{
 		fprintf(stdout, "Reading config file %s.\n", fname);
-		conf.LoadFile(new fStream(fp));
+		fStream fS(fp);
+		conf.LoadFile(&fS);
         CLOSE_FSTREAM(fp);
 		return (true);
 	}

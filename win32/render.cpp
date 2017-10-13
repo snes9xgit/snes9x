@@ -536,6 +536,23 @@ void InitRenderFilters(void)
     }
 }
 
+void DeInitRenderFilters()
+{
+	if (ntsc) {
+		delete ntsc;
+	}
+	if (BlendBuf) {
+		delete[] BlendBuf;
+	}
+	if (xbrz_thread_sync_data) {
+		delete[] xbrz_thread_sync_data;
+		delete[] xbrz_sync_handles;
+	}
+
+	S9xBlit2xSaIFilterDeinit();
+	S9xBlitHQ2xFilterDeinit();
+}
+
 #define R5G6B5 // windows port uses RGB565
 
 #ifdef R5G6B5
