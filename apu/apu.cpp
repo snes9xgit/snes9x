@@ -624,6 +624,8 @@ void S9xDeinitAPU (void)
 		delete[] msu::resample_buffer;
 		msu::resample_buffer = NULL;
 	}
+
+	S9xMSU1DeInit();
 }
 
 static inline int S9xAPUGetClock (int32 cpucycles)

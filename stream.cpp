@@ -451,7 +451,7 @@ int unzStream::revert (size_t from, size_t offset)
 
 void unzStream::closeStream()
 {
-    unzCloseCurrentFile(file);
+    unzClose(file);
     delete this;
 }
 
