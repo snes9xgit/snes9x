@@ -1098,9 +1098,6 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 		if(wParam == CustomKeys.FastForward.key
 		&& modifiers == CustomKeys.FastForward.modifiers)
 		{
-			if(Settings.SPC7110RTC)
-				return 1;
-
 			if(!Settings.TurboMode)
 				S9xMessage (S9X_INFO, S9X_TURBO_MODE, WINPROC_TURBOMODE_TEXT);
 			Settings.TurboMode = TRUE;
@@ -1109,9 +1106,6 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 		if(wParam == CustomKeys.FastForwardToggle.key
 		&& modifiers == CustomKeys.FastForwardToggle.modifiers)
 		{
-			if(Settings.SPC7110RTC)
-				return 1;
-
 			Settings.TurboMode ^= TRUE;
 			if (Settings.TurboMode)
 				S9xMessage (S9X_INFO, S9X_TURBO_MODE,
