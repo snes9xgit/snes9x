@@ -213,6 +213,7 @@
 
 #import <wchar.h>
 #import <Cocoa/Cocoa.h>
+#import <objc/objc-runtime.h>
 
 #import "mac-cocoatools.h"
 #import "mac-prefix.h"
@@ -291,6 +292,26 @@ static pascal Boolean NavPlayMovieFromPreview (NavCBRecPtr, NavCallBackUserData)
 	MacQTVideoConfig();
 }
 
+@end
+
+@interface NSView (HICocoaViewDummy)
+- (void) setNeedsDisplayOnHICocoaViewDummy;
+@end
+
+@implementation NSView (HICocoaViewDummy)
++ (void) initialize
+{
+	/* Add a dummy instance method to make compatible with 10.10 or later */
+	if (self == [NSView self]) {
+		SEL sel = @selector(setNeedsDisplayOnHICocoaView);
+		if (![NSView instancesRespondToSelector:sel]) {
+			Method m = class_getInstanceMethod([NSView class], @selector(setNeedsDisplayOnHICocoaViewDummy));
+			IMP imp = method_getImplementation(m);
+			class_addMethod([NSView class], sel, imp, "v@");
+		}
+	}
+}
+- (void) setNeedsDisplayOnHICocoaViewDummy{}
 @end
 
 
