@@ -214,12 +214,15 @@
 #include "mac-os.h"
 #include "mac-multicart.h"
 
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
+#define truncEnd 0
+#endif
+
 static pascal OSStatus MultiCartEventHandler (EventHandlerCallRef, EventRef, void *);
 static pascal OSStatus MultiCartPaneEventHandler (EventHandlerCallRef, EventRef, void *);
 
 static int		multiCartDragHilite;
 static Boolean	multiCartDialogResult;
-
 
 void InitMultiCart (void)
 {

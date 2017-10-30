@@ -233,6 +233,10 @@ enum
 #define	kCommandColorButtonBase	0x59000000
 #define	kCIFilterNamePrefKey	CFSTR("CoreImageFilterName")
 
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
+#define	truncEnd				0
+#endif
+
 typedef struct {
 	char	name[256];
 	char	displayName[256];

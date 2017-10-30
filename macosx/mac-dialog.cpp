@@ -237,6 +237,10 @@ static pascal OSStatus RomInfoEventHandler (EventHandlerCallRef, EventRef, void 
 static pascal OSStatus AutofireTabEventHandler (EventHandlerCallRef, EventRef, void *);
 static pascal OSStatus AutofireWindowEventHandler (EventHandlerCallRef, EventRef, void *);
 
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
+extern "C" FMFont FMGetFontFromATSFontRef (ATSFontRef iFont);
+#endif
+
 
 static OSStatus UpdateTextControlView (HIViewRef control)
 {
