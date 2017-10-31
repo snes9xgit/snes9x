@@ -3210,7 +3210,7 @@ static void Initialize (void)
 
 	NSApplicationLoad();
 
-	ZeroMemory(&Settings, sizeof(Settings));
+	bzero(&Settings, sizeof(Settings));
 	Settings.MouseMaster = true;
 	Settings.SuperScopeMaster = true;
 	Settings.JustifierMaster = true;

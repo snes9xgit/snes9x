@@ -210,6 +210,7 @@
 #import "memmap.h"
 #import "apu.h"
 #import "snapshot.h"
+#import "snes.hpp"
 
 #import <Cocoa/Cocoa.h>
 #import <sys/time.h>
@@ -300,7 +301,7 @@ static void * SoundTask (void *);
 	headPressed = false;
 
 	stereo_switch = ~0;
-	spc_core->dsp_set_stereo_switch(stereo_switch);
+	SNES::dsp.spc_dsp.set_stereo_switch(stereo_switch);
 
 	for (int i = 0; i < MAC_MAX_PLAYERS; i++)
 		controlPad[i] = 0;
@@ -340,7 +341,7 @@ static void * SoundTask (void *);
 - (void) dealloc
 {
 	stereo_switch = ~0;
-	spc_core->dsp_set_stereo_switch(stereo_switch);
+	SNES::dsp.spc_dsp.set_stereo_switch(stereo_switch);
 
 	if (musicboxmode == kMBXSoundEmulation)
 		SPCPlayDefrost();
@@ -380,7 +381,7 @@ static void * SoundTask (void *);
 - (IBAction) handleChannelButton: (id) sender
 {
 	stereo_switch ^= (1 << [sender tag]);
-	spc_core->dsp_set_stereo_switch(stereo_switch);
+	SNES::dsp.spc_dsp.set_stereo_switch(stereo_switch);
 }
 
 - (IBAction) handleDisclosureButton: (id) sender
@@ -478,8 +479,8 @@ static void * SoundTask (void *);
 
 		// Max
 
-		short			vl = (spc_core->dsp_reg_value(h, 0x00) * spc_core->dsp_envx_value(h)) >> 11;
-		short			vr = (spc_core->dsp_reg_value(h, 0x01) * spc_core->dsp_envx_value(h)) >> 11;
+		short			vl = (SNES::dsp.spc_dsp.reg_value(h, 0x00) * SNES::dsp.spc_dsp.envx_value(h)) >> 11;
+		short			vr = (SNES::dsp.spc_dsp.reg_value(h, 0x01) * SNES::dsp.spc_dsp.envx_value(h)) >> 11;
 		long long		currentTime;
 		struct timeval	tv;
 

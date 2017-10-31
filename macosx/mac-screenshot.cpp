@@ -222,6 +222,12 @@
 static Handle GetScreenAsRawHandle (int, int);
 static void ExportCGImageToPNGFile (CGImageRef, const char *);
 
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
+typedef struct QDPict* QDPictRef;
+extern "C" QDPictRef QDPictCreateWithProvider (CGDataProviderRef provider);
+extern "C" void QDPictRelease (QDPictRef pictRef);
+extern "C" OSStatus QDPictDrawToCGContext (CGContextRef ctx, CGRect rect, QDPictRef pictRef);
+#endif
 
 static Handle GetScreenAsRawHandle (int destWidth, int destHeight)
 {
