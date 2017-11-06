@@ -124,7 +124,8 @@ public:
   inline uint8  op_ror (uint8  x);
 };
 
-#if defined(DEBUGGER)
+// TODO: reactivate once APU debugger works again
+#if 0 // DEBUGGER
   #include "debugger/debugger.hpp"
   extern SMPDebugger smp;
 #else

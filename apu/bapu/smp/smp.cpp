@@ -6,7 +6,8 @@
 #define SMP_CPP
 namespace SNES {
 
-#if defined(DEBUGGER)
+// TODO: reactivate once APU debugger works again
+#if 0 // DEBUGGER
   #include "debugger/debugger.cpp"
   #include "debugger/disassembler.cpp"
   SMPDebugger smp;
@@ -152,6 +153,7 @@ SMP::SMP() {
 }
 
 SMP::~SMP() {
+	delete[] apuram;
 }
 
 }

@@ -274,7 +274,7 @@ STREAM S9xMSU1OpenFile(const char *msu_ext, bool skip_unpacked)
                 file = new unzStream(unzFile);
             }
             else
-                unzCloseCurrentFile(unzFile);
+                unzClose(unzFile);
         }
     }
 #endif
@@ -285,15 +285,20 @@ STREAM S9xMSU1OpenFile(const char *msu_ext, bool skip_unpacked)
     return file;
 }
 
-bool AudioOpen()
+static void AudioClose()
+{
+	if (audioStream)
+	{
+		CLOSE_STREAM(audioStream);
+		audioStream = NULL;
+	}
+}
+
+static bool AudioOpen()
 {
 	MSU1.MSU1_STATUS |= AudioError;
 
-    if (audioStream)
-    {
-        CLOSE_STREAM(audioStream);
-        audioStream = NULL;
-    }
+	AudioClose();
 
 	char ext[_MAX_EXT];
 	snprintf(ext, _MAX_EXT, "-%d.pcm", MSU1.MSU1_CURRENT_TRACK);
@@ -322,13 +327,18 @@ bool AudioOpen()
 	return false;
 }
 
-bool DataOpen()
+static void DataClose()
 {
-    if (dataStream)
-    {
-        CLOSE_STREAM(dataStream);
-        dataStream = NULL;
-    }
+	if (dataStream)
+	{
+		CLOSE_STREAM(dataStream);
+		dataStream = NULL;
+	}
+}
+
+static bool DataOpen()
+{
+	DataClose();
 
     dataStream = S9xMSU1OpenFile(".msu");
 
@@ -358,17 +368,9 @@ void S9xResetMSU(void)
 
 	partial_samples = 0;
 
-    if (dataStream)
-    {
-        CLOSE_STREAM(dataStream);
-        dataStream = NULL;
-    }
+	DataClose();
 
-    if (audioStream)
-    {
-        CLOSE_STREAM(audioStream);
-        audioStream = NULL;
-    }
+	AudioClose();
 
 	Settings.MSU1 = S9xMSU1ROMExists();
 }
@@ -376,6 +378,12 @@ void S9xResetMSU(void)
 void S9xMSU1Init(void)
 {
 	DataOpen();
+}
+
+void S9xMSU1DeInit(void)
+{
+	DataClose();
+	AudioClose();
 }
 
 bool S9xMSU1ROMExists(void)
@@ -399,7 +407,7 @@ bool S9xMSU1ROMExists(void)
 
 	if (unzFile)
 	{
-		unzCloseCurrentFile(unzFile);
+		unzClose(unzFile);
 		return true;
 	}
 #endif
@@ -464,7 +472,7 @@ uint8 S9xMSU1ReadPort(uint8 port)
 	switch (port)
 	{
 	case 0:
-		return MSU1.MSU1_STATUS;
+		return MSU1.MSU1_STATUS | MSU1_REVISION;
 	case 1:
     {
         if (MSU1.MSU1_STATUS & DataBusy)

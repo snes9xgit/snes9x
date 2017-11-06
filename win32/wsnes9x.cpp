@@ -244,13 +244,6 @@
 #include "wlanguage.h"
 #include "../language.h"
 
-//uncomment to find memory leaks, with a line in WinMain
-//#define CHECK_MEMORY_LEAKS
-
-#ifdef CHECK_MEMORY_LEAKS
-	#include <crtdbg.h>
-#endif
-
 #include <commctrl.h>
 #include <io.h>
 #include <time.h>
@@ -326,6 +319,7 @@ HANDLE SoundEvent;
 ExtList* valid_ext=NULL;
 void MakeExtFile(void);
 void LoadExts(void);
+void ClearExts(void);
 static bool ExtensionIsValid(const TCHAR *filename);
 
 extern FILE *trace_fs;
@@ -1104,9 +1098,6 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 		if(wParam == CustomKeys.FastForward.key
 		&& modifiers == CustomKeys.FastForward.modifiers)
 		{
-			if(Settings.SPC7110RTC)
-				return 1;
-
 			if(!Settings.TurboMode)
 				S9xMessage (S9X_INFO, S9X_TURBO_MODE, WINPROC_TURBOMODE_TEXT);
 			Settings.TurboMode = TRUE;
@@ -1115,9 +1106,6 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 		if(wParam == CustomKeys.FastForwardToggle.key
 		&& modifiers == CustomKeys.FastForwardToggle.modifiers)
 		{
-			if(Settings.SPC7110RTC)
-				return 1;
-
 			Settings.TurboMode ^= TRUE;
 			if (Settings.TurboMode)
 				S9xMessage (S9X_INFO, S9X_TURBO_MODE,
@@ -2424,7 +2412,8 @@ LRESULT CALLBACK WinProc(
 			Settings.Paused = FALSE;
 			break;
 		case ID_DEBUG_APU_TRACE:
-			spc_core->debug_toggle_trace();
+			// TODO: reactivate once APU debugger works again
+			//spc_core->debug_toggle_trace();
 			break;
 #endif
 		case IDM_ROM_INFO:
@@ -3701,15 +3690,16 @@ loop_exit:
 
 	Memory.Deinit();
 
-		S9xGraphicsDeinit();
-		S9xDeinitAPU();
-		WinDeleteRecentGamesList ();
-		DeinitS9x();
+	ClearExts();
 
-#ifdef CHECK_MEMORY_LEAKS
-		_CrtDumpMemoryLeaks();
-#endif
-		return msg.wParam;
+	DeInitRenderFilters();
+
+	S9xGraphicsDeinit();
+	S9xDeinitAPU();
+	WinDeleteRecentGamesList ();
+	DeinitS9x();
+
+	return msg.wParam;
 }
 
 void FreezeUnfreezeDialog(bool8 freeze)
@@ -3994,7 +3984,9 @@ static void CheckMenuStates ()
 #ifdef DEBUGGER
     mii.fState = (CPU.Flags & TRACE_FLAG) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_DEBUG_TRACE, FALSE, &mii);
-	mii.fState = (spc_core->debug_is_enabled()) ? MFS_CHECKED : MFS_UNCHECKED;
+	// TODO: reactivate once APU debugger works again
+	//mii.fState = (spc_core->debug_is_enabled()) ? MFS_CHECKED : MFS_UNCHECKED;
+	mii.fState = MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_DEBUG_APU_TRACE, FALSE, &mii);
 #endif
 
@@ -7045,7 +7037,7 @@ void LoadExts(void)
 				curr->compressed=true;
 			if(strlen(buffer)>1)
 			{
-				curr->extension=new TCHAR[strlen(buffer)-1];
+				curr->extension=new TCHAR[strlen(buffer)];
 				_tcsncpy(curr->extension, _tFromChar(buffer), strlen(buffer)-1);
 				curr->extension[strlen(buffer)-1]='\0';
 			}

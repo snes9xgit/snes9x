@@ -208,5 +208,6 @@ void RenderMethod(SSurface Src, SSurface Dst, RECT *);
 
 void SelectRenderMethod();
 void InitRenderFilters();
+void DeInitRenderFilters();
 
 #endif

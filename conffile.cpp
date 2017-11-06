@@ -229,7 +229,8 @@ bool ConfigFile::LoadFile(const char *filename){
         n=filename;
         n2=strrchr(n, '/'); if(n2!=NULL) n=n2+1;
         n2=strrchr(n, '\\'); if(n2!=NULL) n=n2+1;
-        LoadFile(new fStream(s), n);
+		fStream fS(s);
+        LoadFile(&fS, n);
         CLOSE_FSTREAM(s);
         ret = true;
     } else {
