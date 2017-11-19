@@ -5,7 +5,7 @@
 #define BLARGG_CONFIG_H
 
 // Uncomment to disable debugging checks
-#ifndef DEBUGGER
+#if !defined(DEBUGGER) && !defined(_DEBUG)
 #define NDEBUG 1
 #endif
 
