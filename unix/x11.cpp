@@ -864,6 +864,12 @@ void S9xInitDisplay (int argc, char **argv)
 							WidthOfScreen(GUI.screen), HeightOfScreen(GUI.screen), 0,
 							GUI.depth, InputOutput, GUI.visual, CWBackPixel | CWColormap, &attrib);
 
+		/* Try to tell the Window Manager not to decorate this window. */
+		Atom wm_state   = XInternAtom (GUI.display, "_NET_WM_STATE", true );
+		Atom wm_fullscreen = XInternAtom (GUI.display, "_NET_WM_STATE_FULLSCREEN", true );
+
+		XChangeProperty(GUI.display, GUI.window, wm_state, XA_ATOM, 32, PropModeReplace, (unsigned char *)&wm_fullscreen, 1);
+
 #ifdef USE_XVIDEO
 		if (GUI.use_xvideo)
 		{
@@ -965,15 +971,6 @@ void S9xInitDisplay (int argc, char **argv)
 	do {
 		XNextEvent(GUI.display, &event);
 	} while (event.type != MapNotify || event.xmap.event != GUI.window);
-
-	if (GUI.fullscreen)
-	{
-		/* Try to tell the Window Manager not to decorate this window. */
-		Atom wm_state   = XInternAtom (GUI.display, "_NET_WM_STATE", true );
-		Atom wm_fullscreen = XInternAtom (GUI.display, "_NET_WM_STATE_FULLSCREEN", true );
-
-		XChangeProperty(GUI.display, GUI.window, wm_state, XA_ATOM, 32, PropModeReplace, (unsigned char *)&wm_fullscreen, 1);
-	}
 
 #ifdef USE_XVIDEO
 	if (GUI.use_xvideo)
