@@ -20,6 +20,7 @@ class S9xOSSSoundDriver : public S9xSoundDriver
         int filedes;
         uint8 *sound_buffer;
         int sound_buffer_size;
+        int output_buffer_size;
 };
 
 
