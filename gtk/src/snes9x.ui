@@ -150,6 +150,13 @@
     <property name="step_increment">0.01</property>
     <property name="page_increment">0.10000000000000001</property>
   </object>
+  <object class="GtkAdjustment" id="dynamic_rate_adjustment">
+    <property name="lower">0.001</property>
+    <property name="upper">0.100</property>
+    <property name="value">0.010</property>
+    <property name="step_increment">0.001</property>
+    <property name="page_increment">0.010</property>
+  </object>
   <object class="GtkAdjustment" id="adjustment13">
     <property name="lower">-1</property>
     <property name="upper">1</property>
@@ -4008,6 +4015,23 @@
                                         <property name="position">1</property>
                                       </packing>
                                     </child>
+
+                                    <child>
+                                      <object class="GtkCheckButton" id="dynamic_rate_control">
+                                        <property name="label" translatable="yes">Dynamic rate control</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">False</property>
+                                        <property name="tooltip_text" translatable="yes">Adjust input rate automatically</property>
+                                        <property name="draw_indicator">True</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">False</property>
+                                        <property name="position">2</property>
+                                      </packing>
+                                    </child>
+
                                     <child>
                                       <object class="GtkCheckButton" id="mute_sound_check">
                                         <property name="label" translatable="yes">Mute sound output</property>
@@ -4021,7 +4045,7 @@
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">False</property>
-                                        <property name="position">2</property>
+                                        <property name="position">3</property>
                                       </packing>
                                     </child>
                                     <child>
@@ -4037,7 +4061,7 @@
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">False</property>
-                                        <property name="position">3</property>
+                                        <property name="position">4</property>
                                       </packing>
                                     </child>
                                     <child>
@@ -4053,14 +4077,14 @@
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">False</property>
-                                        <property name="position">4</property>
+                                        <property name="position">5</property>
                                       </packing>
                                     </child>
                                     <child>
                                       <object class="GtkTable" id="table7">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="n_rows">4</property>
+                                        <property name="n_rows">5</property>
                                         <property name="n_columns">2</property>
                                         <property name="column_spacing">10</property>
                                         <property name="row_spacing">5</property>
@@ -4134,6 +4158,50 @@
                                             <property name="x_options">GTK_FILL</property>
                                             <property name="y_options">GTK_FILL</property>
                                           </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel" id="dynamic_rate_limit_label">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="xalign">0</property>
+                                            <property name="label" translatable="yes">Dynamic rate limit:</property>
+                                          </object>
+                                          <packing>
+                                            <property name="top_attach">4</property>
+                                            <property name="bottom_attach">5</property>
+                                            <property name="x_options">GTK_FILL</property>
+                                            <property name="y_options">GTK_FILL</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                         <object class="GtkHBox" id="hbox_dynamic_rate">
+                                          <property name="visible">True</property>
+                                          <property name="can_focus">False</property>
+                                          <child>
+                                           <object class="GtkSpinButton" id="dynamic_rate_limit">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                            <property name="digits">3</property>
+                                            <property name="adjustment">dynamic_rate_adjustment</property>
+                                           </object>
+                                           <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">False</property>
+                                            <property name="position">0</property>
+                                           </packing>
+                                          </child>
+                                         </object>
+                                         <packing>
+                                          <property name="left_attach">1</property>
+                                          <property name="top_attach">4</property>
+                                          <property name="bottom_attach">5</property>
+                                          <property name="y_options">GTK_FILL</property>
+                                          <property name="x_options">GTK_FILL</property>
+                                         </packing>
                                         </child>
                                         <child>
                                           <object class="GtkLabel" id="sound_input_rate_label">
@@ -4229,7 +4297,7 @@
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">True</property>
-                                        <property name="position">5</property>
+                                        <property name="position">6</property>
                                       </packing>
                                     </child>
                                   </object>

@@ -226,7 +226,7 @@ GtkBuilderWindow::set_combo (const char *name, unsigned char value)
 }
 
 void
-GtkBuilderWindow::set_spin (const char *name, unsigned int value)
+GtkBuilderWindow::set_spin (const char *name, double value)
 {
     gtk_spin_button_set_value (GTK_SPIN_BUTTON (get_widget (name)),
                                (double) value);
@@ -260,11 +260,10 @@ GtkBuilderWindow::get_window (void)
     return GTK_WINDOW (window);
 }
 
-unsigned int
+double
 GtkBuilderWindow::get_spin (const char *name)
 {
-    return (unsigned int)
-        gtk_spin_button_get_value (GTK_SPIN_BUTTON (get_widget (name)));
+    return  gtk_spin_button_get_value (GTK_SPIN_BUTTON (get_widget (name)));
 }
 
 int
