@@ -183,7 +183,7 @@ S9xOSSSoundDriver::samples_available (void)
 
     ioctl (filedes, SNDCTL_DSP_GETOSPACE, &info);
 
-    if (Settings.DynamicRateControl || 1)
+    if (Settings.DynamicRateControl)
     {
         S9xUpdateDynamicRate (info.bytes, output_buffer_size);
     }
