@@ -444,7 +444,6 @@ void S9xDoHEventProcessing (void)
 
 				ICPU.Frame++;
 				PPU.HVBeamCounterLatched = 0;
-				CPU.Flags |= SCAN_KEYS_FLAG;
 			}
 
 			// From byuu:
@@ -474,6 +473,9 @@ void S9xDoHEventProcessing (void)
 			if (CPU.V_Counter == PPU.ScreenHeight + FIRST_VISIBLE_LINE)	// VBlank starts from V=225(240).
 			{
 				S9xEndScreenRefresh();
+
+				CPU.Flags |= SCAN_KEYS_FLAG;
+
 				PPU.HDMA = 0;
 				// Bits 7 and 6 of $4212 are computed when read in S9xGetPPU.
 			#ifdef DEBUGGER
