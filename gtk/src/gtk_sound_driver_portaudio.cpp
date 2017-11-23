@@ -1,17 +1,10 @@
 #include "gtk_s9x.h"
 #include "gtk_sound_driver_portaudio.h"
 
-static int
-port_audio_callback (const void *input,
-                     void *output,
-                     unsigned long frameCount,
-                     const PaStreamCallbackTimeInfo* timeInfo,
-                     PaStreamCallbackFlags statusFlags,
-                     void *userData)
+static inline int
+frames_to_bytes (int frames)
 {
-    ((S9xPortAudioSoundDriver *) userData)->mix ((unsigned char *) output, frameCount * (Settings.Stereo ? 2 : 1) * (Settings.SixteenBitSound ? 2 : 1));
-
-    return 0;
+    return (frames * (Settings.SixteenBitSound ? 2 : 1) * (Settings.Stereo ? 2 : 1));
 }
 
 static void
@@ -25,19 +18,14 @@ port_audio_samples_available_callback (void *data)
 void
 S9xPortAudioSoundDriver::mix (unsigned char *output, int bytes)
 {
-    g_mutex_lock (mutex);
-
-    S9xMixSamples (output, bytes >> (Settings.SixteenBitSound ? 1 : 0));
-
-    g_mutex_unlock (mutex);
-
     return;
 }
 
 S9xPortAudioSoundDriver::S9xPortAudioSoundDriver(void)
 {
     audio_stream = NULL;
-    mutex = NULL;
+    sound_buffer = NULL;
+    sound_buffer_size = 0;
 
     return;
 }
@@ -62,15 +50,15 @@ S9xPortAudioSoundDriver::terminate (void)
 {
     stop ();
 
-    if (mutex)
-    {
-        g_mutex_free (mutex);
-        mutex = NULL;
-    }
-
     S9xSetSamplesAvailableCallback (NULL, NULL);
 
     Pa_Terminate ();
+
+    if (sound_buffer)
+    {
+        free (sound_buffer);
+        sound_buffer = NULL;
+    }
 
     return;
 }
@@ -173,8 +161,11 @@ S9xPortAudioSoundDriver::open_device (void)
                              Settings.SoundPlaybackRate,
                              0,
                              paNoFlag,
-                             port_audio_callback,
-                             this);
+                             NULL,
+                             NULL);
+
+        int frames = Pa_GetStreamWriteAvailable (audio_stream);
+        output_buffer_size = frames_to_bytes (frames);
 
         if (err == paNoError)
         {
@@ -195,7 +186,6 @@ S9xPortAudioSoundDriver::open_device (void)
         return FALSE;
     }
 
-    mutex = g_mutex_new ();
     S9xSetSamplesAvailableCallback (port_audio_samples_available_callback, this);
 
     fflush (stdout);
@@ -207,11 +197,41 @@ S9xPortAudioSoundDriver::open_device (void)
 void
 S9xPortAudioSoundDriver::samples_available (void)
 {
-    g_mutex_lock (mutex);
+    int frames;
+    int bytes;
+
+    frames = Pa_GetStreamWriteAvailable (audio_stream);
+
+    if (Settings.DynamicRateControl)
+    {
+        S9xUpdateDynamicRate (frames_to_bytes (frames), output_buffer_size);
+    }
 
     S9xFinalizeSamples ();
 
-    g_mutex_unlock (mutex);
+    if (Settings.DynamicRateControl)
+    {
+        // Using rate control, we should always keep the emulator's sound buffers empty to
+        // maintain an accurate measurement.
+        if (frames < (S9xGetSampleCount () >> (Settings.Stereo ? 1 : 0)))
+        {
+            S9xClearSamples ();
+            return;
+        }
+    }
+
+    frames = MIN (frames, S9xGetSampleCount () >> (Settings.Stereo ? 1 : 0));
+    bytes = frames_to_bytes (frames);
+
+    if (sound_buffer_size < bytes || sound_buffer == NULL)
+    {
+        sound_buffer = (uint8 *) realloc (sound_buffer, bytes);
+        sound_buffer_size = bytes;
+    }
+
+    S9xMixSamples (sound_buffer, frames << (Settings.Stereo ? 1 : 0));
+
+    Pa_WriteStream (audio_stream, sound_buffer, frames);
 
     return;
 }

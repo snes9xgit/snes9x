@@ -22,7 +22,9 @@ class S9xPortAudioSoundDriver : public S9xSoundDriver
 
     private:
         PaStream *audio_stream;
-        GMutex *mutex;
+        int sound_buffer_size;
+        uint8 *sound_buffer;
+        int output_buffer_size;
 };
 
 

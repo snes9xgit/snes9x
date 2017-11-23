@@ -253,6 +253,8 @@ Snes9xConfig::load_defaults (void)
     Settings.FrameTime = Settings.FrameTimeNTSC;
     Settings.BlockInvalidVRAMAccessMaster = TRUE;
     Settings.SoundSync = 1;
+    Settings.DynamicRateControl = 0;
+    Settings.DynamicRateLimit = 1000;
     Settings.HDMATimingHack = 100;
     Settings.ApplyCheats = 1;
 
@@ -402,6 +404,8 @@ Snes9xConfig::save_config_file (void)
     xml_out_int (xml, "sound_driver", sound_driver);
     xml_out_int (xml, "sound_input_rate", sound_input_rate);
     xml_out_int (xml, "sound_sync", Settings.SoundSync);
+    xml_out_int (xml, "dynamic_rate_control", Settings.DynamicRateControl);
+    xml_out_int (xml, "dynamic_rate_limit", Settings.DynamicRateLimit);
 
     /* Snes9X core-stored variables */
     xml_out_int (xml, "transparency", Settings.Transparency);
@@ -663,6 +667,14 @@ Snes9xConfig::set_option (const char *name, const char *value)
     else if (!strcasecmp (name, "reverse_stereo"))
     {
         Settings.ReverseStereo = atoi (value);
+    }
+    else if (!strcasecmp (name, "dynamic_rate_control"))
+    {
+        Settings.DynamicRateControl = atoi (value);
+    }
+    else if (!strcasecmp (name, "dynamic_rate_limit"))
+    {
+        Settings.DynamicRateLimit = atoi (value);
     }
     else if (!strcasecmp (name, "gaussian_interpolation"))
     {

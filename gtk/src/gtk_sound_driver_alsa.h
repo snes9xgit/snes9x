@@ -21,6 +21,7 @@ class S9xAlsaSoundDriver : public S9xSoundDriver
         snd_pcm_t *pcm;
         int sound_buffer_size;
         uint8 *sound_buffer;
+        int output_buffer_size;
 };
 
 #endif /* __GTK_SOUND_DRIVER_ALSA_H */
