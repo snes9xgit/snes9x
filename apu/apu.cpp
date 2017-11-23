@@ -479,10 +479,7 @@ void S9xUpdateDynamicRate (int avail, int buffer_size)
 	int delta_mid = avail - half_size;
 	double direction = (double) delta_mid / half_size;
 	spc::dynamic_rate_multiplier = 1.0 - (Settings.DynamicRateLimit / 100000.0) * direction;
-#if 1
-	printf ("%d / %d : ", avail, buffer_size);
-	printf ("%d%%\n", avail * 100 / buffer_size);
-#endif
+
 	UpdatePlaybackRate();
 }
 

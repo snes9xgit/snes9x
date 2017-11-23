@@ -143,7 +143,7 @@ S9xPulseSoundDriver::open_device (void)
     buffer_attr.minreq    = -1;
     buffer_attr.prebuf    = -1;
 
-    printf ("PulseAudio sound driver initializing...\n");
+    printf ("PulseAudio sound driver initializing...");
 
     printf ("    --> (%dhz, %s %s, %dms)...\n",
             Settings.SoundPlaybackRate,
@@ -203,7 +203,6 @@ S9xPulseSoundDriver::open_device (void)
     actual_buffer_attr = pa_stream_get_buffer_attr (stream);
 
     buffer_size = actual_buffer_attr->tlength;
-    printf ("size: %d\n", buffer_size);
 
     printf ("OK\n");
 
