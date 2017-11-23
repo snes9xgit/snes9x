@@ -143,9 +143,9 @@ S9xPulseSoundDriver::open_device (void)
     buffer_attr.minreq    = -1;
     buffer_attr.prebuf    = -1;
 
-    printf ("PulseAudio sound driver initializing...");
+    printf ("PulseAudio sound driver initializing...\n");
 
-    printf ("    --> (%dhz, %s %s, %dms)...\n",
+    printf ("    --> (%dhz, %s %s, %dms)...",
             Settings.SoundPlaybackRate,
             Settings.SixteenBitSound ? "16-bit" : "8-bit",
             Settings.Stereo ? "Stereo" : "Mono",
