@@ -253,8 +253,8 @@ Snes9xConfig::load_defaults (void)
     Settings.FrameTime = Settings.FrameTimeNTSC;
     Settings.BlockInvalidVRAMAccessMaster = TRUE;
     Settings.SoundSync = 1;
-    Settings.DynamicRateControl = 0;
-    Settings.DynamicRateLimit = 1000;
+    Settings.DynamicRateControl = 1;
+    Settings.DynamicRateLimit = 5;
     Settings.HDMATimingHack = 100;
     Settings.ApplyCheats = 1;
 
@@ -675,6 +675,7 @@ Snes9xConfig::set_option (const char *name, const char *value)
     else if (!strcasecmp (name, "dynamic_rate_limit"))
     {
         Settings.DynamicRateLimit = atoi (value);
+        Settings.DynamicRateLimit = CLAMP (Settings.DynamicRateLimit, 1, 1000);
     }
     else if (!strcasecmp (name, "gaussian_interpolation"))
     {

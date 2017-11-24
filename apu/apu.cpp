@@ -475,7 +475,7 @@ void S9xSetSamplesAvailableCallback (apu_callback callback, void *data)
 
 void S9xUpdateDynamicRate (int avail, int buffer_size)
 {
-	spc::dynamic_rate_multiplier = 1.0 + ((int) Settings.DynamicRateLimit * (buffer_size - 2 * avail)) /
+	spc::dynamic_rate_multiplier = 1.0 + (Settings.DynamicRateLimit * (buffer_size - 2 * avail)) /
 					(double)(1000 * buffer_size);
 
 	UpdatePlaybackRate();
