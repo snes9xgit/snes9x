@@ -204,7 +204,6 @@
 
 static inline void S9xReschedule (void);
 
-static int endframe = 0;
 
 void S9xMainLoop (void)
 {
@@ -315,15 +314,13 @@ void S9xMainLoop (void)
 
 	S9xPackStatus();
 
-	CPU.Flags &= ~SCAN_KEYS_FLAG;
-
-	if (endframe)
+	if (CPU.Flags & SCAN_KEYS_FLAG)
 	{
 	#ifdef DEBUGGER
 		if (!(CPU.Flags & FRAME_ADVANCE_FLAG))
 	#endif
 		S9xSyncSpeed();
-		endframe = 0;
+		CPU.Flags &= ~SCAN_KEYS_FLAG;
 	}
 }
 
@@ -446,9 +443,7 @@ void S9xDoHEventProcessing (void)
 				Timings.NMITriggerPos = 0xffff;
 
 				ICPU.Frame++;
-				endframe = 1;
 				PPU.HVBeamCounterLatched = 0;
-				CPU.Flags |= SCAN_KEYS_FLAG;
 			}
 
 			// From byuu:
