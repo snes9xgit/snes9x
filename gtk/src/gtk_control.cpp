@@ -389,7 +389,7 @@ void
 S9xInitInputDevices (void)
 {
 #ifdef USE_JOYSTICK
-    SDL_Init (SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
+    SDL_Init (SDL_INIT_JOYSTICK);
 
     for (int i = 0; ; i++)
     {
