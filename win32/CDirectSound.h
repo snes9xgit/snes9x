@@ -242,6 +242,7 @@ public:
 	bool InitSoundOutput(void) { return InitDirectSound(); }
 	void DeInitSoundOutput(void) { DeInitDirectSound(); }
 	bool SetupSound(void);
+	void SetVolume(double volume);
 	
 };
 

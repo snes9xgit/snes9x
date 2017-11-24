@@ -211,6 +211,9 @@ public:
 	// (re)start playback
 	virtual bool SetupSound()=0;
 
+	// SetVolume should set a new volume level (between 0.0 and 1.0)
+	virtual void SetVolume(double volume) = 0;
+
 	// ProcessSound should call S9xFinalizeSamples and queue new available samples into the
 	// Host sound system. If the sound system is callback based, ProcessSound should do a syncronized
 	// S9xFinalizeSamples and return.

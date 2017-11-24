@@ -266,6 +266,15 @@ bool8 S9xOpenSoundDevice ()
 called by the sound core to process generated samples
 */
 void S9xSoundCallback(void *data)
-{	
+{
+	static double last_volume = 1.0;
+
+	// only try to change volume if we actually need to switch it
+	double current_volume = (Settings.TurboMode ? GUI.VolumeTurbo : GUI.VolumeRegular) / 100.;
+	if (last_volume != current_volume) {
+		S9xSoundOutput->SetVolume(current_volume);
+		last_volume = current_volume;
+	}
+
 	S9xSoundOutput->ProcessSound();
 }

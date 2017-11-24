@@ -379,6 +379,11 @@ bool CXAudio2::SetupSound()
     return true;
 }
 
+void CXAudio2::SetVolume(double volume)
+{
+	pSourceVoice->SetVolume(volume);
+}
+
 void CXAudio2::BeginPlayback()
 {
 	pSourceVoice->Start(0);

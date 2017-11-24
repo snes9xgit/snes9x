@@ -384,6 +384,8 @@ struct sGUI {
 	int SoundDriver;
 	int SoundBufferSize;
 	bool Mute;
+	unsigned int VolumeRegular;
+	unsigned int VolumeTurbo;
 	// used for sync sound synchronization
 	CRITICAL_SECTION SoundCritSect;
     HANDLE SoundSyncEvent;

@@ -245,6 +245,7 @@ public:
 	bool InitSoundOutput(void) { return InitXAudio2(); }
 	void DeInitSoundOutput(void) { DeInitXAudio2(); }
 	bool SetupSound(void);
+	void SetVolume(double volume);
 };
 
 #endif

@@ -441,6 +441,17 @@ bool CDirectSound::SetupSound()
     return (true);
 }
 
+void CDirectSound::SetVolume(double volume)
+{
+	if (!initDone)
+		return;
+
+	// convert percentage to hundredths of dB
+	LONG dbVolume = (LONG)(10 * log10(volume) * 2 * 100);
+
+	lpDSB->SetVolume(dbVolume);
+}
+
 /*  CDirectSound::ProcessSound
 Finishes core sample creation, syncronizes the buffer access.
 */

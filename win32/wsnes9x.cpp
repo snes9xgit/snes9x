@@ -4505,6 +4505,20 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		SendDlgItemMessage(hDlg, IDC_INRATE, TBM_SETTICFREQ,1,0);
 		_sntprintf(valTxt,10,TEXT("%d"),Settings.SoundInputRate);
 		Edit_SetText(GetDlgItem(hDlg, IDC_INRATEEDIT),valTxt);
+
+		// regular volume
+		SendDlgItemMessage(hDlg, IDC_SLIDER_VOLUME_REGULAR, TBM_SETRANGE, TRUE, MAKELONG(0, 100));
+		SendDlgItemMessage(hDlg, IDC_SLIDER_VOLUME_REGULAR, TBM_SETPOS, TRUE, 100 - GUI.VolumeRegular);
+		SendDlgItemMessage(hDlg, IDC_SLIDER_VOLUME_REGULAR, TBM_SETTICFREQ, 10, 0);
+		_sntprintf(valTxt, 10, TEXT("%d"), GUI.VolumeRegular);
+		Edit_SetText(GetDlgItem(hDlg, IDC_EDIT_VOLUME_REGULAR), valTxt);
+
+		// turbo volume
+		SendDlgItemMessage(hDlg, IDC_SLIDER_VOLUME_TURBO, TBM_SETRANGE, TRUE, MAKELONG(0, 100));
+		SendDlgItemMessage(hDlg, IDC_SLIDER_VOLUME_TURBO, TBM_SETPOS, TRUE, 100 - GUI.VolumeTurbo);
+		SendDlgItemMessage(hDlg, IDC_SLIDER_VOLUME_TURBO, TBM_SETTICFREQ, 10, 0);
+		_sntprintf(valTxt, 10, TEXT("%d"), GUI.VolumeTurbo);
+		Edit_SetText(GetDlgItem(hDlg, IDC_EDIT_VOLUME_TURBO), valTxt);
 		
 
 		SendDlgItemMessage(hDlg, IDC_RATE, CB_INSERTSTRING,0,(LPARAM)TEXT("8 KHz"));
@@ -4577,13 +4591,32 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 		return true;
 		case WM_HSCROLL:
-			hTrackbar = GetDlgItem(hDlg, IDC_INRATE);
-			if((HWND)lParam==hTrackbar) {
-				int trackValue = 31100 + 50 * SendDlgItemMessage(hDlg,IDC_INRATE,TBM_GETPOS,0,0);
-				_sntprintf(valTxt,10,TEXT("%d"),trackValue);
-				Edit_SetText(GetDlgItem(hDlg, IDC_INRATEEDIT),valTxt);
+		case WM_VSCROLL:
+		{
+			WORD loword_w = LOWORD(wParam);
+			if (loword_w == TB_THUMBPOSITION || loword_w == TB_THUMBTRACK || loword_w == TB_ENDTRACK) {
+				HWND trackHwnd = (HWND)lParam;
+				WORD scrollPos = SendMessage(trackHwnd, TBM_GETPOS, 0, 0);
+				int trackValue = 100 - scrollPos;
+				int editId = 0;
+				if (trackHwnd == GetDlgItem(hDlg, IDC_INRATE))
+				{
+					trackValue = 31100 + 50 * scrollPos;
+					editId = IDC_INRATEEDIT;
+				}
+				else if (trackHwnd == GetDlgItem(hDlg, IDC_SLIDER_VOLUME_REGULAR))
+				{
+					editId = IDC_EDIT_VOLUME_REGULAR;
+				}
+				else if (trackHwnd == GetDlgItem(hDlg, IDC_SLIDER_VOLUME_TURBO))
+				{
+					editId = IDC_EDIT_VOLUME_TURBO;
+				}
+				_sntprintf(valTxt, 10, TEXT("%d"), trackValue);
+				Edit_SetText(GetDlgItem(hDlg, editId), valTxt);
 				return true;
 			}
+		}
 		break;
 		case WM_COMMAND:
 			switch(LOWORD(wParam))
@@ -4618,6 +4651,16 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					Edit_GetText(GetDlgItem(hDlg,IDC_INRATEEDIT),valTxt,10);
 					int sliderVal=_tstoi(valTxt);
 					Settings.SoundInputRate = sliderVal>0?sliderVal:32000;
+
+					// regular volume
+					Edit_GetText(GetDlgItem(hDlg, IDC_EDIT_VOLUME_REGULAR), valTxt, 10);
+					sliderVal = _tstoi(valTxt);
+					GUI.VolumeRegular = (sliderVal >= 0 && sliderVal <= 100) ? sliderVal : 100;
+
+					// turbo volume
+					Edit_GetText(GetDlgItem(hDlg, IDC_EDIT_VOLUME_TURBO), valTxt, 10);
+					sliderVal = _tstoi(valTxt);
+					GUI.VolumeTurbo = (sliderVal >= 0 && sliderVal <= 100) ? sliderVal : 100;
 
 					WinSaveConfigFile();
 					
