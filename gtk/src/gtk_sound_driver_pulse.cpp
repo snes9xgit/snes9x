@@ -268,9 +268,23 @@ S9xPulseSoundDriver::samples_available (void)
 
     bytes = MIN (bytes, (samples << (Settings.SixteenBitSound ? 1 : 0)));
 
+    if (!bytes)
+        return;
+
     lock ();
 
-    pa_stream_begin_write (stream, &output_buffer, &bytes);
+    if (pa_stream_begin_write (stream, &output_buffer, &bytes) != 0)
+    {
+        pa_stream_flush (stream, NULL, NULL);
+        unlock ();
+        return;
+    }
+    if (bytes <= 0 || !output_buffer)
+    {
+        unlock ();
+        return;
+    }
+
     S9xMixSamples ((uint8 *) output_buffer, bytes >> (Settings.SixteenBitSound ? 1 : 0));
     pa_stream_write (stream, output_buffer, bytes, NULL, 0, PA_SEEK_RELATIVE);
 
