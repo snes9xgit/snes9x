@@ -1901,6 +1901,7 @@ S9xReinitDisplay (void)
 bool8
 S9xContinueUpdate (int width, int height)
 {
+    S9xDeinitUpdate (width, height);
     return TRUE;
 }
 
