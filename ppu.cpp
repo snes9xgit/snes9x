@@ -1340,7 +1340,7 @@ uint8 S9xGetPPU (uint16 Address)
 		else
 		if (Settings.BS      && Address >= 0x2188 && Address <= 0x219f)
 			return (S9xGetBSXPPU(Address));
-		else	
+		else
 		if (Settings.SRTC    && Address == 0x2800)
 			return (S9xGetSRTC(Address));
 		else
@@ -1935,7 +1935,7 @@ void S9xSoftResetPPU (void)
 	PPU.BGMosaic[1] = FALSE;
 	PPU.BGMosaic[2] = FALSE;
 	PPU.BGMosaic[3] = FALSE;
-	
+
 	PPU.Window1Left = 1;
 	PPU.Window1Right = 0;
 	PPU.Window2Left = 1;
@@ -1982,6 +1982,7 @@ void S9xSoftResetPPU (void)
 	memset(IPPU.TileCached[TILE_4BIT_EVEN], 0, MAX_4BIT_TILES);
 	memset(IPPU.TileCached[TILE_4BIT_ODD], 0,  MAX_4BIT_TILES);
 	IPPU.VRAMReadBuffer = 0; // XXX: FIXME: anything better?
+	GFX.InterlaceFrame = 0;
 	IPPU.Interlace = FALSE;
 	IPPU.InterlaceOBJ = FALSE;
 	IPPU.DoubleWidthPixels = FALSE;
