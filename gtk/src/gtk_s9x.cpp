@@ -503,7 +503,7 @@ S9xSyncSpeedFinish (void)
 
     gettimeofday (&now, NULL);
 
-    if (Settings.SoundSync)
+    if (Settings.SoundSync && !Settings.DynamicRateControl)
     {
         while (!S9xSyncSound ())
         {
@@ -611,7 +611,7 @@ S9xSyncSpeed (void)
         ++next_frame_time.tv_usec;
     }
 
-    if (Settings.SkipFrames == AUTO_FRAMERATE && !Settings.SoundSync)
+    if (Settings.SkipFrames == AUTO_FRAMERATE && (!Settings.SoundSync || Settings.DynamicRateControl))
     {
         lag = TIMER_DIFF (now, next_frame_time);
 
@@ -641,7 +641,7 @@ S9xSyncSpeed (void)
     }
     else
     {
-        limit = Settings.SoundSync ? 1 : Settings.SkipFrames + 1;
+        limit = (Settings.SoundSync && !Settings.DynamicRateControl) ? 1 : Settings.SkipFrames + 1;
 
         IPPU.SkippedFrames++;
         IPPU.RenderThisFrame = 0;
