@@ -136,7 +136,7 @@ S9xOSSSoundDriver::open_device (void)
 
     /* OSS requires a power-of-two buffer size, first 16 bits are the number
      * of fragments to generate, second 16 are the respective power-of-two. */
-    temp = (8 << 16) | (S9xSoundBase2log (output_buffer_size / 8));
+    temp = (4 << 16) | (S9xSoundBase2log (output_buffer_size / 4));
 
     if (ioctl (filedes, SNDCTL_DSP_SETFRAGMENT, &temp) < 0)
         goto close_fail;

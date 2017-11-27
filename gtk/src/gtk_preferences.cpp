@@ -754,7 +754,8 @@ Snes9xPreferences::get_settings_from_dialog (void)
         (config->sound_playback_rate !=
                      (7 - (get_combo ("playback_combo"))))                  ||
         (config->sound_input_rate   != get_slider ("sound_input_rate"))     ||
-        (Settings.SoundSync         != get_check ("sync_sound"))
+        (Settings.SoundSync         != get_check ("sync_sound"))            ||
+        (Settings.DynamicRateControl != get_check ("dynamic_rate_control"))
         )
     {
         sound_needs_restart = 1;
