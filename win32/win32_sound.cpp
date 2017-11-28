@@ -244,6 +244,7 @@ bool8 S9xOpenSoundDevice ()
 	switch(GUI.SoundDriver) {
 		case WIN_SNES9X_DIRECT_SOUND_DRIVER:
 			S9xSoundOutput = &S9xDirectSound;
+			Settings.DynamicRateControl = false;
 			break;
 		case WIN_XAUDIO2_SOUND_DRIVER:
 			S9xSoundOutput = &S9xXAudio2;

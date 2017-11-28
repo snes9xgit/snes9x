@@ -2,7 +2,7 @@
 // Microsoft Visual C++ generated include file.
 // Used by snes9x.rc
 //
-#include "windows.h"
+
 #define IDC_STATIC (-1)
 
 #define IDR_RT_MANIFEST2                1
@@ -44,7 +44,7 @@
 #define IDC_BUFLEN                      1002
 #define IDC_RATE                        1003
 #define IDC_MIX                         1004
-#define IDC_16BIT                       1005
+#define IDC_DYNRATECONTROL              1005
 #define IDC_STEREO                      1006
 #define IDC_REV_STEREO                  1007
 #define IDC_LINEAR_INTER                1008

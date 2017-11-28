@@ -4565,8 +4565,8 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 		SendDlgItemMessage(hDlg,IDC_BUFLEN,CB_SETCURSEL,((GUI.SoundBufferSize/16)-1),0);
 
-		if(Settings.SixteenBitSound)
-			SendDlgItemMessage(hDlg,IDC_16BIT,BM_SETCHECK,BST_CHECKED,0);
+		if(Settings.DynamicRateControl)
+			SendDlgItemMessage(hDlg,IDC_DYNRATECONTROL,BM_SETCHECK,BST_CHECKED,0);
 		if(Settings.Stereo)
 			SendDlgItemMessage(hDlg,IDC_STEREO,BM_SETCHECK,BST_CHECKED,0);
 		else EnableWindow(GetDlgItem(hDlg, IDC_REV_STEREO), FALSE);
@@ -4625,7 +4625,7 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				{
 					GUI.SoundDriver=SendDlgItemMessage(hDlg, IDC_DRIVER, CB_GETITEMDATA,
 										SendDlgItemMessage(hDlg, IDC_DRIVER, CB_GETCURSEL, 0,0),0);
-					Settings.SixteenBitSound=IsDlgButtonChecked(hDlg, IDC_16BIT);
+					Settings.DynamicRateControl=IsDlgButtonChecked(hDlg, IDC_DYNRATECONTROL);
 					Settings.SoundSync=IsDlgButtonChecked(hDlg, IDC_SYNC_TO_SOUND_CPU);
 					Settings.Stereo=IsDlgButtonChecked(hDlg, IDC_STEREO);
 					Settings.ReverseStereo=IsDlgButtonChecked(hDlg, IDC_REV_STEREO);

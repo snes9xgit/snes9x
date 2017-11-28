@@ -396,22 +396,40 @@ void CXAudio2::StopPlayback()
 
 /*  CXAudio2::ProcessSound
 The mixing function called by the sound core when new samples are available.
-SoundBuffer is divided into blockCount blocks. If there are enought available samples and a free block,
+SoundBuffer is divided into blockCount blocks. If there are enough available samples and a free block,
 the block is filled and queued to the source voice. bufferCount is increased by pushbuffer and decreased by
 the OnBufferComplete callback.
 */
 void CXAudio2::ProcessSound()
 {
+	int freeBytes = (blockCount - bufferCount) * singleBufferBytes;
+
+	if (Settings.DynamicRateControl)
+	{
+		S9xUpdateDynamicRate(freeBytes, sum_bufferSize);
+	}
+
 	S9xFinalizeSamples();
+
+	UINT32 availableSamples;
+
+	availableSamples = S9xGetSampleCount();
+
+	if (Settings.DynamicRateControl)
+	{
+		// Using rate control, we should always keep the emulator's sound buffers empty to
+		// maintain an accurate measurement.
+		if (availableSamples > (freeBytes >> (Settings.SixteenBitSound ? 1 : 0)))
+		{
+			S9xClearSamples();
+			return;
+		}
+	}
 
 	if(!initDone)
 		return;
 
 	BYTE * curBuffer;
-
-	UINT32 availableSamples;
-
-	availableSamples = S9xGetSampleCount();
 
 	while(availableSamples > singleBufferSamples && bufferCount < blockCount) {
 		curBuffer = soundBuffer + writeOffset;
