@@ -120,9 +120,3 @@ S9xSDLSoundDriver::open_device (void)
 
     return TRUE;
 }
-
-void
-S9xSDLSoundDriver::mix (void)
-{
-    return;
-}

@@ -228,12 +228,6 @@ error0:
 }
 
 void
-S9xPulseSoundDriver::mix (void)
-{
-    return;
-}
-
-void
 S9xPulseSoundDriver::samples_available (void)
 {
     size_t bytes;

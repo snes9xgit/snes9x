@@ -15,12 +15,6 @@ port_audio_samples_available_callback (void *data)
     return;
 }
 
-void
-S9xPortAudioSoundDriver::mix (unsigned char *output, int bytes)
-{
-    return;
-}
-
 S9xPortAudioSoundDriver::S9xPortAudioSoundDriver(void)
 {
     audio_stream = NULL;
@@ -233,11 +227,5 @@ S9xPortAudioSoundDriver::samples_available (void)
 
     Pa_WriteStream (audio_stream, sound_buffer, frames);
 
-    return;
-}
-
-void
-S9xPortAudioSoundDriver::mix (void)
-{
     return;
 }

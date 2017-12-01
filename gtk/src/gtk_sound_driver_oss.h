@@ -13,7 +13,6 @@ class S9xOSSSoundDriver : public S9xSoundDriver
         bool8 open_device (void);
         void start (void);
         void stop (void);
-        void mix (void);
         void samples_available (void);
 
     private:

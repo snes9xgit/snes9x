@@ -135,12 +135,6 @@ fail:
 }
 
 void
-S9xAlsaSoundDriver::mix (void)
-{
-    return;
-}
-
-void
 S9xAlsaSoundDriver::samples_available (void)
 {
     snd_pcm_sframes_t frames_written, frames;

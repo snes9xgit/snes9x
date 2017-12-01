@@ -168,12 +168,6 @@ fail:
 }
 
 void
-S9xOSSSoundDriver::mix (void)
-{
-    return;
-}
-
-void
 S9xOSSSoundDriver::samples_available (void)
 {
     audio_buf_info info;

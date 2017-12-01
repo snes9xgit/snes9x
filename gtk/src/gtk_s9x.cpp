@@ -386,8 +386,6 @@ S9xIdleFunc (gpointer data)
 
     S9xMainLoop ();
 
-    S9xMixSound ();
-
 #ifdef NETPLAY_SUPPORT
         S9xNetplayPop ();
     }
