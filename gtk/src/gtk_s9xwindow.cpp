@@ -139,11 +139,14 @@ event_drawingarea_draw (GtkWidget *widget,
                         cairo_t   *cr,
                         gpointer  data)
 {
-    ((Snes9xWindow *) data)->expose ();
+    Snes9xWindow *window = (Snes9xWindow *) data;
+    window->cr = cr;
+    window->cairo_owned = FALSE;
+    window->expose ();
+    window->cr = NULL;
 
     return FALSE;
 }
-
 #endif
 
 #ifndef USE_GTK3
@@ -600,6 +603,8 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
     maximized_state        = 0;
     focused                = 1;
     paused_from_focus_loss = 0;
+    cr                     = NULL;
+    cairo_owned            = 0;
 
     if (gtk_icon_theme_has_icon (gtk_icon_theme_get_default (), "snes9x"))
     {
@@ -1951,4 +1956,45 @@ Snes9xWindow::resize_to_multiple (int factor)
     resize_viewport (w, h);
 
     return;
+}
+
+cairo_t *
+Snes9xWindow::get_cairo (void)
+{
+    if (cr)
+        return cr;
+
+    GtkWidget *drawing_area = GTK_WIDGET (this->drawing_area);
+
+#ifndef USE_GTK3
+    cr = gdk_cairo_create (gtk_widget_get_window (drawing_area));
+#else
+    GtkAllocation allocation;
+    gtk_widget_get_allocation (drawing_area, &allocation);
+
+    cairo_rectangle_int_t rect = { 0, 0, allocation.width, allocation.height };
+    cairo_region = cairo_region_create_rectangle (&rect);
+    gdk_drawing_context = gdk_window_begin_draw_frame (gtk_widget_get_window (drawing_area),
+                                                       cairo_region);
+    cr = gdk_drawing_context_get_cairo_context (gdk_drawing_context);
+#endif
+
+    cairo_owned = TRUE;
+    return cr;
+}
+
+void
+Snes9xWindow::release_cairo (void)
+{
+    if (cairo_owned)
+    {
+#ifndef USE_GTK3
+        cairo_destroy (cr);
+#else
+        gdk_window_end_draw_frame (gtk_widget_get_window (GTK_WIDGET (drawing_area)), gdk_drawing_context);
+        cairo_region_destroy (cairo_region);
+#endif
+        cairo_owned = FALSE;
+        cr = NULL;
+    }
 }

@@ -108,15 +108,7 @@ S9xGTKDisplayDriver::output (void *src,
                 height,
                 24);
 
-#ifndef USE_GTK3
-    cairo_t *cr = gdk_cairo_create (gtk_widget_get_window (drawing_area));
-#else
-    cairo_rectangle_int_t rect = { x, y, dst_width, dst_height };
-    cairo_region_t *region = cairo_region_create_rectangle (&rect);
-    GdkDrawingContext *context = gdk_window_begin_draw_frame (gtk_widget_get_window (drawing_area),
-                                                              region);
-    cairo_t *cr = gdk_drawing_context_get_cairo_context (context);
-#endif
+    cairo_t *cr = window->get_cairo ();
 
     gdk_cairo_set_source_pixbuf (cr, pixbuf, x, y);
 
@@ -140,13 +132,7 @@ S9xGTKDisplayDriver::output (void *src,
     cairo_rectangle (cr, x, y, dst_width, dst_height);
     cairo_fill (cr);
 
-#ifndef USE_GTK3
-    cairo_destroy (cr);
-#else
-    gdk_window_end_draw_frame (gtk_widget_get_window (drawing_area), context);
-    cairo_region_destroy (region);
-#endif
-
+    window->release_cairo ();
     window->set_mouseable_area (x, y, width, height);
 
     return;
@@ -219,22 +205,14 @@ S9xGTKDisplayDriver::clear (void)
     width = allocation.width;
     height = allocation.height;
 
-#ifndef USE_GTK3
-    cairo_t *cr = gdk_cairo_create (gtk_widget_get_window (drawing_area));
-#else
-    cairo_rectangle_int_t rect = { 0, 0, width, height };
-    cairo_region_t *region = cairo_region_create_rectangle (&rect);
-    GdkDrawingContext *context = gdk_window_begin_draw_frame (gtk_widget_get_window (drawing_area),
-                                                              region);
-    cairo_t *cr = gdk_drawing_context_get_cairo_context (context);
-#endif
+    cairo_t *cr = window->get_cairo ();
 
     cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
 
     if (window->last_width <= 0 || window->last_height <= 0)
     {
         cairo_paint (cr);
-        cairo_destroy (cr);
+        window->release_cairo ();
 
         return;
     }
@@ -265,12 +243,7 @@ S9xGTKDisplayDriver::clear (void)
 
     cairo_fill (cr);
 
-#ifndef USE_GTK3
-    cairo_destroy (cr);
-#else
-    gdk_window_end_draw_frame (gtk_widget_get_window (drawing_area), context);
-    cairo_region_destroy (region);
-#endif
+    window->release_cairo ();
 
     return;
 }
