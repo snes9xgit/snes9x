@@ -32,6 +32,9 @@ S9xPulseSoundDriver::terminate (void)
 {
     S9xSetSamplesAvailableCallback (NULL, NULL);
 
+    if (mainloop)
+        pa_threaded_mainloop_stop (mainloop);
+
     if (stream)
     {
         pa_stream_disconnect (stream);
@@ -46,7 +49,6 @@ S9xPulseSoundDriver::terminate (void)
 
     if (mainloop)
     {
-        pa_threaded_mainloop_stop (mainloop);
         pa_threaded_mainloop_free (mainloop);
     }
 
