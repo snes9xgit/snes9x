@@ -613,7 +613,7 @@ bool8 S9xDoDMA (uint8 Channel)
 							S9xSetPPU(Work, 0x2100 + d->BAddress);
 							UPDATE_COUNTERS;
 							count--;
-
+						// Fall through
 						case 1:
 							Work = S9xGetByte((d->ABank << 16) + p);
 							S9xSetPPU(Work, 0x2101 + d->BAddress);
@@ -648,7 +648,7 @@ bool8 S9xDoDMA (uint8 Channel)
 								b = 1;
 								break;
 							}
-
+						// Fall through
 						case 1:
 							Work = S9xGetByte((d->ABank << 16) + p);
 							S9xSetPPU(Work, 0x2100 + d->BAddress);
@@ -658,7 +658,7 @@ bool8 S9xDoDMA (uint8 Channel)
 								b = 2;
 								break;
 							}
-
+						// Fall through
 						case 2:
 							Work = S9xGetByte((d->ABank << 16) + p);
 							S9xSetPPU(Work, 0x2101 + d->BAddress);
@@ -668,7 +668,7 @@ bool8 S9xDoDMA (uint8 Channel)
 								b = 3;
 								break;
 							}
-
+						// Fall through
 						case 3:
 							Work = S9xGetByte((d->ABank << 16) + p);
 							S9xSetPPU(Work, 0x2101 + d->BAddress);
@@ -697,7 +697,7 @@ bool8 S9xDoDMA (uint8 Channel)
 								b = 1;
 								break;
 							}
-
+						// Fall through
 						case 1:
 							Work = S9xGetByte((d->ABank << 16) + p);
 							S9xSetPPU(Work, 0x2101 + d->BAddress);
@@ -707,7 +707,7 @@ bool8 S9xDoDMA (uint8 Channel)
 								b = 2;
 								break;
 							}
-
+						// Fall through
 						case 2:
 							Work = S9xGetByte((d->ABank << 16) + p);
 							S9xSetPPU(Work, 0x2102 + d->BAddress);
@@ -717,7 +717,7 @@ bool8 S9xDoDMA (uint8 Channel)
 								b = 3;
 								break;
 							}
-
+						// Fall through
 						case 3:
 							Work = S9xGetByte((d->ABank << 16) + p);
 							S9xSetPPU(Work, 0x2103 + d->BAddress);
@@ -857,7 +857,7 @@ bool8 S9xDoDMA (uint8 Channel)
 									REGISTER_2118_linear(Work);
 									UPDATE_COUNTERS;
 									count--;
-
+								// Fall through
 								case 1:
 									Work = *(base + p);
 									REGISTER_2119_linear(Work);
@@ -887,7 +887,7 @@ bool8 S9xDoDMA (uint8 Channel)
 									REGISTER_2118_tile(Work);
 									UPDATE_COUNTERS;
 									count--;
-
+								// Fall through
 								case 1:
 									Work = *(base + p);
 									REGISTER_2119_tile(Work);
@@ -919,7 +919,7 @@ bool8 S9xDoDMA (uint8 Channel)
 								S9xSetPPU(Work, 0x2100 + d->BAddress);
 								UPDATE_COUNTERS;
 								count--;
-
+							// Fall through
 							case 1:
 								Work = *(base + p);
 								S9xSetPPU(Work, 0x2101 + d->BAddress);
@@ -955,7 +955,7 @@ bool8 S9xDoDMA (uint8 Channel)
 								b = 1;
 								break;
 							}
-
+						// Fall through
 						case 1:
 							Work = *(base + p);
 							S9xSetPPU(Work, 0x2100 + d->BAddress);
@@ -965,7 +965,7 @@ bool8 S9xDoDMA (uint8 Channel)
 								b = 2;
 								break;
 							}
-
+						// Fall through
 						case 2:
 							Work = *(base + p);
 							S9xSetPPU(Work, 0x2101 + d->BAddress);
@@ -975,7 +975,7 @@ bool8 S9xDoDMA (uint8 Channel)
 								b = 3;
 								break;
 							}
-
+						// Fall through
 						case 3:
 							Work = *(base + p);
 							S9xSetPPU(Work, 0x2101 + d->BAddress);
@@ -1004,7 +1004,7 @@ bool8 S9xDoDMA (uint8 Channel)
 								b = 1;
 								break;
 							}
-
+						// Fall through
 						case 1:
 							Work = *(base + p);
 							S9xSetPPU(Work, 0x2101 + d->BAddress);
@@ -1014,7 +1014,7 @@ bool8 S9xDoDMA (uint8 Channel)
 								b = 2;
 								break;
 							}
-
+						// Fall through
 						case 2:
 							Work = *(base + p);
 							S9xSetPPU(Work, 0x2102 + d->BAddress);
@@ -1024,7 +1024,7 @@ bool8 S9xDoDMA (uint8 Channel)
 								b = 3;
 								break;
 							}
-
+						// Fall through
 						case 3:
 							Work = *(base + p);
 							S9xSetPPU(Work, 0x2103 + d->BAddress);

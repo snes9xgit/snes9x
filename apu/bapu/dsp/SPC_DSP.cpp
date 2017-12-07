@@ -803,7 +803,7 @@ void SPC_DSP::run( int clocks_remain )
 	{
 	loop:
 
-		#define PHASE( n ) if ( n && !--clocks_remain ) break; case n:
+		#define PHASE( n ) if ( n && !--clocks_remain ) break; /* Fall through */ case n:
 		GEN_DSP_TIMING
 		#undef PHASE
 

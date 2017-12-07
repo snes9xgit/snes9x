@@ -1322,7 +1322,7 @@ bool8 S9xUnfreezeGame (const char *filename)
 
 void S9xFreezeToStream (STREAM stream)
 {
-	char	buffer[1024];
+	char	buffer[8192];
 	uint8	*soundsnapshot = new uint8[SPC_SAVE_STATE_BLOCK_SIZE];
 
 	sprintf(buffer, "%s:%04d\n", SNAPSHOT_MAGIC, SNAPSHOT_VERSION);
@@ -1473,7 +1473,7 @@ int S9xUnfreezeFromStream (STREAM stream)
 	char	buffer[PATH_MAX + 1];
 
 	len = strlen(SNAPSHOT_MAGIC) + 1 + 4 + 1;
-	if (READ_STREAM(buffer, len, stream) != len)
+	if (READ_STREAM(buffer, len, stream) != (unsigned int ) len)
 		return (WRONG_FORMAT);
 
 	if (strncmp(buffer, SNAPSHOT_MAGIC, strlen(SNAPSHOT_MAGIC)) != 0)
@@ -2129,7 +2129,7 @@ static int UnfreezeBlock (STREAM stream, const char *name, uint8 *block, int siz
 
 	memset(block, 0, size);
 
-	if (READ_STREAM(block, len, stream) != len)
+	if (READ_STREAM(block, len, stream) != (unsigned int) len)
 	{
 		REVERT_STREAM(stream, rewind, 0);
 		return (WRONG_FORMAT);

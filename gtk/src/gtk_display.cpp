@@ -969,7 +969,7 @@ get_filter_scale (int &width, int &height)
                 height *= 4;
                 break;
             }
-
+            // Fall through
         case FILTER_HQ3X:
             if (width * 3 <= S9xDisplayDriver::scaled_max_width &&
                     height * 3 <= S9xDisplayDriver::scaled_max_height)
@@ -978,7 +978,7 @@ get_filter_scale (int &width, int &height)
                 height *= 3;
                 break;
             }
-
+            // Fall through
         case FILTER_HQ2X:
             width *= 2;
             height *= 2;
@@ -994,7 +994,7 @@ get_filter_scale (int &width, int &height)
                 height *= 4;
                 break;
             }
-
+            // Fall through
         case FILTER_3XBRZ:
             if (width * 3 <= S9xDisplayDriver::scaled_max_width &&
                     height * 3 <= S9xDisplayDriver::scaled_max_height)
@@ -1003,7 +1003,7 @@ get_filter_scale (int &width, int &height)
                 height *= 3;
                 break;
             }
-
+            // Fall through
         case FILTER_2XBRZ:
             width *= 2;
             height *= 2;
@@ -1018,7 +1018,7 @@ get_filter_scale (int &width, int &height)
                 height *= 4;
                 break;
             }
-
+            // Fall through
         case FILTER_SIMPLE3X:
             if (width * 3 <= S9xDisplayDriver::scaled_max_width &&
                     height * 3 <= S9xDisplayDriver::scaled_max_height)
@@ -1027,7 +1027,7 @@ get_filter_scale (int &width, int &height)
                 height *= 3;
                 break;
             }
-
+            // Fall through
         case FILTER_SIMPLE2X:
             width *= 2;
             height *= 2;
@@ -1114,8 +1114,7 @@ internal_filter (uint8 *src_buffer,
 
                 break;
             }
-            /* Fall back to 3x */
-
+            // Fall through
         case FILTER_HQ3X:
 
             if (width * 3 <= S9xDisplayDriver::scaled_max_width &&
@@ -1130,8 +1129,7 @@ internal_filter (uint8 *src_buffer,
 
                 break;
             }
-            /* Fall back to 2x */
-
+            // Fall through
         case FILTER_HQ2X:
 
             HQ2X_16 (src_buffer,
@@ -1155,7 +1153,7 @@ internal_filter (uint8 *src_buffer,
                      height);
 
             break;
-
+            // Fall through
         case FILTER_3XBRZ:
 
             filter_3xBRZ (src_buffer,
@@ -1166,7 +1164,7 @@ internal_filter (uint8 *src_buffer,
                      height);
 
             break;
-
+            // Fall through
         case FILTER_2XBRZ:
 
             filter_2xBRZ (src_buffer,
@@ -1194,7 +1192,7 @@ internal_filter (uint8 *src_buffer,
 
                 break;
             }
-
+            // Fall through
         case FILTER_SIMPLE3X:
 
             if (width * 3 <= S9xDisplayDriver::scaled_max_width &&
@@ -1209,7 +1207,7 @@ internal_filter (uint8 *src_buffer,
 
                 break;
             }
-
+            // Fall through
         case FILTER_SIMPLE2X:
 
             filter_2x (src_buffer,

@@ -1369,7 +1369,7 @@ void DSP1SetByte (uint8 byte, uint16 address)
 				case 0x17:
 				case 0x37:
 				case 0x3F:
-					DSP1.command = 0x1f;
+					DSP1.command = 0x1f; // Fall through
 				case 0x1f: DSP1.in_count = 1; break;
 				default:
 				#ifdef DEBUGGER

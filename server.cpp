@@ -190,7 +190,7 @@
  ***********************************************************************************/
 
 
-#ifdef NETPLAY_SUPPORT
+#if defined(NETPLAY_SUPPORT) || 1
 #ifdef _DEBUG
 	#define NP_DEBUG 1
 #endif
@@ -596,11 +596,11 @@ void S9xNPProcessClient (int c)
 
             if (NPServer.SyncByReset)
             {
-                S9xNPServerAddTask (NP_SERVER_SEND_SRAM, (void *) c);
+                S9xNPServerAddTask (NP_SERVER_SEND_SRAM, (void *) (pint) c);
                 S9xNPServerAddTask (NP_SERVER_RESET_ALL, 0);
             }
             else
-                S9xNPServerAddTask (NP_SERVER_SYNC_CLIENT, (void *) c);
+                S9xNPServerAddTask (NP_SERVER_SYNC_CLIENT, (void *) (pint) c);
             break;
 
         case NP_CLNT_RECEIVED_ROM_IMAGE:
@@ -615,11 +615,11 @@ void S9xNPProcessClient (int c)
 
             if (NPServer.SyncByReset)
             {
-                S9xNPServerAddTask (NP_SERVER_SEND_SRAM, (void *) c);
+                S9xNPServerAddTask (NP_SERVER_SEND_SRAM, (void *) (pint) c);
                 S9xNPServerAddTask (NP_SERVER_RESET_ALL, 0);
             }
             else
-                S9xNPServerAddTask (NP_SERVER_SYNC_CLIENT, (void *) c);
+                S9xNPServerAddTask (NP_SERVER_SYNC_CLIENT, (void *) (pint) c);
 
             break;
 
@@ -660,7 +660,7 @@ void S9xNPProcessClient (int c)
 
                     if (NPServer.SyncByReset)
                     {
-                        S9xNPServerAddTask (NP_SERVER_SEND_SRAM, (void *) c);
+                        S9xNPServerAddTask (NP_SERVER_SEND_SRAM, (void *) (pint) c);
                         S9xNPServerAddTask (NP_SERVER_RESET_ALL, 0);
                     }
                     else
@@ -668,7 +668,7 @@ void S9xNPProcessClient (int c)
                         S9xNPServerAddTask (NP_SERVER_SYNC_CLIENT, (void *) c);
 #else
                         /* We need to resync all clients on new player connect as we don't have a 'reference game' */
-                        S9xNPServerAddTask (NP_SERVER_SYNC_ALL, (void *) c);
+                        S9xNPServerAddTask (NP_SERVER_SYNC_ALL, (void *) (pint) c);
 #endif
                 }
             }
@@ -1068,8 +1068,8 @@ bool8 S9xNPStartServer (int port)
 #ifdef __WIN32__
         return (_beginthread (S9xNPServerLoop, 0, &p) != (uintptr_t)(~0));
 #else
-    	S9xNPServerLoop(NULL);
-	return (TRUE);
+    S9xNPServerLoop(NULL);
+    return (TRUE);
 #endif
 
     return (FALSE);

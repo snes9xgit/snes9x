@@ -196,6 +196,9 @@
 
 // Top-level compilation.
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-variable"
+
 #ifndef _NEWTILE_CPP
 #define _NEWTILE_CPP
 
@@ -1542,3 +1545,4 @@ static void (*MAKENAME(Renderers_, NAME1, NAME2)[7]) (ARGS) =
 #endif
 #endif
 #endif
+#pragma GCC diagnostic pop

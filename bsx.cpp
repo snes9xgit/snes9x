@@ -268,10 +268,7 @@ static void BSX_Map_SRAM (void);
 static void BSX_Map_PSRAM (void);
 static void BSX_Map_BIOS (void);
 static void BSX_Map_RAM (void);
-static void BSX_Map_Dirty (void);
 static void BSX_Map (void);
-static void BSX_Set_Bypass_FlashIO (uint16, uint8);
-static uint8 BSX_Get_Bypass_FlashIO (uint16);
 static bool8 BSX_LoadBIOS (void);
 static void map_psram_mirror_sub (uint32);
 static int is_bsx (unsigned char *);
@@ -616,39 +613,6 @@ static void BSX_Map_RAM (void)
 		BlockIsRAM[c + 0x7F0] = TRUE;
 		BlockIsROM[c + 0x7E0] = FALSE;
 		BlockIsROM[c + 0x7F0] = FALSE;
-	}
-}
-
-static void BSX_Map_Dirty (void)
-{
-	// for the quick bank change
-
-	int i, c;
-
-	// Banks 00->1F and 80->9F:8000-FFFF
-	if (BSX.MMC[0x02])
-	{
-		for (c = 0; c < 0x200; c += 16)
-		{
-			for (i = c + 8; i < c + 16; i++)
-			{
-				Map[i] = Map[i + 0x800] = &MapROM[(c << 12) % FlashSize];
-				BlockIsRAM[i] = BlockIsRAM[i + 0x800] = BSX.write_enable;
-				BlockIsROM[i] = BlockIsROM[i + 0x800] = !BSX.write_enable;
-			}
-		}
-	}
-	else
-	{
-		for (c = 0; c < 0x200; c += 16)
-		{
-			for (i = c + 8; i < c + 16; i++)
-			{
-				Map[i] = Map[i + 0x800] = &MapROM[(c << 11) % FlashSize] - 0x8000;
-				BlockIsRAM[i] = BlockIsRAM[i + 0x800] = BSX.write_enable;
-				BlockIsROM[i] = BlockIsROM[i + 0x800] = !BSX.write_enable;
-			}
-		}
 	}
 }
 

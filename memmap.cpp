@@ -960,11 +960,9 @@ static bool8 allASCII (uint8 *, int);
 static bool8 is_SufamiTurbo_BIOS (const uint8 *, uint32);
 static bool8 is_SufamiTurbo_Cart (const uint8 *, uint32);
 static bool8 is_BSCart_BIOS (const uint8 *, uint32);
-static bool8 is_SameGame_Add_On (const uint8 *, uint32);
 static bool8 is_BSCartSA1_BIOS(const uint8 *, uint32);
 static bool8 is_GNEXT_Add_On (const uint8 *, uint32);
 static uint32 caCRC32 (uint8 *, uint32, uint32 crc32 = 0xffffffff);
-static uint32 ReadUPSPointer (const uint8 *, unsigned &, unsigned);
 static bool8 ReadUPSPatch (Stream *, long, int32 &);
 static long ReadInt (Stream *, unsigned);
 static bool8 ReadIPSPatch (Stream *, long, int32 &);
@@ -1261,14 +1259,6 @@ static bool8 is_BSCart_BIOS(const uint8 *data, uint32 size)
 
 		return (TRUE);
 	}
-	else
-		return (FALSE);
-}
-
-static bool8 is_SameGame_Add_On (const uint8 *data, uint32 size)
-{
-	if (size == 0x80000)
-		return (TRUE);
 	else
 		return (FALSE);
 }
@@ -2018,7 +2008,7 @@ bool8 CMemory::LoadBSCart ()
 
 	CalculatedSize = Multi.cartSizeA;
 
-	if (Multi.cartSizeB == 0 && Multi.cartSizeA <= (MAX_ROM_SIZE - 0x100000 - Multi.cartOffsetA))
+	if (Multi.cartSizeB == 0 && Multi.cartSizeA <= (int32)(MAX_ROM_SIZE - 0x100000 - Multi.cartOffsetA))
 	{
 		//Initialize 1MB Empty Memory Pack only if cart B is cleared
 		//It does not make a Memory Pack if game is loaded like a normal ROM
@@ -2518,6 +2508,7 @@ void CMemory::InitROM (void)
 		// SPC7110
 		case 0xF93A:
 			Settings.SPC7110RTC = TRUE;
+			// Fall through
 		case 0xF53A:
 			Settings.SPC7110 = TRUE;
 			S9xInitSPC7110();
@@ -2930,7 +2921,7 @@ void CMemory::map_index (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 add
 		for (i = addr_s; i <= addr_e; i += 0x1000)
 		{
 			p = (c << 4) | (i >> 12);
-			Map[p] = (uint8 *) index;
+			Map[p] = (uint8 *) (pint) index;
 			BlockIsROM[p] = isROM;
 			BlockIsRAM[p] = isRAM;
 		}
@@ -4041,7 +4032,6 @@ static bool8 ReadBPSPatch (Stream *r, long, int32 &rom_size)
 	if(patch_crc32 != pp_crc32) { delete[] data; return false; }  //patch is corrupted
 	if(!Settings.IgnorePatchChecksum && rom_crc32 != source_crc32) { delete[] data; return false; }  //patch is for a different ROM
 
-	uint32 source_size = XPSdecode(data, addr, size);
 	uint32 target_size = XPSdecode(data, addr, size);
 	uint32 metadata_size = XPSdecode(data, addr, size);
 	addr += metadata_size;
