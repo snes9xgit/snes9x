@@ -450,7 +450,7 @@ static void map_psram_mirror_sub (uint32 bank)
 
 static void BSX_Map_PSRAM(void)
 {
-	int	c, i;
+	int	c;
 
 	if (!BSX.MMC[0x02])
 	{
@@ -773,7 +773,6 @@ uint8 S9xGetBSX (uint32 address)
 void S9xSetBSX (uint8 byte, uint32 address)
 {
 	uint8	bank = (address >> 16) & 0xFF;
-	uint16	offset = address & 0xFFFF;
 
 	// MMC
 	if ((bank >= 0x01 && bank <= 0x0E))
@@ -902,14 +901,14 @@ void S9xSetBSX (uint8 byte, uint32 address)
 
 void S9xBSXSetStream1 (uint8 count)
 {
-    if (BSX.sat_stream1.is_open())
-        BSX.sat_stream1.close(); //If Stream1 already opened for one file: Close it.
+	if (BSX.sat_stream1.is_open())
+		BSX.sat_stream1.close(); //If Stream1 already opened for one file: Close it.
 
 	char path[PATH_MAX + 1], name[PATH_MAX + 1];
 
 	strcpy(path, S9xGetDirectory(SAT_DIR));
 	strcat(path, SLASH_STR);
-	
+
 	snprintf(name, PATH_MAX + 1, "BSX%04X-%d.bin", (BSX.PPU[0x2188 - BSXPPUBASE] | (BSX.PPU[0x2189 - BSXPPUBASE] * 256)), count); //BSXHHHH-DDD.bin
 	strcat(path, name);
 
@@ -934,8 +933,8 @@ void S9xBSXSetStream1 (uint8 count)
 
 void S9xBSXSetStream2 (uint8 count)
 {
-    if (BSX.sat_stream2.is_open())
-        BSX.sat_stream2.close(); //If Stream1 already opened for one file: Close it.
+	if (BSX.sat_stream2.is_open())
+		BSX.sat_stream2.close(); //If Stream1 already opened for one file: Close it.
 
 	char path[PATH_MAX + 1], name[PATH_MAX + 1];
 
@@ -1517,12 +1516,12 @@ void S9xResetBSX (void)
 	BSX.MMC[0x0E] = 0x80;
 
 	// stream reset
-	BSX.sat_pf_latch1_enable, BSX.sat_dt_latch1_enable = FALSE;
-	BSX.sat_pf_latch2_enable, BSX.sat_dt_latch2_enable = FALSE;
+	BSX.sat_pf_latch1_enable = BSX.sat_dt_latch1_enable = FALSE;
+	BSX.sat_pf_latch2_enable = BSX.sat_dt_latch2_enable = FALSE;
 
-	BSX.sat_stream1_loaded, BSX.sat_stream2_loaded = FALSE;
-	BSX.sat_stream1_first, BSX.sat_stream2_first = FALSE;
-	BSX.sat_stream1_count, BSX.sat_stream2_count = 0;
+	BSX.sat_stream1_loaded = BSX.sat_stream2_loaded = FALSE;
+	BSX.sat_stream1_first = BSX.sat_stream2_first = FALSE;
+	BSX.sat_stream1_count = BSX.sat_stream2_count = 0;
 
     if (BSX.sat_stream1.is_open())
         BSX.sat_stream1.close();
