@@ -225,8 +225,8 @@ event_shader_select (GtkButton *widget, gpointer data)
     dialog = gtk_file_chooser_dialog_new ("Select Shader File",
                                           window->get_window (),
                                           GTK_FILE_CHOOSER_ACTION_OPEN,
-                                          GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                          GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                          "gtk-cancel", GTK_RESPONSE_CANCEL,
+                                          "gtk-open", GTK_RESPONSE_ACCEPT,
                                           NULL);
 
     if (strcmp (gui_config->last_directory, ""))
@@ -288,8 +288,8 @@ event_game_data_browse (GtkButton *widget, gpointer data)
     dialog = gtk_file_chooser_dialog_new ("Select directory",
                                           window->get_window (),
                                           GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
-                                          GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                          GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                          "gtk-cancel", GTK_RESPONSE_CANCEL,
+                                          "gtk-open", GTK_RESPONSE_ACCEPT,
                                           NULL);
 
     if (strcmp (gui_config->last_directory, ""))
@@ -469,7 +469,6 @@ event_about_clicked (GtkButton *widget, gpointer data)
     std::string version_string;
     GtkBuilderWindow *about_dialog = new GtkBuilderWindow ("about_dialog");
     Snes9xPreferences *preferences = (Snes9xPreferences *) data;
-    PangoFontDescription *monospace;
 
     ((version_string += _("Snes9x version: ")) += VERSION) += ", ";
     ((version_string += _("GTK+ port version: ")) += SNES9X_GTK_VERSION) += "\n";
@@ -505,15 +504,31 @@ event_about_clicked (GtkButton *widget, gpointer data)
 
     gtk_widget_hide (about_dialog->get_widget ("preferences_splash"));
 
-    monospace = pango_font_description_from_string ("Monospace 7");
 #ifdef USE_GTK3
-    gtk_widget_override_font (about_dialog->get_widget ("about_text_view"),
-                              monospace);
+    GtkCssProvider *provider;
+    GtkStyleContext *context;
+
+    provider = gtk_css_provider_new ();
+    gtk_css_provider_load_from_data (provider,
+                                     "textview {"
+                                     " font-family: \"monospace\";"
+                                     " font-size: 8pt;"
+                                     "}",
+                                     -1,
+                                     NULL);
+    context = gtk_widget_get_style_context (about_dialog->get_widget ("about_text_view"));
+    gtk_style_context_add_provider (context,
+                                    GTK_STYLE_PROVIDER (provider),
+                                    GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 #else
+    PangoFontDescription *monospace;
+
+    monospace = pango_font_description_from_string ("Monospace 7");
     gtk_widget_modify_font (about_dialog->get_widget ("about_text_view"),
                             monospace);
-#endif
     pango_font_description_free (monospace);
+#endif
+
 
     gtk_window_set_transient_for (about_dialog->get_window (),
                                   preferences->get_window ());
@@ -978,8 +993,8 @@ Snes9xPreferences::browse_folder_dialog (void)
     dialog = gtk_file_chooser_dialog_new (_("Select Folder"),
                                           GTK_WINDOW (this->window),
                                           GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
-                                          GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                          GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                          "gtk-cancel", GTK_RESPONSE_CANCEL,
+                                          "gtk-open", GTK_RESPONSE_ACCEPT,
                                           NULL);
 
     gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (dialog),

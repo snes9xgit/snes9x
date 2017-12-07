@@ -3903,6 +3903,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="icon_name">video-display</property>
+                        <property name="pixel_size">24</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -4330,6 +4331,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="icon_name">audio-x-generic</property>
+                        <property name="pixel_size">24</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -4725,6 +4727,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="icon_name">utilities-terminal</property>
+                        <property name="pixel_size">24</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -5159,6 +5162,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="icon_name">folder</property>
+                        <property name="pixel_size">24</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -6480,6 +6484,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="icon_name">input-gaming</property>
+                        <property name="pixel_size">24</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -8585,6 +8590,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="icon_name">input-keyboard</property>
+                        <property name="pixel_size">24</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>

@@ -431,8 +431,8 @@ S9xOpenROMDialog (void)
     dialog = gtk_file_chooser_dialog_new ("Open SNES ROM Image",
                                           top_level->get_window (),
                                           GTK_FILE_CHOOSER_ACTION_OPEN,
-                                          GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                          GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                          "gtk-cancel", GTK_RESPONSE_CANCEL,
+                                          "gtk-open", GTK_RESPONSE_ACCEPT,
                                           NULL);
 
     filter = gtk_file_filter_new ();

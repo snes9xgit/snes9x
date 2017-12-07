@@ -45,9 +45,6 @@ main (int argc, char *argv[])
 {
     struct sigaction sig_callback;
 
-    gdk_threads_init ();
-    gdk_threads_enter ();
-
     gtk_init (&argc, &argv);
 
     bindtextdomain (GETTEXT_PACKAGE, SNES9XLOCALEDIR);
@@ -129,7 +126,6 @@ main (int argc, char *argv[])
     gtk_window_present (top_level->get_window ());
 
     gtk_main ();
-    gdk_threads_leave ();
     return 0;
 }
 
