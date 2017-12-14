@@ -190,7 +190,7 @@
  ***********************************************************************************/
 
 
-#if defined(NETPLAY_SUPPORT) || 1
+#ifdef NETPLAY_SUPPORT
 #ifdef _DEBUG
 	#define NP_DEBUG 1
 #endif
