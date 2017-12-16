@@ -741,9 +741,18 @@ void S9xSetBSX (uint8 byte, uint32 address)
 	// MMC
 	if ((bank >= 0x01 && bank <= 0x0E))
 	{
-		BSX.MMC[bank] = byte;
-		if (bank == 0x0E)
+		//Avoid updating the memory map when it is not needed
+		if (bank == 0x0E && BSX.dirty)
+		{
 			BSX_Map();
+			BSX.dirty = FALSE;
+		}
+		else if (bank != 0x0E && BSX.MMC[bank] != byte)
+		{
+			BSX.dirty = TRUE;
+		}
+
+		BSX.MMC[bank] = byte;
 	}
 
 	// Flash IO
