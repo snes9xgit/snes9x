@@ -675,8 +675,6 @@ static void BSX_Map (void)
 
 	memcpy(BSX.prevMMC, BSX.MMC, sizeof(BSX.MMC));
 
-	printf("BSX MAP\n");
-
 	MapROM = FlashROM;
 	FlashSize = FLASH_SIZE;
 	
