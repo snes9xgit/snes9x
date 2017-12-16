@@ -227,6 +227,7 @@ struct SBSX
 	bool	sat_stream1_loaded, sat_stream2_loaded;
 	bool	sat_stream1_first, sat_stream2_first;
 	uint8	sat_stream1_count, sat_stream2_count;
+	uint16	sat_stream1_queue, sat_stream2_queue;
 };
 
 extern struct SBSX	BSX;
