@@ -756,6 +756,17 @@ char * S9xParseArgs (char **argv, int argc)
 			else
 			if (!strcasecmp(argv[i], "-bsxbootup"))
 				Settings.BSXBootup = TRUE;
+                        else
+                        if (!strcasecmp(argv[i], "-snapshot"))
+                        {
+                                if (i + 1 < argc)
+                                {
+                                        strncpy(Settings.InitialSnapshotFilename, argv[++i], PATH_MAX);
+                                        Settings.InitialSnapshotFilename[PATH_MAX] = 0;
+                                }
+                                else
+                                        S9xUsage();
+                        }
 			else
 
 			// PATCH/CHEAT OPTIONS

@@ -105,7 +105,7 @@ main (int argc, char *argv[])
 
     if (rom_filename)
     {
-        if (S9xOpenROM (rom_filename) && gui_config->full_screen_on_open)
+        if ((rom_opened=S9xOpenROM (rom_filename)) && gui_config->full_screen_on_open)
             gtk_window_unfullscreen (top_level->get_window());
     }
 
@@ -127,6 +127,9 @@ main (int argc, char *argv[])
 #endif
 
     gtk_window_present (top_level->get_window ());
+
+    if (rom_filename && Settings.InitialSnapshotFilename)
+        S9xUnfreezeGame(Settings.InitialSnapshotFilename);
 
     gtk_main ();
     gdk_threads_leave ();
