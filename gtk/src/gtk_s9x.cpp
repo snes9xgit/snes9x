@@ -105,7 +105,7 @@ main (int argc, char *argv[])
 
     if (rom_filename)
     {
-        if ((rom_opened=S9xOpenROM (rom_filename)) && gui_config->full_screen_on_open)
+        if (S9xOpenROM (rom_filename) && gui_config->full_screen_on_open)
             gtk_window_unfullscreen (top_level->get_window());
     }
 
