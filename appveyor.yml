@@ -1,45 +1,33 @@
-version: 1.56.2-{build}
+version: 0.1.{build}
+
+shallow_clone: true
 
 image: Visual Studio 2017
 
 environment:
-  matrix:
-  - generator: "Visual Studio 15"
-    config: Release Unicode
-    platform: Win32
-    arch: win32
-    output: win32\snes9x.exe
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+  makefile_location: libretro
+  makefile_name: makefile
+  target_name: snes9x
 
-  - generator: "Visual Studio 15"
-    config: Release Unicode
-    platform: x64
-    arch: win32-x64
-    output: win32\snes9x-x64.exe
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+configuration:
+  - release
+
+platform:
+  - windows_msvc2017_uwp_x64
+  - windows_msvc2017_uwp_x86
+  - windows_msvc2017_uwp_arm
+  - windows_msvc2017_desktop_x64
+  - windows_msvc2017_desktop_x86
 
 init:
-  - git config --global core.autocrlf input
-
-before_build:
-  - git submodule update --init --recursive
+  - set Path=C:\msys64\usr\bin;%Path%
 
 build_script:
-  - msbuild win32\snes9xw.sln /t:build /p:Configuration="%config%";Platform="%platform%" /m /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-
-after_build:
-  - ps: $env:gitrev = git describe --tags
-  - ps: $env:my_version = "$env:gitrev"
-  - set package_name=snes9x-%my_version%-%arch%
-  - if exist artifacts rmdir /s /q artifacts
-  - mkdir artifacts
-  - copy "%output%" artifacts
-  - copy docs\changes.txt artifacts
-  - copy docs\snes9x-license.txt artifacts
-  - copy win32\docs\faqs-windows.txt artifacts
-  - copy win32\docs\readme-windows.txt artifacts
-  - 7z a %package_name%.zip .\artifacts\*
+  - cd %makefile_location%
+  - make -f %makefile_name% platform=%platform%
 
 artifacts:
-  - path: $(package_name).zip
-    name: $(arch)
+  - path: '**\%target_name%*.dll'
+  - path: '**\%target_name%*.lib'
+  - path: '**\%target_name%*.pdb'
+  - path: '**\libretro.h'
