@@ -22,10 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2017  BearOso,
                              OV2
 
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -138,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2017  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -146,14 +148,14 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2017  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
 
   Libretro port
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -242,6 +244,7 @@ bool8 S9xOpenSoundDevice ()
 	switch(GUI.SoundDriver) {
 		case WIN_SNES9X_DIRECT_SOUND_DRIVER:
 			S9xSoundOutput = &S9xDirectSound;
+			Settings.DynamicRateControl = false;
 			break;
 		case WIN_XAUDIO2_SOUND_DRIVER:
 			S9xSoundOutput = &S9xXAudio2;
@@ -264,6 +267,15 @@ bool8 S9xOpenSoundDevice ()
 called by the sound core to process generated samples
 */
 void S9xSoundCallback(void *data)
-{	
+{
+	static double last_volume = 1.0;
+
+	// only try to change volume if we actually need to switch it
+	double current_volume = (Settings.TurboMode ? GUI.VolumeTurbo : GUI.VolumeRegular) / 100.;
+	if (last_volume != current_volume) {
+		S9xSoundOutput->SetVolume(current_volume);
+		last_volume = current_volume;
+	}
+
 	S9xSoundOutput->ProcessSound();
 }

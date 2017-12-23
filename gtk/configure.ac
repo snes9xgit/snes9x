@@ -48,31 +48,31 @@ AC_ARG_WITH(opengl,
   [],
   [with_opengl=yes])
 
-AC_ARG_WITH(joystick, 
+AC_ARG_WITH(joystick,
   [AS_HELP_STRING([--with(out)-joystick],
     [Enable joystick support if available (default: with)])],
   [],
   [with_joystick=yes])
 
-AC_ARG_WITH(xv, 
+AC_ARG_WITH(xv,
   [AS_HELP_STRING([--with(out)-xv],
     [Enable XVideo output on GTK (default: with)])],
   [],
   [with_xv=yes])
 
-AC_ARG_WITH(xrandr, 
+AC_ARG_WITH(xrandr,
   [AS_HELP_STRING([--with(out)-xrandr],
     [Enable XRandR support on GTK (default: with)])],
   [],
   [with_xrandr=yes])
 
-AC_ARG_WITH(portaudio, 
+AC_ARG_WITH(portaudio,
   [AS_HELP_STRING([--with(out)-portaudio],
     [Enable PortAudio sound driver support (default: with)])],
   [],
   [with_portaudio=yes])
 
-AC_ARG_WITH(oss, 
+AC_ARG_WITH(oss,
   [AS_HELP_STRING([--with(out)-oss],
     [Enable OSS sound driver support (default: with)])],
   [],
@@ -90,7 +90,7 @@ AC_ARG_WITH(pulseaudio,
   [],
   [with_pulseaudio=yes])
 
-AC_ARG_WITH(debugger, 
+AC_ARG_WITH(debugger,
   [AS_HELP_STRING([--with(out)-debugger],
     [Enable debugger (default: without)])],
   [],
@@ -102,13 +102,13 @@ AC_ARG_WITH(sdd1-decomp,
   [],
   [with_sdd1_decomp=yes])
 
-AC_ARG_WITH(hq2x, 
+AC_ARG_WITH(hq2x,
   [AS_HELP_STRING([--with(out)-hq2x],
     [Enable support for the HQ2x family of filters (default: with)])],
   [],
   [with_hq2x=yes])
 
-AC_ARG_WITH(xbrz, 
+AC_ARG_WITH(xbrz,
   [AS_HELP_STRING([--with(out)-xbrz],
     [Enable support for the xBRZ filter (default: with)])],
   [],
@@ -120,7 +120,7 @@ AC_ARG_WITH(netplay,
   [],
   [with_netplay=yes])
 
-AC_ARG_WITH(jma-decomp, 
+AC_ARG_WITH(jma-decomp,
   [AS_HELP_STRING([--with(out)-jma-decomp],
     [Enable JMA archive decompression (default: with)])],
   [],
@@ -214,18 +214,18 @@ GTKJOY=0
 SDL_CFLAGS=""
 SDL_LIBS=""
 if test yes = "$with_joystick"; then
-    PKG_CHECK_MODULES([SDL],[sdl],[
+    PKG_CHECK_MODULES([SDL],[sdl2],[
         GTKJOY=yes
         CFLAGS="$CFLAGS -DUSE_JOYSTICK"
     ],[
-        AC_CHECK_PROG(SDLCONFIGFOUND,[sdl-config],yes,no)
-        
+        AC_CHECK_PROG(SDLCONFIGFOUND,[sdl2-config],yes,no)
+
         if test yes = "$SDLCONFIGFOUND" ; then
-            SDL_CFLAGS="-DUSE_JOYSTICK `sdl-config --cflags`"
-            SDL_LIBS="`sdl-config --libs`"
+            SDL_CFLAGS="-DUSE_JOYSTICK `sdl2-config --cflags`"
+            SDL_LIBS="`sdl2-config --libs`"
             GTKJOY=yes
         else
-            echo "Cannot find SDL. Disabling joystick support."
+            echo "Cannot find SDL2. Disabling joystick support."
         fi
     ])
 fi
@@ -265,7 +265,7 @@ if test yes = "$with_oss" ; then
     ],[
         echo "Cannot find OSS headers."
         echo "--> Disabling OSS support"
-    ])    
+    ])
 fi
 
 ALSA=0

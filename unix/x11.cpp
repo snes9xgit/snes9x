@@ -22,10 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2017  BearOso,
                              OV2
 
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -138,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2017  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -146,14 +148,14 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2017  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
 
   Libretro port
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -862,6 +864,12 @@ void S9xInitDisplay (int argc, char **argv)
 							WidthOfScreen(GUI.screen), HeightOfScreen(GUI.screen), 0,
 							GUI.depth, InputOutput, GUI.visual, CWBackPixel | CWColormap, &attrib);
 
+		/* Try to tell the Window Manager not to decorate this window. */
+		Atom wm_state   = XInternAtom (GUI.display, "_NET_WM_STATE", true );
+		Atom wm_fullscreen = XInternAtom (GUI.display, "_NET_WM_STATE_FULLSCREEN", true );
+
+		XChangeProperty(GUI.display, GUI.window, wm_state, XA_ATOM, 32, PropModeReplace, (unsigned char *)&wm_fullscreen, 1);
+
 #ifdef USE_XVIDEO
 		if (GUI.use_xvideo)
 		{
@@ -963,15 +971,6 @@ void S9xInitDisplay (int argc, char **argv)
 	do {
 		XNextEvent(GUI.display, &event);
 	} while (event.type != MapNotify || event.xmap.event != GUI.window);
-
-	if (GUI.fullscreen)
-	{
-		/* Try to tell the Window Manager not to decorate this window. */
-		Atom wm_state   = XInternAtom (GUI.display, "_NET_WM_STATE", true );
-		Atom wm_fullscreen = XInternAtom (GUI.display, "_NET_WM_STATE_FULLSCREEN", true );
-
-		XChangeProperty(GUI.display, GUI.window, wm_state, XA_ATOM, 32, PropModeReplace, (unsigned char *)&wm_fullscreen, 1);
-	}
 
 #ifdef USE_XVIDEO
 	if (GUI.use_xvideo)

@@ -22,10 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2017  BearOso,
                              OV2
 
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -138,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2017  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -146,14 +148,14 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2017  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
 
   Libretro port
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -1338,7 +1340,7 @@ uint8 S9xGetPPU (uint16 Address)
 		else
 		if (Settings.BS      && Address >= 0x2188 && Address <= 0x219f)
 			return (S9xGetBSXPPU(Address));
-		else	
+		else
 		if (Settings.SRTC    && Address == 0x2800)
 			return (S9xGetSRTC(Address));
 		else
@@ -1933,7 +1935,7 @@ void S9xSoftResetPPU (void)
 	PPU.BGMosaic[1] = FALSE;
 	PPU.BGMosaic[2] = FALSE;
 	PPU.BGMosaic[3] = FALSE;
-	
+
 	PPU.Window1Left = 1;
 	PPU.Window1Right = 0;
 	PPU.Window2Left = 1;
@@ -1980,6 +1982,7 @@ void S9xSoftResetPPU (void)
 	memset(IPPU.TileCached[TILE_4BIT_EVEN], 0, MAX_4BIT_TILES);
 	memset(IPPU.TileCached[TILE_4BIT_ODD], 0,  MAX_4BIT_TILES);
 	IPPU.VRAMReadBuffer = 0; // XXX: FIXME: anything better?
+	GFX.InterlaceFrame = 0;
 	IPPU.Interlace = FALSE;
 	IPPU.InterlaceOBJ = FALSE;
 	IPPU.DoubleWidthPixels = FALSE;

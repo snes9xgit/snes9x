@@ -45,9 +45,6 @@ main (int argc, char *argv[])
 {
     struct sigaction sig_callback;
 
-    gdk_threads_init ();
-    gdk_threads_enter ();
-
     gtk_init (&argc, &argv);
 
     bindtextdomain (GETTEXT_PACKAGE, SNES9XLOCALEDIR);
@@ -129,7 +126,6 @@ main (int argc, char *argv[])
     gtk_window_present (top_level->get_window ());
 
     gtk_main ();
-    gdk_threads_leave ();
     return 0;
 }
 
@@ -386,8 +382,6 @@ S9xIdleFunc (gpointer data)
 
     S9xMainLoop ();
 
-    S9xMixSound ();
-
 #ifdef NETPLAY_SUPPORT
         S9xNetplayPop ();
     }
@@ -503,7 +497,7 @@ S9xSyncSpeedFinish (void)
 
     gettimeofday (&now, NULL);
 
-    if (Settings.SoundSync)
+    if (Settings.SoundSync && !Settings.DynamicRateControl)
     {
         while (!S9xSyncSound ())
         {
@@ -611,7 +605,7 @@ S9xSyncSpeed (void)
         ++next_frame_time.tv_usec;
     }
 
-    if (Settings.SkipFrames == AUTO_FRAMERATE && !Settings.SoundSync)
+    if (Settings.SkipFrames == AUTO_FRAMERATE && (!Settings.SoundSync || Settings.DynamicRateControl))
     {
         lag = TIMER_DIFF (now, next_frame_time);
 
@@ -641,7 +635,7 @@ S9xSyncSpeed (void)
     }
     else
     {
-        limit = Settings.SoundSync ? 1 : Settings.SkipFrames + 1;
+        limit = (Settings.SoundSync && !Settings.DynamicRateControl) ? 1 : Settings.SkipFrames + 1;
 
         IPPU.SkippedFrames++;
         IPPU.RenderThisFrame = 0;

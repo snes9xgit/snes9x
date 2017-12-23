@@ -22,10 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2017  BearOso,
                              OV2
 
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -138,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2017  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -146,14 +148,14 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2017  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
 
   Libretro port
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -594,11 +596,11 @@ void S9xNPProcessClient (int c)
 
             if (NPServer.SyncByReset)
             {
-                S9xNPServerAddTask (NP_SERVER_SEND_SRAM, (void *) c);
+                S9xNPServerAddTask (NP_SERVER_SEND_SRAM, (void *) (pint) c);
                 S9xNPServerAddTask (NP_SERVER_RESET_ALL, 0);
             }
             else
-                S9xNPServerAddTask (NP_SERVER_SYNC_CLIENT, (void *) c);
+                S9xNPServerAddTask (NP_SERVER_SYNC_CLIENT, (void *) (pint) c);
             break;
 
         case NP_CLNT_RECEIVED_ROM_IMAGE:
@@ -613,11 +615,11 @@ void S9xNPProcessClient (int c)
 
             if (NPServer.SyncByReset)
             {
-                S9xNPServerAddTask (NP_SERVER_SEND_SRAM, (void *) c);
+                S9xNPServerAddTask (NP_SERVER_SEND_SRAM, (void *) (pint) c);
                 S9xNPServerAddTask (NP_SERVER_RESET_ALL, 0);
             }
             else
-                S9xNPServerAddTask (NP_SERVER_SYNC_CLIENT, (void *) c);
+                S9xNPServerAddTask (NP_SERVER_SYNC_CLIENT, (void *) (pint) c);
 
             break;
 
@@ -658,7 +660,7 @@ void S9xNPProcessClient (int c)
 
                     if (NPServer.SyncByReset)
                     {
-                        S9xNPServerAddTask (NP_SERVER_SEND_SRAM, (void *) c);
+                        S9xNPServerAddTask (NP_SERVER_SEND_SRAM, (void *) (pint) c);
                         S9xNPServerAddTask (NP_SERVER_RESET_ALL, 0);
                     }
                     else
@@ -666,7 +668,7 @@ void S9xNPProcessClient (int c)
                         S9xNPServerAddTask (NP_SERVER_SYNC_CLIENT, (void *) c);
 #else
                         /* We need to resync all clients on new player connect as we don't have a 'reference game' */
-                        S9xNPServerAddTask (NP_SERVER_SYNC_ALL, (void *) c);
+                        S9xNPServerAddTask (NP_SERVER_SYNC_ALL, (void *) (pint) c);
 #endif
                 }
             }
@@ -1066,8 +1068,8 @@ bool8 S9xNPStartServer (int port)
 #ifdef __WIN32__
         return (_beginthread (S9xNPServerLoop, 0, &p) != (uintptr_t)(~0));
 #else
-    	S9xNPServerLoop(NULL);
-	return (TRUE);
+    S9xNPServerLoop(NULL);
+    return (TRUE);
 #endif
 
     return (FALSE);

@@ -389,7 +389,7 @@ void
 S9xInitInputDevices (void)
 {
 #ifdef USE_JOYSTICK
-    SDL_Init (SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
+    SDL_Init (SDL_INIT_JOYSTICK);
 
     for (int i = 0; ; i++)
     {
@@ -462,6 +462,13 @@ JoyDevice::JoyDevice (unsigned int device_num)
         calibration[i].max = 32767;
         calibration[i].center = 0;
     }
+
+    printf ("Joystick %d, %s:\n  %d axes, %d buttons, %d hats\n",
+            device_num + 1,
+            SDL_JoystickName (filedes),
+            SDL_JoystickNumButtons (filedes),
+            num_axes,
+            num_hats);
 
     memset (axis, 0, sizeof (int) * num_axes);
 

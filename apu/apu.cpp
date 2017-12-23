@@ -22,10 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2017  BearOso,
                              OV2
 
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -138,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2017  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -146,14 +148,14 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2017  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
 
   Libretro port
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -197,7 +199,7 @@
 
 #include "snes/snes.hpp"
 
-#define APU_DEFAULT_INPUT_RATE		32000
+#define APU_DEFAULT_INPUT_RATE		31987 // 60hz
 #define APU_MINIMUM_SAMPLE_COUNT	512
 #define APU_MINIMUM_SAMPLE_BLOCK	128
 #define APU_NUMERATOR_NTSC			15664
@@ -238,6 +240,8 @@ namespace spc
 	   if necessary on game load. */
 	static uint32		ratio_numerator = APU_NUMERATOR_NTSC;
 	static uint32		ratio_denominator = APU_DENOMINATOR_NTSC;
+
+	static double		dynamic_rate_multiplier = 1.0;
 }
 
 namespace msu
@@ -272,7 +276,7 @@ static void DeStereo (uint8 *buffer, int sample_count)
 	int16	*buf = (int16 *) buffer;
 	int32	s1, s2;
 
-	for (int i = 0; i < sample_count >> 1; i++)
+	for (int i = 0; i < (sample_count >> 1); i++)
 	{
 		s1 = (int32) buf[2 * i];
 		s2 = (int32) buf[2 * i + 1];
@@ -346,7 +350,7 @@ bool8 S9xMixSamples (uint8 *buffer, int sample_count)
 				if (msu::resampler->avail() >= sample_count)
 				{
 					msu::resampler->read((short *)msu::resample_buffer, sample_count);
-					for (uint32 i = 0; i < sample_count; ++i)
+					for (int i = 0; i < sample_count; ++i)
 						*((int16*)(dest+(i * 2))) += *((int16*)(msu::resample_buffer +(i * 2)));
 				}
 				else // should never occur
@@ -469,12 +473,26 @@ void S9xSetSamplesAvailableCallback (apu_callback callback, void *data)
 	spc::extra_data  = data;
 }
 
+void S9xUpdateDynamicRate (int avail, int buffer_size)
+{
+	spc::dynamic_rate_multiplier = 1.0 + (Settings.DynamicRateLimit * (buffer_size - 2 * avail)) /
+					(double)(1000 * buffer_size);
+
+	UpdatePlaybackRate();
+}
+
 static void UpdatePlaybackRate (void)
 {
 	if (Settings.SoundInputRate == 0)
 		Settings.SoundInputRate = APU_DEFAULT_INPUT_RATE;
 
 	double time_ratio = (double) Settings.SoundInputRate * spc::timing_hack_numerator / (Settings.SoundPlaybackRate * spc::timing_hack_denominator);
+
+	if (Settings.DynamicRateControl)
+	{
+		time_ratio *= spc::dynamic_rate_multiplier;
+	}
+
 	spc::resampler->time_ratio(time_ratio);
 
 	if (Settings.MSU1)

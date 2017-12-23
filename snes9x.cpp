@@ -22,10 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2017  BearOso,
                              OV2
 
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -138,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2017  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -146,14 +148,14 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2017  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
 
   Libretro port
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -420,6 +422,8 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.SoundPlaybackRate          =  conf.GetUInt("Sound::Rate",                         32000);
 	Settings.SoundInputRate             =  conf.GetUInt("Sound::InputRate",                    32000);
 	Settings.Mute                       =  conf.GetBool("Sound::Mute",                         false);
+	Settings.DynamicRateControl         =  conf.GetBool("Sound::DynamicRateControl",           false);
+	Settings.DynamicRateLimit           =  conf.GetInt ("Sound::DynamicRateLimit",             5);
 
 	// Display
 
@@ -847,7 +851,7 @@ char * S9xParseArgs (char **argv, int argc)
 		#endif
 
 			// HACKING OR DEBUGGING OPTIONS
-		
+
 		#ifdef DEBUGGER
 			if (!strcasecmp(argv[i], "-debug"))
 				CPU.Flags |= DEBUG_MODE_FLAG;

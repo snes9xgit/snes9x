@@ -2,6 +2,9 @@
 // Microsoft Visual C++ generated include file.
 // Used by snes9x.rc
 //
+
+#define IDC_STATIC (-1)
+
 #define IDR_RT_MANIFEST2                1
 #define IDR_MENU_US                     101
 #define IDC_CURSOR_SCOPE                101
@@ -41,7 +44,7 @@
 #define IDC_BUFLEN                      1002
 #define IDC_RATE                        1003
 #define IDC_MIX                         1004
-#define IDC_16BIT                       1005
+#define IDC_DYNRATECONTROL              1005
 #define IDC_STEREO                      1006
 #define IDC_REV_STEREO                  1007
 #define IDC_LINEAR_INTER                1008
@@ -361,6 +364,10 @@
 #define IDC_SHADER_HLSL_BROWSE          3016
 #define IDC_SHADER_GROUP                3017
 #define IDC_SHADER_GLSL_BROWSE          3018
+#define IDC_SLIDER_VOLUME_REGULAR       3018
+#define IDC_EDIT_VOLUME_REGULAR         3019
+#define IDC_SLIDER_VOLUME_TURBO         3020
+#define IDC_EDIT_VOLUME_TURBO           3021
 #define ID_FILE_EXIT                    40001
 #define ID_WINDOW_HIDEMENUBAR           40004
 #define ID_FILE_AVI_RECORDING           40005
@@ -504,9 +511,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        151
+#define _APS_NEXT_RESOURCE_VALUE        152
 #define _APS_NEXT_COMMAND_VALUE         40178
-#define _APS_NEXT_CONTROL_VALUE         3018
+#define _APS_NEXT_CONTROL_VALUE         3022
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
