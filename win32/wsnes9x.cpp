@@ -327,6 +327,9 @@ extern FILE *trace_fs;
 extern SCheatData Cheat;
 extern bool8 do_frame_adjust;
 
+TCHAR multiRomA[MAX_PATH] = { 0 }; // lazy, should put in sGUI and add init to {0} somewhere
+TCHAR multiRomB[MAX_PATH] = { 0 };
+
 HINSTANCE g_hInst;
 
 #ifdef DEBUGGER
@@ -1550,10 +1553,6 @@ bool WinMoviePlay(LPCTSTR filename)
 	}
 	return true;
 }
-
-TCHAR multiRomA [MAX_PATH] = {0}; // lazy, should put in sGUI and add init to {0} somewhere
-TCHAR multiRomB [MAX_PATH] = {0};
-
 
 static bool startingMovie = false;
 
@@ -3447,8 +3446,18 @@ int WINAPI WinMain(
         MessageBox( GUI.hWnd, Languages[ GUI.Language].errFrameTimer, TEXT("Snes9X - Frame Timer"), MB_OK | MB_ICONINFORMATION);
     }
 
-	if(rom_filename)
-		LoadROM(rom_filename);
+	if (rom_filename)
+	{
+		if (Settings.Multi) // we found -cartB parameter
+		{
+			lstrcpy(multiRomA, rom_filename); // for the mutli cart dialog
+			LoadROM(rom_filename, multiRomB);
+		}
+		else
+		{
+			LoadROM(rom_filename);
+		}
+	}
 
 	S9xUnmapAllControls();
 	S9xSetupDefaultKeymap();

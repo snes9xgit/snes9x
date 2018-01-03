@@ -221,6 +221,9 @@ void WinDeleteRecentGamesList ();
 
 HANDLE configMutex = NULL;
 
+extern TCHAR multiRomA[MAX_PATH]; // lazy, should put in sGUI and add init to {0} somewhere
+extern TCHAR multiRomB[MAX_PATH];
+
 void S9xParseArg (char **argv, int &i, int argc)
 {
 	if (strcasecmp (argv [i], "-restore") == 0)
@@ -236,10 +239,15 @@ void S9xParseArg (char **argv, int &i, int argc)
 	{
 		GUI.FullScreen = true;
 	}
+	else if (!strcasecmp(argv[i], "-cartb"))
+	{
+		Settings.Multi = TRUE; // only used to signal winmain
+		if (i + 1 < argc)
+		{
+			lstrcpyn(multiRomB, _tFromChar(argv[++i]), MAX_PATH);
+		}
+	}
 }
-
-extern TCHAR multiRomA [MAX_PATH]; // lazy, should put in sGUI and add init to {0} somewhere
-extern TCHAR multiRomB [MAX_PATH];
 
 void WinSetDefaultValues ()
 {
