@@ -639,8 +639,8 @@ void FreezeUnfreeze (const char *filename, bool8 freeze);
 void CheckDirectoryIsWritable (const char *filename);
 static void CheckMenuStates ();
 static void ResetFrameTimer ();
-static bool LoadROM (const TCHAR *filename);
-static bool LoadMultiROM (const TCHAR *filename, const TCHAR *filename2);
+static bool LoadROM (const TCHAR *filename, const TCHAR *filename2 = NULL);
+static bool LoadROMMulti (const TCHAR *filename, const TCHAR *filename2);
 bool8 S9xLoadROMImage (const TCHAR *string);
 #ifdef NETPLAY_SUPPORT
 static void EnableServer (bool8 enable);
@@ -656,7 +656,6 @@ void WinCleanupConfigData ();
 
 #include "../ppu.h"
 #include "../snapshot.h"
-const char *S9xGetFilenameInc (const char *);
 void S9xSetRecentGames ();
 void S9xAddToRecentGames (const TCHAR *filename);
 void S9xRemoveFromRecentGames (int i);
@@ -1913,52 +1912,13 @@ LRESULT CALLBACK WinProc(
 
 		case ID_FILE_LOADMULTICART:
 			{
-#ifdef NETPLAY_SUPPORT
-				if (Settings.NetPlay && !Settings.NetPlayServer)
-				{
-					S9xMessage (S9X_INFO, S9X_NETPLAY_NOT_SERVER, WINPROC_DISCONNECT);
-					break;
-				}
-#endif
 				RestoreGUIDisplay ();
 
 				const bool ok = (1 <= DialogBoxParam(g_hInst, MAKEINTRESOURCE(IDD_MULTICART), GUI.hWnd, DlgMultiROMProc, (LPARAM)NULL));
 
 				if(ok)
 				{
-					if (!Settings.StopEmulation)
-					{
-						Memory.SaveSRAM (S9xGetFilename (".srm", SRAM_DIR));
-						S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
-					}
-					
-					Settings.StopEmulation = !LoadMultiROM (multiRomA, multiRomB);
-					if (!Settings.StopEmulation)
-					{
-						bool8 loadedSRAM = Memory.LoadSRAM (S9xGetFilename (".srm", SRAM_DIR));
-						if(!loadedSRAM) // help migration from earlier Snes9x versions by checking ROM directory for savestates
-							Memory.LoadSRAM (S9xGetFilename (".srm", ROMFILENAME_DIR));
-						S9xLoadCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
-//						S9xAddToRecentGames (multiRomA, multiRomB);
-						CheckDirectoryIsWritable (S9xGetFilename (".---", SNAPSHOT_DIR));
-						CheckMenuStates ();
-#ifdef NETPLAY_SUPPORT
-						// still valid with multicart ???
-						if (NPServer.SendROMImageOnConnect)
-							S9xNPServerQueueSendingROMImage ();
-						else
-							S9xNPServerQueueSendingLoadROMRequest (Memory.ROMName);
-#endif
-					}
-
-					if(GUI.ControllerOption == SNES_SUPERSCOPE)
-						SetCursor (GUI.GunSight);
-					else
-					{
-						SetCursor (GUI.Arrow);
-						GUI.CursorTimer = 60;
-					}
-					Settings.Paused = false;
+					LoadROM(multiRomA, multiRomB);
 				}
 
 				RestoreSNESDisplay ();
@@ -4094,7 +4054,20 @@ static bool LoadROMPlain(const TCHAR *filename)
     return (FALSE);
 }
 
-static bool LoadROM(const TCHAR *filename) {
+static bool LoadROMMulti(const TCHAR *filename, const TCHAR *filename2)
+{
+	SetCurrentDirectory(S9xGetDirectoryT(ROM_DIR));
+	if (Memory.LoadMultiCart(_tToChar(filename), _tToChar(filename2)))
+	{
+		S9xStartCheatSearch(&Cheat);
+		ReInitSound();
+		ResetFrameTimer();
+		return (TRUE);
+	}
+	return (FALSE);
+}
+
+static bool LoadROM(const TCHAR *filename, const TCHAR *filename2 /*= NULL*/) {
 
 #ifdef NETPLAY_SUPPORT
 	if (Settings.NetPlay && !Settings.NetPlayServer)
@@ -4110,13 +4083,17 @@ static bool LoadROM(const TCHAR *filename) {
 		S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
 	}
 
-	Settings.StopEmulation = !LoadROMPlain(filename);
+	if(filename2)
+		Settings.StopEmulation = !LoadROMMulti(filename, filename2);
+	else
+		Settings.StopEmulation = !LoadROMPlain(filename);
 
 	if (!Settings.StopEmulation) {
 		bool8 loadedSRAM = Memory.LoadSRAM (S9xGetFilename (".srm", SRAM_DIR));
 		if(!loadedSRAM) // help migration from earlier Snes9x versions by checking ROM directory for savestates
 			Memory.LoadSRAM (S9xGetFilename (".srm", ROMFILENAME_DIR));
-		S9xAddToRecentGames (filename);
+		if(!filename2) // no recent for multi cart
+			S9xAddToRecentGames (filename);
 		CheckDirectoryIsWritable (S9xGetFilename (".---", SNAPSHOT_DIR));
 
 #ifdef NETPLAY_SUPPORT
@@ -4143,19 +4120,6 @@ static bool LoadROM(const TCHAR *filename) {
 	Settings.Paused = false;
 
 	return !Settings.StopEmulation;
-}
-
-static bool LoadMultiROM (const TCHAR *filename, const TCHAR *filename2)
-{
-	SetCurrentDirectory(S9xGetDirectoryT(ROM_DIR));
-    if (Memory.LoadMultiCart (_tToChar(filename), _tToChar(filename2)))
-    {
-		S9xStartCheatSearch (&Cheat);
-        ReInitSound();
-        ResetFrameTimer ();
-        return (TRUE);
-    }
-    return (FALSE);
 }
 
 bool8 S9xLoadROMImage (const TCHAR *string)
