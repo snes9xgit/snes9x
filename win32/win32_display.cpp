@@ -849,26 +849,25 @@ void WinDisplayChar (screenPtrType *s, uint8 c)
 	int	line   = ((c - 32) >> 4) * fontheight_scaled;
 	int	offset = ((c - 32) & 15) * fontwidth_scaled;
 
-	
-	if(displayScale == 1) {
-		for(h=0; h<fontheight_scaled; h++, line++, s+=displayPpl-fontwidth_scaled)
-			for(w=0; w<fontwidth_scaled; w++, s++)
-				FontPixToScreen(font [(line)] [(offset + w)], s);
-	} else if(displayScale == 2) {
-		for(h=0; h<fontheight_scaled; h+=2, line+=2, s+=2*displayPpl-fontwidth_scaled)
-			for(w=0; w<fontwidth_scaled; w+=2, s+=2)
-				FontPixToScreenEPX((offset + w)/2, line/2, s);
-	} else if(displayScale == 3) {
-		for(h=0; h<fontheight_scaled; h+=3, line+=3, s+=3*displayPpl-fontwidth_scaled)
-			for(w=0; w<fontwidth_scaled; w+=3, s+=3)
-				FontPixToScreenEPXSimple3((offset + w)/3, line/3, s);
-	} else {
+	if (GUI.filterMessagFont && (displayScale == 2 || displayScale == 3))
+	{
+		if (displayScale == 2) {
+			for (h = 0; h < fontheight_scaled; h += 2, line += 2, s += 2 * displayPpl - fontwidth_scaled)
+				for (w = 0; w < fontwidth_scaled; w += 2, s += 2)
+					FontPixToScreenEPX((offset + w) / 2, line / 2, s);
+		}
+		else if (displayScale == 3) {
+			for (h = 0; h < fontheight_scaled; h += 3, line += 3, s += 3 * displayPpl - fontwidth_scaled)
+				for (w = 0; w < fontwidth_scaled; w += 3, s += 3)
+					FontPixToScreenEPXSimple3((offset + w) / 3, line / 3, s);
+		}
+	}
+	else
+	{
 		for(h=0; h<fontheight_scaled; h++, line++, s+=displayPpl-fontwidth_scaled)
 			for(w=0; w<fontwidth_scaled; w++, s++)
 				FontPixToScreen(font [(line)/displayScale] [(offset + w)/displayScale], s);
 	}
-
-
 }
 
 static inline void FontPixToScreen(char p, uint16 *s)

@@ -7325,6 +7325,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
         CreateToolTip(IDC_HIRES, hDlg, TEXT("Support the hi-res mode that a few games use, otherwise render them in low-res"));
         CreateToolTip(IDC_HEIGHT_EXTEND, hDlg, TEXT("Display an extra 15 pixels at the bottom, which few games use. Also increases AVI output size from 256x224 to 256x240"));
         CreateToolTip(IDC_MESSAGES_IN_IMAGE, hDlg, TEXT("Draw text inside the SNES image (will get into AVIs, screenshots, and filters)"));
+		CreateToolTip(IDC_MESSAGES_SCALE, hDlg, TEXT("Try to scale messages with EPX instead of Simple, only works for 2x and 3x and when displaying after filters"));
 
         prevOutputMethod = GUI.outputMethod;
         prevScale = GUI.Scale;
@@ -7364,6 +7365,8 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
             SendDlgItemMessage(hDlg, IDC_HEIGHT_EXTEND, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
         if (Settings.AutoDisplayMessages)
             SendDlgItemMessage(hDlg, IDC_MESSAGES_IN_IMAGE, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
+		if (GUI.filterMessagFont)
+			SendDlgItemMessage(hDlg, IDC_MESSAGES_SCALE, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
         if (Settings.SkipFrames == AUTO_FRAMERATE)
             SendDlgItemMessage(hDlg, IDC_AUTOFRAME, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
         if (GUI.Stretch)
@@ -7507,7 +7510,9 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			break;
 
 		case IDC_MESSAGES_IN_IMAGE:
+		case IDC_MESSAGES_SCALE:
 			Settings.AutoDisplayMessages = (bool)(IsDlgButtonChecked(hDlg,IDC_MESSAGES_IN_IMAGE)==BST_CHECKED);
+			GUI.filterMessagFont = (bool)(IsDlgButtonChecked(hDlg, IDC_MESSAGES_SCALE) == BST_CHECKED);
 			if(Settings.AutoDisplayMessages)
 			{
 				if(!GFX.InfoString || !*GFX.InfoString){
@@ -7515,6 +7520,11 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					GFX.InfoStringTimeout = 1;
 				}
 				S9xDisplayMessages(GFX.Screen, GFX.RealPPL, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight, 1);
+				EnableWindow(GetDlgItem(hDlg, IDC_MESSAGES_SCALE), FALSE);
+			}
+			else
+			{
+				EnableWindow(GetDlgItem(hDlg, IDC_MESSAGES_SCALE), TRUE);
 			}
 			// refresh screen, so the user can see the new mode
 			WinRefreshDisplay();
@@ -7742,6 +7752,7 @@ updateFilterBox2:
 				Settings.SupportHiRes = false;
 			GUI.HeightExtend = IsDlgButtonChecked(hDlg, IDC_HEIGHT_EXTEND)!=0;
 			Settings.AutoDisplayMessages = IsDlgButtonChecked(hDlg, IDC_MESSAGES_IN_IMAGE);
+			GUI.filterMessagFont = IsDlgButtonChecked(hDlg, IDC_MESSAGES_SCALE);
 			GUI.DoubleBuffered = (bool)(IsDlgButtonChecked(hDlg, IDC_DBLBUFFER)==BST_CHECKED);
 			GUI.Vsync = (bool)(IsDlgButtonChecked(hDlg, IDC_VSYNC
 				

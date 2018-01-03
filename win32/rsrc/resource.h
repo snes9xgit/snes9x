@@ -2,9 +2,6 @@
 // Microsoft Visual C++ generated include file.
 // Used by snes9x.rc
 //
-
-#define IDC_STATIC (-1)
-
 #define IDR_RT_MANIFEST2                1
 #define IDR_MENU_US                     101
 #define IDC_CURSOR_SCOPE                101
@@ -266,6 +263,7 @@
 #define IDC_ASPECT                      1199
 #define IDC_MESSAGES_IN_IMAGE           1200
 #define IDC_RECORD_NOW                  1201
+#define IDC_MESSAGES_SCALE              1201
 #define IDC_RECORD_RESET                1202
 #define IDC_JOY1                        1203
 #define IDC_JOY2                        1204
@@ -506,12 +504,13 @@
 #define ID_SAVEMEMPACK                  40175
 #define ID_FILE_SAVE_FILE               40176
 #define ID_FILE_LOAD_FILE               40177
+#define IDC_STATIC                      -1
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        152
+#define _APS_NEXT_RESOURCE_VALUE        153
 #define _APS_NEXT_COMMAND_VALUE         40178
 #define _APS_NEXT_CONTROL_VALUE         3022
 #define _APS_NEXT_SYMED_VALUE           101
