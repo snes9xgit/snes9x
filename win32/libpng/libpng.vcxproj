@@ -19,86 +19,86 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\libpng\png.c" />
-    <ClCompile Include="..\..\..\libpng\pngerror.c">
+    <ClCompile Include="src\png.c" />
+    <ClCompile Include="src\pngerror.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngget.c">
+    <ClCompile Include="src\pngget.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngmem.c">
+    <ClCompile Include="src\pngmem.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngpread.c">
+    <ClCompile Include="src\pngpread.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngread.c">
+    <ClCompile Include="src\pngread.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngrio.c">
+    <ClCompile Include="src\pngrio.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngrtran.c">
+    <ClCompile Include="src\pngrtran.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngrutil.c">
+    <ClCompile Include="src\pngrutil.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngset.c">
+    <ClCompile Include="src\pngset.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngtrans.c">
+    <ClCompile Include="src\pngtrans.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngwio.c">
+    <ClCompile Include="src\pngwio.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngwrite.c">
+    <ClCompile Include="src\pngwrite.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngwtran.c">
+    <ClCompile Include="src\pngwtran.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngwutil.c">
+    <ClCompile Include="src\pngwutil.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">Use</PrecompiledHeader>
@@ -183,7 +183,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\libpng;$(ProjectDir)..\..\..\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)..\zlib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>pngpriv.h</PrecompiledHeaderFile>
       <CompileAs>Default</CompileAs>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
@@ -202,8 +202,8 @@
       </AdditionalDependencies>
     </Lib>
     <PreBuildEvent>
-      <Command>IF NOT EXIST "$(ProjectDir)..\..\..\libpng\scripts\pnglibconf.h" (
-COPY "$(ProjectDir)..\..\..\libpng\scripts\pnglibconf.h.prebuilt" "$(ProjectDir)..\..\..\libpng\pnglibconf.h"
+      <Command>IF NOT EXIST "$(ProjectDir)src\scripts\pnglibconf.h" (
+COPY "$(ProjectDir)src\scripts\pnglibconf.h.prebuilt" "$(ProjectDir)src\pnglibconf.h"
 )</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -213,7 +213,7 @@ COPY "$(ProjectDir)..\..\..\libpng\scripts\pnglibconf.h.prebuilt" "$(ProjectDir)
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\libpng;$(ProjectDir)..\..\..\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)..\zlib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>pngpriv.h</PrecompiledHeaderFile>
       <CompileAs>Default</CompileAs>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
@@ -232,8 +232,8 @@ COPY "$(ProjectDir)..\..\..\libpng\scripts\pnglibconf.h.prebuilt" "$(ProjectDir)
       </AdditionalDependencies>
     </Lib>
     <PreBuildEvent>
-      <Command>IF NOT EXIST "$(ProjectDir)..\..\..\libpng\scripts\pnglibconf.h" (
-COPY "$(ProjectDir)..\..\..\libpng\scripts\pnglibconf.h.prebuilt" "$(ProjectDir)..\..\..\libpng\pnglibconf.h"
+      <Command>IF NOT EXIST "$(ProjectDir)src\scripts\pnglibconf.h" (
+COPY "$(ProjectDir)src\scripts\pnglibconf.h.prebuilt" "$(ProjectDir)src\pnglibconf.h"
 )</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -245,7 +245,7 @@ COPY "$(ProjectDir)..\..\..\libpng\scripts\pnglibconf.h.prebuilt" "$(ProjectDir)
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\libpng;$(ProjectDir)..\..\..\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)..\zlib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>pngpriv.h</PrecompiledHeaderFile>
       <CompileAs>Default</CompileAs>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
@@ -266,8 +266,8 @@ COPY "$(ProjectDir)..\..\..\libpng\scripts\pnglibconf.h.prebuilt" "$(ProjectDir)
       </AdditionalDependencies>
     </Lib>
     <PreBuildEvent>
-      <Command>IF NOT EXIST "$(ProjectDir)..\..\..\libpng\scripts\pnglibconf.h" (
-COPY "$(ProjectDir)..\..\..\libpng\scripts\pnglibconf.h.prebuilt" "$(ProjectDir)..\..\..\libpng\pnglibconf.h"
+      <Command>IF NOT EXIST "$(ProjectDir)src\scripts\pnglibconf.h" (
+COPY "$(ProjectDir)src\scripts\pnglibconf.h.prebuilt" "$(ProjectDir)src\pnglibconf.h"
 )</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -279,7 +279,7 @@ COPY "$(ProjectDir)..\..\..\libpng\scripts\pnglibconf.h.prebuilt" "$(ProjectDir)
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\libpng;$(ProjectDir)..\..\..\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)..\zlib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>pngpriv.h</PrecompiledHeaderFile>
       <CompileAs>Default</CompileAs>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
@@ -300,8 +300,8 @@ COPY "$(ProjectDir)..\..\..\libpng\scripts\pnglibconf.h.prebuilt" "$(ProjectDir)
       </AdditionalDependencies>
     </Lib>
     <PreBuildEvent>
-      <Command>IF NOT EXIST "$(ProjectDir)..\..\..\libpng\scripts\pnglibconf.h" (
-COPY "$(ProjectDir)..\..\..\libpng\scripts\pnglibconf.h.prebuilt" "$(ProjectDir)..\..\..\libpng\pnglibconf.h"
+      <Command>IF NOT EXIST "$(ProjectDir)src\scripts\pnglibconf.h" (
+COPY "$(ProjectDir)src\scripts\pnglibconf.h.prebuilt" "$(ProjectDir)src\pnglibconf.h"
 )</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>

@@ -15,49 +15,49 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\libpng\png.c">
+    <ClCompile Include="src\png.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngerror.c">
+    <ClCompile Include="src\pngerror.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngget.c">
+    <ClCompile Include="src\pngget.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngmem.c">
+    <ClCompile Include="src\pngmem.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngpread.c">
+    <ClCompile Include="src\pngpread.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngread.c">
+    <ClCompile Include="src\pngread.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngrio.c">
+    <ClCompile Include="src\pngrio.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngrtran.c">
+    <ClCompile Include="src\pngrtran.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngrutil.c">
+    <ClCompile Include="src\pngrutil.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngset.c">
+    <ClCompile Include="src\pngset.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngtrans.c">
+    <ClCompile Include="src\pngtrans.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngwio.c">
+    <ClCompile Include="src\pngwio.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngwrite.c">
+    <ClCompile Include="src\pngwrite.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngwtran.c">
+    <ClCompile Include="src\pngwtran.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngwutil.c">
+    <ClCompile Include="src\pngwutil.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

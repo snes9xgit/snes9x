@@ -13,11 +13,13 @@ NOTE: Unicode support requires a special zlib build - see the end of the zlib en
 
 - zlib (optional, ZLIB define, enabled by default) - the default solution includes a zlib
   project that builds appropriately (force includes _tfwopen.h for unicode support in s9x).
-  (the zlib directory should reside at win32/../../zlib, i.e. 2 directories up)
+  The zlib directory should reside at win32/zlib/src, or you can download it automatically
+  with git submodule init && git submodule update.
 
 - libpng (optional, HAVE_LIBPNG define, enabled by default) - the default solution includes
   a libpng project that builds appropriately.
-  (the libpng directory should reside at win32/../../libpng, i.e. 2 directories up)
+  The libpng directory should reside at win32/libpng/src, or you can download it automatically
+  with git submodule init && git submodule update.
 
 - To compile Snes9x:
     Start up VS2017.
