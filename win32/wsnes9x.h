@@ -339,6 +339,7 @@ struct sGUI {
 	TCHAR OGLshaderFileName[MAX_PATH];
 
 	bool OGLdisablePBOs;
+	bool filterMessagFont;
 
     bool IgnoreNextMouseMove;
     RECT window_size;

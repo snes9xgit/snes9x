@@ -221,6 +221,9 @@ void WinDeleteRecentGamesList ();
 
 HANDLE configMutex = NULL;
 
+extern TCHAR multiRomA[MAX_PATH]; // lazy, should put in sGUI and add init to {0} somewhere
+extern TCHAR multiRomB[MAX_PATH];
+
 void S9xParseArg (char **argv, int &i, int argc)
 {
 	if (strcasecmp (argv [i], "-restore") == 0)
@@ -236,10 +239,15 @@ void S9xParseArg (char **argv, int &i, int argc)
 	{
 		GUI.FullScreen = true;
 	}
+	else if (!strcasecmp(argv[i], "-cartb"))
+	{
+		Settings.Multi = TRUE; // only used to signal winmain
+		if (i + 1 < argc)
+		{
+			lstrcpyn(multiRomB, _tFromChar(argv[++i]), MAX_PATH);
+		}
+	}
 }
-
-extern TCHAR multiRomA [MAX_PATH]; // lazy, should put in sGUI and add init to {0} somewhere
-extern TCHAR multiRomB [MAX_PATH];
 
 void WinSetDefaultValues ()
 {
@@ -918,6 +926,7 @@ void WinRegisterConfigItems()
 	AddBoolC("Fullscreen:EmulateFullscreen", GUI.EmulateFullscreen, true,"true makes snes9x create a window that spans the entire screen when going fullscreen");
 	AddBoolC("HideMenu", GUI.HideMenu, false, "true to auto-hide the menu bar on startup.");
 	AddBoolC("Vsync", GUI.Vsync, false, "true to enable Vsync");
+	AddBoolC("FilterMessageFont", GUI.filterMessagFont, true, "true to filter message font with EPX on 2x/3x scales if MessagesInImage is false)");
 #undef CATEGORY
 #define CATEGORY "Settings"
 	AddUIntC("FrameSkip", Settings.SkipFrames, AUTO_FRAMERATE, "200=automatic (limits at 50/60 fps), 0=none, 1=skip every other, ...");

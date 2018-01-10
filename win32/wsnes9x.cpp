@@ -264,8 +264,8 @@ extern SNPServer NPServer;
 
 __int64 PCBase, PCFrameTime, PCFrameTimeNTSC, PCFrameTimePAL, PCStart, PCEnd;
 DWORD PCStartTicks, PCEndTicks;
+bool PCFrameTimeIsDefault = true;
 
-INT_PTR CALLBACK  DlgSP7PackConfig(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgInfoProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgAboutProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -275,7 +275,6 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 INT_PTR CALLBACK DlgMultiROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK DlgChildSplitProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgNPProgress(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
-INT_PTR CALLBACK DlgPackConfigProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgNetConnect(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgNPOptions(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -327,6 +326,9 @@ static bool ExtensionIsValid(const TCHAR *filename);
 extern FILE *trace_fs;
 extern SCheatData Cheat;
 extern bool8 do_frame_adjust;
+
+TCHAR multiRomA[MAX_PATH] = { 0 }; // lazy, should put in sGUI and add init to {0} somewhere
+TCHAR multiRomB[MAX_PATH] = { 0 };
 
 HINSTANCE g_hInst;
 
@@ -640,8 +642,8 @@ void FreezeUnfreeze (const char *filename, bool8 freeze);
 void CheckDirectoryIsWritable (const char *filename);
 static void CheckMenuStates ();
 static void ResetFrameTimer ();
-static bool LoadROM (const TCHAR *filename);
-static bool LoadMultiROM (const TCHAR *filename, const TCHAR *filename2);
+static bool LoadROM (const TCHAR *filename, const TCHAR *filename2 = NULL);
+static bool LoadROMMulti (const TCHAR *filename, const TCHAR *filename2);
 bool8 S9xLoadROMImage (const TCHAR *string);
 #ifdef NETPLAY_SUPPORT
 static void EnableServer (bool8 enable);
@@ -657,7 +659,6 @@ void WinCleanupConfigData ();
 
 #include "../ppu.h"
 #include "../snapshot.h"
-const char *S9xGetFilenameInc (const char *);
 void S9xSetRecentGames ();
 void S9xAddToRecentGames (const TCHAR *filename);
 void S9xRemoveFromRecentGames (int i);
@@ -1553,10 +1554,6 @@ bool WinMoviePlay(LPCTSTR filename)
 	return true;
 }
 
-TCHAR multiRomA [MAX_PATH] = {0}; // lazy, should put in sGUI and add init to {0} somewhere
-TCHAR multiRomB [MAX_PATH] = {0};
-
-
 static bool startingMovie = false;
 
 HWND cheatSearchHWND = NULL;
@@ -1914,52 +1911,13 @@ LRESULT CALLBACK WinProc(
 
 		case ID_FILE_LOADMULTICART:
 			{
-#ifdef NETPLAY_SUPPORT
-				if (Settings.NetPlay && !Settings.NetPlayServer)
-				{
-					S9xMessage (S9X_INFO, S9X_NETPLAY_NOT_SERVER, WINPROC_DISCONNECT);
-					break;
-				}
-#endif
 				RestoreGUIDisplay ();
 
 				const bool ok = (1 <= DialogBoxParam(g_hInst, MAKEINTRESOURCE(IDD_MULTICART), GUI.hWnd, DlgMultiROMProc, (LPARAM)NULL));
 
 				if(ok)
 				{
-					if (!Settings.StopEmulation)
-					{
-						Memory.SaveSRAM (S9xGetFilename (".srm", SRAM_DIR));
-						S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
-					}
-					
-					Settings.StopEmulation = !LoadMultiROM (multiRomA, multiRomB);
-					if (!Settings.StopEmulation)
-					{
-						bool8 loadedSRAM = Memory.LoadSRAM (S9xGetFilename (".srm", SRAM_DIR));
-						if(!loadedSRAM) // help migration from earlier Snes9x versions by checking ROM directory for savestates
-							Memory.LoadSRAM (S9xGetFilename (".srm", ROMFILENAME_DIR));
-						S9xLoadCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
-//						S9xAddToRecentGames (multiRomA, multiRomB);
-						CheckDirectoryIsWritable (S9xGetFilename (".---", SNAPSHOT_DIR));
-						CheckMenuStates ();
-#ifdef NETPLAY_SUPPORT
-						// still valid with multicart ???
-						if (NPServer.SendROMImageOnConnect)
-							S9xNPServerQueueSendingROMImage ();
-						else
-							S9xNPServerQueueSendingLoadROMRequest (Memory.ROMName);
-#endif
-					}
-
-					if(GUI.ControllerOption == SNES_SUPERSCOPE)
-						SetCursor (GUI.GunSight);
-					else
-					{
-						SetCursor (GUI.Arrow);
-						GUI.CursorTimer = 60;
-					}
-					Settings.Paused = false;
+					LoadROM(multiRomA, multiRomB);
 				}
 
 				RestoreSNESDisplay ();
@@ -3488,8 +3446,18 @@ int WINAPI WinMain(
         MessageBox( GUI.hWnd, Languages[ GUI.Language].errFrameTimer, TEXT("Snes9X - Frame Timer"), MB_OK | MB_ICONINFORMATION);
     }
 
-	if(rom_filename)
-		LoadROM(rom_filename);
+	if (rom_filename)
+	{
+		if (Settings.Multi) // we found -cartB parameter
+		{
+			lstrcpy(multiRomA, rom_filename); // for the mutli cart dialog
+			LoadROM(rom_filename, multiRomB);
+		}
+		else
+		{
+			LoadROM(rom_filename);
+		}
+	}
 
 	S9xUnmapAllControls();
 	S9xSetupDefaultKeymap();
@@ -3611,7 +3579,8 @@ int WINAPI WinMain(
 			{
 				ProcessInput();
 
-				while(!S9xSyncSound()) {
+				// no sound sync when speed is not set to 100%
+				while(PCFrameTimeIsDefault && !S9xSyncSound()) {
                     ResetEvent(GUI.SoundSyncEvent);
                     if(WaitForSingleObject(GUI.SoundSyncEvent,1000) != WAIT_OBJECT_0)
                         S9xClearSamples();
@@ -4073,6 +4042,8 @@ static void ResetFrameTimer ()
     else if (Settings.FrameTime == Settings.FrameTimePAL) PCFrameTime = PCFrameTimePAL;
     else PCFrameTime = (__int64)((double)(PCBase * Settings.FrameTime) * .000001);
 
+	// determines if we can do sound sync
+	PCFrameTimeIsDefault = Settings.PAL ? Settings.FrameTime == Settings.FrameTimePAL : Settings.FrameTime == Settings.FrameTimeNTSC;
 
     if (GUI.hFrameTimer)
         timeKillEvent (GUI.hFrameTimer);
@@ -4095,7 +4066,20 @@ static bool LoadROMPlain(const TCHAR *filename)
     return (FALSE);
 }
 
-static bool LoadROM(const TCHAR *filename) {
+static bool LoadROMMulti(const TCHAR *filename, const TCHAR *filename2)
+{
+	SetCurrentDirectory(S9xGetDirectoryT(ROM_DIR));
+	if (Memory.LoadMultiCart(_tToChar(filename), _tToChar(filename2)))
+	{
+		S9xStartCheatSearch(&Cheat);
+		ReInitSound();
+		ResetFrameTimer();
+		return (TRUE);
+	}
+	return (FALSE);
+}
+
+static bool LoadROM(const TCHAR *filename, const TCHAR *filename2 /*= NULL*/) {
 
 #ifdef NETPLAY_SUPPORT
 	if (Settings.NetPlay && !Settings.NetPlayServer)
@@ -4111,13 +4095,17 @@ static bool LoadROM(const TCHAR *filename) {
 		S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
 	}
 
-	Settings.StopEmulation = !LoadROMPlain(filename);
+	if(filename2)
+		Settings.StopEmulation = !LoadROMMulti(filename, filename2);
+	else
+		Settings.StopEmulation = !LoadROMPlain(filename);
 
 	if (!Settings.StopEmulation) {
 		bool8 loadedSRAM = Memory.LoadSRAM (S9xGetFilename (".srm", SRAM_DIR));
 		if(!loadedSRAM) // help migration from earlier Snes9x versions by checking ROM directory for savestates
 			Memory.LoadSRAM (S9xGetFilename (".srm", ROMFILENAME_DIR));
-		S9xAddToRecentGames (filename);
+		if(!filename2) // no recent for multi cart
+			S9xAddToRecentGames (filename);
 		CheckDirectoryIsWritable (S9xGetFilename (".---", SNAPSHOT_DIR));
 
 #ifdef NETPLAY_SUPPORT
@@ -4144,19 +4132,6 @@ static bool LoadROM(const TCHAR *filename) {
 	Settings.Paused = false;
 
 	return !Settings.StopEmulation;
-}
-
-static bool LoadMultiROM (const TCHAR *filename, const TCHAR *filename2)
-{
-	SetCurrentDirectory(S9xGetDirectoryT(ROM_DIR));
-    if (Memory.LoadMultiCart (_tToChar(filename), _tToChar(filename2)))
-    {
-		S9xStartCheatSearch (&Cheat);
-        ReInitSound();
-        ResetFrameTimer ();
-        return (TRUE);
-    }
-    return (FALSE);
 }
 
 bool8 S9xLoadROMImage (const TCHAR *string)
@@ -4471,6 +4446,7 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 		CreateToolTip(IDC_INRATEEDIT,hDlg,TEXT("For each 'Input rate' samples generated by the SNES, 'Playback rate' samples will produced. If you experience crackling you can try to lower this setting."));
 		CreateToolTip(IDC_INRATE,hDlg,TEXT("For each 'Input rate' samples generated by the SNES, 'Playback rate' samples will produced. If you experience crackling you can try to lower this setting."));
+		CreateToolTip(IDC_DYNRATECONTROL, hDlg, TEXT("Try to dynamically adjust the input rate to never overflow or underflow the sound buffer. Only works with XAudio2."));
 		
 		int pos;
 		pos = SendDlgItemMessage(hDlg, IDC_DRIVER, CB_INSERTSTRING,-1,(LPARAM)TEXT("Snes9x DirectSound"));
@@ -4499,6 +4475,7 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				break;
 			}
 		}
+		EnableWindow(GetDlgItem(hDlg, IDC_DYNRATECONTROL), GUI.SoundDriver == WIN_XAUDIO2_SOUND_DRIVER);
 
 		SendDlgItemMessage(hDlg, IDC_INRATE, TBM_SETRANGE,TRUE,MAKELONG(0,20));
 		SendDlgItemMessage(hDlg, IDC_INRATE, TBM_SETPOS,TRUE,(Settings.SoundInputRate - 31100)/50);
@@ -4678,12 +4655,14 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						int driver=SendDlgItemMessage(hDlg, IDC_DRIVER, CB_GETITEMDATA,
 										SendDlgItemMessage(hDlg, IDC_DRIVER, CB_GETCURSEL, 0,0),0);
+						EnableWindow(GetDlgItem(hDlg, IDC_DYNRATECONTROL), FALSE);
 						switch(driver) {
 							case WIN_SNES9X_DIRECT_SOUND_DRIVER:
 								SendDlgItemMessage(hDlg,IDC_BUFLEN,CB_SETCURSEL,3,0);
 								break;
 							case WIN_XAUDIO2_SOUND_DRIVER:
 								SendDlgItemMessage(hDlg,IDC_BUFLEN,CB_SETCURSEL,3,0);
+								EnableWindow(GetDlgItem(hDlg, IDC_DYNRATECONTROL), TRUE);
 								break;
 							default:
 								SendDlgItemMessage(hDlg,IDC_BUFLEN,CB_SETCURSEL,7,0);
@@ -7325,6 +7304,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
         CreateToolTip(IDC_HIRES, hDlg, TEXT("Support the hi-res mode that a few games use, otherwise render them in low-res"));
         CreateToolTip(IDC_HEIGHT_EXTEND, hDlg, TEXT("Display an extra 15 pixels at the bottom, which few games use. Also increases AVI output size from 256x224 to 256x240"));
         CreateToolTip(IDC_MESSAGES_IN_IMAGE, hDlg, TEXT("Draw text inside the SNES image (will get into AVIs, screenshots, and filters)"));
+		CreateToolTip(IDC_MESSAGES_SCALE, hDlg, TEXT("Try to scale messages with EPX instead of Simple, only works for 2x and 3x and when displaying after filters"));
 
         prevOutputMethod = GUI.outputMethod;
         prevScale = GUI.Scale;
@@ -7364,6 +7344,8 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
             SendDlgItemMessage(hDlg, IDC_HEIGHT_EXTEND, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
         if (Settings.AutoDisplayMessages)
             SendDlgItemMessage(hDlg, IDC_MESSAGES_IN_IMAGE, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
+		if (GUI.filterMessagFont)
+			SendDlgItemMessage(hDlg, IDC_MESSAGES_SCALE, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
         if (Settings.SkipFrames == AUTO_FRAMERATE)
             SendDlgItemMessage(hDlg, IDC_AUTOFRAME, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
         if (GUI.Stretch)
@@ -7507,7 +7489,9 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			break;
 
 		case IDC_MESSAGES_IN_IMAGE:
+		case IDC_MESSAGES_SCALE:
 			Settings.AutoDisplayMessages = (bool)(IsDlgButtonChecked(hDlg,IDC_MESSAGES_IN_IMAGE)==BST_CHECKED);
+			GUI.filterMessagFont = (bool)(IsDlgButtonChecked(hDlg, IDC_MESSAGES_SCALE) == BST_CHECKED);
 			if(Settings.AutoDisplayMessages)
 			{
 				if(!GFX.InfoString || !*GFX.InfoString){
@@ -7515,6 +7499,11 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					GFX.InfoStringTimeout = 1;
 				}
 				S9xDisplayMessages(GFX.Screen, GFX.RealPPL, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight, 1);
+				EnableWindow(GetDlgItem(hDlg, IDC_MESSAGES_SCALE), FALSE);
+			}
+			else
+			{
+				EnableWindow(GetDlgItem(hDlg, IDC_MESSAGES_SCALE), TRUE);
 			}
 			// refresh screen, so the user can see the new mode
 			WinRefreshDisplay();
@@ -7742,6 +7731,7 @@ updateFilterBox2:
 				Settings.SupportHiRes = false;
 			GUI.HeightExtend = IsDlgButtonChecked(hDlg, IDC_HEIGHT_EXTEND)!=0;
 			Settings.AutoDisplayMessages = IsDlgButtonChecked(hDlg, IDC_MESSAGES_IN_IMAGE);
+			GUI.filterMessagFont = IsDlgButtonChecked(hDlg, IDC_MESSAGES_SCALE);
 			GUI.DoubleBuffered = (bool)(IsDlgButtonChecked(hDlg, IDC_DBLBUFFER)==BST_CHECKED);
 			GUI.Vsync = (bool)(IsDlgButtonChecked(hDlg, IDC_VSYNC
 				
