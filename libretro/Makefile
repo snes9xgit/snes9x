@@ -56,7 +56,7 @@ ifneq (,$(findstring unix,$(platform)))
    CC = gcc
    SHARED := -shared -z defs
    else
-   SHARED := -shared -Wl,--version-script=link.T -Wl,-z,defs
+   SHARED := -shared -Wl,--version-script=link.T
    endif
    ifneq ($(findstring Haiku,$(shell uname -a)),)
       LIBS :=
