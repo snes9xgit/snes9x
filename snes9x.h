@@ -254,9 +254,9 @@
 #define SNES_MAX_PAL_VCOUNTER		312
 #define SNES_HCOUNTER_MAX			341
 
-#define ONE_CYCLE					6
-#define SLOW_ONE_CYCLE				8
-#define TWO_CYCLES					12
+#define ONE_CYCLE						(overclock_cycles ? 4 : 6)
+#define SLOW_ONE_CYCLE				(overclock_cycles ? 4 : 8)
+#define TWO_CYCLES					(overclock_cycles ? 6 : 12)
 #define	ONE_DOT_CYCLE				4
 
 #define SNES_CYCLES_PER_SCANLINE	(SNES_HCOUNTER_MAX * ONE_DOT_CYCLE)
@@ -295,6 +295,8 @@
 
 #define ROM_NAME_LEN	23
 #define AUTO_FRAMERATE	200
+
+extern bool overclock_cycles;
 
 struct SCPUState
 {
