@@ -49,7 +49,7 @@
 char g_rom_dir[1024];
 char g_basename[1024];
 bool overclock_cycles = false;
-bool sprite_flicker = false;
+bool reduce_sprite_flicker = false;
 
 bool hires_blend = false;
 static uint16 *gfx_blend;
@@ -174,8 +174,8 @@ void retro_set_environment(retro_environment_t cb)
         // Adding more variables and rearranging them is safe.
         { "snes9x_up_down_allowed", "Allow Opposing Directions; disabled|enabled" },
         { "snes9x_overclock_superfx", "SuperFX Overclocking; 100%|150%|200%|250%|300%|350%|400%|450%|500%|50%" },
-        { "snes9x_overclock_cycles", "CPU Overclock (Hack, Unsafe); disabled|enabled" },
-        { "snes9x_sprite_flicker", "Reduce Flickering (Hack, Unsafe); disabled|enabled" },
+        { "snes9x_overclock_cycles", "Reduce Slowdown (Hack, Unsafe); disabled|enabled" },
+        { "snes9x_reduce_sprite_flicker", "Reduce Flickering (Hack, Unsafe); disabled|enabled" },
         { "snes9x_hires_blend", "Hires Blending; disabled|enabled" },
         { "snes9x_audio_interpolation", "Audio Interpolation; gaussian|cubic|sinc|none|linear" },
         { "snes9x_layer_1", "Show layer 1; enabled|disabled" },
@@ -318,16 +318,16 @@ static void update_variables(void)
             overclock_cycles = false;
     }
 
-    var.key = "snes9x_sprite_flicker";
+    var.key = "snes9x_reduce_sprite_flicker";
     var.value = NULL;
 
     if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
     {
         if (strcmp(var.value, "enabled") == 0)
-            sprite_flicker = true;
+            reduce_sprite_flicker = true;
         else
-            sprite_flicker = false;
-    }
+            reduce_sprite_flicker = false;
+        }
 
     int disabled_channels=0;
     strcpy(key, "snes9x_sndchan_x");
