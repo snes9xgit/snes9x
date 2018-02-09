@@ -254,7 +254,7 @@
 #define SNES_MAX_PAL_VCOUNTER		312
 #define SNES_HCOUNTER_MAX			341
 
-#define ONE_CYCLE						(overclock_cycles ? 1 : 6)
+#define ONE_CYCLE						(overclock_cycles ? 3 : 6)
 #define SLOW_ONE_CYCLE				(overclock_cycles ? 1 : 8)
 #define TWO_CYCLES					(overclock_cycles ? 1 : 12)
 #define	ONE_DOT_CYCLE				4
