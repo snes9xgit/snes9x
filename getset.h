@@ -220,7 +220,6 @@
 	}
 
 extern uint8	OpenBus;
-extern bool overclock_cycles;
 
 static inline int32 memory_speed (uint32 address)
 {
@@ -229,7 +228,7 @@ static inline int32 memory_speed (uint32 address)
 		if (address & 0x800000)
 			return (CPU.FastROMSpeed);
 
-		return (overclock_cycles ? 6 : SLOW_ONE_CYCLE);
+		return (SLOW_ONE_CYCLE);
 	}
 
 	if ((address + 0x6000) & 0x4000)

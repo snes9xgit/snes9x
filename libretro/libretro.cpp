@@ -50,6 +50,7 @@ char g_rom_dir[1024];
 char g_basename[1024];
 bool overclock_cycles = false;
 bool reduce_sprite_flicker = false;
+int one_c, slow_one_c, two_c;
 
 bool hires_blend = false;
 static uint16 *gfx_blend;
@@ -174,7 +175,7 @@ void retro_set_environment(retro_environment_t cb)
         // Adding more variables and rearranging them is safe.
         { "snes9x_up_down_allowed", "Allow Opposing Directions; disabled|enabled" },
         { "snes9x_overclock_superfx", "SuperFX Overclocking; 100%|150%|200%|250%|300%|350%|400%|450%|500%|50%" },
-        { "snes9x_overclock_cycles", "Reduce Slowdown (Hack, Unsafe); disabled|enabled" },
+        { "snes9x_overclock_cycles", "Reduce Slowdown (Hack, Unsafe); disabled|compatible|max" },
         { "snes9x_reduce_sprite_flicker", "Reduce Flickering (Hack, Unsafe); disabled|enabled" },
         { "snes9x_hires_blend", "Hires Blending; disabled|enabled" },
         { "snes9x_audio_interpolation", "Audio Interpolation; gaussian|cubic|sinc|none|linear" },
@@ -312,8 +313,20 @@ static void update_variables(void)
 
     if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
     {
-        if (strcmp(var.value, "enabled") == 0)
+        if (strcmp(var.value, "compatible") == 0)
+        {
             overclock_cycles = true;
+            one_c = 4;
+            slow_one_c = 5;
+            two_c = 6;
+        }
+        else if (strcmp(var.value, "max") == 0)
+        {
+            overclock_cycles = true;
+            one_c = 3;
+            slow_one_c = 3;
+            two_c = 3;
+        }
         else
             overclock_cycles = false;
     }
