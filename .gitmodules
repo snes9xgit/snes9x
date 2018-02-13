@@ -4,3 +4,6 @@
 [submodule "win32/zlib/src"]
 	path = win32/zlib/src
 	url = https://github.com/madler/zlib.git
+[submodule "win32/lua"]
+	path = win32/lua
+	url = https://github.com/gocha/lua-megapack.git

@@ -569,6 +569,7 @@
     <ClCompile Include="DumpAtEnd.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
+    <ClCompile Include="..\lua-engine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="rsrc\nodrop.cur">
