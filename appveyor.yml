@@ -34,7 +34,7 @@ build_script:
 after_build:
   - ps: $env:gitrev = git describe --tags
   - ps: $env:my_version = "$env:gitrev"
-  - set package_name=snes9x-%my_version%-%arch%
+  - set package_name=snes9x-rr-%my_version%-%arch%
   - if exist artifacts rmdir /s /q artifacts
   - mkdir artifacts
   - copy "%output%" artifacts
