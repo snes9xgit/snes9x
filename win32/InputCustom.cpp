@@ -22,8 +22,14 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2017  BearOso,
                              OV2
+
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -134,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2017  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -142,11 +148,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2017  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -950,17 +961,36 @@ static LRESULT CALLBACK InputCustomWndProc(HWND hwnd, UINT msg, WPARAM wParam, L
 		return 1;
 	case WM_USER+45:
 	case WM_KEYDOWN:
-		TranslateKey(wParam,temp);
-		col = CheckButtonKey(wParam);
+    {
+        UINT scancode = (lParam & 0x00ff0000) >> 16;
+        int extended = (lParam & 0x01000000) != 0;
 
-		icp->crForeGnd = ((~col) & 0x00ffffff);
-		icp->crBackGnd = col;
-		SetWindowText(hwnd,_tFromChar(temp));
-		InvalidateRect(icp->hwnd, NULL, FALSE);
-		UpdateWindow(icp->hwnd);
-		SendMessage(pappy,WM_USER+43,wParam,(LPARAM)hwnd);
+        switch (wParam) {
+        case VK_SHIFT:
+            wParam = MapVirtualKey(scancode, MAPVK_VSC_TO_VK_EX);
+            break;
+        case VK_CONTROL:
+            wParam = extended ? VK_RCONTROL : VK_LCONTROL;
+            break;
+        case VK_MENU:
+            wParam = extended ? VK_RMENU : VK_LMENU;
+            break;
+        default:
+            break;
+        }
 
-		break;
+        TranslateKey(wParam, temp);
+        col = CheckButtonKey(wParam);
+
+        icp->crForeGnd = ((~col) & 0x00ffffff);
+        icp->crBackGnd = col;
+        SetWindowText(hwnd, _tFromChar(temp));
+        InvalidateRect(icp->hwnd, NULL, FALSE);
+        UpdateWindow(icp->hwnd);
+        SendMessage(pappy, WM_USER + 43, wParam, (LPARAM)hwnd);
+
+        break;
+    }
 	case WM_USER+44:
 
 		TranslateKey(wParam,temp);

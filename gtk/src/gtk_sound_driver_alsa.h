@@ -14,13 +14,13 @@ class S9xAlsaSoundDriver : public S9xSoundDriver
         bool8 open_device (void);
         void start (void);
         void stop (void);
-        void mix (void);
         void samples_available (void);
 
     private:
         snd_pcm_t *pcm;
         int sound_buffer_size;
         uint8 *sound_buffer;
+        int output_buffer_size;
 };
 
 #endif /* __GTK_SOUND_DRIVER_ALSA_H */

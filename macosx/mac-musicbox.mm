@@ -22,8 +22,14 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2017  BearOso,
                              OV2
+
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -134,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2017  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -142,11 +148,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2017  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -184,6 +195,11 @@
   Snes9x for Mac OS X
 
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
   (c) Copyright 2002 - 2005  107
   (c) Copyright 2002         PB1400c
   (c) Copyright 2004         Alexander and Sander
@@ -196,6 +212,7 @@
 #import "memmap.h"
 #import "apu.h"
 #import "snapshot.h"
+#import "snes.hpp"
 
 #import <Cocoa/Cocoa.h>
 #import <sys/time.h>
@@ -286,7 +303,7 @@ static void * SoundTask (void *);
 	headPressed = false;
 
 	stereo_switch = ~0;
-	spc_core->dsp_set_stereo_switch(stereo_switch);
+	SNES::dsp.spc_dsp.set_stereo_switch(stereo_switch);
 
 	for (int i = 0; i < MAC_MAX_PLAYERS; i++)
 		controlPad[i] = 0;
@@ -326,7 +343,7 @@ static void * SoundTask (void *);
 - (void) dealloc
 {
 	stereo_switch = ~0;
-	spc_core->dsp_set_stereo_switch(stereo_switch);
+	SNES::dsp.spc_dsp.set_stereo_switch(stereo_switch);
 
 	if (musicboxmode == kMBXSoundEmulation)
 		SPCPlayDefrost();
@@ -366,7 +383,7 @@ static void * SoundTask (void *);
 - (IBAction) handleChannelButton: (id) sender
 {
 	stereo_switch ^= (1 << [sender tag]);
-	spc_core->dsp_set_stereo_switch(stereo_switch);
+	SNES::dsp.spc_dsp.set_stereo_switch(stereo_switch);
 }
 
 - (IBAction) handleDisclosureButton: (id) sender
@@ -464,8 +481,8 @@ static void * SoundTask (void *);
 
 		// Max
 
-		short			vl = (spc_core->dsp_reg_value(h, 0x00) * spc_core->dsp_envx_value(h)) >> 11;
-		short			vr = (spc_core->dsp_reg_value(h, 0x01) * spc_core->dsp_envx_value(h)) >> 11;
+		short			vl = (SNES::dsp.spc_dsp.reg_value(h, 0x00) * SNES::dsp.spc_dsp.envx_value(h)) >> 11;
+		short			vr = (SNES::dsp.spc_dsp.reg_value(h, 0x01) * SNES::dsp.spc_dsp.envx_value(h)) >> 11;
 		long long		currentTime;
 		struct timeval	tv;
 

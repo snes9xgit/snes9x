@@ -22,8 +22,14 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2017  BearOso,
                              OV2
+
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -134,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2017  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -142,11 +148,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2017  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -643,17 +654,18 @@ void CDirect3D::Render(SSurface Src)
 			case D3DERR_DEVICELOST:		//do no rendering until device is restored
 				return;
 			case D3DERR_DEVICENOTRESET: //we can reset now
-				ResetDevice();
+                if(!IsIconic(dPresentParams.hDeviceWindow))
+				    ResetDevice();
 				return;
 			default:
-				DXTRACE_ERR_MSGBOX( TEXT("Internal driver error"), hr);
+				DXTRACE_ERR_MSGBOX(TEXT("Internal driver error"), hr);
 				return;
 		}
 	}
 
 	//BlankTexture(drawSurface);
 	if(FAILED(hr = drawSurface->LockRect(0, &lr, NULL, 0))) {
-		DXTRACE_ERR_MSGBOX( TEXT("Unable to lock texture"), hr);
+		DXTRACE_ERR_MSGBOX(TEXT("Unable to lock texture"), hr);
 		return;
 	} else {
 		Dst.Surface = (unsigned char *)lr.pBits;
@@ -786,7 +798,7 @@ bool CDirect3D::BlankTexture(LPDIRECT3DTEXTURE9 texture)
 	HRESULT hr;
 
 	if(FAILED(hr = texture->LockRect(0, &lr, NULL, 0))) {
-		DXTRACE_ERR_MSGBOX( TEXT("Unable to lock texture"), hr);
+		DXTRACE_ERR_MSGBOX(TEXT("Unable to lock texture"), hr);
 		return false;
 	} else {
 		memset(lr.pBits, 0, lr.Pitch * quadTextureSize);

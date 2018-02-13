@@ -22,8 +22,14 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2017  BearOso,
                              OV2
+
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -134,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2017  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -142,11 +148,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2017  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -199,7 +210,7 @@
 #define SAVE_INFO_LOAD					"Loaded"
 #define SAVE_INFO_OOPS					"Auto-saving 'oops' snapshot"
 #define SAVE_ERR_WRONG_FORMAT			"File not in Snes9x snapshot format"
-#define SAVE_ERR_WRONG_VERSION			"Incompatable snapshot version"
+#define SAVE_ERR_WRONG_VERSION			"Incompatible snapshot version"
 #define SAVE_ERR_ROM_NOT_FOUND			"ROM image \"%s\" for snapshot not found"
 #define SAVE_ERR_SAVE_NOT_FOUND			"Snapshot %s does not exist"
 

@@ -22,8 +22,14 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2017  BearOso,
                              OV2
+
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -134,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2017  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -142,11 +148,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2017  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -349,6 +360,7 @@ struct sGUI {
 	TCHAR OGLshaderFileName[MAX_PATH];
 
 	bool OGLdisablePBOs;
+	bool filterMessagFont;
 
     bool IgnoreNextMouseMove;
     RECT window_size;
@@ -394,6 +406,8 @@ struct sGUI {
 	int SoundDriver;
 	int SoundBufferSize;
 	bool Mute;
+	unsigned int VolumeRegular;
+	unsigned int VolumeTurbo;
 	// used for sync sound synchronization
 	CRITICAL_SECTION SoundCritSect;
     HANDLE SoundSyncEvent;
@@ -405,7 +419,9 @@ struct sGUI {
     TCHAR FreezeFileDir [_MAX_PATH];
     TCHAR SRAMFileDir [_MAX_PATH];
     TCHAR PatchDir [_MAX_PATH];
+	TCHAR CheatDir [_MAX_PATH];
     TCHAR BiosDir [_MAX_PATH];
+	TCHAR SatDir [_MAX_PATH];
 	bool LockDirectories;
 
     TCHAR RecentGames [MAX_RECENT_GAMES_LIST_SIZE][MAX_PATH];

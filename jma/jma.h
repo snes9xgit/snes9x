@@ -64,12 +64,12 @@ namespace JMA
   class jma_open
   {
     public:
-    jma_open(const char *) throw(jma_errors);
+    jma_open(const char *);
     ~jma_open();
 
     std::vector<jma_public_file_info> get_files_info();
-    std::vector<unsigned char *> get_all_files(unsigned char *) throw(jma_errors);
-    void extract_file(std::string& name, unsigned char *) throw(jma_errors);
+    std::vector<unsigned char *> get_all_files(unsigned char *);
+    void extract_file(std::string& name, unsigned char *);
     bool is_solid();
 
     private:
@@ -79,8 +79,8 @@ namespace JMA
     unsigned char *decompressed_buffer;
     unsigned char *compressed_buffer;
 
-    void chunk_seek(unsigned int) throw(jma_errors);
-    void retrieve_file_block() throw(jma_errors);
+    void chunk_seek(unsigned int);
+    void retrieve_file_block();
   };
 
   time_t uint_to_time(unsigned short, unsigned short);

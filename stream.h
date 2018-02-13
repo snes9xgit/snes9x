@@ -22,8 +22,14 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2017  BearOso,
                              OV2
+
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -134,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2017  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -142,11 +148,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2017  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -220,8 +231,11 @@ class fStream : public Stream
 };
 
 #ifdef UNZIP_SUPPORT
-
-#include "unzip.h"
+#  ifdef SYSTEM_ZIP
+#    include <minizip/unzip.h>
+#  else
+#    include "unzip.h"
+#  endif
 
 #define unz_BUFFSIZ	1024
 
@@ -240,10 +254,15 @@ class unzStream : public Stream
         virtual void closeStream();
 
 	private:
+        void   fill_buffer();
+        size_t buffer_remaining();
+
 		unzFile	file;
 		char	buffer[unz_BUFFSIZ];
-		char	*head;
-		size_t	numbytes;
+        size_t  pos_in_buf;
+        size_t  buf_pos_in_unzipped;
+		size_t	bytes_in_buf;
+        unz_file_pos unz_file_start_pos;
 };
 
 #endif

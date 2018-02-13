@@ -22,8 +22,14 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2017  BearOso,
                              OV2
+
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -134,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2017  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -142,11 +148,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2017  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -201,6 +212,7 @@
 #include "AVIOutput.h"
 #include "wlanguage.h"
 
+#include <shlwapi.h>
 #include <direct.h>
 
 #include <io.h>
@@ -291,6 +303,7 @@ static bool startDirectoryValid = false;
 
 const TCHAR *S9xGetDirectoryT (enum s9x_getdirtype dirtype)
 {
+    static TCHAR filename[PATH_MAX];
 	if(!startDirectoryValid)
 	{
 		// directory of the executable's location:
@@ -304,8 +317,6 @@ const TCHAR *S9xGetDirectoryT (enum s9x_getdirtype dirtype)
 
 		startDirectoryValid = true;
 	}
-
-	SetCurrentDirectory(startDirectory); // makes sure relative paths are relative to the application's location
 
 	const TCHAR* rv = startDirectory;
 
@@ -335,17 +346,23 @@ const TCHAR *S9xGetDirectoryT (enum s9x_getdirtype dirtype)
 		  rv = GUI.SPCDir;
 		  break;
 
-	  case IPS_DIR:
-	  case CHEAT_DIR:
+	  case PATCH_DIR:
 		  rv = GUI.PatchDir;
+		  break;
+
+	  case CHEAT_DIR:
+		  rv = GUI.CheatDir;
 		  break;
 
 	  case SNAPSHOT_DIR:
 		  rv = GUI.FreezeFileDir;
 		  break;
 
+	  case SAT_DIR:
+		  rv = GUI.SatDir;
+		  break;
+
 	  case ROMFILENAME_DIR: {
-			static TCHAR filename [PATH_MAX];
 			lstrcpy(filename, _tFromChar(Memory.ROMFilename));
 			if(!filename[0])
 				rv = GUI.RomDir;
@@ -358,6 +375,13 @@ const TCHAR *S9xGetDirectoryT (enum s9x_getdirtype dirtype)
 			rv = filename;
 		}
 		break;
+    }
+
+    if (PathIsRelative(rv)) {
+        TCHAR temp_container[PATH_MAX];
+        _sntprintf(temp_container, PATH_MAX, TEXT("%s\\%s"), startDirectory, rv);
+        GetFullPathName(temp_container, PATH_MAX, filename, NULL);
+        rv = filename;
     }
 
 	_tmkdir(rv);

@@ -19,21 +19,20 @@ gboolean
 snes9x_preferences_open (GtkWidget *widget,
                          gpointer  data)
 {
-    Snes9xPreferences *preferences;
     Snes9xWindow      *window = ((Snes9xWindow *) data);
     Snes9xConfig      *config = window->config;
 
     window->pause_from_focus_change ();
 
-    preferences = new Snes9xPreferences (config);
-    gtk_window_set_transient_for (preferences->get_window (),
+    Snes9xPreferences preferences (config);
+    gtk_window_set_transient_for (preferences.get_window (),
                                   window->get_window ());
 
 #ifdef USE_JOYSTICK
     config->set_joystick_mode (JOY_MODE_GLOBAL);
 #endif
 
-    preferences->show ();
+    preferences.show ();
     window->unpause_from_focus_change ();
 
 #ifdef USE_JOYSTICK
@@ -42,8 +41,6 @@ snes9x_preferences_open (GtkWidget *widget,
 
     config->reconfigure ();
     window->update_accels ();
-
-    delete preferences;
 
     return TRUE;
 }
@@ -228,8 +225,8 @@ event_shader_select (GtkButton *widget, gpointer data)
     dialog = gtk_file_chooser_dialog_new ("Select Shader File",
                                           window->get_window (),
                                           GTK_FILE_CHOOSER_ACTION_OPEN,
-                                          GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                          GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                          "gtk-cancel", GTK_RESPONSE_CANCEL,
+                                          "gtk-open", GTK_RESPONSE_ACCEPT,
                                           NULL);
 
     if (strcmp (gui_config->last_directory, ""))
@@ -291,8 +288,8 @@ event_game_data_browse (GtkButton *widget, gpointer data)
     dialog = gtk_file_chooser_dialog_new ("Select directory",
                                           window->get_window (),
                                           GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
-                                          GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                          GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                          "gtk-cancel", GTK_RESPONSE_CANCEL,
+                                          "gtk-open", GTK_RESPONSE_ACCEPT,
                                           NULL);
 
     if (strcmp (gui_config->last_directory, ""))
@@ -472,7 +469,6 @@ event_about_clicked (GtkButton *widget, gpointer data)
     std::string version_string;
     GtkBuilderWindow *about_dialog = new GtkBuilderWindow ("about_dialog");
     Snes9xPreferences *preferences = (Snes9xPreferences *) data;
-    PangoFontDescription *monospace;
 
     ((version_string += _("Snes9x version: ")) += VERSION) += ", ";
     ((version_string += _("GTK+ port version: ")) += SNES9X_GTK_VERSION) += "\n";
@@ -508,15 +504,31 @@ event_about_clicked (GtkButton *widget, gpointer data)
 
     gtk_widget_hide (about_dialog->get_widget ("preferences_splash"));
 
-    monospace = pango_font_description_from_string ("Monospace 7");
 #ifdef USE_GTK3
-    gtk_widget_override_font (about_dialog->get_widget ("about_text_view"),
-                              monospace);
+    GtkCssProvider *provider;
+    GtkStyleContext *context;
+
+    provider = gtk_css_provider_new ();
+    gtk_css_provider_load_from_data (provider,
+                                     "textview {"
+                                     " font-family: \"monospace\";"
+                                     " font-size: 8pt;"
+                                     "}",
+                                     -1,
+                                     NULL);
+    context = gtk_widget_get_style_context (about_dialog->get_widget ("about_text_view"));
+    gtk_style_context_add_provider (context,
+                                    GTK_STYLE_PROVIDER (provider),
+                                    GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 #else
+    PangoFontDescription *monospace;
+
+    monospace = pango_font_description_from_string ("Monospace 7");
     gtk_widget_modify_font (about_dialog->get_widget ("about_text_view"),
                             monospace);
-#endif
     pango_font_description_free (monospace);
+#endif
+
 
     gtk_window_set_transient_for (about_dialog->get_window (),
                                   preferences->get_window ());
@@ -664,6 +676,8 @@ Snes9xPreferences::move_settings_to_dialog (void)
     set_spin  ("sound_buffer_size",         config->sound_buffer_size);
     set_slider ("sound_input_rate",         config->sound_input_rate);
     set_check ("sync_sound",                Settings.SoundSync);
+    set_check ("dynamic_rate_control",      Settings.DynamicRateControl);
+    set_spin  ("dynamic_rate_limit",        Settings.DynamicRateLimit / 1000.0);
     set_spin  ("rewind_buffer_size",        config->rewind_buffer_size);
     set_spin  ("rewind_granularity",        config->rewind_granularity);
 
@@ -755,7 +769,8 @@ Snes9xPreferences::get_settings_from_dialog (void)
         (config->sound_playback_rate !=
                      (7 - (get_combo ("playback_combo"))))                  ||
         (config->sound_input_rate   != get_slider ("sound_input_rate"))     ||
-        (Settings.SoundSync         != get_check ("sync_sound"))
+        (Settings.SoundSync         != get_check ("sync_sound"))            ||
+        (Settings.DynamicRateControl != get_check ("dynamic_rate_control"))
         )
     {
         sound_needs_restart = 1;
@@ -819,6 +834,8 @@ Snes9xPreferences::get_settings_from_dialog (void)
     Settings.SoundSync                = get_check ("sync_sound");
     config->mute_sound                = get_check ("mute_sound_check");
     config->mute_sound_turbo          = get_check ("mute_sound_turbo_check");
+    Settings.DynamicRateControl       = get_check ("dynamic_rate_control");
+    Settings.DynamicRateLimit         = (uint32) (get_spin ("dynamic_rate_limit") * 1000);
 
     store_ntsc_settings ();
     config->ntsc_scanline_intensity   = get_combo ("ntsc_scanline_intensity");
@@ -976,8 +993,8 @@ Snes9xPreferences::browse_folder_dialog (void)
     dialog = gtk_file_chooser_dialog_new (_("Select Folder"),
                                           GTK_WINDOW (this->window),
                                           GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
-                                          GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                          GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                          "gtk-cancel", GTK_RESPONSE_CANCEL,
+                                          "gtk-open", GTK_RESPONSE_ACCEPT,
                                           NULL);
 
     gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (dialog),

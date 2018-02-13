@@ -22,8 +22,14 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2017  BearOso,
                              OV2
+
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -134,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2017  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -142,11 +148,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2017  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -183,7 +194,7 @@
 #define _SNES9X_H_
 
 #ifndef VERSION
-#define VERSION	"1.54"
+#define VERSION	"1.55"
 #endif
 
 #include "port.h"
@@ -368,6 +379,7 @@ struct SSettings
 	bool8	BS;
 	bool8	BSXItself;
 	bool8	BSXBootup;
+	bool8	MSU1;
 	bool8	MouseMaster;
 	bool8	SuperScopeMaster;
 	bool8	JustifierMaster;
@@ -395,6 +407,8 @@ struct SSettings
 	bool8	Stereo;
 	bool8	ReverseStereo;
 	bool8	Mute;
+	bool8	DynamicRateControl;
+	int32	DynamicRateLimit; /* Multiplied by 1000 */
 
 	bool8	SupportHiRes;
 	bool8	Transparency;
@@ -446,6 +460,7 @@ struct SSettings
 
 	bool8	ApplyCheats;
 	bool8	NoPatch;
+	bool8	IgnorePatchChecksum;
 	int32	AutoSaveDelay;
 	bool8	DontSaveOopsSnapshot;
 	bool8	UpAndDown;

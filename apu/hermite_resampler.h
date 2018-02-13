@@ -4,6 +4,7 @@
 #define __HERMITE_RESAMPLER_H
 
 #include "resampler.h"
+#include <assert.h>
 
 #undef CLAMP
 #undef SHORT_CLAMP
@@ -51,7 +52,6 @@ class HermiteResampler : public Resampler
         time_ratio (double ratio)
         {
             r_step = ratio;
-            clear ();
         }
 
         void
@@ -66,6 +66,7 @@ class HermiteResampler : public Resampler
         void
         read (short *data, int num_samples)
         {
+            assert((num_samples & 1) == 0); // resampler always processes both stereo samples
             int i_position = start >> 1;
             int max_samples = buffer_size >> 1;
             short *internal_buffer = (short *) buffer;
@@ -80,8 +81,8 @@ class HermiteResampler : public Resampler
 
                 while (r_frac <= 1.0 && o_position < num_samples)
                 {
-                    hermite_val[0] = hermite (r_frac, (float)r_left [0], (float)r_left [1], (float)r_left [2], (float)r_left [3]);
-                    hermite_val[1] = hermite (r_frac, (float)r_right[0], (float)r_right[1], (float)r_right[2], (float)r_right[3]); 
+                    hermite_val[0] = hermite (r_frac, r_left [0], r_left [1], r_left [2], r_left [3]);
+                    hermite_val[1] = hermite (r_frac, r_right[0], r_right[1], r_right[2], r_right[3]);
                     data[o_position]     = SHORT_CLAMP (hermite_val[0]);
                     data[o_position + 1] = SHORT_CLAMP (hermite_val[1]);
 

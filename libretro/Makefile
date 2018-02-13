@@ -167,6 +167,8 @@ else ifneq (,$(findstring armv,$(platform)))
 		CXXFLAGS += -marm -mcpu=cortex-a8
 	else ifneq (,$(findstring cortexa9,$(platform)))
 		CXXFLAGS += -marm -mcpu=cortex-a9
+	else ifneq (,$(findstring cortexa53,$(platform)))
+		CXXFLAGS += -marm -mcpu=cortex-a53
 	endif
 	CXXFLAGS += -marm
 	ifneq (,$(findstring neon,$(platform)))
@@ -179,6 +181,14 @@ else ifneq (,$(findstring armv,$(platform)))
 		CXXFLAGS += -mfloat-abi=hard
 	endif
 	CXXFLAGS += -DARM
+
+# Android
+else ifneq (,$(findstring android,$(platform)))
+	TARGET := $(TARGET_NAME)_libretro_android.so
+	SHARED := -shared -Wl,--no-undefined -march=armv7-a -Wl,--fix-cortex-a8
+	fpic := -fPIC
+	CXXFLAGS += -marm -march=armv7-a -mfloat-abi=softfp -mfpu=neon -DANDROID -DARM
+	HAVE_NEON = 1
 
 # Windows
 else

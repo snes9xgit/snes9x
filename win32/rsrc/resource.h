@@ -48,7 +48,7 @@
 #define IDC_BUFLEN                      1002
 #define IDC_RATE                        1003
 #define IDC_MIX                         1004
-#define IDC_16BIT                       1005
+#define IDC_DYNRATECONTROL              1005
 #define IDC_STEREO                      1006
 #define IDC_REV_STEREO                  1007
 #define IDC_LINEAR_INTER                1008
@@ -266,6 +266,7 @@
 #define IDC_ASPECT                      1199
 #define IDC_MESSAGES_IN_IMAGE           1200
 #define IDC_RECORD_NOW                  1201
+#define IDC_MESSAGES_SCALE              1201
 #define IDC_RECORD_RESET                1202
 #define IDC_JOY1                        1203
 #define IDC_JOY2                        1204
@@ -364,7 +365,11 @@
 #define IDC_SHADER_HLSL_BROWSE          3016
 #define IDC_SHADER_GROUP                3017
 #define IDC_SHADER_GLSL_BROWSE          3018
-#define IDC_CHEAT_SYNTAX                3018
+#define IDC_SLIDER_VOLUME_REGULAR       3018
+#define IDC_EDIT_VOLUME_REGULAR         3019
+#define IDC_SLIDER_VOLUME_TURBO         3020
+#define IDC_EDIT_VOLUME_TURBO           3021
+#define IDC_CHEAT_SYNTAX                3999
 #define IDC_RAMLIST                     5000
 //#define IDC_C_SEARCH                    5001
 #define IDC_C_ADDCHEAT                  5002
@@ -557,6 +562,9 @@
 #define ID_WINDOW_SIZE_4X               40172
 #define ID_DEBUG_APU_TRACE              40173
 #define ID_EMULATION_BACKGROUNDINPUT    40174
+#define ID_SAVEMEMPACK                  40175
+#define ID_FILE_SAVE_FILE               40176
+#define ID_FILE_LOAD_FILE               40177
 #define RAMMENU_FILE_AUTOLOAD           45000
 #define RAMMENU_FILE_SAVEWINDOW         45001
 #define RAMMENU_FILE_SAVE               45002
@@ -570,14 +578,15 @@
 #define RW_MENU_FIRST_RECENT_FILE       45010
 #define RW_MENU_LAST_RECENT_FILE        45030
 #define IDM_MEMORY                      45031
+#define IDC_STATIC                      -1
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        151
-#define _APS_NEXT_COMMAND_VALUE         40176
-#define _APS_NEXT_CONTROL_VALUE         3019
+#define _APS_NEXT_RESOURCE_VALUE        153
+#define _APS_NEXT_COMMAND_VALUE         40178
+#define _APS_NEXT_CONTROL_VALUE         3022
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

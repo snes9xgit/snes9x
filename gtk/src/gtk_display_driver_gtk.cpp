@@ -108,7 +108,7 @@ S9xGTKDisplayDriver::output (void *src,
                 height,
                 24);
 
-    cairo_t *cr = gdk_cairo_create (gtk_widget_get_window (drawing_area));
+    cairo_t *cr = window->get_cairo ();
 
     gdk_cairo_set_source_pixbuf (cr, pixbuf, x, y);
 
@@ -132,8 +132,7 @@ S9xGTKDisplayDriver::output (void *src,
     cairo_rectangle (cr, x, y, dst_width, dst_height);
     cairo_fill (cr);
 
-    cairo_destroy (cr);
-
+    window->release_cairo ();
     window->set_mouseable_area (x, y, width, height);
 
     return;
@@ -206,14 +205,14 @@ S9xGTKDisplayDriver::clear (void)
     width = allocation.width;
     height = allocation.height;
 
-    cairo_t *cr = gdk_cairo_create (gtk_widget_get_window (drawing_area));
+    cairo_t *cr = window->get_cairo ();
 
     cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
 
     if (window->last_width <= 0 || window->last_height <= 0)
     {
         cairo_paint (cr);
-        cairo_destroy (cr);
+        window->release_cairo ();
 
         return;
     }
@@ -243,7 +242,8 @@ S9xGTKDisplayDriver::clear (void)
     }
 
     cairo_fill (cr);
-    cairo_destroy (cr);
+
+    window->release_cairo ();
 
     return;
 }

@@ -1,3 +1,34 @@
+Snes9x 1.55
+- Added support for the MSU-1 coprocessor.                  (qwertymodo)
+- Added support for MSU-1 distribution pack.                (qwertymodo)
+- Added support for BS-X Satellaview memory packs and data  (LuigiBlood)
+  files.                                                    
+- Improved BS-X memory mapping accuracy.                    (LuigiBlood)
+- Fixed APU error causing issues with some games.           (byuu, qwertymodo)
+- Added option to ignore patch checksums.                   (qwertymodo)
+- Fixed build warnings / undefined behavior.                (bonimy)
+- Correct pixel placement in hires.                         (BearOso, OV2)
+- Fixed RAM mapping for Light Fantasy.                      (hex_usr, BearOso)
+- Added Circuit USA APU timing hack.                        (BearOso)
+- libretro: Merged some changes from downstream repository. (OV2)
+- GTK+: Allow use of XDG config directory.                  (BearOso)
+- GTK+: Add 10th save slot.                                 (YamashitaRen)
+- GTK+: Updated Spanish translation.                        (jristz)
+- Win32: Switched to Studio 2017.                           (OV2)
+- Win32: Fixed problems when minimized in d3d.              (OV2)
+- Win32: Split Patch/Rom directory.                         (OV2)
+- Win32: Simplified compilation by removing or including
+  some dependencies (included CG headers, completely
+  removed FMOD and FMOD_EX, moved direct draw to compile
+  switch) and reworking solution/configurations.            (bonimy, OV2)
+- Win32: Fixed crash with movie dialog                      (OV2)
+- Win32: Changed hotplugging                                (OV2)
+
+Snes9x 1.54.1
+- GTK+: Properly use --std=c++11 when compiling xBRZ.       (BearOso)
+- Win32: Save window position when toggling fullscreen.     (OV2)
+- Win32: Do not assign down-left binding to down-right.     (OV2)
+
 Snes9x 1.54
 - Changed the S-SMP core module to one written by byuu.     (byuu, BearOso)
   This has the effect of increased accuracy, fewer

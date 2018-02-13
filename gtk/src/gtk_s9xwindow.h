@@ -62,6 +62,9 @@ class Snes9xWindow : public GtkBuilderWindow
         void resize_viewport (int width, int height);
         void expose (void);
 
+        cairo_t *get_cairo (void);
+        void release_cairo (void);
+
         Snes9xConfig   *config;
         int            user_pause, sys_pause;
         int            user_rewind;
@@ -78,6 +81,12 @@ class Snes9xWindow : public GtkBuilderWindow
         GdkCursor      *default_cursor, *empty_cursor;
         GtkDrawingArea *drawing_area;
         GtkWidget      *recent_menu;
+        cairo_t        *cr;
+        int            cairo_owned;
+#ifdef USE_GTK3
+        GdkDrawingContext *gdk_drawing_context;
+        cairo_region_t    *cairo_region;
+#endif
 };
 
 typedef struct gtk_splash_t {

@@ -38,7 +38,7 @@ typedef struct BindingLink
 extern const BindingLink b_links[];
 extern const int b_breaks[];
 #define NUM_JOYPAD_LINKS 24
-#define NUM_EMU_LINKS    53
+#define NUM_EMU_LINKS    55
 
 typedef struct JoypadBinding
 {

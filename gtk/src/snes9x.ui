@@ -150,6 +150,13 @@
     <property name="step_increment">0.01</property>
     <property name="page_increment">0.10000000000000001</property>
   </object>
+  <object class="GtkAdjustment" id="dynamic_rate_adjustment">
+    <property name="lower">0.001</property>
+    <property name="upper">0.100</property>
+    <property name="value">0.010</property>
+    <property name="step_increment">0.001</property>
+    <property name="page_increment">0.010</property>
+  </object>
   <object class="GtkAdjustment" id="adjustment13">
     <property name="lower">-1</property>
     <property name="upper">1</property>
@@ -305,10 +312,19 @@
                 <property name="label_xalign">0</property>
                 <property name="shadow_type">in</property>
                 <child>
-                  <object class="GtkTreeView" id="cheat_treeview">
+                  <object class="GtkScrolledWindow" id="scrolledwindow9">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can_focus">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                    <property name="hscrollbar_policy">never</property>
+                    <property name="vscrollbar_policy">automatic</property>
+                    <child>
+                      <object class="GtkTreeView" id="cheat_treeview">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child type="label_item">
@@ -1199,6 +1215,15 @@
                               </object>
                             </child>
                             <child>
+                              <object class="GtkMenuItem" id="load_state_9">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Slot _9</property>
+                                <property name="use_underline">True</property>
+                                <signal name="activate" handler="load_save_state" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
                               <object class="GtkSeparatorMenuItem" id="separator7">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
@@ -1304,6 +1329,15 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">Slot _8</property>
+                                <property name="use_underline">True</property>
+                                <signal name="activate" handler="save_save_state" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkMenuItem" id="save_state_9">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Slot _9</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="save_save_state" swapped="no"/>
                               </object>
@@ -3869,6 +3903,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="icon_name">video-display</property>
+                        <property name="pixel_size">24</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -3981,6 +4016,23 @@
                                         <property name="position">1</property>
                                       </packing>
                                     </child>
+
+                                    <child>
+                                      <object class="GtkCheckButton" id="dynamic_rate_control">
+                                        <property name="label" translatable="yes">Dynamic rate control</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">False</property>
+                                        <property name="tooltip_text" translatable="yes">Adjust input rate automatically</property>
+                                        <property name="draw_indicator">True</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">False</property>
+                                        <property name="position">2</property>
+                                      </packing>
+                                    </child>
+
                                     <child>
                                       <object class="GtkCheckButton" id="mute_sound_check">
                                         <property name="label" translatable="yes">Mute sound output</property>
@@ -3994,7 +4046,7 @@
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">False</property>
-                                        <property name="position">2</property>
+                                        <property name="position">3</property>
                                       </packing>
                                     </child>
                                     <child>
@@ -4010,7 +4062,7 @@
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">False</property>
-                                        <property name="position">3</property>
+                                        <property name="position">4</property>
                                       </packing>
                                     </child>
                                     <child>
@@ -4026,14 +4078,14 @@
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">False</property>
-                                        <property name="position">4</property>
+                                        <property name="position">5</property>
                                       </packing>
                                     </child>
                                     <child>
                                       <object class="GtkTable" id="table7">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="n_rows">4</property>
+                                        <property name="n_rows">5</property>
                                         <property name="n_columns">2</property>
                                         <property name="column_spacing">10</property>
                                         <property name="row_spacing">5</property>
@@ -4107,6 +4159,50 @@
                                             <property name="x_options">GTK_FILL</property>
                                             <property name="y_options">GTK_FILL</property>
                                           </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel" id="dynamic_rate_limit_label">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="xalign">0</property>
+                                            <property name="label" translatable="yes">Dynamic rate limit:</property>
+                                          </object>
+                                          <packing>
+                                            <property name="top_attach">4</property>
+                                            <property name="bottom_attach">5</property>
+                                            <property name="x_options">GTK_FILL</property>
+                                            <property name="y_options">GTK_FILL</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                         <object class="GtkHBox" id="hbox_dynamic_rate">
+                                          <property name="visible">True</property>
+                                          <property name="can_focus">False</property>
+                                          <child>
+                                           <object class="GtkSpinButton" id="dynamic_rate_limit">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="primary_icon_activatable">False</property>
+                                            <property name="secondary_icon_activatable">False</property>
+                                            <property name="primary_icon_sensitive">True</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                            <property name="digits">3</property>
+                                            <property name="adjustment">dynamic_rate_adjustment</property>
+                                           </object>
+                                           <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">False</property>
+                                            <property name="position">0</property>
+                                           </packing>
+                                          </child>
+                                         </object>
+                                         <packing>
+                                          <property name="left_attach">1</property>
+                                          <property name="top_attach">4</property>
+                                          <property name="bottom_attach">5</property>
+                                          <property name="y_options">GTK_FILL</property>
+                                          <property name="x_options">GTK_FILL</property>
+                                         </packing>
                                         </child>
                                         <child>
                                           <object class="GtkLabel" id="sound_input_rate_label">
@@ -4202,7 +4298,7 @@
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">True</property>
-                                        <property name="position">5</property>
+                                        <property name="position">6</property>
                                       </packing>
                                     </child>
                                   </object>
@@ -4235,6 +4331,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="icon_name">audio-x-generic</property>
+                        <property name="pixel_size">24</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -4630,6 +4727,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="icon_name">utilities-terminal</property>
+                        <property name="pixel_size">24</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -5064,6 +5162,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="icon_name">folder</property>
+                        <property name="pixel_size">24</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -6385,6 +6484,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="icon_name">input-gaming</property>
+                        <property name="pixel_size">24</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -7144,7 +7244,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="border_width">10</property>
-                                    <property name="n_rows">10</property>
+                                    <property name="n_rows">11</property>
                                     <property name="n_columns">4</property>
                                     <property name="column_spacing">10</property>
                                     <property name="row_spacing">5</property>
@@ -7179,20 +7279,6 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkLabel" id="label75">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="xalign">0</property>
-                                        <property name="label" translatable="yes">Slot 1</property>
-                                      </object>
-                                      <packing>
-                                        <property name="top_attach">2</property>
-                                        <property name="bottom_attach">3</property>
-                                        <property name="x_options"/>
-                                        <property name="y_options"/>
-                                      </packing>
-                                    </child>
-                                    <child>
                                       <object class="GtkLabel" id="label74">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
@@ -7202,6 +7288,20 @@
                                       <packing>
                                         <property name="top_attach">1</property>
                                         <property name="bottom_attach">2</property>
+                                        <property name="x_options"/>
+                                        <property name="y_options"/>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel" id="label75">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="xalign">0</property>
+                                        <property name="label" translatable="yes">Slot 1</property>
+                                      </object>
+                                      <packing>
+                                        <property name="top_attach">2</property>
+                                        <property name="bottom_attach">3</property>
                                         <property name="x_options"/>
                                         <property name="y_options"/>
                                       </packing>
@@ -7286,6 +7386,34 @@
                                       <packing>
                                         <property name="top_attach">8</property>
                                         <property name="bottom_attach">9</property>
+                                        <property name="x_options"/>
+                                        <property name="y_options"/>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel" id="label102">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="xalign">0</property>
+                                        <property name="label" translatable="yes">Slot 8</property>
+                                      </object>
+                                      <packing>
+                                        <property name="top_attach">9</property>
+                                        <property name="bottom_attach">10</property>
+                                        <property name="x_options"/>
+                                        <property name="y_options"/>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel" id="label152">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="xalign">0</property>
+                                        <property name="label" translatable="yes">Slot 9</property>
+                                      </object>
+                                      <packing>
+                                        <property name="top_attach">10</property>
+                                        <property name="bottom_attach">11</property>
                                         <property name="x_options"/>
                                         <property name="y_options"/>
                                       </packing>
@@ -7435,15 +7563,17 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkLabel" id="label102">
+                                      <object class="GtkLabel" id="label158">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="xalign">0</property>
-                                        <property name="label" translatable="yes">Slot 8</property>
+                                        <property name="label" translatable="yes">Slot 9</property>
                                       </object>
                                       <packing>
-                                        <property name="top_attach">9</property>
-                                        <property name="bottom_attach">10</property>
+                                        <property name="left_attach">2</property>
+                                        <property name="right_attach">3</property>
+                                        <property name="top_attach">10</property>
+                                        <property name="bottom_attach">11</property>
                                         <property name="x_options"/>
                                         <property name="y_options"/>
                                       </packing>
@@ -7620,6 +7750,25 @@
                                       </packing>
                                     </child>
                                     <child>
+                                      <object class="GtkEntry" id="b_save_9">
+                                        <property name="width_request">50</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="editable">False</property>
+                                        <property name="primary_icon_activatable">False</property>
+                                        <property name="secondary_icon_activatable">False</property>
+                                        <property name="primary_icon_sensitive">True</property>
+                                        <property name="secondary_icon_sensitive">True</property>
+                                      </object>
+                                      <packing>
+                                        <property name="left_attach">1</property>
+                                        <property name="right_attach">2</property>
+                                        <property name="top_attach">10</property>
+                                        <property name="bottom_attach">11</property>
+                                        <property name="y_options">GTK_FILL</property>
+                                      </packing>
+                                    </child>
+                                    <child>
                                       <object class="GtkEntry" id="b_load_0">
                                         <property name="width_request">50</property>
                                         <property name="visible">True</property>
@@ -7639,25 +7788,6 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkEntry" id="b_load_2">
-                                        <property name="width_request">50</property>
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="editable">False</property>
-                                        <property name="primary_icon_activatable">False</property>
-                                        <property name="secondary_icon_activatable">False</property>
-                                        <property name="primary_icon_sensitive">True</property>
-                                        <property name="secondary_icon_sensitive">True</property>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">3</property>
-                                        <property name="right_attach">4</property>
-                                        <property name="top_attach">3</property>
-                                        <property name="bottom_attach">4</property>
-                                        <property name="y_options">GTK_FILL</property>
-                                      </packing>
-                                    </child>
-                                    <child>
                                       <object class="GtkEntry" id="b_load_1">
                                         <property name="width_request">50</property>
                                         <property name="visible">True</property>
@@ -7673,6 +7803,25 @@
                                         <property name="right_attach">4</property>
                                         <property name="top_attach">2</property>
                                         <property name="bottom_attach">3</property>
+                                        <property name="y_options">GTK_FILL</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkEntry" id="b_load_2">
+                                        <property name="width_request">50</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="editable">False</property>
+                                        <property name="primary_icon_activatable">False</property>
+                                        <property name="secondary_icon_activatable">False</property>
+                                        <property name="primary_icon_sensitive">True</property>
+                                        <property name="secondary_icon_sensitive">True</property>
+                                      </object>
+                                      <packing>
+                                        <property name="left_attach">3</property>
+                                        <property name="right_attach">4</property>
+                                        <property name="top_attach">3</property>
+                                        <property name="bottom_attach">4</property>
                                         <property name="y_options">GTK_FILL</property>
                                       </packing>
                                     </child>
@@ -7715,7 +7864,7 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkEntry" id="b_load_8">
+                                      <object class="GtkEntry" id="b_load_5">
                                         <property name="width_request">50</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
@@ -7728,8 +7877,8 @@
                                       <packing>
                                         <property name="left_attach">3</property>
                                         <property name="right_attach">4</property>
-                                        <property name="top_attach">9</property>
-                                        <property name="bottom_attach">10</property>
+                                        <property name="top_attach">6</property>
+                                        <property name="bottom_attach">7</property>
                                         <property name="y_options">GTK_FILL</property>
                                       </packing>
                                     </child>
@@ -7753,25 +7902,6 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkEntry" id="b_load_5">
-                                        <property name="width_request">50</property>
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="editable">False</property>
-                                        <property name="primary_icon_activatable">False</property>
-                                        <property name="secondary_icon_activatable">False</property>
-                                        <property name="primary_icon_sensitive">True</property>
-                                        <property name="secondary_icon_sensitive">True</property>
-                                      </object>
-                                      <packing>
-                                        <property name="left_attach">3</property>
-                                        <property name="right_attach">4</property>
-                                        <property name="top_attach">6</property>
-                                        <property name="bottom_attach">7</property>
-                                        <property name="y_options">GTK_FILL</property>
-                                      </packing>
-                                    </child>
-                                    <child>
                                       <object class="GtkEntry" id="b_load_7">
                                         <property name="width_request">50</property>
                                         <property name="visible">True</property>
@@ -7787,6 +7917,44 @@
                                         <property name="right_attach">4</property>
                                         <property name="top_attach">8</property>
                                         <property name="bottom_attach">9</property>
+                                        <property name="y_options">GTK_FILL</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkEntry" id="b_load_8">
+                                        <property name="width_request">50</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="editable">False</property>
+                                        <property name="primary_icon_activatable">False</property>
+                                        <property name="secondary_icon_activatable">False</property>
+                                        <property name="primary_icon_sensitive">True</property>
+                                        <property name="secondary_icon_sensitive">True</property>
+                                      </object>
+                                      <packing>
+                                        <property name="left_attach">3</property>
+                                        <property name="right_attach">4</property>
+                                        <property name="top_attach">9</property>
+                                        <property name="bottom_attach">10</property>
+                                        <property name="y_options">GTK_FILL</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkEntry" id="b_load_9">
+                                        <property name="width_request">50</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="editable">False</property>
+                                        <property name="primary_icon_activatable">False</property>
+                                        <property name="secondary_icon_activatable">False</property>
+                                        <property name="primary_icon_sensitive">True</property>
+                                        <property name="secondary_icon_sensitive">True</property>
+                                      </object>
+                                      <packing>
+                                        <property name="left_attach">3</property>
+                                        <property name="right_attach">4</property>
+                                        <property name="top_attach">10</property>
+                                        <property name="bottom_attach">11</property>
                                         <property name="y_options">GTK_FILL</property>
                                       </packing>
                                     </child>
@@ -8422,6 +8590,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="icon_name">input-keyboard</property>
+                        <property name="pixel_size">24</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -8490,8 +8659,14 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2017  BearOso,
                              OV2
+
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -8602,7 +8777,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2017  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -8610,11 +8785,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2017  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in

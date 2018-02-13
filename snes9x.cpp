@@ -22,8 +22,14 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2017  BearOso,
                              OV2
+
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -134,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2017  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -142,11 +148,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2017  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -324,7 +335,8 @@ static bool try_load_config_file (const char *fname, ConfigFile &conf)
 	if (fp)
 	{
 		fprintf(stdout, "Reading config file %s.\n", fname);
-		conf.LoadFile(new fStream(fp));
+		fStream fS(fp);
+		conf.LoadFile(&fS);
         CLOSE_FSTREAM(fp);
 		return (true);
 	}
@@ -375,6 +387,7 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.ForceInterleaveGD24        =  conf.GetBool("ROM::InterleaveGD24",                 false);
 	Settings.ApplyCheats                =  conf.GetBool("ROM::Cheat",                          false);
 	Settings.NoPatch                    = !conf.GetBool("ROM::Patch",                          true);
+	Settings.IgnorePatchChecksum        =  conf.GetBool("ROM::IgnorePatchChecksum",            false);
 
 	Settings.ForceLoROM = conf.GetBool("ROM::LoROM", false);
 	Settings.ForceHiROM = conf.GetBool("ROM::HiROM", false);
@@ -409,6 +422,8 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.SoundPlaybackRate          =  conf.GetUInt("Sound::Rate",                         32000);
 	Settings.SoundInputRate             =  conf.GetUInt("Sound::InputRate",                    32000);
 	Settings.Mute                       =  conf.GetBool("Sound::Mute",                         false);
+	Settings.DynamicRateControl         =  conf.GetBool("Sound::DynamicRateControl",           false);
+	Settings.DynamicRateLimit           =  conf.GetInt ("Sound::DynamicRateLimit",             5);
 
 	// Display
 
@@ -835,7 +850,7 @@ char * S9xParseArgs (char **argv, int argc)
 		#endif
 
 			// HACKING OR DEBUGGING OPTIONS
-		
+
 		#ifdef DEBUGGER
 			if (!strcasecmp(argv[i], "-debug"))
 				CPU.Flags |= DEBUG_MODE_FLAG;

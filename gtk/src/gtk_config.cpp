@@ -15,25 +15,67 @@
 #include "gtk_sound.h"
 #include "gtk_display.h"
 
+static int
+directory_exists (const char *directory)
+{
+    DIR *dir;
+
+    dir = opendir (directory);
+
+    if (dir)
+    {
+        closedir (dir);
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
 char *
 get_config_dir (void)
 {
-    char *homedir, *configdir;
+    char *home_dir = NULL,
+         *classic_config_dir = NULL,
+         *xdg_config_dir = NULL,
+         *xdg_snes9x_dir = NULL;
 
     /* Find config directory */
-    homedir = getenv ("HOME");
+    home_dir = getenv ("HOME");
+    xdg_config_dir = getenv ("XDG_CONFIG_HOME");
 
-    if (!homedir)
+    if (!home_dir && !xdg_config_dir)
     {
-        configdir = strdup (".snes9x");
+        return strdup (".snes9x");
+    }
+
+    if (!xdg_config_dir)
+    {
+        xdg_snes9x_dir = (char *) malloc (strlen (home_dir) + 16);
+        sprintf (xdg_snes9x_dir, "%s/.config/snes9x", home_dir);
     }
     else
     {
-        configdir =  (char *) malloc (strlen (homedir) + 9);
-        sprintf (configdir, "%s/.snes9x", homedir);
+        xdg_snes9x_dir = (char *) malloc (strlen (xdg_config_dir) + 9);
+        sprintf (xdg_snes9x_dir, "%s/snes9x", xdg_config_dir);
     }
 
-    return configdir;
+    classic_config_dir =  (char *) malloc (strlen (home_dir) + 9);
+    sprintf (classic_config_dir, "%s/.snes9x", home_dir);
+
+    char *config_dir;
+
+    if (directory_exists (classic_config_dir) && !directory_exists(xdg_snes9x_dir))
+    {
+        free (xdg_snes9x_dir);
+        config_dir =  classic_config_dir;
+    }
+    else
+    {
+        free (classic_config_dir);
+        config_dir = xdg_snes9x_dir;
+    }
+
+    return config_dir;
 }
 
 char *
@@ -211,6 +253,8 @@ Snes9xConfig::load_defaults (void)
     Settings.FrameTime = Settings.FrameTimeNTSC;
     Settings.BlockInvalidVRAMAccessMaster = TRUE;
     Settings.SoundSync = 1;
+    Settings.DynamicRateControl = 1;
+    Settings.DynamicRateLimit = 5;
     Settings.HDMATimingHack = 100;
     Settings.ApplyCheats = 1;
 
@@ -360,6 +404,8 @@ Snes9xConfig::save_config_file (void)
     xml_out_int (xml, "sound_driver", sound_driver);
     xml_out_int (xml, "sound_input_rate", sound_input_rate);
     xml_out_int (xml, "sound_sync", Settings.SoundSync);
+    xml_out_int (xml, "dynamic_rate_control", Settings.DynamicRateControl);
+    xml_out_int (xml, "dynamic_rate_limit", Settings.DynamicRateLimit);
 
     /* Snes9X core-stored variables */
     xml_out_int (xml, "transparency", Settings.Transparency);
@@ -621,6 +667,15 @@ Snes9xConfig::set_option (const char *name, const char *value)
     else if (!strcasecmp (name, "reverse_stereo"))
     {
         Settings.ReverseStereo = atoi (value);
+    }
+    else if (!strcasecmp (name, "dynamic_rate_control"))
+    {
+        Settings.DynamicRateControl = atoi (value);
+    }
+    else if (!strcasecmp (name, "dynamic_rate_limit"))
+    {
+        Settings.DynamicRateLimit = atoi (value);
+        Settings.DynamicRateLimit = CLAMP (Settings.DynamicRateLimit, 1, 1000);
     }
     else if (!strcasecmp (name, "gaussian_interpolation"))
     {

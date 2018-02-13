@@ -65,7 +65,10 @@ bool8
 S9xAlsaSoundDriver::open_device (void)
 {
     int err;
+    unsigned int periods = 8;
+    unsigned int buffer_size = gui_config->sound_buffer_size * 1000;
     snd_pcm_sw_params_t *sw_params;
+    snd_pcm_hw_params_t *hw_params;
     snd_pcm_uframes_t alsa_buffer_size, alsa_period_size;
 
     printf ("ALSA sound driver initializing...\n");
@@ -89,28 +92,28 @@ S9xAlsaSoundDriver::open_device (void)
             Settings.SoundPlaybackRate,
             gui_config->sound_buffer_size);
 
-    if ((err = snd_pcm_set_params (pcm,
-                                   Settings.SixteenBitSound ? SND_PCM_FORMAT_S16 : SND_PCM_FORMAT_U8,
-                                   SND_PCM_ACCESS_RW_INTERLEAVED,
-                                   Settings.Stereo ? 2 : 1,
-                                   Settings.SoundPlaybackRate,
-                                   1 /* Allow software resampling */,
-                                   gui_config->sound_buffer_size * 1000))
-         < 0)
-    {
+    snd_pcm_hw_params_alloca (&hw_params);
+    snd_pcm_hw_params_any (pcm, hw_params);
+    snd_pcm_hw_params_set_format (pcm, hw_params, Settings.SixteenBitSound ? SND_PCM_FORMAT_S16 : SND_PCM_FORMAT_U8);
+    snd_pcm_hw_params_set_access (pcm, hw_params, SND_PCM_ACCESS_RW_INTERLEAVED);
+    snd_pcm_hw_params_set_channels (pcm, hw_params, Settings.Stereo ? 2 : 1);
+    snd_pcm_hw_params_set_rate_near (pcm, hw_params, &Settings.SoundPlaybackRate, NULL);
+    snd_pcm_hw_params_set_rate_resample (pcm, hw_params, 0);
+    snd_pcm_hw_params_set_buffer_time_near (pcm, hw_params, &buffer_size, NULL);
+    snd_pcm_hw_params_set_periods_near (pcm, hw_params, &periods, NULL);
+
+    if ((err = snd_pcm_hw_params (pcm, hw_params)) < 0)
         goto close_fail;
-    }
 
     snd_pcm_sw_params_alloca (&sw_params);
     snd_pcm_sw_params_current (pcm, sw_params);
     snd_pcm_get_params (pcm, &alsa_buffer_size, &alsa_period_size);
     /* Don't start until we're [nearly] full */
-    snd_pcm_sw_params_set_start_threshold (pcm,
-                                           sw_params,
-                                           (alsa_buffer_size / alsa_period_size) * alsa_period_size);
-    /* Transfer in blocks of period-size */
-    snd_pcm_sw_params_set_avail_min (pcm, sw_params, alsa_period_size);
+    snd_pcm_sw_params_set_start_threshold (pcm, sw_params, (alsa_buffer_size / 2));
     err = snd_pcm_sw_params (pcm, sw_params);
+
+    output_buffer_size = snd_pcm_frames_to_bytes (pcm, alsa_buffer_size);
+
     if (err < 0)
         goto close_fail;
 
@@ -132,28 +135,42 @@ fail:
 }
 
 void
-S9xAlsaSoundDriver::mix (void)
-{
-    return;
-}
-
-void
 S9xAlsaSoundDriver::samples_available (void)
 {
     snd_pcm_sframes_t frames_written, frames;
     int bytes;
 
-    S9xFinalizeSamples ();
+    frames = snd_pcm_avail (pcm);
 
-    frames = snd_pcm_avail_update (pcm);
+    if (Settings.DynamicRateControl)
+    {
+        S9xUpdateDynamicRate (snd_pcm_frames_to_bytes (pcm, frames),
+                              output_buffer_size);
+    }
+
     if (frames < 0)
     {
         frames = snd_pcm_recover (pcm, frames, 1);
+        return;
+    }
+
+    S9xFinalizeSamples ();
+
+    if (Settings.DynamicRateControl)
+    {
+        // Using rate control, we should always keep the emulator's sound buffers empty to
+        // maintain an accurate measurement.
+        if (frames < (S9xGetSampleCount () >> (Settings.Stereo ? 1 : 0)))
+        {
+            S9xClearSamples ();
+            return;
+        }
     }
 
     frames = MIN (frames, S9xGetSampleCount () >> (Settings.Stereo ? 1 : 0));
 
     bytes = snd_pcm_frames_to_bytes (pcm, frames);
+
     if (bytes <= 0)
     {
         return;

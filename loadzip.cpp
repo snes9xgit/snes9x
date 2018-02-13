@@ -22,8 +22,14 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2017  BearOso,
                              OV2
+
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -134,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2017  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -142,11 +148,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2017  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -183,7 +194,11 @@
 
 #include <assert.h>
 #include <ctype.h>
+#ifdef SYSTEM_ZIP
+#include <minizip/unzip.h>
+#else
 #include "unzip/unzip.h"
+#endif
 #include "snes9x.h"
 #include "memmap.h"
 
@@ -196,7 +211,7 @@ bool8 LoadZip (const char *zipname, uint32 *TotalFileSize, uint8 *buffer)
 	if (file == NULL)
 		return (FALSE);
 
-	// find largest file in zip file (under MAX_ROM_SIZE) or a file with extension .1
+	// find largest file in zip file (under MAX_ROM_SIZE) or a file with extension .1, or a file named program.rom
 	char	filename[132];
 	uint32	filesize = 0;
 	int		port = unzGoToFirstFile(file);
@@ -228,10 +243,19 @@ bool8 LoadZip (const char *zipname, uint32 *TotalFileSize, uint8 *buffer)
 			break;
 		}
 
+		if (strncasecmp(name, "program.rom", 11) == 0)
+		{
+			strcpy(filename, name);
+			filesize = info.uncompressed_size;
+			break;
+		}
+
 		port = unzGoToNextFile(file);
 	}
 
-	if (!(port == UNZ_END_OF_LIST_OF_FILE || port == UNZ_OK) || filesize == 0)
+	int len = strlen(zipname);
+	if (!(port == UNZ_END_OF_LIST_OF_FILE || port == UNZ_OK) || filesize == 0 ||
+		(len > 5 && strcasecmp(zipname + len - 5, ".msu1") == 0 && strcasecmp(filename, "program.rom") != 0))
 	{
 		assert(unzClose(file) == UNZ_OK);
 		return (FALSE);
@@ -248,7 +272,7 @@ bool8 LoadZip (const char *zipname, uint32 *TotalFileSize, uint8 *buffer)
 	uint8	*ptr = buffer;
 	bool8	more = FALSE;
 
-	unzLocateFile(file, filename, 1);
+	unzLocateFile(file, filename, 0);
 	unzGetCurrentFileInfo(file, &info, filename, 128, NULL, 0, NULL, 0);
 
 	if (unzOpenCurrentFile(file) != UNZ_OK)
@@ -270,7 +294,7 @@ bool8 LoadZip (const char *zipname, uint32 *TotalFileSize, uint8 *buffer)
 			return (FALSE);
 		}
 
-		if (l <= 0 || l != FileSize)
+		if (l <= 0 || l != (int) FileSize)
 		{
 			unzClose(file);
 			return (FALSE);
@@ -308,7 +332,7 @@ bool8 LoadZip (const char *zipname, uint32 *TotalFileSize, uint8 *buffer)
 
 		if (more)
 		{
-			if (unzLocateFile(file, filename, 1) != UNZ_OK ||
+			if (unzLocateFile(file, filename, 0) != UNZ_OK ||
 				unzGetCurrentFileInfo(file, &info, filename, 128, NULL, 0, NULL, 0) != UNZ_OK ||
 				unzOpenCurrentFile(file) != UNZ_OK)
 				break;

@@ -22,8 +22,14 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2017  BearOso,
                              OV2
+
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -134,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2017  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -142,11 +148,19 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2017  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
+
+  MSU-1 code
+  (c) Copyright 2016         qwertymodo
 
 
   Specific ports contains the works of other authors. See headers in
@@ -178,48 +192,54 @@
   Nintendo Co., Limited and its subsidiary companies.
  ***********************************************************************************/
 
+#ifndef _MSU1_H_
+#define _MSU1_H_
+#include "snes9x.h"
 
-#ifndef CFMOD_H
-#define CFMOD_H
-#include "fmod.h"
-#include "IS9xSoundOutput.h"
+#define MSU1_REVISION 0x02
 
-class CFMOD: public IS9xSoundOutput
+struct SMSU1
 {
-	bool initDone;					// has init been called successfully?
-
-	FSOUND_STREAM *fmod_stream;		// the stream object
-
-	int sampleCount;
-	int bufferSize;
-
-	bool InitFMOD();
-	void DeInitFMOD();
-
-	bool InitStream();
-	void DeInitStream();
-
-	void ProcessSound();
-
-	// The FMOD API changed the return type of the stream callback function
-	// somewhere between version 3.20 and 3.33. The FMOD API defines a version
-	// string but you can't test for that at compile time. Instead, I've picked on
-	// a symbol that wasn't defined in version 3.20 to test for the change in API.
-	#if !defined (FSOUND_LOADRAW)
-	void
-	#else
-	signed char
-	#endif
-	static F_CALLBACKAPI FMODStreamCallback (FSOUND_STREAM *stream, void *buff, int len, void *param);
-
-public:
-	CFMOD(void);
-	~CFMOD(void);
-
-	// Inherited from IS9xSoundOutput
-	bool InitSoundOutput(void) { return InitFMOD(); }
-	void DeInitSoundOutput(void) { DeInitFMOD(); }
-	bool SetupSound(void);
+	uint8	MSU1_STATUS;
+	uint32	MSU1_DATA_SEEK;
+	uint32	MSU1_DATA_POS;
+	uint16	MSU1_TRACK_SEEK;
+	uint16	MSU1_CURRENT_TRACK;
+	uint32	MSU1_RESUME_TRACK;
+	uint8	MSU1_VOLUME;
+	uint8	MSU1_CONTROL;
+	uint32	MSU1_AUDIO_POS;
+	uint32	MSU1_RESUME_POS;
 };
+
+enum SMSU1_FLAG {
+	Revision		= 0x07,	// bitmask, not the actual version number
+	AudioError		= 0x08,
+	AudioPlaying		= 0x10,
+	AudioRepeating		= 0x20,
+	AudioBusy		= 0x40,
+	DataBusy		= 0x80
+};
+
+enum SMSU1_CMD {
+	Play			= 0x01,
+	Repeat			= 0x02,
+	Resume			= 0x04
+};
+
+extern struct SMSU1	MSU1;
+
+void S9xResetMSU(void);
+void S9xMSU1Init(void);
+void S9xMSU1DeInit(void);
+bool S9xMSU1ROMExists(void);
+STREAM S9xMSU1OpenFile(const char *msu_ext, bool skip_unpacked = FALSE);
+void S9xMSU1Init(void);
+void S9xMSU1Generate(size_t sample_count);
+uint8 S9xMSU1ReadPort(uint8 port);
+void S9xMSU1WritePort(uint8 port, uint8 byte);
+size_t S9xMSU1Samples(void);
+void S9xMSU1SetOutput(int16 *out, size_t size);
+void S9xMSU1PostLoadState(void);
 
 #endif

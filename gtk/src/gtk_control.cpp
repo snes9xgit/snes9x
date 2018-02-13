@@ -65,6 +65,7 @@ const BindingLink b_links[] =
         { "b_save_6",              "QuickSave006"      },
         { "b_save_7",              "QuickSave007"      },
         { "b_save_8",              "QuickSave008"      },
+        { "b_save_9",              "QuickSave009"      },
         { "b_load_0",              "QuickLoad000"      },
         { "b_load_1",              "QuickLoad001"      },
         { "b_load_2",              "QuickLoad002"      },
@@ -74,6 +75,7 @@ const BindingLink b_links[] =
         { "b_load_6",              "QuickLoad006"      },
         { "b_load_7",              "QuickLoad007"      },
         { "b_load_8",              "QuickLoad008"      },
+        { "b_load_9",              "QuickLoad009"      },
         { "b_sound_channel_0",     "SoundChannel0"     },
         { "b_sound_channel_1",     "SoundChannel1"     },
         { "b_sound_channel_2",     "SoundChannel2"     },
@@ -101,9 +103,9 @@ const int b_breaks[] =
         24, /* End of turbo/sticky buttons */
         35, /* End of base emulator buttons */
         43, /* End of Graphic options */
-        61, /* End of save/load states */
-        70, /* End of sound buttons */
-        77, /* End of miscellaneous buttons */
+        63, /* End of save/load states */
+        72, /* End of sound buttons */
+        79, /* End of miscellaneous buttons */
         -1
 };
 
@@ -387,7 +389,7 @@ void
 S9xInitInputDevices (void)
 {
 #ifdef USE_JOYSTICK
-    SDL_Init (SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
+    SDL_Init (SDL_INIT_JOYSTICK);
 
     for (int i = 0; ; i++)
     {
@@ -460,6 +462,13 @@ JoyDevice::JoyDevice (unsigned int device_num)
         calibration[i].max = 32767;
         calibration[i].center = 0;
     }
+
+    printf ("Joystick %d, %s:\n  %d axes, %d buttons, %d hats\n",
+            device_num + 1,
+            SDL_JoystickName (filedes),
+            SDL_JoystickNumButtons (filedes),
+            num_axes,
+            num_hats);
 
     memset (axis, 0, sizeof (int) * num_axes);
 

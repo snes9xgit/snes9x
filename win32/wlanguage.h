@@ -22,8 +22,14 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2017  BearOso,
                              OV2
+
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -134,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2017  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -142,11 +148,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2017  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -197,7 +208,7 @@
 (c) Copyright 2001 - 2006  John Weidman\r\n\
 (c) Copyright 2002 - 2010  Brad Jorsch, funkyass, Kris Bleakley, Nach, zones\r\n\
 (c) Copyright 2006 - 2007  nitsuja\r\n\
-(c) Copyright 2009 - 2016  BearOso, OV2\r\n\r\n\
+(c) Copyright 2009 - 2017  BearOso, OV2\r\n\r\n\
 Windows Port Authors: Matthew Kendora, funkyass, nitsuja, Nach, blip, OV2.\r\n\r\n\
 Snes9X is a Super Nintendo Entertainment System\r\n\
 emulator that allows you to play most games designed\r\n\
@@ -570,8 +581,10 @@ Nintendo is a trade mark.")
 #define SETTINGS_OPTION_DIRECTORY_SPCS TEXT("SPCs")
 #define SETTINGS_OPTION_DIRECTORY_SAVES TEXT("Saves")
 #define SETTINGS_OPTION_DIRECTORY_SRAM TEXT("SRAM")
-#define SETTINGS_OPTION_DIRECTORY_PATCHESANDCHEATS TEXT("Patch&Cheat")
+#define SETTINGS_OPTION_DIRECTORY_PATCHES TEXT("Patch")
+#define SETTINGS_OPTION_DIRECTORY_CHEATS TEXT("Cheat")
 #define SETTINGS_OPTION_DIRECTORY_BIOS TEXT("BIOS files")
+#define SETTINGS_OPTION_DIRECTORY_SATDATA TEXT("Satellaview")
 
 // Misc.
 
@@ -588,6 +601,8 @@ Nintendo is a trade mark.")
 #define SRM_SAVE_FAILED "Failed to save SRM file."
 
 #define INFO_SAVE_SPC "Saving SPC Data."
+
+#define MPAK_SAVE_FAILED "Failed to save Memory Pack."
 
 #define CHEATS_INFO_ENABLED "Cheats enabled."
 #define CHEATS_INFO_DISABLED "Cheats disabled."

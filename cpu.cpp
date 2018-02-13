@@ -22,8 +22,14 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2017  BearOso,
                              OV2
+
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -134,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2017  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -142,11 +148,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2017  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -280,13 +291,12 @@ void S9xReset (void)
 	memset(Memory.VRAM, 0x00, 0x10000);
 	memset(Memory.FillRAM, 0, 0x8000);
 
-	if (Settings.BS)
-		S9xResetBSX();
-
+	S9xResetBSX();
 	S9xResetCPU();
 	S9xResetPPU();
 	S9xResetDMA();
 	S9xResetAPU();
+    S9xResetMSU();
 
 	if (Settings.DSP)
 		S9xResetDSP();
@@ -304,6 +314,8 @@ void S9xReset (void)
 		S9xResetOBC1();
 	if (Settings.SRTC)
 		S9xResetSRTC();
+	if (Settings.MSU1)
+		S9xMSU1Init();
 
 	S9xInitCheatData();
 
@@ -325,6 +337,7 @@ void S9xSoftReset (void)
 	S9xSoftResetPPU();
 	S9xResetDMA();
 	S9xSoftResetAPU();
+    S9xResetMSU();
 
 	if (Settings.DSP)
 		S9xResetDSP();
@@ -342,6 +355,8 @@ void S9xSoftReset (void)
 		S9xResetOBC1();
 	if (Settings.SRTC)
 		S9xResetSRTC();
+	if (Settings.MSU1)
+		S9xMSU1Init();
 
 	S9xInitCheatData();
 }

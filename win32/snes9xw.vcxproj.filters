@@ -45,9 +45,6 @@
     <ClInclude Include="globals.h">
       <Filter>Emu</Filter>
     </ClInclude>
-    <ClInclude Include="..\lua-engine.h">
-      <Filter>Emu</Filter>
-    </ClInclude>
     <ClInclude Include="..\statemanager.h">
       <Filter>Emu</Filter>
     </ClInclude>
@@ -109,9 +106,6 @@
       <Filter>GUI</Filter>
     </ClInclude>
     <ClInclude Include="CDirectSound.h">
-      <Filter>GUI\SoundDriver</Filter>
-    </ClInclude>
-    <ClInclude Include="CFMODEx.h">
       <Filter>GUI\SoundDriver</Filter>
     </ClInclude>
     <ClInclude Include="CXAudio2.h">
@@ -258,6 +252,12 @@
     <ClInclude Include="dxerr.h">
       <Filter>GUI</Filter>
     </ClInclude>
+    <ClInclude Include="..\msu1.h">
+      <Filter>APU</Filter>
+    </ClInclude>
+    <ClInclude Include="cgMini.h">
+      <Filter>GUI\VideoDriver</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\bsx.cpp">
@@ -336,9 +336,6 @@
       <Filter>Emu</Filter>
     </ClCompile>
     <ClCompile Include="..\logger.cpp">
-      <Filter>Emu</Filter>
-    </ClCompile>
-    <ClCompile Include="..\lua-engine.cpp">
       <Filter>Emu</Filter>
     </ClCompile>
     <ClCompile Include="..\memmap.cpp">
@@ -479,12 +476,6 @@
     <ClCompile Include="CDirectSound.cpp">
       <Filter>GUI\SoundDriver</Filter>
     </ClCompile>
-    <ClCompile Include="CFMOD.cpp">
-      <Filter>GUI\SoundDriver</Filter>
-    </ClCompile>
-    <ClCompile Include="CFMODEx.cpp">
-      <Filter>GUI\SoundDriver</Filter>
-    </ClCompile>
     <ClCompile Include="CXAudio2.cpp">
       <Filter>GUI\SoundDriver</Filter>
     </ClCompile>
@@ -570,6 +561,12 @@
       <Filter>Filter</Filter>
     </ClCompile>
     <ClCompile Include="dxerr.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\msu1.cpp">
+      <Filter>APU</Filter>
+    </ClCompile>
+    <ClCompile Include="DumpAtEnd.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
   </ItemGroup>
@@ -768,9 +765,6 @@
     <CustomBuild Include="..\tile.h">
       <Filter>Emu</Filter>
     </CustomBuild>
-    <CustomBuild Include="CFMOD.h">
-      <Filter>GUI\SoundDriver</Filter>
-    </CustomBuild>
     <CustomBuild Include="CDirect3D.h">
       <Filter>GUI\VideoDriver</Filter>
     </CustomBuild>
@@ -826,5 +820,6 @@
       <Filter>Filter</Filter>
     </CustomBuild>
     <CustomBuild Include="snes9x.cfg" />
+    <CustomBuild Include="..\lua-engine.h" />
   </ItemGroup>
 </Project>

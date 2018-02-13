@@ -22,8 +22,14 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2017  BearOso,
                              OV2
+
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -134,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2017  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -142,11 +148,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2017  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -305,7 +316,8 @@ bool CDirectSound::InitSoundBuffer()
 	blockCount = 4;
 	blockTime = GUI.SoundBufferSize / blockCount;
 
-	blockSamples = (Settings.SoundPlaybackRate * blockTime * (Settings.Stereo ? 2 : 1)) / 1000;
+	blockSamples = (Settings.SoundPlaybackRate * blockTime) / 1000;
+    blockSamples *= (Settings.Stereo ? 2 : 1);
 	blockSize = blockSamples * (Settings.SixteenBitSound ? 2 : 1);
 	bufferSize = blockSize * blockCount;
 
@@ -427,6 +439,17 @@ bool CDirectSound::SetupSound()
 	}
 
     return (true);
+}
+
+void CDirectSound::SetVolume(double volume)
+{
+	if (!initDone)
+		return;
+
+	// convert percentage to hundredths of dB
+	LONG dbVolume = (LONG)(10 * log10(volume) * 2 * 100);
+
+	lpDSB->SetVolume(dbVolume);
 }
 
 /*  CDirectSound::ProcessSound

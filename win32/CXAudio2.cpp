@@ -22,8 +22,14 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2017  BearOso,
                              OV2
+
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -134,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2017  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -142,11 +148,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2017  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -346,7 +357,8 @@ bool CXAudio2::SetupSound()
 	blockCount = 8;
 	UINT32 blockTime = GUI.SoundBufferSize / blockCount;
 
-	singleBufferSamples = (Settings.SoundPlaybackRate * blockTime * (Settings.Stereo ? 2 : 1)) / 1000;
+	singleBufferSamples = (Settings.SoundPlaybackRate * blockTime) / 1000;
+    singleBufferSamples *= (Settings.Stereo ? 2 : 1);
 	singleBufferBytes = singleBufferSamples * (Settings.SixteenBitSound ? 2 : 1);
 	sum_bufferSize = singleBufferBytes * blockCount;
 
@@ -367,6 +379,11 @@ bool CXAudio2::SetupSound()
     return true;
 }
 
+void CXAudio2::SetVolume(double volume)
+{
+	pSourceVoice->SetVolume(volume);
+}
+
 void CXAudio2::BeginPlayback()
 {
 	pSourceVoice->Start(0);
@@ -379,22 +396,40 @@ void CXAudio2::StopPlayback()
 
 /*  CXAudio2::ProcessSound
 The mixing function called by the sound core when new samples are available.
-SoundBuffer is divided into blockCount blocks. If there are enought available samples and a free block,
+SoundBuffer is divided into blockCount blocks. If there are enough available samples and a free block,
 the block is filled and queued to the source voice. bufferCount is increased by pushbuffer and decreased by
 the OnBufferComplete callback.
 */
 void CXAudio2::ProcessSound()
 {
+	int freeBytes = (blockCount - bufferCount) * singleBufferBytes;
+
+	if (Settings.DynamicRateControl)
+	{
+		S9xUpdateDynamicRate(freeBytes, sum_bufferSize);
+	}
+
 	S9xFinalizeSamples();
+
+	UINT32 availableSamples;
+
+	availableSamples = S9xGetSampleCount();
+
+	if (Settings.DynamicRateControl)
+	{
+		// Using rate control, we should always keep the emulator's sound buffers empty to
+		// maintain an accurate measurement.
+		if (availableSamples > (freeBytes >> (Settings.SixteenBitSound ? 1 : 0)))
+		{
+			S9xClearSamples();
+			return;
+		}
+	}
 
 	if(!initDone)
 		return;
 
 	BYTE * curBuffer;
-
-	UINT32 availableSamples;
-
-	availableSamples = S9xGetSampleCount();
 
 	while(availableSamples > singleBufferSamples && bufferCount < blockCount) {
 		curBuffer = soundBuffer + writeOffset;

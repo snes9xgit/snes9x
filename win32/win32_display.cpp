@@ -22,8 +22,14 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2017  BearOso,
                              OV2
+
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -134,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2017  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -142,11 +148,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2017  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -190,7 +201,9 @@
 #include "wsnes9x.h"
 #include "win32_display.h"
 #include "CDirect3D.h"
+#if DIRECTDRAW_SUPPORT
 #include "CDirectDraw.h"
+#endif
 #include "COpenGL.h"
 #include "IS9xDisplayOutput.h"
 
@@ -199,7 +212,9 @@
 
 // available display output methods
 CDirect3D Direct3D;
+#if DIRECTDRAW_SUPPORT
 CDirectDraw DirectDraw;
+#endif
 COpenGL OpenGL;
 SSurface Src = {0};
 extern BYTE *ScreenBufferBlend;
@@ -254,9 +269,11 @@ bool WinDisplayReset(void)
 		case DIRECT3D:
 			S9xDisplayOutput = &Direct3D;
 			break;
+#if DIRECTDRAW_SUPPORT
 		case DIRECTDRAW:
 			S9xDisplayOutput = &DirectDraw;
 			break;
+#endif
 		case OPENGL:
 			S9xDisplayOutput = &OpenGL;
 			break;
@@ -469,9 +486,9 @@ void ReduceToPath(TCHAR *filename)
 // TODO: abstract the following functions in some way - only necessary for directdraw
 
 /* DirectDraw only begin */
-
 void SwitchToGDI()
 {
+#if DIRECTDRAW_SUPPORT
 	if(GUI.outputMethod!=DIRECTDRAW)
 		return;
 
@@ -479,10 +496,12 @@ void SwitchToGDI()
     DirectDraw.lpDD->FlipToGDISurface();
     GUI.FlipCounter = 0;
     DirectDraw.lpDDSPrimary2->SetPalette (NULL);
+#endif
 }
 
 static void ClearSurface (LPDIRECTDRAWSURFACE2 lpDDSurface)
 {
+#if DIRECTDRAW_SUPPORT
     DDBLTFX fx;
 
     memset (&fx, 0, sizeof (fx));
@@ -490,11 +509,12 @@ static void ClearSurface (LPDIRECTDRAWSURFACE2 lpDDSurface)
 
     while (lpDDSurface->Blt (NULL, DirectDraw.lpDDSPrimary2, NULL, DDBLT_WAIT, NULL) == DDERR_SURFACELOST)
         lpDDSurface->Restore ();
+#endif
 }
 
 void UpdateBackBuffer()
 {
-
+#if DIRECTDRAW_SUPPORT
     if (GUI.outputMethod==DIRECTDRAW && GUI.FullScreen)
     {
         SwitchToGDI();
@@ -532,10 +552,12 @@ void UpdateBackBuffer()
         if (GetMenu( GUI.hWnd) != NULL)
             DrawMenuBar (GUI.hWnd);
     }
+#endif
 }
 
 void RestoreGUIDisplay ()
 {
+#if DIRECTDRAW_SUPPORT
 	if(GUI.outputMethod!=DIRECTDRAW)
 		return;
 
@@ -551,10 +573,12 @@ void RestoreGUIDisplay ()
     }
     SwitchToGDI();
     S9xClearPause (PAUSE_RESTORE_GUI);
+#endif
 }
 
 void RestoreSNESDisplay ()
 {
+#if DIRECTDRAW_SUPPORT
 	if(GUI.outputMethod!=DIRECTDRAW)
 		return;
 
@@ -565,6 +589,7 @@ void RestoreSNESDisplay ()
     }
 
     UpdateBackBuffer();
+#endif
 }
 
 /* DirectDraw only end */
@@ -829,26 +854,25 @@ void WinDisplayChar (screenPtrType *s, uint8 c)
 	int	line   = ((c - 32) >> 4) * fontheight_scaled;
 	int	offset = ((c - 32) & 15) * fontwidth_scaled;
 
-	
-	if(displayScale == 1) {
-		for(h=0; h<fontheight_scaled; h++, line++, s+=displayPpl-fontwidth_scaled)
-			for(w=0; w<fontwidth_scaled; w++, s++)
-				FontPixToScreen(font [(line)] [(offset + w)], s);
-	} else if(displayScale == 2) {
-		for(h=0; h<fontheight_scaled; h+=2, line+=2, s+=2*displayPpl-fontwidth_scaled)
-			for(w=0; w<fontwidth_scaled; w+=2, s+=2)
-				FontPixToScreenEPX((offset + w)/2, line/2, s);
-	} else if(displayScale == 3) {
-		for(h=0; h<fontheight_scaled; h+=3, line+=3, s+=3*displayPpl-fontwidth_scaled)
-			for(w=0; w<fontwidth_scaled; w+=3, s+=3)
-				FontPixToScreenEPXSimple3((offset + w)/3, line/3, s);
-	} else {
+	if (GUI.filterMessagFont && (displayScale == 2 || displayScale == 3))
+	{
+		if (displayScale == 2) {
+			for (h = 0; h < fontheight_scaled; h += 2, line += 2, s += 2 * displayPpl - fontwidth_scaled)
+				for (w = 0; w < fontwidth_scaled; w += 2, s += 2)
+					FontPixToScreenEPX((offset + w) / 2, line / 2, s);
+		}
+		else if (displayScale == 3) {
+			for (h = 0; h < fontheight_scaled; h += 3, line += 3, s += 3 * displayPpl - fontwidth_scaled)
+				for (w = 0; w < fontwidth_scaled; w += 3, s += 3)
+					FontPixToScreenEPXSimple3((offset + w) / 3, line / 3, s);
+		}
+	}
+	else
+	{
 		for(h=0; h<fontheight_scaled; h++, line++, s+=displayPpl-fontwidth_scaled)
 			for(w=0; w<fontwidth_scaled; w++, s++)
 				FontPixToScreen(font [(line)/displayScale] [(offset + w)/displayScale], s);
 	}
-
-
 }
 
 static inline void FontPixToScreen(char p, uint16 *s)

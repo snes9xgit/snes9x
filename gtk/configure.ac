@@ -1,4 +1,6 @@
-AC_INIT([snes9x-gtk], 1.54)
+AC_INIT([snes9x-gtk], 1.55)
+
+AC_CONFIG_MACRO_DIR([macros])
 
 if test -z "$CFLAGS"; then
     CFLAGS="-Os -pipe"
@@ -9,12 +11,14 @@ fi
 
 EXTRA_FLAGS="-Wall -W -pedantic -Wno-unused-parameter -Wno-unused-but-set-variable"
 CFLAGS="$CFLAGS $EXTRA_FLAGS"
-CXXFLAGS="$CXXFLAGS $EXTRA_FLAGS -std=c++11"
+CXXFLAGS="$CXXFLAGS $EXTRA_FLAGS"
 
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_RANLIB
 AC_LANG_CPLUSPLUS
+
+AX_CXX_COMPILE_STDCXX([11], [noext], [optional])
 
 AC_PROG_INSTALL
 AM_INIT_AUTOMAKE([foreign subdir-objects])
@@ -44,31 +48,31 @@ AC_ARG_WITH(opengl,
   [],
   [with_opengl=yes])
 
-AC_ARG_WITH(joystick, 
+AC_ARG_WITH(joystick,
   [AS_HELP_STRING([--with(out)-joystick],
     [Enable joystick support if available (default: with)])],
   [],
   [with_joystick=yes])
 
-AC_ARG_WITH(xv, 
+AC_ARG_WITH(xv,
   [AS_HELP_STRING([--with(out)-xv],
     [Enable XVideo output on GTK (default: with)])],
   [],
   [with_xv=yes])
 
-AC_ARG_WITH(xrandr, 
+AC_ARG_WITH(xrandr,
   [AS_HELP_STRING([--with(out)-xrandr],
     [Enable XRandR support on GTK (default: with)])],
   [],
   [with_xrandr=yes])
 
-AC_ARG_WITH(portaudio, 
+AC_ARG_WITH(portaudio,
   [AS_HELP_STRING([--with(out)-portaudio],
     [Enable PortAudio sound driver support (default: with)])],
   [],
   [with_portaudio=yes])
 
-AC_ARG_WITH(oss, 
+AC_ARG_WITH(oss,
   [AS_HELP_STRING([--with(out)-oss],
     [Enable OSS sound driver support (default: with)])],
   [],
@@ -86,7 +90,7 @@ AC_ARG_WITH(pulseaudio,
   [],
   [with_pulseaudio=yes])
 
-AC_ARG_WITH(debugger, 
+AC_ARG_WITH(debugger,
   [AS_HELP_STRING([--with(out)-debugger],
     [Enable debugger (default: without)])],
   [],
@@ -98,13 +102,13 @@ AC_ARG_WITH(sdd1-decomp,
   [],
   [with_sdd1_decomp=yes])
 
-AC_ARG_WITH(hq2x, 
+AC_ARG_WITH(hq2x,
   [AS_HELP_STRING([--with(out)-hq2x],
     [Enable support for the HQ2x family of filters (default: with)])],
   [],
   [with_hq2x=yes])
 
-AC_ARG_WITH(xbrz, 
+AC_ARG_WITH(xbrz,
   [AS_HELP_STRING([--with(out)-xbrz],
     [Enable support for the xBRZ filter (default: with)])],
   [],
@@ -116,7 +120,7 @@ AC_ARG_WITH(netplay,
   [],
   [with_netplay=yes])
 
-AC_ARG_WITH(jma-decomp, 
+AC_ARG_WITH(jma-decomp,
   [AS_HELP_STRING([--with(out)-jma-decomp],
     [Enable JMA archive decompression (default: with)])],
   [],
@@ -133,6 +137,12 @@ AC_ARG_WITH(zlib,
     [Support gzip decompression])],
   [],
   [with_zlib=yes])
+
+AC_ARG_WITH(system-zip,
+  [AS_HELP_STRING([--with(out)-system-zip],
+    [Use system zip])],
+  [],
+  [system_zip=check])
 
 AC_ARG_WITH(screenshot,
   [AS_HELP_STRING([--with(out)-screenshot],
@@ -204,18 +214,18 @@ GTKJOY=0
 SDL_CFLAGS=""
 SDL_LIBS=""
 if test yes = "$with_joystick"; then
-    PKG_CHECK_MODULES([SDL],[sdl],[
+    PKG_CHECK_MODULES([SDL],[sdl2],[
         GTKJOY=yes
         CFLAGS="$CFLAGS -DUSE_JOYSTICK"
     ],[
-        AC_CHECK_PROG(SDLCONFIGFOUND,[sdl-config],yes,no)
-        
+        AC_CHECK_PROG(SDLCONFIGFOUND,[sdl2-config],yes,no)
+
         if test yes = "$SDLCONFIGFOUND" ; then
-            SDL_CFLAGS="-DUSE_JOYSTICK `sdl-config --cflags`"
-            SDL_LIBS="`sdl-config --libs`"
+            SDL_CFLAGS="-DUSE_JOYSTICK `sdl2-config --cflags`"
+            SDL_LIBS="`sdl2-config --libs`"
             GTKJOY=yes
         else
-            echo "Cannot find SDL. Disabling joystick support."
+            echo "Cannot find SDL2. Disabling joystick support."
         fi
     ])
 fi
@@ -255,7 +265,7 @@ if test yes = "$with_oss" ; then
     ],[
         echo "Cannot find OSS headers."
         echo "--> Disabling OSS support"
-    ])    
+    ])
 fi
 
 ALSA=0
@@ -306,6 +316,25 @@ if test yes = "$with_screenshot"; then
     ],[
         echo "Cannot find libpng."
         echo "--> Disabling screenshot support."
+    ])
+fi
+
+SYSTEM_ZIP=0
+SYSTEM_ZIP_CFLAGS=""
+SYSTEM_ZIP_LIBS=""
+ZIP_CFLAGS="-I../unzip"
+if test no != "$with_system_zip" && test yes = "$with_zlib" ; then
+    PKG_CHECK_MODULES([SYSTEM_ZIP],[minizip],[
+	ZIP_CFLAGS=""
+	SYSTEM_ZIP=yes
+	CFLAGS="$CFLAGS $SYSTEM_ZIP_CFLAGS -DSYSTEM_ZIP"
+	LIBS="$LIBS $SYSTEM_ZIP_LIBS"
+    ],[
+	if test check = "$with_system_zip"; then
+	    AC_MSG_WARN(Cannot find system minizip library)
+	else
+	    AC_MSG_ERROR(--with-system-zip given but cannot find system minizip library)
+	fi
     ])
 fi
 
@@ -436,7 +465,7 @@ if test $ac_cv_my_sar_int8 = yes && \
   CFLAGS="$CFLAGS -DRIGHTSHIFT_IS_SAR"
 fi
 
-CFLAGS="$CFLAGS -DUNZIP_SUPPORT -DSPC700_C -I. -I.. -I../unzip"
+CFLAGS="$CFLAGS -DUNZIP_SUPPORT -DSPC700_C -I. -I.. $ZIP_CFLAGS"
 
 CXXFLAGS="$CFLAGS"
 
@@ -458,6 +487,7 @@ AM_CONDITIONAL(ALSA, [test yes = "$ALSA"])
 AM_CONDITIONAL(PULSEAUDIO, [test yes = "$PULSEAUDIO"])
 AM_CONDITIONAL(HQ2X, [test yes = "$HQ2X"])
 AM_CONDITIONAL(XBRZ, [test yes = "$XBRZ"])
+AM_CONDITIONAL(SYSTEM_ZIP, [test yes = "$SYSTEM_ZIP"])
 
 AC_SUBST(NASM)
 AC_SUBST(NASM_FLAGS)

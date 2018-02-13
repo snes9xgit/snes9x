@@ -373,6 +373,7 @@ case 0xaf: {
   switch(++opcode_cycle) {
   case 1:
     op_io(2);
+    break;
   case 2:
     op_writedp(regs.x++, regs.B.a);
     opcode_cycle = 0;

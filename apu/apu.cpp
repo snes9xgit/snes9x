@@ -22,8 +22,14 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2017  BearOso,
                              OV2
+
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   BS-X C emulator code
@@ -134,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2017  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -142,11 +148,16 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2017  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
+
+  Libretro port
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
+                             Daniel De Matteis
+                             (Under no circumstances will commercial rights be given)
 
 
   Specific ports contains the works of other authors. See headers in
@@ -181,13 +192,14 @@
 #include <math.h>
 #include "snes9x.h"
 #include "apu.h"
+#include "msu1.h"
 #include "snapshot.h"
 #include "display.h"
 #include "hermite_resampler.h"
 
 #include "snes/snes.hpp"
 
-#define APU_DEFAULT_INPUT_RATE		32000
+#define APU_DEFAULT_INPUT_RATE		31987 // 60hz
 #define APU_MINIMUM_SAMPLE_COUNT	512
 #define APU_MINIMUM_SAMPLE_BLOCK	128
 #define APU_NUMERATOR_NTSC			15664
@@ -228,6 +240,17 @@ namespace spc
 	   if necessary on game load. */
 	static uint32		ratio_numerator = APU_NUMERATOR_NTSC;
 	static uint32		ratio_denominator = APU_DENOMINATOR_NTSC;
+
+	static double		dynamic_rate_multiplier = 1.0;
+}
+
+namespace msu
+{
+	static int			buffer_size;
+	static uint8		*landing_buffer = NULL;
+	static Resampler	*resampler		= NULL;
+	static int			resample_buffer_size	= -1;
+	static uint8		*resample_buffer		= NULL;
 }
 
 static void EightBitize (uint8 *, int);
@@ -253,7 +276,7 @@ static void DeStereo (uint8 *buffer, int sample_count)
 	int16	*buf = (int16 *) buffer;
 	int32	s1, s2;
 
-	for (int i = 0; i < sample_count >> 1; i++)
+	for (int i = 0; i < (sample_count >> 1); i++)
 	{
 		s1 = (int32) buf[2 * i];
 		s2 = (int32) buf[2 * i + 1];
@@ -297,10 +320,20 @@ bool8 S9xMixSamples (uint8 *buffer, int sample_count)
 	else
 		dest = buffer;
 
+	if (Settings.MSU1 && msu::resample_buffer_size < (sample_count << 1))
+	{
+		delete[] msu::resample_buffer;
+		msu::resample_buffer = new uint8[sample_count << 1];
+		msu::resample_buffer_size = sample_count << 1;
+	}
+
 	if (Settings.Mute)
 	{
 		memset(dest, 0, sample_count << 1);
 		spc::resampler->clear();
+
+		if(Settings.MSU1)
+			msu::resampler->clear();
 
 		return (FALSE);
 	}
@@ -311,6 +344,18 @@ bool8 S9xMixSamples (uint8 *buffer, int sample_count)
 			spc::resampler->read((short *) dest, sample_count);
 			if (spc::lag == spc::lag_master)
 				spc::lag = 0;
+
+			if (Settings.MSU1)
+			{
+				if (msu::resampler->avail() >= sample_count)
+				{
+					msu::resampler->read((short *)msu::resample_buffer, sample_count);
+					for (int i = 0; i < sample_count; ++i)
+						*((int16*)(dest+(i * 2))) += *((int16*)(msu::resample_buffer +(i * 2)));
+				}
+				else // should never occur
+					assert(0);
+			}
 		}
 		else
 		{
@@ -350,17 +395,40 @@ int S9xGetSampleCount (void)
 /* TODO: Attach */
 void S9xFinalizeSamples (void)
 {
+	bool drop_current_msu1_samples = true;
+
 	if (!Settings.Mute)
 	{
-		if (!spc::resampler->push((short *) spc::landing_buffer, SNES::dsp.spc_dsp.sample_count ()))
+		drop_current_msu1_samples = false;
+
+		if (!spc::resampler->push((short *)spc::landing_buffer, SNES::dsp.spc_dsp.sample_count()))
 		{
 			/* We weren't able to process the entire buffer. Potential overrun. */
 			spc::sound_in_sync = FALSE;
 
 			if (Settings.SoundSync && !Settings.TurboMode)
 				return;
+
+			// since we drop the current dsp samples we also want to drop generated msu1 samples
+			drop_current_msu1_samples = true;
 		}
 	}
+
+	// only generate msu1 if we really consumed the dsp samples (sample_count() resets at end of function),
+	// otherwise we will generate multiple times for the same samples - so this needs to be after all early
+	// function returns
+	if (Settings.MSU1)
+	{
+		// generate the same number of msu1 samples as dsp samples were generated
+		S9xMSU1SetOutput((int16 *)msu::landing_buffer, msu::buffer_size);
+		S9xMSU1Generate(SNES::dsp.spc_dsp.sample_count());
+		if (!drop_current_msu1_samples && !msu::resampler->push((short *)msu::landing_buffer, S9xMSU1Samples()))
+		{
+			// should not occur, msu buffer is larger and we drop msu samples if spc buffer overruns
+			assert(0);
+		}
+	}
+
 
 	if (!Settings.SoundSync || Settings.TurboMode || Settings.Mute)
 		spc::sound_in_sync = TRUE;
@@ -384,6 +452,8 @@ void S9xLandSamples (void)
 void S9xClearSamples (void)
 {
 	spc::resampler->clear();
+	if (Settings.MSU1)
+		msu::resampler->clear();
 	spc::lag = spc::lag_master;
 }
 
@@ -403,13 +473,33 @@ void S9xSetSamplesAvailableCallback (apu_callback callback, void *data)
 	spc::extra_data  = data;
 }
 
+void S9xUpdateDynamicRate (int avail, int buffer_size)
+{
+	spc::dynamic_rate_multiplier = 1.0 + (Settings.DynamicRateLimit * (buffer_size - 2 * avail)) /
+					(double)(1000 * buffer_size);
+
+	UpdatePlaybackRate();
+}
+
 static void UpdatePlaybackRate (void)
 {
 	if (Settings.SoundInputRate == 0)
 		Settings.SoundInputRate = APU_DEFAULT_INPUT_RATE;
 
 	double time_ratio = (double) Settings.SoundInputRate * spc::timing_hack_numerator / (Settings.SoundPlaybackRate * spc::timing_hack_denominator);
+
+	if (Settings.DynamicRateControl)
+	{
+		time_ratio *= spc::dynamic_rate_multiplier;
+	}
+
 	spc::resampler->time_ratio(time_ratio);
+
+	if (Settings.MSU1)
+	{
+		time_ratio = (44100.0 / Settings.SoundPlaybackRate) * (Settings.SoundInputRate / 32040.0);
+		msu::resampler->time_ratio(time_ratio);
+	}
 }
 
 bool8 S9xInitSound (int buffer_ms, int lag_ms)
@@ -417,8 +507,8 @@ bool8 S9xInitSound (int buffer_ms, int lag_ms)
 	// buffer_ms : buffer size given in millisecond
 	// lag_ms    : allowable time-lag given in millisecond
 
-	int	sample_count     = buffer_ms * 32000 / 1000;
-	int	lag_sample_count = lag_ms    * 32000 / 1000;
+	int	sample_count     = buffer_ms * 32040 / 1000;
+	int	lag_sample_count = lag_ms    * 32040 / 1000;
 
 	spc::lag_master = lag_sample_count;
 	if (Settings.Stereo)
@@ -428,11 +518,8 @@ bool8 S9xInitSound (int buffer_ms, int lag_ms)
 	if (sample_count < APU_MINIMUM_SAMPLE_COUNT)
 		sample_count = APU_MINIMUM_SAMPLE_COUNT;
 
-	spc::buffer_size = sample_count;
-	if (Settings.Stereo)
-		spc::buffer_size <<= 1;
-	if (Settings.SixteenBitSound)
-		spc::buffer_size <<= 1;
+	spc::buffer_size = sample_count << 2;
+	msu::buffer_size = (int)((sample_count << 2) * 1.5); // Always 16-bit, Stereo; 1.5 to never overflow before dsp buffer
 
 	printf("Sound buffer size: %d (%d samples)\n", spc::buffer_size, sample_count);
 
@@ -440,6 +527,11 @@ bool8 S9xInitSound (int buffer_ms, int lag_ms)
 		delete[] spc::landing_buffer;
 	spc::landing_buffer = new uint8[spc::buffer_size * 2];
 	if (!spc::landing_buffer)
+		return (FALSE);
+	if (msu::landing_buffer)
+		delete[] msu::landing_buffer;
+	msu::landing_buffer = new uint8[msu::buffer_size * 2];
+	if (!msu::landing_buffer)
 		return (FALSE);
 
 	/* The resampler and spc unit use samples (16-bit short) as
@@ -455,6 +547,20 @@ bool8 S9xInitSound (int buffer_ms, int lag_ms)
 	}
 	else
 		spc::resampler->resize(spc::buffer_size >> (Settings.SoundSync ? 0 : 1));
+
+
+	if (!msu::resampler)
+	{
+		msu::resampler = new HermiteResampler(msu::buffer_size);
+		if (!msu::resampler)
+		{
+			delete[] msu::landing_buffer;
+			return (FALSE);
+		}
+	}
+	else
+		msu::resampler->resize(msu::buffer_size);
+
 
 	SNES::dsp.spc_dsp.set_output ((SNES::SPC_DSP::sample_t *) spc::landing_buffer, spc::buffer_size);
 
@@ -494,6 +600,7 @@ bool8 S9xInitAPU (void)
 	spc::landing_buffer = NULL;
 	spc::shrink_buffer  = NULL;
 	spc::resampler      = NULL;
+	msu::resampler		= NULL;
 
 	return (TRUE);
 }
@@ -517,6 +624,26 @@ void S9xDeinitAPU (void)
 		delete[] spc::shrink_buffer;
 		spc::shrink_buffer = NULL;
 	}
+
+	if (msu::resampler)
+	{
+		delete msu::resampler;
+		msu::resampler = NULL;
+	}
+
+	if (msu::landing_buffer)
+	{
+		delete[] msu::landing_buffer;
+		msu::landing_buffer = NULL;
+	}
+
+	if (msu::resample_buffer)
+	{
+		delete[] msu::resample_buffer;
+		msu::resample_buffer = NULL;
+	}
+
+	S9xMSU1DeInit();
 }
 
 static inline int S9xAPUGetClock (int32 cpucycles)
@@ -594,6 +721,9 @@ void S9xResetAPU (void)
 	SNES::dsp.spc_dsp.set_spc_snapshot_callback(SPCSnapshotCallback);
 
 	spc::resampler->clear();
+
+	if (Settings.MSU1)
+		msu::resampler->clear();
 }
 
 void S9xSoftResetAPU (void)
@@ -606,6 +736,9 @@ void S9xSoftResetAPU (void)
 	SNES::dsp.spc_dsp.set_output ((SNES::SPC_DSP::sample_t *) spc::landing_buffer, spc::buffer_size >> 1);
 
 	spc::resampler->clear();
+
+	if (Settings.MSU1)
+		msu::resampler->clear();
 }
 
 void S9xAPUSaveState (uint8 *block)
