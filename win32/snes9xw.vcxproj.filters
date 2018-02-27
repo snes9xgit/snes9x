@@ -231,9 +231,6 @@
     <ClInclude Include="snes_ntsc_impl.h">
       <Filter>Filter</Filter>
     </ClInclude>
-    <ClInclude Include="..\filter\xbrz-config.h">
-      <Filter>Filter</Filter>
-    </ClInclude>
     <ClInclude Include="..\filter\xbrz.h">
       <Filter>Filter</Filter>
     </ClInclude>
@@ -245,6 +242,12 @@
     </ClInclude>
     <ClInclude Include="cgMini.h">
       <Filter>GUI\VideoDriver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filter\xbrz_config.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filter\xbrz_tools.h">
+      <Filter>Filter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

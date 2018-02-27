@@ -321,13 +321,14 @@
     <ClInclude Include="..\filter\blit.h" />
     <ClInclude Include="..\filter\epx.h" />
     <CustomBuild Include="..\filter\hq2x.h" />
-    <ClInclude Include="..\filter\xbrz-config.h" />
     <ClInclude Include="..\filter\xbrz.h" />
     <CustomBuild Include="..\font.h" />
     <CustomBuild Include="..\fxemu.h" />
     <CustomBuild Include="..\fxinst.h" />
     <CustomBuild Include="..\getset.h" />
     <CustomBuild Include="..\gfx.h" />
+    <ClInclude Include="..\filter\xbrz_config.h" />
+    <ClInclude Include="..\filter\xbrz_tools.h" />
     <ClInclude Include="..\jma\7z.h" />
     <ClInclude Include="..\jma\aribitcd.h" />
     <ClInclude Include="..\jma\ariconst.h" />
