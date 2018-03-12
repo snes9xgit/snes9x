@@ -756,6 +756,25 @@ void S9xAPUSaveState (uint8 *block)
 	ptr += sizeof(int32);
 	memcpy (ptr, SNES::cpu.registers, 4);
 	ptr += sizeof(int32);
+	
+	//sample count within buffer
+	int sampleCount = SNES::dsp.spc_dsp.sample_count();
+	SNES::set_le32(ptr, sampleCount);
+	ptr += sizeof(int32);
+	//samples remaining in landing buffer
+	int maxSize = SPC_SAVE_STATE_BLOCK_SIZE - (ptr - block);
+	int copySize = sampleCount * sizeof(SNES::SPC_DSP::sample_t);
+	if (copySize > maxSize) copySize = maxSize;
+
+	if (SNES::dsp.spc_dsp.GetOutputBufferBase() != NULL)
+	{
+		memcpy(ptr, SNES::dsp.spc_dsp.GetOutputBufferBase(), copySize);
+	}
+	else
+	{
+		memset(ptr, 0, copySize);
+	}
+	ptr += copySize;
 
 	memset (ptr, 0, SPC_SAVE_STATE_BLOCK_SIZE-(ptr-block));
 }
@@ -774,6 +793,19 @@ void S9xAPULoadState (uint8 *block)
 	SNES::dsp.clock = SNES::get_le32(ptr);
 	ptr += sizeof(int32);
 	memcpy (SNES::cpu.registers, ptr, 4);
+	ptr += 4;
+
+	//sample count within buffer
+	int sampleCount = SNES::get_le32(ptr);
+	if (sampleCount > 160) sampleCount = 160;
+	if (sampleCount < 0) sampleCount = 0;
+	ptr += sizeof(int32);
+
+	//samples for landing buffer
+	if (sampleCount > 0)
+	{
+		SNES::dsp.spc_dsp.EnqueueSamples((const SNES::SPC_DSP::sample_t*)ptr, sampleCount);
+	}
 }
 
 static void to_var_from_buf (uint8 **buf, void *var, size_t size)

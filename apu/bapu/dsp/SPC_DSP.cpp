@@ -1053,3 +1053,14 @@ int SPC_DSP::envx_value( int ch )
 {
 	return m.voices[ch].env;
 }
+
+bool SPC_DSP::EnqueueSamples(const sample_t *samples, int sampleCount)
+{
+	//used to restore samples back to the output buffer when loading state
+	if (m.out_begin == NULL) return false;
+	int samplesRemaining = m.out_end - m.out;
+	if (sampleCount > samplesRemaining) return false;
+	memcpy(m.out, samples, sampleCount * sizeof(sample_t));
+	m.out += sampleCount;
+	return true;
+}

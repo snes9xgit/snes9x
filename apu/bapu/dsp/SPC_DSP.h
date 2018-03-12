@@ -244,6 +244,15 @@ private:
 	void echo_30();
 
 	void soft_reset_common();
+
+public:
+	//Used to read samples from the output buffer when saving state.
+	const sample_t *GetOutputBufferBase()
+	{
+		return m.out_begin;
+	}
+	//Used to place samples in the output buffer when loading state
+	bool EnqueueSamples(const sample_t *samples, int sampleCount);
 };
 
 #include <assert.h>
