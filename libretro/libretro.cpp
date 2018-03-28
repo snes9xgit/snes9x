@@ -1221,18 +1221,12 @@ void retro_run()
 
     int result = -1;
     bool okay = environ_cb(RETRO_ENVIRONMENT_GET_AUDIO_VIDEO_ENABLE, &result);
-    if (okay)
-    {
-        bool audioEnabled = 0 != (result & 2);
-        bool videoEnabled = 0 != (result & 1);
-        IPPU.RenderThisFrame = videoEnabled;
-        S9xSetSoundMute(!audioEnabled);
-    }
-    else
-    {
-        IPPU.RenderThisFrame = true;
-        S9xSetSoundMute(false);
-    }
+    if (!okay) result |= 3;
+    bool audioEnabled = 0 != (result & 2);
+    bool videoEnabled = 0 != (result & 1);
+
+    IPPU.RenderThisFrame = videoEnabled;
+    S9xSetSoundMute(!audioEnabled);
 
     poll_cb();
     report_buttons();
