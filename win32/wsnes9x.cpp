@@ -6909,7 +6909,7 @@ bool RegisterProgid() {
 
     _stprintf_s(szRegKey,PATH_MAX-1,TEXT("Software\\Classes\\%s\\DefaultIcon"),SNES9XWPROGID);
     REGCREATEKEY(HKEY_CURRENT_USER,szRegKey)
-    _stprintf_s(szRegKey,PATH_MAX-1,TEXT("%s,0"),szExeName);
+    _stprintf_s(szRegKey,PATH_MAX-1,TEXT("%s,0"), szExePath);
     REGSETVALUE(hKey,NULL,REG_SZ,szRegKey,(lstrlen(szRegKey) + 1) * sizeof(TCHAR))
     RegCloseKey(hKey);
 
