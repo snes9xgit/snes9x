@@ -190,7 +190,6 @@
  ***********************************************************************************/
 
 #define SAVE_SCREENSHOT 0
-#define FAST_SAVESTATES 0
 
 #include <assert.h>
 #include "snes9x.h"
@@ -1477,7 +1476,7 @@ void S9xFreezeToStream (STREAM stream)
 
 int S9xUnfreezeFromStream (STREAM stream)
 {
-	const bool8 fast = FAST_SAVESTATES;
+	const bool8 fast = Settings.FastSavestates;
 
 	int		result = SUCCESS;
 	int		version, len;
@@ -2235,10 +2234,10 @@ static int UnfreezeBlock (STREAM stream, const char *name, uint8 *block, int siz
 		len = size;
 	}
 
-	#if FAST_SAVESTATES
-	#else
-	memset(block, 0, size);
-	#endif
+	if (!Settings.FastSavestates)
+	{
+		memset(block, 0, size);
+	}
 
 	if (READ_STREAM(block, len, stream) != (unsigned int) len)
 	{

@@ -1,5 +1,8 @@
 // snes_spc 0.9.0. http://www.slack.net/~ant/
 
+//include for the Settings struct
+#include "snes9x.h"
+
 #include "SPC_DSP.h"
 #include "snes9x.h"
 #include "blargg_endian.h"
@@ -787,6 +790,10 @@ PHASE(31)  V(V4,0)       V(V1,2)\
 
 void SPC_DSP::run( int clocks_remain )
 {
+	if (::Settings.HardDisableAudio)
+	{
+		return;
+	}
 	require( clocks_remain > 0 );
 
 	int const phase = m.phase;
