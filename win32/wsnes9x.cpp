@@ -3809,24 +3809,13 @@ static void CheckMenuStates ()
         mii.fState |= MFS_DISABLED;
 	SetMenuItemInfo (GUI.hMenu, ID_FILE_SAVE_SPC_DATA, FALSE, &mii);
     SetMenuItemInfo (GUI.hMenu, ID_FILE_SAVE_SRAM_DATA, FALSE, &mii);
-    SetMenuItemInfo (GUI.hMenu, ID_FILE_SAVE1, FALSE, &mii);
-    SetMenuItemInfo (GUI.hMenu, ID_FILE_SAVE2, FALSE, &mii);
-    SetMenuItemInfo (GUI.hMenu, ID_FILE_SAVE3, FALSE, &mii);
-    SetMenuItemInfo (GUI.hMenu, ID_FILE_SAVE4, FALSE, &mii);
-    SetMenuItemInfo (GUI.hMenu, ID_FILE_SAVE5, FALSE, &mii);
-    SetMenuItemInfo (GUI.hMenu, ID_FILE_SAVE6, FALSE, &mii);
-    SetMenuItemInfo (GUI.hMenu, ID_FILE_SAVE7, FALSE, &mii);
-    SetMenuItemInfo (GUI.hMenu, ID_FILE_SAVE8, FALSE, &mii);
-    SetMenuItemInfo (GUI.hMenu, ID_FILE_SAVE9, FALSE, &mii);
-    SetMenuItemInfo (GUI.hMenu, ID_FILE_LOAD1, FALSE, &mii);
-    SetMenuItemInfo (GUI.hMenu, ID_FILE_LOAD2, FALSE, &mii);
-    SetMenuItemInfo (GUI.hMenu, ID_FILE_LOAD3, FALSE, &mii);
-    SetMenuItemInfo (GUI.hMenu, ID_FILE_LOAD4, FALSE, &mii);
-    SetMenuItemInfo (GUI.hMenu, ID_FILE_LOAD5, FALSE, &mii);
-    SetMenuItemInfo (GUI.hMenu, ID_FILE_LOAD6, FALSE, &mii);
-    SetMenuItemInfo (GUI.hMenu, ID_FILE_LOAD7, FALSE, &mii);
-    SetMenuItemInfo (GUI.hMenu, ID_FILE_LOAD8, FALSE, &mii);
-    SetMenuItemInfo (GUI.hMenu, ID_FILE_LOAD9, FALSE, &mii);
+
+	for(int i = ID_FILE_SAVE0; i <= ID_FILE_SAVE_FILE; i++)
+		SetMenuItemInfo (GUI.hMenu, i, FALSE, &mii);
+
+	for (int i = ID_FILE_LOAD0; i <= ID_FILE_LOAD_FILE; i++)
+		SetMenuItemInfo(GUI.hMenu, i, FALSE, &mii);
+
     SetMenuItemInfo (GUI.hMenu, ID_FILE_RESET, FALSE, &mii);
     SetMenuItemInfo (GUI.hMenu, ID_CHEAT_ENTER, FALSE, &mii);
     SetMenuItemInfo (GUI.hMenu, ID_CHEAT_SEARCH_MODAL, FALSE, &mii);

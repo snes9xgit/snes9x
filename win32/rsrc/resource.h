@@ -386,26 +386,28 @@
 #define ID_SOUND_22050HZ                40035
 #define ID_SOUND_44100HZ                40036
 #define ID_SOUND_30000HZ                40037
-#define ID_FILE_SAVE0                   40043
-#define ID_FILE_SAVE1                   40044
-#define ID_FILE_SAVE2                   40045
-#define ID_FILE_SAVE3                   40046
-#define ID_FILE_SAVE4                   40047
-#define ID_FILE_SAVE5                   40048
-#define ID_FILE_SAVE6                   40049
-#define ID_FILE_SAVE7                   40050
-#define ID_FILE_SAVE8                   40051
-#define ID_FILE_SAVE9                   40052
-#define ID_FILE_LOAD0                   40053
-#define ID_FILE_LOAD1                   40054
-#define ID_FILE_LOAD2                   40055
-#define ID_FILE_LOAD3                   40056
-#define ID_FILE_LOAD4                   40057
-#define ID_FILE_LOAD5                   40058
-#define ID_FILE_LOAD6                   40059
-#define ID_FILE_LOAD7                   40060
-#define ID_FILE_LOAD8                   40061
-#define ID_FILE_LOAD9                   40062
+#define ID_FILE_SAVE0                   44000
+#define ID_FILE_SAVE1                   44001
+#define ID_FILE_SAVE2                   44002
+#define ID_FILE_SAVE3                   44003
+#define ID_FILE_SAVE4                   44004
+#define ID_FILE_SAVE5                   44005
+#define ID_FILE_SAVE6                   44006
+#define ID_FILE_SAVE7                   44007
+#define ID_FILE_SAVE8                   44008
+#define ID_FILE_SAVE9                   44009
+#define ID_FILE_SAVE_FILE               44010
+#define ID_FILE_LOAD0                   44020
+#define ID_FILE_LOAD1                   44021
+#define ID_FILE_LOAD2                   44022
+#define ID_FILE_LOAD3                   44023
+#define ID_FILE_LOAD4                   44024
+#define ID_FILE_LOAD5                   44025
+#define ID_FILE_LOAD6                   44026
+#define ID_FILE_LOAD7                   44027
+#define ID_FILE_LOAD8                   44028
+#define ID_FILE_LOAD9                   44029
+#define ID_FILE_LOAD_FILE               44030
 #define ID_CHEAT_ENTER                  40063
 #define ID_CHEAT_SEARCH                 40064
 #define ID_CHEAT_APPLY                  40065
@@ -502,8 +504,6 @@
 #define ID_DEBUG_APU_TRACE              40173
 #define ID_EMULATION_BACKGROUNDINPUT    40174
 #define ID_SAVEMEMPACK                  40175
-#define ID_FILE_SAVE_FILE               40176
-#define ID_FILE_LOAD_FILE               40177
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -511,7 +511,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        153
-#define _APS_NEXT_COMMAND_VALUE         40178
+#define _APS_NEXT_COMMAND_VALUE         40176
 #define _APS_NEXT_CONTROL_VALUE         3022
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
