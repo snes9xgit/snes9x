@@ -7263,6 +7263,17 @@ LRESULT CALLBACK GroupBoxCheckBoxTitle(HWND hWnd, UINT message, WPARAM wParam, L
 	return CallWindowProc(lpfnOldWndProc, hWnd, message, wParam, lParam);
 }
 
+void SelectOutputMethodInVideoDropdown(HWND hDlg, OutputMethod method)
+{
+	// select item with corresponding itemdata
+	int item_count = SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_GETCOUNT, 0, 0);
+	for (int index = 0; index < item_count; index++) {
+		int item_data = SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_GETITEMDATA, index, 0);
+		if (item_data == method)
+			SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_SETCURSEL, index, 0);
+	}
+}
+
 INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	int index;
@@ -7406,13 +7417,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
         inserted_index = SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_ADDSTRING, 0, (LPARAM)TEXT("OpenGL"));
         SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_SETITEMDATA, inserted_index, OPENGL);
 
-        // select item with corresponding itemdata
-        int item_count = SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_GETCOUNT, 0, 0);
-        for (int index = 0; index < item_count; index++) {
-            int item_data = SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_GETITEMDATA, index, 0);
-            if (item_data == GUI.outputMethod)
-                SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_SETCURSEL, index, 0);
-        }
+		SelectOutputMethodInVideoDropdown(hDlg, GUI.outputMethod);
 
         // add all the GUI.Scale filters to the combo box
         for (int filter = 0; filter < (int)NUM_FILTERS; filter++)
@@ -7784,7 +7789,7 @@ updateFilterBox2:
 
 
 		case IDCANCEL:
-			ComboBox_SetCurSel(GetDlgItem(hDlg,IDC_OUTPUTMETHOD),prevOutputMethod);
+			SelectOutputMethodInVideoDropdown(hDlg, prevOutputMethod);
 			SendMessage(hDlg,WM_COMMAND,MAKEWPARAM(IDC_OUTPUTMETHOD,CBN_SELCHANGE),0);
 
 			{
