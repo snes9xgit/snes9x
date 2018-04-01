@@ -3827,6 +3827,13 @@ void CMemory::ApplyROMFixes (void)
 			Timings.DMACPUSync = 20;
 			printf("DMA sync: %d\n", Timings.DMACPUSync);
 		}
+		else if (match_na("KORYU NO MIMI ENG")) // Koryu no Mimi translation by rpgone)
+		{
+			// An infinite loop reads $4210 and checks NMI flag. This only works if LDA instruction executes before the NMI triggers,
+			// which doesn't work very well with s9x's default DMA timing.
+			Timings.DMACPUSync = 20;
+			printf("DMA sync: %d\n", Timings.DMACPUSync);
+		}
 	}
 
 	if (!Settings.DisableGameSpecificHacks)
