@@ -1423,13 +1423,14 @@ void S9xStartHDMA (void)
 
 uint8 S9xDoHDMA (uint8 byte)
 {
-	struct SDMA	*p = &DMA[0];
+	struct SDMA *p;
 
 	uint32	ShiftedIBank;
 	uint16	IAddr;
 	bool8	temp;
 	int32	tmpch;
-	int		d = 0;
+	int	d;
+	uint8	mask;
 
 	CPU.InHDMA = TRUE;
 	CPU.InDMAorHDMA = TRUE;
@@ -1440,7 +1441,7 @@ uint8 S9xDoHDMA (uint8 byte)
 	// XXX: Not quite right...
 	ADD_CYCLES(Timings.DMACPUSync);
 
-	for (uint8 mask = 1; mask; mask <<= 1, p++, d++)
+	for (mask = 1, p = &DMA[0], d = 0; mask; mask <<= 1, p++, d++)
 	{
 		if (byte & mask)
 		{
@@ -1755,7 +1756,16 @@ uint8 S9xDoHDMA (uint8 byte)
 
 					#undef DOBYTE
 				}
+			}
+		}
+	}
 
+	for (mask = 1, p = &DMA[0], d = 0; mask; mask <<= 1, p++, d++)
+	{
+		if (byte & mask)
+		{
+			if (p->DoTransfer)
+			{
 				if (p->HDMAIndirectAddressing)
 					p->IndirectAddress += HDMA_ModeByteCounts[p->TransferMode];
 				else
@@ -1771,7 +1781,6 @@ uint8 S9xDoHDMA (uint8 byte)
 					byte &= ~mask;
 					PPU.HDMAEnded |= mask;
 					p->DoTransfer = FALSE;
-					continue;
 				}
 			}
 			else
