@@ -241,9 +241,9 @@ bool8 S9xGraphicsInit (void)
 	GFX.InterlaceFrame = 0;
 	GFX.RealPPL = GFX.Pitch >> 1;
 	IPPU.OBJChanged = TRUE;
-	IPPU.DirectColourMapsNeedRebuild = TRUE;
 	Settings.BG_Forced = 0;
 	S9xFixColourBrightness();
+	S9xBuildDirectColourMaps();
 
 	GFX.X2   = (uint16 *) malloc(sizeof(uint16) * 0x10000);
 	GFX.ZERO = (uint16 *) malloc(sizeof(uint16) * 0x10000);
@@ -336,8 +336,6 @@ void S9xBuildDirectColourMaps (void)
 	for (uint32 p = 0; p < 8; p++)
 		for (uint32 c = 0; c < 256; c++)
 			DirectColourMaps[p][c] = BUILD_PIXEL(IPPU.XB[((c & 7) << 2) | ((p & 1) << 1)], IPPU.XB[((c & 0x38) >> 1) | (p & 2)], IPPU.XB[((c & 0xc0) >> 3) | (p & 4)]);
-
-	IPPU.DirectColourMapsNeedRebuild = FALSE;
 }
 
 void S9xStartScreenRefresh (void)
