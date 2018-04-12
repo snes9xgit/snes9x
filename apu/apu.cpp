@@ -254,6 +254,79 @@ static uint8        *resample_buffer        = NULL;
 }
 
 #ifdef USE_THREADS
+#ifdef _WIN32
+
+#include <windows.h>
+
+static HANDLE worker_thread;
+static DWORD  worker_thread_id;
+static CONDITION_VARIABLE thread_running_cond;
+static CRITICAL_SECTION   thread_running_mutex;
+
+static bool8 thread_running = FALSE;
+static bool8 thread_exit    = FALSE;
+
+static DWORD WINAPI S9xAPUWorkerThread(LPVOID lpParam)
+{
+    while (!thread_exit)
+    {
+        EnterCriticalSection(&thread_running_mutex);
+        while (!thread_running)
+        {
+            SleepConditionVariableCS(&thread_running_cond, &thread_running_mutex, INFINITE);
+            if (thread_exit)
+                break;
+        }
+        LeaveCriticalSection(&thread_running_mutex);
+
+        S9xAPUExecute();
+        SNES::dsp.synchronize();
+
+        EnterCriticalSection(&thread_running_mutex);
+        thread_running = FALSE;
+        WakeAllConditionVariable(&thread_running_cond);
+        LeaveCriticalSection(&thread_running_mutex);
+    }
+
+    return 0;
+}
+
+static void S9xAPUThreadRun(void)
+{
+    EnterCriticalSection(&thread_running_mutex);
+    thread_running = TRUE;
+    WakeAllConditionVariable(&thread_running_cond);
+    LeaveCriticalSection(&thread_running_mutex);
+}
+
+static void S9xAPUThreadWait(void)
+{
+    EnterCriticalSection(&thread_running_mutex);
+    while (thread_running)
+    {
+        SleepConditionVariableCS (&thread_running_cond, &thread_running_mutex, INFINITE);
+    }
+    LeaveCriticalSection(&thread_running_mutex);
+}
+
+static void S9xAPUThreadInit(void)
+{
+    InitializeConditionVariable(&thread_running_cond);
+    InitializeCriticalSection (&thread_running_mutex);
+    thread_running = FALSE;
+    worker_thread = CreateThread(NULL, 0,S9xAPUWorkerThread, NULL, 0, &worker_thread_id);
+}
+
+static void S9xAPUThreadDeinit(void)
+{
+    S9xAPUThreadWait();
+    thread_exit = TRUE;
+    S9xAPUThreadRun();
+    WaitForSingleObject(worker_thread, INFINITE);
+}
+
+#else
+
 #include <pthread.h>
 static pthread_t worker_thread;
 
@@ -302,7 +375,7 @@ static void S9xAPUThreadWait(void)
 static void S9xAPUThreadRun(void)
 {
     pthread_mutex_lock(&thread_running_mutex);
-    thread_running++;
+    thread_running = TRUE;
     pthread_cond_broadcast(&thread_running_cond);
     pthread_mutex_unlock(&thread_running_mutex);
 }
@@ -311,7 +384,7 @@ static void S9xAPUThreadInit(void)
 {
     pthread_cond_init(&thread_running_cond, NULL);
     pthread_mutex_init(&thread_running_mutex, NULL);
-    thread_running = TRUE;
+    thread_running = FALSE;
     pthread_create(&worker_thread, NULL, S9xAPUWorkerThread, NULL);
 }
 
@@ -324,6 +397,7 @@ static void S9xAPUThreadDeinit(void)
     pthread_cond_destroy(&thread_running_cond);
     pthread_mutex_destroy(&thread_running_mutex);
 }
+#endif
 #endif
 
 static void EightBitize (uint8 *, int);
