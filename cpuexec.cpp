@@ -319,9 +319,12 @@ void S9xMainLoop (void)
 	#ifdef DEBUGGER
 		if (!(CPU.Flags & FRAME_ADVANCE_FLAG))
 	#endif
+		S9xAPUWait();
 		S9xSyncSpeed();
 		CPU.Flags &= ~SCAN_KEYS_FLAG;
 	}
+
+
 }
 
 static inline void S9xReschedule (void)
