@@ -255,6 +255,7 @@ Snes9xConfig::load_defaults (void)
     Settings.SoundSync = 1;
     Settings.DynamicRateControl = 1;
     Settings.DynamicRateLimit = 5;
+    Settings.ThreadedAPU = FALSE;
     Settings.HDMATimingHack = 100;
     Settings.ApplyCheats = 1;
 
@@ -406,6 +407,7 @@ Snes9xConfig::save_config_file (void)
     xml_out_int (xml, "sound_sync", Settings.SoundSync);
     xml_out_int (xml, "dynamic_rate_control", Settings.DynamicRateControl);
     xml_out_int (xml, "dynamic_rate_limit", Settings.DynamicRateLimit);
+    xml_out_int (xml, "threaded_apu", Settings.ThreadedAPU);
 
     /* Snes9X core-stored variables */
     xml_out_int (xml, "transparency", Settings.Transparency);
@@ -676,6 +678,10 @@ Snes9xConfig::set_option (const char *name, const char *value)
     {
         Settings.DynamicRateLimit = atoi (value);
         Settings.DynamicRateLimit = CLAMP (Settings.DynamicRateLimit, 1, 1000);
+    }
+    else if (!strcasecmp (name, "threaded_apu"))
+    {
+        Settings.ThreadedAPU = atoi (value);
     }
     else if (!strcasecmp (name, "gaussian_interpolation"))
     {
