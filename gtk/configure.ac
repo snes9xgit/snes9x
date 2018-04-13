@@ -66,12 +66,6 @@ AC_ARG_WITH(xrandr,
   [],
   [with_xrandr=yes])
 
-AC_ARG_WITH(pthreads,
-  [AS_HELP_STRING([--with(out)-pthreads],
-    [Enable POSIX Threads (default: with)])],
-  [],
-  [with_pthreads=yes])
-
 AC_ARG_WITH(portaudio,
   [AS_HELP_STRING([--with(out)-portaudio],
     [Enable PortAudio sound driver support (default: with)])],
@@ -271,17 +265,6 @@ if test yes = "$with_oss" ; then
     ],[
         echo "Cannot find OSS headers."
         echo "--> Disabling OSS support"
-    ])
-fi
-
-THREADS=0
-if test yes = "$with_pthreads" ; then
-    AC_CHECK_HEADER(pthread.h, [
-      CFLAGS="$CFLAGS -DUSE_THREADS"
-      LIBS="$LIBS -lpthread"
-      THREADS=1
-    ],[
-        echo "Cannot find pthreads. Disabling threading."
     ])
 fi
 

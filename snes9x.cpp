@@ -424,7 +424,6 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.Mute                       =  conf.GetBool("Sound::Mute",                         false);
 	Settings.DynamicRateControl         =  conf.GetBool("Sound::DynamicRateControl",           false);
 	Settings.DynamicRateLimit           =  conf.GetInt ("Sound::DynamicRateLimit",             5);
-	Settings.ThreadedAPU                =  conf.GetBool("Sound::ThreadedAPU",                  false);
 
 	// Display
 

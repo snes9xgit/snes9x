@@ -678,7 +678,6 @@ Snes9xPreferences::move_settings_to_dialog (void)
     set_check ("sync_sound",                Settings.SoundSync);
     set_check ("dynamic_rate_control",      Settings.DynamicRateControl);
     set_spin  ("dynamic_rate_limit",        Settings.DynamicRateLimit / 1000.0);
-    set_check ("threaded_apu",              Settings.ThreadedAPU);
     set_spin  ("rewind_buffer_size",        config->rewind_buffer_size);
     set_spin  ("rewind_granularity",        config->rewind_granularity);
 
@@ -771,8 +770,7 @@ Snes9xPreferences::get_settings_from_dialog (void)
                      (7 - (get_combo ("playback_combo"))))                  ||
         (config->sound_input_rate   != get_slider ("sound_input_rate"))     ||
         (Settings.SoundSync         != get_check ("sync_sound"))            ||
-        (Settings.DynamicRateControl != get_check ("dynamic_rate_control")) ||
-        (Settings.ThreadedAPU       != get_check ("threaded_apu"))
+        (Settings.DynamicRateControl != get_check ("dynamic_rate_control"))
         )
     {
         sound_needs_restart = 1;
@@ -838,7 +836,6 @@ Snes9xPreferences::get_settings_from_dialog (void)
     config->mute_sound_turbo          = get_check ("mute_sound_turbo_check");
     Settings.DynamicRateControl       = get_check ("dynamic_rate_control");
     Settings.DynamicRateLimit         = (uint32) (get_spin ("dynamic_rate_limit") * 1000);
-    Settings.ThreadedAPU              = get_check ("threaded_apu");
 
     store_ntsc_settings ();
     config->ntsc_scanline_intensity   = get_combo ("ntsc_scanline_intensity");
