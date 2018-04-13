@@ -260,31 +260,32 @@ static uint8        *resample_buffer        = NULL;
 
 static HANDLE worker_thread;
 static DWORD  worker_thread_id;
-static HANDLE thread_running_semaphore;
-static HANDLE thread_waiting_semaphore;
+static CONDITION_VARIABLE thread_running_cond;
+static CRITICAL_SECTION   thread_running_mutex;
 
 static bool8 thread_running = FALSE;
 static bool8 thread_exit    = FALSE;
 
 static DWORD WINAPI S9xAPUWorkerThread(LPVOID lpParam)
 {
-    DWORD result;
-
     while (!thread_exit)
     {
-        result = WaitForSingleObject(thread_waiting_semaphore, INFINITE);
-
-        if (thread_exit)
-            break;
-
-        if (!thread_running || result != WAIT_OBJECT_0)
-            continue;
+        EnterCriticalSection(&thread_running_mutex);
+        while (!thread_running)
+        {
+            SleepConditionVariableCS(&thread_running_cond, &thread_running_mutex, INFINITE);
+            if (thread_exit)
+                break;
+        }
+        LeaveCriticalSection(&thread_running_mutex);
 
         S9xAPUExecute();
         SNES::dsp.synchronize();
 
+        EnterCriticalSection(&thread_running_mutex);
         thread_running = FALSE;
-        ReleaseSemaphore(thread_running_semaphore, 1, NULL);
+        WakeAllConditionVariable(&thread_running_cond);
+        LeaveCriticalSection(&thread_running_mutex);
     }
 
     return 0;
@@ -292,22 +293,26 @@ static DWORD WINAPI S9xAPUWorkerThread(LPVOID lpParam)
 
 static void S9xAPUThreadRun(void)
 {
+    EnterCriticalSection(&thread_running_mutex);
     thread_running = TRUE;
-    ReleaseSemaphore(thread_waiting_semaphore, 1, 0);
+    WakeAllConditionVariable(&thread_running_cond);
+    LeaveCriticalSection(&thread_running_mutex);
 }
 
 static void S9xAPUThreadWait(void)
 {
+    EnterCriticalSection(&thread_running_mutex);
     while (thread_running)
     {
-        WaitForSingleObject(thread_running_semaphore, INFINITE);
+        SleepConditionVariableCS (&thread_running_cond, &thread_running_mutex, INFINITE);
     }
+    LeaveCriticalSection(&thread_running_mutex);
 }
 
 static void S9xAPUThreadInit(void)
 {
-    thread_running_semaphore = CreateSemaphore(NULL, 0, 1, NULL);
-    thread_waiting_semaphore = CreateSemaphore(NULL, 0, 1, NULL);
+    InitializeConditionVariable(&thread_running_cond);
+    InitializeCriticalSection (&thread_running_mutex);
     thread_running = FALSE;
     worker_thread = CreateThread(NULL, 0,S9xAPUWorkerThread, NULL, 0, &worker_thread_id);
 }
@@ -318,7 +323,6 @@ static void S9xAPUThreadDeinit(void)
     thread_exit = TRUE;
     S9xAPUThreadRun();
     WaitForSingleObject(worker_thread, INFINITE);
-    CloseHandle(worker_thread);
 }
 
 #else
