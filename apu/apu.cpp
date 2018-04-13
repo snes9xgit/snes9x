@@ -769,12 +769,10 @@ bool8 S9xInitAPU (void)
 
 void S9xDeinitAPU (void)
 {
-#ifdef USE_THREADS
     if (spc::using_threads)
     {
         S9xAPUThreadDeinit();
     }
-#endif
 
     if (spc::resampler)
     {
