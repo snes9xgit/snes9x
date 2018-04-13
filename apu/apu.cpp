@@ -319,6 +319,8 @@ static void S9xAPUThreadDeinit(void)
     S9xAPUThreadRun();
     WaitForSingleObject(worker_thread, INFINITE);
     CloseHandle(worker_thread);
+    CloseHandle(thread_running_semaphore);
+    CloseHandle(thread_waiting_semaphore);
 }
 
 #else
