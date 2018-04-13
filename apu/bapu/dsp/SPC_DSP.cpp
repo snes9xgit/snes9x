@@ -62,24 +62,11 @@ static BOOST::uint8_t const initial_regs [SPC_DSP::register_count] =
 	out [0] = l;\
 	out [1] = r;\
 	out += 2;\
-	if ( out >= m.out_end )\
-	{\
-		check( out == m.out_end );\
-		check( m.out_end != &m.extra [extra_size] || \
-			(m.extra <= m.out_begin && m.extra < &m.extra [extra_size]) );\
-		out       = m.extra;\
-		m.out_end = &m.extra [extra_size];\
-	}\
 }\
 
 void SPC_DSP::set_output( sample_t* out, int size )
 {
 	require( (size & 1) == 0 ); // must be even
-	if ( !out )
-	{
-		out  = m.extra;
-		size = extra_size;
-	}
 	m.out_begin = out;
 	m.out       = out;
 	m.out_end   = out + size;
