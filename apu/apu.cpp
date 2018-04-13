@@ -758,16 +758,6 @@ static inline void S9xAPUUpdateClock (void)
     S9xAPUSetReferenceTime(CPU.Cycles);
 }
 
-void S9xAPUWait (void)
-{
-#ifdef USE_THREADS
-    if (spc::using_threads)
-    {
-        S9xAPUThreadWait();
-    }
-#endif
-}
-
 uint8 S9xAPUReadPort (int port)
 {
 #ifdef USE_THREADS
