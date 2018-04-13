@@ -309,7 +309,6 @@ static void S9xAPUThreadInit(void)
     thread_running_semaphore = CreateSemaphore(NULL, 0, 1, NULL);
     thread_waiting_semaphore = CreateSemaphore(NULL, 0, 1, NULL);
     thread_running = FALSE;
-    thread_exit    = FALSE;
     worker_thread = CreateThread(NULL, 0,S9xAPUWorkerThread, NULL, 0, &worker_thread_id);
 }
 
@@ -384,7 +383,6 @@ static void S9xAPUThreadInit(void)
     pthread_cond_init(&thread_running_cond, NULL);
     pthread_mutex_init(&thread_running_mutex, NULL);
     thread_running = FALSE;
-    thread_exit    = FALSE;
     pthread_create(&worker_thread, NULL, S9xAPUWorkerThread, NULL);
 }
 
