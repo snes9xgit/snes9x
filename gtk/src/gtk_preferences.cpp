@@ -1,6 +1,7 @@
 #include <string>
 #include <stdlib.h>
 #include <gdk/gdkkeysyms.h>
+#include <gdk/gdkx.h>
 #ifdef USE_GTK3
 #include <gdk/gdkkeysyms-compat.h>
 #endif
@@ -463,6 +464,66 @@ event_input_rate_changed (GtkRange *range, gpointer data)
     return;
 }
 
+#ifdef USE_XRANDR
+static double XRRGetExactRefreshRate (Display *dpy, Window window)
+{
+    XRRScreenResources *resources = NULL;
+    XRROutputInfo    *output_info = NULL;
+    XRRCrtcInfo        *crtc_info = NULL;
+    RROutput output;
+    int event_base;
+    int error_base;
+    int version_major;
+    int version_minor;
+    double refresh_rate = 0.0;
+    int i;
+
+    if (!XRRQueryExtension (dpy, &event_base, &error_base) ||
+        !XRRQueryVersion (dpy, &version_major, &version_minor))
+    {
+        return refresh_rate;
+    }
+
+    resources   = XRRGetScreenResources (dpy, window);
+    output      = XRRGetOutputPrimary (dpy, window);
+    output_info = XRRGetOutputInfo (dpy, resources, output);
+    crtc_info   = XRRGetCrtcInfo (dpy, resources, output_info->crtc);
+
+    for (i = 0; i < resources->nmode; i++)
+    {
+        if (resources->modes[i].id == crtc_info->mode)
+        {
+            XRRModeInfo *m = &resources->modes[i];
+
+            refresh_rate = (double) m->dotClock / m->hTotal / m->vTotal;
+            break;
+        }
+    }
+
+    XRRFreeCrtcInfo (crtc_info);
+    XRRFreeOutputInfo (output_info);
+    XRRFreeScreenResources (resources);
+
+    return refresh_rate;
+}
+#endif
+
+static void
+event_set_input_rate (GtkButton *widget, gpointer data)
+{
+#ifdef USE_XRANDR
+    Snes9xPreferences *preferences = (Snes9xPreferences *) data;
+    GdkWindow *gdk_window = gtk_widget_get_window (GTK_WIDGET(top_level->get_window()));
+    Display *dpy = GDK_DISPLAY_XDISPLAY (gdk_window_get_display (gdk_window));
+    Window window = GDK_COMPAT_WINDOW_XID (gdk_window);
+    double rate = XRRGetExactRefreshRate(dpy, window);
+
+    if (rate != 0.0)
+        preferences->set_slider("sound_input_rate", (int) (rate * 32040 / 60.09881389744051 + 0.5));
+#endif
+}
+
+
 static void
 event_about_clicked (GtkButton *widget, gpointer data)
 {
@@ -561,6 +622,7 @@ Snes9xPreferences::Snes9xPreferences (Snes9xConfig *config) :
         { "game_data_browse", G_CALLBACK (event_game_data_browse) },
         { "game_data_clear", G_CALLBACK (event_game_data_clear) },
         { "about_clicked", G_CALLBACK (event_about_clicked) },
+        { "set_input_rate", G_CALLBACK (event_set_input_rate) },
 #ifdef USE_JOYSTICK
         { "calibrate", G_CALLBACK (event_calibrate) },
 #endif
@@ -1060,6 +1122,7 @@ Snes9xPreferences::show (void)
     else
     {
         gtk_widget_hide (get_widget ("resolution_box"));
+        gtk_widget_hide (get_widget ("set_input_rate_button"));
     }
 
 #ifdef USE_HQ2X
