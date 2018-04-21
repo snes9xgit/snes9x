@@ -400,7 +400,8 @@ inline VOICE_CLOCK( V3b )
 	m.t_brr_byte   = m.ram [(v->brr_addr + v->brr_offset) & 0xFFFF];
 	m.t_brr_header = m.ram [v->brr_addr]; // brr_addr doesn't need masking
 }
-VOICE_CLOCK( V3c )
+
+inline VOICE_CLOCK( V3c )
 {
 	// Pitch modulation using previous voice's output
 	if ( m.t_pmon & v->vbit )
@@ -494,7 +495,8 @@ inline void SPC_DSP::voice_output( voice_t const* v, int ch )
 		CLAMP16( m.t_echo_out [ch] );
 	}
 }
-VOICE_CLOCK( V4 )
+
+inline VOICE_CLOCK( V4 )
 {
 	// Decode BRR
 	m.t_looped = 0;
