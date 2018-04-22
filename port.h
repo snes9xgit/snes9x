@@ -211,8 +211,6 @@
 #include <windows.h>
 #endif
 
-#define GFX_MULTI_FORMAT
-
 #ifdef __WIN32__
 //#define RIGHTSHIFT_IS_SAR
 #define RIGHTSHIFT_int8_IS_SAR
@@ -220,12 +218,17 @@
 #define RIGHTSHIFT_int32_IS_SAR
 #ifndef __WIN32_LIBSNES__
 #define SNES_JOY_READ_CALLBACKS
+#define GFX_MULTI_FORMAT
 #endif //__WIN32_LIBSNES__
 #endif
 
 #ifdef __MACOSX__
 #undef GFX_MULTI_FORMAT
 #define PIXEL_FORMAT RGB555
+#endif
+
+#ifndef PIXEL_FORMAT
+#define PIXEL_FORMAT RGB565
 #endif
 
 #ifndef snes9x_types_defined

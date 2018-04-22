@@ -1832,7 +1832,6 @@ void
 S9xInitDisplay (int argc, char **argv)
 {
     Settings.SupportHiRes = TRUE;
-    S9xSetRenderPixelFormat (RGB555);
     S9xBlit2xSaIFilterInit ();
 #ifdef USE_HQ2X
     S9xBlitHQ2xFilterInit ();
