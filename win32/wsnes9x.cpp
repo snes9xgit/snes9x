@@ -2829,7 +2829,12 @@ VOID CALLBACK HotkeyTimer( UINT idEvent, UINT uMsg, DWORD dwUser, DWORD dw1, DWO
 				if(counter%2 && !joyState[i])
 					continue;
 
-				bool active = !S9xGetState(i);
+				// special case for escape since S9xGetState ignores it
+				bool active;
+				if (i == VK_ESCAPE)
+					active = (GetKeyState(VK_ESCAPE) & 0x80) != 0;
+				else
+					active = !S9xGetState(i);
 				if(active)
 				{
 					if(joyState[i] < ULONG_MAX) // 0xffffffffUL
