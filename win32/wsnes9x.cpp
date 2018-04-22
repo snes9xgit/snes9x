@@ -297,7 +297,8 @@ void S9xDetectJoypads();
 
 #define WM_CUSTKEYDOWN	(WM_USER+50)
 #define WM_CUSTKEYUP	(WM_USER+51)
-#define WM_SCANJOYPADS  (WM_APP+10)
+
+#define TIMER_SCANJOYPADS  (99999)
 
 #ifdef UNICODE
 #define S9XW_SHARD_PATH SHARD_PATHW
@@ -2682,13 +2683,20 @@ LRESULT CALLBACK WinProc(
 		break;
 #endif
     case WM_DEVICECHANGE:
-        if(wParam == DBT_DEVICEARRIVAL || wParam == DBT_DEVICEREMOVECOMPLETE)
-            PostMessage(hWnd, WM_SCANJOYPADS, 0, 0);
+		if (wParam == DBT_DEVICEARRIVAL || wParam == DBT_DEVICEREMOVECOMPLETE) {
+			// trigger a joypad detect after 500ms - the multimedia functions do not like it if we trigger this right after arrival/removal
+			SetTimer(hWnd, TIMER_SCANJOYPADS, 500, NULL);
+		}
         break;
-    case WM_SCANJOYPADS:
-        S9xDetectJoypads();
-        break;
-    }
+	case WM_TIMER:
+		{
+			if (wParam == TIMER_SCANJOYPADS) {
+				S9xDetectJoypads();
+				KillTimer(hWnd, TIMER_SCANJOYPADS);
+			}
+		}
+		break;
+	}
     return DefWindowProc (hWnd, uMsg, wParam, lParam);
 }
 
