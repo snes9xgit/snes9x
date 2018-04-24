@@ -194,33 +194,180 @@
 #include "memmap.h"
 #include "cheats.h"
 
-static uint8 S9xGetByteFree (uint32);
-static void S9xSetByteFree (uint8, uint32);
-
-
-static uint8 S9xGetByteFree (uint32 address)
+static inline uint8 S9xGetByteFree (uint32 Address)
 {
-	int32	Cycles = CPU.Cycles;
-    int32   NextEvent = CPU.NextEvent;
-	uint8	byte;
+    int		block = (Address & 0xffffff) >> MEMMAP_SHIFT;
+    uint8	*GetAddress = Memory.Map[block];
+    uint8	byte;
 
-    CPU.NextEvent = 0x7FFFFFFF;
-	byte = S9xGetByte(address);
-    CPU.NextEvent = NextEvent;
-	CPU.Cycles = Cycles;
+    if (GetAddress >= (uint8 *) CMemory::MAP_LAST)
+    {
+        byte = *(GetAddress + (Address & 0xffff));
+        return (byte);
+    }
 
-	return (byte);
+    switch ((pint) GetAddress)
+    {
+    case CMemory::MAP_CPU:
+        byte = S9xGetCPU(Address & 0xffff);
+        return (byte);
+
+    case CMemory::MAP_PPU:
+        if (CPU.InDMAorHDMA && (Address & 0xff00) == 0x2100)
+            return (OpenBus);
+
+        byte = S9xGetPPU(Address & 0xffff);
+        return (byte);
+
+    case CMemory::MAP_LOROM_SRAM:
+    case CMemory::MAP_SA1RAM:
+        // Address & 0x7fff   : offset into bank
+        // Address & 0xff0000 : bank
+        // bank >> 1 | offset : SRAM address, unbound
+        // unbound & SRAMMask : SRAM offset
+        byte = *(Memory.SRAM + ((((Address & 0xff0000) >> 1) | (Address & 0x7fff)) & Memory.SRAMMask));
+        return (byte);
+
+    case CMemory::MAP_LOROM_SRAM_B:
+        byte = *(Multi.sramB + ((((Address & 0xff0000) >> 1) | (Address & 0x7fff)) & Multi.sramMaskB));
+        return (byte);
+
+    case CMemory::MAP_HIROM_SRAM:
+    case CMemory::MAP_RONLY_SRAM:
+        byte = *(Memory.SRAM + (((Address & 0x7fff) - 0x6000 + ((Address & 0xf0000) >> 3)) & Memory.SRAMMask));
+        return (byte);
+
+    case CMemory::MAP_BWRAM:
+        byte = *(Memory.BWRAM + ((Address & 0x7fff) - 0x6000));
+        return (byte);
+
+    case CMemory::MAP_DSP:
+        byte = S9xGetDSP(Address & 0xffff);
+        return (byte);
+
+    case CMemory::MAP_SPC7110_ROM:
+        byte = S9xGetSPC7110Byte(Address);
+        return (byte);
+
+    case CMemory::MAP_SPC7110_DRAM:
+        byte = S9xGetSPC7110(0x4800);
+        return (byte);
+
+    case CMemory::MAP_C4:
+        byte = S9xGetC4(Address & 0xffff);
+        return (byte);
+
+    case CMemory::MAP_OBC_RAM:
+        byte = S9xGetOBC1(Address & 0xffff);
+        return (byte);
+
+    case CMemory::MAP_SETA_DSP:
+        byte = S9xGetSetaDSP(Address);
+        return (byte);
+
+    case CMemory::MAP_SETA_RISC:
+        byte = S9xGetST018(Address);
+        return (byte);
+
+    case CMemory::MAP_BSX:
+        byte = S9xGetBSX(Address);
+        return (byte);
+
+    case CMemory::MAP_NONE:
+    default:
+        byte = OpenBus;
+        return (byte);
+    }
 }
 
-static void S9xSetByteFree (uint8 byte, uint32 address)
+static inline void S9xSetByteFree (uint8 Byte, uint32 Address)
 {
-	int32	Cycles = CPU.Cycles;
-    int32  NextEvent = CPU.NextEvent;
+    int		block = (Address & 0xffffff) >> MEMMAP_SHIFT;
+    uint8	*SetAddress = Memory.WriteMap[block];
 
-    CPU.NextEvent = 0x7FFFFFFF;
-	S9xSetByte(byte, address);
-    CPU.NextEvent = NextEvent;
-	CPU.Cycles = Cycles;
+    if (SetAddress >= (uint8 *) CMemory::MAP_LAST)
+    {
+        *(SetAddress + (Address & 0xffff)) = Byte;
+        return;
+    }
+
+    switch ((pint) SetAddress)
+    {
+    case CMemory::MAP_CPU:
+        S9xSetCPU(Byte, Address & 0xffff);
+        return;
+
+    case CMemory::MAP_PPU:
+        if (CPU.InDMAorHDMA && (Address & 0xff00) == 0x2100)
+            return;
+
+        S9xSetPPU(Byte, Address & 0xffff);
+        return;
+
+    case CMemory::MAP_LOROM_SRAM:
+        if (Memory.SRAMMask)
+        {
+            *(Memory.SRAM + ((((Address & 0xff0000) >> 1) | (Address & 0x7fff)) & Memory.SRAMMask)) = Byte;
+            CPU.SRAMModified = TRUE;
+        }
+
+        return;
+
+    case CMemory::MAP_LOROM_SRAM_B:
+        if (Multi.sramMaskB)
+        {
+            *(Multi.sramB + ((((Address & 0xff0000) >> 1) | (Address & 0x7fff)) & Multi.sramMaskB)) = Byte;
+            CPU.SRAMModified = TRUE;
+        }
+
+        return;
+
+    case CMemory::MAP_HIROM_SRAM:
+        if (Memory.SRAMMask)
+        {
+            *(Memory.SRAM + (((Address & 0x7fff) - 0x6000 + ((Address & 0xf0000) >> 3)) & Memory.SRAMMask)) = Byte;
+            CPU.SRAMModified = TRUE;
+        }
+
+        return;
+
+    case CMemory::MAP_BWRAM:
+        *(Memory.BWRAM + ((Address & 0x7fff) - 0x6000)) = Byte;
+        CPU.SRAMModified = TRUE;
+        return;
+
+    case CMemory::MAP_SA1RAM:
+        *(Memory.SRAM + (Address & 0xffff)) = Byte;
+        return;
+
+    case CMemory::MAP_DSP:
+        S9xSetDSP(Byte, Address & 0xffff);
+        return;
+
+    case CMemory::MAP_C4:
+        S9xSetC4(Byte, Address & 0xffff);
+        return;
+
+    case CMemory::MAP_OBC_RAM:
+        S9xSetOBC1(Byte, Address & 0xffff);
+        return;
+
+    case CMemory::MAP_SETA_DSP:
+        S9xSetSetaDSP(Byte, Address);
+        return;
+
+    case CMemory::MAP_SETA_RISC:
+        S9xSetST018(Byte, Address);
+        return;
+
+    case CMemory::MAP_BSX:
+        S9xSetBSX(Byte, Address);
+        return;
+
+    case CMemory::MAP_NONE:
+    default:
+        return;
+    }
 }
 
 void S9xInitWatchedAddress (void)
