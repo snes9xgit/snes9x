@@ -268,6 +268,7 @@ struct CMemory
 	uint32	ROMChecksum;
 	uint32	ROMComplementChecksum;
 	uint32	ROMCRC32;
+	unsigned char ROMSHA256[32];
 	int32	ROMFramesPerSecond;
 
 	bool8	HiROM;

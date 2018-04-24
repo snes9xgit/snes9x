@@ -388,6 +388,7 @@
     </CustomBuild>
     <ClInclude Include="..\msu1.h" />
     <ClInclude Include="..\statemanager.h" />
+    <ClInclude Include="..\sha256.h" />
     <CustomBuild Include="..\stream.h" />
     <CustomBuild Include="..\tile.h" />
     <ClInclude Include="..\unzip\crypt.h" />
@@ -517,6 +518,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\statemanager.cpp" />
+    <ClCompile Include="..\sha256.cpp" />
     <ClCompile Include="..\stream.cpp" />
     <ClCompile Include="..\tile.cpp" />
     <ClCompile Include="..\unzip\ioapi.c" />

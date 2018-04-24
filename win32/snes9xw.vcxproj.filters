@@ -48,6 +48,9 @@
     <ClInclude Include="..\statemanager.h">
       <Filter>Emu</Filter>
     </ClInclude>
+    <ClInclude Include="..\sha256.h">
+      <Filter>Emu</Filter>
+    </ClInclude>
     <ClInclude Include="..\unzip\crypt.h">
       <Filter>UnZip</Filter>
     </ClInclude>
@@ -396,6 +399,9 @@
       <Filter>Emu</Filter>
     </ClCompile>
     <ClCompile Include="..\statemanager.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sha256.cpp">
       <Filter>Emu</Filter>
     </ClCompile>
     <ClCompile Include="..\stream.cpp">

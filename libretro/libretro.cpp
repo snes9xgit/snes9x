@@ -550,7 +550,7 @@ bool retro_load_game(const struct retro_game_info *game)
    
    if(!environ_cb || !environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt)) 
    {
-      return false
+      return false;
    }
 
    S9xGraphicsDeinit();

@@ -179,7 +179,8 @@ snes9x_gtk_SOURCES += \
     ../snapshot.cpp \
     ../screenshot.cpp \
     ../movie.cpp \
-    ../statemanager.cpp
+    ../statemanager.cpp \
+    ../sha256.cpp
 
 # ASMCPU Doesn't exist anymore.
 snes9x_gtk_SOURCES += \

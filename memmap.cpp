@@ -219,6 +219,7 @@
 #include "cheats.h"
 #include "movie.h"
 #include "display.h"
+#include "sha256.h"
 
 #ifndef SET_UI_COLOR
 #define SET_UI_COLOR(r, g, b) ;
@@ -2671,7 +2672,10 @@ void CMemory::InitROM (void)
 
 	// CRC32
 	if (!Settings.BS || Settings.BSXItself) // Not BS Dump
+	{
 		ROMCRC32 = caCRC32(ROM, CalculatedSize);
+		sha256sum(ROM, CalculatedSize, ROMSHA256);
+	}
 	else // Convert to correct format before scan
 	{
 		int offset = HiROM ? 0xffc0 : 0x7fc0;
@@ -2683,6 +2687,7 @@ void CMemory::InitROM (void)
 		ROM[offset + 23] = 0x00;
 		// Calc
 		ROMCRC32 = caCRC32(ROM, CalculatedSize);
+		sha256sum(ROM, CalculatedSize, ROMSHA256);
 		// Convert back
 		ROM[offset + 22] = BSMagic0;
 		ROM[offset + 23] = BSMagic1;
