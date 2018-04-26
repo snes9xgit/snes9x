@@ -429,10 +429,15 @@ void S9xDisableCheat (SCheat *c)
     if (!c->enabled)
         return;
 
-    c->enabled = false;
-
     if (!Cheat.enabled)
+    {
+        c->enabled = false;
         return;
+    }
+
+    /* Make sure we restore the up-to-date written byte */
+    S9xUpdateCheatInMemory (c);
+    c->enabled = false;
 
     if (c->conditional && !c->cond_true)
         return;
