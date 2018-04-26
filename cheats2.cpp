@@ -705,6 +705,40 @@ static void S9xLoadCheatsFromBMLNode (bml_node *n)
     return;
 }
 
+bool8 S9xLoadCheatFileClassic (const char *filename)
+{
+    FILE *fs;
+    uint8 data[28];
+
+    fs = fopen(filename, "rb");
+    if (!fs)
+        return (FALSE);
+
+    S9xDeleteCheats ();
+
+    while (fread ((void *) data, 1, 28, fs) == 28)
+    {
+        SCheat c;
+        char name[21];
+        char cheat[10];
+        c.enabled = (data[0] & 4) == 0;
+        c.byte = data[1];
+        c.address = data[2] | (data[3] << 8) |  (data[4] << 16);
+        memcpy (name, &data[8], 20);
+        name[20] = 0;
+
+        snprintf (cheat, 21, "%x=%x", c.address, c.byte);
+        S9xAddCheatGroup (name, cheat);
+
+        if (c.enabled)
+            S9xEnableCheatGroup (Cheat.g.size () - 1);
+    }
+
+    fclose(fs);
+
+    return (TRUE);
+}
+
 bool8 S9xLoadCheatFile (const char *filename)
 {
     bml_node *bml = NULL;
@@ -712,7 +746,9 @@ bool8 S9xLoadCheatFile (const char *filename)
 
     bml = bml_parse_file (filename);
     if (!bml)
-        return FALSE;
+    {
+        return S9xLoadCheatFileClassic (filename);
+    }
 
     n = bml_find_sub (bml, "cartridge");
     if (n)
@@ -721,6 +757,11 @@ bool8 S9xLoadCheatFile (const char *filename)
     }
 
     bml_free_node (bml);
+
+    if (!n)
+    {
+        return S9xLoadCheatFileClassic (filename);
+    }
 
     return (TRUE);
 }
