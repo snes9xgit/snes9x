@@ -777,57 +777,14 @@ char * S9xParseArgs (char **argv, int argc)
 			if (!strcasecmp(argv[i], "-cheat"))
 				Settings.ApplyCheats = TRUE;
 			else
-			if (!strcasecmp(argv[i], "-gamegenie"))
+			if (!strcasecmp(argv[i], "-gamegenie") || !strcasecmp(argv[i], "-actionreplay"))
 			{
 				if (i + 1 < argc)
 				{
-					uint32		address;
-					uint8		byte;
-					const char	*error;
-
-					if ((error = S9xGameGenieToRaw(argv[++i], address, byte)) == NULL)
-						S9xAddCheat(TRUE, FALSE, address, byte);
-					else
-						S9xMessage(S9X_ERROR, S9X_GAME_GENIE_CODE_ERROR, error);
-				}
-				else
-					S9xUsage();
-			}
-			else
-			if (!strcasecmp(argv[i], "-actionreplay"))
-			{
-				if (i + 1 < argc)
-				{
-					uint32		address;
-					uint8		byte;
-					const char	*error;
-
-					if ((error = S9xProActionReplayToRaw(argv[++i], address, byte)) == NULL)
-						S9xAddCheat(TRUE, FALSE, address, byte);
-					else
-						S9xMessage(S9X_ERROR, S9X_ACTION_REPLY_CODE_ERROR, error);
-				}
-				else
-					S9xUsage();
-			}
-			else
-			if (!strcasecmp(argv[i], "-goldfinger"))
-			{
-				if (i + 1 < argc)
-				{
-					uint32		address;
-					uint8		bytes[3];
-					bool8		sram;
-					uint8		num_bytes;
-					const char	*error;
-
-					if ((error = S9xGoldFingerToRaw(argv[++i], address, sram, num_bytes, bytes)) == NULL)
+					if (S9xAddCheatGroup ("Unknown", argv[++i]) < 0)
 					{
-						for (int c = 0; c < num_bytes; c++)
-							S9xAddCheat(TRUE, FALSE, address + c, bytes[c]);
+						S9xMessage(S9X_ERROR, S9X_GAME_GENIE_CODE_ERROR, "Code format invalid");
 					}
-					else
-						S9xMessage(S9X_ERROR, S9X_GOLD_FINGER_CODE_ERROR, error);
 				}
 				else
 					S9xUsage();

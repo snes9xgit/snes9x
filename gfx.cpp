@@ -452,7 +452,7 @@ void S9xEndScreenRefresh (void)
 	else
 		S9xControlEOF();
 
-	S9xApplyCheats();
+	S9xUpdateCheatsInMemory ();
 
 #ifdef DEBUGGER
 	if (CPU.Flags & FRAME_ADVANCE_FLAG)

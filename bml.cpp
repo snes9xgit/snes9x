@@ -12,6 +12,8 @@ static inline bml_node *bml_node_new(void)
     node->data = NULL;
     node->name = NULL;
     node->depth = -1;
+
+    return node;
 }
 
 static char *strndup_trim (char *str, int len)
@@ -45,14 +47,14 @@ static inline unsigned int bml_read_depth (char *data)
     return depth;
 }
 
-static unsigned int bml_parse_depth (bml_node *node, char **data)
+static void bml_parse_depth (bml_node *node, char **data)
 {
     unsigned int depth = bml_read_depth (*data);
     *data += depth;
     node->depth = depth;
 }
 
-static char *bml_parse_name (bml_node *node, char **data)
+static void bml_parse_name (bml_node *node, char **data)
 {
     int len;
 
@@ -70,7 +72,7 @@ static void bml_parse_data (bml_node *node, char **data)
     if (p[0] == '=' && p[1] == '\"')
     {
         len = 2;
-        while (p[len] && !islf (p[len]))
+        while (p[len] && p[len] != '\"' && !islf (p[len]))
             len++;
         if (p[len] != '\"')
             return;
@@ -177,7 +179,8 @@ static void bml_parse_attr (bml_node *node, char **data)
         n->name = strndup_trim (p, len);
         p += len;
         bml_parse_data (n, &p);
-        node->attr.push_back (n);
+        n->depth = bml_attr_type;
+        node->child.push_back (n);
     }
 
     *data = p;
@@ -196,10 +199,12 @@ static int contains_space (char *str)
 
 static void bml_print_node (bml_node *node, int depth)
 {
+    int i;
+
     if (!node)
         return;
 
-    for (int i = 0; i < depth * 2; i++)
+    for (i = 0; i < depth * 2; i++)
     {
         printf (" ");
     }
@@ -210,22 +215,21 @@ static void bml_print_node (bml_node *node, int depth)
     if (node->data)
     {
         if (contains_space (node->data))
-            printf (": \"%s\"", node->data);
+            printf ("=\"%s\"", node->data);
         else
             printf (": %s", node->data);
     }
-
-    for (int i = 0; i < node->attr.size(); i++)
+    for (i = 0; i < (int) node->child.size () && node->child[i]->depth == bml_attr_type; i++)
     {
-        if (node->attr[i]->name)
+        if (node->child[i]->name)
         {
-            printf (" %s", node->attr[i]->name);
-            if (node->attr[i]->data)
+            printf (" %s", node->child[i]->name);
+            if (node->child[i]->data)
             {
-                if (contains_space (node->attr[i]->data))
-                    printf ("=\"%s\"", node->attr[i]->data);
+                if (contains_space (node->child[i]->data))
+                    printf ("=\"%s\"", node->child[i]->data);
                 else
-                    printf ("=%s", node->attr[i]->data);
+                    printf ("=%s", node->child[i]->data);
             }
         }
     }
@@ -233,7 +237,7 @@ static void bml_print_node (bml_node *node, int depth)
     if (depth >= 0)
         printf ("\n");
 
-    for (int i = 0; i < node->child.size(); i++)
+    for (; i < (int) node->child.size(); i++)
     {
         bml_print_node (node->child[i], depth + 1);
     }
@@ -265,7 +269,7 @@ static bml_node *bml_parse_node (char **doc)
         return NULL;
 
     bml_skip_empty (doc);
-    while (*doc && bml_read_depth (*doc) > node->depth)
+    while (*doc && (int) bml_read_depth (*doc) > node->depth)
     {
         bml_node *child = bml_parse_node (doc);
 
@@ -283,16 +287,10 @@ void bml_free_node (bml_node *node)
     delete[] (node->name);
     delete[] (node->data);
 
-    for (int i = 0; i < node->child.size(); i++)
+    for (unsigned int i = 0; i < node->child.size(); i++)
     {
         bml_free_node (node->child[i]);
         delete node->child[i];
-    }
-
-    for (int i = 0; i < node->attr.size(); i++)
-    {
-        bml_free_node (node->attr[i]);
-        delete node->attr[i];
     }
 
     return;
@@ -320,7 +318,20 @@ bml_node *bml_parse (char **doc)
     return root;
 }
 
-bml_node *bml_parse_file (char *filename)
+bml_node *bml_find_sub (bml_node *n, const char *name)
+{
+    unsigned int i;
+
+    for (i = 0; i < n->child.size (); i++)
+    {
+        if (!strcasecmp (n->child[i]->name, name))
+            return n->child[i];
+    }
+
+    return NULL;
+}
+
+bml_node *bml_parse_file (const char *filename)
 {
     FILE *file = NULL;
     char *buffer = NULL;

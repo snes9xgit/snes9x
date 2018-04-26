@@ -193,22 +193,30 @@
 #ifndef _CHEATS_H_
 #define _CHEATS_H_
 
-#define MAX_CHEATS	150
+#include "port.h"
+#include <vector>
 
 struct SCheat
 {
 	uint32	address;
 	uint8	byte;
 	uint8	saved_byte;
+	bool8	conditional;
+	bool8	cond_true;
+	uint8	cond_byte;
 	bool8	enabled;
-	bool8	saved;
-	char	name[22];
+};
+
+struct SCheatGroup
+{
+	char *name;
+	bool8 enabled;
+	std::vector<struct SCheat> c;
 };
 
 struct SCheatData
 {
-	struct SCheat c[MAX_CHEATS];
-	uint32	num_cheats;
+	std::vector<struct SCheatGroup> g;
 	uint8	CWRAM[0x20000];
 	uint8	CSRAM[0x10000];
 	uint8	CIRAM[0x2000];
@@ -250,20 +258,20 @@ typedef enum
 extern SCheatData	Cheat;
 extern Watch		watches[16];
 
-void S9xApplyCheat (uint32);
-void S9xApplyCheats (void);
-void S9xRemoveCheat (uint32);
-void S9xRemoveCheats (void);
-void S9xDeleteCheat (uint32);
+int S9xAddCheatGroup (const char *name, const char *cheat);
+int S9xModifyCheatGroup (uint32 index, const char *name, const char *cheat);
+void S9xEnableCheatGroup (uint32 index);
+void S9xDisableCheatGroup (uint32 index);
 void S9xDeleteCheats (void);
-void S9xEnableCheat (uint32);
-void S9xDisableCheat (uint32);
-void S9xAddCheat (bool8, bool8, uint32, uint8);
+char *S9xCheatGroupToText (uint32 index);
+void S9xDeleteCheatGroup (uint32 index);
+bool8 S9xLoadCheatFile (const char *filename);
+bool8 S9xSaveCheatFile (const char *filename);
+void S9xUpdateCheatsInMemory (void);
+bool8 S9xImportCheatsFromDatabase (const char *filename);
+
 void S9xInitCheatData (void);
 void S9xInitWatchedAddress (void);
-bool8 S9xLoadCheatFile (const char *);
-bool8 S9xSaveCheatFile (const char *);
-
 void S9xStartCheatSearch (SCheatData *);
 void S9xSearchForChange (SCheatData *, S9xCheatComparisonType, S9xCheatDataSize, bool8, bool8);
 void S9xSearchForValue (SCheatData *, S9xCheatComparisonType, S9xCheatDataSize, uint32, bool8, bool8);
