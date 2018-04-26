@@ -386,6 +386,7 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.ForceInterleaved2          =  conf.GetBool("ROM::Interleaved2",                   false);
 	Settings.ForceInterleaveGD24        =  conf.GetBool("ROM::InterleaveGD24",                 false);
 	Settings.ApplyCheats                =  conf.GetBool("ROM::Cheat",                          false);
+	Cheat.enabled = false;
 	Settings.NoPatch                    = !conf.GetBool("ROM::Patch",                          true);
 	Settings.IgnorePatchChecksum        =  conf.GetBool("ROM::IgnorePatchChecksum",            false);
 
@@ -784,6 +785,10 @@ char * S9xParseArgs (char **argv, int argc)
 					if (S9xAddCheatGroup ("Unknown", argv[++i]) < 0)
 					{
 						S9xMessage(S9X_ERROR, S9X_GAME_GENIE_CODE_ERROR, "Code format invalid");
+					}
+					else
+					{
+						S9xEnableCheatGroup (Cheat.g.size() - 1);
 					}
 				}
 				else

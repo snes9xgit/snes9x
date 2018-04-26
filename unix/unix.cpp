@@ -1619,7 +1619,8 @@ void S9xExit (void)
 #endif
 
 	Memory.SaveSRAM(S9xGetFilename(".srm", SRAM_DIR));
-	S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
+	if (Settings.ApplyCheats)
+		S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
 	S9xResetSaveTimer(FALSE);
 
 	S9xUnmapAllControls();
@@ -1787,7 +1788,11 @@ int main (int argc, char **argv)
 
 	NSRTControllerSetup();
 	Memory.LoadSRAM(S9xGetFilename(".srm", SRAM_DIR));
-	S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
+	if (Settings.ApplyCheats)
+	{
+		S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
+		S9xCheatsEnable ();
+	}
 
 	CPU.Flags = saved_flags;
 	Settings.StopEmulation = FALSE;

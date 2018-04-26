@@ -429,8 +429,10 @@ void S9xDisableCheat (SCheat *c)
     if (!c->enabled)
         return;
 
-    S9xUpdateCheatInMemory (c);
     c->enabled = false;
+
+    if (!Cheat.enabled)
+        return;
 
     if (c->conditional && !c->cond_true)
         return;
@@ -478,6 +480,10 @@ void S9xEnableCheat (SCheat *c)
         return;
 
     c->enabled = true;
+
+    if (!Cheat.enabled)
+        return;
+
     byte = S9xGetByteFree(c->address);
 
     if (c->conditional)
@@ -511,8 +517,8 @@ void S9xDisableCheatGroup (uint32 num)
     for (i = 0; i < Cheat.g[num].c.size (); i++)
     {
         S9xDisableCheat (&Cheat.g[num].c[i]);
-
     }
+
     Cheat.g[num].enabled = false;
 }
 
@@ -650,6 +656,9 @@ void S9xUpdateCheatsInMemory (void)
     unsigned int i;
     unsigned int j;
 
+    if (!Cheat.enabled)
+        return;
+
     for (i = 0; i < Cheat.g.size (); i++)
     {
         for (j = 0; j < Cheat.g[i].c.size (); j++)
@@ -705,8 +714,6 @@ bool8 S9xLoadCheatFile (const char *filename)
     if (!bml)
         return FALSE;
 
-    S9xDeleteCheats ();
-
     n = bml_find_sub (bml, "cartridge");
     if (n)
     {
@@ -724,7 +731,10 @@ bool8 S9xSaveCheatFile (const char *filename)
     FILE *file = NULL;
 
     if (Cheat.g.size () == 0)
+    {
+        remove (filename);
         return TRUE;
+    }
 
     file = fopen (filename, "w");
 
@@ -738,18 +748,60 @@ bool8 S9xSaveCheatFile (const char *filename)
 
     for (i = 0; i < Cheat.g.size (); i++)
     {
+        char *txt = S9xCheatGroupToText (i);
+
         fprintf (file,
                  "  cheat%s\n"
                  "    description: %s\n"
-                 "    code: %s\n\n",
+                 "    code: %s\n",
                  (Cheat.g[i].enabled ? " enabled" : ""),
                  Cheat.g[i].name,
-                 S9xCheatGroupToText (i));
+                 txt);
+        
+        delete[] txt;
     }
 
     fclose (file);
 
     return TRUE;
+}
+
+void S9xCheatsDisable (void)
+{
+    unsigned int i;
+
+    if (!Cheat.enabled)
+        return;
+
+    for (i = 0; i < Cheat.g.size (); i++)
+    {
+        if (Cheat.g[i].enabled)
+        {
+            S9xDisableCheatGroup (i);
+            Cheat.g[i].enabled = TRUE;
+        }
+    }
+
+    Cheat.enabled = FALSE;
+}
+
+void S9xCheatsEnable (void)
+{
+    unsigned int i;
+
+    if (Cheat.enabled)
+        return;
+
+    Cheat.enabled = TRUE;
+
+    for (i = 0; i < Cheat.g.size (); i++)
+    {
+        if (Cheat.g[i].enabled)
+        {
+            Cheat.g[i].enabled = FALSE;
+            S9xEnableCheatGroup (i);
+        }
+    }
 }
 
 bool8 S9xImportCheatsFromDatabase (const char *filename)

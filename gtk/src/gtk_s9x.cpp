@@ -195,6 +195,7 @@ S9xOpenROM (const char *rom_filename)
     if (loaded)
     {
         Memory.LoadSRAM (S9xGetFilename (".srm", SRAM_DIR));
+        S9xDeleteCheats ();
         S9xLoadCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
     }
     else

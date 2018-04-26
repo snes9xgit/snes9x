@@ -217,6 +217,7 @@ Snes9xConfig::load_defaults (void)
     netplay_last_host [0] = '\0';
     netplay_last_port = 6096;
     modal_dialogs = 1;
+    S9xCheatsEnable ();
 
     rewind_granularity = 5;
     rewind_buffer_size = 0;
