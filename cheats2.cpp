@@ -196,9 +196,9 @@
 
 static inline uint8 S9xGetByteFree (uint32 Address)
 {
-    int		block = (Address & 0xffffff) >> MEMMAP_SHIFT;
-    uint8	*GetAddress = Memory.Map[block];
-    uint8	byte;
+    int	block = (Address & 0xffffff) >> MEMMAP_SHIFT;
+    uint8 *GetAddress = Memory.Map[block];
+    uint8 byte;
 
     if (GetAddress >= (uint8 *) CMemory::MAP_LAST)
     {
@@ -282,8 +282,8 @@ static inline uint8 S9xGetByteFree (uint32 Address)
 
 static inline void S9xSetByteFree (uint8 Byte, uint32 Address)
 {
-    int		block = (Address & 0xffffff) >> MEMMAP_SHIFT;
-    uint8	*SetAddress = Memory.Map[block];
+    int block = (Address & 0xffffff) >> MEMMAP_SHIFT;
+    uint8 *SetAddress = Memory.Map[block];
 
     if (SetAddress >= (uint8 *) CMemory::MAP_LAST)
     {
@@ -642,46 +642,46 @@ char *S9xCheatToText (SCheat *c)
     return text;
 }
 
-char *S9xCheatGroupToText(SCheatGroup *g)
+char *S9xCheatGroupToText (SCheatGroup *g)
 {
-	std::string text = "";
-	unsigned int i;
+    std::string text = "";
+    unsigned int i;
 
-	if (g->c.size() == 0)
-		return NULL;
+    if (g->c.size () == 0)
+        return NULL;
 
-	for (i = 0; i < g->c.size(); i++)
-	{
-		char *tmp = S9xCheatToText(&g->c[i]);
-		if (i != 0)
-			text += '+';
-		text += tmp;
-		delete[] tmp;
-	}
+    for (i = 0; i < g->c.size (); i++)
+    {
+        char *tmp = S9xCheatToText (&g->c[i]);
+        if (i != 0)
+            text += '+';
+        text += tmp;
+        delete[] tmp;
+    }
 
-	return strdup(text.c_str());
+    return strdup (text.c_str ());
 }
 
-char *S9xCheatValidate(char *code_string)
+char *S9xCheatValidate (char *code_string)
 {
-	SCheatGroup g = S9xCreateCheatGroup ("temp", code_string);
+    SCheatGroup g = S9xCreateCheatGroup ("temp", code_string);
 
-	delete[] g.name;
+    delete[] g.name;
 
-	if (g.c.size() > 0)
-	{
-		return S9xCheatGroupToText(&g);
-	}
+    if (g.c.size() > 0)
+    {
+        return S9xCheatGroupToText (&g);
+    }
 
-	return NULL;
+    return NULL;
 }
 
 char *S9xCheatGroupToText (uint32 num)
 {
-	if (num >= Cheat.g.size())
-		return NULL;
+    if (num >= Cheat.g.size ())
+        return NULL;
 
-	return S9xCheatGroupToText(&Cheat.g[num]);
+    return S9xCheatGroupToText (&Cheat.g[num]);
 }
 
 void S9xUpdateCheatsInMemory (void)
