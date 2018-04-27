@@ -1,11 +1,27 @@
-#include <ctype.h>
 #include <vector>
 #include <string.h>
 #include <stdio.h>
 
+#include "port.h"
 #include "bml.h"
 
-static inline bml_node *bml_node_new(void)
+static char *strndup_p(char *str, int len)
+{
+    char *buffer;
+    int n;
+
+    buffer = (char *) malloc (len + 1);
+
+    if (buffer)
+    {
+        for (n = 0; ((n < len) && (str[n] != 0)); n++) buffer[n] = str[n];
+        buffer[n] = '\0';
+    }
+
+    return buffer;
+}
+
+static inline bml_node *bml_node_new (void)
 {
     bml_node *node = new bml_node;
 
@@ -14,6 +30,28 @@ static inline bml_node *bml_node_new(void)
     node->depth = -1;
 
     return node;
+}
+
+static inline int islf(char c)
+{
+    return (c == '\r' || c == '\n');
+}
+
+static inline int isblank(char c)
+{
+    return (c == ' ' || c == '\t');
+}
+
+static inline int isalnum(char c)
+{
+    return ((c >= 'a' && c <= 'z') ||
+            (c >= 'A' && c <= 'Z') ||
+            (c >= '0' && c <= '9'));
+}
+
+static inline int bml_valid (char c)
+{
+    return (isalnum (c) || c == '-');
 }
 
 static char *strndup_trim (char *str, int len)
@@ -27,17 +65,7 @@ static char *strndup_trim (char *str, int len)
 
     for (end = len - 1; isblank (str[end]) || str[end] == '\n' || str[end] == '\r'; end--) {}
 
-    return strndup (str + start, end - start + 1);
-}
-
-static inline int bml_valid (char c)
-{
-    return (isalnum (c) || c == '-');
-}
-
-static inline int islf(char c)
-{
-    return (c == '\r' || c == '\n');
+    return strndup_p (str + start, end - start + 1);
 }
 
 static inline unsigned int bml_read_depth (char *data)
@@ -77,7 +105,7 @@ static void bml_parse_data (bml_node *node, char **data)
         if (p[len] != '\"')
             return;
 
-        node->data = strndup (p + 2, len - 2);
+        node->data = strndup_p (p + 2, len - 2);
         *data += len + 1;
     }
     else if (*p == '=')

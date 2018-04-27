@@ -231,6 +231,7 @@
 #include "AVIOutput.h"
 #include "InputCustom.h"
 #include <vector>
+#include <string>
 
 #if (((defined(_MSC_VER) && _MSC_VER >= 1300)) || defined(__MINGW32__))
 	// both MINGW and VS.NET use fstream instead of fstream.h which is deprecated
@@ -2305,10 +2306,10 @@ LRESULT CALLBACK WinProc(
             break;
 		case ID_CHEAT_ENTER:
 			RestoreGUIDisplay ();
-			S9xRemoveCheats ();
+			S9xCheatsDisable ();
 			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_CHEATER), hWnd, DlgCheater);
 			S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
-			S9xApplyCheats ();
+			S9xCheatsEnable ();
 			RestoreSNESDisplay ();
 			break;
 		case ID_CHEAT_SEARCH:
@@ -2333,14 +2334,14 @@ LRESULT CALLBACK WinProc(
 		case ID_CHEAT_APPLY:
 			Settings.ApplyCheats = !Settings.ApplyCheats;
 			if (!Settings.ApplyCheats){
-				S9xRemoveCheats ();
+				S9xCheatsDisable ();
 				S9xMessage (S9X_INFO, S9X_GAME_GENIE_CODE_ERROR, CHEATS_INFO_DISABLED);
 			}else{
-				S9xApplyCheats ();
+				S9xCheatsEnable ();
 				bool on = false;
 				extern struct SCheatData Cheat;
-				for (uint32 i = 0; i < Cheat.num_cheats && !on; i++)
-					if (Cheat.c [i].enabled)
+				for (uint32 i = 0; i < Cheat.g.size() && !on; i++)
+					if (Cheat.g [i].enabled)
 						on = true;
 				S9xMessage (S9X_INFO, S9X_GAME_GENIE_CODE_ERROR, on ? CHEATS_INFO_ENABLED : CHEATS_INFO_ENABLED_NONE);
 			}
@@ -4061,8 +4062,10 @@ static bool LoadROMPlain(const TCHAR *filename)
     if (Memory.LoadROM (_tToChar(filename)))
     {
 		S9xStartCheatSearch (&Cheat);
+		if (Settings.ApplyCheats)
+			S9xCheatsEnable();
         ReInitSound();
-        ResetFrameTimer ();
+		ResetFrameTimer();
         return (TRUE);
     }
     return (FALSE);
@@ -4074,6 +4077,8 @@ static bool LoadROMMulti(const TCHAR *filename, const TCHAR *filename2)
 	if (Memory.LoadMultiCart(_tToChar(filename), _tToChar(filename2)))
 	{
 		S9xStartCheatSearch(&Cheat);
+		if (Settings.ApplyCheats)
+			S9xCheatsEnable();
 		ReInitSound();
 		ResetFrameTimer();
 		return (TRUE);
@@ -8490,6 +8495,7 @@ DWORD* state;
 						a.pszText=d; \
 						a.cchTextMax=e; \
 						ListView_GetItem(GetDlgItem(hDlg, b), &a);
+#define CHEAT_SIZE 1024
 
 INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -8505,35 +8511,20 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 			ListView_SetExtendedListViewStyle(GetDlgItem(hDlg, IDC_CHEAT_LIST), LVS_EX_FULLROWSELECT|LVS_EX_CHECKBOXES);
 
-			SendDlgItemMessage(hDlg, IDC_CHEAT_CODE, EM_LIMITTEXT, 14, 0);
-			SendDlgItemMessage(hDlg, IDC_CHEAT_DESCRIPTION, EM_LIMITTEXT, 22, 0);
-			SendDlgItemMessage(hDlg, IDC_CHEAT_ADDRESS, EM_LIMITTEXT, 6, 0);
-			SendDlgItemMessage(hDlg, IDC_CHEAT_BYTE, EM_LIMITTEXT, 3, 0);
+			SendDlgItemMessage(hDlg, IDC_CHEAT_CODE, EM_LIMITTEXT, CHEAT_SIZE, 0);
+			SendDlgItemMessage(hDlg, IDC_CHEAT_DESCRIPTION, EM_LIMITTEXT, CHEAT_SIZE, 0);
 
 			LVCOLUMN col;
 			TCHAR temp[32];
-			lstrcpy(temp,SEARCH_COLUMN_ADDRESS);
+			lstrcpy(temp, SEARCH_COLUMN_CODE);
 			memset(&col, 0, sizeof(LVCOLUMN));
 			col.mask=LVCF_FMT|LVCF_ORDER|LVCF_TEXT|LVCF_WIDTH;
 			col.fmt=LVCFMT_LEFT;
 			col.iOrder=0;
 			col.cx=70;
-			col.cchTextMax=7;
 			col.pszText=temp;
 
 			ListView_InsertColumn(GetDlgItem(hDlg,IDC_CHEAT_LIST),    0,   &col);
-
-			lstrcpy(temp,SEARCH_COLUMN_VALUE);
-			memset(&col, 0, sizeof(LVCOLUMN));
-			col.mask=LVCF_FMT|LVCF_ORDER|LVCF_TEXT|LVCF_WIDTH|LVCF_SUBITEM;
-			col.fmt=LVCFMT_LEFT;
-			col.iOrder=1;
-			col.cx=43;
-			col.cchTextMax=3;
-			col.pszText=temp;
-			col.iSubItem=1;
-
-			ListView_InsertColumn(GetDlgItem(hDlg,IDC_CHEAT_LIST),    1,   &col);
 
 			lstrcpy(temp,SEARCH_COLUMN_DESCRIPTION);
 			memset(&col, 0, sizeof(LVCOLUMN));
@@ -8541,28 +8532,31 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			col.fmt=LVCFMT_LEFT;
 			col.iOrder=2;
 			col.cx=165;
-			col.cchTextMax=32;
 			col.pszText=temp;
 			col.iSubItem=2;
 
-			ListView_InsertColumn(GetDlgItem(hDlg,IDC_CHEAT_LIST),    2,   &col);
+			ListView_InsertColumn(GetDlgItem(hDlg,IDC_CHEAT_LIST),    1,   &col);
 
-			ct.index=new int[Cheat.num_cheats];
-			ct.state=new DWORD[Cheat.num_cheats];
+			ct.index=new int[Cheat.g.size()];
+			ct.state=new DWORD[Cheat.g.size()];
 
 			uint32 counter;
-			for(counter=0; counter<Cheat.num_cheats; counter++)
+			for(counter=0; counter < Cheat.g.size(); counter++)
 			{
-				TCHAR buffer[22];
+				char *code_string;
+				Utf8ToWide *wstring;
 				int curr_idx=-1;
-				_stprintf(buffer, TEXT("%06X"), Cheat.c[counter].address);
+				code_string = S9xCheatGroupToText(counter);
+				wstring = new Utf8ToWide(code_string);
 				LVITEM lvi;
 				memset(&lvi, 0, sizeof(LVITEM));
 				lvi.mask=LVIF_TEXT;
-				lvi.pszText=buffer;
-				lvi.cchTextMax=7;
+				lvi.cchTextMax = CHEAT_SIZE;
+				lvi.pszText = *wstring;
 				lvi.iItem=counter;
 				curr_idx=ListView_InsertItem(GetDlgItem(hDlg,IDC_CHEAT_LIST), &lvi);
+				delete[] code_string;
+				delete wstring;
 
 				unsigned int k;
 				for(k=0;k<counter;k++)
@@ -8573,25 +8567,17 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				ct.index[counter]=curr_idx;
 				ct.state[counter]=Untouched;
 
-				_stprintf(buffer, TEXT("%02X"), Cheat.c[counter].byte);
+				wstring = new Utf8ToWide(Cheat.g[counter].name);
 				memset(&lvi, 0, sizeof(LVITEM));
 				lvi.iItem=curr_idx;
 				lvi.iSubItem=1;
 				lvi.mask=LVIF_TEXT;
-				lvi.pszText=buffer;
-				lvi.cchTextMax=3;
+				lvi.cchTextMax = CHEAT_SIZE;
+				lvi.pszText = *wstring;
 				SendDlgItemMessage(hDlg,IDC_CHEAT_LIST, LVM_SETITEM, 0, (LPARAM)&lvi);
+				delete wstring;
 
-				lstrcpy(buffer,_tFromChar(Cheat.c[counter].name));
-				memset(&lvi, 0, sizeof(LVITEM));
-				lvi.iItem=curr_idx;
-				lvi.iSubItem=2;
-				lvi.mask=LVIF_TEXT;
-				lvi.pszText=buffer;
-				lvi.cchTextMax=23;
-				SendDlgItemMessage(hDlg,IDC_CHEAT_LIST, LVM_SETITEM, 0, (LPARAM)&lvi);
-
-				ListView_SetCheckState(GetDlgItem(hDlg,IDC_CHEAT_LIST), curr_idx, Cheat.c[counter].enabled);
+				ListView_SetCheckState(GetDlgItem(hDlg,IDC_CHEAT_LIST), curr_idx, Cheat.g[counter].enabled);
 
 			}
 		return true;
@@ -8622,27 +8608,18 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						new_sel=3;
 						//change
-						TCHAR buf[25];
+						TCHAR buf[CHEAT_SIZE];
 						LV_ITEM lvi;
 
-						ITEM_QUERY (lvi, IDC_CHEAT_LIST, 0, buf, 7);
+						/* Code */
+						ITEM_QUERY (lvi, IDC_CHEAT_LIST, 0, buf, CHEAT_SIZE);
+						SetDlgItemText(hDlg, IDC_CHEAT_CODE, lvi.pszText);
 
-						SetDlgItemText(hDlg, IDC_CHEAT_ADDRESS, lvi.pszText);
-
-						ITEM_QUERY (lvi, IDC_CHEAT_LIST, 1, &buf[lstrlen(buf)], 3);
-
-						SetDlgItemText(hDlg, IDC_CHEAT_CODE, buf);
-						TCHAR temp[4];
-						int q;
-						_stscanf(lvi.pszText, TEXT("%02X"), &q);
-						_stprintf(temp, TEXT("%d"), q);
-						SetDlgItemText(hDlg, IDC_CHEAT_BYTE, temp);
-
-						ITEM_QUERY (lvi, IDC_CHEAT_LIST, 2, buf, 24);
-
-						internal_change=true;
+						/* Description */
+						ITEM_QUERY(lvi, IDC_CHEAT_LIST, 1, buf, CHEAT_SIZE);
 						SetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, lvi.pszText);
-
+					
+						internal_change = true;
 					}
 					sel_idx=ListView_GetSelectionMark(GetDlgItem(hDlg, IDC_CHEAT_LIST));
 					has_sel=true;
@@ -8677,249 +8654,92 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				}
 			case IDC_ADD_CHEAT:
 				{
-					char temp[24];
-					TCHAR tempDesc[24];
-					GetDlgItemTextA(hDlg, IDC_CHEAT_CODE, temp, 23);
-					if(strcmp(temp, ""))
+					char temp[CHEAT_SIZE];
+					TCHAR tempDesc[CHEAT_SIZE];
+					GetDlgItemTextA(hDlg, IDC_CHEAT_CODE, temp, CHEAT_SIZE);
+					GetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, tempDesc, CHEAT_SIZE);
+
+					char *valid_cheat = S9xCheatValidate (temp);
+
+					if(valid_cheat)
 					{
-						int j;
-						bool skip=false;
-						int count=1;
-						uint32 addy;
-						uint8 byte[3];
-						//test game genie
-						if (NULL==S9xGameGenieToRaw (temp, addy, byte[0]))
-							skip=true;
-						//test goldfinger
+						Utf8ToWide *wstring;
 
-					//	if(!skip
+						wstring = new Utf8ToWide(valid_cheat);
 
-						//test PAR
-
-						if(!skip)
-						{
-							if(NULL==S9xProActionReplayToRaw(temp, addy, byte[0]))
-								skip=true;
-						}
-
-						if(!skip)
-							return 0;
-
-						for(j=0; j<count; j++)
-						{
-							TCHAR buffer[7];
-							int curr_idx=-1;
-							_stprintf(buffer, TEXT("%06X"), addy);
-							LVITEM lvi;
-							memset(&lvi, 0, sizeof(LVITEM));
-							lvi.mask=LVIF_TEXT;
-							lvi.pszText=buffer;
-							lvi.cchTextMax=6;
-							lvi.iItem=ListView_GetItemCount(GetDlgItem(hDlg,IDC_CHEAT_LIST));
-							curr_idx=ListView_InsertItem(GetDlgItem(hDlg,IDC_CHEAT_LIST), &lvi);
-
-							unsigned int k;
-							for(k=0;k<Cheat.num_cheats;k++)
-							{
-								if(ct.index[k]>=curr_idx)
-									ct.index[k]++;
-							}
-
-
-							_stprintf(buffer, TEXT("%02X"), byte[j]);
-							memset(&lvi, 0, sizeof(LVITEM));
-							lvi.iItem=curr_idx;
-							lvi.iSubItem=1;
-							lvi.mask=LVIF_TEXT;
-							lvi.pszText=buffer;
-							lvi.cchTextMax=2;
-							SendDlgItemMessage(hDlg,IDC_CHEAT_LIST, LVM_SETITEM, 0, (LPARAM)&lvi);
-
-
-							GetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, tempDesc, 23);
-
-							memset(&lvi, 0, sizeof(LVITEM));
-							lvi.iItem=curr_idx;
-							lvi.iSubItem=2;
-							lvi.mask=LVIF_TEXT;
-							lvi.pszText=tempDesc;
-							lvi.cchTextMax=23;
-							SendDlgItemMessage(hDlg,IDC_CHEAT_LIST, LVM_SETITEM, 0, (LPARAM)&lvi);
-
-							addy++;
-
-
-						}
-					}
-					else
-					{
-						uint8 byte;
-						TCHAR buffer[7];
-						TCHAR buffer2[7];
-
-						GetDlgItemText(hDlg, IDC_CHEAT_ADDRESS, buffer, 7);
-						GetDlgItemText(hDlg, IDC_CHEAT_BYTE, buffer2, 7);
+						delete[] valid_cheat;
 
 						int curr_idx=-1;
+						
 						LVITEM lvi;
 						memset(&lvi, 0, sizeof(LVITEM));
 						lvi.mask=LVIF_TEXT;
-						lvi.pszText=buffer;
-						lvi.cchTextMax=6;
-						lvi.iItem=0;
+						lvi.pszText=*wstring;
+						lvi.iItem=ListView_GetItemCount(GetDlgItem(hDlg,IDC_CHEAT_LIST));
 						curr_idx=ListView_InsertItem(GetDlgItem(hDlg,IDC_CHEAT_LIST), &lvi);
 
-						int scanres;
-						if(buffer2[0]=='$')
-							_stscanf(buffer2,TEXT("$%2X"), (unsigned int*)&scanres);
-						else _stscanf(buffer2,TEXT("%d"), &scanres);
-						byte = (uint8)(scanres & 0xff);
+						SetDlgItemText(hDlg, IDC_CHEAT_CODE, *wstring);
 
-						_stprintf(buffer2, TEXT("%02X"), byte);
+						unsigned int k;
+						for(k=0;k<Cheat.g.size();k++)
+						{
+							if(ct.index[k]>=curr_idx)
+								ct.index[k]++;
+						}
 
 						memset(&lvi, 0, sizeof(LVITEM));
 						lvi.iItem=curr_idx;
 						lvi.iSubItem=1;
 						lvi.mask=LVIF_TEXT;
-						lvi.pszText=buffer2;
-						lvi.cchTextMax=2;
-						SendDlgItemMessage(hDlg,IDC_CHEAT_LIST, LVM_SETITEM, 0, (LPARAM)&lvi);
-
-						GetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, tempDesc, 23);
-
-						memset(&lvi, 0, sizeof(LVITEM));
-						lvi.iItem=curr_idx;
-						lvi.iSubItem=2;
-						lvi.mask=LVIF_TEXT;
 						lvi.pszText=tempDesc;
-						lvi.cchTextMax=23;
+						lvi.cchTextMax=CHEAT_SIZE;
 						SendDlgItemMessage(hDlg,IDC_CHEAT_LIST, LVM_SETITEM, 0, (LPARAM)&lvi);
+
+						delete wstring;
 					}
 				}
 				break;
 			case IDC_UPDATE_CHEAT:
 				{
-					TCHAR temp[24];
-					char code[24];
-					GetDlgItemText(hDlg, IDC_CHEAT_CODE, temp, 23);
-					strcpy(code,_tToChar(temp));
-					if(strcmp(code, ""))
+					unsigned int j;
+					TCHAR temp[CHEAT_SIZE];
+					char code[CHEAT_SIZE];
+					GetDlgItemTextA(hDlg, IDC_CHEAT_CODE, code, CHEAT_SIZE);
+
+					char *valid_cheat = S9xCheatValidate(code);
+
+					if(valid_cheat)
 					{
-						int j;
-						bool skip=false;
-						int count=1;
-						uint32 addy;
-						uint8 byte[3];
-						//test game genie
-						if (NULL==S9xGameGenieToRaw (code, addy, byte[0]))
-							skip=true;
-						//test goldfinger
+						Utf8ToWide *wstring;
 
-					//	if(!skip
-
-						//test PAR
-
-						if(!skip)
-						{
-							if(NULL==S9xProActionReplayToRaw(code, addy, byte[0]))
-								skip=true;
-						}
-
-						if(!skip)
-							return 0;
-
-						for(j=0;j<(int)Cheat.num_cheats;j++)
+						for(j=0;j<(int)Cheat.g.size();j++)
 						{
 							if(ct.index[j]==sel_idx)
 								ct.state[j]=Modified;
 						}
 
-						for(j=0; j<count; j++)
-						{
-							TCHAR buffer[7];
-//							int curr_idx=-1;
-							_stprintf(buffer, TEXT("%06X"), addy);
-							LVITEM lvi;
-							memset(&lvi, 0, sizeof(LVITEM));
-							lvi.mask=LVIF_TEXT;
-							lvi.pszText=buffer;
-							lvi.cchTextMax=6;
-							lvi.iItem=sel_idx;
-							ListView_SetItem(GetDlgItem(hDlg,IDC_CHEAT_LIST), &lvi);
+						wstring = new Utf8ToWide(code);
 
-							_stprintf(buffer, TEXT("%02X"), byte[j]);
-							memset(&lvi, 0, sizeof(LVITEM));
-							lvi.iItem=sel_idx;
-							lvi.iSubItem=1;
-							lvi.mask=LVIF_TEXT;
-							lvi.pszText=buffer;
-							lvi.cchTextMax=2;
-							SendDlgItemMessage(hDlg,IDC_CHEAT_LIST, LVM_SETITEM, 0, (LPARAM)&lvi);
-
-							GetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, temp, 23);
-
-							memset(&lvi, 0, sizeof(LVITEM));
-							lvi.iItem=sel_idx;
-							lvi.iSubItem=2;
-							lvi.mask=LVIF_TEXT;
-							lvi.pszText=temp;
-							lvi.cchTextMax=23;
-							SendDlgItemMessage(hDlg,IDC_CHEAT_LIST, LVM_SETITEM, 0, (LPARAM)&lvi);
-
-							addy++;
-
-
-						}
-					}
-					else
-					{
-												uint8 byte;
-						TCHAR buffer[7];
-
-						GetDlgItemText(hDlg, IDC_CHEAT_ADDRESS, buffer, 7);
-						int j;
-						for(j=0;j<(int)Cheat.num_cheats;j++)
-						{
-							if(ct.index[j]==sel_idx)
-								ct.state[j]=Modified;
-						}
-
-//						int curr_idx=-1;
 						LVITEM lvi;
 						memset(&lvi, 0, sizeof(LVITEM));
 						lvi.mask=LVIF_TEXT;
-						lvi.pszText=buffer;
-						lvi.cchTextMax=6;
+						lvi.pszText=*wstring;
 						lvi.iItem=sel_idx;
+						lvi.cchTextMax = CHEAT_SIZE;
 						ListView_SetItem(GetDlgItem(hDlg,IDC_CHEAT_LIST), &lvi);
+						SetDlgItemText(hDlg, IDC_CHEAT_CODE, *wstring);
 
+						delete wstring;
+						delete[] valid_cheat;
 
-						GetDlgItemText(hDlg, IDC_CHEAT_BYTE, buffer, 7);
-
-						int scanres;
-						if(buffer[0]==TEXT('$'))
-							_stscanf(buffer,TEXT("$%2X"), (unsigned int*)&scanres);
-						else _stscanf(buffer,TEXT("%d"), &scanres);
-						byte = (uint8)(scanres & 0xff);
-
-						_stprintf(buffer, TEXT("%02X"), byte);
+						GetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, temp, CHEAT_SIZE);
 
 						memset(&lvi, 0, sizeof(LVITEM));
 						lvi.iItem=sel_idx;
-						lvi.iSubItem=1;
-						lvi.mask=LVIF_TEXT;
-						lvi.pszText=buffer;
-						lvi.cchTextMax=2;
-						SendDlgItemMessage(hDlg,IDC_CHEAT_LIST, LVM_SETITEM, 0, (LPARAM)&lvi);
-
-						GetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, temp, 23);
-
-						memset(&lvi, 0, sizeof(LVITEM));
-						lvi.iItem=sel_idx;
-						lvi.iSubItem=2;
+						lvi.iSubItem = 1;
 						lvi.mask=LVIF_TEXT;
 						lvi.pszText=temp;
-						lvi.cchTextMax=23;
+						lvi.cchTextMax = CHEAT_SIZE;
 						SendDlgItemMessage(hDlg,IDC_CHEAT_LIST, LVM_SETITEM, 0, (LPARAM)&lvi);
 					}
 				}
@@ -8928,16 +8748,16 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			case IDC_DELETE_CHEAT:
 				{
 					unsigned int j;
-				for(j=0;j<Cheat.num_cheats;j++)
-				{
-					if(ct.index[j]==sel_idx)
-						ct.state[j]=Deleted;
-				}
-				for(j=0;j<Cheat.num_cheats;j++)
-				{
-					if(ct.index[j]>sel_idx)
-						ct.index[j]--;
-				}
+					for(j=0;j<Cheat.g.size();j++)
+					{
+						if(ct.index[j]==sel_idx)
+							ct.state[j]=Deleted;
+					}
+					for(j=0;j<Cheat.g.size();j++)
+					{
+						if(ct.index[j]>sel_idx)
+							ct.index[j]--;
+					}
 				}
 				ListView_DeleteItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), sel_idx);
 
@@ -8945,8 +8765,6 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			case IDC_CLEAR_CHEATS:
 				internal_change = true;
 				SetDlgItemText(hDlg,IDC_CHEAT_CODE,TEXT(""));
-				SetDlgItemText(hDlg,IDC_CHEAT_ADDRESS,TEXT(""));
-				SetDlgItemText(hDlg,IDC_CHEAT_BYTE,TEXT(""));
 				SetDlgItemText(hDlg,IDC_CHEAT_DESCRIPTION,TEXT(""));
 				ListView_SetItemState(GetDlgItem(hDlg, IDC_CHEAT_LIST),sel_idx, 0, LVIS_SELECTED|LVIS_FOCUSED);
 				ListView_SetSelectionMark(GetDlgItem(hDlg, IDC_CHEAT_LIST), -1);
@@ -8963,52 +8781,18 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					switch(HIWORD(wParam))
 					{
 					case EN_CHANGE:
-						if(internal_change)
+						
+						char temp[CHEAT_SIZE];
+						char *valid_cheat = NULL;
+						GetDlgItemTextA(hDlg, IDC_CHEAT_CODE, temp, CHEAT_SIZE);
+
+						if (temp && temp[0] && (valid_cheat = S9xCheatValidate(temp)))
 						{
-							internal_change=false;
-							return true;
-						}
-						SendMessageA((HWND)lParam, WM_GETTEXT, 15,(LPARAM)buffer);
-						GetCaretPos(&point);
-
-						index = SendMessageA((HWND)lParam,(UINT) EM_CHARFROMPOS, 0, (LPARAM) ((point.x&0x0000FFFF) | (((point.y&0x0000FFFF))<<16)));
-
-						k=0;
-						for(j=0; j<strlen(buffer);j++)
-						{
-							if( (buffer[j]>='0' && buffer[j]<='9') || (buffer[j]>='A' && buffer[j]<='F') || buffer[j]=='-' || buffer[j]=='X')
-							{
-								buffer2[k]=buffer[j];
-								k++;
-							}
-							else index --;
-						}
-						buffer2[k]='\0';
-
-						if(has_sel&&!new_sel&&strlen(buffer2)!=0)
-						{
-							SetDlgItemTextA(hDlg, IDC_CHEAT_ADDRESS, "");
-							SetDlgItemTextA(hDlg, IDC_CHEAT_BYTE, "");
-
-						}
-
-						if(new_sel!=0)
-							new_sel--;
-
-						internal_change=true;
-						SendMessageA((HWND)lParam, WM_SETTEXT, 0,(LPARAM)buffer2);
-						SendMessageA((HWND)lParam,  (UINT) EM_SETSEL, (WPARAM) (index), index);
-
-						uint32 addy;
-						uint8 val;
-						bool8 sram;
-						uint8 bytes[3];
-						if(NULL==S9xGameGenieToRaw(buffer2, addy, val)||NULL==S9xProActionReplayToRaw(buffer2, addy, val)||NULL==S9xGoldFingerToRaw(buffer2, addy, sram, val, bytes))
-						{
-							if(has_sel)
+							if (has_sel)
 								EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), true);
 							else EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), false);
 							EnableWindow(GetDlgItem(hDlg, IDC_ADD_CHEAT), true);
+							delete[] valid_cheat;
 						}
 						else
 						{
@@ -9016,130 +8800,6 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 							EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), false);
 						}
 
-					//	SetDlgItemText(hDlg, IDC_CHEAT_ADDRESS, "");
-					//	SetDlgItemText(hDlg, IDC_CHEAT_BYTE, "");
-						break;
-					}
-					break;
-				}
-			case IDC_CHEAT_ADDRESS:
-				{
-					uint32 j, k;
-					long index;
-					char buffer[7];
-					char buffer2[7];
-					POINT point;
-					switch(HIWORD(wParam))
-					{
-					case EN_CHANGE:
-						if(internal_change)
-						{
-							internal_change=false;
-							return true;
-						}
-						SendMessageA((HWND)lParam, WM_GETTEXT, 7,(LPARAM)buffer);
-						GetCaretPos(&point);
-
-						index = SendMessageA((HWND)lParam,(UINT) EM_CHARFROMPOS, 0, (LPARAM) ((point.x&0x0000FFFF) | (((point.y&0x0000FFFF))<<16)));
-
-						k=0;
-						for(j=0; j<strlen(buffer);j++)
-						{
-							if( (buffer[j]>='0' && buffer[j]<='9') || (buffer[j]>='A' && buffer[j]<='F'))
-							{
-								buffer2[k]=buffer[j];
-								k++;
-							}
-							else index --;
-						}
-						buffer2[k]='\0';
-
-
-						internal_change=true;
-						SendMessageA((HWND)lParam, WM_SETTEXT, 0,(LPARAM)buffer2);
-						SendMessageA((HWND)lParam,  (UINT) EM_SETSEL, (WPARAM) (index), index);
-
-						SendMessageA(GetDlgItem(hDlg, IDC_CHEAT_BYTE), WM_GETTEXT, 4,(LPARAM)buffer);
-
-						if(has_sel&&!new_sel&&0!=strlen(buffer2))
-							SetDlgItemTextA(hDlg, IDC_CHEAT_CODE, "");
-
-						if(new_sel!=0)
-							new_sel--;
-
-						if(strlen(buffer2)!=0 && strlen(buffer) !=0)
-						{
-							if(has_sel)
-								EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), true);
-							else EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), false);
-							EnableWindow(GetDlgItem(hDlg, IDC_ADD_CHEAT), true);
-						}
-						else
-						{
-							EnableWindow(GetDlgItem(hDlg, IDC_ADD_CHEAT), false);
-							EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), false);
-						}
-
-						break;
-					}
-					break;
-				}
-				case IDC_CHEAT_BYTE:
-				{
-					uint32 j, k;
-					long index;
-					char buffer[4];
-					char buffer2[4];
-					POINT point;
-					switch(HIWORD(wParam))
-					{
-					case EN_CHANGE:
-						if(internal_change)
-						{
-							internal_change=false;
-							return true;
-						}
-						SendMessageA((HWND)lParam, WM_GETTEXT, 4,(LPARAM)buffer);
-						GetCaretPos(&point);
-
-						index = SendMessageA((HWND)lParam,(UINT) EM_CHARFROMPOS, 0, (LPARAM) ((point.x&0x0000FFFF) | (((point.y&0x0000FFFF))<<16)));
-
-						k=0;
-						for(j=0; j<strlen(buffer);j++)
-						{
-							if( (buffer[j]>='0' && buffer[j]<='9') || (buffer[j]>='A' && buffer[j]<='F') || buffer[j]=='$')
-							{
-								buffer2[k]=buffer[j];
-								k++;
-							}
-							else index --;
-						}
-						buffer2[k]='\0';
-
-						if(has_sel&&!new_sel&&0!=strlen(buffer2))
-							SetDlgItemTextA(hDlg, IDC_CHEAT_CODE, "");
-
-						if(new_sel!=0)
-							new_sel--;
-
-						internal_change=true;
-						SendMessageA((HWND)lParam, WM_SETTEXT, 0,(LPARAM)buffer2);
-						SendMessageA((HWND)lParam,  (UINT) EM_SETSEL, (WPARAM) (index), index);
-
-						SendMessageA(GetDlgItem(hDlg, IDC_CHEAT_ADDRESS), WM_GETTEXT, 7,(LPARAM)buffer);
-						if(strlen(buffer2)!=0 && strlen(buffer) !=0)
-						{
-							if(has_sel)
-								EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), true);
-							else EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), false);
-							EnableWindow(GetDlgItem(hDlg, IDC_ADD_CHEAT), true);
-						}
-						else
-						{
-							EnableWindow(GetDlgItem(hDlg, IDC_ADD_CHEAT), false);
-							EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), false);
-						}
-						//SetDlgItemText(hDlg, IDC_CHEAT_CODE, "");
 						break;
 					}
 					break;
@@ -9152,119 +8812,86 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						for(k=0;k<ListView_GetItemCount(GetDlgItem(hDlg, IDC_CHEAT_LIST)); k++)
 						{
 							hit=false;
-							for(l=0;l<(int)Cheat.num_cheats;l++)
+							for(l=0;l<(int)Cheat.g.size();l++)
 							{
 								if(ct.index[l]==k)
 								{
 									hit=true;
-									Cheat.c[l].enabled=ListView_GetCheckState(GetDlgItem(hDlg, IDC_CHEAT_LIST),l);
+									Cheat.g[l].enabled=ListView_GetCheckState(GetDlgItem(hDlg, IDC_CHEAT_LIST),l);
 									if(ct.state[l]==Untouched)
-										l=Cheat.num_cheats;
+										l=Cheat.g.size();
+
 									else if(ct.state[l]==(unsigned long)Modified)
 									{
-										if(Cheat.c[l].enabled)
-											S9xDisableCheat(l);
-										//update me!
-										//get these!
+										S9xDisableCheatGroup(l);
 
-										TCHAR buf[25];
+										TCHAR wcode[CHEAT_SIZE];
+										TCHAR wdescription[CHEAT_SIZE];
+
 										LV_ITEM lvi;
 										memset(&lvi, 0, sizeof(LV_ITEM));
 										lvi.iItem= k;
 										lvi.mask=LVIF_TEXT;
-										lvi.pszText=buf;
-										lvi.cchTextMax=7;
-
+										lvi.pszText=wcode;
+										lvi.cchTextMax = CHEAT_SIZE;
 										ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
-
-										ScanAddress(lvi.pszText, scanned);
-										Cheat.c[l].address = scanned;
-
+										
 										memset(&lvi, 0, sizeof(LV_ITEM));
 										lvi.iItem= k;
 										lvi.iSubItem=1;
 										lvi.mask=LVIF_TEXT;
-										lvi.pszText=buf;
-										lvi.cchTextMax=3;
-
+										lvi.pszText=wdescription;
+										lvi.cchTextMax = CHEAT_SIZE;
 										ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
+										
+										WideToUtf8 code(wcode);
+										WideToUtf8 description(wdescription);
 
-										_stscanf(lvi.pszText, TEXT("%02X"), &scanned);
-										Cheat.c[l].byte = (uint8)(scanned & 0xff);
-
-										memset(&lvi, 0, sizeof(LV_ITEM));
-										lvi.iItem= k;
-										lvi.iSubItem=2;
-										lvi.mask=LVIF_TEXT;
-										lvi.pszText=buf;
-										lvi.cchTextMax=24;
-
-										ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
-
-										strcpy(Cheat.c[l].name,_tToChar(lvi.pszText));
-
-										Cheat.c[l].enabled=ListView_GetCheckState(GetDlgItem(hDlg, IDC_CHEAT_LIST),k);
-
-										if(Cheat.c[l].enabled)
-											S9xEnableCheat(l);
+										S9xModifyCheatGroup(l, description, code);
+										
+										if (ListView_GetCheckState(GetDlgItem(hDlg, IDC_CHEAT_LIST), k))
+											S9xEnableCheatGroup(l);
 									}
 
 								}
 							}
 							if(!hit)
 							{
-								uint32 address;
-								uint8 byte;
-								bool8 enabled;
-								TCHAR buf[25];
+								TCHAR wcode[CHEAT_SIZE];
+								TCHAR wdescription[CHEAT_SIZE];
+
 								LV_ITEM lvi;
 								memset(&lvi, 0, sizeof(LV_ITEM));
-								lvi.iItem= k;
-								lvi.mask=LVIF_TEXT;
-								lvi.pszText=buf;
-								lvi.cchTextMax=7;
-
+								lvi.iItem = k;
+								lvi.mask = LVIF_TEXT;
+								lvi.pszText = wcode;
+								lvi.cchTextMax = CHEAT_SIZE;
 								ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
-
-								ScanAddress(lvi.pszText, scanned);
-								address = scanned;
 
 								memset(&lvi, 0, sizeof(LV_ITEM));
-								lvi.iItem= k;
-								lvi.iSubItem=1;
-								lvi.mask=LVIF_TEXT;
-								lvi.pszText=buf;
-								lvi.cchTextMax=3;
-
+								lvi.iItem = k;
+								lvi.iSubItem = 1;
+								lvi.mask = LVIF_TEXT;
+								lvi.pszText = wdescription;
+								lvi.cchTextMax = CHEAT_SIZE;
 								ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
 
-								_stscanf(lvi.pszText, TEXT("%02X"), &scanned);
-								byte = (uint8)(scanned & 0xff);
+								WideToUtf8 code(wcode);
+								WideToUtf8 description(wdescription);
 
-								enabled=ListView_GetCheckState(GetDlgItem(hDlg, IDC_CHEAT_LIST),k);
+								int index = S9xAddCheatGroup(description, code);
 
-								S9xAddCheat(enabled,true,address,byte);
-
-								memset(&lvi, 0, sizeof(LV_ITEM));
-								lvi.iItem= k;
-								lvi.iSubItem=2;
-								lvi.mask=LVIF_TEXT;
-								lvi.pszText=buf;
-								lvi.cchTextMax=24;
-
-								ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
-
-								strcpy(Cheat.c[Cheat.num_cheats-1].name, _tToChar(lvi.pszText));
-
-
+								if (index >= 0)
+									if (ListView_GetCheckState(GetDlgItem(hDlg, IDC_CHEAT_LIST), k))
+										S9xEnableCheatGroup(index);
 							}
 						}
 
-						for(l=(int)Cheat.num_cheats-1;l>=0;l--)
+						for(l=(int)Cheat.g.size()-1; l>=0; l--)
 						{
 							if(ct.state[l]==Deleted)
 							{
-								S9xDeleteCheat(l);
+								S9xDeleteCheatGroup(l);
 							}
 						}
 					}
@@ -10426,12 +10053,19 @@ INT_PTR CALLBACK DlgCheatSearchAdd(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 						GetDlgItemText(hDlg, IDC_NC_DESC, tempBuf, 22);
 						strncpy(new_cheat->name,_tToChar(tempBuf),22);
 
-						new_cheat->enabled=TRUE;
-						for(int byteIndex = 0; byteIndex < new_cheat->size; byteIndex++)
+						std::string code_string;
+						char code[10];
+						for (int byteIndex = 0; byteIndex < new_cheat->size; byteIndex++)
 						{
-							S9xAddCheat(new_cheat->enabled,new_cheat->saved_val,new_cheat->address+byteIndex,(new_cheat->new_val>>(8*byteIndex))&0xFF);
-							strcpy(Cheat.c[Cheat.num_cheats-1].name,new_cheat->name);
+							if (byteIndex > 0)
+								code_string += '+';
+							snprintf(code, 10, "%x=%x", new_cheat->address + byteIndex, (new_cheat->new_val >> (8 * byteIndex)) & 0xFF);
+							code_string += code;
 						}
+
+						S9xAddCheatGroup(new_cheat->name, code_string.c_str());
+						S9xEnableCheatGroup(Cheat.g.size() - 1);
+
 						ret=0;
 					}
 				}
@@ -11049,9 +10683,9 @@ void S9xPostRomInit()
 	if (Settings.ApplyCheats)
 	{
 		extern struct SCheatData Cheat;
-	    for (uint32 i = 0; i < Cheat.num_cheats; i++)
+	    for (uint32 i = 0; i < Cheat.g.size(); i++)
 		{
-	        if (Cheat.c [i].enabled)
+	        if (Cheat.g [i].enabled)
 			{
 				char String2 [1024];
 				sprintf(String2, "(CHEATS ARE ON!) %s", String);

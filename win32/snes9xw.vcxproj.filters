@@ -51,6 +51,9 @@
     <ClInclude Include="..\sha256.h">
       <Filter>Emu</Filter>
     </ClInclude>
+    <ClInclude Include="..\bml.h">
+      <Filter>Emu</Filter>
+    </ClInclude>
     <ClInclude Include="..\unzip\crypt.h">
       <Filter>UnZip</Filter>
     </ClInclude>
@@ -402,6 +405,9 @@
       <Filter>Emu</Filter>
     </ClCompile>
     <ClCompile Include="..\sha256.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bml.cpp">
       <Filter>Emu</Filter>
     </ClCompile>
     <ClCompile Include="..\stream.cpp">

@@ -546,6 +546,7 @@ Nintendo is a trade mark.")
                                    the current value. This value is used when a cheat is unapplied.\n\
                                    (If left blank, no value is restored when the cheat is unapplied)")
 #define SEARCH_ERR_INVALIDSEARCHVALUE TEXT("Please enter a valid value for a search!")
+#define SEARCH_COLUMN_CODE TEXT("Code")
 #define SEARCH_COLUMN_ADDRESS TEXT("Address")
 #define SEARCH_COLUMN_VALUE TEXT("Value")
 #define SEARCH_COLUMN_DESCRIPTION TEXT("Description")

@@ -389,6 +389,7 @@
     <ClInclude Include="..\msu1.h" />
     <ClInclude Include="..\statemanager.h" />
     <ClInclude Include="..\sha256.h" />
+    <ClInclude Include="..\bml.h" />
     <CustomBuild Include="..\stream.h" />
     <CustomBuild Include="..\tile.h" />
     <ClInclude Include="..\unzip\crypt.h" />
@@ -519,6 +520,7 @@
     </ClCompile>
     <ClCompile Include="..\statemanager.cpp" />
     <ClCompile Include="..\sha256.cpp" />
+    <ClCompile Include="..\bml.cpp" />
     <ClCompile Include="..\stream.cpp" />
     <ClCompile Include="..\tile.cpp" />
     <ClCompile Include="..\unzip\ioapi.c" />

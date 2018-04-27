@@ -613,6 +613,9 @@ int S9xAddCheatGroup (const char *name, const char *cheat)
 
 int S9xModifyCheatGroup (uint32 num, const char *name, const char *cheat)
 {
+	if (num >= Cheat.g.size())
+		return -1;
+
     S9xDisableCheatGroup (num);
     delete[] Cheat.g[num].name;
 
@@ -639,21 +642,46 @@ char *S9xCheatToText (SCheat *c)
     return text;
 }
 
+char *S9xCheatGroupToText(SCheatGroup *g)
+{
+	std::string text = "";
+	unsigned int i;
+
+	if (g->c.size() == 0)
+		return NULL;
+
+	for (i = 0; i < g->c.size(); i++)
+	{
+		char *tmp = S9xCheatToText(&g->c[i]);
+		if (i != 0)
+			text += '+';
+		text += tmp;
+		delete[] tmp;
+	}
+
+	return strdup(text.c_str());
+}
+
+char *S9xCheatValidate(char *code_string)
+{
+	SCheatGroup g = S9xCreateCheatGroup ("temp", code_string);
+
+	delete[] g.name;
+
+	if (g.c.size() > 0)
+	{
+		return S9xCheatGroupToText(&g);
+	}
+
+	return NULL;
+}
+
 char *S9xCheatGroupToText (uint32 num)
 {
-    std::string text = "";
-    unsigned int i;
+	if (num >= Cheat.g.size())
+		return NULL;
 
-    for (i = 0; i < Cheat.g[num].c.size (); i++)
-    {
-        char *tmp = S9xCheatToText (&Cheat.g[num].c[i]);
-        if (i != 0)
-            text += '+';
-        text += tmp;
-        delete[] tmp;
-    }
-
-    return strdup (text.c_str ());
+	return S9xCheatGroupToText(&Cheat.g[num]);
 }
 
 void S9xUpdateCheatsInMemory (void)
