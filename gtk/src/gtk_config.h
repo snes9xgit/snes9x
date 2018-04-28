@@ -58,9 +58,7 @@ class Snes9xConfig
         unsigned char statusbar_visible;
         unsigned char default_esc_behavior;
         unsigned char prevent_screensaver;
-        unsigned int  xrr_index;
-        int           xrr_width;
-        int           xrr_height;
+        int           xrr_index;
         unsigned char scale_to_fit;
         unsigned char maintain_aspect_ratio;
         int           aspect_ratio;
@@ -138,13 +136,11 @@ class Snes9xConfig
         unsigned int   rewind_buffer_size;
 
 #ifdef USE_XRANDR
-        XRRScreenConfiguration *xrr_config;
-        XRRScreenSize          *xrr_sizes;
-        int                    xrr_num_sizes;
-        Rotation               xrr_rotation;
-        SizeID                 xrr_original_size;
+        XRRScreenResources *xrr_screen_resources;
+        XRROutputInfo      *xrr_output_info;
+        XRRCrtcInfo        *xrr_crtc_info;
+        RROutput           xrr_output;
 #endif
-
 
 #ifdef USE_OPENGL
         unsigned char sync_to_vblank;

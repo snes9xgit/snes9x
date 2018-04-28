@@ -1550,52 +1550,39 @@ Snes9xWindow::enter_fullscreen_mode (void)
 
     gtk_window_get_position (GTK_WINDOW (window), &nfs_x, &nfs_y);
 
-    /* Make sure everything is done synchronously */
-    gdk_display_sync (gdk_display_get_default ());
-    gtk_window_fullscreen (GTK_WINDOW (window));
-
 #ifdef USE_XRANDR
     if (config->change_display_resolution)
     {
-        int mode = -1;
+        GdkDisplay *gdk_display = gtk_widget_get_display (window);
+        Display *dpy = gdk_x11_display_get_xdisplay (gdk_display);
 
-        for (int i = 0; i < config->xrr_num_sizes; i++)
-        {
-            if (config->xrr_sizes[i].width == config->xrr_width &&
-                config->xrr_sizes[i].height == config->xrr_height)
-            {
-                mode = i;
-            }
-        }
-
-        if (mode < 0)
+        gdk_display_sync (gdk_display);
+        if (XRRSetCrtcConfig (dpy,
+                              config->xrr_screen_resources,
+                              config->xrr_output_info->crtc,
+                              CurrentTime,
+                              config->xrr_crtc_info->x,
+                              config->xrr_crtc_info->y,
+                              config->xrr_output_info->modes[config->xrr_index],
+                              config->xrr_crtc_info->rotation,
+                              &config->xrr_output,
+                              1) != 0)
         {
             config->change_display_resolution = 0;
-        }
-        else
-        {
-            GdkDisplay *gdk_display = gtk_widget_get_display (window);
-            Display *display = gdk_x11_display_get_xdisplay (gdk_display);
-            GdkScreen *screen = gtk_widget_get_screen (window);
-            GdkWindow *root = gdk_screen_get_root_window (screen);
-
-            gdk_display_sync (gdk_display_get_default ());
-            XRRSetScreenConfig (display,
-                                config->xrr_config,
-                                GDK_COMPAT_WINDOW_XID (root),
-                                (SizeID) mode,
-                                config->xrr_rotation,
-                                CurrentTime);
         }
     }
 #endif
 
-    set_bypass_compositor (gdk_x11_display_get_xdisplay (gtk_widget_get_display (window)),
-                           gdk_x11_window_get_xid (gtk_widget_get_window (window)),
-                           1);
+    /* Make sure everything is done synchronously */
+    gdk_display_sync (gdk_display_get_default ());
+    gtk_window_fullscreen (GTK_WINDOW (window));
 
     gdk_display_sync (gdk_display_get_default ());
     gtk_window_present (GTK_WINDOW (window));
+
+    set_bypass_compositor (gdk_x11_display_get_xdisplay (gtk_widget_get_display (window)),
+                           gdk_x11_window_get_xid (gtk_widget_get_window (window)),
+                           1);
 
     config->fullscreen = 1;
     config->rom_loaded = rom_loaded;
@@ -1619,37 +1606,34 @@ Snes9xWindow::leave_fullscreen_mode (void)
 
     config->rom_loaded = 0;
 
-    set_bypass_compositor (gdk_x11_display_get_xdisplay (gtk_widget_get_display (window)),
-                           gdk_x11_window_get_xid (gtk_widget_get_window (window)),
-                           0);
-
 #ifdef USE_XRANDR
     if (config->change_display_resolution)
     {
-        gtk_widget_hide (window);
-
         GdkDisplay *gdk_display = gtk_widget_get_display (window);
-        Display *display = gdk_x11_display_get_xdisplay (gdk_display);
-        GdkScreen *screen = gtk_widget_get_screen (window);
-        GdkWindow *root = gdk_screen_get_root_window (screen);
+        Display *dpy = gdk_x11_display_get_xdisplay (gdk_display);
 
-        XRRSetScreenConfig (display,
-                            config->xrr_config,
-                            GDK_COMPAT_WINDOW_XID (root),
-                            (SizeID) config->xrr_original_size,
-                            config->xrr_rotation,
-                            CurrentTime);
+        if (config->xrr_index > config->xrr_output_info->nmode)
+            config->xrr_index = 0;
+
+        gdk_display_sync (gdk_display);
+        XRRSetCrtcConfig (dpy,
+                          config->xrr_screen_resources,
+                          config->xrr_output_info->crtc,
+                          CurrentTime,
+                          config->xrr_crtc_info->x,
+                          config->xrr_crtc_info->y,
+                          config->xrr_crtc_info->mode,
+                          config->xrr_crtc_info->rotation,
+                          &config->xrr_output,
+                          1);
     }
 #endif
 
     gtk_window_unfullscreen (GTK_WINDOW (window));
 
-#ifdef USE_XRANDR
-    if (config->change_display_resolution)
-    {
-        gtk_widget_show (window);
-    }
-#endif
+    set_bypass_compositor (gdk_x11_display_get_xdisplay (gtk_widget_get_display (window)),
+                           gdk_x11_window_get_xid (gtk_widget_get_window (window)),
+                           0);
 
     resize (nfs_width, nfs_height);
     gtk_window_move (GTK_WINDOW (window), nfs_x, nfs_y);

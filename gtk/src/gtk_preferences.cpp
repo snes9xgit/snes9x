@@ -497,6 +497,10 @@ static double XRRGetExactRefreshRate (Display *dpy, Window window)
             XRRModeInfo *m = &resources->modes[i];
 
             refresh_rate = (double) m->dotClock / m->hTotal / m->vTotal;
+            refresh_rate /= m->modeFlags & RR_DoubleScan     ? 2 : 1;
+            refresh_rate /= m->modeFlags & RR_ClockDivideBy2 ? 2 : 1;
+            refresh_rate *= m->modeFlags & RR_DoubleClock    ? 2 : 1;
+
             break;
         }
     }
@@ -633,6 +637,10 @@ Snes9xPreferences::Snes9xPreferences (Snes9xConfig *config) :
     last_toggled = NULL;
     this->config = config;
 
+#ifdef USE_XRANDR
+    mode_indices = NULL;
+#endif
+
     gtk_widget_realize (window);
 
     signal_connect (callbacks);
@@ -649,6 +657,10 @@ Snes9xPreferences::Snes9xPreferences (Snes9xConfig *config) :
 
 Snes9xPreferences::~Snes9xPreferences (void)
 {
+#ifdef USE_XRANDR
+    delete[] mode_indices;
+#endif
+
     return;
 }
 
@@ -847,16 +859,12 @@ Snes9xPreferences::get_settings_from_dialog (void)
     {
         top_level->leave_fullscreen_mode ();
         config->xrr_index = get_combo ("resolution_combo");
-        config->xrr_width = config->xrr_sizes[config->xrr_index].width;
-        config->xrr_height = config->xrr_sizes[config->xrr_index].height;
         config->change_display_resolution = get_check ("change_display_resolution");
         top_level->enter_fullscreen_mode ();
     }
     else
     {
         config->xrr_index = get_combo ("resolution_combo");
-        config->xrr_width = config->xrr_sizes[config->xrr_index].width;
-        config->xrr_height = config->xrr_sizes[config->xrr_index].height;
     }
 #endif
 
@@ -1102,22 +1110,38 @@ Snes9xPreferences::show (void)
 
         combo = get_widget ("resolution_combo");
 
-        config->xrr_index = 0;
-
-        for (int i = 0; i < config->xrr_num_sizes; i++)
+        mode_indices = new unsigned int[config->xrr_output_info->nmode];
+        for (int i = 0; i < config->xrr_output_info->nmode; i++)
         {
-            if (config->xrr_width == config->xrr_sizes[i].width &&
-                config->xrr_height == config->xrr_sizes[i].height)
-                config->xrr_index = i;
+            for (int j = 0; j < config->xrr_screen_resources->nmode; j++)
+            {
+                if (config->xrr_screen_resources->modes[j].id == config->xrr_output_info->modes[i])
+                {
+                    mode_indices[i] = j;
+                }
+            }
+
+            XRRModeInfo *m = &config->xrr_screen_resources->modes[mode_indices[i]];
+            unsigned long dotClock = m->dotClock;
+            if (m->modeFlags & RR_ClockDivideBy2)
+                dotClock /= 2;
+            if (m->modeFlags & RR_DoubleScan)
+                dotClock /= 2;
+            if (m->modeFlags & RR_DoubleClock)
+                dotClock *= 2;
 
             snprintf (size_string,
                       256,
-                      "%dx%d",
-                      config->xrr_sizes[i].width,
-                      config->xrr_sizes[i].height);
+                      "%dx%d @ %.3fHz",
+                      m->width,
+                      m->height,
+                      (double) dotClock / m->hTotal / m->vTotal);
 
             combo_box_append (GTK_COMBO_BOX (combo), size_string);
         }
+
+        if (config->xrr_index > config->xrr_output_info->nmode)
+            config->xrr_index = 0;
 #endif
     }
     else

@@ -1703,30 +1703,35 @@ S9xQueryDrivers (void)
     gui_config->allow_opengl = 0;
 #endif
 
+    gui_config->allow_xrandr = 0;
+
 #ifdef USE_XRANDR
     int error_base_p, event_base_p;
-    Display *display = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
+    int major_version, minor_version;
+    Display *dpy = gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (top_level->get_window())));
+    Window xid   = gdk_x11_window_get_xid (gtk_widget_get_window (GTK_WIDGET (top_level->get_window())));
+
+    if (!XRRQueryExtension (dpy, &event_base_p, &error_base_p))
+    {
+        gui_config->change_display_resolution = FALSE;
+        return;
+    }
+    if (!XRRQueryVersion (dpy, &major_version, &minor_version))
+    {
+        gui_config->change_display_resolution = FALSE;
+        return;
+    }
+    if (minor_version < 3)
+    {
+        gui_config->change_display_resolution = FALSE;
+        return;
+    }
 
     gui_config->allow_xrandr = 1;
-
-    if (!XRRQueryExtension (display, &event_base_p, &error_base_p))
-    {
-        gui_config->allow_xrandr = 0;
-        gui_config->change_display_resolution = FALSE;
-    }
-
-    if (gui_config->allow_xrandr)
-    {
-        gui_config->xrr_config = XRRGetScreenInfo (display,
-                                                   DefaultRootWindow (display));
-        gui_config->xrr_original_size =
-            XRRConfigCurrentConfiguration (gui_config->xrr_config,
-                                           &(gui_config->xrr_rotation));
-        gui_config->xrr_sizes = XRRConfigSizes (gui_config->xrr_config,
-                                            &(gui_config->xrr_num_sizes));
-    }
-#else
-    gui_config->allow_xrandr = 0;
+    gui_config->xrr_screen_resources = XRRGetScreenResources (dpy, xid);
+    gui_config->xrr_output           = XRRGetOutputPrimary (dpy, xid);
+    gui_config->xrr_output_info      = XRRGetOutputInfo (dpy, gui_config->xrr_screen_resources, gui_config->xrr_output);
+    gui_config->xrr_crtc_info        = XRRGetCrtcInfo (dpy, gui_config->xrr_screen_resources, gui_config->xrr_output_info->crtc);
 #endif
 
     return;

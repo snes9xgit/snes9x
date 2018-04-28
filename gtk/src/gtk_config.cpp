@@ -162,8 +162,6 @@ Snes9xConfig::load_defaults (void)
     full_screen_on_open = 0;
     change_display_resolution = 0;
     xrr_index = 0;
-    xrr_width = 0;
-    xrr_height = 0;
     scale_to_fit = 1;
     maintain_aspect_ratio = 0;
     aspect_ratio = 0;
@@ -324,8 +322,6 @@ Snes9xConfig::save_config_file (void)
     xml_out_int (xml, "full_screen_on_open", full_screen_on_open);
     xml_out_int (xml, "change_display_resolution", change_display_resolution);
     xml_out_int (xml, "video_mode", xrr_index);
-    xml_out_int (xml, "video_mode_width", xrr_width);
-    xml_out_int (xml, "video_mode_height", xrr_height);
     xml_out_int (xml, "scale_to_fit", scale_to_fit);
     xml_out_int (xml, "maintain_aspect_ratio", maintain_aspect_ratio);
     xml_out_int (xml, "aspect_ratio", aspect_ratio);
@@ -498,14 +494,7 @@ Snes9xConfig::set_option (const char *name, const char *value)
     }
     else if (!strcasecmp (name, "video_mode"))
     {
-    }
-    else if (!strcasecmp (name, "video_mode_width"))
-    {
-        xrr_width = atoi (value);
-    }
-    else if (!strcasecmp (name, "video_mode_height"))
-    {
-        xrr_height = atoi (value);
+        xrr_index = atoi (value);
     }
     else if (!strcasecmp (name, "scale_to_fit"))
     {

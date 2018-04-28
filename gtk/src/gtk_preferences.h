@@ -40,6 +40,10 @@ class Snes9xPreferences : public GtkBuilderWindow
     private:
         void get_settings_from_dialog (void);
         void move_settings_to_dialog (void);
+
+#ifdef USE_XRANDR
+        unsigned int *mode_indices;
+#endif
 };
 
 #endif /* __GTK_PREFERENCES_H */
