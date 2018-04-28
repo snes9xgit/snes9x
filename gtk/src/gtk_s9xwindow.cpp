@@ -2,6 +2,7 @@
 #include <gdk/gdkx.h>
 #include <gdk/gdkkeysyms.h>
 #include <cairo.h>
+#include <X11/Xatom.h>
 
 #ifdef USE_XV
 #include <X11/extensions/XShm.h>
@@ -1528,6 +1529,12 @@ Snes9xWindow::toggle_fullscreen_mode (void)
         enter_fullscreen_mode ();
 }
 
+static void set_bypass_compositor (Display *dpy, Window window, unsigned char bypass)
+{
+    Atom net_wm_bypass_compositor = XInternAtom (dpy, "_NET_WM_BYPASS_COMPOSITOR", False);
+    XChangeProperty (dpy, window, net_wm_bypass_compositor, XA_CARDINAL, 32, PropModeReplace, (const unsigned char *) &bypass, 1);
+}
+
 void
 Snes9xWindow::enter_fullscreen_mode (void)
 {
@@ -1583,6 +1590,10 @@ Snes9xWindow::enter_fullscreen_mode (void)
     }
 #endif
 
+    set_bypass_compositor (gdk_x11_display_get_xdisplay (gtk_widget_get_display (window)),
+                           gdk_x11_window_get_xid (gtk_widget_get_window (window)),
+                           1);
+
     gdk_display_sync (gdk_display_get_default ());
     gtk_window_present (GTK_WINDOW (window));
 
@@ -1607,6 +1618,10 @@ Snes9xWindow::leave_fullscreen_mode (void)
         return;
 
     config->rom_loaded = 0;
+
+    set_bypass_compositor (gdk_x11_display_get_xdisplay (gtk_widget_get_display (window)),
+                           gdk_x11_window_get_xid (gtk_widget_get_window (window)),
+                           0);
 
 #ifdef USE_XRANDR
     if (config->change_display_resolution)
