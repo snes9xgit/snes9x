@@ -2,9 +2,6 @@
 #include <stdlib.h>
 #include <gdk/gdkkeysyms.h>
 #include <gdk/gdkx.h>
-#ifdef USE_GTK3
-#include <gdk/gdkkeysyms-compat.h>
-#endif
 
 #include "gtk_preferences.h"
 #include "gtk_config.h"
@@ -13,6 +10,10 @@
 #include "gtk_sound.h"
 #include "gtk_display.h"
 #include "gtk_binding.h"
+
+#if GTK_MAJOR_VERSION >= 3
+#include <gdk/gdkkeysyms-compat.h>
+#endif
 
 #define SAME_GAME _("Same location as current game")
 
@@ -565,7 +566,7 @@ event_about_clicked (GtkButton *widget, gpointer data)
 
     gtk_widget_hide (about_dialog->get_widget ("preferences_splash"));
 
-#ifdef USE_GTK3
+#if GTK_MAJOR_VERSION >= 3
     GtkCssProvider *provider;
     GtkStyleContext *context;
 

@@ -199,7 +199,6 @@ GTK3_WARNING=no
 if test yes = "$with_gtk3" -a no = "$with_gtk2"; then
     GTK_VERSION="gtk+-3.0"
     GTK3_WARNING=yes
-    CFLAGS="$CFLAGS -DUSE_GTK3"
 else
     GTK_VERSION="gtk+-2.0 >= 2.16"
 fi

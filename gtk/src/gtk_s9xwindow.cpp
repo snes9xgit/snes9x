@@ -1,9 +1,6 @@
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
 #include <gdk/gdkkeysyms.h>
-#ifdef USE_GTK3
-#include <gdk/gdkkeysyms-compat.h>
-#endif
 #include <cairo.h>
 
 #ifdef USE_XV
@@ -22,6 +19,10 @@
 #include "gtk_cheat.h"
 #ifdef NETPLAY_SUPPORT
 #include "gtk_netplay.h"
+#endif
+
+#if GTK_MAJOR_VERSION >= 3
+#include <gdk/gdkkeysyms-compat.h>
 #endif
 
 static gboolean
@@ -133,7 +134,7 @@ event_open_netplay (GtkWidget *widget, gpointer data)
     return TRUE;
 }
 
-#ifdef USE_GTK3
+#if GTK_MAJOR_VERSION >= 3
 static gboolean
 event_drawingarea_draw (GtkWidget *widget,
                         cairo_t   *cr,
@@ -147,9 +148,9 @@ event_drawingarea_draw (GtkWidget *widget,
 
     return FALSE;
 }
-#endif
 
-#ifndef USE_GTK3
+#else
+
 static gboolean
 event_drawingarea_expose (GtkWidget      *widget,
                           GdkEventExpose *event,
@@ -623,13 +624,13 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
     }
 
     drawing_area = GTK_DRAWING_AREA (get_widget ("drawingarea"));
-#ifndef USE_GTK3
+#if GTK_MAJOR_VERSION < 3
     gtk_widget_set_double_buffered (GTK_WIDGET (drawing_area), FALSE);
 #endif
 
     gtk_widget_realize (window);
     gtk_widget_realize (GTK_WIDGET (drawing_area));
-#ifndef USE_GTK3
+#if GTK_MAJOR_VERSION < 3
     gdk_window_set_back_pixmap (gtk_widget_get_window (window), NULL, FALSE);
     gdk_window_set_back_pixmap (gtk_widget_get_window (GTK_WIDGET (drawing_area)), NULL, FALSE);
 #endif
@@ -646,7 +647,7 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
     gtk_widget_hide (get_widget ("sync_clients_separator"));
 #endif
 
-#ifdef USE_GTK3
+#if GTK_MAJOR_VERSION >= 3
     g_signal_connect_data (drawing_area,
                            "draw",
                            G_CALLBACK (event_drawingarea_draw),
@@ -1966,7 +1967,7 @@ Snes9xWindow::get_cairo (void)
 
     GtkWidget *drawing_area = GTK_WIDGET (this->drawing_area);
 
-#ifndef USE_GTK3
+#if GTK_MAJOR_VERSION < 3
     cr = gdk_cairo_create (gtk_widget_get_window (drawing_area));
 #else
     GtkAllocation allocation;
@@ -1988,7 +1989,7 @@ Snes9xWindow::release_cairo (void)
 {
     if (cairo_owned)
     {
-#ifndef USE_GTK3
+#if GTK_MAJOR_VERSION < 3
         cairo_destroy (cr);
 #else
         gdk_window_end_draw_frame (gtk_widget_get_window (GTK_WIDGET (drawing_area)), gdk_drawing_context);

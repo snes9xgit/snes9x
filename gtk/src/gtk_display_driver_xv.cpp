@@ -76,7 +76,7 @@ S9xXVDisplayDriver::create_window (int width, int height)
     XMapWindow (display, xwindow);
     XSync (display, False);
 
-#if USE_GTK3
+#if GTK_MAJOR_VERSION >= 3
     gdk_window = gdk_x11_window_foreign_new_for_display (gtk_widget_get_display (drawing_area), xwindow);
 #else
     gdk_window = gdk_window_foreign_new (xwindow);

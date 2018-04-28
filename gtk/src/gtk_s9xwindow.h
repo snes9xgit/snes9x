@@ -83,7 +83,7 @@ class Snes9xWindow : public GtkBuilderWindow
         GtkWidget      *recent_menu;
         cairo_t        *cr;
         int            cairo_owned;
-#ifdef USE_GTK3
+#if GTK_MAJOR_VERSION >= 3
         GdkDrawingContext *gdk_drawing_context;
         cairo_region_t    *cairo_region;
 #endif
