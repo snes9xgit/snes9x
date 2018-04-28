@@ -8,7 +8,7 @@ snes9x_gtk_CXXFLAGS = -fno-exceptions -fno-rtti
 endif
 noinst_LIBRARIES =
 
-AM_CPPFLAGS = -I../apu/bapu -I$(top_srcdir) -I.. -DSNES9XLOCALEDIR=\""$(snes9xlocaledir)"\"
+AM_CPPFLAGS = -I../apu/bapu -I$(top_srcdir) -I.. -DDATADIR=\""$(snes9xdatadir)"\" -DSNES9XLOCALEDIR=\""$(snes9xlocaledir)"\"
 
 CLEANFILES = \
     src/gtk_snes9x_ui.cpp \

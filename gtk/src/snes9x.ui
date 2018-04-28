@@ -256,8 +256,8 @@
     <property name="page_increment">0.10000000000000001</property>
   </object>
   <object class="GtkDialog" id="cheat_window">
-    <property name="width_request">512</property>
-    <property name="height_request">350</property>
+    <property name="width_request">720</property>
+    <property name="height_request">480</property>
     <property name="can_focus">False</property>
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
     <property name="border_width">5</property>
@@ -436,6 +436,36 @@
                     <property name="expand">False</property>
                     <property name="fill">False</property>
                     <property name="position">5</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="delete_all_cheats_button">
+                    <property name="label" translatable="yes">Delete All Cheats</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                    <signal name="clicked" handler="delete_all_cheats" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">6</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="cheat_search_button">
+                    <property name="label" translatable="yes">Search Cheat Database</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                    <signal name="clicked" handler="search_database" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">7</property>
                   </packing>
                 </child>
               </object>

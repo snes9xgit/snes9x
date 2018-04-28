@@ -34,7 +34,10 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE")
 AM_GLIB_GNU_GETTEXT
 
 snes9xlocaledir='${prefix}/${DATADIRNAME}/locale'
+snes9xdatadir='${prefix}/${DATADIRNAME}/snes9x'
+
 AC_SUBST(snes9xlocaledir)
+AC_SUBST(snes9xdatadir)
 
 AC_ARG_WITH(debug,
   [AS_HELP_STRING([--with(out)-debug],
@@ -152,9 +155,9 @@ AC_ARG_WITH(screenshot,
 
 AC_ARG_WITH(gtk3,
   [AS_HELP_STRING([--with(out)-gtk3],
-    [Build with GTK+ 3 if available (default: without)])],
+    [Build with GTK+ 3 if available (default: with)])],
   [],
-  [with_gtk3=no])
+  [with_gtk3=yes])
 
 if test yes = "$with_debug" ; then
   CFLAGS="$CFLAGS -g"
@@ -499,7 +502,7 @@ echo "Snes9x will build with support for the following:"
 echo ""
 
 if test yes = "$GTK3_WARNING" ; then
-    echo "    GTK+ 3.0 (experimental)"
+    echo "    GTK+ 3.0"
 else
     echo "    GTK+ 2.0"
 fi

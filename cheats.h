@@ -269,7 +269,7 @@ void S9xDeleteCheatGroup (uint32 index);
 bool8 S9xLoadCheatFile (const char *filename);
 bool8 S9xSaveCheatFile (const char *filename);
 void S9xUpdateCheatsInMemory (void);
-bool8 S9xImportCheatsFromDatabase (const char *filename);
+int S9xImportCheatsFromDatabase(const char *filename);
 void S9xCheatsDisable (void);
 void S9xCheatsEnable (void);
 char *S9xCheatValidate (char *cheat);

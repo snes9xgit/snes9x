@@ -701,6 +701,32 @@ void S9xUpdateCheatsInMemory (void)
     }
 }
 
+static int S9xCheatIsDuplicate (char *name, char *code)
+{
+    unsigned int i;
+
+    for (i = 0; i < Cheat.g.size(); i++)
+    {
+        if (!strcmp (name, Cheat.g[i].name))
+        {
+            char *code_string = S9xCheatGroupToText (i);
+            char *validated   = S9xCheatValidate (code);
+
+            if (validated && !strcmp (code_string, validated))
+            {
+                free (code_string);
+                free (validated);
+                return TRUE;
+            }
+
+            free (code_string);
+            free (validated);
+        }
+    }
+
+    return FALSE;
+}
+
 static void S9xLoadCheatsFromBMLNode (bml_node *n)
 {
     unsigned int i;
@@ -725,7 +751,7 @@ static void S9xLoadCheatsFromBMLNode (bml_node *n)
             if (bml_find_sub(c, "enabled"))
                 enabled = true;
 
-            if (desc && code)
+            if (desc && code && !S9xCheatIsDuplicate (desc, code))
             {
                 int index = S9xAddCheatGroup (desc, code);
 
@@ -878,7 +904,7 @@ void S9xCheatsEnable (void)
     }
 }
 
-bool8 S9xImportCheatsFromDatabase (const char *filename)
+int S9xImportCheatsFromDatabase (const char *filename)
 {
     bml_node *bml;
     char sha256_txt[65];
@@ -888,7 +914,7 @@ bool8 S9xImportCheatsFromDatabase (const char *filename)
     bml = bml_parse_file (filename);
 
     if (!bml)
-        return FALSE;
+        return -1; /* No file */
 
     for (i = 0; i < 32; i++)
     {
@@ -909,7 +935,7 @@ bool8 S9xImportCheatsFromDatabase (const char *filename)
                 {
                     S9xLoadCheatsFromBMLNode (bml->child[i]);
                     bml_free_node (bml);
-                    return TRUE;
+                    return 0;
                 }
             }
         }
@@ -917,5 +943,5 @@ bool8 S9xImportCheatsFromDatabase (const char *filename)
 
     bml_free_node (bml);
 
-    return FALSE;
+    return -2; /* No codes */
 }
