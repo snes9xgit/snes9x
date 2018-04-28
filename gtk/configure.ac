@@ -159,6 +159,12 @@ AC_ARG_WITH(gtk3,
   [],
   [with_gtk3=yes])
 
+AC_ARG_WITH(gtk2,
+  [AS_HELP_STRING([--with(out)-gtk2],
+    [Build with GTK+ 3 if available (default: without)])],
+  [],
+  [with_gtk2=no])
+
 if test yes = "$with_debug" ; then
   CFLAGS="$CFLAGS -g"
 else
@@ -190,7 +196,7 @@ GTK=yes
 snes9x_info_display="GTK"
 
 GTK3_WARNING=no
-if test yes = "$with_gtk3" ; then
+if test yes = "$with_gtk3" -a no = "$with_gtk2"; then
     GTK_VERSION="gtk+-3.0"
     GTK3_WARNING=yes
     CFLAGS="$CFLAGS -DUSE_GTK3"
