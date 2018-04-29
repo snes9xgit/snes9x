@@ -1580,8 +1580,8 @@ Snes9xWindow::enter_fullscreen_mode (void)
     gdk_display_sync (gdk_display_get_default ());
     gtk_window_present (GTK_WINDOW (window));
 
-    set_bypass_compositor (gdk_x11_display_get_xdisplay (gtk_widget_get_display (window)),
-                           gdk_x11_window_get_xid (gtk_widget_get_window (window)),
+    set_bypass_compositor (gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (drawing_area))),
+                           gdk_x11_window_get_xid (gtk_widget_get_window (GTK_WIDGET (drawing_area))),
                            1);
 
     config->fullscreen = 1;
@@ -1631,8 +1631,8 @@ Snes9xWindow::leave_fullscreen_mode (void)
 
     gtk_window_unfullscreen (GTK_WINDOW (window));
 
-    set_bypass_compositor (gdk_x11_display_get_xdisplay (gtk_widget_get_display (window)),
-                           gdk_x11_window_get_xid (gtk_widget_get_window (window)),
+    set_bypass_compositor (gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (drawing_area))),
+                           gdk_x11_window_get_xid (gtk_widget_get_window (GTK_WIDGET (drawing_area))),
                            0);
 
     resize (nfs_width, nfs_height);
