@@ -4060,8 +4060,6 @@ static bool LoadROMPlain(const TCHAR *filename)
     if (Memory.LoadROM (_tToChar(filename)))
     {
 		S9xStartCheatSearch (&Cheat);
-		if (Settings.ApplyCheats)
-			S9xCheatsEnable();
         ReInitSound();
 		ResetFrameTimer();
         return (TRUE);
@@ -4075,8 +4073,6 @@ static bool LoadROMMulti(const TCHAR *filename, const TCHAR *filename2)
 	if (Memory.LoadMultiCart(_tToChar(filename), _tToChar(filename2)))
 	{
 		S9xStartCheatSearch(&Cheat);
-		if (Settings.ApplyCheats)
-			S9xCheatsEnable();
 		ReInitSound();
 		ResetFrameTimer();
 		return (TRUE);
@@ -10670,6 +10666,7 @@ void S9xPostRomInit()
 	// a lingering cheat they don't realize is on
 	if (Settings.ApplyCheats)
 	{
+		S9xCheatsEnable();
 		extern struct SCheatData Cheat;
 	    for (uint32 i = 0; i < Cheat.g.size(); i++)
 		{
