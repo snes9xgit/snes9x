@@ -1382,7 +1382,7 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 	{
 		case VK_ESCAPE:
 			if(
-                GUI.outputMethod!=DIRECTDRAW && 
+                GUI.outputMethod!=DIRECTDRAW &&
                 GUI.FullScreen && !GUI.EmulateFullscreen)
 				ToggleFullScreen();
 			else
@@ -1870,11 +1870,11 @@ LRESULT CALLBACK WinProc(
 		case ID_OPTIONS_DISPLAY:
 			{
 				RestoreGUIDisplay ();
-				
+
 				if(GUI.FullScreen)
 					ToggleFullScreen();
 				DialogBox(g_hInst, MAKEINTRESOURCE(IDD_NEWDISPLAY), hWnd, DlgFunky);
-				
+
 				SwitchToGDI();
 
 				RestoreSNESDisplay ();
@@ -2059,55 +2059,55 @@ LRESULT CALLBACK WinProc(
 				}
 				break;
 
-		case ID_SOUND_16MS: 
+		case ID_SOUND_16MS:
 			GUI.SoundBufferSize = 16;
 			ReInitSound();
 			break;
-		case ID_SOUND_32MS: 
+		case ID_SOUND_32MS:
 			GUI.SoundBufferSize = 32;
 			ReInitSound();
 			break;
-		case ID_SOUND_48MS: 
+		case ID_SOUND_48MS:
 			GUI.SoundBufferSize = 48;
 			ReInitSound();
 			break;
-		case ID_SOUND_64MS: 
+		case ID_SOUND_64MS:
 			GUI.SoundBufferSize = 64;
 			ReInitSound();
 			break;
-		case ID_SOUND_80MS: 
+		case ID_SOUND_80MS:
 			GUI.SoundBufferSize = 80;
 			ReInitSound();
 			break;
-		case ID_SOUND_96MS: 
+		case ID_SOUND_96MS:
 			GUI.SoundBufferSize = 96;
 			ReInitSound();
 			break;
-		case ID_SOUND_112MS: 
+		case ID_SOUND_112MS:
 			GUI.SoundBufferSize = 112;
 			ReInitSound();
 			break;
-		case ID_SOUND_128MS: 
+		case ID_SOUND_128MS:
 			GUI.SoundBufferSize = 128;
 			ReInitSound();
 			break;
-		case ID_SOUND_144MS: 
+		case ID_SOUND_144MS:
 			GUI.SoundBufferSize = 144;
 			ReInitSound();
 			break;
-		case ID_SOUND_160MS: 
+		case ID_SOUND_160MS:
 			GUI.SoundBufferSize = 160;
 			ReInitSound();
 			break;
-		case ID_SOUND_176MS: 
+		case ID_SOUND_176MS:
 			GUI.SoundBufferSize = 176;
 			ReInitSound();
 			break;
-		case ID_SOUND_194MS: 
+		case ID_SOUND_194MS:
 			GUI.SoundBufferSize = 194;
 			ReInitSound();
 			break;
-		case ID_SOUND_210MS: 
+		case ID_SOUND_210MS:
 			GUI.SoundBufferSize = 210;
 			ReInitSound();
 			break;
@@ -2307,7 +2307,7 @@ LRESULT CALLBACK WinProc(
 		case ID_CHEAT_ENTER:
 			RestoreGUIDisplay ();
 			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_CHEATER), hWnd, DlgCheater);
-			S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
+			S9xSaveCheatFile (S9xGetFilename (".bml", CHEAT_DIR));
 			RestoreSNESDisplay ();
 			break;
 		case ID_CHEAT_SEARCH:
@@ -2326,7 +2326,7 @@ LRESULT CALLBACK WinProc(
 		case ID_CHEAT_SEARCH_MODAL:
 			RestoreGUIDisplay ();
 			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_CHEAT_SEARCH), hWnd, DlgCheatSearch); // modal
-			S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
+			S9xSaveCheatFile (S9xGetFilename (".bml", CHEAT_DIR));
 			RestoreSNESDisplay ();
 			break;
 		case ID_CHEAT_APPLY:
@@ -3331,7 +3331,7 @@ void ControlPadFlagsToS9xPseudoPointer(uint32 p)
 
 static void ProcessInput(void)
 {
-	extern void S9xWinScanJoypads ();	
+	extern void S9xWinScanJoypads ();
 #ifdef NETPLAY_SUPPORT
     if (!Settings.NetPlay)
 #endif
@@ -3653,7 +3653,7 @@ loop_exit:
     if (!Settings.StopEmulation)
     {
         Memory.SaveSRAM (S9xGetFilename (".srm", SRAM_DIR));
-        S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
+        S9xSaveCheatFile (S9xGetFilename (".bml", CHEAT_DIR));
     }
     //if (!VOODOO_MODE && !GUI.FullScreen)
     //    GetWindowRect (GUI.hWnd, &GUI.window_size);
@@ -4026,7 +4026,7 @@ static void CheckMenuStates ()
 
 	mii.fState = !Settings.StopEmulation ? MFS_ENABLED : MFS_DISABLED;
 	SetMenuItemInfo (GUI.hMenu, ID_FILE_AVI_RECORDING, FALSE, &mii);
-  
+
 	memset(&mii, 0, sizeof(mii));
 	mii.cbSize = sizeof(mii);
 	mii.fMask = MIIM_STRING;
@@ -4093,7 +4093,7 @@ static bool LoadROM(const TCHAR *filename, const TCHAR *filename2 /*= NULL*/) {
 
 	if (!Settings.StopEmulation) {
 		Memory.SaveSRAM (S9xGetFilename (".srm", SRAM_DIR));
-		S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
+		S9xSaveCheatFile (S9xGetFilename (".bml", CHEAT_DIR));
 	}
 
 	if(filename2)
@@ -4259,9 +4259,9 @@ HRESULT Win7_JLSetRecentGames(ICustomDestinationList *pcdl, IObjectArray *poaRem
 		return S_FALSE;
 	}
 	HRESULT hr = CoCreateInstance
-                    (CLSID_EnumerableObjectCollection, 
-                    NULL, 
-                    CLSCTX_INPROC_SERVER, 
+                    (CLSID_EnumerableObjectCollection,
+                    NULL,
+                    CLSCTX_INPROC_SERVER,
                     IID_PPV_ARGS(&poc));
     if (SUCCEEDED(hr)) {
 		UINT max_list = MIN(maxSlots,GUI.MaxRecentGames);
@@ -4285,12 +4285,12 @@ HRESULT Win7_JLSetRecentGames(ICustomDestinationList *pcdl, IObjectArray *poaRem
 }
 
 void Win7_CreateJumpList()
-{    
+{
     ICustomDestinationList *pcdl;
     HRESULT hr = CoCreateInstance(
-                    CLSID_DestinationList, 
-                    NULL, 
-                    CLSCTX_INPROC_SERVER, 
+                    CLSID_DestinationList,
+                    NULL,
+                    CLSCTX_INPROC_SERVER,
                     IID_PPV_ARGS(&pcdl));
     if (SUCCEEDED(hr)) {
         UINT maxSlots;
@@ -4401,27 +4401,27 @@ BOOL CreateToolTip(int toolID, HWND hDlg, TCHAR* pText)
     // hDlg:    the handle of the dialog box.
     // pText:   the text that appears in the tooltip.
     // g_hInst: the global instance handle.
-    
+
     if (!toolID || !hDlg || !pText)
     {
         return FALSE;
     }
     // Get the window of the tool.
     HWND hwndTool = GetDlgItem(hDlg, toolID);
-    
+
     // Create the tooltip.
     HWND hwndTip = CreateWindowEx(NULL, TOOLTIPS_CLASS, NULL,
                               WS_POPUP |TTS_ALWAYSTIP | TTS_BALLOON,
                               CW_USEDEFAULT, CW_USEDEFAULT,
                               CW_USEDEFAULT, CW_USEDEFAULT,
-                              hDlg, NULL, 
+                              hDlg, NULL,
                               g_hInst, NULL);
-                              
+
    if (!hwndTool || !hwndTip)
    {
        return FALSE;
-   }                              
-                              
+   }
+
     // Associate the tooltip with the tool.
     TOOLINFO toolInfo = { 0 };
     toolInfo.cbSize = sizeof(toolInfo);
@@ -4448,7 +4448,7 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		CreateToolTip(IDC_INRATEEDIT,hDlg,TEXT("For each 'Input rate' samples generated by the SNES, 'Playback rate' samples will produced. If you experience crackling you can try to lower this setting."));
 		CreateToolTip(IDC_INRATE,hDlg,TEXT("For each 'Input rate' samples generated by the SNES, 'Playback rate' samples will produced. If you experience crackling you can try to lower this setting."));
 		CreateToolTip(IDC_DYNRATECONTROL, hDlg, TEXT("Try to dynamically adjust the input rate to never overflow or underflow the sound buffer. Only works with XAudio2."));
-		
+
 		int pos;
 		pos = SendDlgItemMessage(hDlg, IDC_DRIVER, CB_INSERTSTRING,-1,(LPARAM)TEXT("Snes9x DirectSound"));
 		SendDlgItemMessage(hDlg, IDC_DRIVER, CB_SETITEMDATA,pos,WIN_SNES9X_DIRECT_SOUND_DRIVER);
@@ -4497,7 +4497,7 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		SendDlgItemMessage(hDlg, IDC_SLIDER_VOLUME_TURBO, TBM_SETTICFREQ, 10, 0);
 		_sntprintf(valTxt, 10, TEXT("%d"), GUI.VolumeTurbo);
 		Edit_SetText(GetDlgItem(hDlg, IDC_EDIT_VOLUME_TURBO), valTxt);
-		
+
 
 		SendDlgItemMessage(hDlg, IDC_RATE, CB_INSERTSTRING,0,(LPARAM)TEXT("8 KHz"));
 		SendDlgItemMessage(hDlg, IDC_RATE, CB_INSERTSTRING,1,(LPARAM)TEXT("11 KHz"));
@@ -4625,7 +4625,7 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					}
 
 					GUI.SoundBufferSize=(16*(1+(SendDlgItemMessage(hDlg,IDC_BUFLEN,CB_GETCURSEL,0,0))));
-					
+
 					Edit_GetText(GetDlgItem(hDlg,IDC_INRATEEDIT),valTxt,10);
 					int sliderVal=_tstoi(valTxt);
 					Settings.SoundInputRate = sliderVal>0?sliderVal:32000;
@@ -4641,9 +4641,9 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					GUI.VolumeTurbo = (sliderVal >= 0 && sliderVal <= 100) ? sliderVal : 100;
 
 					WinSaveConfigFile();
-					
+
 					// already done in WinProc on return
-					// ReInitSound(); 
+					// ReInitSound();
 
 				}	/* FALL THROUGH */
 
@@ -7740,7 +7740,7 @@ updateFilterBox2:
 			GUI.filterMessagFont = IsDlgButtonChecked(hDlg, IDC_MESSAGES_SCALE);
 			GUI.DoubleBuffered = (bool)(IsDlgButtonChecked(hDlg, IDC_DBLBUFFER)==BST_CHECKED);
 			GUI.Vsync = (bool)(IsDlgButtonChecked(hDlg, IDC_VSYNC
-				
+
 				)==BST_CHECKED);
 			if(IsDlgButtonChecked(hDlg, IDC_AUTOFRAME))
 			{
@@ -7819,7 +7819,7 @@ updateFilterBox2:
 				GUI.BlendHiRes = prevBlendHires;
 				lstrcpy(GUI.D3DshaderFileName,prevD3DShaderFile);
 				lstrcpy(GUI.OGLshaderFileName,prevOGLShaderFile);
-			}	
+			}
 
 			EndDialog(hDlg,0);
 
@@ -8610,7 +8610,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						/* Description */
 						ITEM_QUERY(lvi, IDC_CHEAT_LIST, 1, buf, CHEAT_SIZE);
 						SetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, lvi.pszText);
-					
+
 						internal_change = true;
 					}
 					sel_idx=ListView_GetSelectionMark(GetDlgItem(hDlg, IDC_CHEAT_LIST));
@@ -8659,7 +8659,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						delete[] valid_cheat;
 
 						int curr_idx=-1;
-						
+
 						LVITEM lvi;
 						memset(&lvi, 0, sizeof(LVITEM));
 						lvi.mask=LVIF_TEXT;
@@ -8765,7 +8765,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					switch(HIWORD(wParam))
 					{
 					case EN_CHANGE:
-						
+
 						char temp[CHEAT_SIZE];
 						char *valid_cheat = NULL;
 						GetDlgItemTextA(hDlg, IDC_CHEAT_CODE, temp, CHEAT_SIZE);
@@ -8814,7 +8814,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 										lvi.pszText=wcode;
 										lvi.cchTextMax = CHEAT_SIZE;
 										ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
-										
+
 										memset(&lvi, 0, sizeof(LV_ITEM));
 										lvi.iItem= k;
 										lvi.iSubItem=1;
@@ -8822,7 +8822,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 										lvi.pszText=wdescription;
 										lvi.cchTextMax = CHEAT_SIZE;
 										ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
-										
+
 										WideToUtf8 code(wcode);
 										WideToUtf8 description(wdescription);
 
@@ -9111,7 +9111,7 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 		case WM_DESTROY:
 			{
 				cheatSearchHWND = NULL;
-				S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
+				S9xSaveCheatFile (S9xGetFilename (".bml", CHEAT_DIR));
 				break;
 			}
 

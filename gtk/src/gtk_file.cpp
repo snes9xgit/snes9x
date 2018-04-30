@@ -375,7 +375,7 @@ void
 S9xAutoSaveSRAM (void)
 {
     Memory.SaveSRAM (S9xGetFilename (".srm", SRAM_DIR));
-    S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
+    S9xSaveCheatFile (S9xGetFilename (".bml", CHEAT_DIR));
     return;
 }
 

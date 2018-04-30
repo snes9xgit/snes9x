@@ -766,7 +766,7 @@ static void S9xLoadCheatsFromBMLNode (bml_node *n)
     return;
 }
 
-bool8 S9xLoadCheatFileClassic (const char *filename)
+static bool8 S9xLoadCheatFileClassic (const char *filename)
 {
     FILE *fs;
     uint8 data[28];
