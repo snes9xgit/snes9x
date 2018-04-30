@@ -606,7 +606,7 @@ int S9xAddCheatGroup (const char *name, const char *cheat)
     if (g.c.size () == 0)
         return -1;
 
-    Cheat.g.push_back (S9xCreateCheatGroup (name, cheat));
+    Cheat.g.push_back (g);
 
     return Cheat.g.size () - 1;
 }
