@@ -744,6 +744,8 @@ static void S9xLoadCheatsFromBMLNode (bml_node *n)
 
             tmp = bml_find_sub(c, "description");
             desc = tmp->data;
+            if (!desc)
+                desc = (char *) "";
 
             tmp = bml_find_sub(c, "code");
             code = tmp->data;
@@ -751,7 +753,7 @@ static void S9xLoadCheatsFromBMLNode (bml_node *n)
             if (bml_find_sub(c, "enabled"))
                 enabled = true;
 
-            if (desc && code && !S9xCheatIsDuplicate (desc, code))
+            if (code && !S9xCheatIsDuplicate (desc, code))
             {
                 int index = S9xAddCheatGroup (desc, code);
 
@@ -772,8 +774,6 @@ bool8 S9xLoadCheatFileClassic (const char *filename)
     fs = fopen(filename, "rb");
     if (!fs)
         return (FALSE);
-
-    S9xDeleteCheats ();
 
     while (fread ((void *) data, 1, 28, fs) == 28)
     {
@@ -855,7 +855,7 @@ bool8 S9xSaveCheatFile (const char *filename)
                  "    description: %s\n"
                  "    code: %s\n",
                  (Cheat.g[i].enabled ? " enabled" : ""),
-                 Cheat.g[i].name,
+                 (Cheat.g[i].name ? Cheat.g[i].name : ""),
                  txt);
         
         delete[] txt;
