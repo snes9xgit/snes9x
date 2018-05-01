@@ -8810,6 +8810,19 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				ListView_DeleteItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), sel_idx);
 
 				break;
+			case IDC_DELETE_ALL:
+				if (MessageBox(hDlg,
+					TEXT("This will remove all cheats for this game."),
+					TEXT("Remove all"),
+					MB_OKCANCEL | MB_ICONWARNING) != IDOK)
+				{
+					break;
+				}
+				ListView_DeleteAllItems(GetDlgItem(hDlg, IDC_CHEAT_LIST));
+				for (unsigned int j = 0; j < Cheat.g.size(); j++)
+				{
+					ct.state[j] = Deleted;
+				}
 			case IDC_CLEAR_CHEATS:
 				internal_change = true;
 				SetDlgItemText(hDlg,IDC_CHEAT_CODE,TEXT(""));

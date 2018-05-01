@@ -157,9 +157,10 @@
 #define IDC_KEYBOARD                    1127
 #define IDC_ALLOWLEFTRIGHT              1127
 #define IDC_CHEAT_ADDRESS               1128
-#define IDC_CLEAR_CHEATS2               1128
 #define IDC_SEARCH_DB                   1128
 #define IDC_CHEAT_BYTE                  1129
+#define IDC_DELETE_CHEAT2               1129
+#define IDC_DELETE_ALL                  1129
 #define IDC_ADD_CHEAT                   1130
 #define IDC_CHEAT_LIST                  1131
 #define IDC_PICTURE                     1132
