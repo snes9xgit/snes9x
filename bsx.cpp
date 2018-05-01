@@ -1477,6 +1477,12 @@ void S9xInitBSX (void)
 			FlashMode = (header[0x18] & 0xEF) == 0x20 ? FALSE : TRUE;
 			FlashSize = FLASH_SIZE;
 
+			// Fix Block Allocation Flags
+			// (for games that don't have it setup properly,
+			// for exemple when taken seperately from the upper memory of the Memory Pack,
+			// else the game will error out on BS-X)
+			for (; (header[0x10] & 1) == 0; (header[0x10] >>= 1));
+
 #ifdef BSX_DEBUG
 			for (int i = 0; i <= 0x1F; i++)
 				printf("BS: ROM Header %02X: %02X\n", i, header[i]);
