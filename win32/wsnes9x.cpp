@@ -8603,6 +8603,8 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						TCHAR buf[CHEAT_SIZE];
 						LV_ITEM lvi;
 
+						internal_change = true; // do not enable update button
+
 						/* Code */
 						ITEM_QUERY (lvi, IDC_CHEAT_LIST, 0, buf, CHEAT_SIZE);
 						SetDlgItemText(hDlg, IDC_CHEAT_CODE, lvi.pszText);
@@ -8611,7 +8613,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						ITEM_QUERY(lvi, IDC_CHEAT_LIST, 1, buf, CHEAT_SIZE);
 						SetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, lvi.pszText);
 
-						internal_change = true;
+						internal_change = false;
 					}
 					sel_idx=ListView_GetSelectionMark(GetDlgItem(hDlg, IDC_CHEAT_LIST));
 					has_sel=true;
@@ -8633,13 +8635,13 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 						if(internal_change)
 						{
-							internal_change=!internal_change;
 							return false;
 						}
 						if(!has_sel)
 							return true;
-							EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), true);
-							return true;
+
+						EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), true);
+						return true;
 					}
 					break;
 
@@ -8701,8 +8703,11 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 						for(j=0;j<(int)Cheat.g.size();j++)
 						{
-							if(ct.index[j]==sel_idx)
-								ct.state[j]=Modified;
+							if (ct.index[j] == sel_idx)
+							{
+								ct.state[j] = Modified;
+								break;
+							}
 						}
 
 						Utf8ToWide wstring(code);
@@ -8725,6 +8730,9 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						lvi.pszText=temp;
 						lvi.cchTextMax = CHEAT_SIZE;
 						SendDlgItemMessage(hDlg,IDC_CHEAT_LIST, LVM_SETITEM, 0, (LPARAM)&lvi);
+
+						// update done, disable update button
+						EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), false);
 					}
 				}
 
@@ -8734,8 +8742,11 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					unsigned int j;
 					for(j=0;j<Cheat.g.size();j++)
 					{
-						if(ct.index[j]==sel_idx)
-							ct.state[j]=Deleted;
+						if (ct.index[j] == sel_idx)
+						{
+							ct.state[j] = Deleted;
+							break;
+						}
 					}
 					for(j=0;j<Cheat.g.size();j++)
 					{
@@ -8765,7 +8776,10 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					switch(HIWORD(wParam))
 					{
 					case EN_CHANGE:
-
+						if (internal_change)
+						{
+							return true;
+						}
 						char temp[CHEAT_SIZE];
 						char *valid_cheat = NULL;
 						GetDlgItemTextA(hDlg, IDC_CHEAT_CODE, temp, CHEAT_SIZE);
@@ -8774,7 +8788,8 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						{
 							if (has_sel)
 								EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), true);
-							else EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), false);
+							else
+								EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), false);
 							EnableWindow(GetDlgItem(hDlg, IDC_ADD_CHEAT), true);
 							delete[] valid_cheat;
 						}
@@ -8788,104 +8803,105 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					}
 					break;
 				}
-				case IDOK:
+			case IDOK:
+				{
+					int k,l;
+					bool hit;
+					unsigned int scanned;
+					for(k=0;k<ListView_GetItemCount(GetDlgItem(hDlg, IDC_CHEAT_LIST)); k++)
 					{
-						int k,l;
-						bool hit;
-						unsigned int scanned;
-						for(k=0;k<ListView_GetItemCount(GetDlgItem(hDlg, IDC_CHEAT_LIST)); k++)
+						hit=false;
+						for(l=0;l<(int)Cheat.g.size();l++)
 						{
-							hit=false;
-							for(l=0;l<(int)Cheat.g.size();l++)
+							if(ct.index[l]==k)
 							{
-								if(ct.index[l]==k)
+								hit=true;
+
+								if(ct.state[l]==(unsigned long)Modified) // modified in GUI, change in core
 								{
-									hit=true;
+									TCHAR wcode[CHEAT_SIZE];
+									TCHAR wdescription[CHEAT_SIZE];
 
-									if(ct.state[l]==(unsigned long)Modified) // modified in GUI, change in core
-									{
-										TCHAR wcode[CHEAT_SIZE];
-										TCHAR wdescription[CHEAT_SIZE];
+									LV_ITEM lvi;
+									memset(&lvi, 0, sizeof(LV_ITEM));
+									lvi.iItem= k;
+									lvi.mask=LVIF_TEXT;
+									lvi.pszText=wcode;
+									lvi.cchTextMax = CHEAT_SIZE;
+									ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
 
-										LV_ITEM lvi;
-										memset(&lvi, 0, sizeof(LV_ITEM));
-										lvi.iItem= k;
-										lvi.mask=LVIF_TEXT;
-										lvi.pszText=wcode;
-										lvi.cchTextMax = CHEAT_SIZE;
-										ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
+									memset(&lvi, 0, sizeof(LV_ITEM));
+									lvi.iItem= k;
+									lvi.iSubItem=1;
+									lvi.mask=LVIF_TEXT;
+									lvi.pszText=wdescription;
+									lvi.cchTextMax = CHEAT_SIZE;
+									ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
 
-										memset(&lvi, 0, sizeof(LV_ITEM));
-										lvi.iItem= k;
-										lvi.iSubItem=1;
-										lvi.mask=LVIF_TEXT;
-										lvi.pszText=wdescription;
-										lvi.cchTextMax = CHEAT_SIZE;
-										ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
+									WideToUtf8 code(wcode);
+									WideToUtf8 description(wdescription);
 
-										WideToUtf8 code(wcode);
-										WideToUtf8 description(wdescription);
-
-										S9xModifyCheatGroup(l, description, code);
-									}
-
-									// set core state according to checkbox
-									if (ListView_GetCheckState(GetDlgItem(hDlg, IDC_CHEAT_LIST), k))
-										S9xEnableCheatGroup(l);
-									else
-										S9xDisableCheatGroup(l);
-
-									// we've found the internal cheat index, stop checking for this list entry
-									break;
+									S9xModifyCheatGroup(l, description, code);
 								}
-							}
-							if(!hit)
-							{
-								TCHAR wcode[CHEAT_SIZE];
-								TCHAR wdescription[CHEAT_SIZE];
 
-								LV_ITEM lvi;
-								memset(&lvi, 0, sizeof(LV_ITEM));
-								lvi.iItem = k;
-								lvi.mask = LVIF_TEXT;
-								lvi.pszText = wcode;
-								lvi.cchTextMax = CHEAT_SIZE;
-								ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
+								// set core state according to checkbox
+								if (ListView_GetCheckState(GetDlgItem(hDlg, IDC_CHEAT_LIST), k))
+									S9xEnableCheatGroup(l);
+								else
+									S9xDisableCheatGroup(l);
 
-								memset(&lvi, 0, sizeof(LV_ITEM));
-								lvi.iItem = k;
-								lvi.iSubItem = 1;
-								lvi.mask = LVIF_TEXT;
-								lvi.pszText = wdescription;
-								lvi.cchTextMax = CHEAT_SIZE;
-								ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
-
-								WideToUtf8 code(wcode);
-								WideToUtf8 description(wdescription);
-
-								int index = S9xAddCheatGroup(description, code);
-
-								if (index >= 0)
-									if (ListView_GetCheckState(GetDlgItem(hDlg, IDC_CHEAT_LIST), k))
-										S9xEnableCheatGroup(index);
+								// we've found the internal cheat index, stop checking for this list entry
+								break;
 							}
 						}
-
-						for(l=(int)Cheat.g.size()-1; l>=0; l--)
+						if(!hit)
 						{
-							if(ct.state[l]==Deleted)
-							{
-								S9xDeleteCheatGroup(l);
-							}
+							TCHAR wcode[CHEAT_SIZE];
+							TCHAR wdescription[CHEAT_SIZE];
+
+							LV_ITEM lvi;
+							memset(&lvi, 0, sizeof(LV_ITEM));
+							lvi.iItem = k;
+							lvi.mask = LVIF_TEXT;
+							lvi.pszText = wcode;
+							lvi.cchTextMax = CHEAT_SIZE;
+							ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
+
+							memset(&lvi, 0, sizeof(LV_ITEM));
+							lvi.iItem = k;
+							lvi.iSubItem = 1;
+							lvi.mask = LVIF_TEXT;
+							lvi.pszText = wdescription;
+							lvi.cchTextMax = CHEAT_SIZE;
+							ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
+
+							WideToUtf8 code(wcode);
+							WideToUtf8 description(wdescription);
+
+							int index = S9xAddCheatGroup(description, code);
+
+							if (index >= 0)
+								if (ListView_GetCheckState(GetDlgItem(hDlg, IDC_CHEAT_LIST), k))
+									S9xEnableCheatGroup(index);
 						}
 					}
-				case IDCANCEL:
-					delete [] ct.index;
-					delete [] ct.state;
-					EndDialog(hDlg, 0);
-					return true;
-				default:return false;
+
+					for(l=(int)Cheat.g.size()-1; l>=0; l--)
+					{
+						if(ct.state[l]==Deleted)
+						{
+							S9xDeleteCheatGroup(l);
+						}
 					}
+				}
+			case IDCANCEL:
+				delete [] ct.index;
+				delete [] ct.state;
+				EndDialog(hDlg, 0);
+				return true;
+			default:
+				return false;
+			}
 		}
 	default: return false;
 	}
