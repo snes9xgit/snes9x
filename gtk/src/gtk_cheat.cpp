@@ -301,7 +301,8 @@ Snes9xCheats::search_database (void)
     int result;
     int reason = 0;
 
-    filename = S9xGetFilename ("cheats.bml", CHEAT_DIR);
+    filename = S9xGetDirectory (CHEAT_DIR);
+    filename += "/cheats.bml";
     if (!(result = S9xImportCheatsFromDatabase (filename.c_str ())))
     {
         refresh_tree_view ();
@@ -334,7 +335,8 @@ Snes9xCheats::search_database (void)
     if (result < reason)
         reason = result;
 
-    filename = S9xGetFilename ("cheats.bml", ROM_DIR);
+    filename = S9xGetDirectory (ROM_DIR);
+    filename += "/cheats.bml";
     if (!(result = S9xImportCheatsFromDatabase (filename.c_str ())))
     {
         refresh_tree_view ();
