@@ -287,6 +287,7 @@ INT_PTR CALLBACK DlgCheatSearchAdd(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 INT_PTR CALLBACK DlgCreateMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgOpenMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 HRESULT CALLBACK EnumModesCallback( LPDDSURFACEDESC lpDDSurfaceDesc, LPVOID lpContext);
+int WinSearchCheatDatabase();
 
 VOID CALLBACK HotkeyTimer( UINT idEvent, UINT uMsg, DWORD dwUser, DWORD dw1, DWORD dw2);
 
@@ -300,6 +301,7 @@ void S9xDetectJoypads();
 #define WM_CUSTKEYUP	(WM_USER+51)
 
 #define TIMER_SCANJOYPADS  (99999)
+#define NC_SEARCHDB 0x8000
 
 #ifdef UNICODE
 #define S9XW_SHARD_PATH SHARD_PATHW
@@ -2306,7 +2308,10 @@ LRESULT CALLBACK WinProc(
             break;
 		case ID_CHEAT_ENTER:
 			RestoreGUIDisplay ();
-			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_CHEATER), hWnd, DlgCheater);
+			while (DialogBox(g_hInst, MAKEINTRESOURCE(IDD_CHEATER), hWnd, DlgCheater) == NC_SEARCHDB)
+			{
+				WinSearchCheatDatabase();
+			}
 			S9xSaveCheatFile (S9xGetFilename (".bml", CHEAT_DIR));
 			RestoreSNESDisplay ();
 			break;
@@ -8482,6 +8487,54 @@ int* index;
 DWORD* state;
 }CheatTracker;
 
+int WinSearchCheatDatabase()
+{
+	std::string filename;
+	int result;
+	int reason = 0;
+
+	filename = S9xGetDirectory(CHEAT_DIR);
+	filename += "\\cheats.bml";
+	if (!(result = S9xImportCheatsFromDatabase(filename.c_str())))
+	{
+		return result;
+	}
+
+	if (result < reason)
+		reason = result;
+
+	filename = S9xGetDirectory(HOME_DIR);
+	filename += "\\cheats.bml";
+	if (!(result = S9xImportCheatsFromDatabase(filename.c_str())))
+	{
+		return result;
+	}
+
+	if (result < reason)
+		reason = result;
+
+	filename = S9xGetDirectory(ROM_DIR);
+	filename += "\\cheats.bml";
+	if (!(result = S9xImportCheatsFromDatabase(filename.c_str())))
+	{
+		return result;
+	}
+
+	if (result < reason)
+		reason = result;
+
+	MessageBox(GUI.hWnd,
+		reason == -1 ?
+			TEXT("The database file cheats.bml was not found. It is normally installed with "
+				"Snes9x, but you may also place a custom copy in your configuration or cheats directory.") :
+			TEXT("No matching game was found in the databases. If you are using a non-official "
+				"translation or modified copy, you may be able to find and manually enter the codes."),
+		reason == -1 ? TEXT("Couldn't Find Cheats Database") : TEXT("No Matching Game Found"),
+		MB_OK | MB_ICONEXCLAMATION);
+
+	return reason;
+}
+
 #define ITEM_QUERY(a, b, c, d, e)  memset(&a, 0, sizeof(LV_ITEM)); \
 						a.iItem= ListView_GetSelectionMark(GetDlgItem(hDlg, b)); \
 						a.iSubItem=c; \
@@ -8515,7 +8568,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			col.mask=LVCF_FMT|LVCF_ORDER|LVCF_TEXT|LVCF_WIDTH;
 			col.fmt=LVCFMT_LEFT;
 			col.iOrder=0;
-			col.cx=70;
+			col.cx=100;
 			col.pszText=temp;
 
 			ListView_InsertColumn(GetDlgItem(hDlg,IDC_CHEAT_LIST),    0,   &col);
@@ -8525,7 +8578,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			col.mask=LVCF_FMT|LVCF_ORDER|LVCF_TEXT|LVCF_WIDTH|LVCF_SUBITEM;
 			col.fmt=LVCFMT_LEFT;
 			col.iOrder=2;
-			col.cx=165;
+			col.cx=300;
 			col.pszText=temp;
 			col.iSubItem=2;
 
@@ -8761,10 +8814,20 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				internal_change = true;
 				SetDlgItemText(hDlg,IDC_CHEAT_CODE,TEXT(""));
 				SetDlgItemText(hDlg,IDC_CHEAT_DESCRIPTION,TEXT(""));
+				internal_change = false;
 				ListView_SetItemState(GetDlgItem(hDlg, IDC_CHEAT_LIST),sel_idx, 0, LVIS_SELECTED|LVIS_FOCUSED);
 				ListView_SetSelectionMark(GetDlgItem(hDlg, IDC_CHEAT_LIST), -1);
 				sel_idx=-1;
 				has_sel=false;
+				break;
+			case IDC_SEARCH_DB:
+				if (MessageBox(hDlg,
+					TEXT("This will apply current changes from the cheat dialog, try to import cheats from the cheat database, then reopen the dialog."),
+					TEXT("Search Database"),
+					MB_OKCANCEL | MB_ICONINFORMATION) == IDOK)
+				{
+					PostMessage(hDlg, WM_COMMAND, MAKEWPARAM(IDOK, NC_SEARCHDB), (LPARAM)GetDlgItem(hDlg, IDOK));
+				}
 				break;
 			case IDC_CHEAT_CODE:
 				{
@@ -8897,7 +8960,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			case IDCANCEL:
 				delete [] ct.index;
 				delete [] ct.state;
-				EndDialog(hDlg, 0);
+				EndDialog(hDlg, HIWORD(wParam) == NC_SEARCHDB ? NC_SEARCHDB : 0);
 				return true;
 			default:
 				return false;
