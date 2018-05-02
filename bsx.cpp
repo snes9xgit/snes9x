@@ -1481,7 +1481,7 @@ void S9xInitBSX (void)
 			// (for games that don't have it setup properly,
 			// for exemple when taken seperately from the upper memory of the Memory Pack,
 			// else the game will error out on BS-X)
-			for (; (header[0x10] & 1) == 0; (header[0x10] >>= 1));
+			for (; (((header[0x10] & 1) == 0) && header[0x10] != 0); (header[0x10] >>= 1));
 
 #ifdef BSX_DEBUG
 			for (int i = 0; i <= 0x1F; i++)
