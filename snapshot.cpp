@@ -384,7 +384,7 @@ static FreezeData	SnapCPU[] =
 	DELETED_INT_ENTRY(6, 7, WaitAddress, 4),
 	DELETED_INT_ENTRY(6, 7, WaitCounter, 4),
 	DELETED_INT_ENTRY(6, 7, PBPCAtOpcodeStart, 4),
-	INT_ENTRY(7, NMILine),
+	INT_ENTRY(7, NMIPending),
 	INT_ENTRY(7, IRQLine),
 	INT_ENTRY(7, IRQTransition),
 	INT_ENTRY(7, IRQLastState),
@@ -1745,7 +1745,7 @@ int S9xUnfreezeFromStream (STREAM stream)
 		{
 			printf("Converting old snapshot version %d to %d\n...", version, SNAPSHOT_VERSION);
 
-			CPU.NMILine = (CPU.Flags & (1 <<  7)) ? TRUE : FALSE;
+			CPU.NMIPending = (CPU.Flags & (1 <<  7)) ? TRUE : FALSE;
 			CPU.IRQLine = (CPU.Flags & (1 << 11)) ? TRUE : FALSE;
 			CPU.IRQTransition = FALSE;
 			CPU.IRQLastState = FALSE;
