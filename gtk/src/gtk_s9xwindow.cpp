@@ -1641,7 +1641,7 @@ Snes9xWindow::enter_fullscreen_mode (void)
         if (gui_config->auto_input_rate)
         {
             Settings.SoundInputRate = top_level->get_auto_input_rate ();
-            S9xUpdateDynamicRate (1, 1);
+            S9xUpdateDynamicRate (1, 2);
         }
     }
 
@@ -1701,7 +1701,7 @@ Snes9xWindow::leave_fullscreen_mode (void)
         if (gui_config->auto_input_rate)
         {
             Settings.SoundInputRate = top_level->get_auto_input_rate ();
-            S9xUpdateDynamicRate (1, 1);
+            S9xUpdateDynamicRate (1, 2);
         }
     }
 
