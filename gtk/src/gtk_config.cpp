@@ -253,7 +253,7 @@ Snes9xConfig::load_defaults (void)
     Settings.FrameTime = Settings.FrameTimeNTSC;
     Settings.BlockInvalidVRAMAccessMaster = TRUE;
     Settings.SoundSync = 1;
-    Settings.DynamicRateControl = 1;
+    Settings.DynamicRateControl = FALSE;
     Settings.DynamicRateLimit = 5;
     Settings.HDMATimingHack = 100;
 
