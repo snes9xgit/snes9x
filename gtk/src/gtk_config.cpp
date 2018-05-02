@@ -403,6 +403,7 @@ Snes9xConfig::save_config_file (void)
     xml_out_int (xml, "sound_sync", Settings.SoundSync);
     xml_out_int (xml, "dynamic_rate_control", Settings.DynamicRateControl);
     xml_out_int (xml, "dynamic_rate_limit", Settings.DynamicRateLimit);
+    xml_out_int (xml, "auto_input_rate", auto_input_rate);
 
     /* Snes9X core-stored variables */
     xml_out_int (xml, "transparency", Settings.Transparency);
@@ -666,6 +667,10 @@ Snes9xConfig::set_option (const char *name, const char *value)
     {
         Settings.DynamicRateLimit = atoi (value);
         Settings.DynamicRateLimit = CLAMP (Settings.DynamicRateLimit, 1, 1000);
+    }
+    else if (!strcasecmp (name, "auto_input_rate"))
+    {
+        auto_input_rate = atoi (value);
     }
     else if (!strcasecmp (name, "gaussian_interpolation"))
     {

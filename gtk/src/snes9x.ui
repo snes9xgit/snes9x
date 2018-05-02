@@ -4047,7 +4047,22 @@
                                         <property name="position">1</property>
                                       </packing>
                                     </child>
-
+                                    <child>
+                                      <object class="GtkCheckButton" id="auto_input_rate">
+                                        <property name="label" translatable="yes">Automatically adjust input rate to display</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">False</property>
+                                        <property name="tooltip_text" translatable="yes">Sets the correct input rate based on the display's refresh rate</property>
+                                        <property name="draw_indicator">True</property>
+                                        <signal name="toggled" handler="auto_input_rate_toggled" swapped="no"/>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">False</property>
+                                        <property name="position">2</property>
+                                      </packing>
+                                    </child>
                                     <child>
                                       <object class="GtkCheckButton" id="dynamic_rate_control">
                                         <property name="label" translatable="yes">Dynamic rate control</property>
@@ -4060,7 +4075,7 @@
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">False</property>
-                                        <property name="position">2</property>
+                                        <property name="position">3</property>
                                       </packing>
                                     </child>
 
@@ -4077,7 +4092,7 @@
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">False</property>
-                                        <property name="position">3</property>
+                                        <property name="position">4</property>
                                       </packing>
                                     </child>
                                     <child>
@@ -4093,7 +4108,7 @@
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">False</property>
-                                        <property name="position">4</property>
+                                        <property name="position">5</property>
                                       </packing>
                                     </child>
                                     <child>
@@ -4109,7 +4124,7 @@
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">False</property>
-                                        <property name="position">5</property>
+                                        <property name="position">6</property>
                                       </packing>
                                     </child>
                                     <child>
@@ -4171,8 +4186,8 @@
                                           <packing>
                                             <property name="left_attach">1</property>
                                             <property name="right_attach">2</property>
-                                            <property name="top_attach">4</property>
-                                            <property name="bottom_attach">5</property>
+                                            <property name="top_attach">3</property>
+                                            <property name="bottom_attach">4</property>
                                             <property name="x_options">GTK_FILL</property>
                                             <property name="y_options">GTK_FILL</property>
                                           </packing>
@@ -4185,8 +4200,8 @@
                                             <property name="label" translatable="yes">Buffer size:</property>
                                           </object>
                                           <packing>
-                                            <property name="top_attach">4</property>
-                                            <property name="bottom_attach">5</property>
+                                            <property name="top_attach">3</property>
+                                            <property name="bottom_attach">4</property>
                                             <property name="x_options">GTK_FILL</property>
                                             <property name="y_options">GTK_FILL</property>
                                           </packing>
@@ -4199,8 +4214,8 @@
                                             <property name="label" translatable="yes">Dynamic rate limit:</property>
                                           </object>
                                           <packing>
-                                            <property name="top_attach">5</property>
-                                            <property name="bottom_attach">6</property>
+                                            <property name="top_attach">4</property>
+                                            <property name="bottom_attach">5</property>
                                             <property name="x_options">GTK_FILL</property>
                                             <property name="y_options">GTK_FILL</property>
                                           </packing>
@@ -4229,8 +4244,8 @@
                                          </object>
                                          <packing>
                                           <property name="left_attach">1</property>
-                                          <property name="top_attach">5</property>
-                                          <property name="bottom_attach">6</property>
+                                          <property name="top_attach">4</property>
+                                          <property name="bottom_attach">5</property>
                                           <property name="y_options">GTK_FILL</property>
                                           <property name="x_options">GTK_FILL</property>
                                          </packing>
@@ -4243,8 +4258,8 @@
                                             <property name="label" translatable="yes">Input rate:</property>
                                           </object>
                                           <packing>
-                                            <property name="top_attach">2</property>
-                                            <property name="bottom_attach">3</property>
+                                            <property name="top_attach">1</property>
+                                            <property name="bottom_attach">2</property>
                                             <property name="x_options">GTK_FILL</property>
                                             <property name="y_options">GTK_FILL</property>
                                           </packing>
@@ -4262,8 +4277,8 @@
                                           <packing>
                                             <property name="left_attach">1</property>
                                             <property name="right_attach">2</property>
-                                            <property name="top_attach">2</property>
-                                            <property name="bottom_attach">3</property>
+                                            <property name="top_attach">1</property>
+                                            <property name="bottom_attach">2</property>
                                             <property name="y_options">GTK_FILL</property>
                                           </packing>
                                         </child>
@@ -4298,23 +4313,6 @@
                                           </packing>
                                         </child>
                                         <child>
-                                         <object class="GtkButton" id="set_input_rate_button">
-                                          <property name="label" translatable="yes">Automatically Set Input Rate</property>
-                                          <property name="visible">True</property>
-                                          <property name="can_focus">True</property>
-                                          <property name="receives_default">True</property>
-                                          <signal name="clicked" handler="set_input_rate" swapped="no"/>
-                                         </object>
-                                         <packing>
-                                          <property name="left_attach">1</property>
-                                          <property name="right_attach">2</property>
-                                          <property name="top_attach">1</property>
-                                          <property name="bottom_attach">2</property>
-                                          <property name="x_options">GTK_FILL</property>
-                                          <property name="y_options">GTK_FILL</property>
-                                         </packing>
-                                        </child>
-                                        <child>
                                           <object class="GtkLabel" id="label139">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
@@ -4322,8 +4320,8 @@
                                             <property name="label" translatable="yes">Video rate:</property>
                                           </object>
                                           <packing>
-                                            <property name="top_attach">3</property>
-                                            <property name="bottom_attach">4</property>
+                                            <property name="top_attach">2</property>
+                                            <property name="bottom_attach">3</property>
                                             <property name="x_options">GTK_FILL</property>
                                             <property name="y_options">GTK_FILL</property>
                                           </packing>
@@ -4337,8 +4335,8 @@
                                           <packing>
                                             <property name="left_attach">1</property>
                                             <property name="right_attach">2</property>
-                                            <property name="top_attach">3</property>
-                                            <property name="bottom_attach">4</property>
+                                            <property name="top_attach">2</property>
+                                            <property name="bottom_attach">3</property>
                                             <property name="y_options">GTK_FILL</property>
                                           </packing>
                                         </child>
@@ -4346,7 +4344,7 @@
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">True</property>
-                                        <property name="position">6</property>
+                                        <property name="position">7</property>
                                       </packing>
                                     </child>
                                   </object>

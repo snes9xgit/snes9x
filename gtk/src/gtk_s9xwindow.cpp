@@ -1529,6 +1529,74 @@ Snes9xWindow::toggle_fullscreen_mode (void)
         enter_fullscreen_mode ();
 }
 
+static double XRRGetExactRefreshRate (Display *dpy, Window window)
+{
+    XRRScreenResources *resources = NULL;
+    XRROutputInfo    *output_info = NULL;
+    XRRCrtcInfo        *crtc_info = NULL;
+    RROutput output;
+    int event_base;
+    int error_base;
+    int version_major;
+    int version_minor;
+    double refresh_rate = 0.0;
+    int i;
+
+    if (!XRRQueryExtension (dpy, &event_base, &error_base) ||
+        !XRRQueryVersion (dpy, &version_major, &version_minor))
+    {
+        return refresh_rate;
+    }
+
+    resources   = XRRGetScreenResources (dpy, window);
+    output      = XRRGetOutputPrimary (dpy, window);
+    output_info = XRRGetOutputInfo (dpy, resources, output);
+    crtc_info   = XRRGetCrtcInfo (dpy, resources, output_info->crtc);
+
+    for (i = 0; i < resources->nmode; i++)
+    {
+        if (resources->modes[i].id == crtc_info->mode)
+        {
+            XRRModeInfo *m = &resources->modes[i];
+
+            refresh_rate = (double) m->dotClock / m->hTotal / m->vTotal;
+            refresh_rate /= m->modeFlags & RR_DoubleScan     ? 2 : 1;
+            refresh_rate /= m->modeFlags & RR_ClockDivideBy2 ? 2 : 1;
+            refresh_rate *= m->modeFlags & RR_DoubleClock    ? 2 : 1;
+
+            break;
+        }
+    }
+
+    XRRFreeCrtcInfo (crtc_info);
+    XRRFreeOutputInfo (output_info);
+    XRRFreeScreenResources (resources);
+
+    return refresh_rate;
+}
+
+double
+Snes9xWindow::get_refresh_rate (void)
+{
+    Window xid = gdk_x11_window_get_xid(gtk_widget_get_window (window));
+    Display *dpy = gdk_x11_display_get_xdisplay(gtk_widget_get_display (window));
+    double refresh_rate = XRRGetExactRefreshRate (dpy, xid);
+
+    if (refresh_rate < 10.0)
+    {
+        printf ("Warning: Couldn't read refresh rate.\n");
+        refresh_rate = 60.0;
+    }
+
+    return refresh_rate;
+}
+
+int
+Snes9xWindow::get_auto_input_rate (void)
+{
+    return (int) (get_refresh_rate () * 32040.0 / 60.09881389744051 + 0.5);
+}
+
 static void set_bypass_compositor (Display *dpy, Window window, unsigned char bypass)
 {
     Atom net_wm_bypass_compositor = XInternAtom (dpy, "_NET_WM_BYPASS_COMPOSITOR", False);
@@ -1568,6 +1636,12 @@ Snes9xWindow::enter_fullscreen_mode (void)
                               1) != 0)
         {
             config->change_display_resolution = 0;
+        }
+
+        if (gui_config->auto_input_rate)
+        {
+            Settings.SoundInputRate = top_level->get_auto_input_rate ();
+            S9xUpdateDynamicRate (1, 1);
         }
     }
 
@@ -1623,6 +1697,12 @@ Snes9xWindow::leave_fullscreen_mode (void)
                           config->xrr_crtc_info->rotation,
                           &config->xrr_output,
                           1);
+
+        if (gui_config->auto_input_rate)
+        {
+            Settings.SoundInputRate = top_level->get_auto_input_rate ();
+            S9xUpdateDynamicRate (1, 1);
+        }
     }
 
     gtk_window_unfullscreen (GTK_WINDOW (window));

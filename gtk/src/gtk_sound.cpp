@@ -127,7 +127,14 @@ S9xPortSoundInit (void)
     {
         driver->init ();
 
-        Settings.SoundInputRate = CLAMP (gui_config->sound_input_rate, 8000, 48000);
+        if (gui_config->auto_input_rate)
+        {
+            Settings.SoundInputRate = top_level->get_auto_input_rate ();
+        }
+        else
+        {
+            Settings.SoundInputRate = CLAMP (gui_config->sound_input_rate, 8000, 48000);
+        }
 
         Settings.SoundPlaybackRate = playback_rates[gui_config->sound_playback_rate];
 
