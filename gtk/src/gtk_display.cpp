@@ -1705,7 +1705,6 @@ S9xQueryDrivers (void)
 
     gui_config->allow_xrandr = 0;
 
-#ifdef USE_XRANDR
     int error_base_p, event_base_p;
     int major_version, minor_version;
     Display *dpy = gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (top_level->get_window())));
@@ -1732,7 +1731,6 @@ S9xQueryDrivers (void)
     gui_config->xrr_output           = XRRGetOutputPrimary (dpy, xid);
     gui_config->xrr_output_info      = XRRGetOutputInfo (dpy, gui_config->xrr_screen_resources, gui_config->xrr_output);
     gui_config->xrr_crtc_info        = XRRGetCrtcInfo (dpy, gui_config->xrr_screen_resources, gui_config->xrr_output_info->crtc);
-#endif
 
     return;
 }

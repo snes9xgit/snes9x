@@ -189,6 +189,7 @@ Snes9xConfig::load_defaults (void)
     sound_buffer_size = 32;
     sound_playback_rate = 5;
     sound_input_rate = 31950;
+    auto_input_rate = TRUE;
     last_directory[0] = '\0';
     window_width = -1;
     window_height = -1;

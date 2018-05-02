@@ -1550,7 +1550,6 @@ Snes9xWindow::enter_fullscreen_mode (void)
 
     gtk_window_get_position (GTK_WINDOW (window), &nfs_x, &nfs_y);
 
-#ifdef USE_XRANDR
     if (config->change_display_resolution)
     {
         GdkDisplay *gdk_display = gtk_widget_get_display (window);
@@ -1571,7 +1570,6 @@ Snes9xWindow::enter_fullscreen_mode (void)
             config->change_display_resolution = 0;
         }
     }
-#endif
 
     /* Make sure everything is done synchronously */
     gdk_display_sync (gdk_display_get_default ());
@@ -1606,7 +1604,6 @@ Snes9xWindow::leave_fullscreen_mode (void)
 
     config->rom_loaded = 0;
 
-#ifdef USE_XRANDR
     if (config->change_display_resolution)
     {
         GdkDisplay *gdk_display = gtk_widget_get_display (window);
@@ -1627,7 +1624,6 @@ Snes9xWindow::leave_fullscreen_mode (void)
                           &config->xrr_output,
                           1);
     }
-#endif
 
     gtk_window_unfullscreen (GTK_WINDOW (window));
 

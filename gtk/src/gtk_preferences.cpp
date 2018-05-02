@@ -465,7 +465,6 @@ event_input_rate_changed (GtkRange *range, gpointer data)
     return;
 }
 
-#ifdef USE_XRANDR
 static double XRRGetExactRefreshRate (Display *dpy, Window window)
 {
     XRRScreenResources *resources = NULL;
@@ -511,12 +510,10 @@ static double XRRGetExactRefreshRate (Display *dpy, Window window)
 
     return refresh_rate;
 }
-#endif
 
 static void
 event_set_input_rate (GtkButton *widget, gpointer data)
 {
-#ifdef USE_XRANDR
     Snes9xPreferences *preferences = (Snes9xPreferences *) data;
     GdkWindow *gdk_window = gtk_widget_get_window (GTK_WIDGET(top_level->get_window()));
     Display *dpy = GDK_DISPLAY_XDISPLAY (gdk_window_get_display (gdk_window));
@@ -525,7 +522,6 @@ event_set_input_rate (GtkButton *widget, gpointer data)
 
     if (rate != 0.0)
         preferences->set_slider("sound_input_rate", (int) (rate * 32040 / 60.09881389744051 + 0.5));
-#endif
 }
 
 
@@ -552,9 +548,6 @@ event_about_clicked (GtkButton *widget, gpointer data)
 #endif
 #ifdef USE_XV
     version_string += _(" XVideo");
-#endif
-#ifdef USE_XRANDR
-    version_string += _(" XRandR");
 #endif
 #ifdef USE_JOYSTICK
     version_string += _(" Joystick");
@@ -637,9 +630,7 @@ Snes9xPreferences::Snes9xPreferences (Snes9xConfig *config) :
     last_toggled = NULL;
     this->config = config;
 
-#ifdef USE_XRANDR
     mode_indices = NULL;
-#endif
 
     gtk_widget_realize (window);
 
@@ -657,9 +648,7 @@ Snes9xPreferences::Snes9xPreferences (Snes9xConfig *config) :
 
 Snes9xPreferences::~Snes9xPreferences (void)
 {
-#ifdef USE_XRANDR
     delete[] mode_indices;
-#endif
 
     return;
 }
@@ -851,7 +840,6 @@ Snes9xPreferences::get_settings_from_dialog (void)
         sound_needs_restart = 1;
     }
 
-#ifdef USE_XRANDR
     if ((config->change_display_resolution != get_check ("change_display_resolution") ||
             (config->change_display_resolution &&
                     (config->xrr_index != get_combo ("resolution_combo")))) &&
@@ -866,7 +854,6 @@ Snes9xPreferences::get_settings_from_dialog (void)
     {
         config->xrr_index = get_combo ("resolution_combo");
     }
-#endif
 
     config->change_display_resolution = get_check ("change_display_resolution");
 
@@ -1105,7 +1092,6 @@ Snes9xPreferences::show (void)
 
     if (config->allow_xrandr)
     {
-#ifdef USE_XRANDR
         char      size_string[256];
 
         combo = get_widget ("resolution_combo");
@@ -1142,7 +1128,6 @@ Snes9xPreferences::show (void)
 
         if (config->xrr_index > config->xrr_output_info->nmode)
             config->xrr_index = 0;
-#endif
     }
     else
     {

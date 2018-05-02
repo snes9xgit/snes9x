@@ -63,12 +63,6 @@ AC_ARG_WITH(xv,
   [],
   [with_xv=yes])
 
-AC_ARG_WITH(xrandr,
-  [AS_HELP_STRING([--with(out)-xrandr],
-    [Enable XRandR support on GTK (default: with)])],
-  [],
-  [with_xrandr=yes])
-
 AC_ARG_WITH(portaudio,
   [AS_HELP_STRING([--with(out)-portaudio],
     [Enable PortAudio sound driver support (default: with)])],
@@ -206,6 +200,7 @@ fi
 PKG_CHECK_MODULES([GTK], ["$GTK_VERSION"])
 PKG_CHECK_MODULES([GLIB], [gthread-2.0 >= 2.6 gobject-2.0 >= 2.6])
 PKG_CHECK_MODULES([LIBXML], [libxml-2.0 >= 2.0])
+PKG_CHECK_MODULES([XRANDR], [xrandr])
 
 if test yes = "$with_opengl" ; then
 
@@ -300,19 +295,6 @@ if test yes = "$with_pulseaudio" ; then
     ],[
         echo "Cannot find PulseAudio library."
         echo "--> Disabling PulseAudio"
-    ])
-fi
-
-XRANDR=0
-XRANDR_CFLAGS=""
-XRANDR_LIBS=""
-if test yes = "$with_xrandr" ; then
-    PKG_CHECK_MODULES([XRANDR],[xrandr],[
-        XRANDR=yes
-        CFLAGS="$CFLAGS -DUSE_XRANDR"
-    ],[
-        echo "Cannot find libXrandr. Make sure the X11 development headers are installed."
-        echo "--> Disabling Xrandr support."
     ])
 fi
 
