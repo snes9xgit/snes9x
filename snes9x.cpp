@@ -386,6 +386,7 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.ForceInterleaved2          =  conf.GetBool("ROM::Interleaved2",                   false);
 	Settings.ForceInterleaveGD24        =  conf.GetBool("ROM::InterleaveGD24",                 false);
 	Settings.ApplyCheats                =  conf.GetBool("ROM::Cheat",                          false);
+	Cheat.enabled = false;
 	Settings.NoPatch                    = !conf.GetBool("ROM::Patch",                          true);
 	Settings.IgnorePatchChecksum        =  conf.GetBool("ROM::IgnorePatchChecksum",            false);
 
@@ -583,9 +584,8 @@ void S9xUsage (void)
 	// PATCH/CHEAT OPTIONS
 	S9xMessage(S9X_INFO, S9X_USAGE, "-nopatch                        Do not apply any available IPS/UPS patches");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-cheat                          Apply saved cheats");
-	S9xMessage(S9X_INFO, S9X_USAGE, "-gamegenie <code>               Supply a Game Genie code");
-	S9xMessage(S9X_INFO, S9X_USAGE, "-actionreplay <code>            Supply a Pro-Action Reply code");
-	S9xMessage(S9X_INFO, S9X_USAGE, "-goldfinger <code>              Supply a Gold Finger code");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-cheatcode <code>               Supply a cheat code in Game Genie,");
+	S9xMessage(S9X_INFO, S9X_USAGE, "                                Pro-Action Replay, or Raw format (address=byte)");
 	S9xMessage(S9X_INFO, S9X_USAGE, "");
 
 #ifdef NETPLAY_SUPPORT
@@ -622,6 +622,31 @@ void S9xUsage (void)
 	S9xMessage(S9X_INFO, S9X_USAGE, "ROM image can be compressed with zip, gzip, JMA, or compress.");
 
 	exit(1);
+}
+
+void S9xParseArgsForCheats (char **argv, int argc)
+{
+    for (int i = 1; i < argc; i++)
+    {
+        if (!strcasecmp(argv[i], "-gamegenie") ||
+            !strcasecmp(argv[i], "-actionreplay") ||
+            !strcasecmp(argv[i], "-cheatcode"))
+        {
+            if (i + 1 < argc)
+            {
+                if (S9xAddCheatGroup ("Unknown", argv[++i]) < 0)
+                {
+                    S9xMessage(S9X_ERROR, S9X_GAME_GENIE_CODE_ERROR, "Code format invalid");
+                }
+                else
+                {
+                    S9xEnableCheatGroup (Cheat.g.size() - 1);
+                }
+            }
+            else
+                S9xUsage();
+        }
+    }
 }
 
 char * S9xParseArgs (char **argv, int argc)
@@ -777,63 +802,25 @@ char * S9xParseArgs (char **argv, int argc)
 			if (!strcasecmp(argv[i], "-cheat"))
 				Settings.ApplyCheats = TRUE;
 			else
-			if (!strcasecmp(argv[i], "-gamegenie"))
+			if (!strcasecmp(argv[i], "-gamegenie") ||
+			    !strcasecmp(argv[i], "-actionreplay") ||
+			    !strcasecmp(argv[i], "-cheatcode"))
 			{
 				if (i + 1 < argc)
 				{
-					uint32		address;
-					uint8		byte;
-					const char	*error;
-
-					if ((error = S9xGameGenieToRaw(argv[++i], address, byte)) == NULL)
-						S9xAddCheat(TRUE, FALSE, address, byte);
-					else
-						S9xMessage(S9X_ERROR, S9X_GAME_GENIE_CODE_ERROR, error);
-				}
-				else
-					S9xUsage();
-			}
-			else
-			if (!strcasecmp(argv[i], "-actionreplay"))
-			{
-				if (i + 1 < argc)
-				{
-					uint32		address;
-					uint8		byte;
-					const char	*error;
-
-					if ((error = S9xProActionReplayToRaw(argv[++i], address, byte)) == NULL)
-						S9xAddCheat(TRUE, FALSE, address, byte);
-					else
-						S9xMessage(S9X_ERROR, S9X_ACTION_REPLY_CODE_ERROR, error);
-				}
-				else
-					S9xUsage();
-			}
-			else
-			if (!strcasecmp(argv[i], "-goldfinger"))
-			{
-				if (i + 1 < argc)
-				{
-					uint32		address;
-					uint8		bytes[3];
-					bool8		sram;
-					uint8		num_bytes;
-					const char	*error;
-
-					if ((error = S9xGoldFingerToRaw(argv[++i], address, sram, num_bytes, bytes)) == NULL)
+					if (S9xAddCheatGroup ("Unknown", argv[++i]) < 0)
 					{
-						for (int c = 0; c < num_bytes; c++)
-							S9xAddCheat(TRUE, FALSE, address + c, bytes[c]);
+						S9xMessage(S9X_ERROR, S9X_GAME_GENIE_CODE_ERROR, "Code format invalid");
 					}
 					else
-						S9xMessage(S9X_ERROR, S9X_GOLD_FINGER_CODE_ERROR, error);
+					{
+						S9xEnableCheatGroup (Cheat.g.size() - 1);
+					}
 				}
 				else
 					S9xUsage();
 			}
 			else
-
 			// NETPLAY OPTIONS
 
 		#ifdef NETPLAY_SUPPORT

@@ -227,7 +227,7 @@ static void S9xSoftResetCPU (void)
 	CPU.V_Counter = 0;
 	CPU.Flags = CPU.Flags & (DEBUG_MODE_FLAG | TRACE_FLAG);
 	CPU.PCBase = NULL;
-	CPU.NMILine = FALSE;
+	CPU.NMIPending = FALSE;
 	CPU.IRQLine = FALSE;
 	CPU.IRQTransition = FALSE;
 	CPU.IRQLastState = FALSE;

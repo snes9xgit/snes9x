@@ -452,7 +452,7 @@ void S9xEndScreenRefresh (void)
 	else
 		S9xControlEOF();
 
-	S9xApplyCheats();
+	S9xUpdateCheatsInMemory ();
 
 #ifdef DEBUGGER
 	if (CPU.Flags & FRAME_ADVANCE_FLAG)
@@ -899,8 +899,14 @@ static void SetupOBJ (void)
 	else // evil FirstSprite+Y case
 	{
 		// First, find out which sprites are on which lines
-		uint8	OBJOnLine[SNES_HEIGHT_EXTENDED][128];
-		memset(OBJOnLine, 0, sizeof(OBJOnLine));
+		uint8 OBJOnLine[SNES_HEIGHT_EXTENDED][128];
+		// memset(OBJOnLine, 0, sizeof(OBJOnLine));
+		/* Hold on here, that's a lot of bytes to initialise at once!
+		 * So we only initialise them per line, as needed. [Neb]
+		 * Bonus: We can quickly avoid looping if a line has no OBJs.
+		 */
+        bool8 AnyOBJOnLine[SNES_HEIGHT_EXTENDED];
+        memset(AnyOBJOnLine, FALSE, sizeof(AnyOBJOnLine)); // better
 
 		for (S = 0; S < 128; S++)
 		{
@@ -934,6 +940,11 @@ static void SetupOBJ (void)
 					if (Y >= SNES_HEIGHT_EXTENDED)
 						continue;
 
+					if (!AnyOBJOnLine[Y]) {
+						memset(OBJOnLine[Y], 0, sizeof(OBJOnLine[Y]));
+						AnyOBJOnLine[Y] = TRUE;
+					}
+
 					if (PPU.OBJ[S].VFlip)
 						// Yes, Width not Height. It so happens that the
 						// sprites with H=2*W flip as two WxW sprites.
@@ -955,25 +966,28 @@ static void SetupOBJ (void)
 			S = FirstSprite;
 			j = 0;
 
-			do
+			if (AnyOBJOnLine[Y])
 			{
-				if (OBJOnLine[Y][S])
+				do
 				{
-					if (j >= 32)
+					if (OBJOnLine[Y][S])
 					{
-						GFX.OBJLines[Y].RTOFlags |= 0x40;
-						break;
+						if (j >= 32)
+						{
+							GFX.OBJLines[Y].RTOFlags |= 0x40;
+							break;
+						}
+
+						GFX.OBJLines[Y].Tiles -= GFX.OBJVisibleTiles[S];
+						if (GFX.OBJLines[Y].Tiles < 0)
+							GFX.OBJLines[Y].RTOFlags |= 0x80;
+						GFX.OBJLines[Y].OBJ[j].Sprite = S;
+						GFX.OBJLines[Y].OBJ[j++].Line = OBJOnLine[Y][S] & ~0x80;
 					}
 
-					GFX.OBJLines[Y].Tiles -= GFX.OBJVisibleTiles[S];
-					if (GFX.OBJLines[Y].Tiles < 0)
-						GFX.OBJLines[Y].RTOFlags |= 0x80;
-					GFX.OBJLines[Y].OBJ[j].Sprite = S;
-					GFX.OBJLines[Y].OBJ[j++].Line = OBJOnLine[Y][S] & ~0x80;
-				}
-
-				S = (S + 1) & 0x7f;
-			} while (S != FirstSprite);
+					S = (S + 1) & 0x7f;
+				} while (S != FirstSprite);
+			}
 
 			if (j < 32)
 				GFX.OBJLines[Y].OBJ[j].Sprite = -1;

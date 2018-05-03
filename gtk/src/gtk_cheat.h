@@ -15,7 +15,10 @@ class Snes9xCheats : public GtkBuilderWindow
         void show (void);
         void add_code (void);
         void remove_code (void);
-        void toggle_code (const gchar *path);
+        void search_database (void);
+        void delete_all_cheats (void);
+        void toggle_code (const gchar *path, int enabled);
+        void row_activated (GtkTreePath *path);
 
     private:
         void refresh_tree_view (void);

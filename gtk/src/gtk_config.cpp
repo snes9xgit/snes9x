@@ -162,8 +162,6 @@ Snes9xConfig::load_defaults (void)
     full_screen_on_open = 0;
     change_display_resolution = 0;
     xrr_index = 0;
-    xrr_width = 0;
-    xrr_height = 0;
     scale_to_fit = 1;
     maintain_aspect_ratio = 0;
     aspect_ratio = 0;
@@ -191,6 +189,7 @@ Snes9xConfig::load_defaults (void)
     sound_buffer_size = 32;
     sound_playback_rate = 5;
     sound_input_rate = 31950;
+    auto_input_rate = TRUE;
     last_directory[0] = '\0';
     window_width = -1;
     window_height = -1;
@@ -217,6 +216,7 @@ Snes9xConfig::load_defaults (void)
     netplay_last_host [0] = '\0';
     netplay_last_port = 6096;
     modal_dialogs = 1;
+    S9xCheatsEnable ();
 
     rewind_granularity = 5;
     rewind_buffer_size = 0;
@@ -253,10 +253,9 @@ Snes9xConfig::load_defaults (void)
     Settings.FrameTime = Settings.FrameTimeNTSC;
     Settings.BlockInvalidVRAMAccessMaster = TRUE;
     Settings.SoundSync = 1;
-    Settings.DynamicRateControl = 1;
+    Settings.DynamicRateControl = FALSE;
     Settings.DynamicRateLimit = 5;
     Settings.HDMATimingHack = 100;
-    Settings.ApplyCheats = 1;
 
 #ifdef NETPLAY_SUPPORT
     Settings.NetPlay = FALSE;
@@ -324,8 +323,6 @@ Snes9xConfig::save_config_file (void)
     xml_out_int (xml, "full_screen_on_open", full_screen_on_open);
     xml_out_int (xml, "change_display_resolution", change_display_resolution);
     xml_out_int (xml, "video_mode", xrr_index);
-    xml_out_int (xml, "video_mode_width", xrr_width);
-    xml_out_int (xml, "video_mode_height", xrr_height);
     xml_out_int (xml, "scale_to_fit", scale_to_fit);
     xml_out_int (xml, "maintain_aspect_ratio", maintain_aspect_ratio);
     xml_out_int (xml, "aspect_ratio", aspect_ratio);
@@ -406,6 +403,7 @@ Snes9xConfig::save_config_file (void)
     xml_out_int (xml, "sound_sync", Settings.SoundSync);
     xml_out_int (xml, "dynamic_rate_control", Settings.DynamicRateControl);
     xml_out_int (xml, "dynamic_rate_limit", Settings.DynamicRateLimit);
+    xml_out_int (xml, "auto_input_rate", auto_input_rate);
 
     /* Snes9X core-stored variables */
     xml_out_int (xml, "transparency", Settings.Transparency);
@@ -498,14 +496,7 @@ Snes9xConfig::set_option (const char *name, const char *value)
     }
     else if (!strcasecmp (name, "video_mode"))
     {
-    }
-    else if (!strcasecmp (name, "video_mode_width"))
-    {
-        xrr_width = atoi (value);
-    }
-    else if (!strcasecmp (name, "video_mode_height"))
-    {
-        xrr_height = atoi (value);
+        xrr_index = atoi (value);
     }
     else if (!strcasecmp (name, "scale_to_fit"))
     {
@@ -676,6 +667,10 @@ Snes9xConfig::set_option (const char *name, const char *value)
     {
         Settings.DynamicRateLimit = atoi (value);
         Settings.DynamicRateLimit = CLAMP (Settings.DynamicRateLimit, 1, 1000);
+    }
+    else if (!strcasecmp (name, "auto_input_rate"))
+    {
+        auto_input_rate = atoi (value);
     }
     else if (!strcasecmp (name, "gaussian_interpolation"))
     {

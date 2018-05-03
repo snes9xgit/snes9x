@@ -146,6 +146,9 @@
       <Profile>true</Profile>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">
     <Midl>
@@ -191,6 +194,9 @@
       <Profile>false</Profile>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">
     <Midl>
@@ -240,6 +246,9 @@
       <Profile>true</Profile>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">
     <Midl>
@@ -289,6 +298,9 @@
       <Profile>false</Profile>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
     <CustomBuild Include="..\65c816.h" />
@@ -389,6 +401,7 @@
     <ClInclude Include="..\msu1.h" />
     <ClInclude Include="..\statemanager.h" />
     <ClInclude Include="..\sha256.h" />
+    <ClInclude Include="..\bml.h" />
     <CustomBuild Include="..\stream.h" />
     <CustomBuild Include="..\tile.h" />
     <ClInclude Include="..\unzip\crypt.h" />
@@ -519,6 +532,7 @@
     </ClCompile>
     <ClCompile Include="..\statemanager.cpp" />
     <ClCompile Include="..\sha256.cpp" />
+    <ClCompile Include="..\bml.cpp" />
     <ClCompile Include="..\stream.cpp" />
     <ClCompile Include="..\tile.cpp" />
     <ClCompile Include="..\unzip\ioapi.c" />

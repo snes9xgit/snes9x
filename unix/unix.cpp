@@ -1619,9 +1619,8 @@ void S9xExit (void)
 #endif
 
 	Memory.SaveSRAM(S9xGetFilename(".srm", SRAM_DIR));
-	S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
 	S9xResetSaveTimer(FALSE);
-
+	S9xSaveCheatFile(S9xGetFilename(".bml", CHEAT_DIR));
 	S9xUnmapAllControls();
 	S9xDeinitDisplay();
 	Memory.Deinit();
@@ -1698,6 +1697,7 @@ int main (int argc, char **argv)
 
 	S9xLoadConfigFiles(argv, argc);
 	rom_filename = S9xParseArgs(argv, argc);
+	S9xDeleteCheats();
 
 	make_snes9x_dirs();
 
@@ -1785,9 +1785,18 @@ int main (int argc, char **argv)
 		exit(1);
 	}
 
+	S9xDeleteCheats();
+	S9xCheatsEnable();
 	NSRTControllerSetup();
 	Memory.LoadSRAM(S9xGetFilename(".srm", SRAM_DIR));
-	S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
+
+	if (Settings.ApplyCheats)
+	{
+		if (!S9xLoadCheatFile(S9xGetFilename(".bml", CHEAT_DIR)))
+			S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
+	}
+
+	S9xParseArgsForCheats(argv, argc);
 
 	CPU.Flags = saved_flags;
 	Settings.StopEmulation = FALSE;

@@ -2,9 +2,6 @@
 #include <stdlib.h>
 #include <gdk/gdkkeysyms.h>
 #include <gdk/gdkx.h>
-#ifdef USE_GTK3
-#include <gdk/gdkkeysyms-compat.h>
-#endif
 
 #include "gtk_preferences.h"
 #include "gtk_config.h"
@@ -13,6 +10,10 @@
 #include "gtk_sound.h"
 #include "gtk_display.h"
 #include "gtk_binding.h"
+
+#if GTK_MAJOR_VERSION >= 3
+#include <gdk/gdkkeysyms-compat.h>
+#endif
 
 #define SAME_GAME _("Same location as current game")
 
@@ -464,65 +465,21 @@ event_input_rate_changed (GtkRange *range, gpointer data)
     return;
 }
 
-#ifdef USE_XRANDR
-static double XRRGetExactRefreshRate (Display *dpy, Window window)
+void
+event_auto_input_rate_toggled (GtkToggleButton *togglebutton, gpointer data)
 {
-    XRRScreenResources *resources = NULL;
-    XRROutputInfo    *output_info = NULL;
-    XRRCrtcInfo        *crtc_info = NULL;
-    RROutput output;
-    int event_base;
-    int error_base;
-    int version_major;
-    int version_minor;
-    double refresh_rate = 0.0;
-    int i;
-
-    if (!XRRQueryExtension (dpy, &event_base, &error_base) ||
-        !XRRQueryVersion (dpy, &version_major, &version_minor))
-    {
-        return refresh_rate;
-    }
-
-    resources   = XRRGetScreenResources (dpy, window);
-    output      = XRRGetOutputPrimary (dpy, window);
-    output_info = XRRGetOutputInfo (dpy, resources, output);
-    crtc_info   = XRRGetCrtcInfo (dpy, resources, output_info->crtc);
-
-    for (i = 0; i < resources->nmode; i++)
-    {
-        if (resources->modes[i].id == crtc_info->mode)
-        {
-            XRRModeInfo *m = &resources->modes[i];
-
-            refresh_rate = (double) m->dotClock / m->hTotal / m->vTotal;
-            break;
-        }
-    }
-
-    XRRFreeCrtcInfo (crtc_info);
-    XRRFreeOutputInfo (output_info);
-    XRRFreeScreenResources (resources);
-
-    return refresh_rate;
-}
-#endif
-
-static void
-event_set_input_rate (GtkButton *widget, gpointer data)
-{
-#ifdef USE_XRANDR
     Snes9xPreferences *preferences = (Snes9xPreferences *) data;
-    GdkWindow *gdk_window = gtk_widget_get_window (GTK_WIDGET(top_level->get_window()));
-    Display *dpy = GDK_DISPLAY_XDISPLAY (gdk_window_get_display (gdk_window));
-    Window window = GDK_COMPAT_WINDOW_XID (gdk_window);
-    double rate = XRRGetExactRefreshRate(dpy, window);
 
-    if (rate != 0.0)
-        preferences->set_slider("sound_input_rate", (int) (rate * 32040 / 60.09881389744051 + 0.5));
-#endif
+    if (gtk_toggle_button_get_active (togglebutton))
+    {
+        preferences->set_slider("sound_input_rate", top_level->get_auto_input_rate ());
+        gtk_widget_set_sensitive (preferences->get_widget("sound_input_rate"), FALSE);
+    }
+    else
+    {
+        gtk_widget_set_sensitive (preferences->get_widget("sound_input_rate"), TRUE);
+    }
 }
-
 
 static void
 event_about_clicked (GtkButton *widget, gpointer data)
@@ -548,9 +505,6 @@ event_about_clicked (GtkButton *widget, gpointer data)
 #ifdef USE_XV
     version_string += _(" XVideo");
 #endif
-#ifdef USE_XRANDR
-    version_string += _(" XRandR");
-#endif
 #ifdef USE_JOYSTICK
     version_string += _(" Joystick");
 #endif
@@ -565,7 +519,7 @@ event_about_clicked (GtkButton *widget, gpointer data)
 
     gtk_widget_hide (about_dialog->get_widget ("preferences_splash"));
 
-#ifdef USE_GTK3
+#if GTK_MAJOR_VERSION >= 3
     GtkCssProvider *provider;
     GtkStyleContext *context;
 
@@ -622,7 +576,7 @@ Snes9xPreferences::Snes9xPreferences (Snes9xConfig *config) :
         { "game_data_browse", G_CALLBACK (event_game_data_browse) },
         { "game_data_clear", G_CALLBACK (event_game_data_clear) },
         { "about_clicked", G_CALLBACK (event_about_clicked) },
-        { "set_input_rate", G_CALLBACK (event_set_input_rate) },
+        { "auto_input_rate_toggled", G_CALLBACK (event_auto_input_rate_toggled) },
 #ifdef USE_JOYSTICK
         { "calibrate", G_CALLBACK (event_calibrate) },
 #endif
@@ -631,6 +585,8 @@ Snes9xPreferences::Snes9xPreferences (Snes9xConfig *config) :
 
     last_toggled = NULL;
     this->config = config;
+
+    mode_indices = NULL;
 
     gtk_widget_realize (window);
 
@@ -648,6 +604,8 @@ Snes9xPreferences::Snes9xPreferences (Snes9xConfig *config) :
 
 Snes9xPreferences::~Snes9xPreferences (void)
 {
+    delete[] mode_indices;
+
     return;
 }
 
@@ -735,6 +693,9 @@ Snes9xPreferences::move_settings_to_dialog (void)
     set_spin  ("num_threads",               config->num_threads);
     set_check ("mute_sound_check",          config->mute_sound);
     set_check ("mute_sound_turbo_check",    config->mute_sound_turbo);
+    set_check ("auto_input_rate",           config->auto_input_rate);
+    gtk_widget_set_sensitive (get_widget("sound_input_rate"),
+                              config->auto_input_rate ? FALSE : TRUE);
     set_spin  ("sound_buffer_size",         config->sound_buffer_size);
     set_slider ("sound_input_rate",         config->sound_input_rate);
     set_check ("sync_sound",                Settings.SoundSync);
@@ -824,21 +785,19 @@ Snes9xPreferences::get_settings_from_dialog (void)
     int sound_needs_restart = 0;
     int gfx_needs_restart = 0;
 
-    if ((config->sound_driver       != get_combo ("sound_driver"))          ||
-        (config->mute_sound         != get_check ("mute_sound_check"))      ||
-        (config->sound_buffer_size  != (int) get_spin ("sound_buffer_size"))||
-        (Settings.Stereo            != get_check ("stereo_check"))          ||
-        (config->sound_playback_rate !=
-                     (7 - (get_combo ("playback_combo"))))                  ||
-        (config->sound_input_rate   != get_slider ("sound_input_rate"))     ||
-        (Settings.SoundSync         != get_check ("sync_sound"))            ||
-        (Settings.DynamicRateControl != get_check ("dynamic_rate_control"))
-        )
+    if ((config->sound_driver        != get_combo ("sound_driver"))            ||
+        (config->mute_sound          != get_check ("mute_sound_check"))        ||
+        (config->sound_buffer_size   != (int) get_spin ("sound_buffer_size"))  ||
+        (Settings.Stereo             != get_check ("stereo_check"))            ||
+        (config->sound_playback_rate != (7 - (get_combo ("playback_combo"))))  ||
+        (config->sound_input_rate    != get_slider ("sound_input_rate"))       ||
+        (config->auto_input_rate     != get_check ("auto_input_rate"))         ||
+        (Settings.SoundSync          != get_check ("sync_sound"))              ||
+        (Settings.DynamicRateControl != get_check ("dynamic_rate_control")))
     {
         sound_needs_restart = 1;
     }
 
-#ifdef USE_XRANDR
     if ((config->change_display_resolution != get_check ("change_display_resolution") ||
             (config->change_display_resolution &&
                     (config->xrr_index != get_combo ("resolution_combo")))) &&
@@ -846,18 +805,13 @@ Snes9xPreferences::get_settings_from_dialog (void)
     {
         top_level->leave_fullscreen_mode ();
         config->xrr_index = get_combo ("resolution_combo");
-        config->xrr_width = config->xrr_sizes[config->xrr_index].width;
-        config->xrr_height = config->xrr_sizes[config->xrr_index].height;
         config->change_display_resolution = get_check ("change_display_resolution");
         top_level->enter_fullscreen_mode ();
     }
     else
     {
         config->xrr_index = get_combo ("resolution_combo");
-        config->xrr_width = config->xrr_sizes[config->xrr_index].width;
-        config->xrr_height = config->xrr_sizes[config->xrr_index].height;
     }
-#endif
 
     config->change_display_resolution = get_check ("change_display_resolution");
 
@@ -893,6 +847,7 @@ Snes9xPreferences::get_settings_from_dialog (void)
     config->sound_playback_rate       = 7 - (get_combo ("playback_combo"));
     config->sound_buffer_size         = get_spin ("sound_buffer_size");
     config->sound_input_rate          = get_slider ("sound_input_rate");
+    config->auto_input_rate           = get_check ("auto_input_rate");
     Settings.SoundSync                = get_check ("sync_sound");
     config->mute_sound                = get_check ("mute_sound_check");
     config->mute_sound_turbo          = get_check ("mute_sound_turbo_check");
@@ -1096,28 +1051,42 @@ Snes9xPreferences::show (void)
 
     if (config->allow_xrandr)
     {
-#ifdef USE_XRANDR
         char      size_string[256];
 
         combo = get_widget ("resolution_combo");
 
-        config->xrr_index = 0;
-
-        for (int i = 0; i < config->xrr_num_sizes; i++)
+        mode_indices = new unsigned int[config->xrr_output_info->nmode];
+        for (int i = 0; i < config->xrr_output_info->nmode; i++)
         {
-            if (config->xrr_width == config->xrr_sizes[i].width &&
-                config->xrr_height == config->xrr_sizes[i].height)
-                config->xrr_index = i;
+            for (int j = 0; j < config->xrr_screen_resources->nmode; j++)
+            {
+                if (config->xrr_screen_resources->modes[j].id == config->xrr_output_info->modes[i])
+                {
+                    mode_indices[i] = j;
+                }
+            }
+
+            XRRModeInfo *m = &config->xrr_screen_resources->modes[mode_indices[i]];
+            unsigned long dotClock = m->dotClock;
+            if (m->modeFlags & RR_ClockDivideBy2)
+                dotClock /= 2;
+            if (m->modeFlags & RR_DoubleScan)
+                dotClock /= 2;
+            if (m->modeFlags & RR_DoubleClock)
+                dotClock *= 2;
 
             snprintf (size_string,
                       256,
-                      "%dx%d",
-                      config->xrr_sizes[i].width,
-                      config->xrr_sizes[i].height);
+                      "%dx%d @ %.3fHz",
+                      m->width,
+                      m->height,
+                      (double) dotClock / m->hTotal / m->vTotal);
 
             combo_box_append (GTK_COMBO_BOX (combo), size_string);
         }
-#endif
+
+        if (config->xrr_index > config->xrr_output_info->nmode)
+            config->xrr_index = 0;
     }
     else
     {

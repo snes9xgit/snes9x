@@ -13,6 +13,9 @@ icon32x32_DATA = snes9x_32x32.png
 iconscalabledir = $(datadir)/icons/hicolor/scalable/apps
 iconscalable_DATA = snes9x.svg
 
+cheatsdir = $(datadir)/snes9x
+cheats_DATA = ../../data/cheats.bml
+
 install-data-hook:
 	mv -f $(DESTDIR)$(datadir)/icons/hicolor/16x16/apps/snes9x_16x16.png \
 	      $(DESTDIR)$(datadir)/icons/hicolor/16x16/apps/snes9x.png

@@ -1,10 +1,8 @@
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
 #include <gdk/gdkkeysyms.h>
-#ifdef USE_GTK3
-#include <gdk/gdkkeysyms-compat.h>
-#endif
 #include <cairo.h>
+#include <X11/Xatom.h>
 
 #ifdef USE_XV
 #include <X11/extensions/XShm.h>
@@ -22,6 +20,10 @@
 #include "gtk_cheat.h"
 #ifdef NETPLAY_SUPPORT
 #include "gtk_netplay.h"
+#endif
+
+#if GTK_MAJOR_VERSION >= 3
+#include <gdk/gdkkeysyms-compat.h>
 #endif
 
 static gboolean
@@ -133,7 +135,7 @@ event_open_netplay (GtkWidget *widget, gpointer data)
     return TRUE;
 }
 
-#ifdef USE_GTK3
+#if GTK_MAJOR_VERSION >= 3
 static gboolean
 event_drawingarea_draw (GtkWidget *widget,
                         cairo_t   *cr,
@@ -147,9 +149,9 @@ event_drawingarea_draw (GtkWidget *widget,
 
     return FALSE;
 }
-#endif
 
-#ifndef USE_GTK3
+#else
+
 static gboolean
 event_drawingarea_expose (GtkWidget      *widget,
                           GdkEventExpose *event,
@@ -623,13 +625,13 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
     }
 
     drawing_area = GTK_DRAWING_AREA (get_widget ("drawingarea"));
-#ifndef USE_GTK3
+#if GTK_MAJOR_VERSION < 3
     gtk_widget_set_double_buffered (GTK_WIDGET (drawing_area), FALSE);
 #endif
 
     gtk_widget_realize (window);
     gtk_widget_realize (GTK_WIDGET (drawing_area));
-#ifndef USE_GTK3
+#if GTK_MAJOR_VERSION < 3
     gdk_window_set_back_pixmap (gtk_widget_get_window (window), NULL, FALSE);
     gdk_window_set_back_pixmap (gtk_widget_get_window (GTK_WIDGET (drawing_area)), NULL, FALSE);
 #endif
@@ -646,7 +648,7 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
     gtk_widget_hide (get_widget ("sync_clients_separator"));
 #endif
 
-#ifdef USE_GTK3
+#if GTK_MAJOR_VERSION >= 3
     g_signal_connect_data (drawing_area,
                            "draw",
                            G_CALLBACK (event_drawingarea_draw),
@@ -1527,6 +1529,80 @@ Snes9xWindow::toggle_fullscreen_mode (void)
         enter_fullscreen_mode ();
 }
 
+static double XRRGetExactRefreshRate (Display *dpy, Window window)
+{
+    XRRScreenResources *resources = NULL;
+    XRROutputInfo    *output_info = NULL;
+    XRRCrtcInfo        *crtc_info = NULL;
+    RROutput output;
+    int event_base;
+    int error_base;
+    int version_major;
+    int version_minor;
+    double refresh_rate = 0.0;
+    int i;
+
+    if (!XRRQueryExtension (dpy, &event_base, &error_base) ||
+        !XRRQueryVersion (dpy, &version_major, &version_minor))
+    {
+        return refresh_rate;
+    }
+
+    resources   = XRRGetScreenResources (dpy, window);
+    output      = XRRGetOutputPrimary (dpy, window);
+    output_info = XRRGetOutputInfo (dpy, resources, output);
+    crtc_info   = XRRGetCrtcInfo (dpy, resources, output_info->crtc);
+
+    for (i = 0; i < resources->nmode; i++)
+    {
+        if (resources->modes[i].id == crtc_info->mode)
+        {
+            XRRModeInfo *m = &resources->modes[i];
+
+            refresh_rate = (double) m->dotClock / m->hTotal / m->vTotal;
+            refresh_rate /= m->modeFlags & RR_DoubleScan     ? 2 : 1;
+            refresh_rate /= m->modeFlags & RR_ClockDivideBy2 ? 2 : 1;
+            refresh_rate *= m->modeFlags & RR_DoubleClock    ? 2 : 1;
+
+            break;
+        }
+    }
+
+    XRRFreeCrtcInfo (crtc_info);
+    XRRFreeOutputInfo (output_info);
+    XRRFreeScreenResources (resources);
+
+    return refresh_rate;
+}
+
+double
+Snes9xWindow::get_refresh_rate (void)
+{
+    Window xid = gdk_x11_window_get_xid(gtk_widget_get_window (window));
+    Display *dpy = gdk_x11_display_get_xdisplay(gtk_widget_get_display (window));
+    double refresh_rate = XRRGetExactRefreshRate (dpy, xid);
+
+    if (refresh_rate < 10.0)
+    {
+        printf ("Warning: Couldn't read refresh rate.\n");
+        refresh_rate = 60.0;
+    }
+
+    return refresh_rate;
+}
+
+int
+Snes9xWindow::get_auto_input_rate (void)
+{
+    return (int) (get_refresh_rate () * 32040.0 / 60.09881389744051 + 0.5);
+}
+
+static void set_bypass_compositor (Display *dpy, Window window, unsigned char bypass)
+{
+    Atom net_wm_bypass_compositor = XInternAtom (dpy, "_NET_WM_BYPASS_COMPOSITOR", False);
+    XChangeProperty (dpy, window, net_wm_bypass_compositor, XA_CARDINAL, 32, PropModeReplace, (const unsigned char *) &bypass, 1);
+}
+
 void
 Snes9xWindow::enter_fullscreen_mode (void)
 {
@@ -1542,48 +1618,43 @@ Snes9xWindow::enter_fullscreen_mode (void)
 
     gtk_window_get_position (GTK_WINDOW (window), &nfs_x, &nfs_y);
 
+    if (config->change_display_resolution)
+    {
+        GdkDisplay *gdk_display = gtk_widget_get_display (window);
+        Display *dpy = gdk_x11_display_get_xdisplay (gdk_display);
+
+        gdk_display_sync (gdk_display);
+        if (XRRSetCrtcConfig (dpy,
+                              config->xrr_screen_resources,
+                              config->xrr_output_info->crtc,
+                              CurrentTime,
+                              config->xrr_crtc_info->x,
+                              config->xrr_crtc_info->y,
+                              config->xrr_output_info->modes[config->xrr_index],
+                              config->xrr_crtc_info->rotation,
+                              &config->xrr_output,
+                              1) != 0)
+        {
+            config->change_display_resolution = 0;
+        }
+
+        if (gui_config->auto_input_rate)
+        {
+            Settings.SoundInputRate = top_level->get_auto_input_rate ();
+            S9xUpdateDynamicRate (1, 2);
+        }
+    }
+
     /* Make sure everything is done synchronously */
     gdk_display_sync (gdk_display_get_default ());
     gtk_window_fullscreen (GTK_WINDOW (window));
 
-#ifdef USE_XRANDR
-    if (config->change_display_resolution)
-    {
-        int mode = -1;
-
-        for (int i = 0; i < config->xrr_num_sizes; i++)
-        {
-            if (config->xrr_sizes[i].width == config->xrr_width &&
-                config->xrr_sizes[i].height == config->xrr_height)
-            {
-                mode = i;
-            }
-        }
-
-        if (mode < 0)
-        {
-            config->change_display_resolution = 0;
-        }
-        else
-        {
-            GdkDisplay *gdk_display = gtk_widget_get_display (window);
-            Display *display = gdk_x11_display_get_xdisplay (gdk_display);
-            GdkScreen *screen = gtk_widget_get_screen (window);
-            GdkWindow *root = gdk_screen_get_root_window (screen);
-
-            gdk_display_sync (gdk_display_get_default ());
-            XRRSetScreenConfig (display,
-                                config->xrr_config,
-                                GDK_COMPAT_WINDOW_XID (root),
-                                (SizeID) mode,
-                                config->xrr_rotation,
-                                CurrentTime);
-        }
-    }
-#endif
-
     gdk_display_sync (gdk_display_get_default ());
     gtk_window_present (GTK_WINDOW (window));
+
+    set_bypass_compositor (gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (drawing_area))),
+                           gdk_x11_window_get_xid (gtk_widget_get_window (GTK_WIDGET (drawing_area))),
+                           1);
 
     config->fullscreen = 1;
     config->rom_loaded = rom_loaded;
@@ -1607,33 +1678,38 @@ Snes9xWindow::leave_fullscreen_mode (void)
 
     config->rom_loaded = 0;
 
-#ifdef USE_XRANDR
     if (config->change_display_resolution)
     {
-        gtk_widget_hide (window);
-
         GdkDisplay *gdk_display = gtk_widget_get_display (window);
-        Display *display = gdk_x11_display_get_xdisplay (gdk_display);
-        GdkScreen *screen = gtk_widget_get_screen (window);
-        GdkWindow *root = gdk_screen_get_root_window (screen);
+        Display *dpy = gdk_x11_display_get_xdisplay (gdk_display);
 
-        XRRSetScreenConfig (display,
-                            config->xrr_config,
-                            GDK_COMPAT_WINDOW_XID (root),
-                            (SizeID) config->xrr_original_size,
-                            config->xrr_rotation,
-                            CurrentTime);
+        if (config->xrr_index > config->xrr_output_info->nmode)
+            config->xrr_index = 0;
+
+        gdk_display_sync (gdk_display);
+        XRRSetCrtcConfig (dpy,
+                          config->xrr_screen_resources,
+                          config->xrr_output_info->crtc,
+                          CurrentTime,
+                          config->xrr_crtc_info->x,
+                          config->xrr_crtc_info->y,
+                          config->xrr_crtc_info->mode,
+                          config->xrr_crtc_info->rotation,
+                          &config->xrr_output,
+                          1);
+
+        if (gui_config->auto_input_rate)
+        {
+            Settings.SoundInputRate = top_level->get_auto_input_rate ();
+            S9xUpdateDynamicRate (1, 2);
+        }
     }
-#endif
 
     gtk_window_unfullscreen (GTK_WINDOW (window));
 
-#ifdef USE_XRANDR
-    if (config->change_display_resolution)
-    {
-        gtk_widget_show (window);
-    }
-#endif
+    set_bypass_compositor (gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (drawing_area))),
+                           gdk_x11_window_get_xid (gtk_widget_get_window (GTK_WIDGET (drawing_area))),
+                           0);
 
     resize (nfs_width, nfs_height);
     gtk_window_move (GTK_WINDOW (window), nfs_x, nfs_y);
@@ -1966,7 +2042,7 @@ Snes9xWindow::get_cairo (void)
 
     GtkWidget *drawing_area = GTK_WIDGET (this->drawing_area);
 
-#ifndef USE_GTK3
+#if GTK_MAJOR_VERSION < 3
     cr = gdk_cairo_create (gtk_widget_get_window (drawing_area));
 #else
     GtkAllocation allocation;
@@ -1988,7 +2064,7 @@ Snes9xWindow::release_cairo (void)
 {
     if (cairo_owned)
     {
-#ifndef USE_GTK3
+#if GTK_MAJOR_VERSION < 3
         cairo_destroy (cr);
 #else
         gdk_window_end_draw_frame (gtk_widget_get_window (GTK_WIDGET (drawing_area)), gdk_drawing_context);

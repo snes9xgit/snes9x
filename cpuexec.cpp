@@ -209,11 +209,11 @@ void S9xMainLoop (void)
 {
 	for (;;)
 	{
-		if (CPU.NMILine)
+		if (CPU.NMIPending)
 		{
 			if (Timings.NMITriggerPos <= CPU.Cycles)
 			{
-				CPU.NMILine = FALSE;
+				CPU.NMIPending = FALSE;
 				Timings.NMITriggerPos = 0xffff;
 				if (CPU.WaitingForInterrupt)
 				{
@@ -439,8 +439,6 @@ void S9xDoHEventProcessing (void)
 
 				// FIXME: reading $4210 will wait 2 cycles, then perform reading, then wait 4 more cycles.
 				Memory.FillRAM[0x4210] = Model->_5A22;
-				CPU.NMILine = FALSE;
-				Timings.NMITriggerPos = 0xffff;
 
 				ICPU.Frame++;
 				PPU.HVBeamCounterLatched = 0;
@@ -507,7 +505,7 @@ void S9xDoHEventProcessing (void)
 				{
 					// FIXME: triggered at HC=6, checked just before the final CPU cycle,
 					// then, when to call S9xOpcode_NMI()?
-					CPU.NMILine = TRUE;
+					CPU.NMIPending = TRUE;
 					Timings.NMITriggerPos = 6 + 6;
 				}
 

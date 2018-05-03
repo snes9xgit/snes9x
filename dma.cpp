@@ -1288,7 +1288,7 @@ bool8 S9xDoDMA (uint8 Channel)
 		}
 	}
 
-	if (CPU.NMILine && (Timings.NMITriggerPos != 0xffff))
+	if (CPU.NMIPending && (Timings.NMITriggerPos != 0xffff))
 	{
 		Timings.NMITriggerPos = CPU.Cycles + Timings.NMIDMADelay;
 		if (Timings.NMITriggerPos >= Timings.H_Max)

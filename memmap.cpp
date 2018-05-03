@@ -1783,14 +1783,13 @@ bool8 CMemory::LoadROMInt (int32 ROMfillSize)
 	memset(&SNESGameFixes, 0, sizeof(SNESGameFixes));
 	SNESGameFixes.SRAMInitialValue = 0x60;
 
-	S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
-
 	InitROM();
 
-	S9xInitCheatData();
-	S9xApplyCheats();
-
 	S9xReset();
+
+	S9xDeleteCheats();
+	if (!S9xLoadCheatFile(S9xGetFilename(".bml", CHEAT_DIR)))
+		S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
 
     return (TRUE);
 }
@@ -1951,14 +1950,13 @@ bool8 CMemory::LoadMultiCartInt ()
 	memset(&SNESGameFixes, 0, sizeof(SNESGameFixes));
 	SNESGameFixes.SRAMInitialValue = 0x60;
 
-	S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
-
 	InitROM();
 
-	S9xInitCheatData();
-	S9xApplyCheats();
-
 	S9xReset();
+
+	S9xDeleteCheats();
+	if (!S9xLoadCheatFile(S9xGetFilename(".bml", CHEAT_DIR)))
+		S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
 
 	return (TRUE);
 }

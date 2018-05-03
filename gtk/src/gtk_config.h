@@ -4,9 +4,7 @@
 #include <sys/time.h>
 #include <libxml/parser.h>
 #include <X11/Xlib.h>
-#ifdef USE_XRANDR
 #include <X11/extensions/Xrandr.h>
-#endif
 
 #include "gtk_control.h"
 #include "snes_ntsc.h"
@@ -58,9 +56,7 @@ class Snes9xConfig
         unsigned char statusbar_visible;
         unsigned char default_esc_behavior;
         unsigned char prevent_screensaver;
-        unsigned int  xrr_index;
-        int           xrr_width;
-        int           xrr_height;
+        int           xrr_index;
         unsigned char scale_to_fit;
         unsigned char maintain_aspect_ratio;
         int           aspect_ratio;
@@ -122,6 +118,7 @@ class Snes9xConfig
         int           mute_sound_turbo;
         int           sound_buffer_size;
         int           sound_playback_rate;
+        int           auto_input_rate;
         int           sound_input_rate;
         int           rom_loaded;
         int           window_width, window_height;
@@ -137,14 +134,10 @@ class Snes9xConfig
         unsigned int   rewind_granularity;
         unsigned int   rewind_buffer_size;
 
-#ifdef USE_XRANDR
-        XRRScreenConfiguration *xrr_config;
-        XRRScreenSize          *xrr_sizes;
-        int                    xrr_num_sizes;
-        Rotation               xrr_rotation;
-        SizeID                 xrr_original_size;
-#endif
-
+        XRRScreenResources *xrr_screen_resources;
+        XRROutputInfo      *xrr_output_info;
+        XRRCrtcInfo        *xrr_crtc_info;
+        RROutput           xrr_output;
 
 #ifdef USE_OPENGL
         unsigned char sync_to_vblank;

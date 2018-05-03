@@ -395,16 +395,10 @@ void retro_set_controller_port_device(unsigned port, unsigned device)
 void retro_cheat_reset()
 {
    S9xDeleteCheats();
-   S9xApplyCheats();
 }
 
 void retro_cheat_set(unsigned index, bool enabled, const char *codeline)
 {
-   uint32 address;
-   uint8 val;
-
-   bool8 sram;
-   uint8 bytes[3];//used only by GoldFinger, ignored for now
    char codeCopy[256];
    char* code;
 
@@ -421,36 +415,21 @@ void retro_cheat_set(unsigned index, bool enabled, const char *codeline)
          code[8]='\0';
       }
 
-      if (S9xGameGenieToRaw(code, address, val)==NULL ||
-          S9xProActionReplayToRaw(code, address, val)==NULL)
+      /* Goldfinger was broken and nobody noticed. Removed */
+      if (S9xAddCheatGroup ("retro", code) >= 0)
       {
-         Cheat.c[Cheat.num_cheats].address = address;
-         Cheat.c[Cheat.num_cheats].byte = val;
-         Cheat.c[Cheat.num_cheats].enabled = enabled;
-         Cheat.c[Cheat.num_cheats].saved = FALSE; // it'll be saved next time cheats run anyways
-         Cheat.num_cheats++;
-      }
-      else if (S9xGoldFingerToRaw(code, address, sram, val, bytes)==NULL)
-      {
-         if (!sram)
-         {
-            for (int i=0;i<val;i++){
-               Cheat.c[Cheat.num_cheats].address = address;
-               Cheat.c[Cheat.num_cheats].byte = bytes[i];
-               Cheat.c[Cheat.num_cheats].enabled = enabled;
-               Cheat.c[Cheat.num_cheats].saved = FALSE; // it'll be saved next time cheats run anyways
-               Cheat.num_cheats++;
-            }
-         }
+         if (enabled)
+             S9xEnableCheatGroup (Cheat.g.size () - 1);
       }
       else
       {
          printf("CHEAT: Failed to recognize %s\n",code);
       }
+
       code=strtok(NULL,"+,.; "); // bad code, ignore
    }
-   Settings.ApplyCheats=true;
-   S9xApplyCheats();
+
+   S9xCheatsEnable();
 }
 
 static void init_descriptors(void)

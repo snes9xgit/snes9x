@@ -14,14 +14,6 @@ enum
 extern SCheatData Cheat;
 
 static void
-add_cheat (uint32 address, uint8 byte, const char *description)
-{
-    S9xAddCheat (FALSE, TRUE, address, byte);
-    S9xEnableCheat (Cheat.num_cheats - 1);
-    strncpy (Cheat.c[Cheat.num_cheats - 1].name, description, 22);
-}
-
-static void
 display_errorbox (const char *error)
 {
     GtkWidget *dialog = gtk_message_dialog_new (NULL,
@@ -50,11 +42,36 @@ event_remove_code (GtkButton *button, gpointer data)
 }
 
 static void
+event_search_database (GtkButton *button, gpointer data)
+{
+    ((Snes9xCheats *) data)->search_database ();
+}
+
+static void
+event_delete_all_cheats (GtkButton *button, gpointer data)
+{
+    ((Snes9xCheats *) data)->delete_all_cheats ();
+}
+
+static void
 event_code_toggled (GtkCellRendererToggle *cell_renderer,
                     gchar                 *path,
                     gpointer               data)
 {
-    ((Snes9xCheats *) data)->toggle_code (path);
+    int enabled = !gtk_cell_renderer_toggle_get_active (cell_renderer);
+
+    ((Snes9xCheats *) data)->toggle_code (path, enabled);
+
+    return;
+}
+
+void
+event_row_activated (GtkTreeView       *tree_view,
+                     GtkTreePath       *path,
+                     GtkTreeViewColumn *column,
+                     gpointer           data)
+{
+    ((Snes9xCheats *) data)->row_activated (path);
 
     return;
 }
@@ -68,13 +85,17 @@ Snes9xCheats::Snes9xCheats (void)
     {
         { "add_code", G_CALLBACK (event_add_code) },
         { "remove_code", G_CALLBACK (event_remove_code) },
+        { "search_database", G_CALLBACK (event_search_database) },
+        { "delete_all_cheats", G_CALLBACK (event_delete_all_cheats) },
         { NULL, NULL}
     };
 
     view = GTK_TREE_VIEW (get_widget ("cheat_treeview"));
 
+    g_signal_connect (view, "row-activated", G_CALLBACK (event_row_activated), (gpointer) this);
 
     renderer = gtk_cell_renderer_toggle_new ();
+    gtk_cell_renderer_toggle_set_activatable (GTK_CELL_RENDERER_TOGGLE (renderer), TRUE);
     gtk_tree_view_insert_column_with_attributes (view,
                                                  -1,
                                                  "",
@@ -94,6 +115,8 @@ Snes9xCheats::Snes9xCheats (void)
                                                  renderer,
                                                  "text", COLUMN_DESCRIPTION,
                                                  NULL);
+    GtkTreeViewColumn *column = gtk_tree_view_get_column (view, 1);
+    gtk_tree_view_column_set_resizable (column, TRUE);
 
     renderer = gtk_cell_renderer_text_new ();
     gtk_tree_view_insert_column_with_attributes (view,
@@ -102,6 +125,9 @@ Snes9xCheats::Snes9xCheats (void)
                                                  renderer,
                                                  "text", COLUMN_CHEAT,
                                                  NULL);
+    column = gtk_tree_view_get_column (view, 2);
+    gtk_tree_view_column_set_resizable (column, TRUE);
+
 
     store = gtk_list_store_new (NUM_COLS,
                                 G_TYPE_BOOLEAN,
@@ -190,29 +216,34 @@ void
 Snes9xCheats::refresh_tree_view (void)
 {
     GtkTreeIter iter;
-    char str [1024];
+    unsigned int list_size;
 
-    gtk_list_store_clear (store);
+    list_size = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (store), NULL);
 
-    for (unsigned int i = 0; i < Cheat.num_cheats; i++)
-    {
-        snprintf (str,
-                  1024,
-                  "%06x:%02x/%02x",
-                  Cheat.c [i].address,
-                  Cheat.c [i].byte,
-                  Cheat.c [i].saved_byte);
+    if (Cheat.g.size () == 0)
+        return;
 
+    for (unsigned int i = 0; i < Cheat.g.size() - list_size; i++)
         gtk_list_store_append (store, &iter);
+
+    gtk_tree_model_get_iter_first (GTK_TREE_MODEL (store), &iter);
+
+    for (unsigned int i = 0; i < Cheat.g.size (); i++)
+    {
+        char *str = S9xCheatGroupToText (i);
+
+        if (i > 0)
+            gtk_tree_model_iter_next (GTK_TREE_MODEL (store), &iter);
+
         gtk_list_store_set (store, &iter,
                             COLUMN_DESCRIPTION,
-                            !strcmp (Cheat.c [i].name, "") ? _("No description")
-                                    : Cheat.c [i].name,
+                            !strcmp (Cheat.g [i].name, "") ? _("No description")
+                                    : Cheat.g [i].name,
                             COLUMN_CHEAT, str,
-                            COLUMN_ENABLED, Cheat.c [i].enabled,
+                            COLUMN_ENABLED, Cheat.g [i].enabled,
                             -1);
+        delete[] str;
     }
-
 
     return;
 }
@@ -220,32 +251,15 @@ Snes9xCheats::refresh_tree_view (void)
 void
 Snes9xCheats::add_code (void)
 {
-    uint32 address;
-    uint8 byte;
-    uint8 bytes [3];
-    bool8 sram;
-    uint8 num_bytes;
     const char *description;
-
     const gchar *code = get_entry_text ("code_entry");
 
     description = get_entry_text ("description_entry");
     if (description[0] == '\0')
         description = _("No description");
 
-    if (!S9xGameGenieToRaw (code, address, byte))
-        add_cheat (address, byte, description);
-    else if (!S9xProActionReplayToRaw (code, address, byte))
-        add_cheat (address, byte, description);
-    else if (!S9xGoldFingerToRaw (code, address, sram, num_bytes, bytes))
-    {
-        for (int c = 0; c < num_bytes; c++)
-            add_cheat (address + c, bytes[c], description);
-    }
-    else
-    {
-        display_errorbox (_("Code does not match Game Genie, ProAction Replay, or GoldFinger format."));
-    }
+    if (S9xAddCheatGroup (description, code) < 0)
+        display_errorbox (_("Couldn't find any cheat codes in input."));
 
     gtk_widget_grab_focus (get_widget ("code_entry"));
 
@@ -258,31 +272,129 @@ void
 Snes9xCheats::remove_code (void)
 {
     int index = get_selected_index ();
+    GtkTreeIter iter;
 
     if (index < 0)
         return;
 
-    S9xDeleteCheat (index);
+    gtk_tree_model_iter_nth_child (GTK_TREE_MODEL (store), &iter, NULL, index);
+    gtk_list_store_remove (store, &iter);
 
-    refresh_tree_view ();
+    S9xDeleteCheatGroup (index);
 
     return;
 }
 
 void
-Snes9xCheats::toggle_code (const gchar *path)
+Snes9xCheats::delete_all_cheats (void)
 {
+    S9xDeleteCheats ();
+    gtk_list_store_clear (store);
+
+    return;
+}
+
+void
+Snes9xCheats::search_database (void)
+{
+    std::string filename;
+    int result;
+    int reason = 0;
+
+    filename = S9xGetDirectory (CHEAT_DIR);
+    filename += "/cheats.bml";
+    if (!(result = S9xImportCheatsFromDatabase (filename.c_str ())))
+    {
+        refresh_tree_view ();
+        return;
+    }
+
+    if (result < reason)
+        reason = result;
+
+    char *config_dir = get_config_dir ();
+    filename = std::string (config_dir) + "/cheats.bml";
+    free (config_dir);
+    if (!(result = S9xImportCheatsFromDatabase (filename.c_str ())))
+    {
+        refresh_tree_view ();
+        return;
+    }
+
+    if (result < reason)
+        reason = result;
+
+
+    filename = std::string (DATADIR) + "/cheats.bml";
+    if (!(result = S9xImportCheatsFromDatabase (filename.c_str ())))
+    {
+        refresh_tree_view ();
+        return;
+    }
+
+    if (result < reason)
+        reason = result;
+
+    filename = S9xGetDirectory (ROM_DIR);
+    filename += "/cheats.bml";
+    if (!(result = S9xImportCheatsFromDatabase (filename.c_str ())))
+    {
+        refresh_tree_view ();
+        return;
+    }
+
+    if (result < reason)
+        reason = result;
+
+    GtkMessageDialog *dialog;
+    GtkDialogFlags flags = GTK_DIALOG_DESTROY_WITH_PARENT;
+    dialog = GTK_MESSAGE_DIALOG (gtk_message_dialog_new (get_window (),
+                                                         flags,
+                                                         GTK_MESSAGE_INFO,
+                                                         GTK_BUTTONS_CLOSE,
+         reason == -1 ? _("Couldn't Find Cheats Database") :
+                        _("No Matching Game Found")));
+    gtk_message_dialog_format_secondary_markup(GTK_MESSAGE_DIALOG (dialog),
+        reason == -1 ?
+        _("The database file <b>cheats.bml</b> was not found. It is normally installed with "
+          "Snes9x, but you may also place a custom copy in your configuration or cheats directory.") :
+        _("No matching game was found in the databases. If you are using a non-official "
+          "translation or modified copy, you may be able to find and manually enter the codes."));
+    gtk_dialog_run (GTK_DIALOG (dialog));
+    gtk_widget_destroy (GTK_WIDGET (dialog));
+
+    return;
+}
+
+void
+Snes9xCheats::row_activated (GtkTreePath *path)
+{
+    gint *indices = gtk_tree_path_get_indices (path);
+    char *cheat_text;
+
+    cheat_text = S9xCheatGroupToText (indices[0]);
+    set_entry_text ("code_entry", cheat_text);
+    delete[] cheat_text;
+    set_entry_text ("description_entry", Cheat.g[indices[0]].name);
+
+    return;
+}
+
+void
+Snes9xCheats::toggle_code (const gchar *path, int enabled)
+{
+    GtkTreeIter iter;
     int index = get_index_from_path (path);
 
-    if (index < 0)
-        return;
+    GtkTreePath *treepath = gtk_tree_path_new_from_string (path);
+    gtk_tree_model_get_iter (GTK_TREE_MODEL (store), &iter, treepath);
+    gtk_list_store_set (store, &iter, COLUMN_ENABLED, enabled, -1);
 
-    if (Cheat.c[index].enabled)
-        S9xDisableCheat (index);
+    if (enabled)
+        S9xEnableCheatGroup (index);
     else
-        S9xEnableCheat (index);
+        S9xDisableCheatGroup (index);
 
-    refresh_tree_view ();
 
     return;
 }

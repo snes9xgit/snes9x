@@ -34,7 +34,10 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE")
 AM_GLIB_GNU_GETTEXT
 
 snes9xlocaledir='${prefix}/${DATADIRNAME}/locale'
+snes9xdatadir='${prefix}/${DATADIRNAME}/snes9x'
+
 AC_SUBST(snes9xlocaledir)
+AC_SUBST(snes9xdatadir)
 
 AC_ARG_WITH(debug,
   [AS_HELP_STRING([--with(out)-debug],
@@ -59,12 +62,6 @@ AC_ARG_WITH(xv,
     [Enable XVideo output on GTK (default: with)])],
   [],
   [with_xv=yes])
-
-AC_ARG_WITH(xrandr,
-  [AS_HELP_STRING([--with(out)-xrandr],
-    [Enable XRandR support on GTK (default: with)])],
-  [],
-  [with_xrandr=yes])
 
 AC_ARG_WITH(portaudio,
   [AS_HELP_STRING([--with(out)-portaudio],
@@ -152,9 +149,15 @@ AC_ARG_WITH(screenshot,
 
 AC_ARG_WITH(gtk3,
   [AS_HELP_STRING([--with(out)-gtk3],
+    [Build with GTK+ 3 if available (default: with)])],
+  [],
+  [with_gtk3=yes])
+
+AC_ARG_WITH(gtk2,
+  [AS_HELP_STRING([--with(out)-gtk2],
     [Build with GTK+ 3 if available (default: without)])],
   [],
-  [with_gtk3=no])
+  [with_gtk2=no])
 
 if test yes = "$with_debug" ; then
   CFLAGS="$CFLAGS -g"
@@ -187,10 +190,9 @@ GTK=yes
 snes9x_info_display="GTK"
 
 GTK3_WARNING=no
-if test yes = "$with_gtk3" ; then
+if test yes = "$with_gtk3" -a no = "$with_gtk2"; then
     GTK_VERSION="gtk+-3.0"
     GTK3_WARNING=yes
-    CFLAGS="$CFLAGS -DUSE_GTK3"
 else
     GTK_VERSION="gtk+-2.0 >= 2.16"
 fi
@@ -198,6 +200,7 @@ fi
 PKG_CHECK_MODULES([GTK], ["$GTK_VERSION"])
 PKG_CHECK_MODULES([GLIB], [gthread-2.0 >= 2.6 gobject-2.0 >= 2.6])
 PKG_CHECK_MODULES([LIBXML], [libxml-2.0 >= 2.0])
+PKG_CHECK_MODULES([XRANDR], [xrandr])
 
 if test yes = "$with_opengl" ; then
 
@@ -292,19 +295,6 @@ if test yes = "$with_pulseaudio" ; then
     ],[
         echo "Cannot find PulseAudio library."
         echo "--> Disabling PulseAudio"
-    ])
-fi
-
-XRANDR=0
-XRANDR_CFLAGS=""
-XRANDR_LIBS=""
-if test yes = "$with_xrandr" ; then
-    PKG_CHECK_MODULES([XRANDR],[xrandr],[
-        XRANDR=yes
-        CFLAGS="$CFLAGS -DUSE_XRANDR"
-    ],[
-        echo "Cannot find libXrandr. Make sure the X11 development headers are installed."
-        echo "--> Disabling Xrandr support."
     ])
 fi
 
@@ -499,7 +489,7 @@ echo "Snes9x will build with support for the following:"
 echo ""
 
 if test yes = "$GTK3_WARNING" ; then
-    echo "    GTK+ 3.0 (experimental)"
+    echo "    GTK+ 3.0"
 else
     echo "    GTK+ 2.0"
 fi
