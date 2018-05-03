@@ -2717,7 +2717,7 @@ BOOL WinInit( HINSTANCE hInstance)
     wndclass.lpfnWndProc = WinProc;
     wndclass.hInstance = hInstance;
     wndclass.hIcon = LoadIcon (hInstance, MAKEINTRESOURCE(IDI_ICON1));
-    wndclass.hIconSm = (HICON)LoadImage(hInstance, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 16, 16, 0);
+    wndclass.hIconSm = NULL;
     wndclass.hCursor = NULL;
     wndclass.lpszMenuName = NULL;
     wndclass.lpszClassName = TEXT("Snes9X: WndClass");
