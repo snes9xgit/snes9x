@@ -366,7 +366,7 @@ bml_node *bml_parse_file (const char *filename)
     int file_size = 0;
     bml_node *node = NULL;
 
-    file = fopen (filename, "r");
+    file = fopen (filename, "rb");
 
     if (!file)
         return NULL;
