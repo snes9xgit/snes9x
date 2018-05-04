@@ -134,7 +134,7 @@ void snes_ntsc_init( snes_ntsc_t* ntsc, snes_ntsc_setup_t const* setup )
 
 /* 12.5% scanlines like in snes_ntsc example instead of zsnes's 25% */
 #define PIXEL_OUT( x ) \
-        SNES_NTSC_RGB_OUT( x, value, 15 ); \
+        SNES_NTSC_RGB_OUT( x, value, 16 ); \
         line_outa[x] = value; \
         line_outb[x] = value - (value >> scanline_offset & scanline_mask);
 

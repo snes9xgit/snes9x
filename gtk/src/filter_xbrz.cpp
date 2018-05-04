@@ -195,13 +195,13 @@
 #include <vector>
 
 #define CONVERT_16_TO_32(pixel) \
-    (((((pixel) >> 10)        ) << /*RedShift+3*/  19) | \
-     ((((pixel) >> 5)   & 0x1f) << /*GreenShift+3*/11) | \
+    (((((pixel) >> 11)        ) << /*RedShift+3*/  19) | \
+     ((((pixel) >> 5)   & 0x3f) << /*GreenShift+3*/10) | \
       (((pixel)         & 0x1f) << /*BlueShift+3*/ 3))
 
 #define CONVERT_32_TO_16(pixel) \
-    (((((pixel) & 0xf80000) >> 9) | \
-      (((pixel) & 0xf800)   >> 6) | \
+    (((((pixel) & 0xf80000) >> 8) | \
+      (((pixel) & 0xfc00)   >> 5) | \
       (((pixel) & 0xf8)     >> 3)) & 0xffff)
 
 inline

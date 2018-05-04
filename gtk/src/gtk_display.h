@@ -35,8 +35,8 @@
 #define NTSC_SVIDEO                 1
 #define NTSC_RGB                    2
 
-#define ENDIAN_LSB                  0
-#define ENDIAN_MSB                  1
+#define ENDIAN_NORMAL               0
+#define ENDIAN_SWAPPED              1
 
 #define JOB_FILTER                  0
 #define JOB_CONVERT                 1

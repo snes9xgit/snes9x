@@ -703,12 +703,12 @@ Snes9xWindow::expose (void)
         {
             for (int x = 0; x < 256; x++)
             {
-                unsigned int red = *splash_ptr++;
+                unsigned int red =   *splash_ptr++;
                 unsigned int green = *splash_ptr++;
-                unsigned int blue = *splash_ptr++;
+                unsigned int blue =  *splash_ptr++;
 
-                screen_ptr[x] = ((red   & 0xF8) << 7) +
-                                ((green & 0xF8) << 2) +
+                screen_ptr[x] = ((red   & 0xF8) << 8) +
+                                ((green & 0xFC) << 3) +
                                 ((blue  & 0xF8) >> 3);
             }
         }

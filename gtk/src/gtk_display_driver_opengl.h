@@ -26,8 +26,8 @@
 #else
 #define PBO_BGRA_NATIVE_ORDER        GL_UNSIGNED_BYTE
 #endif
-#define PBO_GET_FORMAT(x) (((x) == PBO_FMT_16 || (x) == PBO_FMT_32) ? GL_BGRA : GL_RGB)
-#define PBO_GET_PACKING(x) (((x) == PBO_FMT_16) ? GL_UNSIGNED_SHORT_1_5_5_5_REV : (((x) == PBO_FMT_24) ? GL_UNSIGNED_BYTE : PBO_BGRA_NATIVE_ORDER))
+#define PBO_GET_FORMAT(x) (((x) == PBO_FMT_32) ? GL_BGRA : GL_RGB)
+#define PBO_GET_PACKING(x) (((x) == PBO_FMT_16) ? GL_UNSIGNED_SHORT_5_6_5 : (((x) == PBO_FMT_24) ? GL_UNSIGNED_BYTE : PBO_BGRA_NATIVE_ORDER))
 
 /* The following are procedure pointer types.
  * These aren't necessarily guaranteed to be in GL 1.1 */

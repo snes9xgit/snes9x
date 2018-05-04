@@ -168,7 +168,7 @@ S9xGTKDisplayDriver::init (void)
                                        NULL,
                                        NULL);
 
-    S9xSetEndianess (ENDIAN_MSB);
+    S9xSetEndianess (ENDIAN_SWAPPED);
 
     memset (buffer[0], 0, image_padded_size);
     memset (buffer[1], 0, scaled_padded_size);

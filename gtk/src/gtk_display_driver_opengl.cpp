@@ -205,38 +205,35 @@ S9xOpenGLDisplayDriver::update (int width, int height)
                              0,
                              width,
                              height,
-                             GL_BGRA,
-                             GL_UNSIGNED_SHORT_1_5_5_5_REV,
+                             GL_RGB,
+                             GL_UNSIGNED_SHORT_5_6_5,
                              BUFFER_OFFSET (0));
 
             glBindBuffer (GL_PIXEL_UNPACK_BUFFER, 0);
         }
         else if (config->pbo_format == PBO_FMT_24)
         {
-            /* Complement width to next multiple of 4 to force line size to
-                 * be a multiple of 4 bytes. Otherwise, packing fails. */
-            int width_mul_4 = width + ((4 - (width % 4)) % 4);
-
+            glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
             glBindBuffer (GL_PIXEL_UNPACK_BUFFER, pbo);
             glBufferData (GL_PIXEL_UNPACK_BUFFER,
-                          width_mul_4 * height * 3,
+                          width * height * 3,
                           NULL,
                           GL_STREAM_DRAW);
             pboMemory = glMapBuffer (GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
 
             /* Pixel swizzling in software */
-            S9xSetEndianess (ENDIAN_MSB);
+            S9xSetEndianess (ENDIAN_SWAPPED);
             S9xConvert (final_buffer,
                         pboMemory,
                         final_pitch,
-                        width_mul_4 * 3,
+                        width * 3,
                         width,
                         height,
                         24);
 
             glUnmapBuffer (GL_PIXEL_UNPACK_BUFFER);
 
-            glPixelStorei (GL_UNPACK_ROW_LENGTH, width_mul_4);
+            glPixelStorei (GL_UNPACK_ROW_LENGTH, width);
             glTexSubImage2D (tex_target,
                              0,
                              0,
@@ -259,11 +256,7 @@ S9xOpenGLDisplayDriver::update (int width, int height)
             pboMemory = glMapBuffer (GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
 
             /* Pixel swizzling in software */
-#ifdef __BIG_ENDIAN__
-            S9xSetEndianess (ENDIAN_MSB);
-#else
-            S9xSetEndianess (ENDIAN_LSB);
-#endif
+            S9xSetEndianess (ENDIAN_NORMAL);
             S9xConvert (final_buffer,
                         pboMemory,
                         final_pitch,
@@ -297,8 +290,8 @@ S9xOpenGLDisplayDriver::update (int width, int height)
                          0,
                          width,
                          height,
-                         GL_BGRA,
-                         GL_UNSIGNED_SHORT_1_5_5_5_REV,
+                         GL_RGB,
+                         GL_UNSIGNED_SHORT_5_6_5,
                          final_buffer);
     }
 
@@ -353,16 +346,16 @@ S9xOpenGLDisplayDriver::clear_buffers (void)
     memset (buffer[0], 0, image_padded_size);
     memset (buffer[1], 0, scaled_padded_size);
 
-    glPixelStorei (GL_UNPACK_ROW_LENGTH, scaled_max_width);
+/*    glPixelStorei (GL_UNPACK_ROW_LENGTH, scaled_max_width);
     glTexSubImage2D (tex_target,
                      0,
                      0,
                      0,
                      scaled_max_width,
                      scaled_max_height,
-                     GL_BGRA,
-                     GL_UNSIGNED_SHORT_1_5_5_5_REV,
-                     buffer[1]);
+                     GL_RGB,
+                     GL_UNSIGNED_SHORT_5_6_5,
+                     buffer[1]); */
 
     return;
 }
@@ -380,7 +373,7 @@ S9xOpenGLDisplayDriver::update_texture_size (int width, int height)
             {
                 glTexImage2D (tex_target,
                               0,
-                              config->pbo_format == PBO_FMT_16 ? GL_RGB5_A1 : 4,
+                              config->pbo_format == PBO_FMT_16 ? GL_RGB565 : 4,
                               width,
                               height,
                               0,
@@ -392,12 +385,12 @@ S9xOpenGLDisplayDriver::update_texture_size (int width, int height)
             {
                 glTexImage2D (tex_target,
                               0,
-                              GL_RGB5_A1,
+                              GL_RGB565,
                               width,
                               height,
                               0,
-                              GL_BGRA,
-                              GL_UNSIGNED_SHORT_1_5_5_5_REV,
+                              GL_RGB,
+                              GL_UNSIGNED_SHORT_5_6_5,
                               NULL);
             }
 
@@ -665,7 +658,7 @@ S9xOpenGLDisplayDriver::opengl_defaults (void)
         glBindTexture (tex_target, texmap);
         glTexImage2D (tex_target,
                       0,
-                      config->pbo_format == PBO_FMT_16 ? GL_RGB5_A1 : 4,
+                      config->pbo_format == PBO_FMT_16 ? GL_RGB565 : 4,
                       texture_width,
                       texture_height,
                       0,
@@ -688,12 +681,12 @@ S9xOpenGLDisplayDriver::opengl_defaults (void)
         glBindTexture (tex_target, texmap);
         glTexImage2D (tex_target,
                       0,
-                      GL_RGB5_A1,
+                      GL_RGB565,
                       texture_width,
                       texture_height,
                       0,
-                      GL_BGRA,
-                      GL_UNSIGNED_SHORT_1_5_5_5_REV,
+                      GL_RGB,
+                      GL_UNSIGNED_SHORT_5_6_5,
                       NULL);
     }
 

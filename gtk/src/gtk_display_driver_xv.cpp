@@ -358,9 +358,9 @@ S9xXVDisplayDriver::init (void)
 
                 /* on big-endian Xv still seems to like LSB order */
                 if (config->force_inverted_byte_order)
-                    S9xSetEndianess (ENDIAN_MSB);
+                    S9xSetEndianess (ENDIAN_SWAPPED);
                 else
-                    S9xSetEndianess (ENDIAN_LSB);
+                    S9xSetEndianess (ENDIAN_NORMAL);
             }
         }
     }
@@ -376,16 +376,16 @@ S9xXVDisplayDriver::init (void)
                 if (formats[i].byte_order == LSBFirst)
                 {
                     if (config->force_inverted_byte_order)
-                        S9xSetEndianess (ENDIAN_MSB);
+                        S9xSetEndianess (ENDIAN_SWAPPED);
                     else
-                        S9xSetEndianess (ENDIAN_LSB);
+                        S9xSetEndianess (ENDIAN_NORMAL);
                 }
                 else
                 {
                     if (config->force_inverted_byte_order)
-                        S9xSetEndianess (ENDIAN_LSB);
+                        S9xSetEndianess (ENDIAN_NORMAL);
                     else
-                        S9xSetEndianess (ENDIAN_MSB);
+                        S9xSetEndianess (ENDIAN_SWAPPED);
                 }
 
                 break;
@@ -403,8 +403,8 @@ S9xXVDisplayDriver::init (void)
             int r, g, b;
             int y, u, v;
 
-            r = (color & 0x7c00) >> 7;
-            g = (color & 0x03e0) >> 2;
+            r = (color & 0xf800) >> 8;
+            g = (color & 0x07e0) >> 3;
             b = (color & 0x001F) << 3;
 
             y = (int) ((0.257  * ((double) r)) + (0.504  * ((double) g)) + (0.098  * ((double) b)) + 16.0);
