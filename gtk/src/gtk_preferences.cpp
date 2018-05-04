@@ -1055,18 +1055,9 @@ Snes9xPreferences::show (void)
 
         combo = get_widget ("resolution_combo");
 
-        mode_indices = new unsigned int[config->xrr_output_info->nmode];
-        for (int i = 0; i < config->xrr_output_info->nmode; i++)
+        for (int i = 0; i < config->xrr_screen_resources->nmode; i++)
         {
-            for (int j = 0; j < config->xrr_screen_resources->nmode; j++)
-            {
-                if (config->xrr_screen_resources->modes[j].id == config->xrr_output_info->modes[i])
-                {
-                    mode_indices[i] = j;
-                }
-            }
-
-            XRRModeInfo *m = &config->xrr_screen_resources->modes[mode_indices[i]];
+            XRRModeInfo *m = &config->xrr_screen_resources->modes[i];
             unsigned long dotClock = m->dotClock;
             if (m->modeFlags & RR_ClockDivideBy2)
                 dotClock /= 2;
@@ -1085,7 +1076,7 @@ Snes9xPreferences::show (void)
             combo_box_append (GTK_COMBO_BOX (combo), size_string);
         }
 
-        if (config->xrr_index > config->xrr_output_info->nmode)
+        if (config->xrr_index > config->xrr_screen_resources->nmode)
             config->xrr_index = 0;
     }
     else

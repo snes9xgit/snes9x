@@ -1532,9 +1532,7 @@ Snes9xWindow::toggle_fullscreen_mode (void)
 static double XRRGetExactRefreshRate (Display *dpy, Window window)
 {
     XRRScreenResources *resources = NULL;
-    XRROutputInfo    *output_info = NULL;
     XRRCrtcInfo        *crtc_info = NULL;
-    RROutput output;
     int event_base;
     int error_base;
     int version_major;
@@ -1548,10 +1546,11 @@ static double XRRGetExactRefreshRate (Display *dpy, Window window)
         return refresh_rate;
     }
 
-    resources   = XRRGetScreenResources (dpy, window);
-    output      = XRRGetOutputPrimary (dpy, window);
-    output_info = XRRGetOutputInfo (dpy, resources, output);
-    crtc_info   = XRRGetCrtcInfo (dpy, resources, output_info->crtc);
+    if (version_minor < 3)
+        return refresh_rate;
+
+    resources   = XRRGetScreenResourcesCurrent (dpy, window);
+    crtc_info   = XRRGetCrtcInfo (dpy, resources, resources->crtcs[0]);
 
     for (i = 0; i < resources->nmode; i++)
     {
@@ -1569,7 +1568,6 @@ static double XRRGetExactRefreshRate (Display *dpy, Window window)
     }
 
     XRRFreeCrtcInfo (crtc_info);
-    XRRFreeOutputInfo (output_info);
     XRRFreeScreenResources (resources);
 
     return refresh_rate;
@@ -1626,13 +1624,13 @@ Snes9xWindow::enter_fullscreen_mode (void)
         gdk_display_sync (gdk_display);
         if (XRRSetCrtcConfig (dpy,
                               config->xrr_screen_resources,
-                              config->xrr_output_info->crtc,
+                              config->xrr_screen_resources->crtcs[0],
                               CurrentTime,
                               config->xrr_crtc_info->x,
                               config->xrr_crtc_info->y,
-                              config->xrr_output_info->modes[config->xrr_index],
+                              config->xrr_screen_resources->modes[config->xrr_index].id,
                               config->xrr_crtc_info->rotation,
-                              &config->xrr_output,
+                              &config->xrr_crtc_info->outputs[0],
                               1) != 0)
         {
             config->change_display_resolution = 0;
@@ -1683,19 +1681,19 @@ Snes9xWindow::leave_fullscreen_mode (void)
         GdkDisplay *gdk_display = gtk_widget_get_display (window);
         Display *dpy = gdk_x11_display_get_xdisplay (gdk_display);
 
-        if (config->xrr_index > config->xrr_output_info->nmode)
+        if (config->xrr_index > config->xrr_screen_resources->nmode)
             config->xrr_index = 0;
 
         gdk_display_sync (gdk_display);
         XRRSetCrtcConfig (dpy,
                           config->xrr_screen_resources,
-                          config->xrr_output_info->crtc,
+                          config->xrr_screen_resources->crtcs[0],
                           CurrentTime,
                           config->xrr_crtc_info->x,
                           config->xrr_crtc_info->y,
                           config->xrr_crtc_info->mode,
                           config->xrr_crtc_info->rotation,
-                          &config->xrr_output,
+                          &config->xrr_crtc_info->outputs[0],
                           1);
 
         if (gui_config->auto_input_rate)

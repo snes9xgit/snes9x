@@ -135,9 +135,7 @@ class Snes9xConfig
         unsigned int   rewind_buffer_size;
 
         XRRScreenResources *xrr_screen_resources;
-        XRROutputInfo      *xrr_output_info;
         XRRCrtcInfo        *xrr_crtc_info;
-        RROutput           xrr_output;
 
 #ifdef USE_OPENGL
         unsigned char sync_to_vblank;
