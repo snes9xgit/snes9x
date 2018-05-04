@@ -693,11 +693,12 @@ Snes9xPreferences::move_settings_to_dialog (void)
     set_spin  ("num_threads",               config->num_threads);
     set_check ("mute_sound_check",          config->mute_sound);
     set_check ("mute_sound_turbo_check",    config->mute_sound_turbo);
+    set_slider ("sound_input_rate",         config->sound_input_rate);
     set_check ("auto_input_rate",           config->auto_input_rate);
     gtk_widget_set_sensitive (get_widget("sound_input_rate"),
                               config->auto_input_rate ? FALSE : TRUE);
     set_spin  ("sound_buffer_size",         config->sound_buffer_size);
-    set_slider ("sound_input_rate",         config->sound_input_rate);
+
     set_check ("sync_sound",                Settings.SoundSync);
     set_check ("dynamic_rate_control",      Settings.DynamicRateControl);
     set_spin  ("dynamic_rate_limit",        Settings.DynamicRateLimit / 1000.0);
