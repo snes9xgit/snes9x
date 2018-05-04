@@ -109,7 +109,7 @@ __extension__
 }
 
 void
-S9xOpenGLDisplayDriver::update (int width, int height)
+S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
 {
     uint8 *final_buffer = NULL;
     int   final_pitch;
@@ -150,6 +150,8 @@ S9xOpenGLDisplayDriver::update (int width, int height)
         uint8 *dst_buffer;
         int   dst_pitch;
 
+        src_buffer += (src_pitch * yoffset);
+
         dst_buffer = (uint8 *) padded_buffer[1];
         dst_pitch = scaled_max_width * image_bpp;
         final_buffer = (uint8 *) padded_buffer[1];
@@ -166,6 +168,7 @@ S9xOpenGLDisplayDriver::update (int width, int height)
     {
         final_buffer = (uint8 *) padded_buffer[0];
         final_pitch = image_width * image_bpp;
+        final_buffer += (final_pitch * yoffset);
     }
 
     x = width; y = height;
@@ -346,7 +349,7 @@ S9xOpenGLDisplayDriver::clear_buffers (void)
     memset (buffer[0], 0, image_padded_size);
     memset (buffer[1], 0, scaled_padded_size);
 
-/*    glPixelStorei (GL_UNPACK_ROW_LENGTH, scaled_max_width);
+    glPixelStorei (GL_UNPACK_ROW_LENGTH, scaled_max_width);
     glTexSubImage2D (tex_target,
                      0,
                      0,
@@ -355,7 +358,7 @@ S9xOpenGLDisplayDriver::clear_buffers (void)
                      scaled_max_height,
                      GL_RGB,
                      GL_UNSIGNED_SHORT_5_6_5,
-                     buffer[1]); */
+                     buffer[1]);
 
     return;
 }
@@ -825,7 +828,6 @@ S9xOpenGLDisplayDriver::init_glx (void)
 int
 S9xOpenGLDisplayDriver::init (void)
 {
-    int padding;
     initialized = 0;
 
     if (!init_glx ())
@@ -838,18 +840,13 @@ S9xOpenGLDisplayDriver::init (void)
         return -1;
     }
 
-    /* Create two system buffers to avoid DMA contention */
-
     buffer[0] = malloc (image_padded_size);
     buffer[1] = malloc (scaled_padded_size);
 
     clear_buffers ();
 
-    padding = (image_padded_size - image_size) / 2;
-    padded_buffer[0] = (void *) (((uint8 *) buffer[0]) + padding);
-
-    padding = (scaled_padded_size - scaled_size) / 2;
-    padded_buffer[1] = (void *) (((uint8 *) buffer[1]) + padding);
+    padded_buffer[0] = (void *) (((uint8 *) buffer[0]) + image_padded_offset);
+    padded_buffer[1] = (void *) (((uint8 *) buffer[1]) + scaled_padded_offset);
 
     GFX.Screen = (uint16 *) padded_buffer[0];
     GFX.Pitch = image_width * image_bpp;
@@ -925,7 +922,6 @@ void
 S9xOpenGLDisplayDriver::push_buffer (uint16 *src)
 {
     memmove (padded_buffer[0], src, image_size);
-    update (window->last_width, window->last_height);
 
     return;
 }

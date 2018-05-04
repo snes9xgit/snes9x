@@ -87,7 +87,7 @@ S9xXVDisplayDriver::create_window (int width, int height)
 }
 
 void
-S9xXVDisplayDriver::update (int width, int height)
+S9xXVDisplayDriver::update (int width, int height, int yoffset)
 {
     int   current_width, current_height, final_pitch;
     uint8 *final_buffer;
@@ -119,6 +119,8 @@ S9xXVDisplayDriver::update (int width, int height)
         int   src_pitch = image_width * image_bpp;
         int   dst_pitch = scaled_max_width * image_bpp;
 
+        src_buffer += (src_pitch * yoffset);
+
         S9xFilter (src_buffer,
                    src_pitch,
                    dst_buffer,
@@ -133,6 +135,7 @@ S9xXVDisplayDriver::update (int width, int height)
     {
         final_buffer = (uint8 *) padded_buffer[0];
         final_pitch = image_width * image_bpp;
+        final_buffer += (final_pitch * yoffset);
     }
 
     update_image_size (width, height);
@@ -245,7 +248,6 @@ S9xXVDisplayDriver::update_image_size (int width, int height)
 int
 S9xXVDisplayDriver::init (void)
 {
-    int                 padding;
     int                 depth = 0, num_formats, num_attrs, highest_formats = 0;
     XvImageFormatValues *formats = NULL;
     XvAdaptorInfo       *adaptors;
@@ -258,11 +260,8 @@ S9xXVDisplayDriver::init (void)
     buffer[0] = malloc (image_padded_size);
     buffer[1] = malloc (scaled_padded_size);
 
-    padding = (image_padded_size - image_size) / 2;
-    padded_buffer[0] = (void *) (((uint8 *) buffer[0]) + padding);
-
-    padding = (scaled_padded_size - scaled_size) / 2;
-    padded_buffer[1] = (void *) (((uint8 *) buffer[1]) + padding);
+    padded_buffer[0] = (void *) (((uint8 *) buffer[0]) + image_padded_offset);
+    padded_buffer[1] = (void *) (((uint8 *) buffer[1]) + scaled_padded_offset);
 
     memset (buffer[0], 0, image_padded_size);
     memset (buffer[1], 0, scaled_padded_size);
@@ -586,7 +585,6 @@ void
 S9xXVDisplayDriver::push_buffer (uint16 *src)
 {
     memmove (GFX.Screen, src, image_size);
-    update (window->last_width, window->last_height);
 
     return;
 }

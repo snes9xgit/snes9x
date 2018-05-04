@@ -684,19 +684,19 @@ filter_2x (void *src,
     for (y = 0; y < height; y++)
     {
         uint16 *in = (uint16 *) ((uint8 *) src + y * src_pitch);
-        uint16 *out1 = (uint16 *) ((uint8 *) dst + (y * 2) * dst_pitch);
-        uint16 *out2 = (uint16 *) ((uint8 *) dst + ((y * 2) + 1) * dst_pitch);
+        uint16 *out = (uint16 *) ((uint8 *) dst + (y * 2) * dst_pitch);
 
         for (x = 0; x < width; x++)
         {
             uint16 pixel = *in++;
 
-            *out1++ = pixel;
-            *out1++ = pixel;
-
-            *out2++ = pixel;
-            *out2++ = pixel;
+            *out++ = pixel;
+            *out++ = pixel;
         }
+
+        memcpy ((uint8 *) dst + (y * 2 + 1) * dst_pitch,
+                (uint8 *) dst + (y * 2) * dst_pitch,
+                width * 2 * 2);
     }
 
     return;
@@ -710,30 +710,27 @@ filter_3x (void *src,
            int width,
            int height)
 {
-    int x, y;
+    int x, y, z;
 
     for (y = 0; y < height; y++)
     {
         uint16 *in = (uint16 *) ((uint8 *) src + y * src_pitch);
-        uint16 *out1 = (uint16 *) ((uint8 *) dst + (y * 3) * dst_pitch);
-        uint16 *out2 = (uint16 *) ((uint8 *) dst + ((y * 3) + 1) * dst_pitch);
-        uint16 *out3 = (uint16 *) ((uint8 *) dst + ((y * 3) + 2) * dst_pitch);
+        uint16 *out = (uint16 *) ((uint8 *) dst + (y * 3) * dst_pitch);
 
         for (x = 0; x < width; x++)
         {
             uint16 pixel = *in++;
 
-            *out1++ = pixel;
-            *out1++ = pixel;
-            *out1++ = pixel;
+            *out++ = pixel;
+            *out++ = pixel;
+            *out++ = pixel;
+        }
 
-            *out2++ = pixel;
-            *out2++ = pixel;
-            *out2++ = pixel;
-
-            *out3++ = pixel;
-            *out3++ = pixel;
-            *out3++ = pixel;
+        for (z = 1; z <= 2; z++)
+        {
+            memcpy ((uint8 *) dst + ((y * 3) + z) * dst_pitch,
+                    (uint8 *) dst + ((y * 3)) * dst_pitch,
+                    width * 2 * 3);
         }
     }
 
@@ -748,39 +745,28 @@ filter_4x (void *src,
            int width,
            int height)
 {
-    int x, y;
+    int x, y, z;
 
     for (y = 0; y < height; y++)
     {
         uint16 *in = (uint16 *) ((uint8 *) src + y * src_pitch);
-        uint16 *out1 = (uint16 *) ((uint8 *) dst +  (y * 4) * dst_pitch);
-        uint16 *out2 = (uint16 *) ((uint8 *) dst + ((y * 4) + 1) * dst_pitch);
-        uint16 *out3 = (uint16 *) ((uint8 *) dst + ((y * 4) + 2) * dst_pitch);
-        uint16 *out4 = (uint16 *) ((uint8 *) dst + ((y * 4) + 3) * dst_pitch);
+        uint16 *out = (uint16 *) ((uint8 *) dst +  (y * 4) * dst_pitch);
 
         for (x = 0; x < width; x++)
         {
             uint16 pixel = *in++;
 
-            *out1++ = pixel;
-            *out1++ = pixel;
-            *out1++ = pixel;
-            *out1++ = pixel;
+            *out++ = pixel;
+            *out++ = pixel;
+            *out++ = pixel;
+            *out++ = pixel;
+        }
 
-            *out2++ = pixel;
-            *out2++ = pixel;
-            *out2++ = pixel;
-            *out2++ = pixel;
-
-            *out3++ = pixel;
-            *out3++ = pixel;
-            *out3++ = pixel;
-            *out3++ = pixel;
-
-            *out4++ = pixel;
-            *out4++ = pixel;
-            *out4++ = pixel;
-            *out4++ = pixel;
+        for (z = 1; z <= 3; z++)
+        {
+            memcpy ((uint8 *) dst + ((y * 4) + z) * dst_pitch,
+                    (uint8 *) dst +  (y * 4) * dst_pitch,
+                    width * 2 * 4);
         }
     }
 
@@ -1620,6 +1606,46 @@ S9xQueryDrivers (void)
 bool8
 S9xDeinitUpdate (int width, int height)
 {
+    int yoffset = 0;
+
+    if (height == SNES_HEIGHT_EXTENDED && top_level->last_height == SNES_HEIGHT)
+    {
+        top_level->last_height = height;
+        height = SNES_HEIGHT;
+    }
+    else
+    {
+        top_level->last_height = height;
+    }
+    top_level->last_width = width;
+
+    if (gui_config->overscan)
+    {
+        if (height == SNES_HEIGHT)
+        {
+            yoffset = -7;
+            height = SNES_HEIGHT_EXTENDED;
+        }
+        if (height == SNES_HEIGHT * 2)
+        {
+            yoffset = -15;
+            height = SNES_HEIGHT_EXTENDED * 2;
+        }
+    }
+    else
+    {
+        if (height == SNES_HEIGHT_EXTENDED)
+        {
+            yoffset = 7;
+            height = SNES_HEIGHT;
+        }
+        if (height == SNES_HEIGHT_EXTENDED * 2)
+        {
+            yoffset = 15;
+            height = SNES_HEIGHT * 2;
+        }
+    }
+
     if (!Settings.Paused
 #ifdef NETPLAY_SUPPORT
             && !NetPlay.Paused
@@ -1627,16 +1653,6 @@ S9xDeinitUpdate (int width, int height)
     )
 
     {
-        if (gui_config->overscan)
-            height = (height > SNES_HEIGHT_EXTENDED) ?
-                         SNES_HEIGHT_EXTENDED * 2 :
-                         SNES_HEIGHT_EXTENDED;
-        else
-            if (height > SNES_HEIGHT_EXTENDED)
-                height = 448;
-            else
-                height = 224;
-
         if (gui_config->hires_effect == HIRES_SCALE)
         {
             S9xForceHires (GFX.Screen,
@@ -1657,10 +1673,7 @@ S9xDeinitUpdate (int width, int height)
         GFX.Screen = driver->get_next_buffer ();
     }
 
-    top_level->last_width = width;
-    top_level->last_height = height;
-
-    driver->update (width, height);
+    driver->update (width, height, yoffset);
 
     return TRUE;
 }
