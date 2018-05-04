@@ -8798,6 +8798,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						if (ct.index[j] == sel_idx)
 						{
 							ct.state[j] = Deleted;
+							ct.index[j] = -1;
 							break;
 						}
 					}
