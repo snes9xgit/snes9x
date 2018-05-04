@@ -1597,8 +1597,9 @@ Snes9xWindow::get_auto_input_rate (void)
 
 static void set_bypass_compositor (Display *dpy, Window window, unsigned char bypass)
 {
+    uint32 value = bypass;
     Atom net_wm_bypass_compositor = XInternAtom (dpy, "_NET_WM_BYPASS_COMPOSITOR", False);
-    XChangeProperty (dpy, window, net_wm_bypass_compositor, XA_CARDINAL, 32, PropModeReplace, (const unsigned char *) &bypass, 1);
+    XChangeProperty (dpy, window, net_wm_bypass_compositor, XA_CARDINAL, 32, PropModeReplace, (const unsigned char *) &value, 1);
 }
 
 void
@@ -1650,8 +1651,8 @@ Snes9xWindow::enter_fullscreen_mode (void)
     gdk_display_sync (gdk_display_get_default ());
     gtk_window_present (GTK_WINDOW (window));
 
-    set_bypass_compositor (gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (drawing_area))),
-                           gdk_x11_window_get_xid (gtk_widget_get_window (GTK_WIDGET (drawing_area))),
+    set_bypass_compositor (gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (window))),
+                           gdk_x11_window_get_xid (gtk_widget_get_window (GTK_WIDGET (window))),
                            1);
 
     config->fullscreen = 1;
@@ -1705,8 +1706,8 @@ Snes9xWindow::leave_fullscreen_mode (void)
 
     gtk_window_unfullscreen (GTK_WINDOW (window));
 
-    set_bypass_compositor (gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (drawing_area))),
-                           gdk_x11_window_get_xid (gtk_widget_get_window (GTK_WIDGET (drawing_area))),
+    set_bypass_compositor (gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (window))),
+                           gdk_x11_window_get_xid (gtk_widget_get_window (GTK_WIDGET (window))),
                            0);
 
     resize (nfs_width, nfs_height);
