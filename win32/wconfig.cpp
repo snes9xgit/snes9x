@@ -1059,6 +1059,7 @@ void WinRegisterConfigItems()
 	/*ADD(InterpMode7);*/ ADD(JoypadSwap); ADD(SwitchControllers); ADD(ResetGame); ADD(ToggleCheats);
 	ADD(TurboA); ADD(TurboB); ADD(TurboY); ADD(TurboX); ADD(TurboL); ADD(TurboR); ADD(TurboStart); ADD(TurboSelect); ADD(TurboUp); ADD(TurboDown); ADD(TurboLeft); ADD(TurboRight);
 	ADD(QuitS9X);ADD(Rewind);
+	ADD(SaveFileSelect); ADD(LoadFileSelect);
 #undef ADD
 #undef ADDN
 #undef CATEGORY

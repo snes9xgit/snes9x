@@ -1297,7 +1297,21 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
             if(!GUI.rewinding)
                 S9xMessage (S9X_INFO, 0, GUI.rewindBufferSize?WINPROC_REWINDING_TEXT:WINPROC_REWINDING_DISABLED);
             GUI.rewinding = true;
+			hitHotKey = true;
         }
+
+		if (wParam == CustomKeys.SaveFileSelect.key
+			&& modifiers == CustomKeys.SaveFileSelect.modifiers)
+		{
+			FreezeUnfreezeDialog(TRUE);
+			hitHotKey = true;
+		}
+		if (wParam == CustomKeys.LoadFileSelect.key
+			&& modifiers == CustomKeys.LoadFileSelect.modifiers)
+		{
+			FreezeUnfreezeDialog(FALSE);
+			hitHotKey = true;
+		}
 		//if(wParam == CustomKeys.BGLHack.key
 		//&& modifiers == CustomKeys.BGLHack.modifiers)
 		//{
@@ -3692,6 +3706,9 @@ loop_exit:
 
 void FreezeUnfreezeDialog(bool8 freeze)
 {
+	if (Settings.StopEmulation)
+		return;
+
     TCHAR filename[MAX_PATH];
     OPENFILENAME ofn;
 
@@ -8152,8 +8169,8 @@ static void set_hotkeyinfo(HWND hDlg)
 	case 3:
 		for(int i = 0 ; i < 10 ; i++)
 			SendDlgItemMessage(hDlg,IDC_HOTKEY1+i,WM_USER+44,CustomKeys.SelectSave[i].key,CustomKeys.SelectSave[i].modifiers);
-		SendDlgItemMessage(hDlg,IDC_HOTKEY11,WM_USER+44,0,0);
-		SendDlgItemMessage(hDlg,IDC_HOTKEY12,WM_USER+44,0,0);
+		SendDlgItemMessage(hDlg,IDC_HOTKEY11,WM_USER+44, CustomKeys.SaveFileSelect.key, CustomKeys.SaveFileSelect.modifiers);
+		SendDlgItemMessage(hDlg,IDC_HOTKEY12,WM_USER+44, CustomKeys.LoadFileSelect.key, CustomKeys.LoadFileSelect.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY13,WM_USER+44,CustomKeys.QuitS9X.key,CustomKeys.QuitS9X.modifiers);
 		break;
 	}
@@ -8222,8 +8239,8 @@ static void set_hotkeyinfo(HWND hDlg)
 			_stprintf(temp, TEXT("Select Slot %d"), i);
 			SetDlgItemText(hDlg,IDC_LABEL_HK1+i,temp);
 		}
-		for(int i = 10 ; i < 12 ; i++)
-			SetDlgItemText(hDlg,IDC_LABEL_HK1+i,INPUTCONFIG_LABEL_UNUSED);
+		SetDlgItemText(hDlg, IDC_LABEL_HK11, HOTKEYS_LABEL_4_11);
+		SetDlgItemText(hDlg, IDC_LABEL_HK12, HOTKEYS_LABEL_4_12);
 		SetDlgItemText(hDlg,IDC_LABEL_HK13,HOTKEYS_LABEL_4_13);
 
 		break;
@@ -8372,12 +8389,13 @@ switch(msg)
 			if(index == 0) CustomKeys.FrameCount.key = wParam,  CustomKeys.FrameCount.modifiers = modifiers;
 			if(index == 1) CustomKeys.JoypadSwap.key = wParam, CustomKeys.JoypadSwap.modifiers = modifiers;
 			if(index == 2) CustomKeys.TurboRight.key = wParam,    CustomKeys.TurboRight.modifiers = modifiers;
+			if(index == 3) CustomKeys.SaveFileSelect.key = wParam, CustomKeys.SaveFileSelect.modifiers = modifiers;
 			break;
 		case IDC_HOTKEY12:
 			if(index == 0) CustomKeys.ReadOnly.key = wParam,   CustomKeys.ReadOnly.modifiers = modifiers;
 			if(index == 1) CustomKeys.ResetGame.key = wParam,    CustomKeys.ResetGame.modifiers = modifiers;
 			if(index == 2) CustomKeys.TurboDown.key = wParam,    CustomKeys.TurboDown.modifiers = modifiers;
-//			if(index == 3) CustomKeys.InterpMode7.key = wParam, CustomKeys.InterpMode7.modifiers = modifiers;
+			if(index == 3) CustomKeys.LoadFileSelect.key = wParam, CustomKeys.LoadFileSelect.modifiers = modifiers;
 			break;
 		case IDC_HOTKEY13:
 			if(index == 0) CustomKeys.SaveScreenShot.key = wParam,    CustomKeys.SaveScreenShot.modifiers = modifiers;

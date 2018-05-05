@@ -702,8 +702,10 @@ int GetNumHotKeysAssignedTo (WORD Key, int modifiers)
 		if(MATCHES_KEY(TurboDown))         count++;
 		if(MATCHES_KEY(ResetGame))         count++;
 		if(MATCHES_KEY(ToggleCheats))      count++;
-        if(MATCHES_KEY(QuitS9X))      count++;
-        if(MATCHES_KEY(Rewind))      count++;
+        if(MATCHES_KEY(QuitS9X))           count++;
+        if(MATCHES_KEY(Rewind))            count++;
+        if(MATCHES_KEY(SaveFileSelect))    count++;
+        if(MATCHES_KEY(LoadFileSelect))    count++;
 
 		#undef MATCHES_KEY
 	}
