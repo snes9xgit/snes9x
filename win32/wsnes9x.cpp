@@ -1312,6 +1312,13 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 			FreezeUnfreezeDialog(FALSE);
 			hitHotKey = true;
 		}
+
+		if (wParam == CustomKeys.Mute.key
+			&& modifiers == CustomKeys.Mute.modifiers)
+		{
+			GUI.Mute = !GUI.Mute;
+			hitHotKey = true;
+		}
 		//if(wParam == CustomKeys.BGLHack.key
 		//&& modifiers == CustomKeys.BGLHack.modifiers)
 		//{
@@ -8164,7 +8171,7 @@ static void set_hotkeyinfo(HWND hDlg)
 		SendDlgItemMessage(hDlg,IDC_HOTKEY10,WM_USER+44,CustomKeys.TurboUp.key,CustomKeys.TurboUp.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY11,WM_USER+44,CustomKeys.TurboRight.key,CustomKeys.TurboRight.modifiers);
 		SendDlgItemMessage(hDlg,IDC_HOTKEY12,WM_USER+44,CustomKeys.TurboDown.key,CustomKeys.TurboDown.modifiers);
-		SendDlgItemMessage(hDlg,IDC_HOTKEY13,WM_USER+44,0,0);
+		SendDlgItemMessage(hDlg,IDC_HOTKEY13,WM_USER+44, CustomKeys.Mute.key, CustomKeys.Mute.modifiers);
 		break;
 	case 3:
 		for(int i = 0 ; i < 10 ; i++)
@@ -8229,7 +8236,7 @@ static void set_hotkeyinfo(HWND hDlg)
 		SetDlgItemText(hDlg,IDC_LABEL_HK10,HOTKEYS_LABEL_3_10);
 		SetDlgItemText(hDlg,IDC_LABEL_HK11,HOTKEYS_LABEL_3_11);
 		SetDlgItemText(hDlg,IDC_LABEL_HK12,HOTKEYS_LABEL_3_12);
-		SetDlgItemText(hDlg,IDC_LABEL_HK13,INPUTCONFIG_LABEL_UNUSED);
+		SetDlgItemText(hDlg,IDC_LABEL_HK13, HOTKEYS_LABEL_3_13);
 
 		break;
 	case 3:
@@ -8400,7 +8407,7 @@ switch(msg)
 		case IDC_HOTKEY13:
 			if(index == 0) CustomKeys.SaveScreenShot.key = wParam,    CustomKeys.SaveScreenShot.modifiers = modifiers;
 			if(index == 1) CustomKeys.ToggleCheats.key = wParam,    CustomKeys.ToggleCheats.modifiers = modifiers;
-//			if(index == 3) CustomKeys.BGLHack.key = wParam,  CustomKeys.BGLHack.modifiers = modifiers;
+			if(index == 2) CustomKeys.Mute.key = wParam,  CustomKeys.Mute.modifiers = modifiers;
 			if(index == 3) CustomKeys.QuitS9X.key = wParam,  CustomKeys.QuitS9X.modifiers = modifiers;
 			break;
 

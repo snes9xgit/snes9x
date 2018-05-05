@@ -1060,6 +1060,7 @@ void WinRegisterConfigItems()
 	ADD(TurboA); ADD(TurboB); ADD(TurboY); ADD(TurboX); ADD(TurboL); ADD(TurboR); ADD(TurboStart); ADD(TurboSelect); ADD(TurboUp); ADD(TurboDown); ADD(TurboLeft); ADD(TurboRight);
 	ADD(QuitS9X);ADD(Rewind);
 	ADD(SaveFileSelect); ADD(LoadFileSelect);
+	ADD(Mute);
 #undef ADD
 #undef ADDN
 #undef CATEGORY

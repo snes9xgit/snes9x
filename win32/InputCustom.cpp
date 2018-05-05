@@ -706,6 +706,7 @@ int GetNumHotKeysAssignedTo (WORD Key, int modifiers)
         if(MATCHES_KEY(Rewind))            count++;
         if(MATCHES_KEY(SaveFileSelect))    count++;
         if(MATCHES_KEY(LoadFileSelect))    count++;
+        if(MATCHES_KEY(Mute))              count++;
 
 		#undef MATCHES_KEY
 	}

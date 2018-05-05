@@ -498,6 +498,7 @@ struct SCustomKeys {
     SCustomKey Rewind;
     SCustomKey SaveFileSelect;
     SCustomKey LoadFileSelect;
+    SCustomKey Mute;
 };
 
 struct SJoypad {

@@ -304,7 +304,7 @@ Nintendo is a trade mark.")
 #define HOTKEYS_LABEL_3_10 TEXT("Turbo Up mode")
 #define HOTKEYS_LABEL_3_11 TEXT("Turbo Right mode")
 #define HOTKEYS_LABEL_3_12 TEXT("Turbo Down mode")
-//#define HOTKEYS_LABEL_4_12 "Interpolate Mode 7"
+#define HOTKEYS_LABEL_3_13 TEXT("Toggle Mute")
 #define HOTKEYS_LABEL_4_11 TEXT("Save To File")
 #define HOTKEYS_LABEL_4_12 TEXT("Load From File")
 #define HOTKEYS_LABEL_4_13 TEXT("Quit Snes9x")
