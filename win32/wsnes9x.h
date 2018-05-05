@@ -374,6 +374,7 @@ struct sGUI {
 	int  ValidControllerOptions;
 	int  SoundChannelEnable;
 	bool BackgroundInput;
+    bool BackgroundKeyHotkeys;
 	bool JoystickHotkeys;
 	bool MovieClearSRAM;
 	bool MovieStartFromReset;

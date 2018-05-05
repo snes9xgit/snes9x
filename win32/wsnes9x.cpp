@@ -971,6 +971,12 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 
 	bool hitHotKey = false;
 
+    // if this is not a gamepad press and background hotkeys are disabled, skip it if we do not have focus
+    if (!GUI.BackgroundKeyHotkeys && !(wParam & 0x8000) && GUI.hWnd != GetForegroundWindow())
+    {
+        return 0;
+    }
+
 	if(!(wParam == 0 || wParam == VK_ESCAPE)) // if it's the 'disabled' key, it's never pressed as a hotkey
 	{
 		int modifiers = 0;
@@ -1933,6 +1939,10 @@ LRESULT CALLBACK WinProc(
 			if(!GUI.hHotkeyTimer)
 				GUI.hHotkeyTimer = timeSetEvent (32, 0, (LPTIMECALLBACK)HotkeyTimer, 0, TIME_PERIODIC);
 			break;
+
+        case ID_INPUT_BACKGROUNDKEYBOARDHOTKEYS:
+            GUI.BackgroundKeyHotkeys = !GUI.BackgroundKeyHotkeys;
+            break;
 
 		case ID_FILE_LOADMULTICART:
 			{
@@ -4017,6 +4027,11 @@ static void CheckMenuStates ()
 
 	mii.fState = GUI.BackgroundInput ? MFS_CHECKED : MFS_UNCHECKED;
 	SetMenuItemInfo (GUI.hMenu, ID_EMULATION_BACKGROUNDINPUT, FALSE, &mii);
+
+    mii.fState = GUI.BackgroundKeyHotkeys ? MFS_CHECKED : MFS_UNCHECKED;
+    if (!GUI.BackgroundInput)
+        mii.fState |= MFS_DISABLED;
+    SetMenuItemInfo(GUI.hMenu, ID_INPUT_BACKGROUNDKEYBOARDHOTKEYS, FALSE, &mii);
 
 	UINT validFlag;
     ControllerOptionsFromControllers();

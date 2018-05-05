@@ -485,6 +485,7 @@
 #define ID_DEBUG_APU_TRACE              40173
 #define ID_EMULATION_BACKGROUNDINPUT    40174
 #define ID_SAVEMEMPACK                  40175
+#define ID_INPUT_BACKGROUNDKEYBOARDHOTKEYS 40176
 #define ID_FILE_SAVE0                   44000
 #define ID_FILE_SAVE1                   44001
 #define ID_FILE_SAVE2                   44002
@@ -513,8 +514,8 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        154
-#define _APS_NEXT_COMMAND_VALUE         40176
+#define _APS_NEXT_RESOURCE_VALUE        155
+#define _APS_NEXT_COMMAND_VALUE         40178
 #define _APS_NEXT_CONTROL_VALUE         3022
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

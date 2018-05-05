@@ -880,6 +880,7 @@ BEGIN
         MENUITEM "&Customize Hotkeys...\tAlt+F9", ID_OPTIONS_KEYCUSTOM
         MENUITEM SEPARATOR
         MENUITEM "Enable Background Input",     ID_EMULATION_BACKGROUNDINPUT
+        MENUITEM "Background Keyboard Hotkeys", ID_INPUT_BACKGROUNDKEYBOARDHOTKEYS
         MENUITEM SEPARATOR
         MENUITEM "Use SNES Joypad(s)",          IDM_SNES_JOYPAD
         MENUITEM "Use SNES Mouse",              IDM_MOUSE_TOGGLE
