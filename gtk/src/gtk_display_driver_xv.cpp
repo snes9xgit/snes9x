@@ -39,8 +39,7 @@ S9xXVDisplayDriver::S9xXVDisplayDriver (Snes9xWindow *window,
 void
 S9xXVDisplayDriver::resize_window (int width, int height)
 {
-    g_object_unref (gdk_window);
-    XDestroyWindow (display, xwindow);
+    gdk_window_destroy (gdk_window);
     create_window (width, height);
 
     return;
@@ -49,41 +48,27 @@ S9xXVDisplayDriver::resize_window (int width, int height)
 void
 S9xXVDisplayDriver::create_window (int width, int height)
 {
-    XSetWindowAttributes window_attr;
+    GdkWindowAttr window_attr;
+    memset (&window_attr, 0, sizeof (GdkWindowAttr));
+    window_attr.event_mask = GDK_EXPOSURE_MASK | GDK_STRUCTURE_MASK;
+    window_attr.width = width;
+    window_attr.height = height;
+    window_attr.x = 0;
+    window_attr.y = 0;
+    window_attr.wclass = GDK_INPUT_OUTPUT;
+    window_attr.window_type = GDK_WINDOW_CHILD;
+    window_attr.visual = gdk_x11_screen_lookup_visual (gtk_widget_get_screen (drawing_area), vi->visualid);
 
-    window_attr.colormap = xcolormap;
-    window_attr.border_pixel = 0;
-    window_attr.event_mask = StructureNotifyMask | ExposureMask;
-    window_attr.background_pixmap = None;
+    gdk_window = gdk_window_new (gtk_widget_get_window (drawing_area),
+                                 &window_attr,
+                                 GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL);
+    gdk_window_set_user_data (gdk_window, (gpointer) drawing_area);
 
-    xwindow = XCreateWindow (display,
-                             GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (drawing_area)),
-                             0,
-                             0,
-                             width,
-                             height,
-                             0,
-                             vi->depth,
-                             InputOutput,
-                             vi->visual,
-                             CWColormap | CWBorderPixel | CWBackPixmap | CWEventMask,
-                             &window_attr);
-    XSync (display, False);
+    gdk_window_show (gdk_window);
+    xwindow = gdk_x11_window_get_xid (gdk_window);
 
     output_window_width = width;
     output_window_height = height;
-
-    XMapWindow (display, xwindow);
-    XSync (display, False);
-
-#if GTK_MAJOR_VERSION >= 3
-    gdk_window = gdk_x11_window_foreign_new_for_display (gtk_widget_get_display (drawing_area), xwindow);
-#else
-    gdk_window = gdk_window_foreign_new (xwindow);
-#endif
-    XSync (display, False);
-
-    gdk_window_set_user_data (gdk_window, drawing_area);
 }
 
 void
@@ -402,9 +387,9 @@ S9xXVDisplayDriver::init (void)
             int r, g, b;
             int y, u, v;
 
-            r = (color & 0xf800) >> 8;
-            g = (color & 0x07e0) >> 3;
-            b = (color & 0x001F) << 3;
+            r = ((color & 0xf800) >> 8) | ((color >> 13) & 0x7);
+            g = ((color & 0x07e0) >> 3) | ((color >> 9 ) & 0x3);
+            b = ((color & 0x001F) << 3) | ((color >> 3 ) & 0x7);
 
             y = (int) ((0.257  * ((double) r)) + (0.504  * ((double) g)) + (0.098  * ((double) b)) + 16.0);
             u = (int) ((-0.148 * ((double) r)) + (-0.291 * ((double) g)) + (0.439  * ((double) b)) + 128.0);
@@ -485,14 +470,13 @@ S9xXVDisplayDriver::init (void)
 void
 S9xXVDisplayDriver::deinit (void)
 {
+    gdk_window_destroy (gdk_window);
+
     XShmDetach (display, &shm);
     XSync (display, 0);
 
     XFreeColormap (display, xcolormap);
     XFree (vi);
-
-    g_object_unref (gdk_window);
-    XDestroyWindow (display, xwindow);
 
     free (buffer[0]);
     free (buffer[1]);

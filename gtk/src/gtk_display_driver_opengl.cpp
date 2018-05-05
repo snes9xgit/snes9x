@@ -726,8 +726,7 @@ S9xOpenGLDisplayDriver::refresh (int width, int height)
 void
 S9xOpenGLDisplayDriver::resize_window (int width, int height)
 {
-    g_object_unref (gdk_window);
-    XDestroyWindow (display, xwindow);
+    gdk_window_destroy (gdk_window);
     create_window (width, height);
     glXMakeCurrent (display, xwindow, glx_context);
 
@@ -737,43 +736,27 @@ S9xOpenGLDisplayDriver::resize_window (int width, int height)
 void
 S9xOpenGLDisplayDriver::create_window (int width, int height)
 {
-    XSetWindowAttributes window_attr;
+    GdkWindowAttr window_attr;
+    memset (&window_attr, 0, sizeof (GdkWindowAttr));
+    window_attr.event_mask = GDK_EXPOSURE_MASK | GDK_STRUCTURE_MASK;
+    window_attr.width = width;
+    window_attr.height = height;
+    window_attr.x = 0;
+    window_attr.y = 0;
+    window_attr.wclass = GDK_INPUT_OUTPUT;
+    window_attr.window_type = GDK_WINDOW_CHILD;
+    window_attr.visual = gdk_x11_screen_lookup_visual (gtk_widget_get_screen (drawing_area), vi->visualid);
 
-    window_attr.colormap = xcolormap;
-    window_attr.border_pixel = 0;
-    window_attr.event_mask = StructureNotifyMask | ExposureMask;
-    window_attr.do_not_propagate_mask = 0;
-    window_attr.save_under = False;
-    window_attr.background_pixmap = None;
+    gdk_window = gdk_window_new (gtk_widget_get_window (drawing_area),
+                                 &window_attr,
+                                 GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL);
+    gdk_window_set_user_data (gdk_window, (gpointer) drawing_area);
 
-    xwindow = XCreateWindow (display,
-                             GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (drawing_area)),
-                             0,
-                             0,
-                             width,
-                             height,
-                             0,
-                             vi->depth,
-                             InputOutput,
-                             vi->visual,
-                             CWColormap | CWBorderPixel | CWBackPixmap | CWEventMask | CWSaveUnder | CWDontPropagate,
-                             &window_attr);
-    XSync (display, False);
+    gdk_window_show (gdk_window);
+    xwindow = gdk_x11_window_get_xid (gdk_window);
 
     output_window_width = width;
     output_window_height = height;
-
-    XMapWindow (display, xwindow);
-    XSync (display, False);
-
-#if GTK_MAJOR_VERSION >= 3
-    gdk_window = gdk_x11_window_foreign_new_for_display (gtk_widget_get_display (drawing_area), xwindow);
-#else
-    gdk_window = gdk_window_foreign_new (xwindow);
-#endif
-    XSync (display, False);
-
-    gdk_window_set_user_data (gdk_window, drawing_area);
 }
 
 int
@@ -790,6 +773,7 @@ S9xOpenGLDisplayDriver::init_glx (void)
         fprintf (stderr, _("Couldn't find an adequate OpenGL visual.\n"));
         return 0;
     }
+
 
     xcolormap = XCreateColormap (display,
                                 GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (drawing_area)),
@@ -981,11 +965,10 @@ S9xOpenGLDisplayDriver::deinit (void)
     glDeleteTextures (1, &texmap);
     glXDestroyContext (display, glx_context);
 
+    gdk_window_destroy (gdk_window);
+
     XFree (vi);
     XFreeColormap (display, xcolormap);
-
-    g_object_unref (gdk_window);
-    XDestroyWindow (display, xwindow);
 
     return;
 }

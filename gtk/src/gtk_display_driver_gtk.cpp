@@ -250,9 +250,6 @@ S9xGTKDisplayDriver::clear (void)
 void
 S9xGTKDisplayDriver::refresh (int width, int height)
 {
-    if (!config->rom_loaded)
-        return;
-
     clear ();
 
     return;
