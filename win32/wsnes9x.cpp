@@ -8483,8 +8483,7 @@ enum CheatStatus{
 	Modified
 };
 typedef struct{
-int* index;
-DWORD* state;
+	std::vector<DWORD> state;
 }CheatTracker;
 
 int WinSearchCheatDatabase()
@@ -8584,42 +8583,33 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 			ListView_InsertColumn(GetDlgItem(hDlg,IDC_CHEAT_LIST),    1,   &col);
 
-			ct.index=new int[Cheat.g.size()];
-			ct.state=new DWORD[Cheat.g.size()];
+			ct.state.resize(Cheat.g.size());
 
-			uint32 counter;
-			for(counter=0; counter < Cheat.g.size(); counter++)
+			for(uint32 counter =0; counter < Cheat.g.size(); counter++)
 			{
 				char *code_string;
-				int curr_idx=-1;
+				int curr_idx = -1;
 				code_string = S9xCheatGroupToText(counter);
 				Utf8ToWide wstring(code_string);
 				delete[] code_string;
 
 				LVITEM lvi;
 				memset(&lvi, 0, sizeof(LVITEM));
-				lvi.mask=LVIF_TEXT;
+				lvi.mask = LVIF_TEXT | LVIF_PARAM;
 				lvi.cchTextMax = CHEAT_SIZE;
 				lvi.pszText = wstring;
-				lvi.iItem=counter;
-				curr_idx=ListView_InsertItem(GetDlgItem(hDlg,IDC_CHEAT_LIST), &lvi);
+				lvi.lParam = counter; // we save the internal cheat index as lParam of list entry
+				curr_idx = ListView_InsertItem(GetDlgItem(hDlg,IDC_CHEAT_LIST), &lvi);
 
-				unsigned int k;
-				for(k=0;k<counter;k++)
-				{
-					if(ct.index[k]>=curr_idx)
-						ct.index[k]++;
-				}
-				ct.index[counter]=curr_idx;
-				ct.state[counter]=Untouched;
+				ct.state[counter] = Untouched;
 
-				Utf8ToWide wstring2(Cheat.g[counter].name);
+				Utf8ToWide wstring_name(Cheat.g[counter].name);
 				memset(&lvi, 0, sizeof(LVITEM));
-				lvi.iItem=curr_idx;
-				lvi.iSubItem=1;
-				lvi.mask=LVIF_TEXT;
+				lvi.iItem = curr_idx;
+				lvi.iSubItem = 1;
+				lvi.mask = LVIF_TEXT;
 				lvi.cchTextMax = CHEAT_SIZE;
-				lvi.pszText = wstring2;
+				lvi.pszText = wstring_name;
 				SendDlgItemMessage(hDlg,IDC_CHEAT_LIST, LVM_SETITEM, 0, (LPARAM)&lvi);
 
 				ListView_SetCheckState(GetDlgItem(hDlg,IDC_CHEAT_LIST), curr_idx, Cheat.g[counter].enabled);
@@ -8713,31 +8703,30 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						Utf8ToWide wstring(valid_cheat);
 						delete[] valid_cheat;
 
-						int curr_idx=-1;
+						int curr_idx = -1;
 
 						LVITEM lvi;
 						memset(&lvi, 0, sizeof(LVITEM));
-						lvi.mask=LVIF_TEXT;
-						lvi.pszText=wstring;
-						lvi.iItem=ListView_GetItemCount(GetDlgItem(hDlg,IDC_CHEAT_LIST));
-						curr_idx=ListView_InsertItem(GetDlgItem(hDlg,IDC_CHEAT_LIST), &lvi);
+						lvi.mask = LVIF_TEXT | LVIF_PARAM;
+						lvi.pszText = wstring;
+						lvi.iItem = ListView_GetItemCount(GetDlgItem(hDlg,IDC_CHEAT_LIST));
+						lvi.lParam = -1; // -1 signals this is a new cheat
+						curr_idx = ListView_InsertItem(GetDlgItem(hDlg,IDC_CHEAT_LIST), &lvi);
 
 						SetDlgItemText(hDlg, IDC_CHEAT_CODE, wstring);
 
-						unsigned int k;
-						for(k=0;k<Cheat.g.size();k++)
-						{
-							if(ct.index[k]>=curr_idx)
-								ct.index[k]++;
-						}
-
 						memset(&lvi, 0, sizeof(LVITEM));
-						lvi.iItem=curr_idx;
-						lvi.iSubItem=1;
-						lvi.mask=LVIF_TEXT;
-						lvi.pszText=tempDesc;
-						lvi.cchTextMax=CHEAT_SIZE;
-						SendDlgItemMessage(hDlg,IDC_CHEAT_LIST, LVM_SETITEM, 0, (LPARAM)&lvi);
+						lvi.iItem = curr_idx;
+						lvi.iSubItem = 1;
+						lvi.mask = LVIF_TEXT;
+						lvi.pszText = tempDesc;
+						lvi.cchTextMax = CHEAT_SIZE;
+						ListView_SetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
+
+						// unselect all items, select new item and make sure it is visible
+						ListView_SetItemState(GetDlgItem(hDlg, IDC_CHEAT_LIST), -1, 0, LVIS_FOCUSED | LVIS_SELECTED);
+						ListView_SetItemState(GetDlgItem(hDlg, IDC_CHEAT_LIST), curr_idx, LVIS_FOCUSED | LVIS_SELECTED, LVIS_FOCUSED | LVIS_SELECTED);
+						ListView_EnsureVisible(GetDlgItem(hDlg, IDC_CHEAT_LIST), curr_idx, FALSE);
 					}
 				}
 				break;
@@ -8754,18 +8743,18 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					{
 						delete[] valid_cheat;
 
-						for(j=0;j<(int)Cheat.g.size();j++)
-						{
-							if (ct.index[j] == sel_idx)
-							{
-								ct.state[j] = Modified;
-								break;
-							}
-						}
-
 						Utf8ToWide wstring(code);
 
 						LVITEM lvi;
+
+						// get index in internal cheat list, if present mark as modified
+						memset(&lvi, 0, sizeof(LVITEM));
+						lvi.mask = LVIF_PARAM;
+						lvi.iItem = sel_idx;
+						ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
+						if (lvi.lParam >= 0)
+							ct.state[lvi.lParam] = Modified;
+
 						memset(&lvi, 0, sizeof(LVITEM));
 						lvi.mask=LVIF_TEXT;
 						lvi.pszText=wstring;
@@ -8792,23 +8781,21 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				break;
 			case IDC_DELETE_CHEAT:
 				{
-					unsigned int j;
-					for(j=0;j<Cheat.g.size();j++)
-					{
-						if (ct.index[j] == sel_idx)
-						{
-							ct.state[j] = Deleted;
-							ct.index[j] = -1;
-							break;
-						}
-					}
-					for(j=0;j<Cheat.g.size();j++)
-					{
-						if(ct.index[j]>sel_idx)
-							ct.index[j]--;
-					}
+					LVITEM lvi;
+
+					// get index in internal cheat list, if present mark as deleted
+					memset(&lvi, 0, sizeof(LVITEM));
+					lvi.mask = LVIF_PARAM;
+					lvi.iItem = sel_idx;
+					ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
+					if (lvi.lParam >= 0)
+						ct.state[lvi.lParam] = Deleted;
+
+					// save index, deleting item removes selection
+					int old_sel = sel_idx;
+					ListView_DeleteItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), sel_idx);
+					ListView_SetItemState(GetDlgItem(hDlg, IDC_CHEAT_LIST), old_sel, LVIS_FOCUSED | LVIS_SELECTED, LVIS_FOCUSED | LVIS_SELECTED);
 				}
-				ListView_DeleteItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), sel_idx);
 
 				break;
 			case IDC_DELETE_ALL:
@@ -8882,56 +8869,55 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				}
 			case IDOK:
 				{
-					int k,l;
 					bool hit;
 					unsigned int scanned;
-					for(k=0;k<ListView_GetItemCount(GetDlgItem(hDlg, IDC_CHEAT_LIST)); k++)
+					for(int k = 0; k < ListView_GetItemCount(GetDlgItem(hDlg, IDC_CHEAT_LIST)); k++)
 					{
-						hit=false;
-						for(l=0;l<(int)Cheat.g.size();l++)
+						LVITEM lvi;
+
+						// get index in internal cheat list, if present mark as deleted
+						memset(&lvi, 0, sizeof(LVITEM));
+						lvi.mask = LVIF_PARAM;
+						lvi.iItem = k;
+						ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
+
+						int internal_index = lvi.lParam;
+
+						if(internal_index >= 0)
 						{
-							if(ct.index[l]==k)
+							if(ct.state[internal_index]==(unsigned long)Modified) // modified in GUI, change in core
 							{
-								hit=true;
+								TCHAR wcode[CHEAT_SIZE];
+								TCHAR wdescription[CHEAT_SIZE];
 
-								if(ct.state[l]==(unsigned long)Modified) // modified in GUI, change in core
-								{
-									TCHAR wcode[CHEAT_SIZE];
-									TCHAR wdescription[CHEAT_SIZE];
+								memset(&lvi, 0, sizeof(LV_ITEM));
+								lvi.iItem = k;
+								lvi.mask = LVIF_TEXT;
+								lvi.pszText = wcode;
+								lvi.cchTextMax = CHEAT_SIZE;
+								ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
 
-									LV_ITEM lvi;
-									memset(&lvi, 0, sizeof(LV_ITEM));
-									lvi.iItem= k;
-									lvi.mask=LVIF_TEXT;
-									lvi.pszText=wcode;
-									lvi.cchTextMax = CHEAT_SIZE;
-									ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
+								memset(&lvi, 0, sizeof(LV_ITEM));
+								lvi.iItem = k;
+								lvi.iSubItem = 1;
+								lvi.mask=LVIF_TEXT;
+								lvi.pszText = wdescription;
+								lvi.cchTextMax = CHEAT_SIZE;
+								ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
 
-									memset(&lvi, 0, sizeof(LV_ITEM));
-									lvi.iItem= k;
-									lvi.iSubItem=1;
-									lvi.mask=LVIF_TEXT;
-									lvi.pszText=wdescription;
-									lvi.cchTextMax = CHEAT_SIZE;
-									ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
+								WideToUtf8 code(wcode);
+								WideToUtf8 description(wdescription);
 
-									WideToUtf8 code(wcode);
-									WideToUtf8 description(wdescription);
-
-									S9xModifyCheatGroup(l, description, code);
-								}
-
-								// set core state according to checkbox
-								if (ListView_GetCheckState(GetDlgItem(hDlg, IDC_CHEAT_LIST), k))
-									S9xEnableCheatGroup(l);
-								else
-									S9xDisableCheatGroup(l);
-
-								// we've found the internal cheat index, stop checking for this list entry
-								break;
+								S9xModifyCheatGroup(internal_index, description, code);
 							}
+
+							// set core state according to checkbox
+							if (ListView_GetCheckState(GetDlgItem(hDlg, IDC_CHEAT_LIST), k))
+								S9xEnableCheatGroup(internal_index);
+							else
+								S9xDisableCheatGroup(internal_index);
 						}
-						if(!hit)
+						else // new cheat, add
 						{
 							TCHAR wcode[CHEAT_SIZE];
 							TCHAR wdescription[CHEAT_SIZE];
@@ -8963,7 +8949,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						}
 					}
 
-					for(l=(int)Cheat.g.size()-1; l>=0; l--)
+					for(int l = 0; l < ct.state.size(); l++ )
 					{
 						if(ct.state[l]==Deleted)
 						{
@@ -8972,8 +8958,6 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					}
 				}
 			case IDCANCEL:
-				delete [] ct.index;
-				delete [] ct.state;
 				EndDialog(hDlg, HIWORD(wParam) == NC_SEARCHDB ? NC_SEARCHDB : 0);
 				return true;
 			default:
