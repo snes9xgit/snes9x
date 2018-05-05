@@ -1595,7 +1595,7 @@ S9xQueryDrivers (void)
     }
 
     gui_config->allow_xrandr = 1;
-    gui_config->xrr_screen_resources = XRRGetScreenResources (dpy, xid);
+    gui_config->xrr_screen_resources = XRRGetScreenResourcesCurrent (dpy, xid);
     gui_config->xrr_crtc_info        = XRRGetCrtcInfo (dpy,
                                                        gui_config->xrr_screen_resources,
                                                        gui_config->xrr_screen_resources->crtcs[0]);
