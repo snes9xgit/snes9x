@@ -731,6 +731,20 @@ void CDirect3D::Render(SSurface Src)
 
 	pDevice->Present(NULL, NULL, NULL, NULL);
 
+	if (GUI.ReduceInputLag)
+	{
+		IDirect3DSurface9 *surface;
+
+		if (pDevice->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &surface) == D3D_OK)
+		{
+			if (surface->LockRect(&lr, NULL, D3DLOCK_READONLY) == D3D_OK)
+			{
+				surface->UnlockRect();
+			}
+			surface->Release();
+		}
+	}
+
     return;
 }
 
@@ -927,6 +941,7 @@ bool CDirect3D::ResetDevice()
 	dPresentParams.FullScreen_RefreshRateInHz = 0;
 	dPresentParams.Windowed = true;
 	dPresentParams.PresentationInterval = GUI.Vsync?D3DPRESENT_INTERVAL_ONE:D3DPRESENT_INTERVAL_IMMEDIATE;
+	dPresentParams.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
 
 	if(fullscreen) {
 		dPresentParams.BackBufferWidth = GUI.FullscreenMode.width;

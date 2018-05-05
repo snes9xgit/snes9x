@@ -333,7 +333,8 @@ struct sGUI {
 	bool EmulatedFullscreen;
 	bool BilinearFilter;
 	bool LocalVidMem;
-	bool Vsync;	
+	bool Vsync;
+	bool ReduceInputLag;
 	bool shaderEnabled;
 	TCHAR D3DshaderFileName[MAX_PATH];
 	TCHAR OGLshaderFileName[MAX_PATH];

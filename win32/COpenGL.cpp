@@ -521,6 +521,8 @@ void COpenGL::Render(SSurface Src)
 
 	glFlush();
 	SwapBuffers(hDC);
+	if (GUI.ReduceInputLag)
+		glFinish();
 }
 
 bool COpenGL::ChangeRenderSize(unsigned int newWidth, unsigned int newHeight)
