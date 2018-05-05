@@ -486,6 +486,7 @@
 #define ID_EMULATION_BACKGROUNDINPUT    40174
 #define ID_SAVEMEMPACK                  40175
 #define ID_INPUT_BACKGROUNDKEYBOARDHOTKEYS 40176
+#define ID_INPUT_DETECTGAMEPADCHANGES   40177
 #define ID_FILE_SAVE0                   44000
 #define ID_FILE_SAVE1                   44001
 #define ID_FILE_SAVE2                   44002

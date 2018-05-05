@@ -882,6 +882,8 @@ BEGIN
         MENUITEM "Enable Background Input",     ID_EMULATION_BACKGROUNDINPUT
         MENUITEM "Background Keyboard Hotkeys", ID_INPUT_BACKGROUNDKEYBOARDHOTKEYS
         MENUITEM SEPARATOR
+        MENUITEM "Detect gamepad changes",      ID_INPUT_DETECTGAMEPADCHANGES
+        MENUITEM SEPARATOR
         MENUITEM "Use SNES Joypad(s)",          IDM_SNES_JOYPAD
         MENUITEM "Use SNES Mouse",              IDM_MOUSE_TOGGLE
         MENUITEM "Use Super Scope",             IDM_SCOPE_TOGGLE

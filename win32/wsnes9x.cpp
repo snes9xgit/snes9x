@@ -1944,6 +1944,10 @@ LRESULT CALLBACK WinProc(
             GUI.BackgroundKeyHotkeys = !GUI.BackgroundKeyHotkeys;
             break;
 
+        case ID_INPUT_DETECTGAMEPADCHANGES:
+            S9xDetectJoypads();
+            break;
+
 		case ID_FILE_LOADMULTICART:
 			{
 				RestoreGUIDisplay ();
@@ -2717,20 +2721,6 @@ LRESULT CALLBACK WinProc(
 #endif
 		break;
 #endif
-    case WM_DEVICECHANGE:
-		if (wParam == DBT_DEVICEARRIVAL || wParam == DBT_DEVICEREMOVECOMPLETE) {
-			// trigger a joypad detect after 500ms - the multimedia functions do not like it if we trigger this right after arrival/removal
-			SetTimer(hWnd, TIMER_SCANJOYPADS, 500, NULL);
-		}
-        break;
-	case WM_TIMER:
-		{
-			if (wParam == TIMER_SCANJOYPADS) {
-				S9xDetectJoypads();
-				KillTimer(hWnd, TIMER_SCANJOYPADS);
-			}
-		}
-		break;
 	}
     return DefWindowProc (hWnd, uMsg, wParam, lParam);
 }
