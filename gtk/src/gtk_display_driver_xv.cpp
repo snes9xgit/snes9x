@@ -80,6 +80,13 @@ S9xXVDisplayDriver::update (int width, int height, int yoffset)
     GtkAllocation allocation;
 
     gtk_widget_get_allocation (drawing_area, &allocation);
+
+    if (output_window_width  != allocation.width ||
+        output_window_height != allocation.height)
+    {
+        resize_window (allocation.width, allocation.height);
+    }
+
 #if GTK_CHECK_VERSION(3,10,0)
     int gdk_scale_factor = gdk_window_get_scale_factor (gdk_window);
 
@@ -90,12 +97,6 @@ S9xXVDisplayDriver::update (int width, int height, int yoffset)
 
     current_width = allocation.width;
     current_height = allocation.height;
-
-    if (output_window_width  != current_width ||
-        output_window_height != current_height)
-    {
-        resize_window (current_width, current_height);
-    }
 
     if (config->scale_method > 0)
     {

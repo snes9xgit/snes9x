@@ -119,6 +119,12 @@ S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
     GtkAllocation allocation;
     gtk_widget_get_allocation (drawing_area, &allocation);
 
+    if (output_window_width  != allocation.width ||
+        output_window_height != allocation.height)
+    {
+        resize_window (allocation.width, allocation.height);
+    }
+
 #if GTK_CHECK_VERSION(3,10,0)
     int gdk_scale_factor = gdk_window_get_scale_factor (gdk_window);
 
@@ -126,12 +132,6 @@ S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
     allocation.height *= gdk_scale_factor;
 
 #endif
-
-    if (output_window_width  != allocation.width ||
-        output_window_height != allocation.height)
-    {
-        resize_window (allocation.width, allocation.height);
-    }
 
     GLint filter = config->bilinear_filter ? GL_LINEAR : GL_NEAREST;
     glTexParameteri (tex_target, GL_TEXTURE_MAG_FILTER, filter);
@@ -788,8 +788,7 @@ S9xOpenGLDisplayDriver::init_glx (void)
     if (!glx_context)
     {
         XFreeColormap (display, xcolormap);
-        g_object_unref (gdk_window);
-        XDestroyWindow (display, xwindow);
+        gdk_window_destroy (gdk_window);
 
         fprintf (stderr, _("Couldn't create an OpenGL context.\n"));
         return 0;
@@ -799,8 +798,7 @@ S9xOpenGLDisplayDriver::init_glx (void)
     {
         XFreeColormap (display, xcolormap);
         g_object_unref (gdk_window);
-        XDestroyWindow (display, xwindow);
-        glXDestroyContext (display, glx_context);
+        gdk_window_destroy (gdk_window);
 
         fprintf (stderr, "glXMakeCurrent failed.\n");
         return 0;
