@@ -4383,7 +4383,7 @@ RECT GetWindowMargins(HWND hwnd, UINT width)
 	rcMargins.top = abs(rcMargins.top);
 
 	if (!GUI.HideMenu) {
-		RECT rcTemp = {0,0,width,0x7FFF}; // 0x7FFF="Infinite" height
+		RECT rcTemp = {0,0,(LONG)width,0x7FFF}; // 0x7FFF="Infinite" height
 		SendMessage(hwnd, WM_NCCALCSIZE, FALSE, (LPARAM)&rcTemp);
 
 		// Adjust our previous calculation to compensate for menu
