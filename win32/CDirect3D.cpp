@@ -734,10 +734,11 @@ void CDirect3D::Render(SSurface Src)
 	if (GUI.ReduceInputLag)
 	{
 		IDirect3DSurface9 *surface;
+		RECT r = { 0, 0, 2, 2 };
 
 		if (pDevice->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &surface) == D3D_OK)
 		{
-			if (surface->LockRect(&lr, NULL, D3DLOCK_READONLY) == D3D_OK)
+			if (surface->LockRect(&lr, &r, D3DLOCK_READONLY) == D3D_OK)
 			{
 				surface->UnlockRect();
 			}
