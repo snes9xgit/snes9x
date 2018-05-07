@@ -56,18 +56,6 @@ AC_DEFUN([AC_S9X_COMPILER_FLAG],
 # *** Execution begins here ***
 # *****************************
 
-# Remove -g and -O2 flags manually.
-
-if test "x$CFLAGS" != "x"; then
-	CFLAGS="`echo \"$CFLAGS\" | sed -e 's/-g//'`"
-	CFLAGS="`echo \"$CFLAGS\" | sed -e 's/-O2//'`"
-fi
-
-if test "x$CXXFLAGS" != "x"; then
-	CXXFLAGS="`echo \"$CXXFLAGS\" | sed -e 's/-g//'`"
-	CXXFLAGS="`echo \"$CXXFLAGS\" | sed -e 's/-O2//'`"
-fi
-
 # Test what compiler flags we should use.
 
 AC_ARG_ENABLE([debug],
@@ -450,7 +438,7 @@ S9XDEFS="$S9XDEFS -DGFX_MULTI_FORMAT"
 
 # Output.
 
-S9XFLGS="$CXXFLAGS $CPPFLAGS $LDFLAGS $S9XFLGS"
+S9XFLGS="$S9XFLGS $CXXFLAGS $CPPFLAGS $LDFLAGS"
 S9XLIBS="$LIBS $S9XLIBS"
 
 S9XFLGS="`echo \"$S9XFLGS\" | sed -e 's/  */ /g'`"
