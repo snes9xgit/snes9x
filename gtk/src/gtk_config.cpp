@@ -256,6 +256,7 @@ Snes9xConfig::load_defaults (void)
     Settings.DynamicRateControl = FALSE;
     Settings.DynamicRateLimit = 5;
     Settings.HDMATimingHack = 100;
+    Settings.SuperFXClockMultiplier = 100;
 
 #ifdef NETPLAY_SUPPORT
     Settings.NetPlay = FALSE;
@@ -415,6 +416,7 @@ Snes9xConfig::save_config_file (void)
     xml_out_int (xml, "reverse_stereo", Settings.ReverseStereo);
     xml_out_int (xml, "playback_rate", gui_config->sound_playback_rate);
     xml_out_int (xml, "block_invalid_vram_access", Settings.BlockInvalidVRAMAccessMaster);
+    xml_out_int (xml, "superfx_clock_multiplier", Settings.SuperFXClockMultiplier);
     xml_out_int (xml, "upanddown", Settings.UpAndDown);
 
     xmlTextWriterEndElement (xml); /* preferences */
@@ -694,6 +696,11 @@ Snes9xConfig::set_option (const char *name, const char *value)
     else if (!strcasecmp (name, "hdma"))
     {
         /* Deprecated */
+    }
+    else if (!strcasecmp (name, "superfx_clock_multiplier"))
+    {
+        Settings.SuperFXClockMultiplier = atoi (value);
+        Settings.SuperFXClockMultiplier = CLAMP (Settings.SuperFXClockMultiplier, 50, 400);
     }
     else if (!strcasecmp (name, "speedhacks"))
     {

@@ -467,6 +467,7 @@ struct SSettings
 	bool8	UpAndDown;
 
 	bool8	OpenGLEnable;
+	uint32	SuperFXClockMultiplier;
 };
 
 struct SSNESGameFixes

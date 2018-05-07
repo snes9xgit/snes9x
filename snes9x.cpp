@@ -484,6 +484,7 @@ void S9xLoadConfigFiles (char **argv, int argc)
 		parse_crosshair_spec(X_JUSTIFIER2, conf.GetString("Controls::Justifier2Crosshair"));
 
 	// Hack
+	Settings.SuperFXClockMultiplier         = conf.GetUInt("Hack::SuperFXClockMultiplier", 100);
 
 	Settings.DisableGameSpecificHacks       = !conf.GetBool("Hack::EnableGameSpecificHacks",       true);
 	Settings.BlockInvalidVRAMAccessMaster   = !conf.GetBool("Hack::AllowInvalidVRAMAccess",        false);

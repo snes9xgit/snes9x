@@ -157,6 +157,13 @@
     <property name="step_increment">0.001</property>
     <property name="page_increment">0.010</property>
   </object>
+  <object class="GtkAdjustment" id="superfx_multiplier_adjustment">
+    <property name="lower">50</property>
+    <property name="upper">400</property>
+    <property name="value">100</property>
+    <property name="step_increment">10</property>
+    <property name="page_increment">10</property>
+  </object>
   <object class="GtkAdjustment" id="adjustment13">
     <property name="lower">-1</property>
     <property name="upper">1</property>
@@ -4508,6 +4515,48 @@
                                             <property name="position">2</property>
                                           </packing>
                                         </child>
+                                        <child>
+                                          <object class="GtkHBox" id="superfx_multiplier_hbox">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="spacing">10</property>
+                                            <child>
+                                              <object class="GtkLabel" id="superfx_multiplier_label">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">False</property>
+                                                <property name="label" translatable="yes">SuperFX clock speed %:</property>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">False</property>
+                                                <property name="position">0</property>
+                                              </packing>
+                                            </child>
+                                            <child>
+                                              <object class="GtkSpinButton" id="superfx_multiplier">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">True</property>
+                                                <property name="primary_icon_activatable">False</property>
+                                                <property name="secondary_icon_activatable">False</property>
+                                                <property name="primary_icon_sensitive">True</property>
+                                                <property name="secondary_icon_sensitive">True</property>
+                                                <property name="adjustment">superfx_multiplier_adjustment</property>
+                                                <property name="snap_to_ticks">True</property>
+                                                <property name="numeric">True</property>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">1</property>
+                                              </packing>
+                                            </child>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">False</property>
+                                            <property name="position">3</property>
+                                          </packing>
+                                        </child>
 <child>
   <object class="GtkHBox" id="rewind_buffer_hbox">
     <property name="visible">True</property>
@@ -4547,7 +4596,7 @@
   <packing>
     <property name="expand">False</property>
     <property name="fill">False</property>
-    <property name="position">3</property>
+    <property name="position">4</property>
   </packing>
 </child>
 <child>
@@ -4589,7 +4638,7 @@
   <packing>
     <property name="expand">False</property>
     <property name="fill">False</property>
-    <property name="position">4</property>
+    <property name="position">5</property>
   </packing>
 </child>
                                       </object>

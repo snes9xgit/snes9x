@@ -704,6 +704,7 @@ Snes9xPreferences::move_settings_to_dialog (void)
     set_spin  ("dynamic_rate_limit",        Settings.DynamicRateLimit / 1000.0);
     set_spin  ("rewind_buffer_size",        config->rewind_buffer_size);
     set_spin  ("rewind_granularity",        config->rewind_granularity);
+    set_spin  ("superfx_multiplier",        Settings.SuperFXClockMultiplier);
 
     int num_sound_drivers = 0;
 #ifdef USE_PORTAUDIO
@@ -843,6 +844,7 @@ Snes9xPreferences::get_settings_from_dialog (void)
     Settings.SkipFrames               = get_combo ("frameskip_combo");
     Settings.BlockInvalidVRAMAccessMaster   = get_check ("block_invalid_vram_access");
     Settings.UpAndDown                = get_check ("upanddown");
+    Settings.SuperFXClockMultiplier   = get_spin ("superfx_multiplier");
     config->sound_driver              = get_combo ("sound_driver");
     Settings.Stereo                   = get_check ("stereo_check");
     config->sound_playback_rate       = 7 - (get_combo ("playback_combo"));
