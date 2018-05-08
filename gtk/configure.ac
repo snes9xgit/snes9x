@@ -211,6 +211,10 @@ if test yes = "$with_opengl" ; then
     ],[
         OPENGL=0
     ])
+
+    PKG_CHECK_MODULES([EPOXY], [epoxy]);
+    CFLAGS="$CFLAGS $EPOXY_CFLAGS"
+    LIBS="$LIBS $EPOXY_LIBS"
 fi
 
 GTKJOY=0

@@ -193,6 +193,7 @@
 #include "cgFunctions.h"
 #include <dlfcn.h>
 #include <stdio.h>
+#include <epoxy/gl.h>
 
 void* hCgDll = NULL;
 void* hCgGLDll = NULL;

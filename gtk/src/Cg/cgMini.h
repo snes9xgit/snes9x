@@ -199,7 +199,7 @@
 #define CGD3D9DLL_API
 #define CGGL_API
 
-#include <GL/gl.h>
+#include <epoxy/gl.h>
 
 #define CG_API
 typedef struct _CGprogram* CGprogram;

@@ -192,10 +192,10 @@
 #ifndef CGGLCG_H
 #define CGGLCG_H
 
+#include <epoxy/gl.h>
+
 #include "CCGShader.h"
-#include "GL/glext.h"
 #include "cgFunctions.h"
-#include <GL/gl.h>
 #include <deque>
 #include <vector>
 
@@ -303,13 +303,6 @@ private:
     CGcontext cgContext;
     unsigned int frameCnt;
     static const GLfloat lut_coords[8];
-
-    PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;
-    PFNGLDELETEFRAMEBUFFERSPROC glDeleteFramebuffers;
-    PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer;
-    PFNGLFRAMEBUFFERTEXTURE2DPROC glFramebufferTexture2D;
-    PFNGLCHECKFRAMEBUFFERSTATUSPROC glCheckFramebufferStatus;
-    PFNGLACTIVETEXTUREPROC glClientActiveTexture;
 
 public:
     CGLCG(CGcontext cgContext);

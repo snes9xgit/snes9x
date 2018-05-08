@@ -3,8 +3,6 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <X11/Xlib.h>
-#include <GL/glx.h>
-#include <GL/glxext.h>
 #include <dlfcn.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -15,101 +13,12 @@
 
 #include "Cg/CGLCG.h"
 
-static const char *glGenBuffersNames[] = { "glGenBuffers",
-                                           "glGenBuffersARB",
-                                           "glGenBuffersEXT",
-                                           NULL };
-static const char *glDeleteBuffersNames[] = { "glDeleteBuffers",
-                                              "glDeleteBuffersARB",
-                                              "glDeleteBuffersEXT",
-                                              NULL };
-static const char *glBindBufferNames[] = { "glBindBuffer",
-                                           "glBindBufferARB",
-                                           "glBindBufferEXT",
-                                           NULL };
-static const char *glBufferDataNames[] = { "glBufferData",
-                                           "glBufferDataARB",
-                                           "glBufferDataEXT",
-                                           NULL };
-static const char *glBufferSubDataNames[] = { "glBufferSubData",
-                                              "glBufferSubDataARB",
-                                              "glBufferSubDataEXT",
-                                              NULL };
-static const char *glMapBufferNames[] = { "glMapBuffer",
-                                          "glMapBufferARB",
-                                          "glMapBufferEXT",
-                                          NULL };
-static const char *glUnmapBufferNames[] = { "glUnmapBuffer",
-                                            "glUnmapBufferARB",
-                                            "glUnmapBufferEXT",
-                                            NULL };
-
-getProcAddressProc xglGetProcAddress = NULL;
-
-gl_proc
-get_null_address_proc (const GLubyte *name)
-{
-    return NULL;
-}
-
-gl_proc
-S9xOpenGLDisplayDriver::get_aliased_extension (const char **name)
-{
-    gl_proc ext_proc = NULL;
-
-    for (int i = 0; name[i]; i++)
-    {
-        ext_proc = glGetProcAddress ((GLubyte *) name[i]);
-
-        if (ext_proc)
-            break;
-    }
-
-    return ext_proc;
-}
-
 S9xOpenGLDisplayDriver::S9xOpenGLDisplayDriver (Snes9xWindow *window,
                                                 Snes9xConfig *config)
 {
-    void *dl_handle = NULL;
-
     this->window = window;
     this->config = config;
     this->drawing_area = GTK_WIDGET (window->drawing_area);
-
-    dl_handle = dlopen (NULL, RTLD_LAZY);
-
-    if (dl_handle)
-    {
-        dlerror ();
-
-#ifdef __GNUC__
-__extension__
-#endif
-        getProcAddressProc functor = reinterpret_cast<getProcAddressProc> (dlsym (dl_handle, "glXGetProcAddress"));
-        glGetProcAddress = functor;
-        xglGetProcAddress = glGetProcAddress;
-
-        if (dlerror () != NULL)
-        {
-#ifdef __GNUC__
-__extension__
-#endif
-            getProcAddressProc functor = reinterpret_cast<getProcAddressProc> (dlsym (dl_handle, "glXGetProcAddressARB"));
-            glGetProcAddress = functor;
-            xglGetProcAddress = glGetProcAddress;
-
-            if (dlerror () != NULL)
-                glGetProcAddress = get_null_address_proc;
-        }
-
-        /* ok to close the handle, since didn't really open anything */
-        dlclose (dl_handle);
-    }
-    else
-    {
-        glGetProcAddress = get_null_address_proc;
-    }
 
     return;
 }
@@ -439,44 +348,7 @@ S9xOpenGLDisplayDriver::load_pixel_buffer_functions (void)
 
     if (strstr (extensions, "pixel_buffer_object"))
     {
-        glGenBuffers =
-            (glGenBuffersProc)
-            get_aliased_extension (glGenBuffersNames);
-
-        glDeleteBuffers =
-            (glDeleteBuffersProc)
-            get_aliased_extension (glDeleteBuffersNames);
-
-        glBindBuffer =
-            (glBindBufferProc)
-            get_aliased_extension (glBindBufferNames);
-
-        glBufferData =
-            (glBufferDataProc)
-            get_aliased_extension (glBufferDataNames);
-
-        glBufferSubData =
-            (glBufferSubDataProc)
-            get_aliased_extension (glBufferSubDataNames);
-
-        glMapBuffer =
-            (glMapBufferProc)
-            get_aliased_extension (glMapBufferNames);
-
-        glUnmapBuffer =
-            (glUnmapBufferProc)
-            get_aliased_extension (glUnmapBufferNames);
-
-        if (glGenBuffers    &&
-            glBindBuffer    &&
-            glBufferData    &&
-            glBufferSubData &&
-            glMapBuffer     &&
-            glUnmapBuffer   &&
-            glDeleteBuffers)
-        {
             return 1;
-        }
     }
 
     return 0;
@@ -492,34 +364,7 @@ S9xOpenGLDisplayDriver::load_shader_functions (void)
 
     if (strstr (extensions, "fragment_program"))
     {
-        glCreateProgram = (glCreateProgramProc) glGetProcAddress ((GLubyte *) "glCreateProgram");
-        glCreateShader = (glCreateShaderProc) glGetProcAddress ((GLubyte *) "glCreateShader");
-        glCompileShader = (glCompileShaderProc) glGetProcAddress ((GLubyte *) "glCompileShader");
-        glDeleteShader = (glDeleteShaderProc) glGetProcAddress ((GLubyte *) "glDeleteShader");
-        glDeleteProgram = (glDeleteProgramProc) glGetProcAddress ((GLubyte *) "glDeleteProgram");
-        glAttachShader = (glAttachShaderProc) glGetProcAddress ((GLubyte *) "glAttachShader");
-        glDetachShader = (glDetachShaderProc) glGetProcAddress ((GLubyte *) "glDetachShader");
-        glLinkProgram = (glLinkProgramProc) glGetProcAddress ((GLubyte *) "glLinkProgram");
-        glUseProgram = (glUseProgramProc) glGetProcAddress ((GLubyte *) "glUseProgram");
-        glShaderSource = (glShaderSourceProc) glGetProcAddress ((GLubyte *) "glShaderSource");
-        glGetUniformLocation = (glGetUniformLocationProc) glGetProcAddress ((GLubyte *) "glGetUniformLocation");
-        glUniform2fv = (glUniform2fvProc) glGetProcAddress ((GLubyte *) "glUniform2fv");
-
-        if (glCreateProgram      &&
-            glCreateShader       &&
-            glCompileShader      &&
-            glDeleteShader       &&
-            glDeleteProgram      &&
-            glAttachShader       &&
-            glDetachShader       &&
-            glLinkProgram        &&
-            glUseProgram         &&
-            glShaderSource       &&
-            glGetUniformLocation &&
-            glUniform2fv)
-        {
-            return 1;
-        }
+        return 1;
     }
 
     return 0;
@@ -899,52 +744,16 @@ S9xOpenGLDisplayDriver::init (void)
 void
 S9xOpenGLDisplayDriver::swap_control (int enable)
 {
-    static glSwapIntervalProc     glSwapInterval = NULL;
-    static glXSwapIntervalEXTProc glXSwapIntervalEXT = NULL;
-    static int                    queried = FALSE;
-    const char                   *ext_str;
-
     enable = enable ? 1 : 0;
+    const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
 
-    if (!queried)
+    if (strstr (extensions, "EXT_swap_control"))
     {
-        ext_str = glXQueryExtensionsString (display, DefaultScreen (display));
-
-        /* We try to set this with both extensions since some cards pretend
-         * to support both, but ignore one. */
-
-        if (strstr (ext_str, "GLX_MESA_swap_control"))
-        {
-            glSwapInterval = (glSwapIntervalProc)
-                    glGetProcAddress ((GLubyte *) "glXSwapIntervalMESA");
-        }
-
-        if (strstr (ext_str, "GLX_SGI_swap_control"))
-        {
-            glSwapInterval = (glSwapIntervalProc)
-                    glGetProcAddress ((GLubyte *) "glXSwapIntervalSGI");
-        }
-
-        if (strstr (ext_str, "GLX_EXT_swap_control"))
-        {
-            glXSwapIntervalEXT = (glXSwapIntervalEXTProc)
-                    glGetProcAddress ((GLubyte *) "glXSwapIntervalEXT");
-        }
-
-        queried = TRUE;
-    }
-
-    if (glXSwapIntervalEXT)
-    {
-        if (glSwapInterval)
-            glSwapInterval (0);
-
         glXSwapIntervalEXT (display, xwindow, enable);
     }
-
-    else if (glSwapInterval)
+    else if (strstr (extensions, "SGI_swap_control"))
     {
-        glSwapInterval (enable);
+        glXSwapIntervalSGI (enable);
     }
 
     return;

@@ -3,10 +3,6 @@
 
 #include <gtk/gtk.h>
 
-#ifdef USE_OPENGL
-#include <GL/gl.h>
-#endif
-
 #include "gtk_s9x.h"
 #include "gtk_builder_window.h"
 

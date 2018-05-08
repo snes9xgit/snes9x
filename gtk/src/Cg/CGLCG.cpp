@@ -197,21 +197,7 @@
 
 #include "../gtk_display_driver_opengl.h"
 
-extern getProcAddressProc xglGetProcAddress;
-
-static void ReduceToPath(char* filename)
-{
-    for (int i = strlen(filename); i >= 0; i--)
-    {
-        if (filename[i] == '\\' || filename[i] == '/')
-        {
-            filename[i] = 0;
-            break;
-        }
-    }
-}
-
-static char* ReadShaderFileContents(const char* filename)
+static char* ReadShaderFileContents(const char *filename)
 {
     FILE* file = NULL;
     int size;
@@ -231,6 +217,18 @@ static char* ReadShaderFileContents(const char* filename)
     fclose(file);
 
     return contents;
+}
+
+static void ReduceToPath(char* filename)
+{
+    for (int i = strlen(filename); i >= 0; i--)
+    {
+        if (filename[i] == '\\' || filename[i] == '/')
+        {
+            filename[i] = 0;
+            break;
+        }
+    }
 }
 
 #include <png.h>
@@ -307,30 +305,11 @@ void CGLCG::ClearPasses()
 
 bool CGLCG::LoadFBOFunctions()
 {
-    if (fboFunctionsLoaded)
-        return true;
-
-    const char* extensions = (const char*)glGetString(GL_EXTENSIONS);
+    const char* extensions = (const char*) glGetString(GL_EXTENSIONS);
 
     if (extensions && strstr(extensions, "framebuffer_object"))
     {
-        glGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)xglGetProcAddress(
-            (const GLubyte*)"glGenFramebuffers");
-        glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSPROC)xglGetProcAddress(
-            (const GLubyte*)"glDeleteFramebuffers");
-        glBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)xglGetProcAddress(
-            (const GLubyte*)"glBindFramebuffer");
-        glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DPROC)xglGetProcAddress(
-            (const GLubyte*)"glFramebufferTexture2D");
-        glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSPROC)xglGetProcAddress(
-            (const GLubyte*)"glCheckFramebufferStatus");
-        glClientActiveTexture = (PFNGLACTIVETEXTUREPROC)xglGetProcAddress(
-            (const GLubyte*)"glClientActiveTexture");
-
-        if (glGenFramebuffers && glDeleteFramebuffers && glBindFramebuffer && glFramebufferTexture2D && glClientActiveTexture)
-        {
-            fboFunctionsLoaded = true;
-        }
+        fboFunctionsLoaded = true;
     }
 
     return fboFunctionsLoaded;
