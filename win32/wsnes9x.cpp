@@ -8982,7 +8982,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						}
 					}
 
-					for(int l = 0; l < ct.state.size(); l++ )
+					for(int l = ct.state.size() - 1; l >= 0; l-- )
 					{
 						if(ct.state[l]==Deleted)
 						{
