@@ -44,8 +44,8 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
         int opengl_defaults (void);
         void swap_control (int enable);
         void gl_swap (void);
-        int load_pixel_buffer_functions (void);
-        int load_shader_functions (void);
+        int pbos_available (void);
+        int shaders_available (void);
         int load_shaders (const char *);
         void update_texture_size (int width, int height);
         int init_glx (void);

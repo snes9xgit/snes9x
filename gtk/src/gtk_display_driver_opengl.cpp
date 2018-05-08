@@ -339,7 +339,7 @@ S9xOpenGLDisplayDriver::update_texture_size (int width, int height)
 }
 
 int
-S9xOpenGLDisplayDriver::load_pixel_buffer_functions (void)
+S9xOpenGLDisplayDriver::pbos_available (void)
 {
     const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
 
@@ -355,7 +355,7 @@ S9xOpenGLDisplayDriver::load_pixel_buffer_functions (void)
 }
 
 int
-S9xOpenGLDisplayDriver::load_shader_functions (void)
+S9xOpenGLDisplayDriver::shaders_available (void)
 {
     const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
 
@@ -406,7 +406,7 @@ S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
 
     }
 
-    if (!load_shader_functions ())
+    if (!shaders_available ())
     {
         fprintf (stderr, _("Cannot load GLSL shader functions.\n"));
         return 0;
@@ -483,7 +483,7 @@ S9xOpenGLDisplayDriver::opengl_defaults (void)
     using_pbos = 0;
     if (config->use_pbos)
     {
-        if (!load_pixel_buffer_functions ())
+        if (!pbos_available ())
         {
             fprintf (stderr, _("pixel_buffer_object extension not supported.\n"));
 
@@ -512,8 +512,8 @@ S9xOpenGLDisplayDriver::opengl_defaults (void)
     }
 
     tex_target = GL_TEXTURE_2D;
-    texture_width = 256;
-    texture_height = 256;
+    texture_width = 1024;
+    texture_height = 1024;
     dyn_resizing = FALSE;
 
     const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
