@@ -13,6 +13,8 @@
 #include "gtk_display.h"
 #include "gtk_display_driver_opengl.h"
 
+#include "Cg/CGLCG.h"
+
 static const char *glGenBuffersNames[] = { "glGenBuffers",
                                            "glGenBuffersARB",
                                            "glGenBuffersEXT",
@@ -41,6 +43,8 @@ static const char *glUnmapBufferNames[] = { "glUnmapBuffer",
                                             "glUnmapBufferARB",
                                             "glUnmapBufferEXT",
                                             NULL };
+
+getProcAddressProc xglGetProcAddress = NULL;
 
 gl_proc
 get_null_address_proc (const GLubyte *name)
@@ -84,6 +88,7 @@ __extension__
 #endif
         getProcAddressProc functor = reinterpret_cast<getProcAddressProc> (dlsym (dl_handle, "glXGetProcAddress"));
         glGetProcAddress = functor;
+        xglGetProcAddress = glGetProcAddress;
 
         if (dlerror () != NULL)
         {
@@ -92,6 +97,7 @@ __extension__
 #endif
             getProcAddressProc functor = reinterpret_cast<getProcAddressProc> (dlsym (dl_handle, "glXGetProcAddressARB"));
             glGetProcAddress = functor;
+            xglGetProcAddress = glGetProcAddress;
 
             if (dlerror () != NULL)
                 glGetProcAddress = get_null_address_proc;
@@ -132,6 +138,11 @@ S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
     allocation.height *= gdk_scale_factor;
 
 #endif
+
+    if (using_cg_shaders)
+    {
+        glBindTexture (tex_target, texmap);
+    }
 
     GLint filter = config->bilinear_filter ? GL_LINEAR : GL_NEAREST;
     glTexParameteri (tex_target, GL_TEXTURE_MAG_FILTER, filter);
@@ -313,7 +324,20 @@ S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
         texcoords[4] = texcoords[2];
     }
 
-    if (using_shaders)
+    if (using_shaders && using_cg_shaders)
+    {
+        xySize texture_size, input_size, viewport_size;
+        texture_size.x  = texture_width;
+        texture_size.y  = texture_height;
+        input_size.x    = width;
+        input_size.y    = height;
+        viewport_size.x = w;
+        viewport_size.y = h;
+
+        cg_shader->Render (texmap, texture_size, input_size, viewport_size);
+        glViewport (x, allocation.height - y - h, w, h);
+    }
+    else if (using_shaders)
     {
         GLint location;
         float inputSize[2];
@@ -508,6 +532,35 @@ S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
     xmlNodePtr node = NULL;
     char *fragment = NULL, *vertex = NULL;
 
+    int length = strlen (shader_file);
+    if ((length > 4 && !strcasecmp(shader_file + length - 4, ".cgp")) ||
+        (length > 3 && !strcasecmp(shader_file + length - 3, ".cg")))
+    {
+        if (loadCgFunctions())
+        {
+            cg_context = cgCreateContext ();
+            cg_shader = new CGLCG (cg_context);
+            if (!cg_shader->LoadShader (shader_file))
+            {
+                delete cg_shader;
+                cgDestroyContext (cg_context);
+                return 0;
+            }
+            else
+            {
+                using_cg_shaders = 1;
+                return 1;
+            }
+
+        }
+        else
+        {
+            fprintf (stderr, _("Cannot load CG library.\n"));
+            return 0;
+        }
+
+    }
+
     if (!load_shader_functions ())
     {
         fprintf (stderr, _("Cannot load GLSL shader functions.\n"));
@@ -598,6 +651,9 @@ S9xOpenGLDisplayDriver::opengl_defaults (void)
     }
 
     using_shaders = 0;
+    using_cg_shaders = 0;
+    cg_context = NULL;
+    cg_shader = NULL;
     if (config->use_shaders)
     {
         if (!load_shaders (config->fragment_shader))
@@ -611,8 +667,8 @@ S9xOpenGLDisplayDriver::opengl_defaults (void)
     }
 
     tex_target = GL_TEXTURE_2D;
-    texture_width = 1024;
-    texture_height = 1024;
+    texture_width = 256;
+    texture_height = 256;
     dyn_resizing = FALSE;
 
     const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
@@ -632,8 +688,8 @@ S9xOpenGLDisplayDriver::opengl_defaults (void)
         }
     }
 
-    glEnable (GL_VERTEX_ARRAY);
-    glEnable (GL_TEXTURE_COORD_ARRAY);
+    glEnableClientState (GL_VERTEX_ARRAY);
+    glEnableClientState (GL_TEXTURE_COORD_ARRAY);
 
     vertices[0] = 0.0f;
     vertices[1] = 0.0f;
@@ -935,7 +991,12 @@ S9xOpenGLDisplayDriver::deinit (void)
     if (!initialized)
         return;
 
-    if (using_shaders)
+    if (using_shaders && using_cg_shaders)
+    {
+        delete cg_shader;
+        cgDestroyContext (cg_context);
+    }
+    else if (using_shaders)
     {
         glUseProgram (0);
         glDetachShader (program, vertex_shader);

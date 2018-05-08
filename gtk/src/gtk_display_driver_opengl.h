@@ -7,6 +7,8 @@
 #include <GL/gl.h>
 #include <GL/glx.h>
 
+#include "Cg/CGLCG.h"
+
 #define PBO_FMT_16 0
 #define PBO_FMT_24 1
 #define PBO_FMT_32 2
@@ -136,6 +138,10 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
         int                      using_pbos;
         int                      using_shaders;
         int                      initialized;
+
+        int                      using_cg_shaders;
+        CGcontext                cg_context;
+        CGLCG                    *cg_shader;
 
         Display                  *display;
         Window                   xwindow;

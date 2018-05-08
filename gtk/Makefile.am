@@ -234,7 +234,10 @@ endif
 if OPENGL
 snes9x_gtk_SOURCES += \
     src/gtk_display_driver_opengl.cpp \
-    src/gtk_display_driver_opengl.h
+    src/gtk_display_driver_opengl.h \
+    src/Cg/CGLCG.cpp \
+    src/Cg/cgFunctions.cpp \
+    src/Cg/CCGShader.cpp
 endif
 
 if XV
