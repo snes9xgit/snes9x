@@ -1588,34 +1588,24 @@ S9xQueryDrivers (void)
 #endif
 
     gui_config->allow_xrandr = 0;
+    
+#ifdef GDK_WINDOWING_X11
+    GdkDisplay *display = gtk_widget_get_display (GTK_WIDGET (top_level->get_window()));
+    if (GDK_IS_X11_DISPLAY (display))
+    {
+        int error_base_p, event_base_p;
+        int major_version, minor_version;
+        Display *dpy = gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (top_level->get_window())));
+        Window xid   = gdk_x11_window_get_xid (gtk_widget_get_window (GTK_WIDGET (top_level->get_window())));
 
-    int error_base_p, event_base_p;
-    int major_version, minor_version;
-    Display *dpy = gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (top_level->get_window())));
-    Window xid   = GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (GTK_WIDGET (top_level->get_window())));
-
-    if (!XRRQueryExtension (dpy, &event_base_p, &error_base_p))
-    {
-        gui_config->change_display_resolution = FALSE;
-        return;
-    }
-    if (!XRRQueryVersion (dpy, &major_version, &minor_version))
-    {
-        gui_config->change_display_resolution = FALSE;
-        return;
-    }
-    if (minor_version < 3)
-    {
-        gui_config->change_display_resolution = FALSE;
-        return;
+        gui_config->allow_xrandr = 1;
+        gui_config->xrr_screen_resources = XRRGetScreenResourcesCurrent (dpy, xid);
+        gui_config->xrr_crtc_info        = XRRGetCrtcInfo (dpy,
+                                                        gui_config->xrr_screen_resources,
+                                                        gui_config->xrr_screen_resources->crtcs[0]);
     }
 
-    gui_config->allow_xrandr = 1;
-    gui_config->xrr_screen_resources = XRRGetScreenResourcesCurrent (dpy, xid);
-    gui_config->xrr_crtc_info        = XRRGetCrtcInfo (dpy,
-                                                       gui_config->xrr_screen_resources,
-                                                       gui_config->xrr_screen_resources->crtcs[0]);
-
+#endif
     return;
 }
 
