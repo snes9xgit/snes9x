@@ -1556,7 +1556,18 @@ Snes9xWindow::reset_screensaver (void)
     if (!focused)
         return;
 
-    XResetScreenSaver (GDK_DISPLAY_XDISPLAY (gdk_display_get_default ()));
+#ifdef GDK_WINDOWING_X11
+    if (GDK_IS_X11_WINDOW (gtk_widget_get_window (GTK_WIDGET (window))))
+    {
+        XResetScreenSaver (GDK_DISPLAY_XDISPLAY (gdk_display_get_default ()));
+    }
+#endif
+#ifdef GDK_WINDOWING_WAYLAND
+    if (GDK_IS_WAYLAND_WINDOW (gtk_widget_get_window (GTK_WIDGET (window))))
+    {
+    // TODO screensaver for wayland
+    }
+#endif
 
     config->screensaver_needs_reset = FALSE;
 
