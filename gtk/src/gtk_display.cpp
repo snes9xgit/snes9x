@@ -1,5 +1,7 @@
 #include <gdk/gdk.h>
+#ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
+#endif
 #include <sched.h>
 
 #include "gtk_s9x.h"

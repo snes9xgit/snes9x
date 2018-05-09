@@ -2,7 +2,9 @@
 #include <sys/time.h>
 #include <signal.h>
 #include <gdk/gdk.h>
+#ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
+#endif
 
 #include "gtk_s9x.h"
 #include "gtk_control.h"

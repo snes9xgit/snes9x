@@ -1,7 +1,9 @@
 #include <string>
 #include <stdlib.h>
 #include <gdk/gdkkeysyms.h>
+#ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
+#endif
 
 #include "gtk_preferences.h"
 #include "gtk_config.h"
