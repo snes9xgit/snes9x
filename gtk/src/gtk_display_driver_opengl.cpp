@@ -1,8 +1,10 @@
 #include <gtk/gtk.h>
-#include <gdk/gdkx.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
+#ifdef GDK_WINDOWING_X11
+#include <gdk/gdkx.h>
 #include <X11/Xlib.h>
+#endif
 #include <dlfcn.h>
 #include <sys/stat.h>
 #include <fcntl.h>
