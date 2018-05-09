@@ -2,6 +2,9 @@
 #ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
 #endif
+#ifdef GDK_WINDOWING_WAYLAND
+#include <gdk/gdkwayland.h>
+#endif
 #include <gdk/gdkkeysyms.h>
 #include <cairo.h>
 #include <X11/Xatom.h>
@@ -1616,10 +1619,24 @@ static double XRRGetExactRefreshRate (Display *dpy, Window window)
 double
 Snes9xWindow::get_refresh_rate (void)
 {
+    double refresh_rate = 0.0;
+    GdkDisplay *display = gtk_widget_get_display (window);
+    GdkWindow *gdk_window =  gtk_widget_get_window (window);
+#ifdef GDK_WINDOWING_X11
+    if (GDK_IS_X11_DISPLAY (display))
+    {
     Window xid = GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (window));
     Display *dpy = gdk_x11_display_get_xdisplay (gtk_widget_get_display (window));
-    double refresh_rate = XRRGetExactRefreshRate (dpy, xid);
-
+    refresh_rate = XRRGetExactRefreshRate (dpy, xid);
+    } else
+#endif
+#ifdef GDK_WINDOWING_WAYLAND
+    if (GDK_IS_WAYLAND_DISPLAY (display))
+    {
+        GdkMonitor *monitor = gdk_display_get_monitor_at_window(display, gdk_window);
+        refresh_rate = (double) gdk_monitor_get_refresh_rate(monitor) / 1000.0;
+    }
+#endif
     if (refresh_rate < 10.0)
     {
         printf ("Warning: Couldn't read refresh rate.\n");
