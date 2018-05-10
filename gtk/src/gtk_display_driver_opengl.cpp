@@ -11,7 +11,7 @@
 #include "gtk_display.h"
 #include "gtk_display_driver_opengl.h"
 
-#include "Cg/CGLCG.h"
+#include "shaders/CGLCG.h"
 
 S9xOpenGLDisplayDriver::S9xOpenGLDisplayDriver (Snes9xWindow *window,
                                                 Snes9xConfig *config)
@@ -48,7 +48,7 @@ S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
 
 #endif
 
-    if (using_cg_shaders)
+    if (using_cg_shaders || using_glsl_shaders)
     {
         glBindTexture (tex_target, texmap);
     }
@@ -233,7 +233,12 @@ S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
         texcoords[4] = texcoords[2];
     }
 
-    if (using_shaders && using_cg_shaders)
+    if (using_shaders && using_glsl_shaders)
+    {
+        glsl_shader->render (texmap, width, height, w, h);
+        glViewport (x, allocation.height - y - h, w, h);
+    }
+    else if (using_shaders && using_cg_shaders)
     {
         xySize texture_size, input_size, viewport_size;
         texture_size.x  = texture_width;
@@ -376,8 +381,30 @@ S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
     xmlDoc *xml_doc = NULL;
     xmlNodePtr node = NULL;
     char *fragment = NULL, *vertex = NULL;
+    const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
 
     int length = strlen (shader_file);
+
+    if ((length > 6 && !strcasecmp(shader_file + length - 6, ".glslp")) ||
+        (length > 5 && !strcasecmp(shader_file + length - 5, ".glsl")))
+    {
+        if (shaders_available() && strstr(extensions, "non_power_of_two"))
+        {
+            glsl_shader = new GLSLShader;
+            if (glsl_shader->load_shader ((char *) shader_file))
+            {
+                using_glsl_shaders = 1;
+                return 1;
+            }
+            delete glsl_shader;
+            return 0;
+        }
+        else
+        {
+            printf ("Need shader extensions and non-power-of-two-textures for GLSL.\n");
+        }
+    }
+
     if ((length > 4 && !strcasecmp(shader_file + length - 4, ".cgp")) ||
         (length > 3 && !strcasecmp(shader_file + length - 3, ".cg")))
     {
@@ -480,6 +507,8 @@ S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
 int
 S9xOpenGLDisplayDriver::opengl_defaults (void)
 {
+    const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
+
     using_pbos = 0;
     if (config->use_pbos)
     {
@@ -497,8 +526,11 @@ S9xOpenGLDisplayDriver::opengl_defaults (void)
 
     using_shaders = 0;
     using_cg_shaders = 0;
+    using_glsl_shaders = 0;
     cg_context = NULL;
     cg_shader = NULL;
+    glsl_shader = NULL;
+
     if (config->use_shaders)
     {
         if (!load_shaders (config->fragment_shader))
@@ -515,8 +547,6 @@ S9xOpenGLDisplayDriver::opengl_defaults (void)
     texture_width = 1024;
     texture_height = 1024;
     dyn_resizing = FALSE;
-
-    const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
 
     if (extensions && config->npot_textures)
     {
@@ -800,7 +830,12 @@ S9xOpenGLDisplayDriver::deinit (void)
     if (!initialized)
         return;
 
-    if (using_shaders && using_cg_shaders)
+    if (using_shaders && using_glsl_shaders)
+    {
+        glsl_shader->destroy();
+        delete glsl_shader;
+    }
+    else if (using_shaders && using_cg_shaders)
     {
         delete cg_shader;
         cgDestroyContext (cg_context);

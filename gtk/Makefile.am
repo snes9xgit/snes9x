@@ -235,9 +235,11 @@ if OPENGL
 snes9x_gtk_SOURCES += \
     src/gtk_display_driver_opengl.cpp \
     src/gtk_display_driver_opengl.h \
-    src/Cg/CGLCG.cpp \
-    src/Cg/cgFunctions.cpp \
-    src/Cg/CCGShader.cpp
+    src/shaders/CGLCG.cpp \
+    src/shaders/cgFunctions.cpp \
+    src/shaders/CCGShader.cpp \
+    src/shaders/glsl.cpp \
+    src/shaders/shader_helpers.cpp
 endif
 
 if XV
