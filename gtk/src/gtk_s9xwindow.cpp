@@ -1739,11 +1739,14 @@ Snes9xWindow::enter_fullscreen_mode (void)
 
     gdk_display_sync (gdk_display_get_default ());
     gtk_window_present (GTK_WINDOW (window));
-
-    set_bypass_compositor (gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (window))),
-                           GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (GTK_WIDGET (window))),
-                           1);
-
+#ifdef GDK_WINDOWING_X11
+    if (GDK_IS_X11_WINDOW (gtk_widget_get_window (GTK_WIDGET (window))))
+    {
+        set_bypass_compositor (gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (window))),
+                               GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (GTK_WIDGET (window))),
+                               1);
+    }
+#endif
     config->fullscreen = 1;
     config->rom_loaded = rom_loaded;
 
@@ -1795,9 +1798,14 @@ Snes9xWindow::leave_fullscreen_mode (void)
 
     gtk_window_unfullscreen (GTK_WINDOW (window));
 
-    set_bypass_compositor (gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (window))),
-                           GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (GTK_WIDGET (window))),
-                           0);
+#ifdef GDK_WINDOWING_X11
+    if (GDK_IS_X11_WINDOW (gtk_widget_get_window (GTK_WIDGET (window))))
+    {
+        set_bypass_compositor (gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (window))),
+                               GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (GTK_WIDGET (window))),
+                               0);
+    }
+#endif
 
     resize (nfs_width, nfs_height);
     gtk_window_move (GTK_WINDOW (window), nfs_x, nfs_y);
