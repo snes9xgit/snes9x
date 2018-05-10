@@ -73,9 +73,19 @@ bool GLSLShader::load_shader_file (char *filename)
     if (strlen(filename) < 6 || strcasecmp(&filename[strlen(filename) - 6], ".glslp"))
     {
         GLSLPass pass;
-        pass.scale_type_x = pass.scale_type_y = GLSL_NONE;
+        this->pass.push_back (GLSLPass());
+
+        pass.scale_type_x = pass.scale_type_y = GLSL_VIEWPORT;
         pass.filter = GLSL_UNDEFINED;
         strcpy(pass.filename, filename);
+        pass.frame_count_mod = 0;
+        pass.frame_count = 0;
+        pass.fp = 0;
+        pass.scale_x = 1.0;
+        pass.scale_y = 1.0;
+        this->pass.push_back (pass);
+
+        return true;
     }
     else
     {
