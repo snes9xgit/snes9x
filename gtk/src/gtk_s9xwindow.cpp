@@ -755,14 +755,7 @@ Snes9xWindow::expose (void)
         config->window_height = get_height ();
     }
 
-    if (is_paused ()
-#ifdef NETPLAY_SUPPORT
-            || NetPlay.Paused
-#endif
-    )
-    {
-        S9xDeinitUpdate (last_width, last_height);
-    }
+    S9xUpdateDisplay (last_width, last_height);
 
     return;
 }

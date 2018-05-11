@@ -1596,7 +1596,13 @@ S9xQueryDrivers (void)
 }
 
 bool8
-S9xDeinitUpdate (int width, int height)
+S9xDeinitUpdate (int width, int height) {
+    gdk_window_invalidate_rect(gtk_widget_get_window (GTK_WIDGET (top_level->drawing_area)), NULL, gtk_false ());
+    return TRUE;
+}
+
+bool8
+S9xUpdateDisplay (int width, int height)
 {
     int yoffset = 0;
 
