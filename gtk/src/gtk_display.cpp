@@ -10,10 +10,14 @@
 #include "gtk_display_driver_gtk.h"
 #include "snes_ntsc.h"
 #ifdef USE_XV
+#ifdef GDK_WINDOWING_X11
 #include "gtk_display_driver_xv.h"
 #endif
+#endif
 #ifdef USE_OPENGL
+#ifdef GDK_WINDOWING_X11
 #include "gtk_display_driver_opengl.h"
+#endif
 #endif
 
 static S9xDisplayDriver  *driver;
@@ -1561,23 +1565,27 @@ S9xDisplayReconfigure (void)
 void
 S9xQueryDrivers (void)
 {
-#ifdef USE_XV
-    gui_config->allow_xv = S9xXVDisplayDriver::query_availability ();
-#else
+
     gui_config->allow_xv = 0;
+
+#ifdef USE_XV
+#ifdef GDK_WINDOWING_X11
+    gui_config->allow_xv = S9xXVDisplayDriver::query_availability ();
+#endif
 #endif
 
-#ifdef USE_OPENGL
-    gui_config->allow_opengl = S9xOpenGLDisplayDriver::query_availability ();
-#else
     gui_config->allow_opengl = 0;
+
+#ifdef USE_OPENGL
+#ifdef GDK_WINDOWING_X11
+    gui_config->allow_opengl = S9xOpenGLDisplayDriver::query_availability ();
+#endif
 #endif
 
     gui_config->allow_xrandr = 0;
     
 #ifdef GDK_WINDOWING_X11
-    GdkDisplay *display = gtk_widget_get_display (GTK_WIDGET (top_level->get_window()));
-    if (GDK_IS_X11_DISPLAY (display))
+    if (GDK_IS_X11_DISPLAY (gdk_display_get_default ()))
     {
         int error_base_p, event_base_p;
         int major_version, minor_version;
@@ -1684,6 +1692,7 @@ S9xInitDriver (void)
     switch (gui_config->hw_accel)
     {
 #ifdef USE_OPENGL
+#ifdef GDK_WINDOWING_X11
         case HWA_OPENGL:
 
             driver = new S9xOpenGLDisplayDriver (top_level,
@@ -1691,12 +1700,15 @@ S9xInitDriver (void)
 
             break;
 #endif
+#endif
 #ifdef USE_XV
+#ifdef GDK_WINDOWING_X11
         case HWA_XV:
 
             driver = new S9xXVDisplayDriver (top_level, gui_config);
 
             break;
+#endif
 #endif
         default:
 

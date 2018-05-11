@@ -886,8 +886,14 @@ S9xOpenGLDisplayDriver::reconfigure (int width, int height)
 int
 S9xOpenGLDisplayDriver::query_availability (void)
 {
+    GdkDisplay *gdk_display = gdk_display_get_default ();
+    if (!GDK_IS_X11_DISPLAY (gdk_display))
+    {
+        return 0;
+    }
+
     int errorBase, eventBase;
-    Display *display = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
+    Display *display = GDK_DISPLAY_XDISPLAY (gdk_display);
 
     if (glXQueryExtension (display, &errorBase, &eventBase) == False)
     {
