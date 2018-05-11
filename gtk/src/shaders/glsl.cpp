@@ -65,6 +65,25 @@ static int scale_string_to_enum(const char *string, bool last)
         return GLSL_SOURCE;
 }
 
+static int wrap_mode_string_to_enum(const char *string)
+{
+    if (!strcasecmp(string, "repeat"))
+    {
+        return GL_REPEAT;
+    }
+    else if (!strcasecmp(string, "clamp_to_edge"))
+    {
+        return GL_CLAMP_TO_EDGE;
+    }
+    else if (!strcasecmp(string, "clamp"))
+    {
+        return GL_CLAMP;
+    }
+    else
+        return GL_CLAMP_TO_BORDER;
+}
+
+
 bool GLSLShader::load_shader_file (char *filename)
 {
     ConfigFile conf;
@@ -148,8 +167,24 @@ bool GLSLShader::load_shader_file (char *filename)
         sprintf(key, "::frame_count_mod%u", i);
         pass.frame_count_mod = conf.GetInt(key, 0);
 
-        sprintf(key, "::float_framebuffer%u", i);
-        pass.fp = conf.GetBool(key);
+        if (float_texture_available ())
+        {
+            sprintf(key, "::float_framebuffer%u", i);
+            pass.fp = conf.GetBool(key);
+        }
+        else
+            pass.fp = false;
+
+        if (srgb_available ())
+        {
+            sprintf(key, "::srgb_framebuffer%u", i);
+            pass.srgb = conf.GetBool(key);
+        }
+        else
+            pass.srgb = false;
+
+        sprintf(key, "::alias%u", i);
+        strcpy(pass.alias, conf.GetString(key, ""));
 
         this->pass.push_back(pass);
     }
@@ -165,8 +200,21 @@ bool GLSLShader::load_shader_file (char *filename)
         sprintf(key, "::%s", id);
         strcpy(lut.id, id);
         strcpy(lut.filename, conf.GetString(key, ""));
+
+        sprintf(key, "::%s_wrap_mode", id);
+        lut.wrap_mode = wrap_mode_string_to_enum (conf.GetString (key, ""));
+
+        sprintf(key, "::%s_mipmap", id);
+        lut.mipmap = conf.GetBool (key);
+
         sprintf(key, "::%s_linear", id);
         lut.filter = (conf.GetBool(key, false)) ? GL_LINEAR : GL_NEAREST;
+
+        if (lut.mipmap)
+        {
+            lut.filter = (lut.filter == GL_LINEAR) ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_NEAREST;
+        }
+
         this->lut.push_back(lut);
 
         id = strtok(NULL, ";");
@@ -192,7 +240,11 @@ static void strip_parameter_pragmas(char *buffer)
    }
 }
 
-static GLuint compile_shader (char *program, const char *defines, GLuint type, GLuint *out)
+static GLuint compile_shader (char *program,
+                              const char *aliases,
+                              const char *defines,
+                              GLuint type,
+                              GLuint *out)
 {
     char info_log[1024];
     char *ptr = program;
@@ -211,6 +263,7 @@ static GLuint compile_shader (char *program, const char *defines, GLuint type, G
     }
 
     complete_program += version;
+    complete_program += aliases;
     complete_program += defines;
     complete_program += ptr;
 
@@ -235,6 +288,7 @@ bool GLSLShader::load_shader (char *filename)
 {
     char shader_path[PATH_MAX];
     char temp[PATH_MAX];
+    std::string aliases = "";
     GLint status;
     char log[1024];
 
@@ -250,6 +304,20 @@ bool GLSLShader::load_shader (char *filename)
     chdir(shader_path);
     if (!load_shader_file(filename))
         return false;
+
+    /*
+    for (unsigned int i = 1; i < pass.size(); i++)
+    {
+        if (pass[i].alias && *pass[i].alias)
+        {
+            aliases += "#define ";
+            aliases += pass[i].alias;
+            aliases += " Pass";
+            aliases += std::to_string(i - 1);
+            aliases += "Texture\n";
+            printf ("%s\n", aliases.c_str());
+        }
+    }*/
 
     for (unsigned int i = 1; i < pass.size(); i++)
     {
@@ -268,7 +336,8 @@ bool GLSLShader::load_shader (char *filename)
         strip_parameter_pragmas(contents);
 
         if (!compile_shader (contents,
-                             "#define VERTEX\n", // #define PARAMETER_UNIFORM\n",
+                             "#define VERTEX\n",// #define PARAMETER_UNIFORM\n",
+                             aliases.c_str(),
                              GL_VERTEX_SHADER,
                              &vertex_shader) || !vertex_shader)
         {
@@ -278,6 +347,7 @@ bool GLSLShader::load_shader (char *filename)
 
         if (!compile_shader (contents,
                              "#define FRAGMENT\n", // #define PARAMETER_UNIFORM\n",
+                             aliases.c_str(),
                              GL_FRAGMENT_SHADER,
                              &fragment_shader) || !fragment_shader)
         {
@@ -325,8 +395,8 @@ bool GLSLShader::load_shader (char *filename)
      */
         glGenTextures(1, &l->texture);
         glBindTexture(GL_TEXTURE_2D, l->texture);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, l->wrap_mode);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, l->wrap_mode);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, l->filter);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, l->filter);
 
@@ -384,6 +454,9 @@ bool GLSLShader::load_shader (char *filename)
                 }
             }
         }
+
+        if (l->mipmap)
+            glGenerateMipmap (GL_TEXTURE_2D);
     }
 
     glActiveTexture(GL_TEXTURE1);
@@ -456,15 +529,32 @@ void GLSLShader::render(GLuint &orig, int width, int height, int viewport_width,
      */
         glBindTexture(GL_TEXTURE_2D, pass[i].texture);
 
-        glTexImage2D(GL_TEXTURE_2D,
-                     0,
-                     (pass[i].fp ? GL_RGBA32F : GL_RGBA),
-                     (unsigned int) pass[i].width,
-                     (unsigned int) pass[i].height,
-                     0,
-                     GL_RGBA,
-                     GL_UNSIGNED_INT_8_8_8_8,
-                     NULL);
+        if (pass[i].srgb)
+        {
+            glEnable(GL_FRAMEBUFFER_SRGB);
+
+            glTexImage2D(GL_TEXTURE_2D,
+                         0,
+                         GL_SRGB8_ALPHA8,
+                         (unsigned int) pass[i].width,
+                         (unsigned int) pass[i].height,
+                         0,
+                         GL_RGBA,
+                         GL_UNSIGNED_INT_8_8_8_8,
+                         NULL);
+        }
+        else
+        {
+            glTexImage2D(GL_TEXTURE_2D,
+                         0,
+                         (pass[i].fp ? GL_RGBA32F : GL_RGBA),
+                         (unsigned int) pass[i].width,
+                         (unsigned int) pass[i].height,
+                         0,
+                         GL_RGBA,
+                         (pass[i].fp ? GL_FLOAT : GL_UNSIGNED_INT_8_8_8_8),
+                          NULL);
+        }
 
         // viewport determines the area we render into the output texture
         glViewport(0, 0, pass[i].width, pass[i].height);
@@ -500,6 +590,11 @@ void GLSLShader::render(GLuint &orig, int width, int height, int viewport_width,
         /* reset client states enabled during setShaderVars
      */
         clear_shader_vars();
+
+        if (pass[i].srgb)
+        {
+            glDisable (GL_FRAMEBUFFER_SRGB);
+        }
     }
 
     /* disable framebuffer

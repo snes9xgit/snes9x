@@ -1,5 +1,5 @@
-#ifndef __IMAGE_FILE_FORMATS_H
-#define __IMAGE_FILE_FORMATS_H
+#ifndef __SHADER_HELPERS_H
+#define __SHADER_HELPERS_H
 
 #include <epoxy/gl.h>
 
@@ -41,4 +41,8 @@ bool loadTGA(const char* filename, STGA& tgaFile);
 
 void glLogErrors (void);
 
-#endif // __IMAGE_FILE_FORMATS_H
+bool srgb_available (void);
+bool float_texture_available (void);
+bool gl_version_at_least (int maj, int min);
+
+#endif // __SHADER_HELPERS_H

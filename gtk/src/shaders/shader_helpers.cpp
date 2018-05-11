@@ -28,6 +28,53 @@ static void gl_error_callback( GLenum source,
     return;
 }
 
+bool gl_version_at_least (int maj, int min)
+{
+    static int major_version = -1;
+    static int minor_version = -1;
+
+    if (major_version < 0 || minor_version < 0)
+    {
+        glGetIntegerv (GL_MAJOR_VERSION, &major_version);
+        glGetIntegerv (GL_MINOR_VERSION, &minor_version);
+    }
+
+    if (maj > major_version)
+        return true;
+
+    if (maj == major_version && min >= minor_version)
+        return true;
+
+    return false;
+}
+
+bool srgb_available (void)
+{
+    if (gl_version_at_least (3, 0))
+        return true;
+
+    const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
+
+    if (strstr (extensions, "texture_sRGB") &&
+        strstr (extensions, "framebuffer_sRGB"))
+        return true;
+
+    return false;
+}
+
+bool float_texture_available (void)
+{
+    if (gl_version_at_least (3, 2))
+        return true;
+
+    const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
+
+    if (strstr (extensions, "texture_float"))
+        return true;
+
+    return false;
+}
+
 void glLogErrors (void)
 {
     glEnable (GL_DEBUG_OUTPUT);

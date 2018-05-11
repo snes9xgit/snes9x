@@ -11,6 +11,7 @@
 #include "gtk_display.h"
 #include "gtk_display_driver_opengl.h"
 
+#include "shaders/shader_helpers.h"
 #include "shaders/CGLCG.h"
 
 S9xOpenGLDisplayDriver::S9xOpenGLDisplayDriver (Snes9xWindow *window,
@@ -346,6 +347,10 @@ S9xOpenGLDisplayDriver::update_texture_size (int width, int height)
 int
 S9xOpenGLDisplayDriver::pbos_available (void)
 {
+
+    if (gl_version_at_least (2, 1))
+            return 1;
+
     const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
 
     if (!extensions)
@@ -367,7 +372,27 @@ S9xOpenGLDisplayDriver::shaders_available (void)
     if (!extensions)
         return 0;
 
-    if (strstr (extensions, "fragment_program"))
+    if (strstr (extensions, "fragment_program") ||
+        strstr (extensions, "fragment_shader"))
+    {
+        return 1;
+    }
+
+    return 0;
+}
+
+static int npot_available (void)
+{
+    if (gl_version_at_least (2, 0))
+        return true;
+
+    const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
+
+    if (!extensions)
+        return 0;
+
+    if (strstr (extensions, "non_power_of_two") ||
+        strstr (extensions, "npot"))
     {
         return 1;
     }
@@ -381,14 +406,13 @@ S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
     xmlDoc *xml_doc = NULL;
     xmlNodePtr node = NULL;
     char *fragment = NULL, *vertex = NULL;
-    const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
 
     int length = strlen (shader_file);
 
     if ((length > 6 && !strcasecmp(shader_file + length - 6, ".glslp")) ||
         (length > 5 && !strcasecmp(shader_file + length - 5, ".glsl")))
     {
-        if (shaders_available() && strstr(extensions, "non_power_of_two"))
+        if (shaders_available() && npot_available())
         {
             glsl_shader = new GLSLShader;
             if (glsl_shader->load_shader ((char *) shader_file))
@@ -557,7 +581,7 @@ S9xOpenGLDisplayDriver::opengl_defaults (void)
             texture_height = scaled_max_height;
             dyn_resizing = TRUE;
         }
-        else if (strstr (extensions, "GL_ARB_texture_non_power_of_two"))
+        else if (npot_available ())
         {
             dyn_resizing = TRUE;
         }

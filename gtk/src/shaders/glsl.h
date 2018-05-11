@@ -56,11 +56,13 @@ typedef struct
 typedef struct
 {
     char filename[PATH_MAX];
+    char alias[256];
     int scale_type_x;
     int scale_type_y;
     float scale_x;
     float scale_y;
     bool fp;
+    bool srgb;
     int frame_count_mod;
     unsigned int frame_count;
 
@@ -82,6 +84,8 @@ typedef struct
     char filename[PATH_MAX];
     GLuint filter;
     GLuint texture;
+    GLuint wrap_mode;
+    bool mipmap;
 } GLSLLut;
 
 typedef struct
