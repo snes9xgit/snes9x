@@ -86,7 +86,6 @@ static int wrap_mode_string_to_enum(const char *string)
 
 bool GLSLShader::load_shader_file (char *filename)
 {
-    ConfigFile conf;
     char key[256];
 
     if (strlen(filename) < 6 || strcasecmp(&filename[strlen(filename) - 6], ".glslp"))
@@ -224,7 +223,7 @@ bool GLSLShader::load_shader_file (char *filename)
     return true;
 }
 
-static void strip_parameter_pragmas(char *buffer)
+void GLSLShader::strip_parameter_pragmas(char *buffer)
 {
    /* #pragma parameter lines tend to have " characters in them,
     * which is not legal GLSL. */
@@ -232,19 +231,32 @@ static void strip_parameter_pragmas(char *buffer)
 
    while (s)
    {
-      /* #pragmas have to be on a single line,
-       * so we can just replace the entire line with spaces. */
-      while (*s != '\0' && *s != '\n')
-         *s++ = ' ';
-      s = strstr(s, "#pragma parameter");
+       GLSLParam par;
+       unsigned int i;
+
+       sscanf (s, "#pragma parameter %s \"%[^\"]\" %f %f %f %f",
+               par.id, par.name, &par.val, &par.min, &par.max, &par.step);
+
+       for (i = 0; i < param.size(); i++)
+       {
+           if (!strcmp(param[i].id, par.id))
+               break;
+       }
+       if (i >= param.size())
+           param.push_back (par);
+
+       /* blank out the line */
+       while (*s != '\0' && *s != '\n')
+          *s++ = ' ';
+       s = strstr(s, "#pragma parameter");
    }
 }
 
-static GLuint compile_shader (char *program,
-                              const char *aliases,
-                              const char *defines,
-                              GLuint type,
-                              GLuint *out)
+GLuint GLSLShader::compile_shader(char *program,
+                                  const char *aliases,
+                                  const char *defines,
+                                  GLuint type,
+                                  GLuint *out)
 {
     char info_log[1024];
     char *ptr = program;
@@ -325,8 +337,9 @@ bool GLSLShader::load_shader (char *filename)
         GLuint vertex_shader = 0, fragment_shader = 0;
 
         realpath(p->filename, temp);
+        strcpy (p->filename, temp);
 
-        char *contents = read_file (temp);
+        char *contents = read_file (p->filename);
         if (!contents)
         {
             printf("Couldn't read shader file %s\n", temp);
@@ -336,7 +349,7 @@ bool GLSLShader::load_shader (char *filename)
         strip_parameter_pragmas(contents);
 
         if (!compile_shader (contents,
-                             "#define VERTEX\n",// #define PARAMETER_UNIFORM\n",
+                             "#define VERTEX\n#define PARAMETER_UNIFORM\n",
                              aliases.c_str(),
                              GL_VERTEX_SHADER,
                              &vertex_shader) || !vertex_shader)
@@ -346,7 +359,7 @@ bool GLSLShader::load_shader (char *filename)
         }
 
         if (!compile_shader (contents,
-                             "#define FRAGMENT\n", // #define PARAMETER_UNIFORM\n",
+                             "#define FRAGMENT\n#define PARAMETER_UNIFORM\n",
                              aliases.c_str(),
                              GL_FRAGMENT_SHADER,
                              &fragment_shader) || !fragment_shader)
@@ -457,6 +470,20 @@ bool GLSLShader::load_shader (char *filename)
 
         if (l->mipmap)
             glGenerateMipmap (GL_TEXTURE_2D);
+    }
+
+    /* Check for parameters specified in file */
+    for (unsigned int i = 0; i < param.size(); i++)
+    {
+        char key[266];
+        const char *value;
+        snprintf (key, 266, "::%s", param[i].id);
+        value = conf.GetString (key, NULL);
+        if (value)
+        {
+            param[i].val = atof (value);
+            param[i].val = CLAMP (param[i].val, param[i].min, param[i].max);
+        }
     }
 
     glActiveTexture(GL_TEXTURE1);
@@ -731,6 +758,11 @@ void GLSLShader::register_uniforms ()
         {
             u->Lut[j] = glGetUniformLocation (program, lut[j].id);
         }
+
+        for (unsigned int j = 0; j < param.size(); j++)
+        {
+            param[j].unif[i] = glGetUniformLocation (program, param[j].id);
+        }
     }
 
     glUseProgram (0);
@@ -850,6 +882,12 @@ void GLSLShader::set_shader_vars (int p)
         setTexCoords (u->PassPrev[p - i].TexCoord);
     }
 
+    /* Parameters */
+    for (unsigned int i = 0; i < param.size(); i++)
+    {
+        setUniform1f (param[i].unif[p], param[i].val);
+    }
+
     glActiveTexture (GL_TEXTURE0);
     glBindBuffer (GL_ARRAY_BUFFER, 0);
 }
@@ -877,6 +915,7 @@ void GLSLShader::destroy (void)
         glDeleteTextures (1, &prev_frame[i].texture);
     }
 
+    param.clear();
     pass.clear();
     lut.clear();
     prev_frame.clear();

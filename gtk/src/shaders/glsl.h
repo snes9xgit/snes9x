@@ -2,6 +2,9 @@
 #include <deque>
 #include <limits.h>
 #include <epoxy/gl.h>
+#include "../../conffile.h"
+
+static const unsigned int glsl_max_passes = 20;
 
 enum GLSLScaleType
 {
@@ -47,8 +50,8 @@ typedef struct
     unsigned int max_pass;
     unsigned int max_prevpass;
     GLSLUniformMetrics Prev[7];
-    GLSLUniformMetrics Pass[20];
-    GLSLUniformMetrics PassPrev[20];
+    GLSLUniformMetrics Pass[glsl_max_passes];
+    GLSLUniformMetrics PassPrev[glsl_max_passes];
     GLint Lut[9];
 
 } GLSLUniforms;
@@ -80,7 +83,7 @@ typedef struct
 
 typedef struct
 {
-    char id[PATH_MAX];
+    char id[256];
     char filename[PATH_MAX];
     GLuint filter;
     GLuint texture;
@@ -91,10 +94,12 @@ typedef struct
 typedef struct
 {
     char name[PATH_MAX];
+    char id[256];
     float min;
     float max;
-    float def;
+    float val;
     float step;
+    GLint unif[glsl_max_passes];
 } GLSLParam;
 
 typedef struct
@@ -104,8 +109,17 @@ typedef struct
     void render (GLuint &orig, int width, int height, int viewport_width, int viewport_height);
     void set_shader_vars (int pass);
     void clear_shader_vars (void);
+    void strip_parameter_pragmas(char *buffer);
+    GLuint compile_shader (char *program,
+                           const char *aliases,
+                           const char *defines,
+                           GLuint type,
+                           GLuint *out);
+
     void destroy (void);
     void register_uniforms (void);
+
+    ConfigFile conf;
 
     std::vector<GLSLPass> pass;
     std::vector<GLSLLut> lut;
