@@ -152,7 +152,7 @@ bool GLSLShader::load_shader_file (char *filename)
         GLSLPass pass;
 
         snprintf(key, 256, "::filter_linear%u", i);
-        pass.filter = conf.Exists(key) ? conf.GetBool(key) ? GL_LINEAR : GL_NEAREST : GLSL_UNDEFINED;
+        pass.filter = conf.Exists(key) ? (conf.GetBool(key) ? GL_LINEAR : GL_NEAREST) : GLSL_UNDEFINED;
 
         sprintf(key, "::scale_type%u", i);
         const char* scaleType = conf.GetString(key, "");
@@ -543,7 +543,7 @@ bool GLSLShader::load_shader (char *filename)
     return true;
 }
 
-void GLSLShader::render(GLuint &orig, int width, int height, int viewport_width, int viewport_height)
+void GLSLShader::render(GLuint &orig, int width, int height, int viewport_width, int viewport_height, int viewport_x, int viewport_y)
 {
     frame_count++;
 
@@ -557,6 +557,8 @@ void GLSLShader::render(GLuint &orig, int width, int height, int viewport_width,
    */
     for (unsigned int i = 1; i < pass.size(); i++)
     {
+        bool lastpass = (i == pass.size() - 1);
+
         switch (pass[i].scale_type_x)
         {
         case GLSL_ABSOLUTE:
@@ -631,14 +633,20 @@ void GLSLShader::render(GLuint &orig, int width, int height, int viewport_width,
                                0);
 
         // set up input texture (output of previous pass) and apply filter settings
+
+        GLuint filter = (pass[i].filter == GLSL_UNDEFINED) ?
+                         (lastpass ?
+                          (gui_config->bilinear_filter ? GL_LINEAR : GL_NEAREST) : GL_NEAREST
+                              ) : pass[i].filter;
+
         glBindTexture(GL_TEXTURE_2D, pass[i - 1].texture);
         glPixelStorei(GL_UNPACK_ROW_LENGTH, (GLint) pass[i - 1].width);
         glTexParameteri(GL_TEXTURE_2D,
                         GL_TEXTURE_MAG_FILTER,
-                        pass[i].filter == GLSL_UNDEFINED ? GL_NEAREST : pass[i].filter);
+                        filter);
         glTexParameteri(GL_TEXTURE_2D,
                         GL_TEXTURE_MIN_FILTER,
-                        pass[i].filter == GLSL_UNDEFINED ? GL_NEAREST : pass[i].filter);
+                        filter);
 
         glTexCoordPointer(2, GL_FLOAT, 0, tex_coords);
 
