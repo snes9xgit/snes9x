@@ -283,6 +283,17 @@ S9xOpenGLDisplayDriver::get_parameters(void)
 }
 
 void
+S9xOpenGLDisplayDriver::save (void)
+{
+    if (using_glsl_shaders && glsl_shader)
+    {
+        glsl_shader->save();
+    }
+
+    return;
+}
+
+void
 S9xOpenGLDisplayDriver::clear_buffers (void)
 {
     memset (buffer[0], 0, image_padded_size);

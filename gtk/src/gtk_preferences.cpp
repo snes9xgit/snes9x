@@ -493,8 +493,11 @@ event_auto_input_rate_toggled (GtkToggleButton *togglebutton, gpointer data)
 static void
 event_shader_parameters (GtkButton *widget, gpointer data)
 {
+    S9xDisplayDriver *driver = S9xDisplayGetDriver ();
+    Snes9xPreferences *preferences = (Snes9xPreferences *) data;
+
 #ifdef USE_OPENGL
-    if (!S9xDisplayGetDriver () || !S9xDisplayGetDriver ()->get_parameters () || !gtk_shader_parameters_dialog (top_level->get_window ()))
+    if (!driver || !driver->get_parameters () || !gtk_shader_parameters_dialog (top_level->get_window ()))
     {
         GtkWidget *dialog;
         dialog = gtk_message_dialog_new (top_level->get_window(),
@@ -509,6 +512,12 @@ event_shader_parameters (GtkButton *widget, gpointer data)
 
         return;
     }
+    else
+    {
+        driver->save();
+        preferences->set_entry_text ("fragment_shader", preferences->config->fragment_shader);
+    }
+
 #endif
 }
 

@@ -334,7 +334,7 @@ Snes9xConfig::save_config_file (void)
     xml_out_int (xml, "force_inverted_byte_order", force_inverted_byte_order);
     xml_out_int (xml, "multithreading", multithreading);
     xml_out_string (xml, "last_directory", last_directory);
-    xml_out_string (xml, "last_directory", last_shader_directory);
+    xml_out_string (xml, "last_shader_directory", last_shader_directory);
     xml_out_string (xml, "sram_directory", sram_directory);
     xml_out_string (xml, "savestate_directory", savestate_directory);
     xml_out_string (xml, "cheat_directory", cheat_directory);
