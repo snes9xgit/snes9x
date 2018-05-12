@@ -227,7 +227,8 @@ S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
     if (using_shaders && using_glsl_shaders)
     {
         glsl_shader->render (texmap, width, height, w, h, x, allocation.height - y - h);
-        glViewport (x, allocation.height - y - h, w, h);
+        gl_swap ();
+        return;
     }
     else if (using_shaders && using_cg_shaders)
     {

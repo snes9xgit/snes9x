@@ -3,9 +3,8 @@
 #include "shader_helpers.h"
 #include "../gtk_s9x.h"
 
-static const GLfloat lut_coords[8] = { 0, 0, 1, 0, 1, 1, 0, 1 };
-static const GLfloat inv_coords[8] = { 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f };
-static const GLfloat tex_coords[8] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f };
+static const GLfloat tex_coords[16] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+                                        0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f };
 static const GLfloat mvp_ortho[16] = { 2.0f,  0.0f,  0.0f,  0.0f,
                                           0.0f,  2.0f,  0.0f,  0.0f,
                                           0.0f,  0.0f, -1.0f,  0.0f,
@@ -523,7 +522,7 @@ bool GLSLShader::load_shader (char *filename)
 
     glActiveTexture(GL_TEXTURE1);
     glEnable(GL_TEXTURE_COORD_ARRAY);
-    glTexCoordPointer(2, GL_FLOAT, 0, lut_coords);
+    glTexCoordPointer(2, GL_FLOAT, 0, tex_coords);
     glActiveTexture(GL_TEXTURE0);
 
     register_uniforms();
@@ -591,46 +590,56 @@ void GLSLShader::render(GLuint &orig, int width, int height, int viewport_width,
 
         /* set size of output texture
      */
-        glBindTexture(GL_TEXTURE_2D, pass[i].texture);
-
-        if (pass[i].srgb)
+        if (!lastpass)
         {
-            glEnable(GL_FRAMEBUFFER_SRGB);
+            glBindTexture(GL_TEXTURE_2D, pass[i].texture);
 
-            glTexImage2D(GL_TEXTURE_2D,
-                         0,
-                         GL_SRGB8_ALPHA8,
-                         (unsigned int) pass[i].width,
-                         (unsigned int) pass[i].height,
-                         0,
-                         GL_RGBA,
-                         GL_UNSIGNED_INT_8_8_8_8,
-                         NULL);
+            if (pass[i].srgb)
+            {
+                glEnable(GL_FRAMEBUFFER_SRGB);
+
+                glTexImage2D(GL_TEXTURE_2D,
+                             0,
+                             GL_SRGB8_ALPHA8,
+                             (unsigned int) pass[i].width,
+                             (unsigned int) pass[i].height,
+                             0,
+                             GL_RGBA,
+                             GL_UNSIGNED_INT_8_8_8_8,
+                             NULL);
+            }
+            else
+            {
+                glTexImage2D(GL_TEXTURE_2D,
+                             0,
+                             (pass[i].fp ? GL_RGBA32F : GL_RGBA),
+                             (unsigned int) pass[i].width,
+                             (unsigned int) pass[i].height,
+                             0,
+                             GL_RGBA,
+                             (pass[i].fp ? GL_FLOAT : GL_UNSIGNED_INT_8_8_8_8),
+                             NULL);
+            }
+
+            glViewport(0, 0, pass[i].width, pass[i].height);
+
+                    // set up framebuffer and attach output texture
+
+            glBindFramebuffer(GL_FRAMEBUFFER, pass[i].fbo);
+            glFramebufferTexture2D(GL_FRAMEBUFFER,
+                                   GL_COLOR_ATTACHMENT0,
+                                   GL_TEXTURE_2D,
+                                   pass[i].texture,
+                                   0);
         }
         else
         {
-            glTexImage2D(GL_TEXTURE_2D,
-                         0,
-                         (pass[i].fp ? GL_RGBA32F : GL_RGBA),
-                         (unsigned int) pass[i].width,
-                         (unsigned int) pass[i].height,
-                         0,
-                         GL_RGBA,
-                         (pass[i].fp ? GL_FLOAT : GL_UNSIGNED_INT_8_8_8_8),
-                          NULL);
+            /* output to the screen */
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            glViewport(viewport_x, viewport_y, viewport_width, viewport_height);
         }
 
         // viewport determines the area we render into the output texture
-        glViewport(0, 0, pass[i].width, pass[i].height);
-
-        // set up framebuffer and attach output texture
-
-        glBindFramebuffer(GL_FRAMEBUFFER, pass[i].fbo);
-        glFramebufferTexture2D(GL_FRAMEBUFFER,
-                               GL_COLOR_ATTACHMENT0,
-                               GL_TEXTURE_2D,
-                               pass[i].texture,
-                               0);
 
         // set up input texture (output of previous pass) and apply filter settings
 
@@ -705,16 +714,9 @@ void GLSLShader::render(GLuint &orig, int width, int height, int viewport_width,
                      NULL);
     }
 
-    glBindTexture(GL_TEXTURE_2D, pass.back().texture);
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_MAG_FILTER,
-                    pass.back().filter == GLSL_UNDEFINED ? (gui_config->bilinear_filter ? GL_LINEAR : GL_NEAREST) : pass.back().filter);
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_MIN_FILTER,
-                    pass.back().filter == GLSL_UNDEFINED ? (gui_config->bilinear_filter ? GL_LINEAR : GL_NEAREST) : pass.back().filter);
-
+    glBindTexture(GL_TEXTURE_2D, orig);
     glPixelStorei(GL_UNPACK_ROW_LENGTH, (GLint)pass.back().width);
-    glTexCoordPointer(2, GL_FLOAT, 0, inv_coords);
+    glTexCoordPointer(2, GL_FLOAT, 0, tex_coords + 8);
 }
 
 void GLSLShader::register_uniforms ()
@@ -814,6 +816,10 @@ void GLSLShader::register_uniforms ()
 void GLSLShader::set_shader_vars (int p)
 {
     unsigned int texunit = 0;
+    unsigned int offset = 0;
+
+    if (p == pass.size() - 1)
+        offset = 8;
     GLSLUniforms *u = &pass[p].unif;
 
     GLint mvp = glGetUniformLocation (pass[p].program, "MVPMatrix");
@@ -837,12 +843,19 @@ void GLSLShader::set_shader_vars (int p)
     if (attr > -1) \
     { \
         glEnableVertexAttribArray(attr); \
+        glVertexAttribPointer(attr, 2, GL_FLOAT, GL_FALSE, 0, ((float *) NULL) + offset); \
+        vaos.push_back (attr); \
+    }
+#define setTexCoordsNoOffset(attr) \
+    if (attr > -1) \
+    { \
+        glEnableVertexAttribArray(attr); \
         glVertexAttribPointer(attr, 2, GL_FLOAT, GL_FALSE, 0, NULL); \
         vaos.push_back (attr); \
     }
 
     glBindBuffer (GL_ARRAY_BUFFER, vbo);
-    glBufferData (GL_ARRAY_BUFFER, sizeof (GLfloat) * 8, tex_coords, GL_STATIC_DRAW);
+    glBufferData (GL_ARRAY_BUFFER, sizeof (GLfloat) * 16, tex_coords, GL_STATIC_DRAW);
 
     float inputSize[2] = { (float) pass[p - 1].width, (float) pass[p - 1].height };
     float outputSize[2] = { (float) pass[p].width, (float) pass[p].height };
@@ -860,7 +873,8 @@ void GLSLShader::set_shader_vars (int p)
 
     setTexCoords (u->TexCoord);
     setTexCoords (u->LUTTexCoord);
-    setTexCoords (u->VertexCoord);
+    setTexCoordsNoOffset (u->VertexCoord);
+
     /* ORIG parameter
        */
     float orig_videoSize[2] = { (float) pass[0].width, (float) pass[0].height };
