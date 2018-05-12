@@ -238,7 +238,7 @@ event_shader_select (GtkButton *widget, gpointer data)
     if (strcmp (gui_config->last_shader_directory, ""))
     {
         gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (dialog),
-                                             gui_config->last_directory);
+                                             gui_config->last_shader_directory);
     }
     else
     {
