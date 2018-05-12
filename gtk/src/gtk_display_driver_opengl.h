@@ -39,6 +39,7 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
         uint16 *get_current_buffer (void);
         void push_buffer (uint16 *src);
         void reconfigure (int width, int height);
+        void *get_parameters (void);
         static int query_availability (void);
 
     private:
@@ -59,7 +60,6 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
         GLfloat                  texcoords[8];
         GLuint                   texmap;
         GLuint                   pbo;
-        GLenum                   tex_target;
         GLuint                   program;
         GLuint                   fragment_shader;
         GLuint                   vertex_shader;

@@ -191,6 +191,7 @@ Snes9xConfig::load_defaults (void)
     sound_input_rate = 31950;
     auto_input_rate = TRUE;
     last_directory[0] = '\0';
+    last_shader_directory[0] = '\0';
     window_width = -1;
     window_height = -1;
     preferences_width = -1;
@@ -333,6 +334,7 @@ Snes9xConfig::save_config_file (void)
     xml_out_int (xml, "force_inverted_byte_order", force_inverted_byte_order);
     xml_out_int (xml, "multithreading", multithreading);
     xml_out_string (xml, "last_directory", last_directory);
+    xml_out_string (xml, "last_directory", last_shader_directory);
     xml_out_string (xml, "sram_directory", sram_directory);
     xml_out_string (xml, "savestate_directory", savestate_directory);
     xml_out_string (xml, "cheat_directory", cheat_directory);
@@ -712,6 +714,10 @@ Snes9xConfig::set_option (const char *name, const char *value)
     else if (!strcasecmp (name, "last_directory"))
     {
         strncpy (last_directory, value, PATH_MAX);
+    }
+    else if (!strcasecmp (name, "last_shader_directory"))
+    {
+        strncpy (last_shader_directory, value, PATH_MAX);
     }
     else if (!strcasecmp (name, "custom_sram_directory"))
     {

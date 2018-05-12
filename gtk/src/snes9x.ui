@@ -3823,7 +3823,7 @@
                                                 <property name="spacing">5</property>
                                                 <child>
                                                   <object class="GtkCheckButton" id="use_shaders">
-                                                    <property name="label" translatable="yes">Use GLSL shader:</property>
+                                                    <property name="label" translatable="yes">Shader:</property>
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">False</property>
@@ -3865,6 +3865,20 @@
                                                     <property name="expand">False</property>
                                                     <property name="fill">True</property>
                                                     <property name="position">2</property>
+                                                  </packing>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkButton" id="shader_parameters_button">
+                                                    <property name="label" translatable="yes">Customize...</property>
+                                                    <property name="visible">True</property>
+                                                    <property name="can_focus">True</property>
+                                                    <property name="receives_default">True</property>
+                                                    <signal name="clicked" handler="shader_parameters" swapped="no"/>
+                                                  </object>
+                                                  <packing>
+                                                    <property name="expand">False</property>
+                                                    <property name="fill">True</property>
+                                                    <property name="position">3</property>
                                                   </packing>
                                                 </child>
                                               </object>

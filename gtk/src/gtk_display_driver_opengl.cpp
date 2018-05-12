@@ -51,18 +51,18 @@ S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
 
     if (using_cg_shaders || using_glsl_shaders)
     {
-        glBindTexture (tex_target, texmap);
+        glBindTexture (GL_TEXTURE_2D, texmap);
     }
 
     GLint filter = config->bilinear_filter ? GL_LINEAR : GL_NEAREST;
-    glTexParameteri (tex_target, GL_TEXTURE_MAG_FILTER, filter);
-    glTexParameteri (tex_target, GL_TEXTURE_MIN_FILTER, filter);
+    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
     GLint clamp = (using_shaders || !dyn_resizing) ? GL_CLAMP_TO_BORDER : GL_CLAMP_TO_EDGE;
-    glTexParameteri (tex_target, GL_TEXTURE_WRAP_S, clamp);
-    glTexParameteri (tex_target, GL_TEXTURE_WRAP_T, clamp);
+    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, clamp);
+    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, clamp);
 
     glClear (GL_COLOR_BUFFER_BIT);
-    glEnable (tex_target);
+    glEnable (GL_TEXTURE_2D);
 
     if (config->scale_method > 0)
     {
@@ -123,7 +123,7 @@ S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
             glUnmapBuffer (GL_PIXEL_UNPACK_BUFFER);
 
             glPixelStorei (GL_UNPACK_ROW_LENGTH, width);
-            glTexSubImage2D (tex_target,
+            glTexSubImage2D (GL_TEXTURE_2D,
                              0,
                              0,
                              0,
@@ -158,7 +158,7 @@ S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
             glUnmapBuffer (GL_PIXEL_UNPACK_BUFFER);
 
             glPixelStorei (GL_UNPACK_ROW_LENGTH, width);
-            glTexSubImage2D (tex_target,
+            glTexSubImage2D (GL_TEXTURE_2D,
                              0,
                              0,
                              0,
@@ -192,7 +192,7 @@ S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
             glUnmapBuffer (GL_PIXEL_UNPACK_BUFFER);
 
             glPixelStorei (GL_UNPACK_ROW_LENGTH, width);
-            glTexSubImage2D (tex_target,
+            glTexSubImage2D (GL_TEXTURE_2D,
                              0,
                              0,
                              0,
@@ -208,7 +208,7 @@ S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
     else
     {
         glPixelStorei (GL_UNPACK_ROW_LENGTH, final_pitch / image_bpp);
-        glTexSubImage2D (tex_target,
+        glTexSubImage2D (GL_TEXTURE_2D,
                          0,
                          0,
                          0,
@@ -219,20 +219,10 @@ S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
                          final_buffer);
     }
 
-    if (tex_target == GL_TEXTURE_2D)
-    {
-        texcoords[1] = (float) (height) / texture_height;
-        texcoords[2] = (float) (width) / texture_width;
-        texcoords[3] = texcoords[1];
-        texcoords[4] = texcoords[2];
-    }
-    else if (tex_target == GL_TEXTURE_RECTANGLE)
-    {
-        texcoords[1] = (float) (height);
-        texcoords[2] = (float) (width);
-        texcoords[3] = texcoords[1];
-        texcoords[4] = texcoords[2];
-    }
+    texcoords[1] = (float) (height) / texture_height;
+    texcoords[2] = (float) (width) / texture_width;
+    texcoords[3] = texcoords[1];
+    texcoords[4] = texcoords[2];
 
     if (using_shaders && using_glsl_shaders)
     {
@@ -282,6 +272,16 @@ S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
     return;
 }
 
+void *
+S9xOpenGLDisplayDriver::get_parameters(void)
+{
+    if (using_glsl_shaders && glsl_shader)
+    {
+        return (void *) &glsl_shader->param;
+    }
+    return NULL;
+}
+
 void
 S9xOpenGLDisplayDriver::clear_buffers (void)
 {
@@ -289,7 +289,7 @@ S9xOpenGLDisplayDriver::clear_buffers (void)
     memset (buffer[1], 0, scaled_padded_size);
 
     glPixelStorei (GL_UNPACK_ROW_LENGTH, scaled_max_width);
-    glTexSubImage2D (tex_target,
+    glTexSubImage2D (GL_TEXTURE_2D,
                      0,
                      0,
                      0,
@@ -309,11 +309,11 @@ S9xOpenGLDisplayDriver::update_texture_size (int width, int height)
     {
         if (dyn_resizing)
         {
-            glBindTexture (tex_target, texmap);
+            glBindTexture (GL_TEXTURE_2D, texmap);
 
             if (using_pbos)
             {
-                glTexImage2D (tex_target,
+                glTexImage2D (GL_TEXTURE_2D,
                               0,
                               config->pbo_format == PBO_FMT_16 ? GL_RGB565 : 4,
                               width,
@@ -325,7 +325,7 @@ S9xOpenGLDisplayDriver::update_texture_size (int width, int height)
             }
             else
             {
-                glTexImage2D (tex_target,
+                glTexImage2D (GL_TEXTURE_2D,
                               0,
                               GL_RGB565,
                               width,
@@ -418,6 +418,7 @@ S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
             if (glsl_shader->load_shader ((char *) shader_file))
             {
                 using_glsl_shaders = 1;
+                dyn_resizing = TRUE;
                 return 1;
             }
             delete glsl_shader;
@@ -531,9 +532,9 @@ S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
 int
 S9xOpenGLDisplayDriver::opengl_defaults (void)
 {
-    const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
-
+    dyn_resizing = FALSE;
     using_pbos = 0;
+
     if (config->use_pbos)
     {
         if (!pbos_available ())
@@ -567,21 +568,12 @@ S9xOpenGLDisplayDriver::opengl_defaults (void)
         }
     }
 
-    tex_target = GL_TEXTURE_2D;
     texture_width = 1024;
     texture_height = 1024;
-    dyn_resizing = FALSE;
 
-    if (extensions && config->npot_textures)
+    if (config->npot_textures)
     {
-        if (!using_shaders && strstr (extensions, "_texture_rectangle"))
-        {
-            tex_target = GL_TEXTURE_RECTANGLE;
-            texture_width = scaled_max_width;
-            texture_height = scaled_max_height;
-            dyn_resizing = TRUE;
-        }
-        else if (npot_available ())
+        if (npot_available ())
         {
             dyn_resizing = TRUE;
         }
@@ -613,8 +605,8 @@ S9xOpenGLDisplayDriver::opengl_defaults (void)
         glGenBuffers (1, &pbo);
         glGenTextures (1, &texmap);
 
-        glBindTexture (tex_target, texmap);
-        glTexImage2D (tex_target,
+        glBindTexture (GL_TEXTURE_2D, texmap);
+        glTexImage2D (GL_TEXTURE_2D,
                       0,
                       config->pbo_format == PBO_FMT_16 ? GL_RGB565 : 4,
                       texture_width,
@@ -636,8 +628,8 @@ S9xOpenGLDisplayDriver::opengl_defaults (void)
     {
         glGenTextures (1, &texmap);
 
-        glBindTexture (tex_target, texmap);
-        glTexImage2D (tex_target,
+        glBindTexture (GL_TEXTURE_2D, texmap);
+        glTexImage2D (GL_TEXTURE_2D,
                       0,
                       GL_RGB565,
                       texture_width,
@@ -663,7 +655,6 @@ S9xOpenGLDisplayDriver::opengl_defaults (void)
     glDisable (GL_BLEND);
     glDisable (GL_DEPTH_TEST);
     glDisable (GL_TEXTURE_2D);
-    glDisable (GL_TEXTURE_RECTANGLE);
 
     glMatrixMode (GL_PROJECTION);
     glLoadIdentity ();

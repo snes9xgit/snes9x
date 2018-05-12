@@ -239,7 +239,8 @@ snes9x_gtk_SOURCES += \
     src/shaders/cgFunctions.cpp \
     src/shaders/CCGShader.cpp \
     src/shaders/glsl.cpp \
-    src/shaders/shader_helpers.cpp
+    src/shaders/shader_helpers.cpp \
+    src/gtk_shader_parameters.cpp
 endif
 
 if XV

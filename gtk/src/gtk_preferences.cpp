@@ -11,6 +11,10 @@
 #include "gtk_display.h"
 #include "gtk_binding.h"
 
+#ifdef USE_OPENGL
+#include "gtk_shader_parameters.h"
+#endif
+
 #if GTK_MAJOR_VERSION >= 3
 #include <gdk/gdkkeysyms-compat.h>
 #endif
@@ -231,15 +235,17 @@ event_shader_select (GtkButton *widget, gpointer data)
                                           "gtk-open", GTK_RESPONSE_ACCEPT,
                                           NULL);
 
-    if (strcmp (gui_config->last_directory, ""))
+    if (strcmp (gui_config->last_shader_directory, ""))
     {
         gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (dialog),
                                              gui_config->last_directory);
     }
-
-    if (strlen (gtk_entry_get_text (entry)))
-        gtk_file_chooser_set_filename (GTK_FILE_CHOOSER (dialog),
-                                       gtk_entry_get_text (entry));
+    else
+    {
+        if (strlen (gtk_entry_get_text (entry)))
+            gtk_file_chooser_set_filename (GTK_FILE_CHOOSER (dialog),
+                                           gtk_entry_get_text (entry));
+    }
 
 
     result = gtk_dialog_run (GTK_DIALOG (dialog));
@@ -248,6 +254,9 @@ event_shader_select (GtkButton *widget, gpointer data)
     if (result == GTK_RESPONSE_ACCEPT)
     {
         filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+        strcpy (gui_config->last_shader_directory,
+                gtk_file_chooser_get_current_folder(GTK_FILE_CHOOSER (dialog)));
+
         if (filename != NULL)
         {
             gtk_entry_set_text (entry, filename);
@@ -482,6 +491,28 @@ event_auto_input_rate_toggled (GtkToggleButton *togglebutton, gpointer data)
 }
 
 static void
+event_shader_parameters (GtkButton *widget, gpointer data)
+{
+#ifdef USE_OPENGL
+    if (!S9xDisplayGetDriver () || !S9xDisplayGetDriver ()->get_parameters () || !gtk_shader_parameters_dialog (top_level->get_window ()))
+    {
+        GtkWidget *dialog;
+        dialog = gtk_message_dialog_new (top_level->get_window(),
+                                         (GtkDialogFlags) 0,
+                                         GTK_MESSAGE_INFO,
+                                         GTK_BUTTONS_CLOSE,
+                                         _("No Parameters Available"));
+        gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG (dialog),
+                                                 _("No shader in use, or the shader in use does not support or has no configurable parameters."));
+        gtk_dialog_run (GTK_DIALOG (dialog));
+        gtk_widget_destroy (dialog);
+
+        return;
+    }
+#endif
+}
+
+static void
 event_about_clicked (GtkButton *widget, gpointer data)
 {
     std::string version_string;
@@ -577,6 +608,7 @@ Snes9xPreferences::Snes9xPreferences (Snes9xConfig *config) :
         { "game_data_clear", G_CALLBACK (event_game_data_clear) },
         { "about_clicked", G_CALLBACK (event_about_clicked) },
         { "auto_input_rate_toggled", G_CALLBACK (event_auto_input_rate_toggled) },
+        { "shader_parameters", G_CALLBACK (event_shader_parameters) },
 #ifdef USE_JOYSTICK
         { "calibrate", G_CALLBACK (event_calibrate) },
 #endif

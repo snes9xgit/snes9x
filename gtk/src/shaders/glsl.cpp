@@ -65,6 +65,21 @@ static int scale_string_to_enum(const char *string, bool last)
         return GLSL_SOURCE;
 }
 
+static const char *scale_enum_to_string (int val)
+{
+    switch (val)
+    {
+    case GLSL_SOURCE:
+        return "source";
+    case GLSL_VIEWPORT:
+        return "viewport";
+    case GLSL_ABSOLUTE:
+        return "absolute";
+    default:
+        return "source";
+    }
+}
+
 static int wrap_mode_string_to_enum(const char *string)
 {
     if (!strcasecmp(string, "repeat"))
@@ -81,6 +96,21 @@ static int wrap_mode_string_to_enum(const char *string)
     }
     else
         return GL_CLAMP_TO_BORDER;
+}
+
+static const char *wrap_mode_enum_to_string(int val)
+{
+    switch (val)
+    {
+    case GL_REPEAT:
+        return "repeat";
+    case GL_CLAMP_TO_EDGE:
+        return "clamp_to_edge";
+    case GL_CLAMP:
+        return "clamp";
+    default:
+        return "clamp_to_border";
+    }
 }
 
 
@@ -218,6 +248,7 @@ bool GLSLShader::load_shader_file (char *filename)
 
         id = strtok(NULL, ";");
     }
+
     free(ids);
 
     return true;
@@ -236,6 +267,9 @@ void GLSLShader::strip_parameter_pragmas(char *buffer)
 
        sscanf (s, "#pragma parameter %s \"%[^\"]\" %f %f %f %f",
                par.id, par.name, &par.val, &par.min, &par.max, &par.step);
+
+       if (par.step == 0.0f)
+           par.step = 1.0f;
 
        for (i = 0; i < param.size(); i++)
        {
@@ -414,6 +448,7 @@ bool GLSLShader::load_shader (char *filename)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, l->filter);
 
         realpath(l->filename, temp);
+        strcpy (l->filename, temp);
 
         // simple file extension png/tga decision
         int length = strlen(temp);
@@ -892,16 +927,115 @@ void GLSLShader::set_shader_vars (int p)
     glBindBuffer (GL_ARRAY_BUFFER, 0);
 }
 
+void GLSLShader::clear_shader_vars (void)
+{
+    for (unsigned int i = 0; i < vaos.size(); i++)
+        glDisableVertexAttribArray (vaos[i]);
+
+    vaos.clear();
+}
+
+#define outs(s, v) fprintf (file, "%s%d = \"%s\"\n", s, i, v)
+#define outf(s, v) fprintf (file, "%s%d = \"%f\"\n", s, i, v)
+#define outd(s, v) fprintf (file, "%s%d = \"%d\"\n", s, i, v)
+void GLSLShader::save (void)
+{
+    char *config_dir = get_config_dir();
+    char *config_file = new char[strlen (config_dir) + 14];
+    sprintf(config_file, "%s/shader.glslp", config_dir);
+    delete[] config_dir;
+
+    FILE *file = fopen (config_file, "wb");
+    if (!file)
+    {
+        printf ("Couldn't save shader config to %s\n", config_file);
+    }
+
+    fprintf (file, "shaders = \"%d\"\n", (unsigned int) pass.size() - 1);
+
+    for (unsigned int pn = 1; pn < pass.size(); pn++)
+    {
+        GLSLPass *p = &pass[pn];
+        unsigned int i = pn - 1;
+
+        outs("shader", p->filename);
+        if (p->filter != GLSL_UNDEFINED)
+        {
+            outs("filter_linear", p->filter == GL_LINEAR ? "true" : "false");
+        }
+        //outs ("wrap_mode", wrap_mode_enum_to_string(p->wrap_mode));
+        //outs ("alias", p->alias);
+        outs ("float_framebuffer", p->fp ? "true" : "false");
+        outs ("srgb_framebuffer", p->srgb ? "true" : "false");
+        outs ("scale_type_x", scale_enum_to_string(p->scale_type_x));
+        if (p->scale_type_x == GLSL_ABSOLUTE)
+            outd ("scale_x", (int) p->scale_x);
+        else
+            outf ("scale_x", p->scale_x);
+
+        outs ("scale_type_y", scale_enum_to_string(p->scale_type_y));
+        if (p->scale_type_y == GLSL_ABSOLUTE)
+            outd ("scale_y", (int) p->scale_y);
+        else
+            outf ("scale_y", p->scale_y);
+
+        if (p->frame_count_mod)
+            outd ("frame_count_mod", p->frame_count_mod);
+    }
+
+    if (param.size() > 0)
+    {
+        fprintf (file, "parameters = \"");
+        for (unsigned int i = 0; i < param.size(); i++)
+        {
+            fprintf (file, "%s%c", param[i].id, (i == param.size() - 1) ? '\"' : ';');
+        }
+        fprintf (file, "\n");
+    }
+
+    for (unsigned int i = 0; i < param.size(); i++)
+    {
+        fprintf (file, "%s = \"%f\"\n", param[i].id, param[i].val);
+    }
+
+    if (lut.size() > 0)
+    {
+        fprintf (file, "textures = \"");
+        for (unsigned int i = 0; i < lut.size(); i++)
+        {
+            fprintf (file, "%s%c", lut[i].id, (i == lut.size() - 1) ? '\"' : ';');
+        }
+        fprintf (file, "\n");
+    }
+
+    for (unsigned int i = 0; i < lut.size(); i++)
+    {
+        fprintf (file, "%s = \"%s\"\n", lut[i].id, lut[i].filename);
+        fprintf (file, "%s_linear = \"%s\"\n", lut[i].id, lut[i].filter == GL_LINEAR || lut[i].filter == GL_LINEAR_MIPMAP_LINEAR ? "true" : "false");
+        fprintf (file, "%s_wrap_mode = \"%s\"\n", lut[i].id, wrap_mode_enum_to_string(lut[i].wrap_mode));
+        fprintf (file, "%s_mipmap = \"%s\"\n", lut[i].id, lut[i].mipmap ? "true" : "false");
+    }
+
+    fclose (file);
+
+    realpath (config_file, gui_config->fragment_shader);
+    delete[] config_file;
+}
+#undef outf
+#undef outs
+#undef outd
+
+
 void GLSLShader::destroy (void)
 {
-    glBindTexture (GL_TEXTURE_2D, 0);
-    glUseProgram (0);
-    glActiveTexture (GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glUseProgram(0);
+    glActiveTexture(GL_TEXTURE0);
 
     for (unsigned int i = 1; i < pass.size(); i++)
     {
-        glDeleteProgram (pass[i].program);
-        glDeleteTextures (1, &pass[i].texture);
+        glDeleteProgram(pass[i].program);
+        glDeleteTextures(1, &pass[i].texture);
         glDeleteFramebuffers(1, &pass[i].fbo);
     }
 
@@ -919,13 +1053,5 @@ void GLSLShader::destroy (void)
     pass.clear();
     lut.clear();
     prev_frame.clear();
-}
-
-void GLSLShader::clear_shader_vars (void)
-{
-    for (unsigned int i = 0; i < vaos.size(); i++)
-        glDisableVertexAttribArray (vaos[i]);
-
-    vaos.clear();
 }
 

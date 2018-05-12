@@ -16,6 +16,7 @@ class S9xDisplayDriver
         virtual uint16 *get_current_buffer (void) = 0;
         virtual void push_buffer (uint16 *src) = 0;
         virtual void reconfigure (int width, int height) = 0;
+        virtual void *get_parameters () = 0;
 
         /* Namespaced sizing constants */
         static const int image_width = 1024;

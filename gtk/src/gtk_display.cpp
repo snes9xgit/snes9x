@@ -1726,6 +1726,12 @@ S9xInitDriver (void)
     return;
 }
 
+S9xDisplayDriver *
+S9xDisplayGetDriver (void)
+{
+    return driver;
+}
+
 void
 S9xInitDisplay (int argc, char **argv)
 {

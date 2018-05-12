@@ -95,6 +95,7 @@ class Snes9xConfig
         char          patch_directory [PATH_MAX];
         char          export_directory [PATH_MAX];
         char          last_directory [PATH_MAX];
+        char          last_shader_directory [PATH_MAX];
 
         /* Controls */
         JoypadBinding pad[NUM_JOYPADS];
