@@ -255,8 +255,8 @@ bool GLSLShader::load_shader_file (char *filename)
 
 void GLSLShader::strip_parameter_pragmas(char *buffer)
 {
-   /* #pragma parameter lines tend to have " characters in them,
-    * which is not legal GLSL. */
+   // #pragma parameter lines tend to have " characters in them,
+   // which is not legal GLSL.
    char *s = strstr(buffer, "#pragma parameter");
 
    while (s)
@@ -278,7 +278,7 @@ void GLSLShader::strip_parameter_pragmas(char *buffer)
        if (i >= param.size())
            param.push_back (par);
 
-       /* blank out the line */
+       // blank out the line
        while (*s != '\0' && *s != '\n')
           *s++ = ' ';
        s = strstr(s, "#pragma parameter");
@@ -437,8 +437,7 @@ bool GLSLShader::load_shader (char *filename)
     for (unsigned int i = 0; i < lut.size(); i++)
     {
         GLSLLut *l = &lut[i];
-        /* generate texture for the lut and apply specified filter setting
-     */
+        // generate texture for the lut and apply specified filter setting
         glGenTextures(1, &l->texture);
         glBindTexture(GL_TEXTURE_2D, l->texture);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, l->wrap_mode);
@@ -506,7 +505,7 @@ bool GLSLShader::load_shader (char *filename)
             glGenerateMipmap (GL_TEXTURE_2D);
     }
 
-    /* Check for parameters specified in file */
+    // Check for parameters specified in file
     for (unsigned int i = 0; i < param.size(); i++)
     {
         char key[266];
@@ -549,14 +548,12 @@ void GLSLShader::render(GLuint &orig, int width, int height, int viewport_width,
 {
     frame_count++;
 
-    /* set up our dummy pass for easier loop code
-   */
+    // set up our dummy pass for easier loop code
     pass[0].texture = orig;
     pass[0].width = width;
     pass[0].height = height;
 
-    /* loop through all real passes
-   */
+    // loop through all real passes
     for (unsigned int i = 1; i < pass.size(); i++)
     {
         bool lastpass = (i == pass.size() - 1);
@@ -591,10 +588,9 @@ void GLSLShader::render(GLuint &orig, int width, int height, int viewport_width,
             pass[i].height = viewport_height;
         }
 
-        /* set size of output texture
-     */
         if (!lastpass)
         {
+            // Output to a framebuffer texture
             glBindTexture(GL_TEXTURE_2D, pass[i].texture);
 
             if (pass[i].srgb)
@@ -624,10 +620,10 @@ void GLSLShader::render(GLuint &orig, int width, int height, int viewport_width,
                              NULL);
             }
 
+            // viewport determines the area we render into the output texture
             glViewport(0, 0, pass[i].width, pass[i].height);
 
-                    // set up framebuffer and attach output texture
-
+            // set up framebuffer and attach output texture
             glBindFramebuffer(GL_FRAMEBUFFER, pass[i].fbo);
             glFramebufferTexture2D(GL_FRAMEBUFFER,
                                    GL_COLOR_ATTACHMENT0,
@@ -637,15 +633,12 @@ void GLSLShader::render(GLuint &orig, int width, int height, int viewport_width,
         }
         else
         {
-            /* output to the screen */
+            // output to the screen
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glViewport(viewport_x, viewport_y, viewport_width, viewport_height);
         }
 
-        // viewport determines the area we render into the output texture
-
         // set up input texture (output of previous pass) and apply filter settings
-
         GLuint filter = (pass[i].filter == GLSL_UNDEFINED) ?
                          (lastpass ?
                           (Settings.BilinearFilter ? GL_LINEAR : GL_NEAREST) : GL_NEAREST
@@ -669,8 +662,7 @@ void GLSLShader::render(GLuint &orig, int width, int height, int viewport_width,
         glClear(GL_COLOR_BUFFER_BIT);
         glDrawArrays(GL_QUADS, 0, 4);
 
-        /* reset client states enabled during setShaderVars
-     */
+        // reset vertex attribs set in set_shader_vars
         clear_shader_vars();
 
         if (pass[i].srgb)
@@ -679,17 +671,12 @@ void GLSLShader::render(GLuint &orig, int width, int height, int viewport_width,
         }
     }
 
-    /* disable framebuffer
-   */
+    // Disable framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glActiveTexture(GL_TEXTURE0);
     glUseProgram (0);
 
-    /* set last PREV texture as original, push current texture and
-         sizes to the front of the PREV deque and make sure the new
-         original texture has the same size as the old one
-      */
-
+    // Pop back of previous frame stack and use as upload buffer
     if (prev_frame.size() > 0)
     {
         GLint internal_format;
@@ -840,8 +827,8 @@ void GLSLShader::set_shader_vars (unsigned int p)
         glUniform1i (uni, texunit); \
         texunit++; \
     }
-    /* We use non-power-of-two textures,
-     * so no need to mess with input size/texture size */
+    // We use non-power-of-two textures,
+    // so no need to mess with input size/texture size
 #define setTexCoords(attr) \
     if (attr > -1) \
     { \
@@ -878,8 +865,7 @@ void GLSLShader::set_shader_vars (unsigned int p)
     setTexCoords (u->LUTTexCoord);
     setTexCoordsNoOffset (u->VertexCoord);
 
-    /* ORIG parameter
-       */
+    // Orig parameter
     float orig_videoSize[2] = { (float) pass[0].width, (float) pass[0].height };
 
     setUniform2fv(u->OrigInputSize,  orig_videoSize);
@@ -887,8 +873,7 @@ void GLSLShader::set_shader_vars (unsigned int p)
     setTexture1i (u->OrigTexture, pass[0].texture);
     setTexCoords (u->OrigTexCoord);
 
-    /* PREV parameter
-       */
+    // Prev parameter
     if (max_prev_frame >= 1 && prev_frame[0].width > 0) {
         float prevSize[2] = { (float) prev_frame[0].width, (float) prev_frame[0].height };
 
@@ -898,8 +883,7 @@ void GLSLShader::set_shader_vars (unsigned int p)
         setTexCoords (u->Prev[0].TexCoord);
     }
 
-    /* PREV1-6 parameters
-       */
+    // Prev[1-6] parameters
     for (unsigned int i = 1; i < prev_frame.size(); i++)
     {
         if (prev_frame[i].width <= 0)
@@ -913,15 +897,13 @@ void GLSLShader::set_shader_vars (unsigned int p)
         setTexCoords (u->Prev[i].TexCoord);
     }
 
-    /* LUT parameters
-       */
+    // LUT parameters
     for (unsigned int i = 0; i < lut.size(); i++)
     {
         setTexture1i (u->Lut[i], lut[i].texture);
     }
 
-    /* PASSX parameters, only for third pass and up
-       */
+    // PassX parameters, only for third pass and up
     if (p > 2) {
         for (unsigned int i = 1; i < p - 1; i++) {
             float passSize[2] = { (float) pass[i].width, (float) pass[i].height };
@@ -932,7 +914,7 @@ void GLSLShader::set_shader_vars (unsigned int p)
         }
     }
 
-    /* PASSPREV parameter */
+    // PassPrev parameter
     for (unsigned int i = 0; i < p; i++)
     {
         float passSize[2] = { (float) pass[i].width, (float) pass[i].height };
@@ -942,7 +924,7 @@ void GLSLShader::set_shader_vars (unsigned int p)
         setTexCoords (u->PassPrev[p - i].TexCoord);
     }
 
-    /* Parameters */
+    // User and Preset Parameters
     for (unsigned int i = 0; i < param.size(); i++)
     {
         setUniform1f (param[i].unif[p], param[i].val);
