@@ -593,7 +593,6 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
     };
 
     user_pause             = 0;
-    user_rewind            = 0;
     sys_pause              = 0;
     last_width             = -1;
     last_height            = -1;

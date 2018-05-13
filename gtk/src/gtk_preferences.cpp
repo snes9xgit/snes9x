@@ -799,7 +799,7 @@ Snes9xPreferences::move_settings_to_dialog (void)
     set_combo ("frameskip_combo",
                Settings.SkipFrames == AUTO_FRAMERATE ?
                    0 : Settings.SkipFrames + 1);
-    set_check ("bilinear_filter",           config->bilinear_filter);
+    set_check ("bilinear_filter",           Settings.BilinearFilter);
 
 #ifdef USE_OPENGL
     set_check ("sync_to_vblank",            config->sync_to_vblank);
@@ -907,7 +907,7 @@ Snes9xPreferences::get_settings_from_dialog (void)
     config->ntsc_scanline_intensity   = get_combo ("ntsc_scanline_intensity");
     config->scanline_filter_intensity = get_combo ("scanline_filter_intensity");
     config->hw_accel                  = hw_accel_value (get_combo ("hw_accel"));
-    config->bilinear_filter           = get_check ("bilinear_filter");
+    Settings.BilinearFilter           = get_check ("bilinear_filter");
     config->num_threads               = get_spin ("num_threads");
     config->default_esc_behavior      = get_combo ("default_esc_behavior");
     config->prevent_screensaver       = get_check ("prevent_screensaver");

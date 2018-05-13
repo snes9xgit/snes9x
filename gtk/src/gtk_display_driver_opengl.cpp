@@ -54,7 +54,7 @@ S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
         glBindTexture (GL_TEXTURE_2D, texmap);
     }
 
-    GLint filter = config->bilinear_filter ? GL_LINEAR : GL_NEAREST;
+    GLint filter = Settings.BilinearFilter ? GL_LINEAR : GL_NEAREST;
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
     GLint clamp = (using_shaders || !dyn_resizing) ? GL_CLAMP_TO_BORDER : GL_CLAMP_TO_EDGE;

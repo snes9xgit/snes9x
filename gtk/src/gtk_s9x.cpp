@@ -351,8 +351,8 @@ S9xIdleFunc (gpointer data)
     {
 #endif
 
-    if(top_level->user_rewind)
-        top_level->user_rewind = stateMan.pop();
+    if(Settings.Rewinding)
+        Settings.Rewinding = stateMan.pop();
     else if(IPPU.TotalEmulatedFrames % gui_config->rewind_granularity == 0)
         stateMan.push();
 

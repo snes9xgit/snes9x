@@ -422,6 +422,7 @@ struct SSettings
 	bool8	AutoDisplayMessages;
 	uint32	InitialInfoStringTimeout;
 	uint16	DisplayColor;
+	bool8	BilinearFilter;
 
 	bool8	Multi;
 	char	CartAName[PATH_MAX + 1];
@@ -442,6 +443,7 @@ struct SSettings
 	bool8	TurboMode;
 	uint32	HighSpeedSeek;
 	bool8	FrameAdvance;
+	bool8	Rewinding;
 
 	bool8	NetPlay;
 	bool8	NetPlayServer;

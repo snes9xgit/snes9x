@@ -197,7 +197,7 @@ S9xHandlePortCommand (s9xcommand_t cmd, int16 data1, int16 data2)
         if (cmd.port[0] == PORT_QUIT)
             quit_binding_down = TRUE;
         else if (cmd.port[0] == PORT_REWIND)
-            top_level->user_rewind = TRUE;
+            Settings.Rewinding = TRUE;
     }
 
     if (data1 == FALSE) /* Release */
@@ -232,7 +232,7 @@ S9xHandlePortCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 
         else if (cmd.port[0] == PORT_REWIND)
         {
-            top_level->user_rewind = FALSE;
+            Settings.Rewinding = FALSE;
         }
 
         else if (cmd.port[0] == PORT_SEEK_TO_FRAME)

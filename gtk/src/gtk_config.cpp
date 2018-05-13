@@ -205,7 +205,7 @@ Snes9xConfig::load_defaults (void)
     ntsc_setup = snes_ntsc_composite;
     ntsc_scanline_intensity = 1;
     scanline_filter_intensity = 0;
-    bilinear_filter = 0;
+    Settings.BilinearFilter = FALSE;
     netplay_activated = FALSE;
     netplay_server_up = FALSE;
     netplay_is_server = FALSE;
@@ -221,6 +221,7 @@ Snes9xConfig::load_defaults (void)
 
     rewind_granularity = 5;
     rewind_buffer_size = 0;
+    Settings.Rewinding = FALSE;
 
 #ifdef USE_OPENGL
     sync_to_vblank = 1;
@@ -370,7 +371,7 @@ Snes9xConfig::save_config_file (void)
     xml_out_int (xml, "ntsc_scanline_intensity", ntsc_scanline_intensity);
     xml_out_int (xml, "scanline_filter_intensity", scanline_filter_intensity);
     xml_out_int (xml, "hw_accel", hw_accel);
-    xml_out_int (xml, "bilinear_filter", bilinear_filter);
+    xml_out_int (xml, "bilinear_filter", Settings.BilinearFilter);
 
     xml_out_int (xml, "rewind_buffer_size", rewind_buffer_size);
     xml_out_int (xml, "rewind_granularity", rewind_granularity);
@@ -558,7 +559,7 @@ Snes9xConfig::set_option (const char *name, const char *value)
     }
     else if (!strcasecmp (name, "bilinear_filter"))
     {
-        bilinear_filter = atoi (value);
+        Settings.BilinearFilter = atoi (value);
     }
     else if (!strcasecmp (name, "sync_to_vblank"))
     {

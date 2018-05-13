@@ -437,6 +437,7 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.DisplayMovieFrame          =  conf.GetBool("Display::DisplayFrameCount",          false);
 	Settings.AutoDisplayMessages        =  conf.GetBool("Display::MessagesInImage",            true);
 	Settings.InitialInfoStringTimeout   =  conf.GetInt ("Display::MessageDisplayTime",         120);
+	Settings.BilinearFilter             =  conf.GetBool("Display::BilinearFilter",             false);
 
 	// Settings
 

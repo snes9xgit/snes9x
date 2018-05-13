@@ -389,7 +389,7 @@ bool CGLCG::LoadShader(const char* shaderFile)
             */
         if (pass.scaleParams.scaleTypeX == CG_SCALE_NONE && !it->filterSet)
         {
-            pass.linearFilter = gui_config->bilinear_filter;
+            pass.linearFilter = Settings.BilinearFilter;
         }
         else
         {
@@ -823,7 +823,7 @@ void CGLCG::setShaderVars(int pass)
         shaderFrameCnt %= shaderPasses[pass].frameCounterMod;
     setProgram1f(pass, "IN.frame_count", (float)shaderFrameCnt);
     setProgram1f(
-        pass, "IN.frame_direction", top_level->user_rewind ? -1.0f : 1.0f);
+        pass, "IN.frame_direction", Settings.Rewinding ? -1.0f : 1.0f);
 
     /* ORIG parameter
    */

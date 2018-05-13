@@ -645,7 +645,7 @@ void GLSLShader::render(GLuint &orig, int width, int height, int viewport_width,
 
         GLuint filter = (pass[i].filter == GLSL_UNDEFINED) ?
                          (lastpass ?
-                          (gui_config->bilinear_filter ? GL_LINEAR : GL_NEAREST) : GL_NEAREST
+                          (Settings.BilinearFilter ? GL_LINEAR : GL_NEAREST) : GL_NEAREST
                               ) : pass[i].filter;
 
         glBindTexture(GL_TEXTURE_2D, pass[i - 1].texture);
@@ -813,7 +813,7 @@ void GLSLShader::register_uniforms ()
     glUseProgram (0);
 }
 
-void GLSLShader::set_shader_vars (int p)
+void GLSLShader::set_shader_vars (unsigned int p)
 {
     unsigned int texunit = 0;
     unsigned int offset = 0;
@@ -869,7 +869,7 @@ void GLSLShader::set_shader_vars (int p)
     if (pass[p].frame_count_mod)
         shaderFrameCnt %= pass[p].frame_count_mod;
     setUniform1i(u->FrameCount, (float) shaderFrameCnt);
-    setUniform1i(u->FrameDirection, top_level->user_rewind ? -1.0f : 1.0f);
+    setUniform1i(u->FrameDirection, Settings.Rewinding ? -1.0f : 1.0f);
 
     setTexCoords (u->TexCoord);
     setTexCoords (u->LUTTexCoord);
@@ -920,7 +920,7 @@ void GLSLShader::set_shader_vars (int p)
     /* PASSX parameters, only for third pass and up
        */
     if (p > 2) {
-        for (int i = 1; i < p - 1; i++) {
+        for (unsigned int i = 1; i < p - 1; i++) {
             float passSize[2] = { (float) pass[i].width, (float) pass[i].height };
             setUniform2fv(u->Pass[i].InputSize, passSize);
             setUniform2fv(u->Pass[i].TextureSize, passSize);
@@ -930,7 +930,7 @@ void GLSLShader::set_shader_vars (int p)
     }
 
     /* PASSPREV parameter */
-    for (int i = 0; i < p; i++)
+    for (unsigned int i = 0; i < p; i++)
     {
         float passSize[2] = { (float) pass[i].width, (float) pass[i].height };
         setUniform2fv(u->PassPrev[p - i].InputSize, passSize);

@@ -127,7 +127,7 @@ S9xGTKDisplayDriver::output (void *src,
         cairo_matrix_translate (&matrix, -x, -y);
         cairo_pattern_set_matrix (pattern, &matrix);
         cairo_pattern_set_filter (pattern,
-                                  config->bilinear_filter
+                                  Settings.BilinearFilter
                                        ? CAIRO_FILTER_BILINEAR
                                        : CAIRO_FILTER_NEAREST);
     }
