@@ -1,6 +1,7 @@
 #include "glsl.h"
 #include "../../conffile.h"
 #include "shader_helpers.h"
+#include "shader_platform.h"
 
 static const GLfloat tex_coords[16] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f,
                                         0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f };

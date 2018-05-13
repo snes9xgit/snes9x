@@ -190,12 +190,11 @@
   Nintendo Co., Limited and its subsidiary companies.
  ***********************************************************************************/
 #include "CGLCG.h"
-#include "../gtk_s9x.h"
 #include <limits.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "../gtk_display_driver_opengl.h"
+#include "snes9x.h"
 #include "shader_helpers.h"
 
 static char* ReadShaderFileContents(const char *filename)
