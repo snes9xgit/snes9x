@@ -115,7 +115,7 @@ typedef struct
                            const char *defines,
                            GLuint type,
                            GLuint *out);
-    void save (void);
+    void save (const char *filename);
 
     void destroy (void);
     void register_uniforms (void);

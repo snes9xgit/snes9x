@@ -1576,8 +1576,8 @@ static double XRRGetExactRefreshRate (Display *dpy, Window window)
 double
 Snes9xWindow::get_refresh_rate (void)
 {
-    Window xid = gdk_x11_window_get_xid(gtk_widget_get_window (window));
-    Display *dpy = gdk_x11_display_get_xdisplay(gtk_widget_get_display (window));
+    Window xid = GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (window));
+    Display *dpy = gdk_x11_display_get_xdisplay (gtk_widget_get_display (window));
     double refresh_rate = XRRGetExactRefreshRate (dpy, xid);
 
     if (refresh_rate < 10.0)
@@ -1652,7 +1652,7 @@ Snes9xWindow::enter_fullscreen_mode (void)
     gtk_window_present (GTK_WINDOW (window));
 
     set_bypass_compositor (gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (window))),
-                           gdk_x11_window_get_xid (gtk_widget_get_window (GTK_WIDGET (window))),
+                           GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (GTK_WIDGET (window))),
                            1);
 
     config->fullscreen = 1;
@@ -1707,7 +1707,7 @@ Snes9xWindow::leave_fullscreen_mode (void)
     gtk_window_unfullscreen (GTK_WINDOW (window));
 
     set_bypass_compositor (gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (window))),
-                           gdk_x11_window_get_xid (gtk_widget_get_window (GTK_WIDGET (window))),
+                           GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (GTK_WIDGET (window))),
                            0);
 
     resize (nfs_width, nfs_height);

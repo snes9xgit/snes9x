@@ -960,17 +960,12 @@ void GLSLShader::clear_shader_vars (void)
 #define outs(s, v) fprintf (file, "%s%d = \"%s\"\n", s, i, v)
 #define outf(s, v) fprintf (file, "%s%d = \"%f\"\n", s, i, v)
 #define outd(s, v) fprintf (file, "%s%d = \"%d\"\n", s, i, v)
-void GLSLShader::save (void)
+void GLSLShader::save (const char *filename)
 {
-    char *config_dir = get_config_dir();
-    char *config_file = new char[strlen (config_dir) + 14];
-    sprintf(config_file, "%s/shader.glslp", config_dir);
-    delete[] config_dir;
-
-    FILE *file = fopen (config_file, "wb");
+    FILE *file = fopen (filename, "wb");
     if (!file)
     {
-        printf ("Couldn't save shader config to %s\n", config_file);
+        printf ("Couldn't save shader config to %s\n", filename);
     }
 
     fprintf (file, "shaders = \"%d\"\n", (unsigned int) pass.size() - 1);
@@ -1039,9 +1034,6 @@ void GLSLShader::save (void)
     }
 
     fclose (file);
-
-    realpath (config_file, gui_config->fragment_shader);
-    delete[] config_file;
 }
 #undef outf
 #undef outs

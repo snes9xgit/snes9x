@@ -1576,7 +1576,7 @@ S9xQueryDrivers (void)
     int error_base_p, event_base_p;
     int major_version, minor_version;
     Display *dpy = gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (top_level->get_window())));
-    Window xid   = gdk_x11_window_get_xid (gtk_widget_get_window (GTK_WIDGET (top_level->get_window())));
+    Window xid   = GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (GTK_WIDGET (top_level->get_window())));
 
     if (!XRRQueryExtension (dpy, &event_base_p, &error_base_p))
     {

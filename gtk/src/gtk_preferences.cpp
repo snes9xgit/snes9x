@@ -514,7 +514,12 @@ event_shader_parameters (GtkButton *widget, gpointer data)
     }
     else
     {
-        driver->save();
+        char *config_dir = get_config_dir();
+        char *config_file = new char[strlen (config_dir) + 14];
+        sprintf(config_file, "%s/shader.glslp", config_dir);
+        delete[] config_dir;
+        driver->save (config_file);
+        realpath (config_file, gui_config->fragment_shader);
         preferences->set_entry_text ("fragment_shader", preferences->config->fragment_shader);
     }
 

@@ -65,7 +65,7 @@ S9xXVDisplayDriver::create_window (int width, int height)
     gdk_window_set_user_data (gdk_window, (gpointer) drawing_area);
 
     gdk_window_show (gdk_window);
-    xwindow = gdk_x11_window_get_xid (gdk_window);
+    xwindow = GDK_COMPAT_WINDOW_XID (gdk_window);
 
     output_window_width = width;
     output_window_height = height;

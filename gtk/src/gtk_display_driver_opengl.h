@@ -40,7 +40,7 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
         void push_buffer (uint16 *src);
         void reconfigure (int width, int height);
         void *get_parameters (void);
-        void save (void);
+        void save (const char *filename);
         static int query_availability (void);
 
     private:

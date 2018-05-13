@@ -80,7 +80,7 @@ bool gtk_shader_parameters_dialog (GtkWindow *parent)
         }
         else
         {
-            GtkWidget *scale = gtk_scale_new_with_range (GTK_ORIENTATION_HORIZONTAL, p->min, p->max, p->step);
+            GtkWidget *scale = gtk_hscale_new_with_range (p->min, p->max, p->step);
             gtk_widget_set_hexpand (scale, TRUE);
             gtk_grid_attach (GTK_GRID (grid), scale, 1, i, 1, 1);
             gtk_scale_set_value_pos (GTK_SCALE (scale), GTK_POS_RIGHT);
