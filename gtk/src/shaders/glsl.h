@@ -1,8 +1,8 @@
 #include <vector>
 #include <deque>
 #include <limits.h>
-#include <epoxy/gl.h>
 #include "../../conffile.h"
+#include "shader_platform.h"
 
 static const unsigned int glsl_max_passes = 20;
 

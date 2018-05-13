@@ -1,7 +1,6 @@
 #include "glsl.h"
 #include "../../conffile.h"
 #include "shader_helpers.h"
-#include "../gtk_s9x.h"
 
 static const GLfloat tex_coords[16] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f,
                                         0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f };
@@ -516,7 +515,10 @@ bool GLSLShader::load_shader (char *filename)
         if (value)
         {
             param[i].val = atof (value);
-            param[i].val = CLAMP (param[i].val, param[i].min, param[i].max);
+            if (param[i].val < param[i].min)
+                param[i].val = param[i].min;
+            if (param[i].val > param[i].max)
+                param[i].val = param[i].max;
         }
     }
 

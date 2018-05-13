@@ -1,9 +1,9 @@
-#include <epoxy/gl.h>
 #include <png.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "shader_helpers.h"
+#include "shader_platform.h"
 
 static void gl_error_callback( GLenum source,
                                 GLenum type,

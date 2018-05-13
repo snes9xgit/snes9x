@@ -193,7 +193,7 @@
 #include "cgFunctions.h"
 #include <dlfcn.h>
 #include <stdio.h>
-#include <epoxy/gl.h>
+#include "shader_platform.h"
 
 void* hCgDll = NULL;
 void* hCgGLDll = NULL;

@@ -192,7 +192,7 @@
 #ifndef CGGLCG_H
 #define CGGLCG_H
 
-#include <epoxy/gl.h>
+#include "shader_platform.h"
 
 #include "CCGShader.h"
 #include "cgFunctions.h"

@@ -1,7 +1,7 @@
 #ifndef __SHADER_HELPERS_H
 #define __SHADER_HELPERS_H
 
-#include <epoxy/gl.h>
+#include "shader_platform.h"
 
 typedef struct _STGA
 {
