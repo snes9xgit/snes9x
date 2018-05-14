@@ -405,6 +405,8 @@ bool GLSLShader::load_shader (char *filename)
             return false;
         }
 
+        delete[] contents;
+
         p->program = glCreateProgram ();
 
         glAttachShader (p->program, vertex_shader);
