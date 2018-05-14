@@ -192,6 +192,9 @@ bool GLSLShader::load_shader_file (char *filename)
         sprintf(key, "::shader%u", i);
         strcpy(pass.filename, conf.GetString(key, ""));
 
+        sprintf(key, "::wrap_mode%u", i);
+        pass.wrap_mode = wrap_mode_string_to_enum (conf.GetString (key ,""));
+
         sprintf(key, "::frame_count_mod%u", i);
         pass.frame_count_mod = conf.GetInt(key, 0);
 
@@ -654,6 +657,12 @@ void GLSLShader::render(GLuint &orig, int width, int height, int viewport_width,
         glTexParameteri(GL_TEXTURE_2D,
                         GL_TEXTURE_MIN_FILTER,
                         filter);
+        glTexParameteri(GL_TEXTURE_2D,
+                        GL_TEXTURE_WRAP_S,
+                        pass[i].wrap_mode);
+        glTexParameteri(GL_TEXTURE_2D,
+                        GL_TEXTURE_WRAP_T,
+                        pass[i].wrap_mode);
 
         glTexCoordPointer(2, GL_FLOAT, 0, tex_coords);
 

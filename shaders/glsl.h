@@ -73,6 +73,7 @@ typedef struct
     GLuint vertex_shader;
     GLuint fragment_shader;
     GLuint texture;
+    GLuint wrap_mode;
     GLuint fbo;
     GLuint width;
     GLuint height;
