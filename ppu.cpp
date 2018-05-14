@@ -1177,7 +1177,7 @@ uint8 S9xGetPPU (uint16 Address)
 
 			case 0x2137: // SLHV
 				S9xLatchCounters(0);
-				return (OpenBus);
+				return (PPU.OpenBus1);
 
 			case 0x2138: // OAMDATAREAD
 				if (PPU.OAMAddr & 0x100)
