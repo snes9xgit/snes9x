@@ -237,14 +237,6 @@ static void ReduceToPath(char* filename)
 #define max(a, b) (((a) > (b)) ? (a) : (b))
 #endif
 
-static float npot(float desired)
-{
-    float out = 256.0;
-    while (out < desired)
-        out *= 2;
-    return out;
-}
-
 const GLfloat CGLCG::lut_coords[8] = { 0, 0, 1, 0, 1, 1, 0, 1 };
 
 CGLCG::CGLCG(CGcontext cgContext)
@@ -640,10 +632,8 @@ void CGLCG::Render(GLuint& origTex,
             shaderPasses[i].outputSize.y = viewportSize.y;
         }
 
-        /* use next power of two in both directions
-     */
-        float texSize = npot(max(shaderPasses[i].outputSize.x, shaderPasses[i].outputSize.y));
-        shaderPasses[i].textureSize.x = shaderPasses[i].textureSize.y = texSize;
+        shaderPasses[i].textureSize.x = shaderPasses[i].outputSize.x;
+        shaderPasses[i].textureSize.y = shaderPasses[i].outputSize.y;
 
         /* set size of output texture
      */

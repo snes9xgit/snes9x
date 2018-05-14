@@ -391,7 +391,7 @@ bool GLSLShader::load_shader (char *filename)
                              GL_VERTEX_SHADER,
                              &vertex_shader) || !vertex_shader)
         {
-            printf("Couldn't compile vertex shader.\n");
+            printf("Couldn't compile vertex shader in %s.\n", p->filename);
             return false;
         }
 
@@ -401,7 +401,7 @@ bool GLSLShader::load_shader (char *filename)
                              GL_FRAGMENT_SHADER,
                              &fragment_shader) || !fragment_shader)
         {
-            printf("Couldn't compile fragment shader\n");
+            printf("Couldn't compile fragment shader in %s.\n", p->filename);
             return false;
         }
 
@@ -976,8 +976,8 @@ void GLSLShader::save (const char *filename)
         {
             outs("filter_linear", p->filter == GL_LINEAR ? "true" : "false");
         }
-        //outs ("wrap_mode", wrap_mode_enum_to_string(p->wrap_mode));
-        //outs ("alias", p->alias);
+        outs ("wrap_mode", wrap_mode_enum_to_string(p->wrap_mode));
+        outs ("alias", p->alias);
         outs ("float_framebuffer", p->fp ? "true" : "false");
         outs ("srgb_framebuffer", p->srgb ? "true" : "false");
         outs ("scale_type_x", scale_enum_to_string(p->scale_type_x));
