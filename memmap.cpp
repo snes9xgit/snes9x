@@ -3266,10 +3266,11 @@ void CMemory::Map_SDD1LoROMMap (void)
 	map_lorom(0x00, 0x3f, 0x8000, 0xffff, CalculatedSize);
 	map_lorom(0x80, 0xbf, 0x8000, 0xffff, CalculatedSize);
 
-	map_hirom_offset(0x40, 0x7f, 0x0000, 0xffff, CalculatedSize, 0);
+	map_hirom_offset(0x60, 0x7f, 0x0000, 0xffff, CalculatedSize, 0);
 	map_hirom_offset(0xc0, 0xff, 0x0000, 0xffff, CalculatedSize, 0); // will be overwritten dynamically
 
 	map_index(0x70, 0x7f, 0x0000, 0x7fff, MAP_LOROM_SRAM, MAP_TYPE_RAM);
+	map_index(0xa0, 0xbf, 0x6000, 0x7fff, MAP_LOROM_SRAM, MAP_TYPE_RAM);
 
 	map_WRAM();
 
