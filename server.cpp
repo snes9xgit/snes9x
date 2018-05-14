@@ -360,7 +360,6 @@ static bool8 S9xNPSGetData (int socket, uint8 *data, int length)
 
 static bool8 S9xNPSSendData (int fd, const uint8 *data, int length)
 {
-    int Percent = 0;
     int len = length;
     int chunk = length / 50;
 
@@ -404,8 +403,8 @@ static bool8 S9xNPSSendData (int fd, const uint8 *data, int length)
 	data += sent;
         if (length > 1024)
         {
-            Percent = (uint8) (((length - len) * 100) / length);
 #ifdef __WIN32__
+            int Percent = (uint8) (((length - len) * 100) / length);
             PostMessage (GUI.hWnd, WM_USER, Percent, Percent);
             Sleep (0);
 #endif
@@ -1057,12 +1056,15 @@ void S9xNPServerLoop (void *)
 
 bool8 S9xNPStartServer (int port)
 {
+#ifdef __WIN32__
     static int p;
+    p = port;
+#endif
 
 #ifdef NP_DEBUG
     printf ("SERVER: Starting server on port %d @%ld\n", port, S9xGetMilliTime () - START);
 #endif
-    p = port;
+
     server_continue = TRUE;
     if (S9xNPServerInit (port))
 #ifdef __WIN32__

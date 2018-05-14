@@ -1263,9 +1263,9 @@ Snes9xPreferences::swap_with (void)
     int           source_joypad = get_combo ("control_combo");
     int           dest_joypad   = get_combo ("joypad_to_swap_with");
 
-    memcpy (&mediator, &pad[source_joypad], sizeof (JoypadBinding));
-    memcpy (&pad[source_joypad], &pad[dest_joypad], sizeof (JoypadBinding));
-    memcpy (&pad[dest_joypad], &mediator, sizeof (JoypadBinding));
+    mediator = pad[source_joypad];
+    pad[source_joypad] = pad[dest_joypad];
+    pad[dest_joypad] = mediator;
 
     bindings_to_dialog (source_joypad);
 
@@ -1277,7 +1277,10 @@ Snes9xPreferences::reset_current_joypad (void)
 {
     int joypad = get_combo ("control_combo");
 
-    memset (&pad[joypad], 0, sizeof (JoypadBinding));
+    for (unsigned int i = 0; i < NUM_JOYPAD_LINKS; i++)
+    {
+        pad[joypad].data[i].clear();
+    }
 
     bindings_to_dialog (joypad);
 

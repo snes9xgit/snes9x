@@ -2346,7 +2346,7 @@ void S9xApplyCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 
 						if (S9xUnfreezeGame(filename))
 						{
-							sprintf(buf, "%s.%.*s loaded", def, _MAX_EXT - 1, "oops");
+							snprintf(buf, 256, "%s.%.*s loaded", def, _MAX_EXT - 1, "oops");
 							S9xSetInfoString (buf);
 						}
 						else
@@ -2383,7 +2383,7 @@ void S9xApplyCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 
 						if (S9xUnfreezeGame(filename))
 						{
-							sprintf(buf, "%s.%03d loaded", def, i - QuickLoad000);
+							snprintf(buf, 256, "%s.%03d loaded", def, i - QuickLoad000);
 							S9xSetInfoString(buf);
 						}
 						else
@@ -2410,7 +2410,7 @@ void S9xApplyCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 						_splitpath(Memory.ROMFilename, drive, dir, def, ext);
 						snprintf(filename, PATH_MAX + 1, "%s%s%s.%03d", S9xGetDirectory(SNAPSHOT_DIR), SLASH_STR, def, i - QuickSave000);
 
-						sprintf(buf, "%s.%03d saved", def, i - QuickSave000);
+						snprintf(buf, 256, "%s.%03d saved", def, i - QuickSave000);
 						S9xSetInfoString(buf);
 
 						S9xFreezeGame(filename);

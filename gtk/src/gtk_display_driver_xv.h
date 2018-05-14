@@ -36,7 +36,6 @@ class S9xXVDisplayDriver : public S9xDisplayDriver
 
         Display *display;
         Window xwindow;
-        GC xgc;
         Colormap xcolormap;
         XVisualInfo *vi;
         GdkWindow *gdk_window;

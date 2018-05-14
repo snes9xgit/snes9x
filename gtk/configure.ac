@@ -9,7 +9,7 @@ if test -z "$CXXFLAGS"; then
     CXXFLAGS="$CFLAGS"
 fi
 
-EXTRA_FLAGS="-Wall -W -pedantic -Wno-unused-parameter"
+EXTRA_FLAGS="-Wall -W -Wno-unused-parameter"
 CFLAGS="$CFLAGS $EXTRA_FLAGS"
 CXXFLAGS="$CXXFLAGS $EXTRA_FLAGS"
 

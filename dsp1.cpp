@@ -896,9 +896,9 @@ static void DSP1_Project (int16 X, int16 Y, int16 Z, int16 *H, int16 *V, int16 *
 	Py = DSP1_ShiftR(Py, E  - refE);
 	Pz = DSP1_ShiftR(Pz, E3 - refE);
 
-	C11 =- (Px * DSP1.Nx >> 15);
-	C8  =- (Py * DSP1.Ny >> 15);
-	C9  =- (Pz * DSP1.Nz >> 15);
+	C11 = -(Px * DSP1.Nx >> 15);
+	C8  = -(Py * DSP1.Ny >> 15);
+	C9  = -(Pz * DSP1.Nz >> 15);
 	C12 = C11 + C8 + C9; // this cannot overflow!
 
 	aux4 = C12; // de-normalization with 32-bits arithmetic

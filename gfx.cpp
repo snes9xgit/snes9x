@@ -1511,7 +1511,6 @@ static void DrawBackgroundOffset (int bg, uint8 Zh, uint8 Zl, int VOffOff)
 	int	PixWidth = IPPU.DoubleWidthPixels ? 2 : 1;
 	bool8	HiresInterlace = IPPU.Interlace && IPPU.DoubleWidthPixels;
 
-	void (*DrawTile) (uint32, uint32, uint32, uint32);
 	void (*DrawClippedTile) (uint32, uint32, uint32, uint32, uint32, uint32);
 
 	for (int clip = 0; clip < GFX.Clip[bg].Count; clip++)
@@ -1520,12 +1519,10 @@ static void DrawBackgroundOffset (int bg, uint8 Zh, uint8 Zl, int VOffOff)
 
 		if (BG.EnableMath && (GFX.Clip[bg].DrawMode[clip] & 2))
 		{
-			DrawTile = GFX.DrawTileMath;
 			DrawClippedTile = GFX.DrawClippedTileMath;
 		}
 		else
 		{
-			DrawTile = GFX.DrawTileNomath;
 			DrawClippedTile = GFX.DrawClippedTileNomath;
 		}
 

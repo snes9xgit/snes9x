@@ -321,8 +321,9 @@ GLuint GLSLShader::compile_shader(char *program,
     glCompileShader (shader);
     glGetShaderiv (shader, GL_COMPILE_STATUS, &status);
 
+    info_log[0] = '\0';
     glGetShaderInfoLog (shader, 1024, NULL, info_log);
-    if (info_log && *info_log)
+    if (*info_log)
         printf ("%s\n", info_log);
     *out = shader;
 
@@ -408,8 +409,9 @@ bool GLSLShader::load_shader (char *filename)
 
         glLinkProgram (p->program);
         glGetProgramiv (p->program, GL_LINK_STATUS, &status);
+        log[0] = '\0';
         glGetProgramInfoLog(p->program, 1024, NULL, log);
-        if (log && *log)
+        if (*log)
             printf ("%s\n", log);
 
         glDeleteShader (vertex_shader);
@@ -833,7 +835,7 @@ void GLSLShader::set_shader_vars (unsigned int p)
     if (attr > -1) \
     { \
         glEnableVertexAttribArray(attr); \
-        glVertexAttribPointer(attr, 2, GL_FLOAT, GL_FALSE, 0, ((float *) NULL) + offset); \
+        glVertexAttribPointer(attr, 2, GL_FLOAT, GL_FALSE, 0, (void *)(sizeof (float) * offset)); \
         vaos.push_back (attr); \
     }
 #define setTexCoordsNoOffset(attr) \

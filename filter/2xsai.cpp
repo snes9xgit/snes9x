@@ -293,13 +293,11 @@ void SuperEagle (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, int dstRowBytes,
 		for (int i = 0; i < width; i++)
 		{
            	uint32	color1, color2, color3, color4, color5, color6;
-           	uint32	colorA0, colorA1, colorA2, colorA3, colorB0, colorB1, colorB2, colorB3, colorS1, colorS2;
+           	uint32	colorA1, colorA2, colorB1, colorB2, colorS1, colorS2;
            	uint32	product1a, product1b, product2a, product2b;
 
-			colorB0 = *(bP - nextline - 1);
 			colorB1 = *(bP - nextline    );
 			colorB2 = *(bP - nextline + 1);
-			colorB3 = *(bP - nextline + 2);
 
 			color4  = *(bP - 1);
 			color5  = *(bP    );
@@ -311,10 +309,8 @@ void SuperEagle (uint8 *srcPtr, int srcRowBytes, uint8 *dstPtr, int dstRowBytes,
 			color3  = *(bP + nextline + 1);
 			colorS1 = *(bP + nextline + 2);
 
-			colorA0 = *(bP + nextline + nextline - 1);
 			colorA1 = *(bP + nextline + nextline    );
 			colorA2 = *(bP + nextline + nextline + 1);
-			colorA3 = *(bP + nextline + nextline + 2);
 
 			if (color2 == color6 && color5 != color3)
 			{

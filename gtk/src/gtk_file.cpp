@@ -4,7 +4,7 @@
 
 #include "gtk_s9x.h"
 
-static char buf[256];
+static char buf[PATH_MAX];
 
 const char *
 S9xChooseMovieFilename (bool8 read_only)
@@ -499,13 +499,13 @@ S9xQuickSaveSlot (int slot)
 
     _splitpath (Memory.ROMFilename, drive, dir, def, ext);
 
-    sprintf (filename, "%s%s%s.%03d",
+    snprintf (filename, PATH_MAX, "%s%s%s.%03d",
              S9xGetDirectory (SNAPSHOT_DIR), SLASH_STR, def,
              slot);
 
     if (S9xFreezeGame (filename))
     {
-        sprintf (buf, "%s.%03d saved", def, slot);
+        snprintf (buf, PATH_MAX, "%s.%03d saved", def, slot);
 
         S9xSetInfoString (buf);
     }
@@ -524,13 +524,13 @@ S9xQuickLoadSlot (int slot)
 
     _splitpath (Memory.ROMFilename, drive, dir, def, ext);
 
-    sprintf (filename, "%s%s%s.%03d",
+    snprintf (filename, PATH_MAX, "%s%s%s.%03d",
              S9xGetDirectory (SNAPSHOT_DIR), SLASH_STR, def,
              slot);
 
     if (S9xUnfreezeGame (filename))
     {
-        sprintf (buf, "%s.%03d loaded", def, slot);
+        snprintf (buf, PATH_MAX, "%s.%03d loaded", def, slot);
         S9xSetInfoString (buf);
     }
     else
@@ -539,13 +539,13 @@ S9xQuickLoadSlot (int slot)
 
         _splitpath (Memory.ROMFilename, drive, dir, def, ext);
 
-        sprintf (filename, "%s%s%s.zs%c",
+        snprintf (filename, PATH_MAX, "%s%s%s.zs%c",
                  S9xGetDirectory (SNAPSHOT_DIR), SLASH_STR,
                  def, digits[slot]);
 
         if (S9xUnfreezeGame (filename))
         {
-            sprintf (buf,
+            snprintf (buf, PATH_MAX,
                      "Loaded ZSNES freeze file %s.zs%c",
                      def, digits [slot]);
             S9xSetInfoString (buf);

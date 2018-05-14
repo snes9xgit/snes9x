@@ -172,15 +172,9 @@ swap_controllers_1_2 (void)
 {
     JoypadBinding interrim;
 
-    memcpy (&interrim,
-            &gui_config->pad[0],
-            sizeof (JoypadBinding));
-    memcpy (&gui_config->pad[0],
-            &gui_config->pad[1],
-            sizeof (JoypadBinding));
-    memcpy (&gui_config->pad[1],
-            &interrim,
-            sizeof (JoypadBinding));
+    interrim = gui_config->pad[0];
+    gui_config->pad[0] = gui_config->pad[1];
+    gui_config->pad[1] = interrim;
 
     gui_config->rebind_keys ();
 
