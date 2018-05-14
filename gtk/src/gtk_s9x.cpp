@@ -125,7 +125,7 @@ main (int argc, char *argv[])
 
     gtk_window_present (top_level->get_window ());
 
-    if (rom_filename && Settings.InitialSnapshotFilename)
+    if (rom_filename && *Settings.InitialSnapshotFilename)
         S9xUnfreezeGame(Settings.InitialSnapshotFilename);
 
     gtk_main ();

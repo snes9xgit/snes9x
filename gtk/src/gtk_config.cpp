@@ -259,6 +259,7 @@ Snes9xConfig::load_defaults (void)
     Settings.DynamicRateLimit = 5;
     Settings.HDMATimingHack = 100;
     Settings.SuperFXClockMultiplier = 100;
+    Settings.InitialSnapshotFilename[0] = '\0';
 
 #ifdef NETPLAY_SUPPORT
     Settings.NetPlay = FALSE;
