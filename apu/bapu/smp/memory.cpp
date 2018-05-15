@@ -60,12 +60,12 @@ void SMP::mmio_write(unsigned addr, unsigned data) {
     if(data & 0x30) {
       synchronize_cpu();
       if(data & 0x20) {
-        port_write(3, 0x00);
-        port_write(2, 0x00);
+        cpu.port_write(3, 0x00);
+        cpu.port_write(2, 0x00);
       }
       if(data & 0x10) {
-        port_write(1, 0x00);
-        port_write(0, 0x00);
+        cpu.port_write(1, 0x00);
+        cpu.port_write(0, 0x00);
       }
     }
 
