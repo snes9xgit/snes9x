@@ -365,6 +365,7 @@ struct SSettings
 	bool8	TraceUnknownRegisters;
 	bool8	TraceDSP;
 	bool8	TraceHCEvent;
+	bool8	TraceSMP;
 
 	bool8	SuperFX;
 	uint8	DSP;

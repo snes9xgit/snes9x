@@ -202,6 +202,8 @@
 #include "debug.h"
 #include "missing.h"
 
+#include "apu/bapu/snes/snes.hpp"
+
 extern SDMA	DMA[8];
 extern FILE	*apu_trace;
 FILE		*trace = NULL, *trace2 = NULL;
@@ -259,7 +261,7 @@ static const char	*HelpMessage[] =
 //	"ai                     - Shou APU vectors",
 //	"a                      - Show APU status",
 //	"x                      - Show Sound DSP status",
-//	"A                      - Toggle APU instruction tracing to aputrace.log",
+	"A                      - Toggle APU instruction tracing to trace.log",
 //	"B                      - Toggle sound DSP register tracing to aputrace.log",
 //	"C                      - Dump sound sample addresses",
 //	"ad [Address]           - Dump APU RAM from PC or [Address]",
@@ -1581,8 +1583,11 @@ static void debug_process_command (char *Line)
 	}
 
 	// TODO: reactivate once APU debugger works again
-	/*if (*Line == 'A')
-		spc_core->debug_toggle_trace();*/
+	if (*Line == 'A')
+	{
+		Settings.TraceSMP = !Settings.TraceSMP;
+		printf("SMP tracing %s\n", Settings.TraceSMP ? "enabled" : "disabled");
+	}
 
 /*
 	if (*Line == 'B')
@@ -1643,20 +1648,16 @@ static void debug_process_command (char *Line)
 		}
 
 		*Line = 0;
-	}
+	}*/
+
+
 
 	if (*Line == 'a')
 	{
-		printf("APU in-ports : %02X %02X %02X %02X\n", IAPU.RAM[0xF4], IAPU.RAM[0xF5], IAPU.RAM[0xF6], IAPU.RAM[0xF7]);
-		printf("APU out-ports: %02X %02X %02X %02X\n", APU.OutPorts[0], APU.OutPorts[1], APU.OutPorts[2], APU.OutPorts[3]);
-		printf("ROM/RAM switch: %s\n", (IAPU.RAM[0xf1] & 0x80) ? "ROM" : "RAM");
-
-		for (int i = 0; i < 3; i++)
-			if (APU.TimerEnabled[i])
-				printf("Timer%d enabled, Value: 0x%03X, 4-bit: 0x%02X, Target: 0x%03X\n",
-				       i, APU.Timer[i], IAPU.RAM[0xfd + i], APU.TimerTarget[i]);
+		printf("S-CPU-side ports S-CPU writes these, S-SMP reads: %02X %02X %02X %02X\n", SNES::cpu.port_read(0), SNES::cpu.port_read(1), SNES::cpu.port_read(2), SNES::cpu.port_read(3));
+		printf("S-SMP-side ports S-SMP writes these, S-CPU reads: %02X %02X %02X %02X\n", SNES::smp.port_read(0), SNES::smp.port_read(1), SNES::smp.port_read(2), SNES::smp.port_read(3));
 	}
-
+/*
 	if (*Line == 'P')
 	{
 		Settings.TraceDSP = !Settings.TraceDSP;

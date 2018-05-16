@@ -198,6 +198,8 @@
 #include "debug.h"
 #endif
 
+#include "../apu/apu.h"
+
 struct SOpcodes
 {
 	void (*S9xOpcode) (void);
@@ -288,6 +290,8 @@ static inline void S9xFixCycles (void)
 static inline void S9xCheckInterrupts (void)
 {
 	bool8	thisIRQ = PPU.HTimerEnabled | PPU.VTimerEnabled;
+
+	S9xAPUExecute();
 
 	if (CPU.IRQLine & thisIRQ)
 		CPU.IRQTransition = TRUE;

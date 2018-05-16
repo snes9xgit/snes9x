@@ -516,6 +516,7 @@ void S9xLoadConfigFiles (char **argv, int argc)
 		ENSURE_TRACE_OPEN(trace,"trace.log","wb")
 		CPU.Flags |= TRACE_FLAG;
 	}
+	Settings.TraceSMP = FALSE;
 #endif
 
 	S9xParsePortConfig(conf, 1);
