@@ -413,23 +413,13 @@ void S9xDoHEventProcessing (void)
 			}
 
 			/* Did we skip over a late  NMI Trigger Pos? If so, reschedule it immediately. */
-			if (CPU.NMIPending && (CPU.Cycles >= Timings.NMITriggerPos))
+			if (CPU.NMIPending && (CPU.Cycles >= Timings.NMITriggerPos) && (Timings.NMITriggerPos > Timings.H_Max / 2))
 				Timings.NMITriggerPos = 0;
 
 			S9xAPUEndScanline();
 			CPU.Cycles -= Timings.H_Max;
 			CPU.PrevCycles -= Timings.H_Max;
 			S9xAPUSetReferenceTime(CPU.Cycles);
-
-			if ((Timings.NMITriggerPos != 0xffff) && (Timings.NMITriggerPos >= Timings.H_Max))
-			{
-				Timings.NMITriggerPos -= Timings.H_Max;
-#ifdef DEBUGGER
-				if (Settings.TraceHCEvent)
-				    S9xTraceFormattedMessage ("NMI Trigger pos changed to %d\n", Timings.NMITriggerPos);
-#endif
-			}
-
 
 			CPU.V_Counter++;
 			if (CPU.V_Counter >= Timings.V_Max)	// V ranges from 0 to Timings.V_Max - 1
