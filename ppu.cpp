@@ -1520,8 +1520,8 @@ void S9xSetCPU (uint8 Byte, uint16 Address)
 					// then, when to call S9xOpcode_NMI()?
 					CPU.NMIPending = TRUE;
 					Timings.NMITriggerPos = CPU.Cycles + 6 + 6;
-					if (Timings.NMITriggerPOS >= Timings.H_Max)
-						Timings.NMITriggerPOS -= Timings.H_Max;
+					if (Timings.NMITriggerPos >= Timings.H_Max)
+						Timings.NMITriggerPos -= Timings.H_Max;
 
 #ifdef DEBUGGER
 if (Settings.TraceHCEvent)
