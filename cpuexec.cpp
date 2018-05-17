@@ -412,6 +412,10 @@ void S9xDoHEventProcessing (void)
 				SuperFX.oneLineDone = FALSE;
 			}
 
+			/* Did we skip over a late  NMI Trigger Pos? If so, reschedule it immediately. */
+			if (CPU.NMIPending && (CPU.Cycles >= Timings.NMITriggerPos))
+				Timings.NMITriggerPos = 0;
+
 			S9xAPUEndScanline();
 			CPU.Cycles -= Timings.H_Max;
 			CPU.PrevCycles -= Timings.H_Max;
