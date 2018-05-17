@@ -291,8 +291,6 @@ static inline void S9xCheckInterrupts (void)
 {
 	bool8	thisIRQ = PPU.HTimerEnabled | PPU.VTimerEnabled;
 
-	S9xAPUExecute();
-
 	if (CPU.IRQLine & thisIRQ)
 		CPU.IRQTransition = TRUE;
 
