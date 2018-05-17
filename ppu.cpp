@@ -1476,6 +1476,10 @@ void S9xSetCPU (uint8 Byte, uint16 Address)
 		switch (Address)
 		{
 			case 0x4200: // NMITIMEN
+				#ifdef DEBUGGER
+				if (Settings.TraceHCEvent)
+				    S9xTraceFormattedMessage("Write to 0x4200. Byte is %2x was %2x\n", Byte, Memory.FillRAM[Address]);
+				#endif
 				if (Byte & 0x20)
 				{
 					PPU.VTimerEnabled = TRUE;
@@ -1511,10 +1515,17 @@ void S9xSetCPU (uint8 Byte, uint16 Address)
 				if ((Byte & 0x80) && !(Memory.FillRAM[0x4200] & 0x80) &&
 					(CPU.V_Counter >= PPU.ScreenHeight + FIRST_VISIBLE_LINE) && (Memory.FillRAM[0x4210] & 0x80))
 				{
+
 					// FIXME: triggered at HC+=6, checked just before the final CPU cycle,
 					// then, when to call S9xOpcode_NMI()?
 					CPU.NMIPending = TRUE;
 					Timings.NMITriggerPos = CPU.Cycles + 6 + 6;
+
+#ifdef DEBUGGER
+if (Settings.TraceHCEvent)
+    S9xTraceFormattedMessage("NMI Triggered on low-to-high occurring at next HC=%d\n", Timings.NMITriggerPos);
+#endif
+
 				}
 
                 #ifdef DEBUGGER

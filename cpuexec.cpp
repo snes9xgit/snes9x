@@ -211,6 +211,10 @@ void S9xMainLoop (void)
 	{
 		if (CPU.NMIPending)
 		{
+			#ifdef DEBUGGER
+			if (Settings.TraceHCEvent)
+			    S9xTraceFormattedMessage ("Comparing %d to %d\n", Timings.NMITriggerPos, CPU.Cycles);
+			#endif
 			if (Timings.NMITriggerPos <= CPU.Cycles)
 			{
 				CPU.NMIPending = FALSE;
@@ -414,7 +418,14 @@ void S9xDoHEventProcessing (void)
 			S9xAPUSetReferenceTime(CPU.Cycles);
 
 			if ((Timings.NMITriggerPos != 0xffff) && (Timings.NMITriggerPos >= Timings.H_Max))
+			{
 				Timings.NMITriggerPos -= Timings.H_Max;
+#ifdef DEBUGGER
+				if (Settings.TraceHCEvent)
+				    S9xTraceFormattedMessage ("NMI Trigger pos changed to %d\n", Timings.NMITriggerPos);
+#endif
+			}
+
 
 			CPU.V_Counter++;
 			if (CPU.V_Counter >= Timings.V_Max)	// V ranges from 0 to Timings.V_Max - 1
@@ -503,6 +514,10 @@ void S9xDoHEventProcessing (void)
 				Memory.FillRAM[0x4210] = 0x80 | Model->_5A22;
 				if (Memory.FillRAM[0x4200] & 0x80)
 				{
+#ifdef DEBUGGER
+					if (Settings.TraceHCEvent)
+					    S9xTraceFormattedMessage ("NMI Scheduled for next scanline.");
+#endif
 					// FIXME: triggered at HC=6, checked just before the final CPU cycle,
 					// then, when to call S9xOpcode_NMI()?
 					CPU.NMIPending = TRUE;

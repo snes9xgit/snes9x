@@ -889,7 +889,7 @@ static uint8 debug_cpu_op_print (char *Line, uint8 Bank, uint16 Address)
 			break;
 	}
 
-	sprintf(Line, "%-44s A:%04X X:%04X Y:%04X D:%04X DB:%02X S:%04X P:%c%c%c%c%c%c%c%c%c HC:%04ld VC:%03ld FC:%02d %03x",
+	sprintf(Line, "%-44s A:%04X X:%04X Y:%04X D:%04X DB:%02X S:%04X P:%c%c%c%c%c%c%c%c%c HC:%04ld VC:%03ld FC:%02d %03x %c",
 	        Line, Registers.A.W, Registers.X.W, Registers.Y.W,
 	        Registers.D.W, Registers.DB, Registers.S.W,
 	        CheckEmulation() ? 'E' : 'e',
@@ -904,7 +904,8 @@ static uint8 debug_cpu_op_print (char *Line, uint8 Bank, uint16 Address)
 	        (long) CPU.Cycles,
 	        (long) CPU.V_Counter,
 	        IPPU.FrameCount,
-	        (CPU.IRQExternal ? 0x100 : 0) | (PPU.HTimerEnabled ? 0x10 : 0) | (PPU.VTimerEnabled ? 0x01 : 0));
+	        (CPU.IRQExternal ? 0x100 : 0) | (PPU.HTimerEnabled ? 0x10 : 0) | (PPU.VTimerEnabled ? 0x01 : 0),
+	        CPU.NMIPending ? 'N' : '.');
 
 	return (Size);
 }
