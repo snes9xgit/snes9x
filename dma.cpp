@@ -1291,8 +1291,6 @@ bool8 S9xDoDMA (uint8 Channel)
 	if (CPU.NMIPending && (Timings.NMITriggerPos != 0xffff))
 	{
 		Timings.NMITriggerPos = CPU.Cycles + Timings.NMIDMADelay;
-		if (Timings.NMITriggerPos >= Timings.H_Max)
-			Timings.NMITriggerPos -= Timings.H_Max;
 	}
 
 	// Release the memory used in SPC7110 DMA

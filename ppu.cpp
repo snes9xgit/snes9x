@@ -1520,8 +1520,6 @@ void S9xSetCPU (uint8 Byte, uint16 Address)
 					// then, when to call S9xOpcode_NMI()?
 					CPU.NMIPending = TRUE;
 					Timings.NMITriggerPos = CPU.Cycles + 6 + 6;
-					if (Timings.NMITriggerPos >= Timings.H_Max)
-						Timings.NMITriggerPos -= Timings.H_Max;
 
 #ifdef DEBUGGER
 if (Settings.TraceHCEvent)
@@ -1798,6 +1796,7 @@ uint8 S9xGetCPU (uint16 Address)
 				byte = CPU.IRQLine ? 0x80 : 0;
 				CPU.IRQLine = FALSE;
 				CPU.IRQTransition = FALSE;
+
 				return (byte | (OpenBus & 0x7f));
 
 			case 0x4212: // HVBJOY
