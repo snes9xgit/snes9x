@@ -346,6 +346,7 @@ struct STimings
 	int32	HDMAInit;
 	int32	HDMAStart;
 	int32	NMITriggerPos;
+	int32	NextTimer;
 	int32	IRQTriggerCycles;
 	int32	WRAMRefreshPos;
 	int32	RenderPos;

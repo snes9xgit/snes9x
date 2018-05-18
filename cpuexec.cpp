@@ -229,7 +229,7 @@ void S9xMainLoop (void)
 			}
 		}
 
-		if (CPU.IRQTransition || CPU.IRQExternal)
+		if (CPU.Cycles >= Timings.NextTimer || CPU.IRQExternal)
 		{
 			if (CPU.IRQPending)
 				CPU.IRQPending--;
@@ -241,7 +241,7 @@ void S9xMainLoop (void)
 					Registers.PCw++;
 				}
 
-				CPU.IRQTransition = FALSE;
+				S9xUpdateIRQPositions();
 				CPU.IRQPending = Timings.IRQPendCount;
 
 				if (!CheckFlag(IRQ))
@@ -288,9 +288,7 @@ void S9xMainLoop (void)
 		if (CPU.PCBase)
 		{
 			Op = CPU.PCBase[Registers.PCw];
-			CPU.PrevCycles = CPU.Cycles;
 			CPU.Cycles += CPU.MemSpeed;
-			S9xCheckInterrupts();
 			Opcodes = ICPU.S9xOpcodes;
 		}
 		else
@@ -414,9 +412,10 @@ void S9xDoHEventProcessing (void)
 
 			S9xAPUEndScanline();
 			CPU.Cycles -= Timings.H_Max;
-			CPU.PrevCycles -= Timings.H_Max;
 			if (Timings.NMITriggerPos != 0xffff)
 				Timings.NMITriggerPos -= Timings.H_Max;
+			if (Timings.NextTimer != 0xffff)
+				Timings.NextTimer -= Timings.H_Max;
 			S9xAPUSetReferenceTime(CPU.Cycles);
 
 			CPU.V_Counter++;
@@ -557,9 +556,7 @@ void S9xDoHEventProcessing (void)
 			S9xTraceFormattedMessage("*** WRAM Refresh  HC:%04d", CPU.Cycles);
 		#endif
 
-			CPU.PrevCycles = CPU.Cycles;
 			CPU.Cycles += SNES_WRAM_REFRESH_CYCLES;
-			S9xCheckInterrupts();
 
 			S9xReschedule();
 

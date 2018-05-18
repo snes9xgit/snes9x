@@ -269,7 +269,43 @@ static inline void S9xTryGunLatch (bool force)
 	}
 }
 
-void S9xUpdateHVTimerPosition (void)
+static int CyclesUntilNext (int hc, int vc)
+{
+	int32 total = 0;
+	int vpos = CPU.V_Counter;
+
+	// Advance to next hc
+	total = (hc - CPU.Cycles);
+	if (total < 0)
+	{
+		total += Timings.H_Max;
+		vpos++;
+	}
+
+	if (vc - vpos >= 0)
+	{
+		// It's still in this frame */
+		// Add number of lines
+		total += (vc - vpos) * Timings.H_Max;
+		// If line 240 is in there and we're odd, subtract a dot
+		if (vpos <= 240 && vc > 240 && Timings.InterlaceField)
+			total -= ONE_DOT_CYCLE;
+	}
+	else
+	{
+		total += (Timings.V_Max - vpos) * Timings.H_Max;
+		if (vpos <= 240 && Timings.InterlaceField)
+			total -= ONE_DOT_CYCLE;
+
+		total += (vc) * Timings.H_Max;
+		if (vc > 240 && !Timings.InterlaceField)
+			total -= ONE_DOT_CYCLE;
+	}
+
+	return total;
+}
+
+void S9xUpdateIRQPositions (void)
 {
 	PPU.HTimerPosition = PPU.IRQHBeamPos * ONE_DOT_CYCLE + Timings.IRQTriggerCycles;
 	if (Timings.H_Max == Timings.H_Max_Master)	// 1364
@@ -291,6 +327,16 @@ void S9xUpdateHVTimerPosition (void)
 			PPU.VTimerPosition = 0;
 	}
 
+	if (!PPU.HTimerEnabled && !PPU.VTimerEnabled)
+	{
+		Timings.NextTimer = 0xffff;
+	}
+	else
+	{
+		Timings.NextTimer =
+			CyclesUntilNext (PPU.HTimerEnabled ? PPU.HTimerPosition : 0,
+					PPU.VTimerEnabled ? PPU.VTimerPosition : 0);
+	}
 #ifdef DEBUGGER
 	S9xTraceFormattedMessage("--- IRQ Timer set  HTimer:%d Pos:%04d  VTimer:%d Pos:%03d",
 		PPU.HTimerEnabled, PPU.HTimerPosition, PPU.VTimerEnabled, PPU.VTimerPosition);
@@ -1502,14 +1548,10 @@ void S9xSetCPU (uint8 Byte, uint16 Address)
 				else
 					PPU.HTimerEnabled = FALSE;
 
-				if (CPU.IRQLine && !PPU.HTimerEnabled && PPU.VTimerEnabled)
-					CPU.IRQTransition = TRUE;
-
-				if (!PPU.HTimerEnabled && !PPU.VTimerEnabled)
-				{
+				if (!(Byte & 0x10) && !(Byte & 0x20))
 					CPU.IRQLine = FALSE;
-					CPU.IRQTransition = FALSE;
-				}
+
+				S9xUpdateIRQPositions();
 
 				// NMI can trigger immediately during VBlank as long as NMI_read ($4210) wasn't cleard.
 				if ((Byte & 0x80) && !(Memory.FillRAM[0x4200] & 0x80) &&
@@ -1576,7 +1618,7 @@ if (Settings.TraceHCEvent)
 				pos = PPU.IRQHBeamPos;
 				PPU.IRQHBeamPos = (PPU.IRQHBeamPos & 0xff00) | Byte;
 				if (PPU.IRQHBeamPos != pos)
-					S9xUpdateHVTimerPosition();
+					S9xUpdateIRQPositions();
 			#ifdef DEBUGGER
 				missing.hirq_pos = PPU.IRQHBeamPos;
 			#endif
@@ -1586,7 +1628,7 @@ if (Settings.TraceHCEvent)
 				pos = PPU.IRQHBeamPos;
 				PPU.IRQHBeamPos = (PPU.IRQHBeamPos & 0xff) | ((Byte & 1) << 8);
 				if (PPU.IRQHBeamPos != pos)
-					S9xUpdateHVTimerPosition();
+					S9xUpdateIRQPositions();
 			#ifdef DEBUGGER
 				missing.hirq_pos = PPU.IRQHBeamPos;
 			#endif
@@ -1596,7 +1638,7 @@ if (Settings.TraceHCEvent)
 				pos = PPU.IRQVBeamPos;
 				PPU.IRQVBeamPos = (PPU.IRQVBeamPos & 0xff00) | Byte;
 				if (PPU.IRQVBeamPos != pos)
-					S9xUpdateHVTimerPosition();
+					S9xUpdateIRQPositions();
 			#ifdef DEBUGGER
 				missing.virq_pos = PPU.IRQVBeamPos;
 			#endif
@@ -1606,7 +1648,7 @@ if (Settings.TraceHCEvent)
 				pos = PPU.IRQVBeamPos;
 				PPU.IRQVBeamPos = (PPU.IRQVBeamPos & 0xff) | ((Byte & 1) << 8);
 				if (PPU.IRQVBeamPos != pos)
-					S9xUpdateHVTimerPosition();
+					S9xUpdateIRQPositions();
 			#ifdef DEBUGGER
 				missing.virq_pos = PPU.IRQVBeamPos;
 			#endif
@@ -1617,9 +1659,7 @@ if (Settings.TraceHCEvent)
 					return;
 				// XXX: Not quite right...
                 if (Byte) {
-                    CPU.PrevCycles = CPU.Cycles;
-					CPU.Cycles += Timings.DMACPUSync;
-                    S9xCheckInterrupts();
+				CPU.Cycles += Timings.DMACPUSync;
                 }
 				if (Byte & 0x01)
 					S9xDoDMA(0);
@@ -1795,7 +1835,7 @@ uint8 S9xGetCPU (uint16 Address)
 			case 0x4211: // TIMEUP
 				byte = CPU.IRQLine ? 0x80 : 0;
 				CPU.IRQLine = FALSE;
-				CPU.IRQTransition = FALSE;
+				S9xUpdateIRQPositions();
 
 				return (byte | (OpenBus & 0x7f));
 

@@ -200,7 +200,7 @@
 #include "missing.h"
 #endif
 
-#define ADD_CYCLES(n)	{ CPU.PrevCycles = CPU.Cycles; CPU.Cycles += (n); S9xCheckInterrupts(); }
+#define ADD_CYCLES(n)	{ CPU.Cycles += (n); }
 
 extern uint8	*HDMAMemPointers[8];
 extern int		HDMA_ModeByteCounts[8];

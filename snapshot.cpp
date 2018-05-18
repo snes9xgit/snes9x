@@ -1780,6 +1780,7 @@ int S9xUnfreezeFromStream (STREAM stream)
 		ICPU.ShiftedDB = Registers.DB << 16;
 		S9xSetPCBase(Registers.PBPC);
 		S9xUnpackStatus();
+		S9xUpdateIRQPositions();
 		S9xFixCycles();
 
 		for (int d = 0; d < 8; d++)

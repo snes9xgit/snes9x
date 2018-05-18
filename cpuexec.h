@@ -287,46 +287,4 @@ static inline void S9xFixCycles (void)
 	}
 }
 
-static inline void S9xCheckInterrupts (void)
-{
-	bool8	thisIRQ = PPU.HTimerEnabled | PPU.VTimerEnabled;
-
-	if (CPU.IRQLine & thisIRQ)
-		CPU.IRQTransition = TRUE;
-
-	if (PPU.HTimerEnabled)
-	{
-		int32	htimepos = PPU.HTimerPosition;
-		if ((CPU.Cycles >= Timings.H_Max) & (htimepos < CPU.PrevCycles))
-			htimepos += Timings.H_Max;
-
-		if ((CPU.PrevCycles >= htimepos) | (CPU.Cycles < htimepos))
-			thisIRQ = FALSE;
-	}
-
-	if (PPU.VTimerEnabled)
-	{
-		int32	vcounter = CPU.V_Counter;
-        if ((CPU.Cycles >= Timings.H_Max) & ((!PPU.HTimerEnabled) | (PPU.HTimerPosition < CPU.PrevCycles))) {
-			vcounter++;
-            if(vcounter >= Timings.V_Max)
-                vcounter = 0;
-        }
-
-		if (vcounter != PPU.VTimerPosition)
-			thisIRQ = FALSE;
-	}
-
-	if ((!CPU.IRQLastState) & thisIRQ)
-	{
-#ifdef DEBUGGER
-		S9xTraceFormattedMessage("--- /IRQ High->Low  prev HC:%04d  curr HC:%04d  HTimer:%d Pos:%04d  VTimer:%d Pos:%03d",
-			CPU.PrevCycles, CPU.Cycles, PPU.HTimerEnabled, PPU.HTimerPosition, PPU.VTimerEnabled, PPU.VTimerPosition);
-#endif
-		CPU.IRQLine = TRUE;
-	}
-
-	CPU.IRQLastState = thisIRQ;
-}
-
 #endif

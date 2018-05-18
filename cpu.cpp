@@ -229,8 +229,6 @@ static void S9xSoftResetCPU (void)
 	CPU.PCBase = NULL;
 	CPU.NMIPending = FALSE;
 	CPU.IRQLine = FALSE;
-	CPU.IRQTransition = FALSE;
-	CPU.IRQLastState = FALSE;
 	CPU.IRQExternal = FALSE;
 	CPU.IRQPending = Timings.IRQPendCount;
 	CPU.MemSpeed = SLOW_ONE_CYCLE;
@@ -268,6 +266,7 @@ static void S9xSoftResetCPU (void)
 	Timings.H_Max = Timings.H_Max_Master;
 	Timings.V_Max = Timings.V_Max_Master;
 	Timings.NMITriggerPos = 0xffff;
+	Timings.NextTimer = 0xffff;
 	if (Model->_5A22 == 2)
 		Timings.WRAMRefreshPos = SNES_WRAM_REFRESH_HC_v2;
 	else
