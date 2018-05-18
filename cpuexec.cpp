@@ -245,7 +245,10 @@ void S9xMainLoop (void)
 				CPU.IRQPending = Timings.IRQPendCount;
 
 				if (!CheckFlag(IRQ))
+				{
+					CPU.IRQLine = TRUE;
 					S9xOpcode_IRQ();
+				}
 			}
 		}
 
