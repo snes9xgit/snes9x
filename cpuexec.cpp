@@ -417,7 +417,7 @@ void S9xDoHEventProcessing (void)
 			CPU.Cycles -= Timings.H_Max;
 			if (Timings.NMITriggerPos != 0xffff)
 				Timings.NMITriggerPos -= Timings.H_Max;
-			if (Timings.NextIRQTimer != 0xffff)
+			if (Timings.NextIRQTimer != 0xffffffff)
 				Timings.NextIRQTimer -= Timings.H_Max;
 			S9xAPUSetReferenceTime(CPU.Cycles);
 

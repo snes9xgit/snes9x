@@ -329,13 +329,19 @@ void S9xUpdateIRQPositions (void)
 
 	if (!PPU.HTimerEnabled && !PPU.VTimerEnabled)
 	{
-		Timings.NextIRQTimer = 0xffff;
+		Timings.NextIRQTimer = 0x0fffffff;
+	}
+	else if (PPU.HTimerEnabled && !PPU.VTimerEnabled)
+	{
+		Timings.NextIRQTimer = PPU.HTimerPosition - CPU.Cycles;
+		if (Timings.NextIRQTimer < 0)
+			Timings.NextIRQTimer += Timings.H_Max;
 	}
 	else
 	{
 		Timings.NextIRQTimer =
 			CyclesUntilNext (PPU.HTimerEnabled ? PPU.HTimerPosition : 0,
-					PPU.VTimerEnabled ? PPU.VTimerPosition : 0);
+					PPU.VTimerPosition);
 	}
 #ifdef DEBUGGER
 	S9xTraceFormattedMessage("--- IRQ Timer set  HTimer:%d Pos:%04d  VTimer:%d Pos:%03d",
