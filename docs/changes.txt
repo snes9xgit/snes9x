@@ -65,6 +65,7 @@ Snes9x 1.56
 - GTK+: Add minimal compatibility with cgp shaders.         (BearOso)
 - GTK+: Add full compatibility with GLSLP shaders, with a   (BearOso)
   parameters dialog to configure them.
+- Unix: Add xinerama support and window position hints.     (Francesco149)
 
 Snes9x 1.55
 - Added support for the MSU-1 coprocessor.                  (qwertymodo)
