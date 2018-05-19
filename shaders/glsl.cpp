@@ -666,7 +666,7 @@ void GLSLShader::render(GLuint &orig, int width, int height, int viewport_width,
                         GL_TEXTURE_WRAP_T,
                         pass[i].wrap_mode);
 
-        glTexCoordPointer(2, GL_FLOAT, 0, tex_coords);
+        glTexCoordPointer(2, GL_FLOAT, 0, tex_coords + ((i == pass.size() - 1) ? 8 : 0));
 
         glUseProgram (pass[i].program);
         set_shader_vars(i);
