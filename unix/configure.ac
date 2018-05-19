@@ -406,6 +406,22 @@ if test "x$enable_xvideo" = "xyes"; then
 	])
 fi
 
+# Check if we can build with Xinerama multi-monitor support
+AC_ARG_ENABLE([xinerama],
+	[AS_HELP_STRING([--enable-xinerama],
+		[enable Xinerama if available (default: yes)])],
+	[], [enable_xinerama="yes"])
+
+if test "x$enable_xinerama" = "xyes"; then
+	enable_xinerama="no"
+	AC_CHECK_HEADER([X11/extensions/Xinerama.h],
+	[
+		enable_xinerama="yes"
+		S9XLIBS="$S9XLIBS -lXinerama"
+		S9XDEFS="$S9XDEFS -DUSE_XINERAMA"
+	])
+fi
+
 # Check if we have sound code for this platform.
 
 AC_ARG_ENABLE([sound],
@@ -473,6 +489,7 @@ libs................. $S9XLIBS
 
 features:
 Xvideo support....... $enable_xvideo
+Xinerama support..... $enable_xinerama
 sound support........ $enable_sound
 screenshot support... $enable_screenshot
 netplay support...... $enable_netplay
