@@ -288,17 +288,17 @@ static int CyclesUntilNext (int hc, int vc)
 		// Add number of lines
 		total += (vc - vpos) * Timings.H_Max;
 		// If line 240 is in there and we're odd, subtract a dot
-		if (vpos <= 240 && vc > 240 && Timings.InterlaceField)
+		if (vpos <= 240 && vc > 240 && Timings.InterlaceField & !IPPU.Interlace)
 			total -= ONE_DOT_CYCLE;
 	}
 	else
 	{
 		total += (Timings.V_Max - vpos) * Timings.H_Max;
-		if (vpos <= 240 && Timings.InterlaceField)
+		if (vpos <= 240 && Timings.InterlaceField && !IPPU.Interlace)
 			total -= ONE_DOT_CYCLE;
 
 		total += (vc) * Timings.H_Max;
-		if (vc > 240 && !Timings.InterlaceField)
+		if (vc > 240 && !Timings.InterlaceField && !IPPU.Interlace)
 			total -= ONE_DOT_CYCLE;
 	}
 
@@ -329,11 +329,11 @@ void S9xUpdateIRQPositions (void)
 
 	if (!PPU.HTimerEnabled && !PPU.VTimerEnabled)
 	{
-		Timings.NextTimer = 0xffff;
+		Timings.NextIRQTimer = 0xffff;
 	}
 	else
 	{
-		Timings.NextTimer =
+		Timings.NextIRQTimer =
 			CyclesUntilNext (PPU.HTimerEnabled ? PPU.HTimerPosition : 0,
 					PPU.VTimerEnabled ? PPU.VTimerPosition : 0);
 	}

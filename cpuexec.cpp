@@ -229,7 +229,7 @@ void S9xMainLoop (void)
 			}
 		}
 
-		if (CPU.Cycles >= Timings.NextTimer || CPU.IRQExternal)
+		if (CPU.Cycles >= Timings.NextIRQTimer || CPU.IRQExternal)
 		{
 			if (CPU.IRQPending)
 				CPU.IRQPending--;
@@ -417,8 +417,8 @@ void S9xDoHEventProcessing (void)
 			CPU.Cycles -= Timings.H_Max;
 			if (Timings.NMITriggerPos != 0xffff)
 				Timings.NMITriggerPos -= Timings.H_Max;
-			if (Timings.NextTimer != 0xffff)
-				Timings.NextTimer -= Timings.H_Max;
+			if (Timings.NextIRQTimer != 0xffff)
+				Timings.NextIRQTimer -= Timings.H_Max;
 			S9xAPUSetReferenceTime(CPU.Cycles);
 
 			CPU.V_Counter++;
