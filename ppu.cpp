@@ -274,14 +274,6 @@ static int CyclesUntilNext (int hc, int vc)
 	int32 total = 0;
 	int vpos = CPU.V_Counter;
 
-	// Advance to next hc
-	total = (hc - CPU.Cycles);
-	if (total < 0)
-	{
-		total += Timings.H_Max;
-		vpos++;
-	}
-
 	if (vc - vpos >= 0)
 	{
 		// It's still in this frame */
@@ -301,6 +293,8 @@ static int CyclesUntilNext (int hc, int vc)
 		if (vc > 240 && !Timings.InterlaceField && !IPPU.Interlace)
 			total -= ONE_DOT_CYCLE;
 	}
+
+	total += hc;
 
 	return total;
 }
@@ -333,16 +327,22 @@ void S9xUpdateIRQPositions (void)
 	}
 	else if (PPU.HTimerEnabled && !PPU.VTimerEnabled)
 	{
-		Timings.NextIRQTimer = PPU.HTimerPosition - CPU.Cycles;
-		if (Timings.NextIRQTimer < 0)
+		Timings.NextIRQTimer = PPU.HTimerPosition;
+		if (CPU.Cycles > Timings.NextIRQTimer)
 			Timings.NextIRQTimer += Timings.H_Max;
+	}
+	else if (!PPU.HTimerEnabled && PPU.VTimerEnabled)
+	{
+		if (CPU.V_Counter == PPU.VTimerPosition)
+			Timings.NextIRQTimer = 0;
+		else
+			Timings.NextIRQTimer = CyclesUntilNext (0, PPU.VTimerPosition);
 	}
 	else
 	{
-		Timings.NextIRQTimer =
-			CyclesUntilNext (PPU.HTimerEnabled ? PPU.HTimerPosition : 0,
-					PPU.VTimerPosition);
+		Timings.NextIRQTimer = CyclesUntilNext (PPU.HTimerPosition, PPU.VTimerPosition);
 	}
+
 #ifdef DEBUGGER
 	S9xTraceFormattedMessage("--- IRQ Timer set  HTimer:%d Pos:%04d  VTimer:%d Pos:%03d",
 		PPU.HTimerEnabled, PPU.HTimerPosition, PPU.VTimerEnabled, PPU.VTimerPosition);
