@@ -1,3 +1,71 @@
+Snes9x 1.56
+- Increased the speed of SA1 emulation to match hardware    (BearOso)
+  more closely.
+- Changed the location where we poll input to potentiallly  (Brunnis, BearOso)
+  reduce lag.
+- Fixed the interlace fields being swapped after skipping   (BearOso)
+  frames.
+- More updates for BS-X support.                            (LuigiBlood)
+- Updated xBRZ to version 1.6.                              (zenju, OV2)
+- Added a DMA timing hack for rpgone's Koryu no Mimi        (OV2)
+  translation.
+- Updated HDMA to not update indirect addresses until after (BearOso)
+  transfers are completed.
+- Improved cheats support. This stores cheats in a human-   (BearOso, OV2)
+  readable and editable format as gamename.bml. Cheats are
+  converted from the old format on load. They can be added
+  in many different formats, but they will convert to the
+  simple address?condition=byte format.
+  Also, now included is mightymo's cheat database, and the
+  ability to match a game and automatically load cheats
+  from it.
+- Don't reset a pending NMI on vblank end. Fixes Super      (furrykef)
+  Punch-Out.
+- Redo NMI timing. Fixes Secret of Evermore (PAL).          (BearOso)
+- Test for transparency before dithering on SuperFX. This   (RedGuy(yyy))
+  fixes some graphical artifacts in Star Fox.
+- Change some of the SDD1 guesswork mapping. Fixes a Tales  (BearOso)
+  of Phantasia hack.
+- Return PPU1 MDR for reads of $2137 instead of CPU MDR.    (BearOso)
+  Fixes Mario's Time Machine graphical glitch.
+- Memset less memory for sprite calculations.               (Nebuleon)
+- Don't spuriously update register 14 when running SuperFX. (BearOso)
+  Fixes graphical glitches in Doom.
+- Added a SuperFX clock modifier variable.                  (BearOso)
+- Write CPU MDR during HDMA writes. Fixes Speedy Gonzales.  (BearOso)
+- Calculate next IRQ time in advance instead of continously (BearOso)
+  checking for it.
+- Win32: Added dynamic rate control support for XAudio2     (OV2)
+- Win32: Added different volume level configuration for     (OV2)
+  regular and turbo speed.
+- Win32: Improve multi-rom loading.                         (OV2)
+- Win32: Add libpng and zlib dependencies as submodules for (qwertymodo, OV2)
+  easier compiling from source.
+- Win32: Fixed icon registration.                           (OV2)
+- Win32: Better support for running while unfocused.        (OV2)
+- Win32: Changed icon.                                      (BearOso)
+- Win32: Report hidpi support.                              (BearOso)
+- Win32: Added mute hotkey and hotkeys for saving/loading   (OV2)
+  from file.
+- Win32: Disabled hotplugging in favor of a menu option to  (OV2)
+  reconfigure joysticks.
+- Win32: Added a reduce input lag option.                   (BearOso)
+- GTK+: Added dynamic rate control support for audio to     (BearOso)
+  reduce buffer overflows and underflows.
+- GTK+: Increased SDL requirement to version 2.0. This      (BearOso)
+  improves joystick compatibility.
+- GTK+: Improved GTK+ 3.0 support and made it the default.  (BearOso)
+- GTK+: Added ability to start from a snapshot on the       (julien2512)
+  command line.
+- GTK+: Added automatic input rate handling.                (BearOso)
+- GTK+: Use 16-bit 5-6-5 pixel format for better colors.    (BearOso)
+- GTK+: Now disables the compositor in fullscreen mode.     (BearOso)
+- GTK+: Changed icon.                                       (BearOso)
+- GTK+: Require libepoxy for OpenGL support.                (BearOso)
+- GTK+: Add minimal compatibility with cgp shaders.         (BearOso)
+- GTK+: Add full compatibility with GLSLP shaders, with a   (BearOso)
+  parameters dialog to configure them.
+
 Snes9x 1.55
 - Added support for the MSU-1 coprocessor.                  (qwertymodo)
 - Added support for MSU-1 distribution pack.                (qwertymodo)
