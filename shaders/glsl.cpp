@@ -1066,5 +1066,6 @@ void GLSLShader::destroy (void)
     pass.clear();
     lut.clear();
     prev_frame.clear();
+    conf.Clear();
 }
 
