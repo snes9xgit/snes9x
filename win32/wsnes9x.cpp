@@ -1300,9 +1300,9 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
         if(wParam == CustomKeys.Rewind.key
 		&& modifiers == CustomKeys.Rewind.modifiers)
 		{
-            if(!GUI.rewinding)
+            if(!Settings.Rewinding)
                 S9xMessage (S9X_INFO, 0, GUI.rewindBufferSize?WINPROC_REWINDING_TEXT:WINPROC_REWINDING_DISABLED);
-            GUI.rewinding = true;
+            Settings.Rewinding = true;
 			hitHotKey = true;
         }
 
@@ -1644,7 +1644,7 @@ LRESULT CALLBACK WinProc(
             if(wParam == CustomKeys.Rewind.key
 		    && modifiers == CustomKeys.Rewind.modifiers)
 		    {
-                GUI.rewinding = false;
+                Settings.Rewinding = false;
             }
 
 		}
@@ -3429,7 +3429,7 @@ int WINAPI WinMain(
 	InitRenderFilters();
 
     GUI.ControlForced = 0xff;
-    GUI.rewinding = false;
+    Settings.Rewinding = false;
 
     S9xSetRecentGames ();
 
@@ -3629,8 +3629,8 @@ int WINAPI WinMain(
                     &&!Settings.NetPlay
 #endif
                     ) {
-                    if(GUI.rewinding) {
-                        GUI.rewinding = stateMan.pop();
+                    if(Settings.Rewinding) {
+                        Settings.Rewinding = stateMan.pop();
                     } else {
                         if(IPPU.TotalEmulatedFrames % GUI.rewindGranularity == 0)
                             stateMan.push();

@@ -421,7 +421,6 @@ struct sGUI {
     unsigned long IdleCount;
 
     // rewinding
-    bool rewinding;
     unsigned int rewindBufferSize;
     unsigned int rewindGranularity;
 };

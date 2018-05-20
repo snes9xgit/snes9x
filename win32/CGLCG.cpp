@@ -191,6 +191,7 @@
 #include "CGLCG.h"
 #include "wsnes9x.h"
 #include "win32_display.h"
+#include "snes9x.h"
 #include <png.h>
 
 #ifndef max
@@ -688,7 +689,7 @@ void CGLCG::setShaderVars(int pass)
     if(shaderPasses[pass].frameCounterMod)
         shaderFrameCnt %= shaderPasses[pass].frameCounterMod;
 	setProgram1f(pass,"IN.frame_count",(float)shaderFrameCnt);
-    setProgram1f(pass,"IN.frame_direction",GUI.rewinding?-1.0f:1.0f);
+    setProgram1f(pass,"IN.frame_direction",Settings.Rewinding?-1.0f:1.0f);
 
 	/* ORIG parameter
 	*/

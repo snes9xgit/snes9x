@@ -191,6 +191,7 @@
 #include "CD3DCG.h"
 #include "wsnes9x.h"
 #include "win32_display.h"
+#include "snes9x.h"
 #include <Dxerr.h>
 #include <png.h>
 #include "CDirect3D.h"
@@ -714,7 +715,7 @@ void CD3DCG::setShaderVars(int pass)
     if(shaderPasses[pass].frameCounterMod)
         shaderFrameCnt = (float)(frameCnt % shaderPasses[pass].frameCounterMod);
 	setProgramUniform(pass,"IN.frame_count",&shaderFrameCnt);
-    float frameDirection = GUI.rewinding?-1.0f:1.0f;
+    float frameDirection = Settings.Rewinding?-1.0f:1.0f;
     setProgramUniform(pass,"IN.frame_direction",&frameDirection);
 
 	/* ORIG parameter
