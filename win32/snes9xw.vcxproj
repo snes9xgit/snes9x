@@ -403,6 +403,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
     </CustomBuild>
     <ClInclude Include="..\msu1.h" />
+    <ClInclude Include="..\shaders\glsl.h" />
+    <ClInclude Include="..\shaders\shader_helpers.h" />
+    <ClInclude Include="..\shaders\shader_platform.h" />
     <ClInclude Include="..\statemanager.h" />
     <ClInclude Include="..\sha256.h" />
     <ClInclude Include="..\bml.h" />
@@ -513,6 +516,8 @@
     <ClCompile Include="..\seta010.cpp" />
     <ClCompile Include="..\seta011.cpp" />
     <ClCompile Include="..\seta018.cpp" />
+    <ClCompile Include="..\shaders\glsl.cpp" />
+    <ClCompile Include="..\shaders\shader_helpers.cpp" />
     <ClCompile Include="..\snapshot.cpp" />
     <ClCompile Include="..\snes9x.cpp" />
     <ClCompile Include="..\spc7110.cpp" />

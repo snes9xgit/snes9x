@@ -198,6 +198,7 @@
 #include "gl_core_3_1.h"
 #include "cgFunctions.h"
 #include "CGLCG.h"
+#include "../shaders/glsl.h"
 
 #include "wglext.h"
 #include "IS9xDisplayOutput.h"
@@ -234,6 +235,7 @@ private:
 	bool cgAvailable;
 
 	CGLCG *cgShader;
+    GLSLShader *glslShader;
 
 	GLuint shaderProgram;
     GLuint vertexShader;
@@ -251,6 +253,8 @@ private:
 	void DestroyDrawSurface(void);
 	bool ChangeDrawSurfaceSize(unsigned int scale);
 	void SetupVertices();
+    bool ShaderAailable();
+    bool NPOTAvailable();
 
 public:
 	COpenGL();
