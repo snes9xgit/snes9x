@@ -255,6 +255,9 @@
     <ClInclude Include="..\filter\xbrz_tools.h">
       <Filter>Filter</Filter>
     </ClInclude>
+    <ClInclude Include="gl_core_3_1.h">
+      <Filter>GUI\VideoDriver</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\bsx.cpp">
@@ -556,6 +559,9 @@
     </ClCompile>
     <ClCompile Include="DumpAtEnd.cpp">
       <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_core_3_1.c">
+      <Filter>GUI\VideoDriver</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

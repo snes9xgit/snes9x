@@ -193,7 +193,7 @@
 #define CGMINI_H
 
 #include <d3d9.h>
-#include <gl/GL.h>
+#include "gl_core_3_1.h"
 
 #define CGENTRY __cdecl
 #define CGD3D9ENTRY __cdecl

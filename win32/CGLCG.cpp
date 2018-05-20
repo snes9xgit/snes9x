@@ -264,17 +264,9 @@ bool CGLCG::LoadFBOFunctions()
 	const char *extensions = (const char *) glGetString(GL_EXTENSIONS);
 
 	if(extensions && strstr(extensions, "framebuffer_object")) {
-		glGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)wglGetProcAddress("glGenFramebuffers");
-		glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSPROC)wglGetProcAddress("glDeleteFramebuffers");
-		glBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)wglGetProcAddress("glBindFramebuffer");
-		glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DPROC)wglGetProcAddress("glFramebufferTexture2D");
-		glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSPROC)wglGetProcAddress("glCheckFramebufferStatus");
-		glClientActiveTexture = (PFNGLACTIVETEXTUREPROC)wglGetProcAddress("glClientActiveTexture");
-
 		if(glGenFramebuffers && glDeleteFramebuffers && glBindFramebuffer && glFramebufferTexture2D && glClientActiveTexture) {
 			fboFunctionsLoaded = true;
 		}
-		 
 	}
 	return fboFunctionsLoaded;
 }

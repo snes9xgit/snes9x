@@ -192,8 +192,7 @@
 #define CGGLCG_H
 
 #include <windows.h>
-#include <gl/gl.h>
-#include "glext.h"
+#include "gl_core_3_1.h"
 #include "cgFunctions.h"
 #include "CCGShader.h"
 #include <vector>
@@ -275,13 +274,6 @@ private:
 	unsigned int frameCnt;
 	static const GLfloat lut_coords[8];
 
-
-	PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;
-	PFNGLDELETEFRAMEBUFFERSPROC glDeleteFramebuffers;
-	PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer;
-	PFNGLFRAMEBUFFERTEXTURE2DPROC glFramebufferTexture2D;
-	PFNGLCHECKFRAMEBUFFERSTATUSPROC glCheckFramebufferStatus;
-	PFNGLACTIVETEXTUREPROC glClientActiveTexture;
 
 public:
 	CGLCG(CGcontext cgContext);

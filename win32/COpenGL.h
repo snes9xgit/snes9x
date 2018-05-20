@@ -195,11 +195,10 @@
 #define COPENGL_H
 
 #include <windows.h>
-#include <gl\gl.h>
+#include "gl_core_3_1.h"
 #include "cgFunctions.h"
 #include "CGLCG.h"
 
-#include "glext.h"
 #include "wglext.h"
 #include "IS9xDisplayOutput.h"
 
@@ -239,29 +238,6 @@ private:
 	GLuint shaderProgram;
     GLuint vertexShader;
     GLuint fragmentShader;
-
-	// PBO Functions
-	PFNGLGENBUFFERSPROC		glGenBuffers;
-	PFNGLBINDBUFFERPROC		glBindBuffer;
-	PFNGLBUFFERDATAPROC		glBufferData;
-	PFNGLDELETEBUFFERSPROC	glDeleteBuffers;
-	PFNGLMAPBUFFERPROC		glMapBuffer;
-	PFNGLUNMAPBUFFERPROC	glUnmapBuffer;
-
-	// Shader Functions
-
-	PFNGLCREATEPROGRAMPROC			glCreateProgram;
-    PFNGLCREATESHADERPROC			glCreateShader;
-    PFNGLCOMPILESHADERPROC			glCompileShader;
-    PFNGLDELETESHADERPROC			glDeleteShader;
-	PFNGLDELETEPROGRAMPROC			glDeleteProgram;
-	PFNGLATTACHSHADERPROC			glAttachShader;
-	PFNGLDETACHSHADERPROC			glDetachShader;
-	PFNGLLINKPROGRAMPROC			glLinkProgram;
-	PFNGLUSEPROGRAMPROC				glUseProgram;
-	PFNGLSHADERSOURCEPROC			glShaderSource;
-	PFNGLGETUNIFORMLOCATIONPROC		glGetUniformLocation;
-	PFNGLUNIFORM2FVPROC				glUniform2fv;
 
 	PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
 

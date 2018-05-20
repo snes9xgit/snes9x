@@ -281,6 +281,8 @@ bool COpenGL::Initialize(HWND hWnd)
 		return false;
 	}
 
+    ogl_LoadFunctions();
+
 	LoadPBOFunctions();
 
 	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress( "wglSwapIntervalEXT" );
@@ -641,12 +643,6 @@ bool COpenGL::LoadPBOFunctions()
 	const char *extensions = (const char *) glGetString(GL_EXTENSIONS);
 
 	if(extensions && strstr(extensions, "pixel_buffer_object")) {
-		glGenBuffers = (PFNGLGENBUFFERSPROC)wglGetProcAddress("glGenBuffers");
-		glBindBuffer = (PFNGLBINDBUFFERPROC)wglGetProcAddress("glBindBuffer");
-		glBufferData = (PFNGLBUFFERDATAPROC)wglGetProcAddress("glBufferData");
-		glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)wglGetProcAddress("glDeleteBuffers");
-		glMapBuffer = (PFNGLMAPBUFFERPROC)wglGetProcAddress("glMapBuffer");
-		glUnmapBuffer = (PFNGLUNMAPBUFFERPROC)wglGetProcAddress("glUnmapBuffer");
 
 		if(glGenBuffers && glBindBuffer && glBufferData && glDeleteBuffers && glMapBuffer) {
 			pboFunctionsLoaded = true;
@@ -664,18 +660,6 @@ bool COpenGL::LoadShaderFunctions()
 	const char *extensions = (const char *) glGetString(GL_EXTENSIONS);
 
     if(extensions && strstr(extensions, "fragment_program")) {
-		glCreateProgram = (PFNGLCREATEPROGRAMPROC) wglGetProcAddress ("glCreateProgram");
-		glCreateShader = (PFNGLCREATESHADERPROC) wglGetProcAddress ("glCreateShader");
-		glCompileShader = (PFNGLCOMPILESHADERPROC) wglGetProcAddress ("glCompileShader");
-		glDeleteShader = (PFNGLDELETESHADERPROC) wglGetProcAddress ("glDeleteShader");
-		glDeleteProgram = (PFNGLDELETEPROGRAMPROC) wglGetProcAddress ("glDeleteProgram");
-		glAttachShader = (PFNGLATTACHSHADERPROC) wglGetProcAddress ("glAttachShader");
-		glDetachShader = (PFNGLDETACHSHADERPROC) wglGetProcAddress ("glDetachShader");
-		glLinkProgram = (PFNGLLINKPROGRAMPROC) wglGetProcAddress ("glLinkProgram");
-		glUseProgram = (PFNGLUSEPROGRAMPROC) wglGetProcAddress ("glUseProgram");
-		glShaderSource = (PFNGLSHADERSOURCEPROC) wglGetProcAddress ("glShaderSource");
-		glGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC) wglGetProcAddress ("glGetUniformLocation");
-		glUniform2fv = (PFNGLUNIFORM2FVPROC) wglGetProcAddress ("glUniform2fv");
 
 		if(glCreateProgram      &&
 		   glCreateShader       &&
