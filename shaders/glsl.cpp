@@ -124,6 +124,7 @@ bool GLSLShader::load_shader_file (char *filename)
 
         pass.scale_type_x = pass.scale_type_y = GLSL_VIEWPORT;
         pass.filter = GLSL_UNDEFINED;
+        pass.wrap_mode = GL_CLAMP_TO_BORDER;
         strcpy(pass.filename, filename);
         pass.frame_count_mod = 0;
         pass.frame_count = 0;
