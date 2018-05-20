@@ -198,8 +198,6 @@
 #include "debug.h"
 #endif
 
-#include "../apu/apu.h"
-
 struct SOpcodes
 {
 	void (*S9xOpcode) (void);
