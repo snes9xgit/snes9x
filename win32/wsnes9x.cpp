@@ -2220,7 +2220,7 @@ LRESULT CALLBACK WinProc(
 			WinRefreshDisplay();
 			break;
 		case ID_WINDOW_BILINEAR:
-			GUI.BilinearFilter = !GUI.BilinearFilter;
+			Settings.BilinearFilter = !Settings.BilinearFilter;
 			WinDisplayApplyChanges();
 			WinRefreshDisplay();
 			break;
@@ -3831,7 +3831,7 @@ static void CheckMenuStates ()
 	mii.fState = GUI.Stretch ? (GUI.AspectRatio ? MFS_CHECKED : MFS_UNCHECKED) : MFS_CHECKED|MFS_DISABLED;
     SetMenuItemInfo (GUI.hMenu, ID_WINDOW_ASPECTRATIO, FALSE, &mii);
 
-	mii.fState = GUI.BilinearFilter ? MFS_CHECKED : MFS_UNCHECKED;
+	mii.fState = Settings.BilinearFilter ? MFS_CHECKED : MFS_UNCHECKED;
 	if(!GUI.Stretch)
 		mii.fState |= MFS_DISABLED;
     SetMenuItemInfo (GUI.hMenu, ID_WINDOW_BILINEAR, FALSE, &mii);
@@ -7357,7 +7357,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
         prevScaleHiRes = GUI.ScaleHiRes;
         prevPPL = GFX.RealPPL;
         prevStretch = GUI.Stretch;
-        prevBilinearFilter = GUI.BilinearFilter;
+        prevBilinearFilter = Settings.BilinearFilter;
         prevAspectRatio = GUI.AspectRatio;
         prevAspectWidth = GUI.AspectWidth;
         prevHeightExtend = GUI.HeightExtend;
@@ -7422,7 +7422,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
             SendDlgItemMessage(hDlg, IDC_FULLSCREEN, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
         if (GUI.EmulateFullscreen)
             SendDlgItemMessage(hDlg, IDC_EMUFULLSCREEN, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
-        if (GUI.BilinearFilter)
+        if (Settings.BilinearFilter)
             SendDlgItemMessage(hDlg, IDC_BILINEAR, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
         if (Settings.DisplayFrameRate)
             SendDlgItemMessage(hDlg, IDC_SHOWFPS, BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
@@ -7522,7 +7522,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 		case IDC_BILINEAR:
 
-			GUI.BilinearFilter = (bool)(IsDlgButtonChecked(hDlg,IDC_BILINEAR)==BST_CHECKED);
+			Settings.BilinearFilter = (bool)(IsDlgButtonChecked(hDlg,IDC_BILINEAR)==BST_CHECKED);
 
 			//// refresh screen, so the user can see the new stretch mode
 			WinDisplayApplyChanges();
@@ -7766,7 +7766,7 @@ updateFilterBox2:
 		case IDOK:
 			bool fullscreenWanted;
  			Settings.Transparency = IsDlgButtonChecked(hDlg, IDC_TRANS);
-			GUI.BilinearFilter = (bool)(IsDlgButtonChecked(hDlg,IDC_BILINEAR)==BST_CHECKED);
+			Settings.BilinearFilter = (bool)(IsDlgButtonChecked(hDlg,IDC_BILINEAR)==BST_CHECKED);
 			if(!GUI.FullScreen || (GUI.FullscreenMode.width >= 512 && GUI.FullscreenMode.height >= 478) || GUI.Stretch)
 				Settings.SupportHiRes = IsDlgButtonChecked(hDlg, IDC_HIRES);
 			else
@@ -7848,7 +7848,7 @@ updateFilterBox2:
 				GFX.RealPPL = prevPPL;
 				GUI.Stretch = prevStretch;
 				Settings.AutoDisplayMessages = prevAutoDisplayMessages;
-				GUI.BilinearFilter = prevBilinearFilter;
+				Settings.BilinearFilter = prevBilinearFilter;
 				GUI.AspectRatio = prevAspectRatio;
 				GUI.AspectWidth = prevAspectWidth;
 				GUI.HeightExtend = prevHeightExtend;

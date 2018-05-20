@@ -335,7 +335,7 @@ bool CD3DCG::LoadShader(const TCHAR *shaderFile)
 		   and no filter has been set use the GUI setting
 		*/
 		if(pass.scaleParams.scaleTypeX==CG_SCALE_NONE && !it->filterSet) {
-			pass.linearFilter = GUI.BilinearFilter;
+			pass.linearFilter = Settings.BilinearFilter;
 		} else {
 			pass.linearFilter = it->linearFilter;
 		}

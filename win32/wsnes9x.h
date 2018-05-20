@@ -331,7 +331,6 @@ struct sGUI {
 	bool AlwaysCenterImage;
 	bool EmulateFullscreen;
 	bool EmulatedFullscreen;
-	bool BilinearFilter;
 	bool LocalVidMem;
 	bool Vsync;
 	bool ReduceInputLag;

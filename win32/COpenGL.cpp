@@ -509,7 +509,7 @@ void COpenGL::Render(SSurface Src)
 		}
     }
 
-	if(GUI.BilinearFilter) {
+	if(Settings.BilinearFilter) {
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	} else {

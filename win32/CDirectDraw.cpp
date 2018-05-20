@@ -375,7 +375,7 @@ bool CDirectDraw::SetDisplayMode(
     ZeroMemory (&ddsd, sizeof (ddsd));
     ddsd.dwSize = sizeof (ddsd);
     ddsd.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH;
-	if(GUI.BilinearFilter)
+	if(Settings.BilinearFilter)
 	{
 		ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_VIDEOMEMORY | (GUI.LocalVidMem ? DDSCAPS_LOCALVIDMEM : DDSCAPS_NONLOCALVIDMEM);
 	}
@@ -390,10 +390,10 @@ bool CDirectDraw::SetDisplayMode(
     if (FAILED(lpDD->CreateSurface (&ddsd, &lpDDSOffScreen, NULL)))
     {
 		ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_VIDEOMEMORY | (GUI.LocalVidMem ? DDSCAPS_NONLOCALVIDMEM : DDSCAPS_LOCALVIDMEM);
-		if(!GUI.BilinearFilter || FAILED(lpDD->CreateSurface (&ddsd, &lpDDSOffScreen, NULL)))
+		if(!Settings.BilinearFilter || FAILED(lpDD->CreateSurface (&ddsd, &lpDDSOffScreen, NULL)))
 		{
 			ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
-			if(!GUI.BilinearFilter || FAILED(lpDD->CreateSurface (&ddsd, &lpDDSOffScreen, NULL)))
+			if(!Settings.BilinearFilter || FAILED(lpDD->CreateSurface (&ddsd, &lpDDSOffScreen, NULL)))
 			{
 				BLOCK = false;
 				return (false);

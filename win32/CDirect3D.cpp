@@ -1084,7 +1084,7 @@ bool CDirect3D::ApplyDisplayChanges(void)
 
 void CDirect3D::SetFiltering()
 {
-	if(GUI.BilinearFilter) {
+	if(Settings.BilinearFilter) {
 		pDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 		pDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
 	} else {
