@@ -1660,6 +1660,7 @@ S9xDeinitUpdate (int width, int height)
                                S9xDisplayDriver::image_bpp,
                            width,
                            height);
+            top_level->last_width = width;
         }
         else if (gui_config->hires_effect == HIRES_MERGE)
         {
@@ -1668,6 +1669,7 @@ S9xDeinitUpdate (int width, int height)
                                S9xDisplayDriver::image_bpp,
                            width,
                            height);
+            top_level->last_width = width;
         }
 
         GFX.Screen = driver->get_next_buffer ();
