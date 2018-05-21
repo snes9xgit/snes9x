@@ -113,7 +113,7 @@ typedef struct
 {
     bool load_shader (char *filename);
     bool load_shader_file (char *filename);
-    void render (GLuint &orig, int width, int height, int viewport_width, int viewport_height, int viewport_x, int viewport_y, GLSLViewportCallback vpcallback);
+    void render (GLuint &orig, int width, int height, int viewport_x, int viewport_y, int viewport_width, int viewport_height, GLSLViewportCallback vpcallback);
     void set_shader_vars (unsigned int pass);
     void clear_shader_vars (void);
     void strip_parameter_pragmas(char *buffer);
