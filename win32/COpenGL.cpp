@@ -484,38 +484,36 @@ void COpenGL::Render(SSurface Src)
 	if(pboFunctionsLoaded)
 		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 
-	if (shader_type != OGL_SHADER_NONE) {
+	RECT windowSize, displayRect;
+	GetClientRect(hWnd, &windowSize);
+	//Get maximum rect respecting AR setting
+	displayRect = CalculateDisplayRect(windowSize.right, windowSize.bottom, windowSize.right, windowSize.bottom);
 
-		if(shader_type == OGL_SHADER_GLSL) {
-            RECT windowSize, displayRect;
-            GetClientRect(hWnd, &windowSize);
-            displayRect = CalculateDisplayRect(windowSize.right, windowSize.bottom, windowSize.right, windowSize.bottom);
-            glslShader->render(drawTexture, afterRenderWidth, afterRenderHeight, displayRect.right - displayRect.left, displayRect.bottom - displayRect.top, displayRect.left, displayRect.top);
-		} else if(shader_type == OGL_SHADER_CG) {
+	if (shader_type == OGL_SHADER_GLSL) {
+		glslShader->render(drawTexture, afterRenderWidth, afterRenderHeight, displayRect.right - displayRect.left, displayRect.bottom - displayRect.top, displayRect.left, displayRect.top);
+	}
+	else {
+		if(shader_type == OGL_SHADER_CG) {
 			xySize inputSize = { (float)afterRenderWidth, (float)afterRenderHeight };
-			RECT windowSize, displayRect;
-			GetClientRect(hWnd,&windowSize);
 			xySize xywindowSize = { (double)windowSize.right, (double)windowSize.bottom };
-			//Get maximum rect respecting AR setting
-			displayRect=CalculateDisplayRect(windowSize.right,windowSize.bottom,windowSize.right,windowSize.bottom);
 			xySize viewportSize = { (double)(displayRect.right - displayRect.left),
 				                    (double)(displayRect.bottom - displayRect.top) };
 			xySize textureSize = { (double)quadTextureSize, (double)quadTextureSize };
 			cgShader->Render(drawTexture, textureSize, inputSize, viewportSize, xywindowSize);
 		}
+		if (Settings.BilinearFilter) {
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		}
+		else {
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		}
+
+		glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
+		glClear(GL_COLOR_BUFFER_BIT);
+		glDrawArrays(GL_QUADS, 0, 4);
     }
-
-	if(Settings.BilinearFilter) {
-		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	} else {
-		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	}
-
-	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
-	glClear(GL_COLOR_BUFFER_BIT);
-	glDrawArrays (GL_QUADS, 0, 4);
 
 	glFlush();
 	SwapBuffers(hDC);
