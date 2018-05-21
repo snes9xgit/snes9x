@@ -552,7 +552,11 @@ bool GLSLShader::load_shader (char *filename)
     return true;
 }
 
-void GLSLShader::render(GLuint &orig, int width, int height, int viewport_width, int viewport_height, int viewport_x, int viewport_y)
+void GLSLShader::render(GLuint &orig,
+                        int width, int height,
+                        int viewport_x, int viewport_y,
+                        int viewport_width, int viewport_height,
+                        GLSLViewportCallback vpcallback)
 {
     frame_count++;
 
@@ -641,9 +645,19 @@ void GLSLShader::render(GLuint &orig, int width, int height, int viewport_width,
         }
         else
         {
+            int out_x = 0;
+            int out_y = 0;
+            int out_width = 0;
+            int out_height = 0;
+
             // output to the screen
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            glViewport(viewport_x, viewport_y, viewport_width, viewport_height);
+            vpcallback (pass[i].width, pass[i].height,
+                        viewport_x, viewport_y,
+                        viewport_width, viewport_height,
+                        &out_x, &out_y,
+                        &out_width, &out_height);
+            glViewport(out_x, out_y, out_width, out_height);
         }
 
         // set up input texture (output of previous pass) and apply filter settings

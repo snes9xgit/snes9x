@@ -14,6 +14,21 @@
 #include "shaders/shader_helpers.h"
 #include "shaders/CGLCG.h"
 
+static void S9xViewportCallback (int src_width, int src_height,
+                                 int viewport_x, int viewport_y,
+                                 int viewport_width, int viewport_height,
+                                 int *out_x, int *out_y,
+                                 int *out_width, int *out_height)
+{
+
+    S9xApplyAspect (src_width, src_height, viewport_width, viewport_height);
+    *out_x = src_width + viewport_x;
+    *out_y = src_height + viewport_y;
+    *out_width = viewport_width;
+    *out_height = viewport_height;
+    return;
+}
+
 S9xOpenGLDisplayDriver::S9xOpenGLDisplayDriver (Snes9xWindow *window,
                                                 Snes9xConfig *config)
 {
@@ -226,7 +241,7 @@ S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
 
     if (using_shaders && using_glsl_shaders)
     {
-        glsl_shader->render (texmap, width, height, w, h, x, allocation.height - y - h);
+        glsl_shader->render (texmap, width, height, x, allocation.height - y - h, w, h, S9xViewportCallback);
         gl_swap ();
         return;
     }

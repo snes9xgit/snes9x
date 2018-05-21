@@ -6,6 +6,12 @@
 
 static const unsigned int glsl_max_passes = 20;
 
+typedef void (* GLSLViewportCallback) (int source_width,   int source_height,
+                                       int viewport_x,     int viewport_y,
+                                       int viewport_width, int viewport_height,
+                                       int *out_dst_x,     int *out_dst_y,
+                                       int *out_dst_width, int *out_dst_height);
+
 enum GLSLScaleType
 {
     GLSL_NONE = 0,
@@ -107,7 +113,7 @@ typedef struct
 {
     bool load_shader (char *filename);
     bool load_shader_file (char *filename);
-    void render (GLuint &orig, int width, int height, int viewport_width, int viewport_height, int viewport_x, int viewport_y);
+    void render (GLuint &orig, int width, int height, int viewport_width, int viewport_height, int viewport_x, int viewport_y, GLSLViewportCallback vpcallback);
     void set_shader_vars (unsigned int pass);
     void clear_shader_vars (void);
     void strip_parameter_pragmas(char *buffer);
