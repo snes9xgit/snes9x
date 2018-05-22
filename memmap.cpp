@@ -3856,9 +3856,7 @@ void CMemory::ApplyROMFixes (void)
 	if (!Settings.DisableGameSpecificHacks)
 	{
 		// XXX: What's happening?
-		if (match_na("X-MEN") || // Spider-Man and the X-Men
-		    match_na("KICK OFF") ||
-		    match_na("SUPER FAMICOM JOJO"))
+		if (match_na("X-MEN")) // Spider-Man and the X-Men
 		{
 			Settings.BlockInvalidVRAMAccess = FALSE;
 			printf("Invalid VRAM access hack\n");
