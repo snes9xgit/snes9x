@@ -1157,7 +1157,7 @@ uint8 S9xGetPPU (uint16 Address)
 		return (S9xMSU1ReadPort(Address & 7));
 	else
 	if (Address < 0x2100)
-		return (OpenBus);
+		return (PPU.OpenBus1);
 
 	if (CPU.InDMAorHDMA)
 	{
@@ -1402,12 +1402,12 @@ uint8 S9xGetPPU (uint16 Address)
 			case 0x21c2:
 				if (Model->_5C77 == 2)
 					return (0x20);
-				return (OpenBus);
+				return (PPU.OpenBus2);
 
 			case 0x21c3:
 				if (Model->_5C77 == 2)
 					return (0);
-				return (OpenBus);
+				return (PPU.OpenBus2);
 
 			default:
 				return (OpenBus);
