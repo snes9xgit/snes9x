@@ -1787,14 +1787,13 @@ static void DrawBackgroundOffsetMosaic (int bg, uint8 Zh, uint8 Zl, int VOffOff)
 			uint32	Right = GFX.Clip[bg].Right[clip];
 			uint32	Offset = Left * PixWidth + (Y + MosaicStart) * GFX.PPL;
 			uint32	LineHOffset = LineData[Y].BG[bg].HOffset;
-			bool8	left_edge = (Left < (8 - (LineHOffset & 7)));
 			uint32	Width = Right - Left;
 
 			while (Left < Right)
 			{
 				uint32	VOffset, HOffset;
 
-				if (left_edge)
+				if (Left < (8 - (LineHOffset & 7)))
 				{
 					// SNES cannot do OPT for leftmost tile column
 					VOffset = LineData[Y].BG[bg].VOffset;
