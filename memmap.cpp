@@ -3853,18 +3853,6 @@ void CMemory::ApplyROMFixes (void)
 		}
 	}
 
-	if (!Settings.DisableGameSpecificHacks)
-	{
-		// XXX: What's happening?
-		if (match_na("X-MEN")) // Spider-Man and the X-Men
-		{
-			Settings.BlockInvalidVRAMAccess = FALSE;
-			printf("Invalid VRAM access hack\n");
-		}
-
-
-	}
-
 	//// SRAM initial value
 
 	if (!Settings.DisableGameSpecificHacks)
