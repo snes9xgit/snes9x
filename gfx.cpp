@@ -1798,7 +1798,6 @@ static void DrawBackgroundOffsetMosaic (int bg, uint8 Zh, uint8 Zl, int VOffOff)
 					// SNES cannot do OPT for leftmost tile column
 					VOffset = LineData[Y].BG[bg].VOffset;
 					HOffset = LineHOffset;
-					left_edge = FALSE;
 				}
 				else
 				{
