@@ -203,7 +203,7 @@
 #include "wglext.h"
 #include "IS9xDisplayOutput.h"
 
-enum current_ogl_shader_type { OGL_SHADER_NONE, OGL_SHADER_GLSL, OGL_SHADER_CG };
+enum current_ogl_shader_type { OGL_SHADER_NONE, OGL_SHADER_GLSL, OGL_SHADER_CG, OGL_SHADER_GLSL_OLD};
 
 class COpenGL : public IS9xDisplayOutput
 {
@@ -247,6 +247,7 @@ private:
 	void checkForCgError(const char *situation);
 	bool SetShadersCG(const TCHAR *file);
 	bool SetShadersGLSL(const TCHAR *glslFileName);
+	bool SetShadersGLSL_OLD(const TCHAR *glslFileName);
 	bool LoadShaderFunctions();
 	bool LoadPBOFunctions();
 	void CreateDrawSurface(unsigned int width, unsigned int height);
