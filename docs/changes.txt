@@ -35,6 +35,9 @@ Snes9x 1.56
 - Write CPU MDR during HDMA writes. Fixes Speedy Gonzales.  (BearOso)
 - Calculate next IRQ time in advance instead of continously (BearOso)
   checking for it.
+- Fixed wrong tile selection in offset-per-tile mode.       (BearOso)
+- Advance the VRAM pointer even if VRAM writes at the time  (kps501)
+  are invalid.
 - Win32: Added dynamic rate control support for XAudio2     (OV2)
 - Win32: Added different volume level configuration for     (OV2)
   regular and turbo speed.
@@ -50,6 +53,7 @@ Snes9x 1.56
 - Win32: Disabled hotplugging in favor of a menu option to  (OV2)
   reconfigure joysticks.
 - Win32: Added a reduce input lag option.                   (BearOso)
+- Win32: Added ability to use GLSLP shaders with OpenGL.    (OV2)
 - GTK+: Added dynamic rate control support for audio to     (BearOso)
   reduce buffer overflows and underflows.
 - GTK+: Increased SDL requirement to version 2.0. This      (BearOso)
