@@ -1505,7 +1505,6 @@ static void DrawBackgroundOffset (int bg, uint8 Zh, uint8 Zl, int VOffOff)
 
 	int	OffsetMask   = (BG.TileSizeH   == 16) ? 0x3ff : 0x1ff;
 	int	OffsetShift  = (BG.TileSizeV   == 16) ? 4 : 3;
-	int	Offset2Mask  = (BG.OffsetSizeH == 16) ? 0x3ff : 0x1ff;
 	int	Offset2Shift = (BG.OffsetSizeV == 16) ? 4 : 3;
 	int	OffsetEnableMask = 0x2000 << bg;
 	int	PixWidth = IPPU.DoubleWidthPixels ? 2 : 1;
@@ -1554,8 +1553,8 @@ static void DrawBackgroundOffset (int bg, uint8 Zh, uint8 Zl, int VOffOff)
 			uint32	Left  = GFX.Clip[bg].Left[clip];
 			uint32	Right = GFX.Clip[bg].Right[clip];
 			uint32	Offset = Left * PixWidth + Y * GFX.PPL;
-			uint32	LineHOffset = LineData[Y].BG[bg].HOffset;
-			bool8	left_edge = (Left < (8 - (LineHOffset & 7)));
+			uint32	HScroll = LineData[Y].BG[bg].HOffset;
+			bool8	left_edge = (Left < (8 - (HScroll & 7)));
 			uint32	Width = Right - Left;
 
 			while (Left < Right)
@@ -1566,12 +1565,12 @@ static void DrawBackgroundOffset (int bg, uint8 Zh, uint8 Zl, int VOffOff)
 				{
 					// SNES cannot do OPT for leftmost tile column
 					VOffset = LineData[Y].BG[bg].VOffset;
-					HOffset = LineHOffset;
+					HOffset = HScroll;
 					left_edge = FALSE;
 				}
 				else
 				{
-					int	HOffTile = ((HOff + Left - 1) & Offset2Mask) >> 3;
+					int HOffTile = (((Left + (HScroll & 7)) - 8) + (HOff & ~7)) >> 3;
 
 					if (BG.OffsetSizeH == 8)
 					{
@@ -1610,9 +1609,9 @@ static void DrawBackgroundOffset (int bg, uint8 Zh, uint8 Zl, int VOffOff)
 						VOffset = LineData[Y].BG[bg].VOffset;
 
 					if (HCellOffset & OffsetEnableMask)
-						HOffset = (HCellOffset & ~7) | (LineHOffset & 7);
+						HOffset = (HCellOffset & ~7) | (HScroll & 7);
 					else
-						HOffset = LineHOffset;
+						HOffset = HScroll;
 				}
 
 				if (HiresInterlace)
@@ -1734,7 +1733,6 @@ static void DrawBackgroundOffsetMosaic (int bg, uint8 Zh, uint8 Zl, int VOffOff)
 	int	Lines;
 	int	OffsetMask   = (BG.TileSizeH   == 16) ? 0x3ff : 0x1ff;
 	int	OffsetShift  = (BG.TileSizeV   == 16) ? 4 : 3;
-	int	Offset2Mask  = (BG.OffsetSizeH == 16) ? 0x3ff : 0x1ff;
 	int	Offset2Shift = (BG.OffsetSizeV == 16) ? 4 : 3;
 	int	OffsetEnableMask = 0x2000 << bg;
 	int	PixWidth = IPPU.DoubleWidthPixels ? 2 : 1;
@@ -1786,22 +1784,22 @@ static void DrawBackgroundOffsetMosaic (int bg, uint8 Zh, uint8 Zl, int VOffOff)
 			uint32	Left =  GFX.Clip[bg].Left[clip];
 			uint32	Right = GFX.Clip[bg].Right[clip];
 			uint32	Offset = Left * PixWidth + (Y + MosaicStart) * GFX.PPL;
-			uint32	LineHOffset = LineData[Y].BG[bg].HOffset;
+			uint32	HScroll = LineData[Y].BG[bg].HOffset;
 			uint32	Width = Right - Left;
 
 			while (Left < Right)
 			{
 				uint32	VOffset, HOffset;
 
-				if (Left < (8 - (LineHOffset & 7)))
+				if (Left < (8 - (HScroll & 7)))
 				{
 					// SNES cannot do OPT for leftmost tile column
 					VOffset = LineData[Y].BG[bg].VOffset;
-					HOffset = LineHOffset;
+					HOffset = HScroll;
 				}
 				else
 				{
-					int	HOffTile = ((HOff + Left - 1) & Offset2Mask) >> 3;
+					int HOffTile = (((Left + (HScroll & 7)) - 8) + (HOff & ~7)) >> 3;
 
 					if (BG.OffsetSizeH == 8)
 					{
@@ -1840,9 +1838,9 @@ static void DrawBackgroundOffsetMosaic (int bg, uint8 Zh, uint8 Zl, int VOffOff)
 						VOffset = LineData[Y].BG[bg].VOffset;
 
 					if (HCellOffset & OffsetEnableMask)
-						HOffset = (HCellOffset & ~7) | (LineHOffset & 7);
+						HOffset = (HCellOffset & ~7) | (HScroll & 7);
 					else
-						HOffset = LineHOffset;
+						HOffset = HScroll;
 				}
 
 				if (HiresInterlace)
