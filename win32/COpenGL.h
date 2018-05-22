@@ -221,8 +221,8 @@ private:
 
 	bool initDone;
 	bool fullscreen;
-	unsigned int quadTextureSize;
-	unsigned int filterScale;
+	unsigned int outTextureWidth;
+	unsigned int outTextureHeight;
 	unsigned int afterRenderWidth, afterRenderHeight;
 
 	bool shaderFunctionsLoaded;
@@ -249,9 +249,9 @@ private:
 	bool SetShadersGLSL(const TCHAR *glslFileName);
 	bool LoadShaderFunctions();
 	bool LoadPBOFunctions();
-	void CreateDrawSurface(void);
+	void CreateDrawSurface(unsigned int width, unsigned int height);
 	void DestroyDrawSurface(void);
-	bool ChangeDrawSurfaceSize(unsigned int scale);
+	bool ChangeDrawSurfaceSize(unsigned int width, unsigned int height);
 	void SetupVertices();
     bool ShaderAailable();
     bool NPOTAvailable();

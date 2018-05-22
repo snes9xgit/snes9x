@@ -477,6 +477,42 @@ inline static bool GetFilterBlendSupport(RenderFilter filterID)
 	}
 }
 
+inline void SetRect(RECT* rect, int width, int height, int scale)
+{
+	rect->left = 0;
+	rect->right = width * scale;
+	rect->top = 0;
+	rect->bottom = (height - (GUI.HeightExtend ? 0 : 15)) * scale;
+}
+
+RECT GetFilterOutputSize(SSurface Src)
+{
+	RECT rect;
+	RenderFilter filterID = GUI.Scale;
+	if (Src.Height > SNES_HEIGHT_EXTENDED || Src.Width == 512) {
+		filterID = GUI.ScaleHiRes;
+	}
+	// default to fixed factor
+	SetRect(&rect, SNES_WIDTH, SNES_HEIGHT_EXTENDED, GetFilterScale(filterID));
+
+	// handle special cases
+	switch (filterID)
+	{
+	case FILTER_NONE:
+		SetRect(&rect, Src.Width, Src.Height, 1);
+		break;
+	case FILTER_BLARGGCOMP:
+	case FILTER_BLARGGSVID:
+	case FILTER_BLARGGRGB:
+		SetRect(&rect, SNES_WIDTH, SNES_HEIGHT_EXTENDED, 2);
+		rect.right = SNES_NTSC_OUT_WIDTH(256);
+		break;
+	default:
+		break;
+	}
+	return rect;
+}
+
 void SelectRenderMethod()
 {
     TRenderMethod OldRenderMethod = _RenderMethod;
@@ -699,15 +735,6 @@ inline void ThreeHalfLine32( uint32 *lpDst, uint16 *lpSrc, unsigned int Width){
 		*lpDst++ = CONVERT_16_TO_32(*(lpSrc+1));
 		lpSrc+=2;
     }
-}
-
-
-inline void SetRect(RECT* rect, int width, int height, int scale)
-{
-	rect->left = 0;
-	rect->right = width * scale;
-	rect->top = 0;
-	rect->bottom = (height - (GUI.HeightExtend?0:15)) * scale;
 }
 
 #define AVERAGE_565(el0, el1) (((el0) & (el1)) + ((((el0) ^ (el1)) & 0xF7DE) >> 1))

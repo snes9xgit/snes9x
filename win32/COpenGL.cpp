@@ -210,8 +210,6 @@ COpenGL::COpenGL(void)
 	hWnd = NULL;
 	drawTexture = 0;
 	initDone = false;
-	quadTextureSize = 0;
-	filterScale = 0;
 	afterRenderWidth = 0;
 	afterRenderHeight = 0;
 	fullscreen = false;
@@ -336,8 +334,6 @@ void COpenGL::DeInitialize()
 	}
 	hWnd = NULL;
 	initDone = false;
-	quadTextureSize = 0;
-	filterScale = 0;
 	afterRenderWidth = 0;
 	afterRenderHeight = 0;
 	shaderFunctionsLoaded = false;
@@ -355,28 +351,32 @@ void COpenGL::DeInitialize()
 	cgAvailable = false;
 }
 
-void COpenGL::CreateDrawSurface()
+void COpenGL::CreateDrawSurface(unsigned int width, unsigned int height)
 {
-	unsigned int neededSize;
 	HRESULT hr;
 
-	//we need at least 512 pixels (SNES_WIDTH * 2) so we can start with that value
-	quadTextureSize = 512;
-	neededSize = SNES_WIDTH * filterScale;
-	while(quadTextureSize < neededSize)
-		quadTextureSize *=2;
+	if (!NPOTAvailable()) {
+		unsigned int neededSize = max(width, height);
+		//we need at least 512 pixels (SNES_WIDTH * 2) so we can start with that value
+		unsigned int quadTextureSize = 512;
+		while (quadTextureSize < neededSize)
+			quadTextureSize *= 2;
+		width = height = quadTextureSize;
+	}
 
 	if(!drawTexture) {
+		outTextureWidth = width;
+		outTextureHeight = height;
 		glGenTextures(1,&drawTexture);
 		glBindTexture(GL_TEXTURE_2D,drawTexture);
-		glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,quadTextureSize,quadTextureSize,0,GL_RGB,GL_UNSIGNED_SHORT_5_6_5,NULL);
+		glTexImage2D(GL_TEXTURE_2D,0,GL_RGB, outTextureWidth, outTextureHeight,0,GL_RGB,GL_UNSIGNED_SHORT_5_6_5,NULL);
 		if(pboFunctionsLoaded) {
 			glGenBuffers(1,&drawBuffer);
 			glBindBuffer(GL_PIXEL_UNPACK_BUFFER,drawBuffer);
-			glBufferData(GL_PIXEL_UNPACK_BUFFER,quadTextureSize*quadTextureSize*2,NULL,GL_STREAM_DRAW);
+			glBufferData(GL_PIXEL_UNPACK_BUFFER, outTextureWidth*outTextureHeight *2,NULL,GL_STREAM_DRAW);
 			glBindBuffer(GL_PIXEL_UNPACK_BUFFER,0);
 		} else {
-			noPboBuffer = new BYTE[quadTextureSize*quadTextureSize*2];
+			noPboBuffer = new BYTE[outTextureWidth*outTextureHeight *2];
 		}
 
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -400,12 +400,10 @@ void COpenGL::DestroyDrawSurface()
 	}
 }
 
-bool COpenGL::ChangeDrawSurfaceSize(unsigned int scale)
+bool COpenGL::ChangeDrawSurfaceSize(unsigned int width, unsigned int height)
 {
-	filterScale = scale;
-
 	DestroyDrawSurface();
-	CreateDrawSurface();
+	CreateDrawSurface(width, height);
 	SetupVertices();
 	return true;
 }
@@ -421,8 +419,8 @@ void COpenGL::SetupVertices()
     vertices[6] = 0.0f;
 	vertices[7] = 1.0f;
 
-	float tX = (float)afterRenderWidth / (float)quadTextureSize;
-	float tY = (float)afterRenderHeight / (float)quadTextureSize;
+	float tX = (float)afterRenderWidth / (float)outTextureWidth;
+	float tY = (float)afterRenderHeight / (float)outTextureHeight;
 
 	texcoords[0] = 0.0f;
     texcoords[1] = tY;
@@ -435,6 +433,24 @@ void COpenGL::SetupVertices()
 	glTexCoordPointer(2, GL_FLOAT, 0, texcoords);
 }
 
+void wOGLViewportCallback(int source_width, int source_height,
+	int viewport_x, int viewport_y,
+	int viewport_width, int viewport_height,
+	int *out_dst_x, int *out_dst_y,
+	int *out_dst_width, int *out_dst_height)
+{
+	/* get window size here instead of using viewport passed in - we limited the viewport before the glsl render
+	   call already, this is simply to position smaller outputs correctly in the actual viewport
+	 */
+	RECT windowSize;
+	GetClientRect(GUI.hWnd, &windowSize);
+	RECT displayRect = CalculateDisplayRect(source_width, source_height, windowSize.right, windowSize.bottom);
+	*out_dst_x = displayRect.left;
+	*out_dst_y = displayRect.top;
+	*out_dst_width = displayRect.right - displayRect.left;
+	*out_dst_height = displayRect.bottom - displayRect.top;
+}
+
 void COpenGL::Render(SSurface Src)
 {
 	SSurface Dst;
@@ -445,11 +461,9 @@ void COpenGL::Render(SSurface Src)
 	if(!initDone) return;
 
 	//create a new draw surface if the filter scale changes
-	//at least factor 2 so we can display unscaled hi-res images
-	newFilterScale = max(2,max(GetFilterScale(GUI.ScaleHiRes),GetFilterScale(GUI.Scale)));
-	if(newFilterScale!=filterScale) {
-		ChangeDrawSurfaceSize(newFilterScale);
-	}
+	dstRect = GetFilterOutputSize(Src);
+	if(outTextureWidth != dstRect.right || outTextureHeight != dstRect.bottom)
+		ChangeDrawSurfaceSize(dstRect.right, dstRect.bottom);
 
 	if(pboFunctionsLoaded) {
 		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, drawBuffer);
@@ -457,9 +471,9 @@ void COpenGL::Render(SSurface Src)
 	} else {
 		Dst.Surface = noPboBuffer;
 	}
-	Dst.Height = quadTextureSize;
-	Dst.Width = quadTextureSize;
-	Dst.Pitch = quadTextureSize * 2;
+	Dst.Height = outTextureHeight;
+	Dst.Width = outTextureWidth;
+	Dst.Pitch = outTextureWidth * 2;
 
 	RenderMethod (Src, Dst, &dstRect);
 	if(!Settings.AutoDisplayMessages) {
@@ -478,7 +492,7 @@ void COpenGL::Render(SSurface Src)
 	}
 
 	glBindTexture(GL_TEXTURE_2D,drawTexture);
-	glPixelStorei(GL_UNPACK_ROW_LENGTH, quadTextureSize);
+	glPixelStorei(GL_UNPACK_ROW_LENGTH, outTextureWidth);
 	glTexSubImage2D (GL_TEXTURE_2D,0,0,0,dstRect.right-dstRect.left,dstRect.bottom-dstRect.top,GL_RGB,GL_UNSIGNED_SHORT_5_6_5,pboFunctionsLoaded?0:noPboBuffer);
 
 	if(pboFunctionsLoaded)
@@ -490,7 +504,7 @@ void COpenGL::Render(SSurface Src)
 	displayRect = CalculateDisplayRect(windowSize.right, windowSize.bottom, windowSize.right, windowSize.bottom);
 
 	if (shader_type == OGL_SHADER_GLSL) {
-		glslShader->render(drawTexture, afterRenderWidth, afterRenderHeight, displayRect.right - displayRect.left, displayRect.bottom - displayRect.top, displayRect.left, displayRect.top);
+		glslShader->render(drawTexture, afterRenderWidth, afterRenderHeight, displayRect.left, displayRect.top, displayRect.right - displayRect.left, displayRect.bottom - displayRect.top, wOGLViewportCallback);
 	}
 	else {
 		if(shader_type == OGL_SHADER_CG) {
@@ -498,7 +512,7 @@ void COpenGL::Render(SSurface Src)
 			xySize xywindowSize = { (double)windowSize.right, (double)windowSize.bottom };
 			xySize viewportSize = { (double)(displayRect.right - displayRect.left),
 				                    (double)(displayRect.bottom - displayRect.top) };
-			xySize textureSize = { (double)quadTextureSize, (double)quadTextureSize };
+			xySize textureSize = { (double)outTextureWidth, (double)outTextureHeight };
 			cgShader->Render(drawTexture, textureSize, inputSize, viewportSize, xywindowSize);
 		}
 		if (Settings.BilinearFilter) {

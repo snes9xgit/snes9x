@@ -212,4 +212,6 @@ void SelectRenderMethod();
 void InitRenderFilters();
 void DeInitRenderFilters();
 
+RECT GetFilterOutputSize(SSurface Src);
+
 #endif
