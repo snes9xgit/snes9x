@@ -567,6 +567,9 @@ void S9xControlsSoftReset (void)
 			read_idx[i][j]=0;
 
 	FLAG_LATCH = FALSE;
+
+	curcontrollers[0] = newcontrollers[0];
+	curcontrollers[1] = newcontrollers[1];
 }
 
 void S9xUnmapAllControls (void)
