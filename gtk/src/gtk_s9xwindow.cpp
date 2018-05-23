@@ -230,12 +230,18 @@ event_motion_notify (GtkWidget      *widget,
         return FALSE;
     }
 
+#if GTK_CHECK_VERSION(3,10,0)
+    int scale_factor = gdk_window_get_scale_factor (gtk_widget_get_window (GTK_WIDGET (window->get_window ())));
+#else
+    int scale_factor = 1;
+#endif
+
     window->mouse_loc_x = (uint16)
-        ((int) (event->x) - window->mouse_region_x) * 256 /
+        ((int) (event->x * scale_factor) - window->mouse_region_x) * 256 /
         (window->mouse_region_width <= 0 ? 1 : window->mouse_region_width);
 
     window->mouse_loc_y = (uint16)
-        ((int) (event->y) - window->mouse_region_y) * SNES_HEIGHT_EXTENDED /
+        ((int) (event->y * scale_factor) - window->mouse_region_y) * (gui_config->overscan ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT) /
         (window->mouse_region_height <= 0 ? 1 : window->mouse_region_height);
 
     if (!window->config->pointer_is_visible)

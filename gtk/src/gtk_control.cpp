@@ -141,7 +141,7 @@ S9xIsMousePluggedIn (void)
     for (int i = 0; i <= 1; i++)
     {
         S9xGetController (i, &ctl, &id1, &id2, &id3, &id4);
-        if (ctl == CTL_MOUSE)
+        if (ctl == CTL_MOUSE || ctl == CTL_SUPERSCOPE)
             return true;
     }
 
