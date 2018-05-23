@@ -38,6 +38,10 @@ Snes9x 1.56
 - Fixed wrong tile selection in offset-per-tile mode.       (BearOso)
 - Advance the VRAM pointer even if VRAM writes at the time  (kps501)
   are invalid.
+- Return 0x80 instead of 0xff in DSP1 simulation. Fixes     (kps501)
+  Powerfest '94 Mario Kart.
+- Use PPU1 MDR when accessing open bus below 0x2100. Fixes  (kps501)
+  Funaki Masakatsu Hybrid Wrestler glitches.
 - Win32: Added dynamic rate control support for XAudio2     (OV2)
 - Win32: Added different volume level configuration for     (OV2)
   regular and turbo speed.
