@@ -4512,7 +4512,16 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				break;
 			}
 		}
+
+		if (WinGetAutomaticInputRate() < 1)
+		{
+			EnableWindow(GetDlgItem(hDlg, IDC_AUTOMATICINPUTRATE), 0);
+			GUI.AutomaticInputRate = false;
+		}
+
 		EnableWindow(GetDlgItem(hDlg, IDC_DYNRATECONTROL), GUI.SoundDriver == WIN_XAUDIO2_SOUND_DRIVER);
+		EnableWindow(GetDlgItem(hDlg, IDC_INRATEEDIT), !GUI.AutomaticInputRate);
+		EnableWindow(GetDlgItem(hDlg, IDC_INRATE), !GUI.AutomaticInputRate);
 
 		SendDlgItemMessage(hDlg, IDC_INRATE, TBM_SETRANGE,TRUE,MAKELONG(0,20));
 		SendDlgItemMessage(hDlg, IDC_INRATE, TBM_SETPOS,TRUE,(Settings.SoundInputRate - 31100)/50);
@@ -4595,6 +4604,9 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		if(Settings.SoundSync)
 			SendDlgItemMessage(hDlg,IDC_SYNC_TO_SOUND_CPU,BM_SETCHECK,BST_CHECKED,0);
 
+		if (GUI.AutomaticInputRate)
+			SendDlgItemMessage(hDlg, IDC_AUTOMATICINPUTRATE, BM_SETCHECK, BST_CHECKED, 0);
+
 		return true;
 		case WM_PAINT:
 		{
@@ -4666,6 +4678,8 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					int sliderVal=_tstoi(valTxt);
 					Settings.SoundInputRate = sliderVal>0?sliderVal:32000;
 
+					GUI.AutomaticInputRate = IsDlgButtonChecked(hDlg, IDC_AUTOMATICINPUTRATE);
+
 					// regular volume
 					Edit_GetText(GetDlgItem(hDlg, IDC_EDIT_VOLUME_REGULAR), valTxt, 10);
 					sliderVal = _tstoi(valTxt);
@@ -4685,6 +4699,30 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 				case IDCANCEL:
 					EndDialog(hDlg, 1);
+					return true;
+
+				case IDC_AUTOMATICINPUTRATE:
+					GUI.AutomaticInputRate = IsDlgButtonChecked(hDlg, IDC_AUTOMATICINPUTRATE);
+					EnableWindow(GetDlgItem(hDlg, IDC_INRATEEDIT), !GUI.AutomaticInputRate);
+					EnableWindow(GetDlgItem(hDlg, IDC_INRATE), !GUI.AutomaticInputRate);
+
+					if (GUI.AutomaticInputRate)
+					{
+						int newrate = WinGetAutomaticInputRate();
+						if (newrate)
+						{
+							Settings.SoundInputRate = newrate;
+							SendDlgItemMessage(hDlg, IDC_INRATE, TBM_SETPOS, TRUE, (Settings.SoundInputRate - 31100) / 50);
+							_sntprintf(valTxt, 10, TEXT("%d"), Settings.SoundInputRate);
+							Edit_SetText(GetDlgItem(hDlg, IDC_INRATEEDIT), valTxt);
+						}
+						else
+						{
+							GUI.AutomaticInputRate = false;
+							SendDlgItemMessage(hDlg, IDC_AUTOMATICINPUTRATE, BM_SETCHECK, BST_UNCHECKED, 0);
+						}
+					}
+
 					return true;
 
 				case IDC_DRIVER:

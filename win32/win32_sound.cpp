@@ -196,6 +196,7 @@
 #include "CDirectSound.h"
 #include "CXAudio2.h"
 #include "win32_sound.h"
+#include "win32_display.h"
 
 #define CLAMP(x, low, high) (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
 
@@ -217,6 +218,14 @@ bool ReInitSound()
 {
 	if (GUI.AVIOut)
 		return false;
+	if (GUI.AutomaticInputRate)
+	{
+		int rate = WinGetAutomaticInputRate();
+		if (rate)
+			Settings.SoundInputRate = rate;
+		else
+			GUI.AutomaticInputRate = false;
+	}
 	Settings.SoundInputRate = CLAMP(Settings.SoundInputRate,8000, 48000);
 	Settings.SoundPlaybackRate = CLAMP(Settings.SoundPlaybackRate,8000, 48000);
 	S9xSetSoundMute(GUI.Mute);

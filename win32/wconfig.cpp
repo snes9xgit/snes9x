@@ -987,6 +987,7 @@ void WinRegisterConfigItems()
 	AddBoolC("ReverseStereo", Settings.ReverseStereo, false, "true to swap speaker outputs");
 	AddBoolC("Mute", GUI.Mute, false, "true to mute sound output (does not disable the sound CPU)");
 	AddBool("DynamicRateControl", Settings.DynamicRateControl, false);
+	AddBool("AutomaticInputRate", GUI.AutomaticInputRate, true);
 #undef CATEGORY
 #define	CATEGORY "Sound\\Win"
 	AddUIntC("SoundDriver", GUI.SoundDriver, 4, "0=Snes9xDirectSound, 4=XAudio2 (recommended)");

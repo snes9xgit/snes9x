@@ -388,6 +388,7 @@ struct sGUI {
 	bool Mute;
 	unsigned int VolumeRegular;
 	unsigned int VolumeTurbo;
+	bool AutomaticInputRate;
 	// used for sync sound synchronization
 	CRITICAL_SECTION SoundCritSect;
     HANDLE SoundSyncEvent;

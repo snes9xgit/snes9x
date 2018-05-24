@@ -223,5 +223,7 @@ template<typename screenPtrType>
 void WinDisplayStringInBuffer (const char *string, int linesFromBottom, int pixelsFromLeft, bool allowWrap);
 char *ReadShaderFileContents(const TCHAR *filename);
 void ReduceToPath(TCHAR *filename);
+double WinGetRefreshRate();
+int WinGetAutomaticInputRate();
 
 #endif

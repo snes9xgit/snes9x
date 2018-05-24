@@ -208,6 +208,7 @@
 
 #include "../filter/hq2x.h"
 #include "../filter/2xsai.h"
+#include "../apu/apu.h"
 
 // available display output methods
 CDirect3D Direct3D;
@@ -655,6 +656,15 @@ void ToggleFullScreen ()
 			SetWindowPos (GUI.hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE|SWP_DRAWFRAME|SWP_FRAMECHANGED);
 			RestoreMainWinPos();
 		}
+		if (GUI.AutomaticInputRate)
+		{
+			int rate = WinGetAutomaticInputRate();
+			if (rate)
+			{
+				Settings.SoundInputRate = rate;
+				S9xUpdateDynamicRate(1, 2);
+			}
+		}
 		S9xGraphicsDeinit();
 		S9xSetWinPixelFormat ();
 		S9xInitUpdate();
@@ -671,6 +681,60 @@ ennumerates the available display modes of the currently selected output
 void WinEnumDisplayModes(std::vector<dMode> *modeVector)
 {
 	S9xDisplayOutput->EnumModes(modeVector);
+}
+
+double WinGetRefreshRate(void)
+{
+	double refreshRate = 0.0;
+	OSVERSIONINFO ovi;
+	DISPLAYCONFIG_TOPOLOGY_ID topologyID;
+	unsigned int numPathArrayElements = 0;
+	unsigned int numModeInfoArrayElements = 0;
+	DISPLAYCONFIG_PATH_INFO * pathInfoArray = NULL;
+	DISPLAYCONFIG_MODE_INFO * modeInfoArray = NULL;
+	int result = 0;
+
+	ovi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	if (!GetVersionEx(&ovi))
+		return refreshRate;
+
+	if (ovi.dwMajorVersion < 6 || (ovi.dwMajorVersion == 6 && ovi.dwMinorVersion < 1))
+		return refreshRate;
+
+	result = GetDisplayConfigBufferSizes(QDC_DATABASE_CURRENT,
+		&numPathArrayElements,
+		&numModeInfoArrayElements);
+
+	if (result != ERROR_SUCCESS)
+		return refreshRate;
+
+	pathInfoArray = (DISPLAYCONFIG_PATH_INFO *)
+		malloc(sizeof(DISPLAYCONFIG_PATH_INFO) * numPathArrayElements);
+	modeInfoArray = (DISPLAYCONFIG_MODE_INFO *)
+		malloc(sizeof(DISPLAYCONFIG_MODE_INFO) * numModeInfoArrayElements);
+
+	result = QueryDisplayConfig(QDC_DATABASE_CURRENT,
+		&numPathArrayElements,
+		pathInfoArray,
+		&numModeInfoArrayElements,
+		modeInfoArray,
+		&topologyID);
+
+	if (result == ERROR_SUCCESS && numPathArrayElements >= 1)
+	{
+		refreshRate = (float)pathInfoArray[0].targetInfo.refreshRate.Numerator /
+			pathInfoArray[0].targetInfo.refreshRate.Denominator;
+	}
+
+	free(modeInfoArray);
+	free(pathInfoArray);
+
+	return refreshRate;
+}
+
+int WinGetAutomaticInputRate(void)
+{
+	return (int)(WinGetRefreshRate() * 32040.0 / 60.09881389744051 + 0.5);
 }
 
 /* Depth conversion functions begin */

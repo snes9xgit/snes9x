@@ -45,6 +45,7 @@
 #define IDC_RATE                        1003
 #define IDC_MIX                         1004
 #define IDC_DYNRATECONTROL              1005
+#define IDC_AUTOMATICINPUTRATE          1021
 #define IDC_STEREO                      1006
 #define IDC_REV_STEREO                  1007
 #define IDC_LINEAR_INTER                1008
