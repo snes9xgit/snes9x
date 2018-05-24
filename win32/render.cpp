@@ -477,12 +477,31 @@ inline static bool GetFilterBlendSupport(RenderFilter filterID)
 	}
 }
 
-inline void SetRect(RECT* rect, int width, int height, int scale)
+void AdjustHeightExtend(unsigned int &height)
 {
+    if(GUI.HeightExtend)
+    {
+        if(height == SNES_HEIGHT)
+            height = SNES_HEIGHT_EXTENDED;
+        else if(height == SNES_HEIGHT * 2)
+            height = SNES_HEIGHT_EXTENDED * 2;
+    }
+    else
+    {
+        if(height == SNES_HEIGHT_EXTENDED)
+            height = SNES_HEIGHT;
+        else if(height == SNES_HEIGHT_EXTENDED * 2)
+            height = SNES_HEIGHT * 2;
+    }
+}
+
+inline void SetRect(RECT* rect, unsigned int width, unsigned int height, int scale)
+{
+    AdjustHeightExtend(height);
 	rect->left = 0;
 	rect->right = width * scale;
 	rect->top = 0;
-	rect->bottom = (height - (GUI.HeightExtend ? 0 : 15)) * scale;
+	rect->bottom = height * scale;
 }
 
 RECT GetFilterOutputSize(SSurface Src)
@@ -536,6 +555,7 @@ void SelectRenderMethod()
 
 void RenderMethod(SSurface Src, SSurface Dst, RECT * rect)
 {
+    AdjustHeightExtend(Src.Height);
 	if(Src.Height > SNES_HEIGHT_EXTENDED || Src.Width == 512) {
 		if(GUI.BlendHiRes && Src.Width == 512 && !GetFilterBlendSupport(GUI.ScaleHiRes)) {
 			RenderMergeHires(Src.Surface,Src.Pitch,BlendBuffer,EXT_PITCH,Src.Width,Src.Height);
