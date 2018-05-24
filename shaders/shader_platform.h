@@ -14,10 +14,13 @@
 #include "gl_core_3_1.h"
 #include <direct.h>
 
+#ifdef UNICODE
+#define chdir(dir) _wchdir(Utf8ToWide(dir))
+#define realpath(src, resolved) _twfullpath(resolved, src, PATH_MAX)
+#else
 #define chdir(dir) _chdir(dir)
 #define realpath(src, resolved) _fullpath(resolved, src, PATH_MAX)
-
-
+#endif
 
 #endif
 
