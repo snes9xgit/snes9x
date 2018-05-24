@@ -3,6 +3,8 @@
 // Used by snes9x.rc
 //
 #define IDR_RT_MANIFEST2                1
+#define IDCANCEL2                       3
+#define IDAPPLY                         3
 #define IDR_MENU_US                     101
 #define IDC_CURSOR_SCOPE                101
 #define IDC_CURSOR_BLANK                102
@@ -37,6 +39,7 @@
 #define IDB_LOCKEDFOLDER                148
 #define IDB_HIDDENFOLDER                149
 #define IDD_MULTICART                   150
+#define IDD_DIALOG_SHADER_PARAMS        155
 #define IDC_DRIVER                      1001
 #define IDC_BUFLEN                      1002
 #define IDC_RATE                        1003
@@ -55,6 +58,7 @@
 #define IDC_MUTE                        1016
 #define IDC_SKIP_TYPE                   1017
 #define IDC_SCROLLBAR1                  1018
+#define IDC_SCROLLBAR_PARAMS            1018
 #define IDC_VRAM_DISPLAY                1019
 #define IDC_WIP1                        1019
 #define IDC_ADDRESS                     1020
@@ -368,8 +372,10 @@
 #define IDC_SHADER_GLSL_BROWSE          3018
 #define IDC_SLIDER_VOLUME_REGULAR       3018
 #define IDC_EDIT_VOLUME_REGULAR         3019
+#define IDC_SHADER_GLSL_PARAMETERS      3019
 #define IDC_SLIDER_VOLUME_TURBO         3020
 #define IDC_EDIT_VOLUME_TURBO           3021
+#define IDC_STATIC_CONTAINER            3022
 #define ID_FILE_EXIT                    40001
 #define ID_WINDOW_HIDEMENUBAR           40004
 #define ID_FILE_AVI_RECORDING           40005
@@ -516,9 +522,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        155
+#define _APS_NEXT_RESOURCE_VALUE        157
 #define _APS_NEXT_COMMAND_VALUE         40178
-#define _APS_NEXT_CONTROL_VALUE         3022
+#define _APS_NEXT_CONTROL_VALUE         3023
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

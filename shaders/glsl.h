@@ -1,3 +1,6 @@
+#ifndef __GLSL_H
+#define __GLSL_H
+
 #include <vector>
 #include <deque>
 #include <limits.h>
@@ -142,3 +145,5 @@ typedef struct
     GLfloat *fa;
 
 } GLSLShader;
+
+#endif

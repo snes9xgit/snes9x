@@ -270,6 +270,7 @@
     <ClInclude Include="gl_core_3_1.h">
       <Filter>GUI\VideoDriver</Filter>
     </ClInclude>
+    <ClInclude Include="CShaderParamDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\bsx.cpp">
@@ -581,6 +582,7 @@
     <ClCompile Include="gl_core_3_1.c">
       <Filter>GUI\VideoDriver</Filter>
     </ClCompile>
+    <ClCompile Include="CShaderParamDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="rsrc\nodrop.cur">

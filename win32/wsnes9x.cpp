@@ -217,6 +217,8 @@
 #include "win32_sound.h"
 #include "win32_display.h"
 #include "CCGShader.h"
+#include "../shaders/glsl.h"
+#include "CShaderParamDlg.h"
 #include "../snes9x.h"
 #include "../memmap.h"
 #include "../cpuexec.h"
@@ -7675,6 +7677,23 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				WinRefreshDisplay();
 			}
 			break;
+        case IDC_SHADER_GLSL_PARAMETERS:
+        {
+            GetDlgItemText(hDlg, IDC_SHADER_GLSL_FILE, GUI.OGLshaderFileName, MAX_PATH);
+            if(lstrlen(GUI.OGLshaderFileName) < 6 || _tcsncicmp(&GUI.OGLshaderFileName[lstrlen(GUI.OGLshaderFileName) - 6], TEXT(".glslp"), 6)) {
+                MessageBox(GUI.hWnd, TEXT("Parameters are only supported for .glsl shaders"), TEXT("No Parameters"), MB_OK | MB_ICONINFORMATION);
+                break;
+            }
+            GLSLShader shader;
+            shader.load_shader(_tToChar(GUI.OGLshaderFileName));
+            CShaderParamDlg dlg(shader);
+            if(dlg.show()) {
+                SetDlgItemText(hDlg, IDC_SHADER_GLSL_FILE, GUI.OGLshaderFileName);
+                WinDisplayApplyChanges();
+                WinRefreshDisplay();
+            }
+            break;
+        }
 		case IDC_FILTERBOX:
 			if(HIWORD(wParam)==CBN_SELCHANGE) {
 				int scale = (int)SendDlgItemMessage(hDlg,IDC_FILTERBOX,CB_GETCURSEL,0,0);

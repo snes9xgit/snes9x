@@ -427,6 +427,7 @@
     <ClInclude Include="CGLCG.h" />
     <ClInclude Include="cgMini.h" />
     <ClInclude Include="COpenGL.h" />
+    <ClInclude Include="CShaderParamDlg.h" />
     <ClInclude Include="CXAudio2.h" />
     <ClInclude Include="CXML.h" />
     <ClInclude Include="dxerr.h" />
@@ -559,6 +560,7 @@
     <ClCompile Include="cgFunctions.cpp" />
     <ClCompile Include="CGLCG.cpp" />
     <ClCompile Include="COpenGL.cpp" />
+    <ClCompile Include="CShaderParamDlg.cpp" />
     <ClCompile Include="CXAudio2.cpp" />
     <ClCompile Include="CXML.cpp" />
     <ClCompile Include="DumpAtEnd.cpp" />
