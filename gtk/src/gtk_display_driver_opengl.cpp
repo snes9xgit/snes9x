@@ -13,7 +13,6 @@
 #include "gtk_shader_parameters.h"
 
 #include "shaders/shader_helpers.h"
-#include "shaders/CGLCG.h"
 
 static void S9xViewportCallback (int src_width, int src_height,
                                  int viewport_x, int viewport_y,
@@ -65,7 +64,7 @@ S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
 
 #endif
 
-    if (using_cg_shaders || using_glsl_shaders)
+    if (using_glsl_shaders)
     {
         glBindTexture (GL_TEXTURE_2D, texmap);
     }
@@ -245,19 +244,6 @@ S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
         glsl_shader->render (texmap, width, height, x, allocation.height - y - h, w, h, S9xViewportCallback);
         gl_swap ();
         return;
-    }
-    else if (using_shaders && using_cg_shaders)
-    {
-        xySize texture_size, input_size, viewport_size;
-        texture_size.x  = texture_width;
-        texture_size.y  = texture_height;
-        input_size.x    = width;
-        input_size.y    = height;
-        viewport_size.x = w;
-        viewport_size.y = h;
-
-        cg_shader->Render (texmap, texture_size, input_size, viewport_size);
-        glViewport (x, allocation.height - y - h, w, h);
     }
     else if (using_shaders)
     {
@@ -462,34 +448,6 @@ S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
         }
     }
 
-    if ((length > 4 && !strcasecmp(shader_file + length - 4, ".cgp")) ||
-        (length > 3 && !strcasecmp(shader_file + length - 3, ".cg")))
-    {
-        if (loadCgFunctions())
-        {
-            cg_context = cgCreateContext ();
-            cg_shader = new CGLCG (cg_context);
-            if (!cg_shader->LoadShader (shader_file))
-            {
-                delete cg_shader;
-                cgDestroyContext (cg_context);
-                return 0;
-            }
-            else
-            {
-                using_cg_shaders = 1;
-                return 1;
-            }
-
-        }
-        else
-        {
-            fprintf (stderr, _("Cannot load CG library.\n"));
-            return 0;
-        }
-
-    }
-
     if (!shaders_available ())
     {
         fprintf (stderr, _("Cannot load GLSL shader functions.\n"));
@@ -582,10 +540,7 @@ S9xOpenGLDisplayDriver::opengl_defaults (void)
     }
 
     using_shaders = 0;
-    using_cg_shaders = 0;
     using_glsl_shaders = 0;
-    cg_context = NULL;
-    cg_shader = NULL;
     glsl_shader = NULL;
 
     if (config->use_shaders)
@@ -883,11 +838,6 @@ S9xOpenGLDisplayDriver::deinit (void)
         gtk_shader_parameters_dialog_close ();
         glsl_shader->destroy();
         delete glsl_shader;
-    }
-    else if (using_shaders && using_cg_shaders)
-    {
-        delete cg_shader;
-        cgDestroyContext (cg_context);
     }
     else if (using_shaders)
     {

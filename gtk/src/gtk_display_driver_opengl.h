@@ -7,7 +7,6 @@
 #include <epoxy/gl.h>
 #include <epoxy/glx.h>
 
-#include "shaders/CGLCG.h"
 #include "shaders/glsl.h"
 
 #define PBO_FMT_16 0
@@ -69,10 +68,6 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
         int                      using_pbos;
         int                      using_shaders;
         int                      initialized;
-
-        int                      using_cg_shaders;
-        CGcontext                cg_context;
-        CGLCG                    *cg_shader;
 
         int                      using_glsl_shaders;
         GLSLShader               *glsl_shader;

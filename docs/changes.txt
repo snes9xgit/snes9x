@@ -70,7 +70,6 @@ Snes9x 1.56
 - GTK+: Now disables the compositor in fullscreen mode.     (BearOso)
 - GTK+: Changed icon.                                       (BearOso)
 - GTK+: Require libepoxy for OpenGL support.                (BearOso)
-- GTK+: Add minimal compatibility with cgp shaders.         (BearOso)
 - GTK+: Add full compatibility with GLSLP shaders, with a   (BearOso)
   parameters dialog to configure them.
 - Unix: Add xinerama support and window position hints.     (Francesco149)

@@ -11,10 +11,6 @@
 #include "gtk_display.h"
 #include "gtk_binding.h"
 
-#ifdef USE_OPENGL
-#include "gtk_shader_parameters.h"
-#endif
-
 #if GTK_MAJOR_VERSION >= 3
 #include <gdk/gdkkeysyms-compat.h>
 #endif
@@ -488,42 +484,6 @@ event_auto_input_rate_toggled (GtkToggleButton *togglebutton, gpointer data)
     {
         gtk_widget_set_sensitive (preferences->get_widget("sound_input_rate"), TRUE);
     }
-}
-
-static void
-event_shader_parameters (GtkButton *widget, gpointer data)
-{
-    S9xDisplayDriver *driver = S9xDisplayGetDriver ();
-    Snes9xPreferences *preferences = (Snes9xPreferences *) data;
-
-#ifdef USE_OPENGL
-    if (!driver || !driver->get_parameters () || !gtk_shader_parameters_dialog (top_level->get_window ()))
-    {
-        GtkWidget *dialog;
-        dialog = gtk_message_dialog_new (top_level->get_window(),
-                                         (GtkDialogFlags) 0,
-                                         GTK_MESSAGE_INFO,
-                                         GTK_BUTTONS_CLOSE,
-                                         _("No Parameters Available"));
-        gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG (dialog),
-                                                 _("No shader in use, or the shader in use does not support or has no configurable parameters."));
-        gtk_dialog_run (GTK_DIALOG (dialog));
-        gtk_widget_destroy (dialog);
-
-        return;
-    }
-    else
-    {
-        char *config_dir = get_config_dir();
-        char *config_file = new char[strlen (config_dir) + 14];
-        sprintf(config_file, "%s/shader.glslp", config_dir);
-        delete[] config_dir;
-        driver->save (config_file);
-        realpath (config_file, gui_config->fragment_shader);
-        preferences->set_entry_text ("fragment_shader", preferences->config->fragment_shader);
-    }
-
-#endif
 }
 
 static void
