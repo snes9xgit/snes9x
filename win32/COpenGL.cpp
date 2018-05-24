@@ -772,7 +772,9 @@ bool COpenGL::SetShadersGLSL(const TCHAR *glslFileName)
     if (!glslFileName)
         return false;
 
-    glslShader->load_shader(_tToChar(glslFileName));
+    if(!glslShader->load_shader(_tToChar(glslFileName))) {
+        return false;
+    }
 
 	shader_type = OGL_SHADER_GLSL;
 
