@@ -7,13 +7,18 @@
 #include "gtk_shader_parameters.h"
 #include "shaders/glsl.h"
 
+static GtkWidget *dialog = NULL;
+static std::vector<GLSLParam> *params = NULL;
+static std::vector<GLSLParam> saved_params;
+
 static inline double snap_to_interval (double value, double interval)
 {
     return round (value / interval) * interval;
 }
 
-void value_changed (GtkRange *range, gpointer user_data)
+static void value_changed (GtkRange *range, gpointer user_data)
 {
+    GLSLParam *p = (GLSLParam *) user_data;
     GtkAdjustment *adj = gtk_range_get_adjustment (range);
     double interval = gtk_adjustment_get_step_increment (adj);
     double value = gtk_range_get_value (range);
@@ -21,25 +26,99 @@ void value_changed (GtkRange *range, gpointer user_data)
     value = snap_to_interval (value, interval);
 
     gtk_range_set_value (range, value);
+
+    if (p->val != value)
+    {
+        p->val = value;
+        if (Settings.Paused)
+            S9xDeinitUpdate (top_level->last_width, top_level->last_height);
+    }
 }
 
+static void toggled (GtkToggleButton *togglebutton, gpointer user_data)
+{
+    GLSLParam *p = (GLSLParam *) user_data;
+    double value = (double) gtk_toggle_button_get_active (togglebutton);
+
+    if (p->val != value)
+    {
+        p->val = value;
+        if (Settings.Paused)
+            S9xDeinitUpdate (top_level->last_width, top_level->last_height);
+    }
+}
+
+static void dialog_response (GtkDialog *pdialog, gint response_id, gpointer user_data)
+{
+    std::vector<GLSLParam> * params = (std::vector<GLSLParam> *) user_data;
+    char *config_dir;
+    char *config_file;
+
+    switch (response_id)
+    {
+    case GTK_RESPONSE_OK:
+        config_dir = get_config_dir();
+        config_file = new char[strlen (config_dir) + 14];
+        sprintf(config_file, "%s/snes9x.glslp", config_dir);
+        delete[] config_dir;
+        S9xDisplayGetDriver ()->save (config_file);
+        realpath (config_file, gui_config->fragment_shader);
+
+        if (dialog)
+            gtk_widget_destroy (GTK_WIDGET (dialog));
+        dialog = NULL;
+        break;
+
+    case GTK_RESPONSE_CANCEL:
+    case GTK_RESPONSE_DELETE_EVENT:
+    case GTK_RESPONSE_NONE:
+        if (dialog)
+            gtk_widget_destroy (GTK_WIDGET (dialog));
+        dialog = NULL;
+        *params = saved_params;
+        if (Settings.Paused)
+            S9xDeinitUpdate (top_level->last_width, top_level->last_height);
+        break;
+
+    default:
+        break;
+    }
+}
+
+void gtk_shader_parameters_dialog_close (void)
+{
+    if (dialog)
+    {
+        *params = saved_params;
+        gtk_widget_destroy (GTK_WIDGET (dialog));
+        dialog = NULL;
+    }
+}
 
 bool gtk_shader_parameters_dialog (GtkWindow *parent)
 {
-    GtkWidget *dialog;
-    std::vector<GLSLParam> *params = (std::vector<GLSLParam> *) S9xDisplayGetDriver()->get_parameters();
+    if (dialog)
+    {
+        gtk_window_present (GTK_WINDOW (dialog));
+        return false;
+    }
+
+    params = (std::vector<GLSLParam> *) S9xDisplayGetDriver()->get_parameters();
+    saved_params = *params;
 
     if (!params || params->size() == 0)
         return false;
 
     dialog = gtk_dialog_new_with_buttons (_("GLSL Shader Parameters"),
                                           parent,
-                                          GTK_DIALOG_MODAL,
+                                          GTK_DIALOG_DESTROY_WITH_PARENT,
                                           "gtk-cancel",
                                           GTK_RESPONSE_CANCEL,
-                                          "gtk-apply",
-                                          GTK_RESPONSE_APPLY,
+                                          "gtk-save",
+                                          GTK_RESPONSE_OK,
                                           NULL);
+
+    g_signal_connect_data (G_OBJECT (dialog), "response", G_CALLBACK (dialog_response), (gpointer) params, NULL, (GConnectFlags) 0);
 
     GtkWidget *scrolled_window;
     gtk_widget_set_size_request(dialog, 640, 480);
@@ -64,8 +143,6 @@ bool gtk_shader_parameters_dialog (GtkWindow *parent)
     gtk_container_add (GTK_CONTAINER (vbox), grid);
     gtk_container_add (GTK_CONTAINER (scrolled_window), vbox);
 
-    GtkWidget **value_holders = new GtkWidget*[params->size()];
-
     for (unsigned int i = 0; i < params->size(); i++)
     {
         GLSLParam *p = &(*params)[i];
@@ -80,7 +157,7 @@ bool gtk_shader_parameters_dialog (GtkWindow *parent)
             GtkWidget *check = gtk_check_button_new ();
             gtk_grid_attach (GTK_GRID (grid), check, 1, i, 1, 1);
             gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check), (int) p->val);
-            value_holders[i] = check;
+            g_signal_connect_data (G_OBJECT (check), "toggled", G_CALLBACK (toggled), (gpointer) p, NULL, (GConnectFlags) 0);
         }
         else
         {
@@ -94,11 +171,9 @@ bool gtk_shader_parameters_dialog (GtkWindow *parent)
             g_signal_connect_data (G_OBJECT (scale),
                                    "value-changed",
                                    G_CALLBACK (value_changed),
-                                   NULL,
+                                   (gpointer) p,
                                    NULL,
                                    (GConnectFlags) 0);
-
-            value_holders[i] = scale;
         }
     }
 #else
@@ -110,8 +185,6 @@ bool gtk_shader_parameters_dialog (GtkWindow *parent)
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW (scrolled_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
     gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (scrolled_window), vbox);
     gtk_container_set_border_width (GTK_CONTAINER (scrolled_window), 5);
-
-    GtkWidget **value_holders = new GtkWidget*[params->size()];
 
     for (unsigned int i = 0; i < params->size(); i++)
     {
@@ -127,7 +200,7 @@ bool gtk_shader_parameters_dialog (GtkWindow *parent)
             GtkWidget *check = gtk_check_button_new ();
             gtk_table_attach (GTK_TABLE (table), check, 1, 2, i, i + 1, GTK_FILL, GTK_FILL, 0, 0);
             gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check), (int) p->val);
-            value_holders[i] = check;
+            g_signal_connect_data (G_OBJECT (check), "toggled", G_CALLBACK (toggled), (gpointer) p, NULL, (GConnectFlags) 0);
         }
         else
         {
@@ -140,43 +213,14 @@ bool gtk_shader_parameters_dialog (GtkWindow *parent)
             g_signal_connect_data (G_OBJECT (scale),
                                    "value-changed",
                                    G_CALLBACK (value_changed),
-                                   NULL,
+                                   (gpointer) p,
                                    NULL,
                                    (GConnectFlags) 0);
-
-            value_holders[i] = scale;
         }
     }
 #endif
 
     gtk_widget_show_all (dialog);
-    int response = gtk_dialog_run (GTK_DIALOG(dialog));
-
-    if (response == GTK_RESPONSE_APPLY)
-    {
-        for (unsigned int i = 0; i < params->size(); i++)
-        {
-            GLSLParam *p = &(*params)[i];
-            if (p->min == 0.0 && p->max == 1.0 && p->step == 1.0)
-            {
-                int val = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (value_holders[i]));
-                p->val = (float) val;
-            }
-            else
-            {
-                p->val = gtk_range_get_value (GTK_RANGE (value_holders[i]));
-            }
-
-            p->val = snap_to_interval (p->val, p->step);
-
-            p->val = CLAMP (p->val, p->min, p->max);
-        }
-
-        S9xDeinitUpdate (top_level->last_width, top_level->last_height);
-    }
-
-    delete[] value_holders;
-    gtk_widget_destroy (dialog);
 
     return true;
 }

@@ -10,6 +10,7 @@
 
 #include "gtk_display.h"
 #include "gtk_display_driver_opengl.h"
+#include "gtk_shader_parameters.h"
 
 #include "shaders/shader_helpers.h"
 #include "shaders/CGLCG.h"
@@ -446,6 +447,10 @@ S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
             {
                 using_glsl_shaders = 1;
                 dyn_resizing = TRUE;
+
+                if (glsl_shader->param.size () > 0)
+                    window->enable_widget ("shader_parameters_item", TRUE);
+
                 return 1;
             }
             delete glsl_shader;
@@ -874,6 +879,8 @@ S9xOpenGLDisplayDriver::deinit (void)
 
     if (using_shaders && using_glsl_shaders)
     {
+        window->enable_widget ("shader_parameters_item", FALSE);
+        gtk_shader_parameters_dialog_close ();
         glsl_shader->destroy();
         delete glsl_shader;
     }

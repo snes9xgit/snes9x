@@ -622,7 +622,6 @@ Snes9xPreferences::Snes9xPreferences (Snes9xConfig *config) :
         { "game_data_clear", G_CALLBACK (event_game_data_clear) },
         { "about_clicked", G_CALLBACK (event_about_clicked) },
         { "auto_input_rate_toggled", G_CALLBACK (event_auto_input_rate_toggled) },
-        { "shader_parameters", G_CALLBACK (event_shader_parameters) },
 #ifdef USE_JOYSTICK
         { "calibrate", G_CALLBACK (event_calibrate) },
 #endif

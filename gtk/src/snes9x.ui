@@ -1844,6 +1844,22 @@
                       </object>
                     </child>
                     <child>
+                      <object class="GtkSeparatorMenuItem" id="shader_parameters_separator">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="shader_parameters_item">
+                        <property name="label" translatable="yes">_Shader Parameters...</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_shader_parameters_item_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkSeparatorMenuItem" id="separatormenuitem3">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -3865,20 +3881,6 @@
                                                     <property name="expand">False</property>
                                                     <property name="fill">True</property>
                                                     <property name="position">2</property>
-                                                  </packing>
-                                                </child>
-                                                <child>
-                                                  <object class="GtkButton" id="shader_parameters_button">
-                                                    <property name="label" translatable="yes">Customize...</property>
-                                                    <property name="visible">True</property>
-                                                    <property name="can_focus">True</property>
-                                                    <property name="receives_default">True</property>
-                                                    <signal name="clicked" handler="shader_parameters" swapped="no"/>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="expand">False</property>
-                                                    <property name="fill">True</property>
-                                                    <property name="position">3</property>
                                                   </packing>
                                                 </child>
                                               </object>

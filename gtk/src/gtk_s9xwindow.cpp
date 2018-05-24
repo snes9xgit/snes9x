@@ -10,6 +10,10 @@
 #include <X11/extensions/Xvlib.h>
 #endif
 
+#ifdef USE_OPENGL
+#include "gtk_shader_parameters.h"
+#endif
+
 #include "gtk_s9x.h"
 #include "gtk_preferences.h"
 #include "gtk_icon.h"
@@ -377,6 +381,17 @@ event_open_movie (GtkWidget *widget, gpointer data)
 }
 
 static void
+event_shader_parameters (GtkWidget *widget, gpointer data)
+{
+#ifdef USE_OPENGL
+    Snes9xWindow *window = (Snes9xWindow *) data;
+
+    gtk_shader_parameters_dialog (window->get_window ());
+#endif
+    return;
+}
+
+static void
 event_stop_recording (GtkWidget *widget, gpointer data)
 {
     if (S9xMovieActive ())
@@ -565,6 +580,7 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
         { "on_fullscreen_item_activate", G_CALLBACK (event_fullscreen) },
         { "on_open_rom_activate", G_CALLBACK (event_open_rom) },
         { "on_reset_item_activate", G_CALLBACK (event_reset) },
+        { "on_shader_parameters_item_activate", G_CALLBACK (event_shader_parameters) },
         { "hard_reset", G_CALLBACK (event_hard_reset) },
         { "on_port_activate", G_CALLBACK (event_port) },
         { "load_save_state", G_CALLBACK (event_load_state) },
@@ -651,6 +667,13 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
     gtk_widget_hide (get_widget ("netplay_separator"));
     gtk_widget_hide (get_widget ("sync_clients_item"));
     gtk_widget_hide (get_widget ("sync_clients_separator"));
+#endif
+
+#ifndef USE_OPENGL
+    gtk_widget_hide (get_widget ("shader_parameters_separator"));
+    gtk_widget_hide (get_widget ("shader_parameters_item"));
+#else
+    enable_widget ("shader_parameters_item", FALSE);
 #endif
 
 #if GTK_MAJOR_VERSION >= 3
