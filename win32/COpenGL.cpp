@@ -212,6 +212,8 @@ COpenGL::COpenGL(void)
 	initDone = false;
 	afterRenderWidth = 0;
 	afterRenderHeight = 0;
+    outTextureWidth = 0;
+    outTextureHeight = 0;
 	fullscreen = false;
 	shaderFunctionsLoaded = false;
 	shader_type = OGL_SHADER_NONE;
@@ -333,9 +335,10 @@ void COpenGL::DeInitialize()
 		hDC = NULL;
 	}
 	hWnd = NULL;
-	initDone = false;
 	afterRenderWidth = 0;
 	afterRenderHeight = 0;
+    outTextureWidth = 0;
+    outTextureHeight = 0;
 	shaderFunctionsLoaded = false;
 	shader_type = OGL_SHADER_NONE;
     if (glslShader) {
