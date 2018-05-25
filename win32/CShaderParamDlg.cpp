@@ -170,12 +170,12 @@ void CShaderParamDlg::createContent(HWND hDlg)
         GLSLParam &p = shader.param[i];
         TCHAR desc[270];
         _stprintf(desc, TEXT("%s [%g-%g]"), (TCHAR*)_tFromChar(p.name), p.min, p.max);
-        HWND item = CreateWindow(TEXT("STATIC"), desc, SS_LEFTNOWORDWRAP | WS_VISIBLE | WS_CHILD, LEFT_OFFSET, top, DESC_WIDTH_CHARS * avgCharWidth, avgCharHeight, parent, (HMENU)(IDC_PARAMS_START_STATIC + i), GUI.hInstance, NULL);
+        HWND item = CreateWindow(TEXT("STATIC"), desc, SS_LEFTNOWORDWRAP | WS_VISIBLE | WS_CHILD, LEFT_OFFSET, top, DESC_WIDTH_CHARS * avgCharWidth, avgCharHeight, parent, (HMENU)(UINT_PTR)(IDC_PARAMS_START_STATIC + i), GUI.hInstance, NULL);
         SendMessage(item, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(FALSE, 0));
         TCHAR val[100];
         _stprintf(val, TEXT("%g"), p.val);
         unsigned int edit_left = LEFT_OFFSET + DESC_WIDTH_CHARS * avgCharWidth + HORIZONTAL_SPACE;
-        item = CreateWindow(TEXT("EDIT"), val, ES_AUTOHSCROLL | WS_VISIBLE | WS_CHILD | WS_TABSTOP, edit_left , top, EDIT_WIDTH_CHARS * avgCharWidth, avgCharHeight, parent, (HMENU)(IDC_PARAMS_START_EDIT + i), GUI.hInstance, NULL);
+        item = CreateWindow(TEXT("EDIT"), val, ES_AUTOHSCROLL | WS_VISIBLE | WS_CHILD | WS_TABSTOP, edit_left , top, EDIT_WIDTH_CHARS * avgCharWidth, avgCharHeight, parent, (HMENU)(UINT_PTR)(IDC_PARAMS_START_EDIT + i), GUI.hInstance, NULL);
         SendMessage(item, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(FALSE, 0));
         top += avgCharHeight + VERTICAL_SPACE;
     }

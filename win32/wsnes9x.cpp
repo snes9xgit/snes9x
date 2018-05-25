@@ -7486,6 +7486,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
             EnableWindow(GetDlgItem(hDlg, IDC_SHADER_HLSL_BROWSE), TRUE);
             EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_FILE), TRUE);
             EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_BROWSE), TRUE);
+			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_PARAMETERS), TRUE);
         }
         SetDlgItemText(hDlg, IDC_SHADER_HLSL_FILE, GUI.D3DshaderFileName);
         SetDlgItemText(hDlg, IDC_SHADER_GLSL_FILE, GUI.OGLshaderFileName);
@@ -7671,6 +7672,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_HLSL_BROWSE),GUI.shaderEnabled);
 			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_FILE),GUI.shaderEnabled);
 			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_BROWSE),GUI.shaderEnabled);
+			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_PARAMETERS), GUI.shaderEnabled);
 
 			GetDlgItemText(hDlg,IDC_SHADER_HLSL_FILE,GUI.D3DshaderFileName,MAX_PATH);
 			GetDlgItemText(hDlg,IDC_SHADER_GLSL_FILE,GUI.OGLshaderFileName,MAX_PATH);
@@ -7722,6 +7724,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
                 MessageBox(GUI.hWnd, TEXT("Parameters are only supported for .glsl shaders"), TEXT("No Parameters"), MB_OK | MB_ICONINFORMATION);
                 break;
             }
+			ShowWindow(hDlg, SW_HIDE);
             GLSLShader shader;
             shader.load_shader(_tToChar(GUI.OGLshaderFileName));
             CShaderParamDlg dlg(shader);
@@ -7730,6 +7733,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
                 WinDisplayApplyChanges();
                 WinRefreshDisplay();
             }
+			ShowWindow(hDlg, SW_SHOW);
             break;
         }
 		case IDC_FILTERBOX:

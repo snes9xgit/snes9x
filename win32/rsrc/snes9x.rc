@@ -14,64 +14,6 @@
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
-/////////////////////////////////////////////////////////////////////////////
-// German (Germany) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
-LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
-#pragma code_page(1252)
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Dialog
-//
-
-IDD_DIALOG_SHADER_PARAMS DIALOGEX 0, 0, 309, 205
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Shader Paramaters"
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
-BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,144,184,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,198,184,50,14
-    LTEXT           "",IDC_STATIC_CONTAINER,7,35,282,142,WS_BORDER
-    SCROLLBAR       IDC_SCROLLBAR_PARAMS,289,35,12,142,SBS_VERT
-    PUSHBUTTON      "Apply",IDAPPLY,253,184,50,14
-    LTEXT           "Changing these parameters will create a new ""custom_shader_params.glslp"" file in the snes9x directory that contains the parameters and references to your currently loaded shader. This will then be used as your current OpenGL shader.",IDC_STATIC,7,7,295,28
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO
-BEGIN
-    IDD_DIALOG_SHADER_PARAMS, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 302
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 198
-    END
-END
-#endif    // APSTUDIO_INVOKED
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// AFX_DIALOG_LAYOUT
-//
-
-IDD_DIALOG_SHADER_PARAMS AFX_DIALOG_LAYOUT
-BEGIN
-    0
-END
-
-#endif    // German (Germany) resources
-/////////////////////////////////////////////////////////////////////////////
-
 
 /////////////////////////////////////////////////////////////////////////////
 // English (United States) resources
@@ -99,7 +41,7 @@ BEGIN
     COMBOBOX        IDC_RATE,177,40,106,171,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Playback Rate:",IDC_STATIC,125,41,49,11
     CONTROL         "&Dynamic Rate Control",IDC_DYNRATECONTROL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,295,90,96,10
-	CONTROL			"&Automatic Input Rate",IDC_AUTOMATICINPUTRATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,295,105,96,10
+    CONTROL         "&Automatic Input Rate",IDC_AUTOMATICINPUTRATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,295,105,96,10
     CONTROL         "&Stereo",IDC_STEREO,"Button",BS_AUTOCHECKBOX | BS_NOTIFY | WS_TABSTOP,295,15,93,10
     CONTROL         "&Reverse Stereo",IDC_REV_STEREO,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,295,30,94,10
     CONTROL         "&Synchronize with sound core",IDC_SYNC_TO_SOUND_CPU,
@@ -274,7 +216,7 @@ BEGIN
     CONTROL         "Reduce Input Lag",IDC_REDUCEINPUTLAG,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,11,113,76,10
     CONTROL         "Scale messages with EPX if possible",IDC_MESSAGES_SCALE,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,187,168,131,10
-    PUSHBUTTON      "Parameters",IDC_SHADER_GLSL_PARAMETERS,112,222,49,12
+    PUSHBUTTON      "Parameters",IDC_SHADER_GLSL_PARAMETERS,112,222,49,12,WS_DISABLED
 END
 
 IDD_CHEATER DIALOGEX 0, 0, 375, 194
@@ -592,6 +534,18 @@ BEGIN
     COMBOBOX        IDC_HOSTNAME,60,5,110,40,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
 END
 
+IDD_DIALOG_SHADER_PARAMS DIALOGEX 0, 0, 309, 205
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Shader Paramaters"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK", IDOK, 144, 184, 50, 14
+    PUSHBUTTON      "Cancel", IDCANCEL, 198, 184, 50, 14
+    LTEXT           "", IDC_STATIC_CONTAINER, 7, 35, 282, 142, WS_BORDER
+    SCROLLBAR       IDC_SCROLLBAR_PARAMS, 289, 35, 12, 142, SBS_VERT
+    PUSHBUTTON      "Apply", IDAPPLY, 253, 184, 50, 14
+    LTEXT           "Changing these parameters will create a new ""custom_shader_params.glslp"" file in the snes9x directory that contains the parameters and references to your currently loaded shader. This will then be used as your current OpenGL shader.", IDC_STATIC, 7, 7, 295, 28
+END
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -725,6 +679,14 @@ BEGIN
         RIGHTMARGIN, 400
         TOPMARGIN, 7
         BOTTOMMARGIN, 83
+    END
+
+    IDD_DIALOG_SHADER_PARAMS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 302
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 198
     END
 END
 #endif    // APSTUDIO_INVOKED
