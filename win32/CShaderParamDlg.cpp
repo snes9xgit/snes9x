@@ -2,9 +2,11 @@
 #include "wsnes9x.h"
 #include "display.h"
 #include "win32_display.h"
+#include <CommCtrl.h>
 
-#define IDC_PARAMS_START_STATIC 1000
-#define IDC_PARAMS_START_EDIT 2000
+#define IDC_PARAMS_START_STATIC 5000
+#define IDC_PARAMS_START_EDIT 5500
+#define IDC_PARAMS_START_UPDOWN 6000
 
 INT_PTR CALLBACK CShaderParamDlg::DlgShaderParams(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -34,10 +36,7 @@ INT_PTR CALLBACK CShaderParamDlg::DlgShaderParams(HWND hDlg, UINT msg, WPARAM wP
                     }
                 case IDAPPLY:
                     if(HIWORD(wParam) == BN_CLICKED) {
-                        dlg->get_changed_parameters(hDlg);
-                        dlg->save_custom_shader();
-                        WinDisplayApplyChanges();
-                        WinRefreshDisplay();
+						dlg->apply_changes(hDlg);
                         return TRUE;
                     }
             }
@@ -91,6 +90,25 @@ INT_PTR CALLBACK CShaderParamDlg::DlgShaderParams(HWND hDlg, UINT msg, WPARAM wP
     }
 
     return FALSE;
+}
+
+INT_PTR CALLBACK CShaderParamDlg::WndProcContainerStatic(HWND hStatic, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	CShaderParamDlg* dlg = (CShaderParamDlg*)GetWindowLongPtr(hStatic, GWLP_USERDATA);
+	switch (msg)
+	{
+	case WM_NOTIFY:
+		UINT nCode = ((LPNMHDR)lParam)->code;
+		switch (nCode)
+		{
+		case UDN_DELTAPOS:
+			LPNMUPDOWN lpnmud = (LPNMUPDOWN)lParam;
+			dlg->handle_up_down(hStatic, lpnmud->hdr.idFrom, lpnmud->iDelta);
+			dlg->apply_changes(GetParent(hStatic));
+			return TRUE; // return true so the up/down pos does not change
+		}
+	}
+	return dlg->oldStaticProc(hStatic, msg, wParam, lParam);
 }
 
 CShaderParamDlg::CShaderParamDlg(GLSLShader &glsl_shader): shader(glsl_shader)
@@ -159,24 +177,32 @@ void CShaderParamDlg::createContent(HWND hDlg)
 #define LEFT_OFFSET 10
 #define TOP_OFFSET 10
 #define HORIZONTAL_SPACE 20
-#define VERTICAL_SPACE  10
+#define VERTICAL_SPACE  15
 #define DESC_WIDTH_CHARS 50
 #define EDIT_WIDTH_CHARS 10
 
     HWND parent = GetDlgItem(hDlg, IDC_STATIC_CONTAINER);
+	// override static wndproc so we can handle the up/down messages, save original proc so we can forward everything else
+	oldStaticProc = (WNDPROC)GetWindowLongPtr(parent, GWLP_WNDPROC);
+	SetWindowLongPtr(parent, GWLP_WNDPROC, (LONG_PTR)WndProcContainerStatic);
+	SetWindowLongPtr(parent, GWLP_USERDATA, (LONG_PTR)this);
 
     unsigned int top = TOP_OFFSET;
     for(int i = 0; i < shader.param.size(); i++) {
         GLSLParam &p = shader.param[i];
         TCHAR desc[270];
         _stprintf(desc, TEXT("%s [%g-%g]"), (TCHAR*)_tFromChar(p.name), p.min, p.max);
-        HWND item = CreateWindow(TEXT("STATIC"), desc, SS_LEFTNOWORDWRAP | WS_VISIBLE | WS_CHILD, LEFT_OFFSET, top, DESC_WIDTH_CHARS * avgCharWidth, avgCharHeight, parent, (HMENU)(UINT_PTR)(IDC_PARAMS_START_STATIC + i), GUI.hInstance, NULL);
+        HWND item = CreateWindow(TEXT("STATIC"), desc, SS_LEFTNOWORDWRAP | WS_VISIBLE | WS_CHILD, LEFT_OFFSET, (INT)(top + avgCharHeight * 0.2), DESC_WIDTH_CHARS * avgCharWidth, avgCharHeight, parent, (HMENU)(UINT_PTR)(IDC_PARAMS_START_STATIC + i), GUI.hInstance, NULL);
         SendMessage(item, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(FALSE, 0));
         TCHAR val[100];
         _stprintf(val, TEXT("%g"), p.val);
         unsigned int edit_left = LEFT_OFFSET + DESC_WIDTH_CHARS * avgCharWidth + HORIZONTAL_SPACE;
-        item = CreateWindow(TEXT("EDIT"), val, ES_AUTOHSCROLL | WS_VISIBLE | WS_CHILD | WS_TABSTOP, edit_left , top, EDIT_WIDTH_CHARS * avgCharWidth, avgCharHeight, parent, (HMENU)(UINT_PTR)(IDC_PARAMS_START_EDIT + i), GUI.hInstance, NULL);
+        item = CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("EDIT"), val, ES_AUTOHSCROLL | WS_VISIBLE | WS_CHILD | WS_TABSTOP, edit_left , top, EDIT_WIDTH_CHARS * avgCharWidth, (INT)(avgCharHeight * 1.7), parent, (HMENU)(UINT_PTR)(IDC_PARAMS_START_EDIT + i), GUI.hInstance, NULL);
         SendMessage(item, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(FALSE, 0));
+
+		item = CreateWindow(UPDOWN_CLASS, NULL, WS_CHILDWINDOW | WS_VISIBLE | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_ARROWKEYS | UDS_HOTTRACK, 0, 0, 0, 0, parent, (HMENU)(UINT_PTR)(IDC_PARAMS_START_UPDOWN + i), GUI.hInstance, NULL);
+		SendMessage(item, UDM_SETRANGE, 0, MAKELONG(10, -10)); // we don't use this range, simply set it so the up arrow is positive and down arrow negative
+
         top += avgCharHeight + VERTICAL_SPACE;
     }
 
@@ -192,6 +218,23 @@ void CShaderParamDlg::createContent(HWND hDlg)
     si.nPos = 0;
     scrollpos = 0;
     SetScrollInfo(scrollbar, SB_CTL, &si, TRUE);
+}
+
+void CShaderParamDlg::handle_up_down(HWND hStatic, int id, int change)
+{
+	int param_id = id - IDC_PARAMS_START_UPDOWN;
+	HWND hEdit = GetDlgItem(hStatic, IDC_PARAMS_START_EDIT + param_id);
+	GLSLParam &p = shader.param[param_id];
+	TCHAR val[100];
+	GetWindowText(hEdit, val, 100);
+	p.val = _ttof(val);
+	p.val += change > 0 ? p.step : -p.step;
+	if (p.val < p.min)
+		p.val = p.min;
+	if (p.val > p.max)
+		p.val = p.max;
+	_stprintf(val, TEXT("%g"), p.val);
+	SetWindowText(hEdit, val);
 }
 
 void CShaderParamDlg::get_changed_parameters(HWND hDlg)
@@ -218,4 +261,12 @@ void CShaderParamDlg::save_custom_shader()
     _stprintf(save_path, TEXT("%s\\custom_shader_params.glslp"), S9xGetDirectoryT(DEFAULT_DIR));
     shader.save(_tToChar(save_path));
     lstrcpy(GUI.OGLshaderFileName, save_path);
+}
+
+void CShaderParamDlg::apply_changes(HWND hDlg)
+{
+	get_changed_parameters(hDlg);
+	save_custom_shader();
+	WinDisplayApplyChanges();
+	WinRefreshDisplay();
 }
