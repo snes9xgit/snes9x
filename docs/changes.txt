@@ -42,6 +42,8 @@ Snes9x 1.56
   Powerfest '94 Mario Kart.
 - Use PPU1 MDR when accessing open bus below 0x2100. Fixes  (kps501)
   Funaki Masakatsu Hybrid Wrestler glitches.
+- Initialize controllers on reset. Fixes Looney Tunes       (kps501)
+  B-Ball multitap.                       
 - Win32: Added dynamic rate control support for XAudio2     (OV2)
 - Win32: Added different volume level configuration for     (OV2)
   regular and turbo speed.
