@@ -243,14 +243,12 @@ void S9xMainLoop (void)
 
 				S9xUpdateIRQPositions();
 				CPU.IRQPending = Timings.IRQPendCount;
-
-				if (!CheckFlag(IRQ))
-				{
-					CPU.IRQLine = TRUE;
-					S9xOpcode_IRQ();
-				}
+				CPU.IRQLine = TRUE;
 			}
 		}
+
+		if (CPU.IRQLine && !CheckFlag(IRQ))
+			S9xOpcode_IRQ();
 
 	#ifdef DEBUGGER
 		if ((CPU.Flags & BREAK_FLAG) && !(CPU.Flags & SINGLE_STEP_FLAG))
