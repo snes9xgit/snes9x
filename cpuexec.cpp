@@ -223,6 +223,8 @@ void S9xMainLoop (void)
 				{
 					CPU.WaitingForInterrupt = FALSE;
 					Registers.PCw++;
+					CPU.Cycles += ONE_CYCLE;
+					S9xDoHEventProcessing();
 				}
 
 				S9xOpcode_NMI();
@@ -239,7 +241,7 @@ void S9xMainLoop (void)
 				{
 					CPU.WaitingForInterrupt = FALSE;
 					Registers.PCw++;
-					CPU.Cycles += ONE_CYCLE * 2;
+					CPU.Cycles += ONE_CYCLE;
 					S9xDoHEventProcessing();
 				}
 

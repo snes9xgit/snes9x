@@ -3480,7 +3480,7 @@ static void OpCB (void)
 #else
 	CPU.WaitingForInterrupt = TRUE;
 	Registers.PCw--;
-	AddCycles(TWO_CYCLES);
+	AddCycles(ONE_CYCLE);
 #endif
 }
 
