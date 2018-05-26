@@ -239,6 +239,8 @@ void S9xMainLoop (void)
 				{
 					CPU.WaitingForInterrupt = FALSE;
 					Registers.PCw++;
+					CPU.Cycles += ONE_CYCLE * 2;
+					S9xDoHEventProcessing();
 				}
 
 				S9xUpdateIRQPositions();

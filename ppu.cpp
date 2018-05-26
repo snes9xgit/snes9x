@@ -336,7 +336,7 @@ void S9xUpdateIRQPositions (void)
 		if (CPU.V_Counter == PPU.VTimerPosition)
 			Timings.NextIRQTimer = 0;
 		else
-			Timings.NextIRQTimer = CyclesUntilNext (ONE_DOT_CYCLE + Timings.IRQTriggerCycles, PPU.VTimerPosition);
+			Timings.NextIRQTimer = CyclesUntilNext (Timings.IRQTriggerCycles, PPU.VTimerPosition);
 	}
 	else
 	{
