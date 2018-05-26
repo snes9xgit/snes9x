@@ -9,6 +9,7 @@
 #include "snapshot.h"
 #include "controls.h"
 #include "cheats.h"
+#include "movie.h"
 #include "logger.h"
 #include "display.h"
 #include "conffile.h"
@@ -40,12 +41,10 @@
 #define RETRO_GAME_TYPE_SUPER_GAME_BOY  0x104
 
 #define SNES_4_3 4.0f / 3.0f
+#define SNES_8_7 8.0f / 7.0f
 
 char g_rom_dir[1024];
 char g_basename[1024];
-bool overclock_cycles = false;
-bool reduce_sprite_flicker = false;
-int one_c, slow_one_c, two_c;
 
 retro_log_printf_t log_cb = NULL;
 static retro_video_refresh_t video_cb = NULL;
@@ -113,9 +112,21 @@ void retro_set_input_state(retro_input_state_t cb)
    input_state_cb = cb;
 }
 
+enum overscan_mode {
+    OVERSCAN_CROP_ON,
+    OVERSCAN_CROP_OFF,
+    OVERSCAN_CROP_AUTO
+};
+enum aspect_mode {
+    ASPECT_RATIO_4_3,
+    ASPECT_RATIO_8_7,
+    ASPECT_RATIO_NTSC,
+    ASPECT_RATIO_PAL,
+    ASPECT_RATIO_AUTO
+};
 static retro_environment_t environ_cb;
-static unsigned crop_overscan_mode = 0;
-static unsigned aspect_ratio_mode = 0;
+static overscan_mode crop_overscan_mode = OVERSCAN_CROP_ON; // default to crop
+static aspect_mode aspect_ratio_mode = ASPECT_RATIO_4_3; // default to 4:3
 static bool rom_loaded = false;
 void retro_set_environment(retro_environment_t cb)
 {
@@ -145,20 +156,20 @@ void retro_set_environment(retro_environment_t cb)
       { "snes9x_sndchan_6", "Enable sound channel 6; enabled|disabled" },
       { "snes9x_sndchan_7", "Enable sound channel 7; enabled|disabled" },
       { "snes9x_sndchan_8", "Enable sound channel 8; enabled|disabled" },
-      { "snes9x_overscan", "Crop overscan; auto|enabled|disabled" },
-      { "snes9x_aspect", "Preferred aspect ratio; auto|ntsc|pal|4:3" },
+      { "snes9x_overscan", "Crop overscan; enabled|disabled|auto" },
+      { "snes9x_aspect", "Preferred aspect ratio; 4:3|8:7|auto|ntsc|pal" },
       { NULL, NULL },
    };
 
    environ_cb(RETRO_ENVIRONMENT_SET_VARIABLES, variables);
 
-   static const struct retro_controller_description port_1[] = {
+   const struct retro_controller_description port_1[] = {
       { "SNES Joypad", RETRO_DEVICE_JOYPAD },
       { "SNES Mouse", RETRO_DEVICE_MOUSE },
       { "Multitap", RETRO_DEVICE_JOYPAD_MULTITAP },
    };
 
-   static const struct retro_controller_description port_2[] = {
+   const struct retro_controller_description port_2[] = {
       { "SNES Joypad", RETRO_DEVICE_JOYPAD },
       { "SNES Mouse", RETRO_DEVICE_MOUSE },
       { "Multitap", RETRO_DEVICE_JOYPAD_MULTITAP },
@@ -166,7 +177,7 @@ void retro_set_environment(retro_environment_t cb)
       { "Justifier", RETRO_DEVICE_LIGHTGUN_JUSTIFIER },
    };
 
-   static const struct retro_controller_info ports[] = {
+   const struct retro_controller_info ports[] = {
       { port_1, 3 },
       { port_2, 5 },
       { 0, 0 },
@@ -205,40 +216,6 @@ static void update_variables(void)
    }
    else
       Settings.UpAndDown = false;
-
-   var.key = "snes9x_overclock_cycles";
-   var.value = NULL;
-
-   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
-      {
-        if (strcmp(var.value, "compatible") == 0)
-        {
-           overclock_cycles = true;
-           one_c = 4;
-           slow_one_c = 5;
-           two_c = 6;
-        }
-        else if (strcmp(var.value, "max") == 0)
-        {
-           overclock_cycles = true;
-           one_c = 3;
-           slow_one_c = 3;
-           two_c = 3;
-        }
-        else
-          overclock_cycles = false;
-      }
-
-   var.key = "snes9x_reduce_sprite_flicker";
-   var.value = NULL;
-
-   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
-      {
-        if (strcmp(var.value, "enabled") == 0)
-          reduce_sprite_flicker = true;
-        else
-          reduce_sprite_flicker = false;
-      }
 
    int disabled_channels=0;
    strcpy(key, "snes9x_sndchan_x");
@@ -281,11 +258,11 @@ static void update_variables(void)
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
-     unsigned newval = 0;
+     overscan_mode newval = OVERSCAN_CROP_AUTO;
      if (strcmp(var.value, "enabled") == 0)
-       newval = 1;
+       newval = OVERSCAN_CROP_ON;
      else if (strcmp(var.value, "disabled") == 0)
-       newval = 2;
+       newval = OVERSCAN_CROP_OFF;
 
      if (newval != crop_overscan_mode)
      {
@@ -298,13 +275,15 @@ static void update_variables(void)
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
-      unsigned newval = 0;
+      aspect_mode newval = ASPECT_RATIO_AUTO;
       if (strcmp(var.value, "ntsc") == 0)
-        newval = 1;
+        newval = ASPECT_RATIO_NTSC;
       else if (strcmp(var.value, "pal") == 0)
-        newval = 2;
+        newval = ASPECT_RATIO_PAL;
       else if (strcmp(var.value, "4:3") == 0)
-        newval = 3;
+        newval = ASPECT_RATIO_4_3;
+      else if (strcmp(var.value, "8:7") == 0)
+        newval = ASPECT_RATIO_8_7;
 
       if (newval != aspect_ratio_mode)
       {
@@ -356,23 +335,28 @@ void retro_get_system_info(struct retro_system_info *info)
 
 float get_aspect_ratio(unsigned width, unsigned height)
 {
-  if (aspect_ratio_mode == 3) // 4:3
+  if (aspect_ratio_mode == ASPECT_RATIO_4_3)
   {
     return SNES_4_3;
   }
+  else if (aspect_ratio_mode == ASPECT_RATIO_8_7)
+  {
+    return SNES_8_7;
+  }
 
-  float sample_frequency_ntsc = 135000000.0 / 11.0;
+  // OV2: not sure if these really make sense - NTSC is similar to 4:3, PAL looks weird
+  float sample_frequency_ntsc = 135000000.0f / 11.0f;
   float sample_frequency_pal = 14750000.0;
 
   float sample_freq = retro_get_region() == RETRO_REGION_NTSC ? sample_frequency_ntsc : sample_frequency_pal;
   float dot_rate = SNES::cpu.frequency / 4.0;
 
-  if (aspect_ratio_mode == 1) // ntsc
+  if (aspect_ratio_mode == ASPECT_RATIO_NTSC) // ntsc
   {
     sample_freq = sample_frequency_ntsc;
     dot_rate = NTSC_MASTER_CLOCK / 4.0;
   }
-  else if (aspect_ratio_mode == 2) // pal
+  else if (aspect_ratio_mode == ASPECT_RATIO_PAL) // pal
   {
     sample_freq = sample_frequency_pal;
     dot_rate = PAL_MASTER_CLOCK / 4.0;
@@ -387,9 +371,9 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
     memset(info,0,sizeof(retro_system_av_info));
     unsigned width = SNES_WIDTH;
     unsigned height = PPU.ScreenHeight;
-    if (crop_overscan_mode == 1) // enabled
+    if (crop_overscan_mode == OVERSCAN_CROP_ON)
       height = SNES_HEIGHT;
-    else if (crop_overscan_mode == 2) // disabled
+    else if (crop_overscan_mode == OVERSCAN_CROP_OFF)
       height = SNES_HEIGHT_EXTENDED;
 
     info->geometry.base_width = width;
@@ -442,7 +426,7 @@ void retro_set_controller_port_device(unsigned port, unsigned device)
             break;
          default:
             if (log_cb)
-               log_cb(RETRO_LOG_ERROR, "[libretro]: Invalid device.\n");
+                log_cb(RETRO_LOG_ERROR, "[libretro]: Invalid device (%d).\n", device);
       }
       if (!port)
          retro_set_controller_port_device(1, snes_devices[1]);
@@ -489,49 +473,6 @@ void retro_cheat_set(unsigned index, bool enabled, const char *codeline)
    }
 
    S9xCheatsEnable();
-}
-
-#define MAX_MAPS 32
-static struct retro_memory_descriptor memorydesc[MAX_MAPS];
-static unsigned memorydesc_c;
-
-static bool merge_mapping()
-{
-	if (memorydesc_c==1) return false;//can't merge the only one
-	struct retro_memory_descriptor * a=&memorydesc[MAX_MAPS - (memorydesc_c-1)];
-	struct retro_memory_descriptor * b=&memorydesc[MAX_MAPS - memorydesc_c];
-//printf("test %x/%x\n",a->start,b->start);
-	if (a->flags != b->flags) return false;
-	if (a->disconnect != b->disconnect) return false;
-	if (a->len != b->len) return false;
-	if (a->addrspace || b->addrspace) return false;//we don't use these
-	if (((char*)a->ptr)+a->offset==((char*)b->ptr)+b->offset && a->select==b->select)
-	{
-//printf("merge/mirror\n");
-		a->select&=~(a->start^b->start);
-		memorydesc_c--;
-		return true;
-	}
-	uint32 len=a->len;
-	if (!len) len=(0x1000000 - a->select);
-	if (len && ((len-1) & (len | a->disconnect))==0 && ((char*)a->ptr)+a->offset+len == ((char*)b->ptr)+b->offset)
-	{
-//printf("merge/consec\n");
-		a->select &=~ len;
-		a->disconnect &=~ len;
-		memorydesc_c--;
-		return true;
-	}
-//printf("nomerge\n");
-	return false;
-}
-
-void S9xAppendMapping(struct retro_memory_descriptor *desc)
-{
-	//do it backwards - snes9x defines the last one to win, while we define the first one to win
-	//printf("add %x\n",desc->start);
-	memcpy(&memorydesc[MAX_MAPS - (++memorydesc_c)], desc, sizeof(struct retro_memory_descriptor));
-	while (merge_mapping()) {}
 }
 
 static void init_descriptors(void)
@@ -608,12 +549,9 @@ static void init_descriptors(void)
    environ_cb(RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS, desc);
 }
 
-static bool ChronoTriggerFrameHack;
-
 bool retro_load_game(const struct retro_game_info *game)
 {
    init_descriptors();
-   memorydesc_c = 0;
 
    update_variables();
 
@@ -644,21 +582,6 @@ bool retro_load_game(const struct retro_game_info *game)
    if (!rom_loaded && log_cb)
       log_cb(RETRO_LOG_ERROR, "[libretro]: Rom loading failed...\n");
 
-   /* Check if Chrono Trigger is loaded, if so, we need to set a variable to
-    * true to get rid of an annoying mid-frame resolution switch to 256x239
-    * which can cause an undesirable flicker/breakup of the screen for a
-    * split second - this happens whenever the game switches from normal
-    * mode to battle mode and vice versa. */
-   ChronoTriggerFrameHack = false;
-   if (Memory.match_nc("CHRONO TRIGGER") ||	/* Chrono Trigger */
-      Memory.match_id("ACT") ||
-      Memory.match_id("AC9J")		/* Chrono Trigger (Sample) */
-      )
-         ChronoTriggerFrameHack = true;
-
-   struct retro_memory_map map={ memorydesc+MAX_MAPS-memorydesc_c, memorydesc_c };
-   if (rom_loaded) environ_cb(RETRO_ENVIRONMENT_SET_MEMORY_MAPS, &map);
-
    return rom_loaded;
 }
 
@@ -669,7 +592,6 @@ bool retro_load_game_special(unsigned game_type,
       const struct retro_game_info *info, size_t num_info) {
 
   init_descriptors();
-  memorydesc_c = 0;
 
   update_variables();
 
@@ -715,9 +637,6 @@ bool retro_load_game_special(unsigned game_type,
        break;
   }
 
-  struct retro_memory_map map={ memorydesc+MAX_MAPS-memorydesc_c, memorydesc_c };
-  if (rom_loaded) environ_cb(RETRO_ENVIRONMENT_SET_MEMORY_MAPS, &map);
-
   return rom_loaded;
 }
 
@@ -738,10 +657,6 @@ void retro_init(void)
       log_cb = log.log;
    else
       log_cb = NULL;
-
-   // State that SNES9X supports achievements.
-   bool achievements = true;
-   environ_cb(RETRO_ENVIRONMENT_SET_SUPPORT_ACHIEVEMENTS, &achievements);
 
    memset(&Settings, 0, sizeof(Settings));
    Settings.MouseMaster = TRUE;
@@ -1134,11 +1049,7 @@ bool retro_unserialize(const void* data, size_t size)
 
 bool8 S9xDeinitUpdate(int width, int height)
 {
-   // Apply Chrono Trigger Framehack
-   if (ChronoTriggerFrameHack && (height > SNES_HEIGHT))
-      height = SNES_HEIGHT;
-
-   if (crop_overscan_mode == 1) // enabled
+   if (crop_overscan_mode == OVERSCAN_CROP_ON)
    {
       if (height >= SNES_HEIGHT << 1)
       {
@@ -1149,7 +1060,7 @@ bool8 S9xDeinitUpdate(int width, int height)
          height = SNES_HEIGHT;
       }
    }
-   else if (crop_overscan_mode == 2) // disabled
+   else if (crop_overscan_mode == OVERSCAN_CROP_OFF)
    {
       if (height > SNES_HEIGHT_EXTENDED)
       {
@@ -1171,7 +1082,7 @@ bool8 S9xDeinitUpdate(int width, int height)
 
 bool8 S9xContinueUpdate(int width, int height)
 {
-   return S9xDeinitUpdate(width, height);
+   return true;
 }
 
 // Dummy functions that should probably be implemented correctly later.
@@ -1232,6 +1143,7 @@ void S9xParseArg(char**, int&, int) {}
 void S9xExit() {}
 bool S9xPollPointer(unsigned int, short*, short*) { return false; }
 
+const char *S9xChooseMovieFilename(unsigned char) { return NULL; }
 void S9xMessage(int type, int, const char* s)
 {
 	if (!log_cb) return;
