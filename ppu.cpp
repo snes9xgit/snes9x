@@ -312,7 +312,7 @@ void S9xUpdateIRQPositions (void)
 
 	PPU.VTimerPosition = PPU.IRQVBeamPos;
 
-	if ((PPU.HTimerPosition >= Timings.H_Max) && (PPU.IRQHBeamPos < 340))
+	if ((PPU.HTimerPosition >= Timings.H_Max) && (PPU.IRQHBeamPos < 340) && PPU.HTimerEnabled)
 	{
 		PPU.HTimerPosition -= Timings.H_Max;
 		PPU.VTimerPosition++;
@@ -336,7 +336,7 @@ void S9xUpdateIRQPositions (void)
 		if (CPU.V_Counter == PPU.VTimerPosition)
 			Timings.NextIRQTimer = 0;
 		else
-			Timings.NextIRQTimer = CyclesUntilNext (0, PPU.VTimerPosition);
+			Timings.NextIRQTimer = CyclesUntilNext (ONE_DOT_CYCLE + Timings.IRQTriggerCycles, PPU.VTimerPosition);
 	}
 	else
 	{

@@ -229,7 +229,7 @@ void S9xMainLoop (void)
 			}
 		}
 
-		if (CPU.Cycles >= Timings.NextIRQTimer || CPU.IRQExternal)
+		if ((CPU.Cycles >= Timings.NextIRQTimer || CPU.IRQExternal) && !CPU.IRQLine)
 		{
 			if (CPU.IRQPending)
 				CPU.IRQPending--;
