@@ -274,7 +274,7 @@ static int CyclesUntilNext (int hc, int vc)
 	int32 total = 0;
 	int vpos = CPU.V_Counter;
 
-	if (vc - vpos >= 0)
+	if (vc - vpos > 0)
 	{
 		// It's still in this frame */
 		// Add number of lines
@@ -285,6 +285,11 @@ static int CyclesUntilNext (int hc, int vc)
 	}
 	else
 	{
+		if (vc == vpos && hc > CPU.Cycles)
+		{
+			return hc;
+		}
+
 		total += (Timings.V_Max - vpos) * Timings.H_Max;
 		if (vpos <= 240 && Timings.InterlaceField && !IPPU.Interlace)
 			total -= ONE_DOT_CYCLE;
