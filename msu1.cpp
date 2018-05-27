@@ -420,21 +420,27 @@ bool S9xMSU1ROMExists(void)
 
 void S9xMSU1Generate(size_t sample_count)
 {
-	partial_samples += 4410 * sample_count;
+	partial_samples += 4410 * ((sample_count + 1) &~(size_t)(1));
+    bufPos = (int16*)(((long long)bufPos + 1) &~(long long)(3));
 
-	while (((uintptr_t)bufPos < (uintptr_t)bufEnd) && partial_samples > 3204)
+	while (((uintptr_t)bufPos < (uintptr_t)bufEnd) && partial_samples > 6408)
 	{
 		if (MSU1.MSU1_STATUS & AudioPlaying && audioStream)
 		{
-			int16 sample;
-            int bytes_read = READ_STREAM((char *)&sample, 2, audioStream);
-			if (bytes_read == 2)
-			{
-				sample = (int16)((double)(int16)GET_LE16(&sample) * (double)MSU1.MSU1_VOLUME / 255.0);
+			int32 sample;
+            int16* left = (int16*)&sample;
+            int16* right = left + 1;
 
-				*(bufPos++) = sample;
-				MSU1.MSU1_AUDIO_POS += 2;
-				partial_samples -= 3204;
+            int bytes_read = READ_STREAM((char *)&sample, 4, audioStream);
+			if (bytes_read == 4)
+			{
+				*left = (int16)((double)(int16)GET_LE16(left) * (double)MSU1.MSU1_VOLUME / 255.0);
+                *right = (int16)((double)(int16)GET_LE16(right) * (double)MSU1.MSU1_VOLUME / 255.0);
+
+				*(bufPos++) = *left;
+                *(bufPos++) = *right;
+				MSU1.MSU1_AUDIO_POS += 4;
+				partial_samples -= 6408;
 			}
 			else
 			if (bytes_read >= 0)
