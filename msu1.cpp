@@ -322,6 +322,8 @@ static bool AudioOpen()
 		audioLoopPos <<= 2;
 		audioLoopPos += 8;
 
+        MSU1.MSU1_AUDIO_POS = 8;
+
 		MSU1.MSU1_STATUS &= ~AudioError;
 		return true;
 	}
@@ -437,12 +439,6 @@ void S9xMSU1Generate(size_t sample_count)
 			else
 			if (bytes_read >= 0)
 			{
-				sample = (int16)((double)(int16)GET_LE16(&sample) * (double)MSU1.MSU1_VOLUME / 255.0);
-
-				*(bufPos++) = sample;
-				MSU1.MSU1_AUDIO_POS += 2;
-				partial_samples -= 3204;
-
 				if (MSU1.MSU1_STATUS & AudioRepeating)
 				{
 					MSU1.MSU1_AUDIO_POS = audioLoopPos;
