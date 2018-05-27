@@ -685,7 +685,25 @@ void WinEnumDisplayModes(std::vector<dMode> *modeVector)
 
 double WinGetRefreshRate(void)
 {
+	typedef LONG(WINAPI *PGDCBS) (UINT32, UINT32 *, UINT32 *);
+	typedef LONG(WINAPI *PQDC)   (UINT32, UINT32*, DISPLAYCONFIG_PATH_INFO *, UINT32*, DISPLAYCONFIG_MODE_INFO *, DISPLAYCONFIG_TOPOLOGY_ID *);
+	static PGDCBS pGDCBS = NULL;
+	static PQDC   pQDC   = NULL;
+	static int firstrun = 1;
+
+	if (firstrun)
+	{
+		HMODULE user32 = GetModuleHandleA("user32.dll");
+		pQDC = (PQDC) GetProcAddress(user32, "QueryDisplayConfig");
+		pGDCBS = (PGDCBS) GetProcAddress(user32, "GetDisplayConfigBufferSizes");
+		firstrun = 0;
+	}
+
 	double refreshRate = 0.0;
+
+	if (!pGDCBS || !pQDC)
+		return refreshRate;
+
 	OSVERSIONINFO ovi;
 	DISPLAYCONFIG_TOPOLOGY_ID topologyID;
 	unsigned int numPathArrayElements = 0;
@@ -701,7 +719,7 @@ double WinGetRefreshRate(void)
 	if (ovi.dwMajorVersion < 6 || (ovi.dwMajorVersion == 6 && ovi.dwMinorVersion < 1))
 		return refreshRate;
 
-	result = GetDisplayConfigBufferSizes(QDC_DATABASE_CURRENT,
+	result = pGDCBS(QDC_DATABASE_CURRENT,
 		&numPathArrayElements,
 		&numModeInfoArrayElements);
 
@@ -713,7 +731,7 @@ double WinGetRefreshRate(void)
 	modeInfoArray = (DISPLAYCONFIG_MODE_INFO *)
 		malloc(sizeof(DISPLAYCONFIG_MODE_INFO) * numModeInfoArrayElements);
 
-	result = QueryDisplayConfig(QDC_DATABASE_CURRENT,
+	result = pQDC(QDC_DATABASE_CURRENT,
 		&numPathArrayElements,
 		pathInfoArray,
 		&numModeInfoArrayElements,
