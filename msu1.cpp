@@ -422,7 +422,7 @@ void S9xMSU1Generate(size_t sample_count)
 {
 	partial_frames += 4410 * (sample_count / 2);
 
-	while ((bufPos < (bufEnd - 1)) && partial_frames >= 3204)
+	while ((bufPos < (bufEnd - 2)) && partial_frames >= 3204)
 	{
 		if (MSU1.MSU1_STATUS & AudioPlaying && audioStream)
 		{
