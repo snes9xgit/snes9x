@@ -249,7 +249,7 @@ void S9xMainLoop (void)
 			CPU.IRQLine = TRUE;
 		}
 
-		if ((CPU.Cycles >= Timings.NextIRQTimer || CPU.IRQExternal) && !CPU.IRQLine && !CPU.IRQTransition)
+		if ((CPU.Cycles >= Timings.NextIRQTimer) && !CPU.IRQLine && !CPU.IRQTransition)
 		{
 			if (CPU.IRQPending)
 				CPU.IRQPending--;
@@ -259,7 +259,7 @@ void S9xMainLoop (void)
 			}
 		}
 
-		if (CPU.IRQLine && !CheckFlag(IRQ))
+		if ((CPU.IRQLine || CPU.IRQExternal) && !CheckFlag(IRQ))
 			S9xOpcode_IRQ();
 
 	#ifdef DEBUGGER
