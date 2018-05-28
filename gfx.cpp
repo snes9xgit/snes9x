@@ -1505,6 +1505,7 @@ static void DrawBackgroundOffset (int bg, uint8 Zh, uint8 Zl, int VOffOff)
 
 	int	OffsetMask   = (BG.TileSizeH   == 16) ? 0x3ff : 0x1ff;
 	int	OffsetShift  = (BG.TileSizeV   == 16) ? 4 : 3;
+	int	Offset2Mask  = (BG.OffsetSizeH == 16) ? 0x3ff : 0x1ff;
 	int	Offset2Shift = (BG.OffsetSizeV == 16) ? 4 : 3;
 	int	OffsetEnableMask = 0x2000 << bg;
 	int	PixWidth = IPPU.DoubleWidthPixels ? 2 : 1;
@@ -1570,7 +1571,7 @@ static void DrawBackgroundOffset (int bg, uint8 Zh, uint8 Zl, int VOffOff)
 				}
 				else
 				{
-					int HOffTile = (((Left + (HScroll & 7)) - 8) + (HOff & ~7)) >> 3;
+					int HOffTile = ((HOff + Left - 1) & Offset2Mask) >> 3;
 
 					if (BG.OffsetSizeH == 8)
 					{
