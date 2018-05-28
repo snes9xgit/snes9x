@@ -3620,9 +3620,9 @@ int WINAPI WinMain(
 				ProcessInput();
 
 				// no sound sync when speed is not set to 100%
-				while(PCFrameTimeIsDefault && !S9xSyncSound()) {
+				while(!S9xSyncSound()) {
                     ResetEvent(GUI.SoundSyncEvent);
-                    if(WaitForSingleObject(GUI.SoundSyncEvent,1000) != WAIT_OBJECT_0)
+                    if(!PCFrameTimeIsDefault || WaitForSingleObject(GUI.SoundSyncEvent,1000) != WAIT_OBJECT_0)
                         S9xClearSamples();
 				}
 
