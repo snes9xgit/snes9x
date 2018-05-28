@@ -306,6 +306,8 @@ struct SoundStatus
 	int32	play_position;
 };
 
+
+static int frame_advance = 0;
 static SUnixSettings	unixSettings;
 static SoundStatus		so;
 
@@ -1188,6 +1190,12 @@ s9xcommand_t S9xGetPortCommandT (const char *n)
 
 		return (cmd);
 	}
+        else if (!strcmp(n, "Advance"))
+        {
+                cmd.type = S9xButtonPort;
+                cmd.port[1] = 3;
+                return (cmd);
+        }
 
 	return (S9xGetDisplayCommandT(n));
 }
@@ -1220,6 +1228,9 @@ char * S9xGetPortCommandName (s9xcommand_t cmd)
 
 				case 2:
 					return (strdup("Rewind"));
+
+                                case 3:
+                                        return (strdup("Advance"));
 			}
 
 			break;
@@ -1260,6 +1271,9 @@ void S9xHandlePortCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 				case 2:
 					rewinding = (bool8) data1;
 					break;
+
+                                case 3:
+                                        frame_advance = (bool8) data1;
 			}
 
 			break;
@@ -1945,6 +1959,11 @@ int main (int argc, char **argv)
 
 			S9xMainLoop();
 		}
+                if (Settings.Paused && frame_advance)
+                {
+                        S9xMainLoop();
+                        frame_advance = 0;
+                }
 
 	#ifdef NETPLAY_SUPPORT
 		if (NP_Activated)

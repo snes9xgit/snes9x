@@ -333,7 +333,7 @@ void S9xUpdateIRQPositions (bool initial)
 	else if (PPU.HTimerEnabled && !PPU.VTimerEnabled)
 	{
 		Timings.NextIRQTimer = PPU.HTimerPosition;
-		if (CPU.Cycles > Timings.NextIRQTimer)
+		if (CPU.Cycles > Timings.NextIRQTimer - Timings.IRQTriggerCycles)
 			Timings.NextIRQTimer += Timings.H_Max;
 	}
 	else if (!PPU.HTimerEnabled && PPU.VTimerEnabled)
@@ -349,7 +349,7 @@ void S9xUpdateIRQPositions (bool initial)
 	}
 
 #ifdef DEBUGGER
-	S9xTraceFormattedMessage("--- IRQ Timer set %d cycles HTimer:%d Pos:%04d->%04d  VTimer:%d Pos:%03d->%03d",
+	S9xTraceFormattedMessage("--- IRQ Timer HC:%d VC:%d %s %d cycles HTimer:%d Pos:%04d->%04d  VTimer:%d Pos:%03d->%03d", CPU.Cycles, CPU.V_Counter, initial ? "set" : "recur",
 		Timings.NextIRQTimer, PPU.HTimerEnabled, PPU.IRQHBeamPos, PPU.HTimerPosition, PPU.VTimerEnabled, PPU.IRQVBeamPos, PPU.VTimerPosition);
 #endif
 }
@@ -1848,10 +1848,13 @@ uint8 S9xGetCPU (uint16 Address)
 				return ((byte & 0x80) | (OpenBus & 0x70) | Model->_5A22);
 
 			case 0x4211: // TIMEUP
-				byte = CPU.IRQLine ? 0x80 : 0;
-				CPU.IRQLine = FALSE;
-				CPU.IRQTransition = FALSE;
-				S9xUpdateIRQPositions(false);
+				byte = 0;
+				if (CPU.IRQLine)
+				{
+					byte = 0x80;
+					CPU.IRQLine = FALSE;
+					CPU.IRQTransition = FALSE;
+				}
 
 				return (byte | (OpenBus & 0x7f));
 

@@ -257,6 +257,9 @@ void S9xMainLoop (void)
 				CPU.IRQPending--;
 			else
 			{
+				#ifdef DEBUGGER
+				S9xTraceMessage ("Timer triggered\n");
+				#endif
 				CPU.IRQTransition = TRUE;
 			}
 		}

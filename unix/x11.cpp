@@ -567,6 +567,7 @@ const char * S9xParseDisplayConfig (ConfigFile &conf, int pass)
 		keymaps.push_back(strpair_t("K00:slash",        "Superscope Pause"));
 
 		keymaps.push_back(strpair_t("K00:r",            "Rewind"));
+                keymaps.push_back(strpair_t("K00:l",            "Advance"));
 	}
 
 	GUI.no_repeat = !conf.GetBool("Unix/X11::SetKeyRepeat", TRUE);
