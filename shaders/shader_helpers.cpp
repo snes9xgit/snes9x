@@ -35,14 +35,14 @@ bool gl_version_at_least (int maj, int min)
 
     if (major_version < 0 || minor_version < 0)
     {
-        glGetIntegerv (GL_MAJOR_VERSION, &major_version);
-        glGetIntegerv (GL_MINOR_VERSION, &minor_version);
+        const char *version_string = (const char *) glGetString (GL_VERSION);
+        sscanf (version_string, "%d.%d", &major_version, &minor_version);
     }
 
-    if (maj > major_version)
+    if (major_version > maj)
         return true;
 
-    if (maj == major_version && min >= minor_version)
+    if (maj == major_version && minor_version >= min)
         return true;
 
     return false;

@@ -953,12 +953,13 @@ bool COpenGL::ShaderAailable()
 bool COpenGL::NPOTAvailable()
 {
     const char *extensions = (const char *)glGetString(GL_EXTENSIONS);
+    const char *version = (const char *)glGetString(GL_VERSION);
 
     if (!extensions)
         return false;
 
     int glVersionMajor = 0;
-    glGetIntegerv(GL_MAJOR_VERSION, &glVersionMajor);
+    glVersionMajor = atoi (version);
 
     if (glVersionMajor >= 2)
         return true;
