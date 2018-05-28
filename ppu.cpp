@@ -304,7 +304,7 @@ static int CyclesUntilNext (int hc, int vc)
 	return total;
 }
 
-void S9xUpdateIRQPositions (void)
+void S9xUpdateIRQPositions (bool initial)
 {
 	PPU.HTimerPosition = PPU.IRQHBeamPos * ONE_DOT_CYCLE + Timings.IRQTriggerCycles;
 	if (Timings.H_Max == Timings.H_Max_Master)	// 1364
@@ -338,7 +338,7 @@ void S9xUpdateIRQPositions (void)
 	}
 	else if (!PPU.HTimerEnabled && PPU.VTimerEnabled)
 	{
-		if (CPU.V_Counter == PPU.VTimerPosition)
+		if (CPU.V_Counter == PPU.VTimerPosition && initial)
 			Timings.NextIRQTimer = Timings.IRQTriggerCycles;
 		else
 			Timings.NextIRQTimer = CyclesUntilNext (Timings.IRQTriggerCycles, PPU.VTimerPosition);
@@ -349,8 +349,8 @@ void S9xUpdateIRQPositions (void)
 	}
 
 #ifdef DEBUGGER
-	S9xTraceFormattedMessage("--- IRQ Timer set  HTimer:%d Pos:%04d  VTimer:%d Pos:%03d",
-		PPU.HTimerEnabled, PPU.HTimerPosition, PPU.VTimerEnabled, PPU.VTimerPosition);
+	S9xTraceFormattedMessage("--- IRQ Timer set %d cycles HTimer:%d Pos:%04d->%04d  VTimer:%d Pos:%03d->%03d",
+		Timings.NextIRQTimer, PPU.HTimerEnabled, PPU.IRQHBeamPos, PPU.HTimerPosition, PPU.VTimerEnabled, PPU.IRQVBeamPos, PPU.VTimerPosition);
 #endif
 }
 
@@ -1566,7 +1566,7 @@ void S9xSetCPU (uint8 Byte, uint16 Address)
 					CPU.IRQTransition = FALSE;
 				}
 
-				S9xUpdateIRQPositions();
+				S9xUpdateIRQPositions(true);
 
 				// NMI can trigger immediately during VBlank as long as NMI_read ($4210) wasn't cleard.
 				if ((Byte & 0x80) && !(Memory.FillRAM[0x4200] & 0x80) &&
@@ -1633,7 +1633,7 @@ if (Settings.TraceHCEvent)
 				pos = PPU.IRQHBeamPos;
 				PPU.IRQHBeamPos = (PPU.IRQHBeamPos & 0xff00) | Byte;
 				if (PPU.IRQHBeamPos != pos)
-					S9xUpdateIRQPositions();
+					S9xUpdateIRQPositions(false);
 			#ifdef DEBUGGER
 				missing.hirq_pos = PPU.IRQHBeamPos;
 			#endif
@@ -1643,7 +1643,7 @@ if (Settings.TraceHCEvent)
 				pos = PPU.IRQHBeamPos;
 				PPU.IRQHBeamPos = (PPU.IRQHBeamPos & 0xff) | ((Byte & 1) << 8);
 				if (PPU.IRQHBeamPos != pos)
-					S9xUpdateIRQPositions();
+					S9xUpdateIRQPositions(false);
 			#ifdef DEBUGGER
 				missing.hirq_pos = PPU.IRQHBeamPos;
 			#endif
@@ -1653,7 +1653,7 @@ if (Settings.TraceHCEvent)
 				pos = PPU.IRQVBeamPos;
 				PPU.IRQVBeamPos = (PPU.IRQVBeamPos & 0xff00) | Byte;
 				if (PPU.IRQVBeamPos != pos)
-					S9xUpdateIRQPositions();
+					S9xUpdateIRQPositions(true);
 			#ifdef DEBUGGER
 				missing.virq_pos = PPU.IRQVBeamPos;
 			#endif
@@ -1663,7 +1663,7 @@ if (Settings.TraceHCEvent)
 				pos = PPU.IRQVBeamPos;
 				PPU.IRQVBeamPos = (PPU.IRQVBeamPos & 0xff) | ((Byte & 1) << 8);
 				if (PPU.IRQVBeamPos != pos)
-					S9xUpdateIRQPositions();
+					S9xUpdateIRQPositions(true);
 			#ifdef DEBUGGER
 				missing.virq_pos = PPU.IRQVBeamPos;
 			#endif
@@ -1851,7 +1851,7 @@ uint8 S9xGetCPU (uint16 Address)
 				byte = CPU.IRQLine ? 0x80 : 0;
 				CPU.IRQLine = FALSE;
 				CPU.IRQTransition = FALSE;
-				S9xUpdateIRQPositions();
+				S9xUpdateIRQPositions(false);
 
 				return (byte | (OpenBus & 0x7f));
 

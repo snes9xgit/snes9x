@@ -243,7 +243,7 @@ void S9xMainLoop (void)
 					S9xDoHEventProcessing();
 			}
 
-			S9xUpdateIRQPositions();
+
 			CPU.IRQPending = Timings.IRQPendCount;
 			CPU.IRQTransition = FALSE;
 			CPU.IRQLine = TRUE;
@@ -251,6 +251,8 @@ void S9xMainLoop (void)
 
 		if ((CPU.Cycles >= Timings.NextIRQTimer) && !CPU.IRQLine && !CPU.IRQTransition)
 		{
+			S9xUpdateIRQPositions(false);
+
 			if (CPU.IRQPending)
 				CPU.IRQPending--;
 			else
