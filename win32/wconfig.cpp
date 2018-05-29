@@ -1067,7 +1067,9 @@ void WinRegisterConfigItems()
 #undef ADD
 #undef ADDN
 #undef CATEGORY
-
+#define	CATEGORY "Hack"
+	AddUIntC("SuperFXClockMultiplier", Settings.SuperFXClockMultiplier, 100, "SuperFX speed, in percent (default 100)");
+#undef CATEGORY
 }
 
 

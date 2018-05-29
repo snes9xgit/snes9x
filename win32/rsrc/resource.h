@@ -45,7 +45,6 @@
 #define IDC_RATE                        1003
 #define IDC_MIX                         1004
 #define IDC_DYNRATECONTROL              1005
-#define IDC_AUTOMATICINPUTRATE          1021
 #define IDC_STEREO                      1006
 #define IDC_REV_STEREO                  1007
 #define IDC_LINEAR_INTER                1008
@@ -64,6 +63,7 @@
 #define IDC_WIP1                        1019
 #define IDC_ADDRESS                     1020
 #define IDC_FAMT                        1020
+#define IDC_AUTOMATICINPUTRATE          1021
 #define IDC_ROM_DATA                    1051
 #define IDC_WARNINGS                    1052
 #define IDC_DISCLAIMER                  1053
@@ -90,6 +90,8 @@
 #define IDC_REWIND_BUFFER_SPIN          1069
 #define IDC_REWIND_GRANULARITY          1070
 #define IDC_REWIND_GRANULARITY_SPIN     1071
+#define IDC_SFXSPEED                    1072
+#define IDC_SFXSPEED_SPIN               1073
 #define IDC_HOSTNAME                    1086
 #define IDC_PORTNUMBER                  1087
 #define IDC_CLEARHISTORY                1088
@@ -250,8 +252,10 @@
 #define IDC_LABEL_GRANU_TEXT            1187
 #define IDC_LABEL_PAUSEINTERVAL         1188
 #define IDC_LABEL_UP9                   1188
+#define IDC_LABEL_SFXSPEED              1188
 #define IDC_LABEL_PAUSEINTERVAL_TEXT    1189
 #define IDC_LABEL_UP10                  1189
+#define IDC_LABEL_SFXSPEED_2            1189
 #define IDC_LABEL_MAXSKIP               1190
 #define IDC_LABEL_UP11                  1190
 #define IDC_LABEL_CHEAT_CODE            1191
@@ -523,7 +527,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        157
+#define _APS_NEXT_RESOURCE_VALUE        158
 #define _APS_NEXT_COMMAND_VALUE         40178
 #define _APS_NEXT_CONTROL_VALUE         3023
 #define _APS_NEXT_SYMED_VALUE           101
