@@ -3840,19 +3840,6 @@ void CMemory::ApplyROMFixes (void)
 		}
 	}
 
-	if (!Settings.DisableGameSpecificHacks)
-	{
-		// An infinite loop reads $4212 and waits V-blank end, whereas VIRQ is set V=0.
-		// If Snes9x succeeds to escape from the loop before jumping into the IRQ handler, the game goes further.
-		// If Snes9x jumps into the IRQ handler before escaping from the loop,
-		// Snes9x cannot escape from the loop permanently because the RTI is in the next V-blank.
-		if (match_na("Aero the AcroBat 2"))
-		{
-			Timings.IRQPendCount = 2;
-			printf("IRQ count hack: %d\n", Timings.IRQPendCount);
-		}
-	}
-
 	//// SRAM initial value
 
 	if (!Settings.DisableGameSpecificHacks)
