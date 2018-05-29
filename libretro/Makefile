@@ -257,8 +257,8 @@ else ifneq (,$(findstring windows_msvc2017,$(platform)))
 		LIBS += WindowsApp.lib
 	endif
 
-    # Specific to this core
-    MSVC2017CompileFlags += -D__WIN32__
+	# Specific to this core
+	MSVC2017CompileFlags += -D__WIN32__
 
 	CFLAGS += $(MSVC2017CompileFlags)
 	CXXFLAGS += $(MSVC2017CompileFlags)
@@ -323,9 +323,9 @@ else ifneq (,$(findstring windows_msvc2017,$(platform)))
 	PATH := $(PATH):$(shell IFS=$$'\n'; cygpath "$(VsInstallRoot)/Common7/IDE")
 	INCLUDE := $(shell IFS=$$'\n'; cygpath -w "$(VcCompilerToolsDir)/include")
 	LIB := $(shell IFS=$$'\n'; cygpath -w "$(VcCompilerToolsDir)/lib/$(TargetArchMoniker)")
-    ifneq (,$(findstring uwp,$(PlatformSuffix)))
-        LIB := $(shell IFS=$$'\n'; cygpath -w "$(LIB)/store")
-    endif
+	ifneq (,$(findstring uwp,$(PlatformSuffix)))
+		LIB := $(shell IFS=$$'\n'; cygpath -w "$(LIB)/store")
+	endif
 
 	export INCLUDE := $(INCLUDE);$(WindowsSDKSharedIncludeDir);$(WindowsSDKUCRTIncludeDir);$(WindowsSDKUMIncludeDir)
 	export LIB := $(LIB);$(WindowsSDKUCRTLibDir);$(WindowsSDKUMLibDir)
