@@ -3187,12 +3187,11 @@ int ogl_LoadFunctions()
 {
 	int numFailed = 0;
 	ClearExtensionVars();
+	_ptrc_glGetString = (const GLubyte * (CODEGEN_FUNCPTR *)(GLenum))IntGetProcAddress("glGetString");
+	if(!_ptrc_glGetString) return ogl_LOAD_FAILED;
 	
 	if (ogl_GetMajorVersion() < 3)
 	{
-		_ptrc_glGetString = (const GLubyte * (CODEGEN_FUNCPTR *)(GLenum))IntGetProcAddress("glGetString");
-		if(!_ptrc_glGetString) return ogl_LOAD_FAILED;
-
 		ProcExtsFromExtString((const char *)_ptrc_glGetString(GL_EXTENSIONS));
 	}
 	else
