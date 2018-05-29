@@ -257,6 +257,8 @@ else ifneq (,$(findstring windows_msvc2017,$(platform)))
 		LIBS += WindowsApp.lib
 	endif
 
+    MSVC2017CompileFlags += -D__WIN32__
+
 	CFLAGS += $(MSVC2017CompileFlags)
 	CXXFLAGS += $(MSVC2017CompileFlags)
 
