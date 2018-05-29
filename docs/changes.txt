@@ -43,7 +43,11 @@ Snes9x 1.56
 - Use PPU1 MDR when accessing open bus below 0x2100. Fixes  (kps501)
   Funaki Masakatsu Hybrid Wrestler glitches.
 - Initialize controllers on reset. Fixes Looney Tunes       (kps501)
-  B-Ball multitap.                       
+  B-Ball multitap.
+- Clear IRQ line on CLI instruction. Fixes Marko's Magic    (kps501, OV2, BearOso)
+  Football.
+- Attached APU instruction tracer and made some additions   (BearOso)
+  to debugging output.
 - Win32: Added dynamic rate control support for XAudio2     (OV2)
 - Win32: Added different volume level configuration for     (OV2)
   regular and turbo speed.
@@ -59,7 +63,8 @@ Snes9x 1.56
 - Win32: Disabled hotplugging in favor of a menu option to  (OV2)
   reconfigure joysticks.
 - Win32: Added a reduce input lag option.                   (BearOso)
-- Win32: Added ability to use GLSLP shaders with OpenGL.    (OV2)
+- Win32: Added ability to use GLSLP shaders with OpenGL,    (OV2)
+  including a dialog to tweak custom parameters.
 - GTK+: Added dynamic rate control support for audio to     (BearOso)
   reduce buffer overflows and underflows.
 - GTK+: Increased SDL requirement to version 2.0. This      (BearOso)
