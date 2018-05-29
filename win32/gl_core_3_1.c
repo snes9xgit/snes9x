@@ -3111,7 +3111,6 @@ static void ClearExtensionVars(void)
 	ogl_ext_EXT_texture_filter_anisotropic = ogl_LOAD_FAILED;
 }
 
-
 static void LoadExtByName(const char *extensionName)
 {
 	ogl_StrToExtMap *entry = NULL;
@@ -3137,6 +3136,39 @@ static void LoadExtByName(const char *extensionName)
 	}
 }
 
+static void ProcExtsFromExtString(const char *strExtList)
+{
+	size_t iExtListLen = strlen(strExtList);
+	const char *strExtListEnd = strExtList + iExtListLen;
+	const char *strCurrPos = strExtList;
+	char strWorkBuff[256];
+
+	while(*strCurrPos)
+	{
+		/*Get the extension at our position.*/
+		int iStrLen = 0;
+		const char *strEndStr = strchr(strCurrPos, ' ');
+		int iStop = 0;
+		if(strEndStr == NULL)
+		{
+			strEndStr = strExtListEnd;
+			iStop = 1;
+		}
+
+		iStrLen = (int)((ptrdiff_t)strEndStr - (ptrdiff_t)strCurrPos);
+
+		if(iStrLen > 255)
+			return;
+
+		strncpy(strWorkBuff, strCurrPos, iStrLen);
+		strWorkBuff[iStrLen] = '\0';
+
+		LoadExtByName(strWorkBuff);
+
+		strCurrPos = strEndStr + 1;
+		if(iStop) break;
+	}
+}
 
 static void ProcExtsFromExtList(void)
 {
@@ -3156,12 +3188,22 @@ int ogl_LoadFunctions()
 	int numFailed = 0;
 	ClearExtensionVars();
 	
-	_ptrc_glGetIntegerv = (void (CODEGEN_FUNCPTR *)(GLenum, GLint *))IntGetProcAddress("glGetIntegerv");
-	if(!_ptrc_glGetIntegerv) return ogl_LOAD_FAILED;
-	_ptrc_glGetStringi = (const GLubyte * (CODEGEN_FUNCPTR *)(GLenum, GLuint))IntGetProcAddress("glGetStringi");
-	if(!_ptrc_glGetStringi) return ogl_LOAD_FAILED;
-	
-	ProcExtsFromExtList();
+	if (ogl_GetMajorVersion() < 3)
+	{
+		_ptrc_glGetString = (const GLubyte * (CODEGEN_FUNCPTR *)(GLenum))IntGetProcAddress("glGetString");
+		if(!_ptrc_glGetString) return ogl_LOAD_FAILED;
+
+		ProcExtsFromExtString((const char *)_ptrc_glGetString(GL_EXTENSIONS));
+	}
+	else
+	{
+		_ptrc_glGetIntegerv = (void (CODEGEN_FUNCPTR *)(GLenum, GLint *))IntGetProcAddress("glGetIntegerv");
+		if(!_ptrc_glGetIntegerv) return ogl_LOAD_FAILED;
+		_ptrc_glGetStringi = (const GLubyte * (CODEGEN_FUNCPTR *)(GLenum, GLuint))IntGetProcAddress("glGetStringi");
+		if(!_ptrc_glGetStringi) return ogl_LOAD_FAILED;
+		ProcExtsFromExtList();
+	}
+
 	numFailed = Load_Version_3_1();
 	
 	if(numFailed == 0)
@@ -3173,10 +3215,44 @@ int ogl_LoadFunctions()
 static int g_major_version = 0;
 static int g_minor_version = 0;
 
+static void ParseVersionFromString(int *pOutMajor, int *pOutMinor, const char *strVersion)
+{
+	const char *strDotPos = NULL;
+	int iLength = 0;
+	char strWorkBuff[10];
+	*pOutMinor = 0;
+	*pOutMajor = 0;
+
+	strDotPos = strchr(strVersion, '.');
+	if(!strDotPos)
+		return;
+
+	iLength = (int)((ptrdiff_t)strDotPos - (ptrdiff_t)strVersion);
+	strncpy(strWorkBuff, strVersion, iLength);
+	strWorkBuff[iLength] = '\0';
+
+	*pOutMajor = atoi(strWorkBuff);
+	strDotPos = strchr(strVersion + iLength + 1, ' ');
+	if(!strDotPos)
+	{
+		/*No extra data. Take the whole rest of the string.*/
+		strcpy(strWorkBuff, strVersion + iLength + 1);
+	}
+	else
+	{
+		/*Copy only up until the space.*/
+		int iLengthMinor = (int)((ptrdiff_t)strDotPos - (ptrdiff_t)strVersion);
+		iLengthMinor = iLengthMinor - (iLength + 1);
+		strncpy(strWorkBuff, strVersion + iLength + 1, iLengthMinor);
+		strWorkBuff[iLengthMinor] = '\0';
+	}
+
+	*pOutMinor = atoi(strWorkBuff);
+}
+
 static void GetGLVersion(void)
 {
-	glGetIntegerv(GL_MAJOR_VERSION, &g_major_version);
-	glGetIntegerv(GL_MINOR_VERSION, &g_minor_version);
+	ParseVersionFromString(&g_major_version, &g_minor_version, (const char*)glGetString(GL_VERSION));
 }
 
 int ogl_GetMajorVersion(void)
@@ -3197,10 +3273,9 @@ int ogl_IsVersionGEQ(int majorVersion, int minorVersion)
 {
 	if(g_major_version == 0)
 		GetGLVersion();
-	
+
 	if(majorVersion < g_major_version) return 1;
 	if(majorVersion > g_major_version) return 0;
 	if(minorVersion <= g_minor_version) return 1;
 	return 0;
 }
-
