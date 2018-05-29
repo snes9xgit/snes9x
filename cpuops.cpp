@@ -1637,7 +1637,10 @@ static void Op58 (void)
 {
 	ClearIRQ();
 	AddCycles(ONE_CYCLE);
-	CHECK_FOR_IRQ();
+
+#ifndef SA1_OPCODES
+        CPU.IRQLine = FALSE;
+#endif
 }
 
 // SEI
