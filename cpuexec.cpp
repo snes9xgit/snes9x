@@ -243,8 +243,6 @@ void S9xMainLoop (void)
 					S9xDoHEventProcessing();
 			}
 
-
-			CPU.IRQPending = Timings.IRQPendCount;
 			CPU.IRQTransition = FALSE;
 			CPU.IRQLine = TRUE;
 		}
@@ -253,15 +251,10 @@ void S9xMainLoop (void)
 		{
 			S9xUpdateIRQPositions(false);
 
-			if (CPU.IRQPending)
-				CPU.IRQPending--;
-			else
-			{
-				#ifdef DEBUGGER
-				S9xTraceMessage ("Timer triggered\n");
-				#endif
-				CPU.IRQTransition = TRUE;
-			}
+		#ifdef DEBUGGER
+			S9xTraceMessage ("Timer triggered\n");
+		#endif
+			CPU.IRQTransition = TRUE;
 		}
 
 		if ((CPU.IRQLine || CPU.IRQExternal) && !CheckFlag(IRQ))

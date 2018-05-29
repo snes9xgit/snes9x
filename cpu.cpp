@@ -231,7 +231,6 @@ static void S9xSoftResetCPU (void)
 	CPU.IRQLine = FALSE;
 	CPU.IRQTransition = FALSE;
 	CPU.IRQExternal = FALSE;
-	CPU.IRQPending = Timings.IRQPendCount;
 	CPU.MemSpeed = SLOW_ONE_CYCLE;
 	CPU.MemSpeedx2 = SLOW_ONE_CYCLE * 2;
 	CPU.FastROMSpeed = SLOW_ONE_CYCLE;
