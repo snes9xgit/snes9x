@@ -2764,7 +2764,6 @@ void CMemory::InitROM (void)
 	   and the NMI handler, time enough for an instruction or two. */
 	// Wild Guns, Mighty Morphin Power Rangers - The Fighting Edition
 	Timings.NMIDMADelay  = 24;
-	Timings.IRQPendCount = 0;
 
 	IPPU.TotalEmulatedFrames = 0;
 
