@@ -278,7 +278,7 @@ static int CyclesUntilNext (int hc, int vc)
 	{
 		// It's still in this frame */
 		// Add number of lines
-		total += (vc - vpos) * Timings.H_Max;
+		total += (vc - vpos) * Timings.H_Max_Master;
 		// If line 240 is in there and we're odd, subtract a dot
 		if (vpos <= 240 && vc > 240 && Timings.InterlaceField & !IPPU.Interlace)
 			total -= ONE_DOT_CYCLE;
@@ -290,11 +290,11 @@ static int CyclesUntilNext (int hc, int vc)
 			return hc;
 		}
 
-		total += (Timings.V_Max - vpos) * Timings.H_Max;
+		total += (Timings.V_Max - vpos) * Timings.H_Max_Master;
 		if (vpos <= 240 && Timings.InterlaceField && !IPPU.Interlace)
 			total -= ONE_DOT_CYCLE;
 
-		total += (vc) * Timings.H_Max;
+		total += (vc) * Timings.H_Max_Master;
 		if (vc > 240 && !Timings.InterlaceField && !IPPU.Interlace)
 			total -= ONE_DOT_CYCLE;
 	}
