@@ -1641,8 +1641,10 @@ uint8 S9xDoHDMA (uint8 byte)
 								case 1:
 									S9xSetPPU(*(HDMAMemPointers[d] + 0), 0x2100 + p->BAddress);
 									ADD_CYCLES(SLOW_ONE_CYCLE);
-									S9xSetPPU(*(HDMAMemPointers[d] + 1), 0x2101 + p->BAddress);
+									// XXX: All HDMA should read to MDR first. This one just
+									// happens to fix Speedy Gonzales.
 									OpenBus = *(HDMAMemPointers[d] + 1);
+									S9xSetPPU(OpenBus, 0x2101 + p->BAddress);
 									ADD_CYCLES(SLOW_ONE_CYCLE);
 									HDMAMemPointers[d] += 2;
 									break;
