@@ -1642,7 +1642,6 @@ uint8 S9xDoHDMA (uint8 byte)
 									S9xSetPPU(*(HDMAMemPointers[d] + 0), 0x2100 + p->BAddress);
 									ADD_CYCLES(SLOW_ONE_CYCLE);
 									S9xSetPPU(*(HDMAMemPointers[d] + 1), 0x2101 + p->BAddress);
-									OpenBus = *(HDMAMemPointers[d] + 1);
 									ADD_CYCLES(SLOW_ONE_CYCLE);
 									HDMAMemPointers[d] += 2;
 									break;

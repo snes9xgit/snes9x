@@ -964,6 +964,8 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 				#endif
 				}
 
+				OpenBus = Byte;
+
 				break;
 
 			case 0x212e: // TMW
