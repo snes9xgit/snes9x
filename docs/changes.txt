@@ -1,6 +1,7 @@
 Snes9x 1.56
 - Increased the speed of SA1 emulation to match hardware    (BearOso)
   more closely.
+- Fixed negative SA1 division                               (BearOso, Jonas Quinn)
 - Changed the location where we poll input to potentially   (Brunnis, BearOso)
   reduce lag.
 - Fixed the interlace fields being swapped after skipping   (BearOso)
@@ -51,6 +52,7 @@ Snes9x 1.56
 - Win32: Added dynamic rate control support for XAudio2     (OV2)
 - Win32: Added different volume level configuration for     (OV2)
   regular and turbo speed.
+- Win32: Added option to disable EPX scaling for messages   (OV2)
 - Win32: Improve multi-rom loading.                         (OV2)
 - Win32: Add libpng and zlib dependencies as submodules for (qwertymodo, OV2)
   easier compiling from source.
