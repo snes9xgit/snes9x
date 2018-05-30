@@ -1164,7 +1164,6 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 	}
 
 	Memory.FillRAM[Address] = Byte;
-	OpenBus = Byte;
 }
 
 uint8 S9xGetPPU (uint16 Address)
