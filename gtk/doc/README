@@ -1,14 +1,14 @@
-Snes9x for GTK/X11 README 
+Snes9x for GTK+/X11 README
 -------------------------
 
   The following contains installation instructions, known issues, and info on
-  features currently missing from the GTK port of Snes9x.
+  features currently missing from the GTK+ port of Snes9x.
 
 
 Requirements / Build Notes:
 ---------------------------
 
-  The GTK port of Snes9x is a separate codebase from the unix port, and uses a
+  The GTK+ port of Snes9x is a separate codebase from the unix port, and uses a
   variety of multiplatform libraries for compatibility. The following
   are the required libraries for this port:
 
@@ -18,28 +18,39 @@ Requirements / Build Notes:
     libxml2                >= 2.0
     One or more of portaudio, PulseAudio, SDL, ALSA, or OSS
 
+    GTK+ 3.10 or greater is now supported and is the default version selected.
+    If you wish to build for GTK+ 2, you may pass the --with-gtk2 parameter
+    to the configure script.
+
   And for joystick support:
 
     Library             Required Version
     ------------------------------------    
-    SDL                 >= 1.2.12
+    SDL                 >= 2.0.1
 
-  Building requires you run the configure script with the parameter
-    --with-gtk
-  and for OpenGL support
-    --with-gtk --with-opengl
+  OpenGL support is also available. This requires the extra library:
 
-  An appropriate configure command as an example would be:
-    $ ./configure --prefix=/usr --with-gtk --with-opengl
+    Library             Required Version
+    ------------------------------------
+    libepoxy            >= 1.5.6 recommended
+
+  OpenGL and joystick support will automatically be enabled if configure
+  can find the required libraries. You may disable them with:
+  --without-joystick or --without-opengl passed to configure.
+
+  The usual configure command as an example would be:
+    $ ./configure --prefix=/usr
 
   Next, issue the "make" command:
     $ make
 
   An standalone executable named "snes9x-gtk" will be created. This may be
-  run in place. To install the program and errata, use 
+  run in place. To install the program and its data, such as .desktop
+  entries, icons, and the cheat database, use:
     # make install
-  as a privileged user.
-
+  as a privileged user or
+    $ sudo make install
+  and enter your password.
 
 Joystick Support:
 -----------------
