@@ -345,35 +345,36 @@ inline uint8 S9xGetByte (uint32 Address)
 
 inline uint16 S9xGetWord (uint32 Address, enum s9xwrap_t w = WRAP_NONE)
 {
+	uint16	word;
+
 	uint32	mask = MEMMAP_MASK & (w == WRAP_PAGE ? 0xff : (w == WRAP_BANK ? 0xffff : 0xffffff));
 	if ((Address & mask) == mask)
 	{
 		PC_t	a;
 
-		OpenBus = S9xGetByte(Address);
+		word = OpenBus = S9xGetByte(Address);
 
 		switch (w)
 		{
 			case WRAP_PAGE:
 				a.xPBPC = Address;
 				a.B.xPCl++;
-				return (OpenBus | (S9xGetByte(a.xPBPC) << 8));
+				return (word | (S9xGetByte(a.xPBPC) << 8));
 
 			case WRAP_BANK:
 				a.xPBPC = Address;
 				a.W.xPC++;
-				return (OpenBus | (S9xGetByte(a.xPBPC) << 8));
+				return (word | (S9xGetByte(a.xPBPC) << 8));
 
 			case WRAP_NONE:
 			default:
-				return (OpenBus | (S9xGetByte(Address + 1) << 8));
+				return (word | (S9xGetByte(Address + 1) << 8));
 		}
 	}
 
 	int		block = (Address & 0xffffff) >> MEMMAP_SHIFT;
 	uint8	*GetAddress = Memory.Map[block];
 	int32	speed = memory_speed(Address);
-	uint16	word;
 
 	if (GetAddress >= (uint8 *) CMemory::MAP_LAST)
 	{
@@ -394,8 +395,8 @@ inline uint16 S9xGetWord (uint32 Address, enum s9xwrap_t w = WRAP_NONE)
 		case CMemory::MAP_PPU:
 			if (CPU.InDMAorHDMA)
 			{
-				OpenBus = S9xGetByte(Address);
-				return (OpenBus | (S9xGetByte(Address + 1) << 8));
+				word = OpenBus = S9xGetByte(Address);
+				return (word | (S9xGetByte(Address + 1) << 8));
 			}
 
 			word  = S9xGetPPU(Address & 0xffff);
