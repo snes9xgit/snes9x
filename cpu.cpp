@@ -267,6 +267,8 @@ static void S9xSoftResetCPU (void)
 	Timings.V_Max = Timings.V_Max_Master;
 	Timings.NMITriggerPos = 0xffff;
 	Timings.NextIRQTimer = 0x0fffffff;
+	Timings.IRQFlagChanging = IRQ_NONE;
+
 	if (Model->_5A22 == 2)
 		Timings.WRAMRefreshPos = SNES_WRAM_REFRESH_HC_v2;
 	else

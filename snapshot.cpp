@@ -595,7 +595,7 @@ static FreezeData	SnapTimings[] =
 	INT_ENTRY(6, InterlaceField),
 	INT_ENTRY(6, DMACPUSync),
 	INT_ENTRY(6, NMIDMADelay),
-	INT_ENTRY(6, IRQPendCount),
+	INT_ENTRY(6, IRQFlagChanging),
 	INT_ENTRY(6, APUSpeedup),
 	INT_ENTRY(7, IRQTriggerCycles),
 	INT_ENTRY(7, APUAllowTimeOverflow)

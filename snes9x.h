@@ -335,6 +335,13 @@ enum
 	HC_WRAM_REFRESH_EVENT = 6
 };
 
+enum
+{
+	IRQ_NONE = 0,
+	IRQ_SET_FLAG = 1,
+	IRQ_CLEAR_FLAG = 2
+};
+
 struct STimings
 {
 	int32	H_Max_Master;
@@ -353,7 +360,7 @@ struct STimings
 	bool8	InterlaceField;
 	int32	DMACPUSync;		// The cycles to synchronize DMA and CPU. Snes9x cannot emulate correctly.
 	int32	NMIDMADelay;	// The delay of NMI trigger after DMA transfers. Snes9x cannot emulate correctly.
-	int32	IRQPendCount;	// This value is just a hack.
+	int32	IRQFlagChanging;	// This value is just a hack.
 	int32	APUSpeedup;
 	bool8	APUAllowTimeOverflow;
 };
