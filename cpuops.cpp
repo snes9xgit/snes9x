@@ -1635,11 +1635,12 @@ static void OpF8 (void)
 // CLI
 static void Op58 (void)
 {
-//	ClearIRQ();
 	AddCycles(ONE_CYCLE);
 
 #ifndef SA1_OPCODES
 	Timings.IRQFlagChanging = IRQ_CLEAR_FLAG;
+#else
+	ClearIRQ();
 #endif
 }
 
@@ -1650,6 +1651,8 @@ static void Op78 (void)
 
 #ifndef SA1_OPCODES
 	Timings.IRQFlagChanging = IRQ_SET_FLAG;
+#else
+	SetIRQ();
 #endif
 }
 
