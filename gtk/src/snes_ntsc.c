@@ -195,7 +195,7 @@ void snes_ntsc_blit( snes_ntsc_t const* ntsc, SNES_NTSC_IN_T const* input, long 
 }
 
 #define PIXEL_OUT_HIRES( x ) \
-        SNES_NTSC_HIRES_OUT( x, value, 15 ); \
+        SNES_NTSC_HIRES_OUT( x, value, 16 ); \
         line_outa[x] = value; \
         line_outb[x] = value - (value >> scanline_offset & scanline_mask);
 
