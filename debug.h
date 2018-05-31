@@ -220,6 +220,7 @@ void S9xSA1Trace (void);
 void S9xTraceMessage (const char *);
 void S9xTraceFormattedMessage (const char *, ...);
 void S9xPrintHVPosition (char *);
+void S9xDebugProcessCommand(char *);
 
 #endif
 

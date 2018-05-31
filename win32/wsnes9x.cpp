@@ -235,6 +235,10 @@
 #include <vector>
 #include <string>
 
+#ifdef DEBUGGER
+#include "../debug.h"
+#endif
+
 #if (((defined(_MSC_VER) && _MSC_VER >= 1300)) || defined(__MINGW32__))
 	// both MINGW and VS.NET use fstream instead of fstream.h which is deprecated
 	#include <fstream>
@@ -2405,7 +2409,7 @@ LRESULT CALLBACK WinProc(
 			break;
 #ifdef DEBUGGER
 		case ID_DEBUG_TRACE:
-			CPU.Flags ^= TRACE_FLAG;
+			S9xDebugProcessCommand("T");
 			break;
 
 		case ID_DEBUG_FRAME_ADVANCE:

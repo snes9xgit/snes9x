@@ -343,7 +343,6 @@ static uint8 debug_sa1_op_print (char *, uint8, uint16);
 static void debug_line_print (const char *);
 static int debug_get_number (char *, uint16 *);
 static short debug_get_start_address (char *, uint8 *, uint32 *);
-static void debug_process_command (char *);
 static void debug_print_window (uint8 *);
 static const char * debug_clip_fn (int);
 static void debug_whats_used (void);
@@ -1373,7 +1372,7 @@ static short debug_get_start_address (char *Line, uint8 *Bank, uint32 *Address)
 	return (1);
 }
 
-static void debug_process_command (char *Line)
+void S9xDebugProcessCommand(char *Line)
 {
 	uint8	Bank = Registers.PB;
 	uint32	Address = Registers.PCw;
@@ -2558,7 +2557,7 @@ void S9xDoDebug (void)
 	S9xTextMode();
 
 	strcpy(Line, "r");
-	debug_process_command(Line);
+	S9xDebugProcessCommand(Line);
 
 	while (CPU.Flags & DEBUG_MODE_FLAG)
 	{
@@ -2572,7 +2571,7 @@ void S9xDoDebug (void)
 		Line[strlen(Line) - 1] = 0;
 
 		Cycles = CPU.Cycles;
-		debug_process_command(Line);
+		S9xDebugProcessCommand(Line);
 		CPU.Cycles = Cycles;
 	}
 
