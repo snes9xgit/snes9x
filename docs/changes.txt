@@ -49,6 +49,7 @@ Snes9x 1.56
   Football.
 - Attached APU instruction tracer and made some additions   (BearOso)
   to debugging output.
+- Fix line doubling in interlaced mode.                     (kps501)
 - Win32: Added dynamic rate control support for XAudio2     (OV2)
 - Win32: Added different volume level configuration for     (OV2)
   regular and turbo speed.

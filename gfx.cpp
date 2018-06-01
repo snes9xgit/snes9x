@@ -729,8 +729,8 @@ void S9xUpdateScreen (void)
 				GFX.PPL = GFX.RealPPL << 1;
 				GFX.DoInterlace = 2;
 
-				for (register int32 y = (int32) GFX.StartY - 1; y >= 0; y--)
-					memmove(GFX.Screen + y * GFX.PPL, GFX.Screen + y * GFX.RealPPL, IPPU.RenderedScreenWidth * sizeof(uint16));
+				for (register int32 y = (int32) GFX.StartY - 2; y >= 0; y--)
+					memmove(GFX.Screen + (y + 1) * GFX.PPL, GFX.Screen + y * GFX.RealPPL, GFX.PPL * sizeof(uint16));
 			}
 		}
 
