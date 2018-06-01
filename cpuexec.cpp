@@ -207,6 +207,16 @@ static inline void S9xReschedule (void);
 
 void S9xMainLoop (void)
 {
+	#define CHECK_FOR_IRQ_CHANGE() \
+	if (Timings.IRQFlagChanging) \
+	{ \
+		if (Timings.IRQFlagChanging == IRQ_CLEAR_FLAG) \
+			ClearIRQ(); \
+		else if (Timings.IRQFlagChanging == IRQ_SET_FLAG) \
+			SetIRQ(); \
+		Timings.IRQFlagChanging = IRQ_NONE; \
+	}
+
 	for (;;)
 	{
 		if (CPU.NMIPending)
@@ -258,17 +268,14 @@ void S9xMainLoop (void)
 		}
 
 		if ((CPU.IRQLine || CPU.IRQExternal) && !CheckFlag(IRQ))
+		{
+			/* The flag pushed onto the stack is the new value */
+			CHECK_FOR_IRQ_CHANGE();
 			S9xOpcode_IRQ();
+		}
 
 		/* Change IRQ flag for instructions that set it only on last cycle */
-		if (Timings.IRQFlagChanging)
-		{
-			if (Timings.IRQFlagChanging == IRQ_CLEAR_FLAG)
-				ClearIRQ();
-			else if (Timings.IRQFlagChanging == IRQ_SET_FLAG)
-				SetIRQ();
-			Timings.IRQFlagChanging = IRQ_NONE;
-		}
+		CHECK_FOR_IRQ_CHANGE();
 
 
 	#ifdef DEBUGGER
