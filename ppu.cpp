@@ -1416,12 +1416,12 @@ uint8 S9xGetPPU (uint16 Address)
 			case 0x21c2:
 				if (Model->_5C77 == 2)
 					return (0x20);
-				return (PPU.OpenBus2);
+				return (OpenBus);
 
 			case 0x21c3:
 				if (Model->_5C77 == 2)
 					return (0);
-				return (PPU.OpenBus2);
+				return (OpenBus);
 
 			default:
 				return (OpenBus);
