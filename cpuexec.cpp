@@ -242,8 +242,14 @@ void S9xMainLoop (void)
 			}
 		}
 
-		if (CPU.IRQTransition)
+		if ((CPU.Cycles >= Timings.NextIRQTimer))
 		{
+			S9xUpdateIRQPositions();
+
+		#ifdef DEBUGGER
+			S9xTraceMessage ("Timer triggered\n");
+		#endif
+
 			if (CPU.WaitingForInterrupt)
 			{
 				CPU.WaitingForInterrupt = FALSE;
@@ -253,18 +259,7 @@ void S9xMainLoop (void)
 					S9xDoHEventProcessing();
 			}
 
-			CPU.IRQTransition = FALSE;
 			CPU.IRQLine = TRUE;
-		}
-
-		if ((CPU.Cycles >= Timings.NextIRQTimer) && !CPU.IRQLine && !CPU.IRQTransition)
-		{
-			S9xUpdateIRQPositions();
-
-		#ifdef DEBUGGER
-			S9xTraceMessage ("Timer triggered\n");
-		#endif
-			CPU.IRQTransition = TRUE;
 		}
 
 		if ((CPU.IRQLine || CPU.IRQExternal) && !CheckFlag(IRQ))
