@@ -389,7 +389,7 @@ void S9xSetPPU (uint8, uint16);
 uint8 S9xGetPPU (uint16);
 void S9xSetCPU (uint8, uint16);
 uint8 S9xGetCPU (uint16);
-void S9xUpdateIRQPositions (bool initial);
+void S9xUpdateIRQPositions ();
 void S9xFixColourBrightness (void);
 void S9xDoAutoJoypad (void);
 

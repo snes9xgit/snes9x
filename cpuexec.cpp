@@ -259,7 +259,7 @@ void S9xMainLoop (void)
 
 		if ((CPU.Cycles >= Timings.NextIRQTimer) && !CPU.IRQLine && !CPU.IRQTransition)
 		{
-			S9xUpdateIRQPositions(false);
+			S9xUpdateIRQPositions();
 
 		#ifdef DEBUGGER
 			S9xTraceMessage ("Timer triggered\n");

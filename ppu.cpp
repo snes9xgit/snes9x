@@ -304,9 +304,10 @@ static int CyclesUntilNext (int hc, int vc)
 	return total;
 }
 
-void S9xUpdateIRQPositions (bool initial)
+void S9xUpdateIRQPositions ()
 {
 	PPU.HTimerPosition = PPU.IRQHBeamPos * ONE_DOT_CYCLE + Timings.IRQTriggerCycles;
+	PPU.HTimerPosition -= PPU.IRQHBeamPos ? 0 : ONE_DOT_CYCLE;
 	PPU.HTimerPosition += PPU.IRQHBeamPos > 322 ? (ONE_DOT_CYCLE / 2) : 0;
 	PPU.HTimerPosition += PPU.IRQHBeamPos > 326 ? (ONE_DOT_CYCLE / 2) : 0;
 	PPU.VTimerPosition = PPU.IRQVBeamPos;
@@ -335,10 +336,7 @@ void S9xUpdateIRQPositions (bool initial)
 	}
 	else if (!PPU.HTimerEnabled && PPU.VTimerEnabled)
 	{
-		if (CPU.V_Counter == PPU.VTimerPosition && initial)
-			Timings.NextIRQTimer = CPU.Cycles + Timings.IRQTriggerCycles;
-		else
-			Timings.NextIRQTimer = CyclesUntilNext (Timings.IRQTriggerCycles, PPU.VTimerPosition);
+		Timings.NextIRQTimer = CyclesUntilNext (Timings.IRQTriggerCycles, PPU.VTimerPosition);
 	}
 	else
 	{
@@ -1577,7 +1575,7 @@ void S9xSetCPU (uint8 Byte, uint16 Address)
 					CPU.IRQTransition = FALSE;
 				}
 
-				S9xUpdateIRQPositions(true);
+				S9xUpdateIRQPositions();
 
 				// NMI can trigger immediately during VBlank as long as NMI_read ($4210) wasn't cleard.
 				if ((Byte & 0x80) && !(Memory.FillRAM[0x4200] & 0x80) &&
@@ -1644,7 +1642,7 @@ if (Settings.TraceHCEvent)
 				pos = PPU.IRQHBeamPos;
 				PPU.IRQHBeamPos = (PPU.IRQHBeamPos & 0xff00) | Byte;
 				if (PPU.IRQHBeamPos != pos)
-					S9xUpdateIRQPositions(false);
+					S9xUpdateIRQPositions();
 			#ifdef DEBUGGER
 				missing.hirq_pos = PPU.IRQHBeamPos;
 			#endif
@@ -1654,7 +1652,7 @@ if (Settings.TraceHCEvent)
 				pos = PPU.IRQHBeamPos;
 				PPU.IRQHBeamPos = (PPU.IRQHBeamPos & 0xff) | ((Byte & 1) << 8);
 				if (PPU.IRQHBeamPos != pos)
-					S9xUpdateIRQPositions(false);
+					S9xUpdateIRQPositions();
 			#ifdef DEBUGGER
 				missing.hirq_pos = PPU.IRQHBeamPos;
 			#endif
@@ -1664,7 +1662,7 @@ if (Settings.TraceHCEvent)
 				pos = PPU.IRQVBeamPos;
 				PPU.IRQVBeamPos = (PPU.IRQVBeamPos & 0xff00) | Byte;
 				if (PPU.IRQVBeamPos != pos)
-					S9xUpdateIRQPositions(true);
+					S9xUpdateIRQPositions();
 			#ifdef DEBUGGER
 				missing.virq_pos = PPU.IRQVBeamPos;
 			#endif
@@ -1674,7 +1672,7 @@ if (Settings.TraceHCEvent)
 				pos = PPU.IRQVBeamPos;
 				PPU.IRQVBeamPos = (PPU.IRQVBeamPos & 0xff) | ((Byte & 1) << 8);
 				if (PPU.IRQVBeamPos != pos)
-					S9xUpdateIRQPositions(true);
+					S9xUpdateIRQPositions();
 			#ifdef DEBUGGER
 				missing.virq_pos = PPU.IRQVBeamPos;
 			#endif
