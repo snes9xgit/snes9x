@@ -245,11 +245,11 @@ void S9xMainLoop (void)
 
 		if ((CPU.Cycles >= Timings.NextIRQTimer))
 		{
-			S9xUpdateIRQPositions();
+			S9xUpdateIRQPositions(false);
 
-		#ifdef DEBUGGER
+			#ifdef DEBUGGER
 			S9xTraceMessage ("Timer triggered\n");
-		#endif
+			#endif
 
 			if (CPU.WaitingForInterrupt)
 			{
