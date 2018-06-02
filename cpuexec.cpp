@@ -238,6 +238,7 @@ void S9xMainLoop (void)
 						S9xDoHEventProcessing();
 				}
 
+				CHECK_FOR_IRQ_CHANGE();
 				S9xOpcode_NMI();
 			}
 		}
