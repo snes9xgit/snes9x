@@ -285,7 +285,7 @@ static int CyclesUntilNext (int hc, int vc)
 	}
 	else
 	{
-		if (vc == vpos && hc > CPU.Cycles)
+		if (vc == vpos && (hc > CPU.Cycles || !PPU.HTimerEnabled))
 		{
 			return hc;
 		}
