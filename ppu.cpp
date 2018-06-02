@@ -1171,7 +1171,7 @@ uint8 S9xGetPPU (uint16 Address)
 		return (S9xMSU1ReadPort(Address & 7));
 	else
 	if (Address < 0x2100)
-		return (PPU.OpenBus1);
+		return (OpenBus);
 
 	if (CPU.InDMAorHDMA)
 	{
