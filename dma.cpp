@@ -859,8 +859,8 @@ bool8 S9xDoDMA (uint8 Channel)
 									count--;
 								// Fall through
 								case 1:
-									Work = *(base + p);
-									REGISTER_2119_linear(Work);
+									OpenBus = *(base + p);
+									REGISTER_2119_linear(OpenBus);
 									UPDATE_COUNTERS;
 									count--;
 								}
