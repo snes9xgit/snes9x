@@ -2353,7 +2353,7 @@ LRESULT CALLBACK WinProc(
 			{
 				WinSearchCheatDatabase();
 			}
-			S9xSaveCheatFile (S9xGetFilename (".bml", CHEAT_DIR));
+			S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
 			RestoreSNESDisplay ();
 			break;
 		case ID_CHEAT_SEARCH:
@@ -2372,7 +2372,7 @@ LRESULT CALLBACK WinProc(
 		case ID_CHEAT_SEARCH_MODAL:
 			RestoreGUIDisplay ();
 			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_CHEAT_SEARCH), hWnd, DlgCheatSearch); // modal
-			S9xSaveCheatFile (S9xGetFilename (".bml", CHEAT_DIR));
+			S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
 			RestoreSNESDisplay ();
 			break;
 		case ID_CHEAT_APPLY:
@@ -3685,7 +3685,7 @@ loop_exit:
     if (!Settings.StopEmulation)
     {
         Memory.SaveSRAM (S9xGetFilename (".srm", SRAM_DIR));
-        S9xSaveCheatFile (S9xGetFilename (".bml", CHEAT_DIR));
+        S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
     }
     //if (!VOODOO_MODE && !GUI.FullScreen)
     //    GetWindowRect (GUI.hWnd, &GUI.window_size);
@@ -4133,7 +4133,7 @@ static bool LoadROM(const TCHAR *filename, const TCHAR *filename2 /*= NULL*/) {
 
 	if (!Settings.StopEmulation) {
 		Memory.SaveSRAM (S9xGetFilename (".srm", SRAM_DIR));
-		S9xSaveCheatFile (S9xGetFilename (".bml", CHEAT_DIR));
+		S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
 	}
 
 	if(filename2)
@@ -9289,7 +9289,7 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 		case WM_DESTROY:
 			{
 				cheatSearchHWND = NULL;
-				S9xSaveCheatFile (S9xGetFilename (".bml", CHEAT_DIR));
+				S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
 				break;
 			}
 

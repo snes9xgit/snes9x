@@ -1634,7 +1634,7 @@ void S9xExit (void)
 
 	Memory.SaveSRAM(S9xGetFilename(".srm", SRAM_DIR));
 	S9xResetSaveTimer(FALSE);
-	S9xSaveCheatFile(S9xGetFilename(".bml", CHEAT_DIR));
+	S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
 	S9xUnmapAllControls();
 	S9xDeinitDisplay();
 	Memory.Deinit();
@@ -1806,8 +1806,7 @@ int main (int argc, char **argv)
 
 	if (Settings.ApplyCheats)
 	{
-		if (!S9xLoadCheatFile(S9xGetFilename(".bml", CHEAT_DIR)))
-			S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
+		S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
 	}
 
 	S9xParseArgsForCheats(argv, argc);

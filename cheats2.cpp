@@ -654,7 +654,7 @@ char *S9xCheatGroupToText (SCheatGroup *g)
     {
         char *tmp = S9xCheatToText (&g->c[i]);
         if (i != 0)
-            text += '+';
+            text += " + ";
         text += tmp;
         delete[] tmp;
     }
@@ -809,10 +809,10 @@ bool8 S9xLoadCheatFile (const char *filename)
         return S9xLoadCheatFileClassic (filename);
     }
 
-    n = bml_find_sub (bml, "cartridge");
+    n = bml_find_sub (bml, "cheat");
     if (n)
     {
-        S9xLoadCheatsFromBMLNode (n);
+        S9xLoadCheatsFromBMLNode (bml);
     }
 
     bml_free_node (bml);
@@ -841,22 +841,19 @@ bool8 S9xSaveCheatFile (const char *filename)
     if (!file)
         return FALSE;
 
-    fprintf (file, "cartridge sha256=");
-    for (i = 0; i < 32; i++)
-        fprintf (file, "%02x", Memory.ROMSHA256[i]);
-    fprintf (file, "\n");
-
     for (i = 0; i < Cheat.g.size (); i++)
     {
         char *txt = S9xCheatGroupToText (i);
 
         fprintf (file,
-                 "  cheat%s\n"
-                 "    description: %s\n"
-                 "    code: %s\n",
-                 (Cheat.g[i].enabled ? " enabled" : ""),
-                 (Cheat.g[i].name ? Cheat.g[i].name : ""),
-                 txt);
+                 "cheat\n"
+                 "  description: %s\n"
+                 "  code: %s\n"
+                 "%s\n",
+                 Cheat.g[i].name ? Cheat.g[i].name : "",
+                 txt,
+                 Cheat.g[i].enabled ? "  enabled\n" : ""
+                 );
         
         delete[] txt;
     }

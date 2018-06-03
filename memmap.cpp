@@ -1788,8 +1788,7 @@ bool8 CMemory::LoadROMInt (int32 ROMfillSize)
 	S9xReset();
 
 	S9xDeleteCheats();
-	if (!S9xLoadCheatFile(S9xGetFilename(".bml", CHEAT_DIR)))
-		S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
+	S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
 
     return (TRUE);
 }
@@ -1955,8 +1954,7 @@ bool8 CMemory::LoadMultiCartInt ()
 	S9xReset();
 
 	S9xDeleteCheats();
-	if (!S9xLoadCheatFile(S9xGetFilename(".bml", CHEAT_DIR)))
-		S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
+	S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
 
 	return (TRUE);
 }
