@@ -465,6 +465,7 @@ void S9xMSU1Generate(size_t sample_count)
 			MSU1.MSU1_STATUS &= ~(AudioPlaying | AudioRepeating);
 			partial_frames -= 3204;
 			*(bufPos++) = 0;
+			*(bufPos++) = 0;
 		}
 	}
 }
