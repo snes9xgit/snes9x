@@ -243,14 +243,8 @@ void S9xMainLoop (void)
 			}
 		}
 
-		if ((CPU.Cycles >= Timings.NextIRQTimer))
+		if (CPU.IRQTransition)
 		{
-			S9xUpdateIRQPositions(false);
-
-			#ifdef DEBUGGER
-			S9xTraceMessage ("Timer triggered\n");
-			#endif
-
 			if (CPU.WaitingForInterrupt)
 			{
 				CPU.WaitingForInterrupt = FALSE;
@@ -259,8 +253,18 @@ void S9xMainLoop (void)
 				while (CPU.Cycles >= CPU.NextEvent)
 					S9xDoHEventProcessing();
 			}
-
+			CPU.IRQTransition = FALSE;
 			CPU.IRQLine = TRUE;
+		}
+
+		if (CPU.Cycles >= Timings.NextIRQTimer)
+		{
+			#ifdef DEBUGGER
+			S9xTraceMessage ("Timer triggered\n");
+			#endif
+
+			S9xUpdateIRQPositions(false);
+			CPU.IRQTransition = TRUE;
 		}
 
 		if ((CPU.IRQLine || CPU.IRQExternal) && !CheckFlag(IRQ))
@@ -272,7 +276,6 @@ void S9xMainLoop (void)
 
 		/* Change IRQ flag for instructions that set it only on last cycle */
 		CHECK_FOR_IRQ_CHANGE();
-
 
 	#ifdef DEBUGGER
 		if ((CPU.Flags & BREAK_FLAG) && !(CPU.Flags & SINGLE_STEP_FLAG))
