@@ -635,9 +635,9 @@ char *S9xCheatToText (SCheat *c)
     text = new char[size];
 
     if (c->conditional)
-        snprintf (text, size, "%x=%x?%x", c->address, c->cond_byte, c->byte);
+        snprintf (text, size, "%06x=%02x?%02x", c->address, c->cond_byte, c->byte);
     else
-        snprintf (text, size, "%x=%x", c->address, c->byte);
+        snprintf (text, size, "%06x=%02x", c->address, c->byte);
 
     return text;
 }
