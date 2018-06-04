@@ -752,7 +752,7 @@ static void S9xLoadCheatsFromBMLNode (bml_node *n)
             if (tmp)
                 code = tmp->data;
 
-            if (bml_find_sub(c, "enabled"))
+            if (bml_find_sub(c, "enable"))
                 enabled = true;
 
             if (code && !S9xCheatIsDuplicate (desc, code))
@@ -854,7 +854,7 @@ bool8 S9xSaveCheatFile (const char *filename)
                  "%s\n",
                  Cheat.g[i].name ? Cheat.g[i].name : "",
                  txt,
-                 Cheat.g[i].enabled ? "  enabled\n" : ""
+                 Cheat.g[i].enabled ? "  enable\n" : ""
                  );
         
         delete[] txt;
