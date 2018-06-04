@@ -743,12 +743,14 @@ static void S9xLoadCheatsFromBMLNode (bml_node *n)
             bml_node *tmp = NULL;
 
             tmp = bml_find_sub(c, "name");
-            desc = tmp->data;
-            if (!desc)
+            if (!tmp)
                 desc = (char *) "";
+            else
+                desc = tmp->data;
 
             tmp = bml_find_sub(c, "code");
-            code = tmp->data;
+            if (tmp)
+                code = tmp->data;
 
             if (bml_find_sub(c, "enabled"))
                 enabled = true;
