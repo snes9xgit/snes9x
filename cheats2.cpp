@@ -546,21 +546,21 @@ SCheat S9xTextToCheat (char *text)
         byte = c.byte;
     }
 
-    else if (sscanf (text, "%x=%x?%x", &c.address, &cond_byte, &byte) == 3)
+    else if (sscanf (text, "%x = %x ? %x", &c.address, &cond_byte, &byte) == 3)
     {
         c.conditional = true;
     }
 
-    else if (sscanf (text, "%x=%x", &c.address, &byte) == 2)
+    else if (sscanf (text, "%x = %x", &c.address, &byte) == 2)
     {
     }
 
-    else if (sscanf (text, "%x/%x/%x", &c.address, &cond_byte, &byte) == 3)
+    else if (sscanf (text, "%x / %x / %x", &c.address, &cond_byte, &byte) == 3)
     {
         c.conditional = true;
     }
 
-    else if (sscanf (text, "%x/%x", &c.address, &byte) == 2)
+    else if (sscanf (text, "%x / %x", &c.address, &byte) == 2)
     {
     }
 
@@ -742,7 +742,7 @@ static void S9xLoadCheatsFromBMLNode (bml_node *n)
             bml_node *c = n->child[i];
             bml_node *tmp = NULL;
 
-            tmp = bml_find_sub(c, "description");
+            tmp = bml_find_sub(c, "name");
             desc = tmp->data;
             if (!desc)
                 desc = (char *) "";
@@ -847,7 +847,7 @@ bool8 S9xSaveCheatFile (const char *filename)
 
         fprintf (file,
                  "cheat\n"
-                 "  description: %s\n"
+                 "  name: %s\n"
                  "  code: %s\n"
                  "%s\n",
                  Cheat.g[i].name ? Cheat.g[i].name : "",
