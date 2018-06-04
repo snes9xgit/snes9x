@@ -950,6 +950,7 @@ BEGIN
         MENUITEM "Use Mouse in alternate port", IDM_MOUSE_SWAPPED
         MENUITEM "Use Multitaps (8-player)",    IDM_MULTITAP8
         MENUITEM "Use Dual Justifiers",         IDM_JUSTIFIERS
+        MENUITEM "Use M.A.C.S. Rifle",          IDM_MACSRIFLE_TOGGLE
     END
     POPUP "&Sound"
     BEGIN

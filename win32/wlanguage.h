@@ -426,6 +426,7 @@ Nintendo is a trade mark.")
 #define WINPROC_CONTROLERS4 "Superscope on #1"
 #define WINPROC_CONTROLERS5 "Justifier 1 on #1"
 #define WINPROC_CONTROLERS6 "Justifier 2 on #1"
+#define WINPROC_CONTROLERS7 "M.A.C.S. Rifle on #1"
 #define WINPROC_BGHACK "Background layering hack"
 #define WINPROC_MODE7INTER "Mode 7 Interpolation"
 #define WINPROC_TRANSPARENCY "Transparency effects"

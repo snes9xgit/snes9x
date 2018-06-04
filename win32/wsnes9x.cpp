@@ -732,7 +732,7 @@ void S9xMouseOn ()
 		else
 	        SetCursor (NULL);
     }
-    else if (GUI.ControllerOption!=SNES_SUPERSCOPE && GUI.ControllerOption!=SNES_JUSTIFIER && GUI.ControllerOption!=SNES_JUSTIFIER_2)
+    else if (GUI.ControllerOption!=SNES_SUPERSCOPE && GUI.ControllerOption!=SNES_JUSTIFIER && GUI.ControllerOption!=SNES_JUSTIFIER_2 && GUI.ControllerOption!=SNES_MACSRIFLE)
     {
         SetCursor (GUI.Arrow);
         GUI.CursorTimer = 60;
@@ -771,6 +771,8 @@ void ControllerOptionsFromControllers()
       GUI.ControllerOption = SNES_JUSTIFIER;
    else if (controller[0] == CTL_JOYPAD && controller[1] == CTL_JUSTIFIER && ids[0])
       GUI.ControllerOption = SNES_JUSTIFIER_2;
+   else if (controller[0] == CTL_JOYPAD && controller[1] == CTL_MACSRIFLE)
+      GUI.ControllerOption = SNES_MACSRIFLE;
 }
 
 void ChangeInputDevice(void)
@@ -779,6 +781,7 @@ void ChangeInputDevice(void)
 	Settings.JustifierMaster = false;
 	Settings.SuperScopeMaster = false;
 	Settings.MultiPlayer5Master = false;
+	Settings.MacsRifleMaster = false;
 
 	switch(GUI.ControllerOption)
 	{
@@ -816,6 +819,11 @@ void ChangeInputDevice(void)
 		Settings.JustifierMaster = true;
 		S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
 		S9xSetController(1, CTL_JUSTIFIER,  1, 0, 0, 0);
+		break;
+	case SNES_MACSRIFLE:
+		Settings.MacsRifleMaster = true;
+		S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
+		S9xSetController(1, CTL_MACSRIFLE,  0, 0, 0, 0);
 		break;
 	default:
 	case SNES_JOYPAD:
@@ -1827,6 +1835,11 @@ LRESULT CALLBACK WinProc(
 			GUI.ControllerOption = SNES_JUSTIFIER_2;
 			ChangeInputDevice();
 			break;
+		case IDM_MACSRIFLE_TOGGLE:
+			MOVIE_LOCKED_SETTING
+			GUI.ControllerOption = SNES_MACSRIFLE;
+			ChangeInputDevice();
+			break;
 
 			//start turbo
 		case ID_TURBO_R:
@@ -2553,7 +2566,7 @@ LRESULT CALLBACK WinProc(
 			{
 				CenterCursor();
 			}
-			else if (GUI.ControllerOption==SNES_SUPERSCOPE || GUI.ControllerOption==SNES_JUSTIFIER || GUI.ControllerOption==SNES_JUSTIFIER_2)
+			else if (GUI.ControllerOption==SNES_SUPERSCOPE || GUI.ControllerOption==SNES_JUSTIFIER || GUI.ControllerOption==SNES_JUSTIFIER_2 || GUI.ControllerOption==SNES_MACSRIFLE)
 			{
 				RECT size;
 				GetClientRect (GUI.hWnd, &size);
@@ -3032,6 +3045,7 @@ enum
 	k_MO = 0x02000000,
 	k_SS = 0x04000000,
 	k_LG = 0x08000000,
+	k_RF = 0x10000000,
 
 	k_BT = 0x00100000,
 	k_PT = 0x00200000,
@@ -3171,10 +3185,13 @@ enum
 	kWinCMapLGun2Trigger,
 	kWinCMapLGun2Start,
 
+	kWinCMapMacsRifleTrigger  = k_HD | k_BT | k_RF | k_C1,
+
 	kWinCMapMouse1Pointer     = k_HD | k_PT | k_MO | k_C1,
 	kWinCMapMouse2Pointer     = k_HD | k_PT | k_MO | k_C2,
 	kWinCMapSuperscopePointer = k_HD | k_PT | k_SS | k_C1,
 	kWinCMapJustifier1Pointer = k_HD | k_PT | k_LG | k_C1,
+	kWinCMapMacsRiflePointer  = k_HD | k_PT | k_RF | k_C1,
 
 	kWinCMapPseudoPtrBase     = k_HD | k_PS | k_LG | k_C2	// for Justifier 2P
 };
@@ -3314,10 +3331,13 @@ void S9xSetupDefaultKeymap(void)
 	ASSIGN_BUTTONt(kWinCMapLGun2Trigger,   "Justifier2 Trigger");
 	ASSIGN_BUTTONt(kWinCMapLGun2Start,     "Justifier2 Start");
 
+	ASSIGN_BUTTONt(kWinCMapMacsRifleTrigger,  "MacsRifle Trigger");
+
 	ASSIGN_POINTRt(kWinCMapMouse1Pointer,     "Pointer Mouse1");
 	ASSIGN_POINTRt(kWinCMapMouse2Pointer,     "Pointer Mouse2");
 	ASSIGN_POINTRt(kWinCMapSuperscopePointer, "Pointer Superscope");
 	ASSIGN_POINTRt(kWinCMapJustifier1Pointer, "Pointer Justifier1");
+	ASSIGN_POINTRt(kWinCMapMacsRiflePointer,  "Pointer MacsRifle");
 
 	ASSIGN_POINTRf(PseudoPointerBase,         "Pointer Justifier2");
 	ASSIGN_BUTTONf(kWinCMapPseudoPtrBase + 0, "ButtonToPointer 1u Med");
@@ -3660,7 +3680,7 @@ int WINAPI WinMain(
         {
             if (--GUI.CursorTimer == 0)
             {
-                if (GUI.ControllerOption != SNES_SUPERSCOPE && GUI.ControllerOption != SNES_JUSTIFIER && GUI.ControllerOption != SNES_JUSTIFIER_2)
+                if (GUI.ControllerOption != SNES_SUPERSCOPE && GUI.ControllerOption != SNES_JUSTIFIER && GUI.ControllerOption != SNES_JUSTIFIER_2 && GUI.ControllerOption != SNES_MACSRIFLE)
                     SetCursor (NULL);
             }
         }
@@ -4064,6 +4084,10 @@ static void CheckMenuStates ()
     mii.fState = validFlag | (GUI.ControllerOption == SNES_JUSTIFIER_2 ? MFS_CHECKED : MFS_UNCHECKED);
     SetMenuItemInfo (GUI.hMenu, IDM_JUSTIFIERS, FALSE, &mii);
 
+	validFlag = (((1<<SNES_MACSRIFLE) & GUI.ValidControllerOptions) && (!S9xMovieActive() || !S9xMovieGetFrameCounter())) ? MFS_ENABLED : MFS_DISABLED;
+    mii.fState = validFlag | (GUI.ControllerOption == SNES_MACSRIFLE ? MFS_CHECKED : MFS_UNCHECKED);
+    SetMenuItemInfo (GUI.hMenu, IDM_MACSRIFLE_TOGGLE, FALSE, &mii);
+
 	mii.fState = !Settings.StopEmulation ? MFS_ENABLED : MFS_DISABLED;
 	SetMenuItemInfo (GUI.hMenu, ID_FILE_AVI_RECORDING, FALSE, &mii);
 
@@ -4164,7 +4188,7 @@ static bool LoadROM(const TCHAR *filename, const TCHAR *filename2 /*= NULL*/) {
 		}
 	}
 
-	if(GUI.ControllerOption == SNES_SUPERSCOPE)
+	if(GUI.ControllerOption == SNES_SUPERSCOPE || GUI.ControllerOption == SNES_MACSRIFLE)
 		SetCursor (GUI.GunSight);
 	else {
 		SetCursor (GUI.Arrow);
@@ -10813,6 +10837,14 @@ bool S9xPollButton(uint32 id, bool *pressed){
 			}
 		}
 	}
+	else
+	if (id & k_RF)	// macsrifle
+	{
+		switch (id & 0xFF)
+		{
+			case 0:	*pressed = (GUI.MouseButtons & 1) /* Left */ || CHECK_KEY(1,A) || CHECK_KEY(1,L); break;
+		}
+	}
 
 	return (true);
 }
@@ -10867,6 +10899,17 @@ void S9xPostRomInit()
         }
 		int prevController = GUI.ControllerOption;
 		GUI.ValidControllerOptions = 0xFFFF;
+
+		// auto-joypad2 creates fast menu flicker
+		if (!Settings.DisableGameSpecificHacks)
+		{
+			if(strncmp(Memory.ROMName, "MAC:Basic Rifle", 15) == 0)
+			{
+				GUI.ControllerOption = SNES_MACSRIFLE;
+
+				ChangeInputDevice();
+			}
+		}
 
 		// NSRT controller settings
 		if (!strncmp((const char *)Memory.NSRTHeader+24, "NSRT", 4))
@@ -10947,7 +10990,7 @@ void S9xPostRomInit()
 					GUI.ValidControllerOptions = (1<<SNES_MOUSE_SWAPPED) | (1<<SNES_MULTIPLAYER5) | (1<<SNES_JOYPAD);
 					break;
 			}
-            ChangeInputDevice();
+			ChangeInputDevice();
 		}
 
 		// update menu and remember what (if anything) the control was forced from

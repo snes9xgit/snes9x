@@ -241,6 +241,9 @@ static bool parse_controller_spec (int port, const char *arg)
 	if (!strcasecmp(arg, "two-justifiers"))
 		S9xSetController(port, CTL_JUSTIFIER,  1, 0, 0, 0);
 	else
+	if (!strcasecmp(arg, "macsrifle"))
+		S9xSetController(port, CTL_MACSRIFLE,  0, 0, 0, 0);
+	else
 	if (!strncasecmp(arg, "mp5:", 4) && ((arg[4] >= '1' && arg[4] <= '8') || arg[4] == 'n') &&
 										((arg[5] >= '1' && arg[5] <= '8') || arg[5] == 'n') &&
 										((arg[6] >= '1' && arg[6] <= '8') || arg[6] == 'n') &&
@@ -465,6 +468,7 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.MouseMaster                =  conf.GetBool("Controls::MouseMaster",               true);
 	Settings.SuperScopeMaster           =  conf.GetBool("Controls::SuperscopeMaster",          true);
 	Settings.JustifierMaster            =  conf.GetBool("Controls::JustifierMaster",           true);
+	Settings.MacsRifleMaster            =  conf.GetBool("Controls::MacsRifleMaster",           true);
 	Settings.MultiPlayer5Master         =  conf.GetBool("Controls::MP5Master",                 true);
 	Settings.UpAndDown                  =  conf.GetBool("Controls::AllowLeftRight",            false);
 
@@ -483,6 +487,8 @@ void S9xLoadConfigFiles (char **argv, int argc)
 		parse_crosshair_spec(X_JUSTIFIER1, conf.GetString("Controls::Justifier1Crosshair"));
 	if (conf.Exists("Controls::Justifier2Crosshair"))
 		parse_crosshair_spec(X_JUSTIFIER2, conf.GetString("Controls::Justifier2Crosshair"));
+	if (conf.Exists("Controls::MacsRifleCrosshair"))
+		parse_crosshair_spec(X_MACSRIFLE, conf.GetString("Controls::MacsRifleCrosshair"));
 
 	// Hack
 	Settings.SuperFXClockMultiplier         = conf.GetUInt("Hack::SuperFXClockMultiplier", 100);
@@ -557,6 +563,7 @@ void S9xUsage (void)
 	S9xMessage(S9X_INFO, S9X_USAGE, "-nomouse                        Disable emulation of the SNES mouse");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-nosuperscope                   Disable emulation of the Superscope");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-nojustifier                    Disable emulation of the Konami Justifier");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-nomacsrifle                    Disable emulation of the M.A.C.S. Rifle");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-port# <control>                Specify which controller to emulate in port 1/2");
 	S9xMessage(S9X_INFO, S9X_USAGE, "    Controllers: none              No controller");
 	S9xMessage(S9X_INFO, S9X_USAGE, "                 pad#              Joypad number 1-8");
@@ -565,6 +572,7 @@ void S9xUsage (void)
 	S9xMessage(S9X_INFO, S9X_USAGE, "                 justifier         Blue Justifier (not useful with -port1)");
 	S9xMessage(S9X_INFO, S9X_USAGE, "                 two-justifiers    Blue & Pink Justifiers");
 	S9xMessage(S9X_INFO, S9X_USAGE, "                 mp5:####          MP5 with the 4 named pads (1-8 or n)");
+	S9xMessage(S9X_INFO, S9X_USAGE, "                 macsrifle         M.A.C.S. Rifle");
 	S9xMessage(S9X_INFO, S9X_USAGE, "");
 
 	// ROM OPTIONS
@@ -735,6 +743,9 @@ char * S9xParseArgs (char **argv, int argc)
 			else
 			if (!strcasecmp(argv[i], "-nojustifier"))
 				Settings.JustifierMaster = FALSE;
+			else
+			if (!strcasecmp(argv[i], "-nomacsrifle"))
+				Settings.MacsRifleMaster = FALSE;
 			else
 			if (!strcasecmp(argv[i], "-port1") ||
 				!strcasecmp(argv[i], "-port2"))
