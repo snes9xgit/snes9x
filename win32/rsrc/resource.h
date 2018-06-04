@@ -521,6 +521,7 @@
 #define ID_FILE_LOAD8                   44028
 #define ID_FILE_LOAD9                   44029
 #define ID_FILE_LOAD_FILE               44030
+#define IDM_MACSRIFLE_TOGGLE            44031
 #define IDC_STATIC                      -1
 
 // Next default values for new objects

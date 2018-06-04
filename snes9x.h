@@ -393,7 +393,8 @@ struct SSettings
 	bool8	SuperScopeMaster;
 	bool8	JustifierMaster;
 	bool8	MultiPlayer5Master;
-
+	bool8	MacsRifleMaster;
+	
 	bool8	ForceLoROM;
 	bool8	ForceHiROM;
 	bool8	ForceHeader;

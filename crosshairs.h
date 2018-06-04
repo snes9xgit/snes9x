@@ -214,6 +214,7 @@ const char * S9xGetCrosshair (int idx);
 //   Superscope:    2     White      Black
 //   Justifier 1:   4     Blue       Black
 //   Justifier 2:   4     MagicPink  Black
+//   Macs Rifle:    2     White      Black
 //
 // Available colors are: Trans, Black, 25Grey, 50Grey, 75Grey, White, Red, Orange,
 // Yellow, Green, Cyan, Sky, Blue, Violet, MagicPink, and Purple.
@@ -226,7 +227,8 @@ enum crosscontrols
 	X_MOUSE2,
 	X_SUPERSCOPE,
 	X_JUSTIFIER1,
-	X_JUSTIFIER2
+	X_JUSTIFIER2,
+	X_MACSRIFLE
 };
 
 void S9xSetControllerCrosshair (enum crosscontrols ctl, int8 idx, const char *fg, const char *bg);
