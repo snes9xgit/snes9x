@@ -530,7 +530,7 @@ bool8 S9xInitSound (int buffer_ms, int lag_ms)
 		return (FALSE);
 	if (msu::landing_buffer)
 		delete[] msu::landing_buffer;
-	msu::landing_buffer = (uint8*) new uint32[msu::buffer_size / 2]; // Ensure 4-byte alignment
+	msu::landing_buffer = new uint8[msu::buffer_size * 2];
 	if (!msu::landing_buffer)
 		return (FALSE);
 
