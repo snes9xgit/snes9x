@@ -3686,7 +3686,7 @@ void S9xControlPreSaveState (struct SControlSnapshot *s)
 	COPY(macsrifle.y);
 	COPY(macsrifle.buttons);
 
-	assert(i == sizeof(s->internal));
+	assert(i == sizeof(s->internal) + sizeof(s->internal_macs));
 
 #undef COPY
 
@@ -3757,13 +3757,15 @@ void S9xControlPostLoadState (struct SControlSnapshot *s)
 			for (int k = 0; k < 2; k++)
 				COPY(mp5[j].pads[k]);
 
+		assert(i == sizeof(s->internal));
+
 		if (s->ver > 3)
 		{
 			COPY(macsrifle.x);
 			COPY(macsrifle.y);
 			COPY(macsrifle.buttons);
 
-			assert(i == sizeof(s->internal));
+			assert(i == sizeof(s->internal) + sizeof(s->internal_macs));
 		}
 
 	#undef COPY
