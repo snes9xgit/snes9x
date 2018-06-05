@@ -33,23 +33,23 @@ Snes9x 1.56
 - Don't spuriously update register 14 when running SuperFX. (BearOso)
   Fixes graphical glitches in Doom.
 - Added a SuperFX clock modifier variable.                  (BearOso)
-- Write CPU MDR during HDMA writes. Fixes Speedy Gonzales.  (BearOso)
-- Calculate next IRQ time in advance instead of continously (BearOso)
+- Write CPU MDR during some DMA and HDMA transfers. Fixes   (BearOso)
+  Speedy Gonzales and Funaki Masakatsu Hybrid Wrestler.
+- Calculate next IRQ time in advance instead of continously (BearOso, OV2)
   checking for it.
+- Added some IRQ timing quirks. Fixes at least Marko's      (BearOso, OV2)
+  Magic Football.
 - Fixed wrong tile selection in offset-per-tile mode.       (BearOso)
 - Advance the VRAM pointer even if VRAM writes at the time  (kps501)
   are invalid.
 - Return 0x80 instead of 0xff in DSP1 simulation. Fixes     (kps501)
   Powerfest '94 Mario Kart.
-- Use PPU1 MDR when accessing open bus below 0x2100. Fixes  (kps501)
-  Funaki Masakatsu Hybrid Wrestler glitches.
 - Initialize controllers on reset. Fixes Looney Tunes       (kps501)
   B-Ball multitap.
-- Clear IRQ line on CLI instruction. Fixes Marko's Magic    (kps501, OV2, BearOso)
-  Football.
 - Attached APU instruction tracer and made some additions   (BearOso)
   to debugging output.
 - Fix line doubling in interlaced mode.                     (kps501)
+- Added support for M.A.C.S. rifle peripheral.              (kps501)
 - Win32: Added dynamic rate control support for XAudio2     (OV2)
 - Win32: Added different volume level configuration for     (OV2)
   regular and turbo speed.
