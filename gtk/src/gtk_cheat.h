@@ -19,12 +19,19 @@ class Snes9xCheats : public GtkBuilderWindow
         void delete_all_cheats (void);
         void toggle_code (const gchar *path, int enabled);
         void row_activated (GtkTreePath *path);
+        void row_deleted (int src_row);
+        void row_inserted (int row);
+        void enable_dnd (bool);
+        void sort_cheats (void);
 
     private:
         void refresh_tree_view (void);
         int get_selected_index (void);
         int get_index_from_path (const gchar *path);
 
+        unsigned long insert_id;
+        unsigned long delete_id;
+        int dst_row;
         GtkListStore *store;
 };
 

@@ -65,7 +65,7 @@ event_code_toggled (GtkCellRendererToggle *cell_renderer,
     return;
 }
 
-void
+static void
 event_row_activated (GtkTreeView       *tree_view,
                      GtkTreePath       *path,
                      GtkTreeViewColumn *column,
@@ -74,6 +74,36 @@ event_row_activated (GtkTreeView       *tree_view,
     ((Snes9xCheats *) data)->row_activated (path);
 
     return;
+}
+
+static void
+event_row_inserted (GtkTreeModel *tree_model,
+                    GtkTreePath  *path,
+                    GtkTreeIter  *iter,
+                    gpointer      data)
+{
+    int *indices = gtk_tree_path_get_indices (path);
+    ((Snes9xCheats *) data)->row_inserted (indices[0]);
+
+    return;
+}
+
+static void
+event_row_deleted  (GtkTreeModel *tree_model,
+                    GtkTreePath  *path,
+                    gpointer      data)
+{
+    int *indices = gtk_tree_path_get_indices (path);
+    ((Snes9xCheats *) data)->row_deleted (indices[0]);
+
+    return;
+}
+
+void
+event_enabled_column_clicked (GtkTreeViewColumn *treeviewcolumn,
+                             gpointer           data)
+{
+    ((Snes9xCheats *) data)->sort_cheats ();
 }
 
 Snes9xCheats::Snes9xCheats (void)
@@ -90,18 +120,25 @@ Snes9xCheats::Snes9xCheats (void)
         { NULL, NULL}
     };
 
+    dst_row = -1;
     view = GTK_TREE_VIEW (get_widget ("cheat_treeview"));
 
     g_signal_connect (view, "row-activated", G_CALLBACK (event_row_activated), (gpointer) this);
+
+    gtk_tree_view_set_reorderable (view, TRUE);
 
     renderer = gtk_cell_renderer_toggle_new ();
     gtk_cell_renderer_toggle_set_activatable (GTK_CELL_RENDERER_TOGGLE (renderer), TRUE);
     gtk_tree_view_insert_column_with_attributes (view,
                                                  -1,
-                                                 "",
+                                                 "\xe2\x86\x91",
                                                  renderer,
                                                  "active", COLUMN_ENABLED,
                                                  NULL);
+    GtkTreeViewColumn *column = gtk_tree_view_get_column (view, 0);
+    gtk_tree_view_column_set_clickable (column, TRUE);
+    gtk_tree_view_column_set_alignment (column, 0.5f);
+    g_signal_connect (column, "clicked", G_CALLBACK (event_enabled_column_clicked), (gpointer) this);
 
     g_signal_connect (renderer,
                       "toggled",
@@ -115,7 +152,7 @@ Snes9xCheats::Snes9xCheats (void)
                                                  renderer,
                                                  "text", COLUMN_DESCRIPTION,
                                                  NULL);
-    GtkTreeViewColumn *column = gtk_tree_view_get_column (view, 1);
+    column = gtk_tree_view_get_column (view, 1);
     gtk_tree_view_column_set_resizable (column, TRUE);
 
     renderer = gtk_cell_renderer_text_new ();
@@ -135,6 +172,8 @@ Snes9xCheats::Snes9xCheats (void)
                                 G_TYPE_STRING);
 
     gtk_tree_view_set_model (view, GTK_TREE_MODEL (store));
+    delete_id = g_signal_connect (store, "row-deleted", G_CALLBACK (event_row_deleted), (gpointer) this);
+    insert_id = g_signal_connect (store, "row-inserted", G_CALLBACK (event_row_inserted), (gpointer) this);
 
     gtk_widget_realize (window);
 
@@ -153,6 +192,21 @@ Snes9xCheats::~Snes9xCheats (void)
 }
 
 void
+Snes9xCheats::enable_dnd (bool enable)
+{
+    if (enable)
+    {
+        g_signal_handler_unblock (G_OBJECT (store), delete_id);
+        g_signal_handler_unblock (G_OBJECT (store), insert_id);
+    }
+    else
+    {
+        g_signal_handler_block (G_OBJECT (store), delete_id);
+        g_signal_handler_block (G_OBJECT (store), insert_id);
+    }
+}
+
+void
 Snes9xCheats::show (void)
 {
     top_level->pause_from_focus_change ();
@@ -161,11 +215,54 @@ Snes9xCheats::show (void)
                                   top_level->get_window ());
 
     refresh_tree_view ();
+
     gtk_dialog_run (GTK_DIALOG (window));
 
     top_level->unpause_from_focus_change ();
 
     return;
+}
+
+static void cheat_move (int src, int dst)
+{
+    Cheat.g.insert (Cheat.g.begin() + dst, Cheat.g[src]);
+
+    if (dst < src)
+        src++;
+    Cheat.g.erase (Cheat.g.begin() + src);
+}
+
+static void cheat_gather_enabled (void)
+{
+    unsigned int enabled = 0;
+
+    for (unsigned int i = 0; i < Cheat.g.size(); i++)
+    {
+        if (Cheat.g[i].enabled && i >= enabled)
+        {
+            cheat_move(i, enabled);
+            enabled++;
+        }
+    }
+}
+
+void
+Snes9xCheats::row_deleted (int src_row)
+{
+    if (dst_row >= 0)
+    {
+        if (src_row >= dst_row)
+            src_row--;
+        cheat_move (src_row, dst_row);
+
+        dst_row = -1;
+    }
+}
+
+void
+Snes9xCheats::row_inserted (int new_row)
+{
+    dst_row = new_row;
 }
 
 int
@@ -218,6 +315,7 @@ Snes9xCheats::refresh_tree_view (void)
     GtkTreeIter iter;
     unsigned int list_size;
 
+    enable_dnd (false);
     list_size = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (store), NULL);
 
     if (Cheat.g.size () == 0)
@@ -244,6 +342,7 @@ Snes9xCheats::refresh_tree_view (void)
                             -1);
         delete[] str;
     }
+    enable_dnd (true);
 
     return;
 }
@@ -277,8 +376,10 @@ Snes9xCheats::remove_code (void)
     if (index < 0)
         return;
 
+    enable_dnd (false);
     gtk_tree_model_iter_nth_child (GTK_TREE_MODEL (store), &iter, NULL, index);
     gtk_list_store_remove (store, &iter);
+    enable_dnd (true);
 
     S9xDeleteCheatGroup (index);
 
@@ -288,8 +389,10 @@ Snes9xCheats::remove_code (void)
 void
 Snes9xCheats::delete_all_cheats (void)
 {
+    enable_dnd (false);
     S9xDeleteCheats ();
     gtk_list_store_clear (store);
+    enable_dnd (true);
 
     return;
 }
@@ -364,6 +467,13 @@ Snes9xCheats::search_database (void)
     gtk_widget_destroy (GTK_WIDGET (dialog));
 
     return;
+}
+
+void
+Snes9xCheats::sort_cheats ()
+{
+    cheat_gather_enabled ();
+    refresh_tree_view ();
 }
 
 void
