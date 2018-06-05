@@ -1551,6 +1551,9 @@ void S9xSetCPU (uint8 Byte, uint16 Address)
 					S9xTraceFormattedMessage("Write to 0x4200. Byte is %2x was %2x\n", Byte, Memory.FillRAM[Address]);
 				#endif
 
+				if (Byte == Memory.FillRAM[0x4200])
+					break;
+
 				if (Byte & 0x20)
 				{
 					PPU.VTimerEnabled = TRUE;
