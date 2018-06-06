@@ -168,6 +168,7 @@ Snes9xCheats::Snes9xCheats (void)
                                                  NULL);
     column = gtk_tree_view_get_column (view, 1);
     gtk_tree_view_column_set_resizable (column, TRUE);
+    gtk_tree_view_column_set_min_width (column, 40);
 
     renderer = gtk_cell_renderer_text_new ();
     gtk_tree_view_insert_column_with_attributes (view,
@@ -178,7 +179,7 @@ Snes9xCheats::Snes9xCheats (void)
                                                  NULL);
     column = gtk_tree_view_get_column (view, 2);
     gtk_tree_view_column_set_resizable (column, TRUE);
-
+    gtk_tree_view_column_set_min_width (column, 40);
 
     store = gtk_list_store_new (NUM_COLS,
                                 G_TYPE_BOOLEAN,
