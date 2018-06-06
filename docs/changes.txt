@@ -50,6 +50,7 @@ Snes9x 1.56
   to debugging output.
 - Fix line doubling in interlaced mode.                     (kps501)
 - Added support for M.A.C.S. rifle peripheral.              (kps501)
+- Fixed a bug where the MSU1 channels were reversed.        (qwertymodo)
 - Win32: Added dynamic rate control support for XAudio2     (OV2)
 - Win32: Added different volume level configuration for     (OV2)
   regular and turbo speed.
