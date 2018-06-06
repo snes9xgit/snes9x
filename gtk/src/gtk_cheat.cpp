@@ -36,6 +36,18 @@ event_add_code (GtkButton *button, gpointer data)
 }
 
 static void
+event_update_code (GtkButton *button, gpointer data)
+{
+    ((Snes9xCheats *) data)->update_code ();
+}
+
+static void
+event_disable_all (GtkButton *button, gpointer data)
+{
+    ((Snes9xCheats *) data)->disable_all ();
+}
+
+static void
 event_remove_code (GtkButton *button, gpointer data)
 {
     ((Snes9xCheats *) data)->remove_code ();
@@ -114,8 +126,10 @@ Snes9xCheats::Snes9xCheats (void)
     GtkBuilderWindowCallbacks callbacks[] =
     {
         { "add_code", G_CALLBACK (event_add_code) },
+        { "update_code", G_CALLBACK (event_update_code) },
         { "remove_code", G_CALLBACK (event_remove_code) },
         { "search_database", G_CALLBACK (event_search_database) },
+        { "disable_all", G_CALLBACK (event_disable_all) },
         { "delete_all_cheats", G_CALLBACK (event_delete_all_cheats) },
         { NULL, NULL}
     };
@@ -342,6 +356,7 @@ Snes9xCheats::refresh_tree_view (void)
                             -1);
         delete[] str;
     }
+
     enable_dnd (true);
 
     return;
@@ -358,11 +373,30 @@ Snes9xCheats::add_code (void)
         description = _("No description");
 
     if (S9xAddCheatGroup (description, code) < 0)
+    {
         display_errorbox (_("Couldn't find any cheat codes in input."));
+        return;
+    }
+
+    code = (const gchar *) S9xCheatGroupToText (Cheat.g.size () - 1);
+    set_entry_text ("code_entry", code);
+    delete[] code;
 
     gtk_widget_grab_focus (get_widget ("code_entry"));
 
     refresh_tree_view ();
+
+    while (gtk_events_pending ())
+        gtk_main_iteration ();
+
+    GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (get_widget ("cheat_treeview")));
+    GtkTreePath *path = gtk_tree_path_new_from_indices (Cheat.g.size () - 1, -1);
+    gtk_tree_selection_select_path (selection, path);
+    gtk_tree_path_free (path);
+
+    GtkScrolledWindow *scroll = GTK_SCROLLED_WINDOW (get_widget ("cheat_scrolledwindow"));
+    GtkAdjustment *adj = gtk_scrolled_window_get_vadjustment (scroll);
+    gtk_adjustment_set_value (adj, gtk_adjustment_get_upper (adj));
 
     return;
 }
@@ -505,6 +539,52 @@ Snes9xCheats::toggle_code (const gchar *path, int enabled)
     else
         S9xDisableCheatGroup (index);
 
+    return;
+}
+
+void
+Snes9xCheats::update_code (void)
+{
+    int index = get_selected_index ();
+
+    if (index < 0)
+        return;
+
+    const char *description;
+    char *code = (char *) get_entry_text ("code_entry");
+
+    description = get_entry_text ("description_entry");
+    if (description[0] == '\0')
+        description = _("No description");
+
+    code = S9xCheatValidate (code);
+    if (!code)
+    {
+        display_errorbox (_("Couldn't find any cheat codes in input."));
+        return;
+    }
+
+    S9xModifyCheatGroup (index, description, code);
+    set_entry_text ("code_entry", code);
+    delete[] code;
+
+    gtk_widget_grab_focus (get_widget ("code_entry"));
+
+    refresh_tree_view ();
+
+    return;
+}
+
+void
+Snes9xCheats::disable_all (void)
+{
+    for (unsigned int i = 0; i < Cheat.g.size(); i++)
+    {
+        if (Cheat.g[i].enabled)
+            S9xDisableCheatGroup (i);
+    }
+
+    refresh_tree_view ();
 
     return;
 }

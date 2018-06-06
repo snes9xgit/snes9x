@@ -23,6 +23,8 @@ class Snes9xCheats : public GtkBuilderWindow
         void row_inserted (int row);
         void enable_dnd (bool);
         void sort_cheats (void);
+        void update_code (void);
+        void disable_all (void);
 
     private:
         void refresh_tree_view (void);
