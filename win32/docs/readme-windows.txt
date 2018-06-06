@@ -7,7 +7,7 @@ Files included in the Snes9x archive:
   changes.txt
   snes9x-license.txt
 
-version 1.56  May, 2018
+version 1.56  June, 2018
 Home page: http://www.snes9x.com/
 
 
@@ -303,7 +303,7 @@ Internet.
 Snes9x supports both Game Genie and PAR, as well as the standard raw format:
 xxxxxx=bb or xxxxxx=cc?bb. Also you can create your own cheat codes with the
 cheat search tool.
-Cheats are saved in .bml files and are automatically loaded the next time a game
+Cheats are saved in .cht files and are automatically loaded the next time a game
 with the same filename is loaded.
 
 Technically, a cheat code consists of two elements; an address in SNES memory
@@ -607,7 +607,7 @@ the extension of the freeze files.
 
 Compatibility with Other SNES Emulators
 ---------------------------------------
-Cheat files (.bml) are common between Snes9x and higan/bsnes. higan/bsnes stores
+Cheat files (.cht) are common between Snes9x and higan/bsnes. higan stores
 these as cheats.bml in the higan subdirectory of a game folder. 
 RTC files (.rtc) are common between Snes9x and bsnes. 
 SRAM files (.srm) should be common among all SNES emulators.
@@ -826,4 +826,4 @@ Capcom is a trademark of Capcom Co., Ltd.
 
 Gary Henderson
 
-Updated most recently: 2018/5/31
+Updated most recently: 2018/6/6
