@@ -13,7 +13,7 @@ Snes9x 1.56
 - Updated HDMA to not update indirect addresses until after (BearOso)
   transfers are completed.
 - Improved cheats support. This stores cheats in a human-   (BearOso, OV2)
-  readable and editable format as gamename.bml. Cheats are
+  readable and editable format as gamename.cht. Cheats are
   converted from the old format on load. They can be added
   in many different formats, but they will convert to the
   simple address?condition=byte format.
