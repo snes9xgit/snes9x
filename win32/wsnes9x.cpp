@@ -8724,6 +8724,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				lvi.cchTextMax = CHEAT_SIZE;
 				lvi.pszText = wstring;
 				lvi.lParam = counter; // we save the internal cheat index as lParam of list entry
+				lvi.iItem = counter;
 				curr_idx = ListView_InsertItem(GetDlgItem(hDlg,IDC_CHEAT_LIST), &lvi);
 
 				ct.state[counter] = Untouched;
