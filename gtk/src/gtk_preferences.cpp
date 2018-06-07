@@ -699,6 +699,11 @@ Snes9xPreferences::move_settings_to_dialog (void)
     set_check ("mute_sound_check",          config->mute_sound);
     set_check ("mute_sound_turbo_check",    config->mute_sound_turbo);
     set_slider ("sound_input_rate",         config->sound_input_rate);
+    if (top_level->get_auto_input_rate () == 0)
+    {
+        config->auto_input_rate = 0;
+        gtk_widget_set_sensitive (get_widget ("auto_input_rate"), FALSE);
+    }
     set_check ("auto_input_rate",           config->auto_input_rate);
     gtk_widget_set_sensitive (get_widget("sound_input_rate"),
                               config->auto_input_rate ? FALSE : TRUE);
