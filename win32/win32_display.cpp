@@ -752,7 +752,14 @@ double WinGetRefreshRate(void)
 
 int WinGetAutomaticInputRate(void)
 {
-	return (int)(WinGetRefreshRate() * 32040.0 / 60.09881389744051 + 0.5);
+    double newInputRate = WinGetRefreshRate() * 32040.0 / 60.09881389744051 + 0.5;
+
+    if (newInputRate > 32040.0 * 1.05)
+        newInputRate = 32040.0;
+    if (newInputRate < 32040.0 * 0.95)
+        newInputRate = 32040.0 * 0.95;
+
+    return newInputRate;
 }
 
 /* Depth conversion functions begin */

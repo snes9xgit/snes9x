@@ -1620,7 +1620,14 @@ Snes9xWindow::get_refresh_rate (void)
 int
 Snes9xWindow::get_auto_input_rate (void)
 {
-    return (int) (get_refresh_rate () * 32040.0 / 60.09881389744051 + 0.5);
+    double new_input_rate = get_refresh_rate () * 32040.0 / 60.09881389744051 + 0.5;
+
+    if (new_input_rate > 32040.0 * 1.05)
+        new_input_rate = 32040.0;
+    if (new_input_rate < 32040.0 * 0.95)
+        new_input_rate = 32040.0 * 0.95;
+
+    return new_input_rate;
 }
 
 static void set_bypass_compositor (Display *dpy, Window window, unsigned char bypass)
