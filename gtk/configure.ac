@@ -191,7 +191,7 @@ snes9x_info_display="GTK"
 
 GTK3_WARNING=no
 if test yes = "$with_gtk3" -a no = "$with_gtk2"; then
-    GTK_VERSION="gtk+-3.0"
+    GTK_VERSION="gtk+-3.0 >= 3.22"
     GTK3_WARNING=yes
 else
     GTK_VERSION="gtk+-2.0 >= 2.16"
