@@ -424,7 +424,7 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.Stereo                     =  conf.GetBool("Sound::Stereo",                       true);
 	Settings.ReverseStereo              =  conf.GetBool("Sound::ReverseStereo",                false);
 	Settings.SoundPlaybackRate          =  conf.GetUInt("Sound::Rate",                         32000);
-	Settings.SoundInputRate             =  conf.GetUInt("Sound::InputRate",                    32000);
+	Settings.SoundInputRate             =  conf.GetUInt("Sound::InputRate",                    31950);
 	Settings.Mute                       =  conf.GetBool("Sound::Mute",                         false);
 	Settings.DynamicRateControl         =  conf.GetBool("Sound::DynamicRateControl",           false);
 	Settings.DynamicRateLimit           =  conf.GetInt ("Sound::DynamicRateLimit",             5);
@@ -692,8 +692,10 @@ char * S9xParseArgs (char **argv, int argc)
 				if (i + 1 < argc)
 				{
 					Settings.SoundInputRate = atoi(argv[++i]);
-					if (Settings.SoundInputRate < 8192)
-						Settings.SoundInputRate = 8192;
+					if (Settings.SoundInputRate < 31700)
+						Settings.SoundInputRate = 31700;
+					if (Settings.SoundInputRate > 32300)
+						Settings.SoundInputRate = 32300;
 				}
 				else
 					S9xUsage();

@@ -224,9 +224,13 @@ bool ReInitSound()
 		if (rate)
 			Settings.SoundInputRate = rate;
 		else
+		{
 			GUI.AutomaticInputRate = false;
+			Settings.SoundInputRate = 31950;
+		}
 	}
-	Settings.SoundInputRate = CLAMP(Settings.SoundInputRate,8000, 48000);
+
+	Settings.SoundInputRate = CLAMP(Settings.SoundInputRate,31700, 32300);
 	Settings.SoundPlaybackRate = CLAMP(Settings.SoundPlaybackRate,8000, 48000);
 	S9xSetSoundMute(GUI.Mute);
 	if(S9xSoundOutput)

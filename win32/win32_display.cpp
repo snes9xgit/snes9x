@@ -752,12 +752,23 @@ double WinGetRefreshRate(void)
 
 int WinGetAutomaticInputRate(void)
 {
-    double newInputRate = WinGetRefreshRate() * 32040.0 / 60.09881389744051 + 0.5;
+    double refreshRate = WinGetRefreshRate();
 
-    if (newInputRate > 32040.0 * 1.05)
-        newInputRate = 32040.0;
-    if (newInputRate < 32040.0 * 0.95)
-        newInputRate = 32040.0 * 0.95;
+    if (refreshRate == 0.0)
+        return 0;
+
+    // Try for a close multiple of 60hz
+    if (refreshRate > 119.0 && refreshRate < 121.0)
+        refreshRate /= 2.0;
+    if (refreshRate > 179.0 && refreshRate < 181.0)
+        refreshRate /= 3.0;
+    if (refreshRate > 239.0 && refreshRate < 241.0)
+        refreshRate /= 4.0;
+
+    double newInputRate = refreshRate * 32040.0 / 60.09881389744051 + 0.5;
+
+    if (newInputRate > 32040.0 * 1.05 || newInputRate < 32040.0 * 0.95)
+        newInputRate = 0.0;
 
     return newInputRate;
 }

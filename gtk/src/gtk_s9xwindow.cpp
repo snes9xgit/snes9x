@@ -1620,12 +1620,23 @@ Snes9xWindow::get_refresh_rate (void)
 int
 Snes9xWindow::get_auto_input_rate (void)
 {
-    double new_input_rate = get_refresh_rate () * 32040.0 / 60.09881389744051 + 0.5;
+    double refresh_rate = get_refresh_rate ();
 
-    if (new_input_rate > 32040.0 * 1.05)
-        new_input_rate = 32040.0;
-    if (new_input_rate < 32040.0 * 0.95)
-        new_input_rate = 32040.0 * 0.95;
+    if (refresh_rate == 0.0)
+        return 0;
+
+    // Try for a close multiple of 60hz
+    if (refresh_rate > 119.0 && refresh_rate < 121.0)
+        refresh_rate /= 2.0;
+    if (refresh_rate > 179.0 && refresh_rate < 181.0)
+        refresh_rate /= 3.0;
+    if (refresh_rate > 239.0 && refresh_rate < 241.0)
+        refresh_rate /= 4.0;
+
+    double new_input_rate = refresh_rate * 32040.0 / 60.09881389744051 + 0.5;
+
+    if (new_input_rate > 32040.0 * 1.05 || new_input_rate < 32040.0 * 0.95)
+        new_input_rate = 0.0;
 
     return new_input_rate;
 }

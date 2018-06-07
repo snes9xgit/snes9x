@@ -133,7 +133,7 @@ S9xPortSoundInit (void)
         }
         else
         {
-            Settings.SoundInputRate = CLAMP (gui_config->sound_input_rate, 8000, 48000);
+            Settings.SoundInputRate = CLAMP (gui_config->sound_input_rate, 31700, 32300);
         }
 
         Settings.SoundPlaybackRate = playback_rates[gui_config->sound_playback_rate];
