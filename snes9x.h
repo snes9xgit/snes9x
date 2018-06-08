@@ -479,6 +479,7 @@ struct SSettings
 	bool8	UpAndDown;
 
 	bool8	OpenGLEnable;
+	uint32	SuperFXClockMultiplier;
 
 	bool8	FastSavestates;
 	bool8	HardDisableAudio;

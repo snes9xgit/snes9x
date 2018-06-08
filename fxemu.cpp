@@ -315,7 +315,7 @@ uint8 S9xGetSuperFX (uint16 address)
 	uint8	byte;
 
 	byte = Memory.FillRAM[address];
-
+	
 	if (address == 0x3031)
 	{
 		CPU.IRQExternal = FALSE;
