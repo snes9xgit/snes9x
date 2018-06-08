@@ -45,6 +45,7 @@
 
 char g_rom_dir[1024];
 char g_basename[1024];
+bool hires_blend = false;
 
 retro_log_printf_t log_cb = NULL;
 static retro_video_refresh_t video_cb = NULL;
@@ -137,6 +138,7 @@ void retro_set_environment(retro_environment_t cb)
       // Changing "Show layer 1" is fine, but don't change "layer_1"/etc or the possible values ("Yes|No").
       // Adding more variables and rearranging them is safe.
       { "snes9x_up_down_allowed", "Allow Opposing Directions; disabled|enabled" },
+      { "snes9x_hires_blend", "Hires Blending; disabled|enabled" },
       { "snes9x_overclock", "SuperFX Frequency; 100%|200%|400%|600%|800%|1000%" },
       //{ "snes9x_overclock_cycles", "Reduce Slowdown (Hack, Unsafe); disabled|compatible|max" },
       //{ "snes9x_reduce_sprite_flicker", "Reduce Flickering (Hack, Unsafe); disabled|enabled" },
@@ -198,7 +200,16 @@ static void update_variables(void)
    bool geometry_update = false;
    char key[256];
    struct retro_variable var;
-   var.key = "snes9x_overclock";
+
+   var.key = "snes9x_hires_blend";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
+      hires_blend = !strcmp(var.value, "disabled") ? false : true;
+   else
+      hires_blend = false;
+
+   var.key = "snes9x_overclock_superfx";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
@@ -206,6 +217,14 @@ static void update_variables(void)
       int freq = atoi(var.value);
       Settings.SuperFXClockMultiplier = freq;
    }
+
+   var.key = "snes9x_hires_blend";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
+      hires_blend = !strcmp(var.value, "disabled") ? false : true;
+   else
+      hires_blend = false;
 
    var.key = "snes9x_up_down_allowed";
    var.value = NULL;
@@ -846,13 +865,25 @@ static void map_buttons()
 // libretro uses relative values for analogue devices.
 // S9x seems to use absolute values, but do convert these into relative values in the core. (Why?!)
 // Hack around it. :)
+
 static int16_t snes_mouse_state[2][2] = {{0}, {0}};
 static int16_t snes_scope_state[2] = {0};
 static int16_t snes_justifier_state[2][2] = {{0}, {0}};
 static void report_buttons()
 {
-   int _x, _y;
    int offset = snes_devices[0] == RETRO_DEVICE_JOYPAD_MULTITAP ? 4 : 1;
+
+   int runahead_poll = 0;
+   int result = -1;
+   if(environ_cb(RETRO_ENVIRONMENT_GET_AUDIO_VIDEO_ENABLE, &result))
+   {
+         // runahead off: 3
+         // runahead secondary off: 0,0,0,0,0,3
+         runahead_poll = (result & 0x0b)==3;
+
+         // runahead secondary on: 2,8,8,8,8,9  (messy sync problems)
+   }
+
    for (int port = 0; port <= 1; port++)
    {
       switch (snes_devices[port])
@@ -869,18 +900,22 @@ static void report_buttons()
             break;
 
          case RETRO_DEVICE_MOUSE:
-            _x = input_state_cb(port, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_X);
-            _y = input_state_cb(port, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_Y);
-            snes_mouse_state[port][0] += _x;
-            snes_mouse_state[port][1] += _y;
+            if(runahead_poll)
+            {
+               snes_mouse_state[port][0] = input_state_cb(port, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_X);
+               snes_mouse_state[port][1] = input_state_cb(port, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_Y);
+            }
             S9xReportPointer(BTN_POINTER + port, snes_mouse_state[port][0], snes_mouse_state[port][1]);
             for (int i = MOUSE_LEFT; i <= MOUSE_LAST; i++)
                S9xReportButton(MAKE_BUTTON(port + 1, i), input_state_cb(port, RETRO_DEVICE_MOUSE, 0, i));
             break;
 
          case RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE:
-            snes_scope_state[0] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE, 0, RETRO_DEVICE_ID_LIGHTGUN_X);
-            snes_scope_state[1] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE, 0, RETRO_DEVICE_ID_LIGHTGUN_Y);
+            if(runahead_poll)
+            {
+               snes_scope_state[0] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE, 0, RETRO_DEVICE_ID_LIGHTGUN_X);
+               snes_scope_state[1] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE, 0, RETRO_DEVICE_ID_LIGHTGUN_Y);
+            }
             if (snes_scope_state[0] < 0) snes_scope_state[0] = 0;
             else if (snes_scope_state[0] > (SNES_WIDTH-1)) snes_scope_state[0] = SNES_WIDTH-1;
             if (snes_scope_state[1] < 0) snes_scope_state[1] = 0;
@@ -892,8 +927,11 @@ static void report_buttons()
 
          case RETRO_DEVICE_LIGHTGUN_JUSTIFIER:
          case RETRO_DEVICE_LIGHTGUN_JUSTIFIERS:
-            snes_justifier_state[port][0] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_JUSTIFIER, 0, RETRO_DEVICE_ID_LIGHTGUN_X);
-            snes_justifier_state[port][1] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_JUSTIFIER, 0, RETRO_DEVICE_ID_LIGHTGUN_Y);
+            if(runahead_poll)
+            {
+              snes_justifier_state[port][0] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_JUSTIFIER, 0, RETRO_DEVICE_ID_LIGHTGUN_X);
+              snes_justifier_state[port][1] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_JUSTIFIER, 0, RETRO_DEVICE_ID_LIGHTGUN_Y);
+            }
             if (snes_justifier_state[port][0] < 0) snes_justifier_state[port][0] = 0;
             else if (snes_justifier_state[port][0] > (SNES_WIDTH-1)) snes_justifier_state[port][0] = SNES_WIDTH-1;
             if (snes_justifier_state[port][1] < 0) snes_justifier_state[port][1] = 0;
@@ -906,7 +944,6 @@ static void report_buttons()
          default:
             if (log_cb)
                log_cb(RETRO_LOG_ERROR, "[libretro]: Unknown device...\n");
-
       }
    }
 }
@@ -1076,12 +1113,38 @@ bool8 S9xDeinitUpdate(int width, int height)
       }
    }
 
+
+	 if(width==MAX_SNES_WIDTH && hires_blend)
+	 {
+#define AVERAGE_565(el0, el1) (((el0) & (el1)) + ((((el0) ^ (el1)) & 0xF7DE) >> 1))
+      for (register int y = 0; y < height; y++)
+			{
+        register uint16 *input = (uint16 *) ((uint8 *) GFX.Screen + y * GFX.Pitch);
+        register uint16 *output = (uint16 *) ((uint8 *) GFX.Screen + y * GFX.Pitch);
+				register uint16 l, r;
+
+				l = 0;
+				for (register int x = 0; x < (width >> 1); x++)
+				{
+						r = *input++;
+						*output++ = AVERAGE_565 (l, r);
+						l = r;
+
+						r = *input++;
+						*output++ = AVERAGE_565 (l, r);
+						l = r;
+				}
+			}
+	 }
+
+
    video_cb(GFX.Screen, width, height, GFX.Pitch);
    return TRUE;
 }
 
 bool8 S9xContinueUpdate(int width, int height)
 {
+   S9xDeinitUpdate(width, height);
    return true;
 }
 
