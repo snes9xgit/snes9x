@@ -46,6 +46,7 @@
 char g_rom_dir[1024];
 char g_basename[1024];
 bool hires_blend = false;
+static uint16 *gfx_blend;
 
 retro_log_printf_t log_cb = NULL;
 static retro_video_refresh_t video_cb = NULL;
@@ -725,6 +726,7 @@ void retro_init(void)
 
    GFX.Pitch = MAX_SNES_WIDTH * sizeof(uint16);
    GFX.Screen = (uint16*) calloc(1, GFX.Pitch * MAX_SNES_HEIGHT);
+   gfx_blend = (uint16*) calloc(1, GFX.Pitch * MAX_SNES_HEIGHT);
    S9xGraphicsInit();
 
    S9xInitInputDevices();
@@ -989,6 +991,7 @@ void retro_deinit()
    S9xUnmapAllControls();
 
    free(GFX.Screen);
+   free(gfx_blend);
 }
 
 
@@ -1118,27 +1121,31 @@ bool8 S9xDeinitUpdate(int width, int height)
 	 {
 #define AVERAGE_565(el0, el1) (((el0) & (el1)) + ((((el0) ^ (el1)) & 0xF7DE) >> 1))
       for (register int y = 0; y < height; y++)
-			{
-        register uint16 *input = (uint16 *) ((uint8 *) GFX.Screen + y * GFX.Pitch);
-        register uint16 *output = (uint16 *) ((uint8 *) GFX.Screen + y * GFX.Pitch);
-				register uint16 l, r;
+      {
+         register uint16 *input = (uint16 *) ((uint8 *) GFX.Screen + y * GFX.Pitch);
+         register uint16 *output = (uint16 *) ((uint8 *) gfx_blend + y * GFX.Pitch);
+         register uint16 l, r;
 
-				l = 0;
-				for (register int x = 0; x < (width >> 1); x++)
-				{
-						r = *input++;
-						*output++ = AVERAGE_565 (l, r);
-						l = r;
+         l = 0;
+         for (register int x = 0; x < (width >> 1); x++)
+         {
+            r = *input++;
+            *output++ = AVERAGE_565 (l, r);
+            l = r;
 
-						r = *input++;
-						*output++ = AVERAGE_565 (l, r);
-						l = r;
-				}
-			}
-	 }
+            r = *input++;
+            *output++ = AVERAGE_565 (l, r);
+            l = r;
+         }
+      }
 
+      video_cb(gfx_blend, width, height, GFX.Pitch);
+   }
+   else
+   { 
+      video_cb(GFX.Screen, width, height, GFX.Pitch);
+   }
 
-   video_cb(GFX.Screen, width, height, GFX.Pitch);
    return TRUE;
 }
 
