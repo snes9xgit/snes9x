@@ -385,6 +385,8 @@ S9xAutoSaveSRAM (void)
 void
 S9xLoadState (const char *filename)
 {
+    S9xFreezeGame (S9xGetFilename (".undo", SNAPSHOT_DIR));
+
     if (S9xUnfreezeGame (filename))
     {
         sprintf (buf, "%s loaded", filename);
@@ -528,33 +530,39 @@ S9xQuickLoadSlot (int slot)
              S9xGetDirectory (SNAPSHOT_DIR), SLASH_STR, def,
              slot);
 
+    if (file_exists (filename))
+        S9xFreezeGame (S9xGetFilename (".undo", SNAPSHOT_DIR));
+
     if (S9xUnfreezeGame (filename))
     {
         snprintf (buf, PATH_MAX, "%s.%03d loaded", def, slot);
         S9xSetInfoString (buf);
+        return;
     }
-    else
+
+    static const char *digits = "t123456789";
+
+    _splitpath (Memory.ROMFilename, drive, dir, def, ext);
+
+    snprintf (filename, PATH_MAX, "%s%s%s.zs%c",
+              S9xGetDirectory (SNAPSHOT_DIR), SLASH_STR,
+              def, digits[slot]);
+
+    if (file_exists (filename))
+        S9xFreezeGame (S9xGetFilename (".undo", SNAPSHOT_DIR));
+
+    if (S9xUnfreezeGame (filename))
     {
-        static const char *digits = "t123456789";
-
-        _splitpath (Memory.ROMFilename, drive, dir, def, ext);
-
-        snprintf (filename, PATH_MAX, "%s%s%s.zs%c",
-                 S9xGetDirectory (SNAPSHOT_DIR), SLASH_STR,
-                 def, digits[slot]);
-
-        if (S9xUnfreezeGame (filename))
-        {
-            snprintf (buf, PATH_MAX,
-                     "Loaded ZSNES freeze file %s.zs%c",
-                     def, digits [slot]);
-            S9xSetInfoString (buf);
-        }
-        else
-            S9xMessage (S9X_ERROR,
-                        S9X_FREEZE_FILE_NOT_FOUND,
-                        "Freeze file not found");
+        snprintf (buf, PATH_MAX,
+                  "Loaded ZSNES freeze file %s.zs%c",
+                  def, digits [slot]);
+        S9xSetInfoString (buf);
+        return;
     }
+
+    S9xMessage (S9X_ERROR,
+                S9X_FREEZE_FILE_NOT_FOUND,
+                "Freeze file not found");
 
     return;
 }

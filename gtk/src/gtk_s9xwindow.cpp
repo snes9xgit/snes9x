@@ -461,6 +461,15 @@ event_load_state (GtkWidget *widget, gpointer data)
 }
 
 static void
+event_load_state_undo (GtkWidget *widget, gpointer data)
+{
+    S9xUnfreezeGame (S9xGetFilename (".undo", SNAPSHOT_DIR));
+
+    return;
+}
+
+
+static void
 event_load_state_file (GtkWidget *widget, gpointer data)
 {
     ((Snes9xWindow *) data)->load_state_dialog ();
@@ -585,6 +594,7 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
         { "on_port_activate", G_CALLBACK (event_port) },
         { "load_save_state", G_CALLBACK (event_load_state) },
         { "load_state_file", G_CALLBACK (event_load_state_file) },
+        { "load_state_undo", G_CALLBACK (event_load_state_undo) },
         { "save_save_state", G_CALLBACK (event_save_state) },
         { "save_state_file", G_CALLBACK (event_save_state_file) },
         { "drawingarea_button_press", G_CALLBACK (event_button_press) },

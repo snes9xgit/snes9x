@@ -1334,6 +1334,21 @@
                                 <signal name="activate" handler="load_state_file" swapped="no"/>
                               </object>
                             </child>
+                            <child>
+                              <object class="GtkSeparatorMenuItem" id="undoseparator">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkMenuItem" id="load_state_undo">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">_Undo Load State</property>
+                                <property name="use_underline">True</property>
+                                <signal name="activate" handler="load_state_undo" swapped="no"/>
+                              </object>
+                            </child>
                           </object>
                         </child>
                       </object>
