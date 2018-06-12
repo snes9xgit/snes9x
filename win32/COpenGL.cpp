@@ -504,7 +504,7 @@ void COpenGL::Render(SSurface Src)
 	RECT windowSize, displayRect;
 	GetClientRect(hWnd, &windowSize);
 	//Get maximum rect respecting AR setting
-	displayRect = CalculateDisplayRect(windowSize.right, windowSize.bottom, windowSize.right, windowSize.bottom);
+	displayRect = CalculateDisplayRect(afterRenderWidth, afterRenderHeight, windowSize.right, windowSize.bottom);
 
 	// GLSL class does all the rendering, no output needed
 	if (shader_type == OGL_SHADER_GLSL) {

@@ -326,6 +326,7 @@ struct sGUI {
     bool Stretch;
     bool HeightExtend;
     bool AspectRatio;
+	bool IntegerScaling;
 	OutputMethod outputMethod;
 	int AspectWidth;
 	bool AlwaysCenterImage;

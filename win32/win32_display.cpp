@@ -303,26 +303,36 @@ RECT CalculateDisplayRect(unsigned int sourceWidth,unsigned int sourceHeight,
 
 	if(GUI.Stretch) {
 		if(GUI.AspectRatio) {
-			//fix for hi-res images with FILTER_NONE
-			//where we need to correct the aspect ratio
-			renderWidthCalc = (double)sourceWidth;
-			renderHeightCalc = (double)sourceHeight;
-			if(renderWidthCalc/renderHeightCalc>snesAspect)
-				renderWidthCalc = renderHeightCalc * snesAspect;
-			else if(renderWidthCalc/renderHeightCalc<snesAspect)
-				renderHeightCalc = renderWidthCalc / snesAspect;
 
-			xFactor = (double)displayWidth / renderWidthCalc;
-			yFactor = (double)displayHeight / renderHeightCalc;
-			minFactor = xFactor < yFactor ? xFactor : yFactor;
+			if (GUI.IntegerScaling && sourceHeight > 0) {
+				int h;
+				for (h = sourceHeight * 2; h <= displayHeight && (int)(h * snesAspect) <= displayWidth; h += sourceHeight) {}
+				h -= sourceHeight;
+				drawRect.right = (LONG)(h * snesAspect);
+				drawRect.bottom = h;
+			} else {
+				//fix for hi-res images with FILTER_NONE
+				//where we need to correct the aspect ratio
+				renderWidthCalc = (double)sourceWidth;
+				renderHeightCalc = (double)sourceHeight;
+				if (renderWidthCalc / renderHeightCalc > snesAspect)
+					renderWidthCalc = renderHeightCalc * snesAspect;
+				else if (renderWidthCalc / renderHeightCalc < snesAspect)
+					renderHeightCalc = renderWidthCalc / snesAspect;
 
-			drawRect.right = (LONG)(renderWidthCalc * minFactor);
-			drawRect.bottom = (LONG)(renderHeightCalc * minFactor);
+				xFactor = (double)displayWidth / renderWidthCalc;
+				yFactor = (double)displayHeight / renderHeightCalc;
+				minFactor = xFactor < yFactor ? xFactor : yFactor;
+
+				drawRect.right = (LONG)(renderWidthCalc * minFactor);
+				drawRect.bottom = (LONG)(renderHeightCalc * minFactor);
+			}
 
 			drawRect.left = (displayWidth - drawRect.right) / 2;
 			drawRect.top = (displayHeight - drawRect.bottom) / 2;
 			drawRect.right += drawRect.left;
 			drawRect.bottom += drawRect.top;
+
 		} else {
 			drawRect.top = 0;
 			drawRect.left = 0;
@@ -770,7 +780,7 @@ int WinGetAutomaticInputRate(void)
     if (newInputRate > 32040.0 * 1.05 || newInputRate < 32040.0 * 0.95)
         newInputRate = 0.0;
 
-    return newInputRate;
+    return (int)newInputRate;
 }
 
 /* Depth conversion functions begin */
