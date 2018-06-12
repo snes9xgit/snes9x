@@ -233,7 +233,7 @@ void S9xMainLoop (void)
 				{
 					CPU.WaitingForInterrupt = FALSE;
 					Registers.PCw++;
-					CPU.Cycles += ONE_CYCLE;
+					CPU.Cycles += TWO_CYCLES + ONE_DOT_CYCLE / 2;
 					while (CPU.Cycles >= CPU.NextEvent)
 						S9xDoHEventProcessing();
 				}
@@ -249,7 +249,7 @@ void S9xMainLoop (void)
 			{
 				CPU.WaitingForInterrupt = FALSE;
 				Registers.PCw++;
-				CPU.Cycles += ONE_CYCLE;
+				CPU.Cycles += TWO_CYCLES + ONE_DOT_CYCLE / 2;
 				while (CPU.Cycles >= CPU.NextEvent)
 					S9xDoHEventProcessing();
 			}
@@ -265,6 +265,7 @@ void S9xMainLoop (void)
 
 			S9xUpdateIRQPositions(false);
 			CPU.IRQTransition = TRUE;
+			continue;
 		}
 
 		if ((CPU.IRQLine || CPU.IRQExternal) && !CheckFlag(IRQ))
