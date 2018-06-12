@@ -66,7 +66,7 @@ S9xGetAspect (void)
     double native_aspect = 256.0 / (gui_config->overscan ? 239.0 : 224.0);
     double aspect;
 
-    switch (gui_config->aspect_ratio)
+    switch (gui_config->aspect_ratio / 2)
     {
         case 0: /* Square pixels */
             aspect = native_aspect;
@@ -93,6 +93,7 @@ S9xApplyAspect (int &s_width,  /* Output: x */
 {
     double screen_aspect = (double) d_width / (double) d_height;
     double snes_aspect = S9xGetAspect ();
+    bool   integer = gui_config->aspect_ratio & 1;
     double granularity = 1.0 / (double) MAX (d_width, d_height);
     int x, y, w, h;
 
@@ -114,7 +115,22 @@ S9xApplyAspect (int &s_width,  /* Output: x */
 
         }
     }
+    else if (gui_config->maintain_aspect_ratio && integer)
+    {
+        for (h = s_height * 2; h <= d_height && (int)(h * (snes_aspect) + 0.5) <= d_width; h += s_height) {}
+        h -= s_height;
+        w = h * snes_aspect + 0.5;
+        x = (d_width  - w) / 2;
+        y = (d_height - h) / 2;
 
+        if (w > d_width || h > d_height)
+        {
+            w = d_width;
+            h = d_height;
+            x = 0;
+            y = 0;
+        }
+    }
     else if (gui_config->maintain_aspect_ratio &&
             !(screen_aspect <= snes_aspect * (1.0 + granularity) &&
               screen_aspect >= snes_aspect * (1.0 - granularity)))
@@ -125,9 +141,7 @@ S9xApplyAspect (int &s_width,  /* Output: x */
             h = d_height;
             x = (d_width - w) / 2;
             y = 0;
-
         }
-
         else
         {
             w = d_width;

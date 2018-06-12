@@ -913,10 +913,19 @@
         <col id="0" translatable="yes">8:7 Square pixels</col>
       </row>
       <row>
+        <col id="0" translatable="yes">8:7 Square pixels, integer multiples</col>
+      </row>
+      <row>
         <col id="0" translatable="yes">4:3 SNES correct aspect</col>
       </row>
       <row>
+        <col id="0" translatable="yes">4:3 SNES correct aspect, integer multiples</col>
+      </row>
+      <row>
         <col id="0" translatable="yes">8*8:7*7 NTSC</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">8*8:7*7 NTSC, integer multiples</col>
       </row>
     </data>
   </object>
