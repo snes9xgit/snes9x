@@ -304,7 +304,7 @@ RECT CalculateDisplayRect(unsigned int sourceWidth,unsigned int sourceHeight,
 	if(GUI.Stretch) {
 		if(GUI.AspectRatio) {
 
-			if (GUI.IntegerScaling && sourceHeight > 0) {
+			if (GUI.IntegerScaling && sourceHeight > 0 && sourceHeight <= displayHeight && (int)(sourceHeight * snesAspect) <= displayWidth) {
 				int h;
 				for (h = sourceHeight * 2; h <= displayHeight && (int)(h * snesAspect) <= displayWidth; h += sourceHeight) {}
 				h -= sourceHeight;
