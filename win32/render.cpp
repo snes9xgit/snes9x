@@ -2929,23 +2929,26 @@ void RenderBlarggNTSC( SSurface Src, SSurface Dst, RECT *rect)
 		snes_ntsc_blit( ntsc, (unsigned short *)Src.Surface, srcRowPixels, 0,Src.Width, Src.Height, Dst.Surface, Dst.Pitch );
 
 	//Blargg's filter produces half-height output, so we have to double the height again (unless we have double height hi-res)
-	if(Src.Height <= SNES_HEIGHT_EXTENDED)
-		for (int y = rect->bottom / 2; --y >= 0; )
-		{
-			unsigned char const* in = Dst.Surface + y * Dst.Pitch;
-			unsigned char* out = Dst.Surface + y * 2 * Dst.Pitch;
-			for (int n = rect->right; n; --n )
-			{
-				unsigned prev = *(unsigned short*) in;
-				unsigned next = *(unsigned short*) (in + Dst.Pitch);
-				/* mix 16-bit rgb without losing low bits */
-				unsigned mixed = prev + next + ((prev ^ next) & 0x0821);
-				/* darken by 12% */
-				*(unsigned short*) out = prev;
-				*(unsigned short*) (out + Dst.Pitch) = (mixed >> 1) - (mixed >> 4 & 0x18E3);
-				in += 2;
-				out += 2;
-			}
-		}
-
+    if(Src.Height <= SNES_HEIGHT_EXTENDED)
+    {
+        int last_blargg_line = rect->bottom / 2;
+        memset(Dst.Surface + last_blargg_line * Dst.Pitch, 0, Dst.Pitch);
+        for(int y = last_blargg_line; --y >= 0; )
+        {
+            unsigned char const* in = Dst.Surface + y * Dst.Pitch;
+            unsigned char* out = Dst.Surface + y * 2 * Dst.Pitch;
+            for(int n = rect->right; n; --n)
+            {
+                unsigned prev = *(unsigned short*)in;
+                unsigned next = *(unsigned short*)(in + Dst.Pitch);
+                /* mix 16-bit rgb without losing low bits */
+                unsigned mixed = prev + next + ((prev ^ next) & 0x0821);
+                /* darken by 12% */
+                *(unsigned short*)out = prev;
+                *(unsigned short*)(out + Dst.Pitch) = (mixed >> 1) - (mixed >> 4 & 0x18E3);
+                in += 2;
+                out += 2;
+            }
+        }
+    }
 }
