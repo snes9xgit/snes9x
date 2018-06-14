@@ -511,4 +511,7 @@ extern struct STimings			Timings;
 extern struct SSNESGameFixes	SNESGameFixes;
 extern char						String[513];
 
+extern bool8 libretro_get_snes_interp();
+extern int libretro_snes_interp(void *ptr);
+
 #endif
