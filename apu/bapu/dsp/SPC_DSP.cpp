@@ -115,6 +115,11 @@ static short const gauss [512] =
 
 inline int SPC_DSP::interpolate( voice_t const* v )
 {
+	// libretro: alternate methods
+	extern bool8 get_snes_interp();
+	extern int snes_interp(void *ptr);
+	if(get_snes_interp()) return snes_interp((void*)v);
+
 	// Make pointers into gaussian based on fractional position between samples
 	int offset = v->interp_pos >> 4 & 0xFF;
 	short const* fwd = gauss + 255 - offset;
