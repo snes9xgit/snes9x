@@ -62,7 +62,7 @@ static retro_audio_sample_batch_t audio_batch_cb = NULL;
 static retro_input_poll_t poll_cb = NULL;
 static retro_input_state_t input_state_cb = NULL;
 
-static float audio_interp_max = 32767.0;
+static int audio_interp_max = 32768;
 static int audio_interp_mode = 2;
 
 static void extract_basename(char *buf, const char *path, size_t size)
@@ -300,7 +300,7 @@ static void update_variables(void)
             audio_interp_mode = 4;
 
         if (oldval != audio_interp_mode)
-            audio_interp_max = 32767.0f;
+            audio_interp_max = 32768;
     }
 
     int disabled_channels=0;
@@ -369,7 +369,7 @@ static void update_variables(void)
         else if (strcmp(var.value, "4:3") == 0)
             newval = ASPECT_RATIO_4_3;
         else if (strcmp(var.value, "8:7") == 0)
-        newval = ASPECT_RATIO_8_7;
+            newval = ASPECT_RATIO_8_7;
 
         if (newval != aspect_ratio_mode)
         {
@@ -1549,8 +1549,8 @@ int libretro_snes_interp(void *ptr)
 
         // linear
         case 1:
-            output  = v->buf[offset + 0];
-            output += v->buf[offset + 1];
+            output  = (v->buf[offset + 0]) >> 1;
+            output += (v->buf[offset + 1]) >> 1;
             break;
 
         // gaussian
@@ -1569,31 +1569,32 @@ int libretro_snes_interp(void *ptr)
         case 4:
             // 12-bit ==> 11-bit table
             poffset = (v->interp_pos >> 1) & 0x7ff;
-            output  = (audio_fir_lut[poffset*8 + 0] * v->buf[offset + 0]) >> 11;
-            output += (audio_fir_lut[poffset*8 + 1] * v->buf[offset + 1]) >> 11;
-            output += (audio_fir_lut[poffset*8 + 2] * v->buf[offset + 2]) >> 11;
-            output += (audio_fir_lut[poffset*8 + 3] * v->buf[offset + 3]) >> 11;
-            output += (audio_fir_lut[poffset*8 + 4] * v->buf[offset + 4]) >> 11;
-            output += (audio_fir_lut[poffset*8 + 5] * v->buf[offset + 5]) >> 11;
-            output += (audio_fir_lut[poffset*8 + 6] * v->buf[offset + 6]) >> 11;
-            output += (audio_fir_lut[poffset*8 + 7] * v->buf[offset + 7]) >> 11;
-        break;
+            output  = (audio_fir_lut[poffset*8 + 0] * v->buf[offset + 0]) >> 14;
+            output += (audio_fir_lut[poffset*8 + 1] * v->buf[offset + 1]) >> 14;
+            output += (audio_fir_lut[poffset*8 + 2] * v->buf[offset + 2]) >> 14;
+            output += (audio_fir_lut[poffset*8 + 3] * v->buf[offset + 3]) >> 14;
+            output += (audio_fir_lut[poffset*8 + 4] * v->buf[offset + 4]) >> 14;
+            output += (audio_fir_lut[poffset*8 + 5] * v->buf[offset + 5]) >> 14;
+            output += (audio_fir_lut[poffset*8 + 6] * v->buf[offset + 6]) >> 14;
+            output += (audio_fir_lut[poffset*8 + 7] * v->buf[offset + 7]) >> 14;
+            break;
     }
 
-    float temp_f;
-    while(1)
+    int output_max = output;
+    output *= 32768;
+    output /= audio_interp_max;
+
+    if( output > 32767 )
     {
-        temp_f = (float) output;
-        temp_f *= 32767.0f / audio_interp_max;
-
-        if( temp_f > 32767.0f ) audio_interp_max = output;
-        else if( temp_f < -32768.0f ) audio_interp_max = -output;
-        else break;
+        audio_interp_max = output_max;
+        output = 32767;
     }
-    output = (int) temp_f;
 
-    if( output >  32767 ) output =  32767;
-    if( output < -32768 ) output = -32768;
+    else if( output < -32768 )
+    {
+        audio_interp_max = -output_max;
+        output = -32768;
+    }
 
     return output;
 }
