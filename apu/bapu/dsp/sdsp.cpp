@@ -1,5 +1,8 @@
 #include <snes/snes.hpp>
 
+extern bool8 libretro_get_snes_interp();
+extern int libretro_snes_interp(void *ptr);
+
 #define DSP_CPP
 namespace SNES {
 

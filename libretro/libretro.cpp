@@ -1526,19 +1526,19 @@ void S9xAutoSaveSRAM()
     return;
 }
 
-bool8 get_snes_interp()
+bool8 libretro_get_snes_interp()
 {
     if(audio_interp_mode != 2) return true;
     return false;
 }
 
 #include "fir_lut.h"
-int snes_interp(void *ptr)
+int libretro_snes_interp(void *ptr)
 {
-    SNES::SPC_DSP::voice_t const* v = (SNES::SPC_DSP::voice_t const*) ptr;
+   SNES::SPC_DSP::voice_t const* v = (SNES::SPC_DSP::voice_t const*) ptr;
     int offset = v->buf_pos + (v->interp_pos >> 12);
     int poffset = (v->interp_pos >> 4) & 0xff;
-    int output;
+    int output = 0;
 
     switch(audio_interp_mode)
     {
@@ -1577,7 +1577,7 @@ int snes_interp(void *ptr)
             output += (audio_fir_lut[poffset*8 + 5] * v->buf[offset + 5]) >> 11;
             output += (audio_fir_lut[poffset*8 + 6] * v->buf[offset + 6]) >> 11;
             output += (audio_fir_lut[poffset*8 + 7] * v->buf[offset + 7]) >> 11;
-            break;
+        break;
     }
 
     float temp_f;
