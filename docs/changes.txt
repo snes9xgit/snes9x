@@ -11,6 +11,7 @@ Snes9x 1.56.2
 - GTK+: Added an undo load state option.                    (BearOso)
 - GTK+: Fixed compilation on big-endian systems.            (OV2)
 - Win32, GTK+: Added integer scaling option.                (BearOso)
+- GTK+, Unix: Preserve current joypad state when rewinding. (BearOso)
 
 Snes9x 1.56.1
 - Automatic input rate now only works for close multiples   (BearOso)
