@@ -1952,7 +1952,16 @@ int main (int argc, char **argv)
 	#endif
 		{
 			if(rewinding)
+			{
+				uint16 joypads[8];
+				for (int i = 0; i < 8; i++)
+					joypads[i] = MovieGetJoypad(i);
+
 				rewinding = stateMan.pop();
+
+				for (int i = 0; i < 8; i++)
+					MovieSetJoypad (i, joypads[i]);
+			}
 			else if(IPPU.TotalEmulatedFrames % unixSettings.rewindGranularity == 0)
 				stateMan.push();
 

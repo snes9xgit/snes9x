@@ -352,7 +352,16 @@ S9xIdleFunc (gpointer data)
 #endif
 
     if(Settings.Rewinding)
+    {
+        uint16 joypads[8];
+        for (int i = 0; i < 8; i++)
+            joypads[i] = MovieGetJoypad(i);
+
         Settings.Rewinding = stateMan.pop();
+
+        for (int i = 0; i < 8; i++)
+            MovieSetJoypad (i, joypads[i]);
+    }
     else if(IPPU.TotalEmulatedFrames % gui_config->rewind_granularity == 0)
         stateMan.push();
 
