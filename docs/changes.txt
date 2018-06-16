@@ -1,3 +1,17 @@
+Snes9x 1.56.2
+- Fixed IRQ corner case that caused Umihara Kawase's water
+  to cover the whole screen.                                (BearOso)
+- Adjusted IRQ timing slightly. Fixes Dragon Ball Z - Super
+  Butouden 2.                                               (BearOso)
+- Fix reading the wrong tile data in mosaic drawing. Gets
+  rid of glitch at top of FF6 battle transitions.           (BearOso)
+- Win32: Don't mix garbage into the last line with NTSC
+  filter.                                                   (OV2)
+- Win32: Allow disabling scanlines in NTSC filter.          (BearOso)
+- GTK+: Added an undo load state option.                    (BearOso)
+- GTK+: Fixed compilation on big-endian systems.            (OV2)
+- Win32, GTK+: Added integer scaling option.                (BearOso)
+
 Snes9x 1.56.1
 - Automatic input rate now only works for close multiples   (BearOso)
   of 60Hz.
