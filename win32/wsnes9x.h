@@ -359,6 +359,7 @@ struct sGUI {
     HACCEL Accelerators;
     bool NeedDepthConvert;
     bool DepthConverted;
+	bool NTSCScanlines;
 
 	bool InactivePause;
 	bool CustomRomOpen;

@@ -2918,19 +2918,23 @@ void RenderBlarggNTSCRgb( SSurface Src, SSurface Dst, RECT *rect)
 
 void RenderBlarggNTSC( SSurface Src, SSurface Dst, RECT *rect)
 {
-	SetRect(rect, 256, 239, 2);
-	rect->right = SNES_NTSC_OUT_WIDTH(256);
+    SetRect(rect, 256, 239, 2);
+    rect->right = SNES_NTSC_OUT_WIDTH(256);
 
-	const unsigned int srcRowPixels = Src.Pitch/2;
+    const unsigned int srcRowPixels = Src.Pitch/2;
 
-	if(Src.Width == 512)
-		snes_ntsc_blit_hires( ntsc, (unsigned short *)Src.Surface, srcRowPixels, 0,Src.Width, Src.Height, Dst.Surface, Dst.Pitch );
-	else
-		snes_ntsc_blit( ntsc, (unsigned short *)Src.Surface, srcRowPixels, 0,Src.Width, Src.Height, Dst.Surface, Dst.Pitch );
+    if(Src.Width == 512)
+        snes_ntsc_blit_hires( ntsc, (unsigned short *)Src.Surface, srcRowPixels, 0,Src.Width, Src.Height, Dst.Surface, Dst.Pitch );
+    else
+        snes_ntsc_blit( ntsc, (unsigned short *)Src.Surface, srcRowPixels, 0,Src.Width, Src.Height, Dst.Surface, Dst.Pitch );
 
-	//Blargg's filter produces half-height output, so we have to double the height again (unless we have double height hi-res)
+    //Blargg's filter produces half-height output, so we have to double the height again (unless we have double height hi-res)
     if(Src.Height <= SNES_HEIGHT_EXTENDED)
     {
+        int mask = 0;
+        if (GUI.NTSCScanlines)
+            mask = 0x18E3;
+
         int last_blargg_line = rect->bottom / 2;
         memset(Dst.Surface + last_blargg_line * Dst.Pitch, 0, Dst.Pitch);
         for(int y = last_blargg_line; --y >= 0; )
@@ -2945,7 +2949,7 @@ void RenderBlarggNTSC( SSurface Src, SSurface Dst, RECT *rect)
                 unsigned mixed = prev + next + ((prev ^ next) & 0x0821);
                 /* darken by 12% */
                 *(unsigned short*)out = prev;
-                *(unsigned short*)(out + Dst.Pitch) = (mixed >> 1) - (mixed >> 4 & 0x18E3);
+                *(unsigned short*)(out + Dst.Pitch) = (mixed >> 1) - (mixed >> 4 & mask);
                 in += 2;
                 out += 2;
             }
