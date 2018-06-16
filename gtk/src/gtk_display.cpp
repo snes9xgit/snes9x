@@ -247,7 +247,7 @@ internal_convert_mask (void         *src_buffer,
                        unsigned int bpp)
 {
 #ifdef __BIG_ENDIAN__
-    if (endianess == ENDIAN_MSB)
+    if (endianess == ENDIAN_SWAPPED)
 #else
     if (endianess == ENDIAN_NORMAL)
 #endif
