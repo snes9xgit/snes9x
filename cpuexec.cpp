@@ -243,7 +243,17 @@ void S9xMainLoop (void)
 			}
 		}
 
-		if (CPU.IRQTransition)
+		if (CPU.Cycles >= Timings.NextIRQTimer)
+		{
+			#ifdef DEBUGGER
+			S9xTraceMessage ("Timer triggered\n");
+			#endif
+
+			S9xUpdateIRQPositions(false);
+			CPU.IRQLine = TRUE;
+		}
+
+		if (CPU.IRQLine || CPU.IRQExternal)
 		{
 			if (CPU.WaitingForInterrupt)
 			{
@@ -253,26 +263,13 @@ void S9xMainLoop (void)
 				while (CPU.Cycles >= CPU.NextEvent)
 					S9xDoHEventProcessing();
 			}
-			CPU.IRQTransition = FALSE;
-			CPU.IRQLine = TRUE;
-		}
 
-		if (CPU.Cycles >= Timings.NextIRQTimer)
-		{
-			#ifdef DEBUGGER
-			S9xTraceMessage ("Timer triggered\n");
-			#endif
-
-			S9xUpdateIRQPositions(false);
-			CPU.IRQTransition = TRUE;
-			continue;
-		}
-
-		if ((CPU.IRQLine || CPU.IRQExternal) && !CheckFlag(IRQ))
-		{
-			/* The flag pushed onto the stack is the new value */
-			CHECK_FOR_IRQ_CHANGE();
-			S9xOpcode_IRQ();
+			if (!CheckFlag(IRQ))
+			{
+				/* The flag pushed onto the stack is the new value */
+				CHECK_FOR_IRQ_CHANGE();
+				S9xOpcode_IRQ();
+			}
 		}
 
 		/* Change IRQ flag for instructions that set it only on last cycle */
@@ -408,8 +405,8 @@ void S9xDoHEventProcessing (void)
 
 #ifdef DEBUGGER
 	if (Settings.TraceHCEvent)
-		S9xTraceFormattedMessage("--- HC event processing  (%s)  expected HC:%04d  executed HC:%04d",
-			eventname[CPU.WhichEvent], CPU.NextEvent, CPU.Cycles);
+		S9xTraceFormattedMessage("--- HC event processing  (%s)  expected HC:%04d  executed HC:%04d VC:%04d",
+			eventname[CPU.WhichEvent], CPU.NextEvent, CPU.Cycles, CPU.V_Counter);
 #endif
 
 	switch (CPU.WhichEvent)
