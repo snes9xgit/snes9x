@@ -1447,9 +1447,9 @@ void S9xFreezeToStream (STREAM stream)
 		}
 
 		memset(rowpix, 0, sizeof(ssi->Data) + ssi->Data - rowpix);
-
+#if SAVE_SCREENSHOT
 		FreezeStruct(stream, "SHO", ssi, SnapScreenshot, COUNT(SnapScreenshot));
-
+#endif
 		delete ssi;
 	}
 
