@@ -4254,13 +4254,14 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 
                 Stream *s = new unzStream(file);
 				ret = ReadBPSPatch(s, offset, rom_size);
-                s->closeStream();
+				delete s;
 
 				if (ret)
 					printf("!\n");
 				else
 					printf(" failed!\n");
 			}
+			assert(unzClose(file) == UNZ_OK);
 		}
 	}
 #endif
@@ -4318,13 +4319,14 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 
                 Stream *s = new unzStream(file);
 				ret = ReadUPSPatch(s, offset, rom_size);
-                s->closeStream();
+				delete s;
 
 				if (ret)
 					printf("!\n");
 				else
 					printf(" failed!\n");
 			}
+			assert(unzClose(file) == UNZ_OK);
 		}
 	}
 #endif
@@ -4489,7 +4491,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 
                 Stream *s = new unzStream(file);
 				ret = ReadIPSPatch(s, offset, rom_size);
-                s->closeStream();
+				delete s;
 
 				if (ret)
 				{
@@ -4517,7 +4519,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 
                     Stream *s = new unzStream(file);
 					ret = ReadIPSPatch(s, offset, rom_size);
-                    s->closeStream();
+					delete s;
 
 					if (ret)
 					{
@@ -4552,7 +4554,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 
                     Stream *s = new unzStream(file);
 					ret = ReadIPSPatch(s, offset, rom_size);
-                    s->closeStream();
+					delete s;
 
 					if (ret)
 					{
@@ -4585,7 +4587,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 
                     Stream *s = new unzStream(file);
 					ret = ReadIPSPatch(s, offset, rom_size);
-                    s->closeStream();
+					delete s;
 
 					if (ret)
 					{
