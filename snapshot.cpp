@@ -1182,12 +1182,11 @@ static void UnfreezeStructFromCopy (void *, FreezeData *, int, uint8 *, int);
 static void FreezeBlock (STREAM, const char *, uint8 *, int);
 static void FreezeStruct (STREAM, const char *, void *, FreezeData *, int);
 
+static time_t	oops_timer = -1;
 
 void S9xResetSaveTimer (bool8 dontsave)
 {
-	static time_t	t = -1;
-
-	if (!Settings.DontSaveOopsSnapshot && !dontsave && t != -1 && time(NULL) - t > 300)
+	if (!Settings.DontSaveOopsSnapshot && !dontsave && oops_timer != -1 && time(NULL) - oops_timer > 300)
 	{
 		char	filename[PATH_MAX + 1];
 		char	drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], def[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
@@ -1198,7 +1197,7 @@ void S9xResetSaveTimer (bool8 dontsave)
 		S9xFreezeGame(filename);
 	}
 
-	t = time(NULL);
+	oops_timer = time(NULL);
 }
 
 uint32 S9xFreezeSize()
@@ -1257,11 +1256,13 @@ bool8 S9xUnfreezeGame (const char *filename)
 	const char	*base = S9xBasename(filename);
 
 	_splitpath(filename, drive, dir, def, ext);
-	S9xResetSaveTimer(!strcmp(ext, "oops") || !strcmp(ext, "oop") || !strcmp(ext, ".oops") || !strcmp(ext, ".oop"));
 
 	if (S9xOpenSnapshotFile(filename, TRUE, &stream))
 	{
 		int	result;
+
+		oops_timer = 0;
+		S9xResetSaveTimer(!strcmp(ext, "oops") || !strcmp(ext, "oop") || !strcmp(ext, ".oops") || !strcmp(ext, ".oop"));
 
 		result = S9xUnfreezeFromStream(stream);
 		S9xCloseSnapshotFile(stream);

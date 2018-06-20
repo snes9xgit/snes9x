@@ -385,8 +385,6 @@ S9xAutoSaveSRAM (void)
 void
 S9xLoadState (const char *filename)
 {
-    S9xFreezeGame (S9xGetFilename (".undo", SNAPSHOT_DIR));
-
     if (S9xUnfreezeGame (filename))
     {
         sprintf (buf, "%s loaded", filename);
@@ -530,9 +528,6 @@ S9xQuickLoadSlot (int slot)
              S9xGetDirectory (SNAPSHOT_DIR), SLASH_STR, def,
              slot);
 
-    if (file_exists (filename))
-        S9xFreezeGame (S9xGetFilename (".undo", SNAPSHOT_DIR));
-
     if (S9xUnfreezeGame (filename))
     {
         snprintf (buf, PATH_MAX, "%s.%03d loaded", def, slot);
@@ -547,9 +542,6 @@ S9xQuickLoadSlot (int slot)
     snprintf (filename, PATH_MAX, "%s%s%s.zs%c",
               S9xGetDirectory (SNAPSHOT_DIR), SLASH_STR,
               def, digits[slot]);
-
-    if (file_exists (filename))
-        S9xFreezeGame (S9xGetFilename (".undo", SNAPSHOT_DIR));
 
     if (S9xUnfreezeGame (filename))
     {
