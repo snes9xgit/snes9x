@@ -281,9 +281,6 @@ STREAM S9xMSU1OpenFile(const char *msu_ext, bool skip_unpacked)
     }
 #endif
 
-    if(!file)
-        printf("Unable to find msu file %s.\n", filename);
-
     return file;
 }
 
