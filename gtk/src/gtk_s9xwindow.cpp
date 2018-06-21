@@ -463,7 +463,7 @@ event_load_state (GtkWidget *widget, gpointer data)
 static void
 event_load_state_undo (GtkWidget *widget, gpointer data)
 {
-    S9xUnfreezeGame (S9xGetFilename (".oops", SNAPSHOT_DIR));
+    S9xUnfreezeGame (S9xGetFilename (".undo", SNAPSHOT_DIR));
 
     return;
 }
