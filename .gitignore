@@ -32,6 +32,10 @@ win32/BIOS
 !macosx/libz_u.a
 !macosx/libHIDUtilities_u.a
 
+# Included libraries in windows that should not be ignored.
+!win32/ddraw/ddraw_x86.lib
+!win32/ddraw/ddraw_x64.lib
+
 # Created by https://www.gitignore.io/api/c,c++,visualstudio
 
 ### C ###
