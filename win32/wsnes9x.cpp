@@ -5954,6 +5954,71 @@ INT_PTR CALLBACK DlgMultiROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 	return false;
 }
 
+void MoveControlY(HWND hDlg, HWND hCtrl, unsigned int newY)
+{
+	RECT ctrlRect;
+	GetWindowRect(hCtrl, &ctrlRect);
+	POINT pt;
+	pt.x = ctrlRect.left;
+	pt.y = ctrlRect.top;
+	ScreenToClient(hDlg, &pt);
+	MoveWindow(hCtrl, pt.x, newY, ctrlRect.right - ctrlRect.left, ctrlRect.bottom - ctrlRect.top, FALSE);
+}
+
+void MoveOpenRomWindows(HWND hDlg, unsigned int newWidth, int newHeight)
+{
+	RECT rectRomList, rectDirList, rectSplitter, rectStatic, rectCombo, rectOk, rectCancel;
+
+	HWND romList = GetDlgItem(hDlg, IDC_ROMLIST);
+	HWND dirList = GetDlgItem(hDlg, IDC_ROM_DIR);
+	HWND splitter = GetDlgItem(hDlg, IDC_ROM_SPLITTER);
+	HWND memStatic = GetDlgItem(hDlg, IDC_STATIC_MEMORY_TYPE);
+	HWND memCombo = GetDlgItem(hDlg, IDC_MEM_TYPE);
+	HWND okButton = GetDlgItem(hDlg, IDOK);
+	HWND cancelButton = GetDlgItem(hDlg, IDCANCEL);
+
+	GetWindowRect(romList, &rectRomList);
+	GetWindowRect(dirList, &rectDirList);
+	GetWindowRect(splitter, &rectSplitter);
+	GetWindowRect(memStatic, &rectStatic);
+	GetWindowRect(memCombo, &rectCombo);
+	GetWindowRect(okButton, &rectOk);
+	GetWindowRect(cancelButton, &rectCancel);
+
+	unsigned int comboTop = newHeight - (rectCombo.bottom - rectCombo.top) - 5;
+	unsigned int staticTop = comboTop - (rectStatic.bottom - rectStatic.top);
+	unsigned int newListHeight = staticTop - 15;
+	POINT pt;
+	pt.x = rectRomList.left;
+	pt.y = rectRomList.top;
+	ScreenToClient(hDlg, &pt);
+	unsigned int newListWidth = newWidth - pt.x - 5;
+
+	unsigned int buttonTop = newHeight - (rectOk.bottom - rectOk.top) - 5;
+	unsigned int buttonLeft = newWidth - (rectOk.right - rectOk.left) - (rectCancel.right - rectCancel.left) - 5;
+	unsigned int buttonCancelLeft = buttonLeft + (rectOk.right - rectOk.left);
+
+	// only change width / height
+	SetWindowPos(romList, 0, 0, 0, newListWidth, newListHeight, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOREDRAW | SWP_NOZORDER);
+	SetWindowPos(dirList, 0, 0, 0, rectDirList.right - rectDirList.left, newListHeight, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOREDRAW | SWP_NOZORDER);
+	SetWindowPos(splitter, 0, 0, 0, rectSplitter.right - rectSplitter.left, newListHeight, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOREDRAW | SWP_NOZORDER);
+
+	// only change y pos
+	MoveControlY(hDlg, memStatic, staticTop);
+	MoveControlY(hDlg, GetDlgItem(hDlg, IDC_STATIC_INTERLEAVE_MODE), staticTop);
+	MoveControlY(hDlg, GetDlgItem(hDlg, IDC_STATIC_VIDEO_SYSTEM), staticTop);
+	MoveControlY(hDlg, GetDlgItem(hDlg, IDC_STATIC_HEADER), staticTop);
+
+	MoveControlY(hDlg, memCombo, comboTop);
+	MoveControlY(hDlg, GetDlgItem(hDlg, IDC_INTERLEAVE), comboTop);
+	MoveControlY(hDlg, GetDlgItem(hDlg, IDC_VIDEO_MODE), comboTop);
+	MoveControlY(hDlg, GetDlgItem(hDlg, IDC_HEADER), comboTop);
+
+	// only change position
+	SetWindowPos(okButton, 0, buttonLeft, buttonTop, 0, 0, SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOZORDER);
+	SetWindowPos(cancelButton, 0, buttonCancelLeft, buttonTop, 0, 0, SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOZORDER);
+}
+
 INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	int rv=0;
@@ -5969,6 +6034,10 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 	static HWND dirList = NULL;
 	switch(msg)
 	{
+	case WM_SIZE:
+		MoveOpenRomWindows(hDlg, LOWORD(lParam), HIWORD(lParam));
+		RedrawWindow(hDlg, NULL, NULL, RDW_ERASE | RDW_FRAME | RDW_INVALIDATE | RDW_ALLCHILDREN);
+		break;
 	case WM_INITDIALOG:
 		WinRefreshDisplay();
 		{
@@ -5991,8 +6060,8 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 			wcex.lpszClassName=tempclassname;
 			wcex.hbrBackground=(HBRUSH)GetStockObject(LTGRAY_BRUSH);
 			wcex.hCursor=LoadCursor(NULL, IDC_SIZEWE);
-///			wcex.hCursor=LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZEWE));
-///			ATOM aSplitter=RegisterClassEx(&wcex);
+			wcex.hCursor=LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZEWE));
+			ATOM aSplitter=RegisterClassEx(&wcex);
 			GetWindowRect(dirList, &treeRect);
 			GetWindowRect(romList, &listRect);
 			POINT p;
@@ -6002,7 +6071,7 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 			p.x=treeRect.right;
 			p.y=treeRect.top;
 			ScreenToClient(hDlg, &p);
-			hSplit=CreateWindow(TEXT("S9xSplitter"), TEXT(""),WS_CHILD|WS_VISIBLE , p.x, p.y, listRect.left-treeRect.right , listRect.bottom-listRect.top, hDlg,NULL, g_hInst,0);
+			hSplit=CreateWindow(TEXT("S9xSplitter"), TEXT(""),WS_CHILD|WS_VISIBLE , p.x, p.y, listRect.left-treeRect.right , listRect.bottom-listRect.top, hDlg, (HMENU)IDC_ROM_SPLITTER, g_hInst,0);
 
 			LVCOLUMN col;
 			static const LPTSTR temp1 = ROM_COLUMN_FILENAME;
@@ -6288,6 +6357,10 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 				nextInvalidatedROM = rdl;
 				nextInvalidatedROMCounter = 0;
 				SetTimer(hDlg,42,600,NULL);
+
+				RECT clientRect;
+				GetClientRect(hDlg, &clientRect);
+				PostMessage(hDlg, WM_SIZE, SIZE_RESTORED, MAKELPARAM(clientRect.right, clientRect.bottom));
 
 				return true; //true sets the keyboard focus, in case we need this elsewhere
 		}
@@ -6734,6 +6807,7 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 		}
 	default:return false;
 	}
+	return false;
 }
 LRESULT CALLBACK DlgChildSplitProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {

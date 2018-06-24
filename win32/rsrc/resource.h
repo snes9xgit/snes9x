@@ -383,6 +383,11 @@
 #define IDC_SLIDER_VOLUME_TURBO         3020
 #define IDC_EDIT_VOLUME_TURBO           3021
 #define IDC_STATIC_CONTAINER            3022
+#define IDC_STATIC_MEMORY_TYPE          3023
+#define IDC_STATIC_INTERLEAVE_MODE      3024
+#define IDC_STATIC_VIDEO_SYSTEM         3025
+#define IDC_STATIC_HEADER               3026
+#define IDC_ROM_SPLITTER				3027
 #define ID_FILE_EXIT                    40001
 #define ID_WINDOW_HIDEMENUBAR           40004
 #define ID_FILE_AVI_RECORDING           40005
@@ -530,9 +535,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        158
+#define _APS_NEXT_RESOURCE_VALUE        159
 #define _APS_NEXT_COMMAND_VALUE         40178
-#define _APS_NEXT_CONTROL_VALUE         3023
+#define _APS_NEXT_CONTROL_VALUE         3028
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
