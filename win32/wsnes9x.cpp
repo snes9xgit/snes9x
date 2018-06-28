@@ -1998,7 +1998,7 @@ LRESULT CALLBACK WinProc(
 
 		case ID_FILE_EXIT:
             S9xSetPause (PAUSE_EXIT);
-            PostMessage (hWnd, WM_DESTROY, 0, 0);
+            PostMessage (hWnd, WM_CLOSE, 0, 0);
             break;
 
 		case ID_WINDOW_HIDEMENUBAR:
