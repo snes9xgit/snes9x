@@ -273,7 +273,7 @@ static void InitCheatItems (void)
 
 static void ImportCheatItems (void)
 {
-    int cheat_num = std::min(Cheat.g.size(), MAC_MAX_CHEATS);
+    int cheat_num = std::min((int)Cheat.g.size(), MAC_MAX_CHEATS);
 	for (unsigned int i = 0; i < cheat_num; i++)
 	{
 		citem[i].valid   = true;
