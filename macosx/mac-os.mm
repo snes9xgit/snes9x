@@ -1794,9 +1794,9 @@ static OSStatus HandleMenuChoice (UInt32 command, Boolean *done)
 				Settings.ApplyCheats = applycheat;
 
 				if (!Settings.ApplyCheats)
-					S9xRemoveCheats();
+					S9xCheatsDisable();
 				else
-					S9xApplyCheats();
+					S9xCheatsEnable();
 
 				break;
 
