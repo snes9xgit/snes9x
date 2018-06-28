@@ -1297,7 +1297,7 @@ static void CheatFinderHandleAddEntryButton (WindowData *cf)
 	if (cfAddress[cfListSelection] > (0x20000 - cfViewNumBytes))
 		PlayAlertSound();
 	else
-	if (Cheat.g.size() + cfViewNumBytes > MAX_CHEATS)
+	if (Cheat.g.size() + cfViewNumBytes > MAC_MAX_CHEATS)
 		AppearanceAlert(kAlertCautionAlert, kS9xMacAlertCFCantAddEntry, kS9xMacAlertCFCantAddEntryHint);
 	else
 		CheatFinderBeginAddEntrySheet(cf);
