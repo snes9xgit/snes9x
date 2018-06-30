@@ -732,26 +732,6 @@ static bool8 is_SufamiTurbo_Cart (const uint8 *data, uint32 size)
       return (FALSE);
 }
 
-void retro_load_init_reset()
-{
-   struct retro_memory_map map={ memorydesc+MAX_MAPS-memorydesc_c, memorydesc_c };
-   if (rom_loaded) environ_cb(RETRO_ENVIRONMENT_SET_MEMORY_MAPS, &map);
-
-   int pixel_format = RGB555;
-   if(environ_cb) {
-      pixel_format = RGB565;
-      enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
-      if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
-         pixel_format = RGB555;
-   }
-   S9xGraphicsDeinit();
-   S9xSetRenderPixelFormat(pixel_format);
-   S9xGraphicsInit();
-
-   update_geometry();
-   audio_interp_max = 32768;
-}
-
 bool retro_load_game(const struct retro_game_info *game)
 {
    init_descriptors();
@@ -788,7 +768,8 @@ bool retro_load_game(const struct retro_game_info *game)
    }
 
    int pixel_format = RGB555;
-   if(environ_cb) {
+   if(environ_cb) 
+   {
       pixel_format = RGB565;
       enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
       if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
@@ -798,19 +779,18 @@ bool retro_load_game(const struct retro_game_info *game)
    S9xSetRenderPixelFormat(pixel_format);
    S9xGraphicsInit();
 
+   struct retro_memory_map map={ memorydesc+MAX_MAPS-memorydesc_c, memorydesc_c };
+   if (rom_loaded)
+   {
+       environ_cb(RETRO_ENVIRONMENT_SET_MEMORY_MAPS, &map);
+       update_geometry();
+   }
+
    if (!rom_loaded && log_cb)
       log_cb(RETRO_LOG_ERROR, "[libretro]: Rom loading failed...\n");
 
-   struct retro_memory_map map={ memorydesc+MAX_MAPS-memorydesc_c, memorydesc_c };
-   if (rom_loaded) environ_cb(RETRO_ENVIRONMENT_SET_MEMORY_MAPS, &map);
-
-   update_geometry();
-
    return rom_loaded;
 }
-
-void retro_unload_game(void)
-{}
 
 bool retro_load_game_special(unsigned game_type, const struct retro_game_info *info, size_t num_info)
 {
@@ -897,10 +877,31 @@ bool retro_load_game_special(unsigned game_type, const struct retro_game_info *i
          break;
    }
 
-   if (rom_loaded) retro_load_init_reset();
+   if (rom_loaded)
+   {
+        int pixel_format = RGB555;
+        if(environ_cb) 
+        {
+            pixel_format = RGB565;
+            enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
+            if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
+                pixel_format = RGB555;
+        }
+        S9xGraphicsDeinit();
+        S9xSetRenderPixelFormat(pixel_format);
+        S9xGraphicsInit();
+
+        struct retro_memory_map map={ memorydesc+MAX_MAPS-memorydesc_c, memorydesc_c };
+        environ_cb(RETRO_ENVIRONMENT_SET_MEMORY_MAPS, &map);
+        update_geometry();
+        audio_interp_max = 32768;
+   }
 
    return rom_loaded;
 }
+
+void retro_unload_game(void)
+{}
 
 static void map_buttons();
 
