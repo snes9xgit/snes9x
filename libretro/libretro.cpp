@@ -167,10 +167,8 @@ void retro_set_environment(retro_environment_t cb)
         // Changing "Show layer 1" is fine, but don't change "layer_1"/etc or the possible values ("Yes|No").
         // Adding more variables and rearranging them is safe.
         { "snes9x_up_down_allowed", "Allow Opposing Directions; disabled|enabled" },
-        { "snes9x_hires_blend", "Hires Blending; disabled|enabled" },
         { "snes9x_overclock_superfx", "SuperFX Overclocking; 100%|150%|200%|250%|300%|350%|400%|450%|500%|50%" },
-        //{ "snes9x_overclock_cycles", "Reduce Slowdown (Hack, Unsafe); disabled|compatible|max" },
-        //{ "snes9x_reduce_sprite_flicker", "Reduce Flickering (Hack, Unsafe); disabled|enabled" },
+        { "snes9x_hires_blend", "Hires Blending; disabled|enabled" },
         { "snes9x_layer_1", "Show layer 1; enabled|disabled" },
         { "snes9x_layer_2", "Show layer 2; enabled|disabled" },
         { "snes9x_layer_3", "Show layer 3; enabled|disabled" },
@@ -457,7 +455,7 @@ void retro_reset()
     S9xSoftReset();
 }
 
-static unsigned snes_devices[2];
+static unsigned snes_devices[8];
 void retro_set_controller_port_device(unsigned port, unsigned device)
 {
     if (port < 8)
@@ -491,12 +489,12 @@ void retro_set_controller_port_device(unsigned port, unsigned device)
                 break;
             default:
                 if (log_cb)
-                    log_cb(RETRO_LOG_ERROR, "[libretro]: Invalid device (%d).\n", device);
+                    log_cb(RETRO_LOG_ERROR, "Invalid device (%d).\n", device);
                 break;
         }
     }
     else if(device != RETRO_DEVICE_NONE)
-        log_cb(RETRO_LOG_INFO, "[libretro]: Nonexistent Port (%d).\n", port);
+        log_cb(RETRO_LOG_INFO, "Nonexistent Port (%d).\n", port);
 }
 
 void retro_cheat_reset()
@@ -537,46 +535,6 @@ void retro_cheat_set(unsigned index, bool enabled, const char *codeline)
     }
 
     S9xCheatsEnable();
-}
-
-#define MAX_MAPS 32
-static struct retro_memory_descriptor memorydesc[MAX_MAPS];
-static unsigned memorydesc_c;
-
-static bool merge_mapping()
-{
-    if (memorydesc_c==1) return false;//can't merge the only one
-    struct retro_memory_descriptor * a=&memorydesc[MAX_MAPS - (memorydesc_c-1)];
-    struct retro_memory_descriptor * b=&memorydesc[MAX_MAPS - memorydesc_c];
-
-    if (a->flags != b->flags) return false;
-    if (a->disconnect != b->disconnect) return false;
-    if (a->len != b->len) return false;
-    if (a->addrspace || b->addrspace) return false;//we don't use these
-    if (((char*)a->ptr)+a->offset==((char*)b->ptr)+b->offset && a->select==b->select)
-    {
-        a->select&=~(a->start^b->start);
-        memorydesc_c--;
-        return true;
-    }
-    uint32 len=a->len;
-    if (!len) len=(0x1000000 - a->select);
-    if (len && ((len-1) & (len | a->disconnect))==0 && ((char*)a->ptr)+a->offset+len == ((char*)b->ptr)+b->offset)
-    {
-        a->select &=~ len;
-        a->disconnect &=~ len;
-        memorydesc_c--;
-        return true;
-    }
-    return false;
-}
-
-void S9xAppendMapping(struct retro_memory_descriptor *desc)
-{
-    //do it backwards - snes9x defines the last one to win, while we define the first one to win
-    //printf("add %x\n",desc->start);
-    memcpy(&memorydesc[MAX_MAPS - (++memorydesc_c)], desc, sizeof(struct retro_memory_descriptor));
-    while (merge_mapping()) {}
 }
 
 static void init_descriptors(void)
@@ -769,15 +727,11 @@ bool retro_load_game(const struct retro_game_info *game)
     S9xSetRenderPixelFormat(pixel_format);
     S9xGraphicsInit();
 
-    struct retro_memory_map map={ memorydesc+MAX_MAPS-memorydesc_c, memorydesc_c };
     if (rom_loaded)
-    {
-        environ_cb(RETRO_ENVIRONMENT_SET_MEMORY_MAPS, &map);
         update_geometry();
-    }
 
     if (!rom_loaded && log_cb)
-        log_cb(RETRO_LOG_ERROR, "[libretro]: Rom loading failed...\n");
+        log_cb(RETRO_LOG_ERROR, "ROM loading failed...\n");
 
     return rom_loaded;
 }
@@ -792,7 +746,7 @@ static void remove_header(uint8_t *&romptr, size_t &romsize, bool multicart_sufa
         romptr += 512;
         romsize -= 512;
 
-        if(log_cb) log_cb(RETRO_LOG_INFO,"[libretro]: ROM header removed\n");
+        if(log_cb) log_cb(RETRO_LOG_INFO,"ROM header removed\n");
     }
 
     if (multicart_sufami && (romptr + romsize) >= (romptr + 0x100000))
@@ -803,7 +757,7 @@ static void remove_header(uint8_t *&romptr, size_t &romsize, bool multicart_sufa
             romptr += 0x100000;
             romsize -= 0x100000;
 
-            if(log_cb) log_cb(RETRO_LOG_INFO,"[libretro]: Sufami Turbo Multi-ROM bios removed\n");
+            if(log_cb) log_cb(RETRO_LOG_INFO,"Sufami Turbo Multi-ROM bios removed\n");
         }
     }
 }
@@ -821,7 +775,6 @@ bool retro_load_game_special(unsigned game_type, const struct retro_game_info *i
     }
 
     init_descriptors();
-    memorydesc_c = 0;
     rom_loaded = false;
 
     update_variables();
@@ -839,7 +792,7 @@ bool retro_load_game_special(unsigned game_type, const struct retro_game_info *i
             }
 
             if (!rom_loaded && log_cb)
-                log_cb(RETRO_LOG_ERROR, "[libretro]: BSX ROM loading failed...\n");
+                log_cb(RETRO_LOG_ERROR, "BSX ROM loading failed...\n");
             break;
         case RETRO_GAME_TYPE_BSX_SLOTTED:
         case RETRO_GAME_TYPE_MULTI_CART:
@@ -866,7 +819,7 @@ bool retro_load_game_special(unsigned game_type, const struct retro_game_info *i
                 else
                 {
                     if (log_cb)
-                        log_cb(RETRO_LOG_INFO, "[libretro]: Loading Multi-Cart link game\n");
+                        log_cb(RETRO_LOG_INFO, "Loading Multi-Cart link game\n");
 
                     rom_loaded = Memory.LoadMultiCartMem((const uint8_t*)romptr[0], romsize[0],
                         (const uint8_t*)romptr[1], romsize[1], NULL, 0);
@@ -874,7 +827,7 @@ bool retro_load_game_special(unsigned game_type, const struct retro_game_info *i
             }
 
             if (!rom_loaded && log_cb)
-                log_cb(RETRO_LOG_ERROR, "[libretro]: Multirom loading failed...\n");
+                log_cb(RETRO_LOG_ERROR, "Multirom loading failed...\n");
             break;
 
         case RETRO_GAME_TYPE_SUFAMI_TURBO:
@@ -891,12 +844,12 @@ bool retro_load_game_special(unsigned game_type, const struct retro_game_info *i
             }
 
             if (!rom_loaded && log_cb)
-                log_cb(RETRO_LOG_ERROR, "[libretro]: Sufami Turbo ROM loading failed...\n");
+                log_cb(RETRO_LOG_ERROR, "Sufami Turbo ROM loading failed...\n");
             break;
 
         default:
             rom_loaded = false;
-            log_cb(RETRO_LOG_ERROR, "[libretro]: Multi-cart ROM loading failed...\n");
+            log_cb(RETRO_LOG_ERROR, "Multi-cart ROM loading failed...\n");
             break;
     }
 
@@ -914,8 +867,6 @@ bool retro_load_game_special(unsigned game_type, const struct retro_game_info *i
         S9xSetRenderPixelFormat(pixel_format);
         S9xGraphicsInit();
 
-        struct retro_memory_map map={ memorydesc+MAX_MAPS-memorydesc_c, memorydesc_c };
-        environ_cb(RETRO_ENVIRONMENT_SET_MEMORY_MAPS, &map);
         update_geometry();
     }
 
@@ -989,7 +940,7 @@ void retro_init(void)
         S9xDeinitAPU();
 
         if (log_cb)
-            log_cb(RETRO_LOG_ERROR, "[libretro]: Failed to init Memory or APU.\n");
+            log_cb(RETRO_LOG_ERROR, "Failed to init Memory or APU.\n");
         exit(1);
     }
 
@@ -1229,7 +1180,7 @@ static void report_buttons()
 
             default:
                 if (log_cb)
-                    log_cb(RETRO_LOG_ERROR, "[libretro]: Unknown device...\n");
+                    log_cb(RETRO_LOG_ERROR, "Unknown device...\n");
         }
     }
 }
