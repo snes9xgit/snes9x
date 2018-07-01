@@ -168,7 +168,7 @@ void retro_set_environment(retro_environment_t cb)
         // Adding more variables and rearranging them is safe.
         { "snes9x_up_down_allowed", "Allow Opposing Directions; disabled|enabled" },
         { "snes9x_hires_blend", "Hires Blending; disabled|enabled" },
-        { "snes9x_overclock", "SuperFX Frequency; 100%|200%|400%|600%|800%|1000%" },
+        { "snes9x_overclock_superfx", "SuperFX Overclocking; 100%|150%|200%|250%|300%|350%|400%|450%|500%|50%" },
         //{ "snes9x_overclock_cycles", "Reduce Slowdown (Hack, Unsafe); disabled|compatible|max" },
         //{ "snes9x_reduce_sprite_flicker", "Reduce Flickering (Hack, Unsafe); disabled|enabled" },
         { "snes9x_layer_1", "Show layer 1; enabled|disabled" },
@@ -894,7 +894,6 @@ bool retro_load_game_special(unsigned game_type, const struct retro_game_info *i
         struct retro_memory_map map={ memorydesc+MAX_MAPS-memorydesc_c, memorydesc_c };
         environ_cb(RETRO_ENVIRONMENT_SET_MEMORY_MAPS, &map);
         update_geometry();
-        audio_interp_max = 32768;
     }
 
     return rom_loaded;
