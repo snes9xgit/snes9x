@@ -680,32 +680,6 @@ static int is_bsx (uint8 *p)
     return (0);
 }
 
-static void Remove_Header(uint8_t *&romptr, size_t &romsize, bool multicart_sufami)
-{
-    if (romptr==0 || romsize==0) return;
-
-    uint32 calc_size = (romsize / 0x2000) * 0x2000;
-    if ((romsize - calc_size == 512 && !Settings.ForceNoHeader) || Settings.ForceHeader)
-    {
-        romptr += 512;
-        romsize -= 512;
-
-        if(log_cb) log_cb(RETRO_LOG_INFO,"[libretro]: ROM header removed\n");
-    }
-
-    if (multicart_sufami)
-    {
-        if (strncmp((const char*)(romptr+0x100000), "BANDAI SFC-ADX", 14) == 0 &&
-            strncmp((const char*)(romptr+0x000000), "BANDAI SFC-ADX", 14) == 0)
-        {
-            romptr += 0x100000;
-            romsize -= 0x100000;
-
-            if(log_cb) log_cb(RETRO_LOG_INFO,"[libretro]: Sufami Turbo Multi-ROM bios removed\n");
-        }
-    }
-}
-
 static bool8 LoadBIOS(uint8 *biosrom, char *biosname, int biossize)
 {
     FILE	*fp;
@@ -808,17 +782,42 @@ bool retro_load_game(const struct retro_game_info *game)
     return rom_loaded;
 }
 
+static void remove_header(uint8_t *&romptr, size_t &romsize, bool multicart_sufami)
+{
+    if (romptr==0 || romsize==0) return;
+
+    uint32 calc_size = (romsize / 0x2000) * 0x2000;
+    if ((romsize - calc_size == 512 && !Settings.ForceNoHeader) || Settings.ForceHeader)
+    {
+        romptr += 512;
+        romsize -= 512;
+
+        if(log_cb) log_cb(RETRO_LOG_INFO,"[libretro]: ROM header removed\n");
+    }
+
+    if (multicart_sufami && (romptr + romsize) >= (romptr + 0x100000))
+    {
+        if (strncmp((const char*)(romptr + 0x100000), "BANDAI SFC-ADX", 14) == 0 &&
+            strncmp((const char*)(romptr + 0x000000), "BANDAI SFC-ADX", 14) == 0)
+        {
+            romptr += 0x100000;
+            romsize -= 0x100000;
+
+            if(log_cb) log_cb(RETRO_LOG_INFO,"[libretro]: Sufami Turbo Multi-ROM bios removed\n");
+        }
+    }
+}
+
 bool retro_load_game_special(unsigned game_type, const struct retro_game_info *info, size_t num_info)
 {
     uint8_t *romptr[3];
     size_t romsize[3];
 
-    for(size_t lcv=0; lcv<num_info; lcv++)
+    for(size_t i=0; i < num_info; i++)
     {
-        romptr[lcv] = (uint8_t *) info[lcv].data;
-        romsize[lcv] = info[lcv].size;
-
-        Remove_Header(romptr[lcv], romsize[lcv], true);
+        romptr[i] = (uint8_t *) info[i].data;
+        romsize[i] = info[i].size;
+        remove_header(romptr[i], romsize[i], true);
     }
 
     init_descriptors();
@@ -826,65 +825,73 @@ bool retro_load_game_special(unsigned game_type, const struct retro_game_info *i
     rom_loaded = false;
 
     update_variables();
-
-    switch (game_type) {
+    switch (game_type)
+    {
         case RETRO_GAME_TYPE_BSX:
-            if(num_info == 1) {
-            rom_loaded = Memory.LoadROMMem((const uint8_t*)romptr[0],romsize[0]);
-            } else if(num_info == 2) {
-            memcpy(Memory.BIOSROM,(const uint8_t*)romptr[0],info[0].size);
-            rom_loaded = Memory.LoadROMMem((const uint8_t*)romptr[1],info[1].size);
+            if(num_info == 1)
+            {
+              rom_loaded = Memory.LoadROMMem((const uint8_t*)romptr[0],romsize[0]);
+            }
+            else if(num_info == 2)
+            {
+                memcpy(Memory.BIOSROM,(const uint8_t*)romptr[0],info[0].size);
+                rom_loaded = Memory.LoadROMMem((const uint8_t*)romptr[1],info[1].size);
             }
 
             if (!rom_loaded && log_cb)
-            log_cb(RETRO_LOG_ERROR, "[libretro]: BSX ROM loading failed...\n");
-
+                log_cb(RETRO_LOG_ERROR, "[libretro]: BSX ROM loading failed...\n");
             break;
-
         case RETRO_GAME_TYPE_BSX_SLOTTED:
         case RETRO_GAME_TYPE_MULTI_CART:
-            if(num_info == 2) {
-            if (is_SufamiTurbo_Cart((const uint8_t*)romptr[0], romsize[0])) {
-                uint8 *biosrom = new uint8[0x40000];
-                uint8 *biosptr = biosrom;
+            if(num_info == 2)
+            {
+                if (is_SufamiTurbo_Cart((const uint8_t*)romptr[0], romsize[0]))
+                {
+                    log_cb(RETRO_LOG_ERROR, "Cart is Sufami Turbo...\n");
+                    uint8 *biosrom = new uint8[0x40000];
+                    uint8 *biosptr = biosrom;
 
-                if (LoadBIOS(biosptr,"STBIOS.bin",0x40000)) {
-                    if (log_cb) log_cb(RETRO_LOG_INFO, "[libretro]: Loading Sufami Turbo link game\n");
+                    if (LoadBIOS(biosptr,"STBIOS.bin",0x40000))
+                    {
+                        if (log_cb)
+                            log_cb(RETRO_LOG_INFO, "Loading Sufami Turbo link game\n");
+
+                        rom_loaded = Memory.LoadMultiCartMem((const uint8_t*)romptr[0], romsize[0],
+                               (const uint8_t*)romptr[1], romsize[1], biosptr, 0x40000);
+                    }
+
+                if (biosrom)
+                    delete[] biosrom;
+                }
+                else
+                {
+                    if (log_cb)
+                        log_cb(RETRO_LOG_INFO, "[libretro]: Loading Multi-Cart link game\n");
 
                     rom_loaded = Memory.LoadMultiCartMem((const uint8_t*)romptr[0], romsize[0],
-                                (const uint8_t*)romptr[1], romsize[1], biosptr, 0x40000);
+                        (const uint8_t*)romptr[1], romsize[1], NULL, 0);
                 }
-
-                if (biosrom) delete[] biosrom;
-            }
-
-            else {
-                if (log_cb) log_cb(RETRO_LOG_INFO, "[libretro]: Loading Multi-Cart link game\n");
-
-                rom_loaded = Memory.LoadMultiCartMem((const uint8_t*)romptr[0], romsize[0],
-                            (const uint8_t*)romptr[1], romsize[1], NULL, 0);
-            }
             }
 
             if (!rom_loaded && log_cb)
-            log_cb(RETRO_LOG_ERROR, "[libretro]: Multirom loading failed...\n");
-
+                log_cb(RETRO_LOG_ERROR, "[libretro]: Multirom loading failed...\n");
             break;
 
         case RETRO_GAME_TYPE_SUFAMI_TURBO:
-            if(num_info == 2) {
-            uint8 *biosrom = new uint8[0x100000];
+            if(num_info == 2)
+            {
+                uint8 *biosrom = new uint8[0x100000];
 
-            if ((rom_loaded = LoadBIOS(biosrom,"STBIOS.bin",0x100000)))
-                rom_loaded = Memory.LoadMultiCartMem((const uint8_t*)romptr[0], romsize[0],
-                            (const uint8_t*)romptr[1], romsize[1], biosrom, 0x40000);
+                if ((rom_loaded = LoadBIOS(biosrom,"STBIOS.bin",0x100000)))
+                    rom_loaded = Memory.LoadMultiCartMem((const uint8_t*)romptr[0], romsize[0],
+                        (const uint8_t*)romptr[1], romsize[1], biosrom, 0x40000);
 
-            if (biosrom) delete[] biosrom;
+                if (biosrom)
+                    delete[] biosrom;
             }
 
             if (!rom_loaded && log_cb)
-            log_cb(RETRO_LOG_ERROR, "[libretro]: Sufami Turbo ROM loading failed...\n");
-
+                log_cb(RETRO_LOG_ERROR, "[libretro]: Sufami Turbo ROM loading failed...\n");
             break;
 
         default:
@@ -1281,8 +1288,8 @@ void* retro_get_memory_data(unsigned type)
 {
     void* data;
 
-    switch(type) {
-        case RETRO_MEMORY_SNES_SUFAMI_TURBO_A_RAM:
+    switch(type) 
+    {
         case RETRO_MEMORY_SAVE_RAM:
             data = Memory.SRAM;
             break;
