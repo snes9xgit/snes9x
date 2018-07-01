@@ -736,6 +736,7 @@ bool retro_load_game(const struct retro_game_info *game)
     return rom_loaded;
 }
 
+
 static void remove_header(uint8_t *&romptr, size_t &romsize, bool multicart_sufami)
 {
     if (romptr==0 || romsize==0) return;
@@ -746,7 +747,7 @@ static void remove_header(uint8_t *&romptr, size_t &romsize, bool multicart_sufa
         romptr += 512;
         romsize -= 512;
 
-        if(log_cb) log_cb(RETRO_LOG_INFO,"ROM header removed\n");
+        if(log_cb) log_cb(RETRO_LOG_INFO,"[libretro]: ROM header removed\n");
     }
 
     if (multicart_sufami && (romptr + romsize) >= (romptr + 0x100000))
@@ -757,7 +758,7 @@ static void remove_header(uint8_t *&romptr, size_t &romsize, bool multicart_sufa
             romptr += 0x100000;
             romsize -= 0x100000;
 
-            if(log_cb) log_cb(RETRO_LOG_INFO,"Sufami Turbo Multi-ROM bios removed\n");
+            if(log_cb) log_cb(RETRO_LOG_INFO,"[libretro]: Sufami Turbo Multi-ROM bios removed\n");
         }
     }
 }
