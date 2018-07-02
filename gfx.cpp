@@ -369,7 +369,13 @@ void S9xStartScreenRefresh (void)
 			}
 			else
 			{
-				GFX.RealPPL = GFX.Pitch >> 1;
+				#ifdef USE_OPENGL
+				if (Settings.OpenGLEnable)
+					GFX.RealPPL = SNES_WIDTH;
+				else
+				#endif
+					GFX.RealPPL = GFX.Pitch >> 1;
+
 				IPPU.DoubleWidthPixels = FALSE;
 				IPPU.RenderedScreenWidth = SNES_WIDTH;
 			}
@@ -680,6 +686,27 @@ void S9xUpdateScreen (void)
 		{
 			if (!IPPU.DoubleWidthPixels && (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.PseudoHires))
 			{
+				#ifdef USE_OPENGL
+				if (Settings.OpenGLEnable && GFX.RealPPL == 256)
+				{
+					// Have to back out of the speed up hack where the low res.
+					// SNES image was rendered into a 256x239 sized buffer,
+					// ignoring the true, larger size of the buffer.
+					GFX.RealPPL = GFX.Pitch >> 1;
+
+					for (register int32 y = (int32) GFX.StartY - 1; y >= 0; y--)
+					{
+						register uint16	*p = GFX.Screen + y * GFX.PPL     + 255;
+						register uint16	*q = GFX.Screen + y * GFX.RealPPL + 510;
+
+						for (register int x = 255; x >= 0; x--, p--, q -= 2)
+							*q = *(q + 1) = *p;
+					}
+
+					GFX.PPL = GFX.RealPPL; // = GFX.Pitch >> 1 above
+				}
+				else
+				#endif
 				// Have to back out of the regular speed hack
 				for (register uint32 y = 0; y < GFX.StartY; y++)
 				{
