@@ -485,7 +485,7 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 
 			case 0x2102: // OAMADDL
 				PPU.OAMAddr = ((Memory.FillRAM[0x2103] & 1) << 8) | Byte;
-				PPU.OAMFlip = 2;
+				PPU.OAMFlip = 0;
 				PPU.OAMReadFlip = 0;
 				PPU.SavedOAMAddr = PPU.OAMAddr;
 				if (PPU.OAMPriorityRotation && PPU.FirstSprite != (PPU.OAMAddr >> 1))

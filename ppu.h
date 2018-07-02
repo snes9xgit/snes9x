@@ -419,6 +419,12 @@ static inline void FLUSH_REDRAW (void)
 
 static inline void REGISTER_2104 (uint8 Byte)
 {
+	if (!(PPU.OAMFlip & 1))
+	{
+		PPU.OAMWriteRegister &= 0xff00;
+		PPU.OAMWriteRegister |= Byte;
+	}
+
 	if (PPU.OAMAddr & 0x100)
 	{
 		int addr = ((PPU.OAMAddr & 0x10f) << 1) + (PPU.OAMFlip & 1);
@@ -440,33 +446,8 @@ static inline void REGISTER_2104 (uint8 Byte)
 			pObj->Size = Byte & 128;
 		}
 
-		PPU.OAMFlip ^= 1;
-		if (!(PPU.OAMFlip & 1))
-		{
-			++PPU.OAMAddr;
-			PPU.OAMAddr &= 0x1ff;
-			if (PPU.OAMPriorityRotation && PPU.FirstSprite != (PPU.OAMAddr >> 1))
-			{
-				PPU.FirstSprite = (PPU.OAMAddr & 0xfe) >> 1;
-				IPPU.OBJChanged = TRUE;
-			}
-		}
-		else
-		{
-			if (PPU.OAMPriorityRotation && (PPU.OAMAddr & 1))
-				IPPU.OBJChanged = TRUE;
-		}
 	}
-	else
-	if (!(PPU.OAMFlip & 1))
-	{
-		PPU.OAMWriteRegister &= 0xff00;
-		PPU.OAMWriteRegister |= Byte;
-		PPU.OAMFlip |= 1;
-		if (PPU.OAMPriorityRotation && (PPU.OAMAddr & 1))
-			IPPU.OBJChanged = TRUE;
-	}
-	else
+	else if (PPU.OAMFlip & 1)
 	{
 		PPU.OAMWriteRegister &= 0x00ff;
 		uint8 lowbyte = (uint8) (PPU.OAMWriteRegister);
@@ -499,14 +480,23 @@ static inline void REGISTER_2104 (uint8 Byte)
 				PPU.OBJ[addr].VPos = highbyte;
 			}
 		}
+	}
 
-		PPU.OAMFlip &= ~1;
+	PPU.OAMFlip ^= 1;
+	if (!(PPU.OAMFlip & 1))
+	{
 		++PPU.OAMAddr;
+		PPU.OAMAddr &= 0x1ff;
 		if (PPU.OAMPriorityRotation && PPU.FirstSprite != (PPU.OAMAddr >> 1))
 		{
 			PPU.FirstSprite = (PPU.OAMAddr & 0xfe) >> 1;
 			IPPU.OBJChanged = TRUE;
 		}
+	}
+	else
+	{
+		if (PPU.OAMPriorityRotation && (PPU.OAMAddr & 1))
+			IPPU.OBJChanged = TRUE;
 	}
 }
 
