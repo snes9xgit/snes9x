@@ -302,6 +302,15 @@ struct dMode
 	long rate;
 };
 
+struct sCustomRomDlgSettings {
+	int columnFilename;
+	int columnDescription;
+	int columnSize;
+	int folderPaneWidth;
+	RECT window_size;
+	bool window_maximized;
+};
+
 struct sGUI {
     HWND hWnd;
     HMENU hMenu;
@@ -345,6 +354,8 @@ struct sGUI {
     bool IgnoreNextMouseMove;
     RECT window_size;
 	bool window_maximized;
+	sCustomRomDlgSettings customRomDlgSettings;
+
     int  MouseX;
     int  MouseY;
     unsigned int MouseButtons;

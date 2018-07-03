@@ -806,6 +806,9 @@ void WinPreSave(ConfigFile& conf)
 	if(GUI.window_size.bottom < 10) GUI.window_size.bottom = 10;
 	if(GUI.window_size.right < 10) GUI.window_size.right = 10;
 
+	GUI.customRomDlgSettings.window_size.right -= GUI.customRomDlgSettings.window_size.left;
+	GUI.customRomDlgSettings.window_size.bottom -= GUI.customRomDlgSettings.window_size.top;
+
 	conf.DeleteKey("Sound::Mono");
 	if(configSort == 2)
 		conf.ClearLines();
@@ -825,6 +828,9 @@ void WinPostSave(ConfigFile& conf)
 	GUI.window_size.bottom += GUI.window_size.top;
 	GUI.window_size.right += extra_width;
 	GUI.window_size.bottom += extra_height;
+
+	GUI.customRomDlgSettings.window_size.right += GUI.customRomDlgSettings.window_size.left;
+	GUI.customRomDlgSettings.window_size.bottom += GUI.customRomDlgSettings.window_size.top;
 }
 void WinPostLoad(ConfigFile& conf)
 {
@@ -913,6 +919,15 @@ void WinRegisterConfigItems()
 	AddIntC("Window:Left", GUI.window_size.left, 0, "in pixels from left edge of screen");
 	AddIntC("Window:Top", GUI.window_size.top, 0, "in pixels from top edge of screen");
 	AddBool("Window:Maximized", GUI.window_maximized, false);
+	AddIntC("CustomRomDialog:Width", GUI.customRomDlgSettings.window_size.right, 660, "");
+	AddIntC("CustomRomDialog:Height", GUI.customRomDlgSettings.window_size.bottom, 400, "");
+	AddIntC("CustomRomDialog:Left", GUI.customRomDlgSettings.window_size.left, 50, "in pixels from left edge of screen");
+	AddIntC("CustomRomDialog:Top", GUI.customRomDlgSettings.window_size.top, 50, "in pixels from top edge of screen");
+	AddBool("CustomRomDialog:Maximized", GUI.customRomDlgSettings.window_maximized, false);
+	AddIntC("CustomRomDialog:FolderPaneWidth", GUI.customRomDlgSettings.folderPaneWidth, 230, "");
+	AddIntC("CustomRomDialog:DescColumnWidth", GUI.customRomDlgSettings.columnDescription, 112, "");
+	AddIntC("CustomRomDialog:FilenameColumnWidth", GUI.customRomDlgSettings.columnFilename, 196, "");
+	AddIntC("CustomRomDialog:SizeColumnWidth", GUI.customRomDlgSettings.columnSize, 67, "");
 	AddBoolC("Stretch:Enabled", GUI.Stretch, true, "true to stretch the game image to fill the window or screen");
 	AddBoolC("Stretch:MaintainAspectRatio", GUI.AspectRatio, true, "prevents stretching from changing the aspect ratio");
 	AddBoolC("Stretch:IntegerScaling", GUI.IntegerScaling, false, "scales image height to exact integer multiples");

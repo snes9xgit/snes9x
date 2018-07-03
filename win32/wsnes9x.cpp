@@ -6019,6 +6019,74 @@ void MoveOpenRomWindows(HWND hDlg, unsigned int newWidth, int newHeight)
 	SetWindowPos(cancelButton, 0, buttonCancelLeft, buttonTop, 0, 0, SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOZORDER);
 }
 
+void MoveSplitterRelativeDirList(HWND hDlg, int offset_x)
+{
+	HWND hTree, hList, hSplitter;
+	RECT treeRect;
+	RECT listRect;
+	hTree = GetDlgItem(hDlg, IDC_ROM_DIR);
+	hList = GetDlgItem(hDlg, IDC_ROMLIST);
+	hSplitter = GetDlgItem(hDlg, IDC_ROM_SPLITTER);
+	GetWindowRect(hTree, &treeRect);
+
+	POINT p;
+	p.x = offset_x + treeRect.right;
+
+	p.y = treeRect.top;
+	GetWindowRect(hList, &listRect);
+
+	if (p.x > (listRect.right - 50))
+	{
+		offset_x -= (short)(p.x - (listRect.right - 50));
+		p.x = listRect.right - 50;
+	}
+
+
+	ScreenToClient(hDlg, &p);
+
+	if (p.x < 50)
+	{
+		offset_x += (short)(50 - p.x);
+		p.x = 50;
+	}
+
+	MoveWindow(hSplitter, p.x, p.y, listRect.left - treeRect.right, listRect.bottom - listRect.top, FALSE);
+	MoveWindow(hList, p.x + (listRect.left - treeRect.right), p.y, listRect.right - listRect.left - offset_x, listRect.bottom - listRect.top, TRUE);
+	p.x = treeRect.left;
+	p.y = treeRect.top;
+	ScreenToClient(hDlg, &p);
+	MoveWindow(hTree, p.x, p.y, treeRect.right - treeRect.left + offset_x, treeRect.bottom - treeRect.top, true);
+	InvalidateRect(hSplitter, NULL, true);
+}
+
+void SaveCustomDialogSettings(HWND hDlg)
+{
+	WINDOWPLACEMENT wndPlacement = { 0 };
+	wndPlacement.length = sizeof(WINDOWPLACEMENT);
+	GetWindowPlacement(hDlg, &wndPlacement);
+	GUI.customRomDlgSettings.window_maximized = wndPlacement.showCmd == SW_SHOWMAXIMIZED;
+	GUI.customRomDlgSettings.window_size = wndPlacement.rcNormalPosition;
+
+	HWND dirList = GetDlgItem(hDlg, IDC_ROM_DIR);
+	HWND romList = GetDlgItem(hDlg, IDC_ROMLIST);
+	RECT dirRect;
+	GetWindowRect(dirList, &dirRect);
+	GUI.customRomDlgSettings.folderPaneWidth = dirRect.right - dirRect.left;
+
+	LVCOLUMN col;
+	memset(&col, 0, sizeof(LVCOLUMN));
+	col.mask = LVCF_WIDTH;
+
+	ListView_GetColumn(romList, 0, &col);
+	GUI.customRomDlgSettings.columnFilename = col.cx;
+
+	ListView_GetColumn(romList, 1, &col);
+	GUI.customRomDlgSettings.columnDescription = col.cx;
+
+	ListView_GetColumn(romList, 2, &col);
+	GUI.customRomDlgSettings.columnSize = col.cx;
+}
+
 INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	int rv=0;
@@ -6079,7 +6147,7 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 			col.mask=LVCF_FMT|LVCF_ORDER|LVCF_TEXT|LVCF_WIDTH;
 			col.fmt=LVCFMT_LEFT;
 			col.iOrder=0;
-			col.cx=196;
+			col.cx= GUI.customRomDlgSettings.columnFilename;
 			col.cchTextMax=5;
 			col.pszText=temp1;
 
@@ -6090,7 +6158,7 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 			col.mask=LVCF_FMT|LVCF_ORDER|LVCF_TEXT|LVCF_WIDTH|LVCF_SUBITEM;
 			col.fmt=LVCFMT_LEFT;
 			col.iOrder=1;
-			col.cx=112;
+			col.cx= GUI.customRomDlgSettings.columnDescription;
 			col.cchTextMax=32;
 			col.pszText=temp2;
 			col.iSubItem=1;
@@ -6103,7 +6171,7 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 			col.mask=LVCF_FMT|LVCF_ORDER|LVCF_TEXT|LVCF_WIDTH|LVCF_SUBITEM;
 			col.fmt=LVCFMT_LEFT;
 			col.iOrder=2;
-			col.cx=67;
+			col.cx= GUI.customRomDlgSettings.columnSize;
 			col.cchTextMax=32;
 			col.pszText=temp3;
 			col.iSubItem=2;
@@ -6358,9 +6426,16 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 				nextInvalidatedROMCounter = 0;
 				SetTimer(hDlg,42,600,NULL);
 
+				WINDOWPLACEMENT wndPlacement = { 0 };
+				wndPlacement.length = sizeof(WINDOWPLACEMENT);
+				wndPlacement.showCmd = GUI.customRomDlgSettings.window_maximized ? SW_SHOWMAXIMIZED : SW_SHOWNORMAL;
+				wndPlacement.rcNormalPosition = GUI.customRomDlgSettings.window_size;
+				SetWindowPlacement(hDlg, &wndPlacement);
+
 				RECT clientRect;
 				GetClientRect(hDlg, &clientRect);
-				PostMessage(hDlg, WM_SIZE, SIZE_RESTORED, MAKELPARAM(clientRect.right, clientRect.bottom));
+				MoveOpenRomWindows(hDlg, clientRect.right, clientRect.bottom);
+				MoveSplitterRelativeDirList(hDlg, GUI.customRomDlgSettings.folderPaneWidth - (treeRect.right - treeRect.left));
 
 				return true; //true sets the keyboard focus, in case we need this elsewhere
 		}
@@ -6554,6 +6629,7 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 					}
 				}
 			case IDCANCEL:
+				SaveCustomDialogSettings(hDlg);
 				EndDialog(hDlg, rv);
 				ClearCacheList(rdl);
 				rdl=NULL;
@@ -6809,6 +6885,7 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 	}
 	return false;
 }
+
 LRESULT CALLBACK DlgChildSplitProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static bool PaintSpecial;
@@ -6835,87 +6912,26 @@ LRESULT CALLBACK DlgChildSplitProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 		SetCapture(hWnd);
         return 0;
     case WM_LBUTTONUP:
-		PaintSpecial=false;
-		temp_x=(GET_X_LPARAM(lParam)-drag_x);
-		HWND hDlg,hTree,hList;
-		RECT treeRect;
-		RECT listRect;
-		hDlg=GetParent(hWnd);
-		hTree=GetDlgItem(hDlg, IDC_ROM_DIR);
-		hList=GetDlgItem(hDlg, IDC_ROMLIST);
-		GetWindowRect(hTree, &treeRect);
-
-		POINT p;
-		p.x=temp_x+treeRect.right;
-		p.y=treeRect.top;
-
-		GetWindowRect(hList, &listRect);
-
-		if(p.x>(listRect.right-50))
-		{
-			temp_x-=(short)(p.x-(listRect.right-50));
-			p.x=listRect.right-50;
-		}
-
-
-		ScreenToClient(hDlg, &p);
-
-		if(p.x<50)
-		{
-			temp_x+=(short)(50-p.x);
-			p.x=50;
-		}
-
-
-		MoveWindow( hWnd, p.x, p.y, listRect.left-treeRect.right, listRect.bottom-listRect.top, FALSE);
-		MoveWindow(hList, p.x+(listRect.left-treeRect.right), p.y,listRect.right-listRect.left-temp_x, listRect.bottom-listRect.top, TRUE);
-		p.x=treeRect.left;
-		p.y=treeRect.top;
-		ScreenToClient(hDlg, &p);
-		MoveWindow(hTree, p.x, p.y,treeRect.right-treeRect.left+temp_x,treeRect.bottom-treeRect.top, true);
-		InvalidateRect(hWnd,NULL, true);
+	{
+		PaintSpecial = false;
+		temp_x = (GET_X_LPARAM(lParam) - drag_x);
+		HWND hDlg = GetParent(hWnd);
+		MoveSplitterRelativeDirList(hDlg, temp_x);
 		ReleaseCapture();
-        return 0;
+		return 0;
+	}
     case WM_MOUSEMOVE:
-        if (wParam & MK_LBUTTON)
+	{
+		if (wParam & MK_LBUTTON)
 		{
 			//move paint location
-			PaintSpecial=true;
-			temp_x=(GET_X_LPARAM(lParam)-drag_x);
-			hDlg=GetParent(hWnd);
-			hTree=GetDlgItem(hDlg, IDC_ROM_DIR);
-			hList=GetDlgItem(hDlg, IDC_ROMLIST);
-			GetWindowRect(hTree, &treeRect);
-
-			p.x=temp_x+treeRect.right;
-
-			p.y=treeRect.top;
-			GetWindowRect(hList, &listRect);
-
-			if(p.x>(listRect.right-50))
-			{
-				temp_x-=(short)(p.x-(listRect.right-50));
-				p.x=listRect.right-50;
-			}
-
-
-			ScreenToClient(hDlg, &p);
-
-			if(p.x<50)
-			{
-				temp_x+=(short)(50-p.x);
-				p.x=50;
-			}
-
-			MoveWindow(hWnd, p.x, p.y, listRect.left-treeRect.right, listRect.bottom-listRect.top, FALSE);
-			MoveWindow(hList, p.x+(listRect.left-treeRect.right), p.y,listRect.right-listRect.left-temp_x, listRect.bottom-listRect.top, TRUE);
-			p.x=treeRect.left;
-			p.y=treeRect.top;
-			ScreenToClient(hDlg, &p);
-			MoveWindow(hTree, p.x, p.y,treeRect.right-treeRect.left+temp_x,treeRect.bottom-treeRect.top, true);
-			InvalidateRect(hWnd,NULL, true);
+			PaintSpecial = true;
+			temp_x = (GET_X_LPARAM(lParam) - drag_x);
+			HWND hDlg = GetParent(hWnd);
+			MoveSplitterRelativeDirList(hDlg, temp_x);
 		}
-        return 0;
+		return 0;
+	}
     case WM_CAPTURECHANGED:
 		PaintSpecial=false;
 		ReleaseCapture();
