@@ -788,7 +788,7 @@ static bool8 S9xLoadCheatFileClassic (const char *filename)
         memcpy (name, &data[8], 20);
         name[20] = 0;
 
-        snprintf (cheat, 21, "%x=%x", c.address, c.byte);
+        snprintf (cheat, 10, "%x=%x", c.address, c.byte);
         S9xAddCheatGroup (name, cheat);
 
         if (c.enabled)
