@@ -296,7 +296,7 @@ static void DetachCheatItems (void)
 			char code[10];
 			snprintf(code, 10, "%x=%x", citem[i].address, citem[i].value);
 			int index = S9xAddCheatGroup(citem[i].description, code);
-			if(citem[i].enabled)
+			if(citem[i].enabled && index >= 0)
 				S9xEnableCheatGroup(index);
 		}
 	}

@@ -1470,7 +1470,8 @@ static void CheatFinderAddEntry (SInt64 value, char *description)
 		char code[10];
 		snprintf(code, 10, "%x=%x", addr + i + 0x7E0000, (UInt8) ((v & (0x000000FF << (i * 8))) >> (i * 8)));
 		int index = S9xAddCheatGroup(description, code);
-		S9xEnableCheatGroup(index);
+		if(index >= 0)
+			S9xEnableCheatGroup(index);
 	}
 }
 
