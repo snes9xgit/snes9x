@@ -10351,8 +10351,9 @@ INT_PTR CALLBACK DlgCheatSearchAdd(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 							code_string += code;
 						}
 
-						S9xAddCheatGroup(new_cheat->name, code_string.c_str());
-						S9xEnableCheatGroup(Cheat.g.size() - 1);
+						int index = S9xAddCheatGroup(new_cheat->name, code_string.c_str());
+						if(index >= 0)
+							S9xEnableCheatGroup(index);
 
 						ret=0;
 					}
