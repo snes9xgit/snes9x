@@ -888,7 +888,7 @@ static uint8 debug_cpu_op_print (char *Line, uint8 Bank, uint16 Address)
 			break;
 	}
 
-	sprintf(Line, "%-44s A:%04X X:%04X Y:%04X D:%04X DB:%02X S:%04X P:%c%c%c%c%c%c%c%c%c HC:%04ld VC:%03ld FC:%02d %c%c%c %c %c%c HT:%d VT:%d C:%d",
+	sprintf(Line, "%-44s A:%04X X:%04X Y:%04X D:%04X DB:%02X S:%04X P:%c%c%c%c%c%c%c%c%c HC:%04ld VC:%03ld FC:%02d %c%c%c %c%c%c %c%c HT:%d VT:%d C:%d",
 	        Line, Registers.A.W, Registers.X.W, Registers.Y.W,
 	        Registers.D.W, Registers.DB, Registers.S.W,
 	        CheckEmulation() ? 'E' : 'e',
@@ -905,6 +905,8 @@ static uint8 debug_cpu_op_print (char *Line, uint8 Bank, uint16 Address)
 	        IPPU.FrameCount,
 	        CPU.IRQExternal ?  'E' : ' ', PPU.HTimerEnabled ? 'H' : ' ', PPU.VTimerEnabled ? 'V' : ' ',
 	        CPU.NMIPending ? 'N' : '.',
+	        Memory.FillRAM[0x4200] & 0x80 ? 'n' : '.',
+	        Memory.FillRAM[0x4210] & 0x80 ? '+' : '.',
 	        CPU.IRQTransition ? 'T' : ' ',
 	        CPU.IRQLine ? 'L' : ' ',
 	        PPU.HTimerPosition, PPU.VTimerPosition, Timings.NextIRQTimer);
@@ -1322,7 +1324,7 @@ static uint8 debug_sa1_op_print (char *Line, uint8 Bank, uint16 Address)
 			break;
 	}
 
-	sprintf(Line, "%-44s A:%04X X:%04X Y:%04X D:%04X DB:%02X S:%04X P:%c%c%c%c%c%c%c%c%c HC:%04ld VC:%03ld FC:%02d",
+	sprintf(Line, "%-44s A:%04X X:%04X Y:%04X D:%04X DB:%02X S:%04X P:%c%c%c%c%c%c%c%c%c HC:%04ld VC:%03ld FC:%02d %c%c",
 	        Line, SA1Registers.A.W, SA1Registers.X.W, SA1Registers.Y.W,
 	        SA1Registers.D.W, SA1Registers.DB, SA1Registers.S.W,
 	        SA1CheckEmulation() ? 'E' : 'e',
@@ -1336,7 +1338,9 @@ static uint8 debug_sa1_op_print (char *Line, uint8 Bank, uint16 Address)
 	        SA1CheckCarry() ? 'C' : 'c',
 	        (long) CPU.Cycles,
 	        (long) CPU.V_Counter,
-	        IPPU.FrameCount);
+	        IPPU.FrameCount,
+	        CPU.NMIPending ? 'P' : ' ',
+	        Memory.FillRAM[0x4210] & 0x80 ? 'N' : ' ');
 
 	return (Size);
 }
