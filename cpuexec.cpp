@@ -538,7 +538,7 @@ void S9xDoHEventProcessing (void)
 					// FIXME: triggered at HC=6, checked just before the final CPU cycle,
 					// then, when to call S9xOpcode_NMI()?
 					CPU.NMIPending = TRUE;
-					Timings.NMITriggerPos = 6 + 6;
+					Timings.NMITriggerPos = 14;
 				}
 
 			}
