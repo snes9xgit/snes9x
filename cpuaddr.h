@@ -302,6 +302,8 @@ static inline uint32 AbsoluteIndexedIndirectSlow (AccessMode a)			// (a,X)
 static inline uint32 AbsoluteIndexedIndirect (AccessMode a)				// (a,X)
 {
 	uint16	addr = Immediate16Slow(READ);
+
+	AddCycles(ONE_CYCLE);
 	addr += Registers.X.W;
 
 	// Address load wraps within the bank
