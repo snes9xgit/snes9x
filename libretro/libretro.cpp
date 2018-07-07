@@ -151,7 +151,7 @@ void retro_set_environment(retro_environment_t cb)
 
     static const struct retro_subsystem_rom_info multicart_roms[] = {
         { "Cart A", "smc|sfc|swc|fig|bs", false, false, false, multi_a_memory, 1 },
-        { "Add-On B", "smc|sfc|swc|fig|bs", false, false, false, multi_b_memory, 1 },
+        { "Cart B", "smc|sfc|swc|fig|bs", false, false, false, multi_b_memory, 1 },
     };
 
     static const struct retro_subsystem_info subsystems[] = {
@@ -1241,6 +1241,7 @@ void* retro_get_memory_data(unsigned type)
 
     switch(type) 
     {
+        case RETRO_MEMORY_SNES_SUFAMI_TURBO_A_RAM:
         case RETRO_MEMORY_SAVE_RAM:
             data = Memory.SRAM;
             break;
