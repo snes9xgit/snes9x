@@ -1106,6 +1106,7 @@ static int16_t snes_justifier_state[2][2] = {{0}, {0}};
 static void report_buttons()
 {
     int offset = snes_devices[0] == RETRO_DEVICE_JOYPAD_MULTITAP ? 4 : 1;
+    int _x, _y;
 
     for (int port = 0; port <= 1; port++)
     {
@@ -1123,28 +1124,47 @@ static void report_buttons()
                 break;
 
             case RETRO_DEVICE_MOUSE:
+                _x = input_state_cb(port, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_X);
+                _y = input_state_cb(port, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_Y);
+                snes_mouse_state[port][0] += _x;
+                snes_mouse_state[port][1] += _y;
                 S9xReportPointer(BTN_POINTER + port, snes_mouse_state[port][0], snes_mouse_state[port][1]);
                 for (int i = MOUSE_LEFT; i <= MOUSE_LAST; i++)
                     S9xReportButton(MAKE_BUTTON(port + 1, i), input_state_cb(port, RETRO_DEVICE_MOUSE, 0, i));
                 break;
 
             case RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE:
-                if (snes_scope_state[0] < 0) snes_scope_state[0] = 0;
-                else if (snes_scope_state[0] > (SNES_WIDTH-1)) snes_scope_state[0] = SNES_WIDTH-1;
-                if (snes_scope_state[1] < 0) snes_scope_state[1] = 0;
-                else if (snes_scope_state[1] > (SNES_HEIGHT-1)) snes_scope_state[1] = SNES_HEIGHT-1;
-                    S9xReportPointer(BTN_POINTER, snes_scope_state[0], snes_scope_state[1]);
+                snes_scope_state[0] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE, 0, RETRO_DEVICE_ID_LIGHTGUN_X);
+                snes_scope_state[1] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE, 0, RETRO_DEVICE_ID_LIGHTGUN_Y);
+                if (snes_scope_state[0] < 0)
+                    snes_scope_state[0] = 0;
+                else if (snes_scope_state[0] > (SNES_WIDTH-1))
+                    snes_scope_state[0] = SNES_WIDTH-1;
+                if (snes_scope_state[1] < 0)
+                    snes_scope_state[1] = 0;
+                else if (snes_scope_state[1] > (SNES_HEIGHT-1))
+                    snes_scope_state[1] = SNES_HEIGHT-1;
+
+                S9xReportPointer(BTN_POINTER, snes_scope_state[0], snes_scope_state[1]);
                 for (int i = SCOPE_TRIGGER; i <= SCOPE_LAST; i++)
                     S9xReportButton(MAKE_BUTTON(2, i), input_state_cb(port, RETRO_DEVICE_LIGHTGUN, 0, i));
                 break;
 
             case RETRO_DEVICE_LIGHTGUN_JUSTIFIER:
             case RETRO_DEVICE_LIGHTGUN_JUSTIFIERS:
-                if (snes_justifier_state[port][0] < 0) snes_justifier_state[port][0] = 0;
-                else if (snes_justifier_state[port][0] > (SNES_WIDTH-1)) snes_justifier_state[port][0] = SNES_WIDTH-1;
-                if (snes_justifier_state[port][1] < 0) snes_justifier_state[port][1] = 0;
-                else if (snes_justifier_state[port][1] > (SNES_HEIGHT-1)) snes_justifier_state[port][1] = SNES_HEIGHT-1;
-                    S9xReportPointer(BTN_POINTER, snes_justifier_state[port][0], snes_justifier_state[port][1]);
+                snes_justifier_state[port][0] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_JUSTIFIER, 0, RETRO_DEVICE_ID_LIGHTGUN_X);
+                snes_justifier_state[port][1] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_JUSTIFIER, 0, RETRO_DEVICE_ID_LIGHTGUN_Y);
+
+                if (snes_justifier_state[port][0] < 0)
+                    snes_justifier_state[port][0] = 0;
+                else if (snes_justifier_state[port][0] > (SNES_WIDTH-1))
+                    snes_justifier_state[port][0] = SNES_WIDTH-1;
+                if (snes_justifier_state[port][1] < 0)
+                    snes_justifier_state[port][1] = 0;
+                else if (snes_justifier_state[port][1] > (SNES_HEIGHT-1))
+                    snes_justifier_state[port][1] = SNES_HEIGHT-1;
+
+                S9xReportPointer(BTN_POINTER, snes_justifier_state[port][0], snes_justifier_state[port][1]);
                 for (int i = JUSTIFIER_TRIGGER; i <= JUSTIFIER_LAST; i++)
                     S9xReportButton(MAKE_BUTTON(2, i), input_state_cb(port, RETRO_DEVICE_LIGHTGUN, 0, i));
                 break;
