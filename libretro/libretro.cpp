@@ -151,7 +151,7 @@ void retro_set_environment(retro_environment_t cb)
 
     static const struct retro_subsystem_rom_info multicart_roms[] = {
         { "Cart A", "smc|sfc|swc|fig|bs", false, false, false, multi_a_memory, 1 },
-        { "Add-On B", "smc|sfc|swc|fig|bs", false, false, false, multi_b_memory, 1 },
+        { "Cart B", "smc|sfc|swc|fig|bs", false, false, false, multi_b_memory, 1 },
     };
 
     static const struct retro_subsystem_info subsystems[] = {
@@ -1107,17 +1107,6 @@ static void report_buttons()
 {
     int offset = snes_devices[0] == RETRO_DEVICE_JOYPAD_MULTITAP ? 4 : 1;
 
-    int runahead_poll = 0;
-    int result = -1;
-    if(environ_cb(RETRO_ENVIRONMENT_GET_AUDIO_VIDEO_ENABLE, &result))
-    {
-            // runahead off: 3
-            // runahead secondary off: 0,0,0,0,0,3
-            runahead_poll = (result & 0x0b)==3;
-
-            // runahead secondary on: 2,8,8,8,8,9  (messy sync problems)
-    }
-
     for (int port = 0; port <= 1; port++)
     {
         switch (snes_devices[port])
@@ -1134,22 +1123,12 @@ static void report_buttons()
                 break;
 
             case RETRO_DEVICE_MOUSE:
-                if(runahead_poll)
-                {
-                    snes_mouse_state[port][0] = input_state_cb(port, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_X);
-                    snes_mouse_state[port][1] = input_state_cb(port, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_Y);
-                }
                 S9xReportPointer(BTN_POINTER + port, snes_mouse_state[port][0], snes_mouse_state[port][1]);
                 for (int i = MOUSE_LEFT; i <= MOUSE_LAST; i++)
                     S9xReportButton(MAKE_BUTTON(port + 1, i), input_state_cb(port, RETRO_DEVICE_MOUSE, 0, i));
                 break;
 
             case RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE:
-                if(runahead_poll)
-                {
-                    snes_scope_state[0] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE, 0, RETRO_DEVICE_ID_LIGHTGUN_X);
-                    snes_scope_state[1] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE, 0, RETRO_DEVICE_ID_LIGHTGUN_Y);
-                }
                 if (snes_scope_state[0] < 0) snes_scope_state[0] = 0;
                 else if (snes_scope_state[0] > (SNES_WIDTH-1)) snes_scope_state[0] = SNES_WIDTH-1;
                 if (snes_scope_state[1] < 0) snes_scope_state[1] = 0;
@@ -1161,11 +1140,6 @@ static void report_buttons()
 
             case RETRO_DEVICE_LIGHTGUN_JUSTIFIER:
             case RETRO_DEVICE_LIGHTGUN_JUSTIFIERS:
-                if(runahead_poll)
-                {
-                    snes_justifier_state[port][0] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_JUSTIFIER, 0, RETRO_DEVICE_ID_LIGHTGUN_X);
-                    snes_justifier_state[port][1] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_JUSTIFIER, 0, RETRO_DEVICE_ID_LIGHTGUN_Y);
-                }
                 if (snes_justifier_state[port][0] < 0) snes_justifier_state[port][0] = 0;
                 else if (snes_justifier_state[port][0] > (SNES_WIDTH-1)) snes_justifier_state[port][0] = SNES_WIDTH-1;
                 if (snes_justifier_state[port][1] < 0) snes_justifier_state[port][1] = 0;
@@ -1241,6 +1215,7 @@ void* retro_get_memory_data(unsigned type)
 
     switch(type) 
     {
+        case RETRO_MEMORY_SNES_SUFAMI_TURBO_A_RAM:
         case RETRO_MEMORY_SAVE_RAM:
             data = Memory.SRAM;
             break;
