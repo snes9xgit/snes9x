@@ -887,6 +887,9 @@ S9xOpenGLDisplayDriver::query_availability (void)
     int errorBase, eventBase;
     Display *display = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
 
+    if (!display)
+        return 0;
+
     if (glXQueryExtension (display, &errorBase, &eventBase) == False)
     {
         if (gui_config->hw_accel == HWA_OPENGL)

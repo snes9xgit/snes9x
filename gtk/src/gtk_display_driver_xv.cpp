@@ -615,6 +615,9 @@ S9xXVDisplayDriver::query_availability (void)
                  p_error_base;
     Display *display = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
 
+    if (!display)
+        return 0;
+
     /* Test if XV and SHM are feasible */
     if (!XShmQueryExtension (display))
     {
