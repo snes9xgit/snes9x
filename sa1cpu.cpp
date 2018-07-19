@@ -312,7 +312,7 @@ void S9xSA1MainLoop (void)
 		}
 	}
 
-	for (int i = 0; i < 5 && !(Memory.FillRAM[0x2200] & 0x60); i++)
+	for (int i = 0; i < 4 + ((SA1.Cycles >> 1) & 1) && !(Memory.FillRAM[0x2200] & 0x60); i++)
 	{
 	#ifdef DEBUGGER
 		if (SA1.Flags & TRACE_FLAG)
