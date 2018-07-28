@@ -139,7 +139,7 @@ AC_ARG_WITH(system-zip,
   [AS_HELP_STRING([--with(out)-system-zip],
     [Use system zip])],
   [],
-  [system_zip=check])
+  [with_system_zip=check])
 
 AC_ARG_WITH(screenshot,
   [AS_HELP_STRING([--with(out)-screenshot],
