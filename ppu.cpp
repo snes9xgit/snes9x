@@ -2108,4 +2108,5 @@ void S9xSoftResetPPU (void)
 	memset(&Memory.FillRAM[0x1000], 0, 0x1000);
 
 	Memory.FillRAM[0x4201] = Memory.FillRAM[0x4213] = 0xff;
+	Memory.FillRAM[0x2126] = Memory.FillRAM[0x2128] = 1;
 }
