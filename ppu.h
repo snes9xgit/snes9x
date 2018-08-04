@@ -384,6 +384,7 @@ extern struct SPPU			PPU;
 extern struct InternalPPU	IPPU;
 
 void S9xResetPPU (void);
+void S9xResetPPUFast (void);
 void S9xSoftResetPPU (void);
 void S9xSetPPU (uint8, uint16);
 uint8 S9xGetPPU (uint16);

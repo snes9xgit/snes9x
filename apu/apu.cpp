@@ -774,6 +774,7 @@ void S9xAPULoadState (uint8 *block)
 	SNES::dsp.clock = SNES::get_le32(ptr);
 	ptr += sizeof(int32);
 	memcpy (SNES::cpu.registers, ptr, 4);
+	ptr += 4;
 }
 
 static void to_var_from_buf (uint8 **buf, void *var, size_t size)

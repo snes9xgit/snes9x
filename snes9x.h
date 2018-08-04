@@ -254,9 +254,9 @@
 #define SNES_MAX_PAL_VCOUNTER		312
 #define SNES_HCOUNTER_MAX			341
 
-#define ONE_CYCLE					6
-#define SLOW_ONE_CYCLE				8
-#define TWO_CYCLES					12
+#define ONE_CYCLE						(overclock_cycles ? one_c : 6)
+#define SLOW_ONE_CYCLE				(overclock_cycles ? slow_one_c : 8)
+#define TWO_CYCLES					(overclock_cycles ? two_c : 12)
 #define	ONE_DOT_CYCLE				4
 
 #define SNES_CYCLES_PER_SCANLINE	(SNES_HCOUNTER_MAX * ONE_DOT_CYCLE)
@@ -295,6 +295,9 @@
 
 #define ROM_NAME_LEN	23
 #define AUTO_FRAMERATE	200
+
+extern bool overclock_cycles;
+extern int one_c, slow_one_c, two_c;
 
 struct SCPUState
 {
@@ -480,6 +483,9 @@ struct SSettings
 
 	bool8	OpenGLEnable;
 	uint32	SuperFXClockMultiplier;
+
+	bool8	FastSavestates;
+	bool8	HardDisableAudio;
 };
 
 struct SSNESGameFixes
@@ -510,5 +516,8 @@ extern struct SCPUState			CPU;
 extern struct STimings			Timings;
 extern struct SSNESGameFixes	SNESGameFixes;
 extern char						String[513];
+
+extern bool8 libretro_get_snes_interp();
+extern int libretro_snes_interp(void *ptr);
 
 #endif

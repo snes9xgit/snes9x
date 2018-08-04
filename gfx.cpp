@@ -204,6 +204,7 @@
 extern struct SCheatData		Cheat;
 extern struct SLineData			LineData[240];
 extern struct SLineMatrixData	LineMatrixData[240];
+extern bool reduce_sprite_flicker;
 
 void S9xComputeClipWindows (void);
 
@@ -827,7 +828,7 @@ static void SetupOBJ (void)
 		for (int i = 0; i < SNES_HEIGHT_EXTENDED; i++)
 		{
 			GFX.OBJLines[i].RTOFlags = 0;
-			GFX.OBJLines[i].Tiles = 34;
+			GFX.OBJLines[i].Tiles = (reduce_sprite_flicker ? 60 : 34);
 			for (int j = 0; j < 32; j++)
 				GFX.OBJLines[i].OBJ[j].Sprite = -1;
 		}
@@ -959,7 +960,7 @@ static void SetupOBJ (void)
 		for (int Y = 0; Y < SNES_HEIGHT_EXTENDED; Y++)
 		{
 			GFX.OBJLines[Y].RTOFlags = Y ? GFX.OBJLines[Y - 1].RTOFlags : 0;
-			GFX.OBJLines[Y].Tiles = 34;
+			GFX.OBJLines[Y].Tiles = (reduce_sprite_flicker ? 60 : 34);
 
 			uint8	FirstSprite = (PPU.FirstSprite + Y) & 0x7f;
 			S = FirstSprite;

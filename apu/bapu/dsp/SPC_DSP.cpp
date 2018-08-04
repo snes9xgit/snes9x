@@ -1,7 +1,10 @@
 // snes_spc 0.9.0. http://www.slack.net/~ant/
 
-#include "SPC_DSP.h"
+//include for the Settings struct
+#include "snes9x.h"
 
+#include "SPC_DSP.h"
+#include "snes9x.h"
 #include "blargg_endian.h"
 #include <string.h>
 
@@ -115,6 +118,9 @@ static short const gauss [512] =
 
 inline int SPC_DSP::interpolate( voice_t const* v )
 {
+	// libretro: alternate methods
+	if(libretro_get_snes_interp()) return libretro_snes_interp((void*)v);
+
 	// Make pointers into gaussian based on fractional position between samples
 	int offset = v->interp_pos >> 4 & 0xFF;
 	short const* fwd = gauss + 255 - offset;
@@ -784,6 +790,10 @@ PHASE(31)  V(V4,0)       V(V1,2)\
 
 void SPC_DSP::run( int clocks_remain )
 {
+	if (::Settings.HardDisableAudio)
+	{
+		return;
+	}
 	require( clocks_remain > 0 );
 
 	int const phase = m.phase;
@@ -1049,4 +1059,15 @@ SPC_DSP::uint8_t SPC_DSP::reg_value( int ch, int addr )
 int SPC_DSP::envx_value( int ch )
 {
 	return m.voices[ch].env;
+}
+
+bool SPC_DSP::EnqueueSamples(const sample_t *samples, int sampleCount)
+{
+	//used to restore samples back to the output buffer when loading state
+	if (m.out_begin == NULL) return false;
+	int samplesRemaining = m.out_end - m.out;
+	if (sampleCount > samplesRemaining) return false;
+	memcpy(m.out, samples, sampleCount * sizeof(sample_t));
+	m.out += sampleCount;
+	return true;
 }
