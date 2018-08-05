@@ -662,6 +662,7 @@ S9xOpenGLDisplayDriver::resize_window (int width, int height)
     gdk_window_destroy (gdk_window);
     create_window (width, height);
     glXMakeCurrent (display, xwindow, glx_context);
+    swap_control (config->sync_to_vblank);
 
     return;
 }
