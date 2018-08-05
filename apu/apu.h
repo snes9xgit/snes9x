@@ -231,4 +231,12 @@ bool8 S9xMixSamples (uint8 *, int);
 void S9xSetSamplesAvailableCallback (apu_callback, void *);
 void S9xUpdateDynamicRate (int, int);
 
+#define DSP_INTERPOLATION_NONE     0
+#define DSP_INTERPOLATION_LINEAR   1
+#define DSP_INTERPOLATION_GAUSSIAN 2
+#define DSP_INTERPOLATION_CUBIC    3
+#define DSP_INTERPOLATION_SINC     4
+
+void S9xSetDSPInterpolation (int);
+
 #endif
