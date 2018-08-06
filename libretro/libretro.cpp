@@ -13,6 +13,7 @@
 #include "logger.h"
 #include "display.h"
 #include "conffile.h"
+#include "win32/snes_ntsc.h"
 #include <stdio.h>
 #ifdef _WIN32
 #include <direct.h>
@@ -45,11 +46,20 @@
 #define SNES_4_3 4.0f / 3.0f
 #define SNES_8_7 8.0f / 7.0f
 
+
+#define MAX_SNES_WIDTH_NTSC SNES_NTSC_OUT_WIDTH(256)
+
+enum BlarggMode { UNINITIALIZED,BLARGGMONOCHROME,BLARGGRF,BLARGGCOMPOSITE,BLARGGSVIDEO,BLARGGRGB };
+static snes_ntsc_t *ntsc = NULL;
+static BlarggMode blarggMode = UNINITIALIZED;
+
+
 char g_rom_dir[1024];
 char g_basename[1024];
 
-bool hires_blend = false;
+static bool hires_blend = false;
 static uint16 *gfx_blend;
+static int blargg_filter = 0;
 
 char retro_system_directory[4096];
 char retro_save_directory[4096];
@@ -169,6 +179,7 @@ void retro_set_environment(retro_environment_t cb)
         { "snes9x_up_down_allowed", "Allow Opposing Directions; disabled|enabled" },
         { "snes9x_overclock_superfx", "SuperFX Overclocking; 100%|150%|200%|250%|300%|350%|400%|450%|500%|50%" },
         { "snes9x_hires_blend", "Hires Blending; disabled|enabled" },
+        { "snes9x_blargg", "Blargg NTSC filter; disabled|monochrome|rf|composite|s-video|rgb" },
         { "snes9x_layer_1", "Show layer 1; enabled|disabled" },
         { "snes9x_layer_2", "Show layer 2; enabled|disabled" },
         { "snes9x_layer_3", "Show layer 3; enabled|disabled" },
@@ -258,13 +269,71 @@ static void update_variables(void)
         Settings.SuperFXClockMultiplier = freq;
     }
 
-    var.key = "snes9x_hires_blend";
-    var.value = NULL;
-
-    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
-        hires_blend = !strcmp(var.value, "disabled") ? false : true;
-    else
-        hires_blend = false;
+    var.key="snes9x_blargg";
+    var.value=NULL;
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+    {
+        if (strcmp(var.value, "disabled") == 0)
+        {
+            blarggMode=UNINITIALIZED;
+            blargg_filter = 0;
+        }
+        else if (strcmp(var.value, "monochrome") == 0)
+        {
+            if(blarggMode!=BLARGGMONOCHROME) {
+                if(!ntsc) ntsc = new snes_ntsc_t;
+                snes_ntsc_setup_t setup = snes_ntsc_monochrome;
+                setup.merge_fields = 1;
+                snes_ntsc_init( ntsc, &setup );
+                blarggMode=BLARGGMONOCHROME;
+            }
+            blargg_filter = 1;
+        }
+        else if (strcmp(var.value, "rf") == 0)
+        {
+            if(blarggMode!=BLARGGRF) {
+                if(!ntsc) ntsc = new snes_ntsc_t;
+                snes_ntsc_setup_t setup = snes_ntsc_composite;
+                setup.merge_fields = 0;
+                snes_ntsc_init( ntsc, &setup );
+                blarggMode=BLARGGRF;
+            }
+            blargg_filter = 2;
+        }
+        else if (strcmp(var.value, "composite") == 0)
+        {
+            if(blarggMode!=BLARGGCOMPOSITE) {
+                if(!ntsc) ntsc = new snes_ntsc_t;
+                snes_ntsc_setup_t setup = snes_ntsc_composite;
+                setup.merge_fields = 1;
+                snes_ntsc_init( ntsc, &setup );
+                blarggMode=BLARGGCOMPOSITE;
+            }
+            blargg_filter = 3;
+        }
+        else if (strcmp(var.value, "s-video") == 0)
+        {
+            if(blarggMode!=BLARGGSVIDEO) {
+                if(!ntsc) ntsc = new snes_ntsc_t;
+                snes_ntsc_setup_t setup = snes_ntsc_svideo;
+                setup.merge_fields = 1;
+                snes_ntsc_init( ntsc, &setup );
+                blarggMode=BLARGGSVIDEO;
+            }
+            blargg_filter = 4;
+        }
+        else if (strcmp(var.value, "rgb") == 0)
+        {
+            if(blarggMode!=BLARGGRGB) {
+                if(!ntsc) ntsc = new snes_ntsc_t;
+                snes_ntsc_setup_t setup = snes_ntsc_rgb;
+                setup.merge_fields = 1;
+                snes_ntsc_init( ntsc, &setup );
+                blarggMode=BLARGGRGB;
+            }
+            blargg_filter = 5;
+        }
+    }
 
     var.key = "snes9x_up_down_allowed";
     var.value = NULL;
@@ -437,7 +506,7 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
 
     info->geometry.base_width = width;
     info->geometry.base_height = height;
-    info->geometry.max_width = MAX_SNES_WIDTH;
+    info->geometry.max_width = MAX_SNES_WIDTH_NTSC;
     info->geometry.max_height = MAX_SNES_HEIGHT;
     info->geometry.aspect_ratio = get_aspect_ratio(width, height);
     info->timing.sample_rate = 32040;
@@ -956,7 +1025,7 @@ void retro_init(void)
     S9xSetSoundMute(FALSE);
     S9xSetSamplesAvailableCallback(S9xAudioCallback, NULL);
 
-    GFX.Pitch = MAX_SNES_WIDTH * sizeof(uint16);
+    GFX.Pitch = MAX_SNES_WIDTH_NTSC * sizeof(uint16);
     GFX.Screen = (uint16*) calloc(1, GFX.Pitch * MAX_SNES_HEIGHT);
     gfx_blend = (uint16*) calloc(1, GFX.Pitch * MAX_SNES_HEIGHT);
     S9xGraphicsInit();
@@ -1346,9 +1415,17 @@ bool8 S9xDeinitUpdate(int width, int height)
         }
     }
 
+    if(blargg_filter)
+    {
+        if(width == 512)
+            snes_ntsc_blit_hires(ntsc, GFX.Screen, GFX.Pitch/2, 0, width, height, gfx_blend, GFX.Pitch);
+        else
+            snes_ntsc_blit(ntsc, GFX.Screen, GFX.Pitch/2, 0, width, height, gfx_blend, GFX.Pitch);
 
-        if(width==MAX_SNES_WIDTH && hires_blend)
-        {
+        video_cb(gfx_blend, SNES_NTSC_OUT_WIDTH(256), height, GFX.Pitch);
+    }
+    else if(width==MAX_SNES_WIDTH && hires_blend)
+    {
 #define AVERAGE_565(el0, el1) (((el0) & (el1)) + ((((el0) ^ (el1)) & 0xF7DE) >> 1))
         for (register int y = 0; y < height; y++)
         {
@@ -1359,13 +1436,13 @@ bool8 S9xDeinitUpdate(int width, int height)
             l = 0;
             for (register int x = 0; x < (width >> 1); x++)
             {
-            r = *input++;
-            *output++ = AVERAGE_565 (l, r);
-            l = r;
+                r = *input++;
+                *output++ = AVERAGE_565 (l, r);
+                l = r;
 
-            r = *input++;
-            *output++ = AVERAGE_565 (l, r);
-            l = r;
+                r = *input++;
+                *output++ = AVERAGE_565 (l, r);
+                l = r;
             }
         }
 
