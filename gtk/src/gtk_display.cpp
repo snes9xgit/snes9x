@@ -1622,15 +1622,7 @@ S9xDeinitUpdate (int width, int height)
 {
     int yoffset = 0;
 
-    if (height == SNES_HEIGHT_EXTENDED && top_level->last_height == SNES_HEIGHT)
-    {
-        top_level->last_height = height;
-        height = SNES_HEIGHT;
-    }
-    else
-    {
-        top_level->last_height = height;
-    }
+    top_level->last_height = height;
     top_level->last_width = width;
 
     if (gui_config->overscan)
