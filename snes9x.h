@@ -254,9 +254,15 @@
 #define SNES_MAX_PAL_VCOUNTER		312
 #define SNES_HCOUNTER_MAX			341
 
+#ifndef ALLOW_CPU_OVERCLOCK
 #define ONE_CYCLE					6
 #define SLOW_ONE_CYCLE				8
 #define TWO_CYCLES					12
+#else
+#define ONE_CYCLE      (Settings.OneClockCycle)
+#define SLOW_ONE_CYCLE (Settings.OneSlowClockCycle)
+#define TWO_CYCLES     (Settings.TwoClockCycles)
+#endif
 #define	ONE_DOT_CYCLE				4
 
 #define SNES_CYCLES_PER_SCANLINE	(SNES_HCOUNTER_MAX * ONE_DOT_CYCLE)
@@ -480,7 +486,12 @@ struct SSettings
 	bool8	UpAndDown;
 
 	bool8	OpenGLEnable;
+
 	uint32	SuperFXClockMultiplier;
+	int	OneClockCycle;
+	int	OneSlowClockCycle;
+	int	TwoClockCycles;
+	int	MaxSpriteTilesPerLine;
 };
 
 struct SSNESGameFixes

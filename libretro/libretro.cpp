@@ -168,6 +168,8 @@ void retro_set_environment(retro_environment_t cb)
         // Adding more variables and rearranging them is safe.
         { "snes9x_up_down_allowed", "Allow Opposing Directions; disabled|enabled" },
         { "snes9x_overclock_superfx", "SuperFX Overclocking; 100%|150%|200%|250%|300%|350%|400%|450%|500%|50%" },
+        { "snes9x_overclock_cycles", "Reduce Slowdown (Hack, Unsafe); disabled|compatible|max" },
+        { "snes9x_reduce_sprite_flicker", "Reduce Flickering (Hack, Unsafe); disabled|enabled" },
         { "snes9x_hires_blend", "Hires Blending; disabled|enabled" },
         { "snes9x_audio_interpolation", "Audio Interpolation; gaussian|cubic|sinc|none|linear" },
         { "snes9x_layer_1", "Show layer 1; enabled|disabled" },
@@ -331,6 +333,36 @@ static void update_variables(void)
     }
     else
         Settings.InterpolationMethod = DSP_INTERPOLATION_GAUSSIAN;
+
+
+    Settings.OneClockCycle      = 6;
+    Settings.OneSlowClockCycle  = 8;
+    Settings.TwoClockCycles     = 12;
+
+    var.key="snes9x_overclock_cycles";
+    var.value=NULL;
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+    {
+        if (strcmp(var.value, "max") == 0)
+        {
+            Settings.OneClockCycle      = 3;
+            Settings.OneSlowClockCycle  = 3;
+            Settings.TwoClockCycles     = 3;
+        }
+        else if (strcmp(var.value, "compatible"))
+        {
+            Settings.OneClockCycle      = 4;
+            Settings.OneSlowClockCycle  = 5;
+            Settings.TwoClockCycles     = 6;
+        }
+    }
+
+    Settings.MaxSpriteTilesPerLine = 34;
+    var.key="snes9x_overclock_cycles";
+    var.value=NULL;
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+        if (strcmp(var.value, "enabled") == 0)
+            Settings.MaxSpriteTilesPerLine = 60;
 
     var.key = "snes9x_overscan";
 
