@@ -257,6 +257,7 @@ Snes9xConfig::load_defaults (void)
     Settings.SoundSync = 1;
     Settings.DynamicRateControl = FALSE;
     Settings.DynamicRateLimit = 5;
+    Settings.InterpolationMethod = DSP_INTERPOLATION_GAUSSIAN;
     Settings.HDMATimingHack = 100;
     Settings.SuperFXClockMultiplier = 100;
     Settings.InitialSnapshotFilename[0] = '\0';
@@ -409,6 +410,7 @@ Snes9xConfig::save_config_file (void)
     xml_out_int (xml, "dynamic_rate_control", Settings.DynamicRateControl);
     xml_out_int (xml, "dynamic_rate_limit", Settings.DynamicRateLimit);
     xml_out_int (xml, "auto_input_rate", auto_input_rate);
+    xml_out_int (xml, "interpolation_method", Settings.InterpolationMethod);
 
     /* Snes9X core-stored variables */
     xml_out_int (xml, "transparency", Settings.Transparency);
@@ -916,6 +918,10 @@ Snes9xConfig::set_option (const char *name, const char *value)
     else if (!strcasecmp (name, "rewind_granularity"))
     {
         rewind_granularity = CLAMP (atoi (value), 0, 600);
+    }
+    else if (!strcasecmp (name, "interpolation_method"))
+    {
+        Settings.InterpolationMethod = CLAMP (atoi (value), 0, 4);
     }
     else
     {

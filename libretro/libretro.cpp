@@ -169,6 +169,7 @@ void retro_set_environment(retro_environment_t cb)
         { "snes9x_up_down_allowed", "Allow Opposing Directions; disabled|enabled" },
         { "snes9x_overclock_superfx", "SuperFX Overclocking; 100%|150%|200%|250%|300%|350%|400%|450%|500%|50%" },
         { "snes9x_hires_blend", "Hires Blending; disabled|enabled" },
+        { "snes9x_audio_interpolation", "Audio Interpolation; gaussian|cubic|sinc|none|linear" },
         { "snes9x_layer_1", "Show layer 1; enabled|disabled" },
         { "snes9x_layer_2", "Show layer 2; enabled|disabled" },
         { "snes9x_layer_3", "Show layer 3; enabled|disabled" },
@@ -312,6 +313,24 @@ static void update_variables(void)
     var.key="snes9x_gfx_hires";
     var.value=NULL;
     Settings.SupportHiRes=!(environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && !strcmp("disabled", var.value));
+
+    var.key="snes9x_audio_interpolation";
+    var.value=NULL;
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+    {
+        if (strcmp(var.value, "gaussian") == 0)
+            Settings.InterpolationMethod = DSP_INTERPOLATION_GAUSSIAN;
+        else if (strcmp(var.value, "linear") == 0)
+            Settings.InterpolationMethod = DSP_INTERPOLATION_LINEAR;
+        else if (strcmp(var.value, "cubic") == 0)
+            Settings.InterpolationMethod = DSP_INTERPOLATION_CUBIC;
+        else if (strcmp(var.value, "sinc") == 0)
+            Settings.InterpolationMethod = DSP_INTERPOLATION_SINC;
+        else if (strcmp(var.value, "none") == 0)
+            Settings.InterpolationMethod = DSP_INTERPOLATION_NONE;
+    }
+    else
+        Settings.InterpolationMethod = DSP_INTERPOLATION_GAUSSIAN;
 
     var.key = "snes9x_overscan";
 

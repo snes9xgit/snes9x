@@ -1005,6 +1005,7 @@ void WinRegisterConfigItems()
 	AddBoolC("Mute", GUI.Mute, false, "true to mute sound output (does not disable the sound CPU)");
 	AddBool("DynamicRateControl", Settings.DynamicRateControl, false);
 	AddBool("AutomaticInputRate", GUI.AutomaticInputRate, true);
+	AddIntC("InterpolationMethod", Settings.InterpolationMethod, 2, "0 = None, 1 = Linear, 2 = Gaussian (accurate), 3 = Cubic, 4 = Sinc");
 #undef CATEGORY
 #define	CATEGORY "Sound\\Win"
 	AddUIntC("SoundDriver", GUI.SoundDriver, 4, "0=Snes9xDirectSound, 4=XAudio2 (recommended)");

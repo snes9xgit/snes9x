@@ -428,6 +428,7 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.Mute                       =  conf.GetBool("Sound::Mute",                         false);
 	Settings.DynamicRateControl         =  conf.GetBool("Sound::DynamicRateControl",           false);
 	Settings.DynamicRateLimit           =  conf.GetInt ("Sound::DynamicRateLimit",             5);
+	Settings.InterpolationMethod        =  conf.GetInt ("Sound::InterpolationMethod",          2);
 
 	// Display
 

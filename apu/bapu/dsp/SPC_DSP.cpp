@@ -1,5 +1,7 @@
 // snes_spc 0.9.0. http://www.slack.net/~ant/
 
+#include "snes9x.h"
+
 #include "SPC_DSP.h"
 
 #include "blargg_endian.h"
@@ -412,14 +414,12 @@ static short const sinc [2048] =
    -38,    41,  -328,   718, 15642,   613,  -302,    38,
 };
 
-int dsp_interpolation_method = 2;
-
 inline int SPC_DSP::interpolate( voice_t const* v )
 {
     int out;
     int const* in = &v->buf [(v->interp_pos >> 12) + v->buf_pos];
 
-    switch (dsp_interpolation_method)
+    switch (Settings.InterpolationMethod)
     {
     case 0: // raw
     {

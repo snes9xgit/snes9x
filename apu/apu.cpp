@@ -914,11 +914,3 @@ bool8 S9xSPCDump (const char *filename)
 
 	return (TRUE);
 }
-
-extern int dsp_interpolation_method;
-
-void S9xSetDSPInterpolation (int mode)
-{
-	dsp_interpolation_method = mode;
-	return;
-}

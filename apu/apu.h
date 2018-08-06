@@ -237,6 +237,4 @@ void S9xUpdateDynamicRate (int, int);
 #define DSP_INTERPOLATION_CUBIC    3
 #define DSP_INTERPOLATION_SINC     4
 
-void S9xSetDSPInterpolation (int);
-
 #endif
