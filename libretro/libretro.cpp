@@ -50,6 +50,7 @@ char g_basename[1024];
 
 bool hires_blend = false;
 static uint16 *gfx_blend;
+bool randomize_memory = false;
 
 char retro_system_directory[4096];
 char retro_save_directory[4096];
@@ -170,6 +171,7 @@ void retro_set_environment(retro_environment_t cb)
         { "snes9x_overclock_superfx", "SuperFX Overclocking; 100%|150%|200%|250%|300%|350%|400%|450%|500%|50%" },
         { "snes9x_overclock_cycles", "Reduce Slowdown (Hack, Unsafe); disabled|compatible|max" },
         { "snes9x_reduce_sprite_flicker", "Reduce Flickering (Hack, Unsafe); disabled|enabled" },
+        { "snes9x_randomize_memory", "Randomize Memory (Unsafe); disabled|enabled" },
         { "snes9x_hires_blend", "Hires Blending; disabled|enabled" },
         { "snes9x_audio_interpolation", "Audio Interpolation; gaussian|cubic|sinc|none|linear" },
         { "snes9x_layer_1", "Show layer 1; enabled|disabled" },
@@ -363,6 +365,13 @@ static void update_variables(void)
     if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
         if (strcmp(var.value, "enabled") == 0)
             Settings.MaxSpriteTilesPerLine = 60;
+
+    randomize_memory = false;
+    var.key = "snes9x_randomize_memory";
+    var.value = NULL;
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+        if (strcmp(var.value, "enabled") == 0)
+            randomize_memory = true;
 
     var.key = "snes9x_overscan";
 
@@ -766,20 +775,29 @@ bool retro_load_game(const struct retro_game_info *game)
         if(biosrom) delete[] biosrom;
     }
 
-    int pixel_format = RGB555;
-    if(environ_cb)
-    {
-        pixel_format = RGB565;
-        enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
-        if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
-            pixel_format = RGB555;
-    }
-    S9xGraphicsDeinit();
-    S9xSetRenderPixelFormat(pixel_format);
-    S9xGraphicsInit();
-
     if (rom_loaded)
+    {
+        int pixel_format = RGB555;
+        if (environ_cb)
+        {
+            enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
+            if (environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
+                pixel_format = RGB565;
+        }
+
+        S9xGraphicsDeinit();
+        S9xSetRenderPixelFormat(pixel_format);
+        S9xGraphicsInit();
+
         update_geometry();
+
+        if (randomize_memory)
+        {
+            srand(time(NULL));
+            for(int lcv = 0; lcv < 0x20000; lcv++)
+                Memory.RAM[lcv] = rand() % 256;
+        }
+    }
 
     if (!rom_loaded && log_cb)
         log_cb(RETRO_LOG_ERROR, "ROM loading failed...\n");
