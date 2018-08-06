@@ -423,7 +423,7 @@ inline int SPC_DSP::interpolate( voice_t const* v )
     {
     case 0: // raw
     {
-        out = v->buf [(v->interp_pos >> 12) + v->buf_pos] & ~1;
+        out = in [0] & ~1;
         break;
     }
 
@@ -443,7 +443,6 @@ inline int SPC_DSP::interpolate( voice_t const* v )
         short const* fwd = cubic       + offset;
         short const* rev = cubic + 256 - offset; // mirror left half of cubic
 
-        int const* in = &v->buf [(v->interp_pos >> 12) + v->buf_pos];
         out  = fwd [  0] * in [0];
         out += fwd [257] * in [1];
         out += rev [257] * in [2];
@@ -454,11 +453,9 @@ inline int SPC_DSP::interpolate( voice_t const* v )
 
     case 4: // sinc filter
     {
-        // Make pointers into cubic based on fractional position between samples
         int offset = (v->interp_pos & 0xFF0) >> 1;
         short const* filt = sinc + offset;
 
-        int const* in = &v->buf [(v->interp_pos >> 12) + v->buf_pos];
         out  = filt [0] * in [0];
         out += filt [1] * in [1];
         out += filt [2] * in [2];
@@ -479,7 +476,6 @@ inline int SPC_DSP::interpolate( voice_t const* v )
         short const* fwd = gauss + 255 - offset;
         short const* rev = gauss       + offset; // mirror left half of gaussian
 
-        int const* in = &v->buf [(v->interp_pos >> 12) + v->buf_pos];
         out  = (fwd [  0] * in [0]) >> 11;
         out += (fwd [256] * in [1]) >> 11;
         out += (rev [256] * in [2]) >> 11;
