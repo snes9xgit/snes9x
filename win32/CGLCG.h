@@ -197,31 +197,16 @@
 #include "CCGShader.h"
 #include <vector>
 #include <deque>
+#include "image_functions.h"
 
 typedef struct _xySize {
 	double x;
 	double y;
-	operator CONST FLOAT* () const;
 } xySize;
 
 class CGLCG
 {
 private:
-	typedef struct _STGA {
-		_STGA() {data = (unsigned char*)0;
-				 width = 0;
-				 height = 0;
-				 byteCount = 0;}
-
-		~_STGA() { delete[] data; data = 0; }
-
-		void destroy() { delete[] data; data = 0; }
-
-		int width;
-		int height;
-		unsigned char byteCount;
-		unsigned char* data;
-	} STGA;
 	typedef struct _shaderPass {
 		cgScaleParams scaleParams;
 		bool linearFilter;
@@ -267,8 +252,6 @@ private:
 	void setTexCoords(int pass,xySize inputSize,xySize textureSize,bool topdown=false);
 	void setShaderVars(int pass);
 	void resetAttribParams();
-	bool loadPngImage(const TCHAR *name, int &outWidth, int &outHeight, bool &outHasAlpha, GLubyte **outData);
-	bool loadTGA(const TCHAR *filename, STGA& tgaFile);
 
 	CGcontext cgContext;
 	unsigned int frameCnt;

@@ -192,9 +192,10 @@
 #include "wsnes9x.h"
 #include "win32_display.h"
 #include "snes9x.h"
-#include <Dxerr.h>
+#include "dxerr.h"
 #include <png.h>
 #include "CDirect3D.h"
+#include "image_functions.h"
 
 #ifndef max
 #define max(a, b) (((a) > (b)) ? (a) : (b))
@@ -405,22 +406,7 @@ bool CD3DCG::LoadShader(const TCHAR *shaderFile)
 
 		_tfullpath(tempPath,_tFromChar(it->texturePath),MAX_PATH);
 
-		hr = D3DXCreateTextureFromFileEx(
-               pDevice,
-               tempPath,
-               D3DX_DEFAULT_NONPOW2,
-               D3DX_DEFAULT_NONPOW2,
-               0,
-               0,
-               D3DFMT_FROM_FILE,
-               D3DPOOL_MANAGED,
-			   it->linearfilter?D3DX_FILTER_LINEAR:D3DX_FILTER_POINT,
-               0,
-               0,
-               NULL,
-               NULL,
-               &tex.tex);
-		if FAILED(hr){
+		if(!d3d_create_texture_from_file(pDevice, tempPath, &tex.tex)){
 			tex.tex = NULL;
 		}
 		lookupTextures.push_back(tex);
@@ -431,12 +417,12 @@ bool CD3DCG::LoadShader(const TCHAR *shaderFile)
 	return true;
 }
 
-void CD3DCG::ensureTextureSize(LPDIRECT3DTEXTURE9 &tex, D3DXVECTOR2 &texSize,
-							   D3DXVECTOR2 wantedSize,bool renderTarget,bool useFloat)
+void CD3DCG::ensureTextureSize(LPDIRECT3DTEXTURE9 &tex, XMFLOAT2 &texSize,
+                               XMFLOAT2 wantedSize,bool renderTarget,bool useFloat)
 {
 	HRESULT hr;
 
-	if(!tex || texSize != wantedSize) {
+	if(!tex || texSize.x != wantedSize.x || texSize.y != wantedSize.y) {
 		if(tex)
 			tex->Release();
 
@@ -459,7 +445,7 @@ void CD3DCG::ensureTextureSize(LPDIRECT3DTEXTURE9 &tex, D3DXVECTOR2 &texSize,
 }
 
 void CD3DCG::setVertexStream(IDirect3DVertexBuffer9 *vertexBuffer,
-							 D3DXVECTOR2 inputSize,D3DXVECTOR2 textureSize,D3DXVECTOR2 outputSize)
+                             XMFLOAT2 inputSize, XMFLOAT2 textureSize, XMFLOAT2 outputSize)
 {
 	float tX = inputSize.x / textureSize.x;
 	float tY = inputSize.y / textureSize.y;
@@ -500,8 +486,8 @@ void CD3DCG::setVertexStream(IDirect3DVertexBuffer9 *vertexBuffer,
 	pDevice->SetStreamSource(3,vertexBuffer,0,sizeof(VERTEX));
 }
 
-void CD3DCG::Render(LPDIRECT3DTEXTURE9 &origTex, D3DXVECTOR2 textureSize,
-					D3DXVECTOR2 inputSize, D3DXVECTOR2 viewportSize, D3DXVECTOR2 windowSize)
+void CD3DCG::Render(LPDIRECT3DTEXTURE9 &origTex, XMFLOAT2 textureSize,
+                    XMFLOAT2 inputSize, XMFLOAT2 viewportSize, XMFLOAT2 windowSize)
 {
 	LPDIRECT3DSURFACE9 pRenderSurface = NULL,pBackBuffer = NULL;
 	frameCnt++;
@@ -553,7 +539,7 @@ void CD3DCG::Render(LPDIRECT3DTEXTURE9 &origTex, D3DXVECTOR2 textureSize,
 		/* make sure the render target exists and has an appropriate size,
 		   then set as current render target with last pass as source
 		*/
-		ensureTextureSize(shaderPasses[i].tex,shaderPasses[i].textureSize,D3DXVECTOR2(texSize,texSize),true,shaderPasses[i].useFloatTex);
+		ensureTextureSize(shaderPasses[i].tex,shaderPasses[i].textureSize, XMFLOAT2(texSize,texSize),true,shaderPasses[i].useFloatTex);
 		shaderPasses[i].tex->GetSurfaceLevel(0,&pRenderSurface);
 		pDevice->SetTexture(0, shaderPasses[i-1].tex);
 		pDevice->SetRenderTarget(0,pRenderSurface);
@@ -623,23 +609,22 @@ void CD3DCG::Render(LPDIRECT3DTEXTURE9 &origTex, D3DXVECTOR2 textureSize,
 	setViewport(displayRect.left,displayRect.top,displayRect.right - displayRect.left,displayRect.bottom - displayRect.top);
 	setVertexStream(shaderPasses.back().vertexBuffer,
 		shaderPasses.back().outputSize,shaderPasses.back().textureSize,
-		D3DXVECTOR2(displayRect.right - displayRect.left,displayRect.bottom - displayRect.top));
+		XMFLOAT2(displayRect.right - displayRect.left,displayRect.bottom - displayRect.top));
 	pDevice->SetVertexShader(NULL);
 	pDevice->SetPixelShader(NULL);
 }
 
 void CD3DCG::calculateMatrix()
 {
-	D3DXMATRIX matWorld;
-	D3DXMATRIX matView;
-	D3DXMATRIX matProj;
+	XMMATRIX matWorld;
+	XMMATRIX matView;
+	XMMATRIX matProj;
 
-	pDevice->GetTransform(D3DTS_WORLD,&matWorld);
-	pDevice->GetTransform(D3DTS_VIEW,&matView);
-	pDevice->GetTransform(D3DTS_PROJECTION,&matProj);
+	pDevice->GetTransform(D3DTS_WORLD, (D3DMATRIX*)&matWorld);
+	pDevice->GetTransform(D3DTS_VIEW, (D3DMATRIX*)&matView);
+	pDevice->GetTransform(D3DTS_PROJECTION, (D3DMATRIX*)&matProj);
 
-	mvp = matWorld * matView * matProj;
-	D3DXMatrixTranspose(&mvp,&mvp);
+	XMStoreFloat4x4(&mvp, XMMatrixTranspose(XMMatrixMultiply(matProj, XMMatrixMultiply(matWorld, matView))));
 }
 
 void CD3DCG::setViewport(DWORD x, DWORD y, DWORD width, DWORD height)
@@ -656,16 +641,16 @@ void CD3DCG::setViewport(DWORD x, DWORD y, DWORD width, DWORD height)
 
 void CD3DCG::setShaderVars(int pass)
 {
-	D3DXVECTOR2 inputSize = shaderPasses[pass-1].outputSize;
-	D3DXVECTOR2 textureSize = shaderPasses[pass-1].textureSize;
-	D3DXVECTOR2 outputSize = shaderPasses[pass].outputSize;
+	XMFLOAT2 inputSize = shaderPasses[pass-1].outputSize;
+	XMFLOAT2 textureSize = shaderPasses[pass-1].textureSize;
+	XMFLOAT2 outputSize = shaderPasses[pass].outputSize;
 
 	/* mvp paramater
 	*/
 	CGparameter cgpModelViewProj = cgGetNamedParameter(shaderPasses[pass].cgVertexProgram, "modelViewProj");
 
 	if(cgpModelViewProj)
-		cgD3D9SetUniformMatrix(cgpModelViewProj,&mvp);
+		cgD3D9SetUniformMatrix(cgpModelViewProj,(D3DMATRIX*)&mvp);
 
 #define setProgramUniform(pass,varname,floats)\
 {\
@@ -720,16 +705,16 @@ void CD3DCG::setShaderVars(int pass)
 
 	/* ORIG parameter
 	*/
-	setProgramUniform(pass,"ORIG.video_size",shaderPasses[0].outputSize);
-	setProgramUniform(pass,"ORIG.texture_size",shaderPasses[0].textureSize);
+	setProgramUniform(pass,"ORIG.video_size",&shaderPasses[0].outputSize);
+	setProgramUniform(pass,"ORIG.texture_size",&shaderPasses[0].textureSize);
 	setTextureParameter(pass,"ORIG.texture",shaderPasses[0].tex,shaderPasses[1].linearFilter);
 	setTexCoordsParameter(pass,"ORIG.tex_coord",shaderPasses[1].vertexBuffer);
 
 	/* PREV parameter
 	*/
 	if(prevPasses[0].tex) {
-		setProgramUniform(pass,"PREV.video_size",prevPasses[0].imageSize);
-		setProgramUniform(pass,"PREV.texture_size",prevPasses[0].textureSize);
+		setProgramUniform(pass,"PREV.video_size",&prevPasses[0].imageSize);
+		setProgramUniform(pass,"PREV.texture_size",&prevPasses[0].textureSize);
 		setTextureParameter(pass,"PREV.texture",prevPasses[0].tex,shaderPasses[1].linearFilter);
 		setTexCoordsParameter(pass,"PREV.tex_coord",prevPasses[0].vertexBuffer);
 	}
@@ -741,9 +726,9 @@ void CD3DCG::setShaderVars(int pass)
 			break;
 		char varname[100];
 		sprintf(varname,"PREV%d.video_size",i);
-		setProgramUniform(pass,varname,prevPasses[i].imageSize);
+		setProgramUniform(pass,varname,&prevPasses[i].imageSize);
 		sprintf(varname,"PREV%d.texture_size",i);
-		setProgramUniform(pass,varname,prevPasses[i].textureSize);
+		setProgramUniform(pass,varname,&prevPasses[i].textureSize);
 		sprintf(varname,"PREV%d.texture",i);
 		setTextureParameter(pass,varname,prevPasses[i].tex,shaderPasses[1].linearFilter);
 		sprintf(varname,"PREV%d.tex_coord",i);
@@ -762,9 +747,9 @@ void CD3DCG::setShaderVars(int pass)
 		for(int i=1;i<pass-1;i++) {
 			char varname[100];
 			sprintf(varname,"PASS%d.video_size",i);
-			setProgramUniform(pass,varname,shaderPasses[i].outputSize);
+			setProgramUniform(pass,varname,&shaderPasses[i].outputSize);
 			sprintf(varname,"PASS%d.texture_size",i);
-			setProgramUniform(pass,varname,shaderPasses[i].textureSize);
+			setProgramUniform(pass,varname,&shaderPasses[i].textureSize);
 			sprintf(varname,"PASS%d.texture",i);
 			setTextureParameter(pass,varname,shaderPasses[i].tex,shaderPasses[i+1].linearFilter);
 			sprintf(varname,"PASS%d.tex_coord",i);

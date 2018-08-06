@@ -195,7 +195,7 @@
 #include "../apu/apu.h"
 #include "wsnes9x.h"
 #include <process.h>
-#include <Dxerr.h>
+#include "dxerr.h"
 
 /* CXAudio2
 	Implements audio output through XAudio2.

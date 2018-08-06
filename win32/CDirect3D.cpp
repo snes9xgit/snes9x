@@ -190,7 +190,6 @@
  ***********************************************************************************/
 
 #pragma comment( lib, "d3d9" )
-#pragma comment( lib, "d3dx9" )
 
 #include "cdirect3d.h"
 #include "win32_display.h"
@@ -198,7 +197,7 @@
 #include "../gfx.h"
 #include "../display.h"
 #include "wsnes9x.h"
-#include <Dxerr.h>
+#include "dxerr.h"
 #include <commctrl.h>
 #include "CXML.h"
 
@@ -239,7 +238,6 @@ CDirect3D::CDirect3D()
 	for(int i = 0; i < MAX_SHADER_TEXTURES; i++) {
 		rubyLUT[i] = NULL;
 	}
-	effect=NULL;
 	shader_type = D3D_SHADER_NONE;
 	shaderTimer = 1.0f;
 	shaderTimeStart = 0;
@@ -384,15 +382,14 @@ void CDirect3D::DeInitialize()
 bool CDirect3D::SetShader(const TCHAR *file)
 {
 	SetShaderCG(NULL);
-	SetShaderHLSL(NULL);
 	shader_type = D3D_SHADER_NONE;
 	if(file!=NULL &&
 		(lstrlen(file)>3 && _tcsncicmp(&file[lstrlen(file)-3],TEXT(".cg"),3)==0) ||
 		(lstrlen(file)>4 && _tcsncicmp(&file[lstrlen(file)-4],TEXT(".cgp"),4)==0)){
 		return SetShaderCG(file);
-	} else {
-		return SetShaderHLSL(file);
 	}
+
+	return true;
 }
 
 void CDirect3D::checkForCgError(const char *situation)
@@ -430,194 +427,6 @@ bool CDirect3D::SetShaderCG(const TCHAR *file)
 	shader_type = D3D_SHADER_CG;
 
 	return true;
-}
-
-bool CDirect3D::SetShaderHLSL(const TCHAR *file)
-{
-	//MUDLORD: the guts
-	//Compiles a shader from files on disc
-	//Sets LUT textures to texture files in PNG format.
-
-	TCHAR folder[MAX_PATH];
-	TCHAR rubyLUTfileName[MAX_PATH];
-	TCHAR *slash;
-
-	TCHAR errorMsg[MAX_PATH + 50];
-
-	shaderTimer = 1.0f;
-	shaderTimeStart = 0;
-	shaderTimeElapsed = 0;
-
-	if(effect) {
-		effect->Release();
-		effect = NULL;
-	}
-	for(int i = 0; i < MAX_SHADER_TEXTURES; i++) {
-		if (rubyLUT[i] != NULL) {
-			rubyLUT[i]->Release();
-			rubyLUT[i] = NULL;
-		}
-	}
-	if (file == NULL || *file==TEXT('\0'))
-		return true;
-
-	CXML xml;
-
-    if(!xml.loadXmlFile(file))
-        return false;
-
-    TCHAR *lang = xml.getAttribute(TEXT("/shader"),TEXT("language"));
-
-	if(lstrcmpi(lang,TEXT("hlsl"))) {
-		_stprintf(errorMsg,TEXT("Shader language is <%s>, expected <HLSL> in file:\n%s"),lang,file);
-		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"), MB_OK|MB_ICONEXCLAMATION);
-		return false;
-	}
-
-    TCHAR *shaderText = xml.getNodeContent(TEXT("/shader/source"));
-
-	if(!shaderText) {
-		_stprintf(errorMsg,TEXT("No HLSL shader program in file:\n%s"),file);
-		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"),
-			MB_OK|MB_ICONEXCLAMATION);
-		return false;
-	}
-
-	LPD3DXBUFFER pBufferErrors = NULL;
-#ifdef UNICODE
-    HRESULT hr = D3DXCreateEffect( pDevice,WideToCP(shaderText,CP_ACP),strlen(WideToCP(shaderText,CP_ACP)),NULL, NULL,
-		D3DXSHADER_ENABLE_BACKWARDS_COMPATIBILITY, NULL, &effect, 
-		&pBufferErrors );
-#else
-	HRESULT hr = D3DXCreateEffect( pDevice,shaderText,strlen(shaderText),NULL, NULL,
-		D3DXSHADER_ENABLE_BACKWARDS_COMPATIBILITY, NULL, &effect, 
-		&pBufferErrors );
-#endif
-
-    if( FAILED(hr) ) {
-		_stprintf(errorMsg,TEXT("Error parsing HLSL shader file:\n%s"),file);
-		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"), MB_OK|MB_ICONEXCLAMATION);
-		if(pBufferErrors) {
-			LPVOID pCompilErrors = pBufferErrors->GetBufferPointer();
-			MessageBox(NULL, (const TCHAR*)pCompilErrors, TEXT("FX Compile Error"),
-				MB_OK|MB_ICONEXCLAMATION);
-		}
-		return false;
-	}
-
-	lstrcpy(folder,file);
-	slash = _tcsrchr(folder,TEXT('\\'));
-	if(slash)
-		*(slash+1)=TEXT('\0');
-	else
-		*folder=TEXT('\0');
-	SetCurrentDirectory(S9xGetDirectoryT(DEFAULT_DIR));
-
-	for(int i = 0; i < MAX_SHADER_TEXTURES; i++) {		
-		_stprintf(rubyLUTfileName, TEXT("%srubyLUT%d.png"), folder, i);
-		hr = D3DXCreateTextureFromFile(pDevice,rubyLUTfileName,&rubyLUT[i]);
-		if FAILED(hr){
-			rubyLUT[i] = NULL;
-		}
-	}
-
-	D3DXHANDLE hTech;
-	effect->FindNextValidTechnique(NULL,&hTech);
-	effect->SetTechnique( hTech );
-	shader_type = D3D_SHADER_HLSL;
-	return true;
-}
-
-void CDirect3D::SetShaderVars(bool setMatrix)
-{
-	if(shader_type == D3D_SHADER_HLSL) {
-		D3DXVECTOR4 rubyTextureSize;
-		D3DXVECTOR4 rubyInputSize;
-		D3DXVECTOR4 rubyOutputSize;
-		D3DXHANDLE  rubyTimer;
-
-		int shaderTime = GetTickCount();
-		shaderTimeElapsed += shaderTime - shaderTimeStart;
-		shaderTimeStart = shaderTime;
-		if(shaderTimeElapsed > 100) {
-			shaderTimeElapsed = 0;
-			shaderTimer += 0.01f;
-		}
-		rubyTextureSize.x = rubyTextureSize.y = (float)quadTextureSize;
-		rubyTextureSize.z = rubyTextureSize.w = 1.0 / quadTextureSize;
-		rubyInputSize.x = (float)afterRenderWidth;
-		rubyInputSize.y = (float)afterRenderHeight;
-		rubyInputSize.z = 1.0 / rubyInputSize.y;
-		rubyInputSize.w = 1.0 / rubyInputSize.z;
-		rubyOutputSize.x  = GUI.Stretch?(float)dPresentParams.BackBufferWidth:(float)afterRenderWidth;
-		rubyOutputSize.y  = GUI.Stretch?(float)dPresentParams.BackBufferHeight:(float)afterRenderHeight;
-		rubyOutputSize.z = 1.0 / rubyOutputSize.y;
-		rubyOutputSize.w = 1.0 / rubyOutputSize.x;
-		rubyTimer = effect->GetParameterByName(0, "rubyTimer");
-
-		effect->SetFloat(rubyTimer, shaderTimer);
-		effect->SetVector("rubyTextureSize", &rubyTextureSize);
-		effect->SetVector("rubyInputSize", &rubyInputSize);
-		effect->SetVector("rubyOutputSize", &rubyOutputSize);
-
-		effect->SetTexture("rubyTexture", drawSurface);
-		for(int i = 0; i < MAX_SHADER_TEXTURES; i++) {
-			char rubyLUTName[256];
-			sprintf(rubyLUTName, "rubyLUT%d", i);
-			if (rubyLUT[i] != NULL) {
-				effect->SetTexture( rubyLUTName, rubyLUT[i] );
-			}
-		}
-	}/* else if(shader_type == D3D_SHADER_CG) {
-
-		D3DXVECTOR2 videoSize;
-		D3DXVECTOR2 textureSize;
-		D3DXVECTOR2 outputSize;
-		float frameCnt;
-		videoSize.x = (float)afterRenderWidth;
-		videoSize.y = (float)afterRenderHeight;
-		textureSize.x = textureSize.y = (float)quadTextureSize;
-		outputSize.x = GUI.Stretch?(float)dPresentParams.BackBufferWidth:(float)afterRenderWidth;
-		outputSize.y = GUI.Stretch?(float)dPresentParams.BackBufferHeight:(float)afterRenderHeight;
-		frameCnt = (float)++frameCount;
-		videoSize = textureSize;
-
-#define setProgramUniform(program,varname,floats)\
-{\
-	CGparameter cgp = cgGetNamedParameter(program, varname);\
-	if(cgp)\
-		cgD3D9SetUniform(cgp,floats);\
-}\
-
-		setProgramUniform(cgFragmentProgram,"IN.video_size",&videoSize);
-		setProgramUniform(cgFragmentProgram,"IN.texture_size",&textureSize);
-		setProgramUniform(cgFragmentProgram,"IN.output_size",&outputSize);
-		setProgramUniform(cgFragmentProgram,"IN.frame_count",&frameCnt);
-
-		setProgramUniform(cgVertexProgram,"IN.video_size",&videoSize);
-		setProgramUniform(cgVertexProgram,"IN.texture_size",&textureSize);
-		setProgramUniform(cgVertexProgram,"IN.output_size",&outputSize);
-		setProgramUniform(cgVertexProgram,"IN.frame_count",&frameCnt);
-
-		if(setMatrix) {
-			D3DXMATRIX matWorld;
-			D3DXMATRIX matView;
-			D3DXMATRIX matProj;
-			D3DXMATRIX mvp;
-
-			pDevice->GetTransform(D3DTS_WORLD,&matWorld);
-			pDevice->GetTransform(D3DTS_VIEW,&matView);
-			pDevice->GetTransform(D3DTS_PROJECTION,&matProj);
-
-			mvp = matWorld * matView * matProj;
-			D3DXMatrixTranspose(&mvp,&mvp);
-
-			CGparameter cgpModelViewProj = cgGetNamedParameter(cgVertexProgram, "modelViewProj");
-
-			if(cgpModelViewProj)
-				cgD3D9SetUniformMatrix(cgpModelViewProj,&mvp);
-		}
-	}*/
 }
 
 /*  CDirect3D::Render
@@ -691,43 +500,26 @@ void CDirect3D::Render(SSurface Src)
 	pDevice->SetVertexDeclaration(vertexDeclaration);
 	pDevice->SetStreamSource(0,vertexBuffer,0,sizeof(VERTEX));
 
-	if (shader_type == D3D_SHADER_HLSL) {
-		SetShaderVars();
-		SetFiltering();
-
-		UINT passes;
-		pDevice->BeginScene();
-		hr = effect->Begin(&passes, 0);
-		for(UINT pass = 0; pass < passes; pass++ ) {
-			effect->BeginPass(pass);
-			pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,0,2);
-			effect->EndPass();
-		}
-		effect->End();
-		pDevice->EndScene();
-
-	} else {
-		if(shader_type == D3D_SHADER_CG) {
-			RECT displayRect;
-			//Get maximum rect respecting AR setting
-			displayRect=CalculateDisplayRect(dPresentParams.BackBufferWidth,dPresentParams.BackBufferHeight,
-											dPresentParams.BackBufferWidth,dPresentParams.BackBufferHeight);
-			cgShader->Render(drawSurface,
-				D3DXVECTOR2((float)quadTextureSize, (float)quadTextureSize),
-				D3DXVECTOR2((float)afterRenderWidth, (float)afterRenderHeight),
-				D3DXVECTOR2((float)(displayRect.right - displayRect.left),
-									(float)(displayRect.bottom - displayRect.top)),
-				D3DXVECTOR2((float)dPresentParams.BackBufferWidth, (float)dPresentParams.BackBufferHeight));
-		}
-
-		SetFiltering();
-
-		pDevice->SetVertexDeclaration(vertexDeclaration);
-
-		pDevice->BeginScene();
-		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,0,2);
-		pDevice->EndScene();
+	if(shader_type == D3D_SHADER_CG) {
+		RECT displayRect;
+		//Get maximum rect respecting AR setting
+		displayRect=CalculateDisplayRect(dPresentParams.BackBufferWidth,dPresentParams.BackBufferHeight,
+										dPresentParams.BackBufferWidth,dPresentParams.BackBufferHeight);
+		cgShader->Render(drawSurface,
+			XMFLOAT2((float)quadTextureSize, (float)quadTextureSize),
+			XMFLOAT2((float)afterRenderWidth, (float)afterRenderHeight),
+			XMFLOAT2((float)(displayRect.right - displayRect.left),
+								(float)(displayRect.bottom - displayRect.top)),
+			XMFLOAT2((float)dPresentParams.BackBufferWidth, (float)dPresentParams.BackBufferHeight));
 	}
+
+	SetFiltering();
+
+	pDevice->SetVertexDeclaration(vertexDeclaration);
+
+	pDevice->BeginScene();
+	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,0,2);
+	pDevice->EndScene();
 
 	pDevice->Present(NULL, NULL, NULL, NULL);
 
@@ -863,16 +655,14 @@ void CDirect3D::SetupVertices()
 
 void CDirect3D::SetViewport()
 {
-	D3DXMATRIX matIdentity;
-	D3DXMATRIX matProjection;
+	XMMATRIX matIdentity;
+	XMMATRIX matProjection;
 
-	D3DXMatrixOrthoOffCenterLH(&matProjection,0.0f,1.0f,0.0f,1.0f,0.0f,1.0f);
-	D3DXMatrixIdentity(&matIdentity);
-	pDevice->SetTransform(D3DTS_WORLD,&matIdentity);
-	pDevice->SetTransform(D3DTS_VIEW,&matIdentity);
-	pDevice->SetTransform(D3DTS_PROJECTION,&matProjection);
-
-	SetShaderVars(true);
+	matProjection = XMMatrixOrthographicOffCenterLH(0.0f,1.0f,0.0f,1.0f,0.0f,1.0f);
+	matIdentity = XMMatrixIdentity();
+	pDevice->SetTransform(D3DTS_WORLD,(D3DMATRIX*)&matIdentity);
+	pDevice->SetTransform(D3DTS_VIEW, (D3DMATRIX*)&matIdentity);
+	pDevice->SetTransform(D3DTS_PROJECTION, (D3DMATRIX*)&matProjection);
 
 	RECT drawRect = CalculateDisplayRect(afterRenderWidth,afterRenderHeight,dPresentParams.BackBufferWidth,dPresentParams.BackBufferHeight);
 	D3DVIEWPORT9 viewport;
@@ -931,9 +721,6 @@ bool CDirect3D::ResetDevice()
 		cgD3D9SetDevice(NULL);
 	}
 
-	if(effect)
-		effect->OnLostDevice();
-
 	//zero or unknown values result in the current window size/display settings
 	dPresentParams.BackBufferWidth = 0;
 	dPresentParams.BackBufferHeight = 0;
@@ -960,9 +747,6 @@ bool CDirect3D::ResetDevice()
 		DXTRACE_ERR(TEXT("Unable to reset device"), hr);
 		return false;
 	}
-
-	if(effect)
-		effect->OnResetDevice();
 
 	if(cgAvailable) {
 		cgD3D9SetDevice(pDevice);

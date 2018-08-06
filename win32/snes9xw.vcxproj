@@ -433,6 +433,7 @@
     <ClInclude Include="dxerr.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="gl_core_3_1.h" />
+    <ClInclude Include="image_functions.h" />
     <ClInclude Include="InputCustom.h" />
     <ClInclude Include="IS9xDisplayOutput.h" />
     <ClInclude Include="IS9xSoundOutput.h" />
@@ -566,6 +567,7 @@
     <ClCompile Include="DumpAtEnd.cpp" />
     <ClCompile Include="dxerr.cpp" />
     <ClCompile Include="gl_core_3_1.c" />
+    <ClCompile Include="image_functions.cpp" />
     <ClCompile Include="InputCustom.cpp" />
     <ClCompile Include="render.cpp" />
     <ClCompile Include="snes_ntsc.c" />
