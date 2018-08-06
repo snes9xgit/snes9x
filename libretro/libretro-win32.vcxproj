@@ -246,6 +246,7 @@
     <ClCompile Include="..\apu\bapu\dsp\SPC_DSP.cpp" />
     <ClCompile Include="..\apu\bapu\smp\smp.cpp" />
     <ClCompile Include="..\apu\bapu\smp\smp_state.cpp" />
+    <ClCompile Include="..\win32\snes_ntsc.c" />
     <ClCompile Include="..\bml.cpp" />
     <ClCompile Include="..\bsx.cpp" />
     <ClCompile Include="..\c4.cpp" />
