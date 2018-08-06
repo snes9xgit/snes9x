@@ -1066,7 +1066,10 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 					else
 					{
 						PPU.ScreenHeight = SNES_HEIGHT;
-						IPPU.RenderedScreenHeight = PPU.ScreenHeight;
+						if (IPPU.DoubleHeightPixels)
+							IPPU.RenderedScreenHeight = PPU.ScreenHeight << 1;
+						else
+							IPPU.RenderedScreenHeight = PPU.ScreenHeight;
 					}
 
 					if ((Memory.FillRAM[0x2133] ^ Byte) & 3)
