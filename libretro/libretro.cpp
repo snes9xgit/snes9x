@@ -351,7 +351,7 @@ static void update_variables(void)
             Settings.OneSlowClockCycle  = 3;
             Settings.TwoClockCycles     = 3;
         }
-        else if (strcmp(var.value, "compatible"))
+        else if (strcmp(var.value, "compatible") == 0)
         {
             Settings.OneClockCycle      = 4;
             Settings.OneSlowClockCycle  = 5;
