@@ -698,7 +698,7 @@ static int is_bsx (uint8 *p)
     return (0);
 }
 
-static bool8 LoadBIOS(uint8 *biosrom, char *biosname, int biossize)
+static bool8 LoadBIOS(uint8 *biosrom, const char *biosname, int biossize)
 {
     FILE	*fp;
     char	name[PATH_MAX + 1];
@@ -724,7 +724,7 @@ static bool8 LoadBIOS(uint8 *biosrom, char *biosname, int biossize)
 
         size = fread((void *) biosrom, 1, biossize, fp);
         fclose(fp);
-        if (size == biossize)
+        if (size == (unsigned int) biossize)
             r = TRUE;
     }
 
@@ -759,13 +759,13 @@ bool retro_load_game(const struct retro_game_info *game)
         }
 
         if (is_SufamiTurbo_Cart((uint8 *) game->data, game->size)) {
-            if (rom_loaded = LoadBIOS(biosrom,"STBIOS.bin",0x40000))
+            if ((rom_loaded = LoadBIOS(biosrom,"STBIOS.bin",0x40000)))
             rom_loaded = Memory.LoadMultiCartMem((const uint8_t*)game->data, game->size, 0, 0, biosrom, 0x40000);
         }
 
         else
         if ((is_bsx((uint8 *) game->data + 0x7fc0)==1) | (is_bsx((uint8 *) game->data + 0xffc0)==1)) {
-            if (rom_loaded = LoadBIOS(biosrom,"BS-X.bin",0x100000))
+            if ((rom_loaded = LoadBIOS(biosrom,"BS-X.bin",0x100000)))
             rom_loaded = Memory.LoadMultiCartMem(biosrom, 0x100000, (const uint8_t*)game->data, game->size, 0, 0);
         }
 
@@ -873,7 +873,7 @@ bool retro_load_game_special(unsigned game_type, const struct retro_game_info *i
                     uint8 *biosrom = new uint8[0x40000];
                     uint8 *biosptr = biosrom;
 
-                    if (LoadBIOS(biosptr,"STBIOS.bin",0x40000))
+                    if (LoadBIOS(biosptr, "STBIOS.bin", 0x40000))
                     {
                         if (log_cb)
                             log_cb(RETRO_LOG_INFO, "Loading Sufami Turbo link game\n");
