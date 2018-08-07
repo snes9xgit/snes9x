@@ -360,7 +360,7 @@ static void update_variables(void)
     }
 
     Settings.MaxSpriteTilesPerLine = 34;
-    var.key="snes9x_overclock_cycles";
+    var.key="snes9x_reduce_sprite_flicker";
     var.value=NULL;
     if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
         if (strcmp(var.value, "enabled") == 0)
