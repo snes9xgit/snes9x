@@ -427,7 +427,7 @@ void CD3DCG::ensureTextureSize(LPDIRECT3DTEXTURE9 &tex, XMFLOAT2 &texSize,
 			tex->Release();
 
 		hr = pDevice->CreateTexture(
-			wantedSize.x, wantedSize.y,
+			(UINT)wantedSize.x, (UINT)wantedSize.y,
 			1, // 1 level, no mipmaps
 			renderTarget?D3DUSAGE_RENDERTARGET:0,
             renderTarget?(useFloat?D3DFMT_A32B32G32R32F:D3DFMT_A8R8G8B8):D3DFMT_R5G6B5,
@@ -568,7 +568,7 @@ void CD3DCG::Render(LPDIRECT3DTEXTURE9 &origTex, XMFLOAT2 textureSize,
 		
 		/* viewport defines output size
 		*/
-		setViewport(0,0,shaderPasses[i].outputSize.x,shaderPasses[i].outputSize.y);
+		setViewport(0,0,(DWORD)shaderPasses[i].outputSize.x, (DWORD)shaderPasses[i].outputSize.y);
 
         pDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
 
@@ -605,11 +605,11 @@ void CD3DCG::Render(LPDIRECT3DTEXTURE9 &origTex, XMFLOAT2 textureSize,
 	pDevice->SetTexture(0, shaderPasses.back().tex);
 	pDevice->SetRenderTarget(0,pBackBuffer);
 	pBackBuffer->Release();
-	RECT displayRect=CalculateDisplayRect(shaderPasses.back().outputSize.x,shaderPasses.back().outputSize.y,windowSize.x,windowSize.y);
+	RECT displayRect=CalculateDisplayRect((unsigned int)shaderPasses.back().outputSize.x, (unsigned int)shaderPasses.back().outputSize.y, (unsigned int)windowSize.x, (unsigned int)windowSize.y);
 	setViewport(displayRect.left,displayRect.top,displayRect.right - displayRect.left,displayRect.bottom - displayRect.top);
 	setVertexStream(shaderPasses.back().vertexBuffer,
 		shaderPasses.back().outputSize,shaderPasses.back().textureSize,
-		XMFLOAT2(displayRect.right - displayRect.left,displayRect.bottom - displayRect.top));
+		XMFLOAT2((float)(displayRect.right - displayRect.left),(float)(displayRect.bottom - displayRect.top)));
 	pDevice->SetVertexShader(NULL);
 	pDevice->SetPixelShader(NULL);
 }
@@ -696,7 +696,7 @@ void CD3DCG::setShaderVars(int pass)
 	setProgramUniform(pass,"IN.video_size",&inputSize);
 	setProgramUniform(pass,"IN.texture_size",&textureSize);
 	setProgramUniform(pass,"IN.output_size",&outputSize);
-    float shaderFrameCnt = frameCnt;
+    float shaderFrameCnt = (float)frameCnt;
     if(shaderPasses[pass].frameCounterMod)
         shaderFrameCnt = (float)(frameCnt % shaderPasses[pass].frameCounterMod);
 	setProgramUniform(pass,"IN.frame_count",&shaderFrameCnt);
@@ -834,7 +834,7 @@ void CD3DCG::setupVertexDeclaration(shaderPass &pass)
 			}
 		} else {
 			int resIndex = atoi(sem + strlen(sem) - 1);
-			D3DVERTEXELEMENT9 elem = {streamNum, 12, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, resIndex};
+			D3DVERTEXELEMENT9 elem = {(WORD)streamNum, 12, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, (BYTE)resIndex};
 			vElems[i] = elem;
 			pass.parameterMap[i].streamNumber = streamNum;
 			streamNum++;

@@ -216,7 +216,7 @@ typedef struct _VERTEX {
 		}
 } VERTEX; //our custom vertex with a constuctor for easier assignment
 
-enum current_d3d_shader_type { D3D_SHADER_NONE, D3D_SHADER_HLSL, D3D_SHADER_CG };
+enum current_d3d_shader_type { D3D_SHADER_NONE, D3D_SHADER_CG };
 
 class CDirect3D: public IS9xDisplayOutput
 {

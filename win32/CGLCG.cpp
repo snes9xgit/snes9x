@@ -547,7 +547,7 @@ void CGLCG::Render(GLuint &origTex, xySize textureSize, xySize inputSize, xySize
 
 		/* viewport determines the area we render into the output texture
 		*/
-		glViewport(0,0,shaderPasses[i].outputSize.x,shaderPasses[i].outputSize.y);
+		glViewport(0,0,(GLsizei)shaderPasses[i].outputSize.x, (GLsizei)shaderPasses[i].outputSize.y);
 
 		/* set up framebuffer and attach output texture
 		*/
@@ -601,7 +601,7 @@ void CGLCG::Render(GLuint &origTex, xySize textureSize, xySize inputSize, xySize
 	memcpy(pass.texCoords,shaderPasses[1].texcoords,sizeof(pass.texCoords));
 	prevPasses.push_front(pass);
 	glBindTexture(GL_TEXTURE_2D,origTex);
-	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,textureSize.x,textureSize.y,0,GL_RGB,GL_UNSIGNED_SHORT_5_6_5,NULL);
+	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB, (GLsizei)textureSize.x, (GLsizei)textureSize.y,0,GL_RGB,GL_UNSIGNED_SHORT_5_6_5,NULL);
 
 	/* bind output of last pass to be rendered on the backbuffer
 	*/
@@ -611,8 +611,8 @@ void CGLCG::Render(GLuint &origTex, xySize textureSize, xySize inputSize, xySize
 	/* calculate and apply viewport and texture coordinates to
 	   that will be used in the main ogl code
 	*/
-	RECT displayRect=CalculateDisplayRect(shaderPasses.back().outputSize.x,shaderPasses.back().outputSize.y,windowSize.x,windowSize.y);
-	glViewport(displayRect.left,windowSize.y-displayRect.bottom,displayRect.right-displayRect.left,displayRect.bottom-displayRect.top);	
+	RECT displayRect=CalculateDisplayRect((unsigned int)shaderPasses.back().outputSize.x, (unsigned int)shaderPasses.back().outputSize.y, (unsigned int)windowSize.x, (unsigned int)windowSize.y);
+	glViewport(displayRect.left,(LONG)windowSize.y-displayRect.bottom,displayRect.right-displayRect.left,displayRect.bottom-displayRect.top);
 	setTexCoords(shaderPasses.size()-1,shaderPasses.back().outputSize,shaderPasses.back().textureSize,true);
 
 	/* render to backbuffer without shaders
@@ -670,9 +670,9 @@ void CGLCG::setShaderVars(int pass)
 
 	/* IN paramater
 	*/
-	float inputSize[2] = {shaderPasses[pass-1].outputSize.x,shaderPasses[pass-1].outputSize.y};
-	float textureSize[2] = {shaderPasses[pass-1].textureSize.x,shaderPasses[pass-1].textureSize.y};
-	float outputSize[2] = {shaderPasses[pass].outputSize.x,shaderPasses[pass].outputSize.y};
+	float inputSize[2] = { (float)shaderPasses[pass-1].outputSize.x, (float)shaderPasses[pass-1].outputSize.y };
+	float textureSize[2] = { (float)shaderPasses[pass-1].textureSize.x, (float)shaderPasses[pass-1].textureSize.y };
+	float outputSize[2] = { (float)shaderPasses[pass].outputSize.x, (float)shaderPasses[pass].outputSize.y };
 
 	setProgram2fv(pass,"IN.video_size",inputSize);
 	setProgram2fv(pass,"IN.texture_size",textureSize);
@@ -685,8 +685,8 @@ void CGLCG::setShaderVars(int pass)
 
 	/* ORIG parameter
 	*/
-	float orig_videoSize[2] = {shaderPasses[0].outputSize.x,shaderPasses[0].outputSize.y};
-	float orig_textureSize[2] = {shaderPasses[0].textureSize.x,shaderPasses[0].textureSize.y};
+	float orig_videoSize[2] = { (float)shaderPasses[0].outputSize.x, (float)shaderPasses[0].outputSize.y };
+	float orig_textureSize[2] = { (float)shaderPasses[0].textureSize.x, (float)shaderPasses[0].textureSize.y };
 	
 	setProgram2fv(pass,"ORIG.video_size",orig_videoSize);
 	setProgram2fv(pass,"ORIG.texture_size",orig_textureSize);
@@ -696,8 +696,8 @@ void CGLCG::setShaderVars(int pass)
 	/* PREV parameter
 	*/
 	if(prevPasses[0].textureSize.x>0) {
-		float prev_videoSize[2] = {prevPasses[0].videoSize.x,prevPasses[0].videoSize.y};
-		float prev_textureSize[2] = {prevPasses[0].textureSize.x,prevPasses[0].textureSize.y};
+		float prev_videoSize[2] = { (float)prevPasses[0].videoSize.x, (float)prevPasses[0].videoSize.y };
+		float prev_textureSize[2] = { (float)prevPasses[0].textureSize.x, (float)prevPasses[0].textureSize.y };
 
 		setProgram2fv(pass,"PREV.video_size",prev_videoSize);
 		setProgram2fv(pass,"PREV.texture_size",prev_textureSize);
@@ -711,8 +711,8 @@ void CGLCG::setShaderVars(int pass)
 		if(prevPasses[i].textureSize.x==0)
 			break;
 		char varname[100];
-		float prev_videoSize[2] = {prevPasses[i].videoSize.x,prevPasses[i].videoSize.y};
-		float prev_textureSize[2] = {prevPasses[i].textureSize.x,prevPasses[i].textureSize.y};
+		float prev_videoSize[2] = { (float)prevPasses[i].videoSize.x, (float)prevPasses[i].videoSize.y };
+		float prev_textureSize[2] = { (float)prevPasses[i].textureSize.x, (float)prevPasses[i].textureSize.y };
 		sprintf(varname,"PREV%d.video_size",i);
 		setProgram2fv(pass,varname,prev_videoSize);
 		sprintf(varname,"PREV%d.texture_size",i);
@@ -734,8 +734,8 @@ void CGLCG::setShaderVars(int pass)
 	if(pass>2) {
 		for(int i=1;i<pass-1;i++) {
 			char varname[100];
-			float pass_videoSize[2] = {shaderPasses[i].outputSize.x,shaderPasses[i].outputSize.y};
-			float pass_textureSize[2] = {shaderPasses[i].textureSize.x,shaderPasses[i].textureSize.y};
+			float pass_videoSize[2] = { (float)shaderPasses[i].outputSize.x, (float)shaderPasses[i].outputSize.y };
+			float pass_textureSize[2] = { (float)shaderPasses[i].textureSize.x, (float)shaderPasses[i].textureSize.y };
 			sprintf(varname,"PASS%d.video_size",i);
 			setProgram2fv(pass,varname,pass_videoSize);
 			sprintf(varname,"PASS%d.texture_size",i);

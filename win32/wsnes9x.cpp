@@ -6128,7 +6128,6 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 			wcex.lpszClassName=tempclassname;
 			wcex.hbrBackground=(HBRUSH)GetStockObject(LTGRAY_BRUSH);
 			wcex.hCursor=LoadCursor(NULL, IDC_SIZEWE);
-			wcex.hCursor=LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZEWE));
 			ATOM aSplitter=RegisterClassEx(&wcex);
 			GetWindowRect(dirList, &treeRect);
 			GetWindowRect(romList, &listRect);
