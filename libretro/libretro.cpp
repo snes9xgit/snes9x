@@ -48,8 +48,7 @@
 char g_rom_dir[1024];
 char g_basename[1024];
 
-bool hires_blend = false;
-static uint16 *gfx_blend;
+int hires_blend = 0;
 bool randomize_memory = false;
 
 char retro_system_directory[4096];
@@ -172,7 +171,7 @@ void retro_set_environment(retro_environment_t cb)
         { "snes9x_overclock_cycles", "Reduce Slowdown (Hack, Unsafe); disabled|compatible|max" },
         { "snes9x_reduce_sprite_flicker", "Reduce Flickering (Hack, Unsafe); disabled|enabled" },
         { "snes9x_randomize_memory", "Randomize Memory (Unsafe); disabled|enabled" },
-        { "snes9x_hires_blend", "Hires Blending; disabled|enabled" },
+        { "snes9x_hires_blend", "Hires Blending; disabled|merge|blur" },
         { "snes9x_audio_interpolation", "Audio Interpolation; gaussian|cubic|sinc|none|linear" },
         { "snes9x_layer_1", "Show layer 1; enabled|disabled" },
         { "snes9x_layer_2", "Show layer 2; enabled|disabled" },
@@ -249,10 +248,14 @@ static void update_variables(void)
     var.key = "snes9x_hires_blend";
     var.value = NULL;
 
+    hires_blend = 0;
     if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
-        hires_blend = !strcmp(var.value, "disabled") ? false : true;
-    else
-        hires_blend = false;
+    {
+        if (!strcmp (var.value, "blur"))
+            hires_blend = 1;
+        else if (!strcmp (var.value, "merge"))
+            hires_blend = 2;
+    }
 
     var.key = "snes9x_overclock_superfx";
     var.value = NULL;
@@ -262,14 +265,6 @@ static void update_variables(void)
         int freq = atoi(var.value);
         Settings.SuperFXClockMultiplier = freq;
     }
-
-    var.key = "snes9x_hires_blend";
-    var.value = NULL;
-
-    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
-        hires_blend = !strcmp(var.value, "disabled") ? false : true;
-    else
-        hires_blend = false;
 
     var.key = "snes9x_up_down_allowed";
     var.value = NULL;
@@ -1027,7 +1022,6 @@ void retro_init(void)
 
     GFX.Pitch = MAX_SNES_WIDTH * sizeof(uint16);
     GFX.Screen = (uint16*) calloc(1, GFX.Pitch * MAX_SNES_HEIGHT);
-    gfx_blend = (uint16*) calloc(1, GFX.Pitch * MAX_SNES_HEIGHT);
     S9xGraphicsInit();
 
     S9xInitInputDevices();
@@ -1289,7 +1283,6 @@ void retro_deinit()
     S9xUnmapAllControls();
 
     free(GFX.Screen);
-    free(gfx_blend);
 }
 
 
@@ -1430,32 +1423,54 @@ bool8 S9xDeinitUpdate(int width, int height)
     }
 
 
-        if(width==MAX_SNES_WIDTH && hires_blend)
-        {
-#define AVERAGE_565(el0, el1) (((el0) & (el1)) + ((((el0) ^ (el1)) & 0xF7DE) >> 1))
-        for (register int y = 0; y < height; y++)
-        {
-            register uint16 *input = (uint16 *) ((uint8 *) GFX.Screen + y * GFX.Pitch);
-            register uint16 *output = (uint16 *) ((uint8 *) gfx_blend + y * GFX.Pitch);
-            register uint16 l, r;
+    if (width == MAX_SNES_WIDTH && hires_blend)
+    {
+        #define AVERAGE_565(el0, el1) (((el0) & (el1)) + ((((el0) ^ (el1)) & 0xF7DE) >> 1))
 
-            l = 0;
-            for (register int x = 0; x < (width >> 1); x++)
+        if (hires_blend == 1) /* Blur method */
+        {
+            for (int y = 0; y < height; y++)
             {
-            r = *input++;
-            *output++ = AVERAGE_565 (l, r);
-            l = r;
+                uint16 *input = (uint16 *) ((uint8 *) GFX.Screen + y * GFX.Pitch);
+                uint16 *output = (uint16 *) ((uint8 *) GFX.Screen + y * GFX.Pitch);
+                uint16 l, r;
 
-            r = *input++;
-            *output++ = AVERAGE_565 (l, r);
-            l = r;
+                l = 0;
+                for (int x = 0; x < (width >> 1); x++)
+                {
+                    r = *input++;
+                    *output++ = AVERAGE_565 (l, r);
+                    l = r;
+
+                    r = *input++;
+                    *output++ = AVERAGE_565 (l, r);
+                    l = r;
+                }
             }
         }
+        else if (hires_blend == 2) /* Merge method */
+        {
+            for (int y = 0; y < height; y++)
+            {
+                uint16 *input = (uint16 *) ((uint8 *) GFX.Screen + y * GFX.Pitch);
+                uint16 *output = (uint16 *) ((uint8 *) GFX.Screen + y * GFX.Pitch);
+                uint16 l, r;
 
-        video_cb(gfx_blend, width, height, GFX.Pitch);
+                for (int x = 0; x < (width >> 1); x++)
+                {
+                    l = *input++;
+                    r = *input++;
+                    *output++ = AVERAGE_565 (l, r);
+                }
+            }
+
+            width >>= 1;
+        }
+
+        video_cb(GFX.Screen, width, height, GFX.Pitch);
     }
     else
-    { 
+    {
         video_cb(GFX.Screen, width, height, GFX.Pitch);
     }
 
