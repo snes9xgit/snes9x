@@ -49,7 +49,6 @@ char g_rom_dir[1024];
 char g_basename[1024];
 
 bool hires_blend = false;
-static uint16 *gfx_blend;
 bool randomize_memory = false;
 
 char retro_system_directory[4096];
@@ -364,7 +363,7 @@ static void update_variables(void)
     var.value=NULL;
     if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
         if (strcmp(var.value, "enabled") == 0)
-            Settings.MaxSpriteTilesPerLine = 60;
+            Settings.MaxSpriteTilesPerLine = 128;
 
     randomize_memory = false;
     var.key = "snes9x_randomize_memory";
@@ -1027,7 +1026,6 @@ void retro_init(void)
 
     GFX.Pitch = MAX_SNES_WIDTH * sizeof(uint16);
     GFX.Screen = (uint16*) calloc(1, GFX.Pitch * MAX_SNES_HEIGHT);
-    gfx_blend = (uint16*) calloc(1, GFX.Pitch * MAX_SNES_HEIGHT);
     S9xGraphicsInit();
 
     S9xInitInputDevices();
@@ -1289,7 +1287,6 @@ void retro_deinit()
     S9xUnmapAllControls();
 
     free(GFX.Screen);
-    free(gfx_blend);
 }
 
 
@@ -1436,7 +1433,7 @@ bool8 S9xDeinitUpdate(int width, int height)
         for (register int y = 0; y < height; y++)
         {
             register uint16 *input = (uint16 *) ((uint8 *) GFX.Screen + y * GFX.Pitch);
-            register uint16 *output = (uint16 *) ((uint8 *) gfx_blend + y * GFX.Pitch);
+            register uint16 *output = (uint16 *) ((uint8 *) GFX.Screen + y * GFX.Pitch);
             register uint16 l, r;
 
             l = 0;
@@ -1451,14 +1448,9 @@ bool8 S9xDeinitUpdate(int width, int height)
             l = r;
             }
         }
-
-        video_cb(gfx_blend, width, height, GFX.Pitch);
-    }
-    else
-    { 
-        video_cb(GFX.Screen, width, height, GFX.Pitch);
     }
 
+    video_cb(GFX.Screen, width, height, GFX.Pitch);
     return TRUE;
 }
 
