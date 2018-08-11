@@ -364,7 +364,7 @@ static void update_variables(void)
     var.value=NULL;
     if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
         if (strcmp(var.value, "enabled") == 0)
-            Settings.MaxSpriteTilesPerLine = 60;
+            Settings.MaxSpriteTilesPerLine = 128;
 
     randomize_memory = false;
     var.key = "snes9x_randomize_memory";
