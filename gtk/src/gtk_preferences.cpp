@@ -788,6 +788,14 @@ Snes9xPreferences::move_settings_to_dialog (void)
 
     set_combo ("joypad_to_swap_with", 0);
 
+#ifdef ALLOW_CPU_OVERCLOCK
+    gtk_widget_show (get_widget ("cpu_overclock"));
+    gtk_widget_show (get_widget ("remove_sprite_limit"));
+
+    set_check ("cpu_overclock", Settings.OneClockCycle != 6);
+    set_check ("remove_sprite_limit", Settings.MaxSpriteTilesPerLine != 34);
+#endif
+
     return;
 }
 
@@ -877,6 +885,30 @@ Snes9xPreferences::get_settings_from_dialog (void)
     config->prevent_screensaver       = get_check ("prevent_screensaver");
     config->rewind_buffer_size        = get_spin ("rewind_buffer_size");
     config->rewind_granularity        = get_spin ("rewind_granularity");
+
+#ifdef ALLOW_CPU_OVERCLOCK
+    if (get_check ("cpu_overclock"))
+    {
+        Settings.OneClockCycle = 4;
+        Settings.OneSlowClockCycle = 5;
+        Settings.TwoClockCycles = 6;
+    }
+    else
+    {
+        Settings.OneClockCycle = 6;
+        Settings.OneSlowClockCycle = 8;
+        Settings.TwoClockCycles = 12;
+    }
+
+    if (get_check ("remove_sprite_limit"))
+    {
+        Settings.MaxSpriteTilesPerLine = 128;
+    }
+    else
+    {
+        Settings.MaxSpriteTilesPerLine = 34;
+    }
+#endif
 
 #ifdef USE_JOYSTICK
     config->joystick_threshold        = get_spin ("joystick_threshold");

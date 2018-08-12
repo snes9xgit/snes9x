@@ -159,6 +159,12 @@ AC_ARG_WITH(gtk2,
   [],
   [with_gtk2=no])
 
+AC_ARG_ENABLE(dangerous-hacks,
+  [AS_HELP_STRING([--enable-dangerous-hacks],
+    [Allow dangerous hacks to be enabled.])],
+  [],
+  [enable_dangerous_hacks=no])
+
 if test yes = "$with_debug" ; then
   CFLAGS="$CFLAGS -g"
 else
@@ -386,6 +392,10 @@ if test yes = "$with_zlib"; then
       ], ,)
 fi
 
+if test yes = "$enable_dangerous_hacks"; then
+  CFLAGS="$CFLAGS -DALLOW_CPU_OVERCLOCK"
+fi
+
 dnl Check for functions
 AC_CHECK_FUNC(mkstemp, [
   CFLAGS="$CFLAGS -DHAVE_MKSTEMP"
@@ -568,4 +578,8 @@ fi
 
 if ! test yes = "$XBRZ"; then
     echo "xBRZ filter compilation is disabled."
+fi
+
+if test yes = "$enable_dangerous_hacks"; then
+    echo "Dangerous hacks enabled."
 fi

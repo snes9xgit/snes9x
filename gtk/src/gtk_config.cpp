@@ -261,6 +261,12 @@ Snes9xConfig::load_defaults (void)
     Settings.HDMATimingHack = 100;
     Settings.SuperFXClockMultiplier = 100;
     Settings.InitialSnapshotFilename[0] = '\0';
+#ifdef ALLOW_CPU_OVERCLOCK
+    Settings.MaxSpriteTilesPerLine = 34;
+    Settings.OneClockCycle = 6;
+    Settings.OneSlowClockCycle = 8;
+    Settings.TwoClockCycles = 12;
+#endif
 
 #ifdef NETPLAY_SUPPORT
     Settings.NetPlay = FALSE;
@@ -424,6 +430,9 @@ Snes9xConfig::save_config_file (void)
     xml_out_int (xml, "block_invalid_vram_access", Settings.BlockInvalidVRAMAccessMaster);
     xml_out_int (xml, "superfx_clock_multiplier", Settings.SuperFXClockMultiplier);
     xml_out_int (xml, "upanddown", Settings.UpAndDown);
+
+    xml_out_int (xml, "remove_sprite_limit", Settings.MaxSpriteTilesPerLine == 34 ? 0 : 1);
+    xml_out_int (xml, "cpu_overclock", Settings.OneClockCycle == 6 ? 0 : 1);
 
     xmlTextWriterEndElement (xml); /* preferences */
 
@@ -922,6 +931,28 @@ Snes9xConfig::set_option (const char *name, const char *value)
     else if (!strcasecmp (name, "interpolation_method"))
     {
         Settings.InterpolationMethod = CLAMP (atoi (value), 0, 4);
+    }
+    else if (!strcasecmp (name, "remove_sprite_limit"))
+    {
+        if (atoi (value))
+            Settings.MaxSpriteTilesPerLine = 128;
+        else
+            Settings.MaxSpriteTilesPerLine = 34;
+    }
+    else if (!strcasecmp (name, "cpu_overclock"))
+    {
+        if (atoi (value))
+        {
+            Settings.OneClockCycle = 4;
+            Settings.OneSlowClockCycle = 5;
+            Settings.TwoClockCycles = 6;
+        }
+        else
+        {
+            Settings.OneClockCycle = 6;
+            Settings.OneSlowClockCycle = 8;
+            Settings.TwoClockCycles = 12;
+        }
     }
     else
     {
