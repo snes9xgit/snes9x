@@ -1598,7 +1598,7 @@ void S9xSetCPU (uint8 Byte, uint16 Address)
 					CPU.IRQTransition = FALSE;
 				}
 
-				S9xUpdateIRQPositions(true);
+				S9xUpdateIRQPositions(false);
 
 				// NMI can trigger immediately during VBlank as long as NMI_read ($4210) wasn't cleard.
 				if ((Byte & 0x80) && !(Memory.FillRAM[0x4200] & 0x80) &&
