@@ -40,6 +40,7 @@
 #define IDB_HIDDENFOLDER                149
 #define IDD_MULTICART                   150
 #define IDD_DIALOG_SHADER_PARAMS        155
+#define IDD_DIALOG_XAUDIO2_INIT_ERROR   159
 #define IDC_DRIVER                      1001
 #define IDC_BUFLEN                      1002
 #define IDC_RATE                        1003
@@ -387,7 +388,9 @@
 #define IDC_STATIC_INTERLEAVE_MODE      3024
 #define IDC_STATIC_VIDEO_SYSTEM         3025
 #define IDC_STATIC_HEADER               3026
-#define IDC_ROM_SPLITTER				3027
+#define IDC_ROM_SPLITTER                3027
+#define IDC_SYSLINK_DX                  3028
+#define IDC_STATIC_ICON                 3029
 #define ID_FILE_EXIT                    40001
 #define ID_WINDOW_HIDEMENUBAR           40004
 #define ID_FILE_AVI_RECORDING           40005
@@ -535,9 +538,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        159
+#define _APS_NEXT_RESOURCE_VALUE        161
 #define _APS_NEXT_COMMAND_VALUE         40178
-#define _APS_NEXT_CONTROL_VALUE         3028
+#define _APS_NEXT_CONTROL_VALUE         3030
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
