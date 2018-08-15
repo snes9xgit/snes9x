@@ -191,6 +191,7 @@ void retro_set_environment(retro_environment_t cb)
         { "snes9x_sndchan_8", "Enable sound channel 8; enabled|disabled" },
         { "snes9x_overscan", "Crop overscan; enabled|disabled|auto" },
         { "snes9x_aspect", "Preferred aspect ratio; 4:3|8:7|auto|ntsc|pal" },
+        { "snes9x_region", "Console region (Reload core); auto|ntsc|pal" },
         { NULL, NULL },
     };
 
@@ -409,6 +410,27 @@ static void update_variables(void)
         {
             aspect_ratio_mode = newval;
             geometry_update = true;
+        }
+    }
+
+    var.key = "snes9x_region";
+
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+    {
+        if (!strcmp(var.value, "auto"))
+        {
+            Settings.ForceNTSC = false;
+            Settings.ForcePAL = false;
+        }
+        else if (!strcmp(var.value, "ntsc"))
+        {
+            Settings.ForceNTSC = true;
+            Settings.ForcePAL = false;
+        }
+        else if (!strcmp(var.value, "pal"))
+        {
+            Settings.ForceNTSC = false;
+            Settings.ForcePAL = true;
         }
     }
 
