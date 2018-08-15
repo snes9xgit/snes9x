@@ -168,7 +168,7 @@ void retro_set_environment(retro_environment_t cb)
         // Adding more variables and rearranging them is safe.
         { "snes9x_up_down_allowed", "Allow Opposing Directions; disabled|enabled" },
         { "snes9x_overclock_superfx", "SuperFX Overclocking; 100%|150%|200%|250%|300%|350%|400%|450%|500%|50%" },
-        { "snes9x_overclock_cycles", "Reduce Slowdown (Hack, Unsafe); disabled|compatible|max" },
+        { "snes9x_overclock_cycles", "Reduce Slowdown (Hack, Unsafe); disabled|light|compatible|max" },
         { "snes9x_reduce_sprite_flicker", "Reduce Flickering (Hack, Unsafe); disabled|enabled" },
         { "snes9x_randomize_memory", "Randomize Memory (Unsafe); disabled|enabled" },
         { "snes9x_hires_blend", "Hires Blending; disabled|merge|blur" },
@@ -351,6 +351,12 @@ static void update_variables(void)
             Settings.OneClockCycle      = 4;
             Settings.OneSlowClockCycle  = 5;
             Settings.TwoClockCycles     = 6;
+        }
+        else if (strcmp(var.value, "light") == 0)
+        {
+            Settings.OneClockCycle      = 6;
+            Settings.OneSlowClockCycle  = 6;
+            Settings.TwoClockCycles     = 12;
         }
     }
 
