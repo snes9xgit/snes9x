@@ -50,6 +50,9 @@ endif
 
 # Unix
 ifneq (,$(findstring unix,$(platform)))
+   CFLAGS += -flto
+   CXXFLAGS += -flto
+   LDFLAGS += -flto
    TARGET := $(TARGET_NAME)_libretro.so
    fpic := -fPIC
    ifneq ($(findstring SunOS,$(shell uname -a)),)
@@ -72,6 +75,9 @@ ifneq (,$(findstring unix,$(platform)))
 
 # OS X
 else ifeq ($(platform), osx)
+   CFLAGS += -flto
+   CXXFLAGS += -flto
+   LDFLAGS += -flto
    TARGET := $(TARGET_NAME)_libretro.dylib
    fpic := -fPIC
    SHARED := -dynamiclib
@@ -88,6 +94,9 @@ else ifeq ($(platform), osx)
 
 # iOS
 else ifneq (,$(findstring ios,$(platform)))
+   CFLAGS += -flto
+   CXXFLAGS += -flto
+   LDFLAGS += -flto
    TARGET := $(TARGET_NAME)_libretro_ios.dylib
    fpic := -fPIC
    SHARED := -dynamiclib
@@ -117,6 +126,9 @@ else ifneq (,$(findstring ios,$(platform)))
 
 # Theos
 else ifeq ($(platform), theos_ios)
+   CFLAGS += -flto
+   CXXFLAGS += -flto
+   LDFLAGS += -flto
    DEPLOYMENT_IOSVERSION = 5.0
    TARGET = iphone:latest:$(DEPLOYMENT_IOSVERSION)
    ARCHS = armv7 armv7s
@@ -139,6 +151,9 @@ else ifeq ($(platform), qnx)
 
 # Vita
 else ifeq ($(platform), vita)
+   CFLAGS += -flto
+   CXXFLAGS += -flto
+   LDFLAGS += -flto
    TARGET := $(TARGET_NAME)_libretro_$(platform).so
    fpic := -fPIC
    CC = arm-vita-eabi-gcc$(EXE_EXT)
@@ -162,12 +177,18 @@ else ifneq (,$(filter $(platform), ps3 sncps3 psl1ght))
 
    # PS3
    else ifneq (,$(findstring ps3,$(platform)))
+      CFLAGS += -flto
+      CXXFLAGS += -flto
+      LDFLAGS += -flto
       CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
       CXX = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-g++.exe
       AR = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-ar.exe
 
    # Lightweight PS3 Homebrew SDK
    else ifneq (,$(findstring psl1ght,$(platform)))
+      CFLAGS += -flto
+      CXXFLAGS += -flto
+      LDFLAGS += -flto
       CC = $(PS3DEV)/ppu/bin/ppu-gcc$(EXE_EXT)
       CXX = $(PS3DEV)/ppu/bin/ppu-g++$(EXE_EXT)
       AR = $(PS3DEV)/ppu/bin/ppu-ar$(EXE_EXT)
@@ -175,6 +196,9 @@ else ifneq (,$(filter $(platform), ps3 sncps3 psl1ght))
 
 # Xbox 360
 else ifeq ($(platform), xenon)
+   CFLAGS += -flto
+   CXXFLAGS += -flto
+   LDFLAGS += -flto
    TARGET := $(TARGET_NAME)_libretro_xenon360.a
    CC = xenon-gcc$(EXE_EXT)
    CXX = xenon-g++$(EXE_EXT)
@@ -184,6 +208,9 @@ else ifeq ($(platform), xenon)
 
 # Nintendo Game Cube / Wii / WiiU
 else ifneq (,$(filter $(platform), ngc wii wiiu))
+   CFLAGS += -flto
+   CXXFLAGS += -flto
+   LDFLAGS += -flto
    TARGET := $(TARGET_NAME)_libretro_$(platform).a
    CC = $(DEVKITPPC)/bin/powerpc-eabi-gcc$(EXE_EXT)
    CXX = $(DEVKITPPC)/bin/powerpc-eabi-g++$(EXE_EXT)
@@ -212,6 +239,8 @@ else ifeq ($(platform), emscripten)
 
 # Windows MSVC 2003 Xbox 1
 else ifeq ($(platform), xbox1_msvc2003)
+CFLAGS += -D__WIN32__
+CXXFLAGS += -D__WIN32__
 TARGET := $(TARGET_NAME)_libretro_xdk1.lib
 MSVCBINDIRPREFIX = $(XDK)/xbox/bin/vc71
 CC  = "$(MSVCBINDIRPREFIX)/CL.exe"
@@ -227,6 +256,8 @@ STATIC_LINKING=1
 HAS_GCC := 0
 # Windows MSVC 2010 Xbox 360
 else ifeq ($(platform), xbox360_msvc2010)
+CFLAGS += -D__WIN32__
+CXXFLAGS += -D__WIN32__
 TARGET := $(TARGET_NAME)_libretro_xdk360.lib
 MSVCBINDIRPREFIX = $(XEDK)/bin/win32
 CC  = "$(MSVCBINDIRPREFIX)/cl.exe"
@@ -243,6 +274,8 @@ HAS_GCC := 0
 
 # Windows MSVC 2017 all architectures
 else ifneq (,$(findstring windows_msvc2017,$(platform)))
+    CFLAGS += -D__WIN32__
+    CXXFLAGS += -D__WIN32__
 
 	PlatformSuffix = $(subst windows_msvc2017_,,$(platform))
 	ifneq (,$(findstring desktop,$(PlatformSuffix)))
@@ -335,6 +368,8 @@ else ifneq (,$(findstring windows_msvc2017,$(platform)))
 
 # Windows MSVC 2010 x64
 else ifeq ($(platform), windows_msvc2010_x64)
+    CFLAGS += -D__WIN32__
+    CXXFLAGS += -D__WIN32__
 	CC  = cl.exe
 	CXX = cl.exe
 
@@ -359,6 +394,8 @@ LDFLAGS += -DLL
 LIBS :=
 # Windows MSVC 2010 x86
 else ifeq ($(platform), windows_msvc2010_x86)
+    CFLAGS += -D__WIN32__
+    CXXFLAGS += -D__WIN32__
 	CC  = cl.exe
 	CXX = cl.exe
 
@@ -384,6 +421,8 @@ LIBS :=
 
 # Windows MSVC 2003 x86
 else ifeq ($(platform), windows_msvc2003_x86)
+    CFLAGS += -D__WIN32__
+    CXXFLAGS += -D__WIN32__
 	CC  = cl.exe
 	CXX = cl.exe
 
@@ -404,6 +443,8 @@ CFLAGS += -D_CRT_SECURE_NO_DEPRECATE
 
 # Windows MSVC 2005 x86
 else ifeq ($(platform), windows_msvc2005_x86)
+    CFLAGS += -D__WIN32__
+    CXXFLAGS += -D__WIN32__
 	CC  = cl.exe
 	CXX = cl.exe
 
@@ -421,8 +462,12 @@ TARGET := $(TARGET_NAME)_libretro.dll
 PSS_STYLE :=2
 LDFLAGS += -DLL
 CFLAGS += -D_CRT_SECURE_NO_DEPRECATE
+CXXFLAGS += -D_CRT_SECURE_NO_DEPRECATE
 # Windows
 else
+   CFLAGS += -flto
+   CXXFLAGS += -flto
+   LDFLAGS += -flto
    TARGET := $(TARGET_NAME)_libretro.dll
    CC = gcc
    CXX = g++
