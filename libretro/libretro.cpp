@@ -171,7 +171,7 @@ void retro_set_environment(retro_environment_t cb)
         { "snes9x_overclock_cycles", "Reduce Slowdown (Hack, Unsafe); disabled|compatible|max" },
         { "snes9x_reduce_sprite_flicker", "Reduce Flickering (Hack, Unsafe); disabled|enabled" },
         { "snes9x_randomize_memory", "Randomize Memory (Unsafe); disabled|enabled" },
-        { "snes9x_hires_blend", "Hires Blending; disabled|merge|blur" },
+        { "snes9x_hires_blend", "Hires Blending; disabled|merge|blur|auto" },
         { "snes9x_audio_interpolation", "Audio Interpolation; gaussian|cubic|sinc|none|linear" },
         { "snes9x_layer_1", "Show layer 1; enabled|disabled" },
         { "snes9x_layer_2", "Show layer 2; enabled|disabled" },
@@ -255,6 +255,12 @@ static void update_variables(void)
             hires_blend = 1;
         else if (!strcmp (var.value, "merge"))
             hires_blend = 2;
+        else if (!strcmp (var.value, "auto"))
+        {
+            if (Memory.match_id("AFJE") || Memory.match_id("AFJJ") || Memory.match_nn("JURASSIC PARK"))
+                hires_blend = 2;
+        }
+      )        
     }
 
     var.key = "snes9x_overclock_superfx";
