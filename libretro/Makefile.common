@@ -8,7 +8,6 @@ endif
 SOURCES_C   :=
 SOURCES_CXX := $(CORE_DIR)/apu/apu.cpp \
 				 $(CORE_DIR)/apu/bapu/dsp/sdsp.cpp \
-				 $(CORE_DIR)/apu/bapu/dsp/SPC_DSP.cpp \
 				 $(CORE_DIR)/apu/bapu/smp/smp.cpp \
 				 $(CORE_DIR)/apu/bapu/smp/smp_state.cpp \
 				 $(CORE_DIR)/bsx.cpp \
