@@ -284,7 +284,7 @@ public:
 		: std::ifstream(_Filename,_Mode,_Prot) {}
  #endif /* _NATIVE_WCHAR_T_DEFINED */
 
-	explicit __CLR_OR_THIS_CALL u8nifstream(_Filet *_File)
+	explicit __CLR_OR_THIS_CALL u8nifstream(FILE *_File)
 		: std::ifstream(_File) {}
 };
 }
