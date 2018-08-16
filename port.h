@@ -207,7 +207,7 @@
 #include <sys/types.h>
 
 #ifdef __WIN32__
-#define NOMINMAX
+#define NOMINMAX 1
 #include <windows.h>
 #endif
 

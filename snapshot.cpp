@@ -1939,12 +1939,6 @@ int S9xUnfreezeFromStream (STREAM stream)
 
 			delete ssi;
 		}
-		else
-		{
-			// couldn't load graphics, so black out the screen instead
-			for (uint32 y = 0; y < (uint32) (IMAGE_HEIGHT); y++)
-				memset(GFX.Screen + y * GFX.RealPPL, 0, GFX.RealPPL * 2);
-		}
 	}
 
 	if (local_cpu)				delete [] local_cpu;
