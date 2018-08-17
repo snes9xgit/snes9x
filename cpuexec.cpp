@@ -357,11 +357,6 @@ static inline void S9xReschedule (void)
 	switch (CPU.WhichEvent)
 	{
 		case HC_HBLANK_START_EVENT:
-			CPU.WhichEvent = HC_RENDER_EVENT;
-			CPU.NextEvent  = Timings.RenderPos;
-			break;
-
-		case HC_RENDER_EVENT:
 			CPU.WhichEvent = HC_HDMA_START_EVENT;
 			CPU.NextEvent  = Timings.HDMAStart;
 			break;
@@ -377,6 +372,11 @@ static inline void S9xReschedule (void)
 			break;
 
 		case HC_HDMA_INIT_EVENT:
+			CPU.WhichEvent = HC_RENDER_EVENT;
+			CPU.NextEvent  = Timings.RenderPos;
+			break;
+
+		case HC_RENDER_EVENT:
 			CPU.WhichEvent = HC_WRAM_REFRESH_EVENT;
 			CPU.NextEvent  = Timings.WRAMRefreshPos;
 			break;
