@@ -272,11 +272,11 @@
 #define SNES_WRAM_REFRESH_HC_v2		538
 #define SNES_WRAM_REFRESH_CYCLES	40
 
-#define SNES_HBLANK_START_HC		1096					// H=274
-#define	SNES_HDMA_START_HC			1106					// FIXME: not true
-#define	SNES_HBLANK_END_HC			4						// H=1
-#define	SNES_HDMA_INIT_HC			20						// FIXME: not true
-#define	SNES_RENDER_START_HC		(48 * ONE_DOT_CYCLE)	// FIXME: Snes9x renders a line at a time.
+#define SNES_HBLANK_START_HC            1096  // H=274
+#define	SNES_HDMA_START_HC              1106  // FIXME: not true
+#define	SNES_HBLANK_END_HC              4     // H=1
+#define	SNES_HDMA_INIT_HC               20    // FIXME: not true
+#define	SNES_RENDER_START_HC            1096  // FIXME: Snes9x renders a line at a time.
 
 #define SNES_TR_MASK		(1 <<  4)
 #define SNES_TL_MASK		(1 <<  5)
