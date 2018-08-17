@@ -197,7 +197,7 @@
 #include "display.h"
 #include "hermite_resampler.h"
 
-#include "snes/snes.hpp"
+#include "bapu/snes/snes.hpp"
 
 #define APU_DEFAULT_INPUT_RATE		31950 // ~ 59.94Hz
 #define APU_MINIMUM_SAMPLE_COUNT	512
