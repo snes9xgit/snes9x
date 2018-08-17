@@ -276,7 +276,7 @@
 #define	SNES_HDMA_START_HC			1106					// FIXME: not true
 #define	SNES_HBLANK_END_HC			4						// H=1
 #define	SNES_HDMA_INIT_HC			20						// FIXME: not true
-#define	SNES_RENDER_START_HC		(48 * ONE_DOT_CYCLE)	// FIXME: Snes9x renders a line at a time.
+#define	SNES_RENDER_START_HC		(128 * ONE_DOT_CYCLE)	// FIXME: Snes9x renders a line at a time.
 
 #define SNES_TR_MASK		(1 <<  4)
 #define SNES_TL_MASK		(1 <<  5)
