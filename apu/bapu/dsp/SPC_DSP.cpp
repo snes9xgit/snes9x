@@ -433,6 +433,8 @@ inline int SPC_DSP::interpolate( voice_t const* v )
         out  = (0x1000 - fract) * in [0];
         out +=           fract  * in [1];
         out >>= 12;
+
+        CLAMP16( out );
         break;
     }
 
@@ -448,6 +450,8 @@ inline int SPC_DSP::interpolate( voice_t const* v )
         out += rev [257] * in [2];
         out += rev [  0] * in [3];
         out >>= 11;
+
+        CLAMP16( out );
         break;
     }
 
@@ -465,6 +469,8 @@ inline int SPC_DSP::interpolate( voice_t const* v )
         out += filt [6] * in [6];
         out += filt [7] * in [7];
         out >>= 14;
+
+        CLAMP16( out );
         break;
     }
 
