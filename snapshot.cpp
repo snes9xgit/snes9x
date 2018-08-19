@@ -1843,7 +1843,52 @@ int S9xUnfreezeFromStream (STREAM stream)
 		IPPU.ColorsChanged = TRUE;
 		IPPU.OBJChanged = TRUE;
 		IPPU.RenderThisFrame = TRUE;
+		
+		if (Settings.FastSavestates == 0)
+			memset(GFX.Screen,0,GFX.Pitch * MAX_SNES_HEIGHT);
 
+		GFX.InterlaceFrame = Timings.InterlaceField;
+		GFX.DoInterlace = 0;
+			
+		IPPU.MaxBrightness = PPU.Brightness;
+
+		IPPU.Interlace    = Memory.FillRAM[0x2133] & 1;
+		IPPU.InterlaceOBJ = Memory.FillRAM[0x2133] & 2;
+		IPPU.PseudoHires = Memory.FillRAM[0x2133] & 8;
+		
+		if (Settings.SupportHiRes && (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.PseudoHires))
+		{
+			GFX.RealPPL = GFX.Pitch >> 1;
+			IPPU.DoubleWidthPixels = TRUE;
+			IPPU.RenderedScreenWidth = SNES_WIDTH << 1;
+		}
+		else
+		{
+			#ifdef USE_OPENGL
+			if (Settings.OpenGLEnable)
+				GFX.RealPPL = SNES_WIDTH;
+			else
+			#endif
+				GFX.RealPPL = GFX.Pitch >> 1;
+
+			IPPU.DoubleWidthPixels = FALSE;
+			IPPU.RenderedScreenWidth = SNES_WIDTH;
+		}
+
+		if (Settings.SupportHiRes && IPPU.Interlace)
+		{
+			GFX.PPL = GFX.RealPPL << 1;
+			IPPU.DoubleHeightPixels = TRUE;
+			IPPU.RenderedScreenHeight = PPU.ScreenHeight << 1;
+			GFX.DoInterlace++;
+		}
+		else
+		{
+			GFX.PPL = GFX.RealPPL;
+			IPPU.DoubleHeightPixels = FALSE;
+			IPPU.RenderedScreenHeight = PPU.ScreenHeight;
+		}	
+		
 		uint8 hdma_byte = Memory.FillRAM[0x420c];
 		S9xSetCPU(hdma_byte, 0x420c);
 
