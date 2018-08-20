@@ -575,6 +575,8 @@ void retro_set_controller_port_device(unsigned port, unsigned device)
                     log_cb(RETRO_LOG_ERROR, "Invalid device (%d).\n", device);
                 break;
         }
+        
+        S9xControlsSoftReset();
     }
     else if(device != RETRO_DEVICE_NONE)
         log_cb(RETRO_LOG_INFO, "Nonexistent Port (%d).\n", port);
