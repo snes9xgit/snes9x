@@ -433,6 +433,7 @@ static FreezeData	SnapPPU[] =
 	INT_ENTRY(6, CGFLIP),
 	INT_ENTRY(6, CGFLIPRead),
 	INT_ENTRY(6, CGADD),
+	INT_ENTRY(11, CGSavedByte),
 	ARRAY_ENTRY(6, CGDATA, 256, uint16_ARRAY_V),
 #define O(N) \
 	INT_ENTRY(6, OBJ[N].HPos), \
