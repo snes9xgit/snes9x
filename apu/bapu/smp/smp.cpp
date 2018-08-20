@@ -7,7 +7,7 @@
 char tmp[1024];
 #endif
 
-#include <snes/snes.hpp>
+#include "../snes/snes.hpp"
 
 #define SMP_CPP
 namespace SNES {

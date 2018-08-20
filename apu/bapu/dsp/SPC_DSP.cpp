@@ -1,6 +1,6 @@
 // snes_spc 0.9.0. http://www.slack.net/~ant/
 
-#include "snes9x.h"
+#include "../../../snes9x.h"
 
 #include "SPC_DSP.h"
 
