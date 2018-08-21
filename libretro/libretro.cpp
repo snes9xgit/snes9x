@@ -194,11 +194,11 @@ void retro_set_environment(retro_environment_t cb)
         { "snes9x_aspect", "Preferred aspect ratio; 4:3|8:7|auto|ntsc|pal" },
         { "snes9x_region", "Console region (Reload core); auto|ntsc|pal" },
         { "snes9x_superscope_crosshair", "Super Scope crosshair; 2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|0|1" },
-        { "snes9x_superscope_color", "Super Scope color; White|White (blend)|Red|Red (blend)|Orange|Orange (blend)|Yellow|Yellow (blend)|Green|Green (blend)|Cyan|Cyan (blend)|Sky|Sky (blend)|Blue|Blue (blend)|Violet|Violet (blend)|Pink|Pink (blend)|Purple|Purple (blend)|Black|Black (blend)|25% Gray|25% Gray (blend)|50% Gray|50% Gray (blend)|75% Gray|75% Gray (blend)" },
+        { "snes9x_superscope_color", "Super Scope color; White|White (blend)|Red|Red (blend)|Orange|Orange (blend)|Yellow|Yellow (blend)|Green|Green (blend)|Cyan|Cyan (blend)|Sky|Sky (blend)|Blue|Blue (blend)|Violet|Violet (blend)|Pink|Pink (blend)|Purple|Purple (blend)|Black|Black (blend)|25% Grey|25% Grey (blend)|50% Grey|50% Grey (blend)|75% Grey|75% Grey (blend)" },
         { "snes9x_justifier1_crosshair", "Justifier 1 crosshair; 4|5|6|7|8|9|10|11|12|13|14|15|16|0|1|2|3" },
-        { "snes9x_justifier1_color", "Justifier 1 color; Blue|Blue (blend)|Violet|Violet (blend)|Pink|Pink (blend)|Purple|Purple (blend)|Black|Black (blend)|25% Gray|25% Gray (blend)|50% Gray|50% Gray (blend)|75% Gray|75% Gray (blend)|White|White (blend)|Red|Red (blend)|Orange|Orange (blend)|Yellow|Yellow (blend)|Green|Green (blend)|Cyan|Cyan (blend)|Sky|Sky (blend)" },
+        { "snes9x_justifier1_color", "Justifier 1 color; Blue|Blue (blend)|Violet|Violet (blend)|Pink|Pink (blend)|Purple|Purple (blend)|Black|Black (blend)|25% Grey|25% Grey (blend)|50% Grey|50% Grey (blend)|75% Grey|75% Grey (blend)|White|White (blend)|Red|Red (blend)|Orange|Orange (blend)|Yellow|Yellow (blend)|Green|Green (blend)|Cyan|Cyan (blend)|Sky|Sky (blend)" },
         { "snes9x_justifier2_crosshair", "Justifier 2 crosshair; 4|5|6|7|8|9|10|11|12|13|14|15|16|0|1|2|3" },
-        { "snes9x_justifier2_color", "Justifier 2 color; Pink|Pink (blend)|Purple|Purple (blend)|Black|Black (blend)|25% Gray|25% Gray (blend)|50% Gray|50% Gray (blend)|75% Gray|75% Gray (blend)|White|White (blend)|Red|Red (blend)|Orange|Orange (blend)|Yellow|Yellow (blend)|Green|Green (blend)|Cyan|Cyan (blend)|Sky|Sky (blend)|Blue|Blue (blend)|Violet|Violet (blend)" },
+        { "snes9x_justifier2_color", "Justifier 2 color; Pink|Pink (blend)|Purple|Purple (blend)|Black|Black (blend)|25% Grey|25% Grey (blend)|50% Grey|50% Grey (blend)|75% Grey|75% Grey (blend)|White|White (blend)|Red|Red (blend)|Orange|Orange (blend)|Yellow|Yellow (blend)|Green|Green (blend)|Cyan|Cyan (blend)|Sky|Sky (blend)|Blue|Blue (blend)|Violet|Violet (blend)" },
         { NULL, NULL },
     };
 
