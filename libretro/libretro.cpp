@@ -168,7 +168,7 @@ void retro_set_environment(retro_environment_t cb)
         // Changing "Show layer 1" is fine, but don't change "layer_1"/etc or the possible values ("Yes|No").
         // Adding more variables and rearranging them is safe.
         { "snes9x_up_down_allowed", "Allow Opposing Directions; disabled|enabled" },
-        { "snes9x_overclock_superfx", "SuperFX Overclocking; 100%|150%|200%|250%|300%|350%|400%|450%|500%|50%" },
+        { "snes9x_overclock_superfx", "SuperFX Overclocking; 100%|150%|200%|250%|300%|350%|400%|450%|500%|50%|60%|70%|80%|90%" },
         { "snes9x_overclock_cycles", "Reduce Slowdown (Hack, Unsafe); disabled|light|compatible|max" },
         { "snes9x_reduce_sprite_flicker", "Reduce Flickering (Hack, Unsafe); disabled|enabled" },
         { "snes9x_randomize_memory", "Randomize Memory (Unsafe); disabled|enabled" },
