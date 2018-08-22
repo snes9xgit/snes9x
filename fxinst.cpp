@@ -1049,7 +1049,7 @@ static void fx_plot_8bit (void)
 	c = (uint8) GSU.vColorReg;
 	if (!(GSU.vPlotOptionReg & 0x10))
 	{
-		if (!(GSU.vPlotOptionReg & 0x01) && !(c & 0xf))
+		if (!(GSU.vPlotOptionReg & 0x01) && (!c || ((GSU.vPlotOptionReg & 0x08) && !(c & 0xf))))
 			return;
 	}
 	else
