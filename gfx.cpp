@@ -329,6 +329,48 @@ void S9xGraphicsDeinit (void)
 	if (GFX.SubZBuffer) { free(GFX.SubZBuffer); GFX.SubZBuffer = NULL; }
 }
 
+void S9xGraphicsScreenResize (void)
+{
+	IPPU.MaxBrightness = PPU.Brightness;
+
+	IPPU.Interlace    = Memory.FillRAM[0x2133] & 1;
+	IPPU.InterlaceOBJ = Memory.FillRAM[0x2133] & 2;
+	IPPU.PseudoHires = Memory.FillRAM[0x2133] & 8;
+		
+	if (Settings.SupportHiRes && (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.PseudoHires))
+	{
+		GFX.RealPPL = GFX.Pitch >> 1;
+		IPPU.DoubleWidthPixels = TRUE;
+		IPPU.RenderedScreenWidth = SNES_WIDTH << 1;
+	}
+	else
+	{
+		#ifdef USE_OPENGL
+		if (Settings.OpenGLEnable)
+			GFX.RealPPL = SNES_WIDTH;
+		else
+		#endif
+			GFX.RealPPL = GFX.Pitch >> 1;
+
+		IPPU.DoubleWidthPixels = FALSE;
+		IPPU.RenderedScreenWidth = SNES_WIDTH;
+	}
+
+	if (Settings.SupportHiRes && IPPU.Interlace)
+	{
+		GFX.PPL = GFX.RealPPL << 1;
+		IPPU.DoubleHeightPixels = TRUE;
+		IPPU.RenderedScreenHeight = PPU.ScreenHeight << 1;
+		GFX.DoInterlace++;
+	}
+	else
+	{
+		GFX.PPL = GFX.RealPPL;
+		IPPU.DoubleHeightPixels = FALSE;
+		IPPU.RenderedScreenHeight = PPU.ScreenHeight;
+	}	
+}
+
 void S9xBuildDirectColourMaps (void)
 {
 	IPPU.XB = mul_brightness[PPU.Brightness];
@@ -355,44 +397,7 @@ void S9xStartScreenRefresh (void)
 			if (GFX.DoInterlace)
 				GFX.DoInterlace--;
 
-			IPPU.MaxBrightness = PPU.Brightness;
-
-			IPPU.Interlace    = Memory.FillRAM[0x2133] & 1;
-			IPPU.InterlaceOBJ = Memory.FillRAM[0x2133] & 2;
-			IPPU.PseudoHires  = Memory.FillRAM[0x2133] & 8;
-
-			if (Settings.SupportHiRes && (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.PseudoHires))
-			{
-				GFX.RealPPL = GFX.Pitch >> 1;
-				IPPU.DoubleWidthPixels = TRUE;
-				IPPU.RenderedScreenWidth = SNES_WIDTH << 1;
-			}
-			else
-			{
-				#ifdef USE_OPENGL
-				if (Settings.OpenGLEnable)
-					GFX.RealPPL = SNES_WIDTH;
-				else
-				#endif
-					GFX.RealPPL = GFX.Pitch >> 1;
-
-				IPPU.DoubleWidthPixels = FALSE;
-				IPPU.RenderedScreenWidth = SNES_WIDTH;
-			}
-
-			if (Settings.SupportHiRes && IPPU.Interlace)
-			{
-				GFX.PPL = GFX.RealPPL << 1;
-				IPPU.DoubleHeightPixels = TRUE;
-				IPPU.RenderedScreenHeight = PPU.ScreenHeight << 1;
-				GFX.DoInterlace++;
-			}
-			else
-			{
-				GFX.PPL = GFX.RealPPL;
-				IPPU.DoubleHeightPixels = FALSE;
-				IPPU.RenderedScreenHeight = PPU.ScreenHeight;
-			}
+			S9xGraphicsScreenResize();
 
 			IPPU.RenderedFramesCount++;
 		}
