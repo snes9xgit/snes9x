@@ -204,6 +204,7 @@
 #include "movie.h"
 #include "display.h"
 #include "language.h"
+#include "gfx.h"
 
 #ifndef min
 #define min(a,b)	(((a) < (b)) ? (a) : (b))
@@ -1843,6 +1844,14 @@ int S9xUnfreezeFromStream (STREAM stream)
 		IPPU.ColorsChanged = TRUE;
 		IPPU.OBJChanged = TRUE;
 		IPPU.RenderThisFrame = TRUE;
+		
+		GFX.InterlaceFrame = Timings.InterlaceField;
+		GFX.DoInterlace = 0;
+
+		S9xGraphicsScreenResize();
+		
+		if (Settings.FastSavestates == 0)
+			memset(GFX.Screen,0,GFX.Pitch * MAX_SNES_HEIGHT);
 
 		uint8 hdma_byte = Memory.FillRAM[0x420c];
 		S9xSetCPU(hdma_byte, 0x420c);
