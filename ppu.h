@@ -420,6 +420,19 @@ static inline void FLUSH_REDRAW (void)
 		S9xUpdateScreen();
 }
 
+static inline void S9xUpdateVRAMReadBuffer()
+{
+	if (PPU.VMA.FullGraphicCount)
+	{
+		uint32 addr = PPU.VMA.Address;
+		uint32 rem = addr & PPU.VMA.Mask1;
+		uint32 address = (addr & ~PPU.VMA.Mask1) + (rem >> PPU.VMA.Shift) + ((rem & (PPU.VMA.FullGraphicCount - 1)) << 3);
+		PPU.VRAMReadBuffer = READ_WORD(Memory.VRAM + ((address << 1) & 0xffff));
+	}
+	else
+		PPU.VRAMReadBuffer = READ_WORD(Memory.VRAM + ((PPU.VMA.Address << 1) & 0xffff));
+}
+
 static inline void REGISTER_2104 (uint8 Byte)
 {
 	if (!(PPU.OAMFlip & 1))

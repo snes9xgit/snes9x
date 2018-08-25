@@ -716,15 +716,7 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 				PPU.VMA.Address &= 0xff00;
 				PPU.VMA.Address |= Byte;
 
-				if (PPU.VMA.FullGraphicCount)
-				{
-					uint32 addr = PPU.VMA.Address;
-					uint32 rem = addr & PPU.VMA.Mask1;
-					uint32 address = (addr & ~PPU.VMA.Mask1) + (rem >> PPU.VMA.Shift) + ((rem & (PPU.VMA.FullGraphicCount - 1)) << 3);
-					PPU.VRAMReadBuffer = READ_WORD(Memory.VRAM + ((address << 1) & 0xffff));
-				}
-				else
-					PPU.VRAMReadBuffer = READ_WORD(Memory.VRAM + ((PPU.VMA.Address << 1) & 0xffff));
+				S9xUpdateVRAMReadBuffer();
 
 				break;
 
@@ -732,15 +724,7 @@ void S9xSetPPU (uint8 Byte, uint16 Address)
 				PPU.VMA.Address &= 0x00ff;
 				PPU.VMA.Address |= Byte << 8;
 
-				if (PPU.VMA.FullGraphicCount)
-				{
-					uint32 addr = PPU.VMA.Address;
-					uint32 rem = addr & PPU.VMA.Mask1;
-					uint32 address = (addr & ~PPU.VMA.Mask1) + (rem >> PPU.VMA.Shift) + ((rem & (PPU.VMA.FullGraphicCount - 1)) << 3);
-					PPU.VRAMReadBuffer = READ_WORD(Memory.VRAM + ((address << 1) & 0xffff));
-				}
-				else
-					PPU.VRAMReadBuffer = READ_WORD(Memory.VRAM + ((PPU.VMA.Address << 1) & 0xffff));
+				S9xUpdateVRAMReadBuffer();
 
 				break;
 
@@ -1311,15 +1295,7 @@ uint8 S9xGetPPU (uint16 Address)
 				byte = PPU.VRAMReadBuffer & 0xff;
 				if (!PPU.VMA.High)
 				{
-					if (PPU.VMA.FullGraphicCount)
-					{
-						uint32 addr = PPU.VMA.Address;
-						uint32 rem = addr & PPU.VMA.Mask1;
-						uint32 address = (addr & ~PPU.VMA.Mask1) + (rem >> PPU.VMA.Shift) + ((rem & (PPU.VMA.FullGraphicCount - 1)) << 3);
-						PPU.VRAMReadBuffer = READ_WORD(Memory.VRAM + ((address << 1) & 0xffff));
-					}
-					else
-						PPU.VRAMReadBuffer = READ_WORD(Memory.VRAM + ((PPU.VMA.Address << 1) & 0xffff));
+					S9xUpdateVRAMReadBuffer();
 
 					PPU.VMA.Address += PPU.VMA.Increment;
 				}
@@ -1333,15 +1309,7 @@ uint8 S9xGetPPU (uint16 Address)
 				byte = (PPU.VRAMReadBuffer >> 8) & 0xff;
 				if (PPU.VMA.High)
 				{
-					if (PPU.VMA.FullGraphicCount)
-					{
-						uint32 addr = PPU.VMA.Address;
-						uint32 rem = addr & PPU.VMA.Mask1;
-						uint32 address = (addr & ~PPU.VMA.Mask1) + (rem >> PPU.VMA.Shift) + ((rem & (PPU.VMA.FullGraphicCount - 1)) << 3);
-						PPU.VRAMReadBuffer = READ_WORD(Memory.VRAM + ((address << 1) & 0xffff));
-					}
-					else
-						PPU.VRAMReadBuffer = READ_WORD(Memory.VRAM + ((PPU.VMA.Address << 1) & 0xffff));
+					S9xUpdateVRAMReadBuffer();
 
 					PPU.VMA.Address += PPU.VMA.Increment;
 				}
