@@ -3085,6 +3085,16 @@ void S9xSetJoypadLatch (bool latch)
 	FLAG_LATCH = latch;
 }
 
+// prevent read_idx from overflowing (only latching resets it)
+// otherwise $4016/7 reads will start returning input data again
+static inline uint8 IncreaseReadIdxPost(uint8 &var)
+{
+	uint8 oldval = var;
+	if (var < 255)
+		var++;
+	return oldval;
+}
+
 uint8 S9xReadJOYSERn (int n)
 {
 	int	i, j, r;
@@ -3139,7 +3149,7 @@ uint8 S9xReadJOYSERn (int n)
 		switch (i = curcontrollers[n])
 		{
 			case MP5:
-				r = read_idx[n][FLAG_IOBIT(n) ? 0 : 1]++;
+				r = IncreaseReadIdxPost(read_idx[n][FLAG_IOBIT(n) ? 0 : 1]);
 				j = FLAG_IOBIT(n) ? 0 : 2;
 
 				for (i = 0; i < 2; i++, j++)
@@ -3164,64 +3174,64 @@ uint8 S9xReadJOYSERn (int n)
 			case JOYPAD7:
 				if (read_idx[n][0] >= 16)
 				{
-					read_idx[n][0]++;
+					IncreaseReadIdxPost(read_idx[n][0]);
 					return (bits | 1);
 				}
 				else
-					return (bits | ((joypad[i - JOYPAD0].buttons & (0x8000 >> read_idx[n][0]++)) ? 1 : 0));
+					return (bits | ((joypad[i - JOYPAD0].buttons & (0x8000 >> IncreaseReadIdxPost(read_idx[n][0]))) ? 1 : 0));
 
 			case MOUSE0:
 			case MOUSE1:
 				if (read_idx[n][0] < 8)
 				{
-					read_idx[n][0]++;
+					IncreaseReadIdxPost(read_idx[n][0]);
 					return (bits);
 				}
 				else
 				if (read_idx[n][0] < 16)
-					return (bits | ((mouse[i - MOUSE0].buttons & (0x8000     >> read_idx[n][0]++)) ? 1 : 0));
+					return (bits | ((mouse[i - MOUSE0].buttons & (0x8000     >> IncreaseReadIdxPost(read_idx[n][0]))) ? 1 : 0));
 				else
 				if (read_idx[n][0] < 24)
-					return (bits | ((mouse[i - MOUSE0].delta_y & (0x800000   >> read_idx[n][0]++)) ? 1 : 0));
+					return (bits | ((mouse[i - MOUSE0].delta_y & (0x800000   >> IncreaseReadIdxPost(read_idx[n][0]))) ? 1 : 0));
 				else
 				if (read_idx[n][0] < 32)
-					return (bits | ((mouse[i - MOUSE0].delta_x & (0x80000000 >> read_idx[n][0]++)) ? 1 : 0));
+					return (bits | ((mouse[i - MOUSE0].delta_x & (0x80000000 >> IncreaseReadIdxPost(read_idx[n][0]))) ? 1 : 0));
 				else
 				{
-					read_idx[n][0]++;
+					IncreaseReadIdxPost(read_idx[n][0]);
 					return (bits | 1);
 				}
 
 			case SUPERSCOPE:
 				if (read_idx[n][0] < 8)
-					return (bits | ((superscope.read_buttons & (0x80 >> read_idx[n][0]++)) ? 1 : 0));
+					return (bits | ((superscope.read_buttons & (0x80 >> IncreaseReadIdxPost(read_idx[n][0]))) ? 1 : 0));
 				else
 				{
-					read_idx[n][0]++;
+					IncreaseReadIdxPost(read_idx[n][0]);
 					return (bits | 1);
 				}
 
 			case ONE_JUSTIFIER:
 				if (read_idx[n][0] < 24)
-					return (bits | ((0xaa7000 >> read_idx[n][0]++) & 1));
+					return (bits | ((0xaa7000 >> IncreaseReadIdxPost(read_idx[n][0])) & 1));
 				else
 				if (read_idx[n][0] < 32)
-					return (bits | ((justifier.buttons & (JUSTIFIER_TRIGGER | JUSTIFIER_START | JUSTIFIER_SELECT) & (0x80000000 >> read_idx[n][0]++)) ? 1 : 0));
+					return (bits | ((justifier.buttons & (JUSTIFIER_TRIGGER | JUSTIFIER_START | JUSTIFIER_SELECT) & (0x80000000 >> IncreaseReadIdxPost(read_idx[n][0]))) ? 1 : 0));
 				else
 				{
-					read_idx[n][0]++;
+					IncreaseReadIdxPost(read_idx[n][0]);
 					return (bits | 1);
 				}
 
 			case TWO_JUSTIFIERS:
 				if (read_idx[n][0] < 24)
-					return (bits | ((0xaa7000 >> read_idx[n][0]++) & 1));
+					return (bits | ((0xaa7000 >> IncreaseReadIdxPost(read_idx[n][0])) & 1));
 				else
 				if (read_idx[n][0] < 32)
-					return (bits | ((justifier.buttons & (0x80000000 >> read_idx[n][0]++)) ? 1 : 0));
+					return (bits | ((justifier.buttons & (0x80000000 >> IncreaseReadIdxPost(read_idx[n][0]))) ? 1 : 0));
 				else
 				{
-					read_idx[n][0]++;
+					IncreaseReadIdxPost(read_idx[n][0]);
 					return (bits | 1);
 				}
 
@@ -3230,7 +3240,7 @@ uint8 S9xReadJOYSERn (int n)
 				return (bits | ((macsrifle.buttons & 0x01) ? 1 : 0));
 
 			default:
-				read_idx[n][0]++;
+				IncreaseReadIdxPost(read_idx[n][0]);
 				return (bits);
 		}
 	}
