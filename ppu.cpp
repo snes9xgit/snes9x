@@ -1752,6 +1752,8 @@ void S9xSetCPU (uint8 Byte, uint16 Address)
 					}
 					else
 						CPU.FastROMSpeed = SLOW_ONE_CYCLE;
+					// we might currently be in FastROMSpeed region, S9xSetPCBase will update CPU.MemSpeed
+					S9xSetPCBase(Registers.PBPC);
 				}
 
 				break;
