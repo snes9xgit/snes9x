@@ -227,7 +227,6 @@ struct InternalPPU
 	bool8	OBJChanged;
 	uint8	*TileCache[7];
 	uint8	*TileCached[7];
-	uint16	VRAMReadBuffer;
 	bool8	Interlace;
 	bool8	InterlaceOBJ;
 	bool8	PseudoHires;
@@ -378,6 +377,8 @@ struct SPPU
 
 	uint8	OpenBus1;
 	uint8	OpenBus2;
+
+	uint16	VRAMReadBuffer;
 };
 
 extern uint16				SignExtend[2];
