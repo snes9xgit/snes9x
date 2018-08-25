@@ -601,7 +601,8 @@ static FreezeData	SnapTimings[] =
 	INT_ENTRY(6, IRQFlagChanging),
 	INT_ENTRY(6, APUSpeedup),
 	INT_ENTRY(7, IRQTriggerCycles),
-	INT_ENTRY(7, APUAllowTimeOverflow)
+	INT_ENTRY(7, APUAllowTimeOverflow),
+	INT_ENTRY(11, NextIRQTimer)
 };
 
 #undef STRUCT
@@ -1831,11 +1832,13 @@ int S9xUnfreezeFromStream (STREAM stream)
 		ICPU.ShiftedDB = Registers.DB << 16;
 		S9xSetPCBase(Registers.PBPC);
 		S9xUnpackStatus();
-		S9xUpdateIRQPositions(false);
+		if(version < SNAPSHOT_VERSION_IRQ_2018)
+			S9xUpdateIRQPositions(false); // calculate the new trigger pos from saved PPU data
 		S9xFixCycles();
 
 		for (int d = 0; d < 8; d++)
 			DMA[d] = dma_snap.dma[d];
+		// TODO: these should already be correct since they are stored in the snapshot
 		CPU.InDMA = CPU.InHDMA = FALSE;
 		CPU.InDMAorHDMA = CPU.InWRAMDMAorHDMA = FALSE;
 		CPU.HDMARanInDMA = 0;
@@ -1854,8 +1857,9 @@ int S9xUnfreezeFromStream (STREAM stream)
 		if (Settings.FastSavestates == 0)
 			memset(GFX.Screen,0,GFX.Pitch * MAX_SNES_HEIGHT);
 
-		uint8 hdma_byte = Memory.FillRAM[0x420c];
-		S9xSetCPU(hdma_byte, 0x420c);
+		// TODO: this seems to be a relic from 1.43 changes, completely remove if no issues in the future
+		/*uint8 hdma_byte = Memory.FillRAM[0x420c];
+		S9xSetCPU(hdma_byte, 0x420c);*/
 
 		S9xControlPostLoadState(&ctl_snap);
 
