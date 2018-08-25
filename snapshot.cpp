@@ -531,7 +531,8 @@ static FreezeData	SnapPPU[] =
 	INT_ENTRY(6, HDMA),
 	INT_ENTRY(6, HDMAEnded),
 	INT_ENTRY(6, OpenBus1),
-	INT_ENTRY(6, OpenBus2)
+	INT_ENTRY(6, OpenBus2),
+	INT_ENTRY(11, VRAMReadBuffer)
 };
 
 #undef STRUCT
