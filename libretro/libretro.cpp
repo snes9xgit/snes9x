@@ -28,6 +28,7 @@
 #define RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE ((1 << 8) | RETRO_DEVICE_LIGHTGUN)
 #define RETRO_DEVICE_LIGHTGUN_JUSTIFIER ((2 << 8) | RETRO_DEVICE_LIGHTGUN)
 #define RETRO_DEVICE_LIGHTGUN_JUSTIFIERS ((3 << 8) | RETRO_DEVICE_LIGHTGUN)
+#define RETRO_DEVICE_LIGHTGUN_MACS_RIFLE ((4 << 8) | RETRO_DEVICE_LIGHTGUN)
 
 #define RETRO_MEMORY_SNES_BSX_RAM ((1 << 8) | RETRO_MEMORY_SAVE_RAM)
 #define RETRO_MEMORY_SNES_BSX_PRAM ((2 << 8) | RETRO_MEMORY_SAVE_RAM)
@@ -199,6 +200,8 @@ void retro_set_environment(retro_environment_t cb)
         { "snes9x_justifier1_color", "Justifier 1 color; Blue|Blue (blend)|Violet|Violet (blend)|Pink|Pink (blend)|Purple|Purple (blend)|Black|Black (blend)|25% Grey|25% Grey (blend)|50% Grey|50% Grey (blend)|75% Grey|75% Grey (blend)|White|White (blend)|Red|Red (blend)|Orange|Orange (blend)|Yellow|Yellow (blend)|Green|Green (blend)|Cyan|Cyan (blend)|Sky|Sky (blend)" },
         { "snes9x_justifier2_crosshair", "Justifier 2 crosshair; 4|5|6|7|8|9|10|11|12|13|14|15|16|0|1|2|3" },
         { "snes9x_justifier2_color", "Justifier 2 color; Pink|Pink (blend)|Purple|Purple (blend)|Black|Black (blend)|25% Grey|25% Grey (blend)|50% Grey|50% Grey (blend)|75% Grey|75% Grey (blend)|White|White (blend)|Red|Red (blend)|Orange|Orange (blend)|Yellow|Yellow (blend)|Green|Green (blend)|Cyan|Cyan (blend)|Sky|Sky (blend)|Blue|Blue (blend)|Violet|Violet (blend)" },
+        { "snes9x_rifle_crosshair", "M.A.C.S. rifle crosshair; 2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|0|1" },
+        { "snes9x_rifle_color", "M.A.C.S. rifle color; White|White (blend)|Red|Red (blend)|Orange|Orange (blend)|Yellow|Yellow (blend)|Green|Green (blend)|Cyan|Cyan (blend)|Sky|Sky (blend)|Blue|Blue (blend)|Violet|Violet (blend)|Pink|Pink (blend)|Purple|Purple (blend)|Black|Black (blend)|25% Grey|25% Grey (blend)|50% Grey|50% Grey (blend)|75% Grey|75% Grey (blend)" },
         { NULL, NULL },
     };
 
@@ -218,6 +221,7 @@ void retro_set_environment(retro_environment_t cb)
         { "Multitap", RETRO_DEVICE_JOYPAD_MULTITAP },
         { "SuperScope", RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE },
         { "Justifier", RETRO_DEVICE_LIGHTGUN_JUSTIFIER },
+        { "M.A.C.S. Rifle", RETRO_DEVICE_LIGHTGUN_MACS_RIFLE },
     };
 
     static const struct retro_controller_description port_3[] = {
@@ -227,7 +231,7 @@ void retro_set_environment(retro_environment_t cb)
 
     static const struct retro_controller_info ports[] = {
         { port_1, 4 },
-        { port_2, 6 },
+        { port_2, 7 },
         { port_3, 2 },
         { port_3, 2 },
         { port_3, 2 },
@@ -555,6 +559,28 @@ static void update_variables(void)
             S9xSetControllerCrosshair(X_JUSTIFIER2, -1, get_cursor_color(var.value), "Black");
     }
 
+    var.key="snes9x_rifle_crosshair";
+
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
+    {
+        int crosshair;
+
+        sscanf (var.value,"%d",&crosshair);
+        S9xSetControllerCrosshair(X_MACSRIFLE, crosshair, 0, 0);
+    }
+
+    var.key="snes9x_rifle_color";
+    
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
+    {
+        char *color = get_cursor_color(var.value);
+
+        if (color[0] == 't')
+            S9xSetControllerCrosshair(X_MACSRIFLE, -1, get_cursor_color(var.value), "tBlack");
+        else
+            S9xSetControllerCrosshair(X_MACSRIFLE, -1, get_cursor_color(var.value), "Black");
+    }
+
     if (geometry_update)
         update_geometry();
 }
@@ -686,6 +712,10 @@ void retro_set_controller_port_device(unsigned port, unsigned device)
             case RETRO_DEVICE_LIGHTGUN_JUSTIFIER:
                 S9xSetController(port, CTL_JUSTIFIER, 0, 0, 0, 0);
                 snes_devices[port] = RETRO_DEVICE_LIGHTGUN_JUSTIFIER;
+                break;
+            case RETRO_DEVICE_LIGHTGUN_MACS_RIFLE:
+                S9xSetController(port, CTL_MACSRIFLE, 0, 0, 0, 0);
+                snes_devices[port] = RETRO_DEVICE_LIGHTGUN_MACS_RIFLE;
                 break;
             case RETRO_DEVICE_NONE:
                 S9xSetController(port, CTL_NONE, 0, 0, 0, 0);
@@ -1130,6 +1160,7 @@ void retro_init(void)
     Settings.SuperScopeMaster = TRUE;
     Settings.JustifierMaster = TRUE;
     Settings.MultiPlayer5Master = TRUE;
+    Settings.MacsRifleMaster = TRUE;
     Settings.FrameTimePAL = 20000;
     Settings.FrameTimeNTSC = 16667;
     Settings.SixteenBitSound = TRUE;
@@ -1235,6 +1266,12 @@ void retro_init(void)
 #define JUSTIFIER_FIRST JUSTIFIER_X
 #define JUSTIFIER_LAST JUSTIFIER_START
 
+#define RIFLE_X RETRO_DEVICE_ID_RIFLE_X
+#define RIFLE_Y RETRO_DEVICE_ID_RIFLE_Y
+#define RIFLE_TRIGGER RETRO_DEVICE_ID_LIGHTGUN_TRIGGER
+#define RIFLE_FIRST RIFLE_X
+#define RIFLE_LAST RIFLE_TRIGGER
+
 #define BTN_POINTER (BTN_LAST + 1)
 #define BTN_POINTER2 (BTN_POINTER + 1)
 
@@ -1253,14 +1290,14 @@ static void map_buttons()
     MAP_BUTTON(MAKE_BUTTON(PAD_1, BTN_RIGHT), "Joypad1 Right");
     MAP_BUTTON(MAKE_BUTTON(PAD_1, BTN_UP), "Joypad1 Up");
     MAP_BUTTON(MAKE_BUTTON(PAD_1, BTN_DOWN), "Joypad1 Down");
-    S9xMapPointer((BTN_POINTER), S9xGetCommandT("Pointer Mouse1+Superscope+Justifier1"), false);
+    S9xMapPointer((BTN_POINTER), S9xGetCommandT("Pointer Mouse1+Superscope+Justifier1+MacsRifle"), false);
     S9xMapPointer((BTN_POINTER2), S9xGetCommandT("Pointer Mouse2"), false);
 
     MAP_BUTTON(MAKE_BUTTON(PAD_2, BTN_A), "Joypad2 A");
     MAP_BUTTON(MAKE_BUTTON(PAD_2, BTN_B), "Joypad2 B");
     MAP_BUTTON(MAKE_BUTTON(PAD_2, BTN_X), "Joypad2 X");
     MAP_BUTTON(MAKE_BUTTON(PAD_2, BTN_Y), "Joypad2 Y");
-    MAP_BUTTON(MAKE_BUTTON(PAD_2, BTN_SELECT), "{Joypad2 Select,Mouse2 L,Superscope Fire,Justifier1 Trigger}");
+    MAP_BUTTON(MAKE_BUTTON(PAD_2, BTN_SELECT), "{Joypad2 Select,Mouse2 L,Superscope Fire,Justifier1 Trigger,MacsRifle Trigger}");
     MAP_BUTTON(MAKE_BUTTON(PAD_2, BTN_START), "{Joypad2 Start,Mouse2 R,Superscope Cursor,Justifier1 Start}");
     MAP_BUTTON(MAKE_BUTTON(PAD_2, BTN_L), "Joypad2 L");
     MAP_BUTTON(MAKE_BUTTON(PAD_2, BTN_R), "Joypad2 R");
@@ -1317,6 +1354,8 @@ static void map_buttons()
 static int16_t snes_mouse_state[2][2] = {{0}, {0}};
 static int16_t snes_scope_state[2] = {0};
 static int16_t snes_justifier_state[2][2] = {{0}, {0}};
+static int16_t snes_rifle_state[2] = {0};
+
 static void report_buttons()
 {
     int offset = snes_devices[0] == RETRO_DEVICE_JOYPAD_MULTITAP ? 4 : 1;
@@ -1380,6 +1419,24 @@ static void report_buttons()
 
                 S9xReportPointer(BTN_POINTER, snes_justifier_state[port][0], snes_justifier_state[port][1]);
                 for (int i = JUSTIFIER_TRIGGER; i <= JUSTIFIER_LAST; i++)
+                    S9xReportButton(MAKE_BUTTON(2, i), input_state_cb(port, RETRO_DEVICE_LIGHTGUN, 0, i));
+                break;
+
+            case RETRO_DEVICE_LIGHTGUN_MACS_RIFLE:
+                snes_rifle_state[0] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_MACS_RIFLE, 0, RETRO_DEVICE_ID_LIGHTGUN_X);
+                snes_rifle_state[1] += input_state_cb(port, RETRO_DEVICE_LIGHTGUN_MACS_RIFLE, 0, RETRO_DEVICE_ID_LIGHTGUN_Y);
+
+                if (snes_rifle_state[0] < 0)
+                    snes_rifle_state[0] = 0;
+                else if (snes_rifle_state[0] > (SNES_WIDTH-1))
+                    snes_rifle_state[0] = SNES_WIDTH-1;
+                if (snes_rifle_state[1] < 0)
+                    snes_rifle_state[1] = 0;
+                else if (snes_rifle_state[1] > (SNES_HEIGHT-1))
+                    snes_rifle_state[1] = SNES_HEIGHT-1;
+
+                S9xReportPointer(BTN_POINTER, snes_rifle_state[0], snes_rifle_state[1]);
+                for (int i = RIFLE_TRIGGER; i <= RIFLE_LAST; i++)
                     S9xReportButton(MAKE_BUTTON(2, i), input_state_cb(port, RETRO_DEVICE_LIGHTGUN, 0, i));
                 break;
 
