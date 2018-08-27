@@ -208,9 +208,9 @@
  ***********************************************************************************/
 
 
-#include "snes9x.h"
-#include "memmap.h"
-#include "cheats.h"
+#include "../snes9x.h"
+#include "../memmap.h"
+#include "../cheats.h"
 
 #include "mac-prefix.h"
 #include "mac-audio.h"

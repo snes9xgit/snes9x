@@ -1,4 +1,4 @@
-#include "snes9x.h"
+#include "../snes9x.h"
 #include <windows.h>
 #include <png.h>
 #include "dxerr.h"

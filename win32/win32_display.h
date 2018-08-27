@@ -193,7 +193,7 @@
 #define WIN32_DISPLAY_H
 
 #include "wsnes9x.h"
-#include "port.h"
+#include "../port.h"
 #include "render.h"
 #include <vector>
 
