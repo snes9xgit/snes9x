@@ -18,6 +18,20 @@ environment:
     output: win32\snes9x-x64.exe
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
 
+  - generator: "Visual Studio 15"
+    config: libretro Release
+    platform: Win32
+    arch: libretro
+    output: libretro\Win32\libretro Release\snes9x_libretro.dll
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+
+  - generator: "Visual Studio 15"
+    config: libretro Release
+    platform: x64
+    arch: libretro-x64
+    output: libretro\x64\libretro Release\snes9x_libretro.dll
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+
 init:
   - git config --global core.autocrlf input
 
@@ -25,7 +39,8 @@ before_build:
   - git submodule update --init --recursive
 
 build_script:
-  - msbuild win32\snes9xw.sln /t:build /p:Configuration="%config%";Platform="%platform%" /m /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+  - if "%config%"=="Release Unicode" msbuild win32\snes9xw.sln /t:build /p:Configuration="%config%";Platform="%platform%" /m /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+  - if "%config%"=="libretro Release" msbuild libretro\libretro-win32.vcxproj /t:build /p:Configuration="%config%";Platform="%platform%" /m /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
 after_build:
   - ps: $env:gitrev = git describe --tags
@@ -34,10 +49,11 @@ after_build:
   - if exist artifacts rmdir /s /q artifacts
   - mkdir artifacts
   - copy "%output%" artifacts
-  - copy docs\changes.txt artifacts
-  - copy docs\snes9x-license.txt artifacts
-  - copy win32\docs\faqs-windows.txt artifacts
-  - copy win32\docs\readme-windows.txt artifacts
+  - if "%config%"=="Release Unicode"
+    copy docs\changes.txt artifacts |
+    copy docs\snes9x-license.txt artifacts |
+    copy win32\docs\faqs-windows.txt artifacts |
+    copy win32\docs\readme-windows.txt artifacts
   - 7z a %package_name%.zip .\artifacts\*
 
 artifacts:
