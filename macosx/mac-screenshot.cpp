@@ -208,9 +208,9 @@
  ***********************************************************************************/
 
 
-#include "snes9x.h"
-#include "memmap.h"
-#include "screenshot.h"
+#include "../snes9x.h"
+#include "../memmap.h"
+#include "../screenshot.h"
 
 #include <QuickTime/QuickTime.h>
 

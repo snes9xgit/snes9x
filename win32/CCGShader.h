@@ -191,7 +191,7 @@
 #ifndef CCGSHADER_H
 #define CCGSHADER_H
 
-#include "port.h"
+#include "../port.h"
 #include "cgFunctions.h"
 #include <vector>
 

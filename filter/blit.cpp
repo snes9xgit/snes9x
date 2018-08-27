@@ -190,7 +190,7 @@
  ***********************************************************************************/
 
 
-#include "snes9x.h"
+#include "../snes9x.h"
 #include "blit.h"
 
 #define ALL_COLOR_MASK	(FIRST_COLOR_MASK | SECOND_COLOR_MASK | THIRD_COLOR_MASK)

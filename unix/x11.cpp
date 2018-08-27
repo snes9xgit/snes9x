@@ -224,15 +224,15 @@
 #include <X11/extensions/XShm.h>
 #endif
 
-#include "snes9x.h"
-#include "memmap.h"
-#include "ppu.h"
-#include "controls.h"
-#include "movie.h"
-#include "logger.h"
-#include "conffile.h"
-#include "blit.h"
-#include "display.h"
+#include "../snes9x.h"
+#include "../memmap.h"
+#include "../ppu.h"
+#include "../controls.h"
+#include "../movie.h"
+#include "../logger.h"
+#include "../conffile.h"
+#include "../blit.h"
+#include "../display.h"
 
 // Wrapper struct to make generic XvImage vs XImage
 struct Image

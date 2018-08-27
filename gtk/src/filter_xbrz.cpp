@@ -190,7 +190,7 @@
   Nintendo Co., Limited and its subsidiary companies.
  ***********************************************************************************/
 
-#include "snes9x.h"
+#include "../../snes9x.h"
 #include "../filter/xbrz.h"
 #include <vector>
 
