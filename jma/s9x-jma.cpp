@@ -193,8 +193,8 @@
 //  (c) Copyright 2004-2006 NSRT Team (http://nsrt.edgeemu.com)
 
 
-#include "snes9x.h"
-#include "memmap.h"
+#include "../snes9x.h"
+#include "../memmap.h"
 
 #include <vector>
 using namespace std;

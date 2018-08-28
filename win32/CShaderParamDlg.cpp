@@ -1,6 +1,6 @@
 #include "CShaderParamDlg.h"
 #include "wsnes9x.h"
-#include "display.h"
+#include "../display.h"
 #include "win32_display.h"
 #include <CommCtrl.h>
 

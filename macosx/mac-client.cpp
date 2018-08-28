@@ -208,12 +208,12 @@
  ***********************************************************************************/
 
 
-#include "snes9x.h"
-#include "memmap.h"
-#include "apu.h"
-#include "snapshot.h"
-#include "cheats.h"
-#include "display.h"
+#include "../snes9x.h"
+#include "../memmap.h"
+#include "../apu.h"
+#include "../snapshot.h"
+#include "../cheats.h"
+#include "../display.h"
 
 #include <arpa/inet.h>
 #include <pthread.h>

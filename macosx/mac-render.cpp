@@ -208,11 +208,11 @@
  ***********************************************************************************/
 
 
-#include "snes9x.h"
-#include "memmap.h"
-#include "apu.h"
-#include "display.h"
-#include "blit.h"
+#include "../snes9x.h"
+#include "../memmap.h"
+#include "../apu/apu.h"
+#include "../display.h"
+#include "../filter/blit.h"
 
 #include <OpenGL/OpenGL.h>
 #include <OpenGL/CGLRenderers.h>

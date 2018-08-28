@@ -208,8 +208,8 @@
  ***********************************************************************************/
 
 
-#include "snes9x.h"
-#include "memmap.h"
+#include "../snes9x.h"
+#include "../memmap.h"
 
 #include <sys/time.h>
 #include <arpa/inet.h>
