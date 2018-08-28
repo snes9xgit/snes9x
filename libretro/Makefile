@@ -1,6 +1,7 @@
 DEBUG = 0
 HAVE_EXCEPTIONS = 0
 LAGFIX=1
+HAVE_STRINGS_H = 1
 
 SPACE :=
 SPACE := $(SPACE) $(SPACE)
@@ -167,6 +168,7 @@ else ifneq (,$(filter $(platform), ps3 sncps3 psl1ght))
    TARGET := $(TARGET_NAME)_libretro_$(platform).a
    CXXFLAGS += -DBLARGG_BIG_ENDIAN=1 -D__ppc__
    STATIC_LINKING = 1
+   HAVE_STRINGS_H = 0
 
    # sncps3
    ifneq (,$(findstring sncps3,$(platform)))
@@ -517,9 +519,12 @@ endif
 CXXFLAGS	+= $(CODE_DEFINES) $(WARNINGS_DEFINES) $(fpic)
 CXXFLAGS	+= -DRIGHTSHIFT_IS_SAR -D__LIBRETRO__ -DALLOW_CPU_OVERCLOCK
 CFLAGS		= $(CXXFLAGS)
-
+CFLAGS          += -DHAVE_STDINT_H
+CXXFLAGS        += -DHAVE_STDINT_H
 ifeq (,$(findstring msvc,$(platform)))
+ifeq ($(HAVE_STRINGS_H), 1)
 CXXFLAGS += -DHAVE_STRINGS_H
+endif
 CXXFLAGS += -fno-rtti -pedantic 
 ifneq ($(HAVE_EXCEPTIONS), 1)
    CXXFLAGS += -fno-exceptions
