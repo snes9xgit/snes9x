@@ -177,18 +177,12 @@ else ifneq (,$(filter $(platform), ps3 sncps3 psl1ght))
 
    # PS3
    else ifneq (,$(findstring ps3,$(platform)))
-      CFLAGS += -flto
-      CXXFLAGS += -flto
-      LDFLAGS += -flto
       CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
       CXX = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-g++.exe
       AR = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-ar.exe
 
    # Lightweight PS3 Homebrew SDK
    else ifneq (,$(findstring psl1ght,$(platform)))
-      CFLAGS += -flto
-      CXXFLAGS += -flto
-      LDFLAGS += -flto
       CC = $(PS3DEV)/ppu/bin/ppu-gcc$(EXE_EXT)
       CXX = $(PS3DEV)/ppu/bin/ppu-g++$(EXE_EXT)
       AR = $(PS3DEV)/ppu/bin/ppu-ar$(EXE_EXT)
