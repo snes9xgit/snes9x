@@ -202,9 +202,6 @@ else ifeq ($(platform), xenon)
 
 # Nintendo Game Cube / Wii / WiiU
 else ifneq (,$(filter $(platform), ngc wii wiiu))
-   CFLAGS += -flto
-   CXXFLAGS += -flto
-   LDFLAGS += -flto
    TARGET := $(TARGET_NAME)_libretro_$(platform).a
    CC = $(DEVKITPPC)/bin/powerpc-eabi-gcc$(EXE_EXT)
    CXX = $(DEVKITPPC)/bin/powerpc-eabi-g++$(EXE_EXT)
