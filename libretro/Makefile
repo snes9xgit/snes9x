@@ -1,6 +1,5 @@
 DEBUG = 0
 HAVE_EXCEPTIONS = 0
-LAGFIX=1
 HAVE_STRINGS_H = 1
 
 SPACE :=
@@ -42,11 +41,6 @@ endif
 GIT_VERSION := " $(shell git rev-parse --short HEAD || echo unknown)"
 ifneq ($(GIT_VERSION)," unknown")
    CXXFLAGS += -DGIT_VERSION=\"$(GIT_VERSION)\"
-endif
-
-ifeq ($(LAGFIX),1)
-   CFLAGS   += -DLAGFIX
-   CXXFLAGS += -DLAGFIX
 endif
 
 # Unix
