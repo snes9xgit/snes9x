@@ -219,24 +219,24 @@
 #include <linux/joystick.h>
 #endif
 
-#include "snes9x.h"
-#include "memmap.h"
-#include "apu/apu.h"
-#include "gfx.h"
-#include "snapshot.h"
-#include "controls.h"
-#include "cheats.h"
-#include "movie.h"
-#include "logger.h"
-#include "display.h"
-#include "conffile.h"
+#include "../snes9x.h"
+#include "../memmap.h"
+#include "../apu/apu.h"
+#include "../gfx.h"
+#include "../snapshot.h"
+#include "../controls.h"
+#include "../cheats.h"
+#include "../movie.h"
+#include "../logger.h"
+#include "../display.h"
+#include "../conffile.h"
 #ifdef NETPLAY_SUPPORT
-#include "netplay.h"
+#include "../netplay.h"
 #endif
 #ifdef DEBUGGER
-#include "debug.h"
+#include "../debug.h"
 #endif
-#include "statemanager.h"
+#include "../statemanager.h"
 
 #ifdef NETPLAY_SUPPORT
 #ifdef _DEBUG

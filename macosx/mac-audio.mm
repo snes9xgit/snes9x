@@ -208,8 +208,8 @@
  ***********************************************************************************/
 
 
-#include "snes9x.h"
-#include "apu.h"
+#include "../snes9x.h"
+#include "../apu/apu.h"
 
 #include <Cocoa/Cocoa.h>
 #include <CoreAudio/CoreAudio.h>

@@ -208,10 +208,10 @@
  ***********************************************************************************/
 
 
-#include "snes9x.h"
-#include "memmap.h"
-#include "movie.h"
-#include "display.h"
+#include "../snes9x.h"
+#include "../memmap.h"
+#include "../movie.h"
+#include "../display.h"
 
 #include <libgen.h>
 

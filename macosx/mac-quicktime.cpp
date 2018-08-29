@@ -208,9 +208,9 @@
  ***********************************************************************************/
 
 
-#include "snes9x.h"
-#include "memmap.h"
-#include "apu.h"
+#include "../snes9x.h"
+#include "../memmap.h"
+#include "../apu/apu.h"
 
 #include <QuickTime/QuickTime.h>
 
