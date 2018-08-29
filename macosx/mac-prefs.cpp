@@ -208,9 +208,9 @@
  ***********************************************************************************/
 
 
-#include "snes9x.h"
-#include "memmap.h"
-#include "blit.h"
+#include "../snes9x.h"
+#include "../memmap.h"
+#include "../filter/blit.h"
 
 #include <OpenGL/OpenGL.h>
 #define __STDC_FORMAT_MACROS

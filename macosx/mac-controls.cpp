@@ -208,8 +208,8 @@
  ***********************************************************************************/
 
 
-#include "port.h"
-#include "controls.h"
+#include "../port.h"
+#include "../controls.h"
 
 #include "mac-prefix.h"
 #include "mac-joypad.h"

@@ -208,13 +208,13 @@
  ***********************************************************************************/
 
 
-#include "snes9x.h"
-#include "memmap.h"
-#include "apu.h"
-#include "snapshot.h"
-#include "cheats.h"
-#include "movie.h"
-#include "display.h"
+#include "../snes9x.h"
+#include "../memmap.h"
+#include "../apu/apu.h"
+#include "../snapshot.h"
+#include "../cheats.h"
+#include "../movie.h"
+#include "../display.h"
 
 #include <wchar.h>
 
