@@ -3235,6 +3235,12 @@ static void Initialize (void)
 	Settings.StretchScreenshots = 1;
 	Settings.SnapshotScreenshots = true;
 	Settings.OpenGLEnable = true;
+	Settings.SuperFXClockMultiplier = 100;
+	Settings.InterpolationMethod = DSP_INTERPOLATION_GAUSSIAN;
+	Settings.MaxSpriteTilesPerLine = 34;
+	Settings.OneClockCycle = 6;
+	Settings.OneSlowClockCycle = 8;
+	Settings.TwoClockCycles = 12;
 
 	for (int a = 0; a < kWindowCount; a++)
 	{
