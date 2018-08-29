@@ -190,8 +190,8 @@
  ***********************************************************************************/
 
 
-#include "snes9x.h"
-#include "gfx.h"
+#include "../snes9x.h"
+#include "../gfx.h"
 #include "hq2x.h"
 
 #define	Ymask	0xFF0000

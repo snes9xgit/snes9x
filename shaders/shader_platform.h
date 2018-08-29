@@ -1,7 +1,7 @@
 #ifndef __SHADER_PLATFORM_H
 #define __SHADER_PLATFORM_H
 
-#include "port.h"
+#include "../port.h"
 
 #ifdef SNES9X_GTK
 #include <epoxy/gl.h>

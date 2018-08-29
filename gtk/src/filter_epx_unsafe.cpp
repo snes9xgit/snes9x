@@ -189,19 +189,19 @@
   Nintendo Co., Limited and its subsidiary companies.
  ***********************************************************************************/
 
-#include "snes9x.h"
-#include "memmap.h"
-#include "cpuops.h"
-#include "dma.h"
-#include "apu/apu.h"
-#include "fxemu.h"
-#include "snapshot.h"
+#include "../../snes9x.h"
+#include "../../memmap.h"
+#include "../../cpuops.h"
+#include "../../dma.h"
+#include "../../apu/apu.h"
+#include "../../fxemu.h"
+#include "../../snapshot.h"
 #ifdef DEBUGGER
-#include "debug.h"
-#include "missing.h"
+#include "../../debug.h"
+#include "../../missing.h"
 #endif
 
-#include "port.h"
+#include "../../port.h"
 #include "filter_epx_unsafe.h"
 
 #undef  AVERAGE_565
