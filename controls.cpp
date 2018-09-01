@@ -2628,6 +2628,15 @@ void S9xApplyCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 							S9xSetInfoString("Cannot swap pads: port 2 is not a joypad");
 							break;
 						}
+						
+						if (Settings.NetPlay && data2 != 1) { //data2 == 1 means it's sent by the netplay code
+							if (Settings.NetPlayServer) {
+								S9xNPSendJoypadSwap();
+							} else {
+								S9xSetInfoString("Netplay Client cannot swap pads.");
+								break;
+							}
+						}
 
 						newcontrollers[1] = curcontrollers[0];
 						newcontrollers[0] = curcontrollers[1];
