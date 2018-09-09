@@ -3820,7 +3820,7 @@ void CMemory::ApplyROMFixes (void)
 
 	Timings.HDMAStart   = SNES_HDMA_START_HC + Settings.HDMATimingHack - 100;
 	Timings.HBlankStart = SNES_HBLANK_START_HC + Timings.HDMAStart - SNES_HDMA_START_HC;
-	Timings.IRQTriggerCycles = 10;
+	Timings.IRQTriggerCycles = 14;
 
 	if (!Settings.DisableGameSpecificHacks)
 	{
