@@ -306,7 +306,7 @@ static int CyclesUntilNext (int hc, int vc)
 
 void S9xUpdateIRQPositions (bool initial)
 {
-	PPU.HTimerPosition = (PPU.IRQHBeamPos + 1) * ONE_DOT_CYCLE + Timings.IRQTriggerCycles;
+	PPU.HTimerPosition = PPU.IRQHBeamPos * ONE_DOT_CYCLE + Timings.IRQTriggerCycles;
 	PPU.HTimerPosition -= PPU.IRQHBeamPos ? 0 : ONE_DOT_CYCLE;
 	PPU.HTimerPosition += PPU.IRQHBeamPos > 322 ? (ONE_DOT_CYCLE / 2) : 0;
 	PPU.HTimerPosition += PPU.IRQHBeamPos > 326 ? (ONE_DOT_CYCLE / 2) : 0;
