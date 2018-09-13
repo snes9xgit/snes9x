@@ -1,4 +1,4 @@
-AC_INIT([snes9x-gtk], 1.55)
+AC_INIT([snes9x-gtk], 1.56.2)
 
 AC_CONFIG_MACRO_DIR([macros])
 
@@ -9,7 +9,7 @@ if test -z "$CXXFLAGS"; then
     CXXFLAGS="$CFLAGS"
 fi
 
-EXTRA_FLAGS="-Wall -W -pedantic -Wno-unused-parameter -Wno-unused-but-set-variable"
+EXTRA_FLAGS="-Wall -W -Wno-unused-parameter"
 CFLAGS="$CFLAGS $EXTRA_FLAGS"
 CXXFLAGS="$CXXFLAGS $EXTRA_FLAGS"
 
@@ -34,7 +34,10 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE")
 AM_GLIB_GNU_GETTEXT
 
 snes9xlocaledir='${prefix}/${DATADIRNAME}/locale'
+snes9xdatadir='${prefix}/${DATADIRNAME}/snes9x'
+
 AC_SUBST(snes9xlocaledir)
+AC_SUBST(snes9xdatadir)
 
 AC_ARG_WITH(debug,
   [AS_HELP_STRING([--with(out)-debug],
@@ -59,12 +62,6 @@ AC_ARG_WITH(xv,
     [Enable XVideo output on GTK (default: with)])],
   [],
   [with_xv=yes])
-
-AC_ARG_WITH(xrandr,
-  [AS_HELP_STRING([--with(out)-xrandr],
-    [Enable XRandR support on GTK (default: with)])],
-  [],
-  [with_xrandr=yes])
 
 AC_ARG_WITH(portaudio,
   [AS_HELP_STRING([--with(out)-portaudio],
@@ -142,7 +139,7 @@ AC_ARG_WITH(system-zip,
   [AS_HELP_STRING([--with(out)-system-zip],
     [Use system zip])],
   [],
-  [system_zip=check])
+  [with_system_zip=check])
 
 AC_ARG_WITH(screenshot,
   [AS_HELP_STRING([--with(out)-screenshot],
@@ -152,9 +149,21 @@ AC_ARG_WITH(screenshot,
 
 AC_ARG_WITH(gtk3,
   [AS_HELP_STRING([--with(out)-gtk3],
+    [Build with GTK+ 3 if available (default: with)])],
+  [],
+  [with_gtk3=yes])
+
+AC_ARG_WITH(gtk2,
+  [AS_HELP_STRING([--with(out)-gtk2],
     [Build with GTK+ 3 if available (default: without)])],
   [],
-  [with_gtk3=no])
+  [with_gtk2=no])
+
+AC_ARG_ENABLE(dangerous-hacks,
+  [AS_HELP_STRING([--enable-dangerous-hacks],
+    [Allow dangerous hacks to be enabled.])],
+  [],
+  [enable_dangerous_hacks=no])
 
 if test yes = "$with_debug" ; then
   CFLAGS="$CFLAGS -g"
@@ -187,10 +196,9 @@ GTK=yes
 snes9x_info_display="GTK"
 
 GTK3_WARNING=no
-if test yes = "$with_gtk3" ; then
-    GTK_VERSION="gtk+-3.0"
+if test yes = "$with_gtk3" -a no = "$with_gtk2"; then
+    GTK_VERSION="gtk+-3.0 >= 3.22"
     GTK3_WARNING=yes
-    CFLAGS="$CFLAGS -DUSE_GTK3"
 else
     GTK_VERSION="gtk+-2.0 >= 2.16"
 fi
@@ -198,6 +206,7 @@ fi
 PKG_CHECK_MODULES([GTK], ["$GTK_VERSION"])
 PKG_CHECK_MODULES([GLIB], [gthread-2.0 >= 2.6 gobject-2.0 >= 2.6])
 PKG_CHECK_MODULES([LIBXML], [libxml-2.0 >= 2.0])
+PKG_CHECK_MODULES([XRANDR], [xrandr])
 
 if test yes = "$with_opengl" ; then
 
@@ -208,6 +217,10 @@ if test yes = "$with_opengl" ; then
     ],[
         OPENGL=0
     ])
+
+    PKG_CHECK_MODULES([EPOXY], [epoxy]);
+    CFLAGS="$CFLAGS $EPOXY_CFLAGS"
+    LIBS="$LIBS $EPOXY_LIBS"
 fi
 
 GTKJOY=0
@@ -295,19 +308,6 @@ if test yes = "$with_pulseaudio" ; then
     ])
 fi
 
-XRANDR=0
-XRANDR_CFLAGS=""
-XRANDR_LIBS=""
-if test yes = "$with_xrandr" ; then
-    PKG_CHECK_MODULES([XRANDR],[xrandr],[
-        XRANDR=yes
-        CFLAGS="$CFLAGS -DUSE_XRANDR"
-    ],[
-        echo "Cannot find libXrandr. Make sure the X11 development headers are installed."
-        echo "--> Disabling Xrandr support."
-    ])
-fi
-
 LIBPNG_CFLAGS=""
 LIBPNG_LIBS=""
 if test yes = "$with_screenshot"; then
@@ -359,7 +359,7 @@ NASM="not_found"
 ZSNESC4=no
 ZSNESFX=no
 
-CFLAGS="$CFLAGS -DCORRECT_VRAM_READS"
+CFLAGS="$CFLAGS -DPIXEL_FORMAT=RGB565 -DCORRECT_VRAM_READS"
 CORRECT_VRAM_READS=1
 
 if test yes = "$with_debugger"; then
@@ -390,6 +390,10 @@ if test yes = "$with_zlib"; then
         CFLAGS="$CFLAGS -DZLIB"
         LIBS="$LIBS -lz"
       ], ,)
+fi
+
+if test yes = "$enable_dangerous_hacks"; then
+  CFLAGS="$CFLAGS -DALLOW_CPU_OVERCLOCK"
 fi
 
 dnl Check for functions
@@ -465,7 +469,7 @@ if test $ac_cv_my_sar_int8 = yes && \
   CFLAGS="$CFLAGS -DRIGHTSHIFT_IS_SAR"
 fi
 
-CFLAGS="$CFLAGS -DUNZIP_SUPPORT -DSPC700_C -I. -I.. $ZIP_CFLAGS"
+CFLAGS="$CFLAGS -DUNZIP_SUPPORT -DSNES9X_GTK -DSPC700_C -I. -I.. $ZIP_CFLAGS"
 
 CXXFLAGS="$CFLAGS"
 
@@ -499,7 +503,7 @@ echo "Snes9x will build with support for the following:"
 echo ""
 
 if test yes = "$GTK3_WARNING" ; then
-    echo "    GTK+ 3.0 (experimental)"
+    echo "    GTK+ 3.0"
 else
     echo "    GTK+ 2.0"
 fi
@@ -574,4 +578,8 @@ fi
 
 if ! test yes = "$XBRZ"; then
     echo "xBRZ filter compilation is disabled."
+fi
+
+if test yes = "$enable_dangerous_hacks"; then
+    echo "Dangerous hacks enabled."
 fi

@@ -70,31 +70,31 @@
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>libretro_debug</TargetName>
+    <TargetName>snes9x_libretro_debug</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='libretro Debug|x64'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>libretro_debug</TargetName>
+    <TargetName>snes9x_libretro_debug</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='libretro Release|Win32'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>libretro</TargetName>
+    <TargetName>snes9x_libretro</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='libretro Release|x64'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>libretro</TargetName>
+    <TargetName>snes9x_libretro</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='libretro Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>../;../apu/bapu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>__WIN32__;__WIN32_LIBSNES__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__WIN32__;__LIBRETRO__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -117,7 +117,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>../;../apu/bapu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>__WIN32__;__WIN32_LIBSNES__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__WIN32__;__LIBRETRO__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -140,17 +140,15 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <AdditionalIncludeDirectories>../;../apu/bapu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>__WIN32__;__WIN32_LIBSNES__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__WIN32__;__LIBRETRO__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader />
       <WarningLevel>Level2</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -168,17 +166,15 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <AdditionalIncludeDirectories>../;../apu/bapu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>__WIN32__;__WIN32_LIBSNES__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PreprocessorDefinitions>__WIN32__;__LIBRETRO__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader />
       <WarningLevel>Level2</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -197,6 +193,7 @@
     <ClInclude Include="..\apu\hermite_resampler.h" />
     <ClInclude Include="..\apu\resampler.h" />
     <ClInclude Include="..\apu\ring_buffer.h" />
+    <ClInclude Include="..\bml.h" />
     <ClInclude Include="..\bsx.h" />
     <ClInclude Include="..\c4.h" />
     <ClInclude Include="..\cheats.h" />
@@ -234,6 +231,7 @@
     <ClInclude Include="..\sdd1.h" />
     <ClInclude Include="..\sdd1emu.h" />
     <ClInclude Include="..\seta.h" />
+    <ClInclude Include="..\sha256.h" />
     <ClInclude Include="..\snapshot.h" />
     <ClInclude Include="..\snes9x.h" />
     <ClInclude Include="..\spc7110.h" />
@@ -245,9 +243,15 @@
   <ItemGroup>
     <ClCompile Include="..\apu\apu.cpp" />
     <ClCompile Include="..\apu\bapu\dsp\sdsp.cpp" />
-    <ClCompile Include="..\apu\bapu\dsp\SPC_DSP.cpp" />
+    <ClCompile Include="..\apu\bapu\dsp\SPC_DSP.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='libretro Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='libretro Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='libretro Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='libretro Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\apu\bapu\smp\smp.cpp" />
     <ClCompile Include="..\apu\bapu\smp\smp_state.cpp" />
+    <ClCompile Include="..\bml.cpp" />
     <ClCompile Include="..\bsx.cpp" />
     <ClCompile Include="..\c4.cpp" />
     <ClCompile Include="..\c4emu.cpp" />
@@ -289,6 +293,7 @@
     <ClCompile Include="..\seta010.cpp" />
     <ClCompile Include="..\seta011.cpp" />
     <ClCompile Include="..\seta018.cpp" />
+    <ClCompile Include="..\sha256.cpp" />
     <ClCompile Include="..\snapshot.cpp" />
     <ClCompile Include="..\snes9x.cpp" />
     <ClCompile Include="..\spc7110.cpp" />

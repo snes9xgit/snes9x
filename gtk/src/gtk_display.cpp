@@ -19,7 +19,7 @@ static snes_ntsc_t       snes_ntsc;
 static thread_job_t      job[8];
 static GThreadPool       *pool;
 static uint8             *y_table, *u_table, *v_table;
-static int               endianess = ENDIAN_LSB;
+static int               endianess = ENDIAN_NORMAL;
 
 /* Scanline constants for the NTSC filter */
 static unsigned int scanline_offsets[] =
@@ -34,9 +34,9 @@ static unsigned int scanline_offsets[] =
 static unsigned short scanline_masks[] =
 {
         0x0000,     /* 0%    */
-        0x0C63,     /* 12.5% */
-        0x1CE7,     /* 25%   */
-        0x3DEF,     /* 50%   */
+        0x18E3,     /* 12.5% */
+        0x39E7,     /* 25%   */
+        0x7BEF,     /* 50%   */
         0xffff,     /* 100%  */
 };
 
@@ -66,7 +66,7 @@ S9xGetAspect (void)
     double native_aspect = 256.0 / (gui_config->overscan ? 239.0 : 224.0);
     double aspect;
 
-    switch (gui_config->aspect_ratio)
+    switch (gui_config->aspect_ratio / 2)
     {
         case 0: /* Square pixels */
             aspect = native_aspect;
@@ -93,6 +93,7 @@ S9xApplyAspect (int &s_width,  /* Output: x */
 {
     double screen_aspect = (double) d_width / (double) d_height;
     double snes_aspect = S9xGetAspect ();
+    bool   integer = gui_config->aspect_ratio & 1;
     double granularity = 1.0 / (double) MAX (d_width, d_height);
     int x, y, w, h;
 
@@ -114,7 +115,22 @@ S9xApplyAspect (int &s_width,  /* Output: x */
 
         }
     }
+    else if (gui_config->maintain_aspect_ratio && integer)
+    {
+        for (h = s_height * 2; h <= d_height && (int)(h * (snes_aspect) + 0.5) <= d_width; h += s_height) {}
+        h -= s_height;
+        w = h * snes_aspect + 0.5;
+        x = (d_width  - w) / 2;
+        y = (d_height - h) / 2;
 
+        if (w > d_width || h > d_height)
+        {
+            w = d_width;
+            h = d_height;
+            x = 0;
+            y = 0;
+        }
+    }
     else if (gui_config->maintain_aspect_ratio &&
             !(screen_aspect <= snes_aspect * (1.0 + granularity) &&
               screen_aspect >= snes_aspect * (1.0 - granularity)))
@@ -125,9 +141,7 @@ S9xApplyAspect (int &s_width,  /* Output: x */
             h = d_height;
             x = (d_width - w) / 2;
             y = 0;
-
         }
-
         else
         {
             w = d_width;
@@ -173,12 +187,12 @@ internal_convert_16_yuv (void *src_buffer,
                          int  width,
                          int  height)
 {
-    register int    x, y;
-    register uint16 *src;
-    register uint8  *dst;
-    register uint16 p0, p1;
+    int    x, y;
+    uint16 *src;
+    uint8  *dst;
+    uint16 p0, p1;
 
-    if (endianess == ENDIAN_MSB)
+    if (endianess == ENDIAN_SWAPPED)
     {
         for (y = 0; y < height; y++)
         {
@@ -197,7 +211,6 @@ internal_convert_16_yuv (void *src_buffer,
             }
         }
     }
-
     else
     {
         for (y = 0; y < height; y++)
@@ -234,9 +247,9 @@ internal_convert_mask (void         *src_buffer,
                        unsigned int bpp)
 {
 #ifdef __BIG_ENDIAN__
-    if (endianess == ENDIAN_MSB)
+    if (endianess == ENDIAN_SWAPPED)
 #else
-    if (endianess == ENDIAN_LSB)
+    if (endianess == ENDIAN_NORMAL)
 #endif
     {
         switch (bpp)
@@ -244,20 +257,20 @@ internal_convert_mask (void         *src_buffer,
             case 15:
             case 16:
 
-                for (register int y = 0; y < height; y++)
+                for (int y = 0; y < height; y++)
                 {
-                    register uint16 *data =
+                    uint16 *data =
                         (uint16 *) ((uint8 *) dst_buffer + y * dst_pitch);
 
-                    register uint16 *snes =
+                    uint16 *snes =
                         (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
 
-                    for (register int x = 0; x < width; x++)
+                    for (int x = 0; x < width; x++)
                     {
                         uint32 pixel = *snes++;
 
-                        *data++ = ((pixel & 0x7c00) << 1) >> inv_rshift
-                                | ((pixel & 0x03e0) << 6) >> inv_gshift
+                        *data++ = ((pixel & 0xf800) << 0)  >> inv_rshift
+                                | ((pixel & 0x07e0) << 5)  >> inv_gshift
                                 | ((pixel & 0x001f) << 11) >> inv_bshift;
                     }
                 }
@@ -272,39 +285,39 @@ internal_convert_mask (void         *src_buffer,
                 if (!(inv_rshift > 8))
 #endif
                 {
-                    for (register int y = 0; y < height; y++)
+                    for (int y = 0; y < height; y++)
                     {
-                        register uint8 *data =
+                        uint8 *data =
                             (uint8 *) dst_buffer + y * dst_pitch;
 
-                        register uint16 *snes =
+                        uint16 *snes =
                             (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
 
-                        for (register int x = 0; x < width; x++)
+                        for (int x = 0; x < width; x++)
                         {
                             uint32 pixel = *snes++;
                             *data++ = ((pixel & 0x001f) << 3);
-                            *data++ = ((pixel & 0x03e0) >> 2);
-                            *data++ = ((pixel & 0x7c00) >> 7);
+                            *data++ = ((pixel & 0x07e0) >> 3);
+                            *data++ = ((pixel & 0xf800) >> 8);
                         }
                     }
                 }
 
                 else
                 {
-                    for (register int y = 0; y < height; y++)
+                    for (int y = 0; y < height; y++)
                     {
-                        register uint8 *data =
+                        uint8 *data =
                             (uint8 *) dst_buffer + y * dst_pitch;
 
-                        register uint16 *snes =
+                        uint16 *snes =
                             (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
 
-                        for (register int x = 0; x < width; x++)
+                        for (int x = 0; x < width; x++)
                         {
                             uint32 pixel = *snes++;
-                            *data++ = ((pixel & 0x7c00) >> 7);
-                            *data++ = ((pixel & 0x03e0) >> 2);
+                            *data++ = ((pixel & 0xf800) >> 8);
+                            *data++ = ((pixel & 0x07e0) >> 3);
                             *data++ = ((pixel & 0x001f) << 3);
                         }
                     }
@@ -314,20 +327,20 @@ internal_convert_mask (void         *src_buffer,
 
             case 32:
 
-                for (register int y = 0; y < height; y++)
+                for (int y = 0; y < height; y++)
                 {
-                    register uint32 *data =
+                    uint32 *data =
                         (uint32 *) ((uint8 *) dst_buffer + y * dst_pitch);
 
-                    register uint16 *snes =
+                    uint16 *snes =
                         (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
 
-                    for (register int x = 0; x < width; x++)
+                    for (int x = 0; x < width; x++)
                     {
                         uint32 pixel = *snes++;
 
-                        *data++ = ((uint32) (pixel & 0x7c00) << 17) >> inv_rshift
-                                | ((uint32) (pixel & 0x03e0) << 22) >> inv_gshift
+                        *data++ = ((uint32) (pixel & 0xf800) << 16) >> inv_rshift
+                                | ((uint32) (pixel & 0x07e0) << 21) >> inv_gshift
                                 | ((uint32) (pixel & 0x001f) << 27) >> inv_bshift;
                     }
                 }
@@ -343,21 +356,21 @@ internal_convert_mask (void         *src_buffer,
             case 15:
             case 16:
 
-                for (register int y = 0; y < height; y++)
+                for (int y = 0; y < height; y++)
                 {
-                    register uint16 *data =
+                    uint16 *data =
                         (uint16 *) ((uint8 *) dst_buffer + y * dst_pitch);
 
-                    register uint16 *snes =
+                    uint16 *snes =
                         (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
 
-                    for (register int x = 0; x < width; x++)
+                    for (int x = 0; x < width; x++)
                     {
                         uint32 pixel = *snes++;
-                        register uint16 value;
+                        uint16 value;
 
-                        value   = ((pixel & 0x7c00) << 1) >> inv_rshift
-                                | ((pixel & 0x03e0) << 6) >> inv_gshift
+                        value   = ((pixel & 0xf800) << 0) >> inv_rshift
+                                | ((pixel & 0x07e0) << 5) >> inv_gshift
                                 | ((pixel & 0x001f) << 11) >> inv_bshift;
 
                         *data++ = ((value & 0xff) << 8)
@@ -375,19 +388,19 @@ internal_convert_mask (void         *src_buffer,
                     if (!(inv_rshift > 8))
 #endif
                     {
-                        for (register int y = 0; y < height; y++)
+                        for (int y = 0; y < height; y++)
                         {
-                            register uint8 *data =
+                            uint8 *data =
                                 (uint8 *) dst_buffer + y * dst_pitch;
 
-                            register uint16 *snes =
+                            uint16 *snes =
                                 (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
 
-                            for (register int x = 0; x < width; x++)
+                            for (int x = 0; x < width; x++)
                             {
                                 uint32 pixel = *snes++;
-                                *data++ = ((pixel & 0x7c00) >> 7);
-                                *data++ = ((pixel & 0x03e0) >> 2);
+                                *data++ = ((pixel & 0xf800) >> 8);
+                                *data++ = ((pixel & 0x07e0) >> 3);
                                 *data++ = ((pixel & 0x001f) << 3);
                             }
                         }
@@ -395,20 +408,20 @@ internal_convert_mask (void         *src_buffer,
 
                     else
                     {
-                        for (register int y = 0; y < height; y++)
+                        for (int y = 0; y < height; y++)
                         {
-                            register uint8 *data =
+                            uint8 *data =
                                 (uint8 *) dst_buffer + y * dst_pitch;
 
-                            register uint16 *snes =
+                            uint16 *snes =
                                 (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
 
-                            for (register int x = 0; x < width; x++)
+                            for (int x = 0; x < width; x++)
                             {
                                 uint32 pixel = *snes++;
                                 *data++ = ((pixel & 0x001f) << 3);
-                                *data++ = ((pixel & 0x03e0) >> 2);
-                                *data++ = ((pixel & 0x7c00) >> 7);
+                                *data++ = ((pixel & 0x07e0) >> 3);
+                                *data++ = ((pixel & 0xf800) >> 8);
                             }
                         }
                     }
@@ -417,21 +430,21 @@ internal_convert_mask (void         *src_buffer,
 
             case 32:
 
-                for (register int y = 0; y < height; y++)
+                for (int y = 0; y < height; y++)
                 {
-                    register uint32 *data =
+                    uint32 *data =
                         (uint32 *) ((uint8 *) dst_buffer + y * dst_pitch);
 
-                    register uint16 *snes =
+                    uint16 *snes =
                         (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
 
-                    for (register int x = 0; x < width; x++)
+                    for (int x = 0; x < width; x++)
                     {
                         uint32 pixel = *snes++;
-                        register uint32 value;
+                        uint32 value;
 
-                        value   = ((uint32) (pixel & 0x7c00) << 17) >> inv_rshift
-                                | ((uint32) (pixel & 0x03e0) << 22) >> inv_gshift
+                        value   = ((uint32) (pixel & 0xf800) << 16) >> inv_rshift
+                                | ((uint32) (pixel & 0x07e0) << 21) >> inv_gshift
                                 | ((uint32) (pixel & 0x001f) << 27) >> inv_bshift;
 
                         *data++ = ((value & 0x000000ff) << 24)
@@ -457,71 +470,22 @@ internal_convert (void *src_buffer,
                   int  height,
                   int  bpp)
 {
-    if (endianess == ENDIAN_MSB)
+    if (endianess == ENDIAN_SWAPPED)
     {
-        if (bpp == 15)
+        if (bpp == 24)
         {
-            /* Format in fourcc is xrrrrrgg gggbbbbb */
-            for (register int y = 0; y < height; y++)
+            for (int y = 0; y < height; y++)
             {
-                register uint8 *data =
-                    (uint8 *) dst_buffer + y * dst_pitch;
+                uint8 *data = (uint8 *) dst_buffer + y * dst_pitch;
 
-                register uint16 *snes =
-                    (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
+                uint16 *snes = (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
 
-                for (register int x = 0; x < width; x++)
+                for (int x = 0; x < width; x++)
                 {
-                    uint32 pixel = *snes++;
-                    *data++ = (pixel & 0x7c00) >> 8
-                            | (pixel & 0x0300) >> 8; /* Top 2 green, 5 red */
-                    *data++ = (pixel & 0x00c0)
-                            | (pixel & 0x001f); /* Top 3 of last 4 green 5 blue */
-                }
-            }
-        }
-
-        else if (bpp == 16)
-        {
-            /* Format in fourcc is rrrrrggg gggbbbbb */
-            for (register int y = 0; y < height; y++)
-            {
-                register uint8 *data =
-                    (uint8 *) dst_buffer + y * dst_pitch;
-
-                register uint16 *snes =
-                    (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
-
-                for (register int x = 0; x < width; x++)
-                {
-                    uint32 pixel = *snes++;
-
-                    *data++ = (pixel & 0x7c00) >> 7
-                            | (pixel & 0x0300) >> 7; /* 5 red, first 3 green */
-                    *data++ = (pixel & 0x00c0)
-                            | (pixel & 0x001f); /* last 3 green, 5 blue */
-                }
-            }
-        }
-
-        else if (bpp == 24)
-        {
-            /* Format in fourcc is rrrrrrrr gggggggg bbbbbbbb */
-            for (register int y = 0; y < height; y++)
-            {
-                register uint8 *data =
-                    (uint8 *) dst_buffer + y * dst_pitch;
-
-                register uint16 *snes =
-                    (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
-
-                for (register int x = 0; x < width; x++)
-                {
-                    uint32 pixel = *snes++;
-
-                    *data++ = (pixel & 0x7c00) >> 7; /* Red */
-                    *data++ = (pixel & 0x03e0) >> 2; /* Green */
-                    *data++ = (pixel & 0x001f) << 3; /* Blue */
+                    uint16 pixel = *snes++;
+                    *data++ = ((pixel & 0xf800) >> 8) | ((pixel >> 13) & 0x07); /* Red */
+                    *data++ = ((pixel & 0x07e0) >> 3) | ((pixel >> 9)  & 0x03); /* Green */
+                    *data++ = ((pixel & 0x001f) << 3) | ((pixel >> 2)  & 0x07); /* Blue */
                 }
             }
         }
@@ -529,22 +493,19 @@ internal_convert (void *src_buffer,
         else if (bpp == 32)
         {
             /* Format in fourcc is xxxxxxxx rrrrrrrr gggggggg bbbbbbbb */
-            for (register int y = 0; y < height; y++)
+            for (int y = 0; y < height; y++)
             {
-                register uint8 *data =
-                    (uint8 *) dst_buffer + y * dst_pitch;
+                uint8 *data = (uint8 *) dst_buffer + y * dst_pitch;
 
-                register uint16 *snes =
-                    (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
+                uint16 *snes = (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
 
-                for (register int x = 0; x < width; x++)
+                for (int x = 0; x < width; x++)
                 {
-                    uint32 pixel = *snes++;
-
+                    uint16 pixel = *snes++;
                     *data++ = 0xff; /* Null */
-                    *data++ = (pixel & 0x7c00) >> 7; /* Red */
-                    *data++ = (pixel & 0x03e0) >> 2; /* Green */
-                    *data++ = (pixel & 0x001f) << 3; /* Blue */
+                    *data++ = ((pixel & 0xf800) >> 8) | ((pixel >> 13) & 0x07); /* Red */
+                    *data++ = ((pixel & 0x07e0) >> 3) | ((pixel >> 9)  & 0x03); /* Green */
+                    *data++ = ((pixel & 0x001f) << 3) | ((pixel >> 2)  & 0x07); /* Blue */
                 }
             }
         }
@@ -552,70 +513,23 @@ internal_convert (void *src_buffer,
 
     else /* Least significant byte first :-P */
     {
-        if (bpp == 15)
-        {
-            /* Format in fourcc is xrrrrrgg gggbbbbb */
-
-            for (register int y = 0; y < height; y++)
-            {
-                register uint8 *data =
-                    (uint8 *) dst_buffer + y * dst_pitch;
-
-                register uint16 *snes =
-                    (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
-
-                for (register int x = 0; x < width; x++)
-                {
-                    uint32 pixel = *snes++;
-                    *data++ = (pixel & 0x00c0)
-                            | (pixel & 0x001f); /* Top 3 of last 4 green 5 blue */
-                    *data++ = (pixel & 0x7c00) >> 8
-                            | (pixel & 0x0300) >> 8; /* Top 2 green, 5 red */
-                }
-            }
-        }
-
-        else if (bpp == 16)
-        {
-            /* Format in fourcc is rrrrrggg gggbbbbb */
-            for (register int y = 0; y < height; y++)
-            {
-                register uint8 *data =
-                    (uint8 *) dst_buffer + y * dst_pitch;
-
-                register uint16 *snes =
-                    (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
-
-                for (register int x = 0; x < width; x++)
-                {
-                    uint32 pixel = *snes++;
-
-                    *data++ = (pixel & 0x00c0)
-                            | (pixel & 0x001f); /* last 3 green, 5 blue */
-                    *data++ = (pixel & 0x7c00) >> 7
-                            | (pixel & 0x0300) >> 7; /* 5 red, first 3 green */
-                }
-            }
-        }
-
-        else if (bpp == 24)
+        if (bpp == 24)
         {
             /* Format in fourcc is rrrrrrrr gggggggg bbbbbbbb */
-            for (register int y = 0; y < height; y++)
+            /* Format in fourcc is xxxxxxxx rrrrrrrr gggggggg bbbbbbbb */
+            for (int y = 0; y < height; y++)
             {
-                register uint8 *data =
-                    (uint8 *) dst_buffer + y * dst_pitch;
+                uint8 *data = (uint8 *) dst_buffer + y * dst_pitch;
 
-                register uint16 *snes =
-                    (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
+                uint16 *snes = (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
 
-                for (register int x = 0; x < width; x++)
+                for (int x = 0; x < width; x++)
                 {
-                    uint32 pixel = *snes++;
+                    uint16 pixel = *snes++;
 
-                    *data++ = (pixel & 0x001f) << 3; /* Blue */
-                    *data++ = (pixel & 0x03e0) >> 2; /* Green */
-                    *data++ = (pixel & 0x7c00) >> 7; /* Red */
+                    *data++ = ((pixel & 0x001f) << 3) | ((pixel >> 2)  & 0x07); /* Blue */
+                    *data++ = ((pixel & 0x07e0) >> 3) | ((pixel >> 9)  & 0x03); /* Green */
+                    *data++ = ((pixel & 0xf800) >> 8) | ((pixel >> 13) & 0x07); /* Red */
                 }
             }
         }
@@ -623,21 +537,19 @@ internal_convert (void *src_buffer,
         else if (bpp == 32)
         {
             /* Format in fourcc is xxxxxxxx rrrrrrrr gggggggg bbbbbbbb */
-            for (register int y = 0; y < height; y++)
+            for (int y = 0; y < height; y++)
             {
-                register uint8 *data =
-                    (uint8 *) dst_buffer + y * dst_pitch;
+                uint8 *data = (uint8 *) dst_buffer + y * dst_pitch;
 
-                register uint16 *snes =
-                    (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
+                uint16 *snes = (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
 
-                for (register int x = 0; x < width; x++)
+                for (int x = 0; x < width; x++)
                 {
-                    uint32 pixel = *snes++;
+                    uint16 pixel = *snes++;
 
-                    *data++ = (pixel & 0x001f) << 3; /* Blue */
-                    *data++ = (pixel & 0x03e0) >> 2; /* Green */
-                    *data++ = (pixel & 0x7c00) >> 7; /* Red */
+                    *data++ = ((pixel & 0x001f) << 3) | ((pixel >> 2)  & 0x07); /* Blue */
+                    *data++ = ((pixel & 0x07e0) >> 3) | ((pixel >> 9)  & 0x03); /* Green */
+                    *data++ = ((pixel & 0xf800) >> 8) | ((pixel >> 13) & 0x07); /* Red */
                     *data++ = 0xff; /* Null */
                 }
             }
@@ -664,12 +576,12 @@ S9xForceHires (void *buffer,
 
     if (double_width && double_height)
     {
-        for (register int y = (height * 2) - 1; y >= 0; y--)
+        for (int y = (height * 2) - 1; y >= 0; y--)
         {
-            register uint16 *src_line = (uint16 *) ((uint8 *) buffer + (y >> 1) * pitch);
-            register uint16 *dst_line = (uint16 *) ((uint8 *) buffer + y * pitch);
+            uint16 *src_line = (uint16 *) ((uint8 *) buffer + (y >> 1) * pitch);
+            uint16 *dst_line = (uint16 *) ((uint8 *) buffer + y * pitch);
 
-            for (register int x = (width * 2) - 1; x >= 0; x--)
+            for (int x = (width * 2) - 1; x >= 0; x--)
             {
                 *(dst_line + x) = *(src_line + (x >> 1));
             }
@@ -679,11 +591,11 @@ S9xForceHires (void *buffer,
     }
     else if (double_width && !double_height)
     {
-        for (register int y = (height) - 1; y >= 0; y--)
+        for (int y = (height) - 1; y >= 0; y--)
         {
-            register uint16 *line = (uint16 *) ((uint8 *) buffer + y * pitch);
+            uint16 *line = (uint16 *) ((uint8 *) buffer + y * pitch);
 
-            for (register int x = (width * 2) - 1; x >= 0; x--)
+            for (int x = (width * 2) - 1; x >= 0; x--)
             {
                 *(line + x) = *(line + (x >> 1));
             }
@@ -693,10 +605,10 @@ S9xForceHires (void *buffer,
     }
     else if (!double_width && double_height)
     {
-        for (register int y = (height * 2) - 1; y >= 0; y--)
+        for (int y = (height * 2) - 1; y >= 0; y--)
         {
-            register uint16 *src_line = (uint16 *) ((uint8 *) buffer + (y >> 1) * pitch);
-            register uint16 *dst_line = (uint16 *) ((uint8 *) buffer + y * pitch);
+            uint16 *src_line = (uint16 *) ((uint8 *) buffer + (y >> 1) * pitch);
+            uint16 *dst_line = (uint16 *) ((uint8 *) buffer + y * pitch);
 
             memcpy (dst_line, src_line, width * 2);
         }
@@ -707,8 +619,8 @@ S9xForceHires (void *buffer,
     return;
 }
 
-#undef  AVERAGE_1555
-#define AVERAGE_1555(el0, el1) (((el0) & (el1)) + ((((el0) ^ (el1)) & 0x7BDE) >> 1))
+#undef  AVERAGE_565
+#define AVERAGE_565(el0, el1) (((el0) & (el1)) + ((((el0) ^ (el1)) & 0xF7DE) >> 1))
 static void
 S9xMergeHires (void *buffer,
                int  pitch,
@@ -720,14 +632,14 @@ S9xMergeHires (void *buffer,
         return;
     }
 
-    for (register int y = 0; y < height; y++)
+    for (int y = 0; y < height; y++)
     {
-        register uint16 *input = (uint16 *) ((uint8 *) buffer + y * pitch);
-        register uint16 *output = input;
+        uint16 *input = (uint16 *) ((uint8 *) buffer + y * pitch);
+        uint16 *output = input;
 
-        for (register int x = 0; x < (width >> 1); x++)
+        for (int x = 0; x < (width >> 1); x++)
         {
-            *output++ = AVERAGE_1555 (input[0], input[1]);
+            *output++ = AVERAGE_565 (input[0], input[1]);
             input += 2;
         }
     }
@@ -786,19 +698,19 @@ filter_2x (void *src,
     for (y = 0; y < height; y++)
     {
         uint16 *in = (uint16 *) ((uint8 *) src + y * src_pitch);
-        uint16 *out1 = (uint16 *) ((uint8 *) dst + (y * 2) * dst_pitch);
-        uint16 *out2 = (uint16 *) ((uint8 *) dst + ((y * 2) + 1) * dst_pitch);
+        uint16 *out = (uint16 *) ((uint8 *) dst + (y * 2) * dst_pitch);
 
         for (x = 0; x < width; x++)
         {
             uint16 pixel = *in++;
 
-            *out1++ = pixel;
-            *out1++ = pixel;
-
-            *out2++ = pixel;
-            *out2++ = pixel;
+            *out++ = pixel;
+            *out++ = pixel;
         }
+
+        memcpy ((uint8 *) dst + (y * 2 + 1) * dst_pitch,
+                (uint8 *) dst + (y * 2) * dst_pitch,
+                width * 2 * 2);
     }
 
     return;
@@ -812,30 +724,27 @@ filter_3x (void *src,
            int width,
            int height)
 {
-    int x, y;
+    int x, y, z;
 
     for (y = 0; y < height; y++)
     {
         uint16 *in = (uint16 *) ((uint8 *) src + y * src_pitch);
-        uint16 *out1 = (uint16 *) ((uint8 *) dst + (y * 3) * dst_pitch);
-        uint16 *out2 = (uint16 *) ((uint8 *) dst + ((y * 3) + 1) * dst_pitch);
-        uint16 *out3 = (uint16 *) ((uint8 *) dst + ((y * 3) + 2) * dst_pitch);
+        uint16 *out = (uint16 *) ((uint8 *) dst + (y * 3) * dst_pitch);
 
         for (x = 0; x < width; x++)
         {
             uint16 pixel = *in++;
 
-            *out1++ = pixel;
-            *out1++ = pixel;
-            *out1++ = pixel;
+            *out++ = pixel;
+            *out++ = pixel;
+            *out++ = pixel;
+        }
 
-            *out2++ = pixel;
-            *out2++ = pixel;
-            *out2++ = pixel;
-
-            *out3++ = pixel;
-            *out3++ = pixel;
-            *out3++ = pixel;
+        for (z = 1; z <= 2; z++)
+        {
+            memcpy ((uint8 *) dst + ((y * 3) + z) * dst_pitch,
+                    (uint8 *) dst + ((y * 3)) * dst_pitch,
+                    width * 2 * 3);
         }
     }
 
@@ -850,39 +759,28 @@ filter_4x (void *src,
            int width,
            int height)
 {
-    int x, y;
+    int x, y, z;
 
     for (y = 0; y < height; y++)
     {
         uint16 *in = (uint16 *) ((uint8 *) src + y * src_pitch);
-        uint16 *out1 = (uint16 *) ((uint8 *) dst +  (y * 4) * dst_pitch);
-        uint16 *out2 = (uint16 *) ((uint8 *) dst + ((y * 4) + 1) * dst_pitch);
-        uint16 *out3 = (uint16 *) ((uint8 *) dst + ((y * 4) + 2) * dst_pitch);
-        uint16 *out4 = (uint16 *) ((uint8 *) dst + ((y * 4) + 3) * dst_pitch);
+        uint16 *out = (uint16 *) ((uint8 *) dst +  (y * 4) * dst_pitch);
 
         for (x = 0; x < width; x++)
         {
             uint16 pixel = *in++;
 
-            *out1++ = pixel;
-            *out1++ = pixel;
-            *out1++ = pixel;
-            *out1++ = pixel;
+            *out++ = pixel;
+            *out++ = pixel;
+            *out++ = pixel;
+            *out++ = pixel;
+        }
 
-            *out2++ = pixel;
-            *out2++ = pixel;
-            *out2++ = pixel;
-            *out2++ = pixel;
-
-            *out3++ = pixel;
-            *out3++ = pixel;
-            *out3++ = pixel;
-            *out3++ = pixel;
-
-            *out4++ = pixel;
-            *out4++ = pixel;
-            *out4++ = pixel;
-            *out4++ = pixel;
+        for (z = 1; z <= 3; z++)
+        {
+            memcpy ((uint8 *) dst + ((y * 4) + z) * dst_pitch,
+                    (uint8 *) dst +  (y * 4) * dst_pitch,
+                    width * 2 * 4);
         }
     }
 
@@ -897,10 +795,11 @@ filter_scanlines (void *src_buffer,
                   int width,
                   int height)
 {
-    register int x, y;
-    register uint16 *src, *dst_a, *dst_b;
+    int x, y;
+    uint16 *src, *dst_a, *dst_b;
 
     uint8 shift = scanline_shifts[gui_config->scanline_filter_intensity];
+    uint16 mask = scanline_masks[gui_config->scanline_filter_intensity + 1];
 
     src = (uint16 *) src_buffer;
     dst_a = (uint16 *) dst_buffer;
@@ -910,25 +809,8 @@ filter_scanlines (void *src_buffer,
     {
         for (x = 0; x < width; x++)
         {
-            register uint8 rs, gs, bs, /* Source components */
-                           rh, gh, bh; /* High (bright) components */
-
-            rs = ((src[x] >> 10) & 0x1f);
-            gs = ((src[x] >> 5)  & 0x1f);
-            bs = ((src[x])       & 0x1f);
-
-            rh = rs + (rs >> shift);
-            gh = gs + (gs >> shift);
-            bh = bs + (bs >> shift);
-
-            rh = (rh > 31) ? 31 : rh;
-            gh = (gh > 31) ? 31 : gh;
-            bh = (bh > 31) ? 31 : bh;
-
-            dst_a[x] = (rh << 10) + (gh << 5) + (bh);
-            dst_b[x] = ((rs + rs - rh) << 10) +
-                       ((gs + gs - gh) << 5)  +
-                        (bs + bs - bh);
+            dst_a[x] = src[x];
+            dst_b[x] = (src[x] - (src[x] >> shift & mask));
         }
 
         src += src_pitch >> 1;
@@ -1703,31 +1585,34 @@ S9xQueryDrivers (void)
     gui_config->allow_opengl = 0;
 #endif
 
-#ifdef USE_XRANDR
+    gui_config->allow_xrandr = 0;
+
     int error_base_p, event_base_p;
-    Display *display = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
+    int major_version, minor_version;
+    Display *dpy = gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (top_level->get_window())));
+    Window xid   = GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (GTK_WIDGET (top_level->get_window())));
+
+    if (!XRRQueryExtension (dpy, &event_base_p, &error_base_p))
+    {
+        gui_config->change_display_resolution = FALSE;
+        return;
+    }
+    if (!XRRQueryVersion (dpy, &major_version, &minor_version))
+    {
+        gui_config->change_display_resolution = FALSE;
+        return;
+    }
+    if (minor_version < 3)
+    {
+        gui_config->change_display_resolution = FALSE;
+        return;
+    }
 
     gui_config->allow_xrandr = 1;
-
-    if (!XRRQueryExtension (display, &event_base_p, &error_base_p))
-    {
-        gui_config->allow_xrandr = 0;
-        gui_config->change_display_resolution = FALSE;
-    }
-
-    if (gui_config->allow_xrandr)
-    {
-        gui_config->xrr_config = XRRGetScreenInfo (display,
-                                                   DefaultRootWindow (display));
-        gui_config->xrr_original_size =
-            XRRConfigCurrentConfiguration (gui_config->xrr_config,
-                                           &(gui_config->xrr_rotation));
-        gui_config->xrr_sizes = XRRConfigSizes (gui_config->xrr_config,
-                                            &(gui_config->xrr_num_sizes));
-    }
-#else
-    gui_config->allow_xrandr = 0;
-#endif
+    gui_config->xrr_screen_resources = XRRGetScreenResourcesCurrent (dpy, xid);
+    gui_config->xrr_crtc_info        = XRRGetCrtcInfo (dpy,
+                                                       gui_config->xrr_screen_resources,
+                                                       gui_config->xrr_screen_resources->crtcs[0]);
 
     return;
 }
@@ -1735,6 +1620,38 @@ S9xQueryDrivers (void)
 bool8
 S9xDeinitUpdate (int width, int height)
 {
+    int yoffset = 0;
+
+    top_level->last_height = height;
+    top_level->last_width = width;
+
+    if (gui_config->overscan)
+    {
+        if (height == SNES_HEIGHT)
+        {
+            yoffset = -7;
+            height = SNES_HEIGHT_EXTENDED;
+        }
+        if (height == SNES_HEIGHT * 2)
+        {
+            yoffset = -15;
+            height = SNES_HEIGHT_EXTENDED * 2;
+        }
+    }
+    else
+    {
+        if (height == SNES_HEIGHT_EXTENDED)
+        {
+            yoffset = 7;
+            height = SNES_HEIGHT;
+        }
+        if (height == SNES_HEIGHT_EXTENDED * 2)
+        {
+            yoffset = 15;
+            height = SNES_HEIGHT * 2;
+        }
+    }
+
     if (!Settings.Paused
 #ifdef NETPLAY_SUPPORT
             && !NetPlay.Paused
@@ -1742,16 +1659,6 @@ S9xDeinitUpdate (int width, int height)
     )
 
     {
-        if (gui_config->overscan)
-            height = (height > SNES_HEIGHT_EXTENDED) ?
-                         SNES_HEIGHT_EXTENDED * 2 :
-                         SNES_HEIGHT_EXTENDED;
-        else
-            if (height > SNES_HEIGHT_EXTENDED)
-                height = 448;
-            else
-                height = 224;
-
         if (gui_config->hires_effect == HIRES_SCALE)
         {
             S9xForceHires (GFX.Screen,
@@ -1759,6 +1666,7 @@ S9xDeinitUpdate (int width, int height)
                                S9xDisplayDriver::image_bpp,
                            width,
                            height);
+            top_level->last_width = width;
         }
         else if (gui_config->hires_effect == HIRES_MERGE)
         {
@@ -1767,15 +1675,13 @@ S9xDeinitUpdate (int width, int height)
                                S9xDisplayDriver::image_bpp,
                            width,
                            height);
+            top_level->last_width = width;
         }
 
         GFX.Screen = driver->get_next_buffer ();
     }
 
-    top_level->last_width = width;
-    top_level->last_height = height;
-
-    driver->update (width, height);
+    driver->update (width, height, yoffset);
 
     return TRUE;
 }
@@ -1828,11 +1734,16 @@ S9xInitDriver (void)
     return;
 }
 
+S9xDisplayDriver *
+S9xDisplayGetDriver (void)
+{
+    return driver;
+}
+
 void
 S9xInitDisplay (int argc, char **argv)
 {
     Settings.SupportHiRes = TRUE;
-    S9xSetRenderPixelFormat (RGB555);
     S9xBlit2xSaIFilterInit ();
 #ifdef USE_HQ2X
     S9xBlitHQ2xFilterInit ();
@@ -1899,6 +1810,7 @@ S9xReinitDisplay (void)
 bool8
 S9xContinueUpdate (int width, int height)
 {
+    S9xDeinitUpdate (width, height);
     return TRUE;
 }
 

@@ -198,6 +198,7 @@ extern "C" {
 FILE *_tfwopen(const char *filename, const char *mode );
 int _twremove(const char *filename );
 int _twopen(const char *filename, int oflag, int pmode);
+void _twfullpath(char* dst, const char* src, int len);
 
 #ifdef __cplusplus
 }
@@ -283,7 +284,7 @@ public:
 		: std::ifstream(_Filename,_Mode,_Prot) {}
  #endif /* _NATIVE_WCHAR_T_DEFINED */
 
-	explicit __CLR_OR_THIS_CALL u8nifstream(_Filet *_File)
+	explicit __CLR_OR_THIS_CALL u8nifstream(FILE *_File)
 		: std::ifstream(_File) {}
 };
 }

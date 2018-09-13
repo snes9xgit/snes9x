@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2017  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
   (c) Copyright 2017         qwertymodo
@@ -140,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2017  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -148,7 +148,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2017  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -195,7 +195,8 @@
 #include "../apu/apu.h"
 #include "wsnes9x.h"
 #include <process.h>
-#include <Dxerr.h>
+#include "dxerr.h"
+#include "commctrl.h"
 
 /* CXAudio2
 	Implements audio output through XAudio2.
@@ -224,6 +225,64 @@ CXAudio2::~CXAudio2(void)
 	DeInitXAudio2();
 }
 
+INT_PTR CALLBACK DlgXAudio2InitError(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	switch (msg)
+	{
+	case WM_INITDIALOG:
+		{
+			// display warning icon and set text of sys control (too long for resource)
+			HICON aIcn = LoadIcon(NULL, IDI_WARNING);
+			SendDlgItemMessage(hDlg, IDC_STATIC_ICON, STM_SETICON, (WPARAM)aIcn, 0);
+			SetDlgItemText(hDlg, IDC_SYSLINK_DX, TEXT("Unable to initialize XAudio2.\
+You will not be able to hear any sound effects or music while playing.\n\n\
+This is usually caused by not having a recent DirectX9 runtime installed.\n\
+You can download the most recent DirectX9 runtime here:\n\n\
+<a href=\"https://www.microsoft.com/en-us/download/details.aspx?id=35\">https://www.microsoft.com/en-us/download/details.aspx?id=35</a>"));
+
+			// center dialog on parent
+			HWND parent = GetParent(hDlg);
+			RECT rcParent, rcSelf;
+			GetWindowRect(parent, &rcParent);
+			GetWindowRect(hDlg, &rcSelf);
+
+			SetWindowPos(hDlg,
+				HWND_TOP,
+				rcParent.left + ((rcParent.right - rcParent.left) - (rcSelf.right - rcSelf.left)) / 2,
+				rcParent.top + ((rcParent.bottom - rcParent.top) - (rcSelf.bottom - rcSelf.top)) / 2,
+				0, 0,
+				SWP_NOSIZE);
+		}
+		return true;
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case IDOK:
+			if (HIWORD(wParam) == BN_CLICKED) {
+				EndDialog(hDlg, IDOK);
+				return TRUE;
+			}
+		}
+		break;
+	case WM_NOTIFY:
+		switch (((LPNMHDR)lParam)->code)
+		{
+			case NM_CLICK:          // Fall through to the next case.
+			case NM_RETURN:
+			{
+				PNMLINK pNMLink = (PNMLINK)lParam;
+				LITEM   item = pNMLink->item;
+
+				// open link with registered application
+				ShellExecute(NULL, L"open", item.szUrl, NULL, NULL, SW_SHOW);
+				break;
+			}
+		}
+	}
+
+	return FALSE;
+}
+
 /*  CXAudio2::InitXAudio2
 initializes the XAudio2 object
 -----
@@ -237,12 +296,7 @@ bool CXAudio2::InitXAudio2(void)
 	HRESULT hr;
 	if ( FAILED(hr = XAudio2Create( &pXAudio2, 0 , XAUDIO2_DEFAULT_PROCESSOR ) ) ) {
 		DXTRACE_ERR_MSGBOX(TEXT("Unable to create XAudio2 object."),hr);
-		MessageBox (GUI.hWnd, TEXT("\
-Unable to initialize XAudio2. You will not be able to hear any\n\
-sound effects or music while playing.\n\n\
-This is usually caused by not having a recent DirectX release installed."),
-			TEXT("Snes9X - Unable to Initialize XAudio2"),
-            MB_OK | MB_ICONWARNING);
+		DialogBox(GUI.hInstance, MAKEINTRESOURCE(IDD_DIALOG_XAUDIO2_INIT_ERROR), GUI.hWnd, DlgXAudio2InitError);
 		return false;
 	}
 	initDone = true;

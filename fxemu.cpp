@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2017  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
   (c) Copyright 2017         qwertymodo
@@ -140,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2017  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -148,7 +148,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2017  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -213,8 +213,9 @@ void S9xInitSuperFX (void)
 
 void S9xResetSuperFX (void)
 {
-	// FIXME: Snes9x can't execute CPU and SuperFX at a time. Don't ask me what is 0.417 :P
-	SuperFX.speedPerLine = (uint32) (0.417 * 10.5e6 * ((1.0 / (float) Memory.ROMFramesPerSecond) / ((float) (Timings.V_Max))));
+	// FIXME: Snes9x only runs the SuperFX at the end of every line.
+	// 5823405 is a magic number that seems to work for most games.
+	SuperFX.speedPerLine = (uint32) (5823405 * ((1.0 / (float) Memory.ROMFramesPerSecond) / ((float) (Timings.V_Max))));
 	SuperFX.oneLineDone = FALSE;
 	SuperFX.vFlags = 0;
 	CPU.IRQExternal = FALSE;
@@ -329,7 +330,7 @@ void S9xSuperFXExec (void)
 {
 	if ((Memory.FillRAM[0x3000 + GSU_SFR] & FLG_G) && (Memory.FillRAM[0x3000 + GSU_SCMR] & 0x18) == 0x18)
 	{
-		FxEmulate((Memory.FillRAM[0x3000 + GSU_CLSR] & 1) ? SuperFX.speedPerLine * 2 : SuperFX.speedPerLine);
+		FxEmulate(((Memory.FillRAM[0x3000 + GSU_CLSR] & 1) ? SuperFX.speedPerLine * 2 : SuperFX.speedPerLine) * Settings.SuperFXClockMultiplier / 100);
 
 		uint16 GSUStatus = Memory.FillRAM[0x3000 + GSU_SFR] | (Memory.FillRAM[0x3000 + GSU_SFR + 1] << 8);
 		if ((GSUStatus & (FLG_G | FLG_IRQ)) == FLG_IRQ)

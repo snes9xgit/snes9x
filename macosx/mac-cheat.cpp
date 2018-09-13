@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2017  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
   (c) Copyright 2017         qwertymodo
@@ -140,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2017  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -148,7 +148,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2017  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -243,7 +243,7 @@ typedef struct
 
 static WindowRef	wRef;
 static HIViewRef	dbRef;
-static CheatItem	citem[MAX_CHEATS];
+static CheatItem	citem[MAC_MAX_CHEATS];
 static uint32		numofcheats;
 
 static void InitCheatItems (void);
@@ -260,7 +260,7 @@ static pascal OSStatus CheatEventHandler (EventHandlerCallRef, EventRef, void *)
 
 static void InitCheatItems (void)
 {
-	for (unsigned int i = 0; i < MAX_CHEATS; i++)
+	for (unsigned int i = 0; i < MAC_MAX_CHEATS; i++)
 	{
 		citem[i].id      = i + 1;
 		citem[i].valid   = false;
@@ -273,30 +273,33 @@ static void InitCheatItems (void)
 
 static void ImportCheatItems (void)
 {
-	for (unsigned int i = 0; i < Cheat.num_cheats; i++)
+    int cheat_num = std::min((int)Cheat.g.size(), MAC_MAX_CHEATS);
+	for (unsigned int i = 0; i < cheat_num; i++)
 	{
 		citem[i].valid   = true;
-		citem[i].enabled = Cheat.c[i].enabled;
-		citem[i].address = Cheat.c[i].address;
-		citem[i].value   = Cheat.c[i].byte;
-		strcpy(citem[i].description, Cheat.c[i].name);
+		citem[i].enabled = Cheat.g[i].enabled;
+		citem[i].address = Cheat.g[i].c[0].address; // mac dialog only supports one cheat per group at the moment
+		citem[i].value   = Cheat.g[i].c[0].byte;
+		strncpy(citem[i].description, Cheat.g[i].name, 21);
+		citem[i].description[21] = '\0';
 	}
 }
 
 static void DetachCheatItems (void)
 {
-	S9xDeleteCheats(); // Cheat.num_cheats = 0
+	S9xDeleteCheats();
 
-	for (unsigned int i = 0; i < MAX_CHEATS; i++)
+	for (unsigned int i = 0; i < MAC_MAX_CHEATS; i++)
 	{
 		if (citem[i].valid)
 		{
-			strcpy(Cheat.c[Cheat.num_cheats].name, citem[i].description);
-			S9xAddCheat(citem[i].enabled, false, citem[i].address, citem[i].value); // Cheat.num_cheats++
+			char code[10];
+			snprintf(code, 10, "%x=%x", citem[i].address, citem[i].value);
+			int index = S9xAddCheatGroup(citem[i].description, code);
+			if(citem[i].enabled && index >= 0)
+				S9xEnableCheatGroup(index);
 		}
 	}
-
-	S9xApplyCheats();
 }
 
 void ConfigureCheat (void)
@@ -355,13 +358,13 @@ void ConfigureCheat (void)
 
 			DataBrowserItemID	*id;
 
-			id = new DataBrowserItemID[MAX_CHEATS];
+			id = new DataBrowserItemID[MAC_MAX_CHEATS];
 			if (!id)
 				QuitWithFatalError(0, "cheat 01");
 
 			numofcheats = 0;
 
-			for (unsigned int i = 0; i < MAX_CHEATS; i++)
+			for (unsigned int i = 0; i < MAC_MAX_CHEATS; i++)
 			{
 				if (citem[i].valid)
 				{
@@ -377,7 +380,7 @@ void ConfigureCheat (void)
 
 			cid.signature = kNewButton;
 			HIViewFindByID(root, cid, &ctl);
-			if (numofcheats == MAX_CHEATS)
+			if (numofcheats == MAC_MAX_CHEATS)
 				err = DeactivateControl(ctl);
 			else
 				err = ActivateControl(ctl);
@@ -428,14 +431,14 @@ static void AddCheatItem (void)
 	DataBrowserItemID	id[1];
 	unsigned int		i;
 
-	if (numofcheats == MAX_CHEATS)
+	if (numofcheats == MAC_MAX_CHEATS)
 		return;
 
-	for (i = 0; i < MAX_CHEATS; i++)
+	for (i = 0; i < MAC_MAX_CHEATS; i++)
 		if (citem[i].valid == false)
 			break;
 
-	if (i == MAX_CHEATS)
+	if (i == MAC_MAX_CHEATS)
 		return;
 
 	numofcheats++;
@@ -452,7 +455,7 @@ static void AddCheatItem (void)
 	root = HIViewGetRoot(wRef);
 	cid.id = 0;
 
-	if (numofcheats == MAX_CHEATS)
+	if (numofcheats == MAC_MAX_CHEATS)
 	{
 		cid.signature = kNewButton;
 		HIViewFindByID(root, cid, &ctl);
@@ -502,7 +505,7 @@ static void DeleteCheatItem (void)
 	root = HIViewGetRoot(wRef);
 	cid.id = 0;
 
-	if (numofcheats < MAX_CHEATS)
+	if (numofcheats < MAC_MAX_CHEATS)
 	{
 		cid.signature = kNewButton;
 		HIViewFindByID(root, cid, &ctl);
@@ -521,7 +524,7 @@ static void EnableAllCheatItems (void)
 {
 	OSStatus	err;
 
-	for (unsigned int i = 0; i < MAX_CHEATS; i++)
+	for (unsigned int i = 0; i < MAC_MAX_CHEATS; i++)
 		if (citem[i].valid)
 			citem[i].enabled = true;
 

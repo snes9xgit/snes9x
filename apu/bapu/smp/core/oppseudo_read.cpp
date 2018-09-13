@@ -117,9 +117,16 @@ case 0x3e: {
 }
 
 case 0x7e: {
-  dp = op_readpc();
-  rd = op_readdp(dp);
-  regs.B.y = op_cmp(regs.B.y, rd);
+  switch(++opcode_cycle) {
+  case 1:
+    dp = op_readpc();
+    break;
+  case 2:
+    rd = op_readdp(dp);
+    regs.B.y = op_cmp(regs.B.y, rd);
+    opcode_cycle = 0;
+    break;
+  }
   break;
 }
 

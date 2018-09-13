@@ -498,7 +498,7 @@ void SPC7110Decomp::reset() {
 }
 
 SPC7110Decomp::SPC7110Decomp() {
-  decomp_buffer = new uint8_t[decomp_buffer_size];
+  decomp_buffer = new uint8[decomp_buffer_size];
   reset();
 
   //initialize reverse morton lookup tables

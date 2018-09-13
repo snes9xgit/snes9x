@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2017  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
   (c) Copyright 2017         qwertymodo
@@ -140,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2017  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -148,7 +148,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2017  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -208,6 +208,7 @@
 
 #include "../filter/hq2x.h"
 #include "../filter/2xsai.h"
+#include "../apu/apu.h"
 
 // available display output methods
 CDirect3D Direct3D;
@@ -302,26 +303,36 @@ RECT CalculateDisplayRect(unsigned int sourceWidth,unsigned int sourceHeight,
 
 	if(GUI.Stretch) {
 		if(GUI.AspectRatio) {
-			//fix for hi-res images with FILTER_NONE
-			//where we need to correct the aspect ratio
-			renderWidthCalc = (double)sourceWidth;
-			renderHeightCalc = (double)sourceHeight;
-			if(renderWidthCalc/renderHeightCalc>snesAspect)
-				renderWidthCalc = renderHeightCalc * snesAspect;
-			else if(renderWidthCalc/renderHeightCalc<snesAspect)
-				renderHeightCalc = renderWidthCalc / snesAspect;
 
-			xFactor = (double)displayWidth / renderWidthCalc;
-			yFactor = (double)displayHeight / renderHeightCalc;
-			minFactor = xFactor < yFactor ? xFactor : yFactor;
+			if (GUI.IntegerScaling && sourceHeight > 0 && sourceHeight <= displayHeight && (int)(sourceHeight * snesAspect) <= displayWidth) {
+				int h;
+				for (h = sourceHeight * 2; h <= displayHeight && (int)(h * snesAspect) <= displayWidth; h += sourceHeight) {}
+				h -= sourceHeight;
+				drawRect.right = (LONG)(h * snesAspect);
+				drawRect.bottom = h;
+			} else {
+				//fix for hi-res images with FILTER_NONE
+				//where we need to correct the aspect ratio
+				renderWidthCalc = (double)sourceWidth;
+				renderHeightCalc = (double)sourceHeight;
+				if (renderWidthCalc / renderHeightCalc > snesAspect)
+					renderWidthCalc = renderHeightCalc * snesAspect;
+				else if (renderWidthCalc / renderHeightCalc < snesAspect)
+					renderHeightCalc = renderWidthCalc / snesAspect;
 
-			drawRect.right = (LONG)(renderWidthCalc * minFactor);
-			drawRect.bottom = (LONG)(renderHeightCalc * minFactor);
+				xFactor = (double)displayWidth / renderWidthCalc;
+				yFactor = (double)displayHeight / renderHeightCalc;
+				minFactor = xFactor < yFactor ? xFactor : yFactor;
+
+				drawRect.right = (LONG)(renderWidthCalc * minFactor);
+				drawRect.bottom = (LONG)(renderHeightCalc * minFactor);
+			}
 
 			drawRect.left = (displayWidth - drawRect.right) / 2;
 			drawRect.top = (displayHeight - drawRect.bottom) / 2;
 			drawRect.right += drawRect.left;
 			drawRect.bottom += drawRect.top;
+
 		} else {
 			drawRect.top = 0;
 			drawRect.left = 0;
@@ -655,6 +666,15 @@ void ToggleFullScreen ()
 			SetWindowPos (GUI.hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE|SWP_DRAWFRAME|SWP_FRAMECHANGED);
 			RestoreMainWinPos();
 		}
+		if (GUI.AutomaticInputRate)
+		{
+			int rate = WinGetAutomaticInputRate();
+			if (rate)
+			{
+				Settings.SoundInputRate = rate;
+				S9xUpdateDynamicRate(1, 2);
+			}
+		}
 		S9xGraphicsDeinit();
 		S9xSetWinPixelFormat ();
 		S9xInitUpdate();
@@ -671,6 +691,96 @@ ennumerates the available display modes of the currently selected output
 void WinEnumDisplayModes(std::vector<dMode> *modeVector)
 {
 	S9xDisplayOutput->EnumModes(modeVector);
+}
+
+double WinGetRefreshRate(void)
+{
+	typedef LONG(WINAPI *PGDCBS) (UINT32, UINT32 *, UINT32 *);
+	typedef LONG(WINAPI *PQDC)   (UINT32, UINT32*, DISPLAYCONFIG_PATH_INFO *, UINT32*, DISPLAYCONFIG_MODE_INFO *, DISPLAYCONFIG_TOPOLOGY_ID *);
+	static PGDCBS pGDCBS = NULL;
+	static PQDC   pQDC   = NULL;
+	static int firstrun = 1;
+
+	if (firstrun)
+	{
+		HMODULE user32 = GetModuleHandleA("user32.dll");
+		pQDC = (PQDC) GetProcAddress(user32, "QueryDisplayConfig");
+		pGDCBS = (PGDCBS) GetProcAddress(user32, "GetDisplayConfigBufferSizes");
+		firstrun = 0;
+	}
+
+	double refreshRate = 0.0;
+
+	if (!pGDCBS || !pQDC)
+		return refreshRate;
+
+	OSVERSIONINFO ovi;
+	DISPLAYCONFIG_TOPOLOGY_ID topologyID;
+	unsigned int numPathArrayElements = 0;
+	unsigned int numModeInfoArrayElements = 0;
+	DISPLAYCONFIG_PATH_INFO * pathInfoArray = NULL;
+	DISPLAYCONFIG_MODE_INFO * modeInfoArray = NULL;
+	int result = 0;
+
+	ovi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	if (!GetVersionEx(&ovi))
+		return refreshRate;
+
+	if (ovi.dwMajorVersion < 6 || (ovi.dwMajorVersion == 6 && ovi.dwMinorVersion < 1))
+		return refreshRate;
+
+	result = pGDCBS(QDC_DATABASE_CURRENT,
+		&numPathArrayElements,
+		&numModeInfoArrayElements);
+
+	if (result != ERROR_SUCCESS)
+		return refreshRate;
+
+	pathInfoArray = (DISPLAYCONFIG_PATH_INFO *)
+		malloc(sizeof(DISPLAYCONFIG_PATH_INFO) * numPathArrayElements);
+	modeInfoArray = (DISPLAYCONFIG_MODE_INFO *)
+		malloc(sizeof(DISPLAYCONFIG_MODE_INFO) * numModeInfoArrayElements);
+
+	result = pQDC(QDC_DATABASE_CURRENT,
+		&numPathArrayElements,
+		pathInfoArray,
+		&numModeInfoArrayElements,
+		modeInfoArray,
+		&topologyID);
+
+	if (result == ERROR_SUCCESS && numPathArrayElements >= 1)
+	{
+		refreshRate = (float)pathInfoArray[0].targetInfo.refreshRate.Numerator /
+			pathInfoArray[0].targetInfo.refreshRate.Denominator;
+	}
+
+	free(modeInfoArray);
+	free(pathInfoArray);
+
+	return refreshRate;
+}
+
+int WinGetAutomaticInputRate(void)
+{
+    double refreshRate = WinGetRefreshRate();
+
+    if (refreshRate == 0.0)
+        return 0;
+
+    // Try for a close multiple of 60hz
+    if (refreshRate > 119.0 && refreshRate < 121.0)
+        refreshRate /= 2.0;
+    if (refreshRate > 179.0 && refreshRate < 181.0)
+        refreshRate /= 3.0;
+    if (refreshRate > 239.0 && refreshRate < 241.0)
+        refreshRate /= 4.0;
+
+    double newInputRate = refreshRate * 32040.0 / 60.09881389744051 + 0.5;
+
+    if (newInputRate > 32040.0 * 1.05 || newInputRate < 32040.0 * 0.95)
+        newInputRate = 0.0;
+
+    return (int)newInputRate;
 }
 
 /* Depth conversion functions begin */

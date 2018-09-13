@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2017  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
   (c) Copyright 2017         qwertymodo
@@ -140,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2017  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -148,7 +148,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2017  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -227,12 +227,10 @@ static void S9xSoftResetCPU (void)
 	CPU.V_Counter = 0;
 	CPU.Flags = CPU.Flags & (DEBUG_MODE_FLAG | TRACE_FLAG);
 	CPU.PCBase = NULL;
-	CPU.NMILine = FALSE;
+	CPU.NMIPending = FALSE;
 	CPU.IRQLine = FALSE;
 	CPU.IRQTransition = FALSE;
-	CPU.IRQLastState = FALSE;
 	CPU.IRQExternal = FALSE;
-	CPU.IRQPending = Timings.IRQPendCount;
 	CPU.MemSpeed = SLOW_ONE_CYCLE;
 	CPU.MemSpeedx2 = SLOW_ONE_CYCLE * 2;
 	CPU.FastROMSpeed = SLOW_ONE_CYCLE;
@@ -268,6 +266,9 @@ static void S9xSoftResetCPU (void)
 	Timings.H_Max = Timings.H_Max_Master;
 	Timings.V_Max = Timings.V_Max_Master;
 	Timings.NMITriggerPos = 0xffff;
+	Timings.NextIRQTimer = 0x0fffffff;
+	Timings.IRQFlagChanging = IRQ_NONE;
+
 	if (Model->_5A22 == 2)
 		Timings.WRAMRefreshPos = SNES_WRAM_REFRESH_HC_v2;
 	else

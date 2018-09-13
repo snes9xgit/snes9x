@@ -17,7 +17,7 @@ S9xGTKDisplayDriver::S9xGTKDisplayDriver (Snes9xWindow *window,
 }
 
 void
-S9xGTKDisplayDriver::update (int width, int height)
+S9xGTKDisplayDriver::update (int width, int height, int yoffset)
 {
     int           x, y, w, h;
     int           c_width, c_height, final_pitch;
@@ -38,6 +38,8 @@ S9xGTKDisplayDriver::update (int width, int height)
         int   src_pitch = image_width * image_bpp;
         int   dst_pitch = scaled_max_width * image_bpp;
 
+        src_buffer += (src_pitch * yoffset);
+
         S9xFilter (src_buffer,
                    src_pitch,
                    dst_buffer,
@@ -52,6 +54,7 @@ S9xGTKDisplayDriver::update (int width, int height)
     {
         final_buffer = (uint8 *) padded_buffer[0];
         final_pitch = image_width * image_bpp;
+        final_buffer += (final_pitch * yoffset);
     }
 
     x = width; y = height; w = c_width; h = c_height;
@@ -124,7 +127,7 @@ S9xGTKDisplayDriver::output (void *src,
         cairo_matrix_translate (&matrix, -x, -y);
         cairo_pattern_set_matrix (pattern, &matrix);
         cairo_pattern_set_filter (pattern,
-                                  config->bilinear_filter
+                                  Settings.BilinearFilter
                                        ? CAIRO_FILTER_BILINEAR
                                        : CAIRO_FILTER_NEAREST);
     }
@@ -141,17 +144,13 @@ S9xGTKDisplayDriver::output (void *src,
 int
 S9xGTKDisplayDriver::init (void)
 {
-    int padding;
     GtkAllocation allocation;
 
     buffer[0] = malloc (image_padded_size);
     buffer[1] = malloc (scaled_padded_size);
 
-    padding = (image_padded_size - image_size) / 2;
-    padded_buffer[0] = (void *) (((uint8 *) buffer[0]) + padding);
-
-    padding = (scaled_padded_size - scaled_size) / 2;
-    padded_buffer[1] = (void *) (((uint8 *) buffer[1]) + padding);
+    padded_buffer[0] = (void *) (((uint8 *) buffer[0]) + image_padded_offset);
+    padded_buffer[1] = (void *) (((uint8 *) buffer[1]) + scaled_padded_offset);
 
     gtk_widget_get_allocation (drawing_area, &allocation);
     gdk_buffer_width = allocation.width;
@@ -168,7 +167,7 @@ S9xGTKDisplayDriver::init (void)
                                        NULL,
                                        NULL);
 
-    S9xSetEndianess (ENDIAN_MSB);
+    S9xSetEndianess (ENDIAN_SWAPPED);
 
     memset (buffer[0], 0, image_padded_size);
     memset (buffer[1], 0, scaled_padded_size);
@@ -251,9 +250,6 @@ S9xGTKDisplayDriver::clear (void)
 void
 S9xGTKDisplayDriver::refresh (int width, int height)
 {
-    if (!config->rom_loaded)
-        return;
-
     clear ();
 
     return;
@@ -275,7 +271,6 @@ void
 S9xGTKDisplayDriver::push_buffer (uint16 *src)
 {
     memmove (GFX.Screen, src, image_size);
-    update (window->last_width, window->last_height);
 
     return;
 }

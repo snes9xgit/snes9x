@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2017  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
   (c) Copyright 2017         qwertymodo
@@ -140,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2017  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -148,7 +148,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2017  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -210,10 +210,10 @@ COpenGL::COpenGL(void)
 	hWnd = NULL;
 	drawTexture = 0;
 	initDone = false;
-	quadTextureSize = 0;
-	filterScale = 0;
 	afterRenderWidth = 0;
 	afterRenderHeight = 0;
+    outTextureWidth = 0;
+    outTextureHeight = 0;
 	fullscreen = false;
 	shaderFunctionsLoaded = false;
 	shader_type = OGL_SHADER_NONE;
@@ -226,6 +226,7 @@ COpenGL::COpenGL(void)
 	cgAvailable = false;
 	frameCount = 0;
 	cgShader = NULL;
+    glslShader = NULL;
 }
 
 COpenGL::~COpenGL(void)
@@ -281,6 +282,8 @@ bool COpenGL::Initialize(HWND hWnd)
 		return false;
 	}
 
+    ogl_LoadFunctions();
+
 	LoadPBOFunctions();
 
 	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress( "wglSwapIntervalEXT" );
@@ -302,6 +305,10 @@ bool COpenGL::Initialize(HWND hWnd)
 		cgContext = cgCreateContext();
 		cgShader = new CGLCG(cgContext);
 	}
+
+    if (ShaderAailable() && NPOTAvailable()) {
+        glslShader = new GLSLShader();
+    }
 
 	ApplyDisplayChanges();
 
@@ -328,13 +335,16 @@ void COpenGL::DeInitialize()
 		hDC = NULL;
 	}
 	hWnd = NULL;
-	initDone = false;
-	quadTextureSize = 0;
-	filterScale = 0;
 	afterRenderWidth = 0;
 	afterRenderHeight = 0;
+    outTextureWidth = 0;
+    outTextureHeight = 0;
 	shaderFunctionsLoaded = false;
 	shader_type = OGL_SHADER_NONE;
+    if (glslShader) {
+        delete glslShader;
+        glslShader = NULL;
+    }
 	if(cgShader) {
 		delete cgShader;
 		cgShader = NULL;
@@ -344,28 +354,32 @@ void COpenGL::DeInitialize()
 	cgAvailable = false;
 }
 
-void COpenGL::CreateDrawSurface()
+void COpenGL::CreateDrawSurface(unsigned int width, unsigned int height)
 {
-	unsigned int neededSize;
 	HRESULT hr;
 
-	//we need at least 512 pixels (SNES_WIDTH * 2) so we can start with that value
-	quadTextureSize = 512;
-	neededSize = SNES_WIDTH * filterScale;
-	while(quadTextureSize < neededSize)
-		quadTextureSize *=2;
+	if (!NPOTAvailable()) {
+		unsigned int neededSize = max(width, height);
+		//we need at least 512 pixels (SNES_WIDTH * 2) so we can start with that value
+		unsigned int quadTextureSize = 512;
+		while (quadTextureSize < neededSize)
+			quadTextureSize *= 2;
+		width = height = quadTextureSize;
+	}
 
 	if(!drawTexture) {
+		outTextureWidth = width;
+		outTextureHeight = height;
 		glGenTextures(1,&drawTexture);
 		glBindTexture(GL_TEXTURE_2D,drawTexture);
-		glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,quadTextureSize,quadTextureSize,0,GL_RGB,GL_UNSIGNED_SHORT_5_6_5,NULL);
+		glTexImage2D(GL_TEXTURE_2D,0,GL_RGB, outTextureWidth, outTextureHeight,0,GL_RGB,GL_UNSIGNED_SHORT_5_6_5,NULL);
 		if(pboFunctionsLoaded) {
 			glGenBuffers(1,&drawBuffer);
 			glBindBuffer(GL_PIXEL_UNPACK_BUFFER,drawBuffer);
-			glBufferData(GL_PIXEL_UNPACK_BUFFER,quadTextureSize*quadTextureSize*2,NULL,GL_STREAM_DRAW);
+			glBufferData(GL_PIXEL_UNPACK_BUFFER, outTextureWidth*outTextureHeight *2,NULL,GL_STREAM_DRAW);
 			glBindBuffer(GL_PIXEL_UNPACK_BUFFER,0);
 		} else {
-			noPboBuffer = new BYTE[quadTextureSize*quadTextureSize*2];
+			noPboBuffer = new BYTE[outTextureWidth*outTextureHeight *2];
 		}
 
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -389,12 +403,10 @@ void COpenGL::DestroyDrawSurface()
 	}
 }
 
-bool COpenGL::ChangeDrawSurfaceSize(unsigned int scale)
+bool COpenGL::ChangeDrawSurfaceSize(unsigned int width, unsigned int height)
 {
-	filterScale = scale;
-
 	DestroyDrawSurface();
-	CreateDrawSurface();
+	CreateDrawSurface(width, height);
 	SetupVertices();
 	return true;
 }
@@ -410,8 +422,8 @@ void COpenGL::SetupVertices()
     vertices[6] = 0.0f;
 	vertices[7] = 1.0f;
 
-	float tX = (float)afterRenderWidth / (float)quadTextureSize;
-	float tY = (float)afterRenderHeight / (float)quadTextureSize;
+	float tX = (float)afterRenderWidth / (float)outTextureWidth;
+	float tY = (float)afterRenderHeight / (float)outTextureHeight;
 
 	texcoords[0] = 0.0f;
     texcoords[1] = tY;
@@ -424,6 +436,24 @@ void COpenGL::SetupVertices()
 	glTexCoordPointer(2, GL_FLOAT, 0, texcoords);
 }
 
+void wOGLViewportCallback(int source_width, int source_height,
+	int viewport_x, int viewport_y,
+	int viewport_width, int viewport_height,
+	int *out_dst_x, int *out_dst_y,
+	int *out_dst_width, int *out_dst_height)
+{
+	/* get window size here instead of using viewport passed in - we limited the viewport before the glsl render
+	   call already, this is simply to position smaller outputs correctly in the actual viewport
+	 */
+	RECT windowSize;
+	GetClientRect(GUI.hWnd, &windowSize);
+	RECT displayRect = CalculateDisplayRect(source_width, source_height, windowSize.right, windowSize.bottom);
+	*out_dst_x = displayRect.left;
+	*out_dst_y = displayRect.top;
+	*out_dst_width = displayRect.right - displayRect.left;
+	*out_dst_height = displayRect.bottom - displayRect.top;
+}
+
 void COpenGL::Render(SSurface Src)
 {
 	SSurface Dst;
@@ -434,11 +464,9 @@ void COpenGL::Render(SSurface Src)
 	if(!initDone) return;
 
 	//create a new draw surface if the filter scale changes
-	//at least factor 2 so we can display unscaled hi-res images
-	newFilterScale = max(2,max(GetFilterScale(GUI.ScaleHiRes),GetFilterScale(GUI.Scale)));
-	if(newFilterScale!=filterScale) {
-		ChangeDrawSurfaceSize(newFilterScale);
-	}
+	dstRect = GetFilterOutputSize(Src);
+	if(outTextureWidth != dstRect.right || outTextureHeight != dstRect.bottom)
+		ChangeDrawSurfaceSize(dstRect.right, dstRect.bottom);
 
 	if(pboFunctionsLoaded) {
 		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, drawBuffer);
@@ -446,9 +474,9 @@ void COpenGL::Render(SSurface Src)
 	} else {
 		Dst.Surface = noPboBuffer;
 	}
-	Dst.Height = quadTextureSize;
-	Dst.Width = quadTextureSize;
-	Dst.Pitch = quadTextureSize * 2;
+	Dst.Height = outTextureHeight;
+	Dst.Width = outTextureWidth;
+	Dst.Pitch = outTextureWidth * 2;
 
 	RenderMethod (Src, Dst, &dstRect);
 	if(!Settings.AutoDisplayMessages) {
@@ -467,60 +495,65 @@ void COpenGL::Render(SSurface Src)
 	}
 
 	glBindTexture(GL_TEXTURE_2D,drawTexture);
-	glPixelStorei(GL_UNPACK_ROW_LENGTH, quadTextureSize);
+	glPixelStorei(GL_UNPACK_ROW_LENGTH, outTextureWidth);
 	glTexSubImage2D (GL_TEXTURE_2D,0,0,0,dstRect.right-dstRect.left,dstRect.bottom-dstRect.top,GL_RGB,GL_UNSIGNED_SHORT_5_6_5,pboFunctionsLoaded?0:noPboBuffer);
 
 	if(pboFunctionsLoaded)
 		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 
-	if (shader_type != OGL_SHADER_NONE) {
+	RECT windowSize, displayRect;
+	GetClientRect(hWnd, &windowSize);
+	//Get maximum rect respecting AR setting
+	displayRect = CalculateDisplayRect(afterRenderWidth, afterRenderHeight, windowSize.right, windowSize.bottom);
 
-		if(shader_type == OGL_SHADER_GLSL) {
+	// GLSL class does all the rendering, no output needed
+	if (shader_type == OGL_SHADER_GLSL) {
+		glslShader->render(drawTexture, afterRenderWidth, afterRenderHeight, displayRect.left, displayRect.top, displayRect.right - displayRect.left, displayRect.bottom - displayRect.top, wOGLViewportCallback);
+	}
+	else { // for CG shaders and old style .shader files the last pass is done here, same as no shader
+		if(shader_type == OGL_SHADER_CG) {
+			xySize inputSize = { (float)afterRenderWidth, (float)afterRenderHeight };
+			xySize xywindowSize = { (double)windowSize.right, (double)windowSize.bottom };
+			xySize viewportSize = { (double)(displayRect.right - displayRect.left),
+				                    (double)(displayRect.bottom - displayRect.top) };
+			xySize textureSize = { (double)outTextureWidth, (double)outTextureHeight };
+			cgShader->Render(drawTexture, textureSize, inputSize, viewportSize, xywindowSize);
+		}
+		else if (shader_type == OGL_SHADER_GLSL_OLD) {
 			GLint location;
 
 			float inputSize[2] = { (float)afterRenderWidth, (float)afterRenderHeight };
-			RECT windowSize;
-			GetClientRect(hWnd,&windowSize);
-			float outputSize[2] = {(float)(GUI.Stretch?windowSize.right:afterRenderWidth),
-								(float)(GUI.Stretch?windowSize.bottom:afterRenderHeight) };
-			float textureSize[2] = { (float)quadTextureSize, (float)quadTextureSize };
+			float outputSize[2] = { (float)(GUI.Stretch ? windowSize.right : afterRenderWidth),
+				(float)(GUI.Stretch ? windowSize.bottom : afterRenderHeight) };
+			float textureSize[2] = { (float)outTextureWidth, (float)outTextureHeight };
 			float frameCnt = (float)++frameCount;
-			location = glGetUniformLocation (shaderProgram, "rubyInputSize");
-			glUniform2fv (location, 1, inputSize);
+			location = glGetUniformLocation(shaderProgram, "rubyInputSize");
+			glUniform2fv(location, 1, inputSize);
 
-			location = glGetUniformLocation (shaderProgram, "rubyOutputSize");
-			glUniform2fv (location, 1, outputSize);
+			location = glGetUniformLocation(shaderProgram, "rubyOutputSize");
+			glUniform2fv(location, 1, outputSize);
 
-			location = glGetUniformLocation (shaderProgram, "rubyTextureSize");
-			glUniform2fv (location, 1, textureSize);
-		} else if(shader_type == OGL_SHADER_CG) {
-			xySize inputSize = { (float)afterRenderWidth, (float)afterRenderHeight };
-			RECT windowSize, displayRect;
-			GetClientRect(hWnd,&windowSize);
-			xySize xywindowSize = { (double)windowSize.right, (double)windowSize.bottom };
-			//Get maximum rect respecting AR setting
-			displayRect=CalculateDisplayRect(windowSize.right,windowSize.bottom,windowSize.right,windowSize.bottom);
-			xySize viewportSize = { (double)(displayRect.right - displayRect.left),
-				                    (double)(displayRect.bottom - displayRect.top) };
-			xySize textureSize = { (double)quadTextureSize, (double)quadTextureSize };
-			cgShader->Render(drawTexture, textureSize, inputSize, viewportSize, xywindowSize);
+			location = glGetUniformLocation(shaderProgram, "rubyTextureSize");
+			glUniform2fv(location, 1, textureSize);
 		}
+		if (Settings.BilinearFilter) {
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		}
+		else {
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		}
+
+		glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
+		glClear(GL_COLOR_BUFFER_BIT);
+		glDrawArrays(GL_QUADS, 0, 4);
     }
-
-	if(GUI.BilinearFilter) {
-		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	} else {
-		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	}
-
-	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
-	glClear(GL_COLOR_BUFFER_BIT);
-	glDrawArrays (GL_QUADS, 0, 4);
 
 	glFlush();
 	SwapBuffers(hDC);
+	if (GUI.ReduceInputLag)
+		glFinish();
 }
 
 bool COpenGL::ChangeRenderSize(unsigned int newWidth, unsigned int newHeight)
@@ -639,12 +672,6 @@ bool COpenGL::LoadPBOFunctions()
 	const char *extensions = (const char *) glGetString(GL_EXTENSIONS);
 
 	if(extensions && strstr(extensions, "pixel_buffer_object")) {
-		glGenBuffers = (PFNGLGENBUFFERSPROC)wglGetProcAddress("glGenBuffers");
-		glBindBuffer = (PFNGLBINDBUFFERPROC)wglGetProcAddress("glBindBuffer");
-		glBufferData = (PFNGLBUFFERDATAPROC)wglGetProcAddress("glBufferData");
-		glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)wglGetProcAddress("glDeleteBuffers");
-		glMapBuffer = (PFNGLMAPBUFFERPROC)wglGetProcAddress("glMapBuffer");
-		glUnmapBuffer = (PFNGLUNMAPBUFFERPROC)wglGetProcAddress("glUnmapBuffer");
 
 		if(glGenBuffers && glBindBuffer && glBufferData && glDeleteBuffers && glMapBuffer) {
 			pboFunctionsLoaded = true;
@@ -662,18 +689,6 @@ bool COpenGL::LoadShaderFunctions()
 	const char *extensions = (const char *) glGetString(GL_EXTENSIONS);
 
     if(extensions && strstr(extensions, "fragment_program")) {
-		glCreateProgram = (PFNGLCREATEPROGRAMPROC) wglGetProcAddress ("glCreateProgram");
-		glCreateShader = (PFNGLCREATESHADERPROC) wglGetProcAddress ("glCreateShader");
-		glCompileShader = (PFNGLCOMPILESHADERPROC) wglGetProcAddress ("glCompileShader");
-		glDeleteShader = (PFNGLDELETESHADERPROC) wglGetProcAddress ("glDeleteShader");
-		glDeleteProgram = (PFNGLDELETEPROGRAMPROC) wglGetProcAddress ("glDeleteProgram");
-		glAttachShader = (PFNGLATTACHSHADERPROC) wglGetProcAddress ("glAttachShader");
-		glDetachShader = (PFNGLDETACHSHADERPROC) wglGetProcAddress ("glDetachShader");
-		glLinkProgram = (PFNGLLINKPROGRAMPROC) wglGetProcAddress ("glLinkProgram");
-		glUseProgram = (PFNGLUSEPROGRAMPROC) wglGetProcAddress ("glUseProgram");
-		glShaderSource = (PFNGLSHADERSOURCEPROC) wglGetProcAddress ("glShaderSource");
-		glGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC) wglGetProcAddress ("glGetUniformLocation");
-		glUniform2fv = (PFNGLUNIFORM2FVPROC) wglGetProcAddress ("glUniform2fv");
 
 		if(glCreateProgram      &&
 		   glCreateShader       &&
@@ -697,11 +712,14 @@ bool COpenGL::SetShaders(const TCHAR *file)
 {
 	SetShadersCG(NULL);
 	SetShadersGLSL(NULL);
+	SetShadersGLSL_OLD(NULL);
 	shader_type = OGL_SHADER_NONE;
-	if(file!=NULL && (
-		(lstrlen(file)>3 && _tcsncicmp(&file[lstrlen(file)-3],TEXT(".cg"),3)==0) ||
-		(lstrlen(file)>4 && _tcsncicmp(&file[lstrlen(file)-4],TEXT(".cgp"),4)==0))) {
+	if (file != NULL && (
+		(lstrlen(file) > 3 && _tcsncicmp(&file[lstrlen(file) - 3], TEXT(".cg"), 3) == 0) ||
+		(lstrlen(file) > 4 && _tcsncicmp(&file[lstrlen(file) - 4], TEXT(".cgp"), 4) == 0))) {
 		return SetShadersCG(file);
+	} else if((lstrlen(file) > 7 && _tcsncicmp(&file[lstrlen(file) - 7], TEXT(".shader"), 7) == 0)) {
+		return SetShadersGLSL_OLD(file);
 	} else {
 		return SetShadersGLSL(file);
 	}
@@ -746,7 +764,26 @@ bool COpenGL::SetShadersCG(const TCHAR *file)
 
 bool COpenGL::SetShadersGLSL(const TCHAR *glslFileName)
 {
-	char *fragment=NULL, *vertex=NULL;
+	if (!glslShader)
+		return false;
+
+	glslShader->destroy();
+
+    if (!glslFileName)
+        return false;
+
+    if(!glslShader->load_shader(_tToChar(glslFileName))) {
+        return false;
+    }
+
+	shader_type = OGL_SHADER_GLSL;
+
+    return true;
+}
+
+bool COpenGL::SetShadersGLSL_OLD(const TCHAR *glslFileName)
+{
+	char *fragment = NULL, *vertex = NULL;
 	IXMLDOMDocument * pXMLDoc = NULL;
 	IXMLDOMElement * pXDE = NULL;
 	IXMLDOMNode * pXDN = NULL;
@@ -755,36 +792,36 @@ bool COpenGL::SetShadersGLSL(const TCHAR *glslFileName)
 
 	TCHAR errorMsg[MAX_PATH + 50];
 
-	if(fragmentShader) {
-		glDetachShader(shaderProgram,fragmentShader);
+	if (fragmentShader) {
+		glDetachShader(shaderProgram, fragmentShader);
 		glDeleteShader(fragmentShader);
 		fragmentShader = 0;
 	}
-	if(vertexShader) {
-		glDetachShader(shaderProgram,vertexShader);
+	if (vertexShader) {
+		glDetachShader(shaderProgram, vertexShader);
 		glDeleteShader(vertexShader);
 		vertexShader = 0;
 	}
-	if(shaderProgram) {
+	if (shaderProgram) {
 		glUseProgram(0);
 		glDeleteProgram(shaderProgram);
 		shaderProgram = 0;
 	}
 
-	if(glslFileName==NULL || *glslFileName==TEXT('\0'))
+	if (glslFileName == NULL || *glslFileName == TEXT('\0'))
 		return true;
 
-	if(!LoadShaderFunctions()) {
-        MessageBox(NULL, TEXT("Unable to load OpenGL shader functions"), TEXT("Shader Loading Error"),
-			MB_OK|MB_ICONEXCLAMATION);
-        return false;
-    }
+	if (!LoadShaderFunctions()) {
+		MessageBox(NULL, TEXT("Unable to load OpenGL shader functions"), TEXT("Shader Loading Error"),
+			MB_OK | MB_ICONEXCLAMATION);
+		return false;
+	}
 
-	hr = CoCreateInstance(CLSID_DOMDocument,NULL,CLSCTX_INPROC_SERVER,IID_PPV_ARGS(&pXMLDoc));
+	hr = CoCreateInstance(CLSID_DOMDocument, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pXMLDoc));
 
-	if(FAILED(hr)) {
+	if (FAILED(hr)) {
 		MessageBox(NULL, TEXT("Error creating XML Parser"), TEXT("Shader Loading Error"),
-			MB_OK|MB_ICONEXCLAMATION);
+			MB_OK | MB_ICONEXCLAMATION);
 		return false;
 	}
 
@@ -795,15 +832,15 @@ bool COpenGL::SetShadersGLSL(const TCHAR *glslFileName)
 	fileName.bstrVal = SysAllocString(glslFileName);
 #else
 	wchar_t tempfilename[MAX_PATH];
-	MultiByteToWideChar(CP_UTF8,0,glslFileName,-1,tempfilename,MAX_PATH);
+	MultiByteToWideChar(CP_UTF8, 0, glslFileName, -1, tempfilename, MAX_PATH);
 	fileName.bstrVal = SysAllocString(tempfilename);
 #endif
-	hr = pXMLDoc->load(fileName,&ret);
+	hr = pXMLDoc->load(fileName, &ret);
 	SysFreeString(fileName.bstrVal);
 
-	if(FAILED(hr) || hr==S_FALSE) {
-		_stprintf(errorMsg,TEXT("Error loading GLSL shader file:\n%s"),glslFileName);
-		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"), MB_OK|MB_ICONEXCLAMATION);
+	if (FAILED(hr) || hr == S_FALSE) {
+		_stprintf(errorMsg, TEXT("Error loading GLSL shader file:\n%s"), glslFileName);
+		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"), MB_OK | MB_ICONEXCLAMATION);
 		pXMLDoc->Release();
 		return false;
 	}
@@ -812,53 +849,53 @@ bool COpenGL::SetShadersGLSL(const TCHAR *glslFileName)
 	BSTR attributeName;
 
 	hr = pXMLDoc->get_documentElement(&pXDE);
-	if(FAILED(hr) || hr==S_FALSE) {
-		_stprintf(errorMsg,TEXT("Error loading root element from file:\n%s"),glslFileName);
-		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"), MB_OK|MB_ICONEXCLAMATION);
+	if (FAILED(hr) || hr == S_FALSE) {
+		_stprintf(errorMsg, TEXT("Error loading root element from file:\n%s"), glslFileName);
+		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"), MB_OK | MB_ICONEXCLAMATION);
 		pXMLDoc->Release();
 		return false;
 	}
 
-	attributeName=SysAllocString(L"language");
-	pXDE->getAttribute(attributeName,&attributeValue);
+	attributeName = SysAllocString(L"language");
+	pXDE->getAttribute(attributeName, &attributeValue);
 	SysFreeString(attributeName);
 	pXDE->Release();
 
-	if(attributeValue.vt!=VT_BSTR || lstrcmpiW(attributeValue.bstrVal,L"glsl")) {
-		_stprintf(errorMsg,TEXT("Shader language is <%s>, expected <GLSL> in file:\n%s"),attributeValue.bstrVal,glslFileName);
-		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"), MB_OK|MB_ICONEXCLAMATION);
-		if(attributeValue.vt==VT_BSTR) SysFreeString(attributeValue.bstrVal);
+	if (attributeValue.vt != VT_BSTR || lstrcmpiW(attributeValue.bstrVal, L"glsl")) {
+		_stprintf(errorMsg, TEXT("Shader language is <%s>, expected <GLSL> in file:\n%s"), attributeValue.bstrVal, glslFileName);
+		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"), MB_OK | MB_ICONEXCLAMATION);
+		if (attributeValue.vt == VT_BSTR) SysFreeString(attributeValue.bstrVal);
 		pXMLDoc->Release();
 		return false;
 	}
-	if(attributeValue.vt==VT_BSTR) SysFreeString(attributeValue.bstrVal);
+	if (attributeValue.vt == VT_BSTR) SysFreeString(attributeValue.bstrVal);
 
-	queryString=SysAllocString(L"/shader/fragment");
-	hr = pXMLDoc->selectSingleNode(queryString,&pXDN);
+	queryString = SysAllocString(L"/shader/fragment");
+	hr = pXMLDoc->selectSingleNode(queryString, &pXDN);
 	SysFreeString(queryString);
 
-	if(hr == S_OK) {
+	if (hr == S_OK) {
 		hr = pXDN->get_text(&nodeContent);
-		if(hr == S_OK) {
-			int requiredChars = WideCharToMultiByte(CP_ACP,0,nodeContent,-1,fragment,0,NULL,NULL);
+		if (hr == S_OK) {
+			int requiredChars = WideCharToMultiByte(CP_ACP, 0, nodeContent, -1, fragment, 0, NULL, NULL);
 			fragment = new char[requiredChars];
-			WideCharToMultiByte(CP_UTF8,0,nodeContent,-1,fragment,requiredChars,NULL,NULL);
+			WideCharToMultiByte(CP_UTF8, 0, nodeContent, -1, fragment, requiredChars, NULL, NULL);
 		}
 		SysFreeString(nodeContent);
 		pXDN->Release();
 		pXDN = NULL;
 	}
 
-	queryString=SysAllocString(L"/shader/vertex");
-	hr = pXMLDoc->selectSingleNode(queryString,&pXDN);
+	queryString = SysAllocString(L"/shader/vertex");
+	hr = pXMLDoc->selectSingleNode(queryString, &pXDN);
 	SysFreeString(queryString);
 
-	if(hr == S_OK) {
+	if (hr == S_OK) {
 		hr = pXDN->get_text(&nodeContent);
-		if(hr == S_OK) {
-			int requiredChars = WideCharToMultiByte(CP_ACP,0,nodeContent,-1,vertex,0,NULL,NULL);
+		if (hr == S_OK) {
+			int requiredChars = WideCharToMultiByte(CP_ACP, 0, nodeContent, -1, vertex, 0, NULL, NULL);
 			vertex = new char[requiredChars];
-			WideCharToMultiByte(CP_UTF8,0,nodeContent,-1,vertex,requiredChars,NULL,NULL);
+			WideCharToMultiByte(CP_UTF8, 0, nodeContent, -1, vertex, requiredChars, NULL, NULL);
 		}
 		SysFreeString(nodeContent);
 		pXDN->Release();
@@ -867,32 +904,71 @@ bool COpenGL::SetShadersGLSL(const TCHAR *glslFileName)
 
 	pXMLDoc->Release();
 
-	if(!fragment && !vertex) {
-		_stprintf(errorMsg,TEXT("No vertex or fragment program in file:\n%s"),glslFileName);
-		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"), MB_OK|MB_ICONEXCLAMATION);
+	if (!fragment && !vertex) {
+		_stprintf(errorMsg, TEXT("No vertex or fragment program in file:\n%s"), glslFileName);
+		MessageBox(NULL, errorMsg, TEXT("Shader Loading Error"), MB_OK | MB_ICONEXCLAMATION);
 		return false;
 	}
 
-    shaderProgram = glCreateProgram ();
-	if(vertex) {
-		vertexShader = glCreateShader (GL_VERTEX_SHADER);
+	shaderProgram = glCreateProgram();
+	if (vertex) {
+		vertexShader = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(vertexShader, 1, (const GLchar **)&vertex, NULL);
 		glCompileShader(vertexShader);
 		glAttachShader(shaderProgram, vertexShader);
 		delete[] vertex;
 	}
-	if(fragment) {
-		fragmentShader = glCreateShader (GL_FRAGMENT_SHADER);
-		glShaderSource(fragmentShader, 1, (const GLchar **)&fragment, NULL);    
-		glCompileShader(fragmentShader);    
+	if (fragment) {
+		fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+		glShaderSource(fragmentShader, 1, (const GLchar **)&fragment, NULL);
+		glCompileShader(fragmentShader);
 		glAttachShader(shaderProgram, fragmentShader);
 		delete[] fragment;
 	}
 
-    glLinkProgram(shaderProgram);
-    glUseProgram(shaderProgram);
+	glLinkProgram(shaderProgram);
+	glUseProgram(shaderProgram);
 
-	shader_type = OGL_SHADER_GLSL;
+	shader_type = OGL_SHADER_GLSL_OLD;
 
-    return true;
+	return true;
+}
+
+bool COpenGL::ShaderAailable()
+{
+    const char *extensions = (const char *)glGetString(GL_EXTENSIONS);
+
+    if (!extensions)
+        return false;
+
+    if (strstr(extensions, "fragment_program") ||
+        strstr(extensions, "fragment_shader"))
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool COpenGL::NPOTAvailable()
+{
+    const char *extensions = (const char *)glGetString(GL_EXTENSIONS);
+    const char *version = (const char *)glGetString(GL_VERSION);
+
+    if (!extensions)
+        return false;
+
+    int glVersionMajor = 0;
+    glVersionMajor = atoi (version);
+
+    if (glVersionMajor >= 2)
+        return true;
+
+    if (strstr(extensions, "non_power_of_two") ||
+        strstr(extensions, "npot"))
+    {
+        return true;
+    }
+
+    return false;
 }

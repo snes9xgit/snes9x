@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2017  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
   (c) Copyright 2017         qwertymodo
@@ -140,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2017  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -148,7 +148,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2017  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -302,6 +302,15 @@ struct dMode
 	long rate;
 };
 
+struct sCustomRomDlgSettings {
+	int columnFilename;
+	int columnDescription;
+	int columnSize;
+	int folderPaneWidth;
+	RECT window_size;
+	bool window_maximized;
+};
+
 struct sGUI {
     HWND hWnd;
     HMENU hMenu;
@@ -326,14 +335,15 @@ struct sGUI {
     bool Stretch;
     bool HeightExtend;
     bool AspectRatio;
+	bool IntegerScaling;
 	OutputMethod outputMethod;
 	int AspectWidth;
 	bool AlwaysCenterImage;
 	bool EmulateFullscreen;
 	bool EmulatedFullscreen;
-	bool BilinearFilter;
 	bool LocalVidMem;
-	bool Vsync;	
+	bool Vsync;
+	bool ReduceInputLag;
 	bool shaderEnabled;
 	TCHAR D3DshaderFileName[MAX_PATH];
 	TCHAR OGLshaderFileName[MAX_PATH];
@@ -344,6 +354,8 @@ struct sGUI {
     bool IgnoreNextMouseMove;
     RECT window_size;
 	bool window_maximized;
+	sCustomRomDlgSettings customRomDlgSettings;
+
     int  MouseX;
     int  MouseY;
     unsigned int MouseButtons;
@@ -358,6 +370,7 @@ struct sGUI {
     HACCEL Accelerators;
     bool NeedDepthConvert;
     bool DepthConverted;
+	bool NTSCScanlines;
 
 	bool InactivePause;
 	bool CustomRomOpen;
@@ -374,6 +387,7 @@ struct sGUI {
 	int  ValidControllerOptions;
 	int  SoundChannelEnable;
 	bool BackgroundInput;
+    bool BackgroundKeyHotkeys;
 	bool JoystickHotkeys;
 	bool MovieClearSRAM;
 	bool MovieStartFromReset;
@@ -387,6 +401,7 @@ struct sGUI {
 	bool Mute;
 	unsigned int VolumeRegular;
 	unsigned int VolumeTurbo;
+	bool AutomaticInputRate;
 	// used for sync sound synchronization
 	CRITICAL_SECTION SoundCritSect;
     HANDLE SoundSyncEvent;
@@ -419,7 +434,6 @@ struct sGUI {
     unsigned long IdleCount;
 
     // rewinding
-    bool rewinding;
     unsigned int rewindBufferSize;
     unsigned int rewindGranularity;
 };
@@ -496,6 +510,9 @@ struct SCustomKeys {
 	SCustomKey ToggleCheats;
 	SCustomKey QuitS9X;
     SCustomKey Rewind;
+    SCustomKey SaveFileSelect;
+    SCustomKey LoadFileSelect;
+    SCustomKey Mute;
 };
 
 struct SJoypad {
@@ -569,6 +586,7 @@ enum
 	SNES_MOUSE_SWAPPED,
 	SNES_MULTIPLAYER8,
 	SNES_JUSTIFIER_2,
+	SNES_MACSRIFLE,
 	SNES_MAX_CONTROLLER_OPTIONS
 };
 

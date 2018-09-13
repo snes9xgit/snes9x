@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		85FEF90820DDB15C00C038E9 /* bml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85FEF90620DDB15B00C038E9 /* bml.cpp */; };
+		85FEF90920DDB15C00C038E9 /* bml.h in Headers */ = {isa = PBXBuildFile; fileRef = 85FEF90720DDB15C00C038E9 /* bml.h */; };
+		85FEF90C20DDB18E00C038E9 /* sha256.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85FEF90A20DDB18D00C038E9 /* sha256.cpp */; };
+		85FEF90D20DDB18E00C038E9 /* sha256.h in Headers */ = {isa = PBXBuildFile; fileRef = 85FEF90B20DDB18D00C038E9 /* sha256.h */; };
 		BF0B39AF1FA5792F002B04D3 /* apu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF0B397A1FA5792F002B04D3 /* apu.cpp */; };
 		BF0B39B01FA5792F002B04D3 /* apu.h in Headers */ = {isa = PBXBuildFile; fileRef = BF0B397B1FA5792F002B04D3 /* apu.h */; };
 		BF0B39B11FA5792F002B04D3 /* blargg_common.h in Headers */ = {isa = PBXBuildFile; fileRef = BF0B397E1FA5792F002B04D3 /* blargg_common.h */; };
@@ -712,6 +716,10 @@
 
 /* Begin PBXFileReference section */
 		20286C33FDCF999611CA2CEA /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
+		85FEF90620DDB15B00C038E9 /* bml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = bml.cpp; sourceTree = "<group>"; };
+		85FEF90720DDB15C00C038E9 /* bml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bml.h; sourceTree = "<group>"; };
+		85FEF90A20DDB18D00C038E9 /* sha256.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sha256.cpp; sourceTree = "<group>"; };
+		85FEF90B20DDB18D00C038E9 /* sha256.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sha256.h; sourceTree = "<group>"; };
 		BF0B397A1FA5792F002B04D3 /* apu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = apu.cpp; sourceTree = "<group>"; };
 		BF0B397B1FA5792F002B04D3 /* apu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = apu.h; sourceTree = "<group>"; };
 		BF0B397E1FA5792F002B04D3 /* blargg_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = blargg_common.h; sourceTree = "<group>"; };
@@ -1180,6 +1188,10 @@
 		EAE061540526CCB900A80003 /* snes9x */ = {
 			isa = PBXGroup;
 			children = (
+				85FEF90A20DDB18D00C038E9 /* sha256.cpp */,
+				85FEF90B20DDB18D00C038E9 /* sha256.h */,
+				85FEF90620DDB15B00C038E9 /* bml.cpp */,
+				85FEF90720DDB15C00C038E9 /* bml.h */,
 				EAE0615A0526CCB900A80003 /* 65c816.h */,
 				EA2F381A09B17E9E0078DCA7 /* bsx.h */,
 				EAE061600526CCB900A80003 /* c4.h */,
@@ -1523,6 +1535,7 @@
 				CF5D3E130FAFD34200340007 /* dsp.h in Headers */,
 				BF0B39DA1FA5792F002B04D3 /* snes.hpp in Headers */,
 				CF05669D0CF98E7E00C7877C /* font.h in Headers */,
+				85FEF90D20DDB18E00C038E9 /* sha256.h in Headers */,
 				CF05669E0CF98E7E00C7877C /* fxemu.h in Headers */,
 				CF05669F0CF98E7E00C7877C /* fxinst.h in Headers */,
 				CF0566A00CF98E7E00C7877C /* getset.h in Headers */,
@@ -1557,6 +1570,7 @@
 				CFEFAE9710EAC92B00FB081A /* snes_ntsc_config.h in Headers */,
 				CFEFAE9810EAC92B00FB081A /* snes_ntsc_impl.h in Headers */,
 				BF0B39B11FA5792F002B04D3 /* blargg_common.h in Headers */,
+				85FEF90920DDB15C00C038E9 /* bml.h in Headers */,
 				CFA518E80EBCB5B1008379F6 /* crypt.h in Headers */,
 				BF0B39B31FA5792F002B04D3 /* blargg_endian.h in Headers */,
 				CFA518D90EBCB4CA008379F6 /* ioapi.h in Headers */,
@@ -2110,10 +2124,12 @@
 				CF05673E0CF98E7E00C7877C /* mac-client.cpp in Sources */,
 				CF05673F0CF98E7E00C7877C /* mac-cocoatools.mm in Sources */,
 				CF0567400CF98E7E00C7877C /* mac-controls.cpp in Sources */,
+				85FEF90820DDB15C00C038E9 /* bml.cpp in Sources */,
 				CF0567410CF98E7E00C7877C /* mac-coreimage.mm in Sources */,
 				CF0567420CF98E7E00C7877C /* mac-dialog.cpp in Sources */,
 				CF0567440CF98E7E00C7877C /* mac-file.cpp in Sources */,
 				CF0567450CF98E7E00C7877C /* mac-gworld.cpp in Sources */,
+				85FEF90C20DDB18E00C038E9 /* sha256.cpp in Sources */,
 				CF0567470CF98E7E00C7877C /* mac-joypad.cpp in Sources */,
 				CF0567480CF98E7E00C7877C /* mac-keyboard.cpp in Sources */,
 				CF0567490CF98E7E00C7877C /* mac-multicart.cpp in Sources */,
@@ -2315,7 +2331,7 @@
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
 				PRODUCT_NAME = Snes9x;
-				SDKROOT = macosx10.6;
+				SDKROOT = macosx10.11;
 				WARNING_CFLAGS = "-Wfloat-equal";
 			};
 			name = Debug;
@@ -2516,7 +2532,7 @@
 					"-fast",
 				);
 				PRODUCT_NAME = Snes9x;
-				SDKROOT = macosx10.6;
+				SDKROOT = macosx10.11;
 				WARNING_CFLAGS = "-Wfloat-equal";
 			};
 			name = Release;

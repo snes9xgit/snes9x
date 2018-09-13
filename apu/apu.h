@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2017  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
   (c) Copyright 2017         qwertymodo
@@ -140,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2017  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -148,7 +148,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2017  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -193,7 +193,7 @@
 #ifndef _APU_H_
 #define _APU_H_
 
-#include "snes9x.h"
+#include "../snes9x.h"
 
 typedef void (*apu_callback) (void *);
 
@@ -230,5 +230,11 @@ void S9xClearSamples (void);
 bool8 S9xMixSamples (uint8 *, int);
 void S9xSetSamplesAvailableCallback (apu_callback, void *);
 void S9xUpdateDynamicRate (int, int);
+
+#define DSP_INTERPOLATION_NONE     0
+#define DSP_INTERPOLATION_LINEAR   1
+#define DSP_INTERPOLATION_GAUSSIAN 2
+#define DSP_INTERPOLATION_CUBIC    3
+#define DSP_INTERPOLATION_SINC     4
 
 #endif

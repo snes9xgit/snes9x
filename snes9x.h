@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2017  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
   (c) Copyright 2017         qwertymodo
@@ -140,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2017  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -148,7 +148,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2017  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -194,7 +194,7 @@
 #define _SNES9X_H_
 
 #ifndef VERSION
-#define VERSION	"1.55"
+#define VERSION	"1.56.2"
 #endif
 
 #include "port.h"
@@ -254,9 +254,15 @@
 #define SNES_MAX_PAL_VCOUNTER		312
 #define SNES_HCOUNTER_MAX			341
 
+#ifndef ALLOW_CPU_OVERCLOCK
 #define ONE_CYCLE					6
 #define SLOW_ONE_CYCLE				8
 #define TWO_CYCLES					12
+#else
+#define ONE_CYCLE      (Settings.OneClockCycle)
+#define SLOW_ONE_CYCLE (Settings.OneSlowClockCycle)
+#define TWO_CYCLES     (Settings.TwoClockCycles)
+#endif
 #define	ONE_DOT_CYCLE				4
 
 #define SNES_CYCLES_PER_SCANLINE	(SNES_HCOUNTER_MAX * ONE_DOT_CYCLE)
@@ -270,7 +276,7 @@
 #define	SNES_HDMA_START_HC			1106					// FIXME: not true
 #define	SNES_HBLANK_END_HC			4						// H=1
 #define	SNES_HDMA_INIT_HC			20						// FIXME: not true
-#define	SNES_RENDER_START_HC		(48 * ONE_DOT_CYCLE)	// FIXME: Snes9x renders a line at a time.
+#define	SNES_RENDER_START_HC		(128 * ONE_DOT_CYCLE)	// FIXME: Snes9x renders a line at a time.
 
 #define SNES_TR_MASK		(1 <<  4)
 #define SNES_TL_MASK		(1 <<  5)
@@ -303,7 +309,7 @@ struct SCPUState
 	int32	PrevCycles;
 	int32	V_Counter;
 	uint8	*PCBase;
-	bool8	NMILine;
+	bool8	NMIPending;
 	bool8	IRQLine;
 	bool8	IRQTransition;
 	bool8	IRQLastState;
@@ -335,6 +341,13 @@ enum
 	HC_WRAM_REFRESH_EVENT = 6
 };
 
+enum
+{
+	IRQ_NONE = 0,
+	IRQ_SET_FLAG = 1,
+	IRQ_CLEAR_FLAG = 2
+};
+
 struct STimings
 {
 	int32	H_Max_Master;
@@ -346,13 +359,14 @@ struct STimings
 	int32	HDMAInit;
 	int32	HDMAStart;
 	int32	NMITriggerPos;
+	int32	NextIRQTimer;
 	int32	IRQTriggerCycles;
 	int32	WRAMRefreshPos;
 	int32	RenderPos;
 	bool8	InterlaceField;
 	int32	DMACPUSync;		// The cycles to synchronize DMA and CPU. Snes9x cannot emulate correctly.
 	int32	NMIDMADelay;	// The delay of NMI trigger after DMA transfers. Snes9x cannot emulate correctly.
-	int32	IRQPendCount;	// This value is just a hack.
+	int32	IRQFlagChanging;	// This value is just a hack.
 	int32	APUSpeedup;
 	bool8	APUAllowTimeOverflow;
 };
@@ -365,6 +379,7 @@ struct SSettings
 	bool8	TraceUnknownRegisters;
 	bool8	TraceDSP;
 	bool8	TraceHCEvent;
+	bool8	TraceSMP;
 
 	bool8	SuperFX;
 	uint8	DSP;
@@ -384,7 +399,8 @@ struct SSettings
 	bool8	SuperScopeMaster;
 	bool8	JustifierMaster;
 	bool8	MultiPlayer5Master;
-
+	bool8	MacsRifleMaster;
+	
 	bool8	ForceLoROM;
 	bool8	ForceHiROM;
 	bool8	ForceHeader;
@@ -409,6 +425,7 @@ struct SSettings
 	bool8	Mute;
 	bool8	DynamicRateControl;
 	int32	DynamicRateLimit; /* Multiplied by 1000 */
+	int32	InterpolationMethod;
 
 	bool8	SupportHiRes;
 	bool8	Transparency;
@@ -422,6 +439,7 @@ struct SSettings
 	bool8	AutoDisplayMessages;
 	uint32	InitialInfoStringTimeout;
 	uint16	DisplayColor;
+	bool8	BilinearFilter;
 
 	bool8	Multi;
 	char	CartAName[PATH_MAX + 1];
@@ -442,6 +460,7 @@ struct SSettings
 	bool8	TurboMode;
 	uint32	HighSpeedSeek;
 	bool8	FrameAdvance;
+	bool8	Rewinding;
 
 	bool8	NetPlay;
 	bool8	NetPlayServer;
@@ -457,6 +476,8 @@ struct SSettings
 	bool8	TakeScreenshot;
 	int8	StretchScreenshots;
 	bool8	SnapshotScreenshots;
+	char    InitialSnapshotFilename[PATH_MAX + 1];
+	bool8	FastSavestates;
 
 	bool8	ApplyCheats;
 	bool8	NoPatch;
@@ -466,6 +487,12 @@ struct SSettings
 	bool8	UpAndDown;
 
 	bool8	OpenGLEnable;
+
+	uint32	SuperFXClockMultiplier;
+	int	OneClockCycle;
+	int	OneSlowClockCycle;
+	int	TwoClockCycles;
+	int	MaxSpriteTilesPerLine;
 };
 
 struct SSNESGameFixes

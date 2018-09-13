@@ -7,6 +7,7 @@
 #include "gtk_s9x.h"
 #include "gtk_config.h"
 #include "gtk_control.h"
+#include "gtk_file.h"
 
 const BindingLink b_links[] =
 {
@@ -141,7 +142,7 @@ S9xIsMousePluggedIn (void)
     for (int i = 0; i <= 1; i++)
     {
         S9xGetController (i, &ctl, &id1, &id2, &id3, &id4);
-        if (ctl == CTL_MOUSE)
+        if (ctl == CTL_MOUSE || ctl == CTL_SUPERSCOPE)
             return true;
     }
 
@@ -172,15 +173,9 @@ swap_controllers_1_2 (void)
 {
     JoypadBinding interrim;
 
-    memcpy (&interrim,
-            &gui_config->pad[0],
-            sizeof (JoypadBinding));
-    memcpy (&gui_config->pad[0],
-            &gui_config->pad[1],
-            sizeof (JoypadBinding));
-    memcpy (&gui_config->pad[1],
-            &interrim,
-            sizeof (JoypadBinding));
+    interrim = gui_config->pad[0];
+    gui_config->pad[0] = gui_config->pad[1];
+    gui_config->pad[1] = interrim;
 
     gui_config->rebind_keys ();
 
@@ -197,7 +192,7 @@ S9xHandlePortCommand (s9xcommand_t cmd, int16 data1, int16 data2)
         if (cmd.port[0] == PORT_QUIT)
             quit_binding_down = TRUE;
         else if (cmd.port[0] == PORT_REWIND)
-            top_level->user_rewind = TRUE;
+            Settings.Rewinding = TRUE;
     }
 
     if (data1 == FALSE) /* Release */
@@ -232,7 +227,7 @@ S9xHandlePortCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 
         else if (cmd.port[0] == PORT_REWIND)
         {
-            top_level->user_rewind = FALSE;
+            Settings.Rewinding = FALSE;
         }
 
         else if (cmd.port[0] == PORT_SEEK_TO_FRAME)
@@ -249,6 +244,11 @@ S9xHandlePortCommand (s9xcommand_t cmd, int16 data1, int16 data2)
         {
             if (quit_binding_down)
                 S9xExit ();
+        }
+
+        else if (cmd.port[0] >= PORT_QUICKLOAD0 && cmd.port[0] <= PORT_QUICKLOAD9)
+        {
+            S9xQuickLoadSlot (cmd.port[0] - PORT_QUICKLOAD0);
         }
     }
 
@@ -320,6 +320,56 @@ S9xGetPortCommandT (const char *name)
     else if (!strcasecmp (name, "GTK_rewind"))
     {
         cmd.port[0] = PORT_REWIND;
+    }
+
+    else if (strstr (name, "QuickLoad000"))
+    {
+        cmd.port[0] = PORT_QUICKLOAD0;
+    }
+
+    else if (strstr (name, "QuickLoad001"))
+    {
+        cmd.port[0] = PORT_QUICKLOAD1;
+    }
+
+    else if (strstr (name, "QuickLoad002"))
+    {
+        cmd.port[0] = PORT_QUICKLOAD2;
+    }
+
+    else if (strstr (name, "QuickLoad003"))
+    {
+        cmd.port[0] = PORT_QUICKLOAD3;
+    }
+
+    else if (strstr (name, "QuickLoad004"))
+    {
+        cmd.port[0] = PORT_QUICKLOAD4;
+    }
+
+    else if (strstr (name, "QuickLoad005"))
+    {
+        cmd.port[0] = PORT_QUICKLOAD5;
+    }
+
+    else if (strstr (name, "QuickLoad006"))
+    {
+        cmd.port[0] = PORT_QUICKLOAD6;
+    }
+
+    else if (strstr (name, "QuickLoad007"))
+    {
+        cmd.port[0] = PORT_QUICKLOAD7;
+    }
+
+    else if (strstr (name, "QuickLoad008"))
+    {
+        cmd.port[0] = PORT_QUICKLOAD8;
+    }
+
+    else if (strstr (name, "QuickLoad009"))
+    {
+        cmd.port[0] = PORT_QUICKLOAD9;
     }
 
     else

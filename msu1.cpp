@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2017  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
   (c) Copyright 2017         qwertymodo
@@ -140,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2017  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -148,7 +148,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2017  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -203,7 +203,7 @@
 STREAM dataStream = NULL;
 STREAM audioStream = NULL;
 uint32 audioLoopPos;
-size_t partial_samples;
+size_t partial_frames;
 
 // Sample buffer
 int16 *bufPos, *bufBegin, *bufEnd;
@@ -281,9 +281,6 @@ STREAM S9xMSU1OpenFile(const char *msu_ext, bool skip_unpacked)
     }
 #endif
 
-    if(!file)
-        printf("Unable to find msu file %s.\n", filename);
-
     return file;
 }
 
@@ -321,6 +318,8 @@ static bool AudioOpen()
 		audioLoopPos = GET_LE32(&audioLoopPos);
 		audioLoopPos <<= 2;
 		audioLoopPos += 8;
+
+        MSU1.MSU1_AUDIO_POS = 8;
 
 		MSU1.MSU1_STATUS &= ~AudioError;
 		return true;
@@ -368,7 +367,7 @@ void S9xResetMSU(void)
 	bufBegin			= 0;
 	bufEnd				= 0;
 
-	partial_samples = 0;
+	partial_frames = 0;
 
 	DataClose();
 
@@ -418,40 +417,40 @@ bool S9xMSU1ROMExists(void)
 
 void S9xMSU1Generate(size_t sample_count)
 {
-	partial_samples += 4410 * sample_count;
+	partial_frames += 4410 * (sample_count / 2);
 
-	while (((uintptr_t)bufPos < (uintptr_t)bufEnd) && partial_samples > 3204)
+	while ((bufPos < (bufEnd - 2)) && partial_frames >= 3204)
 	{
 		if (MSU1.MSU1_STATUS & AudioPlaying && audioStream)
 		{
-			int16 sample;
-            int bytes_read = READ_STREAM((char *)&sample, 2, audioStream);
-			if (bytes_read == 2)
-			{
-				sample = (int16)((double)(int16)GET_LE16(&sample) * (double)MSU1.MSU1_VOLUME / 255.0);
+			int32 sample;
+			int16* left = (int16*)&sample;
+			int16* right = left + 1;
 
-				*(bufPos++) = sample;
-				MSU1.MSU1_AUDIO_POS += 2;
-				partial_samples -= 3204;
+			int bytes_read = READ_STREAM((char *)&sample, 4, audioStream);
+			if (bytes_read == 4)
+			{
+				*left = ((int32)(int16)GET_LE16(left) * MSU1.MSU1_VOLUME / 255);
+				*right = ((int32)(int16)GET_LE16(right) * MSU1.MSU1_VOLUME / 255);
+
+
+				*(bufPos++) = *left;
+				*(bufPos++) = *right;
+				MSU1.MSU1_AUDIO_POS += 4;
+				partial_frames -= 3204;
 			}
 			else
 			if (bytes_read >= 0)
 			{
-				sample = (int16)((double)(int16)GET_LE16(&sample) * (double)MSU1.MSU1_VOLUME / 255.0);
-
-				*(bufPos++) = sample;
-				MSU1.MSU1_AUDIO_POS += 2;
-				partial_samples -= 3204;
-
 				if (MSU1.MSU1_STATUS & AudioRepeating)
 				{
 					MSU1.MSU1_AUDIO_POS = audioLoopPos;
-                    REVERT_STREAM(audioStream, MSU1.MSU1_AUDIO_POS, 0);
+					REVERT_STREAM(audioStream, MSU1.MSU1_AUDIO_POS, 0);
 				}
 				else
 				{
 					MSU1.MSU1_STATUS &= ~(AudioPlaying | AudioRepeating);
-                    REVERT_STREAM(audioStream, 8, 0);
+					REVERT_STREAM(audioStream, 8, 0);
 				}
 			}
 			else
@@ -462,7 +461,8 @@ void S9xMSU1Generate(size_t sample_count)
 		else
 		{
 			MSU1.MSU1_STATUS &= ~(AudioPlaying | AudioRepeating);
-			partial_samples -= 3204;
+			partial_frames -= 3204;
+			*(bufPos++) = 0;
 			*(bufPos++) = 0;
 		}
 	}
@@ -619,5 +619,5 @@ void S9xMSU1PostLoadState(void)
 	bufBegin = 0;
 	bufEnd = 0;
 
-	partial_samples = 0;
+	partial_frames = 0;
 }

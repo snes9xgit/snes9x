@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2017  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
   (c) Copyright 2017         qwertymodo
@@ -140,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2017  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -148,7 +148,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2017  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -190,7 +190,12 @@
  ***********************************************************************************/
 
 #if DIRECTDRAW_SUPPORT
-#pragma comment( lib, "ddraw" )
+
+#ifdef _WIN64
+#pragma comment( lib, "ddraw/ddraw_x64" )
+#else
+#pragma comment( lib, "ddraw/ddraw_x86" )
+#endif
 
 // CDirectDraw.cpp: implementation of the CDirectDraw class.
 //
@@ -375,7 +380,7 @@ bool CDirectDraw::SetDisplayMode(
     ZeroMemory (&ddsd, sizeof (ddsd));
     ddsd.dwSize = sizeof (ddsd);
     ddsd.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH;
-	if(GUI.BilinearFilter)
+	if(Settings.BilinearFilter)
 	{
 		ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_VIDEOMEMORY | (GUI.LocalVidMem ? DDSCAPS_LOCALVIDMEM : DDSCAPS_NONLOCALVIDMEM);
 	}
@@ -390,10 +395,10 @@ bool CDirectDraw::SetDisplayMode(
     if (FAILED(lpDD->CreateSurface (&ddsd, &lpDDSOffScreen, NULL)))
     {
 		ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_VIDEOMEMORY | (GUI.LocalVidMem ? DDSCAPS_NONLOCALVIDMEM : DDSCAPS_LOCALVIDMEM);
-		if(!GUI.BilinearFilter || FAILED(lpDD->CreateSurface (&ddsd, &lpDDSOffScreen, NULL)))
+		if(!Settings.BilinearFilter || FAILED(lpDD->CreateSurface (&ddsd, &lpDDSOffScreen, NULL)))
 		{
 			ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
-			if(!GUI.BilinearFilter || FAILED(lpDD->CreateSurface (&ddsd, &lpDDSOffScreen, NULL)))
+			if(!Settings.BilinearFilter || FAILED(lpDD->CreateSurface (&ddsd, &lpDDSOffScreen, NULL)))
 			{
 				BLOCK = false;
 				return (false);

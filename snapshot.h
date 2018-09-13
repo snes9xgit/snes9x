@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2017  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
   (c) Copyright 2017         qwertymodo
@@ -140,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2017  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -148,7 +148,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2017  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -196,9 +196,10 @@
 #include "snes9x.h"
 
 #define SNAPSHOT_MAGIC			"#!s9xsnp"
-#define SNAPSHOT_VERSION_IRQ    7
-#define SNAPSHOT_VERSION_BAPU   8
-#define SNAPSHOT_VERSION		9
+#define SNAPSHOT_VERSION_IRQ		7
+#define SNAPSHOT_VERSION_BAPU		8
+#define SNAPSHOT_VERSION_IRQ_2018	11		// irq changes were introduced earlier, since this we store NextIRQTimer directly
+#define SNAPSHOT_VERSION			11
 
 #define SUCCESS					1
 #define WRONG_FORMAT			(-1)

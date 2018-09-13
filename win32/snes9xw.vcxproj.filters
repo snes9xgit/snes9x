@@ -40,12 +40,21 @@
     <Filter Include="Filter">
       <UniqueIdentifier>{1e3e39fd-b2d2-4c3f-83b2-b5731ab8deee}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{31758447-7e76-4af0-8561-a377194049e1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="globals.h">
       <Filter>Emu</Filter>
     </ClInclude>
     <ClInclude Include="..\statemanager.h">
+      <Filter>Emu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sha256.h">
+      <Filter>Emu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bml.h">
       <Filter>Emu</Filter>
     </ClInclude>
     <ClInclude Include="..\unzip\crypt.h">
@@ -231,9 +240,6 @@
     <ClInclude Include="snes_ntsc_impl.h">
       <Filter>Filter</Filter>
     </ClInclude>
-    <ClInclude Include="..\filter\xbrz-config.h">
-      <Filter>Filter</Filter>
-    </ClInclude>
     <ClInclude Include="..\filter\xbrz.h">
       <Filter>Filter</Filter>
     </ClInclude>
@@ -244,6 +250,30 @@
       <Filter>APU</Filter>
     </ClInclude>
     <ClInclude Include="cgMini.h">
+      <Filter>GUI\VideoDriver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filter\xbrz_config.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filter\xbrz_tools.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\glsl.h">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\shader_helpers.h">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\shader_platform.h">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="gl_core_3_1.h">
+      <Filter>GUI\VideoDriver</Filter>
+    </ClInclude>
+    <ClInclude Include="CShaderParamDlg.h">
+      <Filter>GUI\VideoDriver</Filter>
+    </ClInclude>
+    <ClInclude Include="image_functions.h">
       <Filter>GUI\VideoDriver</Filter>
     </ClInclude>
   </ItemGroup>
@@ -395,6 +425,12 @@
     <ClCompile Include="..\statemanager.cpp">
       <Filter>Emu</Filter>
     </ClCompile>
+    <ClCompile Include="..\sha256.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bml.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
     <ClCompile Include="..\stream.cpp">
       <Filter>Emu</Filter>
     </ClCompile>
@@ -541,6 +577,21 @@
     </ClCompile>
     <ClCompile Include="DumpAtEnd.cpp">
       <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shaders\glsl.cpp">
+      <Filter>Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shaders\shader_helpers.cpp">
+      <Filter>Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_core_3_1.c">
+      <Filter>GUI\VideoDriver</Filter>
+    </ClCompile>
+    <ClCompile Include="CShaderParamDlg.cpp">
+      <Filter>GUI\VideoDriver</Filter>
+    </ClCompile>
+    <ClCompile Include="image_functions.cpp">
+      <Filter>GUI\VideoDriver</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

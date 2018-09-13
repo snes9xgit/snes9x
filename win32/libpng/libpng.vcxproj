@@ -222,6 +222,7 @@ COPY "$(ProjectDir)src\scripts\pnglibconf.h.prebuilt" "$(ProjectDir)src\pnglibco
       <FloatingPointExceptions>false</FloatingPointExceptions>
       <StringPooling>false</StringPooling>
       <OmitFramePointers>false</OmitFramePointers>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

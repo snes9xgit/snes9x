@@ -284,16 +284,7 @@ namespace JMA
         stream.read((char *)int4_buffer, UINT_SIZE);
         size_t compressed_size = charp_to_uint(int4_buffer);
 
-        //Allocate memory of the correct size to hold the compressed data in the JMA
-        //Throw error on failure as that is unrecoverable from
-        try
-        {
-          compressed_buffer = new unsigned char[compressed_size];
-        }
-        catch (bad_alloc xa)
-        {
-          throw(JMA_NO_MEM_ALLOC);
-        }
+        compressed_buffer = new unsigned char[compressed_size];
 
         //Read all the compressed data in
         stream.read((char *)compressed_buffer, compressed_size);
@@ -441,17 +432,11 @@ namespace JMA
 
       //Allocate memory for compressed and decompressed data
       unsigned char *comp_buffer = 0, *decomp_buffer = 0;
-      try
-      {
-        //Compressed data size is <= non compressed size
-        unsigned char *combined_buffer = new unsigned char[chunk_size*2];
-        comp_buffer = combined_buffer;
-        decomp_buffer = combined_buffer+chunk_size;
-      }
-      catch (bad_alloc xa)
-      {
-        throw(JMA_NO_MEM_ALLOC);
-      }
+
+      //Compressed data size is <= non compressed size
+      unsigned char *combined_buffer = new unsigned char[chunk_size*2];
+      comp_buffer = combined_buffer;
+      decomp_buffer = combined_buffer+chunk_size;
 
       size_t first_chunk_offset = size_to_skip % chunk_size;
       unsigned char int4_buffer[UINT_SIZE];
@@ -492,14 +477,7 @@ namespace JMA
     else //Solid JMA
     {
       unsigned char *decomp_buffer = 0;
-      try
-      {
-        decomp_buffer = new unsigned char[get_total_size(files)];
-      }
-      catch (bad_alloc xa)
-      {
-        throw(JMA_NO_MEM_ALLOC);
-      }
+      decomp_buffer = new unsigned char[get_total_size(files)];
 
       get_all_files(decomp_buffer);
 

@@ -114,7 +114,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;D3D_DEBUG_INFO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;D3D_DEBUG_INFO;DIRECTDRAW_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
       <PrecompiledHeader />
@@ -127,6 +127,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <ForcedIncludeFiles>_tfwopen.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <AdditionalOptions>$(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -146,6 +147,9 @@
       <Profile>true</Profile>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">
     <Midl>
@@ -159,7 +163,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;D3D_DEBUG_INFO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;D3D_DEBUG_INFO;DIRECTDRAW_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
       <PrecompiledHeader />
@@ -172,6 +176,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <ForcedIncludeFiles>_tfwopen.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <AdditionalOptions>$(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -191,6 +196,9 @@
       <Profile>false</Profile>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">
     <Midl>
@@ -209,7 +217,7 @@
       <OmitFramePointers>true</OmitFramePointers>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;DIRECTDRAW_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
@@ -223,6 +231,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <ForcedIncludeFiles>_tfwopen.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <AdditionalOptions>$(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -240,6 +249,9 @@
       <Profile>true</Profile>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">
     <Midl>
@@ -258,7 +270,7 @@
       <OmitFramePointers>true</OmitFramePointers>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;DIRECTDRAW_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
@@ -272,6 +284,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <ForcedIncludeFiles>_tfwopen.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <AdditionalOptions>$(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -289,6 +302,9 @@
       <Profile>false</Profile>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
     <CustomBuild Include="..\65c816.h" />
@@ -321,13 +337,14 @@
     <ClInclude Include="..\filter\blit.h" />
     <ClInclude Include="..\filter\epx.h" />
     <CustomBuild Include="..\filter\hq2x.h" />
-    <ClInclude Include="..\filter\xbrz-config.h" />
     <ClInclude Include="..\filter\xbrz.h" />
     <CustomBuild Include="..\font.h" />
     <CustomBuild Include="..\fxemu.h" />
     <CustomBuild Include="..\fxinst.h" />
     <CustomBuild Include="..\getset.h" />
     <CustomBuild Include="..\gfx.h" />
+    <ClInclude Include="..\filter\xbrz_config.h" />
+    <ClInclude Include="..\filter\xbrz_tools.h" />
     <ClInclude Include="..\jma\7z.h" />
     <ClInclude Include="..\jma\aribitcd.h" />
     <ClInclude Include="..\jma\ariconst.h" />
@@ -386,7 +403,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
     </CustomBuild>
     <ClInclude Include="..\msu1.h" />
+    <ClInclude Include="..\shaders\glsl.h" />
+    <ClInclude Include="..\shaders\shader_helpers.h" />
+    <ClInclude Include="..\shaders\shader_platform.h" />
     <ClInclude Include="..\statemanager.h" />
+    <ClInclude Include="..\sha256.h" />
+    <ClInclude Include="..\bml.h" />
     <CustomBuild Include="..\stream.h" />
     <CustomBuild Include="..\tile.h" />
     <ClInclude Include="..\unzip\crypt.h" />
@@ -405,10 +427,13 @@
     <ClInclude Include="CGLCG.h" />
     <ClInclude Include="cgMini.h" />
     <ClInclude Include="COpenGL.h" />
+    <ClInclude Include="CShaderParamDlg.h" />
     <ClInclude Include="CXAudio2.h" />
     <ClInclude Include="CXML.h" />
     <ClInclude Include="dxerr.h" />
     <ClInclude Include="globals.h" />
+    <ClInclude Include="gl_core_3_1.h" />
+    <ClInclude Include="image_functions.h" />
     <ClInclude Include="InputCustom.h" />
     <ClInclude Include="IS9xDisplayOutput.h" />
     <ClInclude Include="IS9xSoundOutput.h" />
@@ -426,7 +451,12 @@
   <ItemGroup>
     <ClCompile Include="..\apu\apu.cpp" />
     <ClCompile Include="..\apu\bapu\dsp\sdsp.cpp" />
-    <ClCompile Include="..\apu\bapu\dsp\SPC_DSP.cpp" />
+    <ClCompile Include="..\apu\bapu\dsp\SPC_DSP.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\apu\bapu\smp\smp.cpp" />
     <ClCompile Include="..\apu\bapu\smp\smp_state.cpp" />
     <ClCompile Include="..\bsx.cpp" />
@@ -493,6 +523,8 @@
     <ClCompile Include="..\seta010.cpp" />
     <ClCompile Include="..\seta011.cpp" />
     <ClCompile Include="..\seta018.cpp" />
+    <ClCompile Include="..\shaders\glsl.cpp" />
+    <ClCompile Include="..\shaders\shader_helpers.cpp" />
     <ClCompile Include="..\snapshot.cpp" />
     <ClCompile Include="..\snes9x.cpp" />
     <ClCompile Include="..\spc7110.cpp" />
@@ -516,6 +548,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\statemanager.cpp" />
+    <ClCompile Include="..\sha256.cpp" />
+    <ClCompile Include="..\bml.cpp" />
     <ClCompile Include="..\stream.cpp" />
     <ClCompile Include="..\tile.cpp" />
     <ClCompile Include="..\unzip\ioapi.c" />
@@ -532,10 +566,13 @@
     <ClCompile Include="cgFunctions.cpp" />
     <ClCompile Include="CGLCG.cpp" />
     <ClCompile Include="COpenGL.cpp" />
+    <ClCompile Include="CShaderParamDlg.cpp" />
     <ClCompile Include="CXAudio2.cpp" />
     <ClCompile Include="CXML.cpp" />
     <ClCompile Include="DumpAtEnd.cpp" />
     <ClCompile Include="dxerr.cpp" />
+    <ClCompile Include="gl_core_3_1.c" />
+    <ClCompile Include="image_functions.cpp" />
     <ClCompile Include="InputCustom.cpp" />
     <ClCompile Include="render.cpp" />
     <ClCompile Include="snes_ntsc.c" />
