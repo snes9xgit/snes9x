@@ -21,14 +21,9 @@
 #include "gtk_sound_driver_pulse.h"
 #endif
 
-int playback_rates[8] =
+static int playback_rates[8] =
 {
     0, 8000, 11025, 16000, 22050, 32000, 44100, 48000
-};
-
-double d_playback_rates[8] =
-{
-    0.0, 8000.0, 11025.0, 16000.0, 22050.0, 32000.0, 44100.0, 48000.0
 };
 
 S9xSoundDriver *driver;
@@ -132,7 +127,19 @@ S9xPortSoundInit (void)
     {
         driver->init ();
 
-        Settings.SoundInputRate = CLAMP (gui_config->sound_input_rate, 8000, 48000);
+        if (gui_config->auto_input_rate)
+        {
+            Settings.SoundInputRate = top_level->get_auto_input_rate ();
+            if (Settings.SoundInputRate == 0.0)
+            {
+                Settings.SoundInputRate = 31950;
+                gui_config->auto_input_rate = 0;
+            }
+        }
+        else
+        {
+            Settings.SoundInputRate = CLAMP (gui_config->sound_input_rate, 31700, 32300);
+        }
 
         Settings.SoundPlaybackRate = playback_rates[gui_config->sound_playback_rate];
 
@@ -187,24 +194,13 @@ S9xSoundStop (void)
     return;
 }
 
-void
-S9xMixSound (void)
-{
-    driver->mix ();
-
-    return;
-}
-
 bool8
 S9xOpenSoundDevice (void)
 {
     if (gui_config->mute_sound)
         return FALSE;
 
-    if (gui_config->sound_buffer_size < 2)
-        gui_config->sound_buffer_size = 2;
-    if (gui_config->sound_buffer_size > 256)
-        gui_config->sound_buffer_size = 256;
+    gui_config->sound_buffer_size = CLAMP (gui_config->sound_buffer_size, 2, 256);
 
     return driver->open_device ();
 }

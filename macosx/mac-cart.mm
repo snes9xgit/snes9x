@@ -22,10 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -138,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -146,14 +148,14 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
 
   Libretro port
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -195,7 +197,7 @@
   (c) Copyright 2001 - 2011  zones
 
   Libretro port
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
   (c) Copyright 2002 - 2005  107
@@ -213,6 +215,7 @@
 
 #import <wchar.h>
 #import <Cocoa/Cocoa.h>
+#import <objc/objc-runtime.h>
 
 #import "mac-cocoatools.h"
 #import "mac-prefix.h"
@@ -291,6 +294,26 @@ static pascal Boolean NavPlayMovieFromPreview (NavCBRecPtr, NavCallBackUserData)
 	MacQTVideoConfig();
 }
 
+@end
+
+@interface NSView (HICocoaViewDummy)
+- (void) setNeedsDisplayOnHICocoaViewDummy;
+@end
+
+@implementation NSView (HICocoaViewDummy)
++ (void) initialize
+{
+	/* Add a dummy instance method to make compatible with 10.10 or later */
+	if (self == [NSView self]) {
+		SEL sel = @selector(setNeedsDisplayOnHICocoaView);
+		if (![NSView instancesRespondToSelector:sel]) {
+			Method m = class_getInstanceMethod([NSView class], @selector(setNeedsDisplayOnHICocoaViewDummy));
+			IMP imp = method_getImplementation(m);
+			class_addMethod([NSView class], sel, imp, "v@");
+		}
+	}
+}
+- (void) setNeedsDisplayOnHICocoaViewDummy{}
 @end
 
 

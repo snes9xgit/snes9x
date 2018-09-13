@@ -22,10 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -138,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -146,14 +148,14 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
 
   Libretro port
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -238,6 +240,9 @@ static bool parse_controller_spec (int port, const char *arg)
 	else
 	if (!strcasecmp(arg, "two-justifiers"))
 		S9xSetController(port, CTL_JUSTIFIER,  1, 0, 0, 0);
+	else
+	if (!strcasecmp(arg, "macsrifle"))
+		S9xSetController(port, CTL_MACSRIFLE,  0, 0, 0, 0);
 	else
 	if (!strncasecmp(arg, "mp5:", 4) && ((arg[4] >= '1' && arg[4] <= '8') || arg[4] == 'n') &&
 										((arg[5] >= '1' && arg[5] <= '8') || arg[5] == 'n') &&
@@ -333,7 +338,8 @@ static bool try_load_config_file (const char *fname, ConfigFile &conf)
 	if (fp)
 	{
 		fprintf(stdout, "Reading config file %s.\n", fname);
-		conf.LoadFile(new fStream(fp));
+		fStream fS(fp);
+		conf.LoadFile(&fS);
         CLOSE_FSTREAM(fp);
 		return (true);
 	}
@@ -383,6 +389,7 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.ForceInterleaved2          =  conf.GetBool("ROM::Interleaved2",                   false);
 	Settings.ForceInterleaveGD24        =  conf.GetBool("ROM::InterleaveGD24",                 false);
 	Settings.ApplyCheats                =  conf.GetBool("ROM::Cheat",                          false);
+	Cheat.enabled = false;
 	Settings.NoPatch                    = !conf.GetBool("ROM::Patch",                          true);
 	Settings.IgnorePatchChecksum        =  conf.GetBool("ROM::IgnorePatchChecksum",            false);
 
@@ -417,8 +424,11 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.Stereo                     =  conf.GetBool("Sound::Stereo",                       true);
 	Settings.ReverseStereo              =  conf.GetBool("Sound::ReverseStereo",                false);
 	Settings.SoundPlaybackRate          =  conf.GetUInt("Sound::Rate",                         32000);
-	Settings.SoundInputRate             =  conf.GetUInt("Sound::InputRate",                    32000);
+	Settings.SoundInputRate             =  conf.GetUInt("Sound::InputRate",                    31950);
 	Settings.Mute                       =  conf.GetBool("Sound::Mute",                         false);
+	Settings.DynamicRateControl         =  conf.GetBool("Sound::DynamicRateControl",           false);
+	Settings.DynamicRateLimit           =  conf.GetInt ("Sound::DynamicRateLimit",             5);
+	Settings.InterpolationMethod        =  conf.GetInt ("Sound::InterpolationMethod",          2);
 
 	// Display
 
@@ -431,6 +441,7 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.DisplayMovieFrame          =  conf.GetBool("Display::DisplayFrameCount",          false);
 	Settings.AutoDisplayMessages        =  conf.GetBool("Display::MessagesInImage",            true);
 	Settings.InitialInfoStringTimeout   =  conf.GetInt ("Display::MessageDisplayTime",         120);
+	Settings.BilinearFilter             =  conf.GetBool("Display::BilinearFilter",             false);
 
 	// Settings
 
@@ -458,6 +469,7 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.MouseMaster                =  conf.GetBool("Controls::MouseMaster",               true);
 	Settings.SuperScopeMaster           =  conf.GetBool("Controls::SuperscopeMaster",          true);
 	Settings.JustifierMaster            =  conf.GetBool("Controls::JustifierMaster",           true);
+	Settings.MacsRifleMaster            =  conf.GetBool("Controls::MacsRifleMaster",           true);
 	Settings.MultiPlayer5Master         =  conf.GetBool("Controls::MP5Master",                 true);
 	Settings.UpAndDown                  =  conf.GetBool("Controls::AllowLeftRight",            false);
 
@@ -476,12 +488,16 @@ void S9xLoadConfigFiles (char **argv, int argc)
 		parse_crosshair_spec(X_JUSTIFIER1, conf.GetString("Controls::Justifier1Crosshair"));
 	if (conf.Exists("Controls::Justifier2Crosshair"))
 		parse_crosshair_spec(X_JUSTIFIER2, conf.GetString("Controls::Justifier2Crosshair"));
+	if (conf.Exists("Controls::MacsRifleCrosshair"))
+		parse_crosshair_spec(X_MACSRIFLE, conf.GetString("Controls::MacsRifleCrosshair"));
 
 	// Hack
+	Settings.SuperFXClockMultiplier         = conf.GetUInt("Hack::SuperFXClockMultiplier", 100);
 
 	Settings.DisableGameSpecificHacks       = !conf.GetBool("Hack::EnableGameSpecificHacks",       true);
 	Settings.BlockInvalidVRAMAccessMaster   = !conf.GetBool("Hack::AllowInvalidVRAMAccess",        false);
 	Settings.HDMATimingHack                 =  conf.GetInt ("Hack::HDMATiming",                    100);
+	Settings.MaxSpriteTilesPerLine          =  conf.GetInt ("Hack::MaxSpriteTilesPerLine",         34);
 
 	// Netplay
 
@@ -508,6 +524,7 @@ void S9xLoadConfigFiles (char **argv, int argc)
 		ENSURE_TRACE_OPEN(trace,"trace.log","wb")
 		CPU.Flags |= TRACE_FLAG;
 	}
+	Settings.TraceSMP = FALSE;
 #endif
 
 	S9xParsePortConfig(conf, 1);
@@ -548,6 +565,7 @@ void S9xUsage (void)
 	S9xMessage(S9X_INFO, S9X_USAGE, "-nomouse                        Disable emulation of the SNES mouse");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-nosuperscope                   Disable emulation of the Superscope");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-nojustifier                    Disable emulation of the Konami Justifier");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-nomacsrifle                    Disable emulation of the M.A.C.S. Rifle");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-port# <control>                Specify which controller to emulate in port 1/2");
 	S9xMessage(S9X_INFO, S9X_USAGE, "    Controllers: none              No controller");
 	S9xMessage(S9X_INFO, S9X_USAGE, "                 pad#              Joypad number 1-8");
@@ -556,6 +574,7 @@ void S9xUsage (void)
 	S9xMessage(S9X_INFO, S9X_USAGE, "                 justifier         Blue Justifier (not useful with -port1)");
 	S9xMessage(S9X_INFO, S9X_USAGE, "                 two-justifiers    Blue & Pink Justifiers");
 	S9xMessage(S9X_INFO, S9X_USAGE, "                 mp5:####          MP5 with the 4 named pads (1-8 or n)");
+	S9xMessage(S9X_INFO, S9X_USAGE, "                 macsrifle         M.A.C.S. Rifle");
 	S9xMessage(S9X_INFO, S9X_USAGE, "");
 
 	// ROM OPTIONS
@@ -578,9 +597,8 @@ void S9xUsage (void)
 	// PATCH/CHEAT OPTIONS
 	S9xMessage(S9X_INFO, S9X_USAGE, "-nopatch                        Do not apply any available IPS/UPS patches");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-cheat                          Apply saved cheats");
-	S9xMessage(S9X_INFO, S9X_USAGE, "-gamegenie <code>               Supply a Game Genie code");
-	S9xMessage(S9X_INFO, S9X_USAGE, "-actionreplay <code>            Supply a Pro-Action Reply code");
-	S9xMessage(S9X_INFO, S9X_USAGE, "-goldfinger <code>              Supply a Gold Finger code");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-cheatcode <code>               Supply a cheat code in Game Genie,");
+	S9xMessage(S9X_INFO, S9X_USAGE, "                                Pro-Action Replay, or Raw format (address=byte)");
 	S9xMessage(S9X_INFO, S9X_USAGE, "");
 
 #ifdef NETPLAY_SUPPORT
@@ -619,6 +637,31 @@ void S9xUsage (void)
 	exit(1);
 }
 
+void S9xParseArgsForCheats (char **argv, int argc)
+{
+    for (int i = 1; i < argc; i++)
+    {
+        if (!strcasecmp(argv[i], "-gamegenie") ||
+            !strcasecmp(argv[i], "-actionreplay") ||
+            !strcasecmp(argv[i], "-cheatcode"))
+        {
+            if (i + 1 < argc)
+            {
+                if (S9xAddCheatGroup ("Unknown", argv[++i]) < 0)
+                {
+                    S9xMessage(S9X_ERROR, S9X_GAME_GENIE_CODE_ERROR, "Code format invalid");
+                }
+                else
+                {
+                    S9xEnableCheatGroup (Cheat.g.size() - 1);
+                }
+            }
+            else
+                S9xUsage();
+        }
+    }
+}
+
 char * S9xParseArgs (char **argv, int argc)
 {
 	for (int i = 1; i < argc; i++)
@@ -651,8 +694,10 @@ char * S9xParseArgs (char **argv, int argc)
 				if (i + 1 < argc)
 				{
 					Settings.SoundInputRate = atoi(argv[++i]);
-					if (Settings.SoundInputRate < 8192)
-						Settings.SoundInputRate = 8192;
+					if (Settings.SoundInputRate < 31700)
+						Settings.SoundInputRate = 31700;
+					if (Settings.SoundInputRate > 32300)
+						Settings.SoundInputRate = 32300;
 				}
 				else
 					S9xUsage();
@@ -703,6 +748,9 @@ char * S9xParseArgs (char **argv, int argc)
 			if (!strcasecmp(argv[i], "-nojustifier"))
 				Settings.JustifierMaster = FALSE;
 			else
+			if (!strcasecmp(argv[i], "-nomacsrifle"))
+				Settings.MacsRifleMaster = FALSE;
+			else
 			if (!strcasecmp(argv[i], "-port1") ||
 				!strcasecmp(argv[i], "-port2"))
 			{
@@ -751,6 +799,17 @@ char * S9xParseArgs (char **argv, int argc)
 			else
 			if (!strcasecmp(argv[i], "-bsxbootup"))
 				Settings.BSXBootup = TRUE;
+                        else
+                        if (!strcasecmp(argv[i], "-snapshot"))
+                        {
+                                if (i + 1 < argc)
+                                {
+                                        strncpy(Settings.InitialSnapshotFilename, argv[++i], PATH_MAX);
+                                        Settings.InitialSnapshotFilename[PATH_MAX] = 0;
+                                }
+                                else
+                                        S9xUsage();
+                        }
 			else
 
 			// PATCH/CHEAT OPTIONS
@@ -761,63 +820,25 @@ char * S9xParseArgs (char **argv, int argc)
 			if (!strcasecmp(argv[i], "-cheat"))
 				Settings.ApplyCheats = TRUE;
 			else
-			if (!strcasecmp(argv[i], "-gamegenie"))
+			if (!strcasecmp(argv[i], "-gamegenie") ||
+			    !strcasecmp(argv[i], "-actionreplay") ||
+			    !strcasecmp(argv[i], "-cheatcode"))
 			{
 				if (i + 1 < argc)
 				{
-					uint32		address;
-					uint8		byte;
-					const char	*error;
-
-					if ((error = S9xGameGenieToRaw(argv[++i], address, byte)) == NULL)
-						S9xAddCheat(TRUE, FALSE, address, byte);
-					else
-						S9xMessage(S9X_ERROR, S9X_GAME_GENIE_CODE_ERROR, error);
-				}
-				else
-					S9xUsage();
-			}
-			else
-			if (!strcasecmp(argv[i], "-actionreplay"))
-			{
-				if (i + 1 < argc)
-				{
-					uint32		address;
-					uint8		byte;
-					const char	*error;
-
-					if ((error = S9xProActionReplayToRaw(argv[++i], address, byte)) == NULL)
-						S9xAddCheat(TRUE, FALSE, address, byte);
-					else
-						S9xMessage(S9X_ERROR, S9X_ACTION_REPLY_CODE_ERROR, error);
-				}
-				else
-					S9xUsage();
-			}
-			else
-			if (!strcasecmp(argv[i], "-goldfinger"))
-			{
-				if (i + 1 < argc)
-				{
-					uint32		address;
-					uint8		bytes[3];
-					bool8		sram;
-					uint8		num_bytes;
-					const char	*error;
-
-					if ((error = S9xGoldFingerToRaw(argv[++i], address, sram, num_bytes, bytes)) == NULL)
+					if (S9xAddCheatGroup ("Unknown", argv[++i]) < 0)
 					{
-						for (int c = 0; c < num_bytes; c++)
-							S9xAddCheat(TRUE, FALSE, address + c, bytes[c]);
+						S9xMessage(S9X_ERROR, S9X_GAME_GENIE_CODE_ERROR, "Code format invalid");
 					}
 					else
-						S9xMessage(S9X_ERROR, S9X_GOLD_FINGER_CODE_ERROR, error);
+					{
+						S9xEnableCheatGroup (Cheat.g.size() - 1);
+					}
 				}
 				else
 					S9xUsage();
 			}
 			else
-
 			// NETPLAY OPTIONS
 
 		#ifdef NETPLAY_SUPPORT
@@ -846,7 +867,7 @@ char * S9xParseArgs (char **argv, int argc)
 		#endif
 
 			// HACKING OR DEBUGGING OPTIONS
-		
+
 		#ifdef DEBUGGER
 			if (!strcasecmp(argv[i], "-debug"))
 				CPU.Flags |= DEBUG_MODE_FLAG;

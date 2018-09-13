@@ -1,4 +1,4 @@
-AC_INIT([snes9x-gtk], 1.55)
+AC_INIT([snes9x-gtk], 1.56.2)
 
 AC_CONFIG_MACRO_DIR([macros])
 
@@ -9,7 +9,7 @@ if test -z "$CXXFLAGS"; then
     CXXFLAGS="$CFLAGS"
 fi
 
-EXTRA_FLAGS="-Wall -W -pedantic -Wno-unused-parameter -Wno-unused-but-set-variable"
+EXTRA_FLAGS="-Wall -W -Wno-unused-parameter"
 CFLAGS="$CFLAGS $EXTRA_FLAGS"
 CXXFLAGS="$CXXFLAGS $EXTRA_FLAGS"
 
@@ -34,7 +34,10 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE")
 AM_GLIB_GNU_GETTEXT
 
 snes9xlocaledir='${prefix}/${DATADIRNAME}/locale'
+snes9xdatadir='${prefix}/${DATADIRNAME}/snes9x'
+
 AC_SUBST(snes9xlocaledir)
+AC_SUBST(snes9xdatadir)
 
 AC_ARG_WITH(debug,
   [AS_HELP_STRING([--with(out)-debug],
@@ -48,31 +51,25 @@ AC_ARG_WITH(opengl,
   [],
   [with_opengl=yes])
 
-AC_ARG_WITH(joystick, 
+AC_ARG_WITH(joystick,
   [AS_HELP_STRING([--with(out)-joystick],
     [Enable joystick support if available (default: with)])],
   [],
   [with_joystick=yes])
 
-AC_ARG_WITH(xv, 
+AC_ARG_WITH(xv,
   [AS_HELP_STRING([--with(out)-xv],
     [Enable XVideo output on GTK (default: with)])],
   [],
   [with_xv=yes])
 
-AC_ARG_WITH(xrandr, 
-  [AS_HELP_STRING([--with(out)-xrandr],
-    [Enable XRandR support on GTK (default: with)])],
-  [],
-  [with_xrandr=yes])
-
-AC_ARG_WITH(portaudio, 
+AC_ARG_WITH(portaudio,
   [AS_HELP_STRING([--with(out)-portaudio],
     [Enable PortAudio sound driver support (default: with)])],
   [],
   [with_portaudio=yes])
 
-AC_ARG_WITH(oss, 
+AC_ARG_WITH(oss,
   [AS_HELP_STRING([--with(out)-oss],
     [Enable OSS sound driver support (default: with)])],
   [],
@@ -90,7 +87,7 @@ AC_ARG_WITH(pulseaudio,
   [],
   [with_pulseaudio=yes])
 
-AC_ARG_WITH(debugger, 
+AC_ARG_WITH(debugger,
   [AS_HELP_STRING([--with(out)-debugger],
     [Enable debugger (default: without)])],
   [],
@@ -102,13 +99,13 @@ AC_ARG_WITH(sdd1-decomp,
   [],
   [with_sdd1_decomp=yes])
 
-AC_ARG_WITH(hq2x, 
+AC_ARG_WITH(hq2x,
   [AS_HELP_STRING([--with(out)-hq2x],
     [Enable support for the HQ2x family of filters (default: with)])],
   [],
   [with_hq2x=yes])
 
-AC_ARG_WITH(xbrz, 
+AC_ARG_WITH(xbrz,
   [AS_HELP_STRING([--with(out)-xbrz],
     [Enable support for the xBRZ filter (default: with)])],
   [],
@@ -120,7 +117,7 @@ AC_ARG_WITH(netplay,
   [],
   [with_netplay=yes])
 
-AC_ARG_WITH(jma-decomp, 
+AC_ARG_WITH(jma-decomp,
   [AS_HELP_STRING([--with(out)-jma-decomp],
     [Enable JMA archive decompression (default: with)])],
   [],
@@ -142,7 +139,7 @@ AC_ARG_WITH(system-zip,
   [AS_HELP_STRING([--with(out)-system-zip],
     [Use system zip])],
   [],
-  [system_zip=check])
+  [with_system_zip=check])
 
 AC_ARG_WITH(screenshot,
   [AS_HELP_STRING([--with(out)-screenshot],
@@ -152,9 +149,21 @@ AC_ARG_WITH(screenshot,
 
 AC_ARG_WITH(gtk3,
   [AS_HELP_STRING([--with(out)-gtk3],
+    [Build with GTK+ 3 if available (default: with)])],
+  [],
+  [with_gtk3=yes])
+
+AC_ARG_WITH(gtk2,
+  [AS_HELP_STRING([--with(out)-gtk2],
     [Build with GTK+ 3 if available (default: without)])],
   [],
-  [with_gtk3=no])
+  [with_gtk2=no])
+
+AC_ARG_ENABLE(dangerous-hacks,
+  [AS_HELP_STRING([--enable-dangerous-hacks],
+    [Allow dangerous hacks to be enabled.])],
+  [],
+  [enable_dangerous_hacks=no])
 
 if test yes = "$with_debug" ; then
   CFLAGS="$CFLAGS -g"
@@ -187,10 +196,9 @@ GTK=yes
 snes9x_info_display="GTK"
 
 GTK3_WARNING=no
-if test yes = "$with_gtk3" ; then
-    GTK_VERSION="gtk+-3.0"
+if test yes = "$with_gtk3" -a no = "$with_gtk2"; then
+    GTK_VERSION="gtk+-3.0 >= 3.22"
     GTK3_WARNING=yes
-    CFLAGS="$CFLAGS -DUSE_GTK3"
 else
     GTK_VERSION="gtk+-2.0 >= 2.16"
 fi
@@ -198,6 +206,7 @@ fi
 PKG_CHECK_MODULES([GTK], ["$GTK_VERSION"])
 PKG_CHECK_MODULES([GLIB], [gthread-2.0 >= 2.6 gobject-2.0 >= 2.6])
 PKG_CHECK_MODULES([LIBXML], [libxml-2.0 >= 2.0])
+PKG_CHECK_MODULES([XRANDR], [xrandr])
 
 if test yes = "$with_opengl" ; then
 
@@ -208,24 +217,28 @@ if test yes = "$with_opengl" ; then
     ],[
         OPENGL=0
     ])
+
+    PKG_CHECK_MODULES([EPOXY], [epoxy]);
+    CFLAGS="$CFLAGS $EPOXY_CFLAGS"
+    LIBS="$LIBS $EPOXY_LIBS"
 fi
 
 GTKJOY=0
 SDL_CFLAGS=""
 SDL_LIBS=""
 if test yes = "$with_joystick"; then
-    PKG_CHECK_MODULES([SDL],[sdl],[
+    PKG_CHECK_MODULES([SDL],[sdl2],[
         GTKJOY=yes
         CFLAGS="$CFLAGS -DUSE_JOYSTICK"
     ],[
-        AC_CHECK_PROG(SDLCONFIGFOUND,[sdl-config],yes,no)
-        
+        AC_CHECK_PROG(SDLCONFIGFOUND,[sdl2-config],yes,no)
+
         if test yes = "$SDLCONFIGFOUND" ; then
-            SDL_CFLAGS="-DUSE_JOYSTICK `sdl-config --cflags`"
-            SDL_LIBS="`sdl-config --libs`"
+            SDL_CFLAGS="-DUSE_JOYSTICK `sdl2-config --cflags`"
+            SDL_LIBS="`sdl2-config --libs`"
             GTKJOY=yes
         else
-            echo "Cannot find SDL. Disabling joystick support."
+            echo "Cannot find SDL2. Disabling joystick support."
         fi
     ])
 fi
@@ -265,7 +278,7 @@ if test yes = "$with_oss" ; then
     ],[
         echo "Cannot find OSS headers."
         echo "--> Disabling OSS support"
-    ])    
+    ])
 fi
 
 ALSA=0
@@ -292,19 +305,6 @@ if test yes = "$with_pulseaudio" ; then
     ],[
         echo "Cannot find PulseAudio library."
         echo "--> Disabling PulseAudio"
-    ])
-fi
-
-XRANDR=0
-XRANDR_CFLAGS=""
-XRANDR_LIBS=""
-if test yes = "$with_xrandr" ; then
-    PKG_CHECK_MODULES([XRANDR],[xrandr],[
-        XRANDR=yes
-        CFLAGS="$CFLAGS -DUSE_XRANDR"
-    ],[
-        echo "Cannot find libXrandr. Make sure the X11 development headers are installed."
-        echo "--> Disabling Xrandr support."
     ])
 fi
 
@@ -359,7 +359,7 @@ NASM="not_found"
 ZSNESC4=no
 ZSNESFX=no
 
-CFLAGS="$CFLAGS -DCORRECT_VRAM_READS"
+CFLAGS="$CFLAGS -DPIXEL_FORMAT=RGB565 -DCORRECT_VRAM_READS"
 CORRECT_VRAM_READS=1
 
 if test yes = "$with_debugger"; then
@@ -390,6 +390,10 @@ if test yes = "$with_zlib"; then
         CFLAGS="$CFLAGS -DZLIB"
         LIBS="$LIBS -lz"
       ], ,)
+fi
+
+if test yes = "$enable_dangerous_hacks"; then
+  CFLAGS="$CFLAGS -DALLOW_CPU_OVERCLOCK"
 fi
 
 dnl Check for functions
@@ -465,7 +469,7 @@ if test $ac_cv_my_sar_int8 = yes && \
   CFLAGS="$CFLAGS -DRIGHTSHIFT_IS_SAR"
 fi
 
-CFLAGS="$CFLAGS -DUNZIP_SUPPORT -DSPC700_C -I. -I.. $ZIP_CFLAGS"
+CFLAGS="$CFLAGS -DUNZIP_SUPPORT -DSNES9X_GTK -DSPC700_C -I. -I.. $ZIP_CFLAGS"
 
 CXXFLAGS="$CFLAGS"
 
@@ -499,7 +503,7 @@ echo "Snes9x will build with support for the following:"
 echo ""
 
 if test yes = "$GTK3_WARNING" ; then
-    echo "    GTK+ 3.0 (experimental)"
+    echo "    GTK+ 3.0"
 else
     echo "    GTK+ 2.0"
 fi
@@ -574,4 +578,8 @@ fi
 
 if ! test yes = "$XBRZ"; then
     echo "xBRZ filter compilation is disabled."
+fi
+
+if test yes = "$enable_dangerous_hacks"; then
+    echo "Dangerous hacks enabled."
 fi

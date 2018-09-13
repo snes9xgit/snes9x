@@ -23,10 +23,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -139,7 +141,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -147,14 +149,14 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
 
   Libretro port
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -193,13 +195,13 @@
 #include <vector>
 
 #define CONVERT_16_TO_32(pixel) \
-    (((((pixel) >> 10)        ) << /*RedShift+3*/  19) | \
-     ((((pixel) >> 5)   & 0x1f) << /*GreenShift+3*/11) | \
+    (((((pixel) >> 11)        ) << /*RedShift+3*/  19) | \
+     ((((pixel) >> 5)   & 0x3f) << /*GreenShift+3*/10) | \
       (((pixel)         & 0x1f) << /*BlueShift+3*/ 3))
 
 #define CONVERT_32_TO_16(pixel) \
-    (((((pixel) & 0xf80000) >> 9) | \
-      (((pixel) & 0xf800)   >> 6) | \
+    (((((pixel) & 0xf80000) >> 8) | \
+      (((pixel) & 0xfc00)   >> 5) | \
       (((pixel) & 0xf8)     >> 3)) & 0xffff)
 
 inline

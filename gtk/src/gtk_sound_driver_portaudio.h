@@ -16,13 +16,13 @@ class S9xPortAudioSoundDriver : public S9xSoundDriver
         bool8 open_device (void);
         void start (void);
         void stop (void);
-        void mix (void);
-        void mix (unsigned char *output, int bytes);
         void samples_available (void);
 
     private:
         PaStream *audio_stream;
-        GMutex *mutex;
+        int sound_buffer_size;
+        uint8 *sound_buffer;
+        int output_buffer_size;
 };
 
 

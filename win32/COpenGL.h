@@ -22,10 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -138,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -146,14 +148,14 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
 
   Libretro port
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -193,15 +195,15 @@
 #define COPENGL_H
 
 #include <windows.h>
-#include <gl\gl.h>
+#include "gl_core_3_1.h"
 #include "cgFunctions.h"
 #include "CGLCG.h"
+#include "../shaders/glsl.h"
 
-#include "glext.h"
 #include "wglext.h"
 #include "IS9xDisplayOutput.h"
 
-enum current_ogl_shader_type { OGL_SHADER_NONE, OGL_SHADER_GLSL, OGL_SHADER_CG };
+enum current_ogl_shader_type { OGL_SHADER_NONE, OGL_SHADER_GLSL, OGL_SHADER_CG, OGL_SHADER_GLSL_OLD};
 
 class COpenGL : public IS9xDisplayOutput
 {
@@ -219,8 +221,8 @@ private:
 
 	bool initDone;
 	bool fullscreen;
-	unsigned int quadTextureSize;
-	unsigned int filterScale;
+	unsigned int outTextureWidth;
+	unsigned int outTextureHeight;
 	unsigned int afterRenderWidth, afterRenderHeight;
 
 	bool shaderFunctionsLoaded;
@@ -233,33 +235,11 @@ private:
 	bool cgAvailable;
 
 	CGLCG *cgShader;
+    GLSLShader *glslShader;
 
 	GLuint shaderProgram;
     GLuint vertexShader;
     GLuint fragmentShader;
-
-	// PBO Functions
-	PFNGLGENBUFFERSPROC		glGenBuffers;
-	PFNGLBINDBUFFERPROC		glBindBuffer;
-	PFNGLBUFFERDATAPROC		glBufferData;
-	PFNGLDELETEBUFFERSPROC	glDeleteBuffers;
-	PFNGLMAPBUFFERPROC		glMapBuffer;
-	PFNGLUNMAPBUFFERPROC	glUnmapBuffer;
-
-	// Shader Functions
-
-	PFNGLCREATEPROGRAMPROC			glCreateProgram;
-    PFNGLCREATESHADERPROC			glCreateShader;
-    PFNGLCOMPILESHADERPROC			glCompileShader;
-    PFNGLDELETESHADERPROC			glDeleteShader;
-	PFNGLDELETEPROGRAMPROC			glDeleteProgram;
-	PFNGLATTACHSHADERPROC			glAttachShader;
-	PFNGLDETACHSHADERPROC			glDetachShader;
-	PFNGLLINKPROGRAMPROC			glLinkProgram;
-	PFNGLUSEPROGRAMPROC				glUseProgram;
-	PFNGLSHADERSOURCEPROC			glShaderSource;
-	PFNGLGETUNIFORMLOCATIONPROC		glGetUniformLocation;
-	PFNGLUNIFORM2FVPROC				glUniform2fv;
 
 	PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
 
@@ -267,12 +247,15 @@ private:
 	void checkForCgError(const char *situation);
 	bool SetShadersCG(const TCHAR *file);
 	bool SetShadersGLSL(const TCHAR *glslFileName);
+	bool SetShadersGLSL_OLD(const TCHAR *glslFileName);
 	bool LoadShaderFunctions();
 	bool LoadPBOFunctions();
-	void CreateDrawSurface(void);
+	void CreateDrawSurface(unsigned int width, unsigned int height);
 	void DestroyDrawSurface(void);
-	bool ChangeDrawSurfaceSize(unsigned int scale);
+	bool ChangeDrawSurfaceSize(unsigned int width, unsigned int height);
 	void SetupVertices();
+    bool ShaderAailable();
+    bool NPOTAvailable();
 
 public:
 	COpenGL();

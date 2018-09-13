@@ -22,10 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -138,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -146,14 +148,14 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
 
   Libretro port
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -225,6 +227,7 @@ struct SBSX
 	bool	sat_stream1_loaded, sat_stream2_loaded;
 	bool	sat_stream1_first, sat_stream2_first;
 	uint8	sat_stream1_count, sat_stream2_count;
+	uint16	sat_stream1_queue, sat_stream2_queue;
 };
 
 extern struct SBSX	BSX;

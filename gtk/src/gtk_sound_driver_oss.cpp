@@ -64,7 +64,7 @@ bool8
 S9xOSSSoundDriver::open_device (void)
 {
     int temp;
-    int output_buffer_size;
+    audio_buf_info info;
 
     output_buffer_size = (gui_config->sound_buffer_size * Settings.SoundPlaybackRate) / 1000;
 
@@ -72,8 +72,6 @@ S9xOSSSoundDriver::open_device (void)
         output_buffer_size *= 2;
     if (Settings.SixteenBitSound)
         output_buffer_size *= 2;
-    if (output_buffer_size > 65536)
-        output_buffer_size = 65536;
     if (output_buffer_size < 256)
         output_buffer_size = 256;
 
@@ -84,7 +82,13 @@ S9xOSSSoundDriver::open_device (void)
     filedes = open ("/dev/dsp", O_WRONLY | O_NONBLOCK);
 
     if (filedes < 0)
-        goto fail;
+    {
+        printf ("Failed\n    --> (Device: /dev/dsp1)...");
+        filedes = open ("/dev/dsp1", O_WRONLY | O_NONBLOCK);
+
+        if (filedes < 0)
+            goto fail;
+    }
 
     printf ("OK\n");
 
@@ -132,18 +136,20 @@ S9xOSSSoundDriver::open_device (void)
 
     /* OSS requires a power-of-two buffer size, first 16 bits are the number
      * of fragments to generate, second 16 are the respective power-of-two. */
-    temp = (2 << 16) | (S9xSoundBase2log (output_buffer_size));
+    temp = (4 << 16) | (S9xSoundBase2log (output_buffer_size / 4));
 
-    output_buffer_size = S9xSoundPowerof2 (temp & 0xffff);
+    if (ioctl (filedes, SNDCTL_DSP_SETFRAGMENT, &temp) < 0)
+        goto close_fail;
+
+    ioctl (filedes, SNDCTL_DSP_GETOSPACE, &info);
+
+    output_buffer_size = info.fragsize * info.fragstotal;
 
     printf ("    --> (Buffer size: %d bytes, %dms latency)...",
             output_buffer_size,
             (((output_buffer_size * 1000) >> (Settings.Stereo ? 1 : 0))
                                           >> (Settings.SixteenBitSound ? 1 : 0))
                                            / (Settings.SoundPlaybackRate));
-
-    if (ioctl (filedes, SNDCTL_DSP_SETFRAGMENT, &temp) < 0)
-        goto close_fail;
 
     printf ("OK\n");
 
@@ -162,12 +168,6 @@ fail:
 }
 
 void
-S9xOSSSoundDriver::mix (void)
-{
-    return;
-}
-
-void
 S9xOSSSoundDriver::samples_available (void)
 {
     audio_buf_info info;
@@ -175,11 +175,27 @@ S9xOSSSoundDriver::samples_available (void)
     int bytes_to_write;
     int bytes_written;
 
+    ioctl (filedes, SNDCTL_DSP_GETOSPACE, &info);
+
+    if (Settings.DynamicRateControl)
+    {
+        S9xUpdateDynamicRate (info.bytes, output_buffer_size);
+    }
+
     S9xFinalizeSamples ();
 
     samples_to_write = S9xGetSampleCount ();
 
-    ioctl (filedes, SNDCTL_DSP_GETOSPACE, &info);
+    if (Settings.DynamicRateControl)
+    {
+        // Using rate control, we should always keep the emulator's sound buffers empty to
+        // maintain an accurate measurement.
+        if (samples_to_write > (info.bytes >> (Settings.SixteenBitSound ? 1 : 0)))
+        {
+            S9xClearSamples ();
+            return;
+        }
+    }
 
     samples_to_write = MIN (info.bytes >> (Settings.SixteenBitSound ? 1 : 0),
                             samples_to_write);

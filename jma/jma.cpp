@@ -48,7 +48,7 @@ namespace JMA
 
 
   //Retreive the file block, what else?
-  void jma_open::retrieve_file_block() throw(jma_errors)
+  void jma_open::retrieve_file_block()
   {
     unsigned char uint_buffer[UINT_SIZE];
     unsigned char ushort_buffer[USHORT_SIZE];
@@ -168,7 +168,7 @@ namespace JMA
   }
 
   //Constructor for opening JMA files for reading
-  jma_open::jma_open(const char *compressed_file_name) throw (jma_errors)
+  jma_open::jma_open(const char *compressed_file_name)
   {
     decompressed_buffer = 0;
     compressed_buffer = 0;
@@ -229,7 +229,7 @@ namespace JMA
   }
 
   //Skip forward a given number of chunks
-  void jma_open::chunk_seek(unsigned int chunk_num) throw(jma_errors)
+  void jma_open::chunk_seek(unsigned int chunk_num)
   {
     //Check the stream is open
     if (!stream.is_open())
@@ -257,7 +257,7 @@ namespace JMA
 
   //Return a vector of pointers to each file in the JMA, the buffer to hold all the files
   //must be initilized outside.
-  vector<unsigned char *> jma_open::get_all_files(unsigned char *buffer) throw(jma_errors)
+  vector<unsigned char *> jma_open::get_all_files(unsigned char *buffer)
   {
     //If there's no stream we can't read from it, so exit
     if (!stream.is_open())
@@ -284,16 +284,7 @@ namespace JMA
         stream.read((char *)int4_buffer, UINT_SIZE);
         size_t compressed_size = charp_to_uint(int4_buffer);
 
-        //Allocate memory of the correct size to hold the compressed data in the JMA
-        //Throw error on failure as that is unrecoverable from
-        try
-        {
-          compressed_buffer = new unsigned char[compressed_size];
-        }
-        catch (bad_alloc xa)
-        {
-          throw(JMA_NO_MEM_ALLOC);
-        }
+        compressed_buffer = new unsigned char[compressed_size];
 
         //Read all the compressed data in
         stream.read((char *)compressed_buffer, compressed_size);
@@ -396,7 +387,7 @@ namespace JMA
   }
 
   //Extracts the file with a given name found in the archive to the given buffer
-  void jma_open::extract_file(string& name, unsigned char *buffer) throw(jma_errors)
+  void jma_open::extract_file(string& name, unsigned char *buffer)
   {
     if (!stream.is_open())
     {
@@ -441,17 +432,11 @@ namespace JMA
 
       //Allocate memory for compressed and decompressed data
       unsigned char *comp_buffer = 0, *decomp_buffer = 0;
-      try
-      {
-        //Compressed data size is <= non compressed size
-        unsigned char *combined_buffer = new unsigned char[chunk_size*2];
-        comp_buffer = combined_buffer;
-        decomp_buffer = combined_buffer+chunk_size;
-      }
-      catch (bad_alloc xa)
-      {
-        throw(JMA_NO_MEM_ALLOC);
-      }
+
+      //Compressed data size is <= non compressed size
+      unsigned char *combined_buffer = new unsigned char[chunk_size*2];
+      comp_buffer = combined_buffer;
+      decomp_buffer = combined_buffer+chunk_size;
 
       size_t first_chunk_offset = size_to_skip % chunk_size;
       unsigned char int4_buffer[UINT_SIZE];
@@ -492,14 +477,7 @@ namespace JMA
     else //Solid JMA
     {
       unsigned char *decomp_buffer = 0;
-      try
-      {
-        decomp_buffer = new unsigned char[get_total_size(files)];
-      }
-      catch (bad_alloc xa)
-      {
-        throw(JMA_NO_MEM_ALLOC);
-      }
+      decomp_buffer = new unsigned char[get_total_size(files)];
 
       get_all_files(decomp_buffer);
 

@@ -22,10 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -138,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -146,14 +148,14 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
 
   Libretro port
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -190,37 +192,21 @@
 #define CGGLCG_H
 
 #include <windows.h>
-#include <gl/gl.h>
-#include "glext.h"
+#include "gl_core_3_1.h"
 #include "cgFunctions.h"
 #include "CCGShader.h"
 #include <vector>
 #include <deque>
+#include "image_functions.h"
 
 typedef struct _xySize {
 	double x;
 	double y;
-	operator CONST FLOAT* () const;
 } xySize;
 
 class CGLCG
 {
 private:
-	typedef struct _STGA {
-		_STGA() {data = (unsigned char*)0;
-				 width = 0;
-				 height = 0;
-				 byteCount = 0;}
-
-		~_STGA() { delete[] data; data = 0; }
-
-		void destroy() { delete[] data; data = 0; }
-
-		int width;
-		int height;
-		unsigned char byteCount;
-		unsigned char* data;
-	} STGA;
 	typedef struct _shaderPass {
 		cgScaleParams scaleParams;
 		bool linearFilter;
@@ -266,20 +252,11 @@ private:
 	void setTexCoords(int pass,xySize inputSize,xySize textureSize,bool topdown=false);
 	void setShaderVars(int pass);
 	void resetAttribParams();
-	bool loadPngImage(const TCHAR *name, int &outWidth, int &outHeight, bool &outHasAlpha, GLubyte **outData);
-	bool loadTGA(const TCHAR *filename, STGA& tgaFile);
 
 	CGcontext cgContext;
 	unsigned int frameCnt;
 	static const GLfloat lut_coords[8];
 
-
-	PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;
-	PFNGLDELETEFRAMEBUFFERSPROC glDeleteFramebuffers;
-	PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer;
-	PFNGLFRAMEBUFFERTEXTURE2DPROC glFramebufferTexture2D;
-	PFNGLCHECKFRAMEBUFFERSTATUSPROC glCheckFramebufferStatus;
-	PFNGLACTIVETEXTUREPROC glClientActiveTexture;
 
 public:
 	CGLCG(CGcontext cgContext);

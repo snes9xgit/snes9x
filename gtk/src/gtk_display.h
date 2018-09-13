@@ -2,6 +2,7 @@
 #define __GTK_DISPLAY_H
 
 #include "gtk_s9x.h"
+#include "gtk_display_driver.h"
 #include "filter/2xsai.h"
 #ifdef USE_HQ2X
 #include "filter/hq2x.h"
@@ -35,8 +36,8 @@
 #define NTSC_SVIDEO                 1
 #define NTSC_RGB                    2
 
-#define ENDIAN_LSB                  0
-#define ENDIAN_MSB                  1
+#define ENDIAN_NORMAL               0
+#define ENDIAN_SWAPPED              1
 
 #define JOB_FILTER                  0
 #define JOB_CONVERT                 1
@@ -110,5 +111,7 @@ void S9xDisplayClearBuffers (void);
 void S9xReinitDisplay (void);
 void S9xDisplayReconfigure (void);
 void S9xQueryDrivers (void);
+
+S9xDisplayDriver *S9xDisplayGetDriver (void);
 
 #endif /* __GTK_DISPLAY_H */

@@ -288,7 +288,7 @@ void SMP::disassemble_opcode(char *output, uint16 addr) {
   strcat(s, t);
 
   sprintf(t, "A:%.2x X:%.2x Y:%.2x SP:01%.2x YA:%.4x ",
-    regs.a, regs.x, regs.y, regs.sp, (uint16)regs.ya);
+    regs.B.a, regs.x, regs.B.y, regs.sp, (uint16)regs.ya);
   strcat(s, t);
 
   sprintf(t, "%c%c%c%c%c%c%c%c",
@@ -300,5 +300,10 @@ void SMP::disassemble_opcode(char *output, uint16 addr) {
     regs.p.i ? 'I' : 'i',
     regs.p.z ? 'Z' : 'z',
     regs.p.c ? 'C' : 'c');
+  strcat(s, t);
+
+  sprintf(t, " %.2x %.2x %.2x %.2x %.2x %.2x %.2x %.2x",
+    apuram[0xf4], apuram[0xf5], apuram[0xf6], apuram[0xf7],
+    cpu.port_read(0), cpu.port_read(1), cpu.port_read(2), cpu.port_read(3));
   strcat(s, t);
 }

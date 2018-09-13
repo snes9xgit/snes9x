@@ -22,10 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -138,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -146,14 +148,14 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
 
   Libretro port
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -191,11 +193,14 @@
 
 #include <vector>
 #include <d3d9.h>
-#include <d3dx9.h>
 #include <windows.h>
 #include "CCGShader.h"
 #include <vector>
 #include <deque>
+#undef Zero // DirectXMath uses Zero as a variable name
+#include "DirectXMath/Inc/DirectXMath.h"
+
+using namespace DirectX;
 
 class CD3DCG
 {
@@ -217,8 +222,8 @@ private:
 		LPDIRECT3DVERTEXDECLARATION9 vertexDeclaration;
 		std::vector<parameterEntry> parameterMap;
 
-		D3DXVECTOR2 outputSize;
-		D3DXVECTOR2 textureSize;
+		XMFLOAT2 outputSize;
+		XMFLOAT2 textureSize;
 
 		_shaderPass()  {cgVertexProgram=NULL;
 					    cgFragmentProgram=NULL;
@@ -229,8 +234,8 @@ private:
 	typedef struct _prevPass {
 		LPDIRECT3DTEXTURE9    tex;
 		LPDIRECT3DVERTEXBUFFER9 vertexBuffer;
-		D3DXVECTOR2 imageSize;
-		D3DXVECTOR2 textureSize;
+		XMFLOAT2 imageSize;
+		XMFLOAT2 textureSize;
 		_prevPass() {tex=NULL;
 		             vertexBuffer=NULL;}
 		_prevPass(const shaderPass &pass) {tex = pass.tex;
@@ -251,10 +256,10 @@ private:
 
 	bool shaderLoaded;
 	void checkForCgError(const char *situation);
-	void setVertexStream(IDirect3DVertexBuffer9 *vertexBuffer,D3DXVECTOR2 inputSize,D3DXVECTOR2 textureSize,D3DXVECTOR2 outputSize);
+	void setVertexStream(IDirect3DVertexBuffer9 *vertexBuffer, XMFLOAT2 inputSize, XMFLOAT2 textureSize, XMFLOAT2 outputSize);
 	void setViewport(DWORD x, DWORD y, DWORD width, DWORD height);
 	void setShaderVars(int pass);
-	void ensureTextureSize(LPDIRECT3DTEXTURE9 &tex, D3DXVECTOR2 &texSize, D3DXVECTOR2 wantedSize,bool renderTarget, bool useFloat = false);
+	void ensureTextureSize(LPDIRECT3DTEXTURE9 &tex, XMFLOAT2 &texSize, XMFLOAT2 wantedSize,bool renderTarget, bool useFloat = false);
 	void fillParameterMap(std::vector<parameterEntry> &map, CGparameter param);
 	void setupVertexDeclaration(shaderPass &pass);
 	void calculateMatrix();
@@ -262,14 +267,14 @@ private:
 	LPDIRECT3DDEVICE9     pDevice;
 	CGcontext cgContext;
 	unsigned int frameCnt;
-	D3DXMATRIX mvp;
+	XMFLOAT4X4 mvp;
 
 public:
 	CD3DCG(CGcontext cgContext,LPDIRECT3DDEVICE9 pDevice);
 	~CD3DCG(void);
 
 	bool LoadShader(const TCHAR *shaderFile);
-	void Render(LPDIRECT3DTEXTURE9 &origTex, D3DXVECTOR2 textureSize, D3DXVECTOR2 inputSize, D3DXVECTOR2 viewportSize, D3DXVECTOR2 windowSize);
+	void Render(LPDIRECT3DTEXTURE9 &origTex, XMFLOAT2 textureSize, XMFLOAT2 inputSize, XMFLOAT2 viewportSize, XMFLOAT2 windowSize);
 	void ClearPasses();	
 	void OnLostDevice();
 	void OnResetDevice();

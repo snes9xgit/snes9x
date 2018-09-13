@@ -42,7 +42,7 @@ void SPC7110Decomp::write(uint8 data) {
 }
 
 uint8 SPC7110Decomp::dataread() {
-  unsigned size = memory_cartrom_size() - 0x100000;
+  unsigned size = memory_cartrom_size() > 0x500000 ? memory_cartrom_size() - 0x200000 : memory_cartrom_size() - 0x100000;
   while(decomp_offset >= size) decomp_offset -= size;
   return memory_cartrom_read(0x100000 + decomp_offset++);
 }
@@ -498,7 +498,7 @@ void SPC7110Decomp::reset() {
 }
 
 SPC7110Decomp::SPC7110Decomp() {
-  decomp_buffer = new uint8_t[decomp_buffer_size];
+  decomp_buffer = new uint8[decomp_buffer_size];
   reset();
 
   //initialize reverse morton lookup tables

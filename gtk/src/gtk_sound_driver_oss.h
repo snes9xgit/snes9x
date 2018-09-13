@@ -13,13 +13,13 @@ class S9xOSSSoundDriver : public S9xSoundDriver
         bool8 open_device (void);
         void start (void);
         void stop (void);
-        void mix (void);
         void samples_available (void);
 
     private:
         int filedes;
         uint8 *sound_buffer;
         int sound_buffer_size;
+        int output_buffer_size;
 };
 
 

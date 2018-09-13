@@ -22,10 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -138,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -146,14 +148,14 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
 
   Libretro port
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -281,48 +283,6 @@ static inline void S9xFixCycles (void)
 			ICPU.S9xOpLengths = S9xOpLengthsM0X0;
 		}
 	}
-}
-
-static inline void S9xCheckInterrupts (void)
-{
-	bool8	thisIRQ = PPU.HTimerEnabled || PPU.VTimerEnabled;
-
-	if (CPU.IRQLine && thisIRQ)
-		CPU.IRQTransition = TRUE;
-
-	if (PPU.HTimerEnabled)
-	{
-		int32	htimepos = PPU.HTimerPosition;
-		if (CPU.Cycles >= Timings.H_Max && htimepos < CPU.PrevCycles)
-			htimepos += Timings.H_Max;
-
-		if (CPU.PrevCycles >= htimepos || CPU.Cycles < htimepos)
-			thisIRQ = FALSE;
-	}
-
-	if (PPU.VTimerEnabled)
-	{
-		int32	vcounter = CPU.V_Counter;
-        if (CPU.Cycles >= Timings.H_Max && (!PPU.HTimerEnabled || PPU.HTimerPosition < CPU.PrevCycles)) {
-			vcounter++;
-            if(vcounter >= Timings.V_Max)
-                vcounter = 0;
-        }
-
-		if (vcounter != PPU.VTimerPosition)
-			thisIRQ = FALSE;
-	}
-
-	if (!CPU.IRQLastState && thisIRQ)
-	{
-#ifdef DEBUGGER
-		S9xTraceFormattedMessage("--- /IRQ High->Low  prev HC:%04d  curr HC:%04d  HTimer:%d Pos:%04d  VTimer:%d Pos:%03d",
-			CPU.PrevCycles, CPU.Cycles, PPU.HTimerEnabled, PPU.HTimerPosition, PPU.VTimerEnabled, PPU.VTimerPosition);
-#endif
-		CPU.IRQLine = TRUE;
-	}
-
-	CPU.IRQLastState = thisIRQ;
 }
 
 #endif

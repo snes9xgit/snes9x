@@ -22,10 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -138,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -146,14 +148,14 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
 
   Libretro port
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -195,7 +197,7 @@
   (c) Copyright 2001 - 2011  zones
 
   Libretro port
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
   (c) Copyright 2002 - 2005  107
@@ -1792,9 +1794,9 @@ static OSStatus HandleMenuChoice (UInt32 command, Boolean *done)
 				Settings.ApplyCheats = applycheat;
 
 				if (!Settings.ApplyCheats)
-					S9xRemoveCheats();
+					S9xCheatsDisable();
 				else
-					S9xApplyCheats();
+					S9xCheatsEnable();
 
 				break;
 
@@ -3210,7 +3212,7 @@ static void Initialize (void)
 
 	NSApplicationLoad();
 
-	ZeroMemory(&Settings, sizeof(Settings));
+	bzero(&Settings, sizeof(Settings));
 	Settings.MouseMaster = true;
 	Settings.SuperScopeMaster = true;
 	Settings.JustifierMaster = true;
@@ -3233,6 +3235,12 @@ static void Initialize (void)
 	Settings.StretchScreenshots = 1;
 	Settings.SnapshotScreenshots = true;
 	Settings.OpenGLEnable = true;
+	Settings.SuperFXClockMultiplier = 100;
+	Settings.InterpolationMethod = DSP_INTERPOLATION_GAUSSIAN;
+	Settings.MaxSpriteTilesPerLine = 34;
+	Settings.OneClockCycle = 6;
+	Settings.OneSlowClockCycle = 8;
+	Settings.TwoClockCycles = 12;
 
 	for (int a = 0; a < kWindowCount; a++)
 	{

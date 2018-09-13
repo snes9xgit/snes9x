@@ -7,7 +7,7 @@ Files included in the Snes9x archive:
   changes.txt
   snes9x-license.txt
 
-version 1.55  October, 2017
+version 1.56.2  June, 2018
 Home page: http://www.snes9x.com/
 
 
@@ -159,7 +159,7 @@ liable under various EULAs.
 
 CG Shaders
 --------
-If you want to use CG Shaders in Snex9x for windows you need to install the
+If you want to use CG Shaders in Snes9x for windows you need to install the
 CG Toolkit from nvidia's developer zone:
 http://developer.nvidia.com/object/cg_download.html
 
@@ -168,6 +168,12 @@ Themaister's Emulator Shader Pack:
 https://github.com/Themaister/Emulator-Shader-Pack
 You can also try the shaders in the libretro common-shaders repository:
 https://github.com/libretro/common-shaders
+
+GLSL Shaders
+--------
+Support for GLSL shaders is available when using OpenGL. A number can be 
+obtained from the libretro glsl-shaders repository:
+https://github.com/libretro/glsl-shaders
 
 Controllers Support
 ===================
@@ -294,7 +300,9 @@ item is found, and etc. Two major formats are well-known: Game Genie and
 Pro-Action Reply (PAR). Many existing Game Genie and PAR codes can be found via
 Internet.
 
-Snes9x supports both Game Genie and PAR. Also you can find your own cheat code.
+Snes9x supports both Game Genie and PAR, as well as the standard raw format:
+xxxxxx=bb or xxxxxx=cc?bb. Also you can create your own cheat codes with the
+cheat search tool.
 Cheats are saved in .cht files and are automatically loaded the next time a game
 with the same filename is loaded.
 
@@ -310,7 +318,7 @@ the cheat address might be different between regions and versions.
 Cheat Code Entry
 ----------------
 Use the Cheat Code Entry and Editor dialog from the Cheats menu to enter Game
-Genie or PAR cheat codes. Type in a Game Genie or PAR code into the 'Enter Cheat
+Genie or PAR, or raw codes. Type a cheat code into the 'Enter Cheat
 Code' text edit box and press Return key. Be sure to include the '-' when typing
 in a Game Genie code. You can then type in an optional short description as a
 reminder to yourself of what function the cheat performs. Press Return key again
@@ -320,10 +328,9 @@ Note that the Add button remains insensitive while 'Enter Cheat Code' text edit
 box is empty or contains an invalid code. The cheat code is always translated
 into an address and value pair and displayed in the cheat list as such.
 
-It is also possible to enter cheats as an address and value pair. Type in the
-address into the 'Address' text edit box then type the value into the 'Value'
-text edit box. The value is normally entered in decimal, but if you prefix the
-value with a '$' or append an 'h' then you can enter the value in hex.
+It is also possible to enter cheats as an address and value pair. Type in a
+code of the form 'address=value' in the 'Enter Cheat Code' box, with both
+address and value in hexadecimal.
 
 Double-clicking on an cheat line from the list in the dialog or clicking on the
 'En' column toggles an individual cheat on and off. All cheats can be switched
@@ -338,6 +345,10 @@ whether you originally entered it as a Game Genie or Pro-Action Replay code.
 
 Selecting a cheat from the list then pressing the Delete button permanently
 removes that cheat.
+
+Snes9x contains a database of cheats for several known games. Click the
+'Search Database' button with a game loaded, and it will try to add existing
+cheats for your current game.
 
 Cheat Search
 ------------
@@ -596,10 +607,10 @@ the extension of the freeze files.
 
 Compatibility with Other SNES Emulators
 ---------------------------------------
-Cheat files (.cht) are common between Snes9x and ZSNES. RTC files (.rtc) are
-common between Snes9x and bsnes. SRAM files (.srm) should be common among all
-SNES emulators.
-
+Cheat files (.cht) are common between Snes9x and higan/bsnes. higan stores
+these as cheats.bml in the higan subdirectory of a game folder. 
+RTC files (.rtc) are common between Snes9x and bsnes. 
+SRAM files (.srm) should be common among all SNES emulators.
 
 
 Problems
@@ -815,4 +826,4 @@ Capcom is a trademark of Capcom Co., Ltd.
 
 Gary Henderson
 
-Updated most recently by: 2017/10/01 OV2
+Updated most recently: 2018/6/6

@@ -22,10 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -138,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -146,14 +148,14 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
 
   Libretro port
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -475,6 +477,61 @@ inline static bool GetFilterBlendSupport(RenderFilter filterID)
 	}
 }
 
+void AdjustHeightExtend(unsigned int &height)
+{
+    if(GUI.HeightExtend)
+    {
+        if(height == SNES_HEIGHT)
+            height = SNES_HEIGHT_EXTENDED;
+        else if(height == SNES_HEIGHT * 2)
+            height = SNES_HEIGHT_EXTENDED * 2;
+    }
+    else
+    {
+        if(height == SNES_HEIGHT_EXTENDED)
+            height = SNES_HEIGHT;
+        else if(height == SNES_HEIGHT_EXTENDED * 2)
+            height = SNES_HEIGHT * 2;
+    }
+}
+
+inline void SetRect(RECT* rect, unsigned int width, unsigned int height, int scale)
+{
+    AdjustHeightExtend(height);
+	rect->left = 0;
+	rect->right = width * scale;
+	rect->top = 0;
+	rect->bottom = height * scale;
+}
+
+RECT GetFilterOutputSize(SSurface Src)
+{
+	RECT rect;
+	RenderFilter filterID = GUI.Scale;
+	if (Src.Height > SNES_HEIGHT_EXTENDED || Src.Width == 512) {
+		filterID = GUI.ScaleHiRes;
+	}
+	// default to fixed factor
+	SetRect(&rect, SNES_WIDTH, SNES_HEIGHT_EXTENDED, GetFilterScale(filterID));
+
+	// handle special cases
+	switch (filterID)
+	{
+	case FILTER_NONE:
+		SetRect(&rect, Src.Width, Src.Height, 1);
+		break;
+	case FILTER_BLARGGCOMP:
+	case FILTER_BLARGGSVID:
+	case FILTER_BLARGGRGB:
+		SetRect(&rect, SNES_WIDTH, SNES_HEIGHT_EXTENDED, 2);
+		rect.right = SNES_NTSC_OUT_WIDTH(256);
+		break;
+	default:
+		break;
+	}
+	return rect;
+}
+
 void SelectRenderMethod()
 {
     TRenderMethod OldRenderMethod = _RenderMethod;
@@ -498,6 +555,7 @@ void SelectRenderMethod()
 
 void RenderMethod(SSurface Src, SSurface Dst, RECT * rect)
 {
+    AdjustHeightExtend(Src.Height);
 	if(Src.Height > SNES_HEIGHT_EXTENDED || Src.Width == 512) {
 		if(GUI.BlendHiRes && Src.Width == 512 && !GetFilterBlendSupport(GUI.ScaleHiRes)) {
 			RenderMergeHires(Src.Surface,Src.Pitch,BlendBuffer,EXT_PITCH,Src.Width,Src.Height);
@@ -534,6 +592,23 @@ void InitRenderFilters(void)
             xbrz_sync_handles[i] = xbrz_thread_sync_data[i].xbrz_sync_event;
         }
     }
+}
+
+void DeInitRenderFilters()
+{
+	if (ntsc) {
+		delete ntsc;
+	}
+	if (BlendBuf) {
+		delete[] BlendBuf;
+	}
+	if (xbrz_thread_sync_data) {
+		delete[] xbrz_thread_sync_data;
+		delete[] xbrz_sync_handles;
+	}
+
+	S9xBlit2xSaIFilterDeinit();
+	S9xBlitHQ2xFilterDeinit();
 }
 
 #define R5G6B5 // windows port uses RGB565
@@ -680,15 +755,6 @@ inline void ThreeHalfLine32( uint32 *lpDst, uint16 *lpSrc, unsigned int Width){
 		*lpDst++ = CONVERT_16_TO_32(*(lpSrc+1));
 		lpSrc+=2;
     }
-}
-
-
-inline void SetRect(RECT* rect, int width, int height, int scale)
-{
-	rect->left = 0;
-	rect->right = width * scale;
-	rect->top = 0;
-	rect->bottom = (height - (GUI.HeightExtend?0:15)) * scale;
 }
 
 #define AVERAGE_565(el0, el1) (((el0) & (el1)) + ((((el0) ^ (el1)) & 0xF7DE) >> 1))
@@ -2852,34 +2918,41 @@ void RenderBlarggNTSCRgb( SSurface Src, SSurface Dst, RECT *rect)
 
 void RenderBlarggNTSC( SSurface Src, SSurface Dst, RECT *rect)
 {
-	SetRect(rect, 256, 239, 2);
-	rect->right = SNES_NTSC_OUT_WIDTH(256);
+    SetRect(rect, 256, 239, 2);
+    rect->right = SNES_NTSC_OUT_WIDTH(256);
 
-	const unsigned int srcRowPixels = Src.Pitch/2;
+    const unsigned int srcRowPixels = Src.Pitch/2;
 
-	if(Src.Width == 512)
-		snes_ntsc_blit_hires( ntsc, (unsigned short *)Src.Surface, srcRowPixels, 0,Src.Width, Src.Height, Dst.Surface, Dst.Pitch );
-	else
-		snes_ntsc_blit( ntsc, (unsigned short *)Src.Surface, srcRowPixels, 0,Src.Width, Src.Height, Dst.Surface, Dst.Pitch );
+    if(Src.Width == 512)
+        snes_ntsc_blit_hires( ntsc, (unsigned short *)Src.Surface, srcRowPixels, 0,Src.Width, Src.Height, Dst.Surface, Dst.Pitch );
+    else
+        snes_ntsc_blit( ntsc, (unsigned short *)Src.Surface, srcRowPixels, 0,Src.Width, Src.Height, Dst.Surface, Dst.Pitch );
 
-	//Blargg's filter produces half-height output, so we have to double the height again (unless we have double height hi-res)
-	if(Src.Height <= SNES_HEIGHT_EXTENDED)
-		for (int y = rect->bottom / 2; --y >= 0; )
-		{
-			unsigned char const* in = Dst.Surface + y * Dst.Pitch;
-			unsigned char* out = Dst.Surface + y * 2 * Dst.Pitch;
-			for (int n = rect->right; n; --n )
-			{
-				unsigned prev = *(unsigned short*) in;
-				unsigned next = *(unsigned short*) (in + Dst.Pitch);
-				/* mix 16-bit rgb without losing low bits */
-				unsigned mixed = prev + next + ((prev ^ next) & 0x0821);
-				/* darken by 12% */
-				*(unsigned short*) out = prev;
-				*(unsigned short*) (out + Dst.Pitch) = (mixed >> 1) - (mixed >> 4 & 0x18E3);
-				in += 2;
-				out += 2;
-			}
-		}
+    //Blargg's filter produces half-height output, so we have to double the height again (unless we have double height hi-res)
+    if(Src.Height <= SNES_HEIGHT_EXTENDED)
+    {
+        int mask = 0;
+        if (GUI.NTSCScanlines)
+            mask = 0x18E3;
 
+        int last_blargg_line = rect->bottom / 2;
+        memset(Dst.Surface + last_blargg_line * Dst.Pitch, 0, Dst.Pitch);
+        for(int y = last_blargg_line; --y >= 0; )
+        {
+            unsigned char const* in = Dst.Surface + y * Dst.Pitch;
+            unsigned char* out = Dst.Surface + y * 2 * Dst.Pitch;
+            for(int n = rect->right; n; --n)
+            {
+                unsigned prev = *(unsigned short*)in;
+                unsigned next = *(unsigned short*)(in + Dst.Pitch);
+                /* mix 16-bit rgb without losing low bits */
+                unsigned mixed = prev + next + ((prev ^ next) & 0x0821);
+                /* darken by 12% */
+                *(unsigned short*)out = prev;
+                *(unsigned short*)(out + Dst.Pitch) = (mixed >> 1) - (mixed >> 4 & mask);
+                in += 2;
+                out += 2;
+            }
+        }
+    }
 }

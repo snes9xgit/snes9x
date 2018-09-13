@@ -30,13 +30,13 @@
 #define bind_textdomain_codeset(Domain,Codeset) (Codeset)
 #endif /* ENABLE_NLS */
 
-#define SNES9X_GTK_AUTHORS "(c) 2007 - 2016 Brandon Wright (bearoso@gmail.com)"
+#define SNES9X_GTK_AUTHORS "(c) 2007 - 2017 Brandon Wright (bearoso@gmail.com)"
 #define SNES9X_GTK_VERSION "85"
 
 extern Snes9xWindow *top_level;
 extern Snes9xConfig *gui_config;
 
-#ifdef USE_GTK3
+#if GTK_MAJOR_VERSION >= 3
 #define GDK_COMPAT_WINDOW_XID(window) (gdk_x11_window_get_xid (window))
 #else
 #define GDK_COMPAT_WINDOW_XID(window) (GDK_WINDOW_XWINDOW (window))

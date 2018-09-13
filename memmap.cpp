@@ -22,10 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -138,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -146,14 +148,14 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
 
   Libretro port
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -217,6 +219,7 @@
 #include "cheats.h"
 #include "movie.h"
 #include "display.h"
+#include "sha256.h"
 
 #ifndef SET_UI_COLOR
 #define SET_UI_COLOR(r, g, b) ;
@@ -958,11 +961,9 @@ static bool8 allASCII (uint8 *, int);
 static bool8 is_SufamiTurbo_BIOS (const uint8 *, uint32);
 static bool8 is_SufamiTurbo_Cart (const uint8 *, uint32);
 static bool8 is_BSCart_BIOS (const uint8 *, uint32);
-static bool8 is_SameGame_Add_On (const uint8 *, uint32);
 static bool8 is_BSCartSA1_BIOS(const uint8 *, uint32);
 static bool8 is_GNEXT_Add_On (const uint8 *, uint32);
 static uint32 caCRC32 (uint8 *, uint32, uint32 crc32 = 0xffffffff);
-static uint32 ReadUPSPointer (const uint8 *, unsigned &, unsigned);
 static bool8 ReadUPSPatch (Stream *, long, int32 &);
 static long ReadInt (Stream *, unsigned);
 static bool8 ReadIPSPatch (Stream *, long, int32 &);
@@ -1259,14 +1260,6 @@ static bool8 is_BSCart_BIOS(const uint8 *data, uint32 size)
 
 		return (TRUE);
 	}
-	else
-		return (FALSE);
-}
-
-static bool8 is_SameGame_Add_On (const uint8 *data, uint32 size)
-{
-	if (size == 0x80000)
-		return (TRUE);
 	else
 		return (FALSE);
 }
@@ -1790,14 +1783,12 @@ bool8 CMemory::LoadROMInt (int32 ROMfillSize)
 	memset(&SNESGameFixes, 0, sizeof(SNESGameFixes));
 	SNESGameFixes.SRAMInitialValue = 0x60;
 
-	S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
-
 	InitROM();
 
-	S9xInitCheatData();
-	S9xApplyCheats();
-
 	S9xReset();
+
+	S9xDeleteCheats();
+	S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
 
     return (TRUE);
 }
@@ -1958,14 +1949,12 @@ bool8 CMemory::LoadMultiCartInt ()
 	memset(&SNESGameFixes, 0, sizeof(SNESGameFixes));
 	SNESGameFixes.SRAMInitialValue = 0x60;
 
-	S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
-
 	InitROM();
 
-	S9xInitCheatData();
-	S9xApplyCheats();
-
 	S9xReset();
+
+	S9xDeleteCheats();
+	S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
 
 	return (TRUE);
 }
@@ -2016,7 +2005,7 @@ bool8 CMemory::LoadBSCart ()
 
 	CalculatedSize = Multi.cartSizeA;
 
-	if (Multi.cartSizeB == 0 && Multi.cartSizeA <= (MAX_ROM_SIZE - 0x100000 - Multi.cartOffsetA))
+	if (Multi.cartSizeB == 0 && Multi.cartSizeA <= (int32)(MAX_ROM_SIZE - 0x100000 - Multi.cartOffsetA))
 	{
 		//Initialize 1MB Empty Memory Pack only if cart B is cleared
 		//It does not make a Memory Pack if game is loaded like a normal ROM
@@ -2516,6 +2505,7 @@ void CMemory::InitROM (void)
 		// SPC7110
 		case 0xF93A:
 			Settings.SPC7110RTC = TRUE;
+			// Fall through
 		case 0xF53A:
 			Settings.SPC7110 = TRUE;
 			S9xInitSPC7110();
@@ -2678,7 +2668,10 @@ void CMemory::InitROM (void)
 
 	// CRC32
 	if (!Settings.BS || Settings.BSXItself) // Not BS Dump
+	{
 		ROMCRC32 = caCRC32(ROM, CalculatedSize);
+		sha256sum(ROM, CalculatedSize, ROMSHA256);
+	}
 	else // Convert to correct format before scan
 	{
 		int offset = HiROM ? 0xffc0 : 0x7fc0;
@@ -2690,6 +2683,7 @@ void CMemory::InitROM (void)
 		ROM[offset + 23] = 0x00;
 		// Calc
 		ROMCRC32 = caCRC32(ROM, CalculatedSize);
+		sha256sum(ROM, CalculatedSize, ROMSHA256);
 		// Convert back
 		ROM[offset + 22] = BSMagic0;
 		ROM[offset + 23] = BSMagic1;
@@ -2768,7 +2762,6 @@ void CMemory::InitROM (void)
 	   and the NMI handler, time enough for an instruction or two. */
 	// Wild Guns, Mighty Morphin Power Rangers - The Fighting Edition
 	Timings.NMIDMADelay  = 24;
-	Timings.IRQPendCount = 0;
 
 	IPPU.TotalEmulatedFrames = 0;
 
@@ -2928,7 +2921,7 @@ void CMemory::map_index (uint32 bank_s, uint32 bank_e, uint32 addr_s, uint32 add
 		for (i = addr_s; i <= addr_e; i += 0x1000)
 		{
 			p = (c << 4) | (i >> 12);
-			Map[p] = (uint8 *) index;
+			Map[p] = (uint8 *) (pint) index;
 			BlockIsROM[p] = isROM;
 			BlockIsRAM[p] = isRAM;
 		}
@@ -2957,12 +2950,15 @@ void CMemory::map_LoROMSRAM (void)
 {
         uint32 hi;
 
-        if (ROMSize >= 10)
-            hi = 0xffff;
-        else
-            hi = 0x7fff;
+        if (SRAMSize == 0)
+            return;
 
-	map_index(0x70, 0x7f, 0x0000, hi, MAP_LOROM_SRAM, MAP_TYPE_RAM);
+        if (ROMSize > 11 || SRAMSize > 5)
+            hi = 0x7fff;
+        else
+            hi = 0xffff;
+
+	map_index(0x70, 0x7d, 0x0000, hi, MAP_LOROM_SRAM, MAP_TYPE_RAM);
 	map_index(0xf0, 0xff, 0x0000, hi, MAP_LOROM_SRAM, MAP_TYPE_RAM);
 }
 
@@ -3270,10 +3266,11 @@ void CMemory::Map_SDD1LoROMMap (void)
 	map_lorom(0x00, 0x3f, 0x8000, 0xffff, CalculatedSize);
 	map_lorom(0x80, 0xbf, 0x8000, 0xffff, CalculatedSize);
 
-	map_hirom_offset(0x40, 0x7f, 0x0000, 0xffff, CalculatedSize, 0);
+	map_hirom_offset(0x60, 0x7f, 0x0000, 0xffff, CalculatedSize, 0);
 	map_hirom_offset(0xc0, 0xff, 0x0000, 0xffff, CalculatedSize, 0); // will be overwritten dynamically
 
 	map_index(0x70, 0x7f, 0x0000, 0x7fff, MAP_LOROM_SRAM, MAP_TYPE_RAM);
+	map_index(0xa0, 0xbf, 0x6000, 0x7fff, MAP_LOROM_SRAM, MAP_TYPE_RAM);
 
 	map_WRAM();
 
@@ -3407,6 +3404,8 @@ void CMemory::Map_SPC7110HiROMMap (void)
 	map_index(0x00, 0x00, 0x6000, 0x7fff, MAP_HIROM_SRAM, MAP_TYPE_RAM);
 	map_hirom(0x00, 0x0f, 0x8000, 0xffff, CalculatedSize);
 	map_index(0x30, 0x30, 0x6000, 0x7fff, MAP_HIROM_SRAM, MAP_TYPE_RAM);
+	if(Memory.ROMSize >= 13)
+		map_hirom_offset(0x40, 0x4f, 0x0000, 0xffff, CalculatedSize, 0x600000);
 	map_index(0x50, 0x50, 0x0000, 0xffff, MAP_SPC7110_DRAM, MAP_TYPE_ROM);
 	map_hirom(0x80, 0x8f, 0x8000, 0xffff, CalculatedSize);
 	map_hirom_offset(0xc0, 0xcf, 0x0000, 0xffff, CalculatedSize, 0);
@@ -3771,8 +3770,10 @@ void CMemory::ApplyROMFixes (void)
 
 	if (!Settings.DisableGameSpecificHacks)
 	{
-		if (match_id("AVCJ"))                                      // Rendering Ranger R2
-			Timings.APUSpeedup = 2;
+		//if (match_id("AVCJ"))                                      // Rendering Ranger R2
+		//	Timings.APUSpeedup = 2;
+		if (match_id("AANJ"))                                      // Chou Aniki
+			Timings.APUSpeedup = 1;
 		if (match_na("CIRCUIT USA"))
 			Timings.APUSpeedup = 2;
 
@@ -3819,7 +3820,7 @@ void CMemory::ApplyROMFixes (void)
 
 	Timings.HDMAStart   = SNES_HDMA_START_HC + Settings.HDMATimingHack - 100;
 	Timings.HBlankStart = SNES_HBLANK_START_HC + Timings.HDMAStart - SNES_HDMA_START_HC;
-	Timings.IRQTriggerCycles = 10;
+	Timings.IRQTriggerCycles = 14;
 
 	if (!Settings.DisableGameSpecificHacks)
 	{
@@ -3830,28 +3831,12 @@ void CMemory::ApplyROMFixes (void)
 			Timings.DMACPUSync = 20;
 			printf("DMA sync: %d\n", Timings.DMACPUSync);
 		}
-	}
-
-	if (!Settings.DisableGameSpecificHacks)
-	{
-		// An infinite loop reads $4212 and waits V-blank end, whereas VIRQ is set V=0.
-		// If Snes9x succeeds to escape from the loop before jumping into the IRQ handler, the game goes further.
-		// If Snes9x jumps into the IRQ handler before escaping from the loop,
-		// Snes9x cannot escape from the loop permanently because the RTI is in the next V-blank.
-		if (match_na("Aero the AcroBat 2"))
+		else if (match_na("KORYU NO MIMI ENG")) // Koryu no Mimi translation by rpgone)
 		{
-			Timings.IRQPendCount = 2;
-			printf("IRQ count hack: %d\n", Timings.IRQPendCount);
-		}
-	}
-
-	if (!Settings.DisableGameSpecificHacks)
-	{
-		// XXX: What's happening?
-		if (match_na("X-MEN")) // Spider-Man and the X-Men
-		{
-			Settings.BlockInvalidVRAMAccess = FALSE;
-			printf("Invalid VRAM access hack\n");
+			// An infinite loop reads $4210 and checks NMI flag. This only works if LDA instruction executes before the NMI triggers,
+			// which doesn't work very well with s9x's default DMA timing.
+			Timings.DMACPUSync = 20;
+			printf("DMA sync: %d\n", Timings.DMACPUSync);
 		}
 	}
 
@@ -4035,7 +4020,6 @@ static bool8 ReadBPSPatch (Stream *r, long, int32 &rom_size)
 	if(patch_crc32 != pp_crc32) { delete[] data; return false; }  //patch is corrupted
 	if(!Settings.IgnorePatchChecksum && rom_crc32 != source_crc32) { delete[] data; return false; }  //patch is for a different ROM
 
-	uint32 source_size = XPSdecode(data, addr, size);
 	uint32 target_size = XPSdecode(data, addr, size);
 	uint32 metadata_size = XPSdecode(data, addr, size);
 	addr += metadata_size;
@@ -4273,13 +4257,14 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 
                 Stream *s = new unzStream(file);
 				ret = ReadBPSPatch(s, offset, rom_size);
-                s->closeStream();
+				delete s;
 
 				if (ret)
 					printf("!\n");
 				else
 					printf(" failed!\n");
 			}
+			assert(unzClose(file) == UNZ_OK);
 		}
 	}
 #endif
@@ -4337,13 +4322,14 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 
                 Stream *s = new unzStream(file);
 				ret = ReadUPSPatch(s, offset, rom_size);
-                s->closeStream();
+				delete s;
 
 				if (ret)
 					printf("!\n");
 				else
 					printf(" failed!\n");
 			}
+			assert(unzClose(file) == UNZ_OK);
 		}
 	}
 #endif
@@ -4508,7 +4494,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 
                 Stream *s = new unzStream(file);
 				ret = ReadIPSPatch(s, offset, rom_size);
-                s->closeStream();
+				delete s;
 
 				if (ret)
 				{
@@ -4536,7 +4522,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 
                     Stream *s = new unzStream(file);
 					ret = ReadIPSPatch(s, offset, rom_size);
-                    s->closeStream();
+					delete s;
 
 					if (ret)
 					{
@@ -4571,7 +4557,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 
                     Stream *s = new unzStream(file);
 					ret = ReadIPSPatch(s, offset, rom_size);
-                    s->closeStream();
+					delete s;
 
 					if (ret)
 					{
@@ -4604,7 +4590,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 
                     Stream *s = new unzStream(file);
 					ret = ReadIPSPatch(s, offset, rom_size);
-                    s->closeStream();
+					delete s;
 
 					if (ret)
 					{

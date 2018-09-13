@@ -27,6 +27,16 @@
 #define PORT_QUIT               6
 #define PORT_SWAP_CONTROLLERS   7
 #define PORT_REWIND             8
+#define PORT_QUICKLOAD0         9
+#define PORT_QUICKLOAD1         10
+#define PORT_QUICKLOAD2         11
+#define PORT_QUICKLOAD3         12
+#define PORT_QUICKLOAD4         13
+#define PORT_QUICKLOAD5         14
+#define PORT_QUICKLOAD6         15
+#define PORT_QUICKLOAD7         16
+#define PORT_QUICKLOAD8         17
+#define PORT_QUICKLOAD9         18
 
 typedef struct BindingLink
 {

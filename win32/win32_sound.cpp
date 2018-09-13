@@ -22,10 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -138,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -146,14 +148,14 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
 
   Libretro port
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -194,6 +196,7 @@
 #include "CDirectSound.h"
 #include "CXAudio2.h"
 #include "win32_sound.h"
+#include "win32_display.h"
 
 #define CLAMP(x, low, high) (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
 
@@ -215,7 +218,19 @@ bool ReInitSound()
 {
 	if (GUI.AVIOut)
 		return false;
-	Settings.SoundInputRate = CLAMP(Settings.SoundInputRate,8000, 48000);
+	if (GUI.AutomaticInputRate)
+	{
+		int rate = WinGetAutomaticInputRate();
+		if (rate)
+			Settings.SoundInputRate = rate;
+		else
+		{
+			GUI.AutomaticInputRate = false;
+			Settings.SoundInputRate = 31950;
+		}
+	}
+
+	Settings.SoundInputRate = CLAMP(Settings.SoundInputRate,31700, 32300);
 	Settings.SoundPlaybackRate = CLAMP(Settings.SoundPlaybackRate,8000, 48000);
 	S9xSetSoundMute(GUI.Mute);
 	if(S9xSoundOutput)
@@ -242,6 +257,7 @@ bool8 S9xOpenSoundDevice ()
 	switch(GUI.SoundDriver) {
 		case WIN_SNES9X_DIRECT_SOUND_DRIVER:
 			S9xSoundOutput = &S9xDirectSound;
+			Settings.DynamicRateControl = false;
 			break;
 		case WIN_XAUDIO2_SOUND_DRIVER:
 			S9xSoundOutput = &S9xXAudio2;
@@ -264,6 +280,15 @@ bool8 S9xOpenSoundDevice ()
 called by the sound core to process generated samples
 */
 void S9xSoundCallback(void *data)
-{	
+{
+	static double last_volume = 1.0;
+
+	// only try to change volume if we actually need to switch it
+	double current_volume = (Settings.TurboMode ? GUI.VolumeTurbo : GUI.VolumeRegular) / 100.;
+	if (last_volume != current_volume) {
+		S9xSoundOutput->SetVolume(current_volume);
+		last_volume = current_volume;
+	}
+
 	S9xSoundOutput->ProcessSound();
 }

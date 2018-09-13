@@ -12,7 +12,6 @@ class S9xSoundDriver
         virtual bool8 open_device (void) = 0;
         virtual void start (void) = 0;
         virtual void stop (void) = 0;
-        virtual void mix (void) = 0;
 };
 
 

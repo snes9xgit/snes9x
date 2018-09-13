@@ -22,10 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -138,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -146,14 +148,14 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
 
   Libretro port
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -195,7 +197,7 @@
   (c) Copyright 2001 - 2011  zones
 
   Libretro port
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
   (c) Copyright 2002 - 2005  107
@@ -1295,7 +1297,7 @@ static void CheatFinderHandleAddEntryButton (WindowData *cf)
 	if (cfAddress[cfListSelection] > (0x20000 - cfViewNumBytes))
 		PlayAlertSound();
 	else
-	if (Cheat.num_cheats + cfViewNumBytes > MAX_CHEATS)
+	if (Cheat.g.size() + cfViewNumBytes > MAC_MAX_CHEATS)
 		AppearanceAlert(kAlertCautionAlert, kS9xMacAlertCFCantAddEntry, kS9xMacAlertCFCantAddEntryHint);
 	else
 		CheatFinderBeginAddEntrySheet(cf);
@@ -1465,11 +1467,12 @@ static void CheatFinderAddEntry (SInt64 value, char *description)
 
 	for (unsigned int i = 0; i < cfViewNumBytes; i++)
 	{
-		strcpy(Cheat.c[Cheat.num_cheats].name, description);
-		S9xAddCheat(true, true, addr + i + 0x7E0000, (UInt8) ((v & (0x000000FF << (i * 8))) >> (i * 8)));
+		char code[10];
+		snprintf(code, 10, "%x=%x", addr + i + 0x7E0000, (UInt8) ((v & (0x000000FF << (i * 8))) >> (i * 8)));
+		int index = S9xAddCheatGroup(description, code);
+		if(index >= 0)
+			S9xEnableCheatGroup(index);
 	}
-
-	S9xApplyCheats();
 }
 
 static pascal OSStatus CheatFinderListFrameEventHandler (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *userData)

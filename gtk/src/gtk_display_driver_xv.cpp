@@ -39,8 +39,7 @@ S9xXVDisplayDriver::S9xXVDisplayDriver (Snes9xWindow *window,
 void
 S9xXVDisplayDriver::resize_window (int width, int height)
 {
-    g_object_unref (gdk_window);
-    XDestroyWindow (display, xwindow);
+    gdk_window_destroy (gdk_window);
     create_window (width, height);
 
     return;
@@ -49,45 +48,31 @@ S9xXVDisplayDriver::resize_window (int width, int height)
 void
 S9xXVDisplayDriver::create_window (int width, int height)
 {
-    XSetWindowAttributes window_attr;
+    GdkWindowAttr window_attr;
+    memset (&window_attr, 0, sizeof (GdkWindowAttr));
+    window_attr.event_mask = GDK_EXPOSURE_MASK | GDK_STRUCTURE_MASK;
+    window_attr.width = width;
+    window_attr.height = height;
+    window_attr.x = 0;
+    window_attr.y = 0;
+    window_attr.wclass = GDK_INPUT_OUTPUT;
+    window_attr.window_type = GDK_WINDOW_CHILD;
+    window_attr.visual = gdk_x11_screen_lookup_visual (gtk_widget_get_screen (drawing_area), vi->visualid);
 
-    window_attr.colormap = xcolormap;
-    window_attr.border_pixel = 0;
-    window_attr.event_mask = StructureNotifyMask | ExposureMask;
-    window_attr.background_pixmap = None;
+    gdk_window = gdk_window_new (gtk_widget_get_window (drawing_area),
+                                 &window_attr,
+                                 GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL);
+    gdk_window_set_user_data (gdk_window, (gpointer) drawing_area);
 
-    xwindow = XCreateWindow (display,
-                             GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (drawing_area)),
-                             0,
-                             0,
-                             width,
-                             height,
-                             0,
-                             vi->depth,
-                             InputOutput,
-                             vi->visual,
-                             CWColormap | CWBorderPixel | CWBackPixmap | CWEventMask,
-                             &window_attr);
-    XSync (display, False);
+    gdk_window_show (gdk_window);
+    xwindow = GDK_COMPAT_WINDOW_XID (gdk_window);
 
     output_window_width = width;
     output_window_height = height;
-
-    XMapWindow (display, xwindow);
-    XSync (display, False);
-
-#if USE_GTK3
-    gdk_window = gdk_x11_window_foreign_new_for_display (gtk_widget_get_display (drawing_area), xwindow);
-#else
-    gdk_window = gdk_window_foreign_new (xwindow);
-#endif
-    XSync (display, False);
-
-    gdk_window_set_user_data (gdk_window, drawing_area);
 }
 
 void
-S9xXVDisplayDriver::update (int width, int height)
+S9xXVDisplayDriver::update (int width, int height, int yoffset)
 {
     int   current_width, current_height, final_pitch;
     uint8 *final_buffer;
@@ -95,6 +80,13 @@ S9xXVDisplayDriver::update (int width, int height)
     GtkAllocation allocation;
 
     gtk_widget_get_allocation (drawing_area, &allocation);
+
+    if (output_window_width  != allocation.width ||
+        output_window_height != allocation.height)
+    {
+        resize_window (allocation.width, allocation.height);
+    }
+
 #if GTK_CHECK_VERSION(3,10,0)
     int gdk_scale_factor = gdk_window_get_scale_factor (gdk_window);
 
@@ -106,18 +98,14 @@ S9xXVDisplayDriver::update (int width, int height)
     current_width = allocation.width;
     current_height = allocation.height;
 
-    if (output_window_width  != current_width ||
-        output_window_height != current_height)
-    {
-        resize_window (current_width, current_height);
-    }
-
     if (config->scale_method > 0)
     {
         uint8 *src_buffer = (uint8 *) padded_buffer[0];
         uint8 *dst_buffer = (uint8 *) padded_buffer[1];
         int   src_pitch = image_width * image_bpp;
         int   dst_pitch = scaled_max_width * image_bpp;
+
+        src_buffer += (src_pitch * yoffset);
 
         S9xFilter (src_buffer,
                    src_pitch,
@@ -133,6 +121,7 @@ S9xXVDisplayDriver::update (int width, int height)
     {
         final_buffer = (uint8 *) padded_buffer[0];
         final_pitch = image_width * image_bpp;
+        final_buffer += (final_pitch * yoffset);
     }
 
     update_image_size (width, height);
@@ -245,7 +234,6 @@ S9xXVDisplayDriver::update_image_size (int width, int height)
 int
 S9xXVDisplayDriver::init (void)
 {
-    int                 padding;
     int                 depth = 0, num_formats, num_attrs, highest_formats = 0;
     XvImageFormatValues *formats = NULL;
     XvAdaptorInfo       *adaptors;
@@ -258,11 +246,8 @@ S9xXVDisplayDriver::init (void)
     buffer[0] = malloc (image_padded_size);
     buffer[1] = malloc (scaled_padded_size);
 
-    padding = (image_padded_size - image_size) / 2;
-    padded_buffer[0] = (void *) (((uint8 *) buffer[0]) + padding);
-
-    padding = (scaled_padded_size - scaled_size) / 2;
-    padded_buffer[1] = (void *) (((uint8 *) buffer[1]) + padding);
+    padded_buffer[0] = (void *) (((uint8 *) buffer[0]) + image_padded_offset);
+    padded_buffer[1] = (void *) (((uint8 *) buffer[1]) + scaled_padded_offset);
 
     memset (buffer[0], 0, image_padded_size);
     memset (buffer[1], 0, scaled_padded_size);
@@ -358,9 +343,9 @@ S9xXVDisplayDriver::init (void)
 
                 /* on big-endian Xv still seems to like LSB order */
                 if (config->force_inverted_byte_order)
-                    S9xSetEndianess (ENDIAN_MSB);
+                    S9xSetEndianess (ENDIAN_SWAPPED);
                 else
-                    S9xSetEndianess (ENDIAN_LSB);
+                    S9xSetEndianess (ENDIAN_NORMAL);
             }
         }
     }
@@ -376,16 +361,16 @@ S9xXVDisplayDriver::init (void)
                 if (formats[i].byte_order == LSBFirst)
                 {
                     if (config->force_inverted_byte_order)
-                        S9xSetEndianess (ENDIAN_MSB);
+                        S9xSetEndianess (ENDIAN_SWAPPED);
                     else
-                        S9xSetEndianess (ENDIAN_LSB);
+                        S9xSetEndianess (ENDIAN_NORMAL);
                 }
                 else
                 {
                     if (config->force_inverted_byte_order)
-                        S9xSetEndianess (ENDIAN_LSB);
+                        S9xSetEndianess (ENDIAN_NORMAL);
                     else
-                        S9xSetEndianess (ENDIAN_MSB);
+                        S9xSetEndianess (ENDIAN_SWAPPED);
                 }
 
                 break;
@@ -403,9 +388,9 @@ S9xXVDisplayDriver::init (void)
             int r, g, b;
             int y, u, v;
 
-            r = (color & 0x7c00) >> 7;
-            g = (color & 0x03e0) >> 2;
-            b = (color & 0x001F) << 3;
+            r = ((color & 0xf800) >> 8) | ((color >> 13) & 0x7);
+            g = ((color & 0x07e0) >> 3) | ((color >> 9 ) & 0x3);
+            b = ((color & 0x001F) << 3) | ((color >> 3 ) & 0x7);
 
             y = (int) ((0.257  * ((double) r)) + (0.504  * ((double) g)) + (0.098  * ((double) b)) + 16.0);
             u = (int) ((-0.148 * ((double) r)) + (-0.291 * ((double) g)) + (0.439  * ((double) b)) + 128.0);
@@ -486,14 +471,13 @@ S9xXVDisplayDriver::init (void)
 void
 S9xXVDisplayDriver::deinit (void)
 {
+    gdk_window_destroy (gdk_window);
+
     XShmDetach (display, &shm);
     XSync (display, 0);
 
     XFreeColormap (display, xcolormap);
     XFree (vi);
-
-    g_object_unref (gdk_window);
-    XDestroyWindow (display, xwindow);
 
     free (buffer[0]);
     free (buffer[1]);
@@ -586,7 +570,6 @@ void
 S9xXVDisplayDriver::push_buffer (uint16 *src)
 {
     memmove (GFX.Screen, src, image_size);
-    update (window->last_width, window->last_height);
 
     return;
 }
@@ -631,6 +614,9 @@ S9xXVDisplayDriver::query_availability (void)
                  p_event_base,
                  p_error_base;
     Display *display = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
+
+    if (!display)
+        return 0;
 
     /* Test if XV and SHM are feasible */
     if (!XShmQueryExtension (display))

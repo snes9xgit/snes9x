@@ -3,6 +3,8 @@
 // Used by snes9x.rc
 //
 #define IDR_RT_MANIFEST2                1
+#define IDCANCEL2                       3
+#define IDAPPLY                         3
 #define IDR_MENU_US                     101
 #define IDC_CURSOR_SCOPE                101
 #define IDC_CURSOR_BLANK                102
@@ -37,11 +39,13 @@
 #define IDB_LOCKEDFOLDER                148
 #define IDB_HIDDENFOLDER                149
 #define IDD_MULTICART                   150
+#define IDD_DIALOG_SHADER_PARAMS        155
+#define IDD_DIALOG_XAUDIO2_INIT_ERROR   159
 #define IDC_DRIVER                      1001
 #define IDC_BUFLEN                      1002
 #define IDC_RATE                        1003
 #define IDC_MIX                         1004
-#define IDC_16BIT                       1005
+#define IDC_DYNRATECONTROL              1005
 #define IDC_STEREO                      1006
 #define IDC_REV_STEREO                  1007
 #define IDC_LINEAR_INTER                1008
@@ -55,10 +59,12 @@
 #define IDC_MUTE                        1016
 #define IDC_SKIP_TYPE                   1017
 #define IDC_SCROLLBAR1                  1018
+#define IDC_SCROLLBAR_PARAMS            1018
 #define IDC_VRAM_DISPLAY                1019
 #define IDC_WIP1                        1019
 #define IDC_ADDRESS                     1020
 #define IDC_FAMT                        1020
+#define IDC_AUTOMATICINPUTRATE          1021
 #define IDC_ROM_DATA                    1051
 #define IDC_WARNINGS                    1052
 #define IDC_DISCLAIMER                  1053
@@ -85,6 +91,8 @@
 #define IDC_REWIND_BUFFER_SPIN          1069
 #define IDC_REWIND_GRANULARITY          1070
 #define IDC_REWIND_GRANULARITY_SPIN     1071
+#define IDC_SFXSPEED                    1072
+#define IDC_SFXSPEED_SPIN               1073
 #define IDC_HOSTNAME                    1086
 #define IDC_PORTNUMBER                  1087
 #define IDC_CLEARHISTORY                1088
@@ -157,7 +165,10 @@
 #define IDC_KEYBOARD                    1127
 #define IDC_ALLOWLEFTRIGHT              1127
 #define IDC_CHEAT_ADDRESS               1128
+#define IDC_SEARCH_DB                   1128
 #define IDC_CHEAT_BYTE                  1129
+#define IDC_DELETE_CHEAT2               1129
+#define IDC_DELETE_ALL                  1129
 #define IDC_ADD_CHEAT                   1130
 #define IDC_CHEAT_LIST                  1131
 #define IDC_PICTURE                     1132
@@ -242,8 +253,10 @@
 #define IDC_LABEL_GRANU_TEXT            1187
 #define IDC_LABEL_PAUSEINTERVAL         1188
 #define IDC_LABEL_UP9                   1188
+#define IDC_LABEL_SFXSPEED              1188
 #define IDC_LABEL_PAUSEINTERVAL_TEXT    1189
 #define IDC_LABEL_UP10                  1189
+#define IDC_LABEL_SFXSPEED_2            1189
 #define IDC_LABEL_MAXSKIP               1190
 #define IDC_LABEL_UP11                  1190
 #define IDC_LABEL_CHEAT_CODE            1191
@@ -263,6 +276,7 @@
 #define IDC_ASPECT                      1199
 #define IDC_MESSAGES_IN_IMAGE           1200
 #define IDC_RECORD_NOW                  1201
+#define IDC_MESSAGES_SCALE              1201
 #define IDC_RECORD_RESET                1202
 #define IDC_JOY1                        1203
 #define IDC_JOY2                        1204
@@ -325,6 +339,9 @@
 #define IDC_LABEL_HK12                  1255
 #define IDC_LABEL_HK13                  1256
 #define IDC_PLAYWARN                    1257
+#define IDC_REDUCEINPUTLAG              1258
+#define IDC_INTEGERSCALING              1259
+#define IDC_NTSCSCANLINES               1260
 #define IDC_HOTKEY1                     2000
 #define IDC_HOTKEY2                     2001
 #define IDC_HOTKEY3                     2002
@@ -361,6 +378,19 @@
 #define IDC_SHADER_HLSL_BROWSE          3016
 #define IDC_SHADER_GROUP                3017
 #define IDC_SHADER_GLSL_BROWSE          3018
+#define IDC_SLIDER_VOLUME_REGULAR       3018
+#define IDC_EDIT_VOLUME_REGULAR         3019
+#define IDC_SHADER_GLSL_PARAMETERS      3019
+#define IDC_SLIDER_VOLUME_TURBO         3020
+#define IDC_EDIT_VOLUME_TURBO           3021
+#define IDC_STATIC_CONTAINER            3022
+#define IDC_STATIC_MEMORY_TYPE          3023
+#define IDC_STATIC_INTERLEAVE_MODE      3024
+#define IDC_STATIC_VIDEO_SYSTEM         3025
+#define IDC_STATIC_HEADER               3026
+#define IDC_ROM_SPLITTER                3027
+#define IDC_SYSLINK_DX                  3028
+#define IDC_STATIC_ICON                 3029
 #define ID_FILE_EXIT                    40001
 #define ID_WINDOW_HIDEMENUBAR           40004
 #define ID_FILE_AVI_RECORDING           40005
@@ -381,26 +411,6 @@
 #define ID_SOUND_22050HZ                40035
 #define ID_SOUND_44100HZ                40036
 #define ID_SOUND_30000HZ                40037
-#define ID_FILE_SAVE0                   40043
-#define ID_FILE_SAVE1                   40044
-#define ID_FILE_SAVE2                   40045
-#define ID_FILE_SAVE3                   40046
-#define ID_FILE_SAVE4                   40047
-#define ID_FILE_SAVE5                   40048
-#define ID_FILE_SAVE6                   40049
-#define ID_FILE_SAVE7                   40050
-#define ID_FILE_SAVE8                   40051
-#define ID_FILE_SAVE9                   40052
-#define ID_FILE_LOAD0                   40053
-#define ID_FILE_LOAD1                   40054
-#define ID_FILE_LOAD2                   40055
-#define ID_FILE_LOAD3                   40056
-#define ID_FILE_LOAD4                   40057
-#define ID_FILE_LOAD5                   40058
-#define ID_FILE_LOAD6                   40059
-#define ID_FILE_LOAD7                   40060
-#define ID_FILE_LOAD8                   40061
-#define ID_FILE_LOAD9                   40062
 #define ID_CHEAT_ENTER                  40063
 #define ID_CHEAT_SEARCH                 40064
 #define ID_CHEAT_APPLY                  40065
@@ -497,16 +507,40 @@
 #define ID_DEBUG_APU_TRACE              40173
 #define ID_EMULATION_BACKGROUNDINPUT    40174
 #define ID_SAVEMEMPACK                  40175
-#define ID_FILE_SAVE_FILE               40176
-#define ID_FILE_LOAD_FILE               40177
+#define ID_INPUT_BACKGROUNDKEYBOARDHOTKEYS 40176
+#define ID_INPUT_DETECTGAMEPADCHANGES   40177
+#define ID_FILE_SAVE0                   44000
+#define ID_FILE_SAVE1                   44001
+#define ID_FILE_SAVE2                   44002
+#define ID_FILE_SAVE3                   44003
+#define ID_FILE_SAVE4                   44004
+#define ID_FILE_SAVE5                   44005
+#define ID_FILE_SAVE6                   44006
+#define ID_FILE_SAVE7                   44007
+#define ID_FILE_SAVE8                   44008
+#define ID_FILE_SAVE9                   44009
+#define ID_FILE_SAVE_FILE               44010
+#define ID_FILE_LOAD0                   44020
+#define ID_FILE_LOAD1                   44021
+#define ID_FILE_LOAD2                   44022
+#define ID_FILE_LOAD3                   44023
+#define ID_FILE_LOAD4                   44024
+#define ID_FILE_LOAD5                   44025
+#define ID_FILE_LOAD6                   44026
+#define ID_FILE_LOAD7                   44027
+#define ID_FILE_LOAD8                   44028
+#define ID_FILE_LOAD9                   44029
+#define ID_FILE_LOAD_FILE               44030
+#define IDM_MACSRIFLE_TOGGLE            44031
+#define IDC_STATIC                      -1
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        151
+#define _APS_NEXT_RESOURCE_VALUE        161
 #define _APS_NEXT_COMMAND_VALUE         40178
-#define _APS_NEXT_CONTROL_VALUE         3018
+#define _APS_NEXT_CONTROL_VALUE         3030
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

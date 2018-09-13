@@ -22,10 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -138,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -146,14 +148,14 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
 
   Libretro port
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -193,7 +195,6 @@
 #define MAX_SHADER_TEXTURES 8
 
 #include <d3d9.h>
-#include <d3dx9.h>
 #include <windows.h>
 
 #include "cgFunctions.h"
@@ -215,7 +216,7 @@ typedef struct _VERTEX {
 		}
 } VERTEX; //our custom vertex with a constuctor for easier assignment
 
-enum current_d3d_shader_type { D3D_SHADER_NONE, D3D_SHADER_HLSL, D3D_SHADER_CG };
+enum current_d3d_shader_type { D3D_SHADER_NONE, D3D_SHADER_CG };
 
 class CDirect3D: public IS9xDisplayOutput
 {
@@ -237,7 +238,6 @@ private:
 	static const D3DVERTEXELEMENT9 vertexElems[4];
 	LPDIRECT3DVERTEXDECLARATION9 vertexDeclaration;
 
-	LPD3DXEFFECT            effect;
 	LPDIRECT3DTEXTURE9      rubyLUT[MAX_SHADER_TEXTURES];
 	CGcontext cgContext;
 	current_d3d_shader_type shader_type;
@@ -258,9 +258,7 @@ private:
 	void SetupVertices();
 	bool ResetDevice();
 	void SetFiltering();
-	void SetShaderVars(bool setMatrix = false);
 	bool SetShader(const TCHAR *file);
-	bool SetShaderHLSL(const TCHAR *file);
 	void checkForCgError(const char *situation);
 	bool SetShaderCG(const TCHAR *file);
 

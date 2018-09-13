@@ -22,10 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -138,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -146,14 +148,14 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
 
   Libretro port
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -205,25 +207,32 @@
 #include <sys/types.h>
 
 #ifdef __WIN32__
-#define NOMINMAX
+#define NOMINMAX 1
 #include <windows.h>
 #endif
-
-#define GFX_MULTI_FORMAT
 
 #ifdef __WIN32__
 //#define RIGHTSHIFT_IS_SAR
 #define RIGHTSHIFT_int8_IS_SAR
 #define RIGHTSHIFT_int16_IS_SAR
 #define RIGHTSHIFT_int32_IS_SAR
-#ifndef __WIN32_LIBSNES__
+#ifndef __LIBRETRO__
 #define SNES_JOY_READ_CALLBACKS
-#endif //__WIN32_LIBSNES__
+#define GFX_MULTI_FORMAT
+#endif //__LIBRETRO__
+#endif
+
+#ifdef __LIBRETRO__
+#define GFX_MULTI_FORMAT
 #endif
 
 #ifdef __MACOSX__
 #undef GFX_MULTI_FORMAT
 #define PIXEL_FORMAT RGB555
+#endif
+
+#ifndef PIXEL_FORMAT
+#define PIXEL_FORMAT RGB565
 #endif
 
 #ifndef snes9x_types_defined
@@ -274,9 +283,9 @@ __extension__
 typedef long long			int64;
 typedef unsigned long long	uint64;
 #ifdef PTR_NOT_INT
-typedef long				pint;
+typedef size_t				pint;
 #else   // __PTR_NOT_INT
-typedef int					pint;
+typedef size_t					pint;
 #endif  // __PTR_NOT_INT
 #endif	//  __WIN32__
 #endif	// HAVE_STDINT_H
@@ -315,14 +324,14 @@ void _makepath (char *, const char *, const char *, const char *, const char *);
 #define snprintf _snprintf
 #define strcasecmp	stricmp
 #define strncasecmp	strnicmp
-#ifndef __WIN32_LIBSNES__
+#ifndef __LIBRETRO__
 void WinDisplayStringFromBottom(const char *string, int linesFromBottom, int pixelsFromLeft, bool allowWrap);
 #define S9xDisplayString	WinDisplayStringFromBottom
 void SetInfoDlgColor(unsigned char, unsigned char, unsigned char);
 #define SET_UI_COLOR(r,g,b) SetInfoDlgColor(r,g,b)
-#else   // __WIN32_LIBSNES__
+#else   // __LIBRETRO__
 #define S9xDisplayString	DisplayStringFromBottom
-#endif  // __WIN32_LIBSNES__
+#endif  // __LIBRETRO__
 #endif  // __WIN32__
 
 #if defined(__DJGPP) || defined(__WIN32__)
@@ -346,7 +355,7 @@ void SetInfoDlgColor(unsigned char, unsigned char, unsigned char);
 #define TITLE "Snes9x"
 #endif
 
-#if defined(__i386__) || defined(__i486__) || defined(__i586__) || defined(__i686__) || defined(__x86_64__) || defined(__alpha__) || defined(__MIPSEL__) || defined(_M_IX86) || defined(_M_X64) || defined(_XBOX1) || defined(ARM) || defined(ANDROID)
+#if defined(__i386__) || defined(__i486__) || defined(__i586__) || defined(__i686__) || defined(__x86_64__) || defined(__alpha__) || defined(__MIPSEL__) || defined(_M_IX86) || defined(_M_X64) || defined(_XBOX1) || defined(__arm__) || defined(ANDROID) || (defined(__BYTE_ORDER__) && __BYTE_ORDER == __ORDER_LITTLE_ENDIAN__)
 #define LSB_FIRST
 #define FAST_LSB_WORD_ACCESS
 #else

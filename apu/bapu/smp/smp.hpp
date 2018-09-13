@@ -128,12 +128,18 @@ public:
   uint8  op_lsr (uint8  x);
   uint8  op_rol (uint8  x);
   uint8  op_ror (uint8  x);
+#ifdef DEBUGGER
+  void disassemble_opcode(char *output, uint16 addr);
+  inline uint8 disassemble_read(uint16 addr);
+  inline uint16 relb(int8 offset, int op_len);
+#endif
 };
 }
 
 namespace SNES
 {
-#if defined(DEBUGGER)
+// TODO: reactivate once APU debugger works again
+#if 0 // DEBUGGER
   #include "debugger/debugger.hpp"
   extern SMPDebugger smp;
 #else

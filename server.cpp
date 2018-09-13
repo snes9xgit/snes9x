@@ -22,10 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -138,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -146,14 +148,14 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
 
   Libretro port
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -358,7 +360,6 @@ static bool8 S9xNPSGetData (int socket, uint8 *data, int length)
 
 static bool8 S9xNPSSendData (int fd, const uint8 *data, int length)
 {
-    int Percent = 0;
     int len = length;
     int chunk = length / 50;
 
@@ -402,8 +403,8 @@ static bool8 S9xNPSSendData (int fd, const uint8 *data, int length)
 	data += sent;
         if (length > 1024)
         {
-            Percent = (uint8) (((length - len) * 100) / length);
 #ifdef __WIN32__
+            int Percent = (uint8) (((length - len) * 100) / length);
             PostMessage (GUI.hWnd, WM_USER, Percent, Percent);
             Sleep (0);
 #endif
@@ -594,11 +595,11 @@ void S9xNPProcessClient (int c)
 
             if (NPServer.SyncByReset)
             {
-                S9xNPServerAddTask (NP_SERVER_SEND_SRAM, (void *) c);
+                S9xNPServerAddTask (NP_SERVER_SEND_SRAM, (void *) (pint) c);
                 S9xNPServerAddTask (NP_SERVER_RESET_ALL, 0);
             }
             else
-                S9xNPServerAddTask (NP_SERVER_SYNC_CLIENT, (void *) c);
+                S9xNPServerAddTask (NP_SERVER_SYNC_CLIENT, (void *) (pint) c);
             break;
 
         case NP_CLNT_RECEIVED_ROM_IMAGE:
@@ -613,11 +614,11 @@ void S9xNPProcessClient (int c)
 
             if (NPServer.SyncByReset)
             {
-                S9xNPServerAddTask (NP_SERVER_SEND_SRAM, (void *) c);
+                S9xNPServerAddTask (NP_SERVER_SEND_SRAM, (void *) (pint) c);
                 S9xNPServerAddTask (NP_SERVER_RESET_ALL, 0);
             }
             else
-                S9xNPServerAddTask (NP_SERVER_SYNC_CLIENT, (void *) c);
+                S9xNPServerAddTask (NP_SERVER_SYNC_CLIENT, (void *) (pint) c);
 
             break;
 
@@ -658,7 +659,7 @@ void S9xNPProcessClient (int c)
 
                     if (NPServer.SyncByReset)
                     {
-                        S9xNPServerAddTask (NP_SERVER_SEND_SRAM, (void *) c);
+                        S9xNPServerAddTask (NP_SERVER_SEND_SRAM, (void *) (pint) c);
                         S9xNPServerAddTask (NP_SERVER_RESET_ALL, 0);
                     }
                     else
@@ -666,7 +667,7 @@ void S9xNPProcessClient (int c)
                         S9xNPServerAddTask (NP_SERVER_SYNC_CLIENT, (void *) c);
 #else
                         /* We need to resync all clients on new player connect as we don't have a 'reference game' */
-                        S9xNPServerAddTask (NP_SERVER_SYNC_ALL, (void *) c);
+                        S9xNPServerAddTask (NP_SERVER_SYNC_ALL, (void *) (pint) c);
 #endif
                 }
             }
@@ -1055,19 +1056,22 @@ void S9xNPServerLoop (void *)
 
 bool8 S9xNPStartServer (int port)
 {
+#ifdef __WIN32__
     static int p;
+    p = port;
+#endif
 
 #ifdef NP_DEBUG
     printf ("SERVER: Starting server on port %d @%ld\n", port, S9xGetMilliTime () - START);
 #endif
-    p = port;
+
     server_continue = TRUE;
     if (S9xNPServerInit (port))
 #ifdef __WIN32__
         return (_beginthread (S9xNPServerLoop, 0, &p) != (uintptr_t)(~0));
 #else
-    	S9xNPServerLoop(NULL);
-	return (TRUE);
+    S9xNPServerLoop(NULL);
+    return (TRUE);
 #endif
 
     return (FALSE);

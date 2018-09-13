@@ -22,10 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -138,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -146,14 +148,14 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
 
   Libretro port
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -219,6 +221,9 @@ void WinDeleteRecentGamesList ();
 
 HANDLE configMutex = NULL;
 
+extern TCHAR multiRomA[MAX_PATH]; // lazy, should put in sGUI and add init to {0} somewhere
+extern TCHAR multiRomB[MAX_PATH];
+
 void S9xParseArg (char **argv, int &i, int argc)
 {
 	if (strcasecmp (argv [i], "-restore") == 0)
@@ -234,10 +239,15 @@ void S9xParseArg (char **argv, int &i, int argc)
 	{
 		GUI.FullScreen = true;
 	}
+	else if (!strcasecmp(argv[i], "-cartb"))
+	{
+		Settings.Multi = TRUE; // only used to signal winmain
+		if (i + 1 < argc)
+		{
+			lstrcpyn(multiRomB, _tFromChar(argv[++i]), MAX_PATH);
+		}
+	}
 }
-
-extern TCHAR multiRomA [MAX_PATH]; // lazy, should put in sGUI and add init to {0} somewhere
-extern TCHAR multiRomB [MAX_PATH];
 
 void WinSetDefaultValues ()
 {
@@ -255,7 +265,7 @@ void WinSetDefaultValues ()
 	GUI.Stretch	= false;
 	GUI.FlipCounter	= 0;
 	GUI.NumFlipFrames =	1;
-	GUI.BilinearFilter	= false;
+	Settings.BilinearFilter	= false;
 	GUI.LockDirectories = false;
 	GUI.window_maximized = false;
 	GUI.EmulatedFullscreen = false;
@@ -796,6 +806,9 @@ void WinPreSave(ConfigFile& conf)
 	if(GUI.window_size.bottom < 10) GUI.window_size.bottom = 10;
 	if(GUI.window_size.right < 10) GUI.window_size.right = 10;
 
+	GUI.customRomDlgSettings.window_size.right -= GUI.customRomDlgSettings.window_size.left;
+	GUI.customRomDlgSettings.window_size.bottom -= GUI.customRomDlgSettings.window_size.top;
+
 	conf.DeleteKey("Sound::Mono");
 	if(configSort == 2)
 		conf.ClearLines();
@@ -815,6 +828,9 @@ void WinPostSave(ConfigFile& conf)
 	GUI.window_size.bottom += GUI.window_size.top;
 	GUI.window_size.right += extra_width;
 	GUI.window_size.bottom += extra_height;
+
+	GUI.customRomDlgSettings.window_size.right += GUI.customRomDlgSettings.window_size.left;
+	GUI.customRomDlgSettings.window_size.bottom += GUI.customRomDlgSettings.window_size.top;
 }
 void WinPostLoad(ConfigFile& conf)
 {
@@ -891,6 +907,7 @@ void WinRegisterConfigItems()
 	AddUIntC("FilterType", GUI.Scale, 0, filterString);
 	AddUIntC("FilterHiRes", GUI.ScaleHiRes, 0, filterString2);
 	AddBoolC("BlendHiRes", GUI.BlendHiRes, true, "true to horizontally blend Hi-Res images (better transparency effect on filters that do not account for this)");
+	AddBoolC("NTSCScanlines", GUI.NTSCScanlines, true, "true to use scanlines with Blargg's NTSC filters");
 	AddBoolC("ShaderEnabled", GUI.shaderEnabled, false, "true to use pixel shader (if supported by output method)");
 	AddStringC("Direct3D:D3DShader", GUI.D3DshaderFileName, MAX_PATH, "", "shader filename for Direct3D mode (HLSL effect file or CG shader");
 	AddStringC("OpenGL:OGLShader", GUI.OGLshaderFileName, MAX_PATH, "", "shader filename for OpenGL mode (bsnes-style XML shader or CG shader)");
@@ -902,10 +919,20 @@ void WinRegisterConfigItems()
 	AddIntC("Window:Left", GUI.window_size.left, 0, "in pixels from left edge of screen");
 	AddIntC("Window:Top", GUI.window_size.top, 0, "in pixels from top edge of screen");
 	AddBool("Window:Maximized", GUI.window_maximized, false);
+	AddIntC("CustomRomDialog:Width", GUI.customRomDlgSettings.window_size.right, 660, "");
+	AddIntC("CustomRomDialog:Height", GUI.customRomDlgSettings.window_size.bottom, 400, "");
+	AddIntC("CustomRomDialog:Left", GUI.customRomDlgSettings.window_size.left, 50, "in pixels from left edge of screen");
+	AddIntC("CustomRomDialog:Top", GUI.customRomDlgSettings.window_size.top, 50, "in pixels from top edge of screen");
+	AddBool("CustomRomDialog:Maximized", GUI.customRomDlgSettings.window_maximized, false);
+	AddIntC("CustomRomDialog:FolderPaneWidth", GUI.customRomDlgSettings.folderPaneWidth, 230, "");
+	AddIntC("CustomRomDialog:DescColumnWidth", GUI.customRomDlgSettings.columnDescription, 112, "");
+	AddIntC("CustomRomDialog:FilenameColumnWidth", GUI.customRomDlgSettings.columnFilename, 196, "");
+	AddIntC("CustomRomDialog:SizeColumnWidth", GUI.customRomDlgSettings.columnSize, 67, "");
 	AddBoolC("Stretch:Enabled", GUI.Stretch, true, "true to stretch the game image to fill the window or screen");
 	AddBoolC("Stretch:MaintainAspectRatio", GUI.AspectRatio, true, "prevents stretching from changing the aspect ratio");
+	AddBoolC("Stretch:IntegerScaling", GUI.IntegerScaling, false, "scales image height to exact integer multiples");
 	AddUIntC("Stretch:AspectRatioBaseWidth", GUI.AspectWidth, 256, "base width for aspect ratio calculation (AR=AspectRatioBaseWidth/224), default is 256 - set to 299 for 4:3 aspect ratio");
-	AddBoolC("Stretch:BilinearFilter", GUI.BilinearFilter, true, "allows bilinear filtering of stretching. Depending on your video card and the window size, this may result in a lower framerate.");
+	AddBoolC("Stretch:BilinearFilter", Settings.BilinearFilter, true, "allows bilinear filtering of stretching. Depending on your video card and the window size, this may result in a lower framerate.");
 	AddBoolC("Stretch:LocalVidMem", GUI.LocalVidMem, true, "determines the location of video memory in DirectDraw mode. May increase or decrease rendering performance, depending on your setup and which filter and stretching options are active.");
 	AddBool("Fullscreen:Enabled", GUI.FullScreen, false);
 	AddUInt("Fullscreen:Width", GUI.FullscreenMode.width, 640);
@@ -916,6 +943,8 @@ void WinRegisterConfigItems()
 	AddBoolC("Fullscreen:EmulateFullscreen", GUI.EmulateFullscreen, true,"true makes snes9x create a window that spans the entire screen when going fullscreen");
 	AddBoolC("HideMenu", GUI.HideMenu, false, "true to auto-hide the menu bar on startup.");
 	AddBoolC("Vsync", GUI.Vsync, false, "true to enable Vsync");
+	AddBoolC("ReduceInputLag", GUI.ReduceInputLag, false, "true to reduce input lag by hard synchronization");
+	AddBoolC("FilterMessageFont", GUI.filterMessagFont, true, "true to filter message font with EPX on 2x/3x scales if MessagesInImage is false)");
 #undef CATEGORY
 #define CATEGORY "Settings"
 	AddUIntC("FrameSkip", Settings.SkipFrames, AUTO_FRAMERATE, "200=automatic (limits at 50/60 fps), 0=none, 1=skip every other, ...");
@@ -970,15 +999,20 @@ void WinRegisterConfigItems()
 	AddIntC("Sync", Settings.SoundSync, 1, "1 to sync emulation to sound output, 0 to disable.");
 	AddBool2("Stereo", Settings.Stereo, true);
 	AddBool("SixteenBitSound", Settings.SixteenBitSound, true);
-	AddUIntC("Rate", Settings.SoundPlaybackRate, 32000, "sound playback quality, in Hz");
-	AddUIntC("InputRate", Settings.SoundInputRate, 31900, "for each 'Input rate' samples generated by the SNES, 'Playback rate' samples will produced. If you experience crackling you can try to lower this setting.");
+	AddUIntC("Rate", Settings.SoundPlaybackRate, 44100, "sound playback quality, in Hz");
+	AddUIntC("InputRate", Settings.SoundInputRate, 31950, "for each 'Input rate' samples generated by the SNES, 'Playback rate' samples will produced. If you experience crackling you can try to lower this setting.");
 	AddBoolC("ReverseStereo", Settings.ReverseStereo, false, "true to swap speaker outputs");
 	AddBoolC("Mute", GUI.Mute, false, "true to mute sound output (does not disable the sound CPU)");
+	AddBool("DynamicRateControl", Settings.DynamicRateControl, false);
+	AddBool("AutomaticInputRate", GUI.AutomaticInputRate, true);
+	AddIntC("InterpolationMethod", Settings.InterpolationMethod, 2, "0 = None, 1 = Linear, 2 = Gaussian (accurate), 3 = Cubic, 4 = Sinc");
 #undef CATEGORY
 #define	CATEGORY "Sound\\Win"
 	AddUIntC("SoundDriver", GUI.SoundDriver, 4, "0=Snes9xDirectSound, 4=XAudio2 (recommended)");
 	AddUIntC("BufferSize", GUI.SoundBufferSize, 64, "sound buffer size in ms - determines the internal and output sound buffer sizes. actual mixing is done every SoundBufferSize/4 samples");
 	AddBoolC("MuteFrameAdvance", GUI.FAMute, false, "true to prevent Snes9x from outputting sound when the Frame Advance command is in use");
+	AddUIntC("VolumeRegular", GUI.VolumeRegular, 100, "volume during regular play (percentage between 0 and 100)");
+	AddUIntC("VolumeTurbo", GUI.VolumeTurbo, 100, "volume during turbo mode (percentage between 0 and 100)");
 #undef CATEGORY
 #define	CATEGORY "Controls"
 	AddBoolC("AllowLeftRight", Settings.UpAndDown, false, "true to allow left+right and up+down");
@@ -1028,6 +1062,7 @@ void WinRegisterConfigItems()
 #undef ADDTN
 #undef ADD2T2
 	AddBool2C("Input:Background", GUI.BackgroundInput, false, "on to detect game keypresses and hotkeys while window is inactive, if PauseWhenInactive = FALSE.");
+	AddBool2C("Input:BackgroundKeyHotkeys", GUI.BackgroundKeyHotkeys, true, "on to also detect keyboard hotkeys when backgroundinput is active");
 #undef CATEGORY
 #define	CATEGORY "Controls\\Win\\Hotkeys"
 	AddBool2C("Handler:Joystick", GUI.JoystickHotkeys, true, "on to detect game controller buttons assigned to hotkeys. May impact performance.");
@@ -1045,10 +1080,14 @@ void WinRegisterConfigItems()
 	/*ADD(InterpMode7);*/ ADD(JoypadSwap); ADD(SwitchControllers); ADD(ResetGame); ADD(ToggleCheats);
 	ADD(TurboA); ADD(TurboB); ADD(TurboY); ADD(TurboX); ADD(TurboL); ADD(TurboR); ADD(TurboStart); ADD(TurboSelect); ADD(TurboUp); ADD(TurboDown); ADD(TurboLeft); ADD(TurboRight);
 	ADD(QuitS9X);ADD(Rewind);
+	ADD(SaveFileSelect); ADD(LoadFileSelect);
+	ADD(Mute);
 #undef ADD
 #undef ADDN
 #undef CATEGORY
-
+#define	CATEGORY "Hack"
+	AddUIntC("SuperFXClockMultiplier", Settings.SuperFXClockMultiplier, 100, "SuperFX speed, in percent (default 100)");
+#undef CATEGORY
 }
 
 

@@ -24,7 +24,9 @@
   (c) Copyright 2009 - 2010  BearOso,
                              OV2
 
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -225,6 +227,14 @@ extern "C" int _twremove(const char *filename ) {
 
 extern "C" int _twopen(const char *filename, int oflag, int pmode) {
   return _wopen(Utf8ToWide(filename), oflag, pmode);
+}
+
+extern "C" void _twfullpath(char* dst, const char* src, int len) {
+    wchar_t *resolved = _wfullpath(NULL, Utf8ToWide(src), MAX_PATH);
+    strncpy(dst, WideToUtf8(resolved), len);
+    free(resolved);
+    dst[len - 1] = '\0';
+    return;
 }
 
 #endif // UNICODE

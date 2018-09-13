@@ -22,10 +22,12 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2016  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2017         qwertymodo
+
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -138,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2016  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -146,14 +148,14 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2016  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
   (c) Copyright 2001 - 2011  zones
 
   Libretro port
-  (c) Copyright 2011 - 2016  Hans-Kristian Arntzen,
+  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
                              Daniel De Matteis
                              (Under no circumstances will commercial rights be given)
 
@@ -304,6 +306,8 @@ struct SoundStatus
 	int32	play_position;
 };
 
+
+static int frame_advance = 0;
 static SUnixSettings	unixSettings;
 static SoundStatus		so;
 
@@ -1186,6 +1190,12 @@ s9xcommand_t S9xGetPortCommandT (const char *n)
 
 		return (cmd);
 	}
+        else if (!strcmp(n, "Advance"))
+        {
+                cmd.type = S9xButtonPort;
+                cmd.port[1] = 3;
+                return (cmd);
+        }
 
 	return (S9xGetDisplayCommandT(n));
 }
@@ -1218,6 +1228,9 @@ char * S9xGetPortCommandName (s9xcommand_t cmd)
 
 				case 2:
 					return (strdup("Rewind"));
+
+                                case 3:
+                                        return (strdup("Advance"));
 			}
 
 			break;
@@ -1258,6 +1271,9 @@ void S9xHandlePortCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 				case 2:
 					rewinding = (bool8) data1;
 					break;
+
+                                case 3:
+                                        frame_advance = (bool8) data1;
 			}
 
 			break;
@@ -1617,9 +1633,8 @@ void S9xExit (void)
 #endif
 
 	Memory.SaveSRAM(S9xGetFilename(".srm", SRAM_DIR));
-	S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
 	S9xResetSaveTimer(FALSE);
-
+	S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
 	S9xUnmapAllControls();
 	S9xDeinitDisplay();
 	Memory.Deinit();
@@ -1656,7 +1671,7 @@ int main (int argc, char **argv)
 	Settings.SixteenBitSound = TRUE;
 	Settings.Stereo = TRUE;
 	Settings.SoundPlaybackRate = 32000;
-	Settings.SoundInputRate = 32000;
+	Settings.SoundInputRate = 31950;
 	Settings.SupportHiRes = TRUE;
 	Settings.Transparency = TRUE;
 	Settings.AutoDisplayMessages = TRUE;
@@ -1696,6 +1711,7 @@ int main (int argc, char **argv)
 
 	S9xLoadConfigFiles(argv, argc);
 	rom_filename = S9xParseArgs(argv, argc);
+	S9xDeleteCheats();
 
 	make_snes9x_dirs();
 
@@ -1783,9 +1799,17 @@ int main (int argc, char **argv)
 		exit(1);
 	}
 
+	S9xDeleteCheats();
+	S9xCheatsEnable();
 	NSRTControllerSetup();
 	Memory.LoadSRAM(S9xGetFilename(".srm", SRAM_DIR));
-	S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
+
+	if (Settings.ApplyCheats)
+	{
+		S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
+	}
+
+	S9xParseArgsForCheats(argv, argc);
 
 	CPU.Flags = saved_flags;
 	Settings.StopEmulation = FALSE;
@@ -1928,12 +1952,26 @@ int main (int argc, char **argv)
 	#endif
 		{
 			if(rewinding)
+			{
+				uint16 joypads[8];
+				for (int i = 0; i < 8; i++)
+					joypads[i] = MovieGetJoypad(i);
+
 				rewinding = stateMan.pop();
+
+				for (int i = 0; i < 8; i++)
+					MovieSetJoypad (i, joypads[i]);
+			}
 			else if(IPPU.TotalEmulatedFrames % unixSettings.rewindGranularity == 0)
 				stateMan.push();
 
 			S9xMainLoop();
 		}
+                if (Settings.Paused && frame_advance)
+                {
+                        S9xMainLoop();
+                        frame_advance = 0;
+                }
 
 	#ifdef NETPLAY_SUPPORT
 		if (NP_Activated)

@@ -30,13 +30,13 @@ class GtkBuilderWindow
         unsigned char get_combo (const char *name);
         void combo_box_append (const char *name, const char *value);
         void combo_box_append (GtkComboBox *combo, const char *value);
-        unsigned int get_spin (const char *name);
+        double get_spin (const char *name);
         float get_slider (const char *name);
         void set_check (const char *name, unsigned char value);
         void set_entry_value (const char *name, unsigned int value);
         void set_entry_text (const char *name, const char *text);
         void set_combo (const char *name, unsigned char value);
-        void set_spin (const char *name, unsigned int value);
+        void set_spin (const char *name, double value);
         void set_slider (const char *name, float value);
         int has_focus (const char *widget);
 

@@ -1,0 +1,9 @@
+[submodule "win32/libpng/src"]
+	path = win32/libpng/src
+	url = https://git.code.sf.net/p/libpng/code
+[submodule "win32/zlib/src"]
+	path = win32/zlib/src
+	url = https://github.com/madler/zlib.git
+[submodule "win32/DirectXMath"]
+	path = win32/DirectXMath
+	url = https://github.com/Microsoft/DirectXMath

@@ -3,8 +3,7 @@
 
 #include "gtk_sound.h"
 #include "gtk_sound_driver.h"
-#include "pulse/simple.h"
-#include "pulse/error.h"
+#include "pulse/pulseaudio.h"
 
 class S9xPulseSoundDriver : public S9xSoundDriver
 {
@@ -15,12 +14,16 @@ class S9xPulseSoundDriver : public S9xSoundDriver
         bool8 open_device (void);
         void start (void);
         void stop (void);
-        void mix (void);
         void samples_available (void);
+        void lock (void);
+        void unlock (void);
+        void wait (void);
+
+        pa_threaded_mainloop *mainloop;
+        pa_context *context;
+        pa_stream *stream;
 
     private:
-        pa_simple *pulse;
-        uint8 *buffer;
         int buffer_size;
 
 };
