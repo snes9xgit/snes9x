@@ -287,6 +287,7 @@ struct CMemory
 	int		ScoreHiROM (bool8, int32 romoff = 0);
 	int		ScoreLoROM (bool8, int32 romoff = 0);
 	uint32	HeaderRemove (uint32, uint8 *);
+	bool	HeaderRemove (uint32*, const uint8 **);
 	uint32	FileLoader (uint8 *, const char *, uint32);
     uint32  MemLoader (uint8 *, const char*, uint32);
     bool8   LoadROMMem (const uint8 *, uint32);
