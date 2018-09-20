@@ -858,7 +858,7 @@ static bool valid_normal_bank (uint8 bankbyte)
     return (false);
 }
 
-static int is_bsx (uint8 *p)
+static int is_bsx (const uint8 *p)
 {
     if ((p[26] == 0x33 || p[26] == 0xFF) && (!p[21] || (p[21] & 131) == 128) && valid_normal_bank(p[24]))
     {
@@ -922,33 +922,40 @@ bool retro_load_game(const struct retro_game_info *game)
 
     update_variables();
 
-    if(game->data == NULL && game->size == 0 && game->path != NULL)
-        rom_loaded = Memory.LoadROM(game->path);
+    uint32 size = game->size;
+    const uint8_t* data = (const uint8_t*)game->data;
+    const char* path = game->path;
+
+    if(data == NULL && size == 0 && path != NULL)
+        rom_loaded = Memory.LoadROM(path);
     else
     {
-        uint8 *biosrom = new uint8[0x100000];
+        //Use HeaderRemove like Memory.LoadRom -> FileLoader
+        Memory.HeaderRemove(&size, &data);
 
-        if (game->path != NULL)
+        if (path != NULL)
         {
-            extract_basename(g_basename, game->path, sizeof(g_basename));
-            extract_directory(g_rom_dir, game->path, sizeof(g_rom_dir));
+            extract_basename(g_basename, path, sizeof(g_basename));
+            extract_directory(g_rom_dir, path, sizeof(g_rom_dir));
         }
 
-        if (is_SufamiTurbo_Cart((uint8 *) game->data, game->size)) {
+        if (is_SufamiTurbo_Cart(data, size)) {
+            uint8 *biosrom = new uint8[0x40000];
             if ((rom_loaded = LoadBIOS(biosrom,"STBIOS.bin",0x40000)))
-            rom_loaded = Memory.LoadMultiCartMem((const uint8_t*)game->data, game->size, 0, 0, biosrom, 0x40000);
+            rom_loaded = Memory.LoadMultiCartMem(data, size, 0, 0, biosrom, 0x40000);
+            if (biosrom) delete[] biosrom;
         }
 
         else
-        if ((is_bsx((uint8 *) game->data + 0x7fc0)==1) | (is_bsx((uint8 *) game->data + 0xffc0)==1)) {
+        if ((is_bsx(data + 0x7fc0)==1) | (is_bsx(data + 0xffc0)==1)) {
+            uint8 *biosrom = new uint8[0x100000];
             if ((rom_loaded = LoadBIOS(biosrom,"BS-X.bin",0x100000)))
-            rom_loaded = Memory.LoadMultiCartMem(biosrom, 0x100000, (const uint8_t*)game->data, game->size, 0, 0);
+            rom_loaded = Memory.LoadMultiCartMem(biosrom, 0x100000, data, size, 0, 0);
+            if (biosrom) delete[] biosrom;
         }
 
         else
-            rom_loaded = Memory.LoadROMMem((const uint8_t*)game->data ,game->size);
-
-        if(biosrom) delete[] biosrom;
+            rom_loaded = Memory.LoadROMMem(data, size);
     }
 
     if (rom_loaded)

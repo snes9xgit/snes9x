@@ -1396,11 +1396,25 @@ int CMemory::First512BytesCountZeroes() const
 
 uint32 CMemory::HeaderRemove (uint32 size, uint8 *buf)
 {
+	const uint8* buf2 = buf;
+	uint32 size2 = size;
+	if (HeaderRemove(&size2, &buf2))
+	{
+		memmove(buf, buf2, size2);
+	}
+	return size;
+}
+
+bool CMemory::HeaderRemove (uint32 *size_p, const uint8 **buf_p)
+{
+	uint32 &size = *size_p;
+	const uint8 *&buf = *buf_p;
+
 	uint32	calc_size = (size / 0x2000) * 0x2000;
 
 	if ((size - calc_size == 512 && !Settings.ForceNoHeader) || Settings.ForceHeader)
 	{
-		uint8	*NSRTHead = buf + 0x1D0; // NSRT Header Location
+		const uint8	*NSRTHead = buf + 0x1D0; // NSRT Header Location
 
 		// detect NSRT header
 		if (!strncmp("NSRT", (char *) &NSRTHead[24], 4))
@@ -1414,12 +1428,13 @@ uint32 CMemory::HeaderRemove (uint32 size, uint8 *buf)
 			}
 		}
 
-		memmove(buf, buf + 512, calc_size);
+		buf += 512;
 		HeaderCount++;
 		size -= 512;
+		return true;
 	}
 
-	return (size);
+	return false;
 }
 
 uint32 CMemory::FileLoader (uint8 *buffer, const char *filename, uint32 maxsize)
