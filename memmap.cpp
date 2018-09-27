@@ -1380,6 +1380,20 @@ int CMemory::ScoreLoROM (bool8 skip_header, int32 romoff)
 	return (score);
 }
 
+int CMemory::First512BytesCountZeroes() const
+{
+	const uint8 *buf = ROM;
+	int zeroCount = 0;
+	for (int i = 0; i < 512; i++)
+	{
+		if (buf[i] == 0)
+		{
+			zeroCount++;
+		}
+	}
+	return zeroCount;
+}
+
 uint32 CMemory::HeaderRemove (uint32 size, uint8 *buf)
 {
 	uint32	calc_size = (size / 0x2000) * 0x2000;
@@ -1590,13 +1604,21 @@ bool8 CMemory::LoadROMInt (int32 ROMfillSize)
 	ExtendedFormat = NOPE;
 
 	int	hi_score, lo_score;
+	int score_headered;
+	int score_nonheadered;
 
 	hi_score = ScoreHiROM(FALSE);
 	lo_score = ScoreLoROM(FALSE);
+	score_nonheadered = max(hi_score, lo_score);
+	score_headered = max(ScoreHiROM(TRUE), ScoreLoROM(TRUE));
 
-	if (HeaderCount == 0 && !Settings.ForceNoHeader &&
-		((hi_score >  lo_score && ScoreHiROM(TRUE) > hi_score) ||
-		 (hi_score <= lo_score && ScoreLoROM(TRUE) > lo_score)))
+	bool size_is_likely_headered = ((ROMfillSize - 512) & 0xFFFF) == 0;
+	if (size_is_likely_headered) { score_headered += 2; } else { score_headered -= 2; }
+	if (First512BytesCountZeroes() >= 0x1E0) { score_headered += 2; } else { score_headered -= 2; }
+
+	bool headered_score_highest = score_headered > score_nonheadered;
+
+	if (HeaderCount == 0 && !Settings.ForceNoHeader && headered_score_highest)
 	{
 		memmove(ROM, ROM + 512, ROMfillSize - 512);
 		ROMfillSize -= 512;
@@ -3820,7 +3842,7 @@ void CMemory::ApplyROMFixes (void)
 
 	Timings.HDMAStart   = SNES_HDMA_START_HC + Settings.HDMATimingHack - 100;
 	Timings.HBlankStart = SNES_HBLANK_START_HC + Timings.HDMAStart - SNES_HDMA_START_HC;
-	Timings.IRQTriggerCycles = 10;
+	Timings.IRQTriggerCycles = 14;
 
 	if (!Settings.DisableGameSpecificHacks)
 	{
