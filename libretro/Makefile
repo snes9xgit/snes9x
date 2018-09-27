@@ -93,6 +93,20 @@ else ifeq ($(platform), osx)
    OSX_LT_MAVERICKS = `(( $(OSXVER) <= 9)) && echo "YES"`
    fpic += -mmacosx-version-min=10.1
 
+# Nintendo Switch (libnx)
+else ifeq ($(platform), libnx)
+    include $(DEVKITPRO)/libnx/switch_rules
+    EXT=a
+    TARGET := $(TARGET_NAME)_libretro_$(platform).$(EXT)
+    DEFINES := -DSWITCH=1 -U__linux__ -U__linux -DRARCH_INTERNAL
+    CFLAGS	:=	 $(DEFINES) -g -O3 \
+                 -fPIE -I$(LIBNX)/include/ -ffunction-sections -fdata-sections -ftls-model=local-exec -Wl,--allow-multiple-definition -specs=$(LIBNX)/switch.specs
+    CFLAGS += $(INCDIRS)
+    CFLAGS	+=	$(INCLUDE)  -D__SWITCH__ -DHAVE_LIBNX -march=armv8-a -mtune=cortex-a57 -mtp=soft
+    CXXFLAGS := $(ASFLAGS) $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11
+    CFLAGS += -std=gnu11
+    STATIC_LINKING = 1
+
 # iOS
 else ifneq (,$(findstring ios,$(platform)))
    CFLAGS += -flto
