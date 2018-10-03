@@ -86,6 +86,32 @@ main (int argc, char *argv[])
 
     S9xPortSoundInit ();
 
+    for (int port = 0; port < 2; port++)
+    {
+        enum controllers type;
+        int8 id;
+        S9xGetController (port, &type, &id, &id, &id, &id);
+        std::string device_type;
+
+        switch (type)
+        {
+        case CTL_MP5:
+            device_type = "multitap";
+            break;
+        case CTL_MOUSE:
+            device_type = "mouse";
+            break;
+        case CTL_SUPERSCOPE:
+            device_type = "superscope";
+            break;
+        default:
+            device_type = "joypad";
+        }
+
+        device_type += std::to_string (port + 1);
+        top_level->set_menu_item_selected (device_type.c_str ());
+    }
+
     gui_config->reconfigure ();
     top_level->update_accels ();
 
@@ -705,12 +731,6 @@ S9xExit (void)
 void
 S9xPostRomInit (void)
 {
-    //First plug in both, they'll change later as needed
-    S9xSetController (0, CTL_JOYPAD,     0, 0, 0, 0);
-    S9xSetController (1, CTL_JOYPAD,     1, 0, 0, 0);
-    top_level->set_menu_item_selected ("joypad1");
-    top_level->set_menu_item_selected ("joypad2");
-
     if (!strncmp ((const char *) Memory.NSRTHeader + 24, "NSRT", 4))
     {
         switch (Memory.NSRTHeader[29])

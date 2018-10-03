@@ -462,6 +462,10 @@ S9xInitInputDevices (void)
     }
 #endif
 
+    //First plug in both, they'll change later as needed
+    S9xSetController (0, CTL_JOYPAD,     0, 0, 0, 0);
+    S9xSetController (1, CTL_JOYPAD,     1, 0, 0, 0);
+
     return;
 }
 
