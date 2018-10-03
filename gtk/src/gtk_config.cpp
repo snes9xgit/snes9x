@@ -260,7 +260,6 @@ Snes9xConfig::load_defaults (void)
     Settings.InterpolationMethod = DSP_INTERPOLATION_GAUSSIAN;
     Settings.HDMATimingHack = 100;
     Settings.SuperFXClockMultiplier = 100;
-    Settings.InitialSnapshotFilename[0] = '\0';
 #ifdef ALLOW_CPU_OVERCLOCK
     Settings.MaxSpriteTilesPerLine = 34;
     Settings.OneClockCycle = 6;

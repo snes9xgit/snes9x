@@ -3521,6 +3521,11 @@ int WINAPI WinMain(
 		{
 			LoadROM(rom_filename);
 		}
+
+		if (*Settings.InitialSnapshotFilename)
+		{
+			S9xUnfreezeGame(Settings.InitialSnapshotFilename);
+		}
 	}
 
 	S9xUnmapAllControls();
