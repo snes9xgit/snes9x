@@ -48,7 +48,6 @@ static int g_screen_gun_height = SNES_HEIGHT;
 
 
 #define SNES_4_3 4.0f / 3.0f
-#define SNES_8_7 8.0f / 7.0f
 
 char g_rom_dir[1024];
 char g_basename[1024];
@@ -132,7 +131,7 @@ enum overscan_mode {
 };
 enum aspect_mode {
     ASPECT_RATIO_4_3,
-    ASPECT_RATIO_8_7,
+    ASPECT_RATIO_1_1,
     ASPECT_RATIO_NTSC,
     ASPECT_RATIO_PAL,
     ASPECT_RATIO_AUTO
@@ -195,7 +194,7 @@ void retro_set_environment(retro_environment_t cb)
         { "snes9x_sndchan_7", "Enable sound channel 7; enabled|disabled" },
         { "snes9x_sndchan_8", "Enable sound channel 8; enabled|disabled" },
         { "snes9x_overscan", "Crop overscan; enabled|disabled|auto" },
-        { "snes9x_aspect", "Preferred aspect ratio; 4:3|8:7|auto|ntsc|pal" },
+        { "snes9x_aspect", "Preferred aspect ratio; 4:3|uncorrected|auto|ntsc|pal" },
         { "snes9x_region", "Console region (Reload core); auto|ntsc|pal" },
         { "snes9x_superscope_crosshair", "Super Scope crosshair; 2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|0|1" },
         { "snes9x_superscope_color", "Super Scope color; White|White (blend)|Red|Red (blend)|Orange|Orange (blend)|Yellow|Yellow (blend)|Green|Green (blend)|Cyan|Cyan (blend)|Sky|Sky (blend)|Blue|Blue (blend)|Violet|Violet (blend)|Pink|Pink (blend)|Purple|Purple (blend)|Black|Black (blend)|25% Grey|25% Grey (blend)|50% Grey|50% Grey (blend)|75% Grey|75% Grey (blend)" },
@@ -473,8 +472,8 @@ static void update_variables(void)
             newval = ASPECT_RATIO_PAL;
         else if (strcmp(var.value, "4:3") == 0)
             newval = ASPECT_RATIO_4_3;
-        else if (strcmp(var.value, "8:7") == 0)
-            newval = ASPECT_RATIO_8_7;
+        else if (strcmp(var.value, "uncorrected") == 0)
+            newval = ASPECT_RATIO_1_1;
 
         if (newval != aspect_ratio_mode)
         {
@@ -639,9 +638,9 @@ float get_aspect_ratio(unsigned width, unsigned height)
     {
         return SNES_4_3;
     }
-    else if (aspect_ratio_mode == ASPECT_RATIO_8_7)
+    else if (aspect_ratio_mode == ASPECT_RATIO_1_1)
     {
-        return SNES_8_7;
+        return (float) width / (float) height;
     }
 
     // OV2: not sure if these really make sense - NTSC is similar to 4:3, PAL looks weird
