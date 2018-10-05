@@ -442,12 +442,13 @@ void OpenRWRecentFile(int memwRFileNumber)
 		char TempAddressStr[11];
 		char TempSize;
 		char TempType;
+		int TempWrongEndian;
 		while (i < 0)
 			i++;
 		do {
 			fgets(Str_Tmp_Char,1024,WatchFile);
 		} while (Str_Tmp_Char[0] == '\n');
-		sscanf(Str_Tmp_Char,"%*05X%*c%6s%*c%c%*c%c%*c%d",TempAddressStr,&TempSize,&TempType,&(Temp.WrongEndian));
+		sscanf(Str_Tmp_Char,"%*05X%*c%6s%*c%c%*c%c%*c%d",TempAddressStr,&TempSize,&TempType,&TempWrongEndian);
 		Temp.Address = DisplayToRWInternalAddress(_tFromChar(TempAddressStr));
 		Temp.Size = TempSize;
 		Temp.Type = TempType;
@@ -616,12 +617,13 @@ bool Load_Watches(bool clear, const TCHAR* filename)
 		char TempAddressStr[11];
 		char TempSize;
 		char TempType;
+		int TempWrongEndian;
 		while (i < 0)
 			i++;
 		do {
 			fgets(Str_Tmp_Char,1024,WatchFile);
 		} while (Str_Tmp_Char[0] == '\n');
-		sscanf(Str_Tmp_Char,"%*05X%*c%6s%*c%c%*c%c%*c%d",TempAddressStr,&TempSize,&TempType,&(Temp.WrongEndian));
+		sscanf(Str_Tmp_Char,"%*05X%*c%6s%*c%c%*c%c%*c%d",TempAddressStr,&TempSize,&TempType,&TempWrongEndian);
 		Temp.Address = DisplayToRWInternalAddress(_tFromChar(TempAddressStr));
 		Temp.Size = TempSize;
 		Temp.Type = TempType;

@@ -96,7 +96,7 @@ void ResetMemoryRegions()
 
 	// use RWInternalToSoftwareAddress to figure out what all the possible memory regions are,
 	// split up wherever there's a discontinuity in the address in our software RAM.
-	static const int regionSearchGranularity = 0x100; // if this is too small, we'll waste time (in this function only), but if any region in RAM isn't evenly divisible by this, we might crash.
+	static const unsigned int regionSearchGranularity = 0x100; // if this is too small, we'll waste time (in this function only), but if any region in RAM isn't evenly divisible by this, we might crash.
 	HWAddressType hwRegionStart = 0;
 	uint8* regionStart = NULL;
 	uint8* regionEnd = NULL;
@@ -134,7 +134,7 @@ void ResetMemoryRegions()
 			// create the region
 			if(!discard)
 			{
-				MemoryRegion region = { hwRegionStart, regionSearchGranularity + (regionEnd - regionStart), regionStart };
+				MemoryRegion region = { hwRegionStart, regionSearchGranularity + (unsigned int)(regionEnd - regionStart), regionStart };
 				s_activeMemoryRegions.push_back(region);
 			}
 
