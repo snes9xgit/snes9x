@@ -1,9 +1,5 @@
 version: 1.56.2-{build}
 
-branches:
-  except:
-    - master
-
 image: Visual Studio 2017
 
 environment:
