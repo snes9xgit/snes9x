@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2017  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
   (c) Copyright 2017         qwertymodo
@@ -140,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2017  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -148,7 +148,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2017  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -196,6 +196,7 @@
 #include "CDirectSound.h"
 #include "CXAudio2.h"
 #include "win32_sound.h"
+#include "win32_display.h"
 
 #define CLAMP(x, low, high) (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
 
@@ -217,7 +218,19 @@ bool ReInitSound()
 {
 	if (GUI.AVIOut)
 		return false;
-	Settings.SoundInputRate = CLAMP(Settings.SoundInputRate,8000, 48000);
+	if (GUI.AutomaticInputRate)
+	{
+		int rate = WinGetAutomaticInputRate();
+		if (rate)
+			Settings.SoundInputRate = rate;
+		else
+		{
+			GUI.AutomaticInputRate = false;
+			Settings.SoundInputRate = 31950;
+		}
+	}
+
+	Settings.SoundInputRate = CLAMP(Settings.SoundInputRate,31700, 32300);
 	Settings.SoundPlaybackRate = CLAMP(Settings.SoundPlaybackRate,8000, 48000);
 	S9xSetSoundMute(GUI.Mute);
 	if(S9xSoundOutput)

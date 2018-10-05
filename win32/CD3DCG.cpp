@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2017  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
   (c) Copyright 2017         qwertymodo
@@ -140,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2017  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -148,7 +148,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2017  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -191,6 +191,7 @@
 #include "CD3DCG.h"
 #include "wsnes9x.h"
 #include "win32_display.h"
+#include "snes9x.h"
 #include <Dxerr.h>
 #include <png.h>
 #include "CDirect3D.h"
@@ -334,7 +335,7 @@ bool CD3DCG::LoadShader(const TCHAR *shaderFile)
 		   and no filter has been set use the GUI setting
 		*/
 		if(pass.scaleParams.scaleTypeX==CG_SCALE_NONE && !it->filterSet) {
-			pass.linearFilter = GUI.BilinearFilter;
+			pass.linearFilter = Settings.BilinearFilter;
 		} else {
 			pass.linearFilter = it->linearFilter;
 		}
@@ -714,7 +715,7 @@ void CD3DCG::setShaderVars(int pass)
     if(shaderPasses[pass].frameCounterMod)
         shaderFrameCnt = (float)(frameCnt % shaderPasses[pass].frameCounterMod);
 	setProgramUniform(pass,"IN.frame_count",&shaderFrameCnt);
-    float frameDirection = GUI.rewinding?-1.0f:1.0f;
+    float frameDirection = Settings.Rewinding?-1.0f:1.0f;
     setProgramUniform(pass,"IN.frame_direction",&frameDirection);
 
 	/* ORIG parameter

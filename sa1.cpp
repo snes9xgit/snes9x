@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2017  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
   (c) Copyright 2017         qwertymodo
@@ -140,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2017  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -148,7 +148,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2017  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -741,8 +741,10 @@ void S9xSetSA1 (uint8 byte, uint32 address)
 						SA1.sum = 0;
 					else
 					{
-						int16	quotient  = (int16) SA1.op1 / (uint16) SA1.op2;
-						uint16	remainder = (int16) SA1.op1 % (uint16) SA1.op2;
+						int16 dividend = (int16) SA1.op1;
+						uint16 divisor = (uint16) SA1.op2;
+						uint16	remainder = (dividend >= 0) ? dividend % divisor : (dividend % divisor) + divisor;
+						uint16	quotient  = (dividend - remainder) / divisor;
 						SA1.sum = (remainder << 16) | quotient;
 					}
 

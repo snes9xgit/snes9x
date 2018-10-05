@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2017  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
   (c) Copyright 2017         qwertymodo
@@ -140,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2017  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -148,7 +148,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2017  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -200,7 +200,7 @@
 #include "missing.h"
 #endif
 
-#define ADD_CYCLES(n)	{ CPU.PrevCycles = CPU.Cycles; CPU.Cycles += (n); S9xCheckInterrupts(); }
+#define ADD_CYCLES(n)	{ CPU.Cycles += (n); }
 
 extern uint8	*HDMAMemPointers[8];
 extern int		HDMA_ModeByteCounts[8];
@@ -886,11 +886,11 @@ bool8 S9xDoDMA (uint8 Channel)
 									count--;
 								// Fall through
 								case 1:
-									Work = *(base + p);
+									OpenBus = *(base + p);
 #ifdef HAVE_LUA
-									CallRegisteredLuaMemHook((d->ABank << 16) + d->AAddress, 1, Work, LUAMEMHOOK_READ);
+									CallRegisteredLuaMemHook((d->ABank << 16) + d->AAddress, 1, OpenBus, LUAMEMHOOK_READ);
 #endif
-									REGISTER_2119_linear(Work);
+									REGISTER_2119_linear(OpenBus);
 									UPDATE_COUNTERS;
 									count--;
 								}
@@ -1363,11 +1363,9 @@ bool8 S9xDoDMA (uint8 Channel)
 		}
 	}
 
-	if (CPU.NMILine && (Timings.NMITriggerPos != 0xffff))
+	if (CPU.NMIPending && (Timings.NMITriggerPos != 0xffff))
 	{
 		Timings.NMITriggerPos = CPU.Cycles + Timings.NMIDMADelay;
-		if (Timings.NMITriggerPos >= Timings.H_Max)
-			Timings.NMITriggerPos -= Timings.H_Max;
 	}
 
 	// Release the memory used in SPC7110 DMA
@@ -1498,13 +1496,14 @@ void S9xStartHDMA (void)
 
 uint8 S9xDoHDMA (uint8 byte)
 {
-	struct SDMA	*p = &DMA[0];
+	struct SDMA *p;
 
 	uint32	ShiftedIBank;
 	uint16	IAddr;
 	bool8	temp;
 	int32	tmpch;
-	int		d = 0;
+	int	d;
+	uint8	mask;
 
 	CPU.InHDMA = TRUE;
 	CPU.InDMAorHDMA = TRUE;
@@ -1515,7 +1514,7 @@ uint8 S9xDoHDMA (uint8 byte)
 	// XXX: Not quite right...
 	ADD_CYCLES(Timings.DMACPUSync);
 
-	for (uint8 mask = 1; mask; mask <<= 1, p++, d++)
+	for (mask = 1, p = &DMA[0], d = 0; mask; mask <<= 1, p++, d++)
 	{
 		if (byte & mask)
 		{
@@ -1726,7 +1725,10 @@ uint8 S9xDoHDMA (uint8 byte)
 #endif
 									S9xSetPPU(*(HDMAMemPointers[d] + 0), 0x2100 + p->BAddress);
 									ADD_CYCLES(SLOW_ONE_CYCLE);
-									S9xSetPPU(*(HDMAMemPointers[d] + 1), 0x2101 + p->BAddress);
+									// XXX: All HDMA should read to MDR first. This one just
+									// happens to fix Speedy Gonzales.
+									OpenBus = *(HDMAMemPointers[d] + 1);
+									S9xSetPPU(OpenBus, 0x2101 + p->BAddress);
 									ADD_CYCLES(SLOW_ONE_CYCLE);
 									HDMAMemPointers[d] += 2;
 									break;
@@ -1848,7 +1850,16 @@ uint8 S9xDoHDMA (uint8 byte)
 
 					#undef DOBYTE
 				}
+			}
+		}
+	}
 
+	for (mask = 1, p = &DMA[0], d = 0; mask; mask <<= 1, p++, d++)
+	{
+		if (byte & mask)
+		{
+			if (p->DoTransfer)
+			{
 				if (p->HDMAIndirectAddressing)
 					p->IndirectAddress += HDMA_ModeByteCounts[p->TransferMode];
 				else
@@ -1864,7 +1875,6 @@ uint8 S9xDoHDMA (uint8 byte)
 					byte &= ~mask;
 					PPU.HDMAEnded |= mask;
 					p->DoTransfer = FALSE;
-					continue;
 				}
 			}
 			else

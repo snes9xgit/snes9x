@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2017  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
   (c) Copyright 2017         qwertymodo
@@ -140,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2017  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -148,7 +148,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2017  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -211,21 +211,28 @@
 #include <windows.h>
 #endif
 
-#define GFX_MULTI_FORMAT
-
 #ifdef __WIN32__
 //#define RIGHTSHIFT_IS_SAR
 #define RIGHTSHIFT_int8_IS_SAR
 #define RIGHTSHIFT_int16_IS_SAR
 #define RIGHTSHIFT_int32_IS_SAR
-#ifndef __WIN32_LIBSNES__
+#ifndef __LIBRETRO__
 #define SNES_JOY_READ_CALLBACKS
-#endif //__WIN32_LIBSNES__
+#define GFX_MULTI_FORMAT
+#endif //__LIBRETRO__
+#endif
+
+#ifdef __LIBRETRO__
+#define GFX_MULTI_FORMAT
 #endif
 
 #ifdef __MACOSX__
 #undef GFX_MULTI_FORMAT
 #define PIXEL_FORMAT RGB555
+#endif
+
+#ifndef PIXEL_FORMAT
+#define PIXEL_FORMAT RGB565
 #endif
 
 #ifndef snes9x_types_defined
@@ -276,9 +283,9 @@ __extension__
 typedef long long			int64;
 typedef unsigned long long	uint64;
 #ifdef PTR_NOT_INT
-typedef long				pint;
+typedef size_t				pint;
 #else   // __PTR_NOT_INT
-typedef int					pint;
+typedef size_t					pint;
 #endif  // __PTR_NOT_INT
 #endif	//  __WIN32__
 #endif	// HAVE_STDINT_H
@@ -317,14 +324,14 @@ void _makepath (char *, const char *, const char *, const char *, const char *);
 #define snprintf _snprintf
 #define strcasecmp	stricmp
 #define strncasecmp	strnicmp
-#ifndef __WIN32_LIBSNES__
+#ifndef __LIBRETRO__
 void WinDisplayStringFromBottom(const char *string, int linesFromBottom, int pixelsFromLeft, bool allowWrap);
 #define S9xDisplayString	WinDisplayStringFromBottom
 void SetInfoDlgColor(unsigned char, unsigned char, unsigned char);
 #define SET_UI_COLOR(r,g,b) SetInfoDlgColor(r,g,b)
-#else   // __WIN32_LIBSNES__
+#else   // __LIBRETRO__
 #define S9xDisplayString	DisplayStringFromBottom
-#endif  // __WIN32_LIBSNES__
+#endif  // __LIBRETRO__
 #endif  // __WIN32__
 
 #if defined(__DJGPP) || defined(__WIN32__)

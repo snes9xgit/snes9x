@@ -62,24 +62,11 @@ static BOOST::uint8_t const initial_regs [SPC_DSP::register_count] =
 	out [0] = l;\
 	out [1] = r;\
 	out += 2;\
-	if ( out >= m.out_end )\
-	{\
-		check( out == m.out_end );\
-		check( m.out_end != &m.extra [extra_size] || \
-			(m.extra <= m.out_begin && m.extra < &m.extra [extra_size]) );\
-		out       = m.extra;\
-		m.out_end = &m.extra [extra_size];\
-	}\
 }\
 
 void SPC_DSP::set_output( sample_t* out, int size )
 {
 	require( (size & 1) == 0 ); // must be even
-	if ( !out )
-	{
-		out  = m.extra;
-		size = extra_size;
-	}
 	m.out_begin = out;
 	m.out       = out;
 	m.out_end   = out + size;
@@ -413,7 +400,8 @@ inline VOICE_CLOCK( V3b )
 	m.t_brr_byte   = m.ram [(v->brr_addr + v->brr_offset) & 0xFFFF];
 	m.t_brr_header = m.ram [v->brr_addr]; // brr_addr doesn't need masking
 }
-VOICE_CLOCK( V3c )
+
+inline VOICE_CLOCK( V3c )
 {
 	// Pitch modulation using previous voice's output
 	if ( m.t_pmon & v->vbit )
@@ -507,7 +495,8 @@ inline void SPC_DSP::voice_output( voice_t const* v, int ch )
 		CLAMP16( m.t_echo_out [ch] );
 	}
 }
-VOICE_CLOCK( V4 )
+
+inline VOICE_CLOCK( V4 )
 {
 	// Decode BRR
 	m.t_looped = 0;

@@ -262,7 +262,7 @@ S9xPulseSoundDriver::samples_available (void)
         }
     }
 
-    bytes = MIN (bytes, (samples << (Settings.SixteenBitSound ? 1 : 0)));
+    bytes = MIN ((int) bytes, (samples << (Settings.SixteenBitSound ? 1 : 0)));
 
     if (!bytes)
         return;

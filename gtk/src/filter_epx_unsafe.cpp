@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2017  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
   (c) Copyright 2017         qwertymodo
@@ -140,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2017  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -148,7 +148,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2017  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -203,6 +203,9 @@
 
 #include "port.h"
 #include "filter_epx_unsafe.h"
+
+#undef  AVERAGE_565
+#define AVERAGE_565(el0, el1) (((el0) & (el1)) + ((((el0) ^ (el1)) & 0xF7DE) >> 1))
 
 /* Allows vertical overlap. We need this to avoid seams when threading */
 void EPX_16_unsafe (uint8 *srcPtr, 
@@ -302,9 +305,6 @@ void EPX_16_unsafe (uint8 *srcPtr,
     return;
 }
 
-#undef  AVERAGE_1555
-#define AVERAGE_1555(el0, el1) (((el0) & (el1)) + ((((el0) ^ (el1)) & 0x7BDE) >> 1))
-
 /* Blends with edge pixel instead of just using it directly. */
 void EPX_16_smooth_unsafe (uint8 *srcPtr,
                            uint32 srcPitch,
@@ -336,11 +336,11 @@ void EPX_16_smooth_unsafe (uint8 *srcPtr,
         if ((colorX != colorC) && (colorB != colorD))
         {
         #ifdef __BIG_ENDIAN__
-            *dP1 = (colorX << 16) + ((colorC == colorD) ? AVERAGE_1555 (colorC, colorX) : colorX);
-            *dP2 = (colorX << 16) + ((colorB == colorC) ? AVERAGE_1555 (colorB, colorX) : colorX);
+            *dP1 = (colorX << 16) + ((colorC == colorD) ? AVERAGE_565 (colorC, colorX) : colorX);
+            *dP2 = (colorX << 16) + ((colorB == colorC) ? AVERAGE_565 (colorB, colorX) : colorX);
         #else
-            *dP1 = colorX + (((colorC == colorD) ? AVERAGE_1555 (colorC, colorX) : colorX) << 16);
-            *dP2 = colorX + (((colorB == colorC) ? AVERAGE_1555 (colorB, colorX) : colorX) << 16);
+            *dP1 = colorX + (((colorC == colorD) ? AVERAGE_565 (colorC, colorX) : colorX) << 16);
+            *dP2 = colorX + (((colorB == colorC) ? AVERAGE_565 (colorB, colorX) : colorX) << 16);
         #endif
         }
         else
@@ -362,11 +362,11 @@ void EPX_16_smooth_unsafe (uint8 *srcPtr,
             if ((colorA != colorC) && (colorB != colorD))
             {
             #ifdef __BIG_ENDIAN__
-                *dP1 = (((colorD == colorA) ? AVERAGE_1555 (colorD, colorX) : colorX) << 16) + ((colorC == colorD) ? AVERAGE_1555 (colorC, colorX) : colorX);
-                *dP2 = (((colorA == colorB) ? AVERAGE_1555 (colorA, colorX) : colorX) << 16) + ((colorB == colorC) ? AVERAGE_1555 (colorB, colorX) : colorX);
+                *dP1 = (((colorD == colorA) ? AVERAGE_565 (colorD, colorX) : colorX) << 16) + ((colorC == colorD) ? AVERAGE_565 (colorC, colorX) : colorX);
+                *dP2 = (((colorA == colorB) ? AVERAGE_565 (colorA, colorX) : colorX) << 16) + ((colorB == colorC) ? AVERAGE_565 (colorB, colorX) : colorX);
             #else
-                *dP1 = ((colorD == colorA) ? AVERAGE_1555 (colorD, colorX) : colorX) + (((colorC == colorD) ? AVERAGE_1555 (colorC, colorX) : colorX) << 16);
-                *dP2 = ((colorA == colorB) ? AVERAGE_1555 (colorA, colorX) : colorX) + (((colorB == colorC) ? AVERAGE_1555 (colorB, colorX) : colorX) << 16);
+                *dP1 = ((colorD == colorA) ? AVERAGE_565 (colorD, colorX) : colorX) + (((colorC == colorD) ? AVERAGE_565 (colorC, colorX) : colorX) << 16);
+                *dP2 = ((colorA == colorB) ? AVERAGE_565 (colorA, colorX) : colorX) + (((colorB == colorC) ? AVERAGE_565 (colorB, colorX) : colorX) << 16);
             #endif
             }
             else
@@ -386,11 +386,11 @@ void EPX_16_smooth_unsafe (uint8 *srcPtr,
         if ((colorA != colorX) && (colorB != colorD))
         {
         #ifdef __BIG_ENDIAN__
-            *dP1 = (((colorD == colorA) ? AVERAGE_1555 (colorD, colorX) : colorX) << 16) + colorX;
-            *dP2 = (((colorA == colorB) ? AVERAGE_1555 (colorA, colorX) : colorX) << 16) + colorX;
+            *dP1 = (((colorD == colorA) ? AVERAGE_565 (colorD, colorX) : colorX) << 16) + colorX;
+            *dP2 = (((colorA == colorB) ? AVERAGE_565 (colorA, colorX) : colorX) << 16) + colorX;
         #else
-            *dP1 = ((colorD == colorA) ? AVERAGE_1555 (colorD, colorX) : colorX) + (colorX << 16);
-            *dP2 = ((colorA == colorB) ? AVERAGE_1555 (colorA, colorX) : colorX) + (colorX << 16);
+            *dP1 = ((colorD == colorA) ? AVERAGE_565 (colorD, colorX) : colorX) + (colorX << 16);
+            *dP2 = ((colorA == colorB) ? AVERAGE_565 (colorA, colorX) : colorX) + (colorX << 16);
         #endif
         }
         else

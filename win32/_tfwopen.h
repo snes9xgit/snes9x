@@ -190,6 +190,7 @@
 #ifdef UNICODE
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <io.h>
 #include <string.h>
 #include <direct.h>
@@ -202,6 +203,8 @@ extern "C" {
 FILE *_tfwopen(const char *filename, const char *mode );
 int _twremove(const char *filename );
 int _twopen(const char *filename, int oflag, int pmode);
+void _twfullpath(char* dst, const char* src, int len);
+
 int _twaccess(const char *_Filename, int _AccessMode);
 int _twrename(const char *_OldFilename, const char *_NewFilename);
 int _twunlink(const char *_Filename);
@@ -296,7 +299,7 @@ public:
 		: std::ifstream(_Filename,_Mode,_Prot) {}
  #endif /* _NATIVE_WCHAR_T_DEFINED */
 
-	explicit __CLR_OR_THIS_CALL u8nifstream(_Filet *_File)
+	explicit __CLR_OR_THIS_CALL u8nifstream(FILE *_File)
 		: std::ifstream(_File) {}
 };
 }
@@ -349,6 +352,7 @@ __forceinline static int remove(const char *filename) {
 __forceinline static int open(const char *filename, int oflag, int pmode) {
   return _twopen(filename, oflag, pmode);
 }
+
 #define _access _twaccess
 #define rename _twrename
 #define _unlink _twunlink

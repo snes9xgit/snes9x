@@ -3,8 +3,6 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <X11/Xlib.h>
-#include <GL/glx.h>
-#include <GL/glxext.h>
 #include <dlfcn.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -12,104 +10,37 @@
 
 #include "gtk_display.h"
 #include "gtk_display_driver_opengl.h"
+#include "gtk_shader_parameters.h"
 
-static const char *glGenBuffersNames[] = { "glGenBuffers",
-                                           "glGenBuffersARB",
-                                           "glGenBuffersEXT",
-                                           NULL };
-static const char *glDeleteBuffersNames[] = { "glDeleteBuffers",
-                                              "glDeleteBuffersARB",
-                                              "glDeleteBuffersEXT",
-                                              NULL };
-static const char *glBindBufferNames[] = { "glBindBuffer",
-                                           "glBindBufferARB",
-                                           "glBindBufferEXT",
-                                           NULL };
-static const char *glBufferDataNames[] = { "glBufferData",
-                                           "glBufferDataARB",
-                                           "glBufferDataEXT",
-                                           NULL };
-static const char *glBufferSubDataNames[] = { "glBufferSubData",
-                                              "glBufferSubDataARB",
-                                              "glBufferSubDataEXT",
-                                              NULL };
-static const char *glMapBufferNames[] = { "glMapBuffer",
-                                          "glMapBufferARB",
-                                          "glMapBufferEXT",
-                                          NULL };
-static const char *glUnmapBufferNames[] = { "glUnmapBuffer",
-                                            "glUnmapBufferARB",
-                                            "glUnmapBufferEXT",
-                                            NULL };
+#include "shaders/shader_helpers.h"
 
-gl_proc
-get_null_address_proc (const GLubyte *name)
+static void S9xViewportCallback (int src_width, int src_height,
+                                 int viewport_x, int viewport_y,
+                                 int viewport_width, int viewport_height,
+                                 int *out_x, int *out_y,
+                                 int *out_width, int *out_height)
 {
-    return NULL;
-}
 
-gl_proc
-S9xOpenGLDisplayDriver::get_aliased_extension (const char **name)
-{
-    gl_proc ext_proc = NULL;
-
-    for (int i = 0; name[i]; i++)
-    {
-        ext_proc = glGetProcAddress ((GLubyte *) name[i]);
-
-        if (ext_proc)
-            break;
-    }
-
-    return ext_proc;
+    S9xApplyAspect (src_width, src_height, viewport_width, viewport_height);
+    *out_x = src_width + viewport_x;
+    *out_y = src_height + viewport_y;
+    *out_width = viewport_width;
+    *out_height = viewport_height;
+    return;
 }
 
 S9xOpenGLDisplayDriver::S9xOpenGLDisplayDriver (Snes9xWindow *window,
                                                 Snes9xConfig *config)
 {
-    void *dl_handle = NULL;
-
     this->window = window;
     this->config = config;
     this->drawing_area = GTK_WIDGET (window->drawing_area);
-
-    dl_handle = dlopen (NULL, RTLD_LAZY);
-
-    if (dl_handle)
-    {
-        dlerror ();
-
-#ifdef __GNUC__
-__extension__
-#endif
-        getProcAddressProc functor = reinterpret_cast<getProcAddressProc> (dlsym (dl_handle, "glXGetProcAddress"));
-        glGetProcAddress = functor;
-
-        if (dlerror () != NULL)
-        {
-#ifdef __GNUC__
-__extension__
-#endif
-            getProcAddressProc functor = reinterpret_cast<getProcAddressProc> (dlsym (dl_handle, "glXGetProcAddressARB"));
-            glGetProcAddress = functor;
-
-            if (dlerror () != NULL)
-                glGetProcAddress = get_null_address_proc;
-        }
-
-        /* ok to close the handle, since didn't really open anything */
-        dlclose (dl_handle);
-    }
-    else
-    {
-        glGetProcAddress = get_null_address_proc;
-    }
 
     return;
 }
 
 void
-S9xOpenGLDisplayDriver::update (int width, int height)
+S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
 {
     uint8 *final_buffer = NULL;
     int   final_pitch;
@@ -119,6 +50,12 @@ S9xOpenGLDisplayDriver::update (int width, int height)
     GtkAllocation allocation;
     gtk_widget_get_allocation (drawing_area, &allocation);
 
+    if (output_window_width  != allocation.width ||
+        output_window_height != allocation.height)
+    {
+        resize_window (allocation.width, allocation.height);
+    }
+
 #if GTK_CHECK_VERSION(3,10,0)
     int gdk_scale_factor = gdk_window_get_scale_factor (gdk_window);
 
@@ -127,21 +64,20 @@ S9xOpenGLDisplayDriver::update (int width, int height)
 
 #endif
 
-    if (output_window_width  != allocation.width ||
-        output_window_height != allocation.height)
+    if (using_glsl_shaders)
     {
-        resize_window (allocation.width, allocation.height);
+        glBindTexture (GL_TEXTURE_2D, texmap);
     }
 
-    GLint filter = config->bilinear_filter ? GL_LINEAR : GL_NEAREST;
-    glTexParameteri (tex_target, GL_TEXTURE_MAG_FILTER, filter);
-    glTexParameteri (tex_target, GL_TEXTURE_MIN_FILTER, filter);
+    GLint filter = Settings.BilinearFilter ? GL_LINEAR : GL_NEAREST;
+    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
     GLint clamp = (using_shaders || !dyn_resizing) ? GL_CLAMP_TO_BORDER : GL_CLAMP_TO_EDGE;
-    glTexParameteri (tex_target, GL_TEXTURE_WRAP_S, clamp);
-    glTexParameteri (tex_target, GL_TEXTURE_WRAP_T, clamp);
+    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, clamp);
+    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, clamp);
 
     glClear (GL_COLOR_BUFFER_BIT);
-    glEnable (tex_target);
+    glEnable (GL_TEXTURE_2D);
 
     if (config->scale_method > 0)
     {
@@ -149,6 +85,8 @@ S9xOpenGLDisplayDriver::update (int width, int height)
         int   src_pitch = image_width * image_bpp;
         uint8 *dst_buffer;
         int   dst_pitch;
+
+        src_buffer += (src_pitch * yoffset);
 
         dst_buffer = (uint8 *) padded_buffer[1];
         dst_pitch = scaled_max_width * image_bpp;
@@ -166,6 +104,7 @@ S9xOpenGLDisplayDriver::update (int width, int height)
     {
         final_buffer = (uint8 *) padded_buffer[0];
         final_pitch = image_width * image_bpp;
+        final_buffer += (final_pitch * yoffset);
     }
 
     x = width; y = height;
@@ -199,45 +138,42 @@ S9xOpenGLDisplayDriver::update (int width, int height)
             glUnmapBuffer (GL_PIXEL_UNPACK_BUFFER);
 
             glPixelStorei (GL_UNPACK_ROW_LENGTH, width);
-            glTexSubImage2D (tex_target,
+            glTexSubImage2D (GL_TEXTURE_2D,
                              0,
                              0,
                              0,
                              width,
                              height,
-                             GL_BGRA,
-                             GL_UNSIGNED_SHORT_1_5_5_5_REV,
+                             GL_RGB,
+                             GL_UNSIGNED_SHORT_5_6_5,
                              BUFFER_OFFSET (0));
 
             glBindBuffer (GL_PIXEL_UNPACK_BUFFER, 0);
         }
         else if (config->pbo_format == PBO_FMT_24)
         {
-            /* Complement width to next multiple of 4 to force line size to
-                 * be a multiple of 4 bytes. Otherwise, packing fails. */
-            int width_mul_4 = width + ((4 - (width % 4)) % 4);
-
+            glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
             glBindBuffer (GL_PIXEL_UNPACK_BUFFER, pbo);
             glBufferData (GL_PIXEL_UNPACK_BUFFER,
-                          width_mul_4 * height * 3,
+                          width * height * 3,
                           NULL,
                           GL_STREAM_DRAW);
             pboMemory = glMapBuffer (GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
 
             /* Pixel swizzling in software */
-            S9xSetEndianess (ENDIAN_MSB);
+            S9xSetEndianess (ENDIAN_SWAPPED);
             S9xConvert (final_buffer,
                         pboMemory,
                         final_pitch,
-                        width_mul_4 * 3,
+                        width * 3,
                         width,
                         height,
                         24);
 
             glUnmapBuffer (GL_PIXEL_UNPACK_BUFFER);
 
-            glPixelStorei (GL_UNPACK_ROW_LENGTH, width_mul_4);
-            glTexSubImage2D (tex_target,
+            glPixelStorei (GL_UNPACK_ROW_LENGTH, width);
+            glTexSubImage2D (GL_TEXTURE_2D,
                              0,
                              0,
                              0,
@@ -259,11 +195,7 @@ S9xOpenGLDisplayDriver::update (int width, int height)
             pboMemory = glMapBuffer (GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
 
             /* Pixel swizzling in software */
-#ifdef __BIG_ENDIAN__
-            S9xSetEndianess (ENDIAN_MSB);
-#else
-            S9xSetEndianess (ENDIAN_LSB);
-#endif
+            S9xSetEndianess (ENDIAN_NORMAL);
             S9xConvert (final_buffer,
                         pboMemory,
                         final_pitch,
@@ -275,7 +207,7 @@ S9xOpenGLDisplayDriver::update (int width, int height)
             glUnmapBuffer (GL_PIXEL_UNPACK_BUFFER);
 
             glPixelStorei (GL_UNPACK_ROW_LENGTH, width);
-            glTexSubImage2D (tex_target,
+            glTexSubImage2D (GL_TEXTURE_2D,
                              0,
                              0,
                              0,
@@ -291,33 +223,29 @@ S9xOpenGLDisplayDriver::update (int width, int height)
     else
     {
         glPixelStorei (GL_UNPACK_ROW_LENGTH, final_pitch / image_bpp);
-        glTexSubImage2D (tex_target,
+        glTexSubImage2D (GL_TEXTURE_2D,
                          0,
                          0,
                          0,
                          width,
                          height,
-                         GL_BGRA,
-                         GL_UNSIGNED_SHORT_1_5_5_5_REV,
+                         GL_RGB,
+                         GL_UNSIGNED_SHORT_5_6_5,
                          final_buffer);
     }
 
-    if (tex_target == GL_TEXTURE_2D)
-    {
-        texcoords[1] = (float) (height) / texture_height;
-        texcoords[2] = (float) (width) / texture_width;
-        texcoords[3] = texcoords[1];
-        texcoords[4] = texcoords[2];
-    }
-    else if (tex_target == GL_TEXTURE_RECTANGLE)
-    {
-        texcoords[1] = (float) (height);
-        texcoords[2] = (float) (width);
-        texcoords[3] = texcoords[1];
-        texcoords[4] = texcoords[2];
-    }
+    texcoords[1] = (float) (height) / texture_height;
+    texcoords[2] = (float) (width) / texture_width;
+    texcoords[3] = texcoords[1];
+    texcoords[4] = texcoords[2];
 
-    if (using_shaders)
+    if (using_shaders && using_glsl_shaders)
+    {
+        glsl_shader->render (texmap, width, height, x, allocation.height - y - h, w, h, S9xViewportCallback);
+        gl_swap ();
+        return;
+    }
+    else if (using_shaders)
     {
         GLint location;
         float inputSize[2];
@@ -347,6 +275,27 @@ S9xOpenGLDisplayDriver::update (int width, int height)
     return;
 }
 
+void *
+S9xOpenGLDisplayDriver::get_parameters(void)
+{
+    if (using_glsl_shaders && glsl_shader)
+    {
+        return (void *) &glsl_shader->param;
+    }
+    return NULL;
+}
+
+void
+S9xOpenGLDisplayDriver::save (const char *filename)
+{
+    if (using_glsl_shaders && glsl_shader)
+    {
+        glsl_shader->save(filename);
+    }
+
+    return;
+}
+
 void
 S9xOpenGLDisplayDriver::clear_buffers (void)
 {
@@ -354,14 +303,14 @@ S9xOpenGLDisplayDriver::clear_buffers (void)
     memset (buffer[1], 0, scaled_padded_size);
 
     glPixelStorei (GL_UNPACK_ROW_LENGTH, scaled_max_width);
-    glTexSubImage2D (tex_target,
+    glTexSubImage2D (GL_TEXTURE_2D,
                      0,
                      0,
                      0,
                      scaled_max_width,
                      scaled_max_height,
-                     GL_BGRA,
-                     GL_UNSIGNED_SHORT_1_5_5_5_REV,
+                     GL_RGB,
+                     GL_UNSIGNED_SHORT_5_6_5,
                      buffer[1]);
 
     return;
@@ -374,13 +323,13 @@ S9xOpenGLDisplayDriver::update_texture_size (int width, int height)
     {
         if (dyn_resizing)
         {
-            glBindTexture (tex_target, texmap);
+            glBindTexture (GL_TEXTURE_2D, texmap);
 
             if (using_pbos)
             {
-                glTexImage2D (tex_target,
+                glTexImage2D (GL_TEXTURE_2D,
                               0,
-                              config->pbo_format == PBO_FMT_16 ? GL_RGB5_A1 : 4,
+                              config->pbo_format == PBO_FMT_16 ? GL_RGB565 : 4,
                               width,
                               height,
                               0,
@@ -390,14 +339,14 @@ S9xOpenGLDisplayDriver::update_texture_size (int width, int height)
             }
             else
             {
-                glTexImage2D (tex_target,
+                glTexImage2D (GL_TEXTURE_2D,
                               0,
-                              GL_RGB5_A1,
+                              GL_RGB565,
                               width,
                               height,
                               0,
-                              GL_BGRA,
-                              GL_UNSIGNED_SHORT_1_5_5_5_REV,
+                              GL_RGB,
+                              GL_UNSIGNED_SHORT_5_6_5,
                               NULL);
             }
 
@@ -410,8 +359,12 @@ S9xOpenGLDisplayDriver::update_texture_size (int width, int height)
 }
 
 int
-S9xOpenGLDisplayDriver::load_pixel_buffer_functions (void)
+S9xOpenGLDisplayDriver::pbos_available (void)
 {
+
+    if (gl_version_at_least (2, 1))
+            return 1;
+
     const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
 
     if (!extensions)
@@ -419,87 +372,43 @@ S9xOpenGLDisplayDriver::load_pixel_buffer_functions (void)
 
     if (strstr (extensions, "pixel_buffer_object"))
     {
-        glGenBuffers =
-            (glGenBuffersProc)
-            get_aliased_extension (glGenBuffersNames);
-
-        glDeleteBuffers =
-            (glDeleteBuffersProc)
-            get_aliased_extension (glDeleteBuffersNames);
-
-        glBindBuffer =
-            (glBindBufferProc)
-            get_aliased_extension (glBindBufferNames);
-
-        glBufferData =
-            (glBufferDataProc)
-            get_aliased_extension (glBufferDataNames);
-
-        glBufferSubData =
-            (glBufferSubDataProc)
-            get_aliased_extension (glBufferSubDataNames);
-
-        glMapBuffer =
-            (glMapBufferProc)
-            get_aliased_extension (glMapBufferNames);
-
-        glUnmapBuffer =
-            (glUnmapBufferProc)
-            get_aliased_extension (glUnmapBufferNames);
-
-        if (glGenBuffers    &&
-            glBindBuffer    &&
-            glBufferData    &&
-            glBufferSubData &&
-            glMapBuffer     &&
-            glUnmapBuffer   &&
-            glDeleteBuffers)
-        {
             return 1;
-        }
     }
 
     return 0;
 }
 
 int
-S9xOpenGLDisplayDriver::load_shader_functions (void)
+S9xOpenGLDisplayDriver::shaders_available (void)
 {
     const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
 
     if (!extensions)
         return 0;
 
-    if (strstr (extensions, "fragment_program"))
+    if (strstr (extensions, "fragment_program") ||
+        strstr (extensions, "fragment_shader"))
     {
-        glCreateProgram = (glCreateProgramProc) glGetProcAddress ((GLubyte *) "glCreateProgram");
-        glCreateShader = (glCreateShaderProc) glGetProcAddress ((GLubyte *) "glCreateShader");
-        glCompileShader = (glCompileShaderProc) glGetProcAddress ((GLubyte *) "glCompileShader");
-        glDeleteShader = (glDeleteShaderProc) glGetProcAddress ((GLubyte *) "glDeleteShader");
-        glDeleteProgram = (glDeleteProgramProc) glGetProcAddress ((GLubyte *) "glDeleteProgram");
-        glAttachShader = (glAttachShaderProc) glGetProcAddress ((GLubyte *) "glAttachShader");
-        glDetachShader = (glDetachShaderProc) glGetProcAddress ((GLubyte *) "glDetachShader");
-        glLinkProgram = (glLinkProgramProc) glGetProcAddress ((GLubyte *) "glLinkProgram");
-        glUseProgram = (glUseProgramProc) glGetProcAddress ((GLubyte *) "glUseProgram");
-        glShaderSource = (glShaderSourceProc) glGetProcAddress ((GLubyte *) "glShaderSource");
-        glGetUniformLocation = (glGetUniformLocationProc) glGetProcAddress ((GLubyte *) "glGetUniformLocation");
-        glUniform2fv = (glUniform2fvProc) glGetProcAddress ((GLubyte *) "glUniform2fv");
+        return 1;
+    }
 
-        if (glCreateProgram      &&
-            glCreateShader       &&
-            glCompileShader      &&
-            glDeleteShader       &&
-            glDeleteProgram      &&
-            glAttachShader       &&
-            glDetachShader       &&
-            glLinkProgram        &&
-            glUseProgram         &&
-            glShaderSource       &&
-            glGetUniformLocation &&
-            glUniform2fv)
-        {
-            return 1;
-        }
+    return 0;
+}
+
+static int npot_available (void)
+{
+    if (gl_version_at_least (2, 0))
+        return true;
+
+    const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
+
+    if (!extensions)
+        return 0;
+
+    if (strstr (extensions, "non_power_of_two") ||
+        strstr (extensions, "npot"))
+    {
+        return 1;
     }
 
     return 0;
@@ -512,7 +421,34 @@ S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
     xmlNodePtr node = NULL;
     char *fragment = NULL, *vertex = NULL;
 
-    if (!load_shader_functions ())
+    int length = strlen (shader_file);
+
+    if ((length > 6 && !strcasecmp(shader_file + length - 6, ".glslp")) ||
+        (length > 5 && !strcasecmp(shader_file + length - 5, ".glsl")))
+    {
+        if (shaders_available() && npot_available())
+        {
+            glsl_shader = new GLSLShader;
+            if (glsl_shader->load_shader ((char *) shader_file))
+            {
+                using_glsl_shaders = 1;
+                dyn_resizing = TRUE;
+
+                if (glsl_shader->param.size () > 0)
+                    window->enable_widget ("shader_parameters_item", TRUE);
+
+                return 1;
+            }
+            delete glsl_shader;
+            return 0;
+        }
+        else
+        {
+            printf ("Need shader extensions and non-power-of-two-textures for GLSL.\n");
+        }
+    }
+
+    if (!shaders_available ())
     {
         fprintf (stderr, _("Cannot load GLSL shader functions.\n"));
         return 0;
@@ -586,10 +522,12 @@ S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
 int
 S9xOpenGLDisplayDriver::opengl_defaults (void)
 {
+    dyn_resizing = FALSE;
     using_pbos = 0;
+
     if (config->use_pbos)
     {
-        if (!load_pixel_buffer_functions ())
+        if (!pbos_available ())
         {
             fprintf (stderr, _("pixel_buffer_object extension not supported.\n"));
 
@@ -602,6 +540,9 @@ S9xOpenGLDisplayDriver::opengl_defaults (void)
     }
 
     using_shaders = 0;
+    using_glsl_shaders = 0;
+    glsl_shader = NULL;
+
     if (config->use_shaders)
     {
         if (!load_shaders (config->fragment_shader))
@@ -614,30 +555,19 @@ S9xOpenGLDisplayDriver::opengl_defaults (void)
         }
     }
 
-    tex_target = GL_TEXTURE_2D;
     texture_width = 1024;
     texture_height = 1024;
-    dyn_resizing = FALSE;
 
-    const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
-
-    if (extensions && config->npot_textures)
+    if (config->npot_textures)
     {
-        if (!using_shaders && strstr (extensions, "_texture_rectangle"))
-        {
-            tex_target = GL_TEXTURE_RECTANGLE;
-            texture_width = scaled_max_width;
-            texture_height = scaled_max_height;
-            dyn_resizing = TRUE;
-        }
-        else if (strstr (extensions, "GL_ARB_texture_non_power_of_two"))
+        if (npot_available ())
         {
             dyn_resizing = TRUE;
         }
     }
 
-    glEnable (GL_VERTEX_ARRAY);
-    glEnable (GL_TEXTURE_COORD_ARRAY);
+    glEnableClientState (GL_VERTEX_ARRAY);
+    glEnableClientState (GL_TEXTURE_COORD_ARRAY);
 
     vertices[0] = 0.0f;
     vertices[1] = 0.0f;
@@ -662,10 +592,10 @@ S9xOpenGLDisplayDriver::opengl_defaults (void)
         glGenBuffers (1, &pbo);
         glGenTextures (1, &texmap);
 
-        glBindTexture (tex_target, texmap);
-        glTexImage2D (tex_target,
+        glBindTexture (GL_TEXTURE_2D, texmap);
+        glTexImage2D (GL_TEXTURE_2D,
                       0,
-                      config->pbo_format == PBO_FMT_16 ? GL_RGB5_A1 : 4,
+                      config->pbo_format == PBO_FMT_16 ? GL_RGB565 : 4,
                       texture_width,
                       texture_height,
                       0,
@@ -685,15 +615,15 @@ S9xOpenGLDisplayDriver::opengl_defaults (void)
     {
         glGenTextures (1, &texmap);
 
-        glBindTexture (tex_target, texmap);
-        glTexImage2D (tex_target,
+        glBindTexture (GL_TEXTURE_2D, texmap);
+        glTexImage2D (GL_TEXTURE_2D,
                       0,
-                      GL_RGB5_A1,
+                      GL_RGB565,
                       texture_width,
                       texture_height,
                       0,
-                      GL_BGRA,
-                      GL_UNSIGNED_SHORT_1_5_5_5_REV,
+                      GL_RGB,
+                      GL_UNSIGNED_SHORT_5_6_5,
                       NULL);
     }
 
@@ -712,7 +642,6 @@ S9xOpenGLDisplayDriver::opengl_defaults (void)
     glDisable (GL_BLEND);
     glDisable (GL_DEPTH_TEST);
     glDisable (GL_TEXTURE_2D);
-    glDisable (GL_TEXTURE_RECTANGLE);
 
     glMatrixMode (GL_PROJECTION);
     glLoadIdentity ();
@@ -730,8 +659,7 @@ S9xOpenGLDisplayDriver::refresh (int width, int height)
 void
 S9xOpenGLDisplayDriver::resize_window (int width, int height)
 {
-    g_object_unref (gdk_window);
-    XDestroyWindow (display, xwindow);
+    gdk_window_destroy (gdk_window);
     create_window (width, height);
     glXMakeCurrent (display, xwindow, glx_context);
 
@@ -741,43 +669,27 @@ S9xOpenGLDisplayDriver::resize_window (int width, int height)
 void
 S9xOpenGLDisplayDriver::create_window (int width, int height)
 {
-    XSetWindowAttributes window_attr;
+    GdkWindowAttr window_attr;
+    memset (&window_attr, 0, sizeof (GdkWindowAttr));
+    window_attr.event_mask = GDK_EXPOSURE_MASK | GDK_STRUCTURE_MASK;
+    window_attr.width = width;
+    window_attr.height = height;
+    window_attr.x = 0;
+    window_attr.y = 0;
+    window_attr.wclass = GDK_INPUT_OUTPUT;
+    window_attr.window_type = GDK_WINDOW_CHILD;
+    window_attr.visual = gdk_x11_screen_lookup_visual (gtk_widget_get_screen (drawing_area), vi->visualid);
 
-    window_attr.colormap = xcolormap;
-    window_attr.border_pixel = 0;
-    window_attr.event_mask = StructureNotifyMask | ExposureMask;
-    window_attr.do_not_propagate_mask = 0;
-    window_attr.save_under = False;
-    window_attr.background_pixmap = None;
+    gdk_window = gdk_window_new (gtk_widget_get_window (drawing_area),
+                                 &window_attr,
+                                 GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL);
+    gdk_window_set_user_data (gdk_window, (gpointer) drawing_area);
 
-    xwindow = XCreateWindow (display,
-                             GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (drawing_area)),
-                             0,
-                             0,
-                             width,
-                             height,
-                             0,
-                             vi->depth,
-                             InputOutput,
-                             vi->visual,
-                             CWColormap | CWBorderPixel | CWBackPixmap | CWEventMask | CWSaveUnder | CWDontPropagate,
-                             &window_attr);
-    XSync (display, False);
+    gdk_window_show (gdk_window);
+    xwindow = GDK_COMPAT_WINDOW_XID (gdk_window);
 
     output_window_width = width;
     output_window_height = height;
-
-    XMapWindow (display, xwindow);
-    XSync (display, False);
-
-#if USE_GTK3
-    gdk_window = gdk_x11_window_foreign_new_for_display (gtk_widget_get_display (drawing_area), xwindow);
-#else
-    gdk_window = gdk_window_foreign_new (xwindow);
-#endif
-    XSync (display, False);
-
-    gdk_window_set_user_data (gdk_window, drawing_area);
 }
 
 int
@@ -795,6 +707,7 @@ S9xOpenGLDisplayDriver::init_glx (void)
         return 0;
     }
 
+
     xcolormap = XCreateColormap (display,
                                 GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (drawing_area)),
                                 vi->visual,
@@ -808,8 +721,7 @@ S9xOpenGLDisplayDriver::init_glx (void)
     if (!glx_context)
     {
         XFreeColormap (display, xcolormap);
-        g_object_unref (gdk_window);
-        XDestroyWindow (display, xwindow);
+        gdk_window_destroy (gdk_window);
 
         fprintf (stderr, _("Couldn't create an OpenGL context.\n"));
         return 0;
@@ -819,8 +731,7 @@ S9xOpenGLDisplayDriver::init_glx (void)
     {
         XFreeColormap (display, xcolormap);
         g_object_unref (gdk_window);
-        XDestroyWindow (display, xwindow);
-        glXDestroyContext (display, glx_context);
+        gdk_window_destroy (gdk_window);
 
         fprintf (stderr, "glXMakeCurrent failed.\n");
         return 0;
@@ -832,7 +743,6 @@ S9xOpenGLDisplayDriver::init_glx (void)
 int
 S9xOpenGLDisplayDriver::init (void)
 {
-    int padding;
     initialized = 0;
 
     if (!init_glx ())
@@ -845,18 +755,13 @@ S9xOpenGLDisplayDriver::init (void)
         return -1;
     }
 
-    /* Create two system buffers to avoid DMA contention */
-
     buffer[0] = malloc (image_padded_size);
     buffer[1] = malloc (scaled_padded_size);
 
     clear_buffers ();
 
-    padding = (image_padded_size - image_size) / 2;
-    padded_buffer[0] = (void *) (((uint8 *) buffer[0]) + padding);
-
-    padding = (scaled_padded_size - scaled_size) / 2;
-    padded_buffer[1] = (void *) (((uint8 *) buffer[1]) + padding);
+    padded_buffer[0] = (void *) (((uint8 *) buffer[0]) + image_padded_offset);
+    padded_buffer[1] = (void *) (((uint8 *) buffer[1]) + scaled_padded_offset);
 
     GFX.Screen = (uint16 *) padded_buffer[0];
     GFX.Pitch = image_width * image_bpp;
@@ -871,52 +776,16 @@ S9xOpenGLDisplayDriver::init (void)
 void
 S9xOpenGLDisplayDriver::swap_control (int enable)
 {
-    static glSwapIntervalProc     glSwapInterval = NULL;
-    static glXSwapIntervalEXTProc glXSwapIntervalEXT = NULL;
-    static int                    queried = FALSE;
-    const char                   *ext_str;
-
     enable = enable ? 1 : 0;
+    const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
 
-    if (!queried)
+    if (strstr (extensions, "EXT_swap_control"))
     {
-        ext_str = glXQueryExtensionsString (display, DefaultScreen (display));
-
-        /* We try to set this with both extensions since some cards pretend
-         * to support both, but ignore one. */
-
-        if (strstr (ext_str, "GLX_MESA_swap_control"))
-        {
-            glSwapInterval = (glSwapIntervalProc)
-                    glGetProcAddress ((GLubyte *) "glXSwapIntervalMESA");
-        }
-
-        if (strstr (ext_str, "GLX_SGI_swap_control"))
-        {
-            glSwapInterval = (glSwapIntervalProc)
-                    glGetProcAddress ((GLubyte *) "glXSwapIntervalSGI");
-        }
-
-        if (strstr (ext_str, "GLX_EXT_swap_control"))
-        {
-            glXSwapIntervalEXT = (glXSwapIntervalEXTProc)
-                    glGetProcAddress ((GLubyte *) "glXSwapIntervalEXT");
-        }
-
-        queried = TRUE;
-    }
-
-    if (glXSwapIntervalEXT)
-    {
-        if (glSwapInterval)
-            glSwapInterval (0);
-
         glXSwapIntervalEXT (display, xwindow, enable);
     }
-
-    else if (glSwapInterval)
+    else if (strstr (extensions, "SGI_swap_control"))
     {
-        glSwapInterval (enable);
+        glXSwapIntervalSGI (enable);
     }
 
     return;
@@ -932,7 +801,6 @@ void
 S9xOpenGLDisplayDriver::push_buffer (uint16 *src)
 {
     memmove (padded_buffer[0], src, image_size);
-    update (window->last_width, window->last_height);
 
     return;
 }
@@ -964,7 +832,14 @@ S9xOpenGLDisplayDriver::deinit (void)
     if (!initialized)
         return;
 
-    if (using_shaders)
+    if (using_shaders && using_glsl_shaders)
+    {
+        window->enable_widget ("shader_parameters_item", FALSE);
+        gtk_shader_parameters_dialog_close ();
+        glsl_shader->destroy();
+        delete glsl_shader;
+    }
+    else if (using_shaders)
     {
         glUseProgram (0);
         glDetachShader (program, vertex_shader);
@@ -992,11 +867,10 @@ S9xOpenGLDisplayDriver::deinit (void)
     glDeleteTextures (1, &texmap);
     glXDestroyContext (display, glx_context);
 
+    gdk_window_destroy (gdk_window);
+
     XFree (vi);
     XFreeColormap (display, xcolormap);
-
-    g_object_unref (gdk_window);
-    XDestroyWindow (display, xwindow);
 
     return;
 }

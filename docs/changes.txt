@@ -1,3 +1,116 @@
+Snes9x 1.56.2
+- Fixed IRQ corner case that caused Umihara Kawase's water
+  to cover the whole screen.                                (BearOso)
+- Adjusted IRQ timing slightly. Fixes Dragon Ball Z - Super
+  Butouden 2.                                               (BearOso)
+- Clear WAI when IRQLine is active. Fixes Top Gear 3000.    (BearOso)
+- Fix reading the wrong tile data in mosaic drawing. Gets
+  rid of glitch at top of FF6 battle transitions.           (BearOso)
+- Break a specific opcode into cycles. Fixes Little Magic.  (BearOso)
+- Win32: Don't mix garbage into the last line with NTSC
+  filter.                                                   (OV2)
+- Win32: Allow disabling scanlines in NTSC filter.          (BearOso)
+- GTK+: Added an undo load state option.                    (BearOso)
+- GTK+: Fixed compilation on big-endian systems.            (OV2)
+- Win32, GTK+: Added integer scaling option.                (BearOso)
+- GTK+, Unix: Preserve current joypad state when rewinding. (BearOso)
+
+Snes9x 1.56.1
+- Automatic input rate now only works for close multiples   (BearOso)
+  of 60Hz.
+- Win32: Cheats are now shown in the correct order in the   (BearOso)
+  list view.
+- GTK+: Check for version greater than 3.22 when using GTK+ (BearOso)
+  3.
+- GTK+: Don't resize code and description field in GTK+ 2.  (BearOso)
+
+Snes9x 1.56
+- Increased the speed of SA1 emulation to match hardware    (BearOso)
+  more closely.
+- Fixed negative SA1 division                               (BearOso, Jonas Quinn)
+- Changed the location where we poll input to potentially   (Brunnis, BearOso)
+  reduce lag.
+- Fixed the interlace fields being swapped after skipping   (BearOso)
+  frames.
+- More updates for BS-X support.                            (LuigiBlood)
+- Updated xBRZ to version 1.6.                              (zenju, OV2)
+- Added a DMA timing hack for rpgone's Koryu no Mimi        (OV2)
+  translation.
+- Updated HDMA to not update indirect addresses until after (BearOso)
+  transfers are completed.
+- Improved cheats support. This stores cheats in a human-   (BearOso, OV2)
+  readable and editable format as gamename.cht. Cheats are
+  converted from the old format on load. They can be added
+  in many different formats, but they will convert to the
+  simple address=condition?byte format.
+  Also, now included is mightymo's cheat database, and the
+  ability to match a game and automatically load cheats
+  from it.
+- Don't reset a pending NMI on vblank end. Fixes Super      (furrykef)
+  Punch-Out.
+- Redo NMI timing. Fixes Secret of Evermore (PAL).          (BearOso)
+- Test for transparency before dithering on SuperFX. This   (RedGuy(yyy))
+  fixes some graphical artifacts in Star Fox.
+- Change some of the SDD1 guesswork mapping. Fixes a Tales  (BearOso)
+  of Phantasia hack.
+- Return PPU1 MDR for reads of $2137 instead of CPU MDR.    (BearOso)
+  Fixes Mario's Time Machine graphical glitch.
+- Memset less memory for sprite calculations.               (Nebuleon)
+- Don't spuriously update register 14 when running SuperFX. (BearOso)
+  Fixes graphical glitches in Doom.
+- Added a SuperFX clock modifier variable.                  (BearOso)
+- Write CPU MDR during some DMA and HDMA transfers. Fixes   (BearOso)
+  Speedy Gonzales and Funaki Masakatsu Hybrid Wrestler.
+- Calculate next IRQ time in advance instead of continously (BearOso, OV2)
+  checking for it.
+- Added some IRQ timing quirks. Fixes at least Marko's      (BearOso, OV2)
+  Magic Football.
+- Fixed wrong tile selection in offset-per-tile mode.       (BearOso)
+- Advance the VRAM pointer even if VRAM writes at the time  (kps501)
+  are invalid.
+- Return 0x80 instead of 0xff in DSP1 simulation. Fixes     (kps501)
+  Powerfest '94 Mario Kart.
+- Initialize controllers on reset. Fixes Looney Tunes       (kps501)
+  B-Ball multitap.
+- Attached APU instruction tracer and made some additions   (BearOso)
+  to debugging output.
+- Fix line doubling in interlaced mode.                     (kps501)
+- Added support for M.A.C.S. rifle peripheral.              (kps501)
+- Fixed a bug where the MSU1 channels were reversed.        (qwertymodo)
+- Win32: Added dynamic rate control support for XAudio2     (OV2)
+- Win32: Added different volume level configuration for     (OV2)
+  regular and turbo speed.
+- Win32: Added option to disable EPX scaling for messages   (OV2)
+- Win32: Improve multi-rom loading.                         (OV2)
+- Win32: Add libpng and zlib dependencies as submodules for (qwertymodo, OV2)
+  easier compiling from source.
+- Win32: Fixed icon registration.                           (OV2)
+- Win32: Better support for running while unfocused.        (OV2)
+- Win32: Changed icon.                                      (BearOso)
+- Win32: Report hidpi support.                              (BearOso)
+- Win32: Added mute hotkey and hotkeys for saving/loading   (OV2)
+  from file.
+- Win32: Disabled hotplugging in favor of a menu option to  (OV2)
+  reconfigure joysticks.
+- Win32: Added a reduce input lag option.                   (BearOso)
+- Win32: Added ability to use GLSLP shaders with OpenGL,    (OV2)
+  including a dialog to tweak custom parameters.
+- GTK+: Added dynamic rate control support for audio to     (BearOso)
+  reduce buffer overflows and underflows.
+- GTK+: Increased SDL requirement to version 2.0. This      (BearOso)
+  improves joystick compatibility.
+- GTK+: Improved GTK+ 3.0 support and made it the default.  (BearOso)
+- GTK+: Added ability to start from a snapshot on the       (julien2512)
+  command line.
+- GTK+: Added automatic input rate handling.                (BearOso)
+- GTK+: Use 16-bit 5-6-5 pixel format for better colors.    (BearOso)
+- GTK+: Now disables the compositor in fullscreen mode.     (BearOso)
+- GTK+: Changed icon.                                       (BearOso)
+- GTK+: Require libepoxy for OpenGL support.                (BearOso)
+- GTK+: Add full compatibility with GLSLP shaders, with a   (BearOso)
+  parameters dialog to configure them.
+- Unix: Add xinerama support and window position hints.     (Francesco149)
+
 Snes9x 1.55
 - Added support for the MSU-1 coprocessor.                  (qwertymodo)
 - Added support for MSU-1 distribution pack.                (qwertymodo)

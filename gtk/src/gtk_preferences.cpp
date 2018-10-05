@@ -1,9 +1,7 @@
 #include <string>
 #include <stdlib.h>
 #include <gdk/gdkkeysyms.h>
-#ifdef USE_GTK3
-#include <gdk/gdkkeysyms-compat.h>
-#endif
+#include <gdk/gdkx.h>
 
 #include "gtk_preferences.h"
 #include "gtk_config.h"
@@ -12,6 +10,10 @@
 #include "gtk_sound.h"
 #include "gtk_display.h"
 #include "gtk_binding.h"
+
+#if GTK_MAJOR_VERSION >= 3
+#include <gdk/gdkkeysyms-compat.h>
+#endif
 
 #define SAME_GAME _("Same location as current game")
 
@@ -229,15 +231,17 @@ event_shader_select (GtkButton *widget, gpointer data)
                                           "gtk-open", GTK_RESPONSE_ACCEPT,
                                           NULL);
 
-    if (strcmp (gui_config->last_directory, ""))
+    if (strcmp (gui_config->last_shader_directory, ""))
     {
         gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (dialog),
-                                             gui_config->last_directory);
+                                             gui_config->last_shader_directory);
     }
-
-    if (strlen (gtk_entry_get_text (entry)))
-        gtk_file_chooser_set_filename (GTK_FILE_CHOOSER (dialog),
-                                       gtk_entry_get_text (entry));
+    else
+    {
+        if (strlen (gtk_entry_get_text (entry)))
+            gtk_file_chooser_set_filename (GTK_FILE_CHOOSER (dialog),
+                                           gtk_entry_get_text (entry));
+    }
 
 
     result = gtk_dialog_run (GTK_DIALOG (dialog));
@@ -246,6 +250,9 @@ event_shader_select (GtkButton *widget, gpointer data)
     if (result == GTK_RESPONSE_ACCEPT)
     {
         filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+        strcpy (gui_config->last_shader_directory,
+                gtk_file_chooser_get_current_folder(GTK_FILE_CHOOSER (dialog)));
+
         if (filename != NULL)
         {
             gtk_entry_set_text (entry, filename);
@@ -463,6 +470,22 @@ event_input_rate_changed (GtkRange *range, gpointer data)
     return;
 }
 
+void
+event_auto_input_rate_toggled (GtkToggleButton *togglebutton, gpointer data)
+{
+    Snes9xPreferences *preferences = (Snes9xPreferences *) data;
+
+    if (gtk_toggle_button_get_active (togglebutton))
+    {
+        preferences->set_slider("sound_input_rate", top_level->get_auto_input_rate ());
+        gtk_widget_set_sensitive (preferences->get_widget("sound_input_rate"), FALSE);
+    }
+    else
+    {
+        gtk_widget_set_sensitive (preferences->get_widget("sound_input_rate"), TRUE);
+    }
+}
+
 static void
 event_about_clicked (GtkButton *widget, gpointer data)
 {
@@ -487,9 +510,6 @@ event_about_clicked (GtkButton *widget, gpointer data)
 #ifdef USE_XV
     version_string += _(" XVideo");
 #endif
-#ifdef USE_XRANDR
-    version_string += _(" XRandR");
-#endif
 #ifdef USE_JOYSTICK
     version_string += _(" Joystick");
 #endif
@@ -504,7 +524,7 @@ event_about_clicked (GtkButton *widget, gpointer data)
 
     gtk_widget_hide (about_dialog->get_widget ("preferences_splash"));
 
-#ifdef USE_GTK3
+#if GTK_MAJOR_VERSION >= 3
     GtkCssProvider *provider;
     GtkStyleContext *context;
 
@@ -561,6 +581,7 @@ Snes9xPreferences::Snes9xPreferences (Snes9xConfig *config) :
         { "game_data_browse", G_CALLBACK (event_game_data_browse) },
         { "game_data_clear", G_CALLBACK (event_game_data_clear) },
         { "about_clicked", G_CALLBACK (event_about_clicked) },
+        { "auto_input_rate_toggled", G_CALLBACK (event_auto_input_rate_toggled) },
 #ifdef USE_JOYSTICK
         { "calibrate", G_CALLBACK (event_calibrate) },
 #endif
@@ -569,6 +590,8 @@ Snes9xPreferences::Snes9xPreferences (Snes9xConfig *config) :
 
     last_toggled = NULL;
     this->config = config;
+
+    mode_indices = NULL;
 
     gtk_widget_realize (window);
 
@@ -586,6 +609,8 @@ Snes9xPreferences::Snes9xPreferences (Snes9xConfig *config) :
 
 Snes9xPreferences::~Snes9xPreferences (void)
 {
+    delete[] mode_indices;
+
     return;
 }
 
@@ -673,13 +698,23 @@ Snes9xPreferences::move_settings_to_dialog (void)
     set_spin  ("num_threads",               config->num_threads);
     set_check ("mute_sound_check",          config->mute_sound);
     set_check ("mute_sound_turbo_check",    config->mute_sound_turbo);
-    set_spin  ("sound_buffer_size",         config->sound_buffer_size);
     set_slider ("sound_input_rate",         config->sound_input_rate);
+    if (top_level->get_auto_input_rate () == 0)
+    {
+        config->auto_input_rate = 0;
+        gtk_widget_set_sensitive (get_widget ("auto_input_rate"), FALSE);
+    }
+    set_check ("auto_input_rate",           config->auto_input_rate);
+    gtk_widget_set_sensitive (get_widget("sound_input_rate"),
+                              config->auto_input_rate ? FALSE : TRUE);
+    set_spin  ("sound_buffer_size",         config->sound_buffer_size);
+
     set_check ("sync_sound",                Settings.SoundSync);
     set_check ("dynamic_rate_control",      Settings.DynamicRateControl);
     set_spin  ("dynamic_rate_limit",        Settings.DynamicRateLimit / 1000.0);
     set_spin  ("rewind_buffer_size",        config->rewind_buffer_size);
     set_spin  ("rewind_granularity",        config->rewind_granularity);
+    set_spin  ("superfx_multiplier",        Settings.SuperFXClockMultiplier);
 
     int num_sound_drivers = 0;
 #ifdef USE_PORTAUDIO
@@ -728,7 +763,7 @@ Snes9xPreferences::move_settings_to_dialog (void)
     set_combo ("frameskip_combo",
                Settings.SkipFrames == AUTO_FRAMERATE ?
                    0 : Settings.SkipFrames + 1);
-    set_check ("bilinear_filter",           config->bilinear_filter);
+    set_check ("bilinear_filter",           Settings.BilinearFilter);
 
 #ifdef USE_OPENGL
     set_check ("sync_to_vblank",            config->sync_to_vblank);
@@ -762,21 +797,19 @@ Snes9xPreferences::get_settings_from_dialog (void)
     int sound_needs_restart = 0;
     int gfx_needs_restart = 0;
 
-    if ((config->sound_driver       != get_combo ("sound_driver"))          ||
-        (config->mute_sound         != get_check ("mute_sound_check"))      ||
-        (config->sound_buffer_size  != (int) get_spin ("sound_buffer_size"))||
-        (Settings.Stereo            != get_check ("stereo_check"))          ||
-        (config->sound_playback_rate !=
-                     (7 - (get_combo ("playback_combo"))))                  ||
-        (config->sound_input_rate   != get_slider ("sound_input_rate"))     ||
-        (Settings.SoundSync         != get_check ("sync_sound"))            ||
-        (Settings.DynamicRateControl != get_check ("dynamic_rate_control"))
-        )
+    if ((config->sound_driver        != get_combo ("sound_driver"))            ||
+        (config->mute_sound          != get_check ("mute_sound_check"))        ||
+        (config->sound_buffer_size   != (int) get_spin ("sound_buffer_size"))  ||
+        (Settings.Stereo             != get_check ("stereo_check"))            ||
+        (config->sound_playback_rate != (7 - (get_combo ("playback_combo"))))  ||
+        (config->sound_input_rate    != get_slider ("sound_input_rate"))       ||
+        (config->auto_input_rate     != get_check ("auto_input_rate"))         ||
+        (Settings.SoundSync          != get_check ("sync_sound"))              ||
+        (Settings.DynamicRateControl != get_check ("dynamic_rate_control")))
     {
         sound_needs_restart = 1;
     }
 
-#ifdef USE_XRANDR
     if ((config->change_display_resolution != get_check ("change_display_resolution") ||
             (config->change_display_resolution &&
                     (config->xrr_index != get_combo ("resolution_combo")))) &&
@@ -784,18 +817,13 @@ Snes9xPreferences::get_settings_from_dialog (void)
     {
         top_level->leave_fullscreen_mode ();
         config->xrr_index = get_combo ("resolution_combo");
-        config->xrr_width = config->xrr_sizes[config->xrr_index].width;
-        config->xrr_height = config->xrr_sizes[config->xrr_index].height;
         config->change_display_resolution = get_check ("change_display_resolution");
         top_level->enter_fullscreen_mode ();
     }
     else
     {
         config->xrr_index = get_combo ("resolution_combo");
-        config->xrr_width = config->xrr_sizes[config->xrr_index].width;
-        config->xrr_height = config->xrr_sizes[config->xrr_index].height;
     }
-#endif
 
     config->change_display_resolution = get_check ("change_display_resolution");
 
@@ -826,11 +854,13 @@ Snes9xPreferences::get_settings_from_dialog (void)
     Settings.SkipFrames               = get_combo ("frameskip_combo");
     Settings.BlockInvalidVRAMAccessMaster   = get_check ("block_invalid_vram_access");
     Settings.UpAndDown                = get_check ("upanddown");
+    Settings.SuperFXClockMultiplier   = get_spin ("superfx_multiplier");
     config->sound_driver              = get_combo ("sound_driver");
     Settings.Stereo                   = get_check ("stereo_check");
     config->sound_playback_rate       = 7 - (get_combo ("playback_combo"));
     config->sound_buffer_size         = get_spin ("sound_buffer_size");
     config->sound_input_rate          = get_slider ("sound_input_rate");
+    config->auto_input_rate           = get_check ("auto_input_rate");
     Settings.SoundSync                = get_check ("sync_sound");
     config->mute_sound                = get_check ("mute_sound_check");
     config->mute_sound_turbo          = get_check ("mute_sound_turbo_check");
@@ -841,7 +871,7 @@ Snes9xPreferences::get_settings_from_dialog (void)
     config->ntsc_scanline_intensity   = get_combo ("ntsc_scanline_intensity");
     config->scanline_filter_intensity = get_combo ("scanline_filter_intensity");
     config->hw_accel                  = hw_accel_value (get_combo ("hw_accel"));
-    config->bilinear_filter           = get_check ("bilinear_filter");
+    Settings.BilinearFilter           = get_check ("bilinear_filter");
     config->num_threads               = get_spin ("num_threads");
     config->default_esc_behavior      = get_combo ("default_esc_behavior");
     config->prevent_screensaver       = get_check ("prevent_screensaver");
@@ -1034,32 +1064,38 @@ Snes9xPreferences::show (void)
 
     if (config->allow_xrandr)
     {
-#ifdef USE_XRANDR
         char      size_string[256];
 
         combo = get_widget ("resolution_combo");
 
-        config->xrr_index = 0;
-
-        for (int i = 0; i < config->xrr_num_sizes; i++)
+        for (int i = 0; i < config->xrr_screen_resources->nmode; i++)
         {
-            if (config->xrr_width == config->xrr_sizes[i].width &&
-                config->xrr_height == config->xrr_sizes[i].height)
-                config->xrr_index = i;
+            XRRModeInfo *m = &config->xrr_screen_resources->modes[i];
+            unsigned long dotClock = m->dotClock;
+            if (m->modeFlags & RR_ClockDivideBy2)
+                dotClock /= 2;
+            if (m->modeFlags & RR_DoubleScan)
+                dotClock /= 2;
+            if (m->modeFlags & RR_DoubleClock)
+                dotClock *= 2;
 
             snprintf (size_string,
                       256,
-                      "%dx%d",
-                      config->xrr_sizes[i].width,
-                      config->xrr_sizes[i].height);
+                      "%dx%d @ %.3fHz",
+                      m->width,
+                      m->height,
+                      (double) dotClock / m->hTotal / m->vTotal);
 
             combo_box_append (GTK_COMBO_BOX (combo), size_string);
         }
-#endif
+
+        if (config->xrr_index > config->xrr_screen_resources->nmode)
+            config->xrr_index = 0;
     }
     else
     {
         gtk_widget_hide (get_widget ("resolution_box"));
+        gtk_widget_hide (get_widget ("set_input_rate_button"));
     }
 
 #ifdef USE_HQ2X
@@ -1191,9 +1227,9 @@ Snes9xPreferences::swap_with (void)
     int           source_joypad = get_combo ("control_combo");
     int           dest_joypad   = get_combo ("joypad_to_swap_with");
 
-    memcpy (&mediator, &pad[source_joypad], sizeof (JoypadBinding));
-    memcpy (&pad[source_joypad], &pad[dest_joypad], sizeof (JoypadBinding));
-    memcpy (&pad[dest_joypad], &mediator, sizeof (JoypadBinding));
+    mediator = pad[source_joypad];
+    pad[source_joypad] = pad[dest_joypad];
+    pad[dest_joypad] = mediator;
 
     bindings_to_dialog (source_joypad);
 
@@ -1205,7 +1241,10 @@ Snes9xPreferences::reset_current_joypad (void)
 {
     int joypad = get_combo ("control_combo");
 
-    memset (&pad[joypad], 0, sizeof (JoypadBinding));
+    for (unsigned int i = 0; i < NUM_JOYPAD_LINKS; i++)
+    {
+        pad[joypad].data[i].clear();
+    }
 
     bindings_to_dialog (joypad);
 

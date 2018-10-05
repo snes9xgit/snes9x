@@ -286,4 +286,12 @@ extern "C" char *_twcsrchr(const char *_Str, int _Ch) {
 	}
 }
 
+extern "C" void _twfullpath(char* dst, const char* src, int len) {
+    wchar_t *resolved = _wfullpath(NULL, Utf8ToWide(src), MAX_PATH);
+    strncpy(dst, WideToUtf8(resolved), len);
+    free(resolved);
+    dst[len - 1] = '\0';
+    return;
+}
+
 #endif // UNICODE

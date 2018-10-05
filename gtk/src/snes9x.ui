@@ -157,6 +157,13 @@
     <property name="step_increment">0.001</property>
     <property name="page_increment">0.010</property>
   </object>
+  <object class="GtkAdjustment" id="superfx_multiplier_adjustment">
+    <property name="lower">50</property>
+    <property name="upper">400</property>
+    <property name="value">100</property>
+    <property name="step_increment">10</property>
+    <property name="page_increment">10</property>
+  </object>
   <object class="GtkAdjustment" id="adjustment13">
     <property name="lower">-1</property>
     <property name="upper">1</property>
@@ -210,9 +217,9 @@
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjustment5">
-    <property name="lower">31500</property>
-    <property name="upper">32500</property>
-    <property name="value">31990</property>
+    <property name="lower">31700</property>
+    <property name="upper">32300</property>
+    <property name="value">31950</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
@@ -256,8 +263,8 @@
     <property name="page_increment">0.10000000000000001</property>
   </object>
   <object class="GtkDialog" id="cheat_window">
-    <property name="width_request">512</property>
-    <property name="height_request">350</property>
+    <property name="width_request">720</property>
+    <property name="height_request">480</property>
     <property name="can_focus">False</property>
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
     <property name="border_width">5</property>
@@ -270,7 +277,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-        <property name="spacing">2</property>
+        <property name="spacing">3</property>
         <child internal-child="action_area">
           <object class="GtkHButtonBox" id="dialog-action_area3">
             <property name="visible">True</property>
@@ -312,11 +319,11 @@
                 <property name="label_xalign">0</property>
                 <property name="shadow_type">in</property>
                 <child>
-                  <object class="GtkScrolledWindow" id="scrolledwindow9">
+                  <object class="GtkScrolledWindow" id="cheat_scrolledwindow">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="hscrollbar_policy">never</property>
+                    <property name="hscrollbar_policy">automatic</property>
                     <property name="vscrollbar_policy">automatic</property>
                     <child>
                       <object class="GtkTreeView" id="cheat_treeview">
@@ -344,67 +351,6 @@
                 <property name="border_width">5</property>
                 <property name="spacing">5</property>
                 <child>
-                  <object class="GtkLabel" id="label141">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="xalign">0</property>
-                    <property name="label" translatable="yes">Code:</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkEntry" id="code_entry">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="has_focus">True</property>
-                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="activates_default">True</property>
-                    <property name="primary_icon_activatable">False</property>
-                    <property name="secondary_icon_activatable">False</property>
-                    <property name="primary_icon_sensitive">True</property>
-                    <property name="secondary_icon_sensitive">True</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="label140">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="xalign">0</property>
-                    <property name="label" translatable="yes">Description:</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkEntry" id="description_entry">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="max_length">21</property>
-                    <property name="activates_default">True</property>
-                    <property name="primary_icon_activatable">False</property>
-                    <property name="secondary_icon_activatable">False</property>
-                    <property name="primary_icon_sensitive">True</property>
-                    <property name="secondary_icon_sensitive">True</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">3</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkButton" id="button4">
                     <property name="label">gtk-add</property>
                     <property name="visible">True</property>
@@ -419,7 +365,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">4</property>
+                    <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
@@ -431,6 +377,67 @@
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <property name="use_stock">True</property>
                     <signal name="clicked" handler="remove_code" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="update_button">
+                    <property name="label" translatable="yes">Update Cheat</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                    <signal name="clicked" handler="update_code" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="disable_all_button">
+                    <property name="label" translatable="yes">Disable All</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                    <property name="use_stock">True</property>
+                    <signal name="clicked" handler="disable_all" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="delete_all_cheats_button">
+                    <property name="label" translatable="yes">Delete All Cheats</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                    <signal name="clicked" handler="delete_all_cheats" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="cheat_search_button">
+                    <property name="label" translatable="yes">Search Cheat Database</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                    <signal name="clicked" handler="search_database" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -450,6 +457,95 @@
             <property name="expand">True</property>
             <property name="fill">True</property>
             <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+           <!-- Code and description table -->
+          <object class="GtkTable" id="code_and_description_table">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+            <property name="n_rows">2</property>
+            <property name="n_columns">2</property>
+            <property name="column_spacing">12</property>
+            <property name="row_spacing">5</property>
+            <child>
+              <object class="GtkLabel" id="label141">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="xalign">1</property>
+                <property name="label" translatable="yes">Code:</property>
+              </object>
+              <packing>
+                <property name="top_attach">0</property>
+                <property name="bottom_attach">1</property>
+                <property name="left_attach">0</property>
+                <property name="right_attach">1</property>
+                <property name="x_options">GTK_FILL</property>
+                <property name="y_options">GTK_FILL</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="code_entry">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="has_focus">True</property>
+                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                <property name="activates_default">True</property>
+                <property name="primary_icon_activatable">False</property>
+                <property name="secondary_icon_activatable">False</property>
+                <property name="primary_icon_sensitive">True</property>
+                <property name="secondary_icon_sensitive">True</property>
+              </object>
+              <packing>
+                <property name="top_attach">0</property>
+                <property name="bottom_attach">1</property>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="x_options">GTK_FILL|GTK_EXPAND</property>
+                <property name="y_options">GTK_FILL</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label140">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="xalign">1</property>
+                <property name="label" translatable="yes">Description:</property>
+              </object>
+              <packing>
+                <property name="top_attach">1</property>
+                <property name="bottom_attach">2</property>
+                <property name="left_attach">0</property>
+                <property name="right_attach">1</property>
+                <property name="x_options">GTK_FILL</property>
+                <property name="y_options">GTK_FILL</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="description_entry">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="max_length">1024</property>
+                <property name="activates_default">True</property>
+                <property name="primary_icon_activatable">False</property>
+                <property name="secondary_icon_activatable">False</property>
+                <property name="primary_icon_sensitive">True</property>
+                <property name="secondary_icon_sensitive">True</property>
+              </object>
+              <packing>
+                <property name="top_attach">1</property>
+                <property name="bottom_attach">2</property>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="x_options">GTK_FILL|GTK_EXPAND</property>
+                <property name="y_options">GTK_FILL</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
           </packing>
         </child>
       </object>
@@ -817,10 +913,19 @@
         <col id="0" translatable="yes">8:7 Square pixels</col>
       </row>
       <row>
+        <col id="0" translatable="yes">8:7 Square pixels, integer multiples</col>
+      </row>
+      <row>
         <col id="0" translatable="yes">4:3 SNES correct aspect</col>
       </row>
       <row>
+        <col id="0" translatable="yes">4:3 SNES correct aspect, integer multiples</col>
+      </row>
+      <row>
         <col id="0" translatable="yes">8*8:7*7 NTSC</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">8*8:7*7 NTSC, integer multiples</col>
       </row>
     </data>
   </object>
@@ -1236,6 +1341,21 @@
                                 <property name="label" translatable="yes">From _File...</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="load_state_file" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkSeparatorMenuItem" id="undoseparator">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkMenuItem" id="load_state_undo">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">_Undo Load State</property>
+                                <property name="use_underline">True</property>
+                                <signal name="activate" handler="load_state_undo" swapped="no"/>
                               </object>
                             </child>
                           </object>
@@ -1804,6 +1924,22 @@
                         <property name="label" translatable="yes">_Cheats...</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="open_cheats" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="shader_parameters_separator">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="shader_parameters_item">
+                        <property name="label" translatable="yes">_Shader Parameters...</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_shader_parameters_item_activate" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -2491,6 +2627,7 @@
       <object class="GtkVBox" id="dialog-vbox1">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="spacing">2</property>
         <child internal-child="action_area">
           <object class="GtkHButtonBox" id="dialog-action_area1">
             <property name="visible">True</property>
@@ -3785,7 +3922,7 @@
                                                 <property name="spacing">5</property>
                                                 <child>
                                                   <object class="GtkCheckButton" id="use_shaders">
-                                                    <property name="label" translatable="yes">Use GLSL shader:</property>
+                                                    <property name="label" translatable="yes">Shader:</property>
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">False</property>
@@ -4016,20 +4153,35 @@
                                         <property name="position">1</property>
                                       </packing>
                                     </child>
-
+                                    <child>
+                                      <object class="GtkCheckButton" id="auto_input_rate">
+                                        <property name="label" translatable="yes">Automatically adjust input rate to display</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">False</property>
+                                        <property name="tooltip_text" translatable="yes">Sets the correct input rate based on the display's refresh rate</property>
+                                        <property name="draw_indicator">True</property>
+                                        <signal name="toggled" handler="auto_input_rate_toggled" swapped="no"/>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">False</property>
+                                        <property name="position">2</property>
+                                      </packing>
+                                    </child>
                                     <child>
                                       <object class="GtkCheckButton" id="dynamic_rate_control">
                                         <property name="label" translatable="yes">Dynamic rate control</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">False</property>
-                                        <property name="tooltip_text" translatable="yes">Adjust input rate automatically</property>
+                                        <property name="tooltip_text" translatable="yes">Smoothes out slight hiccups in sound input rate</property>
                                         <property name="draw_indicator">True</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">False</property>
-                                        <property name="position">2</property>
+                                        <property name="position">3</property>
                                       </packing>
                                     </child>
 
@@ -4046,7 +4198,7 @@
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">False</property>
-                                        <property name="position">3</property>
+                                        <property name="position">4</property>
                                       </packing>
                                     </child>
                                     <child>
@@ -4062,7 +4214,7 @@
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">False</property>
-                                        <property name="position">4</property>
+                                        <property name="position">5</property>
                                       </packing>
                                     </child>
                                     <child>
@@ -4078,14 +4230,14 @@
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">False</property>
-                                        <property name="position">5</property>
+                                        <property name="position">6</property>
                                       </packing>
                                     </child>
                                     <child>
                                       <object class="GtkTable" id="table7">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="n_rows">5</property>
+                                        <property name="n_rows">6</property>
                                         <property name="n_columns">2</property>
                                         <property name="column_spacing">10</property>
                                         <property name="row_spacing">5</property>
@@ -4298,7 +4450,7 @@
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">True</property>
-                                        <property name="position">6</property>
+                                        <property name="position">7</property>
                                       </packing>
                                     </child>
                                   </object>
@@ -4462,6 +4614,48 @@
                                             <property name="position">2</property>
                                           </packing>
                                         </child>
+                                        <child>
+                                          <object class="GtkHBox" id="superfx_multiplier_hbox">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="spacing">10</property>
+                                            <child>
+                                              <object class="GtkLabel" id="superfx_multiplier_label">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">False</property>
+                                                <property name="label" translatable="yes">SuperFX clock speed %:</property>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">False</property>
+                                                <property name="position">0</property>
+                                              </packing>
+                                            </child>
+                                            <child>
+                                              <object class="GtkSpinButton" id="superfx_multiplier">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">True</property>
+                                                <property name="primary_icon_activatable">False</property>
+                                                <property name="secondary_icon_activatable">False</property>
+                                                <property name="primary_icon_sensitive">True</property>
+                                                <property name="secondary_icon_sensitive">True</property>
+                                                <property name="adjustment">superfx_multiplier_adjustment</property>
+                                                <property name="snap_to_ticks">True</property>
+                                                <property name="numeric">True</property>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">1</property>
+                                              </packing>
+                                            </child>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">False</property>
+                                            <property name="position">3</property>
+                                          </packing>
+                                        </child>
 <child>
   <object class="GtkHBox" id="rewind_buffer_hbox">
     <property name="visible">True</property>
@@ -4501,7 +4695,7 @@
   <packing>
     <property name="expand">False</property>
     <property name="fill">False</property>
-    <property name="position">3</property>
+    <property name="position">4</property>
   </packing>
 </child>
 <child>
@@ -4543,7 +4737,7 @@
   <packing>
     <property name="expand">False</property>
     <property name="fill">False</property>
-    <property name="position">4</property>
+    <property name="position">5</property>
   </packing>
 </child>
                                       </object>
@@ -8659,7 +8853,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2017  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
   (c) Copyright 2017         qwertymodo
@@ -8777,7 +8971,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2017  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -8785,7 +8979,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2017  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles

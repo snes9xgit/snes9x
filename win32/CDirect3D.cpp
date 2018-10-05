@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2017  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
   (c) Copyright 2017         qwertymodo
@@ -140,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2017  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -148,7 +148,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2017  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -739,6 +739,21 @@ void CDirect3D::Render(SSurface Src)
 
 	pDevice->Present(NULL, NULL, NULL, NULL);
 
+	if (GUI.ReduceInputLag)
+	{
+		IDirect3DSurface9 *surface;
+		RECT r = { 0, 0, 2, 2 };
+
+		if (pDevice->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &surface) == D3D_OK)
+		{
+			if (surface->LockRect(&lr, &r, D3DLOCK_READONLY) == D3D_OK)
+			{
+				surface->UnlockRect();
+			}
+			surface->Release();
+		}
+	}
+
     return;
 }
 
@@ -935,6 +950,7 @@ bool CDirect3D::ResetDevice()
 	dPresentParams.FullScreen_RefreshRateInHz = 0;
 	dPresentParams.Windowed = true;
 	dPresentParams.PresentationInterval = GUI.Vsync?D3DPRESENT_INTERVAL_ONE:D3DPRESENT_INTERVAL_IMMEDIATE;
+	dPresentParams.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
 
 	if(fullscreen) {
 		dPresentParams.BackBufferWidth = GUI.FullscreenMode.width;
@@ -1076,7 +1092,7 @@ bool CDirect3D::ApplyDisplayChanges(void)
 
 void CDirect3D::SetFiltering()
 {
-	if(GUI.BilinearFilter) {
+	if(Settings.BilinearFilter) {
 		pDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 		pDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
 	} else {

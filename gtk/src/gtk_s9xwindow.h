@@ -3,10 +3,6 @@
 
 #include <gtk/gtk.h>
 
-#ifdef USE_OPENGL
-#include <GL/gl.h>
-#endif
-
 #include "gtk_s9x.h"
 #include "gtk_builder_window.h"
 
@@ -61,13 +57,14 @@ class Snes9xWindow : public GtkBuilderWindow
         void resize_to_multiple (int factor);
         void resize_viewport (int width, int height);
         void expose (void);
+        double get_refresh_rate (void);
+        int get_auto_input_rate (void);
 
         cairo_t *get_cairo (void);
         void release_cairo (void);
 
         Snes9xConfig   *config;
         int            user_pause, sys_pause;
-        int            user_rewind;
         int            last_width, last_height;
         int            mouse_region_x, mouse_region_y;
         int            mouse_region_width, mouse_region_height;
@@ -83,7 +80,7 @@ class Snes9xWindow : public GtkBuilderWindow
         GtkWidget      *recent_menu;
         cairo_t        *cr;
         int            cairo_owned;
-#ifdef USE_GTK3
+#if GTK_MAJOR_VERSION >= 3
         GdkDrawingContext *gdk_drawing_context;
         cairo_region_t    *cairo_region;
 #endif

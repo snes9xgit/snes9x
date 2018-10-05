@@ -70,9 +70,11 @@ S9xAlsaSoundDriver::open_device (void)
     snd_pcm_sw_params_t *sw_params;
     snd_pcm_hw_params_t *hw_params;
     snd_pcm_uframes_t alsa_buffer_size, alsa_period_size;
+    unsigned int min = 0;
+    unsigned int max = 0;
 
     printf ("ALSA sound driver initializing...\n");
-    printf ("    --> (Device: default)...");
+    printf ("    --> (Device: default)...\n");
 
     err = snd_pcm_open (&pcm,
                         "default",
@@ -84,9 +86,7 @@ S9xAlsaSoundDriver::open_device (void)
         goto fail;
     }
 
-    printf ("OK\n");
-
-    printf ("    --> (%s, %s, %dhz, %d ms)...",
+    printf ("    --> (%s, %s, %dhz, %d ms)...\n",
             Settings.SixteenBitSound ? "16-bit" : "8-bit",
             Settings.Stereo ? "Stereo" : "Mono",
             Settings.SoundPlaybackRate,
@@ -96,14 +96,43 @@ S9xAlsaSoundDriver::open_device (void)
     snd_pcm_hw_params_any (pcm, hw_params);
     snd_pcm_hw_params_set_format (pcm, hw_params, Settings.SixteenBitSound ? SND_PCM_FORMAT_S16 : SND_PCM_FORMAT_U8);
     snd_pcm_hw_params_set_access (pcm, hw_params, SND_PCM_ACCESS_RW_INTERLEAVED);
-    snd_pcm_hw_params_set_channels (pcm, hw_params, Settings.Stereo ? 2 : 1);
-    snd_pcm_hw_params_set_rate_near (pcm, hw_params, &Settings.SoundPlaybackRate, NULL);
     snd_pcm_hw_params_set_rate_resample (pcm, hw_params, 0);
+    snd_pcm_hw_params_set_channels (pcm, hw_params, Settings.Stereo ? 2 : 1);
+
+    snd_pcm_hw_params_get_rate_min (hw_params, &min, NULL);
+    snd_pcm_hw_params_get_rate_max (hw_params, &max, NULL);
+    printf ("    --> Available rates: %d to %d\n", min, max);
+    if (Settings.SoundPlaybackRate > max && Settings.SoundPlaybackRate < min)
+    {
+        printf ("        Rate %d not available. Using %d instead.\n", Settings.SoundPlaybackRate, max);
+        Settings.SoundPlaybackRate = max;
+    }
+    snd_pcm_hw_params_set_rate_near (pcm, hw_params, &Settings.SoundPlaybackRate, NULL);
+
+    snd_pcm_hw_params_get_buffer_time_min (hw_params, &min, NULL);
+    snd_pcm_hw_params_get_buffer_time_max (hw_params, &max, NULL);
+    printf ("    --> Available buffer sizes: %dms to %dms\n", min / 1000, max / 1000);
+    if (buffer_size < min && buffer_size > max)
+    {
+        printf ("        Buffer size %dms not available. Using %d instead.\n", buffer_size / 1000, (min + max) / 2000);
+        buffer_size = (min + max) / 2;
+    }
     snd_pcm_hw_params_set_buffer_time_near (pcm, hw_params, &buffer_size, NULL);
+
+    snd_pcm_hw_params_get_periods_min (hw_params, &min, NULL);
+    snd_pcm_hw_params_get_periods_max (hw_params, &max, NULL);
+    printf ("    --> Period ranges: %d to %d blocks\n", min, max);
+    if (periods > max)
+    {
+        periods = max;
+    }
     snd_pcm_hw_params_set_periods_near (pcm, hw_params, &periods, NULL);
 
     if ((err = snd_pcm_hw_params (pcm, hw_params)) < 0)
+    {
+        printf ("        Hardware parameter set failed.\n");
         goto close_fail;
+    }
 
     snd_pcm_sw_params_alloca (&sw_params);
     snd_pcm_sw_params_current (pcm, sw_params);
@@ -115,7 +144,10 @@ S9xAlsaSoundDriver::open_device (void)
     output_buffer_size = snd_pcm_frames_to_bytes (pcm, alsa_buffer_size);
 
     if (err < 0)
+    {
+        printf ("        Software parameter set failed.\n");
         goto close_fail;
+    }
 
     printf ("OK\n");
 

@@ -183,6 +183,12 @@
     <ClInclude Include="..\msu1.h">
       <Filter>s9x-source</Filter>
     </ClInclude>
+    <ClInclude Include="..\bml.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sha256.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\bsx.cpp">
@@ -342,6 +348,12 @@
       <Filter>libretro</Filter>
     </ClCompile>
     <ClCompile Include="..\msu1.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bml.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sha256.cpp">
       <Filter>s9x-source</Filter>
     </ClCompile>
   </ItemGroup>

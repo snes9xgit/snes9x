@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2017  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
   (c) Copyright 2017         qwertymodo
@@ -140,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2017  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -148,7 +148,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2017  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -191,6 +191,7 @@
 #include "CGLCG.h"
 #include "wsnes9x.h"
 #include "win32_display.h"
+#include "snes9x.h"
 #include <png.h>
 
 #ifndef max
@@ -263,17 +264,9 @@ bool CGLCG::LoadFBOFunctions()
 	const char *extensions = (const char *) glGetString(GL_EXTENSIONS);
 
 	if(extensions && strstr(extensions, "framebuffer_object")) {
-		glGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)wglGetProcAddress("glGenFramebuffers");
-		glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSPROC)wglGetProcAddress("glDeleteFramebuffers");
-		glBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)wglGetProcAddress("glBindFramebuffer");
-		glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DPROC)wglGetProcAddress("glFramebufferTexture2D");
-		glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSPROC)wglGetProcAddress("glCheckFramebufferStatus");
-		glClientActiveTexture = (PFNGLACTIVETEXTUREPROC)wglGetProcAddress("glClientActiveTexture");
-
 		if(glGenFramebuffers && glDeleteFramebuffers && glBindFramebuffer && glFramebufferTexture2D && glClientActiveTexture) {
 			fboFunctionsLoaded = true;
 		}
-		 
 	}
 	return fboFunctionsLoaded;
 }
@@ -346,7 +339,7 @@ bool CGLCG::LoadShader(const TCHAR *shaderFile)
 		   and no filter has been set use the GUI setting
 		*/
 		if(pass.scaleParams.scaleTypeX==CG_SCALE_NONE && !it->filterSet) {
-			pass.linearFilter = GUI.BilinearFilter;
+			pass.linearFilter = Settings.BilinearFilter;
 		} else {
 			pass.linearFilter = it->linearFilter;
 		}
@@ -688,7 +681,7 @@ void CGLCG::setShaderVars(int pass)
     if(shaderPasses[pass].frameCounterMod)
         shaderFrameCnt %= shaderPasses[pass].frameCounterMod;
 	setProgram1f(pass,"IN.frame_count",(float)shaderFrameCnt);
-    setProgram1f(pass,"IN.frame_direction",GUI.rewinding?-1.0f:1.0f);
+    setProgram1f(pass,"IN.frame_direction",Settings.Rewinding?-1.0f:1.0f);
 
 	/* ORIG parameter
 	*/

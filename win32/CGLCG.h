@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2017  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
   (c) Copyright 2017         qwertymodo
@@ -140,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2017  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -148,7 +148,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2017  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -192,8 +192,7 @@
 #define CGGLCG_H
 
 #include <windows.h>
-#include <gl/gl.h>
-#include "glext.h"
+#include "gl_core_3_1.h"
 #include "cgFunctions.h"
 #include "CCGShader.h"
 #include <vector>
@@ -275,13 +274,6 @@ private:
 	unsigned int frameCnt;
 	static const GLfloat lut_coords[8];
 
-
-	PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;
-	PFNGLDELETEFRAMEBUFFERSPROC glDeleteFramebuffers;
-	PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer;
-	PFNGLFRAMEBUFFERTEXTURE2DPROC glFramebufferTexture2D;
-	PFNGLCHECKFRAMEBUFFERSTATUSPROC glCheckFramebufferStatus;
-	PFNGLACTIVETEXTUREPROC glClientActiveTexture;
 
 public:
 	CGLCG(CGcontext cgContext);

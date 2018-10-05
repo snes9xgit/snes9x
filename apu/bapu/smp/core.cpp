@@ -62,7 +62,17 @@ void SMP::op_step() {
   #if defined(PSEUDO_CYCLE)
 
   if(opcode_cycle == 0)
+  {
+#ifdef DEBUGGER
+    if (Settings.TraceSMP)
+    {
+      disassemble_opcode(tmp, regs.pc);
+      S9xTraceMessage (tmp);
+    }
+#endif
     opcode_number = op_readpc();
+  }
+
 
   switch(opcode_number) {
     #include "core/oppseudo_misc.cpp"

@@ -125,6 +125,9 @@ main (int argc, char *argv[])
 
     gtk_window_present (top_level->get_window ());
 
+    if (rom_filename && *Settings.InitialSnapshotFilename)
+        S9xUnfreezeGame(Settings.InitialSnapshotFilename);
+
     gtk_main ();
     return 0;
 }
@@ -192,17 +195,6 @@ S9xOpenROM (const char *rom_filename)
     if (loaded)
     {
         Memory.LoadSRAM (S9xGetFilename (".srm", SRAM_DIR));
-        S9xLoadCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
-
-        for (unsigned int i = 0; i < Cheat.num_cheats; i++)
-        {
-            if (Cheat.c[i].enabled)
-            {
-                /* RAM is fresh, so we need to clean out old saved values */
-                Cheat.c[i].saved = FALSE;
-                S9xApplyCheat (i);
-            }
-        }
     }
     else
     {
@@ -359,8 +351,17 @@ S9xIdleFunc (gpointer data)
     {
 #endif
 
-    if(top_level->user_rewind)
-        top_level->user_rewind = stateMan.pop();
+    if(Settings.Rewinding)
+    {
+        uint16 joypads[8];
+        for (int i = 0; i < 8; i++)
+            joypads[i] = MovieGetJoypad(i);
+
+        Settings.Rewinding = stateMan.pop();
+
+        for (int i = 0; i < 8; i++)
+            MovieSetJoypad (i, joypads[i]);
+    }
     else if(IPPU.TotalEmulatedFrames % gui_config->rewind_granularity == 0)
         stateMan.push();
 

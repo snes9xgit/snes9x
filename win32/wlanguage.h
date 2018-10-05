@@ -22,7 +22,7 @@
 
   (c) Copyright 2006 - 2007  nitsuja
 
-  (c) Copyright 2009 - 2017  BearOso,
+  (c) Copyright 2009 - 2018  BearOso,
                              OV2
 
   (c) Copyright 2017         qwertymodo
@@ -140,7 +140,7 @@
   (c) Copyright 2006 - 2007  Shay Green
 
   GTK+ GUI code
-  (c) Copyright 2004 - 2017  BearOso
+  (c) Copyright 2004 - 2018  BearOso
 
   Win32 GUI code
   (c) Copyright 2003 - 2006  blip,
@@ -148,7 +148,7 @@
                              Matthew Kendora,
                              Nach,
                              nitsuja
-  (c) Copyright 2009 - 2017  OV2
+  (c) Copyright 2009 - 2018  OV2
 
   Mac OS GUI code
   (c) Copyright 1998 - 2001  John Stiles
@@ -208,7 +208,7 @@
 (c) Copyright 2001 - 2006  John Weidman\r\n\
 (c) Copyright 2002 - 2010  Brad Jorsch, funkyass, Kris Bleakley, Nach, zones\r\n\
 (c) Copyright 2006 - 2007  nitsuja\r\n\
-(c) Copyright 2009 - 2017  BearOso, OV2\r\n\r\n\
+(c) Copyright 2009 - 2018  BearOso, OV2\r\n\r\n\
 Windows Port Authors: Matthew Kendora, funkyass, nitsuja, Nach, blip, OV2.\r\n\r\n\
 Snes9X is a Super Nintendo Entertainment System\r\n\
 emulator that allows you to play most games designed\r\n\
@@ -304,7 +304,9 @@ Nintendo is a trade mark.")
 #define HOTKEYS_LABEL_3_10 TEXT("Turbo Up mode")
 #define HOTKEYS_LABEL_3_11 TEXT("Turbo Right mode")
 #define HOTKEYS_LABEL_3_12 TEXT("Turbo Down mode")
-//#define HOTKEYS_LABEL_4_12 "Interpolate Mode 7"
+#define HOTKEYS_LABEL_3_13 TEXT("Toggle Mute")
+#define HOTKEYS_LABEL_4_11 TEXT("Save To File")
+#define HOTKEYS_LABEL_4_12 TEXT("Load From File")
 #define HOTKEYS_LABEL_4_13 TEXT("Quit Snes9x")
 
 // gaming buttons and axes
@@ -424,6 +426,7 @@ Nintendo is a trade mark.")
 #define WINPROC_CONTROLERS4 "Superscope on #1"
 #define WINPROC_CONTROLERS5 "Justifier 1 on #1"
 #define WINPROC_CONTROLERS6 "Justifier 2 on #1"
+#define WINPROC_CONTROLERS7 "M.A.C.S. Rifle on #1"
 #define WINPROC_BGHACK "Background layering hack"
 #define WINPROC_MODE7INTER "Mode 7 Interpolation"
 #define WINPROC_TRANSPARENCY "Transparency effects"
@@ -545,6 +548,7 @@ Nintendo is a trade mark.")
                                    the current value. This value is used when a cheat is unapplied.\n\
                                    (If left blank, no value is restored when the cheat is unapplied)")
 #define SEARCH_ERR_INVALIDSEARCHVALUE TEXT("Please enter a valid value for a search!")
+#define SEARCH_COLUMN_CODE TEXT("Code")
 #define SEARCH_COLUMN_ADDRESS TEXT("Address")
 #define SEARCH_COLUMN_VALUE TEXT("Value")
 #define SEARCH_COLUMN_DESCRIPTION TEXT("Description")

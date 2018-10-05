@@ -11,11 +11,13 @@ class S9xDisplayDriver
         virtual int init (void) = 0;
         virtual void deinit (void) = 0;
         virtual void clear_buffers (void) = 0;
-        virtual void update (int width, int height) = 0;
+        virtual void update (int width, int height, int yoffset) = 0;
         virtual uint16 *get_next_buffer (void) = 0;
         virtual uint16 *get_current_buffer (void) = 0;
         virtual void push_buffer (uint16 *src) = 0;
         virtual void reconfigure (int width, int height) = 0;
+        virtual void *get_parameters (void) = 0;
+        virtual void save (const char *filename) = 0;
 
         /* Namespaced sizing constants */
         static const int image_width = 1024;
@@ -26,14 +28,16 @@ class S9xDisplayDriver
 
         static const int image_size = image_width * image_height * image_bpp;
         static const int image_padded_size = (image_width + 8) *
-                                             (image_height + 8) *
+                                             (image_height + 8 + 30) *
                                              image_bpp;
+        static const int image_padded_offset = (image_width + 8) * (4 + 30) + 4;
         static const int scaled_size = scaled_max_width *
                                        scaled_max_height *
                                        image_bpp;
         static const int scaled_padded_size = (scaled_max_width + 8) *
                                               (scaled_max_height + 8) *
                                               image_bpp;
+        static const int scaled_padded_offset = (scaled_max_width + 8) * 4 + 4;
 
     protected:
         Snes9xWindow *window;
