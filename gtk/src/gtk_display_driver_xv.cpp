@@ -243,15 +243,6 @@ S9xXVDisplayDriver::init (void)
     GdkScreen           *screen;
     GdkWindow           *root;
 
-    buffer[0] = malloc (image_padded_size);
-    buffer[1] = malloc (scaled_padded_size);
-
-    padded_buffer[0] = (void *) (((uint8 *) buffer[0]) + image_padded_offset);
-    padded_buffer[1] = (void *) (((uint8 *) buffer[1]) + scaled_padded_offset);
-
-    memset (buffer[0], 0, image_padded_size);
-    memset (buffer[1], 0, scaled_padded_size);
-
     /* Setup XV */
     gtk_widget_realize (drawing_area);
 
@@ -310,7 +301,7 @@ S9xXVDisplayDriver::init (void)
     }
 
     /* Try to find an RGB format */
-    format = FOURCC_YUY2;
+    format = -1;
     bpp = 100;
 
     formats = XvListImageFormats (display,
@@ -350,12 +341,13 @@ S9xXVDisplayDriver::init (void)
         }
     }
 
-    if (format == FOURCC_YUY2)
+    if (format == -1)
     {
         for (int i = 0; i < num_formats; i++)
         {
             if (formats[i].id == FOURCC_YUY2)
             {
+                format = formats[i].id;
                 depth = formats[i].depth;
 
                 if (formats[i].byte_order == LSBFirst)
@@ -379,6 +371,9 @@ S9xXVDisplayDriver::init (void)
     }
 
     free (formats);
+
+    if (format == -1)
+        return -1;
 
     /* Build a table for yuv conversion */
     if (format == FOURCC_YUY2)
@@ -458,6 +453,15 @@ S9xXVDisplayDriver::init (void)
 
     desired_width = scaled_max_width;
     desired_height = scaled_max_width;
+
+    buffer[0] = malloc (image_padded_size);
+    buffer[1] = malloc (scaled_padded_size);
+
+    padded_buffer[0] = (void *) (((uint8 *) buffer[0]) + image_padded_offset);
+    padded_buffer[1] = (void *) (((uint8 *) buffer[1]) + scaled_padded_offset);
+
+    memset (buffer[0], 0, image_padded_size);
+    memset (buffer[1], 0, scaled_padded_size);
 
     clear_buffers ();
 

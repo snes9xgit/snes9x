@@ -1708,7 +1708,6 @@ S9xInitDriver (void)
     {
         if (gui_config->hw_accel > 0)
         {
-            driver->deinit ();
             delete driver;
 
             gui_config->hw_accel = HWA_NONE;
