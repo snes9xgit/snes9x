@@ -5,7 +5,10 @@
 #include "gtk_display_driver.h"
 
 #include <epoxy/gl.h>
+#ifdef GDK_WINDOWING_X11
 #include <epoxy/glx.h>
+#endif
+#include <epoxy/egl.h>
 
 #include "shaders/glsl.h"
 
@@ -50,7 +53,7 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
         int shaders_available (void);
         int load_shaders (const char *);
         void update_texture_size (int width, int height);
-        int init_glx (void);
+        int init_gl (void);
         void create_window (int width, int height);
         void resize_window (int width, int height);
 
@@ -72,14 +75,23 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
         int                      using_glsl_shaders;
         GLSLShader               *glsl_shader;
 
+        GdkWindow                *gdk_window;
+        int                      output_window_width;
+        int                      output_window_height;
+
+#ifdef GDK_WINDOWING_X11
         Display                  *display;
         Window                   xwindow;
         Colormap                 xcolormap;
         XVisualInfo              *vi;
-        GdkWindow                *gdk_window;
         GLXContext               glx_context;
-        int                      output_window_width;
-        int                      output_window_height;
+#endif
+
+        bool                     using_egl;
+        EGLDisplay               egl_display;
+        EGLContext               egl_context;
+        EGLConfig                egl_config;
+        EGLSurface               egl_surface;
 };
 
 #endif /* __GTK_DISPLAY_DRIVER_OPENGL_H */
