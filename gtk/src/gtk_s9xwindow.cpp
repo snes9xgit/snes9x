@@ -1684,12 +1684,14 @@ Snes9xWindow::get_auto_input_rate (void)
     return new_input_rate;
 }
 
+#ifdef GDK_WINDOWING_X11
 static void set_bypass_compositor (Display *dpy, Window window, unsigned char bypass)
 {
     uint32 value = bypass;
     Atom net_wm_bypass_compositor = XInternAtom (dpy, "_NET_WM_BYPASS_COMPOSITOR", False);
     XChangeProperty (dpy, window, net_wm_bypass_compositor, XA_CARDINAL, 32, PropModeReplace, (const unsigned char *) &value, 1);
 }
+#endif
 
 void
 Snes9xWindow::enter_fullscreen_mode (void)
