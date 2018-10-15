@@ -9,9 +9,11 @@
 #include "gtk_display_driver.h"
 #include "gtk_display_driver_gtk.h"
 #include "snes_ntsc.h"
-#ifdef USE_XV
+
+#if defined(USE_XV) && defined(GDK_WINDOWING_X11)
 #include "gtk_display_driver_xv.h"
 #endif
+
 #ifdef USE_OPENGL
 #include "gtk_display_driver_opengl.h"
 #endif
@@ -1575,7 +1577,7 @@ S9xDisplayReconfigure (void)
 void
 S9xQueryDrivers (void)
 {
-#ifdef USE_XV
+#if defined(USE_XV) && defined(GDK_WINDOWING_X11)
     gui_config->allow_xv = S9xXVDisplayDriver::query_availability ();
 #else
     gui_config->allow_xv = 0;
@@ -1588,7 +1590,6 @@ S9xQueryDrivers (void)
 #endif
 
     gui_config->allow_xrandr = 0;
-    
 #ifdef GDK_WINDOWING_X11
     GdkDisplay *display = gtk_widget_get_display (GTK_WIDGET (top_level->get_window()));
     if (GDK_IS_X11_DISPLAY (display))
@@ -1604,8 +1605,8 @@ S9xQueryDrivers (void)
                                                         gui_config->xrr_screen_resources,
                                                         gui_config->xrr_screen_resources->crtcs[0]);
     }
-
 #endif
+
     return;
 }
 
@@ -1691,7 +1692,7 @@ S9xInitDriver (void)
 
             break;
 #endif
-#ifdef USE_XV
+#if defined(USE_XV) && defined(GDK_WINDOWING_X11)
         case HWA_XV:
 
             driver = new S9xXVDisplayDriver (top_level, gui_config);
