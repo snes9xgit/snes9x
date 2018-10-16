@@ -617,7 +617,7 @@ ${LIBRARY_NAME}_FILES = $(SOURCES_CXX) $(SOURCES_C)
 include $(THEOS_MAKE_PATH)/library.mk
 else
 all: $(TARGET)
-  @echo "** BUILDING $(TARGET) FOR PLATFORM $(platform) **"
+
 $(TARGET): $(OBJECTS)
 	@echo "** BUILDING $(TARGET) FOR PLATFORM $(platform) **"
 ifeq ($(STATIC_LINKING), 1)
