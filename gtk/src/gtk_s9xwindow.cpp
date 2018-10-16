@@ -765,14 +765,23 @@ Snes9xWindow::expose (void)
         config->window_height = get_height ();
     }
 
-    if (is_paused ()
+#ifdef GDK_WINDOWING_X11
+    if (GDK_IS_X11_WINDOW (gtk_widget_get_window (window)))
+    {
+        if (is_paused ()
 #ifdef NETPLAY_SUPPORT
             || NetPlay.Paused
 #endif
-    )
-    {
-        S9xDeinitUpdate (last_width, last_height);
+        )
+        {
+            S9xDeinitUpdate (last_width, last_height);
+        }
+
+        return;
     }
+#endif
+
+    S9xRealDeinitUpdate (last_width, last_height);
 
     return;
 }

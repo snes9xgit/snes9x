@@ -1577,10 +1577,12 @@ S9xDisplayReconfigure (void)
 void
 S9xQueryDrivers (void)
 {
-#if defined(USE_XV) && defined(GDK_WINDOWING_X11)
-    gui_config->allow_xv = S9xXVDisplayDriver::query_availability ();
-#else
+    GdkDisplay *display = gtk_widget_get_display (GTK_WIDGET (top_level->get_window()));
+
     gui_config->allow_xv = 0;
+#if defined(USE_XV) && defined(GDK_WINDOWING_X11)
+    if (GDK_IS_X11_DISPLAY (display))
+        gui_config->allow_xv = S9xXVDisplayDriver::query_availability ();
 #endif
 
 #ifdef USE_OPENGL
@@ -1591,7 +1593,6 @@ S9xQueryDrivers (void)
 
     gui_config->allow_xrandr = 0;
 #ifdef GDK_WINDOWING_X11
-    GdkDisplay *display = gtk_widget_get_display (GTK_WIDGET (top_level->get_window()));
     if (GDK_IS_X11_DISPLAY (display))
     {
         int error_base_p, event_base_p;
@@ -1612,6 +1613,22 @@ S9xQueryDrivers (void)
 
 bool8
 S9xDeinitUpdate (int width, int height)
+{
+    GdkWindow *gdk_window = gtk_widget_get_window (GTK_WIDGET (top_level->get_window ()));
+
+#ifdef GDK_WINDOWING_X11
+    if (GDK_IS_X11_WINDOW (gdk_window))
+    {
+        return S9xRealDeinitUpdate (width, height);
+    }
+#endif
+
+    gtk_widget_queue_draw (GTK_WIDGET (top_level->drawing_area));
+    return TRUE;
+}
+
+bool8
+S9xRealDeinitUpdate (int width, int height)
 {
     int yoffset = 0;
 
