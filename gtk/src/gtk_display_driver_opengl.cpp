@@ -1017,7 +1017,9 @@ S9xOpenGLDisplayDriver::gl_swap (void)
         eglSwapBuffers (egl_display, egl_surface);
 #ifdef GDK_WINDOWING_WAYLAND
         if (on_wayland ())
-            wl_surface_commit (wl.child);
+        {
+            wl_display_flush (wl.display);
+        }
 #endif
     }
 #ifdef GDK_WINDOWING_X11
