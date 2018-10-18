@@ -763,9 +763,10 @@ S9xOpenGLDisplayDriver::create_window (int width, int height)
             if (!wl.subsurface)
             {
                 wl.subsurface = wl_subcompositor_get_subsurface (wl.subcompositor, wl.child, wl.parent);
-                wl_subsurface_set_desync (wl.subsurface);
-                wl_subsurface_set_position (wl.subsurface, x, y);
             }
+
+            wl_subsurface_set_desync (wl.subsurface);
+            wl_subsurface_set_position (wl.subsurface, x, y);
 
             if (wl.egl_window)
                 wl_egl_window_resize (wl.egl_window, w, h, 0, 0);
