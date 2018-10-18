@@ -1595,8 +1595,6 @@ S9xQueryDrivers (void)
 #ifdef GDK_WINDOWING_X11
     if (GDK_IS_X11_DISPLAY (display))
     {
-        int error_base_p, event_base_p;
-        int major_version, minor_version;
         Display *dpy = gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (top_level->get_window())));
         Window xid   = gdk_x11_window_get_xid (gtk_widget_get_window (GTK_WIDGET (top_level->get_window())));
 
@@ -1616,15 +1614,15 @@ S9xDeinitUpdate (int width, int height)
 {
     GdkWindow *gdk_window = gtk_widget_get_window (GTK_WIDGET (top_level->get_window ()));
 
-#ifdef GDK_WINDOWING_X11
-    if (GDK_IS_X11_WINDOW (gdk_window))
+#ifdef GDK_WINDOWING_WAYLAND
+    if (GDK_IS_WAYLAND_WINDOW (gdk_window) && gui_config->hw_accel == 0)
     {
-        return S9xRealDeinitUpdate (width, height);
+        gtk_widget_queue_draw (GTK_WIDGET (top_level->drawing_area));
+        return TRUE;
     }
 #endif
 
-    gtk_widget_queue_draw (GTK_WIDGET (top_level->drawing_area));
-    return TRUE;
+    return S9xRealDeinitUpdate (width, height);
 }
 
 bool8

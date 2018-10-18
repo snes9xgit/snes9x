@@ -28,6 +28,23 @@
 #define PBO_GET_FORMAT(x) (((x) == PBO_FMT_32) ? GL_BGRA : GL_RGB)
 #define PBO_GET_PACKING(x) (((x) == PBO_FMT_16) ? GL_UNSIGNED_SHORT_5_6_5 : (((x) == PBO_FMT_24) ? GL_UNSIGNED_BYTE : PBO_BGRA_NATIVE_ORDER))
 
+#ifdef GDK_WINDOWING_WAYLAND
+#include <gdk/gdkwayland.h>
+#include <wayland-egl.h>
+
+struct wl_collection {
+    struct wl_display       *display;
+    struct wl_registry      *registry;
+    struct wl_compositor    *compositor;
+    struct wl_subcompositor *subcompositor;
+    struct wl_surface       *parent;
+    struct wl_surface       *child;
+    struct wl_subsurface    *subsurface;
+    struct wl_egl_window    *egl_window;
+};
+
+#endif
+
 class S9xOpenGLDisplayDriver : public S9xDisplayDriver
 {
     public:
@@ -85,6 +102,10 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
         Colormap                 xcolormap;
         XVisualInfo              *vi;
         GLXContext               glx_context;
+#endif
+
+#ifdef GDK_WINDOWING_WAYLAND
+        struct wl_collection     wl;
 #endif
 
         bool                     using_egl;

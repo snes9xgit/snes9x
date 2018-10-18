@@ -223,6 +223,13 @@ if test yes = "$with_opengl" ; then
     LIBS="$LIBS $EPOXY_LIBS"
 fi
 
+PKG_CHECK_MODULES([WAYLAND_EGL],[wayland-egl],[
+    CFLAGS="$CFLAGS $WAYLAND_EGL_CFLAGS"
+    LIBS="$LIBS $WAYLAND_EGL_LIBS"
+],[
+    echo "Not using Wayland-EGL."
+])
+
 GTKJOY=0
 SDL_CFLAGS=""
 SDL_LIBS=""

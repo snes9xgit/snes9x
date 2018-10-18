@@ -19,6 +19,15 @@
 
 #include "shaders/shader_helpers.h"
 
+static bool
+on_wayland (void)
+{
+#ifdef GDK_WINDOWING_WAYLAND
+    return (GDK_IS_WAYLAND_DISPLAY (gdk_display_get_default ()));
+#endif
+    return 0;
+}
+
 static void S9xViewportCallback (int src_width, int src_height,
                                  int viewport_x, int viewport_y,
                                  int viewport_width, int viewport_height,
@@ -65,9 +74,11 @@ S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
 #if GTK_CHECK_VERSION(3,10,0)
     int gdk_scale_factor = gdk_window_get_scale_factor (gdk_window);
 
-    allocation.width *= gdk_scale_factor;
-    allocation.height *= gdk_scale_factor;
-
+    if (!on_wayland ())
+    {
+        allocation.width *= gdk_scale_factor;
+        allocation.height *= gdk_scale_factor;
+    }
 #endif
 
     if (using_glsl_shaders)
@@ -683,6 +694,36 @@ S9xOpenGLDisplayDriver::resize_window (int width, int height)
     return;
 }
 
+#ifdef GDK_WINDOWING_WAYLAND
+static void wl_global (void *data,
+                       struct wl_registry *wl_registry,
+                       uint32_t name,
+                       const char *interface,
+                       uint32_t version)
+{
+    struct wl_collection *wl = (struct wl_collection *) data;
+
+    if (!strcmp (interface, "wl_compositor"))
+        wl->compositor = (struct wl_compositor *) wl_registry_bind (wl_registry, name, &wl_compositor_interface, 1);
+    else if (!strcmp (interface, "wl_subcompositor"))
+        wl->subcompositor = (struct wl_subcompositor *) wl_registry_bind (wl_registry, name, &wl_subcompositor_interface, 1);
+
+    return;
+}
+
+static void wl_global_remove (void *data,
+                              struct wl_registry *wl_registry,
+                              uint32_t name)
+{
+    return;
+}
+
+static const struct wl_registry_listener wl_registry_listener = {
+    wl_global,
+    wl_global_remove
+};
+#endif
+
 void
 S9xOpenGLDisplayDriver::create_window (int width, int height)
 {
@@ -695,15 +736,44 @@ S9xOpenGLDisplayDriver::create_window (int width, int height)
         if (GDK_IS_X11_WINDOW (gdk_window))
         {
             xwindow = GDK_COMPAT_WINDOW_XID (gdk_window);
-            egl_surface = eglCreateWindowSurface (egl_display, egl_config, xwindow, NULL);
+            egl_surface = eglCreateWindowSurface (egl_display, egl_config, (EGLNativeWindowType) xwindow, NULL);
         }
 #endif
 #ifdef GDK_WINDOWING_WAYLAND
         if (GDK_IS_WAYLAND_WINDOW (gdk_window))
         {
-            struct wl_surface *surface;
-            surface = gdk_wayland_window_get_wl_surface (gdk_window);
-            egl_surface = eglCreatePlatformWindowSurface (egl_display, egl_config, surface, NULL);
+            int x, y, w, h;
+            gdk_window_get_geometry (gdk_window, &x, &y, &w, &h);
+
+            /* Gets whole window surface */
+            wl.parent = gdk_wayland_window_get_wl_surface (gdk_window);
+            wl.display = gdk_wayland_display_get_wl_display (gdk_window_get_display (gdk_window));
+            wl.registry = wl_display_get_registry (wl.display);
+            wl.compositor = NULL;
+            wl.subcompositor = NULL;
+            wl_registry_add_listener (wl.registry, &wl_registry_listener, &wl);
+            wl_display_roundtrip (wl.display);
+
+            if (!wl.compositor || !wl.subcompositor)
+                return;
+
+            if (!wl.child)
+                wl.child = wl_compositor_create_surface (wl.compositor);
+
+            if (!wl.subsurface)
+            {
+                wl.subsurface = wl_subcompositor_get_subsurface (wl.subcompositor, wl.child, wl.parent);
+                wl_subsurface_set_desync (wl.subsurface);
+                wl_subsurface_set_position (wl.subsurface, x, y);
+            }
+
+            if (wl.egl_window)
+                wl_egl_window_resize (wl.egl_window, w, h, 0, 0);
+            else
+                wl.egl_window = wl_egl_window_create (wl.child, w, h);
+
+            if (!egl_surface)
+                egl_surface = eglCreateWindowSurface (egl_display, egl_config, (EGLNativeWindowType) wl.egl_window, NULL);
         }
 #endif
     }
@@ -754,14 +824,14 @@ S9xOpenGLDisplayDriver::init_gl (void)
         if (GDK_IS_X11_DISPLAY (d))
         {
             display = GDK_DISPLAY_XDISPLAY (d);
-            egl_display = eglGetDisplay (display);
+            egl_display = eglGetDisplay ((EGLNativeDisplayType) display);
         }
 #endif
 #ifdef GDK_WINDOWING_WAYLAND
         if (GDK_IS_WAYLAND_DISPLAY (d))
         {
             struct wl_display *wl_d = gdk_wayland_display_get_wl_display (d);
-            egl_display = eglGetPlatformDisplay (EGL_PLATFORM_WAYLAND_KHR, wl_d, NULL);
+            egl_display = eglGetDisplay ((EGLNativeDisplayType) wl_d);
         }
 #endif
         if (!egl_display)
@@ -777,6 +847,10 @@ S9xOpenGLDisplayDriver::init_gl (void)
             return 0;
         }
 
+#ifdef GDK_WINDOWING_WAYLAND
+        if (on_wayland ())
+            memset (&wl, 0, sizeof (wl));
+#endif
         create_window (1, 1);
         if (!egl_surface)
         {
@@ -938,7 +1012,13 @@ void
 S9xOpenGLDisplayDriver::gl_swap (void)
 {
     if (using_egl)
+    {
         eglSwapBuffers (egl_display, egl_surface);
+#ifdef GDK_WINDOWING_WAYLAND
+        if (on_wayland ())
+            wl_surface_commit (wl.child);
+#endif
+    }
 #ifdef GDK_WINDOWING_X11
     else
         glXSwapBuffers (display, xwindow);
@@ -997,6 +1077,17 @@ S9xOpenGLDisplayDriver::deinit (void)
     {
         eglDestroyContext (egl_display, egl_context);
         eglDestroySurface (egl_display, egl_surface);
+#ifdef GDK_WINDOWING_WAYLAND
+        if (on_wayland ())
+        {
+            if (wl.egl_window)
+                wl_egl_window_destroy (wl.egl_window);
+            if (wl.subsurface)
+                wl_subsurface_destroy (wl.subsurface);
+            if (wl.child)
+                wl_surface_destroy (wl.child);
+        }
+#endif
     }
 #ifdef GDK_WINDOWING_X11
     else
@@ -1007,6 +1098,7 @@ S9xOpenGLDisplayDriver::deinit (void)
         XFreeColormap (display, xcolormap);
     }
 #endif
+
     return;
 }
 

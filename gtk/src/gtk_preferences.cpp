@@ -1129,7 +1129,6 @@ Snes9xPreferences::show (void)
     else
     {
         gtk_widget_hide (get_widget ("resolution_box"));
-        gtk_widget_hide (get_widget ("set_input_rate_button"));
     }
 
 #ifdef USE_HQ2X
