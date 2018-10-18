@@ -41,6 +41,7 @@ struct wl_collection {
     struct wl_surface       *child;
     struct wl_subsurface    *subsurface;
     struct wl_egl_window    *egl_window;
+    struct wl_region        *region;
 };
 
 #endif

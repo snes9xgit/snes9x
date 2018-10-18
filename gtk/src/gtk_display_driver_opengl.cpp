@@ -758,7 +758,10 @@ S9xOpenGLDisplayDriver::create_window (int width, int height)
                 return;
 
             if (!wl.child)
+            {
                 wl.child = wl_compositor_create_surface (wl.compositor);
+                wl.region = wl_compositor_create_region (wl.compositor);
+            }
 
             if (!wl.subsurface)
             {
@@ -767,6 +770,7 @@ S9xOpenGLDisplayDriver::create_window (int width, int height)
 
             wl_subsurface_set_desync (wl.subsurface);
             wl_subsurface_set_position (wl.subsurface, x, y);
+            wl_surface_set_input_region (wl.child, wl.region);
 
             if (wl.egl_window)
                 wl_egl_window_resize (wl.egl_window, w, h, 0, 0);
@@ -1088,7 +1092,10 @@ S9xOpenGLDisplayDriver::deinit (void)
             if (wl.subsurface)
                 wl_subsurface_destroy (wl.subsurface);
             if (wl.child)
+            {
+                wl_region_destroy (wl.region);
                 wl_surface_destroy (wl.child);
+            }
         }
 #endif
     }
