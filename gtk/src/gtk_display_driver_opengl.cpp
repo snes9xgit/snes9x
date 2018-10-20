@@ -3,9 +3,6 @@
 #include <gdk/gdkx.h>
 #include <X11/Xlib.h>
 #endif
-#ifdef GDK_WINDOWING_WAYLAND
-#include <gdk/gdkwayland.h>
-#endif
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <dlfcn.h>
@@ -19,14 +16,6 @@
 
 #include "shaders/shader_helpers.h"
 
-static bool
-on_wayland (void)
-{
-#ifdef GDK_WINDOWING_WAYLAND
-    return (GDK_IS_WAYLAND_DISPLAY (gdk_display_get_default ()));
-#endif
-    return 0;
-}
 
 static void S9xViewportCallback (int src_width, int src_height,
                                  int viewport_x, int viewport_y,
@@ -74,11 +63,8 @@ S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
 #if GTK_CHECK_VERSION(3,10,0)
     int gdk_scale_factor = gdk_window_get_scale_factor (gdk_window);
 
-    if (!on_wayland ())
-    {
-        allocation.width *= gdk_scale_factor;
-        allocation.height *= gdk_scale_factor;
-    }
+    allocation.width *= gdk_scale_factor;
+    allocation.height *= gdk_scale_factor;
 #endif
 
     if (using_glsl_shaders)
@@ -677,16 +663,11 @@ void
 S9xOpenGLDisplayDriver::resize_window (int width, int height)
 {
 
-    if (!using_egl)
-        gdk_window_destroy (gdk_window);
-
+    gdk_window_destroy (gdk_window);
     create_window (width, height);
 
-    if (using_egl)
-        eglMakeCurrent (egl_display, egl_surface, egl_surface, egl_context);
 #ifdef GDK_WINDOWING_X11
-    else
-        glXMakeCurrent (display, xwindow, glx_context);
+    glXMakeCurrent (display, xwindow, glx_context);
 #endif
 
     swap_control (config->sync_to_vblank);
@@ -694,116 +675,28 @@ S9xOpenGLDisplayDriver::resize_window (int width, int height)
     return;
 }
 
-#ifdef GDK_WINDOWING_WAYLAND
-static void wl_global (void *data,
-                       struct wl_registry *wl_registry,
-                       uint32_t name,
-                       const char *interface,
-                       uint32_t version)
-{
-    struct wl_collection *wl = (struct wl_collection *) data;
-
-    if (!strcmp (interface, "wl_compositor"))
-        wl->compositor = (struct wl_compositor *) wl_registry_bind (wl_registry, name, &wl_compositor_interface, 1);
-    else if (!strcmp (interface, "wl_subcompositor"))
-        wl->subcompositor = (struct wl_subcompositor *) wl_registry_bind (wl_registry, name, &wl_subcompositor_interface, 1);
-
-    return;
-}
-
-static void wl_global_remove (void *data,
-                              struct wl_registry *wl_registry,
-                              uint32_t name)
-{
-    return;
-}
-
-static const struct wl_registry_listener wl_registry_listener = {
-    wl_global,
-    wl_global_remove
-};
-#endif
-
 void
 S9xOpenGLDisplayDriver::create_window (int width, int height)
 {
-    if (using_egl)
-    {
-        egl_surface = NULL;
-        gdk_window = gtk_widget_get_window (drawing_area);
-
 #ifdef GDK_WINDOWING_X11
-        if (GDK_IS_X11_WINDOW (gdk_window))
-        {
-            xwindow = GDK_COMPAT_WINDOW_XID (gdk_window);
-            egl_surface = eglCreateWindowSurface (egl_display, egl_config, (EGLNativeWindowType) xwindow, NULL);
-        }
-#endif
-#ifdef GDK_WINDOWING_WAYLAND
-        if (GDK_IS_WAYLAND_WINDOW (gdk_window))
-        {
-            int x, y, w, h;
-            gdk_window_get_geometry (gdk_window, &x, &y, &w, &h);
+    GdkWindowAttr window_attr;
+    memset (&window_attr, 0, sizeof (GdkWindowAttr));
+    window_attr.event_mask = GDK_EXPOSURE_MASK | GDK_STRUCTURE_MASK;
+    window_attr.width = width;
+    window_attr.height = height;
+    window_attr.x = 0;
+    window_attr.y = 0;
+    window_attr.wclass = GDK_INPUT_OUTPUT;
+    window_attr.window_type = GDK_WINDOW_CHILD;
+    window_attr.visual = gdk_x11_screen_lookup_visual (gtk_widget_get_screen (drawing_area), vi->visualid);
 
-            /* Gets whole window surface */
-            wl.parent = gdk_wayland_window_get_wl_surface (gdk_window);
-            wl.display = gdk_wayland_display_get_wl_display (gdk_window_get_display (gdk_window));
-            wl.registry = wl_display_get_registry (wl.display);
-            wl.compositor = NULL;
-            wl.subcompositor = NULL;
-            wl_registry_add_listener (wl.registry, &wl_registry_listener, &wl);
-            wl_display_roundtrip (wl.display);
+    gdk_window = gdk_window_new (gtk_widget_get_window (drawing_area),
+                                 &window_attr,
+                                 GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL);
+    gdk_window_set_user_data (gdk_window, (gpointer) drawing_area);
 
-            if (!wl.compositor || !wl.subcompositor)
-                return;
-
-            if (!wl.child)
-            {
-                wl.child = wl_compositor_create_surface (wl.compositor);
-                wl.region = wl_compositor_create_region (wl.compositor);
-            }
-
-            if (!wl.subsurface)
-            {
-                wl.subsurface = wl_subcompositor_get_subsurface (wl.subcompositor, wl.child, wl.parent);
-            }
-
-            wl_subsurface_set_desync (wl.subsurface);
-            wl_subsurface_set_position (wl.subsurface, x, y);
-            wl_surface_set_input_region (wl.child, wl.region);
-
-            if (wl.egl_window)
-                wl_egl_window_resize (wl.egl_window, w, h, 0, 0);
-            else
-                wl.egl_window = wl_egl_window_create (wl.child, w, h);
-
-            if (!egl_surface)
-                egl_surface = eglCreateWindowSurface (egl_display, egl_config, (EGLNativeWindowType) wl.egl_window, NULL);
-        }
-#endif
-    }
-#ifdef GDK_WINDOWING_X11
-    else
-    {
-        GdkWindowAttr window_attr;
-        memset (&window_attr, 0, sizeof (GdkWindowAttr));
-        window_attr.event_mask = GDK_EXPOSURE_MASK | GDK_STRUCTURE_MASK;
-        window_attr.width = width;
-        window_attr.height = height;
-        window_attr.x = 0;
-        window_attr.y = 0;
-        window_attr.wclass = GDK_INPUT_OUTPUT;
-        window_attr.window_type = GDK_WINDOW_CHILD;
-        window_attr.visual = gdk_x11_screen_lookup_visual (gtk_widget_get_screen (drawing_area), vi->visualid);
-
-        gdk_window = gdk_window_new (gtk_widget_get_window (drawing_area),
-                                     &window_attr,
-                                     GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL);
-        gdk_window_set_user_data (gdk_window, (gpointer) drawing_area);
-
-        gdk_window_show (gdk_window);
-        xwindow = GDK_COMPAT_WINDOW_XID (gdk_window);
-    }
+    gdk_window_show (gdk_window);
+    xwindow = GDK_COMPAT_WINDOW_XID (gdk_window);
 #endif
 
     output_window_width = width;
@@ -813,121 +706,46 @@ S9xOpenGLDisplayDriver::create_window (int width, int height)
 int
 S9xOpenGLDisplayDriver::init_gl (void)
 {
-    using_egl = 0;
-    if (epoxy_has_egl ())
+    int glx_attribs[] = { GLX_RGBA, GLX_DOUBLEBUFFER, None };
+
+    display = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
+
+    vi = glXChooseVisual (display, DefaultScreen (display), glx_attribs);
+
+    if (!vi)
     {
-        printf ("Using EGL context\n");
-
-        using_egl = 1;
-        EGLint num_configs;
-        EGLint const egl_attribs[] = { EGL_COLOR_BUFFER_TYPE, EGL_RGB_BUFFER, EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT, EGL_NONE };
-
-        egl_display = NULL;
-        GdkDisplay *d = gdk_display_get_default ();
-
-#ifdef GDK_WINDOWING_X11
-        if (GDK_IS_X11_DISPLAY (d))
-        {
-            display = GDK_DISPLAY_XDISPLAY (d);
-            egl_display = eglGetDisplay ((EGLNativeDisplayType) display);
-        }
-#endif
-#ifdef GDK_WINDOWING_WAYLAND
-        if (GDK_IS_WAYLAND_DISPLAY (d))
-        {
-            struct wl_display *wl_d = gdk_wayland_display_get_wl_display (d);
-            egl_display = eglGetDisplay ((EGLNativeDisplayType) wl_d);
-        }
-#endif
-        if (!egl_display)
-            return 0;
-
-        eglInitialize (egl_display, NULL, NULL);
-        eglChooseConfig (egl_display, egl_attribs, &egl_config, 1, &num_configs);
-        eglBindAPI (EGL_OPENGL_API);
-
-        if (num_configs < 1)
-        {
-            fprintf (stderr, _("Couldn't find any appropriate EGL configs.\n"));
-            return 0;
-        }
-
-#ifdef GDK_WINDOWING_WAYLAND
-        if (on_wayland ())
-            memset (&wl, 0, sizeof (wl));
-#endif
-        create_window (1, 1);
-        if (!egl_surface)
-        {
-            fprintf (stderr, _("Couldn't create an EGL surface.\n"));
-            return 0;
-        }
-
-        egl_context = eglCreateContext (egl_display, egl_config, EGL_NO_CONTEXT, NULL);
-
-        if (!egl_context)
-        {
-            fprintf (stderr, _("Couldn't create an EGL context.\n"));
-            eglDestroySurface (egl_display, egl_surface);
-            return 0;
-        }
-
-        if (!eglMakeCurrent (egl_display, egl_surface, egl_surface, egl_context))
-        {
-            fprintf (stderr, _("Couldn't make current EGL context.\n"));
-            eglDestroyContext (egl_display, egl_context);
-            eglDestroySurface (egl_display, egl_surface);
-            return 0;
-        }
+        fprintf (stderr, _("Couldn't find an adequate OpenGL visual.\n"));
+        return 0;
     }
 
-#ifdef GDK_WINDOWING_X11
-    else /* GLX */
+    xcolormap = XCreateColormap (display,
+                                 GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (drawing_area)),
+                                 vi->visual,
+                                 AllocNone);
+
+    create_window (1, 1);
+    gdk_window_hide (gdk_window);
+
+    glx_context = glXCreateContext (display, vi, 0, 1);
+
+    if (!glx_context)
     {
-        printf ("Using GLX context\n");
+        XFreeColormap (display, xcolormap);
+        gdk_window_destroy (gdk_window);
 
-        int glx_attribs[] = { GLX_RGBA, GLX_DOUBLEBUFFER, None };
-
-        display = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
-
-        vi = glXChooseVisual (display, DefaultScreen (display), glx_attribs);
-
-        if (!vi)
-        {
-            fprintf (stderr, _("Couldn't find an adequate OpenGL visual.\n"));
-            return 0;
-        }
-
-        xcolormap = XCreateColormap (display,
-                                     GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (drawing_area)),
-                                     vi->visual,
-                                     AllocNone);
-
-        create_window (1, 1);
-        gdk_window_hide (gdk_window);
-
-        glx_context = glXCreateContext (display, vi, 0, 1);
-
-        if (!glx_context)
-        {
-            XFreeColormap (display, xcolormap);
-            gdk_window_destroy (gdk_window);
-
-            fprintf (stderr, _("Couldn't create an OpenGL context.\n"));
-            return 0;
-        }
-
-        if (!glXMakeCurrent (display, xwindow, glx_context))
-        {
-            XFreeColormap (display, xcolormap);
-            g_object_unref (gdk_window);
-            gdk_window_destroy (gdk_window);
-
-            fprintf (stderr, "glXMakeCurrent failed.\n");
-            return 0;
-        }
+        fprintf (stderr, _("Couldn't create an OpenGL context.\n"));
+        return 0;
     }
-#endif
+
+    if (!glXMakeCurrent (display, xwindow, glx_context))
+    {
+        XFreeColormap (display, xcolormap);
+        g_object_unref (gdk_window);
+        gdk_window_destroy (gdk_window);
+
+        fprintf (stderr, "glXMakeCurrent failed.\n");
+        return 0;
+    }
 
     return 1;
 }
@@ -970,23 +788,16 @@ S9xOpenGLDisplayDriver::swap_control (int enable)
 {
     enable = enable ? 1 : 0;
 
-    if (using_egl)
-    {
-        eglSwapInterval (egl_display, enable);
-    }
 #ifdef GDK_WINDOWING_X11
-    else
-    {
-        const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
+    const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
 
-        if (strstr (extensions, "EXT_swap_control"))
-        {
-            glXSwapIntervalEXT (display, xwindow, enable);
-        }
-        else if (strstr (extensions, "SGI_swap_control"))
-        {
-            glXSwapIntervalSGI (enable);
-        }
+    if (strstr (extensions, "EXT_swap_control"))
+    {
+        glXSwapIntervalEXT (display, xwindow, enable);
+    }
+    else if (strstr (extensions, "SGI_swap_control"))
+    {
+        glXSwapIntervalSGI (enable);
     }
 #endif
 
@@ -1016,19 +827,8 @@ S9xOpenGLDisplayDriver::get_current_buffer (void)
 void
 S9xOpenGLDisplayDriver::gl_swap (void)
 {
-    if (using_egl)
-    {
-        eglSwapBuffers (egl_display, egl_surface);
-#ifdef GDK_WINDOWING_WAYLAND
-        if (on_wayland ())
-        {
-            wl_display_flush (wl.display);
-        }
-#endif
-    }
 #ifdef GDK_WINDOWING_X11
-    else
-        glXSwapBuffers (display, xwindow);
+    glXSwapBuffers (display, xwindow);
 #endif
 
     if (config->sync_every_frame)
@@ -1080,34 +880,10 @@ S9xOpenGLDisplayDriver::deinit (void)
 
     glDeleteTextures (1, &texmap);
 
-    if (using_egl)
-    {
-        eglDestroyContext (egl_display, egl_context);
-        eglDestroySurface (egl_display, egl_surface);
-#ifdef GDK_WINDOWING_WAYLAND
-        if (on_wayland ())
-        {
-            if (wl.egl_window)
-                wl_egl_window_destroy (wl.egl_window);
-            if (wl.subsurface)
-                wl_subsurface_destroy (wl.subsurface);
-            if (wl.child)
-            {
-                wl_region_destroy (wl.region);
-                wl_surface_destroy (wl.child);
-            }
-        }
-#endif
-    }
-#ifdef GDK_WINDOWING_X11
-    else
-    {
-        glXDestroyContext (display, glx_context);
-        gdk_window_destroy (gdk_window);
-        XFree (vi);
-        XFreeColormap (display, xcolormap);
-    }
-#endif
+    glXDestroyContext (display, glx_context);
+    gdk_window_destroy (gdk_window);
+    XFree (vi);
+    XFreeColormap (display, xcolormap);
 
     return;
 }
@@ -1121,14 +897,16 @@ S9xOpenGLDisplayDriver::reconfigure (int width, int height)
 int
 S9xOpenGLDisplayDriver::query_availability (void)
 {
-    if (epoxy_has_egl ())
-        return 1;
+    GdkDisplay *gdk_display = gdk_display_get_default ();
 
 #ifdef GDK_WINDOWING_X11
-    Display *dpy = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
+    if (GDK_IS_X11_DISPLAY (gdk_display))
+    {
+        Display *dpy = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
 
-    if (epoxy_has_glx (dpy))
-        return 1;
+        if (epoxy_has_glx (dpy))
+            return 1;
+    }
 #endif
 
     if (gui_config->hw_accel == HWA_OPENGL)
