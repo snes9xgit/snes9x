@@ -36,6 +36,7 @@ wlgl_helper::wlgl_helper ()
     subcompositor = NULL;
     parent        = NULL;
     child         = NULL;
+    region        = NULL;
     subsurface    = NULL;
     egl_display   = NULL;
     egl_surface   = NULL;
