@@ -9,6 +9,10 @@
 #include <epoxy/glx.h>
 #endif
 
+#ifdef GDK_WINDOWING_WAYLAND
+#include "gtk_wayland_helpers.h"
+#endif
+
 #include "shaders/glsl.h"
 
 #define PBO_FMT_16 0
@@ -84,6 +88,10 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
         Colormap                 xcolormap;
         XVisualInfo              *vi;
         GLXContext               glx_context;
+#endif
+
+#ifdef GDK_WINDOWING_WAYLAND
+        wlgl_helper              wl;
 #endif
 };
 

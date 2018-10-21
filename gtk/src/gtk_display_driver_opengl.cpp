@@ -16,6 +16,14 @@
 
 #include "shaders/shader_helpers.h"
 
+#ifdef GDK_WINDOWING_WAYLAND
+#define ON_WAYLAND(BLOCK) if (GDK_IS_WAYLAND_DISPLAY (gdk_display_get_default())) \
+                          { \
+                              BLOCK \
+                          }
+#else
+#define ON_WAYLAND(BLOCK) do {} while (0);
+#endif
 
 static void S9xViewportCallback (int src_width, int src_height,
                                  int viewport_x, int viewport_y,
@@ -662,6 +670,12 @@ S9xOpenGLDisplayDriver::refresh (int width, int height)
 void
 S9xOpenGLDisplayDriver::resize_window (int width, int height)
 {
+    ON_WAYLAND
+    (
+        wl.resize (width, height);
+        wl.swap_interval (config->sync_to_vblank);
+        return;
+    )
 
     gdk_window_destroy (gdk_window);
     create_window (width, height);
@@ -706,6 +720,20 @@ S9xOpenGLDisplayDriver::create_window (int width, int height)
 int
 S9xOpenGLDisplayDriver::init_gl (void)
 {
+    ON_WAYLAND
+    (
+        gdk_window = gtk_widget_get_window (drawing_area);
+        if (!wl.attach (gdk_window))
+            return 0;
+
+        if (!wl.create_egl_context (256, 224))
+            return 0;
+
+        wl.make_current ();
+
+        return 1;
+    )
+
     int glx_attribs[] = { GLX_RGBA, GLX_DOUBLEBUFFER, None };
 
     display = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
@@ -788,6 +816,11 @@ S9xOpenGLDisplayDriver::swap_control (int enable)
 {
     enable = enable ? 1 : 0;
 
+    ON_WAYLAND
+    (
+        wl.swap_interval (enable);
+    )
+
 #ifdef GDK_WINDOWING_X11
     const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
 
@@ -827,6 +860,19 @@ S9xOpenGLDisplayDriver::get_current_buffer (void)
 void
 S9xOpenGLDisplayDriver::gl_swap (void)
 {
+    ON_WAYLAND
+    (
+        wl.swap_buffers ();
+
+        if (config->sync_every_frame)
+        {
+            usleep (0);
+            glFinish ();
+        }
+
+        return;
+    )
+
 #ifdef GDK_WINDOWING_X11
     glXSwapBuffers (display, xwindow);
 #endif
@@ -880,6 +926,11 @@ S9xOpenGLDisplayDriver::deinit (void)
 
     glDeleteTextures (1, &texmap);
 
+    ON_WAYLAND
+    (
+        return;
+    )
+
     glXDestroyContext (display, glx_context);
     gdk_window_destroy (gdk_window);
     XFree (vi);
@@ -898,6 +949,11 @@ int
 S9xOpenGLDisplayDriver::query_availability (void)
 {
     GdkDisplay *gdk_display = gdk_display_get_default ();
+
+    ON_WAYLAND
+    (
+        return 1;
+    )
 
 #ifdef GDK_WINDOWING_X11
     if (GDK_IS_X11_DISPLAY (gdk_display))

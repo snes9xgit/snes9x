@@ -125,6 +125,11 @@ snes9x_gtk_SOURCES += \
     ../c4emu.cpp
 endif
 
+if WAYLAND
+snes9x_gtk_SOURCES += \
+    src/gtk_wayland_helpers.cpp
+endif
+
 # APU
 snes9x_gtk_SOURCES += \
     ../apu/apu.cpp
