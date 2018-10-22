@@ -674,6 +674,8 @@ S9xOpenGLDisplayDriver::resize_window (int width, int height)
     (
         wl.resize (width, height);
         wl.swap_interval (config->sync_to_vblank);
+        output_window_width = width;
+        output_window_height = height;
         return;
     )
 
@@ -728,6 +730,9 @@ S9xOpenGLDisplayDriver::init_gl (void)
 
         if (!wl.create_egl_context (256, 224))
             return 0;
+
+        output_window_width = 256;
+        output_window_height = 224;
 
         wl.make_current ();
 

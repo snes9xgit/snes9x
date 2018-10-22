@@ -846,9 +846,6 @@ Snes9xPreferences::get_settings_from_dialog (void)
     if (config->force_inverted_byte_order != get_check ("force_inverted_byte_order"))
         gfx_needs_restart = 1;
 
-#ifdef USE_OPENGL
-#endif
-
     config->full_screen_on_open       = get_check ("full_screen_on_open");
     Settings.DisplayFrameRate         = get_check ("show_frame_rate");
     config->scale_to_fit              = get_check ("scale_to_fit");
