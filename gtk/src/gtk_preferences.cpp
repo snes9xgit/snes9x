@@ -1093,6 +1093,7 @@ Snes9xPreferences::show (void)
     guint     source_id = -1;
 #endif
 
+#ifdef GDK_WINDOWING_X11
     if (config->allow_xrandr)
     {
         char      size_string[256];
@@ -1124,6 +1125,7 @@ Snes9xPreferences::show (void)
             config->xrr_index = 0;
     }
     else
+#endif
     {
         gtk_widget_hide (get_widget ("resolution_box"));
     }
