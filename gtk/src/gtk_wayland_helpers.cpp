@@ -12,7 +12,7 @@ static void wl_global (void *data,
     struct wlgl_helper *wl = (struct wlgl_helper *) data;
 
     if (!strcmp (interface, "wl_compositor"))
-        wl->compositor = (struct wl_compositor *) wl_registry_bind (wl_registry, name, &wl_compositor_interface, 1);
+        wl->compositor = (struct wl_compositor *) wl_registry_bind (wl_registry, name, &wl_compositor_interface, 3);
     else if (!strcmp (interface, "wl_subcompositor"))
         wl->subcompositor = (struct wl_subcompositor *) wl_registry_bind (wl_registry, name, &wl_subcompositor_interface, 1);
 }
@@ -149,6 +149,8 @@ bool wlgl_helper::create_egl_context (int width, int height)
         printf ("Couldn't create context.\n");
         return false;
     }
+
+    wl_surface_set_buffer_scale (child, scale);
 
     return true;
 }
