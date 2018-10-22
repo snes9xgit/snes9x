@@ -558,6 +558,10 @@ void GLSLShader::render(GLuint &orig,
                         int viewport_width, int viewport_height,
                         GLSLViewportCallback vpcallback)
 {
+    GLint saved_framebuffer;
+
+    glGetIntegerv (GL_FRAMEBUFFER_BINDING, &saved_framebuffer);
+
     frame_count++;
 
     // set up our dummy pass for easier loop code
@@ -651,7 +655,7 @@ void GLSLShader::render(GLuint &orig,
             int out_height = 0;
 
             // output to the screen
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            glBindFramebuffer(GL_FRAMEBUFFER, saved_framebuffer);
             vpcallback (pass[i].width, pass[i].height,
                         viewport_x, viewport_y,
                         viewport_width, viewport_height,
@@ -700,7 +704,7 @@ void GLSLShader::render(GLuint &orig,
     }
 
     // Disable framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, saved_framebuffer);
     glActiveTexture(GL_TEXTURE0);
     glUseProgram (0);
 
