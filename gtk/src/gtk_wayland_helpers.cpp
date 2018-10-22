@@ -151,6 +151,7 @@ bool wlgl_helper::create_egl_context (int width, int height)
     }
 
     wl_surface_set_buffer_scale (child, scale);
+    gdk_window_invalidate_rect (gdk_window, NULL, FALSE);
 
     return true;
 }
