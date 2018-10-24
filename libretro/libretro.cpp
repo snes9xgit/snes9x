@@ -49,6 +49,8 @@ static int g_screen_gun_height = SNES_HEIGHT;
 
 #define SNES_4_3 4.0f / 3.0f
 
+uint16 *screen_buffer = NULL;
+
 char g_rom_dir[1024];
 char g_basename[1024];
 
@@ -1239,7 +1241,8 @@ void retro_init(void)
     S9xSetSamplesAvailableCallback(S9xAudioCallback, NULL);
 
     GFX.Pitch = MAX_SNES_WIDTH * sizeof(uint16);
-    GFX.Screen = (uint16*) calloc(1, GFX.Pitch * MAX_SNES_HEIGHT);
+    screen_buffer = (uint16*) calloc(1, GFX.Pitch * (MAX_SNES_HEIGHT + 16));
+    GFX.Screen = screen_buffer + (GFX.Pitch >> 1) * 16;
     S9xGraphicsInit();
 
     S9xInitInputDevices();
@@ -1562,7 +1565,7 @@ void retro_deinit()
     S9xGraphicsDeinit();
     S9xUnmapAllControls();
 
-    free(GFX.Screen);
+    free(screen_buffer);
 }
 
 
@@ -1694,14 +1697,20 @@ bool8 S9xDeinitUpdate(int width, int height)
     {
         if (height > SNES_HEIGHT_EXTENDED)
         {
-            if (height < SNES_HEIGHT_EXTENDED << 1)
-            memset(GFX.Screen + (GFX.Pitch >> 1) * height,0,GFX.Pitch * ((SNES_HEIGHT_EXTENDED << 1) - height));
+            if (height < (SNES_HEIGHT_EXTENDED << 1))
+            {
+                overscan_offset = -16;
+                memset(GFX.Screen + (GFX.Pitch >> 1) * height,0,GFX.Pitch * ((SNES_HEIGHT_EXTENDED << 1) - height));
+            }
             height = SNES_HEIGHT_EXTENDED << 1;
         }
         else
         {
             if (height < SNES_HEIGHT_EXTENDED)
-            memset(GFX.Screen + (GFX.Pitch >> 1) * height,0,GFX.Pitch * (SNES_HEIGHT_EXTENDED - height));
+            {
+                overscan_offset = -8;
+                memset(GFX.Screen + (GFX.Pitch >> 1) * height,0,GFX.Pitch * (SNES_HEIGHT_EXTENDED - height));
+            }
             height = SNES_HEIGHT_EXTENDED;
         }
     }
@@ -1751,11 +1760,11 @@ bool8 S9xDeinitUpdate(int width, int height)
             width >>= 1;
         }
 
-        video_cb(GFX.Screen + ((GFX.Pitch >> 1) * overscan_offset), width, height, GFX.Pitch);
+        video_cb(GFX.Screen + ((int)(GFX.Pitch >> 1) * overscan_offset), width, height, GFX.Pitch);
     }
     else
     {
-        video_cb(GFX.Screen + ((GFX.Pitch >> 1) * overscan_offset), width, height, GFX.Pitch);
+        video_cb(GFX.Screen + ((int)(GFX.Pitch >> 1) * overscan_offset), width, height, GFX.Pitch);
     }
 
     return TRUE;
