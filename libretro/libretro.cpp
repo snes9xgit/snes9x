@@ -204,6 +204,7 @@ void retro_set_environment(retro_environment_t cb)
         { "snes9x_justifier2_color", "Justifier 2 color; Pink|Pink (blend)|Purple|Purple (blend)|Black|Black (blend)|25% Grey|25% Grey (blend)|50% Grey|50% Grey (blend)|75% Grey|75% Grey (blend)|White|White (blend)|Red|Red (blend)|Orange|Orange (blend)|Yellow|Yellow (blend)|Green|Green (blend)|Cyan|Cyan (blend)|Sky|Sky (blend)|Blue|Blue (blend)|Violet|Violet (blend)" },
         { "snes9x_rifle_crosshair", "M.A.C.S. rifle crosshair; 2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|0|1" },
         { "snes9x_rifle_color", "M.A.C.S. rifle color; White|White (blend)|Red|Red (blend)|Orange|Orange (blend)|Yellow|Yellow (blend)|Green|Green (blend)|Cyan|Cyan (blend)|Sky|Sky (blend)|Blue|Blue (blend)|Violet|Violet (blend)|Pink|Pink (blend)|Purple|Purple (blend)|Black|Black (blend)|25% Grey|25% Grey (blend)|50% Grey|50% Grey (blend)|75% Grey|75% Grey (blend)" },
+        { "snes9x_block_invalid_vram_access", "Block Invalid VRAM Access; enabled|disabled" },
         { NULL, NULL },
     };
 
@@ -590,6 +591,14 @@ static void update_variables(void)
         else
             S9xSetControllerCrosshair(X_MACSRIFLE, -1, get_cursor_color(var.value), "Black");
     }
+
+    var.key = "snes9x_block_invalid_vram_access";
+    var.value = NULL;
+
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
+        Settings.BlockInvalidVRAMAccessMaster = !strcmp(var.value, "disabled") ? false : true;
+    else
+        Settings.BlockInvalidVRAMAccessMaster = true;
 
     if (geometry_update)
         update_geometry();
