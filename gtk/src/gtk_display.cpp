@@ -1633,6 +1633,13 @@ S9xRealDeinitUpdate (int width, int height)
 {
     int yoffset = 0;
 
+    if (top_level->last_height > height)
+    {
+        memset (GFX.Screen + (GFX.Pitch >> 1) * height,
+                0,
+                GFX.Pitch * (top_level->last_height - height));
+    }
+
     top_level->last_height = height;
     top_level->last_width = width;
 
