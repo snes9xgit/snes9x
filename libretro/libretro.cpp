@@ -1679,12 +1679,12 @@ bool8 S9xDeinitUpdate(int width, int height)
 
     if (crop_overscan_mode == OVERSCAN_CROP_ON)
     {
-        if (height >= SNES_HEIGHT << 1)
+        if (height > SNES_HEIGHT << 1)
         {
             overscan_offset = 15;
             height = SNES_HEIGHT << 1;
         }
-        else if (height >= SNES_HEIGHT)
+        else if (height > SNES_HEIGHT)
         {
             overscan_offset = 7;
             height = SNES_HEIGHT;
