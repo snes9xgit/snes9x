@@ -1666,14 +1666,18 @@ bool retro_unserialize(const void* data, size_t size)
 
 bool8 S9xDeinitUpdate(int width, int height)
 {
+    int overscan_offset = 0;
+
     if (crop_overscan_mode == OVERSCAN_CROP_ON)
     {
         if (height >= SNES_HEIGHT << 1)
         {
+            overscan_offset = 15;
             height = SNES_HEIGHT << 1;
         }
-        else
+        else if (height >= SNES_HEIGHT)
         {
+            overscan_offset = 7;
             height = SNES_HEIGHT;
         }
     }
@@ -1738,11 +1742,11 @@ bool8 S9xDeinitUpdate(int width, int height)
             width >>= 1;
         }
 
-        video_cb(GFX.Screen, width, height, GFX.Pitch);
+        video_cb(GFX.Screen + ((GFX.Pitch >> 1) * overscan_offset), width, height, GFX.Pitch);
     }
     else
     {
-        video_cb(GFX.Screen, width, height, GFX.Pitch);
+        video_cb(GFX.Screen + ((GFX.Pitch >> 1) * overscan_offset), width, height, GFX.Pitch);
     }
 
     return TRUE;
