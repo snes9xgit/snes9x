@@ -1640,7 +1640,7 @@ S9xRealDeinitUpdate (int width, int height)
     {
         if (height == SNES_HEIGHT)
         {
-            yoffset = -7;
+            yoffset = -8;
             height = SNES_HEIGHT_EXTENDED;
         }
         if (height == SNES_HEIGHT * 2)
@@ -1653,7 +1653,7 @@ S9xRealDeinitUpdate (int width, int height)
     {
         if (height == SNES_HEIGHT_EXTENDED)
         {
-            yoffset = 8;
+            yoffset = 7;
             height = SNES_HEIGHT;
         }
         if (height == SNES_HEIGHT_EXTENDED * 2)
