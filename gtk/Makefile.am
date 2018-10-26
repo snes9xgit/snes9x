@@ -127,7 +127,7 @@ endif
 
 if WAYLAND
 snes9x_gtk_SOURCES += \
-    src/gtk_wayland_helpers.cpp
+    src/gtk_wayland_egl_context.cpp
 endif
 
 # APU

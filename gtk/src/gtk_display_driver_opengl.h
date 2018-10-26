@@ -10,7 +10,7 @@
 #endif
 
 #ifdef GDK_WINDOWING_WAYLAND
-#include "gtk_wayland_helpers.h"
+#include "gtk_wayland_egl_context.h"
 #endif
 
 #include "shaders/glsl.h"
@@ -91,7 +91,7 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
 #endif
 
 #ifdef GDK_WINDOWING_WAYLAND
-        wlgl_helper              wl;
+        WaylandEGLContext              wl;
 #endif
 };
 

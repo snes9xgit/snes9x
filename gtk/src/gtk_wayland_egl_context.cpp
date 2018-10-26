@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "gtk_wayland_helpers.h"
+#include "gtk_wayland_egl_context.h"
 
 static void wl_global (void *data,
                        struct wl_registry *wl_registry,
@@ -9,7 +9,7 @@ static void wl_global (void *data,
                        const char *interface,
                        uint32_t version)
 {
-    struct wlgl_helper *wl = (struct wlgl_helper *) data;
+    struct WaylandEGLContext *wl = (struct WaylandEGLContext *) data;
 
     if (!strcmp (interface, "wl_compositor"))
         wl->compositor = (struct wl_compositor *) wl_registry_bind (wl_registry, name, &wl_compositor_interface, 3);
@@ -28,7 +28,7 @@ static const struct wl_registry_listener wl_registry_listener = {
     wl_global_remove
 };
 
-wlgl_helper::wlgl_helper ()
+WaylandEGLContext::WaylandEGLContext ()
 {
     display       = NULL;
     registry      = NULL;
@@ -45,7 +45,7 @@ wlgl_helper::wlgl_helper ()
     egl_window    = NULL;
 }
 
-wlgl_helper::~wlgl_helper ()
+WaylandEGLContext::~WaylandEGLContext ()
 {
     if (subsurface)
         wl_subsurface_destroy (subsurface);
@@ -66,7 +66,7 @@ wlgl_helper::~wlgl_helper ()
         wl_egl_window_destroy (egl_window);
 }
 
-bool wlgl_helper::attach (GdkWindow *window)
+bool WaylandEGLContext::attach (GdkWindow *window)
 {
     int x, y, w, h;
 
@@ -97,7 +97,7 @@ bool wlgl_helper::attach (GdkWindow *window)
     return true;
 }
 
-bool wlgl_helper::create_egl_context (int width, int height)
+bool WaylandEGLContext::create_egl_context (int width, int height)
 {
     int scale = gdk_window_get_scale_factor (gdk_window);
 
@@ -156,7 +156,7 @@ bool wlgl_helper::create_egl_context (int width, int height)
     return true;
 }
 
-void wlgl_helper::resize (int width, int height)
+void WaylandEGLContext::resize (int width, int height)
 {
     int x, y, w, h, scale;
 
@@ -169,18 +169,18 @@ void wlgl_helper::resize (int width, int height)
     make_current ();
 }
 
-void wlgl_helper::swap_buffers ()
+void WaylandEGLContext::swap_buffers ()
 {
     eglSwapBuffers (egl_display, egl_surface);
     wl_surface_commit (child);
 }
 
-void wlgl_helper::make_current ()
+void WaylandEGLContext::make_current ()
 {
     eglMakeCurrent (egl_display, egl_surface, egl_surface, egl_context);
 }
 
-void wlgl_helper::swap_interval (int frames)
+void WaylandEGLContext::swap_interval (int frames)
 {
     eglSwapInterval (egl_display, frames);
 }

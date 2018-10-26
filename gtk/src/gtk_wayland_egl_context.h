@@ -3,10 +3,10 @@
 #include <wayland-egl.h>
 #include <epoxy/egl.h>
 
-struct wlgl_helper
+struct WaylandEGLContext
 {
-    wlgl_helper ();
-    ~wlgl_helper ();
+    WaylandEGLContext ();
+    ~WaylandEGLContext ();
     bool attach (GdkWindow *window);
     bool create_egl_context (int width, int height);
     void resize (int width, int height);
