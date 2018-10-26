@@ -3,13 +3,15 @@
 #include <wayland-egl.h>
 #include <epoxy/egl.h>
 
-struct WaylandEGLContext
+#include "gtk_opengl_context.h"
+
+struct WaylandEGLContext : OpenGLContext
 {
     WaylandEGLContext ();
     ~WaylandEGLContext ();
-    bool attach (GdkWindow *window);
-    bool create_egl_context (int width, int height);
-    void resize (int width, int height);
+    bool attach (GtkWidget *widget);
+    bool create_context ();
+    void resize ();
     void swap_buffers ();
     void swap_interval (int frames);
     void make_current ();

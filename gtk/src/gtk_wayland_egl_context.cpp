@@ -66,15 +66,15 @@ WaylandEGLContext::~WaylandEGLContext ()
         wl_egl_window_destroy (egl_window);
 }
 
-bool WaylandEGLContext::attach (GdkWindow *window)
+bool WaylandEGLContext::attach (GtkWidget *widget)
 {
-    int x, y, w, h;
+    GdkWindow *window = gtk_widget_get_window (widget);
 
     if (!GDK_IS_WAYLAND_WINDOW (window))
         return false;
 
     gdk_window = window;
-    gdk_window_get_geometry (gdk_window, &x, &y, &w, &h);
+    gdk_window_get_geometry (gdk_window, &x, &y, &width, &height);
 
     display  = gdk_wayland_display_get_wl_display (gdk_window_get_display (gdk_window));
     parent   = gdk_wayland_window_get_wl_surface (gdk_window);
@@ -97,9 +97,10 @@ bool WaylandEGLContext::attach (GdkWindow *window)
     return true;
 }
 
-bool WaylandEGLContext::create_egl_context (int width, int height)
+bool WaylandEGLContext::create_context ()
 {
     int scale = gdk_window_get_scale_factor (gdk_window);
+    gdk_window_get_geometry (gdk_window, &x, &y, &width, &height);
 
     EGLint surface_attribs[] = {
         EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
@@ -156,14 +157,14 @@ bool WaylandEGLContext::create_egl_context (int width, int height)
     return true;
 }
 
-void WaylandEGLContext::resize (int width, int height)
+void WaylandEGLContext::resize ()
 {
-    int x, y, w, h, scale;
+    int scale;
 
-    gdk_window_get_geometry (gdk_window, &x, &y, &w, &h);
+    gdk_window_get_geometry (gdk_window, &x, &y, &width, &height);
     scale = gdk_window_get_scale_factor (gdk_window);
 
-    wl_egl_window_resize (egl_window, w * scale, h * scale, 0, 0);
+    wl_egl_window_resize (egl_window, width * scale, height * scale, 0, 0);
     wl_subsurface_set_position (subsurface, x, y);
 
     make_current ();
