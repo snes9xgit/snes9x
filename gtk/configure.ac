@@ -225,9 +225,13 @@ fi
 
 WAYLAND=0
 PKG_CHECK_MODULES([WAYLAND_EGL],[wayland-egl],[
-    CFLAGS="$CFLAGS $WAYLAND_EGL_CFLAGS"
-    LIBS="$LIBS $WAYLAND_EGL_LIBS"
-    WAYLAND=yes
+    if test yes = "$GTK3_WARNING" ; then
+        CFLAGS="$CFLAGS $WAYLAND_EGL_CFLAGS"
+        LIBS="$LIBS $WAYLAND_EGL_LIBS"
+        WAYLAND=yes
+    else
+        echo "Found Wayland, but need GTK3 for support."
+    fi
 ],[
     echo "Not using Wayland-EGL."
 ])

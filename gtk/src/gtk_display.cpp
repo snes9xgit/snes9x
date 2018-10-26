@@ -1599,7 +1599,7 @@ S9xQueryDrivers (void)
     if (GDK_IS_X11_DISPLAY (display))
     {
         Display *dpy = gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (top_level->get_window())));
-        Window xid   = gdk_x11_window_get_xid (gtk_widget_get_window (GTK_WIDGET (top_level->get_window())));
+        Window xid   = GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (GTK_WIDGET (top_level->get_window())));
 
         gui_config->allow_xrandr = 1;
         gui_config->xrr_screen_resources = XRRGetScreenResourcesCurrent (dpy, xid);
