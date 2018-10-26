@@ -85,8 +85,6 @@ bool GTKGLXContext::attach (GtkWidget *widget)
 bool GTKGLXContext::create_context ()
 {
     int context_attribs[] = {
-        GLX_CONTEXT_MAJOR_VERSION_ARB, 4,
-        GLX_CONTEXT_MINOR_VERSION_ARB, 5,
         GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB,
         None
     };
