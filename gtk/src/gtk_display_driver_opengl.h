@@ -37,8 +37,6 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
     private:
         int opengl_defaults ();
         void swap_buffers ();
-        int pbos_available ();
-        int shaders_available ();
         int load_shaders (const char *);
         void update_texture_size (int width, int height);
         int init_gl ();
@@ -54,10 +52,10 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
         GLuint                   fragment_shader;
         GLuint                   vertex_shader;
 
-        int                      dyn_resizing;
-        int                      using_pbos;
-        int                      using_shaders;
-        int                      initialized;
+        bool                     npot;
+        bool                     using_pbos;
+        bool                     using_shaders;
+        bool                     initialized;
 
         int                      using_glsl_shaders;
         GLSLShader               *glsl_shader;

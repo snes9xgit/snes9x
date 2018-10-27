@@ -69,7 +69,7 @@ S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
     GLint filter = Settings.BilinearFilter ? GL_LINEAR : GL_NEAREST;
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
-    GLint clamp = (using_shaders || !dyn_resizing) ? GL_CLAMP_TO_BORDER : GL_CLAMP_TO_EDGE;
+    GLint clamp = (using_shaders || !npot) ? GL_CLAMP_TO_BORDER : GL_CLAMP_TO_EDGE;
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, clamp);
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, clamp);
 
@@ -283,7 +283,7 @@ S9xOpenGLDisplayDriver::update_texture_size (int width, int height)
 {
     if (width != texture_width || height != texture_height)
     {
-        if (dyn_resizing)
+        if (npot)
         {
             glBindTexture (GL_TEXTURE_2D, texmap);
 
@@ -321,62 +321,6 @@ S9xOpenGLDisplayDriver::update_texture_size (int width, int height)
 }
 
 int
-S9xOpenGLDisplayDriver::pbos_available (void)
-{
-
-    if (gl_version_at_least (2, 1))
-            return 1;
-
-    const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
-
-    if (!extensions)
-        return 0;
-
-    if (strstr (extensions, "pixel_buffer_object"))
-    {
-            return 1;
-    }
-
-    return 0;
-}
-
-int
-S9xOpenGLDisplayDriver::shaders_available (void)
-{
-    const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
-
-    if (!extensions)
-        return 0;
-
-    if (strstr (extensions, "fragment_program") ||
-        strstr (extensions, "fragment_shader"))
-    {
-        return 1;
-    }
-
-    return 0;
-}
-
-static int npot_available (void)
-{
-    if (gl_version_at_least (2, 0))
-        return true;
-
-    const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
-
-    if (!extensions)
-        return 0;
-
-    if (strstr (extensions, "non_power_of_two") ||
-        strstr (extensions, "npot"))
-    {
-        return 1;
-    }
-
-    return 0;
-}
-
-int
 S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
 {
     xmlDoc *xml_doc = NULL;
@@ -388,31 +332,19 @@ S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
     if ((length > 6 && !strcasecmp(shader_file + length - 6, ".glslp")) ||
         (length > 5 && !strcasecmp(shader_file + length - 5, ".glsl")))
     {
-        if (shaders_available() && npot_available())
+        glsl_shader = new GLSLShader;
+        if (glsl_shader->load_shader ((char *) shader_file))
         {
-            glsl_shader = new GLSLShader;
-            if (glsl_shader->load_shader ((char *) shader_file))
-            {
-                using_glsl_shaders = 1;
-                dyn_resizing = TRUE;
+            using_glsl_shaders = true;
+            npot = true;
 
-                if (glsl_shader->param.size () > 0)
-                    window->enable_widget ("shader_parameters_item", TRUE);
+            if (glsl_shader->param.size () > 0)
+                window->enable_widget ("shader_parameters_item", TRUE);
 
-                return 1;
-            }
-            delete glsl_shader;
-            return 0;
+            return 1;
         }
-        else
-        {
-            printf ("Need shader extensions and non-power-of-two-textures for GLSL.\n");
-        }
-    }
 
-    if (!shaders_available ())
-    {
-        fprintf (stderr, _("Cannot load GLSL shader functions.\n"));
+        delete glsl_shader;
         return 0;
     }
 
@@ -484,36 +416,27 @@ S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
 int
 S9xOpenGLDisplayDriver::opengl_defaults (void)
 {
-    dyn_resizing = FALSE;
-    using_pbos = 0;
+    npot = false;
+    using_pbos = false;
 
     if (config->use_pbos)
     {
-        if (!pbos_available ())
-        {
-            fprintf (stderr, _("pixel_buffer_object extension not supported.\n"));
-
-            config->use_pbos = 0;
-        }
-        else
-        {
-            using_pbos = 1;
-        }
+        using_pbos = true;
     }
 
-    using_shaders = 0;
-    using_glsl_shaders = 0;
+    using_shaders = false;
+    using_glsl_shaders = false;
     glsl_shader = NULL;
 
     if (config->use_shaders)
     {
         if (!load_shaders (config->fragment_shader))
         {
-            config->use_shaders = 0;
+            config->use_shaders = false;
         }
         else
         {
-            using_shaders = 1;
+            using_shaders = true;
         }
     }
 
@@ -522,10 +445,7 @@ S9xOpenGLDisplayDriver::opengl_defaults (void)
 
     if (config->npot_textures)
     {
-        if (npot_available ())
-        {
-            dyn_resizing = TRUE;
-        }
+        npot = true;
     }
 
     glEnableClientState (GL_VERTEX_ARRAY);
@@ -658,13 +578,19 @@ S9xOpenGLDisplayDriver::init_gl (void)
 
     context->make_current ();
 
+    if (epoxy_gl_version () < 20)
+    {
+        printf ("OpenGL version is only %d. Need 20.\n", epoxy_gl_version ());
+        return 0;
+    }
+
     return 1;
 }
 
 int
 S9xOpenGLDisplayDriver::init (void)
 {
-    initialized = 0;
+    initialized = false;
 
     if (!init_gl ())
     {
@@ -689,7 +615,7 @@ S9xOpenGLDisplayDriver::init (void)
 
     context->swap_interval (config->sync_to_vblank);
 
-    initialized = 1;
+    initialized = true;
 
     return 0;
 }
