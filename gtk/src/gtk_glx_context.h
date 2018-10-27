@@ -26,6 +26,10 @@ struct GTKGLXContext : OpenGLContext
     GLXContext context;
     GLXFBConfig fbconfig;
     Display *display;
+    int screen;
     XVisualInfo *vi;
     Window xid;
+
+    int version_major;
+    int version_minor;
 };

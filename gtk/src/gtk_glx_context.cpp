@@ -12,6 +12,9 @@ GTKGLXContext::GTKGLXContext ()
     display           = NULL;
     vi                = NULL;
     context           = NULL;
+
+    version_major     = -1;
+    version_minor     = -1;
 }
 
 GTKGLXContext::~GTKGLXContext ()
@@ -32,7 +35,6 @@ bool GTKGLXContext::attach (GtkWidget *widget)
     GdkWindow   *window;
     GLXFBConfig *fbconfigs;
     int         num_fbconfigs;
-    int         screen;
 
     int attribs[] = {
         GLX_DOUBLEBUFFER, True,
@@ -54,6 +56,10 @@ bool GTKGLXContext::attach (GtkWidget *widget)
     gdk_screen        = gdk_window_get_screen (window);
     screen            = gdk_x11_screen_get_screen_number (gdk_screen);
     display           = GDK_DISPLAY_XDISPLAY (gdk_display);
+
+    glXQueryVersion (display, &version_major, &version_minor);
+    if (version_major < 2 && version_minor < 3)
+        return false;
 
     fbconfigs = glXChooseFBConfig (display, screen, attribs, &num_fbconfigs);
     if (!fbconfigs || num_fbconfigs < 1)
@@ -89,7 +95,12 @@ bool GTKGLXContext::create_context ()
         None
     };
 
-    context = glXCreateContextAttribsARB (display, fbconfig, NULL, True, context_attribs);
+    const char *extensions = glXQueryExtensionsString (display, screen);
+
+    if (strstr (extensions, "GLX_ARB_create_context"))
+        context = glXCreateContextAttribsARB (display, fbconfig, NULL, True, context_attribs);
+    if (!context)
+        context = glXCreateNewContext (display, fbconfig, GLX_RGBA_TYPE, NULL, True);
 
     if (!context)
     {
