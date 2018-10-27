@@ -23,8 +23,6 @@ static void S9xViewportCallback (int src_width, int src_height,
     *out_y = src_height + viewport_y;
     *out_width = viewport_width;
     *out_height = viewport_height;
-
-    return;
 }
 
 S9xOpenGLDisplayDriver::S9xOpenGLDisplayDriver (Snes9xWindow *window,
@@ -33,12 +31,9 @@ S9xOpenGLDisplayDriver::S9xOpenGLDisplayDriver (Snes9xWindow *window,
     this->window = window;
     this->config = config;
     this->drawing_area = GTK_WIDGET (window->drawing_area);
-
-    return;
 }
 
-void
-S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
+void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
 {
     uint8 *final_buffer = NULL;
     int   final_pitch;
@@ -233,33 +228,27 @@ S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
     glDrawArrays (GL_QUADS, 0, 4);
 
     swap_buffers ();
-
-    return;
 }
 
-void *
-S9xOpenGLDisplayDriver::get_parameters(void)
+void *S9xOpenGLDisplayDriver::get_parameters ()
 {
     if (using_glsl_shaders && glsl_shader)
     {
         return (void *) &glsl_shader->param;
     }
+
     return NULL;
 }
 
-void
-S9xOpenGLDisplayDriver::save (const char *filename)
+void S9xOpenGLDisplayDriver::save (const char *filename)
 {
     if (using_glsl_shaders && glsl_shader)
     {
         glsl_shader->save(filename);
     }
-
-    return;
 }
 
-void
-S9xOpenGLDisplayDriver::clear_buffers (void)
+void S9xOpenGLDisplayDriver::clear_buffers ()
 {
     memset (buffer[0], 0, image_padded_size);
     memset (buffer[1], 0, scaled_padded_size);
@@ -274,12 +263,9 @@ S9xOpenGLDisplayDriver::clear_buffers (void)
                      GL_RGB,
                      GL_UNSIGNED_SHORT_5_6_5,
                      buffer[1]);
-
-    return;
 }
 
-void
-S9xOpenGLDisplayDriver::update_texture_size (int width, int height)
+void S9xOpenGLDisplayDriver::update_texture_size (int width, int height)
 {
     if (width != texture_width || height != texture_height)
     {
@@ -316,12 +302,9 @@ S9xOpenGLDisplayDriver::update_texture_size (int width, int height)
             texture_height = height;
         }
     }
-
-    return;
 }
 
-int
-S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
+int S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
 {
     xmlDoc *xml_doc = NULL;
     xmlNodePtr node = NULL;
@@ -413,8 +396,7 @@ S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
     return 1;
 }
 
-int
-S9xOpenGLDisplayDriver::opengl_defaults (void)
+int S9xOpenGLDisplayDriver::opengl_defaults ()
 {
     npot = false;
     using_pbos = false;
@@ -532,25 +514,19 @@ S9xOpenGLDisplayDriver::opengl_defaults (void)
     return 1;
 }
 
-void
-S9xOpenGLDisplayDriver::refresh (int width, int height)
+void S9xOpenGLDisplayDriver::refresh (int width, int height)
 {
-    return;
 }
 
-void
-S9xOpenGLDisplayDriver::resize ()
+void S9xOpenGLDisplayDriver::resize ()
 {
     context->resize ();
     context->swap_interval (config->sync_to_vblank);
     output_window_width = context->width;
     output_window_height = context->height;
-
-    return;
 }
 
-int
-S9xOpenGLDisplayDriver::init_gl (void)
+int S9xOpenGLDisplayDriver::create_context ()
 {
     gdk_window = gtk_widget_get_window (drawing_area);
 
@@ -587,12 +563,11 @@ S9xOpenGLDisplayDriver::init_gl (void)
     return 1;
 }
 
-int
-S9xOpenGLDisplayDriver::init (void)
+int S9xOpenGLDisplayDriver::init ()
 {
     initialized = false;
 
-    if (!init_gl ())
+    if (!create_context ())
     {
         return -1;
     }
@@ -620,28 +595,22 @@ S9xOpenGLDisplayDriver::init (void)
     return 0;
 }
 
-uint16 *
-S9xOpenGLDisplayDriver::get_next_buffer (void)
+uint16 *S9xOpenGLDisplayDriver::get_next_buffer ()
 {
     return (uint16 *) padded_buffer[0];
 }
 
-void
-S9xOpenGLDisplayDriver::push_buffer (uint16 *src)
+void S9xOpenGLDisplayDriver::push_buffer (uint16 *src)
 {
     memmove (padded_buffer[0], src, image_size);
-
-    return;
 }
 
-uint16 *
-S9xOpenGLDisplayDriver::get_current_buffer (void)
+uint16 *S9xOpenGLDisplayDriver::get_current_buffer ()
 {
     return (uint16 *) padded_buffer[0];
 }
 
-void
-S9xOpenGLDisplayDriver::swap_buffers (void)
+void S9xOpenGLDisplayDriver::swap_buffers ()
 {
     context->swap_buffers ();
 
@@ -650,12 +619,9 @@ S9xOpenGLDisplayDriver::swap_buffers (void)
         usleep (0);
         glFinish ();
     }
-
-    return;
 }
 
-void
-S9xOpenGLDisplayDriver::deinit (void)
+void S9xOpenGLDisplayDriver::deinit ()
 {
     if (!initialized)
         return;
@@ -693,12 +659,9 @@ S9xOpenGLDisplayDriver::deinit (void)
     }
 
     glDeleteTextures (1, &texmap);
-
-    return;
 }
 
-int
-S9xOpenGLDisplayDriver::query_availability (void)
+int S9xOpenGLDisplayDriver::query_availability ()
 {
     GdkDisplay *gdk_display = gdk_display_get_default ();
 

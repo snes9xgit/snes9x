@@ -16,7 +16,7 @@
 
 #include "shaders/glsl.h"
 
-#define BUFFER_OFFSET(i)             ((char *) NULL + (i))
+#define BUFFER_OFFSET(i) ((char *) NULL + (i))
 
 class S9xOpenGLDisplayDriver : public S9xDisplayDriver
 {
@@ -39,38 +39,38 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
         void swap_buffers ();
         int load_shaders (const char *);
         void update_texture_size (int width, int height);
-        int init_gl ();
+        int create_context ();
         void resize ();
 
-        GLint                    texture_width;
-        GLint                    texture_height;
-        GLfloat                  vertices[8];
-        GLfloat                  texcoords[8];
-        GLuint                   texmap;
-        GLuint                   pbo;
-        GLuint                   program;
-        GLuint                   fragment_shader;
-        GLuint                   vertex_shader;
+        GLint             texture_width;
+        GLint             texture_height;
+        GLfloat           vertices[8];
+        GLfloat           texcoords[8];
+        GLuint            texmap;
+        GLuint            pbo;
+        GLuint            program;
+        GLuint            fragment_shader;
+        GLuint            vertex_shader;
 
-        bool                     npot;
-        bool                     using_pbos;
-        bool                     using_shaders;
-        bool                     initialized;
+        bool              npot;
+        bool              using_pbos;
+        bool              using_shaders;
+        bool              initialized;
 
-        int                      using_glsl_shaders;
-        GLSLShader               *glsl_shader;
+        bool              using_glsl_shaders;
+        GLSLShader        *glsl_shader;
 
-        GdkWindow                *gdk_window;
-        int                      output_window_width;
-        int                      output_window_height;
+        GdkWindow         *gdk_window;
+        int               output_window_width;
+        int               output_window_height;
 
-        OpenGLContext            *context;
+        OpenGLContext     *context;
 
 #ifdef GDK_WINDOWING_X11
-        GTKGLXContext            glx;
+        GTKGLXContext     glx;
 #endif
 #ifdef GDK_WINDOWING_WAYLAND
-        WaylandEGLContext        wl;
+        WaylandEGLContext wl;
 #endif
 };
 
