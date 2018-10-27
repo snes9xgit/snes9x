@@ -48,13 +48,9 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
         GLfloat           texcoords[8];
         GLuint            texmap;
         GLuint            pbo;
-        GLuint            program;
-        GLuint            fragment_shader;
-        GLuint            vertex_shader;
 
         bool              npot;
         bool              using_pbos;
-        bool              using_shaders;
         bool              initialized;
 
         bool              using_glsl_shaders;

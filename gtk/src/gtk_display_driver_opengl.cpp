@@ -56,15 +56,11 @@ void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
     allocation.height *= gdk_scale_factor;
 #endif
 
-    if (using_glsl_shaders)
-    {
-        glBindTexture (GL_TEXTURE_2D, texmap);
-    }
-
+    glBindTexture (GL_TEXTURE_2D, texmap);
     GLint filter = Settings.BilinearFilter ? GL_LINEAR : GL_NEAREST;
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
-    GLint clamp = (using_shaders || !npot) ? GL_CLAMP_TO_BORDER : GL_CLAMP_TO_EDGE;
+    GLint clamp = (using_glsl_shaders || !npot) ? GL_CLAMP_TO_BORDER : GL_CLAMP_TO_EDGE;
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, clamp);
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, clamp);
 
@@ -196,33 +192,11 @@ void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
     texcoords[3] = texcoords[1];
     texcoords[4] = texcoords[2];
 
-    if (using_shaders && using_glsl_shaders)
+    if (using_glsl_shaders)
     {
         glsl_shader->render (texmap, width, height, x, allocation.height - y - h, w, h, S9xViewportCallback);
         swap_buffers ();
         return;
-    }
-    else if (using_shaders)
-    {
-        GLint location;
-        float inputSize[2];
-        float outputSize[2];
-        float textureSize[2];
-
-        inputSize[0] = width;
-        inputSize[1] = height;
-        location = glGetUniformLocation (program, "rubyInputSize");
-        glUniform2fv (location, 1, inputSize);
-
-        outputSize[0] = w;
-        outputSize[1] = h;
-        location = glGetUniformLocation (program, "rubyOutputSize");
-        glUniform2fv (location, 1, outputSize);
-
-        textureSize[0] = texture_width;
-        textureSize[1] = texture_height;
-        location = glGetUniformLocation (program, "rubyTextureSize");
-        glUniform2fv (location, 1, textureSize);
     }
 
     glDrawArrays (GL_QUADS, 0, 4);
@@ -306,10 +280,6 @@ void S9xOpenGLDisplayDriver::update_texture_size (int width, int height)
 
 int S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
 {
-    xmlDoc *xml_doc = NULL;
-    xmlNodePtr node = NULL;
-    char *fragment = NULL, *vertex = NULL;
-
     int length = strlen (shader_file);
 
     if ((length > 6 && !strcasecmp(shader_file + length - 6, ".glslp")) ||
@@ -328,72 +298,9 @@ int S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
         }
 
         delete glsl_shader;
-        return 0;
     }
 
-    xml_doc = xmlReadFile (shader_file, NULL, 0);
-
-    if (!xml_doc)
-    {
-        fprintf (stderr, _("Cannot read shader file.\n"));
-        return 0;
-    }
-
-    node = xmlDocGetRootElement (xml_doc);
-
-    if (xmlStrcasecmp (node->name, BAD_CAST "shader"))
-    {
-        fprintf (stderr, _("File %s is not a shader file.\n"), shader_file);
-        xmlFreeDoc (xml_doc);
-        return 0;
-    }
-
-    for (xmlNodePtr i = node->children; i; i = i->next)
-    {
-        if (!xmlStrcasecmp (i->name, BAD_CAST "vertex"))
-        {
-            if (i->children)
-                vertex = (char *) i->children->content;
-        }
-
-        if (!xmlStrcasecmp (i->name, BAD_CAST "fragment"))
-        {
-            if (i->children)
-                fragment = (char *) i->children->content;
-        }
-    }
-
-    if (!vertex && !fragment)
-    {
-        fprintf (stderr, _("Shader lacks any programs.\n"));
-        xmlFreeDoc (xml_doc);
-        return 0;
-    }
-
-    program = glCreateProgram ();
-
-    if (vertex)
-    {
-        vertex_shader = glCreateShader (GL_VERTEX_SHADER);
-        glShaderSource (vertex_shader, 1, (const GLchar **) &vertex, NULL);
-        glCompileShader (vertex_shader);
-        glAttachShader (program, vertex_shader);
-    }
-
-    if (fragment)
-    {
-        fragment_shader = glCreateShader (GL_FRAGMENT_SHADER);
-        glShaderSource (fragment_shader, 1, (const GLchar **) &fragment, NULL);
-        glCompileShader (fragment_shader);
-        glAttachShader (program, fragment_shader);
-    }
-
-    glLinkProgram (program);
-    glUseProgram (program);
-
-    xmlFreeDoc (xml_doc);
-
-    return 1;
+    return 0;
 }
 
 int S9xOpenGLDisplayDriver::opengl_defaults ()
@@ -406,7 +313,6 @@ int S9xOpenGLDisplayDriver::opengl_defaults ()
         using_pbos = true;
     }
 
-    using_shaders = false;
     using_glsl_shaders = false;
     glsl_shader = NULL;
 
@@ -415,10 +321,6 @@ int S9xOpenGLDisplayDriver::opengl_defaults ()
         if (!load_shaders (config->fragment_shader))
         {
             config->use_shaders = false;
-        }
-        else
-        {
-            using_shaders = true;
         }
     }
 
@@ -626,22 +528,12 @@ void S9xOpenGLDisplayDriver::deinit ()
     if (!initialized)
         return;
 
-    if (using_shaders && using_glsl_shaders)
+    if (using_glsl_shaders)
     {
         window->enable_widget ("shader_parameters_item", FALSE);
         gtk_shader_parameters_dialog_close ();
         glsl_shader->destroy();
         delete glsl_shader;
-    }
-    else if (using_shaders)
-    {
-        glUseProgram (0);
-        glDetachShader (program, vertex_shader);
-        glDetachShader (program, fragment_shader);
-        glDeleteShader (vertex_shader);
-        glDeleteShader (fragment_shader);
-        glDeleteProgram (program);
-        using_shaders = 0;
     }
 
     GFX.Screen = NULL;
