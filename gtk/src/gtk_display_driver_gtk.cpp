@@ -283,9 +283,3 @@ S9xGTKDisplayDriver::clear_buffers (void)
 
     return;
 }
-
-void
-S9xGTKDisplayDriver::reconfigure (int width, int height)
-{
-    return;
-}

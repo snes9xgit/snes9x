@@ -640,9 +640,3 @@ S9xXVDisplayDriver::query_availability (void)
 
     return 1;
 }
-
-void
-S9xXVDisplayDriver::reconfigure (int width, int height)
-{
-    return;
-}

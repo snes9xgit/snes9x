@@ -806,12 +806,6 @@ S9xOpenGLDisplayDriver::deinit (void)
     return;
 }
 
-void
-S9xOpenGLDisplayDriver::reconfigure (int width, int height)
-{
-    return;
-}
-
 int
 S9xOpenGLDisplayDriver::query_availability (void)
 {

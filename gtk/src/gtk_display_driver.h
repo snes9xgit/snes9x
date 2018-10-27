@@ -15,7 +15,6 @@ class S9xDisplayDriver
         virtual uint16 *get_next_buffer (void) = 0;
         virtual uint16 *get_current_buffer (void) = 0;
         virtual void push_buffer (uint16 *src) = 0;
-        virtual void reconfigure (int width, int height) = 0;
         virtual void *get_parameters (void) = 0;
         virtual void save (const char *filename) = 0;
 
