@@ -771,7 +771,7 @@ Snes9xPreferences::move_settings_to_dialog (void)
     set_check ("sync_to_vblank",            config->sync_to_vblank);
     set_check ("sync_every_frame",          config->sync_every_frame);
     set_check ("use_pbos",                  config->use_pbos);
-    set_combo ("pixel_format",              config->pbo_format);
+    set_combo ("pixel_format",              config->pbo_format == 16 ? 0 : 1);
     set_check ("npot_textures",             config->npot_textures);
     set_check ("use_shaders",               config->use_shaders);
     set_entry_text ("fragment_shader",      config->fragment_shader);
@@ -914,10 +914,12 @@ Snes9xPreferences::get_settings_from_dialog (void)
 #endif
 
 #ifdef USE_OPENGL
+    int pbo_format = get_combo ("pixel_format") == 1 ? 32 : 16;
+
     if (config->sync_to_vblank != get_check ("sync_to_vblank") ||
         config->npot_textures != get_check ("npot_textures") ||
         config->use_pbos != get_check ("use_pbos") ||
-        config->pbo_format != get_combo ("pixel_format") ||
+        config->pbo_format !=  pbo_format ||
         config->use_shaders != get_check ("use_shaders") ||
         get_check ("use_shaders"))
     {
@@ -932,7 +934,7 @@ Snes9xPreferences::get_settings_from_dialog (void)
 
     strncpy (config->fragment_shader, get_entry_text ("fragment_shader"), PATH_MAX);
 
-    config->pbo_format = get_combo ("pixel_format");
+    config->pbo_format = pbo_format;
 #endif
     char safety_sram_directory [PATH_MAX];
 

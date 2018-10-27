@@ -1131,10 +1131,7 @@
     </columns>
     <data>
       <row>
-        <col id="0" translatable="yes">16-bit (GL_BGRA)</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">24-bit (GL_RGB)</col>
+        <col id="0" translatable="yes">16-bit (GL_RGB)</col>
       </row>
       <row>
         <col id="0" translatable="yes">32-bit (GL_BGRA)</col>

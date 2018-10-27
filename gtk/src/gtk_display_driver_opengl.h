@@ -16,21 +16,7 @@
 
 #include "shaders/glsl.h"
 
-#define PBO_FMT_16 0
-#define PBO_FMT_24 1
-#define PBO_FMT_32 2
-
 #define BUFFER_OFFSET(i)             ((char *) NULL + (i))
-
-#ifdef __BIG_ENDIAN__
-/* We have to reverse the bytes on MSB systems. This can be slow */
-/* GL_UNSIGNED_INT_8_8_8_8_REV = 0x8367 */
-#define PBO_BGRA_NATIVE_ORDER        0x8367
-#else
-#define PBO_BGRA_NATIVE_ORDER        GL_UNSIGNED_BYTE
-#endif
-#define PBO_GET_FORMAT(x) (((x) == PBO_FMT_32) ? GL_BGRA : GL_RGB)
-#define PBO_GET_PACKING(x) (((x) == PBO_FMT_16) ? GL_UNSIGNED_SHORT_5_6_5 : (((x) == PBO_FMT_24) ? GL_UNSIGNED_BYTE : PBO_BGRA_NATIVE_ORDER))
 
 class S9xOpenGLDisplayDriver : public S9xDisplayDriver
 {

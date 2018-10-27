@@ -115,7 +115,7 @@ S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
 
     if (using_pbos)
     {
-        if (config->pbo_format == PBO_FMT_16)
+        if (config->pbo_format == 16)
         {
 
             glBindBuffer (GL_PIXEL_UNPACK_BUFFER, pbo);
@@ -147,42 +147,7 @@ S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
 
             glBindBuffer (GL_PIXEL_UNPACK_BUFFER, 0);
         }
-        else if (config->pbo_format == PBO_FMT_24)
-        {
-            glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
-            glBindBuffer (GL_PIXEL_UNPACK_BUFFER, pbo);
-            glBufferData (GL_PIXEL_UNPACK_BUFFER,
-                          width * height * 3,
-                          NULL,
-                          GL_STREAM_DRAW);
-            pboMemory = glMapBuffer (GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
-
-            /* Pixel swizzling in software */
-            S9xSetEndianess (ENDIAN_SWAPPED);
-            S9xConvert (final_buffer,
-                        pboMemory,
-                        final_pitch,
-                        width * 3,
-                        width,
-                        height,
-                        24);
-
-            glUnmapBuffer (GL_PIXEL_UNPACK_BUFFER);
-
-            glPixelStorei (GL_UNPACK_ROW_LENGTH, width);
-            glTexSubImage2D (GL_TEXTURE_2D,
-                             0,
-                             0,
-                             0,
-                             width,
-                             height,
-                             GL_RGB,
-                             GL_UNSIGNED_BYTE,
-                             BUFFER_OFFSET (0));
-
-            glBindBuffer (GL_PIXEL_UNPACK_BUFFER, 0);
-        }
-        else /* PBO_FMT_32 */
+        else /* 32-bit color */
         {
             glBindBuffer (GL_PIXEL_UNPACK_BUFFER, pbo);
             glBufferData (GL_PIXEL_UNPACK_BUFFER,
@@ -211,7 +176,7 @@ S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
                              width,
                              height,
                              GL_BGRA,
-                             PBO_BGRA_NATIVE_ORDER,
+                             GL_UNSIGNED_BYTE,
                              BUFFER_OFFSET (0));
 
             glBindBuffer (GL_PIXEL_UNPACK_BUFFER, 0);
@@ -322,16 +287,16 @@ S9xOpenGLDisplayDriver::update_texture_size (int width, int height)
         {
             glBindTexture (GL_TEXTURE_2D, texmap);
 
-            if (using_pbos)
+            if (using_pbos && config->pbo_format == 32)
             {
                 glTexImage2D (GL_TEXTURE_2D,
                               0,
-                              config->pbo_format == PBO_FMT_16 ? GL_RGB565 : 4,
+                              4,
                               width,
                               height,
                               0,
-                              PBO_GET_FORMAT (config->pbo_format),
-                              PBO_GET_PACKING (config->pbo_format),
+                              GL_BGRA,
+                              GL_UNSIGNED_BYTE,
                               NULL);
             }
             else
@@ -592,12 +557,12 @@ S9xOpenGLDisplayDriver::opengl_defaults (void)
         glBindTexture (GL_TEXTURE_2D, texmap);
         glTexImage2D (GL_TEXTURE_2D,
                       0,
-                      config->pbo_format == PBO_FMT_16 ? GL_RGB565 : 4,
+                      config->pbo_format == 16 ? GL_RGB565 : 4,
                       texture_width,
                       texture_height,
                       0,
-                      PBO_GET_FORMAT (config->pbo_format),
-                      PBO_GET_PACKING (config->pbo_format),
+                      config->pbo_format == 16 ? GL_RGB : GL_BGRA,
+                      config->pbo_format == 16 ? GL_UNSIGNED_SHORT_5_6_5 : GL_UNSIGNED_BYTE,
                       NULL);
 
         glBindBuffer (GL_PIXEL_UNPACK_BUFFER, pbo);

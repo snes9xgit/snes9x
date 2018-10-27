@@ -596,7 +596,8 @@ Snes9xConfig::set_option (const char *name, const char *value)
     {
 #ifdef USE_OPENGL
         pbo_format = atoi (value);
-        pbo_format = CLAMP (pbo_format, 0, 2);
+        if (pbo_format != 32)
+            pbo_format = 16;
 #endif
     }
     else if (!strcasecmp (name, "npot_textures"))
