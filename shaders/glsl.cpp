@@ -3,8 +3,8 @@
 #include "shader_helpers.h"
 #include "shader_platform.h"
 
-static const GLfloat tex_coords[16] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-                                        0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f };
+static const GLfloat tex_coords[16] = { 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+                                        0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f };
 static const GLfloat mvp_ortho[16] = { 2.0f,  0.0f,  0.0f,  0.0f,
                                           0.0f,  2.0f,  0.0f,  0.0f,
                                           0.0f,  0.0f, -1.0f,  0.0f,
@@ -685,14 +685,12 @@ void GLSLShader::render(GLuint &orig,
                         GL_TEXTURE_WRAP_T,
                         pass[i].wrap_mode);
 
-        glTexCoordPointer(2, GL_FLOAT, 0, tex_coords + (lastpass ? 8 : 0));
-
         glUseProgram (pass[i].program);
         set_shader_vars(i);
 
         glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
         glClear(GL_COLOR_BUFFER_BIT);
-        glDrawArrays(GL_QUADS, 0, 4);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
         // reset vertex attribs set in set_shader_vars
         clear_shader_vars();
@@ -738,7 +736,6 @@ void GLSLShader::render(GLuint &orig,
 
     glBindTexture(GL_TEXTURE_2D, orig);
     glPixelStorei(GL_UNPACK_ROW_LENGTH, (GLint)pass.back().width);
-    glTexCoordPointer(2, GL_FLOAT, 0, tex_coords + 8);
 }
 
 void GLSLShader::register_uniforms ()
