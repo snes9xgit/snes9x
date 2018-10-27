@@ -91,7 +91,9 @@ bool GTKGLXContext::attach (GtkWidget *widget)
 bool GTKGLXContext::create_context ()
 {
     int context_attribs[] = {
-        GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB,
+        GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
+        GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
+        GLX_CONTEXT_MINOR_VERSION_ARB, 3,
         None
     };
 
@@ -142,13 +144,9 @@ void GTKGLXContext::make_current ()
 
 void GTKGLXContext::swap_interval (int frames)
 {
-    const char *extensions = (const char *) glGetString (GL_EXTENSIONS);
-    if (!extensions)
-        return;
-
-    if (strstr (extensions, "EXT_swap_control"))
+    if (epoxy_has_glx_extension (display, screen, "GLX_EXT_swap_control"))
         glXSwapIntervalEXT (display, xid, frames);
-    else if (strstr (extensions, "SGI_swap_control"))
+    else if (epoxy_has_glx_extension (display, screen, "GLX_SGI_swap_control"))
         glXSwapIntervalSGI (frames);
 }
 

@@ -42,13 +42,14 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
         int create_context ();
         void resize ();
 
+        GLuint            stock_program;
+        GLuint            coord_buffer;
         GLint             texture_width;
         GLint             texture_height;
-        GLfloat           vertices[8];
-        GLfloat           texcoords[8];
         GLuint            texmap;
         GLuint            pbo;
 
+        bool              core;
         bool              npot;
         bool              using_pbos;
         bool              initialized;

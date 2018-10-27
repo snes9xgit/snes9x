@@ -110,7 +110,14 @@ bool WaylandEGLContext::create_context ()
         EGL_NONE
     };
 
-    EGLint context_attribs[] = {
+    EGLint core_context_attribs[] = {
+        EGL_CONTEXT_OPENGL_PROFILE_MASK, EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT,
+        EGL_CONTEXT_MAJOR_VERSION, 3,
+        EGL_CONTEXT_MINOR_VERSION, 3,
+        EGL_NONE
+    };
+
+    EGLint compatibility_context_attribs[] = {
         EGL_CONTEXT_OPENGL_PROFILE_MASK, EGL_CONTEXT_OPENGL_COMPATIBILITY_PROFILE_BIT,
         EGL_NONE
     };
@@ -144,11 +151,15 @@ bool WaylandEGLContext::create_context ()
         return false;
     }
 
-    egl_context = eglCreateContext (egl_display, egl_config, EGL_NO_CONTEXT, context_attribs);
+    egl_context = eglCreateContext (egl_display, egl_config, EGL_NO_CONTEXT, core_context_attribs);
     if (!egl_context)
     {
-        printf ("Couldn't create context.\n");
-        return false;
+        egl_context = eglCreateContext (egl_display, egl_config, EGL_NO_CONTEXT, compatibility_context_attribs);
+        if (!egl_context)
+        {
+            printf ("Couldn't create context.\n");
+            return false;
+        }
     }
 
     wl_surface_set_buffer_scale (child, scale);

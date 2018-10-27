@@ -11,6 +11,36 @@
 #include "gtk_shader_parameters.h"
 #include "shaders/shader_helpers.h"
 
+static const char *stock_vertex_shader =
+"#version 130\n"
+
+"in vec2 in_position;\n"
+"in vec2 in_texcoord;\n"
+"out vec2 texcoord;\n"
+
+"void main()\n"
+"{\n"
+"    gl_Position = vec4 (in_position, 0.0, 1.0);\n"
+"    texcoord = in_texcoord;\n"
+"}\n";
+
+
+static const char *stock_fragment_shader =
+"#version 130\n"
+
+"uniform sampler2D texmap;\n"
+"out vec4 fragcolor;\n"
+"in vec2 texcoord;\n"
+
+"void main()\n"
+"{\n"
+"    fragcolor = texture2D(texmap, texcoord);\n"
+"}\n";
+
+
+static GLfloat coords[]  = { -1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f,
+                              0.0f,  1.0f, 1.0f,  1.0f,  0.0f, 0.0f, 1.0f, 0.0f, };
+
 static void S9xViewportCallback (int src_width, int src_height,
                                  int viewport_x, int viewport_y,
                                  int viewport_width, int viewport_height,
@@ -37,7 +67,7 @@ void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
 {
     uint8 *final_buffer = NULL;
     int   final_pitch;
-    void  *pboMemory = NULL;
+    void  *pbo_map = NULL;
     int   x, y, w, h;
 
     GtkAllocation allocation;
@@ -56,6 +86,7 @@ void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
     allocation.height *= gdk_scale_factor;
 #endif
 
+    glActiveTexture (GL_TEXTURE0);
     glBindTexture (GL_TEXTURE_2D, texmap);
     GLint filter = Settings.BilinearFilter ? GL_LINEAR : GL_NEAREST;
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
@@ -65,7 +96,6 @@ void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, clamp);
 
     glClear (GL_COLOR_BUFFER_BIT);
-    glEnable (GL_TEXTURE_2D);
 
     if (config->scale_method > 0)
     {
@@ -95,8 +125,10 @@ void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
         final_buffer += (final_pitch * yoffset);
     }
 
-    x = width; y = height;
-    w = allocation.width; h = allocation.height;
+    x = width;
+    y = height;
+    w = allocation.width;
+    h = allocation.height;
     S9xApplyAspect (x, y, w, h);
 
     glViewport (x, allocation.height - y - h, w, h);
@@ -114,11 +146,11 @@ void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
                           width * height * 2,
                           NULL,
                           GL_STREAM_DRAW);
-            pboMemory = glMapBuffer (GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
+            pbo_map = glMapBuffer (GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
 
             for (int y = 0; y < height; y++)
             {
-                memcpy ((uint8 *) pboMemory + (width * y * 2),
+                memcpy ((uint8 *) pbo_map + (width * y * 2),
                         final_buffer + (y * final_pitch),
                         width * image_bpp);
             }
@@ -145,12 +177,12 @@ void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
                           width * height * 4,
                           NULL,
                           GL_STREAM_DRAW);
-            pboMemory = glMapBuffer (GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
+            pbo_map = glMapBuffer (GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
 
             /* Pixel swizzling in software */
             S9xSetEndianess (ENDIAN_NORMAL);
             S9xConvert (final_buffer,
-                        pboMemory,
+                        pbo_map,
                         final_pitch,
                         width * 4,
                         width,
@@ -187,11 +219,6 @@ void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
                          final_buffer);
     }
 
-    texcoords[1] = (float) (height) / texture_height;
-    texcoords[2] = (float) (width) / texture_width;
-    texcoords[3] = texcoords[1];
-    texcoords[4] = texcoords[2];
-
     if (using_glsl_shaders)
     {
         glsl_shader->render (texmap, width, height, x, allocation.height - y - h, w, h, S9xViewportCallback);
@@ -199,7 +226,15 @@ void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
         return;
     }
 
-    glDrawArrays (GL_QUADS, 0, 4);
+    glUseProgram (stock_program);
+    glBindBuffer (GL_ARRAY_BUFFER, coord_buffer);
+    glEnableVertexAttribArray (0);
+    glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET (0));
+    glEnableVertexAttribArray (1);
+    glVertexAttribPointer (1, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET (32));
+    glDrawArrays (GL_TRIANGLE_STRIP, 0, 4);
+    glDisableVertexAttribArray (1);
+    glDisableVertexAttribArray (0);
 
     swap_buffers ();
 }
@@ -332,26 +367,41 @@ int S9xOpenGLDisplayDriver::opengl_defaults ()
         npot = true;
     }
 
-    glEnableClientState (GL_VERTEX_ARRAY);
-    glEnableClientState (GL_TEXTURE_COORD_ARRAY);
+    stock_program = glCreateProgram ();
 
-    vertices[0] = 0.0f;
-    vertices[1] = 0.0f;
-    vertices[2] = 1.0f;
-    vertices[3] = 0.0f;
-    vertices[4] = 1.0f;
-    vertices[5] = 1.0f;
-    vertices[6] = 0.0f;
-    vertices[7] = 1.0f;
+    GLuint vertex_shader = glCreateShader (GL_VERTEX_SHADER);
+    glShaderSource (vertex_shader, 1, (const GLchar **) &stock_vertex_shader, NULL);
+    glCompileShader (vertex_shader);
+    glAttachShader (stock_program, vertex_shader);
 
-    glVertexPointer (2, GL_FLOAT, 0, vertices);
+    GLuint fragment_shader = glCreateShader (GL_FRAGMENT_SHADER);
+    glShaderSource (fragment_shader, 1, (const GLchar **) &stock_fragment_shader, NULL);
+    glCompileShader (fragment_shader);
+    glAttachShader (stock_program, fragment_shader);
 
-    texcoords[0] = 0.0f;
-    texcoords[5] = 0.0f;
-    texcoords[6] = 0.0f;
-    texcoords[7] = 0.0f;
+    glBindAttribLocation (stock_program, 0, "in_position");
+    glBindAttribLocation (stock_program, 1, "in_texcoord");
 
-    glTexCoordPointer (2, GL_FLOAT, 0, texcoords);
+    glLinkProgram (stock_program);
+    glUseProgram (stock_program);
+
+    glDeleteShader (vertex_shader);
+    glDeleteShader (fragment_shader);
+
+    GLint texture_uniform = glGetUniformLocation (stock_program, "texmap");
+    glUniform1i (texture_uniform, 0);
+
+    if (core)
+    {
+        GLuint vao;
+        glGenVertexArrays (1, &vao);
+        glBindVertexArray (vao);
+    }
+
+    glGenBuffers (1, &coord_buffer);
+    glBindBuffer (GL_ARRAY_BUFFER, coord_buffer);
+    glBufferData (GL_ARRAY_BUFFER, sizeof (GLfloat) * 16, coords, GL_STATIC_DRAW);
+    glBindBuffer (GL_ARRAY_BUFFER, 0);
 
     if (config->use_pbos)
     {
@@ -393,25 +443,7 @@ int S9xOpenGLDisplayDriver::opengl_defaults ()
                       NULL);
     }
 
-    glEnable (GL_DITHER);
-
-    glDisable (GL_POLYGON_SMOOTH);
-    glShadeModel (GL_FLAT);
-    glPolygonMode (GL_FRONT, GL_FILL);
-
-    glEnable (GL_CULL_FACE);
-    glCullFace (GL_BACK);
-
     glClearColor (0.0, 0.0, 0.0, 0.0);
-    glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-
-    glDisable (GL_BLEND);
-    glDisable (GL_DEPTH_TEST);
-    glDisable (GL_TEXTURE_2D);
-
-    glMatrixMode (GL_PROJECTION);
-    glLoadIdentity ();
-    glOrtho (0.0, 1.0, 0.0, 1.0, -1, 1);
 
     return 1;
 }
@@ -456,11 +488,21 @@ int S9xOpenGLDisplayDriver::create_context ()
 
     context->make_current ();
 
-    if (epoxy_gl_version () < 20)
+    int version = epoxy_gl_version ();
+    if (version < 20)
     {
-        printf ("OpenGL version is only %d. Need 20.\n", epoxy_gl_version ());
-        return 0;
+        printf ("OpenGL version is only %d.%d. Need 2.0.\n"
+                "Trying to run anyway.",
+                version / 10,
+                version % 10);
     }
+
+    int profile_mask = 0;
+    glGetIntegerv (GL_CONTEXT_PROFILE_MASK, &profile_mask);
+    if (profile_mask & GL_CONTEXT_CORE_PROFILE_BIT)
+        core = true;
+    else
+        core = false;
 
     return 1;
 }
