@@ -1,12 +1,15 @@
-#pragma once
+#ifndef __GTK_WAYLAND_EGL_CONTEXT_H
+#define __GTK_WAYLAND_EGL_CONTEXT_H
+
 #include <gdk/gdkwayland.h>
 #include <wayland-egl.h>
 #include <epoxy/egl.h>
 
 #include "gtk_opengl_context.h"
 
-struct WaylandEGLContext : OpenGLContext
+class WaylandEGLContext : public OpenGLContext
 {
+  public:
     WaylandEGLContext ();
     ~WaylandEGLContext ();
     bool attach (GtkWidget *widget);
@@ -35,3 +38,5 @@ struct WaylandEGLContext : OpenGLContext
 
     wl_egl_window *egl_window;
 };
+
+#endif

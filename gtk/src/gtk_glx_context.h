@@ -1,12 +1,15 @@
-#pragma once
+#ifndef __GTK_GLX_CONTEXT_H
+#define __GTK_GLX_CONTEXT_H
+
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
 #include <epoxy/glx.h>
 
 #include "gtk_opengl_context.h"
 
-struct GTKGLXContext : OpenGLContext
+class GTKGLXContext : public OpenGLContext
 {
+  public:
     GTKGLXContext ();
     ~GTKGLXContext ();
     bool attach (GtkWidget *widget);
@@ -33,3 +36,5 @@ struct GTKGLXContext : OpenGLContext
     int version_major;
     int version_minor;
 };
+
+#endif

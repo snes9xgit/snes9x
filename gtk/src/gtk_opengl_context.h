@@ -1,8 +1,11 @@
-#pragma once
+#ifndef __GTK_OPENGL_CONTEXT_H
+#define __GTK_OPENGL_CONTEXT_H
+
 #include <gtk/gtk.h>
 
-struct OpenGLContext
+class OpenGLContext
 {
+  public:
     virtual bool attach (GtkWidget *widget) = 0;
     virtual bool create_context () = 0;
     virtual void resize () = 0;
@@ -15,3 +18,5 @@ struct OpenGLContext
     int width;
     int height;
 };
+
+#endif
