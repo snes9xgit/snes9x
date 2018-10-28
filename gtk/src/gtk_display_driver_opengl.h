@@ -50,6 +50,7 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
         GLuint            pbo;
 
         bool              core;
+        int               version;
         bool              npot;
         bool              using_pbos;
         bool              initialized;

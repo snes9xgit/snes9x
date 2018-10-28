@@ -11,8 +11,21 @@
 #include "gtk_shader_parameters.h"
 #include "shaders/shader_helpers.h"
 
-static const char *stock_vertex_shader =
-"#version 130\n"
+static const GLchar *stock_vertex_shader_110 =
+"#version 110\n"
+
+"attribute vec2 in_position;\n"
+"attribute vec2 in_texcoord;\n"
+"varying vec2 texcoord;\n"
+
+"void main()\n"
+"{\n"
+"    gl_Position = vec4 (in_position, 0.0, 1.0);\n"
+"    texcoord = in_texcoord;\n"
+"}\n";
+
+static const GLchar *stock_vertex_shader_140 =
+"#version 140\n"
 
 "in vec2 in_position;\n"
 "in vec2 in_texcoord;\n"
@@ -24,9 +37,19 @@ static const char *stock_vertex_shader =
 "    texcoord = in_texcoord;\n"
 "}\n";
 
+static const GLchar *stock_fragment_shader_110 =
+"#version 110\n"
 
-static const char *stock_fragment_shader =
-"#version 130\n"
+"uniform sampler2D texmap;\n"
+"varying vec2 texcoord;\n"
+
+"void main()\n"
+"{\n"
+"    gl_FragColor = texture2D(texmap, texcoord);\n"
+"}\n";
+
+static const GLchar *stock_fragment_shader_140 =
+"#version 140\n"
 
 "uniform sampler2D texmap;\n"
 "out vec4 fragcolor;\n"
@@ -370,12 +393,21 @@ int S9xOpenGLDisplayDriver::opengl_defaults ()
     stock_program = glCreateProgram ();
 
     GLuint vertex_shader = glCreateShader (GL_VERTEX_SHADER);
-    glShaderSource (vertex_shader, 1, (const GLchar **) &stock_vertex_shader, NULL);
+    GLuint fragment_shader = glCreateShader (GL_FRAGMENT_SHADER);
+
+    if (version < 30)
+    {
+        glShaderSource (vertex_shader, 1, &stock_vertex_shader_110, NULL);
+        glShaderSource (fragment_shader, 1, &stock_fragment_shader_110, NULL);
+    }
+    else
+    {
+        glShaderSource (vertex_shader, 1, &stock_vertex_shader_140, NULL);
+        glShaderSource (fragment_shader, 1, &stock_fragment_shader_140, NULL);
+    }
+
     glCompileShader (vertex_shader);
     glAttachShader (stock_program, vertex_shader);
-
-    GLuint fragment_shader = glCreateShader (GL_FRAGMENT_SHADER);
-    glShaderSource (fragment_shader, 1, (const GLchar **) &stock_fragment_shader, NULL);
     glCompileShader (fragment_shader);
     glAttachShader (stock_program, fragment_shader);
 
@@ -488,7 +520,7 @@ int S9xOpenGLDisplayDriver::create_context ()
 
     context->make_current ();
 
-    int version = epoxy_gl_version ();
+    version = epoxy_gl_version ();
     if (version < 20)
     {
         printf ("OpenGL version is only %d.%d. Need 2.0.\n"
