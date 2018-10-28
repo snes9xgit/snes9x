@@ -1,7 +1,6 @@
 #ifndef __GTK_CONFIG_H
 #define __GTK_CONFIG_H
 
-#include <sys/time.h>
 #include <libxml/parser.h>
 #include <X11/Xlib.h>
 #include <X11/extensions/Xrandr.h>
@@ -9,17 +8,30 @@
 #include "gtk_control.h"
 #include "snes_ntsc.h"
 
-#define HWA_NONE                0
-#define HWA_OPENGL              1
-#define HWA_XV                  2
+enum {
+    HWA_NONE = 0,
+    HWA_OPENGL = 1,
+    HWA_XV = 2
+};
 
-#define HIRES_MERGE             0
-#define HIRES_NORMAL            1
-#define HIRES_SCALE             2
+enum {
+    HIRES_MERGE = 0,
+    HIRES_NORMAL = 1,
+    HIRES_SCALE = 2
+};
 
-#define ESC_TOGGLE_MENUBAR      0
-#define ESC_EXIT_FULLSCREEN     1
-#define ESC_EXIT_SNES9X         2
+enum {
+    ESC_TOGGLE_MENUBAR = 0,
+    ESC_EXIT_FULLSCREEN = 1,
+    ESC_EXIT_SNES9X = 2
+};
+
+enum {
+    THROTTLE_TIMER = 0,
+    THROTTLE_TIMER_FRAMESKIP = 1,
+    THROTTLE_SOUND_SYNC = 2,
+    THROTTLE_NONE = 3
+};
 
 class Snes9xConfig
 {
@@ -128,11 +140,11 @@ class Snes9xConfig
         unsigned char screensaver_needs_reset;
         int           modal_dialogs;
 
-        int            pointer_is_visible;
-        struct timeval pointer_timestamp;
-        
-        unsigned int   rewind_granularity;
-        unsigned int   rewind_buffer_size;
+        int           pointer_is_visible;
+        gint64        pointer_timestamp;
+
+        unsigned int  rewind_granularity;
+        unsigned int  rewind_buffer_size;
 
         XRRScreenResources *xrr_screen_resources;
         XRRCrtcInfo        *xrr_crtc_info;

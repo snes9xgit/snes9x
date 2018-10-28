@@ -1,6 +1,4 @@
 #include <gtk/gtk.h>
-#include <libxml/parser.h>
-#include <libxml/tree.h>
 #include <dlfcn.h>
 #include <sys/stat.h>
 #include <fcntl.h>

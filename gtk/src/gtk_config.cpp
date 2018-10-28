@@ -413,7 +413,6 @@ Snes9xConfig::save_config_file (void)
     xml_out_int (xml, "sound_buffer_size", sound_buffer_size);
     xml_out_int (xml, "sound_driver", sound_driver);
     xml_out_int (xml, "sound_input_rate", sound_input_rate);
-    xml_out_int (xml, "sound_sync", Settings.SoundSync);
     xml_out_int (xml, "dynamic_rate_control", Settings.DynamicRateControl);
     xml_out_int (xml, "dynamic_rate_limit", Settings.DynamicRateLimit);
     xml_out_int (xml, "auto_input_rate", auto_input_rate);
@@ -653,6 +652,8 @@ Snes9xConfig::set_option (const char *name, const char *value)
     else if (!strcasecmp (name, "frameskip"))
     {
         Settings.SkipFrames = atoi (value);
+        if (Settings.SkipFrames == THROTTLE_SOUND_SYNC)
+            Settings.SoundSync = 1;
     }
     else if (!strcasecmp (name, "sound_emulation"))
     {
@@ -917,10 +918,6 @@ Snes9xConfig::set_option (const char *name, const char *value)
     else if (!strcasecmp (name, "upanddown"))
     {
         Settings.UpAndDown = CLAMP (atoi (value), 0, 1);
-    }
-    else if (!strcasecmp (name, "sound_sync"))
-    {
-        Settings.SoundSync = atoi (value) ? 1 : 0;
     }
     else if (!strcasecmp (name, "rewind_buffer_size"))
     {

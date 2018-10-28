@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <sys/time.h>
 #include <signal.h>
 #include <gdk/gdk.h>
 #ifdef GDK_WINDOWING_X11
@@ -17,33 +16,26 @@
 #include "gtk_netplay.h"
 #endif
 
-#define IDLE_FUNC_PRIORITY (G_PRIORITY_DEFAULT_IDLE)
-
-void S9xPostRomInit (void);
-void S9xSyncSpeedFinish (void);
-static void S9xCheckPointerTimer (void);
+void S9xPostRomInit ();
+static void S9xThrottle ();
+static void S9xCheckPointerTimer ();
 static gboolean S9xIdleFunc (gpointer data);
 static gboolean S9xScreenSaverCheckFunc (gpointer data);
 
-Snes9xWindow          *top_level;
-Snes9xConfig          *gui_config;
-StateManager          stateMan;
-static struct timeval next_frame_time = { 0, 0 };
-static struct timeval now;
-static int            needs_fullscreening = FALSE;
-int                   syncing;
-guint                 idle_func_id;
+Snes9xWindow *top_level;
+Snes9xConfig *gui_config;
+StateManager state_manager;
+static int   needs_fullscreening = FALSE;
+guint        idle_func_id;
+gint64       frame_clock = -1;
+gint64       pointer_timestamp = -1;
 
-void
-S9xTerm (int signal)
+void S9xTerm (int signal)
 {
     S9xExit ();
-
-    return;
 }
 
-int
-main (int argc, char *argv[])
+int main (int argc, char *argv[])
 {
     struct sigaction sig_callback;
 
@@ -118,8 +110,7 @@ main (int argc, char *argv[])
     top_level->update_accels ();
 
     Settings.Paused = TRUE;
-    syncing = 0;
-    idle_func_id = g_idle_add_full (IDLE_FUNC_PRIORITY,
+    idle_func_id = g_idle_add_full (G_PRIORITY_DEFAULT_IDLE,
                                     S9xIdleFunc,
                                     NULL,
                                     NULL);
@@ -160,8 +151,7 @@ main (int argc, char *argv[])
     return 0;
 }
 
-int
-S9xOpenROM (const char *rom_filename)
+int S9xOpenROM (const char *rom_filename)
 {
     uint32 flags;
     bool8  loaded;
@@ -237,7 +227,7 @@ S9xOpenROM (const char *rom_filename)
 
     CPU.Flags = flags;
 
-    if (stateMan.init (gui_config->rewind_buffer_size * 1024 * 1024))
+    if (state_manager.init (gui_config->rewind_buffer_size * 1024 * 1024))
     {
         printf ("Using rewind buffer of %uMB\n", gui_config->rewind_buffer_size);
     }
@@ -247,8 +237,7 @@ S9xOpenROM (const char *rom_filename)
     return 0;
 }
 
-void
-S9xROMLoaded (void)
+void S9xROMLoaded ()
 {
     gui_config->rom_loaded = TRUE;
     top_level->configure_widgets ();
@@ -260,40 +249,18 @@ S9xROMLoaded (void)
     }
 
     S9xSoundStart ();
-
-    return;
 }
 
-void
-S9xNoROMLoaded (void)
+void S9xNoROMLoaded ()
 {
     S9xSoundStop ();
     gui_config->rom_loaded = FALSE;
     S9xDisplayRefresh (-1, -1);
     top_level->configure_widgets ();
     top_level->update_statusbar ();
-
-    return;
 }
 
-/*
-static inline void check_messages (void)
-{
-    static unsigned int current_timeout = 0;
-
-    if (GFX.InfoStringTimeout > current_timeout)
-    {
-        top_level->show_status_message (GFX.InfoString);
-    }
-
-    current_timeout = GFX.InfoStringTimeout;
-
-    return;
-}
-*/
-
-gboolean
-S9xPauseFunc (gpointer data)
+gboolean S9xPauseFunc (gpointer data)
 {
     S9xProcessEvents (TRUE);
 
@@ -325,7 +292,7 @@ S9xPauseFunc (gpointer data)
 #endif
 
         /* Resume high-performance callback */
-        idle_func_id = g_idle_add_full (IDLE_FUNC_PRIORITY,
+        idle_func_id = g_idle_add_full (G_PRIORITY_DEFAULT_IDLE,
                                         S9xIdleFunc,
                                         NULL,
                                         NULL);
@@ -336,8 +303,7 @@ S9xPauseFunc (gpointer data)
     return TRUE;
 }
 
-gboolean
-S9xIdleFunc (gpointer data)
+gboolean S9xIdleFunc (gpointer data)
 {
     if (needs_fullscreening)
     {
@@ -367,11 +333,8 @@ S9xIdleFunc (gpointer data)
         return FALSE;
     }
 
-    if (syncing)
-        S9xSyncSpeedFinish ();
-
     S9xCheckPointerTimer ();
-
+    S9xThrottle ();
     S9xProcessEvents (TRUE);
 
 #ifdef NETPLAY_SUPPORT
@@ -385,13 +348,13 @@ S9xIdleFunc (gpointer data)
         for (int i = 0; i < 8; i++)
             joypads[i] = MovieGetJoypad(i);
 
-        Settings.Rewinding = stateMan.pop();
+        Settings.Rewinding = state_manager.pop();
 
         for (int i = 0; i < 8; i++)
             MovieSetJoypad (i, joypads[i]);
     }
     else if(IPPU.TotalEmulatedFrames % gui_config->rewind_granularity == 0)
-        stateMan.push();
+        state_manager.push();
 
     static int muted_from_turbo = FALSE;
     static int mute_saved_state = FALSE;
@@ -419,8 +382,7 @@ S9xIdleFunc (gpointer data)
     return TRUE;
 }
 
-gboolean
-S9xScreenSaverCheckFunc (gpointer data)
+gboolean S9xScreenSaverCheckFunc (gpointer data)
 {
 
     if (!Settings.Paused &&
@@ -432,18 +394,12 @@ S9xScreenSaverCheckFunc (gpointer data)
 }
 
 /* Snes9x core hooks */
-void
-S9xMessage (int type, int number, const char *message)
+void S9xMessage (int type, int number, const char *message)
 {
-    /*
-    fprintf (stderr, "%s\n", message);
-     */
-    return;
 }
 
 /* Varies from ParseArgs because this one is for the OS port to handle */
-void
-S9xParseArg (char **argv, int &i, int argc)
+void S9xParseArg (char **argv, int &i, int argc)
 {
     if (!strcasecmp (argv[i], "-filter"))
     {
@@ -511,106 +467,33 @@ S9xParseArg (char **argv, int &i, int argc)
     {
         gui_config->mute_sound = TRUE;
     }
-
-    return;
 }
 
-#undef TIMER_DIFF
-#define TIMER_DIFF(a, b) ((((a).tv_sec - (b).tv_sec) * 1000000) + (a).tv_usec - (b).tv_usec)
-/* Finishes syncing by using more accurate system sleep functions*/
-void
-S9xSyncSpeedFinish (void)
+static void S9xThrottle ()
 {
-    if (!syncing)
-        return;
-
-    gettimeofday (&now, NULL);
-
-    if (Settings.SoundSync && !Settings.DynamicRateControl)
-    {
-        while (!S9xSyncSound ())
-        {
-            usleep (100);
-
-            gettimeofday (&next_frame_time, NULL);
-
-            /* If we can't sync sound within a second, we're probably deadlocked */
-            if (TIMER_DIFF (next_frame_time, now) > 1000000)
-            {
-                /* Flush out our sample buffer and give up. */
-                S9xClearSamples ();
-
-                break;
-            }
-        }
-
-        next_frame_time = now;
-        return;
-    }
-
-    if (TIMER_DIFF (next_frame_time, now) < -500000)
-    {
-        next_frame_time = now;
-    }
-
-    while (timercmp (&next_frame_time, &now, >))
-    {
-        int time_left = TIMER_DIFF (next_frame_time, now);
-
-        if (time_left > 500000)
-        {
-            next_frame_time = now;
-            break;
-        }
-
-        usleep (time_left);
-
-        gettimeofday (&now, NULL);
-    }
-
-    next_frame_time.tv_usec += Settings.FrameTime;
-
-    if (next_frame_time.tv_usec >= 1000000)
-    {
-        next_frame_time.tv_sec += next_frame_time.tv_usec / 1000000;
-        next_frame_time.tv_usec %= 1000000;
-    }
-
-    syncing = 0;
-
-    return;
-}
-
-/* SyncSpeed Handles delays between frames, similar to unix.cpp version,
- * cleaned up for clarity, adjusted for GUI event loop */
-void
-S9xSyncSpeed (void)
-{
-    unsigned int limit;
-    int          lag;
+    gint64 now;
 
 #ifdef NETPLAY_SUPPORT
     if (S9xNetplaySyncSpeed ())
         return;
 #endif
 
+    now = g_get_monotonic_time ();
+
     if (Settings.HighSpeedSeek > 0)
     {
         Settings.HighSpeedSeek--;
         IPPU.RenderThisFrame = FALSE;
         IPPU.SkippedFrames = 0;
-
-        gettimeofday (&now, NULL);
-        next_frame_time = now;
-
-        syncing = 0;
+        frame_clock = now;
 
         return;
     }
 
-    else if (Settings.TurboMode)
+    if (Settings.TurboMode)
     {
-        if ((++IPPU.FrameSkip >= Settings.TurboSkipFrames)
+        IPPU.FrameSkip++;
+        if ((IPPU.FrameSkip >= Settings.TurboSkipFrames)
             && !Settings.HighSpeedSeek)
         {
             IPPU.FrameSkip = 0;
@@ -623,84 +506,93 @@ S9xSyncSpeed (void)
             IPPU.RenderThisFrame = FALSE;
         }
 
+        frame_clock = now;
+
         return;
     }
 
-    gettimeofday (&now, NULL);
+    IPPU.RenderThisFrame = TRUE;
 
-    if (next_frame_time.tv_sec == 0)
+    if (now - frame_clock > 500000)
     {
-        next_frame_time = now;
-        ++next_frame_time.tv_usec;
+        frame_clock = now;
     }
 
-    if (Settings.SkipFrames == AUTO_FRAMERATE && (!Settings.SoundSync || Settings.DynamicRateControl))
+    if (Settings.SkipFrames == THROTTLE_SOUND_SYNC &&
+        !Settings.DynamicRateControl)
     {
-        lag = TIMER_DIFF (now, next_frame_time);
-
-        /* We compensate for the frame time by a frame in case it's just a CPU
-         * discrepancy. We can recover lost time in the next frame anyway. */
-        if (lag > (int) (Settings.FrameTime))
+        while (!S9xSyncSound ())
         {
-            if (lag > (int) Settings.FrameTime * 10)
+            usleep (100);
+
+            /* If we can't sync sound within a half-second, we're probably deadlocked */
+            if (g_get_monotonic_time () - now > 500000)
             {
-                /* Running way too slowly */
-                next_frame_time = now;
-                IPPU.RenderThisFrame = 1;
-                IPPU.SkippedFrames = 0;
+                S9xClearSamples ();
+                break;
             }
-            else
+        }
+
+        frame_clock = now;
+        IPPU.SkippedFrames = 0;
+
+        return;
+    }
+    else if (Settings.SkipFrames == THROTTLE_NONE)
+    {
+        frame_clock = now;
+    }
+    else // THROTTLE_TIMER or THROTTLE_TIMER_FRAMESKIP
+    {
+        if (Settings.SkipFrames == THROTTLE_TIMER_FRAMESKIP)
+        {
+            if (now - frame_clock > Settings.FrameTime)
             {
-                IPPU.RenderThisFrame = 0;
                 IPPU.SkippedFrames++;
+
+                if (IPPU.SkippedFrames < 8)
+                {
+                    IPPU.RenderThisFrame = FALSE;
+                    frame_clock += Settings.FrameTime;
+                    return;
+                }
+                else
+                {
+                    frame_clock = now - Settings.FrameTime;
+                }
             }
         }
 
-        else
+        while (now - frame_clock < Settings.FrameTime)
         {
-            IPPU.RenderThisFrame = 1;
-            IPPU.SkippedFrames = 0;
+            usleep (100);
+            now = g_get_monotonic_time ();
         }
+
+        frame_clock += Settings.FrameTime;
+        IPPU.FrameSkip = 0;
+        IPPU.SkippedFrames = 0;
     }
-    else
-    {
-        limit = (Settings.SoundSync && !Settings.DynamicRateControl) ? 1 : Settings.SkipFrames + 1;
-
-        IPPU.SkippedFrames++;
-        IPPU.RenderThisFrame = 0;
-
-        if (IPPU.SkippedFrames >= limit)
-        {
-            IPPU.RenderThisFrame = 1;
-            IPPU.SkippedFrames = 0;
-        }
-    }
-
-    syncing = 1;
-
-    return;
 }
 
-static void
-S9xCheckPointerTimer (void)
+void S9xSyncSpeed ()
+{
+}
+
+static void S9xCheckPointerTimer ()
 {
     if (!gui_config->pointer_is_visible)
         return;
 
-    gettimeofday (&now, NULL);
-
-    if (TIMER_DIFF (now, gui_config->pointer_timestamp) > 1000000)
+    if (g_get_monotonic_time () - gui_config->pointer_timestamp > 1000000)
     {
         top_level->hide_mouse_cursor ();
         gui_config->pointer_is_visible = FALSE;
     }
-
-    return;
 }
 
 /* Final exit point, issues exit (0) */
-void
-S9xExit (void)
+void S9xExit ()
 {
     gui_config->save_config_file ();
 
@@ -726,8 +618,6 @@ S9xExit (void)
     delete gui_config;
 
     exit (0);
-
-    return;
 }
 
 void
@@ -808,18 +698,14 @@ S9xPostRomInit (void)
             case 0x0A: break; //Barcode Battler
         }
     }
-
-    return;
 }
 
-const char *
-S9xStringInput(const char *message)
+const char *S9xStringInput(const char *message)
 {
     return NULL;
 }
 
-void
-S9xExtraUsage (void)
+void S9xExtraUsage ()
 {
     printf ("GTK port options:\n"
             "-filter [option]               Use a filter to scale the image.\n"
@@ -827,5 +713,4 @@ S9xExtraUsage (void)
             "                               super2xsai hq2x hq3x hq4x 2xbrz 3xbrz 4xbrz epx ntsc\n"
             "\n"
             "-mutesound                     Disables sound output.\n");
-    return;
 }

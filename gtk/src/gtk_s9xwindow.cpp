@@ -259,7 +259,7 @@ event_motion_notify (GtkWidget      *widget,
             window->show_mouse_cursor ();
     }
 
-    gettimeofday (&(window->config->pointer_timestamp), NULL);
+    window->config->pointer_timestamp = g_get_monotonic_time ();
 
     return FALSE;
 }

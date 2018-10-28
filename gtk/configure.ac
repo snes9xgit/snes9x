@@ -204,7 +204,7 @@ else
 fi
 
 PKG_CHECK_MODULES([GTK], ["$GTK_VERSION"])
-PKG_CHECK_MODULES([GLIB], [gthread-2.0 >= 2.6 gobject-2.0 >= 2.6])
+PKG_CHECK_MODULES([GLIB], [glib-2.0 > 2.28 gthread-2.0 >= 2.6 gobject-2.0 >= 2.6])
 PKG_CHECK_MODULES([LIBXML], [libxml-2.0 >= 2.0])
 PKG_CHECK_MODULES([XRANDR], [xrandr])
 
