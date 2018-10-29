@@ -256,7 +256,7 @@ Snes9xConfig::load_defaults (void)
     Settings.SupportHiRes = true;
     Settings.FrameTime = Settings.FrameTimeNTSC;
     Settings.BlockInvalidVRAMAccessMaster = TRUE;
-    Settings.SoundSync = 1;
+    Settings.SoundSync = 0;
     Settings.DynamicRateControl = FALSE;
     Settings.DynamicRateLimit = 5;
     Settings.InterpolationMethod = DSP_INTERPOLATION_GAUSSIAN;
@@ -654,6 +654,8 @@ Snes9xConfig::set_option (const char *name, const char *value)
         Settings.SkipFrames = atoi (value);
         if (Settings.SkipFrames == THROTTLE_SOUND_SYNC)
             Settings.SoundSync = 1;
+        else
+            Settings.SoundSync = 0;
     }
     else if (!strcasecmp (name, "sound_emulation"))
     {
