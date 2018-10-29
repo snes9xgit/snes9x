@@ -664,6 +664,7 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
     drawing_area = GTK_DRAWING_AREA (get_widget ("drawingarea"));
 #if GTK_MAJOR_VERSION < 3
     gtk_widget_set_double_buffered (GTK_WIDGET (drawing_area), FALSE);
+    gtk_widget_set_app_paintable (GTK_WIDGET (drawing_area), TRUE);
 #endif
 
     gtk_widget_realize (window);
