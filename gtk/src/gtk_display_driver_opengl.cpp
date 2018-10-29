@@ -480,6 +480,7 @@ int S9xOpenGLDisplayDriver::opengl_defaults ()
 
 void S9xOpenGLDisplayDriver::refresh (int width, int height)
 {
+    resize ();
 }
 
 void S9xOpenGLDisplayDriver::resize ()

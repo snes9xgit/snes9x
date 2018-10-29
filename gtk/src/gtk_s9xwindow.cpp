@@ -786,7 +786,7 @@ Snes9xWindow::expose (void)
 #ifdef GDK_WINDOWING_WAYLAND
     if (GDK_IS_WAYLAND_WINDOW (gtk_widget_get_window (window)))
     {
-        if (config->hw_accel == HWA_NONE)
+        if (config->hw_accel == HWA_NONE || is_paused ())
             S9xRealDeinitUpdate (last_width, last_height);
     }
 #endif
