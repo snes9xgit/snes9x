@@ -150,13 +150,14 @@ event_drawingarea_draw (GtkWidget *widget,
                         cairo_t   *cr,
                         gpointer  data)
 {
+
     Snes9xWindow *window = (Snes9xWindow *) data;
     window->cr = cr;
     window->cairo_owned = FALSE;
     window->expose ();
     window->cr = NULL;
 
-    return FALSE;
+    return TRUE;
 }
 
 #else
@@ -168,7 +169,7 @@ event_drawingarea_expose (GtkWidget      *widget,
 {
     ((Snes9xWindow *) data)->expose ();
 
-    return FALSE;
+    return TRUE;
 }
 #endif
 
@@ -781,7 +782,13 @@ Snes9xWindow::expose (void)
     }
 #endif
 
-    S9xRealDeinitUpdate (last_width, last_height);
+#ifdef GDK_WINDOWING_WAYLAND
+    if (GDK_IS_WAYLAND_WINDOW (gtk_widget_get_window (window)))
+    {
+        if (config->hw_accel == HWA_NONE)
+            S9xRealDeinitUpdate (last_width, last_height);
+    }
+#endif
 
     return;
 }
