@@ -5,7 +5,7 @@
 
 #define AXIS_POS                    1
 #define AXIS_NEG                    0
-#define JOY_AXIS(axis, button)      (512 + ((axis) * 2 + (button)))
+#define JOY_AXIS(axis, direction)   (512 + ((axis) * 2 + (direction)))
 #define JOY_AXIS_UNMASK(bin)        ((((bin) & 0x0000ffff) - 512) / 2)
 #define JOY_DIRECTION_UNMASK(bin)   ((((bin) & 0x0000ffff) - 512) % 2)
 #define BINDING_KEY                 0x10000000
@@ -34,6 +34,7 @@ class Binding
         Binding (GdkEventKey *event);
         Binding (unsigned int);
         Binding (void);
+        Binding (const char *str);
         void to_string (char *str);
         unsigned int hex (void);   
         unsigned int base_hex (void);

@@ -172,6 +172,62 @@ Binding::is_negative (void)
     return JOY_DIRECTION_UNMASK (value) == AXIS_NEG;
 }
 
+Binding::Binding (const char *raw_string)
+{
+    value = 0;
+
+    if (!raw_string)
+        return;
+
+    char substr[80];
+    if (sscanf (raw_string, "Keyboard %79s", substr) == 1)
+    {
+        bool ctrl = false;
+        bool shift = false;
+        bool alt= false;
+        unsigned int keyval = 0;
+        char *key;
+
+        key = strtok (substr, "+");
+        while (key)
+        {
+            if (strstr (key, "Alt"))
+                alt = true;
+            else if (strstr (key, "Ctrl"))
+                ctrl = true;
+            else if (strstr (key, "Shift"))
+                shift = true;
+            else
+            {
+                keyval = gdk_keyval_from_name (key);
+            }
+
+            key = strtok (NULL, "+");
+        }
+
+        value = Binding(keyval, ctrl, shift, alt).value;
+    }
+    else if (!strncmp (raw_string, "Joystick", 8))
+    {
+        unsigned int axis;
+        unsigned int button;
+        unsigned int percent;
+        unsigned int device;
+        char posneg;
+        const char *substr = &raw_string[8];
+
+        if (sscanf (substr, "%u Axis #%u %c %u", &device, &axis, &posneg, &percent) == 4)
+        {
+            value = Binding(device - 1, JOY_AXIS (axis, posneg == '+' ? AXIS_POS : AXIS_NEG), percent).value;
+        }
+        else if (sscanf (substr, "%u Button %u", &device, &button) == 2)
+        {
+            value = Binding(device - 1, button, 0).value;
+        }
+
+    }
+}
+
 void
 Binding::to_string (char *str)
 {

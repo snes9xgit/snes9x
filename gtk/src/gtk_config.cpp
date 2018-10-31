@@ -127,14 +127,11 @@ xml_out_float (xmlTextWriterPtr xml, const char *name, float value)
 }
 
 static void
-xml_out_binding (xmlTextWriterPtr xml, const char *name, unsigned int value)
+xml_out_binding (xmlTextWriterPtr xml, const char *name, const char *value)
 {
-    char string[1024];
-    snprintf (string, 1024, "%u", value);
-
     xmlTextWriterStartElement (xml, BAD_CAST ("binding"));
     xmlTextWriterWriteAttribute (xml, BAD_CAST ("name"), BAD_CAST (name));
-    xmlTextWriterWriteAttribute (xml, BAD_CAST ("binding"), BAD_CAST (string));
+    xmlTextWriterWriteAttribute (xml, BAD_CAST ("binding"), BAD_CAST (value));
     xmlTextWriterEndElement (xml);
 }
 
@@ -478,7 +475,8 @@ Snes9xConfig::save_config_file (void)
 
         for (int j = 0; j < NUM_JOYPAD_LINKS; j++)
         {
-            xml_out_binding (xml, b_links[j].snes9x_name, joypad[j].hex ());
+            joypad[j].to_string (buffer);
+            xml_out_binding (xml, b_links[j].snes9x_name, buffer);
         }
 
         xmlTextWriterEndElement (xml); /* joypad */
@@ -486,9 +484,10 @@ Snes9xConfig::save_config_file (void)
 
     for (int i = NUM_JOYPAD_LINKS; b_links[i].snes9x_name; i++)
     {
+        shortcut[i - NUM_JOYPAD_LINKS].to_string (buffer);
         xml_out_binding (xml,
                          b_links[i].snes9x_name,
-                         shortcut[i - NUM_JOYPAD_LINKS].hex ());
+                         buffer);
     }
 
     xmlTextWriterEndElement (xml); /* controls */
@@ -1015,7 +1014,7 @@ Snes9xConfig::parse_binding (xmlNodePtr node, int joypad_number)
             type = (char *) attr->children->content;
     }
 
-    b = Binding ((unsigned int) strtoul (type, NULL, 10));
+    b = Binding (type);
 
     if (joypad_number > -1 && joypad_number < NUM_JOYPAD_LINKS)
     {
