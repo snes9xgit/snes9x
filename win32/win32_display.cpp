@@ -242,7 +242,7 @@ static void CheckOverscanOffset()
 		if (Src.Height == SNES_HEIGHT_EXTENDED)
 			lines_to_skip = 7;
 		else if (Src.Height == SNES_HEIGHT_EXTENDED << 1)
-			lines_to_skip = 15;
+			lines_to_skip = 14;
 	}
 	else
 	{
