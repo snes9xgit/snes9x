@@ -232,6 +232,29 @@ IS9xDisplayOutput *S9xDisplayOutput=&Direct3D;
 bool8 S9xDeinitUpdate (int, int);
 void DoAVIVideoFrame();
 
+// cut off both top and bottom if overscan is disabled and game outputs extended height,
+// center image if overscan is enabled and game outputs regular height
+static void CheckOverscanOffset()
+{
+	int lines_to_skip = 0;
+	if (!GUI.HeightExtend)
+	{
+		if (Src.Height == SNES_HEIGHT_EXTENDED)
+			lines_to_skip = 7;
+		else if (Src.Height == SNES_HEIGHT_EXTENDED << 1)
+			lines_to_skip = 15;
+	}
+	else
+	{
+		if (Src.Height == SNES_HEIGHT)
+			lines_to_skip = -8;
+		else if (Src.Height == SNES_HEIGHT << 1)
+			lines_to_skip = -16;
+	}
+
+	Src.Surface = (BYTE*)(GFX.Screen + lines_to_skip * (int)GFX.RealPPL);
+}
+
 /*  WinRefreshDisplay
 repeats the last rendered frame
 */
@@ -239,6 +262,8 @@ void WinRefreshDisplay(void)
 {
 	if(!Src.Width)
 		return;
+
+	CheckOverscanOffset();
 
 	SelectRenderMethod ();
 
@@ -391,16 +416,10 @@ bool8 S9xContinueUpdate(int Width, int Height)
 bool8 S9xDeinitUpdate (int Width, int Height)
 {
     Src.Width = Width;
-	if(Height%SNES_HEIGHT)
-	    Src.Height = Height;
-	else
-	{
-		if(Height==SNES_HEIGHT)
-			Src.Height=SNES_HEIGHT_EXTENDED;
-		else Src.Height=SNES_HEIGHT_EXTENDED<<1;
-	}
+	Src.Height = Height;
     Src.Pitch = GFX.Pitch;
-    Src.Surface = (BYTE*)GFX.Screen;
+
+	CheckOverscanOffset();
 
 	// avi writing
 	DoAVIVideoFrame();
