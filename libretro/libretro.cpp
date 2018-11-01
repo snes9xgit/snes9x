@@ -1684,7 +1684,7 @@ bool8 S9xDeinitUpdate(int width, int height)
     {
         if (height > SNES_HEIGHT << 1)
         {
-            overscan_offset = 15;
+            overscan_offset = 14;
             height = SNES_HEIGHT << 1;
         }
         else if (height > SNES_HEIGHT)
