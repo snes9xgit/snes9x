@@ -9,7 +9,7 @@
 #include "gtk_s9x.h"
 #include "gtk_display_driver.h"
 
-#define FOURCC_YUY2 0x32595559
+const uint32 FOURCC_YUY2 = 0x32595559;
 
 class S9xXVDisplayDriver : public S9xDisplayDriver
 {

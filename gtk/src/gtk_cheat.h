@@ -3,9 +3,12 @@
 
 #include "gtk_builder_window.h"
 
-#define TYPE_GAME_GENIE     0
-#define TYPE_ACTION_REPLAY  1
-#define TYPE_GOLDFINGER     2
+enum
+{
+    TYPE_GAME_GENIE    = 0,
+    TYPE_ACTION_REPLAY = 1,
+    TYPE_GOLDFINGER    = 2
+};
 
 class Snes9xCheats : public GtkBuilderWindow
 {

@@ -3,8 +3,9 @@
 
 #include <gtk/gtk.h>
 
-#include "gtk_s9x.h"
+#include "port.h"
 #include "gtk_builder_window.h"
+#include "gtk_config.h"
 
 class Snes9xWindow : public GtkBuilderWindow
 {
