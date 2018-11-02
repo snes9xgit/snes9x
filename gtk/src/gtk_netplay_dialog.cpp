@@ -58,7 +58,7 @@ Snes9xNetplayDialog::Snes9xNetplayDialog (Snes9xConfig *config) :
 }
 
 void
-Snes9xNetplayDialog::update_state (void)
+Snes9xNetplayDialog::update_state ()
 {
     if (get_check ("host_radio"))
     {
@@ -80,7 +80,7 @@ Snes9xNetplayDialog::update_state (void)
 }
 
 void
-Snes9xNetplayDialog::settings_to_dialog (void)
+Snes9xNetplayDialog::settings_to_dialog ()
 {
     set_entry_text ("rom_image", config->netplay_last_rom);
     set_entry_text ("ip_entry", config->netplay_last_host);
@@ -98,7 +98,7 @@ Snes9xNetplayDialog::settings_to_dialog (void)
 }
 
 void
-Snes9xNetplayDialog::settings_from_dialog (void)
+Snes9xNetplayDialog::settings_from_dialog ()
 {
     strncpy (config->netplay_last_rom, get_entry_text ("rom_image"), PATH_MAX);
     strncpy (config->netplay_last_host, get_entry_text ("ip_entry"), PATH_MAX);
@@ -115,7 +115,7 @@ Snes9xNetplayDialog::settings_from_dialog (void)
 }
 
 int
-Snes9xNetplayDialog::show (void)
+Snes9xNetplayDialog::show ()
 {
     int result;
 
@@ -139,7 +139,7 @@ Snes9xNetplayDialog::show (void)
 
 }
 
-Snes9xNetplayDialog::~Snes9xNetplayDialog (void)
+Snes9xNetplayDialog::~Snes9xNetplayDialog ()
 {
     gtk_widget_destroy (window);
 }

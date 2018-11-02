@@ -15,7 +15,7 @@ port_audio_samples_available_callback (void *data)
     return;
 }
 
-S9xPortAudioSoundDriver::S9xPortAudioSoundDriver(void)
+S9xPortAudioSoundDriver::S9xPortAudioSoundDriver()
 {
     audio_stream = NULL;
     sound_buffer = NULL;
@@ -25,7 +25,7 @@ S9xPortAudioSoundDriver::S9xPortAudioSoundDriver(void)
 }
 
 void
-S9xPortAudioSoundDriver::init (void)
+S9xPortAudioSoundDriver::init ()
 {
     PaError err;
 
@@ -40,7 +40,7 @@ S9xPortAudioSoundDriver::init (void)
 }
 
 void
-S9xPortAudioSoundDriver::terminate (void)
+S9xPortAudioSoundDriver::terminate ()
 {
     stop ();
 
@@ -58,7 +58,7 @@ S9xPortAudioSoundDriver::terminate (void)
 }
 
 void
-S9xPortAudioSoundDriver::start (void)
+S9xPortAudioSoundDriver::start ()
 {
     PaError err;
 
@@ -79,7 +79,7 @@ S9xPortAudioSoundDriver::start (void)
 }
 
 void
-S9xPortAudioSoundDriver::stop (void)
+S9xPortAudioSoundDriver::stop ()
 {
     if (audio_stream != NULL)
     {
@@ -90,7 +90,7 @@ S9xPortAudioSoundDriver::stop (void)
 }
 
 bool8
-S9xPortAudioSoundDriver::open_device (void)
+S9xPortAudioSoundDriver::open_device ()
 {
     PaStreamParameters  param;
     const PaDeviceInfo  *device_info;
@@ -189,7 +189,7 @@ S9xPortAudioSoundDriver::open_device (void)
 }
 
 void
-S9xPortAudioSoundDriver::samples_available (void)
+S9xPortAudioSoundDriver::samples_available ()
 {
     int frames;
     int bytes;

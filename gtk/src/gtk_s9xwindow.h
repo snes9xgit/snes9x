@@ -13,56 +13,56 @@ class Snes9xWindow : public GtkBuilderWindow
         Snes9xWindow (Snes9xConfig *config);
 
         /* Pause related functions */
-        void pause_from_focus_change (void);
-        void unpause_from_focus_change (void);
+        void pause_from_focus_change ();
+        void unpause_from_focus_change ();
         void focus_notify (int state);
-        void pause_from_user (void);
-        void unpause_from_user (void);
-        unsigned char is_paused (void);
-        void propagate_pause_state (void);
+        void pause_from_user ();
+        void unpause_from_user ();
+        unsigned char is_paused ();
+        void propagate_pause_state ();
 
         /* Fullscreen functions */
-        void enter_fullscreen_mode (void);
-        void leave_fullscreen_mode (void);
-        void toggle_fullscreen_mode (void);
-        void finish_fullscreen (void);
+        void enter_fullscreen_mode ();
+        void leave_fullscreen_mode ();
+        void toggle_fullscreen_mode ();
+        void finish_fullscreen ();
 
         /* Cursor modifying functions */
-        void show_mouse_cursor (void);
-        void hide_mouse_cursor (void);
+        void show_mouse_cursor ();
+        void hide_mouse_cursor ();
 
         /* Rom-related functions */
-        void open_rom_dialog (void);
-        void save_state_dialog (void);
-        void load_state_dialog (void);
-        void configure_widgets (void);
-        void save_spc_dialog (void);
+        void open_rom_dialog ();
+        void save_state_dialog ();
+        void load_state_dialog ();
+        void configure_widgets ();
+        void save_spc_dialog ();
         int try_open_rom (const char *filename);
         const char *open_movie_dialog (bool readonly);
-        void movie_seek_dialog (void);
-        void open_multicart_dialog (void);
-        void show_rom_info (void);
+        void movie_seek_dialog ();
+        void open_multicart_dialog ();
+        void show_rom_info ();
 
         /* GTK-base-related functions */
-        void show (void);
+        void show ();
         void show_status_message (const char *message);
-        void update_statusbar (void);
-        void toggle_statusbar (void);
+        void update_statusbar ();
+        void toggle_statusbar ();
         void set_menu_item_selected (const char *name);
         void set_mouseable_area (int x, int y, int width, int height);
         void set_menu_item_accel_to_binding (const char *name,
                                              const char *binding);
-        void reset_screensaver (void);
-        void update_accels (void);
-        void toggle_ui (void);
+        void reset_screensaver ();
+        void update_accels ();
+        void toggle_ui ();
         void resize_to_multiple (int factor);
         void resize_viewport (int width, int height);
-        void expose (void);
-        double get_refresh_rate (void);
-        int get_auto_input_rate (void);
+        void expose ();
+        double get_refresh_rate ();
+        int get_auto_input_rate ();
 
-        cairo_t *get_cairo (void);
-        void release_cairo (void);
+        cairo_t *get_cairo ();
+        void release_cairo ();
 
         Snes9xConfig   *config;
         int            user_pause, sys_pause;

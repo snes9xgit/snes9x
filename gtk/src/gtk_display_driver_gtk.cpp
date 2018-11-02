@@ -118,7 +118,7 @@ S9xGTKDisplayDriver::output (void *src,
 }
 
 int
-S9xGTKDisplayDriver::init (void)
+S9xGTKDisplayDriver::init ()
 {
     buffer[0] = malloc (image_padded_size);
     buffer[1] = malloc (scaled_padded_size);
@@ -136,7 +136,7 @@ S9xGTKDisplayDriver::init (void)
 }
 
 void
-S9xGTKDisplayDriver::deinit (void)
+S9xGTKDisplayDriver::deinit ()
 {
     padded_buffer[0] = NULL;
     padded_buffer[1] = NULL;
@@ -148,7 +148,7 @@ S9xGTKDisplayDriver::deinit (void)
 }
 
 void
-S9xGTKDisplayDriver::clear (void)
+S9xGTKDisplayDriver::clear ()
 {
     int  x, y, w, h;
     int  width, height;
@@ -210,13 +210,13 @@ S9xGTKDisplayDriver::refresh (int width, int height)
 }
 
 uint16 *
-S9xGTKDisplayDriver::get_next_buffer (void)
+S9xGTKDisplayDriver::get_next_buffer ()
 {
     return (uint16 *) padded_buffer[0];
 }
 
 uint16 *
-S9xGTKDisplayDriver::get_current_buffer (void)
+S9xGTKDisplayDriver::get_current_buffer ()
 {
     return (uint16 *) padded_buffer[0];
 }
@@ -230,7 +230,7 @@ S9xGTKDisplayDriver::push_buffer (uint16 *src)
 }
 
 void
-S9xGTKDisplayDriver::clear_buffers (void)
+S9xGTKDisplayDriver::clear_buffers ()
 {
     memset (buffer[0], 0, image_padded_size);
     memset (buffer[1], 0, scaled_padded_size);

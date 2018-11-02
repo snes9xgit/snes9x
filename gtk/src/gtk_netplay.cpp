@@ -14,7 +14,7 @@ static GThread *npthread;
 extern SNPServer NPServer;
 
 static void
-S9xNetplayPreconnect (void)
+S9xNetplayPreconnect ()
 {
     S9xNetplayDisconnect ();
 
@@ -30,7 +30,7 @@ S9xNetplayPreconnect (void)
 }
 
 static void
-S9xNetplayConnect (void)
+S9xNetplayConnect ()
 {
     GtkWidget *msg;
 
@@ -80,7 +80,7 @@ S9xNetplayConnect (void)
 }
 
 void
-S9xNetplaySyncClients (void)
+S9xNetplaySyncClients ()
 {
     if (Settings.NetPlay && Settings.NetPlayServer)
         S9xNPServerQueueSyncAll ();
@@ -89,7 +89,7 @@ S9xNetplaySyncClients (void)
 }
 
 void
-S9xNetplayStopServer (void)
+S9xNetplayStopServer ()
 {
     S9xNPStopServer ();
 
@@ -101,7 +101,7 @@ S9xNetplayStopServer (void)
 }
 
 void
-S9xNetplayDisconnect (void)
+S9xNetplayDisconnect ()
 {
     if (Settings.NetPlay)
     {
@@ -131,7 +131,7 @@ S9xNetplayServerThread (gpointer)
 }
 
 void
-S9xNetplayStartServer (void)
+S9xNetplayStartServer ()
 {
     uint32 flags;
 
@@ -173,7 +173,7 @@ S9xNetplayStartServer (void)
 }
 
 void
-S9xNetplayDialogOpen (void)
+S9xNetplayDialogOpen ()
 {
     Snes9xNetplayDialog *np_dialog;
 
@@ -206,7 +206,7 @@ S9xNetplayDialogOpen (void)
 }
 
 int
-S9xNetplaySyncSpeed (void)
+S9xNetplaySyncSpeed ()
 {
     if (!Settings.NetPlay || !NetPlay.Connected)
         return 0;
@@ -275,7 +275,7 @@ S9xNetplaySyncSpeed (void)
 }
 
 int
-S9xNetplayPush (void)
+S9xNetplayPush ()
 {
     static int statusbar_state = FALSE;
 
@@ -331,7 +331,7 @@ S9xNetplayPush (void)
 }
 
 void
-S9xNetplayPop (void)
+S9xNetplayPop ()
 {
     if (!Settings.NetPlay)
         return;

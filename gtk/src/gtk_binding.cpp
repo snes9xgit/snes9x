@@ -11,7 +11,7 @@
 #include "gtk_s9x.h"
 #include "gtk_binding.h"
 
-Binding::Binding (void)
+Binding::Binding ()
 {
     value = 0;
 
@@ -94,7 +94,7 @@ Binding::matches (Binding &binding)
 }
 
 void
-Binding::clear (void)
+Binding::clear ()
 {
     value = 0;
 
@@ -102,55 +102,55 @@ Binding::clear (void)
 }
 
 unsigned int
-Binding::hex (void)
+Binding::hex ()
 {
     return value;
 }
 
 unsigned int
-Binding::base_hex (void)
+Binding::base_hex ()
 {
     return (value & ~BINDING_THRESHOLD_MASK);
 }
 
 bool
-Binding::is_joy (void)
+Binding::is_joy ()
 {
     return (value & BINDING_JOY);
 }
 
 bool
-Binding::is_key (void)
+Binding::is_key ()
 {
     return (value & BINDING_KEY);
 }
 
 unsigned int
-Binding::get_key (void)
+Binding::get_key ()
 {
     return (value & BINDING_KEY_MASK);
 }
 
 unsigned int
-Binding::get_device (void)
+Binding::get_device ()
 {
     return JOY_DEVICE_UNMASK (value);
 }
 
 unsigned int
-Binding::get_threshold (void)
+Binding::get_threshold ()
 {
     return THRESHOLD_UNMASK (value);
 }
 
 unsigned int
-Binding::get_axis (void)
+Binding::get_axis ()
 {
     return JOY_AXIS_UNMASK (value);
 }
 
 GdkModifierType
-Binding::get_gdk_modifiers (void)
+Binding::get_gdk_modifiers ()
 {
     return (GdkModifierType) (((BINDING_CTRL  & value) ? GDK_CONTROL_MASK : 0) |
                               ((BINDING_ALT   & value) ? GDK_MOD1_MASK    : 0) |
@@ -158,13 +158,13 @@ Binding::get_gdk_modifiers (void)
 }
 
 bool
-Binding::is_positive (void)
+Binding::is_positive ()
 {
     return JOY_DIRECTION_UNMASK (value) == AXIS_POS;
 }
 
 bool
-Binding::is_negative (void)
+Binding::is_negative ()
 {
     return JOY_DIRECTION_UNMASK (value) == AXIS_NEG;
 }

@@ -68,7 +68,7 @@ S9xSetEndianess (int type)
 }
 
 double
-S9xGetAspect (void)
+S9xGetAspect ()
 {
     double native_aspect = 256.0 / (gui_config->overscan ? 239.0 : 224.0);
     double aspect;
@@ -1223,7 +1223,7 @@ thread_worker (gpointer data,
 }
 
 static void
-create_thread_pool (void)
+create_thread_pool ()
 {
     if (pool == NULL)
     {
@@ -1554,7 +1554,7 @@ S9xDisplayRefresh (int width, int height)
 }
 
 static void
-ntsc_filter_init (void)
+ntsc_filter_init ()
 {
     scanline_offset = scanline_offsets [gui_config->ntsc_scanline_intensity];
     scanline_mask   = scanline_masks [gui_config->ntsc_scanline_intensity];
@@ -1565,7 +1565,7 @@ ntsc_filter_init (void)
 }
 
 void
-S9xDisplayReconfigure (void)
+S9xDisplayReconfigure ()
 {
     ntsc_filter_init ();
 
@@ -1578,7 +1578,7 @@ S9xDisplayReconfigure (void)
 }
 
 void
-S9xQueryDrivers (void)
+S9xQueryDrivers ()
 {
     GdkDisplay *display = gtk_widget_get_display (GTK_WIDGET (top_level->get_window()));
 
@@ -1705,7 +1705,7 @@ S9xRealDeinitUpdate (int width, int height)
 }
 
 static void
-S9xInitDriver (void)
+S9xInitDriver ()
 {
     switch (gui_config->hw_accel)
     {
@@ -1752,7 +1752,7 @@ S9xInitDriver (void)
 }
 
 S9xDisplayDriver *
-S9xDisplayGetDriver (void)
+S9xDisplayGetDriver ()
 {
     return driver;
 }
@@ -1774,7 +1774,7 @@ S9xInitDisplay (int argc, char **argv)
 }
 
 void
-S9xDisplayClearBuffers (void)
+S9xDisplayClearBuffers ()
 {
     driver->clear_buffers ();
 
@@ -1782,7 +1782,7 @@ S9xDisplayClearBuffers (void)
 }
 
 void
-S9xDeinitDisplay (void)
+S9xDeinitDisplay ()
 {
     driver->deinit ();
     delete driver;
@@ -1797,7 +1797,7 @@ S9xDeinitDisplay (void)
 }
 
 void
-S9xReinitDisplay (void)
+S9xReinitDisplay ()
 {
     uint16 *buffer = NULL;
     int    width, height;
@@ -1832,25 +1832,25 @@ S9xContinueUpdate (int width, int height)
 }
 
 bool8
-S9xInitUpdate (void)
+S9xInitUpdate ()
 {
     return TRUE;
 }
 
 void
-S9xSetPalette (void)
+S9xSetPalette ()
 {
     return;
 }
 
 void
-S9xTextMode (void)
+S9xTextMode ()
 {
     return;
 }
 
 void
-S9xGraphicsMode (void)
+S9xGraphicsMode ()
 {
     return;
 }

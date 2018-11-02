@@ -33,23 +33,23 @@ class Binding
         Binding (const Binding &binding);
         Binding (GdkEventKey *event);
         Binding (unsigned int);
-        Binding (void);
+        Binding ();
         Binding (const char *str);
         void to_string (char *str);
-        unsigned int hex (void);   
-        unsigned int base_hex (void);
+        unsigned int hex ();
+        unsigned int base_hex ();
         bool matches (Binding &binding);
-        void clear (void);
-        bool is_joy (void);
-        bool is_key (void);
-        bool is_mouse (void);
-        bool is_positive (void);
-        bool is_negative (void);
-        unsigned int get_key (void);
-        unsigned int get_device (void);
-        unsigned int get_threshold (void);
-        unsigned int get_axis (void);
-        GdkModifierType get_gdk_modifiers (void);
+        void clear ();
+        bool is_joy ();
+        bool is_key ();
+        bool is_mouse ();
+        bool is_positive ();
+        bool is_negative ();
+        unsigned int get_key ();
+        unsigned int get_device ();
+        unsigned int get_threshold ();
+        unsigned int get_axis ();
+        GdkModifierType get_gdk_modifiers ();
         
     private:
         unsigned int value;

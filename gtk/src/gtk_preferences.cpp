@@ -454,7 +454,7 @@ poll_joystick (gpointer data)
 }
 
 void
-Snes9xPreferences::calibration_dialog (void)
+Snes9xPreferences::calibration_dialog ()
 {
     GtkWidget *dialog;
 
@@ -627,7 +627,7 @@ Snes9xPreferences::Snes9xPreferences (Snes9xConfig *config) :
     return;
 }
 
-Snes9xPreferences::~Snes9xPreferences (void)
+Snes9xPreferences::~Snes9xPreferences ()
 {
     delete[] mode_indices;
 
@@ -635,7 +635,7 @@ Snes9xPreferences::~Snes9xPreferences (void)
 }
 
 void
-Snes9xPreferences::load_ntsc_settings (void)
+Snes9xPreferences::load_ntsc_settings ()
 {
     set_slider ("ntsc_artifacts", config->ntsc_setup.artifacts);
     set_slider ("ntsc_bleed", config->ntsc_setup.bleed);
@@ -653,7 +653,7 @@ Snes9xPreferences::load_ntsc_settings (void)
 }
 
 void
-Snes9xPreferences::store_ntsc_settings (void)
+Snes9xPreferences::store_ntsc_settings ()
 {
     config->ntsc_setup.artifacts    = get_slider ("ntsc_artifacts");
     config->ntsc_setup.bleed        = get_slider ("ntsc_bleed");
@@ -671,7 +671,7 @@ Snes9xPreferences::store_ntsc_settings (void)
 }
 
 void
-Snes9xPreferences::move_settings_to_dialog (void)
+Snes9xPreferences::move_settings_to_dialog ()
 {
     set_check ("full_screen_on_open",       config->full_screen_on_open);
     set_check ("show_frame_rate",           Settings.DisplayFrameRate);
@@ -820,7 +820,7 @@ Snes9xPreferences::move_settings_to_dialog (void)
 }
 
 void
-Snes9xPreferences::get_settings_from_dialog (void)
+Snes9xPreferences::get_settings_from_dialog ()
 {
     int sound_needs_restart = 0;
     int gfx_needs_restart = 0;
@@ -1064,7 +1064,7 @@ Snes9xPreferences::combo_value (int hw_accel)
 
 
 void
-Snes9xPreferences::browse_folder_dialog (void)
+Snes9xPreferences::browse_folder_dialog ()
 {
     GtkWidget *dialog;
     char      *filename;
@@ -1103,7 +1103,7 @@ Snes9xPreferences::browse_folder_dialog (void)
 }
 
 void
-Snes9xPreferences::show (void)
+Snes9xPreferences::show ()
 {
     gint      result;
     GtkWidget *combo;
@@ -1253,7 +1253,7 @@ Snes9xPreferences::show (void)
 }
 
 void
-Snes9xPreferences::focus_next (void)
+Snes9xPreferences::focus_next ()
 {
     int next = get_focused_binding () + 1;
 
@@ -1272,7 +1272,7 @@ Snes9xPreferences::focus_next (void)
 }
 
 void
-Snes9xPreferences::swap_with (void)
+Snes9xPreferences::swap_with ()
 {
     JoypadBinding mediator;
     int           source_joypad = get_combo ("control_combo");
@@ -1288,7 +1288,7 @@ Snes9xPreferences::swap_with (void)
 }
 
 void
-Snes9xPreferences::reset_current_joypad (void)
+Snes9xPreferences::reset_current_joypad ()
 {
     int joypad = get_combo ("control_combo");
 
@@ -1346,7 +1346,7 @@ Snes9xPreferences::store_binding (const char *string, Binding binding)
 }
 
 int
-Snes9xPreferences::get_focused_binding (void)
+Snes9xPreferences::get_focused_binding ()
 {
     for (int i = 0; b_links[i].button_name; i++)
     {

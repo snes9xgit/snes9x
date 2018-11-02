@@ -11,7 +11,7 @@ pulse_samples_available (void *data)
     ((S9xPulseSoundDriver *) data)->samples_available ();
 }
 
-S9xPulseSoundDriver::S9xPulseSoundDriver (void)
+S9xPulseSoundDriver::S9xPulseSoundDriver ()
 {
     mainloop = NULL;
     context = NULL;
@@ -22,13 +22,13 @@ S9xPulseSoundDriver::S9xPulseSoundDriver (void)
 }
 
 void
-S9xPulseSoundDriver::init (void)
+S9xPulseSoundDriver::init ()
 {
     return;
 }
 
 void
-S9xPulseSoundDriver::terminate (void)
+S9xPulseSoundDriver::terminate ()
 {
     S9xSetSamplesAvailableCallback (NULL, NULL);
 
@@ -56,19 +56,19 @@ S9xPulseSoundDriver::terminate (void)
 }
 
 void
-S9xPulseSoundDriver::start (void)
+S9xPulseSoundDriver::start ()
 {
     return;
 }
 
 void
-S9xPulseSoundDriver::stop (void)
+S9xPulseSoundDriver::stop ()
 {
     return;
 }
 
 void
-S9xPulseSoundDriver::lock (void)
+S9xPulseSoundDriver::lock ()
 {
     pa_threaded_mainloop_lock (mainloop);
 
@@ -76,7 +76,7 @@ S9xPulseSoundDriver::lock (void)
 }
 
 void
-S9xPulseSoundDriver::unlock (void)
+S9xPulseSoundDriver::unlock ()
 {
     pa_threaded_mainloop_unlock (mainloop);
 
@@ -84,7 +84,7 @@ S9xPulseSoundDriver::unlock (void)
 }
 
 void
-S9xPulseSoundDriver::wait (void)
+S9xPulseSoundDriver::wait ()
 {
     pa_threaded_mainloop_wait (mainloop);
 
@@ -128,7 +128,7 @@ stream_state_callback (pa_stream *p, void *userdata)
 }
 
 bool8
-S9xPulseSoundDriver::open_device (void)
+S9xPulseSoundDriver::open_device ()
 {
     int err = PA_ERR_UNKNOWN;
     pa_sample_spec ss;
@@ -230,7 +230,7 @@ error0:
 }
 
 void
-S9xPulseSoundDriver::samples_available (void)
+S9xPulseSoundDriver::samples_available ()
 {
     size_t bytes;
     int samples;

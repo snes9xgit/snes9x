@@ -29,7 +29,7 @@ S9xSDLSoundDriver::mix (unsigned char *output, int bytes)
     return;
 }
 
-S9xSDLSoundDriver::S9xSDLSoundDriver (void)
+S9xSDLSoundDriver::S9xSDLSoundDriver ()
 {
     audiospec = NULL;
 
@@ -37,7 +37,7 @@ S9xSDLSoundDriver::S9xSDLSoundDriver (void)
 }
 
 void
-S9xSDLSoundDriver::init (void)
+S9xSDLSoundDriver::init ()
 {
     SDL_InitSubSystem (SDL_INIT_AUDIO);
     stop ();
@@ -46,7 +46,7 @@ S9xSDLSoundDriver::init (void)
 }
 
 void
-S9xSDLSoundDriver::terminate (void)
+S9xSDLSoundDriver::terminate ()
 {
     stop ();
 
@@ -63,7 +63,7 @@ S9xSDLSoundDriver::terminate (void)
 }
 
 void
-S9xSDLSoundDriver::start (void)
+S9xSDLSoundDriver::start ()
 {
     if (!gui_config->mute_sound)
     {
@@ -77,7 +77,7 @@ S9xSDLSoundDriver::start (void)
 }
 
 void
-S9xSDLSoundDriver::stop (void)
+S9xSDLSoundDriver::stop ()
 {
     if (audiospec)
     {
@@ -88,7 +88,7 @@ S9xSDLSoundDriver::stop (void)
 }
 
 bool8
-S9xSDLSoundDriver::open_device (void)
+S9xSDLSoundDriver::open_device ()
 {
     audiospec = (SDL_AudioSpec *) malloc (sizeof (SDL_AudioSpec));
 

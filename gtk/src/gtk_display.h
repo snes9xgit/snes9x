@@ -81,7 +81,7 @@ thread_job_t;
 
 void S9xRegisterYUVTables (uint8 *y, uint8 *u, uint8 *v);
 void S9xSetEndianess (int type);
-double S9xGetAspect (void);
+double S9xGetAspect ();
 void S9xApplyAspect (int&, int&, int&, int&);
 
 void S9xConvertYUV (void *src_buffer,
@@ -119,12 +119,12 @@ void S9xFilter (uint8 *src_buffer,
 void get_filter_scale (int& width, int& height);
 
 void S9xDisplayRefresh (int width, int height);
-void S9xDisplayClearBuffers (void);
-void S9xReinitDisplay (void);
-void S9xDisplayReconfigure (void);
-void S9xQueryDrivers (void);
+void S9xDisplayClearBuffers ();
+void S9xReinitDisplay ();
+void S9xDisplayReconfigure ();
+void S9xQueryDrivers ();
 bool8 S9xRealDeinitUpdate (int width, int height);
 
-S9xDisplayDriver *S9xDisplayGetDriver (void);
+S9xDisplayDriver *S9xDisplayGetDriver ();
 
 #endif /* __GTK_DISPLAY_H */

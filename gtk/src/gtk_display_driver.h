@@ -8,14 +8,14 @@ class S9xDisplayDriver
     public:
         virtual ~S9xDisplayDriver() {}
         virtual void refresh (int width, int height) = 0;
-        virtual int init (void) = 0;
-        virtual void deinit (void) = 0;
-        virtual void clear_buffers (void) = 0;
+        virtual int init () = 0;
+        virtual void deinit () = 0;
+        virtual void clear_buffers () = 0;
         virtual void update (int width, int height, int yoffset) = 0;
-        virtual uint16 *get_next_buffer (void) = 0;
-        virtual uint16 *get_current_buffer (void) = 0;
+        virtual uint16 *get_next_buffer () = 0;
+        virtual uint16 *get_current_buffer () = 0;
         virtual void push_buffer (uint16 *src) = 0;
-        virtual void *get_parameters (void) = 0;
+        virtual void *get_parameters () = 0;
         virtual void save (const char *filename) = 0;
 
         /* Namespaced sizing constants */

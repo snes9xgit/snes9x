@@ -727,7 +727,7 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
 extern const gtk_splash_t gtk_splash;
 
 void
-Snes9xWindow::expose (void)
+Snes9xWindow::expose ()
 {
     if (last_width < 0)
     {
@@ -816,7 +816,7 @@ Snes9xWindow::focus_notify (int state)
 }
 
 void
-Snes9xWindow::open_multicart_dialog (void)
+Snes9xWindow::open_multicart_dialog ()
 {
     int result;
     GtkBuilderWindow *dialog = new GtkBuilderWindow ("multicart_dialog");
@@ -1114,7 +1114,7 @@ Snes9xWindow::load_state_dialog ()
 }
 
 void
-Snes9xWindow::movie_seek_dialog (void)
+Snes9xWindow::movie_seek_dialog ()
 {
     char      str[1024];
     gint      result;
@@ -1358,7 +1358,7 @@ Snes9xWindow::show_status_message (const char *message)
 }
 
 void
-Snes9xWindow::update_statusbar (void)
+Snes9xWindow::update_statusbar ()
 {
     GtkStatusbar *bar = GTK_STATUSBAR (get_widget ("statusbar"));
     char         status_string[256];
@@ -1416,7 +1416,7 @@ Snes9xWindow::update_statusbar (void)
 }
 
 void
-Snes9xWindow::show_rom_info (void)
+Snes9xWindow::show_rom_info ()
 {
     GtkWidget *msg;
 
@@ -1478,7 +1478,7 @@ Snes9xWindow::show_rom_info (void)
 }
 
 void
-Snes9xWindow::configure_widgets (void)
+Snes9xWindow::configure_widgets ()
 {
     enable_widget ("continue_item", config->rom_loaded);
     enable_widget ("pause_item", config->rom_loaded);
@@ -1568,7 +1568,7 @@ Snes9xWindow::set_mouseable_area (int x, int y, int width, int height)
 }
 
 void
-Snes9xWindow::reset_screensaver (void)
+Snes9xWindow::reset_screensaver ()
 {
     if (!focused)
         return;
@@ -1592,7 +1592,7 @@ Snes9xWindow::reset_screensaver (void)
 }
 
 void
-Snes9xWindow::toggle_fullscreen_mode (void)
+Snes9xWindow::toggle_fullscreen_mode ()
 {
     if (config->fullscreen)
         leave_fullscreen_mode ();
@@ -1645,7 +1645,7 @@ static double XRRGetExactRefreshRate (Display *dpy, Window window)
 }
 
 double
-Snes9xWindow::get_refresh_rate (void)
+Snes9xWindow::get_refresh_rate ()
 {
     double refresh_rate = 0.0;
     GdkDisplay *display = gtk_widget_get_display (window);
@@ -1678,7 +1678,7 @@ Snes9xWindow::get_refresh_rate (void)
 }
 
 int
-Snes9xWindow::get_auto_input_rate (void)
+Snes9xWindow::get_auto_input_rate ()
 {
     double refresh_rate = get_refresh_rate ();
 
@@ -1711,7 +1711,7 @@ static void set_bypass_compositor (Display *dpy, Window window, unsigned char by
 #endif
 
 void
-Snes9xWindow::enter_fullscreen_mode (void)
+Snes9xWindow::enter_fullscreen_mode ()
 {
     int rom_loaded = config->rom_loaded;
 
@@ -1779,7 +1779,7 @@ Snes9xWindow::enter_fullscreen_mode (void)
 }
 
 void
-Snes9xWindow::leave_fullscreen_mode (void)
+Snes9xWindow::leave_fullscreen_mode ()
 {
     int rom_loaded = config->rom_loaded;
 
@@ -1839,7 +1839,7 @@ Snes9xWindow::leave_fullscreen_mode (void)
 }
 
 void
-Snes9xWindow::toggle_statusbar (void)
+Snes9xWindow::toggle_statusbar ()
 {
     GtkWidget     *item;
     GtkAllocation allocation;
@@ -1888,7 +1888,7 @@ Snes9xWindow::resize_viewport (int width, int height)
 }
 
 void
-Snes9xWindow::hide_mouse_cursor (void)
+Snes9xWindow::hide_mouse_cursor ()
 {
     if (!empty_cursor)
     {
@@ -1903,7 +1903,7 @@ Snes9xWindow::hide_mouse_cursor (void)
 }
 
 void
-Snes9xWindow::show_mouse_cursor (void)
+Snes9xWindow::show_mouse_cursor ()
 {
     gdk_window_set_cursor (gtk_widget_get_window (GTK_WIDGET (drawing_area)),
                            NULL);
@@ -1913,7 +1913,7 @@ Snes9xWindow::show_mouse_cursor (void)
 }
 
 void
-Snes9xWindow::show (void)
+Snes9xWindow::show ()
 {
     gtk_widget_show (window);
 
@@ -1948,7 +1948,7 @@ Snes9xWindow::show (void)
 }
 
 void
-Snes9xWindow::propagate_pause_state (void)
+Snes9xWindow::propagate_pause_state ()
 {
     int oldpause = Settings.Paused;
 
@@ -1979,7 +1979,7 @@ Snes9xWindow::propagate_pause_state (void)
 }
 
 void
-Snes9xWindow::toggle_ui (void)
+Snes9xWindow::toggle_ui ()
 {
     config->ui_visible = !config->ui_visible;
 
@@ -1990,7 +1990,7 @@ Snes9xWindow::toggle_ui (void)
 
 /* gui_[un]pause Handles when system needs to pause the emulator */
 void
-Snes9xWindow::pause_from_focus_change (void)
+Snes9xWindow::pause_from_focus_change ()
 {
     sys_pause += config->modal_dialogs;
 
@@ -2000,7 +2000,7 @@ Snes9xWindow::pause_from_focus_change (void)
 }
 
 void
-Snes9xWindow::unpause_from_focus_change (void)
+Snes9xWindow::unpause_from_focus_change ()
 {
     if (--sys_pause < 0)
         sys_pause = 0;
@@ -2011,7 +2011,7 @@ Snes9xWindow::unpause_from_focus_change (void)
 
 /* client_[un]pause Handles when user manually chooses to pause */
 void
-Snes9xWindow::pause_from_user (void)
+Snes9xWindow::pause_from_user ()
 {
     user_pause = TRUE;
     propagate_pause_state ();
@@ -2020,7 +2020,7 @@ Snes9xWindow::pause_from_user (void)
 }
 
 void
-Snes9xWindow::unpause_from_user (void)
+Snes9xWindow::unpause_from_user ()
 {
     user_pause = FALSE;
     propagate_pause_state ();
@@ -2029,7 +2029,7 @@ Snes9xWindow::unpause_from_user (void)
 }
 
 unsigned char
-Snes9xWindow::is_paused (void)
+Snes9xWindow::is_paused ()
 {
     if (user_pause || sys_pause || Settings.Paused || !(config->rom_loaded))
         return TRUE;
@@ -2097,7 +2097,7 @@ Snes9xWindow::set_menu_item_accel_to_binding (const char *name,
 }
 
 void
-Snes9xWindow::update_accels (void)
+Snes9xWindow::update_accels ()
 {
     set_menu_item_accel_to_binding ("fullscreen_item", "GTK_fullscreen");
     set_menu_item_accel_to_binding ("reset_item", "SoftReset");
@@ -2150,7 +2150,7 @@ Snes9xWindow::resize_to_multiple (int factor)
 }
 
 cairo_t *
-Snes9xWindow::get_cairo (void)
+Snes9xWindow::get_cairo ()
 {
     if (cr)
         return cr;
@@ -2175,7 +2175,7 @@ Snes9xWindow::get_cairo (void)
 }
 
 void
-Snes9xWindow::release_cairo (void)
+Snes9xWindow::release_cairo ()
 {
     if (cairo_owned)
     {

@@ -18,7 +18,7 @@ GtkBuilderWindow::GtkBuilderWindow (const char *root)
     return;
 }
 
-GtkBuilderWindow::~GtkBuilderWindow (void)
+GtkBuilderWindow::~GtkBuilderWindow ()
 {
     gtk_widget_destroy (window);
     g_object_unref (builder);
@@ -115,7 +115,7 @@ GtkBuilderWindow::resize (int width, int height)
 }
 
 void
-GtkBuilderWindow::refresh (void)
+GtkBuilderWindow::refresh ()
 {
     gtk_widget_queue_draw (GTK_WIDGET (window));
 
@@ -123,7 +123,7 @@ GtkBuilderWindow::refresh (void)
 }
 
 int
-GtkBuilderWindow::get_width (void)
+GtkBuilderWindow::get_width ()
 {
     int width, height;
 
@@ -133,7 +133,7 @@ GtkBuilderWindow::get_width (void)
 }
 
 int
-GtkBuilderWindow::get_height (void)
+GtkBuilderWindow::get_height ()
 {
     int width, height;
 
@@ -255,7 +255,7 @@ GtkBuilderWindow::combo_box_append (GtkComboBox *combo, const char *value)
 }
 
 GtkWindow *
-GtkBuilderWindow::get_window (void)
+GtkBuilderWindow::get_window ()
 {
     return GTK_WINDOW (window);
 }

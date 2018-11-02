@@ -51,7 +51,7 @@ S9xSoundPowerof2 (int num)
 }
 
 void
-S9xPortSoundInit (void)
+S9xPortSoundInit ()
 {
     int pao_driver = 0;
     int sdl_driver = 0;
@@ -156,7 +156,7 @@ S9xPortSoundInit (void)
 }
 
 void
-S9xPortSoundReinit (void)
+S9xPortSoundReinit ()
 {
     S9xPortSoundDeinit ();
 
@@ -167,7 +167,7 @@ S9xPortSoundReinit (void)
 }
 
 void
-S9xPortSoundDeinit (void)
+S9xPortSoundDeinit ()
 {
     S9xSoundStop ();
 
@@ -179,7 +179,7 @@ S9xPortSoundDeinit (void)
 }
 
 void
-S9xSoundStart (void)
+S9xSoundStart ()
 {
     driver->start ();
 
@@ -187,7 +187,7 @@ S9xSoundStart (void)
 }
 
 void
-S9xSoundStop (void)
+S9xSoundStop ()
 {
     driver->stop ();
 
@@ -195,7 +195,7 @@ S9xSoundStop (void)
 }
 
 bool8
-S9xOpenSoundDevice (void)
+S9xOpenSoundDevice ()
 {
     if (gui_config->mute_sound)
         return FALSE;

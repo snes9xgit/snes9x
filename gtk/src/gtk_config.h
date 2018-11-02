@@ -156,7 +156,7 @@ class Snes9xConfig
 
 };
 
-char *get_config_dir (void);
-char *get_config_file_name (void);
+char *get_config_dir ();
+char *get_config_file_name ();
 
 #endif /* __GTK_CONFIG_H */

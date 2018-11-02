@@ -621,7 +621,7 @@ void S9xExit ()
 }
 
 void
-S9xPostRomInit (void)
+S9xPostRomInit ()
 {
     if (!strncmp ((const char *) Memory.NSRTHeader + 24, "NSRT", 4))
     {

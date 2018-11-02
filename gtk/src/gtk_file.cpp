@@ -363,19 +363,19 @@ extern "C"
     uint8 snes9x_clear_change_log = 0;
 }
 
-extern "C" char *osd_GetPackDir (void)
+extern "C" char *osd_GetPackDir ()
 {
     return NULL;
 }
 
 void
-S9xLoadSDD1Data (void)
+S9xLoadSDD1Data ()
 {
     return;
 }
 
 void
-S9xAutoSaveSRAM (void)
+S9xAutoSaveSRAM ()
 {
     Memory.SaveSRAM (S9xGetFilename (".srm", SRAM_DIR));
     S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
@@ -417,7 +417,7 @@ S9xSaveState (const char *filename)
 }
 
 char *
-S9xOpenROMDialog (void)
+S9xOpenROMDialog ()
 {
     GtkWidget     *dialog;
     GtkFileFilter *filter;

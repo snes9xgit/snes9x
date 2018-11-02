@@ -16,10 +16,10 @@ class GtkBuilderWindow
         ~GtkBuilderWindow ();
         GtkWidget *get_widget (const char *name);
         void resize (int width, int height);
-        GtkWindow *get_window (void);
-        void refresh (void);
-        int get_width (void);
-        int get_height (void);
+        GtkWindow *get_window ();
+        void refresh ();
+        int get_width ();
+        int get_height ();
 
         void signal_connect (GtkBuilderWindowCallbacks *callbacks);
         void enable_widget (const char *name, unsigned char state);

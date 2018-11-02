@@ -232,7 +232,7 @@ S9xXVDisplayDriver::update_image_size (int width, int height)
 }
 
 int
-S9xXVDisplayDriver::init (void)
+S9xXVDisplayDriver::init ()
 {
     int                 depth = 0, num_formats, num_attrs, highest_formats = 0;
     XvImageFormatValues *formats = NULL;
@@ -473,7 +473,7 @@ S9xXVDisplayDriver::init (void)
 }
 
 void
-S9xXVDisplayDriver::deinit (void)
+S9xXVDisplayDriver::deinit ()
 {
     gdk_window_destroy (gdk_window);
 
@@ -496,7 +496,7 @@ S9xXVDisplayDriver::deinit (void)
 }
 
 void
-S9xXVDisplayDriver::clear (void)
+S9xXVDisplayDriver::clear ()
 {
     int  x, y, w, h;
     int  width, height;
@@ -559,13 +559,13 @@ S9xXVDisplayDriver::refresh (int width, int height)
 }
 
 uint16 *
-S9xXVDisplayDriver::get_next_buffer (void)
+S9xXVDisplayDriver::get_next_buffer ()
 {
     return (uint16 *) padded_buffer[0];
 }
 
 uint16 *
-S9xXVDisplayDriver::get_current_buffer (void)
+S9xXVDisplayDriver::get_current_buffer ()
 {
     return get_next_buffer ();
 }
@@ -579,7 +579,7 @@ S9xXVDisplayDriver::push_buffer (uint16 *src)
 }
 
 void
-S9xXVDisplayDriver::clear_buffers (void)
+S9xXVDisplayDriver::clear_buffers ()
 {
     uint32 black;
     uint8  *color;
@@ -610,7 +610,7 @@ S9xXVDisplayDriver::clear_buffers (void)
 }
 
 int
-S9xXVDisplayDriver::query_availability (void)
+S9xXVDisplayDriver::query_availability ()
 {
     unsigned int p_version,
                  p_release,

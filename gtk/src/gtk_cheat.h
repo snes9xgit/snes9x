@@ -13,25 +13,25 @@ enum
 class Snes9xCheats : public GtkBuilderWindow
 {
     public:
-        Snes9xCheats (void);
-        ~Snes9xCheats (void);
-        void show (void);
-        void add_code (void);
-        void remove_code (void);
-        void search_database (void);
-        void delete_all_cheats (void);
+        Snes9xCheats ();
+        ~Snes9xCheats ();
+        void show ();
+        void add_code ();
+        void remove_code ();
+        void search_database ();
+        void delete_all_cheats ();
         void toggle_code (const gchar *path, int enabled);
         void row_activated (GtkTreePath *path);
         void row_deleted (int src_row);
         void row_inserted (int row);
         void enable_dnd (bool);
-        void sort_cheats (void);
-        void update_code (void);
-        void disable_all (void);
+        void sort_cheats ();
+        void update_code ();
+        void disable_all ();
 
     private:
-        void refresh_tree_view (void);
-        int get_selected_index (void);
+        void refresh_tree_view ();
+        int get_selected_index ();
         int get_index_from_path (const gchar *path);
 
         unsigned long insert_id;

@@ -118,7 +118,7 @@ event_enabled_column_clicked (GtkTreeViewColumn *treeviewcolumn,
     ((Snes9xCheats *) data)->sort_cheats ();
 }
 
-Snes9xCheats::Snes9xCheats (void)
+Snes9xCheats::Snes9xCheats ()
     : GtkBuilderWindow ("cheat_window")
 {
     GtkTreeView     *view;
@@ -197,7 +197,7 @@ Snes9xCheats::Snes9xCheats (void)
     return;
 }
 
-Snes9xCheats::~Snes9xCheats (void)
+Snes9xCheats::~Snes9xCheats ()
 {
     gtk_widget_destroy (window);
 
@@ -222,7 +222,7 @@ Snes9xCheats::enable_dnd (bool enable)
 }
 
 void
-Snes9xCheats::show (void)
+Snes9xCheats::show ()
 {
     top_level->pause_from_focus_change ();
 
@@ -247,7 +247,7 @@ static void cheat_move (int src, int dst)
     Cheat.g.erase (Cheat.g.begin() + src);
 }
 
-static void cheat_gather_enabled (void)
+static void cheat_gather_enabled ()
 {
     unsigned int enabled = 0;
 
@@ -281,7 +281,7 @@ Snes9xCheats::row_inserted (int new_row)
 }
 
 int
-Snes9xCheats::get_selected_index (void)
+Snes9xCheats::get_selected_index ()
 {
     GtkTreeSelection *selection;
     GList            *rows;
@@ -325,7 +325,7 @@ Snes9xCheats::get_index_from_path (const gchar *path)
 }
 
 void
-Snes9xCheats::refresh_tree_view (void)
+Snes9xCheats::refresh_tree_view ()
 {
     GtkTreeIter iter;
     unsigned int list_size;
@@ -364,7 +364,7 @@ Snes9xCheats::refresh_tree_view (void)
 }
 
 void
-Snes9xCheats::add_code (void)
+Snes9xCheats::add_code ()
 {
     const char *description;
     const gchar *code = get_entry_text ("code_entry");
@@ -403,7 +403,7 @@ Snes9xCheats::add_code (void)
 }
 
 void
-Snes9xCheats::remove_code (void)
+Snes9xCheats::remove_code ()
 {
     int index = get_selected_index ();
     GtkTreeIter iter;
@@ -422,7 +422,7 @@ Snes9xCheats::remove_code (void)
 }
 
 void
-Snes9xCheats::delete_all_cheats (void)
+Snes9xCheats::delete_all_cheats ()
 {
     enable_dnd (false);
     S9xDeleteCheats ();
@@ -433,7 +433,7 @@ Snes9xCheats::delete_all_cheats (void)
 }
 
 void
-Snes9xCheats::search_database (void)
+Snes9xCheats::search_database ()
 {
     std::string filename;
     int result;
@@ -544,7 +544,7 @@ Snes9xCheats::toggle_code (const gchar *path, int enabled)
 }
 
 void
-Snes9xCheats::update_code (void)
+Snes9xCheats::update_code ()
 {
     int index = get_selected_index ();
 
@@ -577,7 +577,7 @@ Snes9xCheats::update_code (void)
 }
 
 void
-Snes9xCheats::disable_all (void)
+Snes9xCheats::disable_all ()
 {
     for (unsigned int i = 0; i < Cheat.g.size(); i++)
     {
