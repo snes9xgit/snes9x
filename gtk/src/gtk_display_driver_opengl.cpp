@@ -328,9 +328,25 @@ void S9xOpenGLDisplayDriver::update_texture_size (int width, int height)
                               NULL);
             }
 
-            texture_width = width;
-            texture_height = height;
+            coords[9]  = 1.0f;
+            coords[10] = 1.0f;
+            coords[11] = 1.0f;
+            coords[14] = 1.0f;
         }
+        else
+        {
+            coords[9]  = height / 1024.0f;
+            coords[10] = width  / 1024.0f;
+            coords[11] = height / 1024.0f;
+            coords[14] = width  / 1024.0f;
+        }
+
+        texture_width  = width;
+        texture_height = height;
+
+        glBindBuffer (GL_ARRAY_BUFFER, coord_buffer);
+        glBufferData (GL_ARRAY_BUFFER, sizeof (GLfloat) * 16, coords, GL_STATIC_DRAW);
+        glBindBuffer (GL_ARRAY_BUFFER, 0);
     }
 }
 
