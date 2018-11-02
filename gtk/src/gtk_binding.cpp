@@ -216,7 +216,7 @@ Binding::Binding (const char *raw_string)
         char posneg;
         const char *substr = &raw_string[8];
 
-        if (sscanf (substr, "%u Axis #%u %c %u", &device, &axis, &posneg, &percent) == 4)
+        if (sscanf (substr, "%u Axis %u %c %u", &device, &axis, &posneg, &percent) == 4)
         {
             value = Binding(device - 1, JOY_AXIS (axis, posneg == '+' ? AXIS_POS : AXIS_NEG), percent).value;
         }
@@ -271,7 +271,7 @@ Binding::to_string (char *str)
     {
         if ((get_key ()) >= 512)
             sprintf (buf,
-                     _("Axis #%u %s %u%%"),
+                     _("Axis %u %s %u%%"),
                      get_axis (),
                      is_positive () ? "+" : "-",
                      get_threshold ());

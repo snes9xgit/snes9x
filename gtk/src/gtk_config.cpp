@@ -256,10 +256,6 @@ int Snes9xConfig::save_config_file ()
     char buffer[PATH_MAX];
     ConfigFile cf;
 
-    cf.SetNiceAlignment (true);
-    cf.SetShowComments (true);
-    cf.SetAlphaSort (true);
-
 #undef z
 #define z "Display::"
     outbool (cf, z"FullscreenOnOpen", full_screen_on_open,"Set the screen resolution after opening a ROM");
@@ -290,7 +286,7 @@ int Snes9xConfig::save_config_file ()
     cf.SetString (z"Bleed", std::to_string (ntsc_setup.bleed));
     cf.SetString (z"Fringing", std::to_string (ntsc_setup.fringing));
     cf.SetString (z"Resolution", std::to_string (ntsc_setup.resolution));
-    cf.SetInt    (z"MergeFields", ntsc_setup.merge_fields);
+    outbool  (cf, z"MergeFields", ntsc_setup.merge_fields);
     cf.SetInt    (z"ScanlineIntensity", ntsc_scanline_intensity);
 
 #ifdef USE_OPENGL
@@ -383,7 +379,7 @@ int Snes9xConfig::save_config_file ()
 #ifdef USE_JOYSTICK
 #undef z
 #define z "Input::"
-    cf.SetInt (z"joystick_threshold", joystick_threshold);
+    cf.SetInt (z"JoystickThreshold", joystick_threshold);
 #endif
 
 #undef z
@@ -408,6 +404,8 @@ int Snes9xConfig::save_config_file ()
     }
 
     filename = get_config_file_name ();
+    cf.SetNiceAlignment (true);
+    cf.SetShowComments (true);
     cf.SaveTo (filename);
     free (filename);
 
@@ -491,7 +489,7 @@ int Snes9xConfig::load_config_file ()
     infloat (z"Bleed", ntsc_setup.bleed);
     infloat (z"Fringing", ntsc_setup.fringing);
     infloat (z"Resolution", ntsc_setup.resolution);
-    inint   (z"MergeFields", ntsc_setup.merge_fields);
+    inbool  (z"MergeFields", ntsc_setup.merge_fields);
     inint   (z"ScanlineIntensity", ntsc_scanline_intensity);
 
 #ifdef USE_OPENGL
@@ -584,7 +582,7 @@ int Snes9xConfig::load_config_file ()
 #ifdef USE_JOYSTICK
 #undef z
 #define z "Input::"
-    inint (z"joystick_threshold", joystick_threshold);
+    inint (z"JoystickThreshold", joystick_threshold);
 #endif
 
     for (int i = 0; i < NUM_JOYPADS; i++)
