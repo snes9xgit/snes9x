@@ -151,8 +151,6 @@ S9xPortSoundInit ()
     {
         S9xSetSoundMute (gui_config->mute_sound);
     }
-
-    return;
 }
 
 void
@@ -174,24 +172,18 @@ S9xPortSoundDeinit ()
     driver->terminate ();
 
     delete driver;
-
-    return;
 }
 
 void
 S9xSoundStart ()
 {
     driver->start ();
-
-    return;
 }
 
 void
 S9xSoundStop ()
 {
     driver->stop ();
-
-    return;
 }
 
 bool8
@@ -217,6 +209,4 @@ S9xToggleSoundChannel (int c)
         sound_switch ^= 1 << c;
 
     S9xSetSoundControl (sound_switch);
-
-    return;
 }

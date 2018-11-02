@@ -11,8 +11,6 @@ S9xGTKDisplayDriver::S9xGTKDisplayDriver (Snes9xWindow *window,
     this->window = window;
     this->config = config;
     this->drawing_area = GTK_WIDGET (window->drawing_area);
-
-    return;
 }
 
 void
@@ -58,8 +56,6 @@ S9xGTKDisplayDriver::update (int width, int height, int yoffset)
     S9xApplyAspect (x, y, w, h);
 
     output (final_buffer, final_pitch, x, y, width, height, w, h);
-
-    return;
 }
 
 void
@@ -113,8 +109,6 @@ S9xGTKDisplayDriver::output (void *src,
 
     window->release_cairo ();
     window->set_mouseable_area (x, y, width, height);
-
-    return;
 }
 
 int
@@ -143,8 +137,6 @@ S9xGTKDisplayDriver::deinit ()
 
     free (buffer[0]);
     free (buffer[1]);
-
-    return;
 }
 
 void
@@ -197,16 +189,12 @@ S9xGTKDisplayDriver::clear ()
     cairo_fill (cr);
 
     window->release_cairo ();
-
-    return;
 }
 
 void
 S9xGTKDisplayDriver::refresh (int width, int height)
 {
     clear ();
-
-    return;
 }
 
 uint16 *
@@ -225,8 +213,6 @@ void
 S9xGTKDisplayDriver::push_buffer (uint16 *src)
 {
     memmove (GFX.Screen, src, image_size);
-
-    return;
 }
 
 void
@@ -234,6 +220,4 @@ S9xGTKDisplayDriver::clear_buffers ()
 {
     memset (buffer[0], 0, image_padded_size);
     memset (buffer[1], 0, scaled_padded_size);
-
-    return;
 }

@@ -25,8 +25,6 @@ display_errorbox (const char *error)
     gtk_window_set_title (GTK_WINDOW (dialog), _("Error"));
     gtk_dialog_run (GTK_DIALOG (dialog));
     gtk_widget_destroy (dialog);
-
-    return;
 }
 
 static void
@@ -73,8 +71,6 @@ event_code_toggled (GtkCellRendererToggle *cell_renderer,
     int enabled = !gtk_cell_renderer_toggle_get_active (cell_renderer);
 
     ((Snes9xCheats *) data)->toggle_code (path, enabled);
-
-    return;
 }
 
 static void
@@ -84,8 +80,6 @@ event_row_activated (GtkTreeView       *tree_view,
                      gpointer           data)
 {
     ((Snes9xCheats *) data)->row_activated (path);
-
-    return;
 }
 
 static void
@@ -96,8 +90,6 @@ event_row_inserted (GtkTreeModel *tree_model,
 {
     int *indices = gtk_tree_path_get_indices (path);
     ((Snes9xCheats *) data)->row_inserted (indices[0]);
-
-    return;
 }
 
 static void
@@ -107,8 +99,6 @@ event_row_deleted  (GtkTreeModel *tree_model,
 {
     int *indices = gtk_tree_path_get_indices (path);
     ((Snes9xCheats *) data)->row_deleted (indices[0]);
-
-    return;
 }
 
 void
@@ -193,8 +183,6 @@ Snes9xCheats::Snes9xCheats ()
     gtk_widget_realize (window);
 
     signal_connect (callbacks);
-
-    return;
 }
 
 Snes9xCheats::~Snes9xCheats ()
@@ -202,8 +190,6 @@ Snes9xCheats::~Snes9xCheats ()
     gtk_widget_destroy (window);
 
     g_object_unref (store);
-
-    return;
 }
 
 void
@@ -234,8 +220,6 @@ Snes9xCheats::show ()
     gtk_dialog_run (GTK_DIALOG (window));
 
     top_level->unpause_from_focus_change ();
-
-    return;
 }
 
 static void cheat_move (int src, int dst)
@@ -359,8 +343,6 @@ Snes9xCheats::refresh_tree_view ()
     }
 
     enable_dnd (true);
-
-    return;
 }
 
 void
@@ -398,8 +380,6 @@ Snes9xCheats::add_code ()
     GtkScrolledWindow *scroll = GTK_SCROLLED_WINDOW (get_widget ("cheat_scrolledwindow"));
     GtkAdjustment *adj = gtk_scrolled_window_get_vadjustment (scroll);
     gtk_adjustment_set_value (adj, gtk_adjustment_get_upper (adj));
-
-    return;
 }
 
 void
@@ -417,8 +397,6 @@ Snes9xCheats::remove_code ()
     enable_dnd (true);
 
     S9xDeleteCheatGroup (index);
-
-    return;
 }
 
 void
@@ -428,8 +406,6 @@ Snes9xCheats::delete_all_cheats ()
     S9xDeleteCheats ();
     gtk_list_store_clear (store);
     enable_dnd (true);
-
-    return;
 }
 
 void
@@ -500,8 +476,6 @@ Snes9xCheats::search_database ()
           "translation or modified copy, you may be able to find and manually enter the codes."));
     gtk_dialog_run (GTK_DIALOG (dialog));
     gtk_widget_destroy (GTK_WIDGET (dialog));
-
-    return;
 }
 
 void
@@ -521,8 +495,6 @@ Snes9xCheats::row_activated (GtkTreePath *path)
     set_entry_text ("code_entry", cheat_text);
     delete[] cheat_text;
     set_entry_text ("description_entry", Cheat.g[indices[0]].name);
-
-    return;
 }
 
 void
@@ -539,8 +511,6 @@ Snes9xCheats::toggle_code (const gchar *path, int enabled)
         S9xEnableCheatGroup (index);
     else
         S9xDisableCheatGroup (index);
-
-    return;
 }
 
 void
@@ -572,8 +542,6 @@ Snes9xCheats::update_code ()
     gtk_widget_grab_focus (get_widget ("code_entry"));
 
     refresh_tree_view ();
-
-    return;
 }
 
 void
@@ -586,7 +554,5 @@ Snes9xCheats::disable_all ()
     }
 
     refresh_tree_view ();
-
-    return;
 }
 

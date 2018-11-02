@@ -14,8 +14,6 @@
 Binding::Binding ()
 {
     value = 0;
-
-    return;
 }
 
 Binding::Binding (GdkEventKey *event)
@@ -42,8 +40,6 @@ Binding::Binding (GdkEventKey *event)
 
     if (event->state & GDK_MOD1_MASK)
         value |= BINDING_ALT;
-
-    return;
 }
 
 Binding::Binding (unsigned int key, bool ctrl, bool shift, bool alt)
@@ -73,8 +69,6 @@ Binding::Binding (unsigned int device,
 Binding::Binding (unsigned int val)
 {
     value = val;
-
-    return;
 }
 
 Binding::Binding (const Binding& binding)
@@ -97,8 +91,6 @@ void
 Binding::clear ()
 {
     value = 0;
-
-    return;
 }
 
 unsigned int
@@ -282,6 +274,4 @@ Binding::to_string (char *str)
     {
         sprintf (str, _("Unset"));
     }
-
-    return;
 }

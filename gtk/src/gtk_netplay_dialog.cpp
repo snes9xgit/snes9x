@@ -17,8 +17,6 @@ event_browse_clicked (GtkButton *button, gpointer data)
 
         g_free (filename);
     }
-
-    return;
 }
 
 static void
@@ -27,8 +25,6 @@ event_clear_clicked (GtkButton *button, gpointer data)
     Snes9xNetplayDialog *np_dialog = (Snes9xNetplayDialog *) data;
 
     gtk_entry_set_text (GTK_ENTRY (np_dialog->get_widget ("rom_image")), "");
-
-    return;
 }
 
 static void
@@ -53,8 +49,6 @@ Snes9xNetplayDialog::Snes9xNetplayDialog (Snes9xConfig *config) :
     signal_connect (callbacks);
 
     this->config = config;
-
-    return;
 }
 
 void
@@ -75,8 +69,6 @@ Snes9xNetplayDialog::update_state ()
         enable_widget ("sync_reset", FALSE);
         enable_widget ("send_image", FALSE);
     }
-
-    return;
 }
 
 void
@@ -93,8 +85,6 @@ Snes9xNetplayDialog::settings_to_dialog ()
     set_check ("host_radio", config->netplay_is_server);
 
     update_state ();
-
-    return;
 }
 
 void
@@ -110,8 +100,6 @@ Snes9xNetplayDialog::settings_from_dialog ()
     config->netplay_is_server = get_check ("host_radio");
 
     config->save_config_file ();
-
-    return;
 }
 
 int

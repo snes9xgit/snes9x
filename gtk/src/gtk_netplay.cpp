@@ -25,8 +25,6 @@ S9xNetplayPreconnect ()
 
     NetPlay.MaxBehindFrameCount = gui_config->netplay_max_frame_loss;
     NetPlay.Waiting4EmulationThread = FALSE;
-
-    return;
 }
 
 static void
@@ -75,8 +73,6 @@ S9xNetplayConnect ()
     CPU.Flags = flags;
 
     top_level->configure_widgets ();
-
-    return;
 }
 
 void
@@ -84,8 +80,6 @@ S9xNetplaySyncClients ()
 {
     if (Settings.NetPlay && Settings.NetPlayServer)
         S9xNPServerQueueSyncAll ();
-
-    return;
 }
 
 void
@@ -96,8 +90,6 @@ S9xNetplayStopServer ()
     g_thread_join (npthread);
     Settings.NetPlayServer = FALSE;
     gui_config->netplay_server_up = FALSE;
-
-    return;
 }
 
 void
@@ -118,8 +110,6 @@ S9xNetplayDisconnect ()
     NetPlay.Paused = FALSE;
 
     top_level->configure_widgets ();
-
-    return;
 }
 
 static gpointer
@@ -168,8 +158,6 @@ S9xNetplayStartServer ()
     CPU.Flags = flags;
 
     top_level->configure_widgets ();
-
-    return;
 }
 
 void
@@ -201,8 +189,6 @@ S9xNetplayDialogOpen ()
     delete np_dialog;
 
     top_level->unpause_from_focus_change ();
-
-    return;
 }
 
 int
@@ -338,8 +324,6 @@ S9xNetplayPop ()
 
     for (int i = 0; i < 8; i++)
         MovieSetJoypad (i, local_joypads[i]);
-
-    return;
 }
 
 

@@ -63,8 +63,6 @@ void
 S9xSetEndianess (int type)
 {
     endianess = type;
-
-    return;
 }
 
 double
@@ -171,8 +169,6 @@ S9xApplyAspect (int &s_width,  /* Output: x */
     s_height = y;
     d_width = w;
     d_height = h;
-
-    return;
 }
 
 void
@@ -181,8 +177,6 @@ S9xRegisterYUVTables (uint8 *y, uint8 *u, uint8 *v)
     y_table = y;
     u_table = u;
     v_table = v;
-
-    return;
 }
 
 /* YUY2 in LSB first format */
@@ -237,8 +231,6 @@ internal_convert_16_yuv (void *src_buffer,
             }
         }
     }
-
-    return;
 }
 
 static void
@@ -464,8 +456,6 @@ internal_convert_mask (void         *src_buffer,
                 break;
         }
     }
-
-    return;
 }
 
 static void
@@ -562,8 +552,6 @@ internal_convert (void *src_buffer,
             }
         }
     }
-
-    return;
 }
 
 static void
@@ -622,8 +610,6 @@ S9xForceHires (void *buffer,
 
         height *= 2;
     }
-
-    return;
 }
 
 #undef  AVERAGE_565
@@ -652,8 +638,6 @@ S9xMergeHires (void *buffer,
     }
 
     width >>= 1;
-
-    return;
 }
 
 #if 0
@@ -687,8 +671,6 @@ S9xBlendHires (void *buffer, int pitch, int &width, int &height)
 
         memcpy (input, tmp, pitch);
     }
-
-    return;
 }
 #endif
 
@@ -719,8 +701,6 @@ filter_2x (void *src,
                 (uint8 *) dst + (y * 2) * dst_pitch,
                 width * 2 * 2);
     }
-
-    return;
 }
 
 void
@@ -754,8 +734,6 @@ filter_3x (void *src,
                     width * 2 * 3);
         }
     }
-
-    return;
 }
 
 void
@@ -790,8 +768,6 @@ filter_4x (void *src,
                     width * 2 * 4);
         }
     }
-
-    return;
 }
 
 void
@@ -824,10 +800,7 @@ filter_scanlines (void *src_buffer,
         dst_a += dst_pitch;
         dst_b += dst_pitch;
     }
-
-    return;
 }
-
 
 void
 get_filter_scale (int &width, int &height)
@@ -944,8 +917,6 @@ get_filter_scale (int &width, int &height)
             height *= 2;
             break;
     }
-
-    return;
 }
 
 static void
@@ -1163,8 +1134,6 @@ internal_filter (uint8 *src_buffer,
     }
 
     get_filter_scale (width, height);
-
-    return;
 }
 
 static void
@@ -1218,8 +1187,6 @@ thread_worker (gpointer data,
     }
 
     job->complete = 1;
-
-    return;
 }
 
 static void
@@ -1233,8 +1200,6 @@ create_thread_pool ()
                                   TRUE,
                                   NULL);
     }
-
-    return;
 }
 
 static void
@@ -1291,8 +1256,6 @@ internal_threaded_convert (void *src_buffer,
 
         sched_yield ();
     }
-
-    return;
 }
 
 static void
@@ -1358,8 +1321,6 @@ internal_threaded_convert_mask (void *src_buffer,
 
         sched_yield ();
     }
-
-    return;
 }
 
 static void
@@ -1423,8 +1384,6 @@ internal_threaded_filter (uint8 *src_buffer,
     }
 
     get_filter_scale (width, height);
-
-    return;
 }
 
 void
@@ -1450,8 +1409,6 @@ S9xFilter (uint8 *src_buffer,
                          dst_pitch,
                          width,
                          height);
-
-    return;
 }
 
 void
@@ -1477,7 +1434,6 @@ S9xConvertYUV (void *src_buffer,
                                  dst_pitch,
                                  width,
                                  height);
-    return;
 }
 
 void
@@ -1505,7 +1461,6 @@ S9xConvert (void *src,
                           width,
                           height,
                           bpp);
-    return;
 }
 
 void
@@ -1542,15 +1497,12 @@ S9xConvertMask (void *src,
                                gshift,
                                bshift,
                                bpp);
-    return;
 }
 
 void
 S9xDisplayRefresh (int width, int height)
 {
     driver->refresh (width, height);
-
-    return;
 }
 
 static void
@@ -1560,8 +1512,6 @@ ntsc_filter_init ()
     scanline_mask   = scanline_masks [gui_config->ntsc_scanline_intensity];
 
     snes_ntsc_init (&snes_ntsc, &gui_config->ntsc_setup);
-
-    return;
 }
 
 void
@@ -1573,8 +1523,6 @@ S9xDisplayReconfigure ()
     {
         g_thread_pool_set_max_threads (pool, gui_config->num_threads - 1, NULL);
     }
-
-    return;
 }
 
 void
@@ -1608,8 +1556,6 @@ S9xQueryDrivers ()
                                                         gui_config->xrr_screen_resources->crtcs[0]);
     }
 #endif
-
-    return;
 }
 
 bool8
@@ -1747,8 +1693,6 @@ S9xInitDriver ()
     }
 
     pool = NULL;
-
-    return;
 }
 
 S9xDisplayDriver *
@@ -1769,16 +1713,12 @@ S9xInitDisplay (int argc, char **argv)
     S9xInitDriver ();
     S9xGraphicsInit ();
     S9xDisplayReconfigure ();
-
-    return;
 }
 
 void
 S9xDisplayClearBuffers ()
 {
     driver->clear_buffers ();
-
-    return;
 }
 
 void
@@ -1792,8 +1732,6 @@ S9xDeinitDisplay ()
 
     if (pool)
         g_thread_pool_free (pool, FALSE, TRUE);
-
-    return;
 }
 
 void
@@ -1820,8 +1758,6 @@ S9xReinitDisplay ()
     driver->push_buffer (buffer);
 
     free (buffer);
-
-    return;
 }
 
 bool8
@@ -1840,19 +1776,16 @@ S9xInitUpdate ()
 void
 S9xSetPalette ()
 {
-    return;
 }
 
 void
 S9xTextMode ()
 {
-    return;
 }
 
 void
 S9xGraphicsMode ()
 {
-    return;
 }
 
 

@@ -16,14 +16,11 @@ S9xAlsaSoundDriver::S9xAlsaSoundDriver ()
     pcm = NULL;
     sound_buffer = NULL;
     sound_buffer_size = 0;
-
-    return;
 }
 
 void
 S9xAlsaSoundDriver::init ()
 {
-    return;
 }
 
 void
@@ -45,20 +42,16 @@ S9xAlsaSoundDriver::terminate ()
         free (sound_buffer);
         sound_buffer = NULL;
     }
-
-    return;
 }
 
 void
 S9xAlsaSoundDriver::start ()
 {
-    return;
 }
 
 void
 S9xAlsaSoundDriver::stop ()
 {
-    return;
 }
 
 bool8
@@ -241,6 +234,4 @@ S9xAlsaSoundDriver::samples_available ()
             frames_written += result;
         }
     }
-
-    return;
 }

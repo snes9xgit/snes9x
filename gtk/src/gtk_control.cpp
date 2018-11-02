@@ -385,8 +385,6 @@ void S9xProcessEvents (bool8 block)
         S9xReleaseJoysticks ();
     }
 #endif
-
-    return;
 }
 
 #ifdef USE_JOYSTICK
@@ -500,8 +498,6 @@ JoyDevice::JoyDevice (unsigned int device_num)
             num_hats);
 
     memset (axis, 0, sizeof (int) * num_axes);
-
-    return;
 }
 
 JoyDevice::~JoyDevice ()

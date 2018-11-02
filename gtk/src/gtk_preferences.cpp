@@ -53,8 +53,6 @@ static void
 event_sram_folder_browse (GtkButton *widget, gpointer data)
 {
     ((Snes9xPreferences *) data)->browse_folder_dialog ();
-
-    return;
 }
 
 #ifdef USE_JOYSTICK
@@ -62,8 +60,6 @@ static void
 event_calibrate (GtkButton *widget, gpointer data)
 {
     ((Snes9xPreferences *) data)->calibration_dialog ();
-
-    return;
 }
 #endif
 
@@ -99,8 +95,6 @@ event_control_toggle (GtkToggleButton *widget, gpointer data)
     gtk_toggle_button_set_active (widget, state);
 
     toggle_lock = 0;
-
-    return;
 }
 
 static gboolean
@@ -163,8 +157,6 @@ event_ntsc_composite_preset (GtkButton *widget, gpointer data)
     Snes9xPreferences *window = (Snes9xPreferences *) data;
     window->config->ntsc_setup = snes_ntsc_composite;
     window->load_ntsc_settings ();
-
-    return;
 }
 
 static void
@@ -173,8 +165,6 @@ event_ntsc_svideo_preset (GtkButton *widget, gpointer data)
     Snes9xPreferences *window = (Snes9xPreferences *) data;
     window->config->ntsc_setup = snes_ntsc_svideo;
     window->load_ntsc_settings ();
-
-    return;
 }
 
 static void
@@ -183,8 +173,6 @@ event_ntsc_rgb_preset (GtkButton *widget, gpointer data)
     Snes9xPreferences *window = (Snes9xPreferences *) data;
     window->config->ntsc_setup = snes_ntsc_rgb;
     window->load_ntsc_settings ();
-
-    return;
 }
 
 static void
@@ -193,8 +181,6 @@ event_ntsc_monochrome_preset (GtkButton *widget, gpointer data)
     Snes9xPreferences *window = (Snes9xPreferences *) data;
     window->config->ntsc_setup = snes_ntsc_monochrome;
     window->load_ntsc_settings ();
-
-    return;
 }
 
 
@@ -202,16 +188,12 @@ static void
 event_swap_with (GtkButton *widget, gpointer data)
 {
     ((Snes9xPreferences *) data)->swap_with ();
-
-    return;
 }
 
 static void
 event_reset_current_joypad (GtkButton *widget, gpointer data)
 {
     ((Snes9xPreferences *) data)->reset_current_joypad ();
-
-    return;
 }
 
 static void
@@ -263,8 +245,6 @@ event_shader_select (GtkButton *widget, gpointer data)
     }
 
     gtk_widget_destroy (dialog);
-
-    return;
 #endif
 }
 
@@ -275,8 +255,6 @@ event_game_data_clear (GtkEntry *entry,
                        gpointer  user_data)
 {
     gtk_entry_set_text (entry, SAME_GAME);
-
-    return;
 }
 
 static void
@@ -325,8 +303,6 @@ event_game_data_browse (GtkButton *widget, gpointer data)
     }
 
     gtk_widget_destroy (dialog);
-
-    return;
 }
 
 static void
@@ -357,8 +333,6 @@ event_hw_accel_changed (GtkComboBox *widget, gpointer data)
             gtk_widget_hide (window->get_widget ("opengl_frame"));
             break;
     }
-
-    return;
 }
 
 static void
@@ -402,9 +376,6 @@ event_scale_method_changed (GtkComboBox *widget, gpointer user_data)
     {
         gtk_widget_hide (window->get_widget ("scanline_filter_frame"));
     }
-
-
-    return;
 }
 
 static void
@@ -413,8 +384,6 @@ event_control_combo_changed (GtkComboBox *widget, gpointer user_data)
     Snes9xPreferences *window = (Snes9xPreferences *) user_data;
 
     window->bindings_to_dialog (gtk_combo_box_get_active (widget));
-
-    return;
 }
 
 #ifdef USE_JOYSTICK
@@ -469,8 +438,6 @@ Snes9xPreferences::calibration_dialog ()
     gtk_dialog_run (GTK_DIALOG (dialog));
 
     gtk_widget_destroy (dialog);
-
-    return;
 }
 
 #endif
@@ -485,8 +452,6 @@ event_input_rate_changed (GtkRange *range, gpointer data)
     snprintf (text, 256, "%.4f hz", value);
 
     gtk_label_set_text (label, text);
-
-    return;
 }
 
 void
@@ -575,8 +540,6 @@ event_about_clicked (GtkButton *widget, gpointer data)
     gtk_dialog_run (GTK_DIALOG (about_dialog->get_window ()));
 
     delete about_dialog;
-
-    return;
 }
 
 Snes9xPreferences::Snes9xPreferences (Snes9xConfig *config) :
@@ -623,15 +586,11 @@ Snes9xPreferences::Snes9xPreferences (Snes9xConfig *config) :
                            get_widget ("relative_video_rate"),
                            NULL,
                            (GConnectFlags) 0);
-
-    return;
 }
 
 Snes9xPreferences::~Snes9xPreferences ()
 {
     delete[] mode_indices;
-
-    return;
 }
 
 void
@@ -648,8 +607,6 @@ Snes9xPreferences::load_ntsc_settings ()
     set_slider ("ntsc_resolution", config->ntsc_setup.resolution);
     set_slider ("ntsc_saturation", config->ntsc_setup.saturation);
     set_slider ("ntsc_sharpness", config->ntsc_setup.sharpness);
-
-    return;
 }
 
 void
@@ -666,8 +623,6 @@ Snes9xPreferences::store_ntsc_settings ()
     config->ntsc_setup.resolution   = get_slider ("ntsc_resolution");
     config->ntsc_setup.saturation   = get_slider ("ntsc_saturation");
     config->ntsc_setup.sharpness    = get_slider ("ntsc_sharpness");
-
-    return;
 }
 
 void
@@ -815,8 +770,6 @@ Snes9xPreferences::move_settings_to_dialog ()
     set_check ("cpu_overclock", Settings.OneClockCycle != 6);
     set_check ("remove_sprite_limit", Settings.MaxSpriteTilesPerLine != 34);
 #endif
-
-    return;
 }
 
 void
@@ -1032,8 +985,6 @@ Snes9xPreferences::get_settings_from_dialog ()
 
     if (config->default_esc_behavior != ESC_TOGGLE_MENUBAR)
         top_level->leave_fullscreen_mode ();
-
-    return;
 }
 
 int
@@ -1098,8 +1049,6 @@ Snes9xPreferences::browse_folder_dialog ()
     }
 
     gtk_widget_destroy (dialog);
-
-    return;
 }
 
 void
@@ -1248,8 +1197,6 @@ Snes9xPreferences::show ()
 #endif
 
     gtk_widget_destroy (window);
-
-    return;
 }
 
 void
@@ -1267,8 +1214,6 @@ Snes9xPreferences::focus_next ()
         gtk_widget_grab_focus (get_widget (b_links [next].button_name));
     else
         gtk_widget_grab_focus (get_widget ("cancel_button"));
-
-    return;
 }
 
 void
@@ -1283,8 +1228,6 @@ Snes9xPreferences::swap_with ()
     pad[dest_joypad] = mediator;
 
     bindings_to_dialog (source_joypad);
-
-    return;
 }
 
 void
@@ -1298,8 +1241,6 @@ Snes9xPreferences::reset_current_joypad ()
     }
 
     bindings_to_dialog (joypad);
-
-    return;
 }
 
 void
@@ -1341,8 +1282,6 @@ Snes9xPreferences::store_binding (const char *string, Binding binding)
     focus_next ();
 
     bindings_to_dialog (get_combo ("control_combo"));
-
-    return;
 }
 
 int
@@ -1376,6 +1315,4 @@ Snes9xPreferences::bindings_to_dialog (int joypad)
         shortcut[i - NUM_JOYPAD_LINKS].to_string (name);
         set_entry_text (b_links[i].button_name, name);
     }
-
-    return;
 }

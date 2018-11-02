@@ -71,8 +71,6 @@ _splitpath (const char *path, char *drive, char *dir, char *fname, char *ext)
             *ext = '\0';
         }
     }
-
-    return;
 }
 
 void
@@ -97,8 +95,6 @@ _makepath (char       *path,
         strcat (path, ".");
         strcat (path, ext);
     }
-
-    return;
 }
 
 const char *
@@ -371,7 +367,6 @@ extern "C" char *osd_GetPackDir ()
 void
 S9xLoadSDD1Data ()
 {
-    return;
 }
 
 void
@@ -379,7 +374,6 @@ S9xAutoSaveSRAM ()
 {
     Memory.SaveSRAM (S9xGetFilename (".srm", SRAM_DIR));
     S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
-    return;
 }
 
 void
@@ -396,8 +390,6 @@ S9xLoadState (const char *filename)
     {
         fprintf (stderr, "Failed to load state file: %s\n", filename);
     }
-
-    return;
 }
 
 void
@@ -412,8 +404,6 @@ S9xSaveState (const char *filename)
     {
         fprintf (stderr, "Couldn't save state file: %s\n", filename);
     }
-
-    return;
 }
 
 char *
@@ -511,8 +501,6 @@ S9xQuickSaveSlot (int slot)
 
         S9xSetInfoString (buf);
     }
-
-    return;
 }
 
 void
@@ -563,7 +551,5 @@ S9xQuickLoadSlot (int slot)
     S9xMessage (S9X_ERROR,
                 S9X_FREEZE_FILE_NOT_FOUND,
                 "Freeze file not found");
-
-    return;
 }
 

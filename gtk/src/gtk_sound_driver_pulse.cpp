@@ -17,14 +17,11 @@ S9xPulseSoundDriver::S9xPulseSoundDriver ()
     context = NULL;
     stream = NULL;
     buffer_size = 0;
-
-    return;
 }
 
 void
 S9xPulseSoundDriver::init ()
 {
-    return;
 }
 
 void
@@ -51,44 +48,34 @@ S9xPulseSoundDriver::terminate ()
     {
         pa_threaded_mainloop_free (mainloop);
     }
-
-    return;
 }
 
 void
 S9xPulseSoundDriver::start ()
 {
-    return;
 }
 
 void
 S9xPulseSoundDriver::stop ()
 {
-    return;
 }
 
 void
 S9xPulseSoundDriver::lock ()
 {
     pa_threaded_mainloop_lock (mainloop);
-
-    return;
 }
 
 void
 S9xPulseSoundDriver::unlock ()
 {
     pa_threaded_mainloop_unlock (mainloop);
-
-    return;
 }
 
 void
 S9xPulseSoundDriver::wait ()
 {
     pa_threaded_mainloop_wait (mainloop);
-
-    return;
 }
 
 static void
@@ -105,8 +92,6 @@ context_state_cb (pa_context *c, void *userdata)
     {
         pa_threaded_mainloop_signal (driver->mainloop, 0);
     }
-
-    return;
 }
 
 static void
@@ -123,8 +108,6 @@ stream_state_callback (pa_stream *p, void *userdata)
     {
         pa_threaded_mainloop_signal (driver->mainloop, 0);
     }
-
-    return;
 }
 
 bool8
@@ -285,6 +268,4 @@ S9xPulseSoundDriver::samples_available ()
     pa_stream_write (stream, output_buffer, bytes, NULL, 0, PA_SEEK_RELATIVE);
 
     unlock ();
-
-    return;
 }

@@ -17,14 +17,11 @@ S9xOSSSoundDriver::S9xOSSSoundDriver ()
     filedes = -1;
     sound_buffer = NULL;
     sound_buffer_size = 0;
-
-    return;
 }
 
 void
 S9xOSSSoundDriver::init ()
 {
-    return;
 }
 
 void
@@ -44,20 +41,16 @@ S9xOSSSoundDriver::terminate ()
         free (sound_buffer);
         sound_buffer = NULL;
     }
-
-    return;
 }
 
 void
 S9xOSSSoundDriver::start ()
 {
-    return;
 }
 
 void
 S9xOSSSoundDriver::stop ()
 {
-    return;
 }
 
 bool8
@@ -227,6 +220,4 @@ S9xOSSSoundDriver::samples_available ()
 
         bytes_written += result;
     }
-
-    return;
 }

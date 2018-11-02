@@ -32,8 +32,6 @@ S9xXVDisplayDriver::S9xXVDisplayDriver (Snes9xWindow *window,
     display =
         gdk_x11_display_get_xdisplay (gtk_widget_get_display (drawing_area));
     last_known_width = last_known_height = -1;
-
-    return;
 }
 
 void
@@ -41,8 +39,6 @@ S9xXVDisplayDriver::resize_window (int width, int height)
 {
     gdk_window_destroy (gdk_window);
     create_window (width, height);
-
-    return;
 }
 
 void
@@ -178,8 +174,6 @@ S9xXVDisplayDriver::update (int width, int height, int yoffset)
     top_level->set_mouseable_area (dst_x, dst_y, dst_width, dst_height);
 
     XSync (display, False);
-
-    return;
 }
 
 void
@@ -227,8 +221,6 @@ S9xXVDisplayDriver::update_image_size (int width, int height)
         desired_width = width;
         desired_height = height;
     }
-
-    return;
 }
 
 int
@@ -491,8 +483,6 @@ S9xXVDisplayDriver::deinit ()
 
     padded_buffer[0] = NULL;
     padded_buffer[1] = NULL;
-
-    return;
 }
 
 void
@@ -546,16 +536,12 @@ S9xXVDisplayDriver::clear ()
     }
 
     XSync (display, False);
-
-    return;
 }
 
 void
 S9xXVDisplayDriver::refresh (int width, int height)
 {
     clear ();
-
-    return;
 }
 
 uint16 *
@@ -574,8 +560,6 @@ void
 S9xXVDisplayDriver::push_buffer (uint16 *src)
 {
     memmove (GFX.Screen, src, image_size);
-
-    return;
 }
 
 void
@@ -605,8 +589,6 @@ S9xXVDisplayDriver::clear_buffers ()
     {
         memset (xv_image->data, 0, xv_image->data_size);
     }
-
-    return;
 }
 
 int
