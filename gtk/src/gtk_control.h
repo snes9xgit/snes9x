@@ -57,8 +57,8 @@ typedef struct JoypadBinding
 
 #ifdef USE_JOYSTICK
 
-bool S9xGrabJoysticks (void);
-void S9xReleaseJoysticks (void);
+bool S9xGrabJoysticks ();
+void S9xReleaseJoysticks ();
 
 typedef struct JoyEvent
 {
@@ -78,11 +78,11 @@ class JoyDevice
 {
     public:
         JoyDevice (unsigned int device_num);
-        ~JoyDevice (void);
+        ~JoyDevice ();
         int get_event (JoyEvent *event);
-        void flush (void);
+        void flush ();
         void handle_event (SDL_Event *event);
-        void register_centers (void);
+        void register_centers ();
 
         SDL_Joystick         *filedes;
         Calibration          *calibration;
@@ -103,8 +103,8 @@ class JoyDevice
 };
 #endif
 
-void S9xDeinitInputDevices (void);
+void S9xDeinitInputDevices ();
 Binding S9xGetBindingByName (const char *name);
-bool S9xIsMousePluggedIn (void);
+bool S9xIsMousePluggedIn ();
 
 #endif /* __GTK_CONTROL_H*/

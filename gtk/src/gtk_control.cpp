@@ -112,20 +112,17 @@ const int b_breaks[] =
 
 static int joystick_lock = 0;
 
-bool
-S9xPollButton (uint32 id, bool *pressed)
+bool S9xPollButton (uint32 id, bool *pressed)
 {
     return true;
 }
 
-bool
-S9xPollAxis (uint32 id, int16 *value)
+bool S9xPollAxis (uint32 id, int16 *value)
 {
     return true;
 }
 
-bool
-S9xPollPointer (uint32 id, int16 *x, int16 *y)
+bool S9xPollPointer (uint32 id, int16 *x, int16 *y)
 {
     *x = top_level->mouse_loc_x;
     *y = top_level->mouse_loc_y;
@@ -133,8 +130,7 @@ S9xPollPointer (uint32 id, int16 *x, int16 *y)
     return true;
 }
 
-bool
-S9xIsMousePluggedIn (void)
+bool S9xIsMousePluggedIn ()
 {
     enum controllers ctl;
     int8 id1, id2, id3, id4;
@@ -149,8 +145,7 @@ S9xIsMousePluggedIn (void)
     return false;
 }
 
-bool
-S9xGrabJoysticks (void)
+bool S9xGrabJoysticks ()
 {
     if (joystick_lock)
         return FALSE;
@@ -160,16 +155,12 @@ S9xGrabJoysticks (void)
     return TRUE;
 }
 
-void
-S9xReleaseJoysticks (void)
+void S9xReleaseJoysticks ()
 {
     joystick_lock--;
-
-    return;
 }
 
-static void
-swap_controllers_1_2 (void)
+static void swap_controllers_1_2 ()
 {
     JoypadBinding interrim;
 
@@ -178,12 +169,9 @@ swap_controllers_1_2 (void)
     gui_config->pad[1] = interrim;
 
     gui_config->rebind_keys ();
-
-    return;
 }
 
-void
-S9xHandlePortCommand (s9xcommand_t cmd, int16 data1, int16 data2)
+void S9xHandlePortCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 {
     static bool quit_binding_down = FALSE;
 
@@ -251,12 +239,9 @@ S9xHandlePortCommand (s9xcommand_t cmd, int16 data1, int16 data2)
             S9xQuickLoadSlot (cmd.port[0] - PORT_QUICKLOAD0);
         }
     }
-
-    return;
 }
 
-Binding
-S9xGetBindingByName (const char *name)
+Binding S9xGetBindingByName (const char *name)
 {
     for (int i = 0; i < NUM_EMU_LINKS; i++)
     {
@@ -269,8 +254,7 @@ S9xGetBindingByName (const char *name)
     return Binding ();
 }
 
-s9xcommand_t
-S9xGetPortCommandT (const char *name)
+s9xcommand_t S9xGetPortCommandT (const char *name)
 {
     s9xcommand_t cmd;
 
@@ -380,8 +364,7 @@ S9xGetPortCommandT (const char *name)
     return cmd;
 }
 
-void
-S9xProcessEvents (bool8 block)
+void S9xProcessEvents (bool8 block)
 {
 #ifdef USE_JOYSTICK
     JoyEvent event;
@@ -407,8 +390,7 @@ S9xProcessEvents (bool8 block)
 }
 
 #ifdef USE_JOYSTICK
-static void
-poll_joystick_events (void)
+static void poll_joystick_events ()
 {
     SDL_Event event;
 
@@ -430,13 +412,10 @@ poll_joystick_events (void)
             gui_config->joystick[event.jbutton.which]->handle_event (&event);
         }
     }
-
-    return;
 }
 #endif
 
-void
-S9xInitInputDevices (void)
+void S9xInitInputDevices ()
 {
 #ifdef USE_JOYSTICK
     SDL_Init (SDL_INIT_JOYSTICK);
@@ -465,12 +444,9 @@ S9xInitInputDevices (void)
     //First plug in both, they'll change later as needed
     S9xSetController (0, CTL_JOYPAD,     0, 0, 0, 0);
     S9xSetController (1, CTL_JOYPAD,     1, 0, 0, 0);
-
-    return;
 }
 
-void
-S9xDeinitInputDevices (void)
+void S9xDeinitInputDevices ()
 {
 #ifdef USE_JOYSTICK
     for (int i = 0; gui_config->joystick[i] != NULL; i++)
@@ -482,11 +458,10 @@ S9xDeinitInputDevices (void)
 
     SDL_Quit ();
 #endif
-
-    return;
 }
 
 #ifdef USE_JOYSTICK
+
 JoyDevice::JoyDevice (unsigned int device_num)
 {
     enabled = false;
@@ -529,7 +504,7 @@ JoyDevice::JoyDevice (unsigned int device_num)
     return;
 }
 
-JoyDevice::~JoyDevice (void)
+JoyDevice::~JoyDevice ()
 {
     if (enabled)
     {
@@ -540,22 +515,16 @@ JoyDevice::~JoyDevice (void)
     }
 
     enabled = false;
-
-    return;
 }
 
-void
-JoyDevice::add_event (unsigned int parameter, unsigned int state)
+void JoyDevice::add_event (unsigned int parameter, unsigned int state)
 {
     JoyEvent event = { parameter, state };
 
     queue.push (event);
-
-    return;
 }
 
-void
-JoyDevice::register_centers (void)
+void JoyDevice::register_centers ()
 {
     for (int i = 0; i < num_axes; i++)
     {
@@ -573,12 +542,9 @@ JoyDevice::register_centers (void)
         else
             calibration[i].center = 32767;
     }
-
-    return;
 }
 
-void
-JoyDevice::handle_event (SDL_Event *event)
+void JoyDevice::handle_event (SDL_Event *event)
 {
     if (event->type == SDL_JOYAXISMOTION)
     {
@@ -733,12 +699,9 @@ JoyDevice::handle_event (SDL_Event *event)
 
         hat[event->jhat.hat] = event->jhat.value;
     }
-
-    return;
 }
 
-int
-JoyDevice::get_event (JoyEvent *event)
+int JoyDevice::get_event (JoyEvent *event)
 {
     poll_events ();
 
@@ -753,16 +716,12 @@ JoyDevice::get_event (JoyEvent *event)
     return 1;
 }
 
-void
-JoyDevice::poll_events (void)
+void JoyDevice::poll_events ()
 {
     poll_joystick_events ();
-
-    return;
 }
 
-void
-JoyDevice::flush (void)
+void JoyDevice::flush ()
 {
     SDL_Event event;
 
@@ -772,7 +731,5 @@ JoyDevice::flush (void)
 
     while (!queue.empty ())
         queue.pop ();
-
-    return;
 }
 #endif

@@ -20,11 +20,8 @@ Binding::Binding (void)
 
 Binding::Binding (GdkEventKey *event)
 {
-    /* Make keypress lower-case */
-    if (event->keyval >= GDK_A && event->keyval <= GDK_Z)
-        value = BINDING_KEY | ((event->keyval - GDK_A + GDK_a) & BINDING_KEY_MASK);
-    else
-        value = BINDING_KEY | (event->keyval & BINDING_KEY_MASK);
+    event->keyval = gdk_keyval_to_lower (event->keyval);
+    value = BINDING_KEY | (event->keyval & BINDING_KEY_MASK);
 
     /* Strip modifiers from modifiers */
     if (event->keyval == GDK_Control_L ||
