@@ -60,6 +60,7 @@ class Snes9xWindow : public GtkBuilderWindow
         void expose ();
         double get_refresh_rate ();
         int get_auto_input_rate ();
+        void become_monster ();
 
         cairo_t *get_cairo ();
         void release_cairo ();
