@@ -787,8 +787,6 @@ void RenderMergeHires(void *src, int srcPitch , void* dst, int dstPitch, unsigne
 void RenderPlain (SSurface Src, SSurface Dst, RECT *rect)
 {
 	SetRect(rect, Src.Width, Src.Height, 1);
-	if(Src.Height > SNES_HEIGHT_EXTENDED)
-		rect->bottom -= (GUI.HeightExtend?0:15);
 	const uint32 srcHeight = (rect->bottom - rect->top);
 
 	uint16 *lpSrc = reinterpret_cast<uint16 *>(Src.Surface);

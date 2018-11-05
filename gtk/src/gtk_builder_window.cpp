@@ -14,11 +14,9 @@ GtkBuilderWindow::GtkBuilderWindow (const char *root)
                                  NULL);
 
     window = get_widget (root);
-
-    return;
 }
 
-GtkBuilderWindow::~GtkBuilderWindow (void)
+GtkBuilderWindow::~GtkBuilderWindow ()
 {
     gtk_widget_destroy (window);
     g_object_unref (builder);
@@ -76,8 +74,6 @@ GtkBuilderWindow::signal_connection_func (GtkBuilder *builder,
     else
     {
     }
-
-    return;
 }
 
 void
@@ -93,16 +89,12 @@ GtkBuilderWindow::signal_connect (GtkBuilderWindowCallbacks *callbacks)
                                       (gpointer) this);
 
     this->callbacks = NULL;
-
-    return;
 }
 
 void
 GtkBuilderWindow::enable_widget (const char *name, unsigned char state)
 {
     gtk_widget_set_sensitive (get_widget (name), state);
-
-    return;
 }
 
 void
@@ -110,20 +102,16 @@ GtkBuilderWindow::resize (int width, int height)
 {
     if (width > 0 && height > 0)
         gtk_window_resize (GTK_WINDOW (window), width, height);
-
-    return;
 }
 
 void
-GtkBuilderWindow::refresh (void)
+GtkBuilderWindow::refresh ()
 {
     gtk_widget_queue_draw (GTK_WIDGET (window));
-
-    return;
 }
 
 int
-GtkBuilderWindow::get_width (void)
+GtkBuilderWindow::get_width ()
 {
     int width, height;
 
@@ -133,7 +121,7 @@ GtkBuilderWindow::get_width (void)
 }
 
 int
-GtkBuilderWindow::get_height (void)
+GtkBuilderWindow::get_height ()
 {
     int width, height;
 
@@ -146,8 +134,6 @@ void
 GtkBuilderWindow::set_button_label (const char *name, const char *label)
 {
     gtk_button_set_label (GTK_BUTTON (get_widget (name)), label);
-
-    return;
 }
 
 unsigned char
@@ -186,8 +172,6 @@ void
 GtkBuilderWindow::set_slider (const char *name, float value)
 {
     gtk_range_set_value (GTK_RANGE (get_widget (name)), (double) value);
-
-    return;
 }
 
 void
@@ -195,7 +179,6 @@ GtkBuilderWindow::set_check (const char *name, unsigned char value)
 {
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (get_widget (name)),
                                   value);
-    return;
 }
 
 void
@@ -205,24 +188,18 @@ GtkBuilderWindow::set_entry_value (const char *name, unsigned int value)
 
     snprintf (text, 80, "%u", value);
     gtk_entry_set_text (GTK_ENTRY (get_widget (name)), text);
-
-    return;
 }
 
 void
 GtkBuilderWindow::set_entry_text (const char *name, const char *text)
 {
     gtk_entry_set_text (GTK_ENTRY (get_widget (name)), text);
-
-    return;
 }
 
 void
 GtkBuilderWindow::set_combo (const char *name, unsigned char value)
 {
     gtk_combo_box_set_active (GTK_COMBO_BOX (get_widget (name)), value);
-
-    return;
 }
 
 void
@@ -230,8 +207,6 @@ GtkBuilderWindow::set_spin (const char *name, double value)
 {
     gtk_spin_button_set_value (GTK_SPIN_BUTTON (get_widget (name)),
                                (double) value);
-
-    return;
 }
 
 void
@@ -250,12 +225,10 @@ GtkBuilderWindow::combo_box_append (GtkComboBox *combo, const char *value)
 
     gtk_list_store_append (store, &iter);
     gtk_list_store_set (store, &iter, 0, value, -1);
-
-    return;
 }
 
 GtkWindow *
-GtkBuilderWindow::get_window (void)
+GtkBuilderWindow::get_window ()
 {
     return GTK_WINDOW (window);
 }

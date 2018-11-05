@@ -12,23 +12,20 @@ oss_samples_available (void *data)
     ((S9xOSSSoundDriver *) data)->samples_available ();
 }
 
-S9xOSSSoundDriver::S9xOSSSoundDriver (void)
+S9xOSSSoundDriver::S9xOSSSoundDriver ()
 {
     filedes = -1;
     sound_buffer = NULL;
     sound_buffer_size = 0;
-
-    return;
 }
 
 void
-S9xOSSSoundDriver::init (void)
+S9xOSSSoundDriver::init ()
 {
-    return;
 }
 
 void
-S9xOSSSoundDriver::terminate (void)
+S9xOSSSoundDriver::terminate ()
 {
     stop ();
 
@@ -44,24 +41,20 @@ S9xOSSSoundDriver::terminate (void)
         free (sound_buffer);
         sound_buffer = NULL;
     }
-
-    return;
 }
 
 void
-S9xOSSSoundDriver::start (void)
+S9xOSSSoundDriver::start ()
 {
-    return;
 }
 
 void
-S9xOSSSoundDriver::stop (void)
+S9xOSSSoundDriver::stop ()
 {
-    return;
 }
 
 bool8
-S9xOSSSoundDriver::open_device (void)
+S9xOSSSoundDriver::open_device ()
 {
     int temp;
     audio_buf_info info;
@@ -168,7 +161,7 @@ fail:
 }
 
 void
-S9xOSSSoundDriver::samples_available (void)
+S9xOSSSoundDriver::samples_available ()
 {
     audio_buf_info info;
     int samples_to_write;
@@ -227,6 +220,4 @@ S9xOSSSoundDriver::samples_available (void)
 
         bytes_written += result;
     }
-
-    return;
 }

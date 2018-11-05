@@ -416,6 +416,7 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	}
 
 	rom_filename = conf.GetStringDup("ROM::Filename", NULL);
+	Settings.InitialSnapshotFilename[0] = '\0';
 
 	// Sound
 

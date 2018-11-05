@@ -1052,37 +1052,16 @@
     </columns>
     <data>
       <row>
-        <col id="0" translatable="yes">Automatic</col>
+        <col id="0" translatable="yes">Timer-based</col>
       </row>
       <row>
-        <col id="0" translatable="yes">0</col>
+        <col id="0" translatable="yes">Timer-based with automatic frame-skipping</col>
       </row>
       <row>
-        <col id="0" translatable="yes">1</col>
+        <col id="0" translatable="yes">Sound buffer synchronization</col>
       </row>
       <row>
-        <col id="0" translatable="yes">2</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">3</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">4</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">5</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">6</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">7</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">8</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">9</col>
+        <col id="0" translatable="yes">No throttling, but can use vsync to control speed</col>
       </row>
     </data>
   </object>
@@ -1131,10 +1110,7 @@
     </columns>
     <data>
       <row>
-        <col id="0" translatable="yes">16-bit (GL_BGRA)</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">24-bit (GL_RGB)</col>
+        <col id="0" translatable="yes">16-bit (GL_RGB)</col>
       </row>
       <row>
         <col id="0" translatable="yes">32-bit (GL_BGRA)</col>
@@ -4139,21 +4115,6 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkCheckButton" id="sync_sound">
-                                        <property name="label" translatable="yes">Synchronize with sound</property>
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="receives_default">False</property>
-                                        <property name="tooltip_text" translatable="yes">Base emulation speed on the rate sound is output</property>
-                                        <property name="draw_indicator">True</property>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">False</property>
-                                        <property name="position">1</property>
-                                      </packing>
-                                    </child>
-                                    <child>
                                       <object class="GtkCheckButton" id="auto_input_rate">
                                         <property name="label" translatable="yes">Automatically adjust input rate to display</property>
                                         <property name="visible">True</property>
@@ -4166,7 +4127,7 @@
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">False</property>
-                                        <property name="position">2</property>
+                                        <property name="position">1</property>
                                       </packing>
                                     </child>
                                     <child>
@@ -4175,13 +4136,13 @@
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">False</property>
-                                        <property name="tooltip_text" translatable="yes">Smoothes out slight hiccups in sound input rate</property>
+                                        <property name="tooltip_text" translatable="yes">Smoothes out slight hiccups in sound input rate (can't be used with sound buffer synchronization)</property>
                                         <property name="draw_indicator">True</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">False</property>
-                                        <property name="position">3</property>
+                                        <property name="position">2</property>
                                       </packing>
                                     </child>
 
@@ -4198,7 +4159,7 @@
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">False</property>
-                                        <property name="position">4</property>
+                                        <property name="position">3</property>
                                       </packing>
                                     </child>
                                     <child>
@@ -4214,7 +4175,7 @@
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">False</property>
-                                        <property name="position">5</property>
+                                        <property name="position">4</property>
                                       </packing>
                                     </child>
                                     <child>
@@ -4230,7 +4191,7 @@
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">False</property>
-                                        <property name="position">6</property>
+                                        <property name="position">5</property>
                                       </packing>
                                     </child>
                                     <child>
@@ -4450,7 +4411,7 @@
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">True</property>
-                                        <property name="position">7</property>
+                                        <property name="position">6</property>
                                       </packing>
                                     </child>
                                   </object>
@@ -4553,7 +4514,7 @@
                                               <object class="GtkLabel" id="label45">
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">False</property>
-                                                <property name="label" translatable="yes">Frameskip:</property>
+                                                <property name="label" translatable="yes">Speed throttle:</property>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>
@@ -4566,6 +4527,7 @@
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">False</property>
                                                 <property name="model">liststore5</property>
+                                                <signal name="changed" handler="frameskip_combo_changed" swapped="no"/>
                                                 <child>
                                                   <object class="GtkCellRendererText" id="cellrenderertext5"/>
                                                   <attributes>

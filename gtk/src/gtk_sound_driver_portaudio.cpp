@@ -11,21 +11,17 @@ static void
 port_audio_samples_available_callback (void *data)
 {
     ((S9xPortAudioSoundDriver *) data)->samples_available ();
-
-    return;
 }
 
-S9xPortAudioSoundDriver::S9xPortAudioSoundDriver(void)
+S9xPortAudioSoundDriver::S9xPortAudioSoundDriver()
 {
     audio_stream = NULL;
     sound_buffer = NULL;
     sound_buffer_size = 0;
-
-    return;
 }
 
 void
-S9xPortAudioSoundDriver::init (void)
+S9xPortAudioSoundDriver::init ()
 {
     PaError err;
 
@@ -35,12 +31,10 @@ S9xPortAudioSoundDriver::init (void)
         fprintf (stderr,
                  "Couldn't initialize PortAudio: %s\n",
                  Pa_GetErrorText (err));
-
-    return;
 }
 
 void
-S9xPortAudioSoundDriver::terminate (void)
+S9xPortAudioSoundDriver::terminate ()
 {
     stop ();
 
@@ -53,12 +47,10 @@ S9xPortAudioSoundDriver::terminate (void)
         free (sound_buffer);
         sound_buffer = NULL;
     }
-
-    return;
 }
 
 void
-S9xPortAudioSoundDriver::start (void)
+S9xPortAudioSoundDriver::start ()
 {
     PaError err;
 
@@ -74,23 +66,19 @@ S9xPortAudioSoundDriver::start (void)
             fprintf (stderr, "Error: %s\n", Pa_GetErrorText (err));
         }
     }
-
-    return;
 }
 
 void
-S9xPortAudioSoundDriver::stop (void)
+S9xPortAudioSoundDriver::stop ()
 {
     if (audio_stream != NULL)
     {
         Pa_StopStream (audio_stream);
     }
-
-    return;
 }
 
 bool8
-S9xPortAudioSoundDriver::open_device (void)
+S9xPortAudioSoundDriver::open_device ()
 {
     PaStreamParameters  param;
     const PaDeviceInfo  *device_info;
@@ -189,7 +177,7 @@ S9xPortAudioSoundDriver::open_device (void)
 }
 
 void
-S9xPortAudioSoundDriver::samples_available (void)
+S9xPortAudioSoundDriver::samples_available ()
 {
     int frames;
     int bytes;
@@ -226,6 +214,4 @@ S9xPortAudioSoundDriver::samples_available (void)
     S9xMixSamples (sound_buffer, frames << (Settings.Stereo ? 1 : 0));
 
     Pa_WriteStream (audio_stream, sound_buffer, frames);
-
-    return;
 }

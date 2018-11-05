@@ -11,23 +11,20 @@ alsa_samples_available (void *data)
     ((S9xAlsaSoundDriver *) data)->samples_available ();
 }
 
-S9xAlsaSoundDriver::S9xAlsaSoundDriver (void)
+S9xAlsaSoundDriver::S9xAlsaSoundDriver ()
 {
     pcm = NULL;
     sound_buffer = NULL;
     sound_buffer_size = 0;
-
-    return;
 }
 
 void
-S9xAlsaSoundDriver::init (void)
+S9xAlsaSoundDriver::init ()
 {
-    return;
 }
 
 void
-S9xAlsaSoundDriver::terminate (void)
+S9xAlsaSoundDriver::terminate ()
 {
     stop ();
 
@@ -45,24 +42,20 @@ S9xAlsaSoundDriver::terminate (void)
         free (sound_buffer);
         sound_buffer = NULL;
     }
-
-    return;
 }
 
 void
-S9xAlsaSoundDriver::start (void)
+S9xAlsaSoundDriver::start ()
 {
-    return;
 }
 
 void
-S9xAlsaSoundDriver::stop (void)
+S9xAlsaSoundDriver::stop ()
 {
-    return;
 }
 
 bool8
-S9xAlsaSoundDriver::open_device (void)
+S9xAlsaSoundDriver::open_device ()
 {
     int err;
     unsigned int periods = 8;
@@ -167,7 +160,7 @@ fail:
 }
 
 void
-S9xAlsaSoundDriver::samples_available (void)
+S9xAlsaSoundDriver::samples_available ()
 {
     snd_pcm_sframes_t frames_written, frames;
     int bytes;
@@ -241,6 +234,4 @@ S9xAlsaSoundDriver::samples_available (void)
             frames_written += result;
         }
     }
-
-    return;
 }

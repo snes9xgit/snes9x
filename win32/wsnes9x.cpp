@@ -551,14 +551,14 @@ struct SCustomKeys CustomKeys = {
 	{0,0}, // slot minus (disabled by default)
 	{0,0}, // slot save (disabled by default)
 	{0,0}, // slot load (disabled by default)
-	{'1',0}, // background layer 1
-	{'2',0}, // background layer 2
-	{'3',0}, // background layer 3
-	{'4',0}, // background layer 4
-	{'5',0}, // sprite layer
-	{'8',0}, // Clipping Windows
+	{0,0}, // background layer 1
+	{0,0}, // background layer 2
+	{0,0}, // background layer 3
+	{0,0}, // background layer 4
+	{0,0}, // sprite layer
+	{0,0}, // Clipping Windows
 //	{'8',0}, // BG Layering hack
-	{'9',0}, // Transparency
+	{0,0}, // Transparency
 //	{'6',CUSTKEY_SHIFT_MASK}, // GLCube Mode
 //	{'9',CUSTKEY_SHIFT_MASK}, // Interpolate Mode 7
 	{'6',0}, // Joypad Swap
@@ -3520,6 +3520,11 @@ int WINAPI WinMain(
 		else
 		{
 			LoadROM(rom_filename);
+		}
+
+		if (*Settings.InitialSnapshotFilename)
+		{
+			S9xUnfreezeGame(Settings.InitialSnapshotFilename);
 		}
 	}
 

@@ -30,8 +30,8 @@
 #define bind_textdomain_codeset(Domain,Codeset) (Codeset)
 #endif /* ENABLE_NLS */
 
-#define SNES9X_GTK_AUTHORS "(c) 2007 - 2017 Brandon Wright (bearoso@gmail.com)"
-#define SNES9X_GTK_VERSION "85"
+#define SNES9X_GTK_AUTHORS "(c) 2007 - 2018 Brandon Wright (bearoso@gmail.com)"
+#define SNES9X_GTK_VERSION "86"
 
 extern Snes9xWindow *top_level;
 extern Snes9xConfig *gui_config;
@@ -39,11 +39,14 @@ extern Snes9xConfig *gui_config;
 #if GTK_MAJOR_VERSION >= 3
 #define GDK_COMPAT_WINDOW_XID(window) (gdk_x11_window_get_xid (window))
 #else
+#define GDK_WINDOWING_X11
+#define GDK_IS_X11_WINDOW(window) TRUE
+#define GDK_IS_X11_DISPLAY(display) TRUE
 #define GDK_COMPAT_WINDOW_XID(window) (GDK_WINDOW_XWINDOW (window))
 #endif
 
 int S9xOpenROM (const char *filename);
-void S9xNoROMLoaded (void);
-void S9xROMLoaded (void);
+void S9xNoROMLoaded ();
+void S9xROMLoaded ();
 
 #endif /* __GTK_S9X_H */

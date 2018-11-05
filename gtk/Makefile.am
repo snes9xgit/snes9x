@@ -125,6 +125,11 @@ snes9x_gtk_SOURCES += \
     ../c4emu.cpp
 endif
 
+if WAYLAND
+snes9x_gtk_SOURCES += \
+    src/gtk_wayland_egl_context.cpp
+endif
+
 # APU
 snes9x_gtk_SOURCES += \
     ../apu/apu.cpp
@@ -234,9 +239,11 @@ if OPENGL
 snes9x_gtk_SOURCES += \
     src/gtk_display_driver_opengl.cpp \
     src/gtk_display_driver_opengl.h \
+    src/gtk_glx_context.cpp \
     ../shaders/glsl.cpp \
     ../shaders/shader_helpers.cpp \
-    src/gtk_shader_parameters.cpp
+    src/gtk_shader_parameters.cpp 
+
 endif
 
 if XV

@@ -315,57 +315,40 @@ static inline void ADC (uint16 Work16)
 {
 	if (CheckDecimal())
 	{
-		uint16	A1 = Registers.A.W & 0x000F;
-		uint16	A2 = Registers.A.W & 0x00F0;
-		uint16	A3 = Registers.A.W & 0x0F00;
-		uint32	A4 = Registers.A.W & 0xF000;
-		uint16	W1 = Work16 & 0x000F;
-		uint16	W2 = Work16 & 0x00F0;
-		uint16	W3 = Work16 & 0x0F00;
-		uint16	W4 = Work16 & 0xF000;
+		uint32 result;
+		uint32 carry = CheckCarry();
 
-		A1 += W1 + CheckCarry();
-		if (A1 > 0x0009)
-		{
-			A1 -= 0x000A;
-			A1 &= 0x000F;
-			A2 += 0x0010;
-		}
+		result = (Registers.A.W & 0x000F) + (Work16 & 0x000F) + carry;
+		if (result > 0x0009)
+			result += 0x0006;
+		carry = (result > 0x000F);
 
-		A2 += W2;
-		if (A2 > 0x0090)
-		{
-			A2 -= 0x00A0;
-			A2 &= 0x00F0;
-			A3 += 0x0100;
-		}
+		result = (Registers.A.W & 0x00F0) + (Work16 & 0x00F0) + (result & 0x000F) + carry * 0x10;
+		if (result > 0x009F)
+			result += 0x0060;
+		carry = (result > 0x00FF);
 
-		A3 += W3;
-		if (A3 > 0x0900)
-		{
-			A3 -= 0x0A00;
-			A3 &= 0x0F00;
-			A4 += 0x1000;
-		}
+		result = (Registers.A.W & 0x0F00) + (Work16 & 0x0F00) + (result & 0x00FF) + carry * 0x100;
+		if (result > 0x09FF)
+			result += 0x0600;
+		carry = (result > 0x0FFF);
 
-		A4 += W4;
-		if (A4 > 0x9000)
-		{
-			A4 -= 0xA000;
-			A4 &= 0xF000;
-			SetCarry();
-		}
-		else
-			ClearCarry();
+		result = (Registers.A.W & 0xF000) + (Work16 & 0xF000) + (result & 0x0FFF) + carry * 0x1000;
 
-		uint16	Ans16 = A4 | A3 | A2 | A1;
-
-		if (~(Registers.A.W ^ Work16) & (Work16 ^ Ans16) & 0x8000)
+		if ((Registers.A.W & 0x8000) == (Work16 & 0x8000) && (Registers.A.W & 0x8000) != (result & 0x8000))
 			SetOverflow();
 		else
 			ClearOverflow();
 
-		Registers.A.W = Ans16;
+		if (result > 0x9FFF)
+			result += 0x6000;
+
+		if (result > 0xFFFF)
+			SetCarry();
+		else
+			ClearCarry();
+
+		Registers.A.W = result & 0xFFFF;
 		SetZN(Registers.A.W);
 	}
 	else
@@ -388,37 +371,30 @@ static inline void ADC (uint8 Work8)
 {
 	if (CheckDecimal())
 	{
-		uint8	A1 = Registers.A.W & 0x0F;
-		uint16	A2 = Registers.A.W & 0xF0;
-		uint8	W1 = Work8 & 0x0F;
-		uint8	W2 = Work8 & 0xF0;
+		uint32 result;
+		uint32 carry = CheckCarry();
 
-		A1 += W1 + CheckCarry();
-		if (A1 > 0x09)
-		{
-			A1 -= 0x0A;
-			A1 &= 0x0F;
-			A2 += 0x10;
-		}
+		result = (Registers.AL & 0x0F) + (Work8 & 0x0F) + carry;
+		if ( result > 0x09 )
+			result += 0x06;
+		carry = (result > 0x0F);
 
-		A2 += W2;
-		if (A2 > 0x90)
-		{
-			A2 -= 0xA0;
-			A2 &= 0xF0;
-			SetCarry();
-		}
-		else
-			ClearCarry();
+		result = (Registers.AL & 0xF0) + (Work8 & 0xF0) + (result & 0x0F) + (carry * 0x10);
 
-		uint8	Ans8 = A2 | A1;
-
-		if (~(Registers.AL ^ Work8) & (Work8 ^ Ans8) & 0x80)
+		if ((Registers.AL & 0x80) == (Work8 & 0x80) && (Registers.AL & 0x80) != (result & 0x80))
 			SetOverflow();
 		else
 			ClearOverflow();
 
-		Registers.AL = Ans8;
+		if (result > 0x9F)
+			result += 0x60;
+
+		if (result > 0xFF)
+			SetCarry();
+		else
+			ClearCarry();
+
+		Registers.AL = result & 0xFF;
 		SetZN(Registers.AL);
 	}
 	else
@@ -691,58 +667,42 @@ static inline void SBC (uint16 Work16)
 {
 	if (CheckDecimal())
 	{
-		uint16	A1 = Registers.A.W & 0x000F;
-		uint16	A2 = Registers.A.W & 0x00F0;
-		uint16	A3 = Registers.A.W & 0x0F00;
-		uint32	A4 = Registers.A.W & 0xF000;
-		uint16	W1 = Work16 & 0x000F;
-		uint16	W2 = Work16 & 0x00F0;
-		uint16	W3 = Work16 & 0x0F00;
-		uint16	W4 = Work16 & 0xF000;
+		int result;
+		int carry = CheckCarry();
 
-		A1 -= W1 + !CheckCarry();
-		A2 -= W2;
-		A3 -= W3;
-		A4 -= W4;
+		Work16 ^= 0xFFFF;
 
-		if (A1 > 0x000F)
-		{
-			A1 += 0x000A;
-			A1 &= 0x000F;
-			A2 -= 0x0010;
-		}
+		result = (Registers.A.W & 0x000F) + (Work16 & 0x000F) + carry;
+		if (result < 0x0010)
+			result -= 0x0006;
+		carry = (result > 0x000F);
 
-		if (A2 > 0x00F0)
-		{
-			A2 += 0x00A0;
-			A2 &= 0x00F0;
-			A3 -= 0x0100;
-		}
+		result = (Registers.A.W & 0x00F0) + (Work16 & 0x00F0) + (result & 0x000F) + carry * 0x10;
+		if (result < 0x0100)
+			result -= 0x0060;
+		carry = (result > 0x00FF);
 
-		if (A3 > 0x0F00)
-		{
-			A3 += 0x0A00;
-			A3 &= 0x0F00;
-			A4 -= 0x1000;
-		}
+		result = (Registers.A.W & 0x0F00) + (Work16 & 0x0F00) + (result & 0x00FF) + carry * 0x100;
+		if (result < 0x1000)
+			result -= 0x0600;
+		carry = (result > 0x0FFF);
 
-		if (A4 > 0xF000)
-		{
-			A4 += 0xA000;
-			A4 &= 0xF000;
-			ClearCarry();
-		}
-		else
-			SetCarry();
+		result = (Registers.A.W & 0xF000) + (Work16 & 0xF000) + (result & 0x0FFF) + carry * 0x1000;
 
-		uint16	Ans16 = A4 | A3 | A2 | A1;
-
-		if ((Registers.A.W ^ Work16) & (Registers.A.W ^ Ans16) & 0x8000)
+		if (((Registers.A.W ^ Work16) & 0x8000) == 0 && ((Registers.A.W ^ result) & 0x8000))
 			SetOverflow();
 		else
 			ClearOverflow();
 
-		Registers.A.W = Ans16;
+		if (result < 0x10000)
+			result -= 0x6000;
+
+		if (result > 0xFFFF)
+			SetCarry();
+		else
+			ClearCarry();
+
+		Registers.A.W = result & 0xFFFF;
 		SetZN(Registers.A.W);
 	}
 	else
@@ -765,38 +725,32 @@ static inline void SBC (uint8 Work8)
 {
 	if (CheckDecimal())
 	{
-		uint8	A1 = Registers.A.W & 0x0F;
-		uint16	A2 = Registers.A.W & 0xF0;
-		uint8	W1 = Work8 & 0x0F;
-		uint8	W2 = Work8 & 0xF0;
+		int result;
+		int carry = CheckCarry();
 
-		A1 -= W1 + !CheckCarry();
-		A2 -= W2;
+		Work8 ^= 0xFF;
 
-		if (A1 > 0x0F)
-		{
-			A1 += 0x0A;
-			A1 &= 0x0F;
-			A2 -= 0x10;
-		}
+		result = (Registers.AL & 0x0F) + (Work8 & 0x0F) + carry;
+		if (result < 0x10)
+			result -= 0x06;
+		carry = (result > 0x0F);
 
-		if (A2 > 0xF0)
-		{
-			A2 += 0xA0;
-			A2 &= 0xF0;
-			ClearCarry();
-		}
-		else
-			SetCarry();
+		result = (Registers.AL & 0xF0) + (Work8 & 0xF0) + (result & 0x0F) + carry * 0x10;
 
-		uint8	Ans8 = A2 | A1;
-
-		if ((Registers.AL ^ Work8) & (Registers.AL ^ Ans8) & 0x80)
+		if ((Registers.AL & 0x80) == (Work8 & 0x80) && (Registers.AL & 0x80) != (result & 0x80))
 			SetOverflow();
 		else
 			ClearOverflow();
 
-		Registers.AL = Ans8;
+		if (result < 0x100 )
+			result -= 0x60;
+
+		if (result > 0xFF)
+			SetCarry();
+		else
+			ClearCarry();
+
+		Registers.AL = result & 0xFF;
 		SetZN(Registers.AL);
 	}
 	else

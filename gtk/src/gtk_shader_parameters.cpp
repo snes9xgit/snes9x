@@ -85,7 +85,7 @@ static void dialog_response (GtkDialog *pdialog, gint response_id, gpointer user
     }
 }
 
-void gtk_shader_parameters_dialog_close (void)
+void gtk_shader_parameters_dialog_close ()
 {
     if (dialog)
     {

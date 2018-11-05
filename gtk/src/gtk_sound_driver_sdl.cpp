@@ -5,8 +5,6 @@ static void
 sdl_audio_callback (void *userdata, Uint8 *stream, int len)
 {
     ((S9xSDLSoundDriver *) userdata)->mix ((unsigned char *) stream, len);
-
-    return;
 }
 
 static void
@@ -15,8 +13,6 @@ samples_available (void *data)
     SDL_LockAudio ();
     S9xFinalizeSamples ();
     SDL_UnlockAudio ();
-
-    return;
 }
 
 void
@@ -25,28 +21,22 @@ S9xSDLSoundDriver::mix (unsigned char *output, int bytes)
     SDL_LockAudio ();
     S9xMixSamples (output, bytes >> (Settings.SixteenBitSound ? 1 : 0));
     SDL_UnlockAudio ();
-
-    return;
 }
 
-S9xSDLSoundDriver::S9xSDLSoundDriver (void)
+S9xSDLSoundDriver::S9xSDLSoundDriver ()
 {
     audiospec = NULL;
-
-    return;
 }
 
 void
-S9xSDLSoundDriver::init (void)
+S9xSDLSoundDriver::init ()
 {
     SDL_InitSubSystem (SDL_INIT_AUDIO);
     stop ();
-
-    return;
 }
 
 void
-S9xSDLSoundDriver::terminate (void)
+S9xSDLSoundDriver::terminate ()
 {
     stop ();
 
@@ -58,12 +48,10 @@ S9xSDLSoundDriver::terminate (void)
     }
 
     SDL_QuitSubSystem (SDL_INIT_AUDIO);
-
-    return;
 }
 
 void
-S9xSDLSoundDriver::start (void)
+S9xSDLSoundDriver::start ()
 {
     if (!gui_config->mute_sound)
     {
@@ -72,23 +60,19 @@ S9xSDLSoundDriver::start (void)
             SDL_PauseAudio (0);
         }
     }
-
-    return;
 }
 
 void
-S9xSDLSoundDriver::stop (void)
+S9xSDLSoundDriver::stop ()
 {
     if (audiospec)
     {
         SDL_PauseAudio (1);
     }
-
-    return;
 }
 
 bool8
-S9xSDLSoundDriver::open_device (void)
+S9xSDLSoundDriver::open_device ()
 {
     audiospec = (SDL_AudioSpec *) malloc (sizeof (SDL_AudioSpec));
 

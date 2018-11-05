@@ -32,8 +32,6 @@ S9xXVDisplayDriver::S9xXVDisplayDriver (Snes9xWindow *window,
     display =
         gdk_x11_display_get_xdisplay (gtk_widget_get_display (drawing_area));
     last_known_width = last_known_height = -1;
-
-    return;
 }
 
 void
@@ -41,8 +39,6 @@ S9xXVDisplayDriver::resize_window (int width, int height)
 {
     gdk_window_destroy (gdk_window);
     create_window (width, height);
-
-    return;
 }
 
 void
@@ -178,8 +174,6 @@ S9xXVDisplayDriver::update (int width, int height, int yoffset)
     top_level->set_mouseable_area (dst_x, dst_y, dst_width, dst_height);
 
     XSync (display, False);
-
-    return;
 }
 
 void
@@ -227,12 +221,10 @@ S9xXVDisplayDriver::update_image_size (int width, int height)
         desired_width = width;
         desired_height = height;
     }
-
-    return;
 }
 
 int
-S9xXVDisplayDriver::init (void)
+S9xXVDisplayDriver::init ()
 {
     int                 depth = 0, num_formats, num_attrs, highest_formats = 0;
     XvImageFormatValues *formats = NULL;
@@ -242,15 +234,6 @@ S9xXVDisplayDriver::init (void)
     unsigned int        num_adaptors;
     GdkScreen           *screen;
     GdkWindow           *root;
-
-    buffer[0] = malloc (image_padded_size);
-    buffer[1] = malloc (scaled_padded_size);
-
-    padded_buffer[0] = (void *) (((uint8 *) buffer[0]) + image_padded_offset);
-    padded_buffer[1] = (void *) (((uint8 *) buffer[1]) + scaled_padded_offset);
-
-    memset (buffer[0], 0, image_padded_size);
-    memset (buffer[1], 0, scaled_padded_size);
 
     /* Setup XV */
     gtk_widget_realize (drawing_area);
@@ -310,7 +293,7 @@ S9xXVDisplayDriver::init (void)
     }
 
     /* Try to find an RGB format */
-    format = FOURCC_YUY2;
+    format = -1;
     bpp = 100;
 
     formats = XvListImageFormats (display,
@@ -350,12 +333,13 @@ S9xXVDisplayDriver::init (void)
         }
     }
 
-    if (format == FOURCC_YUY2)
+    if (format == -1)
     {
         for (int i = 0; i < num_formats; i++)
         {
             if (formats[i].id == FOURCC_YUY2)
             {
+                format = formats[i].id;
                 depth = formats[i].depth;
 
                 if (formats[i].byte_order == LSBFirst)
@@ -379,6 +363,9 @@ S9xXVDisplayDriver::init (void)
     }
 
     free (formats);
+
+    if (format == -1)
+        return -1;
 
     /* Build a table for yuv conversion */
     if (format == FOURCC_YUY2)
@@ -459,6 +446,15 @@ S9xXVDisplayDriver::init (void)
     desired_width = scaled_max_width;
     desired_height = scaled_max_width;
 
+    buffer[0] = malloc (image_padded_size);
+    buffer[1] = malloc (scaled_padded_size);
+
+    padded_buffer[0] = (void *) (((uint8 *) buffer[0]) + image_padded_offset);
+    padded_buffer[1] = (void *) (((uint8 *) buffer[1]) + scaled_padded_offset);
+
+    memset (buffer[0], 0, image_padded_size);
+    memset (buffer[1], 0, scaled_padded_size);
+
     clear_buffers ();
 
     /* Give Snes9x core a pointer to draw on */
@@ -469,7 +465,7 @@ S9xXVDisplayDriver::init (void)
 }
 
 void
-S9xXVDisplayDriver::deinit (void)
+S9xXVDisplayDriver::deinit ()
 {
     gdk_window_destroy (gdk_window);
 
@@ -487,12 +483,10 @@ S9xXVDisplayDriver::deinit (void)
 
     padded_buffer[0] = NULL;
     padded_buffer[1] = NULL;
-
-    return;
 }
 
 void
-S9xXVDisplayDriver::clear (void)
+S9xXVDisplayDriver::clear ()
 {
     int  x, y, w, h;
     int  width, height;
@@ -542,26 +536,22 @@ S9xXVDisplayDriver::clear (void)
     }
 
     XSync (display, False);
-
-    return;
 }
 
 void
 S9xXVDisplayDriver::refresh (int width, int height)
 {
     clear ();
-
-    return;
 }
 
 uint16 *
-S9xXVDisplayDriver::get_next_buffer (void)
+S9xXVDisplayDriver::get_next_buffer ()
 {
     return (uint16 *) padded_buffer[0];
 }
 
 uint16 *
-S9xXVDisplayDriver::get_current_buffer (void)
+S9xXVDisplayDriver::get_current_buffer ()
 {
     return get_next_buffer ();
 }
@@ -570,12 +560,10 @@ void
 S9xXVDisplayDriver::push_buffer (uint16 *src)
 {
     memmove (GFX.Screen, src, image_size);
-
-    return;
 }
 
 void
-S9xXVDisplayDriver::clear_buffers (void)
+S9xXVDisplayDriver::clear_buffers ()
 {
     uint32 black;
     uint8  *color;
@@ -601,12 +589,10 @@ S9xXVDisplayDriver::clear_buffers (void)
     {
         memset (xv_image->data, 0, xv_image->data_size);
     }
-
-    return;
 }
 
 int
-S9xXVDisplayDriver::query_availability (void)
+S9xXVDisplayDriver::query_availability ()
 {
     unsigned int p_version,
                  p_release,
@@ -635,10 +621,4 @@ S9xXVDisplayDriver::query_availability (void)
     }
 
     return 1;
-}
-
-void
-S9xXVDisplayDriver::reconfigure (int width, int height)
-{
-    return;
 }

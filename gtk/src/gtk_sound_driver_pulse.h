@@ -8,16 +8,16 @@
 class S9xPulseSoundDriver : public S9xSoundDriver
 {
     public:
-        S9xPulseSoundDriver (void);
-        void init (void);
-        void terminate (void);
-        bool8 open_device (void);
-        void start (void);
-        void stop (void);
-        void samples_available (void);
-        void lock (void);
-        void unlock (void);
-        void wait (void);
+        S9xPulseSoundDriver ();
+        void init ();
+        void terminate ();
+        bool8 open_device ();
+        void start ();
+        void stop ();
+        void samples_available ();
+        void lock ();
+        void unlock ();
+        void wait ();
 
         pa_threaded_mainloop *mainloop;
         pa_context *context;
