@@ -658,8 +658,10 @@ int S9xOpenGLDisplayDriver::query_availability ()
     {
         Display *dpy = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
 
-        if (epoxy_has_glx (dpy))
-            return 1;
+        if (glXQueryExtension (dpy, NULL, NULL) == True)
+        {
+           return 1;
+        }
     }
 #endif
 
