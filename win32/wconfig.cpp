@@ -290,6 +290,8 @@ void WinSetDefaultValues ()
 	// CPU options
 	Settings.Paused	= false;
 
+	Settings.SupportHiRes = true;
+
 #ifdef NETPLAY_SUPPORT
 	Settings.Port =	1996;
 	NetPlay.MaxFrameSkip = 10;
@@ -895,7 +897,6 @@ void WinRegisterConfigItems()
 	AddBoolC("Lock", readOnlyConfig, false, "if true, prevents Snes9x from editing this configuration file (or making it read-only while it is running)");
 #undef CATEGORY
 #define CATEGORY "Display"
-	AddBool2C("HiRes", Settings.SupportHiRes, true, "on to support the hi-res mode that a few games use, off to render them in low-res");
 	AddBool2("Transparency", Settings.Transparency, true);
 	AddBoolC("MessagesInImage", Settings.AutoDisplayMessages, false, "true to draw text inside the SNES image (will get into AVIs, screenshots, and filters)");
 	AddBool2C("FrameRate", Settings.DisplayFrameRate, false, "on to display the framerate (will be inaccurate if AutoMaxSkipFrames is too small)");
