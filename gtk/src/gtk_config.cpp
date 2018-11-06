@@ -264,16 +264,16 @@ int Snes9xConfig::save_config_file ()
     cf.SetInt   (z"VideoMode", xrr_index, "Platform-specific video mode number");
     outbool (cf, z"ScaleToFit", scale_to_fit, "Scale the image to fit the window size");
     outbool (cf, z"MaintainAspectRatio", maintain_aspect_ratio, "Resize the screen to the proportions set by aspect ratio option");
-    cf.SetInt   (z"AspectRatio", aspect_ratio, "0: uncorrected, 1: 4:3, 2: NTSC/PAL");
+    cf.SetInt   (z"AspectRatio", aspect_ratio, "0: uncorrected, 1: uncorrected integer scale, 2: 4:3, 3: 4/3 integer scale, 4: NTSC/PAL, 5: NTSC/PAL integer scale");
     cf.SetInt   (z"SoftwareScaleFilter", scale_method, "Build-specific number of filter used for software scaling");
-    cf.SetInt   (z"ScanlineFilterIntensity", scanline_filter_intensity);
+    cf.SetInt   (z"ScanlineFilterIntensity", scanline_filter_intensity, "0: 0%, 1: 12.5%, 2: 25%, 3: 50%, 4: 100%");
     outbool (cf, z"ShowOverscanArea", overscan);
     cf.SetInt   (z"HiresEffect", hires_effect, "0: Downscale to low-res, 1: Leave as-is, 2: Upscale low-res screens");
     cf.SetInt   (z"ForceInvertedByteOrder", force_inverted_byte_order);
-    outbool (cf, z"Multithreading", multithreading);
+    outbool (cf, z"Multithreading", multithreading, "Apply filters using multiple threads");
     cf.SetInt   (z"NumberOfThreads", num_threads);
     cf.SetInt   (z"HardwareAcceleration", hw_accel, "0: None, 1: OpenGL, 2: XVideo");
-    outbool (cf, z"BilinearFilter", Settings.BilinearFilter);
+    outbool (cf, z"BilinearFilter", Settings.BilinearFilter, "Smoothes scaled image");
 
 #undef z
 #define z "NTSC::"
@@ -306,16 +306,16 @@ int Snes9xConfig::save_config_file ()
 #define z "Sound::"
     outbool (cf, z"MuteSound", mute_sound);
     outbool (cf, z"MuteSoundDuringTurbo", mute_sound_turbo);
-    cf.SetInt   (z"BufferSize", sound_buffer_size);
+    cf.SetInt   (z"BufferSize", sound_buffer_size, "Buffer size in milliseconds");
     cf.SetInt   (z"Driver", sound_driver);
     cf.SetInt   (z"InputRate", sound_input_rate);
     outbool (cf, z"DynamicRateControl", Settings.DynamicRateControl);
     cf.SetInt   (z"DynamicRateControlLimit", Settings.DynamicRateLimit);
-    outbool (cf, z"AutomaticInputRate", auto_input_rate);
+    outbool (cf, z"AutomaticInputRate", auto_input_rate, "Guess input rate by asking the monitor what its refresh rate is");
     outbool (cf, z"16bit", Settings.SixteenBitSound);
     outbool (cf, z"Stereo", Settings.Stereo);
-    outbool (cf, z"ReverseStero", Settings.ReverseStereo);
-    cf.SetInt   (z"PlaybackRate", gui_config->sound_playback_rate);
+    outbool (cf, z"ReverseStereo", Settings.ReverseStereo);
+    cf.SetInt   (z"PlaybackRate", gui_config->sound_playback_rate, "1: 8000Hz, 2: 11025Hz, 3: 16000Hz, 4: 22050Hz, 5: 32000Hz, 6: 44100Hz, 7: 48000Hz");
 
 #undef z
 #define z "Files::"
@@ -359,22 +359,22 @@ int Snes9xConfig::save_config_file ()
     cf.SetInt (z"DefaultESCKeyBehavior", default_esc_behavior);
     outbool (cf, z"PreventScreensaver", prevent_screensaver);
     outbool (cf, z"UseModalDialogs", modal_dialogs);
-    cf.SetInt (z"rewind_buffer_size", rewind_buffer_size);
-    cf.SetInt (z"rewind_granularity", rewind_granularity);
+    cf.SetInt (z"RewindBufferSize", rewind_buffer_size, "Amount of memory (in MB) to use for rewinding");
+    cf.SetInt (z"RewindGranularity", rewind_granularity, "Only save rewind snapshots every N frames");
 
 #undef z
 #define z "Emulation::"
     outbool (cf, z"EmulateTransparency", Settings.Transparency);
     outbool (cf, z"DisplayFrameRate", Settings.DisplayFrameRate);
-    cf.SetInt (z"SpeedControlMethod", Settings.SkipFrames);
+    cf.SetInt (z"SpeedControlMethod", Settings.SkipFrames, "0: Time the frames to 50 or 60Hz, 1: Same, but skip frames if too slow, 2: Synchronize to the sound buffer, 3: Unlimited, except potentially by vsync");
     cf.SetInt (z"SaveSRAMEveryNSeconds", Settings.AutoSaveDelay);
     outbool (cf, z"BlockInvalidVRAMAccess", Settings.BlockInvalidVRAMAccessMaster);
-    outbool (cf, z"AllowDPadContradictions", Settings.UpAndDown);
+    outbool (cf, z"AllowDPadContradictions", Settings.UpAndDown, "Allow the D-Pad to press both up + down at the same time, or left + right");
 
 #undef z
 #define z "Hacks::"
     cf.SetInt (z"SuperFXClockMultiplier", Settings.SuperFXClockMultiplier);
-    cf.SetInt   (z"SoundInterpolationMethod", Settings.InterpolationMethod);
+    cf.SetInt   (z"SoundInterpolationMethod", Settings.InterpolationMethod, "0: None, 1: Linear, 2: Gaussian (what the hardware uses), 3: Cubic, 4: Sinc");
     outbool (cf, z"RemoveSpriteLimit", Settings.MaxSpriteTilesPerLine == 34 ? 0 : 1);
     outbool (cf, z"OverclockCPU", Settings.OneClockCycle == 6 ? 0 : 1);
 
@@ -518,7 +518,7 @@ int Snes9xConfig::load_config_file ()
     inbool (z"AutomaticInputRate", auto_input_rate);
     inbool (z"16bit", Settings.SixteenBitSound);
     inbool (z"Stereo", Settings.Stereo);
-    inbool (z"ReverseStero", Settings.ReverseStereo);
+    inbool (z"ReverseStereo", Settings.ReverseStereo);
     inint  (z"PlaybackRate", gui_config->sound_playback_rate);
 
 #undef z
@@ -560,8 +560,8 @@ int Snes9xConfig::load_config_file ()
     inint (z"DefaultESCKeyBehavior", default_esc_behavior);
     inbool (z"PreventScreensaver", prevent_screensaver);
     inbool (z"UseModalDialogs", modal_dialogs);
-    inint (z"rewind_buffer_size", rewind_buffer_size);
-    inint (z"rewind_granularity", rewind_granularity);
+    inint (z"RewindBufferSize", rewind_buffer_size);
+    inint (z"RewindGranularity", rewind_granularity);
 
 #undef z
 #define z "Emulation::"
