@@ -1407,7 +1407,7 @@ Snes9xWindow::update_statusbar ()
                       S9xBasenameNoExt (Memory.ROMFilename));
         }
 
-        snprintf (title_string, 1024, "%s - Snes9x", S9xBasenameNoExt (Memory.ROMFilename));
+        snprintf (title_string, 1024, "%s", S9xBasenameNoExt (Memory.ROMFilename));
     }
 
     gtk_window_set_title (GTK_WINDOW (window), title_string);
