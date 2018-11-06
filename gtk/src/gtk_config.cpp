@@ -158,6 +158,7 @@ int Snes9xConfig::load_defaults ()
     netplay_last_port = 6096;
     modal_dialogs = 1;
     use_headerbar = 0;
+    current_save_slot = 0;
     S9xCheatsEnable ();
 
     rewind_granularity = 5;
@@ -361,6 +362,7 @@ int Snes9xConfig::save_config_file ()
     outbool (cf, z"UseModalDialogs", modal_dialogs);
     cf.SetInt (z"RewindBufferSize", rewind_buffer_size, "Amount of memory (in MB) to use for rewinding");
     cf.SetInt (z"RewindGranularity", rewind_granularity, "Only save rewind snapshots every N frames");
+    cf.SetInt (z"CurrentSaveSlot", current_save_slot);
 
 #undef z
 #define z "Emulation::"
@@ -562,6 +564,7 @@ int Snes9xConfig::load_config_file ()
     inbool (z"UseModalDialogs", modal_dialogs);
     inint (z"RewindBufferSize", rewind_buffer_size);
     inint (z"RewindGranularity", rewind_granularity);
+    inint (z"CurrentSaveSlot", current_save_slot);
 
 #undef z
 #define z "Emulation::"

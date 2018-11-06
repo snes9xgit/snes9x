@@ -489,6 +489,9 @@ S9xQuickSaveSlot (int slot)
     char dir[_MAX_DIR];
     char ext[_MAX_EXT];
 
+    if (!gui_config->rom_loaded)
+        return;
+
     _splitpath (Memory.ROMFilename, drive, dir, def, ext);
 
     snprintf (filename, PATH_MAX, "%s%s%s.%03d",
@@ -503,14 +506,16 @@ S9xQuickSaveSlot (int slot)
     }
 }
 
-void
-S9xQuickLoadSlot (int slot)
+void S9xQuickLoadSlot (int slot)
 {
     char def[PATH_MAX];
     char filename[PATH_MAX];
     char drive[_MAX_DRIVE];
     char dir[_MAX_DIR];
     char ext[_MAX_EXT];
+
+    if (!gui_config->rom_loaded)
+        return;
 
     _splitpath (Memory.ROMFilename, drive, dir, def, ext);
 

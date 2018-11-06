@@ -57,6 +57,12 @@ const BindingLink b_links[] =
         { "b_bg_layering_hack",    "BGLayeringHack"    },
         { "b_screenshot",          "Screenshot"        },
         { "b_fullscreen",          "GTK_fullscreen"    },
+        { "b_state_save_current",  "GTK_state_save_current" },
+        { "b_state_load_current",  "GTK_state_load_current" },
+        { "b_state_increment_save","GTK_state_increment_save" },
+        { "b_state_decrement_load","GTK_state_decrement_load" },
+        { "b_state_increment",     "GTK_state_increment" },
+        { "b_state_decrement",     "GTK_state_decrement" },
         { "b_save_0",              "QuickSave000"      },
         { "b_save_1",              "QuickSave001"      },
         { "b_save_2",              "QuickSave002"      },
@@ -104,9 +110,9 @@ const int b_breaks[] =
         24, /* End of turbo/sticky buttons */
         35, /* End of base emulator buttons */
         43, /* End of Graphic options */
-        63, /* End of save/load states */
-        72, /* End of sound buttons */
-        79, /* End of miscellaneous buttons */
+        69, /* End of save/load states */
+        78, /* End of sound buttons */
+        85, /* End of miscellaneous buttons */
         -1
 };
 
@@ -169,6 +175,19 @@ static void swap_controllers_1_2 ()
     gui_config->pad[1] = interrim;
 
     gui_config->rebind_keys ();
+}
+
+static void change_slot (int difference)
+{
+    static char buf[256];
+
+    gui_config->current_save_slot += difference;
+    gui_config->current_save_slot %= 1000;
+    if (gui_config->current_save_slot < 0)
+        gui_config->current_save_slot += 1000;
+    snprintf (buf, 256, "Slot %d", gui_config->current_save_slot);
+    S9xSetInfoString (buf);
+    GFX.InfoStringTimeout = 60;
 }
 
 void S9xHandlePortCommand (s9xcommand_t cmd, int16 data1, int16 data2)
@@ -237,6 +256,38 @@ void S9xHandlePortCommand (s9xcommand_t cmd, int16 data1, int16 data2)
         else if (cmd.port[0] >= PORT_QUICKLOAD0 && cmd.port[0] <= PORT_QUICKLOAD9)
         {
             S9xQuickLoadSlot (cmd.port[0] - PORT_QUICKLOAD0);
+        }
+
+        else if (cmd.port[0] == PORT_SAVESLOT)
+        {
+            S9xQuickSaveSlot (gui_config->current_save_slot);
+        }
+
+        else if (cmd.port[0] == PORT_LOADSLOT)
+        {
+            S9xQuickLoadSlot (gui_config->current_save_slot);
+        }
+
+        else if (cmd.port[0] == PORT_INCREMENTSAVESLOT)
+        {
+            change_slot (1);
+            S9xQuickSaveSlot (gui_config->current_save_slot);
+        }
+
+        else if (cmd.port[0] == PORT_DECREMENTLOADSLOT)
+        {
+            change_slot (-1);
+            S9xQuickLoadSlot (gui_config->current_save_slot);
+        }
+
+        else if (cmd.port[0] == PORT_INCREMENTSLOT)
+        {
+            change_slot (1);
+        }
+
+        else if (cmd.port[0] == PORT_DECREMENTSLOT)
+        {
+            change_slot (-1);
         }
     }
 }
@@ -355,6 +406,37 @@ s9xcommand_t S9xGetPortCommandT (const char *name)
     {
         cmd.port[0] = PORT_QUICKLOAD9;
     }
+
+    else if (strstr (name, "GTK_state_save_current"))
+    {
+        cmd.port[0] = PORT_SAVESLOT;
+    }
+
+    else if (strstr (name, "GTK_state_load_current"))
+    {
+        cmd.port[0] = PORT_LOADSLOT;
+    }
+
+    else if (strstr (name, "GTK_state_increment_save"))
+    {
+        cmd.port[0] = PORT_INCREMENTSAVESLOT;
+    }
+
+    else if (strstr (name, "GTK_state_decrement_load"))
+    {
+        cmd.port[0] = PORT_DECREMENTLOADSLOT;
+    }
+
+    else if (strstr (name, "GTK_state_increment"))
+    {
+        cmd.port[0] = PORT_INCREMENTSLOT;
+    }
+
+    else if (strstr (name, "GTK_state_decrement"))
+    {
+        cmd.port[0] = PORT_DECREMENTSLOT;
+    }
+
 
     else
     {

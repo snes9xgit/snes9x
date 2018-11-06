@@ -135,6 +135,8 @@ class Snes9xConfig
     unsigned int  rewind_granularity;
     unsigned int  rewind_buffer_size;
 
+    int           current_save_slot;
+
     XRRScreenResources *xrr_screen_resources;
     XRRCrtcInfo        *xrr_crtc_info;
 
