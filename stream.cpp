@@ -253,6 +253,24 @@ std::string Stream::getline (bool &eof)
 	return (ret);
 }
 
+size_t Stream::pos_from_origin_offset(uint8 origin, int32 offset)
+{
+    size_t position = 0;
+    switch (origin)
+    {
+        case SEEK_SET:
+            position = offset;
+            break;
+        case SEEK_END:
+            position = size() + offset;
+            break;
+        case SEEK_CUR:
+            position = pos() + offset;
+            break;
+    }
+    return position;
+}
+
 // snes9x.h FSTREAM Stream
 
 fStream::fStream (FSTREAM f)
@@ -299,9 +317,9 @@ size_t fStream::size (void)
     return sz;
 }
 
-int fStream::revert (size_t from, size_t offset)
+int fStream::revert (uint8 origin, int32 offset)
 {
-    return (REVERT_FSTREAM(fp, offset, from));
+    return (REVERT_FSTREAM(fp, offset, origin));
 }
 
 void fStream::closeStream()
@@ -428,9 +446,9 @@ size_t unzStream::size (void)
     return info.uncompressed_size;
 }
 
-int unzStream::revert (size_t from, size_t offset)
+int unzStream::revert (uint8 origin, int32 offset)
 {
-    size_t target_pos = from + offset;
+    size_t target_pos = pos_from_origin_offset(origin, offset);
 
     // new pos inside buffered data
     if (target_pos >= buf_pos_in_unzipped && target_pos < buf_pos_in_unzipped + bytes_in_buf)
@@ -547,9 +565,9 @@ size_t memStream::size (void)
     return msize;
 }
 
-int memStream::revert (size_t from, size_t offset)
+int memStream::revert (uint8 origin, int32 offset)
 {
-    size_t pos = from + offset;
+    size_t pos = pos_from_origin_offset(origin, offset);
 
     if(pos > msize)
         return -1;
@@ -610,9 +628,10 @@ size_t nulStream::size (void)
     return bytes_written;
 }
 
-int nulStream::revert (size_t from, size_t offset)
+int nulStream::revert (uint8 origin, int32 offset)
 {
-    bytes_written = from + offset;
+    size_t target_pos = pos_from_origin_offset(origin, offset);
+    bytes_written = target_pos;
     return 0;
 }
 
