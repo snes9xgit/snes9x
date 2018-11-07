@@ -618,9 +618,6 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
 
 #endif
 
-    if (config->use_headerbar)
-        become_monster ();
-
     gtk_widget_realize (window);
     gtk_widget_realize (GTK_WIDGET (drawing_area));
 #if GTK_MAJOR_VERSION < 3
@@ -674,69 +671,6 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
     gdk_window_set_cursor (gtk_widget_get_window (window), default_cursor);
 
     resize (config->window_width, config->window_height);
-}
-
-void
-Snes9xWindow::become_monster ()
-{
-#if GTK_MAJOR_VERSION >= 3
-
-    if (!config->use_headerbar)
-        return;
-
-    config->default_esc_behavior = ESC_EXIT_FULLSCREEN;
-
-    GtkCssProvider *headerbar_provider;
-    GtkCssProvider *menubar_provider;
-    GtkStyleContext *context;
-    GtkWidget *headerbar;
-    GtkWidget *menubar;
-
-    headerbar_provider = gtk_css_provider_new ();
-    menubar_provider = gtk_css_provider_new ();
-    gtk_css_provider_load_from_data (headerbar_provider,
-                                     "headerbar {"
-                                     " min-height: 0px;"
-                                     " padding-top: 0px;"
-                                     " padding-bottom: 0px;"
-                                     " margin: 0px;"
-                                     "}",
-                                     -1,
-                                     NULL);
-    gtk_css_provider_load_from_data (menubar_provider,
-                                     "menubar, menubar.* {"
-                                     " margin-top: 2px;"
-                                     " margin-bottom: 2px;"
-                                     " box-shadow: none;"
-                                     " border: 0px;"
-                                     " background-image: none;"
-                                     " background-color: transparent;"
-                                     "}",
-                                     -1,
-                                     NULL);
-
-    headerbar = gtk_header_bar_new ();
-    context = gtk_widget_get_style_context (headerbar);
-    gtk_style_context_add_provider (context,
-                                    GTK_STYLE_PROVIDER (headerbar_provider),
-                                    GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-    gtk_header_bar_set_has_subtitle(GTK_HEADER_BAR (headerbar), FALSE);
-    gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (headerbar), TRUE);
-    gtk_window_set_titlebar (GTK_WINDOW (window), headerbar);
-
-    menubar = get_widget ("menubar");
-    g_object_ref ((gpointer) menubar);
-    context = gtk_widget_get_style_context (menubar);
-    gtk_style_context_add_provider (context,
-                                    GTK_STYLE_PROVIDER (menubar_provider),
-                                    GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-    gtk_container_remove (GTK_CONTAINER (get_widget ("vbox1")), menubar);
-
-    gtk_header_bar_pack_start (GTK_HEADER_BAR (headerbar), menubar);
-    gtk_widget_show_all (headerbar);
-#else
-    config->use_headerbar = 0;
-#endif
 }
 
 extern const gtk_splash_t gtk_splash;
@@ -1812,12 +1746,9 @@ Snes9xWindow::toggle_statusbar ()
     int           width = 0;
     int           height = 0;
 
-    if (!config->use_headerbar)
-    {
-        item = get_widget ("menubar");
-        gtk_widget_get_allocation (item, &allocation);
-        height += gtk_widget_get_visible (item) ? allocation.height : 0;
-    }
+    item = get_widget ("menubar");
+    gtk_widget_get_allocation (item, &allocation);
+    height += gtk_widget_get_visible (item) ? allocation.height : 0;
 
     item = get_widget ("drawingarea");
     gtk_widget_get_allocation (item, &allocation);
@@ -1841,12 +1772,9 @@ Snes9xWindow::resize_viewport (int width, int height)
     GtkAllocation allocation;
     int           y_padding = 0;
 
-    if (!config->use_headerbar)
-    {
-        item = get_widget ("menubar");
-        gtk_widget_get_allocation (item, &allocation);
-        y_padding += gtk_widget_get_visible (item) ? allocation.height : 0;
-    }
+    item = get_widget ("menubar");
+    gtk_widget_get_allocation (item, &allocation);
+    y_padding += gtk_widget_get_visible (item) ? allocation.height : 0;
 
     item = get_widget ("statusbar");
     gtk_widget_get_allocation (item, &allocation);

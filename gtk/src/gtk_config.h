@@ -127,7 +127,6 @@ class Snes9xConfig
     int           num_threads;
     unsigned char screensaver_needs_reset;
     int           modal_dialogs;
-    unsigned char use_headerbar;
 
     int           pointer_is_visible;
     gint64        pointer_timestamp;

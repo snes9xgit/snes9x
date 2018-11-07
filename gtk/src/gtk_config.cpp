@@ -157,7 +157,6 @@ int Snes9xConfig::load_defaults ()
     netplay_last_host [0] = '\0';
     netplay_last_port = 6096;
     modal_dialogs = 1;
-    use_headerbar = 0;
     current_save_slot = 0;
     S9xCheatsEnable ();
 
@@ -337,7 +336,6 @@ int Snes9xConfig::save_config_file ()
     cf.SetInt (z"PreferencesHeight", preferences_height);
     outbool (cf, z"UIVisible", ui_visible);
     outbool (cf, z"StatusBarVisible", statusbar_visible);
-    outbool (cf, z"UseHeaderBar", use_headerbar);
     if (default_esc_behavior != ESC_TOGGLE_MENUBAR)
         outbool (cf, z"Fullscreen", 0);
     else
@@ -543,7 +541,6 @@ int Snes9xConfig::load_config_file ()
     inbool (z"UIVisible", ui_visible);
     inbool (z"StatusBarVisible", statusbar_visible);
     inbool (z"Fullscreen", fullscreen);
-    inbool (z"UseHeaderBar", use_headerbar);
 
 #undef z
 #define z "Netplay::"
