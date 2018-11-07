@@ -1,13 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <gtk/gtk.h>
-#include <gdk/gdk.h>
-#include <gdk/gdkkeysyms.h>
-#if GTK_MAJOR_VERSION >= 3
-#include <gdk/gdkkeysyms-compat.h>
-#endif
-
 #include "gtk_s9x.h"
 #include "gtk_binding.h"
 

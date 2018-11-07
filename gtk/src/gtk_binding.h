@@ -1,7 +1,7 @@
 #ifndef __GTK_BINDING_H
 #define __GTK_BINDING_H
 
-#include <gdk/gdk.h>
+#include "gtk_2_3_compat.h"
 
 #define AXIS_POS                    1
 #define AXIS_NEG                    0

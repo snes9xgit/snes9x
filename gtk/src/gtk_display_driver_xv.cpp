@@ -1,5 +1,3 @@
-#include <gtk/gtk.h>
-#include <gdk/gdkx.h>
 #include "gtk_2_3_compat.h"
 #include <X11/extensions/XShm.h>
 #include <X11/extensions/Xv.h>
@@ -62,7 +60,7 @@ S9xXVDisplayDriver::create_window (int width, int height)
     gdk_window_set_user_data (gdk_window, (gpointer) drawing_area);
 
     gdk_window_show (gdk_window);
-    xwindow = GDK_COMPAT_WINDOW_XID (gdk_window);
+    xwindow = gdk_x11_window_get_xid (gdk_window);
 
     output_window_width = width;
     output_window_height = height;
@@ -245,7 +243,7 @@ S9xXVDisplayDriver::init ()
 
     xv_portid = -1;
     XvQueryAdaptors (display,
-                     GDK_COMPAT_WINDOW_XID (root),
+                     gdk_x11_window_get_xid (root),
                      &num_adaptors,
                      &adaptors);
 
@@ -414,7 +412,7 @@ S9xXVDisplayDriver::init ()
     }
 
     xcolormap = XCreateColormap (display,
-                                GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (drawing_area)),
+                                gdk_x11_window_get_xid (gtk_widget_get_window (drawing_area)),
                                 vi->visual,
                                 AllocNone);
 

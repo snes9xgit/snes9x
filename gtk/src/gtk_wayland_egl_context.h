@@ -1,7 +1,7 @@
 #ifndef __GTK_WAYLAND_EGL_CONTEXT_H
 #define __GTK_WAYLAND_EGL_CONTEXT_H
 
-#include <gdk/gdkwayland.h>
+
 #include <wayland-egl.h>
 #include <epoxy/egl.h>
 

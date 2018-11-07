@@ -1,11 +1,6 @@
 #include "gtk_2_3_compat.h"
-#include <gdk/gdk.h>
 #ifdef GDK_WINDOWING_X11
-#include <gdk/gdkx.h>
 #include <X11/Xatom.h>
-#endif
-#ifdef GDK_WINDOWING_WAYLAND
-#include <gdk/gdkwayland.h>
 #endif
 #include <gdk/gdkkeysyms.h>
 #include <cairo.h>
@@ -30,10 +25,6 @@
 #include "gtk_cheat.h"
 #ifdef NETPLAY_SUPPORT
 #include "gtk_netplay.h"
-#endif
-
-#if GTK_MAJOR_VERSION >= 3
-#include <gdk/gdkkeysyms-compat.h>
 #endif
 
 static gboolean
@@ -1633,7 +1624,7 @@ Snes9xWindow::get_refresh_rate ()
 #ifdef GDK_WINDOWING_X11
     if (GDK_IS_X11_DISPLAY (display))
     {
-        Window xid = GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (window));
+        Window xid = gdk_x11_window_get_xid (gtk_widget_get_window (window));
         Display *dpy = gdk_x11_display_get_xdisplay (gtk_widget_get_display (window));
         refresh_rate = XRRGetExactRefreshRate (dpy, xid);
     }
@@ -1741,7 +1732,7 @@ Snes9xWindow::enter_fullscreen_mode ()
     if (GDK_IS_X11_WINDOW (gtk_widget_get_window (GTK_WIDGET (window))))
     {
         set_bypass_compositor (gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (window))),
-                               GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (GTK_WIDGET (window))),
+                               gdk_x11_window_get_xid (gtk_widget_get_window (GTK_WIDGET (window))),
                                1);
     }
 #endif
@@ -1798,7 +1789,7 @@ Snes9xWindow::leave_fullscreen_mode ()
     if (GDK_IS_X11_WINDOW (gtk_widget_get_window (GTK_WIDGET (window))))
     {
         set_bypass_compositor (gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (window))),
-                               GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (GTK_WIDGET (window))),
+                               gdk_x11_window_get_xid (gtk_widget_get_window (GTK_WIDGET (window))),
                                0);
     }
 #endif

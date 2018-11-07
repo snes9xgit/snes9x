@@ -3,14 +3,36 @@
 
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
+#include <gdk/gdkkeysyms.h>
 
 #if GTK_MAJOR_VERSION >= 3
-#define GDK_COMPAT_WINDOW_XID(window) (gdk_x11_window_get_xid (window))
-#else
+
+#include <gdk/gdkkeysyms-compat.h>
+
+#ifdef GDK_WINDOWING_WAYLAND
+#include <gdk/gdkwayland.h>
+#endif
+
+#else // GTK+ 2.0
+
 #define GDK_WINDOWING_X11
 #define GDK_IS_X11_WINDOW(window) TRUE
 #define GDK_IS_X11_DISPLAY(display) TRUE
-#define GDK_COMPAT_WINDOW_XID(window) (GDK_WINDOW_XWINDOW (window))
+#define gdk_x11_window_get_xid(window) GDK_WINDOW_XWINDOW (window)
+
+inline void gdk_window_get_geometry (GdkWindow *window,
+                                     gint *x,
+                                     gint *y,
+                                     gint *width,
+                                     gint *height)
+{
+    gdk_window_get_geometry (window, x, y, width, height, NULL);
+}
+
+#endif
+
+#ifdef GDK_WINDOWING_X11
+#include <gdk/gdkx.h>
 #endif
 
 #endif

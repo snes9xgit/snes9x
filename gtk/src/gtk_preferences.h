@@ -1,7 +1,7 @@
 #ifndef __GTK_PREFERENCES_H
 #define __GTK_PREFERENCES_H
 
-#include <gtk/gtk.h>
+#include "gtk_2_3_compat.h"
 #include "gtk_s9x.h"
 #include "gtk_builder_window.h"
 

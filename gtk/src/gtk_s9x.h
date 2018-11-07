@@ -1,8 +1,6 @@
 #ifndef __GTK_S9X_H
 #define __GTK_S9X_H
 
-#include <gtk/gtk.h>
-
 #include "gtk_config.h"
 #include "gtk_s9xcore.h"
 #include "gtk_s9xwindow.h"

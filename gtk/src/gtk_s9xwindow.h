@@ -1,7 +1,7 @@
 #ifndef __GTK_S9XWINDOW_H
 #define __GTK_S9XWINDOW_H
 
-#include <gtk/gtk.h>
+#include "gtk_2_3_compat.h"
 
 #include "port.h"
 #include "gtk_builder_window.h"

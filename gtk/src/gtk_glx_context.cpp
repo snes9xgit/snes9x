@@ -73,11 +73,7 @@ bool GTKGLXContext::attach (GtkWidget *widget)
 
     vi = glXGetVisualFromFBConfig (display, fbconfig);
 
-#if GTK_MAJOR_VERSION < 3
-    gdk_window_get_geometry (parent_gdk_window, &x, &y, &width, &height, NULL);
-#else
     gdk_window_get_geometry (parent_gdk_window, &x, &y, &width, &height);
-#endif
     memset (&window_attr, 0, sizeof (GdkWindowAttr));
     window_attr.event_mask  = GDK_EXPOSURE_MASK | GDK_STRUCTURE_MASK;
     window_attr.width       = width;
@@ -89,7 +85,7 @@ bool GTKGLXContext::attach (GtkWidget *widget)
     gdk_window = gdk_window_new (window, &window_attr, GDK_WA_VISUAL);
     gdk_window_set_user_data (gdk_window, (gpointer) widget);
     gdk_window_show (gdk_window);
-    xid = GDK_COMPAT_WINDOW_XID (gdk_window);
+    xid = gdk_x11_window_get_xid (gdk_window);
 
     return true;
 }
@@ -121,11 +117,7 @@ bool GTKGLXContext::create_context ()
 
 void GTKGLXContext::resize ()
 {
-#if GTK_MAJOR_VERSION < 3
-    gdk_window_get_geometry (parent_gdk_window, &x, &y, &width, &height, NULL);
-#else
     gdk_window_get_geometry (parent_gdk_window, &x, &y, &width, &height);
-#endif
 
     if (window_attr.width == width && window_attr.height == height)
         return;
@@ -137,7 +129,7 @@ void GTKGLXContext::resize ()
     gdk_window = gdk_window_new (parent_gdk_window, &window_attr, GDK_WA_VISUAL);
     gdk_window_set_user_data (gdk_window, (gpointer) widget);
     gdk_window_show (gdk_window);
-    xid = GDK_COMPAT_WINDOW_XID (gdk_window);
+    xid = gdk_x11_window_get_xid (gdk_window);
 
     make_current ();
 }

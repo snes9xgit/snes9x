@@ -1,11 +1,6 @@
 #include <string>
 #include <stdlib.h>
-#include <gdk/gdkkeysyms.h>
 #include "gtk_2_3_compat.h"
-#ifdef GDK_WINDOWING_X11
-#include <gdk/gdkx.h>
-#endif
-
 #include "gtk_preferences.h"
 #include "gtk_config.h"
 #include "gtk_s9xcore.h"
@@ -13,10 +8,6 @@
 #include "gtk_sound.h"
 #include "gtk_display.h"
 #include "gtk_binding.h"
-
-#if GTK_MAJOR_VERSION >= 3
-#include <gdk/gdkkeysyms-compat.h>
-#endif
 
 #define SAME_GAME _("Same location as current game")
 

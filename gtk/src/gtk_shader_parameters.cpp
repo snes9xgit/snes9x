@@ -1,4 +1,4 @@
-#include <gtk/gtk.h>
+#include "gtk_2_3_compat.h"
 #include <vector>
 #include <math.h>
 

@@ -1,7 +1,7 @@
 #ifndef __GTK_OPENGL_CONTEXT_H
 #define __GTK_OPENGL_CONTEXT_H
 
-#include <gtk/gtk.h>
+#include "gtk_2_3_compat.h"
 
 class OpenGLContext
 {

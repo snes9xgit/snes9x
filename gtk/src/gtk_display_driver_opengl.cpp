@@ -1,4 +1,4 @@
-#include <gtk/gtk.h>
+#include "gtk_2_3_compat.h"
 #include <dlfcn.h>
 #include <sys/stat.h>
 #include <fcntl.h>

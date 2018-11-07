@@ -1,5 +1,4 @@
-#include <gtk/gtk.h>
-#include <gdk/gdk.h>
+#include "gtk_2_3_compat.h"
 #include <cairo.h>
 #include "gtk_display.h"
 #include "gtk_display_driver_gtk.h"

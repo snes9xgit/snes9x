@@ -1,11 +1,6 @@
 #include <stdio.h>
 #include <signal.h>
-#include <gdk/gdk.h>
 #include "gtk_2_3_compat.h"
-#ifdef GDK_WINDOWING_X11
-#include <gdk/gdkx.h>
-#endif
-
 #include "gtk_s9x.h"
 #include "gtk_control.h"
 #include "gtk_sound.h"

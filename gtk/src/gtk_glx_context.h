@@ -1,8 +1,7 @@
 #ifndef __GTK_GLX_CONTEXT_H
 #define __GTK_GLX_CONTEXT_H
 
-#include <gtk/gtk.h>
-#include <gdk/gdkx.h>
+#include "gtk_2_3_compat.h"
 #include <epoxy/glx.h>
 
 #include "gtk_opengl_context.h"

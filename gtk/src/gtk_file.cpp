@@ -1,7 +1,7 @@
 #include <sys/stat.h>
-#include <gtk/gtk.h>
 #include <errno.h>
 
+#include "gtk_2_3_compat.h"
 #include "gtk_s9x.h"
 
 static char buf[PATH_MAX];

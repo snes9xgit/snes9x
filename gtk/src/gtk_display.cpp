@@ -1,11 +1,4 @@
 #include "gtk_2_3_compat.h"
-#include <gdk/gdk.h>
-#ifdef GDK_WINDOWING_X11
-#include <gdk/gdkx.h>
-#endif
-#ifdef GDK_WINDOWING_WAYLAND
-#include <gdk/gdkwayland.h>
-#endif
 #include <sched.h>
 
 #include "gtk_s9x.h"
@@ -1548,7 +1541,7 @@ S9xQueryDrivers ()
     if (GDK_IS_X11_DISPLAY (display))
     {
         Display *dpy = gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (top_level->get_window())));
-        Window xid   = GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (GTK_WIDGET (top_level->get_window())));
+        Window xid   = gdk_x11_window_get_xid (gtk_widget_get_window (GTK_WIDGET (top_level->get_window())));
 
         gui_config->allow_xrandr = 1;
         gui_config->xrr_screen_resources = XRRGetScreenResourcesCurrent (dpy, xid);
