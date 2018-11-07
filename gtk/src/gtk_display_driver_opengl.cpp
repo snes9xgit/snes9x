@@ -656,7 +656,7 @@ int S9xOpenGLDisplayDriver::query_availability ()
 #ifdef GDK_WINDOWING_X11
     if (GDK_IS_X11_DISPLAY (gdk_display))
     {
-        Display *dpy = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
+        Display *dpy = GDK_DISPLAY_XDISPLAY (gdk_display);
 
         if (glXQueryExtension (dpy, NULL, NULL) == True)
         {

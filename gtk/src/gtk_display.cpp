@@ -1,3 +1,4 @@
+#include "gtk_2_3_compat.h"
 #include <gdk/gdk.h>
 #ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
@@ -1560,22 +1561,6 @@ S9xQueryDrivers ()
 
 bool8
 S9xDeinitUpdate (int width, int height)
-{
-    GdkWindow *gdk_window = gtk_widget_get_window (GTK_WIDGET (top_level->get_window ()));
-
-#ifdef GDK_WINDOWING_WAYLAND
-    if (GDK_IS_WAYLAND_WINDOW (gdk_window) && gui_config->hw_accel == 0)
-    {
-        gtk_widget_queue_draw (GTK_WIDGET (top_level->drawing_area));
-        return TRUE;
-    }
-#endif
-
-    return S9xRealDeinitUpdate (width, height);
-}
-
-bool8
-S9xRealDeinitUpdate (int width, int height)
 {
     int yoffset = 0;
 

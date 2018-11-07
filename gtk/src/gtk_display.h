@@ -123,7 +123,6 @@ void S9xDisplayClearBuffers ();
 void S9xReinitDisplay ();
 void S9xDisplayReconfigure ();
 void S9xQueryDrivers ();
-bool8 S9xRealDeinitUpdate (int width, int height);
 
 S9xDisplayDriver *S9xDisplayGetDriver ();
 

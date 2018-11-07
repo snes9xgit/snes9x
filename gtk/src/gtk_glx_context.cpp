@@ -3,6 +3,7 @@
 
 #include "gtk_s9x.h"
 #include "gtk_glx_context.h"
+#include "gtk_2_3_compat.h"
 
 GTKGLXContext::GTKGLXContext ()
 {
@@ -72,8 +73,13 @@ bool GTKGLXContext::attach (GtkWidget *widget)
 
     vi = glXGetVisualFromFBConfig (display, fbconfig);
 
-    gdk_window_get_geometry (window, &x, &y, &width, &height);
+#if GTK_MAJOR_VERSION < 3
+    gdk_window_get_geometry (parent_gdk_window, &x, &y, &width, &height, NULL);
+#else
+    gdk_window_get_geometry (parent_gdk_window, &x, &y, &width, &height);
+#endif
     memset (&window_attr, 0, sizeof (GdkWindowAttr));
+    window_attr.event_mask  = GDK_EXPOSURE_MASK | GDK_STRUCTURE_MASK;
     window_attr.width       = width;
     window_attr.height      = height;
     window_attr.wclass      = GDK_INPUT_OUTPUT;
@@ -115,7 +121,11 @@ bool GTKGLXContext::create_context ()
 
 void GTKGLXContext::resize ()
 {
+#if GTK_MAJOR_VERSION < 3
+    gdk_window_get_geometry (parent_gdk_window, &x, &y, &width, &height, NULL);
+#else
     gdk_window_get_geometry (parent_gdk_window, &x, &y, &width, &height);
+#endif
 
     if (window_attr.width == width && window_attr.height == height)
         return;

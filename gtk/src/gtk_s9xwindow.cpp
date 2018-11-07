@@ -1,13 +1,14 @@
+#include "gtk_2_3_compat.h"
 #include <gdk/gdk.h>
 #ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
+#include <X11/Xatom.h>
 #endif
 #ifdef GDK_WINDOWING_WAYLAND
 #include <gdk/gdkwayland.h>
 #endif
 #include <gdk/gdkkeysyms.h>
 #include <cairo.h>
-#include <X11/Xatom.h>
 
 #ifdef USE_XV
 #include <X11/extensions/XShm.h>
@@ -623,6 +624,7 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
 #if GTK_MAJOR_VERSION < 3
     gtk_widget_set_double_buffered (GTK_WIDGET (drawing_area), FALSE);
     gtk_widget_set_app_paintable (GTK_WIDGET (drawing_area), TRUE);
+
 #endif
 
     if (config->use_headerbar)
@@ -789,29 +791,14 @@ Snes9xWindow::expose ()
         config->window_height = get_height ();
     }
 
-#ifdef GDK_WINDOWING_X11
-    if (GDK_IS_X11_WINDOW (gtk_widget_get_window (window)))
-    {
-        if (is_paused ()
+    if (is_paused ()
 #ifdef NETPLAY_SUPPORT
             || NetPlay.Paused
 #endif
         )
-        {
-            S9xDeinitUpdate (last_width, last_height);
-        }
-
-        return;
-    }
-#endif
-
-#ifdef GDK_WINDOWING_WAYLAND
-    if (GDK_IS_WAYLAND_WINDOW (gtk_widget_get_window (window)))
     {
-        if (config->hw_accel == HWA_NONE || is_paused ())
-            S9xRealDeinitUpdate (last_width, last_height);
+        S9xDeinitUpdate (last_width, last_height);
     }
-#endif
 }
 
 void

@@ -1,5 +1,6 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
+#include "gtk_2_3_compat.h"
 #include <X11/extensions/XShm.h>
 #include <X11/extensions/Xv.h>
 #include <X11/extensions/Xvlib.h>

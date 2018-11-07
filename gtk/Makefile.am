@@ -53,7 +53,8 @@ snes9x_gtk_SOURCES = \
     src/snes_ntsc_config.h \
     src/snes_ntsc.h \
     src/snes_ntsc_impl.h \
-    src/snes_ntsc.c
+    src/snes_ntsc.c \
+    src/gtk_2_3_compat.h
 
 if HQ2X
 snes9x_gtk_SOURCES += \
