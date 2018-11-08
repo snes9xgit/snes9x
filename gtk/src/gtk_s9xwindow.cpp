@@ -1407,7 +1407,6 @@ Snes9xWindow::configure_widgets ()
     enable_widget ("continue_item", config->rom_loaded);
     enable_widget ("pause_item", config->rom_loaded);
     enable_widget ("reset_item", config->rom_loaded);
-    enable_widget ("controller_ports_item", config->rom_loaded);
     enable_widget ("load_state_item", config->rom_loaded);
     enable_widget ("save_state_item", config->rom_loaded);
     enable_widget ("save_spc_item", config->rom_loaded);

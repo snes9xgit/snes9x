@@ -378,12 +378,44 @@ int Snes9xConfig::save_config_file ()
     outbool (cf, z"RemoveSpriteLimit", Settings.MaxSpriteTilesPerLine == 34 ? 0 : 1);
     outbool (cf, z"OverclockCPU", Settings.OneClockCycle == 6 ? 0 : 1);
 
-#ifdef USE_JOYSTICK
 #undef z
 #define z "Input::"
+    controllers controller = CTL_NONE;
+    int8 id[4];
+
+    for (int i = 0; i < 2; i++)
+    {
+        const char *output_string;
+        snprintf (buffer, PATH_MAX, z"ControllerPort%d", i);
+        S9xGetController (i, &controller, &id[0], &id[1], &id[2], &id[3]);
+
+        switch (controller)
+        {
+        case CTL_JOYPAD:
+            output_string = "joypad";
+            break;
+        case CTL_MOUSE:
+            output_string = "mouse";
+            break;
+        case CTL_SUPERSCOPE:
+            output_string = "superscope";
+            break;
+        case CTL_MP5:
+            output_string = "multitap";
+            break;
+        case CTL_JUSTIFIER:
+            output_string = "justifier";
+            break;
+        default:
+            output_string = "none";
+        }
+
+        cf.SetString (buffer, output_string);
+    }
+
+#ifdef USE_JOYSTICK
     cf.SetInt (z"JoystickThreshold", joystick_threshold);
 #endif
-
 #undef z
 
     for (int i = 0; i < NUM_JOYPADS; i++)
@@ -582,11 +614,28 @@ int Snes9xConfig::load_config_file ()
     bool OverclockCPU;
     inbool (z"OverclockCPU", OverclockCPU);
 
-#ifdef USE_JOYSTICK
 #undef z
 #define z "Input::"
+
+    for (int i = 0; i < 2; i++)
+    {
+        snprintf (buffer, PATH_MAX, z"ControllerPort%d", i);
+        std::string tmp = cf.GetString (buffer, "");
+
+        if (tmp.find ("joypad") != std::string::npos)
+            S9xSetController (i, CTL_JOYPAD, i, 0, 0, 0);
+        else if (tmp.find ("multitap") != std::string::npos)
+            S9xSetController (i, CTL_MP5, i, i + 1, i + 2, i + 3);
+        else if (tmp.find ("superscope") != std::string::npos)
+            S9xSetController (i, CTL_SUPERSCOPE, 0, 0, 0, 0);
+        else if (tmp.find ("mouse") != std::string::npos)
+            S9xSetController (i, CTL_MOUSE, i, 0, 0, 0);
+    }
+
+#ifdef USE_JOYSTICK
     inint (z"JoystickThreshold", joystick_threshold);
 #endif
+#undef z
 
     for (int i = 0; i < NUM_JOYPADS; i++)
     {
