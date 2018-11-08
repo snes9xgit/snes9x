@@ -70,17 +70,32 @@ S9xOSSSoundDriver::open_device ()
 
     printf ("OSS sound driver initializing...\n");
 
-    printf ("    --> (Device: /dev/dsp)...");
+    printf ("Device: /dev/dsp: ");
 
     filedes = open ("/dev/dsp", O_WRONLY | O_NONBLOCK);
 
     if (filedes < 0)
     {
-        printf ("Failed\n    --> (Device: /dev/dsp1)...");
-        filedes = open ("/dev/dsp1", O_WRONLY | O_NONBLOCK);
+        printf ("Failed.\n");
+        char dspstring[16] = "/dev/dspX\0";
 
-        if (filedes < 0)
-            goto fail;
+        for (int i = 1; i <= 9; i++)
+        {
+            dspstring[8] = '0' + i;
+
+            printf ("Trying %s: ", dspstring);
+
+            filedes = open (dspstring, O_WRONLY | O_NONBLOCK);
+
+            if (filedes < 0)
+            {
+                if (i == 9)
+                    goto fail;
+                printf ("Failed.\n");
+            }
+            else
+                break;
+        }
     }
 
     printf ("OK\n");
