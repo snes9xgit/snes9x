@@ -49,6 +49,7 @@ enum
     PORT_DECREMENTLOADSLOT  = 22,
     PORT_INCREMENTSLOT      = 23,
     PORT_DECREMENTSLOT      = 24,
+    PORT_GRABMOUSE          = 25
 };
 
 typedef struct BindingLink
@@ -61,7 +62,7 @@ typedef struct BindingLink
 extern const BindingLink b_links[];
 extern const int b_breaks[];
 const int NUM_JOYPAD_LINKS = 24;
-const int NUM_EMU_LINKS    = 61;
+const int NUM_EMU_LINKS    = 62;
 
 typedef struct JoypadBinding
 {

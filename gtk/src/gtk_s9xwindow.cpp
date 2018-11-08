@@ -232,6 +232,19 @@ event_motion_notify (GtkWidget      *widget,
         return FALSE;
     }
 
+    if (window->mouse_grabbed)
+    {
+        if (event->x_root == window->mouse_reported_x &&
+            event->y_root == window->mouse_reported_y)
+            return FALSE;
+
+        window->mouse_loc_x += (event->x_root - window->mouse_reported_x);
+        window->mouse_loc_y += (event->y_root - window->mouse_reported_y);
+        window->center_mouse ();
+
+        return FALSE;
+    }
+
 #if GTK_CHECK_VERSION(3,10,0)
     int scale_factor = gdk_window_get_scale_factor (gtk_widget_get_window (GTK_WIDGET (window->get_window ())));
 #else
@@ -594,6 +607,7 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
     paused_from_focus_loss = 0;
     cr                     = NULL;
     cairo_owned            = 0;
+    mouse_grabbed          = 0;
 
     if (gtk_icon_theme_has_icon (gtk_icon_theme_get_default (), "snes9x"))
     {
@@ -1802,6 +1816,84 @@ Snes9xWindow::show_mouse_cursor ()
     gdk_window_set_cursor (gtk_widget_get_window (GTK_WIDGET (drawing_area)),
                            NULL);
     config->pointer_is_visible = TRUE;
+}
+
+void
+Snes9xWindow::center_mouse ()
+{
+    GdkWindow *gdk_window = gtk_widget_get_window (window);
+    GdkDisplay *gdk_display = gdk_window_get_display (gdk_window);
+    GdkScreen *gdk_screen = gdk_window_get_screen (gdk_window);
+    int x, y, w, h;
+
+    gdk_window_get_origin (gdk_window, &x, &y);
+    w = gdk_window_get_width (gdk_window);
+    h = gdk_window_get_height (gdk_window);
+
+    mouse_reported_x = x + w / 2;
+    mouse_reported_y = y + h / 2;
+
+#if GTK_MAJOR_VERSION < 3
+    gdk_display_warp_pointer (gdk_display, gdk_screen, mouse_reported_x,
+                              mouse_reported_y);
+#elif GTK_MINOR_VERSION < 20
+    GdkDeviceManager *manager = gdk_display_get_device_manager (gdk_display);
+    GdkDevice *pointer = gdk_device_manager_get_client_pointer (manager);
+
+    gdk_device_warp (pointer, gdk_screen, mouse_reported_x, mouse_reported_y);
+#else
+    GdkSeat *seat = gdk_display_get_default_seat (gdk_display);
+    GdkDevice *pointer = gdk_seat_get_pointer (seat);
+
+    gdk_device_warp (pointer, gdk_screen, mouse_reported_x, mouse_reported_y);
+#endif
+}
+
+void
+Snes9xWindow::toggle_grab_mouse ()
+{
+    GdkWindow *gdk_window = gtk_widget_get_window (window);
+    GdkDisplay *gdk_display = gdk_window_get_display (gdk_window);
+
+    if ((!mouse_grabbed && !S9xIsMousePluggedIn ()) || !config->rom_loaded)
+        return;
+
+#if GTK_MAJOR_VERSION < 3
+    if (!mouse_grabbed)
+    {
+        gdk_pointer_grab (gdk_window, TRUE, (GdkEventMask) 1020, gdk_window, empty_cursor, GDK_CURRENT_TIME);
+        center_mouse ();
+    }
+    else
+    {
+        gdk_pointer_ungrab (GDK_CURRENT_TIME);
+        if (config->pointer_is_visible)
+            show_mouse_cursor ();
+    }
+#elif GTK_MINOR_VERSION < 20
+    GdkDeviceManager *manager = gdk_display_get_device_manager (gdk_display);
+    GdkDevice *pointer = gdk_device_manager_get_client_pointer (manager);
+
+    if (!mouse_grabbed)
+        gdk_device_grab (pointer, gdk_window, GDK_OWNERSHIP_NONE, TRUE,
+                         (GdkEventMask) 1020, empty_cursor, GDK_CURRENT_TIME);
+    else
+        gdk_device_ungrab (pointer, GDK_CURRENT_TIME);
+#else
+    GdkSeat *seat = gdk_display_get_default_seat (gdk_display);
+
+    if (!mouse_grabbed)
+        gdk_seat_grab (seat, gdk_window, GDK_SEAT_CAPABILITY_ALL_POINTING, TRUE,
+                       empty_cursor, NULL, NULL, NULL);
+    else
+        gdk_seat_ungrab (seat);
+#endif
+
+    S9xReportPointer (BINDING_MOUSE_POINTER, 0, 0);
+    mouse_loc_x = 0; mouse_loc_y = 0;
+    mouse_grabbed ^= 1;
+    if (mouse_grabbed)
+        center_mouse ();
 }
 
 void

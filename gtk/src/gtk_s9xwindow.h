@@ -30,6 +30,8 @@ class Snes9xWindow : public GtkBuilderWindow
         /* Cursor modifying functions */
         void show_mouse_cursor ();
         void hide_mouse_cursor ();
+        void toggle_grab_mouse ();
+        void center_mouse ();
 
         /* Rom-related functions */
         void open_rom_dialog ();
@@ -75,6 +77,8 @@ class Snes9xWindow : public GtkBuilderWindow
         int            focused;
         int            paused_from_focus_loss;
         uint16         mouse_loc_x, mouse_loc_y;
+        uint16         mouse_reported_x, mouse_reported_y;
+        int            mouse_grabbed;
         GdkPixbuf      *icon, *splash;
         GdkCursor      *default_cursor, *empty_cursor;
         GtkDrawingArea *drawing_area;

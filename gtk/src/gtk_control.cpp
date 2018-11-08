@@ -99,6 +99,7 @@ const BindingLink b_links[] =
         { "b_seek_to_frame",       "GTK_seek_to_frame" },
         { "b_swap_controllers",    "GTK_swap_controllers" },
         { "b_rewind",              "GTK_rewind"        },
+        { "b_grab_mouse",          "GTK_grab_mouse"    },
 
         { NULL, NULL }
 };
@@ -112,7 +113,7 @@ const int b_breaks[] =
         43, /* End of Graphic options */
         69, /* End of save/load states */
         78, /* End of sound buttons */
-        85, /* End of miscellaneous buttons */
+        86, /* End of miscellaneous buttons */
         -1
 };
 
@@ -289,6 +290,11 @@ void S9xHandlePortCommand (s9xcommand_t cmd, int16 data1, int16 data2)
         {
             change_slot (-1);
         }
+
+        else if (cmd.port[0] == PORT_GRABMOUSE)
+        {
+            top_level->toggle_grab_mouse ();
+        }
     }
 }
 
@@ -435,6 +441,11 @@ s9xcommand_t S9xGetPortCommandT (const char *name)
     else if (strstr (name, "GTK_state_decrement"))
     {
         cmd.port[0] = PORT_DECREMENTSLOT;
+    }
+
+    else if (strstr (name, "GTK_grab_mouse"))
+    {
+        cmd.port[0] = PORT_GRABMOUSE;
     }
 
 
