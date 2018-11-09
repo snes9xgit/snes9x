@@ -395,7 +395,10 @@ int S9xOpenGLDisplayDriver::opengl_defaults ()
 
     if (config->use_pbos)
     {
-        using_pbos = true;
+        if (version >= 15)
+            using_pbos = true;
+        else
+            config->use_pbos = false;
     }
 
     using_glsl_shaders = false;
