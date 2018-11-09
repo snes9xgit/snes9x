@@ -153,6 +153,12 @@ AC_ARG_WITH(gtk3,
   [],
   [with_gtk3=yes])
 
+AC_ARG_WITH(wayland,
+  [AS_HELP_STRING([--with(out)-wayland],
+    [Build with Wayland support if available (default: with)])],
+  [],
+  [with_wayland=yes])
+
 AC_ARG_WITH(gtk2,
   [AS_HELP_STRING([--with(out)-gtk2],
     [Build with GTK+ 3 if available (default: without)])],
@@ -224,17 +230,19 @@ if test yes = "$with_opengl" ; then
 fi
 
 WAYLAND=0
-PKG_CHECK_MODULES([WAYLAND_EGL],[wayland-egl],[
-    if test yes = "$GTK3_WARNING" ; then
-        CFLAGS="$CFLAGS $WAYLAND_EGL_CFLAGS"
-        LIBS="$LIBS $WAYLAND_EGL_LIBS"
-        WAYLAND=yes
-    else
-        echo "Found Wayland, but need GTK3 for support."
-    fi
-],[
-    echo "Not using Wayland-EGL."
-])
+if test yes = "$with_wayland"; then
+    PKG_CHECK_MODULES([WAYLAND_EGL],[wayland-egl],[
+        if test yes = "$GTK3_WARNING" ; then
+            CFLAGS="$CFLAGS -DUSE_WAYLAND $WAYLAND_EGL_CFLAGS"
+            LIBS="$LIBS $WAYLAND_EGL_LIBS"
+            WAYLAND=yes
+        else
+            echo "Found Wayland, but need GTK3 for support."
+        fi
+    ],[
+        echo "Not using Wayland-EGL."
+    ])
+fi
 
 GTKJOY=0
 SDL_CFLAGS=""
@@ -520,6 +528,10 @@ if test yes = "$GTK3_WARNING" ; then
     echo "    GTK+ 3.0"
 else
     echo "    GTK+ 2.0"
+fi
+
+if test yes = "$WAYLAND" ; then
+    echo "    Wayland"
 fi
 
 if test yes = "$ALSA" ; then

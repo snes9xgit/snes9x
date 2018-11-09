@@ -9,6 +9,10 @@
 
 #include <gdk/gdkkeysyms-compat.h>
 
+#ifndef USE_WAYLAND
+#undef GDK_WINDOWING_WAYLAND
+#endif
+
 #ifdef GDK_WINDOWING_WAYLAND
 #include <gdk/gdkwayland.h>
 #endif
