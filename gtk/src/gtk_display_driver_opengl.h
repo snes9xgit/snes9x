@@ -51,6 +51,7 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
         GLuint            texmap;
         GLuint            pbo;
 
+        bool              legacy;
         bool              core;
         int               version;
         bool              npot;

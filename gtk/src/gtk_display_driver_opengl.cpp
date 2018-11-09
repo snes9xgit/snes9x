@@ -107,7 +107,8 @@ void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
     allocation.height *= gdk_scale_factor;
 #endif
 
-    glActiveTexture (GL_TEXTURE0);
+    if (!legacy)
+        glActiveTexture (GL_TEXTURE0);
     glBindTexture (GL_TEXTURE_2D, texmap);
     GLint filter = Settings.BilinearFilter ? GL_LINEAR : GL_NEAREST;
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
@@ -247,15 +248,24 @@ void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
         return;
     }
 
-    glUseProgram (stock_program);
-    glBindBuffer (GL_ARRAY_BUFFER, coord_buffer);
-    glEnableVertexAttribArray (0);
-    glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET (0));
-    glEnableVertexAttribArray (1);
-    glVertexAttribPointer (1, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET (32));
-    glDrawArrays (GL_TRIANGLE_STRIP, 0, 4);
-    glDisableVertexAttribArray (1);
-    glDisableVertexAttribArray (0);
+    if (legacy)
+    {
+        glVertexPointer (2, GL_FLOAT, 0, coords);
+        glTexCoordPointer (2, GL_FLOAT, 0, &coords[8]);
+        glDrawArrays (GL_TRIANGLE_STRIP, 0, 4);
+    }
+    else
+    {
+        glUseProgram (stock_program);
+        glBindBuffer (GL_ARRAY_BUFFER, coord_buffer);
+        glEnableVertexAttribArray (0);
+        glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET (0));
+        glEnableVertexAttribArray (1);
+        glVertexAttribPointer (1, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET (32));
+        glDrawArrays (GL_TRIANGLE_STRIP, 0, 4);
+        glDisableVertexAttribArray (1);
+        glDisableVertexAttribArray (0);
+    }
 
     swap_buffers ();
 }
@@ -390,7 +400,7 @@ int S9xOpenGLDisplayDriver::opengl_defaults ()
 
     if (config->use_shaders)
     {
-        if (!load_shaders (config->fragment_shader))
+        if (legacy || !load_shaders (config->fragment_shader))
         {
             config->use_shaders = false;
         }
@@ -404,50 +414,63 @@ int S9xOpenGLDisplayDriver::opengl_defaults ()
         npot = true;
     }
 
-    stock_program = glCreateProgram ();
-
-    GLuint vertex_shader = glCreateShader (GL_VERTEX_SHADER);
-    GLuint fragment_shader = glCreateShader (GL_FRAGMENT_SHADER);
-
-    if (version < 30)
+    if (legacy)
     {
-        glShaderSource (vertex_shader, 1, &stock_vertex_shader_110, NULL);
-        glShaderSource (fragment_shader, 1, &stock_fragment_shader_110, NULL);
+        glEnableClientState (GL_VERTEX_ARRAY);
+        glEnableClientState (GL_TEXTURE_COORD_ARRAY);
+        glEnable (GL_TEXTURE_2D);
+        glMatrixMode (GL_PROJECTION);
+        glLoadIdentity ();
+        glMatrixMode (GL_MODELVIEW);
+        glLoadIdentity ();
     }
     else
     {
-        glShaderSource (vertex_shader, 1, &stock_vertex_shader_140, NULL);
-        glShaderSource (fragment_shader, 1, &stock_fragment_shader_140, NULL);
+        stock_program = glCreateProgram ();
+
+        GLuint vertex_shader = glCreateShader (GL_VERTEX_SHADER);
+        GLuint fragment_shader = glCreateShader (GL_FRAGMENT_SHADER);
+
+        if (version < 30)
+        {
+            glShaderSource (vertex_shader, 1, &stock_vertex_shader_110, NULL);
+            glShaderSource (fragment_shader, 1, &stock_fragment_shader_110, NULL);
+        }
+        else
+        {
+            glShaderSource (vertex_shader, 1, &stock_vertex_shader_140, NULL);
+            glShaderSource (fragment_shader, 1, &stock_fragment_shader_140, NULL);
+        }
+
+        glCompileShader (vertex_shader);
+        glAttachShader (stock_program, vertex_shader);
+        glCompileShader (fragment_shader);
+        glAttachShader (stock_program, fragment_shader);
+
+        glBindAttribLocation (stock_program, 0, "in_position");
+        glBindAttribLocation (stock_program, 1, "in_texcoord");
+
+        glLinkProgram (stock_program);
+        glUseProgram (stock_program);
+
+        glDeleteShader (vertex_shader);
+        glDeleteShader (fragment_shader);
+
+        GLint texture_uniform = glGetUniformLocation (stock_program, "texmap");
+        glUniform1i (texture_uniform, 0);
+
+        if (core)
+        {
+            GLuint vao;
+            glGenVertexArrays (1, &vao);
+            glBindVertexArray (vao);
+        }
+
+        glGenBuffers (1, &coord_buffer);
+        glBindBuffer (GL_ARRAY_BUFFER, coord_buffer);
+        glBufferData (GL_ARRAY_BUFFER, sizeof (GLfloat) * 16, coords, GL_STATIC_DRAW);
+        glBindBuffer (GL_ARRAY_BUFFER, 0);
     }
-
-    glCompileShader (vertex_shader);
-    glAttachShader (stock_program, vertex_shader);
-    glCompileShader (fragment_shader);
-    glAttachShader (stock_program, fragment_shader);
-
-    glBindAttribLocation (stock_program, 0, "in_position");
-    glBindAttribLocation (stock_program, 1, "in_texcoord");
-
-    glLinkProgram (stock_program);
-    glUseProgram (stock_program);
-
-    glDeleteShader (vertex_shader);
-    glDeleteShader (fragment_shader);
-
-    GLint texture_uniform = glGetUniformLocation (stock_program, "texmap");
-    glUniform1i (texture_uniform, 0);
-
-    if (core)
-    {
-        GLuint vao;
-        glGenVertexArrays (1, &vao);
-        glBindVertexArray (vao);
-    }
-
-    glGenBuffers (1, &coord_buffer);
-    glBindBuffer (GL_ARRAY_BUFFER, coord_buffer);
-    glBufferData (GL_ARRAY_BUFFER, sizeof (GLfloat) * 16, coords, GL_STATIC_DRAW);
-    glBindBuffer (GL_ARRAY_BUFFER, 0);
 
     if (config->use_pbos)
     {
@@ -535,22 +558,14 @@ int S9xOpenGLDisplayDriver::create_context ()
 
     context->make_current ();
 
+    legacy = false;
     version = epoxy_gl_version ();
     if (version < 20)
     {
-        printf ("OpenGL version is only %d.%d. Required version is 2.0.",
+        printf ("OpenGL version is only %d.%d. Recommended version is 2.0.\n",
                 version / 10,
                 version % 10);
-        if (epoxy_has_gl_extension ("GL_EXT_fragment_shader") ||
-            epoxy_has_gl_extension ("GL_ARB_fragment_shader"))
-        {
-            printf ("Found GLSL capability. Continuing, but things may not work well.\n");
-        }
-        else
-        {
-            printf ("No GLSL available. Aborting.\n");
-            return 0;
-        }
+        legacy = true;
     }
 
     int profile_mask = 0;
