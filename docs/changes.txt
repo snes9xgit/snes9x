@@ -29,8 +29,9 @@ Snes9x 1.57
  Win32:
 - Include DirectDraw libraries and compile with DirectDraw
   support by default.                                       (OV2)
-  Add a link to DirectX installer in error message displayed
+- Add a link to DirectX installer in error message displayed
   when the needed DirectX libraries can't be found.         (OV2)
+- Save window position when exiting via menu                (OV2)
 - Make custom ROM dialog resizable.                         (OV2)
 - Fix various cheat dialog issues.                          (OV2)
 - Remove d3d9x DLL dependency by using DirectXMath.         (OV2)
