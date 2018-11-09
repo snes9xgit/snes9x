@@ -1,6 +1,6 @@
 AC_PREREQ([2.60])
-AC_INIT([Snes9x], [1.56.2], [], [snes9x])
-AC_REVISION([$Revision: 1.56.2 $])
+AC_INIT([Snes9x], [1.57], [], [snes9x])
+AC_REVISION([$Revision: 1.57 $])
 
 AC_CONFIG_SRCDIR([unix.cpp])
 

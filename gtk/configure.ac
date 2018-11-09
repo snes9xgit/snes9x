@@ -1,4 +1,4 @@
-AC_INIT([snes9x-gtk], 1.56.2)
+AC_INIT([snes9x-gtk], 1.57)
 
 AC_CONFIG_MACRO_DIR([macros])
 
