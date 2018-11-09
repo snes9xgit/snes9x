@@ -1631,6 +1631,12 @@ S9xDeinitUpdate (int width, int height)
 static void
 S9xInitDriver ()
 {
+#ifdef GDK_WINDOWING_WAYLAND
+    if (GDK_IS_WAYLAND_DISPLAY (gdk_display_get_default ()))
+    {
+        gui_config->hw_accel = HWA_OPENGL;
+    }
+#endif
     switch (gui_config->hw_accel)
     {
 #ifdef USE_OPENGL

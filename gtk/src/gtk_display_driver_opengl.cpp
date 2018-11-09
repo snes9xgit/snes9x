@@ -538,10 +538,19 @@ int S9xOpenGLDisplayDriver::create_context ()
     version = epoxy_gl_version ();
     if (version < 20)
     {
-        printf ("OpenGL version is only %d.%d. Need 2.0.\n"
-                "Trying to run anyway.",
+        printf ("OpenGL version is only %d.%d. Required version is 2.0.",
                 version / 10,
                 version % 10);
+        if (epoxy_has_gl_extension ("GL_EXT_fragment_shader") ||
+            epoxy_has_gl_extension ("GL_ARB_fragment_shader"))
+        {
+            printf ("Found GLSL capability. Continuing, but things may not work well.\n");
+        }
+        else
+        {
+            printf ("No GLSL available. Aborting.\n");
+            return 0;
+        }
     }
 
     int profile_mask = 0;
