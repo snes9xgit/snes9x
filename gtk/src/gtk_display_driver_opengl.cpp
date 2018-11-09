@@ -354,9 +354,12 @@ void S9xOpenGLDisplayDriver::update_texture_size (int width, int height)
         texture_width  = width;
         texture_height = height;
 
-        glBindBuffer (GL_ARRAY_BUFFER, coord_buffer);
-        glBufferData (GL_ARRAY_BUFFER, sizeof (GLfloat) * 16, coords, GL_STATIC_DRAW);
-        glBindBuffer (GL_ARRAY_BUFFER, 0);
+        if (!legacy)
+        {
+            glBindBuffer (GL_ARRAY_BUFFER, coord_buffer);
+            glBufferData (GL_ARRAY_BUFFER, sizeof (GLfloat) * 16, coords, GL_STATIC_DRAW);
+            glBindBuffer (GL_ARRAY_BUFFER, 0);
+        }
     }
 }
 
