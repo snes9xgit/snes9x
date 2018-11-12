@@ -5,7 +5,7 @@
 #include <X11/extensions/Xrandr.h>
 
 #include "gtk_control.h"
-#include "snes_ntsc.h"
+#include "filter/snes_ntsc.h"
 
 enum {
     HWA_NONE = 0,

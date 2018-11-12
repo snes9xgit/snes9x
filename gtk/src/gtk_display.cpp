@@ -5,7 +5,6 @@
 #include "gtk_display.h"
 #include "gtk_display_driver.h"
 #include "gtk_display_driver_gtk.h"
-#include "snes_ntsc.h"
 
 #if defined(USE_XV) && defined(GDK_WINDOWING_X11)
 #include "gtk_display_driver_xv.h"
@@ -40,9 +39,6 @@ static unsigned short scanline_masks[] =
         0x7BEF,     /* 50%   */
         0xffff,     /* 100%  */
 };
-
-extern unsigned int scanline_offset;
-extern unsigned short scanline_mask;
 
 /* Scanline constants for standard scanline filter */
 static uint8 scanline_shifts[] =
@@ -1097,23 +1093,23 @@ internal_filter (uint8 *src_buffer,
 
         case FILTER_NTSC:
             if (width > 256)
-                snes_ntsc_blit_hires (&snes_ntsc,
-                                      (SNES_NTSC_IN_T *) src_buffer,
-                                      src_pitch >> 1,
-                                      0, /* Burst_phase */
-                                      width,
-                                      height,
-                                      (void *) dst_buffer,
-                                      dst_pitch);
+                snes_ntsc_blit_hires_scanlines (&snes_ntsc,
+                                                (SNES_NTSC_IN_T *) src_buffer,
+                                                src_pitch >> 1,
+                                                0, /* Burst_phase */
+                                                width,
+                                                height,
+                                                (void *) dst_buffer,
+                                                dst_pitch);
             else
-                snes_ntsc_blit (&snes_ntsc,
-                                (SNES_NTSC_IN_T *) src_buffer,
-                                src_pitch >> 1,
-                                0, /* Burst_phase */
-                                width,
-                                height,
-                                (void *) dst_buffer,
-                                dst_pitch);
+                snes_ntsc_blit_scanlines (&snes_ntsc,
+                                          (SNES_NTSC_IN_T *) src_buffer,
+                                          src_pitch >> 1,
+                                          0, /* Burst_phase */
+                                          width,
+                                          height,
+                                          (void *) dst_buffer,
+                                          dst_pitch);
             break;
 
         case FILTER_SCANLINES:
@@ -1502,8 +1498,8 @@ S9xDisplayRefresh (int width, int height)
 static void
 ntsc_filter_init ()
 {
-    scanline_offset = scanline_offsets [gui_config->ntsc_scanline_intensity];
-    scanline_mask   = scanline_masks [gui_config->ntsc_scanline_intensity];
+    snes_ntsc_scanline_offset = scanline_offsets [gui_config->ntsc_scanline_intensity];
+    snes_ntsc_scanline_mask   = scanline_masks [gui_config->ntsc_scanline_intensity];
 
     snes_ntsc_init (&snes_ntsc, &gui_config->ntsc_setup);
 }

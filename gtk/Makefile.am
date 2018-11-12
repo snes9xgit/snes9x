@@ -50,10 +50,10 @@ snes9x_gtk_SOURCES = \
     src/gtk_sound.cpp \
     src/gtk_sound.h \
     src/gtk_splash.cpp \
-    src/snes_ntsc_config.h \
-    src/snes_ntsc.h \
-    src/snes_ntsc_impl.h \
-    src/snes_ntsc.c \
+    ../filter/snes_ntsc_config.h \
+    ../filter/snes_ntsc.h \
+    ../filter/snes_ntsc_impl.h \
+    ../filter/snes_ntsc.c \
     src/gtk_2_3_compat.h
 
 if HQ2X

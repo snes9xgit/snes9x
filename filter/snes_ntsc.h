@@ -39,6 +39,10 @@ extern snes_ntsc_setup_t const snes_ntsc_svideo;    /* color bleeding only */
 extern snes_ntsc_setup_t const snes_ntsc_rgb;       /* crisp image */
 extern snes_ntsc_setup_t const snes_ntsc_monochrome;/* desaturated + artifacts */
 
+/* Scanline values */
+extern unsigned int snes_ntsc_scanline_offset;
+extern unsigned short snes_ntsc_scanline_mask;
+
 /* Initializes and adjusts parameters. Can be called multiple times on the same
 snes_ntsc_t object. Can pass NULL for either parameter. */
 typedef struct snes_ntsc_t snes_ntsc_t;
@@ -53,6 +57,14 @@ void snes_ntsc_blit( snes_ntsc_t const* ntsc, SNES_NTSC_IN_T const* input,
 		void* rgb_out, long out_pitch );
 
 void snes_ntsc_blit_hires( snes_ntsc_t const* ntsc, SNES_NTSC_IN_T const* input,
+		long in_row_width, int burst_phase, int in_width, int in_height,
+		void* rgb_out, long out_pitch );
+
+void snes_ntsc_blit_scanlines( snes_ntsc_t const* ntsc, SNES_NTSC_IN_T const* input,
+		long in_row_width, int burst_phase, int in_width, int in_height,
+		void* rgb_out, long out_pitch );
+
+void snes_ntsc_blit_hires_scanlines( snes_ntsc_t const* ntsc, SNES_NTSC_IN_T const* input,
 		long in_row_width, int burst_phase, int in_width, int in_height,
 		void* rgb_out, long out_pitch );
 

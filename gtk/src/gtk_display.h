@@ -12,6 +12,7 @@
 #endif
 #include "filter/epx.h"
 #include "filter_epx_unsafe.h"
+#include "filter/snes_ntsc.h"
 
 enum
 {
