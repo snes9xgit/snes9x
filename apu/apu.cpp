@@ -190,14 +190,14 @@
  ***********************************************************************************/
 
 #include <math.h>
-#include "snes9x.h"
+#include "../snes9x.h"
 #include "apu.h"
-#include "msu1.h"
-#include "snapshot.h"
-#include "display.h"
+#include "../msu1.h"
+#include "../snapshot.h"
+#include "../display.h"
 #include "hermite_resampler.h"
 
-#include "snes/snes.hpp"
+#include "bapu/snes/snes.hpp"
 
 #define APU_DEFAULT_INPUT_RATE		31950 // ~ 59.94Hz
 #define APU_MINIMUM_SAMPLE_COUNT	512
@@ -783,7 +783,7 @@ static void to_var_from_buf (uint8 **buf, void *var, size_t size)
 }
 
 #undef IF_0_THEN_256
-#define IF_0_THEN_256( n ) ((uint8_t) ((n) - 1) + 1)
+#define IF_0_THEN_256( n ) ((uint8) ((n) - 1) + 1)
 void S9xAPULoadBlarggState(uint8 *oldblock)
 {
     uint8	*ptr = oldblock;
@@ -792,26 +792,26 @@ void S9xAPULoadBlarggState(uint8 *oldblock)
 
     copier.copy(SNES::smp.apuram,0x10000); // RAM
 
-    uint8_t regs_in [0x10];
-    uint8_t regs [0x10];
-    uint16_t pc, spc_time, dsp_time;
-    uint8_t a,x,y,psw,sp;
+    uint8 regs_in [0x10];
+    uint8 regs [0x10];
+    uint16 pc, spc_time, dsp_time;
+    uint8 a,x,y,psw,sp;
 
     copier.copy(regs,0x10); // REGS
     copier.copy(regs_in,0x10); // REGS_IN
 
     // CPU Regs
-    pc = copier.copy_int( 0, sizeof(uint16_t) );
-    a = copier.copy_int( 0, sizeof(uint8_t) );
-    x = copier.copy_int( 0, sizeof(uint8_t) );
-    y = copier.copy_int( 0, sizeof(uint8_t) );
-    psw = copier.copy_int( 0, sizeof(uint8_t) );
-    sp = copier.copy_int( 0, sizeof(uint8_t) );
+    pc = copier.copy_int( 0, sizeof(uint16) );
+    a = copier.copy_int( 0, sizeof(uint8) );
+    x = copier.copy_int( 0, sizeof(uint8) );
+    y = copier.copy_int( 0, sizeof(uint8) );
+    psw = copier.copy_int( 0, sizeof(uint8) );
+    sp = copier.copy_int( 0, sizeof(uint8) );
     copier.extra();
 
     // times
-    spc_time = copier.copy_int( 0, sizeof(uint16_t) );
-    dsp_time = copier.copy_int( 0, sizeof(uint16_t) );
+    spc_time = copier.copy_int( 0, sizeof(uint16) );
+    dsp_time = copier.copy_int( 0, sizeof(uint16) );
 
     int cur_time = S9xAPUGetClock(CPU.Cycles);
 
@@ -824,14 +824,14 @@ void S9xAPULoadBlarggState(uint8 *oldblock)
     SNES::dsp.load_state(&ptr);
 
     // Timers
-    uint16_t next_time[3];
-    uint8_t divider[3], counter[3];
+    uint16 next_time[3];
+    uint8 divider[3], counter[3];
     for ( int i = 0; i < 3; i++ )
     {
-	    next_time[i] = copier.copy_int( 0, sizeof(uint16_t) );
-	    divider[i] = copier.copy_int( 0, sizeof(uint8_t) );
-	    counter[i] = copier.copy_int( 0, sizeof(uint8_t) );
-	    copier.extra();
+        next_time[i] = copier.copy_int( 0, sizeof(uint16) );
+        divider[i] = copier.copy_int( 0, sizeof(uint8) );
+        counter[i] = copier.copy_int( 0, sizeof(uint8) );
+        copier.extra();
     }
     // construct timers out of available parts from blargg smp
     SNES::smp.timer0.enable = regs[1] >> 0 & 1;                 // regs[1] = CONTROL

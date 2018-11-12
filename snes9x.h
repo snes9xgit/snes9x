@@ -194,7 +194,7 @@
 #define _SNES9X_H_
 
 #ifndef VERSION
-#define VERSION	"1.56.2"
+#define VERSION	"1.57"
 #endif
 
 #include "port.h"
@@ -254,9 +254,15 @@
 #define SNES_MAX_PAL_VCOUNTER		312
 #define SNES_HCOUNTER_MAX			341
 
+#ifndef ALLOW_CPU_OVERCLOCK
 #define ONE_CYCLE					6
 #define SLOW_ONE_CYCLE				8
 #define TWO_CYCLES					12
+#else
+#define ONE_CYCLE      (Settings.OneClockCycle)
+#define SLOW_ONE_CYCLE (Settings.OneSlowClockCycle)
+#define TWO_CYCLES     (Settings.TwoClockCycles)
+#endif
 #define	ONE_DOT_CYCLE				4
 
 #define SNES_CYCLES_PER_SCANLINE	(SNES_HCOUNTER_MAX * ONE_DOT_CYCLE)
@@ -270,7 +276,7 @@
 #define	SNES_HDMA_START_HC			1106					// FIXME: not true
 #define	SNES_HBLANK_END_HC			4						// H=1
 #define	SNES_HDMA_INIT_HC			20						// FIXME: not true
-#define	SNES_RENDER_START_HC		(48 * ONE_DOT_CYCLE)	// FIXME: Snes9x renders a line at a time.
+#define	SNES_RENDER_START_HC		(128 * ONE_DOT_CYCLE)	// FIXME: Snes9x renders a line at a time.
 
 #define SNES_TR_MASK		(1 <<  4)
 #define SNES_TL_MASK		(1 <<  5)
@@ -419,6 +425,7 @@ struct SSettings
 	bool8	Mute;
 	bool8	DynamicRateControl;
 	int32	DynamicRateLimit; /* Multiplied by 1000 */
+	int32	InterpolationMethod;
 
 	bool8	SupportHiRes;
 	bool8	Transparency;
@@ -469,7 +476,8 @@ struct SSettings
 	bool8	TakeScreenshot;
 	int8	StretchScreenshots;
 	bool8	SnapshotScreenshots;
-        char    InitialSnapshotFilename[PATH_MAX + 1];
+	char    InitialSnapshotFilename[PATH_MAX + 1];
+	bool8	FastSavestates;
 
 	bool8	ApplyCheats;
 	bool8	NoPatch;
@@ -479,7 +487,12 @@ struct SSettings
 	bool8	UpAndDown;
 
 	bool8	OpenGLEnable;
+
 	uint32	SuperFXClockMultiplier;
+	int	OneClockCycle;
+	int	OneSlowClockCycle;
+	int	TwoClockCycles;
+	int	MaxSpriteTilesPerLine;
 };
 
 struct SSNESGameFixes

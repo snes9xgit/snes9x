@@ -227,7 +227,6 @@ struct InternalPPU
 	bool8	OBJChanged;
 	uint8	*TileCache[7];
 	uint8	*TileCached[7];
-	uint16	VRAMReadBuffer;
 	bool8	Interlace;
 	bool8	InterlaceOBJ;
 	bool8	PseudoHires;
@@ -296,6 +295,7 @@ struct SPPU
 	bool8	CGFLIP;
 	uint8	CGFLIPRead;
 	uint8	CGADD;
+	uint8	CGSavedByte;
 	uint16	CGDATA[256];
 
 	struct SOBJ OBJ[128];
@@ -379,6 +379,8 @@ struct SPPU
 
 	uint8	OpenBus1;
 	uint8	OpenBus2;
+
+	uint16	VRAMReadBuffer;
 };
 
 extern uint16				SignExtend[2];
@@ -386,6 +388,7 @@ extern struct SPPU			PPU;
 extern struct InternalPPU	IPPU;
 
 void S9xResetPPU (void);
+void S9xResetPPUFast (void);
 void S9xSoftResetPPU (void);
 void S9xSetPPU (uint8, uint16);
 uint8 S9xGetPPU (uint16);
@@ -419,8 +422,27 @@ static inline void FLUSH_REDRAW (void)
 		S9xUpdateScreen();
 }
 
+static inline void S9xUpdateVRAMReadBuffer()
+{
+	if (PPU.VMA.FullGraphicCount)
+	{
+		uint32 addr = PPU.VMA.Address;
+		uint32 rem = addr & PPU.VMA.Mask1;
+		uint32 address = (addr & ~PPU.VMA.Mask1) + (rem >> PPU.VMA.Shift) + ((rem & (PPU.VMA.FullGraphicCount - 1)) << 3);
+		PPU.VRAMReadBuffer = READ_WORD(Memory.VRAM + ((address << 1) & 0xffff));
+	}
+	else
+		PPU.VRAMReadBuffer = READ_WORD(Memory.VRAM + ((PPU.VMA.Address << 1) & 0xffff));
+}
+
 static inline void REGISTER_2104 (uint8 Byte)
 {
+	if (!(PPU.OAMFlip & 1))
+	{
+		PPU.OAMWriteRegister &= 0xff00;
+		PPU.OAMWriteRegister |= Byte;
+	}
+
 	if (PPU.OAMAddr & 0x100)
 	{
 		int addr = ((PPU.OAMAddr & 0x10f) << 1) + (PPU.OAMFlip & 1);
@@ -442,33 +464,8 @@ static inline void REGISTER_2104 (uint8 Byte)
 			pObj->Size = Byte & 128;
 		}
 
-		PPU.OAMFlip ^= 1;
-		if (!(PPU.OAMFlip & 1))
-		{
-			++PPU.OAMAddr;
-			PPU.OAMAddr &= 0x1ff;
-			if (PPU.OAMPriorityRotation && PPU.FirstSprite != (PPU.OAMAddr >> 1))
-			{
-				PPU.FirstSprite = (PPU.OAMAddr & 0xfe) >> 1;
-				IPPU.OBJChanged = TRUE;
-			}
-		}
-		else
-		{
-			if (PPU.OAMPriorityRotation && (PPU.OAMAddr & 1))
-				IPPU.OBJChanged = TRUE;
-		}
 	}
-	else
-	if (!(PPU.OAMFlip & 1))
-	{
-		PPU.OAMWriteRegister &= 0xff00;
-		PPU.OAMWriteRegister |= Byte;
-		PPU.OAMFlip |= 1;
-		if (PPU.OAMPriorityRotation && (PPU.OAMAddr & 1))
-			IPPU.OBJChanged = TRUE;
-	}
-	else
+	else if (PPU.OAMFlip & 1)
 	{
 		PPU.OAMWriteRegister &= 0x00ff;
 		uint8 lowbyte = (uint8) (PPU.OAMWriteRegister);
@@ -501,14 +498,23 @@ static inline void REGISTER_2104 (uint8 Byte)
 				PPU.OBJ[addr].VPos = highbyte;
 			}
 		}
+	}
 
-		PPU.OAMFlip &= ~1;
+	PPU.OAMFlip ^= 1;
+	if (!(PPU.OAMFlip & 1))
+	{
 		++PPU.OAMAddr;
+		PPU.OAMAddr &= 0x1ff;
 		if (PPU.OAMPriorityRotation && PPU.FirstSprite != (PPU.OAMAddr >> 1))
 		{
 			PPU.FirstSprite = (PPU.OAMAddr & 0xfe) >> 1;
 			IPPU.OBJChanged = TRUE;
 		}
+	}
+	else
+	{
+		if (PPU.OAMPriorityRotation && (PPU.OAMAddr & 1))
+			IPPU.OBJChanged = TRUE;
 	}
 }
 
@@ -730,12 +736,12 @@ static inline void REGISTER_2122 (uint8 Byte)
 {
 	if (PPU.CGFLIP)
 	{
-		if ((Byte & 0x7f) != (PPU.CGDATA[PPU.CGADD] >> 8))
+		if ((Byte & 0x7f) != (PPU.CGDATA[PPU.CGADD] >> 8) || PPU.CGSavedByte != (uint8) (PPU.CGDATA[PPU.CGADD] & 0xff))
 		{
 			FLUSH_REDRAW();
-			PPU.CGDATA[PPU.CGADD] &= 0x00ff;
-			PPU.CGDATA[PPU.CGADD] |= (Byte & 0x7f) << 8;
+			PPU.CGDATA[PPU.CGADD] = (Byte & 0x7f) << 8 | PPU.CGSavedByte;
 			IPPU.ColorsChanged = TRUE;
+			IPPU.Red[PPU.CGADD] = IPPU.XB[PPU.CGSavedByte & 0x1f];
 			IPPU.Blue[PPU.CGADD] = IPPU.XB[(Byte >> 2) & 0x1f];
 			IPPU.Green[PPU.CGADD] = IPPU.XB[(PPU.CGDATA[PPU.CGADD] >> 5) & 0x1f];
 			IPPU.ScreenColors[PPU.CGADD] = (uint16) BUILD_PIXEL(IPPU.Red[PPU.CGADD], IPPU.Green[PPU.CGADD], IPPU.Blue[PPU.CGADD]);
@@ -745,16 +751,7 @@ static inline void REGISTER_2122 (uint8 Byte)
 	}
 	else
 	{
-		if (Byte != (uint8) (PPU.CGDATA[PPU.CGADD] & 0xff))
-		{
-			FLUSH_REDRAW();
-			PPU.CGDATA[PPU.CGADD] &= 0x7f00;
-			PPU.CGDATA[PPU.CGADD] |= Byte;
-			IPPU.ColorsChanged = TRUE;
-			IPPU.Red[PPU.CGADD] = IPPU.XB[Byte & 0x1f];
-			IPPU.Green[PPU.CGADD] = IPPU.XB[(PPU.CGDATA[PPU.CGADD] >> 5) & 0x1f];
-			IPPU.ScreenColors[PPU.CGADD] = (uint16) BUILD_PIXEL(IPPU.Red[PPU.CGADD], IPPU.Green[PPU.CGADD], IPPU.Blue[PPU.CGADD]);
-		}
+		PPU.CGSavedByte = Byte;
 	}
 
 	PPU.CGFLIP ^= 1;

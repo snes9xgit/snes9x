@@ -1794,9 +1794,9 @@ static OSStatus HandleMenuChoice (UInt32 command, Boolean *done)
 				Settings.ApplyCheats = applycheat;
 
 				if (!Settings.ApplyCheats)
-					S9xRemoveCheats();
+					S9xCheatsDisable();
 				else
-					S9xApplyCheats();
+					S9xCheatsEnable();
 
 				break;
 
@@ -3235,6 +3235,12 @@ static void Initialize (void)
 	Settings.StretchScreenshots = 1;
 	Settings.SnapshotScreenshots = true;
 	Settings.OpenGLEnable = true;
+	Settings.SuperFXClockMultiplier = 100;
+	Settings.InterpolationMethod = DSP_INTERPOLATION_GAUSSIAN;
+	Settings.MaxSpriteTilesPerLine = 34;
+	Settings.OneClockCycle = 6;
+	Settings.OneSlowClockCycle = 8;
+	Settings.TwoClockCycles = 12;
 
 	for (int a = 0; a < kWindowCount; a++)
 	{

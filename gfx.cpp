@@ -333,6 +333,48 @@ void S9xGraphicsDeinit (void)
 	if (GFX.SubZBuffer) { free(GFX.SubZBuffer); GFX.SubZBuffer = NULL; }
 }
 
+void S9xGraphicsScreenResize (void)
+{
+	IPPU.MaxBrightness = PPU.Brightness;
+
+	IPPU.Interlace    = Memory.FillRAM[0x2133] & 1;
+	IPPU.InterlaceOBJ = Memory.FillRAM[0x2133] & 2;
+	IPPU.PseudoHires = Memory.FillRAM[0x2133] & 8;
+		
+	if (Settings.SupportHiRes && (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.PseudoHires))
+	{
+		GFX.RealPPL = GFX.Pitch >> 1;
+		IPPU.DoubleWidthPixels = TRUE;
+		IPPU.RenderedScreenWidth = SNES_WIDTH << 1;
+	}
+	else
+	{
+		#ifdef USE_OPENGL
+		if (Settings.OpenGLEnable)
+			GFX.RealPPL = SNES_WIDTH;
+		else
+		#endif
+			GFX.RealPPL = GFX.Pitch >> 1;
+
+		IPPU.DoubleWidthPixels = FALSE;
+		IPPU.RenderedScreenWidth = SNES_WIDTH;
+	}
+
+	if (Settings.SupportHiRes && IPPU.Interlace)
+	{
+		GFX.PPL = GFX.RealPPL << 1;
+		IPPU.DoubleHeightPixels = TRUE;
+		IPPU.RenderedScreenHeight = PPU.ScreenHeight << 1;
+		GFX.DoInterlace++;
+	}
+	else
+	{
+		GFX.PPL = GFX.RealPPL;
+		IPPU.DoubleHeightPixels = FALSE;
+		IPPU.RenderedScreenHeight = PPU.ScreenHeight;
+	}	
+}
+
 void S9xBuildDirectColourMaps (void)
 {
 	IPPU.XB = mul_brightness[PPU.Brightness];
@@ -359,43 +401,7 @@ void S9xStartScreenRefresh (void)
 			if (GFX.DoInterlace)
 				GFX.DoInterlace--;
 
-			IPPU.MaxBrightness = PPU.Brightness;
-
-			IPPU.Interlace    = Memory.FillRAM[0x2133] & 1;
-			IPPU.InterlaceOBJ = Memory.FillRAM[0x2133] & 2;
-			IPPU.PseudoHires  = Memory.FillRAM[0x2133] & 8;
-
-			if (Settings.SupportHiRes && (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.PseudoHires))
-			{
-				GFX.RealPPL = GFX.Pitch >> 1;
-				IPPU.DoubleWidthPixels = TRUE;
-				IPPU.RenderedScreenWidth = SNES_WIDTH << 1;
-			}
-			else
-			{
-			#ifdef USE_OPENGL
-				if (Settings.OpenGLEnable)
-					GFX.RealPPL = SNES_WIDTH;
-				else
-			#endif
-					GFX.RealPPL = GFX.Pitch >> 1;
-				IPPU.DoubleWidthPixels = FALSE;
-				IPPU.RenderedScreenWidth = SNES_WIDTH;
-			}
-
-			if (Settings.SupportHiRes && IPPU.Interlace)
-			{
-				GFX.PPL = GFX.RealPPL << 1;
-				IPPU.DoubleHeightPixels = TRUE;
-				IPPU.RenderedScreenHeight = PPU.ScreenHeight << 1;
-				GFX.DoInterlace++;
-			}
-			else
-			{
-				GFX.PPL = GFX.RealPPL;
-				IPPU.DoubleHeightPixels = FALSE;
-				IPPU.RenderedScreenHeight = PPU.ScreenHeight;
-			}
+			S9xGraphicsScreenResize();
 
 			IPPU.RenderedFramesCount++;
 		}
@@ -694,7 +700,7 @@ void S9xUpdateScreen (void)
 		{
 			if (!IPPU.DoubleWidthPixels && (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.PseudoHires))
 			{
-			#ifdef USE_OPENGL
+				#ifdef USE_OPENGL
 				if (Settings.OpenGLEnable && GFX.RealPPL == 256)
 				{
 					// Have to back out of the speed up hack where the low res.
@@ -714,17 +720,15 @@ void S9xUpdateScreen (void)
 					GFX.PPL = GFX.RealPPL; // = GFX.Pitch >> 1 above
 				}
 				else
-			#endif
+				#endif
+				// Have to back out of the regular speed hack
+				for (register uint32 y = 0; y < GFX.StartY; y++)
 				{
-					// Have to back out of the regular speed hack
-					for (register uint32 y = 0; y < GFX.StartY; y++)
-					{
-						register uint16	*p = GFX.Screen + y * GFX.PPL + 255;
-						register uint16	*q = GFX.Screen + y * GFX.PPL + 510;
+					register uint16	*p = GFX.Screen + y * GFX.PPL + 255;
+					register uint16	*q = GFX.Screen + y * GFX.PPL + 510;
 
-						for (register int x = 255; x >= 0; x--, p--, q -= 2)
-							*q = *(q + 1) = *p;
-					}
+					for (register int x = 255; x >= 0; x--, p--, q -= 2)
+						*q = *(q + 1) = *p;
 				}
 
 				IPPU.DoubleWidthPixels = TRUE;
@@ -837,7 +841,7 @@ static void SetupOBJ (void)
 		for (int i = 0; i < SNES_HEIGHT_EXTENDED; i++)
 		{
 			GFX.OBJLines[i].RTOFlags = 0;
-			GFX.OBJLines[i].Tiles = 34;
+			GFX.OBJLines[i].Tiles = Settings.MaxSpriteTilesPerLine;
 			for (int j = 0; j < 32; j++)
 				GFX.OBJLines[i].OBJ[j].Sprite = -1;
 		}
@@ -969,7 +973,7 @@ static void SetupOBJ (void)
 		for (int Y = 0; Y < SNES_HEIGHT_EXTENDED; Y++)
 		{
 			GFX.OBJLines[Y].RTOFlags = Y ? GFX.OBJLines[Y - 1].RTOFlags : 0;
-			GFX.OBJLines[Y].Tiles = 34;
+			GFX.OBJLines[Y].Tiles = Settings.MaxSpriteTilesPerLine;
 
 			uint8	FirstSprite = (PPU.FirstSprite + Y) & 0x7f;
 			S = FirstSprite;

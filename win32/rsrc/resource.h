@@ -33,6 +33,7 @@
 #define IDD_CREATEMOVIE                 135
 #define IDD_KEYCUSTOM                   136
 #define IDI_ICON1                       144
+#define IDI_ICON2                       160
 #define IDB_REMOVABLE                   145
 #define IDB_RAMDISK                     146
 #define IDB_UNKNOWN                     147
@@ -40,6 +41,7 @@
 #define IDB_HIDDENFOLDER                149
 #define IDD_MULTICART                   150
 #define IDD_DIALOG_SHADER_PARAMS        155
+#define IDD_DIALOG_XAUDIO2_INIT_ERROR   159
 #define IDD_RAMSEARCH                   500
 #define IDD_RAMWATCH                    501
 #define IDD_EDITWATCH                   502
@@ -390,6 +392,13 @@
 #define IDC_SLIDER_VOLUME_TURBO         3020
 #define IDC_EDIT_VOLUME_TURBO           3021
 #define IDC_STATIC_CONTAINER            3022
+#define IDC_STATIC_MEMORY_TYPE          3023
+#define IDC_STATIC_INTERLEAVE_MODE      3024
+#define IDC_STATIC_VIDEO_SYSTEM         3025
+#define IDC_STATIC_HEADER               3026
+#define IDC_ROM_SPLITTER                3027
+#define IDC_SYSLINK_DX                  3028
+#define IDC_STATIC_ICON                 3029
 #define IDC_RAMLIST                     5000
 //#define IDC_C_SEARCH                    5001
 #define IDC_C_ADDCHEAT                  5002
@@ -607,9 +616,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        158
+#define _APS_NEXT_RESOURCE_VALUE        161
 #define _APS_NEXT_COMMAND_VALUE         40178
-#define _APS_NEXT_CONTROL_VALUE         3023
+#define _APS_NEXT_CONTROL_VALUE         3030
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

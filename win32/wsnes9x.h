@@ -323,6 +323,15 @@ struct dMode
 	long rate;
 };
 
+struct sCustomRomDlgSettings {
+	int columnFilename;
+	int columnDescription;
+	int columnSize;
+	int folderPaneWidth;
+	RECT window_size;
+	bool window_maximized;
+};
+
 struct sGUI {
     HWND hWnd;
     HMENU hMenu;
@@ -366,6 +375,8 @@ struct sGUI {
     bool IgnoreNextMouseMove;
     RECT window_size;
 	bool window_maximized;
+	sCustomRomDlgSettings customRomDlgSettings;
+
     int  MouseX;
     int  MouseY;
     unsigned int MouseButtons;
@@ -641,10 +652,12 @@ enum
 #define EXT_WIDTH (MAX_SNES_WIDTH + 4)
 #define EXT_PITCH (EXT_WIDTH * 2)
 #define EXT_HEIGHT (MAX_SNES_HEIGHT + 4)
+#define EXT_HEIGHT_WITH_CENTERING (EXT_HEIGHT + 16) // extra lines to center non ext height images
 // Offset into buffer to allow a two pixel border around the whole rendered
 // SNES image. This is a speed up hack to allow some of the image processing
 // routines to access black pixel data outside the normal bounds of the buffer.
 #define EXT_OFFSET (EXT_PITCH * 2 + 2 * 2)
+#define EXT_OFFSET_WITH_CENTERING (EXT_OFFSET + EXT_PITCH * 16) // same as above
 
 #define WIN32_WHITE RGB(255,255,255)
 

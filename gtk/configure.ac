@@ -1,4 +1,4 @@
-AC_INIT([snes9x-gtk], 1.56.2)
+AC_INIT([snes9x-gtk], 1.57)
 
 AC_CONFIG_MACRO_DIR([macros])
 
@@ -139,7 +139,7 @@ AC_ARG_WITH(system-zip,
   [AS_HELP_STRING([--with(out)-system-zip],
     [Use system zip])],
   [],
-  [system_zip=check])
+  [with_system_zip=check])
 
 AC_ARG_WITH(screenshot,
   [AS_HELP_STRING([--with(out)-screenshot],
@@ -153,11 +153,23 @@ AC_ARG_WITH(gtk3,
   [],
   [with_gtk3=yes])
 
+AC_ARG_WITH(wayland,
+  [AS_HELP_STRING([--with(out)-wayland],
+    [Build with Wayland support if available (default: with)])],
+  [],
+  [with_wayland=yes])
+
 AC_ARG_WITH(gtk2,
   [AS_HELP_STRING([--with(out)-gtk2],
     [Build with GTK+ 3 if available (default: without)])],
   [],
   [with_gtk2=no])
+
+AC_ARG_ENABLE(dangerous-hacks,
+  [AS_HELP_STRING([--enable-dangerous-hacks],
+    [Allow dangerous hacks to be enabled.])],
+  [],
+  [enable_dangerous_hacks=no])
 
 if test yes = "$with_debug" ; then
   CFLAGS="$CFLAGS -g"
@@ -198,7 +210,7 @@ else
 fi
 
 PKG_CHECK_MODULES([GTK], ["$GTK_VERSION"])
-PKG_CHECK_MODULES([GLIB], [gthread-2.0 >= 2.6 gobject-2.0 >= 2.6])
+PKG_CHECK_MODULES([GLIB], [glib-2.0 > 2.28 gthread-2.0 >= 2.6 gobject-2.0 >= 2.6])
 PKG_CHECK_MODULES([LIBXML], [libxml-2.0 >= 2.0])
 PKG_CHECK_MODULES([XRANDR], [xrandr])
 
@@ -215,6 +227,21 @@ if test yes = "$with_opengl" ; then
     PKG_CHECK_MODULES([EPOXY], [epoxy]);
     CFLAGS="$CFLAGS $EPOXY_CFLAGS"
     LIBS="$LIBS $EPOXY_LIBS"
+fi
+
+WAYLAND=0
+if test yes = "$with_wayland"; then
+    PKG_CHECK_MODULES([WAYLAND_EGL],[wayland-egl],[
+        if test yes = "$GTK3_WARNING" ; then
+            CFLAGS="$CFLAGS -DUSE_WAYLAND $WAYLAND_EGL_CFLAGS"
+            LIBS="$LIBS $WAYLAND_EGL_LIBS"
+            WAYLAND=yes
+        else
+            echo "Found Wayland, but need GTK3 for support."
+        fi
+    ],[
+        echo "Not using Wayland-EGL."
+    ])
 fi
 
 GTKJOY=0
@@ -386,6 +413,10 @@ if test yes = "$with_zlib"; then
       ], ,)
 fi
 
+if test yes = "$enable_dangerous_hacks"; then
+  CFLAGS="$CFLAGS -DALLOW_CPU_OVERCLOCK"
+fi
+
 dnl Check for functions
 AC_CHECK_FUNC(mkstemp, [
   CFLAGS="$CFLAGS -DHAVE_MKSTEMP"
@@ -482,6 +513,7 @@ AM_CONDITIONAL(PULSEAUDIO, [test yes = "$PULSEAUDIO"])
 AM_CONDITIONAL(HQ2X, [test yes = "$HQ2X"])
 AM_CONDITIONAL(XBRZ, [test yes = "$XBRZ"])
 AM_CONDITIONAL(SYSTEM_ZIP, [test yes = "$SYSTEM_ZIP"])
+AM_CONDITIONAL(WAYLAND, [test yes = "$WAYLAND"])
 
 AC_SUBST(NASM)
 AC_SUBST(NASM_FLAGS)
@@ -496,6 +528,10 @@ if test yes = "$GTK3_WARNING" ; then
     echo "    GTK+ 3.0"
 else
     echo "    GTK+ 2.0"
+fi
+
+if test yes = "$WAYLAND" ; then
+    echo "    Wayland"
 fi
 
 if test yes = "$ALSA" ; then
@@ -568,4 +604,8 @@ fi
 
 if ! test yes = "$XBRZ"; then
     echo "xBRZ filter compilation is disabled."
+fi
+
+if test yes = "$enable_dangerous_hacks"; then
+    echo "Dangerous hacks enabled."
 fi

@@ -7,13 +7,13 @@
 class S9xOSSSoundDriver : public S9xSoundDriver
 {
     public:
-        S9xOSSSoundDriver (void);
-        void init (void);
-        void terminate (void);
-        bool8 open_device (void);
-        void start (void);
-        void stop (void);
-        void samples_available (void);
+        S9xOSSSoundDriver ();
+        void init ();
+        void terminate ();
+        bool8 open_device ();
+        void start ();
+        void stop ();
+        void samples_available ();
 
     private:
         int filedes;

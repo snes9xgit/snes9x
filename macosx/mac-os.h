@@ -296,6 +296,7 @@ typedef struct
 
 #define kMacWindowHeight	(SNES_HEIGHT_EXTENDED << 1)
 #define	MAC_MAX_PLAYERS		8
+#define MAC_MAX_CHEATS      150
 
 extern volatile bool8	running, s9xthreadrunning;
 extern volatile bool8	eventQueued, windowExtend;

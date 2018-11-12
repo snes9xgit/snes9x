@@ -547,7 +547,7 @@ void CGLCG::Render(GLuint &origTex, xySize textureSize, xySize inputSize, xySize
 
 		/* viewport determines the area we render into the output texture
 		*/
-		glViewport(0,0,(GLsizei)shaderPasses[i].outputSize.x,(GLsizei)shaderPasses[i].outputSize.y);
+		glViewport(0,0,(GLsizei)shaderPasses[i].outputSize.x, (GLsizei)shaderPasses[i].outputSize.y);
 
 		/* set up framebuffer and attach output texture
 		*/
@@ -601,7 +601,7 @@ void CGLCG::Render(GLuint &origTex, xySize textureSize, xySize inputSize, xySize
 	memcpy(pass.texCoords,shaderPasses[1].texcoords,sizeof(pass.texCoords));
 	prevPasses.push_front(pass);
 	glBindTexture(GL_TEXTURE_2D,origTex);
-	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,(GLsizei)textureSize.x,(GLsizei)textureSize.y,0,GL_RGB,GL_UNSIGNED_SHORT_5_6_5,NULL);
+	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB, (GLsizei)textureSize.x, (GLsizei)textureSize.y,0,GL_RGB,GL_UNSIGNED_SHORT_5_6_5,NULL);
 
 	/* bind output of last pass to be rendered on the backbuffer
 	*/
@@ -611,8 +611,8 @@ void CGLCG::Render(GLuint &origTex, xySize textureSize, xySize inputSize, xySize
 	/* calculate and apply viewport and texture coordinates to
 	   that will be used in the main ogl code
 	*/
-	RECT displayRect=CalculateDisplayRect((unsigned int)shaderPasses.back().outputSize.x,(unsigned int)shaderPasses.back().outputSize.y,(unsigned int)windowSize.x,(unsigned int)windowSize.y);
-	glViewport(displayRect.left,(GLint)(windowSize.y-displayRect.bottom),displayRect.right-displayRect.left,displayRect.bottom-displayRect.top);	
+	RECT displayRect=CalculateDisplayRect((unsigned int)shaderPasses.back().outputSize.x, (unsigned int)shaderPasses.back().outputSize.y, (unsigned int)windowSize.x, (unsigned int)windowSize.y);
+	glViewport(displayRect.left,(LONG)windowSize.y-displayRect.bottom,displayRect.right-displayRect.left,displayRect.bottom-displayRect.top);
 	setTexCoords(shaderPasses.size()-1,shaderPasses.back().outputSize,shaderPasses.back().textureSize,true);
 
 	/* render to backbuffer without shaders
@@ -670,9 +670,9 @@ void CGLCG::setShaderVars(int pass)
 
 	/* IN paramater
 	*/
-	float inputSize[2] = {shaderPasses[pass-1].outputSize.x,shaderPasses[pass-1].outputSize.y};
-	float textureSize[2] = {shaderPasses[pass-1].textureSize.x,shaderPasses[pass-1].textureSize.y};
-	float outputSize[2] = {shaderPasses[pass].outputSize.x,shaderPasses[pass].outputSize.y};
+	float inputSize[2] = { (float)shaderPasses[pass-1].outputSize.x, (float)shaderPasses[pass-1].outputSize.y };
+	float textureSize[2] = { (float)shaderPasses[pass-1].textureSize.x, (float)shaderPasses[pass-1].textureSize.y };
+	float outputSize[2] = { (float)shaderPasses[pass].outputSize.x, (float)shaderPasses[pass].outputSize.y };
 
 	setProgram2fv(pass,"IN.video_size",inputSize);
 	setProgram2fv(pass,"IN.texture_size",textureSize);
@@ -685,8 +685,8 @@ void CGLCG::setShaderVars(int pass)
 
 	/* ORIG parameter
 	*/
-	float orig_videoSize[2] = {shaderPasses[0].outputSize.x,shaderPasses[0].outputSize.y};
-	float orig_textureSize[2] = {shaderPasses[0].textureSize.x,shaderPasses[0].textureSize.y};
+	float orig_videoSize[2] = { (float)shaderPasses[0].outputSize.x, (float)shaderPasses[0].outputSize.y };
+	float orig_textureSize[2] = { (float)shaderPasses[0].textureSize.x, (float)shaderPasses[0].textureSize.y };
 	
 	setProgram2fv(pass,"ORIG.video_size",orig_videoSize);
 	setProgram2fv(pass,"ORIG.texture_size",orig_textureSize);
@@ -696,8 +696,8 @@ void CGLCG::setShaderVars(int pass)
 	/* PREV parameter
 	*/
 	if(prevPasses[0].textureSize.x>0) {
-		float prev_videoSize[2] = {prevPasses[0].videoSize.x,prevPasses[0].videoSize.y};
-		float prev_textureSize[2] = {prevPasses[0].textureSize.x,prevPasses[0].textureSize.y};
+		float prev_videoSize[2] = { (float)prevPasses[0].videoSize.x, (float)prevPasses[0].videoSize.y };
+		float prev_textureSize[2] = { (float)prevPasses[0].textureSize.x, (float)prevPasses[0].textureSize.y };
 
 		setProgram2fv(pass,"PREV.video_size",prev_videoSize);
 		setProgram2fv(pass,"PREV.texture_size",prev_textureSize);
@@ -711,8 +711,8 @@ void CGLCG::setShaderVars(int pass)
 		if(prevPasses[i].textureSize.x==0)
 			break;
 		char varname[100];
-		float prev_videoSize[2] = {prevPasses[i].videoSize.x,prevPasses[i].videoSize.y};
-		float prev_textureSize[2] = {prevPasses[i].textureSize.x,prevPasses[i].textureSize.y};
+		float prev_videoSize[2] = { (float)prevPasses[i].videoSize.x, (float)prevPasses[i].videoSize.y };
+		float prev_textureSize[2] = { (float)prevPasses[i].textureSize.x, (float)prevPasses[i].textureSize.y };
 		sprintf(varname,"PREV%d.video_size",i);
 		setProgram2fv(pass,varname,prev_videoSize);
 		sprintf(varname,"PREV%d.texture_size",i);
@@ -734,8 +734,8 @@ void CGLCG::setShaderVars(int pass)
 	if(pass>2) {
 		for(int i=1;i<pass-1;i++) {
 			char varname[100];
-			float pass_videoSize[2] = {shaderPasses[i].outputSize.x,shaderPasses[i].outputSize.y};
-			float pass_textureSize[2] = {shaderPasses[i].textureSize.x,shaderPasses[i].textureSize.y};
+			float pass_videoSize[2] = { (float)shaderPasses[i].outputSize.x, (float)shaderPasses[i].outputSize.y };
+			float pass_textureSize[2] = { (float)shaderPasses[i].textureSize.x, (float)shaderPasses[i].textureSize.y };
 			sprintf(varname,"PASS%d.video_size",i);
 			setProgram2fv(pass,varname,pass_videoSize);
 			sprintf(varname,"PASS%d.texture_size",i);
@@ -755,191 +755,3 @@ void CGLCG::resetAttribParams()
 	cgAttribParams.clear();
 }
 
-#ifdef HAVE_LIBPNG
-bool CGLCG::loadPngImage(const TCHAR *name, int &outWidth, int &outHeight, bool &outHasAlpha, GLubyte **outData) {
-    png_structp png_ptr;
-    png_infop info_ptr;
-    unsigned int sig_read = 0;
-    int color_type, interlace_type;
-    FILE *fp;
-
-	if ((fp = _tfopen(name, TEXT("rb"))) == NULL)
-        return false;
-
-    /* Create and initialize the png_struct
-     * with the desired error handler
-     * functions.  If you want to use the
-     * default stderr and longjump method,
-     * you can supply NULL for the last
-     * three parameters.  We also supply the
-     * the compiler header file version, so
-     * that we know if the application
-     * was compiled with a compatible version
-     * of the library.  REQUIRED
-     */
-    png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,
-            NULL, NULL, NULL);
-
-    if (png_ptr == NULL) {
-        fclose(fp);
-        return false;
-    }
-
-    /* Allocate/initialize the memory
-     * for image information.  REQUIRED. */
-    info_ptr = png_create_info_struct(png_ptr);
-    if (info_ptr == NULL) {
-        fclose(fp);
-        png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
-        return false;
-    }
-
-    /* Set error handling if you are
-     * using the setjmp/longjmp method
-     * (this is the normal method of
-     * doing things with libpng).
-     * REQUIRED unless you  set up
-     * your own error handlers in
-     * the png_create_read_struct()
-     * earlier.
-     */
-    if (setjmp(png_jmpbuf(png_ptr))) {
-        /* Free all of the memory associated
-         * with the png_ptr and info_ptr */
-        png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
-        fclose(fp);
-        /* If we get here, we had a
-         * problem reading the file */
-        return false;
-    }
-
-    /* Set up the output control if
-     * you are using standard C streams */
-    png_init_io(png_ptr, fp);
-
-    /* If we have already
-     * read some of the signature */
-    png_set_sig_bytes(png_ptr, sig_read);
-
-    /*
-     * If you have enough memory to read
-     * in the entire image at once, and
-     * you need to specify only
-     * transforms that can be controlled
-     * with one of the PNG_TRANSFORM_*
-     * bits (this presently excludes
-     * dithering, filling, setting
-     * background, and doing gamma
-     * adjustment), then you can read the
-     * entire image (including pixels)
-     * into the info structure with this
-     * call
-     *
-     * PNG_TRANSFORM_STRIP_16 |
-     * PNG_TRANSFORM_PACKING  forces 8 bit
-     * PNG_TRANSFORM_EXPAND forces to
-     *  expand a palette into RGB
-     */
-    png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_PACKING | PNG_TRANSFORM_EXPAND, (png_voidp)NULL);
-
-    outWidth = png_get_image_width(png_ptr, info_ptr);
-    outHeight = png_get_image_height(png_ptr, info_ptr);
-    switch (png_get_color_type(png_ptr, info_ptr)) {
-        case PNG_COLOR_TYPE_RGBA:
-            outHasAlpha = true;
-            break;
-        case PNG_COLOR_TYPE_RGB:
-            outHasAlpha = false;
-            break;
-        default:
-            png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-            fclose(fp);
-            return false;
-    }
-    unsigned int row_bytes = png_get_rowbytes(png_ptr, info_ptr);
-    *outData = (unsigned char*) malloc(row_bytes * outHeight);
-
-    png_bytepp row_pointers = png_get_rows(png_ptr, info_ptr);
-
-    for (int i = 0; i < outHeight; i++) {
-        memcpy(*outData+(row_bytes * i), row_pointers[i], row_bytes);
-    }
-
-    /* Clean up after the read,
-     * and free any memory allocated */
-    png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
-
-    /* Close the file */
-    fclose(fp);
-
-    /* That's it */
-    return true;
-}
-#else
-bool CGLCG::loadPngImage(const TCHAR *name, int &outWidth, int &outHeight, bool &outHasAlpha, GLubyte **outData) {
-	/* No PNG support */
-	return false;
-}
-#endif
-
-bool CGLCG::loadTGA(const TCHAR *filename, STGA& tgaFile)
-{
-	FILE *file;
-	unsigned char type[4];
-	unsigned char info[6];
-
-        file = _tfopen(filename, TEXT("rb"));
-
-        if (!file)
-		return false;
-
-	fread (&type, sizeof (char), 3, file);
-	fseek (file, 12, SEEK_SET);
-	fread (&info, sizeof (char), 6, file);
-
-	//image type either 2 (color) or 3 (greyscale)
-	if (type[1] != 0 || (type[2] != 2 && type[2] != 3))
-	{
-		fclose(file);
-		return false;
-	}
-
-	tgaFile.width = info[0] + info[1] * 256;
-	tgaFile.height = info[2] + info[3] * 256;
-	tgaFile.byteCount = info[4] / 8;
-
-	if (tgaFile.byteCount != 3 && tgaFile.byteCount != 4) {
-		fclose(file);
-		return false;
-	}
-
-	long imageSize = tgaFile.width * tgaFile.height * tgaFile.byteCount;
-
-	//allocate memory for image data
-	unsigned char *tempBuf = new unsigned char[imageSize];
-	tgaFile.data = new unsigned char[tgaFile.width * tgaFile.height * 4];
-
-	//read in image data
-	fread(tempBuf, sizeof(unsigned char), imageSize, file);
-
-	//swap line order and convert to RBGA
-	for(int i=0;i<tgaFile.height;i++) {
-		unsigned char* source = tempBuf + tgaFile.width * (tgaFile.height - 1 - i) * tgaFile.byteCount;
-		unsigned char* destination = tgaFile.data + tgaFile.width * i * 4;
-		for(int j=0;j<tgaFile.width;j++) {
-			destination[0]=source[2];
-			destination[1]=source[1];
-			destination[2]=source[0];
-			destination[3]=tgaFile.byteCount==4?source[3]:0xff;
-			source+=tgaFile.byteCount;
-			destination+=4;
-		}
-	}
-	delete [] tempBuf;
-	tgaFile.byteCount = 4;
-
-	//close file
-	fclose(file);
-
-	return true;
-}

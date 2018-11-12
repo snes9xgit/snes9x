@@ -416,6 +416,7 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	}
 
 	rom_filename = conf.GetStringDup("ROM::Filename", NULL);
+	Settings.InitialSnapshotFilename[0] = '\0';
 
 	// Sound
 
@@ -428,6 +429,7 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.Mute                       =  conf.GetBool("Sound::Mute",                         false);
 	Settings.DynamicRateControl         =  conf.GetBool("Sound::DynamicRateControl",           false);
 	Settings.DynamicRateLimit           =  conf.GetInt ("Sound::DynamicRateLimit",             5);
+	Settings.InterpolationMethod        =  conf.GetInt ("Sound::InterpolationMethod",          2);
 
 	// Display
 
@@ -496,6 +498,7 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.DisableGameSpecificHacks       = !conf.GetBool("Hack::EnableGameSpecificHacks",       true);
 	Settings.BlockInvalidVRAMAccessMaster   = !conf.GetBool("Hack::AllowInvalidVRAMAccess",        false);
 	Settings.HDMATimingHack                 =  conf.GetInt ("Hack::HDMATiming",                    100);
+	Settings.MaxSpriteTilesPerLine          =  conf.GetInt ("Hack::MaxSpriteTilesPerLine",         34);
 
 	// Netplay
 

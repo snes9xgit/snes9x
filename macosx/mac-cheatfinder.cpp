@@ -1297,7 +1297,7 @@ static void CheatFinderHandleAddEntryButton (WindowData *cf)
 	if (cfAddress[cfListSelection] > (0x20000 - cfViewNumBytes))
 		PlayAlertSound();
 	else
-	if (Cheat.num_cheats + cfViewNumBytes > MAX_CHEATS)
+	if (Cheat.g.size() + cfViewNumBytes > MAC_MAX_CHEATS)
 		AppearanceAlert(kAlertCautionAlert, kS9xMacAlertCFCantAddEntry, kS9xMacAlertCFCantAddEntryHint);
 	else
 		CheatFinderBeginAddEntrySheet(cf);
@@ -1467,11 +1467,12 @@ static void CheatFinderAddEntry (SInt64 value, char *description)
 
 	for (unsigned int i = 0; i < cfViewNumBytes; i++)
 	{
-		strcpy(Cheat.c[Cheat.num_cheats].name, description);
-		S9xAddCheat(true, true, addr + i + 0x7E0000, (UInt8) ((v & (0x000000FF << (i * 8))) >> (i * 8)));
+		char code[10];
+		snprintf(code, 10, "%x=%x", addr + i + 0x7E0000, (UInt8) ((v & (0x000000FF << (i * 8))) >> (i * 8)));
+		int index = S9xAddCheatGroup(description, code);
+		if(index >= 0)
+			S9xEnableCheatGroup(index);
 	}
-
-	S9xApplyCheats();
 }
 
 static pascal OSStatus CheatFinderListFrameEventHandler (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *userData)

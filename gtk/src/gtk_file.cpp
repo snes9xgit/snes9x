@@ -1,7 +1,7 @@
 #include <sys/stat.h>
-#include <gtk/gtk.h>
 #include <errno.h>
 
+#include "gtk_2_3_compat.h"
 #include "gtk_s9x.h"
 
 static char buf[PATH_MAX];
@@ -71,8 +71,6 @@ _splitpath (const char *path, char *drive, char *dir, char *fname, char *ext)
             *ext = '\0';
         }
     }
-
-    return;
 }
 
 void
@@ -97,8 +95,6 @@ _makepath (char       *path,
         strcat (path, ".");
         strcat (path, ext);
     }
-
-    return;
 }
 
 const char *
@@ -363,23 +359,21 @@ extern "C"
     uint8 snes9x_clear_change_log = 0;
 }
 
-extern "C" char *osd_GetPackDir (void)
+extern "C" char *osd_GetPackDir ()
 {
     return NULL;
 }
 
 void
-S9xLoadSDD1Data (void)
+S9xLoadSDD1Data ()
 {
-    return;
 }
 
 void
-S9xAutoSaveSRAM (void)
+S9xAutoSaveSRAM ()
 {
     Memory.SaveSRAM (S9xGetFilename (".srm", SRAM_DIR));
     S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
-    return;
 }
 
 void
@@ -396,8 +390,6 @@ S9xLoadState (const char *filename)
     {
         fprintf (stderr, "Failed to load state file: %s\n", filename);
     }
-
-    return;
 }
 
 void
@@ -412,12 +404,10 @@ S9xSaveState (const char *filename)
     {
         fprintf (stderr, "Couldn't save state file: %s\n", filename);
     }
-
-    return;
 }
 
 char *
-S9xOpenROMDialog (void)
+S9xOpenROMDialog ()
 {
     GtkWidget     *dialog;
     GtkFileFilter *filter;
@@ -499,6 +489,9 @@ S9xQuickSaveSlot (int slot)
     char dir[_MAX_DIR];
     char ext[_MAX_EXT];
 
+    if (!gui_config->rom_loaded)
+        return;
+
     _splitpath (Memory.ROMFilename, drive, dir, def, ext);
 
     snprintf (filename, PATH_MAX, "%s%s%s.%03d",
@@ -511,18 +504,18 @@ S9xQuickSaveSlot (int slot)
 
         S9xSetInfoString (buf);
     }
-
-    return;
 }
 
-void
-S9xQuickLoadSlot (int slot)
+void S9xQuickLoadSlot (int slot)
 {
     char def[PATH_MAX];
     char filename[PATH_MAX];
     char drive[_MAX_DRIVE];
     char dir[_MAX_DIR];
     char ext[_MAX_EXT];
+
+    if (!gui_config->rom_loaded)
+        return;
 
     _splitpath (Memory.ROMFilename, drive, dir, def, ext);
 
@@ -563,7 +556,5 @@ S9xQuickLoadSlot (int slot)
     S9xMessage (S9X_ERROR,
                 S9X_FREEZE_FILE_NOT_FOUND,
                 "Freeze file not found");
-
-    return;
 }
 

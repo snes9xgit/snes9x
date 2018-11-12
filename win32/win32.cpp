@@ -1038,9 +1038,9 @@ void InitSnes9X( void)
 	extern void S9xPostRomInit();
 	Memory.PostRomInitFunc = S9xPostRomInit;
 
-    ScreenBuf = new BYTE [EXT_PITCH * EXT_HEIGHT];
-    ScreenBuffer = ScreenBuf + EXT_OFFSET;
-    memset (ScreenBuf, 0, EXT_PITCH * EXT_HEIGHT);
+    ScreenBuf = new BYTE [EXT_PITCH * EXT_HEIGHT_WITH_CENTERING];
+    ScreenBuffer = ScreenBuf + EXT_OFFSET_WITH_CENTERING;
+    memset (ScreenBuf, 0, EXT_PITCH * EXT_HEIGHT_WITH_CENTERING);
 
     GFX.Pitch = EXT_PITCH;
     GFX.RealPPL = EXT_PITCH;

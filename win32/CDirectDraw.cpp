@@ -190,7 +190,12 @@
  ***********************************************************************************/
 
 #if DIRECTDRAW_SUPPORT
-#pragma comment( lib, "ddraw" )
+
+#ifdef _WIN64
+#pragma comment( lib, "ddraw/ddraw_x64" )
+#else
+#pragma comment( lib, "ddraw/ddraw_x86" )
+#endif
 
 // CDirectDraw.cpp: implementation of the CDirectDraw class.
 //

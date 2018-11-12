@@ -229,7 +229,7 @@ void S9xSA1Init (void)
 	SA1.op2 = 0;
 	SA1.sum = 0;
 	SA1.overflow = FALSE;
-	SA1.VirtualBitmapFormat = 0;
+	SA1.VirtualBitmapFormat = 4;
 	SA1.variable_bit_pos = 0;
 
 	SA1Registers.PBPC = 0;
@@ -303,6 +303,10 @@ void S9xSA1PostLoadState (void)
 	SA1.VirtualBitmapFormat = (Memory.FillRAM[0x223f] & 0x80) ? 2 : 4;
 	Memory.BWRAM = Memory.SRAM + (Memory.FillRAM[0x2224] & 7) * 0x2000;
 	S9xSA1SetBWRAMMemMap(Memory.FillRAM[0x2225]);
+	S9xSetSA1(Memory.FillRAM[0x2220], 0x2220);
+	S9xSetSA1(Memory.FillRAM[0x2221], 0x2221);
+	S9xSetSA1(Memory.FillRAM[0x2222], 0x2222);
+	S9xSetSA1(Memory.FillRAM[0x2223], 0x2223);
 }
 
 static void S9xSetSA1MemMap (uint32 which1, uint8 map)

@@ -301,8 +301,6 @@ void EPX_16_unsafe (uint8 *srcPtr,
         srcPtr += srcPitch;
         dstPtr += dstPitch << 1;
     }
-
-    return;
 }
 
 /* Blends with edge pixel instead of just using it directly. */
@@ -399,6 +397,4 @@ void EPX_16_smooth_unsafe (uint8 *srcPtr,
         srcPtr += srcPitch;
         dstPtr += dstPitch << 1;
     }
-
-    return;
 }

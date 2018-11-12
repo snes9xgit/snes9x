@@ -12,23 +12,20 @@ oss_samples_available (void *data)
     ((S9xOSSSoundDriver *) data)->samples_available ();
 }
 
-S9xOSSSoundDriver::S9xOSSSoundDriver (void)
+S9xOSSSoundDriver::S9xOSSSoundDriver ()
 {
     filedes = -1;
     sound_buffer = NULL;
     sound_buffer_size = 0;
-
-    return;
 }
 
 void
-S9xOSSSoundDriver::init (void)
+S9xOSSSoundDriver::init ()
 {
-    return;
 }
 
 void
-S9xOSSSoundDriver::terminate (void)
+S9xOSSSoundDriver::terminate ()
 {
     stop ();
 
@@ -44,24 +41,20 @@ S9xOSSSoundDriver::terminate (void)
         free (sound_buffer);
         sound_buffer = NULL;
     }
-
-    return;
 }
 
 void
-S9xOSSSoundDriver::start (void)
+S9xOSSSoundDriver::start ()
 {
-    return;
 }
 
 void
-S9xOSSSoundDriver::stop (void)
+S9xOSSSoundDriver::stop ()
 {
-    return;
 }
 
 bool8
-S9xOSSSoundDriver::open_device (void)
+S9xOSSSoundDriver::open_device ()
 {
     int temp;
     audio_buf_info info;
@@ -77,17 +70,32 @@ S9xOSSSoundDriver::open_device (void)
 
     printf ("OSS sound driver initializing...\n");
 
-    printf ("    --> (Device: /dev/dsp)...");
+    printf ("Device: /dev/dsp: ");
 
     filedes = open ("/dev/dsp", O_WRONLY | O_NONBLOCK);
 
     if (filedes < 0)
     {
-        printf ("Failed\n    --> (Device: /dev/dsp1)...");
-        filedes = open ("/dev/dsp1", O_WRONLY | O_NONBLOCK);
+        printf ("Failed.\n");
+        char dspstring[16] = "/dev/dspX\0";
 
-        if (filedes < 0)
-            goto fail;
+        for (int i = 1; i <= 9; i++)
+        {
+            dspstring[8] = '0' + i;
+
+            printf ("Trying %s: ", dspstring);
+
+            filedes = open (dspstring, O_WRONLY | O_NONBLOCK);
+
+            if (filedes < 0)
+            {
+                if (i == 9)
+                    goto fail;
+                printf ("Failed.\n");
+            }
+            else
+                break;
+        }
     }
 
     printf ("OK\n");
@@ -168,7 +176,7 @@ fail:
 }
 
 void
-S9xOSSSoundDriver::samples_available (void)
+S9xOSSSoundDriver::samples_available ()
 {
     audio_buf_info info;
     int samples_to_write;
@@ -227,6 +235,4 @@ S9xOSSSoundDriver::samples_available (void)
 
         bytes_written += result;
     }
-
-    return;
 }

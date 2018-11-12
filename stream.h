@@ -208,8 +208,11 @@ class Stream
         virtual size_t write (void *, size_t) = 0;
         virtual size_t pos (void) = 0;
         virtual size_t size (void) = 0;
-        virtual int revert (size_t from, size_t offset) = 0;
+        virtual int revert (uint8 origin, int32 offset) = 0;
         virtual void closeStream() = 0;
+
+	protected:
+		size_t pos_from_origin_offset(uint8 origin, int32 offset);
 };
 
 class fStream : public Stream
@@ -223,7 +226,7 @@ class fStream : public Stream
         virtual size_t write (void *, size_t);
         virtual size_t pos (void);
         virtual size_t size (void);
-        virtual int revert (size_t from, size_t offset);
+        virtual int revert (uint8 origin, int32 offset);
         virtual void closeStream();
 
 	private:
@@ -250,7 +253,7 @@ class unzStream : public Stream
         virtual size_t write (void *, size_t);
         virtual size_t pos (void);
         virtual size_t size (void);
-        virtual int revert (size_t from, size_t offset);
+        virtual int revert (uint8 origin, int32 offset);
         virtual void closeStream();
 
 	private:
@@ -279,7 +282,7 @@ class memStream : public Stream
         virtual size_t write (void *, size_t);
         virtual size_t pos (void);
         virtual size_t size (void);
-        virtual int revert (size_t from, size_t offset);
+        virtual int revert (uint8 origin, int32 offset);
         virtual void closeStream();
 
 	private:
@@ -304,7 +307,7 @@ class nulStream : public Stream
         virtual size_t write (void *, size_t);
         virtual size_t pos (void);
         virtual size_t size (void);
-        virtual int revert (size_t from, size_t offset);
+        virtual int revert (uint8 origin, int32 offset);
         virtual void closeStream();
 
     private:

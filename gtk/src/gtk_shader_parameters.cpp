@@ -1,4 +1,4 @@
-#include <gtk/gtk.h>
+#include "gtk_2_3_compat.h"
 #include <vector>
 #include <math.h>
 
@@ -85,7 +85,7 @@ static void dialog_response (GtkDialog *pdialog, gint response_id, gpointer user
     }
 }
 
-void gtk_shader_parameters_dialog_close (void)
+void gtk_shader_parameters_dialog_close ()
 {
     if (dialog)
     {

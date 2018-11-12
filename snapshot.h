@@ -196,9 +196,10 @@
 #include "snes9x.h"
 
 #define SNAPSHOT_MAGIC			"#!s9xsnp"
-#define SNAPSHOT_VERSION_IRQ    7
-#define SNAPSHOT_VERSION_BAPU   8
-#define SNAPSHOT_VERSION		10
+#define SNAPSHOT_VERSION_IRQ		7
+#define SNAPSHOT_VERSION_BAPU		8
+#define SNAPSHOT_VERSION_IRQ_2018	11		// irq changes were introduced earlier, since this we store NextIRQTimer directly
+#define SNAPSHOT_VERSION			11
 
 #define SUCCESS					1
 #define WRONG_FORMAT			(-1)

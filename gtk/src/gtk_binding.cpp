@@ -1,30 +1,18 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <gtk/gtk.h>
-#include <gdk/gdk.h>
-#include <gdk/gdkkeysyms.h>
-#if GTK_MAJOR_VERSION >= 3
-#include <gdk/gdkkeysyms-compat.h>
-#endif
-
 #include "gtk_s9x.h"
 #include "gtk_binding.h"
 
-Binding::Binding (void)
+Binding::Binding ()
 {
     value = 0;
-
-    return;
 }
 
 Binding::Binding (GdkEventKey *event)
 {
-    /* Make keypress lower-case */
-    if (event->keyval >= GDK_A && event->keyval <= GDK_Z)
-        value = BINDING_KEY | ((event->keyval - GDK_A + GDK_a) & BINDING_KEY_MASK);
-    else
-        value = BINDING_KEY | (event->keyval & BINDING_KEY_MASK);
+    event->keyval = gdk_keyval_to_lower (event->keyval);
+    value = BINDING_KEY | (event->keyval & BINDING_KEY_MASK);
 
     /* Strip modifiers from modifiers */
     if (event->keyval == GDK_Control_L ||
@@ -45,8 +33,6 @@ Binding::Binding (GdkEventKey *event)
 
     if (event->state & GDK_MOD1_MASK)
         value |= BINDING_ALT;
-
-    return;
 }
 
 Binding::Binding (unsigned int key, bool ctrl, bool shift, bool alt)
@@ -76,8 +62,6 @@ Binding::Binding (unsigned int device,
 Binding::Binding (unsigned int val)
 {
     value = val;
-
-    return;
 }
 
 Binding::Binding (const Binding& binding)
@@ -97,63 +81,61 @@ Binding::matches (Binding &binding)
 }
 
 void
-Binding::clear (void)
+Binding::clear ()
 {
     value = 0;
-
-    return;
 }
 
 unsigned int
-Binding::hex (void)
+Binding::hex ()
 {
     return value;
 }
 
 unsigned int
-Binding::base_hex (void)
+Binding::base_hex ()
 {
     return (value & ~BINDING_THRESHOLD_MASK);
 }
 
 bool
-Binding::is_joy (void)
+Binding::is_joy ()
 {
     return (value & BINDING_JOY);
 }
 
 bool
-Binding::is_key (void)
+Binding::is_key ()
 {
     return (value & BINDING_KEY);
 }
 
 unsigned int
-Binding::get_key (void)
+Binding::get_key ()
 {
     return (value & BINDING_KEY_MASK);
 }
 
 unsigned int
-Binding::get_device (void)
+Binding::get_device ()
 {
     return JOY_DEVICE_UNMASK (value);
 }
 
 unsigned int
-Binding::get_threshold (void)
+Binding::get_threshold ()
 {
     return THRESHOLD_UNMASK (value);
 }
 
 unsigned int
-Binding::get_axis (void)
+Binding::get_axis ()
 {
     return JOY_AXIS_UNMASK (value);
 }
 
 GdkModifierType
-Binding::get_gdk_modifiers (void)
+Binding::get_gdk_modifiers ()
 {
     return (GdkModifierType) (((BINDING_CTRL  & value) ? GDK_CONTROL_MASK : 0) |
                               ((BINDING_ALT   & value) ? GDK_MOD1_MASK    : 0) |
@@ -161,15 +143,71 @@ Binding::get_gdk_modifiers (void)
 }
 
 bool
-Binding::is_positive (void)
+Binding::is_positive ()
 {
     return JOY_DIRECTION_UNMASK (value) == AXIS_POS;
 }
 
 bool
-Binding::is_negative (void)
+Binding::is_negative ()
 {
     return JOY_DIRECTION_UNMASK (value) == AXIS_NEG;
+}
+
+Binding::Binding (const char *raw_string)
+{
+    value = 0;
+
+    if (!raw_string)
+        return;
+
+    char substr[80];
+    if (sscanf (raw_string, "Keyboard %79s", substr) == 1)
+    {
+        bool ctrl = false;
+        bool shift = false;
+        bool alt= false;
+        unsigned int keyval = 0;
+        char *key;
+
+        key = strtok (substr, "+");
+        while (key)
+        {
+            if (strstr (key, "Alt"))
+                alt = true;
+            else if (strstr (key, "Ctrl"))
+                ctrl = true;
+            else if (strstr (key, "Shift"))
+                shift = true;
+            else
+            {
+                keyval = gdk_keyval_from_name (key);
+            }
+
+            key = strtok (NULL, "+");
+        }
+
+        value = Binding(keyval, ctrl, shift, alt).value;
+    }
+    else if (!strncmp (raw_string, "Joystick", 8))
+    {
+        unsigned int axis;
+        unsigned int button;
+        unsigned int percent;
+        unsigned int device;
+        char posneg;
+        const char *substr = &raw_string[8];
+
+        if (sscanf (substr, "%u Axis %u %c %u", &device, &axis, &posneg, &percent) == 4)
+        {
+            value = Binding(device - 1, JOY_AXIS (axis, posneg == '+' ? AXIS_POS : AXIS_NEG), percent).value;
+        }
+        else if (sscanf (substr, "%u Button %u", &device, &button) == 2)
+        {
+            value = Binding(device - 1, button, 0).value;
+        }
+
+    }
 }
 
 void
@@ -215,7 +253,7 @@ Binding::to_string (char *str)
     {
         if ((get_key ()) >= 512)
             sprintf (buf,
-                     _("Axis #%u %s %u%%"),
+                     _("Axis %u %s %u%%"),
                      get_axis (),
                      is_positive () ? "+" : "-",
                      get_threshold ());
@@ -229,6 +267,4 @@ Binding::to_string (char *str)
     {
         sprintf (str, _("Unset"));
     }
-
-    return;
 }

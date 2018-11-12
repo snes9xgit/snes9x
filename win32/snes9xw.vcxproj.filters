@@ -285,6 +285,9 @@
     <ClInclude Include="CShaderParamDlg.h">
       <Filter>GUI\VideoDriver</Filter>
     </ClInclude>
+    <ClInclude Include="image_functions.h">
+      <Filter>GUI\VideoDriver</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\bsx.cpp">
@@ -613,6 +616,9 @@
       <Filter>GUI\VideoDriver</Filter>
     </ClCompile>
     <ClCompile Include="CShaderParamDlg.cpp">
+      <Filter>GUI\VideoDriver</Filter>
+    </ClCompile>
+    <ClCompile Include="image_functions.cpp">
       <Filter>GUI\VideoDriver</Filter>
     </ClCompile>
   </ItemGroup>

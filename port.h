@@ -207,7 +207,7 @@
 #include <sys/types.h>
 
 #ifdef __WIN32__
-#define NOMINMAX
+#define NOMINMAX 1
 #include <windows.h>
 #endif
 
@@ -355,7 +355,7 @@ void SetInfoDlgColor(unsigned char, unsigned char, unsigned char);
 #define TITLE "Snes9x"
 #endif
 
-#if defined(__i386__) || defined(__i486__) || defined(__i586__) || defined(__i686__) || defined(__x86_64__) || defined(__alpha__) || defined(__MIPSEL__) || defined(_M_IX86) || defined(_M_X64) || defined(_XBOX1) || defined(ARM) || defined(ANDROID)
+#if defined(__i386__) || defined(__i486__) || defined(__i586__) || defined(__i686__) || defined(__x86_64__) || defined(__alpha__) || defined(__MIPSEL__) || defined(_M_IX86) || defined(_M_X64) || defined(_XBOX1) || defined(__arm__) || defined(ANDROID) || defined(__aarch64__) || (defined(__BYTE_ORDER__) && __BYTE_ORDER == __ORDER_LITTLE_ENDIAN__)
 #define LSB_FIRST
 #define FAST_LSB_WORD_ACCESS
 #else

@@ -195,7 +195,6 @@
 #define MAX_SHADER_TEXTURES 8
 
 #include <d3d9.h>
-#include <d3dx9.h>
 #include <windows.h>
 
 #include "cgFunctions.h"
@@ -217,7 +216,7 @@ typedef struct _VERTEX {
 		}
 } VERTEX; //our custom vertex with a constuctor for easier assignment
 
-enum current_d3d_shader_type { D3D_SHADER_NONE, D3D_SHADER_HLSL, D3D_SHADER_CG };
+enum current_d3d_shader_type { D3D_SHADER_NONE, D3D_SHADER_CG };
 
 class CDirect3D: public IS9xDisplayOutput
 {
@@ -239,7 +238,6 @@ private:
 	static const D3DVERTEXELEMENT9 vertexElems[4];
 	LPDIRECT3DVERTEXDECLARATION9 vertexDeclaration;
 
-	LPD3DXEFFECT            effect;
 	LPDIRECT3DTEXTURE9      rubyLUT[MAX_SHADER_TEXTURES];
 	CGcontext cgContext;
 	current_d3d_shader_type shader_type;
@@ -260,9 +258,7 @@ private:
 	void SetupVertices();
 	bool ResetDevice();
 	void SetFiltering();
-	void SetShaderVars(bool setMatrix = false);
 	bool SetShader(const TCHAR *file);
-	bool SetShaderHLSL(const TCHAR *file);
 	void checkForCgError(const char *situation);
 	bool SetShaderCG(const TCHAR *file);
 

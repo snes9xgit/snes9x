@@ -53,7 +53,8 @@ snes9x_gtk_SOURCES = \
     src/snes_ntsc_config.h \
     src/snes_ntsc.h \
     src/snes_ntsc_impl.h \
-    src/snes_ntsc.c
+    src/snes_ntsc.c \
+    src/gtk_2_3_compat.h
 
 if HQ2X
 snes9x_gtk_SOURCES += \
@@ -125,6 +126,11 @@ snes9x_gtk_SOURCES += \
     ../c4emu.cpp
 endif
 
+if WAYLAND
+snes9x_gtk_SOURCES += \
+    src/gtk_wayland_egl_context.cpp
+endif
+
 # APU
 snes9x_gtk_SOURCES += \
     ../apu/apu.cpp
@@ -132,7 +138,6 @@ snes9x_gtk_SOURCES += \
 # Byuu's APU
 snes9x_gtk_SOURCES += \
     ../apu/bapu/dsp/sdsp.cpp \
-    ../apu/bapu/dsp/SPC_DSP.cpp \
     ../apu/bapu/smp/smp.cpp \
     ../apu/bapu/smp/smp_state.cpp
 
@@ -235,9 +240,11 @@ if OPENGL
 snes9x_gtk_SOURCES += \
     src/gtk_display_driver_opengl.cpp \
     src/gtk_display_driver_opengl.h \
+    src/gtk_glx_context.cpp \
     ../shaders/glsl.cpp \
     ../shaders/shader_helpers.cpp \
-    src/gtk_shader_parameters.cpp
+    src/gtk_shader_parameters.cpp 
+
 endif
 
 if XV

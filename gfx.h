@@ -359,6 +359,7 @@ void S9xBuildDirectColourMaps (void);
 void RenderLine (uint8);
 void S9xComputeClipWindows (void);
 void S9xDisplayChar (uint16 *, uint8);
+void S9xGraphicsScreenResize (void);
 // called automatically unless Settings.AutoDisplayMessages is false
 void S9xDisplayMessages (uint16 *, int, int, int, int);
 #ifdef GFX_MULTI_FORMAT
