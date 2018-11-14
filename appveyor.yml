@@ -51,7 +51,7 @@ after_build:
   - copy "%output%" artifacts
   - if "%config%"=="Release Unicode"
     copy docs\changes.txt artifacts |
-    copy docs\snes9x-license.txt artifacts |
+    copy LICENSE artifacts |
     copy win32\docs\faqs-windows.txt artifacts |
     copy win32\docs\readme-windows.txt artifacts
   - 7z a %package_name%.zip .\artifacts\*
