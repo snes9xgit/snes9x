@@ -31,6 +31,5 @@ Some parts included in Snes9x are usually available under a different license,
 their authors have granted exception for their use in Snes9x (and/or they are
 licensed as LGPL):
  - JMA: GPL/LGPL, see jma/license.txt
- - GTK port: dual licensed as LGPL, see gtk/doc/LICENSE
  - snes_ntsc: LGPL, see filter/snes_ntsc-license.txt
  - xBRZ: GPLv3, see filter/xbrz-license.txt
