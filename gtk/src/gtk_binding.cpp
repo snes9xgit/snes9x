@@ -211,10 +211,13 @@ Binding::Binding (const char *raw_string)
 }
 
 void
-Binding::to_string (char *str)
+Binding::to_string (char *str, bool translate)
 {
     char buf[256];
     char *c;
+
+#undef _
+#define _(String) translate ? gettext(String) : (String)
 
     str[0] = '\0';
 

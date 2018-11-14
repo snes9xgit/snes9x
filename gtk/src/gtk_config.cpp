@@ -425,7 +425,7 @@ int Snes9xConfig::save_config_file ()
         for (int j = 0; j < NUM_JOYPAD_LINKS; j++)
         {
             snprintf (key, PATH_MAX, "Joypad %d::%s", i, b_links[j].snes9x_name);
-            joypad[j].to_string (buffer);
+            joypad[j].to_string (buffer, false);
             cf.SetString (key, std::string (buffer));
         }
     }
@@ -433,7 +433,7 @@ int Snes9xConfig::save_config_file ()
     for (int i = NUM_JOYPAD_LINKS; b_links[i].snes9x_name; i++)
     {
         snprintf (key, PATH_MAX, "Shortcuts::%s", b_links[i].snes9x_name);
-        shortcut[i - NUM_JOYPAD_LINKS].to_string (buffer);
+        shortcut[i - NUM_JOYPAD_LINKS].to_string (buffer, false);
         cf.SetString (key, std::string (buffer));
     }
 

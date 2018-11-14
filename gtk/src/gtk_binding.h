@@ -35,7 +35,7 @@ class Binding
         Binding (unsigned int);
         Binding ();
         Binding (const char *str);
-        void to_string (char *str);
+        void to_string (char *str, bool translate = true);
         unsigned int hex ();
         unsigned int base_hex ();
         bool matches (Binding &binding);
