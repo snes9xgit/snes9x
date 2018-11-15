@@ -1,4 +1,8 @@
-/* Simple resampler based on bsnes's ruby audio library */
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
 
 #ifndef __HERMITE_RESAMPLER_H
 #define __HERMITE_RESAMPLER_H

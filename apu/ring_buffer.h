@@ -1,4 +1,8 @@
-/* Simple byte-based ring buffer. Licensed under public domain (C) BearOso. */
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
 
 #ifndef __RING_BUFFER_H
 #define __RING_BUFFER_H

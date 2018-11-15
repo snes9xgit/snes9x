@@ -1,6 +1,11 @@
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
 #ifndef __GTK_WAYLAND_EGL_CONTEXT_H
 #define __GTK_WAYLAND_EGL_CONTEXT_H
-
 
 #include <wayland-egl.h>
 #include <epoxy/egl.h>
