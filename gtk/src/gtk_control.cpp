@@ -186,7 +186,10 @@ static void change_slot (int difference)
     gui_config->current_save_slot %= 1000;
     if (gui_config->current_save_slot < 0)
         gui_config->current_save_slot += 1000;
-    snprintf (buf, 256, "Slot %d", gui_config->current_save_slot);
+    if (!gui_config->rom_loaded)
+        return;
+
+    snprintf (buf, 256, "State Slot: %d", gui_config->current_save_slot);
     S9xSetInfoString (buf);
     GFX.InfoStringTimeout = 60;
 }

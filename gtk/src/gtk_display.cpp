@@ -5,6 +5,7 @@
 #include "gtk_display.h"
 #include "gtk_display_driver.h"
 #include "gtk_display_driver_gtk.h"
+#include "font.h"
 
 #if defined(USE_XV) && defined(GDK_WINDOWING_X11)
 #include "gtk_display_driver_xv.h"
@@ -13,6 +14,27 @@
 #ifdef USE_OPENGL
 #include "gtk_display_driver_opengl.h"
 #endif
+
+static const char kern[224][2] =
+{
+    { 2, 2 },{ 2, 3 },{ 1, 2 },{ 0, 1 },{ 0, 1 },{ 0, 2 },{ 0, 2 },{ 0, 3 },{ 1, 3 },{ 1, 3 },{ 0, 3 },{ 0, 1 },{ 0, 3 },{ 0, 2 },{ 1, 3 },{ 0, 2 },
+    { 0, 3 },{ 0, 3 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 1, 3 },{ 0, 3 },{ 0, 3 },{ 0, 2 },{ 0, 3 },{ 0, 3 },
+    { 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 3 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 1 },{ 0, 1 },{ 0, 2 },
+    { 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 3 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 2 },{ 0, 3 },{ 0, 2 },{ 0, 3 },{ 0, 2 },{ 0, 3 },{ 0, 3 },{ 0, 2 },
+    { 0, 3 },{ 0, 2 },{ 0, 2 },{ 0, 3 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 3 },{ 0, 3 },{ 0, 2 },{ 0, 3 },{ 0, 1 },{ 0, 2 },{ 0, 2 },
+    { 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 3 },{ 0, 1 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 3 },{ 1, 4 },{ 0, 3 },{ 0, 2 },{ 2, 2 },
+    { 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },
+    { 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },
+    { 2, 2 },{ 0, 3 },{ 2, 2 },{ 2, 2 },{ 2, 1 },{ 1, 3 },{ 0, 1 },{ 0, 3 },{ 0, 3 },{ 0, 3 },{ 0, 3 },{ 0, 3 },{ 0, 2 },{ 0, 2 },{ 1, 3 },{ 0, 1 },
+    { 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 2 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },
+    { 0, 1 },{ 0, 2 },{ 0, 1 },{ 0, 1 },{ 1, 2 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 1, 2 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },
+    { 1, 2 },{ 0, 2 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 1, 1 },{ 0, 1 },{ 1, 1 },{ 0, 1 },{ 0, 2 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 2 },{ 0, 3 },
+    { 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },
+    { 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 }
+};
+
+static const int font_width = 8;
+static const int font_height = 9;
 
 static S9xDisplayDriver  *driver;
 static snes_ntsc_t       snes_ntsc;
@@ -1768,4 +1790,101 @@ S9xGraphicsMode ()
 {
 }
 
+static inline int CharWidth (uint8 c)
+{
+    return font_width - kern[c - 32][0] - kern[c - 32][1];
+}
+
+static int StringWidth (const char *str)
+{
+    int length = strlen (str);
+    int pixcount = 0;
+
+    if (length > 0)
+        pixcount++;
+
+    for (int i = 0; i < length; i++)
+    {
+        pixcount += (CharWidth (str[i]) - 1);
+    }
+
+    return pixcount;
+}
+
+static void GTKDisplayChar (int x, int y, uint8 c, bool overlap = false)
+{
+    int cindex = c - 32;
+    int crow   = cindex >> 4;
+    int ccol   = cindex & 15;
+    int cwidth = font_width - kern[cindex][0] - kern[cindex][1];
+
+    int	line   = crow * font_height;
+    int	offset = ccol * font_width + kern[cindex][0];
+    int scale = IPPU.RenderedScreenWidth / SNES_WIDTH;
+
+    uint16 *s = GFX.Screen + y * GFX.RealPPL + x * scale;
+
+    for (int h = 0; h < font_height; h++, line++, s += GFX.RealPPL - cwidth * scale)
+    {
+        for (int w = 0; w < cwidth; w++, s++)
+        {
+            char p = font[line][offset + w];
+
+            if (p == '#')
+                *s = Settings.DisplayColor;
+            else if (!overlap || w > 0)
+                *s = (*s & 0xf7de) >> 1;
+
+            if (scale > 1)
+            {
+                s[1] = s[0];
+                s++;
+            }
+        }
+    }
+}
+
+void GTKDisplayStringFromBottom (const char *string, int linesFromBottom,
+                                 int pixelsFromLeft, bool allowWrap)
+{
+    if (linesFromBottom <= 0)
+        linesFromBottom = 1;
+
+    if (linesFromBottom >= 5)
+        linesFromBottom -= 3;
+
+    if (pixelsFromLeft > 128)
+        pixelsFromLeft = SNES_WIDTH - StringWidth (string);
+
+    int dst_x = pixelsFromLeft;
+    int dst_y = IPPU.RenderedScreenHeight - font_height * linesFromBottom;
+    int	len = strlen(string);
+    bool overlap = false;
+
+    for (int i = 0 ; i < len ; i++)
+    {
+        int cindex = string[i] - 32;
+        int char_width = font_width - kern[cindex][0] - kern[cindex][1];
+
+        if (dst_x + char_width > SNES_WIDTH || (uint8) string[i] < 32)
+        {
+            if (!allowWrap)
+                break;
+
+            linesFromBottom--;
+            dst_y = IPPU.RenderedScreenHeight - font_height * linesFromBottom;
+            dst_x = pixelsFromLeft;
+
+            if (dst_y >= IPPU.RenderedScreenHeight)
+                break;
+        }
+
+        if ((uint8) string[i] < 32)
+            continue;
+
+        GTKDisplayChar(dst_x, dst_y, string[i], overlap);
+        dst_x  += char_width - 1;
+        overlap = true;
+    }
+}
 
