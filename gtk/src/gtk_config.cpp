@@ -617,7 +617,7 @@ int Snes9xConfig::load_config_file ()
 
     bool RemoveSpriteLimit;
     inbool (z"RemoveSpriteLimit", RemoveSpriteLimit);
-    bool OverclockCPU;
+    bool OverclockCPU = false;
     inbool (z"OverclockCPU", OverclockCPU);
 
 #undef z

@@ -254,24 +254,7 @@ void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
         return;
     }
 
-    if (legacy)
-    {
-        glVertexPointer (2, GL_FLOAT, 0, coords);
-        glTexCoordPointer (2, GL_FLOAT, 0, &coords[8]);
-        glDrawArrays (GL_TRIANGLE_STRIP, 0, 4);
-    }
-    else
-    {
-        glUseProgram (stock_program);
-        glBindBuffer (GL_ARRAY_BUFFER, coord_buffer);
-        glEnableVertexAttribArray (0);
-        glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET (0));
-        glEnableVertexAttribArray (1);
-        glVertexAttribPointer (1, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET (32));
-        glDrawArrays (GL_TRIANGLE_STRIP, 0, 4);
-        glDisableVertexAttribArray (1);
-        glDisableVertexAttribArray (0);
-    }
+    glDrawArrays (GL_TRIANGLE_STRIP, 0, 4);
 
     swap_buffers ();
 }
@@ -366,6 +349,11 @@ void S9xOpenGLDisplayDriver::update_texture_size (int width, int height)
             glBufferData (GL_ARRAY_BUFFER, sizeof (GLfloat) * 16, coords, GL_STATIC_DRAW);
             glBindBuffer (GL_ARRAY_BUFFER, 0);
         }
+        else
+        {
+            glVertexPointer (2, GL_FLOAT, 0, coords);
+            glTexCoordPointer (2, GL_FLOAT, 0, &coords[8]);
+        }
     }
 }
 
@@ -435,6 +423,9 @@ int S9xOpenGLDisplayDriver::opengl_defaults ()
         glLoadIdentity ();
         glMatrixMode (GL_MODELVIEW);
         glLoadIdentity ();
+
+        glVertexPointer (2, GL_FLOAT, 0, coords);
+        glTexCoordPointer (2, GL_FLOAT, 0, &coords[8]);
     }
     else
     {
@@ -481,6 +472,12 @@ int S9xOpenGLDisplayDriver::opengl_defaults ()
         glGenBuffers (1, &coord_buffer);
         glBindBuffer (GL_ARRAY_BUFFER, coord_buffer);
         glBufferData (GL_ARRAY_BUFFER, sizeof (GLfloat) * 16, coords, GL_STATIC_DRAW);
+
+        glEnableVertexAttribArray (0);
+        glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET (0));
+        glEnableVertexAttribArray (1);
+        glVertexAttribPointer (1, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET (32));
+
         glBindBuffer (GL_ARRAY_BUFFER, 0);
     }
 
