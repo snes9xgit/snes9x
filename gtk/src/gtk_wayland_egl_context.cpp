@@ -15,7 +15,7 @@ static void wl_global (void *data,
                        const char *interface,
                        uint32_t version)
 {
-    struct WaylandEGLContext *wl = (struct WaylandEGLContext *) data;
+    WaylandEGLContext *wl = (WaylandEGLContext *) data;
 
     if (!strcmp (interface, "wl_compositor"))
         wl->compositor = (struct wl_compositor *) wl_registry_bind (wl_registry, name, &wl_compositor_interface, 3);
