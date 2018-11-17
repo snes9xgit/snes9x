@@ -24,7 +24,7 @@
 
 #include "shaders/glsl.h"
 
-#define BUFFER_OFFSET(i) ((char *) NULL + (i))
+#define BUFFER_OFFSET(i) ((char *) (i))
 
 class S9xOpenGLDisplayDriver : public S9xDisplayDriver
 {
