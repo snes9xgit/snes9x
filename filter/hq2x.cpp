@@ -403,11 +403,11 @@ static inline bool Diff (int c1, int c2)
 
 void HQ2X_16 (uint8 *srcPtr, uint32 srcPitch, uint8 *dstPtr, uint32 dstPitch, int width, int height)
 {
-	register int	w1, w2, w3, w4, w5, w6, w7, w8, w9;
-	register uint32	src1line = srcPitch >> 1;
-	register uint32	dst1line = dstPitch >> 1;
-	register uint16	*sp = (uint16 *) srcPtr;
-	register uint16	*dp = (uint16 *) dstPtr;
+	int	w1, w2, w3, w4, w5, w6, w7, w8, w9;
+	uint32	src1line = srcPitch >> 1;
+	uint32	dst1line = dstPitch >> 1;
+	uint16	*sp = (uint16 *) srcPtr;
+	uint16	*dp = (uint16 *) dstPtr;
 
 	uint32  pattern;
 	int		l, y;
@@ -3102,11 +3102,11 @@ void HQ2X_16 (uint8 *srcPtr, uint32 srcPitch, uint8 *dstPtr, uint32 dstPitch, in
 
 void HQ3X_16 (uint8 *srcPtr, uint32 srcPitch, uint8 *dstPtr, uint32 dstPitch, int width, int height)
 {
-	register int	w1, w2, w3, w4, w5, w6, w7, w8, w9;
-	register uint32	src1line = srcPitch >> 1;
-	register uint32	dst1line = dstPitch >> 1;
-	register uint16	*sp = (uint16 *) srcPtr;
-	register uint16	*dp = (uint16 *) dstPtr;
+	int	w1, w2, w3, w4, w5, w6, w7, w8, w9;
+	uint32	src1line = srcPitch >> 1;
+	uint32	dst1line = dstPitch >> 1;
+	uint16	*sp = (uint16 *) srcPtr;
+	uint16	*dp = (uint16 *) dstPtr;
 
 	uint32  pattern;
 	int		l, y;
@@ -6774,11 +6774,11 @@ void HQ3X_16 (uint8 *srcPtr, uint32 srcPitch, uint8 *dstPtr, uint32 dstPitch, in
 
 void HQ4X_16 (uint8 *srcPtr, uint32 srcPitch, uint8 *dstPtr, uint32 dstPitch, int width, int height)
 {
-	register int	w1, w2, w3, w4, w5, w6, w7, w8, w9;
-	register uint32	src1line = srcPitch >> 1;
-	register uint32	dst1line = dstPitch >> 1;
-	register uint16	*sp = (uint16 *) srcPtr;
-	register uint16	*dp = (uint16 *) dstPtr;
+	int	w1, w2, w3, w4, w5, w6, w7, w8, w9;
+	uint32	src1line = srcPitch >> 1;
+	uint32	dst1line = dstPitch >> 1;
+	uint16	*sp = (uint16 *) srcPtr;
+	uint16	*dp = (uint16 *) dstPtr;
 
 	uint32  pattern;
 	int		l, y;

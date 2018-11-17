@@ -513,12 +513,12 @@ void S9xUpdateScreen (void)
 					// ignoring the true, larger size of the buffer.
 					GFX.RealPPL = GFX.Pitch >> 1;
 
-					for (register int32 y = (int32) GFX.StartY - 1; y >= 0; y--)
+					for (int32 y = (int32) GFX.StartY - 1; y >= 0; y--)
 					{
-						register uint16	*p = GFX.Screen + y * GFX.PPL     + 255;
-						register uint16	*q = GFX.Screen + y * GFX.RealPPL + 510;
+						uint16	*p = GFX.Screen + y * GFX.PPL     + 255;
+						uint16	*q = GFX.Screen + y * GFX.RealPPL + 510;
 
-						for (register int x = 255; x >= 0; x--, p--, q -= 2)
+						for (int x = 255; x >= 0; x--, p--, q -= 2)
 							*q = *(q + 1) = *p;
 					}
 
@@ -527,12 +527,12 @@ void S9xUpdateScreen (void)
 				else
 				#endif
 				// Have to back out of the regular speed hack
-				for (register uint32 y = 0; y < GFX.StartY; y++)
+				for (uint32 y = 0; y < GFX.StartY; y++)
 				{
-					register uint16	*p = GFX.Screen + y * GFX.PPL + 255;
-					register uint16	*q = GFX.Screen + y * GFX.PPL + 510;
+					uint16	*p = GFX.Screen + y * GFX.PPL + 255;
+					uint16	*q = GFX.Screen + y * GFX.PPL + 510;
 
-					for (register int x = 255; x >= 0; x--, p--, q -= 2)
+					for (int x = 255; x >= 0; x--, p--, q -= 2)
 						*q = *(q + 1) = *p;
 				}
 
@@ -547,7 +547,7 @@ void S9xUpdateScreen (void)
 				GFX.PPL = GFX.RealPPL << 1;
 				GFX.DoInterlace = 2;
 
-				for (register int32 y = (int32) GFX.StartY - 2; y >= 0; y--)
+				for (int32 y = (int32) GFX.StartY - 2; y >= 0; y--)
 					memmove(GFX.Screen + (y + 1) * GFX.PPL, GFX.Screen + y * GFX.RealPPL, GFX.PPL * sizeof(uint16));
 			}
 		}

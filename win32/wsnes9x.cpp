@@ -5299,8 +5299,8 @@ inline int InfoScore(char *Buffer)
 
 inline unsigned short sum(unsigned char *array, unsigned int size = HEADER_SIZE)
 {
-	register unsigned short theSum = 0;
-	for (register unsigned int i = 0; i < size; i++)
+	unsigned short theSum = 0;
+	for (unsigned int i = 0; i < size; i++)
 	{
 		theSum += array[i];
 	}

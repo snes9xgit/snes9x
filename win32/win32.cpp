@@ -900,10 +900,10 @@ void DeinitS9x()
 //    for (int l = 0; l < 32; l++)
 //	levels [l] = l * brightness;
 //
-//    for (register int y = 0; y < height; y++)
+//    for (int y = 0; y < height; y++)
 //    {
-//        register uint8 *s = ((uint8 *) src->Surface + y * src->Pitch + offset1);
-//        register uint8 *d = ((uint8 *) dst->Surface + y * dst->Pitch + offset2);
+//        uint8 *s = ((uint8 *) src->Surface + y * src->Pitch + offset1);
+//        uint8 *d = ((uint8 *) dst->Surface + y * dst->Pitch + offset2);
 //
 //#ifdef LSB_FIRST
 //        if (GUI.RedShift < GUI.BlueShift)
@@ -912,7 +912,7 @@ void DeinitS9x()
 //#endif
 //        {
 //            // Order is RGB
-//            for (register int x = 0; x < width; x++)
+//            for (int x = 0; x < width; x++)
 //            {
 //                uint16 pixel = PPU.CGDATA [*s++];
 //                *(d + 0) = levels [(pixel & 0x1f)];
@@ -924,7 +924,7 @@ void DeinitS9x()
 //        else
 //        {
 //            // Order is BGR
-//            for (register int x = 0; x < width; x++)
+//            for (int x = 0; x < width; x++)
 //            {
 //                uint16 pixel = PPU.CGDATA [*s++];
 //                *(d + 0) = levels [((pixel >> 10) & 0x1f)];

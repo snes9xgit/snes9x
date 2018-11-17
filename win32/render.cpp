@@ -572,14 +572,14 @@ inline void ThreeHalfLine32( uint32 *lpDst, uint16 *lpSrc, unsigned int Width){
 #define AVERAGE_565(el0, el1) (((el0) & (el1)) + ((((el0) ^ (el1)) & 0xF7DE) >> 1))
 void RenderMergeHires(void *src, int srcPitch , void* dst, int dstPitch, unsigned int width, unsigned int height)
 {
-    for (register int y = 0; y < height; y++)
+    for (int y = 0; y < height; y++)
     {
-        register uint16 *input = (uint16 *) ((uint8 *) src + y * srcPitch);
-        register uint16 *output = (uint16 *) ((uint8 *) dst + y * dstPitch);
-        register uint16 l, r;
+        uint16 *input = (uint16 *) ((uint8 *) src + y * srcPitch);
+        uint16 *output = (uint16 *) ((uint8 *) dst + y * dstPitch);
+        uint16 l, r;
 
         l = 0;
-        for (register int x = 0; x < (width >> 1); x++)
+        for (int x = 0; x < (width >> 1); x++)
         {
             r = *input++;
             *output++ = AVERAGE_565 (l, r);

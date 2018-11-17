@@ -632,8 +632,8 @@ void Convert16To24 (SSurface *src, SSurface *dst, RECT *srect)
 
     for (int y = 0; y < height; y++)
     {
-		register uint16 *s = (uint16 *) ((uint8 *) src->Surface + (doubledY ? y*2 : y) * src->Pitch + offset1);
-        register uint8 *d = ((uint8 *) dst->Surface + y * dst->Pitch + offset2);
+		uint16 *s = (uint16 *) ((uint8 *) src->Surface + (doubledY ? y*2 : y) * src->Pitch + offset1);
+        uint8 *d = ((uint8 *) dst->Surface + y * dst->Pitch + offset2);
 
 		#define Interp(c1, c2) \
 			(c1 == c2) ? c1 : \
@@ -716,12 +716,12 @@ void Convert16To32 (SSurface *src, SSurface *dst, RECT *srect)
     int offset2 = 0;//((dst->Height - height) >> 1) * dst->Pitch +
         //((dst->Width - width) >> 1) * sizeof (uint32);
 
-    for (register int y = 0; y < height; y++)
+    for (int y = 0; y < height; y++)
     {
-        register uint16 *s = (uint16 *) ((uint8 *) src->Surface + y * src->Pitch + offset1);
-        register uint32 *d = (uint32 *) ((uint8 *) dst->Surface +
+        uint16 *s = (uint16 *) ((uint8 *) src->Surface + y * src->Pitch + offset1);
+        uint32 *d = (uint32 *) ((uint8 *) dst->Surface +
                                          y * dst->Pitch + offset2);
-        for (register int x = 0; x < width; x++)
+        for (int x = 0; x < width; x++)
         {
             uint32 pixel = *s++;
             *d++ = (((pixel >> 11) & 0x1f) << GUI.RedShift) |
