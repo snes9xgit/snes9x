@@ -58,6 +58,7 @@ static const uint8	flashcard[20] =
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
+#if 0
 static const uint8	init2192[32] =	// FIXME
 {
 	00, 00, 00, 00, 00,		// unknown
@@ -69,6 +70,7 @@ static const uint8	init2192[32] =	// FIXME
 	10, 10, 10, 10, 10,		// dummy
 	00, 00, 00, 00, 00, 00, 00, 00, 00
 };
+#endif
 
 static bool8	FlashMode;
 static uint32	FlashSize;

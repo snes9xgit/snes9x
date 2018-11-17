@@ -1967,7 +1967,6 @@ static bool CheckBlockName(STREAM stream, const char *name, int &len)
 {
 	char	buffer[16];
 	len = 0;
-	long	rewind = FIND_STREAM(stream);
 
 	size_t	l = READ_STREAM(buffer, 11, stream);
 	buffer[l] = 0;
