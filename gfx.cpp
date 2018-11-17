@@ -815,8 +815,10 @@ static void SetupOBJ (void)
 	IPPU.OBJChanged = FALSE;
 }
 
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC push_options
 #pragma GCC optimize ("no-tree-vrp")
+#endif
 static void DrawOBJS (int D)
 {
 	void (*DrawTile) (uint32, uint32, uint32, uint32) = NULL;
@@ -909,8 +911,9 @@ static void DrawOBJS (int D)
 		}
 	}
 }
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC pop_options
-
+#endif
 
 static void DrawBackground (int bg, uint8 Zh, uint8 Zl)
 {
