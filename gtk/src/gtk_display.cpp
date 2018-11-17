@@ -1710,20 +1710,6 @@ S9xDisplayGetDriver ()
 }
 
 void
-S9xInitDisplay (int argc, char **argv)
-{
-    Settings.SupportHiRes = TRUE;
-    S9xBlit2xSaIFilterInit ();
-#ifdef USE_HQ2X
-    S9xBlitHQ2xFilterInit ();
-#endif /* USE_HQ2SX */
-    S9xQueryDrivers ();
-    S9xInitDriver ();
-    S9xGraphicsInit ();
-    S9xDisplayReconfigure ();
-}
-
-void
 S9xDisplayClearBuffers ()
 {
     driver->clear_buffers ();
@@ -1850,7 +1836,7 @@ static void GTKDisplayChar (int x, int y, uint8 c, bool overlap = false)
     }
 }
 
-void GTKDisplayStringFromBottom (const char *string, int linesFromBottom,
+static void S9xGTKDisplayString (const char *string, int linesFromBottom,
                                  int pixelsFromLeft, bool allowWrap)
 {
     if (linesFromBottom <= 0)
@@ -1866,6 +1852,11 @@ void GTKDisplayStringFromBottom (const char *string, int linesFromBottom,
     int dst_y = IPPU.RenderedScreenHeight - font_height * linesFromBottom;
     int	len = strlen(string);
     bool overlap = false;
+
+    if (IPPU.RenderedScreenHeight % 224 && !gui_config->overscan)
+        dst_y -= 8;
+    else if (gui_config->overscan)
+        dst_y += 8;
 
     for (int i = 0 ; i < len ; i++)
     {
@@ -1892,5 +1883,20 @@ void GTKDisplayStringFromBottom (const char *string, int linesFromBottom,
         dst_x  += char_width - 1;
         overlap = true;
     }
+}
+
+void
+S9xInitDisplay (int argc, char **argv)
+{
+    Settings.SupportHiRes = TRUE;
+    S9xBlit2xSaIFilterInit ();
+#ifdef USE_HQ2X
+    S9xBlitHQ2xFilterInit ();
+#endif /* USE_HQ2SX */
+    S9xQueryDrivers ();
+    S9xInitDriver ();
+    S9xGraphicsInit ();
+    S9xDisplayReconfigure ();
+    S9xCustomDisplayString = S9xGTKDisplayString;
 }
 

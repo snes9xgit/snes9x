@@ -22,6 +22,7 @@ extern struct SLineMatrixData	LineMatrixData[240];
 void S9xComputeClipWindows (void);
 
 static int	font_width = 8, font_height = 9;
+void (*S9xCustomDisplayString) (const char *, int, int, bool) = NULL;
 
 static void SetupOBJ (void);
 static void DrawOBJS (int);
@@ -1824,6 +1825,12 @@ void S9xDisplayChar (uint16 *s, uint8 c)
 
 static void DisplayStringFromBottom (const char *string, int linesFromBottom, int pixelsFromLeft, bool allowWrap)
 {
+	if (S9xCustomDisplayString)
+	{
+		S9xCustomDisplayString (string, linesFromBottom, pixelsFromLeft, allowWrap);
+		return;
+	}
+
 	if (linesFromBottom <= 0)
 		linesFromBottom = 1;
 

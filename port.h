@@ -133,12 +133,7 @@ typedef size_t					pint;
 #ifndef __WIN32__
 void _splitpath (const char *, char *, char *, char *, char *);
 void _makepath (char *, const char *, const char *, const char *, const char *);
-#ifdef SNES9X_GTK
-void GTKDisplayStringFromBottom(const char *, int, int, bool);
-#define S9xDisplayString GTKDisplayStringFromBottom
-#else
 #define S9xDisplayString	DisplayStringFromBottom
-#endif
 #else   // __WIN32__
 #define snprintf _snprintf
 #define strcasecmp	stricmp
