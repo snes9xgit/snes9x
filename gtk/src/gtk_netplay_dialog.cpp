@@ -96,8 +96,8 @@ Snes9xNetplayDialog::settings_to_dialog ()
 void
 Snes9xNetplayDialog::settings_from_dialog ()
 {
-    strncpy (config->netplay_last_rom, get_entry_text ("rom_image"), PATH_MAX);
-    strncpy (config->netplay_last_host, get_entry_text ("ip_entry"), PATH_MAX);
+    strncpy (config->netplay_last_rom, get_entry_text ("rom_image"), PATH_MAX - 1);
+    strncpy (config->netplay_last_host, get_entry_text ("ip_entry"), PATH_MAX - 1);
     config->netplay_sync_reset = get_check ("sync_reset");
     config->netplay_send_rom = get_check ("send_image");
     config->netplay_last_port = get_spin ("port");

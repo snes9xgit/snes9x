@@ -905,17 +905,17 @@ Snes9xPreferences::get_settings_from_dialog ()
     config->use_shaders               = get_check ("use_shaders");
     config->sync_every_frame          = get_check ("sync_every_frame");
 
-    strncpy (config->fragment_shader, get_entry_text ("fragment_shader"), PATH_MAX);
+    strncpy (config->fragment_shader, get_entry_text ("fragment_shader"), PATH_MAX - 1);
 
     config->pbo_format = pbo_format;
 #endif
     char safety_sram_directory [PATH_MAX];
 
-    strncpy (safety_sram_directory, get_entry_text ("sram_directory"), PATH_MAX);
-    strncpy (config->savestate_directory, get_entry_text ("savestate_directory"), PATH_MAX);
-    strncpy (config->patch_directory, get_entry_text ("patch_directory"), PATH_MAX);
-    strncpy (config->cheat_directory, get_entry_text ("cheat_directory"), PATH_MAX);
-    strncpy (config->export_directory, get_entry_text ("export_directory"), PATH_MAX);
+    strncpy (safety_sram_directory, get_entry_text ("sram_directory"), PATH_MAX - 1);
+    strncpy (config->savestate_directory, get_entry_text ("savestate_directory"), PATH_MAX - 1);
+    strncpy (config->patch_directory, get_entry_text ("patch_directory"), PATH_MAX - 1);
+    strncpy (config->cheat_directory, get_entry_text ("cheat_directory"), PATH_MAX - 1);
+    strncpy (config->export_directory, get_entry_text ("export_directory"), PATH_MAX - 1);
 
     if (!strcmp (safety_sram_directory, SAME_GAME))
         safety_sram_directory[0] = '\0';

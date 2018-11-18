@@ -15,17 +15,21 @@ static char buf[PATH_MAX];
 const char *
 S9xChooseMovieFilename (bool8 read_only)
 {
-    if (!gui_config->rom_loaded)
-        return strdup ("");
+    static char path[PATH_MAX];
 
-    return top_level->open_movie_dialog (read_only);
+    if (!gui_config->rom_loaded)
+        return "";
+
+    const char *str = top_level->open_movie_dialog (read_only);
+    strcpy (path, str);
+
+    return path;
 }
 
 const char *
 S9xChooseFilename (bool8 read_only)
 {
-
-    return strdup ("");
+    return "";
 }
 
 /* _splitpath/_makepath: Modified from unix.cpp. See file for credits. */
@@ -120,8 +124,7 @@ S9xGetFilenameInc (const char *e, enum s9x_getdirtype dirtype)
 
     do
     {
-        snprintf (filename, sizeof (filename),
-                  "%s" SLASH_STR "%s%03d%s", d, fname, i, e);
+        ssnprintf (filename, PATH_MAX, "%s" SLASH_STR "%s%03d%s", d, fname, i, e);
         i++;
     }
     while (stat (filename, &buf) == 0 && i != 0); /* Overflow? ...riiight :-) */
@@ -211,7 +214,7 @@ S9xGetFilename (const char *ex, enum s9x_getdirtype dirtype)
 
     _splitpath (Memory.ROMFilename, drive, dir, fname, ext);
 
-    snprintf (filename, sizeof (filename), "%s" SLASH_STR "%s%s",
+    ssnprintf (filename, sizeof (filename), "%s" SLASH_STR "%s%s",
               S9xGetDirectory (dirtype), fname, ex);
 
     return (filename);
@@ -360,21 +363,6 @@ void S9xCloseSnapshotFile (STREAM file)
 #endif
 }
 
-extern "C"
-{
-    uint8 snes9x_clear_change_log = 0;
-}
-
-extern "C" char *osd_GetPackDir ()
-{
-    return NULL;
-}
-
-void
-S9xLoadSDD1Data ()
-{
-}
-
 void
 S9xAutoSaveSRAM ()
 {
@@ -468,7 +456,7 @@ S9xOpenROMDialog ()
             gtk_file_chooser_get_current_folder (GTK_FILE_CHOOSER (dialog));
         if (directory)
         {
-            strncpy (gui_config->last_directory, directory, PATH_MAX);
+            strncpy (gui_config->last_directory, directory, PATH_MAX - 1);
             g_free (directory);
         }
     }
@@ -500,13 +488,13 @@ S9xQuickSaveSlot (int slot)
 
     _splitpath (Memory.ROMFilename, drive, dir, def, ext);
 
-    snprintf (filename, PATH_MAX, "%s%s%s.%03d",
+    ssnprintf (filename, PATH_MAX, "%s%s%s.%03d",
              S9xGetDirectory (SNAPSHOT_DIR), SLASH_STR, def,
              slot);
 
     if (S9xFreezeGame (filename))
     {
-        snprintf (buf, PATH_MAX, "%s.%03d saved", def, slot);
+        ssnprintf (buf, PATH_MAX, "%s.%03d saved", def, slot);
 
         S9xSetInfoString (buf);
     }
@@ -525,7 +513,7 @@ void S9xQuickLoadSlot (int slot)
 
     _splitpath (Memory.ROMFilename, drive, dir, def, ext);
 
-    snprintf (filename, PATH_MAX, "%s%s%s.%03d",
+    ssnprintf (filename, PATH_MAX, "%s%s%s.%03d",
              S9xGetDirectory (SNAPSHOT_DIR), SLASH_STR, def,
              slot);
 
@@ -534,7 +522,7 @@ void S9xQuickLoadSlot (int slot)
 
     if (S9xUnfreezeGame (filename))
     {
-        snprintf (buf, PATH_MAX, "%s.%03d loaded", def, slot);
+        ssnprintf (buf, PATH_MAX, "%s.%03d loaded", def, slot);
         S9xSetInfoString (buf);
         return;
     }
@@ -543,7 +531,7 @@ void S9xQuickLoadSlot (int slot)
 
     _splitpath (Memory.ROMFilename, drive, dir, def, ext);
 
-    snprintf (filename, PATH_MAX, "%s%s%s.zs%c",
+    ssnprintf (filename, PATH_MAX, "%s%s%s.zs%c",
               S9xGetDirectory (SNAPSHOT_DIR), SLASH_STR,
               def, digits[slot]);
 
@@ -552,7 +540,7 @@ void S9xQuickLoadSlot (int slot)
 
     if (S9xUnfreezeGame (filename))
     {
-        snprintf (buf, PATH_MAX,
+        ssnprintf (buf, PATH_MAX,
                   "Loaded ZSNES freeze file %s.zs%c",
                   def, digits [slot]);
         S9xSetInfoString (buf);
