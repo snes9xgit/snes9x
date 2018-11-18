@@ -93,12 +93,6 @@ AC_ARG_WITH(debugger,
   [],
   [with_debugger=no])
 
-AC_ARG_WITH(sdd1-decomp,
-  [AS_HELP_STRING([--with(out)-sdd1-decomp],
-    [Use SDD1 decompression (default: with)])],
-  [],
-  [with_sdd1_decomp=yes])
-
 AC_ARG_WITH(hq2x,
   [AS_HELP_STRING([--with(out)-hq2x],
     [Enable support for the HQ2x family of filters (default: with)])],
@@ -122,12 +116,6 @@ AC_ARG_WITH(jma-decomp,
     [Enable JMA archive decompression (default: with)])],
   [],
   [with_jma_decomp=yes])
-
-AC_ARG_WITH(newblend,
-  [AS_HELP_STRING([--with(out)-newblend],
-    [New colour blender (default: with)])],
-  [],
-  [with_newblend=yes])
 
 AC_ARG_WITH(zlib,
   [AS_HELP_STRING([--with(out)-zlib],
@@ -179,19 +167,10 @@ fi
 
 LIBS="$LIBS -lX11 -ldl -lXext"
 
-ZSNESFX='#ZSNESFX=yes'
-ZSNESC4='#ZSNESC4=yes'
-ASMCPU=''
-SDD1_DECOMP='#SDD1_DECOMP=yes'
 JMA='#JMA=yes'
-SPC700ASM=''
-I386SPC=''
 CPUINC=''
 NETPLAY='#NETPLAY=yes'
-
 SYSLIBS=''
-NASM='not_found'
-
 OPENGL=0
 
 if test yes = "$with_opengl" ; then
@@ -211,7 +190,6 @@ fi
 
 PKG_CHECK_MODULES([GTK], ["$GTK_VERSION"])
 PKG_CHECK_MODULES([GLIB], [glib-2.0 > 2.28 gthread-2.0 >= 2.6 gobject-2.0 >= 2.6])
-PKG_CHECK_MODULES([LIBXML], [libxml-2.0 >= 2.0])
 PKG_CHECK_MODULES([XRANDR], [xrandr])
 
 if test yes = "$with_opengl" ; then
@@ -373,24 +351,13 @@ else
     XBRZ=0
 fi
 
-CFLAGS="$CFLAGS $GTK_CFLAGS $GLIB_CFLAGS $LIBXML_CFLAGS $PORTAUDIO_CFLAGS $LIBPNG_CFLAGS $SDL_CFLAGS $XV_CFLAGS $XRANDR_CFLAGS $ALSA_CFLAGS $PULSEAUDIO_CFLAGS"
-LIBS="$LIBS $GTK_LIBS $GLIB_LIBS $LIBXML_LIBS $PORTAUDIO_LIBS $LIBPNG_LIBS $SDL_LIBS $XV_LIBS $XRANDR_LIBS $ALSA_LIBS $PULSEAUDIO_LIBS"
+CFLAGS="$CFLAGS $GTK_CFLAGS $GLIB_CFLAGS $PORTAUDIO_CFLAGS $LIBPNG_CFLAGS $SDL_CFLAGS $XV_CFLAGS $XRANDR_CFLAGS $ALSA_CFLAGS $PULSEAUDIO_CFLAGS"
+LIBS="$LIBS $GTK_LIBS $GLIB_LIBS $PORTAUDIO_LIBS $LIBPNG_LIBS $SDL_LIBS $XV_LIBS $XRANDR_LIBS $ALSA_LIBS $PULSEAUDIO_LIBS"
 
-NASM="not_found"
-ZSNESC4=no
-ZSNESFX=no
-
-CFLAGS="$CFLAGS -DPIXEL_FORMAT=RGB565 -DCORRECT_VRAM_READS"
-CORRECT_VRAM_READS=1
+CFLAGS="$CFLAGS -DPIXEL_FORMAT=RGB565"
 
 if test yes = "$with_debugger"; then
    CFLAGS="$CFLAGS -DDEBUGGER"
-fi
-
-dnl Enable SDD1 decompression if requested
-if test yes = "$with_sdd1_decomp"; then
-   CFLAGS="$CFLAGS -DSDD1_DECOMP"
-   SDD1_DECOMP=yes
 fi
 
 dnl Enable Netplay support if requested
@@ -490,16 +457,10 @@ if test $ac_cv_my_sar_int8 = yes && \
   CFLAGS="$CFLAGS -DRIGHTSHIFT_IS_SAR"
 fi
 
-CFLAGS="$CFLAGS -DUNZIP_SUPPORT -DSNES9X_GTK -DSPC700_C -I. -I.. $ZIP_CFLAGS"
+CFLAGS="$CFLAGS -DUNZIP_SUPPORT -DSNES9X_GTK -I. -I.. $ZIP_CFLAGS"
 
 CXXFLAGS="$CFLAGS"
 
-CCASFLAGS="$CFLAGS -I.. -I../i386"
-
-AM_CONDITIONAL(ZSNESFX, [test yes = "$ZSNESFX"])
-AM_CONDITIONAL(ZSNESC4, [test yes = "$ZSNESC4"])
-AM_CONDITIONAL(ASMCPU, [test yes = "$ASMCPU"])
-AM_CONDITIONAL(SDD1_DECOMP, [test yes = "$SDD1_DECOMP"])
 AM_CONDITIONAL(NETPLAY, [test yes = "$NETPLAY"])
 AM_CONDITIONAL(JMA, [test yes = "$JMA"])
 AM_CONDITIONAL(OPENGL, [test yes = "$OPENGL"])
@@ -514,9 +475,6 @@ AM_CONDITIONAL(HQ2X, [test yes = "$HQ2X"])
 AM_CONDITIONAL(XBRZ, [test yes = "$XBRZ"])
 AM_CONDITIONAL(SYSTEM_ZIP, [test yes = "$SYSTEM_ZIP"])
 AM_CONDITIONAL(WAYLAND, [test yes = "$WAYLAND"])
-
-AC_SUBST(NASM)
-AC_SUBST(NASM_FLAGS)
 
 AC_OUTPUT(Makefile data/Makefile po/Makefile.in)
 
