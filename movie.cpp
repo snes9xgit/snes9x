@@ -366,8 +366,8 @@ static void flush_movie (void)
 	write_movie_header(Movie.File, &Movie);
 	fseek(Movie.File, Movie.ControllerDataOffset, SEEK_SET);
 
-	size_t	ignore;
-	ignore = fwrite(Movie.InputBuffer, 1, Movie.BytesPerSample * (Movie.MaxSample + 1), Movie.File);
+	if (!fwrite(Movie.InputBuffer, 1, Movie.BytesPerSample * (Movie.MaxSample + 1), Movie.File))
+		printf ("Movie flush failed.\n");
 }
 
 static void truncate_movie (void)
@@ -378,8 +378,8 @@ static void truncate_movie (void)
 	if (Movie.SaveStateOffset > Movie.ControllerDataOffset)
 		return;
 
-	int	ignore;
-	ignore = ftruncate(fileno(Movie.File), Movie.ControllerDataOffset + Movie.BytesPerSample * (Movie.MaxSample + 1));
+	if (ftruncate(fileno(Movie.File), Movie.ControllerDataOffset + Movie.BytesPerSample * (Movie.MaxSample + 1)))
+		printf ("Couldn't truncate file.\n");
 }
 
 static int read_movie_header (FILE *fd, SMovie *movie)
@@ -465,8 +465,8 @@ static void write_movie_header (FILE *fd, SMovie *movie)
 			Write8(movie->PortIDs[p][i], ptr);
 	}
 
-	size_t	ignore;
-	ignore = fwrite(buf, 1, SMV_HEADER_SIZE, fd);
+	if (!fwrite(buf, 1, SMV_HEADER_SIZE, fd))
+		printf ("Couldn't write movie header.\n");
 }
 
 static void write_movie_extrarominfo (FILE *fd, SMovie *movie)
@@ -479,8 +479,7 @@ static void write_movie_extrarominfo (FILE *fd, SMovie *movie)
 	Write32(movie->ROMCRC32, ptr);
 	strncpy((char *) ptr, movie->ROMName, 23);
 
-	size_t	ignore;
-	ignore = fwrite(buf, 1, SMV_EXTRAROMINFO_SIZE, fd);
+	fwrite(buf, 1, SMV_EXTRAROMINFO_SIZE, fd);
 }
 
 static void change_state (MovieState new_state)
@@ -667,8 +666,12 @@ int S9xMovieOpen (const char *filename, bool8 read_only)
 	Movie.InputBufferPtr = Movie.InputBuffer;
 	reserve_buffer_space(Movie.BytesPerSample * (Movie.MaxSample + 1));
 
-	size_t	ignore;
-	ignore = fread(Movie.InputBufferPtr, 1, Movie.BytesPerSample * (Movie.MaxSample + 1), fd);
+	if (!fread(Movie.InputBufferPtr, 1, Movie.BytesPerSample * (Movie.MaxSample + 1), fd))
+	{
+		printf ("Failed to read from movie file.\n");
+		fclose(fd);
+		return (WRONG_FORMAT);
+	}
 
 	// read "baseline" controller data
 	if (Movie.MaxSample && Movie.MaxFrame)
@@ -732,8 +735,8 @@ int S9xMovieCreate (const char *filename, uint8 controllers_mask, uint8 opts, co
 			meta_buf[i * 2 + 1] = (uint8) ((c >> 8) & 0xff);
 		}
 
-		size_t	ignore;
-		ignore = fwrite(meta_buf, sizeof(uint16), metadata_length, fd);
+		if (!fwrite(meta_buf, sizeof(uint16), metadata_length, fd))
+			printf ("Failed writing movie metadata.\n");
 	}
 
 	Movie.ROMCRC32 = Memory.ROMCRC32;
@@ -900,8 +903,8 @@ void S9xMovieUpdate (bool addFrame)
 			if (addFrame)
 				Movie.MaxFrame = ++Movie.CurrentFrame;
 
-			size_t	ignore;
-			ignore = fwrite((Movie.InputBufferPtr - Movie.BytesPerSample), 1, Movie.BytesPerSample, Movie.File);
+			if (!fwrite((Movie.InputBufferPtr - Movie.BytesPerSample), 1, Movie.BytesPerSample, Movie.File))
+				printf ("Error writing control data.\n");
 
 			break;
 		}
@@ -926,8 +929,8 @@ void S9xMovieUpdateOnReset (void)
 		Movie.MaxSample = ++Movie.CurrentSample;
 		Movie.MaxFrame = ++Movie.CurrentFrame;
 
-		size_t	ignore;
-		ignore = fwrite((Movie.InputBufferPtr - Movie.BytesPerSample), 1, Movie.BytesPerSample, Movie.File);
+		if (!fwrite((Movie.InputBufferPtr - Movie.BytesPerSample), 1, Movie.BytesPerSample, Movie.File))
+			printf ("Failed writing reset data.\n");
 	}
 }
 
