@@ -456,7 +456,7 @@ S9xOpenROMDialog ()
             gtk_file_chooser_get_current_folder (GTK_FILE_CHOOSER (dialog));
         if (directory)
         {
-            strncpy (gui_config->last_directory, directory, PATH_MAX - 1);
+            sstrncpy (gui_config->last_directory, directory, PATH_MAX);
             g_free (directory);
         }
     }

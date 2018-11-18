@@ -148,7 +148,8 @@ void SetInfoDlgColor(unsigned char, unsigned char, unsigned char);
 #endif  // __LIBRETRO__
 #endif  // __WIN32__
 
-#define ssnprintf(dst, size, fmt, ...) if (snprintf (dst, size, fmt, __VA_ARGS__) >= (int) size) dst[size - 1] = '\0';
+#define ssnprintf(dst, size, fmt, ...) if (snprintf(dst, size, fmt, __VA_ARGS__) >= (int) size) dst[size - 1] = '\0';
+#define sstrncpy(dst, src, size) strncpy(dst, src, size - 1); dst[size - 1] = '\0';
 
 #if defined(__DJGPP) || defined(__WIN32__)
 #define SLASH_STR	"\\"
