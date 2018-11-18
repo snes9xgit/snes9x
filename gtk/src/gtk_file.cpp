@@ -246,7 +246,7 @@ S9xBasenameNoExt (const char *f)
     else
     {
         int len = ext - base;
-        sstrncpy (filename, base, len);
+        strncpy (filename, base, len);
         filename[len] = '\0';
     }
 
