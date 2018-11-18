@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <limits.h>
 #ifndef __LIBRETRO__
 #include <memory.h>
@@ -148,8 +149,20 @@ void SetInfoDlgColor(unsigned char, unsigned char, unsigned char);
 #endif  // __LIBRETRO__
 #endif  // __WIN32__
 
-#define ssnprintf(dst, size, fmt, ...) if (snprintf(dst, size, fmt, __VA_ARGS__) >= (int) size) dst[size - 1] = '\0';
-#define sstrncpy(dst, src, size) strncpy(dst, src, size - 1); dst[size - 1] = '\0';
+inline void ssnprintf(char *dst, size_t size, const char *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    if (vsnprintf(dst, size, fmt, args) >= (int) size)
+        dst[size - 1] = '\0';
+    va_end(args);
+}
+
+inline void sstrncpy(char *dst, const char *src, size_t size)
+{
+    strncpy(dst, src, size - 1);
+    dst[size - 1] = '\0';
+}
 
 #if defined(__DJGPP) || defined(__WIN32__)
 #define SLASH_STR	"\\"

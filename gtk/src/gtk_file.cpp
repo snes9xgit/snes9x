@@ -234,7 +234,7 @@ S9xBasename (const char *f)
 const char *
 S9xBasenameNoExt (const char *f)
 {
-    static char filename[PATH_MAX + 1];
+    static char filename[PATH_MAX];
     const char *base, *ext;
 
     if (!(base = strrchr (f, SLASH_CHAR)))
@@ -245,11 +245,11 @@ S9xBasenameNoExt (const char *f)
     ext = strrchr (f, '.');
 
     if (!ext)
-        strncpy (filename, base, PATH_MAX);
+        sstrncpy (filename, base, PATH_MAX);
     else
     {
         int len = ext - base;
-        strncpy (filename, base, len);
+        sstrncpy (filename, base, len);
         filename[len] = '\0';
     }
 
@@ -284,7 +284,7 @@ S9xOpenSnapshotFile (const char *fname, bool8 read_only, STREAM *file)
 
     if (*drive || *dir == '/' || (*dir == '.' && (*(dir + 1) == '/')))
     {
-        strncpy (filename, fname, PATH_MAX);
+        sstrncpy (filename, fname, PATH_MAX + 1);
 
         if (!file_exists (filename))
         {
