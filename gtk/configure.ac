@@ -167,23 +167,18 @@ fi
 
 LIBS="$LIBS -lX11 -ldl -lXext"
 
-JMA='#JMA=yes'
-CPUINC=''
-NETPLAY='#NETPLAY=yes'
-SYSLIBS=''
-OPENGL=0
+JMA=yes
+NETPLAY=yes
+OPENGL=no
 
 if test yes = "$with_opengl" ; then
   OPENGL=yes
 fi
 
-GTK=yes
-snes9x_info_display="GTK"
-
-GTK3_WARNING=no
+GTK3=no
 if test yes = "$with_gtk3" -a no = "$with_gtk2"; then
     GTK_VERSION="gtk+-3.0 >= 3.22"
-    GTK3_WARNING=yes
+    GTK3=yes
 else
     GTK_VERSION="gtk+-2.0 >= 2.16"
 fi
@@ -207,10 +202,10 @@ if test yes = "$with_opengl" ; then
     LIBS="$LIBS $EPOXY_LIBS"
 fi
 
-WAYLAND=0
+WAYLAND=no
 if test yes = "$with_wayland"; then
     PKG_CHECK_MODULES([WAYLAND_EGL],[wayland-egl],[
-        if test yes = "$GTK3_WARNING" ; then
+        if test yes = "$GTK3" ; then
             CFLAGS="$CFLAGS -DUSE_WAYLAND $WAYLAND_EGL_CFLAGS"
             LIBS="$LIBS $WAYLAND_EGL_LIBS"
             WAYLAND=yes
@@ -222,7 +217,7 @@ if test yes = "$with_wayland"; then
     ])
 fi
 
-GTKJOY=0
+GTKJOY=no
 SDL_CFLAGS=""
 SDL_LIBS=""
 if test yes = "$with_joystick"; then
@@ -242,7 +237,7 @@ if test yes = "$with_joystick"; then
     ])
 fi
 
-XV=0
+XV=no
 XV_CFLAGS=""
 XV_LIBS=""
 if test yes = "$with_xv" ; then
@@ -255,7 +250,7 @@ if test yes = "$with_xv" ; then
     ])
 fi
 
-PORTAUDIO=0
+PORTAUDIO=no
 PORTAUDIO_CFLAGS=""
 PORTAUDIO_LIBS=""
 if test yes = "$with_portaudio" ; then
@@ -268,7 +263,7 @@ if test yes = "$with_portaudio" ; then
     ])
 fi
 
-OSS=0
+OSS=no
 if test yes = "$with_oss" ; then
 
     AC_CHECK_HEADER(sys/soundcard.h, [
@@ -280,7 +275,7 @@ if test yes = "$with_oss" ; then
     ])
 fi
 
-ALSA=0
+ALSA=no
 ALSA_CFLAGS=""
 ALSA_LIBS=""
 if test yes = "$with_alsa" ; then
@@ -294,7 +289,7 @@ if test yes = "$with_alsa" ; then
     ])
 fi
 
-PULSEAUDIO=0
+PULSEAUDIO=no
 PULSEAUDIO_CFLAGS=""
 PULSEAUDIO_LIBS=""
 if test yes = "$with_pulseaudio" ; then
@@ -318,7 +313,7 @@ if test yes = "$with_screenshot"; then
     ])
 fi
 
-SYSTEM_ZIP=0
+SYSTEM_ZIP=no
 SYSTEM_ZIP_CFLAGS=""
 SYSTEM_ZIP_LIBS=""
 ZIP_CFLAGS="-I../unzip"
@@ -341,14 +336,14 @@ if test yes = "$with_hq2x" ; then
     HQ2X=yes
     CFLAGS="$CFLAGS -DUSE_HQ2X"
 else
-    HQ2X=0
+    HQ2X=no
 fi
 
 if test yes = "$with_xbrz" ; then
     XBRZ=yes
     CFLAGS="$CFLAGS -DUSE_XBRZ"
 else
-    XBRZ=0
+    XBRZ=no
 fi
 
 CFLAGS="$CFLAGS $GTK_CFLAGS $GLIB_CFLAGS $PORTAUDIO_CFLAGS $LIBPNG_CFLAGS $SDL_CFLAGS $XV_CFLAGS $XRANDR_CFLAGS $ALSA_CFLAGS $PULSEAUDIO_CFLAGS"
@@ -482,7 +477,7 @@ echo ""
 echo "Snes9x will build with support for the following:"
 echo ""
 
-if test yes = "$GTK3_WARNING" ; then
+if test yes = "$GTK3" ; then
     echo "    GTK+ 3.0"
 else
     echo "    GTK+ 2.0"
