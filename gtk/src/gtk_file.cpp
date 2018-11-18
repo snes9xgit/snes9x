@@ -136,14 +136,11 @@ const char *
 S9xGetDirectory (enum s9x_getdirtype dirtype)
 {
     static char path[PATH_MAX + 1];
-    char *config_dir;
 
     switch (dirtype)
     {
         case HOME_DIR:
-            config_dir = get_config_dir ();
-            strcpy (path, config_dir);
-            free (config_dir);
+            sstrncpy (path, get_config_dir ().c_str (), PATH_MAX + 1);
             break;
 
         case SNAPSHOT_DIR:

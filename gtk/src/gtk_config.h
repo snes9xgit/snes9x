@@ -9,6 +9,7 @@
 
 #include <X11/Xlib.h>
 #include <X11/extensions/Xrandr.h>
+#include <string>
 
 #include "gtk_control.h"
 #include "filter/snes_ntsc.h"
@@ -164,7 +165,7 @@ class Snes9xConfig
 
 };
 
-char *get_config_dir ();
-char *get_config_file_name ();
+std::string get_config_dir ();
+std::string get_config_file_name ();
 
 #endif /* __GTK_CONFIG_H */

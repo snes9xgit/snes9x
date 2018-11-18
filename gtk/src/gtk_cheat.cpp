@@ -432,9 +432,7 @@ Snes9xCheats::search_database ()
     if (result < reason)
         reason = result;
 
-    char *config_dir = get_config_dir ();
-    filename = std::string (config_dir) + "/cheats.bml";
-    free (config_dir);
+    filename = get_config_dir () + "/cheats.bml";
     if (!(result = S9xImportCheatsFromDatabase (filename.c_str ())))
     {
         refresh_tree_view ();
@@ -443,7 +441,6 @@ Snes9xCheats::search_database ()
 
     if (result < reason)
         reason = result;
-
 
     filename = std::string (DATADIR) + "/cheats.bml";
     if (!(result = S9xImportCheatsFromDatabase (filename.c_str ())))

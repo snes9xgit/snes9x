@@ -30,62 +30,38 @@ static int directory_exists (const char *directory)
     return FALSE;
 }
 
-char *get_config_dir ()
+std::string get_config_dir ()
 {
-    char *home_dir = NULL,
-         *classic_config_dir = NULL,
-         *xdg_config_dir = NULL,
-         *xdg_snes9x_dir = NULL;
+    // Find config directory
+    char *env_home = getenv ("HOME");
+    char *env_xdg_config_home = getenv ("XDG_CONFIG_HOME");
 
-    /* Find config directory */
-    home_dir = getenv ("HOME");
-    xdg_config_dir = getenv ("XDG_CONFIG_HOME");
-
-    if (!home_dir && !xdg_config_dir)
+    if (!env_home && !env_xdg_config_home)
     {
-        return strdup (".snes9x");
+        return std::string (".snes9x");
     }
 
-    if (!xdg_config_dir)
-    {
-        xdg_snes9x_dir = (char *) malloc (strlen (home_dir) + 16);
-        sprintf (xdg_snes9x_dir, "%s/.config/snes9x", home_dir);
-    }
-    else
-    {
-        xdg_snes9x_dir = (char *) malloc (strlen (xdg_config_dir) + 9);
-        sprintf (xdg_snes9x_dir, "%s/snes9x", xdg_config_dir);
-    }
+    std::string config;
+    std::string legacy;
 
-    classic_config_dir =  (char *) malloc (strlen (home_dir) + 9);
-    sprintf (classic_config_dir, "%s/.snes9x", home_dir);
-
-    char *config_dir;
-
-    if (directory_exists (classic_config_dir) && !directory_exists(xdg_snes9x_dir))
+    // If XDG_CONFIG_HOME is set, use that, otherwise guess default
+    if (!env_xdg_config_home)
     {
-        free (xdg_snes9x_dir);
-        config_dir =  classic_config_dir;
+        (config += env_home) += "/.config/snes9x";
+        (legacy += env_home) += "/.snes9x";
     }
     else
-    {
-        free (classic_config_dir);
-        config_dir = xdg_snes9x_dir;
-    }
+        config = std::string (env_xdg_config_home) + "/snes9x";
 
-    return config_dir;
+    if (directory_exists (legacy.c_str ()) && !directory_exists(config.c_str ()))
+        return legacy;
+
+    return config;
 }
 
-char *get_config_file_name ()
+std::string get_config_file_name ()
 {
-    char *filename;
-
-    filename = get_config_dir ();
-
-    filename = (char *) realloc (filename, strlen (filename) + 16);
-    strcat (filename, "/snes9x.conf");
-
-    return filename;
+    return get_config_dir () + "/snes9x.conf";
 }
 
 void S9xParsePortConfig (ConfigFile &conf, int pass)
@@ -258,7 +234,6 @@ static inline void outbool (ConfigFile &cf, const char *key, bool value, const c
 
 int Snes9xConfig::save_config_file ()
 {
-    char *filename;
     char key[PATH_MAX];
     char buffer[PATH_MAX];
     ConfigFile cf;
@@ -443,11 +418,9 @@ int Snes9xConfig::save_config_file ()
         cf.SetString (key, std::string (buffer));
     }
 
-    filename = get_config_file_name ();
     cf.SetNiceAlignment (true);
     cf.SetShowComments (true);
-    cf.SaveTo (filename);
-    free (filename);
+    cf.SaveTo (get_config_file_name ().c_str ());
 
     return 0;
 }
@@ -455,43 +428,39 @@ int Snes9xConfig::save_config_file ()
 int Snes9xConfig::load_config_file ()
 {
     struct stat file_info;
-    char        *pathname;
+    std::string path;
     ConfigFile  cf;
     char        key[PATH_MAX];
     char        buffer[PATH_MAX];
 
     load_defaults ();
 
-    pathname = get_config_dir ();
+    path = get_config_dir ();
 
-    if (stat (pathname, &file_info))
+    if (stat (path.c_str (), &file_info))
     {
-        if (mkdir (pathname, 0755))
+        if (mkdir (path.c_str (), 0755))
         {
             fprintf (stderr,
                      _("Couldn't create config directory: %s\n"),
-                     pathname);
+                     path.c_str ());
             return -1;
         }
     }
     else
     {
-        chmod (pathname, 0755);
+        chmod (path.c_str (), 0755);
     }
 
-    free (pathname);
+    path = get_config_file_name ();
 
-    pathname = get_config_file_name ();
-
-    if (stat (pathname, &file_info))
+    if (stat (path.c_str (), &file_info))
     {
         save_config_file ();
     }
 
-    if (!cf.LoadFile (pathname))
+    if (!cf.LoadFile (path.c_str ()))
         return -1;
-
-    free (pathname);
 
     std::string none;
 #define inbool(key, var) var = cf.GetBool (key)

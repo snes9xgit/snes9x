@@ -57,23 +57,20 @@ static void toggled (GtkToggleButton *togglebutton, gpointer user_data)
 static void dialog_response (GtkDialog *pdialog, gint response_id, gpointer user_data)
 {
     std::vector<GLSLParam> * params = (std::vector<GLSLParam> *) user_data;
-    char *config_dir;
-    char *config_file;
 
     switch (response_id)
     {
     case GTK_RESPONSE_OK:
-        config_dir = get_config_dir();
-        config_file = new char[strlen (config_dir) + 14];
-        sprintf(config_file, "%s/snes9x.glslp", config_dir);
-        delete[] config_dir;
-        S9xDisplayGetDriver ()->save (config_file);
-        realpath (config_file, gui_config->fragment_shader);
+    {
+        std::string config_file = get_config_dir() + "/snes9x.glslp";
+        S9xDisplayGetDriver ()->save (config_file.c_str ());
+        realpath (config_file.c_str (), gui_config->fragment_shader);
 
         if (dialog)
             gtk_widget_destroy (GTK_WIDGET (dialog));
         dialog = NULL;
         break;
+    }
 
     case GTK_RESPONSE_CANCEL:
     case GTK_RESPONSE_DELETE_EVENT:
