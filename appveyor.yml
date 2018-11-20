@@ -53,7 +53,8 @@ after_build:
     copy docs\changes.txt artifacts |
     copy LICENSE artifacts |
     copy win32\docs\faqs-windows.txt artifacts |
-    copy win32\docs\readme-windows.txt artifacts
+    copy win32\docs\readme-windows.txt artifacts |
+    copy data\cheats.bml artifacts
   - 7z a %package_name%.zip .\artifacts\*
 
 artifacts:
