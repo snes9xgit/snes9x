@@ -238,6 +238,22 @@ else ifeq ($(platform), emscripten)
    TARGET := $(TARGET_NAME)_libretro_$(platform).bc
    STATIC_LINKING = 1
 
+# Genode
+else ifeq ($(platform), genode)
+   TARGET  := $(TARGET_NAME)_libretro.lib.so
+   PKG_CONFIG := genode-lib genode-stdcxx
+   CXXFLAGS += -D__GENODE__
+   CXXFLAGS += $(shell pkg-config --cflags $(PKG_CONFIG))
+
+   LDFLAGS += -shared --version-script=link.T
+   LDFLAGS += $(shell pkg-config --libs $(PKG_CONFIG))
+
+   CC  = $(shell pkg-config genode-base --variable=cc)
+   CXX = $(shell pkg-config genode-base --variable=cxx)
+   LD  = $(shell pkg-config genode-base --variable=ld)
+   AR  = $(shell pkg-config genode-base --variable=ar) -rcs
+   LIBS =
+
 # Windows MSVC 2003 Xbox 1
 else ifeq ($(platform), xbox1_msvc2003)
 CFLAGS += -D__WIN32__
@@ -551,7 +567,7 @@ ifeq ($(STATIC_LINKING),1)
 else
 	LD = link.exe
 endif
-else
+else ifneq ($(platform),genode)
 	LD = $(CXX)
 endif
 
