@@ -2282,11 +2282,11 @@ void S9xApplyCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 						char	drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], def[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
 
 						_splitpath(Memory.ROMFilename, drive, dir, def, ext);
-						ssnprintf(filename, PATH_MAX + 1, "%s%s%s.%.*s", S9xGetDirectory(SNAPSHOT_DIR), SLASH_STR, def, _MAX_EXT - 1, "oops");
+						snprintf(filename, PATH_MAX + 1, "%s%s%s.%.*s", S9xGetDirectory(SNAPSHOT_DIR), SLASH_STR, def, _MAX_EXT - 1, "oops");
 
 						if (S9xUnfreezeGame(filename))
 						{
-							ssnprintf(buf, 256, "%s.%.*s loaded", def, _MAX_EXT - 1, "oops");
+							snprintf(buf, 256, "%s.%.*s loaded", def, _MAX_EXT - 1, "oops");
 							S9xSetInfoString (buf);
 						}
 						else
@@ -2319,11 +2319,11 @@ void S9xApplyCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 						char	drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], def[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
 
 						_splitpath(Memory.ROMFilename, drive, dir, def, ext);
-						ssnprintf(filename, PATH_MAX + 1, "%s%s%s.%03d", S9xGetDirectory(SNAPSHOT_DIR), SLASH_STR, def, i - QuickLoad000);
+						snprintf(filename, PATH_MAX + 1, "%s%s%s.%03d", S9xGetDirectory(SNAPSHOT_DIR), SLASH_STR, def, i - QuickLoad000);
 
 						if (S9xUnfreezeGame(filename))
 						{
-							ssnprintf(buf, 256, "%s.%03d loaded", def, i - QuickLoad000);
+							snprintf(buf, 256, "%s.%03d loaded", def, i - QuickLoad000);
 							S9xSetInfoString(buf);
 						}
 						else
@@ -2348,9 +2348,9 @@ void S9xApplyCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 						char	drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], def[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
 
 						_splitpath(Memory.ROMFilename, drive, dir, def, ext);
-						ssnprintf(filename, PATH_MAX + 1, "%s%s%s.%03d", S9xGetDirectory(SNAPSHOT_DIR), SLASH_STR, def, i - QuickSave000);
+						snprintf(filename, PATH_MAX + 1, "%s%s%s.%03d", S9xGetDirectory(SNAPSHOT_DIR), SLASH_STR, def, i - QuickSave000);
 
-						ssnprintf(buf, 256, "%s.%03d saved", def, i - QuickSave000);
+						snprintf(buf, 256, "%s.%03d saved", def, i - QuickSave000);
 						S9xSetInfoString(buf);
 
 						S9xFreezeGame(filename);

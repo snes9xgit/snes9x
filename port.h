@@ -149,15 +149,6 @@ void SetInfoDlgColor(unsigned char, unsigned char, unsigned char);
 #endif  // __LIBRETRO__
 #endif  // __WIN32__
 
-inline void ssnprintf(char *dst, size_t size, const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    if (vsnprintf(dst, size, fmt, args) >= (int) size)
-        dst[size - 1] = '\0';
-    va_end(args);
-}
-
 inline void sstrncpy(char *dst, const char *src, size_t size)
 {
     strncpy(dst, src, size - 1);

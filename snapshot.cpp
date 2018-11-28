@@ -1013,7 +1013,7 @@ void S9xResetSaveTimer (bool8 dontsave)
 		char	drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], def[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
 
 		_splitpath(Memory.ROMFilename, drive, dir, def, ext);
-		ssnprintf(filename, PATH_MAX + 1, "%s%s%s.%.*s", S9xGetDirectory(SNAPSHOT_DIR), SLASH_STR, def, _MAX_EXT - 1, "oops");
+		snprintf(filename, PATH_MAX + 1, "%s%s%s.%.*s", S9xGetDirectory(SNAPSHOT_DIR), SLASH_STR, def, _MAX_EXT - 1, "oops");
 		S9xMessage(S9X_INFO, S9X_FREEZE_FILE_INFO, SAVE_INFO_OOPS);
 		S9xFreezeGame(filename);
 	}

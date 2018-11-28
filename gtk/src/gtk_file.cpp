@@ -124,7 +124,7 @@ S9xGetFilenameInc (const char *e, enum s9x_getdirtype dirtype)
 
     do
     {
-        ssnprintf (filename, PATH_MAX, "%s" SLASH_STR "%s%03d%s", d, fname, i, e);
+        snprintf (filename, PATH_MAX, "%s" SLASH_STR "%s%03d%s", d, fname, i, e);
         i++;
     }
     while (stat (filename, &buf) == 0 && i != 0); /* Overflow? ...riiight :-) */
@@ -211,7 +211,7 @@ S9xGetFilename (const char *ex, enum s9x_getdirtype dirtype)
 
     _splitpath (Memory.ROMFilename, drive, dir, fname, ext);
 
-    ssnprintf (filename, sizeof (filename), "%s" SLASH_STR "%s%s",
+    snprintf (filename, sizeof (filename), "%s" SLASH_STR "%s%s",
               S9xGetDirectory (dirtype), fname, ex);
 
     return (filename);
@@ -485,13 +485,13 @@ S9xQuickSaveSlot (int slot)
 
     _splitpath (Memory.ROMFilename, drive, dir, def, ext);
 
-    ssnprintf (filename, PATH_MAX, "%s%s%s.%03d",
+    snprintf (filename, PATH_MAX, "%s%s%s.%03d",
              S9xGetDirectory (SNAPSHOT_DIR), SLASH_STR, def,
              slot);
 
     if (S9xFreezeGame (filename))
     {
-        ssnprintf (buf, PATH_MAX, "%s.%03d saved", def, slot);
+        snprintf (buf, PATH_MAX, "%s.%03d saved", def, slot);
 
         S9xSetInfoString (buf);
     }
@@ -510,7 +510,7 @@ void S9xQuickLoadSlot (int slot)
 
     _splitpath (Memory.ROMFilename, drive, dir, def, ext);
 
-    ssnprintf (filename, PATH_MAX, "%s%s%s.%03d",
+    snprintf (filename, PATH_MAX, "%s%s%s.%03d",
              S9xGetDirectory (SNAPSHOT_DIR), SLASH_STR, def,
              slot);
 
@@ -519,7 +519,7 @@ void S9xQuickLoadSlot (int slot)
 
     if (S9xUnfreezeGame (filename))
     {
-        ssnprintf (buf, PATH_MAX, "%s.%03d loaded", def, slot);
+        snprintf (buf, PATH_MAX, "%s.%03d loaded", def, slot);
         S9xSetInfoString (buf);
         return;
     }
@@ -528,7 +528,7 @@ void S9xQuickLoadSlot (int slot)
 
     _splitpath (Memory.ROMFilename, drive, dir, def, ext);
 
-    ssnprintf (filename, PATH_MAX, "%s%s%s.zs%c",
+    snprintf (filename, PATH_MAX, "%s%s%s.zs%c",
               S9xGetDirectory (SNAPSHOT_DIR), SLASH_STR,
               def, digits[slot]);
 
@@ -537,7 +537,7 @@ void S9xQuickLoadSlot (int slot)
 
     if (S9xUnfreezeGame (filename))
     {
-        ssnprintf (buf, PATH_MAX,
+        snprintf (buf, PATH_MAX,
                   "Loaded ZSNES freeze file %s.zs%c",
                   def, digits [slot]);
         S9xSetInfoString (buf);

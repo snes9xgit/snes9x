@@ -859,7 +859,7 @@ Snes9xWindow::open_movie_dialog (bool readonly)
 
         _splitpath (Memory.ROMFilename, drive, dir, def, ext);
 
-        ssnprintf (default_name, PATH_MAX, "%s.smv", def);
+        snprintf (default_name, PATH_MAX, "%s.smv", def);
 
         dialog = gtk_file_chooser_dialog_new (_("New SNES Movie"),
                                               GTK_WINDOW (this->window),
@@ -1119,7 +1119,7 @@ Snes9xWindow::save_state_dialog ()
 
     _splitpath (Memory.ROMFilename, drive, dir, def, ext);
 
-    ssnprintf (default_name, PATH_MAX, "%s.sst", def);
+    snprintf (default_name, PATH_MAX, "%s.sst", def);
 
     dialog = gtk_file_chooser_dialog_new (_("Save State"),
                                           GTK_WINDOW (this->window),
@@ -1195,7 +1195,7 @@ Snes9xWindow::save_spc_dialog ()
 
     _splitpath (Memory.ROMFilename, drive, dir, def, ext);
 
-    ssnprintf (default_name, PATH_MAX, "%s.spc", def);
+    snprintf (default_name, PATH_MAX, "%s.spc", def);
 
     dialog = gtk_file_chooser_dialog_new (_("Save SPC file..."),
                                           GTK_WINDOW (this->window),
