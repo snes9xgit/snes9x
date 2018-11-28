@@ -1682,12 +1682,12 @@ bool8 S9xDeinitUpdate(int width, int height)
 
     if (crop_overscan_mode == OVERSCAN_CROP_ON)
     {
-        if (height > SNES_HEIGHT << 1)
+        if (height > SNES_HEIGHT * 2)
         {
             overscan_offset = 14;
-            height = SNES_HEIGHT << 1;
+            height = SNES_HEIGHT * 2;
         }
-        else if (height > SNES_HEIGHT)
+        else if ((height > SNES_HEIGHT) && (height != SNES_HEIGHT * 2))
         {
             overscan_offset = 7;
             height = SNES_HEIGHT;
@@ -1697,12 +1697,12 @@ bool8 S9xDeinitUpdate(int width, int height)
     {
         if (height > SNES_HEIGHT_EXTENDED)
         {
-            if (height < (SNES_HEIGHT_EXTENDED << 1))
+            if (height < SNES_HEIGHT_EXTENDED * 2)
             {
                 overscan_offset = -16;
                 memset(GFX.Screen + (GFX.Pitch >> 1) * height,0,GFX.Pitch * ((SNES_HEIGHT_EXTENDED << 1) - height));
             }
-            height = SNES_HEIGHT_EXTENDED << 1;
+            height = SNES_HEIGHT_EXTENDED * 2;
         }
         else
         {
