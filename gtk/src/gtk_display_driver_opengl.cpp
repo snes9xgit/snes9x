@@ -61,7 +61,7 @@ static const GLchar *stock_fragment_shader_140 =
 
 "void main()\n"
 "{\n"
-"    fragcolor = texture2D(texmap, texcoord);\n"
+"    fragcolor = texture(texmap, texcoord);\n"
 "}\n";
 
 
