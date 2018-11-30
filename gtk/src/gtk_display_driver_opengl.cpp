@@ -306,7 +306,7 @@ void S9xOpenGLDisplayDriver::update_texture_size (int width, int height)
             {
                 glTexImage2D (GL_TEXTURE_2D,
                               0,
-                              4,
+                              GL_RGBA,
                               width,
                               height,
                               0,
@@ -489,7 +489,7 @@ int S9xOpenGLDisplayDriver::opengl_defaults ()
         glBindTexture (GL_TEXTURE_2D, texmap);
         glTexImage2D (GL_TEXTURE_2D,
                       0,
-                      config->pbo_format == 16 ? GL_RGB565 : 4,
+                      config->pbo_format == 16 ? GL_RGB565 : GL_RGBA,
                       texture_width,
                       texture_height,
                       0,
