@@ -88,11 +88,9 @@ snes9x_gtk_SOURCES += \
     src/gtk_sound_driver_oss.cpp
 endif
 
-if SDL
 snes9x_gtk_SOURCES += \
     src/gtk_sound_driver_sdl.h \
     src/gtk_sound_driver_sdl.cpp
-endif
 
 if ALSA
 snes9x_gtk_SOURCES += \
@@ -183,11 +181,9 @@ snes9x_gtk_SOURCES += \
 
 snes9x_gtk_SOURCES += ../sdd1emu.cpp
 
-if NETPLAY
 snes9x_gtk_SOURCES += \
     ../netplay.cpp \
     ../server.cpp
-endif
 
 
 # Zip support is nonconfigurable.
@@ -201,7 +197,6 @@ snes9x_gtk_SOURCES += \
 endif
 UNZIPDEFINES=-DUNZIP_SUPPORT
 
-if JMA
 snes9x_gtk_LDADD += libjma.a
 noinst_LIBRARIES += libjma.a
 libjma_a_SOURCES = \
@@ -215,7 +210,6 @@ libjma_a_SOURCES = \
     ../jma/lzmadec.cpp \
     ../jma/winout.cpp
 libjma_a_CPPFLAGS = -fexceptions
-endif
 
 if OPENGL
 snes9x_gtk_SOURCES += \
@@ -234,13 +228,11 @@ snes9x_gtk_SOURCES += \
     src/gtk_display_driver_xv.h
 endif
 
-if NETPLAY
 snes9x_gtk_SOURCES += \
     src/gtk_netplay_dialog.cpp \
     src/gtk_netplay_dialog.h \
     src/gtk_netplay.cpp \
     src/gtk_netplay.h
-endif
 
 src/sourcify: src/sourcify.c
 	$(CC) src/sourcify.c -o src/sourcify

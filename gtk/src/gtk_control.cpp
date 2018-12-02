@@ -5,9 +5,7 @@
 \*****************************************************************************/
 
 #include <fcntl.h>
-#ifdef USE_JOYSTICK
-#   include "SDL.h"
-#endif
+#include "SDL.h"
 
 #include "gtk_s9xcore.h"
 #include "gtk_s9x.h"
@@ -468,7 +466,6 @@ s9xcommand_t S9xGetPortCommandT (const char *name)
 
 void S9xProcessEvents (bool8 block)
 {
-#ifdef USE_JOYSTICK
     JoyEvent event;
     Binding  binding;
 
@@ -486,10 +483,8 @@ void S9xProcessEvents (bool8 block)
 
         S9xReleaseJoysticks ();
     }
-#endif
 }
 
-#ifdef USE_JOYSTICK
 static void poll_joystick_events ()
 {
     SDL_Event event;
@@ -513,11 +508,9 @@ static void poll_joystick_events ()
         }
     }
 }
-#endif
 
 void S9xInitInputDevices ()
 {
-#ifdef USE_JOYSTICK
     SDL_Init (SDL_INIT_JOYSTICK);
 
     for (int i = 0; ; i++)
@@ -539,7 +532,6 @@ void S9xInitInputDevices ()
             gui_config->joystick[i]->joynum = i;
         }
     }
-#endif
 
     //First plug in both, they'll change later as needed
     S9xSetController (0, CTL_JOYPAD,     0, 0, 0, 0);
@@ -548,7 +540,6 @@ void S9xInitInputDevices ()
 
 void S9xDeinitInputDevices ()
 {
-#ifdef USE_JOYSTICK
     for (int i = 0; gui_config->joystick[i] != NULL; i++)
     {
         delete gui_config->joystick[i];
@@ -557,10 +548,7 @@ void S9xDeinitInputDevices ()
     free (gui_config->joystick);
 
     SDL_Quit ();
-#endif
 }
-
-#ifdef USE_JOYSTICK
 
 JoyDevice::JoyDevice (unsigned int device_num)
 {
@@ -830,4 +818,3 @@ void JoyDevice::flush ()
     while (!queue.empty ())
         queue.pop ();
 }
-#endif

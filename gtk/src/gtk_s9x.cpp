@@ -11,12 +11,9 @@
 #include "gtk_control.h"
 #include "gtk_sound.h"
 #include "gtk_display.h"
-
+#include "gtk_netplay.h"
 #include "statemanager.h"
 
-#ifdef NETPLAY_SUPPORT
-#include "gtk_netplay.h"
-#endif
 
 void S9xPostRomInit ();
 static void S9xThrottle ();
@@ -135,9 +132,7 @@ int main (int argc, char *argv[])
         top_level->enter_fullscreen_mode ();
     }
 
-#ifdef USE_JOYSTICK
     gui_config->flush_joysticks ();
-#endif
 
     gtk_window_present (top_level->get_window ());
 
@@ -158,9 +153,7 @@ int S9xOpenROM (const char *rom_filename)
         S9xAutoSaveSRAM ();
     }
 
-#ifdef NETPLAY_SUPPORT
     S9xNetplayDisconnect ();
-#endif
 
     flags = CPU.Flags;
 
@@ -264,29 +257,23 @@ static gboolean S9xPauseFunc (gpointer data)
     if (!gui_config->rom_loaded)
         return TRUE;
 
-#ifdef NETPLAY_SUPPORT
     if (!S9xNetplayPush ())
     {
         S9xNetplayPop ();
     }
-#endif
 
     if (!Settings.Paused) /* Coming out of pause */
     {
-#ifdef USE_JOYSTICK
         /* Clear joystick queues */
         gui_config->flush_joysticks ();
-#endif
 
         S9xSetSoundMute (FALSE);
         S9xSoundStart ();
 
-#ifdef NETPLAY_SUPPORT
         if (Settings.NetPlay && NetPlay.Connected)
         {
             S9xNPSendPause (FALSE);
         }
-#endif
 
         /* Resume high-performance callback */
         idle_func_id = g_idle_add_full (G_PRIORITY_DEFAULT_IDLE,
@@ -307,16 +294,12 @@ gboolean S9xIdleFunc (gpointer data)
         S9xSetSoundMute (gui_config->mute_sound);
         S9xSoundStop ();
 
-#ifdef USE_JOYSTICK
         gui_config->flush_joysticks ();
-#endif
 
-#ifdef NETPLAY_SUPPORT
         if (Settings.NetPlay && NetPlay.Connected)
         {
             S9xNPSendPause (TRUE);
         }
-#endif
 
         /* Move to a timer-based function to use less CPU */
         g_timeout_add (100, S9xPauseFunc, NULL);
@@ -328,47 +311,42 @@ gboolean S9xIdleFunc (gpointer data)
     S9xThrottle ();
     S9xProcessEvents (TRUE);
 
-#ifdef NETPLAY_SUPPORT
     if (!S9xNetplayPush ())
     {
-#endif
+        if(Settings.Rewinding)
+        {
+            uint16 joypads[8];
+            for (int i = 0; i < 8; i++)
+                joypads[i] = MovieGetJoypad(i);
 
-    if(Settings.Rewinding)
-    {
-        uint16 joypads[8];
-        for (int i = 0; i < 8; i++)
-            joypads[i] = MovieGetJoypad(i);
+            Settings.Rewinding = state_manager.pop();
 
-        Settings.Rewinding = state_manager.pop();
+            for (int i = 0; i < 8; i++)
+                MovieSetJoypad (i, joypads[i]);
+        }
+        else if(IPPU.TotalEmulatedFrames % gui_config->rewind_granularity == 0)
+            state_manager.push();
 
-        for (int i = 0; i < 8; i++)
-            MovieSetJoypad (i, joypads[i]);
-    }
-    else if(IPPU.TotalEmulatedFrames % gui_config->rewind_granularity == 0)
-        state_manager.push();
+        static int muted_from_turbo = FALSE;
+        static int mute_saved_state = FALSE;
 
-    static int muted_from_turbo = FALSE;
-    static int mute_saved_state = FALSE;
+        if (Settings.TurboMode && !muted_from_turbo && gui_config->mute_sound_turbo)
+        {
+            muted_from_turbo = TRUE;
+            mute_saved_state = Settings.Mute;
+            S9xSetSoundMute (TRUE);
+        }
 
-    if (Settings.TurboMode && !muted_from_turbo && gui_config->mute_sound_turbo)
-    {
-        muted_from_turbo = TRUE;
-        mute_saved_state = Settings.Mute;
-        S9xSetSoundMute (TRUE);
-    }
+        if (!Settings.TurboMode && muted_from_turbo)
+        {
+            muted_from_turbo = FALSE;
+            Settings.Mute = mute_saved_state;
+        }
 
-    if (!Settings.TurboMode && muted_from_turbo)
-    {
-        muted_from_turbo = FALSE;
-        Settings.Mute = mute_saved_state;
-    }
+        S9xMainLoop ();
 
-    S9xMainLoop ();
-
-#ifdef NETPLAY_SUPPORT
         S9xNetplayPop ();
     }
-#endif
 
     return TRUE;
 }
@@ -464,10 +442,8 @@ static void S9xThrottle ()
 {
     gint64 now;
 
-#ifdef NETPLAY_SUPPORT
     if (S9xNetplaySyncSpeed ())
         return;
-#endif
 
     now = g_get_monotonic_time ();
 

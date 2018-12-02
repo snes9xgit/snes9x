@@ -10,9 +10,7 @@
 #include <queue>
 
 #include "gtk_binding.h"
-#ifdef USE_JOYSTICK
 #include "SDL.h"
-#endif
 
 const int NUM_JOYPADS = 10;
 
@@ -75,8 +73,6 @@ typedef struct JoypadBinding
     Binding data[NUM_JOYPAD_LINKS]; /* Avoid packing issues */
 } JoypadBinding;
 
-#ifdef USE_JOYSTICK
-
 bool S9xGrabJoysticks ();
 void S9xReleaseJoysticks ();
 
@@ -121,7 +117,6 @@ class JoyDevice
         void add_event (unsigned int parameter, unsigned int state);
 
 };
-#endif
 
 void S9xDeinitInputDevices ();
 Binding S9xGetBindingByName (const char *name);

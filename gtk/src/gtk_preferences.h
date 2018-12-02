@@ -31,10 +31,7 @@ class Snes9xPreferences : public GtkBuilderWindow
         void reset_current_joypad ();
         void load_ntsc_settings ();
         void store_ntsc_settings ();
-
-#ifdef USE_JOYSTICK
         void calibration_dialog ();
-#endif
 
         Snes9xConfig    *config;
         GtkToggleButton *last_toggled;

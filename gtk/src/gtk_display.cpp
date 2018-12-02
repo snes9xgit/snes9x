@@ -1618,10 +1618,7 @@ S9xDeinitUpdate (int width, int height)
         }
     }
 
-    if (!Settings.Paused
-#ifdef NETPLAY_SUPPORT
-            && !NetPlay.Paused
-#endif
+    if (!Settings.Paused && !NetPlay.Paused
     )
 
     {

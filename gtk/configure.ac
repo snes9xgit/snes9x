@@ -51,12 +51,6 @@ AC_ARG_WITH(opengl,
   [],
   [with_opengl=yes])
 
-AC_ARG_WITH(joystick,
-  [AS_HELP_STRING([--with(out)-joystick],
-    [Enable joystick support if available (default: with)])],
-  [],
-  [with_joystick=yes])
-
 AC_ARG_WITH(xv,
   [AS_HELP_STRING([--with(out)-xv],
     [Enable XVideo output on GTK (default: with)])],
@@ -104,18 +98,6 @@ AC_ARG_WITH(xbrz,
     [Enable support for the xBRZ filter (default: with)])],
   [],
   [with_xbrz=yes])
-
-AC_ARG_WITH(netplay,
-  [AS_HELP_STRING([--with(out)-netplay],
-    [Enable netplay support (default: without)])],
-  [],
-  [with_netplay=yes])
-
-AC_ARG_WITH(jma-decomp,
-  [AS_HELP_STRING([--with(out)-jma-decomp],
-    [Enable JMA archive decompression (default: with)])],
-  [],
-  [with_jma_decomp=yes])
 
 AC_ARG_WITH(zlib,
   [AS_HELP_STRING([--with(out)-zlib],
@@ -166,9 +148,6 @@ else
 fi
 
 LIBS="$LIBS -lX11 -ldl -lXext"
-
-JMA=yes
-NETPLAY=yes
 OPENGL=no
 
 if test yes = "$with_opengl" ; then
@@ -220,22 +199,20 @@ fi
 GTKJOY=no
 SDL_CFLAGS=""
 SDL_LIBS=""
-if test yes = "$with_joystick"; then
-    PKG_CHECK_MODULES([SDL],[sdl2],[
-        GTKJOY=yes
-        CFLAGS="$CFLAGS -DUSE_JOYSTICK"
-    ],[
-        AC_CHECK_PROG(SDLCONFIGFOUND,[sdl2-config],yes,no)
+PKG_CHECK_MODULES([SDL],[sdl2],[
+    GTKJOY=yes
+],[
+    AC_CHECK_PROG(SDLCONFIGFOUND,[sdl2-config],yes,no)
 
-        if test yes = "$SDLCONFIGFOUND" ; then
-            SDL_CFLAGS="-DUSE_JOYSTICK `sdl2-config --cflags`"
-            SDL_LIBS="`sdl2-config --libs`"
-            GTKJOY=yes
-        else
-            echo "Cannot find SDL2. Disabling joystick support."
-        fi
-    ])
-fi
+    if test yes = "$SDLCONFIGFOUND" ; then
+        SDL_CFLAGS="`sdl2-config --cflags`"
+        SDL_LIBS="`sdl2-config --libs`"
+        GTKJOY=yes
+    else
+        echo "Cannot find SDL2."
+        exit
+    fi
+])
 
 XV=no
 XV_CFLAGS=""
@@ -355,17 +332,7 @@ if test yes = "$with_debugger"; then
    CFLAGS="$CFLAGS -DDEBUGGER"
 fi
 
-dnl Enable Netplay support if requested
-if test yes = "$with_netplay"; then
-   CFLAGS="$CFLAGS -DNETPLAY_SUPPORT"
-   NETPLAY=yes
-fi
-
-dnl Enable jma decompression (nachs own format)
-if test yes = "$with_jma_decomp"; then
-   CFLAGS="$CFLAGS -DJMA_SUPPORT"
-   JMA=yes
-fi
+CFLAGS="$CFLAGS -DNETPLAY_SUPPORT -DJMA_SUPPORT"
 
 if test yes = "$with_zlib"; then
   AC_CHECK_HEADERS(zlib.h)
@@ -456,14 +423,11 @@ CFLAGS="$CFLAGS -DUNZIP_SUPPORT -DSNES9X_GTK -I. -I.. $ZIP_CFLAGS"
 
 CXXFLAGS="$CFLAGS"
 
-AM_CONDITIONAL(NETPLAY, [test yes = "$NETPLAY"])
-AM_CONDITIONAL(JMA, [test yes = "$JMA"])
 AM_CONDITIONAL(OPENGL, [test yes = "$OPENGL"])
 AM_CONDITIONAL(XV, [test yes = "$XV"])
 AM_CONDITIONAL(PORTAUDIO, [test yes = "$PORTAUDIO"])
 AM_CONDITIONAL(OSS, [test yes = "$OSS"])
 AM_CONDITIONAL(DEBUG, [test yes = "$with_debug" ])
-AM_CONDITIONAL(SDL, [test yes = "$GTKJOY"])
 AM_CONDITIONAL(ALSA, [test yes = "$ALSA"])
 AM_CONDITIONAL(PULSEAUDIO, [test yes = "$PULSEAUDIO"])
 AM_CONDITIONAL(HQ2X, [test yes = "$HQ2X"])
@@ -527,15 +491,6 @@ else
     if test yes = "$with_joystick" ; then
         echo "!!! NOT able to use joystick support"
         echo "--- Needs SDL libraries and headers"
-    fi
-fi
-
-if test yes = "$NETPLAY" ; then
-    echo "    NetPlay"
-else
-    if test yes = "$with_netplay" ; then
-        echo "!!! NOT able to build NetPlay support"
-
     fi
 fi
 

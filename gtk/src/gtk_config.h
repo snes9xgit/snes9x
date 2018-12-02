@@ -48,12 +48,9 @@ class Snes9xConfig
     int load_defaults ();
     void reconfigure ();
     void rebind_keys ();
-
-#ifdef USE_JOYSTICK
     void flush_joysticks ();
     void set_joystick_mode (int mode);
     void joystick_register_centers ();
-#endif
 
     /* Screen options */
     unsigned char full_screen_on_open;
@@ -148,7 +145,6 @@ class Snes9xConfig
 
 #ifdef USE_OPENGL
     unsigned char sync_to_vblank;
-    unsigned char opengl_activated;
     unsigned char use_pbos;
     int           pbo_format;
     unsigned char npot_textures;
@@ -158,11 +154,8 @@ class Snes9xConfig
     unsigned char sync_every_frame;
 #endif
 
-#ifdef USE_JOYSTICK
     JoyDevice **joystick;
     int       joystick_threshold;
-#endif
-
 };
 
 std::string get_config_dir ();

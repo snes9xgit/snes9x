@@ -22,13 +22,10 @@
 #include "cheats.h"
 #include "movie.h"
 #include "conffile.h"
+#include "netplay.h"
 
 #include <sys/types.h>
 #include <ctype.h>
 #include <dirent.h>
-
-#ifdef NETPLAY_SUPPORT
-#include "netplay.h"
-#endif
 
 #endif /* __GTK_S9XCORE_H */

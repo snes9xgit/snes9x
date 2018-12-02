@@ -29,9 +29,7 @@
 #include "gtk_sound.h"
 #include "gtk_control.h"
 #include "gtk_cheat.h"
-#ifdef NETPLAY_SUPPORT
 #include "gtk_netplay.h"
-#endif
 
 static gboolean
 event_main_window_delete (GtkWidget *widget,
@@ -116,9 +114,7 @@ event_show_statusbar (GtkWidget *widget, gpointer data)
 static gboolean
 event_sync_clients (GtkWidget *widget, gpointer data)
 {
-#ifdef NETPLAY_SUPPORT
     S9xNetplaySyncClients ();
-#endif
 
     return TRUE;
 }
@@ -136,9 +132,8 @@ event_pause_item_activate (GtkWidget *widget, gpointer data)
 static gboolean
 event_open_netplay (GtkWidget *widget, gpointer data)
 {
-#ifdef NETPLAY_SUPPORT
     S9xNetplayDialogOpen ();
-#endif
+
     return TRUE;
 }
 
@@ -649,14 +644,6 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
         GTK_CHECK_MENU_ITEM (get_widget ("show_statusbar_item")),
         config->statusbar_visible ? 1 : 0);
 
-#ifdef NETPLAY_SUPPORT
-#else
-    gtk_widget_hide (get_widget ("open_netplay_item"));
-    gtk_widget_hide (get_widget ("netplay_separator"));
-    gtk_widget_hide (get_widget ("sync_clients_item"));
-    gtk_widget_hide (get_widget ("sync_clients_separator"));
-#endif
-
 #ifndef USE_OPENGL
     gtk_widget_hide (get_widget ("shader_parameters_separator"));
     gtk_widget_hide (get_widget ("shader_parameters_item"));
@@ -736,11 +723,7 @@ Snes9xWindow::expose ()
         config->window_height = get_height ();
     }
 
-    if (is_paused ()
-#ifdef NETPLAY_SUPPORT
-            || NetPlay.Paused
-#endif
-        )
+    if (is_paused () || NetPlay.Paused)
     {
         S9xDeinitUpdate (last_width, last_height);
     }
@@ -1305,7 +1288,6 @@ Snes9xWindow::update_statusbar ()
     }
     else
     {
-#ifdef NETPLAY_SUPPORT
         if (config->netplay_activated)
         {
             if (config->netplay_server_up)
@@ -1330,7 +1312,6 @@ Snes9xWindow::update_statusbar ()
 
         }
         else
-#endif
         {
             snprintf (status_string,
                       256,
@@ -1424,12 +1405,10 @@ Snes9xWindow::configure_widgets ()
     enable_widget ("cheats_item", config->rom_loaded);
     enable_widget ("rom_info_item", config->rom_loaded);
 
-#ifdef NETPLAY_SUPPORT
     enable_widget ("sync_clients_item",
                    config->rom_loaded &&
                    Settings.NetPlay   &&
                    Settings.NetPlayServer);
-#endif
 
     if (config->default_esc_behavior != ESC_TOGGLE_MENUBAR)
     {

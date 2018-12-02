@@ -70,13 +70,8 @@ void S9xParsePortConfig (ConfigFile &conf, int pass)
 
 Snes9xConfig::Snes9xConfig ()
 {
-#ifdef USE_JOYSTICK
     joystick = NULL;
     joystick_threshold = 40;
-#endif
-#ifdef USE_OPENGL
-    opengl_activated = FALSE;
-#endif
 }
 
 int Snes9xConfig::load_defaults ()
@@ -183,6 +178,9 @@ int Snes9xConfig::load_defaults ()
     Settings.InterpolationMethod = DSP_INTERPOLATION_GAUSSIAN;
     Settings.HDMATimingHack = 100;
     Settings.SuperFXClockMultiplier = 100;
+    Settings.NetPlay = FALSE;
+    NetPlay.Paused = FALSE;
+    NetPlay.MaxFrameSkip = 10;
 #ifdef ALLOW_CPU_OVERCLOCK
     Settings.MaxSpriteTilesPerLine = 34;
     Settings.OneClockCycle = 6;
@@ -190,19 +188,11 @@ int Snes9xConfig::load_defaults ()
     Settings.TwoClockCycles = 12;
 #endif
 
-#ifdef NETPLAY_SUPPORT
-    Settings.NetPlay = FALSE;
-    NetPlay.Paused = FALSE;
-    NetPlay.MaxFrameSkip = 10;
-#endif
-
     memset (pad, 0, sizeof (JoypadBinding) * NUM_JOYPADS);
     memset (shortcut, 0, sizeof (Binding) * NUM_EMU_LINKS);
 
     return 0;
 }
-
-#ifdef USE_JOYSTICK
 
 void Snes9xConfig::joystick_register_centers ()
 {
@@ -224,8 +214,6 @@ void Snes9xConfig::set_joystick_mode (int mode)
     for (i = 0; joystick[i] != NULL; i++)
         joystick[i]->mode = mode;
 }
-
-#endif
 
 static inline void outbool (ConfigFile &cf, const char *key, bool value, const char *comment = "")
 {
@@ -394,9 +382,8 @@ int Snes9xConfig::save_config_file ()
         cf.SetString (buffer, output_string);
     }
 
-#ifdef USE_JOYSTICK
     cf.SetInt (z"JoystickThreshold", joystick_threshold);
-#endif
+
 #undef z
 
     for (int i = 0; i < NUM_JOYPADS; i++)
@@ -584,7 +571,7 @@ int Snes9xConfig::load_config_file ()
     inint  (z"SuperFXClockMultiplier", Settings.SuperFXClockMultiplier);
     inint  (z"SoundInterpolationMethod", Settings.InterpolationMethod);
 
-    bool RemoveSpriteLimit;
+    bool RemoveSpriteLimit = false;
     inbool (z"RemoveSpriteLimit", RemoveSpriteLimit);
     bool OverclockCPU = false;
     inbool (z"OverclockCPU", OverclockCPU);
@@ -607,9 +594,8 @@ int Snes9xConfig::load_config_file ()
             S9xSetController (i, CTL_MOUSE, i, 0, 0, 0);
     }
 
-#ifdef USE_JOYSTICK
     inint (z"JoystickThreshold", joystick_threshold);
-#endif
+
 #undef z
 
     for (int i = 0; i < NUM_JOYPADS; i++)
@@ -683,8 +669,8 @@ int Snes9xConfig::load_config_file ()
     hires_effect = CLAMP (hires_effect, 0, 2);
     Settings.DynamicRateLimit = CLAMP (Settings.DynamicRateLimit, 1, 1000);
     Settings.SuperFXClockMultiplier = CLAMP (Settings.SuperFXClockMultiplier, 50, 400);
-    ntsc_scanline_intensity = CLAMP (ntsc_scanline_intensity, 0, 4);
-    scanline_filter_intensity = CLAMP (scanline_filter_intensity, 0, 3);
+    ntsc_scanline_intensity = MIN (ntsc_scanline_intensity, 4);
+    scanline_filter_intensity = MIN (scanline_filter_intensity, 3);
 
     return 0;
 }
