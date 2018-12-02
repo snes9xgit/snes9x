@@ -22,12 +22,12 @@ void S9xPostRomInit ();
 static void S9xThrottle ();
 static void S9xCheckPointerTimer ();
 static gboolean S9xIdleFunc (gpointer data);
+static gboolean S9xPauseFunc (gpointer data);
 static gboolean S9xScreenSaverCheckFunc (gpointer data);
 
 Snes9xWindow *top_level;
 Snes9xConfig *gui_config;
 StateManager state_manager;
-static int   needs_fullscreening = FALSE;
 guint        idle_func_id;
 gint64       frame_clock = -1;
 gint64       pointer_timestamp = -1;
@@ -112,11 +112,7 @@ int main (int argc, char *argv[])
     top_level->update_accels ();
 
     Settings.Paused = TRUE;
-    idle_func_id = g_idle_add_full (G_PRIORITY_DEFAULT_IDLE,
-                                    S9xIdleFunc,
-                                    NULL,
-                                    NULL);
-
+    g_timeout_add (100, S9xPauseFunc, NULL);
     g_timeout_add (10000, S9xScreenSaverCheckFunc, NULL);
 
     S9xNoROMLoaded ();
@@ -136,8 +132,7 @@ int main (int argc, char *argv[])
 
     if (gui_config->fullscreen)
     {
-        gui_config->fullscreen = 0;
-        needs_fullscreening = 1;
+        top_level->enter_fullscreen_mode ();
     }
 
 #ifdef USE_JOYSTICK
@@ -262,7 +257,7 @@ void S9xNoROMLoaded ()
     top_level->update_statusbar ();
 }
 
-gboolean S9xPauseFunc (gpointer data)
+static gboolean S9xPauseFunc (gpointer data)
 {
     S9xProcessEvents (TRUE);
 
@@ -307,12 +302,6 @@ gboolean S9xPauseFunc (gpointer data)
 
 gboolean S9xIdleFunc (gpointer data)
 {
-    if (needs_fullscreening)
-    {
-        top_level->enter_fullscreen_mode();
-        needs_fullscreening = FALSE;
-    }
-
     if (Settings.Paused)
     {
         S9xSetSoundMute (gui_config->mute_sound);
