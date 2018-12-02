@@ -463,9 +463,9 @@ int Snes9xConfig::load_config_file ()
         return -1;
 
     std::string none;
-#define inbool(key, var) var = cf.GetBool (key)
-#define inint(key, var) var = cf.GetInt (key)
-#define infloat(key, var) var = atof (cf.GetString (key, none).c_str())
+#define inbool(key, var) { if (cf.Exists (key)) var = cf.GetBool (key); }
+#define inint(key, var) { if (cf.Exists(key)) var = cf.GetInt (key); }
+#define infloat(key, var) { if (cf.Exists(key)) var = atof (cf.GetString (key, none).c_str()); }
 #define instr(key, var) strcpy (var, cf.GetString (key, none).c_str())
 
 #undef z
@@ -683,8 +683,8 @@ int Snes9xConfig::load_config_file ()
     hires_effect = CLAMP (hires_effect, 0, 2);
     Settings.DynamicRateLimit = CLAMP (Settings.DynamicRateLimit, 1, 1000);
     Settings.SuperFXClockMultiplier = CLAMP (Settings.SuperFXClockMultiplier, 50, 400);
-    ntsc_scanline_intensity = MAX (ntsc_scanline_intensity, 4);
-    scanline_filter_intensity = MAX (scanline_filter_intensity, 3);
+    ntsc_scanline_intensity = CLAMP (ntsc_scanline_intensity, 0, 4);
+    scanline_filter_intensity = CLAMP (scanline_filter_intensity, 0, 3);
 
     return 0;
 }
