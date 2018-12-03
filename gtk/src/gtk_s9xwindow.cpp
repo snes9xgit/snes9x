@@ -1420,10 +1420,8 @@ Snes9xWindow::configure_widgets ()
         {
             gtk_widget_show (get_widget ("menubar"));
 
-            if (config->statusbar_visible)
-                gtk_widget_show (get_widget ("statusbar"));
-            else
-                gtk_widget_hide (get_widget ("statusbar"));
+            gtk_widget_set_visible (get_widget ("statusbar"),
+                                    config->statusbar_visible);
         }
         else
         {
@@ -1442,10 +1440,8 @@ Snes9xWindow::configure_widgets ()
         if (config->ui_visible)
         {
             gtk_widget_show (get_widget ("menubar"));
-            if (config->statusbar_visible)
-                gtk_widget_show (get_widget ("statusbar"));
-            else
-                gtk_widget_hide (get_widget ("statusbar"));
+            gtk_widget_set_visible (get_widget ("statusbar"),
+                                    config->statusbar_visible);
         }
         else
         {

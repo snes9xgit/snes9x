@@ -25,7 +25,6 @@ static gboolean S9xScreenSaverCheckFunc (gpointer data);
 Snes9xWindow *top_level;
 Snes9xConfig *gui_config;
 StateManager state_manager;
-guint        idle_func_id;
 gint64       frame_clock = -1;
 gint64       pointer_timestamp = -1;
 
@@ -39,6 +38,9 @@ int main (int argc, char *argv[])
     struct sigaction sig_callback;
 
     gtk_init (&argc, &argv);
+
+    g_set_prgname ("snes9x");
+    g_set_application_name ("Snes9x");
 
     bindtextdomain (GETTEXT_PACKAGE, SNES9XLOCALEDIR);
     bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
@@ -62,8 +64,6 @@ int main (int argc, char *argv[])
 
     if (!Memory.Init () || !S9xInitAPU ())
         exit (3);
-
-    g_set_application_name ("Snes9x");
 
     top_level = new Snes9xWindow (gui_config);
 
@@ -105,7 +105,7 @@ int main (int argc, char *argv[])
         top_level->set_menu_item_selected (device_type.c_str ());
     }
 
-    gui_config->reconfigure ();
+    gui_config->rebind_keys ();
     top_level->update_accels ();
 
     Settings.Paused = TRUE;
@@ -276,10 +276,10 @@ static gboolean S9xPauseFunc (gpointer data)
         }
 
         /* Resume high-performance callback */
-        idle_func_id = g_idle_add_full (G_PRIORITY_DEFAULT_IDLE,
-                                        S9xIdleFunc,
-                                        NULL,
-                                        NULL);
+        g_idle_add_full (G_PRIORITY_DEFAULT_IDLE,
+                         S9xIdleFunc,
+                         NULL,
+                         NULL);
         top_level->update_statusbar ();
         return FALSE;
     }

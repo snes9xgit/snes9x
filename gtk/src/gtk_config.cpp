@@ -15,19 +15,19 @@
 #include "gtk_display.h"
 #include "conffile.h"
 
-static int directory_exists (const char *directory)
+static bool directory_exists (std::string str)
 {
     DIR *dir;
 
-    dir = opendir (directory);
+    dir = opendir (str.c_str ());
 
     if (dir)
     {
         closedir (dir);
-        return TRUE;
+        return true;
     }
 
-    return FALSE;
+    return false;
 }
 
 std::string get_config_dir ()
@@ -53,7 +53,7 @@ std::string get_config_dir ()
     else
         config = std::string (env_xdg_config_home) + "/snes9x";
 
-    if (directory_exists (legacy.c_str ()) && !directory_exists(config.c_str ()))
+    if (directory_exists (legacy) && !directory_exists(config))
         return legacy;
 
     return config;
@@ -721,11 +721,3 @@ void Snes9xConfig::rebind_keys ()
     cmd = S9xGetPortCommandT ("{Mouse1 R,Superscope Cursor,Justifier1 Start}");
     S9xMapButton (BINDING_MOUSE_BUTTON2, cmd, FALSE);
 }
-
-void Snes9xConfig::reconfigure ()
-{
-    rebind_keys ();
-}
-
-
-

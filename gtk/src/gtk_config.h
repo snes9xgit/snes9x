@@ -46,7 +46,6 @@ class Snes9xConfig
     int load_config_file ();
     int save_config_file ();
     int load_defaults ();
-    void reconfigure ();
     void rebind_keys ();
     void flush_joysticks ();
     void set_joystick_mode (int mode);

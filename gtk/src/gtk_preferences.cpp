@@ -37,7 +37,7 @@ snes9x_preferences_open (GtkWidget *widget,
 
     config->set_joystick_mode (JOY_MODE_INDIVIDUAL);
 
-    config->reconfigure ();
+    config->rebind_keys ();
     window->update_accels ();
 
     return TRUE;
