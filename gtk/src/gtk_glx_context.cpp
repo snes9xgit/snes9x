@@ -156,6 +156,8 @@ void GTKGLXContext::swap_interval (int frames)
         glXSwapIntervalEXT (display, xid, frames);
     else if (epoxy_has_glx_extension (display, screen, "GLX_SGI_swap_control"))
         glXSwapIntervalSGI (frames);
+    else if (epoxy_has_glx_extension (display, screen, "GLX_MESA_swap_control"))
+        glXSwapIntervalMESA (frames);
 }
 
 

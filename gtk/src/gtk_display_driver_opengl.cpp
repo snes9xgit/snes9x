@@ -584,6 +584,9 @@ int S9xOpenGLDisplayDriver::create_context ()
     else
         core = false;
 
+    if (version >= 31 || epoxy_has_gl_extension ("GL_ARB_sync"))
+        fences = true;
+
     return 1;
 }
 
@@ -640,8 +643,18 @@ void S9xOpenGLDisplayDriver::swap_buffers ()
 
     if (config->sync_every_frame)
     {
-        usleep (0);
-        glFinish ();
+        if (fences)
+        {
+            GLsync fence = glFenceSync (GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+            usleep (0);
+            glClientWaitSync (fence, GL_SYNC_FLUSH_COMMANDS_BIT, 100000000);
+            glDeleteSync (fence);
+        }
+        else
+        {
+            usleep (0);
+            glFinish ();
+        }
     }
 }
 
