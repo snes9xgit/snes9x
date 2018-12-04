@@ -88,6 +88,7 @@ S9xOpenGLDisplayDriver::S9xOpenGLDisplayDriver (Snes9xWindow *window,
     this->window = window;
     this->config = config;
     this->drawing_area = GTK_WIDGET (window->drawing_area);
+    fence = NULL;
 }
 
 void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
@@ -645,10 +646,9 @@ void S9xOpenGLDisplayDriver::swap_buffers ()
     {
         if (fences)
         {
-            GLsync fence = glFenceSync (GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-            usleep (0);
-            glClientWaitSync (fence, GL_SYNC_FLUSH_COMMANDS_BIT, 100000000);
-            glDeleteSync (fence);
+            if (fence)
+                glDeleteSync (fence);
+            fence = glFenceSync (GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
         }
         else
         {
@@ -715,4 +715,17 @@ int S9xOpenGLDisplayDriver::query_availability ()
         gui_config->hw_accel = HWA_NONE;
 
     return 0;
+}
+
+bool S9xOpenGLDisplayDriver::is_ready ()
+{
+    if (!fence)
+        return true;
+
+    if (glClientWaitSync (fence, GL_SYNC_FLUSH_COMMANDS_BIT, 0) == GL_TIMEOUT_EXPIRED)
+        return false;
+
+    glDeleteSync (fence);
+    fence = NULL;
+    return true;
 }

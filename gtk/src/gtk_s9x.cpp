@@ -308,8 +308,12 @@ gboolean S9xIdleFunc (gpointer data)
     }
 
     S9xCheckPointerTimer ();
-    S9xThrottle ();
     S9xProcessEvents (TRUE);
+
+    if (!S9xDisplayDriverIsReady ())
+        return TRUE;
+
+    S9xThrottle ();
 
     if (!S9xNetplayPush ())
     {

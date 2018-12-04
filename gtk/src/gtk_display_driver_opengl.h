@@ -41,6 +41,7 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
         void *get_parameters ();
         void save (const char *filename);
         static int query_availability ();
+        bool is_ready ();
 
     private:
         int opengl_defaults ();
@@ -73,6 +74,8 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
         int               output_window_height;
 
         OpenGLContext     *context;
+
+        GLsync            fence;
 
 #ifdef GDK_WINDOWING_X11
         GTKGLXContext     glx;

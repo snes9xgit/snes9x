@@ -23,6 +23,7 @@ class S9xDisplayDriver
         virtual void push_buffer (uint16 *src) = 0;
         virtual void *get_parameters () = 0;
         virtual void save (const char *filename) = 0;
+        virtual bool is_ready () = 0;
 
         /* Namespaced sizing constants */
         static const int image_width = 1024;

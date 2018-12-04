@@ -132,5 +132,6 @@ void S9xDisplayReconfigure ();
 void S9xQueryDrivers ();
 
 S9xDisplayDriver *S9xDisplayGetDriver ();
+bool S9xDisplayDriverIsReady ();
 
 #endif /* __GTK_DISPLAY_H */

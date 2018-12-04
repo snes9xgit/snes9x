@@ -24,6 +24,7 @@ class S9xGTKDisplayDriver : public S9xDisplayDriver
         void push_buffer (uint16 *src);
         void *get_parameters () { return NULL; }
         void save (const char *filename) { }
+        bool is_ready () { return true; }
 
     private:
         void clear ();

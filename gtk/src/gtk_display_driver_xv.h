@@ -32,6 +32,7 @@ class S9xXVDisplayDriver : public S9xDisplayDriver
         void *get_parameters () { return NULL; }
         void save (const char *filename) { }
         static int query_availability ();
+        bool is_ready () { return true; }
 
     private:
         void clear ();

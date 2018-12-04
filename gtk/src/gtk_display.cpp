@@ -1897,3 +1897,10 @@ S9xInitDisplay (int argc, char **argv)
     S9xCustomDisplayString = S9xGTKDisplayString;
 }
 
+bool
+S9xDisplayDriverIsReady ()
+{
+    if (!driver)
+        return false;
+    return driver->is_ready ();
+}
