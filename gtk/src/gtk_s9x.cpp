@@ -42,6 +42,7 @@ int main (int argc, char *argv[])
     g_set_prgname ("snes9x");
     g_set_application_name ("Snes9x");
 
+    setlocale (LC_ALL, "");
     bindtextdomain (GETTEXT_PACKAGE, SNES9XLOCALEDIR);
     bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
     textdomain (GETTEXT_PACKAGE);

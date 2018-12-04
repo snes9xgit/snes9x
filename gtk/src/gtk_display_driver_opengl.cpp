@@ -362,6 +362,8 @@ int S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
 {
     int length = strlen (shader_file);
 
+    setlocale (LC_ALL, "C");
+
     if ((length > 6 && !strcasecmp(shader_file + length - 6, ".glslp")) ||
         (length > 5 && !strcasecmp(shader_file + length - 5, ".glsl")))
     {
@@ -374,12 +376,14 @@ int S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
             if (glsl_shader->param.size () > 0)
                 window->enable_widget ("shader_parameters_item", TRUE);
 
+            setlocale (LC_ALL, "");
             return 1;
         }
 
         delete glsl_shader;
     }
 
+    setlocale (LC_ALL, "");
     return 0;
 }
 
