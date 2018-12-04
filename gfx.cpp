@@ -1908,10 +1908,11 @@ static void DisplayPressedKeys (void)
 		{
 			case CTL_MOUSE:
 			{
-				uint8 buf[5], *p = buf;
-				MovieGetMouse(port, buf);
-				int16 x = READ_WORD(p);
-				int16 y = READ_WORD(p + 2);
+				uint8 buf[5];
+				if (!MovieGetMouse(port, buf))
+					break;
+				int16 x = READ_WORD(buf);
+				int16 y = READ_WORD(buf + 2);
 				uint8 buttons = buf[4];
 				sprintf(string, "#%d %d: (%03d,%03d) %c%c", port, ids[0], x, y,
 						(buttons & 0x40) ? 'L' : ' ', (buttons & 0x80) ? 'R' : ' ');
@@ -1921,10 +1922,11 @@ static void DisplayPressedKeys (void)
 
 			case CTL_SUPERSCOPE:
 			{
-				uint8 buf[6], *p = buf;
-				MovieGetScope(port, buf);
-				int16 x = READ_WORD(p);
-				int16 y = READ_WORD(p + 2);
+				uint8 buf[6];
+				if (!MovieGetScope(port, buf))
+					break;
+				int16 x = READ_WORD(buf);
+				int16 y = READ_WORD(buf + 2);
 				uint8 buttons = buf[4];
 				sprintf(string, "#%d %d: (%03d,%03d) %c%c%c%c", port, ids[0], x, y,
 						(buttons & 0x80) ? 'F' : ' ', (buttons & 0x40) ? 'C' : ' ',
@@ -1935,12 +1937,13 @@ static void DisplayPressedKeys (void)
 
 			case CTL_JUSTIFIER:
 			{
-				uint8 buf[11], *p = buf;
-				MovieGetJustifier(port, buf);
-				int16 x1 = READ_WORD(p);
-				int16 x2 = READ_WORD(p + 2);
-				int16 y1 = READ_WORD(p + 4);
-				int16 y2 = READ_WORD(p + 6);
+				uint8 buf[11];
+				if (!MovieGetJustifier(port, buf))
+					break;
+				int16 x1 = READ_WORD(buf);
+				int16 x2 = READ_WORD(buf + 2);
+				int16 y1 = READ_WORD(buf + 4);
+				int16 y2 = READ_WORD(buf + 6);
 				uint8 buttons = buf[8];
 				bool8 offscreen1 = buf[9];
 				bool8 offscreen2 = buf[10];

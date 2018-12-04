@@ -2723,7 +2723,7 @@ static void do_polling (int mp)
 		{
 			case MAP_BUTTON:
 			{
-				bool	pressed;
+				bool	pressed = false;
 				if (S9xPollButton(*itr, &pressed))
 					S9xReportButton(*itr, pressed);
 				break;
@@ -2731,7 +2731,7 @@ static void do_polling (int mp)
 
 			case MAP_AXIS:
 			{
-				int16	value;
+				int16	value = 0;
 				if (S9xPollAxis(*itr, &value))
 					S9xReportAxis(*itr, value);
 				break;
@@ -2739,7 +2739,7 @@ static void do_polling (int mp)
 
 			case MAP_POINTER:
 			{
-				int16	x, y;
+				int16	x = 0, y = 0;
 				if (S9xPollPointer(*itr, &x, &y))
 					S9xReportPointer(*itr, x, y);
 				break;
