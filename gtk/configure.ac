@@ -33,8 +33,8 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE")
 AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.19.2])
 
-snes9xlocaledir='${prefix}/${DATADIRNAME}/locale'
-snes9xdatadir='${prefix}/${DATADIRNAME}/snes9x'
+snes9xlocaledir='${prefix}/share/locale'
+snes9xdatadir='${prefix}/share/snes9x'
 
 AC_SUBST(snes9xlocaledir)
 AC_SUBST(snes9xdatadir)
