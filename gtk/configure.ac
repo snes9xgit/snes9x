@@ -167,18 +167,13 @@ PKG_CHECK_MODULES([GLIB], [glib-2.0 > 2.28 gthread-2.0 >= 2.6 gobject-2.0 >= 2.6
 PKG_CHECK_MODULES([XRANDR], [xrandr])
 
 if test yes = "$with_opengl" ; then
-
-    AC_CHECK_LIB(GL,glGetString,[
-        OPENGL=yes
-        CFLAGS="$CFLAGS -DUSE_OPENGL"
-        LIBS="$LIBS -lGL"
-    ],[
-        OPENGL=0
+    PKG_CHECK_MODULES([EPOXY], [epoxy], [
+        CFLAGS="$CFLAGS $EPOXY_CFLAGS -DUSE_OPENGL"
+        LIBS="$LIBS $EPOXY_LIBS"
+    ], [
+        echo "Couldn't find libepoxy. Disabling OpenGL."
+        OPENGL=no
     ])
-
-    PKG_CHECK_MODULES([EPOXY], [epoxy]);
-    CFLAGS="$CFLAGS $EPOXY_CFLAGS"
-    LIBS="$LIBS $EPOXY_LIBS"
 fi
 
 WAYLAND=no
