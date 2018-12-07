@@ -33,6 +33,7 @@
 #define IDD_CREATEMOVIE                 135
 #define IDD_KEYCUSTOM                   136
 #define IDI_ICON1                       144
+#define IDI_ICON2                       160
 #define IDB_REMOVABLE                   145
 #define IDB_RAMDISK                     146
 #define IDB_UNKNOWN                     147

@@ -194,16 +194,15 @@ BEGIN
     LTEXT           "Resolution",IDC_CURRMODE,187,76,41,8
     COMBOBOX        IDC_RESOLUTION,234,74,105,95,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Enable Triple Buffering",IDC_DBLBUFFER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,187,88,87,10
-    CONTROL         "Transparency Effects",IDC_TRANS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,187,113,153,10
-    CONTROL         "Hi Resolution Support",IDC_HIRES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,187,124,85,10
-    CONTROL         "Extend Height of SNES Image",IDC_HEIGHT_EXTEND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,187,146,111,10
+    CONTROL         "Transparency Effects",IDC_TRANS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,187,118,153,10
+    CONTROL         "Extend Height of SNES Image",IDC_HEIGHT_EXTEND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,187,140,153,10
     CONTROL         "Display messages before applying filters",IDC_MESSAGES_IN_IMAGE,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,187,157,140,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,187,151,153,10
     GROUPBOX        "",IDC_SHADER_GROUP,8,184,338,71,0,WS_EX_TRANSPARENT
     EDITTEXT        IDC_SHADER_HLSL_FILE,13,206,306,14,ES_AUTOHSCROLL | WS_DISABLED
     PUSHBUTTON      "...",IDC_SHADER_HLSL_BROWSE,322,206,19,14,WS_DISABLED
     GROUPBOX        "Frame Skipping:",IDC_STATIC,7,132,167,46,0,WS_EX_TRANSPARENT
-    GROUPBOX        "SNES Image",IDC_STATIC,180,103,166,79,0,WS_EX_TRANSPARENT
+    GROUPBOX        "SNES Image",IDC_STATIC,180,106,166,72,0,WS_EX_TRANSPARENT
     GROUPBOX        "Output Image Processing",IDC_STATIC,179,7,166,53,0,WS_EX_TRANSPARENT
     GROUPBOX        "Fullscreen Display Settings",IDC_STATIC,179,63,166,39,0,WS_EX_TRANSPARENT
     LTEXT           "Hi Res:",IDC_HIRESLABEL,186,36,31,8
@@ -216,11 +215,11 @@ BEGIN
     EDITTEXT        IDC_SHADER_GLSL_FILE,13,235,306,14,ES_AUTOHSCROLL | WS_DISABLED
     PUSHBUTTON      "...",IDC_SHADER_GLSL_BROWSE,322,235,19,14,WS_DISABLED
     LTEXT           "OpenGL Shader File",IDC_STATIC,13,224,104,8
-    CONTROL         "Blend Hi-Res Images",IDC_HIRESBLEND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,187,135,82,10
+    CONTROL         "Blend Hi-Res Images",IDC_HIRESBLEND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,187,129,153,10
     CONTROL         "VSync",IDC_VSYNC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,11,107,37,10
     CONTROL         "Reduce Input Lag",IDC_REDUCEINPUTLAG,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,11,118,76,10
     CONTROL         "Scale messages with EPX if possible",IDC_MESSAGES_SCALE,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,187,168,131,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,187,162,153,10
     PUSHBUTTON      "Parameters",IDC_SHADER_GLSL_PARAMETERS,112,222,49,12,WS_DISABLED
 END
 
@@ -824,6 +823,7 @@ IDB_HIDDENFOLDER        BITMAP                  "hiddir.bmp"
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_ICON1               ICON                    "icon1.ico"
+IDI_ICON2               ICON                    "icon2.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -850,12 +850,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "http://www.snes9x.com"
             VALUE "FileDescription", "Snes9X"
-            VALUE "FileVersion", "1.56.2"
+            VALUE "FileVersion", "1.57"
             VALUE "InternalName", "Snes9X"
             VALUE "LegalCopyright", "Copyright  1996-2018"
             VALUE "OriginalFilename", "Snes9X.exe"
             VALUE "ProductName", "Snes9X SNES Emulator"
-            VALUE "ProductVersion", "1.56.2"
+            VALUE "ProductVersion", "1.57"
         END
     END
     BLOCK "VarFileInfo"

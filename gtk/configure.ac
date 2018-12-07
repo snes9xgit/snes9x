@@ -1,4 +1,4 @@
-AC_INIT([snes9x-gtk], 1.56.2)
+AC_INIT([snes9x-gtk], 1.57)
 
 AC_CONFIG_MACRO_DIR([macros])
 
@@ -26,15 +26,15 @@ AM_INIT_AUTOMAKE([foreign subdir-objects])
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 AM_PROG_CC_C_O
-IT_PROG_INTLTOOL([0.37.0])
 GETTEXT_PACKAGE=[snes9x-gtk]
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE")
 
-AM_GLIB_GNU_GETTEXT
+AM_GNU_GETTEXT([external])
+AM_GNU_GETTEXT_VERSION([0.19.2])
 
-snes9xlocaledir='${prefix}/${DATADIRNAME}/locale'
-snes9xdatadir='${prefix}/${DATADIRNAME}/snes9x'
+snes9xlocaledir='${prefix}/share/locale'
+snes9xdatadir='${prefix}/share/snes9x'
 
 AC_SUBST(snes9xlocaledir)
 AC_SUBST(snes9xdatadir)
@@ -50,12 +50,6 @@ AC_ARG_WITH(opengl,
     [Use OpenGL for output (default: with)])],
   [],
   [with_opengl=yes])
-
-AC_ARG_WITH(joystick,
-  [AS_HELP_STRING([--with(out)-joystick],
-    [Enable joystick support if available (default: with)])],
-  [],
-  [with_joystick=yes])
 
 AC_ARG_WITH(xv,
   [AS_HELP_STRING([--with(out)-xv],
@@ -93,12 +87,6 @@ AC_ARG_WITH(debugger,
   [],
   [with_debugger=no])
 
-AC_ARG_WITH(sdd1-decomp,
-  [AS_HELP_STRING([--with(out)-sdd1-decomp],
-    [Use SDD1 decompression (default: with)])],
-  [],
-  [with_sdd1_decomp=yes])
-
 AC_ARG_WITH(hq2x,
   [AS_HELP_STRING([--with(out)-hq2x],
     [Enable support for the HQ2x family of filters (default: with)])],
@@ -110,24 +98,6 @@ AC_ARG_WITH(xbrz,
     [Enable support for the xBRZ filter (default: with)])],
   [],
   [with_xbrz=yes])
-
-AC_ARG_WITH(netplay,
-  [AS_HELP_STRING([--with(out)-netplay],
-    [Enable netplay support (default: without)])],
-  [],
-  [with_netplay=yes])
-
-AC_ARG_WITH(jma-decomp,
-  [AS_HELP_STRING([--with(out)-jma-decomp],
-    [Enable JMA archive decompression (default: with)])],
-  [],
-  [with_jma_decomp=yes])
-
-AC_ARG_WITH(newblend,
-  [AS_HELP_STRING([--with(out)-newblend],
-    [New colour blender (default: with)])],
-  [],
-  [with_newblend=yes])
 
 AC_ARG_WITH(zlib,
   [AS_HELP_STRING([--with(out)-zlib],
@@ -153,6 +123,12 @@ AC_ARG_WITH(gtk3,
   [],
   [with_gtk3=yes])
 
+AC_ARG_WITH(wayland,
+  [AS_HELP_STRING([--with(out)-wayland],
+    [Build with Wayland support if available (default: with)])],
+  [],
+  [with_wayland=yes])
+
 AC_ARG_WITH(gtk2,
   [AS_HELP_STRING([--with(out)-gtk2],
     [Build with GTK+ 3 if available (default: without)])],
@@ -172,78 +148,68 @@ else
 fi
 
 LIBS="$LIBS -lX11 -ldl -lXext"
-
-ZSNESFX='#ZSNESFX=yes'
-ZSNESC4='#ZSNESC4=yes'
-ASMCPU=''
-SDD1_DECOMP='#SDD1_DECOMP=yes'
-JMA='#JMA=yes'
-SPC700ASM=''
-I386SPC=''
-CPUINC=''
-NETPLAY='#NETPLAY=yes'
-
-SYSLIBS=''
-NASM='not_found'
-
-OPENGL=0
+OPENGL=no
 
 if test yes = "$with_opengl" ; then
   OPENGL=yes
 fi
 
-GTK=yes
-snes9x_info_display="GTK"
-
-GTK3_WARNING=no
+GTK3=no
 if test yes = "$with_gtk3" -a no = "$with_gtk2"; then
     GTK_VERSION="gtk+-3.0 >= 3.22"
-    GTK3_WARNING=yes
+    GTK3=yes
 else
     GTK_VERSION="gtk+-2.0 >= 2.16"
 fi
 
 PKG_CHECK_MODULES([GTK], ["$GTK_VERSION"])
-PKG_CHECK_MODULES([GLIB], [gthread-2.0 >= 2.6 gobject-2.0 >= 2.6])
-PKG_CHECK_MODULES([LIBXML], [libxml-2.0 >= 2.0])
+PKG_CHECK_MODULES([GLIB], [glib-2.0 > 2.28 gthread-2.0 >= 2.6 gobject-2.0 >= 2.6])
 PKG_CHECK_MODULES([XRANDR], [xrandr])
 
 if test yes = "$with_opengl" ; then
-
-    AC_CHECK_LIB(GL,glGetString,[
-        OPENGL=yes
-        CFLAGS="$CFLAGS -DUSE_OPENGL"
-        LIBS="$LIBS -lGL"
-    ],[
-        OPENGL=0
+    PKG_CHECK_MODULES([EPOXY], [epoxy], [
+        CFLAGS="$CFLAGS $EPOXY_CFLAGS -DUSE_OPENGL"
+        LIBS="$LIBS $EPOXY_LIBS"
+    ], [
+        echo "Couldn't find libepoxy. Disabling OpenGL."
+        OPENGL=no
     ])
-
-    PKG_CHECK_MODULES([EPOXY], [epoxy]);
-    CFLAGS="$CFLAGS $EPOXY_CFLAGS"
-    LIBS="$LIBS $EPOXY_LIBS"
 fi
 
-GTKJOY=0
+WAYLAND=no
+if test yes = "$with_wayland"; then
+    PKG_CHECK_MODULES([WAYLAND_EGL],[wayland-egl],[
+        if test yes = "$GTK3" ; then
+            CFLAGS="$CFLAGS -DUSE_WAYLAND $WAYLAND_EGL_CFLAGS"
+            LIBS="$LIBS $WAYLAND_EGL_LIBS"
+            WAYLAND=yes
+        else
+            echo "Found Wayland, but need GTK3 for support."
+        fi
+    ],[
+        echo "Not using Wayland-EGL."
+    ])
+fi
+
+GTKJOY=no
 SDL_CFLAGS=""
 SDL_LIBS=""
-if test yes = "$with_joystick"; then
-    PKG_CHECK_MODULES([SDL],[sdl2],[
+PKG_CHECK_MODULES([SDL],[sdl2],[
+    GTKJOY=yes
+],[
+    AC_CHECK_PROG(SDLCONFIGFOUND,[sdl2-config],yes,no)
+
+    if test yes = "$SDLCONFIGFOUND" ; then
+        SDL_CFLAGS="`sdl2-config --cflags`"
+        SDL_LIBS="`sdl2-config --libs`"
         GTKJOY=yes
-        CFLAGS="$CFLAGS -DUSE_JOYSTICK"
-    ],[
-        AC_CHECK_PROG(SDLCONFIGFOUND,[sdl2-config],yes,no)
+    else
+        echo "Cannot find SDL2."
+        exit
+    fi
+])
 
-        if test yes = "$SDLCONFIGFOUND" ; then
-            SDL_CFLAGS="-DUSE_JOYSTICK `sdl2-config --cflags`"
-            SDL_LIBS="`sdl2-config --libs`"
-            GTKJOY=yes
-        else
-            echo "Cannot find SDL2. Disabling joystick support."
-        fi
-    ])
-fi
-
-XV=0
+XV=no
 XV_CFLAGS=""
 XV_LIBS=""
 if test yes = "$with_xv" ; then
@@ -256,7 +222,7 @@ if test yes = "$with_xv" ; then
     ])
 fi
 
-PORTAUDIO=0
+PORTAUDIO=no
 PORTAUDIO_CFLAGS=""
 PORTAUDIO_LIBS=""
 if test yes = "$with_portaudio" ; then
@@ -269,7 +235,7 @@ if test yes = "$with_portaudio" ; then
     ])
 fi
 
-OSS=0
+OSS=no
 if test yes = "$with_oss" ; then
 
     AC_CHECK_HEADER(sys/soundcard.h, [
@@ -281,7 +247,7 @@ if test yes = "$with_oss" ; then
     ])
 fi
 
-ALSA=0
+ALSA=no
 ALSA_CFLAGS=""
 ALSA_LIBS=""
 if test yes = "$with_alsa" ; then
@@ -295,7 +261,7 @@ if test yes = "$with_alsa" ; then
     ])
 fi
 
-PULSEAUDIO=0
+PULSEAUDIO=no
 PULSEAUDIO_CFLAGS=""
 PULSEAUDIO_LIBS=""
 if test yes = "$with_pulseaudio" ; then
@@ -319,7 +285,7 @@ if test yes = "$with_screenshot"; then
     ])
 fi
 
-SYSTEM_ZIP=0
+SYSTEM_ZIP=no
 SYSTEM_ZIP_CFLAGS=""
 SYSTEM_ZIP_LIBS=""
 ZIP_CFLAGS="-I../unzip"
@@ -342,47 +308,26 @@ if test yes = "$with_hq2x" ; then
     HQ2X=yes
     CFLAGS="$CFLAGS -DUSE_HQ2X"
 else
-    HQ2X=0
+    HQ2X=no
 fi
 
 if test yes = "$with_xbrz" ; then
     XBRZ=yes
     CFLAGS="$CFLAGS -DUSE_XBRZ"
 else
-    XBRZ=0
+    XBRZ=no
 fi
 
-CFLAGS="$CFLAGS $GTK_CFLAGS $GLIB_CFLAGS $LIBXML_CFLAGS $PORTAUDIO_CFLAGS $LIBPNG_CFLAGS $SDL_CFLAGS $XV_CFLAGS $XRANDR_CFLAGS $ALSA_CFLAGS $PULSEAUDIO_CFLAGS"
-LIBS="$LIBS $GTK_LIBS $GLIB_LIBS $LIBXML_LIBS $PORTAUDIO_LIBS $LIBPNG_LIBS $SDL_LIBS $XV_LIBS $XRANDR_LIBS $ALSA_LIBS $PULSEAUDIO_LIBS"
+CFLAGS="$CFLAGS $GTK_CFLAGS $GLIB_CFLAGS $PORTAUDIO_CFLAGS $LIBPNG_CFLAGS $SDL_CFLAGS $XV_CFLAGS $XRANDR_CFLAGS $ALSA_CFLAGS $PULSEAUDIO_CFLAGS"
+LIBS="$LIBS $GTK_LIBS $GLIB_LIBS $PORTAUDIO_LIBS $LIBPNG_LIBS $SDL_LIBS $XV_LIBS $XRANDR_LIBS $ALSA_LIBS $PULSEAUDIO_LIBS"
 
-NASM="not_found"
-ZSNESC4=no
-ZSNESFX=no
-
-CFLAGS="$CFLAGS -DPIXEL_FORMAT=RGB565 -DCORRECT_VRAM_READS"
-CORRECT_VRAM_READS=1
+CFLAGS="$CFLAGS -DPIXEL_FORMAT=RGB565"
 
 if test yes = "$with_debugger"; then
    CFLAGS="$CFLAGS -DDEBUGGER"
 fi
 
-dnl Enable SDD1 decompression if requested
-if test yes = "$with_sdd1_decomp"; then
-   CFLAGS="$CFLAGS -DSDD1_DECOMP"
-   SDD1_DECOMP=yes
-fi
-
-dnl Enable Netplay support if requested
-if test yes = "$with_netplay"; then
-   CFLAGS="$CFLAGS -DNETPLAY_SUPPORT"
-   NETPLAY=yes
-fi
-
-dnl Enable jma decompression (nachs own format)
-if test yes = "$with_jma_decomp"; then
-   CFLAGS="$CFLAGS -DJMA_SUPPORT"
-   JMA=yes
-fi
+CFLAGS="$CFLAGS -DNETPLAY_SUPPORT -DJMA_SUPPORT"
 
 if test yes = "$with_zlib"; then
   AC_CHECK_HEADERS(zlib.h)
@@ -469,32 +414,21 @@ if test $ac_cv_my_sar_int8 = yes && \
   CFLAGS="$CFLAGS -DRIGHTSHIFT_IS_SAR"
 fi
 
-CFLAGS="$CFLAGS -DUNZIP_SUPPORT -DSNES9X_GTK -DSPC700_C -I. -I.. $ZIP_CFLAGS"
+CFLAGS="$CFLAGS -DUNZIP_SUPPORT -DSNES9X_GTK -I. -I.. $ZIP_CFLAGS"
 
 CXXFLAGS="$CFLAGS"
 
-CCASFLAGS="$CFLAGS -I.. -I../i386"
-
-AM_CONDITIONAL(ZSNESFX, [test yes = "$ZSNESFX"])
-AM_CONDITIONAL(ZSNESC4, [test yes = "$ZSNESC4"])
-AM_CONDITIONAL(ASMCPU, [test yes = "$ASMCPU"])
-AM_CONDITIONAL(SDD1_DECOMP, [test yes = "$SDD1_DECOMP"])
-AM_CONDITIONAL(NETPLAY, [test yes = "$NETPLAY"])
-AM_CONDITIONAL(JMA, [test yes = "$JMA"])
 AM_CONDITIONAL(OPENGL, [test yes = "$OPENGL"])
 AM_CONDITIONAL(XV, [test yes = "$XV"])
 AM_CONDITIONAL(PORTAUDIO, [test yes = "$PORTAUDIO"])
 AM_CONDITIONAL(OSS, [test yes = "$OSS"])
 AM_CONDITIONAL(DEBUG, [test yes = "$with_debug" ])
-AM_CONDITIONAL(SDL, [test yes = "$GTKJOY"])
 AM_CONDITIONAL(ALSA, [test yes = "$ALSA"])
 AM_CONDITIONAL(PULSEAUDIO, [test yes = "$PULSEAUDIO"])
 AM_CONDITIONAL(HQ2X, [test yes = "$HQ2X"])
 AM_CONDITIONAL(XBRZ, [test yes = "$XBRZ"])
 AM_CONDITIONAL(SYSTEM_ZIP, [test yes = "$SYSTEM_ZIP"])
-
-AC_SUBST(NASM)
-AC_SUBST(NASM_FLAGS)
+AM_CONDITIONAL(WAYLAND, [test yes = "$WAYLAND"])
 
 AC_OUTPUT(Makefile data/Makefile po/Makefile.in)
 
@@ -502,10 +436,14 @@ echo ""
 echo "Snes9x will build with support for the following:"
 echo ""
 
-if test yes = "$GTK3_WARNING" ; then
+if test yes = "$GTK3" ; then
     echo "    GTK+ 3.0"
 else
     echo "    GTK+ 2.0"
+fi
+
+if test yes = "$WAYLAND" ; then
+    echo "    Wayland"
 fi
 
 if test yes = "$ALSA" ; then
@@ -548,15 +486,6 @@ else
     if test yes = "$with_joystick" ; then
         echo "!!! NOT able to use joystick support"
         echo "--- Needs SDL libraries and headers"
-    fi
-fi
-
-if test yes = "$NETPLAY" ; then
-    echo "    NetPlay"
-else
-    if test yes = "$with_netplay" ; then
-        echo "!!! NOT able to build NetPlay support"
-
     fi
 fi
 

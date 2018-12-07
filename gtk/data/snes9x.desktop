@@ -5,5 +5,4 @@ Type=Application
 Categories=Game;Emulator;
 MimeType=application/vnd.nintendo.snes.rom;application/x-snes-rom;
 Exec=snes9x-gtk %F
-TryExec=snes9x-gtk
 Icon=snes9x

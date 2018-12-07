@@ -1,3 +1,9 @@
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
 #include <glib.h>
 
 #include "gtk_s9x.h"
@@ -14,7 +20,7 @@ static GThread *npthread;
 extern SNPServer NPServer;
 
 static void
-S9xNetplayPreconnect (void)
+S9xNetplayPreconnect ()
 {
     S9xNetplayDisconnect ();
 
@@ -25,12 +31,10 @@ S9xNetplayPreconnect (void)
 
     NetPlay.MaxBehindFrameCount = gui_config->netplay_max_frame_loss;
     NetPlay.Waiting4EmulationThread = FALSE;
-
-    return;
 }
 
 static void
-S9xNetplayConnect (void)
+S9xNetplayConnect ()
 {
     GtkWidget *msg;
 
@@ -75,33 +79,27 @@ S9xNetplayConnect (void)
     CPU.Flags = flags;
 
     top_level->configure_widgets ();
-
-    return;
 }
 
 void
-S9xNetplaySyncClients (void)
+S9xNetplaySyncClients ()
 {
     if (Settings.NetPlay && Settings.NetPlayServer)
         S9xNPServerQueueSyncAll ();
-
-    return;
 }
 
 void
-S9xNetplayStopServer (void)
+S9xNetplayStopServer ()
 {
     S9xNPStopServer ();
 
     g_thread_join (npthread);
     Settings.NetPlayServer = FALSE;
     gui_config->netplay_server_up = FALSE;
-
-    return;
 }
 
 void
-S9xNetplayDisconnect (void)
+S9xNetplayDisconnect ()
 {
     if (Settings.NetPlay)
     {
@@ -118,8 +116,6 @@ S9xNetplayDisconnect (void)
     NetPlay.Paused = FALSE;
 
     top_level->configure_widgets ();
-
-    return;
 }
 
 static gpointer
@@ -131,7 +127,7 @@ S9xNetplayServerThread (gpointer)
 }
 
 void
-S9xNetplayStartServer (void)
+S9xNetplayStartServer ()
 {
     uint32 flags;
 
@@ -168,12 +164,10 @@ S9xNetplayStartServer (void)
     CPU.Flags = flags;
 
     top_level->configure_widgets ();
-
-    return;
 }
 
 void
-S9xNetplayDialogOpen (void)
+S9xNetplayDialogOpen ()
 {
     Snes9xNetplayDialog *np_dialog;
 
@@ -201,12 +195,10 @@ S9xNetplayDialogOpen (void)
     delete np_dialog;
 
     top_level->unpause_from_focus_change ();
-
-    return;
 }
 
 int
-S9xNetplaySyncSpeed (void)
+S9xNetplaySyncSpeed ()
 {
     if (!Settings.NetPlay || !NetPlay.Connected)
         return 0;
@@ -275,7 +267,7 @@ S9xNetplaySyncSpeed (void)
 }
 
 int
-S9xNetplayPush (void)
+S9xNetplayPush ()
 {
     static int statusbar_state = FALSE;
 
@@ -331,15 +323,13 @@ S9xNetplayPush (void)
 }
 
 void
-S9xNetplayPop (void)
+S9xNetplayPop ()
 {
     if (!Settings.NetPlay)
         return;
 
     for (int i = 0; i < 8; i++)
         MovieSetJoypad (i, local_joypads[i]);
-
-    return;
 }
 
 

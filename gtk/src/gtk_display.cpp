@@ -1,18 +1,46 @@
-#include <gdk/gdk.h>
-#include <gdk/gdkx.h>
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
+#include "gtk_2_3_compat.h"
 #include <sched.h>
 
 #include "gtk_s9x.h"
 #include "gtk_display.h"
 #include "gtk_display_driver.h"
 #include "gtk_display_driver_gtk.h"
-#include "snes_ntsc.h"
-#ifdef USE_XV
+#include "font.h"
+
+#if defined(USE_XV) && defined(GDK_WINDOWING_X11)
 #include "gtk_display_driver_xv.h"
 #endif
+
 #ifdef USE_OPENGL
 #include "gtk_display_driver_opengl.h"
 #endif
+
+static const char kern[224][2] =
+{
+    { 2, 2 },{ 2, 3 },{ 1, 2 },{ 0, 1 },{ 0, 1 },{ 0, 2 },{ 0, 2 },{ 0, 3 },{ 1, 3 },{ 1, 3 },{ 0, 3 },{ 0, 1 },{ 0, 3 },{ 0, 2 },{ 1, 3 },{ 0, 2 },
+    { 0, 3 },{ 0, 3 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 1, 3 },{ 0, 3 },{ 0, 3 },{ 0, 2 },{ 0, 3 },{ 0, 3 },
+    { 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 3 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 1 },{ 0, 1 },{ 0, 2 },
+    { 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 3 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 2 },{ 0, 3 },{ 0, 2 },{ 0, 3 },{ 0, 2 },{ 0, 3 },{ 0, 3 },{ 0, 2 },
+    { 0, 3 },{ 0, 2 },{ 0, 2 },{ 0, 3 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 3 },{ 0, 3 },{ 0, 2 },{ 0, 3 },{ 0, 1 },{ 0, 2 },{ 0, 2 },
+    { 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 3 },{ 0, 1 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 3 },{ 1, 4 },{ 0, 3 },{ 0, 2 },{ 2, 2 },
+    { 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },
+    { 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },
+    { 2, 2 },{ 0, 3 },{ 2, 2 },{ 2, 2 },{ 2, 1 },{ 1, 3 },{ 0, 1 },{ 0, 3 },{ 0, 3 },{ 0, 3 },{ 0, 3 },{ 0, 3 },{ 0, 2 },{ 0, 2 },{ 1, 3 },{ 0, 1 },
+    { 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 2 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },
+    { 0, 1 },{ 0, 2 },{ 0, 1 },{ 0, 1 },{ 1, 2 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 1, 2 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },
+    { 1, 2 },{ 0, 2 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 1, 1 },{ 0, 1 },{ 1, 1 },{ 0, 1 },{ 0, 2 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 2 },{ 0, 3 },
+    { 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },
+    { 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 }
+};
+
+static const int font_width = 8;
+static const int font_height = 9;
 
 static S9xDisplayDriver  *driver;
 static snes_ntsc_t       snes_ntsc;
@@ -40,9 +68,6 @@ static unsigned short scanline_masks[] =
         0xffff,     /* 100%  */
 };
 
-extern unsigned int scanline_offset;
-extern unsigned short scanline_mask;
-
 /* Scanline constants for standard scanline filter */
 static uint8 scanline_shifts[] =
 {
@@ -56,12 +81,10 @@ void
 S9xSetEndianess (int type)
 {
     endianess = type;
-
-    return;
 }
 
 double
-S9xGetAspect (void)
+S9xGetAspect ()
 {
     double native_aspect = 256.0 / (gui_config->overscan ? 239.0 : 224.0);
     double aspect;
@@ -164,8 +187,6 @@ S9xApplyAspect (int &s_width,  /* Output: x */
     s_height = y;
     d_width = w;
     d_height = h;
-
-    return;
 }
 
 void
@@ -174,8 +195,6 @@ S9xRegisterYUVTables (uint8 *y, uint8 *u, uint8 *v)
     y_table = y;
     u_table = u;
     v_table = v;
-
-    return;
 }
 
 /* YUY2 in LSB first format */
@@ -230,8 +249,6 @@ internal_convert_16_yuv (void *src_buffer,
             }
         }
     }
-
-    return;
 }
 
 static void
@@ -457,8 +474,6 @@ internal_convert_mask (void         *src_buffer,
                 break;
         }
     }
-
-    return;
 }
 
 static void
@@ -555,8 +570,6 @@ internal_convert (void *src_buffer,
             }
         }
     }
-
-    return;
 }
 
 static void
@@ -615,8 +628,6 @@ S9xForceHires (void *buffer,
 
         height *= 2;
     }
-
-    return;
 }
 
 #undef  AVERAGE_565
@@ -645,8 +656,6 @@ S9xMergeHires (void *buffer,
     }
 
     width >>= 1;
-
-    return;
 }
 
 #if 0
@@ -680,8 +689,6 @@ S9xBlendHires (void *buffer, int pitch, int &width, int &height)
 
         memcpy (input, tmp, pitch);
     }
-
-    return;
 }
 #endif
 
@@ -712,8 +719,6 @@ filter_2x (void *src,
                 (uint8 *) dst + (y * 2) * dst_pitch,
                 width * 2 * 2);
     }
-
-    return;
 }
 
 void
@@ -747,8 +752,6 @@ filter_3x (void *src,
                     width * 2 * 3);
         }
     }
-
-    return;
 }
 
 void
@@ -783,8 +786,6 @@ filter_4x (void *src,
                     width * 2 * 4);
         }
     }
-
-    return;
 }
 
 void
@@ -817,10 +818,7 @@ filter_scanlines (void *src_buffer,
         dst_a += dst_pitch;
         dst_b += dst_pitch;
     }
-
-    return;
 }
-
 
 void
 get_filter_scale (int &width, int &height)
@@ -937,8 +935,6 @@ get_filter_scale (int &width, int &height)
             height *= 2;
             break;
     }
-
-    return;
 }
 
 static void
@@ -1125,23 +1121,23 @@ internal_filter (uint8 *src_buffer,
 
         case FILTER_NTSC:
             if (width > 256)
-                snes_ntsc_blit_hires (&snes_ntsc,
-                                      (SNES_NTSC_IN_T *) src_buffer,
-                                      src_pitch >> 1,
-                                      0, /* Burst_phase */
-                                      width,
-                                      height,
-                                      (void *) dst_buffer,
-                                      dst_pitch);
+                snes_ntsc_blit_hires_scanlines (&snes_ntsc,
+                                                (SNES_NTSC_IN_T *) src_buffer,
+                                                src_pitch >> 1,
+                                                0, /* Burst_phase */
+                                                width,
+                                                height,
+                                                (void *) dst_buffer,
+                                                dst_pitch);
             else
-                snes_ntsc_blit (&snes_ntsc,
-                                (SNES_NTSC_IN_T *) src_buffer,
-                                src_pitch >> 1,
-                                0, /* Burst_phase */
-                                width,
-                                height,
-                                (void *) dst_buffer,
-                                dst_pitch);
+                snes_ntsc_blit_scanlines (&snes_ntsc,
+                                          (SNES_NTSC_IN_T *) src_buffer,
+                                          src_pitch >> 1,
+                                          0, /* Burst_phase */
+                                          width,
+                                          height,
+                                          (void *) dst_buffer,
+                                          dst_pitch);
             break;
 
         case FILTER_SCANLINES:
@@ -1156,8 +1152,6 @@ internal_filter (uint8 *src_buffer,
     }
 
     get_filter_scale (width, height);
-
-    return;
 }
 
 static void
@@ -1211,12 +1205,10 @@ thread_worker (gpointer data,
     }
 
     job->complete = 1;
-
-    return;
 }
 
 static void
-create_thread_pool (void)
+create_thread_pool ()
 {
     if (pool == NULL)
     {
@@ -1226,8 +1218,6 @@ create_thread_pool (void)
                                   TRUE,
                                   NULL);
     }
-
-    return;
 }
 
 static void
@@ -1284,8 +1274,6 @@ internal_threaded_convert (void *src_buffer,
 
         sched_yield ();
     }
-
-    return;
 }
 
 static void
@@ -1351,8 +1339,6 @@ internal_threaded_convert_mask (void *src_buffer,
 
         sched_yield ();
     }
-
-    return;
 }
 
 static void
@@ -1416,8 +1402,6 @@ internal_threaded_filter (uint8 *src_buffer,
     }
 
     get_filter_scale (width, height);
-
-    return;
 }
 
 void
@@ -1443,8 +1427,6 @@ S9xFilter (uint8 *src_buffer,
                          dst_pitch,
                          width,
                          height);
-
-    return;
 }
 
 void
@@ -1470,7 +1452,6 @@ S9xConvertYUV (void *src_buffer,
                                  dst_pitch,
                                  width,
                                  height);
-    return;
 }
 
 void
@@ -1498,7 +1479,6 @@ S9xConvert (void *src,
                           width,
                           height,
                           bpp);
-    return;
 }
 
 void
@@ -1535,30 +1515,25 @@ S9xConvertMask (void *src,
                                gshift,
                                bshift,
                                bpp);
-    return;
 }
 
 void
 S9xDisplayRefresh (int width, int height)
 {
     driver->refresh (width, height);
-
-    return;
 }
 
 static void
-ntsc_filter_init (void)
+ntsc_filter_init ()
 {
-    scanline_offset = scanline_offsets [gui_config->ntsc_scanline_intensity];
-    scanline_mask   = scanline_masks [gui_config->ntsc_scanline_intensity];
+    snes_ntsc_scanline_offset = scanline_offsets [gui_config->ntsc_scanline_intensity];
+    snes_ntsc_scanline_mask   = scanline_masks [gui_config->ntsc_scanline_intensity];
 
     snes_ntsc_init (&snes_ntsc, &gui_config->ntsc_setup);
-
-    return;
 }
 
 void
-S9xDisplayReconfigure (void)
+S9xDisplayReconfigure ()
 {
     ntsc_filter_init ();
 
@@ -1566,17 +1541,17 @@ S9xDisplayReconfigure (void)
     {
         g_thread_pool_set_max_threads (pool, gui_config->num_threads - 1, NULL);
     }
-
-    return;
 }
 
 void
-S9xQueryDrivers (void)
+S9xQueryDrivers ()
 {
-#ifdef USE_XV
-    gui_config->allow_xv = S9xXVDisplayDriver::query_availability ();
-#else
+    GdkDisplay *display = gtk_widget_get_display (GTK_WIDGET (top_level->get_window()));
+
     gui_config->allow_xv = 0;
+#if defined(USE_XV) && defined(GDK_WINDOWING_X11)
+    if (GDK_IS_X11_DISPLAY (display))
+        gui_config->allow_xv = S9xXVDisplayDriver::query_availability ();
 #endif
 
 #ifdef USE_OPENGL
@@ -1586,41 +1561,32 @@ S9xQueryDrivers (void)
 #endif
 
     gui_config->allow_xrandr = 0;
-
-    int error_base_p, event_base_p;
-    int major_version, minor_version;
-    Display *dpy = gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (top_level->get_window())));
-    Window xid   = GDK_COMPAT_WINDOW_XID (gtk_widget_get_window (GTK_WIDGET (top_level->get_window())));
-
-    if (!XRRQueryExtension (dpy, &event_base_p, &error_base_p))
+#ifdef GDK_WINDOWING_X11
+    if (GDK_IS_X11_DISPLAY (display))
     {
-        gui_config->change_display_resolution = FALSE;
-        return;
-    }
-    if (!XRRQueryVersion (dpy, &major_version, &minor_version))
-    {
-        gui_config->change_display_resolution = FALSE;
-        return;
-    }
-    if (minor_version < 3)
-    {
-        gui_config->change_display_resolution = FALSE;
-        return;
-    }
+        Display *dpy = gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (top_level->get_window())));
+        Window xid   = gdk_x11_window_get_xid (gtk_widget_get_window (GTK_WIDGET (top_level->get_window())));
 
-    gui_config->allow_xrandr = 1;
-    gui_config->xrr_screen_resources = XRRGetScreenResourcesCurrent (dpy, xid);
-    gui_config->xrr_crtc_info        = XRRGetCrtcInfo (dpy,
-                                                       gui_config->xrr_screen_resources,
-                                                       gui_config->xrr_screen_resources->crtcs[0]);
-
-    return;
+        gui_config->allow_xrandr = 1;
+        gui_config->xrr_screen_resources = XRRGetScreenResourcesCurrent (dpy, xid);
+        gui_config->xrr_crtc_info        = XRRGetCrtcInfo (dpy,
+                                                        gui_config->xrr_screen_resources,
+                                                        gui_config->xrr_screen_resources->crtcs[0]);
+    }
+#endif
 }
 
 bool8
 S9xDeinitUpdate (int width, int height)
 {
     int yoffset = 0;
+
+    if (top_level->last_height > height)
+    {
+        memset (GFX.Screen + (GFX.Pitch >> 1) * height,
+                0,
+                GFX.Pitch * (top_level->last_height - height));
+    }
 
     top_level->last_height = height;
     top_level->last_width = width;
@@ -1629,12 +1595,12 @@ S9xDeinitUpdate (int width, int height)
     {
         if (height == SNES_HEIGHT)
         {
-            yoffset = -7;
+            yoffset = -8;
             height = SNES_HEIGHT_EXTENDED;
         }
         if (height == SNES_HEIGHT * 2)
         {
-            yoffset = -15;
+            yoffset = -16;
             height = SNES_HEIGHT_EXTENDED * 2;
         }
     }
@@ -1647,15 +1613,12 @@ S9xDeinitUpdate (int width, int height)
         }
         if (height == SNES_HEIGHT_EXTENDED * 2)
         {
-            yoffset = 15;
+            yoffset = 14;
             height = SNES_HEIGHT * 2;
         }
     }
 
-    if (!Settings.Paused
-#ifdef NETPLAY_SUPPORT
-            && !NetPlay.Paused
-#endif
+    if (!Settings.Paused && !NetPlay.Paused
     )
 
     {
@@ -1687,8 +1650,14 @@ S9xDeinitUpdate (int width, int height)
 }
 
 static void
-S9xInitDriver (void)
+S9xInitDriver ()
 {
+#ifdef GDK_WINDOWING_WAYLAND
+    if (GDK_IS_WAYLAND_DISPLAY (gdk_display_get_default ()))
+    {
+        gui_config->hw_accel = HWA_OPENGL;
+    }
+#endif
     switch (gui_config->hw_accel)
     {
 #ifdef USE_OPENGL
@@ -1699,7 +1668,7 @@ S9xInitDriver (void)
 
             break;
 #endif
-#ifdef USE_XV
+#if defined(USE_XV) && defined(GDK_WINDOWING_X11)
         case HWA_XV:
 
             driver = new S9xXVDisplayDriver (top_level, gui_config);
@@ -1715,7 +1684,6 @@ S9xInitDriver (void)
     {
         if (gui_config->hw_accel > 0)
         {
-            driver->deinit ();
             delete driver;
 
             gui_config->hw_accel = HWA_NONE;
@@ -1730,42 +1698,22 @@ S9xInitDriver (void)
     }
 
     pool = NULL;
-
-    return;
 }
 
 S9xDisplayDriver *
-S9xDisplayGetDriver (void)
+S9xDisplayGetDriver ()
 {
     return driver;
 }
 
 void
-S9xInitDisplay (int argc, char **argv)
-{
-    Settings.SupportHiRes = TRUE;
-    S9xBlit2xSaIFilterInit ();
-#ifdef USE_HQ2X
-    S9xBlitHQ2xFilterInit ();
-#endif /* USE_HQ2SX */
-    S9xQueryDrivers ();
-    S9xInitDriver ();
-    S9xGraphicsInit ();
-    S9xDisplayReconfigure ();
-
-    return;
-}
-
-void
-S9xDisplayClearBuffers (void)
+S9xDisplayClearBuffers ()
 {
     driver->clear_buffers ();
-
-    return;
 }
 
 void
-S9xDeinitDisplay (void)
+S9xDeinitDisplay ()
 {
     driver->deinit ();
     delete driver;
@@ -1775,12 +1723,10 @@ S9xDeinitDisplay (void)
 
     if (pool)
         g_thread_pool_free (pool, FALSE, TRUE);
-
-    return;
 }
 
 void
-S9xReinitDisplay (void)
+S9xReinitDisplay ()
 {
     uint16 *buffer = NULL;
     int    width, height;
@@ -1803,8 +1749,6 @@ S9xReinitDisplay (void)
     driver->push_buffer (buffer);
 
     free (buffer);
-
-    return;
 }
 
 bool8
@@ -1815,27 +1759,148 @@ S9xContinueUpdate (int width, int height)
 }
 
 bool8
-S9xInitUpdate (void)
+S9xInitUpdate ()
 {
     return TRUE;
 }
 
 void
-S9xSetPalette (void)
+S9xSetPalette ()
 {
-    return;
 }
 
 void
-S9xTextMode (void)
+S9xTextMode ()
 {
-    return;
 }
 
 void
-S9xGraphicsMode (void)
+S9xGraphicsMode ()
 {
-    return;
 }
 
+static inline int CharWidth (uint8 c)
+{
+    return font_width - kern[c - 32][0] - kern[c - 32][1];
+}
 
+static int StringWidth (const char *str)
+{
+    int length = strlen (str);
+    int pixcount = 0;
+
+    if (length > 0)
+        pixcount++;
+
+    for (int i = 0; i < length; i++)
+    {
+        pixcount += (CharWidth (str[i]) - 1);
+    }
+
+    return pixcount;
+}
+
+static void GTKDisplayChar (int x, int y, uint8 c, bool overlap = false)
+{
+    int cindex = c - 32;
+    int crow   = cindex >> 4;
+    int ccol   = cindex & 15;
+    int cwidth = font_width - kern[cindex][0] - kern[cindex][1];
+
+    int	line   = crow * font_height;
+    int	offset = ccol * font_width + kern[cindex][0];
+    int scale = IPPU.RenderedScreenWidth / SNES_WIDTH;
+
+    uint16 *s = GFX.Screen + y * GFX.RealPPL + x * scale;
+
+    for (int h = 0; h < font_height; h++, line++, s += GFX.RealPPL - cwidth * scale)
+    {
+        for (int w = 0; w < cwidth; w++, s++)
+        {
+            char p = font[line][offset + w];
+
+            if (p == '#')
+                *s = Settings.DisplayColor;
+            else if (!overlap || w > 0)
+                *s = (*s & 0xf7de) >> 1;
+
+            if (scale > 1)
+            {
+                s[1] = s[0];
+                s++;
+            }
+        }
+    }
+}
+
+static void S9xGTKDisplayString (const char *string, int linesFromBottom,
+                                 int pixelsFromLeft, bool allowWrap)
+{
+    if (linesFromBottom <= 0)
+        linesFromBottom = 1;
+
+    if (linesFromBottom >= 5)
+        linesFromBottom -= 3;
+
+    if (pixelsFromLeft > 128)
+        pixelsFromLeft = SNES_WIDTH - StringWidth (string);
+
+    int dst_x = pixelsFromLeft;
+    int dst_y = IPPU.RenderedScreenHeight - font_height * linesFromBottom;
+    int	len = strlen(string);
+    bool overlap = false;
+
+    if (IPPU.RenderedScreenHeight % 224 && !gui_config->overscan)
+        dst_y -= 8;
+    else if (gui_config->overscan)
+        dst_y += 8;
+
+    for (int i = 0 ; i < len ; i++)
+    {
+        int cindex = string[i] - 32;
+        int char_width = font_width - kern[cindex][0] - kern[cindex][1];
+
+        if (dst_x + char_width > SNES_WIDTH || (uint8) string[i] < 32)
+        {
+            if (!allowWrap)
+                break;
+
+            linesFromBottom--;
+            dst_y = IPPU.RenderedScreenHeight - font_height * linesFromBottom;
+            dst_x = pixelsFromLeft;
+
+            if (dst_y >= IPPU.RenderedScreenHeight)
+                break;
+        }
+
+        if ((uint8) string[i] < 32)
+            continue;
+
+        GTKDisplayChar(dst_x, dst_y, string[i], overlap);
+        dst_x  += char_width - 1;
+        overlap = true;
+    }
+}
+
+void
+S9xInitDisplay (int argc, char **argv)
+{
+    Settings.SupportHiRes = TRUE;
+    S9xBlit2xSaIFilterInit ();
+#ifdef USE_HQ2X
+    S9xBlitHQ2xFilterInit ();
+#endif /* USE_HQ2SX */
+    S9xQueryDrivers ();
+    S9xInitDriver ();
+    S9xGraphicsInit ();
+    S9xDisplayReconfigure ();
+    S9xCustomDisplayString = S9xGTKDisplayString;
+}
+
+bool
+S9xDisplayDriverIsReady ()
+{
+    if (!driver)
+        return false;
+    return driver->is_ready ();
+}

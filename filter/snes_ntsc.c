@@ -32,6 +32,9 @@ snes_ntsc_setup_t const snes_ntsc_rgb        = { 0, 0, 0, 0,.2,  0,.7, -1, -1,-1
 
 #include "snes_ntsc_impl.h"
 
+unsigned int snes_ntsc_scanline_offset = 0;
+unsigned short snes_ntsc_scanline_mask = 0xffff;
+
 /* 3 input pixels -> 8 composite samples */
 pixel_info_t const snes_ntsc_pixels [alignment_count] = {
 	{ PIXEL_OFFSET( -4, -9 ), { 1, 1, .6667f, 0 } },
@@ -245,6 +248,142 @@ void snes_ntsc_blit_hires( snes_ntsc_t const* ntsc, SNES_NTSC_IN_T const* input,
 		burst_phase = (burst_phase + 1) % snes_ntsc_burst_count;
 		input += in_row_width;
 		rgb_out = (char*) rgb_out + out_pitch;
+	}
+}
+
+/* 12.5% scanlines like in snes_ntsc example instead of zsnes's 25% */
+#define PIXEL_OUT( x ) \
+	SNES_NTSC_RGB_OUT( x, value, SNES_NTSC_OUT_DEPTH ); \
+	line_outa[x] = value; \
+	line_outb[x] = value - (value >> snes_ntsc_scanline_offset & snes_ntsc_scanline_mask);
+
+void snes_ntsc_blit_scanlines( snes_ntsc_t const* ntsc, SNES_NTSC_IN_T const* input, long in_row_width,
+		int burst_phase, int in_width, int in_height, void* rgb_out, long out_pitch )
+{
+	unsigned value;
+	int chunk_count = (in_width - 1) / snes_ntsc_in_chunk;
+	for ( ; in_height; --in_height )
+	{
+		SNES_NTSC_IN_T const* line_in = input;
+		SNES_NTSC_BEGIN_ROW( ntsc, burst_phase,
+				snes_ntsc_black, snes_ntsc_black, SNES_NTSC_ADJ_IN( *line_in ) );
+		snes_ntsc_out_t * restrict line_outa = (snes_ntsc_out_t *) rgb_out;
+		snes_ntsc_out_t * restrict line_outb = (snes_ntsc_out_t *) ((char *) line_outa + out_pitch);
+		int n;
+		++line_in;
+
+		for ( n = chunk_count; n; --n )
+		{
+			/* order of input and output pixels must not be altered */
+			SNES_NTSC_COLOR_IN( 0, SNES_NTSC_ADJ_IN( line_in [0] ) );
+			PIXEL_OUT (0);
+			PIXEL_OUT (1);
+
+			SNES_NTSC_COLOR_IN( 1, SNES_NTSC_ADJ_IN( line_in [1] ) );
+			PIXEL_OUT (2);
+			PIXEL_OUT (3);
+
+			SNES_NTSC_COLOR_IN( 2, SNES_NTSC_ADJ_IN( line_in [2] ) );
+			PIXEL_OUT (4);
+			PIXEL_OUT (5);
+			PIXEL_OUT (6);
+
+			line_in  += 3;
+			line_outa += 7;
+			line_outb += 7;
+		}
+
+		/* finish final pixels */
+		SNES_NTSC_COLOR_IN( 0, snes_ntsc_black );
+		PIXEL_OUT (0);
+		PIXEL_OUT (1);
+
+		SNES_NTSC_COLOR_IN( 1, snes_ntsc_black );
+		PIXEL_OUT (2);
+		PIXEL_OUT (3);
+
+		SNES_NTSC_COLOR_IN( 2, snes_ntsc_black );
+		PIXEL_OUT (4);
+		PIXEL_OUT (5);
+		PIXEL_OUT (6);
+
+		burst_phase = (burst_phase + 1) % snes_ntsc_burst_count;
+		input += in_row_width;
+		rgb_out = (char*) rgb_out + 2 * out_pitch;
+	}
+}
+
+#define PIXEL_OUT_HIRES( x ) \
+	SNES_NTSC_HIRES_OUT( x, value, SNES_NTSC_OUT_DEPTH ); \
+	line_outa[x] = value; \
+	line_outb[x] = value - (value >> snes_ntsc_scanline_offset & snes_ntsc_scanline_mask);
+
+void snes_ntsc_blit_hires_scanlines( snes_ntsc_t const* ntsc, SNES_NTSC_IN_T const* input, long in_row_width,
+		int burst_phase, int in_width, int in_height, void* rgb_out, long out_pitch )
+{
+	int chunk_count = (in_width - 2) / (snes_ntsc_in_chunk * 2);
+	unsigned value;
+	for ( ; in_height; --in_height )
+	{
+		SNES_NTSC_IN_T const* line_in = input;
+		SNES_NTSC_HIRES_ROW( ntsc, burst_phase,
+				snes_ntsc_black, snes_ntsc_black, snes_ntsc_black,
+				SNES_NTSC_ADJ_IN( line_in [0] ),
+				SNES_NTSC_ADJ_IN( line_in [1] ) );
+		snes_ntsc_out_t* restrict line_outa = (snes_ntsc_out_t*) rgb_out;
+		snes_ntsc_out_t* restrict line_outb = (snes_ntsc_out_t*) ((char *) line_outa + out_pitch);
+		int n;
+		line_in += 2;
+
+		for ( n = chunk_count; n; --n )
+		{
+			/* twice as many input pixels per chunk */
+			SNES_NTSC_COLOR_IN( 0, SNES_NTSC_ADJ_IN( line_in [0] ) );
+			PIXEL_OUT_HIRES (0);
+
+			SNES_NTSC_COLOR_IN( 1, SNES_NTSC_ADJ_IN( line_in [1] ) );
+			PIXEL_OUT_HIRES (1);
+
+			SNES_NTSC_COLOR_IN( 2, SNES_NTSC_ADJ_IN( line_in [2] ) );
+			PIXEL_OUT_HIRES (2);
+
+			SNES_NTSC_COLOR_IN( 3, SNES_NTSC_ADJ_IN( line_in [3] ) );
+			PIXEL_OUT_HIRES (3);
+
+			SNES_NTSC_COLOR_IN( 4, SNES_NTSC_ADJ_IN( line_in [4] ) );
+			PIXEL_OUT_HIRES (4);
+
+			SNES_NTSC_COLOR_IN( 5, SNES_NTSC_ADJ_IN( line_in [5] ) );
+			PIXEL_OUT_HIRES (5);
+			PIXEL_OUT_HIRES (6);
+
+			line_in  += 6;
+			line_outa += 7;
+			line_outb += 7;
+		}
+
+		SNES_NTSC_COLOR_IN( 0, snes_ntsc_black );
+		PIXEL_OUT_HIRES (0);
+
+		SNES_NTSC_COLOR_IN( 1, snes_ntsc_black );
+		PIXEL_OUT_HIRES (1);
+
+		SNES_NTSC_COLOR_IN( 2, snes_ntsc_black );
+		PIXEL_OUT_HIRES (2);
+
+		SNES_NTSC_COLOR_IN( 3, snes_ntsc_black );
+		PIXEL_OUT_HIRES (3);
+
+		SNES_NTSC_COLOR_IN( 4, snes_ntsc_black );
+		PIXEL_OUT_HIRES (4);
+
+		SNES_NTSC_COLOR_IN( 5, snes_ntsc_black );
+		PIXEL_OUT_HIRES (5);
+		PIXEL_OUT_HIRES (6);
+
+		burst_phase = (burst_phase + 1) % snes_ntsc_burst_count;
+		input += in_row_width;
+		rgb_out = (char*) rgb_out + out_pitch * 2;
 	}
 }
 

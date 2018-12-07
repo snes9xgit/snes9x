@@ -1,194 +1,8 @@
-/***********************************************************************************
-  Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
-
-  (c) Copyright 1996 - 2002  Gary Henderson (gary.henderson@ntlworld.com),
-                             Jerremy Koot (jkoot@snes9x.com)
-
-  (c) Copyright 2002 - 2004  Matthew Kendora
-
-  (c) Copyright 2002 - 2005  Peter Bortas (peter@bortas.org)
-
-  (c) Copyright 2004 - 2005  Joel Yliluoma (http://iki.fi/bisqwit/)
-
-  (c) Copyright 2001 - 2006  John Weidman (jweidman@slip.net)
-
-  (c) Copyright 2002 - 2006  funkyass (funkyass@spam.shaw.ca),
-                             Kris Bleakley (codeviolation@hotmail.com)
-
-  (c) Copyright 2002 - 2010  Brad Jorsch (anomie@users.sourceforge.net),
-                             Nach (n-a-c-h@users.sourceforge.net),
-
-  (c) Copyright 2002 - 2011  zones (kasumitokoduck@yahoo.com)
-
-  (c) Copyright 2006 - 2007  nitsuja
-
-  (c) Copyright 2009 - 2018  BearOso,
-                             OV2
-
-  (c) Copyright 2017         qwertymodo
-
-  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
-                             Daniel De Matteis
-                             (Under no circumstances will commercial rights be given)
-
-
-  BS-X C emulator code
-  (c) Copyright 2005 - 2006  Dreamer Nom,
-                             zones
-
-  C4 x86 assembler and some C emulation code
-  (c) Copyright 2000 - 2003  _Demo_ (_demo_@zsnes.com),
-                             Nach,
-                             zsKnight (zsknight@zsnes.com)
-
-  C4 C++ code
-  (c) Copyright 2003 - 2006  Brad Jorsch,
-                             Nach
-
-  DSP-1 emulator code
-  (c) Copyright 1998 - 2006  _Demo_,
-                             Andreas Naive (andreasnaive@gmail.com),
-                             Gary Henderson,
-                             Ivar (ivar@snes9x.com),
-                             John Weidman,
-                             Kris Bleakley,
-                             Matthew Kendora,
-                             Nach,
-                             neviksti (neviksti@hotmail.com)
-
-  DSP-2 emulator code
-  (c) Copyright 2003         John Weidman,
-                             Kris Bleakley,
-                             Lord Nightmare (lord_nightmare@users.sourceforge.net),
-                             Matthew Kendora,
-                             neviksti
-
-  DSP-3 emulator code
-  (c) Copyright 2003 - 2006  John Weidman,
-                             Kris Bleakley,
-                             Lancer,
-                             z80 gaiden
-
-  DSP-4 emulator code
-  (c) Copyright 2004 - 2006  Dreamer Nom,
-                             John Weidman,
-                             Kris Bleakley,
-                             Nach,
-                             z80 gaiden
-
-  OBC1 emulator code
-  (c) Copyright 2001 - 2004  zsKnight,
-                             pagefault (pagefault@zsnes.com),
-                             Kris Bleakley
-                             Ported from x86 assembler to C by sanmaiwashi
-
-  SPC7110 and RTC C++ emulator code used in 1.39-1.51
-  (c) Copyright 2002         Matthew Kendora with research by
-                             zsKnight,
-                             John Weidman,
-                             Dark Force
-
-  SPC7110 and RTC C++ emulator code used in 1.52+
-  (c) Copyright 2009         byuu,
-                             neviksti
-
-  S-DD1 C emulator code
-  (c) Copyright 2003         Brad Jorsch with research by
-                             Andreas Naive,
-                             John Weidman
-
-  S-RTC C emulator code
-  (c) Copyright 2001 - 2006  byuu,
-                             John Weidman
-
-  ST010 C++ emulator code
-  (c) Copyright 2003         Feather,
-                             John Weidman,
-                             Kris Bleakley,
-                             Matthew Kendora
-
-  Super FX x86 assembler emulator code
-  (c) Copyright 1998 - 2003  _Demo_,
-                             pagefault,
-                             zsKnight
-
-  Super FX C emulator code
-  (c) Copyright 1997 - 1999  Ivar,
-                             Gary Henderson,
-                             John Weidman
-
-  Sound emulator code used in 1.5-1.51
-  (c) Copyright 1998 - 2003  Brad Martin
-  (c) Copyright 1998 - 2006  Charles Bilyue'
-
-  Sound emulator code used in 1.52+
-  (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
-
-  S-SMP emulator code used in 1.54+
-  (c) Copyright 2016         byuu
-
-  SH assembler code partly based on x86 assembler code
-  (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
-
-  2xSaI filter
-  (c) Copyright 1999 - 2001  Derek Liauw Kie Fa
-
-  HQ2x, HQ3x, HQ4x filters
-  (c) Copyright 2003         Maxim Stepin (maxim@hiend3d.com)
-
-  NTSC filter
-  (c) Copyright 2006 - 2007  Shay Green
-
-  GTK+ GUI code
-  (c) Copyright 2004 - 2018  BearOso
-
-  Win32 GUI code
-  (c) Copyright 2003 - 2006  blip,
-                             funkyass,
-                             Matthew Kendora,
-                             Nach,
-                             nitsuja
-  (c) Copyright 2009 - 2018  OV2
-
-  Mac OS GUI code
-  (c) Copyright 1998 - 2001  John Stiles
-  (c) Copyright 2001 - 2011  zones
-
-  Libretro port
-  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
-                             Daniel De Matteis
-                             (Under no circumstances will commercial rights be given)
-
-
-  Specific ports contains the works of other authors. See headers in
-  individual files.
-
-
-  Snes9x homepage: http://www.snes9x.com/
-
-  Permission to use, copy, modify and/or distribute Snes9x in both binary
-  and source form, for non-commercial purposes, is hereby granted without
-  fee, providing that this license information and copyright notice appear
-  with all copies and any derived work.
-
-  This software is provided 'as-is', without any express or implied
-  warranty. In no event shall the authors be held liable for any damages
-  arising from the use of this software or it's derivatives.
-
-  Snes9x is freeware for PERSONAL USE only. Commercial users should
-  seek permission of the copyright holders first. Commercial use includes,
-  but is not limited to, charging money for Snes9x or software derived from
-  Snes9x, including Snes9x or derivatives in commercial game bundles, and/or
-  using Snes9x as a promotion for your commercial product.
-
-  The copyright holders request that bug fixes and improvements to the code
-  should be forwarded to them so everyone can benefit from the modifications
-  in future versions.
-
-  Super NES and Super Nintendo Entertainment System are trademarks of
-  Nintendo Co., Limited and its subsidiary companies.
- ***********************************************************************************/
-
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
 
 // This file includes itself multiple times.
 // The other option would be to have 4 files, where A includes B, and B includes C 3 times, and C includes D 5 times.
@@ -210,11 +24,11 @@ static uint8	hrbit_even[256];
 
 void S9xInitTileRenderer (void)
 {
-	register int	i;
+	int	i;
 
 	for (i = 0; i < 16; i++)
 	{
-		register uint32	b = 0;
+		uint32	b = 0;
 
 	#ifdef LSB_FIRST
 		if (i & 8)
@@ -242,8 +56,8 @@ void S9xInitTileRenderer (void)
 
 	for (i = 0; i < 256; i++)
 	{
-		register uint8	m = 0;
-		register uint8	s = 0;
+		uint8	m = 0;
+		uint8	s = 0;
 
 		if (i & 0x80)
 			s |= 8;
@@ -279,7 +93,7 @@ void S9xInitTileRenderer (void)
 
 static uint8 ConvertTile2 (uint8 *pCache, uint32 TileAddr, uint32)
 {
-	register uint8	*tp      = &Memory.VRAM[TileAddr];
+	uint8	*tp      = &Memory.VRAM[TileAddr];
 	uint32			*p       = (uint32 *) pCache;
 	uint32			non_zero = 0;
 	uint8			line;
@@ -288,7 +102,7 @@ static uint8 ConvertTile2 (uint8 *pCache, uint32 TileAddr, uint32)
 	{
 		uint32			p1 = 0;
 		uint32			p2 = 0;
-		register uint8	pix;
+		uint8	pix;
 
 		DOBIT( 0, 0);
 		DOBIT( 1, 1);
@@ -302,7 +116,7 @@ static uint8 ConvertTile2 (uint8 *pCache, uint32 TileAddr, uint32)
 
 static uint8 ConvertTile4 (uint8 *pCache, uint32 TileAddr, uint32)
 {
-	register uint8	*tp      = &Memory.VRAM[TileAddr];
+	uint8	*tp      = &Memory.VRAM[TileAddr];
 	uint32			*p       = (uint32 *) pCache;
 	uint32			non_zero = 0;
 	uint8			line;
@@ -311,7 +125,7 @@ static uint8 ConvertTile4 (uint8 *pCache, uint32 TileAddr, uint32)
 	{
 		uint32			p1 = 0;
 		uint32			p2 = 0;
-		register uint8	pix;
+		uint8	pix;
 
 		DOBIT( 0, 0);
 		DOBIT( 1, 1);
@@ -327,7 +141,7 @@ static uint8 ConvertTile4 (uint8 *pCache, uint32 TileAddr, uint32)
 
 static uint8 ConvertTile8 (uint8 *pCache, uint32 TileAddr, uint32)
 {
-	register uint8	*tp      = &Memory.VRAM[TileAddr];
+	uint8	*tp      = &Memory.VRAM[TileAddr];
 	uint32			*p       = (uint32 *) pCache;
 	uint32			non_zero = 0;
 	uint8			line;
@@ -336,7 +150,7 @@ static uint8 ConvertTile8 (uint8 *pCache, uint32 TileAddr, uint32)
 	{
 		uint32			p1 = 0;
 		uint32			p2 = 0;
-		register uint8	pix;
+		uint8	pix;
 
 		DOBIT( 0, 0);
 		DOBIT( 1, 1);
@@ -364,7 +178,7 @@ static uint8 ConvertTile8 (uint8 *pCache, uint32 TileAddr, uint32)
 
 static uint8 ConvertTile2h_odd (uint8 *pCache, uint32 TileAddr, uint32 Tile)
 {
-	register uint8	*tp1     = &Memory.VRAM[TileAddr], *tp2;
+	uint8	*tp1     = &Memory.VRAM[TileAddr], *tp2;
 	uint32			*p       = (uint32 *) pCache;
 	uint32			non_zero = 0;
 	uint8			line;
@@ -378,7 +192,7 @@ static uint8 ConvertTile2h_odd (uint8 *pCache, uint32 TileAddr, uint32 Tile)
 	{
 		uint32			p1 = 0;
 		uint32			p2 = 0;
-		register uint8	pix;
+		uint8	pix;
 
 		DOBIT( 0, 0);
 		DOBIT( 1, 1);
@@ -392,7 +206,7 @@ static uint8 ConvertTile2h_odd (uint8 *pCache, uint32 TileAddr, uint32 Tile)
 
 static uint8 ConvertTile4h_odd (uint8 *pCache, uint32 TileAddr, uint32 Tile)
 {
-	register uint8	*tp1     = &Memory.VRAM[TileAddr], *tp2;
+	uint8	*tp1     = &Memory.VRAM[TileAddr], *tp2;
 	uint32			*p       = (uint32 *) pCache;
 	uint32			non_zero = 0;
 	uint8			line;
@@ -406,7 +220,7 @@ static uint8 ConvertTile4h_odd (uint8 *pCache, uint32 TileAddr, uint32 Tile)
 	{
 		uint32			p1 = 0;
 		uint32			p2 = 0;
-		register uint8	pix;
+		uint8	pix;
 
 		DOBIT( 0, 0);
 		DOBIT( 1, 1);
@@ -430,7 +244,7 @@ static uint8 ConvertTile4h_odd (uint8 *pCache, uint32 TileAddr, uint32 Tile)
 
 static uint8 ConvertTile2h_even (uint8 *pCache, uint32 TileAddr, uint32 Tile)
 {
-	register uint8	*tp1     = &Memory.VRAM[TileAddr], *tp2;
+	uint8	*tp1     = &Memory.VRAM[TileAddr], *tp2;
 	uint32			*p       = (uint32 *) pCache;
 	uint32			non_zero = 0;
 	uint8			line;
@@ -444,7 +258,7 @@ static uint8 ConvertTile2h_even (uint8 *pCache, uint32 TileAddr, uint32 Tile)
 	{
 		uint32			p1 = 0;
 		uint32			p2 = 0;
-		register uint8	pix;
+		uint8	pix;
 
 		DOBIT( 0, 0);
 		DOBIT( 1, 1);
@@ -458,7 +272,7 @@ static uint8 ConvertTile2h_even (uint8 *pCache, uint32 TileAddr, uint32 Tile)
 
 static uint8 ConvertTile4h_even (uint8 *pCache, uint32 TileAddr, uint32 Tile)
 {
-	register uint8	*tp1     = &Memory.VRAM[TileAddr], *tp2;
+	uint8	*tp1     = &Memory.VRAM[TileAddr], *tp2;
 	uint32			*p       = (uint32 *) pCache;
 	uint32			non_zero = 0;
 	uint8			line;
@@ -472,7 +286,7 @@ static uint8 ConvertTile4h_even (uint8 *pCache, uint32 TileAddr, uint32 Tile)
 	{
 		uint32			p1 = 0;
 		uint32			p2 = 0;
-		register uint8	pix;
+		uint8	pix;
 
 		DOBIT( 0, 0);
 		DOBIT( 1, 1);
@@ -750,8 +564,8 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 
 #define DRAW_TILE() \
 	uint8			*pCache; \
-	register int32	l; \
-	register uint8	*bp, Pix; \
+	int32	l; \
+	uint8	*bp, Pix; \
 	\
 	GET_CACHED_TILE(); \
 	if (IS_BLANK_TILE()) \
@@ -845,8 +659,8 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 
 #define DRAW_TILE() \
 	uint8			*pCache; \
-	register int32	l; \
-	register uint8	*bp, Pix, w; \
+	int32	l; \
+	uint8	*bp, Pix, w; \
 	\
 	GET_CACHED_TILE(); \
 	if (IS_BLANK_TILE()) \
@@ -957,8 +771,8 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 
 #define DRAW_TILE() \
 	uint8			*pCache; \
-	register int32	l, w; \
-	register uint8	Pix; \
+	int32	l, w; \
+	uint8	Pix; \
 	\
 	GET_CACHED_TILE(); \
 	if (IS_BLANK_TILE()) \
@@ -1007,7 +821,7 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 #define Pix				0
 
 #define DRAW_TILE() \
-	register uint32	l, x; \
+	uint32	l, x; \
 	\
 	GFX.RealScreenColors = IPPU.ScreenColors; \
 	GFX.ScreenColors = GFX.ClipColors ? BlackColourMap : GFX.RealScreenColors; \

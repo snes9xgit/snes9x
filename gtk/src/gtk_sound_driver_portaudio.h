@@ -1,3 +1,9 @@
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
 #ifndef __GTK_SOUND_DRIVER_PORTAUDIO_H
 #define __GTK_SOUND_DRIVER_PORTAUDIO_H
 
@@ -10,13 +16,13 @@
 class S9xPortAudioSoundDriver : public S9xSoundDriver
 {
     public:
-        S9xPortAudioSoundDriver (void);
-        void init (void);
-        void terminate (void);
-        bool8 open_device (void);
-        void start (void);
-        void stop (void);
-        void samples_available (void);
+        S9xPortAudioSoundDriver ();
+        void init ();
+        void terminate ();
+        bool8 open_device ();
+        void start ();
+        void stop ();
+        void samples_available ();
 
     private:
         PaStream *audio_stream;

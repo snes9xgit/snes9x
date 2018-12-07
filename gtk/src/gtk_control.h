@@ -1,42 +1,60 @@
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
 #ifndef __GTK_CONTROL_H
 #define __GTK_CONTROL_H
 
 #include <queue>
 
 #include "gtk_binding.h"
-#ifdef USE_JOYSTICK
 #include "SDL.h"
-#endif
 
-#ifndef NUM_JOYPADS
-#define NUM_JOYPADS 10
-#endif
+const int NUM_JOYPADS = 10;
 
-#define JOY_MODE_GLOBAL     0
-#define JOY_MODE_INDIVIDUAL 1
-#define JOY_MODE_CALIBRATE  2
+enum
+{
+    JOY_MODE_GLOBAL     = 0,
+    JOY_MODE_INDIVIDUAL = 1,
+    JOY_MODE_CALIBRATE  = 2
+};
 
-#define JOY_RELEASED                0
-#define JOY_PRESSED                 1
+enum
+{
+    JOY_RELEASED = 0,
+    JOY_PRESSED  = 1
+};
 
-#define PORT_COMMAND_FULLSCREEN 1
-#define PORT_COMMAND_SAVE_SPC   2
-#define PORT_OPEN_ROM           3
-#define PORT_PAUSE              4
-#define PORT_SEEK_TO_FRAME      5
-#define PORT_QUIT               6
-#define PORT_SWAP_CONTROLLERS   7
-#define PORT_REWIND             8
-#define PORT_QUICKLOAD0         9
-#define PORT_QUICKLOAD1         10
-#define PORT_QUICKLOAD2         11
-#define PORT_QUICKLOAD3         12
-#define PORT_QUICKLOAD4         13
-#define PORT_QUICKLOAD5         14
-#define PORT_QUICKLOAD6         15
-#define PORT_QUICKLOAD7         16
-#define PORT_QUICKLOAD8         17
-#define PORT_QUICKLOAD9         18
+enum
+{
+    PORT_COMMAND_FULLSCREEN = 1,
+    PORT_COMMAND_SAVE_SPC   = 2,
+    PORT_OPEN_ROM           = 3,
+    PORT_PAUSE              = 4,
+    PORT_SEEK_TO_FRAME      = 5,
+    PORT_QUIT               = 6,
+    PORT_SWAP_CONTROLLERS   = 7,
+    PORT_REWIND             = 8,
+    PORT_QUICKLOAD0         = 9,
+    PORT_QUICKLOAD1         = 10,
+    PORT_QUICKLOAD2         = 11,
+    PORT_QUICKLOAD3         = 12,
+    PORT_QUICKLOAD4         = 13,
+    PORT_QUICKLOAD5         = 14,
+    PORT_QUICKLOAD6         = 15,
+    PORT_QUICKLOAD7         = 16,
+    PORT_QUICKLOAD8         = 17,
+    PORT_QUICKLOAD9         = 18,
+    PORT_SAVESLOT           = 19,
+    PORT_LOADSLOT           = 20,
+    PORT_INCREMENTSAVESLOT  = 21,
+    PORT_DECREMENTLOADSLOT  = 22,
+    PORT_INCREMENTSLOT      = 23,
+    PORT_DECREMENTSLOT      = 24,
+    PORT_GRABMOUSE          = 25
+};
 
 typedef struct BindingLink
 {
@@ -47,18 +65,16 @@ typedef struct BindingLink
 
 extern const BindingLink b_links[];
 extern const int b_breaks[];
-#define NUM_JOYPAD_LINKS 24
-#define NUM_EMU_LINKS    55
+const int NUM_JOYPAD_LINKS = 24;
+const int NUM_EMU_LINKS    = 62;
 
 typedef struct JoypadBinding
 {
     Binding data[NUM_JOYPAD_LINKS]; /* Avoid packing issues */
 } JoypadBinding;
 
-#ifdef USE_JOYSTICK
-
-bool S9xGrabJoysticks (void);
-void S9xReleaseJoysticks (void);
+bool S9xGrabJoysticks ();
+void S9xReleaseJoysticks ();
 
 typedef struct JoyEvent
 {
@@ -78,11 +94,11 @@ class JoyDevice
 {
     public:
         JoyDevice (unsigned int device_num);
-        ~JoyDevice (void);
+        ~JoyDevice ();
         int get_event (JoyEvent *event);
-        void flush (void);
+        void flush ();
         void handle_event (SDL_Event *event);
-        void register_centers (void);
+        void register_centers ();
 
         SDL_Joystick         *filedes;
         Calibration          *calibration;
@@ -97,14 +113,13 @@ class JoyDevice
 
 
     private:
-        void poll_events (void);
+        void poll_events ();
         void add_event (unsigned int parameter, unsigned int state);
 
 };
-#endif
 
-void S9xDeinitInputDevices (void);
+void S9xDeinitInputDevices ();
 Binding S9xGetBindingByName (const char *name);
-bool S9xIsMousePluggedIn (void);
+bool S9xIsMousePluggedIn ();
 
 #endif /* __GTK_CONTROL_H*/

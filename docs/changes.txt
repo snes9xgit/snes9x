@@ -1,3 +1,79 @@
+Snes9x 1.57
+- Various seta010 emulation fixes.                          (kps501)
+- Pass blargg OAM tests with proper write behavior.         (BearOso)
+- Prevent interlacing in BG modes 1-4.                      (BearOso)
+- Corrected IRQ and NMI emulation to allow more games to
+  work properly.                                            (BearOso, OV2)
+- Use 1 instead of 0 for initial PPU left window coordinate,
+  fixing garbage in left column of pixels in some games.    (turhope)
+- Added interpolation option hack for DSP.                  (kps501, mudlord,
+                                                            BearOso)
+- Added sprite-tile limit disabling hack.                   (Tatsuya79)
+- Added libretro's fast snapshot support.                   (OV2)
+- Add overclocking hack that increases IPC                  (retrotalker)
+- Fix controller initialization issues preventing some games
+  from using multitap.                                      (retrotalker)
+- Proper write behavior for register $2122.                 (BearOso)
+- Fix transparency issue with Star Fox asteroids.           (redguy, BearOso)
+- Increase SuperFX speed to more accurately represent
+  hardware, and fix bugs with Stunt Race FX and Yoshi's
+  Island.                                                   (BearOso)
+- Resize viewport on state load.                            (retrotalker)
+- Many fixes to variables not saved or saved incorrectly in
+  save states.                                              (Dwedit)
+- Pass decimal tests in blargg's math test ROMs.            (BearOso)
+- Remove memory leak in loadzip.cpp.                        (bonimy)
+- Fix screen size not reverting when overscan is turned on
+  then off mid-frame.                                       (BearOso)
+
+ Win32:
+- Include DirectDraw libraries and compile with DirectDraw
+  support by default.                                       (OV2)
+- Add a link to DirectX installer in error message displayed
+  when the needed DirectX libraries can't be found.         (OV2)
+- Save window position when exiting via menu                (OV2)
+- Make custom ROM dialog resizable.                         (OV2)
+- Fix various cheat dialog issues.                          (OV2)
+- Remove d3d9x DLL dependency by using DirectXMath.         (OV2)
+- Remove rarely-used HLSL shader option.                    (OV2)
+- Add InitialSnapshotFilename support.                      (BearOso)
+- Disable BG toggle keys by default.                        (BearOso)
+- Proper centering and cropping for overscanned and
+  regular height modes.                                     (OV2)
+- Remove ability to disable the SNES's hires modes.         (OV2)
+- Added a Super Famicom-style icon resource to the EXE.     (BearOso)
+
+ MacOS:
+- Partial support for new cheats format.                    (OV2)
+- Fix MacOS build.                                          (marconett)
+- Set default for new config options.                       (tmkk)
+- Fix compilation on Mac OS Mojave                          (meepingsnesroms)
+
+ libretro:
+- Massive update of libretro code to latest downstream.      (fr500, kps501,
+                                                             OV2, twinaphex,
+                                                             BearOso,
+                                                             hiddenasbestos,
+                                                             m4xw, kxyxz,
+                                                             claudiuslollarius)
+
+ GTK+:
+- Use datarootdir instead of datadir on install.            (orbea)
+- Fix --with-system-zip configure flag.                     (BearOso)
+- Draw interlaced fields when ready.                        (BearOso)
+- Initial Wayland support.                                  (remicalixte)
+- Allow XV only in X11.                                     (BearOso)
+- Add Wayland support via EGL.                              (BearOso)
+- Significant rewrite of OpenGL driver to support newer
+  standards. This won't work on cards < OpenGL ~1.5.        (BearOso)
+- Changed frameskip option to speed throttling option with
+  simpler, but more relevant methods of speed control.      (BearOso)
+- Add support for relative-style save slots.                (ichigo-0, BearOso)
+- Remove XML config file format in favor of one more like
+  Win32. Make joystick bindings and more options human-
+  readable and editable.                                    (BearOso)
+- Try more device nodes when initializing OSS.              (BearOso)
+
 Snes9x 1.56.2
 - Fixed IRQ corner case that caused Umihara Kawase's water
   to cover the whole screen.                                (BearOso)

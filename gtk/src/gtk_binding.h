@@ -1,11 +1,17 @@
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
 #ifndef __GTK_BINDING_H
 #define __GTK_BINDING_H
 
-#include <gdk/gdk.h>
+#include "gtk_2_3_compat.h"
 
 #define AXIS_POS                    1
 #define AXIS_NEG                    0
-#define JOY_AXIS(axis, button)      (512 + ((axis) * 2 + (button)))
+#define JOY_AXIS(axis, direction)   (512 + ((axis) * 2 + (direction)))
 #define JOY_AXIS_UNMASK(bin)        ((((bin) & 0x0000ffff) - 512) / 2)
 #define JOY_DIRECTION_UNMASK(bin)   ((((bin) & 0x0000ffff) - 512) % 2)
 #define BINDING_KEY                 0x10000000
@@ -33,22 +39,23 @@ class Binding
         Binding (const Binding &binding);
         Binding (GdkEventKey *event);
         Binding (unsigned int);
-        Binding (void);
-        void to_string (char *str);
-        unsigned int hex (void);   
-        unsigned int base_hex (void);
+        Binding ();
+        Binding (const char *str);
+        void to_string (char *str, bool translate = true);
+        unsigned int hex ();
+        unsigned int base_hex ();
         bool matches (Binding &binding);
-        void clear (void);
-        bool is_joy (void);
-        bool is_key (void);
-        bool is_mouse (void);
-        bool is_positive (void);
-        bool is_negative (void);
-        unsigned int get_key (void);
-        unsigned int get_device (void);
-        unsigned int get_threshold (void);
-        unsigned int get_axis (void);
-        GdkModifierType get_gdk_modifiers (void);
+        void clear ();
+        bool is_joy ();
+        bool is_key ();
+        bool is_mouse ();
+        bool is_positive ();
+        bool is_negative ();
+        unsigned int get_key ();
+        unsigned int get_device ();
+        unsigned int get_threshold ();
+        unsigned int get_axis ();
+        GdkModifierType get_gdk_modifiers ();
         
     private:
         unsigned int value;

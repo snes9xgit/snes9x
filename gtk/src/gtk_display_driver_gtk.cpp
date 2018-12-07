@@ -1,5 +1,10 @@
-#include <gtk/gtk.h>
-#include <gdk/gdk.h>
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
+#include "gtk_2_3_compat.h"
 #include <cairo.h>
 #include "gtk_display.h"
 #include "gtk_display_driver_gtk.h"
@@ -11,25 +16,20 @@ S9xGTKDisplayDriver::S9xGTKDisplayDriver (Snes9xWindow *window,
     this->window = window;
     this->config = config;
     this->drawing_area = GTK_WIDGET (window->drawing_area);
-    this->pixbuf = NULL;
-
-    return;
 }
 
 void
 S9xGTKDisplayDriver::update (int width, int height, int yoffset)
 {
     int           x, y, w, h;
-    int           c_width, c_height, final_pitch;
+    int           final_pitch;
     uint8         *final_buffer;
     GtkAllocation allocation;
 
-    gtk_widget_get_allocation (drawing_area, &allocation);
-    c_width = allocation.width;
-    c_height = allocation.height;
-
     if (width <= 0)
         return;
+
+    gtk_widget_get_allocation (drawing_area, &allocation);
 
     if (config->scale_method > 0)
     {
@@ -57,12 +57,10 @@ S9xGTKDisplayDriver::update (int width, int height, int yoffset)
         final_buffer += (final_pitch * yoffset);
     }
 
-    x = width; y = height; w = c_width; h = c_height;
+    x = width; y = height; w = allocation.width; h = allocation.height;
     S9xApplyAspect (x, y, w, h);
 
     output (final_buffer, final_pitch, x, y, width, height, w, h);
-
-    return;
 }
 
 void
@@ -75,26 +73,6 @@ S9xGTKDisplayDriver::output (void *src,
                              int  dst_width,
                              int  dst_height)
 {
-    if (width != gdk_buffer_width || height != gdk_buffer_height)
-    {
-        gdk_buffer_width = width;
-        gdk_buffer_height = height;
-
-        g_object_unref (pixbuf);
-
-        padded_buffer[2] = realloc (padded_buffer[2],
-                                    gdk_buffer_width * gdk_buffer_height * 3);
-        pixbuf = gdk_pixbuf_new_from_data ((guchar *) padded_buffer[2],
-                                           GDK_COLORSPACE_RGB,
-                                           FALSE,
-                                           8,
-                                           gdk_buffer_width,
-                                           gdk_buffer_height,
-                                           gdk_buffer_width * 3,
-                                           NULL,
-                                           NULL);
-    }
-
     if (last_known_width != dst_width || last_known_height != dst_height)
     {
         clear ();
@@ -103,17 +81,13 @@ S9xGTKDisplayDriver::output (void *src,
         last_known_height = dst_height;
     }
 
-    S9xConvert (src,
-                padded_buffer[2],
-                src_pitch,
-                gdk_buffer_width * 3,
-                width,
-                height,
-                24);
-
     cairo_t *cr = window->get_cairo ();
 
-    gdk_cairo_set_source_pixbuf (cr, pixbuf, x, y);
+    cairo_surface_t *surface;
+
+    surface = cairo_image_surface_create_for_data ((unsigned char *) src, CAIRO_FORMAT_RGB16_565, width, height, src_pitch);
+
+    cairo_set_source_surface (cr, surface, 0, 0);
 
     if (width != dst_width || height != dst_height)
     {
@@ -135,39 +109,21 @@ S9xGTKDisplayDriver::output (void *src,
     cairo_rectangle (cr, x, y, dst_width, dst_height);
     cairo_fill (cr);
 
+    cairo_surface_finish (surface);
+    cairo_surface_destroy (surface);
+
     window->release_cairo ();
     window->set_mouseable_area (x, y, width, height);
-
-    return;
 }
 
 int
-S9xGTKDisplayDriver::init (void)
+S9xGTKDisplayDriver::init ()
 {
-    GtkAllocation allocation;
-
     buffer[0] = malloc (image_padded_size);
     buffer[1] = malloc (scaled_padded_size);
 
     padded_buffer[0] = (void *) (((uint8 *) buffer[0]) + image_padded_offset);
     padded_buffer[1] = (void *) (((uint8 *) buffer[1]) + scaled_padded_offset);
-
-    gtk_widget_get_allocation (drawing_area, &allocation);
-    gdk_buffer_width = allocation.width;
-    gdk_buffer_height = allocation.height;
-
-    padded_buffer[2] = malloc (gdk_buffer_width * gdk_buffer_height * 3);
-    pixbuf = gdk_pixbuf_new_from_data ((guchar *) padded_buffer[2],
-                                       GDK_COLORSPACE_RGB,
-                                       FALSE,
-                                       8,
-                                       gdk_buffer_width,
-                                       gdk_buffer_height,
-                                       gdk_buffer_width * 3,
-                                       NULL,
-                                       NULL);
-
-    S9xSetEndianess (ENDIAN_SWAPPED);
 
     memset (buffer[0], 0, image_padded_size);
     memset (buffer[1], 0, scaled_padded_size);
@@ -179,22 +135,17 @@ S9xGTKDisplayDriver::init (void)
 }
 
 void
-S9xGTKDisplayDriver::deinit (void)
+S9xGTKDisplayDriver::deinit ()
 {
     padded_buffer[0] = NULL;
     padded_buffer[1] = NULL;
 
     free (buffer[0]);
     free (buffer[1]);
-
-    g_object_unref (pixbuf);
-    free (padded_buffer[2]);
-
-    return;
 }
 
 void
-S9xGTKDisplayDriver::clear (void)
+S9xGTKDisplayDriver::clear ()
 {
     int  x, y, w, h;
     int  width, height;
@@ -243,26 +194,22 @@ S9xGTKDisplayDriver::clear (void)
     cairo_fill (cr);
 
     window->release_cairo ();
-
-    return;
 }
 
 void
 S9xGTKDisplayDriver::refresh (int width, int height)
 {
     clear ();
-
-    return;
 }
 
 uint16 *
-S9xGTKDisplayDriver::get_next_buffer (void)
+S9xGTKDisplayDriver::get_next_buffer ()
 {
     return (uint16 *) padded_buffer[0];
 }
 
 uint16 *
-S9xGTKDisplayDriver::get_current_buffer (void)
+S9xGTKDisplayDriver::get_current_buffer ()
 {
     return (uint16 *) padded_buffer[0];
 }
@@ -271,21 +218,11 @@ void
 S9xGTKDisplayDriver::push_buffer (uint16 *src)
 {
     memmove (GFX.Screen, src, image_size);
-
-    return;
 }
 
 void
-S9xGTKDisplayDriver::clear_buffers (void)
+S9xGTKDisplayDriver::clear_buffers ()
 {
     memset (buffer[0], 0, image_padded_size);
     memset (buffer[1], 0, scaled_padded_size);
-
-    return;
-}
-
-void
-S9xGTKDisplayDriver::reconfigure (int width, int height)
-{
-    return;
 }

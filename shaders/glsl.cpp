@@ -1,10 +1,16 @@
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
 #include "glsl.h"
 #include "../../conffile.h"
 #include "shader_helpers.h"
 #include "shader_platform.h"
 
-static const GLfloat tex_coords[16] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-                                        0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f };
+static const GLfloat tex_coords[16] = { 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+                                        0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f };
 static const GLfloat mvp_ortho[16] = { 2.0f,  0.0f,  0.0f,  0.0f,
                                           0.0f,  2.0f,  0.0f,  0.0f,
                                           0.0f,  0.0f, -1.0f,  0.0f,
@@ -558,6 +564,10 @@ void GLSLShader::render(GLuint &orig,
                         int viewport_width, int viewport_height,
                         GLSLViewportCallback vpcallback)
 {
+    GLint saved_framebuffer;
+
+    glGetIntegerv (GL_FRAMEBUFFER_BINDING, &saved_framebuffer);
+
     frame_count++;
 
     // set up our dummy pass for easier loop code
@@ -651,7 +661,7 @@ void GLSLShader::render(GLuint &orig,
             int out_height = 0;
 
             // output to the screen
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            glBindFramebuffer(GL_FRAMEBUFFER, saved_framebuffer);
             vpcallback (pass[i].width, pass[i].height,
                         viewport_x, viewport_y,
                         viewport_width, viewport_height,
@@ -681,14 +691,12 @@ void GLSLShader::render(GLuint &orig,
                         GL_TEXTURE_WRAP_T,
                         pass[i].wrap_mode);
 
-        glTexCoordPointer(2, GL_FLOAT, 0, tex_coords + (lastpass ? 8 : 0));
-
         glUseProgram (pass[i].program);
         set_shader_vars(i);
 
         glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
         glClear(GL_COLOR_BUFFER_BIT);
-        glDrawArrays(GL_QUADS, 0, 4);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
         // reset vertex attribs set in set_shader_vars
         clear_shader_vars();
@@ -700,7 +708,7 @@ void GLSLShader::render(GLuint &orig,
     }
 
     // Disable framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, saved_framebuffer);
     glActiveTexture(GL_TEXTURE0);
     glUseProgram (0);
 
@@ -734,7 +742,6 @@ void GLSLShader::render(GLuint &orig,
 
     glBindTexture(GL_TEXTURE_2D, orig);
     glPixelStorei(GL_UNPACK_ROW_LENGTH, (GLint)pass.back().width);
-    glTexCoordPointer(2, GL_FLOAT, 0, tex_coords + 8);
 }
 
 void GLSLShader::register_uniforms ()
