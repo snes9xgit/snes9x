@@ -1914,7 +1914,7 @@ static void DisplayPressedKeys (void)
 				int16 x = READ_WORD(buf);
 				int16 y = READ_WORD(buf + 2);
 				uint8 buttons = buf[4];
-				sprintf(string, "#%d %d: (%03d,%03d) %c%c", port, ids[0], x, y,
+				sprintf(string, "#%d %d: (%03d,%03d) %c%c", port + 1, ids[0] + 1, x, y,
 						(buttons & 0x40) ? 'L' : ' ', (buttons & 0x80) ? 'R' : ' ');
 				S9xDisplayString(string, line++, 1, false);
 				break;
@@ -1928,7 +1928,7 @@ static void DisplayPressedKeys (void)
 				int16 x = READ_WORD(buf);
 				int16 y = READ_WORD(buf + 2);
 				uint8 buttons = buf[4];
-				sprintf(string, "#%d %d: (%03d,%03d) %c%c%c%c", port, ids[0], x, y,
+				sprintf(string, "#%d %d: (%03d,%03d) %c%c%c%c", port + 1, ids[0] + 1, x, y,
 						(buttons & 0x80) ? 'F' : ' ', (buttons & 0x40) ? 'C' : ' ',
 						(buttons & 0x20) ? 'T' : ' ', (buttons & 0x10) ? 'P' : ' ');
 				S9xDisplayString(string, line++, 1, false);
@@ -1947,7 +1947,7 @@ static void DisplayPressedKeys (void)
 				uint8 buttons = buf[8];
 				bool8 offscreen1 = buf[9];
 				bool8 offscreen2 = buf[10];
-				sprintf(string, "#%d %d: (%03d,%03d) %c%c%c / (%03d,%03d) %c%c%c", port, ids[0],
+				sprintf(string, "#%d %d: (%03d,%03d) %c%c%c / (%03d,%03d) %c%c%c", port + 1, ids[0] + 1,
 						x1, y1, (buttons & 0x80) ? 'T' : ' ', (buttons & 0x20) ? 'S' : ' ', offscreen1 ? 'O' : ' ',
 						x2, y2, (buttons & 0x40) ? 'T' : ' ', (buttons & 0x10) ? 'S' : ' ', offscreen2 ? 'O' : ' ');
 				S9xDisplayString(string, line++, 1, false);
@@ -1956,7 +1956,7 @@ static void DisplayPressedKeys (void)
 
 			case CTL_JOYPAD:
 			{
-				sprintf(string, "#%d %d:                  ", port, ids[0]);
+				sprintf(string, "#%d %d:                  ", port + 1, ids[0] + 1);
 				uint16 pad = MovieGetJoypad(ids[0]);
 				for (int i = 0; i < 15; i++)
 				{
@@ -1975,7 +1975,7 @@ static void DisplayPressedKeys (void)
 				{
 					if (ids[n] != -1)
 					{
-						sprintf(string, "#%d %d:                  ", port, ids[n]);
+						sprintf(string, "#%d %d:                  ", port + 1, ids[n] + 1);
 						uint16 pad = MovieGetJoypad(ids[n]);
 						for (int i = 0; i < 15; i++)
 						{
@@ -2009,8 +2009,7 @@ static void DisplayPressedKeys (void)
 
 			case CTL_NONE:
 			{
-				sprintf(string, "#%d -", port);
-				S9xDisplayString(string, line++, 1, false);
+				// Display Nothing
 				break;
 			}
 		}
