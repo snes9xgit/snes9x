@@ -1078,7 +1078,7 @@
         <col id="0" translatable="yes">44100 hz</col>
       </row>
       <row>
-        <col id="0" translatable="yes">32000 hz (SNES Default)</col>
+        <col id="0" translatable="yes">32000 hz</col>
       </row>
       <row>
         <col id="0" translatable="yes">22050 hz</col>
