@@ -64,7 +64,7 @@ static void dialog_response (GtkDialog *pdialog, gint response_id, gpointer user
     {
         std::string config_file = get_config_dir() + "/snes9x.glslp";
         S9xDisplayGetDriver ()->save (config_file.c_str ());
-        realpath (config_file.c_str (), gui_config->fragment_shader);
+        realpath (config_file.c_str (), gui_config->shader_filename);
 
         if (dialog)
             gtk_widget_destroy (GTK_WIDGET (dialog));

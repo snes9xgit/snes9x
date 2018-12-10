@@ -147,8 +147,7 @@ int Snes9xConfig::load_defaults ()
     pbo_format = 0;
     npot_textures = FALSE;
     use_shaders = 0;
-    fragment_shader[0] = '\0';
-    vertex_shader[0] = '\0';
+    shader_filename[0] = '\0';
     sync_every_frame = FALSE;
 #endif
 
@@ -268,7 +267,7 @@ int Snes9xConfig::save_config_file ()
     cf.SetInt     (z"PixelBufferObjectBitDepth", pbo_format);
     outbool   (cf, z"UseNonPowerOfTwoTextures", npot_textures);
     outbool   (cf, z"EnableCustomShaders", use_shaders);
-    cf.SetString  (z"ShaderFile", fragment_shader);
+    cf.SetString  (z"ShaderFile", shader_filename);
 #endif
 
 #undef z
@@ -497,7 +496,7 @@ int Snes9xConfig::load_config_file ()
     inint  (z"PixelBufferObjectBitDepth", pbo_format);
     inbool (z"UseNonPowerOfTwoTextures", npot_textures);
     inbool (z"EnableCustomShaders", use_shaders);
-    instr  (z"ShaderFile", fragment_shader);
+    instr  (z"ShaderFile", shader_filename);
 #endif
 
 #undef z

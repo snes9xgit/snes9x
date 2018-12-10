@@ -711,7 +711,7 @@ Snes9xPreferences::move_settings_to_dialog ()
     set_combo ("pixel_format",              config->pbo_format == 16 ? 0 : 1);
     set_check ("npot_textures",             config->npot_textures);
     set_check ("use_shaders",               config->use_shaders);
-    set_entry_text ("fragment_shader",      config->fragment_shader);
+    set_entry_text ("fragment_shader",      config->shader_filename);
 #endif
     set_spin ("joystick_threshold",         config->joystick_threshold);
 
@@ -864,7 +864,7 @@ Snes9xPreferences::get_settings_from_dialog ()
     config->use_shaders               = get_check ("use_shaders");
     config->sync_every_frame          = get_check ("sync_every_frame");
 
-    sstrncpy (config->fragment_shader, get_entry_text ("fragment_shader"), PATH_MAX);
+    sstrncpy (config->shader_filename, get_entry_text ("fragment_shader"), PATH_MAX);
 
     config->pbo_format = pbo_format;
 #endif

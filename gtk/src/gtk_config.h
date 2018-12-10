@@ -148,8 +148,7 @@ class Snes9xConfig
     int           pbo_format;
     unsigned char npot_textures;
     unsigned char use_shaders;
-    char          fragment_shader[PATH_MAX];
-    char          vertex_shader[PATH_MAX];
+    char          shader_filename[PATH_MAX];
     unsigned char sync_every_frame;
 #endif
 
