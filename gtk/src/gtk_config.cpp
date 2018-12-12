@@ -180,6 +180,7 @@ int Snes9xConfig::load_defaults ()
     Settings.NetPlay = FALSE;
     NetPlay.Paused = FALSE;
     NetPlay.MaxFrameSkip = 10;
+    Settings.DisplayPressedKeys = FALSE;
 #ifdef ALLOW_CPU_OVERCLOCK
     Settings.MaxSpriteTilesPerLine = 34;
     Settings.OneClockCycle = 6;
@@ -334,6 +335,7 @@ int Snes9xConfig::save_config_file ()
 #define z "Emulation::"
     outbool (cf, z"EmulateTransparency", Settings.Transparency);
     outbool (cf, z"DisplayFrameRate", Settings.DisplayFrameRate);
+    outbool (cf, z"DisplayPressedKeys", Settings.DisplayPressedKeys);
     cf.SetInt (z"SpeedControlMethod", Settings.SkipFrames, "0: Time the frames to 50 or 60Hz, 1: Same, but skip frames if too slow, 2: Synchronize to the sound buffer, 3: Unlimited, except potentially by vsync");
     cf.SetInt (z"SaveSRAMEveryNSeconds", Settings.AutoSaveDelay);
     outbool (cf, z"BlockInvalidVRAMAccess", Settings.BlockInvalidVRAMAccessMaster);
@@ -560,6 +562,7 @@ int Snes9xConfig::load_config_file ()
 #define z "Emulation::"
     inbool (z"EmulateTransparency", Settings.Transparency);
     inbool (z"DisplayFrameRate", Settings.DisplayFrameRate);
+    inbool (z"DisplayPressedKeys", Settings.DisplayPressedKeys);
     inint (z"SpeedControlMethod", Settings.SkipFrames);
     inint (z"SaveSRAMEveryNSeconds", Settings.AutoSaveDelay);
     inbool (z"BlockInvalidVRAMAccess", Settings.BlockInvalidVRAMAccessMaster);
