@@ -3321,8 +3321,6 @@ void S9xControlEOF (void)
 
 	do_polling(POLL_ALL);
 
-	S9xMovieUpdate();
-
 	pad_read_last = pad_read;
 	pad_read      = false;
 }
