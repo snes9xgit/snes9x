@@ -594,6 +594,8 @@ int Snes9xConfig::load_config_file ()
             S9xSetController (i, CTL_SUPERSCOPE, 0, 0, 0, 0);
         else if (tmp.find ("mouse") != std::string::npos)
             S9xSetController (i, CTL_MOUSE, i, 0, 0, 0);
+        else if (tmp.find ("none") != std::string::npos)
+            S9xSetController (i, CTL_NONE, 0, 0, 0, 0);
     }
 
     inint (z"JoystickThreshold", joystick_threshold);
