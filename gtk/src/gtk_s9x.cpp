@@ -370,6 +370,14 @@ gboolean S9xScreenSaverCheckFunc (gpointer data)
 /* Snes9x core hooks */
 void S9xMessage (int type, int number, const char *message)
 {
+    switch (number)
+    {
+      case S9X_MOVIE_INFO:
+        S9xSetInfoString (message);
+        break;
+      default:
+        break;
+    }
 }
 
 /* Varies from ParseArgs because this one is for the OS port to handle */
