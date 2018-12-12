@@ -1821,10 +1821,10 @@ static void GTKDisplayChar (int x, int y, uint8 c, bool overlap = false, bool mo
 
             if (p == '#')
                 *s = Settings.DisplayColor;
-            else if (monospace && p == '.')
+            else if (p == '.')
                 *s = 0x0000;
-            else if (!monospace && (!overlap || w > 0))
-                *s = (*s & 0xf7de) >> 1;
+//            else if (!monospace && (!overlap || w > 0))
+//                *s = (*s & 0xf7de) >> 1;
 
             if (scale > 1)
             {
