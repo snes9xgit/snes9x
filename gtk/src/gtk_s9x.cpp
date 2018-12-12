@@ -98,8 +98,11 @@ int main (int argc, char *argv[])
         case CTL_SUPERSCOPE:
             device_type = "superscope";
             break;
-        default:
+        case CTL_JOYPAD:
             device_type = "joypad";
+            break;
+        default:
+            device_type = "nothingpluggedin";
         }
 
         device_type += std::to_string (port + 1);
