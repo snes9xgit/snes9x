@@ -543,6 +543,11 @@ event_port (GtkWidget *widget, gpointer data)
     {
         S9xSetController (1, CTL_MP5, 1, 2, 3, 4);
     }
+
+    else if (!strcasecmp (name, "nothingpluggedin2"))
+    {
+        S9xSetController (1, CTL_NONE, 0, 0, 0, 0);
+    }
 }
 
 Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :

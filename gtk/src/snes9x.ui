@@ -1878,6 +1878,17 @@
                                         <signal name="activate" handler="on_port_activate" swapped="no"/>
                                       </object>
                                     </child>
+                                    <child>
+                                      <object class="GtkRadioMenuItem" id="nothingpluggedin2">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="label" translatable="yes">None</property>
+                                        <property name="use_underline">True</property>
+                                        <property name="active">True</property>
+                                        <property name="group">joypad2</property>
+                                        <signal name="activate" handler="on_port_activate" swapped="no"/>
+                                      </object>
+                                    </child>
                                   </object>
                                 </child>
                               </object>
