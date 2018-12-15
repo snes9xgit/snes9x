@@ -21,7 +21,9 @@
 #define _WIN32_WINNT 0x0501
 #endif
 
+#pragma warning(disable: 4091)
 #include <shlobj.h>
+#pragma warning(default: 4091)
 #include <objidl.h>
 #include <shlwapi.h>
 #include <Shobjidl.h>
