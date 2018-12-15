@@ -81,9 +81,6 @@
     <ClInclude Include="AVIOutput.h">
       <Filter>GUI</Filter>
     </ClInclude>
-    <ClInclude Include="CXML.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
     <ClInclude Include="InputCustom.h">
       <Filter>GUI</Filter>
     </ClInclude>
@@ -458,9 +455,6 @@
     <ClCompile Include="AVIOutput.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
-    <ClCompile Include="CXML.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
     <ClCompile Include="InputCustom.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
@@ -649,6 +643,7 @@
     <Image Include="rsrc\ud.bmp">
       <Filter>Resource\Other</Filter>
     </Image>
+    <Image Include="rsrc\icon2.ico" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\65c816.h">
