@@ -125,8 +125,13 @@ returns true if successful, false otherwise
 bool CXAudio2::InitVoices(void)
 {
 	HRESULT hr;
+    // subtract -1, we added "Default" as first index
+    int device_index = FindDeviceIndex(GUI.AudioDevice) - 1;
+    if (device_index < 0)
+        device_index = 0;
+
 	if ( FAILED(hr = pXAudio2->CreateMasteringVoice( &pMasterVoice, (Settings.Stereo?2:1),
-		Settings.SoundPlaybackRate, 0, 0 , NULL ) ) ) {
+		Settings.SoundPlaybackRate, 0, device_index, NULL ) ) ) {
 			DXTRACE_ERR_MSGBOX(TEXT("Unable to create mastering voice."),hr);
 			return false;
 	}
@@ -307,4 +312,56 @@ void CXAudio2::ProcessSound()
 		writeOffset%=sum_bufferSize;
         availableSamples -= singleBufferSamples;
 	}
+}
+
+/*  CXAudio2::GetDeviceList
+get a list of the available output devices
+-----
+returns a vector of display names
+*/
+std::vector<std::wstring> CXAudio2::GetDeviceList()
+{
+    std::vector<std::wstring> device_list;
+
+    if (pXAudio2)
+    {
+        UINT32 num_devices;
+        pXAudio2->GetDeviceCount(&num_devices);
+
+        device_list.push_back(_T("Default"));
+
+        for (unsigned int i = 0; i < num_devices; i++)
+        {
+            XAUDIO2_DEVICE_DETAILS device_details;
+            if (SUCCEEDED(pXAudio2->GetDeviceDetails(i, &device_details)))
+            {
+                device_list.push_back(device_details.DisplayName);
+            }
+        }
+    }
+
+    return device_list;
+}
+
+/*  CXAudio2::FindDeviceIndex
+find a device name in the list of possible output devices
+-----
+returns the index in the device list returned by GetDeviceList
+*/
+int CXAudio2::FindDeviceIndex(TCHAR *audio_device)
+{
+    std::vector<std::wstring> device_list = GetDeviceList();
+
+    int index = 0;
+
+    for (int i = 0; i < device_list.size(); i++)
+    {
+        if (_tcsstr(device_list[i].c_str(), audio_device) != NULL)
+        {
+            index = i;
+            break;
+        }
+    }
+
+    return index;
 }

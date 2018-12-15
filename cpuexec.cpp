@@ -11,13 +11,13 @@
 #include "apu/apu.h"
 #include "fxemu.h"
 #include "snapshot.h"
+#include "movie.h"
 #ifdef DEBUGGER
 #include "debug.h"
 #include "missing.h"
 #endif
 
 static inline void S9xReschedule (void);
-
 
 void S9xMainLoop (void)
 {
@@ -29,6 +29,12 @@ void S9xMainLoop (void)
 		else if (Timings.IRQFlagChanging == IRQ_SET_FLAG) \
 			SetIRQ(); \
 		Timings.IRQFlagChanging = IRQ_NONE; \
+	}
+
+	if (CPU.Flags & SCAN_KEYS_FLAG)
+	{
+		CPU.Flags &= ~SCAN_KEYS_FLAG;
+		S9xMovieUpdate();
 	}
 
 	for (;;)
@@ -120,7 +126,16 @@ void S9xMainLoop (void)
 	#endif
 
 		if (CPU.Flags & SCAN_KEYS_FLAG)
+		{
+			#ifdef DEBUGGER
+			if (!(CPU.Flags & FRAME_ADVANCE_FLAG))
+			#endif
+			{
+				S9xSyncSpeed();
+			}
+
 			break;
+		}
 
 		uint8				Op;
 		struct	SOpcodes	*Opcodes;
@@ -155,15 +170,6 @@ void S9xMainLoop (void)
 	}
 
 	S9xPackStatus();
-
-	if (CPU.Flags & SCAN_KEYS_FLAG)
-	{
-	#ifdef DEBUGGER
-		if (!(CPU.Flags & FRAME_ADVANCE_FLAG))
-	#endif
-		S9xSyncSpeed();
-		CPU.Flags &= ~SCAN_KEYS_FLAG;
-	}
 }
 
 static inline void S9xReschedule (void)

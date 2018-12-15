@@ -405,7 +405,7 @@ int S9xOpenGLDisplayDriver::opengl_defaults ()
 
     if (config->use_shaders)
     {
-        if (legacy || !load_shaders (config->fragment_shader))
+        if (legacy || !load_shaders (config->shader_filename))
         {
             config->use_shaders = false;
         }

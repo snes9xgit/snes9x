@@ -596,6 +596,7 @@ Snes9xPreferences::move_settings_to_dialog ()
 {
     set_check ("full_screen_on_open",       config->full_screen_on_open);
     set_check ("show_frame_rate",           Settings.DisplayFrameRate);
+    set_check ("show_pressed_keys",         Settings.DisplayPressedKeys);
     set_check ("change_display_resolution", config->change_display_resolution);
     set_check ("scale_to_fit",              config->scale_to_fit);
     set_check ("overscan",                  config->overscan);
@@ -711,7 +712,7 @@ Snes9xPreferences::move_settings_to_dialog ()
     set_combo ("pixel_format",              config->pbo_format == 16 ? 0 : 1);
     set_check ("npot_textures",             config->npot_textures);
     set_check ("use_shaders",               config->use_shaders);
-    set_entry_text ("fragment_shader",      config->fragment_shader);
+    set_entry_text ("fragment_shader",      config->shader_filename);
 #endif
     set_spin ("joystick_threshold",         config->joystick_threshold);
 
@@ -783,6 +784,7 @@ Snes9xPreferences::get_settings_from_dialog ()
 
     config->full_screen_on_open       = get_check ("full_screen_on_open");
     Settings.DisplayFrameRate         = get_check ("show_frame_rate");
+    Settings.DisplayPressedKeys       = get_check ("show_pressed_keys");
     config->scale_to_fit              = get_check ("scale_to_fit");
     config->overscan                  = get_check ("overscan");
     config->maintain_aspect_ratio     = get_check ("maintain_aspect_ratio");
@@ -864,7 +866,7 @@ Snes9xPreferences::get_settings_from_dialog ()
     config->use_shaders               = get_check ("use_shaders");
     config->sync_every_frame          = get_check ("sync_every_frame");
 
-    sstrncpy (config->fragment_shader, get_entry_text ("fragment_shader"), PATH_MAX);
+    sstrncpy (config->shader_filename, get_entry_text ("fragment_shader"), PATH_MAX);
 
     config->pbo_format = pbo_format;
 #endif

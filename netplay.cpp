@@ -5,11 +5,6 @@
 \*****************************************************************************/
 
 #ifdef NETPLAY_SUPPORT
-#ifdef _DEBUG
-	#define NP_DEBUG 1
-#endif
-
-#define NP_DEBUG 3 // FF-FIXME
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -555,7 +550,7 @@ bool8 S9xNPLoadROMDialog (const char *rom_name)
     printf ("CLIENT: Asking GUI thread to open ROM load dialog...\n");
 #endif
 
-    PostMessage (GUI.hWnd, WM_USER + 3, (uint32) rom_name, (uint32) rom_name);
+    PostMessage (GUI.hWnd, WM_USER + 3, (WPARAM) rom_name, (LPARAM) rom_name);
 
 #ifdef NP_DEBUG
     printf ("CLIENT: Waiting for reply from GUI thread...\n");

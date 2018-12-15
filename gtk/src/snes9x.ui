@@ -1078,7 +1078,7 @@
         <col id="0" translatable="yes">44100 hz</col>
       </row>
       <row>
-        <col id="0" translatable="yes">32000 hz (SNES Default)</col>
+        <col id="0" translatable="yes">32000 hz</col>
       </row>
       <row>
         <col id="0" translatable="yes">22050 hz</col>
@@ -1872,6 +1872,17 @@
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="label" translatable="yes">Superscope</property>
+                                        <property name="use_underline">True</property>
+                                        <property name="active">True</property>
+                                        <property name="group">joypad2</property>
+                                        <signal name="activate" handler="on_port_activate" swapped="no"/>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkRadioMenuItem" id="nothingpluggedin2">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="label" translatable="yes">None</property>
                                         <property name="use_underline">True</property>
                                         <property name="active">True</property>
                                         <property name="group">joypad2</property>
@@ -2758,6 +2769,21 @@
                                           </packing>
                                         </child>
                                         <child>
+                                          <object class="GtkCheckButton" id="show_pressed_keys">
+                                            <property name="label" translatable="yes">Show pressed keys</property>
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                            <property name="receives_default">False</property>
+                                            <property name="use_underline">True</property>
+                                            <property name="draw_indicator">True</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">False</property>
+                                            <property name="position">2</property>
+                                          </packing>
+                                        </child>
+                                        <child>
                                           <object class="GtkCheckButton" id="overscan">
                                             <property name="label" translatable="yes">Use overscanned height</property>
                                             <property name="visible">True</property>
@@ -2770,7 +2796,7 @@
                                           <packing>
                                             <property name="expand">False</property>
                                             <property name="fill">False</property>
-                                            <property name="position">2</property>
+                                            <property name="position">3</property>
                                           </packing>
                                         </child>
                                         <child>
@@ -2816,7 +2842,7 @@
                                           <packing>
                                             <property name="expand">False</property>
                                             <property name="fill">False</property>
-                                            <property name="position">3</property>
+                                            <property name="position">4</property>
                                           </packing>
                                         </child>
                                       </object>

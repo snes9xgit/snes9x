@@ -147,8 +147,7 @@ int Snes9xConfig::load_defaults ()
     pbo_format = 0;
     npot_textures = FALSE;
     use_shaders = 0;
-    fragment_shader[0] = '\0';
-    vertex_shader[0] = '\0';
+    shader_filename[0] = '\0';
     sync_every_frame = FALSE;
 #endif
 
@@ -165,9 +164,9 @@ int Snes9xConfig::load_defaults ()
     Settings.SixteenBitSound = TRUE;
     Settings.Stereo = TRUE;
     Settings.ReverseStereo = FALSE;
-    Settings.SoundPlaybackRate = 32000;
+    Settings.SoundPlaybackRate = 44100;
     Settings.StopEmulation = TRUE;
-    Settings.FrameTimeNTSC = 16667;
+    Settings.FrameTimeNTSC = 16666;
     Settings.FrameTimePAL = 20000;
     Settings.SupportHiRes = true;
     Settings.FrameTime = Settings.FrameTimeNTSC;
@@ -181,6 +180,7 @@ int Snes9xConfig::load_defaults ()
     Settings.NetPlay = FALSE;
     NetPlay.Paused = FALSE;
     NetPlay.MaxFrameSkip = 10;
+    Settings.DisplayPressedKeys = FALSE;
 #ifdef ALLOW_CPU_OVERCLOCK
     Settings.MaxSpriteTilesPerLine = 34;
     Settings.OneClockCycle = 6;
@@ -268,7 +268,7 @@ int Snes9xConfig::save_config_file ()
     cf.SetInt     (z"PixelBufferObjectBitDepth", pbo_format);
     outbool   (cf, z"UseNonPowerOfTwoTextures", npot_textures);
     outbool   (cf, z"EnableCustomShaders", use_shaders);
-    cf.SetString  (z"ShaderFile", fragment_shader);
+    cf.SetString  (z"ShaderFile", shader_filename);
 #endif
 
 #undef z
@@ -335,6 +335,7 @@ int Snes9xConfig::save_config_file ()
 #define z "Emulation::"
     outbool (cf, z"EmulateTransparency", Settings.Transparency);
     outbool (cf, z"DisplayFrameRate", Settings.DisplayFrameRate);
+    outbool (cf, z"DisplayPressedKeys", Settings.DisplayPressedKeys);
     cf.SetInt (z"SpeedControlMethod", Settings.SkipFrames, "0: Time the frames to 50 or 60Hz, 1: Same, but skip frames if too slow, 2: Synchronize to the sound buffer, 3: Unlimited, except potentially by vsync");
     cf.SetInt (z"SaveSRAMEveryNSeconds", Settings.AutoSaveDelay);
     outbool (cf, z"BlockInvalidVRAMAccess", Settings.BlockInvalidVRAMAccessMaster);
@@ -497,7 +498,7 @@ int Snes9xConfig::load_config_file ()
     inint  (z"PixelBufferObjectBitDepth", pbo_format);
     inbool (z"UseNonPowerOfTwoTextures", npot_textures);
     inbool (z"EnableCustomShaders", use_shaders);
-    instr  (z"ShaderFile", fragment_shader);
+    instr  (z"ShaderFile", shader_filename);
 #endif
 
 #undef z
@@ -561,6 +562,7 @@ int Snes9xConfig::load_config_file ()
 #define z "Emulation::"
     inbool (z"EmulateTransparency", Settings.Transparency);
     inbool (z"DisplayFrameRate", Settings.DisplayFrameRate);
+    inbool (z"DisplayPressedKeys", Settings.DisplayPressedKeys);
     inint (z"SpeedControlMethod", Settings.SkipFrames);
     inint (z"SaveSRAMEveryNSeconds", Settings.AutoSaveDelay);
     inbool (z"BlockInvalidVRAMAccess", Settings.BlockInvalidVRAMAccessMaster);
@@ -592,6 +594,8 @@ int Snes9xConfig::load_config_file ()
             S9xSetController (i, CTL_SUPERSCOPE, 0, 0, 0, 0);
         else if (tmp.find ("mouse") != std::string::npos)
             S9xSetController (i, CTL_MOUSE, i, 0, 0, 0);
+        else if (tmp.find ("none") != std::string::npos)
+            S9xSetController (i, CTL_NONE, 0, 0, 0, 0);
     }
 
     inint (z"JoystickThreshold", joystick_threshold);

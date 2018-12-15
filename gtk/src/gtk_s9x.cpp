@@ -98,8 +98,11 @@ int main (int argc, char *argv[])
         case CTL_SUPERSCOPE:
             device_type = "superscope";
             break;
-        default:
+        case CTL_JOYPAD:
             device_type = "joypad";
+            break;
+        default:
+            device_type = "nothingpluggedin";
         }
 
         device_type += std::to_string (port + 1);
@@ -370,6 +373,14 @@ gboolean S9xScreenSaverCheckFunc (gpointer data)
 /* Snes9x core hooks */
 void S9xMessage (int type, int number, const char *message)
 {
+    switch (number)
+    {
+      case S9X_MOVIE_INFO:
+        S9xSetInfoString (message);
+        break;
+      default:
+        break;
+    }
 }
 
 /* Varies from ParseArgs because this one is for the OS port to handle */

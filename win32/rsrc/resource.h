@@ -33,7 +33,6 @@
 #define IDD_CREATEMOVIE                 135
 #define IDD_KEYCUSTOM                   136
 #define IDI_ICON1                       144
-#define IDI_ICON2                       160
 #define IDB_REMOVABLE                   145
 #define IDB_RAMDISK                     146
 #define IDB_UNKNOWN                     147
@@ -42,10 +41,12 @@
 #define IDD_MULTICART                   150
 #define IDD_DIALOG_SHADER_PARAMS        155
 #define IDD_DIALOG_XAUDIO2_INIT_ERROR   159
+#define IDI_ICON2                       160
 #define IDC_DRIVER                      1001
 #define IDC_BUFLEN                      1002
 #define IDC_RATE                        1003
 #define IDC_MIX                         1004
+#define IDC_OUTPUT_DEVICE               1004
 #define IDC_DYNRATECONTROL              1005
 #define IDC_STEREO                      1006
 #define IDC_REV_STEREO                  1007

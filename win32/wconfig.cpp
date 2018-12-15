@@ -828,6 +828,7 @@ void WinRegisterConfigItems()
 	AddBoolC("MuteFrameAdvance", GUI.FAMute, false, "true to prevent Snes9x from outputting sound when the Frame Advance command is in use");
 	AddUIntC("VolumeRegular", GUI.VolumeRegular, 100, "volume during regular play (percentage between 0 and 100)");
 	AddUIntC("VolumeTurbo", GUI.VolumeTurbo, 100, "volume during turbo mode (percentage between 0 and 100)");
+    AddStringC("OutputDevice", GUI.AudioDevice, MAX_AUDIO_NAME_LENGTH, "Default", "Name of the output audio device (substring matching, XAudio2 only atm), set to 'Default' for default audio device");
 #undef CATEGORY
 #define	CATEGORY "Controls"
 	AddBoolC("AllowLeftRight", Settings.UpAndDown, false, "true to allow left+right and up+down");

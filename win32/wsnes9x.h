@@ -28,7 +28,7 @@
 #include "rsrc/resource.h"
 
 #define COUNT(a) (sizeof (a) / sizeof (a[0]))
-#define GUI_VERSION 1008
+#define MAX_AUDIO_NAME_LENGTH 1024
 
 #define MAX_RECENT_GAMES_LIST_SIZE 32
 #define MAX_RECENT_HOSTS_LIST_SIZE 16
@@ -216,6 +216,7 @@ struct sGUI {
 	// used for sync sound synchronization
 	CRITICAL_SECTION SoundCritSect;
     HANDLE SoundSyncEvent;
+    TCHAR AudioDevice[MAX_AUDIO_NAME_LENGTH];
 
     TCHAR RomDir [_MAX_PATH];
     TCHAR ScreensDir [_MAX_PATH];

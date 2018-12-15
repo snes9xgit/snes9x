@@ -56,15 +56,19 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="s9x.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="s9x.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="s9x.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="s9x.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -430,7 +434,6 @@
     <ClInclude Include="COpenGL.h" />
     <ClInclude Include="CShaderParamDlg.h" />
     <ClInclude Include="CXAudio2.h" />
-    <ClInclude Include="CXML.h" />
     <ClInclude Include="dxerr.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="gl_core_3_1.h" />
@@ -570,7 +573,6 @@
     <ClCompile Include="COpenGL.cpp" />
     <ClCompile Include="CShaderParamDlg.cpp" />
     <ClCompile Include="CXAudio2.cpp" />
-    <ClCompile Include="CXML.cpp" />
     <ClCompile Include="DumpAtEnd.cpp" />
     <ClCompile Include="dxerr.cpp" />
     <ClCompile Include="gl_core_3_1.c" />
@@ -705,6 +707,7 @@
     <Image Include="rsrc\hd.bmp" />
     <Image Include="rsrc\hiddir.bmp" />
     <Image Include="rsrc\icon1.ico" />
+    <Image Include="rsrc\icon2.ico" />
     <Image Include="rsrc\nd.bmp" />
     <Image Include="rsrc\openfold.bmp" />
     <Image Include="rsrc\pad.bmp" />

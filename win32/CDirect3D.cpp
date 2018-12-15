@@ -14,9 +14,6 @@
 #include "wsnes9x.h"
 #include "dxerr.h"
 #include <commctrl.h>
-#include "CXML.h"
-
-
 
 #include "../filter/hq2x.h"
 #include "../filter/2xsai.h"

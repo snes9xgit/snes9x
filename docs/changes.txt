@@ -1,3 +1,34 @@
+Snes9x 1.58
+- Move the LICENSE file to the base directory and use a stub
+  in all the source files referring to it. 
+- Adjust Chou Aniki timing hack.
+- Use 1-based numbering when displaying pressed keys.
+- Hide controller port if disabled when displaying keys.
+- Fix movie playback. (OV2, BearOso)
+
+ libretro:
+- Fix interlaced modes when overscan crop is enabled.
+- Allow overriding -flto. (orbea)
+
+ GTK+:
+- Use shared snes_ntsc implementation.
+- Remove extra LGPL licensing to avoid confusion.
+- Don't translate config file entries. Fixes breakage on
+  non-C languages.
+- Fix issue where config file doesn't contain all configurable
+  entries.
+- Remove config options for Netplay, Joystick, and JMA. SDL 2.0
+  is now mandatory.
+- Updated gettext and removed intltool. update-po should now catch
+  all translatable strings.
+- If available, reduce input lag option will now use fences instead
+  of glFinish to prevent hogging the CPU.
+- Onscreen text can be variable width and will show up in some more
+  cases now.
+
+ Win32:
+- Add audio device selection (XAudio2 only)
+
 Snes9x 1.57
 - Various seta010 emulation fixes.                          (kps501)
 - Pass blargg OAM tests with proper write behavior.         (BearOso)

@@ -1800,15 +1800,15 @@ static int StringWidth (const char *str)
     return pixcount;
 }
 
-static void GTKDisplayChar (int x, int y, uint8 c, bool overlap = false)
+static void GTKDisplayChar (int x, int y, uint8 c, bool overlap = false, bool monospace = false)
 {
     int cindex = c - 32;
     int crow   = cindex >> 4;
     int ccol   = cindex & 15;
-    int cwidth = font_width - kern[cindex][0] - kern[cindex][1];
+    int cwidth = font_width - (monospace ? 0 : (kern[cindex][0] + kern[cindex][1]));
 
     int	line   = crow * font_height;
-    int	offset = ccol * font_width + kern[cindex][0];
+    int	offset = ccol * font_width + (monospace ? 0 : kern[cindex][0]);
     int scale = IPPU.RenderedScreenWidth / SNES_WIDTH;
 
     uint16 *s = GFX.Screen + y * GFX.RealPPL + x * scale;
@@ -1821,8 +1821,10 @@ static void GTKDisplayChar (int x, int y, uint8 c, bool overlap = false)
 
             if (p == '#')
                 *s = Settings.DisplayColor;
-            else if (!overlap || w > 0)
-                *s = (*s & 0xf7de) >> 1;
+            else if (p == '.')
+                *s = 0x0000;
+//            else if (!monospace && (!overlap || w > 0))
+//                *s = (*s & 0xf7de) >> 1;
 
             if (scale > 1)
             {
@@ -1834,16 +1836,22 @@ static void GTKDisplayChar (int x, int y, uint8 c, bool overlap = false)
 }
 
 static void S9xGTKDisplayString (const char *string, int linesFromBottom,
-                                 int pixelsFromLeft, bool allowWrap)
+                                 int pixelsFromLeft, bool allowWrap, int type)
 {
-    if (linesFromBottom <= 0)
-        linesFromBottom = 1;
+    bool monospace = true;
+    if (type == S9X_NO_INFO)
+    {
+        if (linesFromBottom <= 0)
+            linesFromBottom = 1;
 
-    if (linesFromBottom >= 5)
-        linesFromBottom -= 3;
+        if (linesFromBottom >= 5)
+            linesFromBottom -= 3;
 
-    if (pixelsFromLeft > 128)
-        pixelsFromLeft = SNES_WIDTH - StringWidth (string);
+        if (pixelsFromLeft > 128)
+            pixelsFromLeft = SNES_WIDTH - StringWidth (string);
+
+        monospace = false;
+    }
 
     int dst_x = pixelsFromLeft;
     int dst_y = IPPU.RenderedScreenHeight - font_height * linesFromBottom;
@@ -1858,7 +1866,7 @@ static void S9xGTKDisplayString (const char *string, int linesFromBottom,
     for (int i = 0 ; i < len ; i++)
     {
         int cindex = string[i] - 32;
-        int char_width = font_width - kern[cindex][0] - kern[cindex][1];
+        int char_width = font_width - (monospace ? 1 : (kern[cindex][0] + kern[cindex][1]));
 
         if (dst_x + char_width > SNES_WIDTH || (uint8) string[i] < 32)
         {
@@ -1876,7 +1884,8 @@ static void S9xGTKDisplayString (const char *string, int linesFromBottom,
         if ((uint8) string[i] < 32)
             continue;
 
-        GTKDisplayChar(dst_x, dst_y, string[i], overlap);
+        GTKDisplayChar(dst_x, dst_y, string[i], overlap, monospace);
+
         dst_x  += char_width - 1;
         overlap = true;
     }

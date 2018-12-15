@@ -7,8 +7,13 @@
 #ifndef WIN32_SOUND_H
 #define WIN32_SOUND_H
 
+#include <vector>
+#include <string>
+
 bool ReInitSound();
 void S9xSoundCallback(void *data);
 void CloseSoundDevice();
+std::vector<std::wstring> GetAvailableSoundDevices();
+int FindAudioDeviceIndex(TCHAR *audio_device);
 
 #endif
