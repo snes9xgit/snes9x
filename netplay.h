@@ -22,7 +22,9 @@
  * joypad data  4 * n
  */
 
-//#define NP_DEBUG 1
+#ifdef _DEBUG
+#define NP_DEBUG 1
+#endif
 
 #define NP_VERSION 10
 #define NP_JOYPAD_HIST_SIZE 120

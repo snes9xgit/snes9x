@@ -5,9 +5,6 @@
 \*****************************************************************************/
 
 #ifdef NETPLAY_SUPPORT
-#ifdef _DEBUG
-	#define NP_DEBUG 1
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -478,7 +475,7 @@ void S9xNPProcessClient (int c)
                     }
                     else
 #ifdef __WIN32__
-                        S9xNPServerAddTask (NP_SERVER_SYNC_CLIENT, (void *) c);
+                        S9xNPServerAddTask (NP_SERVER_SYNC_CLIENT, (void *)(UINT_PTR) c);
 #else
                         /* We need to resync all clients on new player connect as we don't have a 'reference game' */
                         S9xNPServerAddTask (NP_SERVER_SYNC_ALL, (void *) (pint) c);
