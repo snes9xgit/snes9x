@@ -26,6 +26,9 @@ Snes9x 1.58
 - Onscreen text can be variable width and will show up in some more
   cases now.
 
+ Win32:
+- Add audio device selection (XAudio2 only)
+
 Snes9x 1.57
 - Various seta010 emulation fixes.                          (kps501)
 - Pass blargg OAM tests with proper write behavior.         (BearOso)
