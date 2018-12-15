@@ -107,3 +107,19 @@ void S9xSoundCallback(void *data)
 
 	S9xSoundOutput->ProcessSound();
 }
+
+/*  GetAvailableSoundDevices
+returns a list of output devices available for the current output driver
+*/
+std::vector<std::wstring> GetAvailableSoundDevices()
+{
+    return S9xSoundOutput->GetDeviceList();
+}
+
+/*  FindAudioDeviceIndex
+find an audio device that matches the currently configured audio device string
+*/
+int FindAudioDeviceIndex(TCHAR *audio_device)
+{
+    return S9xSoundOutput->FindDeviceIndex(audio_device);
+}

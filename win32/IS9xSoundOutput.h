@@ -7,6 +7,8 @@
 #ifndef IS9XSOUNDOUTPUT_H
 #define IS9XSOUNDOUTPUT_H
 #include "../port.h"
+#include <vector>
+#include <string>
 
 /* IS9xSoundOutput
 	Interface for the sound output.
@@ -31,6 +33,19 @@ public:
 	// Host sound system. If the sound system is callback based, ProcessSound should do a syncronized
 	// S9xFinalizeSamples and return.
 	virtual void ProcessSound()=0;
+
+    // GetDeviceList should return a list of device strings that can be displayed in a dropdown
+    virtual std::vector<std::wstring> GetDeviceList()
+    {
+        return std::vector<std::wstring>();
+    }
+
+    // FindDeviceIndex should try to find a matching index in the device list for a particular device string
+    virtual int FindDeviceIndex(TCHAR *audio_device)
+    {
+        return 0;
+    }
+
 };
 
 #endif
