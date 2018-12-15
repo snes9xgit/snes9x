@@ -4588,29 +4588,28 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					return true;
 
 				case IDC_AUTOMATICINPUTRATE:
-					GUI.AutomaticInputRate = IsDlgButtonChecked(hDlg, IDC_AUTOMATICINPUTRATE);
-					EnableWindow(GetDlgItem(hDlg, IDC_INRATEEDIT), !GUI.AutomaticInputRate);
-					EnableWindow(GetDlgItem(hDlg, IDC_INRATE), !GUI.AutomaticInputRate);
+                {
+                    bool temp_auto_input_rate = IsDlgButtonChecked(hDlg, IDC_AUTOMATICINPUTRATE);
+                    EnableWindow(GetDlgItem(hDlg, IDC_INRATEEDIT), !temp_auto_input_rate);
+                    EnableWindow(GetDlgItem(hDlg, IDC_INRATE), !temp_auto_input_rate);
 
-					if (GUI.AutomaticInputRate)
-					{
-						int newrate = WinGetAutomaticInputRate();
-						if (newrate)
-						{
-							Settings.SoundInputRate = newrate;
-							SendDlgItemMessage(hDlg, IDC_INRATE, TBM_SETPOS, TRUE, (Settings.SoundInputRate - 31100) / 50);
-							_sntprintf(valTxt, 10, TEXT("%d"), Settings.SoundInputRate);
-							Edit_SetText(GetDlgItem(hDlg, IDC_INRATEEDIT), valTxt);
-						}
-						else
-						{
-							GUI.AutomaticInputRate = false;
-							SendDlgItemMessage(hDlg, IDC_AUTOMATICINPUTRATE, BM_SETCHECK, BST_UNCHECKED, 0);
-						}
-					}
+                    if (temp_auto_input_rate)
+                    {
+                        int newrate = WinGetAutomaticInputRate();
+                        if (newrate)
+                        {
+                            SendDlgItemMessage(hDlg, IDC_INRATE, TBM_SETPOS, TRUE, (newrate - 31100) / 50);
+                            _sntprintf(valTxt, 10, TEXT("%d"), newrate);
+                            Edit_SetText(GetDlgItem(hDlg, IDC_INRATEEDIT), valTxt);
+                        }
+                        else
+                        {
+                            SendDlgItemMessage(hDlg, IDC_AUTOMATICINPUTRATE, BM_SETCHECK, BST_UNCHECKED, 0);
+                        }
+                    }
 
-					return true;
-
+                    return true;
+                }
 				case IDC_DRIVER:
 					if(CBN_SELCHANGE==HIWORD(wParam))
 					{
