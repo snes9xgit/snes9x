@@ -644,7 +644,10 @@ void ChangeInputDevice(void)
 	default:
 	case SNES_JOYPAD:
 		S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
-		S9xSetController(1, CTL_JOYPAD,     1, 0, 0, 0);
+		if (Joypad[1].Enabled)
+			S9xSetController(1, CTL_JOYPAD,     1, 0, 0, 0);
+		else
+			S9xSetController(1, CTL_NONE,       0, 0, 0, 0);
 		break;
 	}
 
