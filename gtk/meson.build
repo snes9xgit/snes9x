@@ -1,4 +1,9 @@
-project('snes9x-gtk', ['c', 'cpp'], version: '1.58', default_options: ['cpp_std=c++11'])
+project('snes9x-gtk',
+        ['c', 'cpp'],
+        version: '1.58',
+        default_options: ['cpp_std=c++11',
+                          'buildtype=release',
+                          'strip=true'])
 
 subdir('po')
 subdir('data')
@@ -6,7 +11,7 @@ subdir('data')
 args = [ '-DSNES9X_GTK', '-DUNZIP_SUPPORT', '-DNETPLAY_SUPPORT', '-DJMA_SUPPORT', '-Wall', '-W', '-Wno-unused-parameter' ]
 srcs = []
 deps = []
-includes = include_directories('../apu/bapu', '../', 'src')
+includes = [ '../apu/bapu', '../', 'src' ]
 
 prefix = get_option('prefix')
 localedir = join_paths(prefix, get_option('localedir'))
@@ -144,16 +149,15 @@ if get_option('screenshot')
   endif
 endif
 
-if get_option('system-zip')
-  systemzip_dep = dependency('minizip', required: false)
+systemzip_dep = dependency('minizip', required: false)
 
-  if systemzip_dep.found()
-    args += '-DSYSTEM_ZIP'
-    deps += systemzip_dep
-  else
-    message('minizip not found. Using built-in minizip.')
-    srcs += [ '../unzip/unzip.c', '../unzip/ioapi.c', '../unzip/zip.c' ]
-  endif
+if get_option('system-zip') and systemzip_dep.found()
+  args += '-DSYSTEM_ZIP'
+  deps += systemzip_dep
+else
+  message('Using built-in minizip.')
+  includes += '../unzip'
+  srcs += [ '../unzip/unzip.c', '../unzip/ioapi.c', '../unzip/zip.c' ]
 endif
         
 if get_option('zlib')
@@ -325,7 +329,7 @@ libjma = static_library('jma',
                         libjma_srcs, 
                         c_args: args, 
                         cpp_args: [args, '-fexceptions'],
-                        include_directories: includes)
+                        include_directories: include_directories(includes))
 
 sourcify = executable('sourcify', 'src/sourcify.c')
 gtk_snes9x_ui_cpp = custom_target('sourcify', 
@@ -339,7 +343,7 @@ snes9x_gtk = executable('snes9x-gtk',
                         c_args: args, 
                         cpp_args: [args, '-fno-exceptions', '-fno-rtti'],
                         dependencies: deps,
-                        include_directories: includes,
+                        include_directories: include_directories(includes),
                         link_with: libjma,
                         install: true)
 
