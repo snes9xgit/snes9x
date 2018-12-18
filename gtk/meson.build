@@ -22,6 +22,10 @@ deps += [ glib_dep, gthread_dep, gobject_dep, sdl2_dep ]
 
 c_compiler = meson.get_compiler('c')
 
+if c_compiler.version().version_compare('>=7.0.0') and c_compiler.get_id() == 'gcc'
+  args += '-Wno-format-truncation'
+endif
+
 if get_option('gtk3') and not get_option('gtk2')
   message('Building with GTK+-3.0')
   gtk_dep = dependency('gtk+-3.0', version: '>= 3.22')
