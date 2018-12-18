@@ -12,6 +12,7 @@
 class OpenGLContext
 {
   public:
+    virtual ~OpenGLContext () {};
     virtual bool attach (GtkWidget *widget) = 0;
     virtual bool create_context () = 0;
     virtual void resize () = 0;
