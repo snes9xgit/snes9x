@@ -1,5 +1,4 @@
-datadir = join_paths(get_option('prefix'), get_option('datadir'))
-install_data('../../data/cheats.bml')
+install_data('../../data/cheats.bml', install_dir: appdatadir)
 install_data('snes9x.desktop', install_dir: join_paths(datadir, 'applications'))
 
 hicolor = join_paths(datadir, 'icons', 'hicolor')

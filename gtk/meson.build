@@ -5,9 +5,6 @@ project('snes9x-gtk',
                           'buildtype=release',
                           'strip=true'])
 
-subdir('po')
-subdir('data')
-
 args = [ '-DSNES9X_GTK', '-DUNZIP_SUPPORT', '-DNETPLAY_SUPPORT', '-DJMA_SUPPORT', '-Wall', '-W', '-Wno-unused-parameter' ]
 srcs = []
 deps = []
@@ -15,8 +12,15 @@ includes = [ '../apu/bapu', '../', 'src' ]
 
 prefix = get_option('prefix')
 localedir = join_paths(prefix, get_option('localedir'))
-datadir = join_paths(prefix, get_option('datadir'), 'snes9x')
-args += [ '-DDATADIR="' + datadir + '"', '-DSNES9XLOCALEDIR="' + localedir + '"' ]
+datadir = get_option('datadir')
+appdatadir = get_option ('appdatadir')
+if appdatadir == ''
+  appdatadir = join_paths(prefix, datadir, 'snes9x')
+endif
+args += [ '-DDATADIR="' + appdatadir + '"', '-DSNES9XLOCALEDIR="' + localedir + '"' ]
+
+subdir('data')
+subdir('po')
 
 glib_dep = dependency('glib-2.0', version: '> 2.28')
 gthread_dep = dependency('gthread-2.0', version: '>= 2.6')
