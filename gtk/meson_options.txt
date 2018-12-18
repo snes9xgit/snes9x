@@ -14,4 +14,4 @@ option('gtk3',            type: 'boolean', value: true,  description: 'Build wit
 option('wayland',         type: 'boolean', value: true,  description: 'Build support for Wayland')
 option('gtk2',            type: 'boolean', value: false, description: 'Build with GTK+ 2.0 as the toolkit')
 option('dangerous-hacks', type: 'boolean', value: false, description: 'Allow dangerous hacks to be enabled')
-option('appdatadir',      type: 'string' , value: '',    description: 'Snes9x-only data directory')
+option('appdatadir',      type: 'string' , value: '',    description: 'Snes9x-only data directory (default: datadir/snes9x)')
