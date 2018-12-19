@@ -3257,8 +3257,8 @@ int WINAPI WinMain(
     WinSaveConfigFile ();
 	WinLockConfigFile ();
 
-    ChangeInputDevice();
     ControllerOptionsFromControllers();
+    ChangeInputDevice();
 
     WinInit (hInstance);
 	if(GUI.HideMenu)
