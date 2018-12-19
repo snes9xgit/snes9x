@@ -571,9 +571,7 @@ void ControllerOptionsFromControllers()
 
    GUI.ControllerOption = SNES_JOYPAD;
 
-   if (controller[0] == CTL_JOYPAD && controller[1] == CTL_JOYPAD)
-      GUI.ControllerOption = SNES_JOYPAD;
-   else if (controller[0] == CTL_JOYPAD && controller[1] == CTL_MP5)
+   if (controller[0] == CTL_JOYPAD && controller[1] == CTL_MP5)
       GUI.ControllerOption = SNES_MULTIPLAYER5;
    else if (controller[0] == CTL_MP5 && controller[1] == CTL_MP5)
       GUI.ControllerOption = SNES_MULTIPLAYER8;
@@ -589,6 +587,9 @@ void ControllerOptionsFromControllers()
       GUI.ControllerOption = SNES_JUSTIFIER_2;
    else if (controller[0] == CTL_JOYPAD && controller[1] == CTL_MACSRIFLE)
       GUI.ControllerOption = SNES_MACSRIFLE;
+   else if (controller[0] == CTL_JOYPAD)
+      GUI.ControllerOption = SNES_JOYPAD;
+
 }
 
 void ChangeInputDevice(void)
@@ -1764,6 +1765,7 @@ LRESULT CALLBACK WinProc(
             RestoreGUIDisplay ();
 			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_INPUTCONFIG), hWnd, DlgInputConfig);
             RestoreSNESDisplay ();
+            ChangeInputDevice ();
             break;
 
 		case ID_OPTIONS_KEYCUSTOM:
@@ -3251,12 +3253,11 @@ int WINAPI WinMain(
 	ConfigFile::SetAlphaSort(false);
 	ConfigFile::SetTimeSort(false);
 
-    ChangeInputDevice();
-
     const TCHAR *rom_filename = WinParseCommandLineAndLoadConfigFile (GetCommandLine());
     WinSaveConfigFile ();
 	WinLockConfigFile ();
 
+    ChangeInputDevice();
     ControllerOptionsFromControllers();
 
     WinInit (hInstance);
