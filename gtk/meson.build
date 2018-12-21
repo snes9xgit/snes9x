@@ -1,14 +1,13 @@
 project('snes9x-gtk',
         ['c', 'cpp'],
         version: '1.58',
-        default_options: ['cpp_std=c++11',
-                          'buildtype=release',
-                          'strip=true'])
+        default_options: ['cpp_std=c++11'])
 
-args = [ '-DSNES9X_GTK', '-DUNZIP_SUPPORT', '-DNETPLAY_SUPPORT', '-DJMA_SUPPORT', '-Wall', '-W', '-Wno-unused-parameter' ]
+args = ['-DSNES9X_GTK', '-DUNZIP_SUPPORT', '-DNETPLAY_SUPPORT', '-DJMA_SUPPORT', '-Wall', '-W', '-Wno-unused-parameter']
 srcs = []
 deps = []
-includes = [ '../apu/bapu', '../', 'src' ]
+includes = ['../apu/bapu', '../', 'src']
+warns = []
 
 prefix = get_option('prefix')
 localedir = join_paths(prefix, get_option('localedir'))
@@ -16,6 +15,8 @@ datadir = get_option('datadir')
 appdatadir = get_option ('appdatadir')
 if appdatadir == ''
   appdatadir = join_paths(prefix, datadir, 'snes9x')
+else
+  appdatadir = join_paths(prefix, datadir, appdatadir)
 endif
 args += [ '-DDATADIR="' + appdatadir + '"', '-DSNES9XLOCALEDIR="' + localedir + '"' ]
 
@@ -57,7 +58,8 @@ deps += dl_dep
 xrandr_dep = dependency('xrandr')
 deps += xrandr_dep
 
-if get_option('opengl')
+opengl = get_option('opengl')
+if opengl
   opengl_dep = dependency('epoxy', required: false)
 
   if opengl_dep.found() 
@@ -70,123 +72,143 @@ if get_option('opengl')
               '../shaders/shader_helpers.cpp',
               'src/gtk_shader_parameters.cpp' ]
     deps += opengl_dep
+  else
+    opengl = false
+    warns += 'libepoxy not found. OpenGL will disabled.'
   endif
 endif
 
-if get_option('wayland') and gtk_ver == 3
+wayland = get_option('wayland')
+if wayland and gtk_ver == 3
   wayland_dep = dependency('wayland-egl', required: false)
   
   if wayland_dep.found()
     args += '-DUSE_WAYLAND'
-    srcs += [ 'src/gtk_wayland_egl_context.cpp', 'src/gtk_wayland_egl_context.h' ]
+    srcs += ['src/gtk_wayland_egl_context.cpp', 'src/gtk_wayland_egl_context.h']
     deps += wayland_dep
   else
-    message('Wayland not found. Disabling.')
+    wayland = false
+    warns += 'wayland-egl not found. Wayland will be disabled.'
   endif
 endif
 
-if get_option('xv')
+xv = get_option('xv')
+if xv
   xv_dep = dependency('xv', required: false)
   
   if xv_dep.found()
     args += '-DUSE_XV'
-    srcs += [ 'src/gtk_display_driver_xv.cpp', 'src/gtk_display_driver_xv.h' ]
+    srcs += ['src/gtk_display_driver_xv.cpp', 'src/gtk_display_driver_xv.h']
     deps += xv_dep
   else
-    message('XV not found. Disabling.')
+    xv = false
+    warns += 'XV/XVideo was not found. It will be disabled.'
   endif
 endif
 
-if get_option('portaudio')
+portaudio = get_option('portaudio')
+if portaudio
   portaudio_dep = dependency('portaudio-2.0', version: '>= 10', required: false)
   
   if portaudio_dep.found()
     args += '-DUSE_PORTAUDIO'
-    srcs += [ 'src/gtk_sound_driver_portaudio.cpp', 'src/gtk_sound_driver_portaudio.h' ]
+    srcs += ['src/gtk_sound_driver_portaudio.cpp', 'src/gtk_sound_driver_portaudio.h']
     deps += portaudio_dep
   else
-    message('PortAudio not found. Disabling.')
+    portaudio = false
+    warns += 'PortAudio was not found. It will disabled.'
   endif
 endif
 
-if get_option('oss')
+oss = get_option('oss')
+if oss
   if c_compiler.has_header('sys/soundcard.h')
     args += '-DUSE_OSS'
-    srcs += [ 'src/gtk_sound_driver_oss.cpp', 'src/gtk_sound_driver_oss.h' ]
+    srcs += ['src/gtk_sound_driver_oss.cpp', 'src/gtk_sound_driver_oss.h']
   else
-    message('OSS not found. Disabling.')
+    oss = false
+    warns += 'OSS not found. It will be disabled.'
   endif
 endif
 
-if get_option('alsa')
+alsa = get_option('alsa')
+if alsa
   alsa_dep = dependency('alsa', required: false)
   
   if alsa_dep.found()
     args += '-DUSE_ALSA'
-    srcs += [ 'src/gtk_sound_driver_alsa.cpp', 'src/gtk_sound_driver_alsa.h' ]
+    srcs += ['src/gtk_sound_driver_alsa.cpp', 'src/gtk_sound_driver_alsa.h']
     deps += alsa_dep
   else
-    message('Alsa not found. Disabling.')
+    alsa = false
+    warns += 'ALSA not found. It will be disabled.'
   endif
 endif
 
-if get_option('pulseaudio')
+pulseaudio = get_option('pulseaudio')
+if pulseaudio
   pulseaudio_dep = dependency('libpulse', required: false)
   
   if pulseaudio_dep.found()
     args += '-DUSE_PULSEAUDIO'
-    srcs += [ 'src/gtk_sound_driver_pulse.cpp', 'src/gtk_sound_driver_pulse.h' ]
+    srcs += ['src/gtk_sound_driver_pulse.cpp', 'src/gtk_sound_driver_pulse.h']
     deps += pulseaudio_dep
   else
-    message('PulseAudio not found. Disabling.')
+    pulseaudio = false
+    warns += 'PulseAudio not found. Disabling.'
   endif
 endif
 
-if get_option('screenshot')
+screenshot = get_option('screenshot')
+if screenshot
   screenshot_dep = dependency('libpng', required: false)
 
   if screenshot_dep.found()
     args += '-DHAVE_LIBPNG'
     deps += screenshot_dep
   else
-    message('libpng not found. Disabling screenshot support.')
+    screenshot = false
+    warns += 'libpng not found. Disabling screenshot support.'
   endif
 endif
 
 systemzip_dep = dependency('minizip', required: false)
-
-if get_option('system-zip') and systemzip_dep.found()
+systemzip = get_option('system-zip')
+if systemzip and systemzip_dep.found()
   args += '-DSYSTEM_ZIP'
   deps += systemzip_dep
 else
-  message('Using built-in minizip.')
+  systemzip = false
   includes += '../unzip'
-  srcs += [ '../unzip/unzip.c', '../unzip/ioapi.c', '../unzip/zip.c' ]
+  srcs += ['../unzip/unzip.c', '../unzip/ioapi.c', '../unzip/zip.c']
 endif
         
-if get_option('zlib')
+zlib = get_option('zlib')
+if zlib
   zlib_dep = dependency('zlib', required: false)
 
   if zlib_dep.found()
     args += '-DZLIB'
     deps += zlib_dep
   else
-    message('zlib not found. Disabling.')
+    zlib = false
+    warns += 'zlib not found. Disabling.'
   endif
 endif
 
 if get_option('dangerous-hacks')
+  warns += 'Dangerous hacks are enabled. Don\'t complain if things break!'
   args += '-DALLOW_CPU_OVERCLOCK'
 endif
 
 if get_option('hq2x')
   args += '-DUSE_HQ2X'
-  srcs += [ '../filter/hq2x.cpp', '../filter/hq2x.h' ]
+  srcs += ['../filter/hq2x.cpp', '../filter/hq2x.h']
 endif
 
 if get_option('xbrz')
   args += '-DUSE_XBRZ'
-  srcs += [ '../filter/xbrz.cpp', '../filter/xbrz.h', 'src/filter_xbrz.cpp', 'src/filter_xbrz.h' ]
+  srcs += ['../filter/xbrz.cpp', '../filter/xbrz.h', 'src/filter_xbrz.cpp', 'src/filter_xbrz.h']
 endif
 
 if c_compiler.has_function('mkstemp')
@@ -339,7 +361,7 @@ sourcify = executable('sourcify', 'src/sourcify.c')
 gtk_snes9x_ui_cpp = custom_target('sourcify', 
                                   input: 'src/snes9x.ui', 
                                   output: 'gtk_snes9x_ui.cpp',
-                                  command: [ sourcify, '@INPUT@', '@OUTPUT@', 'snes9x_ui'])
+                                  command: [sourcify, '@INPUT@', '@OUTPUT@', 'snes9x_ui'])
 
 snes9x_gtk = executable('snes9x-gtk', 
                         srcs, 
@@ -351,3 +373,27 @@ snes9x_gtk = executable('snes9x-gtk',
                         link_with: libjma,
                         install: true)
 
+summary = [
+  'Snes9x GTK+ Build Configuration',
+  '[Locations] prefix:            ' + prefix,
+  '            datadir:           ' + datadir,
+  '            appdatadir:        ' + appdatadir,
+  '            localedir:         ' + localedir,
+  '[Options]   Build type:        ' + get_option('buildtype'),
+  '            GTK+ version:      ' + gtk_ver.to_string(),
+  '            Wayland:           ' + wayland.to_string(),
+  '            OpenGL:            ' + opengl.to_string(),
+  '            XVideo:            ' + xv.to_string(),
+  '            ALSA:              ' + alsa.to_string(),
+  '            Open Sound System: ' + oss.to_string(),
+  '            PulseAudio:        ' + pulseaudio.to_string(),
+  '            PortAudio:         ' + portaudio.to_string(),
+  '            HQ2X filter:       ' + get_option('hq2x').to_string(),
+  '            xBRZ filter:       ' + get_option('xbrz').to_string(),
+  '            Screenshot saving: ' + screenshot.to_string(),
+  '            zlib compression:  ' + zlib.to_string(),
+  '            System minizip:    ' + systemzip.to_string(),
+]
+
+summary += warns
+message('\n'.join(summary))
