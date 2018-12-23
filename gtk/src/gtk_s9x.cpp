@@ -39,7 +39,7 @@ int main (int argc, char *argv[])
 
     gtk_init (&argc, &argv);
 
-    g_set_prgname ("snes9x");
+    g_set_prgname ("snes9x-gtk");
     g_set_application_name ("Snes9x");
 
     setlocale (LC_ALL, "");
