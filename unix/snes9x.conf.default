@@ -84,7 +84,7 @@ Trace = FALSE
 # PlayMovieFilename = 
 # RecordMovieFilename = 
 EnableGamePad = TRUE
-PadDevice1 = (null)
+PadDevice1 = /dev/input/js0
 PadDevice2 = (null)
 PadDevice3 = (null)
 PadDevice4 = (null)
@@ -100,6 +100,9 @@ ClearAllControls = FALSE
 
 [Unix/X11]
 SetKeyRepeat = TRUE
+Fullscreen = FALSE
+Xvideo = FALSE
+MaxAspect = FALSE
 VideoMode = 1
 
 [Unix/X11 Controls]
