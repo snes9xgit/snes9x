@@ -149,6 +149,7 @@ int Snes9xConfig::load_defaults ()
     use_shaders = 0;
     shader_filename[0] = '\0';
     sync_every_frame = FALSE;
+    use_fences = FALSE;
 #endif
 
     /* Snes9X Variables */
@@ -263,7 +264,8 @@ int Snes9xConfig::save_config_file ()
 #undef z
 #define z "OpenGL::"
     outbool   (cf, z"VSync", sync_to_vblank);
-    outbool   (cf, z"ReduceInputLag", sync_every_frame);
+    outbool   (cf, z"glFinish", sync_every_frame);
+    outbool   (cf, z"glFenceSync", use_fences);
     outbool   (cf, z"UsePixelBufferObjects", use_pbos);
     cf.SetInt     (z"PixelBufferObjectBitDepth", pbo_format);
     outbool   (cf, z"UseNonPowerOfTwoTextures", npot_textures);
@@ -493,7 +495,8 @@ int Snes9xConfig::load_config_file ()
 #undef z
 #define z "OpenGL::"
     inbool (z"VSync", sync_to_vblank);
-    inbool (z"ReduceInputLag", sync_every_frame);
+    inbool (z"glFinish", sync_every_frame);
+    inbool (z"glFenceSync", use_fences);
     inbool (z"UsePixelBufferObjects", use_pbos);
     inint  (z"PixelBufferObjectBitDepth", pbo_format);
     inbool (z"UseNonPowerOfTwoTextures", npot_textures);

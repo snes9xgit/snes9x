@@ -708,6 +708,7 @@ Snes9xPreferences::move_settings_to_dialog ()
 #ifdef USE_OPENGL
     set_check ("sync_to_vblank",            config->sync_to_vblank);
     set_check ("sync_every_frame",          config->sync_every_frame);
+    set_check ("use_fences",                config->use_fences);
     set_check ("use_pbos",                  config->use_pbos);
     set_combo ("pixel_format",              config->pbo_format == 16 ? 0 : 1);
     set_check ("npot_textures",             config->npot_textures);
@@ -865,6 +866,7 @@ Snes9xPreferences::get_settings_from_dialog ()
     config->npot_textures             = get_check ("npot_textures");
     config->use_shaders               = get_check ("use_shaders");
     config->sync_every_frame          = get_check ("sync_every_frame");
+    config->use_fences                = get_check ("use_fences");
 
     sstrncpy (config->shader_filename, get_entry_text ("fragment_shader"), PATH_MAX);
 

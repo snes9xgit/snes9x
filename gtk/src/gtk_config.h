@@ -150,6 +150,7 @@ class Snes9xConfig
     unsigned char use_shaders;
     char          shader_filename[PATH_MAX];
     unsigned char sync_every_frame;
+    unsigned char use_fences;
 #endif
 
     JoyDevice **joystick;

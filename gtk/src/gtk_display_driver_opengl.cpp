@@ -646,19 +646,16 @@ void S9xOpenGLDisplayDriver::swap_buffers ()
 {
     context->swap_buffers ();
 
-    if (config->sync_every_frame)
+    if (config->sync_every_frame && !config->use_fences)
     {
-        if (fences)
-        {
-            if (fence)
-                glDeleteSync (fence);
-            fence = glFenceSync (GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-        }
-        else
-        {
-            usleep (0);
-            glFinish ();
-        }
+        usleep (0);
+        glFinish ();
+    }
+    else if (config->use_fences && fences)
+    {
+        if (fence)
+            glDeleteSync (fence);
+        fence = glFenceSync (GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
     }
 }
 
@@ -731,5 +728,6 @@ bool S9xOpenGLDisplayDriver::is_ready ()
 
     glDeleteSync (fence);
     fence = NULL;
+
     return true;
 }
