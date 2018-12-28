@@ -60,8 +60,7 @@ S9xAlsaSoundDriver::stop ()
 {
 }
 
-bool8
-S9xAlsaSoundDriver::open_device ()
+bool S9xAlsaSoundDriver::open_device()
 {
     int err;
     unsigned int periods = 8;
@@ -152,7 +151,7 @@ S9xAlsaSoundDriver::open_device ()
 
     S9xSetSamplesAvailableCallback (alsa_samples_available, this);
 
-    return TRUE;
+    return true;
 
 close_fail:
     snd_pcm_drain (pcm);
@@ -162,7 +161,7 @@ close_fail:
 fail:
     printf ("Failed: %s\n", snd_strerror (err));
 
-    return FALSE;
+    return false;
 }
 
 void

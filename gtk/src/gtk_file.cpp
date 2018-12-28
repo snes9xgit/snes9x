@@ -306,7 +306,7 @@ S9xOpenSnapshotFile (const char *fname, bool8 read_only, STREAM *file)
     if (read_only)
     {
         if ((*file = OPEN_STREAM (filename, "rb")))
-            return (TRUE);
+            return (true);
         else
             fprintf (stderr,
                      "Failed to open file stream for reading. (%s)\n",
@@ -316,7 +316,7 @@ S9xOpenSnapshotFile (const char *fname, bool8 read_only, STREAM *file)
     {
         if ((*file = OPEN_STREAM (filename, "wb")))
         {
-            return (TRUE);
+            return (true);
         }
         else
         {
@@ -335,20 +335,20 @@ S9xOpenSnapshotFile (const char *fname, bool8 read_only, STREAM *file)
     {
         sprintf (command, "gzip -d <\"%s\"", filename);
         if (*file = popen (command, "r"))
-            return (TRUE);
+            return (true);
     }
     else
     {
         sprintf (command, "gzip --best >\"%s\"", filename);
         if (*file = popen (command, "wb"))
-            return (TRUE);
+            return (true);
     }
 
     fprintf (stderr, "gzip: Couldn't open snapshot file:\n%s\n", filename);
 
 #endif
 
-    return (FALSE);
+    return (false);
 }
 
 void S9xCloseSnapshotFile (STREAM file)

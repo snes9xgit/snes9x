@@ -82,7 +82,7 @@ typedef struct thread_job_t
     int line_start;
     int line_end;
 
-    volatile int complete;
+    volatile bool complete;
 }
 thread_job_t;
 

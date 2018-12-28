@@ -98,7 +98,7 @@ GtkBuilderWindow::signal_connect (GtkBuilderWindowCallbacks *callbacks)
 }
 
 void
-GtkBuilderWindow::enable_widget (const char *name, unsigned char state)
+GtkBuilderWindow::enable_widget (const char *name, bool state)
 {
     gtk_widget_set_sensitive (get_widget (name), state);
 }
@@ -150,8 +150,7 @@ GtkBuilderWindow::get_check (const char *name)
     return 0;
 }
 
-unsigned int
-GtkBuilderWindow::get_entry_value (const char *name)
+int GtkBuilderWindow::get_entry_value(const char *name)
 {
     return atoi (gtk_entry_get_text (GTK_ENTRY (get_widget (name))));;
 }
@@ -181,7 +180,7 @@ GtkBuilderWindow::set_slider (const char *name, float value)
 }
 
 void
-GtkBuilderWindow::set_check (const char *name, unsigned char value)
+GtkBuilderWindow::set_check (const char *name, bool value)
 {
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (get_widget (name)),
                                   value);
@@ -245,8 +244,7 @@ GtkBuilderWindow::get_spin (const char *name)
     return  gtk_spin_button_get_value (GTK_SPIN_BUTTON (get_widget (name)));
 }
 
-int
-GtkBuilderWindow::has_focus (const char *widget)
+bool GtkBuilderWindow::has_focus(const char *widget)
 {
     return gtk_widget_is_focus (get_widget (widget));
 }

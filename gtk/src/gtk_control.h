@@ -92,30 +92,28 @@ typedef struct Calibration
 
 class JoyDevice
 {
-    public:
-        JoyDevice (unsigned int device_num);
-        ~JoyDevice ();
-        int get_event (JoyEvent *event);
-        void flush ();
-        void handle_event (SDL_Event *event);
-        void register_centers ();
+  public:
+    JoyDevice (unsigned int device_num);
+    ~JoyDevice ();
+    int get_event (JoyEvent *event);
+    void flush ();
+    void handle_event (SDL_Event *event);
+    void register_centers ();
 
-        SDL_Joystick         *filedes;
-        Calibration          *calibration;
-        std::queue<JoyEvent> queue;
-        int                  mode;
-        int                  joynum;
-        int                  num_axes;
-        int                  num_hats;
-        int                  *axis;
-        int                  *hat;
-        bool                 enabled;
+    SDL_Joystick         *filedes;
+    Calibration          *calibration;
+    std::queue<JoyEvent> queue;
+    int                  mode;
+    int                  joynum;
+    int                  num_axes;
+    int                  num_hats;
+    int                  *axis;
+    int                  *hat;
+    bool                 enabled;
 
-
-    private:
-        void poll_events ();
-        void add_event (unsigned int parameter, unsigned int state);
-
+  private:
+    void poll_events ();
+    void add_event (unsigned int parameter, unsigned int state);
 };
 
 void S9xDeinitInputDevices ();

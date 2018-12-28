@@ -35,8 +35,8 @@ class Snes9xPreferences : public GtkBuilderWindow
 
         Snes9xConfig    *config;
         GtkToggleButton *last_toggled;
-        int             awaiting_key;
-        int             polling_joystick;
+        bool            awaiting_key;
+        bool            polling_joystick;
         JoypadBinding   pad[NUM_JOYPADS];
         Binding         shortcut[NUM_EMU_LINKS];
 

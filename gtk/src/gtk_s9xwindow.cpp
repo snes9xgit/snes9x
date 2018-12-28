@@ -38,7 +38,7 @@ event_main_window_delete (GtkWidget *widget,
 {
     S9xExit ();
 
-    return TRUE;
+    return true;
 }
 
 static gboolean
@@ -50,7 +50,7 @@ event_main_window_state_event (GtkWidget           *widget,
     window->fullscreen_state = event->new_window_state & GDK_WINDOW_STATE_FULLSCREEN;
     window->maximized_state  = event->new_window_state & GDK_WINDOW_STATE_MAXIMIZED;
 
-    return FALSE;
+    return false;
 }
 
 static gboolean
@@ -60,7 +60,7 @@ event_continue_item_activate (GtkWidget *widget, gpointer data)
 
     window->unpause_from_user ();
 
-    return TRUE;
+    return true;
 }
 
 static gboolean
@@ -72,7 +72,7 @@ event_open_cheats (GtkWidget *widget, gpointer data)
     cheats->show ();
     delete cheats;
 
-    return TRUE;
+    return true;
 }
 
 static gboolean
@@ -80,7 +80,7 @@ event_open_multicart (GtkWidget *widget, gpointer data)
 {
     ((Snes9xWindow *) data)->open_multicart_dialog ();
 
-    return TRUE;
+    return true;
 }
 
 static gboolean
@@ -90,7 +90,7 @@ event_rom_info (GtkWidget *widget, gpointer data)
 
     window->show_rom_info ();
 
-    return TRUE;
+    return true;
 }
 
 static gboolean
@@ -100,7 +100,7 @@ event_toggle_interface (GtkWidget *widget, gpointer data)
 
     window->toggle_ui ();
 
-    return TRUE;
+    return true;
 }
 
 static gboolean
@@ -108,7 +108,7 @@ event_show_statusbar (GtkWidget *widget, gpointer data)
 {
     ((Snes9xWindow *) data)->toggle_statusbar ();
 
-    return TRUE;
+    return true;
 }
 
 static gboolean
@@ -116,7 +116,7 @@ event_sync_clients (GtkWidget *widget, gpointer data)
 {
     S9xNetplaySyncClients ();
 
-    return TRUE;
+    return true;
 }
 
 static gboolean
@@ -126,7 +126,7 @@ event_pause_item_activate (GtkWidget *widget, gpointer data)
 
     window->pause_from_user ();
 
-    return TRUE;
+    return true;
 }
 
 static gboolean
@@ -134,7 +134,7 @@ event_open_netplay (GtkWidget *widget, gpointer data)
 {
     S9xNetplayDialogOpen ();
 
-    return TRUE;
+    return true;
 }
 
 #if GTK_MAJOR_VERSION >= 3
@@ -146,11 +146,11 @@ event_drawingarea_draw (GtkWidget *widget,
 
     Snes9xWindow *window = (Snes9xWindow *) data;
     window->cr = cr;
-    window->cairo_owned = FALSE;
+    window->cairo_owned = false;
     window->expose ();
     window->cr = NULL;
 
-    return TRUE;
+    return true;
 }
 
 #else
@@ -162,7 +162,7 @@ event_drawingarea_expose (GtkWidget      *widget,
 {
     ((Snes9xWindow *) data)->expose ();
 
-    return TRUE;
+    return true;
 }
 #endif
 
@@ -178,7 +178,7 @@ event_key (GtkWidget *widget, GdkEventKey *event, gpointer data)
     /* Ignore multiple identical keypresses to discard repeating keys */
     if (event->keyval == keyval && event->type == type)
     {
-        return TRUE;
+        return true;
     }
 
     /* Provide escape key to get out of fullscreen */
@@ -194,7 +194,7 @@ event_key (GtkWidget *widget, GdkEventKey *event, gpointer data)
                 window->toggle_ui ();
         }
 
-        return TRUE;
+        return true;
     }
 
     keyval = event->keyval;
@@ -213,10 +213,10 @@ event_key (GtkWidget *widget, GdkEventKey *event, gpointer data)
     if (cmd.type != S9xNoMapping)
     {
         S9xReportButton (b.hex (), (event->type == GDK_KEY_PRESS));
-        return TRUE;
+        return true;
     }
 
-    return FALSE; /* Pass the key to GTK */
+    return false; /* Pass the key to GTK */
 }
 
 gboolean
@@ -230,20 +230,20 @@ event_motion_notify (GtkWidget      *widget,
         window->last_width <= 0     ||
         window->last_height <= 0)
     {
-        return FALSE;
+        return false;
     }
 
     if (window->mouse_grabbed)
     {
         if (event->x_root == window->mouse_reported_x &&
             event->y_root == window->mouse_reported_y)
-            return FALSE;
+            return false;
 
         window->mouse_loc_x += (event->x_root - window->mouse_reported_x);
         window->mouse_loc_y += (event->y_root - window->mouse_reported_y);
         window->center_mouse ();
 
-        return FALSE;
+        return false;
     }
 
 #if GTK_CHECK_VERSION(3,10,0)
@@ -268,7 +268,7 @@ event_motion_notify (GtkWidget      *widget,
 
     window->config->pointer_timestamp = g_get_monotonic_time ();
 
-    return FALSE;
+    return false;
 }
 
 gboolean
@@ -289,7 +289,7 @@ event_button_press (GtkWidget      *widget,
             break;
     }
 
-    return FALSE;
+    return false;
 }
 
 gboolean
@@ -310,7 +310,7 @@ event_button_release (GtkWidget      *widget,
             break;
     }
 
-    return FALSE;
+    return false;
 }
 
 static void
@@ -359,9 +359,9 @@ static void
 event_record_movie (GtkWidget *widget, gpointer data)
 {
     if (S9xMovieActive ())
-        S9xMovieStop (FALSE);
+        S9xMovieStop (false);
 
-    S9xMovieCreate (S9xChooseMovieFilename (FALSE),
+    S9xMovieCreate (S9xChooseMovieFilename (false),
                     0xFF,
                     MOVIE_OPT_FROM_RESET,
                     NULL,
@@ -372,9 +372,9 @@ static void
 event_open_movie (GtkWidget *widget, gpointer data)
 {
     if (S9xMovieActive ())
-        S9xMovieStop (FALSE);
+        S9xMovieStop (false);
 
-    S9xMovieOpen (S9xChooseMovieFilename (TRUE), FALSE);
+    S9xMovieOpen (S9xChooseMovieFilename (true), false);
 }
 
 static void
@@ -391,7 +391,7 @@ static void
 event_stop_recording (GtkWidget *widget, gpointer data)
 {
     if (S9xMovieActive ())
-        S9xMovieStop (FALSE);
+        S9xMovieStop (false);
 }
 
 static void
@@ -483,17 +483,17 @@ event_save_spc (GtkWidget *widget, gpointer data)
 static gboolean
 event_focus_in (GtkWidget *widget, GdkEventFocus *event, gpointer data)
 {
-    ((Snes9xWindow *) data)->focus_notify (TRUE);
+    ((Snes9xWindow *) data)->focus_notify (true);
 
-    return FALSE;
+    return false;
 }
 
 static gboolean
 event_focus_out (GtkWidget *widget, GdkEventFocus *event, gpointer data)
 {
-    ((Snes9xWindow *) data)->focus_notify (FALSE);
+    ((Snes9xWindow *) data)->focus_notify (false);
 
-    return FALSE;
+    return false;
 }
 
 static void
@@ -609,11 +609,11 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
     recent_menu            = NULL;
     fullscreen_state       = 0;
     maximized_state        = 0;
-    focused                = 1;
-    paused_from_focus_loss = 0;
+    focused                = true;
+    paused_from_focus_loss = false;
     cr                     = NULL;
-    cairo_owned            = 0;
-    mouse_grabbed          = 0;
+    cairo_owned            = false;
+    mouse_grabbed          = false;
 
     if (gtk_icon_theme_has_icon (gtk_icon_theme_get_default (), "snes9x"))
     {
@@ -633,16 +633,16 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
 
     drawing_area = GTK_DRAWING_AREA (get_widget ("drawingarea"));
 #if GTK_MAJOR_VERSION < 3
-    gtk_widget_set_double_buffered (GTK_WIDGET (drawing_area), FALSE);
-    gtk_widget_set_app_paintable (GTK_WIDGET (drawing_area), TRUE);
+    gtk_widget_set_double_buffered (GTK_WIDGET (drawing_area), false);
+    gtk_widget_set_app_paintable (GTK_WIDGET (drawing_area), true);
 
 #endif
 
     gtk_widget_realize (window);
     gtk_widget_realize (GTK_WIDGET (drawing_area));
 #if GTK_MAJOR_VERSION < 3
-    gdk_window_set_back_pixmap (gtk_widget_get_window (window), NULL, FALSE);
-    gdk_window_set_back_pixmap (gtk_widget_get_window (GTK_WIDGET (drawing_area)), NULL, FALSE);
+    gdk_window_set_back_pixmap (gtk_widget_get_window (window), NULL, false);
+    gdk_window_set_back_pixmap (gtk_widget_get_window (GTK_WIDGET (drawing_area)), NULL, false);
 #endif
 
     gtk_check_menu_item_set_active (
@@ -653,7 +653,7 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
     gtk_widget_hide (get_widget ("shader_parameters_separator"));
     gtk_widget_hide (get_widget ("shader_parameters_item"));
 #else
-    enable_widget ("shader_parameters_item", FALSE);
+    enable_widget ("shader_parameters_item", false);
 #endif
 
 #if GTK_MAJOR_VERSION >= 3
@@ -735,21 +735,21 @@ Snes9xWindow::expose ()
 }
 
 void
-Snes9xWindow::focus_notify (int state)
+Snes9xWindow::focus_notify (bool state)
 {
-    focused = state ? 1 : 0;
+    focused = state;
 
     if (!state && config->pause_emulation_on_switch)
     {
         sys_pause++;
         propagate_pause_state ();
-        paused_from_focus_loss = TRUE;
+        paused_from_focus_loss = true;
     }
 
     if (state && paused_from_focus_loss)
     {
         unpause_from_focus_change ();
-        paused_from_focus_loss = FALSE;
+        paused_from_focus_loss = false;
     }
 }
 
@@ -791,7 +791,7 @@ Snes9xWindow::open_multicart_dialog ()
         else
             Settings.CartBName[0] = '\0';
 
-        Settings.Multi = TRUE;
+        Settings.Multi = true;
 
         if (S9xOpenROM (NULL))
         {
@@ -908,7 +908,7 @@ Snes9xWindow::open_rom_dialog ()
 
     if (filename)
     {
-        Settings.Multi = FALSE;
+        Settings.Multi = false;
         try_open_rom (filename);
 
         g_free (filename);
@@ -917,12 +917,11 @@ Snes9xWindow::open_rom_dialog ()
     unpause_from_focus_change ();
 }
 
-int
-Snes9xWindow::try_open_rom (const char *filename)
+bool Snes9xWindow::try_open_rom(const char *filename)
 {
     pause_from_focus_change ();
 
-    Settings.Multi = FALSE;
+    Settings.Multi = false;
 
     if (S9xOpenROM (filename))
     {
@@ -940,7 +939,7 @@ Snes9xWindow::try_open_rom (const char *filename)
 
         unpause_from_focus_change ();
 
-        return 1;
+        return false;
     }
     else
     {
@@ -954,7 +953,7 @@ Snes9xWindow::try_open_rom (const char *filename)
                 (gchar *) "Snes9x",
                 NULL,
                 (gchar **) groups,
-                FALSE
+                false
         };
         gchar *u_filename;
 
@@ -978,7 +977,7 @@ Snes9xWindow::try_open_rom (const char *filename)
 
     this->unpause_from_focus_change ();
 
-    return 0;
+    return true;
 }
 
 void
@@ -1265,7 +1264,7 @@ statusbar_timeout (gpointer data)
                        gtk_statusbar_get_context_id (GTK_STATUSBAR (data),
                                                      "info"));
 
-    return FALSE;
+    return false;
 }
 
 void
@@ -1419,7 +1418,7 @@ Snes9xWindow::configure_widgets ()
     {
         enable_widget ("fullscreen_item", config->rom_loaded);
 
-        config->ui_visible = TRUE;
+        config->ui_visible = true;
 
         if (!config->fullscreen)
         {
@@ -1438,7 +1437,7 @@ Snes9xWindow::configure_widgets ()
     }
     else
     {
-        enable_widget ("fullscreen_item", TRUE);
+        enable_widget ("fullscreen_item", true);
 
         gtk_widget_show (get_widget ("hide_ui"));
 
@@ -1491,7 +1490,7 @@ Snes9xWindow::reset_screensaver ()
     }
 #endif
 
-    config->screensaver_needs_reset = FALSE;
+    config->screensaver_needs_reset = false;
 }
 
 void
@@ -1674,7 +1673,7 @@ Snes9xWindow::enter_fullscreen_mode ()
 
     /* If we're running a game, disable ui when entering fullscreen */
     if (!Settings.Paused && config->rom_loaded)
-        config->ui_visible = FALSE;
+        config->ui_visible = false;
 
     configure_widgets ();
 }
@@ -1792,7 +1791,7 @@ Snes9xWindow::hide_mouse_cursor ()
 
     gdk_window_set_cursor (gtk_widget_get_window (GTK_WIDGET (drawing_area)),
                            empty_cursor);
-    config->pointer_is_visible = FALSE;
+    config->pointer_is_visible = false;
 }
 
 void
@@ -1800,7 +1799,7 @@ Snes9xWindow::show_mouse_cursor ()
 {
     gdk_window_set_cursor (gtk_widget_get_window (GTK_WIDGET (drawing_area)),
                            NULL);
-    config->pointer_is_visible = TRUE;
+    config->pointer_is_visible = true;
 }
 
 void
@@ -1846,7 +1845,7 @@ Snes9xWindow::toggle_grab_mouse ()
 #if GTK_MAJOR_VERSION < 3
     if (!mouse_grabbed)
     {
-        gdk_pointer_grab (gdk_window, TRUE, (GdkEventMask) 1020, gdk_window, empty_cursor, GDK_CURRENT_TIME);
+        gdk_pointer_grab (gdk_window, true, (GdkEventMask) 1020, gdk_window, empty_cursor, GDK_CURRENT_TIME);
         center_mouse ();
     }
     else
@@ -1860,7 +1859,7 @@ Snes9xWindow::toggle_grab_mouse ()
     GdkDevice *pointer = gdk_device_manager_get_client_pointer (manager);
 
     if (!mouse_grabbed)
-        gdk_device_grab (pointer, gdk_window, GDK_OWNERSHIP_NONE, TRUE,
+        gdk_device_grab (pointer, gdk_window, GDK_OWNERSHIP_NONE, true,
                          (GdkEventMask) 1020, empty_cursor, GDK_CURRENT_TIME);
     else
         gdk_device_ungrab (pointer, GDK_CURRENT_TIME);
@@ -1868,7 +1867,7 @@ Snes9xWindow::toggle_grab_mouse ()
     GdkSeat *seat = gdk_display_get_default_seat (gdk_display);
 
     if (!mouse_grabbed)
-        gdk_seat_grab (seat, gdk_window, GDK_SEAT_CAPABILITY_ALL_POINTING, TRUE,
+        gdk_seat_grab (seat, gdk_window, GDK_SEAT_CAPABILITY_ALL_POINTING, true,
                        empty_cursor, NULL, NULL, NULL);
     else
         gdk_seat_ungrab (seat);
@@ -1876,7 +1875,7 @@ Snes9xWindow::toggle_grab_mouse ()
 
     S9xReportPointer (BINDING_MOUSE_POINTER, 0, 0);
     mouse_loc_x = 0; mouse_loc_y = 0;
-    mouse_grabbed ^= 1;
+    mouse_grabbed = !mouse_grabbed;
     if (mouse_grabbed)
         center_mouse ();
 }
@@ -1896,8 +1895,8 @@ Snes9xWindow::show ()
         GtkRecentChooser *chooser = GTK_RECENT_CHOOSER (recent_menu);
 
         gtk_recent_filter_add_group (filter, "cartridge");
-        gtk_recent_chooser_set_local_only (chooser, TRUE);
-        gtk_recent_chooser_set_show_icons (chooser, FALSE);
+        gtk_recent_chooser_set_local_only (chooser, true);
+        gtk_recent_chooser_set_show_icons (chooser, false);
         gtk_recent_chooser_set_sort_type (chooser, GTK_RECENT_SORT_MRU);
         gtk_recent_chooser_add_filter (chooser, filter);
 
@@ -1927,14 +1926,14 @@ Snes9xWindow::propagate_pause_state ()
         {
             S9xSoundStart ();
             if (config->rom_loaded)
-                enable_widget ("pause_item", TRUE);
+                enable_widget ("pause_item", true);
 
             S9xDisplayClearBuffers ();
         }
         else
         {
             S9xSoundStop ();
-            enable_widget ("pause_item", FALSE);
+            enable_widget ("pause_item", false);
 
         }
 
@@ -1972,24 +1971,23 @@ Snes9xWindow::unpause_from_focus_change ()
 void
 Snes9xWindow::pause_from_user ()
 {
-    user_pause = TRUE;
+    user_pause = true;
     propagate_pause_state ();
 }
 
 void
 Snes9xWindow::unpause_from_user ()
 {
-    user_pause = FALSE;
+    user_pause = false;
     propagate_pause_state ();
 }
 
-unsigned char
-Snes9xWindow::is_paused ()
+bool Snes9xWindow::is_paused()
 {
     if (user_pause || sys_pause || Settings.Paused || !(config->rom_loaded))
-        return TRUE;
+        return true;
 
-    return FALSE;
+    return false;
 }
 
 void
@@ -2015,7 +2013,7 @@ Snes9xWindow::set_menu_item_accel_to_binding (const char *name,
         gtk_accel_map_change_entry (str,
                                     0,
                                     (GdkModifierType) 0,
-                                    TRUE);
+                                    true);
         return;
     }
 
@@ -2045,7 +2043,7 @@ Snes9xWindow::set_menu_item_accel_to_binding (const char *name,
         gtk_accel_map_change_entry (str,
                                     bin.get_key (),
                                     bin.get_gdk_modifiers (),
-                                    TRUE);
+                                    true);
     }
 }
 
@@ -2119,7 +2117,7 @@ Snes9xWindow::get_cairo ()
     cr = gdk_drawing_context_get_cairo_context (gdk_drawing_context);
 #endif
 
-    cairo_owned = TRUE;
+    cairo_owned = true;
     return cr;
 }
 
@@ -2134,7 +2132,7 @@ Snes9xWindow::release_cairo ()
         gdk_window_end_draw_frame (gtk_widget_get_window (GTK_WIDGET (drawing_area)), gdk_drawing_context);
         cairo_region_destroy (cairo_region);
 #endif
-        cairo_owned = FALSE;
+        cairo_owned = false;
         cr = NULL;
     }
 }

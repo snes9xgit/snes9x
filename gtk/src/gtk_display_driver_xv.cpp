@@ -217,7 +217,7 @@ S9xXVDisplayDriver::update_image_size (int width, int height)
             }
         }
 
-        shm.readOnly = FALSE;
+        shm.readOnly = false;
 
         xv_image->data = shm.shmaddr;
 
@@ -442,7 +442,7 @@ S9xXVDisplayDriver::init ()
         return -1;
     }
 
-    shm.readOnly = FALSE;
+    shm.readOnly = false;
 
     xv_image->data = shm.shmaddr;
 

@@ -62,18 +62,18 @@ Snes9xNetplayDialog::update_state ()
 {
     if (get_check ("host_radio"))
     {
-        enable_widget ("connect_box", FALSE);
-        enable_widget ("default_port_box", TRUE);
-        enable_widget ("sync_reset", TRUE);
-        enable_widget ("send_image", TRUE);
+        enable_widget ("connect_box", false);
+        enable_widget ("default_port_box", true);
+        enable_widget ("sync_reset", true);
+        enable_widget ("send_image", true);
     }
 
     else
     {
-        enable_widget ("connect_box", TRUE);
-        enable_widget ("default_port_box", FALSE);
-        enable_widget ("sync_reset", FALSE);
-        enable_widget ("send_image", FALSE);
+        enable_widget ("connect_box", true);
+        enable_widget ("default_port_box", false);
+        enable_widget ("sync_reset", false);
+        enable_widget ("send_image", false);
     }
 }
 
@@ -108,8 +108,7 @@ Snes9xNetplayDialog::settings_from_dialog ()
     config->save_config_file ();
 }
 
-int
-Snes9xNetplayDialog::show ()
+bool Snes9xNetplayDialog::show()
 {
     int result;
 
@@ -123,12 +122,12 @@ Snes9xNetplayDialog::show ()
     {
         settings_from_dialog ();
 
-        return TRUE;
+        return true;
     }
 
     else
     {
-        return FALSE;
+        return false;
     }
 
 }

@@ -16,7 +16,7 @@ class S9xOSSSoundDriver : public S9xSoundDriver
         S9xOSSSoundDriver ();
         void init ();
         void terminate ();
-        bool8 open_device ();
+        bool open_device ();
         void start ();
         void stop ();
         void samples_available ();

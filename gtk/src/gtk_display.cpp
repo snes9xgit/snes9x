@@ -1204,7 +1204,7 @@ thread_worker (gpointer data,
             break;
     }
 
-    job->complete = 1;
+    job->complete = true;
 }
 
 static void
@@ -1215,7 +1215,7 @@ create_thread_pool ()
         pool = g_thread_pool_new (thread_worker,
                                   NULL,
                                   gui_config->num_threads - 1,
-                                  TRUE,
+                                  true,
                                   NULL);
     }
 }
@@ -1245,7 +1245,7 @@ internal_threaded_convert (void *src_buffer,
         job[i].width = width;
         job[i].height = height / gui_config->num_threads;
         job[i].bpp = bpp;
-        job[i].complete = 0;
+        job[i].complete = false;
 
         g_thread_pool_push (pool, (gpointer) &(job[i]), NULL);
     }
@@ -1307,7 +1307,7 @@ internal_threaded_convert_mask (void *src_buffer,
         job[i].inv_rmask = inv_rmask;
         job[i].inv_gmask = inv_gmask;
         job[i].inv_bmask = inv_bmask;
-        job[i].complete = 0;
+        job[i].complete = false;
 
         g_thread_pool_push (pool, (gpointer) &(job[i]), NULL);
     }
@@ -1363,7 +1363,7 @@ internal_threaded_filter (uint8 *src_buffer,
     for (i = 0; i < gui_config->num_threads - 1; i++)
     {
         job[i].operation_type = JOB_FILTER;
-        job[i].complete = 0;
+        job[i].complete = false;
         job[i].width = width;
         job[i].src_pitch = src_pitch;
         job[i].dst_pitch = dst_pitch;
@@ -1548,7 +1548,7 @@ S9xQueryDrivers ()
 {
     GdkDisplay *display = gtk_widget_get_display (GTK_WIDGET (top_level->get_window()));
 
-    gui_config->allow_xv = 0;
+    gui_config->allow_xv = false;
 #if defined(USE_XV) && defined(GDK_WINDOWING_X11)
     if (GDK_IS_X11_DISPLAY (display))
         gui_config->allow_xv = S9xXVDisplayDriver::query_availability ();
@@ -1557,17 +1557,17 @@ S9xQueryDrivers ()
 #ifdef USE_OPENGL
     gui_config->allow_opengl = S9xOpenGLDisplayDriver::query_availability ();
 #else
-    gui_config->allow_opengl = 0;
+    gui_config->allow_opengl = false;
 #endif
 
-    gui_config->allow_xrandr = 0;
+    gui_config->allow_xrandr = false;
 #ifdef GDK_WINDOWING_X11
     if (GDK_IS_X11_DISPLAY (display))
     {
         Display *dpy = gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (top_level->get_window())));
         Window xid   = gdk_x11_window_get_xid (gtk_widget_get_window (GTK_WIDGET (top_level->get_window())));
 
-        gui_config->allow_xrandr = 1;
+        gui_config->allow_xrandr = true;
         gui_config->xrr_screen_resources = XRRGetScreenResourcesCurrent (dpy, xid);
         gui_config->xrr_crtc_info        = XRRGetCrtcInfo (dpy,
                                                         gui_config->xrr_screen_resources,
@@ -1646,7 +1646,7 @@ S9xDeinitUpdate (int width, int height)
 
     driver->update (width, height, yoffset);
 
-    return TRUE;
+    return true;
 }
 
 static void
@@ -1722,7 +1722,7 @@ S9xDeinitDisplay ()
     GFX.Screen = NULL;
 
     if (pool)
-        g_thread_pool_free (pool, FALSE, TRUE);
+        g_thread_pool_free (pool, false, true);
 }
 
 void
@@ -1755,13 +1755,13 @@ bool8
 S9xContinueUpdate (int width, int height)
 {
     S9xDeinitUpdate (width, height);
-    return TRUE;
+    return true;
 }
 
 bool8
 S9xInitUpdate ()
 {
-    return TRUE;
+    return true;
 }
 
 void
@@ -1894,7 +1894,7 @@ static void S9xGTKDisplayString (const char *string, int linesFromBottom,
 void
 S9xInitDisplay (int argc, char **argv)
 {
-    Settings.SupportHiRes = TRUE;
+    Settings.SupportHiRes = true;
     S9xBlit2xSaIFilterInit ();
 #ifdef USE_HQ2X
     S9xBlitHQ2xFilterInit ();

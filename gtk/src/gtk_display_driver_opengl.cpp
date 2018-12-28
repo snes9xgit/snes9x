@@ -358,7 +358,7 @@ void S9xOpenGLDisplayDriver::update_texture_size (int width, int height)
     }
 }
 
-int S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
+bool S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
 {
     int length = strlen (shader_file);
 
@@ -374,20 +374,20 @@ int S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
             npot = true;
 
             if (glsl_shader->param.size () > 0)
-                window->enable_widget ("shader_parameters_item", TRUE);
+                window->enable_widget ("shader_parameters_item", true);
 
             setlocale (LC_ALL, "");
-            return 1;
+            return true;
         }
 
         delete glsl_shader;
     }
 
     setlocale (LC_ALL, "");
-    return 0;
+    return false;
 }
 
-int S9xOpenGLDisplayDriver::opengl_defaults ()
+bool S9xOpenGLDisplayDriver::opengl_defaults()
 {
     npot = false;
     using_pbos = false;
@@ -528,7 +528,7 @@ int S9xOpenGLDisplayDriver::opengl_defaults ()
 
     glClearColor (0.0, 0.0, 0.0, 0.0);
 
-    return 1;
+    return true;
 }
 
 void S9xOpenGLDisplayDriver::refresh (int width, int height)
@@ -544,7 +544,7 @@ void S9xOpenGLDisplayDriver::resize ()
     output_window_height = context->height;
 }
 
-int S9xOpenGLDisplayDriver::create_context ()
+bool S9xOpenGLDisplayDriver::create_context()
 {
     gdk_window = gtk_widget_get_window (drawing_area);
 
@@ -562,10 +562,10 @@ int S9xOpenGLDisplayDriver::create_context ()
 #endif
 
     if (!context->attach (drawing_area))
-        return 0;
+        return false;
 
     if (!context->create_context ())
-        return 0;
+        return false;
 
     output_window_width = context->width;
     output_window_height = context->height;
@@ -592,7 +592,7 @@ int S9xOpenGLDisplayDriver::create_context ()
     if (version >= 31 || epoxy_has_gl_extension ("GL_ARB_sync"))
         fences = true;
 
-    return 1;
+    return true;
 }
 
 int S9xOpenGLDisplayDriver::init ()
@@ -666,7 +666,7 @@ void S9xOpenGLDisplayDriver::deinit ()
 
     if (using_glsl_shaders)
     {
-        window->enable_widget ("shader_parameters_item", FALSE);
+        window->enable_widget ("shader_parameters_item", false);
         gtk_shader_parameters_dialog_close ();
         glsl_shader->destroy();
         delete glsl_shader;

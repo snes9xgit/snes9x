@@ -83,8 +83,7 @@ S9xPortAudioSoundDriver::stop ()
     }
 }
 
-bool8
-S9xPortAudioSoundDriver::open_device ()
+bool S9xPortAudioSoundDriver::open_device()
 {
     PaStreamParameters  param;
     const PaDeviceInfo  *device_info;
@@ -101,7 +100,7 @@ S9xPortAudioSoundDriver::open_device ()
             fprintf (stderr,
                      "Couldn't reset audio stream.\nError: %s\n",
                      Pa_GetErrorText (err));
-            return TRUE;
+            return true;
         }
 
         audio_stream = NULL;
@@ -171,7 +170,7 @@ S9xPortAudioSoundDriver::open_device ()
     {
         fprintf (stderr,
                  "Couldn't initialize sound\n");
-        return FALSE;
+        return false;
     }
 
     S9xSetSamplesAvailableCallback (port_audio_samples_available_callback, this);
@@ -179,7 +178,7 @@ S9xPortAudioSoundDriver::open_device ()
     fflush (stdout);
     fflush (stderr);
 
-    return TRUE;
+    return true;
 }
 
 void

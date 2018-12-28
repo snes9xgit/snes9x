@@ -116,8 +116,7 @@ stream_state_callback (pa_stream *p, void *userdata)
     }
 }
 
-bool8
-S9xPulseSoundDriver::open_device ()
+bool S9xPulseSoundDriver::open_device()
 {
     int err = PA_ERR_UNKNOWN;
     pa_sample_spec ss;
@@ -201,7 +200,7 @@ S9xPulseSoundDriver::open_device ()
 
     unlock ();
 
-    return TRUE;
+    return true;
 
 error3:
     pa_stream_disconnect (stream);
@@ -215,7 +214,7 @@ error1:
 error0:
     printf ("Failed: %s\n", pa_strerror (err));
 
-    return FALSE;
+    return false;
 }
 
 void

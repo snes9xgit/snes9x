@@ -40,7 +40,7 @@ snes9x_preferences_open (GtkWidget *widget,
     config->rebind_keys ();
     window->update_accels ();
 
-    return TRUE;
+    return true;
 }
 
 static void
@@ -59,7 +59,7 @@ static void
 event_control_toggle (GtkToggleButton *widget, gpointer data)
 {
     Snes9xPreferences    *window = (Snes9xPreferences *) data;
-    static unsigned char toggle_lock = 0;
+    static bool          toggle_lock = false;
     const gchar          *name;
     bool                 state;
 
@@ -72,7 +72,7 @@ event_control_toggle (GtkToggleButton *widget, gpointer data)
     name = gtk_buildable_get_name (GTK_BUILDABLE (widget));
     state = gtk_toggle_button_get_active (widget);
 
-    toggle_lock = 1;
+    toggle_lock = true;
 
     for (int i = 0; b_links[i].button_name; i++)
     {
@@ -80,13 +80,13 @@ event_control_toggle (GtkToggleButton *widget, gpointer data)
         {
             gtk_toggle_button_set_active (
                 GTK_TOGGLE_BUTTON (window->get_widget (b_links[i].button_name)),
-                FALSE);
+                false);
         }
     }
 
     gtk_toggle_button_set_active (widget, state);
 
-    toggle_lock = 0;
+    toggle_lock = false;
 }
 
 static gboolean
@@ -100,7 +100,7 @@ event_key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_data)
 
     if ((focus = window->get_focused_binding ()) < 0)
     {
-        return FALSE; /* Don't keep key for ourselves */
+        return false; /* Don't keep key for ourselves */
     }
 
     /* Allow modifier keys to be used if page is set to the joypad bindings. */
@@ -118,7 +118,7 @@ event_key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_data)
             event->keyval == GDK_Alt_L     ||
             event->keyval == GDK_Alt_R)
         {
-            return FALSE;
+            return false;
         }
     }
 
@@ -134,13 +134,13 @@ event_key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_data)
         else
         {
             window->focus_next ();
-            return TRUE;
+            return true;
         }
     }
 
     window->store_binding (b_links[focus].button_name, key_binding);
 
-    return TRUE;
+    return true;
 }
 
 static void
@@ -402,14 +402,14 @@ poll_joystick (gpointer data)
                                            binding);
 
                     window->config->flush_joysticks ();
-                    return TRUE;
+                    return true;
                 }
 
             }
         }
     }
 
-    return TRUE;
+    return true;
 }
 
 void
@@ -450,11 +450,11 @@ event_auto_input_rate_toggled (GtkToggleButton *togglebutton, gpointer data)
     if (gtk_toggle_button_get_active (togglebutton))
     {
         preferences->set_slider("sound_input_rate", top_level->get_auto_input_rate ());
-        gtk_widget_set_sensitive (preferences->get_widget("sound_input_rate"), FALSE);
+        gtk_widget_set_sensitive (preferences->get_widget("sound_input_rate"), false);
     }
     else
     {
-        gtk_widget_set_sensitive (preferences->get_widget("sound_input_rate"), TRUE);
+        gtk_widget_set_sensitive (preferences->get_widget("sound_input_rate"), true);
     }
 }
 
@@ -644,11 +644,11 @@ Snes9xPreferences::move_settings_to_dialog ()
     if (top_level->get_auto_input_rate () == 0)
     {
         config->auto_input_rate = 0;
-        gtk_widget_set_sensitive (get_widget ("auto_input_rate"), FALSE);
+        gtk_widget_set_sensitive (get_widget ("auto_input_rate"), false);
     }
     set_check ("auto_input_rate",           config->auto_input_rate);
     gtk_widget_set_sensitive (get_widget("sound_input_rate"),
-                              config->auto_input_rate ? FALSE : TRUE);
+                              config->auto_input_rate ? false : true);
     set_spin  ("sound_buffer_size",         config->sound_buffer_size);
 
     if (Settings.SkipFrames == THROTTLE_SOUND_SYNC)
@@ -736,13 +736,13 @@ Snes9xPreferences::move_settings_to_dialog ()
 void
 Snes9xPreferences::get_settings_from_dialog ()
 {
-    int sound_needs_restart = 0;
-    int gfx_needs_restart = 0;
-    int sound_sync = 0;
+    bool sound_needs_restart = false;
+    bool gfx_needs_restart = false;
+    bool sound_sync = false;
 
     Settings.SkipFrames               = get_combo ("frameskip_combo");
     if (Settings.SkipFrames == THROTTLE_SOUND_SYNC)
-        sound_sync = 1;
+        sound_sync = true;
 
     if ((config->sound_driver        != get_combo ("sound_driver"))            ||
         (config->mute_sound          != get_check ("mute_sound_check"))        ||
@@ -754,7 +754,7 @@ Snes9xPreferences::get_settings_from_dialog ()
         (Settings.SoundSync          != sound_sync)                            ||
         (Settings.DynamicRateControl != get_check ("dynamic_rate_control")))
     {
-        sound_needs_restart = 1;
+        sound_needs_restart = true;
     }
 
     if ((config->change_display_resolution != get_check ("change_display_resolution") ||
@@ -775,13 +775,13 @@ Snes9xPreferences::get_settings_from_dialog ()
     config->change_display_resolution = get_check ("change_display_resolution");
 
     if (config->multithreading != get_check ("multithreading"))
-        gfx_needs_restart = 1;
+        gfx_needs_restart = true;
 
     if (config->hw_accel != hw_accel_value (get_combo ("hw_accel")))
-        gfx_needs_restart = 1;
+        gfx_needs_restart = true;
 
     if (config->force_inverted_byte_order != get_check ("force_inverted_byte_order"))
-        gfx_needs_restart = 1;
+        gfx_needs_restart = true;
 
     config->full_screen_on_open       = get_check ("full_screen_on_open");
     Settings.DisplayFrameRate         = get_check ("show_frame_rate");
@@ -858,7 +858,7 @@ Snes9xPreferences::get_settings_from_dialog ()
         config->use_shaders != get_check ("use_shaders") ||
         get_check ("use_shaders"))
     {
-        gfx_needs_restart = 1;
+        gfx_needs_restart = true;
     }
 
     config->sync_to_vblank            = get_check ("sync_to_vblank");
@@ -1017,7 +1017,7 @@ Snes9xPreferences::show ()
 {
     gint      result;
     GtkWidget *combo;
-    int       close_dialog;
+    bool      close_dialog;
     guint     source_id = -1;
 
 #ifdef GDK_WINDOWING_X11
@@ -1112,7 +1112,7 @@ Snes9xPreferences::show ()
     if (config->preferences_width > 0 && config->preferences_height > 0)
         resize (config->preferences_width, config->preferences_height);
 
-    for (close_dialog = 0; !close_dialog; )
+    for (close_dialog = false; !close_dialog; )
     {
         gtk_widget_show (window);
         result = gtk_dialog_run (GTK_DIALOG (window));
@@ -1125,7 +1125,7 @@ Snes9xPreferences::show ()
             case GTK_RESPONSE_OK:
                 get_settings_from_dialog ();
                 config->save_config_file ();
-                close_dialog = 1;
+                close_dialog = true;
                 gtk_widget_hide (window);
                 break;
 
@@ -1138,7 +1138,7 @@ Snes9xPreferences::show ()
             case GTK_RESPONSE_CLOSE:
             case GTK_RESPONSE_DELETE_EVENT:
                 gtk_widget_hide (window);
-                close_dialog = 1;
+                close_dialog = true;
                 break;
 
             default:

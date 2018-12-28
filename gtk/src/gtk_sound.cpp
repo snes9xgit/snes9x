@@ -146,7 +146,7 @@ S9xPortSoundInit ()
 
         S9xInitSound (gui_config->sound_buffer_size, 0);
 
-        S9xSetSoundMute (FALSE);
+        S9xSetSoundMute (false);
     }
     else
     {
@@ -191,7 +191,7 @@ bool8
 S9xOpenSoundDevice ()
 {
     if (gui_config->mute_sound)
-        return FALSE;
+        return false;
 
     gui_config->sound_buffer_size = CLAMP (gui_config->sound_buffer_size, 2, 256);
 

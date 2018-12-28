@@ -15,7 +15,7 @@ class Snes9xNetplayDialog : public GtkBuilderWindow
     public:
         Snes9xNetplayDialog (Snes9xConfig *config);
         ~Snes9xNetplayDialog ();
-        int show ();
+        bool show ();
         void update_state ();
 
     private:

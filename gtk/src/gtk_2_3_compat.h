@@ -26,8 +26,8 @@
 #else // GTK+ 2.0
 
 #define GDK_WINDOWING_X11
-#define GDK_IS_X11_WINDOW(window) TRUE
-#define GDK_IS_X11_DISPLAY(display) TRUE
+#define GDK_IS_X11_WINDOW(window) true
+#define GDK_IS_X11_DISPLAY(display) true
 #define gdk_x11_window_get_xid(window) GDK_WINDOW_XWINDOW (window)
 
 inline void gdk_window_get_geometry (GdkWindow *window,

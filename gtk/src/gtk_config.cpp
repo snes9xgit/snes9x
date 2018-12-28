@@ -76,37 +76,37 @@ Snes9xConfig::Snes9xConfig ()
 
 int Snes9xConfig::load_defaults ()
 {
-    full_screen_on_open = 0;
-    change_display_resolution = 0;
+    full_screen_on_open = false;
+    change_display_resolution = false;
     xrr_index = 0;
-    scale_to_fit = 1;
-    maintain_aspect_ratio = 1;
+    scale_to_fit = true;
+    maintain_aspect_ratio = true;
     aspect_ratio = 2;
     scale_method = 0;
-    overscan = 0;
+    overscan = false;
     save_sram_after_secs = 0;
-    rom_loaded = 0;
-    multithreading = 0;
+    rom_loaded = false;
+    multithreading = false;
     hw_accel = 0;
-    allow_opengl = 0;
-    allow_xv = 0;
-    allow_xrandr = 0;
-    force_inverted_byte_order = FALSE;
+    allow_opengl = false;
+    allow_xv = false;
+    allow_xrandr = false;
+    force_inverted_byte_order = false;
     hires_effect = HIRES_NORMAL;
-    pause_emulation_on_switch = 0;
+    pause_emulation_on_switch = false;
     num_threads = 2;
-    mute_sound = FALSE;
-    mute_sound_turbo = FALSE;
-    fullscreen = FALSE;
-    ui_visible = TRUE;
-    statusbar_visible = FALSE;
+    mute_sound = false;
+    mute_sound_turbo = false;
+    fullscreen = false;
+    ui_visible = true;
+    statusbar_visible = false;
     default_esc_behavior = 1;
-    prevent_screensaver = FALSE;
+    prevent_screensaver = false;
     sound_driver = 0;
     sound_buffer_size = 32;
     sound_playback_rate = 5;
     sound_input_rate = 31950;
-    auto_input_rate = TRUE;
+    auto_input_rate = true;
     last_directory[0] = '\0';
     last_shader_directory[0] = '\0';
     window_width = -1;
@@ -118,70 +118,70 @@ int Snes9xConfig::load_defaults ()
     savestate_directory[0] = '\0';
     cheat_directory[0] = '\0';
     patch_directory[0] = '\0';
-    screensaver_needs_reset = FALSE;
+    screensaver_needs_reset = false;
     ntsc_setup = snes_ntsc_composite;
     ntsc_scanline_intensity = 1;
     scanline_filter_intensity = 0;
-    Settings.BilinearFilter = FALSE;
-    netplay_activated = FALSE;
-    netplay_server_up = FALSE;
-    netplay_is_server = FALSE;
-    netplay_sync_reset = TRUE;
-    netplay_send_rom = FALSE;
+    Settings.BilinearFilter = false;
+    netplay_activated = false;
+    netplay_server_up = false;
+    netplay_is_server = false;
+    netplay_sync_reset = true;
+    netplay_send_rom = false;
     netplay_default_port = 6096;
     netplay_max_frame_loss = 10;
     netplay_last_rom [0] = '\0';
     netplay_last_host [0] = '\0';
     netplay_last_port = 6096;
-    modal_dialogs = 1;
+    modal_dialogs = true;
     current_save_slot = 0;
     S9xCheatsEnable ();
 
     rewind_granularity = 5;
     rewind_buffer_size = 0;
-    Settings.Rewinding = FALSE;
+    Settings.Rewinding = false;
 
 #ifdef USE_OPENGL
-    sync_to_vblank = 1;
-    use_pbos = 1;
+    sync_to_vblank = true;
+    use_pbos = true;
     pbo_format = 0;
-    npot_textures = FALSE;
-    use_shaders = 0;
+    npot_textures = false;
+    use_shaders = false;
     shader_filename[0] = '\0';
-    sync_every_frame = FALSE;
-    use_fences = FALSE;
+    sync_every_frame = false;
+    use_fences = false;
 #endif
 
     /* Snes9X Variables */
-    Settings.MouseMaster = TRUE;
-    Settings.SuperScopeMaster = TRUE;
-    Settings.JustifierMaster = TRUE;
-    Settings.MultiPlayer5Master = TRUE;
-    Settings.UpAndDown = FALSE;
+    Settings.MouseMaster = true;
+    Settings.SuperScopeMaster = true;
+    Settings.JustifierMaster = true;
+    Settings.MultiPlayer5Master = true;
+    Settings.UpAndDown = false;
     Settings.AutoSaveDelay = 0;
     Settings.SkipFrames = 0;
-    Settings.Transparency = TRUE;
-    Settings.DisplayFrameRate = FALSE;
-    Settings.SixteenBitSound = TRUE;
-    Settings.Stereo = TRUE;
-    Settings.ReverseStereo = FALSE;
+    Settings.Transparency = true;
+    Settings.DisplayFrameRate = false;
+    Settings.SixteenBitSound = true;
+    Settings.Stereo = true;
+    Settings.ReverseStereo = false;
     Settings.SoundPlaybackRate = 44100;
-    Settings.StopEmulation = TRUE;
+    Settings.StopEmulation = true;
     Settings.FrameTimeNTSC = 16666;
     Settings.FrameTimePAL = 20000;
     Settings.SupportHiRes = true;
     Settings.FrameTime = Settings.FrameTimeNTSC;
-    Settings.BlockInvalidVRAMAccessMaster = TRUE;
-    Settings.SoundSync = 0;
-    Settings.DynamicRateControl = FALSE;
+    Settings.BlockInvalidVRAMAccessMaster = true;
+    Settings.SoundSync = false;
+    Settings.DynamicRateControl = false;
     Settings.DynamicRateLimit = 5;
     Settings.InterpolationMethod = DSP_INTERPOLATION_GAUSSIAN;
     Settings.HDMATimingHack = 100;
     Settings.SuperFXClockMultiplier = 100;
-    Settings.NetPlay = FALSE;
-    NetPlay.Paused = FALSE;
+    Settings.NetPlay = false;
+    NetPlay.Paused = false;
     NetPlay.MaxFrameSkip = 10;
-    Settings.DisplayPressedKeys = FALSE;
+    Settings.DisplayPressedKeys = false;
 #ifdef ALLOW_CPU_OVERCLOCK
     Settings.MaxSpriteTilesPerLine = 34;
     Settings.OneClockCycle = 6;
@@ -669,9 +669,9 @@ int Snes9xConfig::load_config_file ()
 #endif
 
     if (Settings.SkipFrames == THROTTLE_SOUND_SYNC)
-        Settings.SoundSync = 1;
+        Settings.SoundSync = true;
     else
-        Settings.SoundSync = 0;
+        Settings.SoundSync = false;
 
     hires_effect = CLAMP (hires_effect, 0, 2);
     Settings.DynamicRateLimit = CLAMP (Settings.DynamicRateLimit, 1, 1000);
@@ -703,7 +703,7 @@ void Snes9xConfig::rebind_keys ()
 
             cmd = S9xGetPortCommandT (buf);
 
-            S9xMapButton (bin[button_i].base_hex (), cmd, FALSE);
+            S9xMapButton (bin[button_i].base_hex (), cmd, false);
         }
     }
 
@@ -713,18 +713,18 @@ void Snes9xConfig::rebind_keys ()
         cmd = S9xGetPortCommandT (buf);
         S9xMapButton (shortcut[i - NUM_JOYPAD_LINKS].base_hex (),
                       cmd,
-                      FALSE);
+                      false);
     }
 
     cmd = S9xGetPortCommandT ("Pointer Mouse1+Superscope+Justifier1");
-    S9xMapPointer (BINDING_MOUSE_POINTER, cmd, TRUE);
+    S9xMapPointer (BINDING_MOUSE_POINTER, cmd, true);
 
     cmd = S9xGetPortCommandT ("{Mouse1 L,Superscope Fire,Justifier1 Trigger}");
-    S9xMapButton (BINDING_MOUSE_BUTTON0, cmd, FALSE);
+    S9xMapButton (BINDING_MOUSE_BUTTON0, cmd, false);
 
     cmd = S9xGetPortCommandT ("{Justifier1 AimOffscreen Trigger,Superscope AimOffscreen}");
-    S9xMapButton (BINDING_MOUSE_BUTTON1, cmd, FALSE);
+    S9xMapButton (BINDING_MOUSE_BUTTON1, cmd, false);
 
     cmd = S9xGetPortCommandT ("{Mouse1 R,Superscope Cursor,Justifier1 Start}");
-    S9xMapButton (BINDING_MOUSE_BUTTON2, cmd, FALSE);
+    S9xMapButton (BINDING_MOUSE_BUTTON2, cmd, false);
 }

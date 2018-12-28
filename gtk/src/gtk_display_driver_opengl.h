@@ -44,11 +44,11 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
         bool is_ready ();
 
     private:
-        int opengl_defaults ();
+        bool opengl_defaults ();
         void swap_buffers ();
-        int load_shaders (const char *);
+        bool load_shaders (const char *);
         void update_texture_size (int width, int height);
-        int create_context ();
+        bool create_context ();
         void resize ();
 
         GLuint            stock_program;

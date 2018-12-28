@@ -169,7 +169,7 @@ bool WaylandEGLContext::create_context ()
     }
 
     wl_surface_set_buffer_scale (child, scale);
-    gdk_window_invalidate_rect (gdk_window, NULL, FALSE);
+    gdk_window_invalidate_rect (gdk_window, NULL, false);
 
     return true;
 }

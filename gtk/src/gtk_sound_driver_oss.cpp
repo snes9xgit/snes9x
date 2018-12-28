@@ -59,8 +59,7 @@ S9xOSSSoundDriver::stop ()
 {
 }
 
-bool8
-S9xOSSSoundDriver::open_device ()
+bool S9xOSSSoundDriver::open_device()
 {
     int temp;
     audio_buf_info info;
@@ -169,7 +168,7 @@ S9xOSSSoundDriver::open_device ()
 
     S9xSetSamplesAvailableCallback (oss_samples_available, this);
 
-    return TRUE;
+    return true;
 
 close_fail:
 
@@ -178,7 +177,7 @@ close_fail:
 fail:
     printf ("failed\n");
 
-    return FALSE;
+    return false;
 }
 
 void

@@ -112,7 +112,7 @@ int main (int argc, char *argv[])
     gui_config->rebind_keys ();
     top_level->update_accels ();
 
-    Settings.Paused = TRUE;
+    Settings.Paused = true;
     g_timeout_add (100, S9xPauseFunc, NULL);
     g_timeout_add (10000, S9xScreenSaverCheckFunc, NULL);
 
@@ -150,7 +150,7 @@ int main (int argc, char *argv[])
 int S9xOpenROM (const char *rom_filename)
 {
     uint32 flags;
-    bool8  loaded;
+    bool   loaded;
 
     if (gui_config->rom_loaded)
     {
@@ -161,7 +161,7 @@ int S9xOpenROM (const char *rom_filename)
 
     flags = CPU.Flags;
 
-    loaded = FALSE;
+    loaded = false;
 
     if (Settings.Multi)
         loaded = Memory.LoadMultiCart (Settings.CartAName, Settings.CartBName);
@@ -198,10 +198,10 @@ int S9xOpenROM (const char *rom_filename)
         {
             fprintf (stderr, _("Error opening: %s\n"), rom_filename);
 
-            loaded = FALSE;
+            loaded = false;
         }
         else
-            loaded = TRUE;
+            loaded = true;
     }
 
     if (loaded)
@@ -211,7 +211,7 @@ int S9xOpenROM (const char *rom_filename)
     else
     {
         CPU.Flags = flags;
-        Settings.Paused = 1;
+        Settings.Paused = true;
 
         S9xNoROMLoaded ();
         top_level->refresh ();
@@ -233,12 +233,12 @@ int S9xOpenROM (const char *rom_filename)
 
 void S9xROMLoaded ()
 {
-    gui_config->rom_loaded = TRUE;
+    gui_config->rom_loaded = true;
     top_level->configure_widgets ();
 
     if (gui_config->full_screen_on_open)
     {
-        Settings.Paused = FALSE;
+        Settings.Paused = false;
         top_level->enter_fullscreen_mode ();
     }
 
@@ -248,7 +248,7 @@ void S9xROMLoaded ()
 void S9xNoROMLoaded ()
 {
     S9xSoundStop ();
-    gui_config->rom_loaded = FALSE;
+    gui_config->rom_loaded = false;
     S9xDisplayRefresh (-1, -1);
     top_level->configure_widgets ();
     top_level->update_statusbar ();
@@ -256,10 +256,10 @@ void S9xNoROMLoaded ()
 
 static gboolean S9xPauseFunc (gpointer data)
 {
-    S9xProcessEvents (TRUE);
+    S9xProcessEvents (true);
 
     if (!gui_config->rom_loaded)
-        return TRUE;
+        return true;
 
     if (!S9xNetplayPush ())
     {
@@ -271,12 +271,12 @@ static gboolean S9xPauseFunc (gpointer data)
         /* Clear joystick queues */
         gui_config->flush_joysticks ();
 
-        S9xSetSoundMute (FALSE);
+        S9xSetSoundMute (false);
         S9xSoundStart ();
 
         if (Settings.NetPlay && NetPlay.Connected)
         {
-            S9xNPSendPause (FALSE);
+            S9xNPSendPause (false);
         }
 
         /* Resume high-performance callback */
@@ -285,10 +285,10 @@ static gboolean S9xPauseFunc (gpointer data)
                          NULL,
                          NULL);
         top_level->update_statusbar ();
-        return FALSE;
+        return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 gboolean S9xIdleFunc (gpointer data)
@@ -302,20 +302,20 @@ gboolean S9xIdleFunc (gpointer data)
 
         if (Settings.NetPlay && NetPlay.Connected)
         {
-            S9xNPSendPause (TRUE);
+            S9xNPSendPause (true);
         }
 
         /* Move to a timer-based function to use less CPU */
         g_timeout_add (100, S9xPauseFunc, NULL);
         top_level->update_statusbar ();
-        return FALSE;
+        return false;
     }
 
     S9xCheckPointerTimer ();
-    S9xProcessEvents (TRUE);
+    S9xProcessEvents (true);
 
     if (!S9xDisplayDriverIsReady ())
-        return TRUE;
+        return true;
 
     S9xThrottle ();
 
@@ -335,19 +335,19 @@ gboolean S9xIdleFunc (gpointer data)
         else if(IPPU.TotalEmulatedFrames % gui_config->rewind_granularity == 0)
             state_manager.push();
 
-        static int muted_from_turbo = FALSE;
-        static int mute_saved_state = FALSE;
+        static int muted_from_turbo = false;
+        static int mute_saved_state = false;
 
         if (Settings.TurboMode && !muted_from_turbo && gui_config->mute_sound_turbo)
         {
-            muted_from_turbo = TRUE;
+            muted_from_turbo = true;
             mute_saved_state = Settings.Mute;
-            S9xSetSoundMute (TRUE);
+            S9xSetSoundMute (true);
         }
 
         if (!Settings.TurboMode && muted_from_turbo)
         {
-            muted_from_turbo = FALSE;
+            muted_from_turbo = false;
             Settings.Mute = mute_saved_state;
         }
 
@@ -356,7 +356,7 @@ gboolean S9xIdleFunc (gpointer data)
         S9xNetplayPop ();
     }
 
-    return TRUE;
+    return true;
 }
 
 gboolean S9xScreenSaverCheckFunc (gpointer data)
@@ -367,7 +367,7 @@ gboolean S9xScreenSaverCheckFunc (gpointer data)
          gui_config->prevent_screensaver))
         top_level->reset_screensaver ();
 
-    return TRUE;
+    return true;
 }
 
 /* Snes9x core hooks */
@@ -450,7 +450,7 @@ void S9xParseArg (char **argv, int &i, int argc)
     }
     else if (!strcasecmp (argv[i], "-mutesound"))
     {
-        gui_config->mute_sound = TRUE;
+        gui_config->mute_sound = true;
     }
 }
 
@@ -466,7 +466,7 @@ static void S9xThrottle ()
     if (Settings.HighSpeedSeek > 0)
     {
         Settings.HighSpeedSeek--;
-        IPPU.RenderThisFrame = FALSE;
+        IPPU.RenderThisFrame = false;
         IPPU.SkippedFrames = 0;
         frame_clock = now;
 
@@ -481,12 +481,12 @@ static void S9xThrottle ()
         {
             IPPU.FrameSkip = 0;
             IPPU.SkippedFrames = 0;
-            IPPU.RenderThisFrame = TRUE;
+            IPPU.RenderThisFrame = true;
         }
         else
         {
             IPPU.SkippedFrames++;
-            IPPU.RenderThisFrame = FALSE;
+            IPPU.RenderThisFrame = false;
         }
 
         frame_clock = now;
@@ -494,7 +494,7 @@ static void S9xThrottle ()
         return;
     }
 
-    IPPU.RenderThisFrame = TRUE;
+    IPPU.RenderThisFrame = true;
 
     if (now - frame_clock > 500000)
     {
@@ -535,7 +535,7 @@ static void S9xThrottle ()
 
                 if (IPPU.SkippedFrames < 8)
                 {
-                    IPPU.RenderThisFrame = FALSE;
+                    IPPU.RenderThisFrame = false;
                     frame_clock += Settings.FrameTime;
                     return;
                 }
@@ -570,7 +570,7 @@ static void S9xCheckPointerTimer ()
     if (g_get_monotonic_time () - gui_config->pointer_timestamp > 1000000)
     {
         top_level->hide_mouse_cursor ();
-        gui_config->pointer_is_visible = FALSE;
+        gui_config->pointer_is_visible = false;
     }
 }
 
@@ -583,7 +583,7 @@ void S9xExit ()
 
     S9xPortSoundDeinit ();
 
-    Settings.StopEmulation = TRUE;
+    Settings.StopEmulation = true;
 
     if (gui_config->rom_loaded)
     {

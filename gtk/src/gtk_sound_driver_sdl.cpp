@@ -77,8 +77,7 @@ S9xSDLSoundDriver::stop ()
     }
 }
 
-bool8
-S9xSDLSoundDriver::open_device ()
+bool S9xSDLSoundDriver::open_device()
 {
     audiospec = (SDL_AudioSpec *) malloc (sizeof (SDL_AudioSpec));
 
@@ -101,12 +100,12 @@ S9xSDLSoundDriver::open_device ()
         free (audiospec);
         audiospec = NULL;
 
-        return FALSE;
+        return false;
     }
 
     printf ("OK\n");
 
     S9xSetSamplesAvailableCallback (samples_available, NULL);
 
-    return TRUE;
+    return true;
 }

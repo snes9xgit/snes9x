@@ -159,11 +159,11 @@ bool S9xIsMousePluggedIn ()
 bool S9xGrabJoysticks ()
 {
     if (joystick_lock)
-        return FALSE;
+        return false;
 
     joystick_lock++;
 
-    return TRUE;
+    return true;
 }
 
 void S9xReleaseJoysticks ()
@@ -200,21 +200,21 @@ static void change_slot (int difference)
 
 void S9xHandlePortCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 {
-    static bool quit_binding_down = FALSE;
+    static bool quit_binding_down = false;
 
-    if (data1 == TRUE)
+    if (data1 == true)
     {
         if (cmd.port[0] == PORT_QUIT)
-            quit_binding_down = TRUE;
+            quit_binding_down = true;
         else if (cmd.port[0] == PORT_REWIND)
-            Settings.Rewinding = TRUE;
+            Settings.Rewinding = true;
     }
 
-    if (data1 == FALSE) /* Release */
+    if (data1 == false) /* Release */
     {
         if (cmd.port[0] != PORT_QUIT)
         {
-            quit_binding_down = FALSE;
+            quit_binding_down = false;
         }
 
         if (cmd.port[0] == PORT_COMMAND_FULLSCREEN)
@@ -242,7 +242,7 @@ void S9xHandlePortCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 
         else if (cmd.port[0] == PORT_REWIND)
         {
-            Settings.Rewinding = FALSE;
+            Settings.Rewinding = false;
         }
 
         else if (cmd.port[0] == PORT_SEEK_TO_FRAME)
@@ -477,7 +477,7 @@ void S9xProcessEvents (bool8 block)
             {
                 binding = Binding (i, event.parameter, 0);
                 S9xReportButton (binding.hex (), event.state == JOY_PRESSED ? 1 : 0);
-                gui_config->screensaver_needs_reset = TRUE;
+                gui_config->screensaver_needs_reset = true;
             }
         }
 

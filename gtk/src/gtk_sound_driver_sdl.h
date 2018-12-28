@@ -18,7 +18,7 @@ class S9xSDLSoundDriver : public S9xSoundDriver
         S9xSDLSoundDriver ();
         void init ();
         void terminate ();
-        bool8 open_device ();
+        bool open_device ();
         void start ();
         void stop ();
         void mix (unsigned char *output, int bytes);

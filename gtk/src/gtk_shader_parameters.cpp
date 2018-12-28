@@ -132,8 +132,8 @@ bool gtk_shader_parameters_dialog (GtkWindow *parent)
 
 #if GTK_MAJOR_VERSION >= 3
 
-    gtk_widget_set_hexpand (scrolled_window, TRUE);
-    gtk_widget_set_vexpand (scrolled_window, TRUE);
+    gtk_widget_set_hexpand (scrolled_window, true);
+    gtk_widget_set_vexpand (scrolled_window, true);
     gtk_widget_set_margin_start (scrolled_window, 5);
     gtk_widget_set_margin_end (scrolled_window, 5);
     gtk_widget_set_margin_top (scrolled_window, 5);
@@ -141,7 +141,7 @@ bool gtk_shader_parameters_dialog (GtkWindow *parent)
 
     GtkWidget *vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
     GtkWidget *grid = gtk_grid_new ();
-    gtk_grid_set_row_homogeneous (GTK_GRID (grid), TRUE);
+    gtk_grid_set_row_homogeneous (GTK_GRID (grid), true);
     gtk_grid_set_column_spacing (GTK_GRID (grid), 12);
     gtk_container_add (GTK_CONTAINER (vbox), grid);
     gtk_container_add (GTK_CONTAINER (scrolled_window), vbox);
@@ -165,10 +165,10 @@ bool gtk_shader_parameters_dialog (GtkWindow *parent)
         else
         {
             GtkWidget *scale = gtk_scale_new_with_range (GTK_ORIENTATION_HORIZONTAL, p->min, p->max, p->step);
-            gtk_widget_set_hexpand (scale, TRUE);
+            gtk_widget_set_hexpand (scale, true);
             gtk_grid_attach (GTK_GRID (grid), scale, 1, i, 1, 1);
             gtk_scale_set_value_pos (GTK_SCALE (scale), GTK_POS_LEFT);
-            gtk_scale_set_draw_value (GTK_SCALE (scale), TRUE);
+            gtk_scale_set_draw_value (GTK_SCALE (scale), true);
             gtk_scale_set_digits (GTK_SCALE (scale), 3);
             gtk_range_set_value (GTK_RANGE (scale), p->val);
             g_signal_connect_data (G_OBJECT (scale),
@@ -180,8 +180,8 @@ bool gtk_shader_parameters_dialog (GtkWindow *parent)
         }
     }
 #else
-    GtkWidget *vbox = gtk_vbox_new (FALSE, 5);
-    GtkWidget *table = gtk_table_new (params->size (), 2, FALSE);
+    GtkWidget *vbox = gtk_vbox_new (false, 5);
+    GtkWidget *table = gtk_table_new (params->size (), 2, false);
     gtk_table_set_row_spacings (GTK_TABLE (table), 5);
     gtk_table_set_col_spacings (GTK_TABLE (table), 12);
     gtk_container_add (GTK_CONTAINER (vbox), table);
@@ -210,7 +210,7 @@ bool gtk_shader_parameters_dialog (GtkWindow *parent)
             GtkWidget *scale = gtk_hscale_new_with_range (p->min, p->max, p->step);
             gtk_table_attach (GTK_TABLE (table), scale, 1, 2, i, i + 1, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), GTK_FILL, 0, 0);
             gtk_scale_set_value_pos (GTK_SCALE (scale), GTK_POS_LEFT);
-            gtk_scale_set_draw_value (GTK_SCALE (scale), TRUE);
+            gtk_scale_set_draw_value (GTK_SCALE (scale), true);
             gtk_scale_set_digits (GTK_SCALE (scale), 3);
             gtk_range_set_value (GTK_RANGE (scale), p->val);
             g_signal_connect_data (G_OBJECT (scale),
