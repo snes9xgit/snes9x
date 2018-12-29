@@ -619,13 +619,11 @@ else
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
-	@echo "** BUILDING $(TARGET) FOR PLATFORM $(platform) **"
 ifeq ($(STATIC_LINKING), 1)
 	$(AR) rcs $@ $(OBJECTS)
 else
 	+$(LD) $(fpic) $(SHARED) $(LINKOUT)$@ $(OBJECTS) $(LDFLAGS) $(LIBS)
 endif
-	@echo "** BUILD SUCCESSFUL! GG NO RE **"
 
 %.o: %.cpp 
 	$(CXX) $(INCFLAGS) $(CPPFLAGS) $(CXXFLAGS) -c $(OBJOUT)$@ $<
