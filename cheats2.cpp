@@ -4,6 +4,8 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
+#include <ctype.h>
+
 #include "snes9x.h"
 #include "memmap.h"
 #include "cheats.h"
