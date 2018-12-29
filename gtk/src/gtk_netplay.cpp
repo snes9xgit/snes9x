@@ -42,13 +42,13 @@ S9xNetplayConnect ()
 
     uint32 flags = CPU.Flags;
 
-    if (*(gui_config->netplay_last_rom) &&
-        !top_level->try_open_rom (gui_config->netplay_last_rom))
+    if (!gui_config->netplay_last_rom.empty () &&
+        !top_level->try_open_rom (gui_config->netplay_last_rom.c_str ()))
     {
         return;
     }
 
-    if (!S9xNPConnectToServer (gui_config->netplay_last_host,
+    if (!S9xNPConnectToServer (gui_config->netplay_last_host.c_str (),
                                gui_config->netplay_last_port,
                                Memory.ROMName))
     {
@@ -57,7 +57,7 @@ S9xNetplayConnect ()
                                       GTK_MESSAGE_ERROR,
                                       GTK_BUTTONS_CLOSE,
                                       "Couldn't connect to server: %s:%d",
-                                      gui_config->netplay_last_host,
+                                      gui_config->netplay_last_host.c_str (),
                                       gui_config->netplay_last_port);
         gtk_window_set_title (GTK_WINDOW (msg), _("Connection Error"));
 
@@ -68,7 +68,7 @@ S9xNetplayConnect ()
     gui_config->netplay_activated = true;
 
     /* If no rom is specified, assume we'll get it from the server */
-    if (*(gui_config->netplay_last_rom) == 0)
+    if (gui_config->netplay_last_rom.empty ())
     {
         Settings.StopEmulation = false;
         S9xROMLoaded ();
@@ -135,8 +135,8 @@ S9xNetplayStartServer ()
 
     flags = CPU.Flags;
 
-    if (*(gui_config->netplay_last_rom) == 0 ||
-        !top_level->try_open_rom (gui_config->netplay_last_rom))
+    if (gui_config->netplay_last_rom.empty () ||
+        !top_level->try_open_rom (gui_config->netplay_last_rom.c_str ()))
     {
         return;
     }

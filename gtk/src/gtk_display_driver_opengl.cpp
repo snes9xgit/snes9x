@@ -405,7 +405,7 @@ bool S9xOpenGLDisplayDriver::opengl_defaults()
 
     if (config->use_shaders)
     {
-        if (legacy || !load_shaders (config->shader_filename))
+        if (legacy || !load_shaders (config->shader_filename.c_str ()))
         {
             config->use_shaders = false;
         }

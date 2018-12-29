@@ -107,17 +107,17 @@ int Snes9xConfig::load_defaults ()
     sound_playback_rate = 5;
     sound_input_rate = 31950;
     auto_input_rate = true;
-    last_directory[0] = '\0';
-    last_shader_directory[0] = '\0';
+    last_directory.clear ();
+    last_shader_directory.clear ();
     window_width = -1;
     window_height = -1;
     preferences_width = -1;
     preferences_height = -1;
-    sram_directory[0] = '\0';
-    export_directory[0] = '\0';
-    savestate_directory[0] = '\0';
-    cheat_directory[0] = '\0';
-    patch_directory[0] = '\0';
+    sram_directory.clear ();
+    export_directory.clear ();
+    savestate_directory.clear ();
+    cheat_directory.clear ();
+    patch_directory.clear ();
     screensaver_needs_reset = false;
     ntsc_setup = snes_ntsc_composite;
     ntsc_scanline_intensity = 1;
@@ -130,8 +130,8 @@ int Snes9xConfig::load_defaults ()
     netplay_send_rom = false;
     netplay_default_port = 6096;
     netplay_max_frame_loss = 10;
-    netplay_last_rom [0] = '\0';
-    netplay_last_host [0] = '\0';
+    netplay_last_rom.clear ();
+    netplay_last_host.clear ();
     netplay_last_port = 6096;
     modal_dialogs = true;
     current_save_slot = 0;
@@ -147,7 +147,7 @@ int Snes9xConfig::load_defaults ()
     pbo_format = 0;
     npot_textures = false;
     use_shaders = false;
-    shader_filename[0] = '\0';
+    shader_filename.clear ();
     sync_every_frame = false;
     use_fences = false;
 #endif
@@ -421,7 +421,6 @@ int Snes9xConfig::load_config_file ()
     std::string path;
     ConfigFile  cf;
     char        key[PATH_MAX];
-    char        buffer[PATH_MAX];
 
     load_defaults ();
 
@@ -456,7 +455,7 @@ int Snes9xConfig::load_config_file ()
 #define inbool(key, var) { if (cf.Exists (key)) var = cf.GetBool (key); }
 #define inint(key, var) { if (cf.Exists(key)) var = cf.GetInt (key); }
 #define infloat(key, var) { if (cf.Exists(key)) var = atof (cf.GetString (key, none).c_str()); }
-#define instr(key, var) strcpy (var, cf.GetString (key, none).c_str())
+#define instr(key, var) var = cf.GetString (key, none);
 
 #undef z
 #define z "Display::"
@@ -586,8 +585,8 @@ int Snes9xConfig::load_config_file ()
 
     for (int i = 0; i < 2; i++)
     {
-        snprintf (buffer, PATH_MAX, z"ControllerPort%d", i);
-        std::string tmp = cf.GetString (buffer, "");
+        snprintf (key, PATH_MAX, z"ControllerPort%d", i);
+        std::string tmp = cf.GetString (key, "");
 
         if (tmp.find ("joypad") != std::string::npos)
             S9xSetController (i, CTL_JOYPAD, i, 0, 0, 0);
@@ -605,6 +604,8 @@ int Snes9xConfig::load_config_file ()
 
 #undef z
 
+    std::string buffer;
+
     for (int i = 0; i < NUM_JOYPADS; i++)
     {
         Binding *joypad = (Binding *) &pad[i];
@@ -613,7 +614,7 @@ int Snes9xConfig::load_config_file ()
         {
             snprintf (key, PATH_MAX, "Joypad %d::%s", i, b_links[j].snes9x_name);
             instr (key, buffer);
-            joypad[j] = Binding (buffer);
+            joypad[j] = Binding (buffer.c_str ());
         }
     }
 
@@ -621,7 +622,7 @@ int Snes9xConfig::load_config_file ()
     {
         snprintf (key, PATH_MAX, "Shortcuts::%s", b_links[i].snes9x_name);
         instr (key, buffer);
-        shortcut[i - NUM_JOYPAD_LINKS] = Binding (buffer);
+        shortcut[i - NUM_JOYPAD_LINKS] = Binding (buffer.c_str ());
     }
 
     /* Validation */

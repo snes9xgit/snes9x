@@ -144,24 +144,24 @@ S9xGetDirectory (enum s9x_getdirtype dirtype)
             break;
 
         case SNAPSHOT_DIR:
-            sprintf (path, "%s", gui_config->savestate_directory);
+            sstrncpy (path, gui_config->savestate_directory.c_str (), PATH_MAX + 1);
             break;
 
         case PATCH_DIR:
-            sprintf (path, "%s", gui_config->patch_directory);
+            sstrncpy (path, gui_config->patch_directory.c_str (), PATH_MAX + 1);
             break;
 
         case CHEAT_DIR:
-            sprintf (path, "%s", gui_config->cheat_directory);
+            sstrncpy (path, gui_config->cheat_directory.c_str (), PATH_MAX + 1);
             break;
 
         case SRAM_DIR:
-            sprintf (path, "%s", gui_config->sram_directory);
+            sstrncpy (path, gui_config->sram_directory.c_str (), PATH_MAX + 1);
             break;
 
         case SCREENSHOT_DIR:
         case SPC_DIR:
-            sprintf (path, "%s", gui_config->export_directory);
+            sstrncpy (path, gui_config->export_directory.c_str (), PATH_MAX + 1);
             break;
 
         default:
@@ -435,10 +435,10 @@ S9xOpenROMDialog ()
     gtk_file_filter_add_pattern (filter, "*");
     gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (dialog), filter);
 
-    if (strcmp (gui_config->last_directory, ""))
+    if (!gui_config->last_directory.empty ())
     {
         gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (dialog),
-                                             gui_config->last_directory);
+                                             gui_config->last_directory.c_str ());
     }
 
     result = gtk_dialog_run (GTK_DIALOG (dialog));
@@ -453,7 +453,7 @@ S9xOpenROMDialog ()
             gtk_file_chooser_get_current_folder (GTK_FILE_CHOOSER (dialog));
         if (directory)
         {
-            sstrncpy (gui_config->last_directory, directory, PATH_MAX);
+            gui_config->last_directory = directory;
             g_free (directory);
         }
     }

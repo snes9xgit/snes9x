@@ -768,8 +768,8 @@ Snes9xWindow::open_multicart_dialog ()
     slota = GTK_FILE_CHOOSER (dialog->get_widget ("multicart_slota"));
     slotb = GTK_FILE_CHOOSER (dialog->get_widget ("multicart_slotb"));
 
-    gtk_file_chooser_set_current_folder (slota, config->last_directory);
-    gtk_file_chooser_set_current_folder (slotb, config->last_directory);
+    gtk_file_chooser_set_current_folder (slota, config->last_directory.c_str ());
+    gtk_file_chooser_set_current_folder (slotb, config->last_directory.c_str ());
 
     result = gtk_dialog_run (GTK_DIALOG (multicart_dialog));
 

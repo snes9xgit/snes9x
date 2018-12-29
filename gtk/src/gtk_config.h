@@ -91,13 +91,13 @@ class Snes9xConfig
 
     /* Data options */
     int save_sram_after_secs;
-    char sram_directory [PATH_MAX];
-    char savestate_directory [PATH_MAX];
-    char cheat_directory [PATH_MAX];
-    char patch_directory [PATH_MAX];
-    char export_directory [PATH_MAX];
-    char last_directory [PATH_MAX];
-    char last_shader_directory [PATH_MAX];
+    std::string sram_directory;
+    std::string savestate_directory;
+    std::string cheat_directory;
+    std::string patch_directory;
+    std::string export_directory;
+    std::string last_directory;
+    std::string last_shader_directory;
 
     /* Controls */
     JoypadBinding pad[NUM_JOYPADS];
@@ -109,8 +109,8 @@ class Snes9xConfig
     bool netplay_send_rom;
     int netplay_default_port;
     int netplay_max_frame_loss;
-    char netplay_last_rom [PATH_MAX];
-    char netplay_last_host [PATH_MAX];
+    std::string netplay_last_rom;
+    std::string netplay_last_host;
     int netplay_last_port;
     bool netplay_activated;
     bool netplay_server_up;
@@ -148,7 +148,7 @@ class Snes9xConfig
     int pbo_format;
     bool npot_textures;
     bool use_shaders;
-    char shader_filename[PATH_MAX];
+    std::string shader_filename;
     bool sync_every_frame;
     bool use_fences;
 #endif

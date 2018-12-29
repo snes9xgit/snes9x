@@ -80,8 +80,8 @@ Snes9xNetplayDialog::update_state ()
 void
 Snes9xNetplayDialog::settings_to_dialog ()
 {
-    set_entry_text ("rom_image", config->netplay_last_rom);
-    set_entry_text ("ip_entry", config->netplay_last_host);
+    set_entry_text ("rom_image", config->netplay_last_rom.c_str ());
+    set_entry_text ("ip_entry", config->netplay_last_host.c_str ());
     set_check ("sync_reset", config->netplay_sync_reset);
     set_check ("send_image", config->netplay_send_rom);
     set_spin ("port", config->netplay_last_port);
@@ -96,8 +96,8 @@ Snes9xNetplayDialog::settings_to_dialog ()
 void
 Snes9xNetplayDialog::settings_from_dialog ()
 {
-    sstrncpy (config->netplay_last_rom, get_entry_text ("rom_image"), PATH_MAX);
-    sstrncpy (config->netplay_last_host, get_entry_text ("ip_entry"), PATH_MAX);
+    config->netplay_last_rom = get_entry_text ("rom_image");
+    config->netplay_last_host = get_entry_text ("ip_entry");
     config->netplay_sync_reset = get_check ("sync_reset");
     config->netplay_send_rom = get_check ("send_image");
     config->netplay_last_port = get_spin ("port");
