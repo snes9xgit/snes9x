@@ -4585,7 +4585,7 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					// ReInitSound();
 
                     EndDialog(hDlg, 1);
-
+                    return true;
 				}
 
 				case IDCANCEL:
