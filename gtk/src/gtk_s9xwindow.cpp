@@ -1820,11 +1820,6 @@ Snes9xWindow::center_mouse ()
 #if GTK_MAJOR_VERSION < 3
     gdk_display_warp_pointer (gdk_display, gdk_screen, mouse_reported_x,
                               mouse_reported_y);
-#elif GTK_MINOR_VERSION < 20
-    GdkDeviceManager *manager = gdk_display_get_device_manager (gdk_display);
-    GdkDevice *pointer = gdk_device_manager_get_client_pointer (manager);
-
-    gdk_device_warp (pointer, gdk_screen, mouse_reported_x, mouse_reported_y);
 #else
     GdkSeat *seat = gdk_display_get_default_seat (gdk_display);
     GdkDevice *pointer = gdk_seat_get_pointer (seat);
@@ -1854,15 +1849,6 @@ Snes9xWindow::toggle_grab_mouse ()
         if (config->pointer_is_visible)
             show_mouse_cursor ();
     }
-#elif GTK_MINOR_VERSION < 20
-    GdkDeviceManager *manager = gdk_display_get_device_manager (gdk_display);
-    GdkDevice *pointer = gdk_device_manager_get_client_pointer (manager);
-
-    if (!mouse_grabbed)
-        gdk_device_grab (pointer, gdk_window, GDK_OWNERSHIP_NONE, true,
-                         (GdkEventMask) 1020, empty_cursor, GDK_CURRENT_TIME);
-    else
-        gdk_device_ungrab (pointer, GDK_CURRENT_TIME);
 #else
     GdkSeat *seat = gdk_display_get_default_seat (gdk_display);
 

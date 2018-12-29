@@ -21,8 +21,8 @@ gboolean
 snes9x_preferences_open (GtkWidget *widget,
                          gpointer  data)
 {
-    Snes9xWindow      *window = ((Snes9xWindow *) data);
-    Snes9xConfig      *config = window->config;
+    Snes9xWindow *window = ((Snes9xWindow *) data);
+    Snes9xConfig *config = window->config;
 
     window->pause_from_focus_change ();
 
@@ -58,10 +58,10 @@ event_calibrate (GtkButton *widget, gpointer data)
 static void
 event_control_toggle (GtkToggleButton *widget, gpointer data)
 {
-    Snes9xPreferences    *window = (Snes9xPreferences *) data;
-    static bool          toggle_lock = false;
-    const gchar          *name;
-    bool                 state;
+    Snes9xPreferences *window = (Snes9xPreferences *) data;
+    static bool       toggle_lock = false;
+    const gchar       *name;
+    bool              state;
 
     if (toggle_lock)
     {
@@ -193,9 +193,9 @@ event_shader_select (GtkButton *widget, gpointer data)
 {
 #ifdef USE_OPENGL
     Snes9xPreferences *window = (Snes9xPreferences *) data;
-    GtkWidget     *dialog;
-    gint          result;
-    GtkEntry      *entry;
+    GtkWidget *dialog;
+    gint      result;
+    GtkEntry  *entry;
 
     entry = GTK_ENTRY (window->get_widget ("fragment_shader"));
 
