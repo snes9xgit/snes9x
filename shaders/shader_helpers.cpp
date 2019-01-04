@@ -93,6 +93,7 @@ bool loadPngImage(const char* name,
     bool& outHasAlpha,
     GLubyte** outData)
 {
+#ifdef HAVE_LIBPNG
     png_structp png_ptr;
     png_infop info_ptr;
     unsigned int sig_read = 0;
@@ -211,6 +212,9 @@ bool loadPngImage(const char* name,
 
     /* That's it */
     return true;
+#else
+    return false;
+#endif
 }
 
 bool loadTGA(const char* filename, STGA& tgaFile)
