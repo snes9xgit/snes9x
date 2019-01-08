@@ -727,6 +727,7 @@ Snes9xPreferences::move_settings_to_dialog ()
 #ifdef ALLOW_CPU_OVERCLOCK
     gtk_widget_show (get_widget ("cpu_overclock"));
     gtk_widget_show (get_widget ("remove_sprite_limit"));
+    gtk_widget_show (get_widget ("block_invalid_vram_access"));
 
     set_check ("cpu_overclock", Settings.OneClockCycle != 6);
     set_check ("remove_sprite_limit", Settings.MaxSpriteTilesPerLine != 34);
