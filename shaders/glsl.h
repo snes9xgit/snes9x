@@ -7,19 +7,19 @@
 #ifndef __GLSL_H
 #define __GLSL_H
 
-#include <vector>
-#include <deque>
-#include <limits.h>
 #include "../../conffile.h"
 #include "shader_platform.h"
+#include <deque>
+#include <limits.h>
+#include <vector>
 
 static const unsigned int glsl_max_passes = 20;
 
-typedef void (* GLSLViewportCallback) (int source_width,   int source_height,
-                                       int viewport_x,     int viewport_y,
-                                       int viewport_width, int viewport_height,
-                                       int *out_dst_x,     int *out_dst_y,
-                                       int *out_dst_width, int *out_dst_height);
+typedef void (*GLSLViewportCallback)(int source_width, int source_height,
+                                     int viewport_x, int viewport_y,
+                                     int viewport_width, int viewport_height,
+                                     int *out_dst_x, int *out_dst_y,
+                                     int *out_dst_width, int *out_dst_height);
 
 enum GLSLScaleType
 {
@@ -40,7 +40,6 @@ typedef struct
     GLint InputSize;
     GLint TextureSize;
     GLint TexCoord;
-
 } GLSLUniformMetrics;
 
 typedef struct
@@ -68,7 +67,6 @@ typedef struct
     GLSLUniformMetrics Pass[glsl_max_passes];
     GLSLUniformMetrics PassPrev[glsl_max_passes];
     GLint Lut[9];
-
 } GLSLUniforms;
 
 typedef struct
@@ -120,21 +118,19 @@ typedef struct
 
 typedef struct
 {
-    bool load_shader (char *filename);
-    bool load_shader_file (char *filename);
-    void render (GLuint &orig, int width, int height, int viewport_x, int viewport_y, int viewport_width, int viewport_height, GLSLViewportCallback vpcallback);
-    void set_shader_vars (unsigned int pass);
-    void clear_shader_vars (void);
+    bool load_shader(char *filename);
+    bool load_shader_file(char *filename);
+    void render(GLuint &orig, int width, int height, int viewport_x,
+                int viewport_y, int viewport_width, int viewport_height,
+                GLSLViewportCallback vpcallback);
+    void set_shader_vars(unsigned int pass);
+    void clear_shader_vars(void);
     void strip_parameter_pragmas(char *buffer);
-    GLuint compile_shader (char *program,
-                           const char *aliases,
-                           const char *defines,
-                           GLuint type,
-                           GLuint *out);
-    void save (const char *filename);
-
-    void destroy (void);
-    void register_uniforms (void);
+    GLuint compile_shader(char *program, const char *aliases,
+                          const char *defines, GLuint type, GLuint *out);
+    void save(const char *filename);
+    void destroy(void);
+    void register_uniforms(void);
 
     ConfigFile conf;
 
@@ -149,7 +145,6 @@ typedef struct
     GLuint vbo;
     GLuint prev_fbo;
     GLfloat *fa;
-
 } GLSLShader;
 
 #endif
