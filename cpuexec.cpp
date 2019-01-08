@@ -264,6 +264,9 @@ void S9xDoHEventProcessing (void)
 				Timings.NextIRQTimer -= Timings.H_Max;
 			S9xAPUSetReferenceTime(CPU.Cycles);
 
+			if (Settings.SA1)
+				SA1.Cycles -= Timings.H_Max * 3;
+
 			CPU.V_Counter++;
 			if (CPU.V_Counter >= Timings.V_Max)	// V ranges from 0 to Timings.V_Max - 1
 			{
