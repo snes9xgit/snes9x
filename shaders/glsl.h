@@ -119,14 +119,14 @@ typedef struct
 typedef struct
 {
     bool load_shader(char *filename);
-    bool load_shader_file(char *filename);
+    bool load_shader_preset_file(char *filename);
     void render(GLuint &orig, int width, int height, int viewport_x,
                 int viewport_y, int viewport_width, int viewport_height,
                 GLSLViewportCallback vpcallback);
     void set_shader_vars(unsigned int pass);
     void clear_shader_vars(void);
-    void strip_parameter_pragmas(char *buffer);
-    GLuint compile_shader(char *program, const char *aliases,
+    void strip_parameter_pragmas(std::vector<std::string> &lines);
+    GLuint compile_shader(std::vector<std::string> &lines, const char *aliases,
                           const char *defines, GLuint type, GLuint *out);
     void save(const char *filename);
     void destroy(void);

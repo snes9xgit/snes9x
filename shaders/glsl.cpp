@@ -4,6 +4,9 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
+#include <vector>
+#include <string>
+#include <sstream>
 #include "glsl.h"
 #include "../../conffile.h"
 #include "shader_helpers.h"
@@ -48,6 +51,33 @@ static char *read_file(const char *filename)
     fclose(file);
 
     return contents;
+}
+
+std::vector<std::string> read_file_lines(const char *filename)
+{
+    std::vector<std::string> lines;
+
+    char *file_contents = read_file(filename);
+    if (!file_contents)
+        return lines;
+
+    std::string string_contents(file_contents);
+    delete[] file_contents;
+
+    std::istringstream ss(string_contents);
+    std::string line;
+
+    for (char &c : line)
+    {
+        if (c == '\r')
+            c = '\n';
+    }
+
+    while (std::getline(ss, line, '\n'))
+        if (!line.empty())
+            lines.push_back(line);
+
+    return std::move(lines);
 }
 
 static int scale_string_to_enum(const char *string, bool last)
@@ -119,11 +149,11 @@ static const char *wrap_mode_enum_to_string(int val)
 }
 
 
-bool GLSLShader::load_shader_file(char *filename)
+bool GLSLShader::load_shader_preset_file(char *filename)
 {
     char key[256];
 
-    if (strlen(filename) < 6 || strcasecmp(&filename[strlen(filename) - 6], ".glslp"))
+    if (strlen(filename) > 5 && !strcasecmp(&filename[strlen(filename) - 5], ".glsl"))
     {
         GLSLPass pass;
         this->pass.push_back (GLSLPass());
@@ -263,69 +293,76 @@ bool GLSLShader::load_shader_file(char *filename)
     return true;
 }
 
-void GLSLShader::strip_parameter_pragmas(char *buffer)
+void GLSLShader::strip_parameter_pragmas(std::vector<std::string> &lines)
 {
    // #pragma parameter lines tend to have " characters in them,
    // which is not legal GLSL.
-   char *s = strstr(buffer, "#pragma parameter");
-
-   while (s)
+   auto it = lines.begin();
+   while (it != lines.end())
    {
-       GLSLParam par;
-       unsigned int i;
+        if (it->find("#pragma parameter") != std::string::npos)
+        {
+            GLSLParam par;
 
-       sscanf(s, "#pragma parameter %s \"%[^\"]\" %f %f %f %f",
-              par.id, par.name, &par.val, &par.min, &par.max, &par.step);
+            sscanf(it->c_str(), "#pragma parameter %s \"%[^\"]\" %f %f %f %f",
+                   par.id, par.name, &par.val, &par.min, &par.max, &par.step);
 
-       if (par.step == 0.0f)
-           par.step = 1.0f;
+            if (par.step == 0.0f)
+                par.step = 1.0f;
 
-       for (i = 0; i < param.size(); i++)
-       {
-           if (!strcmp(param[i].id, par.id))
-               break;
-       }
-       if (i >= param.size())
-           param.push_back(par);
+            unsigned int i = 0;
+            for (; i < param.size(); i++)
+            {
+                if (!strcmp(param[i].id, par.id))
+                    break;
+            }
+            if (i >= param.size())
+                param.push_back(par);
 
-       // blank out the line
-       while (*s != '\0' && *s != '\n')
-          *s++ = ' ';
-       s = strstr(s, "#pragma parameter");
+            it = lines.erase(it);
+        }
+        else
+            ++it;
    }
 }
 
-GLuint GLSLShader::compile_shader(char *program,
+GLuint GLSLShader::compile_shader(std::vector<std::string> &lines,
                                   const char *aliases,
                                   const char *defines,
                                   GLuint type,
                                   GLuint *out)
 {
     char info_log[1024];
-    char *ptr = program;
-    std::string complete_program = "";
-    char version[32];
-    const char *existing_version = strstr(ptr, "#version");
+    std::string source;
+    unsigned int first_line = 0;
 
-    if (existing_version)
+    if (lines.empty())
+        return 0;
+
+    if (lines[0].find("#version") == std::string::npos)
     {
-        unsigned version_no = (unsigned)strtoul(existing_version + 8, &ptr, 10);
-        snprintf(version, 32, "#version %u\n", version_no);
+        int version = gl_version();
+        if (version >= 33)
+            version *= 10;
+        else
+            version = 150;
+        source += "#version " + std::to_string(version) + "\n";
     }
     else
     {
-        snprintf(version, 32, "#version 150\n");
+        source += lines[0] + "\n";
+        first_line++;
     }
 
-    complete_program += version;
-    complete_program += aliases;
-    complete_program += defines;
-    complete_program += ptr;
+    source += aliases;
+    source += defines;
+    for (unsigned int i = first_line; i < lines.size(); i++)
+        source += lines[i] + "\n";
 
     GLuint shader = glCreateShader(type);
     GLint status;
-    GLint length = complete_program.length();
-    GLchar *prog = (GLchar *)complete_program.c_str();
+    GLint length = source.length();
+    GLchar *prog = (GLchar *)source.c_str();
 
     glShaderSource(shader, 1, &prog, &length);
     glCompileShader(shader);
@@ -358,7 +395,7 @@ bool GLSLShader::load_shader(char *filename)
     reduce_to_path(shader_path);
 
     chdir(shader_path);
-    if (!load_shader_file(filename))
+    if (!load_shader_preset_file(filename))
         return false;
 
     /*
@@ -383,16 +420,16 @@ bool GLSLShader::load_shader(char *filename)
         realpath(p->filename, temp);
         strcpy(p->filename, temp);
 
-        char *contents = read_file(p->filename);
-        if (!contents)
+        auto lines = read_file_lines(p->filename);
+        if (lines.empty())
         {
             printf("Couldn't read shader file %s\n", temp);
             return false;
         }
 
-        strip_parameter_pragmas(contents);
+        strip_parameter_pragmas(lines);
 
-        if (!compile_shader(contents,
+        if (!compile_shader(lines,
                             "#define VERTEX\n#define PARAMETER_UNIFORM\n",
                             aliases.c_str(),
                             GL_VERTEX_SHADER,
@@ -402,7 +439,7 @@ bool GLSLShader::load_shader(char *filename)
             return false;
         }
 
-        if (!compile_shader(contents,
+        if (!compile_shader(lines,
                             "#define FRAGMENT\n#define PARAMETER_UNIFORM\n",
                             aliases.c_str(),
                             GL_FRAGMENT_SHADER,
@@ -411,8 +448,6 @@ bool GLSLShader::load_shader(char *filename)
             printf("Couldn't compile fragment shader in %s.\n", p->filename);
             return false;
         }
-
-        delete[] contents;
 
         p->program = glCreateProgram();
 
@@ -1093,4 +1128,3 @@ void GLSLShader::destroy(void)
     prev_frame.clear();
     conf.Clear();
 }
-

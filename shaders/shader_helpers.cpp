@@ -30,7 +30,7 @@ static void gl_error_callback(GLenum source, GLenum type, GLuint id,
     return;
 }
 
-int gl_version(void)
+int gl_version()
 {
     static int version = -1;
 
