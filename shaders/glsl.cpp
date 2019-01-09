@@ -64,14 +64,14 @@ std::vector<std::string> read_file_lines(const char *filename)
     std::string string_contents(file_contents);
     delete[] file_contents;
 
-    std::istringstream ss(string_contents);
-    std::string line;
-
-    for (char &c : line)
+    for (char &c : string_contents)
     {
         if (c == '\r')
             c = '\n';
     }
+
+    std::istringstream ss(string_contents);
+    std::string line;
 
     while (std::getline(ss, line, '\n'))
         if (!line.empty())
