@@ -909,22 +909,30 @@ static void internal_filter (uint8 *src_buffer,
 
 #ifdef USE_XBRZ
     case FILTER_4XBRZ:
-        filter_4xBRZ (src_buffer,
-                      src_pitch,
-                      dst_buffer,
-                      dst_pitch,
-                      width,
-                      height);
-        break;
+        if (width * 4 <= S9xDisplayDriver::scaled_max_width &&
+            height * 4 <= S9xDisplayDriver::scaled_max_height)
+        {
+            filter_4xBRZ (src_buffer,
+                          src_pitch,
+                          dst_buffer,
+                          dst_pitch,
+                          width,
+                          height);
+            break;
+        }
         // Fall through
     case FILTER_3XBRZ:
-        filter_3xBRZ (src_buffer,
-                      src_pitch,
-                      dst_buffer,
-                      dst_pitch,
-                      width,
-                      height);
-        break;
+        if (width * 3 <= S9xDisplayDriver::scaled_max_width &&
+            height * 3 <= S9xDisplayDriver::scaled_max_height)
+        {
+            filter_3xBRZ (src_buffer,
+                          src_pitch,
+                          dst_buffer,
+                          dst_pitch,
+                          width,
+                          height);
+            break;
+        }
         // Fall through
     case FILTER_2XBRZ:
         filter_2xBRZ (src_buffer,
