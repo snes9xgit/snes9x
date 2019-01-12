@@ -1100,6 +1100,21 @@ create_thread_pool ()
     }
 }
 
+static void wait_for_jobs_to_complete ()
+{
+    while (1)
+    {
+        int complete = 1;
+        for (int i = 0; i < gui_config->num_threads; i++)
+            complete = complete && job[i].complete;
+
+        if (complete)
+            break;
+
+        sched_yield ();
+    }
+}
+
 static void
 internal_threaded_convert (void *src_buffer,
                            void *dst_buffer,
@@ -1131,17 +1146,7 @@ internal_threaded_convert (void *src_buffer,
         g_thread_pool_push (pool, (gpointer) &(job[i]), NULL);
     }
 
-    while (1)
-    {
-        int complete = 1;
-        for (int i = 0; i < gui_config->num_threads; i++)
-            complete = complete && job[i].complete;
-
-        if (complete)
-            break;
-
-        sched_yield ();
-    }
+    wait_for_jobs_to_complete ();
 }
 
 static void internal_threaded_convert_mask (void *src_buffer,
@@ -1180,17 +1185,7 @@ static void internal_threaded_convert_mask (void *src_buffer,
         g_thread_pool_push (pool, (gpointer) &(job[i]), NULL);
     }
 
-    while (1)
-    {
-        int complete = 1;
-        for (int i = 0; i < gui_config->num_threads; i++)
-            complete = complete && job[i].complete;
-
-        if (complete)
-            break;
-
-        sched_yield ();
-    }
+    wait_for_jobs_to_complete ();
 }
 
 static void internal_threaded_filter (uint8 *src_buffer,
@@ -1200,13 +1195,15 @@ static void internal_threaded_filter (uint8 *src_buffer,
                                       int   &width,
                                       int   &height)
 {
-    int src_coverage = 0, dst_coverage = 0;
-    int xscale = 1, yscale = 1;
-
-    get_filter_scale (xscale, yscale);
+    int dst_width = width, dst_height = height;
 
     /* If the threadpool doesn't exist, create it */
     create_thread_pool ();
+
+    get_filter_scale (dst_width, dst_height);
+
+    int yscale = dst_height / height;
+    int coverage = 0;
 
     for (int i = 0; i < gui_config->num_threads; i++)
     {
@@ -1215,28 +1212,17 @@ static void internal_threaded_filter (uint8 *src_buffer,
         job[i].width = width;
         job[i].src_pitch = src_pitch;
         job[i].dst_pitch = dst_pitch;
-        job[i].src_buffer = src_buffer + (src_pitch * src_coverage);
-        job[i].dst_buffer = dst_buffer + (dst_pitch * dst_coverage);
+        job[i].src_buffer = src_buffer + (src_pitch * coverage);
+        job[i].dst_buffer = dst_buffer + (dst_pitch * coverage * yscale);
         job[i].height = (height / gui_config->num_threads) & ~3; /* Cut to multiple of 4 */
         if (i == gui_config->num_threads - 1)
-            job[i].height = height - src_coverage;
-        src_coverage += job[i].height;
-        dst_coverage += job[i].height * yscale;
+            job[i].height = height - coverage;
+        coverage += job[i].height;
 
         g_thread_pool_push (pool, (gpointer) &(job[i]), NULL);
     }
 
-    while (1)
-    {
-        int complete = 1;
-        for (int i = 0; i < gui_config->num_threads; i++)
-            complete = complete && job[i].complete;
-
-        if (complete)
-            break;
-
-        sched_yield ();
-    }
+    wait_for_jobs_to_complete ();
 
     get_filter_scale (width, height);
 }
