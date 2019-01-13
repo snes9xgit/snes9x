@@ -19,67 +19,6 @@ static const GLfloat mvp_ortho[16] = { 2.0f,  0.0f,  0.0f,  0.0f,
                                        0.0f,  0.0f, -1.0f,  0.0f,
                                       -1.0f, -1.0f,  0.0f,  1.0f };
 
-static void reduce_to_path(char* filename)
-{
-    for (int i = strlen(filename); i >= 0; i--)
-    {
-        if (filename[i] == '\\' || filename[i] == '/')
-        {
-            filename[i] = 0;
-            break;
-        }
-    }
-}
-
-static char *read_file(const char *filename)
-{
-    FILE *file = NULL;
-    int size;
-    char *contents;
-
-    file = fopen(filename, "rb");
-    if (!file)
-        return NULL;
-
-    fseek(file, 0, SEEK_END);
-    size = ftell(file);
-    fseek(file, 0, SEEK_SET);
-
-    contents = new char[size + 1];
-    fread(contents, size, 1, file);
-    contents[size] = '\0';
-    fclose(file);
-
-    return contents;
-}
-
-std::vector<std::string> read_file_lines(const char *filename)
-{
-    std::vector<std::string> lines;
-
-    char *file_contents = read_file(filename);
-    if (!file_contents)
-        return lines;
-
-    std::string string_contents(file_contents);
-    delete[] file_contents;
-
-    for (char &c : string_contents)
-    {
-        if (c == '\r')
-            c = '\n';
-    }
-
-    std::istringstream ss(string_contents);
-    std::string line;
-
-    while (std::getline(ss, line, '\n'))
-        if (!line.empty())
-            lines.push_back(line);
-
-    return std::move(lines);
-}
-
 static int scale_string_to_enum(const char *string, bool last)
 {
     if (!strcasecmp(string, "source"))
@@ -398,20 +337,6 @@ bool GLSLShader::load_shader(char *filename)
     if (!load_shader_preset_file(filename))
         return false;
 
-    /*
-    for (unsigned int i = 1; i < pass.size(); i++)
-    {
-        if (pass[i].alias && *pass[i].alias)
-        {
-            aliases += "#define ";
-            aliases += pass[i].alias;
-            aliases += " Pass";
-            aliases += std::to_string(i - 1);
-            aliases += "Texture\n";
-            printf ("%s\n", aliases.c_str());
-        }
-    }*/
-
     for (unsigned int i = 1; i < pass.size(); i++)
     {
         GLSLPass *p = &pass[i];
@@ -420,7 +345,9 @@ bool GLSLShader::load_shader(char *filename)
         realpath(p->filename, temp);
         strcpy(p->filename, temp);
 
-        auto lines = read_file_lines(p->filename);
+        std::vector<std::string> lines;
+        read_shader_file_with_includes(p->filename, lines);
+
         if (lines.empty())
         {
             printf("Couldn't read shader file %s\n", temp);

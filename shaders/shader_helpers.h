@@ -8,6 +8,9 @@
 #define __SHADER_HELPERS_H
 
 #include "shader_platform.h"
+#include <vector>
+#include <string>
+#include <sstream>
 
 typedef struct _STGA
 {
@@ -44,5 +47,7 @@ void gl_log_errors();
 bool gl_srgb_available();
 int gl_version();
 bool gl_float_texture_available();
+void reduce_to_path(char* filename);
+void read_shader_file_with_includes(std::string filename, std::vector<std::string> &lines);
 
 #endif // __SHADER_HELPERS_H

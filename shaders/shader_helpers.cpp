@@ -151,14 +151,10 @@ bool loadPngImage(const char *name, int &outWidth, int &outHeight,
         memcpy(*outData + (row_bytes * i), row_pointers[i], row_bytes);
     }
 
-    /* Clean up after the read,
-     * and free any memory allocated */
     png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 
-    /* Close the file */
     fclose(fp);
 
-    /* That's it */
     return true;
 #else
     return false;
@@ -199,19 +195,17 @@ bool loadTGA(const char *filename, STGA &tgaFile)
 
     long imageSize = tgaFile.width * tgaFile.height * tgaFile.byteCount;
 
-    // allocate memory for image data
     unsigned char *tempBuf = new unsigned char[imageSize];
     tgaFile.data = new unsigned char[tgaFile.width * tgaFile.height * 4];
 
-    // read in image data
     fread(tempBuf, sizeof(unsigned char), imageSize, file);
 
-    // swap line order and convert to RBGA
+    // swap line order and convert to RGBA
     for (int i = 0; i < tgaFile.height; i++)
     {
         unsigned char *source = tempBuf + tgaFile.width *
-                                              (tgaFile.height - 1 - i) *
-                                              tgaFile.byteCount;
+                                          (tgaFile.height - 1 - i) *
+                                          tgaFile.byteCount;
         unsigned char *destination = tgaFile.data + tgaFile.width * i * 4;
         for (int j = 0; j < tgaFile.width; j++)
         {
@@ -226,8 +220,99 @@ bool loadTGA(const char *filename, STGA &tgaFile)
     delete[] tempBuf;
     tgaFile.byteCount = 4;
 
-    // close file
     fclose(file);
 
     return true;
+}
+
+void reduce_to_path(char *filename)
+{
+    for (int i = strlen(filename); i >= 0; i--)
+    {
+        if (filename[i] == '\\' || filename[i] == '/')
+        {
+            filename[i] = 0;
+            break;
+        }
+    }
+}
+
+static std::string folder_from_path(std::string filename)
+{
+    for (int i = filename.length() - 1; i >= 0; i--)
+        if (filename[i] == '\\' || filename[i] == '/')
+            return filename.substr(0, i);
+
+    return std::string(".");
+}
+
+static char *read_file(const char *filename)
+{
+    FILE *file = NULL;
+    int size;
+    char *contents;
+
+    file = fopen(filename, "rb");
+    if (!file)
+        return NULL;
+
+    fseek(file, 0, SEEK_END);
+    size = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    contents = new char[size + 1];
+    fread(contents, size, 1, file);
+    contents[size] = '\0';
+    fclose(file);
+
+    return contents;
+}
+
+static std::string canonicalize(const std::string &noncanonical)
+{
+    char *temp = realpath(noncanonical.c_str(), NULL);
+    std::string filename_string(temp);
+    free(temp);
+    return std::move(filename_string);
+}
+
+// filename must be canonical
+void read_shader_file_with_includes(std::string filename,
+                                    std::vector<std::string> &lines)
+{
+    char *file_contents = read_file(filename.c_str());
+    if (!file_contents)
+        return;
+
+    std::string string_contents(file_contents);
+    delete[] file_contents;
+
+    for (char &c : string_contents)
+    {
+        if (c == '\r')
+            c = '\n';
+    }
+
+    std::istringstream ss(string_contents);
+    std::string line;
+
+    while (std::getline(ss, line, '\n'))
+    {
+        if (line.empty())
+            continue;
+
+        if (line.find("#include") == 0)
+        {
+            char tmp[PATH_MAX];
+            sscanf(line.c_str(), "#include \"%[^\"]\"", tmp);
+
+            std::string fullpath = canonicalize(folder_from_path(filename) + "/" + tmp);
+            read_shader_file_with_includes(fullpath.c_str(), lines);
+            continue;
+        }
+
+        lines.push_back(line);
+    }
+
+    return;
 }
