@@ -61,7 +61,10 @@ void S9xSA1MainLoop (void)
 {
 	if (Memory.FillRAM[0x2200] & 0x60)
 	{
-		SA1.Cycles += 6; // FIXME
+#undef CPU
+		int cycles = CPU.Cycles * 3;
+#define CPU SA1
+		SA1.Cycles = cycles;
 		S9xSA1UpdateTimer();
 		return;
 	}
