@@ -434,7 +434,6 @@
     <ClInclude Include="CShaderParamDlg.h" />
     <ClInclude Include="CXAudio2.h" />
     <ClInclude Include="dxerr.h" />
-    <ClInclude Include="globals.h" />
     <ClInclude Include="gl_core_3_1.h" />
     <ClInclude Include="image_functions.h" />
     <ClInclude Include="InputCustom.h" />

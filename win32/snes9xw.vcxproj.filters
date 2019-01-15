@@ -45,9 +45,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="globals.h">
-      <Filter>Emu</Filter>
-    </ClInclude>
     <ClInclude Include="..\statemanager.h">
       <Filter>Emu</Filter>
     </ClInclude>
