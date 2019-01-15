@@ -18,7 +18,7 @@ extern "C" {
 FILE *_tfwopen(const char *filename, const char *mode );
 int _twremove(const char *filename );
 int _twopen(const char *filename, int oflag, int pmode);
-void _twfullpath(char* dst, const char* src, int len);
+char *_twfullpath(char* dst, const char* src, int len);
 
 #ifdef __cplusplus
 }

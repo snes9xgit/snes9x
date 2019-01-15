@@ -48,12 +48,18 @@ extern "C" int _twopen(const char *filename, int oflag, int pmode) {
   return _wopen(Utf8ToWide(filename), oflag, pmode);
 }
 
-extern "C" void _twfullpath(char* dst, const char* src, int len) {
+extern "C" char *_twfullpath(char* dst, const char* src, int len) {
     wchar_t *resolved = _wfullpath(NULL, Utf8ToWide(src), MAX_PATH);
-    strncpy(dst, WideToUtf8(resolved), len);
-    free(resolved);
+	WideToUtf8 utf8resolved = WideToUtf8(resolved);
+	free(resolved);
+	if (dst == NULL)
+	{
+		len = strlen(utf8resolved) + 1;
+		dst = (char *)malloc(len);
+	}
+    strncpy(dst, utf8resolved, len);
     dst[len - 1] = '\0';
-    return;
+    return dst;
 }
 
 #endif // UNICODE
