@@ -175,6 +175,11 @@ void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
                           width * height * 2,
                           NULL,
                           GL_STREAM_DRAW);
+
+            if (version >= 30)
+                glMapBufferRange (GL_PIXEL_UNPACK_BUFFER, 0,
+                                  width * height * image_bpp,
+                                  GL_WRITE_ONLY | GL_MAP_INVALIDATE_BUFFER_BIT);
             pbo_map = glMapBuffer (GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
 
             for (int y = 0; y < height; y++)
@@ -206,6 +211,11 @@ void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
                           width * height * 4,
                           NULL,
                           GL_STREAM_DRAW);
+
+            if (version >= 30)
+                glMapBufferRange (GL_PIXEL_UNPACK_BUFFER, 0,
+                                  width * height * image_bpp,
+                                  GL_WRITE_ONLY | GL_MAP_INVALIDATE_BUFFER_BIT);
             pbo_map = glMapBuffer (GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
 
             /* Pixel swizzling in software */
