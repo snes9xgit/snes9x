@@ -177,10 +177,12 @@ void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
                           GL_STREAM_DRAW);
 
             if (version >= 30)
-                glMapBufferRange (GL_PIXEL_UNPACK_BUFFER, 0,
-                                  width * height * image_bpp,
-                                  GL_WRITE_ONLY | GL_MAP_INVALIDATE_BUFFER_BIT);
-            pbo_map = glMapBuffer (GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
+                pbo_map = glMapBufferRange (
+                    GL_PIXEL_UNPACK_BUFFER, 0, width * height * 2,
+                    GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT |
+                        GL_MAP_UNSYNCHRONIZED_BIT);
+            else
+                pbo_map = glMapBuffer (GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
 
             for (int y = 0; y < height; y++)
             {
@@ -213,10 +215,12 @@ void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
                           GL_STREAM_DRAW);
 
             if (version >= 30)
-                glMapBufferRange (GL_PIXEL_UNPACK_BUFFER, 0,
-                                  width * height * image_bpp,
-                                  GL_WRITE_ONLY | GL_MAP_INVALIDATE_BUFFER_BIT);
-            pbo_map = glMapBuffer (GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
+                pbo_map = glMapBufferRange (
+                    GL_PIXEL_UNPACK_BUFFER, 0, width * height * 4,
+                    GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT |
+                        GL_MAP_UNSYNCHRONIZED_BIT);
+            else
+                pbo_map = glMapBuffer (GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
 
             /* Pixel swizzling in software */
             S9xSetEndianess (ENDIAN_NORMAL);
