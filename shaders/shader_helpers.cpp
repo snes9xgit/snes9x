@@ -273,7 +273,7 @@ static std::string canonicalize(const std::string &noncanonical)
     char *temp = realpath(noncanonical.c_str(), NULL);
     std::string filename_string(temp);
     free(temp);
-    return std::move(filename_string);
+    return filename_string;
 }
 
 // filename must be canonical
