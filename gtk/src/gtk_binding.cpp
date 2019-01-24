@@ -193,7 +193,10 @@ Binding::Binding (const char *raw_string)
             key = strtok (NULL, "+");
         }
 
-        value = Binding(keyval, ctrl, shift, alt).value;
+        if (keyval != GDK_KEY_VoidSymbol)
+            value = Binding(keyval, ctrl, shift, alt).value;
+        else
+            value = 0;
     }
     else if (!strncmp (raw_string, "Joystick", 8))
     {
@@ -220,7 +223,6 @@ void
 Binding::to_string (char *str, bool translate)
 {
     char buf[256];
-    char *c;
 
 #undef _
 #define _(String) translate ? gettext(String) : (String)
@@ -237,7 +239,6 @@ Binding::to_string (char *str, bool translate)
         {
             sprintf (buf, _("Unknown"));
         }
-
         else
         {
             memset (buf, 0, 256);
@@ -246,10 +247,10 @@ Binding::to_string (char *str, bool translate)
                      255);
         }
 
-        while ((c = strstr (buf, "_")))
-        {
-            *c = ' ';
-        }
+        if (translate)
+            for (int i = 0; buf[i]; i++)
+                if (buf[i] == '_')
+                    buf[i] = ' ';
 
         sprintf (str, _("Keyboard %s%s%s%s"),
                  (value & BINDING_SHIFT) ? "Shift+" : "",
