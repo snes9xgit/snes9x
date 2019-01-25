@@ -80,28 +80,33 @@ endif
 
 slang = get_option('slang')
 if slang and opengl
-  glslang_dep = c_compiler.find_library('glslang')
-  spirv_dep = c_compiler.find_library('SPIRV')
-  osdependent_dep = c_compiler.find_library('OSDependent')
-  hlsl_dep = c_compiler.find_library('HLSL')
-  ogl_compiler_dep = c_compiler.find_library('OGLCompiler')
-  spv_remapper_dep = c_compiler.find_library('SPVRemapper')
-  deps += [glslang_dep, spirv_dep, osdependent_dep, hlsl_dep, ogl_compiler_dep, spv_remapper_dep]
+  glslang_dep = c_compiler.find_library('glslang', required: false)
+  spirv_dep = c_compiler.find_library('SPIRV', required: false)
+  osdependent_dep = c_compiler.find_library('OSDependent', required: false)
+  ogl_compiler_dep = c_compiler.find_library('OGLCompiler', required: false)
+  spv_remapper_dep = c_compiler.find_library('SPVRemapper', required: false)
 
-  args += ['-DUSE_SLANG', '-DSPIRV_CROSS_EXCEPTIONS_TO_ASSERTIONS']
-  srcs += ['../shaders/slang.cpp']
-  srcs += ['../shaders/SPIRV-Cross/spirv_cfg.cpp',
-           '../shaders/SPIRV-Cross/spirv_cfg.hpp',
-           '../shaders/SPIRV-Cross/spirv_common.hpp',
-           '../shaders/SPIRV-Cross/spirv_cross.cpp',
-           '../shaders/SPIRV-Cross/spirv_cross.hpp',
-           '../shaders/SPIRV-Cross/spirv_glsl.cpp',
-           '../shaders/SPIRV-Cross/spirv_glsl.hpp',
-           '../shaders/SPIRV-Cross/spirv_cross_parsed_ir.cpp',
-           '../shaders/SPIRV-Cross/spirv_cross_parsed_ir.hpp',
-           '../shaders/SPIRV-Cross/spirv_parser.cpp',
-           '../shaders/SPIRV-Cross/spirv_parser.hpp',
-           '../shaders/SPIRV-Cross/spirv.hpp']
+  if glslang_dep.found() and spirv_dep.found() and osdependent_dep.found() and ogl_compiler_dep.found() and spv_remapper_dep.found()
+    deps += [glslang_dep, spirv_dep, osdependent_dep, ogl_compiler_dep, spv_remapper_dep]
+
+    args += ['-DUSE_SLANG', '-DSPIRV_CROSS_EXCEPTIONS_TO_ASSERTIONS']
+    srcs += ['../shaders/slang.cpp']
+    srcs += ['../shaders/SPIRV-Cross/spirv_cfg.cpp',
+             '../shaders/SPIRV-Cross/spirv_cfg.hpp',
+             '../shaders/SPIRV-Cross/spirv_common.hpp',
+             '../shaders/SPIRV-Cross/spirv_cross.cpp',
+             '../shaders/SPIRV-Cross/spirv_cross.hpp',
+             '../shaders/SPIRV-Cross/spirv_glsl.cpp',
+             '../shaders/SPIRV-Cross/spirv_glsl.hpp',
+             '../shaders/SPIRV-Cross/spirv_cross_parsed_ir.cpp',
+             '../shaders/SPIRV-Cross/spirv_cross_parsed_ir.hpp',
+             '../shaders/SPIRV-Cross/spirv_parser.cpp',
+             '../shaders/SPIRV-Cross/spirv_parser.hpp',
+             '../shaders/SPIRV-Cross/spirv.hpp']
+  else
+    slang = false
+    warns += 'glslang libraries not found. Slang shaders will be disabled.'
+  endif
 endif
 
 wayland = get_option('wayland')
