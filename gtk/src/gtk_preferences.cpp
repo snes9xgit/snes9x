@@ -857,7 +857,7 @@ Snes9xPreferences::get_settings_from_dialog ()
         config->use_pbos != get_check ("use_pbos") ||
         config->pbo_format !=  pbo_format ||
         config->use_shaders != get_check ("use_shaders") ||
-        get_check ("use_shaders"))
+        (config->shader_filename.compare(get_entry_text("fragment_shader"))))
     {
         gfx_needs_restart = true;
     }

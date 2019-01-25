@@ -69,6 +69,32 @@ typedef struct
     GLint Lut[9];
 } GLSLUniforms;
 
+// Size must always follow texture type
+enum
+{
+    SL_INVALID = 0,
+    SL_PASSTEXTURE = 1,
+    SL_PASSSIZE = 2,
+    SL_PREVIOUSFRAMETEXTURE = 3,
+    SL_PREVIOUSFRAMESIZE = 4,
+    SL_LUTTEXTURE = 5,
+    SL_LUTSIZE = 6,
+    SL_MVP = 7,
+    SL_FRAMECOUNT = 8,
+    SL_PARAM = 9
+};
+
+typedef struct
+{
+    // Source
+    int type;
+    int num;
+
+    // Output
+    GLint location; // -1 Indicates UBO
+    GLint offset;
+} SlangUniform;
+
 typedef struct
 {
     char filename[PATH_MAX];
@@ -93,6 +119,12 @@ typedef struct
     GLuint filter;
 
     GLSLUniforms unif;
+#ifdef USE_SLANG
+    GLuint format;
+    std::vector<SlangUniform> uniforms;
+    std::vector<uint8_t> ubo_buffer;
+    GLuint ubo;
+#endif
 } GLSLPass;
 
 typedef struct
@@ -103,6 +135,8 @@ typedef struct
     GLuint texture;
     GLuint wrap_mode;
     bool mipmap;
+    int width;
+    int height;
 } GLSLLut;
 
 typedef struct
@@ -124,13 +158,13 @@ typedef struct
                 int viewport_y, int viewport_width, int viewport_height,
                 GLSLViewportCallback vpcallback);
     void set_shader_vars(unsigned int pass);
-    void clear_shader_vars(void);
+    void clear_shader_vars();
     void strip_parameter_pragmas(std::vector<std::string> &lines);
     GLuint compile_shader(std::vector<std::string> &lines, const char *aliases,
                           const char *defines, GLuint type, GLuint *out);
     void save(const char *filename);
-    void destroy(void);
-    void register_uniforms(void);
+    void destroy();
+    void register_uniforms();
 
     ConfigFile conf;
 
@@ -145,6 +179,17 @@ typedef struct
     GLuint vbo;
     GLuint prev_fbo;
     GLfloat *fa;
+
+    bool using_slang = false;
+#ifdef USE_SLANG
+    std::string slang_get_stage(std::vector<std::string> &lines,
+                                std::string name);
+    void slang_parse_pragmas(std::vector<std::string> &lines, int p);
+    GLint slang_compile(std::vector<std::string> &lines, std::string stage);
+    void slang_introspect();
+    void slang_set_shader_vars(int p);
+    void slang_clear_shader_vars();
+#endif
 } GLSLShader;
 
 #endif

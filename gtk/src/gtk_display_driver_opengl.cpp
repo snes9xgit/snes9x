@@ -372,32 +372,38 @@ void S9xOpenGLDisplayDriver::update_texture_size (int width, int height)
     }
 }
 
-bool S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
+bool S9xOpenGLDisplayDriver::load_shaders(const char *shader_file)
 {
-    int length = strlen (shader_file);
+    setlocale(LC_ALL, "C");
+    std::string filename(shader_file);
 
-    setlocale (LC_ALL, "C");
+    auto endswith = [&](std::string ext) -> bool {
+        return filename.rfind(ext) == filename.length() - ext.length();
+    };
 
-    if ((length > 6 && !strcasecmp(shader_file + length - 6, ".glslp")) ||
-        (length > 5 && !strcasecmp(shader_file + length - 5, ".glsl")))
+    if (endswith(".glslp") || endswith(".glsl")
+#ifdef USE_SLANG
+        || endswith(".slangp") || endswith(".slang")
+#endif
+    )
     {
         glsl_shader = new GLSLShader;
-        if (glsl_shader->load_shader ((char *) shader_file))
+        if (glsl_shader->load_shader((char *)shader_file))
         {
             using_glsl_shaders = true;
             npot = true;
 
-            if (glsl_shader->param.size () > 0)
-                window->enable_widget ("shader_parameters_item", true);
+            if (glsl_shader->param.size() > 0)
+                window->enable_widget("shader_parameters_item", true);
 
-            setlocale (LC_ALL, "");
+            setlocale(LC_ALL, "");
             return true;
         }
 
         delete glsl_shader;
     }
 
-    setlocale (LC_ALL, "");
+    setlocale(LC_ALL, "");
     return false;
 }
 

@@ -78,6 +78,32 @@ if opengl
   endif
 endif
 
+slang = get_option('slang')
+if slang and opengl
+  glslang_dep = c_compiler.find_library('glslang')
+  spirv_dep = c_compiler.find_library('SPIRV')
+  osdependent_dep = c_compiler.find_library('OSDependent')
+  hlsl_dep = c_compiler.find_library('HLSL')
+  ogl_compiler_dep = c_compiler.find_library('OGLCompiler')
+  spv_remapper_dep = c_compiler.find_library('SPVRemapper')
+  deps += [glslang_dep, spirv_dep, osdependent_dep, hlsl_dep, ogl_compiler_dep, spv_remapper_dep]
+
+  args += ['-DUSE_SLANG', '-DSPIRV_CROSS_EXCEPTIONS_TO_ASSERTIONS']
+  srcs += ['../shaders/slang.cpp']
+  srcs += ['../shaders/SPIRV-Cross/spirv_cfg.cpp',
+           '../shaders/SPIRV-Cross/spirv_cfg.hpp',
+           '../shaders/SPIRV-Cross/spirv_common.hpp',
+           '../shaders/SPIRV-Cross/spirv_cross.cpp',
+           '../shaders/SPIRV-Cross/spirv_cross.hpp',
+           '../shaders/SPIRV-Cross/spirv_glsl.cpp',
+           '../shaders/SPIRV-Cross/spirv_glsl.hpp',
+           '../shaders/SPIRV-Cross/spirv_cross_parsed_ir.cpp',
+           '../shaders/SPIRV-Cross/spirv_cross_parsed_ir.hpp',
+           '../shaders/SPIRV-Cross/spirv_parser.cpp',
+           '../shaders/SPIRV-Cross/spirv_parser.hpp',
+           '../shaders/SPIRV-Cross/spirv.hpp']
+endif
+
 wayland = get_option('wayland')
 if wayland and gtk_ver == 3
   wayland_dep = dependency('wayland-egl', required: false)
@@ -383,6 +409,7 @@ summary = [
   '            GTK+ version:      ' + gtk_ver.to_string(),
   '            Wayland:           ' + wayland.to_string(),
   '            OpenGL:            ' + opengl.to_string(),
+  '             slang shaders:    ' + slang.to_string(),
   '            XVideo:            ' + xv.to_string(),
   '            ALSA:              ' + alsa.to_string(),
   '            Open Sound System: ' + oss.to_string(),

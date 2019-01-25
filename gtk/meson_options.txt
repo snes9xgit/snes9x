@@ -1,4 +1,5 @@
 option('opengl',          type: 'boolean', value: true,  description: 'Build support for OpenGL')
+option('slang',           type: 'boolean', value: true,  description: 'Build support for slang-type shaders')
 option('xv',              type: 'boolean', value: true,  description: 'Build support for XV')
 option('portaudio',       type: 'boolean', value: true,  description: 'Build PortAudio sound driver')
 option('oss',             type: 'boolean', value: true,  description: 'Build OSS sound driver')

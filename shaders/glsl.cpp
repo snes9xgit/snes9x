@@ -91,11 +91,27 @@ static const char *wrap_mode_enum_to_string(int val)
 bool GLSLShader::load_shader_preset_file(char *filename)
 {
     char key[256];
+    int length = strlen(filename);
+    bool singlepass = false;
 
-    if (strlen(filename) > 5 && !strcasecmp(&filename[strlen(filename) - 5], ".glsl"))
+    if (length > 6 && (!strcasecmp(&filename[length - 5], ".glsl") ||
+                       !strcasecmp(&filename[length - 6], ".slang")))
+        singlepass = true;
+
+    if (length > 7 && (!strcasecmp(&filename[length - 6], ".slang") ||
+                       !strcasecmp(&filename[length - 7], ".slangp")))
+    {
+#ifdef USE_SLANG
+        this->using_slang = true;
+#else
+        return false;
+#endif
+    }
+
+    if (singlepass)
     {
         GLSLPass pass;
-        this->pass.push_back (GLSLPass());
+        this->pass.push_back(GLSLPass());
 
         pass.scale_type_x = pass.scale_type_y = GLSL_VIEWPORT;
         pass.filter = GLSL_UNDEFINED;
@@ -106,7 +122,7 @@ bool GLSLShader::load_shader_preset_file(char *filename)
         pass.fp = 0;
         pass.scale_x = 1.0;
         pass.scale_y = 1.0;
-        this->pass.push_back (pass);
+        this->pass.push_back(pass);
 
         return true;
     }
@@ -356,24 +372,50 @@ bool GLSLShader::load_shader(char *filename)
 
         strip_parameter_pragmas(lines);
 
-        if (!compile_shader(lines,
-                            "#define VERTEX\n#define PARAMETER_UNIFORM\n",
-                            aliases.c_str(),
-                            GL_VERTEX_SHADER,
-                            &vertex_shader) || !vertex_shader)
+#ifdef USE_SLANG
+        if (using_slang)
         {
-            printf("Couldn't compile vertex shader in %s.\n", p->filename);
-            return false;
-        }
+            slang_parse_pragmas(lines, i);
 
-        if (!compile_shader(lines,
-                            "#define FRAGMENT\n#define PARAMETER_UNIFORM\n",
-                            aliases.c_str(),
-                            GL_FRAGMENT_SHADER,
-                            &fragment_shader) || !fragment_shader)
+            GLint retval;
+            retval = slang_compile(lines, "vertex");
+            if (retval < 0)
+            {
+                printf("Vertex shader in %s failed to compile.\n", p->filename);
+                return false;
+            }
+            vertex_shader = retval;
+
+            retval = slang_compile(lines, "fragment");
+            if (retval < 0)
+            {
+                printf ("Fragment shader in %s failed to compile.\n", p->filename);
+                return false;
+            }
+            fragment_shader = retval;
+        }
+        else
+#endif
         {
-            printf("Couldn't compile fragment shader in %s.\n", p->filename);
-            return false;
+            if (!compile_shader(lines,
+                                "#define VERTEX\n#define PARAMETER_UNIFORM\n",
+                                aliases.c_str(),
+                                GL_VERTEX_SHADER,
+                                &vertex_shader) || !vertex_shader)
+            {
+                printf("Couldn't compile vertex shader in %s.\n", p->filename);
+                return false;
+            }
+
+            if (!compile_shader(lines,
+                                "#define FRAGMENT\n#define PARAMETER_UNIFORM\n",
+                                aliases.c_str(),
+                                GL_FRAGMENT_SHADER,
+                                &fragment_shader) || !fragment_shader)
+            {
+                printf("Couldn't compile fragment shader in %s.\n", p->filename);
+                return false;
+            }
         }
 
         p->program = glCreateProgram();
@@ -446,6 +488,8 @@ bool GLSLShader::load_shader(char *filename)
                                  hasAlpha ? GL_RGBA : GL_RGB,
                                  GL_UNSIGNED_BYTE,
                                  texData);
+                    l->width = width;
+                    l->height = height;
                     free(texData);
                 }
                 else
@@ -469,6 +513,8 @@ bool GLSLShader::load_shader(char *filename)
                                  GL_RGBA,
                                  GL_UNSIGNED_BYTE,
                                  stga.data);
+                    l->width = stga.width;
+                    l->height = stga.height;
                 }
                 else
                 {
@@ -503,7 +549,12 @@ bool GLSLShader::load_shader(char *filename)
     glTexCoordPointer(2, GL_FLOAT, 0, tex_coords);
     glActiveTexture(GL_TEXTURE0);
 
-    register_uniforms();
+#ifdef USE_SLANG
+    if (using_slang)
+        slang_introspect();
+    else
+#endif
+        register_uniforms();
 
     prev_frame.resize(max_prev_frame);
 
@@ -658,14 +709,24 @@ void GLSLShader::render(GLuint &orig,
                         pass[i].wrap_mode);
 
         glUseProgram(pass[i].program);
-        set_shader_vars(i);
+#ifdef USE_SLANG
+        if (using_slang)
+            slang_set_shader_vars(i);
+        else
+#endif
+            set_shader_vars(i);
 
         glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
         glClear(GL_COLOR_BUFFER_BIT);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
         // reset vertex attribs set in set_shader_vars
-        clear_shader_vars();
+#ifdef USE_SLANG
+        if (using_slang)
+            slang_clear_shader_vars();
+        else
+#endif
+            clear_shader_vars();
 
         if (pass[i].srgb)
         {
@@ -685,12 +746,14 @@ void GLSLShader::render(GLuint &orig,
         orig = prev_frame.back().texture;
         prev_frame.pop_back();
 
-        GLSLPass newprevframe;
-        newprevframe.width = width;
-        newprevframe.height = height;
-        newprevframe.texture = pass[0].texture;
-        prev_frame.push_front(newprevframe);
-        glBindTexture(GL_TEXTURE_2D, newprevframe.texture);
+        GLSLPass *newprevframe = new GLSLPass;
+        newprevframe->width = width;
+        newprevframe->height = height;
+        newprevframe->texture = pass[0].texture;
+
+        prev_frame.push_front(*newprevframe);
+        glBindTexture(GL_TEXTURE_2D, newprevframe->texture);
+        delete newprevframe;
         glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &internal_format);
 
         glBindTexture(GL_TEXTURE_2D, orig);
@@ -935,7 +998,7 @@ void GLSLShader::set_shader_vars(unsigned int p)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void GLSLShader::clear_shader_vars(void)
+void GLSLShader::clear_shader_vars()
 {
     for (unsigned int i = 0; i < vaos.size(); i++)
         glDisableVertexAttribArray(vaos[i]);
@@ -1026,7 +1089,7 @@ void GLSLShader::save(const char *filename)
 #undef outd
 
 
-void GLSLShader::destroy(void)
+void GLSLShader::destroy()
 {
     glBindTexture(GL_TEXTURE_2D, 0);
     glUseProgram(0);
