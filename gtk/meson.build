@@ -79,6 +79,16 @@ if opengl
 endif
 
 slang = get_option('slang')
+
+if slang and opengl
+  spirv_cross_hpp = join_paths(meson.source_root(), '../shaders/SPIRV-Cross/spirv_cross.hpp')
+  if not meson.get_compiler('cpp').compiles('#include "' + spirv_cross_hpp + '"')
+    slang = false
+    warns += 'Slang support needs the SPIRV-Cross directory in ../shaders'
+    warns += 'It can be downloaded with git submodule init; git submodule update'
+  endif
+endif
+
 if slang and opengl
   glslang_dep = c_compiler.find_library('glslang', required: false)
   spirv_dep = c_compiler.find_library('SPIRV', required: false)
