@@ -40,6 +40,45 @@ std::string GLSLShader::slang_get_stage(std::vector<std::string> &lines,
     return output.str();
 }
 
+static void printuniforms(std::vector<SlangUniform> &unif)
+{
+    for (int i = 0; i < (int)unif.size(); i++)
+    {
+        SlangUniform &u = unif[i];
+        printf("Uniform %d: ", i);
+        switch (u.type)
+        {
+        case SL_PREVIOUSFRAMETEXTURE:
+            printf("OriginalHistory%d\n", u.num);
+            break;
+        case SL_PASSTEXTURE:
+            printf("Pass%d\n", u.num);
+            break;
+        case SL_LUTTEXTURE:
+            printf("User%d\n", u.num);
+            break;
+        case SL_PREVIOUSFRAMESIZE:
+            printf("OriginalHistorySize%d\n", u.num);
+            break;
+        case SL_PASSSIZE:
+            printf("PassSize%d\n", u.num);
+            break;
+        case SL_LUTSIZE:
+            printf("UserSize%d\n", u.num);
+            break;
+        case SL_MVP:
+            printf("MVP\n");
+            break;
+        case SL_FRAMECOUNT:
+            printf("FrameCount\n");
+            break;
+        case SL_PARAM:
+            printf("Parameter %d\n", u.num);
+            break;
+        }
+    }
+}
+
 static GLuint string_to_format(char *format)
 {
 #define MATCH(s, f)                                                            \
@@ -385,10 +424,10 @@ void GLSLShader::slang_introspect()
                 if (name.find(needle) == 0)
                 {
                     std::string tmp = name.substr(needle.length());
-                    if (tmp.rfind("Size") == tmp.length() - 4)
+                    if (tmp.find("Size") == 0)
                     {
                         u.type = type + 1;
-                        tmp = tmp.substr(0, tmp.length() - 4);
+                        tmp = tmp.substr(4);
                     }
                     else
                         u.type = type;
@@ -634,6 +673,8 @@ void GLSLShader::slang_set_shader_vars(int p)
             }
             else if (u.type == SL_PREVIOUSFRAMESIZE)
             {
+                if (u.num < 1)
+                    u.num = 0;
                 size[0] = (GLfloat)prev_frame[u.num - 1].width;
                 size[1] = (GLfloat)prev_frame[u.num - 1].height;
                 size[2] = (GLfloat)1.0f / prev_frame[u.num - 1].width;
