@@ -90,7 +90,10 @@ bool loadPngImage(const char *name, int &outWidth, int &outHeight,
     FILE *fp;
 
     if ((fp = fopen(name, "rb")) == NULL)
+    {
+        printf ("File not found: \"%s\"\n", name);
         return false;
+    }
 
     png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 
@@ -136,6 +139,7 @@ bool loadPngImage(const char *name, int &outWidth, int &outHeight,
         outHasAlpha = false;
         break;
     default:
+        printf ("Unsupported color type: %d\n", png_get_color_type(png_ptr, info_ptr));
         png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
         fclose(fp);
         return false;
@@ -254,7 +258,10 @@ static char *read_file(const char *filename)
 
     file = fopen(filename, "rb");
     if (!file)
+    {
+        printf("Couldn't open file \"%s\".\n", filename);
         return NULL;
+    }
 
     fseek(file, 0, SEEK_END);
     size = ftell(file);
@@ -282,7 +289,10 @@ void read_shader_file_with_includes(std::string filename,
 {
     char *file_contents = read_file(filename.c_str());
     if (!file_contents)
+    {
+        printf("File contents not read.\n");
         return;
+    }
 
     std::string string_contents(file_contents);
     delete[] file_contents;
