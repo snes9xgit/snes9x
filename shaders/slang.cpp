@@ -489,8 +489,6 @@ void GLSLShader::slang_introspect()
             }
             else if (indexedtexorsize("PassOutput", SL_PASSTEXTURE))
             {
-                // Their pass 0 is our pass 1
-                u.num--;
             }
             else if (indexedtexorsize("User", SL_LUTTEXTURE))
             {
