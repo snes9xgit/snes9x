@@ -19,17 +19,6 @@ static const GLfloat mvp_ortho[16] = { 2.0f,  0.0f,  0.0f,  0.0f,
                                        0.0f,  0.0f, -1.0f,  0.0f,
                                       -1.0f, -1.0f,  0.0f,  1.0f };
 
-static std::string strip(const std::string str)
-{
-    size_t start = 0, end = 0;
-    end = str.rfind("//");
-    if (end == std::string::npos)
-        end = str.length();
-    for (start = 0; isspace(str[start]); start++) {}
-    for (; isspace(str[end - 1]); end--) {}
-    return str.substr(start, end - start);
-}
-
 static int scale_string_to_enum(const char *string, bool last)
 {
     if (!strcasecmp(string, "source"))
@@ -157,46 +146,46 @@ bool GLSLShader::load_shader_preset_file(char *filename)
         pass.filter = conf.Exists(key) ? (conf.GetBool(key) ? GL_LINEAR : GL_NEAREST) : GLSL_UNDEFINED;
 
         sprintf(key, "::scale_type%u", i);
-        std::string scaleType = strip(conf.GetString(key, ""));
+        const char* scaleType = conf.GetString(key, "");
 
-        if (!scaleType.empty())
+        if (!strcasecmp(scaleType, ""))
         {
             sprintf(key, "::scale_type_x%u", i);
-            std::string scaleTypeX = strip(conf.GetString(key, ""));
-            pass.scale_type_x = scale_string_to_enum(scaleTypeX.c_str(), i == shader_count - 1);
+            const char* scaleTypeX = conf.GetString(key, "");
+            pass.scale_type_x = scale_string_to_enum(scaleTypeX, i == shader_count - 1);
 
             sprintf(key, "::scale_type_y%u", i);
-            std::string scaleTypeY = strip(conf.GetString(key, ""));
-            pass.scale_type_y = scale_string_to_enum(scaleTypeY.c_str(), i == shader_count - 1);
+            const char* scaleTypeY = conf.GetString(key, "");
+            pass.scale_type_y = scale_string_to_enum(scaleTypeY, i == shader_count - 1);
         }
         else
         {
-            int scale_type =  scale_string_to_enum(scaleType.c_str(), i == shader_count - 1);
+            int scale_type =  scale_string_to_enum(scaleType, i == shader_count - 1);
             pass.scale_type_x = scale_type;
             pass.scale_type_y = scale_type;
         }
 
         sprintf(key, "::scale%u", i);
-        std::string scaleFloat = strip(conf.GetString(key, ""));
-        if (!scaleFloat.empty())
+        const char* scaleFloat = conf.GetString(key, "");
+        if (!strcasecmp(scaleFloat, ""))
         {
             sprintf(key, "::scale_x%u", i);
-            std::string scaleFloatX = strip(conf.GetString(key, "1.0"));
-            pass.scale_x = atof(scaleFloatX.c_str());
+            const char* scaleFloatX = conf.GetString(key, "1.0");
+            pass.scale_x = atof(scaleFloatX);
             sprintf(key, "::scale_y%u", i);
-            std::string scaleFloatY = strip(conf.GetString(key, "1.0"));
-            pass.scale_y = atof(scaleFloatY.c_str());
+            const char* scaleFloatY = conf.GetString(key, "1.0");
+            pass.scale_y = atof(scaleFloatY);
         }
         else
         {
-            pass.scale_x = pass.scale_y = atof(scaleFloat.c_str());
+            pass.scale_x = pass.scale_y = atof(scaleFloat);
         }
 
         sprintf(key, "::shader%u", i);
-        strcpy(pass.filename, strip(conf.GetString(key, "")).c_str());
+        strcpy(pass.filename, conf.GetString(key, ""));
 
         sprintf(key, "::wrap_mode%u", i);
-        pass.wrap_mode = wrap_mode_string_to_enum(strip(conf.GetString (key ,"")).c_str());
+        pass.wrap_mode = wrap_mode_string_to_enum (conf.GetString (key ,""));
 
         sprintf(key, "::frame_count_mod%u", i);
         pass.frame_count_mod = conf.GetInt(key, 0);
@@ -218,7 +207,7 @@ bool GLSLShader::load_shader_preset_file(char *filename)
             pass.srgb = false;
 
         sprintf(key, "::alias%u", i);
-        strcpy(pass.alias, strip(conf.GetString(key, "")).c_str());
+        strcpy(pass.alias, conf.GetString(key, ""));
 
         this->pass.push_back(pass);
     }
@@ -233,10 +222,10 @@ bool GLSLShader::load_shader_preset_file(char *filename)
 
         sprintf(key, "::%s", id);
         strcpy(lut.id, id);
-        strcpy(lut.filename, strip(conf.GetString(key, "")).c_str());
+        strcpy(lut.filename, conf.GetString(key, ""));
 
         sprintf(key, "::%s_wrap_mode", id);
-        lut.wrap_mode = wrap_mode_string_to_enum(strip(conf.GetString (key, "")).c_str());
+        lut.wrap_mode = wrap_mode_string_to_enum (conf.GetString (key, ""));
 
         sprintf(key, "::%s_mipmap", id);
         lut.mipmap = conf.GetBool (key);
@@ -518,7 +507,7 @@ bool GLSLShader::load_shader(char *filename)
                 }
                 else
                 {
-                    printf ("Failed to load PNG LUT: \"%s\"\n", temp);
+                    printf ("Failed to load PNG LUT: %s\n", temp);
                 }
             }
             else if (!strcasecmp(&temp[length - 4], ".tga"))
