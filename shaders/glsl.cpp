@@ -598,6 +598,13 @@ void GLSLShader::render(GLuint &orig,
     pass[0].width = width;
     pass[0].height = height;
 
+    for (int i = 1; i < (int)pass.size(); i++)
+    {
+        GLuint tmp = pass[i].texture;
+        pass[i].texture = pass[i].feedback_texture;
+        pass[i].feedback_texture = tmp;
+    }
+
     // loop through all real passes
     for (unsigned int i = 1; i < pass.size(); i++)
     {
@@ -705,18 +712,10 @@ void GLSLShader::render(GLuint &orig,
 
         glBindTexture(GL_TEXTURE_2D, pass[i - 1].texture);
         glPixelStorei(GL_UNPACK_ROW_LENGTH, (GLint) pass[i - 1].width);
-        glTexParameteri(GL_TEXTURE_2D,
-                        GL_TEXTURE_MAG_FILTER,
-                        filter);
-        glTexParameteri(GL_TEXTURE_2D,
-                        GL_TEXTURE_MIN_FILTER,
-                        filter);
-        glTexParameteri(GL_TEXTURE_2D,
-                        GL_TEXTURE_WRAP_S,
-                        pass[i].wrap_mode);
-        glTexParameteri(GL_TEXTURE_2D,
-                        GL_TEXTURE_WRAP_T,
-                        pass[i].wrap_mode);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, pass[i].wrap_mode);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, pass[i].wrap_mode);
 
         glUseProgram(pass[i].program);
 #ifdef USE_SLANG
