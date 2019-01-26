@@ -64,7 +64,7 @@ static void dialog_response (GtkDialog *pdialog, gint response_id, gpointer user
     {
         char path[PATH_MAX];
         std::string config_file = get_config_dir();
-        if (gui_config->shader_filename.find(".slangp") != std::string::npos)
+        if (gui_config->shader_filename.find(".slang") != std::string::npos)
             config_file += "/snes9x.slangp";
         else
             config_file = get_config_dir() + "/snes9x.glslp";
