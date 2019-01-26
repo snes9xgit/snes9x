@@ -489,6 +489,7 @@ void GLSLShader::slang_introspect()
             }
             else if (indexedtexorsize("PassOutput", SL_PASSTEXTURE))
             {
+                u.num++;
             }
             else if (indexedtexorsize("User", SL_LUTTEXTURE))
             {
