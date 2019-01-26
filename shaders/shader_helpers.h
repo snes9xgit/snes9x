@@ -41,7 +41,7 @@ typedef struct _STGA
 } STGA;
 
 bool loadPngImage(const char *name, int &outWidth, int &outHeight,
-                  bool &outHasAlpha, GLubyte **outData);
+                  bool &grayscale, bool &outHasAlpha, GLubyte **outData);
 bool loadTGA(const char *filename, STGA &tgaFile);
 void gl_log_errors();
 bool gl_srgb_available();

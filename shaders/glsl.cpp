@@ -485,20 +485,33 @@ bool GLSLShader::load_shader(char *filename)
             {
                 int width, height;
                 bool hasAlpha;
+                bool grayscale;
                 GLubyte* texData;
 
-                if (loadPngImage(temp, width, height, hasAlpha, &texData))
+                if (loadPngImage(temp, width, height, grayscale, hasAlpha,
+                                 &texData))
                 {
                     glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
-                    glTexImage2D(GL_TEXTURE_2D,
-                                 0,
-                                 GL_RGBA,
-                                 width,
-                                 height,
-                                 0,
-                                 hasAlpha ? GL_RGBA : GL_RGB,
-                                 GL_UNSIGNED_BYTE,
-                                 texData);
+                    if (grayscale)
+                        glTexImage2D(GL_TEXTURE_2D,
+                                     0,
+                                     GL_RGBA,
+                                     width,
+                                     height,
+                                     0,
+                                     GL_LUMINANCE,
+                                     GL_UNSIGNED_BYTE,
+                                     texData);
+                    else
+                        glTexImage2D(GL_TEXTURE_2D,
+                                     0,
+                                     GL_RGBA,
+                                     width,
+                                     height,
+                                     0,
+                                     hasAlpha ? GL_RGBA : GL_RGB,
+                                     GL_UNSIGNED_BYTE,
+                                     texData);
                     l->width = width;
                     l->height = height;
                     free(texData);
@@ -555,9 +568,6 @@ bool GLSLShader::load_shader(char *filename)
         }
     }
 
-    glActiveTexture(GL_TEXTURE1);
-    glEnable(GL_TEXTURE_COORD_ARRAY);
-    glTexCoordPointer(2, GL_FLOAT, 0, tex_coords);
     glActiveTexture(GL_TEXTURE0);
 
 #ifdef USE_SLANG

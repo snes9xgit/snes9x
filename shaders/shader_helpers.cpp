@@ -81,7 +81,7 @@ void gl_log_errors(void)
 }
 
 bool loadPngImage(const char *name, int &outWidth, int &outHeight,
-                  bool &outHasAlpha, GLubyte **outData)
+                  bool &grayscale, bool &outHasAlpha, GLubyte **outData)
 {
 #ifdef HAVE_LIBPNG
     png_structp png_ptr;
@@ -134,9 +134,14 @@ bool loadPngImage(const char *name, int &outWidth, int &outHeight,
     {
     case PNG_COLOR_TYPE_RGBA:
         outHasAlpha = true;
+        grayscale = false;
         break;
     case PNG_COLOR_TYPE_RGB:
         outHasAlpha = false;
+        grayscale = false;
+        break;
+    case PNG_COLOR_TYPE_GRAY:
+        grayscale = true;
         break;
     default:
         printf ("Unsupported color type: %d\n", png_get_color_type(png_ptr, info_ptr));

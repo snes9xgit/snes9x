@@ -302,8 +302,8 @@ void S9xOpenGLDisplayDriver::clear_buffers ()
                      0,
                      0,
                      0,
-                     scaled_max_width,
-                     scaled_max_height,
+                     MIN(scaled_max_width, texture_width),
+                     MIN(scaled_max_height, texture_height),
                      GL_RGB,
                      GL_UNSIGNED_SHORT_5_6_5,
                      buffer[1]);
