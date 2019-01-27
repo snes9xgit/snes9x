@@ -377,6 +377,7 @@ void GLSLShader::slang_introspect()
     for (int i = 1; i < (int)pass.size(); i++)
     {
         GLSLPass &p = pass[i];
+        p.feedback_texture = 0;
 
         int num_uniforms;
         glGetProgramiv(p.program, GL_ACTIVE_UNIFORMS, &num_uniforms);
@@ -490,6 +491,13 @@ void GLSLShader::slang_introspect()
             else if (indexedtexorsize("PassOutput", SL_PASSTEXTURE))
             {
                 u.num++;
+            }
+            else if (indexedtexorsize("PassFeedback", SL_FEEDBACK))
+            {
+                using_feedback = true;
+                u.num++;
+                if (u.type == SL_FEEDBACK + 1)
+                    u.type = SL_PASSSIZE;
             }
             else if (indexedtexorsize("User", SL_LUTTEXTURE))
             {
@@ -642,6 +650,7 @@ void GLSLShader::slang_set_shader_vars(int p)
         case SL_PREVIOUSFRAMETEXTURE:
         case SL_PASSTEXTURE:
         case SL_LUTTEXTURE:
+        case SL_FEEDBACK:
             glActiveTexture(GL_TEXTURE0 + texunit);
 
             if (u.type == SL_PASSTEXTURE)
@@ -650,6 +659,8 @@ void GLSLShader::slang_set_shader_vars(int p)
                 glBindTexture(GL_TEXTURE_2D, prev_frame[u.num - 1].texture);
             else if (u.type == SL_LUTTEXTURE)
                 glBindTexture(GL_TEXTURE_2D, lut[u.num].texture);
+            else if (u.type == SL_FEEDBACK)
+                glBindTexture(GL_TEXTURE_2D, pass[u.num].feedback_texture);
 
             if (u.location == -1)
                 *((GLint *)(ubo + u.offset)) = texunit;
@@ -727,6 +738,9 @@ void GLSLShader::slang_set_shader_vars(int p)
             break;
         }
     }
+    if (using_feedback)
+        for (int i = 1; i < (int)pass.size(); i++)
+            glGenTextures(1, &pass[i].feedback_texture);
 
     if (pass[p].ubo_buffer.size() > 0)
     {
