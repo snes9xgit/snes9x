@@ -81,8 +81,7 @@ enum
     SL_LUTSIZE = 6,
     SL_MVP = 7,
     SL_FRAMECOUNT = 8,
-    SL_PARAM = 9,
-    SL_FEEDBACK = 10
+    SL_PARAM = 9
 };
 
 typedef struct
@@ -125,7 +124,6 @@ typedef struct
     std::vector<SlangUniform> uniforms;
     std::vector<uint8_t> ubo_buffer;
     GLuint ubo;
-    GLuint feedback_texture;
 #endif
 } GLSLPass;
 
@@ -191,8 +189,6 @@ typedef struct
     void slang_introspect();
     void slang_set_shader_vars(int p);
     void slang_clear_shader_vars();
-
-    bool using_feedback = false;
 #endif
 } GLSLShader;
 
