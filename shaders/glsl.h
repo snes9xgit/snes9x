@@ -125,6 +125,7 @@ typedef struct
     std::vector<SlangUniform> uniforms;
     std::vector<uint8_t> ubo_buffer;
     GLuint ubo;
+    bool uses_feedback = false;
     GLuint feedback_texture;
 #endif
 } GLSLPass;
@@ -159,7 +160,7 @@ typedef struct
     void render(GLuint &orig, int width, int height, int viewport_x,
                 int viewport_y, int viewport_width, int viewport_height,
                 GLSLViewportCallback vpcallback);
-    void set_shader_vars(unsigned int pass);
+    void set_shader_vars(unsigned int pass, bool inverted);
     void clear_shader_vars();
     void strip_parameter_pragmas(std::vector<std::string> &lines);
     GLuint compile_shader(std::vector<std::string> &lines, const char *aliases,
@@ -189,7 +190,7 @@ typedef struct
     void slang_parse_pragmas(std::vector<std::string> &lines, int p);
     GLint slang_compile(std::vector<std::string> &lines, std::string stage);
     void slang_introspect();
-    void slang_set_shader_vars(int p);
+    void slang_set_shader_vars(int p, bool inverted);
     void slang_clear_shader_vars();
 
     bool using_feedback = false;

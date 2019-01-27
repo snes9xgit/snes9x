@@ -494,10 +494,14 @@ void GLSLShader::slang_introspect()
             }
             else if (indexedtexorsize("PassFeedback", SL_FEEDBACK))
             {
-                using_feedback = true;
                 u.num++;
                 if (u.type == SL_FEEDBACK + 1)
                     u.type = SL_PASSSIZE;
+                else
+                {
+                    pass[u.num].uses_feedback = true;
+                    using_feedback = true;
+                }
             }
             else if (indexedtexorsize("User", SL_LUTTEXTURE))
             {
@@ -587,6 +591,11 @@ void GLSLShader::slang_introspect()
             p.ubo_buffer.resize(uniform_block_size);
         }
     }
+
+    if (using_feedback)
+        for (int i = 1; i < (int)pass.size(); i++)
+            if (pass[i].uses_feedback)
+                glGenTextures(1, &pass[i].feedback_texture);
 }
 
 static const GLfloat coords[] =  { 0.0f, 0.0f, 0.0f, 1.0f, // Vertex Positions
@@ -614,7 +623,7 @@ void GLSLShader::slang_clear_shader_vars()
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void GLSLShader::slang_set_shader_vars(int p)
+void GLSLShader::slang_set_shader_vars(int p, bool inverted)
 {
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 32, coords, GL_STATIC_DRAW);
@@ -631,7 +640,7 @@ void GLSLShader::slang_set_shader_vars(int p)
     {
         GLfloat *offset = 0;
         offset += 16;
-        if (p == (int)pass.size() - 1)
+        if (inverted)
             offset += 8;
 
         glEnableVertexAttribArray(attr);
@@ -738,9 +747,6 @@ void GLSLShader::slang_set_shader_vars(int p)
             break;
         }
     }
-    if (using_feedback)
-        for (int i = 1; i < (int)pass.size(); i++)
-            glGenTextures(1, &pass[i].feedback_texture);
 
     if (pass[p].ubo_buffer.size() > 0)
     {

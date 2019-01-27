@@ -19,7 +19,7 @@ static const GLfloat mvp_ortho[16] = { 2.0f,  0.0f,  0.0f,  0.0f,
                                        0.0f,  0.0f, -1.0f,  0.0f,
                                       -1.0f, -1.0f,  0.0f,  1.0f };
 
-static int scale_string_to_enum(const char *string, bool last)
+static int scale_string_to_enum(const char *string)
 {
     if (!strcasecmp(string, "source"))
     {
@@ -33,10 +33,8 @@ static int scale_string_to_enum(const char *string, bool last)
     {
         return GLSL_ABSOLUTE;
     }
-    else if (last)
-        return GLSL_VIEWPORT;
     else
-        return GLSL_SOURCE;
+        return GLSL_NONE;
 }
 
 static const char *scale_enum_to_string(int val)
@@ -50,7 +48,7 @@ static const char *scale_enum_to_string(int val)
     case GLSL_ABSOLUTE:
         return "absolute";
     default:
-        return "source";
+        return "undefined";
     }
 }
 
@@ -152,15 +150,15 @@ bool GLSLShader::load_shader_preset_file(char *filename)
         {
             sprintf(key, "::scale_type_x%u", i);
             const char* scaleTypeX = conf.GetString(key, "");
-            pass.scale_type_x = scale_string_to_enum(scaleTypeX, i == shader_count - 1);
+            pass.scale_type_x = scale_string_to_enum(scaleTypeX);
 
             sprintf(key, "::scale_type_y%u", i);
             const char* scaleTypeY = conf.GetString(key, "");
-            pass.scale_type_y = scale_string_to_enum(scaleTypeY, i == shader_count - 1);
+            pass.scale_type_y = scale_string_to_enum(scaleTypeY);
         }
         else
         {
-            int scale_type =  scale_string_to_enum(scaleType, i == shader_count - 1);
+            int scale_type =  scale_string_to_enum(scaleType);
             pass.scale_type_x = scale_type;
             pass.scale_type_y = scale_type;
         }
@@ -598,12 +596,17 @@ void GLSLShader::render(GLuint &orig,
     pass[0].width = width;
     pass[0].height = height;
 
-    for (int i = 1; i < (int)pass.size(); i++)
-    {
-        GLuint tmp = pass[i].texture;
-        pass[i].texture = pass[i].feedback_texture;
-        pass[i].feedback_texture = tmp;
-    }
+#ifdef USE_SLANG
+    if (using_slang && using_feedback)
+        for (int i = 1; i < (int)pass.size(); i++)
+        {
+            if (!pass[i].uses_feedback)
+                continue;
+            GLuint tmp = pass[i].texture;
+            pass[i].texture = pass[i].feedback_texture;
+            pass[i].feedback_texture = tmp;
+        }
+#endif
 
     // loop through all real passes
     for (unsigned int i = 1; i < pass.size(); i++)
@@ -622,7 +625,10 @@ void GLSLShader::render(GLuint &orig,
             pass[i].width = viewport_width * pass[i].scale_x;
             break;
         default:
-            pass[i].width = viewport_width;
+            if (lastpass)
+                pass[i].width = viewport_width;
+            else
+                pass[i].width = pass[i - 1].width * pass[i].scale_x;
         }
 
         switch (pass[i].scale_type_y)
@@ -640,7 +646,15 @@ void GLSLShader::render(GLuint &orig,
             pass[i].height = viewport_height;
         }
 
-        if (!lastpass)
+        bool direct_lastpass = true;
+#ifdef USE_SLANG
+        if (lastpass && using_feedback && pass[i].scale_type_x != GLSL_NONE &&
+            pass[i].scale_type_y != GLSL_NONE && pass[i].uses_feedback)
+        {
+            direct_lastpass = false;
+        }
+#endif
+        if (!lastpass || !direct_lastpass)
         {
             // Output to a framebuffer texture
             glBindTexture(GL_TEXTURE_2D, pass[i].texture);
@@ -720,17 +734,42 @@ void GLSLShader::render(GLuint &orig,
         glUseProgram(pass[i].program);
 #ifdef USE_SLANG
         if (using_slang)
-            slang_set_shader_vars(i);
+            slang_set_shader_vars(i, lastpass && direct_lastpass);
         else
 #endif
-            set_shader_vars(i);
+            set_shader_vars(i, lastpass && direct_lastpass);
 
         glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
         glClear(GL_COLOR_BUFFER_BIT);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-        // reset vertex attribs set in set_shader_vars
 #ifdef USE_SLANG
+        if (lastpass && !direct_lastpass)
+        {
+            glBindTexture(GL_TEXTURE_2D, pass[i].texture);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, pass[i].wrap_mode);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, pass[i].wrap_mode);
+
+            int out_x = 0, out_y = 0, out_width = 0, out_height = 0;
+            vpcallback (pass[i].width, pass[i].height,
+                        viewport_x, viewport_y,
+                        viewport_width, viewport_height,
+                        &out_x, &out_y,
+                        &out_width, &out_height);
+
+            glViewport(out_x, out_y, out_width, out_height);
+            glBindFramebuffer(GL_FRAMEBUFFER, saved_framebuffer);
+            glClear(GL_COLOR_BUFFER_BIT);
+            glBindFramebuffer(GL_READ_FRAMEBUFFER, pass[i].fbo);
+            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, saved_framebuffer);
+            glBlitFramebuffer(0, 0, pass[i].width, pass[i].height, out_x,
+                              out_height + out_y, out_x + out_width, out_y,
+                              GL_COLOR_BUFFER_BIT,
+                              Settings.BilinearFilter ? GL_LINEAR : GL_NEAREST);
+        }
+        // reset vertex attribs set in set_shader_vars
         if (using_slang)
             slang_clear_shader_vars();
         else
@@ -876,12 +915,12 @@ void GLSLShader::register_uniforms()
     glUseProgram(0);
 }
 
-void GLSLShader::set_shader_vars(unsigned int p)
+void GLSLShader::set_shader_vars(unsigned int p, bool inverted)
 {
     unsigned int texunit = 0;
     unsigned int offset = 0;
 
-    if (p == pass.size() - 1)
+    if (inverted)
         offset = 8;
     GLSLUniforms *u = &pass[p].unif;
 
