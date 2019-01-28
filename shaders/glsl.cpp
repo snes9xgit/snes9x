@@ -185,6 +185,9 @@ bool GLSLShader::load_shader_preset_file(char *filename)
         sprintf(key, "::wrap_mode%u", i);
         pass.wrap_mode = wrap_mode_string_to_enum (conf.GetString (key ,""));
 
+        sprintf(key, "::mipmap_input%u", i);
+        pass.mipmap_input = conf.GetBool (key);
+
         sprintf(key, "::frame_count_mod%u", i);
         pass.frame_count_mod = conf.GetInt(key, 0);
 
@@ -730,6 +733,9 @@ void GLSLShader::render(GLuint &orig,
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, pass[i].wrap_mode);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, pass[i].wrap_mode);
+
+        if (pass[i].mipmap_input)
+            glGenerateMipmap(GL_TEXTURE_2D);
 
         glUseProgram(pass[i].program);
 #ifdef USE_SLANG

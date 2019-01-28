@@ -118,6 +118,7 @@ typedef struct
     GLuint width;
     GLuint height;
     GLuint filter;
+    bool mipmap_input;
 
     GLSLUniforms unif;
 #ifdef USE_SLANG
