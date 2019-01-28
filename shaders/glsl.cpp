@@ -364,7 +364,7 @@ bool GLSLShader::load_shader(char *filename)
 
         if (lines.empty())
         {
-            printf("Couldn't read shader file %s\n", temp);
+            printf("Couldn't read shader file \"%s\"\n", temp);
             return false;
         }
 
@@ -379,7 +379,7 @@ bool GLSLShader::load_shader(char *filename)
             retval = slang_compile(lines, "vertex");
             if (retval < 0)
             {
-                printf("Vertex shader in %s failed to compile.\n", p->filename);
+                printf("Vertex shader in \"%s\" failed to compile.\n", p->filename);
                 return false;
             }
             vertex_shader = retval;
@@ -387,7 +387,7 @@ bool GLSLShader::load_shader(char *filename)
             retval = slang_compile(lines, "fragment");
             if (retval < 0)
             {
-                printf ("Fragment shader in %s failed to compile.\n", p->filename);
+                printf ("Fragment shader in \"%s\" failed to compile.\n", p->filename);
                 return false;
             }
             fragment_shader = retval;
@@ -401,7 +401,7 @@ bool GLSLShader::load_shader(char *filename)
                                 GL_VERTEX_SHADER,
                                 &vertex_shader) || !vertex_shader)
             {
-                printf("Couldn't compile vertex shader in %s.\n", p->filename);
+                printf("Couldn't compile vertex shader in \"%s\".\n", p->filename);
                 return false;
             }
 
@@ -411,7 +411,7 @@ bool GLSLShader::load_shader(char *filename)
                                 GL_FRAGMENT_SHADER,
                                 &fragment_shader) || !fragment_shader)
             {
-                printf("Couldn't compile fragment shader in %s.\n", p->filename);
+                printf("Couldn't compile fragment shader in \"%s\".\n", p->filename);
                 return false;
             }
         }
