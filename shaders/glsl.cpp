@@ -646,7 +646,10 @@ void GLSLShader::render(GLuint &orig,
             pass[i].height = viewport_height * pass[i].scale_y;
             break;
         default:
-            pass[i].height = viewport_height;
+            if (lastpass)
+                pass[i].height = viewport_height;
+            else
+                pass[i].height = pass[i - 1].height * pass[i].scale_y;
         }
 
         bool direct_lastpass = true;
