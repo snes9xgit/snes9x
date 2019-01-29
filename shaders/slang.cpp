@@ -379,6 +379,7 @@ static inline bool isalldigits(std::string str)
 void GLSLShader::slang_introspect()
 {
     max_prev_frame = 0;
+    using_feedback = false;
 
     for (int i = 1; i < (int)pass.size(); i++)
     {

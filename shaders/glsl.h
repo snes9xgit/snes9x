@@ -181,10 +181,8 @@ typedef struct
 
     unsigned int frame_count;
     GLuint vbo;
-    GLuint prev_fbo;
-    GLfloat *fa;
 
-    bool using_slang = false;
+    bool using_slang;
 #ifdef USE_SLANG
     std::string slang_get_stage(std::vector<std::string> &lines,
                                 std::string name);
@@ -194,7 +192,7 @@ typedef struct
     void slang_set_shader_vars(int p, bool inverted);
     void slang_clear_shader_vars();
 
-    bool using_feedback = false;
+    bool using_feedback;
 #endif
 } GLSLShader;
 

@@ -96,6 +96,7 @@ bool GLSLShader::load_shader_preset_file(char *filename)
                        !strcasecmp(&filename[length - 6], ".slang")))
         singlepass = true;
 
+    this->using_slang = false;
     if (length > 7 && (!strcasecmp(&filename[length - 6], ".slang") ||
                        !strcasecmp(&filename[length - 7], ".slangp")))
     {
@@ -1157,6 +1158,15 @@ void GLSLShader::destroy()
         glDeleteProgram(pass[i].program);
         glDeleteTextures(1, &pass[i].texture);
         glDeleteFramebuffers(1, &pass[i].fbo);
+#ifdef USE_SLANG
+        if (using_slang)
+        {
+            if (pass[i].uses_feedback)
+                glDeleteTextures(1, &pass[i].feedback_texture);
+            if (pass[i].ubo_buffer.size() > 0)
+                glDeleteBuffers(1, &pass[i].ubo);
+        }
+#endif
     }
 
     for (unsigned int i = 0; i < lut.size(); i++)
@@ -1168,6 +1178,8 @@ void GLSLShader::destroy()
     {
         glDeleteTextures(1, &prev_frame[i].texture);
     }
+
+    glDeleteBuffers(1, &vbo);
 
     param.clear();
     pass.clear();
