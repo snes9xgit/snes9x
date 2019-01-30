@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <fstream>
 #include "glsl.h"
 #include "../../conffile.h"
 #include "shader_helpers.h"
@@ -250,18 +251,99 @@ bool GLSLShader::load_shader_preset_file(char *filename)
     return true;
 }
 
-void GLSLShader::strip_parameter_pragmas(std::vector<std::string> &lines)
+static std::string folder_from_path(std::string filename)
 {
-   // #pragma parameter lines tend to have " characters in them,
-   // which is not legal GLSL.
-   auto it = lines.begin();
-   while (it != lines.end())
-   {
-        if (it->find("#pragma parameter") != std::string::npos)
+    for (int i = filename.length() - 1; i >= 0; i--)
+        if (filename[i] == '\\' || filename[i] == '/')
+            return filename.substr(0, i);
+
+    return std::string(".");
+}
+
+static std::string canonicalize(const std::string &noncanonical)
+{
+    char *temp = realpath(noncanonical.c_str(), NULL);
+    std::string filename_string(temp);
+    free(temp);
+    return filename_string;
+}
+
+static GLuint string_to_format(char *format)
+{
+#define MATCH(s, f)                                                            \
+    if (!strcmp(format, s))                                                    \
+        return f;
+    MATCH("R8_UNORM", GL_R8);
+    MATCH("R8_UINT", GL_R8UI);
+    MATCH("R8_SINT", GL_R8I);
+    MATCH("R8G8_UNORM", GL_RG8);
+    MATCH("R8G8_UINT", GL_RG8UI);
+    MATCH("R8G8_SINT", GL_RG8I);
+    MATCH("R8G8B8A8_UNORM", GL_RGBA8);
+    MATCH("R8G8B8A8_UINT", GL_RGBA8UI);
+    MATCH("R8G8B8A8_SINT", GL_RGBA8I);
+    MATCH("R8G8B8A8_SRGB", GL_SRGB8_ALPHA8);
+
+    MATCH("A2B10G10R10_UNORM_PACK32", GL_RGB10_A2);
+    MATCH("A2B10G10R10_UINT_PACK32", GL_RGB10_A2UI);
+
+    MATCH("R16_UINT", GL_R16UI);
+    MATCH("R16_SINT", GL_R16I);
+    MATCH("R16_SFLOAT", GL_R16F);
+    MATCH("R16G16_UINT", GL_RG16UI);
+    MATCH("R16G16_SINT", GL_RG16I);
+    MATCH("R16G16_SFLOAT", GL_RG16F);
+    MATCH("R16G16B16A16_UINT", GL_RGBA16UI);
+    MATCH("R16G16B16A16_SINT", GL_RGBA16I);
+    MATCH("R16G16B16A16_SFLOAT", GL_RGBA16F);
+
+    MATCH("R32_UINT", GL_R32UI);
+    MATCH("R32_SINT", GL_R32I);
+    MATCH("R32_SFLOAT", GL_R32F);
+    MATCH("R32G32_UINT", GL_RG32UI);
+    MATCH("R32G32_SINT", GL_RG32I);
+    MATCH("R32G32_SFLOAT", GL_RG32F);
+    MATCH("R32G32B32A32_UINT", GL_RGBA32UI);
+    MATCH("R32G32B32A32_SINT", GL_RGBA32I);
+    MATCH("R32G32B32A32_SFLOAT", GL_RGBA32F);
+
+    return GL_RGBA;
+}
+
+// filename must be canonical
+void GLSLShader::read_shader_file_with_includes(std::string filename,
+                                    std::vector<std::string> &lines,
+                                    int p)
+{
+    std::ifstream ss(filename);
+
+    if (ss.fail())
+    {
+        printf ("Couldn't open file \"%s\"\n", filename.c_str());
+        return;
+    }
+
+    std::string line;
+
+    while (std::getline(ss, line, '\n'))
+    {
+        if (line.empty())
+            continue;
+
+        if (line.compare(0, 8, "#include") == 0)
+        {
+            char tmp[PATH_MAX];
+            sscanf(line.c_str(), "#include \"%[^\"]\"", tmp);
+
+            std::string fullpath = canonicalize(folder_from_path(filename) + "/" + tmp);
+            read_shader_file_with_includes(fullpath.c_str(), lines, p);
+            continue;
+        }
+        else if (line.compare(0, 17, "#pragma parameter") == 0)
         {
             GLSLParam par;
 
-            sscanf(it->c_str(), "#pragma parameter %s \"%[^\"]\" %f %f %f %f",
+            sscanf(line.c_str(), "#pragma parameter %s \"%[^\"]\" %f %f %f %f",
                    par.id, par.name, &par.val, &par.min, &par.max, &par.step);
 
             if (par.step == 0.0f)
@@ -275,12 +357,30 @@ void GLSLShader::strip_parameter_pragmas(std::vector<std::string> &lines)
             }
             if (i >= param.size())
                 param.push_back(par);
-
-            it = lines.erase(it);
+            continue;
         }
-        else
-            ++it;
-   }
+#ifdef USE_SLANG
+        else if (line.compare(0, 12, "#pragma name") == 0)
+        {
+            sscanf(line.c_str(), "#pragma name %255s", pass[p].alias);
+            continue;
+        }
+        else if (line.compare(0, 14, "#pragma format") == 0)
+        {
+            char format[256];
+            sscanf(line.c_str(), "#pragma format %255s", format);
+            pass[p].format = string_to_format(format);
+            if (pass[p].format == GL_RGBA16F || pass[p].format == GL_RGBA32F)
+                pass[p].fp = TRUE;
+            else if (pass[p].format == GL_SRGB8_ALPHA8)
+                pass[p].srgb = TRUE;
+            continue;
+        }
+#endif
+        lines.push_back(line);
+    }
+
+    return;
 }
 
 GLuint GLSLShader::compile_shader(std::vector<std::string> &lines,
@@ -364,7 +464,7 @@ bool GLSLShader::load_shader(char *filename)
         strcpy(p->filename, temp);
 
         std::vector<std::string> lines;
-        read_shader_file_with_includes(p->filename, lines);
+        read_shader_file_with_includes(p->filename, lines, i);
 
         if (lines.empty())
         {
@@ -372,13 +472,9 @@ bool GLSLShader::load_shader(char *filename)
             return false;
         }
 
-        strip_parameter_pragmas(lines);
-
 #ifdef USE_SLANG
         if (using_slang)
         {
-            slang_parse_pragmas(lines, i);
-
             GLint retval;
             retval = slang_compile(lines, "vertex");
             if (retval < 0)
@@ -1064,9 +1160,9 @@ void GLSLShader::clear_shader_vars()
     vaos.clear();
 }
 
-#define outs(s, v) fprintf (file, "%s%d = \"%s\"\n", s, i, v)
-#define outf(s, v) fprintf (file, "%s%d = \"%f\"\n", s, i, v)
-#define outd(s, v) fprintf (file, "%s%d = \"%d\"\n", s, i, v)
+#define outs(s, v) fprintf(file, "%s%d = \"%s\"\n", s, i, v)
+#define outf(s, v) fprintf(file, "%s%d = \"%f\"\n", s, i, v)
+#define outd(s, v) fprintf(file, "%s%d = \"%d\"\n", s, i, v)
 void GLSLShader::save(const char *filename)
 {
     FILE *file = fopen(filename, "wb");

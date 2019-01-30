@@ -163,7 +163,9 @@ typedef struct
                 GLSLViewportCallback vpcallback);
     void set_shader_vars(unsigned int pass, bool inverted);
     void clear_shader_vars();
-    void strip_parameter_pragmas(std::vector<std::string> &lines);
+    void read_shader_file_with_includes(std::string filename,
+                                        std::vector<std::string> &lines,
+                                        int p);
     GLuint compile_shader(std::vector<std::string> &lines, const char *aliases,
                           const char *defines, GLuint type, GLuint *out);
     void save(const char *filename);
@@ -186,7 +188,6 @@ typedef struct
 #ifdef USE_SLANG
     std::string slang_get_stage(std::vector<std::string> &lines,
                                 std::string name);
-    void slang_parse_pragmas(std::vector<std::string> &lines, int p);
     GLint slang_compile(std::vector<std::string> &lines, std::string stage);
     void slang_introspect();
     void slang_set_shader_vars(int p, bool inverted);

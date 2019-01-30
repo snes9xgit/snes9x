@@ -25,17 +25,13 @@ std::string GLSLShader::slang_get_stage(std::vector<std::string> &lines,
 
     for (auto &line : lines)
     {
-        if (line.find("#pragma stage") != std::string::npos)
+        if (line.compare(0, 13, "#pragma stage") == 0)
         {
             if (line.find(std::string("#pragma stage ") + name) !=
                 std::string::npos)
                 in_stage = true;
             else
                 in_stage = false;
-        }
-        else if (line.find("#pragma name") != std::string::npos ||
-                 line.find("#pragma format") != std::string::npos)
-        {
         }
         else if (in_stage)
         {
@@ -81,71 +77,6 @@ static void printuniforms(std::vector<SlangUniform> &unif)
         case SL_PARAM:
             printf("Parameter %d\n", u.num);
             break;
-        }
-    }
-}
-
-static GLuint string_to_format(char *format)
-{
-#define MATCH(s, f)                                                            \
-    if (!strcmp(format, s))                                                    \
-        return f;
-    MATCH("R8_UNORM", GL_R8);
-    MATCH("R8_UINT", GL_R8UI);
-    MATCH("R8_SINT", GL_R8I);
-    MATCH("R8G8_UNORM", GL_RG8);
-    MATCH("R8G8_UINT", GL_RG8UI);
-    MATCH("R8G8_SINT", GL_RG8I);
-    MATCH("R8G8B8A8_UNORM", GL_RGBA8);
-    MATCH("R8G8B8A8_UINT", GL_RGBA8UI);
-    MATCH("R8G8B8A8_SINT", GL_RGBA8I);
-    MATCH("R8G8B8A8_SRGB", GL_SRGB8_ALPHA8);
-
-    MATCH("A2B10G10R10_UNORM_PACK32", GL_RGB10_A2);
-    MATCH("A2B10G10R10_UINT_PACK32", GL_RGB10_A2UI);
-
-    MATCH("R16_UINT", GL_R16UI);
-    MATCH("R16_SINT", GL_R16I);
-    MATCH("R16_SFLOAT", GL_R16F);
-    MATCH("R16G16_UINT", GL_RG16UI);
-    MATCH("R16G16_SINT", GL_RG16I);
-    MATCH("R16G16_SFLOAT", GL_RG16F);
-    MATCH("R16G16B16A16_UINT", GL_RGBA16UI);
-    MATCH("R16G16B16A16_SINT", GL_RGBA16I);
-    MATCH("R16G16B16A16_SFLOAT", GL_RGBA16F);
-
-    MATCH("R32_UINT", GL_R32UI);
-    MATCH("R32_SINT", GL_R32I);
-    MATCH("R32_SFLOAT", GL_R32F);
-    MATCH("R32G32_UINT", GL_RG32UI);
-    MATCH("R32G32_SINT", GL_RG32I);
-    MATCH("R32G32_SFLOAT", GL_RG32F);
-    MATCH("R32G32B32A32_UINT", GL_RGBA32UI);
-    MATCH("R32G32B32A32_SINT", GL_RGBA32I);
-    MATCH("R32G32B32A32_SFLOAT", GL_RGBA32F);
-
-    return GL_RGBA;
-}
-
-void GLSLShader::slang_parse_pragmas(std::vector<std::string> &lines, int p)
-{
-    pass[p].format = GL_RGBA;
-
-    for (auto &line : lines)
-    {
-        if (line.find("#pragma name") != std::string::npos)
-        {
-            sscanf(line.c_str(), "#pragma name %255s", pass[p].alias);
-        }
-        else if (line.find("#pragma format") != std::string::npos)
-        {
-            char format[256];
-            sscanf(line.c_str(), "#pragma format %255s", format);
-            pass[p].format = string_to_format(format);
-            if (pass[p].format == GL_RGBA16F || pass[p].format == GL_RGBA32F)
-                pass[p].fp = TRUE;
-            else if (pass[p].format == GL_SRGB8_ALPHA8)
-                pass[p].srgb = TRUE;
         }
     }
 }

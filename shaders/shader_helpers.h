@@ -48,6 +48,5 @@ bool gl_srgb_available();
 int gl_version();
 bool gl_float_texture_available();
 void reduce_to_path(char* filename);
-void read_shader_file_with_includes(std::string filename, std::vector<std::string> &lines);
 
 #endif // __SHADER_HELPERS_H
