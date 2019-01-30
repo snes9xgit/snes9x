@@ -312,7 +312,7 @@ void GLSLShader::read_shader_file_with_includes(std::string filename,
                                                 std::vector<std::string> &lines,
                                                 int p)
 {
-    std::ifstream ss(filename);
+    std::ifstream ss(filename.c_str());
 
     if (ss.fail())
     {
