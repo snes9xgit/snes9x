@@ -312,8 +312,8 @@ static GLuint string_to_format(char *format)
 
 // filename must be canonical
 void GLSLShader::read_shader_file_with_includes(std::string filename,
-                                    std::vector<std::string> &lines,
-                                    int p)
+                                                std::vector<std::string> &lines,
+                                                int p)
 {
     std::ifstream ss(filename);
 
