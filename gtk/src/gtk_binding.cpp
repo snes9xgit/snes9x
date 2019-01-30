@@ -79,8 +79,7 @@ bool
 Binding::matches (Binding &binding)
 {
     if ((value & ~BINDING_THRESHOLD_MASK) ==
-        (binding.value & ~BINDING_THRESHOLD_MASK) &&
-        is_joy ())
+        (binding.value & ~BINDING_THRESHOLD_MASK))
         return true;
 
     return false;
