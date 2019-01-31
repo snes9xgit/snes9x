@@ -29,6 +29,7 @@ private:
 	GLfloat				vertices[8];
     GLfloat				texcoords[8];
 	unsigned char *		noPboBuffer;
+	TCHAR				currentShaderFile[MAX_PATH];
 
 	int frameCount;
 
