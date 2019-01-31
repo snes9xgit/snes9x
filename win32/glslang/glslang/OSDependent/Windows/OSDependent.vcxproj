@@ -109,6 +109,38 @@
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.lib</TargetExt>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.lib</TargetExt>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)_Output\$(Configuration)\$(PlatformTarget)\</OutDir>
+    <IntDir>$(SolutionDir)_Intermediate\$(ProjectName)\$(Configuration)\$(PlatformTarget)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <OutDir>$(SolutionDir)_Output\$(Configuration)\$(PlatformTarget)\</OutDir>
+    <IntDir>$(SolutionDir)_Intermediate\$(ProjectName)\$(Configuration)\$(PlatformTarget)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)_Output\$(Configuration)\$(PlatformTarget)\</OutDir>
+    <IntDir>$(SolutionDir)_Intermediate\$(ProjectName)\$(Configuration)\$(PlatformTarget)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <OutDir>$(SolutionDir)_Output\$(Configuration)\$(PlatformTarget)\</OutDir>
+    <IntDir>$(SolutionDir)_Intermediate\$(ProjectName)\$(Configuration)\$(PlatformTarget)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)_Output\$(Configuration)\$(PlatformTarget)\</OutDir>
+    <IntDir>$(SolutionDir)_Intermediate\$(ProjectName)\$(Configuration)\$(PlatformTarget)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <OutDir>$(SolutionDir)_Output\$(Configuration)\$(PlatformTarget)\</OutDir>
+    <IntDir>$(SolutionDir)_Intermediate\$(ProjectName)\$(Configuration)\$(PlatformTarget)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)_Output\$(Configuration)\$(PlatformTarget)\</OutDir>
+    <IntDir>$(SolutionDir)_Intermediate\$(ProjectName)\$(Configuration)\$(PlatformTarget)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <OutDir>$(SolutionDir)_Output\$(Configuration)\$(PlatformTarget)\</OutDir>
+    <IntDir>$(SolutionDir)_Intermediate\$(ProjectName)\$(Configuration)\$(PlatformTarget)\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>

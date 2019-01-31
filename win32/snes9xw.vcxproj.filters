@@ -679,7 +679,9 @@
     <Image Include="rsrc\ud.bmp">
       <Filter>Resource\Other</Filter>
     </Image>
-    <Image Include="rsrc\icon2.ico" />
+    <Image Include="rsrc\icon2.ico">
+      <Filter>Resource\Other</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\65c816.h">
