@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\src\SPIRV\GlslangToSpv.cpp" />
+    <ClCompile Include="..\src\SPIRV\InReadableOrder.cpp" />
+    <ClCompile Include="..\src\SPIRV\Logger.cpp" />
+    <ClCompile Include="..\src\SPIRV\SpvBuilder.cpp" />
+    <ClCompile Include="..\src\SPIRV\SpvPostProcess.cpp" />
+    <ClCompile Include="..\src\SPIRV\doc.cpp" />
+    <ClCompile Include="..\src\SPIRV\SpvTools.cpp" />
+    <ClCompile Include="..\src\SPIRV\disassemble.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\SPIRV\bitutils.h" />
+    <ClInclude Include="..\src\SPIRV\spirv.hpp" />
+    <ClInclude Include="..\src\SPIRV\GLSL.std.450.h" />
+    <ClInclude Include="..\src\SPIRV\GLSL.ext.EXT.h" />
+    <ClInclude Include="..\src\SPIRV\GLSL.ext.KHR.h" />
+    <ClInclude Include="..\src\SPIRV\GlslangToSpv.h" />
+    <ClInclude Include="..\src\SPIRV\hex_float.h" />
+    <ClInclude Include="..\src\SPIRV\Logger.h" />
+    <ClInclude Include="..\src\SPIRV\SpvBuilder.h" />
+    <ClInclude Include="..\src\SPIRV\spvIR.h" />
+    <ClInclude Include="..\src\SPIRV\doc.h" />
+    <ClInclude Include="..\src\SPIRV\SpvTools.h" />
+    <ClInclude Include="..\src\SPIRV\disassemble.h" />
+    <ClInclude Include="..\src\SPIRV\GLSL.ext.AMD.h" />
+    <ClInclude Include="..\src\SPIRV\GLSL.ext.NV.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source">
+      <UniqueIdentifier>{4C2A0BE9-8B7C-3570-80FB-29A3780DFB5C}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\src\glslang\MachineIndependent\glslang_tab.cpp" />
+    <ClCompile Include="..\src\glslang\MachineIndependent\attribute.cpp" />
+    <ClCompile Include="..\src\glslang\MachineIndependent\Constant.cpp" />
+    <ClCompile Include="..\src\glslang\MachineIndependent\iomapper.cpp" />
+    <ClCompile Include="..\src\glslang\MachineIndependent\InfoSink.cpp" />
+    <ClCompile Include="..\src\glslang\MachineIndependent\Initialize.cpp" />
+    <ClCompile Include="..\src\glslang\MachineIndependent\IntermTraverse.cpp" />
+    <ClCompile Include="..\src\glslang\MachineIndependent\Intermediate.cpp" />
+    <ClCompile Include="..\src\glslang\MachineIndependent\ParseContextBase.cpp" />
+    <ClCompile Include="..\src\glslang\MachineIndependent\ParseHelper.cpp" />
+    <ClCompile Include="..\src\glslang\MachineIndependent\PoolAlloc.cpp" />
+    <ClCompile Include="..\src\glslang\MachineIndependent\RemoveTree.cpp" />
+    <ClCompile Include="..\src\glslang\MachineIndependent\Scan.cpp" />
+    <ClCompile Include="..\src\glslang\MachineIndependent\ShaderLang.cpp" />
+    <ClCompile Include="..\src\glslang\MachineIndependent\SymbolTable.cpp" />
+    <ClCompile Include="..\src\glslang\MachineIndependent\Versions.cpp" />
+    <ClCompile Include="..\src\glslang\MachineIndependent\intermOut.cpp" />
+    <ClCompile Include="..\src\glslang\MachineIndependent\limits.cpp" />
+    <ClCompile Include="..\src\glslang\MachineIndependent\linkValidate.cpp" />
+    <ClCompile Include="..\src\glslang\MachineIndependent\parseConst.cpp" />
+    <ClCompile Include="..\src\glslang\MachineIndependent\reflection.cpp" />
+    <ClCompile Include="..\src\glslang\MachineIndependent\preprocessor\Pp.cpp" />
+    <ClCompile Include="..\src\glslang\MachineIndependent\preprocessor\PpAtom.cpp" />
+    <ClCompile Include="..\src\glslang\MachineIndependent\preprocessor\PpContext.cpp" />
+    <ClCompile Include="..\src\glslang\MachineIndependent\preprocessor\PpScanner.cpp" />
+    <ClCompile Include="..\src\glslang\MachineIndependent\preprocessor\PpTokens.cpp" />
+    <ClCompile Include="..\src\glslang\MachineIndependent\propagateNoContraction.cpp" />
+    <ClCompile Include="..\src\glslang\GenericCodeGen\CodeGen.cpp" />
+    <ClCompile Include="..\src\glslang\GenericCodeGen\Link.cpp" />
+    <ClCompile Include="..\src\glslang\MachineIndependent\pch.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\glslang\Public\ShaderLang.h" />
+    <ClInclude Include="..\src\glslang\Include\arrays.h" />
+    <ClInclude Include="..\src\glslang\Include\BaseTypes.h" />
+    <ClInclude Include="..\src\glslang\Include\Common.h" />
+    <ClInclude Include="..\src\glslang\Include\ConstantUnion.h" />
+    <ClInclude Include="..\src\glslang\Include\InfoSink.h" />
+    <ClInclude Include="..\src\glslang\Include\InitializeGlobals.h" />
+    <ClInclude Include="..\src\glslang\Include\intermediate.h" />
+    <ClInclude Include="..\src\glslang\Include\PoolAlloc.h" />
+    <ClInclude Include="..\src\glslang\Include\ResourceLimits.h" />
+    <ClInclude Include="..\src\glslang\Include\revision.h" />
+    <ClInclude Include="..\src\glslang\Include\ShHandle.h" />
+    <ClInclude Include="..\src\glslang\Include\Types.h" />
+    <ClInclude Include="..\src\glslang\MachineIndependent\attribute.h" />
+    <ClInclude Include="..\src\glslang\MachineIndependent\glslang_tab.cpp.h" />
+    <ClInclude Include="..\src\glslang\MachineIndependent\gl_types.h" />
+    <ClInclude Include="..\src\glslang\MachineIndependent\Initialize.h" />
+    <ClInclude Include="..\src\glslang\MachineIndependent\iomapper.h" />
+    <ClInclude Include="..\src\glslang\MachineIndependent\LiveTraverser.h" />
+    <ClInclude Include="..\src\glslang\MachineIndependent\localintermediate.h" />
+    <ClInclude Include="..\src\glslang\MachineIndependent\ParseHelper.h" />
+    <ClInclude Include="..\src\glslang\MachineIndependent\reflection.h" />
+    <ClInclude Include="..\src\glslang\MachineIndependent\RemoveTree.h" />
+    <ClInclude Include="..\src\glslang\MachineIndependent\Scan.h" />
+    <ClInclude Include="..\src\glslang\MachineIndependent\ScanContext.h" />
+    <ClInclude Include="..\src\glslang\MachineIndependent\SymbolTable.h" />
+    <ClInclude Include="..\src\glslang\MachineIndependent\Versions.h" />
+    <ClInclude Include="..\src\glslang\MachineIndependent\parseVersions.h" />
+    <ClInclude Include="..\src\glslang\MachineIndependent\propagateNoContraction.h" />
+    <ClInclude Include="..\src\glslang\MachineIndependent\preprocessor\PpContext.h" />
+    <ClInclude Include="..\src\glslang\MachineIndependent\preprocessor\PpTokens.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\src\glslang\MachineIndependent\glslang.y" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="GenericCodeGen">
+      <UniqueIdentifier>{5805D2BD-1025-385F-990A-346F761177E1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include">
+      <UniqueIdentifier>{FCDA9977-E596-334C-9B27-E4603B46FA94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MachineIndependent">
+      <UniqueIdentifier>{830EF11A-A94F-3C75-A9DC-7286F9C77685}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MachineIndependent\Preprocessor">
+      <UniqueIdentifier>{A97DA032-0D72-3407-8E00-8AFAA01785E9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public">
+      <UniqueIdentifier>{8780F4F6-80B4-3E5A-8BDB-870CCE928E56}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

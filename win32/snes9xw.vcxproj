@@ -117,8 +117,8 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;D3D_DEBUG_INFO;DIRECTDRAW_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)glslang\src</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;D3D_DEBUG_INFO;DIRECTDRAW_SUPPORT;USE_SLANG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
       <PrecompiledHeader />
@@ -166,8 +166,8 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;D3D_DEBUG_INFO;DIRECTDRAW_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)glslang\src</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;D3D_DEBUG_INFO;DIRECTDRAW_SUPPORT;USE_SLANG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
       <PrecompiledHeader />
@@ -220,8 +220,8 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;DIRECTDRAW_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)glslang\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;DIRECTDRAW_SUPPORT;USE_SLANG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
@@ -273,8 +273,8 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;DIRECTDRAW_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)glslang\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;DIRECTDRAW_SUPPORT;USE_SLANG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
@@ -410,6 +410,13 @@
     <ClInclude Include="..\shaders\glsl.h" />
     <ClInclude Include="..\shaders\shader_helpers.h" />
     <ClInclude Include="..\shaders\shader_platform.h" />
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv.hpp" />
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_cfg.hpp" />
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_common.hpp" />
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_cross.hpp" />
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_cross_parsed_ir.hpp" />
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_glsl.hpp" />
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_parser.hpp" />
     <ClInclude Include="..\statemanager.h" />
     <ClInclude Include="..\sha256.h" />
     <ClInclude Include="..\bml.h" />
@@ -527,6 +534,12 @@
     <ClCompile Include="..\seta018.cpp" />
     <ClCompile Include="..\shaders\glsl.cpp" />
     <ClCompile Include="..\shaders\shader_helpers.cpp" />
+    <ClCompile Include="..\shaders\slang.cpp" />
+    <ClCompile Include="..\shaders\SPIRV-Cross\spirv_cfg.cpp" />
+    <ClCompile Include="..\shaders\SPIRV-Cross\spirv_cross.cpp" />
+    <ClCompile Include="..\shaders\SPIRV-Cross\spirv_cross_parsed_ir.cpp" />
+    <ClCompile Include="..\shaders\SPIRV-Cross\spirv_glsl.cpp" />
+    <ClCompile Include="..\shaders\SPIRV-Cross\spirv_parser.cpp" />
     <ClCompile Include="..\snapshot.cpp" />
     <ClCompile Include="..\snes9x.cpp" />
     <ClCompile Include="..\spc7110.cpp" />
@@ -714,6 +727,12 @@
     <Image Include="rsrc\ud.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="glslang\glslang\glslang.vcxproj">
+      <Project>{bdb39616-8279-33b4-8b93-9049a49bfebb}</Project>
+    </ProjectReference>
+    <ProjectReference Include="glslang\SPIRV\SPIRV.vcxproj">
+      <Project>{b5cc37ae-e321-3064-a3d7-9d41ceed9d4e}</Project>
+    </ProjectReference>
     <ProjectReference Include="libpng\libpng.vcxproj">
       <Project>{95804e5f-b69e-4e2a-925e-52fafc19edbf}</Project>
     </ProjectReference>

@@ -270,6 +270,27 @@
     <ClInclude Include="image_functions.h">
       <Filter>GUI\VideoDriver</Filter>
     </ClInclude>
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv.hpp">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_cfg.hpp">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_common.hpp">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_cross.hpp">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_cross_parsed_ir.hpp">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_glsl.hpp">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_parser.hpp">
+      <Filter>Shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\bsx.cpp">
@@ -583,6 +604,24 @@
     </ClCompile>
     <ClCompile Include="image_functions.cpp">
       <Filter>GUI\VideoDriver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shaders\slang.cpp">
+      <Filter>Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shaders\SPIRV-Cross\spirv_cfg.cpp">
+      <Filter>Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shaders\SPIRV-Cross\spirv_cross.cpp">
+      <Filter>Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shaders\SPIRV-Cross\spirv_cross_parsed_ir.cpp">
+      <Filter>Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shaders\SPIRV-Cross\spirv_glsl.cpp">
+      <Filter>Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shaders\SPIRV-Cross\spirv_parser.cpp">
+      <Filter>Shaders</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
