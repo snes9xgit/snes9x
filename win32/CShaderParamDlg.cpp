@@ -258,7 +258,13 @@ void CShaderParamDlg::get_changed_parameters(HWND hDlg)
 void CShaderParamDlg::save_custom_shader()
 {
     TCHAR save_path[MAX_PATH];
-    _stprintf(save_path, TEXT("%s\\custom_shader_params.glslp"), S9xGetDirectoryT(DEFAULT_DIR));
+	int len = lstrlen(GUI.OGLshaderFileName);
+	if (len > 5 && !_tcsncicmp(&GUI.OGLshaderFileName[len - 6], TEXT(".glslp"), 6)) {
+		_stprintf(save_path, TEXT("%s\\custom_shader_params.glslp"), S9xGetDirectoryT(DEFAULT_DIR));
+	}
+	else {
+		_stprintf(save_path, TEXT("%s\\custom_shader_params.slangp"), S9xGetDirectoryT(DEFAULT_DIR));
+	}
     shader.save(_tToChar(save_path));
     lstrcpy(GUI.OGLshaderFileName, save_path);
 }
@@ -267,6 +273,5 @@ void CShaderParamDlg::apply_changes(HWND hDlg)
 {
 	get_changed_parameters(hDlg);
 	save_custom_shader();
-	WinDisplayApplyChanges();
 	WinRefreshDisplay();
 }
