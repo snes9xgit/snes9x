@@ -7740,14 +7740,17 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
                 break;
             }
 			ShowWindow(hDlg, SW_HIDE);
-            GLSLShader shader;
-            shader.load_shader(_tToChar(GUI.OGLshaderFileName));
-            CShaderParamDlg dlg(shader);
-            if(dlg.show()) {
-                SetDlgItemText(hDlg, IDC_SHADER_GLSL_FILE, GUI.OGLshaderFileName);
-                WinDisplayApplyChanges();
-                WinRefreshDisplay();
-            }
+			WinDisplayApplyChanges();
+			WinRefreshDisplay();
+			GLSLShader *shader = WinGetActiveGLSLShader();
+			if (shader) {
+				CShaderParamDlg dlg(*shader);
+				if (dlg.show()) {
+					SetDlgItemText(hDlg, IDC_SHADER_GLSL_FILE, GUI.OGLshaderFileName);
+					WinDisplayApplyChanges();
+					WinRefreshDisplay();
+				}
+			}
 			ShowWindow(hDlg, SW_SHOW);
             break;
         }

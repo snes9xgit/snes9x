@@ -82,6 +82,10 @@ public:
 	bool SetFullscreen(bool fullscreen);
 	void SetSnes9xColorFormat(void);
 	void EnumModes(std::vector<dMode> *modeVector);	
+	GLSLShader *GetActiveShader()
+	{
+		return glslShader;
+	}
 };
 
 
