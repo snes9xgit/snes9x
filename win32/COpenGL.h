@@ -29,6 +29,7 @@ private:
 	GLfloat				vertices[8];
     GLfloat				texcoords[8];
 	unsigned char *		noPboBuffer;
+	TCHAR				currentShaderFile[MAX_PATH];
 
 	int frameCount;
 
@@ -81,6 +82,10 @@ public:
 	bool SetFullscreen(bool fullscreen);
 	void SetSnes9xColorFormat(void);
 	void EnumModes(std::vector<dMode> *modeVector);	
+	GLSLShader *GetActiveShader()
+	{
+		return glslShader;
+	}
 };
 
 

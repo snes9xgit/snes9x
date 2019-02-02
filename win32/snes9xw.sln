@@ -1,4 +1,3 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26403.7
@@ -13,6 +12,27 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		..\.gitignore = ..\.gitignore
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "glsang", "glsang", "{188A2A44-C7BB-420C-93D8-2CE3458925D4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "glslang", "glslang", "{031A55FD-212F-30BB-9E23-93274E16EC78}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "hlsl", "hlsl", "{0EE28951-70D9-3186-B194-FD95656C957A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HLSL", "glslang\hlsl\HLSL.vcxproj", "{5F003A48-8DC8-3A67-AC87-69EF27CED058}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OGLCompiler", "glslang\OGLCompilersDLL\OGLCompiler.vcxproj", "{01177620-65CE-3EBF-968A-1EAA8D2379EF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OSDependent", "glslang\glslang\OSDependent\Windows\OSDependent.vcxproj", "{8D35D808-45F8-3B41-8526-72BCBC568F7B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glslang", "glslang\glslang\glslang.vcxproj", "{BDB39616-8279-33B4-8B93-9049A49BFEBB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5F003A48-8DC8-3A67-AC87-69EF27CED058} = {5F003A48-8DC8-3A67-AC87-69EF27CED058}
+		{01177620-65CE-3EBF-968A-1EAA8D2379EF} = {01177620-65CE-3EBF-968A-1EAA8D2379EF}
+		{8D35D808-45F8-3B41-8526-72BCBC568F7B} = {8D35D808-45F8-3B41-8526-72BCBC568F7B}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SPIRV", "glslang\SPIRV\SPIRV.vcxproj", "{B5CC37AE-E321-3064-A3D7-9D41CEED9D4E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,8 +66,60 @@ Global
 		{99E9817A-4605-44AF-8433-7048F0EC1859}.Release Unicode|Win32.Build.0 = Release Unicode|Win32
 		{99E9817A-4605-44AF-8433-7048F0EC1859}.Release Unicode|x64.ActiveCfg = Release Unicode|x64
 		{99E9817A-4605-44AF-8433-7048F0EC1859}.Release Unicode|x64.Build.0 = Release Unicode|x64
+		{5F003A48-8DC8-3A67-AC87-69EF27CED058}.Debug Unicode|Win32.ActiveCfg = Debug|Win32
+		{5F003A48-8DC8-3A67-AC87-69EF27CED058}.Debug Unicode|Win32.Build.0 = Debug|Win32
+		{5F003A48-8DC8-3A67-AC87-69EF27CED058}.Debug Unicode|x64.ActiveCfg = Debug|x64
+		{5F003A48-8DC8-3A67-AC87-69EF27CED058}.Debug Unicode|x64.Build.0 = Debug|x64
+		{5F003A48-8DC8-3A67-AC87-69EF27CED058}.Release Unicode|Win32.ActiveCfg = Release|Win32
+		{5F003A48-8DC8-3A67-AC87-69EF27CED058}.Release Unicode|Win32.Build.0 = Release|Win32
+		{5F003A48-8DC8-3A67-AC87-69EF27CED058}.Release Unicode|x64.ActiveCfg = Release|x64
+		{5F003A48-8DC8-3A67-AC87-69EF27CED058}.Release Unicode|x64.Build.0 = Release|x64
+		{01177620-65CE-3EBF-968A-1EAA8D2379EF}.Debug Unicode|Win32.ActiveCfg = Debug|Win32
+		{01177620-65CE-3EBF-968A-1EAA8D2379EF}.Debug Unicode|Win32.Build.0 = Debug|Win32
+		{01177620-65CE-3EBF-968A-1EAA8D2379EF}.Debug Unicode|x64.ActiveCfg = Debug|x64
+		{01177620-65CE-3EBF-968A-1EAA8D2379EF}.Debug Unicode|x64.Build.0 = Debug|x64
+		{01177620-65CE-3EBF-968A-1EAA8D2379EF}.Release Unicode|Win32.ActiveCfg = Release|Win32
+		{01177620-65CE-3EBF-968A-1EAA8D2379EF}.Release Unicode|Win32.Build.0 = Release|Win32
+		{01177620-65CE-3EBF-968A-1EAA8D2379EF}.Release Unicode|x64.ActiveCfg = Release|x64
+		{01177620-65CE-3EBF-968A-1EAA8D2379EF}.Release Unicode|x64.Build.0 = Release|x64
+		{8D35D808-45F8-3B41-8526-72BCBC568F7B}.Debug Unicode|Win32.ActiveCfg = Debug|Win32
+		{8D35D808-45F8-3B41-8526-72BCBC568F7B}.Debug Unicode|Win32.Build.0 = Debug|Win32
+		{8D35D808-45F8-3B41-8526-72BCBC568F7B}.Debug Unicode|x64.ActiveCfg = Debug|x64
+		{8D35D808-45F8-3B41-8526-72BCBC568F7B}.Debug Unicode|x64.Build.0 = Debug|x64
+		{8D35D808-45F8-3B41-8526-72BCBC568F7B}.Release Unicode|Win32.ActiveCfg = Release|Win32
+		{8D35D808-45F8-3B41-8526-72BCBC568F7B}.Release Unicode|Win32.Build.0 = Release|Win32
+		{8D35D808-45F8-3B41-8526-72BCBC568F7B}.Release Unicode|x64.ActiveCfg = Release|x64
+		{8D35D808-45F8-3B41-8526-72BCBC568F7B}.Release Unicode|x64.Build.0 = Release|x64
+		{BDB39616-8279-33B4-8B93-9049A49BFEBB}.Debug Unicode|Win32.ActiveCfg = Debug|Win32
+		{BDB39616-8279-33B4-8B93-9049A49BFEBB}.Debug Unicode|Win32.Build.0 = Debug|Win32
+		{BDB39616-8279-33B4-8B93-9049A49BFEBB}.Debug Unicode|x64.ActiveCfg = Debug|x64
+		{BDB39616-8279-33B4-8B93-9049A49BFEBB}.Debug Unicode|x64.Build.0 = Debug|x64
+		{BDB39616-8279-33B4-8B93-9049A49BFEBB}.Release Unicode|Win32.ActiveCfg = Release|Win32
+		{BDB39616-8279-33B4-8B93-9049A49BFEBB}.Release Unicode|Win32.Build.0 = Release|Win32
+		{BDB39616-8279-33B4-8B93-9049A49BFEBB}.Release Unicode|x64.ActiveCfg = Release|x64
+		{BDB39616-8279-33B4-8B93-9049A49BFEBB}.Release Unicode|x64.Build.0 = Release|x64
+		{B5CC37AE-E321-3064-A3D7-9D41CEED9D4E}.Debug Unicode|Win32.ActiveCfg = Debug|Win32
+		{B5CC37AE-E321-3064-A3D7-9D41CEED9D4E}.Debug Unicode|Win32.Build.0 = Debug|Win32
+		{B5CC37AE-E321-3064-A3D7-9D41CEED9D4E}.Debug Unicode|x64.ActiveCfg = Debug|x64
+		{B5CC37AE-E321-3064-A3D7-9D41CEED9D4E}.Debug Unicode|x64.Build.0 = Debug|x64
+		{B5CC37AE-E321-3064-A3D7-9D41CEED9D4E}.Release Unicode|Win32.ActiveCfg = Release|Win32
+		{B5CC37AE-E321-3064-A3D7-9D41CEED9D4E}.Release Unicode|Win32.Build.0 = Release|Win32
+		{B5CC37AE-E321-3064-A3D7-9D41CEED9D4E}.Release Unicode|x64.ActiveCfg = Release|x64
+		{B5CC37AE-E321-3064-A3D7-9D41CEED9D4E}.Release Unicode|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{031A55FD-212F-30BB-9E23-93274E16EC78} = {188A2A44-C7BB-420C-93D8-2CE3458925D4}
+		{0EE28951-70D9-3186-B194-FD95656C957A} = {188A2A44-C7BB-420C-93D8-2CE3458925D4}
+		{5F003A48-8DC8-3A67-AC87-69EF27CED058} = {0EE28951-70D9-3186-B194-FD95656C957A}
+		{01177620-65CE-3EBF-968A-1EAA8D2379EF} = {031A55FD-212F-30BB-9E23-93274E16EC78}
+		{8D35D808-45F8-3B41-8526-72BCBC568F7B} = {031A55FD-212F-30BB-9E23-93274E16EC78}
+		{BDB39616-8279-33B4-8B93-9049A49BFEBB} = {031A55FD-212F-30BB-9E23-93274E16EC78}
+		{B5CC37AE-E321-3064-A3D7-9D41CEED9D4E} = {031A55FD-212F-30BB-9E23-93274E16EC78}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {465D50FD-1BC8-3EC8-BB18-56566C07637B}
 	EndGlobalSection
 EndGlobal

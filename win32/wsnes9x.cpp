@@ -7717,7 +7717,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 			ofn.lStructSize = sizeof(OPENFILENAME);
 			ofn.hwndOwner = hDlg;
-			ofn.lpstrFilter = TEXT("Shader Files\0*.shader;*.cg;*.cgp;*.glsl;*.glslp\0All Files\0*.*\0\0");
+			ofn.lpstrFilter = TEXT("Shader Files\0*.shader;*.cg;*.cgp;*.glsl;*.glslp;*.slang;*.slangp\0All Files\0*.*\0\0");
 			ofn.lpstrFile = openFileName;
 			ofn.lpstrTitle = TEXT("Select Shader");
 			ofn.lpstrDefExt = TEXT("shader");
@@ -7733,19 +7733,24 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
         case IDC_SHADER_GLSL_PARAMETERS:
         {
             GetDlgItemText(hDlg, IDC_SHADER_GLSL_FILE, GUI.OGLshaderFileName, MAX_PATH);
-            if(lstrlen(GUI.OGLshaderFileName) < 6 || _tcsncicmp(&GUI.OGLshaderFileName[lstrlen(GUI.OGLshaderFileName) - 6], TEXT(".glslp"), 6)) {
-                MessageBox(GUI.hWnd, TEXT("Parameters are only supported for .glsl shaders"), TEXT("No Parameters"), MB_OK | MB_ICONINFORMATION);
+			int len = lstrlen(GUI.OGLshaderFileName);
+            if((len < 6 || _tcsncicmp(&GUI.OGLshaderFileName[len - 6], TEXT(".glslp"), 6)) &&
+			   (len < 7 || _tcsncicmp(&GUI.OGLshaderFileName[len - 7], TEXT(".slangp"), 7))) {
+                MessageBox(GUI.hWnd, TEXT("Parameters are only supported for .glslp and .slangp shaders"), TEXT("No Parameters"), MB_OK | MB_ICONINFORMATION);
                 break;
             }
 			ShowWindow(hDlg, SW_HIDE);
-            GLSLShader shader;
-            shader.load_shader(_tToChar(GUI.OGLshaderFileName));
-            CShaderParamDlg dlg(shader);
-            if(dlg.show()) {
-                SetDlgItemText(hDlg, IDC_SHADER_GLSL_FILE, GUI.OGLshaderFileName);
-                WinDisplayApplyChanges();
-                WinRefreshDisplay();
-            }
+			WinDisplayApplyChanges();
+			WinRefreshDisplay();
+			GLSLShader *shader = WinGetActiveGLSLShader();
+			if (shader) {
+				CShaderParamDlg dlg(*shader);
+				if (dlg.show()) {
+					SetDlgItemText(hDlg, IDC_SHADER_GLSL_FILE, GUI.OGLshaderFileName);
+					WinDisplayApplyChanges();
+					WinRefreshDisplay();
+				}
+			}
 			ShowWindow(hDlg, SW_SHOW);
             break;
         }

@@ -617,6 +617,11 @@ int WinGetAutomaticInputRate(void)
     return (int)newInputRate;
 }
 
+GLSLShader *WinGetActiveGLSLShader()
+{
+	return OpenGL.GetActiveShader();
+}
+
 /* Depth conversion functions begin */
 
 void Convert16To24 (SSurface *src, SSurface *dst, RECT *srect)

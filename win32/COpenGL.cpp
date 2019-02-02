@@ -40,6 +40,7 @@ COpenGL::COpenGL(void)
 	frameCount = 0;
 	cgShader = NULL;
     glslShader = NULL;
+	*currentShaderFile = _T('\0');
 }
 
 COpenGL::~COpenGL(void)
@@ -523,19 +524,31 @@ bool COpenGL::LoadShaderFunctions()
 
 bool COpenGL::SetShaders(const TCHAR *file)
 {
+	if (file && lstrcmp(file, currentShaderFile) == 0)
+		return true;
+
 	SetShadersCG(NULL);
 	SetShadersGLSL(NULL);
 	SetShadersGLSL_OLD(NULL);
 	shader_type = OGL_SHADER_NONE;
-	if (file != NULL && (
-		(lstrlen(file) > 3 && _tcsncicmp(&file[lstrlen(file) - 3], TEXT(".cg"), 3) == 0) ||
-		(lstrlen(file) > 4 && _tcsncicmp(&file[lstrlen(file) - 4], TEXT(".cgp"), 4) == 0))) {
-		return SetShadersCG(file);
-	} else if((lstrlen(file) > 7 && _tcsncicmp(&file[lstrlen(file) - 7], TEXT(".shader"), 7) == 0)) {
-		return SetShadersGLSL_OLD(file);
-	} else {
-		return SetShadersGLSL(file);
+
+	if (file) {
+		lstrcpy(currentShaderFile, file);
+		if ((lstrlen(file) > 3 && _tcsncicmp(&file[lstrlen(file) - 3], TEXT(".cg"), 3) == 0) ||
+			(lstrlen(file) > 4 && _tcsncicmp(&file[lstrlen(file) - 4], TEXT(".cgp"), 4) == 0)) {
+			return SetShadersCG(file);
+		}
+		else if ((lstrlen(file) > 7 && _tcsncicmp(&file[lstrlen(file) - 7], TEXT(".shader"), 7) == 0)) {
+			return SetShadersGLSL_OLD(file);
+		}
+		else {
+			return SetShadersGLSL(file);
+		}
 	}
+
+	*currentShaderFile = _T('\0');
+
+	return true;
 }
 
 void COpenGL::checkForCgError(const char *situation)

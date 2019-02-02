@@ -550,7 +550,7 @@ BEGIN
     LTEXT           "",IDC_STATIC_CONTAINER,7,35,282,142,WS_BORDER
     SCROLLBAR       IDC_SCROLLBAR_PARAMS,289,35,12,142,SBS_VERT
     PUSHBUTTON      "Apply",IDAPPLY,253,184,50,14
-    LTEXT           "Changing these parameters will create a new ""custom_shader_params.glslp"" file in the snes9x directory that contains the parameters and references to your currently loaded shader. This will then be used as your current OpenGL shader.",IDC_STATIC,7,7,295,28
+    LTEXT           "Changing these parameters will create a new ""custom_shader_params.glslp / .slangp"" file in the snes9x directory that contains the parameters and references to your currently loaded shader. This will then be used as your current OpenGL shader.",IDC_STATIC,7,7,295,28
 END
 
 IDD_DIALOG_XAUDIO2_INIT_ERROR DIALOGEX 0, 0, 277, 92
