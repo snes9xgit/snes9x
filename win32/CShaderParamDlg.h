@@ -20,6 +20,7 @@ private:
     unsigned int avgCharWidth;
     unsigned int avgCharHeight;
     int scrollpos;
+	std::vector<GLSLParam> saved_parameters;
 
 	WNDPROC oldStaticProc;
 
