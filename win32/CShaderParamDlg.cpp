@@ -164,16 +164,11 @@ CShaderParamDlg::~CShaderParamDlg()
 
 bool CShaderParamDlg::show()
 {
-	saved_parameters = shader.param;
-
     if(DialogBoxParam(GUI.hInstance, MAKEINTRESOURCE(IDD_DIALOG_SHADER_PARAMS), GUI.hWnd, DlgShaderParams, (LPARAM)this) == IDOK)
     {
         save_custom_shader();
         return true;
     }
-
-	shader.param = saved_parameters;
-	WinRefreshDisplay();
     return false;
 }
 
