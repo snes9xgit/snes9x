@@ -11,7 +11,6 @@
 #include "gtk_display.h"
 #include "gtk_display_driver.h"
 #include "gtk_display_driver_gtk.h"
-#include "font.h"
 
 #if defined(USE_XV) && defined(GDK_WINDOWING_X11)
 #include "gtk_display_driver_xv.h"
@@ -1583,30 +1582,13 @@ void S9xGraphicsMode ()
 {
 }
 
-static const char kern[224][2] =
-{
-    { 2, 2 },{ 2, 3 },{ 1, 2 },{ 0, 1 },{ 0, 1 },{ 0, 2 },{ 0, 2 },{ 0, 3 },{ 1, 3 },{ 1, 3 },{ 0, 3 },{ 0, 1 },{ 0, 3 },{ 0, 2 },{ 1, 3 },{ 0, 2 },
-    { 0, 3 },{ 0, 3 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 1, 3 },{ 0, 3 },{ 0, 3 },{ 0, 2 },{ 0, 3 },{ 0, 3 },
-    { 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 3 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 1 },{ 0, 1 },{ 0, 2 },
-    { 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 3 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 2 },{ 0, 3 },{ 0, 2 },{ 0, 3 },{ 0, 2 },{ 0, 3 },{ 0, 3 },{ 0, 2 },
-    { 0, 3 },{ 0, 2 },{ 0, 2 },{ 0, 3 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 3 },{ 0, 3 },{ 0, 2 },{ 0, 3 },{ 0, 1 },{ 0, 2 },{ 0, 2 },
-    { 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 3 },{ 0, 1 },{ 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 3 },{ 1, 4 },{ 0, 3 },{ 0, 2 },{ 2, 2 },
-    { 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },
-    { 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },
-    { 2, 2 },{ 0, 3 },{ 2, 2 },{ 2, 2 },{ 2, 1 },{ 1, 3 },{ 0, 1 },{ 0, 3 },{ 0, 3 },{ 0, 3 },{ 0, 3 },{ 0, 3 },{ 0, 2 },{ 0, 2 },{ 1, 3 },{ 0, 1 },
-    { 0, 2 },{ 0, 2 },{ 0, 2 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 2 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },
-    { 0, 1 },{ 0, 2 },{ 0, 1 },{ 0, 1 },{ 1, 2 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 1, 2 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },
-    { 1, 2 },{ 0, 2 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 1, 1 },{ 0, 1 },{ 1, 1 },{ 0, 1 },{ 0, 2 },{ 0, 1 },{ 0, 1 },{ 0, 1 },{ 0, 2 },{ 0, 3 },
-    { 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },
-    { 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 },{ 2, 2 }
-};
-
+#include "var8x10font.h"
 static const int font_width = 8;
-static const int font_height = 9;
+static const int font_height = 10;
 
 static inline int CharWidth (uint8 c)
 {
-    return font_width - kern[c - 32][0] - kern[c - 32][1];
+    return font_width - var8x10font_kern[c - 32][0] - var8x10font_kern[c - 32][1];
 }
 
 static int StringWidth (const char *str)
@@ -1625,15 +1607,15 @@ static int StringWidth (const char *str)
     return pixcount;
 }
 
-static void GTKDisplayChar (int x, int y, uint8 c, bool overlap = false, bool monospace = false)
+static void GTKDisplayChar(int x, int y, uint8 c, bool monospace = false, int overlap = 0)
 {
     int cindex = c - 32;
     int crow   = cindex >> 4;
     int ccol   = cindex & 15;
-    int cwidth = font_width - (monospace ? 0 : (kern[cindex][0] + kern[cindex][1]));
+    int cwidth = font_width - (monospace ? 0 : (var8x10font_kern[cindex][0] + var8x10font_kern[cindex][1]));
 
     int	line   = crow * font_height;
-    int	offset = ccol * font_width + (monospace ? 0 : kern[cindex][0]);
+    int	offset = ccol * font_width + (monospace ? 0 : var8x10font_kern[cindex][0]);
     int scale = IPPU.RenderedScreenWidth / SNES_WIDTH;
 
     uint16 *s = GFX.Screen + y * GFX.RealPPL + x * scale;
@@ -1642,14 +1624,13 @@ static void GTKDisplayChar (int x, int y, uint8 c, bool overlap = false, bool mo
     {
         for (int w = 0; w < cwidth; w++, s++)
         {
-            char p = font[line][offset + w];
-
-            if (p == '#')
+            if (var8x10font[line][offset + w] == '#')
                 *s = Settings.DisplayColor;
-            else if (p == '.')
+            else if (var8x10font[line][offset + w] == '.')
                 *s = 0x0000;
-//            else if (!monospace && (!overlap || w > 0))
+//            else if (!monospace && w >= overlap)
 //                *s = (*s & 0xf7de) >> 1;
+//                *s = (*s & 0xe79c) >> 2;
 
             if (scale > 1)
             {
@@ -1660,8 +1641,8 @@ static void GTKDisplayChar (int x, int y, uint8 c, bool overlap = false, bool mo
     }
 }
 
-static void S9xGTKDisplayString (const char *string, int linesFromBottom,
-                                 int pixelsFromLeft, bool allowWrap, int type)
+static void S9xGTKDisplayString(const char *string, int linesFromBottom,
+                                int pixelsFromLeft, bool allowWrap, int type)
 {
     bool monospace = true;
     if (type == S9X_NO_INFO)
@@ -1679,21 +1660,22 @@ static void S9xGTKDisplayString (const char *string, int linesFromBottom,
     }
 
     int dst_x = pixelsFromLeft;
-    int dst_y = IPPU.RenderedScreenHeight - font_height * linesFromBottom;
+    int dst_y = IPPU.RenderedScreenHeight - (font_height) * linesFromBottom;
     int	len = strlen(string);
-    bool overlap = false;
 
     if (IPPU.RenderedScreenHeight % 224 && !gui_config->overscan)
         dst_y -= 8;
     else if (gui_config->overscan)
         dst_y += 8;
 
+    int overlap = 0;
+
     for (int i = 0 ; i < len ; i++)
     {
         int cindex = string[i] - 32;
-        int char_width = font_width - (monospace ? 1 : (kern[cindex][0] + kern[cindex][1]));
+        int char_width = font_width - (monospace ? 1 : (var8x10font_kern[cindex][0] + var8x10font_kern[cindex][1]));
 
-        if (dst_x + char_width > SNES_WIDTH || (uint8) string[i] < 32)
+        if (dst_x + char_width > SNES_WIDTH || (uint8)string[i] < 32)
         {
             if (!allowWrap)
                 break;
@@ -1709,10 +1691,10 @@ static void S9xGTKDisplayString (const char *string, int linesFromBottom,
         if ((uint8) string[i] < 32)
             continue;
 
-        GTKDisplayChar(dst_x, dst_y, string[i], overlap, monospace);
+        GTKDisplayChar(dst_x, dst_y, string[i], monospace, overlap);
 
         dst_x  += char_width - 1;
-        overlap = true;
+        overlap = 1;
     }
 }
 
