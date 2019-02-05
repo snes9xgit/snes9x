@@ -62,7 +62,7 @@ class HermiteResampler : public Resampler
         clear (void)
         {
             ring_buffer::clear ();
-            r_frac = 0.0;
+            r_frac = 1.0;
             r_left [0] = r_left [1] = r_left [2] = r_left [3] = 0;
             r_right[0] = r_right[1] = r_right[2] = r_right[3] = 0;
         }
@@ -138,7 +138,7 @@ class HermiteResampler : public Resampler
                 return (ring_buffer::space_filled() + sizeof(short) - 1) / sizeof(short);
             }
 
-            return (int) trunc (((size >> 2) - r_frac) / r_step) * 2;
+            return (int) floor (((size >> 2) - r_frac) / r_step) * 2;
         }
 };
 

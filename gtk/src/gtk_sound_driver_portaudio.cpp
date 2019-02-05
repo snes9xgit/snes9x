@@ -10,7 +10,7 @@
 static inline int
 frames_to_bytes (int frames)
 {
-    return frames * 4;
+    return (frames * (Settings.SixteenBitSound ? 2 : 1) * (Settings.Stereo ? 2 : 1));
 }
 
 static void
@@ -106,8 +106,8 @@ bool S9xPortAudioSoundDriver::open_device()
         audio_stream = NULL;
     }
 
-    param.channelCount = 2;
-    param.sampleFormat = paInt16;
+    param.channelCount = Settings.Stereo ? 2 : 1;
+    param.sampleFormat = Settings.SixteenBitSound ? paInt16 : paUInt8;
     param.hostApiSpecificStreamInfo = NULL;
 
     printf ("PortAudio sound driver initializing...\n");
@@ -200,14 +200,14 @@ S9xPortAudioSoundDriver::samples_available ()
     {
         // Using rate control, we should always keep the emulator's sound buffers empty to
         // maintain an accurate measurement.
-        if (frames < (S9xGetSampleCount () >> 1))
+        if (frames < (S9xGetSampleCount () >> (Settings.Stereo ? 1 : 0)))
         {
             S9xClearSamples ();
             return;
         }
     }
 
-    frames = MIN (frames, S9xGetSampleCount () >> 1);
+    frames = MIN (frames, S9xGetSampleCount () >> (Settings.Stereo ? 1 : 0));
     bytes = frames_to_bytes (frames);
 
     if (sound_buffer_size < bytes || sound_buffer == NULL)
@@ -216,7 +216,7 @@ S9xPortAudioSoundDriver::samples_available ()
         sound_buffer_size = bytes;
     }
 
-    S9xMixSamples (sound_buffer, frames << 1);
+    S9xMixSamples (sound_buffer, frames << (Settings.Stereo ? 1 : 0));
 
     Pa_WriteStream (audio_stream, sound_buffer, frames);
 }
