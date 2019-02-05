@@ -85,17 +85,17 @@ bool S9xAlsaSoundDriver::open_device()
     }
 
     printf ("    --> (%s, %s, %dhz, %d ms)...\n",
-            Settings.SixteenBitSound ? "16-bit" : "8-bit",
-            Settings.Stereo ? "Stereo" : "Mono",
+            "16-bit",
+            "Stereo",
             Settings.SoundPlaybackRate,
             gui_config->sound_buffer_size);
 
     snd_pcm_hw_params_alloca (&hw_params);
     snd_pcm_hw_params_any (pcm, hw_params);
-    snd_pcm_hw_params_set_format (pcm, hw_params, Settings.SixteenBitSound ? SND_PCM_FORMAT_S16 : SND_PCM_FORMAT_U8);
+    snd_pcm_hw_params_set_format (pcm, hw_params, SND_PCM_FORMAT_S16);
     snd_pcm_hw_params_set_access (pcm, hw_params, SND_PCM_ACCESS_RW_INTERLEAVED);
     snd_pcm_hw_params_set_rate_resample (pcm, hw_params, 0);
-    snd_pcm_hw_params_set_channels (pcm, hw_params, Settings.Stereo ? 2 : 1);
+    snd_pcm_hw_params_set_channels (pcm, hw_params, 2);
 
     snd_pcm_hw_params_get_rate_min (hw_params, &min, NULL);
     snd_pcm_hw_params_get_rate_max (hw_params, &max, NULL);
@@ -190,14 +190,14 @@ S9xAlsaSoundDriver::samples_available ()
     {
         // Using rate control, we should always keep the emulator's sound buffers empty to
         // maintain an accurate measurement.
-        if (frames < (S9xGetSampleCount () >> (Settings.Stereo ? 1 : 0)))
+        if (frames < (S9xGetSampleCount () >> 1))
         {
             S9xClearSamples ();
             return;
         }
     }
 
-    frames = MIN (frames, S9xGetSampleCount () >> (Settings.Stereo ? 1 : 0));
+    frames = MIN (frames, S9xGetSampleCount () >> 1);
 
     bytes = snd_pcm_frames_to_bytes (pcm, frames);
 
@@ -212,7 +212,7 @@ S9xAlsaSoundDriver::samples_available ()
         sound_buffer_size = bytes;
     }
 
-    S9xMixSamples (sound_buffer, frames << (Settings.Stereo ? 1 : 0));
+    S9xMixSamples (sound_buffer, frames * 2);
 
     frames_written = 0;
 
