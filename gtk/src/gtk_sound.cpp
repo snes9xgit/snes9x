@@ -144,7 +144,10 @@ S9xPortSoundInit ()
 
         Settings.SoundPlaybackRate = playback_rates[gui_config->sound_playback_rate];
 
-        S9xInitSound (gui_config->sound_buffer_size, 0);
+        if (gui_config->sound_driver == sdl_driver)
+            S9xInitSound(gui_config->sound_buffer_size, 0);
+        else
+            S9xInitSound(0, 0);
 
         S9xSetSoundMute (false);
     }

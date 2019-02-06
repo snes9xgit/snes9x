@@ -224,24 +224,28 @@ static void UpdatePlaybackRate(void)
     }
 }
 
-bool8 S9xInitSound(int unused, int unused2)
+bool8 S9xInitSound(int buffer_ms, int unused2)
 {
     // The resampler and spc unit use samples (16-bit short) as arguments.
+    int buffer_size_samples = MAX_SAMPLE_FRAMES * 2;
+    if (buffer_ms > 0)
+        buffer_size_samples = Settings.SoundPlaybackRate * buffer_ms * 2 / 1000;
+
     if (!spc::resampler)
     {
-        spc::resampler = new HermiteResampler(MAX_SAMPLE_FRAMES * 2);
+        spc::resampler = new HermiteResampler(buffer_size_samples);
         if (!spc::resampler)
             return (FALSE);
     }
 
     if (!msu::resampler)
     {
-        msu::resampler = new HermiteResampler(msu::buffer_size);
+        msu::resampler = new HermiteResampler(buffer_size_samples * 3 / 2);
         if (!msu::resampler)
             return (FALSE);
     }
     else
-        msu::resampler->resize(msu::buffer_size);
+        msu::resampler->resize(buffer_size_samples * 3 / 2);
 
     reset_dsp_output();
 
