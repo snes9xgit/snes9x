@@ -146,7 +146,7 @@ bool CXAudio2::InitVoices(void)
     wfx.cbSize = 0;
 
 	if( FAILED(hr = pXAudio2->CreateSourceVoice(&pSourceVoice, (WAVEFORMATEX*)&wfx,
-		XAUDIO2_VOICE_NOSRC , XAUDIO2_DEFAULT_FREQ_RATIO, this, NULL, NULL ) ) ) {
+		XAUDIO2_VOICE_USEFILTER, XAUDIO2_DEFAULT_FREQ_RATIO, this, NULL, NULL ) ) ) {
 			DXTRACE_ERR_MSGBOX(TEXT("Unable to create source voice."),hr);
 			return false;
 	}
@@ -239,6 +239,7 @@ bool CXAudio2::SetupSound()
     {
 		soundBuffer = new uint8[sum_bufferSize];
 		writeOffset = 0;
+		partialOffset = 0;
     }
 	else {
 		DeInitVoices();
@@ -275,7 +276,7 @@ the OnBufferComplete callback.
 */
 void CXAudio2::ProcessSound()
 {
-	int freeBytes = (blockCount - bufferCount) * singleBufferBytes;
+	int freeBytes = ((blockCount - bufferCount) * singleBufferBytes) - partialOffset;
 
 	if (Settings.DynamicRateControl)
 	{
@@ -302,15 +303,38 @@ void CXAudio2::ProcessSound()
 	if(!initDone)
 		return;
 
-	BYTE * curBuffer;
+	if (partialOffset != 0)	{
+		BYTE *offsetBuffer = soundBuffer + writeOffset + partialOffset;
+		UINT32 samplesleftinblock = (singleBufferBytes - partialOffset) >> (Settings.SixteenBitSound ? 1 : 0);
+		if (availableSamples < ((singleBufferBytes - partialOffset) >> (Settings.SixteenBitSound ? 1 : 0)))
+		{
+			S9xMixSamples(offsetBuffer, availableSamples);
+			partialOffset += availableSamples << (Settings.SixteenBitSound ? 1 : 0);
+			availableSamples = 0;
+		}
+		else
+		{
+			S9xMixSamples(offsetBuffer, samplesleftinblock);
+			partialOffset = 0;
+			availableSamples -= samplesleftinblock;
+			PushBuffer(singleBufferBytes, soundBuffer + writeOffset, NULL);
+			writeOffset += singleBufferBytes;
+			writeOffset %= sum_bufferSize;
+		}
+	}
 
-	while(availableSamples > singleBufferSamples && bufferCount < blockCount) {
-		curBuffer = soundBuffer + writeOffset;
-		S9xMixSamples(curBuffer,singleBufferSamples);
-		PushBuffer(singleBufferBytes,curBuffer,NULL);
-		writeOffset+=singleBufferBytes;
-		writeOffset%=sum_bufferSize;
-        availableSamples -= singleBufferSamples;
+	while (availableSamples > singleBufferSamples && bufferCount < blockCount) {
+		BYTE *curBuffer = soundBuffer + writeOffset;
+		S9xMixSamples(curBuffer, singleBufferSamples);
+		PushBuffer(singleBufferBytes, curBuffer, NULL);
+		writeOffset += singleBufferBytes;
+		writeOffset %= sum_bufferSize;
+		availableSamples -= singleBufferSamples;
+	}
+
+	if (availableSamples > 0 && bufferCount < blockCount) {
+		S9xMixSamples(soundBuffer + writeOffset, availableSamples);
+		partialOffset = availableSamples << (Settings.SixteenBitSound ? 1 : 0);
 	}
 }
 

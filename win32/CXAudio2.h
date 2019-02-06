@@ -26,9 +26,9 @@ private:
 	UINT32 singleBufferSamples;				// samples in one block
 	UINT32 singleBufferBytes;				// bytes in one block
 	UINT32 blockCount;						// soundBuffer is divided into blockCount blocks
-											// currently set to 4
-
+											// currently set to 8
 	UINT32 writeOffset;						// offset into the buffer for the next block
+	UINT32 partialOffset;					// offset into non-complete block
 	uint8 *soundBuffer;						// the buffer itself
 
 	bool InitVoices(void);
