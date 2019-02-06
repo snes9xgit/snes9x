@@ -135,7 +135,6 @@ void S9xFinalizeSamples(void)
                                   SNES::dsp.spc_dsp.sample_count()))
         {
             spc::resampler->clear();
-            msu::resampler->clear();
             drop_msu1_samples = true;
         }
     }
@@ -157,9 +156,7 @@ void S9xFinalizeSamples(void)
         }
     }
 
-    if (!Settings.SoundSync || Settings.TurboMode || Settings.Mute)
-        spc::sound_in_sync = TRUE;
-    else if (spc::resampler->space_empty() >= spc::resampler->space_filled())
+    if (!Settings.SoundSync || Settings.TurboMode || Settings.Mute || spc::resampler->space_filled() <= 8)
         spc::sound_in_sync = TRUE;
     else
         spc::sound_in_sync = FALSE;
