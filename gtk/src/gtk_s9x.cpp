@@ -504,15 +504,14 @@ static void S9xThrottle ()
     if (Settings.SkipFrames == THROTTLE_SOUND_SYNC &&
         !Settings.DynamicRateControl)
     {
-        while (!S9xSyncSound ())
+        while (!S9xSyncSound())
         {
             usleep (100);
 
             /* If we can't sync sound within a half-second, we're probably deadlocked */
-            if (g_get_monotonic_time () - now > 500000)
+            if (g_get_monotonic_time() - now > 500000)
             {
-                S9xClearSamples ();
-                break;
+                S9xClearSamples();
             }
         }
 

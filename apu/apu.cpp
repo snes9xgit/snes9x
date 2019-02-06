@@ -22,8 +22,12 @@ static const int APU_DENOMINATOR_NTSC   = 328125;
 static const int APU_NUMERATOR_PAL      = 34176;
 static const int APU_DENOMINATOR_PAL    = 709379;
 
-// Max number of sample frames we'll ever generate before call to port API
-static const int MAX_SAMPLE_FRAMES      = (32040 + 59) / 60;
+// Max number of sample frames we'll ever generate before call to port API and
+// moving the samples to the resampler.
+// This is 535 sample frames, which corresponds to 1 video frame + some leeway
+// for use with SoundSync.
+static const int MAX_SAMPLE_FRAMES   = 600;
+static const int SAMPLE_FRAMES_LIMIT = 550;
 
 namespace SNES
 {
@@ -125,17 +129,27 @@ int S9xGetSampleCount(void)
 
 void S9xFinalizeSamples(void)
 {
-    bool drop_msu1_samples = true;
-
     if (!Settings.Mute)
     {
-        drop_msu1_samples = false;
-
         if (!spc::resampler->push((short *)spc::dsp_buffer,
                                   SNES::dsp.spc_dsp.sample_count()))
         {
+            // Don't drop samples if SoundSync is enabled. The port will wait
+            // and call S9xSyncSound again to catch up.
+            // If the sample count is over a frame, it indicates the port
+            // didn't implement SoundSync correctly.
+            if (Settings.SoundSync && !Settings.TurboMode && !Settings.Mute &&
+                SNES::dsp.spc_dsp.sample_count() < SAMPLE_FRAMES_LIMIT)
+            {
+                spc::sound_in_sync = false;
+                return;
+            }
+
             spc::resampler->clear();
-            drop_msu1_samples = true;
+            spc::resampler->push((short *)spc::dsp_buffer,
+                                 SNES::dsp.spc_dsp.sample_count());
+            if (Settings.MSU1)
+                msu::resampler->clear();
         }
     }
 
@@ -147,19 +161,15 @@ void S9xFinalizeSamples(void)
         // generate the same number of msu1 samples as dsp samples were generated
         S9xMSU1SetOutput((int16 *)msu::mixing_buffer, msu::buffer_size);
         S9xMSU1Generate(SNES::dsp.spc_dsp.sample_count());
-        if (drop_msu1_samples)
-            msu::resampler->clear();
-        else if (!msu::resampler->push((short *)msu::mixing_buffer, S9xMSU1Samples()))
+
+        if (!msu::resampler->push((short *)msu::mixing_buffer, S9xMSU1Samples()))
         {
             // should not occur, msu buffer is larger and we drop msu samples if spc buffer overruns
             assert(0);
         }
     }
 
-    if (!Settings.SoundSync || Settings.TurboMode || Settings.Mute || spc::resampler->space_filled() <= 8)
-        spc::sound_in_sync = TRUE;
-    else
-        spc::sound_in_sync = FALSE;
+    spc::sound_in_sync = true;
 
     reset_dsp_output();
 }
