@@ -285,9 +285,6 @@ int Snes9xConfig::save_config_file ()
     outbool (cf, z"DynamicRateControl", Settings.DynamicRateControl);
     cf.SetInt   (z"DynamicRateControlLimit", Settings.DynamicRateLimit);
     outbool (cf, z"AutomaticInputRate", auto_input_rate, "Guess input rate by asking the monitor what its refresh rate is");
-    outbool (cf, z"16bit", Settings.SixteenBitSound);
-    outbool (cf, z"Stereo", Settings.Stereo);
-    outbool (cf, z"ReverseStereo", Settings.ReverseStereo);
     cf.SetInt   (z"PlaybackRate", gui_config->sound_playback_rate, "1: 8000Hz, 2: 11025Hz, 3: 16000Hz, 4: 22050Hz, 5: 32000Hz, 6: 44100Hz, 7: 48000Hz");
 
 #undef z
@@ -517,9 +514,6 @@ int Snes9xConfig::load_config_file ()
     inbool (z"DynamicRateControl", Settings.DynamicRateControl);
     inint  (z"DynamicRateControlLimit", Settings.DynamicRateLimit);
     inbool (z"AutomaticInputRate", auto_input_rate);
-    inbool (z"16bit", Settings.SixteenBitSound);
-    inbool (z"Stereo", Settings.Stereo);
-    inbool (z"ReverseStereo", Settings.ReverseStereo);
     inint  (z"PlaybackRate", gui_config->sound_playback_rate);
 
 #undef z

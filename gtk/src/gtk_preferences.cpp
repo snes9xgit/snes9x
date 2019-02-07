@@ -633,7 +633,6 @@ Snes9xPreferences::move_settings_to_dialog ()
     set_combo ("default_esc_behavior",      config->default_esc_behavior);
     set_check ("prevent_screensaver",       config->prevent_screensaver);
     set_check ("force_inverted_byte_order", config->force_inverted_byte_order);
-    set_check ("stereo_check",              Settings.Stereo);
     set_combo ("playback_combo",            7 - config->sound_playback_rate);
     set_combo ("hw_accel",                  combo_value (config->hw_accel));
     set_check ("pause_emulation_on_switch", config->pause_emulation_on_switch);
@@ -748,7 +747,6 @@ Snes9xPreferences::get_settings_from_dialog ()
     if ((config->sound_driver        != get_combo ("sound_driver"))            ||
         (config->mute_sound          != get_check ("mute_sound_check"))        ||
         (config->sound_buffer_size   != (int) get_spin ("sound_buffer_size"))  ||
-        (Settings.Stereo             != get_check ("stereo_check"))            ||
         (config->sound_playback_rate != (7 - (get_combo ("playback_combo"))))  ||
         (config->sound_input_rate    != get_slider ("sound_input_rate"))       ||
         (config->auto_input_rate     != get_check ("auto_input_rate"))         ||
@@ -801,7 +799,6 @@ Snes9xPreferences::get_settings_from_dialog ()
     Settings.UpAndDown                = get_check ("upanddown");
     Settings.SuperFXClockMultiplier   = get_spin ("superfx_multiplier");
     config->sound_driver              = get_combo ("sound_driver");
-    Settings.Stereo                   = get_check ("stereo_check");
     config->sound_playback_rate       = 7 - (get_combo ("playback_combo"));
     config->sound_buffer_size         = get_spin ("sound_buffer_size");
     config->sound_input_rate          = get_slider ("sound_input_rate");

@@ -13,25 +13,24 @@
 
 class S9xPulseSoundDriver : public S9xSoundDriver
 {
-    public:
-        S9xPulseSoundDriver ();
-        void init ();
-        void terminate ();
-        bool open_device ();
-        void start ();
-        void stop ();
-        void samples_available ();
-        void lock ();
-        void unlock ();
-        void wait ();
+  public:
+    S9xPulseSoundDriver();
+    void init();
+    void terminate();
+    bool open_device();
+    void start();
+    void stop();
+    void samples_available();
+    void lock();
+    void unlock();
+    void wait();
 
-        pa_threaded_mainloop *mainloop;
-        pa_context *context;
-        pa_stream *stream;
+    pa_threaded_mainloop *mainloop;
+    pa_context *context;
+    pa_stream *stream;
 
-    private:
-        int buffer_size;
-
+  private:
+    int buffer_size;
 };
 
 #endif /* __GTK_SOUND_DRIVER_PULSE_H */

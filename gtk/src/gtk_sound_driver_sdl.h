@@ -14,18 +14,17 @@
 
 class S9xSDLSoundDriver : public S9xSoundDriver
 {
-    public:
-        S9xSDLSoundDriver ();
-        void init ();
-        void terminate ();
-        bool open_device ();
-        void start ();
-        void stop ();
-        void mix (unsigned char *output, int bytes);
+  public:
+    S9xSDLSoundDriver();
+    void init();
+    void terminate();
+    bool open_device();
+    void start();
+    void stop();
+    void mix(unsigned char *output, int bytes);
 
-    private:
-        SDL_AudioSpec *audiospec;
+  private:
+    SDL_AudioSpec *audiospec;
 };
-
 
 #endif /* __GTK_SOUND_DRIVER_SDL_H */

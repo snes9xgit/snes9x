@@ -4,12 +4,12 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include "gtk_s9x.h"
 #include "gtk_sound_driver_pulse.h"
+#include "gtk_s9x.h"
 
+#include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/time.h>
-#include <fcntl.h>
 
 static void pulse_samples_available(void *data)
 {
@@ -125,10 +125,8 @@ bool S9xPulseSoundDriver::open_device()
 
     printf("PulseAudio sound driver initializing...\n");
 
-    printf("    --> (%dhz, %s %s, %dms)...",
+    printf("    --> (%dhz, 16-bit Stereo, %dms)...",
            Settings.SoundPlaybackRate,
-           "16-bit",
-           "Stereo",
            gui_config->sound_buffer_size);
     fflush(stdout);
 
