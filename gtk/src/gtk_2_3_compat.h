@@ -30,6 +30,18 @@
 #define GDK_IS_X11_DISPLAY(display) true
 #define gdk_x11_window_get_xid(window) GDK_WINDOW_XWINDOW (window)
 
+inline void gdk_x11_display_error_trap_push(GdkDisplay *dpy)
+{
+    gdk_error_trap_push();
+}
+
+inline void gdk_x11_display_error_trap_pop_ignored(GdkDisplay *dpy)
+{
+    if (gdk_error_trap_pop())
+    {
+    }
+}
+
 inline void gdk_window_get_geometry (GdkWindow *window,
                                      gint *x,
                                      gint *y,

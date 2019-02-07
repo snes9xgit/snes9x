@@ -75,7 +75,7 @@ bool GTKGLXContext::attach (GtkWidget *widget)
         return false;
     }
     fbconfig = fbconfigs[0];
-    XFree (fbconfigs);
+    XFree(fbconfigs);
 
     vi = glXGetVisualFromFBConfig (display, fbconfig);
 
@@ -107,10 +107,12 @@ bool GTKGLXContext::create_context ()
 
     const char *extensions = glXQueryExtensionsString (display, screen);
 
+    gdk_x11_display_error_trap_push(gdk_display);
     if (strstr (extensions, "GLX_ARB_create_context"))
         context = glXCreateContextAttribsARB (display, fbconfig, NULL, True, context_attribs);
     if (!context)
         context = glXCreateNewContext (display, fbconfig, GLX_RGBA_TYPE, NULL, True);
+    gdk_x11_display_error_trap_pop_ignored(gdk_display);
 
     if (!context)
     {
