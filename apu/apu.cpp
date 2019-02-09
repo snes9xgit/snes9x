@@ -11,7 +11,7 @@
 #include "../msu1.h"
 #include "../snapshot.h"
 #include "../display.h"
-#include "hermite_resampler.h"
+#include "resampler.h"
 
 #include "bapu/snes/snes.hpp"
 
@@ -243,14 +243,14 @@ bool8 S9xInitSound(int buffer_ms, int unused2)
 
     if (!spc::resampler)
     {
-        spc::resampler = new HermiteResampler(buffer_size_samples);
+        spc::resampler = new Resampler(buffer_size_samples);
         if (!spc::resampler)
             return (FALSE);
     }
 
     if (!msu::resampler)
     {
-        msu::resampler = new HermiteResampler(buffer_size_samples * 3 / 2);
+        msu::resampler = new Resampler(buffer_size_samples * 3 / 2);
         if (!msu::resampler)
             return (FALSE);
     }
