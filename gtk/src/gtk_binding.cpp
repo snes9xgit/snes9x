@@ -172,17 +172,21 @@ Binding::Binding (const char *raw_string)
         bool ctrl = false;
         bool shift = false;
         bool alt= false;
+        bool direct = false;
         unsigned int keyval = 0;
         char *key;
+
+        if (!strchr (substr, '+'))
+            direct = true;
 
         key = strtok (substr, "+");
         while (key)
         {
-            if (strstr (key, "Alt"))
+            if (strstr (key, "Alt") && !direct)
                 alt = true;
-            else if (strstr (key, "Ctrl"))
+            else if (strstr (key, "Ctrl") && !direct)
                 ctrl = true;
-            else if (strstr (key, "Shift"))
+            else if (strstr (key, "Shift") && !direct)
                 shift = true;
             else
             {
