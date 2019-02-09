@@ -12,8 +12,9 @@
 #include <cstdint>
 #include <cmath>
 
-struct Resampler
+class Resampler
 {
+  public:
     int size;
     int buffer_size;
     int start;
