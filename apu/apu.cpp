@@ -33,7 +33,7 @@ namespace SNES
 {
 #include "bapu/dsp/blargg_endian.h"
 CPU cpu;
-}
+} // namespace SNES
 
 namespace spc
 {
@@ -57,7 +57,7 @@ static uint32 ratio_numerator = APU_NUMERATOR_NTSC;
 static uint32 ratio_denominator = APU_DENOMINATOR_NTSC;
 
 static double dynamic_rate_multiplier = 1.0;
-}
+} // namespace spc
 
 namespace msu
 {
@@ -66,7 +66,7 @@ static const int buffer_size = MAX_SAMPLE_FRAMES * 6;
 static uint8 mixing_buffer[buffer_size];
 static Resampler *resampler = NULL;
 static std::vector<uint16> resample_buffer;
-}
+} // namespace msu
 
 static void UpdatePlaybackRate(void);
 static void SPCSnapshotCallback(void);

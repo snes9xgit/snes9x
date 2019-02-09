@@ -95,12 +95,27 @@ struct Resampler
         return true;
     }
 
+    inline void push(int16_t l, int16_t r)
+    {
+        if (space_empty() >= 2)
+        {
+            int end = start + size;
+            if (end > buffer_size)
+                end -= buffer_size;
+            buffer[end] = l;
+            buffer[end + 1] = r;
+            size += 2;
+        }
+    }
+
     inline bool push(int16_t *src, int num_samples)
     {
         if (space_empty() < num_samples)
             return false;
 
-        int end = (start + size) % buffer_size;
+        int end = start + size;
+        if (end > buffer_size)
+            end -= buffer_size;
         int first_write_size = min(num_samples, buffer_size - end);
 
         memcpy(buffer + end, src, first_write_size * 2);
