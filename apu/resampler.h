@@ -95,12 +95,12 @@ struct Resampler
         return true;
     }
 
-    inline void push(int16_t l, int16_t r)
+    inline void push_sample(int16_t l, int16_t r)
     {
         if (space_empty() >= 2)
         {
             int end = start + size;
-            if (end > buffer_size)
+            if (end >= buffer_size)
                 end -= buffer_size;
             buffer[end] = l;
             buffer[end + 1] = r;
@@ -199,9 +199,10 @@ struct Resampler
         return (int)trunc(((size >> 1) - r_frac) / r_step) * 2;
     }
 
-    inline void resize(int num_samples)
+    void resize(int num_samples)
     {
-        delete[] buffer;
+        if (buffer)
+            delete[] buffer;
         buffer_size = num_samples;
         buffer = new int16_t[buffer_size];
         clear();
