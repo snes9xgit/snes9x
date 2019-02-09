@@ -106,7 +106,8 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
         }
     }
 
-    if (spc::resampler->space_empty() >= 535 * 2)
+    if (spc::resampler->space_empty() >= 535 * 2 || !Settings.SoundSync ||
+        Settings.TurboMode || Settings.Mute)
         spc::sound_in_sync = true;
     else
         spc::sound_in_sync = false;
@@ -128,7 +129,8 @@ void S9xLandSamples(void)
     if (spc::callback != NULL)
         spc::callback(spc::callback_data);
 
-    if (spc::resampler->space_empty() >= 535 * 2)
+    if (spc::resampler->space_empty() >= 535 * 2 || !Settings.SoundSync ||
+        Settings.TurboMode || Settings.Mute)
         spc::sound_in_sync = true;
     else
         spc::sound_in_sync = false;

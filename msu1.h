@@ -7,7 +7,6 @@
 #ifndef _MSU1_H_
 #define _MSU1_H_
 #include "snes9x.h"
-#include "apu/resampler.h"
 
 #define MSU1_REVISION 0x02
 
@@ -52,6 +51,7 @@ void S9xMSU1Generate(size_t sample_count);
 uint8 S9xMSU1ReadPort(uint8 port);
 void S9xMSU1WritePort(uint8 port, uint8 byte);
 size_t S9xMSU1Samples(void);
+class Resampler;
 void S9xMSU1SetOutput(Resampler *resampler);
 void S9xMSU1PostLoadState(void);
 

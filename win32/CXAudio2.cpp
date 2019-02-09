@@ -146,7 +146,7 @@ bool CXAudio2::InitVoices(void)
     wfx.cbSize = 0;
 
 	if( FAILED(hr = pXAudio2->CreateSourceVoice(&pSourceVoice, (WAVEFORMATEX*)&wfx,
-		XAUDIO2_VOICE_USEFILTER, XAUDIO2_DEFAULT_FREQ_RATIO, this, NULL, NULL ) ) ) {
+		XAUDIO2_VOICE_NOSRC, XAUDIO2_DEFAULT_FREQ_RATIO, this, NULL, NULL ) ) ) {
 			DXTRACE_ERR_MSGBOX(TEXT("Unable to create source voice."),hr);
 			return false;
 	}
@@ -305,11 +305,12 @@ void CXAudio2::ProcessSound()
 
 	if (partialOffset != 0)	{
 		BYTE *offsetBuffer = soundBuffer + writeOffset + partialOffset;
-		UINT32 samplesleftinblock = (singleBufferBytes - partialOffset) >> (Settings.SixteenBitSound ? 1 : 0);
-		if (availableSamples < ((singleBufferBytes - partialOffset) >> (Settings.SixteenBitSound ? 1 : 0)))
+		UINT32 samplesleftinblock = (singleBufferBytes - partialOffset) >> 1;
+
+		if (availableSamples <= samplesleftinblock)
 		{
 			S9xMixSamples(offsetBuffer, availableSamples);
-			partialOffset += availableSamples << (Settings.SixteenBitSound ? 1 : 0);
+            partialOffset += availableSamples << 1;
 			availableSamples = 0;
 		}
 		else
@@ -323,7 +324,7 @@ void CXAudio2::ProcessSound()
 		}
 	}
 
-	while (availableSamples > singleBufferSamples && bufferCount < blockCount) {
+	while (availableSamples >= singleBufferSamples && bufferCount < blockCount) {
 		BYTE *curBuffer = soundBuffer + writeOffset;
 		S9xMixSamples(curBuffer, singleBufferSamples);
 		PushBuffer(singleBufferBytes, curBuffer, NULL);
