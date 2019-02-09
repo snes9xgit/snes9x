@@ -22,12 +22,11 @@ static const int APU_DENOMINATOR_NTSC   = 328125;
 static const int APU_NUMERATOR_PAL      = 34176;
 static const int APU_DENOMINATOR_PAL    = 709379;
 
-// Max number of sample frames we'll ever generate before call to port API and
+// Max number of samples we'll ever generate before call to port API and
 // moving the samples to the resampler.
 // This is 535 sample frames, which corresponds to 1 video frame + some leeway
-// for use with SoundSync.
-static const int MAX_SAMPLE_FRAMES   = 600;
-static const int SAMPLE_FRAMES_LIMIT = 550;
+// for use with SoundSync, multiplied by 2, for left and right samples.
+static const int MINIMUM_BUFFER_SIZE = 550 * 2;
 
 namespace SNES
 {
@@ -42,7 +41,6 @@ static void *callback_data = NULL;
 
 static bool8 sound_in_sync = TRUE;
 static bool8 sound_enabled = FALSE;
-static uint16 dsp_buffer[MAX_SAMPLE_FRAMES * 2];
 
 static Resampler *resampler = NULL;
 
@@ -62,22 +60,14 @@ static double dynamic_rate_multiplier = 1.0;
 namespace msu
 {
 // Always 16-bit, Stereo; 1.5x dsp buffer to never overflow
-static const int buffer_size = MAX_SAMPLE_FRAMES * 6;
-static uint8 mixing_buffer[buffer_size];
 static Resampler *resampler = NULL;
-static std::vector<uint16> resample_buffer;
+static std::vector<int16> resample_buffer;
 } // namespace msu
 
 static void UpdatePlaybackRate(void);
 static void SPCSnapshotCallback(void);
 static inline int S9xAPUGetClock(int32);
 static inline int S9xAPUGetClockRemainder(int32);
-
-static void reset_dsp_output()
-{
-    SNES::dsp.spc_dsp.set_output((SNES::SPC_DSP::sample_t *)spc::dsp_buffer,
-                                 MAX_SAMPLE_FRAMES * 2);
-}
 
 bool8 S9xMixSamples(uint8 *dest, int sample_count)
 {
@@ -86,10 +76,7 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
     if (Settings.Mute)
     {
         memset(out, 0, sample_count << 1);
-        spc::resampler->clear();
-
-        if (Settings.MSU1)
-            msu::resampler->clear();
+        S9xClearSamples();
     }
     else
     {
@@ -119,6 +106,11 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
         }
     }
 
+    if (spc::resampler->space_empty() >= 535 * 2)
+        spc::sound_in_sync = true;
+    else
+        spc::sound_in_sync = false;
+
     return true;
 }
 
@@ -129,57 +121,17 @@ int S9xGetSampleCount(void)
 
 void S9xFinalizeSamples(void)
 {
-    if (!Settings.Mute)
-    {
-        if (!spc::resampler->push((short *)spc::dsp_buffer,
-                                  SNES::dsp.spc_dsp.sample_count()))
-        {
-            // Don't drop samples if SoundSync is enabled. The port will wait
-            // and call S9xSyncSound again to catch up.
-            // If the sample count is over a frame, it indicates the port
-            // didn't implement SoundSync correctly.
-            if (Settings.SoundSync && !Settings.TurboMode && !Settings.Mute &&
-                SNES::dsp.spc_dsp.sample_count() < SAMPLE_FRAMES_LIMIT)
-            {
-                spc::sound_in_sync = false;
-                return;
-            }
-
-            spc::resampler->clear();
-            spc::resampler->push((short *)spc::dsp_buffer,
-                                 SNES::dsp.spc_dsp.sample_count());
-            if (Settings.MSU1)
-                msu::resampler->clear();
-        }
-    }
-
-    // only generate msu1 if we really consumed the dsp samples (sample_count() resets at end of function),
-    // otherwise we will generate multiple times for the same samples - so this needs to be after all early
-    // function returns
-    if (Settings.MSU1)
-    {
-        // generate the same number of msu1 samples as dsp samples were generated
-        S9xMSU1SetOutput((int16 *)msu::mixing_buffer, msu::buffer_size);
-        S9xMSU1Generate(SNES::dsp.spc_dsp.sample_count());
-
-        if (!msu::resampler->push((short *)msu::mixing_buffer, S9xMSU1Samples()))
-        {
-            // should not occur, msu buffer is larger and we drop msu samples if spc buffer overruns
-            assert(0);
-        }
-    }
-
-    spc::sound_in_sync = true;
-
-    reset_dsp_output();
 }
 
 void S9xLandSamples(void)
 {
     if (spc::callback != NULL)
         spc::callback(spc::callback_data);
+
+    if (spc::resampler->space_empty() >= 535 * 2)
+        spc::sound_in_sync = true;
     else
-        S9xFinalizeSamples();
+        spc::sound_in_sync = false;
 }
 
 void S9xClearSamples(void)
@@ -237,9 +189,11 @@ static void UpdatePlaybackRate(void)
 bool8 S9xInitSound(int buffer_ms, int unused2)
 {
     // The resampler and spc unit use samples (16-bit short) as arguments.
-    int buffer_size_samples = MAX_SAMPLE_FRAMES * 2;
-    if (buffer_ms > 0)
-        buffer_size_samples = Settings.SoundPlaybackRate * buffer_ms * 2 / 1000;
+    int buffer_size_samples = MINIMUM_BUFFER_SIZE;
+    int requested_buffer_size_samples = Settings.SoundPlaybackRate * buffer_ms * 2 / 1000;
+
+    if (requested_buffer_size_samples > buffer_size_samples)
+        buffer_size_samples = requested_buffer_size_samples;
 
     if (!spc::resampler)
     {
@@ -247,6 +201,9 @@ bool8 S9xInitSound(int buffer_ms, int unused2)
         if (!spc::resampler)
             return (FALSE);
     }
+    else
+        spc::resampler->resize(buffer_size_samples);
+
 
     if (!msu::resampler)
     {
@@ -257,7 +214,8 @@ bool8 S9xInitSound(int buffer_ms, int unused2)
     else
         msu::resampler->resize(buffer_size_samples * 3 / 2);
 
-    reset_dsp_output();
+    SNES::dsp.spc_dsp.set_output(spc::resampler);
+    S9xMSU1SetOutput(msu::resampler);
 
     UpdatePlaybackRate();
 
@@ -358,7 +316,7 @@ void S9xAPUEndScanline(void)
     S9xAPUExecute();
     SNES::dsp.synchronize();
 
-    if (SNES::dsp.spc_dsp.sample_count() >= APU_SAMPLE_BLOCK || !spc::sound_in_sync)
+    if (spc::resampler->space_filled() >= APU_SAMPLE_BLOCK || !spc::sound_in_sync)
         S9xLandSamples();
 }
 
@@ -385,13 +343,9 @@ void S9xResetAPU(void)
     SNES::cpu.frequency = Settings.PAL ? PAL_MASTER_CLOCK : NTSC_MASTER_CLOCK;
     SNES::smp.power();
     SNES::dsp.power();
-    reset_dsp_output();
     SNES::dsp.spc_dsp.set_spc_snapshot_callback(SPCSnapshotCallback);
 
-    spc::resampler->clear();
-
-    if (Settings.MSU1)
-        msu::resampler->clear();
+    S9xClearSamples();
 }
 
 void S9xSoftResetAPU(void)
@@ -401,12 +355,8 @@ void S9xSoftResetAPU(void)
     SNES::cpu.reset();
     SNES::smp.reset();
     SNES::dsp.reset();
-    reset_dsp_output();
 
-    spc::resampler->clear();
-
-    if (Settings.MSU1)
-        msu::resampler->clear();
+    S9xClearSamples();
 }
 
 void S9xAPUSaveState(uint8 *block)

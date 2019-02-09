@@ -23,7 +23,7 @@ struct Resampler
     float r_frac;
     int   r_left[4], r_right[4];
 
-    static inline int16_t short_clamp(int16_t n)
+    static inline int16_t short_clamp(int n)
     {
         return (int16_t)(((int16_t)n != n) ? (n >> 31) ^ 0x7fff : n);
     }
