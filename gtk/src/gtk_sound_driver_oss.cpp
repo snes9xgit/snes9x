@@ -168,7 +168,7 @@ void S9xOSSSoundDriver::samples_available()
 
     samples_to_write = S9xGetSampleCount();
 
-    if (Settings.DynamicRateControl)
+    if (Settings.DynamicRateControl && !Settings.SoundSync)
     {
         // Using rate control, we should always keep the emulator's sound buffers empty to
         // maintain an accurate measurement.
@@ -176,6 +176,15 @@ void S9xOSSSoundDriver::samples_available()
         {
             S9xClearSamples();
             return;
+        }
+    }
+
+    if (Settings.SoundSync && !Settings.TurboMode && !Settings.Mute)
+    {
+        while (info.bytes >> 1 < samples_to_write)
+        {
+            usleep(100);
+            ioctl(filedes, SNDCTL_DSP_GETOSPACE, &info);
         }
     }
 

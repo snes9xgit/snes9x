@@ -228,12 +228,23 @@ void S9xPulseSoundDriver::samples_available()
 
     samples = S9xGetSampleCount();
 
-    if (Settings.DynamicRateControl)
+    if (Settings.DynamicRateControl && !Settings.SoundSync)
     {
         if ((int)bytes < (samples * 2))
         {
             S9xClearSamples();
             return;
+        }
+    }
+
+    if (Settings.SoundSync && !Settings.TurboMode && !Settings.Mute)
+    {
+        while ((int)bytes < samples * 2)
+        {
+            usleep(100);
+            lock();
+            bytes = pa_stream_writable_size(stream);
+            unlock();
         }
     }
 

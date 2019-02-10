@@ -188,8 +188,9 @@ void S9xPortAudioSoundDriver::samples_available()
     }
 
     S9xFinalizeSamples();
+    int snes_frames_available = S9xGetSampleCount() >> 1;
 
-    if (Settings.DynamicRateControl)
+    if (Settings.DynamicRateControl && !Settings.SoundSync)
     {
         // Using rate control, we should always keep the emulator's sound buffers empty to
         // maintain an accurate measurement.
@@ -200,7 +201,16 @@ void S9xPortAudioSoundDriver::samples_available()
         }
     }
 
-    frames = MIN(frames, S9xGetSampleCount() >> 1);
+    if (Settings.SoundSync && !Settings.TurboMode && !Settings.Mute)
+    {
+        while (frames < snes_frames_available)
+        {
+            usleep(100);
+            frames = Pa_GetStreamWriteAvailable(audio_stream);
+        }
+    }
+
+    frames = MIN(frames, snes_frames_available);
     bytes = frames_to_bytes(frames);
 
     if (sound_buffer_size < bytes || sound_buffer == NULL)
