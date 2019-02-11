@@ -2005,17 +2005,6 @@ LRESULT CALLBACK WinProc(
 			GUI.Mute = !GUI.Mute;
             break;
 
-        case ID_SOUND_STEREO:
-            Settings.Stereo = !Settings.Stereo;
-            ReInitSound();
-            break;
-        case ID_SOUND_REVERSE_STEREO:
-            Settings.ReverseStereo = !Settings.ReverseStereo;
-            break;
-        case ID_SOUND_16BIT:
-            Settings.SixteenBitSound = !Settings.SixteenBitSound;
-            ReInitSound();
-            break;
         case ID_SOUND_SYNC:
             Settings.SoundSync = !Settings.SoundSync;
 			S9xDisplayStateChange (WINPROC_SYNC_SND, Settings.SoundSync);
@@ -3758,8 +3747,6 @@ static void CheckMenuStates ()
     if (Settings.SoundPlaybackRate == 0 || GUI.Mute)
         mii.fState |= MFS_DISABLED;
 
-    SetMenuItemInfo (GUI.hMenu, ID_SOUND_16BIT, FALSE, &mii);
-    SetMenuItemInfo (GUI.hMenu, ID_SOUND_STEREO, FALSE, &mii);
     SetMenuItemInfo (GUI.hMenu, ID_SOUND_SYNC, FALSE, &mii);
     SetMenuItemInfo (GUI.hMenu, ID_SOUND_INTERPOLATED, FALSE, &mii);
 
@@ -3776,11 +3763,6 @@ static void CheckMenuStates ()
 	SetMenuItemInfo (GUI.hMenu, ID_SOUND_176MS, FALSE, &mii);
 	SetMenuItemInfo (GUI.hMenu, ID_SOUND_194MS, FALSE, &mii);
 	SetMenuItemInfo (GUI.hMenu, ID_SOUND_210MS, FALSE, &mii);
-
-    if (!Settings.Stereo)
-        mii.fState |= MFS_DISABLED;
-
-    SetMenuItemInfo (GUI.hMenu, ID_SOUND_REVERSE_STEREO, FALSE, &mii);
 
     mii.fState = MFS_CHECKED;
 	if (GUI.AVIOut)
@@ -3821,17 +3803,8 @@ static void CheckMenuStates ()
     }
     SetMenuItemInfo (GUI.hMenu, id, FALSE, &mii);
 
-    if (Settings.SixteenBitSound)
-        SetMenuItemInfo (GUI.hMenu, ID_SOUND_16BIT, FALSE, &mii);
-    if (Settings.Stereo)
-        SetMenuItemInfo (GUI.hMenu, ID_SOUND_STEREO, FALSE, &mii);
     if (Settings.SoundSync)
         SetMenuItemInfo (GUI.hMenu, ID_SOUND_SYNC, FALSE, &mii);
-
-    if (!Settings.Stereo)
-        mii.fState |= MFS_DISABLED;
-    if (Settings.ReverseStereo)
-        SetMenuItemInfo (GUI.hMenu, ID_SOUND_REVERSE_STEREO, FALSE, &mii);
 
 #ifdef DEBUGGER
     mii.fState = (CPU.Flags & TRACE_FLAG) ? MFS_CHECKED : MFS_UNCHECKED;
@@ -4475,11 +4448,6 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
             if (Settings.DynamicRateControl)
                 SendDlgItemMessage(hDlg, IDC_DYNRATECONTROL, BM_SETCHECK, BST_CHECKED, 0);
-            if (Settings.Stereo)
-                SendDlgItemMessage(hDlg, IDC_STEREO, BM_SETCHECK, BST_CHECKED, 0);
-            else EnableWindow(GetDlgItem(hDlg, IDC_REV_STEREO), FALSE);
-            if (Settings.ReverseStereo)
-                SendDlgItemMessage(hDlg, IDC_REV_STEREO, BM_SETCHECK, BST_CHECKED, 0);
 
             if (GUI.Mute)
                 SendDlgItemMessage(hDlg, IDC_MUTE, BM_SETCHECK, BST_CHECKED, 0);
@@ -4539,8 +4507,6 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 										SendDlgItemMessage(hDlg, IDC_DRIVER, CB_GETCURSEL, 0,0),0);
 					Settings.DynamicRateControl=IsDlgButtonChecked(hDlg, IDC_DYNRATECONTROL);
 					Settings.SoundSync=IsDlgButtonChecked(hDlg, IDC_SYNC_TO_SOUND_CPU);
-					Settings.Stereo=IsDlgButtonChecked(hDlg, IDC_STEREO);
-					Settings.ReverseStereo=IsDlgButtonChecked(hDlg, IDC_REV_STEREO);
 					GUI.Mute=IsDlgButtonChecked(hDlg, IDC_MUTE);
 					GUI.FAMute=IsDlgButtonChecked(hDlg, IDC_FAMT)!=0;
 
@@ -4646,20 +4612,6 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						return true;
 					}
 					else return false;
-				case IDC_STEREO:
-					{
-						if(BN_CLICKED==HIWORD(wParam)||BN_DBLCLK==HIWORD(wParam))
-						{
-							if(IsDlgButtonChecked(hDlg,IDC_STEREO))
-							{
-								EnableWindow(GetDlgItem(hDlg, IDC_REV_STEREO), TRUE);
-							}
-							else EnableWindow(GetDlgItem(hDlg, IDC_REV_STEREO), FALSE);
-							return true;
-
-						}
-						else return false;
-					}
 				case IDC_INRATEEDIT:
 					if(HIWORD(wParam)==EN_UPDATE) {
 						Edit_GetText(GetDlgItem(hDlg,IDC_INRATEEDIT),valTxt,10);

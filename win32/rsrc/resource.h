@@ -48,8 +48,6 @@
 #define IDC_MIX                         1004
 #define IDC_OUTPUT_DEVICE               1004
 #define IDC_DYNRATECONTROL              1005
-#define IDC_STEREO                      1006
-#define IDC_REV_STEREO                  1007
 #define IDC_LINEAR_INTER                1008
 #define IDC_SYNC_TO_SOUND_CPU           1009
 #define IDC_ECHO                        1011
@@ -405,8 +403,6 @@
 #define ID_SOUND_INTERPOLATED           40027
 #define ID_SOUND_SYNC                   40028
 #define ID_WINDOW_FULLSCREEN            40029
-#define ID_SOUND_16BIT                  40030
-#define ID_SOUND_STEREO                 40031
 #define ID_WINDOW_STRETCH               40032
 #define ID_SOUND_8000HZ                 40033
 #define ID_SOUND_11025HZ                40034
@@ -436,7 +432,6 @@
 #define ID_SOUND_48000HZ                40085
 #define ID_SOUND_16000HZ                40086
 #define ID_SOUND_35000HZ                40087
-#define ID_SOUND_REVERSE_STEREO         40088
 #define ID_FILE_SAVE_SRAM_DATA          40089
 #define ID_RECENT_DUMMY                 40090
 #define IDM_ROM_INFO                    40094

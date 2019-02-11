@@ -130,7 +130,7 @@ bool CXAudio2::InitVoices(void)
     if (device_index < 0)
         device_index = 0;
 
-	if ( FAILED(hr = pXAudio2->CreateMasteringVoice( &pMasterVoice, (Settings.Stereo?2:1),
+	if ( FAILED(hr = pXAudio2->CreateMasteringVoice( &pMasterVoice, 2,
 		Settings.SoundPlaybackRate, 0, device_index, NULL ) ) ) {
 			DXTRACE_ERR_MSGBOX(TEXT("Unable to create mastering voice."),hr);
 			return false;
@@ -138,10 +138,10 @@ bool CXAudio2::InitVoices(void)
 
 	WAVEFORMATEX wfx;
 	wfx.wFormatTag = WAVE_FORMAT_PCM;
-    wfx.nChannels = Settings.Stereo ? 2 : 1;
+    wfx.nChannels = 2;
     wfx.nSamplesPerSec = Settings.SoundPlaybackRate;
-    wfx.nBlockAlign = (Settings.SixteenBitSound ? 2 : 1) * (Settings.Stereo ? 2 : 1);
-    wfx.wBitsPerSample = Settings.SixteenBitSound ? 16 : 8;
+    wfx.nBlockAlign = 2 * 2;
+    wfx.wBitsPerSample = 16;
     wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * wfx.nBlockAlign;
     wfx.cbSize = 0;
 
@@ -231,8 +231,8 @@ bool CXAudio2::SetupSound()
 	UINT32 blockTime = GUI.SoundBufferSize / blockCount;
 
 	singleBufferSamples = (Settings.SoundPlaybackRate * blockTime) / 1000;
-    singleBufferSamples *= (Settings.Stereo ? 2 : 1);
-	singleBufferBytes = singleBufferSamples * (Settings.SixteenBitSound ? 2 : 1);
+    singleBufferSamples *= 2;
+	singleBufferBytes = singleBufferSamples * 2;
 	sum_bufferSize = singleBufferBytes * blockCount;
 
     if (InitVoices())
@@ -293,7 +293,7 @@ void CXAudio2::ProcessSound()
 	{
 		// Using rate control, we should always keep the emulator's sound buffers empty to
 		// maintain an accurate measurement.
-		if (availableSamples > (freeBytes >> (Settings.SixteenBitSound ? 1 : 0)))
+		if (availableSamples > (freeBytes >> 1))
 		{
 			S9xClearSamples();
 			return;
@@ -335,7 +335,7 @@ void CXAudio2::ProcessSound()
 
 	if (availableSamples > 0 && bufferCount < blockCount) {
 		S9xMixSamples(soundBuffer + writeOffset, availableSamples);
-		partialOffset = availableSamples << (Settings.SixteenBitSound ? 1 : 0);
+		partialOffset = availableSamples << 1;
 	}
 }
 

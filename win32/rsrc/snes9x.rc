@@ -41,8 +41,6 @@ BEGIN
     LTEXT           "Playback Rate:",IDC_STATIC,125,53,49,11
     CONTROL         "&Dynamic Rate Control",IDC_DYNRATECONTROL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,295,97,102,10
     CONTROL         "&Automatic Input Rate",IDC_AUTOMATICINPUTRATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,295,109,102,10
-    CONTROL         "&Stereo",IDC_STEREO,"Button",BS_AUTOCHECKBOX | BS_NOTIFY | WS_TABSTOP,295,37,102,10
-    CONTROL         "&Reverse Stereo",IDC_REV_STEREO,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,295,49,102,10
     CONTROL         "&Synchronize with sound core",IDC_SYNC_TO_SOUND_CPU,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,295,85,102,10
     PUSHBUTTON      "&Cancel",IDCANCEL,350,134,56,16
@@ -786,7 +784,6 @@ BEGIN
     VK_F8,          ID_OPTIONS_SETTINGS,    VIRTKEY, ALT, NOINVERT
     "[",            ID_SOUND_INTERPOLATED,  ASCII,  ALT, NOINVERT
     "T",            ID_SOUND_OPTIONS,       VIRTKEY, ALT, NOINVERT
-    "R",            ID_SOUND_REVERSE_STEREO, VIRTKEY, ALT, NOINVERT
     "]",            ID_SOUND_SYNC,          ASCII,  ALT, NOINVERT
     VK_RETURN,      ID_WINDOW_FULLSCREEN,   VIRTKEY, ALT, NOINVERT
     VK_BACK,        ID_WINDOW_STRETCH,      VIRTKEY, ALT, NOINVERT
@@ -1034,9 +1031,6 @@ BEGIN
             MENUITEM SEPARATOR
             MENUITEM "Enable All",                  ID_CHANNELS_ENABLEALL
         END
-        MENUITEM "&16-Bit Sound",               ID_SOUND_16BIT
-        MENUITEM "&Stereo",                     ID_SOUND_STEREO
-        MENUITEM "&Reverse Stereo\tAlt+R",      ID_SOUND_REVERSE_STEREO
         MENUITEM SEPARATOR
         MENUITEM "S&ync Sound\tAlt+]",          ID_SOUND_SYNC
         MENUITEM "&Settings...\tAlt+T",         ID_SOUND_OPTIONS

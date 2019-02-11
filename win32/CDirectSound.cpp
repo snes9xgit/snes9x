@@ -129,15 +129,15 @@ bool CDirectSound::InitSoundBuffer()
 	blockTime = GUI.SoundBufferSize / blockCount;
 
 	blockSamples = (Settings.SoundPlaybackRate * blockTime) / 1000;
-    blockSamples *= (Settings.Stereo ? 2 : 1);
-	blockSize = blockSamples * (Settings.SixteenBitSound ? 2 : 1);
+    blockSamples *= 2;
+	blockSize = blockSamples * 2;
 	bufferSize = blockSize * blockCount;
 
     wfx.wFormatTag = WAVE_FORMAT_PCM;
-    wfx.nChannels = Settings.Stereo ? 2 : 1;
+    wfx.nChannels = 2;
     wfx.nSamplesPerSec = Settings.SoundPlaybackRate;
-    wfx.nBlockAlign = (Settings.SixteenBitSound ? 2 : 1) * (Settings.Stereo ? 2 : 1);
-    wfx.wBitsPerSample = Settings.SixteenBitSound ? 16 : 8;
+    wfx.nBlockAlign = 2 * 2;
+    wfx.wBitsPerSample = 16;
     wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * wfx.nBlockAlign;
     wfx.cbSize = 0;
 
@@ -320,11 +320,11 @@ void CDirectSound::MixSound()
 		EnterCriticalSection(&GUI.SoundCritSect);
         if (B1)
 		{
-			S9xMixSamples(B1,(Settings.SixteenBitSound?S1>>1:S1));
+			S9xMixSamples(B1, S1>>1);
 		}
         if (B2)
 		{
-			S9xMixSamples(B2,(Settings.SixteenBitSound?S2>>1:S2));
+			S9xMixSamples(B2, S2>>1);
 		}
 		LeaveCriticalSection(&GUI.SoundCritSect);
 
