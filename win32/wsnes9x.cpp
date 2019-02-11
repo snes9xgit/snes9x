@@ -3455,14 +3455,14 @@ int WINAPI WinMain(
 
 			if(run_loop)
 			{
-				ProcessInput();
-
-				// no sound sync when speed is not set to 100%
-				while(!S9xSyncSound()) {
+                // no sound sync when speed is not set to 100%
+                while (!S9xSyncSound()) {
                     ResetEvent(GUI.SoundSyncEvent);
-                    if(!PCFrameTimeIsDefault || WaitForSingleObject(GUI.SoundSyncEvent,1000) != WAIT_OBJECT_0)
+                    if (!PCFrameTimeIsDefault || WaitForSingleObject(GUI.SoundSyncEvent, 1000) != WAIT_OBJECT_0)
                         S9xClearSamples();
-				}
+                }
+
+				ProcessInput();
 
                 if(GUI.rewindBufferSize
 #ifdef NETPLAY_SUPPORT
