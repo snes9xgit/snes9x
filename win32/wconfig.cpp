@@ -385,16 +385,16 @@ struct ConfigItem
 				if(size	== 8) *(uint64*)addr = (uint64)conf.GetBool(name, def!=0);
 				break;
 			case CIT_INT:
-				if(size	== 1) *(uint8 *)addr = (uint8) conf.GetInt(name, reinterpret_cast<int32>(def));
-				if(size	== 2) *(uint16*)addr = (uint16)conf.GetInt(name, reinterpret_cast<int32>(def));
-				if(size	== 4) *(uint32*)addr = (uint32)conf.GetInt(name, reinterpret_cast<int32>(def));
-				if(size	== 8) *(uint64*)addr = (uint64)conf.GetInt(name, reinterpret_cast<int32>(def));
+				if(size	== 1) *(uint8 *)addr = (uint8) conf.GetInt(name, PtrToInt(def));
+				if(size	== 2) *(uint16*)addr = (uint16)conf.GetInt(name, PtrToInt(def));
+				if(size	== 4) *(uint32*)addr = (uint32)conf.GetInt(name, PtrToInt(def));
+				if(size	== 8) *(uint64*)addr = (uint64)conf.GetInt(name, PtrToInt(def));
 				break;
 			case CIT_UINT:
-				if(size	== 1) *(uint8 *)addr = (uint8) conf.GetUInt(name, reinterpret_cast<uint32>(def));
-				if(size	== 2) *(uint16*)addr = (uint16)conf.GetUInt(name, reinterpret_cast<uint32>(def));
-				if(size	== 4) *(uint32*)addr = (uint32)conf.GetUInt(name, reinterpret_cast<uint32>(def));
-				if(size	== 8) *(uint64*)addr = (uint64)conf.GetUInt(name, reinterpret_cast<uint32>(def));
+				if(size	== 1) *(uint8 *)addr = (uint8) conf.GetUInt(name, PtrToUint(def));
+				if(size	== 2) *(uint16*)addr = (uint16)conf.GetUInt(name, PtrToUint(def));
+				if(size	== 4) *(uint32*)addr = (uint32)conf.GetUInt(name, PtrToUint(def));
+				if(size	== 8) *(uint64*)addr = (uint64)conf.GetUInt(name, PtrToUint(def));
 				break;
 			case CIT_STRING:
 				lstrcpyn((TCHAR*)addr, _tFromChar(conf.GetString(name, reinterpret_cast<const char*>(def))), size-1);
@@ -409,7 +409,7 @@ struct ConfigItem
 				break;
 			case CIT_VKEY:
 				{
-					uint16 keyNum = (uint16)conf.GetUInt(name, reinterpret_cast<uint32>(def));
+					uint16 keyNum = (uint16)conf.GetUInt(name, PtrToUint(def));
 					const char* keyStr = conf.GetString(name);
 					if(keyStr)
 					{
@@ -460,7 +460,7 @@ struct ConfigItem
 						if(strstr(modStr, "lt") || strstr(modStr, "LT")) modNum |= CUSTKEY_ALT_MASK;
 					}
 					if(!modNum && (!modStr || strcasecmp(modStr, "none")))
-						modNum = conf.GetUInt(name, reinterpret_cast<uint32>(def));
+						modNum = conf.GetUInt(name, PtrToUint(def));
 					if(size	== 1) *(uint8 *)addr = (uint8) modNum;
 					if(size	== 2) *(uint16*)addr = (uint16)modNum;
 					if(size	== 4) *(uint32*)addr = (uint32)modNum;
