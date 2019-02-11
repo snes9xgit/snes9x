@@ -56,12 +56,14 @@ class Resampler
     {
         this->buffer_size = num_samples;
         buffer = new int16_t[this->buffer_size];
+        r_step = 1.0;
         clear();
     }
 
     ~Resampler()
     {
         delete[] buffer;
+        buffer = NULL;
     }
 
     inline void time_ratio(double ratio)
