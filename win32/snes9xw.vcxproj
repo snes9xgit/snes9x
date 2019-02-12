@@ -320,7 +320,6 @@
     <ClInclude Include="..\apu\bapu\dsp\sdsp.hpp" />
     <ClInclude Include="..\apu\bapu\dsp\SPC_DSP.h" />
     <ClInclude Include="..\apu\bapu\snes\snes.hpp" />
-    <ClInclude Include="..\apu\ring_buffer.h" />
     <CustomBuild Include="..\bsx.h" />
     <CustomBuild Include="..\c4.h" />
     <CustomBuild Include="..\cheats.h" />
@@ -335,6 +334,7 @@
     <CustomBuild Include="..\display.h" />
     <CustomBuild Include="..\dma.h" />
     <CustomBuild Include="..\dsp.h" />
+    <ClInclude Include="..\apu\resampler.h" />
     <ClInclude Include="..\filter\2xsai.h" />
     <ClInclude Include="..\filter\blit.h" />
     <ClInclude Include="..\filter\epx.h" />
