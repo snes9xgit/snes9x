@@ -11,21 +11,28 @@
 
 #include "gtk_sound.h"
 #include "gtk_sound_driver.h"
+#include "../../apu/resampler.h"
+
+#include <mutex>
+#include <cstdint>
 
 class S9xSDLSoundDriver : public S9xSoundDriver
 {
-    public:
-        S9xSDLSoundDriver ();
-        void init ();
-        void terminate ();
-        bool open_device ();
-        void start ();
-        void stop ();
-        void mix (unsigned char *output, int bytes);
+  public:
+    S9xSDLSoundDriver();
+    void init();
+    void terminate();
+    bool open_device();
+    void start();
+    void stop();
+    void mix(unsigned char *output, int bytes);
+    void samples_available();
 
-    private:
-        SDL_AudioSpec *audiospec;
+  private:
+    SDL_AudioSpec *audiospec;
+    Resampler *buffer;
+    std::mutex mutex;
+    int16_t temp[512];
 };
-
 
 #endif /* __GTK_SOUND_DRIVER_SDL_H */

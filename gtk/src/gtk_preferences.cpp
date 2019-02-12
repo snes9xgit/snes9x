@@ -328,23 +328,6 @@ event_hw_accel_changed (GtkComboBox *widget, gpointer data)
 }
 
 static void
-event_frameskip_combo_changed (GtkComboBox *widget, gpointer user_data)
-{
-    Snes9xPreferences *window = (Snes9xPreferences *) user_data;
-
-    if (window->get_combo ("frameskip_combo") == THROTTLE_SOUND_SYNC)
-    {
-        window->set_check ("dynamic_rate_control", 0);
-        window->enable_widget ("dynamic_rate_control", 0);
-    }
-    else
-    {
-        window->enable_widget ("dynamic_rate_control", 1);
-    }
-}
-
-
-static void
 event_scale_method_changed (GtkComboBox *widget, gpointer user_data)
 {
     Snes9xPreferences *window = (Snes9xPreferences *) user_data;
@@ -532,7 +515,6 @@ Snes9xPreferences::Snes9xPreferences (Snes9xConfig *config) :
         { "game_data_clear", G_CALLBACK (event_game_data_clear) },
         { "about_clicked", G_CALLBACK (event_about_clicked) },
         { "auto_input_rate_toggled", G_CALLBACK (event_auto_input_rate_toggled) },
-        { "frameskip_combo_changed", G_CALLBACK (event_frameskip_combo_changed) },
         { "calibrate", G_CALLBACK (event_calibrate) },
         { NULL, NULL }
     };
@@ -633,7 +615,6 @@ Snes9xPreferences::move_settings_to_dialog ()
     set_combo ("default_esc_behavior",      config->default_esc_behavior);
     set_check ("prevent_screensaver",       config->prevent_screensaver);
     set_check ("force_inverted_byte_order", config->force_inverted_byte_order);
-    set_check ("stereo_check",              Settings.Stereo);
     set_combo ("playback_combo",            7 - config->sound_playback_rate);
     set_combo ("hw_accel",                  combo_value (config->hw_accel));
     set_check ("pause_emulation_on_switch", config->pause_emulation_on_switch);
@@ -651,8 +632,6 @@ Snes9xPreferences::move_settings_to_dialog ()
                               config->auto_input_rate ? false : true);
     set_spin  ("sound_buffer_size",         config->sound_buffer_size);
 
-    if (Settings.SkipFrames == THROTTLE_SOUND_SYNC)
-        Settings.DynamicRateControl = 0;
     set_check ("dynamic_rate_control",      Settings.DynamicRateControl);
     set_spin  ("dynamic_rate_limit",        Settings.DynamicRateLimit / 1000.0);
     set_spin  ("rewind_buffer_size",        config->rewind_buffer_size);
@@ -702,7 +681,6 @@ Snes9xPreferences::move_settings_to_dialog ()
     set_combo ("scanline_filter_intensity", config->scanline_filter_intensity);
 
     set_combo ("frameskip_combo",           Settings.SkipFrames);
-    enable_widget ("dynamic_rate_control",  Settings.SkipFrames != THROTTLE_SOUND_SYNC);
     set_check ("bilinear_filter",           Settings.BilinearFilter);
 
 #ifdef USE_OPENGL
@@ -748,7 +726,6 @@ Snes9xPreferences::get_settings_from_dialog ()
     if ((config->sound_driver        != get_combo ("sound_driver"))            ||
         (config->mute_sound          != get_check ("mute_sound_check"))        ||
         (config->sound_buffer_size   != (int) get_spin ("sound_buffer_size"))  ||
-        (Settings.Stereo             != get_check ("stereo_check"))            ||
         (config->sound_playback_rate != (7 - (get_combo ("playback_combo"))))  ||
         (config->sound_input_rate    != get_slider ("sound_input_rate"))       ||
         (config->auto_input_rate     != get_check ("auto_input_rate"))         ||
@@ -801,7 +778,6 @@ Snes9xPreferences::get_settings_from_dialog ()
     Settings.UpAndDown                = get_check ("upanddown");
     Settings.SuperFXClockMultiplier   = get_spin ("superfx_multiplier");
     config->sound_driver              = get_combo ("sound_driver");
-    Settings.Stereo                   = get_check ("stereo_check");
     config->sound_playback_rate       = 7 - (get_combo ("playback_combo"));
     config->sound_buffer_size         = get_spin ("sound_buffer_size");
     config->sound_input_rate          = get_slider ("sound_input_rate");

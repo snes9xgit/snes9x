@@ -8,6 +8,7 @@
 #include "memmap.h"
 #include "display.h"
 #include "msu1.h"
+#include "apu/resampler.h"
 #include "apu/bapu/dsp/blargg_endian.h"
 #include <fstream>
 #include <sys/stat.h>
@@ -18,7 +19,7 @@ uint32 audioLoopPos;
 size_t partial_frames;
 
 // Sample buffer
-int16 *bufPos, *bufBegin, *bufEnd;
+static Resampler *msu_resampler = NULL;
 
 #ifdef UNZIP_SUPPORT
 static int unzFindExtension(unzFile &file, const char *ext, bool restart = TRUE, bool print = TRUE, bool allowExact = FALSE)
@@ -174,10 +175,8 @@ void S9xResetMSU(void)
 	MSU1.MSU1_AUDIO_POS		= 0;
 	MSU1.MSU1_RESUME_POS	= 0;
 
-
-	bufPos				= 0;
-	bufBegin			= 0;
-	bufEnd				= 0;
+	if (msu_resampler)
+		msu_resampler->clear();
 
 	partial_frames = 0;
 
@@ -231,7 +230,7 @@ void S9xMSU1Generate(size_t sample_count)
 {
 	partial_frames += 4410 * (sample_count / 2);
 
-	while ((bufPos < (bufEnd - 2)) && partial_frames >= 3204)
+	while (partial_frames >= 3204)
 	{
 		if (MSU1.MSU1_STATUS & AudioPlaying && audioStream)
 		{
@@ -245,9 +244,7 @@ void S9xMSU1Generate(size_t sample_count)
 				*left = ((int32)(int16)GET_LE16(left) * MSU1.MSU1_VOLUME / 255);
 				*right = ((int32)(int16)GET_LE16(right) * MSU1.MSU1_VOLUME / 255);
 
-
-				*(bufPos++) = *left;
-				*(bufPos++) = *right;
+				msu_resampler->push_sample(*left, *right);
 				MSU1.MSU1_AUDIO_POS += 4;
 				partial_frames -= 3204;
 			}
@@ -274,8 +271,7 @@ void S9xMSU1Generate(size_t sample_count)
 		{
 			MSU1.MSU1_STATUS &= ~(AudioPlaying | AudioRepeating);
 			partial_frames -= 3204;
-			*(bufPos++) = 0;
-			*(bufPos++) = 0;
+			msu_resampler->push_sample(0, 0);
 		}
 	}
 }
@@ -392,13 +388,12 @@ void S9xMSU1WritePort(uint8 port, uint8 byte)
 
 size_t S9xMSU1Samples(void)
 {
-	return bufPos - bufBegin;
+	return msu_resampler->space_filled();
 }
 
-void S9xMSU1SetOutput(int16 * out, size_t size)
+void S9xMSU1SetOutput(Resampler *resampler)
 {
-	bufPos = bufBegin = out;
-	bufEnd = out + size;
+	msu_resampler = resampler;
 }
 
 void S9xMSU1PostLoadState(void)
@@ -427,9 +422,8 @@ void S9xMSU1PostLoadState(void)
 		}
 	}
 
-	bufPos = 0;
-	bufBegin = 0;
-	bufEnd = 0;
+	if (msu_resampler)
+		msu_resampler->clear();
 
 	partial_frames = 0;
 }

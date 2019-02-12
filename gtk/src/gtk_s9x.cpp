@@ -501,29 +501,11 @@ static void S9xThrottle ()
         frame_clock = now;
     }
 
-    if (Settings.SkipFrames == THROTTLE_SOUND_SYNC &&
-        !Settings.DynamicRateControl)
+    if (Settings.SkipFrames == THROTTLE_SOUND_SYNC ||
+        Settings.SkipFrames == THROTTLE_NONE)
     {
-        while (!S9xSyncSound ())
-        {
-            usleep (100);
-
-            /* If we can't sync sound within a half-second, we're probably deadlocked */
-            if (g_get_monotonic_time () - now > 500000)
-            {
-                S9xClearSamples ();
-                break;
-            }
-        }
-
         frame_clock = now;
         IPPU.SkippedFrames = 0;
-
-        return;
-    }
-    else if (Settings.SkipFrames == THROTTLE_NONE)
-    {
-        frame_clock = now;
     }
     else // THROTTLE_TIMER or THROTTLE_TIMER_FRAMESKIP
     {

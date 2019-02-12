@@ -320,8 +320,6 @@
     <ClInclude Include="..\apu\bapu\dsp\sdsp.hpp" />
     <ClInclude Include="..\apu\bapu\dsp\SPC_DSP.h" />
     <ClInclude Include="..\apu\bapu\snes\snes.hpp" />
-    <ClInclude Include="..\apu\hermite_resampler.h" />
-    <ClInclude Include="..\apu\resampler.h" />
     <ClInclude Include="..\apu\ring_buffer.h" />
     <CustomBuild Include="..\bsx.h" />
     <CustomBuild Include="..\c4.h" />
@@ -433,12 +431,12 @@
     <ClInclude Include="CD3DCG.h" />
     <CustomBuild Include="CDirect3D.h" />
     <ClInclude Include="CDirectDraw.h" />
-    <ClInclude Include="CDirectSound.h" />
     <ClInclude Include="cgFunctions.h" />
     <ClInclude Include="CGLCG.h" />
     <ClInclude Include="cgMini.h" />
     <ClInclude Include="COpenGL.h" />
     <ClInclude Include="CShaderParamDlg.h" />
+    <ClInclude Include="CWaveOut.h" />
     <ClInclude Include="CXAudio2.h" />
     <ClInclude Include="dxerr.h" />
     <ClInclude Include="gl_core_3_1.h" />
@@ -577,11 +575,11 @@
     <ClCompile Include="CD3DCG.cpp" />
     <ClCompile Include="CDirect3D.cpp" />
     <ClCompile Include="CDirectDraw.cpp" />
-    <ClCompile Include="CDirectSound.cpp" />
     <ClCompile Include="cgFunctions.cpp" />
     <ClCompile Include="CGLCG.cpp" />
     <ClCompile Include="COpenGL.cpp" />
     <ClCompile Include="CShaderParamDlg.cpp" />
+    <ClCompile Include="CWaveOut.cpp" />
     <ClCompile Include="CXAudio2.cpp" />
     <ClCompile Include="DumpAtEnd.cpp" />
     <ClCompile Include="dxerr.cpp" />

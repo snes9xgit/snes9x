@@ -87,7 +87,6 @@ extern SNPServer NPServer;
 
 __int64 PCBase, PCFrameTime, PCFrameTimeNTSC, PCFrameTimePAL, PCStart, PCEnd;
 DWORD PCStartTicks, PCEndTicks;
-bool PCFrameTimeIsDefault = true;
 
 INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgInfoProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -1980,12 +1979,12 @@ LRESULT CALLBACK WinProc(
 			GUI.SoundBufferSize = 176;
 			ReInitSound();
 			break;
-		case ID_SOUND_194MS:
-			GUI.SoundBufferSize = 194;
+		case ID_SOUND_192MS:
+			GUI.SoundBufferSize = 192;
 			ReInitSound();
 			break;
-		case ID_SOUND_210MS:
-			GUI.SoundBufferSize = 210;
+		case ID_SOUND_208MS:
+			GUI.SoundBufferSize = 208;
 			ReInitSound();
 			break;
 
@@ -2005,17 +2004,6 @@ LRESULT CALLBACK WinProc(
 			GUI.Mute = !GUI.Mute;
             break;
 
-        case ID_SOUND_STEREO:
-            Settings.Stereo = !Settings.Stereo;
-            ReInitSound();
-            break;
-        case ID_SOUND_REVERSE_STEREO:
-            Settings.ReverseStereo = !Settings.ReverseStereo;
-            break;
-        case ID_SOUND_16BIT:
-            Settings.SixteenBitSound = !Settings.SixteenBitSound;
-            ReInitSound();
-            break;
         case ID_SOUND_SYNC:
             Settings.SoundSync = !Settings.SoundSync;
 			S9xDisplayStateChange (WINPROC_SYNC_SND, Settings.SoundSync);
@@ -3468,13 +3456,6 @@ int WINAPI WinMain(
 			{
 				ProcessInput();
 
-				// no sound sync when speed is not set to 100%
-				while(!S9xSyncSound()) {
-                    ResetEvent(GUI.SoundSyncEvent);
-                    if(!PCFrameTimeIsDefault || WaitForSingleObject(GUI.SoundSyncEvent,1000) != WAIT_OBJECT_0)
-                        S9xClearSamples();
-				}
-
                 if(GUI.rewindBufferSize
 #ifdef NETPLAY_SUPPORT
                     &&!Settings.NetPlay
@@ -3758,8 +3739,6 @@ static void CheckMenuStates ()
     if (Settings.SoundPlaybackRate == 0 || GUI.Mute)
         mii.fState |= MFS_DISABLED;
 
-    SetMenuItemInfo (GUI.hMenu, ID_SOUND_16BIT, FALSE, &mii);
-    SetMenuItemInfo (GUI.hMenu, ID_SOUND_STEREO, FALSE, &mii);
     SetMenuItemInfo (GUI.hMenu, ID_SOUND_SYNC, FALSE, &mii);
     SetMenuItemInfo (GUI.hMenu, ID_SOUND_INTERPOLATED, FALSE, &mii);
 
@@ -3774,13 +3753,8 @@ static void CheckMenuStates ()
 	SetMenuItemInfo (GUI.hMenu, ID_SOUND_144MS, FALSE, &mii);
 	SetMenuItemInfo (GUI.hMenu, ID_SOUND_160MS, FALSE, &mii);
 	SetMenuItemInfo (GUI.hMenu, ID_SOUND_176MS, FALSE, &mii);
-	SetMenuItemInfo (GUI.hMenu, ID_SOUND_194MS, FALSE, &mii);
-	SetMenuItemInfo (GUI.hMenu, ID_SOUND_210MS, FALSE, &mii);
-
-    if (!Settings.Stereo)
-        mii.fState |= MFS_DISABLED;
-
-    SetMenuItemInfo (GUI.hMenu, ID_SOUND_REVERSE_STEREO, FALSE, &mii);
+	SetMenuItemInfo (GUI.hMenu, ID_SOUND_192MS, FALSE, &mii);
+	SetMenuItemInfo (GUI.hMenu, ID_SOUND_208MS, FALSE, &mii);
 
     mii.fState = MFS_CHECKED;
 	if (GUI.AVIOut)
@@ -3816,22 +3790,13 @@ static void CheckMenuStates ()
 	case 144: id = ID_SOUND_144MS; break;
 	case 160: id = ID_SOUND_160MS; break;
 	case 176: id = ID_SOUND_176MS; break;
-	case 194: id = ID_SOUND_194MS; break;
-	case 210: id = ID_SOUND_210MS; break;
+	case 192: id = ID_SOUND_192MS; break;
+	case 208: id = ID_SOUND_208MS; break;
     }
     SetMenuItemInfo (GUI.hMenu, id, FALSE, &mii);
 
-    if (Settings.SixteenBitSound)
-        SetMenuItemInfo (GUI.hMenu, ID_SOUND_16BIT, FALSE, &mii);
-    if (Settings.Stereo)
-        SetMenuItemInfo (GUI.hMenu, ID_SOUND_STEREO, FALSE, &mii);
     if (Settings.SoundSync)
         SetMenuItemInfo (GUI.hMenu, ID_SOUND_SYNC, FALSE, &mii);
-
-    if (!Settings.Stereo)
-        mii.fState |= MFS_DISABLED;
-    if (Settings.ReverseStereo)
-        SetMenuItemInfo (GUI.hMenu, ID_SOUND_REVERSE_STEREO, FALSE, &mii);
 
 #ifdef DEBUGGER
     mii.fState = (CPU.Flags & TRACE_FLAG) ? MFS_CHECKED : MFS_UNCHECKED;
@@ -3928,12 +3893,15 @@ static void ResetFrameTimer ()
 {
     QueryPerformanceCounter((LARGE_INTEGER*)&PCStart);
 	PCStartTicks = timeGetTime()*1000;
-    if (Settings.FrameTime == Settings.FrameTimeNTSC) PCFrameTime = PCFrameTimeNTSC;
-    else if (Settings.FrameTime == Settings.FrameTimePAL) PCFrameTime = PCFrameTimePAL;
-    else PCFrameTime = (__int64)((double)(PCBase * Settings.FrameTime) * .000001);
+    if (Settings.FrameTime == Settings.FrameTimeNTSC)
+        PCFrameTime = PCFrameTimeNTSC;
+    else if (Settings.FrameTime == Settings.FrameTimePAL)
+        PCFrameTime = PCFrameTimePAL;
+    else
+        PCFrameTime = (__int64)((double)(PCBase * Settings.FrameTime) * .000001);
 
 	// determines if we can do sound sync
-	PCFrameTimeIsDefault = Settings.PAL ? Settings.FrameTime == Settings.FrameTimePAL : Settings.FrameTime == Settings.FrameTimeNTSC;
+	GUI.AllowSoundSync = Settings.PAL ? Settings.FrameTime == Settings.FrameTimePAL : Settings.FrameTime == Settings.FrameTimeNTSC;
 
     if (GUI.hFrameTimer)
         timeKillEvent (GUI.hFrameTimer);
@@ -4364,32 +4332,17 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
             CreateToolTip(IDC_INRATEEDIT, hDlg, TEXT("For each 'Input rate' samples generated by the SNES, 'Playback rate' samples will produced. If you experience crackling you can try to lower this setting."));
             CreateToolTip(IDC_INRATE, hDlg, TEXT("For each 'Input rate' samples generated by the SNES, 'Playback rate' samples will produced. If you experience crackling you can try to lower this setting."));
-            CreateToolTip(IDC_DYNRATECONTROL, hDlg, TEXT("Try to dynamically adjust the input rate to never overflow or underflow the sound buffer. Only works with XAudio2."));
+            CreateToolTip(IDC_DYNRATECONTROL, hDlg, TEXT("Try to dynamically adjust the input rate to never overflow or underflow the sound buffer."));
 
             HWND output_dropdown = GetDlgItem(hDlg, IDC_OUTPUT_DEVICE);
             UpdateAudioDeviceDropdown(output_dropdown);
             ComboBox_SetCurSel(output_dropdown, FindAudioDeviceIndex(GUI.AudioDevice));
 
             int pos;
-            pos = SendDlgItemMessage(hDlg, IDC_DRIVER, CB_INSERTSTRING, -1, (LPARAM)TEXT("Snes9x DirectSound"));
-            SendDlgItemMessage(hDlg, IDC_DRIVER, CB_SETITEMDATA, pos, WIN_SNES9X_DIRECT_SOUND_DRIVER);
+            pos = SendDlgItemMessage(hDlg, IDC_DRIVER, CB_INSERTSTRING, -1, (LPARAM)TEXT("WaveOut"));
+            SendDlgItemMessage(hDlg, IDC_DRIVER, CB_SETITEMDATA, pos, WIN_WAVEOUT_DRIVER);
             pos = SendDlgItemMessage(hDlg, IDC_DRIVER, CB_INSERTSTRING, -1, (LPARAM)TEXT("XAudio2"));
             SendDlgItemMessage(hDlg, IDC_DRIVER, CB_SETITEMDATA, pos, WIN_XAUDIO2_SOUND_DRIVER);
-    #ifdef FMOD_SUPPORT
-            pos = SendDlgItemMessage(hDlg, IDC_DRIVER, CB_INSERTSTRING, -1, (LPARAM)TEXT("FMOD DirectSound"));
-            SendDlgItemMessage(hDlg, IDC_DRIVER, CB_SETITEMDATA, pos, WIN_FMOD_DIRECT_SOUND_DRIVER);
-            pos = SendDlgItemMessage(hDlg, IDC_DRIVER, CB_INSERTSTRING, -1, (LPARAM)TEXT("FMOD Windows Multimedia"));
-            SendDlgItemMessage(hDlg, IDC_DRIVER, CB_SETITEMDATA, pos, WIN_FMOD_WAVE_SOUND_DRIVER);
-            pos = SendDlgItemMessage(hDlg, IDC_DRIVER, CB_INSERTSTRING, -1, (LPARAM)TEXT("FMOD A3D"));
-            SendDlgItemMessage(hDlg, IDC_DRIVER, CB_SETITEMDATA, pos, WIN_FMOD_A3D_SOUND_DRIVER);
-    #elif defined FMODEX_SUPPORT
-            pos = SendDlgItemMessage(hDlg, IDC_DRIVER, CB_INSERTSTRING, -1, (LPARAM)TEXT("FMOD Ex Default"));
-            SendDlgItemMessage(hDlg, IDC_DRIVER, CB_SETITEMDATA, pos, WIN_FMODEX_DEFAULT_DRIVER);
-            pos = SendDlgItemMessage(hDlg, IDC_DRIVER, CB_INSERTSTRING, -1, (LPARAM)TEXT("FMOD Ex ASIO"));
-            SendDlgItemMessage(hDlg, IDC_DRIVER, CB_SETITEMDATA, pos, WIN_FMODEX_ASIO_DRIVER);
-            pos = SendDlgItemMessage(hDlg, IDC_DRIVER, CB_INSERTSTRING, -1, (LPARAM)TEXT("FMOD Ex OpenAL"));
-            SendDlgItemMessage(hDlg, IDC_DRIVER, CB_SETITEMDATA, pos, WIN_FMODEX_OPENAL_DRIVER);
-    #endif
             SendDlgItemMessage(hDlg, IDC_DRIVER, CB_SETCURSEL, 0, 0);
             for (pos = 0; pos < SendDlgItemMessage(hDlg, IDC_DRIVER, CB_GETCOUNT, 0, 0); pos++) {
                 if (SendDlgItemMessage(hDlg, IDC_DRIVER, CB_GETITEMDATA, pos, 0) == GUI.SoundDriver) {
@@ -4404,7 +4357,6 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
                 GUI.AutomaticInputRate = false;
             }
 
-            EnableWindow(GetDlgItem(hDlg, IDC_DYNRATECONTROL), GUI.SoundDriver == WIN_XAUDIO2_SOUND_DRIVER);
             EnableWindow(GetDlgItem(hDlg, IDC_INRATEEDIT), !GUI.AutomaticInputRate);
             EnableWindow(GetDlgItem(hDlg, IDC_INRATE), !GUI.AutomaticInputRate);
 
@@ -4468,18 +4420,13 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
             SendDlgItemMessage(hDlg, IDC_BUFLEN, CB_INSERTSTRING, 8, (LPARAM)TEXT("144 ms"));
             SendDlgItemMessage(hDlg, IDC_BUFLEN, CB_INSERTSTRING, 9, (LPARAM)TEXT("160 ms"));
             SendDlgItemMessage(hDlg, IDC_BUFLEN, CB_INSERTSTRING, 10, (LPARAM)TEXT("176 ms"));
-            SendDlgItemMessage(hDlg, IDC_BUFLEN, CB_INSERTSTRING, 11, (LPARAM)TEXT("194 ms"));
-            SendDlgItemMessage(hDlg, IDC_BUFLEN, CB_INSERTSTRING, 12, (LPARAM)TEXT("210 ms"));
+            SendDlgItemMessage(hDlg, IDC_BUFLEN, CB_INSERTSTRING, 11, (LPARAM)TEXT("192 ms"));
+            SendDlgItemMessage(hDlg, IDC_BUFLEN, CB_INSERTSTRING, 12, (LPARAM)TEXT("208 ms"));
 
             SendDlgItemMessage(hDlg, IDC_BUFLEN, CB_SETCURSEL, ((GUI.SoundBufferSize / 16) - 1), 0);
 
             if (Settings.DynamicRateControl)
                 SendDlgItemMessage(hDlg, IDC_DYNRATECONTROL, BM_SETCHECK, BST_CHECKED, 0);
-            if (Settings.Stereo)
-                SendDlgItemMessage(hDlg, IDC_STEREO, BM_SETCHECK, BST_CHECKED, 0);
-            else EnableWindow(GetDlgItem(hDlg, IDC_REV_STEREO), FALSE);
-            if (Settings.ReverseStereo)
-                SendDlgItemMessage(hDlg, IDC_REV_STEREO, BM_SETCHECK, BST_CHECKED, 0);
 
             if (GUI.Mute)
                 SendDlgItemMessage(hDlg, IDC_MUTE, BM_SETCHECK, BST_CHECKED, 0);
@@ -4539,8 +4486,6 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 										SendDlgItemMessage(hDlg, IDC_DRIVER, CB_GETCURSEL, 0,0),0);
 					Settings.DynamicRateControl=IsDlgButtonChecked(hDlg, IDC_DYNRATECONTROL);
 					Settings.SoundSync=IsDlgButtonChecked(hDlg, IDC_SYNC_TO_SOUND_CPU);
-					Settings.Stereo=IsDlgButtonChecked(hDlg, IDC_STEREO);
-					Settings.ReverseStereo=IsDlgButtonChecked(hDlg, IDC_REV_STEREO);
 					GUI.Mute=IsDlgButtonChecked(hDlg, IDC_MUTE);
 					GUI.FAMute=IsDlgButtonChecked(hDlg, IDC_FAMT)!=0;
 
@@ -4619,16 +4564,15 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				case IDC_DRIVER:
 					if(CBN_SELCHANGE==HIWORD(wParam))
 					{
-						int driver=SendDlgItemMessage(hDlg, IDC_DRIVER, CB_GETITEMDATA,
+						int driver = SendDlgItemMessage(hDlg, IDC_DRIVER, CB_GETITEMDATA,
 										SendDlgItemMessage(hDlg, IDC_DRIVER, CB_GETCURSEL, 0,0),0);
-						EnableWindow(GetDlgItem(hDlg, IDC_DYNRATECONTROL), FALSE);
+
 						switch(driver) {
-							case WIN_SNES9X_DIRECT_SOUND_DRIVER:
+							case WIN_WAVEOUT_DRIVER:
 								SendDlgItemMessage(hDlg,IDC_BUFLEN,CB_SETCURSEL,3,0);
 								break;
 							case WIN_XAUDIO2_SOUND_DRIVER:
 								SendDlgItemMessage(hDlg,IDC_BUFLEN,CB_SETCURSEL,3,0);
-								EnableWindow(GetDlgItem(hDlg, IDC_DYNRATECONTROL), TRUE);
 								break;
 							default:
 								SendDlgItemMessage(hDlg,IDC_BUFLEN,CB_SETCURSEL,7,0);
@@ -4646,20 +4590,6 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						return true;
 					}
 					else return false;
-				case IDC_STEREO:
-					{
-						if(BN_CLICKED==HIWORD(wParam)||BN_DBLCLK==HIWORD(wParam))
-						{
-							if(IsDlgButtonChecked(hDlg,IDC_STEREO))
-							{
-								EnableWindow(GetDlgItem(hDlg, IDC_REV_STEREO), TRUE);
-							}
-							else EnableWindow(GetDlgItem(hDlg, IDC_REV_STEREO), FALSE);
-							return true;
-
-						}
-						else return false;
-					}
 				case IDC_INRATEEDIT:
 					if(HIWORD(wParam)==EN_UPDATE) {
 						Edit_GetText(GetDlgItem(hDlg,IDC_INRATEEDIT),valTxt,10);

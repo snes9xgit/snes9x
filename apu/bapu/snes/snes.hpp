@@ -2,6 +2,8 @@
 #define __SNES_HPP
 
 #include "../../../snes9x.h"
+#include "../../resampler.h"
+#include "../../../msu1.h"
 
 #define SNES9X
 

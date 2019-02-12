@@ -8,16 +8,16 @@
 #include "../snes9x.h"
 #include "../apu/apu.h"
 #include "wsnes9x.h"
-#include "CDirectSound.h"
 #include "CXAudio2.h"
+#include "CWaveOut.h"
 #include "win32_sound.h"
 #include "win32_display.h"
 
 #define CLAMP(x, low, high) (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
 
 // available sound output methods
-CDirectSound S9xDirectSound;
 CXAudio2 S9xXAudio2;
+CWaveOut S9xWaveOut;
 
 // Interface used to access the sound output
 IS9xSoundOutput *S9xSoundOutput = &S9xXAudio2;
@@ -51,7 +51,7 @@ bool ReInitSound()
 	if(S9xSoundOutput)
 		S9xSoundOutput->DeInitSoundOutput();
 
-	return S9xInitSound(GUI.SoundBufferSize,0);
+    return S9xInitSound(0, 0);
 }
 
 void CloseSoundDevice() {
@@ -70,16 +70,15 @@ bool8 S9xOpenSoundDevice ()
 	S9xSetSamplesAvailableCallback (NULL, NULL);
 	// point the interface to the correct output object
 	switch(GUI.SoundDriver) {
-		case WIN_SNES9X_DIRECT_SOUND_DRIVER:
-			S9xSoundOutput = &S9xDirectSound;
-			Settings.DynamicRateControl = false;
+		case WIN_WAVEOUT_DRIVER:
+			S9xSoundOutput = &S9xWaveOut;
 			break;
 		case WIN_XAUDIO2_SOUND_DRIVER:
 			S9xSoundOutput = &S9xXAudio2;
 			break;
-		default:	// we default to DirectSound
-			GUI.SoundDriver = WIN_SNES9X_DIRECT_SOUND_DRIVER;
-			S9xSoundOutput = &S9xDirectSound;
+		default:	// we default to WaveOut
+			GUI.SoundDriver = WIN_WAVEOUT_DRIVER;
+			S9xSoundOutput = &S9xWaveOut;
 	}
 	if(!S9xSoundOutput->InitSoundOutput())
 		return false;

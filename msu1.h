@@ -51,7 +51,8 @@ void S9xMSU1Generate(size_t sample_count);
 uint8 S9xMSU1ReadPort(uint8 port);
 void S9xMSU1WritePort(uint8 port, uint8 byte);
 size_t S9xMSU1Samples(void);
-void S9xMSU1SetOutput(int16 *out, size_t size);
+class Resampler;
+void S9xMSU1SetOutput(Resampler *resampler);
 void S9xMSU1PostLoadState(void);
 
 #endif
