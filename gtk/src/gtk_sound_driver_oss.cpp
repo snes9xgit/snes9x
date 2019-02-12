@@ -164,8 +164,6 @@ void S9xOSSSoundDriver::samples_available()
         S9xUpdateDynamicRate(info.bytes, output_buffer_size);
     }
 
-    S9xFinalizeSamples();
-
     samples_to_write = S9xGetSampleCount();
 
     if (Settings.DynamicRateControl && !Settings.SoundSync)

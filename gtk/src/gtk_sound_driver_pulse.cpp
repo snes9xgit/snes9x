@@ -224,8 +224,6 @@ void S9xPulseSoundDriver::samples_available()
         S9xUpdateDynamicRate(bytes, buffer_size);
     }
 
-    S9xFinalizeSamples();
-
     samples = S9xGetSampleCount();
 
     if (Settings.DynamicRateControl && !Settings.SoundSync)
