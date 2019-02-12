@@ -40,7 +40,10 @@ bool CWaveOut::SetupSound()
     wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * wfx.nBlockAlign;
     wfx.cbSize = 0;
 
-    waveOutOpen(&hWaveOut, WAVE_MAPPER, &wfx, (DWORD_PTR)WaveCallback, (DWORD_PTR)&bufferCount, CALLBACK_FUNCTION);
+	// subtract -1, we added "Default" as first index - Default will yield -1, which is WAVE_MAPPER
+	int device_index = FindDeviceIndex(GUI.AudioDevice) - 1;
+
+    waveOutOpen(&hWaveOut, device_index, &wfx, (DWORD_PTR)WaveCallback, (DWORD_PTR)&bufferCount, CALLBACK_FUNCTION);
 
     UINT32 blockTime = GUI.SoundBufferSize / blockCount;
     singleBufferSamples = (Settings.SoundPlaybackRate * blockTime) / 1000;
@@ -217,4 +220,42 @@ void CWaveOut::ProcessSound()
         S9xMixSamples((BYTE *)waveHeaders[writeOffset].lpData, availableSamples);
         partialOffset = availableSamples << 1;
     }
+}
+
+std::vector<std::wstring> CWaveOut::GetDeviceList()
+{
+	std::vector<std::wstring> device_list;
+
+	UINT num_devices = waveOutGetNumDevs();
+
+	device_list.push_back(_T("Default"));
+
+	for (unsigned int i = 0; i < num_devices; i++)
+	{
+		WAVEOUTCAPS caps;
+		if(waveOutGetDevCaps(i, &caps, sizeof(WAVEOUTCAPS)) == MMSYSERR_NOERROR)
+		{
+			device_list.push_back(caps.szPname);
+		}
+	}
+
+	return device_list;
+}
+
+int CWaveOut::FindDeviceIndex(TCHAR *audio_device)
+{
+	std::vector<std::wstring> device_list = GetDeviceList();
+
+	int index = 0;
+
+	for (int i = 0; i < device_list.size(); i++)
+	{
+		if (_tcsstr(device_list[i].c_str(), audio_device) != NULL)
+		{
+			index = i;
+			break;
+		}
+	}
+
+	return index;
 }

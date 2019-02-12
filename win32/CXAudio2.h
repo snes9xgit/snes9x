@@ -42,9 +42,6 @@ private:
 	void DeInitXAudio2(void);
     int GetAvailableBytes();
 
-    std::vector<std::wstring> GetDeviceList();
-    int FindDeviceIndex(TCHAR *audio_device);
-
 public:
 	CXAudio2(void);
 	~CXAudio2(void);
@@ -64,6 +61,8 @@ public:
 	void DeInitSoundOutput(void) { DeInitXAudio2(); }
 	bool SetupSound(void);
 	void SetVolume(double volume);
+	std::vector<std::wstring> GetDeviceList();
+	int FindDeviceIndex(TCHAR *audio_device);
 };
 
 #endif

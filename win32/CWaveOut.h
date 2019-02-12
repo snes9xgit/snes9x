@@ -42,4 +42,6 @@ class CWaveOut : public IS9xSoundOutput
     void DeInitSoundOutput(void);
     bool SetupSound(void);
     void SetVolume(double volume);
+	std::vector<std::wstring> GetDeviceList();
+	int FindDeviceIndex(TCHAR *audio_device);
 };
