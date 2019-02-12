@@ -96,9 +96,6 @@
     <ClInclude Include="wsnes9x.h">
       <Filter>GUI</Filter>
     </ClInclude>
-    <ClInclude Include="CDirectSound.h">
-      <Filter>GUI\SoundDriver</Filter>
-    </ClInclude>
     <ClInclude Include="CXAudio2.h">
       <Filter>GUI\SoundDriver</Filter>
     </ClInclude>
@@ -184,12 +181,6 @@
       <Filter>Resource</Filter>
     </ClInclude>
     <ClInclude Include="..\apu\apu.h">
-      <Filter>APU</Filter>
-    </ClInclude>
-    <ClInclude Include="..\apu\hermite_resampler.h">
-      <Filter>APU</Filter>
-    </ClInclude>
-    <ClInclude Include="..\apu\resampler.h">
       <Filter>APU</Filter>
     </ClInclude>
     <ClInclude Include="..\apu\ring_buffer.h">
@@ -496,9 +487,6 @@
     </ClCompile>
     <ClCompile Include="wsnes9x.cpp">
       <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="CDirectSound.cpp">
-      <Filter>GUI\SoundDriver</Filter>
     </ClCompile>
     <ClCompile Include="CXAudio2.cpp">
       <Filter>GUI\SoundDriver</Filter>
