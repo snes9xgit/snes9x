@@ -439,6 +439,7 @@
     <ClInclude Include="cgMini.h" />
     <ClInclude Include="COpenGL.h" />
     <ClInclude Include="CShaderParamDlg.h" />
+    <ClInclude Include="CWaveOut.h" />
     <ClInclude Include="CXAudio2.h" />
     <ClInclude Include="dxerr.h" />
     <ClInclude Include="gl_core_3_1.h" />
@@ -582,6 +583,7 @@
     <ClCompile Include="CGLCG.cpp" />
     <ClCompile Include="COpenGL.cpp" />
     <ClCompile Include="CShaderParamDlg.cpp" />
+    <ClCompile Include="CWaveOut.cpp" />
     <ClCompile Include="CXAudio2.cpp" />
     <ClCompile Include="DumpAtEnd.cpp" />
     <ClCompile Include="dxerr.cpp" />

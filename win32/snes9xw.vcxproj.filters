@@ -291,6 +291,9 @@
     <ClInclude Include="..\shaders\SPIRV-Cross\spirv_parser.hpp">
       <Filter>Shaders</Filter>
     </ClInclude>
+    <ClInclude Include="CWaveOut.h">
+      <Filter>GUI\SoundDriver</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\bsx.cpp">
@@ -622,6 +625,9 @@
     </ClCompile>
     <ClCompile Include="..\shaders\SPIRV-Cross\spirv_parser.cpp">
       <Filter>Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="CWaveOut.cpp">
+      <Filter>GUI\SoundDriver</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
