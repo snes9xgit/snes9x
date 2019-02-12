@@ -493,8 +493,8 @@
 #define ID_SOUND_144MS                  40162
 #define ID_SOUND_160MS                  40163
 #define ID_SOUND_176MS                  40164
-#define ID_SOUND_194MS                  40165
-#define ID_SOUND_210MS                  40166
+#define ID_SOUND_192MS                  40165
+#define ID_SOUND_208MS                  40166
 #define ID_EMULATION_PAUSEWHENINACTIVE  40167
 #define ID_VIDEO_SHOWFRAMERATE          40168
 #define ID_WINDOW_SIZE_1X               40169

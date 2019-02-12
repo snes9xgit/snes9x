@@ -1015,8 +1015,8 @@ BEGIN
             MENUITEM "144ms",                       ID_SOUND_144MS
             MENUITEM "160ms",                       ID_SOUND_160MS
             MENUITEM "176ms",                       ID_SOUND_176MS
-            MENUITEM "194ms",                       ID_SOUND_194MS
-            MENUITEM "210ms",                       ID_SOUND_210MS
+            MENUITEM "192ms",                       ID_SOUND_192MS
+            MENUITEM "208ms",                       ID_SOUND_208MS
         END
         POPUP "&Channels"
         BEGIN
