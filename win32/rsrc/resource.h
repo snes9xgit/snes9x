@@ -274,6 +274,7 @@
 #define IDC_HEIGHT_EXTEND               1198
 #define IDC_LABEL_UP19                  1198
 #define IDC_ASPECT                      1199
+#define IDC_LABEL_UP26                  1199
 #define IDC_MESSAGES_IN_IMAGE           1200
 #define IDC_RECORD_NOW                  1201
 #define IDC_MESSAGES_SCALE              1201
@@ -535,7 +536,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        162
+#define _APS_NEXT_RESOURCE_VALUE        164
 #define _APS_NEXT_COMMAND_VALUE         40178
 #define _APS_NEXT_CONTROL_VALUE         3032
 #define _APS_NEXT_SYMED_VALUE           101
