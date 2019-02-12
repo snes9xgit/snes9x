@@ -176,7 +176,6 @@ void S9xAlsaSoundDriver::samples_available()
                              output_buffer_size);
     }
 
-    S9xFinalizeSamples();
     int snes_frames_available = S9xGetSampleCount() >> 1;
 
     if (Settings.DynamicRateControl && !Settings.SoundSync)

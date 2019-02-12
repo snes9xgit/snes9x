@@ -29,9 +29,10 @@ public:
 	// SetVolume should set a new volume level (between 0.0 and 1.0)
 	virtual void SetVolume(double volume) = 0;
 
-	// ProcessSound should call S9xFinalizeSamples and queue new available samples into the
-	// Host sound system. If the sound system is callback based, ProcessSound should do a syncronized
-	// S9xFinalizeSamples and return.
+	// ProcessSound should queue new available samples into the Host sound 
+    // system. If the sound system is callback based, ProcessSound should move
+    // all samples into a buffer that the callback can read, using a critical 
+    // section while accessing that buffer for thread-safety.
 	virtual void ProcessSound()=0;
 
     // GetDeviceList should return a list of device strings that can be displayed in a dropdown

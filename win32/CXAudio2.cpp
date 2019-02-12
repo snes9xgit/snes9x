@@ -288,8 +288,6 @@ void CXAudio2::ProcessSound()
 		S9xUpdateDynamicRate(freeBytes, sum_bufferSize);
 	}
 
-	S9xFinalizeSamples();
-
 	UINT32 availableSamples;
 
 	availableSamples = S9xGetSampleCount();

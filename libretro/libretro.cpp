@@ -612,7 +612,6 @@ static void S9xAudioCallback(void*)
     // This is called every time 128 to 132 samples are generated, which happens about 8 times per frame.  A buffer size of 256 samples is enough here.
     static int16_t audio_buf[BUFFER_SIZE];
 
-    S9xFinalizeSamples();
     size_t avail = S9xGetSampleCount();
     while (avail >= BUFFER_SIZE)
     {

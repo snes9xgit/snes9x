@@ -120,10 +120,6 @@ int S9xGetSampleCount(void)
     return spc::resampler->avail();
 }
 
-void S9xFinalizeSamples(void)
-{
-}
-
 void S9xLandSamples(void)
 {
     if (spc::callback != NULL)
