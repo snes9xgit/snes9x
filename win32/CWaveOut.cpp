@@ -70,7 +70,7 @@ bool CWaveOut::SetupSound()
 
 void CWaveOut::SetVolume(double volume)
 {
-    waveOutSetVolume(hWaveOut, 0xffffffff);
+    waveOutSetVolume(hWaveOut, (DWORD)(volume * 0xffffffff));
 }
 
 void CWaveOut::BeginPlayback()
