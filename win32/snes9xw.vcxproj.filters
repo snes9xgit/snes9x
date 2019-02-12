@@ -183,9 +183,6 @@
     <ClInclude Include="..\apu\apu.h">
       <Filter>APU</Filter>
     </ClInclude>
-    <ClInclude Include="..\apu\ring_buffer.h">
-      <Filter>APU</Filter>
-    </ClInclude>
     <ClInclude Include="..\apu\bapu\snes\snes.hpp">
       <Filter>APU</Filter>
     </ClInclude>
@@ -284,6 +281,9 @@
     </ClInclude>
     <ClInclude Include="CWaveOut.h">
       <Filter>GUI\SoundDriver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\apu\resampler.h">
+      <Filter>APU</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
