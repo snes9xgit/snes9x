@@ -44,6 +44,8 @@ bool CWaveOut::SetupSound()
 
     UINT32 blockTime = GUI.SoundBufferSize / blockCount;
     singleBufferSamples = (Settings.SoundPlaybackRate * blockTime) / 1000;
+    if (singleBufferSamples < 256)
+        singleBufferSamples = 256;
     singleBufferSamples *= 2;
     singleBufferBytes = singleBufferSamples * 2;
     sumBufferSize = singleBufferBytes * blockCount;
@@ -88,6 +90,8 @@ void CWaveOut::DeInitSoundOutput()
     if (!initDone)
         return;
 
+    StopPlayback();
+
     waveOutReset(hWaveOut);
 
     if (!waveHeaders.empty())
@@ -115,9 +119,28 @@ int CWaveOut::GetAvailableBytes()
     return ((blockCount - bufferCount) * singleBufferBytes) - partialOffset;
 }
 
+// Fill the set of blocks preceding writeOffset with silence and write them
+// to the output to get the buffer back to 50%
+void CWaveOut::RecoverFromUnderrun()
+{
+    writeOffset = (writeOffset - (blockCount / 2) + blockCount) % blockCount;
+
+    for (int i = 0; i < blockCount / 2; i++)
+    {
+        memset(waveHeaders[writeOffset].lpData, 0, singleBufferBytes);
+        waveOutWrite(hWaveOut, &waveHeaders[writeOffset], sizeof(WAVEHDR));
+        InterlockedIncrement(&bufferCount);
+        writeOffset++;
+        writeOffset %= blockCount;
+    }
+}
+
 void CWaveOut::ProcessSound()
 {
     int freeBytes = ((blockCount - bufferCount) * singleBufferBytes) - partialOffset;
+
+    if (bufferCount == 0)
+        RecoverFromUnderrun();
 
     if (Settings.DynamicRateControl)
     {

@@ -19,6 +19,7 @@ class CWaveOut : public IS9xSoundOutput
     void StopPlayback(void);
     void ProcessSound(void);
     int GetAvailableBytes();
+    void RecoverFromUnderrun();
 
     HWAVEOUT hWaveOut;
     bool initDone;
