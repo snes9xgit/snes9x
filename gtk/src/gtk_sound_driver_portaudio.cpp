@@ -205,7 +205,9 @@ void S9xPortAudioSoundDriver::samples_available()
     {
         while (frames < snes_frames_available)
         {
-            usleep(100);
+            int usec_to_sleep = (snes_frames_available - frames) * 10000 /
+                                (Settings.SoundPlaybackRate / 100);
+            usleep(usec_to_sleep > 0 ? usec_to_sleep : 0);
             frames = Pa_GetStreamWriteAvailable(audio_stream);
         }
     }

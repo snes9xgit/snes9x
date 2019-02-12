@@ -183,12 +183,16 @@ void S9xOSSSoundDriver::samples_available()
     {
         while (info.bytes >> 1 < samples_to_write)
         {
-            usleep(100);
+            int usec_to_sleep = ((samples_to_write >> 1) - (info.bytes >> 2)) * 10000 /
+                                (Settings.SoundPlaybackRate / 100);
+            usleep(usec_to_sleep > 0 ? usec_to_sleep : 0);
             ioctl(filedes, SNDCTL_DSP_GETOSPACE, &info);
         }
     }
-
-    samples_to_write = MIN(info.bytes >> 1, samples_to_write) & ~1;
+    else
+    {
+        samples_to_write = MIN(info.bytes >> 1, samples_to_write) & ~1;
+    }
 
     if (samples_to_write < 0)
         return;

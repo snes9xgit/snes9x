@@ -241,7 +241,9 @@ void S9xPulseSoundDriver::samples_available()
     {
         while ((int)bytes < samples * 2)
         {
-            usleep(100);
+            int usec_to_sleep = ((samples >> 1) - (bytes >> 2)) * 10000 /
+                                (Settings.SoundPlaybackRate / 100);
+            usleep(usec_to_sleep > 0 ? usec_to_sleep : 0);
             lock();
             bytes = pa_stream_writable_size(stream);
             unlock();

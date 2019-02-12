@@ -192,19 +192,14 @@ void S9xAlsaSoundDriver::samples_available()
 
     if (Settings.SoundSync && !Settings.TurboMode && !Settings.Mute)
     {
-        while (frames < snes_frames_available)
-        {
-            usleep(100);
-            frames = snd_pcm_avail(pcm);
-            if (frames < 0)
-            {
-                frames = snd_pcm_recover(pcm, frames, 1);
-                return;
-            }
-        }
+        snd_pcm_nonblock(pcm, 0);
+        frames = snes_frames_available;
     }
-
-    frames = MIN(frames, snes_frames_available);
+    else
+    {
+        snd_pcm_nonblock(pcm, 1);
+        frames = MIN(frames, snes_frames_available);
+    }
 
     bytes = snd_pcm_frames_to_bytes(pcm, frames);
     if (bytes <= 0)
