@@ -87,7 +87,6 @@ extern SNPServer NPServer;
 
 __int64 PCBase, PCFrameTime, PCFrameTimeNTSC, PCFrameTimePAL, PCStart, PCEnd;
 DWORD PCStartTicks, PCEndTicks;
-bool PCFrameTimeIsDefault = true;
 
 INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgInfoProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -3455,13 +3454,6 @@ int WINAPI WinMain(
 
 			if(run_loop)
 			{
-                // no sound sync when speed is not set to 100%
-                while (!S9xSyncSound()) {
-                    ResetEvent(GUI.SoundSyncEvent);
-                    if (!PCFrameTimeIsDefault || WaitForSingleObject(GUI.SoundSyncEvent, 1000) != WAIT_OBJECT_0)
-                        S9xClearSamples();
-                }
-
 				ProcessInput();
 
                 if(GUI.rewindBufferSize
@@ -3901,12 +3893,15 @@ static void ResetFrameTimer ()
 {
     QueryPerformanceCounter((LARGE_INTEGER*)&PCStart);
 	PCStartTicks = timeGetTime()*1000;
-    if (Settings.FrameTime == Settings.FrameTimeNTSC) PCFrameTime = PCFrameTimeNTSC;
-    else if (Settings.FrameTime == Settings.FrameTimePAL) PCFrameTime = PCFrameTimePAL;
-    else PCFrameTime = (__int64)((double)(PCBase * Settings.FrameTime) * .000001);
+    if (Settings.FrameTime == Settings.FrameTimeNTSC)
+        PCFrameTime = PCFrameTimeNTSC;
+    else if (Settings.FrameTime == Settings.FrameTimePAL)
+        PCFrameTime = PCFrameTimePAL;
+    else
+        PCFrameTime = (__int64)((double)(PCBase * Settings.FrameTime) * .000001);
 
 	// determines if we can do sound sync
-	PCFrameTimeIsDefault = Settings.PAL ? Settings.FrameTime == Settings.FrameTimePAL : Settings.FrameTime == Settings.FrameTimeNTSC;
+	GUI.AllowSoundSync = Settings.PAL ? Settings.FrameTime == Settings.FrameTimePAL : Settings.FrameTime == Settings.FrameTimeNTSC;
 
     if (GUI.hFrameTimer)
         timeKillEvent (GUI.hFrameTimer);

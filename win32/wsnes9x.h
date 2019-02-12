@@ -217,6 +217,7 @@ struct sGUI {
 	CRITICAL_SECTION SoundCritSect;
     HANDLE SoundSyncEvent;
     TCHAR AudioDevice[MAX_AUDIO_NAME_LENGTH];
+    bool AllowSoundSync;
 
     TCHAR RomDir [_MAX_PATH];
     TCHAR ScreensDir [_MAX_PATH];

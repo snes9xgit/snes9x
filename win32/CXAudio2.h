@@ -40,6 +40,7 @@ private:
 	void ProcessSound(void);
 	bool InitXAudio2(void);
 	void DeInitXAudio2(void);
+    int GetAvailableBytes();
 
     std::vector<std::wstring> GetDeviceList();
     int FindDeviceIndex(TCHAR *audio_device);

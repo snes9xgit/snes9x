@@ -268,6 +268,11 @@ void CXAudio2::StopPlayback()
 	pSourceVoice->Stop(0);
 }
 
+int CXAudio2::GetAvailableBytes()
+{
+    return ((blockCount - bufferCount) * singleBufferBytes) - partialOffset;
+}
+
 /*  CXAudio2::ProcessSound
 The mixing function called by the sound core when new samples are available.
 SoundBuffer is divided into blockCount blocks. If there are enough available samples and a free block,
@@ -276,7 +281,7 @@ the OnBufferComplete callback.
 */
 void CXAudio2::ProcessSound()
 {
-	int freeBytes = ((blockCount - bufferCount) * singleBufferBytes) - partialOffset;
+	int freeBytes = GetAvailableBytes();
 
 	if (Settings.DynamicRateControl)
 	{
@@ -289,7 +294,7 @@ void CXAudio2::ProcessSound()
 
 	availableSamples = S9xGetSampleCount();
 
-	if (Settings.DynamicRateControl)
+	if (Settings.DynamicRateControl && !Settings.SoundSync)
 	{
 		// Using rate control, we should always keep the emulator's sound buffers empty to
 		// maintain an accurate measurement.
@@ -302,6 +307,21 @@ void CXAudio2::ProcessSound()
 
 	if(!initDone)
 		return;
+
+    if(Settings.SoundSync && !Settings.TurboMode && !Settings.Mute)
+    {
+        // no sound sync when speed is not set to 100%
+        while((freeBytes >> 1) < availableSamples)
+        {
+            ResetEvent(GUI.SoundSyncEvent);
+            if(!GUI.AllowSoundSync || WaitForSingleObject(GUI.SoundSyncEvent, 1000) != WAIT_OBJECT_0)
+            {
+                S9xClearSamples();
+                return;
+            }
+            freeBytes = GetAvailableBytes();
+        }
+    }
 
 	if (partialOffset != 0)	{
 		BYTE *offsetBuffer = soundBuffer + writeOffset + partialOffset;

@@ -110,6 +110,11 @@ void CWaveOut::StopPlayback()
     waveOutPause(hWaveOut);
 }
 
+int CWaveOut::GetAvailableBytes()
+{
+    return ((blockCount - bufferCount) * singleBufferBytes) - partialOffset;
+}
+
 void CWaveOut::ProcessSound()
 {
     int freeBytes = ((blockCount - bufferCount) * singleBufferBytes) - partialOffset;
@@ -136,6 +141,22 @@ void CWaveOut::ProcessSound()
 
     if (!initDone)
         return;
+
+    if(Settings.SoundSync && !Settings.TurboMode && !Settings.Mute)
+    {
+        // no sound sync when speed is not set to 100%
+        while((freeBytes >> 1) < availableSamples)
+        {
+            ResetEvent(GUI.SoundSyncEvent);
+            if(!GUI.AllowSoundSync || WaitForSingleObject(GUI.SoundSyncEvent, 1000) != WAIT_OBJECT_0)
+            {
+                S9xClearSamples();
+                return;
+            }
+            freeBytes = GetAvailableBytes();
+        }
+    }
+
 
     if (partialOffset != 0) {
         UINT32 samplesleftinblock = (singleBufferBytes - partialOffset) >> 1;

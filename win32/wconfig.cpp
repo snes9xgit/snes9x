@@ -117,6 +117,7 @@ void WinSetDefaultValues ()
 	Settings.TakeScreenshot=false;
 
 	GUI.Language=0;
+    GUI.AllowSoundSync = true;
 }
 
 
