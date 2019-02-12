@@ -123,7 +123,7 @@ void CWaveOut::ProcessSound()
 
     availableSamples = S9xGetSampleCount();
 
-    if (Settings.DynamicRateControl)
+    if (Settings.DynamicRateControl && !Settings.SoundSync)
     {
         // Using rate control, we should always keep the emulator's sound buffers empty to
         // maintain an accurate measurement.
@@ -155,7 +155,7 @@ void CWaveOut::ProcessSound()
             waveOutWrite(hWaveOut, &waveHeaders[writeOffset], sizeof(WAVEHDR));
             InterlockedIncrement(&bufferCount);
             writeOffset++;
-            writeOffset %= bufferCount;
+            writeOffset %= blockCount;
         }
     }
 
@@ -165,7 +165,7 @@ void CWaveOut::ProcessSound()
         waveOutWrite(hWaveOut, &waveHeaders[writeOffset], sizeof(WAVEHDR));
         InterlockedIncrement(&bufferCount);
         writeOffset++;
-        writeOffset %= bufferCount;
+        writeOffset %= blockCount;
         availableSamples -= singleBufferSamples;
     }
 
