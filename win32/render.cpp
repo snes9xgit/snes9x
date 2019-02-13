@@ -859,6 +859,9 @@ void RenderTVMode ( SSurface Src, SSurface Dst, RECT *rect)
         return;
     }
 
+    if (GUI.outputMethod != DIRECTDRAW)
+        snes9x_clear_change_log = 1;
+
     uint8 *nextLine, *finish;
     uint32 colorMask = ~(RGB_LOW_BITS_MASK | (RGB_LOW_BITS_MASK << 16));
     uint32 lowPixelMask = RGB_LOW_BITS_MASK;
