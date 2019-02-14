@@ -199,8 +199,8 @@ void S9xBuildDirectColourMaps (void)
 void S9xStartScreenRefresh (void)
 {
 	GFX.InterlaceFrame = !GFX.InterlaceFrame;
-    if (GFX.DoInterlace)
-        GFX.DoInterlace--;
+	if (GFX.DoInterlace)
+		GFX.DoInterlace--;
 
 	if (IPPU.RenderThisFrame)
 	{
