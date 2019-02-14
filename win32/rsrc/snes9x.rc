@@ -111,7 +111,7 @@ BEGIN
     RTEXT           "Skip rendering",IDC_LABEL_STURBO,12,85,84,14,SS_CENTERIMAGE
     LTEXT           "seconds after last change (0 disables auto-save)",IDC_LABEL_ASRAM_TEXT,156,47,161,14,SS_CENTERIMAGE
     LTEXT           "frames in auto-frame rate mode",IDC_LABEL_SMAX_TEXT,156,66,138,14,SS_CENTERIMAGE
-    LTEXT           "frames in Turbo mode",IDC_LABEL_STURBO_TEXT,156,85,92,14,SS_CENTERIMAGE
+    LTEXT           "frames in Turbo mode",IDC_LABEL_STURBO_TEXT,156,85,143,14,SS_CENTERIMAGE
     RTEXT           "Config file:",IDC_STATIC,24,12,72,8
     EDITTEXT        IDC_CONFIG_NAME_BOX,102,9,49,14,ES_AUTOHSCROLL | ES_READONLY | ES_NUMBER
     LTEXT           "all of Snes9x's settings are stored in this file",IDC_STATIC,158,11,160,11
@@ -1128,6 +1128,11 @@ BEGIN
 END
 
 IDD_NPOPTIONS AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_EMU_SETTINGS AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
