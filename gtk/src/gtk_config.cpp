@@ -167,7 +167,7 @@ int Snes9xConfig::load_defaults ()
     Settings.SixteenBitSound = true;
     Settings.Stereo = true;
     Settings.ReverseStereo = false;
-    Settings.SoundPlaybackRate = 44100;
+    Settings.SoundPlaybackRate = 48000;
     Settings.StopEmulation = true;
     Settings.FrameTimeNTSC = 16666;
     Settings.FrameTimePAL = 20000;
