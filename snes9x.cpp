@@ -238,7 +238,7 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.SixteenBitSound            =  conf.GetBool("Sound::16BitSound",                   true);
 	Settings.Stereo                     =  conf.GetBool("Sound::Stereo",                       true);
 	Settings.ReverseStereo              =  conf.GetBool("Sound::ReverseStereo",                false);
-	Settings.SoundPlaybackRate          =  conf.GetUInt("Sound::Rate",                         32000);
+	Settings.SoundPlaybackRate          =  conf.GetUInt("Sound::Rate",                         48000);
 	Settings.SoundInputRate             =  conf.GetUInt("Sound::InputRate",                    31950);
 	Settings.Mute                       =  conf.GetBool("Sound::Mute",                         false);
 	Settings.DynamicRateControl         =  conf.GetBool("Sound::DynamicRateControl",           false);

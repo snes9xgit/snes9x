@@ -963,7 +963,7 @@ BEGIN
             MENUITEM "16KHz",                       ID_SOUND_16000HZ
             MENUITEM "22KHz",                       ID_SOUND_22050HZ
             MENUITEM "30KHz",                       ID_SOUND_30000HZ
-            MENUITEM "32KHz (SNES)",                ID_SOUND_32000HZ
+            MENUITEM "32KHz",                       ID_SOUND_32000HZ
             MENUITEM "35KHz",                       ID_SOUND_35000HZ
             MENUITEM "44KHz",                       ID_SOUND_44100HZ
             MENUITEM "48KHz",                       ID_SOUND_48000HZ
