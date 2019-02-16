@@ -11,6 +11,7 @@
 #include <process.h>
 #include "dxerr.h"
 #include "commctrl.h"
+#include <assert.h>
 
 /* CXAudio2
 	Implements audio output through XAudio2.
@@ -322,13 +323,16 @@ void CXAudio2::ProcessSound()
     }
 
 	if (partialOffset != 0)	{
+		assert(partialOffset < singleBufferBytes);
+		assert(bufferCount < blockCount);
 		BYTE *offsetBuffer = soundBuffer + writeOffset + partialOffset;
 		UINT32 samplesleftinblock = (singleBufferBytes - partialOffset) >> 1;
 
-		if (availableSamples <= samplesleftinblock)
+		if (availableSamples < samplesleftinblock)
 		{
 			S9xMixSamples(offsetBuffer, availableSamples);
             partialOffset += availableSamples << 1;
+			assert(partialOffset < singleBufferBytes);
 			availableSamples = 0;
 		}
 		else
@@ -351,9 +355,11 @@ void CXAudio2::ProcessSound()
 		availableSamples -= singleBufferSamples;
 	}
 
-	if (availableSamples > 0 && bufferCount < blockCount) {
+	// need to check this is less than a single buffer, otherwise we have a race condition with bufferCount
+	if (availableSamples > 0 && availableSamples < singleBufferSamples && bufferCount < blockCount) {
 		S9xMixSamples(soundBuffer + writeOffset, availableSamples);
 		partialOffset = availableSamples << 1;
+		assert(partialOffset < singleBufferBytes);
 	}
 }
 

@@ -189,7 +189,7 @@ void CWaveOut::ProcessSound()
         UINT32 samplesleftinblock = (singleBufferBytes - partialOffset) >> 1;
         BYTE *offsetBuffer = (BYTE *)waveHeaders[writeOffset].lpData + partialOffset;
 
-        if (availableSamples <= samplesleftinblock)
+        if (availableSamples < samplesleftinblock)
         {
             S9xMixSamples(offsetBuffer, availableSamples);
             partialOffset += availableSamples << 1;
@@ -217,7 +217,8 @@ void CWaveOut::ProcessSound()
         availableSamples -= singleBufferSamples;
     }
 
-    if (availableSamples > 0 && bufferCount < blockCount) {
+	// need to check this is less than a single buffer, otherwise we have a race condition with bufferCount
+    if (availableSamples > 0 && availableSamples < singleBufferSamples && bufferCount < blockCount) {
         S9xMixSamples((BYTE *)waveHeaders[writeOffset].lpData, availableSamples);
         partialOffset = availableSamples << 1;
     }
