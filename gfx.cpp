@@ -53,8 +53,6 @@ bool8 S9xGraphicsInit (void)
 		S9xSetRenderPixelFormat(RGB565);
 #endif
 
-	GFX.DoInterlace = 0;
-	GFX.InterlaceFrame = 0;
 	GFX.RealPPL = GFX.Pitch >> 1;
 	IPPU.OBJChanged = TRUE;
 	Settings.BG_Forced = 0;
