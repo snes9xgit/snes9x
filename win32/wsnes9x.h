@@ -156,6 +156,7 @@ struct sGUI {
 	bool Vsync;
 	bool ReduceInputLag;
 	bool shaderEnabled;
+    bool DWMTweaks;
 	TCHAR D3DshaderFileName[MAX_PATH];
 	TCHAR OGLshaderFileName[MAX_PATH];
 

@@ -118,6 +118,19 @@ bool WinDisplayReset(void)
 		S9xGraphicsDeinit();
 		S9xSetWinPixelFormat ();
 		S9xGraphicsInit();
+
+        if (GUI.DWMTweaks)
+        {
+            HMODULE dwmlib = LoadLibrary(TEXT("dwmapi"));
+            if (dwmlib)
+            {
+                HRESULT(WINAPI *dwmEnableMMCSS)(BOOL) = (HRESULT(WINAPI *)(BOOL))GetProcAddress(dwmlib, "DwmEnableMMCSS");
+                dwmEnableMMCSS(true);
+                return true;
+            }
+            MessageBox(GUI.hWnd, TEXT("Couldn't enable MMCSS for DWM"), TEXT("Warning"), MB_OK | MB_ICONWARNING);
+        }
+
 		return true;
 	} else {
 		MessageBox (GUI.hWnd, Languages[ GUI.Language].errInitDD, TEXT("Snes9X - Display Failure"), MB_OK | MB_ICONSTOP);
