@@ -115,6 +115,7 @@ int Snes9xConfig::load_defaults ()
     preferences_height = -1;
     shader_parameters_width = -1;
     shader_parameters_height = -1;
+    current_display_tab = 0;
     sram_directory.clear ();
     export_directory.clear ();
     savestate_directory.clear ();
@@ -306,6 +307,7 @@ int Snes9xConfig::save_config_file ()
     cf.SetInt (z"PreferencesHeight", preferences_height);
     cf.SetInt (z"ShaderParametersWidth", shader_parameters_width);
     cf.SetInt (z"ShaderParametersHeight", shader_parameters_height);
+    cf.SetInt (z"CurrentDisplayTab", current_display_tab);
     outbool (cf, z"UIVisible", ui_visible);
     outbool (cf, z"StatusBarVisible", statusbar_visible);
     if (default_esc_behavior != ESC_TOGGLE_MENUBAR)
@@ -535,6 +537,7 @@ int Snes9xConfig::load_config_file ()
     inint (z"PreferencesHeight", preferences_height);
     inint (z"ShaderParametersWidth", shader_parameters_width);
     inint (z"ShaderParametersHeight", shader_parameters_height);
+    inint (z"CurrentDisplayTab", current_display_tab);
     inbool (z"UIVisible", ui_visible);
     inbool (z"StatusBarVisible", statusbar_visible);
     inbool (z"Fullscreen", fullscreen);

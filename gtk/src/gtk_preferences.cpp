@@ -336,20 +336,20 @@ event_scale_method_changed (GtkComboBox *widget, gpointer user_data)
 
     if (gtk_combo_box_get_active (combo) == FILTER_NTSC)
     {
-        gtk_widget_show (window->get_widget ("ntsc_frame"));
+        gtk_widget_show (window->get_widget ("ntsc_alignment"));
     }
     else
     {
-        gtk_widget_hide (window->get_widget ("ntsc_frame"));
+        gtk_widget_hide (window->get_widget ("ntsc_alignment"));
     }
 
     if (gtk_combo_box_get_active (combo) == FILTER_SCANLINES)
     {
-        gtk_widget_show (window->get_widget ("scanline_filter_frame"));
+        gtk_widget_show (window->get_widget ("scanline_alignment"));
     }
     else
     {
-        gtk_widget_hide (window->get_widget ("scanline_filter_frame"));
+        gtk_widget_hide (window->get_widget ("scanline_alignment"));
     }
 }
 
@@ -660,20 +660,20 @@ Snes9xPreferences::move_settings_to_dialog ()
 
     if (config->scale_method == FILTER_NTSC)
     {
-        gtk_widget_show (get_widget ("ntsc_frame"));
+        gtk_widget_show (get_widget ("ntsc_alignment"));
     }
     else
     {
-        gtk_widget_hide (get_widget ("ntsc_frame"));
+        gtk_widget_hide (get_widget ("ntsc_alignment"));
     }
 
     if (config->scale_method == FILTER_SCANLINES)
     {
-        gtk_widget_show (get_widget ("scanline_filter_frame"));
+        gtk_widget_show (get_widget ("scanline_alignment"));
     }
     else
     {
-        gtk_widget_hide (get_widget ("scanline_filter_frame"));
+        gtk_widget_hide (get_widget ("scanline_alignment"));
     }
 
     load_ntsc_settings ();
@@ -1087,6 +1087,8 @@ Snes9xPreferences::show ()
     if (config->preferences_width > 0 && config->preferences_height > 0)
         resize (config->preferences_width, config->preferences_height);
 
+    gtk_notebook_set_current_page(GTK_NOTEBOOK(get_widget("display_notebook")), config->current_display_tab);
+
     for (close_dialog = false; !close_dialog; )
     {
         gtk_widget_show (window);
@@ -1094,6 +1096,7 @@ Snes9xPreferences::show ()
 
         config->preferences_width = get_width ();
         config->preferences_height = get_height ();
+        config->current_display_tab = gtk_notebook_get_current_page(GTK_NOTEBOOK(get_widget("display_notebook")));
 
         switch (result)
         {

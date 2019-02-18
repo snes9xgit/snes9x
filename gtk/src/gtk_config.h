@@ -127,6 +127,7 @@ class Snes9xConfig
     int window_width, window_height;
     int preferences_width, preferences_height;
     int shader_parameters_width, shader_parameters_height;
+    int current_display_tab;
     bool pause_emulation_on_switch;
     int num_threads;
     bool screensaver_needs_reset;
