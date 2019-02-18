@@ -819,12 +819,12 @@ BEGIN
         BLOCK "080904b0"
         BEGIN
             VALUE "CompanyName", "http://www.snes9x.com"
-            VALUE "FileDescription", "Snes9X"
+            VALUE "FileDescription", "Snes9x"
             VALUE "FileVersion", "1.58"
-            VALUE "InternalName", "Snes9X"
+            VALUE "InternalName", "Snes9x"
             VALUE "LegalCopyright", "Copyright  1996-2018"
-            VALUE "OriginalFilename", "Snes9X.exe"
-            VALUE "ProductName", "Snes9X SNES Emulator"
+            VALUE "OriginalFilename", "Snes9x.exe"
+            VALUE "ProductName", "Snes9x SNES Emulator"
             VALUE "ProductVersion", "1.58"
         END
     END

@@ -826,7 +826,7 @@ void S9xDetectJoypads()
                                               sizeof( JOYCAPS)) == JOYERR_NOERROR;
 }
 
-void InitSnes9X( void)
+void InitSnes9x( void)
 {
 #ifdef DEBUGGER
 //    extern FILE *trace;

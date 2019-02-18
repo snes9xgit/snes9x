@@ -133,7 +133,7 @@ bool WinDisplayReset(void)
 
 		return true;
 	} else {
-		MessageBox (GUI.hWnd, Languages[ GUI.Language].errInitDD, TEXT("Snes9X - Display Failure"), MB_OK | MB_ICONSTOP);
+		MessageBox (GUI.hWnd, Languages[ GUI.Language].errInitDD, TEXT("Snes9x - Display Failure"), MB_OK | MB_ICONSTOP);
 		return false;
 	}
 }
@@ -420,7 +420,7 @@ void RestoreGUIDisplay ()
         (GUI.FullscreenMode.width < 640 || GUI.FullscreenMode.height < 400) &&
         !DirectDraw.SetDisplayMode (640, 480, 1, 0, 60, !GUI.FullScreen, false))
     {
-        MessageBox (GUI.hWnd, Languages[ GUI.Language].errModeDD, TEXT("Snes9X - DirectDraw(1)"), MB_OK | MB_ICONSTOP);
+        MessageBox (GUI.hWnd, Languages[ GUI.Language].errModeDD, TEXT("Snes9x - DirectDraw(1)"), MB_OK | MB_ICONSTOP);
         S9xClearPause (PAUSE_RESTORE_GUI);
         return;
     }
@@ -437,7 +437,7 @@ void RestoreSNESDisplay ()
 
 	if (!DirectDraw.SetFullscreen(GUI.FullScreen))
     {
-        MessageBox (GUI.hWnd, Languages[ GUI.Language].errModeDD, TEXT("Snes9X - DirectDraw(4)"), MB_OK | MB_ICONSTOP);
+        MessageBox (GUI.hWnd, Languages[ GUI.Language].errModeDD, TEXT("Snes9x - DirectDraw(4)"), MB_OK | MB_ICONSTOP);
         return;
     }
 

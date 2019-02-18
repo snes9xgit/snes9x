@@ -155,7 +155,7 @@ int Snes9xConfig::load_defaults ()
     use_fences = false;
 #endif
 
-    /* Snes9X Variables */
+    /* Snes9x Variables */
     Settings.MouseMaster = true;
     Settings.SuperScopeMaster = true;
     Settings.JustifierMaster = true;

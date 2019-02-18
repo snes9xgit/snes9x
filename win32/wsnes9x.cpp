@@ -427,7 +427,7 @@ static uint32 FrameTimings[] = {
 	4000, 4000, 8333, 11667, 16667, 20000, 33333, 66667, 133333, 300000, 500000, 1000000, 1000000
 };
 
-// Languages supported by Snes9X: Windows
+// Languages supported by Snes9x: Windows
 // 0 - English [Default]
 struct sLanguages Languages[] = {
 	{ IDR_MENU_US,
@@ -435,7 +435,7 @@ struct sLanguages Languages[] = {
 		TEXT("DirectDraw failed to set the selected display mode!"),
 		TEXT("DirectSound failed to initialize; no sound will be played."),
 		TEXT("These settings won't take effect until you restart the emulator."),
-		TEXT("The frame timer failed to initialize, please do NOT select the automatic framerate option or Snes9X will crash!")}
+		TEXT("The frame timer failed to initialize, please do NOT select the automatic framerate option or Snes9x will crash!")}
 };
 
 struct OpenMovieParams
@@ -685,7 +685,15 @@ static void CenterCursor()
 void S9xRestoreWindowTitle ()
 {
     TCHAR buf [100];
-    _stprintf (buf, WINDOW_TITLE, TEXT(VERSION));
+    if (Memory.ROMFilename[0])
+    {
+        char drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], def[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
+        _splitpath(Memory.ROMFilename, drive, dir, def, ext);
+        _stprintf(buf, TEXT("%s - %s"), (wchar_t *)Utf8ToWide(def), WINDOW_TITLE);
+    }
+    else
+        _stprintf(buf, WINDOW_TITLE);
+
     SetWindowText (GUI.hWnd, buf);
 }
 
@@ -2569,7 +2577,7 @@ BOOL WinInit( HINSTANCE hInstance)
     wndclass.hIconSm = NULL;
     wndclass.hCursor = NULL;
     wndclass.lpszMenuName = NULL;
-    wndclass.lpszClassName = TEXT("Snes9X: WndClass");
+    wndclass.lpszClassName = TEXT("Snes9x: WndClass");
 	wndclass.hbrBackground=(HBRUSH)GetStockObject(BLACK_BRUSH);
 
     GUI.hInstance = hInstance;
@@ -2583,7 +2591,7 @@ BOOL WinInit( HINSTANCE hInstance)
 	GUI.hMenu = LoadMenu(GUI.hInstance, MAKEINTRESOURCE(IDR_MENU_US));
     if (GUI.hMenu == NULL)
 	{
-		MessageBox (NULL, TEXT("Failed to initialize the menu.\nThis could indicate a failure of your operating system;\ntry closing some other windows or programs, or restart your computer, before opening Snes9x again.\nOr, if you compiled this program yourself, ensure that Snes9x was built with the proper resource files."), TEXT("Snes9X - Menu Initialization Failure"), MB_OK | MB_ICONSTOP);
+		MessageBox (NULL, TEXT("Failed to initialize the menu.\nThis could indicate a failure of your operating system;\ntry closing some other windows or programs, or restart your computer, before opening Snes9x again.\nOr, if you compiled this program yourself, ensure that Snes9x was built with the proper resource files."), TEXT("Snes9x - Menu Initialization Failure"), MB_OK | MB_ICONSTOP);
 //        return FALSE; // disabled: try to function without the menu
 	}
 #ifdef DEBUGGER
@@ -2596,7 +2604,7 @@ BOOL WinInit( HINSTANCE hInstance)
 #endif
 
     TCHAR buf [100];
-    _stprintf (buf, WINDOW_TITLE, TEXT(VERSION));
+    _stprintf (buf, WINDOW_TITLE);
 
     DWORD dwExStyle;
     DWORD dwStyle;
@@ -2611,7 +2619,7 @@ BOOL WinInit( HINSTANCE hInstance)
     AdjustWindowRectEx (&rect, dwStyle, FALSE, dwExStyle);
     if ((GUI.hWnd = CreateWindowEx (
         dwExStyle,
-        TEXT("Snes9X: WndClass"),
+        TEXT("Snes9x: WndClass"),
         buf,
         WS_CLIPSIBLINGS |
         WS_CLIPCHILDREN |
@@ -3269,8 +3277,8 @@ int WINAPI WinMain(
 
 	RestoreMainWinPos();
 
-	void InitSnes9X (void);
-	InitSnes9X ();
+	void InitSnes9x (void);
+	InitSnes9x ();
 
 	if(GUI.FullScreen) {
 		GUI.FullScreen = false;
@@ -3315,7 +3323,7 @@ int WINAPI WinMain(
 
     if (GUI.hFrameTimer == 0)
     {
-        MessageBox( GUI.hWnd, Languages[ GUI.Language].errFrameTimer, TEXT("Snes9X - Frame Timer"), MB_OK | MB_ICONINFORMATION);
+        MessageBox( GUI.hWnd, Languages[ GUI.Language].errFrameTimer, TEXT("Snes9x - Frame Timer"), MB_OK | MB_ICONINFORMATION);
     }
 
 	if (rom_filename)
@@ -3635,8 +3643,8 @@ void CheckDirectoryIsWritable (const char *filename)
     FILE *fs = fopen (filename, "w+");
 
     if (fs == NULL)
-	MessageBox (GUI.hWnd, TEXT("The folder where Snes9X saves emulated save RAM files and\ngame save positions (freeze files) is currently set to a\nread-only folder.\n\nIf you do not change the game save folder, Snes9X will be\nunable to save your progress in this game. Change the folder\nfrom the Settings Dialog available from the Options menu.\n\nThe default save folder is called Saves, if no value is set.\n"),
-							 TEXT("Snes9X: Unable to save file warning"),
+	MessageBox (GUI.hWnd, TEXT("The folder where Snes9x saves emulated save RAM files and\ngame save positions (freeze files) is currently set to a\nread-only folder.\n\nIf you do not change the game save folder, Snes9x will be\nunable to save your progress in this game. Change the folder\nfrom the Settings Dialog available from the Options menu.\n\nThe default save folder is called Saves, if no value is set.\n"),
+							 TEXT("Snes9x: Unable to save file warning"),
 							 MB_OK | MB_ICONINFORMATION);
     else
     {
@@ -3988,6 +3996,7 @@ static bool LoadROM(const TCHAR *filename, const TCHAR *filename2 /*= NULL*/) {
 		GUI.CursorTimer = 60;
 	}
 	Settings.Paused = false;
+    S9xRestoreWindowTitle();
 
 	return !Settings.StopEmulation;
 }

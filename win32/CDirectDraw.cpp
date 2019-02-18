@@ -70,7 +70,7 @@ bool CDirectDraw::Initialize (HWND hWnd)
 	if (!SetDisplayMode (GUI.FullscreenMode.width, GUI.FullscreenMode.height, max(GetFilterScale(GUI.Scale), GetFilterScale(GUI.ScaleHiRes)), GUI.FullscreenMode.depth, GUI.FullscreenMode.rate,
 		TRUE, GUI.DoubleBuffered))
     {
-        MessageBox( GUI.hWnd, Languages[ GUI.Language].errModeDD, TEXT("Snes9X - DirectDraw(7)"), MB_OK | MB_ICONSTOP);
+        MessageBox( GUI.hWnd, Languages[ GUI.Language].errModeDD, TEXT("Snes9x - DirectDraw(7)"), MB_OK | MB_ICONSTOP);
         return (false);
     }
 
@@ -596,7 +596,7 @@ bool CDirectDraw::SetFullscreen(bool fullscreen)
 {
 	if (!SetDisplayMode (GUI.FullscreenMode.width, GUI.FullscreenMode.height, max(GetFilterScale(GUI.Scale), GetFilterScale(GUI.ScaleHiRes)), GUI.FullscreenMode.depth, GUI.FullscreenMode.rate, !fullscreen, GUI.DoubleBuffered))
 	{
-		MessageBox( GUI.hWnd, Languages[ GUI.Language].errModeDD, TEXT("Snes9X - DirectDraw(2)"), MB_OK | MB_ICONSTOP);
+		MessageBox( GUI.hWnd, Languages[ GUI.Language].errModeDD, TEXT("Snes9x - DirectDraw(2)"), MB_OK | MB_ICONSTOP);
 		return false;
 	}
 	return true;

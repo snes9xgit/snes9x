@@ -149,7 +149,7 @@ up correctly?");
 #ifdef NP_DEBUG
     printf ("CLIENT: Trying to connect to server @%ld...\n", S9xGetMilliTime () - START);
 #endif
-    S9xNPSetAction ("Trying to connect to Snes9X server...");
+    S9xNPSetAction ("Trying to connect to Snes9x server...");
 
     if (connect (NetPlay.Socket, (struct sockaddr *) &address, sizeof (address)) < 0)
     {
@@ -162,7 +162,7 @@ up correctly?");
         {
             S9xNPSetError ("\
 Connection to remote server socket refused:\n\n\
-Is there actually a Snes9X NetPlay server running\n\
+Is there actually a Snes9x NetPlay server running\n\
 on the remote machine on this port?");
         }
         else
@@ -251,7 +251,7 @@ on the remote machine on this port?");
     if (data [0] != NP_VERSION)
     {
         S9xNPSetError ("\
-The Snes9X NetPlay server implements a different\n\
+The Snes9x NetPlay server implements a different\n\
 version of the protocol. Disconnecting.");
         delete[] data;
 	S9xNPDisconnect ();
@@ -775,7 +775,7 @@ void S9xNPStepJoypadHistory ()
         NetPlay.JoypadReadInd = (NetPlay.JoypadReadInd + 1) % NP_JOYPAD_HIST_SIZE;
         if (NetPlay.FrameCount != NetPlay.Frame [NetPlay.JoypadReadInd])
         {
-            S9xNPSetWarning ("This Snes9X session may be out of sync with the server.");
+            S9xNPSetWarning ("This Snes9x session may be out of sync with the server.");
 #ifdef NP_DEBUG
             printf ("*** CLIENT: client out of sync with server (%d, %d) @%ld\n", NetPlay.FrameCount, NetPlay.Frame [NetPlay.JoypadReadInd], S9xGetMilliTime () - START);
 #endif
