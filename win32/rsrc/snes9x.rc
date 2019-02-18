@@ -1003,7 +1003,7 @@ BEGIN
     END
     POPUP "&Video"
     BEGIN
-        MENUITEM "&Hide menubar\tEsc",          ID_WINDOW_HIDEMENUBAR
+        MENUITEM "&Hide Menubar\tEsc",          ID_WINDOW_HIDEMENUBAR
         MENUITEM "&Full Screen\tAlt+Enter",     ID_WINDOW_FULLSCREEN
         POPUP "&Window Size"
         BEGIN
