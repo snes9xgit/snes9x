@@ -15,7 +15,7 @@
 
 #include "bapu/snes/snes.hpp"
 
-static const int APU_DEFAULT_INPUT_RATE = 31950; // ~59.94Hz
+static const int APU_DEFAULT_INPUT_RATE = 31920; // ~59.94Hz
 static const int APU_SAMPLE_BLOCK       = 48;
 static const int APU_NUMERATOR_NTSC     = 5632;
 static const int APU_DENOMINATOR_NTSC   = 118125;

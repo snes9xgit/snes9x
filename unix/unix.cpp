@@ -1485,7 +1485,7 @@ int main (int argc, char **argv)
 	Settings.SixteenBitSound = TRUE;
 	Settings.Stereo = TRUE;
 	Settings.SoundPlaybackRate = 48000;
-	Settings.SoundInputRate = 31950;
+	Settings.SoundInputRate = 31920;
 	Settings.SupportHiRes = TRUE;
 	Settings.Transparency = TRUE;
 	Settings.AutoDisplayMessages = TRUE;

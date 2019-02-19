@@ -133,7 +133,7 @@ S9xPortSoundInit ()
             Settings.SoundInputRate = top_level->get_auto_input_rate ();
             if (Settings.SoundInputRate == 0.0)
             {
-                Settings.SoundInputRate = 31950;
+                Settings.SoundInputRate = 31920;
                 gui_config->auto_input_rate = 0;
             }
         }
