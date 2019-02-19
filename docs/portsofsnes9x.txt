@@ -50,7 +50,7 @@ use these tips to get other homebrews going.
 
 *Wii/Gamecube version of Snes9x*
 Name: Snes9X GX
-Latest Version: 4.2.8
+Latest Version: 4.4.2
 Homepage/forum: http://code.google.com/p/snes9x-gx
 Maintainer: Tantric
 
@@ -76,7 +76,7 @@ Gamecube: You might need a modchip.
 
 *Android and iOS (Apple iPhone/iPod Touch) version of Snes9x*
 Name: Snes9X EX
-Latest Version: 1.4.2 (iOS); 1.4.7.1 (Android)
+Latest Version: 1.5.37 (iOS); 1.5.37 (Android)
 Homepage/forum: http://www.explusalpha.com/home/snes9x-ex
 Maintainer: Rakashazi
 
