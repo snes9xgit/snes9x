@@ -684,15 +684,15 @@ static void CenterCursor()
 
 void S9xRestoreWindowTitle ()
 {
-    TCHAR buf [100];
+    TCHAR buf [1024];
     if (Memory.ROMFilename[0])
     {
-        char drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], def[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
-        _splitpath(Memory.ROMFilename, drive, dir, def, ext);
-        _stprintf(buf, TEXT("%s - %s"), (wchar_t *)Utf8ToWide(def), WINDOW_TITLE);
+        char def[_MAX_FNAME]];
+        _splitpath(Memory.ROMFilename, NULL, NULL def, NULL);
+        _stprintf(buf, TEXT("%s - %s %s"), (wchar_t *)Utf8ToWide(def), WINDOW_TITLE, TEXT(VERSION));
     }
     else
-        _stprintf(buf, WINDOW_TITLE);
+        _stprintf(buf, TEXT("%s %s"), WINDOW_TITLE, TEXT(VERSION));
 
     SetWindowText (GUI.hWnd, buf);
 }
@@ -2604,7 +2604,7 @@ BOOL WinInit( HINSTANCE hInstance)
 #endif
 
     TCHAR buf [100];
-    _stprintf (buf, WINDOW_TITLE);
+    _stprintf(buf, TEXT("%s %s"), WINDOW_TITLE, TEXT(VERSION));
 
     DWORD dwExStyle;
     DWORD dwStyle;

@@ -28,14 +28,12 @@ static const int APU_DENOMINATOR_PAL    = 709379;
 // for use with SoundSync, multiplied by 2, for left and right samples.
 static const int MINIMUM_BUFFER_SIZE = 550 * 2;
 
-namespace SNES
-{
+namespace SNES {
 #include "bapu/dsp/blargg_endian.h"
 CPU cpu;
 } // namespace SNES
 
-namespace spc
-{
+namespace spc {
 static apu_callback callback = NULL;
 static void *callback_data = NULL;
 
@@ -57,8 +55,7 @@ static uint32 ratio_denominator = APU_DENOMINATOR_NTSC;
 static double dynamic_rate_multiplier = 1.0;
 } // namespace spc
 
-namespace msu
-{
+namespace msu {
 // Always 16-bit, Stereo; 1.5x dsp buffer to never overflow
 static Resampler *resampler = NULL;
 static std::vector<int16> resample_buffer;
