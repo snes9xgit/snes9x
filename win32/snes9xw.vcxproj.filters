@@ -213,15 +213,6 @@
     <ClInclude Include="..\filter\epx.h">
       <Filter>Filter</Filter>
     </ClInclude>
-    <ClInclude Include="snes_ntsc.h">
-      <Filter>Filter</Filter>
-    </ClInclude>
-    <ClInclude Include="snes_ntsc_config.h">
-      <Filter>Filter</Filter>
-    </ClInclude>
-    <ClInclude Include="snes_ntsc_impl.h">
-      <Filter>Filter</Filter>
-    </ClInclude>
     <ClInclude Include="..\filter\xbrz.h">
       <Filter>Filter</Filter>
     </ClInclude>
@@ -284,6 +275,15 @@
     </ClInclude>
     <ClInclude Include="..\apu\resampler.h">
       <Filter>APU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filter\snes_ntsc.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filter\snes_ntsc_config.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filter\snes_ntsc_impl.h">
+      <Filter>Filter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -566,9 +566,6 @@
     <ClCompile Include="..\filter\hq2x.cpp">
       <Filter>Filter</Filter>
     </ClCompile>
-    <ClCompile Include="snes_ntsc.c">
-      <Filter>Filter</Filter>
-    </ClCompile>
     <ClCompile Include="..\filter\xbrz.cpp">
       <Filter>Filter</Filter>
     </ClCompile>
@@ -616,6 +613,9 @@
     </ClCompile>
     <ClCompile Include="CWaveOut.cpp">
       <Filter>GUI\SoundDriver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\filter\snes_ntsc.c">
+      <Filter>Filter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

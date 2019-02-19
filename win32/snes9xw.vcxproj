@@ -339,6 +339,9 @@
     <ClInclude Include="..\filter\blit.h" />
     <ClInclude Include="..\filter\epx.h" />
     <CustomBuild Include="..\filter\hq2x.h" />
+    <ClInclude Include="..\filter\snes_ntsc.h" />
+    <ClInclude Include="..\filter\snes_ntsc_config.h" />
+    <ClInclude Include="..\filter\snes_ntsc_impl.h" />
     <ClInclude Include="..\filter\xbrz.h" />
     <CustomBuild Include="..\font.h" />
     <CustomBuild Include="..\fxemu.h" />
@@ -446,9 +449,6 @@
     <ClInclude Include="IS9xSoundOutput.h" />
     <ClInclude Include="render.h" />
     <ClInclude Include="rsrc\resource.h" />
-    <ClInclude Include="snes_ntsc.h" />
-    <ClInclude Include="snes_ntsc_config.h" />
-    <ClInclude Include="snes_ntsc_impl.h" />
     <ClInclude Include="win32_display.h" />
     <ClInclude Include="win32_sound.h" />
     <ClInclude Include="wlanguage.h" />
@@ -489,6 +489,7 @@
     <ClCompile Include="..\filter\blit.cpp" />
     <ClCompile Include="..\filter\epx.cpp" />
     <ClCompile Include="..\filter\hq2x.cpp" />
+    <ClCompile Include="..\filter\snes_ntsc.c" />
     <ClCompile Include="..\filter\xbrz.cpp" />
     <ClCompile Include="..\fxdbg.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
@@ -587,7 +588,6 @@
     <ClCompile Include="image_functions.cpp" />
     <ClCompile Include="InputCustom.cpp" />
     <ClCompile Include="render.cpp" />
-    <ClCompile Include="snes_ntsc.c" />
     <ClCompile Include="wconfig.cpp" />
     <ClCompile Include="win32.cpp" />
     <ClCompile Include="win32_display.cpp" />

@@ -68,7 +68,7 @@ private:
 	void DestroyDrawSurface(void);
 	bool ChangeDrawSurfaceSize(unsigned int width, unsigned int height);
 	void SetupVertices();
-    bool ShaderAailable();
+    bool ShaderAvailable();
     bool NPOTAvailable();
 
 public:
