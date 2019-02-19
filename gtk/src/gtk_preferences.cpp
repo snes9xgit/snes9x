@@ -418,7 +418,7 @@ event_input_rate_changed (GtkRange *range, gpointer data)
 {
     char text[256];
     GtkLabel *label = GTK_LABEL (data);
-    double value = gtk_range_get_value (range) / 32040.0 * 60.09881389744051;
+    double value = gtk_range_get_value (range) / 32000.0 * 60.09881389744051;
 
     snprintf (text, 256, "%.4f hz", value);
 

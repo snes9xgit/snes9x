@@ -690,7 +690,7 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
     info->geometry.max_width = MAX_SNES_WIDTH;
     info->geometry.max_height = MAX_SNES_HEIGHT;
     info->geometry.aspect_ratio = get_aspect_ratio(width, height);
-    info->timing.sample_rate = 32040;
+    info->timing.sample_rate = 32000;
     info->timing.fps = retro_get_region() == RETRO_REGION_NTSC ? 21477272.0 / 357366.0 : 21281370.0 / 425568.0;
 
     g_screen_gun_width = width;
@@ -1202,8 +1202,8 @@ void retro_init(void)
     Settings.FrameTimeNTSC = 16667;
     Settings.SixteenBitSound = TRUE;
     Settings.Stereo = TRUE;
-    Settings.SoundPlaybackRate = 32040;
-    Settings.SoundInputRate = 32040;
+    Settings.SoundPlaybackRate = 32000;
+    Settings.SoundInputRate = 32000;
     Settings.SupportHiRes = TRUE;
     Settings.Transparency = TRUE;
     Settings.AutoDisplayMessages = TRUE;

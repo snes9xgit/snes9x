@@ -17,10 +17,10 @@
 
 static const int APU_DEFAULT_INPUT_RATE = 31950; // ~59.94Hz
 static const int APU_SAMPLE_BLOCK       = 48;
-static const int APU_NUMERATOR_NTSC     = 15664;
-static const int APU_DENOMINATOR_NTSC   = 328125;
-static const int APU_NUMERATOR_PAL      = 34176;
-static const int APU_DENOMINATOR_PAL    = 709379;
+static const int APU_NUMERATOR_NTSC     = 5632;
+static const int APU_DENOMINATOR_NTSC   = 118125;
+static const int APU_NUMERATOR_PAL      = 35527;
+static const int APU_DENOMINATOR_PAL    = 738343;
 
 // Max number of samples we'll ever generate before call to port API and
 // moving the samples to the resampler.
@@ -176,7 +176,7 @@ static void UpdatePlaybackRate(void)
 
     if (Settings.MSU1)
     {
-        time_ratio = (44100.0 / Settings.SoundPlaybackRate) * (Settings.SoundInputRate / 32040.0);
+        time_ratio = (44100.0 / Settings.SoundPlaybackRate) * (Settings.SoundInputRate / 32000.0);
         msu::resampler->time_ratio(time_ratio);
     }
 }

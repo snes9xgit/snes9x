@@ -1595,9 +1595,9 @@ Snes9xWindow::get_auto_input_rate ()
     if (refresh_rate > 239.0 && refresh_rate < 241.0)
         refresh_rate /= 4.0;
 
-    double new_input_rate = refresh_rate * 32040.0 / 60.09881389744051 + 0.5;
+    double new_input_rate = refresh_rate * 32000.0 / 60.09881389744051 + 0.5;
 
-    if (new_input_rate > 32040.0 * 1.05 || new_input_rate < 32040.0 * 0.95)
+    if (new_input_rate > 32000.0 * 1.05 || new_input_rate < 32000.0 * 0.95)
         new_input_rate = 0.0;
 
     return new_input_rate;
