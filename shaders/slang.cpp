@@ -194,7 +194,7 @@ GLint GLSLShader::slang_compile(std::vector<std::string> &lines,
 
     if (!ProcessInitialized)
     {
-        ShInitialize();
+        glslang::InitializeProcess();
         ProcessInitialized = true;
     }
 
