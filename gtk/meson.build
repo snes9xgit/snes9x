@@ -85,7 +85,9 @@ if slang and opengl
   if not meson.get_compiler('cpp').compiles('#include "' + spirv_cross_hpp + '"')
     slang = false
     warns += 'Slang support needs the SPIRV-Cross directory in ../shaders'
-    warns += 'It can be downloaded with git submodule init; git submodule update'
+    warns += 'It can be downloaded with:'
+    warns += '  git submodule init ../shaders/SPIRV-Cross'
+    warns += '  git submodule update ../shaders/SPIRV-Cross'
   endif
 endif
 
