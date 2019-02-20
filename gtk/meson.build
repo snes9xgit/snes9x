@@ -1,6 +1,6 @@
 project('snes9x-gtk',
         ['c', 'cpp'],
-        version: '1.58',
+        version: '1.59',
         default_options: ['cpp_std=c++11'])
 
 args = ['-DSNES9X_GTK', '-DUNZIP_SUPPORT', '-DNETPLAY_SUPPORT', '-DJMA_SUPPORT', '-Wall', '-W', '-Wno-unused-parameter']
