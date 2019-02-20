@@ -1,3 +1,38 @@
+Snes9x 1.59
+- Count clock cycles to synchronize SA1 with S-CPU properly. Based mostly on
+  work by Vitor Vilela.
+- Only allow instant IRQ when toggling IRQ. Fixes WWF - Wrestlemania.
+- Refactored APU output code to buffer less on the client side. Removed 8-bit,
+  Mono, and Reverse Stereo options.
+- Consistently handle interlacing when we skip frames.
+- Changed APU clock to reflect nominal values for original hardware.
+- Fix C4 square instruction regression.
+
+Win32:
+- Don't display Joypad 2 pressed keys if disabled.
+- Add support for libretro ".slang" shaders to OpenGL driver.
+- Removed glitch-prone DirectSound audio driver in favor of a generic Wave Out
+  driver.
+- Moved sound sync to drivers to be more reactive. This makes sound sync and
+  dynamic resampling work more reliably.
+- Cleaned up dialog boxes to be more consistently spaced.
+- Fixed TVMode filter in Direct3D and OpenGL modes.
+- Fixed an interaction slowdown with OpenGL and Blargg NTSC filters.
+
+libretro:
+- Fix multiline cheats.
+
+GTK+:
+- Switch from autotools to Meson build system.
+- Readd glFinish option as alternative to glFenceSync.
+- Fix size fallthrough with xBRZ filter.
+- Fix loading of key bindings with spaces in them and modifier keys used alone.
+- Add support for libretro ".slang" shaders to OpenGL driver.
+- Use a cleaner onscreen font.
+- Trap errors to allow OpenGL <= 2.1 to run again.
+- Break display settings up to make it easier to access hardware accel section.
+
+
 Snes9x 1.58
 - Move the LICENSE file to the base directory and use a stub
   in all the source files referring to it. 
