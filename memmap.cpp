@@ -3617,7 +3617,7 @@ void CMemory::ApplyROMFixes (void)
 		if (match_id("AANJ"))                                      // Chou Aniki
 			Timings.APUSpeedup = -3;
 		if (match_na("CIRCUIT USA"))
-			Timings.APUSpeedup = 2;
+			Timings.APUSpeedup = 3;
 
 /*		if (match_na("GAIA GENSOUKI 1 JPN")                     || // Gaia Gensouki
 			match_id("JG  ")                                    || // Illusion of Gaia
