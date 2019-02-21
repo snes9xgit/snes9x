@@ -235,7 +235,6 @@ struct SSettings
 	uint32	SoundPlaybackRate;
 	uint32	SoundInputRate;
 	bool8	Stereo;
-	bool8	ReverseStereo;
 	bool8	Mute;
 	bool8	DynamicRateControl;
 	int32	DynamicRateLimit; /* Multiplied by 1000 */
