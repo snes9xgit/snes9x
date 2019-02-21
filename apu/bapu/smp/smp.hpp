@@ -1,6 +1,7 @@
 class SMP : public Processor {
 public:
   static const uint8 iplrom[64];
+  uint8 highmem[64];
   uint8 *apuram;
 
   enum { Threaded = false };

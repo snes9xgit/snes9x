@@ -87,6 +87,8 @@ void SMP::reset() {
 
   //$00f1
   status.iplrom_enable = true;
+  memcpy(highmem, iplrom, 64);
+  memcpy(&apuram[0xffc0], iplrom, 64);
 
   //$00f2
   status.dsp_addr = 0x00;
