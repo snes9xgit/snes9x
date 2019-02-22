@@ -81,6 +81,10 @@ static void printuniforms(std::vector<SlangUniform> &unif)
     }
 }
 
+namespace glslang {
+#ifndef _WIN32
+extern TBuiltInResource DefaultTBuiltInResource;
+#else
 static const TBuiltInResource DefaultTBuiltInResource = {
     /* .MaxLights = */ 32,
     /* .MaxClipPlanes = */ 6,
@@ -186,6 +190,8 @@ static const TBuiltInResource DefaultTBuiltInResource = {
         /* .generalVariableIndexing = */ 1,
         /* .generalConstantMatrixVectorIndexing = */ 1,
     }};
+#endif
+} // namespace glslang
 
 GLint GLSLShader::slang_compile(std::vector<std::string> &lines,
                                 std::string stage)
@@ -216,14 +222,14 @@ GLint GLSLShader::slang_compile(std::vector<std::string> &lines,
     std::string debug;
     auto forbid_includer = glslang::TShader::ForbidIncluder();
 
-    if (!shader.preprocess(&DefaultTBuiltInResource, 100, ENoProfile, false,
+    if (!shader.preprocess(&glslang::DefaultTBuiltInResource, 100, ENoProfile, false,
                            false, messages, &debug, forbid_includer))
     {
         puts(debug.c_str());
         return -1;
     }
 
-    if (!shader.parse(&DefaultTBuiltInResource, 100, false, messages))
+    if (!shader.parse(&glslang::DefaultTBuiltInResource, 100, false, messages))
     {
         puts(shader.getInfoLog());
         puts(shader.getInfoDebugLog());
