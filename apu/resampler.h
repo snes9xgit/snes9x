@@ -9,7 +9,11 @@
 
 #include <cstring>
 #include <cassert>
+#if __cplusplus >= 201103L
 #include <cstdint>
+#else
+#include <stdint.h>
+#endif
 #include <cmath>
 
 class Resampler
