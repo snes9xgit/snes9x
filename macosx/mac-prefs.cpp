@@ -149,14 +149,10 @@ static PrefList	prefList[] =
 	{ 'CIFl', &ciFilterEnable,							    sizeof(bool8      ) },
 
 	{ 'sSyn', &Settings.SoundSync,					        sizeof(bool8      ) },
-	{ 'so16', &Settings.SixteenBitSound,					sizeof(bool8      ) },
-	{ 'ster', &Settings.Stereo,								sizeof(bool8      ) },
-	{ 'rbst', &Settings.ReverseStereo,						sizeof(bool8      ) },
 	{ 'srat', &Settings.SoundPlaybackRate,					sizeof(uint32     ) },
 	{ 'InRt', &Settings.SoundInputRate,						sizeof(uint32     ) },
 	{ 'MxIv', &macSoundInterval_ms,					        sizeof(uint32     ) },
 	{ 'SBuf', &macSoundBuffer_ms,					        sizeof(uint32     ) },
-	{ 'SLag', &macSoundLagEnable,					        sizeof(bool8      ) },
 	{ 'Volm', &macSoundVolume,								sizeof(SInt32     ) },
 	{ 'AUef', &aueffect,									sizeof(uint16     ) },
 	{ 'AUce', &cureffect,									sizeof(int        ) },
@@ -538,16 +534,17 @@ void ConfigurePreferences (void)
 			cid.id = iNibS16BitPlayback;
 			HIViewFindByID(root, cid, &ctl);
 			SetControl32BitValue(ctl, Settings.SixteenBitSound);
+			DeactivateControl(ctl);
 
 			cid.id = iNibSStereo;
 			HIViewFindByID(root, cid, &ctl);
 			SetControl32BitValue(ctl, Settings.Stereo);
+			DeactivateControl(ctl);
 
 			cid.id = iNibSReverseStereo;
 			HIViewFindByID(root, cid, &ctl);
 			SetControl32BitValue(ctl, Settings.ReverseStereo);
-			if (!Settings.Stereo)
-				DeactivateControl(ctl);
+			DeactivateControl(ctl);
 
 			cid.id = iNibSPlaybackRate;
 			HIViewFindByID(root, cid, &ctl);
@@ -633,6 +630,7 @@ void ConfigurePreferences (void)
 			cid.id = iNibSAllowLag;
 			HIViewFindByID(root, cid, &ctl);
 			SetControl32BitValue(ctl, macSoundLagEnable);
+			DeactivateControl(ctl);
 
 			cid.id = iNibSVolume;
 			HIViewFindByID(root, cid, &ctl);
