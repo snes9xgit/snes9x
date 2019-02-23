@@ -658,7 +658,7 @@ float get_aspect_ratio(unsigned width, unsigned height)
     double sample_frequency_pal = 14750000.0;
 
     double sample_freq = retro_get_region() == RETRO_REGION_NTSC ? sample_frequency_ntsc : sample_frequency_pal;
-    double dot_rate = SNES::cpu.frequency / 4.0;
+    double dot_rate = (Settings.PAL ? PAL_MASTER_CLOCK : NTSC_MASTER_CLOCK) / 4.0;
 
     if (aspect_ratio_mode == ASPECT_RATIO_NTSC) // ntsc
     {
