@@ -654,11 +654,11 @@ float get_aspect_ratio(unsigned width, unsigned height)
     }
 
     // OV2: not sure if these really make sense - NTSC is similar to 4:3, PAL looks weird
-    float sample_frequency_ntsc = 135000000.0f / 11.0f;
-    float sample_frequency_pal = 14750000.0;
+    double sample_frequency_ntsc = 135000000.0f / 11.0f;
+    double sample_frequency_pal = 14750000.0;
 
-    float sample_freq = retro_get_region() == RETRO_REGION_NTSC ? sample_frequency_ntsc : sample_frequency_pal;
-    float dot_rate = SNES::cpu.frequency / 4.0;
+    double sample_freq = retro_get_region() == RETRO_REGION_NTSC ? sample_frequency_ntsc : sample_frequency_pal;
+    double dot_rate = SNES::cpu.frequency / 4.0;
 
     if (aspect_ratio_mode == ASPECT_RATIO_NTSC) // ntsc
     {
@@ -671,8 +671,8 @@ float get_aspect_ratio(unsigned width, unsigned height)
         dot_rate = PAL_MASTER_CLOCK / 4.0;
     }
 
-    float par = sample_freq / 2.0 / dot_rate;
-    return (float)width * par / (float)height;
+    double par = sample_freq / 2.0 / dot_rate;
+    return (float)(width * par / height);
 }
 
 void retro_get_system_av_info(struct retro_system_av_info *info)

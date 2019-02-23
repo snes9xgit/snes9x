@@ -713,37 +713,37 @@ void GLSLShader::render(GLuint &orig,
         switch (pass[i].scale_type_x)
         {
         case GLSL_ABSOLUTE:
-            pass[i].width = pass[i].scale_x;
+            pass[i].width = (GLuint)pass[i].scale_x;
             break;
         case GLSL_SOURCE:
-            pass[i].width = pass[i-1].width * pass[i].scale_x;
+            pass[i].width = (GLuint)(pass[i-1].width * pass[i].scale_x);
             break;
         case GLSL_VIEWPORT:
-            pass[i].width = viewport_width * pass[i].scale_x;
+            pass[i].width = (GLuint)(viewport_width * pass[i].scale_x);
             break;
         default:
             if (lastpass)
                 pass[i].width = viewport_width;
             else
-                pass[i].width = pass[i - 1].width * pass[i].scale_x;
+                pass[i].width = (GLuint)(pass[i - 1].width * pass[i].scale_x);
         }
 
         switch (pass[i].scale_type_y)
         {
         case GLSL_ABSOLUTE:
-            pass[i].height = pass[i].scale_y;
+            pass[i].height = (GLuint)pass[i].scale_y;
             break;
         case GLSL_SOURCE:
-            pass[i].height = pass[i - 1].height * pass[i].scale_y;
+            pass[i].height = (GLuint)(pass[i - 1].height * pass[i].scale_y);
             break;
         case GLSL_VIEWPORT:
-            pass[i].height = viewport_height * pass[i].scale_y;
+            pass[i].height = (GLuint)(viewport_height * pass[i].scale_y);
             break;
         default:
             if (lastpass)
                 pass[i].height = viewport_height;
             else
-                pass[i].height = pass[i - 1].height * pass[i].scale_y;
+                pass[i].height = (GLuint)(pass[i - 1].height * pass[i].scale_y);
         }
 
         bool direct_lastpass = true;
@@ -1073,8 +1073,8 @@ void GLSLShader::set_shader_vars(unsigned int p, bool inverted)
     unsigned int shaderFrameCnt = frame_count;
     if (pass[p].frame_count_mod)
         shaderFrameCnt %= pass[p].frame_count_mod;
-    setUniform1i(u->FrameCount, (float)shaderFrameCnt);
-    setUniform1i(u->FrameDirection, Settings.Rewinding ? -1.0f : 1.0f);
+    setUniform1i(u->FrameCount, shaderFrameCnt);
+    setUniform1i(u->FrameDirection, Settings.Rewinding ? -1 : 1);
 
     setTexCoords(u->TexCoord);
     setTexCoords(u->LUTTexCoord);
