@@ -205,4 +205,4 @@ void SMP::load_state(uint8 **block) {
   *block = ptr;
 }
 
-} /* namespace SNES */
+} // namespace SNES

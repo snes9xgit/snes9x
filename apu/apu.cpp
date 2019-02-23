@@ -335,7 +335,6 @@ void S9xResetAPU(void)
     spc::remainder = 0;
 
     SNES::cpu.reset();
-    SNES::cpu.frequency = (int)(Settings.PAL ? PAL_MASTER_CLOCK : NTSC_MASTER_CLOCK);
     SNES::smp.power();
     SNES::dsp.power();
     SNES::dsp.spc_dsp.set_spc_snapshot_callback(SPCSnapshotCallback);

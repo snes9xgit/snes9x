@@ -5,8 +5,6 @@
 #include "../../resampler.h"
 #include "../../../msu1.h"
 
-#define SNES9X
-
 #if defined(__GNUC__)
   #define inline        inline
   #define alwaysinline  inline __attribute__((always_inline))
@@ -35,8 +33,6 @@ struct Processor
 class CPU
 {
 public:
-    enum { Threaded = false };
-    int frequency;
     uint8 registers[4];
 
     inline void reset ()
@@ -57,6 +53,6 @@ public:
 
 extern CPU cpu;
 
-} /* namespace SNES */
+} // namespace SNES
 
 #endif

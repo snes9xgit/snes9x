@@ -18,7 +18,6 @@ unsigned SMP::mmio_read(unsigned addr) {
   case 0xf5:
   case 0xf6:
   case 0xf7:
-    synchronize_cpu();
     return cpu.port_read(addr);
 
   case 0xf8:
@@ -78,7 +77,6 @@ void SMP::mmio_write(unsigned addr, unsigned data) {
     }
 
     if(data & 0x30) {
-      synchronize_cpu();
       if(data & 0x20) {
         cpu.port_write(3, 0x00);
         cpu.port_write(2, 0x00);
@@ -122,7 +120,6 @@ void SMP::mmio_write(unsigned addr, unsigned data) {
   case 0xf5:
   case 0xf6:
   case 0xf7:
-    synchronize_cpu();
     port_write(addr, data);
     break;
 

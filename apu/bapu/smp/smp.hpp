@@ -4,10 +4,6 @@ public:
   uint8 highmem[64];
   uint8 *apuram;
 
-  enum { Threaded = false };
-  alwaysinline void synchronize_cpu();
-  alwaysinline void synchronize_dsp();
-
   unsigned port_read(unsigned port);
   void port_write(unsigned port, unsigned data);
 
@@ -18,13 +14,9 @@ public:
   void power();
   void reset();
 
-#ifndef SNES9X
-  void serialize(serializer&);
-#else
   void load_state(uint8 **);
   void save_state(uint8 **);
   void save_spc (uint8 *);
-#endif
   SMP();
   ~SMP();
 
@@ -133,10 +125,4 @@ public:
 #endif
 };
 
-// TODO: reactivate once APU debugger works again
-#if 0 // DEBUGGER
-  #include "debugger/debugger.hpp"
-  extern SMPDebugger smp;
-#else
-  extern SMP smp;
-#endif
+extern SMP smp;
