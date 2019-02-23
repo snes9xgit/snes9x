@@ -19,15 +19,12 @@
 		BF0B39B41FA5792F002B04D3 /* blargg_source.h in Headers */ = {isa = PBXBuildFile; fileRef = BF0B39811FA5792F002B04D3 /* blargg_source.h */; };
 		BF0B39B51FA5792F002B04D3 /* sdsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF0B39821FA5792F002B04D3 /* sdsp.cpp */; };
 		BF0B39B61FA5792F002B04D3 /* sdsp.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BF0B39831FA5792F002B04D3 /* sdsp.hpp */; };
-		BF0B39B71FA5792F002B04D3 /* SPC_DSP.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF0B39841FA5792F002B04D3 /* SPC_DSP.cpp */; };
 		BF0B39B81FA5792F002B04D3 /* SPC_DSP.h in Headers */ = {isa = PBXBuildFile; fileRef = BF0B39851FA5792F002B04D3 /* SPC_DSP.h */; };
 		BF0B39D61FA5792F002B04D3 /* smp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF0B39A61FA5792F002B04D3 /* smp.cpp */; };
 		BF0B39D71FA5792F002B04D3 /* smp.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BF0B39A71FA5792F002B04D3 /* smp.hpp */; };
 		BF0B39D81FA5792F002B04D3 /* smp_state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF0B39A81FA5792F002B04D3 /* smp_state.cpp */; };
 		BF0B39DA1FA5792F002B04D3 /* snes.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BF0B39AB1FA5792F002B04D3 /* snes.hpp */; };
-		BF0B39DB1FA5792F002B04D3 /* hermite_resampler.h in Headers */ = {isa = PBXBuildFile; fileRef = BF0B39AC1FA5792F002B04D3 /* hermite_resampler.h */; };
 		BF0B39DC1FA5792F002B04D3 /* resampler.h in Headers */ = {isa = PBXBuildFile; fileRef = BF0B39AD1FA5792F002B04D3 /* resampler.h */; };
-		BF0B39DD1FA5792F002B04D3 /* ring_buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = BF0B39AE1FA5792F002B04D3 /* ring_buffer.h */; };
 		BF0B39DF1FA580F9002B04D3 /* msu1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF0B39DE1FA580F9002B04D3 /* msu1.cpp */; };
 		BF0B39E01FA5810A002B04D3 /* msu1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF0B39DE1FA580F9002B04D3 /* msu1.cpp */; };
 		BF0B39E11FA5810B002B04D3 /* msu1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF0B39DE1FA580F9002B04D3 /* msu1.cpp */; };
@@ -50,8 +47,6 @@
 		BF0B39F31FA5815A002B04D3 /* sdsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF0B39821FA5792F002B04D3 /* sdsp.cpp */; };
 		BF0B39F41FA5815C002B04D3 /* sdsp.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BF0B39831FA5792F002B04D3 /* sdsp.hpp */; };
 		BF0B39F51FA5815C002B04D3 /* sdsp.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BF0B39831FA5792F002B04D3 /* sdsp.hpp */; };
-		BF0B39F61FA5815F002B04D3 /* SPC_DSP.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF0B39841FA5792F002B04D3 /* SPC_DSP.cpp */; };
-		BF0B39F71FA58160002B04D3 /* SPC_DSP.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF0B39841FA5792F002B04D3 /* SPC_DSP.cpp */; };
 		BF0B39F81FA58162002B04D3 /* SPC_DSP.h in Headers */ = {isa = PBXBuildFile; fileRef = BF0B39851FA5792F002B04D3 /* SPC_DSP.h */; };
 		BF0B39F91FA58163002B04D3 /* SPC_DSP.h in Headers */ = {isa = PBXBuildFile; fileRef = BF0B39851FA5792F002B04D3 /* SPC_DSP.h */; };
 		BF0B39FA1FA58165002B04D3 /* smp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF0B39A61FA5792F002B04D3 /* smp.cpp */; };
@@ -62,12 +57,8 @@
 		BF0B39FF1FA5816A002B04D3 /* smp_state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF0B39A81FA5792F002B04D3 /* smp_state.cpp */; };
 		BF0B3A001FA5816D002B04D3 /* snes.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BF0B39AB1FA5792F002B04D3 /* snes.hpp */; };
 		BF0B3A011FA5816D002B04D3 /* snes.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BF0B39AB1FA5792F002B04D3 /* snes.hpp */; };
-		BF0B3A021FA58170002B04D3 /* hermite_resampler.h in Headers */ = {isa = PBXBuildFile; fileRef = BF0B39AC1FA5792F002B04D3 /* hermite_resampler.h */; };
-		BF0B3A031FA58170002B04D3 /* hermite_resampler.h in Headers */ = {isa = PBXBuildFile; fileRef = BF0B39AC1FA5792F002B04D3 /* hermite_resampler.h */; };
 		BF0B3A041FA58172002B04D3 /* resampler.h in Headers */ = {isa = PBXBuildFile; fileRef = BF0B39AD1FA5792F002B04D3 /* resampler.h */; };
 		BF0B3A051FA58172002B04D3 /* resampler.h in Headers */ = {isa = PBXBuildFile; fileRef = BF0B39AD1FA5792F002B04D3 /* resampler.h */; };
-		BF0B3A061FA58174002B04D3 /* ring_buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = BF0B39AE1FA5792F002B04D3 /* ring_buffer.h */; };
-		BF0B3A071FA58174002B04D3 /* ring_buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = BF0B39AE1FA5792F002B04D3 /* ring_buffer.h */; };
 		CF047D38109D0E0600FD0754 /* 65c816.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE0615A0526CCB900A80003 /* 65c816.h */; };
 		CF047D3B109D0E0600FD0754 /* bsx.h in Headers */ = {isa = PBXBuildFile; fileRef = EA2F381A09B17E9E0078DCA7 /* bsx.h */; };
 		CF047D3C109D0E0600FD0754 /* c4.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE061600526CCB900A80003 /* c4.h */; };
@@ -734,9 +725,7 @@
 		BF0B39A71FA5792F002B04D3 /* smp.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = smp.hpp; sourceTree = "<group>"; };
 		BF0B39A81FA5792F002B04D3 /* smp_state.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = smp_state.cpp; sourceTree = "<group>"; };
 		BF0B39AB1FA5792F002B04D3 /* snes.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = snes.hpp; sourceTree = "<group>"; };
-		BF0B39AC1FA5792F002B04D3 /* hermite_resampler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hermite_resampler.h; sourceTree = "<group>"; };
 		BF0B39AD1FA5792F002B04D3 /* resampler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = resampler.h; sourceTree = "<group>"; };
-		BF0B39AE1FA5792F002B04D3 /* ring_buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ring_buffer.h; sourceTree = "<group>"; };
 		BF0B39DE1FA580F9002B04D3 /* msu1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = msu1.cpp; sourceTree = "<group>"; };
 		BF0B39E21FA58124002B04D3 /* msu1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = msu1.h; sourceTree = "<group>"; };
 		CF047E15109D0E0600FD0754 /* Snes9x (i386).app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Snes9x (i386).app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1082,9 +1071,7 @@
 				BF0B397A1FA5792F002B04D3 /* apu.cpp */,
 				BF0B397B1FA5792F002B04D3 /* apu.h */,
 				BF0B397C1FA5792F002B04D3 /* bapu */,
-				BF0B39AC1FA5792F002B04D3 /* hermite_resampler.h */,
 				BF0B39AD1FA5792F002B04D3 /* resampler.h */,
-				BF0B39AE1FA5792F002B04D3 /* ring_buffer.h */,
 			);
 			path = apu;
 			sourceTree = "<group>";
@@ -1475,7 +1462,6 @@
 				CF047D79109D0E0600FD0754 /* portable.h in Headers */,
 				CF047D7A109D0E0600FD0754 /* rcdefs.h in Headers */,
 				CF047D7B109D0E0600FD0754 /* rngcoder.h in Headers */,
-				BF0B3A061FA58174002B04D3 /* ring_buffer.h in Headers */,
 				CF047D7C109D0E0600FD0754 /* s9x-jma.h in Headers */,
 				CF047D7D109D0E0600FD0754 /* winout.h in Headers */,
 				CF047D7E109D0E0600FD0754 /* mac-appleevent.h in Headers */,
@@ -1490,7 +1476,6 @@
 				CF047D87109D0E0600FD0754 /* mac-dialog.h in Headers */,
 				CF047D88109D0E0600FD0754 /* mac-file.h in Headers */,
 				CF047D89109D0E0600FD0754 /* mac-gworld.h in Headers */,
-				BF0B3A021FA58170002B04D3 /* hermite_resampler.h in Headers */,
 				CF047D8A109D0E0600FD0754 /* mac-joypad.h in Headers */,
 				CF047D8B109D0E0600FD0754 /* mac-keyboard.h in Headers */,
 				BF0B39E81FA58131002B04D3 /* apu.h in Headers */,
@@ -1597,7 +1582,6 @@
 				CF0566CC0CF98E7E00C7877C /* rngcoder.h in Headers */,
 				CF0566CD0CF98E7E00C7877C /* s9x-jma.h in Headers */,
 				CF0566CE0CF98E7E00C7877C /* winout.h in Headers */,
-				BF0B39DD1FA5792F002B04D3 /* ring_buffer.h in Headers */,
 				CF0566D00CF98E7E00C7877C /* mac-appleevent.h in Headers */,
 				CF0566D10CF98E7E00C7877C /* mac-audio.h in Headers */,
 				CF0566D30CF98E7E00C7877C /* mac-cart.h in Headers */,
@@ -1611,7 +1595,6 @@
 				CF0566D90CF98E7E00C7877C /* mac-coreimage.h in Headers */,
 				CF0566DA0CF98E7E00C7877C /* mac-dialog.h in Headers */,
 				CF0566DC0CF98E7E00C7877C /* mac-file.h in Headers */,
-				BF0B39DB1FA5792F002B04D3 /* hermite_resampler.h in Headers */,
 				CF0566DD0CF98E7E00C7877C /* mac-gworld.h in Headers */,
 				CF0566DF0CF98E7E00C7877C /* mac-joypad.h in Headers */,
 				CF0566E00CF98E7E00C7877C /* mac-keyboard.h in Headers */,
@@ -1715,7 +1698,6 @@
 				CF2F46531095EE72007D33FA /* portable.h in Headers */,
 				CF2F46541095EE72007D33FA /* rcdefs.h in Headers */,
 				CF2F46551095EE72007D33FA /* rngcoder.h in Headers */,
-				BF0B3A071FA58174002B04D3 /* ring_buffer.h in Headers */,
 				CF2F46561095EE72007D33FA /* s9x-jma.h in Headers */,
 				CF2F46571095EE72007D33FA /* winout.h in Headers */,
 				CF2F46581095EE72007D33FA /* mac-appleevent.h in Headers */,
@@ -1730,7 +1712,6 @@
 				CF2F46611095EE72007D33FA /* mac-dialog.h in Headers */,
 				CF2F46621095EE72007D33FA /* mac-file.h in Headers */,
 				CF2F46631095EE72007D33FA /* mac-gworld.h in Headers */,
-				BF0B3A031FA58170002B04D3 /* hermite_resampler.h in Headers */,
 				CF2F46641095EE72007D33FA /* mac-joypad.h in Headers */,
 				CF2F46651095EE72007D33FA /* mac-keyboard.h in Headers */,
 				BF0B39E91FA58131002B04D3 /* apu.h in Headers */,
@@ -2027,7 +2008,6 @@
 				CF047DF0109D0E0600FD0754 /* mac-cocoatools.mm in Sources */,
 				CF047DF1109D0E0600FD0754 /* mac-controls.cpp in Sources */,
 				CF047DF2109D0E0600FD0754 /* mac-coreimage.mm in Sources */,
-				BF0B39F61FA5815F002B04D3 /* SPC_DSP.cpp in Sources */,
 				BF0B39FE1FA5816A002B04D3 /* smp_state.cpp in Sources */,
 				BF0B39F21FA58159002B04D3 /* sdsp.cpp in Sources */,
 				CF047DF3109D0E0600FD0754 /* mac-dialog.cpp in Sources */,
@@ -2057,7 +2037,6 @@
 				CF0567040CF98E7E00C7877C /* c4.cpp in Sources */,
 				CF0567050CF98E7E00C7877C /* c4emu.cpp in Sources */,
 				CF0567060CF98E7E00C7877C /* cheats.cpp in Sources */,
-				BF0B39B71FA5792F002B04D3 /* SPC_DSP.cpp in Sources */,
 				BF0B39AF1FA5792F002B04D3 /* apu.cpp in Sources */,
 				CF0567070CF98E7E00C7877C /* cheats2.cpp in Sources */,
 				CF0567080CF98E7E00C7877C /* clip.cpp in Sources */,
@@ -2219,7 +2198,6 @@
 				CF2F46CA1095EE72007D33FA /* mac-cocoatools.mm in Sources */,
 				CF2F46CB1095EE72007D33FA /* mac-controls.cpp in Sources */,
 				CF2F46CC1095EE72007D33FA /* mac-coreimage.mm in Sources */,
-				BF0B39F71FA58160002B04D3 /* SPC_DSP.cpp in Sources */,
 				BF0B39FF1FA5816A002B04D3 /* smp_state.cpp in Sources */,
 				BF0B39F31FA5815A002B04D3 /* sdsp.cpp in Sources */,
 				CF2F46CD1095EE72007D33FA /* mac-dialog.cpp in Sources */,
