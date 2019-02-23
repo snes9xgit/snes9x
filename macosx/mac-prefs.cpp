@@ -258,6 +258,12 @@ void SavePrefs (void)
 		CFRelease(mref);
 	}
 
+	sref = (CFStringRef) CFDictionaryGetValue(CFBundleGetInfoDictionary(CFBundleGetMainBundle()), CFSTR("CFBundleShortVersionString"));
+	if (sref)
+	{
+		CFPreferencesSetAppValue(CFSTR("LastVersionUsed"), sref, kCFPreferencesCurrentApplication);
+	}
+
 	CFPreferencesAppSynchronize(kCFPreferencesCurrentApplication);
 }
 
@@ -301,6 +307,13 @@ void LoadPrefs (void)
 
 		CFRelease(mref);
 	}
+
+	sref = (CFStringRef) CFPreferencesCopyAppValue(CFSTR("LastVersionUsed"), kCFPreferencesCurrentApplication);
+	if (!sref) {
+		Settings.SoundInputRate = 31950;
+		macSoundBuffer_ms = 80;
+	}
+	else CFRelease(sref);
 }
 
 void ConfigurePreferences (void)
