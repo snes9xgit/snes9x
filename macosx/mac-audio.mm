@@ -26,6 +26,7 @@
 #include <AudioToolbox/AudioToolbox.h>
 #include <AudioUnit/AudioUnitCarbonView.h>
 #include <pthread.h>
+#include <semaphore.h>
 
 #include "mac-prefix.h"
 #include "mac-dialog.h"
@@ -49,6 +50,10 @@ static WindowRef			effectWRef;
 static HISize				effectWSize;
 static pthread_mutex_t		mutex;
 static UInt32				outStoredFrames, cnvStoredFrames, revStoredFrames, eqlStoredFrames, devStoredFrames;
+static int16_t				*audioBuffer;
+static uint32_t				audioBufferSampleCapacity;
+static uint32_t				audioBufferSampleCount;
+static sem_t				*soundSyncSemaphore;
 
 static void ConnectAudioUnits (void);
 static void DisconnectAudioUnits (void);
@@ -60,7 +65,7 @@ static void StoreBufferFrameSize (void);
 static void ChangeBufferFrameSize (void);
 static void ReplaceAudioUnitCarbonView (void);
 static void ResizeSoundEffectsDialog (HIViewRef);
-static void MacFinalizeSamplesCallBack (void *);
+static void MacSamplesAvailableCallBack (void *);
 static OSStatus MacAURenderCallBack (void *, AudioUnitRenderActionFlags *, const AudioTimeStamp *, UInt32, UInt32, AudioBufferList *);
 static pascal OSStatus SoundEffectsEventHandler (EventHandlerCallRef, EventRef, void *);
 static pascal OSStatus SoundEffectsCarbonViewEventHandler (EventHandlerCallRef, EventRef, void *);
@@ -139,7 +144,8 @@ void InitMacSound (void)
 	LoadEffectPresets();
 
 	pthread_mutex_init(&mutex, NULL);
-	S9xSetSamplesAvailableCallback(MacFinalizeSamplesCallBack, NULL); 
+	soundSyncSemaphore = sem_open("/s9x_mac_soundsync", O_CREAT, 0644, 1);
+	S9xSetSamplesAvailableCallback(MacSamplesAvailableCallBack, NULL);
 }
 
 void DeinitMacSound (void)
@@ -147,6 +153,8 @@ void DeinitMacSound (void)
 	OSStatus	err;
 
 	pthread_mutex_destroy(&mutex);
+	sem_close(soundSyncSemaphore);
+	sem_unlink("/s9x_mac_soundsync");
 	SaveEffectPresets();
 	DisconnectAudioUnits();
 	err = AUGraphUninitialize(agraph);
@@ -325,49 +333,72 @@ static OSStatus MacAURenderCallBack (void *inRefCon, AudioUnitRenderActionFlags 
 		*ioActionFlags |= kAudioUnitRenderAction_OutputIsSilence;
 	}
 	else
-	if (Settings.Stereo)
 	{
-		unsigned int	samples;
-
-		samples = ioData->mBuffers[0].mDataByteSize;
-		if (Settings.SixteenBitSound)
-			samples >>= 1;
+		static bool		recoverBufferUnderrun = false;
+		unsigned int	samples = ioData->mBuffers[0].mDataByteSize >> 1;
 
 		pthread_mutex_lock(&mutex);
-		S9xMixSamples((uint8 *) ioData->mBuffers[0].mData, samples);
-		pthread_mutex_unlock(&mutex);
-	}
-	else	// Manually map L to R
-	{
-		unsigned int	monosmp;
-
-		monosmp = ioData->mBuffers[0].mDataByteSize >> 1;
-		if (Settings.SixteenBitSound)
-			monosmp >>= 1;
-
-		pthread_mutex_lock(&mutex);
-		S9xMixSamples((uint8 *) ioData->mBuffers[0].mData, monosmp);
-		pthread_mutex_unlock(&mutex);
-
-		if (Settings.SixteenBitSound)
+		if (samples > audioBufferSampleCount || (recoverBufferUnderrun && audioBufferSampleCount<<1 < audioBufferSampleCapacity))
 		{
-			for (int i = monosmp - 1; i >= 0; i--)
-				((int16 *) ioData->mBuffers[0].mData)[i * 2 + 1] = ((int16 *) ioData->mBuffers[0].mData)[i * 2] = ((int16 *) ioData->mBuffers[0].mData)[i];
+			/* buffer underrun - emit silence at least 50% of buffer is filled */
+			bzero(ioData->mBuffers[0].mData, samples*2);
+			recoverBufferUnderrun = true;
 		}
 		else
 		{
-			for (int i = monosmp - 1; i >= 0; i--)
-				((int8  *) ioData->mBuffers[0].mData)[i * 2 + 1] = ((int8  *) ioData->mBuffers[0].mData)[i * 2] = ((int8  *) ioData->mBuffers[0].mData)[i];
+			recoverBufferUnderrun = false;
+			memcpy(ioData->mBuffers[0].mData, audioBuffer, samples*2);
+			memmove(audioBuffer, audioBuffer+samples, (audioBufferSampleCount-samples)*2);
+			audioBufferSampleCount -= samples;
+			sem_post(soundSyncSemaphore);
 		}
+		pthread_mutex_unlock(&mutex);
 	}
 
 	return (noErr);
 }
 
-static void MacFinalizeSamplesCallBack (void *userData)
-{ 
+static void MacSamplesAvailableCallBack (void *userData)
+{
+	uint32_t availableSamples = S9xGetSampleCount();
+	if (Settings.DynamicRateControl)
+	{
+		S9xUpdateDynamicRate((audioBufferSampleCapacity-audioBufferSampleCount)*2, audioBufferSampleCapacity*2);
+	}
+
+tryLock:
 	pthread_mutex_lock(&mutex);
-	S9xFinalizeSamples(); 
+	if (audioBufferSampleCapacity - audioBufferSampleCount < availableSamples)
+	{
+		/* buffer overrun */
+		if (Settings.DynamicRateControl && !Settings.SoundSync)
+		{
+			/* for dynamic rate control, clear S9x internal buffer and do nothing */
+			pthread_mutex_unlock(&mutex);
+			S9xClearSamples();
+			return;
+		}
+		if (Settings.SoundSync && !Settings.TurboMode)
+		{
+			/* when SoundSync is enabled, wait buffer for being drained by render callback */
+			pthread_mutex_unlock(&mutex);
+			sem_wait(soundSyncSemaphore);
+			goto tryLock;
+		}
+		/* dispose samples to allocate 50% of the buffer capacity */
+		uint32_t samplesToBeDisposed = availableSamples + audioBufferSampleCount - audioBufferSampleCapacity/2;
+		if(samplesToBeDisposed >= audioBufferSampleCount)
+		{
+			audioBufferSampleCount = 0;
+		}
+		else
+		{
+			memmove(audioBuffer, audioBuffer+samplesToBeDisposed, (audioBufferSampleCount-samplesToBeDisposed)*2);
+			audioBufferSampleCount = audioBufferSampleCount - samplesToBeDisposed;
+		}
+	}
+	S9xMixSamples((uint8 *)(audioBuffer+audioBufferSampleCount), availableSamples);
+	audioBufferSampleCount += availableSamples;
 	pthread_mutex_unlock(&mutex);
 }
 
@@ -472,6 +503,10 @@ bool8 S9xOpenSoundDevice (void)
 
 	err = AUGraphInitialize(agraph);
 
+	if (audioBuffer) free(audioBuffer);
+	audioBufferSampleCapacity = 2 * macSoundBuffer_ms * Settings.SoundPlaybackRate / 1000;
+	audioBuffer = (int16_t *)calloc(audioBufferSampleCapacity,sizeof(int16_t));
+	audioBufferSampleCount = 0;
 	return (true);
 }
 
