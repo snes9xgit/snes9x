@@ -2740,7 +2740,7 @@ void RenderBlarggNTSC(SSurface Src, SSurface Dst, RECT *rect)
     const unsigned int srcRowPixels = Src.Pitch / 2;
 
     snes_ntsc_scanline_offset = 0;
-    snes_ntsc_scanline_mask = 0xffff;
+    snes_ntsc_scanline_mask = 0;
 
     if (GUI.NTSCScanlines)
     {
