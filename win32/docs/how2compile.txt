@@ -9,18 +9,24 @@ NOTE: Unicode support requires a special zlib build - see the end of the zlib en
 - A recent DirectX SDK..
   https://www.microsoft.com/en-us/download/details.aspx?id=23549
 
-- DirecXMath. The source files should reside in win32/DirectXMath, or you can download them
-  automatically with "git submodule update --init".
+- The following modules can all be downloaded automatically by using:
+      git submodule update --init
+  in the cloned Snes9x git directory, or by using git GUI tools to do the same.
+  This is the recommended method of installing these dependencies.
 
-- zlib (optional, ZLIB define, enabled by default) - the default solution includes a zlib
-  project that builds appropriately (force includes _tfwopen.h for unicode support in s9x).
-  The zlib source files should reside in win32/zlib/src, or you can download them automatically
-  with "git submodule update --init".
+    * DirectXMath. The source files should reside in win32/DirectXMath
 
-- libpng (optional, HAVE_LIBPNG define, enabled by default) - the default solution includes
-  a libpng project that builds appropriately.
-  The libpng source files should reside in win32/libpng/src, or you can download them automatically
-  with "git submodule update --init".
+    * zlib (optional, ZLIB define, enabled by default) - the default solution includes a zlib
+      project that builds appropriately (force includes _tfwopen.h for unicode support in s9x).
+      The zlib source files should reside in win32/zlib/src
+
+    * libpng (optional, HAVE_LIBPNG define, enabled by default) - the default solution includes
+      a libpng project that builds appropriately.
+      The libpng source files should reside in win32/libpng/src
+
+    * glslang (optional, USE_SLANG define, enabled by default) - the default solution includes
+      a series of projects encompassing glslang that build appropriately.
+      The glslang source files should reside in win32/glslang/src
 
 - To compile Snes9x:
     Start up VS2017.
