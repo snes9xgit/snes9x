@@ -4127,7 +4127,7 @@
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">False</property>
-                                        <property name="tooltip_text" translatable="yes">Smoothes out slight hiccups in sound input rate (can't be used with sound buffer synchronization)</property>
+                                        <property name="tooltip_text" translatable="yes">Smooth out slight hiccups in sound input rate</property>
                                         <property name="draw_indicator">True</property>
                                       </object>
                                       <packing>
