@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-20 16:29-0600\n"
+"POT-Creation-Date: 2019-02-26 16:43-0600\n"
 "PO-Revision-Date: 2009-09-12 23:32-0300\n"
 "Last-Translator: Tibério Vítor <tvtoon@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -328,6 +328,19 @@ msgstr ""
 #, fuzzy
 msgid "File Information"
 msgstr "Formato do vídeo:"
+
+#: src/gtk_shader_parameters.cpp:99
+msgid "Export Shader Preset to:"
+msgstr ""
+
+#: src/gtk_shader_parameters.cpp:124
+#, fuzzy
+msgid "Shader Preset"
+msgstr "Reiniciar máquina"
+
+#: src/gtk_shader_parameters.cpp:169
+msgid "GLSL Shader Parameters"
+msgstr ""
 
 #: src/snes9x.ui:9
 #, fuzzy
@@ -1233,9 +1246,7 @@ msgid "Dynamic rate control"
 msgstr ""
 
 #: src/snes9x.ui:4130
-msgid ""
-"Smoothes out slight hiccups in sound input rate (can't be used with sound "
-"buffer synchronization)"
+msgid "Smooth out slight hiccups in sound input rate"
 msgstr ""
 
 #: src/snes9x.ui:4141
@@ -1795,6 +1806,7 @@ msgid ""
 "  Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.\n"
 "\n"
 "  Snes9x homepage: http://www.snes9x.com/\n"
+"  Snes9x source code: https://github.com/snes9xgit/snes9x/\n"
 "\n"
 "  Permission to use, copy, modify and/or distribute Snes9x in both binary\n"
 "  and source form, for non-commercial purposes, is hereby granted without\n"
