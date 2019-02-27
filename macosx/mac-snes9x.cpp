@@ -460,5 +460,5 @@ void SNES9X_Quit (void)
 
 void SNES9X_InitSound (void)
 {
-	S9xInitSound(0, 0);
+	S9xInitSound(0);
 }

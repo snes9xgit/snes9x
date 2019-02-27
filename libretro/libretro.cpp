@@ -517,7 +517,7 @@ static void update_variables(void)
     }
 
     var.key="snes9x_superscope_color";
-    
+
     if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
     {
         char *color = get_cursor_color(var.value);
@@ -583,7 +583,7 @@ static void update_variables(void)
     }
 
     var.key="snes9x_rifle_color";
-    
+
     if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
     {
         char *color = get_cursor_color(var.value);
@@ -763,7 +763,7 @@ void retro_set_controller_port_device(unsigned port, unsigned device)
                     log_cb(RETRO_LOG_ERROR, "Invalid device (%d).\n", device);
                 break;
         }
-        
+
         S9xControlsSoftReset();
     }
     else if(device != RETRO_DEVICE_NONE)
@@ -1227,14 +1227,7 @@ void retro_init(void)
         exit(1);
     }
 
-    //very slow devices will still pop
-
-    //this needs to be applied to all snes9x cores
-
-    //increasing the buffer size does not cause extra lag(tested with 1000ms buffer)
-    //bool8 S9xInitSound (int buffer_ms, int lag_ms)
-
-    S9xInitSound(32, 0); //give it a 1.9 frame long buffer, or 1026 samples.  The audio buffer is flushed every 128-132 samples anyway, so it won't get anywhere near there.
+    S9xInitSound(0);
 
     S9xSetSoundMute(FALSE);
     S9xSetSamplesAvailableCallback(S9xAudioCallback, NULL);
@@ -1577,7 +1570,7 @@ void* retro_get_memory_data(unsigned type)
 {
     void* data;
 
-    switch(type) 
+    switch(type)
     {
         case RETRO_MEMORY_SNES_SUFAMI_TURBO_A_RAM:
         case RETRO_MEMORY_SAVE_RAM:

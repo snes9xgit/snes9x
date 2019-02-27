@@ -178,11 +178,10 @@
 		<p>
 			Deallocates the allocations made by <code>S9xInitAPU</code> function.
 		</p>
-		<h3><code>bool8 S9xInitSound (int buffer_ms, int lag_ms)</code></h3>
+		<h3><code>bool8 S9xInitSound (int buffer_ms)</code></h3>
 		<p>
 			Allocates memory for mixing and queueing SNES sound data, does more sound code initialization and opens the host system's sound device by calling <code>S9xOpenSoundDevice</code>, a function you must provide. Before calling this function you must set up <code>Settings.SoundSync</code>, <code>Settings.SoundPlaybackRate</code>, and <code>Settings.SoundInputRate</code>. (see section below)<br>
 			<code>buffer_ms</code>, given in milliseconds, is the memory buffer size for queueing sound data. Leave this at 0 to use the suggested default.<br>
-			<code>lag_ms</code> is no longer used.
 		</p>
 		<h3><code>void S9xReset (void)</code></h3>
 		<p>

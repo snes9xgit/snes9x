@@ -181,7 +181,7 @@ static void UpdatePlaybackRate(void)
     }
 }
 
-bool8 S9xInitSound(int buffer_ms, int unused2)
+bool8 S9xInitSound(int buffer_ms)
 {
     // The resampler and spc unit use samples (16-bit short) as arguments.
     int buffer_size_samples = MINIMUM_BUFFER_SIZE;

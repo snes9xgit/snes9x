@@ -30,7 +30,7 @@ void S9xAPUSaveState (uint8 *);
 void S9xDumpSPCSnapshot (void);
 bool8 S9xSPCDump (const char *);
 
-bool8 S9xInitSound (int, int);
+bool8 S9xInitSound (int);
 bool8 S9xOpenSoundDevice (void);
 
 bool8 S9xSyncSound (void);

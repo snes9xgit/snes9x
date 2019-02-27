@@ -24,10 +24,14 @@ NOTE: Unicode support requires a special zlib build - see the end of the zlib en
       a libpng project that builds appropriately.
       The libpng source files should reside in win32/libpng/src
 
-    * glslang (optional, USE_SLANG define, enabled by default) - the default solution includes
+    * glslang and SPIRV-Cross (optional, USE_SLANG define, enabled by default)
+      These are needed to build support for .slang shaders. The default solution includes
       a series of projects encompassing glslang that build appropriately.
       The glslang source files should reside in win32/glslang/src
-      USE_SLANG also requires SPIRV-Cross, which should be placed in shaders/SPIRV-Cross
+      The SPIRV-Cross source files should be placed in shaders/SPIRV-Cross
+
+      If wish to compile without USE_SLANG, you must remove the files named
+      spirv_*.cpp from the Visual Studio project's Shaders group.
 
 - To compile Snes9x:
     Start up VS2017.
