@@ -170,7 +170,7 @@ int Snes9xConfig::load_defaults ()
     Settings.ReverseStereo = false;
     Settings.SoundPlaybackRate = 48000;
     Settings.StopEmulation = true;
-    Settings.FrameTimeNTSC = 16666;
+    Settings.FrameTimeNTSC = 16639;
     Settings.FrameTimePAL = 20000;
     Settings.SupportHiRes = true;
     Settings.FrameTime = Settings.FrameTimeNTSC;
