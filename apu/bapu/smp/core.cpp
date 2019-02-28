@@ -37,27 +37,14 @@ void SMP::op_write(uint16 addr, uint8 data) {
   apuram[addr] = data;  //all writes go to RAM, even MMIO writes
 }
 
-uint8 SMP::op_readpc() {
-  tick();
-  if (regs.pc >= 0xffc0 && status.iplrom_enable) return iplrom[regs.pc++ & 0x3f];
-  return apuram[regs.pc++];
-}
-
-uint8 SMP::op_readstack() {
-  tick();
-  return apuram[0x0100 | ++regs.sp];
-}
-
-void SMP::op_writestack(uint8 data) {
-  tick();
-  apuram[0x0100 | regs.sp--] = data;
-}
-
 void SMP::op_step() {
+  #define op_readpc() op_read(regs.pc++)
   #define op_readdp(addr) op_read((regs.p.p << 8) + ((addr) & 0xff))
   #define op_writedp(addr, data) op_write((regs.p.p << 8) + ((addr) & 0xff), data)
   #define op_readaddr(addr) op_read(addr)
   #define op_writeaddr(addr, data) op_write(addr, data)
+  #define op_readstack() op_read(0x0100 | ++regs.sp)
+  #define op_writestack(data) op_write(0x0100 | regs.sp--, data)
 
   if(opcode_cycle == 0)
   {
