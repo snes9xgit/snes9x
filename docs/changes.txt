@@ -1,3 +1,6 @@
+Snes9x 1.59.1
+- Fix sound core breakage.
+
 Snes9x 1.59
 - Count clock cycles to synchronize SA1 with S-CPU properly. Based mostly on
   work by Vitor Vilela.
