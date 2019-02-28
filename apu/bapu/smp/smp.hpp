@@ -1,6 +1,7 @@
 class SMP : public Processor {
 public:
   static const uint8 iplrom[64];
+  uint8 highmem[64];
   uint8 *apuram;
 
   unsigned port_read(unsigned port);
@@ -94,6 +95,8 @@ public:
   debugvirtual alwaysinline uint8 op_read(uint16 addr);
   debugvirtual alwaysinline void op_write(uint16 addr, uint8 data);
   debugvirtual alwaysinline void op_step();
+  alwaysinline void op_writestack(uint8 data);
+  alwaysinline uint8 op_readstack();
   static const unsigned cycle_count_table[256];
   uint64 cycle_table_cpu[256];
   unsigned cycle_table_dsp[256];
