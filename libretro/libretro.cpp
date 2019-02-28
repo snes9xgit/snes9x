@@ -54,6 +54,8 @@ uint16 *screen_buffer = NULL;
 char g_rom_dir[1024];
 char g_basename[1024];
 
+bool g_geometry_update = false;
+
 int hires_blend = 0;
 bool randomize_memory = false;
 
@@ -303,6 +305,7 @@ char *get_cursor_color(const char *name)
 	return "None";
 }
 
+// always ensure this is only called in retro_run
 void update_geometry(void)
 {
     struct retro_system_av_info av_info;
@@ -310,11 +313,11 @@ void update_geometry(void)
     environ_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, &av_info);
     g_screen_gun_width = av_info.geometry.base_width;
     g_screen_gun_height = av_info.geometry.base_height;
+    g_geometry_update = false;
 }
 
 static void update_variables(void)
 {
-    bool geometry_update = false;
     char key[256];
     struct retro_variable var;
 
@@ -460,7 +463,7 @@ static void update_variables(void)
         if (newval != crop_overscan_mode)
         {
             crop_overscan_mode = newval;
-            geometry_update = true;
+            g_geometry_update = true;
         }
     }
 
@@ -481,7 +484,7 @@ static void update_variables(void)
         if (newval != aspect_ratio_mode)
         {
             aspect_ratio_mode = newval;
-            geometry_update = true;
+            g_geometry_update = true;
         }
     }
 
@@ -601,9 +604,6 @@ static void update_variables(void)
         Settings.BlockInvalidVRAMAccessMaster = !strcmp(var.value, "disabled") ? false : true;
     else
         Settings.BlockInvalidVRAMAccessMaster = true;
-
-    if (geometry_update)
-        update_geometry();
 }
 
 static void S9xAudioCallback(void*)
@@ -1002,7 +1002,7 @@ bool retro_load_game(const struct retro_game_info *game)
         S9xSetRenderPixelFormat(pixel_format);
         S9xGraphicsInit();
 
-        update_geometry();
+        g_geometry_update = true;
 
         if (randomize_memory)
         {
@@ -1149,7 +1149,7 @@ bool retro_load_game_special(unsigned game_type, const struct retro_game_info *i
         S9xSetRenderPixelFormat(pixel_format);
         S9xGraphicsInit();
 
-        update_geometry();
+        g_geometry_update = true;
     }
 
     return rom_loaded;
@@ -1523,7 +1523,8 @@ void retro_run()
     bool updated = false;
     if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
         update_variables();
-    if (height != PPU.ScreenHeight)
+
+    if (g_geometry_update || height != PPU.ScreenHeight)
     {
         update_geometry();
         height = PPU.ScreenHeight;
