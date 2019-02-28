@@ -73,11 +73,12 @@ void SMP::save_spc (uint8 *block) {
 void SMP::save_state(uint8 **block) {
   uint8 *ptr = *block;
   memcpy(ptr, apuram, 64 * 1024);
-  ptr += 64 * 1024;
   if (status.iplrom_enable)
   {
-    memcpy (&ptr[0xffc0], highmem, 64);
+      memcpy(&ptr[0xffc0], highmem, 64);
   }
+
+  ptr += 64 * 1024;
 
 #undef INT32
 #define INT32(i) set_le32(ptr, (i)); ptr += sizeof(int32)
