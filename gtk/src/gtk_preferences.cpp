@@ -249,6 +249,15 @@ event_game_data_clear (GtkEntry *entry,
     gtk_entry_set_text (entry, SAME_AS_GAME);
 }
 
+static void event_binding_icon_clear(GtkEntry *entry,
+                                     GtkEntryIconPosition icon_pos,
+                                     GdkEvent *event,
+                                     gpointer user_data)
+{
+    auto window = (Snes9xPreferences *)user_data;
+    window->clear_binding(gtk_buildable_get_name(GTK_BUILDABLE(entry)));
+}
+
 static void
 event_game_data_browse (GtkButton *widget, gpointer data)
 {
@@ -534,6 +543,27 @@ Snes9xPreferences::Snes9xPreferences (Snes9xConfig *config) :
                            get_widget ("relative_video_rate"),
                            NULL,
                            (GConnectFlags) 0);
+
+    for (int i = 0; ; i++)
+    {
+        const BindingLink &link = b_links[i];
+        if (!link.button_name)
+        break;
+
+        GtkWidget *entry = get_widget(link.button_name);
+        gtk_entry_set_icon_from_icon_name(GTK_ENTRY(entry),
+                                          GTK_ENTRY_ICON_SECONDARY,
+                                          "edit-clear");
+        gtk_entry_set_icon_activatable(GTK_ENTRY(entry),
+                                       GTK_ENTRY_ICON_SECONDARY,
+                                       true);
+        g_signal_connect_data((gpointer)entry,
+                              "icon-release",
+                              G_CALLBACK(event_binding_icon_clear),
+                              (gpointer)this,
+                              NULL,
+                              (GConnectFlags)0);
+    }
 }
 
 Snes9xPreferences::~Snes9xPreferences ()
@@ -1227,11 +1257,45 @@ Snes9xPreferences::get_focused_binding ()
     return -1;
 }
 
+void Snes9xPreferences::clear_binding(const char *name)
+{
+    Binding unset;
+    int i;
+
+    for (i = 0; i < NUM_JOYPAD_LINKS; i++)
+    {
+        if (!strcmp(name, b_links[i].button_name))
+        {
+            int current_joypad = get_combo("control_combo");
+            pad[current_joypad].data[i] = unset;
+            break;
+        }
+    }
+    if (i == NUM_JOYPAD_LINKS)
+    {
+        for (i = NUM_JOYPAD_LINKS; b_links[i].button_name; i++)
+        {
+            if (!strcmp(name, b_links[i].button_name))
+            {
+                shortcut[i - NUM_JOYPAD_LINKS] = unset;
+                break;
+            }
+        }
+    }
+
+    if (b_links[i].button_name)
+    {
+        char buf[256];
+        unset.to_string(buf);
+        set_entry_text(b_links[i].button_name, buf);
+    }
+}
+
 void
 Snes9xPreferences::bindings_to_dialog (int joypad)
 {
     char    name[256];
-    Binding *bindings = (Binding *) &pad[joypad];
+    Binding *bindings = (Binding *) &pad[joypad].data;
 
     set_combo ("control_combo", joypad);
 
