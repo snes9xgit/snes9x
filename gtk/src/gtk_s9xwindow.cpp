@@ -235,12 +235,12 @@ event_motion_notify (GtkWidget      *widget,
 
     if (window->mouse_grabbed)
     {
-        if (event->x_root == window->mouse_reported_x &&
-            event->y_root == window->mouse_reported_y)
+        if (event->x_root == window->gdk_mouse_x &&
+            event->y_root == window->gdk_mouse_y)
             return false;
 
-        window->mouse_loc_x += (event->x_root - window->mouse_reported_x);
-        window->mouse_loc_y += (event->y_root - window->mouse_reported_y);
+        window->snes_mouse_x += (event->x_root - window->gdk_mouse_x);
+        window->snes_mouse_y += (event->y_root - window->gdk_mouse_y);
         window->center_mouse ();
 
         return false;
@@ -252,11 +252,11 @@ event_motion_notify (GtkWidget      *widget,
     int scale_factor = 1;
 #endif
 
-    window->mouse_loc_x = (uint16)
+    window->snes_mouse_x = (uint16)
         ((int) (event->x * scale_factor) - window->mouse_region_x) * 256 /
         (window->mouse_region_width <= 0 ? 1 : window->mouse_region_width);
 
-    window->mouse_loc_y = (uint16)
+    window->snes_mouse_y = (uint16)
         ((int) (event->y * scale_factor) - window->mouse_region_y) * (gui_config->overscan ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT) /
         (window->mouse_region_height <= 0 ? 1 : window->mouse_region_height);
 
@@ -1814,17 +1814,17 @@ Snes9xWindow::center_mouse ()
     w = gdk_window_get_width (gdk_window);
     h = gdk_window_get_height (gdk_window);
 
-    mouse_reported_x = x + w / 2;
-    mouse_reported_y = y + h / 2;
+    gdk_mouse_x = x + w / 2;
+    gdk_mouse_y = y + h / 2;
 
 #if GTK_MAJOR_VERSION < 3
-    gdk_display_warp_pointer (gdk_display, gdk_screen, mouse_reported_x,
-                              mouse_reported_y);
+    gdk_display_warp_pointer (gdk_display, gdk_screen, gdk_mouse_x,
+                              gdk_mouse_y);
 #else
     GdkSeat *seat = gdk_display_get_default_seat (gdk_display);
     GdkDevice *pointer = gdk_seat_get_pointer (seat);
 
-    gdk_device_warp (pointer, gdk_screen, mouse_reported_x, mouse_reported_y);
+    gdk_device_warp (pointer, gdk_screen, gdk_mouse_x, gdk_mouse_y);
 #endif
 }
 
@@ -1860,7 +1860,7 @@ Snes9xWindow::toggle_grab_mouse ()
 #endif
 
     S9xReportPointer (BINDING_MOUSE_POINTER, 0, 0);
-    mouse_loc_x = 0; mouse_loc_y = 0;
+    snes_mouse_x = 0.0; snes_mouse_y = 0.0;
     mouse_grabbed = !mouse_grabbed;
     if (mouse_grabbed)
         center_mouse ();

@@ -135,8 +135,8 @@ bool S9xPollAxis (uint32 id, int16 *value)
 
 bool S9xPollPointer (uint32 id, int16 *x, int16 *y)
 {
-    *x = top_level->mouse_loc_x;
-    *y = top_level->mouse_loc_y;
+    *x = top_level->snes_mouse_x;
+    *y = top_level->snes_mouse_y;
 
     return true;
 }

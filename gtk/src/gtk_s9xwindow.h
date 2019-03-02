@@ -82,8 +82,8 @@ class Snes9xWindow : public GtkBuilderWindow
         int            maximized_state;
         bool           focused;
         bool           paused_from_focus_loss;
-        uint16         mouse_loc_x, mouse_loc_y;
-        uint16         mouse_reported_x, mouse_reported_y;
+        double         snes_mouse_x, snes_mouse_y;
+        double         gdk_mouse_x, gdk_mouse_y;
         bool           mouse_grabbed;
         GdkPixbuf      *icon, *splash;
         GdkCursor      *default_cursor, *empty_cursor;

@@ -312,6 +312,7 @@ gboolean S9xIdleFunc (gpointer data)
     }
 
     S9xCheckPointerTimer ();
+
     S9xProcessEvents (true);
 
     if (!S9xDisplayDriverIsReady ())
