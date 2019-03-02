@@ -6,7 +6,6 @@
 
 #include "gtk_2_3_compat.h"
 #include <dlfcn.h>
-#include <epoxy/glx_generated.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/time.h>

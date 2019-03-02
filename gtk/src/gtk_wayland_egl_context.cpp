@@ -4,7 +4,6 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include <epoxy/egl_generated.h>
 #include <stdio.h>
 #include <string.h>
 
