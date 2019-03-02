@@ -3777,7 +3777,7 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkCheckButton" id="sync_every_frame">
+                                  <object class="GtkCheckButton" id="use_glfinish">
                                     <property name="label" translatable="yes">Reduce input lag with glFinish</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
@@ -3792,12 +3792,12 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkCheckButton" id="use_fences">
-                                    <property name="label" translatable="yes">Reduce input lag with glFenceSync</property>
+                                  <object class="GtkCheckButton" id="use_sync_control">
+                                    <property name="label" translatable="yes">Reduce input lag with sync control</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Sync the program with the video output after every displayed frame to reduce input latency, but allow GUI events to occur in the meantime</property>
+                                    <property name="tooltip_text" translatable="yes">More modern method for syncing the program with the video output to reduce input latency. Allows GUI events to occur in the meantime</property>
                                     <property name="draw_indicator">True</property>
                                   </object>
                                   <packing>

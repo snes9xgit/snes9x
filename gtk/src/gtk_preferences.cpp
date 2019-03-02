@@ -715,8 +715,8 @@ Snes9xPreferences::move_settings_to_dialog ()
 
 #ifdef USE_OPENGL
     set_check ("sync_to_vblank",            config->sync_to_vblank);
-    set_check ("sync_every_frame",          config->sync_every_frame);
-    set_check ("use_fences",                config->use_fences);
+    set_check ("use_glfinish",              config->use_glfinish);
+    set_check ("use_sync_control",          config->use_sync_control);
     set_check ("use_pbos",                  config->use_pbos);
     set_combo ("pixel_format",              config->pbo_format == 16 ? 0 : 1);
     set_check ("npot_textures",             config->npot_textures);
@@ -859,6 +859,7 @@ Snes9xPreferences::get_settings_from_dialog ()
     int pbo_format = get_combo ("pixel_format") == 1 ? 32 : 16;
 
     if (config->sync_to_vblank != get_check ("sync_to_vblank") ||
+        config->use_sync_control != get_check ("use_sync_control") ||
         config->npot_textures != get_check ("npot_textures") ||
         config->use_pbos != get_check ("use_pbos") ||
         config->pbo_format !=  pbo_format ||
@@ -872,8 +873,8 @@ Snes9xPreferences::get_settings_from_dialog ()
     config->use_pbos                  = get_check ("use_pbos");
     config->npot_textures             = get_check ("npot_textures");
     config->use_shaders               = get_check ("use_shaders");
-    config->sync_every_frame          = get_check ("sync_every_frame");
-    config->use_fences                = get_check ("use_fences");
+    config->use_glfinish              = get_check ("use_glfinish");
+    config->use_sync_control          = get_check ("use_sync_control");
 
     config->shader_filename           = get_entry_text ("fragment_shader");
 

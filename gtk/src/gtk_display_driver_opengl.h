@@ -75,8 +75,6 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
 
         OpenGLContext     *context;
 
-        GLsync            fence;
-
 #ifdef GDK_WINDOWING_X11
         GTKGLXContext     glx;
 #endif

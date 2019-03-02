@@ -151,8 +151,8 @@ class Snes9xConfig
     bool npot_textures;
     bool use_shaders;
     std::string shader_filename;
-    bool sync_every_frame;
-    bool use_fences;
+    bool use_glfinish;
+    bool use_sync_control;
 #endif
 
     JoyDevice **joystick;

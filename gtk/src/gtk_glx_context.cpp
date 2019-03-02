@@ -4,6 +4,7 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
+#include <epoxy/glx_generated.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -22,6 +23,8 @@ GTKGLXContext::GTKGLXContext ()
 
     version_major     = -1;
     version_minor     = -1;
+    use_oml_sync_control = false;
+    ust = msc = sbc = 0;
 }
 
 GTKGLXContext::~GTKGLXContext ()
@@ -120,6 +123,9 @@ bool GTKGLXContext::create_context ()
         return false;
     }
 
+    if (strstr(extensions, "GLX_OML_sync_control") && gui_config->use_sync_control)
+        use_oml_sync_control = true;
+
     return true;
 }
 
@@ -144,7 +150,25 @@ void GTKGLXContext::resize ()
 
 void GTKGLXContext::swap_buffers ()
 {
+    if (use_oml_sync_control)
+        glXGetSyncValuesOML(display, xid, &ust, &msc, &sbc);
+
     glXSwapBuffers (display, xid);
+}
+
+bool GTKGLXContext::ready()
+{
+    if (use_oml_sync_control)
+    {
+        int64 ust, msc, sbc;
+        glXGetSyncValuesOML(display, xid, &ust, &msc, &sbc);
+
+        if (sbc != this->sbc || msc - this->msc > 2)
+            return true;
+        return false;
+    }
+
+    return true;
 }
 
 void GTKGLXContext::make_current ()
