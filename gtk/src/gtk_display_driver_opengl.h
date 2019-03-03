@@ -64,7 +64,6 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
         bool              npot;
         bool              using_pbos;
         bool              initialized;
-        bool              fences;
 
         bool              using_glsl_shaders;
         GLSLShader        *glsl_shader;
