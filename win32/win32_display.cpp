@@ -34,6 +34,11 @@ COpenGL OpenGL;
 SSurface Src = {0};
 extern BYTE *ScreenBufferBlend;
 
+typedef HRESULT (*DWMFLUSHPROC)();
+typedef HRESULT (*DWMISCOMPOSITIONENABLEDPROC)(BOOL *);
+DWMFLUSHPROC DwmFlushProc = NULL;
+DWMISCOMPOSITIONENABLEDPROC DwmIsCompositionEnabledProc = NULL;
+
 // Interface used to access the display output
 IS9xDisplayOutput *S9xDisplayOutput=&Direct3D;
 
@@ -119,16 +124,17 @@ bool WinDisplayReset(void)
 		S9xSetWinPixelFormat ();
 		S9xGraphicsInit();
 
-        if (GUI.DWMTweaks)
+        if (GUI.DWMSync)
         {
             HMODULE dwmlib = LoadLibrary(TEXT("dwmapi"));
-            if (dwmlib)
+            DwmFlushProc = (DWMFLUSHPROC)GetProcAddress(dwmlib, "DwmFlush");
+            DwmIsCompositionEnabledProc = (DWMISCOMPOSITIONENABLEDPROC)GetProcAddress(dwmlib, "DwmIsCompositionEnabled");
+
+            if (!DwmFlushProc || !DwmIsCompositionEnabledProc)
             {
-                HRESULT(WINAPI *dwmEnableMMCSS)(BOOL) = (HRESULT(WINAPI *)(BOOL))GetProcAddress(dwmlib, "DwmEnableMMCSS");
-                dwmEnableMMCSS(true);
-                return true;
+                MessageBox(GUI.hWnd, TEXT("Couldn't load DWM functions. DWM Sync is disabled."), TEXT("Warning"), MB_OK | MB_ICONWARNING);
+                GUI.DWMSync = false;
             }
-            MessageBox(GUI.hWnd, TEXT("Couldn't enable MMCSS for DWM"), TEXT("Warning"), MB_OK | MB_ICONWARNING);
         }
 
 		return true;
@@ -282,6 +288,15 @@ bool8 S9xDeinitUpdate (int Width, int Height)
     }
 	
 	WinRefreshDisplay();
+
+    if (GUI.DWMSync)
+    {
+        BOOL DWMEnabled = false;
+
+        DwmIsCompositionEnabledProc(&DWMEnabled);
+        if (DWMEnabled)
+            DwmFlushProc();
+    }
 
     return (true);
 }

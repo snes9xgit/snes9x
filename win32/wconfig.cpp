@@ -759,7 +759,7 @@ void WinRegisterConfigItems()
 	AddBoolC("HideMenu", GUI.HideMenu, false, "true to auto-hide the menu bar on startup.");
 	AddBoolC("Vsync", GUI.Vsync, false, "true to enable Vsync");
 	AddBoolC("ReduceInputLag", GUI.ReduceInputLag, false, "true to reduce input lag by hard synchronization");
-    AddBoolC("DWMTweaks", GUI.DWMTweaks, false, "true to try and avoid DWM stutter");
+    AddBoolC("DWMSync", GUI.DWMSync, false, "sync to DWM compositor if it is running instead of vsync (OpenGL)");
 	AddBoolC("FilterMessageFont", GUI.filterMessagFont, true, "true to filter message font with EPX on 2x/3x scales if MessagesInImage is false)");
 #undef CATEGORY
 #define CATEGORY "Settings"
