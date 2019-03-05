@@ -286,16 +286,25 @@ bool8 S9xDeinitUpdate (int Width, int Height)
         LastWidth = Width;
         LastHeight = Height;
     }
-	
-	WinRefreshDisplay();
 
-    if (GUI.DWMSync)
+    if (GUI.DWMSync && GUI.outputMethod == OPENGL)
     {
         BOOL DWMEnabled = false;
-
         DwmIsCompositionEnabledProc(&DWMEnabled);
-        if (DWMEnabled)
+
+        if (GUI.FullScreen || !DWMEnabled)
+            ((COpenGL *)S9xDisplayOutput)->SetSwapInterval(GUI.Vsync ? 1 : 0);
+        else
+            ((COpenGL *)S9xDisplayOutput)->SetSwapInterval(0);
+
+        WinRefreshDisplay();
+
+        if (DWMEnabled && !GUI.FullScreen)
             DwmFlushProc();
+    }
+    else
+    {
+        WinRefreshDisplay();
     }
 
     return (true);

@@ -81,7 +81,8 @@ public:
 	bool ApplyDisplayChanges(void);
 	bool SetFullscreen(bool fullscreen);
 	void SetSnes9xColorFormat(void);
-	void EnumModes(std::vector<dMode> *modeVector);	
+	void EnumModes(std::vector<dMode> *modeVector);
+    void SetSwapInterval(int frames);
 	GLSLShader *GetActiveShader()
 	{
 		return glslShader;

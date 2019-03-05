@@ -384,6 +384,12 @@ bool COpenGL::ChangeRenderSize(unsigned int newWidth, unsigned int newHeight)
 	return true;
 }
 
+void COpenGL::SetSwapInterval(int frames)
+{
+    if (wglSwapIntervalEXT)
+        wglSwapIntervalEXT(frames);
+}
+
 bool COpenGL::ApplyDisplayChanges(void)
 {
 	if(wglSwapIntervalEXT) {
