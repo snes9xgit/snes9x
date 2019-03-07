@@ -315,7 +315,6 @@ sets default settings and calls the appropriate display object
 */
 void S9xSetWinPixelFormat ()
 {
-    S9xSetRenderPixelFormat (RGB565);
     GUI.NeedDepthConvert = FALSE;
 	GUI.DepthConverted = !GUI.NeedDepthConvert;
 

@@ -442,7 +442,6 @@ void COpenGL::SetSnes9xColorFormat()
 	GUI.BlueShift = 0;
 	GUI.GreenShift = 6;
 	GUI.RedShift = 11;
-	S9xSetRenderPixelFormat (RGB565);
 	S9xBlit2xSaIFilterInit();
 	S9xBlitHQ2xFilterInit();
 	GUI.NeedDepthConvert = FALSE;

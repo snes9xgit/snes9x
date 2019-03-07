@@ -990,17 +990,15 @@ bool retro_load_game(const struct retro_game_info *game)
 
     if (rom_loaded)
     {
-        int pixel_format = RGB555;
-        if (environ_cb)
+        /* If we're in RGB565 format, switch frontend to that */
+        if (RED_SHIFT_BITS == 11) 
         {
             enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
-            if (environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
-                pixel_format = RGB565;
+            if (!environ_cb || !environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
+            {
+                return false;
+            }
         }
-
-        S9xGraphicsDeinit();
-        S9xSetRenderPixelFormat(pixel_format);
-        S9xGraphicsInit();
 
         g_geometry_update = true;
 
@@ -1137,17 +1135,12 @@ bool retro_load_game_special(unsigned game_type, const struct retro_game_info *i
 
     if (rom_loaded)
     {
-        int pixel_format = RGB555;
-        if(environ_cb)
+        if(RED_SHIFT_BITS == 11)
         {
-            pixel_format = RGB565;
             enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
-            if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
-                pixel_format = RGB555;
+            if (!environ_cb || !environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
+                return false;
         }
-        S9xGraphicsDeinit();
-        S9xSetRenderPixelFormat(pixel_format);
-        S9xGraphicsInit();
 
         g_geometry_update = true;
     }

@@ -19,7 +19,6 @@ struct SGFX
 	uint32	ScreenSize;
 	uint16	*S;
 	uint8	*DB;
-	uint16	*X2;
 	uint16	*ZERO;
 	uint32	RealPPL;			// true PPL of Screen buffer
 	uint32	PPL;				// number of pixels on each of Screen buffer
@@ -50,13 +49,6 @@ struct SGFX
 			uint8	Line;
 		}	OBJ[32];
 	}	OBJLines[SNES_HEIGHT_EXTENDED];
-
-#ifdef GFX_MULTI_FORMAT
-	uint32	PixelFormat;
-	uint32	(*BuildPixel) (uint32, uint32, uint32);
-	uint32	(*BuildPixel2) (uint32, uint32, uint32);
-	void	(*DecomposePixel) (uint32, uint32 &, uint32 &, uint32 &);
-#endif
 
 	void	(*DrawBackdropMath) (uint32, uint32, uint32);
 	void	(*DrawBackdropNomath) (uint32, uint32, uint32);
@@ -140,23 +132,12 @@ extern struct SGFX	GFX;
 	((C2) & RGB_REMOVE_LOW_BITS_MASK)) >> 1) + \
 	((C1) & (C2) & RGB_LOW_BITS_MASK)) | ALPHA_BITS_MASK)
 
-#ifdef GFX_MULTI_FORMAT
-#define COLOR_ADD(C1, C2) \
-	(GFX.X2[((((C1) & RGB_REMOVE_LOW_BITS_MASK) + \
-	((C2) & RGB_REMOVE_LOW_BITS_MASK)) >> 1) + \
-	((C1) & (C2) & RGB_LOW_BITS_MASK)] | \
-	(((C1) ^ (C2)) & RGB_LOW_BITS_MASK))
-
-#else
-
 inline uint16 COLOR_ADD(uint16 C1, uint16 C2)
 {
 	return ((brightness_cap[ (C1 >> RED_SHIFT_BITS)           +  (C2 >> RED_SHIFT_BITS)          ] << RED_SHIFT_BITS)   |
             (brightness_cap[((C1 >> GREEN_SHIFT_BITS) & 0x1f) + ((C2 >> GREEN_SHIFT_BITS) & 0x1f)] << GREEN_SHIFT_BITS) |
             (brightness_cap[ (C1                      & 0x1f) +  (C2                      & 0x1f)]      ));
 }
-
-#endif // GFX_MULTI_FORMAT
 
 #define COLOR_SUB1_2(C1, C2) \
 	GFX.ZERO[(((C1) | RGB_HI_BITS_MASKx2) - \
@@ -190,9 +171,6 @@ void S9xDisplayChar (uint16 *, uint8);
 void S9xGraphicsScreenResize (void);
 // called automatically unless Settings.AutoDisplayMessages is false
 void S9xDisplayMessages (uint16 *, int, int, int, int);
-#ifdef GFX_MULTI_FORMAT
-bool8 S9xSetRenderPixelFormat (int);
-#endif
 
 // external port interface which must be implemented or initialised for each port
 bool8 S9xGraphicsInit (void);

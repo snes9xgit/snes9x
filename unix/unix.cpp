@@ -1542,10 +1542,6 @@ int main (int argc, char **argv)
 
 	S9xReportControllers();
 
-#ifdef GFX_MULTI_FORMAT
-	S9xSetRenderPixelFormat(RGB565);
-#endif
-
 	uint32	saved_flags = CPU.Flags;
 	bool8	loaded = FALSE;
 

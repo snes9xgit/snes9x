@@ -864,43 +864,7 @@ xinerama_end:
 	}
 #endif
 
-	switch (GUI.depth)
-	{
-		default:
-		case 32:
-		case 24:
-			S9xSetRenderPixelFormat(RGB555);
-			GUI.pixel_format = 555;
-			break;
-
-		case 16:
-			if (GUI.red_size != GUI.green_size || GUI.blue_size != GUI.green_size)
-			{
-				// 565 format
-				if (GUI.green_shift > GUI.blue_shift && GUI.green_shift > GUI.red_shift)
-					S9xSetRenderPixelFormat(GBR565);
-				else
-				if (GUI.red_shift > GUI.blue_shift)
-					S9xSetRenderPixelFormat(RGB565);
-				else
-					S9xSetRenderPixelFormat(BGR565);
-
-				GUI.pixel_format = 565;
-				break;
-			}
-			// FALL ...
-		case 15:
-			if (GUI.green_shift > GUI.blue_shift && GUI.green_shift > GUI.red_shift)
-				S9xSetRenderPixelFormat(GBR555);
-			else
-			if (GUI.red_shift > GUI.blue_shift)
-				S9xSetRenderPixelFormat(RGB555);
-			else
-				S9xSetRenderPixelFormat(BGR555);
-
-			GUI.pixel_format = 555;
-			break;
-	}
+	GUI.pixel_format = 565;
 
 	SetupImage();
 

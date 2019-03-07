@@ -9,15 +9,10 @@
 
 #define ALL_COLOR_MASK	(FIRST_COLOR_MASK | SECOND_COLOR_MASK | THIRD_COLOR_MASK)
 
-#ifdef GFX_MULTI_FORMAT
-static uint16	lowPixelMask = 0, qlowPixelMask = 0, highBitsMask = 0;
-static uint32	colorMask = 0;
-#else
 #define lowPixelMask	(RGB_LOW_BITS_MASK)
 #define qlowPixelMask	((RGB_HI_BITS_MASK >> 3) | TWO_LOW_BITS_MASK)
 #define highBitsMask	(ALL_COLOR_MASK & RGB_REMOVE_LOW_BITS_MASK)
 #define colorMask		(((~RGB_HI_BITS_MASK & ALL_COLOR_MASK) << 16) | (~RGB_HI_BITS_MASK & ALL_COLOR_MASK))
-#endif
 
 static snes_ntsc_t	*ntsc   = NULL;
 static uint8		*XDelta = NULL;
@@ -30,13 +25,6 @@ bool8 S9xBlitFilterInit (void)
 		return (FALSE);
 
 	S9xBlitClearDelta();
-
-#ifdef GFX_MULTI_FORMAT
-	lowPixelMask  = RGB_LOW_BITS_MASK;
-	qlowPixelMask = (RGB_HI_BITS_MASK >> 3) | TWO_LOW_BITS_MASK;
-	highBitsMask  = ALL_COLOR_MASK & RGB_REMOVE_LOW_BITS_MASK;
-	colorMask     = ((~RGB_HI_BITS_MASK & ALL_COLOR_MASK) << 16) | (~RGB_HI_BITS_MASK & ALL_COLOR_MASK);
-#endif
 
 	return (TRUE);
 }

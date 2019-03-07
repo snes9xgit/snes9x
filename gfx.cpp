@@ -48,18 +48,12 @@ bool8 S9xGraphicsInit (void)
 	S9xInitTileRenderer();
 	memset(BlackColourMap, 0, 256 * sizeof(uint16));
 
-#ifdef GFX_MULTI_FORMAT
-	if (GFX.BuildPixel == NULL)
-		S9xSetRenderPixelFormat(RGB565);
-#endif
-
 	GFX.RealPPL = GFX.Pitch >> 1;
 	IPPU.OBJChanged = TRUE;
 	Settings.BG_Forced = 0;
 	S9xFixColourBrightness();
 	S9xBuildDirectColourMaps();
 
-	GFX.X2   = (uint16 *) malloc(sizeof(uint16) * 0x10000);
 	GFX.ZERO = (uint16 *) malloc(sizeof(uint16) * 0x10000);
 
 	GFX.ScreenSize = GFX.Pitch / 2 * SNES_HEIGHT_EXTENDED * (Settings.SupportHiRes ? 2 : 1);
@@ -67,36 +61,10 @@ bool8 S9xGraphicsInit (void)
 	GFX.ZBuffer    = (uint8 *)  malloc(GFX.ScreenSize);
 	GFX.SubZBuffer = (uint8 *)  malloc(GFX.ScreenSize);
 
-	if (!GFX.X2 || !GFX.ZERO || !GFX.SubScreen || !GFX.ZBuffer || !GFX.SubZBuffer)
+	if (!GFX.ZERO || !GFX.SubScreen || !GFX.ZBuffer || !GFX.SubZBuffer)
 	{
 		S9xGraphicsDeinit();
 		return (FALSE);
-	}
-
-    // Lookup table for color addition
-	memset(GFX.X2, 0, 0x10000 * sizeof(uint16));
-	for (uint32 r = 0; r <= MAX_RED; r++)
-	{
-		uint32	r2 = r << 1;
-		if (r2 > MAX_RED)
-			r2 = MAX_RED;
-
-		for (uint32 g = 0; g <= MAX_GREEN; g++)
-		{
-			uint32	g2 = g << 1;
-			if (g2 > MAX_GREEN)
-				g2 = MAX_GREEN;
-
-			for (uint32 b = 0; b <= MAX_BLUE; b++)
-			{
-				uint32	b2 = b << 1;
-				if (b2 > MAX_BLUE)
-					b2 = MAX_BLUE;
-
-				GFX.X2[BUILD_PIXEL2(r, g, b)] = BUILD_PIXEL2(r2, g2, b2);
-				GFX.X2[BUILD_PIXEL2(r, g, b) & ~ALPHA_BITS_MASK] = BUILD_PIXEL2(r2, g2, b2);
-			}
-		}
 	}
 
 	// Lookup table for 1/2 color subtraction
@@ -136,7 +104,6 @@ bool8 S9xGraphicsInit (void)
 
 void S9xGraphicsDeinit (void)
 {
-	if (GFX.X2)         { free(GFX.X2);         GFX.X2         = NULL; }
 	if (GFX.ZERO)       { free(GFX.ZERO);       GFX.ZERO       = NULL; }
 	if (GFX.SubScreen)  { free(GFX.SubScreen);  GFX.SubScreen  = NULL; }
 	if (GFX.ZBuffer)    { free(GFX.ZBuffer);    GFX.ZBuffer    = NULL; }
@@ -2157,122 +2124,3 @@ void S9xDrawCrosshair (const char *crosshair, uint8 fgcolor, uint8 bgcolor, int1
 	}
 }
 
-#ifdef GFX_MULTI_FORMAT
-
-static uint32 BuildPixelRGB565  (uint32, uint32, uint32);
-static uint32 BuildPixelRGB555  (uint32, uint32, uint32);
-static uint32 BuildPixelBGR565  (uint32, uint32, uint32);
-static uint32 BuildPixelBGR555  (uint32, uint32, uint32);
-static uint32 BuildPixelGBR565  (uint32, uint32, uint32);
-static uint32 BuildPixelGBR555  (uint32, uint32, uint32);
-static uint32 BuildPixelRGB5551 (uint32, uint32, uint32);
-
-static uint32 BuildPixel2RGB565  (uint32, uint32, uint32);
-static uint32 BuildPixel2RGB555  (uint32, uint32, uint32);
-static uint32 BuildPixel2BGR565  (uint32, uint32, uint32);
-static uint32 BuildPixel2BGR555  (uint32, uint32, uint32);
-static uint32 BuildPixel2GBR565  (uint32, uint32, uint32);
-static uint32 BuildPixel2GBR555  (uint32, uint32, uint32);
-static uint32 BuildPixel2RGB5551 (uint32, uint32, uint32);
-
-static void DecomposePixelRGB565  (uint32, uint32 &, uint32 &, uint32 &);
-static void DecomposePixelRGB555  (uint32, uint32 &, uint32 &, uint32 &);
-static void DecomposePixelBGR565  (uint32, uint32 &, uint32 &, uint32 &);
-static void DecomposePixelBGR555  (uint32, uint32 &, uint32 &, uint32 &);
-static void DecomposePixelGBR565  (uint32, uint32 &, uint32 &, uint32 &);
-static void DecomposePixelGBR555  (uint32, uint32 &, uint32 &, uint32 &);
-static void DecomposePixelRGB5551 (uint32, uint32 &, uint32 &, uint32 &);
-
-#define _BUILD_PIXEL(F) \
-static uint32 BuildPixel##F (uint32 R, uint32 G, uint32 B) \
-{ \
-	return (BUILD_PIXEL_##F(R, G, B)); \
-} \
-\
-static uint32 BuildPixel2##F (uint32 R, uint32 G, uint32 B) \
-{ \
-	return (BUILD_PIXEL2_##F(R, G, B)); \
-} \
-\
-static void DecomposePixel##F (uint32 pixel, uint32 &R, uint32 &G, uint32 &B) \
-{ \
-	DECOMPOSE_PIXEL_##F(pixel, R, G, B); \
-}
-
-_BUILD_PIXEL(RGB565)
-_BUILD_PIXEL(RGB555)
-_BUILD_PIXEL(BGR565)
-_BUILD_PIXEL(BGR555)
-_BUILD_PIXEL(GBR565)
-_BUILD_PIXEL(GBR555)
-_BUILD_PIXEL(RGB5551)
-
-#define _BUILD_SETUP(F) \
-GFX.BuildPixel             = BuildPixel##F; \
-GFX.BuildPixel2            = BuildPixel2##F; \
-GFX.DecomposePixel         = DecomposePixel##F; \
-RED_LOW_BIT_MASK           = RED_LOW_BIT_MASK_##F; \
-GREEN_LOW_BIT_MASK         = GREEN_LOW_BIT_MASK_##F; \
-BLUE_LOW_BIT_MASK          = BLUE_LOW_BIT_MASK_##F; \
-RED_HI_BIT_MASK            = RED_HI_BIT_MASK_##F; \
-GREEN_HI_BIT_MASK          = GREEN_HI_BIT_MASK_##F; \
-BLUE_HI_BIT_MASK           = BLUE_HI_BIT_MASK_##F; \
-MAX_RED                    = MAX_RED_##F; \
-MAX_GREEN                  = MAX_GREEN_##F; \
-MAX_BLUE                   = MAX_BLUE_##F; \
-SPARE_RGB_BIT_MASK         = SPARE_RGB_BIT_MASK_##F; \
-GREEN_HI_BIT               = ((MAX_GREEN_##F + 1) >> 1); \
-RGB_LOW_BITS_MASK          = (RED_LOW_BIT_MASK_##F | GREEN_LOW_BIT_MASK_##F | BLUE_LOW_BIT_MASK_##F); \
-RGB_HI_BITS_MASK           = (RED_HI_BIT_MASK_##F  | GREEN_HI_BIT_MASK_##F  | BLUE_HI_BIT_MASK_##F); \
-RGB_HI_BITS_MASKx2         = (RED_HI_BIT_MASK_##F  | GREEN_HI_BIT_MASK_##F  | BLUE_HI_BIT_MASK_##F) << 1; \
-RGB_REMOVE_LOW_BITS_MASK   = ~RGB_LOW_BITS_MASK; \
-FIRST_COLOR_MASK           = FIRST_COLOR_MASK_##F; \
-SECOND_COLOR_MASK          = SECOND_COLOR_MASK_##F; \
-THIRD_COLOR_MASK           = THIRD_COLOR_MASK_##F; \
-ALPHA_BITS_MASK            = ALPHA_BITS_MASK_##F; \
-FIRST_THIRD_COLOR_MASK     = FIRST_COLOR_MASK | THIRD_COLOR_MASK; \
-TWO_LOW_BITS_MASK          = RGB_LOW_BITS_MASK | (RGB_LOW_BITS_MASK << 1); \
-HIGH_BITS_SHIFTED_TWO_MASK = ((FIRST_COLOR_MASK | SECOND_COLOR_MASK | THIRD_COLOR_MASK) & ~TWO_LOW_BITS_MASK) >> 2;
-
-bool8 S9xSetRenderPixelFormat (int format)
-{
-	GFX.PixelFormat = format;
-
-	switch (format)
-	{
-		case RGB565:
-			_BUILD_SETUP(RGB565)
-			return (TRUE);
-
-		case RGB555:
-			_BUILD_SETUP(RGB555)
-			return (TRUE);
-
-		case BGR565:
-			_BUILD_SETUP(BGR565)
-			return (TRUE);
-
-		case BGR555:
-			_BUILD_SETUP(BGR555)
-			return (TRUE);
-
-		case GBR565:
-			_BUILD_SETUP(GBR565)
-			return (TRUE);
-
-		case GBR555:
-			_BUILD_SETUP(GBR555)
-			return (TRUE);
-
-		case RGB5551:
-			_BUILD_SETUP(RGB5551)
-			return (TRUE);
-
-		default:
-			break;
-	}
-
-	return (FALSE);
-}
-
-#endif
