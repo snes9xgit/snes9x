@@ -138,21 +138,21 @@ extern struct SGFX	GFX;
 	((C2) & RGB_REMOVE_LOW_BITS_MASK)) >> 1) + \
 	((C1) & (C2) & RGB_LOW_BITS_MASK)) | ALPHA_BITS_MASK)
 
-/*#define COLOR_ADD(C1, C2) \
+#ifdef GFX_MULTI_FORMAT
+#define COLOR_ADD(C1, C2) \
 	(GFX.X2[((((C1) & RGB_REMOVE_LOW_BITS_MASK) + \
 	((C2) & RGB_REMOVE_LOW_BITS_MASK)) >> 1) + \
 	((C1) & (C2) & RGB_LOW_BITS_MASK)] | \
-	(((C1) ^ (C2)) & RGB_LOW_BITS_MASK)) */
+	(((C1) ^ (C2)) & RGB_LOW_BITS_MASK))
 
+#else
 inline uint16 COLOR_ADD(uint16 C1, uint16 C2)
 {
-    int r1, g1, b1, r2, g2, b2;
-    DECOMPOSE_PIXEL(C1, r1, g1, b1);
-    DECOMPOSE_PIXEL(C2, r2, g2, b2);
-    return BUILD_PIXEL(brightness_cap[r1 + r2],
-                       brightness_cap[g1 + g2],
-                       brightness_cap[b1 + b2]);
+	return ((brightness_cap[ (C1 >> 11)        +  (C2 >> 11)       ] << 11) |
+            (brightness_cap[((C1 >> 6) & 0x1f) + ((C2 >> 6) & 0x1f)] << 6 ) |
+            (brightness_cap[ (C1 & 0x1f)       +  (C2 & 0x1f)      ]      ));
 }
+#endif
 
 #define COLOR_SUB1_2(C1, C2) \
 	GFX.ZERO[(((C1) | RGB_HI_BITS_MASKx2) - \
