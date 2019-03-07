@@ -132,16 +132,36 @@ extern struct SGFX	GFX;
 #define V_FLIP		0x8000
 #define BLANK_TILE	2
 
+#include "ppu.h"
+
 #define COLOR_ADD1_2(C1, C2) \
 	((((((C1) & RGB_REMOVE_LOW_BITS_MASK) + \
 	((C2) & RGB_REMOVE_LOW_BITS_MASK)) >> 1) + \
 	((C1) & (C2) & RGB_LOW_BITS_MASK)) | ALPHA_BITS_MASK)
 
-#define COLOR_ADD(C1, C2) \
+/*#define COLOR_ADD(C1, C2) \
 	(GFX.X2[((((C1) & RGB_REMOVE_LOW_BITS_MASK) + \
 	((C2) & RGB_REMOVE_LOW_BITS_MASK)) >> 1) + \
 	((C1) & (C2) & RGB_LOW_BITS_MASK)] | \
-	(((C1) ^ (C2)) & RGB_LOW_BITS_MASK))
+	(((C1) ^ (C2)) & RGB_LOW_BITS_MASK)) */
+
+inline uint16 COLOR_ADD(uint16 C1, uint16 C2)
+{
+	int r1, g1, b1, r2, g2, b2;
+	int cap = mul_brightness[PPU.Brightness][31];
+	DECOMPOSE_PIXEL(C1, r1, g1, b1);
+	DECOMPOSE_PIXEL(C2, r2, g2, b2);
+	r1 += r2;
+	if (r1 > cap)
+		r1 = cap;
+	g1 += g2;
+	if (g1 > cap)
+		g1 = cap;
+	b1 += b2;
+	if (b1 > cap)
+		b1 = cap;
+	return BUILD_PIXEL(r1, g1, b1);
+}
 
 #define COLOR_SUB1_2(C1, C2) \
 	GFX.ZERO[(((C1) | RGB_HI_BITS_MASKx2) - \
@@ -168,7 +188,6 @@ inline uint16 COLOR_SUB (uint16 C1, uint16 C2)
 
 void S9xStartScreenRefresh (void);
 void S9xEndScreenRefresh (void);
-void S9xUpdateScreen (void);
 void S9xBuildDirectColourMaps (void);
 void RenderLine (uint8);
 void S9xComputeClipWindows (void);
