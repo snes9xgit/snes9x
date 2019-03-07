@@ -125,14 +125,13 @@ struct SLineMatrixData
 extern uint16		BlackColourMap[256];
 extern uint16		DirectColourMaps[8][256];
 extern uint8		mul_brightness[16][32];
+extern uint8		brightness_cap[64];
 extern struct SBG	BG;
 extern struct SGFX	GFX;
 
 #define H_FLIP		0x4000
 #define V_FLIP		0x8000
 #define BLANK_TILE	2
-
-#include "ppu.h"
 
 #define COLOR_ADD1_2(C1, C2) \
 	((((((C1) & RGB_REMOVE_LOW_BITS_MASK) + \
@@ -147,20 +146,12 @@ extern struct SGFX	GFX;
 
 inline uint16 COLOR_ADD(uint16 C1, uint16 C2)
 {
-	int r1, g1, b1, r2, g2, b2;
-	int cap = mul_brightness[PPU.Brightness][31];
-	DECOMPOSE_PIXEL(C1, r1, g1, b1);
-	DECOMPOSE_PIXEL(C2, r2, g2, b2);
-	r1 += r2;
-	if (r1 > cap)
-		r1 = cap;
-	g1 += g2;
-	if (g1 > cap)
-		g1 = cap;
-	b1 += b2;
-	if (b1 > cap)
-		b1 = cap;
-	return BUILD_PIXEL(r1, g1, b1);
+    int r1, g1, b1, r2, g2, b2;
+    DECOMPOSE_PIXEL(C1, r1, g1, b1);
+    DECOMPOSE_PIXEL(C2, r2, g2, b2);
+    return BUILD_PIXEL(brightness_cap[r1 + r2],
+                       brightness_cap[g1 + g2],
+                       brightness_cap[b1 + b2]);
 }
 
 #define COLOR_SUB1_2(C1, C2) \
