@@ -626,49 +626,6 @@ void CDirectDraw::SetSnes9xColorFormat()
         GUI.GreenShift = ffs (DDPixelFormat.dwGBitMask);
         GUI.BlueShift = ffs (DDPixelFormat.dwBBitMask);
 
-        if((DDPixelFormat.dwFlags&DDPF_RGB) != 0 &&
-           GUI.ScreenDepth == 16 &&
-           DDPixelFormat.dwRBitMask == 0xF800 &&
-           DDPixelFormat.dwGBitMask == 0x07E0 &&
-           DDPixelFormat.dwBBitMask == 0x001F)
-        {
-            S9xSetRenderPixelFormat (RGB565);
-        }
-        else
-            if( (DDPixelFormat.dwFlags&DDPF_RGB) != 0 &&
-                GUI.ScreenDepth == 16 &&
-                DDPixelFormat.dwRBitMask == 0x7C00 &&
-                DDPixelFormat.dwGBitMask == 0x03E0 &&
-                DDPixelFormat.dwBBitMask == 0x001F)
-            {
-                S9xSetRenderPixelFormat (RGB555);
-            }
-            else
-                if((DDPixelFormat.dwFlags&DDPF_RGB) != 0 &&
-                   GUI.ScreenDepth == 16 &&
-                   DDPixelFormat.dwRBitMask == 0x001F &&
-                   DDPixelFormat.dwGBitMask == 0x07E0 &&
-                   DDPixelFormat.dwBBitMask == 0xF800)
-                {
-                    S9xSetRenderPixelFormat (BGR565);
-                }
-                else
-                    if( (DDPixelFormat.dwFlags&DDPF_RGB) != 0 &&
-                        GUI.ScreenDepth == 16 &&
-                        DDPixelFormat.dwRBitMask == 0x001F &&
-                        DDPixelFormat.dwGBitMask == 0x03E0 &&
-                        DDPixelFormat.dwBBitMask == 0x7C00)
-                    {
-                        S9xSetRenderPixelFormat (BGR555);
-                    }
-                    else
-                        if (DDPixelFormat.dwRGBBitCount == 8 ||
-                            DDPixelFormat.dwRGBBitCount == 24 ||
-                            DDPixelFormat.dwRGBBitCount == 32)
-                        {
-                            S9xSetRenderPixelFormat (RGB565);
-                        }
-
         if ((GUI.ScreenDepth == 24 || GUI.ScreenDepth == 32))
             GUI.NeedDepthConvert = TRUE;
 
