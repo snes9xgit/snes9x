@@ -1795,12 +1795,10 @@ const char* S9xGetDirectory(s9x_getdirtype type)
 {
     switch (type)
     {
-        case ROMFILENAME_DIR:
-            return g_rom_dir;
         case BIOS_DIR:
             return retro_system_directory;
         default:
-            break;
+            return g_rom_dir;
     }
 
     return "";
