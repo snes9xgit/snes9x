@@ -1452,7 +1452,7 @@ static void Op58 (void)
 	AddCycles(ONE_CYCLE);
 
 #ifndef SA1_OPCODES
-	Timings.IRQFlagChanging = IRQ_CLEAR_FLAG;
+	Timings.IRQFlagChanging |= IRQ_CLEAR_FLAG;
 #else
 	ClearIRQ();
 #endif
@@ -1464,7 +1464,7 @@ static void Op78 (void)
 	AddCycles(ONE_CYCLE);
 
 #ifndef SA1_OPCODES
-	Timings.IRQFlagChanging = IRQ_SET_FLAG;
+	Timings.IRQFlagChanging |= IRQ_SET_FLAG;
 #else
 	SetIRQ();
 #endif

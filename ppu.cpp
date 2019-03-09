@@ -1403,8 +1403,7 @@ void S9xSetCPU (uint8 Byte, uint16 Address)
 				{
 					// FIXME: triggered at HC+=6, checked just before the final CPU cycle,
 					// then, when to call S9xOpcode_NMI()?
-					CPU.NMIPending = TRUE;
-					Timings.NMITriggerPos = CPU.Cycles + 6 + 6;
+					Timings.IRQFlagChanging |= IRQ_TRIGGER_NMI;
 
 					#ifdef DEBUGGER
 					if (Settings.TraceHCEvent)

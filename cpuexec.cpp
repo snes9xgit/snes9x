@@ -24,9 +24,14 @@ void S9xMainLoop (void)
 	#define CHECK_FOR_IRQ_CHANGE() \
 	if (Timings.IRQFlagChanging) \
 	{ \
-		if (Timings.IRQFlagChanging == IRQ_CLEAR_FLAG) \
+		if (Timings.IRQFlagChanging & IRQ_TRIGGER_NMI) \
+		{ \
+			CPU.NMIPending = TRUE; \
+			Timings.NMITriggerPos = CPU.Cycles + 6; \
+		} \
+		if (Timings.IRQFlagChanging & IRQ_CLEAR_FLAG) \
 			ClearIRQ(); \
-		else if (Timings.IRQFlagChanging == IRQ_SET_FLAG) \
+		else if (Timings.IRQFlagChanging & IRQ_SET_FLAG) \
 			SetIRQ(); \
 		Timings.IRQFlagChanging = IRQ_NONE; \
 	}

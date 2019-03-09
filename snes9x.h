@@ -157,9 +157,10 @@ enum
 
 enum
 {
-	IRQ_NONE = 0,
-	IRQ_SET_FLAG = 1,
-	IRQ_CLEAR_FLAG = 2
+	IRQ_NONE        = 0x0,
+	IRQ_SET_FLAG    = 0x1,
+	IRQ_CLEAR_FLAG  = 0x2,
+	IRQ_TRIGGER_NMI = 0x4
 };
 
 struct STimings

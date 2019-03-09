@@ -3614,8 +3614,6 @@ void CMemory::ApplyROMFixes (void)
 	{
 		//if (match_id("AVCJ"))                                      // Rendering Ranger R2
 		//	Timings.APUSpeedup = 2;
-		if (match_id("AANJ"))                                      // Chou Aniki
-			Timings.APUSpeedup = -3;
 		if (match_na("CIRCUIT USA"))
 			Timings.APUSpeedup = 3;
 
