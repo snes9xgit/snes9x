@@ -57,6 +57,8 @@
 #define NP_SERV_FREEZE_FILE 6
 #define NP_SERV_SRAM_DATA 7
 #define NP_SERV_READY 8
+// ...
+#define NP_SERV_JOYPAD_SWAP 12
 
 struct SNPClient
 {
@@ -198,6 +200,7 @@ void S9xNPServerAddTask (uint32 task, void *data);
 
 bool8 S9xNPStartServer (int port);
 void S9xNPStopServer ();
+void S9xNPSendJoypadSwap ();
 #ifdef __WIN32__
 #define S9xGetMilliTime timeGetTime
 #else

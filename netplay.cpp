@@ -13,6 +13,7 @@
 #include <sys/types.h>
 
 #include "snes9x.h"
+#include "controls.h"
 
 #ifdef __WIN32__
 	#include <winsock.h>
@@ -493,7 +494,13 @@ bool8 S9xNPWaitForHeartBeat ()
 				else
 					S9xNPSetWarning("CLIENT: Server has resumed.");
                 break;
-            case NP_SERV_LOAD_ROM:
+		case NP_SERV_JOYPAD_SWAP:
+#ifdef NP_DEBUG
+			printf("CLIENT: Joypad Swap received @%ld\n", S9xGetMilliTime() - START);
+#endif
+			S9xApplyCommand(S9xGetCommandT("SwapJoypads"), 1, 1);
+			break;
+        case NP_SERV_LOAD_ROM:
 #ifdef NP_DEBUG
                 printf ("CLIENT: LOAD_ROM received @%ld\n", S9xGetMilliTime () - START);
 #endif
