@@ -27,15 +27,14 @@ void SMP::op_io(unsigned clocks) {
 uint8 SMP::op_read(uint16 addr) {
   tick();
   if((addr & 0xfff0) == 0x00f0) return mmio_read(addr);
+  if(addr >= 0xffc0 && status.iplrom_enable) return iplrom[addr & 0x3f];
   return apuram[addr];
 }
 
 void SMP::op_write(uint16 addr, uint8 data) {
   tick();
-  if((addr & 0xfff0) == 0x00f0 || addr >= 0xffc0)
-    mmio_write(addr, data);
-  else
-    apuram[addr] = data;
+  if((addr & 0xfff0) == 0x00f0) mmio_write(addr, data);
+  apuram[addr] = data;  //all writes go to RAM, even MMIO writes
 }
 
 uint8 SMP::op_readstack()

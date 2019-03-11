@@ -73,11 +73,6 @@ void SMP::save_spc (uint8 *block) {
 void SMP::save_state(uint8 **block) {
   uint8 *ptr = *block;
   memcpy(ptr, apuram, 64 * 1024);
-  if (status.iplrom_enable)
-  {
-      memcpy(&ptr[0xffc0], highmem, 64);
-  }
-
   ptr += 64 * 1024;
 
 #undef INT32
@@ -165,11 +160,6 @@ void SMP::load_state(uint8 **block) {
   INT32(regs.p.c);
 
   INT32(status.iplrom_enable);
-  if (status.iplrom_enable)
-  {
-    memcpy(highmem, &apuram[0xffc0], 64);
-    memcpy(&apuram[0xffc0], iplrom, 64);
-  }
 
   INT32(status.dsp_addr);
 
