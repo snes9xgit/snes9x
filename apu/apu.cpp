@@ -90,7 +90,10 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
                     msu::resampler->read((short *)msu::resample_buffer.data(),
                                          sample_count);
                     for (int i = 0; i < sample_count; ++i)
-                        out[i] += msu::resample_buffer[i];
+                    {
+                        int32 mixed = (int32)out[i] + msu::resample_buffer[i];
+                        out[i] = ((int16)mixed != mixed) ? (mixed >> 31) ^ 0x7fff : mixed;
+                    }
                 }
                 else // should never occur
                     assert(0);
