@@ -1,3 +1,28 @@
+Snes9x 1.60
+- Fixed subscreen blending with master brightness < 100%.
+- Fixed NMI timing when toggling enable bit. Fixes Chou Aniki--hack removed.
+- Reverted an IPL map optimization that misses a weird edge case that caused
+  The Great Battle III to lock up.
+- Clamp MSU1 addition to max amplitude instead of wrapping. Proper MSU1 tracks
+  will not be affected by this.
+
+Win32:
+- Changed window flags to allow NVIDIA cards to auto-enable exclusive
+  fullscreen mode in OpenGL.
+- Added a hidden option "DWMSync" that allows OpenGL to sync to the window
+  manager while in windowed or borderless windowed mode.
+
+libretro:
+- Added ability to use Satellaview data in same directory as ROM.
+- Fixed deviation from proper libretro spec.
+
+GTK:
+- Added icons to the entries to clear binding assignments.
+- Fixed overlap in xBRZ multithreading.
+- Changed glFenceSync option to an OML_sync option that works better.
+- Fixed accumulation of partial pixel data on mouse motion when we update the
+  mouse position more than once per frame.
+
 Snes9x 1.59.2
 - Fix out-of-bounds access on APU memory.
 
@@ -41,7 +66,7 @@ GTK+:
 
 Snes9x 1.58
 - Move the LICENSE file to the base directory and use a stub
-  in all the source files referring to it. 
+  in all the source files referring to it.
 - Adjust Chou Aniki timing hack.
 - Use 1-based numbering when displaying pressed keys.
 - Hide controller port if disabled when displaying keys.
@@ -263,7 +288,7 @@ Snes9x 1.55
 - Added support for the MSU-1 coprocessor.                  (qwertymodo)
 - Added support for MSU-1 distribution pack.                (qwertymodo)
 - Added support for BS-X Satellaview memory packs and data  (LuigiBlood)
-  files.                                                    
+  files.
 - Improved BS-X memory mapping accuracy.                    (LuigiBlood)
 - Fixed APU error causing issues with some games.           (byuu, qwertymodo)
 - Added option to ignore patch checksums.                   (qwertymodo)
@@ -379,20 +404,20 @@ Snes9x 1.53
 - Mac  : Fixed gliches in open/save dialogs on 10.6.        (zones)
 - Mac  : Fixed display configuration in windowed mode.      (zones)
 - Unix : Fixed segfault and hang-up with -DNOSOUND.         (zones)
-- GTK+ : Added ability to set specific folders for SRAM, 
+- GTK+ : Added ability to set specific folders for SRAM,
   patches, snapshots, etc.                                  (BearOso)
 - GTK+ : Fixed many permissions issues with config folders. (BearOso)
-- GTK+ : Updated compatibility with latest GTK+ and 
+- GTK+ : Updated compatibility with latest GTK+ and
   GtkBuilder. Added experimental support for GTK+ 3.x.      (BearOso)
-- GTK+ : Updated software output to use cairo and added the 
+- GTK+ : Updated software output to use cairo and added the
   ability to use bilinear-filtering with it.                (BearOso)
 - GTK+ : Fixed issues where cheats wouldn't stay enabled.   (BearOso)
 - GTK+ : Fixed focus issue when there is no window manager. (BearOso)
-- GTK+ : Fixed X Visual incompatibilities and expose 
+- GTK+ : Fixed X Visual incompatibilities and expose
   problems in the Xv and OpenGL outputs.                    (BearOso)
 - GTK+ : Fixed vsync with new X Server and NVIDIA drivers.  (BearOso)
 - GTK+ : Added "Reduce input lag" option to OpenGL output.  (BearOso)
-- GTK+ : Added a visual indication of the expected video 
+- GTK+ : Added a visual indication of the expected video
   refresh rate for the currently selected sound input rate. (BearOso)
 
 Snes9x 1.52
