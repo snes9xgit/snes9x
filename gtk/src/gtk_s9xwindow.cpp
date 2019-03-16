@@ -714,7 +714,7 @@ Snes9xWindow::expose ()
                 unsigned int blue =  *splash_ptr++;
 
                 screen_ptr[x] = ((red   & 0xF8) << 8) +
-                                ((green & 0xFC) << 3) +
+                                ((green & 0xF8) << 3) +
                                 ((blue  & 0xF8) >> 3);
             }
         }

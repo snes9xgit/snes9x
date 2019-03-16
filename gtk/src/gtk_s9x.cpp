@@ -138,8 +138,6 @@ int main (int argc, char *argv[])
 
     gui_config->flush_joysticks ();
 
-    gtk_window_present (top_level->get_window ());
-
     if (rom_filename && *Settings.InitialSnapshotFilename)
         S9xUnfreezeGame(Settings.InitialSnapshotFilename);
 
