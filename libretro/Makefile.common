@@ -5,7 +5,7 @@ ifneq (,$(findstring msvc2003,$(platform)))
 INCFLAGS += -I$(LIBRETRO_COMM_DIR)/include/compat/msvc
 endif
 
-SOURCES_C   :=
+SOURCES_C   := $(CORE_DIR)/filter/snes_ntsc.c
 SOURCES_CXX := $(CORE_DIR)/apu/apu.cpp \
 				 $(CORE_DIR)/apu/bapu/dsp/sdsp.cpp \
 				 $(CORE_DIR)/apu/bapu/smp/smp.cpp \

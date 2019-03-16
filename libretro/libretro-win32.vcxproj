@@ -199,6 +199,7 @@
     <ClInclude Include="..\apu\hermite_resampler.h" />
     <ClInclude Include="..\apu\resampler.h" />
     <ClInclude Include="..\apu\ring_buffer.h" />
+    <ClInclude Include="..\filter\snes_ntsc.h" />
     <ClInclude Include="..\bml.h" />
     <ClInclude Include="..\bsx.h" />
     <ClInclude Include="..\c4.h" />
@@ -257,6 +258,7 @@
     </ClCompile>
     <ClCompile Include="..\apu\bapu\smp\smp.cpp" />
     <ClCompile Include="..\apu\bapu\smp\smp_state.cpp" />
+    <ClCompile Include="..\filter\snes_ntsc.c" />
     <ClCompile Include="..\bml.cpp" />
     <ClCompile Include="..\bsx.cpp" />
     <ClCompile Include="..\c4.cpp" />

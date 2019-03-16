@@ -23,6 +23,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
+#include "filter/snes_ntsc.h"
 
 #define RETRO_DEVICE_JOYPAD_MULTITAP ((1 << 8) | RETRO_DEVICE_JOYPAD)
 #define RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE ((1 << 8) | RETRO_DEVICE_LIGHTGUN)
@@ -68,6 +69,12 @@ static retro_audio_sample_t audio_cb = NULL;
 static retro_audio_sample_batch_t audio_batch_cb = NULL;
 static retro_input_poll_t poll_cb = NULL;
 static retro_input_state_t input_state_cb = NULL;
+
+static snes_ntsc_t *snes_ntsc = NULL;
+static int blargg_filter = 0;
+static uint16 *ntsc_screen_buffer, *snes_ntsc_buffer;
+
+#define MAX_SNES_WIDTH_NTSC SNES_NTSC_OUT_WIDTH(256)
 
 static void extract_basename(char *buf, const char *path, size_t size)
 {
@@ -181,6 +188,7 @@ void retro_set_environment(retro_environment_t cb)
         { "snes9x_randomize_memory", "Randomize Memory (Unsafe); disabled|enabled" },
         { "snes9x_hires_blend", "Hires Blending; disabled|merge|blur" },
         { "snes9x_audio_interpolation", "Audio Interpolation; gaussian|cubic|sinc|none|linear" },
+        { "snes9x_blargg", "Blargg NTSC filter; disabled|monochrome|rf|composite|s-video|rgb" },
         { "snes9x_layer_1", "Show layer 1; enabled|disabled" },
         { "snes9x_layer_2", "Show layer 2; enabled|disabled" },
         { "snes9x_layer_3", "Show layer 3; enabled|disabled" },
@@ -604,6 +612,57 @@ static void update_variables(void)
         Settings.BlockInvalidVRAMAccessMaster = !strcmp(var.value, "disabled") ? false : true;
     else
         Settings.BlockInvalidVRAMAccessMaster = true;
+
+    var.key = "snes9x_blargg";
+    var.value = NULL;
+
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
+    {
+        if (strcmp(var.value, "disabled") == 0)
+            blargg_filter = 0;
+        else
+        {
+            int old_filter = blargg_filter;
+
+            if(!snes_ntsc) snes_ntsc = new snes_ntsc_t;
+            snes_ntsc_setup_t setup = snes_ntsc_composite;
+
+            if (strcmp(var.value, "monochrome") == 0)
+            {
+                blargg_filter = 1;
+
+                setup = snes_ntsc_monochrome;
+            }
+            else if (strcmp(var.value, "rf") == 0)
+            {
+                blargg_filter = 2;
+
+                setup = snes_ntsc_composite;
+                setup.merge_fields = 0;
+            }
+            else if (strcmp(var.value, "composite") == 0)
+            {
+                blargg_filter = 3;
+
+                setup = snes_ntsc_composite;
+            }
+            else if (strcmp(var.value, "s-video") == 0)
+            {
+                blargg_filter = 4;
+
+                setup = snes_ntsc_svideo;
+            }
+            else if (strcmp(var.value, "rgb") == 0)
+            {
+                blargg_filter = 5;
+
+                setup = snes_ntsc_rgb;
+            }
+
+            if (old_filter != blargg_filter)
+                snes_ntsc_init( snes_ntsc, &setup );
+        }
+    }
 }
 
 static void S9xAudioCallback(void*)
@@ -687,7 +746,7 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
 
     info->geometry.base_width = width;
     info->geometry.base_height = height;
-    info->geometry.max_width = MAX_SNES_WIDTH;
+    info->geometry.max_width = MAX_SNES_WIDTH_NTSC;
     info->geometry.max_height = MAX_SNES_HEIGHT;
     info->geometry.aspect_ratio = get_aspect_ratio(width, height);
     info->timing.sample_rate = 32000;
@@ -1225,9 +1284,11 @@ void retro_init(void)
     S9xSetSoundMute(FALSE);
     S9xSetSamplesAvailableCallback(S9xAudioCallback, NULL);
 
-    GFX.Pitch = MAX_SNES_WIDTH * sizeof(uint16);
+    GFX.Pitch = MAX_SNES_WIDTH_NTSC * sizeof(uint16);
     screen_buffer = (uint16*) calloc(1, GFX.Pitch * (MAX_SNES_HEIGHT + 16));
     GFX.Screen = screen_buffer + (GFX.Pitch >> 1) * 16;
+    ntsc_screen_buffer = (uint16*) calloc(1, GFX.Pitch * (MAX_SNES_HEIGHT + 16));
+    snes_ntsc_buffer = ntsc_screen_buffer + (GFX.Pitch >> 1) * 16;
     S9xGraphicsInit();
 
     S9xInitInputDevices();
@@ -1552,6 +1613,7 @@ void retro_deinit()
     S9xUnmapAllControls();
 
     free(screen_buffer);
+    free(ntsc_screen_buffer);
 }
 
 
@@ -1702,7 +1764,16 @@ bool8 S9xDeinitUpdate(int width, int height)
     }
 
 
-    if (width == MAX_SNES_WIDTH && hires_blend)
+    if(blargg_filter)
+    {
+        if(width == 512)
+            snes_ntsc_blit_hires(snes_ntsc, GFX.Screen, GFX.Pitch/2, 0, width, height, snes_ntsc_buffer, GFX.Pitch);
+        else
+            snes_ntsc_blit(snes_ntsc, GFX.Screen, GFX.Pitch/2, 0, width, height, snes_ntsc_buffer, GFX.Pitch);
+
+        video_cb(snes_ntsc_buffer + ((int)(GFX.Pitch >> 1) * overscan_offset), MAX_SNES_WIDTH_NTSC, height, GFX.Pitch);
+    }
+    else if (width == MAX_SNES_WIDTH && hires_blend)
     {
         #define AVERAGE_565(el0, el1) (((el0) & (el1)) + ((((el0) ^ (el1)) & 0xF7DE) >> 1))
 
