@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Snes9x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-26 16:43-0600\n"
-"PO-Revision-Date: 2019-03-17 03:37-0300\n"
+"POT-Creation-Date: 2019-03-17 16:30-0500\n"
+"PO-Revision-Date: 2019-03-17 16:29-0500\n"
 "Last-Translator: Pablo \"Jota\" Lezaeta <prflr88@gmail.com>\n"
 "Language-Team: Spanish / Español\n"
 "Language: es\n"
@@ -127,29 +127,29 @@ msgstr "Error de connección"
 msgid "Same location as current game"
 msgstr "El mismo lugar que el juego actual"
 
-#: src/gtk_preferences.cpp:408
+#: src/gtk_preferences.cpp:417
 msgid "Current joystick centers have been saved."
 msgstr "Los centros de ejes del mando fueron guardados."
 
-#: src/gtk_preferences.cpp:409
+#: src/gtk_preferences.cpp:418
 msgid "Calibration Complete"
 msgstr "Calibrado completado"
 
-#: src/gtk_preferences.cpp:451
+#: src/gtk_preferences.cpp:460
 msgid "Snes9x version: "
 msgstr "Versión de Snes9x: "
 
-#: src/gtk_preferences.cpp:452
+#: src/gtk_preferences.cpp:461
 msgid "GTK+ port version: "
 msgstr "Adaptación GTK+ versión: "
 
-#: src/gtk_preferences.cpp:454
+#: src/gtk_preferences.cpp:463
 msgid "English localization by Brandon Wright"
 msgstr ""
 "Localización al inglés por Brandon Wright\n"
 "Localización al español por INUKAZE, Jota (aka Jristz), y otros"
 
-#: src/gtk_preferences.cpp:878
+#: src/gtk_preferences.cpp:909
 msgid ""
 "Changing the SRAM directory with a game loaded will replace the .srm file in "
 "the selected directory with the SRAM from the running game. If this is not "
@@ -159,71 +159,71 @@ msgstr ""
 "srm en el directorio seleccionado con el SRAM del juego en ejecución. Si "
 "esto no es lo que quieres, haz clic en «Cancelar»."
 
-#: src/gtk_preferences.cpp:879
+#: src/gtk_preferences.cpp:910
 msgid "Warning: Possible File Overwrite"
 msgstr "Advertencia: posible sobrescritura de archivos"
 
-#: src/gtk_preferences.cpp:960
+#: src/gtk_preferences.cpp:991
 msgid "Select Folder"
 msgstr "Seleccione una carpeta"
 
-#: src/gtk_preferences.cpp:1037
+#: src/gtk_preferences.cpp:1068
 msgid "HQ2x"
 msgstr "HQ 2x"
 
-#: src/gtk_preferences.cpp:1038
+#: src/gtk_preferences.cpp:1069
 msgid "HQ3x"
 msgstr "HQ 3x"
 
-#: src/gtk_preferences.cpp:1039
+#: src/gtk_preferences.cpp:1070
 msgid "HQ4x"
 msgstr "HQ 4x"
 
-#: src/gtk_preferences.cpp:1044
+#: src/gtk_preferences.cpp:1075
 msgid "2xBRZ"
 msgstr "2x BRZ"
 
-#: src/gtk_preferences.cpp:1045
+#: src/gtk_preferences.cpp:1076
 msgid "3xBRZ"
 msgstr "3x BRZ"
 
-#: src/gtk_preferences.cpp:1046
+#: src/gtk_preferences.cpp:1077
 msgid "4xBRZ"
 msgstr "4x BRZ"
 
-#: src/gtk_preferences.cpp:1051
+#: src/gtk_preferences.cpp:1082
 msgid "None - Use software scaler"
 msgstr "Nada - Usar ajuste por software"
 
-#: src/gtk_preferences.cpp:1055
+#: src/gtk_preferences.cpp:1086
 msgid "OpenGL - Use 3D graphics hardware"
 msgstr "OpenGL - Usar aceleración en 3D por hardware"
 
-#: src/gtk_preferences.cpp:1059
+#: src/gtk_preferences.cpp:1090
 msgid "XVideo - Use hardware video blitter"
 msgstr "XVideo - Usar cegador de vídeo por hardware"
 
-#: src/gtk_preferences.cpp:1065
+#: src/gtk_preferences.cpp:1096
 msgid "PortAudio"
 msgstr "Port Audio"
 
-#: src/gtk_preferences.cpp:1069
+#: src/gtk_preferences.cpp:1100
 msgid "Open Sound System"
 msgstr "Open Sound System"
 
-#: src/gtk_preferences.cpp:1072
+#: src/gtk_preferences.cpp:1103
 msgid "SDL"
 msgstr "SDL"
 
-#: src/gtk_preferences.cpp:1075
+#: src/gtk_preferences.cpp:1106
 msgid "ALSA"
 msgstr "ALSA"
 
-#: src/gtk_preferences.cpp:1079
+#: src/gtk_preferences.cpp:1110
 msgid "PulseAudio"
 msgstr "Pulseaudio"
 
-#: src/gtk_s9x.cpp:199
+#: src/gtk_s9x.cpp:197
 #, c-format
 msgid "Error opening: %s\n"
 msgstr "Error abriendo: %s\n"
@@ -245,7 +245,7 @@ msgid "SNES Movies"
 msgstr "Vídeos SNES"
 
 #: src/gtk_s9xwindow.cpp:873 src/gtk_s9xwindow.cpp:1021
-#: src/gtk_s9xwindow.cpp:1141 src/gtk_s9xwindow.cpp:1206
+#: src/gtk_s9xwindow.cpp:1141 src/gtk_s9xwindow.cpp:1206 src/gtk_file.cpp:433
 msgid "All Files"
 msgstr "Todos los archivos"
 
@@ -362,6 +362,14 @@ msgstr "Sombra preconfigurada"
 msgid "GLSL Shader Parameters"
 msgstr "Parámetros de sombra GLSL"
 
+#: src/gtk_file.cpp:417
+msgid "Open SNES ROM Image"
+msgstr "Abrir imagen ROM..."
+
+#: src/gtk_file.cpp:425
+msgid "SNES ROM Images"
+msgstr "Imagenes SNES"
+
 #: src/snes9x.ui:9
 msgid "About Snes9x"
 msgstr "Acerca de Snes9x"
@@ -424,23 +432,23 @@ msgstr "Goldfinger"
 
 #: src/snes9x.ui:829 src/snes9x.ui:852
 msgid "12.5%"
-msgstr "12,5 %"
+msgstr "12,5%"
 
 #: src/snes9x.ui:832 src/snes9x.ui:855
 msgid "25%"
-msgstr "25 %"
+msgstr "25%"
 
 #: src/snes9x.ui:835 src/snes9x.ui:858
 msgid "50%"
-msgstr "50 %"
+msgstr "50%"
 
 #: src/snes9x.ui:838 src/snes9x.ui:861
 msgid "100%"
-msgstr "100 %"
+msgstr "100%"
 
 #: src/snes9x.ui:849
 msgid "0%"
-msgstr "0 %"
+msgstr "0%"
 
 #: src/snes9x.ui:872 src/snes9x.ui:1885
 msgid "None"
@@ -452,11 +460,11 @@ msgstr "Superáguila"
 
 #: src/snes9x.ui:878
 msgid "2xSaI"
-msgstr "2x Sai"
+msgstr "2xSai"
 
 #: src/snes9x.ui:881
 msgid "Super2xSaI"
-msgstr "Súper 2x Sai"
+msgstr "Super2xSai"
 
 #: src/snes9x.ui:884
 msgid "EPX"
@@ -544,23 +552,23 @@ msgstr "5"
 
 #: src/snes9x.ui:977 src/snes9x.ui:1015
 msgid "1+"
-msgstr "1 +"
+msgstr "1+"
 
 #: src/snes9x.ui:980 src/snes9x.ui:1018
 msgid "2+"
-msgstr "2 +"
+msgstr "2+"
 
 #: src/snes9x.ui:983 src/snes9x.ui:1021
 msgid "3+"
-msgstr "3 +"
+msgstr "3+"
 
 #: src/snes9x.ui:986 src/snes9x.ui:1024
 msgid "4+"
-msgstr "4 +"
+msgstr "4+"
 
 #: src/snes9x.ui:989 src/snes9x.ui:1027
 msgid "5+"
-msgstr "5 +"
+msgstr "5+"
 
 #: src/snes9x.ui:1038
 msgid "Toggle the menu bar"
@@ -788,23 +796,23 @@ msgstr "_Cambiar tamaño"
 
 #: src/snes9x.ui:1703
 msgid "_1x"
-msgstr "_1 x"
+msgstr "_1x"
 
 #: src/snes9x.ui:1712
 msgid "_2x"
-msgstr "_2 x"
+msgstr "_2x"
 
 #: src/snes9x.ui:1721
 msgid "_3x"
-msgstr "_3 x"
+msgstr "_3x"
 
 #: src/snes9x.ui:1730
 msgid "_4x"
-msgstr "_4 x"
+msgstr "_4x"
 
 #: src/snes9x.ui:1739
 msgid "_5x"
-msgstr "_5 x"
+msgstr "_5x"
 
 #: src/snes9x.ui:1756
 msgid "_Fullscreen"
@@ -1162,13 +1170,13 @@ msgstr ""
 "mostrado para reducir la latencia de entrada"
 
 #: src/snes9x.ui:3796
-msgid "Reduce input lag with glFenceSync"
-msgstr "Reducir el retraso de entrada con glFenceSync"
+msgid "Reduce input lag with sync control"
+msgstr "Reducir el retraso de entrada con sync_control"
 
 #: src/snes9x.ui:3800
 msgid ""
-"Sync the program with the video output after every displayed frame to reduce "
-"input latency, but allow GUI events to occur in the meantime"
+"More modern method for syncing the program with the video output to reduce "
+"input latency. Allows GUI events to occur in the meantime"
 msgstr ""
 "Sincronizar el programa con la salida de vídeo después de cada cuadro "
 "mostrado para reducir la latencia de entrada, pero permite que ocurran "
