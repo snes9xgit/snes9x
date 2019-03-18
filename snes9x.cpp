@@ -491,6 +491,11 @@ char * S9xParseArgs (char **argv, int argc)
 
 			if (!strcasecmp(argv[i], "-soundsync"))
 				Settings.SoundSync = TRUE;
+			else if (!strcasecmp(argv[i], "-dynamicratecontrol"))
+			{
+				Settings.DynamicRateControl = TRUE;
+				Settings.DynamicRateLimit = 5;
+			}
 			else
 			if (!strcasecmp(argv[i], "-playbackrate"))
 			{
