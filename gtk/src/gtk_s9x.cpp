@@ -61,6 +61,11 @@ int main (int argc, char *argv[])
 
     char *rom_filename = S9xParseArgs (argv, argc);
 
+#if GTK_MAJOR_VERSION >= 3
+    auto settings = gtk_settings_get_default();
+    g_object_set(settings, "gtk-menu-images", true, "gtk_button_images", true, NULL);
+#endif
+
     S9xReportControllers ();
 
     if (!Memory.Init () || !S9xInitAPU ())
