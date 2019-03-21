@@ -1219,10 +1219,6 @@ Snes9xPreferences::store_binding (const char *string, Binding binding)
         }
         else
         {
-            if (pad_bindings[i].matches (binding))
-            {
-                pad_bindings[i].clear ();
-            }
         }
     }
 

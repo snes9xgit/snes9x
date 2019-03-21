@@ -689,49 +689,71 @@ int Snes9xConfig::load_config_file ()
     return 0;
 }
 
-void Snes9xConfig::rebind_keys ()
+void Snes9xConfig::rebind_keys()
 {
     s9xcommand_t cmd;
-    char         buf[256];
+    std::string string;
 
-    S9xUnmapAllControls ();
+    S9xUnmapAllControls();
 
-    for (int joypad_i = 0; joypad_i < NUM_JOYPADS; joypad_i++ )
+    for (int joypad_i = 0; joypad_i < NUM_JOYPADS; joypad_i++)
     {
-        Binding *bin = (Binding *) &pad[joypad_i];
+        Binding *bin = (Binding *)&pad[joypad_i];
 
         for (int button_i = 0; button_i < NUM_JOYPAD_LINKS; button_i++)
         {
-            snprintf (buf,
-                      256,
-                      "Joypad%d %s",
-                      (joypad_i % 5) + 1,
-                      b_links[button_i].snes9x_name);
+            int dupe;
+            for (dupe = button_i + 1; dupe < NUM_JOYPAD_LINKS; dupe++)
+            {
+                if (bin[button_i].matches(bin[dupe]) && bin[button_i].hex() != 0)
+                {
+                    printf("%d: %d matches %d\n", joypad_i, button_i, dupe);
+                    break;
+                }
+            }
+            if (dupe < NUM_JOYPAD_LINKS || bin[button_i].hex() == 0)
+                continue;
 
-            cmd = S9xGetPortCommandT (buf);
+            string += "Joypad" + std::to_string((joypad_i % 5) + 1) + " ";
+            string += b_links[button_i].snes9x_name;
 
-            S9xMapButton (bin[button_i].base_hex (), cmd, false);
+            bool ismulti = false;
+            for (dupe = button_i - 1; dupe > 0; dupe--)
+            {
+                if (bin[button_i].matches(bin[dupe]))
+                {
+                    ismulti = true;
+                    string += ",Joypad" + std::to_string((joypad_i % 5) + 1) + " ";
+                    string += b_links[dupe].snes9x_name;
+                }
+            }
+
+            if (ismulti)
+                string = std::string("{") + string + "}";
+
+            cmd = S9xGetPortCommandT(string.c_str());
+
+            S9xMapButton(bin[button_i].base_hex(), cmd, false);
         }
     }
 
     for (int i = NUM_JOYPAD_LINKS; b_links[i].snes9x_name; i++)
     {
-        snprintf (buf, 256, "%s", b_links[i].snes9x_name);
-        cmd = S9xGetPortCommandT (buf);
-        S9xMapButton (shortcut[i - NUM_JOYPAD_LINKS].base_hex (),
-                      cmd,
-                      false);
+        cmd = S9xGetPortCommandT(b_links[i].snes9x_name);
+        S9xMapButton(shortcut[i - NUM_JOYPAD_LINKS].base_hex(),
+                     cmd,
+                     false);
     }
 
-    cmd = S9xGetPortCommandT ("Pointer Mouse1+Superscope+Justifier1");
-    S9xMapPointer (BINDING_MOUSE_POINTER, cmd, true);
+    cmd = S9xGetPortCommandT("Pointer Mouse1+Superscope+Justifier1");
+    S9xMapPointer(BINDING_MOUSE_POINTER, cmd, true);
 
-    cmd = S9xGetPortCommandT ("{Mouse1 L,Superscope Fire,Justifier1 Trigger}");
-    S9xMapButton (BINDING_MOUSE_BUTTON0, cmd, false);
+    cmd = S9xGetPortCommandT("{Mouse1 L,Superscope Fire,Justifier1 Trigger}");
+    S9xMapButton(BINDING_MOUSE_BUTTON0, cmd, false);
 
-    cmd = S9xGetPortCommandT ("{Justifier1 AimOffscreen Trigger,Superscope AimOffscreen}");
-    S9xMapButton (BINDING_MOUSE_BUTTON1, cmd, false);
+    cmd = S9xGetPortCommandT("{Justifier1 AimOffscreen Trigger,Superscope AimOffscreen}");
+    S9xMapButton(BINDING_MOUSE_BUTTON1, cmd, false);
 
-    cmd = S9xGetPortCommandT ("{Mouse1 R,Superscope Cursor,Justifier1 Start}");
-    S9xMapButton (BINDING_MOUSE_BUTTON2, cmd, false);
+    cmd = S9xGetPortCommandT("{Mouse1 R,Superscope Cursor,Justifier1 Start}");
+    S9xMapButton(BINDING_MOUSE_BUTTON2, cmd, false);
 }
