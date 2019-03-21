@@ -685,40 +685,92 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
     resize (config->window_width, config->window_height);
 }
 
-extern const gtk_splash_t gtk_splash;
+extern int gtk_splash_smtpe_size;
+extern unsigned char gtk_splash_smtpe[];
+extern int gtk_splash_pattern_size;
+extern unsigned char gtk_splash_pattern[];
+
+void Snes9xWindow::setup_splash()
+{
+    uint16 *screen_ptr = GFX.Screen;
+
+    /* Load splash image (RGB24) into Snes9x buffer (RGB15) */
+    last_width = 256;
+    last_height = 224;
+
+    if (config->splash_image == SPLASH_IMAGE_PATTERN ||
+        config->splash_image == SPLASH_IMAGE_SMTPE) {
+        unsigned char *pattern = NULL;
+        int pattern_size = 0;
+
+        if (config->splash_image == SPLASH_IMAGE_PATTERN) {
+            pattern = gtk_splash_pattern;
+            pattern_size = gtk_splash_pattern_size;
+        } else {
+            pattern = gtk_splash_smtpe;
+            pattern_size = gtk_splash_smtpe_size;
+        }
+
+        auto pixbuf_loader = gdk_pixbuf_loader_new_with_type("png", NULL);
+        gdk_pixbuf_loader_write(pixbuf_loader, pattern, pattern_size, NULL);
+        gdk_pixbuf_loader_close(pixbuf_loader, NULL);
+        auto pixbuf = gdk_pixbuf_loader_get_pixbuf(pixbuf_loader);
+        const unsigned char *splash_ptr = gdk_pixbuf_get_pixels(pixbuf);
+        const int channels = gdk_pixbuf_get_n_channels(pixbuf);
+
+        for (int y = 0; y < 224; y++, screen_ptr += (GFX.Pitch / 2)) {
+            for (int x = 0; x < 256; x++) {
+                unsigned int red = splash_ptr[0];
+                unsigned int green = splash_ptr[1];
+                unsigned int blue = splash_ptr[2];
+
+                screen_ptr[x] = ((red & 0xF8) << 8) +
+                                ((green & 0xF8) << 3) +
+                                ((green & 0x80) >> 2) +
+                                ((blue & 0xF8) >> 3);
+
+                splash_ptr += channels;
+            }
+        }
+
+        g_object_unref(pixbuf_loader);
+
+        return;
+    }
+
+    if (config->splash_image == SPLASH_IMAGE_BLUE) {
+        for (int y = 0; y < 224; y++, screen_ptr += (GFX.Pitch / 2)) {
+            uint16 colora = (uint16)y / 7;
+            uint16 colorb = ((uint16)y - 3) / 7;
+            if (colorb > 32)
+                colorb = 0;
+
+            for (int x = 0; x < 256; x++) {
+                screen_ptr[x] = ((x ^ y) & 1) ? colorb : colora;
+            }
+        }
+
+        return;
+    }
+
+    for (int y = 0; y < 224; y++, screen_ptr += (GFX.Pitch / 2)) {
+        memset(screen_ptr, 0, 256 * sizeof(uint16));
+    }
+}
 
 void
 Snes9xWindow::expose ()
 {
+    if (!(config->fullscreen) && !(maximized_state)) 
+    {
+        config->window_width = get_width();
+        config->window_height = get_height();
+    }
+
     if (last_width < 0)
     {
-        if (!(config->fullscreen) && !(maximized_state))
-        {
-            config->window_width = get_width ();
-            config->window_height = get_height ();
-        }
-
-        /* Load splash image (RGB24) into Snes9x buffer (RGB15) */
-        last_width = 256;
-        last_height = 224;
-
-        uint16 *screen_ptr = GFX.Screen;
-        const unsigned char *splash_ptr = gtk_splash.pixel_data;
-
-        for (int y = 0; y < 224; y++, screen_ptr += (GFX.Pitch / 2))
-        {
-            for (int x = 0; x < 256; x++)
-            {
-                unsigned int red =   *splash_ptr++;
-                unsigned int green = *splash_ptr++;
-                unsigned int blue =  *splash_ptr++;
-
-                screen_ptr[x] = ((red   & 0xF8) << 8) +
-                                ((green & 0xF8) << 3) +
-                                ((blue  & 0xF8) >> 3);
-            }
-        }
-   }
+        setup_splash();
+    }
 
     S9xDisplayRefresh (last_width, last_height);
 

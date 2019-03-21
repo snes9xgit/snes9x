@@ -66,6 +66,7 @@ class Snes9xWindow : public GtkBuilderWindow
         void resize_to_multiple (int factor);
         void resize_viewport (int width, int height);
         void expose ();
+        void setup_splash();
         double get_refresh_rate ();
         int get_auto_input_rate ();
 

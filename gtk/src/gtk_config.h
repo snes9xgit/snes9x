@@ -39,6 +39,13 @@ enum {
     THROTTLE_NONE = 3
 };
 
+enum {
+    SPLASH_IMAGE_BLACK = 0,
+    SPLASH_IMAGE_SMTPE = 1,
+    SPLASH_IMAGE_PATTERN = 2,
+    SPLASH_IMAGE_BLUE = 3
+};
+
 class Snes9xConfig
 {
   public:
@@ -68,6 +75,7 @@ class Snes9xConfig
     bool multithreading;
     int hires_effect;
     bool force_inverted_byte_order;
+    int splash_image;
 
     snes_ntsc_setup_t ntsc_setup;
     int ntsc_format;
