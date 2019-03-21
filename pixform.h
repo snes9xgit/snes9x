@@ -8,7 +8,7 @@
 #define _PIXFORM_H_
 
 /* RGB565 format */
-#define BUILD_PIXEL_RGB565(R, G, B)  (((int)(R) << 11) | ((int)(G) << 6) | (int)(B))
+#define BUILD_PIXEL_RGB565(R, G, B)  (((int)(R) << 11) | ((int)(G) << 6) | (((int)(G) & 0x10) << 1) | (int)(B))
 #define BUILD_PIXEL2_RGB565(R, G, B) (((int)(R) << 11) | ((int)(G) << 5) | (int)(B))
 #define DECOMPOSE_PIXEL_RGB565(PIX, R, G, B) \
     {                                        \

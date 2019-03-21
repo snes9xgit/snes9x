@@ -136,6 +136,10 @@ inline uint16 COLOR_ADD(uint16 C1, uint16 C2)
 {
 	return ((brightness_cap[ (C1 >> RED_SHIFT_BITS)           +  (C2 >> RED_SHIFT_BITS)          ] << RED_SHIFT_BITS)   |
             (brightness_cap[((C1 >> GREEN_SHIFT_BITS) & 0x1f) + ((C2 >> GREEN_SHIFT_BITS) & 0x1f)] << GREEN_SHIFT_BITS) |
+// Proper 15->16bit color conversion moves the high bit of green into the low bit.
+#if GREEN_SHIFT_BITS == 6
+           ((brightness_cap[((C1 >> 6) & 0x1f) + ((C2 >> 6) & 0x1f)] & 0x10) << 1) |
+#endif
             (brightness_cap[ (C1                      & 0x1f) +  (C2                      & 0x1f)]      ));
 }
 
