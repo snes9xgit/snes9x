@@ -706,15 +706,12 @@ void Snes9xConfig::rebind_keys()
             for (dupe = button_i + 1; dupe < NUM_JOYPAD_LINKS; dupe++)
             {
                 if (bin[button_i].matches(bin[dupe]) && bin[button_i].hex() != 0)
-                {
-                    printf("%d: %d matches %d\n", joypad_i, button_i, dupe);
                     break;
-                }
             }
             if (dupe < NUM_JOYPAD_LINKS || bin[button_i].hex() == 0)
                 continue;
 
-            string += "Joypad" + std::to_string((joypad_i % 5) + 1) + " ";
+            string = "Joypad" + std::to_string((joypad_i % 5) + 1) + " ";
             string += b_links[button_i].snes9x_name;
 
             bool ismulti = false;
