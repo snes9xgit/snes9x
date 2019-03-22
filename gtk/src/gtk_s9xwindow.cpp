@@ -276,19 +276,32 @@ event_button_press (GtkWidget      *widget,
                     GdkEventButton *event,
                     gpointer       user_data)
 {
-    switch (event->button)
+    auto window = (Snes9xWindow *)user_data;
+
+    if (S9xIsMousePluggedIn())
     {
+        switch (event->button)
+        {
         case 1:
-            S9xReportButton (BINDING_MOUSE_BUTTON0, 1);
+            S9xReportButton(BINDING_MOUSE_BUTTON0, 1);
             break;
         case 2:
-            S9xReportButton (BINDING_MOUSE_BUTTON1, 1);
+            S9xReportButton(BINDING_MOUSE_BUTTON2, 1);
             break;
         case 3:
-            S9xReportButton (BINDING_MOUSE_BUTTON2, 1);
+            S9xReportButton(BINDING_MOUSE_BUTTON1, 1);
             break;
+        }
     }
-
+    else if (event->button == 3)
+    {
+#if GTK_MAJOR_VERSION >= 3
+        gtk_menu_popup_at_pointer(GTK_MENU(window->get_widget("view_menu_menu")), NULL);
+#else
+        gtk_menu_popup(GTK_MENU(window->get_widget("view_menu_menu")), NULL,
+                       NULL, NULL, NULL, 3, event->time);
+#endif
+    }
     return false;
 }
 
@@ -761,7 +774,7 @@ void Snes9xWindow::setup_splash()
 void
 Snes9xWindow::expose ()
 {
-    if (!(config->fullscreen) && !(maximized_state)) 
+    if (!(config->fullscreen) && !(maximized_state))
     {
         config->window_width = get_width();
         config->window_height = get_height();

@@ -1660,7 +1660,7 @@
                     <property name="can_focus">False</property>
                     <child>
                       <object class="GtkImageMenuItem" id="hide_ui">
-                        <property name="label" translatable="yes">_Hide Menu</property>
+                        <property name="label" translatable="yes">_Toggle Menubar</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
