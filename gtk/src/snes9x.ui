@@ -1670,15 +1670,6 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkCheckMenuItem" id="show_statusbar_item">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">_Status Bar</property>
-                        <property name="use_underline">True</property>
-                        <signal name="activate" handler="show_statusbar" swapped="no"/>
-                      </object>
-                    </child>
-                    <child>
                       <object class="GtkSeparatorMenuItem" id="hide_ui_separator">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -1975,17 +1966,6 @@
             <property name="expand">True</property>
             <property name="fill">True</property>
             <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkStatusbar" id="statusbar">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">2</property>
           </packing>
         </child>
       </object>

@@ -254,7 +254,6 @@ void S9xNoROMLoaded ()
     gui_config->rom_loaded = false;
     S9xDisplayRefresh (-1, -1);
     top_level->configure_widgets ();
-    top_level->update_statusbar ();
 }
 
 static gboolean S9xPauseFunc (gpointer data)
@@ -287,7 +286,6 @@ static gboolean S9xPauseFunc (gpointer data)
                          S9xIdleFunc,
                          NULL,
                          NULL);
-        top_level->update_statusbar ();
         return false;
     }
 
@@ -310,7 +308,6 @@ gboolean S9xIdleFunc (gpointer data)
 
         /* Move to a timer-based function to use less CPU */
         g_timeout_add (100, S9xPauseFunc, NULL);
-        top_level->update_statusbar ();
         return false;
     }
 

@@ -63,7 +63,6 @@ class Snes9xConfig
     bool change_display_resolution;
     bool fullscreen;
     bool ui_visible;
-    bool statusbar_visible;
     int default_esc_behavior;
     bool prevent_screensaver;
     int xrr_index;

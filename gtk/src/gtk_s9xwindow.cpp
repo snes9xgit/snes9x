@@ -5,6 +5,7 @@
 \*****************************************************************************/
 
 #include "gtk_2_3_compat.h"
+#include "gtk_config.h"
 #ifdef GDK_WINDOWING_X11
 #include <X11/Xatom.h>
 #endif
@@ -99,14 +100,6 @@ event_toggle_interface (GtkWidget *widget, gpointer data)
     Snes9xWindow *window = (Snes9xWindow *) data;
 
     window->toggle_ui ();
-
-    return true;
-}
-
-static gboolean
-event_show_statusbar (GtkWidget *widget, gpointer data)
-{
-    ((Snes9xWindow *) data)->toggle_statusbar ();
 
     return true;
 }
@@ -601,7 +594,6 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
         { "rom_info", G_CALLBACK (event_rom_info) },
         { "sync_clients", G_CALLBACK (event_sync_clients) },
         { "toggle_interface", G_CALLBACK (event_toggle_interface) },
-        { "show_statusbar", G_CALLBACK (event_show_statusbar) },
         { "exact_1x", G_CALLBACK (event_exact_pixels_1x) },
         { "exact_2x", G_CALLBACK (event_exact_pixels_2x) },
         { "exact_3x", G_CALLBACK (event_exact_pixels_3x) },
@@ -657,10 +649,6 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
     gdk_window_set_back_pixmap (gtk_widget_get_window (window), NULL, false);
     gdk_window_set_back_pixmap (gtk_widget_get_window (GTK_WIDGET (drawing_area)), NULL, false);
 #endif
-
-    gtk_check_menu_item_set_active (
-        GTK_CHECK_MENU_ITEM (get_widget ("show_statusbar_item")),
-        config->statusbar_visible ? 1 : 0);
 
 #ifndef USE_OPENGL
     gtk_widget_hide (get_widget ("shader_parameters_separator"));
@@ -1322,81 +1310,6 @@ Snes9xWindow::set_menu_item_selected (const char *name)
     gtk_check_menu_item_set_active (item, 1);
 }
 
-static gboolean
-statusbar_timeout (gpointer data)
-{
-    gtk_statusbar_pop (GTK_STATUSBAR (data),
-                       gtk_statusbar_get_context_id (GTK_STATUSBAR (data),
-                                                     "info"));
-
-    return false;
-}
-
-void
-Snes9xWindow::show_status_message (const char *message)
-{
-    GtkStatusbar *statusbar = GTK_STATUSBAR (get_widget ("statusbar"));
-
-    gtk_statusbar_pop (statusbar, gtk_statusbar_get_context_id (statusbar, "info"));
-    gtk_statusbar_push (statusbar, gtk_statusbar_get_context_id (statusbar, "info"), message);
-
-    g_timeout_add (2000, statusbar_timeout, statusbar);
-}
-
-void
-Snes9xWindow::update_statusbar ()
-{
-    GtkStatusbar *bar = GTK_STATUSBAR (get_widget ("statusbar"));
-    char         status_string[256];
-    char         title_string[1024];
-
-    if (!config->rom_loaded)
-    {
-        snprintf (title_string, 1024, "Snes9x");
-        status_string[0] = '\0';
-    }
-    else
-    {
-        if (config->netplay_activated)
-        {
-            if (config->netplay_server_up)
-            {
-                snprintf (status_string,
-                          256,
-                          _("%sHosting NetPlay - %s"),
-                          is_paused () || NetPlay.Paused ? _("Paused - ") : "",
-                          S9xBasenameNoExt (Memory.ROMFilename));
-            }
-            else
-            {
-                snprintf (status_string,
-                          256,
-                          _("%s%s on NetPlay %s:%d - Player %d"),
-                          is_paused () || NetPlay.Paused ? _("Paused - ") : "",
-                          S9xBasenameNoExt (Memory.ROMFilename),
-                          NetPlay.ServerHostName,
-                          NetPlay.Port,
-                          NetPlay.Player);
-            }
-
-        }
-        else
-        {
-            snprintf (status_string,
-                      256,
-                      "%s%s",
-                      is_paused () ? _("Paused - ") : "",
-                      S9xBasenameNoExt (Memory.ROMFilename));
-        }
-
-        snprintf (title_string, 1024, "%s", S9xBasenameNoExt (Memory.ROMFilename));
-    }
-
-    gtk_window_set_title (GTK_WINDOW (window), title_string);
-    gtk_statusbar_pop (bar, gtk_statusbar_get_context_id (bar, "none"));
-    gtk_statusbar_push (bar, gtk_statusbar_get_context_id (bar, "none"), status_string);
-}
-
 void
 Snes9xWindow::show_rom_info ()
 {
@@ -1488,34 +1401,29 @@ Snes9xWindow::configure_widgets ()
         if (!config->fullscreen)
         {
             gtk_widget_show (get_widget ("menubar"));
-
-            gtk_widget_set_visible (get_widget ("statusbar"),
-                                    config->statusbar_visible);
         }
         else
         {
             gtk_widget_hide (get_widget ("menubar"));
-            gtk_widget_hide (get_widget ("statusbar"));
         }
 
         gtk_widget_hide (get_widget ("hide_ui"));
+        gtk_widget_hide (get_widget ("hide_ui_separator"));
     }
     else
     {
         enable_widget ("fullscreen_item", true);
 
         gtk_widget_show (get_widget ("hide_ui"));
+        gtk_widget_show (get_widget ("hide_ui_separator"));
 
         if (config->ui_visible)
         {
             gtk_widget_show (get_widget ("menubar"));
-            gtk_widget_set_visible (get_widget ("statusbar"),
-                                    config->statusbar_visible);
         }
         else
         {
             gtk_widget_hide (get_widget ("menubar"));
-            gtk_widget_hide (get_widget ("statusbar"));
         }
     }
 
@@ -1726,7 +1634,8 @@ Snes9xWindow::enter_fullscreen_mode ()
     gdk_display_sync (gdk_display_get_default ());
     gtk_window_present (GTK_WINDOW (window));
 #ifdef GDK_WINDOWING_X11
-    if (GDK_IS_X11_WINDOW (gtk_widget_get_window (GTK_WIDGET (window))))
+    if (GDK_IS_X11_WINDOW (gtk_widget_get_window (GTK_WIDGET (window))) &&
+        config->default_esc_behavior != ESC_TOGGLE_MENUBAR)
     {
         set_bypass_compositor (gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (window))),
                                gdk_x11_window_get_xid (gtk_widget_get_window (GTK_WIDGET (window))),
@@ -1802,33 +1711,6 @@ Snes9xWindow::leave_fullscreen_mode ()
 }
 
 void
-Snes9xWindow::toggle_statusbar ()
-{
-    GtkWidget     *item;
-    GtkAllocation allocation;
-    int           width = 0;
-    int           height = 0;
-
-    item = get_widget ("menubar");
-    gtk_widget_get_allocation (item, &allocation);
-    height += gtk_widget_get_visible (item) ? allocation.height : 0;
-
-    item = get_widget ("drawingarea");
-    gtk_widget_get_allocation (item, &allocation);
-    height += allocation.height;
-    width = allocation.width;
-
-    config->statusbar_visible = !config->statusbar_visible;
-    configure_widgets ();
-
-    item = get_widget ("statusbar");
-    gtk_widget_get_allocation (item, &allocation);
-    height += gtk_widget_get_visible (item) ? allocation.height : 0;
-
-    resize (width, height);
-}
-
-void
 Snes9xWindow::resize_viewport (int width, int height)
 {
     GtkWidget     *item;
@@ -1836,10 +1718,6 @@ Snes9xWindow::resize_viewport (int width, int height)
     int           y_padding = 0;
 
     item = get_widget ("menubar");
-    gtk_widget_get_allocation (item, &allocation);
-    y_padding += gtk_widget_get_visible (item) ? allocation.height : 0;
-
-    item = get_widget ("statusbar");
     gtk_widget_get_allocation (item, &allocation);
     y_padding += gtk_widget_get_visible (item) ? allocation.height : 0;
 
@@ -1989,7 +1867,6 @@ Snes9xWindow::propagate_pause_state ()
         }
 
         configure_widgets ();
-        update_statusbar ();
     }
 }
 

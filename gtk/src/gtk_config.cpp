@@ -100,7 +100,6 @@ int Snes9xConfig::load_defaults ()
     mute_sound_turbo = false;
     fullscreen = false;
     ui_visible = true;
-    statusbar_visible = false;
     default_esc_behavior = 1;
     prevent_screensaver = false;
     sound_driver = 0;
@@ -311,7 +310,6 @@ int Snes9xConfig::save_config_file ()
     cf.SetInt (z"ShaderParametersHeight", shader_parameters_height);
     cf.SetInt (z"CurrentDisplayTab", current_display_tab);
     outbool (cf, z"UIVisible", ui_visible);
-    outbool (cf, z"StatusBarVisible", statusbar_visible);
     if (default_esc_behavior != ESC_TOGGLE_MENUBAR)
         outbool (cf, z"Fullscreen", 0);
     else
@@ -542,7 +540,6 @@ int Snes9xConfig::load_config_file ()
     inint (z"ShaderParametersHeight", shader_parameters_height);
     inint (z"CurrentDisplayTab", current_display_tab);
     inbool (z"UIVisible", ui_visible);
-    inbool (z"StatusBarVisible", statusbar_visible);
     inbool (z"Fullscreen", fullscreen);
 
 #undef z
