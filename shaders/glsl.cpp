@@ -1185,6 +1185,7 @@ void GLSLShader::save(const char *filename)
         outs("float_framebuffer", p->fp ? "true" : "false");
         outs("srgb_framebuffer", p->srgb ? "true" : "false");
         outs("scale_type_x", scale_enum_to_string(p->scale_type_x));
+        outs("mipmap_input", p->mipmap_input ? "true" : "false");
         if (p->scale_type_x == GLSL_ABSOLUTE)
             outd("scale_x", (int)p->scale_x);
         else
