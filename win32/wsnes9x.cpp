@@ -3306,7 +3306,7 @@ int WINAPI WinMain(
 	PCEnd = PCStart;
 	PCEndTicks = timeGetTime()*1000;
 	PCStartTicks = timeGetTime()*1000;
-    PCFrameTime = PCFrameTimeNTSC = (__int64)((float)PCBase / 59.948743718592964824120603015098f);
+    PCFrameTime = PCFrameTimeNTSC = (__int64)((float)PCBase / 60.09881389744051f);
     PCFrameTimePAL = PCBase / 50;
 
 
