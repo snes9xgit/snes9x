@@ -43,7 +43,8 @@ enum {
     SPLASH_IMAGE_BLACK = 0,
     SPLASH_IMAGE_SMTPE = 1,
     SPLASH_IMAGE_PATTERN = 2,
-    SPLASH_IMAGE_BLUE = 3
+    SPLASH_IMAGE_BLUE = 3,
+    SPLASH_IMAGE_COMBO = 4
 };
 
 class Snes9xConfig

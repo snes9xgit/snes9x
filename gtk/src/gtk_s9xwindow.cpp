@@ -688,6 +688,8 @@ Snes9xWindow::Snes9xWindow (Snes9xConfig *config) :
 
 extern int gtk_splash_smtpe_size;
 extern unsigned char gtk_splash_smtpe[];
+extern int gtk_splash_combo_size;
+extern unsigned char gtk_splash_combo[];
 extern int gtk_splash_pattern_size;
 extern unsigned char gtk_splash_pattern[];
 
@@ -700,16 +702,20 @@ void Snes9xWindow::setup_splash()
     last_height = 224;
 
     if (config->splash_image == SPLASH_IMAGE_PATTERN ||
-        config->splash_image == SPLASH_IMAGE_SMTPE) {
+        config->splash_image == SPLASH_IMAGE_SMTPE   ||
+        config->splash_image == SPLASH_IMAGE_COMBO) {
         unsigned char *pattern = NULL;
         int pattern_size = 0;
 
         if (config->splash_image == SPLASH_IMAGE_PATTERN) {
             pattern = gtk_splash_pattern;
             pattern_size = gtk_splash_pattern_size;
-        } else {
+        } else if (config->splash_image == SPLASH_IMAGE_SMTPE) {
             pattern = gtk_splash_smtpe;
             pattern_size = gtk_splash_smtpe_size;
+        } else {
+            pattern = gtk_splash_combo;
+            pattern_size = gtk_splash_combo_size;
         }
 
         auto pixbuf_loader = gdk_pixbuf_loader_new_with_type("png", NULL);

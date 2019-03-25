@@ -87,7 +87,7 @@ int Snes9xConfig::load_defaults ()
     save_sram_after_secs = 0;
     rom_loaded = false;
     multithreading = false;
-    splash_image = SPLASH_IMAGE_PATTERN;
+    splash_image = SPLASH_IMAGE_COMBO;
     hw_accel = 0;
     allow_opengl = false;
     allow_xv = false;
@@ -247,7 +247,7 @@ int Snes9xConfig::save_config_file ()
     cf.SetInt   (z"NumberOfThreads", num_threads);
     cf.SetInt   (z"HardwareAcceleration", hw_accel, "0: None, 1: OpenGL, 2: XVideo");
     outbool (cf, z"BilinearFilter", Settings.BilinearFilter, "Smoothes scaled image");
-    cf.SetInt   (z"SplashBackground", splash_image, "0: Black, 1: Color bars, 2: Pattern, 3: Blue");
+    cf.SetInt   (z"SplashBackground", splash_image, "0: Black, 1: Color bars, 2: Pattern, 3: Blue, 4: Default");
 
 #undef z
 #define z "NTSC::"
