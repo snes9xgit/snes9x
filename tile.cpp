@@ -578,14 +578,9 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 		OFFSET_IN_LINE; \
 		for (l = LineCount; l > 0; l--, bp += 8 * PITCH, Offset += GFX.PPL) \
 		{ \
-			DRAW_PIXEL(0, Pix = bp[0]); \
-			DRAW_PIXEL(1, Pix = bp[1]); \
-			DRAW_PIXEL(2, Pix = bp[2]); \
-			DRAW_PIXEL(3, Pix = bp[3]); \
-			DRAW_PIXEL(4, Pix = bp[4]); \
-			DRAW_PIXEL(5, Pix = bp[5]); \
-			DRAW_PIXEL(6, Pix = bp[6]); \
-			DRAW_PIXEL(7, Pix = bp[7]); \
+			for (int x = 0; x < 8; x++) { \
+				DRAW_PIXEL(x, Pix = bp[x]); \
+			} \
 		} \
 	} \
 	else \
@@ -595,14 +590,9 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 		OFFSET_IN_LINE; \
 		for (l = LineCount; l > 0; l--, bp += 8 * PITCH, Offset += GFX.PPL) \
 		{ \
-			DRAW_PIXEL(0, Pix = bp[7]); \
-			DRAW_PIXEL(1, Pix = bp[6]); \
-			DRAW_PIXEL(2, Pix = bp[5]); \
-			DRAW_PIXEL(3, Pix = bp[4]); \
-			DRAW_PIXEL(4, Pix = bp[3]); \
-			DRAW_PIXEL(5, Pix = bp[2]); \
-			DRAW_PIXEL(6, Pix = bp[1]); \
-			DRAW_PIXEL(7, Pix = bp[0]); \
+			for (int x = 0; x < 8; x++) { \
+				DRAW_PIXEL(x, Pix = bp[7 - x]); \
+			} \
 		} \
 	} \
 	else \
@@ -612,14 +602,9 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 		OFFSET_IN_LINE; \
 		for (l = LineCount; l > 0; l--, bp -= 8 * PITCH, Offset += GFX.PPL) \
 		{ \
-			DRAW_PIXEL(0, Pix = bp[0]); \
-			DRAW_PIXEL(1, Pix = bp[1]); \
-			DRAW_PIXEL(2, Pix = bp[2]); \
-			DRAW_PIXEL(3, Pix = bp[3]); \
-			DRAW_PIXEL(4, Pix = bp[4]); \
-			DRAW_PIXEL(5, Pix = bp[5]); \
-			DRAW_PIXEL(6, Pix = bp[6]); \
-			DRAW_PIXEL(7, Pix = bp[7]); \
+			for (int x = 0; x < 8; x++) { \
+				DRAW_PIXEL(x, Pix = bp[x]); \
+			} \
 		} \
 	} \
 	else \
@@ -628,14 +613,9 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 		OFFSET_IN_LINE; \
 		for (l = LineCount; l > 0; l--, bp -= 8 * PITCH, Offset += GFX.PPL) \
 		{ \
-			DRAW_PIXEL(0, Pix = bp[7]); \
-			DRAW_PIXEL(1, Pix = bp[6]); \
-			DRAW_PIXEL(2, Pix = bp[5]); \
-			DRAW_PIXEL(3, Pix = bp[4]); \
-			DRAW_PIXEL(4, Pix = bp[3]); \
-			DRAW_PIXEL(5, Pix = bp[2]); \
-			DRAW_PIXEL(6, Pix = bp[1]); \
-			DRAW_PIXEL(7, Pix = bp[0]); \
+			for (int x = 0; x < 8; x++) { \
+				DRAW_PIXEL(x, Pix = bp[7 - x]); \
+			} \
 		} \
 	}
 
