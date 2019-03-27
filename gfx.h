@@ -165,9 +165,9 @@ inline uint16 COLOR_ADD(uint16 C1, uint16 C2)
 
 inline uint16 COLOR_SUB (uint16 C1, uint16 C2)
 {
-	int r = (C1 & (THIRD_COLOR_MASK | FIRST_COLOR_MASK)) | ((0x20 << 0) | (0x20 << RED_SHIFT_BITS));
-	int b = C2 & (THIRD_COLOR_MASK | FIRST_COLOR_MASK);
-	int rb = r - b;
+	int rb1 = (C1 & (THIRD_COLOR_MASK | FIRST_COLOR_MASK)) | ((0x20 << 0) | (0x20 << RED_SHIFT_BITS));
+	int rb2 = C2 & (THIRD_COLOR_MASK | FIRST_COLOR_MASK);
+	int rb = rb1 - rb2;
 	int rbcarry = rb & ((0x20 << RED_SHIFT_BITS) | (0x20 << 0));
 	int g = ((C1 & (SECOND_COLOR_MASK)) | (0x20 << GREEN_SHIFT_BITS)) - (C2 & (SECOND_COLOR_MASK));
 	int rgbsaturate = (rbcarry >> 5) * 0x1f + ((g & (0x20 << GREEN_SHIFT_BITS)) >> GREEN_SHIFT_BITS) * MAX_GREEN;
