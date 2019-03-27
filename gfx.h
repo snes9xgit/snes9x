@@ -131,8 +131,9 @@ extern struct SGFX	GFX;
 	((((((C1) & RGB_REMOVE_LOW_BITS_MASK) + \
 	((C2) & RGB_REMOVE_LOW_BITS_MASK)) >> 1) + \
 	((C1) & (C2) & RGB_LOW_BITS_MASK)) | ALPHA_BITS_MASK)
+#define COLOR_ADD_BRIGHTNESS1_2 COLOR_ADD1_2
 
-inline uint16 COLOR_ADD(uint16 C1, uint16 C2)
+inline uint16 COLOR_ADD_BRIGHTNESS(uint16 C1, uint16 C2)
 {
 	return ((brightness_cap[ (C1 >> RED_SHIFT_BITS)           +  (C2 >> RED_SHIFT_BITS)          ] << RED_SHIFT_BITS)   |
             (brightness_cap[((C1 >> GREEN_SHIFT_BITS) & 0x1f) + ((C2 >> GREEN_SHIFT_BITS) & 0x1f)] << GREEN_SHIFT_BITS) |
@@ -143,27 +144,39 @@ inline uint16 COLOR_ADD(uint16 C1, uint16 C2)
             (brightness_cap[ (C1                      & 0x1f) +  (C2                      & 0x1f)]      ));
 }
 
+inline uint16 COLOR_ADD(uint16 C1, uint16 C2)
+{
+	const int RED_MASK = 0x1F << RED_SHIFT_BITS;
+	const int GREEN_MASK = 0x1F << GREEN_SHIFT_BITS;
+	const int BLUE_MASK = 0x1F;
+
+	int rb = C1 & (RED_MASK | BLUE_MASK);
+	rb += C2 & (RED_MASK | BLUE_MASK);
+	int rbcarry = rb & ((0x20 << RED_SHIFT_BITS) | (0x20 << 0));
+	int g = (C1 & (GREEN_MASK)) + (C2 & (GREEN_MASK));
+	int rgbsaturate = (((g & (0x20 << GREEN_SHIFT_BITS)) | rbcarry) >> 5) * 0x1f;
+	return (uint16)((rb & (RED_MASK | BLUE_MASK)) | (g & GREEN_MASK) | rgbsaturate);
+}
+
+
 #define COLOR_SUB1_2(C1, C2) \
 	GFX.ZERO[(((C1) | RGB_HI_BITS_MASKx2) - \
 	((C2) & RGB_REMOVE_LOW_BITS_MASK)) >> 1]
 
 inline uint16 COLOR_SUB (uint16 C1, uint16 C2)
 {
-	uint16	mC1, mC2, v = ALPHA_BITS_MASK;
-
-	mC1 = C1 & FIRST_COLOR_MASK;
-	mC2 = C2 & FIRST_COLOR_MASK;
-	if (mC1 > mC2) v += (mC1 - mC2);
-
-	mC1 = C1 & SECOND_COLOR_MASK;
-	mC2 = C2 & SECOND_COLOR_MASK;
-	if (mC1 > mC2) v += (mC1 - mC2);
-
-	mC1 = C1 & THIRD_COLOR_MASK;
-	mC2 = C2 & THIRD_COLOR_MASK;
-	if (mC1 > mC2) v += (mC1 - mC2);
-
-	return (v);
+	int a = (C1 & (THIRD_COLOR_MASK | FIRST_COLOR_MASK)) | ((0x20 << 0) | (0x20 << RED_SHIFT_BITS));
+	int b = C2 & (THIRD_COLOR_MASK | FIRST_COLOR_MASK);
+	int c = a - b;
+	int d = c & ((0x20 << RED_SHIFT_BITS) | (0x20 << 0));
+	int e = (C1 & (SECOND_COLOR_MASK)) | (0x20 << GREEN_SHIFT_BITS);
+	int f = C2 & (SECOND_COLOR_MASK);
+	int g = e - f;
+	int h = (g & (0x20 << GREEN_SHIFT_BITS)) | d;
+	int i = h >> 5;
+	int j = i * 0x1F;
+	int k = ((c & (THIRD_COLOR_MASK | FIRST_COLOR_MASK)) | (g & SECOND_COLOR_MASK)) & j;
+	return (uint16)k;
 }
 
 void S9xStartScreenRefresh (void);
