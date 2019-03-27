@@ -154,8 +154,8 @@ inline uint16 COLOR_ADD(uint16 C1, uint16 C2)
 	rb += C2 & (RED_MASK | BLUE_MASK);
 	int rbcarry = rb & ((0x20 << RED_SHIFT_BITS) | (0x20 << 0));
 	int g = (C1 & (GREEN_MASK)) + (C2 & (GREEN_MASK));
-	int rgbsaturate = (((g & (0x20 << GREEN_SHIFT_BITS)) | rbcarry) >> 5) * 0x1f;
-	return (uint16)((rb & (RED_MASK | BLUE_MASK)) | (g & GREEN_MASK) | rgbsaturate);
+	int rgbsaturate = (rbcarry >> 5) * 0x1f + ((g & (0x20 << GREEN_SHIFT_BITS)) >> GREEN_SHIFT_BITS) * MAX_GREEN;
+	return (rb & (RED_MASK | BLUE_MASK)) | (g & GREEN_MASK) | rgbsaturate;
 }
 
 
@@ -165,18 +165,13 @@ inline uint16 COLOR_ADD(uint16 C1, uint16 C2)
 
 inline uint16 COLOR_SUB (uint16 C1, uint16 C2)
 {
-	int a = (C1 & (THIRD_COLOR_MASK | FIRST_COLOR_MASK)) | ((0x20 << 0) | (0x20 << RED_SHIFT_BITS));
+	int r = (C1 & (THIRD_COLOR_MASK | FIRST_COLOR_MASK)) | ((0x20 << 0) | (0x20 << RED_SHIFT_BITS));
 	int b = C2 & (THIRD_COLOR_MASK | FIRST_COLOR_MASK);
-	int c = a - b;
-	int d = c & ((0x20 << RED_SHIFT_BITS) | (0x20 << 0));
-	int e = (C1 & (SECOND_COLOR_MASK)) | (0x20 << GREEN_SHIFT_BITS);
-	int f = C2 & (SECOND_COLOR_MASK);
-	int g = e - f;
-	int h = (g & (0x20 << GREEN_SHIFT_BITS)) | d;
-	int i = h >> 5;
-	int j = i * 0x1F;
-	int k = ((c & (THIRD_COLOR_MASK | FIRST_COLOR_MASK)) | (g & SECOND_COLOR_MASK)) & j;
-	return (uint16)k;
+	int rb = r - b;
+	int rbcarry = rb & ((0x20 << RED_SHIFT_BITS) | (0x20 << 0));
+	int g = ((C1 & (SECOND_COLOR_MASK)) | (0x20 << GREEN_SHIFT_BITS)) - (C2 & (SECOND_COLOR_MASK));
+	int rgbsaturate = (rbcarry >> 5) * 0x1f + ((g & (0x20 << GREEN_SHIFT_BITS)) >> GREEN_SHIFT_BITS) * MAX_GREEN;
+	return ((rb & (THIRD_COLOR_MASK | FIRST_COLOR_MASK)) | (g & SECOND_COLOR_MASK)) & rgbsaturate;
 }
 
 void S9xStartScreenRefresh (void);
