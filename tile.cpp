@@ -21,41 +21,63 @@ static uint32	pixbit[8][16];
 static uint8	hrbit_odd[256];
 static uint8	hrbit_even[256];
 
-template<class MATHOP>
-static inline void DrawPixel_Normal1x1(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2, MATHOP Math)
-{
-	(void) OffsetInLine;
-	if (Z1 > GFX.DB[Offset + N] && (M))
-	{
-		GFX.S[Offset + N] = Math(GFX.ScreenColors[Pix], GFX.SubScreen[Offset + N], GFX.SubZBuffer[Offset + N]);
-		GFX.DB[Offset + N] = Z2;
-	}
-}
+#define OFFSET_IN_LINE \
+	uint32 OffsetInLine = Offset % GFX.RealPPL;
 
 template<class MATHOP>
-static inline void DrawPixel_Normal2x1(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2, MATHOP Math)
+struct Normal1x1
 {
-	(void) OffsetInLine;
-	if (Z1 > GFX.DB[Offset + 2 * N] && (M))
+	static void draw(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2)
 	{
-		GFX.S[Offset + 2 * N] = GFX.S[Offset + 2 * N + 1] = Math(GFX.ScreenColors[Pix], GFX.SubScreen[Offset + 2 * N], GFX.SubZBuffer[Offset + 2 * N]);
-		GFX.DB[Offset + 2 * N] = GFX.DB[Offset + 2 * N + 1] = Z2;
+		(void) OffsetInLine;
+		if (Z1 > GFX.DB[Offset + N] && (M))
+		{
+			GFX.S[Offset + N] = MATHOP::calc(GFX.ScreenColors[Pix], GFX.SubScreen[Offset + N], GFX.SubZBuffer[Offset + N]);
+			GFX.DB[Offset + N] = Z2;
+		}
 	}
-}
+};
 
 template<class MATHOP>
-static inline void DrawPixel_Hires2x1(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2, MATHOP Math)
+struct Normal2x1
 {
-	if (Z1 > GFX.DB[Offset + 2 * N] && (M))
+	static void draw(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2)
 	{
-		GFX.S[Offset + 2 * N + 1] = Math(GFX.ScreenColors[Pix], GFX.SubScreen[Offset + 2 * N], GFX.SubZBuffer[Offset + 2 * N]);
-		if ((OffsetInLine + 2 * N ) != (SNES_WIDTH - 1) << 1)
-			GFX.S[Offset + 2 * N + 2] = Math((GFX.ClipColors ? 0 : GFX.SubScreen[Offset + 2 * N + 2]), GFX.RealScreenColors[Pix], GFX.SubZBuffer[Offset + 2 * N]);
-		if ((OffsetInLine + 2 * N) == 0 || (OffsetInLine + 2 * N) == GFX.RealPPL)
-			GFX.S[Offset + 2 * N] = Math((GFX.ClipColors ? 0 : GFX.SubScreen[Offset + 2 * N]), GFX.RealScreenColors[Pix], GFX.SubZBuffer[Offset + 2 * N]);
-		GFX.DB[Offset + 2 * N] = GFX.DB[Offset + 2 * N + 1] = Z2;
+		(void) OffsetInLine;
+		if (Z1 > GFX.DB[Offset + 2 * N] && (M))
+		{
+			GFX.S[Offset + 2 * N] = GFX.S[Offset + 2 * N + 1] = MATHOP::calc(GFX.ScreenColors[Pix], GFX.SubScreen[Offset + 2 * N], GFX.SubZBuffer[Offset + 2 * N]);
+			GFX.DB[Offset + 2 * N] = GFX.DB[Offset + 2 * N + 1] = Z2;
+		}
 	}
-}
+};
+
+template<class MATHOP>
+struct Hires
+{
+	static void draw(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2)
+	{
+		if (Z1 > GFX.DB[Offset + 2 * N] && (M))
+		{
+			GFX.S[Offset + 2 * N + 1] = MATHOP::calc(GFX.ScreenColors[Pix], GFX.SubScreen[Offset + 2 * N], GFX.SubZBuffer[Offset + 2 * N]);
+			if ((OffsetInLine + 2 * N ) != (SNES_WIDTH - 1) << 1)
+				GFX.S[Offset + 2 * N + 2] = MATHOP::calc((GFX.ClipColors ? 0 : GFX.SubScreen[Offset + 2 * N + 2]), GFX.RealScreenColors[Pix], GFX.SubZBuffer[Offset + 2 * N]);
+			if ((OffsetInLine + 2 * N) == 0 || (OffsetInLine + 2 * N) == GFX.RealPPL)
+				GFX.S[Offset + 2 * N] = MATHOP::calc((GFX.ClipColors ? 0 : GFX.SubScreen[Offset + 2 * N]), GFX.RealScreenColors[Pix], GFX.SubZBuffer[Offset + 2 * N]);
+			GFX.DB[Offset + 2 * N] = GFX.DB[Offset + 2 * N + 1] = Z2;
+		}
+	}
+};
+
+struct Progressive
+{
+	static uint32 get(uint32 StartLine) { return StartLine; }
+};
+
+struct Interlace
+{
+	static uint32 get(uint32 StartLine) { return StartLine * 2 + BG.InterlaceLine; }
+};
 
 void S9xInitTileRenderer (void)
 {
@@ -586,9 +608,6 @@ struct NOMATH
 	{
 		return Main;
 	}
-	uint16 operator()(uint16 Main, uint16 Sub, uint8 SD) {
-		return calc(Main, Sub, SD);
-	}
 };
 
 template<class Op>
@@ -597,9 +616,6 @@ struct REGMATH
 	static uint16 calc(uint16 Main, uint16 Sub, uint8 SD)
 	{
 		return Op::fn(Main, (SD & 0x20) ? Sub : GFX.FixedColour);
-	}
-	uint16 operator()(uint16 Main, uint16 Sub, uint8 SD) {
-		return calc(Main, Sub, SD);
 	}
 };
 
@@ -610,9 +626,6 @@ struct MATHF1_2
 	{
 		return GFX.ClipColors ? Op::fn(Main, GFX.FixedColour) : Op::fn1_2(Main, GFX.FixedColour);
 	}
-	uint16 operator()(uint16 Main, uint16 Sub, uint8 SD) {
-		return calc(Main, Sub, SD);
-	}
 };
 
 template<class Op>
@@ -621,9 +634,6 @@ struct MATHS1_2
 	static uint16 calc(uint16 Main, uint16 Sub, uint8 SD)
 	{
 		return GFX.ClipColors ? REGMATH<Op>::calc(Main, Sub, SD) : (SD & 0x20) ? Op::fn1_2(Main, Sub) : Op::fn(Main, GFX.FixedColour);
-	}
-	uint16 operator()(uint16 Main, uint16 Sub, uint8 SD) {
-		return calc(Main, Sub, SD);
 	}
 };
 
@@ -638,68 +648,77 @@ struct MATHS1_2
 //     Z2 is the "cur_depth = new_depth". OBJ need the two separate.
 //     Pix is the pixel to draw.
 
+#define DRAW_PIXEL(N, M) DRAWPIXELOP::draw(N, M, Offset, OffsetInLine, Pix, Z1, Z2)
 #define Z1	GFX.Z1
 #define Z2	GFX.Z2
 
-#define DRAW_TILE() \
-	uint8			*pCache; \
-	int32	l; \
-	uint8	*bp, Pix; \
-	\
-	GET_CACHED_TILE(); \
-	if (IS_BLANK_TILE()) \
-		return; \
-	SELECT_PALETTE(); \
-	\
-	if (!(Tile & (V_FLIP | H_FLIP))) \
-	{ \
-		bp = pCache + BPSTART; \
-		OFFSET_IN_LINE; \
-		for (l = LineCount; l > 0; l--, bp += 8 * PITCH, Offset += GFX.PPL) \
-		{ \
-			for (int x = 0; x < 8; x++) { \
-				Pix = bp[x]; DRAW_PIXEL(x, Pix); \
-			} \
-		} \
-	} \
-	else \
-	if (!(Tile & V_FLIP)) \
-	{ \
-		bp = pCache + BPSTART; \
-		OFFSET_IN_LINE; \
-		for (l = LineCount; l > 0; l--, bp += 8 * PITCH, Offset += GFX.PPL) \
-		{ \
-			for (int x = 0; x < 8; x++) { \
-				Pix = bp[7 - x]; DRAW_PIXEL(x, Pix); \
-			} \
-		} \
-	} \
-	else \
-	if (!(Tile & H_FLIP)) \
-	{ \
-		bp = pCache + 56 - BPSTART; \
-		OFFSET_IN_LINE; \
-		for (l = LineCount; l > 0; l--, bp -= 8 * PITCH, Offset += GFX.PPL) \
-		{ \
-			for (int x = 0; x < 8; x++) { \
-				Pix = bp[x]; DRAW_PIXEL(x, Pix); \
-			} \
-		} \
-	} \
-	else \
-	{ \
-		bp = pCache + 56 - BPSTART; \
-		OFFSET_IN_LINE; \
-		for (l = LineCount; l > 0; l--, bp -= 8 * PITCH, Offset += GFX.PPL) \
-		{ \
-			for (int x = 0; x < 8; x++) { \
-				Pix = bp[7 - x]; DRAW_PIXEL(x, Pix); \
-			} \
-		} \
-	}
+#define DRAW_TILE	DrawTile16
+#define NAME1		DrawTile16
+#define ARGS_DEF	uint32 Tile, uint32 Offset, uint32 StartLine, uint32 LineCount
+#define ARGS		Tile, Offset, StartLine, LineCount
 
-#define NAME1	DrawTile16
-#define ARGS	uint32 Tile, uint32 Offset, uint32 StartLine, uint32 LineCount
+template<class DRAWPIXELOP, class BPSTARTOP, int PITCH>
+struct DrawTile16
+{
+	static void draw(ARGS_DEF)
+	{
+		uint8			*pCache;
+		int32	l;
+		uint8	*bp, Pix;
+
+		GET_CACHED_TILE();
+		if (IS_BLANK_TILE())
+			return;
+		SELECT_PALETTE();
+
+		if (!(Tile & (V_FLIP | H_FLIP)))
+		{
+			bp = pCache + BPSTARTOP::get(StartLine);
+			OFFSET_IN_LINE;
+			for (l = LineCount; l > 0; l--, bp += 8 * PITCH, Offset += GFX.PPL)
+			{
+				for (int x = 0; x < 8; x++) {
+					Pix = bp[x]; DRAW_PIXEL(x, Pix);
+				}
+			}
+		}
+		else
+		if (!(Tile & V_FLIP))
+		{
+			bp = pCache + BPSTARTOP::get(StartLine);
+			OFFSET_IN_LINE;
+			for (l = LineCount; l > 0; l--, bp += 8 * PITCH, Offset += GFX.PPL)
+			{
+				for (int x = 0; x < 8; x++) {
+					Pix = bp[7 - x]; DRAW_PIXEL(x, Pix);
+				}
+			}
+		}
+		else
+		if (!(Tile & H_FLIP))
+		{
+			bp = pCache + 56 - BPSTARTOP::get(StartLine);
+			OFFSET_IN_LINE;
+			for (l = LineCount; l > 0; l--, bp -= 8 * PITCH, Offset += GFX.PPL)
+			{
+				for (int x = 0; x < 8; x++) {
+					Pix = bp[x]; DRAW_PIXEL(x, Pix);
+				}
+			}
+		}
+		else
+		{
+			bp = pCache + 56 - BPSTARTOP::get(StartLine);
+			OFFSET_IN_LINE;
+			for (l = LineCount; l > 0; l--, bp -= 8 * PITCH, Offset += GFX.PPL)
+			{
+				for (int x = 0; x < 8; x++) {
+					Pix = bp[7 - x]; DRAW_PIXEL(x, Pix);
+				}
+			}
+		}
+	}
+};
 
 // Second-level include: Get the DrawTile16 renderers.
 
@@ -707,6 +726,7 @@ struct MATHS1_2
 
 #undef NAME1
 #undef ARGS
+#undef ARGS_DEF
 #undef DRAW_TILE
 #undef Z1
 #undef Z2
@@ -716,101 +736,109 @@ struct MATHS1_2
 #define Z1	GFX.Z1
 #define Z2	GFX.Z2
 
-#define DRAW_TILE() \
-	uint8			*pCache; \
-	int32	l; \
-	uint8	*bp, Pix, w; \
-	\
-	GET_CACHED_TILE(); \
-	if (IS_BLANK_TILE()) \
-		return; \
-	SELECT_PALETTE(); \
-	\
-	if (!(Tile & (V_FLIP | H_FLIP))) \
-	{ \
-		bp = pCache + BPSTART; \
-		OFFSET_IN_LINE; \
-		for (l = LineCount; l > 0; l--, bp += 8 * PITCH, Offset += GFX.PPL) \
-		{ \
-			w = Width; \
-			switch (StartPixel) \
-			{ \
-				case 0: Pix = bp[0]; DRAW_PIXEL(0, Pix); if (!--w) break; /* Fall through */ \
-				case 1: Pix = bp[1]; DRAW_PIXEL(1, Pix); if (!--w) break; /* Fall through */ \
-				case 2: Pix = bp[2]; DRAW_PIXEL(2, Pix); if (!--w) break; /* Fall through */ \
-				case 3: Pix = bp[3]; DRAW_PIXEL(3, Pix); if (!--w) break; /* Fall through */ \
-				case 4: Pix = bp[4]; DRAW_PIXEL(4, Pix); if (!--w) break; /* Fall through */ \
-				case 5: Pix = bp[5]; DRAW_PIXEL(5, Pix); if (!--w) break; /* Fall through */ \
-				case 6: Pix = bp[6]; DRAW_PIXEL(6, Pix); if (!--w) break; /* Fall through */ \
-				case 7: Pix = bp[7]; DRAW_PIXEL(7, Pix); break; \
-			} \
-		} \
-	} \
-	else \
-	if (!(Tile & V_FLIP)) \
-	{ \
-		bp = pCache + BPSTART; \
-		OFFSET_IN_LINE; \
-		for (l = LineCount; l > 0; l--, bp += 8 * PITCH, Offset += GFX.PPL) \
-		{ \
-			w = Width; \
-			switch (StartPixel) \
-			{ \
-				case 0: Pix = bp[7]; DRAW_PIXEL(0, Pix); if (!--w) break; /* Fall through */ \
-				case 1: Pix = bp[6]; DRAW_PIXEL(1, Pix); if (!--w) break; /* Fall through */ \
-				case 2: Pix = bp[5]; DRAW_PIXEL(2, Pix); if (!--w) break; /* Fall through */ \
-				case 3: Pix = bp[4]; DRAW_PIXEL(3, Pix); if (!--w) break; /* Fall through */ \
-				case 4: Pix = bp[3]; DRAW_PIXEL(4, Pix); if (!--w) break; /* Fall through */ \
-				case 5: Pix = bp[2]; DRAW_PIXEL(5, Pix); if (!--w) break; /* Fall through */ \
-				case 6: Pix = bp[1]; DRAW_PIXEL(6, Pix); if (!--w) break; /* Fall through */ \
-				case 7: Pix = bp[0]; DRAW_PIXEL(7, Pix); break; \
-			} \
-		} \
-	} \
-	else \
-	if (!(Tile & H_FLIP)) \
-	{ \
-		bp = pCache + 56 - BPSTART; \
-		OFFSET_IN_LINE; \
-		for (l = LineCount; l > 0; l--, bp -= 8 * PITCH, Offset += GFX.PPL) \
-		{ \
-			w = Width; \
-			switch (StartPixel) \
-			{ \
-				case 0: Pix = bp[0]; DRAW_PIXEL(0, Pix); if (!--w) break; /* Fall through */ \
-				case 1: Pix = bp[1]; DRAW_PIXEL(1, Pix); if (!--w) break; /* Fall through */ \
-				case 2: Pix = bp[2]; DRAW_PIXEL(2, Pix); if (!--w) break; /* Fall through */ \
-				case 3: Pix = bp[3]; DRAW_PIXEL(3, Pix); if (!--w) break; /* Fall through */ \
-				case 4: Pix = bp[4]; DRAW_PIXEL(4, Pix); if (!--w) break; /* Fall through */ \
-				case 5: Pix = bp[5]; DRAW_PIXEL(5, Pix); if (!--w) break; /* Fall through */ \
-				case 6: Pix = bp[6]; DRAW_PIXEL(6, Pix); if (!--w) break; /* Fall through */ \
-				case 7: Pix = bp[7]; DRAW_PIXEL(7, Pix); break; \
-			} \
-		} \
-	} \
-	else \
-	{ \
-		bp = pCache + 56 - BPSTART; \
-		OFFSET_IN_LINE; \
-		for (l = LineCount; l > 0; l--, bp -= 8 * PITCH, Offset += GFX.PPL) \
-		{ \
-			w = Width; \
-			switch (StartPixel) \
-			{ \
-				case 0: Pix = bp[7]; DRAW_PIXEL(0, Pix); if (!--w) break; /* Fall through */ \
-				case 1: Pix = bp[6]; DRAW_PIXEL(1, Pix); if (!--w) break; /* Fall through */ \
-				case 2: Pix = bp[5]; DRAW_PIXEL(2, Pix); if (!--w) break; /* Fall through */ \
-				case 3: Pix = bp[4]; DRAW_PIXEL(3, Pix); if (!--w) break; /* Fall through */ \
-				case 4: Pix = bp[3]; DRAW_PIXEL(4, Pix); if (!--w) break; /* Fall through */ \
-				case 5: Pix = bp[2]; DRAW_PIXEL(5, Pix); if (!--w) break; /* Fall through */ \
-				case 6: Pix = bp[1]; DRAW_PIXEL(6, Pix); if (!--w) break; /* Fall through */ \
-				case 7: Pix = bp[0]; DRAW_PIXEL(7, Pix); break; \
-			} \
-		} \
-	}
+#define DRAW_TILE	DrawClippedTile16
+#define NAME1		DrawClippedTile16
+#define ARGS_DEF	uint32 Tile, uint32 Offset, uint32 StartPixel, uint32 Width, uint32 StartLine, uint32 LineCount
+#define ARGS		Tile, Offset, StartPixel, Width, StartLine, LineCount
 
-#define NAME1	DrawClippedTile16
-#define ARGS	uint32 Tile, uint32 Offset, uint32 StartPixel, uint32 Width, uint32 StartLine, uint32 LineCount
+template<class DRAWPIXELOP, class BPSTARTOP, int PITCH>
+struct DrawClippedTile16
+{
+	static void draw(ARGS_DEF)
+	{
+		uint8			*pCache;
+		int32	l;
+		uint8	*bp, Pix, w;
+
+		GET_CACHED_TILE();
+		if (IS_BLANK_TILE())
+			return;
+		SELECT_PALETTE();
+
+		if (!(Tile & (V_FLIP | H_FLIP)))
+		{
+			bp = pCache + BPSTARTOP::get(StartLine);
+			OFFSET_IN_LINE;
+			for (l = LineCount; l > 0; l--, bp += 8 * PITCH, Offset += GFX.PPL)
+			{
+				w = Width;
+				switch (StartPixel)
+				{
+					case 0: Pix = bp[0]; DRAW_PIXEL(0, Pix); if (!--w) break; /* Fall through */
+					case 1: Pix = bp[1]; DRAW_PIXEL(1, Pix); if (!--w) break; /* Fall through */
+					case 2: Pix = bp[2]; DRAW_PIXEL(2, Pix); if (!--w) break; /* Fall through */
+					case 3: Pix = bp[3]; DRAW_PIXEL(3, Pix); if (!--w) break; /* Fall through */
+					case 4: Pix = bp[4]; DRAW_PIXEL(4, Pix); if (!--w) break; /* Fall through */
+					case 5: Pix = bp[5]; DRAW_PIXEL(5, Pix); if (!--w) break; /* Fall through */
+					case 6: Pix = bp[6]; DRAW_PIXEL(6, Pix); if (!--w) break; /* Fall through */
+					case 7: Pix = bp[7]; DRAW_PIXEL(7, Pix); break;
+				}
+			}
+		}
+		else
+		if (!(Tile & V_FLIP))
+		{
+			bp = pCache + BPSTARTOP::get(StartLine);
+			OFFSET_IN_LINE;
+			for (l = LineCount; l > 0; l--, bp += 8 * PITCH, Offset += GFX.PPL)
+			{
+				w = Width;
+				switch (StartPixel)
+				{
+					case 0: Pix = bp[7]; DRAW_PIXEL(0, Pix); if (!--w) break; /* Fall through */
+					case 1: Pix = bp[6]; DRAW_PIXEL(1, Pix); if (!--w) break; /* Fall through */
+					case 2: Pix = bp[5]; DRAW_PIXEL(2, Pix); if (!--w) break; /* Fall through */
+					case 3: Pix = bp[4]; DRAW_PIXEL(3, Pix); if (!--w) break; /* Fall through */
+					case 4: Pix = bp[3]; DRAW_PIXEL(4, Pix); if (!--w) break; /* Fall through */
+					case 5: Pix = bp[2]; DRAW_PIXEL(5, Pix); if (!--w) break; /* Fall through */
+					case 6: Pix = bp[1]; DRAW_PIXEL(6, Pix); if (!--w) break; /* Fall through */
+					case 7: Pix = bp[0]; DRAW_PIXEL(7, Pix); break;
+				}
+			}
+		}
+		else
+		if (!(Tile & H_FLIP))
+		{
+			bp = pCache + 56 - BPSTARTOP::get(StartLine);
+			OFFSET_IN_LINE;
+			for (l = LineCount; l > 0; l--, bp -= 8 * PITCH, Offset += GFX.PPL)
+			{
+				w = Width;
+				switch (StartPixel)
+				{
+					case 0: Pix = bp[0]; DRAW_PIXEL(0, Pix); if (!--w) break; /* Fall through */
+					case 1: Pix = bp[1]; DRAW_PIXEL(1, Pix); if (!--w) break; /* Fall through */
+					case 2: Pix = bp[2]; DRAW_PIXEL(2, Pix); if (!--w) break; /* Fall through */
+					case 3: Pix = bp[3]; DRAW_PIXEL(3, Pix); if (!--w) break; /* Fall through */
+					case 4: Pix = bp[4]; DRAW_PIXEL(4, Pix); if (!--w) break; /* Fall through */
+					case 5: Pix = bp[5]; DRAW_PIXEL(5, Pix); if (!--w) break; /* Fall through */
+					case 6: Pix = bp[6]; DRAW_PIXEL(6, Pix); if (!--w) break; /* Fall through */
+					case 7: Pix = bp[7]; DRAW_PIXEL(7, Pix); break;
+				}
+			}
+		}
+		else
+		{
+			bp = pCache + 56 - BPSTARTOP::get(StartLine);
+			OFFSET_IN_LINE;
+			for (l = LineCount; l > 0; l--, bp -= 8 * PITCH, Offset += GFX.PPL)
+			{
+				w = Width;
+				switch (StartPixel)
+				{
+					case 0: Pix = bp[7]; DRAW_PIXEL(0, Pix); if (!--w) break; /* Fall through */
+					case 1: Pix = bp[6]; DRAW_PIXEL(1, Pix); if (!--w) break; /* Fall through */
+					case 2: Pix = bp[5]; DRAW_PIXEL(2, Pix); if (!--w) break; /* Fall through */
+					case 3: Pix = bp[4]; DRAW_PIXEL(3, Pix); if (!--w) break; /* Fall through */
+					case 4: Pix = bp[3]; DRAW_PIXEL(4, Pix); if (!--w) break; /* Fall through */
+					case 5: Pix = bp[2]; DRAW_PIXEL(5, Pix); if (!--w) break; /* Fall through */
+					case 6: Pix = bp[1]; DRAW_PIXEL(6, Pix); if (!--w) break; /* Fall through */
+					case 7: Pix = bp[0]; DRAW_PIXEL(7, Pix); break;
+				}
+			}
+		}
+	}
+};
 
 // Second-level include: Get the DrawClippedTile16 renderers.
 
@@ -818,6 +846,7 @@ struct MATHS1_2
 
 #undef NAME1
 #undef ARGS
+#undef ARGS_DEF
 #undef DRAW_TILE
 #undef Z1
 #undef Z2
@@ -828,36 +857,44 @@ struct MATHS1_2
 #define Z1	GFX.Z1
 #define Z2	GFX.Z2
 
-#define DRAW_TILE() \
-	uint8			*pCache; \
-	int32	l, w; \
-	uint8	Pix; \
-	\
-	GET_CACHED_TILE(); \
-	if (IS_BLANK_TILE()) \
-		return; \
-	SELECT_PALETTE(); \
-	\
-	if (Tile & H_FLIP) \
-		StartPixel = 7 - StartPixel; \
-	\
-	if (Tile & V_FLIP) \
-		Pix = pCache[56 - BPSTART + StartPixel]; \
-	else \
-		Pix = pCache[BPSTART + StartPixel]; \
-	\
-	if (Pix) \
-	{ \
-		OFFSET_IN_LINE; \
-		for (l = LineCount; l > 0; l--, Offset += GFX.PPL) \
-		{ \
-			for (w = Width - 1; w >= 0; w--) \
-				DRAW_PIXEL(w, 1); \
-		} \
-	}
+#define DRAW_TILE	DrawMosaicPixel16
+#define NAME1		DrawMosaicPixel16
+#define ARGS_DEF	uint32 Tile, uint32 Offset, uint32 StartLine, uint32 StartPixel, uint32 Width, uint32 LineCount
+#define ARGS		Tile, Offset, StartLine, StartPixel, Width, LineCount
 
-#define NAME1	DrawMosaicPixel16
-#define ARGS	uint32 Tile, uint32 Offset, uint32 StartLine, uint32 StartPixel, uint32 Width, uint32 LineCount
+template<class DRAWPIXELOP, class BPSTARTOP, int PITCH>
+struct DrawMosaicPixel16
+{
+	static void draw(ARGS_DEF)
+	{
+		uint8			*pCache;
+		int32	l, w;
+		uint8	Pix;
+
+		GET_CACHED_TILE();
+		if (IS_BLANK_TILE())
+			return;
+		SELECT_PALETTE();
+
+		if (Tile & H_FLIP)
+			StartPixel = 7 - StartPixel;
+
+		if (Tile & V_FLIP)
+			Pix = pCache[56 - BPSTARTOP::get(StartLine) + StartPixel];
+		else
+			Pix = pCache[BPSTARTOP::get(StartLine) + StartPixel];
+
+		if (Pix)
+		{
+			OFFSET_IN_LINE;
+			for (l = LineCount; l > 0; l--, Offset += GFX.PPL)
+			{
+				for (w = Width - 1; w >= 0; w--)
+					DRAW_PIXEL(w, 1);
+			}
+		}
+	}
+};
 
 // Second-level include: Get the DrawMosaicPixel16 renderers.
 
@@ -865,6 +902,7 @@ struct MATHS1_2
 
 #undef NAME1
 #undef ARGS
+#undef ARGS_DEF
 #undef DRAW_TILE
 #undef Z1
 #undef Z2
@@ -879,21 +917,29 @@ struct MATHS1_2
 #define Z2				1
 #define Pix				0
 
-#define DRAW_TILE() \
-	uint32	l, x; \
-	\
-	GFX.RealScreenColors = IPPU.ScreenColors; \
-	GFX.ScreenColors = GFX.ClipColors ? BlackColourMap : GFX.RealScreenColors; \
-	\
-	OFFSET_IN_LINE; \
-	for (l = GFX.StartY; l <= GFX.EndY; l++, Offset += GFX.PPL) \
-	{ \
-		for (x = Left; x < Right; x++) \
-			DRAW_PIXEL(x, 1); \
-	}
+#define DRAW_TILE	DrawBackdrop16
+#define NAME1		DrawBackdrop16
+#define ARGS_DEF	uint32 Offset, uint32 Left, uint32 Right
+#define ARGS		Offset, Left, Right
 
-#define NAME1	DrawBackdrop16
-#define ARGS	uint32 Offset, uint32 Left, uint32 Right
+template<class DRAWPIXELOP, class BPSTARTOP, int PITCH>
+struct DrawBackdrop16
+{
+	static void draw(ARGS_DEF)
+	{
+		uint32	l, x;
+
+		GFX.RealScreenColors = IPPU.ScreenColors;
+		GFX.ScreenColors = GFX.ClipColors ? BlackColourMap : GFX.RealScreenColors;
+
+		OFFSET_IN_LINE;
+		for (l = GFX.StartY; l <= GFX.EndY; l++, Offset += GFX.PPL)
+		{
+			for (x = Left; x < Right; x++)
+				DRAW_PIXEL(x, 1);
+		}
+	}
+};
 
 // Second-level include: Get the DrawBackdrop16 renderers.
 
@@ -901,11 +947,13 @@ struct MATHS1_2
 
 #undef NAME1
 #undef ARGS
+#undef ARGS_DEF
 #undef DRAW_TILE
 #undef Pix
 #undef Z1
 #undef Z2
 #undef NO_INTERLACE
+#undef DRAW_PIXEL
 
 // Basic routine to render a chunk of a Mode 7 BG.
 // Mode 7 has no interlace, so BPSTART and PITCH are unused.
@@ -920,253 +968,294 @@ struct MATHS1_2
 extern struct SLineMatrixData	LineMatrixData[240];
 
 #define NO_INTERLACE	1
-#define Z1				(D + 7)
-#define Z2				(D + 7)
-#define MASK			0xff
-#define DCMODE			(Memory.FillRAM[0x2130] & 1)
-#define BG				0
 
-#define DRAW_TILE_NORMAL() \
-	uint8	*VRAM1 = Memory.VRAM + 1; \
-	\
-	if (DCMODE) \
-	{ \
-		GFX.RealScreenColors = DirectColourMaps[0]; \
-	} \
-	else \
-		GFX.RealScreenColors = IPPU.ScreenColors; \
-	\
-	GFX.ScreenColors = GFX.ClipColors ? BlackColourMap : GFX.RealScreenColors; \
-	\
-	int	aa, cc; \
-	int	startx; \
-	\
-	uint32	Offset = GFX.StartY * GFX.PPL; \
-	struct SLineMatrixData	*l = &LineMatrixData[GFX.StartY]; \
-	\
-	OFFSET_IN_LINE; \
-	for (uint32 Line = GFX.StartY; Line <= GFX.EndY; Line++, Offset += GFX.PPL, l++) \
-	{ \
-		int	yy, starty; \
-		\
-		int32	HOffset = ((int32) l->M7HOFS  << 19) >> 19; \
-		int32	VOffset = ((int32) l->M7VOFS  << 19) >> 19; \
-		\
-		int32	CentreX = ((int32) l->CentreX << 19) >> 19; \
-		int32	CentreY = ((int32) l->CentreY << 19) >> 19; \
-		\
-		if (PPU.Mode7VFlip) \
-			starty = 255 - (int) (Line + 1); \
-		else \
-			starty = Line + 1; \
-		\
-		yy = CLIP_10_BIT_SIGNED(VOffset - CentreY); \
-		\
-		int	BB = ((l->MatrixB * starty) & ~63) + ((l->MatrixB * yy) & ~63) + (CentreX << 8); \
-		int	DD = ((l->MatrixD * starty) & ~63) + ((l->MatrixD * yy) & ~63) + (CentreY << 8); \
-		\
-		if (PPU.Mode7HFlip) \
-		{ \
-			startx = Right - 1; \
-			aa = -l->MatrixA; \
-			cc = -l->MatrixC; \
-		} \
-		else \
-		{ \
-			startx = Left; \
-			aa = l->MatrixA; \
-			cc = l->MatrixC; \
-		} \
-		\
-		int	xx = CLIP_10_BIT_SIGNED(HOffset - CentreX); \
-		int	AA = l->MatrixA * startx + ((l->MatrixA * xx) & ~63); \
-		int	CC = l->MatrixC * startx + ((l->MatrixC * xx) & ~63); \
-		\
-		uint8	Pix; \
-		\
-		if (!PPU.Mode7Repeat) \
-		{ \
-			for (uint32 x = Left; x < Right; x++, AA += aa, CC += cc) \
-			{ \
-				int	X = ((AA + BB) >> 8) & 0x3ff; \
-				int	Y = ((CC + DD) >> 8) & 0x3ff; \
-				\
-				uint8	*TileData = VRAM1 + (Memory.VRAM[((Y & ~7) << 5) + ((X >> 2) & ~1)] << 7); \
-				uint8	b = *(TileData + ((Y & 7) << 4) + ((X & 7) << 1)); \
-				\
-				Pix = b & MASK; DRAW_PIXEL(x, Pix); \
-			} \
-		} \
-		else \
-		{ \
-			for (uint32 x = Left; x < Right; x++, AA += aa, CC += cc) \
-			{ \
-				int	X = ((AA + BB) >> 8); \
-				int	Y = ((CC + DD) >> 8); \
-				\
-				uint8	b; \
-				\
-				if (((X | Y) & ~0x3ff) == 0) \
-				{ \
-					uint8	*TileData = VRAM1 + (Memory.VRAM[((Y & ~7) << 5) + ((X >> 2) & ~1)] << 7); \
-					b = *(TileData + ((Y & 7) << 4) + ((X & 7) << 1)); \
-				} \
-				else \
-				if (PPU.Mode7Repeat == 3) \
-					b = *(VRAM1    + ((Y & 7) << 4) + ((X & 7) << 1)); \
-				else \
-					continue; \
-				\
-				Pix = b & MASK; DRAW_PIXEL(x, Pix); \
-			} \
-		} \
-	}
-
-#define DRAW_TILE_MOSAIC() \
-	uint8	*VRAM1 = Memory.VRAM + 1; \
-	\
-	if (DCMODE) \
-	{ \
-		GFX.RealScreenColors = DirectColourMaps[0]; \
-	} \
-	else \
-		GFX.RealScreenColors = IPPU.ScreenColors; \
-	\
-	GFX.ScreenColors = GFX.ClipColors ? BlackColourMap : GFX.RealScreenColors; \
-	\
-	int	aa, cc; \
-	int	startx, StartY = GFX.StartY; \
-	\
-	int		HMosaic = 1, VMosaic = 1, MosaicStart = 0; \
-	int32	MLeft = Left, MRight = Right; \
-	\
-	if (PPU.BGMosaic[0]) \
-	{ \
-		VMosaic = PPU.Mosaic; \
-		MosaicStart = ((uint32) GFX.StartY - PPU.MosaicStart) % VMosaic; \
-		StartY -= MosaicStart; \
-	} \
-	\
-	if (PPU.BGMosaic[BG]) \
-	{ \
-		HMosaic = PPU.Mosaic; \
-		MLeft  -= MLeft  % HMosaic; \
-		MRight += HMosaic - 1; \
-		MRight -= MRight % HMosaic; \
-	} \
-	\
-	uint32	Offset = StartY * GFX.PPL; \
-	struct SLineMatrixData	*l = &LineMatrixData[StartY]; \
-	\
-	OFFSET_IN_LINE; \
-	for (uint32 Line = StartY; Line <= GFX.EndY; Line += VMosaic, Offset += VMosaic * GFX.PPL, l += VMosaic) \
-	{ \
-		if (Line + VMosaic > GFX.EndY) \
-			VMosaic = GFX.EndY - Line + 1; \
-		\
-		int	yy, starty; \
-		\
-		int32	HOffset = ((int32) l->M7HOFS  << 19) >> 19; \
-		int32	VOffset = ((int32) l->M7VOFS  << 19) >> 19; \
-		\
-		int32	CentreX = ((int32) l->CentreX << 19) >> 19; \
-		int32	CentreY = ((int32) l->CentreY << 19) >> 19; \
-		\
-		if (PPU.Mode7VFlip) \
-			starty = 255 - (int) (Line + 1); \
-		else \
-			starty = Line + 1; \
-		\
-		yy = CLIP_10_BIT_SIGNED(VOffset - CentreY); \
-		\
-		int	BB = ((l->MatrixB * starty) & ~63) + ((l->MatrixB * yy) & ~63) + (CentreX << 8); \
-		int	DD = ((l->MatrixD * starty) & ~63) + ((l->MatrixD * yy) & ~63) + (CentreY << 8); \
-		\
-		if (PPU.Mode7HFlip) \
-		{ \
-			startx = MRight - 1; \
-			aa = -l->MatrixA; \
-			cc = -l->MatrixC; \
-		} \
-		else \
-		{ \
-			startx = MLeft; \
-			aa = l->MatrixA; \
-			cc = l->MatrixC; \
-		} \
-		\
-		int	xx = CLIP_10_BIT_SIGNED(HOffset - CentreX); \
-		int	AA = l->MatrixA * startx + ((l->MatrixA * xx) & ~63); \
-		int	CC = l->MatrixC * startx + ((l->MatrixC * xx) & ~63); \
-		\
-		uint8	Pix; \
-		uint8	ctr = 1; \
-		\
-		if (!PPU.Mode7Repeat) \
-		{ \
-			for (int32 x = MLeft; x < MRight; x++, AA += aa, CC += cc) \
-			{ \
-				if (--ctr) \
-					continue; \
-				ctr = HMosaic; \
-				\
-				int	X = ((AA + BB) >> 8) & 0x3ff; \
-				int	Y = ((CC + DD) >> 8) & 0x3ff; \
-				\
-				uint8	*TileData = VRAM1 + (Memory.VRAM[((Y & ~7) << 5) + ((X >> 2) & ~1)] << 7); \
-				uint8	b = *(TileData + ((Y & 7) << 4) + ((X & 7) << 1)); \
-				\
-				if ((Pix = (b & MASK))) \
-				{ \
-					for (int32 h = MosaicStart; h < VMosaic; h++) \
-					{ \
-						for (int32 w = x + HMosaic - 1; w >= x; w--) \
-							DRAW_PIXEL(w + h * GFX.PPL, (w >= (int32) Left && w < (int32) Right)); \
-					} \
-				} \
-			} \
-		} \
-		else \
-		{ \
-			for (int32 x = MLeft; x < MRight; x++, AA += aa, CC += cc) \
-			{ \
-				if (--ctr) \
-					continue; \
-				ctr = HMosaic; \
-				\
-				int	X = ((AA + BB) >> 8); \
-				int	Y = ((CC + DD) >> 8); \
-				\
-				uint8	b; \
-				\
-				if (((X | Y) & ~0x3ff) == 0) \
-				{ \
-					uint8	*TileData = VRAM1 + (Memory.VRAM[((Y & ~7) << 5) + ((X >> 2) & ~1)] << 7); \
-					b = *(TileData + ((Y & 7) << 4) + ((X & 7) << 1)); \
-				} \
-				else \
-				if (PPU.Mode7Repeat == 3) \
-					b = *(VRAM1    + ((Y & 7) << 4) + ((X & 7) << 1)); \
-				else \
-					continue; \
-				\
-				if ((Pix = (b & MASK))) \
-				{ \
-					for (int32 h = MosaicStart; h < VMosaic; h++) \
-					{ \
-						for (int32 w = x + HMosaic - 1; w >= x; w--) \
-							DRAW_PIXEL(w + h * GFX.PPL, (w >= (int32) Left && w < (int32) Right)); \
-					} \
-				} \
-			} \
-		} \
-		\
-		MosaicStart = 0; \
-	}
-
-#define DRAW_TILE()	DRAW_TILE_NORMAL()
+#define DRAW_TILE	DrawMode7BG1
 #define NAME1		DrawMode7BG1
-#define ARGS		uint32 Left, uint32 Right, int D
+#define ARGS_DEF	uint32 Left, uint32 Right, int D
+#define ARGS		Left, Right, D
+
+#define DRAW_PIXEL(N, M) DRAWPIXELOP::draw(N, M, Offset, OffsetInLine, Pix, OP::Z1(D, b), OP::Z2(D, b))
+
+struct DrawMode7BG1_OP
+{
+	enum {
+		MASK = 0xff,
+		BG   = 0
+	};
+	static uint8 Z1(int D, uint8 b) { return D + 7; }
+	static uint8 Z2(int D, uint8 b) { return D + 7; }
+	static uint8 DCMODE() { return Memory.FillRAM[0x2130] & 1; }
+};
+struct DrawMode7BG2_OP
+{
+	enum {
+		MASK = 0x7f,
+		BG   = 1
+	};
+	static uint8 Z1(int D, uint8 b) { return D + ((b & 0x80) ? 11 : 3); }
+	static uint8 Z2(int D, uint8 b) { return D + ((b & 0x80) ? 11 : 3); }
+	static uint8 DCMODE() { return 0; }
+};
+
+template<class DRAWPIXELOP, class BPSTARTOP, int PITCH, class OP>
+struct DrawTileNormalBase
+{
+	static void draw(ARGS_DEF)
+	{
+		uint8	*VRAM1 = Memory.VRAM + 1;
+
+		if (OP::DCMODE())
+		{
+			GFX.RealScreenColors = DirectColourMaps[0];
+		}
+		else
+			GFX.RealScreenColors = IPPU.ScreenColors;
+
+		GFX.ScreenColors = GFX.ClipColors ? BlackColourMap : GFX.RealScreenColors;
+
+		int	aa, cc;
+		int	startx;
+
+		uint32	Offset = GFX.StartY * GFX.PPL;
+		struct SLineMatrixData	*l = &LineMatrixData[GFX.StartY];
+
+		OFFSET_IN_LINE;
+		for (uint32 Line = GFX.StartY; Line <= GFX.EndY; Line++, Offset += GFX.PPL, l++)
+		{
+			int	yy, starty;
+
+			int32	HOffset = ((int32) l->M7HOFS  << 19) >> 19;
+			int32	VOffset = ((int32) l->M7VOFS  << 19) >> 19;
+
+			int32	CentreX = ((int32) l->CentreX << 19) >> 19;
+			int32	CentreY = ((int32) l->CentreY << 19) >> 19;
+
+			if (PPU.Mode7VFlip)
+				starty = 255 - (int) (Line + 1);
+			else
+				starty = Line + 1;
+
+			yy = CLIP_10_BIT_SIGNED(VOffset - CentreY);
+
+			int	BB = ((l->MatrixB * starty) & ~63) + ((l->MatrixB * yy) & ~63) + (CentreX << 8);
+			int	DD = ((l->MatrixD * starty) & ~63) + ((l->MatrixD * yy) & ~63) + (CentreY << 8);
+
+			if (PPU.Mode7HFlip)
+			{
+				startx = Right - 1;
+				aa = -l->MatrixA;
+				cc = -l->MatrixC;
+			}
+			else
+			{
+				startx = Left;
+				aa = l->MatrixA;
+				cc = l->MatrixC;
+			}
+
+			int	xx = CLIP_10_BIT_SIGNED(HOffset - CentreX);
+			int	AA = l->MatrixA * startx + ((l->MatrixA * xx) & ~63);
+			int	CC = l->MatrixC * startx + ((l->MatrixC * xx) & ~63);
+
+			uint8	Pix;
+
+			if (!PPU.Mode7Repeat)
+			{
+				for (uint32 x = Left; x < Right; x++, AA += aa, CC += cc)
+				{
+					int	X = ((AA + BB) >> 8) & 0x3ff;
+					int	Y = ((CC + DD) >> 8) & 0x3ff;
+
+					uint8	*TileData = VRAM1 + (Memory.VRAM[((Y & ~7) << 5) + ((X >> 2) & ~1)] << 7);
+					uint8	b = *(TileData + ((Y & 7) << 4) + ((X & 7) << 1));
+
+					Pix = b & OP::MASK; DRAW_PIXEL(x, Pix);
+				}
+			}
+			else
+			{
+				for (uint32 x = Left; x < Right; x++, AA += aa, CC += cc)
+				{
+					int	X = ((AA + BB) >> 8);
+					int	Y = ((CC + DD) >> 8);
+
+					uint8	b;
+
+					if (((X | Y) & ~0x3ff) == 0)
+					{
+						uint8	*TileData = VRAM1 + (Memory.VRAM[((Y & ~7) << 5) + ((X >> 2) & ~1)] << 7);
+						b = *(TileData + ((Y & 7) << 4) + ((X & 7) << 1));
+					}
+					else
+					if (PPU.Mode7Repeat == 3)
+						b = *(VRAM1    + ((Y & 7) << 4) + ((X & 7) << 1));
+					else
+						continue;
+
+					Pix = b & OP::MASK; DRAW_PIXEL(x, Pix);
+				}
+			}
+		}
+	}
+};
+
+template<class DRAWPIXELOP, class BPSTARTOP, int PITCH>
+struct DrawMode7BG1 : public DrawTileNormalBase<DRAWPIXELOP, BPSTARTOP, PITCH, DrawMode7BG1_OP> {};
+template<class DRAWPIXELOP, class BPSTARTOP, int PITCH>
+struct DrawMode7BG2 : public DrawTileNormalBase<DRAWPIXELOP, BPSTARTOP, PITCH, DrawMode7BG2_OP> {};
+
+template<class DRAWPIXELOP, class BPSTARTOP, int PITCH, class OP>
+struct DrawTileMosaicBase
+{
+	static void draw(ARGS_DEF)
+	{
+		uint8	*VRAM1 = Memory.VRAM + 1;
+
+		if (OP::DCMODE())
+		{
+			GFX.RealScreenColors = DirectColourMaps[0];
+		}
+		else
+			GFX.RealScreenColors = IPPU.ScreenColors;
+
+		GFX.ScreenColors = GFX.ClipColors ? BlackColourMap : GFX.RealScreenColors;
+
+		int	aa, cc;
+		int	startx, StartY = GFX.StartY;
+
+		int		HMosaic = 1, VMosaic = 1, MosaicStart = 0;
+		int32	MLeft = Left, MRight = Right;
+
+		if (PPU.BGMosaic[0])
+		{
+			VMosaic = PPU.Mosaic;
+			MosaicStart = ((uint32) GFX.StartY - PPU.MosaicStart) % VMosaic;
+			StartY -= MosaicStart;
+		}
+
+		if (PPU.BGMosaic[OP::BG])
+		{
+			HMosaic = PPU.Mosaic;
+			MLeft  -= MLeft  % HMosaic;
+			MRight += HMosaic - 1;
+			MRight -= MRight % HMosaic;
+		}
+
+		uint32	Offset = StartY * GFX.PPL;
+		struct SLineMatrixData	*l = &LineMatrixData[StartY];
+
+		OFFSET_IN_LINE;
+		for (uint32 Line = StartY; Line <= GFX.EndY; Line += VMosaic, Offset += VMosaic * GFX.PPL, l += VMosaic)
+		{
+			if (Line + VMosaic > GFX.EndY)
+				VMosaic = GFX.EndY - Line + 1;
+
+			int	yy, starty;
+
+			int32	HOffset = ((int32) l->M7HOFS  << 19) >> 19;
+			int32	VOffset = ((int32) l->M7VOFS  << 19) >> 19;
+
+			int32	CentreX = ((int32) l->CentreX << 19) >> 19;
+			int32	CentreY = ((int32) l->CentreY << 19) >> 19;
+
+			if (PPU.Mode7VFlip)
+				starty = 255 - (int) (Line + 1);
+			else
+				starty = Line + 1;
+
+			yy = CLIP_10_BIT_SIGNED(VOffset - CentreY);
+
+			int	BB = ((l->MatrixB * starty) & ~63) + ((l->MatrixB * yy) & ~63) + (CentreX << 8);
+			int	DD = ((l->MatrixD * starty) & ~63) + ((l->MatrixD * yy) & ~63) + (CentreY << 8);
+
+			if (PPU.Mode7HFlip)
+			{
+				startx = MRight - 1;
+				aa = -l->MatrixA;
+				cc = -l->MatrixC;
+			}
+			else
+			{
+				startx = MLeft;
+				aa = l->MatrixA;
+				cc = l->MatrixC;
+			}
+
+			int	xx = CLIP_10_BIT_SIGNED(HOffset - CentreX);
+			int	AA = l->MatrixA * startx + ((l->MatrixA * xx) & ~63);
+			int	CC = l->MatrixC * startx + ((l->MatrixC * xx) & ~63);
+
+			uint8	Pix;
+			uint8	ctr = 1;
+
+			if (!PPU.Mode7Repeat)
+			{
+				for (int32 x = MLeft; x < MRight; x++, AA += aa, CC += cc)
+				{
+					if (--ctr)
+						continue;
+					ctr = HMosaic;
+
+					int	X = ((AA + BB) >> 8) & 0x3ff;
+					int	Y = ((CC + DD) >> 8) & 0x3ff;
+
+					uint8	*TileData = VRAM1 + (Memory.VRAM[((Y & ~7) << 5) + ((X >> 2) & ~1)] << 7);
+					uint8	b = *(TileData + ((Y & 7) << 4) + ((X & 7) << 1));
+
+					if ((Pix = (b & OP::MASK)))
+					{
+						for (int32 h = MosaicStart; h < VMosaic; h++)
+						{
+							for (int32 w = x + HMosaic - 1; w >= x; w--)
+								DRAW_PIXEL(w + h * GFX.PPL, (w >= (int32) Left && w < (int32) Right));
+						}
+					}
+				}
+			}
+			else
+			{
+				for (int32 x = MLeft; x < MRight; x++, AA += aa, CC += cc)
+				{
+					if (--ctr)
+						continue;
+					ctr = HMosaic;
+
+					int	X = ((AA + BB) >> 8);
+					int	Y = ((CC + DD) >> 8);
+
+					uint8	b;
+
+					if (((X | Y) & ~0x3ff) == 0)
+					{
+						uint8	*TileData = VRAM1 + (Memory.VRAM[((Y & ~7) << 5) + ((X >> 2) & ~1)] << 7);
+						b = *(TileData + ((Y & 7) << 4) + ((X & 7) << 1));
+					}
+					else
+					if (PPU.Mode7Repeat == 3)
+						b = *(VRAM1    + ((Y & 7) << 4) + ((X & 7) << 1));
+					else
+						continue;
+
+					if ((Pix = (b & OP::MASK)))
+					{
+						for (int32 h = MosaicStart; h < VMosaic; h++)
+						{
+							for (int32 w = x + HMosaic - 1; w >= x; w--)
+								DRAW_PIXEL(w + h * GFX.PPL, (w >= (int32) Left && w < (int32) Right));
+						}
+					}
+				}
+			}
+
+			MosaicStart = 0;
+		}
+	}
+};
+
+template<class DRAWPIXELOP, class BPSTARTOP, int PITCH>
+struct DrawMode7MosaicBG1 : public DrawTileMosaicBase<DRAWPIXELOP, BPSTARTOP, PITCH, DrawMode7BG1_OP> {};
+template<class DRAWPIXELOP, class BPSTARTOP, int PITCH>
+struct DrawMode7MosaicBG2 : public DrawTileMosaicBase<DRAWPIXELOP, BPSTARTOP, PITCH, DrawMode7BG2_OP> {};
 
 // Second-level include: Get the DrawMode7BG1 renderers.
 
@@ -1175,7 +1264,7 @@ extern struct SLineMatrixData	LineMatrixData[240];
 #undef NAME1
 #undef DRAW_TILE
 
-#define DRAW_TILE()	DRAW_TILE_MOSAIC()
+#define DRAW_TILE	DrawMode7MosaicBG1
 #define NAME1		DrawMode7MosaicBG1
 
 // Second-level include: Get the DrawMode7MosaicBG1 renderers.
@@ -1184,19 +1273,9 @@ extern struct SLineMatrixData	LineMatrixData[240];
 
 #undef DRAW_TILE
 #undef NAME1
-#undef Z1
-#undef Z2
-#undef MASK
-#undef DCMODE
-#undef BG
 
 #define NAME1		DrawMode7BG2
-#define DRAW_TILE()	DRAW_TILE_NORMAL()
-#define Z1			(D + ((b & 0x80) ? 11 : 3))
-#define Z2			(D + ((b & 0x80) ? 11 : 3))
-#define MASK		0x7f
-#define DCMODE		0
-#define BG			1
+#define DRAW_TILE	DrawMode7BG2
 
 // Second-level include: Get the DrawMode7BG2 renderers.
 
@@ -1205,23 +1284,18 @@ extern struct SLineMatrixData	LineMatrixData[240];
 #undef NAME1
 #undef DRAW_TILE
 
-#define DRAW_TILE()	DRAW_TILE_MOSAIC()
+#define DRAW_TILE	DrawMode7MosaicBG2
 #define NAME1		DrawMode7MosaicBG2
 
 // Second-level include: Get the DrawMode7MosaicBG2 renderers.
 
 #include "tile.cpp"
 
-#undef MASK
-#undef DCMODE
-#undef BG
 #undef NAME1
 #undef ARGS
+#undef ARGS_DEF
 #undef DRAW_TILE
-#undef DRAW_TILE_NORMAL
-#undef DRAW_TILE_MOSAIC
-#undef Z1
-#undef Z2
+#undef DRAW_PIXEL
 #undef NO_INTERLACE
 
 /*****************************************************************************/
@@ -1229,14 +1303,12 @@ extern struct SLineMatrixData	LineMatrixData[240];
 #ifndef NAME2 // Second-level: Get all the NAME1 renderers.
 /*****************************************************************************/
 
-#define BPSTART	StartLine
+#define BPSTART	Progressive
 #define PITCH	1
-#define OFFSET_IN_LINE \
-	uint32 OffsetInLine = Offset % GFX.RealPPL;
 
 // The 1x1 pixel plotter, for speedhacking modes.
 
-#define DRAW_PIXEL(N, M) DrawPixel_Normal1x1(N, M, Offset, OffsetInLine, Pix, Z1, Z2, MATH)
+#define DRAW_PIXEL_OP Normal1x1
 
 #define NAME2	Normal1x1
 
@@ -1245,13 +1317,13 @@ extern struct SLineMatrixData	LineMatrixData[240];
 #include "tile.cpp"
 
 #undef NAME2
-#undef DRAW_PIXEL
+#undef DRAW_PIXEL_OP
 
 // The 2x1 pixel plotter, for normal rendering when we've used hires/interlace already this frame.
 
-#define DRAW_PIXEL_N2x1(N, M) DrawPixel_Normal2x1(N, M, Offset, OffsetInLine, Pix, Z1, Z2, MATH)
+#define DRAW_PIXEL_N2x1_OP Normal2x1
 
-#define DRAW_PIXEL(N, M)	DRAW_PIXEL_N2x1(N, M)
+#define DRAW_PIXEL_OP		DRAW_PIXEL_N2x1_OP
 #define NAME2				Normal2x1
 
 // Third-level include: Get the Normal2x1 renderers.
@@ -1259,7 +1331,7 @@ extern struct SLineMatrixData	LineMatrixData[240];
 #include "tile.cpp"
 
 #undef NAME2
-#undef DRAW_PIXEL
+#undef DRAW_PIXEL_OP
 
 // Hires pixel plotter, this combines the main and subscreen pixels as appropriate to render hires or pseudo-hires images.
 // Use it only on the main screen, subscreen should use Normal2x1 instead.
@@ -1270,9 +1342,9 @@ extern struct SLineMatrixData	LineMatrixData[240];
 //     Also, color window clipping clips Sub(x + 1, y) if Main(x, y) is clipped, not Main(x + 1, y).
 //     We don't know how Sub(0, y) is handled.
 
-#define DRAW_PIXEL_H2x1(N, M) DrawPixel_Hires2x1(N, M, Offset, OffsetInLine, Pix, Z1, Z2, MATH)
+#define DRAW_PIXEL_H2x1_OP Hires
 
-#define DRAW_PIXEL(N, M)	DRAW_PIXEL_H2x1(N, M)
+#define DRAW_PIXEL_OP		DRAW_PIXEL_H2x1_OP
 #define NAME2				Hires
 
 // Third-level include: Get the Hires renderers.
@@ -1280,7 +1352,7 @@ extern struct SLineMatrixData	LineMatrixData[240];
 #include "tile.cpp"
 
 #undef NAME2
-#undef DRAW_PIXEL
+#undef DRAW_PIXEL_OP
 
 // Interlace: Only draw every other line, so we'll redefine BPSTART and PITCH to do so.
 // Otherwise, it's the same as Normal2x1/Hires2x1.
@@ -1288,12 +1360,12 @@ extern struct SLineMatrixData	LineMatrixData[240];
 #undef BPSTART
 #undef PITCH
 
-#define BPSTART	(StartLine * 2 + BG.InterlaceLine)
+#define BPSTART	Interlace
 #define PITCH	2
 
 #ifndef NO_INTERLACE
 
-#define DRAW_PIXEL(N, M)	DRAW_PIXEL_N2x1(N, M)
+#define DRAW_PIXEL_OP		DRAW_PIXEL_N2x1_OP
 #define NAME2				Interlace
 
 // Third-level include: Get the double width Interlace renderers.
@@ -1301,9 +1373,9 @@ extern struct SLineMatrixData	LineMatrixData[240];
 #include "tile.cpp"
 
 #undef NAME2
-#undef DRAW_PIXEL
+#undef DRAW_PIXEL_OP
 
-#define DRAW_PIXEL(N, M)	DRAW_PIXEL_H2x1(N, M)
+#define DRAW_PIXEL_OP		DRAW_PIXEL_H2x1_OP
 #define NAME2				HiresInterlace
 
 // Third-level include: Get the HiresInterlace renderers.
@@ -1311,7 +1383,7 @@ extern struct SLineMatrixData	LineMatrixData[240];
 #include "tile.cpp"
 
 #undef NAME2
-#undef DRAW_PIXEL
+#undef DRAW_PIXEL_OP
 
 #endif
 
@@ -1325,70 +1397,52 @@ extern struct SLineMatrixData	LineMatrixData[240];
 #define CONCAT3(A, B, C)	A##B##C
 #define MAKENAME(A, B, C)	CONCAT3(A, B, C)
 
-static void MAKENAME(NAME1, _, NAME2) (ARGS)
+static void MAKENAME(NAME1, _, NAME2) (ARGS_DEF)
 {
-#define MATH	NOMATH()
-	DRAW_TILE();
-#undef MATH
+	DRAW_TILE<DRAW_PIXEL_OP<NOMATH>, BPSTART, PITCH>::draw(ARGS);
 }
 
-static void MAKENAME(NAME1, Add_, NAME2) (ARGS)
+static void MAKENAME(NAME1, Add_, NAME2) (ARGS_DEF)
 {
-#define MATH	REGMATH<COLOR_ADD>()
-	DRAW_TILE();
-#undef MATH
+	DRAW_TILE<DRAW_PIXEL_OP< REGMATH<COLOR_ADD> >, BPSTART, PITCH>::draw(ARGS);
 }
 
-static void MAKENAME(NAME1, Add_Brightness_, NAME2) (ARGS)
+static void MAKENAME(NAME1, Add_Brightness_, NAME2) (ARGS_DEF)
 {
-#define MATH	REGMATH<COLOR_ADD_BRIGHTNESS>()
-	DRAW_TILE();
-#undef MATH
+	DRAW_TILE<DRAW_PIXEL_OP< REGMATH<COLOR_ADD_BRIGHTNESS> >, BPSTART, PITCH>::draw(ARGS);
 }
 
-static void MAKENAME(NAME1, AddF1_2_, NAME2) (ARGS)
+static void MAKENAME(NAME1, AddF1_2_, NAME2) (ARGS_DEF)
 {
-#define MATH	MATHF1_2<COLOR_ADD>()
-	DRAW_TILE();
-#undef MATH
+	DRAW_TILE<DRAW_PIXEL_OP< MATHF1_2<COLOR_ADD> >, BPSTART, PITCH>::draw(ARGS);
 }
 
-static void MAKENAME(NAME1, AddS1_2_, NAME2) (ARGS)
+static void MAKENAME(NAME1, AddS1_2_, NAME2) (ARGS_DEF)
 {
-#define MATH	MATHS1_2<COLOR_ADD>()
-	DRAW_TILE();
-#undef MATH
+	DRAW_TILE<DRAW_PIXEL_OP< MATHS1_2<COLOR_ADD> >, BPSTART, PITCH>::draw(ARGS);
 }
 
-static void MAKENAME(NAME1, AddS1_2_Brightness_, NAME2) (ARGS)
+static void MAKENAME(NAME1, AddS1_2_Brightness_, NAME2) (ARGS_DEF)
 {
-#define MATH	MATHS1_2<COLOR_ADD_BRIGHTNESS>()
-	DRAW_TILE();
-#undef MATH
+	DRAW_TILE<DRAW_PIXEL_OP< MATHS1_2<COLOR_ADD_BRIGHTNESS> >, BPSTART, PITCH>::draw(ARGS);
 }
 
-static void MAKENAME(NAME1, Sub_, NAME2) (ARGS)
+static void MAKENAME(NAME1, Sub_, NAME2) (ARGS_DEF)
 {
-#define MATH	REGMATH<COLOR_SUB>()
-	DRAW_TILE();
-#undef MATH
+	DRAW_TILE<DRAW_PIXEL_OP< REGMATH<COLOR_SUB> >, BPSTART, PITCH>::draw(ARGS);
 }
 
-static void MAKENAME(NAME1, SubF1_2_, NAME2) (ARGS)
+static void MAKENAME(NAME1, SubF1_2_, NAME2) (ARGS_DEF)
 {
-#define MATH	MATHF1_2<COLOR_SUB>()
-	DRAW_TILE();
-#undef MATH
+	DRAW_TILE<DRAW_PIXEL_OP< MATHF1_2<COLOR_SUB> >, BPSTART, PITCH>::draw(ARGS);
 }
 
-static void MAKENAME(NAME1, SubS1_2_, NAME2) (ARGS)
+static void MAKENAME(NAME1, SubS1_2_, NAME2) (ARGS_DEF)
 {
-#define MATH	MATHS1_2<COLOR_SUB>()
-	DRAW_TILE();
-#undef MATH
+	DRAW_TILE<DRAW_PIXEL_OP< MATHS1_2<COLOR_SUB> >, BPSTART, PITCH>::draw(ARGS);
 }
 
-static void (*MAKENAME(Renderers_, NAME1, NAME2)[9]) (ARGS) =
+static void (*MAKENAME(Renderers_, NAME1, NAME2)[9]) (ARGS_DEF) =
 {
 	MAKENAME(NAME1, _, NAME2),
 	MAKENAME(NAME1, Add_, NAME2),
