@@ -21,6 +21,16 @@ static uint32	pixbit[8][16];
 static uint8	hrbit_odd[256];
 static uint8	hrbit_even[256];
 
+template<class MATHOP>
+static inline void DrawPixel_Normal1x1(int N, int M, uint32 Offset, uint8 Pix, uint8 Z1, uint8 Z2, MATHOP Math)
+{
+	if (Z1 > GFX.DB[Offset + N] && (M))
+	{
+		GFX.S[Offset + N] = Math(GFX.ScreenColors[Pix], GFX.SubScreen[Offset + N], GFX.SubZBuffer[Offset + N]);
+		GFX.DB[Offset + N] = Z2;
+	}
+}
+
 void S9xInitTileRenderer (void)
 {
 	int	i;
@@ -506,6 +516,7 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 	}
 }
 
+
 /*****************************************************************************/
 #else
 #ifndef NAME1 // First-level: Get all the renderers.
@@ -543,17 +554,52 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 		GFX.RealScreenColors = &IPPU.ScreenColors[((Tile >> BG.PaletteShift) & BG.PaletteMask) + BG.StartPalette]; \
 	GFX.ScreenColors = GFX.ClipColors ? BlackColourMap : GFX.RealScreenColors
 
-#define NOMATH(Op, Main, Sub, SD) \
-	(Main)
+struct NOMATH
+{
+	static uint16 calc(uint16 Main, uint16 Sub, uint8 SD)
+	{
+		return Main;
+	}
+	uint16 operator()(uint16 Main, uint16 Sub, uint8 SD) {
+		return calc(Main, Sub, SD);
+	}
+};
 
-#define REGMATH(Op, Main, Sub, SD) \
-	(COLOR_##Op((Main), ((SD) & 0x20) ? (Sub) : GFX.FixedColour))
+template<class Op>
+struct REGMATH
+{
+	static uint16 calc(uint16 Main, uint16 Sub, uint8 SD)
+	{
+		return Op::fn(Main, (SD & 0x20) ? Sub : GFX.FixedColour);
+	}
+	uint16 operator()(uint16 Main, uint16 Sub, uint8 SD) {
+		return calc(Main, Sub, SD);
+	}
+};
 
-#define MATHF1_2(Op, Main, Sub, SD) \
-	(GFX.ClipColors ? (COLOR_##Op((Main), GFX.FixedColour)) : (COLOR_##Op##1_2((Main), GFX.FixedColour)))
+template<class Op>
+struct MATHF1_2
+{
+	static uint16 calc(uint16 Main, uint16 Sub, uint8 SD)
+	{
+		return GFX.ClipColors ? Op::fn(Main, GFX.FixedColour) : Op::fn1_2(Main, GFX.FixedColour);
+	}
+	uint16 operator()(uint16 Main, uint16 Sub, uint8 SD) {
+		return calc(Main, Sub, SD);
+	}
+};
 
-#define MATHS1_2(Op, Main, Sub, SD) \
-	(GFX.ClipColors ? REGMATH(Op, Main, Sub, SD) : (((SD) & 0x20) ? COLOR_##Op##1_2((Main), (Sub)) : COLOR_##Op((Main), GFX.FixedColour)))
+template<class Op>
+struct MATHS1_2
+{
+	static uint16 calc(uint16 Main, uint16 Sub, uint8 SD)
+	{
+		return GFX.ClipColors ? REGMATH<Op>::calc(Main, Sub, SD) : (SD & 0x20) ? Op::fn1_2(Main, Sub) : Op::fn(Main, GFX.FixedColour);
+	}
+	uint16 operator()(uint16 Main, uint16 Sub, uint8 SD) {
+		return calc(Main, Sub, SD);
+	}
+};
 
 // Basic routine to render an unclipped tile.
 // Input parameters:
@@ -586,7 +632,7 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 		for (l = LineCount; l > 0; l--, bp += 8 * PITCH, Offset += GFX.PPL) \
 		{ \
 			for (int x = 0; x < 8; x++) { \
-				DRAW_PIXEL(x, Pix = bp[x]); \
+				Pix = bp[x]; DRAW_PIXEL(x, Pix); \
 			} \
 		} \
 	} \
@@ -598,7 +644,7 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 		for (l = LineCount; l > 0; l--, bp += 8 * PITCH, Offset += GFX.PPL) \
 		{ \
 			for (int x = 0; x < 8; x++) { \
-				DRAW_PIXEL(x, Pix = bp[7 - x]); \
+				Pix = bp[7 - x]; DRAW_PIXEL(x, Pix); \
 			} \
 		} \
 	} \
@@ -610,7 +656,7 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 		for (l = LineCount; l > 0; l--, bp -= 8 * PITCH, Offset += GFX.PPL) \
 		{ \
 			for (int x = 0; x < 8; x++) { \
-				DRAW_PIXEL(x, Pix = bp[x]); \
+				Pix = bp[x]; DRAW_PIXEL(x, Pix); \
 			} \
 		} \
 	} \
@@ -621,7 +667,7 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 		for (l = LineCount; l > 0; l--, bp -= 8 * PITCH, Offset += GFX.PPL) \
 		{ \
 			for (int x = 0; x < 8; x++) { \
-				DRAW_PIXEL(x, Pix = bp[7 - x]); \
+				Pix = bp[7 - x]; DRAW_PIXEL(x, Pix); \
 			} \
 		} \
 	}
@@ -663,14 +709,14 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 			w = Width; \
 			switch (StartPixel) \
 			{ \
-				case 0: DRAW_PIXEL(0, Pix = bp[0]); if (!--w) break; /* Fall through */ \
-				case 1: DRAW_PIXEL(1, Pix = bp[1]); if (!--w) break; /* Fall through */ \
-				case 2: DRAW_PIXEL(2, Pix = bp[2]); if (!--w) break; /* Fall through */ \
-				case 3: DRAW_PIXEL(3, Pix = bp[3]); if (!--w) break; /* Fall through */ \
-				case 4: DRAW_PIXEL(4, Pix = bp[4]); if (!--w) break; /* Fall through */ \
-				case 5: DRAW_PIXEL(5, Pix = bp[5]); if (!--w) break; /* Fall through */ \
-				case 6: DRAW_PIXEL(6, Pix = bp[6]); if (!--w) break; /* Fall through */ \
-				case 7: DRAW_PIXEL(7, Pix = bp[7]); break; \
+				case 0: Pix = bp[0]; DRAW_PIXEL(0, Pix); if (!--w) break; /* Fall through */ \
+				case 1: Pix = bp[1]; DRAW_PIXEL(1, Pix); if (!--w) break; /* Fall through */ \
+				case 2: Pix = bp[2]; DRAW_PIXEL(2, Pix); if (!--w) break; /* Fall through */ \
+				case 3: Pix = bp[3]; DRAW_PIXEL(3, Pix); if (!--w) break; /* Fall through */ \
+				case 4: Pix = bp[4]; DRAW_PIXEL(4, Pix); if (!--w) break; /* Fall through */ \
+				case 5: Pix = bp[5]; DRAW_PIXEL(5, Pix); if (!--w) break; /* Fall through */ \
+				case 6: Pix = bp[6]; DRAW_PIXEL(6, Pix); if (!--w) break; /* Fall through */ \
+				case 7: Pix = bp[7]; DRAW_PIXEL(7, Pix); break; \
 			} \
 		} \
 	} \
@@ -684,14 +730,14 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 			w = Width; \
 			switch (StartPixel) \
 			{ \
-				case 0: DRAW_PIXEL(0, Pix = bp[7]); if (!--w) break; /* Fall through */ \
-				case 1: DRAW_PIXEL(1, Pix = bp[6]); if (!--w) break; /* Fall through */ \
-				case 2: DRAW_PIXEL(2, Pix = bp[5]); if (!--w) break; /* Fall through */ \
-				case 3: DRAW_PIXEL(3, Pix = bp[4]); if (!--w) break; /* Fall through */ \
-				case 4: DRAW_PIXEL(4, Pix = bp[3]); if (!--w) break; /* Fall through */ \
-				case 5: DRAW_PIXEL(5, Pix = bp[2]); if (!--w) break; /* Fall through */ \
-				case 6: DRAW_PIXEL(6, Pix = bp[1]); if (!--w) break; /* Fall through */ \
-				case 7: DRAW_PIXEL(7, Pix = bp[0]); break; \
+				case 0: Pix = bp[7]; DRAW_PIXEL(0, Pix); if (!--w) break; /* Fall through */ \
+				case 1: Pix = bp[6]; DRAW_PIXEL(1, Pix); if (!--w) break; /* Fall through */ \
+				case 2: Pix = bp[5]; DRAW_PIXEL(2, Pix); if (!--w) break; /* Fall through */ \
+				case 3: Pix = bp[4]; DRAW_PIXEL(3, Pix); if (!--w) break; /* Fall through */ \
+				case 4: Pix = bp[3]; DRAW_PIXEL(4, Pix); if (!--w) break; /* Fall through */ \
+				case 5: Pix = bp[2]; DRAW_PIXEL(5, Pix); if (!--w) break; /* Fall through */ \
+				case 6: Pix = bp[1]; DRAW_PIXEL(6, Pix); if (!--w) break; /* Fall through */ \
+				case 7: Pix = bp[0]; DRAW_PIXEL(7, Pix); break; \
 			} \
 		} \
 	} \
@@ -705,14 +751,14 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 			w = Width; \
 			switch (StartPixel) \
 			{ \
-				case 0: DRAW_PIXEL(0, Pix = bp[0]); if (!--w) break; /* Fall through */ \
-				case 1: DRAW_PIXEL(1, Pix = bp[1]); if (!--w) break; /* Fall through */ \
-				case 2: DRAW_PIXEL(2, Pix = bp[2]); if (!--w) break; /* Fall through */ \
-				case 3: DRAW_PIXEL(3, Pix = bp[3]); if (!--w) break; /* Fall through */ \
-				case 4: DRAW_PIXEL(4, Pix = bp[4]); if (!--w) break; /* Fall through */ \
-				case 5: DRAW_PIXEL(5, Pix = bp[5]); if (!--w) break; /* Fall through */ \
-				case 6: DRAW_PIXEL(6, Pix = bp[6]); if (!--w) break; /* Fall through */ \
-				case 7: DRAW_PIXEL(7, Pix = bp[7]); break; \
+				case 0: Pix = bp[0]; DRAW_PIXEL(0, Pix); if (!--w) break; /* Fall through */ \
+				case 1: Pix = bp[1]; DRAW_PIXEL(1, Pix); if (!--w) break; /* Fall through */ \
+				case 2: Pix = bp[2]; DRAW_PIXEL(2, Pix); if (!--w) break; /* Fall through */ \
+				case 3: Pix = bp[3]; DRAW_PIXEL(3, Pix); if (!--w) break; /* Fall through */ \
+				case 4: Pix = bp[4]; DRAW_PIXEL(4, Pix); if (!--w) break; /* Fall through */ \
+				case 5: Pix = bp[5]; DRAW_PIXEL(5, Pix); if (!--w) break; /* Fall through */ \
+				case 6: Pix = bp[6]; DRAW_PIXEL(6, Pix); if (!--w) break; /* Fall through */ \
+				case 7: Pix = bp[7]; DRAW_PIXEL(7, Pix); break; \
 			} \
 		} \
 	} \
@@ -725,14 +771,14 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 			w = Width; \
 			switch (StartPixel) \
 			{ \
-				case 0: DRAW_PIXEL(0, Pix = bp[7]); if (!--w) break; /* Fall through */ \
-				case 1: DRAW_PIXEL(1, Pix = bp[6]); if (!--w) break; /* Fall through */ \
-				case 2: DRAW_PIXEL(2, Pix = bp[5]); if (!--w) break; /* Fall through */ \
-				case 3: DRAW_PIXEL(3, Pix = bp[4]); if (!--w) break; /* Fall through */ \
-				case 4: DRAW_PIXEL(4, Pix = bp[3]); if (!--w) break; /* Fall through */ \
-				case 5: DRAW_PIXEL(5, Pix = bp[2]); if (!--w) break; /* Fall through */ \
-				case 6: DRAW_PIXEL(6, Pix = bp[1]); if (!--w) break; /* Fall through */ \
-				case 7: DRAW_PIXEL(7, Pix = bp[0]); break; \
+				case 0: Pix = bp[7]; DRAW_PIXEL(0, Pix); if (!--w) break; /* Fall through */ \
+				case 1: Pix = bp[6]; DRAW_PIXEL(1, Pix); if (!--w) break; /* Fall through */ \
+				case 2: Pix = bp[5]; DRAW_PIXEL(2, Pix); if (!--w) break; /* Fall through */ \
+				case 3: Pix = bp[4]; DRAW_PIXEL(3, Pix); if (!--w) break; /* Fall through */ \
+				case 4: Pix = bp[3]; DRAW_PIXEL(4, Pix); if (!--w) break; /* Fall through */ \
+				case 5: Pix = bp[2]; DRAW_PIXEL(5, Pix); if (!--w) break; /* Fall through */ \
+				case 6: Pix = bp[1]; DRAW_PIXEL(6, Pix); if (!--w) break; /* Fall through */ \
+				case 7: Pix = bp[0]; DRAW_PIXEL(7, Pix); break; \
 			} \
 		} \
 	}
@@ -922,7 +968,7 @@ extern struct SLineMatrixData	LineMatrixData[240];
 				uint8	*TileData = VRAM1 + (Memory.VRAM[((Y & ~7) << 5) + ((X >> 2) & ~1)] << 7); \
 				uint8	b = *(TileData + ((Y & 7) << 4) + ((X & 7) << 1)); \
 				\
-				DRAW_PIXEL(x, Pix = (b & MASK)); \
+				Pix = b & MASK; DRAW_PIXEL(x, Pix); \
 			} \
 		} \
 		else \
@@ -945,7 +991,7 @@ extern struct SLineMatrixData	LineMatrixData[240];
 				else \
 					continue; \
 				\
-				DRAW_PIXEL(x, Pix = (b & MASK)); \
+				Pix = b & MASK; DRAW_PIXEL(x, Pix); \
 			} \
 		} \
 	}
@@ -1163,12 +1209,8 @@ extern struct SLineMatrixData	LineMatrixData[240];
 // The 1x1 pixel plotter, for speedhacking modes.
 
 #define OFFSET_IN_LINE
-#define DRAW_PIXEL(N, M) \
-	if (Z1 > GFX.DB[Offset + N] && (M)) \
-	{ \
-		GFX.S[Offset + N] = MATH(GFX.ScreenColors[Pix], GFX.SubScreen[Offset + N], GFX.SubZBuffer[Offset + N]); \
-		GFX.DB[Offset + N] = Z2; \
-	}
+
+#define DRAW_PIXEL(N, M) DrawPixel_Normal1x1(N, M, Offset, Pix, Z1, Z2, MATH)
 
 #define NAME2	Normal1x1
 
@@ -1282,63 +1324,63 @@ extern struct SLineMatrixData	LineMatrixData[240];
 
 static void MAKENAME(NAME1, _, NAME2) (ARGS)
 {
-#define MATH(A, B, C)	NOMATH(x, A, B, C)
+#define MATH	NOMATH()
 	DRAW_TILE();
 #undef MATH
 }
 
 static void MAKENAME(NAME1, Add_, NAME2) (ARGS)
 {
-#define MATH(A, B, C)	REGMATH(ADD, A, B, C)
+#define MATH	REGMATH<COLOR_ADD>()
 	DRAW_TILE();
 #undef MATH
 }
 
 static void MAKENAME(NAME1, Add_Brightness_, NAME2) (ARGS)
 {
-#define MATH(A, B, C)	REGMATH(ADD_BRIGHTNESS, A, B, C)
+#define MATH	REGMATH<COLOR_ADD_BRIGHTNESS>()
 	DRAW_TILE();
 #undef MATH
 }
 
 static void MAKENAME(NAME1, AddF1_2_, NAME2) (ARGS)
 {
-#define MATH(A, B, C)	MATHF1_2(ADD, A, B, C)
+#define MATH	MATHF1_2<COLOR_ADD>()
 	DRAW_TILE();
 #undef MATH
 }
 
 static void MAKENAME(NAME1, AddS1_2_, NAME2) (ARGS)
 {
-#define MATH(A, B, C)	MATHS1_2(ADD, A, B, C)
+#define MATH	MATHS1_2<COLOR_ADD>()
 	DRAW_TILE();
 #undef MATH
 }
 
 static void MAKENAME(NAME1, AddS1_2_Brightness_, NAME2) (ARGS)
 {
-#define MATH(A, B, C)	MATHS1_2(ADD_BRIGHTNESS, A, B, C)
+#define MATH	MATHS1_2<COLOR_ADD_BRIGHTNESS>()
 	DRAW_TILE();
 #undef MATH
 }
 
 static void MAKENAME(NAME1, Sub_, NAME2) (ARGS)
 {
-#define MATH(A, B, C)	REGMATH(SUB, A, B, C)
+#define MATH	REGMATH<COLOR_SUB>()
 	DRAW_TILE();
 #undef MATH
 }
 
 static void MAKENAME(NAME1, SubF1_2_, NAME2) (ARGS)
 {
-#define MATH(A, B, C)	MATHF1_2(SUB, A, B, C)
+#define MATH	MATHF1_2<COLOR_SUB>()
 	DRAW_TILE();
 #undef MATH
 }
 
 static void MAKENAME(NAME1, SubS1_2_, NAME2) (ARGS)
 {
-#define MATH(A, B, C)	MATHS1_2(SUB, A, B, C)
+#define MATH	MATHS1_2<COLOR_SUB>()
 	DRAW_TILE();
 #undef MATH
 }
