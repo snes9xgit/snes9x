@@ -22,8 +22,9 @@ static uint8	hrbit_odd[256];
 static uint8	hrbit_even[256];
 
 template<class MATHOP>
-static inline void DrawPixel_Normal1x1(int N, int M, uint32 Offset, uint8 Pix, uint8 Z1, uint8 Z2, MATHOP Math)
+static inline void DrawPixel_Normal1x1(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2, MATHOP Math)
 {
+	(void) OffsetInLine;
 	if (Z1 > GFX.DB[Offset + N] && (M))
 	{
 		GFX.S[Offset + N] = Math(GFX.ScreenColors[Pix], GFX.SubScreen[Offset + N], GFX.SubZBuffer[Offset + N]);
@@ -32,8 +33,9 @@ static inline void DrawPixel_Normal1x1(int N, int M, uint32 Offset, uint8 Pix, u
 }
 
 template<class MATHOP>
-static inline void DrawPixel_Normal2x1(int N, int M, uint32 Offset, uint8 Pix, uint8 Z1, uint8 Z2, MATHOP Math)
+static inline void DrawPixel_Normal2x1(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2, MATHOP Math)
 {
+	(void) OffsetInLine;
 	if (Z1 > GFX.DB[Offset + 2 * N] && (M))
 	{
 		GFX.S[Offset + 2 * N] = GFX.S[Offset + 2 * N + 1] = Math(GFX.ScreenColors[Pix], GFX.SubScreen[Offset + 2 * N], GFX.SubZBuffer[Offset + 2 * N]);
@@ -1229,12 +1231,12 @@ extern struct SLineMatrixData	LineMatrixData[240];
 
 #define BPSTART	StartLine
 #define PITCH	1
+#define OFFSET_IN_LINE \
+	uint32 OffsetInLine = Offset % GFX.RealPPL;
 
 // The 1x1 pixel plotter, for speedhacking modes.
 
-#define OFFSET_IN_LINE
-
-#define DRAW_PIXEL(N, M) DrawPixel_Normal1x1(N, M, Offset, Pix, Z1, Z2, MATH)
+#define DRAW_PIXEL(N, M) DrawPixel_Normal1x1(N, M, Offset, OffsetInLine, Pix, Z1, Z2, MATH)
 
 #define NAME2	Normal1x1
 
@@ -1247,7 +1249,7 @@ extern struct SLineMatrixData	LineMatrixData[240];
 
 // The 2x1 pixel plotter, for normal rendering when we've used hires/interlace already this frame.
 
-#define DRAW_PIXEL_N2x1(N, M) DrawPixel_Normal2x1(N, M, Offset, Pix, Z1, Z2, MATH)
+#define DRAW_PIXEL_N2x1(N, M) DrawPixel_Normal2x1(N, M, Offset, OffsetInLine, Pix, Z1, Z2, MATH)
 
 #define DRAW_PIXEL(N, M)	DRAW_PIXEL_N2x1(N, M)
 #define NAME2				Normal2x1
@@ -1258,7 +1260,6 @@ extern struct SLineMatrixData	LineMatrixData[240];
 
 #undef NAME2
 #undef DRAW_PIXEL
-#undef OFFSET_IN_LINE
 
 // Hires pixel plotter, this combines the main and subscreen pixels as appropriate to render hires or pseudo-hires images.
 // Use it only on the main screen, subscreen should use Normal2x1 instead.
@@ -1271,8 +1272,6 @@ extern struct SLineMatrixData	LineMatrixData[240];
 
 #define DRAW_PIXEL_H2x1(N, M) DrawPixel_Hires2x1(N, M, Offset, OffsetInLine, Pix, Z1, Z2, MATH)
 
-#define OFFSET_IN_LINE \
-	uint32 OffsetInLine = Offset % GFX.RealPPL;
 #define DRAW_PIXEL(N, M)	DRAW_PIXEL_H2x1(N, M)
 #define NAME2				Hires
 
@@ -1282,7 +1281,6 @@ extern struct SLineMatrixData	LineMatrixData[240];
 
 #undef NAME2
 #undef DRAW_PIXEL
-#undef OFFSET_IN_LINE
 
 // Interlace: Only draw every other line, so we'll redefine BPSTART and PITCH to do so.
 // Otherwise, it's the same as Normal2x1/Hires2x1.
@@ -1295,7 +1293,6 @@ extern struct SLineMatrixData	LineMatrixData[240];
 
 #ifndef NO_INTERLACE
 
-#define OFFSET_IN_LINE
 #define DRAW_PIXEL(N, M)	DRAW_PIXEL_N2x1(N, M)
 #define NAME2				Interlace
 
@@ -1305,10 +1302,7 @@ extern struct SLineMatrixData	LineMatrixData[240];
 
 #undef NAME2
 #undef DRAW_PIXEL
-#undef OFFSET_IN_LINE
 
-#define OFFSET_IN_LINE \
-	uint32 OffsetInLine = Offset % GFX.RealPPL;
 #define DRAW_PIXEL(N, M)	DRAW_PIXEL_H2x1(N, M)
 #define NAME2				HiresInterlace
 
@@ -1318,7 +1312,6 @@ extern struct SLineMatrixData	LineMatrixData[240];
 
 #undef NAME2
 #undef DRAW_PIXEL
-#undef OFFSET_IN_LINE
 
 #endif
 
