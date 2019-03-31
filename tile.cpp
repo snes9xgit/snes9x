@@ -31,6 +31,30 @@ static inline void DrawPixel_Normal1x1(int N, int M, uint32 Offset, uint8 Pix, u
 	}
 }
 
+template<class MATHOP>
+static inline void DrawPixel_Normal2x1(int N, int M, uint32 Offset, uint8 Pix, uint8 Z1, uint8 Z2, MATHOP Math)
+{
+	if (Z1 > GFX.DB[Offset + 2 * N] && (M))
+	{
+		GFX.S[Offset + 2 * N] = GFX.S[Offset + 2 * N + 1] = Math(GFX.ScreenColors[Pix], GFX.SubScreen[Offset + 2 * N], GFX.SubZBuffer[Offset + 2 * N]);
+		GFX.DB[Offset + 2 * N] = GFX.DB[Offset + 2 * N + 1] = Z2;
+	}
+}
+
+template<class MATHOP>
+static inline void DrawPixel_Hires2x1(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2, MATHOP Math)
+{
+	if (Z1 > GFX.DB[Offset + 2 * N] && (M))
+	{
+		GFX.S[Offset + 2 * N + 1] = Math(GFX.ScreenColors[Pix], GFX.SubScreen[Offset + 2 * N], GFX.SubZBuffer[Offset + 2 * N]);
+		if ((OffsetInLine + 2 * N ) != (SNES_WIDTH - 1) << 1)
+			GFX.S[Offset + 2 * N + 2] = Math((GFX.ClipColors ? 0 : GFX.SubScreen[Offset + 2 * N + 2]), GFX.RealScreenColors[Pix], GFX.SubZBuffer[Offset + 2 * N]);
+		if ((OffsetInLine + 2 * N) == 0 || (OffsetInLine + 2 * N) == GFX.RealPPL)
+			GFX.S[Offset + 2 * N] = Math((GFX.ClipColors ? 0 : GFX.SubScreen[Offset + 2 * N]), GFX.RealScreenColors[Pix], GFX.SubZBuffer[Offset + 2 * N]);
+		GFX.DB[Offset + 2 * N] = GFX.DB[Offset + 2 * N + 1] = Z2;
+	}
+}
+
 void S9xInitTileRenderer (void)
 {
 	int	i;
@@ -1223,12 +1247,7 @@ extern struct SLineMatrixData	LineMatrixData[240];
 
 // The 2x1 pixel plotter, for normal rendering when we've used hires/interlace already this frame.
 
-#define DRAW_PIXEL_N2x1(N, M) \
-	if (Z1 > GFX.DB[Offset + 2 * N] && (M)) \
-	{ \
-		GFX.S[Offset + 2 * N] = GFX.S[Offset + 2 * N + 1] = MATH(GFX.ScreenColors[Pix], GFX.SubScreen[Offset + 2 * N], GFX.SubZBuffer[Offset + 2 * N]); \
-		GFX.DB[Offset + 2 * N] = GFX.DB[Offset + 2 * N + 1] = Z2; \
-	}
+#define DRAW_PIXEL_N2x1(N, M) DrawPixel_Normal2x1(N, M, Offset, Pix, Z1, Z2, MATH)
 
 #define DRAW_PIXEL(N, M)	DRAW_PIXEL_N2x1(N, M)
 #define NAME2				Normal2x1
@@ -1250,16 +1269,7 @@ extern struct SLineMatrixData	LineMatrixData[240];
 //     Also, color window clipping clips Sub(x + 1, y) if Main(x, y) is clipped, not Main(x + 1, y).
 //     We don't know how Sub(0, y) is handled.
 
-#define DRAW_PIXEL_H2x1(N, M) \
-	if (Z1 > GFX.DB[Offset + 2 * N] && (M)) \
-	{ \
-		GFX.S[Offset + 2 * N + 1] = MATH(GFX.ScreenColors[Pix], GFX.SubScreen[Offset + 2 * N], GFX.SubZBuffer[Offset + 2 * N]); \
-		if ((OffsetInLine + 2 * N ) != (SNES_WIDTH - 1) << 1) \
-			GFX.S[Offset + 2 * N + 2] = MATH((GFX.ClipColors ? 0 : GFX.SubScreen[Offset + 2 * N + 2]), GFX.RealScreenColors[Pix], GFX.SubZBuffer[Offset + 2 * N]); \
-		if ((OffsetInLine + 2 * N) == 0 || (OffsetInLine + 2 * N) == GFX.RealPPL) \
-			GFX.S[Offset + 2 * N] = MATH((GFX.ClipColors ? 0 : GFX.SubScreen[Offset + 2 * N]), GFX.RealScreenColors[Pix], GFX.SubZBuffer[Offset + 2 * N]); \
-		GFX.DB[Offset + 2 * N] = GFX.DB[Offset + 2 * N + 1] = Z2; \
-	}
+#define DRAW_PIXEL_H2x1(N, M) DrawPixel_Hires2x1(N, M, Offset, OffsetInLine, Pix, Z1, Z2, MATH)
 
 #define OFFSET_IN_LINE \
 	uint32 OffsetInLine = Offset % GFX.RealPPL;
