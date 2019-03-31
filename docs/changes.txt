@@ -5,16 +5,20 @@ Snes9x 1.60
   The Great Battle III to lock up.
 - Clamp MSU1 addition to max amplitude instead of wrapping. Proper MSU1 tracks
   will not be affected by this.
+- Save mipmap_input parameter with customized GLSL and slang shaders.
+- Optimized subscreen math with help from Dwedit.
 
 Win32:
 - Changed window flags to allow NVIDIA cards to auto-enable exclusive
   fullscreen mode in OpenGL.
 - Added a hidden option "DWMSync" that allows OpenGL to sync to the window
   manager while in windowed or borderless windowed mode.
+- The automatic frame skip option no longer limits to 59.94Hz.
 
 libretro:
 - Added ability to use Satellaview data in same directory as ROM.
 - Fixed deviation from proper libretro spec.
+- Added option to use the software NTSC filter. (stellarporter)
 
 GTK:
 - Added icons to the entries to clear binding assignments.
@@ -22,6 +26,14 @@ GTK:
 - Changed glFenceSync option to an OML_sync option that works better.
 - Fixed accumulation of partial pixel data on mouse motion when we update the
   mouse position more than once per frame.
+- Allow one key to be bound to many controller buttons on the same controller.
+- Force menu and button icons.
+- Add the view menu to right-click when SNES mouse isn't used.
+- Remove unused status bar option.
+- Startup background can be changed in snes9x.conf.
+
+Unix:
+- Fixed sound output that broke with APU refactor.
 
 Snes9x 1.59.2
 - Fix out-of-bounds access on APU memory.
