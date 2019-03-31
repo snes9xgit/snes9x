@@ -5,7 +5,6 @@
 \*****************************************************************************/
 
 #include <cmath>
-#include <vector>
 #include "../snes9x.h"
 #include "apu.h"
 #include "../msu1.h"
@@ -58,7 +57,8 @@ static double dynamic_rate_multiplier = 1.0;
 namespace msu {
 // Always 16-bit, Stereo; 1.5x dsp buffer to never overflow
 static Resampler *resampler = NULL;
-static std::vector<int16> resample_buffer;
+static int16 *resample_buffer = NULL;
+static int resample_buffer_size = 0;
 } // namespace msu
 
 static void UpdatePlaybackRate(void);
@@ -85,9 +85,14 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
             {
                 if (msu::resampler->avail() >= sample_count)
                 {
-                    if ((int)msu::resample_buffer.size() < sample_count)
-                        msu::resample_buffer.resize(sample_count);
-                    msu::resampler->read((short *)msu::resample_buffer.data(),
+                    if (msu::resample_buffer_size < sample_count)
+                    {
+                        if (msu::resample_buffer)
+                            delete[] msu::resample_buffer;
+                        msu::resample_buffer = new int16[sample_count];
+                        msu::resample_buffer_size = sample_count;
+                    }
+                    msu::resampler->read(msu::resample_buffer,
                                          sample_count);
                     for (int i = 0; i < sample_count; ++i)
                     {
