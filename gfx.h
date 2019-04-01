@@ -135,7 +135,7 @@ extern struct SGFX	GFX;
 
 inline uint16 COLOR_ADD_BRIGHTNESS(uint16 C1, uint16 C2)
 {
-	return ((brightness_cap[ (C1 >> RED_SHIFT_BITS)           +  (C2 >> RED_SHIFT_BITS)          ] << RED_SHIFT_BITS)   |
+    return ((brightness_cap[ (C1 >> RED_SHIFT_BITS)           +  (C2 >> RED_SHIFT_BITS)          ] << RED_SHIFT_BITS)   |
             (brightness_cap[((C1 >> GREEN_SHIFT_BITS) & 0x1f) + ((C2 >> GREEN_SHIFT_BITS) & 0x1f)] << GREEN_SHIFT_BITS) |
 // Proper 15->16bit color conversion moves the high bit of green into the low bit.
 #if GREEN_SHIFT_BITS == 6
@@ -154,8 +154,12 @@ inline uint16 COLOR_ADD(uint16 C1, uint16 C2)
 	rb += C2 & (RED_MASK | BLUE_MASK);
 	int rbcarry = rb & ((0x20 << RED_SHIFT_BITS) | (0x20 << 0));
 	int g = (C1 & (GREEN_MASK)) + (C2 & (GREEN_MASK));
-	int rgbsaturate = (rbcarry >> 5) * 0x1f + ((g & (0x20 << GREEN_SHIFT_BITS)) >> GREEN_SHIFT_BITS) * MAX_GREEN;
-	return (rb & (RED_MASK | BLUE_MASK)) | (g & GREEN_MASK) | rgbsaturate;
+	int rgbsaturate = (((g & (0x20 << GREEN_SHIFT_BITS)) | rbcarry) >> 5) * 0x1f;
+	uint16 retval = (rb & (RED_MASK | BLUE_MASK)) | (g & GREEN_MASK) | rgbsaturate;
+#if GREEN_SHIFT_BITS == 6
+	retval |= (retval & 0x0400) >> 5;
+#endif
+	return retval;
 }
 
 
@@ -170,8 +174,12 @@ inline uint16 COLOR_SUB (uint16 C1, uint16 C2)
 	int rb = rb1 - rb2;
 	int rbcarry = rb & ((0x20 << RED_SHIFT_BITS) | (0x20 << 0));
 	int g = ((C1 & (SECOND_COLOR_MASK)) | (0x20 << GREEN_SHIFT_BITS)) - (C2 & (SECOND_COLOR_MASK));
-	int rgbsaturate = (rbcarry >> 5) * 0x1f + ((g & (0x20 << GREEN_SHIFT_BITS)) >> GREEN_SHIFT_BITS) * MAX_GREEN;
-	return ((rb & (THIRD_COLOR_MASK | FIRST_COLOR_MASK)) | (g & SECOND_COLOR_MASK)) & rgbsaturate;
+	int rgbsaturate = (((g & (0x20 << GREEN_SHIFT_BITS)) | rbcarry) >> 5) * 0x1f;
+	uint16 retval = ((rb & (THIRD_COLOR_MASK | FIRST_COLOR_MASK)) | (g & SECOND_COLOR_MASK)) & rgbsaturate;
+#if GREEN_SHIFT_BITS == 6
+	retval |= (retval & 0x0400) >> 5;
+#endif
+	return retval;
 }
 
 void S9xStartScreenRefresh (void);
