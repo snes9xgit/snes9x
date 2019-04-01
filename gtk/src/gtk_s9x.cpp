@@ -316,7 +316,10 @@ gboolean S9xIdleFunc (gpointer data)
     S9xProcessEvents (true);
 
     if (!S9xDisplayDriverIsReady ())
+    {
+        usleep(100);
         return true;
+    }
 
     S9xThrottle ();
 
