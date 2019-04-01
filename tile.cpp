@@ -609,6 +609,7 @@ struct NOMATH
 		return Main;
 	}
 };
+typedef NOMATH Blend_None;
 
 template<class Op>
 struct REGMATH
@@ -618,6 +619,9 @@ struct REGMATH
 		return Op::fn(Main, (SD & 0x20) ? Sub : GFX.FixedColour);
 	}
 };
+typedef REGMATH<COLOR_ADD> Blend_Add;
+typedef REGMATH<COLOR_SUB> Blend_Sub;
+typedef REGMATH<COLOR_ADD_BRIGHTNESS> Blend_AddBrightness;
 
 template<class Op>
 struct MATHF1_2
@@ -627,6 +631,8 @@ struct MATHF1_2
 		return GFX.ClipColors ? Op::fn(Main, GFX.FixedColour) : Op::fn1_2(Main, GFX.FixedColour);
 	}
 };
+typedef MATHF1_2<COLOR_ADD> Blend_AddF1_2;
+typedef MATHF1_2<COLOR_SUB> Blend_SubF1_2;
 
 template<class Op>
 struct MATHS1_2
@@ -636,6 +642,9 @@ struct MATHS1_2
 		return GFX.ClipColors ? REGMATH<Op>::calc(Main, Sub, SD) : (SD & 0x20) ? Op::fn1_2(Main, Sub) : Op::fn(Main, GFX.FixedColour);
 	}
 };
+typedef MATHS1_2<COLOR_ADD> Blend_AddS1_2;
+typedef MATHS1_2<COLOR_SUB> Blend_SubS1_2;
+typedef MATHS1_2<COLOR_ADD_BRIGHTNESS> Blend_AddS1_2Brightness;
 
 // Basic routine to render an unclipped tile.
 // Input parameters:
@@ -654,13 +663,12 @@ struct MATHS1_2
 
 #define DRAW_TILE	DrawTile16
 #define NAME1		DrawTile16
-#define ARGS_DEF	uint32 Tile, uint32 Offset, uint32 StartLine, uint32 LineCount
-#define ARGS		Tile, Offset, StartLine, LineCount
+#define ARGS		uint32 Tile, uint32 Offset, uint32 StartLine, uint32 LineCount
 
 template<class DRAWPIXELOP, class BPSTARTOP, int PITCH>
 struct DrawTile16
 {
-	static void draw(ARGS_DEF)
+	static void draw(ARGS)
 	{
 		uint8			*pCache;
 		int32	l;
@@ -738,13 +746,12 @@ struct DrawTile16
 
 #define DRAW_TILE	DrawClippedTile16
 #define NAME1		DrawClippedTile16
-#define ARGS_DEF	uint32 Tile, uint32 Offset, uint32 StartPixel, uint32 Width, uint32 StartLine, uint32 LineCount
-#define ARGS		Tile, Offset, StartPixel, Width, StartLine, LineCount
+#define ARGS		uint32 Tile, uint32 Offset, uint32 StartPixel, uint32 Width, uint32 StartLine, uint32 LineCount
 
 template<class DRAWPIXELOP, class BPSTARTOP, int PITCH>
 struct DrawClippedTile16
 {
-	static void draw(ARGS_DEF)
+	static void draw(ARGS)
 	{
 		uint8			*pCache;
 		int32	l;
@@ -846,7 +853,6 @@ struct DrawClippedTile16
 
 #undef NAME1
 #undef ARGS
-#undef ARGS_DEF
 #undef DRAW_TILE
 #undef Z1
 #undef Z2
@@ -859,13 +865,12 @@ struct DrawClippedTile16
 
 #define DRAW_TILE	DrawMosaicPixel16
 #define NAME1		DrawMosaicPixel16
-#define ARGS_DEF	uint32 Tile, uint32 Offset, uint32 StartLine, uint32 StartPixel, uint32 Width, uint32 LineCount
-#define ARGS		Tile, Offset, StartLine, StartPixel, Width, LineCount
+#define ARGS		uint32 Tile, uint32 Offset, uint32 StartLine, uint32 StartPixel, uint32 Width, uint32 LineCount
 
 template<class DRAWPIXELOP, class BPSTARTOP, int PITCH>
 struct DrawMosaicPixel16
 {
-	static void draw(ARGS_DEF)
+	static void draw(ARGS)
 	{
 		uint8			*pCache;
 		int32	l, w;
@@ -902,7 +907,6 @@ struct DrawMosaicPixel16
 
 #undef NAME1
 #undef ARGS
-#undef ARGS_DEF
 #undef DRAW_TILE
 #undef Z1
 #undef Z2
@@ -919,13 +923,12 @@ struct DrawMosaicPixel16
 
 #define DRAW_TILE	DrawBackdrop16
 #define NAME1		DrawBackdrop16
-#define ARGS_DEF	uint32 Offset, uint32 Left, uint32 Right
-#define ARGS		Offset, Left, Right
+#define ARGS		uint32 Offset, uint32 Left, uint32 Right
 
 template<class DRAWPIXELOP, class BPSTARTOP, int PITCH>
 struct DrawBackdrop16
 {
-	static void draw(ARGS_DEF)
+	static void draw(ARGS)
 	{
 		uint32	l, x;
 
@@ -947,7 +950,6 @@ struct DrawBackdrop16
 
 #undef NAME1
 #undef ARGS
-#undef ARGS_DEF
 #undef DRAW_TILE
 #undef Pix
 #undef Z1
@@ -971,8 +973,7 @@ extern struct SLineMatrixData	LineMatrixData[240];
 
 #define DRAW_TILE	DrawMode7BG1
 #define NAME1		DrawMode7BG1
-#define ARGS_DEF	uint32 Left, uint32 Right, int D
-#define ARGS		Left, Right, D
+#define ARGS		uint32 Left, uint32 Right, int D
 
 #define DRAW_PIXEL(N, M) DRAWPIXELOP::draw(N, M, Offset, OffsetInLine, Pix, OP::Z1(D, b), OP::Z2(D, b))
 
@@ -1000,7 +1001,7 @@ struct DrawMode7BG2_OP
 template<class DRAWPIXELOP, class BPSTARTOP, int PITCH, class OP>
 struct DrawTileNormalBase
 {
-	static void draw(ARGS_DEF)
+	static void draw(ARGS)
 	{
 		uint8	*VRAM1 = Memory.VRAM + 1;
 
@@ -1107,7 +1108,7 @@ struct DrawMode7BG2 : public DrawTileNormalBase<DRAWPIXELOP, BPSTARTOP, PITCH, D
 template<class DRAWPIXELOP, class BPSTARTOP, int PITCH, class OP>
 struct DrawTileMosaicBase
 {
-	static void draw(ARGS_DEF)
+	static void draw(ARGS)
 	{
 		uint8	*VRAM1 = Memory.VRAM + 1;
 
@@ -1293,7 +1294,6 @@ struct DrawMode7MosaicBG2 : public DrawTileMosaicBase<DRAWPIXELOP, BPSTARTOP, PI
 
 #undef NAME1
 #undef ARGS
-#undef ARGS_DEF
 #undef DRAW_TILE
 #undef DRAW_PIXEL
 #undef NO_INTERLACE
@@ -1397,62 +1397,17 @@ struct DrawMode7MosaicBG2 : public DrawTileMosaicBase<DRAWPIXELOP, BPSTARTOP, PI
 #define CONCAT3(A, B, C)	A##B##C
 #define MAKENAME(A, B, C)	CONCAT3(A, B, C)
 
-static void MAKENAME(NAME1, _, NAME2) (ARGS_DEF)
+static void (*MAKENAME(Renderers_, NAME1, NAME2)[9]) (ARGS) =
 {
-	DRAW_TILE<DRAW_PIXEL_OP<NOMATH>, BPSTART, PITCH>::draw(ARGS);
-}
-
-static void MAKENAME(NAME1, Add_, NAME2) (ARGS_DEF)
-{
-	DRAW_TILE<DRAW_PIXEL_OP< REGMATH<COLOR_ADD> >, BPSTART, PITCH>::draw(ARGS);
-}
-
-static void MAKENAME(NAME1, Add_Brightness_, NAME2) (ARGS_DEF)
-{
-	DRAW_TILE<DRAW_PIXEL_OP< REGMATH<COLOR_ADD_BRIGHTNESS> >, BPSTART, PITCH>::draw(ARGS);
-}
-
-static void MAKENAME(NAME1, AddF1_2_, NAME2) (ARGS_DEF)
-{
-	DRAW_TILE<DRAW_PIXEL_OP< MATHF1_2<COLOR_ADD> >, BPSTART, PITCH>::draw(ARGS);
-}
-
-static void MAKENAME(NAME1, AddS1_2_, NAME2) (ARGS_DEF)
-{
-	DRAW_TILE<DRAW_PIXEL_OP< MATHS1_2<COLOR_ADD> >, BPSTART, PITCH>::draw(ARGS);
-}
-
-static void MAKENAME(NAME1, AddS1_2_Brightness_, NAME2) (ARGS_DEF)
-{
-	DRAW_TILE<DRAW_PIXEL_OP< MATHS1_2<COLOR_ADD_BRIGHTNESS> >, BPSTART, PITCH>::draw(ARGS);
-}
-
-static void MAKENAME(NAME1, Sub_, NAME2) (ARGS_DEF)
-{
-	DRAW_TILE<DRAW_PIXEL_OP< REGMATH<COLOR_SUB> >, BPSTART, PITCH>::draw(ARGS);
-}
-
-static void MAKENAME(NAME1, SubF1_2_, NAME2) (ARGS_DEF)
-{
-	DRAW_TILE<DRAW_PIXEL_OP< MATHF1_2<COLOR_SUB> >, BPSTART, PITCH>::draw(ARGS);
-}
-
-static void MAKENAME(NAME1, SubS1_2_, NAME2) (ARGS_DEF)
-{
-	DRAW_TILE<DRAW_PIXEL_OP< MATHS1_2<COLOR_SUB> >, BPSTART, PITCH>::draw(ARGS);
-}
-
-static void (*MAKENAME(Renderers_, NAME1, NAME2)[9]) (ARGS_DEF) =
-{
-	MAKENAME(NAME1, _, NAME2),
-	MAKENAME(NAME1, Add_, NAME2),
-	MAKENAME(NAME1, AddF1_2_, NAME2),
-	MAKENAME(NAME1, AddS1_2_, NAME2),
-	MAKENAME(NAME1, Sub_, NAME2),
-	MAKENAME(NAME1, SubF1_2_, NAME2),
-	MAKENAME(NAME1, SubS1_2_, NAME2),
-	MAKENAME(NAME1, Add_Brightness_, NAME2),
-	MAKENAME(NAME1, AddS1_2_Brightness_, NAME2)
+	DRAW_TILE<DRAW_PIXEL_OP<Blend_None>, BPSTART, PITCH>::draw,
+	DRAW_TILE<DRAW_PIXEL_OP<Blend_Add>, BPSTART, PITCH>::draw,
+	DRAW_TILE<DRAW_PIXEL_OP<Blend_AddF1_2>, BPSTART, PITCH>::draw,
+	DRAW_TILE<DRAW_PIXEL_OP<Blend_AddS1_2>, BPSTART, PITCH>::draw,
+	DRAW_TILE<DRAW_PIXEL_OP<Blend_Sub>, BPSTART, PITCH>::draw,
+	DRAW_TILE<DRAW_PIXEL_OP<Blend_SubF1_2>, BPSTART, PITCH>::draw,
+	DRAW_TILE<DRAW_PIXEL_OP<Blend_SubS1_2>, BPSTART, PITCH>::draw,
+	DRAW_TILE<DRAW_PIXEL_OP<Blend_AddBrightness>, BPSTART, PITCH>::draw,
+	DRAW_TILE<DRAW_PIXEL_OP<Blend_AddS1_2Brightness>, BPSTART, PITCH>::draw,
 };
 
 #undef MAKENAME
