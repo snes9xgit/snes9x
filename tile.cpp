@@ -713,8 +713,6 @@ namespace {
 	#define Z2				1
 	#define Pix				0
 
-	#define ARGS		uint32 Offset, uint32 Left, uint32 Right
-
 	template<class PIXEL>
 	struct DrawBackdrop16
 	{
