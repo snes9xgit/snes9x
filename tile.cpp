@@ -330,37 +330,59 @@ namespace {
 	#undef DOBIT
 
 
-	#define GET_CACHED_TILE() \
-		uint32	TileNumber; \
-		uint32	TileAddr = BG.TileAddress + ((Tile & 0x3ff) << BG.TileShift); \
-		if (Tile & 0x100) \
-			TileAddr += BG.NameSelect; \
-		TileAddr &= 0xffff; \
-		TileNumber = TileAddr >> BG.TileShift; \
-		if (Tile & H_FLIP) \
-		{ \
-			pCache = &BG.BufferFlip[TileNumber << 6]; \
-			if (!BG.BufferedFlip[TileNumber]) \
-				BG.BufferedFlip[TileNumber] = BG.ConvertTileFlip(pCache, TileAddr, Tile & 0x3ff); \
-		} \
-		else \
-		{ \
-			pCache = &BG.Buffer[TileNumber << 6]; \
-			if (!BG.Buffered[TileNumber]) \
-				BG.Buffered[TileNumber] = BG.ConvertTile(pCache, TileAddr, Tile & 0x3ff); \
+	class CachedTile
+	{
+	public:
+		CachedTile(uint32 tile) : Tile(tile) {}
+
+		void GetCachedTile()
+		{
+			TileAddr = BG.TileAddress + ((Tile & 0x3ff) << BG.TileShift);
+			if (Tile & 0x100)
+				TileAddr += BG.NameSelect;
+			TileAddr &= 0xffff;
+			TileNumber = TileAddr >> BG.TileShift;
+			if (Tile & H_FLIP)
+			{
+				pCache = &BG.BufferFlip[TileNumber << 6];
+				if (!BG.BufferedFlip[TileNumber])
+					BG.BufferedFlip[TileNumber] = BG.ConvertTileFlip(pCache, TileAddr, Tile & 0x3ff);
+			}
+			else
+			{
+				pCache = &BG.Buffer[TileNumber << 6];
+				if (!BG.Buffered[TileNumber])
+					BG.Buffered[TileNumber] = BG.ConvertTile(pCache, TileAddr, Tile & 0x3ff);
+			}
 		}
 
-	#define IS_BLANK_TILE() \
-		( ( (Tile & H_FLIP) ? BG.BufferedFlip[TileNumber] : BG.Buffered[TileNumber]) == BLANK_TILE)
+		bool IsBlankTile() const
+		{
+			return ((Tile & H_FLIP) ? BG.BufferedFlip[TileNumber] : BG.Buffered[TileNumber]) == BLANK_TILE;
+		}
 
-	#define SELECT_PALETTE() \
-		if (BG.DirectColourMode) \
-		{ \
-			GFX.RealScreenColors = DirectColourMaps[(Tile >> 10) & 7]; \
-		} \
-		else \
-			GFX.RealScreenColors = &IPPU.ScreenColors[((Tile >> BG.PaletteShift) & BG.PaletteMask) + BG.StartPalette]; \
-		GFX.ScreenColors = GFX.ClipColors ? BlackColourMap : GFX.RealScreenColors
+		void SelectPalette() const
+		{
+			if (BG.DirectColourMode)
+			{
+				GFX.RealScreenColors = DirectColourMaps[(Tile >> 10) & 7];
+			}
+			else
+				GFX.RealScreenColors = &IPPU.ScreenColors[((Tile >> BG.PaletteShift) & BG.PaletteMask) + BG.StartPalette];
+			GFX.ScreenColors = GFX.ClipColors ? BlackColourMap : GFX.RealScreenColors;
+		}
+
+		uint8* Ptr() const
+		{
+			return pCache;
+		}
+
+	private:
+		uint8  *pCache;
+		uint32 Tile;
+		uint32 TileNumber;
+		uint32 TileAddr;
+	};
 
 	struct NOMATH
 	{
@@ -462,18 +484,18 @@ namespace {
 
 		static void Draw(uint32 Tile, uint32 Offset, uint32 StartLine, uint32 LineCount)
 		{
-			uint8			*pCache;
+			CachedTile cache(Tile);
 			int32	l;
 			uint8	*bp, Pix;
 
-			GET_CACHED_TILE();
-			if (IS_BLANK_TILE())
+			cache.GetCachedTile();
+			if (cache.IsBlankTile())
 				return;
-			SELECT_PALETTE();
+			cache.SelectPalette();
 
 			if (!(Tile & (V_FLIP | H_FLIP)))
 			{
-				bp = pCache + bpstart_t::Get(StartLine);
+				bp = cache.Ptr() + bpstart_t::Get(StartLine);
 				OFFSET_IN_LINE;
 				for (l = LineCount; l > 0; l--, bp += 8 * Pitch, Offset += GFX.PPL)
 				{
@@ -485,7 +507,7 @@ namespace {
 			else
 			if (!(Tile & V_FLIP))
 			{
-				bp = pCache + bpstart_t::Get(StartLine);
+				bp = cache.Ptr() + bpstart_t::Get(StartLine);
 				OFFSET_IN_LINE;
 				for (l = LineCount; l > 0; l--, bp += 8 * Pitch, Offset += GFX.PPL)
 				{
@@ -497,7 +519,7 @@ namespace {
 			else
 			if (!(Tile & H_FLIP))
 			{
-				bp = pCache + 56 - bpstart_t::Get(StartLine);
+				bp = cache.Ptr() + 56 - bpstart_t::Get(StartLine);
 				OFFSET_IN_LINE;
 				for (l = LineCount; l > 0; l--, bp -= 8 * Pitch, Offset += GFX.PPL)
 				{
@@ -508,7 +530,7 @@ namespace {
 			}
 			else
 			{
-				bp = pCache + 56 - bpstart_t::Get(StartLine);
+				bp = cache.Ptr() + 56 - bpstart_t::Get(StartLine);
 				OFFSET_IN_LINE;
 				for (l = LineCount; l > 0; l--, bp -= 8 * Pitch, Offset += GFX.PPL)
 				{
@@ -538,18 +560,18 @@ namespace {
 
 		static void Draw(uint32 Tile, uint32 Offset, uint32 StartPixel, uint32 Width, uint32 StartLine, uint32 LineCount)
 		{
-			uint8			*pCache;
+			CachedTile cache(Tile);
 			int32	l;
 			uint8	*bp, Pix, w;
 
-			GET_CACHED_TILE();
-			if (IS_BLANK_TILE())
+			cache.GetCachedTile();
+			if (cache.IsBlankTile())
 				return;
-			SELECT_PALETTE();
+			cache.SelectPalette();
 
 			if (!(Tile & (V_FLIP | H_FLIP)))
 			{
-				bp = pCache + bpstart_t::Get(StartLine);
+				bp = cache.Ptr() + bpstart_t::Get(StartLine);
 				OFFSET_IN_LINE;
 				for (l = LineCount; l > 0; l--, bp += 8 * Pitch, Offset += GFX.PPL)
 				{
@@ -570,7 +592,7 @@ namespace {
 			else
 			if (!(Tile & V_FLIP))
 			{
-				bp = pCache + bpstart_t::Get(StartLine);
+				bp = cache.Ptr() + bpstart_t::Get(StartLine);
 				OFFSET_IN_LINE;
 				for (l = LineCount; l > 0; l--, bp += 8 * Pitch, Offset += GFX.PPL)
 				{
@@ -591,7 +613,7 @@ namespace {
 			else
 			if (!(Tile & H_FLIP))
 			{
-				bp = pCache + 56 - bpstart_t::Get(StartLine);
+				bp = cache.Ptr() + 56 - bpstart_t::Get(StartLine);
 				OFFSET_IN_LINE;
 				for (l = LineCount; l > 0; l--, bp -= 8 * Pitch, Offset += GFX.PPL)
 				{
@@ -611,7 +633,7 @@ namespace {
 			}
 			else
 			{
-				bp = pCache + 56 - bpstart_t::Get(StartLine);
+				bp = cache.Ptr() + 56 - bpstart_t::Get(StartLine);
 				OFFSET_IN_LINE;
 				for (l = LineCount; l > 0; l--, bp -= 8 * Pitch, Offset += GFX.PPL)
 				{
@@ -650,22 +672,22 @@ namespace {
 
 		static void Draw(uint32 Tile, uint32 Offset, uint32 StartLine, uint32 StartPixel, uint32 Width, uint32 LineCount)
 		{
-			uint8			*pCache;
+			CachedTile cache(Tile);
 			int32	l, w;
 			uint8	Pix;
 
-			GET_CACHED_TILE();
-			if (IS_BLANK_TILE())
+			cache.GetCachedTile();
+			if (cache.IsBlankTile())
 				return;
-			SELECT_PALETTE();
+			cache.SelectPalette();
 
 			if (Tile & H_FLIP)
 				StartPixel = 7 - StartPixel;
 
 			if (Tile & V_FLIP)
-				Pix = pCache[56 - bpstart_t::Get(StartLine) + StartPixel];
+				Pix = cache.Ptr()[56 - bpstart_t::Get(StartLine) + StartPixel];
 			else
-				Pix = pCache[bpstart_t::Get(StartLine) + StartPixel];
+				Pix = cache.Ptr()[bpstart_t::Get(StartLine) + StartPixel];
 
 			if (Pix)
 			{
