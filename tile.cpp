@@ -4,9 +4,7 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-// This file includes itself multiple times.
-// The other option would be to have 4 files, where A includes B, and B includes C 3 times, and C includes D 5 times.
-// Look for the following marker to find where the divisions are.
+// This file includes itself.
 
 // Top-level compilation.
 
@@ -21,63 +19,96 @@ static uint32	pixbit[8][16];
 static uint8	hrbit_odd[256];
 static uint8	hrbit_even[256];
 
-#define OFFSET_IN_LINE \
-	uint32 OffsetInLine = Offset % GFX.RealPPL;
-
-template<class MATHOP>
-struct Normal1x1
+struct BPProgressive
 {
-	static void draw(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2)
+	enum { Pitch = 1 };
+	static uint32 Get(uint32 StartLine) { return StartLine; }
+};
+
+// Interlace: Only draw every other line, so we'll redefine BPSTART and PITCH to do so.
+// Otherwise, it's the same as Normal2x1/Hires2x1.
+struct BPInterlace
+{
+	enum { Pitch = 2 };
+	static uint32 Get(uint32 StartLine) { return StartLine * 2 + BG.InterlaceLine; }
+};
+
+// The 1x1 pixel plotter, for speedhacking modes.
+template<class MATH, class BPSTART>
+struct Normal1x1Base
+{
+	enum { Pitch = BPSTART::Pitch };
+	typedef BPSTART bpstart_t;
+
+	static void Draw(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2)
 	{
 		(void) OffsetInLine;
 		if (Z1 > GFX.DB[Offset + N] && (M))
 		{
-			GFX.S[Offset + N] = MATHOP::calc(GFX.ScreenColors[Pix], GFX.SubScreen[Offset + N], GFX.SubZBuffer[Offset + N]);
+			GFX.S[Offset + N] = MATH::Calc(GFX.ScreenColors[Pix], GFX.SubScreen[Offset + N], GFX.SubZBuffer[Offset + N]);
 			GFX.DB[Offset + N] = Z2;
 		}
 	}
 };
 
-template<class MATHOP>
-struct Normal2x1
+template<class MATH>
+struct Normal1x1 : public Normal1x1Base<MATH, BPProgressive> {};
+
+// The 2x1 pixel plotter, for normal rendering when we've used hires/interlace already this frame.
+template<class MATH, class BPSTART>
+struct Normal2x1Base
 {
-	static void draw(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2)
+	enum { Pitch = BPSTART::Pitch };
+	typedef BPSTART bpstart_t;
+
+	static void Draw(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2)
 	{
 		(void) OffsetInLine;
 		if (Z1 > GFX.DB[Offset + 2 * N] && (M))
 		{
-			GFX.S[Offset + 2 * N] = GFX.S[Offset + 2 * N + 1] = MATHOP::calc(GFX.ScreenColors[Pix], GFX.SubScreen[Offset + 2 * N], GFX.SubZBuffer[Offset + 2 * N]);
+			GFX.S[Offset + 2 * N] = GFX.S[Offset + 2 * N + 1] = MATH::Calc(GFX.ScreenColors[Pix], GFX.SubScreen[Offset + 2 * N], GFX.SubZBuffer[Offset + 2 * N]);
 			GFX.DB[Offset + 2 * N] = GFX.DB[Offset + 2 * N + 1] = Z2;
 		}
 	}
 };
 
-template<class MATHOP>
-struct Hires
+template<class MATH>
+struct Normal2x1 : public Normal2x1Base<MATH, BPProgressive> {};
+template<class MATH>
+struct Interlace : public Normal2x1Base<MATH, BPInterlace> {};
+
+// Hires pixel plotter, this combines the main and subscreen pixels as appropriate to render hires or pseudo-hires images.
+// Use it only on the main screen, subscreen should use Normal2x1 instead.
+// Hires math:
+//     Main pixel is mathed as normal: Main(x, y) * Sub(x, y).
+//     Sub pixel is mathed somewhat weird: Basically, for Sub(x + 1, y) we apply the same operation we applied to Main(x, y)
+//     (e.g. no math, add fixed, add1/2 subscreen) using Main(x, y) as the "corresponding subscreen pixel".
+//     Also, color window clipping clips Sub(x + 1, y) if Main(x, y) is clipped, not Main(x + 1, y).
+//     We don't know how Sub(0, y) is handled.
+template<class MATH, class BPSTART>
+struct HiresBase
 {
-	static void draw(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2)
+	enum { Pitch = BPSTART::Pitch };
+	typedef BPSTART bpstart_t;
+
+	static void Draw(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2)
 	{
 		if (Z1 > GFX.DB[Offset + 2 * N] && (M))
 		{
-			GFX.S[Offset + 2 * N + 1] = MATHOP::calc(GFX.ScreenColors[Pix], GFX.SubScreen[Offset + 2 * N], GFX.SubZBuffer[Offset + 2 * N]);
+			GFX.S[Offset + 2 * N + 1] = MATH::Calc(GFX.ScreenColors[Pix], GFX.SubScreen[Offset + 2 * N], GFX.SubZBuffer[Offset + 2 * N]);
 			if ((OffsetInLine + 2 * N ) != (SNES_WIDTH - 1) << 1)
-				GFX.S[Offset + 2 * N + 2] = MATHOP::calc((GFX.ClipColors ? 0 : GFX.SubScreen[Offset + 2 * N + 2]), GFX.RealScreenColors[Pix], GFX.SubZBuffer[Offset + 2 * N]);
+				GFX.S[Offset + 2 * N + 2] = MATH::Calc((GFX.ClipColors ? 0 : GFX.SubScreen[Offset + 2 * N + 2]), GFX.RealScreenColors[Pix], GFX.SubZBuffer[Offset + 2 * N]);
 			if ((OffsetInLine + 2 * N) == 0 || (OffsetInLine + 2 * N) == GFX.RealPPL)
-				GFX.S[Offset + 2 * N] = MATHOP::calc((GFX.ClipColors ? 0 : GFX.SubScreen[Offset + 2 * N]), GFX.RealScreenColors[Pix], GFX.SubZBuffer[Offset + 2 * N]);
+				GFX.S[Offset + 2 * N] = MATH::Calc((GFX.ClipColors ? 0 : GFX.SubScreen[Offset + 2 * N]), GFX.RealScreenColors[Pix], GFX.SubZBuffer[Offset + 2 * N]);
 			GFX.DB[Offset + 2 * N] = GFX.DB[Offset + 2 * N + 1] = Z2;
 		}
 	}
 };
 
-struct Progressive
-{
-	static uint32 get(uint32 StartLine) { return StartLine; }
-};
-
-struct Interlace
-{
-	static uint32 get(uint32 StartLine) { return StartLine * 2 + BG.InterlaceLine; }
-};
+template<class MATH>
+struct Hires : public HiresBase<MATH, BPProgressive> {};
+template<class MATH>
+struct HiresInterlace : public HiresBase<MATH, BPInterlace> {};
 
 void S9xInitTileRenderer (void)
 {
@@ -382,34 +413,34 @@ void S9xSelectTileRenderers (int BGMode, bool8 sub, bool8 obj)
 
 	if (!IPPU.DoubleWidthPixels)	// normal width
 	{
-		DT     = Renderers_DrawTile16Normal1x1;
-		DCT    = Renderers_DrawClippedTile16Normal1x1;
-		DMP    = Renderers_DrawMosaicPixel16Normal1x1;
-		DB     = Renderers_DrawBackdrop16Normal1x1;
-		DM7BG1 = M7M1 ? Renderers_DrawMode7MosaicBG1Normal1x1 : Renderers_DrawMode7BG1Normal1x1;
-		DM7BG2 = M7M2 ? Renderers_DrawMode7MosaicBG2Normal1x1 : Renderers_DrawMode7BG2Normal1x1;
+		DT     = Renderers<DrawTile16, Normal1x1>::Functions;
+		DCT    = Renderers<DrawClippedTile16, Normal1x1>::Functions;
+		DMP    = Renderers<DrawMosaicPixel16, Normal1x1>::Functions;
+		DB     = Renderers<DrawBackdrop16, Normal1x1>::Functions;
+		DM7BG1 = M7M1 ? Renderers<DrawMode7MosaicBG1, Normal1x1>::Functions : Renderers<DrawMode7BG1, Normal1x1>::Functions;
+		DM7BG2 = M7M2 ? Renderers<DrawMode7MosaicBG2, Normal1x1>::Functions : Renderers<DrawMode7BG2, Normal1x1>::Functions;
 		GFX.LinesPerTile = 8;
 	}
 	else if(hires)					// hires double width
 	{
 		if (interlace)
 		{
-			DT     = Renderers_DrawTile16HiresInterlace;
-			DCT    = Renderers_DrawClippedTile16HiresInterlace;
-			DMP    = Renderers_DrawMosaicPixel16HiresInterlace;
-			DB     = Renderers_DrawBackdrop16Hires;
-			DM7BG1 = M7M1 ? Renderers_DrawMode7MosaicBG1Hires : Renderers_DrawMode7BG1Hires;
-			DM7BG2 = M7M2 ? Renderers_DrawMode7MosaicBG2Hires : Renderers_DrawMode7BG2Hires;
+			DT     = Renderers<DrawTile16, HiresInterlace>::Functions;
+			DCT    = Renderers<DrawClippedTile16, HiresInterlace>::Functions;
+			DMP    = Renderers<DrawMosaicPixel16, HiresInterlace>::Functions;
+			DB     = Renderers<DrawBackdrop16, Hires>::Functions;
+			DM7BG1 = M7M1 ? Renderers<DrawMode7MosaicBG1, Hires>::Functions : Renderers<DrawMode7BG1, Hires>::Functions;
+			DM7BG2 = M7M2 ? Renderers<DrawMode7MosaicBG2, Hires>::Functions : Renderers<DrawMode7BG2, Hires>::Functions;
 			GFX.LinesPerTile = 4;
 		}
 		else
 		{
-			DT     = Renderers_DrawTile16Hires;
-			DCT    = Renderers_DrawClippedTile16Hires;
-			DMP    = Renderers_DrawMosaicPixel16Hires;
-			DB     = Renderers_DrawBackdrop16Hires;
-			DM7BG1 = M7M1 ? Renderers_DrawMode7MosaicBG1Hires : Renderers_DrawMode7BG1Hires;
-			DM7BG2 = M7M2 ? Renderers_DrawMode7MosaicBG2Hires : Renderers_DrawMode7BG2Hires;
+			DT     = Renderers<DrawTile16, Hires>::Functions;
+			DCT    = Renderers<DrawClippedTile16, Hires>::Functions;
+			DMP    = Renderers<DrawMosaicPixel16, Hires>::Functions;
+			DB     = Renderers<DrawBackdrop16, Hires>::Functions;
+			DM7BG1 = M7M1 ? Renderers<DrawMode7MosaicBG1, Hires>::Functions : Renderers<DrawMode7BG1, Hires>::Functions;
+			DM7BG2 = M7M2 ? Renderers<DrawMode7MosaicBG2, Hires>::Functions : Renderers<DrawMode7BG2, Hires>::Functions;
 			GFX.LinesPerTile = 8;
 		}
 	}
@@ -417,22 +448,22 @@ void S9xSelectTileRenderers (int BGMode, bool8 sub, bool8 obj)
 	{
 		if (interlace)
 		{
-			DT     = Renderers_DrawTile16Interlace;
-			DCT    = Renderers_DrawClippedTile16Interlace;
-			DMP    = Renderers_DrawMosaicPixel16Interlace;
-			DB     = Renderers_DrawBackdrop16Normal2x1;
-			DM7BG1 = M7M1 ? Renderers_DrawMode7MosaicBG1Normal2x1 : Renderers_DrawMode7BG1Normal2x1;
-			DM7BG2 = M7M2 ? Renderers_DrawMode7MosaicBG2Normal2x1 : Renderers_DrawMode7BG2Normal2x1;
+			DT     = Renderers<DrawTile16, Interlace>::Functions;
+			DCT    = Renderers<DrawClippedTile16, Interlace>::Functions;
+			DMP    = Renderers<DrawMosaicPixel16, Interlace>::Functions;
+			DB     = Renderers<DrawBackdrop16, Normal2x1>::Functions;
+			DM7BG1 = M7M1 ? Renderers<DrawMode7MosaicBG1, Normal2x1>::Functions : Renderers<DrawMode7BG1, Normal2x1>::Functions;
+			DM7BG2 = M7M2 ? Renderers<DrawMode7MosaicBG2, Normal2x1>::Functions : Renderers<DrawMode7BG2, Normal2x1>::Functions;
 			GFX.LinesPerTile = 4;
 		}
 		else
 		{
-			DT     = Renderers_DrawTile16Normal2x1;
-			DCT    = Renderers_DrawClippedTile16Normal2x1;
-			DMP    = Renderers_DrawMosaicPixel16Normal2x1;
-			DB     = Renderers_DrawBackdrop16Normal2x1;
-			DM7BG1 = M7M1 ? Renderers_DrawMode7MosaicBG1Normal2x1 : Renderers_DrawMode7BG1Normal2x1;
-			DM7BG2 = M7M2 ? Renderers_DrawMode7MosaicBG2Normal2x1 : Renderers_DrawMode7BG2Normal2x1;
+			DT     = Renderers<DrawTile16, Normal2x1>::Functions;
+			DCT    = Renderers<DrawClippedTile16, Normal2x1>::Functions;
+			DMP    = Renderers<DrawMosaicPixel16, Normal2x1>::Functions;
+			DB     = Renderers<DrawBackdrop16, Normal2x1>::Functions;
+			DM7BG1 = M7M1 ? Renderers<DrawMode7MosaicBG1, Normal2x1>::Functions : Renderers<DrawMode7BG1, Normal2x1>::Functions;
+			DM7BG2 = M7M2 ? Renderers<DrawMode7MosaicBG2, Normal2x1>::Functions : Renderers<DrawMode7BG2, Normal2x1>::Functions;
 			GFX.LinesPerTile = 8;
 		}
 	}
@@ -604,7 +635,7 @@ void S9xSelectTileConverter (int depth, bool8 hires, bool8 sub, bool8 mosaic)
 
 struct NOMATH
 {
-	static uint16 calc(uint16 Main, uint16 Sub, uint8 SD)
+	static uint16 Calc(uint16 Main, uint16 Sub, uint8 SD)
 	{
 		return Main;
 	}
@@ -614,7 +645,7 @@ typedef NOMATH Blend_None;
 template<class Op>
 struct REGMATH
 {
-	static uint16 calc(uint16 Main, uint16 Sub, uint8 SD)
+	static uint16 Calc(uint16 Main, uint16 Sub, uint8 SD)
 	{
 		return Op::fn(Main, (SD & 0x20) ? Sub : GFX.FixedColour);
 	}
@@ -626,7 +657,7 @@ typedef REGMATH<COLOR_ADD_BRIGHTNESS> Blend_AddBrightness;
 template<class Op>
 struct MATHF1_2
 {
-	static uint16 calc(uint16 Main, uint16 Sub, uint8 SD)
+	static uint16 Calc(uint16 Main, uint16 Sub, uint8 SD)
 	{
 		return GFX.ClipColors ? Op::fn(Main, GFX.FixedColour) : Op::fn1_2(Main, GFX.FixedColour);
 	}
@@ -637,14 +668,43 @@ typedef MATHF1_2<COLOR_SUB> Blend_SubF1_2;
 template<class Op>
 struct MATHS1_2
 {
-	static uint16 calc(uint16 Main, uint16 Sub, uint8 SD)
+	static uint16 Calc(uint16 Main, uint16 Sub, uint8 SD)
 	{
-		return GFX.ClipColors ? REGMATH<Op>::calc(Main, Sub, SD) : (SD & 0x20) ? Op::fn1_2(Main, Sub) : Op::fn(Main, GFX.FixedColour);
+		return GFX.ClipColors ? REGMATH<Op>::Calc(Main, Sub, SD) : (SD & 0x20) ? Op::fn1_2(Main, Sub) : Op::fn(Main, GFX.FixedColour);
 	}
 };
 typedef MATHS1_2<COLOR_ADD> Blend_AddS1_2;
 typedef MATHS1_2<COLOR_SUB> Blend_SubS1_2;
 typedef MATHS1_2<COLOR_ADD_BRIGHTNESS> Blend_AddS1_2Brightness;
+
+template<
+	template<class PIXEL_> class TILE,
+	template<class MATH> class PIXEL
+>
+struct Renderers
+{
+	enum { Pitch = PIXEL<Blend_None>::Pitch };
+	typedef typename TILE< PIXEL<Blend_None> >::call_t call_t;
+
+	static call_t Functions[9];
+
+};
+template<
+	template<class PIXEL_> class TILE,
+	template<class MATH> class PIXEL
+>
+typename Renderers<TILE, PIXEL>::call_t Renderers<TILE, PIXEL>::Functions[9] =
+{
+	TILE< PIXEL<Blend_None> >::Draw,
+	TILE< PIXEL<Blend_Add> >::Draw,
+	TILE< PIXEL<Blend_AddF1_2> >::Draw,
+	TILE< PIXEL<Blend_AddS1_2> >::Draw,
+	TILE< PIXEL<Blend_Sub> >::Draw,
+	TILE< PIXEL<Blend_SubF1_2> >::Draw,
+	TILE< PIXEL<Blend_SubS1_2> >::Draw,
+	TILE< PIXEL<Blend_AddBrightness> >::Draw,
+	TILE< PIXEL<Blend_AddS1_2Brightness> >::Draw,
+};
 
 // Basic routine to render an unclipped tile.
 // Input parameters:
@@ -657,18 +717,21 @@ typedef MATHS1_2<COLOR_ADD_BRIGHTNESS> Blend_AddS1_2Brightness;
 //     Z2 is the "cur_depth = new_depth". OBJ need the two separate.
 //     Pix is the pixel to draw.
 
-#define DRAW_PIXEL(N, M) DRAWPIXELOP::draw(N, M, Offset, OffsetInLine, Pix, Z1, Z2)
+#define OFFSET_IN_LINE \
+	uint32 OffsetInLine = Offset % GFX.RealPPL;
+#define DRAW_PIXEL(N, M) PIXEL::Draw(N, M, Offset, OffsetInLine, Pix, Z1, Z2)
 #define Z1	GFX.Z1
 #define Z2	GFX.Z2
 
-#define DRAW_TILE	DrawTile16
-#define NAME1		DrawTile16
-#define ARGS		uint32 Tile, uint32 Offset, uint32 StartLine, uint32 LineCount
-
-template<class DRAWPIXELOP, class BPSTARTOP, int PITCH>
+template<class PIXEL>
 struct DrawTile16
 {
-	static void draw(ARGS)
+	typedef void (*call_t)(uint32, uint32, uint32, uint32);
+
+	enum { Pitch = PIXEL::Pitch };
+	typedef typename PIXEL::bpstart_t bpstart_t;
+
+	static void Draw(uint32 Tile, uint32 Offset, uint32 StartLine, uint32 LineCount)
 	{
 		uint8			*pCache;
 		int32	l;
@@ -681,9 +744,9 @@ struct DrawTile16
 
 		if (!(Tile & (V_FLIP | H_FLIP)))
 		{
-			bp = pCache + BPSTARTOP::get(StartLine);
+			bp = pCache + bpstart_t::Get(StartLine);
 			OFFSET_IN_LINE;
-			for (l = LineCount; l > 0; l--, bp += 8 * PITCH, Offset += GFX.PPL)
+			for (l = LineCount; l > 0; l--, bp += 8 * Pitch, Offset += GFX.PPL)
 			{
 				for (int x = 0; x < 8; x++) {
 					Pix = bp[x]; DRAW_PIXEL(x, Pix);
@@ -693,9 +756,9 @@ struct DrawTile16
 		else
 		if (!(Tile & V_FLIP))
 		{
-			bp = pCache + BPSTARTOP::get(StartLine);
+			bp = pCache + bpstart_t::Get(StartLine);
 			OFFSET_IN_LINE;
-			for (l = LineCount; l > 0; l--, bp += 8 * PITCH, Offset += GFX.PPL)
+			for (l = LineCount; l > 0; l--, bp += 8 * Pitch, Offset += GFX.PPL)
 			{
 				for (int x = 0; x < 8; x++) {
 					Pix = bp[7 - x]; DRAW_PIXEL(x, Pix);
@@ -705,9 +768,9 @@ struct DrawTile16
 		else
 		if (!(Tile & H_FLIP))
 		{
-			bp = pCache + 56 - BPSTARTOP::get(StartLine);
+			bp = pCache + 56 - bpstart_t::Get(StartLine);
 			OFFSET_IN_LINE;
-			for (l = LineCount; l > 0; l--, bp -= 8 * PITCH, Offset += GFX.PPL)
+			for (l = LineCount; l > 0; l--, bp -= 8 * Pitch, Offset += GFX.PPL)
 			{
 				for (int x = 0; x < 8; x++) {
 					Pix = bp[x]; DRAW_PIXEL(x, Pix);
@@ -716,9 +779,9 @@ struct DrawTile16
 		}
 		else
 		{
-			bp = pCache + 56 - BPSTARTOP::get(StartLine);
+			bp = pCache + 56 - bpstart_t::Get(StartLine);
 			OFFSET_IN_LINE;
-			for (l = LineCount; l > 0; l--, bp -= 8 * PITCH, Offset += GFX.PPL)
+			for (l = LineCount; l > 0; l--, bp -= 8 * Pitch, Offset += GFX.PPL)
 			{
 				for (int x = 0; x < 8; x++) {
 					Pix = bp[7 - x]; DRAW_PIXEL(x, Pix);
@@ -728,14 +791,6 @@ struct DrawTile16
 	}
 };
 
-// Second-level include: Get the DrawTile16 renderers.
-
-#include "tile.cpp"
-
-#undef NAME1
-#undef ARGS
-#undef ARGS_DEF
-#undef DRAW_TILE
 #undef Z1
 #undef Z2
 
@@ -744,14 +799,15 @@ struct DrawTile16
 #define Z1	GFX.Z1
 #define Z2	GFX.Z2
 
-#define DRAW_TILE	DrawClippedTile16
-#define NAME1		DrawClippedTile16
-#define ARGS		uint32 Tile, uint32 Offset, uint32 StartPixel, uint32 Width, uint32 StartLine, uint32 LineCount
-
-template<class DRAWPIXELOP, class BPSTARTOP, int PITCH>
+template<class PIXEL>
 struct DrawClippedTile16
 {
-	static void draw(ARGS)
+	typedef void (*call_t)(uint32, uint32, uint32, uint32, uint32, uint32);
+
+	enum { Pitch = PIXEL::Pitch };
+	typedef typename PIXEL::bpstart_t bpstart_t;
+
+	static void Draw(uint32 Tile, uint32 Offset, uint32 StartPixel, uint32 Width, uint32 StartLine, uint32 LineCount)
 	{
 		uint8			*pCache;
 		int32	l;
@@ -764,9 +820,9 @@ struct DrawClippedTile16
 
 		if (!(Tile & (V_FLIP | H_FLIP)))
 		{
-			bp = pCache + BPSTARTOP::get(StartLine);
+			bp = pCache + bpstart_t::Get(StartLine);
 			OFFSET_IN_LINE;
-			for (l = LineCount; l > 0; l--, bp += 8 * PITCH, Offset += GFX.PPL)
+			for (l = LineCount; l > 0; l--, bp += 8 * Pitch, Offset += GFX.PPL)
 			{
 				w = Width;
 				switch (StartPixel)
@@ -785,9 +841,9 @@ struct DrawClippedTile16
 		else
 		if (!(Tile & V_FLIP))
 		{
-			bp = pCache + BPSTARTOP::get(StartLine);
+			bp = pCache + bpstart_t::Get(StartLine);
 			OFFSET_IN_LINE;
-			for (l = LineCount; l > 0; l--, bp += 8 * PITCH, Offset += GFX.PPL)
+			for (l = LineCount; l > 0; l--, bp += 8 * Pitch, Offset += GFX.PPL)
 			{
 				w = Width;
 				switch (StartPixel)
@@ -806,9 +862,9 @@ struct DrawClippedTile16
 		else
 		if (!(Tile & H_FLIP))
 		{
-			bp = pCache + 56 - BPSTARTOP::get(StartLine);
+			bp = pCache + 56 - bpstart_t::Get(StartLine);
 			OFFSET_IN_LINE;
-			for (l = LineCount; l > 0; l--, bp -= 8 * PITCH, Offset += GFX.PPL)
+			for (l = LineCount; l > 0; l--, bp -= 8 * Pitch, Offset += GFX.PPL)
 			{
 				w = Width;
 				switch (StartPixel)
@@ -826,9 +882,9 @@ struct DrawClippedTile16
 		}
 		else
 		{
-			bp = pCache + 56 - BPSTARTOP::get(StartLine);
+			bp = pCache + 56 - bpstart_t::Get(StartLine);
 			OFFSET_IN_LINE;
-			for (l = LineCount; l > 0; l--, bp -= 8 * PITCH, Offset += GFX.PPL)
+			for (l = LineCount; l > 0; l--, bp -= 8 * Pitch, Offset += GFX.PPL)
 			{
 				w = Width;
 				switch (StartPixel)
@@ -847,13 +903,6 @@ struct DrawClippedTile16
 	}
 };
 
-// Second-level include: Get the DrawClippedTile16 renderers.
-
-#include "tile.cpp"
-
-#undef NAME1
-#undef ARGS
-#undef DRAW_TILE
 #undef Z1
 #undef Z2
 
@@ -863,14 +912,14 @@ struct DrawClippedTile16
 #define Z1	GFX.Z1
 #define Z2	GFX.Z2
 
-#define DRAW_TILE	DrawMosaicPixel16
-#define NAME1		DrawMosaicPixel16
-#define ARGS		uint32 Tile, uint32 Offset, uint32 StartLine, uint32 StartPixel, uint32 Width, uint32 LineCount
-
-template<class DRAWPIXELOP, class BPSTARTOP, int PITCH>
+template<class PIXEL>
 struct DrawMosaicPixel16
 {
-	static void draw(ARGS)
+	typedef void (*call_t)(uint32, uint32, uint32, uint32, uint32, uint32);
+
+	typedef typename PIXEL::bpstart_t bpstart_t;
+
+	static void Draw(uint32 Tile, uint32 Offset, uint32 StartLine, uint32 StartPixel, uint32 Width, uint32 LineCount)
 	{
 		uint8			*pCache;
 		int32	l, w;
@@ -885,9 +934,9 @@ struct DrawMosaicPixel16
 			StartPixel = 7 - StartPixel;
 
 		if (Tile & V_FLIP)
-			Pix = pCache[56 - BPSTARTOP::get(StartLine) + StartPixel];
+			Pix = pCache[56 - bpstart_t::Get(StartLine) + StartPixel];
 		else
-			Pix = pCache[BPSTARTOP::get(StartLine) + StartPixel];
+			Pix = pCache[bpstart_t::Get(StartLine) + StartPixel];
 
 		if (Pix)
 		{
@@ -901,13 +950,6 @@ struct DrawMosaicPixel16
 	}
 };
 
-// Second-level include: Get the DrawMosaicPixel16 renderers.
-
-#include "tile.cpp"
-
-#undef NAME1
-#undef ARGS
-#undef DRAW_TILE
 #undef Z1
 #undef Z2
 
@@ -916,19 +958,18 @@ struct DrawMosaicPixel16
 // (or interlace at all, really).
 // The backdrop is always depth = 1, so Z1 = Z2 = 1. And backdrop is always color 0.
 
-#define NO_INTERLACE	1
 #define Z1				1
 #define Z2				1
 #define Pix				0
 
-#define DRAW_TILE	DrawBackdrop16
-#define NAME1		DrawBackdrop16
 #define ARGS		uint32 Offset, uint32 Left, uint32 Right
 
-template<class DRAWPIXELOP, class BPSTARTOP, int PITCH>
+template<class PIXEL>
 struct DrawBackdrop16
 {
-	static void draw(ARGS)
+	typedef void (*call_t)(uint32 Offset, uint32 Left, uint32 Right);
+
+	static void Draw(uint32 Offset, uint32 Left, uint32 Right)
 	{
 		uint32	l, x;
 
@@ -944,17 +985,9 @@ struct DrawBackdrop16
 	}
 };
 
-// Second-level include: Get the DrawBackdrop16 renderers.
-
-#include "tile.cpp"
-
-#undef NAME1
-#undef ARGS
-#undef DRAW_TILE
 #undef Pix
 #undef Z1
 #undef Z2
-#undef NO_INTERLACE
 #undef DRAW_PIXEL
 
 // Basic routine to render a chunk of a Mode 7 BG.
@@ -969,13 +1002,7 @@ struct DrawBackdrop16
 
 extern struct SLineMatrixData	LineMatrixData[240];
 
-#define NO_INTERLACE	1
-
-#define DRAW_TILE	DrawMode7BG1
-#define NAME1		DrawMode7BG1
-#define ARGS		uint32 Left, uint32 Right, int D
-
-#define DRAW_PIXEL(N, M) DRAWPIXELOP::draw(N, M, Offset, OffsetInLine, Pix, OP::Z1(D, b), OP::Z2(D, b))
+#define DRAW_PIXEL(N, M) PIXEL::Draw(N, M, Offset, OffsetInLine, Pix, OP::Z1(D, b), OP::Z2(D, b))
 
 struct DrawMode7BG1_OP
 {
@@ -998,10 +1025,12 @@ struct DrawMode7BG2_OP
 	static uint8 DCMODE() { return 0; }
 };
 
-template<class DRAWPIXELOP, class BPSTARTOP, int PITCH, class OP>
-struct DrawTileNormalBase
+template<class PIXEL, class OP>
+struct DrawTileNormal
 {
-	static void draw(ARGS)
+	typedef void (*call_t)(uint32 Left, uint32 Right, int D);
+
+	static void Draw(uint32 Left, uint32 Right, int D)
 	{
 		uint8	*VRAM1 = Memory.VRAM + 1;
 
@@ -1100,15 +1129,17 @@ struct DrawTileNormalBase
 	}
 };
 
-template<class DRAWPIXELOP, class BPSTARTOP, int PITCH>
-struct DrawMode7BG1 : public DrawTileNormalBase<DRAWPIXELOP, BPSTARTOP, PITCH, DrawMode7BG1_OP> {};
-template<class DRAWPIXELOP, class BPSTARTOP, int PITCH>
-struct DrawMode7BG2 : public DrawTileNormalBase<DRAWPIXELOP, BPSTARTOP, PITCH, DrawMode7BG2_OP> {};
+template<class PIXEL>
+struct DrawMode7BG1 : public DrawTileNormal<PIXEL, DrawMode7BG1_OP> {};
+template<class PIXEL>
+struct DrawMode7BG2 : public DrawTileNormal<PIXEL, DrawMode7BG2_OP> {};
 
-template<class DRAWPIXELOP, class BPSTARTOP, int PITCH, class OP>
-struct DrawTileMosaicBase
+template<class PIXEL, class OP>
+struct DrawTileMosaic
 {
-	static void draw(ARGS)
+	typedef void (*call_t)(uint32 Left, uint32 Right, int D);
+
+	static void Draw(uint32 Left, uint32 Right, int D)
 	{
 		uint8	*VRAM1 = Memory.VRAM + 1;
 
@@ -1253,166 +1284,13 @@ struct DrawTileMosaicBase
 	}
 };
 
-template<class DRAWPIXELOP, class BPSTARTOP, int PITCH>
-struct DrawMode7MosaicBG1 : public DrawTileMosaicBase<DRAWPIXELOP, BPSTARTOP, PITCH, DrawMode7BG1_OP> {};
-template<class DRAWPIXELOP, class BPSTARTOP, int PITCH>
-struct DrawMode7MosaicBG2 : public DrawTileMosaicBase<DRAWPIXELOP, BPSTARTOP, PITCH, DrawMode7BG2_OP> {};
+template<class PIXEL>
+struct DrawMode7MosaicBG1 : public DrawTileMosaic<PIXEL, DrawMode7BG1_OP> {};
+template<class PIXEL>
+struct DrawMode7MosaicBG2 : public DrawTileMosaic<PIXEL, DrawMode7BG2_OP> {};
 
-// Second-level include: Get the DrawMode7BG1 renderers.
 
-#include "tile.cpp"
-
-#undef NAME1
-#undef DRAW_TILE
-
-#define DRAW_TILE	DrawMode7MosaicBG1
-#define NAME1		DrawMode7MosaicBG1
-
-// Second-level include: Get the DrawMode7MosaicBG1 renderers.
-
-#include "tile.cpp"
-
-#undef DRAW_TILE
-#undef NAME1
-
-#define NAME1		DrawMode7BG2
-#define DRAW_TILE	DrawMode7BG2
-
-// Second-level include: Get the DrawMode7BG2 renderers.
-
-#include "tile.cpp"
-
-#undef NAME1
-#undef DRAW_TILE
-
-#define DRAW_TILE	DrawMode7MosaicBG2
-#define NAME1		DrawMode7MosaicBG2
-
-// Second-level include: Get the DrawMode7MosaicBG2 renderers.
-
-#include "tile.cpp"
-
-#undef NAME1
-#undef ARGS
-#undef DRAW_TILE
 #undef DRAW_PIXEL
-#undef NO_INTERLACE
 
-/*****************************************************************************/
-#else
-#ifndef NAME2 // Second-level: Get all the NAME1 renderers.
-/*****************************************************************************/
-
-#define BPSTART	Progressive
-#define PITCH	1
-
-// The 1x1 pixel plotter, for speedhacking modes.
-
-#define DRAW_PIXEL_OP Normal1x1
-
-#define NAME2	Normal1x1
-
-// Third-level include: Get the Normal1x1 renderers.
-
-#include "tile.cpp"
-
-#undef NAME2
-#undef DRAW_PIXEL_OP
-
-// The 2x1 pixel plotter, for normal rendering when we've used hires/interlace already this frame.
-
-#define DRAW_PIXEL_N2x1_OP Normal2x1
-
-#define DRAW_PIXEL_OP		DRAW_PIXEL_N2x1_OP
-#define NAME2				Normal2x1
-
-// Third-level include: Get the Normal2x1 renderers.
-
-#include "tile.cpp"
-
-#undef NAME2
-#undef DRAW_PIXEL_OP
-
-// Hires pixel plotter, this combines the main and subscreen pixels as appropriate to render hires or pseudo-hires images.
-// Use it only on the main screen, subscreen should use Normal2x1 instead.
-// Hires math:
-//     Main pixel is mathed as normal: Main(x, y) * Sub(x, y).
-//     Sub pixel is mathed somewhat weird: Basically, for Sub(x + 1, y) we apply the same operation we applied to Main(x, y)
-//     (e.g. no math, add fixed, add1/2 subscreen) using Main(x, y) as the "corresponding subscreen pixel".
-//     Also, color window clipping clips Sub(x + 1, y) if Main(x, y) is clipped, not Main(x + 1, y).
-//     We don't know how Sub(0, y) is handled.
-
-#define DRAW_PIXEL_H2x1_OP Hires
-
-#define DRAW_PIXEL_OP		DRAW_PIXEL_H2x1_OP
-#define NAME2				Hires
-
-// Third-level include: Get the Hires renderers.
-
-#include "tile.cpp"
-
-#undef NAME2
-#undef DRAW_PIXEL_OP
-
-// Interlace: Only draw every other line, so we'll redefine BPSTART and PITCH to do so.
-// Otherwise, it's the same as Normal2x1/Hires2x1.
-
-#undef BPSTART
-#undef PITCH
-
-#define BPSTART	Interlace
-#define PITCH	2
-
-#ifndef NO_INTERLACE
-
-#define DRAW_PIXEL_OP		DRAW_PIXEL_N2x1_OP
-#define NAME2				Interlace
-
-// Third-level include: Get the double width Interlace renderers.
-
-#include "tile.cpp"
-
-#undef NAME2
-#undef DRAW_PIXEL_OP
-
-#define DRAW_PIXEL_OP		DRAW_PIXEL_H2x1_OP
-#define NAME2				HiresInterlace
-
-// Third-level include: Get the HiresInterlace renderers.
-
-#include "tile.cpp"
-
-#undef NAME2
-#undef DRAW_PIXEL_OP
-
-#endif
-
-#undef BPSTART
-#undef PITCH
-
-/*****************************************************************************/
-#else // Third-level: Renderers for each math mode for NAME1 + NAME2.
-/*****************************************************************************/
-
-#define CONCAT3(A, B, C)	A##B##C
-#define MAKENAME(A, B, C)	CONCAT3(A, B, C)
-
-static void (*MAKENAME(Renderers_, NAME1, NAME2)[9]) (ARGS) =
-{
-	DRAW_TILE<DRAW_PIXEL_OP<Blend_None>, BPSTART, PITCH>::draw,
-	DRAW_TILE<DRAW_PIXEL_OP<Blend_Add>, BPSTART, PITCH>::draw,
-	DRAW_TILE<DRAW_PIXEL_OP<Blend_AddF1_2>, BPSTART, PITCH>::draw,
-	DRAW_TILE<DRAW_PIXEL_OP<Blend_AddS1_2>, BPSTART, PITCH>::draw,
-	DRAW_TILE<DRAW_PIXEL_OP<Blend_Sub>, BPSTART, PITCH>::draw,
-	DRAW_TILE<DRAW_PIXEL_OP<Blend_SubF1_2>, BPSTART, PITCH>::draw,
-	DRAW_TILE<DRAW_PIXEL_OP<Blend_SubS1_2>, BPSTART, PITCH>::draw,
-	DRAW_TILE<DRAW_PIXEL_OP<Blend_AddBrightness>, BPSTART, PITCH>::draw,
-	DRAW_TILE<DRAW_PIXEL_OP<Blend_AddS1_2Brightness>, BPSTART, PITCH>::draw,
-};
-
-#undef MAKENAME
-#undef CONCAT3
-
-#endif
 #endif
 #endif
