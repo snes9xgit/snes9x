@@ -42,6 +42,7 @@
 #define IDD_DIALOG_SHADER_PARAMS        155
 #define IDD_DIALOG_XAUDIO2_INIT_ERROR   159
 #define IDI_ICON2                       160
+#define IDI_ICON3                       161
 #define IDC_DRIVER                      1001
 #define IDC_BUFLEN                      1002
 #define IDC_RATE                        1003

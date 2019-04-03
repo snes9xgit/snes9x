@@ -795,6 +795,8 @@ IDI_ICON1               ICON                    "icon1.ico"
 
 IDI_ICON2               ICON                    "icon2.ico"
 
+IDI_ICON3               ICON                    "icon3.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
