@@ -1484,9 +1484,9 @@ void RenderDotMatrix3X (SSurface Src, SSurface Dst, RECT *rect)
 
 	#define DrawPix(on00,on01,on10,on11) /* on00 on01 */  \
 	{                                    /* on10 on11 */  \
-		const uint16 colorXA = COLOR_ADD(colorX,colorX);  \
-		const uint16 colorXS = COLOR_SUB(colorXA,colorX); \
-		const uint16 colorX2 = COLOR_SUB(colorX,colorXS); \
+		const uint16 colorXA = COLOR_ADD::fn(colorX,colorX);  \
+		const uint16 colorXS = COLOR_SUB::fn(colorXA,colorX); \
+		const uint16 colorX2 = COLOR_SUB::fn(colorX,colorXS); \
 		*dP1++ = _THREE_PIX(colorX2, colorX,  colorX2);   \
 		*dP2++ = _THREE_PIX(colorX,  colorXA, colorX);    \
 		*dP3++ = _THREE_PIX(colorX2, colorX,  colorX2);   \
