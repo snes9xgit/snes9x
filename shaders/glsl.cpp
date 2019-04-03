@@ -824,6 +824,14 @@ void GLSLShader::render(GLuint &orig,
                 filter = GL_NEAREST;
         }
 
+        if (pass[i].mipmap_input)
+        {
+            if (filter == GL_LINEAR)
+                filter = GL_LINEAR_MIPMAP_LINEAR;
+            else
+                filter = GL_NEAREST_MIPMAP_NEAREST;
+        }
+
         glBindTexture(GL_TEXTURE_2D, pass[i - 1].texture);
         glPixelStorei(GL_UNPACK_ROW_LENGTH, (GLint) pass[i - 1].width);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
