@@ -25,6 +25,7 @@ class S9xPortAudioSoundDriver : public S9xSoundDriver
     void samples_available();
 
   private:
+    void set_buffer_min(int frames);
     PaStream *audio_stream;
     int sound_buffer_size;
     uint8 *sound_buffer;

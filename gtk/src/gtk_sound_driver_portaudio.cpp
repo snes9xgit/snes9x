@@ -7,11 +7,6 @@
 #include "gtk_sound_driver_portaudio.h"
 #include "gtk_s9x.h"
 
-static inline int frames_to_bytes(int frames)
-{
-    return frames * 4;
-}
-
 static void port_audio_samples_available_callback(void *data)
 {
     ((S9xPortAudioSoundDriver *)data)->samples_available();
@@ -77,6 +72,15 @@ void S9xPortAudioSoundDriver::stop()
     }
 }
 
+void S9xPortAudioSoundDriver::set_buffer_min(int frames)
+{
+    if ((sound_buffer_size < frames) || sound_buffer == NULL)
+    {
+        sound_buffer = (uint8 *)realloc(sound_buffer, frames << 2);
+        sound_buffer_size = frames;
+    }
+}
+
 bool S9xPortAudioSoundDriver::open_device()
 {
     PaStreamParameters param;
@@ -129,7 +133,7 @@ bool S9xPortAudioSoundDriver::open_device()
         param.device = hostapi_info->defaultOutputDevice;
         param.suggestedLatency = gui_config->sound_buffer_size * 0.001;
 
-        printf("(%s : %s, latency %dms)...",
+        printf("(%s : %s, latency %dms)...\n",
                hostapi_info->name,
                device_info->name,
                (int)(param.suggestedLatency * 1000.0));
@@ -146,7 +150,8 @@ bool S9xPortAudioSoundDriver::open_device()
                             NULL);
 
         int frames = Pa_GetStreamWriteAvailable(audio_stream);
-        output_buffer_size = frames_to_bytes(frames);
+        printf ("PortAudio set buffer size to %d frames.\n", frames);
+        output_buffer_size = frames;
 
         if (err == paNoError)
         {
@@ -178,13 +183,21 @@ bool S9xPortAudioSoundDriver::open_device()
 void S9xPortAudioSoundDriver::samples_available()
 {
     int frames;
-    int bytes;
 
     frames = Pa_GetStreamWriteAvailable(audio_stream);
 
+    if (frames == output_buffer_size)
+    {
+        // Prime the stream
+        set_buffer_min(output_buffer_size >> 1);
+        memset(sound_buffer, 0, output_buffer_size << 1);
+        Pa_WriteStream(audio_stream, sound_buffer, output_buffer_size >> 1);
+        frames -= output_buffer_size >> 1;
+    }
+
     if (Settings.DynamicRateControl)
     {
-        S9xUpdateDynamicRate(frames_to_bytes(frames), output_buffer_size);
+        S9xUpdateDynamicRate(frames, output_buffer_size);
     }
 
     int snes_frames_available = S9xGetSampleCount() >> 1;
@@ -193,34 +206,20 @@ void S9xPortAudioSoundDriver::samples_available()
     {
         // Using rate control, we should always keep the emulator's sound buffers empty to
         // maintain an accurate measurement.
-        if (frames < (S9xGetSampleCount() >> 1))
+        if (frames < snes_frames_available)
         {
             S9xClearSamples();
             return;
         }
     }
 
+    // Rely on PortAudio's blocking behavior to sync
     if (Settings.SoundSync && !Settings.TurboMode && !Settings.Mute)
-    {
-        while (frames < snes_frames_available)
-        {
-            int usec_to_sleep = (snes_frames_available - frames) * 10000 /
-                                (Settings.SoundPlaybackRate / 100);
-            usleep(usec_to_sleep > 0 ? usec_to_sleep : 0);
-            frames = Pa_GetStreamWriteAvailable(audio_stream);
-        }
-    }
+        frames = snes_frames_available;
 
     frames = MIN(frames, snes_frames_available);
-    bytes = frames_to_bytes(frames);
 
-    if (sound_buffer_size < bytes || sound_buffer == NULL)
-    {
-        sound_buffer = (uint8 *)realloc(sound_buffer, bytes);
-        sound_buffer_size = bytes;
-    }
-
+    set_buffer_min(frames);
     S9xMixSamples(sound_buffer, frames << 1);
-
     Pa_WriteStream(audio_stream, sound_buffer, frames);
 }
