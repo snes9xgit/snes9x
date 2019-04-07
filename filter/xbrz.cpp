@@ -74,15 +74,6 @@ uint32_t gradientARGB(uint32_t pixFront, uint32_t pixBack) //find intermediate c
 //
 
 
-#ifdef _MSC_VER
-    #define FORCE_INLINE __forceinline
-#elif defined __GNUC__
-    #define FORCE_INLINE __attribute__((always_inline)) inline
-#else
-    #define FORCE_INLINE inline
-#endif
-
-
 enum RotationDegree //clock-wise
 {
     ROT_0,
@@ -268,7 +259,7 @@ input kernel area naming convention:
 -----------------
 */
 template <class ColorDistance>
-FORCE_INLINE //detect blend direction
+alwaysinline //detect blend direction
 BlendResult preProcessCorners(const Kernel_4x4& ker, const xbrz::ScalerCfg& cfg) //result: F, G, J, K corners of "GradientType"
 {
     BlendResult result = {};
@@ -378,7 +369,7 @@ input kernel area naming convention:
 -------------
 */
 template <class Scaler, class ColorDistance, RotationDegree rotDeg>
-FORCE_INLINE //perf: quite worth it!
+alwaysinline //perf: quite worth it!
 void blendPixel(const Kernel_3x3& ker,
                 uint32_t* target, int trgWidth,
                 unsigned char blendInfo, //result of preprocessing all four corners of pixel "e"
