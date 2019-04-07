@@ -129,7 +129,7 @@ extern struct SGFX	GFX;
 
 struct COLOR_ADD
 {
-	static uint16 fn(uint16 C1, uint16 C2)
+	static alwaysinline uint16 fn(uint16 C1, uint16 C2)
 	{
 		const int RED_MASK = 0x1F << RED_SHIFT_BITS;
 		const int GREEN_MASK = 0x1F << GREEN_SHIFT_BITS;
@@ -147,7 +147,7 @@ struct COLOR_ADD
 		return retval;
 	}
 
-	static uint16 fn1_2(uint16 C1, uint16 C2)
+	static alwaysinline uint16 fn1_2(uint16 C1, uint16 C2)
 	{
 		return ((((C1 & RGB_REMOVE_LOW_BITS_MASK) +
 			(C2 & RGB_REMOVE_LOW_BITS_MASK)) >> 1) +
@@ -157,7 +157,7 @@ struct COLOR_ADD
 
 struct COLOR_ADD_BRIGHTNESS
 {
-	static uint16 fn(uint16 C1, uint16 C2)
+	static alwaysinline uint16 fn(uint16 C1, uint16 C2)
 	{
 		return ((brightness_cap[ (C1 >> RED_SHIFT_BITS)           +  (C2 >> RED_SHIFT_BITS)          ] << RED_SHIFT_BITS)   |
 				(brightness_cap[((C1 >> GREEN_SHIFT_BITS) & 0x1f) + ((C2 >> GREEN_SHIFT_BITS) & 0x1f)] << GREEN_SHIFT_BITS) |
@@ -168,7 +168,7 @@ struct COLOR_ADD_BRIGHTNESS
 				(brightness_cap[ (C1                      & 0x1f) +  (C2                      & 0x1f)]      ));
 	}
 
-	static uint16 fn1_2(uint16 C1, uint16 C2)
+	static alwaysinline uint16 fn1_2(uint16 C1, uint16 C2)
 	{
 		return COLOR_ADD::fn1_2(C1, C2);
 	}
@@ -177,7 +177,7 @@ struct COLOR_ADD_BRIGHTNESS
 
 struct COLOR_SUB
 {
-	static uint16 fn(uint16 C1, uint16 C2)
+	static alwaysinline uint16 fn(uint16 C1, uint16 C2)
 	{
 		int rb1 = (C1 & (THIRD_COLOR_MASK | FIRST_COLOR_MASK)) | ((0x20 << 0) | (0x20 << RED_SHIFT_BITS));
 		int rb2 = C2 & (THIRD_COLOR_MASK | FIRST_COLOR_MASK);
@@ -192,7 +192,7 @@ struct COLOR_SUB
 		return retval;
 	}
 
-	static uint16 fn1_2(uint16 C1, uint16 C2)
+	static alwaysinline uint16 fn1_2(uint16 C1, uint16 C2)
 	{
 		return GFX.ZERO[((C1 | RGB_HI_BITS_MASKx2) -
 			(C2 & RGB_REMOVE_LOW_BITS_MASK)) >> 1];

@@ -335,7 +335,7 @@ namespace {
 	public:
 		CachedTile(uint32 tile) : Tile(tile) {}
 
-		void GetCachedTile()
+		alwaysinline void GetCachedTile()
 		{
 			TileAddr = BG.TileAddress + ((Tile & 0x3ff) << BG.TileShift);
 			if (Tile & 0x100)
@@ -356,12 +356,12 @@ namespace {
 			}
 		}
 
-		bool IsBlankTile() const
+		alwaysinline bool IsBlankTile() const
 		{
 			return ((Tile & H_FLIP) ? BG.BufferedFlip[TileNumber] : BG.Buffered[TileNumber]) == BLANK_TILE;
 		}
 
-		void SelectPalette() const
+		alwaysinline void SelectPalette() const
 		{
 			if (BG.DirectColourMode)
 			{
@@ -372,7 +372,7 @@ namespace {
 			GFX.ScreenColors = GFX.ClipColors ? BlackColourMap : GFX.RealScreenColors;
 		}
 
-		uint8* Ptr() const
+		alwaysinline uint8* Ptr() const
 		{
 			return pCache;
 		}
@@ -386,7 +386,7 @@ namespace {
 
 	struct NOMATH
 	{
-		static uint16 Calc(uint16 Main, uint16 Sub, uint8 SD)
+		static alwaysinline uint16 Calc(uint16 Main, uint16 Sub, uint8 SD)
 		{
 			return Main;
 		}
@@ -396,7 +396,7 @@ namespace {
 	template<class Op>
 	struct REGMATH
 	{
-		static uint16 Calc(uint16 Main, uint16 Sub, uint8 SD)
+		static alwaysinline uint16 Calc(uint16 Main, uint16 Sub, uint8 SD)
 		{
 			return Op::fn(Main, (SD & 0x20) ? Sub : GFX.FixedColour);
 		}
@@ -408,7 +408,7 @@ namespace {
 	template<class Op>
 	struct MATHF1_2
 	{
-		static uint16 Calc(uint16 Main, uint16 Sub, uint8 SD)
+		static alwaysinline uint16 Calc(uint16 Main, uint16 Sub, uint8 SD)
 		{
 			return GFX.ClipColors ? Op::fn(Main, GFX.FixedColour) : Op::fn1_2(Main, GFX.FixedColour);
 		}
@@ -419,7 +419,7 @@ namespace {
 	template<class Op>
 	struct MATHS1_2
 	{
-		static uint16 Calc(uint16 Main, uint16 Sub, uint8 SD)
+		static alwaysinline uint16 Calc(uint16 Main, uint16 Sub, uint8 SD)
 		{
 			return GFX.ClipColors ? REGMATH<Op>::Calc(Main, Sub, SD) : (SD & 0x20) ? Op::fn1_2(Main, Sub) : Op::fn(Main, GFX.FixedColour);
 		}
