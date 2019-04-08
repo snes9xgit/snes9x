@@ -5109,8 +5109,8 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
         switch (LOWORD(wParam))
         {
         case IDOK:
-            if ((!Settings.BlockInvalidVRAMAccessMaster == IsDlgButtonChecked(hDlg, IDC_INVALID_VRAM) ||
-                Settings.SeparateEchoBuffer != IsDlgButtonChecked(hDlg, IDC_SEPARATE_ECHO_BUFFER))
+            if (((Settings.BlockInvalidVRAMAccessMaster != !IsDlgButtonChecked(hDlg, IDC_INVALID_VRAM)) ||
+                (Settings.SeparateEchoBuffer != IsDlgButtonChecked(hDlg, IDC_SEPARATE_ECHO_BUFFER)))
                 && !Settings.StopEmulation)
             {
 
