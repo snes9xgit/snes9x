@@ -308,7 +308,8 @@ void S9xLoadConfigFiles (char **argv, int argc)
 
 	// Hack
 	Settings.SuperFXClockMultiplier         = conf.GetUInt("Hack::SuperFXClockMultiplier", 100);
-
+    Settings.OverclockMode                  = conf.GetUInt("Hack::OverclockMode", 0);
+    Settings.SeparateEchoBuffer             = conf.GetBool("Hack::SeparateEchoBuffer", false);
 	Settings.DisableGameSpecificHacks       = !conf.GetBool("Hack::EnableGameSpecificHacks",       true);
 	Settings.BlockInvalidVRAMAccessMaster   = !conf.GetBool("Hack::AllowInvalidVRAMAccess",        false);
 	Settings.HDMATimingHack                 =  conf.GetInt ("Hack::HDMATiming",                    100);

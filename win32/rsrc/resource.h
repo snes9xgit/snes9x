@@ -44,6 +44,7 @@
 #define IDI_ICON2                       160
 #define IDI_ICON3                       161
 #define IDI_ICON4                       162
+#define IDD_DIALOG_HACKS                164
 #define IDC_DRIVER                      1001
 #define IDC_BUFLEN                      1002
 #define IDC_RATE                        1003
@@ -203,6 +204,7 @@
 #define IDC_COMBO1                      1155
 #define IDC_C_LOADWATCH                 1155
 #define IDC_OUTPUTMETHOD                1155
+#define IDC_CPU_OVERCLOCK               1155
 #define IDC_NC_ADDRESS                  1156
 #define IDC_C_SAVEWATCH                 1156
 #define IDC_ASPECTDROP                  1156
@@ -394,6 +396,12 @@
 #define IDC_ROM_SPLITTER                3027
 #define IDC_SYSLINK_DX                  3028
 #define IDC_STATIC_ICON                 3029
+#define IDC_INVALID_VRAM                3030
+#define IDC_SEPARATE_ECHO_BUFFER        3031
+#define IDC_SOUND_INTERPOLATION         3033
+#define IDC_SFX_CLOCK_SPEED             3035
+#define IDC_SFX_CLOCK_SPEED_SPIN        3036
+#define IDC_NO_SPRITE_LIMIT             3037
 #define ID_FILE_EXIT                    40001
 #define ID_WINDOW_HIDEMENUBAR           40004
 #define ID_FILE_AVI_RECORDING           40005
@@ -509,6 +517,7 @@
 #define ID_SAVEMEMPACK                  40175
 #define ID_INPUT_BACKGROUNDKEYBOARDHOTKEYS 40176
 #define ID_INPUT_DETECTGAMEPADCHANGES   40177
+#define ID_EMULATION_HACKS              40178
 #define ID_FILE_SAVE0                   44000
 #define ID_FILE_SAVE1                   44001
 #define ID_FILE_SAVE2                   44002
@@ -538,9 +547,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        164
-#define _APS_NEXT_COMMAND_VALUE         40178
-#define _APS_NEXT_CONTROL_VALUE         3032
+#define _APS_NEXT_RESOURCE_VALUE        167
+#define _APS_NEXT_COMMAND_VALUE         40179
+#define _APS_NEXT_CONTROL_VALUE         3038
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

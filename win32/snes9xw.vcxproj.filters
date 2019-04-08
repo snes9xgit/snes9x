@@ -676,6 +676,8 @@
     <Image Include="rsrc\icon2.ico">
       <Filter>Resource\Other</Filter>
     </Image>
+    <Image Include="rsrc\icon3.ico" />
+    <Image Include="rsrc\icon4.ico" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\65c816.h">

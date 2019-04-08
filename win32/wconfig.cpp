@@ -671,6 +671,34 @@ void WinPostLoad(ConfigFile& conf)
 		}
 	}
 
+    if (Settings.MaxSpriteTilesPerLine != 34 && Settings.MaxSpriteTilesPerLine != 128)
+        Settings.MaxSpriteTilesPerLine = 34;
+
+    switch (Settings.OverclockMode)
+    {
+        default:
+        case 0:
+            Settings.OneClockCycle = 6;
+            Settings.OneSlowClockCycle = 8;
+            Settings.TwoClockCycles = 12;
+            break;
+        case 1:
+            Settings.OneClockCycle = 6;
+            Settings.OneSlowClockCycle = 6;
+            Settings.TwoClockCycles = 12;
+            break;
+        case 2:
+            Settings.OneClockCycle = 4;
+            Settings.OneSlowClockCycle = 5;
+            Settings.TwoClockCycles = 8;
+            break;
+        case 3:
+            Settings.OneClockCycle = 3;
+            Settings.OneSlowClockCycle = 4;
+            Settings.TwoClockCycles = 6;
+            break;
+    }
+
 	ConfigFile::SetNiceAlignment(niceAlignment);
 	ConfigFile::SetShowComments(showComments);
 	ConfigFile::SetAlphaSort(configSort==2);
@@ -900,7 +928,10 @@ void WinRegisterConfigItems()
 #undef ADDN
 #undef CATEGORY
 #define	CATEGORY "Hack"
+    AddUIntC("CPUOverclockMode", Settings.OverclockMode, 0, "CPU Overclock: 0=none, 1=min, 2=medium, 3=max");
+    AddUIntC("MaxSpriteTilesPerLine", Settings.MaxSpriteTilesPerLine, 34, "Max sprite tiles rendered per line. Default = 34, Unlimited ~= 128");
 	AddUIntC("SuperFXClockMultiplier", Settings.SuperFXClockMultiplier, 100, "SuperFX speed, in percent (default 100)");
+    AddBoolC("SeparateEchoBuffer", Settings.SeparateEchoBuffer, false, "Separate echo buffer from APU ram. For old hacks only.");
 #undef CATEGORY
 }
 
