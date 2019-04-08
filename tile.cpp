@@ -20,7 +20,7 @@ namespace {
 	struct BPProgressive
 	{
 		enum { Pitch = 1 };
-		static uint32 Get(uint32 StartLine) { return StartLine; }
+		static alwaysinline uint32 Get(uint32 StartLine) { return StartLine; }
 	};
 
 	// Interlace: Only draw every other line, so we'll redefine bpstart_t and Pitch to do so.
@@ -28,7 +28,7 @@ namespace {
 	struct BPInterlace
 	{
 		enum { Pitch = 2 };
-		static uint32 Get(uint32 StartLine) { return StartLine * 2 + BG.InterlaceLine; }
+		static alwaysinline uint32 Get(uint32 StartLine) { return StartLine * 2 + BG.InterlaceLine; }
 	};
 
 	// The 1x1 pixel plotter, for speedhacking modes.
@@ -38,7 +38,7 @@ namespace {
 		enum { Pitch = BPSTART::Pitch };
 		typedef BPSTART bpstart_t;
 
-		static void Draw(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2)
+		static alwaysinline void Draw(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2)
 		{
 			(void) OffsetInLine;
 			if (Z1 > GFX.DB[Offset + N] && (M))
@@ -59,7 +59,7 @@ namespace {
 		enum { Pitch = BPSTART::Pitch };
 		typedef BPSTART bpstart_t;
 
-		static void Draw(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2)
+		static alwaysinline void Draw(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2)
 		{
 			(void) OffsetInLine;
 			if (Z1 > GFX.DB[Offset + 2 * N] && (M))
@@ -89,7 +89,7 @@ namespace {
 		enum { Pitch = BPSTART::Pitch };
 		typedef BPSTART bpstart_t;
 
-		static void Draw(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2)
+		static alwaysinline void Draw(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2)
 		{
 			if (Z1 > GFX.DB[Offset + 2 * N] && (M))
 			{
