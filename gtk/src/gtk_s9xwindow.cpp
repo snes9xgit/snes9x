@@ -1342,7 +1342,7 @@ Snes9xWindow::show_rom_info ()
                                               "<i>Video:</i> %s\n"
                                               "<i>CRC32:</i> %08X\n"
                                               "<i>Revision:</i> %s"
-                                              "<b><i>%s</i></b>"),
+                                              "<b><i>%s%s</i></b>"),
                                               Memory.ROMFilename,
                                               Memory.ROMName,
                                               Memory.ROMSpeed,
@@ -1363,10 +1363,15 @@ Snes9xWindow::show_rom_info ()
                                                   "NTSC 60Hz" : "PAL 50Hz",
                                               Memory.ROMCRC32,
                                               Memory.Revision (),
+                                              (Settings.IsPatched) ? _("\n\nThis ROM has been patched with ") :
                                               (Memory.ROMChecksum !=
                                                   Memory.CalculatedChecksum) ?
                                                _("\n\nThis ROM has been modified or damaged")
-                                               : "");
+                                               : "",
+                                               Settings.IsPatched == 1 ? "IPS" :
+                                               Settings.IsPatched == 2 ? "BPS" :
+                                               Settings.IsPatched == 3 ? "UPS" :
+                                               "");
     gtk_window_set_title (GTK_WINDOW (msg), _("File Information"));
 
     gtk_dialog_run (GTK_DIALOG (msg));

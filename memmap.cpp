@@ -1401,8 +1401,7 @@ bool8 CMemory::LoadROM (const char *filename)
         if (!totalFileSize)
             return (FALSE);
 
-        if (!Settings.NoPatch)
-            CheckForAnyPatch(filename, HeaderCount != 0, totalFileSize);
+        CheckForAnyPatch(filename, HeaderCount != 0, totalFileSize);
     }
     while(!LoadROMInt(totalFileSize));
 
@@ -1678,8 +1677,7 @@ bool8 CMemory::LoadMultiCart (const char *cartA, const char *cartB)
     if (Multi.cartSizeB) {
         strcpy(Multi.fileNameB, cartB);
 
-        if(!Settings.NoPatch)
-		    CheckForAnyPatch(cartB, HeaderCount != 0, Multi.cartSizeB);
+		CheckForAnyPatch(cartB, HeaderCount != 0, Multi.cartSizeB);
 
         Multi.cartOffsetB = 0x400000;
         memcpy(ROM + Multi.cartOffsetB,ROM,Multi.cartSizeB);
@@ -1691,8 +1689,7 @@ bool8 CMemory::LoadMultiCart (const char *cartA, const char *cartB)
     if (Multi.cartSizeA) {
         strcpy(Multi.fileNameA, cartA);
 
-        if(!Settings.NoPatch)
-		    CheckForAnyPatch(cartA, HeaderCount != 0, Multi.cartSizeA);
+		CheckForAnyPatch(cartA, HeaderCount != 0, Multi.cartSizeA);
     }
 
     return LoadMultiCartInt();
@@ -2570,6 +2567,13 @@ void CMemory::InitROM (void)
 	{
 		Settings.DisplayColor = BUILD_PIXEL(31, 31, 0);
 		SET_UI_COLOR(255, 255, 0);
+	}
+
+	// Use slight blue tint to indicate ROM was patched.
+	if (Settings.IsPatched)
+	{
+		Settings.DisplayColor = BUILD_PIXEL(26, 26, 31);
+		SET_UI_COLOR(216, 216, 255);
 	}
 
 	if (Multi.cartType == 4)
@@ -3806,6 +3810,7 @@ static bool8 ReadUPSPatch (Stream *r, long, int32 &rom_size)
 	|| ((rom_crc32 == px_crc32) && (out_crc32 == py_crc32))
 	|| ((rom_crc32 == py_crc32) && (out_crc32 == px_crc32))
 	) {
+		Settings.IsPatched = 3;
 		return true;
 	} else {
 		//technically, reaching here means that patching has failed.
@@ -3913,6 +3918,7 @@ static bool8 ReadBPSPatch (Stream *r, long, int32 &rom_size)
 		memcpy(Memory.ROM, patched_rom, target_size);
 		rom_size = target_size;
 		delete[] patched_rom;
+		Settings.IsPatched = 2;
 		return true;
 	} else {
 		delete[] patched_rom;
@@ -4013,6 +4019,7 @@ static bool8 ReadIPSPatch (Stream *r, long offset, int32 &rom_size)
 	if (ofs != -1 && ofs - offset < rom_size)
 		rom_size = ofs - offset;
 
+	Settings.IsPatched = 1;
 	return (1);
 }
 
@@ -4052,6 +4059,8 @@ static int unzFindExtension (unzFile &file, const char *ext, bool restart, bool 
 
 void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &rom_size)
 {
+	Settings.IsPatched = false;
+
 	if (Settings.NoPatch)
 		return;
 
