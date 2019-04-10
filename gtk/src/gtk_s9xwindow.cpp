@@ -1363,7 +1363,7 @@ Snes9xWindow::show_rom_info ()
                                                   "NTSC 60Hz" : "PAL 50Hz",
                                               Memory.ROMCRC32,
                                               Memory.Revision (),
-                                              (Settings.IsPatched) ? _("\n\nThis ROM has been patched with ") :
+                                              (Settings.IsPatched) ? _("\n\nThis ROM has been auto-patched with ") :
                                               (Memory.ROMChecksum !=
                                                   Memory.CalculatedChecksum) ?
                                                _("\n\nThis ROM has been modified or damaged")
