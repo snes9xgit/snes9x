@@ -6,7 +6,11 @@ Snes9x 1.60
 - Clamp MSU1 addition to max amplitude instead of wrapping. Proper MSU1 tracks
   will not be affected by this.
 - Save mipmap_input parameter with customized GLSL and slang shaders.
+- Actually use mipmap_input parameter.
 - Optimized subscreen math with help from Dwedit.
+- Revert to measured APU clock speed instead of nominal speed. Fixes An
+  American Tail.
+- Fixed broken BPS patch support. (ArtiiP)
 
 Win32:
 - Changed window flags to allow NVIDIA cards to auto-enable exclusive
@@ -14,6 +18,8 @@ Win32:
 - Added a hidden option "DWMSync" that allows OpenGL to sync to the window
   manager while in windowed or borderless windowed mode.
 - The automatic frame skip option no longer limits to 59.94Hz.
+- Fixed bad icon scaling.
+- Added a hacks dialog to enable settings for older hacks to run.
 
 libretro:
 - Added ability to use Satellaview data in same directory as ROM.
@@ -31,6 +37,7 @@ GTK:
 - Add the view menu to right-click when SNES mouse isn't used.
 - Remove unused status bar option.
 - Startup background can be changed in snes9x.conf.
+- Improved PortAudio driver.
 
 Unix:
 - Fixed sound output that broke with APU refactor.
