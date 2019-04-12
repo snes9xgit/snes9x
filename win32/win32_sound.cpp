@@ -41,7 +41,7 @@ bool ReInitSound()
 		else
 		{
 			GUI.AutomaticInputRate = false;
-			Settings.SoundInputRate = 31920;
+			Settings.SoundInputRate = 31950;
 		}
 	}
 

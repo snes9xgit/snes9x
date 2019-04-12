@@ -230,7 +230,7 @@ void S9xMSU1Generate(size_t sample_count)
 {
 	partial_frames += 4410 * (sample_count / 2);
 
-	while (partial_frames >= 3200)
+	while (partial_frames >= 3204)
 	{
 		if (MSU1.MSU1_STATUS & AudioPlaying && audioStream)
 		{
@@ -246,7 +246,7 @@ void S9xMSU1Generate(size_t sample_count)
 
 				msu_resampler->push_sample(*left, *right);
 				MSU1.MSU1_AUDIO_POS += 4;
-				partial_frames -= 3200;
+				partial_frames -= 3204;
 			}
 			else
 			if (bytes_read >= 0)
@@ -270,7 +270,7 @@ void S9xMSU1Generate(size_t sample_count)
 		else
 		{
 			MSU1.MSU1_STATUS &= ~(AudioPlaying | AudioRepeating);
-			partial_frames -= 3200;
+			partial_frames -= 3204;
 			msu_resampler->push_sample(0, 0);
 		}
 	}

@@ -648,9 +648,9 @@ int WinGetAutomaticInputRate(void)
     if (refreshRate > 239.0 && refreshRate < 241.0)
         refreshRate /= 4.0;
 
-    double newInputRate = refreshRate * 32000.0 / 60.09881389744051 + 0.5;
+    double newInputRate = refreshRate * 32040.0 / 60.09881389744051 + 0.5;
 
-    if (newInputRate > 32000.0 * 1.05 || newInputRate < 32000.0 * 0.95)
+    if (newInputRate > 32040.0 * 1.05 || newInputRate < 32040.0 * 0.95)
         newInputRate = 0.0;
 
     return (int)newInputRate;
