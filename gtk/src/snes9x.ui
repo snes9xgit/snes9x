@@ -4771,7 +4771,7 @@
                                             <property name="visible">False</property>
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">False</property>
-                                            <property name="tooltip_text" translatable="yes">Allows old addmusic hacks to work</property>
+                                            <property name="tooltip_text" translatable="yes">Allows old addmusic hacks to work, but will likely hurt other games</property>
                                             <property name="draw_indicator">True</property>
                                           </object>
                                           <packing>
