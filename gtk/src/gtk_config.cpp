@@ -352,6 +352,7 @@ int Snes9xConfig::save_config_file ()
     cf.SetInt   (z"SoundInterpolationMethod", Settings.InterpolationMethod, "0: None, 1: Linear, 2: Gaussian (what the hardware uses), 3: Cubic, 4: Sinc");
     outbool (cf, z"RemoveSpriteLimit", Settings.MaxSpriteTilesPerLine == 34 ? 0 : 1);
     outbool (cf, z"OverclockCPU", Settings.OneClockCycle == 6 ? 0 : 1);
+    outbool (cf, z"EchoBufferHack", Settings.SeparateEchoBuffer, "Prevents echo buffer from overwriting APU RAM");
 
 #undef z
 #define z "Input::"
@@ -582,6 +583,7 @@ int Snes9xConfig::load_config_file ()
     inbool (z"RemoveSpriteLimit", RemoveSpriteLimit);
     bool OverclockCPU = false;
     inbool (z"OverclockCPU", OverclockCPU);
+    inbool (z"EchoBufferHack", Settings.SeparateEchoBuffer);
 
 #undef z
 #define z "Input::"
@@ -647,6 +649,16 @@ int Snes9xConfig::load_config_file ()
         Settings.OneSlowClockCycle = 8;
         Settings.TwoClockCycles = 12;
     }
+
+#ifndef ALLOW_CPU_OVERCLOCK
+        Settings.OneClockCycle = 6;
+        Settings.OneSlowClockCycle = 8;
+        Settings.TwoClockCycles = 12;
+        Settings.MaxSpriteTilesPerLine = 34;
+        Settings.SeparateEchoBuffer = false;
+        Settings.InterpolationMethod = 2;
+        Settings.BlockInvalidVRAMAccessMaster = true;
+#endif
 
     if (default_esc_behavior != ESC_TOGGLE_MENUBAR)
         fullscreen = false;
