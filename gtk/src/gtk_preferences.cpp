@@ -736,9 +736,13 @@ Snes9xPreferences::move_settings_to_dialog ()
     gtk_widget_show (get_widget ("cpu_overclock"));
     gtk_widget_show (get_widget ("remove_sprite_limit"));
     gtk_widget_show (get_widget ("block_invalid_vram_access"));
+    gtk_widget_show (get_widget ("echo_buffer_hack"));
+    gtk_widget_show (get_widget ("soundfilterhbox"));
 
     set_check ("cpu_overclock", Settings.OneClockCycle != 6);
     set_check ("remove_sprite_limit", Settings.MaxSpriteTilesPerLine != 34);
+    set_check ("echo_buffer_hack", Settings.SeparateEchoBuffer);
+    set_combo ("sound_filter", Settings.InterpolationMethod);
 #endif
 }
 
@@ -851,6 +855,9 @@ Snes9xPreferences::get_settings_from_dialog ()
     {
         Settings.MaxSpriteTilesPerLine = 34;
     }
+
+    Settings.SeparateEchoBuffer = get_check ("echo_buffer_hack");
+    Settings.InterpolationMethod = get_check ("sound_filter");
 #endif
 
     config->joystick_threshold        = get_spin ("joystick_threshold");
