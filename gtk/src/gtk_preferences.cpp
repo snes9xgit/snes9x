@@ -667,6 +667,7 @@ Snes9xPreferences::move_settings_to_dialog ()
     set_spin  ("rewind_buffer_size",        config->rewind_buffer_size);
     set_spin  ("rewind_granularity",        config->rewind_granularity);
     set_spin  ("superfx_multiplier",        Settings.SuperFXClockMultiplier);
+    set_combo ("splash_background",         config->splash_image);
 
     int num_sound_drivers = 0;
 #ifdef USE_PORTAUDIO
@@ -786,6 +787,18 @@ Snes9xPreferences::get_settings_from_dialog ()
 
     config->change_display_resolution = get_check ("change_display_resolution");
 
+    if (config->splash_image != get_combo ("splash_background"))
+    {
+        config->splash_image = get_combo ("splash_background");
+        if (!config->rom_loaded)
+        {
+            top_level->last_width = top_level->last_height = -1;
+            top_level->expose();
+        }
+    }
+
+    config->splash_image = get_combo ("splash_background");
+
     if (config->multithreading != get_check ("multithreading"))
         gfx_needs_restart = true;
 
@@ -857,7 +870,7 @@ Snes9xPreferences::get_settings_from_dialog ()
     }
 
     Settings.SeparateEchoBuffer = get_check ("echo_buffer_hack");
-    Settings.InterpolationMethod = get_check ("sound_filter");
+    Settings.InterpolationMethod = get_combo ("sound_filter");
 #endif
 
     config->joystick_threshold        = get_spin ("joystick_threshold");

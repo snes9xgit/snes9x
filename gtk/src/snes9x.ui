@@ -802,6 +802,29 @@
     <property name="stock">gtk-media-stop</property>
     <property name="icon-size">1</property>
   </object>
+  <object class="GtkListStore" id="liststorebackgrounds">
+    <columns>
+      <!-- column-name item -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">Black</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Color bars</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Pixel art patterns</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Dithered gradient</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Color bars and patterns</col>
+      </row>
+    </data>
+  </object>
   <object class="GtkListStore" id="liststore1">
     <columns>
       <!-- column-name item -->
@@ -9092,6 +9115,48 @@
                                     <property name="position">1</property>
                                   </packing>
                                 </child>
+                                <child>
+                                  <object class="GtkHBox" id="hboxsplashbackground">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="spacing">12</property>
+                                    <child>
+                                      <object class="GtkLabel" id="labelsplashbackground">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="label" translatable="yes">Initial background:</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkComboBox" id="splash_background">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="model">liststorebackgrounds</property>
+                                        <child>
+                                          <object class="GtkCellRendererText" id="cellrenderertextsplashbackground"/>
+                                          <attributes>
+                                            <attribute name="text">0</attribute>
+                                          </attributes>
+                                        </child>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">2</property>
+                                  </packing>
+                                </child>
                               </object>
                             </child>
                           </object>
@@ -9100,7 +9165,7 @@
                           <object class="GtkLabel" id="label123">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">&lt;b&gt;Window Switching&lt;/b&gt;</property>
+                            <property name="label" translatable="yes">&lt;b&gt;Window Behavior&lt;/b&gt;</property>
                             <property name="use_markup">True</property>
                           </object>
                         </child>
@@ -9171,7 +9236,7 @@
                       <object class="GtkImage" id="imageuitab">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="icon_name">input-keyboard</property>
+                        <property name="icon_name">preferences-system-windows</property>
                         <property name="pixel_size">24</property>
                       </object>
                       <packing>
