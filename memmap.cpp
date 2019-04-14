@@ -1441,7 +1441,7 @@ bool8 CMemory::LoadROMInt (int32 ROMfillSize)
 		lo_score = ScoreLoROM(FALSE);
 	}
 
-	CalculatedSize = (ROMfillSize / 0x2000) * 0x2000;
+	CalculatedSize = ((ROMfillSize + 0x1fff) / 0x2000) * 0x2000;
 
 	if (CalculatedSize > 0x400000 &&
 		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x3423 && // exclude SA-1
