@@ -2231,7 +2231,7 @@ LRESULT CALLBACK WinProc(
 			break;
         case ID_EMULATION_HACKS:
 			if (MessageBoxA(hWnd,
-				"The settings in this dialog should only be used for compatibility\n"
+				"The settings in this dialog should only be used for compatibility "
 				"with old ROM hacks or if you otherwise know what you're doing.\n\n"
 				"If any problems occur, click \"Set Defaults\" to reset the options to normal.",
 				"Warning: Unsupported",
