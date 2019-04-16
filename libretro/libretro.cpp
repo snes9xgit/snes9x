@@ -217,6 +217,7 @@ void retro_set_environment(retro_environment_t cb)
         { "snes9x_rifle_crosshair", "M.A.C.S. rifle crosshair; 2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|0|1" },
         { "snes9x_rifle_color", "M.A.C.S. rifle color; White|White (blend)|Red|Red (blend)|Orange|Orange (blend)|Yellow|Yellow (blend)|Green|Green (blend)|Cyan|Cyan (blend)|Sky|Sky (blend)|Blue|Blue (blend)|Violet|Violet (blend)|Pink|Pink (blend)|Purple|Purple (blend)|Black|Black (blend)|25% Grey|25% Grey (blend)|50% Grey|50% Grey (blend)|75% Grey|75% Grey (blend)" },
         { "snes9x_block_invalid_vram_access", "Block Invalid VRAM Access; enabled|disabled" },
+        { "snes9x_echo_buffer_hack", "Echo Buffer Hack (Unsafe, only enable for old addmusic hacks); disabled|enabled"},
         { NULL, NULL },
     };
 
@@ -310,7 +311,7 @@ char *get_cursor_color(const char *name)
 		lcv += 2;
 	}
 
-	return "None";
+	return color_names[16]; // White
 }
 
 // always ensure this is only called in retro_run
@@ -612,6 +613,14 @@ static void update_variables(void)
         Settings.BlockInvalidVRAMAccessMaster = !strcmp(var.value, "disabled") ? false : true;
     else
         Settings.BlockInvalidVRAMAccessMaster = true;
+
+    var.key = "snes9x_echo_buffer_hack";
+    var.value = NULL;
+    
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
+        Settings.SeparateEchoBuffer = !strcmp(var.value, "disabled") ? false : true;
+    else 
+        Settings.SeparateEchoBuffer = false;
 
     var.key = "snes9x_blargg";
     var.value = NULL;
@@ -1262,6 +1271,7 @@ void retro_init(void)
     Settings.InitialInfoStringTimeout = 120;
     Settings.HDMATimingHack = 100;
     Settings.BlockInvalidVRAMAccessMaster = TRUE;
+    Settings.SeparateEchoBuffer = FALSE;
     Settings.CartAName[0] = 0;
     Settings.CartBName[0] = 0;
     Settings.AutoSaveDelay = 1;
