@@ -4707,8 +4707,8 @@
                                         <property name="border_width">5</property>
                                         <property name="spacing">5</property>
                                         <child>
-                                          <object class="GtkCheckButton" id="block_invalid_vram_access">
-                                            <property name="label" translatable="yes">Block invalid VRAM access</property>
+                                          <object class="GtkCheckButton" id="allow_invalid_vram_access">
+                                            <property name="label" translatable="yes">Allow invalid VRAM access</property>
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">False</property>
                                             <property name="draw_indicator">True</property>
