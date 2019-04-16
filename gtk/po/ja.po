@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-13 16:15-0500\n"
+"POT-Creation-Date: 2019-04-16 15:42-0500\n"
 "PO-Revision-Date: 2016-01-09 21:35+0900\n"
 "Last-Translator: trickart <trickart412@gmail.com>\n"
 "Language-Team: \n"
@@ -90,7 +90,7 @@ msgid ""
 "codes."
 msgstr ""
 
-#: src/gtk_config.cpp:438
+#: src/gtk_config.cpp:440
 #, c-format
 msgid "Couldn't create config directory: %s\n"
 msgstr "コンフィグディレクトリを作成できません: %s\n"
@@ -123,78 +123,78 @@ msgstr "GTK+移植 バージョン:"
 msgid "English localization by Brandon Wright"
 msgstr "日本語訳 trickart"
 
-#: src/gtk_preferences.cpp:929
+#: src/gtk_preferences.cpp:943
 msgid ""
 "Changing the SRAM directory with a game loaded will replace the .srm file in "
 "the selected directory with the SRAM from the running game. If this is not "
 "what you want, click 'cancel'."
 msgstr ""
 
-#: src/gtk_preferences.cpp:930
+#: src/gtk_preferences.cpp:944
 msgid "Warning: Possible File Overwrite"
 msgstr "警告: ファイルを上書きします"
 
-#: src/gtk_preferences.cpp:1011
+#: src/gtk_preferences.cpp:1025
 msgid "Select Folder"
 msgstr "フォルダ選択"
 
-#: src/gtk_preferences.cpp:1088
+#: src/gtk_preferences.cpp:1102
 msgid "HQ2x"
 msgstr ""
 
-#: src/gtk_preferences.cpp:1089
+#: src/gtk_preferences.cpp:1103
 msgid "HQ3x"
 msgstr ""
 
-#: src/gtk_preferences.cpp:1090
+#: src/gtk_preferences.cpp:1104
 msgid "HQ4x"
 msgstr ""
 
-#: src/gtk_preferences.cpp:1095
+#: src/gtk_preferences.cpp:1109
 msgid "2xBRZ"
 msgstr ""
 
-#: src/gtk_preferences.cpp:1096
+#: src/gtk_preferences.cpp:1110
 msgid "3xBRZ"
 msgstr ""
 
-#: src/gtk_preferences.cpp:1097
+#: src/gtk_preferences.cpp:1111
 msgid "4xBRZ"
 msgstr ""
 
-#: src/gtk_preferences.cpp:1102
+#: src/gtk_preferences.cpp:1116
 msgid "None - Use software scaler"
 msgstr "使用しない - ソフトウェアレンダリング"
 
-#: src/gtk_preferences.cpp:1106
+#: src/gtk_preferences.cpp:1120
 msgid "OpenGL - Use 3D graphics hardware"
 msgstr "OpenGL - 3Dグラフィックハードウェアを使用する"
 
-#: src/gtk_preferences.cpp:1110
+#: src/gtk_preferences.cpp:1124
 msgid "XVideo - Use hardware video blitter"
 msgstr "XVideo - ハードウェアビデオブリッターを使用する"
 
-#: src/gtk_preferences.cpp:1116
+#: src/gtk_preferences.cpp:1130
 msgid "PortAudio"
 msgstr ""
 
-#: src/gtk_preferences.cpp:1120
+#: src/gtk_preferences.cpp:1134
 msgid "Open Sound System"
 msgstr ""
 
-#: src/gtk_preferences.cpp:1123
+#: src/gtk_preferences.cpp:1137
 msgid "SDL"
 msgstr ""
 
-#: src/gtk_preferences.cpp:1126
+#: src/gtk_preferences.cpp:1140
 msgid "ALSA"
 msgstr ""
 
-#: src/gtk_preferences.cpp:1130
+#: src/gtk_preferences.cpp:1144
 msgid "PulseAudio"
 msgstr ""
 
-#: src/gtk_s9x.cpp:202
+#: src/gtk_s9x.cpp:205
 #, c-format
 msgid "Error opening: %s\n"
 msgstr "エラー: %s を開けません\n"
@@ -1325,7 +1325,8 @@ msgid "<b>Rewind Settings</b>"
 msgstr "<b>サウンド設定</b>"
 
 #: src/snes9x.ui:4711
-msgid "Block invalid VRAM access"
+#, fuzzy
+msgid "Allow invalid VRAM access"
 msgstr "不正なVRAMアクセスをブロックする"
 
 #: src/snes9x.ui:4715
@@ -1804,32 +1805,36 @@ msgstr "ショートカット"
 msgid "Pause emulation when switching away from Snes9x"
 msgstr "ウィンドウが非アクティブ時にポーズする"
 
-#: src/snes9x.ui:9085
+#: src/snes9x.ui:9078
+msgid "Force-enable button and menu icons"
+msgstr ""
+
+#: src/snes9x.ui:9099
 msgid "The ESC key should:"
 msgstr "ESCキー:"
 
-#: src/snes9x.ui:9127
+#: src/snes9x.ui:9141
 msgid "Initial background:"
 msgstr ""
 
-#: src/snes9x.ui:9168
+#: src/snes9x.ui:9182
 #, fuzzy
 msgid "<b>Window Behavior</b>"
 msgstr "<b>ウィンドウ切り替え</b>"
 
-#: src/snes9x.ui:9198
+#: src/snes9x.ui:9212
 msgid "Prevent the screensaver from activating"
 msgstr "スクリーンセーバーを抑止"
 
-#: src/snes9x.ui:9218
+#: src/snes9x.ui:9232
 msgid "<b>Screensaver</b>"
 msgstr "<b>スクリーンセーバー</b>"
 
-#: src/snes9x.ui:9252
+#: src/snes9x.ui:9266
 msgid "UI"
 msgstr ""
 
-#: src/snes9x.ui:9286
+#: src/snes9x.ui:9300
 msgid ""
 "  Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.\n"
 "\n"
