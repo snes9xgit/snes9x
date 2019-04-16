@@ -2235,7 +2235,7 @@ LRESULT CALLBACK WinProc(
 				"with old ROM hacks or if you otherwise know what you're doing.\n\n"
 				"If any problems occur, click \"Set Defaults\" to reset the options to normal.",
 				"Warning: Unsupported",
-				MB_OKCANCEL) != IDOK)
+				MB_ICONWARNING | MB_OKCANCEL) != IDOK)
 				break;
 
             RestoreGUIDisplay();
