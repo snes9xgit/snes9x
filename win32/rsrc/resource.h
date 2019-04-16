@@ -402,6 +402,7 @@
 #define IDC_SFX_CLOCK_SPEED             3035
 #define IDC_SFX_CLOCK_SPEED_SPIN        3036
 #define IDC_NO_SPRITE_LIMIT             3037
+#define IDC_SET_DEFAULTS                3038
 #define ID_FILE_EXIT                    40001
 #define ID_WINDOW_HIDEMENUBAR           40004
 #define ID_FILE_AVI_RECORDING           40005
@@ -549,7 +550,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        167
 #define _APS_NEXT_COMMAND_VALUE         40179
-#define _APS_NEXT_CONTROL_VALUE         3038
+#define _APS_NEXT_CONTROL_VALUE         3039
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

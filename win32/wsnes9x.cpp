@@ -2230,8 +2230,17 @@ LRESULT CALLBACK WinProc(
 			RestoreSNESDisplay ();
 			break;
         case ID_EMULATION_HACKS:
+			if (MessageBoxA(hWnd,
+				"The settings in this dialog should only be used for compatibility\n"
+				"with old ROM hacks or if you otherwise know what you're doing.\n\n"
+				"If any problems occur, click \"Set Defaults\" to reset the options to normal.",
+				"Warning: Unsupported",
+				MB_OKCANCEL) != IDOK)
+				break;
+
             RestoreGUIDisplay();
-            if (DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_HACKS), hWnd, DlgEmulatorHacksProc))
+			i = DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_HACKS), hWnd, DlgEmulatorHacksProc);
+            if (i == 1)
                 S9xReset();
             else
                 RestoreSNESDisplay();
@@ -5157,6 +5166,15 @@ INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM
         case IDCANCEL:
             EndDialog(hDlg, 0);
             return true;
+
+		case IDC_SET_DEFAULTS:
+			SendDlgItemMessage(hDlg, IDC_SFX_CLOCK_SPEED_SPIN, UDM_SETPOS, 0, 100);
+			SendDlgItemMessage(hDlg, IDC_CPU_OVERCLOCK, CB_SETCURSEL, 0, 0);
+			SendDlgItemMessage(hDlg, IDC_SOUND_INTERPOLATION, CB_SETCURSEL, 2, 0);
+			CheckDlgButton(hDlg, IDC_INVALID_VRAM, false);
+			CheckDlgButton(hDlg, IDC_SEPARATE_ECHO_BUFFER, false);
+			CheckDlgButton(hDlg, IDC_NO_SPRITE_LIMIT, false);
+			break;
         default:
             break;
         }
