@@ -63,7 +63,10 @@ int main (int argc, char *argv[])
 
 #if GTK_MAJOR_VERSION >= 3
     auto settings = gtk_settings_get_default();
-    g_object_set(settings, "gtk-menu-images", true, "gtk_button_images", true, NULL);
+    g_object_set(settings,
+                 "gtk-menu-images", gui_config->enable_icons,
+                 "gtk_button_images", gui_config->enable_icons,
+                 NULL);
 #endif
 
     S9xReportControllers ();

@@ -140,6 +140,7 @@ class Snes9xConfig
     int num_threads;
     bool screensaver_needs_reset;
     bool modal_dialogs;
+    bool enable_icons;
 
     bool pointer_is_visible;
     gint64 pointer_timestamp;

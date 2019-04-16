@@ -115,6 +115,7 @@ int Snes9xConfig::load_defaults ()
     preferences_height = -1;
     shader_parameters_width = -1;
     shader_parameters_height = -1;
+    enable_icons = true;
     current_display_tab = 0;
     sram_directory.clear ();
     export_directory.clear ();
@@ -310,6 +311,7 @@ int Snes9xConfig::save_config_file ()
     cf.SetInt (z"ShaderParametersHeight", shader_parameters_height);
     cf.SetInt (z"CurrentDisplayTab", current_display_tab);
     outbool (cf, z"UIVisible", ui_visible);
+    outbool (cf, z"EnableIcons", enable_icons);
     if (default_esc_behavior != ESC_TOGGLE_MENUBAR)
         outbool (cf, z"Fullscreen", 0);
     else
@@ -542,6 +544,7 @@ int Snes9xConfig::load_config_file ()
     inint (z"CurrentDisplayTab", current_display_tab);
     inbool (z"UIVisible", ui_visible);
     inbool (z"Fullscreen", fullscreen);
+    inbool (z"EnableIcons", enable_icons);
 
 #undef z
 #define z "Netplay::"

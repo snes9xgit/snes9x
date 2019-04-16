@@ -669,6 +669,11 @@ Snes9xPreferences::move_settings_to_dialog ()
     set_spin  ("superfx_multiplier",        Settings.SuperFXClockMultiplier);
     set_combo ("splash_background",         config->splash_image);
 
+#if GTK_MAJOR_VERSION < 3
+    gtk_widget_hide (get_widget ("force_enable_icons"));
+#endif
+    set_check ("force_enable_icons",        config->enable_icons);
+
     int num_sound_drivers = 0;
 #ifdef USE_PORTAUDIO
     num_sound_drivers++;
@@ -807,6 +812,15 @@ Snes9xPreferences::get_settings_from_dialog ()
 
     if (config->force_inverted_byte_order != get_check ("force_inverted_byte_order"))
         gfx_needs_restart = true;
+
+    config->enable_icons              = get_check ("force_enable_icons");
+#if GTK_MAJOR_VERSION >= 3
+    auto settings = gtk_settings_get_default();
+    g_object_set(settings,
+                 "gtk-menu-images", gui_config->enable_icons,
+                 "gtk_button_images", gui_config->enable_icons,
+                 NULL);
+#endif
 
     config->full_screen_on_open       = get_check ("full_screen_on_open");
     Settings.DisplayFrameRate         = get_check ("show_frame_rate");
