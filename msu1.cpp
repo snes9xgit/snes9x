@@ -415,7 +415,8 @@ void S9xMSU1PostLoadState(void)
 			audioLoopPos <<= 2;
 			audioLoopPos += 8;
 
-            REVERT_STREAM(audioStream, savedPosition, 0);
+			MSU1.MSU1_AUDIO_POS = savedPosition;
+            REVERT_STREAM(audioStream, MSU1.MSU1_AUDIO_POS, 0);
 		}
 		else
 		{
