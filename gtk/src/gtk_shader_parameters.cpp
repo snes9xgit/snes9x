@@ -231,6 +231,7 @@ bool gtk_shader_parameters_dialog(GtkWindow *parent)
         else
         {
             GtkWidget *spin = gtk_spin_button_new_with_range(p->min, p->max, p->step);
+            gtk_entry_set_width_chars(GTK_ENTRY(spin), 5);
             gtk_grid_attach(GTK_GRID(grid), spin, 1, i, 1, 1);
             gtk_size_group_add_widget(sizegroup, spin);
             int digits = gtk_spin_button_get_digits(GTK_SPIN_BUTTON(spin));

@@ -2397,6 +2397,7 @@
                                 <property name="secondary_icon_sensitive">True</property>
                                 <property name="adjustment">adjustment3</property>
                                 <property name="snap_to_ticks">True</property>
+                                <property name="width_chars">6</property>
                                 <property name="numeric">True</property>
                               </object>
                               <packing>
@@ -2524,6 +2525,7 @@
                                 <property name="secondary_icon_sensitive">True</property>
                                 <property name="adjustment">adjustment2</property>
                                 <property name="snap_to_ticks">True</property>
+                                <property name="width_chars">6</property>
                                 <property name="numeric">True</property>
                               </object>
                               <packing>
@@ -4229,6 +4231,7 @@
                                                 <property name="secondary_icon_sensitive">True</property>
                                                 <property name="adjustment">adjustment6</property>
                                                 <property name="snap_to_ticks">True</property>
+                                                <property name="width_chars">6</property>
                                                 <property name="numeric">True</property>
                                               </object>
                                               <packing>
@@ -4300,6 +4303,7 @@
                                                 <property name="primary_icon_sensitive">True</property>
                                                 <property name="secondary_icon_sensitive">True</property>
                                                 <property name="digits">3</property>
+                                                <property name="width_chars">6</property>
                                                 <property name="adjustment">dynamic_rate_adjustment</property>
                                               </object>
                                               <packing>
@@ -4807,6 +4811,7 @@
                                                 <property name="secondary_icon_sensitive">True</property>
                                                 <property name="adjustment">superfx_multiplier_adjustment</property>
                                                 <property name="snap_to_ticks">True</property>
+                                                <property name="width_chars">6</property>
                                                 <property name="numeric">True</property>
                                               </object>
                                               <packing>
