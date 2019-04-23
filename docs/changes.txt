@@ -11,6 +11,7 @@ Snes9x 1.60
 - Revert to measured APU clock speed instead of nominal speed. Fixes An
   American Tail.
 - Fixed broken BPS patch support. (ArtiiP)
+- Fixed MSU1 track restarting on load state.
 
 Win32:
 - Changed window flags to allow NVIDIA cards to auto-enable exclusive
