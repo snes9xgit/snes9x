@@ -38,7 +38,7 @@ namespace {
 		enum { Pitch = BPSTART::Pitch };
 		typedef BPSTART bpstart_t;
 
-		static alwaysinline void Draw(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2)
+		static alwaysinline void Draw(uint8 N, uint8 M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2)
 		{
 			(void) OffsetInLine;
 			if (Z1 > GFX.DB[Offset + N] && (M))
@@ -59,7 +59,7 @@ namespace {
 		enum { Pitch = BPSTART::Pitch };
 		typedef BPSTART bpstart_t;
 
-		static alwaysinline void Draw(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2)
+		static alwaysinline void Draw(uint8 N, uint8 M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2)
 		{
 			(void) OffsetInLine;
 			if (Z1 > GFX.DB[Offset + 2 * N] && (M))
@@ -89,7 +89,7 @@ namespace {
 		enum { Pitch = BPSTART::Pitch };
 		typedef BPSTART bpstart_t;
 
-		static alwaysinline void Draw(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2)
+		static alwaysinline void Draw(uint8 N, uint8 M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2)
 		{
 			if (Z1 > GFX.DB[Offset + 2 * N] && (M))
 			{
