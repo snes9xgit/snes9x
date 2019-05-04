@@ -67,9 +67,10 @@ if test "x$enable_debug" = "xyes"; then
 	AC_S9X_COMPILER_FLAG([-g],  [g])
 	AC_S9X_COMPILER_FLAG([-O0], [o0])
 else
-	AC_S9X_COMPILER_FLAG([-O3], [o3], [
-		AC_S9X_COMPILER_FLAG([-O2], [o2], [
-			AC_S9X_COMPILER_FLAG([-O1], [o1])])])
+	AC_S9X_COMPILER_FLAG([-Ofast], [ofast], [
+		AC_S9X_COMPILER_FLAG([-O3], [o3], [
+			AC_S9X_COMPILER_FLAG([-O2], [o2], [
+				AC_S9X_COMPILER_FLAG([-O1], [o1])])])])
 	AC_S9X_COMPILER_FLAG([-fomit-frame-pointer], [omit_frame_pointer])
 fi
 
@@ -93,6 +94,45 @@ AC_S9X_COMPILER_FLAG([-pedantic],             [pedantic])
 AC_S9X_COMPILER_FLAG([-Wall],                 [Wall])
 AC_S9X_COMPILER_FLAG([-W],                    [W])
 AC_S9X_COMPILER_FLAG([-Wno-unused-parameter], [Wno_unused_parameter])
+
+# Enable SSE4.1
+AC_ARG_ENABLE([sse41],
+	[AS_HELP_STRING([--enable-sse41],
+		[enable SSE4.1 if available (default: no)])],
+	[], [enable_sse41="no"])
+
+if test "x$enable_sse41" = "xyes"; then
+	AC_S9X_COMPILER_FLAG([-msse4.1], [sse41])
+	if test "x$snes9x_cv_option_sse41" != "xyes"; then
+		enable_sse41="no"
+	fi
+fi
+
+# Enable AVX2
+AC_ARG_ENABLE([avx2],
+	[AS_HELP_STRING([--enable-avx2],
+		[enable AVX2 if available (default: no)])],
+	[], [enable_avx2="no"])
+
+if test "x$enable_avx2" = "xyes"; then
+	AC_S9X_COMPILER_FLAG([-mavx2], [avx2])
+	if test "x$snes9x_cv_option_avx2" != "xyes"; then
+		enable_avx2="no"
+	fi
+fi
+
+# Enable ARM NEON
+AC_ARG_ENABLE([neon],
+	[AS_HELP_STRING([--enable-neon],
+		[enable NEON if available (default: no)])],
+	[], [enable_neon="no"])
+
+if test "x$enable_neon" = "xyes"; then
+	AC_S9X_COMPILER_FLAG([-mfpu=neon], [neon])
+	if test "x$snes9x_cv_option_neon" != "xyes"; then
+		enable_neon="no"
+	fi
+fi
 
 # Check if the OS is Linux.
 
@@ -496,6 +536,9 @@ GZIP support......... $enable_gzip
 ZIP support.......... $enable_zip
 SYSTEM_ZIP........... $with_system_zip
 JMA support.......... $enable_jma
+SSE4.1............... $enable_sse41
+AVX2................. $enable_avx2
+NEON................. $enable_neon
 debugger............. $enable_debugger
 
 EOF
