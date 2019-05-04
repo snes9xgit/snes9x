@@ -423,6 +423,7 @@
     <ClInclude Include="..\bml.h" />
     <CustomBuild Include="..\stream.h" />
     <CustomBuild Include="..\tile.h" />
+    <CustomBuild Include="..\tileimpl.h" />
     <ClInclude Include="..\unzip\crypt.h" />
     <ClInclude Include="..\unzip\ioapi.h" />
     <ClInclude Include="..\unzip\iowin32.h" />
@@ -566,6 +567,9 @@
     <ClCompile Include="..\bml.cpp" />
     <ClCompile Include="..\stream.cpp" />
     <ClCompile Include="..\tile.cpp" />
+    <ClCompile Include="..\tileimpl-n1x1.cpp" />
+    <ClCompile Include="..\tileimpl-n2x1.cpp" />
+    <ClCompile Include="..\tileimpl-h2x1.cpp" />
     <ClCompile Include="..\unzip\ioapi.c" />
     <ClCompile Include="..\unzip\iowin32.c" />
     <ClCompile Include="..\unzip\mztools.c" />

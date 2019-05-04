@@ -446,6 +446,15 @@
     <ClCompile Include="..\tile.cpp">
       <Filter>Emu</Filter>
     </ClCompile>
+    <ClCompile Include="..\tileimpl-n1x1.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tileimpl-n2x1.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tileimpl-h2x1.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
     <ClCompile Include="..\unzip\ioapi.c">
       <Filter>UnZip</Filter>
     </ClCompile>
@@ -814,6 +823,9 @@
       <Filter>Emu</Filter>
     </CustomBuild>
     <CustomBuild Include="..\tile.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\tileimpl.h">
       <Filter>Emu</Filter>
     </CustomBuild>
     <CustomBuild Include="CDirect3D.h">

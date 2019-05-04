@@ -59,6 +59,18 @@
 		BF0B3A011FA5816D002B04D3 /* snes.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BF0B39AB1FA5792F002B04D3 /* snes.hpp */; };
 		BF0B3A041FA58172002B04D3 /* resampler.h in Headers */ = {isa = PBXBuildFile; fileRef = BF0B39AD1FA5792F002B04D3 /* resampler.h */; };
 		BF0B3A051FA58172002B04D3 /* resampler.h in Headers */ = {isa = PBXBuildFile; fileRef = BF0B39AD1FA5792F002B04D3 /* resampler.h */; };
+		CE6E9065227D5E0F00C3FFC6 /* tileimpl.h in Headers */ = {isa = PBXBuildFile; fileRef = CE6E9064227D5E0F00C3FFC6 /* tileimpl.h */; };
+		CE6E9066227D5E0F00C3FFC6 /* tileimpl.h in Headers */ = {isa = PBXBuildFile; fileRef = CE6E9064227D5E0F00C3FFC6 /* tileimpl.h */; };
+		CE6E9067227D5E0F00C3FFC6 /* tileimpl.h in Headers */ = {isa = PBXBuildFile; fileRef = CE6E9064227D5E0F00C3FFC6 /* tileimpl.h */; };
+		CE6E906B227D5E1E00C3FFC6 /* tileimpl-h2x1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE6E9068227D5E1E00C3FFC6 /* tileimpl-h2x1.cpp */; };
+		CE6E906C227D5E1E00C3FFC6 /* tileimpl-h2x1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE6E9068227D5E1E00C3FFC6 /* tileimpl-h2x1.cpp */; };
+		CE6E906D227D5E1E00C3FFC6 /* tileimpl-h2x1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE6E9068227D5E1E00C3FFC6 /* tileimpl-h2x1.cpp */; };
+		CE6E906E227D5E1E00C3FFC6 /* tileimpl-n2x1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE6E9069227D5E1E00C3FFC6 /* tileimpl-n2x1.cpp */; };
+		CE6E906F227D5E1E00C3FFC6 /* tileimpl-n2x1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE6E9069227D5E1E00C3FFC6 /* tileimpl-n2x1.cpp */; };
+		CE6E9070227D5E1E00C3FFC6 /* tileimpl-n2x1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE6E9069227D5E1E00C3FFC6 /* tileimpl-n2x1.cpp */; };
+		CE6E9071227D5E1E00C3FFC6 /* tileimpl-n1x1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE6E906A227D5E1E00C3FFC6 /* tileimpl-n1x1.cpp */; };
+		CE6E9072227D5E1E00C3FFC6 /* tileimpl-n1x1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE6E906A227D5E1E00C3FFC6 /* tileimpl-n1x1.cpp */; };
+		CE6E9073227D5E1E00C3FFC6 /* tileimpl-n1x1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE6E906A227D5E1E00C3FFC6 /* tileimpl-n1x1.cpp */; };
 		CF047D38109D0E0600FD0754 /* 65c816.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE0615A0526CCB900A80003 /* 65c816.h */; };
 		CF047D3B109D0E0600FD0754 /* bsx.h in Headers */ = {isa = PBXBuildFile; fileRef = EA2F381A09B17E9E0078DCA7 /* bsx.h */; };
 		CF047D3C109D0E0600FD0754 /* c4.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE061600526CCB900A80003 /* c4.h */; };
@@ -728,6 +740,10 @@
 		BF0B39AD1FA5792F002B04D3 /* resampler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = resampler.h; sourceTree = "<group>"; };
 		BF0B39DE1FA580F9002B04D3 /* msu1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = msu1.cpp; sourceTree = "<group>"; };
 		BF0B39E21FA58124002B04D3 /* msu1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = msu1.h; sourceTree = "<group>"; };
+		CE6E9064227D5E0F00C3FFC6 /* tileimpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tileimpl.h; sourceTree = "<group>"; };
+		CE6E9068227D5E1E00C3FFC6 /* tileimpl-h2x1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "tileimpl-h2x1.cpp"; sourceTree = "<group>"; };
+		CE6E9069227D5E1E00C3FFC6 /* tileimpl-n2x1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "tileimpl-n2x1.cpp"; sourceTree = "<group>"; };
+		CE6E906A227D5E1E00C3FFC6 /* tileimpl-n1x1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "tileimpl-n1x1.cpp"; sourceTree = "<group>"; };
 		CF047E15109D0E0600FD0754 /* Snes9x (i386).app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Snes9x (i386).app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CF047E17109D0E0600FD0754 /* Info_i386.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info_i386.plist; sourceTree = "<group>"; };
 		CF0567660CF98E7E00C7877C /* Snes9x.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Snes9x.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1224,6 +1240,7 @@
 				EAE061EA0526CCB900A80003 /* srtc.h */,
 				CFA82C3D0F1B43A60089C17F /* srtcemu.h */,
 				EAE061EC0526CCB900A80003 /* tile.h */,
+				CE6E9064227D5E0F00C3FFC6 /* tileimpl.h */,
 				EA2F380F09B17E070078DCA7 /* bsx.cpp */,
 				EAE0615F0526CCB900A80003 /* c4.cpp */,
 				EAE061610526CCB900A80003 /* c4emu.cpp */,
@@ -1269,6 +1286,9 @@
 				EAE061E90526CCB900A80003 /* srtc.cpp */,
 				CFA82C3E0F1B43A60089C17F /* srtcemu.cpp */,
 				EAE061EB0526CCB900A80003 /* tile.cpp */,
+				CE6E9068227D5E1E00C3FFC6 /* tileimpl-h2x1.cpp */,
+				CE6E906A227D5E1E00C3FFC6 /* tileimpl-n1x1.cpp */,
+				CE6E9069227D5E1E00C3FFC6 /* tileimpl-n2x1.cpp */,
 				BF0B39791FA5792F002B04D3 /* apu */,
 				CF5553B00EA24C36005957E4 /* filter */,
 				EAA7B5D807609F76001BAB8B /* jma */,
@@ -1417,6 +1437,7 @@
 				CF047D51109D0E0600FD0754 /* missing.h in Headers */,
 				CF047D52109D0E0600FD0754 /* movie.h in Headers */,
 				CF047D53109D0E0600FD0754 /* obc1.h in Headers */,
+				CE6E9066227D5E0F00C3FFC6 /* tileimpl.h in Headers */,
 				CF047D54109D0E0600FD0754 /* pixform.h in Headers */,
 				CF047D55109D0E0600FD0754 /* port.h in Headers */,
 				CF047D56109D0E0600FD0754 /* ppu.h in Headers */,
@@ -1603,6 +1624,7 @@
 				CF0566E30CF98E7E00C7877C /* mac-netplay.h in Headers */,
 				CF0566E40CF98E7E00C7877C /* mac-os.h in Headers */,
 				CF0566E50CF98E7E00C7877C /* mac-prefs.h in Headers */,
+				CE6E9065227D5E0F00C3FFC6 /* tileimpl.h in Headers */,
 				CF0566E60CF98E7E00C7877C /* mac-quicktime.h in Headers */,
 				BF0B39B81FA5792F002B04D3 /* SPC_DSP.h in Headers */,
 				CF0566E70CF98E7E00C7877C /* mac-render.h in Headers */,
@@ -1653,6 +1675,7 @@
 				CF2F462B1095EE72007D33FA /* missing.h in Headers */,
 				CF2F462C1095EE72007D33FA /* movie.h in Headers */,
 				CF2F462D1095EE72007D33FA /* obc1.h in Headers */,
+				CE6E9067227D5E0F00C3FFC6 /* tileimpl.h in Headers */,
 				CF2F462E1095EE72007D33FA /* pixform.h in Headers */,
 				CF2F462F1095EE72007D33FA /* port.h in Headers */,
 				CF2F46301095EE72007D33FA /* ppu.h in Headers */,
@@ -1981,6 +2004,7 @@
 				CF047DD5109D0E0600FD0754 /* snapshot.cpp in Sources */,
 				CF047DD8109D0E0600FD0754 /* spc7110.cpp in Sources */,
 				CF047DD9109D0E0600FD0754 /* srtc.cpp in Sources */,
+				CE6E906C227D5E1E00C3FFC6 /* tileimpl-h2x1.cpp in Sources */,
 				CF047DDA109D0E0600FD0754 /* tile.cpp in Sources */,
 				CF047DDB109D0E0600FD0754 /* 2xsai.cpp in Sources */,
 				CF047DDC109D0E0600FD0754 /* blit.cpp in Sources */,
@@ -2013,11 +2037,13 @@
 				CF047DF3109D0E0600FD0754 /* mac-dialog.cpp in Sources */,
 				CF047DF4109D0E0600FD0754 /* mac-file.cpp in Sources */,
 				CF047DF5109D0E0600FD0754 /* mac-gworld.cpp in Sources */,
+				CE6E9072227D5E1E00C3FFC6 /* tileimpl-n1x1.cpp in Sources */,
 				CF047DF6109D0E0600FD0754 /* mac-joypad.cpp in Sources */,
 				CF047DF7109D0E0600FD0754 /* mac-keyboard.cpp in Sources */,
 				CF047DF8109D0E0600FD0754 /* mac-multicart.cpp in Sources */,
 				CF047DF9109D0E0600FD0754 /* mac-musicbox.mm in Sources */,
 				CF047DFA109D0E0600FD0754 /* mac-netplay.cpp in Sources */,
+				CE6E906F227D5E1E00C3FFC6 /* tileimpl-n2x1.cpp in Sources */,
 				CF047DFB109D0E0600FD0754 /* mac-os.mm in Sources */,
 				CF047DFC109D0E0600FD0754 /* mac-prefs.cpp in Sources */,
 				CF047DFD109D0E0600FD0754 /* mac-quicktime.cpp in Sources */,
@@ -2037,6 +2063,7 @@
 				CF0567040CF98E7E00C7877C /* c4.cpp in Sources */,
 				CF0567050CF98E7E00C7877C /* c4emu.cpp in Sources */,
 				CF0567060CF98E7E00C7877C /* cheats.cpp in Sources */,
+				CE6E906B227D5E1E00C3FFC6 /* tileimpl-h2x1.cpp in Sources */,
 				BF0B39AF1FA5792F002B04D3 /* apu.cpp in Sources */,
 				CF0567070CF98E7E00C7877C /* cheats2.cpp in Sources */,
 				CF0567080CF98E7E00C7877C /* clip.cpp in Sources */,
@@ -2055,6 +2082,7 @@
 				CF5D3E250FAFD35400340007 /* dsp4.cpp in Sources */,
 				CFE7FBB40D2F67BA002F3102 /* fxemu.cpp in Sources */,
 				CF0567120CF98E7E00C7877C /* fxinst.cpp in Sources */,
+				CE6E9071227D5E1E00C3FFC6 /* tileimpl-n1x1.cpp in Sources */,
 				CF0567130CF98E7E00C7877C /* gfx.cpp in Sources */,
 				CF0567140CF98E7E00C7877C /* globals.cpp in Sources */,
 				CF0567150CF98E7E00C7877C /* loadzip.cpp in Sources */,
@@ -2077,6 +2105,7 @@
 				CF0567270CF98E7E00C7877C /* spc7110.cpp in Sources */,
 				CF0567280CF98E7E00C7877C /* srtc.cpp in Sources */,
 				CF0567290CF98E7E00C7877C /* tile.cpp in Sources */,
+				CE6E906E227D5E1E00C3FFC6 /* tileimpl-n2x1.cpp in Sources */,
 				CF5553C90EA24C36005957E4 /* 2xsai.cpp in Sources */,
 				CF5553CB0EA24C36005957E4 /* blit.cpp in Sources */,
 				CF5553CD0EA24C36005957E4 /* epx.cpp in Sources */,
@@ -2171,6 +2200,7 @@
 				CF2F46AF1095EE72007D33FA /* snapshot.cpp in Sources */,
 				CF2F46B21095EE72007D33FA /* spc7110.cpp in Sources */,
 				CF2F46B31095EE72007D33FA /* srtc.cpp in Sources */,
+				CE6E906D227D5E1E00C3FFC6 /* tileimpl-h2x1.cpp in Sources */,
 				CF2F46B41095EE72007D33FA /* tile.cpp in Sources */,
 				CF2F46B51095EE72007D33FA /* 2xsai.cpp in Sources */,
 				CF2F46B61095EE72007D33FA /* blit.cpp in Sources */,
@@ -2203,11 +2233,13 @@
 				CF2F46CD1095EE72007D33FA /* mac-dialog.cpp in Sources */,
 				CF2F46CE1095EE72007D33FA /* mac-file.cpp in Sources */,
 				CF2F46CF1095EE72007D33FA /* mac-gworld.cpp in Sources */,
+				CE6E9073227D5E1E00C3FFC6 /* tileimpl-n1x1.cpp in Sources */,
 				CF2F46D01095EE72007D33FA /* mac-joypad.cpp in Sources */,
 				CF2F46D11095EE72007D33FA /* mac-keyboard.cpp in Sources */,
 				CF2F46D21095EE72007D33FA /* mac-multicart.cpp in Sources */,
 				CF2F46D31095EE72007D33FA /* mac-musicbox.mm in Sources */,
 				CF2F46D41095EE72007D33FA /* mac-netplay.cpp in Sources */,
+				CE6E9070227D5E1E00C3FFC6 /* tileimpl-n2x1.cpp in Sources */,
 				CF2F46D51095EE72007D33FA /* mac-os.mm in Sources */,
 				CF2F46D61095EE72007D33FA /* mac-prefs.cpp in Sources */,
 				CF2F46D71095EE72007D33FA /* mac-quicktime.cpp in Sources */,
