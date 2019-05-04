@@ -245,6 +245,7 @@
     <ClInclude Include="..\srtc.h" />
     <ClInclude Include="..\stream.h" />
     <ClInclude Include="..\tile.h" />
+    <ClInclude Include="..\tileimpl.h" />
     <ClInclude Include="libretro.h" />
   </ItemGroup>
   <ItemGroup>
@@ -308,6 +309,9 @@
     <ClCompile Include="..\srtc.cpp" />
     <ClCompile Include="..\stream.cpp" />
     <ClCompile Include="..\tile.cpp" />
+    <ClCompile Include="..\tileimpl-n1x1.cpp" />
+    <ClCompile Include="..\tileimpl-n2x1.cpp" />
+    <ClCompile Include="..\tileimpl-h2x1.cpp" />
     <ClCompile Include="libretro.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
