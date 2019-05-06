@@ -67,10 +67,9 @@ if test "x$enable_debug" = "xyes"; then
 	AC_S9X_COMPILER_FLAG([-g],  [g])
 	AC_S9X_COMPILER_FLAG([-O0], [o0])
 else
-	AC_S9X_COMPILER_FLAG([-Ofast], [ofast], [
-		AC_S9X_COMPILER_FLAG([-O3], [o3], [
-			AC_S9X_COMPILER_FLAG([-O2], [o2], [
-				AC_S9X_COMPILER_FLAG([-O1], [o1])])])])
+	AC_S9X_COMPILER_FLAG([-O3], [o3], [
+		AC_S9X_COMPILER_FLAG([-O2], [o2], [
+			AC_S9X_COMPILER_FLAG([-O1], [o1])])])
 	AC_S9X_COMPILER_FLAG([-fomit-frame-pointer], [omit_frame_pointer])
 fi
 
