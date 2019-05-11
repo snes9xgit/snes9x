@@ -74,7 +74,7 @@ static snes_ntsc_t *snes_ntsc = NULL;
 static int blargg_filter = 0;
 static uint16 *ntsc_screen_buffer, *snes_ntsc_buffer;
 
-#define MAX_SNES_WIDTH_NTSC SNES_NTSC_OUT_WIDTH(256)
+const int MAX_SNES_WIDTH_NTSC = ((SNES_NTSC_OUT_WIDTH(256) + 3) / 4) * 4;
 
 static void extract_basename(char *buf, const char *path, size_t size)
 {
@@ -1774,14 +1774,14 @@ bool8 S9xDeinitUpdate(int width, int height)
     }
 
 
-    if(blargg_filter)
+    if (blargg_filter)
     {
         if(width == 512)
             snes_ntsc_blit_hires(snes_ntsc, GFX.Screen, GFX.Pitch/2, 0, width, height, snes_ntsc_buffer, GFX.Pitch);
         else
             snes_ntsc_blit(snes_ntsc, GFX.Screen, GFX.Pitch/2, 0, width, height, snes_ntsc_buffer, GFX.Pitch);
 
-        video_cb(snes_ntsc_buffer + ((int)(GFX.Pitch >> 1) * overscan_offset), MAX_SNES_WIDTH_NTSC, height, GFX.Pitch);
+        video_cb(snes_ntsc_buffer + ((int)(GFX.Pitch >> 1) * overscan_offset), SNES_NTSC_OUT_WIDTH(width), height, GFX.Pitch);
     }
     else if (width == MAX_SNES_WIDTH && hires_blend)
     {
