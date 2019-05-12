@@ -26,6 +26,7 @@ void (*S9xCustomDisplayString) (const char *, int, int, bool, int) = NULL;
 
 static void SetupOBJ (void);
 static void DrawOBJS (int);
+static void DisplayTime (void);
 static void DisplayFrameRate (void);
 static void DisplayPressedKeys (void);
 static void DisplayWatchedAddresses (void);
@@ -1838,6 +1839,20 @@ static void S9xDisplayStringType (const char *string, int linesFromBottom, int p
     S9xDisplayString (string, linesFromBottom, pixelsFromLeft, allowWrap);
 }
 
+static void DisplayTime (void)
+{
+	char string[10];
+	
+	time_t rawtime;
+	struct tm *timeinfo;
+
+	time (&rawtime);
+	timeinfo = localtime(&rawtime);
+
+	sprintf(string, "%02u:%02u", timeinfo->tm_hour, timeinfo->tm_min);
+	S9xDisplayString(string, 0, 0, false);
+}
+
 static void DisplayFrameRate (void)
 {
 	char	string[10];
@@ -2031,6 +2046,9 @@ static void DisplayWatchedAddresses (void)
 
 void S9xDisplayMessages (uint16 *screen, int ppl, int width, int height, int scale)
 {
+	if (Settings.DisplayTime)
+		DisplayTime();
+		
 	if (Settings.DisplayFrameRate)
 		DisplayFrameRate();
 

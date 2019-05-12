@@ -607,6 +607,7 @@ void
 Snes9xPreferences::move_settings_to_dialog ()
 {
     set_check ("full_screen_on_open",       config->full_screen_on_open);
+    set_check ("show_time",                 Settings.DisplayTime);
     set_check ("show_frame_rate",           Settings.DisplayFrameRate);
     set_check ("show_pressed_keys",         Settings.DisplayPressedKeys);
     set_check ("change_display_resolution", config->change_display_resolution);
@@ -823,6 +824,7 @@ Snes9xPreferences::get_settings_from_dialog ()
 #endif
 
     config->full_screen_on_open       = get_check ("full_screen_on_open");
+    Settings.DisplayTime              = get_check ("show_time");
     Settings.DisplayFrameRate         = get_check ("show_frame_rate");
     Settings.DisplayPressedKeys       = get_check ("show_pressed_keys");
     config->scale_to_fit              = get_check ("scale_to_fit");
