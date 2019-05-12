@@ -1849,8 +1849,8 @@ static void DisplayTime (void)
 	time (&rawtime);
 	timeinfo = localtime(&rawtime);
 
-	sprintf(string, "%u:%u", timeinfo->tm_hour, timeinfo->tm_min);
-	S9xDisplayString(string, 3, IPPU.RenderedScreenWidth - (font_width - 1) * strlen(string) - 1, false);
+	sprintf(string, "%02u:%02u", timeinfo->tm_hour, timeinfo->tm_min);
+	S9xDisplayString(string, 0, 0, false);
 }
 
 static void DisplayFrameRate (void)
@@ -2046,7 +2046,7 @@ static void DisplayWatchedAddresses (void)
 
 void S9xDisplayMessages (uint16 *screen, int ppl, int width, int height, int scale)
 {
-	DisplayTime(); // Todo: make a setting.
+	DisplayTime();
 
 	if (Settings.DisplayFrameRate)
 		DisplayFrameRate();
