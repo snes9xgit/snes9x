@@ -2046,8 +2046,9 @@ static void DisplayWatchedAddresses (void)
 
 void S9xDisplayMessages (uint16 *screen, int ppl, int width, int height, int scale)
 {
-	DisplayTime();
-
+	if (Settings.DisplayTime)
+		DisplayTime();
+		
 	if (Settings.DisplayFrameRate)
 		DisplayFrameRate();
 
