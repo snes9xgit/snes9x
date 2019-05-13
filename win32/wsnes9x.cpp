@@ -2359,6 +2359,10 @@ LRESULT CALLBACK WinProc(
 		//                RealizePalette (GUI.WindowDC);
 		break;
 	case WM_SIZE:
+		if (wParam == SIZE_MINIMIZED && GUI.InactivePause)
+		{
+			S9xSetPause(PAUSE_INACTIVE_WINDOW);
+		}
 		WinChangeWindowSize(LOWORD(lParam),HIWORD(lParam));
 		break;
 	case WM_MOVE:
