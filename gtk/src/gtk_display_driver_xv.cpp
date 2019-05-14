@@ -77,7 +77,6 @@ S9xXVDisplayDriver::update (int width, int height, int yoffset)
 {
     int   current_width, current_height, final_pitch;
     uint8 *final_buffer;
-    int   dst_x, dst_y, dst_width, dst_height;
     GtkAllocation allocation;
 
     gtk_widget_get_allocation (drawing_area, &allocation);
@@ -150,14 +149,12 @@ S9xXVDisplayDriver::update (int width, int height, int yoffset)
                         bpp);
     }
 
-    dst_x = width; dst_y = height;
-    dst_width = current_width; dst_height = current_height;
-    S9xApplyAspect (dst_x, dst_y, dst_width, dst_height);
+    S9xRect dst = S9xApplyAspect(width, height, current_width, current_height);
 
-    if (last_known_width != dst_width || last_known_height != dst_height)
+    if (last_known_width != dst.w || last_known_height != dst.h)
     {
-        last_known_width = dst_width;
-        last_known_height = dst_height;
+        last_known_width = dst.w;
+        last_known_height = dst.h;
         clear ();
     }
 
@@ -170,13 +167,13 @@ S9xXVDisplayDriver::update (int width, int height, int yoffset)
                    0,
                    width,
                    height,
-                   dst_x,
-                   dst_y,
-                   dst_width,
-                   dst_height,
+                   dst.x,
+                   dst.y,
+                   dst.w,
+                   dst.h,
                    False);
 
-    top_level->set_mouseable_area (dst_x, dst_y, dst_width, dst_height);
+    top_level->set_mouseable_area (dst.x, dst.y, dst.w, dst.h);
 
     XSync (display, False);
 }
@@ -493,7 +490,6 @@ S9xXVDisplayDriver::deinit ()
 void
 S9xXVDisplayDriver::clear ()
 {
-    int  x, y, w, h;
     int  width, height;
     GtkAllocation allocation;
     GC   xgc = XDefaultGC (display, XDefaultScreen (display));
@@ -516,28 +512,27 @@ S9xXVDisplayDriver::clear ()
     }
 
     /* Get width of modified display */
-    x = window->last_width;
-    y = window->last_height;
-    get_filter_scale (x, y);
-    w = width;
-    h = height;
-    S9xApplyAspect (x, y, w, h);
+    S9xRect dst;
+    dst.w = window->last_width;
+    dst.h = window->last_height;
+    get_filter_scale (dst.w, dst.h);
+    dst = S9xApplyAspect (dst.w, dst.h, width, height);
 
-    if (x > 0)
+    if (dst.x > 0)
     {
-        XFillRectangle (display, xwindow, xgc, 0, y, x, h);
+        XFillRectangle (display, xwindow, xgc, 0, dst.y, dst.x, dst.h);
     }
-    if (x + w < width)
+    if (dst.x + dst.w < width)
     {
-        XFillRectangle (display, xwindow, xgc, x + w, y, width - (x + w), h);
+        XFillRectangle (display, xwindow, xgc, dst.x + dst.w, dst.y, width - (dst.x + dst.w), dst.h);
     }
-    if (y > 0)
+    if (dst.y > 0)
     {
-        XFillRectangle (display, xwindow, xgc, 0, 0, width, y);
+        XFillRectangle (display, xwindow, xgc, 0, 0, width, dst.y);
     }
-    if (y + h < height)
+    if (dst.y + dst.h < height)
     {
-        XFillRectangle (display, xwindow, xgc, 0, y + h, width, height - (y + h));
+        XFillRectangle (display, xwindow, xgc, 0, dst.y + dst.h, width, height - (dst.y + dst.h));
     }
 
     XSync (display, False);

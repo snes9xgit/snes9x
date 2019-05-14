@@ -21,7 +21,6 @@ S9xGTKDisplayDriver::S9xGTKDisplayDriver (Snes9xWindow *window,
 void
 S9xGTKDisplayDriver::update (int width, int height, int yoffset)
 {
-    int           x, y, w, h;
     int           final_pitch;
     uint8         *final_buffer;
     GtkAllocation allocation;
@@ -57,10 +56,8 @@ S9xGTKDisplayDriver::update (int width, int height, int yoffset)
         final_buffer += (final_pitch * yoffset);
     }
 
-    x = width; y = height; w = allocation.width; h = allocation.height;
-    S9xApplyAspect (x, y, w, h);
-
-    output (final_buffer, final_pitch, x, y, width, height, w, h);
+    S9xRect dst = S9xApplyAspect(width, height, allocation.width, allocation.height);
+    output (final_buffer, final_pitch, dst.x, dst.y, width, height, dst.w, dst.h);
 }
 
 void
@@ -147,8 +144,7 @@ S9xGTKDisplayDriver::deinit ()
 void
 S9xGTKDisplayDriver::clear ()
 {
-    int  x, y, w, h;
-    int  width, height;
+    int width, height;
     GtkAllocation allocation;
 
     gtk_widget_get_allocation (drawing_area, &allocation);
@@ -167,28 +163,27 @@ S9xGTKDisplayDriver::clear ()
         return;
     }
 
-    x = window->last_width;
-    y = window->last_height;
-    get_filter_scale (x, y);
-    w = width;
-    h = height;
-    S9xApplyAspect (x, y, w, h);
+    S9xRect dst;
+    dst.w = window->last_width;
+    dst.h = window->last_height;
+    get_filter_scale(dst.w, dst.h);
+    dst = S9xApplyAspect(dst.w, dst.h, width, height);
 
-    if (x > 0)
+    if (dst.x > 0)
     {
-        cairo_rectangle (cr, 0, y, x, h);
+        cairo_rectangle (cr, 0, dst.y, dst.x, dst.h);
     }
-    if (x + w < width)
+    if (dst.x + dst.w < width)
     {
-        cairo_rectangle (cr, x + w, y, width - (x + w), h);
+        cairo_rectangle (cr, dst.x + dst.w, dst.y, width - (dst.x + dst.w), dst.h);
     }
-    if (y > 0)
+    if (dst.y > 0)
     {
-        cairo_rectangle (cr, 0, 0, width, y);
+        cairo_rectangle (cr, 0, 0, width, dst.y);
     }
-    if (y + h < height)
+    if (dst.y + dst.h < height)
     {
-        cairo_rectangle (cr, 0, y + h, width, height - (y + h));
+        cairo_rectangle (cr, 0, dst.y + dst.h, width, height - (dst.y + dst.h));
     }
 
     cairo_fill (cr);

@@ -81,10 +81,17 @@ typedef struct thread_job_t
     volatile bool complete;
 } thread_job_t;
 
+struct S9xRect {
+    int x;
+    int y;
+    int w;
+    int h;
+};
+
 void S9xRegisterYUVTables (uint8 *y, uint8 *u, uint8 *v);
 void S9xSetEndianess (int type);
 double S9xGetAspect ();
-void S9xApplyAspect (int&, int&, int&, int&);
+S9xRect S9xApplyAspect (int, int, int, int);
 void S9xConvertYUV (void *src_buffer,
                     void *dst_buffer,
                     int src_pitch,
