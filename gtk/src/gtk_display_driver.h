@@ -49,8 +49,8 @@ class S9xDisplayDriver
         Snes9xWindow *window;
         Snes9xConfig *config;
         GtkWidget    *drawing_area;
-        void         *padded_buffer[4];
-        void         *buffer[4];
+        uint8_t      *padded_buffer[4];
+        uint8_t      *buffer[4];
 };
 
 #endif /* __GTK_DISPLAY_DRIVER_H*/

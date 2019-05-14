@@ -29,8 +29,8 @@ class S9xSDLSoundDriver : public S9xSoundDriver
     void samples_available();
 
   private:
-    SDL_AudioSpec *audiospec;
-    Resampler *buffer;
+    SDL_AudioSpec audiospec;
+    Resampler buffer;
     std::mutex mutex;
     int16_t temp[512];
 };

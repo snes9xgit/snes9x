@@ -448,11 +448,11 @@ S9xXVDisplayDriver::init ()
     desired_width = scaled_max_width;
     desired_height = scaled_max_width;
 
-    buffer[0] = malloc (image_padded_size);
-    buffer[1] = malloc (scaled_padded_size);
+    buffer[0] = new uint8_t[image_padded_size];
+    buffer[1] = new uint8_t[scaled_padded_size];
 
-    padded_buffer[0] = (void *) (((uint8 *) buffer[0]) + image_padded_offset);
-    padded_buffer[1] = (void *) (((uint8 *) buffer[1]) + scaled_padded_offset);
+    padded_buffer[0] = &buffer[0][image_padded_offset];
+    padded_buffer[1] = &buffer[1][scaled_padded_offset];
 
     memset (buffer[0], 0, image_padded_size);
     memset (buffer[1], 0, scaled_padded_size);
@@ -477,8 +477,8 @@ S9xXVDisplayDriver::deinit ()
     XFreeColormap (display, xcolormap);
     XFree (vi);
 
-    free (buffer[0]);
-    free (buffer[1]);
+    delete[] buffer[0];
+    delete[] buffer[1];
 
     shmctl (shm.shmid, IPC_RMID, 0);
     shmdt (shm.shmaddr);
@@ -559,7 +559,7 @@ S9xXVDisplayDriver::get_current_buffer ()
 void
 S9xXVDisplayDriver::push_buffer (uint16 *src)
 {
-    memmove (GFX.Screen, src, image_size);
+    memmove (GFX.Screen, src, image_size * image_bpp);
 }
 
 void

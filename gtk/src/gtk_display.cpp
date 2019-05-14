@@ -1533,10 +1533,10 @@ void S9xDeinitDisplay ()
 
 void S9xReinitDisplay ()
 {
-    uint16 *buffer = NULL;
-    int    width, height;
+    uint8_t *buffer = NULL;
+    int     width, height;
 
-    buffer = (uint16 *) malloc (S9xDisplayDriver::image_size);
+    buffer = new uint8_t[S9xDisplayDriver::image_size];
     memmove (buffer,
              driver->get_current_buffer (),
              S9xDisplayDriver::image_size);
@@ -1551,9 +1551,9 @@ void S9xReinitDisplay ()
     top_level->last_width = width;
     top_level->last_height = height;
 
-    driver->push_buffer (buffer);
+    driver->push_buffer ((uint16_t *)buffer);
 
-    free (buffer);
+    delete[] buffer;
 }
 
 bool8 S9xContinueUpdate (int width, int height)
