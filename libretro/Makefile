@@ -596,6 +596,10 @@ ifneq ($(HAVE_EXCEPTIONS), 1)
 endif
 endif
 
+ifneq (,$(findstring uwp,$(PlatformSuffix)))
+   CFLAGS := $(filter-out -ZW:nostdlib,$(CFLAGS))
+endif
+
 OBJOUT   = -o
 LINKOUT  = -o 
 
