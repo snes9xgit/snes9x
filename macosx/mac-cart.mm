@@ -15,6 +15,7 @@
   (c) Copyright 2004         Alexander and Sander
   (c) Copyright 2004 - 2005  Steven Seeger
   (c) Copyright 2005         Ryan Vogt
+  (c) Copyright 2019         Michael Donald Buckley
  ***********************************************************************************/
 
 
@@ -60,21 +61,21 @@ static NavState				gSheetNav;
 static NSAutoreleasePool	*gPool;
 static NSPopUpButton		*gPopM, *gPopI, *gPopV, *gPopH;
 
-static pascal void NavGenericOpenEventHandler (const NavEventCallbackMessage, NavCBRecPtr, NavCallBackUserData);
-static pascal void NavGenericSaveEventHandler (const NavEventCallbackMessage, NavCBRecPtr, NavCallBackUserData);
-static pascal Boolean NavOpenCartFilter (AEDesc *, void *, NavCallBackUserData, NavFilterModes);
-static pascal Boolean NavDefrostFromFilter (AEDesc *, void *, NavCallBackUserData, NavFilterModes);
-static pascal Boolean NavPlayMovieFromFilter (AEDesc *, void *, NavCallBackUserData, NavFilterModes);
+static void NavGenericOpenEventHandler (const NavEventCallbackMessage, NavCBRecPtr, NavCallBackUserData);
+static void NavGenericSaveEventHandler (const NavEventCallbackMessage, NavCBRecPtr, NavCallBackUserData);
+static Boolean NavOpenCartFilter (AEDesc *, void *, NavCallBackUserData, NavFilterModes);
+static Boolean NavDefrostFromFilter (AEDesc *, void *, NavCallBackUserData, NavFilterModes);
+static Boolean NavPlayMovieFromFilter (AEDesc *, void *, NavCallBackUserData, NavFilterModes);
 #ifdef MAC_LEOPARD_TIGER_PANTHER_SUPPORT
 static void GlobalPointToWindowLocalPoint (Point *, WindowRef);
-static pascal void NavOpenCartEventHandler (const NavEventCallbackMessage, NavCBRecPtr, NavCallBackUserData);
-static pascal void NavRecordMovieToEventHandler (const NavEventCallbackMessage, NavCBRecPtr, NavCallBackUserData);
-static pascal void NavPlayMovieFromEventHandler (const NavEventCallbackMessage, NavCBRecPtr, NavCallBackUserData);
-static pascal void NavQTMovieRecordToEventHandler (const NavEventCallbackMessage, NavCBRecPtr, NavCallBackUserData);
+static void NavOpenCartEventHandler (const NavEventCallbackMessage, NavCBRecPtr, NavCallBackUserData);
+static void NavRecordMovieToEventHandler (const NavEventCallbackMessage, NavCBRecPtr, NavCallBackUserData);
+static void NavPlayMovieFromEventHandler (const NavEventCallbackMessage, NavCBRecPtr, NavCallBackUserData);
+static void NavQTMovieRecordToEventHandler (const NavEventCallbackMessage, NavCBRecPtr, NavCallBackUserData);
 #endif
 #ifdef MAC_TIGER_PANTHER_SUPPORT
-static pascal Boolean NavDefrostFromPreview (NavCBRecPtr, NavCallBackUserData);
-static pascal Boolean NavPlayMovieFromPreview (NavCBRecPtr, NavCallBackUserData);
+static Boolean NavDefrostFromPreview (NavCBRecPtr, NavCallBackUserData);
+static Boolean NavPlayMovieFromPreview (NavCBRecPtr, NavCallBackUserData);
 #endif
 
 
@@ -1085,7 +1086,7 @@ bool8 NavEndChooseFolderSheet (FSRef *ref)
 		return (false);
 }
 
-static pascal void NavGenericOpenEventHandler (const NavEventCallbackMessage callBackSelector, NavCBRecPtr callBackParms, NavCallBackUserData callBackUD)
+static void NavGenericOpenEventHandler (const NavEventCallbackMessage callBackSelector, NavCBRecPtr callBackParms, NavCallBackUserData callBackUD)
 {
 	OSStatus		err;
 	NavReplyRecord	reply;
@@ -1163,7 +1164,7 @@ static pascal void NavGenericOpenEventHandler (const NavEventCallbackMessage cal
 	}
 }
 
-static pascal void NavGenericSaveEventHandler (const NavEventCallbackMessage callBackSelector, NavCBRecPtr callBackParms, NavCallBackUserData callBackUD)
+static void NavGenericSaveEventHandler (const NavEventCallbackMessage callBackSelector, NavCBRecPtr callBackParms, NavCallBackUserData callBackUD)
 {
 	OSStatus		err;
 	NavReplyRecord	reply;
@@ -1221,7 +1222,7 @@ static pascal void NavGenericSaveEventHandler (const NavEventCallbackMessage cal
 }
 
 #ifdef MAC_LEOPARD_TIGER_PANTHER_SUPPORT
-static pascal void NavOpenCartEventHandler (const NavEventCallbackMessage callBackSelector, NavCBRecPtr callBackParms, NavCallBackUserData callBackUD)
+static void NavOpenCartEventHandler (const NavEventCallbackMessage callBackSelector, NavCBRecPtr callBackParms, NavCallBackUserData callBackUD)
 {
 	static Boolean	embedded = false;
 
@@ -1385,7 +1386,7 @@ static pascal void NavOpenCartEventHandler (const NavEventCallbackMessage callBa
 	}
 }
 
-static pascal void NavPlayMovieFromEventHandler (const NavEventCallbackMessage callBackSelector, NavCBRecPtr callBackParms, NavCallBackUserData callBackUD)
+static void NavPlayMovieFromEventHandler (const NavEventCallbackMessage callBackSelector, NavCBRecPtr callBackParms, NavCallBackUserData callBackUD)
 {
 	static Boolean	embedded = false;
 
@@ -1509,7 +1510,7 @@ static pascal void NavPlayMovieFromEventHandler (const NavEventCallbackMessage c
 	}
 }
 
-static pascal void NavRecordMovieToEventHandler (const NavEventCallbackMessage callBackSelector, NavCBRecPtr callBackParms, NavCallBackUserData callBackUD)
+static void NavRecordMovieToEventHandler (const NavEventCallbackMessage callBackSelector, NavCBRecPtr callBackParms, NavCallBackUserData callBackUD)
 {
 	static Boolean	embedded = false;
 
@@ -1667,7 +1668,7 @@ static pascal void NavRecordMovieToEventHandler (const NavEventCallbackMessage c
 	}
 }
 
-static pascal void NavQTMovieRecordToEventHandler (const NavEventCallbackMessage callBackSelector, NavCBRecPtr callBackParms, NavCallBackUserData callBackUD)
+static void NavQTMovieRecordToEventHandler (const NavEventCallbackMessage callBackSelector, NavCBRecPtr callBackParms, NavCallBackUserData callBackUD)
 {
 	static Boolean	embedded = false;
 
@@ -1804,7 +1805,7 @@ static pascal void NavQTMovieRecordToEventHandler (const NavEventCallbackMessage
 }
 #endif
 
-static pascal Boolean NavOpenCartFilter (AEDesc *theItem, void *ninfo, NavCallBackUserData callbackUD, NavFilterModes filterMode)
+static Boolean NavOpenCartFilter (AEDesc *theItem, void *ninfo, NavCallBackUserData callbackUD, NavFilterModes filterMode)
 {
 	OSStatus	err;
 	AEDesc 		resultDesc;
@@ -1849,7 +1850,7 @@ static pascal Boolean NavOpenCartFilter (AEDesc *theItem, void *ninfo, NavCallBa
 	return (result);
 }
 
-static pascal Boolean NavDefrostFromFilter (AEDesc *theItem, void *ninfo, NavCallBackUserData callbackUD, NavFilterModes filterMode)
+static Boolean NavDefrostFromFilter (AEDesc *theItem, void *ninfo, NavCallBackUserData callbackUD, NavFilterModes filterMode)
 {
 	OSStatus	err;
 	AEDesc 		resultDesc;
@@ -1890,7 +1891,7 @@ static pascal Boolean NavDefrostFromFilter (AEDesc *theItem, void *ninfo, NavCal
 	return (result);
 }
 
-static pascal Boolean NavPlayMovieFromFilter (AEDesc *theItem, void *ninfo, NavCallBackUserData callbackUD, NavFilterModes filterMode)
+static Boolean NavPlayMovieFromFilter (AEDesc *theItem, void *ninfo, NavCallBackUserData callbackUD, NavFilterModes filterMode)
 {
 	OSStatus	err;
 	AEDesc 		resultDesc;
@@ -1932,7 +1933,7 @@ static pascal Boolean NavPlayMovieFromFilter (AEDesc *theItem, void *ninfo, NavC
 }
 
 #ifdef MAC_TIGER_PANTHER_SUPPORT
-static pascal Boolean NavDefrostFromPreview (NavCBRecPtr callBackParms, NavCallBackUserData callBackUD)
+static Boolean NavDefrostFromPreview (NavCBRecPtr callBackParms, NavCallBackUserData callBackUD)
 {
 	if (systemVersion >= 0x1050)
 		return (true);
@@ -2006,7 +2007,7 @@ static pascal Boolean NavDefrostFromPreview (NavCBRecPtr callBackParms, NavCallB
 						bounds.size.width  = 128.0f;
 						bounds.size.height = 120.0f;
 
-						DrawThumbnailResource(&ref, ctx, bounds);
+						DrawThumbnailFromExtendedAttribute(&ref, ctx, bounds);
 
 						HIThemeTextInfo	textinfo;
 
@@ -2045,7 +2046,7 @@ static pascal Boolean NavDefrostFromPreview (NavCBRecPtr callBackParms, NavCallB
 	return (result);
 }
 
-static pascal Boolean NavPlayMovieFromPreview (NavCBRecPtr callBackParms, NavCallBackUserData callBackUD)
+static Boolean NavPlayMovieFromPreview (NavCBRecPtr callBackParms, NavCallBackUserData callBackUD)
 {
 	if (systemVersion >= 0x1050)
 		return (true);
@@ -2178,7 +2179,7 @@ static pascal Boolean NavPlayMovieFromPreview (NavCBRecPtr callBackParms, NavCal
 						bounds.size.width  = 128.0f;
 						bounds.size.height = 120.0f;
 
-						DrawThumbnailResource(&ref, ctx, bounds);
+						DrawThumbnailFromExtendedAttribute(&ref, ctx, bounds);
 
 						// Text
 

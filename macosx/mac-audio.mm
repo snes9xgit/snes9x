@@ -67,8 +67,8 @@ static void ReplaceAudioUnitCarbonView (void);
 static void ResizeSoundEffectsDialog (HIViewRef);
 static void MacSamplesAvailableCallBack (void *);
 static OSStatus MacAURenderCallBack (void *, AudioUnitRenderActionFlags *, const AudioTimeStamp *, UInt32, UInt32, AudioBufferList *);
-static pascal OSStatus SoundEffectsEventHandler (EventHandlerCallRef, EventRef, void *);
-static pascal OSStatus SoundEffectsCarbonViewEventHandler (EventHandlerCallRef, EventRef, void *);
+static OSStatus SoundEffectsEventHandler (EventHandlerCallRef, EventRef, void *);
+static OSStatus SoundEffectsCarbonViewEventHandler (EventHandlerCallRef, EventRef, void *);
 
 
 void InitMacSound (void)
@@ -830,7 +830,7 @@ void ConfigureSoundEffects (void)
 	}
 }
 
-static pascal OSStatus SoundEffectsCarbonViewEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
+static OSStatus SoundEffectsCarbonViewEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
 {
 	OSStatus	err, result = eventNotHandledErr;
 	HIViewRef	ctl;
@@ -863,7 +863,7 @@ static pascal OSStatus SoundEffectsCarbonViewEventHandler (EventHandlerCallRef i
 	return (result);
 }
 
-static pascal OSStatus SoundEffectsEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
+static OSStatus SoundEffectsEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
 {
 	OSStatus	err, result = eventNotHandledErr;
 	WindowRef	tWindowRef = (WindowRef) inUserData;

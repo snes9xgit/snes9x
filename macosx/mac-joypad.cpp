@@ -477,8 +477,8 @@ static int	gIconNumber[kNeedCount] =
 };
 
 static void JoypadSetDirectionInfo (void);
-static pascal void IdleTimer (EventLoopTimerRef, void *);
-static pascal OSStatus ControllerEventHandler (EventHandlerCallRef, EventRef, void *);
+static void IdleTimer (EventLoopTimerRef, void *);
+static OSStatus ControllerEventHandler (EventHandlerCallRef, EventRef, void *);
 
 
 void SaveControllerSettings (void)
@@ -591,7 +591,7 @@ void LoadControllerSettings (void)
 	JoypadSetDirectionInfo();
 }
 
-static pascal OSStatus ControllerEventHandler (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData)
+static OSStatus ControllerEventHandler (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData)
 {
 	OSStatus	err, result = eventNotHandledErr;
 	WindowRef	tWindowRef;
@@ -779,7 +779,7 @@ static pascal OSStatus ControllerEventHandler (EventHandlerCallRef inHandlerCall
 	return (result);
 }
 
-static pascal void IdleTimer (EventLoopTimerRef inTimer, void *userData)
+static void IdleTimer (EventLoopTimerRef inTimer, void *userData)
 {
 	static uint32	old[MAC_MAX_PLAYERS] = { ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0 };
 

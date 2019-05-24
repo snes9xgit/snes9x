@@ -55,6 +55,6 @@ OSStatus SetEditTextCStr (HIViewRef, char *, Boolean);
 OSStatus CopyEditTextCFString (HIViewRef, CFStringRef *);
 OSStatus SetEditTextCFString (HIViewRef, CFStringRef, Boolean);
 OSStatus SetEditTextSelection (HIViewRef, SInt16, SInt16);
-pascal OSStatus DefaultEventHandler (EventHandlerCallRef, EventRef, void *);
+OSStatus DefaultEventHandler (EventHandlerCallRef, EventRef, void *);
 
 #endif

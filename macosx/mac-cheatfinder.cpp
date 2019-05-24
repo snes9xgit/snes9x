@@ -156,10 +156,10 @@ static SInt64 CheatFinderReadBytes (UInt8 *, UInt32);
 static SInt64 CheatFinderGetValueEditText (ControlRef);
 static Boolean CheatFinderCompare (SInt64, SInt64);
 static HIViewPartCode CheatFinderListViewFindPart (EventRef, ListViewData *, SInt32 *);
-static pascal OSStatus CheatFinderListViewHandler (EventHandlerCallRef, EventRef, void *);
-static pascal OSStatus CheatFinderSheetEventHandler (EventHandlerCallRef, EventRef, void *);
-static pascal OSStatus CheatFinderWindowEventHandler (EventHandlerCallRef, EventRef, void *);
-static pascal OSStatus CheatFinderListFrameEventHandler (EventHandlerCallRef, EventRef, void *);
+static OSStatus CheatFinderListViewHandler (EventHandlerCallRef, EventRef, void *);
+static OSStatus CheatFinderSheetEventHandler (EventHandlerCallRef, EventRef, void *);
+static OSStatus CheatFinderWindowEventHandler (EventHandlerCallRef, EventRef, void *);
+static OSStatus CheatFinderListFrameEventHandler (EventHandlerCallRef, EventRef, void *);
 
 
 void InitCheatFinder (void)
@@ -505,7 +505,7 @@ static SInt64 CheatFinderReadBytes (UInt8 *mem, UInt32 addr)
 	return (0);
 }
 
-static pascal OSStatus CheatFinderWindowEventHandler (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData)
+static OSStatus CheatFinderWindowEventHandler (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData)
 {
 	OSStatus	err, result = eventNotHandledErr;
 	WindowData	*cf;
@@ -1176,7 +1176,7 @@ static void CheatFinderEndAddEntrySheet (WindowData *cf)
 	}
 }
 
-static pascal OSStatus CheatFinderSheetEventHandler (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData)
+static OSStatus CheatFinderSheetEventHandler (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData)
 {
 	OSStatus	err, result = eventNotHandledErr;
 	WindowData	*cf = (WindowData *) inUserData;
@@ -1285,7 +1285,7 @@ static void CheatFinderAddEntry (SInt64 value, char *description)
 	}
 }
 
-static pascal OSStatus CheatFinderListFrameEventHandler (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *userData)
+static OSStatus CheatFinderListFrameEventHandler (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *userData)
 {
 	OSStatus	err, result = eventNotHandledErr;
 	HIViewRef	view = (HIViewRef) userData;
@@ -1736,7 +1736,7 @@ static void CheatFinderListViewScrollToThere (float where, ListViewData *myData)
 	}
 }
 
-static pascal OSStatus CheatFinderListViewHandler (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData)
+static OSStatus CheatFinderListViewHandler (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData)
 {
 	OSStatus		err, result = eventNotHandledErr;
 	ListViewData	*myData = (ListViewData *) inUserData;

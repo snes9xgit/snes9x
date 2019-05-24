@@ -15,6 +15,7 @@
   (c) Copyright 2004         Alexander and Sander
   (c) Copyright 2004 - 2005  Steven Seeger
   (c) Copyright 2005         Ryan Vogt
+  (c) Copyright 2019         Michael Donald Buckley
  ***********************************************************************************/
 
 
@@ -34,7 +35,6 @@
 #endif
 
 #import <Cocoa/Cocoa.h>
-#import <QuickTime/QuickTime.h>
 #import <pthread.h>
 
 #import "mac-prefix.h"
@@ -352,10 +352,10 @@ static void UpdateFreezeDefrostScreen (int, CGImageRef, uint8 *, CGContextRef);
 static void * MacSnes9xThread (void *);
 static OSStatus HandleMenuChoice (UInt32, Boolean *);
 static inline void EmulationLoop (void);
-static pascal OSStatus MainEventHandler (EventHandlerCallRef, EventRef, void *);
-static pascal OSStatus SubEventHandler (EventHandlerCallRef, EventRef, void *);
-static pascal OSStatus GameWindowEventHandler (EventHandlerCallRef, EventRef, void *);
-static pascal OSStatus GameWindowUserPaneEventHandler (EventHandlerCallRef, EventRef, void *);
+static OSStatus MainEventHandler (EventHandlerCallRef, EventRef, void *);
+static OSStatus SubEventHandler (EventHandlerCallRef, EventRef, void *);
+static OSStatus GameWindowEventHandler (EventHandlerCallRef, EventRef, void *);
+static OSStatus GameWindowUserPaneEventHandler (EventHandlerCallRef, EventRef, void *);
 
 
 int main (int argc, char **argv)
@@ -600,7 +600,7 @@ static inline void EmulationLoop (void)
 	S9xMovieShutdown();
 }
 
-static pascal OSStatus MainEventHandler (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData)
+static OSStatus MainEventHandler (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData)
 {
     OSStatus	err, result = eventNotHandledErr;
 	Boolean		done = false;
@@ -653,7 +653,7 @@ static pascal OSStatus MainEventHandler (EventHandlerCallRef inHandlerCallRef, E
 	return (result);
 }
 
-static pascal OSStatus SubEventHandler (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData)
+static OSStatus SubEventHandler (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData)
 {
 	OSStatus	err, result = eventNotHandledErr;
 
@@ -939,7 +939,7 @@ void DeinitGameWindow (void)
 	gWindow = NULL;
 }
 
-static pascal OSStatus GameWindowEventHandler (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData)
+static OSStatus GameWindowEventHandler (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData)
 {
 	OSStatus	err, result = eventNotHandledErr;
 	HIRect		rct;
@@ -1052,7 +1052,7 @@ static pascal OSStatus GameWindowEventHandler (EventHandlerCallRef inHandlerCall
 	return (result);
 }
 
-static pascal OSStatus GameWindowUserPaneEventHandler (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData)
+static OSStatus GameWindowUserPaneEventHandler (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData)
 {
     OSStatus	err, result = eventNotHandledErr;
 
@@ -2091,7 +2091,7 @@ int PromptFreezeDefrost (Boolean freezing)
 				newestDate  = currentDate;
 			}
 
-			DrawThumbnailResource(&ref, ctx, rct);
+			DrawThumbnailFromExtendedAttribute(filename, ctx, rct);
 
 			CGContextSetShouldAntialias(ctx, false);
 			CGContextSetLineWidth(ctx, 1.0f);

@@ -15,14 +15,14 @@
   (c) Copyright 2004         Alexander and Sander
   (c) Copyright 2004 - 2005  Steven Seeger
   (c) Copyright 2005         Ryan Vogt
+  (c) Copyright 2019         Michael Donald Buckley
  ***********************************************************************************/
 
+#include <sys/xattr.h>
 
 #include "snes9x.h"
 #include "memmap.h"
 #include "screenshot.h"
-
-#include <QuickTime/QuickTime.h>
 
 #include "mac-prefix.h"
 #include "mac-file.h"
@@ -31,92 +31,50 @@
 #include "mac-render.h"
 #include "mac-screenshot.h"
 
-static Handle GetScreenAsRawHandle (int, int);
-static void ExportCGImageToPNGFile (CGImageRef, const char *);
+const char *extendedAttributeName = "com.snes9x.preview";
 
-#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-typedef struct QDPict* QDPictRef;
-extern "C" QDPictRef QDPictCreateWithProvider (CGDataProviderRef provider);
-extern "C" void QDPictRelease (QDPictRef pictRef);
-extern "C" OSStatus QDPictDrawToCGContext (CGContextRef ctx, CGRect rect, QDPictRef pictRef);
-#endif
+unsigned char *CGImageToPNGData (CGImageRef image, CFIndex *outLength);
 
-static Handle GetScreenAsRawHandle (int destWidth, int destHeight)
+unsigned char *CGImageToPNGData (CGImageRef image, CFIndex *outLength)
 {
-	CGContextRef	ctx;
-	CGColorSpaceRef	color;
-	CGImageRef		image;
-	Handle			data = NULL;
+    if (!outLength)
+    {
+        return NULL;
+    }
 
-	image = CreateGameScreenCGImage();
-	if (image)
-	{
-		data = NewHandleClear(destWidth * destHeight * 2);
-		if (data)
-		{
-			HLock(data);
+    CFMutableDataRef dataRef = CFDataCreateMutable(kCFAllocatorDefault, 0);
+    if (dataRef)
+    {
+        CGImageDestinationRef dest = CGImageDestinationCreateWithData(dataRef, kUTTypePNG, 1, NULL);
 
-			color = CGColorSpaceCreateDeviceRGB();
-			if (color)
-			{
-				ctx = CGBitmapContextCreate(*data, destWidth, destHeight, 5, destWidth * 2, color, kCGImageAlphaNoneSkipFirst | ((systemVersion >= 0x1040) ? kCGBitmapByteOrder16Big : 0));
-				if (ctx)
-				{
-					CGContextDrawImage(ctx, CGRectMake(0.0f, 0.0f, (float) destWidth, (float) destHeight), image);
-					CGContextRelease(ctx);
-				}
+        if (dest)
+        {
+            CGImageDestinationAddImage(dest, image, NULL);
+            CGImageDestinationFinalize(dest);
+            CFRelease(dest);
 
-				CGColorSpaceRelease(color);
-			}
+            *outLength = CFDataGetLength(dataRef);
+            unsigned char *data = (unsigned char *)malloc(*outLength);
 
-			HUnlock(data);
-		}
+            if (data)
+            {
+                CFDataGetBytes(dataRef, CFRangeMake(0, *outLength), data);
+                return data;
+            }
+        }
+        else
+        {
+            CFRelease(dataRef);
+        }
+    }
 
-		CGImageRelease(image);
-	}
-
-	return (data);
-}
-
-void WriteThumbnailToResourceFork (FSRef *ref, int destWidth, int destHeight)
-{
-	OSStatus		err;
-	HFSUniStr255	fork;
-	SInt16			resf;
-
-	err = FSGetResourceForkName(&fork);
-	if (err == noErr)
-	{
-		err = FSCreateResourceFork(ref, fork.length, fork.unicode, 0);
-		if ((err == noErr) || (err == errFSForkExists))
-		{
-			err = FSOpenResourceFile(ref, fork.length, fork.unicode, fsWrPerm, &resf);
-			if (err == noErr)
-			{
-				Handle	pict;
-
-				pict = GetScreenAsRawHandle(destWidth, destHeight);
-				if (pict)
-				{
-					AddResource(pict, 'Thum', 128, "\p");
-					WriteResource(pict);
-					ReleaseResource(pict);
-				}
-
-				CloseResFile(resf);
-			}
-		}
-	}
+    return NULL;
 }
 
 static void ExportCGImageToPNGFile (CGImageRef image, const char *path)
 {
-	OSStatus				err;
-	GraphicsExportComponent	exporter;
-	CFStringRef				str;
-	CFURLRef				url;
-	Handle					dataRef;
-	OSType					dataRefType;
+	CFStringRef str;
+	CFURLRef    url;
 
 	str = CFStringCreateWithCString(kCFAllocatorDefault, path, kCFStringEncodingUTF8);
 	if (str)
@@ -124,25 +82,19 @@ static void ExportCGImageToPNGFile (CGImageRef image, const char *path)
 		url = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, str, kCFURLPOSIXPathStyle, false);
 		if (url)
 		{
-			err = QTNewDataReferenceFromCFURL(url, 0, &dataRef, &dataRefType);
-			if (err == noErr)
-			{
-				err = OpenADefaultComponent(GraphicsExporterComponentType, kQTFileTypePNG, &exporter);
-				if (err == noErr)
-				{
-					err = GraphicsExportSetInputCGImage(exporter, image);
-					if (err == noErr)
-					{
-						err = GraphicsExportSetOutputDataReference(exporter, dataRef, dataRefType);
-						if (err == noErr)
-							err = GraphicsExportDoExport(exporter, NULL);
-					}
+            CFIndex length = 0;
+            unsigned char *data = CGImageToPNGData(image, &length);
+            if (data)
+            {
+                FILE *f = fopen(path, "wb");
+                if (f)
+                {
+                    fwrite(data, length, 1, f);
+                    fclose(f);
+                }
 
-					CloseComponent(exporter);
-				}
-
-				DisposeHandle(dataRef);
-			}
+                free(data);
+            }
 
 			CFRelease(url);
 		}
@@ -198,88 +150,77 @@ CGImageRef CreateBlitScreenCGImage (int width, int height, int rowbytes, uint8 *
 	return (image);
 }
 
-void DrawThumbnailResource (FSRef *ref, CGContextRef ctx, CGRect bounds)
+void WriteThumbnailToExtendedAttribute (const char *path, int destWidth, int destHeight)
 {
-	OSStatus			err;
-	CGDataProviderRef	prov;
-	CGColorSpaceRef		color;
-	CGImageRef			image;
-	QDPictRef			qdpr;
-	Handle				pict;
-	HFSUniStr255		fork;
-	SInt16				resf;
-	Size				size;
+    CGContextRef    ctx;
+    CGColorSpaceRef color = NULL;
+    char            *data[destWidth * destHeight * 2];
+    CGImageRef      image = CreateGameScreenCGImage();
 
-	CGContextSaveGState(ctx);
+    if (image)
+    {
+        color = CGColorSpaceCreateDeviceRGB();
+        if (color)
+        {
+            ctx = CGBitmapContextCreate(data, destWidth, destHeight, 5, destWidth * 2, color, kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder16Big);
 
-	CGContextSetRGBFillColor(ctx, 0.0f, 0.0f, 0.0f, 1.0f);
-	CGContextFillRect(ctx, bounds);
+            if (ctx)
+            {
+                CGContextDrawImage(ctx, CGRectMake(0.0f, 0.0f, (float) destWidth, (float) destHeight), image);
+                CGContextRelease(ctx);
 
-	err = FSGetResourceForkName(&fork);
-	if (err == noErr)
-	{
-		err = FSOpenResourceFile(ref, fork.length, fork.unicode, fsRdPerm, &resf);
-		if (err == noErr)
-		{
-			pict = Get1Resource('PICT', 128);
-			if (pict)
-			{
-				HLock(pict);
+                CFIndex length = 0;
+                unsigned char *data = CGImageToPNGData(image, &length);
+                if (data)
+                {
+                    setxattr(path, extendedAttributeName, data, length, 0, 0);
+                    free(data);
+                }
+            }
 
-				size = GetHandleSize(pict);
-				prov = CGDataProviderCreateWithData(NULL, (void *) *pict, size, NULL);
-				if (prov)
-				{
-					qdpr = QDPictCreateWithProvider(prov);
-					if (qdpr)
-					{
-						QDPictDrawToCGContext(ctx, bounds, qdpr);
-						QDPictRelease(qdpr);
-					}
+            CGColorSpaceRelease(color);
+        }
 
-					CGDataProviderRelease(prov);
-				}
+        CGImageRelease(image);
+    }
+}
 
-				HUnlock(pict);
-				ReleaseResource(pict);
-			}
-			else
-			{
-				pict = Get1Resource('Thum', 128);
-				if (pict)
-				{
-					HLock(pict);
+void DrawThumbnailFomExtendedAttribute (const char *path, CGContextRef ctx, CGRect bounds)
+{
+    CGContextSaveGState(ctx);
 
-					size = GetHandleSize(pict);
-					prov = CGDataProviderCreateWithData(NULL, (void *) *pict, size, NULL);
-					if (prov)
-					{
-						color = CGColorSpaceCreateDeviceRGB();
-						if (color)
-						{
-							image = CGImageCreate(128, 120, 5, 16, 256, color, kCGImageAlphaNoneSkipFirst | ((systemVersion >= 0x1040) ? kCGBitmapByteOrder16Big : 0), prov, NULL, 0, kCGRenderingIntentDefault);
-							if (image)
-							{
-								CGContextDrawImage(ctx, bounds, image);
-								CGImageRelease(image);
-							}
+    CGContextSetRGBFillColor(ctx, 0.0f, 0.0f, 0.0f, 1.0f);
+    CGContextFillRect(ctx, bounds);
 
-							CGColorSpaceRelease(color);
-						}
+    ssize_t size = getxattr(path, extendedAttributeName, NULL, 0, 0, 0);
 
-						CGDataProviderRelease(prov);
-					}
+    if ( size > 0 )
+    {
+        unsigned char *buffer = (unsigned char *)malloc(size);
+        if (buffer != NULL)
+        {
+            CFDataRef data = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, buffer, size, NULL);
+            if (data)
+            {
+                CGImageSourceRef source = CGImageSourceCreateWithData(data, NULL);
+                if (source)
+                {
+                    CGImageRef image = CGImageSourceCreateImageAtIndex(source, 0, NULL);
+                    if (image)
+                    {
+                        CGContextDrawImage(ctx, bounds, image);
+                        CGImageRelease(image);
+                    }
+                }
 
-					HUnlock(pict);
-					ReleaseResource(pict);
-				}
-			}
+                CFRelease(data);
+            }
 
-			CloseResFile(resf);
-		}
-	}
+            free(buffer);
+        }
+    }
 
-	CGContextRestoreGState(ctx);
+    CGContextRestoreGState(ctx);
 }
 
 bool8 S9xDoScreenshot (int width, int height)

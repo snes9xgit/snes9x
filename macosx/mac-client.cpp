@@ -136,9 +136,9 @@ static bool8 NPClientReplyPhaseSpanTest (void);
 static void * NPClientConnectThread (void *);
 static void * NPClientPrepareThread (void *);
 static void * NPClientNetPlayThread (void *);
-static pascal void NPClientDialogTimerHandler (EventLoopTimerRef, void *);
-static pascal OSStatus NPClientDialogEventHandler (EventHandlerCallRef, EventRef, void *);
-static pascal OSStatus NPClientSheetEventHandler (EventHandlerCallRef, EventRef, void *);
+static void NPClientDialogTimerHandler (EventLoopTimerRef, void *);
+static OSStatus NPClientDialogEventHandler (EventHandlerCallRef, EventRef, void *);
+static OSStatus NPClientSheetEventHandler (EventHandlerCallRef, EventRef, void *);
 
 
 bool8 NPClientDialog (void)
@@ -230,7 +230,7 @@ bool8 NPClientDialog (void)
 	return (!npclient.dialogcancel);
 }
 
-static pascal OSStatus NPClientDialogEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
+static OSStatus NPClientDialogEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
 {
 	OSStatus	err, result = eventNotHandledErr;
 
@@ -335,7 +335,7 @@ static pascal OSStatus NPClientDialogEventHandler (EventHandlerCallRef inHandler
 	return (result);
 }
 
-static pascal void NPClientDialogTimerHandler (EventLoopTimerRef inTimer, void *userData)
+static void NPClientDialogTimerHandler (EventLoopTimerRef inTimer, void *userData)
 {
 	WindowRef	window = (WindowRef) userData;
 	HIViewRef	ctl;
@@ -1017,7 +1017,7 @@ static void NPClientEndPlayerListSheet (void)
 	err = HideSheetWindow(sRef);
 }
 
-static pascal OSStatus NPClientSheetEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
+static OSStatus NPClientSheetEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
 {
 	if (!npclient.dialogsheet)
 		return (eventNotHandledErr);

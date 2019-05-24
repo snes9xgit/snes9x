@@ -27,14 +27,14 @@
 
 static AEEventHandlerUPP	oappUPP, rappUPP, pdocUPP, quitUPP, odocUPP;
 
-static pascal OSErr AEoapp (const AppleEvent *, AppleEvent *, long);
-static pascal OSErr AErapp (const AppleEvent *, AppleEvent *, long);
-static pascal OSErr AEpdoc (const AppleEvent *, AppleEvent *, long);
-static pascal OSErr AEquit (const AppleEvent *, AppleEvent *, long);
-static pascal OSErr AEodoc (const AppleEvent *, AppleEvent *, long);
+static OSErr AEoapp (const AppleEvent *, AppleEvent *, long);
+static OSErr AErapp (const AppleEvent *, AppleEvent *, long);
+static OSErr AEpdoc (const AppleEvent *, AppleEvent *, long);
+static OSErr AEquit (const AppleEvent *, AppleEvent *, long);
+static OSErr AEodoc (const AppleEvent *, AppleEvent *, long);
 
 
-static pascal OSErr AEoapp (const AppleEvent *theEvent, AppleEvent *theReply, long refCon)
+static OSErr AEoapp (const AppleEvent *theEvent, AppleEvent *theReply, long refCon)
 {
 	if (running)
 		return (noErr);
@@ -53,7 +53,7 @@ static pascal OSErr AEoapp (const AppleEvent *theEvent, AppleEvent *theReply, lo
 	return (noErr);
 }
 
-static pascal OSErr AErapp (const AppleEvent *theEvent, AppleEvent *theReply, long refCon)
+static OSErr AErapp (const AppleEvent *theEvent, AppleEvent *theReply, long refCon)
 {
 	if (running)
 		return (noErr);
@@ -80,12 +80,12 @@ static pascal OSErr AErapp (const AppleEvent *theEvent, AppleEvent *theReply, lo
 	return (noErr);
 }
 
-static pascal OSErr AEpdoc (const AppleEvent *theEvent, AppleEvent *theReply, long refCon)
+static OSErr AEpdoc (const AppleEvent *theEvent, AppleEvent *theReply, long refCon)
 {
 	return (errAEEventNotHandled);
 }
 
-static pascal OSErr AEquit (const AppleEvent *theEvent, AppleEvent *theReply, long refCon)
+static OSErr AEquit (const AppleEvent *theEvent, AppleEvent *theReply, long refCon)
 {
 	if (running)
 		return (noErr);
@@ -96,7 +96,7 @@ static pascal OSErr AEquit (const AppleEvent *theEvent, AppleEvent *theReply, lo
 	return (noErr);
 }
 
-static pascal OSErr AEodoc (const AppleEvent *theEvent, AppleEvent *theReply, long refCon)
+static OSErr AEodoc (const AppleEvent *theEvent, AppleEvent *theReply, long refCon)
 {
 	OSErr 		err;
 	FSRef		ref;

@@ -62,10 +62,10 @@ static void DetachCheatItems (void);
 static void AddCheatItem (void);
 static void DeleteCheatItem (void);
 static void EnableAllCheatItems (void);
-static pascal void DBItemNotificationCallBack (HIViewRef, DataBrowserItemID, DataBrowserItemNotification);
-static pascal Boolean DBCompareCallBack (HIViewRef, DataBrowserItemID, DataBrowserItemID, DataBrowserPropertyID);
-static pascal OSStatus DBClientDataCallback (HIViewRef, DataBrowserItemID, DataBrowserPropertyID, DataBrowserItemDataRef, Boolean);
-static pascal OSStatus CheatEventHandler (EventHandlerCallRef, EventRef, void *);
+static void DBItemNotificationCallBack (HIViewRef, DataBrowserItemID, DataBrowserItemNotification);
+static Boolean DBCompareCallBack (HIViewRef, DataBrowserItemID, DataBrowserItemID, DataBrowserPropertyID);
+static OSStatus DBClientDataCallback (HIViewRef, DataBrowserItemID, DataBrowserPropertyID, DataBrowserItemDataRef, Boolean);
+static OSStatus CheatEventHandler (EventHandlerCallRef, EventRef, void *);
 
 
 static void InitCheatItems (void)
@@ -341,7 +341,7 @@ static void EnableAllCheatItems (void)
 	err = UpdateDataBrowserItems(dbRef, kDataBrowserNoItem, kDataBrowserNoItem, NULL, kDataBrowserItemNoProperty, kCmCheckBox);
 }
 
-static pascal OSStatus DBClientDataCallback (HIViewRef browser, DataBrowserItemID itemID, DataBrowserPropertyID property, DataBrowserItemDataRef itemData, Boolean changeValue)
+static OSStatus DBClientDataCallback (HIViewRef browser, DataBrowserItemID itemID, DataBrowserPropertyID property, DataBrowserItemDataRef itemData, Boolean changeValue)
 {
 	OSStatus 	err, result;
 	CFStringRef	str;
@@ -486,7 +486,7 @@ static pascal OSStatus DBClientDataCallback (HIViewRef browser, DataBrowserItemI
 	return (result);
 }
 
-static pascal Boolean DBCompareCallBack (HIViewRef browser, DataBrowserItemID itemOne, DataBrowserItemID itemTwo, DataBrowserPropertyID sortProperty)
+static Boolean DBCompareCallBack (HIViewRef browser, DataBrowserItemID itemOne, DataBrowserItemID itemTwo, DataBrowserPropertyID sortProperty)
 {
 	Boolean	result = false;
 
@@ -511,7 +511,7 @@ static pascal Boolean DBCompareCallBack (HIViewRef browser, DataBrowserItemID it
 	return (result);
 }
 
-static pascal void DBItemNotificationCallBack (HIViewRef browser, DataBrowserItemID itemID, DataBrowserItemNotification message)
+static void DBItemNotificationCallBack (HIViewRef browser, DataBrowserItemID itemID, DataBrowserItemNotification message)
 {
 	OSStatus	err;
 	HIViewRef	ctl;
@@ -531,7 +531,7 @@ static pascal void DBItemNotificationCallBack (HIViewRef browser, DataBrowserIte
 	}
 }
 
-static pascal OSStatus CheatEventHandler (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData)
+static OSStatus CheatEventHandler (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData)
 {
 	OSStatus	err, result = eventNotHandledErr;
 	WindowRef	tWindowRef;

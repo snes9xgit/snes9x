@@ -299,9 +299,9 @@ static void DrawPlacedIcon (CGContextRef, int);
 static void DrawDraggedIcon (CGContextRef, int, CGPoint *);
 static Boolean KeyCodeInUse (int);
 static int FindHitKey (HIPoint, CGRect *, CGPoint *);
-static pascal OSStatus KeyWindowEventHandler (EventHandlerCallRef, EventRef, void *);
-static pascal OSStatus KeyLegendEventHandler (EventHandlerCallRef, EventRef, void *);
-static pascal OSStatus KeyLayoutEventHandler (EventHandlerCallRef, EventRef, void *);
+static OSStatus KeyWindowEventHandler (EventHandlerCallRef, EventRef, void *);
+static OSStatus KeyLegendEventHandler (EventHandlerCallRef, EventRef, void *);
+static OSStatus KeyLayoutEventHandler (EventHandlerCallRef, EventRef, void *);
 
 #define	kCustomLayoutViewClassID	CFSTR("com.snes9x.macos.snes9x.keylayout")
 
@@ -780,7 +780,7 @@ static int FindHitKey (HIPoint where, CGRect *keybounds, CGPoint *offset)
 	return (hit);
 }
 
-static pascal OSStatus KeyWindowEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
+static OSStatus KeyWindowEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
 {
 	OSStatus	err, result = eventNotHandledErr;
 	WindowRef	tWindowRef = (WindowRef) inUserData;
@@ -830,7 +830,7 @@ static pascal OSStatus KeyWindowEventHandler (EventHandlerCallRef inHandlerRef, 
 	return (result);
 }
 
-static pascal OSStatus KeyLegendEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
+static OSStatus KeyLegendEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
 {
     OSStatus	err, result = eventNotHandledErr;
 	HIViewRef	view = (HIViewRef) inUserData;
@@ -863,7 +863,7 @@ static pascal OSStatus KeyLegendEventHandler (EventHandlerCallRef inHandlerRef, 
 	return (result);
 }
 
-static pascal OSStatus KeyLayoutEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
+static OSStatus KeyLayoutEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
 {
 	OSStatus		err, result = eventNotHandledErr;
 	CustomViewData	*data = (CustomViewData *) inUserData;

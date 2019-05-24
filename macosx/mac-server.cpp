@@ -129,8 +129,8 @@ static bool8 NPServerSendPlayerListToClient (int);
 static void * NPServerListenLoop (void *);
 static void * NPServerProcessThread (void *);
 static void * NPServerNetPlayThread (void *);
-static pascal void NPServerDialogTimerHandler (EventLoopTimerRef, void *);
-static pascal OSStatus NPServerDialogEventHandler (EventHandlerCallRef, EventRef, void *);
+static void NPServerDialogTimerHandler (EventLoopTimerRef, void *);
+static OSStatus NPServerDialogEventHandler (EventHandlerCallRef, EventRef, void *);
 
 
 bool8 NPServerDialog (void)
@@ -189,7 +189,7 @@ bool8 NPServerDialog (void)
 	return (!npserver.dialogcancel);
 }
 
-static pascal void NPServerDialogTimerHandler (EventLoopTimerRef inTimer, void *userData)
+static void NPServerDialogTimerHandler (EventLoopTimerRef inTimer, void *userData)
 {
 	WindowRef	window = (WindowRef) userData;
 	CFStringRef	ref;
@@ -308,7 +308,7 @@ static pascal void NPServerDialogTimerHandler (EventLoopTimerRef inTimer, void *
 	}
 }
 
-static pascal OSStatus NPServerDialogEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
+static OSStatus NPServerDialogEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
 {
 	OSStatus	err, result = eventNotHandledErr;
 	WindowRef	tWindowRef = (WindowRef) inUserData;

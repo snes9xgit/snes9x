@@ -15,6 +15,7 @@
   (c) Copyright 2004         Alexander and Sander
   (c) Copyright 2004 - 2005  Steven Seeger
   (c) Copyright 2005         Ryan Vogt
+  (c) Copyright 2019         Michael Donald Buckley
  ***********************************************************************************/
 
 
@@ -238,8 +239,6 @@ void SNES9X_SoftReset (void)
 
 bool8 SNES9X_Freeze (void)
 {
-	OSStatus	err;
-	FSRef		ref;
 	int			which;
     const char	*filename;
 
@@ -253,14 +252,11 @@ bool8 SNES9X_Freeze (void)
 		{
 			filename = S9xGetFreezeFilename(which);
 
-			err = FSPathMakeRef((unsigned char *) filename, &ref, NULL);
-			if (!err)
-				FSDeleteObject(&ref);
+            unlink(filename);
 
 			S9xFreezeGame(filename);
 			ChangeTypeAndCreator(filename, 'SAVE', '~9X~');
-			err = FSPathMakeRef((unsigned char *) filename, &ref, NULL);
-			WriteThumbnailToResourceFork(&ref, 128, 120);
+            WriteThumbnailToExtendedAttribute(filename, 128, 120);
 
 			SNES9X_Go();
 
@@ -310,22 +306,17 @@ bool8 SNES9X_Defrost (void)
 
 bool8 SNES9X_FreezeTo (void)
 {
-	OSStatus	err;
-	FSRef		ref;
-    char		filename[PATH_MAX + 1];
+    char filename[PATH_MAX + 1];
 
 	if (cartOpen)
 	{
 		if (NavFreezeTo(filename))
 		{
-			err = FSPathMakeRef((unsigned char *) filename, &ref, NULL);
-			if (!err)
-				FSDeleteObject(&ref);
+            unlink(filename);
 
 			S9xFreezeGame(filename);
-			ChangeTypeAndCreator(filename, 'SAVE', '~9X~');
-			err = FSPathMakeRef((unsigned char *) filename, &ref, NULL);
-			WriteThumbnailToResourceFork(&ref, 128, 120);
+			ChangeTypeAndCreator(filename, 'SAVE', '~9X~');;
+            WriteThumbnailToExtendedAttribute(filename, 128, 120);
 
 			return (true);
 		}
@@ -336,7 +327,7 @@ bool8 SNES9X_FreezeTo (void)
 
 bool8 SNES9X_DefrostFrom (void)
 {
-	char	filename[PATH_MAX + 1];
+	char filename[PATH_MAX + 1];
 
 	if (cartOpen)
 	{
@@ -355,17 +346,13 @@ bool8 SNES9X_DefrostFrom (void)
 
 bool8 SNES9X_RecordMovie (void)
 {
-	OSStatus	err;
-	FSRef		ref;
-    char		filename[PATH_MAX + 1];
+    char filename[PATH_MAX + 1];
 
 	if (cartOpen)
 	{
 		if (NavRecordMovieTo(filename))
 		{
-			err = FSPathMakeRef((unsigned char *) filename, &ref, NULL);
-			if (!err)
-				FSDeleteObject(&ref);
+            unlink(filename);
 
 			int		r;
 			uint8   opt = 0, mask = 0;
@@ -386,8 +373,7 @@ bool8 SNES9X_RecordMovie (void)
 
 				if ((macRecordFlag & (1 << 5)) == 0)
 				{
-					err = FSPathMakeRef((unsigned char *) filename, &ref, NULL);
-					WriteThumbnailToResourceFork(&ref, 128, 120);
+                    WriteThumbnailToExtendedAttribute(filename, 128, 120);
 				}
 
 				SNES9X_Go();

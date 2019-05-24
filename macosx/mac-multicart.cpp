@@ -30,8 +30,8 @@
 #define truncEnd 0
 #endif
 
-static pascal OSStatus MultiCartEventHandler (EventHandlerCallRef, EventRef, void *);
-static pascal OSStatus MultiCartPaneEventHandler (EventHandlerCallRef, EventRef, void *);
+static OSStatus MultiCartEventHandler (EventHandlerCallRef, EventRef, void *);
+static OSStatus MultiCartPaneEventHandler (EventHandlerCallRef, EventRef, void *);
 
 static int		multiCartDragHilite;
 static Boolean	multiCartDialogResult;
@@ -172,7 +172,7 @@ Boolean MultiCartDialog (void)
 	return (multiCartDialogResult);
 }
 
-static pascal OSStatus MultiCartEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
+static OSStatus MultiCartEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
 {
 	OSStatus	err, result = eventNotHandledErr;
 	WindowRef	window = (WindowRef) inUserData;
@@ -324,7 +324,7 @@ static pascal OSStatus MultiCartEventHandler (EventHandlerCallRef inHandlerRef, 
 	return (result);
 }
 
-static pascal OSStatus MultiCartPaneEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
+static OSStatus MultiCartPaneEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
 {
 	OSStatus			err, result = eventNotHandledErr;
 	HIViewRef			view;

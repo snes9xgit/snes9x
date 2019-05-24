@@ -206,12 +206,12 @@ static PrefList	prefList[] =
 #define	kPrefListSize	(sizeof(prefList) / sizeof(prefList[0]))
 
 static void SelectTabPane (HIViewRef, SInt16);
-static pascal void InputRateSliderActionProc (HIViewRef, HIViewPartCode);
-static pascal void LittleArrowsActionProc (HIViewRef, HIViewPartCode);
-static pascal OSStatus InputRateTextEventHandler (EventHandlerCallRef, EventRef, void *);
-static pascal OSStatus AspectRatioTextEventHandler (EventHandlerCallRef, EventRef, void *);
-static pascal OSStatus TabEventHandler (EventHandlerCallRef, EventRef, void *);
-static pascal OSStatus PreferencesEventHandler (EventHandlerCallRef, EventRef, void *);
+static void InputRateSliderActionProc (HIViewRef, HIViewPartCode);
+static void LittleArrowsActionProc (HIViewRef, HIViewPartCode);
+static OSStatus InputRateTextEventHandler (EventHandlerCallRef, EventRef, void *);
+static OSStatus AspectRatioTextEventHandler (EventHandlerCallRef, EventRef, void *);
+static OSStatus TabEventHandler (EventHandlerCallRef, EventRef, void *);
+static OSStatus PreferencesEventHandler (EventHandlerCallRef, EventRef, void *);
 
 
 void SavePrefs (void)
@@ -1170,7 +1170,7 @@ static void SelectTabPane (HIViewRef tabControl, SInt16 index)
 	HIViewSetNeedsDisplay(tabControl, true);
 }
 
-static pascal void InputRateSliderActionProc (HIViewRef slider, HIViewPartCode partCode)
+static void InputRateSliderActionProc (HIViewRef slider, HIViewPartCode partCode)
 {
 	HIViewRef	ctl;
 	HIViewID	cid;
@@ -1184,7 +1184,7 @@ static pascal void InputRateSliderActionProc (HIViewRef slider, HIViewPartCode p
 	SetStaticTextCStr(ctl, num, true);
 }
 
-static pascal void LittleArrowsActionProc (HIViewRef arrows, HIViewPartCode partCode)
+static void LittleArrowsActionProc (HIViewRef arrows, HIViewPartCode partCode)
 {
 	HIViewRef	ctl;
 	HIViewID	cid = { 'msc2', iNibMTurboSkipText };
@@ -1201,7 +1201,7 @@ static pascal void LittleArrowsActionProc (HIViewRef arrows, HIViewPartCode part
 	SetStaticTextCStr(ctl, num, true);
 }
 
-static pascal OSStatus InputRateTextEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
+static OSStatus InputRateTextEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
 {
 	OSStatus	err, result = eventNotHandledErr;
 	HIViewRef	ctl, slider;
@@ -1234,7 +1234,7 @@ static pascal OSStatus InputRateTextEventHandler (EventHandlerCallRef inHandlerR
 	return (result);
 }
 
-static pascal OSStatus AspectRatioTextEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
+static OSStatus AspectRatioTextEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
 {
 	OSStatus	err, result = eventNotHandledErr;
 	HIViewRef	ctl, slider;
@@ -1264,7 +1264,7 @@ static pascal OSStatus AspectRatioTextEventHandler (EventHandlerCallRef inHandle
 	return (result);
 }
 
-static pascal OSStatus TabEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
+static OSStatus TabEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
 {
 	OSStatus	err, result = eventNotHandledErr;
 	HIViewRef	ctl;
@@ -1287,7 +1287,7 @@ static pascal OSStatus TabEventHandler (EventHandlerCallRef inHandlerRef, EventR
 	return (result);
 }
 
-static pascal OSStatus PreferencesEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
+static OSStatus PreferencesEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
 {
 	OSStatus	err, result = eventNotHandledErr;
 	WindowRef	tWindowRef = (WindowRef) inUserData;

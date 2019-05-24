@@ -93,7 +93,7 @@ static void ReplaceFilterUI (WindowRef);
 static void FilterUIAddSubviews (WindowRef, HIViewRef);
 static void FilterUISetValues (HIViewRef);
 static bool8 IsCoreImageFilterSupported (CIFilter *);
-static pascal OSStatus CoreImageFilterEventHandler (EventHandlerCallRef, EventRef, void *);
+static OSStatus CoreImageFilterEventHandler (EventHandlerCallRef, EventRef, void *);
 
 
 void InitCoreImage (void)
@@ -667,7 +667,7 @@ static void FilterUISetValues (HIViewRef parent)
 	}
 }
 
-static pascal OSStatus CoreImageFilterEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
+static OSStatus CoreImageFilterEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
 {
 	OSStatus	err, result = eventNotHandledErr;
 	WindowRef	window = (WindowRef) inUserData;

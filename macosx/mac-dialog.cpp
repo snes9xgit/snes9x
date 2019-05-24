@@ -44,10 +44,10 @@ static void AutofireWriteAllSettings (int, HIViewRef);
 static void AutofireWriteSetting (int, uint16 *, HIViewRef);
 static void AutofireSelectTabPane (HIViewRef, SInt16);
 static OSStatus UpdateTextControlView (HIViewRef);
-static pascal void AutofireSliderActionProc (HIViewRef, HIViewPartCode);
-static pascal OSStatus RomInfoEventHandler (EventHandlerCallRef, EventRef, void *);
-static pascal OSStatus AutofireTabEventHandler (EventHandlerCallRef, EventRef, void *);
-static pascal OSStatus AutofireWindowEventHandler (EventHandlerCallRef, EventRef, void *);
+static void AutofireSliderActionProc (HIViewRef, HIViewPartCode);
+static OSStatus RomInfoEventHandler (EventHandlerCallRef, EventRef, void *);
+static OSStatus AutofireTabEventHandler (EventHandlerCallRef, EventRef, void *);
+static OSStatus AutofireWindowEventHandler (EventHandlerCallRef, EventRef, void *);
 
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
 extern "C" FMFont FMGetFontFromATSFontRef (ATSFontRef iFont);
@@ -333,7 +333,7 @@ void AboutDialog (void)
 	}
 }
 
-pascal OSStatus DefaultEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
+OSStatus DefaultEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
 {
 	OSStatus	err, result = eventNotHandledErr;
 	WindowRef	tWindowRef = (WindowRef) inUserData;
@@ -787,7 +787,7 @@ static void AutofireSelectTabPane (HIViewRef tabControl, SInt16 index)
 	HIViewSetNeedsDisplay(tabControl, true);
 }
 
-static pascal OSStatus AutofireTabEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
+static OSStatus AutofireTabEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
 {
 	OSStatus	err, result = eventNotHandledErr;
 	HIViewRef	ctl;
@@ -810,7 +810,7 @@ static pascal OSStatus AutofireTabEventHandler (EventHandlerCallRef inHandlerRef
 	return (result);
 }
 
-static pascal OSStatus AutofireWindowEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
+static OSStatus AutofireWindowEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
 {
 	OSStatus	err, result = eventNotHandledErr;
 	WindowRef	tWindowRef = (WindowRef) inUserData;
@@ -880,7 +880,7 @@ static pascal OSStatus AutofireWindowEventHandler (EventHandlerCallRef inHandler
 	return (result);
 }
 
-static pascal void AutofireSliderActionProc (HIViewRef slider, HIViewPartCode partCode)
+static void AutofireSliderActionProc (HIViewRef slider, HIViewPartCode partCode)
 {
 	HIViewRef	ctl;
 	HIViewID	cid;
@@ -1081,7 +1081,7 @@ static void RomInfoBuildInfoText (char *romtext)
 	sprintf(romtext, "%s%s", s1, s2);
 }
 
-static pascal OSStatus RomInfoEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
+static OSStatus RomInfoEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
 {
 	OSStatus	err, result = eventNotHandledErr;
 	WindowRef	tWindowRef = (WindowRef) inUserData;
