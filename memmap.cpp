@@ -3665,6 +3665,13 @@ void CMemory::ApplyROMFixes (void)
 	Timings.HDMAStart   = SNES_HDMA_START_HC + Settings.HDMATimingHack - 100;
 	Timings.HBlankStart = SNES_HBLANK_START_HC + Timings.HDMAStart - SNES_HDMA_START_HC;
 	Timings.IRQTriggerCycles = 14;
+	
+	if (match_id("YI")) { // Super Mario World 2 - Yoshi's Island 
+			Timings.SFX2CoreSpeed = 8 / 3;
+		}
+		else {
+			Timings.SFX2CoreSpeed = 5 / 2;
+		}
 
 	if (!Settings.DisableGameSpecificHacks)
 	{

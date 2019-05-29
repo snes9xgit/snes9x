@@ -184,6 +184,7 @@ struct STimings
 	int32	IRQFlagChanging;	// This value is just a hack.
 	int32	APUSpeedup;
 	bool8	APUAllowTimeOverflow;
+	int32	SFX2CoreSpeed;
 };
 
 struct SSettings
