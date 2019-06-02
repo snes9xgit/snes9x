@@ -7,6 +7,7 @@
 
 bml_node::bml_node()
 {
+    type = CHILD;
     depth = -1;
 }
 
@@ -181,7 +182,8 @@ static void bml_parse_attr(bml_node &node, char **data)
         n.name = trim(std::string(p, len));
         p += len;
         bml_parse_data(n, &p);
-        n.depth = bml_attr_type;
+        n.depth = node.depth + 1;
+        n.type = bml_node::CHILD;
         node.child.push_back(n);
     }
 
@@ -218,7 +220,7 @@ static void bml_print_node(bml_node &node, int depth)
         else
             printf (": %s", node.data.c_str());
     }
-    for (i = 0; i < (int) node.child.size () && node.child[i].depth == bml_attr_type; i++)
+    for (i = 0; i < (int) node.child.size () && node.child[i].type == bml_node::CHILD; i++)
     {
         if (!node.child[i].name.empty())
         {
