@@ -2,6 +2,7 @@
 #define __BML_H
 #include <vector>
 #include <string>
+#include <fstream>
 
 struct bml_node
 {
@@ -11,8 +12,8 @@ struct bml_node
     };
 
     bml_node();
-    bool parse_file(const char *filename);
-    void parse(char *buffer);
+    bool parse_file(std::string filename);
+    void parse(std::ifstream &fd);
     bml_node *find_subnode(std::string name);
     void print();
 
