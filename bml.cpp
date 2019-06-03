@@ -280,7 +280,7 @@ bml_node *bml_node::find_subnode(std::string name)
 
 bool bml_node::parse_file(std::string filename)
 {
-    std::ifstream file(filename, std::ios_base::binary);
+    std::ifstream file(filename.c_str(), std::ios_base::binary);
 
     if (!file)
         return false;
