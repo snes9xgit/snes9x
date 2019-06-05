@@ -47,7 +47,7 @@ static std::string trim(std::string str)
     for (start = 0; str[start] && start != (int)str.length() && isblank(str[start]); start++) {}
     if (start >= (int)str.length())
         return std::string("");
-    for (end = str.length() - 1; isblank(str[end]) || str[end] == '\n' || str[end] == '\r'; end--) {}
+    for (end = str.length() - 1; isblankorlf(str[end]); end--) {}
     return str.substr(start, end - start + 1);
 }
 
