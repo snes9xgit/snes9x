@@ -548,7 +548,7 @@ bool Save_Watches()
 		const char DELIM = '\t';
 		for (int i = 0; i < WatchCount; i++)
 		{
-			sprintf(Str_Tmp_Char,"%05X%c%-6s%c%c%c%c%c%d%c%s\n",i,DELIM,_tToChar(RWInternalToDisplayAddress(rswatches[i].Address)),DELIM,rswatches[i].Size,DELIM,rswatches[i].Type,DELIM,rswatches[i].WrongEndian,DELIM,_tToChar(rswatches[i].comment));
+			sprintf(Str_Tmp_Char,"%05X%c%-6s%c%c%c%c%c%d%c%s\n",i,DELIM,(char*)_tToChar(RWInternalToDisplayAddress(rswatches[i].Address)),DELIM,rswatches[i].Size,DELIM,rswatches[i].Type,DELIM,rswatches[i].WrongEndian,DELIM,(char*)_tToChar(rswatches[i].comment));
 			fputs(Str_Tmp_Char,WatchFile);
 		}
 		
@@ -577,7 +577,7 @@ if (currentWatch[0] == NULL) //If there is no currently loaded file, run to Save
 		const char DELIM = '\t';
 		for (int i = 0; i < WatchCount; i++)
 		{
-			sprintf(Str_Tmp_Char,"%05X%c%-6s%c%c%c%c%c%d%c%s\n",i,DELIM,_tToChar(RWInternalToDisplayAddress(rswatches[i].Address)),DELIM,rswatches[i].Size,DELIM,rswatches[i].Type,DELIM,rswatches[i].WrongEndian,DELIM,_tToChar(rswatches[i].comment));
+			sprintf(Str_Tmp_Char,"%05X%c%-6s%c%c%c%c%c%d%c%s\n",i,DELIM,(char*)_tToChar(RWInternalToDisplayAddress(rswatches[i].Address)),DELIM,rswatches[i].Size,DELIM,rswatches[i].Type,DELIM,rswatches[i].WrongEndian,DELIM,(char*)_tToChar(rswatches[i].comment));
 			fputs(Str_Tmp_Char,WatchFile);
 		}
 		fclose(WatchFile);
