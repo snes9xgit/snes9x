@@ -29607,7 +29607,7 @@
 												<integer value="0" key="controlSize"/>
 												<integer value="0" key="command"/>
 												<nil key="helpTagExtendedText"/>
-												<string key="helpTagText">The real SNES is 32000 Hz. Any values other than 32000 Hz will cause resampling.</string>
+												<string key="helpTagText">The real SNES is 32040 Hz. Any values other than 32040 Hz will cause resampling.</string>
 												<integer value="0" key="helpTagDisplaySide"/>
 												<object class="NSArray" key="auxiliaryProperties">
 													<bool key="EncodedWithXMLCoder">YES</bool>

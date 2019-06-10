@@ -31,7 +31,7 @@ addressed. Being able to input the diagonals can help hinder that occurrence. It
 can also make keyboard usage a bit easier... assigning the directional controls
 to the number pad for instance.
 
-Q: I gotsid me a translation patch (.ips) for my game. Now what do I do so I can
+Q: I have a translation patch (.ips) for my game. Now what do I do so I can
 use it?
   A: Make sure both your ROM image and .ips file are in the same folder. Finally
 make sure they have the exact same name (minus file extensions, of course). As

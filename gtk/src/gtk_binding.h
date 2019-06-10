@@ -1,3 +1,9 @@
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
 #ifndef __GTK_BINDING_H
 #define __GTK_BINDING_H
 
@@ -35,7 +41,7 @@ class Binding
         Binding (unsigned int);
         Binding ();
         Binding (const char *str);
-        void to_string (char *str);
+        void to_string (char *str, bool translate = true);
         unsigned int hex ();
         unsigned int base_hex ();
         bool matches (Binding &binding);

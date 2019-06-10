@@ -1,6 +1,6 @@
 AC_PREREQ([2.60])
-AC_INIT([Snes9x], [1.57], [], [snes9x])
-AC_REVISION([$Revision: 1.57 $])
+AC_INIT([Snes9x], [1.60], [], [snes9x])
+AC_REVISION([$Revision: 1.60 $])
 
 AC_CONFIG_SRCDIR([unix.cpp])
 
@@ -449,8 +449,6 @@ if test "x$enable_sound" = "xyes"; then
 else
 	S9XDEFS="$S9XDEFS -DNOSOUND"
 fi
-
-S9XDEFS="$S9XDEFS -DGFX_MULTI_FORMAT"
 
 # Output.
 

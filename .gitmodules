@@ -7,6 +7,12 @@
 [submodule "win32/DirectXMath"]
 	path = win32/DirectXMath
 	url = https://github.com/Microsoft/DirectXMath
+[submodule "shaders/SPIRV-Cross"]
+	path = shaders/SPIRV-Cross
+	url = https://github.com/KhronosGroup/SPIRV-Cross.git
+[submodule "win32/glslang/src"]
+	path = win32/glslang/src
+	url = https://github.com/KhronosGroup/glslang.git
 [submodule "win32/lua"]
 	path = win32/lua
 	url = https://github.com/gocha/lua-megapack.git

@@ -1,3 +1,9 @@
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
 #include "gtk_netplay_dialog.h"
 #include "gtk_s9x.h"
 #include "gtk_file.h"
@@ -56,26 +62,26 @@ Snes9xNetplayDialog::update_state ()
 {
     if (get_check ("host_radio"))
     {
-        enable_widget ("connect_box", FALSE);
-        enable_widget ("default_port_box", TRUE);
-        enable_widget ("sync_reset", TRUE);
-        enable_widget ("send_image", TRUE);
+        enable_widget ("connect_box", false);
+        enable_widget ("default_port_box", true);
+        enable_widget ("sync_reset", true);
+        enable_widget ("send_image", true);
     }
 
     else
     {
-        enable_widget ("connect_box", TRUE);
-        enable_widget ("default_port_box", FALSE);
-        enable_widget ("sync_reset", FALSE);
-        enable_widget ("send_image", FALSE);
+        enable_widget ("connect_box", true);
+        enable_widget ("default_port_box", false);
+        enable_widget ("sync_reset", false);
+        enable_widget ("send_image", false);
     }
 }
 
 void
 Snes9xNetplayDialog::settings_to_dialog ()
 {
-    set_entry_text ("rom_image", config->netplay_last_rom);
-    set_entry_text ("ip_entry", config->netplay_last_host);
+    set_entry_text ("rom_image", config->netplay_last_rom.c_str ());
+    set_entry_text ("ip_entry", config->netplay_last_host.c_str ());
     set_check ("sync_reset", config->netplay_sync_reset);
     set_check ("send_image", config->netplay_send_rom);
     set_spin ("port", config->netplay_last_port);
@@ -90,8 +96,8 @@ Snes9xNetplayDialog::settings_to_dialog ()
 void
 Snes9xNetplayDialog::settings_from_dialog ()
 {
-    strncpy (config->netplay_last_rom, get_entry_text ("rom_image"), PATH_MAX);
-    strncpy (config->netplay_last_host, get_entry_text ("ip_entry"), PATH_MAX);
+    config->netplay_last_rom = get_entry_text ("rom_image");
+    config->netplay_last_host = get_entry_text ("ip_entry");
     config->netplay_sync_reset = get_check ("sync_reset");
     config->netplay_send_rom = get_check ("send_image");
     config->netplay_last_port = get_spin ("port");
@@ -102,8 +108,7 @@ Snes9xNetplayDialog::settings_from_dialog ()
     config->save_config_file ();
 }
 
-int
-Snes9xNetplayDialog::show ()
+bool Snes9xNetplayDialog::show()
 {
     int result;
 
@@ -117,12 +122,12 @@ Snes9xNetplayDialog::show ()
     {
         settings_from_dialog ();
 
-        return TRUE;
+        return true;
     }
 
     else
     {
-        return FALSE;
+        return false;
     }
 
 }

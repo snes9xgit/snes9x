@@ -5,247 +5,263 @@
 #
 msgid ""
 msgstr ""
-"Snes9x-gtk: 1.5.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-01-02 12:20+0100\n"
+"POT-Creation-Date: 2019-04-16 15:42-0500\n"
 "PO-Revision-Date: 2010-01-02 12:20+0100\n"
 "Last-Translator: Milan Kostić <smoki00790@gmail.com>\n"
 "Language-Team: Serbian / Srpski <LL@li.org>\n"
+"Language: sr@latin\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Snes9x-gtk: 1.5.2\n"
 
-#: ../src/gtk_binding.cpp:187
+#: src/gtk_binding.cpp:243
 #, c-format
 msgid "Unknown"
 msgstr "Nepoznato"
 
-#: ../src/gtk_binding.cpp:202
+#: src/gtk_binding.cpp:258
 #, c-format
 msgid "Keyboard %s%s%s%s"
 msgstr "Tastatura %s%s%s%s"
 
-#: ../src/gtk_binding.cpp:213
-#, c-format
-msgid "Axis #%d %s %d%%"
+#: src/gtk_binding.cpp:269
+#, fuzzy, c-format
+msgid "Axis %u %s %u%%"
 msgstr "Smerovi #%d %s %d%%"
 
-#: ../src/gtk_binding.cpp:218
-#, c-format
-msgid "Button %d"
+#: src/gtk_binding.cpp:274
+#, fuzzy, c-format
+msgid "Button %u"
 msgstr "Dugme %d"
 
-#: ../src/gtk_binding.cpp:220
-#, c-format
-msgid "Joystick %d %s"
+#: src/gtk_binding.cpp:276
+#, fuzzy, c-format
+msgid "Joystick %u %s"
 msgstr "Dzojstik %d %s"
 
-#: ../src/gtk_binding.cpp:225
+#: src/gtk_binding.cpp:281
 #, c-format
 msgid "Unset"
 msgstr "Nepodešeno"
 
-#: ../src/gtk_cheat.cpp:84
+#: src/gtk_cheat.cpp:31 src/gtk_s9xwindow.cpp:864 src/gtk_s9xwindow.cpp:995
+#: src/gtk_s9xwindow.cpp:1292
+msgid "Error"
+msgstr ""
+
+#: src/gtk_cheat.cpp:161
 msgid "Description"
 msgstr "Opis"
 
-#: ../src/gtk_cheat.cpp:92
+#: src/gtk_cheat.cpp:172
 msgid "Cheat"
 msgstr "Varanja"
 
-#: ../src/gtk_cheat.cpp:203 ../src/gtk_cheat.cpp:274
+#: src/gtk_cheat.cpp:343 src/gtk_cheat.cpp:362 src/gtk_cheat.cpp:532
 msgid "No description"
 msgstr "Bez opisa"
 
-#: ../src/gtk_config.cpp:766
-#, c-format
-msgid "bad option name: %s\n"
-msgstr "pogrešan naziv za opciju: %s\n"
+#: src/gtk_cheat.cpp:366 src/gtk_cheat.cpp:537
+msgid "Couldn't find any cheat codes in input."
+msgstr ""
 
-#: ../src/gtk_config.cpp:1013
-#, c-format
-msgid "failure to read snes9x node"
-msgstr "ne mogu da učitam snes9x-ov čvor"
+#: src/gtk_cheat.cpp:472
+msgid "Couldn't Find Cheats Database"
+msgstr ""
 
-#: ../src/gtk_config.cpp:1050
+#: src/gtk_cheat.cpp:473
+msgid "No Matching Game Found"
+msgstr ""
+
+#: src/gtk_cheat.cpp:476
+msgid ""
+"The database file <b>cheats.bml</b> was not found. It is normally installed "
+"with Snes9x, but you may also place a custom copy in your configuration or "
+"cheats directory."
+msgstr ""
+
+#: src/gtk_cheat.cpp:478
+msgid ""
+"No matching game was found in the databases. If you are using a non-official "
+"translation or modified copy, you may be able to find and manually enter the "
+"codes."
+msgstr ""
+
+#: src/gtk_config.cpp:440
 #, c-format
 msgid "Couldn't create config directory: %s\n"
 msgstr "Ne mogu napraviti konfiguracijski direktorijum: %s\n"
 
-#: ../src/gtk_config.cpp:1069
-#, c-format
-msgid "Couldn't open config file: %s\n"
-msgstr "Ne mogu otvoriti konfiguracijski fajl: %s\n"
-
-#: ../src/gtk_display_driver_opengl.cpp:509
-#, c-format
-msgid "pixel_buffer_object extension not supported.\n"
-msgstr "GL_ARB_pixel_buffer_object ekstenzija nije podržana.\n"
-
-#: ../src/gtk_preferences.cpp:343
-msgid "Rotate all axes to their maximum values, then press OK"
-msgstr "Okreći maksimalno u svim smerovima, onda pritisni OK"
-
-#: ../src/gtk_preferences.cpp:383
-msgid "GTK port version: "
-msgstr "Verzija GTK porta: "
-
-#: ../src/gtk_preferences.cpp:385
-msgid "English localization by Brandon Wright"
-msgstr "Prevod sačinio Milan Kostić"
-
-#: ../src/gtk_preferences.cpp:389
-msgid ""
-"\n"
-"Features enabled:<i>"
-msgstr ""
-"\n"
-"Dostupne osobine:<i>"
-
-#: ../src/gtk_preferences.cpp:391
-msgid " Only barebones features enabled<i>"
+#: src/gtk_netplay.cpp:62
+msgid "Connection Error"
 msgstr ""
 
-#: ../src/gtk_preferences.cpp:394
-msgid " OpenGL"
-msgstr " OpenGL"
+#: src/gtk_preferences.cpp:18
+msgid "Same location as current game"
+msgstr ""
 
-#: ../src/gtk_preferences.cpp:397
-msgid " XVideo"
-msgstr " XVideo"
+#: src/gtk_preferences.cpp:417
+msgid "Current joystick centers have been saved."
+msgstr ""
 
-#: ../src/gtk_preferences.cpp:400
-msgid " XRandR"
-msgstr " XRandR"
+#: src/gtk_preferences.cpp:418
+#, fuzzy
+msgid "Calibration Complete"
+msgstr "Kali_bracija"
 
-#: ../src/gtk_preferences.cpp:403
-msgid " Joystick"
-msgstr " Joystick"
-
-#: ../src/gtk_preferences.cpp:406
-msgid " NetPlay"
-msgstr " NetPlay"
-
-#: ../src/gtk_preferences.cpp:408
-msgid ""
-"</i>\n"
-"\n"
-"Snes9x version: "
+#: src/gtk_preferences.cpp:460
+#, fuzzy
+msgid "Snes9x version: "
 msgstr ""
 "</i>\n"
 "\n"
 "Snes9x verzija: "
 
-#: ../src/gtk_preferences.cpp:796
+#: src/gtk_preferences.cpp:461
+#, fuzzy
+msgid "GTK+ port version: "
+msgstr "Verzija GTK porta: "
+
+#: src/gtk_preferences.cpp:463
+msgid "English localization by Brandon Wright"
+msgstr "Prevod sačinio Milan Kostić"
+
+#: src/gtk_preferences.cpp:943
+msgid ""
+"Changing the SRAM directory with a game loaded will replace the .srm file in "
+"the selected directory with the SRAM from the running game. If this is not "
+"what you want, click 'cancel'."
+msgstr ""
+
+#: src/gtk_preferences.cpp:944
+msgid "Warning: Possible File Overwrite"
+msgstr ""
+
+#: src/gtk_preferences.cpp:1025
 msgid "Select Folder"
 msgstr "Odaberi direktorijum"
 
-#: ../src/gtk_preferences.cpp:870
+#: src/gtk_preferences.cpp:1102
+msgid "HQ2x"
+msgstr ""
+
+#: src/gtk_preferences.cpp:1103
+msgid "HQ3x"
+msgstr ""
+
+#: src/gtk_preferences.cpp:1104
+msgid "HQ4x"
+msgstr ""
+
+#: src/gtk_preferences.cpp:1109
+msgid "2xBRZ"
+msgstr ""
+
+#: src/gtk_preferences.cpp:1110
+msgid "3xBRZ"
+msgstr ""
+
+#: src/gtk_preferences.cpp:1111
+msgid "4xBRZ"
+msgstr ""
+
+#: src/gtk_preferences.cpp:1116
 msgid "None - Use software scaler"
 msgstr "Nijedno - softversko prilagođavanje"
 
-#: ../src/gtk_preferences.cpp:874
+#: src/gtk_preferences.cpp:1120
 msgid "OpenGL - Use 3D graphics hardware"
 msgstr "OpenGL - hardverski 2D/3D"
 
-#: ../src/gtk_preferences.cpp:878
+#: src/gtk_preferences.cpp:1124
 msgid "XVideo - Use hardware video blitter"
 msgstr "XVideo - hardverski video"
 
-#: ../src/gtk_preferences.cpp:884
+#: src/gtk_preferences.cpp:1130
 msgid "PortAudio"
 msgstr "PortAudio"
 
-#: ../src/gtk_preferences.cpp:888
+#: src/gtk_preferences.cpp:1134
 msgid "Open Sound System"
 msgstr "OSS"
 
-#: ../src/gtk_preferences.cpp:892
+#: src/gtk_preferences.cpp:1137
 msgid "SDL"
 msgstr "SDL"
 
-#: ../src/gtk_preferences.cpp:896
+#: src/gtk_preferences.cpp:1140
 msgid "ALSA"
 msgstr "ALSA"
 
-#: ../src/gtk_preferences.cpp:900
+#: src/gtk_preferences.cpp:1144
 msgid "PulseAudio"
 msgstr "PulseAudio"
 
-#: ../src/gtk_s9x.cpp:177
+#: src/gtk_s9x.cpp:205
 #, c-format
 msgid "Error opening: %s\n"
 msgstr "Greška pri otvaranju: %s\n"
 
-#: ../src/gtk_s9xwindow.cpp:729
+#: src/gtk_s9xwindow.cpp:863
+#, fuzzy
+msgid "Couldn't load files."
+msgstr "Ne mogu učitati fajl '%s'"
+
+#: src/gtk_s9xwindow.cpp:892
 msgid "Open SNES Movie"
 msgstr "Otvori SNES Film"
 
-#: ../src/gtk_s9xwindow.cpp:748
+#: src/gtk_s9xwindow.cpp:911
 msgid "New SNES Movie"
 msgstr "Novi SNES Film"
 
-#: ../src/gtk_s9xwindow.cpp:761
+#: src/gtk_s9xwindow.cpp:924
 msgid "SNES Movies"
 msgstr "SNES Filmovi"
 
-#: ../src/gtk_s9xwindow.cpp:769 ../src/gtk_s9xwindow.cpp:915
-#: ../src/gtk_s9xwindow.cpp:1060 ../src/gtk_s9xwindow.cpp:1127
+#: src/gtk_s9xwindow.cpp:932 src/gtk_s9xwindow.cpp:1080
+#: src/gtk_s9xwindow.cpp:1200 src/gtk_s9xwindow.cpp:1265 src/gtk_file.cpp:433
 msgid "All Files"
 msgstr "Svi Fajlovi"
 
-#: ../src/gtk_s9xwindow.cpp:830
+#: src/gtk_s9xwindow.cpp:993
 #, c-format
 msgid "Couldn't load file '%s'"
 msgstr "Ne mogu učitati fajl '%s'"
 
-#: ../src/gtk_s9xwindow.cpp:888
+#: src/gtk_s9xwindow.cpp:1052
 msgid "Load Saved State"
 msgstr "Učitaj Snimljenu Poziciju"
 
-#: ../src/gtk_s9xwindow.cpp:899 ../src/gtk_s9xwindow.cpp:1044
-#: ../src/snes9x.glade.h:201
+#: src/gtk_s9xwindow.cpp:1063 src/gtk_s9xwindow.cpp:1183 src/snes9x.ui:8363
 msgid "Save States"
 msgstr "Pozicije"
 
-#: ../src/gtk_s9xwindow.cpp:965
+#: src/gtk_s9xwindow.cpp:1120
 #, c-format
 msgid "The current frame in the movie is <b>%d</b>."
 msgstr "Trenutni frejm u filmu je <b>%d</b>."
 
-#: ../src/gtk_s9xwindow.cpp:1031
+#: src/gtk_s9xwindow.cpp:1170
 msgid "Save State"
 msgstr "Snimi poziciju"
 
-#: ../src/gtk_s9xwindow.cpp:1108
+#: src/gtk_s9xwindow.cpp:1246
 msgid "Save SPC file..."
 msgstr "Snimi SPC fajl..."
 
-#: ../src/gtk_s9xwindow.cpp:1121
+#: src/gtk_s9xwindow.cpp:1259
 msgid "SPC Files"
 msgstr "SPC fajlovi"
 
-#: ../src/gtk_s9xwindow.cpp:1152
+#: src/gtk_s9xwindow.cpp:1290
 #, c-format
 msgid "Couldn't save SPC file '%s'"
 msgstr "Ne mogu sačuvati SPC fajl '%s'"
 
-#: ../src/gtk_s9xwindow.cpp:1226
-#, c-format
-msgid "%sHosting NetPlay - %s"
-msgstr "%sHostuj NetPlay - %s"
-
-#: ../src/gtk_s9xwindow.cpp:1227 ../src/gtk_s9xwindow.cpp:1235
-#: ../src/gtk_s9xwindow.cpp:1249
-msgid "Paused - "
-msgstr "Pauza - "
-
-#: ../src/gtk_s9xwindow.cpp:1234
-#, c-format
-msgid "%s%s on NetPlay %s:%d - Player %d"
-msgstr "%s%s na NetPlay %s:%d - Igrač %d"
-
-#: ../src/gtk_s9xwindow.cpp:1271
+#: src/gtk_s9xwindow.cpp:1330
 #, c-format
 msgid ""
 "<b>Information for %s</b>\n"
@@ -263,258 +279,1170 @@ msgid ""
 "<i>Actual Checksum:</i> %04X\n"
 "<i>Video:</i> %s\n"
 "<i>CRC32:</i> %08X\n"
-"<i>Revision:</i> %s<b><i>%s</i></b>"
+"<i>Revision:</i> %s<b><i>%s%s</i></b>"
 msgstr ""
 
-#: ../src/gtk_s9xwindow.cpp:1309
+#: src/gtk_s9xwindow.cpp:1366
+msgid ""
+"\n"
+"\n"
+"This ROM has been auto-patched with "
+msgstr ""
+
+#: src/gtk_s9xwindow.cpp:1369
 msgid ""
 "\n"
 "\n"
 "This ROM has been modified or damaged"
 msgstr ""
 
-#: ../src/snes9x.glade.h:2
-#, no-c-format
-msgid ""
-"0%\n"
-"12.5%\n"
-"25%\n"
-"50%\n"
-"100%"
+#: src/gtk_s9xwindow.cpp:1375
+msgid "File Information"
 msgstr ""
 
-#: ../src/snes9x.glade.h:8
-#, no-c-format
-msgid ""
-"12.5%\n"
-"25%\n"
-"50%\n"
-"100%"
+#: src/gtk_shader_parameters.cpp:99
+msgid "Export Shader Preset to:"
 msgstr ""
 
-#: ../src/snes9x.glade.h:12
-msgid "16 Bit audio output"
-msgstr "16-bitni izlaz za zvuk"
+#: src/gtk_shader_parameters.cpp:124
+#, fuzzy
+msgid "Shader Preset"
+msgstr "Hardverski reset"
 
-#: ../src/snes9x.glade.h:13
-msgid ""
-"16-bit (GL_BGRA)\n"
-"24-bit (GL_RGB)\n"
-"32-bit (GL_BGRA)"
+#: src/gtk_shader_parameters.cpp:169
+msgid "GLSL Shader Parameters"
 msgstr ""
 
-#: ../src/snes9x.glade.h:16
-msgid "1x"
+#: src/gtk_file.cpp:417
+#, fuzzy
+msgid "Open SNES ROM Image"
+msgstr "_Otvori ROM..."
+
+#: src/gtk_file.cpp:425
+#, fuzzy
+msgid "SNES ROM Images"
+msgstr "SNES Filmovi"
+
+#: src/snes9x.ui:9
+#, fuzzy
+msgid "About Snes9x"
+msgstr "Isključi Snes9x"
+
+#: src/snes9x.ui:48
+msgid "label106"
+msgstr ""
+
+#: src/snes9x.ui:271
+msgid "Snes9x Cheats"
+msgstr "Snes9x Varanja"
+
+#: src/snes9x.ui:389
+msgid "Update Cheat"
+msgstr ""
+
+#: src/snes9x.ui:404
+msgid "Disable All"
+msgstr ""
+
+#: src/snes9x.ui:420
+msgid "Delete All Cheats"
+msgstr ""
+
+#: src/snes9x.ui:435
+msgid "Search Cheat Database"
+msgstr ""
+
+#: src/snes9x.ui:477
+msgid "Code:"
+msgstr "Kod: "
+
+#: src/snes9x.ui:514
+msgid "Description:"
+msgstr "Opis:"
+
+#: src/snes9x.ui:561
+msgid "Advance to Frame"
+msgstr "Doteraj do okvira Prozora"
+
+#: src/snes9x.ui:630
+msgid "The current frame in the movie is"
+msgstr "Trenutni frejm u filmu je"
+
+#: src/snes9x.ui:651
+msgid "Fast-forward to frame"
+msgstr "Ubrzaj do frejma..."
+
+#: src/snes9x.ui:812
+msgid "Black"
+msgstr ""
+
+#: src/snes9x.ui:815
+msgid "Color bars"
+msgstr ""
+
+#: src/snes9x.ui:818
+msgid "Pixel art patterns"
+msgstr ""
+
+#: src/snes9x.ui:821
+msgid "Dithered gradient"
+msgstr ""
+
+#: src/snes9x.ui:824
+msgid "Color bars and patterns"
+msgstr ""
+
+#: src/snes9x.ui:835
+msgid "Game Genie"
+msgstr ""
+
+#: src/snes9x.ui:838
+msgid "Pro Action Replay"
+msgstr ""
+
+#: src/snes9x.ui:841
+msgid "Goldfinger"
+msgstr ""
+
+#: src/snes9x.ui:852 src/snes9x.ui:875
+msgid "12.5%"
+msgstr ""
+
+#: src/snes9x.ui:855 src/snes9x.ui:878
+msgid "25%"
+msgstr ""
+
+#: src/snes9x.ui:858 src/snes9x.ui:881
+msgid "50%"
+msgstr ""
+
+#: src/snes9x.ui:861 src/snes9x.ui:884
+msgid "100%"
+msgstr ""
+
+#: src/snes9x.ui:872
+msgid "0%"
+msgstr ""
+
+#: src/snes9x.ui:895 src/snes9x.ui:1922
+msgid "None"
+msgstr ""
+
+#: src/snes9x.ui:898
+#, fuzzy
+msgid "SuperEagle"
+msgstr "Superscope"
+
+#: src/snes9x.ui:901
+msgid "2xSaI"
+msgstr ""
+
+#: src/snes9x.ui:904
+msgid "Super2xSaI"
+msgstr ""
+
+#: src/snes9x.ui:907
+msgid "EPX"
+msgstr ""
+
+#: src/snes9x.ui:910
+msgid "EPX Smooth"
+msgstr ""
+
+#: src/snes9x.ui:913
+msgid "Blargg's NTSC"
+msgstr ""
+
+#: src/snes9x.ui:916
+#, fuzzy
+msgid "Scanlines"
+msgstr "Scanline intenzitet:"
+
+#: src/snes9x.ui:919
+msgid "Simple2x"
+msgstr ""
+
+#: src/snes9x.ui:922
+msgid "Simple3x"
+msgstr ""
+
+#: src/snes9x.ui:925
+msgid "Simple4x"
+msgstr ""
+
+#: src/snes9x.ui:936
+msgid "8:7 Square pixels"
+msgstr ""
+
+#: src/snes9x.ui:939
+msgid "8:7 Square pixels, integer multiples"
+msgstr ""
+
+#: src/snes9x.ui:942
+#, fuzzy
+msgid "4:3 SNES correct aspect"
+msgstr "Ispravan prizor"
+
+#: src/snes9x.ui:945
+msgid "4:3 SNES correct aspect, integer multiples"
+msgstr ""
+
+#: src/snes9x.ui:948
+msgid "8*8:7*7 NTSC"
+msgstr ""
+
+#: src/snes9x.ui:951
+msgid "8*8:7*7 NTSC, integer multiples"
+msgstr ""
+
+#: src/snes9x.ui:968
+msgid "Merge adjacent pairs"
+msgstr ""
+
+#: src/snes9x.ui:971
+msgid "Output directly"
+msgstr ""
+
+#: src/snes9x.ui:974
+msgid "Scale low-resolution screens"
+msgstr ""
+
+#: src/snes9x.ui:985 src/snes9x.ui:1023
+#, fuzzy
+msgid "1"
 msgstr "Original"
 
-#: ../src/snes9x.glade.h:17
-msgid "2x"
+#: src/snes9x.ui:988 src/snes9x.ui:1026
+#, fuzzy
+msgid "2"
 msgstr "2 puta"
 
-#: ../src/snes9x.glade.h:18
-msgid "3x"
+#: src/snes9x.ui:991 src/snes9x.ui:1029
+#, fuzzy
+msgid "3"
 msgstr "3 puta"
 
-#: ../src/snes9x.glade.h:19
-msgid ""
-"48000 hz\n"
-"44100 hz\n"
-"32000 hz (SNES Default)\n"
-"22050 hz\n"
-"16000 hz\n"
-"11025 hz\n"
-"8000 hz\n"
-"0 hz"
-msgstr ""
-
-#: ../src/snes9x.glade.h:27
-msgid "4x"
+#: src/snes9x.ui:994 src/snes9x.ui:1032
+#, fuzzy
+msgid "4"
 msgstr "4 puta"
 
-#: ../src/snes9x.glade.h:28
-msgid "5x"
+#: src/snes9x.ui:997 src/snes9x.ui:1035
+#, fuzzy
+msgid "5"
 msgstr "5 puta"
 
-#: ../src/snes9x.glade.h:29
-msgid ""
-"8:7 Square pixels\n"
-"4:3 SNES correct aspect"
+#: src/snes9x.ui:1000 src/snes9x.ui:1038
+msgid "1+"
 msgstr ""
 
-#: ../src/snes9x.glade.h:31
-msgid "<b>Accuracy</b>"
-msgstr "<b>Tačnost</b>"
+#: src/snes9x.ui:1003 src/snes9x.ui:1041
+msgid "2+"
+msgstr ""
 
-#: ../src/snes9x.glade.h:32
-msgid "<b>Basic Settings</b>"
-msgstr "<b>Osnovna podešavanja</b>"
+#: src/snes9x.ui:1006 src/snes9x.ui:1044
+msgid "3+"
+msgstr ""
 
-#: ../src/snes9x.glade.h:33
-msgid "<b>Calibration</b>"
-msgstr "<b>Kalibracija</b>"
+#: src/snes9x.ui:1009 src/snes9x.ui:1047
+msgid "4+"
+msgstr ""
 
-#: ../src/snes9x.glade.h:34
-msgid "<b>Game Data</b>"
-msgstr "<b>Podaci igre</b>"
+#: src/snes9x.ui:1012 src/snes9x.ui:1050
+msgid "5+"
+msgstr ""
 
-#: ../src/snes9x.glade.h:35
-msgid "<b>Hardware Acceleration</b>"
-msgstr "<b>Hardversko ubrzanje</b>"
+#: src/snes9x.ui:1061
+#, fuzzy
+msgid "Toggle the menu bar"
+msgstr "Uključi/Isključi turbo"
 
-#: ../src/snes9x.glade.h:36
-msgid "<b>Image Adjustments</b>"
-msgstr "<b>Podešavanje slike</b>"
+#: src/snes9x.ui:1064
+#, fuzzy
+msgid "Exit fullscreen mode"
+msgstr "Koristi ceo ekran pri otvaranju ROMa"
 
-#: ../src/snes9x.glade.h:37
-msgid "<b>Joypad:</b>"
-msgstr "<b>Dzojped</b>"
+#: src/snes9x.ui:1067 src/snes9x.ui:6890
+msgid "Quit Snes9x"
+msgstr "Isključi Snes9x"
 
-#: ../src/snes9x.glade.h:38
-msgid "<b>Joystick Axis Threshold</b>"
-msgstr "<b>Smerovi dzojstika</b>"
+#: src/snes9x.ui:1078
+msgid "Timer-based"
+msgstr ""
 
-#: ../src/snes9x.glade.h:39
-msgid "<b>NTSC Filter</b>"
-msgstr "<b>NTSC Filter</b>"
+#: src/snes9x.ui:1081
+msgid "Timer-based with automatic frame-skipping"
+msgstr ""
 
-#: ../src/snes9x.glade.h:40
-msgid "<b>Quick load state</b>"
-msgstr "<b>Brzo učitaj</b>"
+#: src/snes9x.ui:1084
+msgid "Sound buffer synchronization"
+msgstr ""
 
-#: ../src/snes9x.glade.h:41
-msgid "<b>Quick save state</b>"
-msgstr "<b>Brzo snimi</b>"
+#: src/snes9x.ui:1087
+msgid "No throttling, use vsync to control speed"
+msgstr ""
 
-#: ../src/snes9x.glade.h:42
+#: src/snes9x.ui:1098
+msgid "48000 hz"
+msgstr ""
+
+#: src/snes9x.ui:1101
+msgid "44100 hz"
+msgstr ""
+
+#: src/snes9x.ui:1104
+msgid "32000 hz"
+msgstr ""
+
+#: src/snes9x.ui:1107
+msgid "22050 hz"
+msgstr ""
+
+#: src/snes9x.ui:1110
+msgid "16000 hz"
+msgstr ""
+
+#: src/snes9x.ui:1113
+msgid "11025 hz"
+msgstr ""
+
+#: src/snes9x.ui:1116
+msgid "8000 hz"
+msgstr ""
+
+#: src/snes9x.ui:1119
+msgid "0 hz"
+msgstr ""
+
+#: src/snes9x.ui:1136
+msgid "16-bit (GL_RGB)"
+msgstr ""
+
+#: src/snes9x.ui:1139
+msgid "32-bit (GL_BGRA)"
+msgstr ""
+
+#: src/snes9x.ui:1150
+msgid "Nearest"
+msgstr ""
+
+#: src/snes9x.ui:1153
+msgid "Linear"
+msgstr ""
+
+#: src/snes9x.ui:1156
+msgid "Gaussian (correct)"
+msgstr ""
+
+#: src/snes9x.ui:1159
+msgid "Cubic"
+msgstr ""
+
+#: src/snes9x.ui:1162
+msgid "Sinc"
+msgstr ""
+
+#: src/snes9x.ui:1175
+msgid "Snes9x"
+msgstr "Snes9x"
+
+#: src/snes9x.ui:1195
+msgid "_File"
+msgstr "_Fajl"
+
+#: src/snes9x.ui:1202
+#, fuzzy
+msgid "_Open ROM Image..."
+msgstr "_Otvori ROM..."
+
+#: src/snes9x.ui:1216
+msgid "Open Recent"
+msgstr "Otvori poslednje"
+
+#: src/snes9x.ui:1228
+msgid "Open with _NetPlay..."
+msgstr "Otvori uz _NetPlay..."
+
+#: src/snes9x.ui:1231
+msgid "Open a ROM to use with NetPlay"
+msgstr "Otvori ROM koji ćeš koristiti za NetPlay"
+
+#: src/snes9x.ui:1242
+#, fuzzy
+msgid "Open _MultiCart..."
+msgstr "_Otvori ROM..."
+
+#: src/snes9x.ui:1257
+msgid "_Load State"
+msgstr "_Učitaj poziciju"
+
+#: src/snes9x.ui:1267 src/snes9x.ui:1401
+msgid "Slot _0"
+msgstr ""
+
+#: src/snes9x.ui:1276 src/snes9x.ui:1410
+msgid "Slot _1"
+msgstr ""
+
+#: src/snes9x.ui:1285 src/snes9x.ui:1419
+msgid "Slot _2"
+msgstr ""
+
+#: src/snes9x.ui:1294 src/snes9x.ui:1428
+msgid "Slot _3"
+msgstr ""
+
+#: src/snes9x.ui:1303 src/snes9x.ui:1437
+msgid "Slot _4"
+msgstr ""
+
+#: src/snes9x.ui:1312 src/snes9x.ui:1446
+msgid "Slot _5"
+msgstr ""
+
+#: src/snes9x.ui:1321 src/snes9x.ui:1455
+msgid "Slot _6"
+msgstr ""
+
+#: src/snes9x.ui:1330 src/snes9x.ui:1464
+msgid "Slot _7"
+msgstr ""
+
+#: src/snes9x.ui:1339 src/snes9x.ui:1473
+msgid "Slot _8"
+msgstr ""
+
+#: src/snes9x.ui:1348 src/snes9x.ui:1482
+msgid "Slot _9"
+msgstr ""
+
+#: src/snes9x.ui:1363
+msgid "From _File..."
+msgstr "Iz _Fajla..."
+
+#: src/snes9x.ui:1378
+#, fuzzy
+msgid "_Undo Load State"
+msgstr "_Učitaj poziciju"
+
+#: src/snes9x.ui:1391
+msgid "_Save State"
+msgstr "_Snimi poziciju"
+
+#: src/snes9x.ui:1497
+msgid "To _File..."
+msgstr "Ka _Fajlu..."
+
+#: src/snes9x.ui:1514
+msgid "Save SPC..."
+msgstr "Snimi SPC..."
+
+#: src/snes9x.ui:1531
+msgid "Show ROM _Info..."
+msgstr "Prikaži informacije o ROMu..."
+
+#: src/snes9x.ui:1548
+msgid "_Quit"
+msgstr "_Izlaz"
+
+#: src/snes9x.ui:1565
+msgid "_Emulation"
+msgstr "_Emulacija"
+
+#: src/snes9x.ui:1572
+msgid "Run / _Continue"
+msgstr "Pokreni / _Nastavi"
+
+#: src/snes9x.ui:1583
+msgid "_Pause"
+msgstr "_Pauza"
+
+#: src/snes9x.ui:1601
+msgid "Load _Movie..."
+msgstr "Učitaj _film..."
+
+#: src/snes9x.ui:1613
+msgid "R_ecord Movie..."
+msgstr "S_nimi film..."
+
+#: src/snes9x.ui:1625
+msgid "_Stop Recording"
+msgstr "_Zaustavi snimanje"
+
+#: src/snes9x.ui:1637
+msgid "_Jump to Frame..."
+msgstr "_Pređi na frejm..."
+
+#: src/snes9x.ui:1655
+msgid "Sy_nc Clients"
+msgstr "Si_nhronizuj klijente"
+
+#: src/snes9x.ui:1672
+msgid "Reset"
+msgstr "Hardverski reset"
+
+#: src/snes9x.ui:1684
+msgid "Soft _Reset"
+msgstr "Softverski _reset"
+
+#: src/snes9x.ui:1701
+msgid "_View"
+msgstr "_Pregled"
+
+#: src/snes9x.ui:1709
+#, fuzzy
+msgid "_Toggle Menubar"
+msgstr "Uključi/Isključi turbo"
+
+#: src/snes9x.ui:1726
+msgid "_Change Size"
+msgstr "_Promeni veličinu"
+
+#: src/snes9x.ui:1740
+msgid "_1x"
+msgstr "_Original"
+
+#: src/snes9x.ui:1749
+msgid "_2x"
+msgstr "_2 puta"
+
+#: src/snes9x.ui:1758
+msgid "_3x"
+msgstr "_3 puta"
+
+#: src/snes9x.ui:1767
+msgid "_4x"
+msgstr "_4 puta"
+
+#: src/snes9x.ui:1776
+msgid "_5x"
+msgstr "_5 puta"
+
+#: src/snes9x.ui:1793
+msgid "_Fullscreen"
+msgstr "_Ceo ekran"
+
+#: src/snes9x.ui:1810
+msgid "_Options"
+msgstr "_Opcije"
+
+#: src/snes9x.ui:1819
+msgid "Controller Ports"
+msgstr "Portovi kontrolera"
+
+#: src/snes9x.ui:1828
+msgid "SNES Port 1"
+msgstr ""
+
+#: src/snes9x.ui:1838 src/snes9x.ui:1882
+msgid "Joypad"
+msgstr "Dzojped"
+
+#: src/snes9x.ui:1847 src/snes9x.ui:1891
+msgid "Mouse"
+msgstr "Miš"
+
+#: src/snes9x.ui:1857 src/snes9x.ui:1911
+msgid "Superscope"
+msgstr "Superscope"
+
+#: src/snes9x.ui:1872
+msgid "SNES Port 2"
+msgstr ""
+
+#: src/snes9x.ui:1901
+msgid "Multitap"
+msgstr ""
+
+#: src/snes9x.ui:1948
+msgid "_Cheats..."
+msgstr "_Varanja"
+
+#: src/snes9x.ui:1962
+msgid "_Shader Parameters..."
+msgstr ""
+
+#: src/snes9x.ui:1978
+msgid "_Preferences..."
+msgstr "_Podešavanja..."
+
+#: src/snes9x.ui:2023
+msgid "Open Multiple ROM Images (MultiCart)"
+msgstr ""
+
+#: src/snes9x.ui:2086
+msgid "Slot A:"
+msgstr ""
+
+#: src/snes9x.ui:2098
+msgid "Select an Image for Slot A"
+msgstr ""
+
+#: src/snes9x.ui:2122
+msgid "Slot B:"
+msgstr ""
+
+#: src/snes9x.ui:2134
+msgid "Select an Image for Slot B"
+msgstr ""
+
+#: src/snes9x.ui:2166
+msgid "Snes9x NetPlay"
+msgstr "Snes9x NetPlay"
+
+#: src/snes9x.ui:2243
+msgid ""
+"The game chosen will be loaded before connecting. This field can be blank if "
+"the server will send the ROM image"
+msgstr ""
+"Izabrana igra biće učitana pre konekcije. Ovo polje može biti prazno ako će "
+"server da pošalje ROM"
+
+#: src/snes9x.ui:2258 src/snes9x.ui:3959 src/snes9x.ui:5071 src/snes9x.ui:5086
+#: src/snes9x.ui:5103 src/snes9x.ui:5120 src/snes9x.ui:5137
+msgid "Browse..."
+msgstr "Pretraži..."
+
+#: src/snes9x.ui:2280
+msgid "Clear entry"
+msgstr "Očisti upis"
+
+#: src/snes9x.ui:2300
 msgid "<b>ROM Image</b>"
 msgstr "<b>ROM slika</b>"
 
-#: ../src/snes9x.glade.h:43
-msgid "<b>Scanline Filter</b>"
-msgstr "<b>Scanline Filter</b>"
+#: src/snes9x.ui:2329
+msgid "Connect to another computer"
+msgstr "Poveži se sa drugim računarom"
 
-#: ../src/snes9x.glade.h:44
-msgid "<b>Screensaver</b>"
-msgstr "<b>Čuvar ekrana</b>"
+#: src/snes9x.ui:2333
+msgid "Connect to another computer that is running Snes9x NetPlay as a server"
+msgstr "Poveži se sa računarom kod koga je Snes9x NetPlay server"
 
-#: ../src/snes9x.glade.h:45
-msgid "<b>Server</b>"
-msgstr "<b>Server</b>"
+#: src/snes9x.ui:2353
+msgid "Name or IP address:"
+msgstr "Naziv ili IP adresa:"
 
-#: ../src/snes9x.glade.h:46
-msgid "<b>Settings</b>"
-msgstr "<b>Podešavanja</b>"
+#: src/snes9x.ui:2365
+msgid "Domain name or internet protocol address of a remote computer"
+msgstr "Naziv domena ili adresa interent protokola udaljenog računara"
 
-#: ../src/snes9x.glade.h:47
-msgid "<b>Snes9x Emulator Shortcut Keys</b>"
-msgstr "<b>Tastaturne prečice za Snes9x Emulator</b>"
+#: src/snes9x.ui:2381
+msgid "Port:"
+msgstr "Port:"
 
-#: ../src/snes9x.glade.h:48
-msgid "<b>Sound Settings</b>"
-msgstr "<b>Podešavanje zvuka</b>"
+#: src/snes9x.ui:2393
+msgid "Connect to specified TCP port on remote computer"
+msgstr "Poveži se specifičnim TCP portom ka udaljenom računaru"
 
-#: ../src/snes9x.glade.h:49
-msgid "<b>Sticky</b>"
-msgstr "<b>Lepljiva</b>"
-
-#: ../src/snes9x.glade.h:50
-msgid "<b>Turbo</b>"
-msgstr "<b>Turbo</b>"
-
-#: ../src/snes9x.glade.h:51
-msgid "<b>Window Switching</b>"
-msgstr "<b>Prebacivanje izmedju prozora</b>"
-
-#: ../src/snes9x.glade.h:52
-msgid ""
-"<small>Click an entry and then press the desired keys or joystick button\n"
-"<i>Escape</i>: Move to next<i>  Shift-Escape</i>: Clear selected</small>"
-msgstr ""
-
-#: ../src/snes9x.glade.h:54
-msgid "A"
-msgstr "A"
-
-#: ../src/snes9x.glade.h:55
+#: src/snes9x.ui:2417
 msgid "Act as a server"
 msgstr "Radi kao server"
 
-#: ../src/snes9x.glade.h:56
+#: src/snes9x.ui:2421
+msgid ""
+"Host a game on this computer as Player 1, requiring extra throughput to "
+"support multitple users"
+msgstr ""
+"Hostuj igru na ovom računaru kao Igrač 1. Ovo će zahtevati više propusne "
+"moći za podršku većeg broja korisnika"
+
+#: src/snes9x.ui:2441
+msgid "<b>Server</b>"
+msgstr "<b>Server</b>"
+
+#: src/snes9x.ui:2471
+msgid "Sync using reset"
+msgstr "Resetuj igru radi sinhronizacije"
+
+#: src/snes9x.ui:2475
+msgid ""
+"Reset the game when players join instead of transferring potentially "
+"unreliable freeze states"
+msgstr ""
+"Resetuj igru kada se igrači priključe, zbog mogućeg zamrzavanja i zbog "
+"pouzdanog prenosa"
+
+#: src/snes9x.ui:2486
+msgid "Send ROM image to clients"
+msgstr "Pošalji ROM sliku drugim klijentima"
+
+#: src/snes9x.ui:2490
+msgid ""
+"Send the running game image to players instead of requiring them to have "
+"their own copies"
+msgstr ""
+"Pošalji trenutnu igru drugim igračima, umesto da im tražite da imaju iste "
+"takve kopije"
+
+#: src/snes9x.ui:2508
+msgid "Default port:"
+msgstr "Podrazumevani port:"
+
+#: src/snes9x.ui:2520
+msgid "TCP port used as a connection point for remote clients"
+msgstr ""
+"Podrazumevani TCP port koji će se koristi za povezivanje sa udaljenim "
+"računarom"
+
+#: src/snes9x.ui:2551
+msgid "Ask server to pause when"
+msgstr "Server će pauzirati nakon"
+
+#: src/snes9x.ui:2581
+msgid "frames behind"
+msgstr "frejmova"
+
+#: src/snes9x.ui:2604
+msgid "<b>Settings</b>"
+msgstr "<b>Podešavanja</b>"
+
+#: src/snes9x.ui:2632
+msgid "Snes9x Preferences"
+msgstr "Snes9x Podešavanja"
+
+#: src/snes9x.ui:2748
+msgid "Use fullscreen on ROM open"
+msgstr "Koristi ceo ekran pri otvaranju ROMa"
+
+#: src/snes9x.ui:2752
+msgid "Go to fullscreen mode immediately after opening a ROM"
+msgstr "Pređi na ceo ekran odmah nakon otvaranja ROMa"
+
+#: src/snes9x.ui:2764
+msgid "Show frame rate"
+msgstr "Prikaži vrednost frejmova"
+
+#: src/snes9x.ui:2779
+msgid "Show pressed keys"
+msgstr ""
+
+#: src/snes9x.ui:2794
+msgid "Use overscanned height"
+msgstr "Koristi prekomernu visinu"
+
+#: src/snes9x.ui:2798
+msgid "Use SNES extended height. Will probably cause letterboxing"
+msgstr "Korišćenje prekomerne visine će verovatno izazvati letterboxing"
+
+#: src/snes9x.ui:2815
+msgid "Change fullscreen resolution:"
+msgstr "Promena rezolucije za ceo ekran:"
+
+#: src/snes9x.ui:2819
+msgid "Changes the screen resolution when running Snes9x in fullscreen mode"
+msgstr "Ekranska rezolucija kada slika bude prekrila ceo ekran"
+
+#: src/snes9x.ui:2862
+#, fuzzy
+msgid "Basic Settings"
+msgstr "<b>Osnovna podešavanja</b>"
+
+#: src/snes9x.ui:2903
+msgid "Scale image to fit window"
+msgstr "Prilagodi sliku prozoru"
+
+#: src/snes9x.ui:2907
+msgid "Scales the image so no black bars are present"
+msgstr "Prilagodi sliku tako da se ne vide crni delovi"
+
+#: src/snes9x.ui:2927
+#, fuzzy
+msgid "Aspect ratio:"
+msgstr "Očuvaj proporciju prizora:"
+
+#: src/snes9x.ui:2962
+#, fuzzy
+msgid "Maintain aspect-ratio"
+msgstr "Očuvaj proporciju prizora:"
+
+#: src/snes9x.ui:2966
+msgid "Scales the image as large as possible without distortion"
+msgstr "Prilagodi sliku što je god moguće veću, ali bez izobličenja"
+
+#: src/snes9x.ui:2983
+msgid "Use "
+msgstr "Koristi "
+
+#: src/snes9x.ui:2987
+msgid "Allows scaling and filtering to use multiple processors"
+msgstr "Omogući većem broju CPU jezgara da ubrzaju skaliranje/filtere"
+
+#: src/snes9x.ui:3019
+msgid "threads for filtering and scaling"
+msgstr "niti za za filtriranje i prilagođavanje slike"
+
+#: src/snes9x.ui:3043
+msgid "High-resolution effect:"
+msgstr ""
+
+#: src/snes9x.ui:3086
+msgid "Apply scaling filter:"
+msgstr "Potvrdi filter za skaliranje"
+
+#: src/snes9x.ui:3154
+msgid "Video preset:"
+msgstr "Video postavke:"
+
+#: src/snes9x.ui:3168
+msgid "Composite"
+msgstr "Composite"
+
+#: src/snes9x.ui:3182
+msgid "S-Video"
+msgstr ""
+
+#: src/snes9x.ui:3196
+msgid "RGB"
+msgstr "RedGreenBlue"
+
+#: src/snes9x.ui:3210
+msgid "Monochrome"
+msgstr "MonoChrome"
+
+#: src/snes9x.ui:3251
+msgid "Artifacts:"
+msgstr "Artifakti:"
+
+#: src/snes9x.ui:3266
+msgid "Sharpness:"
+msgstr "Oštrina:"
+
+#: src/snes9x.ui:3281
+msgid "Brightness:"
+msgstr "Osvetljenje:"
+
+#: src/snes9x.ui:3296
+msgid "Contrast:"
+msgstr "Kontrast:"
+
+#: src/snes9x.ui:3311
+msgid "Saturation:"
+msgstr "Zasićenje:"
+
+#: src/snes9x.ui:3326
+msgid "Hue:"
+msgstr "Nijansa boje:"
+
+#: src/snes9x.ui:3527
+msgid "Gamma:"
+msgstr "Gama:"
+
+#: src/snes9x.ui:3542
+msgid "Fringing:"
+msgstr ""
+
+#: src/snes9x.ui:3557
+msgid "Bleed:"
+msgstr "Bledilo:"
+
+#: src/snes9x.ui:3572
+msgid "Resolution:"
+msgstr "Rezolucija:"
+
+#: src/snes9x.ui:3602
+msgid "Merge odd and even fields"
+msgstr ""
+
+#: src/snes9x.ui:3624 src/snes9x.ui:3683
+msgid "Scanline intensity:"
+msgstr "Scanline intenzitet:"
+
+#: src/snes9x.ui:3728
+msgid "Scaling"
+msgstr ""
+
+#: src/snes9x.ui:3770
+msgid "Bilinear-filter output"
+msgstr "Bilinearno filtriranje"
+
+#: src/snes9x.ui:3791
+msgid "Sync to vertical blank"
+msgstr "Sinhronizacija sa vertikalnim osvežavanjem ekrana"
+
+#: src/snes9x.ui:3795
+msgid "Sync the image to the vertical retrace to stop tearing"
+msgstr ""
+"Sinhronizuje sliku sa vertikalnim osvežavanjem da bi se izbeglo 'suzenje'"
+
+#: src/snes9x.ui:3807
+msgid "Reduce input lag with glFinish"
+msgstr ""
+
+#: src/snes9x.ui:3811
+msgid ""
+"Sync the program with the video output after every displayed frame to reduce "
+"input latency"
+msgstr ""
+
+#: src/snes9x.ui:3822
+msgid "Reduce input lag with sync control"
+msgstr ""
+
+#: src/snes9x.ui:3826
+msgid ""
+"More modern method for syncing the program with the video output to reduce "
+"input latency. Allows GUI events to occur in the meantime"
+msgstr ""
+
+#: src/snes9x.ui:3837
+msgid "Allow non-power-of-two textures"
+msgstr "Dozvoli NPOT teksture"
+
+#: src/snes9x.ui:3841
+msgid "Prevents edge artifacts, but can slow performance"
+msgstr ""
+"Sprečava moguću pojavu artifakata na rubovima prikaza. Može usporiti, ali i "
+"ubrzati performanse - zavisno od drajvera."
+
+#: src/snes9x.ui:3852
+msgid "Use pixel-buffer objects"
+msgstr "Koristi pixel-buffer objects"
+
+#: src/snes9x.ui:3857
+msgid "Can be faster or slower depending on drivers"
+msgstr "Može biti i sporije i brže... zavisno od drajvera"
+
+#: src/snes9x.ui:3877
+msgid "Different formats can yield highly different performance"
+msgstr "Različiti formati mogu doprineti drugačijim performansama"
+
+#: src/snes9x.ui:3884
+msgid "Pixel-buffer format:"
+msgstr ""
+
+#: src/snes9x.ui:3927
+msgid "Shader:"
+msgstr ""
+
+#: src/snes9x.ui:3991
+msgid "Force an inverted byte-ordering"
+msgstr "Prisili na preinačeni poredak bajtova"
+
+#: src/snes9x.ui:3995
+msgid ""
+"Forces a swapped byte-ordering for cases where the system's endian is used "
+"instead of the video card"
+msgstr ""
+"Prisiljava na izmenu poretka bajtova u slučajevima kada se koristi sistemski "
+"endian umesto video kartice"
+
+#: src/snes9x.ui:4019
+#, fuzzy
+msgid "Hardware Acceleration"
+msgstr "<b>Hardversko ubrzanje</b>"
+
+#: src/snes9x.ui:4048
+msgid "Display"
+msgstr "Prikaz"
+
+#: src/snes9x.ui:4101
+msgid "Sound driver:"
+msgstr "Pokretač zvuka:"
+
+#: src/snes9x.ui:4136
+msgid "Automatically adjust input rate to display"
+msgstr ""
+
+#: src/snes9x.ui:4140
+msgid "Sets the correct input rate based on the display's refresh rate"
+msgstr ""
+
+#: src/snes9x.ui:4152
+msgid "Dynamic rate control"
+msgstr ""
+
+#: src/snes9x.ui:4156
+msgid "Smooth out slight hiccups in sound input rate"
+msgstr ""
+
+#: src/snes9x.ui:4167
+msgid "Mute sound output"
+msgstr "Priguši izvor zvuka"
+
+#: src/snes9x.ui:4171
+msgid "Disables output of sound"
+msgstr "Isključuje izvor zvuka"
+
+#: src/snes9x.ui:4183
+#, fuzzy
+msgid "Mute sound when using turbo"
+msgstr "Priguši izvor zvuka"
+
+#: src/snes9x.ui:4187
+#, fuzzy
+msgid "Disables output of sound when using turbo"
+msgstr "Isključuje izvor zvuka"
+
+#: src/snes9x.ui:4210
+msgid "Playback rate:"
+msgstr "Plejbek vrednost:"
+
+#: src/snes9x.ui:4244
+msgid "milliseconds"
+msgstr "milisekunde"
+
+#: src/snes9x.ui:4267
+msgid "Buffer size:"
+msgstr "Vrednost bafera: "
+
+#: src/snes9x.ui:4281
+msgid "Dynamic rate limit:"
+msgstr ""
+
+#: src/snes9x.ui:4325
+msgid "Input rate:"
+msgstr "Ulazna vrednost:"
+
+#: src/snes9x.ui:4338
 msgid ""
 "Adjust to produce more or less data. Decrease the rate if experiencing "
 "crackling. Increase the rate if experiencing frame-rate stuttering. Best "
 "used with the \"Synchronize with sound\" option"
 msgstr ""
-"Ova regulacija stvara više ili manje podataka za obradu. Umanjavajte vrednost "
-"ako čujete 'pucketanje' ili povećajte vrednost ako primetite zastajkivanje "
-"'frejm-rejta'. Najbolje se koristi uz opciju \"Sinhronizacija sa zvukom\""
+"Ova regulacija stvara više ili manje podataka za obradu. Umanjavajte "
+"vrednost ako čujete 'pucketanje' ili povećajte vrednost ako primetite "
+"zastajkivanje 'frejm-rejta'. Najbolje se koristi uz opciju \"Sinhronizacija "
+"sa zvukom\""
 
-#: ../src/snes9x.glade.h:57
-msgid "Advance to Frame"
-msgstr "Doteraj do okvira Prozora"
+#: src/snes9x.ui:4387
+#, fuzzy
+msgid "Video rate:"
+msgstr "Video postavke:"
 
-#: ../src/snes9x.glade.h:58
-msgid "Allow non-power-of-two textures"
-msgstr "Dozvoli NPOT teksture"
+#: src/snes9x.ui:4400
+msgid "label"
+msgstr ""
 
-#: ../src/snes9x.glade.h:59
+#: src/snes9x.ui:4425
+msgid "<b>Sound Settings</b>"
+msgstr "<b>Podešavanje zvuka</b>"
+
+#: src/snes9x.ui:4459 src/snes9x.ui:8688
+msgid "Sound"
+msgstr "Zvuk"
+
+#: src/snes9x.ui:4517
+msgid "Throttling method:"
+msgstr ""
+
+#: src/snes9x.ui:4559
+#, fuzzy
+msgid "<b>Speed Control</b>"
+msgstr "<b>Server</b>"
+
+#: src/snes9x.ui:4597
+#, fuzzy
+msgid "Rewind buffer size (MB):"
+msgstr "Vrednost bafera: "
+
+#: src/snes9x.ui:4639
+msgid "Number of frames between rewind snapshots:"
+msgstr ""
+
+#: src/snes9x.ui:4680
+#, fuzzy
+msgid "<b>Rewind Settings</b>"
+msgstr "<b>Podešavanje zvuka</b>"
+
+#: src/snes9x.ui:4711
+#, fuzzy
+msgid "Allow invalid VRAM access"
+msgstr "Blokiraj pogrešan pristup video memoriji"
+
+#: src/snes9x.ui:4715
+msgid ""
+"Allows ROM hacks to write to screen at the wrong time. Only use if you know "
+"your ROM hack expects this"
+msgstr ""
+
+#: src/snes9x.ui:4725
 msgid "Allow opposing dpad directions"
 msgstr "Dozvoli suprotne dpad pravce"
 
-#: ../src/snes9x.glade.h:60
-msgid "Allow using modifier keys as independent keys instead of modifiers"
-msgstr "Dozvoli korišćenje modifikacijskih tastera kao nezavisnih tastera"
+#: src/snes9x.ui:4729
+msgid "Let left and right or up and down be pressed at the same time"
+msgstr "Levo-desno ili gore-dole će biti moguće istovremeno koristiti"
 
-#: ../src/snes9x.glade.h:61
-msgid ""
-"Allows games to use transparency effects. Recommended for correct graphics"
+#: src/snes9x.ui:4740
+msgid "Overclock CPU"
 msgstr ""
-"Dozvoli igrama da koriste efekte providnosti. "
-"Preporučeno radi ispravne grafike"
 
-#: ../src/snes9x.glade.h:62
-msgid "Allows scaling and filtering to use multiple processors"
-msgstr "Omogući većem broju CPU jezgara da ubrzaju skaliranje/filtere"
-
-#: ../src/snes9x.glade.h:63
-msgid "Apply scaling filter:"
-msgstr "Potvrdi filter za skaliranje"
-
-#: ../src/snes9x.glade.h:64
-msgid "Artifacts:"
-msgstr "Artifakti:"
-
-#: ../src/snes9x.glade.h:65
-msgid "Ask server to pause when"
-msgstr "Server će pauzirati nakon"
-
-#: ../src/snes9x.glade.h:66
-msgid ""
-"Automatic\n"
-"0\n"
-"1\n"
-"2\n"
-"3\n"
-"4\n"
-"5\n"
-"6\n"
-"7\n"
-"8\n"
-"9"
+#: src/snes9x.ui:4744
+msgid "Reduces slowdown, but has potential to break games"
 msgstr ""
-"Automatsko\n"
-"0\n"
-"1\n"
-"2\n"
-"3\n"
-"4\n"
-"5\n"
-"6\n"
-"7\n"
-"8\n"
-"9"
 
-#: ../src/snes9x.glade.h:77
+#: src/snes9x.ui:4755
+msgid "Remove sprite limit"
+msgstr ""
+
+#: src/snes9x.ui:4759
+msgid "Reduces flicker, but may cause graphical artifacts"
+msgstr ""
+
+#: src/snes9x.ui:4770
+msgid "Redirect echo buffer overflow"
+msgstr ""
+
+#: src/snes9x.ui:4774
+msgid "Allows old addmusic hacks to work, but will likely hurt other games"
+msgstr ""
+
+#: src/snes9x.ui:4792
+msgid "SuperFX clock speed %:"
+msgstr ""
+
+#: src/snes9x.ui:4830
+msgid "Gaussian is the correct behavior for SNES hardware"
+msgstr ""
+
+#: src/snes9x.ui:4837
+#, fuzzy
+msgid "Sound filter:"
+msgstr "Pokretač zvuka:"
+
+#: src/snes9x.ui:4874
+#, fuzzy
+msgid "<b>Hacks</b>"
+msgstr "<b>Lepljiva</b>"
+
+#: src/snes9x.ui:4916 src/snes9x.ui:7105
+msgid "Emulation"
+msgstr "Emulacija"
+
+#: src/snes9x.ui:5157
+#, fuzzy
+msgid "SRAM:"
+msgstr "Sačuvaj SRAM:"
+
+#: src/snes9x.ui:5169
+#, fuzzy
+msgid "Save states:"
+msgstr "Pozicije"
+
+#: src/snes9x.ui:5183
+#, fuzzy
+msgid "Cheats:"
+msgstr "Varanja"
+
+#: src/snes9x.ui:5197
+msgid "Patches:"
+msgstr ""
+
+#: src/snes9x.ui:5211
+msgid "Exports:"
+msgstr ""
+
+#: src/snes9x.ui:5235
+#, fuzzy
+msgid "<b>Game Data Locations</b>"
+msgstr "<b>Podaci igre</b>"
+
+#: src/snes9x.ui:5267
+msgid "Save SRAM:"
+msgstr "Sačuvaj SRAM:"
+
+#: src/snes9x.ui:5279
 msgid ""
 "Automatically save the game's SRAM at this interval. Setting this to 0 will "
 "only save when quitting or changing ROMs"
@@ -522,975 +1450,627 @@ msgstr ""
 "Automatski snimaj SRAM igre u ovom intervalu. Vrednost 0 (nula) će snimati "
 "jedino pri izlasku iz emulatora ili pak pri promeni ROMova"
 
-#: ../src/snes9x.glade.h:78
-msgid "B"
-msgstr "B"
-
-#: ../src/snes9x.glade.h:79
-msgid "BG layering hack"
-msgstr "BG hak za sloj"
-
-#: ../src/snes9x.glade.h:80
-msgid "Base emulation speed on the rate sound is output"
-msgstr "Baziraj brzinu emulacije srazmerno zvučnoj slici"
-
-#: ../src/snes9x.glade.h:81
-msgid "Begin movie recording"
-msgstr "Započni snimanje filma"
-
-#: ../src/snes9x.glade.h:82
-msgid "Bilinear-filter output"
-msgstr "Bilinearno filtriranje"
-
-#: ../src/snes9x.glade.h:83
-msgid "Bleed:"
-msgstr "Bledilo:"
-
-#: ../src/snes9x.glade.h:84
-msgid "Block invalid VRAM access"
-msgstr "Blokiraj pogrešan pristup video memoriji"
-
-#: ../src/snes9x.glade.h:85
-msgid "Brightness:"
-msgstr "Osvetljenje:"
-
-#: ../src/snes9x.glade.h:86
-msgid "Browse..."
-msgstr "Pretraži..."
-
-#: ../src/snes9x.glade.h:87
-msgid "Buffer size:"
-msgstr "Vrednost bafera: "
-
-#: ../src/snes9x.glade.h:88
-msgid "Buttons"
-msgstr "Dugmad"
-
-#: ../src/snes9x.glade.h:89
-msgid "Cali_brate"
-msgstr "Kali_bracija"
-
-#: ../src/snes9x.glade.h:90
-msgid "Can be faster or slower depending on drivers"
-msgstr "Može biti i sporije i brže... zavisno od drajvera"
-
-#: ../src/snes9x.glade.h:91
-msgid "Center all axes on all joysticks and press Calibrate."
-msgstr "Centriraj prvo sve ose na svim dzojsticima, tek onda Kalibracija!"
-
-#: ../src/snes9x.glade.h:92
-msgid "Change fullscreen resolution:"
-msgstr "Promena rezolucije za ceo ekran:"
-
-#: ../src/snes9x.glade.h:93
-msgid ""
-"Changes the amount a joystick should be tilted to register a button press"
-msgstr ""
-"Menja vredost koliko treba palicu dzojstika nakriviti da bi registrovao taster"
-
-#: ../src/snes9x.glade.h:94
-msgid "Changes the screen resolution when running Snes9x in fullscreen mode"
-msgstr "Ekranska rezolucija kada slika bude prekrila ceo ekran"
-
-#: ../src/snes9x.glade.h:95
-msgid "Clear entry"
-msgstr "Očisti upis"
-
-#: ../src/snes9x.glade.h:96
-msgid "Code:"
-msgstr "Kod: "
-
-#: ../src/snes9x.glade.h:97
-msgid "Composite"
-msgstr "Composite"
-
-#: ../src/snes9x.glade.h:98
-msgid "Connect to another computer"
-msgstr "Poveži se sa drugim računarom"
-
-#: ../src/snes9x.glade.h:99
-msgid "Connect to another computer that is running Snes9x NetPlay as a server"
-msgstr "Poveži se sa računarom kod koga je Snes9x NetPlay server"
-
-#: ../src/snes9x.glade.h:100
-msgid "Connect to specified TCP port on remote computer"
-msgstr "Poveži se specifičnim TCP portom ka udaljenom računaru"
-
-#: ../src/snes9x.glade.h:101
-msgid "Contrast:"
-msgstr "Kontrast:"
-
-#: ../src/snes9x.glade.h:102
-msgid "Controller Ports"
-msgstr "Portovi kontrolera"
-
-#: ../src/snes9x.glade.h:103
-msgid "Correct Aspect"
-msgstr "Ispravan prizor"
-
-#: ../src/snes9x.glade.h:104
-msgid "Custom folder:"
-msgstr "Direktorijum po izboru:"
-
-#: ../src/snes9x.glade.h:105
-msgid "Decrease frame rate"
-msgstr "Uspori frajmove"
-
-#: ../src/snes9x.glade.h:106
-msgid "Decrease frame time"
-msgstr "Uspori frejmove"
-
-#: ../src/snes9x.glade.h:107
-msgid "Default port:"
-msgstr "Podrazumevani port:"
-
-#: ../src/snes9x.glade.h:108
-msgid "Description:"
-msgstr "Opis:"
-
-#: ../src/snes9x.glade.h:109
-msgid "Detects frames that are not output by Snes9x in hires, and scales them"
-msgstr "Pronađi frejmove koji nisu emulirani u većim rezolucijama i prilagodi ih"
-
-#: ../src/snes9x.glade.h:110
-msgid "Different formats can yield highly different performance"
-msgstr "Različiti formati mogu doprineti drugačijim performansama"
-
-#: ../src/snes9x.glade.h:111
-msgid "Disables output of sound"
-msgstr "Isključuje izvor zvuka"
-
-#: ../src/snes9x.glade.h:112
-msgid "Display"
-msgstr "Prikaz"
-
-#: ../src/snes9x.glade.h:113
-msgid "Domain name or internet protocol address of a remote computer"
-msgstr "Naziv domena ili adresa interent protokola udaljenog računara"
-
-#: ../src/snes9x.glade.h:114
-msgid "Down"
-msgstr "Dole"
-
-#: ../src/snes9x.glade.h:115
-msgid "Emulation"
-msgstr "Emulacija"
-
-#: ../src/snes9x.glade.h:116
-msgid "Enable HDMA"
-msgstr "Omogući HDMA"
-
-#: ../src/snes9x.glade.h:117
-msgid "Enable HDMA. Required feature for compatibility with some games"
-msgstr "Potrebna osobina radi kompatibilnosti sa nekim igrama" 
-
-#: ../src/snes9x.glade.h:118
-msgid "Enable hacks that may improve performance, but can cause errors"
-msgstr "Ovi hakovi mogu poboljšati performanse, ali ponekad mogu biti i uzrok pojava greški"
-
-#: ../src/snes9x.glade.h:119
-msgid "Enable speed hacks"
-msgstr "Omogući hakove za brzinu"
-
-#: ../src/snes9x.glade.h:120
-msgid "Enable transparency"
-msgstr "Omogući transparenciju"
-
-#: ../src/snes9x.glade.h:121
-msgid "Enable turbo"
-msgstr "Omogući turbo"
-
-#: ../src/snes9x.glade.h:122
-msgid "Exact Pixels"
-msgstr "Ispravni pikseli"
-
-#: ../src/snes9x.glade.h:123
-msgid "Fast-forward to frame"
-msgstr "Ubrzaj do frejma..."
-
-#: ../src/snes9x.glade.h:124
-msgid "Files"
-msgstr "Fajlovi"
-
-#: ../src/snes9x.glade.h:125
-msgid "Force SNES-hires output"
-msgstr "Prisili emulaciju većih rezolucija"
-
-#: ../src/snes9x.glade.h:126
-msgid "Force an inverted byte-ordering"
-msgstr "Prisili na preinačeni poredak bajtova"
-
-#: ../src/snes9x.glade.h:127
-msgid ""
-"Forces a swapped byte-ordering for cases where the system's endian is used "
-"instead of the video card"
-msgstr ""
-"Prisiljava na izmenu poretka bajtova u slučajevima kada se koristi sistemski "
-"endian umesto video kartice"
-#: ../src/snes9x.glade.h:128
-msgid "Frameskip:"
-msgstr "Preskakanje frejmova:"
-
-#: ../src/snes9x.glade.h:129
-msgid "Fringing:"
-msgstr ""
-
-#: ../src/snes9x.glade.h:130
-msgid "From _File..."
-msgstr "Iz _Fajla..."
-
-#: ../src/snes9x.glade.h:131
-msgid ""
-"Game Genie\n"
-"Pro Action Replay\n"
-"Goldfinger"
-msgstr ""
-
-#: ../src/snes9x.glade.h:134
-msgid "Gamma:"
-msgstr "Gama:"
-
-#: ../src/snes9x.glade.h:135
-msgid "Go to fullscreen mode immediately after opening a ROM"
-msgstr "Pređi na ceo ekran odmah nakon otvaranja ROMa"
-
-#: ../src/snes9x.glade.h:136
-msgid "Graphics"
-msgstr "Grafika"
-
-#: ../src/snes9x.glade.h:137
-msgid "Hardware reset"
-msgstr "Hardverski reset"
-
-#: ../src/snes9x.glade.h:138
-msgid ""
-"Host a game on this computer as Player 1, requiring extra throughput to "
-"support multitple users"
-msgstr ""
-"Hostuj igru na ovom računaru kao Igrač 1. Ovo će zahtevati više propusne moći za "
-"podršku većeg broja korisnika"
-
-#: ../src/snes9x.glade.h:139
-msgid "Hue:"
-msgstr "Nijansa boje:"
-
-#: ../src/snes9x.glade.h:140
-msgid "Increase frame rate"
-msgstr "Ubrzaj frejmove"
-
-#: ../src/snes9x.glade.h:141
-msgid "Increase frame time"
-msgstr "Ubrzaj frejmove"
-
-#: ../src/snes9x.glade.h:142
-msgid "Input rate:"
-msgstr "Ulazna vrednost:"
-
-#: ../src/snes9x.glade.h:143
-msgid "Joypad"
-msgstr "Dzojped"
-
-#: ../src/snes9x.glade.h:144
-msgid "Joypads"
-msgstr "Dzojpedi"
-
-#: ../src/snes9x.glade.h:145
-msgid "Joystick Options"
-msgstr "Opcije za dzojstik"
-
-#: ../src/snes9x.glade.h:146
-msgid "L"
-msgstr "L"
-
-#: ../src/snes9x.glade.h:147
-msgid "Left"
-msgstr "Levo"
-
-#: ../src/snes9x.glade.h:148
-msgid "Let left and right or up and down be pressed at the same time"
-msgstr "Levo-desno ili gore-dole će biti moguće istovremeno koristiti"
-
-#: ../src/snes9x.glade.h:149
-msgid "Load Movie"
-msgstr "Učitaj film"
-
-#: ../src/snes9x.glade.h:150
-msgid "Load _Movie..."
-msgstr "Učitaj _film..."
-
-#: ../src/snes9x.glade.h:151
-msgid "Maintain aspect-ratio:"
-msgstr "Očuvaj proporciju prizora:"
-
-#: ../src/snes9x.glade.h:152
-msgid "Merge odd and even fields"
-msgstr ""
-
-#: ../src/snes9x.glade.h:153
-msgid "Misc"
-msgstr "Razno"
-
-#: ../src/snes9x.glade.h:154
-msgid "Monochrome"
-msgstr "MonoChrome"
-
-#: ../src/snes9x.glade.h:155
-msgid "Mouse"
-msgstr "Miš"
-
-#: ../src/snes9x.glade.h:156
-msgid "Multitap"
-msgstr ""
-
-#: ../src/snes9x.glade.h:157
-msgid "Mute sound output"
-msgstr "Priguši izvor zvuka"
-
-#: ../src/snes9x.glade.h:158
-msgid "Name or IP address:"
-msgstr "Naziv ili IP adresa:"
-
-#: ../src/snes9x.glade.h:159
-msgid ""
-"None\n"
-"SuperEagle\n"
-"2xSaI\n"
-"Super2xSaI\n"
-"hq2x\n"
-"hq3x\n"
-"hq4x\n"
-"EPX\n"
-"EPX Smooth\n"
-"Blargg's NTSC\n"
-"Scanlines"
-msgstr ""
-
-#: ../src/snes9x.glade.h:170
-msgid "Open ROM"
-msgstr "Otvori ROM"
-
-#: ../src/snes9x.glade.h:171
-msgid "Open Recent"
-msgstr "Otvori poslednje"
-
-#: ../src/snes9x.glade.h:172
-msgid "Open a ROM to use with NetPlay"
-msgstr "Otvori ROM koji ćeš koristiti za NetPlay"
-
-#: ../src/snes9x.glade.h:173
-msgid "Open with _NetPlay..."
-msgstr "Otvori uz _NetPlay..."
-
-#: ../src/snes9x.glade.h:174
-msgid "Output two channels, left and right"
-msgstr "Dvokanalni zvuk - odvojeno levi i desni"
-
-#: ../src/snes9x.glade.h:175
-msgid "Outputs at 16 bits per sample instead of 8 bits. More accurate sound"
-msgstr "Izlaz od 16 bita po semplu umesto 8 bita - još ispravniji zvuk"
-
-#: ../src/snes9x.glade.h:176
-msgid "Pause"
-msgstr "Pauza"
-
-#: ../src/snes9x.glade.h:177
-msgid "Pause emulation when switching away from Snes9x"
-msgstr "Pauziraj emulaciju kada istovremeno koristiš i druge GUI programe"
-
-#: ../src/snes9x.glade.h:178
-msgid "Pixel-buffer format:"
-msgstr ""
-
-#: ../src/snes9x.glade.h:179
-msgid "Playback rate:"
-msgstr "Plejbek vrednost:"
-
-#: ../src/snes9x.glade.h:180
-msgid "Port:"
-msgstr "Port:"
-
-#: ../src/snes9x.glade.h:181
-msgid "Prevent the screensaver from activating"
-msgstr "Spreči aktiviranje čuvara ekrana"
-
-#: ../src/snes9x.glade.h:182
-msgid "Prevents edge artifacts, but can slow performance"
-msgstr "Sprečava moguću pojavu artifakata na rubovima prikaza. "
-"Može usporiti, ali i ubrzati performanse - zavisno od drajvera."
-
-#: ../src/snes9x.glade.h:183
-msgid "Quit Snes9x"
-msgstr "Isključi Snes9x"
-
-#: ../src/snes9x.glade.h:184
-msgid "R"
-msgstr "R"
-
-#: ../src/snes9x.glade.h:185
-msgid "RGB"
-msgstr "RedGreenBlue"
-
-#: ../src/snes9x.glade.h:186
-msgid "ROM folder"
-msgstr "ROM direktorijum"
-
-#: ../src/snes9x.glade.h:187
-msgid "R_ecord Movie..."
-msgstr "S_nimi film..."
-
-#: ../src/snes9x.glade.h:188
-msgid "Reset"
-msgstr "Hardverski reset"
-
-#: ../src/snes9x.glade.h:189
-msgid ""
-"Reset the game when players join instead of transferring potentially "
-"unreliable freeze states"
-msgstr ""
-"Resetuj igru kada se igrači priključe, zbog mogućeg zamrzavanja "
-"i zbog pouzdanog prenosa"
-
-#: ../src/snes9x.glade.h:190
-msgid "Resolution:"
-msgstr "Rezolucija:"
-
-#: ../src/snes9x.glade.h:191
-msgid "Reverse stereo"
-msgstr "Reverzni stereo"
-
-#: ../src/snes9x.glade.h:192
-msgid "Right"
-msgstr "Levo"
-
-#: ../src/snes9x.glade.h:193
-msgid "Run / _Continue"
-msgstr "Pokreni / _Nastavi"
-
-#: ../src/snes9x.glade.h:194
-msgid "S-Video"
-msgstr ""
-
-#: ../src/snes9x.glade.h:195
-msgid "SNES Port 1"
-msgstr ""
-
-#: ../src/snes9x.glade.h:196
-msgid "SNES Port 2"
-msgstr ""
-
-#: ../src/snes9x.glade.h:197
-msgid "Saturation:"
-msgstr "Zasićenje:"
-
-#: ../src/snes9x.glade.h:198
-msgid "Save SPC"
-msgstr "Sačuvaj SPC"
-
-#: ../src/snes9x.glade.h:199
-msgid "Save SPC..."
-msgstr "Snimi SPC..."
-
-#: ../src/snes9x.glade.h:200
-msgid "Save SRAM:"
-msgstr "Sačuvaj SRAM:"
-
-#: ../src/snes9x.glade.h:202
-msgid "Save data in:"
-msgstr "Sačuvaj podatke u:"
-
-#: ../src/snes9x.glade.h:203
-msgid "Scale image to fit window"
-msgstr "Prilagodi sliku prozoru"
-
-#: ../src/snes9x.glade.h:204
-msgid "Scales the image as large as possible without distortion"
-msgstr "Prilagodi sliku što je god moguće veću, ali bez izobličenja"
-
-#: ../src/snes9x.glade.h:205
-msgid "Scales the image so no black bars are present"
-msgstr "Prilagodi sliku tako da se ne vide crni delovi"
-
-#: ../src/snes9x.glade.h:206
-msgid "Scanline intensity:"
-msgstr "Scanline intenzitet:"
-
-#: ../src/snes9x.glade.h:207
-msgid "Screenshot"
-msgstr "Snimak ekrana"
-
-#: ../src/snes9x.glade.h:208
-msgid "Seek to frame"
-msgstr "Pređi na frejm"
-
-#: ../src/snes9x.glade.h:209
-msgid "Select"
-msgstr "Odaberi"
-
-#: ../src/snes9x.glade.h:210
-msgid "Send ROM image to clients"
-msgstr "Pošalji ROM sliku drugim klijentima"
-
-#: ../src/snes9x.glade.h:211
-msgid ""
-"Send the running game image to players instead of requiring them to have "
-"their own copies"
-msgstr ""
-"Pošalji trenutnu igru drugim igračima, umesto da im tražite da imaju "
-"iste takve kopije"
-
-#: ../src/snes9x.glade.h:212
-msgid "Set new axis bindings at:"
-msgstr "Prilagodi nove tastere na:"
-
-#: ../src/snes9x.glade.h:213
-msgid "Sharpness:"
-msgstr "Oštrina:"
-
-#: ../src/snes9x.glade.h:214
-msgid "Shortcuts"
-msgstr "Prečice"
-
-#: ../src/snes9x.glade.h:215
-msgid "Show ROM _Info..."
-msgstr "Prikaži informacije o ROMu..."
-
-#: ../src/snes9x.glade.h:216
-msgid "Show frame rate"
-msgstr "Prikaži vrednost frejmova"
-
-#: ../src/snes9x.glade.h:217
-msgid "Slot 0"
-msgstr ""
-
-#: ../src/snes9x.glade.h:218
-msgid "Slot 1"
-msgstr ""
-
-#: ../src/snes9x.glade.h:219
-msgid "Slot 2"
-msgstr ""
-
-#: ../src/snes9x.glade.h:220
-msgid "Slot 3"
-msgstr ""
-
-#: ../src/snes9x.glade.h:221
-msgid "Slot 4"
-msgstr ""
-
-#: ../src/snes9x.glade.h:222
-msgid "Slot 5"
-msgstr ""
-
-#: ../src/snes9x.glade.h:223
-msgid "Slot 6"
-msgstr ""
-
-#: ../src/snes9x.glade.h:224
-msgid "Slot 7"
-msgstr ""
-
-#: ../src/snes9x.glade.h:225
-msgid "Slot 8"
-msgstr ""
-
-#: ../src/snes9x.glade.h:226
-msgid "Slot _0"
-msgstr ""
-
-#: ../src/snes9x.glade.h:227
-msgid "Slot _1"
-msgstr ""
-
-#: ../src/snes9x.glade.h:228
-msgid "Slot _2"
-msgstr ""
-
-#: ../src/snes9x.glade.h:229
-msgid "Slot _3"
-msgstr ""
-
-#: ../src/snes9x.glade.h:230
-msgid "Slot _4"
-msgstr ""
-
-#: ../src/snes9x.glade.h:231
-msgid "Slot _5"
-msgstr ""
-
-#: ../src/snes9x.glade.h:232
-msgid "Slot _6"
-msgstr ""
-
-#: ../src/snes9x.glade.h:233
-msgid "Slot _7"
-msgstr ""
-
-#: ../src/snes9x.glade.h:234
-msgid "Slot _8"
-msgstr ""
-
-#: ../src/snes9x.glade.h:235
-msgid "Smoothens (blurs) the image"
-msgstr "Ugladi (zamagli) sliku"
-
-#: ../src/snes9x.glade.h:236
-msgid "Snes9x"
-msgstr "Snes9x"
-
-#: ../src/snes9x.glade.h:237
-msgid "Snes9x Cheats"
-msgstr "Snes9x Varanja"
-
-#: ../src/snes9x.glade.h:238
-msgid "Snes9x NetPlay"
-msgstr "Snes9x NetPlay"
-
-#: ../src/snes9x.glade.h:239
-msgid "Snes9x Preferences"
-msgstr "Snes9x Podešavanja"
-
-#: ../src/snes9x.glade.h:240
-msgid "Snes9x configuration folder"
-msgstr "Snes9x konfiguracijski direktorijum"
-
-#: ../src/snes9x.glade.h:241
-msgid "Soft _Reset"
-msgstr "Softverski _reset"
-
-#: ../src/snes9x.glade.h:242
-msgid "Soft reset"
-msgstr "Softverski reset"
-
-#: ../src/snes9x.glade.h:243
-msgid "Sound"
-msgstr "Zvuk"
-
-#: ../src/snes9x.glade.h:244
-msgid "Sound driver:"
-msgstr "Pokretač zvuka:"
-
-#: ../src/snes9x.glade.h:245
-msgid "Start"
-msgstr "Početak"
-
-#: ../src/snes9x.glade.h:246
-msgid "Stereo"
-msgstr "Stereo"
-
-#: ../src/snes9x.glade.h:247
-msgid "Stop movie recording"
-msgstr "Zaustavi snimanje filma"
-
-#: ../src/snes9x.glade.h:248
-msgid "Store data in $HOME/.snes9x/sram"
-msgstr "Čuvaj podatke u $HOME/.snes9x/sram"
-
-#: ../src/snes9x.glade.h:249
-msgid "Store data in the same folder as the ROM file used"
-msgstr "Čuvaj podatke u istom direktorijumu gde je i sam ROM fajl"
-
-#: ../src/snes9x.glade.h:250
-msgid "Superscope"
-msgstr "Superscope"
-
-#: ../src/snes9x.glade.h:251
-msgid "Swap controllers 1 & 2"
-msgstr "Zameni mesta kontrolerima 1 i 2"
-
-#: ../src/snes9x.glade.h:252
-msgid "Swap the left and right sound channels"
-msgstr "Zamena zvučnih kanala - levi kao desni, a desni kao levi"
-
-#: ../src/snes9x.glade.h:253
-msgid "Swap with:"
-msgstr "Zameni sa:"
-
-#: ../src/snes9x.glade.h:254
-msgid "Sy_nc Clients"
-msgstr "Si_nhronizuj klijente"
-
-#: ../src/snes9x.glade.h:255
-msgid "Sync the image to the vertical retrace to stop tearing"
-msgstr "Sinhronizuje sliku sa vertikalnim osvežavanjem da bi se izbeglo 'suzenje'"
-
-#: ../src/snes9x.glade.h:256
-msgid "Sync to vertical blank"
-msgstr "Sinhronizacija sa vertikalnim osvežavanjem ekrana"
-
-#: ../src/snes9x.glade.h:257
-msgid "Sync using reset"
-msgstr "Resetuj igru radi sinhronizacije"
-
-#: ../src/snes9x.glade.h:258
-msgid "Synchronize with sound"
-msgstr "Sinhronizacija sa zvukom"
-
-#: ../src/snes9x.glade.h:259
-msgid "TCP port used as a connection point for remote clients"
-msgstr ""
-"Podrazumevani TCP port koji će se koristi za povezivanje sa "
-"udaljenim računarom"
-
-#: ../src/snes9x.glade.h:260
-msgid "The ESC key should:"
-msgstr "ESC taster će:"
-
-#: ../src/snes9x.glade.h:261
-msgid "The current frame in the movie is"
-msgstr "Trenutni frejm u filmu je"
-
-#: ../src/snes9x.glade.h:262
-msgid ""
-"The game chosen will be loaded before connecting. This field can be blank if "
-"the server will send the ROM image"
-msgstr ""
-"Izabrana igra biće učitana pre konekcije. Ovo polje može biti prazno ako "
-"će server da pošalje ROM"
-
-#: ../src/snes9x.glade.h:263
-msgid "To _File..."
-msgstr "Ka _Fajlu..."
-
-#: ../src/snes9x.glade.h:264
-msgid "Toggle BG layer 0"
-msgstr "Uključi BG sloj 0"
-
-#: ../src/snes9x.glade.h:265
-msgid "Toggle BG layer 1"
-msgstr "Uključi BG sloj 1"
-
-#: ../src/snes9x.glade.h:266
-msgid "Toggle BG layer 2"
-msgstr "Uključi BG sloj 2"
-
-#: ../src/snes9x.glade.h:267
-msgid "Toggle BG layer 3"
-msgstr "Uključi BG sloj 3"
-
-#: ../src/snes9x.glade.h:268
-msgid "Toggle all sound channels"
-msgstr "Uključi sve zvučne kanale"
-
-#: ../src/snes9x.glade.h:269
-msgid "Toggle fullscreen"
-msgstr "Pređi na ceo ekran"
-
-#: ../src/snes9x.glade.h:270
-msgid "Toggle sound channel 0"
-msgstr "Uključi zvučni kanal 0"
-
-#: ../src/snes9x.glade.h:271
-msgid "Toggle sound channel 1"
-msgstr "Uključi zvučni kanal 1"
-
-#: ../src/snes9x.glade.h:272
-msgid "Toggle sound channel 2"
-msgstr "Uključi zvučni kanal 2"
-
-#: ../src/snes9x.glade.h:273
-msgid "Toggle sound channel 3"
-msgstr "Uključi zvučni kanal 3"
-
-#: ../src/snes9x.glade.h:274
-msgid "Toggle sound channel 4"
-msgstr "Uključi zvučni kanal 4"
-
-#: ../src/snes9x.glade.h:275
-msgid "Toggle sound channel 5"
-msgstr "Uključi zvučni kanal 5"
-
-#: ../src/snes9x.glade.h:276
-msgid "Toggle sound channel 6"
-msgstr "Uključi zvučni kanal 6"
-
-#: ../src/snes9x.glade.h:277
-msgid "Toggle sound channel 7"
-msgstr "Uključi zvučni kanal 7"
-
-#: ../src/snes9x.glade.h:278
-msgid "Toggle sprites"
-msgstr "Uključi sprajtove"
-
-#: ../src/snes9x.glade.h:279
-msgid ""
-"Toggle the menu bar\n"
-"Exit fullscreen mode\n"
-"Quit Snes9x"
-msgstr ""
-"Uključi/Isključi meni\n"
-"Izađi iz moda celog ekrana\n"
-"Isključi Snes9x"
-
-#: ../src/snes9x.glade.h:282
-msgid "Toggle turbo"
-msgstr "Uključi/Isključi turbo"
-
-#: ../src/snes9x.glade.h:283
-msgid "Turbo / Sticky Buttons"
-msgstr "Turbo / Lepljiva Dugmad"
-
-#: ../src/snes9x.glade.h:284
-msgid "Type:"
-msgstr "Odaberi:"
-
-#: ../src/snes9x.glade.h:285
-msgid "Up"
-msgstr "Gore"
-
-#: ../src/snes9x.glade.h:286
-msgid "Use "
-msgstr "Koristi "
-
-#: ../src/snes9x.glade.h:287
-msgid "Use SNES extended height. Will probably cause letterboxing"
-msgstr ""
-"Korišćenje prekomerne visine će verovatno izazvati letterboxing"
-
-#: ../src/snes9x.glade.h:288
-msgid "Use fullscreen on ROM open"
-msgstr "Koristi ceo ekran pri otvaranju ROMa"
-
-#: ../src/snes9x.glade.h:289
-msgid "Use modifier keys (CTRL, SHIFT, ALT) directly"
-msgstr "Koristi mod. tastere (CTRL, SHIFT, ALT) direktno"
-
-#: ../src/snes9x.glade.h:290
-msgid "Use overscanned height"
-msgstr "Koristi prekomernu visinu"
-
-#: ../src/snes9x.glade.h:291
-msgid "Use pixel-buffer objects"
-msgstr "Koristi pixel-buffer objects"
-
-#: ../src/snes9x.glade.h:292
-msgid "Version Info"
-msgstr "O programu"
-
-#: ../src/snes9x.glade.h:293
-msgid "Video preset:"
-msgstr "Video postavke:"
-
-#: ../src/snes9x.glade.h:294
-msgid "X"
-msgstr "X"
-
-#: ../src/snes9x.glade.h:295
-msgid "Y"
-msgstr "Y"
-
-#: ../src/snes9x.glade.h:296
-msgid "_1x"
-msgstr "_Original"
-
-#: ../src/snes9x.glade.h:297
-msgid "_2x"
-msgstr "_2 puta"
-
-#: ../src/snes9x.glade.h:298
-msgid "_3x"
-msgstr "_3 puta"
-
-#: ../src/snes9x.glade.h:299
-msgid "_4x"
-msgstr "_4 puta"
-
-#: ../src/snes9x.glade.h:300
-msgid "_5x"
-msgstr "_5 puta"
-
-#: ../src/snes9x.glade.h:301
-msgid "_Change Size"
-msgstr "_Promeni veličinu"
-
-#: ../src/snes9x.glade.h:302
-msgid "_Cheats..."
-msgstr "_Varanja"
-
-#: ../src/snes9x.glade.h:303
-msgid "_Emulation"
-msgstr "_Emulacija"
-
-#: ../src/snes9x.glade.h:304
-msgid "_File"
-msgstr "_Fajl"
-
-#: ../src/snes9x.glade.h:305
-msgid "_Fullscreen"
-msgstr "_Ceo ekran"
-
-#: ../src/snes9x.glade.h:306
-msgid "_Hide Menu"
-msgstr "_Sakrij meni"
-
-#: ../src/snes9x.glade.h:307
-msgid "_Jump to Frame..."
-msgstr "_Pređi na frejm..."
-
-#: ../src/snes9x.glade.h:308
-msgid "_Load State"
-msgstr "_Učitaj poziciju"
-
-#: ../src/snes9x.glade.h:309
-msgid "_Open ROM..."
-msgstr "_Otvori ROM..."
-
-#: ../src/snes9x.glade.h:310
-msgid "_Options"
-msgstr "_Opcije"
-
-#: ../src/snes9x.glade.h:311
-msgid "_Pause"
-msgstr "_Pauza"
-
-#: ../src/snes9x.glade.h:312
-msgid "_Preferences..."
-msgstr "_Podešavanja..."
-
-#: ../src/snes9x.glade.h:313
-msgid "_Quit"
-msgstr "_Izlaz"
-
-#: ../src/snes9x.glade.h:314
-msgid "_Reset"
-msgstr "_Resetuj"
-
-#: ../src/snes9x.glade.h:315
-msgid "_Save State"
-msgstr "_Snimi poziciju"
-
-#: ../src/snes9x.glade.h:316
-msgid "_Status Bar"
-msgstr "_Statusna linija"
-
-#: ../src/snes9x.glade.h:317
-msgid "_Stop Recording"
-msgstr "_Zaustavi snimanje"
-
-#: ../src/snes9x.glade.h:318
-msgid "_Swap"
-msgstr "_Zamena"
-
-#: ../src/snes9x.glade.h:319
-msgid "_View"
-msgstr "_Pregled"
-
-#: ../src/snes9x.glade.h:320
-msgid "frames behind"
-msgstr "frejmova"
-
-#: ../src/snes9x.glade.h:321
-msgid "milliseconds"
-msgstr "milisekunde"
-
-#: ../src/snes9x.glade.h:322
-msgid "percent"
-msgstr "procenat"
-
-#: ../src/snes9x.glade.h:323
+#: src/snes9x.ui:5298
 msgid "seconds after change"
 msgstr "sekundi nakon promene"
 
-#: ../src/snes9x.glade.h:324
-msgid "threads for filtering and scaling"
-msgstr "niti za za filtriranje i prilagođavanje slike"
+#: src/snes9x.ui:5314
+#, fuzzy
+msgid "<b>Automatic Saving</b>"
+msgstr "<b>Osnovna podešavanja</b>"
+
+#: src/snes9x.ui:5351
+msgid "Files"
+msgstr "Fajlovi"
+
+#: src/snes9x.ui:5382
+msgid "<b>Joypad:</b>"
+msgstr "<b>Dzojped</b>"
+
+#: src/snes9x.ui:5423
+msgid "_Reset"
+msgstr "_Resetuj"
+
+#: src/snes9x.ui:5451
+msgid "Swap with:"
+msgstr "Zameni sa:"
+
+#: src/snes9x.ui:5479
+msgid "_Swap"
+msgstr "_Zamena"
+
+#: src/snes9x.ui:5501
+msgid "Use modifier keys (CTRL, SHIFT, ALT) directly"
+msgstr "Koristi mod. tastere (CTRL, SHIFT, ALT) direktno"
+
+#: src/snes9x.ui:5505
+msgid "Allow using modifier keys as independent keys instead of modifiers"
+msgstr "Dozvoli korišćenje modifikacijskih tastera kao nezavisnih tastera"
+
+#: src/snes9x.ui:5539
+msgid "Up"
+msgstr "Gore"
+
+#: src/snes9x.ui:5551
+msgid "Down"
+msgstr "Dole"
+
+#: src/snes9x.ui:5565
+msgid "Left"
+msgstr "Levo"
+
+#: src/snes9x.ui:5579
+msgid "Right"
+msgstr "Levo"
+
+#: src/snes9x.ui:5593
+msgid "Start"
+msgstr "Početak"
+
+#: src/snes9x.ui:5607
+msgid "Select"
+msgstr "Odaberi"
+
+#: src/snes9x.ui:5748 src/snes9x.ui:5978 src/snes9x.ui:6190
+msgid "A"
+msgstr "A"
+
+#: src/snes9x.ui:5760 src/snes9x.ui:5990 src/snes9x.ui:6202
+msgid "B"
+msgstr "B"
+
+#: src/snes9x.ui:5774 src/snes9x.ui:6004 src/snes9x.ui:6216
+msgid "X"
+msgstr "X"
+
+#: src/snes9x.ui:5788 src/snes9x.ui:6018 src/snes9x.ui:6230
+msgid "Y"
+msgstr "Y"
+
+#: src/snes9x.ui:5802 src/snes9x.ui:6032 src/snes9x.ui:6244
+msgid "L"
+msgstr "L"
+
+#: src/snes9x.ui:5816 src/snes9x.ui:6046 src/snes9x.ui:6258
+msgid "R"
+msgstr "R"
+
+#: src/snes9x.ui:5950
+msgid "Buttons"
+msgstr "Dugmad"
+
+#: src/snes9x.ui:6391
+msgid "<b>Sticky</b>"
+msgstr "<b>Lepljiva</b>"
+
+#: src/snes9x.ui:6407
+msgid "<b>Turbo</b>"
+msgstr "<b>Turbo</b>"
+
+#: src/snes9x.ui:6426
+msgid "Turbo / Sticky Buttons"
+msgstr "Turbo / Lepljiva Dugmad"
+
+#: src/snes9x.ui:6463
+msgid "Set new axis bindings at:"
+msgstr "Prilagodi nove tastere na:"
+
+#: src/snes9x.ui:6475
+msgid ""
+"Changes the amount a joystick should be tilted to register a button press"
+msgstr ""
+"Menja vredost koliko treba palicu dzojstika nakriviti da bi registrovao "
+"taster"
+
+#: src/snes9x.ui:6494
+msgid "percent"
+msgstr "procenat"
+
+#: src/snes9x.ui:6511
+msgid "<b>Joystick Axis Threshold</b>"
+msgstr "<b>Smerovi dzojstika</b>"
+
+#: src/snes9x.ui:6548
+msgid "Center all axes on all joysticks and press Calibrate."
+msgstr "Centriraj prvo sve ose na svim dzojsticima, tek onda Kalibracija!"
+
+#: src/snes9x.ui:6563
+msgid "Cali_brate"
+msgstr "Kali_bracija"
+
+#: src/snes9x.ui:6596
+msgid "<b>Calibration</b>"
+msgstr "<b>Kalibracija</b>"
+
+#: src/snes9x.ui:6617
+msgid "Joystick Options"
+msgstr "Opcije za dzojstik"
+
+#: src/snes9x.ui:6635 src/snes9x.ui:8987
+msgid ""
+"<small>Click an entry and then press the desired keys or joystick button\n"
+"<i>Escape</i>: Move to next<i>  Shift-Escape</i>: Clear selected</small>"
+msgstr ""
+
+#: src/snes9x.ui:6673
+msgid "Joypads"
+msgstr "Dzojpedi"
+
+#: src/snes9x.ui:6700
+msgid "<b>Snes9x Emulator Shortcut Keys</b>"
+msgstr "<b>Tastaturne prečice za Snes9x Emulator</b>"
+
+#: src/snes9x.ui:6751
+msgid "Soft reset"
+msgstr "Softverski reset"
+
+#: src/snes9x.ui:6765
+msgid "Hardware reset"
+msgstr "Hardverski reset"
+
+#: src/snes9x.ui:6779
+msgid "Increase frame time"
+msgstr "Ubrzaj frejmove"
+
+#: src/snes9x.ui:6793
+msgid "Decrease frame time"
+msgstr "Uspori frejmove"
+
+#: src/snes9x.ui:6807
+msgid "Increase frame rate"
+msgstr "Ubrzaj frejmove"
+
+#: src/snes9x.ui:6821
+msgid "Decrease frame rate"
+msgstr "Uspori frajmove"
+
+#: src/snes9x.ui:6835
+msgid "Pause"
+msgstr "Pauza"
+
+#: src/snes9x.ui:6849
+msgid "Toggle turbo"
+msgstr "Uključi/Isključi turbo"
+
+#: src/snes9x.ui:6863
+msgid "Enable turbo"
+msgstr "Omogući turbo"
+
+#: src/snes9x.ui:6878
+msgid "Open ROM"
+msgstr "Otvori ROM"
+
+#: src/snes9x.ui:7137
+msgid "Toggle BG layer 0"
+msgstr "Uključi BG sloj 0"
+
+#: src/snes9x.ui:7149
+msgid "Toggle BG layer 1"
+msgstr "Uključi BG sloj 1"
+
+#: src/snes9x.ui:7163
+msgid "Toggle BG layer 2"
+msgstr "Uključi BG sloj 2"
+
+#: src/snes9x.ui:7177
+msgid "Toggle BG layer 3"
+msgstr "Uključi BG sloj 3"
+
+#: src/snes9x.ui:7191
+msgid "Toggle sprites"
+msgstr "Uključi sprajtove"
+
+#: src/snes9x.ui:7205
+msgid "BG layering hack"
+msgstr "BG hak za sloj"
+
+#: src/snes9x.ui:7219
+msgid "Screenshot"
+msgstr "Snimak ekrana"
+
+#: src/snes9x.ui:7233
+msgid "Toggle fullscreen"
+msgstr "Pređi na ceo ekran"
+
+#: src/snes9x.ui:7397
+msgid "Graphics"
+msgstr "Grafika"
+
+#: src/snes9x.ui:7434
+msgid "Save current slot"
+msgstr ""
+
+#: src/snes9x.ui:7467
+msgid "Load current slot"
+msgstr ""
+
+#: src/snes9x.ui:7500
+msgid "Increment and save"
+msgstr ""
+
+#: src/snes9x.ui:7533
+msgid "Decrement and load"
+msgstr ""
+
+#: src/snes9x.ui:7566
+msgid "Increment slot"
+msgstr ""
+
+#: src/snes9x.ui:7599
+msgid "Decrement slot"
+msgstr ""
+
+#: src/snes9x.ui:7643
+msgid "<b>Quick save state</b>"
+msgstr "<b>Brzo snimi</b>"
+
+#: src/snes9x.ui:7658
+msgid "<b>Quick load state</b>"
+msgstr "<b>Brzo učitaj</b>"
+
+#: src/snes9x.ui:7673 src/snes9x.ui:7813
+msgid "Slot 0"
+msgstr ""
+
+#: src/snes9x.ui:7687 src/snes9x.ui:7829
+msgid "Slot 1"
+msgstr ""
+
+#: src/snes9x.ui:7701 src/snes9x.ui:7845
+msgid "Slot 2"
+msgstr ""
+
+#: src/snes9x.ui:7715 src/snes9x.ui:7861
+msgid "Slot 3"
+msgstr ""
+
+#: src/snes9x.ui:7729 src/snes9x.ui:7877
+msgid "Slot 4"
+msgstr ""
+
+#: src/snes9x.ui:7743 src/snes9x.ui:7893
+msgid "Slot 5"
+msgstr ""
+
+#: src/snes9x.ui:7757 src/snes9x.ui:7909
+msgid "Slot 6"
+msgstr ""
+
+#: src/snes9x.ui:7771 src/snes9x.ui:7925
+msgid "Slot 7"
+msgstr ""
+
+#: src/snes9x.ui:7785 src/snes9x.ui:7941
+msgid "Slot 8"
+msgstr ""
+
+#: src/snes9x.ui:7799 src/snes9x.ui:7957
+msgid "Slot 9"
+msgstr ""
+
+#: src/snes9x.ui:8396
+msgid "Toggle sound channel 0"
+msgstr "Uključi zvučni kanal 0"
+
+#: src/snes9x.ui:8408
+msgid "Toggle sound channel 1"
+msgstr "Uključi zvučni kanal 1"
+
+#: src/snes9x.ui:8422
+msgid "Toggle sound channel 2"
+msgstr "Uključi zvučni kanal 2"
+
+#: src/snes9x.ui:8436
+msgid "Toggle sound channel 3"
+msgstr "Uključi zvučni kanal 3"
+
+#: src/snes9x.ui:8450
+msgid "Toggle sound channel 4"
+msgstr "Uključi zvučni kanal 4"
+
+#: src/snes9x.ui:8464
+msgid "Toggle sound channel 5"
+msgstr "Uključi zvučni kanal 5"
+
+#: src/snes9x.ui:8478
+msgid "Toggle sound channel 6"
+msgstr "Uključi zvučni kanal 6"
+
+#: src/snes9x.ui:8492
+msgid "Toggle sound channel 7"
+msgstr "Uključi zvučni kanal 7"
+
+#: src/snes9x.ui:8506
+msgid "Toggle all sound channels"
+msgstr "Uključi sve zvučne kanale"
+
+#: src/snes9x.ui:8711
+msgid "Seek to frame"
+msgstr "Pređi na frejm"
+
+#: src/snes9x.ui:8726
+msgid "Load Movie"
+msgstr "Učitaj film"
+
+#: src/snes9x.ui:8741
+msgid "Stop movie recording"
+msgstr "Zaustavi snimanje filma"
+
+#: src/snes9x.ui:8756
+msgid "Begin movie recording"
+msgstr "Započni snimanje filma"
+
+#: src/snes9x.ui:8771
+msgid "Save SPC"
+msgstr "Sačuvaj SPC"
+
+#: src/snes9x.ui:8871
+msgid "Swap controllers 1 & 2"
+msgstr "Zameni mesta kontrolerima 1 i 2"
+
+#: src/snes9x.ui:8902
+msgid "Rewind"
+msgstr ""
+
+#: src/snes9x.ui:8933
+msgid "Capture/release mouse"
+msgstr ""
+
+#: src/snes9x.ui:8969
+msgid "Misc"
+msgstr "Razno"
+
+#: src/snes9x.ui:9025
+msgid "Shortcuts"
+msgstr "Prečice"
+
+#: src/snes9x.ui:9064
+msgid "Pause emulation when switching away from Snes9x"
+msgstr "Pauziraj emulaciju kada istovremeno koristiš i druge GUI programe"
+
+#: src/snes9x.ui:9078
+msgid "Force-enable button and menu icons"
+msgstr ""
+
+#: src/snes9x.ui:9099
+msgid "The ESC key should:"
+msgstr "ESC taster će:"
+
+#: src/snes9x.ui:9141
+msgid "Initial background:"
+msgstr ""
+
+#: src/snes9x.ui:9182
+#, fuzzy
+msgid "<b>Window Behavior</b>"
+msgstr "<b>Prebacivanje izmedju prozora</b>"
+
+#: src/snes9x.ui:9212
+msgid "Prevent the screensaver from activating"
+msgstr "Spreči aktiviranje čuvara ekrana"
+
+#: src/snes9x.ui:9232
+msgid "<b>Screensaver</b>"
+msgstr "<b>Čuvar ekrana</b>"
+
+#: src/snes9x.ui:9266
+msgid "UI"
+msgstr ""
+
+#: src/snes9x.ui:9300
+msgid ""
+"  Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.\n"
+"\n"
+"  Snes9x homepage: http://www.snes9x.com/\n"
+"  Snes9x source code: https://github.com/snes9xgit/snes9x/\n"
+"\n"
+"  Permission to use, copy, modify and/or distribute Snes9x in both binary\n"
+"  and source form, for non-commercial purposes, is hereby granted without\n"
+"  fee, providing that this license information and copyright notice appear\n"
+"  with all copies and any derived work.\n"
+"\n"
+"  This software is provided 'as-is', without any express or implied\n"
+"  warranty. In no event shall the authors be held liable for any damages\n"
+"  arising from the use of this software or it's derivatives.\n"
+"\n"
+"  Snes9x is freeware for PERSONAL USE only. Commercial users should\n"
+"  seek permission of the copyright holders first. Commercial use includes,\n"
+"  but is not limited to, charging money for Snes9x or software derived from\n"
+"  Snes9x, including Snes9x or derivatives in commercial game bundles, and/"
+"or\n"
+"  using Snes9x as a promotion for your commercial product.\n"
+"\n"
+"  The copyright holders request that bug fixes and improvements to the code\n"
+"  should be forwarded to them so everyone can benefit from the "
+"modifications\n"
+"  in future versions.\n"
+"\n"
+"  Super NES and Super Nintendo Entertainment System are trademarks of\n"
+"  Nintendo Co., Limited and its subsidiary companies."
+msgstr ""
+
+#~ msgid "<b>Accuracy</b>"
+#~ msgstr "<b>Tačnost</b>"
+
+#~ msgid "%sHosting NetPlay - %s"
+#~ msgstr "%sHostuj NetPlay - %s"
+
+#~ msgid "Paused - "
+#~ msgstr "Pauza - "
+
+#~ msgid "%s%s on NetPlay %s:%d - Player %d"
+#~ msgstr "%s%s na NetPlay %s:%d - Igrač %d"
+
+#~ msgid "_Hide Menu"
+#~ msgstr "_Sakrij meni"
+
+#~ msgid "_Status Bar"
+#~ msgstr "_Statusna linija"
+
+#~ msgid "<b>Image Adjustments</b>"
+#~ msgstr "<b>Podešavanje slike</b>"
+
+#~ msgid "<b>NTSC Filter</b>"
+#~ msgstr "<b>NTSC Filter</b>"
+
+#~ msgid "<b>Scanline Filter</b>"
+#~ msgstr "<b>Scanline Filter</b>"
+
+#~ msgid "Stereo"
+#~ msgstr "Stereo"
+
+#~ msgid "Output two channels, left and right"
+#~ msgstr "Dvokanalni zvuk - odvojeno levi i desni"
+
+#~ msgid "bad option name: %s\n"
+#~ msgstr "pogrešan naziv za opciju: %s\n"
+
+#~ msgid "failure to read snes9x node"
+#~ msgstr "ne mogu da učitam snes9x-ov čvor"
+
+#~ msgid "Couldn't open config file: %s\n"
+#~ msgstr "Ne mogu otvoriti konfiguracijski fajl: %s\n"
+
+#~ msgid "pixel_buffer_object extension not supported.\n"
+#~ msgstr "GL_ARB_pixel_buffer_object ekstenzija nije podržana.\n"
+
+#~ msgid "Rotate all axes to their maximum values, then press OK"
+#~ msgstr "Okreći maksimalno u svim smerovima, onda pritisni OK"
+
+#~ msgid ""
+#~ "\n"
+#~ "Features enabled:<i>"
+#~ msgstr ""
+#~ "\n"
+#~ "Dostupne osobine:<i>"
+
+#~ msgid " OpenGL"
+#~ msgstr " OpenGL"
+
+#~ msgid " XVideo"
+#~ msgstr " XVideo"
+
+#~ msgid " XRandR"
+#~ msgstr " XRandR"
+
+#~ msgid " Joystick"
+#~ msgstr " Joystick"
+
+#~ msgid " NetPlay"
+#~ msgstr " NetPlay"
+
+#~ msgid "16 Bit audio output"
+#~ msgstr "16-bitni izlaz za zvuk"
+
+#~ msgid ""
+#~ "Allows games to use transparency effects. Recommended for correct graphics"
+#~ msgstr ""
+#~ "Dozvoli igrama da koriste efekte providnosti. Preporučeno radi ispravne "
+#~ "grafike"
+
+#~ msgid ""
+#~ "Automatic\n"
+#~ "0\n"
+#~ "1\n"
+#~ "2\n"
+#~ "3\n"
+#~ "4\n"
+#~ "5\n"
+#~ "6\n"
+#~ "7\n"
+#~ "8\n"
+#~ "9"
+#~ msgstr ""
+#~ "Automatsko\n"
+#~ "0\n"
+#~ "1\n"
+#~ "2\n"
+#~ "3\n"
+#~ "4\n"
+#~ "5\n"
+#~ "6\n"
+#~ "7\n"
+#~ "8\n"
+#~ "9"
+
+#~ msgid "Base emulation speed on the rate sound is output"
+#~ msgstr "Baziraj brzinu emulacije srazmerno zvučnoj slici"
+
+#~ msgid "Custom folder:"
+#~ msgstr "Direktorijum po izboru:"
+
+#~ msgid ""
+#~ "Detects frames that are not output by Snes9x in hires, and scales them"
+#~ msgstr ""
+#~ "Pronađi frejmove koji nisu emulirani u većim rezolucijama i prilagodi ih"
+
+#~ msgid "Enable HDMA"
+#~ msgstr "Omogući HDMA"
+
+#~ msgid "Enable HDMA. Required feature for compatibility with some games"
+#~ msgstr "Potrebna osobina radi kompatibilnosti sa nekim igrama"
+
+#~ msgid "Enable hacks that may improve performance, but can cause errors"
+#~ msgstr ""
+#~ "Ovi hakovi mogu poboljšati performanse, ali ponekad mogu biti i uzrok "
+#~ "pojava greški"
+
+#~ msgid "Enable speed hacks"
+#~ msgstr "Omogući hakove za brzinu"
+
+#~ msgid "Enable transparency"
+#~ msgstr "Omogući transparenciju"
+
+#~ msgid "Exact Pixels"
+#~ msgstr "Ispravni pikseli"
+
+#~ msgid "Force SNES-hires output"
+#~ msgstr "Prisili emulaciju većih rezolucija"
+
+#~ msgid "Frameskip:"
+#~ msgstr "Preskakanje frejmova:"
+
+#~ msgid "Outputs at 16 bits per sample instead of 8 bits. More accurate sound"
+#~ msgstr "Izlaz od 16 bita po semplu umesto 8 bita - još ispravniji zvuk"
+
+#~ msgid "ROM folder"
+#~ msgstr "ROM direktorijum"
+
+#~ msgid "Reverse stereo"
+#~ msgstr "Reverzni stereo"
+
+#~ msgid "Save data in:"
+#~ msgstr "Sačuvaj podatke u:"
+
+#~ msgid "Smoothens (blurs) the image"
+#~ msgstr "Ugladi (zamagli) sliku"
+
+#~ msgid "Snes9x configuration folder"
+#~ msgstr "Snes9x konfiguracijski direktorijum"
+
+#~ msgid "Store data in $HOME/.snes9x/sram"
+#~ msgstr "Čuvaj podatke u $HOME/.snes9x/sram"
+
+#~ msgid "Store data in the same folder as the ROM file used"
+#~ msgstr "Čuvaj podatke u istom direktorijumu gde je i sam ROM fajl"
+
+#~ msgid "Swap the left and right sound channels"
+#~ msgstr "Zamena zvučnih kanala - levi kao desni, a desni kao levi"
+
+#~ msgid "Synchronize with sound"
+#~ msgstr "Sinhronizacija sa zvukom"
+
+#~ msgid ""
+#~ "Toggle the menu bar\n"
+#~ "Exit fullscreen mode\n"
+#~ "Quit Snes9x"
+#~ msgstr ""
+#~ "Uključi/Isključi meni\n"
+#~ "Izađi iz moda celog ekrana\n"
+#~ "Isključi Snes9x"
+
+#~ msgid "Type:"
+#~ msgstr "Odaberi:"
+
+#~ msgid "Version Info"
+#~ msgstr "O programu"

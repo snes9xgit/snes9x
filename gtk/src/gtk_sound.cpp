@@ -1,3 +1,9 @@
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
 #include <errno.h>
 #include <unistd.h>
 
@@ -11,9 +17,7 @@
 #ifdef USE_OSS
 #include "gtk_sound_driver_oss.h"
 #endif
-#ifdef USE_JOYSTICK
 #include "gtk_sound_driver_sdl.h"
-#endif
 #ifdef USE_ALSA
 #include "gtk_sound_driver_alsa.h"
 #endif
@@ -79,12 +83,11 @@ S9xPortSoundInit ()
     max_driver++;
 #endif
 
-#ifdef USE_JOYSTICK
+    /* SDL */
     alsa_driver++;
     pulse_driver++;
 
     max_driver++;
-#endif
 
 #ifdef USE_ALSA
     max_driver++;
@@ -108,10 +111,8 @@ S9xPortSoundInit ()
         driver = new S9xOSSSoundDriver ();
 #endif
 
-#ifdef USE_JOYSTICK
     if (gui_config->sound_driver == sdl_driver)
         driver = new S9xSDLSoundDriver ();
-#endif
 
 #ifdef USE_ALSA
     if (gui_config->sound_driver == alsa_driver)
@@ -143,9 +144,9 @@ S9xPortSoundInit ()
 
         Settings.SoundPlaybackRate = playback_rates[gui_config->sound_playback_rate];
 
-        S9xInitSound (gui_config->sound_buffer_size, 0);
+        S9xInitSound(0);
 
-        S9xSetSoundMute (FALSE);
+        S9xSetSoundMute (false);
     }
     else
     {
@@ -190,7 +191,7 @@ bool8
 S9xOpenSoundDevice ()
 {
     if (gui_config->mute_sound)
-        return FALSE;
+        return false;
 
     gui_config->sound_buffer_size = CLAMP (gui_config->sound_buffer_size, 2, 256);
 

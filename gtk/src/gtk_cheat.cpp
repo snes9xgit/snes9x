@@ -1,3 +1,9 @@
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
 #include "gtk_s9xcore.h"
 
 #include "gtk_s9x.h"
@@ -129,10 +135,10 @@ Snes9xCheats::Snes9xCheats ()
 
     g_signal_connect (view, "row-activated", G_CALLBACK (event_row_activated), (gpointer) this);
 
-    gtk_tree_view_set_reorderable (view, TRUE);
+    gtk_tree_view_set_reorderable (view, true);
 
     renderer = gtk_cell_renderer_toggle_new ();
-    gtk_cell_renderer_toggle_set_activatable (GTK_CELL_RENDERER_TOGGLE (renderer), TRUE);
+    gtk_cell_renderer_toggle_set_activatable (GTK_CELL_RENDERER_TOGGLE (renderer), true);
     gtk_tree_view_insert_column_with_attributes (view,
                                                  -1,
                                                  "\xe2\x86\x91",
@@ -140,7 +146,7 @@ Snes9xCheats::Snes9xCheats ()
                                                  "active", COLUMN_ENABLED,
                                                  NULL);
     GtkTreeViewColumn *column = gtk_tree_view_get_column (view, 0);
-    gtk_tree_view_column_set_clickable (column, TRUE);
+    gtk_tree_view_column_set_clickable (column, true);
     gtk_tree_view_column_set_alignment (column, 0.5f);
     g_signal_connect (column, "clicked", G_CALLBACK (event_enabled_column_clicked), (gpointer) this);
 
@@ -157,7 +163,7 @@ Snes9xCheats::Snes9xCheats ()
                                                  "text", COLUMN_DESCRIPTION,
                                                  NULL);
     column = gtk_tree_view_get_column (view, 1);
-    gtk_tree_view_column_set_resizable (column, TRUE);
+    gtk_tree_view_column_set_resizable (column, true);
     gtk_tree_view_column_set_min_width (column, 40);
 
     renderer = gtk_cell_renderer_text_new ();
@@ -168,7 +174,7 @@ Snes9xCheats::Snes9xCheats ()
                                                  "text", COLUMN_CHEAT,
                                                  NULL);
     column = gtk_tree_view_get_column (view, 2);
-    gtk_tree_view_column_set_resizable (column, TRUE);
+    gtk_tree_view_column_set_resizable (column, true);
     gtk_tree_view_column_set_min_width (column, 40);
 
     store = gtk_list_store_new (NUM_COLS,
@@ -426,9 +432,7 @@ Snes9xCheats::search_database ()
     if (result < reason)
         reason = result;
 
-    char *config_dir = get_config_dir ();
-    filename = std::string (config_dir) + "/cheats.bml";
-    free (config_dir);
+    filename = get_config_dir () + "/cheats.bml";
     if (!(result = S9xImportCheatsFromDatabase (filename.c_str ())))
     {
         refresh_tree_view ();
@@ -437,7 +441,6 @@ Snes9xCheats::search_database ()
 
     if (result < reason)
         reason = result;
-
 
     filename = std::string (DATADIR) + "/cheats.bml";
     if (!(result = S9xImportCheatsFromDatabase (filename.c_str ())))

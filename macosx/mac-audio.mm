@@ -1,193 +1,8 @@
-/***********************************************************************************
-  Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
-
-  (c) Copyright 1996 - 2002  Gary Henderson (gary.henderson@ntlworld.com),
-                             Jerremy Koot (jkoot@snes9x.com)
-
-  (c) Copyright 2002 - 2004  Matthew Kendora
-
-  (c) Copyright 2002 - 2005  Peter Bortas (peter@bortas.org)
-
-  (c) Copyright 2004 - 2005  Joel Yliluoma (http://iki.fi/bisqwit/)
-
-  (c) Copyright 2001 - 2006  John Weidman (jweidman@slip.net)
-
-  (c) Copyright 2002 - 2006  funkyass (funkyass@spam.shaw.ca),
-                             Kris Bleakley (codeviolation@hotmail.com)
-
-  (c) Copyright 2002 - 2010  Brad Jorsch (anomie@users.sourceforge.net),
-                             Nach (n-a-c-h@users.sourceforge.net),
-
-  (c) Copyright 2002 - 2011  zones (kasumitokoduck@yahoo.com)
-
-  (c) Copyright 2006 - 2007  nitsuja
-
-  (c) Copyright 2009 - 2018  BearOso,
-                             OV2
-
-  (c) Copyright 2017         qwertymodo
-
-  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
-                             Daniel De Matteis
-                             (Under no circumstances will commercial rights be given)
-
-
-  BS-X C emulator code
-  (c) Copyright 2005 - 2006  Dreamer Nom,
-                             zones
-
-  C4 x86 assembler and some C emulation code
-  (c) Copyright 2000 - 2003  _Demo_ (_demo_@zsnes.com),
-                             Nach,
-                             zsKnight (zsknight@zsnes.com)
-
-  C4 C++ code
-  (c) Copyright 2003 - 2006  Brad Jorsch,
-                             Nach
-
-  DSP-1 emulator code
-  (c) Copyright 1998 - 2006  _Demo_,
-                             Andreas Naive (andreasnaive@gmail.com),
-                             Gary Henderson,
-                             Ivar (ivar@snes9x.com),
-                             John Weidman,
-                             Kris Bleakley,
-                             Matthew Kendora,
-                             Nach,
-                             neviksti (neviksti@hotmail.com)
-
-  DSP-2 emulator code
-  (c) Copyright 2003         John Weidman,
-                             Kris Bleakley,
-                             Lord Nightmare (lord_nightmare@users.sourceforge.net),
-                             Matthew Kendora,
-                             neviksti
-
-  DSP-3 emulator code
-  (c) Copyright 2003 - 2006  John Weidman,
-                             Kris Bleakley,
-                             Lancer,
-                             z80 gaiden
-
-  DSP-4 emulator code
-  (c) Copyright 2004 - 2006  Dreamer Nom,
-                             John Weidman,
-                             Kris Bleakley,
-                             Nach,
-                             z80 gaiden
-
-  OBC1 emulator code
-  (c) Copyright 2001 - 2004  zsKnight,
-                             pagefault (pagefault@zsnes.com),
-                             Kris Bleakley
-                             Ported from x86 assembler to C by sanmaiwashi
-
-  SPC7110 and RTC C++ emulator code used in 1.39-1.51
-  (c) Copyright 2002         Matthew Kendora with research by
-                             zsKnight,
-                             John Weidman,
-                             Dark Force
-
-  SPC7110 and RTC C++ emulator code used in 1.52+
-  (c) Copyright 2009         byuu,
-                             neviksti
-
-  S-DD1 C emulator code
-  (c) Copyright 2003         Brad Jorsch with research by
-                             Andreas Naive,
-                             John Weidman
-
-  S-RTC C emulator code
-  (c) Copyright 2001 - 2006  byuu,
-                             John Weidman
-
-  ST010 C++ emulator code
-  (c) Copyright 2003         Feather,
-                             John Weidman,
-                             Kris Bleakley,
-                             Matthew Kendora
-
-  Super FX x86 assembler emulator code
-  (c) Copyright 1998 - 2003  _Demo_,
-                             pagefault,
-                             zsKnight
-
-  Super FX C emulator code
-  (c) Copyright 1997 - 1999  Ivar,
-                             Gary Henderson,
-                             John Weidman
-
-  Sound emulator code used in 1.5-1.51
-  (c) Copyright 1998 - 2003  Brad Martin
-  (c) Copyright 1998 - 2006  Charles Bilyue'
-
-  Sound emulator code used in 1.52+
-  (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
-
-  S-SMP emulator code used in 1.54+
-  (c) Copyright 2016         byuu
-
-  SH assembler code partly based on x86 assembler code
-  (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
-
-  2xSaI filter
-  (c) Copyright 1999 - 2001  Derek Liauw Kie Fa
-
-  HQ2x, HQ3x, HQ4x filters
-  (c) Copyright 2003         Maxim Stepin (maxim@hiend3d.com)
-
-  NTSC filter
-  (c) Copyright 2006 - 2007  Shay Green
-
-  GTK+ GUI code
-  (c) Copyright 2004 - 2018  BearOso
-
-  Win32 GUI code
-  (c) Copyright 2003 - 2006  blip,
-                             funkyass,
-                             Matthew Kendora,
-                             Nach,
-                             nitsuja
-  (c) Copyright 2009 - 2018  OV2
-
-  Mac OS GUI code
-  (c) Copyright 1998 - 2001  John Stiles
-  (c) Copyright 2001 - 2011  zones
-
-  Libretro port
-  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
-                             Daniel De Matteis
-                             (Under no circumstances will commercial rights be given)
-
-
-  Specific ports contains the works of other authors. See headers in
-  individual files.
-
-
-  Snes9x homepage: http://www.snes9x.com/
-
-  Permission to use, copy, modify and/or distribute Snes9x in both binary
-  and source form, for non-commercial purposes, is hereby granted without
-  fee, providing that this license information and copyright notice appear
-  with all copies and any derived work.
-
-  This software is provided 'as-is', without any express or implied
-  warranty. In no event shall the authors be held liable for any damages
-  arising from the use of this software or it's derivatives.
-
-  Snes9x is freeware for PERSONAL USE only. Commercial users should
-  seek permission of the copyright holders first. Commercial use includes,
-  but is not limited to, charging money for Snes9x or software derived from
-  Snes9x, including Snes9x or derivatives in commercial game bundles, and/or
-  using Snes9x as a promotion for your commercial product.
-
-  The copyright holders request that bug fixes and improvements to the code
-  should be forwarded to them so everyone can benefit from the modifications
-  in future versions.
-
-  Super NES and Super Nintendo Entertainment System are trademarks of
-  Nintendo Co., Limited and its subsidiary companies.
- ***********************************************************************************/
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
 
 /***********************************************************************************
   SNES9X for Mac OS (c) Copyright John Stiles
@@ -195,11 +10,6 @@
   Snes9x for Mac OS X
 
   (c) Copyright 2001 - 2011  zones
-
-  Libretro port
-  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
-                             Daniel De Matteis
-                             (Under no circumstances will commercial rights be given)
   (c) Copyright 2002 - 2005  107
   (c) Copyright 2002         PB1400c
   (c) Copyright 2004         Alexander and Sander
@@ -216,6 +26,7 @@
 #include <AudioToolbox/AudioToolbox.h>
 #include <AudioUnit/AudioUnitCarbonView.h>
 #include <pthread.h>
+#include <semaphore.h>
 
 #include "mac-prefix.h"
 #include "mac-dialog.h"
@@ -239,6 +50,10 @@ static WindowRef			effectWRef;
 static HISize				effectWSize;
 static pthread_mutex_t		mutex;
 static UInt32				outStoredFrames, cnvStoredFrames, revStoredFrames, eqlStoredFrames, devStoredFrames;
+static int16_t				*audioBuffer;
+static uint32_t				audioBufferSampleCapacity;
+static uint32_t				audioBufferSampleCount;
+static sem_t				*soundSyncSemaphore;
 
 static void ConnectAudioUnits (void);
 static void DisconnectAudioUnits (void);
@@ -250,7 +65,7 @@ static void StoreBufferFrameSize (void);
 static void ChangeBufferFrameSize (void);
 static void ReplaceAudioUnitCarbonView (void);
 static void ResizeSoundEffectsDialog (HIViewRef);
-static void MacFinalizeSamplesCallBack (void *);
+static void MacSamplesAvailableCallBack (void *);
 static OSStatus MacAURenderCallBack (void *, AudioUnitRenderActionFlags *, const AudioTimeStamp *, UInt32, UInt32, AudioBufferList *);
 static pascal OSStatus SoundEffectsEventHandler (EventHandlerCallRef, EventRef, void *);
 static pascal OSStatus SoundEffectsCarbonViewEventHandler (EventHandlerCallRef, EventRef, void *);
@@ -329,7 +144,8 @@ void InitMacSound (void)
 	LoadEffectPresets();
 
 	pthread_mutex_init(&mutex, NULL);
-	S9xSetSamplesAvailableCallback(MacFinalizeSamplesCallBack, NULL); 
+	soundSyncSemaphore = sem_open("/s9x_mac_soundsync", O_CREAT, 0644, 1);
+	S9xSetSamplesAvailableCallback(MacSamplesAvailableCallBack, NULL);
 }
 
 void DeinitMacSound (void)
@@ -337,6 +153,8 @@ void DeinitMacSound (void)
 	OSStatus	err;
 
 	pthread_mutex_destroy(&mutex);
+	sem_close(soundSyncSemaphore);
+	sem_unlink("/s9x_mac_soundsync");
 	SaveEffectPresets();
 	DisconnectAudioUnits();
 	err = AUGraphUninitialize(agraph);
@@ -515,49 +333,72 @@ static OSStatus MacAURenderCallBack (void *inRefCon, AudioUnitRenderActionFlags 
 		*ioActionFlags |= kAudioUnitRenderAction_OutputIsSilence;
 	}
 	else
-	if (Settings.Stereo)
 	{
-		unsigned int	samples;
-
-		samples = ioData->mBuffers[0].mDataByteSize;
-		if (Settings.SixteenBitSound)
-			samples >>= 1;
+		static bool		recoverBufferUnderrun = false;
+		unsigned int	samples = ioData->mBuffers[0].mDataByteSize >> 1;
 
 		pthread_mutex_lock(&mutex);
-		S9xMixSamples((uint8 *) ioData->mBuffers[0].mData, samples);
-		pthread_mutex_unlock(&mutex);
-	}
-	else	// Manually map L to R
-	{
-		unsigned int	monosmp;
-
-		monosmp = ioData->mBuffers[0].mDataByteSize >> 1;
-		if (Settings.SixteenBitSound)
-			monosmp >>= 1;
-
-		pthread_mutex_lock(&mutex);
-		S9xMixSamples((uint8 *) ioData->mBuffers[0].mData, monosmp);
-		pthread_mutex_unlock(&mutex);
-
-		if (Settings.SixteenBitSound)
+		if (samples > audioBufferSampleCount || (recoverBufferUnderrun && audioBufferSampleCount<<1 < audioBufferSampleCapacity))
 		{
-			for (int i = monosmp - 1; i >= 0; i--)
-				((int16 *) ioData->mBuffers[0].mData)[i * 2 + 1] = ((int16 *) ioData->mBuffers[0].mData)[i * 2] = ((int16 *) ioData->mBuffers[0].mData)[i];
+			/* buffer underrun - emit silence at least 50% of buffer is filled */
+			bzero(ioData->mBuffers[0].mData, samples*2);
+			recoverBufferUnderrun = true;
 		}
 		else
 		{
-			for (int i = monosmp - 1; i >= 0; i--)
-				((int8  *) ioData->mBuffers[0].mData)[i * 2 + 1] = ((int8  *) ioData->mBuffers[0].mData)[i * 2] = ((int8  *) ioData->mBuffers[0].mData)[i];
+			recoverBufferUnderrun = false;
+			memcpy(ioData->mBuffers[0].mData, audioBuffer, samples*2);
+			memmove(audioBuffer, audioBuffer+samples, (audioBufferSampleCount-samples)*2);
+			audioBufferSampleCount -= samples;
+			sem_post(soundSyncSemaphore);
 		}
+		pthread_mutex_unlock(&mutex);
 	}
 
 	return (noErr);
 }
 
-static void MacFinalizeSamplesCallBack (void *userData)
-{ 
+static void MacSamplesAvailableCallBack (void *userData)
+{
+	uint32_t availableSamples = S9xGetSampleCount();
+	if (Settings.DynamicRateControl)
+	{
+		S9xUpdateDynamicRate((audioBufferSampleCapacity-audioBufferSampleCount)*2, audioBufferSampleCapacity*2);
+	}
+
+tryLock:
 	pthread_mutex_lock(&mutex);
-	S9xFinalizeSamples(); 
+	if (audioBufferSampleCapacity - audioBufferSampleCount < availableSamples)
+	{
+		/* buffer overrun */
+		if (Settings.DynamicRateControl && !Settings.SoundSync)
+		{
+			/* for dynamic rate control, clear S9x internal buffer and do nothing */
+			pthread_mutex_unlock(&mutex);
+			S9xClearSamples();
+			return;
+		}
+		if (Settings.SoundSync && !Settings.TurboMode)
+		{
+			/* when SoundSync is enabled, wait buffer for being drained by render callback */
+			pthread_mutex_unlock(&mutex);
+			sem_wait(soundSyncSemaphore);
+			goto tryLock;
+		}
+		/* dispose samples to allocate 50% of the buffer capacity */
+		uint32_t samplesToBeDisposed = availableSamples + audioBufferSampleCount - audioBufferSampleCapacity/2;
+		if(samplesToBeDisposed >= audioBufferSampleCount)
+		{
+			audioBufferSampleCount = 0;
+		}
+		else
+		{
+			memmove(audioBuffer, audioBuffer+samplesToBeDisposed, (audioBufferSampleCount-samplesToBeDisposed)*2);
+			audioBufferSampleCount = audioBufferSampleCount - samplesToBeDisposed;
+		}
+	}
+	S9xMixSamples((uint8 *)(audioBuffer+audioBufferSampleCount), availableSamples);
+	audioBufferSampleCount += availableSamples;
 	pthread_mutex_unlock(&mutex);
 }
 
@@ -662,6 +503,10 @@ bool8 S9xOpenSoundDevice (void)
 
 	err = AUGraphInitialize(agraph);
 
+	if (audioBuffer) free(audioBuffer);
+	audioBufferSampleCapacity = 2 * macSoundBuffer_ms * Settings.SoundPlaybackRate / 1000;
+	audioBuffer = (int16_t *)calloc(audioBufferSampleCapacity,sizeof(int16_t));
+	audioBufferSampleCount = 0;
 	return (true);
 }
 

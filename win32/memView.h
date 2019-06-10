@@ -31,8 +31,9 @@
 #ifndef MEM_VIEW_H
 #define MEM_VIEW_H
 
-#include <windows.h>
 #include "../port.h"
+
+#include <windows.h>
 
 INT_PTR CALLBACK MemView_DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK MemView_ViewBoxProc(HWND hCtl, UINT uMsg, WPARAM wParam, LPARAM lParam);

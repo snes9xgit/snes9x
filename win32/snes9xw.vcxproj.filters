@@ -45,9 +45,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="globals.h">
-      <Filter>Emu</Filter>
-    </ClInclude>
     <ClInclude Include="..\statemanager.h">
       <Filter>Emu</Filter>
     </ClInclude>
@@ -84,9 +81,6 @@
     <ClInclude Include="CWindow.h">
       <Filter>GUI</Filter>
     </ClInclude>
-    <ClInclude Include="CXML.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
     <ClInclude Include="InputCustom.h">
       <Filter>GUI</Filter>
     </ClInclude>
@@ -113,9 +107,6 @@
     </ClInclude>
     <ClInclude Include="wsnes9x.h">
       <Filter>GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="CDirectSound.h">
-      <Filter>GUI\SoundDriver</Filter>
     </ClInclude>
     <ClInclude Include="CXAudio2.h">
       <Filter>GUI\SoundDriver</Filter>
@@ -204,15 +195,6 @@
     <ClInclude Include="..\apu\apu.h">
       <Filter>APU</Filter>
     </ClInclude>
-    <ClInclude Include="..\apu\hermite_resampler.h">
-      <Filter>APU</Filter>
-    </ClInclude>
-    <ClInclude Include="..\apu\resampler.h">
-      <Filter>APU</Filter>
-    </ClInclude>
-    <ClInclude Include="..\apu\ring_buffer.h">
-      <Filter>APU</Filter>
-    </ClInclude>
     <ClInclude Include="..\apu\bapu\snes\snes.hpp">
       <Filter>APU</Filter>
     </ClInclude>
@@ -241,15 +223,6 @@
       <Filter>Filter</Filter>
     </ClInclude>
     <ClInclude Include="..\filter\epx.h">
-      <Filter>Filter</Filter>
-    </ClInclude>
-    <ClInclude Include="snes_ntsc.h">
-      <Filter>Filter</Filter>
-    </ClInclude>
-    <ClInclude Include="snes_ntsc_config.h">
-      <Filter>Filter</Filter>
-    </ClInclude>
-    <ClInclude Include="snes_ntsc_impl.h">
       <Filter>Filter</Filter>
     </ClInclude>
     <ClInclude Include="..\filter\xbrz.h">
@@ -287,6 +260,42 @@
     </ClInclude>
     <ClInclude Include="image_functions.h">
       <Filter>GUI\VideoDriver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv.hpp">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_cfg.hpp">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_common.hpp">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_cross.hpp">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_cross_parsed_ir.hpp">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_glsl.hpp">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_parser.hpp">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="CWaveOut.h">
+      <Filter>GUI\SoundDriver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\apu\resampler.h">
+      <Filter>APU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filter\snes_ntsc.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filter\snes_ntsc_config.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filter\snes_ntsc_impl.h">
+      <Filter>Filter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -473,9 +482,6 @@
     <ClCompile Include="CWindow.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
-    <ClCompile Include="CXML.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
     <ClCompile Include="InputCustom.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
@@ -508,9 +514,6 @@
     </ClCompile>
     <ClCompile Include="wsnes9x.cpp">
       <Filter>GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="CDirectSound.cpp">
-      <Filter>GUI\SoundDriver</Filter>
     </ClCompile>
     <ClCompile Include="CXAudio2.cpp">
       <Filter>GUI\SoundDriver</Filter>
@@ -590,9 +593,6 @@
     <ClCompile Include="..\filter\hq2x.cpp">
       <Filter>Filter</Filter>
     </ClCompile>
-    <ClCompile Include="snes_ntsc.c">
-      <Filter>Filter</Filter>
-    </ClCompile>
     <ClCompile Include="..\filter\xbrz.cpp">
       <Filter>Filter</Filter>
     </ClCompile>
@@ -605,7 +605,6 @@
     <ClCompile Include="DumpAtEnd.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
-    <ClCompile Include="..\lua-engine.cpp" />
     <ClCompile Include="..\shaders\glsl.cpp">
       <Filter>Shaders</Filter>
     </ClCompile>
@@ -620,6 +619,33 @@
     </ClCompile>
     <ClCompile Include="image_functions.cpp">
       <Filter>GUI\VideoDriver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shaders\slang.cpp">
+      <Filter>Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shaders\SPIRV-Cross\spirv_cfg.cpp">
+      <Filter>Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shaders\SPIRV-Cross\spirv_cross.cpp">
+      <Filter>Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shaders\SPIRV-Cross\spirv_cross_parsed_ir.cpp">
+      <Filter>Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shaders\SPIRV-Cross\spirv_glsl.cpp">
+      <Filter>Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shaders\SPIRV-Cross\spirv_parser.cpp">
+      <Filter>Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="CWaveOut.cpp">
+      <Filter>GUI\SoundDriver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\filter\snes_ntsc.c">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lua-engine.cpp">
+      <Filter>Emu</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -677,6 +703,11 @@
     <Image Include="rsrc\ud.bmp">
       <Filter>Resource\Other</Filter>
     </Image>
+    <Image Include="rsrc\icon2.ico">
+      <Filter>Resource\Other</Filter>
+    </Image>
+    <Image Include="rsrc\icon3.ico" />
+    <Image Include="rsrc\icon4.ico" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\65c816.h">
@@ -872,6 +903,8 @@
       <Filter>Filter</Filter>
     </CustomBuild>
     <CustomBuild Include="snes9x.cfg" />
-    <CustomBuild Include="..\lua-engine.h" />
+    <CustomBuild Include="..\lua-engine.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

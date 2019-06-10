@@ -1,3 +1,9 @@
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
 #ifndef __GTK_DISPLAY_DRIVER_OPENGL_H
 #define __GTK_DISPLAY_DRIVER_OPENGL_H
 
@@ -18,7 +24,7 @@
 
 #include "shaders/glsl.h"
 
-#define BUFFER_OFFSET(i) ((char *) NULL + (i))
+#define BUFFER_OFFSET(i) ((char *) (i))
 
 class S9xOpenGLDisplayDriver : public S9xDisplayDriver
 {
@@ -35,13 +41,14 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
         void *get_parameters ();
         void save (const char *filename);
         static int query_availability ();
+        bool is_ready ();
 
     private:
-        int opengl_defaults ();
+        bool opengl_defaults ();
         void swap_buffers ();
-        int load_shaders (const char *);
+        bool load_shaders (const char *);
         void update_texture_size (int width, int height);
-        int create_context ();
+        bool create_context ();
         void resize ();
 
         GLuint            stock_program;

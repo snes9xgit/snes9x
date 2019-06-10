@@ -1,3 +1,9 @@
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
 #ifndef __GTK_DISPLAY_H
 #define __GTK_DISPLAY_H
 
@@ -12,6 +18,7 @@
 #endif
 #include "filter/epx.h"
 #include "filter_epx_unsafe.h"
+#include "filter/snes_ntsc.h"
 
 enum
 {
@@ -66,31 +73,24 @@ typedef struct thread_job_t
     int dst_pitch;
     int width;
     int height;
-    int dst_width;
-    int dst_height;
     int bpp;
     int inv_rmask;
     int inv_gmask;
     int inv_bmask;
-    int line_start;
-    int line_end;
 
-    volatile int complete;
-}
-thread_job_t;
+    volatile bool complete;
+} thread_job_t;
 
 void S9xRegisterYUVTables (uint8 *y, uint8 *u, uint8 *v);
 void S9xSetEndianess (int type);
 double S9xGetAspect ();
 void S9xApplyAspect (int&, int&, int&, int&);
-
 void S9xConvertYUV (void *src_buffer,
                     void *dst_buffer,
                     int src_pitch,
                     int dst_pitch,
                     int width,
                     int height);
-
 void S9xConvert (void *src,
                  void *dst,
                  int src_pitch,
@@ -98,7 +98,6 @@ void S9xConvert (void *src,
                  int width,
                  int height,
                  int bpp);
-
 void S9xConvertMask (void *src,
                      void *dst,
                      int  src_pitch,
@@ -109,7 +108,6 @@ void S9xConvertMask (void *src,
                      int  gshift,
                      int  bshift,
                      int  bpp);
-
 void S9xFilter (uint8 *src_buffer,
                 int src_pitch,
                 uint8 *dst_buffer,
@@ -117,13 +115,12 @@ void S9xFilter (uint8 *src_buffer,
                 int& width,
                 int& height);
 void get_filter_scale (int& width, int& height);
-
 void S9xDisplayRefresh (int width, int height);
 void S9xDisplayClearBuffers ();
 void S9xReinitDisplay ();
 void S9xDisplayReconfigure ();
 void S9xQueryDrivers ();
-
 S9xDisplayDriver *S9xDisplayGetDriver ();
+bool S9xDisplayDriverIsReady ();
 
 #endif /* __GTK_DISPLAY_H */

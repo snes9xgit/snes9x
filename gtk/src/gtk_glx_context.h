@@ -1,3 +1,9 @@
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
 #ifndef __GTK_GLX_CONTEXT_H
 #define __GTK_GLX_CONTEXT_H
 
@@ -17,6 +23,7 @@ class GTKGLXContext : public OpenGLContext
     void swap_buffers ();
     void swap_interval (int frames);
     void make_current ();
+    bool ready();
 
     GtkWidget *widget;
 
@@ -34,6 +41,9 @@ class GTKGLXContext : public OpenGLContext
 
     int version_major;
     int version_minor;
+
+    bool use_oml_sync_control;
+    int64_t ust, msc, sbc;
 };
 
 #endif

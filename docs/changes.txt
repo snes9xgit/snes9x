@@ -1,3 +1,120 @@
+Snes9x 1.60
+- Fixed subscreen blending with master brightness < 100%.
+- Fixed NMI timing when toggling enable bit. Fixes Chou Aniki--hack removed.
+- Reverted an IPL map optimization that misses a weird edge case that caused
+  The Great Battle III to lock up.
+- Clamp MSU1 addition to max amplitude instead of wrapping. Proper MSU1 tracks
+  will not be affected by this.
+- Save mipmap_input parameter with customized GLSL and slang shaders.
+- Actually use mipmap_input parameter.
+- Optimized subscreen math with help from Dwedit.
+- Revert to measured APU clock speed instead of nominal speed. Fixes An
+  American Tail.
+- Fixed broken BPS patch support. (ArtiiP)
+- Fixed MSU1 track restarting on load state.
+
+Win32:
+- Changed window flags to allow NVIDIA cards to auto-enable exclusive
+  fullscreen mode in OpenGL.
+- Added a hidden option "DWMSync" that allows OpenGL to sync to the window
+  manager while in windowed or borderless windowed mode.
+- The automatic frame skip option no longer limits to 59.94Hz.
+- Fixed bad icon scaling.
+- Added a hacks dialog to enable settings for older hacks to run.
+
+libretro:
+- Added ability to use Satellaview data in same directory as ROM.
+- Fixed deviation from proper libretro spec.
+- Added option to use the software NTSC filter. (stellarporter)
+
+GTK:
+- Added icons to the entries to clear binding assignments.
+- Fixed overlap in xBRZ multithreading.
+- Changed glFenceSync option to an OML_sync option that works better.
+- Fixed accumulation of partial pixel data on mouse motion when we update the
+  mouse position more than once per frame.
+- Allow one key to be bound to many controller buttons on the same controller.
+- Force menu and button icons.
+- Add the view menu to right-click when SNES mouse isn't used.
+- Remove unused status bar option.
+- Startup background can be changed in snes9x.conf.
+- Improved PortAudio driver.
+
+Unix:
+- Fixed sound output that broke with APU refactor.
+
+Snes9x 1.59.2
+- Fix out-of-bounds access on APU memory.
+
+Snes9x 1.59.1
+- Fix sound core breakage.
+
+Snes9x 1.59
+- Count clock cycles to synchronize SA1 with S-CPU properly. Based mostly on
+  work by Vitor Vilela.
+- Only allow instant IRQ when toggling IRQ. Fixes WWF - Wrestlemania.
+- Refactored APU output code to buffer less on the client side. Removed 8-bit,
+  Mono, and Reverse Stereo options.
+- Consistently handle interlacing when we skip frames.
+- Changed APU clock to reflect nominal values for original hardware.
+- Fix C4 square instruction regression.
+
+Win32:
+- Don't display Joypad 2 pressed keys if disabled.
+- Add support for libretro ".slang" shaders to OpenGL driver.
+- Removed glitch-prone DirectSound audio driver in favor of a generic Wave Out
+  driver.
+- Moved sound sync to drivers to be more reactive. This makes sound sync and
+  dynamic resampling work more reliably.
+- Cleaned up dialog boxes to be more consistently spaced.
+- Fixed TVMode filter in Direct3D and OpenGL modes.
+- Fixed an interaction slowdown with OpenGL and Blargg NTSC filters.
+
+libretro:
+- Fix multiline cheats.
+
+GTK+:
+- Switch from autotools to Meson build system.
+- Readd glFinish option as alternative to glFenceSync.
+- Fix size fallthrough with xBRZ filter.
+- Fix loading of key bindings with spaces in them and modifier keys used alone.
+- Add support for libretro ".slang" shaders to OpenGL driver.
+- Use a cleaner onscreen font.
+- Trap errors to allow OpenGL <= 2.1 to run again.
+- Break display settings up to make it easier to access hardware accel section.
+
+
+Snes9x 1.58
+- Move the LICENSE file to the base directory and use a stub
+  in all the source files referring to it.
+- Adjust Chou Aniki timing hack.
+- Use 1-based numbering when displaying pressed keys.
+- Hide controller port if disabled when displaying keys.
+- Fix movie playback. (OV2, BearOso)
+
+ libretro:
+- Fix interlaced modes when overscan crop is enabled.
+- Allow overriding -flto. (orbea)
+
+ GTK+:
+- Use shared snes_ntsc implementation.
+- Remove extra LGPL licensing to avoid confusion.
+- Don't translate config file entries. Fixes breakage on
+  non-C languages.
+- Fix issue where config file doesn't contain all configurable
+  entries.
+- Remove config options for Netplay, Joystick, and JMA. SDL 2.0
+  is now mandatory.
+- Updated gettext and removed intltool. update-po should now catch
+  all translatable strings.
+- If available, reduce input lag option will now use fences instead
+  of glFinish to prevent hogging the CPU.
+- Onscreen text can be variable width and will show up in some more
+  cases now.
+
+ Win32:
+- Add audio device selection (XAudio2 only)
+
 Snes9x 1.57
 - Various seta010 emulation fixes.                          (kps501)
 - Pass blargg OAM tests with proper write behavior.         (BearOso)
@@ -191,7 +308,7 @@ Snes9x 1.55
 - Added support for the MSU-1 coprocessor.                  (qwertymodo)
 - Added support for MSU-1 distribution pack.                (qwertymodo)
 - Added support for BS-X Satellaview memory packs and data  (LuigiBlood)
-  files.                                                    
+  files.
 - Improved BS-X memory mapping accuracy.                    (LuigiBlood)
 - Fixed APU error causing issues with some games.           (byuu, qwertymodo)
 - Added option to ignore patch checksums.                   (qwertymodo)
@@ -307,20 +424,20 @@ Snes9x 1.53
 - Mac  : Fixed gliches in open/save dialogs on 10.6.        (zones)
 - Mac  : Fixed display configuration in windowed mode.      (zones)
 - Unix : Fixed segfault and hang-up with -DNOSOUND.         (zones)
-- GTK+ : Added ability to set specific folders for SRAM, 
+- GTK+ : Added ability to set specific folders for SRAM,
   patches, snapshots, etc.                                  (BearOso)
 - GTK+ : Fixed many permissions issues with config folders. (BearOso)
-- GTK+ : Updated compatibility with latest GTK+ and 
+- GTK+ : Updated compatibility with latest GTK+ and
   GtkBuilder. Added experimental support for GTK+ 3.x.      (BearOso)
-- GTK+ : Updated software output to use cairo and added the 
+- GTK+ : Updated software output to use cairo and added the
   ability to use bilinear-filtering with it.                (BearOso)
 - GTK+ : Fixed issues where cheats wouldn't stay enabled.   (BearOso)
 - GTK+ : Fixed focus issue when there is no window manager. (BearOso)
-- GTK+ : Fixed X Visual incompatibilities and expose 
+- GTK+ : Fixed X Visual incompatibilities and expose
   problems in the Xv and OpenGL outputs.                    (BearOso)
 - GTK+ : Fixed vsync with new X Server and NVIDIA drivers.  (BearOso)
 - GTK+ : Added "Reduce input lag" option to OpenGL output.  (BearOso)
-- GTK+ : Added a visual indication of the expected video 
+- GTK+ : Added a visual indication of the expected video
   refresh rate for the currently selected sound input rate. (BearOso)
 
 Snes9x 1.52

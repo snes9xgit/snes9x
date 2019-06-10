@@ -1,0 +1,10 @@
+install_data('../../data/cheats.bml', install_dir: appdatadir)
+install_data('snes9x-gtk.desktop', install_dir: join_paths(datadir, 'applications'))
+
+hicolor = join_paths(datadir, 'icons', 'hicolor')
+install_data('snes9x_16x16.png', install_dir: hicolor, rename: '16x16/apps/snes9x.png')
+install_data('snes9x_24x24.png', install_dir: hicolor, rename: '24x24/apps/snes9x.png')
+install_data('snes9x_32x32.png', install_dir: hicolor, rename: '32x32/apps/snes9x.png')
+install_data('snes9x_64x64.png', install_dir: hicolor, rename: '64x64/apps/snes9x.png')
+install_data('snes9x_128x128.png', install_dir: hicolor, rename: '128x128/apps/snes9x.png')
+install_data('snes9x_256x256.png', install_dir: hicolor, rename: '256x256/apps/snes9x.png')

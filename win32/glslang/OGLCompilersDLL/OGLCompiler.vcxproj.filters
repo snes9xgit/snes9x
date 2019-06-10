@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\src\OGLCompilersDLL\InitializeDll.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\OGLCompilersDLL\InitializeDll.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source">
+      <UniqueIdentifier>{4C2A0BE9-8B7C-3570-80FB-29A3780DFB5C}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

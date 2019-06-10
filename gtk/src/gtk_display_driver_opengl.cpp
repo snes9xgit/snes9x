@@ -1,3 +1,9 @@
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
 #include "gtk_2_3_compat.h"
 #include <dlfcn.h>
 #include <sys/stat.h>
@@ -55,7 +61,7 @@ static const GLchar *stock_fragment_shader_140 =
 
 "void main()\n"
 "{\n"
-"    fragcolor = texture2D(texmap, texcoord);\n"
+"    fragcolor = texture(texmap, texcoord);\n"
 "}\n";
 
 
@@ -168,7 +174,14 @@ void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
                           width * height * 2,
                           NULL,
                           GL_STREAM_DRAW);
-            pbo_map = glMapBuffer (GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
+
+            if (version >= 30)
+                pbo_map = glMapBufferRange (
+                    GL_PIXEL_UNPACK_BUFFER, 0, width * height * 2,
+                    GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT |
+                        GL_MAP_UNSYNCHRONIZED_BIT);
+            else
+                pbo_map = glMapBuffer (GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
 
             for (int y = 0; y < height; y++)
             {
@@ -199,7 +212,14 @@ void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
                           width * height * 4,
                           NULL,
                           GL_STREAM_DRAW);
-            pbo_map = glMapBuffer (GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
+
+            if (version >= 30)
+                pbo_map = glMapBufferRange (
+                    GL_PIXEL_UNPACK_BUFFER, 0, width * height * 4,
+                    GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT |
+                        GL_MAP_UNSYNCHRONIZED_BIT);
+            else
+                pbo_map = glMapBuffer (GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
 
             /* Pixel swizzling in software */
             S9xSetEndianess (ENDIAN_NORMAL);
@@ -248,24 +268,7 @@ void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
         return;
     }
 
-    if (legacy)
-    {
-        glVertexPointer (2, GL_FLOAT, 0, coords);
-        glTexCoordPointer (2, GL_FLOAT, 0, &coords[8]);
-        glDrawArrays (GL_TRIANGLE_STRIP, 0, 4);
-    }
-    else
-    {
-        glUseProgram (stock_program);
-        glBindBuffer (GL_ARRAY_BUFFER, coord_buffer);
-        glEnableVertexAttribArray (0);
-        glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET (0));
-        glEnableVertexAttribArray (1);
-        glVertexAttribPointer (1, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET (32));
-        glDrawArrays (GL_TRIANGLE_STRIP, 0, 4);
-        glDisableVertexAttribArray (1);
-        glDisableVertexAttribArray (0);
-    }
+    glDrawArrays (GL_TRIANGLE_STRIP, 0, 4);
 
     swap_buffers ();
 }
@@ -298,8 +301,8 @@ void S9xOpenGLDisplayDriver::clear_buffers ()
                      0,
                      0,
                      0,
-                     scaled_max_width,
-                     scaled_max_height,
+                     MIN(scaled_max_width, texture_width),
+                     MIN(scaled_max_height, texture_height),
                      GL_RGB,
                      GL_UNSIGNED_SHORT_5_6_5,
                      buffer[1]);
@@ -317,7 +320,7 @@ void S9xOpenGLDisplayDriver::update_texture_size (int width, int height)
             {
                 glTexImage2D (GL_TEXTURE_2D,
                               0,
-                              4,
+                              GL_RGBA,
                               width,
                               height,
                               0,
@@ -360,35 +363,50 @@ void S9xOpenGLDisplayDriver::update_texture_size (int width, int height)
             glBufferData (GL_ARRAY_BUFFER, sizeof (GLfloat) * 16, coords, GL_STATIC_DRAW);
             glBindBuffer (GL_ARRAY_BUFFER, 0);
         }
+        else
+        {
+            glVertexPointer (2, GL_FLOAT, 0, coords);
+            glTexCoordPointer (2, GL_FLOAT, 0, &coords[8]);
+        }
     }
 }
 
-int S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
+bool S9xOpenGLDisplayDriver::load_shaders(const char *shader_file)
 {
-    int length = strlen (shader_file);
+    setlocale(LC_ALL, "C");
+    std::string filename(shader_file);
 
-    if ((length > 6 && !strcasecmp(shader_file + length - 6, ".glslp")) ||
-        (length > 5 && !strcasecmp(shader_file + length - 5, ".glsl")))
+    auto endswith = [&](std::string ext) -> bool {
+        return filename.rfind(ext) == filename.length() - ext.length();
+    };
+
+    if (endswith(".glslp") || endswith(".glsl")
+#ifdef USE_SLANG
+        || endswith(".slangp") || endswith(".slang")
+#endif
+    )
     {
         glsl_shader = new GLSLShader;
-        if (glsl_shader->load_shader ((char *) shader_file))
+        if (glsl_shader->load_shader((char *)shader_file))
         {
             using_glsl_shaders = true;
             npot = true;
 
-            if (glsl_shader->param.size () > 0)
-                window->enable_widget ("shader_parameters_item", TRUE);
+            if (glsl_shader->param.size() > 0)
+                window->enable_widget("shader_parameters_item", true);
 
-            return 1;
+            setlocale(LC_ALL, "");
+            return true;
         }
 
         delete glsl_shader;
     }
 
-    return 0;
+    setlocale(LC_ALL, "");
+    return false;
 }
 
-int S9xOpenGLDisplayDriver::opengl_defaults ()
+bool S9xOpenGLDisplayDriver::opengl_defaults()
 {
     npot = false;
     using_pbos = false;
@@ -406,7 +424,7 @@ int S9xOpenGLDisplayDriver::opengl_defaults ()
 
     if (config->use_shaders)
     {
-        if (legacy || !load_shaders (config->fragment_shader))
+        if (legacy || !load_shaders (config->shader_filename.c_str ()))
         {
             config->use_shaders = false;
         }
@@ -429,6 +447,9 @@ int S9xOpenGLDisplayDriver::opengl_defaults ()
         glLoadIdentity ();
         glMatrixMode (GL_MODELVIEW);
         glLoadIdentity ();
+
+        glVertexPointer (2, GL_FLOAT, 0, coords);
+        glTexCoordPointer (2, GL_FLOAT, 0, &coords[8]);
     }
     else
     {
@@ -475,6 +496,12 @@ int S9xOpenGLDisplayDriver::opengl_defaults ()
         glGenBuffers (1, &coord_buffer);
         glBindBuffer (GL_ARRAY_BUFFER, coord_buffer);
         glBufferData (GL_ARRAY_BUFFER, sizeof (GLfloat) * 16, coords, GL_STATIC_DRAW);
+
+        glEnableVertexAttribArray (0);
+        glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET (0));
+        glEnableVertexAttribArray (1);
+        glVertexAttribPointer (1, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET (32));
+
         glBindBuffer (GL_ARRAY_BUFFER, 0);
     }
 
@@ -486,7 +513,7 @@ int S9xOpenGLDisplayDriver::opengl_defaults ()
         glBindTexture (GL_TEXTURE_2D, texmap);
         glTexImage2D (GL_TEXTURE_2D,
                       0,
-                      config->pbo_format == 16 ? GL_RGB565 : 4,
+                      config->pbo_format == 16 ? GL_RGB565 : GL_RGBA,
                       texture_width,
                       texture_height,
                       0,
@@ -520,7 +547,7 @@ int S9xOpenGLDisplayDriver::opengl_defaults ()
 
     glClearColor (0.0, 0.0, 0.0, 0.0);
 
-    return 1;
+    return true;
 }
 
 void S9xOpenGLDisplayDriver::refresh (int width, int height)
@@ -536,7 +563,7 @@ void S9xOpenGLDisplayDriver::resize ()
     output_window_height = context->height;
 }
 
-int S9xOpenGLDisplayDriver::create_context ()
+bool S9xOpenGLDisplayDriver::create_context()
 {
     gdk_window = gtk_widget_get_window (drawing_area);
 
@@ -554,10 +581,10 @@ int S9xOpenGLDisplayDriver::create_context ()
 #endif
 
     if (!context->attach (drawing_area))
-        return 0;
+        return false;
 
     if (!context->create_context ())
-        return 0;
+        return false;
 
     output_window_width = context->width;
     output_window_height = context->height;
@@ -581,7 +608,7 @@ int S9xOpenGLDisplayDriver::create_context ()
     else
         core = false;
 
-    return 1;
+    return true;
 }
 
 int S9xOpenGLDisplayDriver::init ()
@@ -635,7 +662,7 @@ void S9xOpenGLDisplayDriver::swap_buffers ()
 {
     context->swap_buffers ();
 
-    if (config->sync_every_frame)
+    if (config->use_glfinish && !config->use_sync_control)
     {
         usleep (0);
         glFinish ();
@@ -649,7 +676,7 @@ void S9xOpenGLDisplayDriver::deinit ()
 
     if (using_glsl_shaders)
     {
-        window->enable_widget ("shader_parameters_item", FALSE);
+        window->enable_widget ("shader_parameters_item", false);
         gtk_shader_parameters_dialog_close ();
         glsl_shader->destroy();
         delete glsl_shader;
@@ -699,4 +726,14 @@ int S9xOpenGLDisplayDriver::query_availability ()
         gui_config->hw_accel = HWA_NONE;
 
     return 0;
+}
+
+bool S9xOpenGLDisplayDriver::is_ready ()
+{
+    if (context->ready())
+    {
+        return true;
+    }
+
+    return false;
 }

@@ -1,206 +1,18 @@
-/***********************************************************************************
-  Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
-
-  (c) Copyright 1996 - 2002  Gary Henderson (gary.henderson@ntlworld.com),
-                             Jerremy Koot (jkoot@snes9x.com)
-
-  (c) Copyright 2002 - 2004  Matthew Kendora
-
-  (c) Copyright 2002 - 2005  Peter Bortas (peter@bortas.org)
-
-  (c) Copyright 2004 - 2005  Joel Yliluoma (http://iki.fi/bisqwit/)
-
-  (c) Copyright 2001 - 2006  John Weidman (jweidman@slip.net)
-
-  (c) Copyright 2002 - 2006  funkyass (funkyass@spam.shaw.ca),
-                             Kris Bleakley (codeviolation@hotmail.com)
-
-  (c) Copyright 2002 - 2010  Brad Jorsch (anomie@users.sourceforge.net),
-                             Nach (n-a-c-h@users.sourceforge.net),
-
-  (c) Copyright 2002 - 2011  zones (kasumitokoduck@yahoo.com)
-
-  (c) Copyright 2006 - 2007  nitsuja
-
-  (c) Copyright 2009 - 2018  BearOso,
-                             OV2
-
-  (c) Copyright 2017         qwertymodo
-
-  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
-                             Daniel De Matteis
-                             (Under no circumstances will commercial rights be given)
-
-
-  BS-X C emulator code
-  (c) Copyright 2005 - 2006  Dreamer Nom,
-                             zones
-
-  C4 x86 assembler and some C emulation code
-  (c) Copyright 2000 - 2003  _Demo_ (_demo_@zsnes.com),
-                             Nach,
-                             zsKnight (zsknight@zsnes.com)
-
-  C4 C++ code
-  (c) Copyright 2003 - 2006  Brad Jorsch,
-                             Nach
-
-  DSP-1 emulator code
-  (c) Copyright 1998 - 2006  _Demo_,
-                             Andreas Naive (andreasnaive@gmail.com),
-                             Gary Henderson,
-                             Ivar (ivar@snes9x.com),
-                             John Weidman,
-                             Kris Bleakley,
-                             Matthew Kendora,
-                             Nach,
-                             neviksti (neviksti@hotmail.com)
-
-  DSP-2 emulator code
-  (c) Copyright 2003         John Weidman,
-                             Kris Bleakley,
-                             Lord Nightmare (lord_nightmare@users.sourceforge.net),
-                             Matthew Kendora,
-                             neviksti
-
-  DSP-3 emulator code
-  (c) Copyright 2003 - 2006  John Weidman,
-                             Kris Bleakley,
-                             Lancer,
-                             z80 gaiden
-
-  DSP-4 emulator code
-  (c) Copyright 2004 - 2006  Dreamer Nom,
-                             John Weidman,
-                             Kris Bleakley,
-                             Nach,
-                             z80 gaiden
-
-  OBC1 emulator code
-  (c) Copyright 2001 - 2004  zsKnight,
-                             pagefault (pagefault@zsnes.com),
-                             Kris Bleakley
-                             Ported from x86 assembler to C by sanmaiwashi
-
-  SPC7110 and RTC C++ emulator code used in 1.39-1.51
-  (c) Copyright 2002         Matthew Kendora with research by
-                             zsKnight,
-                             John Weidman,
-                             Dark Force
-
-  SPC7110 and RTC C++ emulator code used in 1.52+
-  (c) Copyright 2009         byuu,
-                             neviksti
-
-  S-DD1 C emulator code
-  (c) Copyright 2003         Brad Jorsch with research by
-                             Andreas Naive,
-                             John Weidman
-
-  S-RTC C emulator code
-  (c) Copyright 2001 - 2006  byuu,
-                             John Weidman
-
-  ST010 C++ emulator code
-  (c) Copyright 2003         Feather,
-                             John Weidman,
-                             Kris Bleakley,
-                             Matthew Kendora
-
-  Super FX x86 assembler emulator code
-  (c) Copyright 1998 - 2003  _Demo_,
-                             pagefault,
-                             zsKnight
-
-  Super FX C emulator code
-  (c) Copyright 1997 - 1999  Ivar,
-                             Gary Henderson,
-                             John Weidman
-
-  Sound emulator code used in 1.5-1.51
-  (c) Copyright 1998 - 2003  Brad Martin
-  (c) Copyright 1998 - 2006  Charles Bilyue'
-
-  Sound emulator code used in 1.52+
-  (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
-
-  S-SMP emulator code used in 1.54+
-  (c) Copyright 2016         byuu
-
-  SH assembler code partly based on x86 assembler code
-  (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
-
-  2xSaI filter
-  (c) Copyright 1999 - 2001  Derek Liauw Kie Fa
-
-  HQ2x, HQ3x, HQ4x filters
-  (c) Copyright 2003         Maxim Stepin (maxim@hiend3d.com)
-
-  NTSC filter
-  (c) Copyright 2006 - 2007  Shay Green
-
-  GTK+ GUI code
-  (c) Copyright 2004 - 2018  BearOso
-
-  Win32 GUI code
-  (c) Copyright 2003 - 2006  blip,
-                             funkyass,
-                             Matthew Kendora,
-                             Nach,
-                             nitsuja
-  (c) Copyright 2009 - 2018  OV2
-
-  Mac OS GUI code
-  (c) Copyright 1998 - 2001  John Stiles
-  (c) Copyright 2001 - 2011  zones
-
-  Libretro port
-  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
-                             Daniel De Matteis
-                             (Under no circumstances will commercial rights be given)
-
-
-  Specific ports contains the works of other authors. See headers in
-  individual files.
-
-
-  Snes9x homepage: http://www.snes9x.com/
-
-  Permission to use, copy, modify and/or distribute Snes9x in both binary
-  and source form, for non-commercial purposes, is hereby granted without
-  fee, providing that this license information and copyright notice appear
-  with all copies and any derived work.
-
-  This software is provided 'as-is', without any express or implied
-  warranty. In no event shall the authors be held liable for any damages
-  arising from the use of this software or it's derivatives.
-
-  Snes9x is freeware for PERSONAL USE only. Commercial users should
-  seek permission of the copyright holders first. Commercial use includes,
-  but is not limited to, charging money for Snes9x or software derived from
-  Snes9x, including Snes9x or derivatives in commercial game bundles, and/or
-  using Snes9x as a promotion for your commercial product.
-
-  The copyright holders request that bug fixes and improvements to the code
-  should be forwarded to them so everyone can benefit from the modifications
-  in future versions.
-
-  Super NES and Super Nintendo Entertainment System are trademarks of
-  Nintendo Co., Limited and its subsidiary companies.
- ***********************************************************************************/
-
-
-
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
 
 /* This is where all the GUI text strings will eventually end up */
 
-#define WINDOW_TITLE TEXT("Snes9X v%s for Windows")
+#define WINDOW_TITLE TEXT("Snes9x")
 
 // the windows registry is no longer used
-//#define MY_REG_KEY   "Software\\Emulators\\Snes9X"
+//#define MY_REG_KEY   "Software\\Emulators\\Snes9x"
 //#define REG_KEY_VER  "1.31"
 
-#define DISCLAIMER_TEXT        TEXT("Snes9X v%s for Windows.\r\n\
+#define DISCLAIMER_TEXT        TEXT("Snes9x v%s for Windows.\r\n\
 (c) Copyright 1996 - 2002  Gary Henderson and Jerremy Koot (jkoot@snes9x.com)\r\n\
 (c) Copyright 2002 - 2004  Matthew Kendora\r\n\
 (c) Copyright 2002 - 2005  Peter Bortas\r\n\
@@ -208,23 +20,23 @@
 (c) Copyright 2001 - 2006  John Weidman\r\n\
 (c) Copyright 2002 - 2010  Brad Jorsch, funkyass, Kris Bleakley, Nach, zones\r\n\
 (c) Copyright 2006 - 2007  nitsuja\r\n\
-(c) Copyright 2009 - 2018  BearOso, OV2\r\n\r\n\
+(c) Copyright 2009 - 2019  BearOso, OV2\r\n\r\n\
 Windows Port Authors: Matthew Kendora, funkyass, nitsuja, Nach, blip, OV2.\r\n\r\n\
-Snes9X is a Super Nintendo Entertainment System\r\n\
+Snes9x is a Super Nintendo Entertainment System\r\n\
 emulator that allows you to play most games designed\r\n\
 for the SNES on your PC.\r\n\r\n\
 Please visit http://www.snes9x.com for\r\n\
-up-to-the-minute information and help on Snes9X.\r\n\r\n\
-Nintendo is a trade mark.")
+up-to-the-minute information and help on Snes9x.\r\n\r\n\
+Nintendo is a trademark.")
 
 
 #define APP_NAME TEXT("Snes9x")
 // possible global strings
 #define SNES9X_INFO TEXT("Snes9x: Information")
 #define SNES9X_WARN TEXT("Snes9x: WARNING!")
-#define SNES9X_DXS TEXT("Snes9X: DirectSound")
-#define SNES9X_SNDQ TEXT("Snes9X: Sound CPU Question")
-#define SNES9X_NP_ERROR TEXT("Snes9X: NetPlay Error")
+#define SNES9X_DXS TEXT("Snes9x: DirectSound")
+#define SNES9X_SNDQ TEXT("Snes9x: Sound CPU Question")
+#define SNES9X_NP_ERROR TEXT("Snes9x: NetPlay Error")
 #define BUTTON_OK TEXT("&OK")
 #define BUTTON_CANCEL TEXT("&Cancel")
 
@@ -266,48 +78,48 @@ Nintendo is a trade mark.")
 #define HOTKEYS_ALT_MOD "Alt + "
 #define HOTKEYS_LABEL_BLUE TEXT("Blue means the hotkey is already mapped.\nPink means it conflicts with a game button.\nRed means it's reserved by Windows.\nA hotkey can be disabled using Escape.")
 #define HOTKEYS_HKCOMBO TEXT("Page %d")
-#define HOTKEYS_LABEL_1_1 TEXT("speed +")
-#define HOTKEYS_LABEL_1_2 TEXT("speed -")
-#define HOTKEYS_LABEL_1_3 TEXT("pause")
-#define HOTKEYS_LABEL_1_4 TEXT("frame advance")
-#define HOTKEYS_LABEL_1_5 TEXT("fast forward")
-#define HOTKEYS_LABEL_1_6 TEXT("skip +")
-#define HOTKEYS_LABEL_1_7 TEXT("skip -")
-#define HOTKEYS_LABEL_1_8 TEXT("superscope turbo")
-#define HOTKEYS_LABEL_1_9 TEXT("superscope pause")
-#define HOTKEYS_LABEL_1_10 TEXT("show pressed keys")
-#define HOTKEYS_LABEL_1_11 TEXT("movie frame count")
-#define HOTKEYS_LABEL_1_12 TEXT("movie read-only")
-#define HOTKEYS_LABEL_1_13 TEXT("save screenshot")
-#define HOTKEYS_LABEL_2_1 TEXT("Graphics Layer 1")
-#define HOTKEYS_LABEL_2_2 TEXT("Graphics Layer 2")
-#define HOTKEYS_LABEL_2_3 TEXT("Graphics Layer 3")
-#define HOTKEYS_LABEL_2_4 TEXT("Graphics Layer 4")
-#define HOTKEYS_LABEL_2_5 TEXT("Sprites Layer")
-#define HOTKEYS_LABEL_2_6 TEXT("Clipping Windows")
-#define HOTKEYS_LABEL_2_7 TEXT("Transparency")
-#define HOTKEYS_LABEL_2_8 TEXT("fast forward toggle")
-#define HOTKEYS_LABEL_2_9 TEXT("Rewind")
-#define HOTKEYS_LABEL_2_10 TEXT("Switch Controllers")
-#define HOTKEYS_LABEL_2_11 TEXT("Joypad Swap")
-#define HOTKEYS_LABEL_2_12 TEXT("Reset Game")
-#define HOTKEYS_LABEL_2_13 TEXT("Toggle Cheats")
-#define HOTKEYS_LABEL_3_1 TEXT("Turbo A mode")
-#define HOTKEYS_LABEL_3_2 TEXT("Turbo B mode")
-#define HOTKEYS_LABEL_3_3 TEXT("Turbo Y mode")
-#define HOTKEYS_LABEL_3_4 TEXT("Turbo X mode")
-#define HOTKEYS_LABEL_3_5 TEXT("Turbo L mode")
-#define HOTKEYS_LABEL_3_6 TEXT("Turbo R mode")
-#define HOTKEYS_LABEL_3_7 TEXT("Turbo Start mode")
-#define HOTKEYS_LABEL_3_8 TEXT("Turbo Select mode")
-#define HOTKEYS_LABEL_3_9 TEXT("Turbo Left mode")
-#define HOTKEYS_LABEL_3_10 TEXT("Turbo Up mode")
-#define HOTKEYS_LABEL_3_11 TEXT("Turbo Right mode")
-#define HOTKEYS_LABEL_3_12 TEXT("Turbo Down mode")
-#define HOTKEYS_LABEL_3_13 TEXT("Toggle Mute")
-#define HOTKEYS_LABEL_4_11 TEXT("Save To File")
-#define HOTKEYS_LABEL_4_12 TEXT("Load From File")
-#define HOTKEYS_LABEL_4_13 TEXT("Quit Snes9x")
+#define HOTKEYS_LABEL_1_1 TEXT("Speed +:")
+#define HOTKEYS_LABEL_1_2 TEXT("Speed -:")
+#define HOTKEYS_LABEL_1_3 TEXT("Pause:")
+#define HOTKEYS_LABEL_1_4 TEXT("Frame advance:")
+#define HOTKEYS_LABEL_1_5 TEXT("Fast forward:")
+#define HOTKEYS_LABEL_1_6 TEXT("Skip frames +:")
+#define HOTKEYS_LABEL_1_7 TEXT("Skip frames -:")
+#define HOTKEYS_LABEL_1_8 TEXT("SuperScope turbo:")
+#define HOTKEYS_LABEL_1_9 TEXT("SuperScope pause:")
+#define HOTKEYS_LABEL_1_10 TEXT("Show pressed keys:")
+#define HOTKEYS_LABEL_1_11 TEXT("Movie frame count:")
+#define HOTKEYS_LABEL_1_12 TEXT("Movie read-only:")
+#define HOTKEYS_LABEL_1_13 TEXT("Save screenshot")
+#define HOTKEYS_LABEL_2_1 TEXT("Graphics layer 1:")
+#define HOTKEYS_LABEL_2_2 TEXT("Graphics layer 2:")
+#define HOTKEYS_LABEL_2_3 TEXT("Graphics layer 3:")
+#define HOTKEYS_LABEL_2_4 TEXT("Graphics layer 4:")
+#define HOTKEYS_LABEL_2_5 TEXT("Sprites layer:")
+#define HOTKEYS_LABEL_2_6 TEXT("Clipping Windows:")
+#define HOTKEYS_LABEL_2_7 TEXT("Transparency:")
+#define HOTKEYS_LABEL_2_8 TEXT("Fast-forward toggle:")
+#define HOTKEYS_LABEL_2_9 TEXT("Rewind:")
+#define HOTKEYS_LABEL_2_10 TEXT("Switch controllers:")
+#define HOTKEYS_LABEL_2_11 TEXT("Joypad swap:")
+#define HOTKEYS_LABEL_2_12 TEXT("Reset game:")
+#define HOTKEYS_LABEL_2_13 TEXT("Toggle cheats:")
+#define HOTKEYS_LABEL_3_1 TEXT("Turbo A mode:")
+#define HOTKEYS_LABEL_3_2 TEXT("Turbo B mode:")
+#define HOTKEYS_LABEL_3_3 TEXT("Turbo Y mode:")
+#define HOTKEYS_LABEL_3_4 TEXT("Turbo X mode:")
+#define HOTKEYS_LABEL_3_5 TEXT("Turbo L mode:")
+#define HOTKEYS_LABEL_3_6 TEXT("Turbo R mode:")
+#define HOTKEYS_LABEL_3_7 TEXT("Turbo Start mode:")
+#define HOTKEYS_LABEL_3_8 TEXT("Turbo Select mode:")
+#define HOTKEYS_LABEL_3_9 TEXT("Turbo Left mode:")
+#define HOTKEYS_LABEL_3_10 TEXT("Turbo Up mode:")
+#define HOTKEYS_LABEL_3_11 TEXT("Turbo Right mode:")
+#define HOTKEYS_LABEL_3_12 TEXT("Turbo Down mode:")
+#define HOTKEYS_LABEL_3_13 TEXT("Toggle mute:")
+#define HOTKEYS_LABEL_4_11 TEXT("Save to file:")
+#define HOTKEYS_LABEL_4_12 TEXT("Load from file:")
+#define HOTKEYS_LABEL_4_13 TEXT("Quit Snes9x:")
 
 // gaming buttons and axes
 #define GAMEDEVICE_JOYNUMPREFIX "(J%x)" // don't change this

@@ -1,23 +1,30 @@
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
 #ifndef __GTK_WAYLAND_EGL_CONTEXT_H
 #define __GTK_WAYLAND_EGL_CONTEXT_H
 
-
-#include <wayland-egl.h>
 #include <epoxy/egl.h>
+#include <epoxy/egl_generated.h>
+#include <wayland-egl.h>
 
 #include "gtk_opengl_context.h"
 
 class WaylandEGLContext : public OpenGLContext
 {
   public:
-    WaylandEGLContext ();
-    ~WaylandEGLContext ();
-    bool attach (GtkWidget *widget);
-    bool create_context ();
-    void resize ();
-    void swap_buffers ();
-    void swap_interval (int frames);
-    void make_current ();
+    WaylandEGLContext();
+    ~WaylandEGLContext();
+    bool attach(GtkWidget *widget);
+    bool create_context();
+    void resize();
+    void swap_buffers();
+    void swap_interval(int frames);
+    void make_current();
+    bool ready();
 
     GdkWindow *gdk_window;
 
@@ -34,9 +41,14 @@ class WaylandEGLContext : public OpenGLContext
     EGLDisplay egl_display;
     EGLSurface egl_surface;
     EGLContext egl_context;
-    EGLConfig  egl_config;
+    EGLConfig egl_config;
 
     wl_egl_window *egl_window;
+
+    typedef EGLBoolean (*PEGLGETSYNCVALUESCHROMIUM)(EGLDisplay, EGLSurface, EGLuint64KHR *, EGLuint64KHR *, EGLuint64KHR *);
+    PEGLGETSYNCVALUESCHROMIUM eglGetSyncValuesCHROMIUM;
+    bool use_sync_control;
+    EGLuint64KHR ust, msc, sbc;
 };
 
 #endif

@@ -30,13 +30,13 @@
 #ifndef CWINDOW_H
 #define CWINDOW_H
 
+#include "../port.h"
+
 #include <commctrl.h>
 #include <string>
 #include <vector>
 #include <map>
 #include <algorithm>
-
-#include "../port.h"
 
 namespace std {
 #ifndef tstring

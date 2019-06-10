@@ -6,20 +6,32 @@ NOTE: Unicode support requires a special zlib build - see the end of the zlib en
   your own project file for earlier MSVC versions. VS2017 will automatically ask to install
   the correct Windows SDK Version (7.1A)
 
-- A recent DirectX SDK. The official binary is compiled against the August 2009 SDK.
-  Note that as of the June 2010 release of the DirectX SDK, DirectDraw has been removed
-  (DirectDraw is disabled by default, DIRECTDRAW_SUPPORT enables it)
+- A recent DirectX SDK..
   https://www.microsoft.com/en-us/download/details.aspx?id=23549
 
-- zlib (optional, ZLIB define, enabled by default) - the default solution includes a zlib
-  project that builds appropriately (force includes _tfwopen.h for unicode support in s9x).
-  The zlib directory should reside at win32/zlib/src, or you can download it automatically
-  with git submodule init && git submodule update.
+- The following modules can all be downloaded automatically by using:
+      git submodule update --init
+  in the cloned Snes9x git directory, or by using git GUI tools to do the same.
+  This is the recommended method of installing these dependencies.
 
-- libpng (optional, HAVE_LIBPNG define, enabled by default) - the default solution includes
-  a libpng project that builds appropriately.
-  The libpng directory should reside at win32/libpng/src, or you can download it automatically
-  with git submodule init && git submodule update.
+    * DirectXMath. The source files should reside in win32/DirectXMath
+
+    * zlib (optional, ZLIB define, enabled by default) - the default solution includes a zlib
+      project that builds appropriately (force includes _tfwopen.h for unicode support in s9x).
+      The zlib source files should reside in win32/zlib/src
+
+    * libpng (optional, HAVE_LIBPNG define, enabled by default) - the default solution includes
+      a libpng project that builds appropriately.
+      The libpng source files should reside in win32/libpng/src
+
+    * glslang and SPIRV-Cross (optional, USE_SLANG define, enabled by default)
+      These are needed to build support for .slang shaders. The default solution includes
+      a series of projects encompassing glslang that build appropriately.
+      The glslang source files should reside in win32/glslang/src
+      The SPIRV-Cross source files should be placed in shaders/SPIRV-Cross
+
+      If wish to compile without USE_SLANG, you must remove the files named
+      spirv_*.cpp from the Visual Studio project's Shaders group.
 
 - To compile Snes9x:
     Start up VS2017.

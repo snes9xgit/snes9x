@@ -28,13 +28,14 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#include "../port.h"
+
 #include <list>
 #include <algorithm>
 #include <windows.h>
 #include <windowsx.h>
 #include <commctrl.h>
 #include <tchar.h>
-#include "../port.h"
 #include "../snes9x.h"
 #include "../memmap.h"
 #include "CWindow.h"
@@ -43,11 +44,6 @@
 #include "memView.h"
 
 #include "../apu/bapu/snes/snes.hpp"
-#if defined(DEBUGGER)
-	extern SNES::SMPDebugger SNES::smp;
-#else
-	extern SNES::SMP SNES::smp;
-#endif
 #define APURAM  SNES::smp.apuram
 
 using namespace std;

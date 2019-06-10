@@ -1,4 +1,4 @@
-version: 1.57-{build}
+version: 1.60-{build}
 
 image: Visual Studio 2017
 
@@ -51,9 +51,10 @@ after_build:
   - copy "%output%" artifacts
   - if "%config%"=="Release Unicode"
     copy docs\changes.txt artifacts |
-    copy docs\snes9x-license.txt artifacts |
+    copy LICENSE artifacts |
     copy win32\docs\faqs-windows.txt artifacts |
-    copy win32\docs\readme-windows.txt artifacts
+    copy win32\docs\readme-windows.txt artifacts |
+    copy data\cheats.bml artifacts
   - copy win32\lua\dist\%platform%\lua5.1.dll artifacts
   - copy win32\lua\dist\%platform%\lua51.dll artifacts
   - 7z a %package_name%.zip .\artifacts\*

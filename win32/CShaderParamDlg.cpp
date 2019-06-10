@@ -164,49 +164,59 @@ CShaderParamDlg::~CShaderParamDlg()
 
 bool CShaderParamDlg::show()
 {
+	saved_parameters = shader.param;
+
     if(DialogBoxParam(GUI.hInstance, MAKEINTRESOURCE(IDD_DIALOG_SHADER_PARAMS), GUI.hWnd, DlgShaderParams, (LPARAM)this) == IDOK)
     {
         save_custom_shader();
         return true;
     }
+
+	shader.param = saved_parameters;
+	WinRefreshDisplay();
     return false;
 }
 
 void CShaderParamDlg::createContent(HWND hDlg)
 {
-#define LEFT_OFFSET 10
-#define TOP_OFFSET 10
-#define HORIZONTAL_SPACE 20
-#define VERTICAL_SPACE  15
-#define DESC_WIDTH_CHARS 50
-#define EDIT_WIDTH_CHARS 10
-
     HWND parent = GetDlgItem(hDlg, IDC_STATIC_CONTAINER);
 	// override static wndproc so we can handle the up/down messages, save original proc so we can forward everything else
 	oldStaticProc = (WNDPROC)GetWindowLongPtr(parent, GWLP_WNDPROC);
 	SetWindowLongPtr(parent, GWLP_WNDPROC, (LONG_PTR)WndProcContainerStatic);
 	SetWindowLongPtr(parent, GWLP_USERDATA, (LONG_PTR)this);
 
-    unsigned int top = TOP_OFFSET;
+    RECT clientRect;
+	GetClientRect(parent, &clientRect);
+
+	const int HORIZONTAL_MARGIN = 10;
+	const int VERTICAL_MARGIN = 10;
+	const int HORIZONTAL_SPACE = 20;
+	const int VERTICAL_SPACE = 5;
+
+	unsigned int desc_left = HORIZONTAL_MARGIN;
+	unsigned int desc_width = (clientRect.right - clientRect.left) * 3 / 4 - desc_left - HORIZONTAL_SPACE / 2;
+	unsigned int edit_left = desc_left + desc_width + HORIZONTAL_SPACE;
+	unsigned int edit_width = clientRect.right - clientRect.left - edit_left - HORIZONTAL_MARGIN;
+	unsigned int top = VERTICAL_MARGIN;
+
     for(int i = 0; i < shader.param.size(); i++) {
         GLSLParam &p = shader.param[i];
         TCHAR desc[270];
         _stprintf(desc, TEXT("%s [%g-%g]"), (TCHAR*)_tFromChar(p.name), p.min, p.max);
-        HWND item = CreateWindow(TEXT("STATIC"), desc, SS_LEFTNOWORDWRAP | WS_VISIBLE | WS_CHILD, LEFT_OFFSET, (INT)(top + avgCharHeight * 0.2), DESC_WIDTH_CHARS * avgCharWidth, avgCharHeight, parent, (HMENU)(UINT_PTR)(IDC_PARAMS_START_STATIC + i), GUI.hInstance, NULL);
+        HWND item = CreateWindow(TEXT("STATIC"), desc, SS_LEFTNOWORDWRAP | WS_VISIBLE | WS_CHILD, desc_left, (INT)(top + avgCharHeight * 0.3), desc_width, avgCharHeight, parent, (HMENU)(UINT_PTR)(IDC_PARAMS_START_STATIC + i), GUI.hInstance, NULL);
         SendMessage(item, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(FALSE, 0));
         TCHAR val[100];
         _stprintf(val, TEXT("%g"), p.val);
-        unsigned int edit_left = LEFT_OFFSET + DESC_WIDTH_CHARS * avgCharWidth + HORIZONTAL_SPACE;
-        item = CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("EDIT"), val, ES_AUTOHSCROLL | WS_VISIBLE | WS_CHILD | WS_TABSTOP, edit_left , top, EDIT_WIDTH_CHARS * avgCharWidth, (INT)(avgCharHeight * 1.7), parent, (HMENU)(UINT_PTR)(IDC_PARAMS_START_EDIT + i), GUI.hInstance, NULL);
+        item = CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("EDIT"), val, ES_AUTOHSCROLL | WS_VISIBLE | WS_CHILD | WS_TABSTOP, edit_left , top, edit_width, (INT)(avgCharHeight * 1.7), parent, (HMENU)(UINT_PTR)(IDC_PARAMS_START_EDIT + i), GUI.hInstance, NULL);
         SendMessage(item, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(FALSE, 0));
 
 		item = CreateWindow(UPDOWN_CLASS, NULL, WS_CHILDWINDOW | WS_VISIBLE | UDS_AUTOBUDDY | UDS_ALIGNRIGHT | UDS_ARROWKEYS | UDS_HOTTRACK, 0, 0, 0, 0, parent, (HMENU)(UINT_PTR)(IDC_PARAMS_START_UPDOWN + i), GUI.hInstance, NULL);
 		SendMessage(item, UDM_SETRANGE, 0, MAKELONG(10, -10)); // we don't use this range, simply set it so the up arrow is positive and down arrow negative
 
-        top += avgCharHeight + VERTICAL_SPACE;
+        top += (INT)(avgCharHeight * 1.7 + VERTICAL_SPACE);
     }
 
-    RECT clientRect, windowRect;
+    RECT windowRect;
     GetClientRect(parent, &clientRect);
     HWND scrollbar = GetDlgItem(hDlg,IDC_SCROLLBAR_PARAMS);
     SCROLLINFO si = { 0 };
@@ -258,7 +268,13 @@ void CShaderParamDlg::get_changed_parameters(HWND hDlg)
 void CShaderParamDlg::save_custom_shader()
 {
     TCHAR save_path[MAX_PATH];
-    _stprintf(save_path, TEXT("%s\\custom_shader_params.glslp"), S9xGetDirectoryT(DEFAULT_DIR));
+	int len = lstrlen(GUI.OGLshaderFileName);
+	if (len > 5 && !_tcsncicmp(&GUI.OGLshaderFileName[len - 6], TEXT(".glslp"), 6)) {
+		_stprintf(save_path, TEXT("%s\\custom_shader_params.glslp"), S9xGetDirectoryT(DEFAULT_DIR));
+	}
+	else {
+		_stprintf(save_path, TEXT("%s\\custom_shader_params.slangp"), S9xGetDirectoryT(DEFAULT_DIR));
+	}
     shader.save(_tToChar(save_path));
     lstrcpy(GUI.OGLshaderFileName, save_path);
 }
@@ -267,6 +283,5 @@ void CShaderParamDlg::apply_changes(HWND hDlg)
 {
 	get_changed_parameters(hDlg);
 	save_custom_shader();
-	WinDisplayApplyChanges();
 	WinRefreshDisplay();
 }

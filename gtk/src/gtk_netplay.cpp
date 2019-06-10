@@ -1,3 +1,9 @@
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
 #include <glib.h>
 
 #include "gtk_s9x.h"
@@ -24,7 +30,7 @@ S9xNetplayPreconnect ()
     }
 
     NetPlay.MaxBehindFrameCount = gui_config->netplay_max_frame_loss;
-    NetPlay.Waiting4EmulationThread = FALSE;
+    NetPlay.Waiting4EmulationThread = false;
 }
 
 static void
@@ -36,13 +42,13 @@ S9xNetplayConnect ()
 
     uint32 flags = CPU.Flags;
 
-    if (*(gui_config->netplay_last_rom) &&
-        top_level->try_open_rom (gui_config->netplay_last_rom))
+    if (!gui_config->netplay_last_rom.empty () &&
+        !top_level->try_open_rom (gui_config->netplay_last_rom.c_str ()))
     {
         return;
     }
 
-    if (!S9xNPConnectToServer (gui_config->netplay_last_host,
+    if (!S9xNPConnectToServer (gui_config->netplay_last_host.c_str (),
                                gui_config->netplay_last_port,
                                Memory.ROMName))
     {
@@ -51,7 +57,7 @@ S9xNetplayConnect ()
                                       GTK_MESSAGE_ERROR,
                                       GTK_BUTTONS_CLOSE,
                                       "Couldn't connect to server: %s:%d",
-                                      gui_config->netplay_last_host,
+                                      gui_config->netplay_last_host.c_str (),
                                       gui_config->netplay_last_port);
         gtk_window_set_title (GTK_WINDOW (msg), _("Connection Error"));
 
@@ -59,12 +65,12 @@ S9xNetplayConnect ()
         gtk_widget_destroy (msg);
     }
 
-    gui_config->netplay_activated = TRUE;
+    gui_config->netplay_activated = true;
 
     /* If no rom is specified, assume we'll get it from the server */
-    if (*(gui_config->netplay_last_rom) == 0)
+    if (gui_config->netplay_last_rom.empty ())
     {
-        Settings.StopEmulation = FALSE;
+        Settings.StopEmulation = false;
         S9xROMLoaded ();
     }
 
@@ -88,8 +94,8 @@ S9xNetplayStopServer ()
     S9xNPStopServer ();
 
     g_thread_join (npthread);
-    Settings.NetPlayServer = FALSE;
-    gui_config->netplay_server_up = FALSE;
+    Settings.NetPlayServer = false;
+    gui_config->netplay_server_up = false;
 }
 
 void
@@ -106,8 +112,8 @@ S9xNetplayDisconnect ()
         S9xNetplayStopServer ();
     }
 
-    gui_config->netplay_activated = FALSE;
-    NetPlay.Paused = FALSE;
+    gui_config->netplay_activated = false;
+    NetPlay.Paused = false;
 
     top_level->configure_widgets ();
 }
@@ -129,13 +135,13 @@ S9xNetplayStartServer ()
 
     flags = CPU.Flags;
 
-    if (*(gui_config->netplay_last_rom) == 0 ||
-        top_level->try_open_rom (gui_config->netplay_last_rom))
+    if (gui_config->netplay_last_rom.empty () ||
+        !top_level->try_open_rom (gui_config->netplay_last_rom.c_str ()))
     {
         return;
     }
 
-    Settings.NetPlayServer = TRUE;
+    Settings.NetPlayServer = true;
     NPServer.SyncByReset = gui_config->netplay_sync_reset;
     NPServer.SendROMImageOnConnect = gui_config->netplay_send_rom;
 
@@ -152,8 +158,8 @@ S9xNetplayStartServer ()
 
     S9xROMLoaded ();
 
-    gui_config->netplay_activated = TRUE;
-    gui_config->netplay_server_up = TRUE;
+    gui_config->netplay_activated = true;
+    gui_config->netplay_server_up = true;
 
     CPU.Flags = flags;
 
@@ -209,7 +215,7 @@ S9xNetplaySyncSpeed ()
         // No heartbeats already arrived, have to wait for one.
         NetPlay.PendingWait4Sync = !S9xNPWaitForHeartBeatDelay (100);
 
-        IPPU.RenderThisFrame = TRUE;
+        IPPU.RenderThisFrame = true;
         IPPU.SkippedFrames = 0;
     }
     else
@@ -224,16 +230,16 @@ S9xNetplaySyncSpeed ()
         {
             if ((unsigned int) difference <= (NetPlay.MaxBehindFrameCount / 2))
             {
-                NetPlay.Waiting4EmulationThread = FALSE;
-                S9xNPSendPause (FALSE);
+                NetPlay.Waiting4EmulationThread = false;
+                S9xNPSendPause (false);
             }
         }
         else
         {
             if ((unsigned int) difference >= (NetPlay.MaxBehindFrameCount))
             {
-                NetPlay.Waiting4EmulationThread = TRUE;
-                S9xNPSendPause (TRUE);
+                NetPlay.Waiting4EmulationThread = true;
+                S9xNPSendPause (true);
             }
         }
 
@@ -242,11 +248,11 @@ S9xNetplaySyncSpeed ()
         if (IPPU.SkippedFrames < NetPlay.MaxFrameSkip)
         {
             IPPU.SkippedFrames++;
-            IPPU.RenderThisFrame = FALSE;
+            IPPU.RenderThisFrame = false;
         }
         else
         {
-            IPPU.RenderThisFrame = TRUE;
+            IPPU.RenderThisFrame = true;
             IPPU.SkippedFrames = 0;
         }
     }
@@ -263,8 +269,6 @@ S9xNetplaySyncSpeed ()
 int
 S9xNetplayPush ()
 {
-    static int statusbar_state = FALSE;
-
     if (gui_config->netplay_activated &&
         (!Settings.NetPlay || !NetPlay.Connected))
         S9xNetplayDisconnect ();
@@ -274,27 +278,15 @@ S9xNetplayPush ()
 
     if (NetPlay.PendingWait4Sync && !S9xNPWaitForHeartBeatDelay (100))
     {
-        S9xProcessEvents (FALSE);
+        S9xProcessEvents (false);
 
         S9xSoundStop ();
-        NetPlay.Paused = TRUE;
-
-        if (statusbar_state == FALSE)
-        {
-            top_level->update_statusbar ();
-            statusbar_state = TRUE;
-        }
+        NetPlay.Paused = true;
 
         return 1;
     }
 
-    NetPlay.Paused = FALSE;
-
-    if (statusbar_state)
-    {
-        top_level->update_statusbar ();
-        statusbar_state = FALSE;
-    }
+    NetPlay.Paused = false;
 
     S9xSoundStart ();
 
@@ -308,7 +300,7 @@ S9xNetplayPush ()
 
     if (NetPlay.PendingWait4Sync)
     {
-        NetPlay.PendingWait4Sync = FALSE;
+        NetPlay.PendingWait4Sync = false;
         NetPlay.FrameCount++;
         S9xNPStepJoypadHistory ();
     }

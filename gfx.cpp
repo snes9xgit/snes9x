@@ -1,194 +1,8 @@
-/***********************************************************************************
-  Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
-
-  (c) Copyright 1996 - 2002  Gary Henderson (gary.henderson@ntlworld.com),
-                             Jerremy Koot (jkoot@snes9x.com)
-
-  (c) Copyright 2002 - 2004  Matthew Kendora
-
-  (c) Copyright 2002 - 2005  Peter Bortas (peter@bortas.org)
-
-  (c) Copyright 2004 - 2005  Joel Yliluoma (http://iki.fi/bisqwit/)
-
-  (c) Copyright 2001 - 2006  John Weidman (jweidman@slip.net)
-
-  (c) Copyright 2002 - 2006  funkyass (funkyass@spam.shaw.ca),
-                             Kris Bleakley (codeviolation@hotmail.com)
-
-  (c) Copyright 2002 - 2010  Brad Jorsch (anomie@users.sourceforge.net),
-                             Nach (n-a-c-h@users.sourceforge.net),
-
-  (c) Copyright 2002 - 2011  zones (kasumitokoduck@yahoo.com)
-
-  (c) Copyright 2006 - 2007  nitsuja
-
-  (c) Copyright 2009 - 2018  BearOso,
-                             OV2
-
-  (c) Copyright 2017         qwertymodo
-
-  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
-                             Daniel De Matteis
-                             (Under no circumstances will commercial rights be given)
-
-
-  BS-X C emulator code
-  (c) Copyright 2005 - 2006  Dreamer Nom,
-                             zones
-
-  C4 x86 assembler and some C emulation code
-  (c) Copyright 2000 - 2003  _Demo_ (_demo_@zsnes.com),
-                             Nach,
-                             zsKnight (zsknight@zsnes.com)
-
-  C4 C++ code
-  (c) Copyright 2003 - 2006  Brad Jorsch,
-                             Nach
-
-  DSP-1 emulator code
-  (c) Copyright 1998 - 2006  _Demo_,
-                             Andreas Naive (andreasnaive@gmail.com),
-                             Gary Henderson,
-                             Ivar (ivar@snes9x.com),
-                             John Weidman,
-                             Kris Bleakley,
-                             Matthew Kendora,
-                             Nach,
-                             neviksti (neviksti@hotmail.com)
-
-  DSP-2 emulator code
-  (c) Copyright 2003         John Weidman,
-                             Kris Bleakley,
-                             Lord Nightmare (lord_nightmare@users.sourceforge.net),
-                             Matthew Kendora,
-                             neviksti
-
-  DSP-3 emulator code
-  (c) Copyright 2003 - 2006  John Weidman,
-                             Kris Bleakley,
-                             Lancer,
-                             z80 gaiden
-
-  DSP-4 emulator code
-  (c) Copyright 2004 - 2006  Dreamer Nom,
-                             John Weidman,
-                             Kris Bleakley,
-                             Nach,
-                             z80 gaiden
-
-  OBC1 emulator code
-  (c) Copyright 2001 - 2004  zsKnight,
-                             pagefault (pagefault@zsnes.com),
-                             Kris Bleakley
-                             Ported from x86 assembler to C by sanmaiwashi
-
-  SPC7110 and RTC C++ emulator code used in 1.39-1.51
-  (c) Copyright 2002         Matthew Kendora with research by
-                             zsKnight,
-                             John Weidman,
-                             Dark Force
-
-  SPC7110 and RTC C++ emulator code used in 1.52+
-  (c) Copyright 2009         byuu,
-                             neviksti
-
-  S-DD1 C emulator code
-  (c) Copyright 2003         Brad Jorsch with research by
-                             Andreas Naive,
-                             John Weidman
-
-  S-RTC C emulator code
-  (c) Copyright 2001 - 2006  byuu,
-                             John Weidman
-
-  ST010 C++ emulator code
-  (c) Copyright 2003         Feather,
-                             John Weidman,
-                             Kris Bleakley,
-                             Matthew Kendora
-
-  Super FX x86 assembler emulator code
-  (c) Copyright 1998 - 2003  _Demo_,
-                             pagefault,
-                             zsKnight
-
-  Super FX C emulator code
-  (c) Copyright 1997 - 1999  Ivar,
-                             Gary Henderson,
-                             John Weidman
-
-  Sound emulator code used in 1.5-1.51
-  (c) Copyright 1998 - 2003  Brad Martin
-  (c) Copyright 1998 - 2006  Charles Bilyue'
-
-  Sound emulator code used in 1.52+
-  (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
-
-  S-SMP emulator code used in 1.54+
-  (c) Copyright 2016         byuu
-
-  SH assembler code partly based on x86 assembler code
-  (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
-
-  2xSaI filter
-  (c) Copyright 1999 - 2001  Derek Liauw Kie Fa
-
-  HQ2x, HQ3x, HQ4x filters
-  (c) Copyright 2003         Maxim Stepin (maxim@hiend3d.com)
-
-  NTSC filter
-  (c) Copyright 2006 - 2007  Shay Green
-
-  GTK+ GUI code
-  (c) Copyright 2004 - 2018  BearOso
-
-  Win32 GUI code
-  (c) Copyright 2003 - 2006  blip,
-                             funkyass,
-                             Matthew Kendora,
-                             Nach,
-                             nitsuja
-  (c) Copyright 2009 - 2018  OV2
-
-  Mac OS GUI code
-  (c) Copyright 1998 - 2001  John Stiles
-  (c) Copyright 2001 - 2011  zones
-
-  Libretro port
-  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
-                             Daniel De Matteis
-                             (Under no circumstances will commercial rights be given)
-
-
-  Specific ports contains the works of other authors. See headers in
-  individual files.
-
-
-  Snes9x homepage: http://www.snes9x.com/
-
-  Permission to use, copy, modify and/or distribute Snes9x in both binary
-  and source form, for non-commercial purposes, is hereby granted without
-  fee, providing that this license information and copyright notice appear
-  with all copies and any derived work.
-
-  This software is provided 'as-is', without any express or implied
-  warranty. In no event shall the authors be held liable for any damages
-  arising from the use of this software or it's derivatives.
-
-  Snes9x is freeware for PERSONAL USE only. Commercial users should
-  seek permission of the copyright holders first. Commercial use includes,
-  but is not limited to, charging money for Snes9x or software derived from
-  Snes9x, including Snes9x or derivatives in commercial game bundles, and/or
-  using Snes9x as a promotion for your commercial product.
-
-  The copyright holders request that bug fixes and improvements to the code
-  should be forwarded to them so everyone can benefit from the modifications
-  in future versions.
-
-  Super NES and Super Nintendo Entertainment System are trademarks of
-  Nintendo Co., Limited and its subsidiary companies.
- ***********************************************************************************/
-
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
 
 #include "snes9x.h"
 #include "ppu.h"
@@ -212,6 +26,7 @@ extern struct SLineMatrixData	LineMatrixData[240];
 void S9xComputeClipWindows (void);
 
 static int	font_width = 8, font_height = 9;
+void (*S9xCustomDisplayString) (const char *, int, int, bool, int) = NULL;
 
 static void SetupOBJ (void);
 static void DrawOBJS (int);
@@ -227,6 +42,7 @@ static inline void DrawBackgroundMode7 (int, void (*DrawMath) (uint32, uint32, i
 static inline void DrawBackdrop (void);
 static inline void RenderScreen (bool8);
 static uint16 get_crosshair_color (uint8);
+static void S9xDisplayStringType (const char *, int, int, bool, int);
 
 #define TILE_PLUS(t, x)	(((t) & 0xfc00) | ((t + x) & 0x3ff))
 
@@ -236,20 +52,12 @@ bool8 S9xGraphicsInit (void)
 	S9xInitTileRenderer();
 	memset(BlackColourMap, 0, 256 * sizeof(uint16));
 
-#ifdef GFX_MULTI_FORMAT
-	if (GFX.BuildPixel == NULL)
-		S9xSetRenderPixelFormat(RGB565);
-#endif
-
-	GFX.DoInterlace = 0;
-	GFX.InterlaceFrame = 0;
 	GFX.RealPPL = GFX.Pitch >> 1;
 	IPPU.OBJChanged = TRUE;
 	Settings.BG_Forced = 0;
 	S9xFixColourBrightness();
 	S9xBuildDirectColourMaps();
 
-	GFX.X2   = (uint16 *) malloc(sizeof(uint16) * 0x10000);
 	GFX.ZERO = (uint16 *) malloc(sizeof(uint16) * 0x10000);
 
 	GFX.ScreenSize = GFX.Pitch / 2 * SNES_HEIGHT_EXTENDED * (Settings.SupportHiRes ? 2 : 1);
@@ -257,36 +65,10 @@ bool8 S9xGraphicsInit (void)
 	GFX.ZBuffer    = (uint8 *)  malloc(GFX.ScreenSize);
 	GFX.SubZBuffer = (uint8 *)  malloc(GFX.ScreenSize);
 
-	if (!GFX.X2 || !GFX.ZERO || !GFX.SubScreen || !GFX.ZBuffer || !GFX.SubZBuffer)
+	if (!GFX.ZERO || !GFX.SubScreen || !GFX.ZBuffer || !GFX.SubZBuffer)
 	{
 		S9xGraphicsDeinit();
 		return (FALSE);
-	}
-
-    // Lookup table for color addition
-	memset(GFX.X2, 0, 0x10000 * sizeof(uint16));
-	for (uint32 r = 0; r <= MAX_RED; r++)
-	{
-		uint32	r2 = r << 1;
-		if (r2 > MAX_RED)
-			r2 = MAX_RED;
-
-		for (uint32 g = 0; g <= MAX_GREEN; g++)
-		{
-			uint32	g2 = g << 1;
-			if (g2 > MAX_GREEN)
-				g2 = MAX_GREEN;
-
-			for (uint32 b = 0; b <= MAX_BLUE; b++)
-			{
-				uint32	b2 = b << 1;
-				if (b2 > MAX_BLUE)
-					b2 = MAX_BLUE;
-
-				GFX.X2[BUILD_PIXEL2(r, g, b)] = BUILD_PIXEL2(r2, g2, b2);
-				GFX.X2[BUILD_PIXEL2(r, g, b) & ~ALPHA_BITS_MASK] = BUILD_PIXEL2(r2, g2, b2);
-			}
-		}
 	}
 
 	// Lookup table for 1/2 color subtraction
@@ -326,7 +108,6 @@ bool8 S9xGraphicsInit (void)
 
 void S9xGraphicsDeinit (void)
 {
-	if (GFX.X2)         { free(GFX.X2);         GFX.X2         = NULL; }
 	if (GFX.ZERO)       { free(GFX.ZERO);       GFX.ZERO       = NULL; }
 	if (GFX.SubScreen)  { free(GFX.SubScreen);  GFX.SubScreen  = NULL; }
 	if (GFX.ZBuffer)    { free(GFX.ZBuffer);    GFX.ZBuffer    = NULL; }
@@ -387,6 +168,8 @@ void S9xBuildDirectColourMaps (void)
 void S9xStartScreenRefresh (void)
 {
 	GFX.InterlaceFrame = !GFX.InterlaceFrame;
+	if (GFX.DoInterlace)
+		GFX.DoInterlace--;
 
 	if (IPPU.RenderThisFrame)
 	{
@@ -397,9 +180,6 @@ void S9xStartScreenRefresh (void)
 				IPPU.RenderThisFrame = FALSE;
 				return;
 			}
-
-			if (GFX.DoInterlace)
-				GFX.DoInterlace--;
 
 			S9xGraphicsScreenResize();
 
@@ -708,12 +488,12 @@ void S9xUpdateScreen (void)
 					// ignoring the true, larger size of the buffer.
 					GFX.RealPPL = GFX.Pitch >> 1;
 
-					for (register int32 y = (int32) GFX.StartY - 1; y >= 0; y--)
+					for (int32 y = (int32) GFX.StartY - 1; y >= 0; y--)
 					{
-						register uint16	*p = GFX.Screen + y * GFX.PPL     + 255;
-						register uint16	*q = GFX.Screen + y * GFX.RealPPL + 510;
+						uint16	*p = GFX.Screen + y * GFX.PPL     + 255;
+						uint16	*q = GFX.Screen + y * GFX.RealPPL + 510;
 
-						for (register int x = 255; x >= 0; x--, p--, q -= 2)
+						for (int x = 255; x >= 0; x--, p--, q -= 2)
 							*q = *(q + 1) = *p;
 					}
 
@@ -722,12 +502,12 @@ void S9xUpdateScreen (void)
 				else
 				#endif
 				// Have to back out of the regular speed hack
-				for (register uint32 y = 0; y < GFX.StartY; y++)
+				for (uint32 y = 0; y < GFX.StartY; y++)
 				{
-					register uint16	*p = GFX.Screen + y * GFX.PPL + 255;
-					register uint16	*q = GFX.Screen + y * GFX.PPL + 510;
+					uint16	*p = GFX.Screen + y * GFX.PPL + 255;
+					uint16	*q = GFX.Screen + y * GFX.PPL + 510;
 
-					for (register int x = 255; x >= 0; x--, p--, q -= 2)
+					for (int x = 255; x >= 0; x--, p--, q -= 2)
 						*q = *(q + 1) = *p;
 				}
 
@@ -742,7 +522,7 @@ void S9xUpdateScreen (void)
 				GFX.PPL = GFX.RealPPL << 1;
 				GFX.DoInterlace = 2;
 
-				for (register int32 y = (int32) GFX.StartY - 2; y >= 0; y--)
+				for (int32 y = (int32) GFX.StartY - 2; y >= 0; y--)
 					memmove(GFX.Screen + (y + 1) * GFX.PPL, GFX.Screen + y * GFX.RealPPL, GFX.PPL * sizeof(uint16));
 			}
 		}
@@ -1010,8 +790,10 @@ static void SetupOBJ (void)
 	IPPU.OBJChanged = FALSE;
 }
 
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC push_options
 #pragma GCC optimize ("no-tree-vrp")
+#endif
 static void DrawOBJS (int D)
 {
 	void (*DrawTile) (uint32, uint32, uint32, uint32) = NULL;
@@ -1104,8 +886,9 @@ static void DrawOBJS (int D)
 		}
 	}
 }
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC pop_options
-
+#endif
 
 static void DrawBackground (int bg, uint8 Zh, uint8 Zl)
 {
@@ -2016,6 +1799,12 @@ void S9xDisplayChar (uint16 *s, uint8 c)
 
 static void DisplayStringFromBottom (const char *string, int linesFromBottom, int pixelsFromLeft, bool allowWrap)
 {
+	if (S9xCustomDisplayString)
+	{
+		S9xCustomDisplayString (string, linesFromBottom, pixelsFromLeft, allowWrap, S9X_NO_INFO);
+		return;
+	}
+
 	if (linesFromBottom <= 0)
 		linesFromBottom = 1;
 
@@ -2045,6 +1834,17 @@ static void DisplayStringFromBottom (const char *string, int linesFromBottom, in
 		S9xDisplayChar(dst, string[i]);
 		dst += font_width - 1;
 	}
+}
+
+static void S9xDisplayStringType (const char *string, int linesFromBottom, int pixelsFromLeft, bool allowWrap, int type)
+{
+    if (S9xCustomDisplayString)
+    {
+            S9xCustomDisplayString (string, linesFromBottom, pixelsFromLeft, allowWrap, type);
+            return;
+    }
+
+    S9xDisplayString (string, linesFromBottom, pixelsFromLeft, allowWrap);
 }
 
 static void DisplayFrameRate (void)
@@ -2077,8 +1877,8 @@ static void DisplayFrameRate (void)
 
 static void DisplayPressedKeys (void)
 {
-	static char	KeyMap[]   = { '0', '1', '2', 'R', 'L', 'X', 'A', '>', '<', 'v', '^', 'S', 's', 'Y', 'B' };
-	static int	KeyOrder[] = { 8, 10, 7, 9, 0, 6, 14, 13, 5, 1, 4, 3, 2, 11, 12 }; // < ^ > v   A B Y X  L R  S s
+	static unsigned char	KeyMap[]   = { '0', '1', '2', 'R', 'L', 'X', 'A', 225, 224, 227, 226, 'S', 's', 'Y', 'B' };
+	static int		KeyOrder[] = { 8, 10, 7, 9, 0, 6, 14, 13, 5, 1, 4, 3, 2, 11, 12 }; // < ^ > v   A B Y X  L R  S s
 
 	enum controllers	controller;
     int					line = Settings.DisplayMovieFrame ? 2 : 1;
@@ -2093,52 +1893,55 @@ static void DisplayPressedKeys (void)
 		{
 			case CTL_MOUSE:
 			{
-				uint8 buf[5], *p = buf;
-				MovieGetMouse(port, buf);
-				int16 x = READ_WORD(p);
-				int16 y = READ_WORD(p + 2);
+				uint8 buf[5];
+				if (!MovieGetMouse(port, buf))
+					break;
+				int16 x = READ_WORD(buf);
+				int16 y = READ_WORD(buf + 2);
 				uint8 buttons = buf[4];
-				sprintf(string, "#%d %d: (%03d,%03d) %c%c", port, ids[0], x, y,
+				sprintf(string, "#%d %d: (%03d,%03d) %c%c", port + 1, ids[0] + 1, x, y,
 						(buttons & 0x40) ? 'L' : ' ', (buttons & 0x80) ? 'R' : ' ');
-				S9xDisplayString(string, line++, 1, false);
+				S9xDisplayStringType(string, line++, 1, false, S9X_PRESSED_KEYS_INFO);
 				break;
 			}
 
 			case CTL_SUPERSCOPE:
 			{
-				uint8 buf[6], *p = buf;
-				MovieGetScope(port, buf);
-				int16 x = READ_WORD(p);
-				int16 y = READ_WORD(p + 2);
+				uint8 buf[6];
+				if (!MovieGetScope(port, buf))
+					break;
+				int16 x = READ_WORD(buf);
+				int16 y = READ_WORD(buf + 2);
 				uint8 buttons = buf[4];
-				sprintf(string, "#%d %d: (%03d,%03d) %c%c%c%c", port, ids[0], x, y,
+				sprintf(string, "#%d %d: (%03d,%03d) %c%c%c%c", port + 1, ids[0] + 1, x, y,
 						(buttons & 0x80) ? 'F' : ' ', (buttons & 0x40) ? 'C' : ' ',
 						(buttons & 0x20) ? 'T' : ' ', (buttons & 0x10) ? 'P' : ' ');
-				S9xDisplayString(string, line++, 1, false);
+				S9xDisplayStringType(string, line++, 1, false, S9X_PRESSED_KEYS_INFO);
 				break;
 			}
 
 			case CTL_JUSTIFIER:
 			{
-				uint8 buf[11], *p = buf;
-				MovieGetJustifier(port, buf);
-				int16 x1 = READ_WORD(p);
-				int16 x2 = READ_WORD(p + 2);
-				int16 y1 = READ_WORD(p + 4);
-				int16 y2 = READ_WORD(p + 6);
+				uint8 buf[11];
+				if (!MovieGetJustifier(port, buf))
+					break;
+				int16 x1 = READ_WORD(buf);
+				int16 x2 = READ_WORD(buf + 2);
+				int16 y1 = READ_WORD(buf + 4);
+				int16 y2 = READ_WORD(buf + 6);
 				uint8 buttons = buf[8];
 				bool8 offscreen1 = buf[9];
 				bool8 offscreen2 = buf[10];
-				sprintf(string, "#%d %d: (%03d,%03d) %c%c%c / (%03d,%03d) %c%c%c", port, ids[0],
+				sprintf(string, "#%d %d: (%03d,%03d) %c%c%c / (%03d,%03d) %c%c%c", port + 1, ids[0] + 1,
 						x1, y1, (buttons & 0x80) ? 'T' : ' ', (buttons & 0x20) ? 'S' : ' ', offscreen1 ? 'O' : ' ',
 						x2, y2, (buttons & 0x40) ? 'T' : ' ', (buttons & 0x10) ? 'S' : ' ', offscreen2 ? 'O' : ' ');
-				S9xDisplayString(string, line++, 1, false);
+				S9xDisplayStringType(string, line++, 1, false, S9X_PRESSED_KEYS_INFO);
 				break;
 			}
 
 			case CTL_JOYPAD:
 			{
-				sprintf(string, "#%d %d:                  ", port, ids[0]);
+				sprintf(string, "#%d %d:                  ", port + 1, ids[0] + 1);
 				uint16 pad = MovieGetJoypad(ids[0]);
 				for (int i = 0; i < 15; i++)
 				{
@@ -2147,7 +1950,7 @@ static void DisplayPressedKeys (void)
 					string[6 + i]= (pad & mask) ? KeyMap[j] : ' ';
 				}
 
-				S9xDisplayString(string, line++, 1, false);
+				S9xDisplayStringType(string, line++, 1, false, S9X_PRESSED_KEYS_INFO);
 				break;
 			}
 
@@ -2157,7 +1960,7 @@ static void DisplayPressedKeys (void)
 				{
 					if (ids[n] != -1)
 					{
-						sprintf(string, "#%d %d:                  ", port, ids[n]);
+						sprintf(string, "#%d %d:                  ", port + 1, ids[n] + 1);
 						uint16 pad = MovieGetJoypad(ids[n]);
 						for (int i = 0; i < 15; i++)
 						{
@@ -2166,7 +1969,7 @@ static void DisplayPressedKeys (void)
 							string[6 + i]= (pad & mask) ? KeyMap[j] : ' ';
 						}
 
-						S9xDisplayString(string, line++, 1, false);
+						S9xDisplayStringType(string, line++, 1, false, S9X_PRESSED_KEYS_INFO);
 					}
 				}
 
@@ -2191,8 +1994,7 @@ static void DisplayPressedKeys (void)
 
 			case CTL_NONE:
 			{
-				sprintf(string, "#%d -", port);
-				S9xDisplayString(string, line++, 1, false);
+				// Display Nothing
 				break;
 			}
 		}
@@ -2331,122 +2133,3 @@ void S9xDrawCrosshair (const char *crosshair, uint8 fgcolor, uint8 bgcolor, int1
 	}
 }
 
-#ifdef GFX_MULTI_FORMAT
-
-static uint32 BuildPixelRGB565  (uint32, uint32, uint32);
-static uint32 BuildPixelRGB555  (uint32, uint32, uint32);
-static uint32 BuildPixelBGR565  (uint32, uint32, uint32);
-static uint32 BuildPixelBGR555  (uint32, uint32, uint32);
-static uint32 BuildPixelGBR565  (uint32, uint32, uint32);
-static uint32 BuildPixelGBR555  (uint32, uint32, uint32);
-static uint32 BuildPixelRGB5551 (uint32, uint32, uint32);
-
-static uint32 BuildPixel2RGB565  (uint32, uint32, uint32);
-static uint32 BuildPixel2RGB555  (uint32, uint32, uint32);
-static uint32 BuildPixel2BGR565  (uint32, uint32, uint32);
-static uint32 BuildPixel2BGR555  (uint32, uint32, uint32);
-static uint32 BuildPixel2GBR565  (uint32, uint32, uint32);
-static uint32 BuildPixel2GBR555  (uint32, uint32, uint32);
-static uint32 BuildPixel2RGB5551 (uint32, uint32, uint32);
-
-static void DecomposePixelRGB565  (uint32, uint32 &, uint32 &, uint32 &);
-static void DecomposePixelRGB555  (uint32, uint32 &, uint32 &, uint32 &);
-static void DecomposePixelBGR565  (uint32, uint32 &, uint32 &, uint32 &);
-static void DecomposePixelBGR555  (uint32, uint32 &, uint32 &, uint32 &);
-static void DecomposePixelGBR565  (uint32, uint32 &, uint32 &, uint32 &);
-static void DecomposePixelGBR555  (uint32, uint32 &, uint32 &, uint32 &);
-static void DecomposePixelRGB5551 (uint32, uint32 &, uint32 &, uint32 &);
-
-#define _BUILD_PIXEL(F) \
-static uint32 BuildPixel##F (uint32 R, uint32 G, uint32 B) \
-{ \
-	return (BUILD_PIXEL_##F(R, G, B)); \
-} \
-\
-static uint32 BuildPixel2##F (uint32 R, uint32 G, uint32 B) \
-{ \
-	return (BUILD_PIXEL2_##F(R, G, B)); \
-} \
-\
-static void DecomposePixel##F (uint32 pixel, uint32 &R, uint32 &G, uint32 &B) \
-{ \
-	DECOMPOSE_PIXEL_##F(pixel, R, G, B); \
-}
-
-_BUILD_PIXEL(RGB565)
-_BUILD_PIXEL(RGB555)
-_BUILD_PIXEL(BGR565)
-_BUILD_PIXEL(BGR555)
-_BUILD_PIXEL(GBR565)
-_BUILD_PIXEL(GBR555)
-_BUILD_PIXEL(RGB5551)
-
-#define _BUILD_SETUP(F) \
-GFX.BuildPixel             = BuildPixel##F; \
-GFX.BuildPixel2            = BuildPixel2##F; \
-GFX.DecomposePixel         = DecomposePixel##F; \
-RED_LOW_BIT_MASK           = RED_LOW_BIT_MASK_##F; \
-GREEN_LOW_BIT_MASK         = GREEN_LOW_BIT_MASK_##F; \
-BLUE_LOW_BIT_MASK          = BLUE_LOW_BIT_MASK_##F; \
-RED_HI_BIT_MASK            = RED_HI_BIT_MASK_##F; \
-GREEN_HI_BIT_MASK          = GREEN_HI_BIT_MASK_##F; \
-BLUE_HI_BIT_MASK           = BLUE_HI_BIT_MASK_##F; \
-MAX_RED                    = MAX_RED_##F; \
-MAX_GREEN                  = MAX_GREEN_##F; \
-MAX_BLUE                   = MAX_BLUE_##F; \
-SPARE_RGB_BIT_MASK         = SPARE_RGB_BIT_MASK_##F; \
-GREEN_HI_BIT               = ((MAX_GREEN_##F + 1) >> 1); \
-RGB_LOW_BITS_MASK          = (RED_LOW_BIT_MASK_##F | GREEN_LOW_BIT_MASK_##F | BLUE_LOW_BIT_MASK_##F); \
-RGB_HI_BITS_MASK           = (RED_HI_BIT_MASK_##F  | GREEN_HI_BIT_MASK_##F  | BLUE_HI_BIT_MASK_##F); \
-RGB_HI_BITS_MASKx2         = (RED_HI_BIT_MASK_##F  | GREEN_HI_BIT_MASK_##F  | BLUE_HI_BIT_MASK_##F) << 1; \
-RGB_REMOVE_LOW_BITS_MASK   = ~RGB_LOW_BITS_MASK; \
-FIRST_COLOR_MASK           = FIRST_COLOR_MASK_##F; \
-SECOND_COLOR_MASK          = SECOND_COLOR_MASK_##F; \
-THIRD_COLOR_MASK           = THIRD_COLOR_MASK_##F; \
-ALPHA_BITS_MASK            = ALPHA_BITS_MASK_##F; \
-FIRST_THIRD_COLOR_MASK     = FIRST_COLOR_MASK | THIRD_COLOR_MASK; \
-TWO_LOW_BITS_MASK          = RGB_LOW_BITS_MASK | (RGB_LOW_BITS_MASK << 1); \
-HIGH_BITS_SHIFTED_TWO_MASK = ((FIRST_COLOR_MASK | SECOND_COLOR_MASK | THIRD_COLOR_MASK) & ~TWO_LOW_BITS_MASK) >> 2;
-
-bool8 S9xSetRenderPixelFormat (int format)
-{
-	GFX.PixelFormat = format;
-
-	switch (format)
-	{
-		case RGB565:
-			_BUILD_SETUP(RGB565)
-			return (TRUE);
-
-		case RGB555:
-			_BUILD_SETUP(RGB555)
-			return (TRUE);
-
-		case BGR565:
-			_BUILD_SETUP(BGR565)
-			return (TRUE);
-
-		case BGR555:
-			_BUILD_SETUP(BGR555)
-			return (TRUE);
-
-		case GBR565:
-			_BUILD_SETUP(GBR565)
-			return (TRUE);
-
-		case GBR555:
-			_BUILD_SETUP(GBR555)
-			return (TRUE);
-
-		case RGB5551:
-			_BUILD_SETUP(RGB5551)
-			return (TRUE);
-
-		default:
-			break;
-	}
-
-	return (FALSE);
-}
-
-#endif

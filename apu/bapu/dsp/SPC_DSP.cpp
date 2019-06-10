@@ -64,7 +64,19 @@ static BOOST::uint8_t const initial_regs [SPC_DSP::register_count] =
 	out [0] = l;\
 	out [1] = r;\
 	out += 2;\
-}\
+}
+
+#define SPC_DSP_OUT_HOOK(l, r)  \
+    {                           \
+        resampler->push_sample(l, r);  \
+        if (Settings.MSU1)      \
+            S9xMSU1Generate(2); \
+    }
+
+void SPC_DSP::set_output( Resampler *resampler )
+{
+	this->resampler = resampler;
+}
 
 void SPC_DSP::set_output( sample_t* out, int size )
 {
@@ -947,7 +959,7 @@ VOICE_CLOCK(V9_V6_V3) { voice_V9(v); voice_V6(v+1); voice_V3(v+2); }
 //// Echo
 
 // Current echo buffer pointer for left/right channel
-#define ECHO_PTR( ch )      (&m.ram [m.t_echo_ptr + ch * 2])
+#define ECHO_PTR( ch )      ((Settings.SeparateEchoBuffer) ? (&m.separate_echo_buffer [m.t_echo_ptr + ch * 2]) : (&m.ram [m.t_echo_ptr + ch * 2]))
 
 // Sample in echo history buffer, where 0 is the oldest
 #define ECHO_FIR( i )       (m.echo_hist_pos [i])
@@ -1208,6 +1220,8 @@ void SPC_DSP::soft_reset_common()
 	m.every_other_sample = 1;
 	m.echo_offset        = 0;
 	m.phase              = 0;
+
+    memset(m.separate_echo_buffer, 0, 0x10000);
 
 	init_counter();
 

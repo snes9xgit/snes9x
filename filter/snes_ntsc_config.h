@@ -3,6 +3,7 @@
 #ifndef SNES_NTSC_CONFIG_H
 #define SNES_NTSC_CONFIG_H
 
+#if !defined(SNES9X_GTK) && !defined(_WIN32) && !defined(__LIBRETRO__)
 /* Format of source pixels */
 #define SNES_NTSC_IN_FORMAT SNES_NTSC_RGB15
 /* #define SNES_NTSC_IN_FORMAT SNES_NTSC_RGB16 */
@@ -13,6 +14,10 @@ handle things however it wants. */
 
 /* Bits per pixel of output. Can be 15, 16, 32, or 24 (same as 32). */
 #define SNES_NTSC_OUT_DEPTH 15
+#else
+#define SNES_NTSC_IN_FORMAT SNES_NTSC_RGB16
+#define SNES_NTSC_OUT_DEPTH 16
+#endif
 
 /* Type of input pixel values */
 #define SNES_NTSC_IN_T unsigned short

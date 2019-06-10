@@ -1,3 +1,9 @@
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
 #include "gtk_2_3_compat.h"
 #include <sched.h>
 
@@ -5,7 +11,6 @@
 #include "gtk_display.h"
 #include "gtk_display_driver.h"
 #include "gtk_display_driver_gtk.h"
-#include "snes_ntsc.h"
 
 #if defined(USE_XV) && defined(GDK_WINDOWING_X11)
 #include "gtk_display_driver_xv.h"
@@ -23,7 +28,7 @@ static uint8             *y_table, *u_table, *v_table;
 static int               endianess = ENDIAN_NORMAL;
 
 /* Scanline constants for the NTSC filter */
-static unsigned int scanline_offsets[] =
+static const unsigned int scanline_offsets[] =
 {
         0,     /* 0%    */
         3,     /* 12.5% */
@@ -32,7 +37,7 @@ static unsigned int scanline_offsets[] =
         0,     /* 100%  */
 };
 
-static unsigned short scanline_masks[] =
+static const unsigned short scanline_masks[] =
 {
         0x0000,     /* 0%    */
         0x18E3,     /* 12.5% */
@@ -41,11 +46,8 @@ static unsigned short scanline_masks[] =
         0xffff,     /* 100%  */
 };
 
-extern unsigned int scanline_offset;
-extern unsigned short scanline_mask;
-
 /* Scanline constants for standard scanline filter */
-static uint8 scanline_shifts[] =
+static const uint8 scanline_shifts[] =
 {
         3,
         2,
@@ -53,42 +55,39 @@ static uint8 scanline_shifts[] =
         0
 };
 
-void
-S9xSetEndianess (int type)
+void S9xSetEndianess (int type)
 {
     endianess = type;
 }
 
-double
-S9xGetAspect ()
+double S9xGetAspect ()
 {
     double native_aspect = 256.0 / (gui_config->overscan ? 239.0 : 224.0);
     double aspect;
 
     switch (gui_config->aspect_ratio / 2)
     {
-        case 0: /* Square pixels */
-            aspect = native_aspect;
-            break;
+    case 0: /* Square pixels */
+        aspect = native_aspect;
+        break;
 
-        case 1: /* 4:3 */
-            aspect = native_aspect * 7 / 6;
-            break;
+    case 1: /* 4:3 */
+        aspect = native_aspect * 7 / 6;
+        break;
 
-        case 2:
-        default: /* Correct */
-            aspect = native_aspect * 8 / 7;
-            break;
+    case 2:
+    default: /* Correct */
+        aspect = native_aspect * 8 / 7;
+        break;
     }
 
     return aspect;
 }
 
-void
-S9xApplyAspect (int &s_width,  /* Output: x */
-                int &s_height, /* Output: y */
-                int &d_width,  /* Output: width */
-                int &d_height) /* Output: height */
+void S9xApplyAspect (int &s_width,  /* Output: x */
+                     int &s_height, /* Output: y */
+                     int &d_width,  /* Output: width */
+                     int &d_height) /* Output: height */
 {
     double screen_aspect = (double) d_width / (double) d_height;
     double snes_aspect = S9xGetAspect ();
@@ -165,8 +164,7 @@ S9xApplyAspect (int &s_width,  /* Output: x */
     d_height = h;
 }
 
-void
-S9xRegisterYUVTables (uint8 *y, uint8 *u, uint8 *v)
+void S9xRegisterYUVTables (uint8 *y, uint8 *u, uint8 *v)
 {
     y_table = y;
     u_table = u;
@@ -174,13 +172,12 @@ S9xRegisterYUVTables (uint8 *y, uint8 *u, uint8 *v)
 }
 
 /* YUY2 in LSB first format */
-static void
-internal_convert_16_yuv (void *src_buffer,
-                         void *dst_buffer,
-                         int  src_pitch,
-                         int  dst_pitch,
-                         int  width,
-                         int  height)
+static void internal_convert_16_yuv (void *src_buffer,
+                                     void *dst_buffer,
+                                     int  src_pitch,
+                                     int  dst_pitch,
+                                     int  width,
+                                     int  height)
 {
     int    x, y;
     uint16 *src;
@@ -227,17 +224,16 @@ internal_convert_16_yuv (void *src_buffer,
     }
 }
 
-static void
-internal_convert_mask (void         *src_buffer,
-                       void         *dst_buffer,
-                       int          src_pitch,
-                       int          dst_pitch,
-                       int          width,
-                       int          height,
-                       unsigned int inv_rshift,
-                       unsigned int inv_gshift,
-                       unsigned int inv_bshift,
-                       unsigned int bpp)
+static void internal_convert_mask (void         *src_buffer,
+                                   void         *dst_buffer,
+                                   int          src_pitch,
+                                   int          dst_pitch,
+                                   int          width,
+                                   int          height,
+                                   unsigned int inv_rshift,
+                                   unsigned int inv_gshift,
+                                   unsigned int inv_bshift,
+                                   unsigned int bpp)
 {
 #ifdef __BIG_ENDIAN__
     if (endianess == ENDIAN_SWAPPED)
@@ -247,98 +243,80 @@ internal_convert_mask (void         *src_buffer,
     {
         switch (bpp)
         {
-            case 15:
-            case 16:
+        case 15:
+        case 16:
+            for (int y = 0; y < height; y++)
+            {
+                uint16 *data = (uint16 *) ((uint8 *) dst_buffer + y * dst_pitch);
+                uint16 *snes = (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
 
-                for (int y = 0; y < height; y++)
+                for (int x = 0; x < width; x++)
                 {
-                    uint16 *data =
-                        (uint16 *) ((uint8 *) dst_buffer + y * dst_pitch);
+                    uint32 pixel = *snes++;
 
-                    uint16 *snes =
-                        (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
-
-                    for (int x = 0; x < width; x++)
-                    {
-                        uint32 pixel = *snes++;
-
-                        *data++ = ((pixel & 0xf800) << 0)  >> inv_rshift
-                                | ((pixel & 0x07e0) << 5)  >> inv_gshift
-                                | ((pixel & 0x001f) << 11) >> inv_bshift;
-                    }
+                    *data++ = ((pixel & 0xf800) << 0)  >> inv_rshift
+                            | ((pixel & 0x07e0) << 5)  >> inv_gshift
+                            | ((pixel & 0x001f) << 11) >> inv_bshift;
                 }
+            }
+            break;
 
-                break;
-
-            case 24:
-
+        case 24:
 #ifdef __BIG_ENDIAN__
-                if (inv_rshift > 8)
+            if (inv_rshift > 8)
 #else
-                if (!(inv_rshift > 8))
+            if (!(inv_rshift > 8))
 #endif
-                {
-                    for (int y = 0; y < height; y++)
-                    {
-                        uint8 *data =
-                            (uint8 *) dst_buffer + y * dst_pitch;
-
-                        uint16 *snes =
-                            (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
-
-                        for (int x = 0; x < width; x++)
-                        {
-                            uint32 pixel = *snes++;
-                            *data++ = ((pixel & 0x001f) << 3);
-                            *data++ = ((pixel & 0x07e0) >> 3);
-                            *data++ = ((pixel & 0xf800) >> 8);
-                        }
-                    }
-                }
-
-                else
-                {
-                    for (int y = 0; y < height; y++)
-                    {
-                        uint8 *data =
-                            (uint8 *) dst_buffer + y * dst_pitch;
-
-                        uint16 *snes =
-                            (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
-
-                        for (int x = 0; x < width; x++)
-                        {
-                            uint32 pixel = *snes++;
-                            *data++ = ((pixel & 0xf800) >> 8);
-                            *data++ = ((pixel & 0x07e0) >> 3);
-                            *data++ = ((pixel & 0x001f) << 3);
-                        }
-                    }
-                }
-
-                break;
-
-            case 32:
-
+            {
                 for (int y = 0; y < height; y++)
                 {
-                    uint32 *data =
-                        (uint32 *) ((uint8 *) dst_buffer + y * dst_pitch);
-
-                    uint16 *snes =
-                        (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
+                    uint8 *data = (uint8 *) dst_buffer + y * dst_pitch;
+                    uint16 *snes = (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
 
                     for (int x = 0; x < width; x++)
                     {
                         uint32 pixel = *snes++;
-
-                        *data++ = ((uint32) (pixel & 0xf800) << 16) >> inv_rshift
-                                | ((uint32) (pixel & 0x07e0) << 21) >> inv_gshift
-                                | ((uint32) (pixel & 0x001f) << 27) >> inv_bshift;
+                        *data++ = ((pixel & 0x001f) << 3);
+                        *data++ = ((pixel & 0x07e0) >> 3);
+                        *data++ = ((pixel & 0xf800) >> 8);
                     }
                 }
+            }
+            else
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    uint8 *data = (uint8 *) dst_buffer + y * dst_pitch;
 
-                break;
+                    uint16 *snes = (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
+
+                    for (int x = 0; x < width; x++)
+                    {
+                        uint32 pixel = *snes++;
+                        *data++ = ((pixel & 0xf800) >> 8);
+                        *data++ = ((pixel & 0x07e0) >> 3);
+                        *data++ = ((pixel & 0x001f) << 3);
+                    }
+                }
+            }
+            break;
+
+        case 32:
+            for (int y = 0; y < height; y++)
+            {
+                uint32 *data = (uint32 *) ((uint8 *) dst_buffer + y * dst_pitch);
+                uint16 *snes = (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
+
+                for (int x = 0; x < width; x++)
+                {
+                    uint32 pixel = *snes++;
+
+                    *data++ = ((uint32) (pixel & 0xf800) << 16) >> inv_rshift
+                            | ((uint32) (pixel & 0x07e0) << 21) >> inv_gshift
+                            | ((uint32) (pixel & 0x001f) << 27) >> inv_bshift;
+                }
+            }
+            break;
         }
     }
 
@@ -346,120 +324,100 @@ internal_convert_mask (void         *src_buffer,
     {
         switch (bpp)
         {
-            case 15:
-            case 16:
+        case 15:
+        case 16:
+            for (int y = 0; y < height; y++)
+            {
+                uint16 *data = (uint16 *) ((uint8 *) dst_buffer + y * dst_pitch);
+                uint16 *snes = (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
 
-                for (int y = 0; y < height; y++)
+                for (int x = 0; x < width; x++)
                 {
-                    uint16 *data =
-                        (uint16 *) ((uint8 *) dst_buffer + y * dst_pitch);
+                    uint32 pixel = *snes++;
+                    uint16 value;
 
-                    uint16 *snes =
-                        (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
+                    value   = ((pixel & 0xf800) << 0) >> inv_rshift
+                            | ((pixel & 0x07e0) << 5) >> inv_gshift
+                            | ((pixel & 0x001f) << 11) >> inv_bshift;
 
-                    for (int x = 0; x < width; x++)
-                    {
-                        uint32 pixel = *snes++;
-                        uint16 value;
-
-                        value   = ((pixel & 0xf800) << 0) >> inv_rshift
-                                | ((pixel & 0x07e0) << 5) >> inv_gshift
-                                | ((pixel & 0x001f) << 11) >> inv_bshift;
-
-                        *data++ = ((value & 0xff) << 8)
-                                | ((value & 0xff00) >> 8);
-                    }
+                    *data++ = ((value & 0xff) << 8)
+                            | ((value & 0xff00) >> 8);
                 }
+            }
+            break;
 
-                break;
-
-            case 24:
-
+        case 24:
 #ifdef __BIG_ENDIAN__
-                if (inv_rshift > 8)
+            if (inv_rshift > 8)
 #else
-                    if (!(inv_rshift > 8))
+            if (!(inv_rshift > 8))
 #endif
-                    {
-                        for (int y = 0; y < height; y++)
-                        {
-                            uint8 *data =
-                                (uint8 *) dst_buffer + y * dst_pitch;
-
-                            uint16 *snes =
-                                (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
-
-                            for (int x = 0; x < width; x++)
-                            {
-                                uint32 pixel = *snes++;
-                                *data++ = ((pixel & 0xf800) >> 8);
-                                *data++ = ((pixel & 0x07e0) >> 3);
-                                *data++ = ((pixel & 0x001f) << 3);
-                            }
-                        }
-                    }
-
-                    else
-                    {
-                        for (int y = 0; y < height; y++)
-                        {
-                            uint8 *data =
-                                (uint8 *) dst_buffer + y * dst_pitch;
-
-                            uint16 *snes =
-                                (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
-
-                            for (int x = 0; x < width; x++)
-                            {
-                                uint32 pixel = *snes++;
-                                *data++ = ((pixel & 0x001f) << 3);
-                                *data++ = ((pixel & 0x07e0) >> 3);
-                                *data++ = ((pixel & 0xf800) >> 8);
-                            }
-                        }
-                    }
-
-                break;
-
-            case 32:
-
+            {
                 for (int y = 0; y < height; y++)
                 {
-                    uint32 *data =
-                        (uint32 *) ((uint8 *) dst_buffer + y * dst_pitch);
-
-                    uint16 *snes =
-                        (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
+                    uint8 *data = (uint8 *) dst_buffer + y * dst_pitch;
+                    uint16 *snes = (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
 
                     for (int x = 0; x < width; x++)
                     {
                         uint32 pixel = *snes++;
-                        uint32 value;
-
-                        value   = ((uint32) (pixel & 0xf800) << 16) >> inv_rshift
-                                | ((uint32) (pixel & 0x07e0) << 21) >> inv_gshift
-                                | ((uint32) (pixel & 0x001f) << 27) >> inv_bshift;
-
-                        *data++ = ((value & 0x000000ff) << 24)
-                                | ((value & 0x0000ff00) << 8)
-                                | ((value & 0x00ff0000) >> 8)
-                                | ((value & 0xff000000) >> 24);
+                        *data++ = ((pixel & 0xf800) >> 8);
+                        *data++ = ((pixel & 0x07e0) >> 3);
+                        *data++ = ((pixel & 0x001f) << 3);
                     }
                 }
+            }
+            else
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    uint8 *data = (uint8 *) dst_buffer + y * dst_pitch;
+                    uint16 *snes = (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
 
-                break;
+                    for (int x = 0; x < width; x++)
+                    {
+                        uint32 pixel = *snes++;
+                        *data++ = ((pixel & 0x001f) << 3);
+                        *data++ = ((pixel & 0x07e0) >> 3);
+                        *data++ = ((pixel & 0xf800) >> 8);
+                    }
+                }
+            }
+            break;
+
+        case 32:
+            for (int y = 0; y < height; y++)
+            {
+                uint32 *data = (uint32 *) ((uint8 *) dst_buffer + y * dst_pitch);
+                uint16 *snes = (uint16 *) (((uint8 *) src_buffer) + y * src_pitch);
+
+                for (int x = 0; x < width; x++)
+                {
+                    uint32 pixel = *snes++;
+                    uint32 value;
+
+                    value   = ((uint32) (pixel & 0xf800) << 16) >> inv_rshift
+                            | ((uint32) (pixel & 0x07e0) << 21) >> inv_gshift
+                            | ((uint32) (pixel & 0x001f) << 27) >> inv_bshift;
+
+                    *data++ = ((value & 0x000000ff) << 24)
+                            | ((value & 0x0000ff00) << 8)
+                            | ((value & 0x00ff0000) >> 8)
+                            | ((value & 0xff000000) >> 24);
+                }
+            }
+            break;
         }
     }
 }
 
-static void
-internal_convert (void *src_buffer,
-                  void *dst_buffer,
-                  int  src_pitch,
-                  int  dst_pitch,
-                  int  width,
-                  int  height,
-                  int  bpp)
+static void internal_convert (void *src_buffer,
+                              void *dst_buffer,
+                              int  src_pitch,
+                              int  dst_pitch,
+                              int  width,
+                              int  height,
+                              int  bpp)
 {
     if (endianess == ENDIAN_SWAPPED)
     {
@@ -548,11 +506,10 @@ internal_convert (void *src_buffer,
     }
 }
 
-static void
-S9xForceHires (void *buffer,
-               int  pitch,
-               int  &width,
-               int  &height)
+static void S9xForceHires (void *buffer,
+                           int  pitch,
+                           int  &width,
+                           int  &height)
 {
     int double_width  = 0,
         double_height = 0;
@@ -606,13 +563,15 @@ S9xForceHires (void *buffer,
     }
 }
 
-#undef  AVERAGE_565
-#define AVERAGE_565(el0, el1) (((el0) & (el1)) + ((((el0) ^ (el1)) & 0xF7DE) >> 1))
-static void
-S9xMergeHires (void *buffer,
-               int  pitch,
-               int  &width,
-               int  &height)
+static inline uint16 average_565(uint16 colora, uint16 colorb)
+{
+    return (((colora) & (colorb)) + ((((colora) ^ (colorb)) & 0xF7DE) >> 1));
+}
+
+static void S9xMergeHires (void *buffer,
+                           int  pitch,
+                           int  &width,
+                           int  &height)
 {
     if (width < 512)
     {
@@ -626,7 +585,7 @@ S9xMergeHires (void *buffer,
 
         for (int x = 0; x < (width >> 1); x++)
         {
-            *output++ = AVERAGE_565 (input[0], input[1]);
+            *output++ = average_565 (input[0], input[1]);
             input += 2;
         }
     }
@@ -634,47 +593,12 @@ S9xMergeHires (void *buffer,
     width >>= 1;
 }
 
-#if 0
-static void
-S9xBlendHires (void *buffer, int pitch, int &width, int &height)
-{
-    uint16 tmp[512];
-
-    if (width < 512)
-    {
-        width <<= 1;
-
-        for (int y = 0; y < height; y++)
-        {
-            uint16 *input = (uint16 *) ((uint8 *) buffer + y * pitch);
-
-            tmp[0] = input[0];
-            for (int x = 1; x < width; x++)
-                tmp[x] = AVERAGE_1555 (input[(x - 1) >> 1], input[(x >> 1)]);
-
-            memcpy (input, tmp, width << 1);
-        }
-    }
-    else for (int y = 0; y < height; y++)
-    {
-        uint16 *input = (uint16 *) ((uint8 *) buffer + y * pitch);
-
-        tmp[0] = input[0];
-        for (int x = 1; x < width; x++)
-            tmp[x] = AVERAGE_1555 (input[x - 1], input[x]);
-
-        memcpy (input, tmp, pitch);
-    }
-}
-#endif
-
-void
-filter_2x (void *src,
-           int src_pitch,
-           void *dst,
-           int dst_pitch,
-           int width,
-           int height)
+void filter_2x (void *src,
+                int src_pitch,
+                void *dst,
+                int dst_pitch,
+                int width,
+                int height)
 {
     int x, y;
 
@@ -697,13 +621,12 @@ filter_2x (void *src,
     }
 }
 
-void
-filter_3x (void *src,
-           int src_pitch,
-           void *dst,
-           int dst_pitch,
-           int width,
-           int height)
+void filter_3x (void *src,
+                int src_pitch,
+                void *dst,
+                int dst_pitch,
+                int width,
+                int height)
 {
     int x, y, z;
 
@@ -730,13 +653,12 @@ filter_3x (void *src,
     }
 }
 
-void
-filter_4x (void *src,
-           int src_pitch,
-           void *dst,
-           int dst_pitch,
-           int width,
-           int height)
+void filter_4x (void *src,
+                int src_pitch,
+                void *dst,
+                int dst_pitch,
+                int width,
+                int height)
 {
     int x, y, z;
 
@@ -764,13 +686,12 @@ filter_4x (void *src,
     }
 }
 
-void
-filter_scanlines (void *src_buffer,
-                  int src_pitch,
-                  void *dst_buffer,
-                  int dst_pitch,
-                  int width,
-                  int height)
+void filter_scanlines (void *src_buffer,
+                       int src_pitch,
+                       void *dst_buffer,
+                       int dst_pitch,
+                       int width,
+                       int height)
 {
     int x, y;
     uint16 *src, *dst_a, *dst_b;
@@ -796,308 +717,300 @@ filter_scanlines (void *src_buffer,
     }
 }
 
-void
-get_filter_scale (int &width, int &height)
+void get_filter_scale (int &width, int &height)
 {
     switch (gui_config->scale_method)
     {
-        case FILTER_SUPEREAGLE:
-            width *= 2;
-            height *= 2;
-            break;
+    case FILTER_SUPEREAGLE:
+        width *= 2;
+        height *= 2;
+        break;
 
-        case FILTER_2XSAI:
-            width *= 2;
-            height *= 2;
-            break;
+    case FILTER_2XSAI:
+        width *= 2;
+        height *= 2;
+        break;
 
-        case FILTER_SUPER2XSAI:
-            width *= 2;
-            height *= 2;
-            break;
+    case FILTER_SUPER2XSAI:
+        width *= 2;
+        height *= 2;
+        break;
 
 #ifdef USE_HQ2X
-        case FILTER_HQ4X:
-            if (((width * 4) <= S9xDisplayDriver::scaled_max_width) &&
+    case FILTER_HQ4X:
+        if (((width * 4) <= S9xDisplayDriver::scaled_max_width) &&
                 ((height * 4) <= S9xDisplayDriver::scaled_max_height))
-            {
-                width *= 4;
-                height *= 4;
-                break;
-            }
-            // Fall through
-        case FILTER_HQ3X:
-            if (width * 3 <= S9xDisplayDriver::scaled_max_width &&
-                    height * 3 <= S9xDisplayDriver::scaled_max_height)
-            {
-                width *= 3;
-                height *= 3;
-                break;
-            }
-            // Fall through
-        case FILTER_HQ2X:
-            width *= 2;
-            height *= 2;
+        {
+            width *= 4;
+            height *= 4;
             break;
+        }
+        // Fall through
+    case FILTER_HQ3X:
+        if (width * 3 <= S9xDisplayDriver::scaled_max_width &&
+            height * 3 <= S9xDisplayDriver::scaled_max_height)
+        {
+            width *= 3;
+            height *= 3;
+            break;
+        }
+        // Fall through
+    case FILTER_HQ2X:
+        width *= 2;
+        height *= 2;
+        break;
 #endif /* USE_HQ2X */
 
 #ifdef USE_XBRZ
-        case FILTER_4XBRZ:
-            if (((width * 4) <= S9xDisplayDriver::scaled_max_width) &&
-                ((height * 4) <= S9xDisplayDriver::scaled_max_height))
-            {
-                width *= 4;
-                height *= 4;
-                break;
-            }
-            // Fall through
-        case FILTER_3XBRZ:
-            if (width * 3 <= S9xDisplayDriver::scaled_max_width &&
-                    height * 3 <= S9xDisplayDriver::scaled_max_height)
-            {
-                width *= 3;
-                height *= 3;
-                break;
-            }
-            // Fall through
-        case FILTER_2XBRZ:
-            width *= 2;
-            height *= 2;
+    case FILTER_4XBRZ:
+        if (((width * 4) <= S9xDisplayDriver::scaled_max_width) &&
+            ((height * 4) <= S9xDisplayDriver::scaled_max_height))
+        {
+            width *= 4;
+            height *= 4;
             break;
+        }
+        // Fall through
+    case FILTER_3XBRZ:
+        if (width * 3 <= S9xDisplayDriver::scaled_max_width &&
+            height * 3 <= S9xDisplayDriver::scaled_max_height)
+        {
+            width *= 3;
+            height *= 3;
+            break;
+        }
+        // Fall through
+    case FILTER_2XBRZ:
+        width *= 2;
+        height *= 2;
+        break;
 #endif /* USE_XBRZ */
 
-        case FILTER_SIMPLE4X:
-            if (((width * 4) <= S9xDisplayDriver::scaled_max_width) &&
-                ((height * 4) <= S9xDisplayDriver::scaled_max_height))
-            {
-                width *= 4;
-                height *= 4;
-                break;
-            }
-            // Fall through
-        case FILTER_SIMPLE3X:
-            if (width * 3 <= S9xDisplayDriver::scaled_max_width &&
-                    height * 3 <= S9xDisplayDriver::scaled_max_height)
-            {
-                width *= 3;
-                height *= 3;
-                break;
-            }
-            // Fall through
-        case FILTER_SIMPLE2X:
-            width *= 2;
-            height *= 2;
+    case FILTER_SIMPLE4X:
+        if (((width * 4) <= S9xDisplayDriver::scaled_max_width) &&
+            ((height * 4) <= S9xDisplayDriver::scaled_max_height))
+        {
+            width *= 4;
+            height *= 4;
             break;
+        }
+        // Fall through
+    case FILTER_SIMPLE3X:
+        if (width * 3 <= S9xDisplayDriver::scaled_max_width &&
+            height * 3 <= S9xDisplayDriver::scaled_max_height)
+        {
+            width *= 3;
+            height *= 3;
+            break;
+        }
+        // Fall through
+    case FILTER_SIMPLE2X:
+        width *= 2;
+        height *= 2;
+        break;
 
-        case FILTER_EPX:
-            width *= 2;
-            height *= 2;
-            break;
+    case FILTER_EPX:
+        width *= 2;
+        height *= 2;
+        break;
 
-        case FILTER_NTSC:
-            if (width > 256)
-                width = SNES_NTSC_OUT_WIDTH (width / 2);
-            else
-                width = SNES_NTSC_OUT_WIDTH (width);
-            height *= 2;
-            break;
+    case FILTER_NTSC:
+        if (width > 256)
+            width = SNES_NTSC_OUT_WIDTH (width / 2);
+        else
+            width = SNES_NTSC_OUT_WIDTH (width);
+        height *= 2;
+        break;
 
-        case FILTER_SCANLINES:
-            height *= 2;
-            break;
+    case FILTER_SCANLINES:
+        height *= 2;
+        break;
 
-        case FILTER_EPX_SMOOTH:
-            width *= 2;
-            height *= 2;
-            break;
+    case FILTER_EPX_SMOOTH:
+        width *= 2;
+        height *= 2;
+        break;
     }
 }
 
-static void
-internal_filter (uint8 *src_buffer,
-                 int   src_pitch,
-                 uint8 *dst_buffer,
-                 int   dst_pitch,
-                 int   &width,
-                 int   &height)
+static void internal_filter (uint8 *src_buffer,
+                             int   src_pitch,
+                             uint8 *dst_buffer,
+                             int   dst_pitch,
+                             int   &width,
+                             int   &height)
 {
     switch (gui_config->scale_method)
     {
-        case FILTER_SUPEREAGLE:
-            SuperEagle (src_buffer,
-                        src_pitch,
-                        dst_buffer,
-                        dst_pitch,
-                        width,
-                        height);
-
-            break;
-
-        case FILTER_2XSAI:
-            _2xSaI (src_buffer,
+    case FILTER_SUPEREAGLE:
+        SuperEagle (src_buffer,
                     src_pitch,
                     dst_buffer,
                     dst_pitch,
                     width,
                     height);
+        break;
 
-            break;
+    case FILTER_2XSAI:
+        _2xSaI (src_buffer,
+                src_pitch,
+                dst_buffer,
+                dst_pitch,
+                width,
+                height);
+        break;
 
-        case FILTER_SUPER2XSAI:
-            Super2xSaI (src_buffer,
-                        src_pitch,
-                        dst_buffer,
-                        dst_pitch,
-                        width,
-                        height);
-
-            break;
+    case FILTER_SUPER2XSAI:
+        Super2xSaI (src_buffer,
+                    src_pitch,
+                    dst_buffer,
+                    dst_pitch,
+                    width,
+                    height);
+        break;
 
 #ifdef USE_HQ2X
-        case FILTER_HQ4X:
-
-            if (((width * 4) <= S9xDisplayDriver::scaled_max_width) &&
-                    ((height * 4) <= S9xDisplayDriver::scaled_max_height))
-            {
-                HQ4X_16 (src_buffer,
-                         src_pitch,
-                         dst_buffer,
-                         dst_pitch,
-                         width,
-                         height);
-
-                break;
-            }
-            // Fall through
-        case FILTER_HQ3X:
-
-            if (width * 3 <= S9xDisplayDriver::scaled_max_width &&
-                    height * 3 <= S9xDisplayDriver::scaled_max_height)
-            {
-                HQ3X_16 (src_buffer,
-                         src_pitch,
-                         dst_buffer,
-                         dst_pitch,
-                         width,
-                         height);
-
-                break;
-            }
-            // Fall through
-        case FILTER_HQ2X:
-
-            HQ2X_16 (src_buffer,
+    case FILTER_HQ4X:
+        if (((width * 4) <= S9xDisplayDriver::scaled_max_width) &&
+            ((height * 4) <= S9xDisplayDriver::scaled_max_height))
+        {
+            HQ4X_16 (src_buffer,
                      src_pitch,
                      dst_buffer,
                      dst_pitch,
                      width,
                      height);
-
             break;
-#endif /* USE_HQ2X */
-
-#ifdef USE_XBRZ
-        case FILTER_4XBRZ:
-
-            filter_4xBRZ (src_buffer,
+        }
+        // Fall through
+    case FILTER_HQ3X:
+        if (width * 3 <= S9xDisplayDriver::scaled_max_width &&
+            height * 3 <= S9xDisplayDriver::scaled_max_height)
+        {
+            HQ3X_16 (src_buffer,
                      src_pitch,
                      dst_buffer,
                      dst_pitch,
                      width,
                      height);
-
             break;
-            // Fall through
-        case FILTER_3XBRZ:
-
-            filter_3xBRZ (src_buffer,
-                     src_pitch,
-                     dst_buffer,
-                     dst_pitch,
-                     width,
-                     height);
-
-            break;
-            // Fall through
-        case FILTER_2XBRZ:
-
-            filter_2xBRZ (src_buffer,
+        }
+        // Fall through
+    case FILTER_HQ2X:
+        HQ2X_16 (src_buffer,
                  src_pitch,
                  dst_buffer,
                  dst_pitch,
                  width,
                  height);
+        break;
+#endif /* USE_HQ2X */
 
-            break;
-#endif /* USE_XBRZ */
-
-
-        case FILTER_SIMPLE4X:
-
-            if (((width * 4) <= S9xDisplayDriver::scaled_max_width) &&
-                    ((height * 4) <= S9xDisplayDriver::scaled_max_height))
-            {
-                filter_4x (src_buffer,
-                           src_pitch,
-                           dst_buffer,
-                           dst_pitch,
-                           width,
-                           height);
-
-                break;
-            }
-            // Fall through
-        case FILTER_SIMPLE3X:
-
-            if (width * 3 <= S9xDisplayDriver::scaled_max_width &&
-                    height * 3 <= S9xDisplayDriver::scaled_max_height)
-            {
-                filter_3x (src_buffer,
+#ifdef USE_XBRZ
+    case FILTER_4XBRZ:
+        if (width * 4 <= S9xDisplayDriver::scaled_max_width &&
+            height * 4 <= S9xDisplayDriver::scaled_max_height)
+        {
+            filter_4xBRZ (src_buffer,
                           src_pitch,
                           dst_buffer,
                           dst_pitch,
                           width,
                           height);
+            break;
+        }
+        // Fall through
+    case FILTER_3XBRZ:
+        if (width * 3 <= S9xDisplayDriver::scaled_max_width &&
+            height * 3 <= S9xDisplayDriver::scaled_max_height)
+        {
+            filter_3xBRZ (src_buffer,
+                          src_pitch,
+                          dst_buffer,
+                          dst_pitch,
+                          width,
+                          height);
+            break;
+        }
+        // Fall through
+    case FILTER_2XBRZ:
+        filter_2xBRZ (src_buffer,
+                      src_pitch,
+                      dst_buffer,
+                      dst_pitch,
+                      width,
+                      height);
+        break;
+#endif /* USE_XBRZ */
 
-                break;
-            }
-            // Fall through
-        case FILTER_SIMPLE2X:
-
-            filter_2x (src_buffer,
+    case FILTER_SIMPLE4X:
+        if (((width * 4) <= S9xDisplayDriver::scaled_max_width) &&
+            ((height * 4) <= S9xDisplayDriver::scaled_max_height))
+        {
+            filter_4x (src_buffer,
                        src_pitch,
                        dst_buffer,
                        dst_pitch,
                        width,
                        height);
-
             break;
+        }
+        // Fall through
+    case FILTER_SIMPLE3X:
 
-        case FILTER_EPX:
-
-            EPX_16_unsafe (src_buffer,
-                           src_pitch,
-                           dst_buffer,
-                           dst_pitch,
-                           width,
-                           height);
-
+        if (width * 3 <= S9xDisplayDriver::scaled_max_width &&
+            height * 3 <= S9xDisplayDriver::scaled_max_height)
+        {
+            filter_3x (src_buffer,
+                       src_pitch,
+                       dst_buffer,
+                       dst_pitch,
+                       width,
+                       height);
             break;
+        }
+        // Fall through
+    case FILTER_SIMPLE2X:
+        filter_2x (src_buffer,
+                   src_pitch,
+                   dst_buffer,
+                   dst_pitch,
+                   width,
+                   height);
+        break;
 
-        case FILTER_EPX_SMOOTH:
+    case FILTER_EPX:
+        EPX_16_unsafe (src_buffer,
+                       src_pitch,
+                       dst_buffer,
+                       dst_pitch,
+                       width,
+                       height);
+        break;
 
-            EPX_16_smooth_unsafe (src_buffer,
-                                  src_pitch,
-                                  dst_buffer,
-                                  dst_pitch,
-                                  width,
-                                  height);
+    case FILTER_EPX_SMOOTH:
 
-            break;
+        EPX_16_smooth_unsafe (src_buffer,
+                              src_pitch,
+                              dst_buffer,
+                              dst_pitch,
+                              width,
+                              height);
 
-        case FILTER_NTSC:
-            if (width > 256)
-                snes_ntsc_blit_hires (&snes_ntsc,
+        break;
+
+    case FILTER_NTSC:
+        if (width > 256)
+            snes_ntsc_blit_hires_scanlines (&snes_ntsc,
+                                            (SNES_NTSC_IN_T *) src_buffer,
+                                            src_pitch >> 1,
+                                            0, /* Burst_phase */
+                                            width,
+                                            height,
+                                            (void *) dst_buffer,
+                                            dst_pitch);
+        else
+            snes_ntsc_blit_scanlines (&snes_ntsc,
                                       (SNES_NTSC_IN_T *) src_buffer,
                                       src_pitch >> 1,
                                       0, /* Burst_phase */
@@ -1105,82 +1018,72 @@ internal_filter (uint8 *src_buffer,
                                       height,
                                       (void *) dst_buffer,
                                       dst_pitch);
-            else
-                snes_ntsc_blit (&snes_ntsc,
-                                (SNES_NTSC_IN_T *) src_buffer,
-                                src_pitch >> 1,
-                                0, /* Burst_phase */
-                                width,
-                                height,
-                                (void *) dst_buffer,
-                                dst_pitch);
-            break;
+        break;
 
-        case FILTER_SCANLINES:
-            filter_scanlines (src_buffer,
-                              src_pitch,
-                              dst_buffer,
-                              dst_pitch,
-                              width,
-                              height);
-            break;
+    case FILTER_SCANLINES:
+        filter_scanlines (src_buffer,
+                          src_pitch,
+                          dst_buffer,
+                          dst_pitch,
+                          width,
+                          height);
+        break;
 
     }
 
     get_filter_scale (width, height);
 }
 
-static void
-thread_worker (gpointer data,
-               gpointer user_data)
+static void thread_worker (gpointer data,
+                           gpointer user_data)
 {
     thread_job_t *job = ((thread_job_t *) data);
 
     switch (job->operation_type)
     {
-        case JOB_FILTER:
-            internal_filter (job->src_buffer,
-                             job->src_pitch,
-                             job->dst_buffer,
-                             job->dst_pitch,
-                             job->width,
-                             job->height);
-            break;
+    case JOB_FILTER:
+        internal_filter (job->src_buffer,
+                         job->src_pitch,
+                         job->dst_buffer,
+                         job->dst_pitch,
+                         job->width,
+                         job->height);
+        break;
 
-        case JOB_CONVERT:
-            internal_convert (job->src_buffer,
-                              job->dst_buffer,
-                              job->src_pitch,
-                              job->dst_pitch,
-                              job->width,
-                              job->height,
-                              job->bpp);
-            break;
+    case JOB_CONVERT:
+        internal_convert (job->src_buffer,
+                          job->dst_buffer,
+                          job->src_pitch,
+                          job->dst_pitch,
+                          job->width,
+                          job->height,
+                          job->bpp);
+        break;
 
-        case JOB_CONVERT_YUV:
-            internal_convert_16_yuv (job->src_buffer,
-                                     job->dst_buffer,
-                                     job->src_pitch,
-                                     job->dst_pitch,
-                                     job->width,
-                                     job->height);
-            break;
+    case JOB_CONVERT_YUV:
+        internal_convert_16_yuv (job->src_buffer,
+                                 job->dst_buffer,
+                                 job->src_pitch,
+                                 job->dst_pitch,
+                                 job->width,
+                                 job->height);
+        break;
 
-        case JOB_CONVERT_MASK:
-            internal_convert_mask (job->src_buffer,
-                                   job->dst_buffer,
-                                   job->src_pitch,
-                                   job->dst_pitch,
-                                   job->width,
-                                   job->height,
-                                   job->inv_rmask,
-                                   job->inv_bmask,
-                                   job->inv_gmask,
-                                   job->bpp);
-            break;
+    case JOB_CONVERT_MASK:
+        internal_convert_mask (job->src_buffer,
+                               job->dst_buffer,
+                               job->src_pitch,
+                               job->dst_pitch,
+                               job->width,
+                               job->height,
+                               job->inv_rmask,
+                               job->inv_bmask,
+                               job->inv_gmask,
+                               job->bpp);
+        break;
     }
 
-    job->complete = 1;
+    job->complete = true;
 }
 
 static void
@@ -1191,8 +1094,23 @@ create_thread_pool ()
         pool = g_thread_pool_new (thread_worker,
                                   NULL,
                                   gui_config->num_threads - 1,
-                                  TRUE,
+                                  true,
                                   NULL);
+    }
+}
+
+static void wait_for_jobs_to_complete ()
+{
+    while (1)
+    {
+        int complete = 1;
+        for (int i = 0; i < gui_config->num_threads; i++)
+            complete = complete && job[i].complete;
+
+        if (complete)
+            break;
+
+        sched_yield ();
     }
 }
 
@@ -1205,11 +1123,9 @@ internal_threaded_convert (void *src_buffer,
                            int  height,
                            int  bpp)
 {
-    int i, flag;
-
     create_thread_pool ();
 
-    for (i = 0; i < gui_config->num_threads - 1; i++)
+    for (int i = 0; i < gui_config->num_threads; i++)
     {
         job[i].operation_type = (bpp == -1 ? JOB_CONVERT_YUV : JOB_CONVERT);
         job[i].src_buffer =
@@ -1221,54 +1137,31 @@ internal_threaded_convert (void *src_buffer,
         job[i].width = width;
         job[i].height = height / gui_config->num_threads;
         job[i].bpp = bpp;
-        job[i].complete = 0;
+        job[i].complete = false;
+
+        if (i == gui_config->num_threads - 1)
+            job[i].height = height - ((gui_config->num_threads - 1) * (height / gui_config->num_threads));
 
         g_thread_pool_push (pool, (gpointer) &(job[i]), NULL);
     }
 
-    job[i].operation_type = (bpp == -1 ? JOB_CONVERT_YUV : JOB_CONVERT);
-    job[i].src_buffer =
-        ((uint8 *) src_buffer) + (src_pitch * i * (height / gui_config->num_threads));
-    job[i].src_pitch = src_pitch;
-    job[i].dst_buffer =
-        ((uint8 *) dst_buffer) + (dst_pitch * i * (height / gui_config->num_threads));
-    job[i].dst_pitch = dst_pitch;
-    job[i].width = width;
-    job[i].height = height - ((gui_config->num_threads - 1) * (height / gui_config->num_threads));
-    job[i].bpp = bpp;
-
-    thread_worker ((gpointer) &(job[i]), NULL);
-
-    while (1)
-    {
-        flag = 1;
-        for (i = 0; i < gui_config->num_threads - 1; i++)
-            flag = flag && job[i].complete;
-
-        if (flag)
-            break;
-
-        sched_yield ();
-    }
+    wait_for_jobs_to_complete ();
 }
 
-static void
-internal_threaded_convert_mask (void *src_buffer,
-                                void *dst_buffer,
-                                int  src_pitch,
-                                int  dst_pitch,
-                                int  width,
-                                int  height,
-                                int  inv_rmask,
-                                int  inv_gmask,
-                                int  inv_bmask,
-                                int  bpp)
+static void internal_threaded_convert_mask (void *src_buffer,
+                                            void *dst_buffer,
+                                            int  src_pitch,
+                                            int  dst_pitch,
+                                            int  width,
+                                            int  height,
+                                            int  inv_rmask,
+                                            int  inv_gmask,
+                                            int  inv_bmask,
+                                            int  bpp)
 {
-    int i, flag;
-
     create_thread_pool ();
 
-    for (i = 0; i < gui_config->num_threads - 1; i++)
+    for (int i = 0; i < gui_config->num_threads; i++)
     {
         job[i].operation_type = (bpp == -1 ? JOB_CONVERT_YUV : JOB_CONVERT);
         job[i].src_buffer =
@@ -1283,110 +1176,62 @@ internal_threaded_convert_mask (void *src_buffer,
         job[i].inv_rmask = inv_rmask;
         job[i].inv_gmask = inv_gmask;
         job[i].inv_bmask = inv_bmask;
-        job[i].complete = 0;
+        job[i].complete = false;
+
+        if (i == gui_config->num_threads - 1)
+            job[i].height = height - ((gui_config->num_threads - 1) * (height / gui_config->num_threads));
 
         g_thread_pool_push (pool, (gpointer) &(job[i]), NULL);
     }
 
-    job[i].operation_type = (bpp == -1 ? JOB_CONVERT_YUV : JOB_CONVERT);
-    job[i].src_buffer =
-        ((uint8 *) src_buffer) + (src_pitch * i * (height / gui_config->num_threads));
-    job[i].src_pitch = src_pitch;
-    job[i].dst_buffer =
-        ((uint8 *) dst_buffer) + (dst_pitch * i * (height / gui_config->num_threads));
-    job[i].dst_pitch = dst_pitch;
-    job[i].width = width;
-    job[i].height = height - ((gui_config->num_threads - 1) * (height / gui_config->num_threads));
-    job[i].bpp = bpp;
-    job[i].inv_rmask = inv_rmask;
-    job[i].inv_gmask = inv_gmask;
-    job[i].inv_bmask = inv_bmask;
-
-    thread_worker ((gpointer) &(job[i]), NULL);
-
-    while (1)
-    {
-        flag = 1;
-        for (i = 0; i < gui_config->num_threads - 1; i++)
-            flag = flag && job[i].complete;
-
-        if (flag)
-            break;
-
-        sched_yield ();
-    }
+    wait_for_jobs_to_complete ();
 }
 
-static void
-internal_threaded_filter (uint8 *src_buffer,
-                          int   src_pitch,
-                          uint8 *dst_buffer,
-                          int   dst_pitch,
-                          int   &width,
-                          int   &height)
+static void internal_threaded_filter (uint8 *src_buffer,
+                                      int   src_pitch,
+                                      uint8 *dst_buffer,
+                                      int   dst_pitch,
+                                      int   &width,
+                                      int   &height)
 {
-    int i, flag;
-    int dwidth = width, dheight = height;
-    int src_coverage = 0, dst_coverage = 0;
-    int height_scale;
-
-    get_filter_scale (dwidth, dheight);
-    height_scale = dheight / height;
+    int dst_width = width, dst_height = height;
 
     /* If the threadpool doesn't exist, create it */
     create_thread_pool ();
 
-    for (i = 0; i < gui_config->num_threads - 1; i++)
+    get_filter_scale (dst_width, dst_height);
+
+    int yscale = dst_height / height;
+    int coverage = 0;
+
+    for (int i = 0; i < gui_config->num_threads; i++)
     {
         job[i].operation_type = JOB_FILTER;
-        job[i].complete = 0;
+        job[i].complete = false;
         job[i].width = width;
         job[i].src_pitch = src_pitch;
         job[i].dst_pitch = dst_pitch;
-        job[i].src_buffer = src_buffer + (src_pitch * src_coverage);
-        job[i].dst_buffer = dst_buffer + (dst_pitch * dst_coverage);
-
+        job[i].src_buffer = src_buffer + (src_pitch * coverage);
+        job[i].dst_buffer = dst_buffer + (dst_pitch * coverage * yscale);
         job[i].height = (height / gui_config->num_threads) & ~3; /* Cut to multiple of 4 */
-        src_coverage += job[i].height;
-        dst_coverage += job[i].height * height_scale;
-
+        if (i == gui_config->num_threads - 1)
+            job[i].height = height - coverage;
+        coverage += job[i].height;
 
         g_thread_pool_push (pool, (gpointer) &(job[i]), NULL);
     }
 
-    job[i].operation_type = JOB_FILTER;
-    job[i].width = width;
-    job[i].src_pitch = src_pitch;
-    job[i].dst_pitch = dst_pitch;
-    job[i].src_buffer = src_buffer + (src_pitch * src_coverage);
-    job[i].dst_buffer = dst_buffer + (dst_pitch * dst_coverage);
-
-    job[i].height = height - src_coverage;
-
-    thread_worker ((gpointer) &(job[i]), NULL);
-
-    while (1)
-    {
-        flag = 1;
-        for (i = 0; i < gui_config->num_threads - 1; i++)
-            flag = flag && job[i].complete;
-
-        if (flag)
-            break;
-
-        sched_yield ();
-    }
+    wait_for_jobs_to_complete ();
 
     get_filter_scale (width, height);
 }
 
-void
-S9xFilter (uint8 *src_buffer,
-           int   src_pitch,
-           uint8 *dst_buffer,
-           int   dst_pitch,
-           int   &width,
-           int   &height)
+void S9xFilter (uint8 *src_buffer,
+                int   src_pitch,
+                uint8 *dst_buffer,
+                int   dst_pitch,
+                int   &width,
+                int   &height)
 {
 
     if (gui_config->multithreading)
@@ -1405,13 +1250,12 @@ S9xFilter (uint8 *src_buffer,
                          height);
 }
 
-void
-S9xConvertYUV (void *src_buffer,
-               void *dst_buffer,
-               int  src_pitch,
-               int  dst_pitch,
-               int  width,
-               int  height)
+void S9xConvertYUV (void *src_buffer,
+                    void *dst_buffer,
+                    int  src_pitch,
+                    int  dst_pitch,
+                    int  width,
+                    int  height)
 {
     if (gui_config->multithreading)
         internal_threaded_convert (src_buffer,
@@ -1430,14 +1274,13 @@ S9xConvertYUV (void *src_buffer,
                                  height);
 }
 
-void
-S9xConvert (void *src,
-            void *dst,
-            int  src_pitch,
-            int  dst_pitch,
-            int  width,
-            int  height,
-            int  bpp)
+void S9xConvert (void *src,
+                 void *dst,
+                 int  src_pitch,
+                 int  dst_pitch,
+                 int  width,
+                 int  height,
+                 int  bpp)
 {
     if (gui_config->multithreading)
         internal_threaded_convert (src,
@@ -1457,17 +1300,16 @@ S9xConvert (void *src,
                           bpp);
 }
 
-void
-S9xConvertMask (void *src,
-                void *dst,
-                int  src_pitch,
-                int  dst_pitch,
-                int  width,
-                int  height,
-                int  rshift,
-                int  gshift,
-                int  bshift,
-                int  bpp)
+void S9xConvertMask (void *src,
+                     void *dst,
+                     int  src_pitch,
+                     int  dst_pitch,
+                     int  width,
+                     int  height,
+                     int  rshift,
+                     int  gshift,
+                     int  bshift,
+                     int  bpp)
 {
     if (gui_config->multithreading)
         internal_threaded_convert_mask (src,
@@ -1493,23 +1335,20 @@ S9xConvertMask (void *src,
                                bpp);
 }
 
-void
-S9xDisplayRefresh (int width, int height)
+void S9xDisplayRefresh (int width, int height)
 {
     driver->refresh (width, height);
 }
 
-static void
-ntsc_filter_init ()
+static void ntsc_filter_init ()
 {
-    scanline_offset = scanline_offsets [gui_config->ntsc_scanline_intensity];
-    scanline_mask   = scanline_masks [gui_config->ntsc_scanline_intensity];
+    snes_ntsc_scanline_offset = scanline_offsets [gui_config->ntsc_scanline_intensity];
+    snes_ntsc_scanline_mask   = scanline_masks [gui_config->ntsc_scanline_intensity];
 
     snes_ntsc_init (&snes_ntsc, &gui_config->ntsc_setup);
 }
 
-void
-S9xDisplayReconfigure ()
+void S9xDisplayReconfigure ()
 {
     ntsc_filter_init ();
 
@@ -1519,12 +1358,11 @@ S9xDisplayReconfigure ()
     }
 }
 
-void
-S9xQueryDrivers ()
+void S9xQueryDrivers ()
 {
     GdkDisplay *display = gtk_widget_get_display (GTK_WIDGET (top_level->get_window()));
 
-    gui_config->allow_xv = 0;
+    gui_config->allow_xv = false;
 #if defined(USE_XV) && defined(GDK_WINDOWING_X11)
     if (GDK_IS_X11_DISPLAY (display))
         gui_config->allow_xv = S9xXVDisplayDriver::query_availability ();
@@ -1533,17 +1371,17 @@ S9xQueryDrivers ()
 #ifdef USE_OPENGL
     gui_config->allow_opengl = S9xOpenGLDisplayDriver::query_availability ();
 #else
-    gui_config->allow_opengl = 0;
+    gui_config->allow_opengl = false;
 #endif
 
-    gui_config->allow_xrandr = 0;
+    gui_config->allow_xrandr = false;
 #ifdef GDK_WINDOWING_X11
     if (GDK_IS_X11_DISPLAY (display))
     {
         Display *dpy = gdk_x11_display_get_xdisplay (gtk_widget_get_display (GTK_WIDGET (top_level->get_window())));
         Window xid   = gdk_x11_window_get_xid (gtk_widget_get_window (GTK_WIDGET (top_level->get_window())));
 
-        gui_config->allow_xrandr = 1;
+        gui_config->allow_xrandr = true;
         gui_config->xrr_screen_resources = XRRGetScreenResourcesCurrent (dpy, xid);
         gui_config->xrr_crtc_info        = XRRGetCrtcInfo (dpy,
                                                         gui_config->xrr_screen_resources,
@@ -1552,8 +1390,7 @@ S9xQueryDrivers ()
 #endif
 }
 
-bool8
-S9xDeinitUpdate (int width, int height)
+bool8 S9xDeinitUpdate (int width, int height)
 {
     int yoffset = 0;
 
@@ -1594,10 +1431,7 @@ S9xDeinitUpdate (int width, int height)
         }
     }
 
-    if (!Settings.Paused
-#ifdef NETPLAY_SUPPORT
-            && !NetPlay.Paused
-#endif
+    if (!Settings.Paused && !NetPlay.Paused
     )
 
     {
@@ -1625,11 +1459,10 @@ S9xDeinitUpdate (int width, int height)
 
     driver->update (width, height, yoffset);
 
-    return TRUE;
+    return true;
 }
 
-static void
-S9xInitDriver ()
+static void S9xInitDriver ()
 {
 #ifdef GDK_WINDOWING_WAYLAND
     if (GDK_IS_WAYLAND_DISPLAY (gdk_display_get_default ()))
@@ -1679,34 +1512,17 @@ S9xInitDriver ()
     pool = NULL;
 }
 
-S9xDisplayDriver *
-S9xDisplayGetDriver ()
+S9xDisplayDriver *S9xDisplayGetDriver ()
 {
     return driver;
 }
 
-void
-S9xInitDisplay (int argc, char **argv)
-{
-    Settings.SupportHiRes = TRUE;
-    S9xBlit2xSaIFilterInit ();
-#ifdef USE_HQ2X
-    S9xBlitHQ2xFilterInit ();
-#endif /* USE_HQ2SX */
-    S9xQueryDrivers ();
-    S9xInitDriver ();
-    S9xGraphicsInit ();
-    S9xDisplayReconfigure ();
-}
-
-void
-S9xDisplayClearBuffers ()
+void S9xDisplayClearBuffers ()
 {
     driver->clear_buffers ();
 }
 
-void
-S9xDeinitDisplay ()
+void S9xDeinitDisplay ()
 {
     driver->deinit ();
     delete driver;
@@ -1715,11 +1531,10 @@ S9xDeinitDisplay ()
     GFX.Screen = NULL;
 
     if (pool)
-        g_thread_pool_free (pool, FALSE, TRUE);
+        g_thread_pool_free (pool, false, true);
 }
 
-void
-S9xReinitDisplay ()
+void S9xReinitDisplay ()
 {
     uint16 *buffer = NULL;
     int    width, height;
@@ -1744,32 +1559,162 @@ S9xReinitDisplay ()
     free (buffer);
 }
 
-bool8
-S9xContinueUpdate (int width, int height)
+bool8 S9xContinueUpdate (int width, int height)
 {
     S9xDeinitUpdate (width, height);
-    return TRUE;
+    return true;
 }
 
-bool8
-S9xInitUpdate ()
+bool8 S9xInitUpdate ()
 {
-    return TRUE;
+    return true;
 }
 
-void
-S9xSetPalette ()
+void S9xSetPalette ()
 {
 }
 
-void
-S9xTextMode ()
+void S9xTextMode ()
 {
 }
 
-void
-S9xGraphicsMode ()
+void S9xGraphicsMode ()
 {
 }
 
+#include "var8x10font.h"
+static const int font_width = 8;
+static const int font_height = 10;
 
+static inline int CharWidth (uint8 c)
+{
+    return font_width - var8x10font_kern[c - 32][0] - var8x10font_kern[c - 32][1];
+}
+
+static int StringWidth (const char *str)
+{
+    int length = strlen (str);
+    int pixcount = 0;
+
+    if (length > 0)
+        pixcount++;
+
+    for (int i = 0; i < length; i++)
+    {
+        pixcount += (CharWidth (str[i]) - 1);
+    }
+
+    return pixcount;
+}
+
+static void GTKDisplayChar(int x, int y, uint8 c, bool monospace = false, int overlap = 0)
+{
+    int cindex = c - 32;
+    int crow   = cindex >> 4;
+    int ccol   = cindex & 15;
+    int cwidth = font_width - (monospace ? 0 : (var8x10font_kern[cindex][0] + var8x10font_kern[cindex][1]));
+
+    int	line   = crow * font_height;
+    int	offset = ccol * font_width + (monospace ? 0 : var8x10font_kern[cindex][0]);
+    int scale = IPPU.RenderedScreenWidth / SNES_WIDTH;
+
+    uint16 *s = GFX.Screen + y * GFX.RealPPL + x * scale;
+
+    for (int h = 0; h < font_height; h++, line++, s += GFX.RealPPL - cwidth * scale)
+    {
+        for (int w = 0; w < cwidth; w++, s++)
+        {
+            if (var8x10font[line][offset + w] == '#')
+                *s = Settings.DisplayColor;
+            else if (var8x10font[line][offset + w] == '.')
+                *s = 0x0000;
+//            else if (!monospace && w >= overlap)
+//                *s = (*s & 0xf7de) >> 1;
+//                *s = (*s & 0xe79c) >> 2;
+
+            if (scale > 1)
+            {
+                s[1] = s[0];
+                s++;
+            }
+        }
+    }
+}
+
+static void S9xGTKDisplayString(const char *string, int linesFromBottom,
+                                int pixelsFromLeft, bool allowWrap, int type)
+{
+    bool monospace = true;
+    if (type == S9X_NO_INFO)
+    {
+        if (linesFromBottom <= 0)
+            linesFromBottom = 1;
+
+        if (linesFromBottom >= 5)
+            linesFromBottom -= 3;
+
+        if (pixelsFromLeft > 128)
+            pixelsFromLeft = SNES_WIDTH - StringWidth (string);
+
+        monospace = false;
+    }
+
+    int dst_x = pixelsFromLeft;
+    int dst_y = IPPU.RenderedScreenHeight - (font_height) * linesFromBottom;
+    int	len = strlen(string);
+
+    if (IPPU.RenderedScreenHeight % 224 && !gui_config->overscan)
+        dst_y -= 8;
+    else if (gui_config->overscan)
+        dst_y += 8;
+
+    int overlap = 0;
+
+    for (int i = 0 ; i < len ; i++)
+    {
+        int cindex = string[i] - 32;
+        int char_width = font_width - (monospace ? 1 : (var8x10font_kern[cindex][0] + var8x10font_kern[cindex][1]));
+
+        if (dst_x + char_width > SNES_WIDTH || (uint8)string[i] < 32)
+        {
+            if (!allowWrap)
+                break;
+
+            linesFromBottom--;
+            dst_y = IPPU.RenderedScreenHeight - font_height * linesFromBottom;
+            dst_x = pixelsFromLeft;
+
+            if (dst_y >= IPPU.RenderedScreenHeight)
+                break;
+        }
+
+        if ((uint8) string[i] < 32)
+            continue;
+
+        GTKDisplayChar(dst_x, dst_y, string[i], monospace, overlap);
+
+        dst_x  += char_width - 1;
+        overlap = 1;
+    }
+}
+
+void S9xInitDisplay (int argc, char **argv)
+{
+    Settings.SupportHiRes = true;
+    S9xBlit2xSaIFilterInit ();
+#ifdef USE_HQ2X
+    S9xBlitHQ2xFilterInit ();
+#endif /* USE_HQ2SX */
+    S9xQueryDrivers ();
+    S9xInitDriver ();
+    S9xGraphicsInit ();
+    S9xDisplayReconfigure ();
+    S9xCustomDisplayString = S9xGTKDisplayString;
+}
+
+bool S9xDisplayDriverIsReady ()
+{
+    if (!driver)
+        return false;
+    return driver->is_ready ();
+}

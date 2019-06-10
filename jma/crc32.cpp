@@ -68,10 +68,10 @@ namespace CRC32lib
 
 
   //CRC32 for char arrays
-  unsigned int CRC32(const unsigned char *array, size_t size, register unsigned int crc32)
+  unsigned int CRC32(const unsigned char *array, size_t size, unsigned int crc32)
   {
     const unsigned char *end_p = array+size;
-    for (register const unsigned char *p = array; p < end_p; p++)
+    for (const unsigned char *p = array; p < end_p; p++)
     {
       crc32 = ((crc32 >> 8) & 0x00FFFFFF) ^ crc32Table[(crc32 ^ *p) & 0xFF];
     }

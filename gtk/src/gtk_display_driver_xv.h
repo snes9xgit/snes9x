@@ -1,3 +1,9 @@
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
 #ifndef __GTK_DISPLAY_DRIVER_XV_H
 #define __GTK_DISPLAY_DRIVER_XV_H
 
@@ -26,6 +32,7 @@ class S9xXVDisplayDriver : public S9xDisplayDriver
         void *get_parameters () { return NULL; }
         void save (const char *filename) { }
         static int query_availability ();
+        bool is_ready () { return true; }
 
     private:
         void clear ();

@@ -19,7 +19,6 @@
 #include "zlib.h"
 
 #ifdef __WIN32__
-#define NOMINMAX
 #include <windows.h>
 #include <direct.h>
 #include "win32/wsnes9x.h"
@@ -4393,11 +4392,6 @@ DEFINE_LUA_FUNCTION(input_getup, "")
 
 
 #include "../apu/bapu/snes/snes.hpp"
-#if defined(DEBUGGER)
-	extern SNES::SMPDebugger SNES::smp;
-#else
-	extern SNES::SMP SNES::smp;
-#endif
 #define APURAM  SNES::smp.apuram
 
 DEFINE_LUA_FUNCTION(apu_readbyte, "address")

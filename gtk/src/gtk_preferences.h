@@ -1,3 +1,9 @@
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
 #ifndef __GTK_PREFERENCES_H
 #define __GTK_PREFERENCES_H
 
@@ -22,18 +28,16 @@ class Snes9xPreferences : public GtkBuilderWindow
         int combo_value (int hw_accel);
         void focus_next ();
         void swap_with ();
+        void clear_binding (const char *name);
         void reset_current_joypad ();
         void load_ntsc_settings ();
         void store_ntsc_settings ();
-
-#ifdef USE_JOYSTICK
         void calibration_dialog ();
-#endif
 
         Snes9xConfig    *config;
         GtkToggleButton *last_toggled;
-        int             awaiting_key;
-        int             polling_joystick;
+        bool            awaiting_key;
+        bool            polling_joystick;
         JoypadBinding   pad[NUM_JOYPADS];
         Binding         shortcut[NUM_EMU_LINKS];
 

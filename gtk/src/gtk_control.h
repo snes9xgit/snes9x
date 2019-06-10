@@ -1,12 +1,16 @@
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
 #ifndef __GTK_CONTROL_H
 #define __GTK_CONTROL_H
 
 #include <queue>
 
 #include "gtk_binding.h"
-#ifdef USE_JOYSTICK
 #include "SDL.h"
-#endif
 
 const int NUM_JOYPADS = 10;
 
@@ -69,8 +73,6 @@ typedef struct JoypadBinding
     Binding data[NUM_JOYPAD_LINKS]; /* Avoid packing issues */
 } JoypadBinding;
 
-#ifdef USE_JOYSTICK
-
 bool S9xGrabJoysticks ();
 void S9xReleaseJoysticks ();
 
@@ -90,32 +92,29 @@ typedef struct Calibration
 
 class JoyDevice
 {
-    public:
-        JoyDevice (unsigned int device_num);
-        ~JoyDevice ();
-        int get_event (JoyEvent *event);
-        void flush ();
-        void handle_event (SDL_Event *event);
-        void register_centers ();
+  public:
+    JoyDevice (unsigned int device_num);
+    ~JoyDevice ();
+    int get_event (JoyEvent *event);
+    void flush ();
+    void handle_event (SDL_Event *event);
+    void register_centers ();
 
-        SDL_Joystick         *filedes;
-        Calibration          *calibration;
-        std::queue<JoyEvent> queue;
-        int                  mode;
-        int                  joynum;
-        int                  num_axes;
-        int                  num_hats;
-        int                  *axis;
-        int                  *hat;
-        bool                 enabled;
+    SDL_Joystick         *filedes;
+    Calibration          *calibration;
+    std::queue<JoyEvent> queue;
+    int                  mode;
+    int                  joynum;
+    int                  num_axes;
+    int                  num_hats;
+    int                  *axis;
+    int                  *hat;
+    bool                 enabled;
 
-
-    private:
-        void poll_events ();
-        void add_event (unsigned int parameter, unsigned int state);
-
+  private:
+    void poll_events ();
+    void add_event (unsigned int parameter, unsigned int state);
 };
-#endif
 
 void S9xDeinitInputDevices ();
 Binding S9xGetBindingByName (const char *name);

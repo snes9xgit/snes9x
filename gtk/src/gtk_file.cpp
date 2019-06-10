@@ -1,3 +1,9 @@
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
 #include <sys/stat.h>
 #include <errno.h>
 
@@ -9,17 +15,21 @@ static char buf[PATH_MAX];
 const char *
 S9xChooseMovieFilename (bool8 read_only)
 {
-    if (!gui_config->rom_loaded)
-        return strdup ("");
+    static char path[PATH_MAX];
 
-    return top_level->open_movie_dialog (read_only);
+    if (!gui_config->rom_loaded)
+        return "";
+
+    const char *str = top_level->open_movie_dialog (read_only);
+    strcpy (path, str);
+
+    return path;
 }
 
 const char *
 S9xChooseFilename (bool8 read_only)
 {
-
-    return strdup ("");
+    return "";
 }
 
 /* _splitpath/_makepath: Modified from unix.cpp. See file for credits. */
@@ -114,8 +124,7 @@ S9xGetFilenameInc (const char *e, enum s9x_getdirtype dirtype)
 
     do
     {
-        snprintf (filename, sizeof (filename),
-                  "%s" SLASH_STR "%s%03d%s", d, fname, i, e);
+        snprintf (filename, PATH_MAX, "%s" SLASH_STR "%s%03d%s", d, fname, i, e);
         i++;
     }
     while (stat (filename, &buf) == 0 && i != 0); /* Overflow? ...riiight :-) */
@@ -127,35 +136,32 @@ const char *
 S9xGetDirectory (enum s9x_getdirtype dirtype)
 {
     static char path[PATH_MAX + 1];
-    char *config_dir;
 
     switch (dirtype)
     {
         case HOME_DIR:
-            config_dir = get_config_dir ();
-            strcpy (path, config_dir);
-            free (config_dir);
+            sstrncpy (path, get_config_dir ().c_str (), PATH_MAX + 1);
             break;
 
         case SNAPSHOT_DIR:
-            sprintf (path, "%s", gui_config->savestate_directory);
+            sstrncpy (path, gui_config->savestate_directory.c_str (), PATH_MAX + 1);
             break;
 
         case PATCH_DIR:
-            sprintf (path, "%s", gui_config->patch_directory);
+            sstrncpy (path, gui_config->patch_directory.c_str (), PATH_MAX + 1);
             break;
 
         case CHEAT_DIR:
-            sprintf (path, "%s", gui_config->cheat_directory);
+            sstrncpy (path, gui_config->cheat_directory.c_str (), PATH_MAX + 1);
             break;
 
         case SRAM_DIR:
-            sprintf (path, "%s", gui_config->sram_directory);
+            sstrncpy (path, gui_config->sram_directory.c_str (), PATH_MAX + 1);
             break;
 
         case SCREENSHOT_DIR:
         case SPC_DIR:
-            sprintf (path, "%s", gui_config->export_directory);
+            sstrncpy (path, gui_config->export_directory.c_str (), PATH_MAX + 1);
             break;
 
         default:
@@ -225,7 +231,7 @@ S9xBasename (const char *f)
 const char *
 S9xBasenameNoExt (const char *f)
 {
-    static char filename[PATH_MAX + 1];
+    static char filename[PATH_MAX];
     const char *base, *ext;
 
     if (!(base = strrchr (f, SLASH_CHAR)))
@@ -236,7 +242,7 @@ S9xBasenameNoExt (const char *f)
     ext = strrchr (f, '.');
 
     if (!ext)
-        strncpy (filename, base, PATH_MAX);
+        sstrncpy (filename, base, PATH_MAX);
     else
     {
         int len = ext - base;
@@ -275,7 +281,7 @@ S9xOpenSnapshotFile (const char *fname, bool8 read_only, STREAM *file)
 
     if (*drive || *dir == '/' || (*dir == '.' && (*(dir + 1) == '/')))
     {
-        strncpy (filename, fname, PATH_MAX);
+        sstrncpy (filename, fname, PATH_MAX + 1);
 
         if (!file_exists (filename))
         {
@@ -300,7 +306,7 @@ S9xOpenSnapshotFile (const char *fname, bool8 read_only, STREAM *file)
     if (read_only)
     {
         if ((*file = OPEN_STREAM (filename, "rb")))
-            return (TRUE);
+            return (true);
         else
             fprintf (stderr,
                      "Failed to open file stream for reading. (%s)\n",
@@ -310,7 +316,7 @@ S9xOpenSnapshotFile (const char *fname, bool8 read_only, STREAM *file)
     {
         if ((*file = OPEN_STREAM (filename, "wb")))
         {
-            return (TRUE);
+            return (true);
         }
         else
         {
@@ -329,20 +335,20 @@ S9xOpenSnapshotFile (const char *fname, bool8 read_only, STREAM *file)
     {
         sprintf (command, "gzip -d <\"%s\"", filename);
         if (*file = popen (command, "r"))
-            return (TRUE);
+            return (true);
     }
     else
     {
         sprintf (command, "gzip --best >\"%s\"", filename);
         if (*file = popen (command, "wb"))
-            return (TRUE);
+            return (true);
     }
 
     fprintf (stderr, "gzip: Couldn't open snapshot file:\n%s\n", filename);
 
 #endif
 
-    return (FALSE);
+    return (false);
 }
 
 void S9xCloseSnapshotFile (STREAM file)
@@ -352,21 +358,6 @@ void S9xCloseSnapshotFile (STREAM file)
 #else
     pclose (file);
 #endif
-}
-
-extern "C"
-{
-    uint8 snes9x_clear_change_log = 0;
-}
-
-extern "C" char *osd_GetPackDir ()
-{
-    return NULL;
-}
-
-void
-S9xLoadSDD1Data ()
-{
 }
 
 void
@@ -423,7 +414,7 @@ S9xOpenROMDialog ()
 
     top_level->pause_from_focus_change ();
 
-    dialog = gtk_file_chooser_dialog_new ("Open SNES ROM Image",
+    dialog = gtk_file_chooser_dialog_new (_("Open SNES ROM Image"),
                                           top_level->get_window (),
                                           GTK_FILE_CHOOSER_ACTION_OPEN,
                                           "gtk-cancel", GTK_RESPONSE_CANCEL,
@@ -431,7 +422,7 @@ S9xOpenROMDialog ()
                                           NULL);
 
     filter = gtk_file_filter_new ();
-    gtk_file_filter_set_name (filter, "SNES ROM Images");
+    gtk_file_filter_set_name (filter, _("SNES ROM Images"));
     for (int i = 0; extensions[i]; i++)
     {
         gtk_file_filter_add_pattern (filter, extensions[i]);
@@ -439,15 +430,15 @@ S9xOpenROMDialog ()
     gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (dialog), filter);
 
     filter = gtk_file_filter_new ();
-    gtk_file_filter_set_name (filter, "All Files");
+    gtk_file_filter_set_name (filter, _("All Files"));
     gtk_file_filter_add_pattern (filter, "*.*");
     gtk_file_filter_add_pattern (filter, "*");
     gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (dialog), filter);
 
-    if (strcmp (gui_config->last_directory, ""))
+    if (!gui_config->last_directory.empty ())
     {
         gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (dialog),
-                                             gui_config->last_directory);
+                                             gui_config->last_directory.c_str ());
     }
 
     result = gtk_dialog_run (GTK_DIALOG (dialog));
@@ -462,7 +453,7 @@ S9xOpenROMDialog ()
             gtk_file_chooser_get_current_folder (GTK_FILE_CHOOSER (dialog));
         if (directory)
         {
-            strncpy (gui_config->last_directory, directory, PATH_MAX);
+            gui_config->last_directory = directory;
             g_free (directory);
         }
     }

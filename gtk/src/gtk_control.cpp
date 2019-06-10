@@ -1,7 +1,11 @@
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
 #include <fcntl.h>
-#ifdef USE_JOYSTICK
-#   include "SDL.h"
-#endif
+#include "SDL.h"
 
 #include "gtk_s9xcore.h"
 #include "gtk_s9x.h"
@@ -131,8 +135,8 @@ bool S9xPollAxis (uint32 id, int16 *value)
 
 bool S9xPollPointer (uint32 id, int16 *x, int16 *y)
 {
-    *x = top_level->mouse_loc_x;
-    *y = top_level->mouse_loc_y;
+    *x = top_level->snes_mouse_x;
+    *y = top_level->snes_mouse_y;
 
     return true;
 }
@@ -155,11 +159,11 @@ bool S9xIsMousePluggedIn ()
 bool S9xGrabJoysticks ()
 {
     if (joystick_lock)
-        return FALSE;
+        return false;
 
     joystick_lock++;
 
-    return TRUE;
+    return true;
 }
 
 void S9xReleaseJoysticks ()
@@ -186,28 +190,31 @@ static void change_slot (int difference)
     gui_config->current_save_slot %= 1000;
     if (gui_config->current_save_slot < 0)
         gui_config->current_save_slot += 1000;
-    snprintf (buf, 256, "Slot %d", gui_config->current_save_slot);
+    if (!gui_config->rom_loaded)
+        return;
+
+    snprintf (buf, 256, "State Slot: %d", gui_config->current_save_slot);
     S9xSetInfoString (buf);
     GFX.InfoStringTimeout = 60;
 }
 
 void S9xHandlePortCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 {
-    static bool quit_binding_down = FALSE;
+    static bool quit_binding_down = false;
 
-    if (data1 == TRUE)
+    if (data1 == true)
     {
         if (cmd.port[0] == PORT_QUIT)
-            quit_binding_down = TRUE;
+            quit_binding_down = true;
         else if (cmd.port[0] == PORT_REWIND)
-            Settings.Rewinding = TRUE;
+            Settings.Rewinding = true;
     }
 
-    if (data1 == FALSE) /* Release */
+    if (data1 == false) /* Release */
     {
         if (cmd.port[0] != PORT_QUIT)
         {
-            quit_binding_down = FALSE;
+            quit_binding_down = false;
         }
 
         if (cmd.port[0] == PORT_COMMAND_FULLSCREEN)
@@ -235,7 +242,7 @@ void S9xHandlePortCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 
         else if (cmd.port[0] == PORT_REWIND)
         {
-            Settings.Rewinding = FALSE;
+            Settings.Rewinding = false;
         }
 
         else if (cmd.port[0] == PORT_SEEK_TO_FRAME)
@@ -459,7 +466,6 @@ s9xcommand_t S9xGetPortCommandT (const char *name)
 
 void S9xProcessEvents (bool8 block)
 {
-#ifdef USE_JOYSTICK
     JoyEvent event;
     Binding  binding;
 
@@ -471,16 +477,14 @@ void S9xProcessEvents (bool8 block)
             {
                 binding = Binding (i, event.parameter, 0);
                 S9xReportButton (binding.hex (), event.state == JOY_PRESSED ? 1 : 0);
-                gui_config->screensaver_needs_reset = TRUE;
+                gui_config->screensaver_needs_reset = true;
             }
         }
 
         S9xReleaseJoysticks ();
     }
-#endif
 }
 
-#ifdef USE_JOYSTICK
 static void poll_joystick_events ()
 {
     SDL_Event event;
@@ -504,11 +508,9 @@ static void poll_joystick_events ()
         }
     }
 }
-#endif
 
 void S9xInitInputDevices ()
 {
-#ifdef USE_JOYSTICK
     SDL_Init (SDL_INIT_JOYSTICK);
 
     for (int i = 0; ; i++)
@@ -530,7 +532,6 @@ void S9xInitInputDevices ()
             gui_config->joystick[i]->joynum = i;
         }
     }
-#endif
 
     //First plug in both, they'll change later as needed
     S9xSetController (0, CTL_JOYPAD,     0, 0, 0, 0);
@@ -539,7 +540,6 @@ void S9xInitInputDevices ()
 
 void S9xDeinitInputDevices ()
 {
-#ifdef USE_JOYSTICK
     for (int i = 0; gui_config->joystick[i] != NULL; i++)
     {
         delete gui_config->joystick[i];
@@ -548,10 +548,7 @@ void S9xDeinitInputDevices ()
     free (gui_config->joystick);
 
     SDL_Quit ();
-#endif
 }
-
-#ifdef USE_JOYSTICK
 
 JoyDevice::JoyDevice (unsigned int device_num)
 {
@@ -821,4 +818,3 @@ void JoyDevice::flush ()
     while (!queue.empty ())
         queue.pop ();
 }
-#endif

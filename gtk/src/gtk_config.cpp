@@ -1,3 +1,9 @@
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -9,77 +15,53 @@
 #include "gtk_display.h"
 #include "conffile.h"
 
-static int directory_exists (const char *directory)
+static bool directory_exists (std::string str)
 {
     DIR *dir;
 
-    dir = opendir (directory);
+    dir = opendir (str.c_str ());
 
     if (dir)
     {
         closedir (dir);
-        return TRUE;
+        return true;
     }
 
-    return FALSE;
+    return false;
 }
 
-char *get_config_dir ()
+std::string get_config_dir ()
 {
-    char *home_dir = NULL,
-         *classic_config_dir = NULL,
-         *xdg_config_dir = NULL,
-         *xdg_snes9x_dir = NULL;
+    // Find config directory
+    char *env_home = getenv ("HOME");
+    char *env_xdg_config_home = getenv ("XDG_CONFIG_HOME");
 
-    /* Find config directory */
-    home_dir = getenv ("HOME");
-    xdg_config_dir = getenv ("XDG_CONFIG_HOME");
-
-    if (!home_dir && !xdg_config_dir)
+    if (!env_home && !env_xdg_config_home)
     {
-        return strdup (".snes9x");
+        return std::string (".snes9x");
     }
 
-    if (!xdg_config_dir)
-    {
-        xdg_snes9x_dir = (char *) malloc (strlen (home_dir) + 16);
-        sprintf (xdg_snes9x_dir, "%s/.config/snes9x", home_dir);
-    }
-    else
-    {
-        xdg_snes9x_dir = (char *) malloc (strlen (xdg_config_dir) + 9);
-        sprintf (xdg_snes9x_dir, "%s/snes9x", xdg_config_dir);
-    }
+    std::string config;
+    std::string legacy;
 
-    classic_config_dir =  (char *) malloc (strlen (home_dir) + 9);
-    sprintf (classic_config_dir, "%s/.snes9x", home_dir);
-
-    char *config_dir;
-
-    if (directory_exists (classic_config_dir) && !directory_exists(xdg_snes9x_dir))
+    // If XDG_CONFIG_HOME is set, use that, otherwise guess default
+    if (!env_xdg_config_home)
     {
-        free (xdg_snes9x_dir);
-        config_dir =  classic_config_dir;
+        (config += env_home) += "/.config/snes9x";
+        (legacy += env_home) += "/.snes9x";
     }
     else
-    {
-        free (classic_config_dir);
-        config_dir = xdg_snes9x_dir;
-    }
+        config = std::string (env_xdg_config_home) + "/snes9x";
 
-    return config_dir;
+    if (directory_exists (legacy) && !directory_exists(config))
+        return legacy;
+
+    return config;
 }
 
-char *get_config_file_name ()
+std::string get_config_file_name ()
 {
-    char *filename;
-
-    filename = get_config_dir ();
-
-    filename = (char *) realloc (filename, strlen (filename) + 16);
-    strcat (filename, "/snes9x.conf");
-
-    return filename;
+    return get_config_dir () + "/snes9x.conf";
 }
 
 void S9xParsePortConfig (ConfigFile &conf, int pass)
@@ -88,119 +70,122 @@ void S9xParsePortConfig (ConfigFile &conf, int pass)
 
 Snes9xConfig::Snes9xConfig ()
 {
-#ifdef USE_JOYSTICK
     joystick = NULL;
     joystick_threshold = 40;
-#endif
-#ifdef USE_OPENGL
-    opengl_activated = FALSE;
-#endif
 }
 
 int Snes9xConfig::load_defaults ()
 {
-    full_screen_on_open = 0;
-    change_display_resolution = 0;
+    full_screen_on_open = false;
+    change_display_resolution = false;
     xrr_index = 0;
-    scale_to_fit = 1;
-    maintain_aspect_ratio = 1;
+    scale_to_fit = true;
+    maintain_aspect_ratio = true;
     aspect_ratio = 2;
     scale_method = 0;
-    overscan = 0;
+    overscan = false;
     save_sram_after_secs = 0;
-    rom_loaded = 0;
-    multithreading = 0;
+    rom_loaded = false;
+    multithreading = false;
+    splash_image = SPLASH_IMAGE_COMBO;
     hw_accel = 0;
-    allow_opengl = 0;
-    allow_xv = 0;
-    allow_xrandr = 0;
-    force_inverted_byte_order = FALSE;
+    allow_opengl = false;
+    allow_xv = false;
+    allow_xrandr = false;
+    force_inverted_byte_order = false;
     hires_effect = HIRES_NORMAL;
-    pause_emulation_on_switch = 0;
+    pause_emulation_on_switch = false;
     num_threads = 2;
-    mute_sound = FALSE;
-    mute_sound_turbo = FALSE;
-    fullscreen = FALSE;
-    ui_visible = TRUE;
-    statusbar_visible = FALSE;
+    mute_sound = false;
+    mute_sound_turbo = false;
+    fullscreen = false;
+    ui_visible = true;
     default_esc_behavior = 1;
-    prevent_screensaver = FALSE;
+    prevent_screensaver = false;
     sound_driver = 0;
     sound_buffer_size = 32;
     sound_playback_rate = 5;
     sound_input_rate = 31950;
-    auto_input_rate = TRUE;
-    last_directory[0] = '\0';
-    last_shader_directory[0] = '\0';
+    auto_input_rate = true;
+    last_directory.clear ();
+    last_shader_directory.clear ();
     window_width = -1;
     window_height = -1;
     preferences_width = -1;
     preferences_height = -1;
-    sram_directory[0] = '\0';
-    export_directory[0] = '\0';
-    savestate_directory[0] = '\0';
-    cheat_directory[0] = '\0';
-    patch_directory[0] = '\0';
-    screensaver_needs_reset = FALSE;
+    shader_parameters_width = -1;
+    shader_parameters_height = -1;
+    enable_icons = true;
+    current_display_tab = 0;
+    sram_directory.clear ();
+    export_directory.clear ();
+    savestate_directory.clear ();
+    cheat_directory.clear ();
+    patch_directory.clear ();
+    screensaver_needs_reset = false;
     ntsc_setup = snes_ntsc_composite;
     ntsc_scanline_intensity = 1;
     scanline_filter_intensity = 0;
-    Settings.BilinearFilter = FALSE;
-    netplay_activated = FALSE;
-    netplay_server_up = FALSE;
-    netplay_is_server = FALSE;
-    netplay_sync_reset = TRUE;
-    netplay_send_rom = FALSE;
+    Settings.BilinearFilter = false;
+    netplay_activated = false;
+    netplay_server_up = false;
+    netplay_is_server = false;
+    netplay_sync_reset = true;
+    netplay_send_rom = false;
     netplay_default_port = 6096;
     netplay_max_frame_loss = 10;
-    netplay_last_rom [0] = '\0';
-    netplay_last_host [0] = '\0';
+    netplay_last_rom.clear ();
+    netplay_last_host.clear ();
     netplay_last_port = 6096;
-    modal_dialogs = 1;
+    modal_dialogs = true;
     current_save_slot = 0;
     S9xCheatsEnable ();
 
     rewind_granularity = 5;
     rewind_buffer_size = 0;
-    Settings.Rewinding = FALSE;
+    Settings.Rewinding = false;
 
 #ifdef USE_OPENGL
-    sync_to_vblank = 1;
-    use_pbos = 1;
+    sync_to_vblank = true;
+    use_pbos = true;
     pbo_format = 0;
-    npot_textures = FALSE;
-    use_shaders = 0;
-    fragment_shader[0] = '\0';
-    vertex_shader[0] = '\0';
-    sync_every_frame = FALSE;
+    npot_textures = false;
+    use_shaders = false;
+    shader_filename.clear ();
+    use_glfinish = false;
+    use_sync_control = false;
 #endif
 
-    /* Snes9X Variables */
-    Settings.MouseMaster = TRUE;
-    Settings.SuperScopeMaster = TRUE;
-    Settings.JustifierMaster = TRUE;
-    Settings.MultiPlayer5Master = TRUE;
-    Settings.UpAndDown = FALSE;
+    /* Snes9x Variables */
+    Settings.MouseMaster = true;
+    Settings.SuperScopeMaster = true;
+    Settings.JustifierMaster = true;
+    Settings.MultiPlayer5Master = true;
+    Settings.UpAndDown = false;
     Settings.AutoSaveDelay = 0;
     Settings.SkipFrames = 0;
-    Settings.Transparency = TRUE;
-    Settings.DisplayFrameRate = FALSE;
-    Settings.SixteenBitSound = TRUE;
-    Settings.Stereo = TRUE;
-    Settings.ReverseStereo = FALSE;
-    Settings.SoundPlaybackRate = 32000;
-    Settings.StopEmulation = TRUE;
-    Settings.FrameTimeNTSC = 16667;
+    Settings.Transparency = true;
+    Settings.DisplayFrameRate = false;
+    Settings.SixteenBitSound = true;
+    Settings.Stereo = true;
+    Settings.ReverseStereo = false;
+    Settings.SoundPlaybackRate = 48000;
+    Settings.StopEmulation = true;
+    Settings.FrameTimeNTSC = 16639;
     Settings.FrameTimePAL = 20000;
     Settings.SupportHiRes = true;
     Settings.FrameTime = Settings.FrameTimeNTSC;
-    Settings.BlockInvalidVRAMAccessMaster = TRUE;
-    Settings.SoundSync = 0;
-    Settings.DynamicRateControl = FALSE;
+    Settings.BlockInvalidVRAMAccessMaster = true;
+    Settings.SoundSync = false;
+    Settings.DynamicRateControl = false;
     Settings.DynamicRateLimit = 5;
     Settings.InterpolationMethod = DSP_INTERPOLATION_GAUSSIAN;
     Settings.HDMATimingHack = 100;
     Settings.SuperFXClockMultiplier = 100;
+    Settings.NetPlay = false;
+    NetPlay.Paused = false;
+    NetPlay.MaxFrameSkip = 10;
+    Settings.DisplayPressedKeys = false;
 #ifdef ALLOW_CPU_OVERCLOCK
     Settings.MaxSpriteTilesPerLine = 34;
     Settings.OneClockCycle = 6;
@@ -208,19 +193,11 @@ int Snes9xConfig::load_defaults ()
     Settings.TwoClockCycles = 12;
 #endif
 
-#ifdef NETPLAY_SUPPORT
-    Settings.NetPlay = FALSE;
-    NetPlay.Paused = FALSE;
-    NetPlay.MaxFrameSkip = 10;
-#endif
-
     memset (pad, 0, sizeof (JoypadBinding) * NUM_JOYPADS);
     memset (shortcut, 0, sizeof (Binding) * NUM_EMU_LINKS);
 
     return 0;
 }
-
-#ifdef USE_JOYSTICK
 
 void Snes9xConfig::joystick_register_centers ()
 {
@@ -243,8 +220,6 @@ void Snes9xConfig::set_joystick_mode (int mode)
         joystick[i]->mode = mode;
 }
 
-#endif
-
 static inline void outbool (ConfigFile &cf, const char *key, bool value, const char *comment = "")
 {
     cf.SetBool (key, value, "true", "false", comment);
@@ -252,7 +227,6 @@ static inline void outbool (ConfigFile &cf, const char *key, bool value, const c
 
 int Snes9xConfig::save_config_file ()
 {
-    char *filename;
     char key[PATH_MAX];
     char buffer[PATH_MAX];
     ConfigFile cf;
@@ -274,6 +248,7 @@ int Snes9xConfig::save_config_file ()
     cf.SetInt   (z"NumberOfThreads", num_threads);
     cf.SetInt   (z"HardwareAcceleration", hw_accel, "0: None, 1: OpenGL, 2: XVideo");
     outbool (cf, z"BilinearFilter", Settings.BilinearFilter, "Smoothes scaled image");
+    cf.SetInt   (z"SplashBackground", splash_image, "0: Black, 1: Color bars, 2: Pattern, 3: Blue, 4: Default");
 
 #undef z
 #define z "NTSC::"
@@ -294,12 +269,13 @@ int Snes9xConfig::save_config_file ()
 #undef z
 #define z "OpenGL::"
     outbool   (cf, z"VSync", sync_to_vblank);
-    outbool   (cf, z"ReduceInputLag", sync_every_frame);
+    outbool   (cf, z"glFinish", use_glfinish);
+    outbool   (cf, z"SyncControl", use_sync_control);
     outbool   (cf, z"UsePixelBufferObjects", use_pbos);
     cf.SetInt     (z"PixelBufferObjectBitDepth", pbo_format);
     outbool   (cf, z"UseNonPowerOfTwoTextures", npot_textures);
     outbool   (cf, z"EnableCustomShaders", use_shaders);
-    cf.SetString  (z"ShaderFile", fragment_shader);
+    cf.SetString  (z"ShaderFile", shader_filename);
 #endif
 
 #undef z
@@ -312,9 +288,6 @@ int Snes9xConfig::save_config_file ()
     outbool (cf, z"DynamicRateControl", Settings.DynamicRateControl);
     cf.SetInt   (z"DynamicRateControlLimit", Settings.DynamicRateLimit);
     outbool (cf, z"AutomaticInputRate", auto_input_rate, "Guess input rate by asking the monitor what its refresh rate is");
-    outbool (cf, z"16bit", Settings.SixteenBitSound);
-    outbool (cf, z"Stereo", Settings.Stereo);
-    outbool (cf, z"ReverseStereo", Settings.ReverseStereo);
     cf.SetInt   (z"PlaybackRate", gui_config->sound_playback_rate, "1: 8000Hz, 2: 11025Hz, 3: 16000Hz, 4: 22050Hz, 5: 32000Hz, 6: 44100Hz, 7: 48000Hz");
 
 #undef z
@@ -334,8 +307,11 @@ int Snes9xConfig::save_config_file ()
     cf.SetInt (z"MainHeight", window_height);
     cf.SetInt (z"PreferencesWidth", preferences_width);
     cf.SetInt (z"PreferencesHeight", preferences_height);
+    cf.SetInt (z"ShaderParametersWidth", shader_parameters_width);
+    cf.SetInt (z"ShaderParametersHeight", shader_parameters_height);
+    cf.SetInt (z"CurrentDisplayTab", current_display_tab);
     outbool (cf, z"UIVisible", ui_visible);
-    outbool (cf, z"StatusBarVisible", statusbar_visible);
+    outbool (cf, z"EnableIcons", enable_icons);
     if (default_esc_behavior != ESC_TOGGLE_MENUBAR)
         outbool (cf, z"Fullscreen", 0);
     else
@@ -366,6 +342,7 @@ int Snes9xConfig::save_config_file ()
 #define z "Emulation::"
     outbool (cf, z"EmulateTransparency", Settings.Transparency);
     outbool (cf, z"DisplayFrameRate", Settings.DisplayFrameRate);
+    outbool (cf, z"DisplayPressedKeys", Settings.DisplayPressedKeys);
     cf.SetInt (z"SpeedControlMethod", Settings.SkipFrames, "0: Time the frames to 50 or 60Hz, 1: Same, but skip frames if too slow, 2: Synchronize to the sound buffer, 3: Unlimited, except potentially by vsync");
     cf.SetInt (z"SaveSRAMEveryNSeconds", Settings.AutoSaveDelay);
     outbool (cf, z"BlockInvalidVRAMAccess", Settings.BlockInvalidVRAMAccessMaster);
@@ -377,6 +354,7 @@ int Snes9xConfig::save_config_file ()
     cf.SetInt   (z"SoundInterpolationMethod", Settings.InterpolationMethod, "0: None, 1: Linear, 2: Gaussian (what the hardware uses), 3: Cubic, 4: Sinc");
     outbool (cf, z"RemoveSpriteLimit", Settings.MaxSpriteTilesPerLine == 34 ? 0 : 1);
     outbool (cf, z"OverclockCPU", Settings.OneClockCycle == 6 ? 0 : 1);
+    outbool (cf, z"EchoBufferHack", Settings.SeparateEchoBuffer, "Prevents echo buffer from overwriting APU RAM");
 
 #undef z
 #define z "Input::"
@@ -413,9 +391,8 @@ int Snes9xConfig::save_config_file ()
         cf.SetString (buffer, output_string);
     }
 
-#ifdef USE_JOYSTICK
     cf.SetInt (z"JoystickThreshold", joystick_threshold);
-#endif
+
 #undef z
 
     for (int i = 0; i < NUM_JOYPADS; i++)
@@ -425,7 +402,7 @@ int Snes9xConfig::save_config_file ()
         for (int j = 0; j < NUM_JOYPAD_LINKS; j++)
         {
             snprintf (key, PATH_MAX, "Joypad %d::%s", i, b_links[j].snes9x_name);
-            joypad[j].to_string (buffer);
+            joypad[j].to_string (buffer, false);
             cf.SetString (key, std::string (buffer));
         }
     }
@@ -433,15 +410,13 @@ int Snes9xConfig::save_config_file ()
     for (int i = NUM_JOYPAD_LINKS; b_links[i].snes9x_name; i++)
     {
         snprintf (key, PATH_MAX, "Shortcuts::%s", b_links[i].snes9x_name);
-        shortcut[i - NUM_JOYPAD_LINKS].to_string (buffer);
+        shortcut[i - NUM_JOYPAD_LINKS].to_string (buffer, false);
         cf.SetString (key, std::string (buffer));
     }
 
-    filename = get_config_file_name ();
     cf.SetNiceAlignment (true);
     cf.SetShowComments (true);
-    cf.SaveTo (filename);
-    free (filename);
+    cf.SaveTo (get_config_file_name ().c_str ());
 
     return 0;
 }
@@ -449,49 +424,44 @@ int Snes9xConfig::save_config_file ()
 int Snes9xConfig::load_config_file ()
 {
     struct stat file_info;
-    char        *pathname;
+    std::string path;
     ConfigFile  cf;
     char        key[PATH_MAX];
-    char        buffer[PATH_MAX];
 
     load_defaults ();
 
-    pathname = get_config_dir ();
+    path = get_config_dir ();
 
-    if (stat (pathname, &file_info))
+    if (stat (path.c_str (), &file_info))
     {
-        if (mkdir (pathname, 0755))
+        if (mkdir (path.c_str (), 0755))
         {
             fprintf (stderr,
                      _("Couldn't create config directory: %s\n"),
-                     pathname);
+                     path.c_str ());
             return -1;
         }
     }
     else
     {
-        chmod (pathname, 0755);
+        chmod (path.c_str (), 0755);
     }
 
-    free (pathname);
+    path = get_config_file_name ();
 
-    pathname = get_config_file_name ();
-
-    if (stat (pathname, &file_info))
+    if (stat (path.c_str (), &file_info))
     {
         save_config_file ();
     }
 
-    if (!cf.LoadFile (pathname))
+    if (!cf.LoadFile (path.c_str ()))
         return -1;
 
-    free (pathname);
-
     std::string none;
-#define inbool(key, var) var = cf.GetBool (key)
-#define inint(key, var) var = cf.GetInt (key)
-#define infloat(key, var) var = atof (cf.GetString (key, none).c_str())
-#define instr(key, var) strcpy (var, cf.GetString (key, none).c_str())
+#define inbool(key, var) { if (cf.Exists (key)) var = cf.GetBool (key); }
+#define inint(key, var) { if (cf.Exists(key)) var = cf.GetInt (key); }
+#define infloat(key, var) { if (cf.Exists(key)) var = atof (cf.GetString (key, none).c_str()); }
+#define instr(key, var) var = cf.GetString (key, none);
 
 #undef z
 #define z "Display::"
@@ -510,6 +480,7 @@ int Snes9xConfig::load_config_file ()
     inint  (z"NumberOfThreads", num_threads);
     inint  (z"HardwareAcceleration", hw_accel);
     inbool (z"BilinearFilter", Settings.BilinearFilter);
+    inint  (z"SplashBackground", splash_image);
 
 #undef z
 #define z "NTSC::"
@@ -530,12 +501,13 @@ int Snes9xConfig::load_config_file ()
 #undef z
 #define z "OpenGL::"
     inbool (z"VSync", sync_to_vblank);
-    inbool (z"ReduceInputLag", sync_every_frame);
+    inbool (z"glFinish", use_glfinish);
+    inbool (z"SyncControl", use_sync_control);
     inbool (z"UsePixelBufferObjects", use_pbos);
     inint  (z"PixelBufferObjectBitDepth", pbo_format);
     inbool (z"UseNonPowerOfTwoTextures", npot_textures);
     inbool (z"EnableCustomShaders", use_shaders);
-    instr  (z"ShaderFile", fragment_shader);
+    instr  (z"ShaderFile", shader_filename);
 #endif
 
 #undef z
@@ -548,9 +520,6 @@ int Snes9xConfig::load_config_file ()
     inbool (z"DynamicRateControl", Settings.DynamicRateControl);
     inint  (z"DynamicRateControlLimit", Settings.DynamicRateLimit);
     inbool (z"AutomaticInputRate", auto_input_rate);
-    inbool (z"16bit", Settings.SixteenBitSound);
-    inbool (z"Stereo", Settings.Stereo);
-    inbool (z"ReverseStereo", Settings.ReverseStereo);
     inint  (z"PlaybackRate", gui_config->sound_playback_rate);
 
 #undef z
@@ -570,9 +539,12 @@ int Snes9xConfig::load_config_file ()
     inint (z"MainHeight", window_height);
     inint (z"PreferencesWidth", preferences_width);
     inint (z"PreferencesHeight", preferences_height);
+    inint (z"ShaderParametersWidth", shader_parameters_width);
+    inint (z"ShaderParametersHeight", shader_parameters_height);
+    inint (z"CurrentDisplayTab", current_display_tab);
     inbool (z"UIVisible", ui_visible);
-    inbool (z"StatusBarVisible", statusbar_visible);
     inbool (z"Fullscreen", fullscreen);
+    inbool (z"EnableIcons", enable_icons);
 
 #undef z
 #define z "Netplay::"
@@ -599,6 +571,7 @@ int Snes9xConfig::load_config_file ()
 #define z "Emulation::"
     inbool (z"EmulateTransparency", Settings.Transparency);
     inbool (z"DisplayFrameRate", Settings.DisplayFrameRate);
+    inbool (z"DisplayPressedKeys", Settings.DisplayPressedKeys);
     inint (z"SpeedControlMethod", Settings.SkipFrames);
     inint (z"SaveSRAMEveryNSeconds", Settings.AutoSaveDelay);
     inbool (z"BlockInvalidVRAMAccess", Settings.BlockInvalidVRAMAccessMaster);
@@ -609,18 +582,19 @@ int Snes9xConfig::load_config_file ()
     inint  (z"SuperFXClockMultiplier", Settings.SuperFXClockMultiplier);
     inint  (z"SoundInterpolationMethod", Settings.InterpolationMethod);
 
-    bool RemoveSpriteLimit;
+    bool RemoveSpriteLimit = false;
     inbool (z"RemoveSpriteLimit", RemoveSpriteLimit);
-    bool OverclockCPU;
+    bool OverclockCPU = false;
     inbool (z"OverclockCPU", OverclockCPU);
+    inbool (z"EchoBufferHack", Settings.SeparateEchoBuffer);
 
 #undef z
 #define z "Input::"
 
     for (int i = 0; i < 2; i++)
     {
-        snprintf (buffer, PATH_MAX, z"ControllerPort%d", i);
-        std::string tmp = cf.GetString (buffer, "");
+        snprintf (key, PATH_MAX, z"ControllerPort%d", i);
+        std::string tmp = cf.GetString (key, "");
 
         if (tmp.find ("joypad") != std::string::npos)
             S9xSetController (i, CTL_JOYPAD, i, 0, 0, 0);
@@ -630,12 +604,15 @@ int Snes9xConfig::load_config_file ()
             S9xSetController (i, CTL_SUPERSCOPE, 0, 0, 0, 0);
         else if (tmp.find ("mouse") != std::string::npos)
             S9xSetController (i, CTL_MOUSE, i, 0, 0, 0);
+        else if (tmp.find ("none") != std::string::npos)
+            S9xSetController (i, CTL_NONE, 0, 0, 0, 0);
     }
 
-#ifdef USE_JOYSTICK
     inint (z"JoystickThreshold", joystick_threshold);
-#endif
+
 #undef z
+
+    std::string buffer;
 
     for (int i = 0; i < NUM_JOYPADS; i++)
     {
@@ -645,7 +622,7 @@ int Snes9xConfig::load_config_file ()
         {
             snprintf (key, PATH_MAX, "Joypad %d::%s", i, b_links[j].snes9x_name);
             instr (key, buffer);
-            joypad[j] = Binding (buffer);
+            joypad[j] = Binding (buffer.c_str ());
         }
     }
 
@@ -653,7 +630,7 @@ int Snes9xConfig::load_config_file ()
     {
         snprintf (key, PATH_MAX, "Shortcuts::%s", b_links[i].snes9x_name);
         instr (key, buffer);
-        shortcut[i - NUM_JOYPAD_LINKS] = Binding (buffer);
+        shortcut[i - NUM_JOYPAD_LINKS] = Binding (buffer.c_str ());
     }
 
     /* Validation */
@@ -675,6 +652,16 @@ int Snes9xConfig::load_config_file ()
         Settings.OneSlowClockCycle = 8;
         Settings.TwoClockCycles = 12;
     }
+
+#ifndef ALLOW_CPU_OVERCLOCK
+        Settings.OneClockCycle = 6;
+        Settings.OneSlowClockCycle = 8;
+        Settings.TwoClockCycles = 12;
+        Settings.MaxSpriteTilesPerLine = 34;
+        Settings.SeparateEchoBuffer = false;
+        Settings.InterpolationMethod = 2;
+        Settings.BlockInvalidVRAMAccessMaster = true;
+#endif
 
     if (default_esc_behavior != ESC_TOGGLE_MENUBAR)
         fullscreen = false;
@@ -701,70 +688,81 @@ int Snes9xConfig::load_config_file ()
 #endif
 
     if (Settings.SkipFrames == THROTTLE_SOUND_SYNC)
-        Settings.SoundSync = 1;
+        Settings.SoundSync = true;
     else
-        Settings.SoundSync = 0;
+        Settings.SoundSync = false;
 
     hires_effect = CLAMP (hires_effect, 0, 2);
     Settings.DynamicRateLimit = CLAMP (Settings.DynamicRateLimit, 1, 1000);
     Settings.SuperFXClockMultiplier = CLAMP (Settings.SuperFXClockMultiplier, 50, 400);
-    ntsc_scanline_intensity = MAX (ntsc_scanline_intensity, 4);
-    scanline_filter_intensity = MAX (scanline_filter_intensity, 3);
+    ntsc_scanline_intensity = MIN (ntsc_scanline_intensity, 4);
+    scanline_filter_intensity = MIN (scanline_filter_intensity, 3);
 
     return 0;
 }
 
-void Snes9xConfig::rebind_keys ()
+void Snes9xConfig::rebind_keys()
 {
     s9xcommand_t cmd;
-    char         buf[256];
+    std::string string;
 
-    S9xUnmapAllControls ();
+    S9xUnmapAllControls();
 
-    for (int joypad_i = 0; joypad_i < NUM_JOYPADS; joypad_i++ )
+    for (int joypad_i = 0; joypad_i < NUM_JOYPADS; joypad_i++)
     {
-        Binding *bin = (Binding *) &pad[joypad_i];
+        Binding *bin = (Binding *)&pad[joypad_i];
 
         for (int button_i = 0; button_i < NUM_JOYPAD_LINKS; button_i++)
         {
-            snprintf (buf,
-                      256,
-                      "Joypad%d %s",
-                      (joypad_i % 5) + 1,
-                      b_links[button_i].snes9x_name);
+            int dupe;
+            for (dupe = button_i + 1; dupe < NUM_JOYPAD_LINKS; dupe++)
+            {
+                if (bin[button_i].matches(bin[dupe]) && bin[button_i].hex() != 0)
+                    break;
+            }
+            if (dupe < NUM_JOYPAD_LINKS || bin[button_i].hex() == 0)
+                continue;
 
-            cmd = S9xGetPortCommandT (buf);
+            string = "Joypad" + std::to_string((joypad_i % 5) + 1) + " ";
+            string += b_links[button_i].snes9x_name;
 
-            S9xMapButton (bin[button_i].base_hex (), cmd, FALSE);
+            bool ismulti = false;
+            for (dupe = button_i - 1; dupe > 0; dupe--)
+            {
+                if (bin[button_i].matches(bin[dupe]))
+                {
+                    ismulti = true;
+                    string += ",Joypad" + std::to_string((joypad_i % 5) + 1) + " ";
+                    string += b_links[dupe].snes9x_name;
+                }
+            }
+
+            if (ismulti)
+                string = std::string("{") + string + "}";
+
+            cmd = S9xGetPortCommandT(string.c_str());
+
+            S9xMapButton(bin[button_i].base_hex(), cmd, false);
         }
     }
 
     for (int i = NUM_JOYPAD_LINKS; b_links[i].snes9x_name; i++)
     {
-        snprintf (buf, 256, "%s", b_links[i].snes9x_name);
-        cmd = S9xGetPortCommandT (buf);
-        S9xMapButton (shortcut[i - NUM_JOYPAD_LINKS].base_hex (),
-                      cmd,
-                      FALSE);
+        cmd = S9xGetPortCommandT(b_links[i].snes9x_name);
+        S9xMapButton(shortcut[i - NUM_JOYPAD_LINKS].base_hex(),
+                     cmd,
+                     false);
     }
 
-    cmd = S9xGetPortCommandT ("Pointer Mouse1+Superscope+Justifier1");
-    S9xMapPointer (BINDING_MOUSE_POINTER, cmd, TRUE);
+    cmd = S9xGetPortCommandT("Pointer Mouse1+Superscope+Justifier1");
+    S9xMapPointer(BINDING_MOUSE_POINTER, cmd, true);
 
-    cmd = S9xGetPortCommandT ("{Mouse1 L,Superscope Fire,Justifier1 Trigger}");
-    S9xMapButton (BINDING_MOUSE_BUTTON0, cmd, FALSE);
+    cmd = S9xGetPortCommandT("{Mouse1 L,Superscope Fire,Justifier1 Trigger}");
+    S9xMapButton(BINDING_MOUSE_BUTTON0, cmd, false);
 
-    cmd = S9xGetPortCommandT ("{Justifier1 AimOffscreen Trigger,Superscope AimOffscreen}");
-    S9xMapButton (BINDING_MOUSE_BUTTON1, cmd, FALSE);
+    cmd = S9xGetPortCommandT("{Justifier1 AimOffscreen Trigger,Superscope AimOffscreen}");
+    S9xMapButton(BINDING_MOUSE_BUTTON1, cmd, false);
 
-    cmd = S9xGetPortCommandT ("{Mouse1 R,Superscope Cursor,Justifier1 Start}");
-    S9xMapButton (BINDING_MOUSE_BUTTON2, cmd, FALSE);
+    cmd = S9xGetPortCommandT("{Mouse1 R,Superscope Cursor,Justifier1 Start}");
+    S9xMapButton(BINDING_MOUSE_BUTTON2, cmd, false);
 }
-
-void Snes9xConfig::reconfigure ()
-{
-    rebind_keys ();
-}
-
-
-

@@ -1,19 +1,25 @@
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
+
 #ifndef __GLSL_H
 #define __GLSL_H
 
-#include <vector>
-#include <deque>
-#include <limits.h>
 #include "../../conffile.h"
 #include "shader_platform.h"
+#include <deque>
+#include <limits.h>
+#include <vector>
 
 static const unsigned int glsl_max_passes = 20;
 
-typedef void (* GLSLViewportCallback) (int source_width,   int source_height,
-                                       int viewport_x,     int viewport_y,
-                                       int viewport_width, int viewport_height,
-                                       int *out_dst_x,     int *out_dst_y,
-                                       int *out_dst_width, int *out_dst_height);
+typedef void (*GLSLViewportCallback)(int source_width, int source_height,
+                                     int viewport_x, int viewport_y,
+                                     int viewport_width, int viewport_height,
+                                     int *out_dst_x, int *out_dst_y,
+                                     int *out_dst_width, int *out_dst_height);
 
 enum GLSLScaleType
 {
@@ -34,7 +40,6 @@ typedef struct
     GLint InputSize;
     GLint TextureSize;
     GLint TexCoord;
-
 } GLSLUniformMetrics;
 
 typedef struct
@@ -62,8 +67,34 @@ typedef struct
     GLSLUniformMetrics Pass[glsl_max_passes];
     GLSLUniformMetrics PassPrev[glsl_max_passes];
     GLint Lut[9];
-
 } GLSLUniforms;
+
+// Size must always follow texture type
+enum
+{
+    SL_INVALID = 0,
+    SL_PASSTEXTURE = 1,
+    SL_PASSSIZE = 2,
+    SL_PREVIOUSFRAMETEXTURE = 3,
+    SL_PREVIOUSFRAMESIZE = 4,
+    SL_LUTTEXTURE = 5,
+    SL_LUTSIZE = 6,
+    SL_MVP = 7,
+    SL_FRAMECOUNT = 8,
+    SL_PARAM = 9,
+    SL_FEEDBACK = 10
+};
+
+typedef struct
+{
+    // Source
+    int type;
+    int num;
+
+    // Output
+    GLint location; // -1 Indicates UBO
+    GLint offset;
+} SlangUniform;
 
 typedef struct
 {
@@ -87,8 +118,17 @@ typedef struct
     GLuint width;
     GLuint height;
     GLuint filter;
+    bool mipmap_input;
 
     GLSLUniforms unif;
+#ifdef USE_SLANG
+    GLuint format;
+    std::vector<SlangUniform> uniforms;
+    std::vector<uint8_t> ubo_buffer;
+    GLuint ubo;
+    bool uses_feedback = false;
+    GLuint feedback_texture;
+#endif
 } GLSLPass;
 
 typedef struct
@@ -99,6 +139,8 @@ typedef struct
     GLuint texture;
     GLuint wrap_mode;
     bool mipmap;
+    int width;
+    int height;
 } GLSLLut;
 
 typedef struct
@@ -114,21 +156,21 @@ typedef struct
 
 typedef struct
 {
-    bool load_shader (char *filename);
-    bool load_shader_file (char *filename);
-    void render (GLuint &orig, int width, int height, int viewport_x, int viewport_y, int viewport_width, int viewport_height, GLSLViewportCallback vpcallback);
-    void set_shader_vars (unsigned int pass);
-    void clear_shader_vars (void);
-    void strip_parameter_pragmas(char *buffer);
-    GLuint compile_shader (char *program,
-                           const char *aliases,
-                           const char *defines,
-                           GLuint type,
-                           GLuint *out);
-    void save (const char *filename);
-
-    void destroy (void);
-    void register_uniforms (void);
+    bool load_shader(char *filename);
+    bool load_shader_preset_file(char *filename);
+    void render(GLuint &orig, int width, int height, int viewport_x,
+                int viewport_y, int viewport_width, int viewport_height,
+                GLSLViewportCallback vpcallback);
+    void set_shader_vars(unsigned int pass, bool inverted);
+    void clear_shader_vars();
+    void read_shader_file_with_includes(std::string filename,
+                                        std::vector<std::string> &lines,
+                                        int p);
+    GLuint compile_shader(std::vector<std::string> &lines, const char *aliases,
+                          const char *defines, GLuint type, GLuint *out);
+    void save(const char *filename);
+    void destroy();
+    void register_uniforms();
 
     ConfigFile conf;
 
@@ -141,9 +183,18 @@ typedef struct
 
     unsigned int frame_count;
     GLuint vbo;
-    GLuint prev_fbo;
-    GLfloat *fa;
 
+    bool using_slang;
+#ifdef USE_SLANG
+    std::string slang_get_stage(std::vector<std::string> &lines,
+                                std::string name);
+    GLint slang_compile(std::vector<std::string> &lines, std::string stage);
+    void slang_introspect();
+    void slang_set_shader_vars(int p, bool inverted);
+    void slang_clear_shader_vars();
+
+    bool using_feedback;
+#endif
 } GLSLShader;
 
 #endif

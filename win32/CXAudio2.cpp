@@ -1,194 +1,8 @@
-/***********************************************************************************
-  Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
-
-  (c) Copyright 1996 - 2002  Gary Henderson (gary.henderson@ntlworld.com),
-                             Jerremy Koot (jkoot@snes9x.com)
-
-  (c) Copyright 2002 - 2004  Matthew Kendora
-
-  (c) Copyright 2002 - 2005  Peter Bortas (peter@bortas.org)
-
-  (c) Copyright 2004 - 2005  Joel Yliluoma (http://iki.fi/bisqwit/)
-
-  (c) Copyright 2001 - 2006  John Weidman (jweidman@slip.net)
-
-  (c) Copyright 2002 - 2006  funkyass (funkyass@spam.shaw.ca),
-                             Kris Bleakley (codeviolation@hotmail.com)
-
-  (c) Copyright 2002 - 2010  Brad Jorsch (anomie@users.sourceforge.net),
-                             Nach (n-a-c-h@users.sourceforge.net),
-
-  (c) Copyright 2002 - 2011  zones (kasumitokoduck@yahoo.com)
-
-  (c) Copyright 2006 - 2007  nitsuja
-
-  (c) Copyright 2009 - 2018  BearOso,
-                             OV2
-
-  (c) Copyright 2017         qwertymodo
-
-  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
-                             Daniel De Matteis
-                             (Under no circumstances will commercial rights be given)
-
-
-  BS-X C emulator code
-  (c) Copyright 2005 - 2006  Dreamer Nom,
-                             zones
-
-  C4 x86 assembler and some C emulation code
-  (c) Copyright 2000 - 2003  _Demo_ (_demo_@zsnes.com),
-                             Nach,
-                             zsKnight (zsknight@zsnes.com)
-
-  C4 C++ code
-  (c) Copyright 2003 - 2006  Brad Jorsch,
-                             Nach
-
-  DSP-1 emulator code
-  (c) Copyright 1998 - 2006  _Demo_,
-                             Andreas Naive (andreasnaive@gmail.com),
-                             Gary Henderson,
-                             Ivar (ivar@snes9x.com),
-                             John Weidman,
-                             Kris Bleakley,
-                             Matthew Kendora,
-                             Nach,
-                             neviksti (neviksti@hotmail.com)
-
-  DSP-2 emulator code
-  (c) Copyright 2003         John Weidman,
-                             Kris Bleakley,
-                             Lord Nightmare (lord_nightmare@users.sourceforge.net),
-                             Matthew Kendora,
-                             neviksti
-
-  DSP-3 emulator code
-  (c) Copyright 2003 - 2006  John Weidman,
-                             Kris Bleakley,
-                             Lancer,
-                             z80 gaiden
-
-  DSP-4 emulator code
-  (c) Copyright 2004 - 2006  Dreamer Nom,
-                             John Weidman,
-                             Kris Bleakley,
-                             Nach,
-                             z80 gaiden
-
-  OBC1 emulator code
-  (c) Copyright 2001 - 2004  zsKnight,
-                             pagefault (pagefault@zsnes.com),
-                             Kris Bleakley
-                             Ported from x86 assembler to C by sanmaiwashi
-
-  SPC7110 and RTC C++ emulator code used in 1.39-1.51
-  (c) Copyright 2002         Matthew Kendora with research by
-                             zsKnight,
-                             John Weidman,
-                             Dark Force
-
-  SPC7110 and RTC C++ emulator code used in 1.52+
-  (c) Copyright 2009         byuu,
-                             neviksti
-
-  S-DD1 C emulator code
-  (c) Copyright 2003         Brad Jorsch with research by
-                             Andreas Naive,
-                             John Weidman
-
-  S-RTC C emulator code
-  (c) Copyright 2001 - 2006  byuu,
-                             John Weidman
-
-  ST010 C++ emulator code
-  (c) Copyright 2003         Feather,
-                             John Weidman,
-                             Kris Bleakley,
-                             Matthew Kendora
-
-  Super FX x86 assembler emulator code
-  (c) Copyright 1998 - 2003  _Demo_,
-                             pagefault,
-                             zsKnight
-
-  Super FX C emulator code
-  (c) Copyright 1997 - 1999  Ivar,
-                             Gary Henderson,
-                             John Weidman
-
-  Sound emulator code used in 1.5-1.51
-  (c) Copyright 1998 - 2003  Brad Martin
-  (c) Copyright 1998 - 2006  Charles Bilyue'
-
-  Sound emulator code used in 1.52+
-  (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
-
-  S-SMP emulator code used in 1.54+
-  (c) Copyright 2016         byuu
-
-  SH assembler code partly based on x86 assembler code
-  (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
-
-  2xSaI filter
-  (c) Copyright 1999 - 2001  Derek Liauw Kie Fa
-
-  HQ2x, HQ3x, HQ4x filters
-  (c) Copyright 2003         Maxim Stepin (maxim@hiend3d.com)
-
-  NTSC filter
-  (c) Copyright 2006 - 2007  Shay Green
-
-  GTK+ GUI code
-  (c) Copyright 2004 - 2018  BearOso
-
-  Win32 GUI code
-  (c) Copyright 2003 - 2006  blip,
-                             funkyass,
-                             Matthew Kendora,
-                             Nach,
-                             nitsuja
-  (c) Copyright 2009 - 2018  OV2
-
-  Mac OS GUI code
-  (c) Copyright 1998 - 2001  John Stiles
-  (c) Copyright 2001 - 2011  zones
-
-  Libretro port
-  (c) Copyright 2011 - 2017  Hans-Kristian Arntzen,
-                             Daniel De Matteis
-                             (Under no circumstances will commercial rights be given)
-
-
-  Specific ports contains the works of other authors. See headers in
-  individual files.
-
-
-  Snes9x homepage: http://www.snes9x.com/
-
-  Permission to use, copy, modify and/or distribute Snes9x in both binary
-  and source form, for non-commercial purposes, is hereby granted without
-  fee, providing that this license information and copyright notice appear
-  with all copies and any derived work.
-
-  This software is provided 'as-is', without any express or implied
-  warranty. In no event shall the authors be held liable for any damages
-  arising from the use of this software or it's derivatives.
-
-  Snes9x is freeware for PERSONAL USE only. Commercial users should
-  seek permission of the copyright holders first. Commercial use includes,
-  but is not limited to, charging money for Snes9x or software derived from
-  Snes9x, including Snes9x or derivatives in commercial game bundles, and/or
-  using Snes9x as a promotion for your commercial product.
-
-  The copyright holders request that bug fixes and improvements to the code
-  should be forwarded to them so everyone can benefit from the modifications
-  in future versions.
-
-  Super NES and Super Nintendo Entertainment System are trademarks of
-  Nintendo Co., Limited and its subsidiary companies.
- ***********************************************************************************/
-
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
 
 #include "CXAudio2.h"
 #include "../snes9x.h"
@@ -197,6 +11,7 @@
 #include <process.h>
 #include "dxerr.h"
 #include "commctrl.h"
+#include <assert.h>
 
 /* CXAudio2
 	Implements audio output through XAudio2.
@@ -311,23 +126,28 @@ returns true if successful, false otherwise
 bool CXAudio2::InitVoices(void)
 {
 	HRESULT hr;
-	if ( FAILED(hr = pXAudio2->CreateMasteringVoice( &pMasterVoice, (Settings.Stereo?2:1),
-		Settings.SoundPlaybackRate, 0, 0 , NULL ) ) ) {
+    // subtract -1, we added "Default" as first index
+    int device_index = FindDeviceIndex(GUI.AudioDevice) - 1;
+    if (device_index < 0)
+        device_index = 0;
+
+	if ( FAILED(hr = pXAudio2->CreateMasteringVoice( &pMasterVoice, 2,
+		Settings.SoundPlaybackRate, 0, device_index, NULL ) ) ) {
 			DXTRACE_ERR_MSGBOX(TEXT("Unable to create mastering voice."),hr);
 			return false;
 	}
 
 	WAVEFORMATEX wfx;
 	wfx.wFormatTag = WAVE_FORMAT_PCM;
-    wfx.nChannels = Settings.Stereo ? 2 : 1;
+    wfx.nChannels = 2;
     wfx.nSamplesPerSec = Settings.SoundPlaybackRate;
-    wfx.nBlockAlign = (Settings.SixteenBitSound ? 2 : 1) * (Settings.Stereo ? 2 : 1);
-    wfx.wBitsPerSample = Settings.SixteenBitSound ? 16 : 8;
+    wfx.nBlockAlign = 2 * 2;
+    wfx.wBitsPerSample = 16;
     wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * wfx.nBlockAlign;
     wfx.cbSize = 0;
 
 	if( FAILED(hr = pXAudio2->CreateSourceVoice(&pSourceVoice, (WAVEFORMATEX*)&wfx,
-		XAUDIO2_VOICE_NOSRC , XAUDIO2_DEFAULT_FREQ_RATIO, this, NULL, NULL ) ) ) {
+		XAUDIO2_VOICE_NOSRC, XAUDIO2_DEFAULT_FREQ_RATIO, this, NULL, NULL ) ) ) {
 			DXTRACE_ERR_MSGBOX(TEXT("Unable to create source voice."),hr);
 			return false;
 	}
@@ -412,14 +232,15 @@ bool CXAudio2::SetupSound()
 	UINT32 blockTime = GUI.SoundBufferSize / blockCount;
 
 	singleBufferSamples = (Settings.SoundPlaybackRate * blockTime) / 1000;
-    singleBufferSamples *= (Settings.Stereo ? 2 : 1);
-	singleBufferBytes = singleBufferSamples * (Settings.SixteenBitSound ? 2 : 1);
+    singleBufferSamples *= 2;
+	singleBufferBytes = singleBufferSamples * 2;
 	sum_bufferSize = singleBufferBytes * blockCount;
 
     if (InitVoices())
     {
 		soundBuffer = new uint8[sum_bufferSize];
 		writeOffset = 0;
+		partialOffset = 0;
     }
 	else {
 		DeInitVoices();
@@ -448,6 +269,11 @@ void CXAudio2::StopPlayback()
 	pSourceVoice->Stop(0);
 }
 
+int CXAudio2::GetAvailableBytes()
+{
+    return ((blockCount - bufferCount) * singleBufferBytes) - partialOffset;
+}
+
 /*  CXAudio2::ProcessSound
 The mixing function called by the sound core when new samples are available.
 SoundBuffer is divided into blockCount blocks. If there are enough available samples and a free block,
@@ -456,24 +282,22 @@ the OnBufferComplete callback.
 */
 void CXAudio2::ProcessSound()
 {
-	int freeBytes = (blockCount - bufferCount) * singleBufferBytes;
+	int freeBytes = GetAvailableBytes();
 
 	if (Settings.DynamicRateControl)
 	{
 		S9xUpdateDynamicRate(freeBytes, sum_bufferSize);
 	}
 
-	S9xFinalizeSamples();
-
 	UINT32 availableSamples;
 
 	availableSamples = S9xGetSampleCount();
 
-	if (Settings.DynamicRateControl)
+	if (Settings.DynamicRateControl && !Settings.SoundSync)
 	{
 		// Using rate control, we should always keep the emulator's sound buffers empty to
 		// maintain an accurate measurement.
-		if (availableSamples > (freeBytes >> (Settings.SixteenBitSound ? 1 : 0)))
+		if (availableSamples > (freeBytes >> 1))
 		{
 			S9xClearSamples();
 			return;
@@ -483,14 +307,110 @@ void CXAudio2::ProcessSound()
 	if(!initDone)
 		return;
 
-	BYTE * curBuffer;
+    if(Settings.SoundSync && !Settings.TurboMode && !Settings.Mute)
+    {
+        // no sound sync when speed is not set to 100%
+        while((freeBytes >> 1) < availableSamples)
+        {
+            ResetEvent(GUI.SoundSyncEvent);
+            if(!GUI.AllowSoundSync || WaitForSingleObject(GUI.SoundSyncEvent, 1000) != WAIT_OBJECT_0)
+            {
+                S9xClearSamples();
+                return;
+            }
+            freeBytes = GetAvailableBytes();
+        }
+    }
 
-	while(availableSamples > singleBufferSamples && bufferCount < blockCount) {
-		curBuffer = soundBuffer + writeOffset;
-		S9xMixSamples(curBuffer,singleBufferSamples);
-		PushBuffer(singleBufferBytes,curBuffer,NULL);
-		writeOffset+=singleBufferBytes;
-		writeOffset%=sum_bufferSize;
-        availableSamples -= singleBufferSamples;
+	if (partialOffset != 0)	{
+		assert(partialOffset < singleBufferBytes);
+		assert(bufferCount < blockCount);
+		BYTE *offsetBuffer = soundBuffer + writeOffset + partialOffset;
+		UINT32 samplesleftinblock = (singleBufferBytes - partialOffset) >> 1;
+
+		if (availableSamples < samplesleftinblock)
+		{
+			S9xMixSamples(offsetBuffer, availableSamples);
+            partialOffset += availableSamples << 1;
+			assert(partialOffset < singleBufferBytes);
+			availableSamples = 0;
+		}
+		else
+		{
+			S9xMixSamples(offsetBuffer, samplesleftinblock);
+			partialOffset = 0;
+			availableSamples -= samplesleftinblock;
+			PushBuffer(singleBufferBytes, soundBuffer + writeOffset, NULL);
+			writeOffset += singleBufferBytes;
+			writeOffset %= sum_bufferSize;
+		}
 	}
+
+	while (availableSamples >= singleBufferSamples && bufferCount < blockCount) {
+		BYTE *curBuffer = soundBuffer + writeOffset;
+		S9xMixSamples(curBuffer, singleBufferSamples);
+		PushBuffer(singleBufferBytes, curBuffer, NULL);
+		writeOffset += singleBufferBytes;
+		writeOffset %= sum_bufferSize;
+		availableSamples -= singleBufferSamples;
+	}
+
+	// need to check this is less than a single buffer, otherwise we have a race condition with bufferCount
+	if (availableSamples > 0 && availableSamples < singleBufferSamples && bufferCount < blockCount) {
+		S9xMixSamples(soundBuffer + writeOffset, availableSamples);
+		partialOffset = availableSamples << 1;
+		assert(partialOffset < singleBufferBytes);
+	}
+}
+
+/*  CXAudio2::GetDeviceList
+get a list of the available output devices
+-----
+returns a vector of display names
+*/
+std::vector<std::wstring> CXAudio2::GetDeviceList()
+{
+    std::vector<std::wstring> device_list;
+
+    if (pXAudio2)
+    {
+        UINT32 num_devices;
+        pXAudio2->GetDeviceCount(&num_devices);
+
+        device_list.push_back(_T("Default"));
+
+        for (unsigned int i = 0; i < num_devices; i++)
+        {
+            XAUDIO2_DEVICE_DETAILS device_details;
+            if (SUCCEEDED(pXAudio2->GetDeviceDetails(i, &device_details)))
+            {
+                device_list.push_back(device_details.DisplayName);
+            }
+        }
+    }
+
+    return device_list;
+}
+
+/*  CXAudio2::FindDeviceIndex
+find a device name in the list of possible output devices
+-----
+returns the index in the device list returned by GetDeviceList
+*/
+int CXAudio2::FindDeviceIndex(TCHAR *audio_device)
+{
+    std::vector<std::wstring> device_list = GetDeviceList();
+
+    int index = 0;
+
+    for (int i = 0; i < device_list.size(); i++)
+    {
+        if (_tcsstr(device_list[i].c_str(), audio_device) != NULL)
+        {
+            index = i;
+            break;
+        }
+    }
+
+    return index;
 }
