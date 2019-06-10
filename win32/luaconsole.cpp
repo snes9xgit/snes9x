@@ -273,7 +273,7 @@ void PrintToWindowConsole(int hDlgAsInt, const char* str)
 	}
 }
 
-extern int Show_Genesis_Screen(HWND hWnd);
+//extern int Show_Genesis_Screen(HWND hWnd);
 void OnStart(int hDlgAsInt)
 {
 	HWND hDlg = (HWND)hDlgAsInt;
