@@ -45,64 +45,7 @@ extern "C" int _twremove(const char *filename ) {
 }
 
 extern "C" int _twopen(const char *filename, int oflag, int pmode) {
-	return _wopen(Utf8ToWide(filename), oflag, pmode);
-}
-
-extern "C" int _twaccess(const char *_Filename, int _AccessMode) {
-	return _waccess(Utf8ToWide(_Filename), _AccessMode);
-}
-
-extern "C" int _twrename(const char *_OldFilename, const char *_NewFilename) {
-	return _wrename(Utf8ToWide(_OldFilename), Utf8ToWide(_NewFilename));
-}
-
-extern "C" int _twunlink(const char *_Filename) {
-	return _wunlink(Utf8ToWide(_Filename));
-}
-
-extern "C" int _twchdir(const char *_Path) {
-	return _wchdir(Utf8ToWide(_Path));
-}
-
-extern "C" int _twmkdir(const char *_Path) {
-	return _wmkdir(Utf8ToWide(_Path));
-}
-
-extern "C" int _twrmdir(const char *_Path) {
-	return _wrmdir(Utf8ToWide(_Path));
-}
-
-extern "C" void _twsplitpath(const char *_FullPath, char *_Drive, char *_Dir, char *_Filename, char *_Ext) {
-	wchar_t _wDrive[_MAX_PATH];
-	wchar_t _wDir[_MAX_PATH];
-	wchar_t _wFilename[_MAX_PATH];
-	wchar_t _wExt[_MAX_PATH];
-	_wsplitpath(Utf8ToWide(_FullPath), _wDrive, _wDir, _wFilename, _wExt);
-	strcpy(_Drive, WideToUtf8(_wDrive));
-	strcpy(_Dir, WideToUtf8(_wDir));
-	strcpy(_Filename, WideToUtf8(_wFilename));
-	strcpy(_Ext, WideToUtf8(_wExt));
-}
-
-extern "C" void _twmakepath(char *_Path, const char *_Drive, const char *_Dir, const char *_Filename, const char *_Ext) {
-	wchar_t wResultPath[_MAX_PATH];
-	wcscpy(wResultPath, L"");
-	_wmakepath(wResultPath, Utf8ToWide(_Drive), Utf8ToWide(_Dir), Utf8ToWide(_Filename), Utf8ToWide(_Ext));
-	strcpy(_Path, WideToUtf8(wResultPath));
-}
-
-extern "C" char *_twcsrchr(const char *_Str, int _Ch) {
-	wchar_t *wStr = Utf8ToWide(_Str);
-	wchar_t *wResult = wcsrchr(wStr, (wchar_t) _Ch);
-	if (wResult != NULL)
-	{
-		wResult[0] = L'\0';
-		return (char*) &_Str[strlen(WideToUtf8(wResult))];
-	}
-	else
-	{
-		return NULL;
-	}
+  return _wopen(Utf8ToWide(filename), oflag, pmode);
 }
 
 extern "C" char *_twfullpath(char* dst, const char* src, int len) {
