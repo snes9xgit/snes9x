@@ -401,7 +401,7 @@ libjma = static_library('jma',
                         cpp_args: [args, '-fexceptions'],
                         include_directories: include_directories(includes))
 
-sourcify = executable('sourcify', 'src/sourcify.c')
+sourcify = executable('sourcify', 'src/sourcify.c', native: true)
 gtk_snes9x_ui_cpp = custom_target('sourcify', 
                                   input: 'src/snes9x.ui', 
                                   output: 'gtk_snes9x_ui.cpp',
