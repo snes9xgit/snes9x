@@ -75,6 +75,12 @@ Binding::Binding (const Binding& binding)
     this->value = binding.value;
 }
 
+Binding &Binding::operator=(const Binding &binding)
+{
+    this->value = binding.value;
+    return *this;
+}
+
 bool
 Binding::matches (Binding &binding)
 {

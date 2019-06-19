@@ -37,6 +37,7 @@ class Binding
         Binding (unsigned int key, bool ctrl, bool shift, bool alt);
         Binding (unsigned int device, unsigned int button, unsigned int threshold);
         Binding (const Binding &binding);
+        Binding &operator=(const Binding &binding);
         Binding (GdkEventKey *event);
         Binding (unsigned int);
         Binding ();
