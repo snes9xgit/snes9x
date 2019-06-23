@@ -42,6 +42,7 @@ std::string GLSLShader::slang_get_stage(std::vector<std::string> &lines,
     return output.str();
 }
 
+#if 0
 static void printuniforms(std::vector<SlangUniform> &unif)
 {
     for (int i = 0; i < (int)unif.size(); i++)
@@ -80,6 +81,7 @@ static void printuniforms(std::vector<SlangUniform> &unif)
         }
     }
 }
+#endif // #if 0
 
 namespace glslang {
 #ifndef _WIN32
