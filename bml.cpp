@@ -124,7 +124,7 @@ static void bml_parse_data(bml_node &node, std::string &line)
         len = 1;
         while (line[len] && !islf(line[len]))
             len++;
-        node.data = line.substr(1, len - 1);
+        node.data = trim(line.substr(1, len - 1));
         line.erase(0, len);
     }
 
