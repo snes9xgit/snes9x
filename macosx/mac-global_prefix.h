@@ -18,12 +18,12 @@
  ***********************************************************************************/
 
 
-#undef	READ_WORD(s)
-#undef	READ_3WORD(s)
-#undef	READ_DWORD(s)
-#undef	WRITE_WORD(s, d)
-#undef	WRITE_3WORD(s, d)
-#undef	WRITE_DWORD(s, d)
+#undef	READ_WORD
+#undef	READ_3WORD
+#undef	READ_DWORD
+#undef	WRITE_WORD
+#undef	WRITE_3WORD
+#undef	WRITE_DWORD
 
 #define ZLIB
 #define UNZIP_SUPPORT
