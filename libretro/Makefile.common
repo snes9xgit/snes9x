@@ -1,4 +1,7 @@
-LIBRETRO_COMM_DIR = $(CORE_DIR)/libretro/libretro-common
+ifeq ($(LIBRETRO_COMM_DIR),)
+	LIBRETRO_COMM_DIR = $(CORE_DIR)/libretro/libretro-common
+endif
+
 INCFLAGS   = -I$(CORE_DIR)/libretro -I$(CORE_DIR) -I$(CORE_DIR)/apu/ -I$(CORE_DIR)/apu/bapu
 
 ifneq (,$(findstring msvc2003,$(platform)))
