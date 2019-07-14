@@ -125,7 +125,6 @@ extern int				macFrameSkip;
 extern int32			skipFrames;
 extern int64			lastFrame;
 extern unsigned long	spcFileCount, pngFileCount;
-extern SInt32			systemVersion;
 extern bool8			finished, cartOpen,
 						autofire, hidExist, directDisplay;
 extern bool8			fullscreen, autoRes,
@@ -138,7 +137,7 @@ extern uint32			macSoundBuffer_ms, macSoundInterval_ms;
 extern bool8			macSoundLagEnable;
 extern uint16			aueffect;
 extern uint8			saveInROMFolder;
-extern CFStringRef		saveFolderPath;
+extern NSString			*saveFolderPath;
 extern int				macCurvatureWarp, macAspectRatio;
 extern int				macFastForwardRate, macFrameAdvanceRate;
 extern int				inactiveMode;
@@ -159,18 +158,15 @@ extern CFStringRef		multiCartPath[2];
 extern IconRef			macIconRef[118];
 #endif
 
-void InitGameWindow (void);
-void DeinitGameWindow (void);
-void UpdateGameWindow (void);
-void AddRecentItem (FSRef *);
-void BuildRecentMenu (void);
+void AddRecentItem (NSURL *);
 void AdjustMenus (void);
 void UpdateMenuCommandStatus (Boolean);
 void ApplyNSRTHeaderControllers (void);
-void QuitWithFatalError (OSStatus, const char *);
+void QuitWithFatalError (NSString *);
 void ChangeInputDevice (void);
 void GetGameScreenPointer (int16 *, int16 *, bool);
 void PostQueueToSubEventLoop (void);
 int PromptFreezeDefrost (Boolean);
+uint64 GetMicroseconds();
 
 #endif

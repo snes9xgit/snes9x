@@ -175,56 +175,56 @@ void S9xSetupDefaultKeymap (void)
 
 bool S9xPollButton (uint32 id, bool *pressed)
 {
-	#define kmControlKey	0x3B
-
-	KeyMap	keys;
-
-	GetKeys(keys);
-
-	*pressed = false;
-
-	if (id & k_MO)	// mouse
-	{
-		switch (id & 0xFF)
-		{
-			case 0:	*pressed = ISpKeyIsPressed(kISpMouseL);														break;
-			case 1: *pressed = ISpKeyIsPressed(kISpMouseR);
-		}
-	}
-	else
-	if (id & k_SS)	// superscope
-	{
-		switch (id & 0xFF)
-		{
-			case 0:	*pressed = ISpKeyIsPressed(kISpOffScreen) | KeyIsPressed(keys, keyCode[kKeyOffScreen]);		break;
-			case 2:	*pressed = ISpKeyIsPressed(kISpScopeC)    | KeyIsPressed(keys, keyCode[kKeyScopeCursor]);	break;
-			case 3:	*pressed = ISpKeyIsPressed(kISpScopeT)    | KeyIsPressed(keys, keyCode[kKeyScopeTurbo]);	break;
-			case 4:	*pressed = ISpKeyIsPressed(kISpScopeP)    | KeyIsPressed(keys, keyCode[kKeyScopePause]);	break;
-			case 1:	*pressed = ISpKeyIsPressed(kISpMouseL);
-		}
-	}
-	else
-	if (id & k_LG)	// justifier
-	{
-		if (id & k_C1)
-		{
-			switch (id & 0xFF)
-			{
-				case 0: *pressed = ISpKeyIsPressed(kISpOffScreen) | KeyIsPressed(keys, keyCode[kKeyOffScreen]);	break;
-				case 1:	*pressed = ISpKeyIsPressed(kISpMouseL);													break;
-				case 2: *pressed = ISpKeyIsPressed(kISpMouseR);
-			}
-		}
-		else
-		{
-			switch (id & 0xFF)
-			{
-				case 0: *pressed = ISpKeyIsPressed(kISp2PStart)   | KeyIsPressed(keys, keyCode[k2PStart]);		break;
-				case 1:	*pressed = ISpKeyIsPressed(kISp2PB)       | KeyIsPressed(keys, keyCode[k2PB]);			break;
-				case 2: *pressed = ISpKeyIsPressed(kISp2PA)       | KeyIsPressed(keys, keyCode[k2PA]);
-			}
-		}
-	}
+//    #define kmControlKey    0x3B
+//
+//    KeyMap    keys;
+//
+//    GetKeys(keys);
+//
+//    *pressed = false;
+//
+//    if (id & k_MO)    // mouse
+//    {
+//        switch (id & 0xFF)
+//        {
+//            case 0:    *pressed = ISpKeyIsPressed(kISpMouseL);                                                        break;
+//            case 1: *pressed = ISpKeyIsPressed(kISpMouseR);
+//        }
+//    }
+//    else
+//    if (id & k_SS)    // superscope
+//    {
+//        switch (id & 0xFF)
+//        {
+//            case 0:    *pressed = ISpKeyIsPressed(kISpOffScreen) | KeyIsPressed(keys, keyCode[kKeyOffScreen]);        break;
+//            case 2:    *pressed = ISpKeyIsPressed(kISpScopeC)    | KeyIsPressed(keys, keyCode[kKeyScopeCursor]);    break;
+//            case 3:    *pressed = ISpKeyIsPressed(kISpScopeT)    | KeyIsPressed(keys, keyCode[kKeyScopeTurbo]);    break;
+//            case 4:    *pressed = ISpKeyIsPressed(kISpScopeP)    | KeyIsPressed(keys, keyCode[kKeyScopePause]);    break;
+//            case 1:    *pressed = ISpKeyIsPressed(kISpMouseL);
+//        }
+//    }
+//    else
+//    if (id & k_LG)    // justifier
+//    {
+//        if (id & k_C1)
+//        {
+//            switch (id & 0xFF)
+//            {
+//                case 0: *pressed = ISpKeyIsPressed(kISpOffScreen) | KeyIsPressed(keys, keyCode[kKeyOffScreen]);    break;
+//                case 1:    *pressed = ISpKeyIsPressed(kISpMouseL);                                                    break;
+//                case 2: *pressed = ISpKeyIsPressed(kISpMouseR);
+//            }
+//        }
+//        else
+//        {
+//            switch (id & 0xFF)
+//            {
+//                case 0: *pressed = ISpKeyIsPressed(kISp2PStart)   | KeyIsPressed(keys, keyCode[k2PStart]);        break;
+//                case 1:    *pressed = ISpKeyIsPressed(kISp2PB)       | KeyIsPressed(keys, keyCode[k2PB]);            break;
+//                case 2: *pressed = ISpKeyIsPressed(kISp2PA)       | KeyIsPressed(keys, keyCode[k2PA]);
+//            }
+//        }
+//    }
 
 	return (true);
 }

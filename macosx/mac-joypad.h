@@ -158,7 +158,7 @@ enum
 
 void SetUpHID (void);
 void ReleaseHID (void);
-void ConfigureHID (void);
+//void ConfigureHID (void);
 void ClearPadSetting (void);
 void SaveControllerSettings (void);
 void LoadControllerSettings (void);

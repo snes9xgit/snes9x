@@ -740,7 +740,7 @@ static bool8 NPClientBeginOpenROMImage (WindowRef window)
 	replaceAt = CFStringGetIntValue(numRef);
 	CFStringReplace(mesRef, CFRangeMake(replaceAt - 1, 1), romRef);
 
-	r = NavBeginOpenROMImageSheet(window, mesRef);
+	// r = NavBeginOpenROMImageSheet(window, mesRef);
 
 	CFRelease(mesRef);
 	CFRelease(baseRef);

@@ -25,8 +25,8 @@ enum
 {
 	kS9xMacAlertFolderNotFound = 1,
 	kS9xMacAlertFolderNotFoundHint,
-	kS9xMacAlertFolderFailToCreate,
-	kS9xMacAlertFolderFailToCreateHint,
+	kS9xMacAlertFolderNotWritable,
+	kS9xMacAlertFolderNotWritableHint,
 	kS9xMacAlertkBadRom,
 	kS9xMacAlertkBadRomHint,
 	kS9xMacAlertCFCantAddEntry,

@@ -308,101 +308,101 @@ static OSStatus KeyLayoutEventHandler (EventHandlerCallRef, EventRef, void *);
 
 void ConfigureKeyboard (void)
 {
-	OSStatus	err;
-	IBNibRef	nibRef;
-
-	err = CreateNibReference(kMacS9XCFString, &nibRef);
-	if (err == noErr)
-	{
-		WindowRef	tWindowRef;
-
-		err = CreateWindowFromNib(nibRef, CFSTR("Keyboard"), &tWindowRef);
-		if (err == noErr)
-		{
-			EventHandlerRef	wref, iref1, iref2;
-			EventHandlerUPP	wUPP, iUPP;
-			EventTypeSpec	wEvents[] = { { kEventClassWindow,   kEventWindowClose         },
-										  { kEventClassCommand,  kEventCommandProcess      },
-										  { kEventClassCommand,  kEventCommandUpdateStatus } },
-							cEvents[] = { { kEventClassHIObject, kEventHIObjectConstruct   },
-										  { kEventClassHIObject, kEventHIObjectDestruct    },
-										  { kEventClassHIObject, kEventHIObjectInitialize  },
-										  { kEventClassControl,  kEventControlDraw         },
-										  { kEventClassControl,  kEventControlHitTest      },
-										  { kEventClassControl,  kEventControlTrack        } },
-							iEvents[] = { { kEventClassControl,  kEventControlDraw         } };
-			HIObjectRef		hiObject;
-			HIViewRef		contentView, image1, image2;
-			HIViewID		cid;
-			HIRect			frame;
-			Rect			winBounds;
-
-			UpdateIconPlaceImage();
-
-			keyInDrag = false;
-			dragKey = -1;
-			dragKeyOfs = CGPointMake(0.0f, 0.0f);
-			dragKeyRect = CGRectMake(0.0f, 0.0f, 0.0f, 0.0f);
-			mousePos = CGPointMake(0.0f, 0.0f);
-
-			err = noErr;
-			if (theClass == NULL)
-				err = HIObjectRegisterSubclass(kCustomLayoutViewClassID, kHIViewClassID, 0, KeyLayoutEventHandler, GetEventTypeCount(cEvents), cEvents, NULL, &theClass);
-
-			if (err == noErr)
-			{
-				err = HIObjectCreate(kCustomLayoutViewClassID, NULL, &hiObject);
-				if (err == noErr)
-				{
-					GetWindowBounds(tWindowRef, kWindowContentRgn, &winBounds);
-
-					frame.origin.x = 2.0f;
-					frame.origin.y = 2.0f;
-					frame.size.width  = (float) (winBounds.right - winBounds.left) - 4.0f;
-					frame.size.height = (float) kKeyLayoutHeight + 36.0f;
-
-					ofsx = (float) (((int) frame.size.width  - kKeyLayoutWidth ) >> 1) + 1.0f;
-					ofsy = (float) (((int) frame.size.height - kKeyLayoutHeight) >> 1) + 1.0f;
-
-					customView = (HIViewRef) hiObject;
-
-					HIViewFindByID(HIViewGetRoot(tWindowRef), kHIViewWindowContentID, &contentView);
-					HIViewAddSubview(contentView, customView);
-					HIViewSetFrame(customView, &frame);
-					HIViewSetVisible(customView, true);
-
-					cid.signature = 'Lgnd';
-					cid.id = 0;
-					HIViewFindByID(contentView, cid, &image1);
-					cid.id = 1;
-					HIViewFindByID(contentView, cid, &image2);
-					iUPP = NewEventHandlerUPP(KeyLegendEventHandler);
-					err = InstallControlEventHandler(image1, iUPP, GetEventTypeCount(iEvents), iEvents, (void *) image1, &iref1);
-					err = InstallControlEventHandler(image2, iUPP, GetEventTypeCount(iEvents), iEvents, (void *) image2, &iref2);
-
-					wUPP = NewEventHandlerUPP(KeyWindowEventHandler);
-					err = InstallWindowEventHandler(tWindowRef, wUPP, GetEventTypeCount(wEvents), wEvents, (void *) tWindowRef, &wref);
-
-					MoveWindowPosition(tWindowRef, kWindowKeyConfig, false);
-					ShowWindow(tWindowRef);
-					err = RunAppModalLoopForWindow(tWindowRef);
-					HideWindow(tWindowRef);
-					SaveWindowPosition(tWindowRef, kWindowKeyConfig);
-
-					err = RemoveEventHandler(iref2);
-					err = RemoveEventHandler(iref1);
-					DisposeEventHandlerUPP(iUPP);
-
-					err = RemoveEventHandler(wref);
-					DisposeEventHandlerUPP(wUPP);
-				}
-			}
-
-			CFRelease(tWindowRef);
-		}
-
-		DisposeNibReference(nibRef);
-	}
+//    OSStatus    err;
+//    IBNibRef    nibRef;
+//
+//    err = CreateNibReference(kMacS9XCFString, &nibRef);
+//    if (err == noErr)
+//    {
+//        WindowRef    tWindowRef;
+//
+//        err = CreateWindowFromNib(nibRef, CFSTR("Keyboard"), &tWindowRef);
+//        if (err == noErr)
+//        {
+//            EventHandlerRef    wref, iref1, iref2;
+//            EventHandlerUPP    wUPP, iUPP;
+//            EventTypeSpec    wEvents[] = { { kEventClassWindow,   kEventWindowClose         },
+//                                          { kEventClassCommand,  kEventCommandProcess      },
+//                                          { kEventClassCommand,  kEventCommandUpdateStatus } },
+//                            cEvents[] = { { kEventClassHIObject, kEventHIObjectConstruct   },
+//                                          { kEventClassHIObject, kEventHIObjectDestruct    },
+//                                          { kEventClassHIObject, kEventHIObjectInitialize  },
+//                                          { kEventClassControl,  kEventControlDraw         },
+//                                          { kEventClassControl,  kEventControlHitTest      },
+//                                          { kEventClassControl,  kEventControlTrack        } },
+//                            iEvents[] = { { kEventClassControl,  kEventControlDraw         } };
+//            HIObjectRef        hiObject;
+//            HIViewRef        contentView, image1, image2;
+//            HIViewID        cid;
+//            HIRect            frame;
+//            Rect            winBounds;
+//
+//            UpdateIconPlaceImage();
+//
+//            keyInDrag = false;
+//            dragKey = -1;
+//            dragKeyOfs = CGPointMake(0.0f, 0.0f);
+//            dragKeyRect = CGRectMake(0.0f, 0.0f, 0.0f, 0.0f);
+//            mousePos = CGPointMake(0.0f, 0.0f);
+//
+//            err = noErr;
+//            if (theClass == NULL)
+//                err = HIObjectRegisterSubclass(kCustomLayoutViewClassID, kHIViewClassID, 0, KeyLayoutEventHandler, GetEventTypeCount(cEvents), cEvents, NULL, &theClass);
+//
+//            if (err == noErr)
+//            {
+//                err = HIObjectCreate(kCustomLayoutViewClassID, NULL, &hiObject);
+//                if (err == noErr)
+//                {
+//                    GetWindowBounds(tWindowRef, kWindowContentRgn, &winBounds);
+//
+//                    frame.origin.x = 2.0f;
+//                    frame.origin.y = 2.0f;
+//                    frame.size.width  = (float) (winBounds.right - winBounds.left) - 4.0f;
+//                    frame.size.height = (float) kKeyLayoutHeight + 36.0f;
+//
+//                    ofsx = (float) (((int) frame.size.width  - kKeyLayoutWidth ) >> 1) + 1.0f;
+//                    ofsy = (float) (((int) frame.size.height - kKeyLayoutHeight) >> 1) + 1.0f;
+//
+//                    customView = (HIViewRef) hiObject;
+//
+//                    HIViewFindByID(HIViewGetRoot(tWindowRef), kHIViewWindowContentID, &contentView);
+//                    HIViewAddSubview(contentView, customView);
+//                    HIViewSetFrame(customView, &frame);
+//                    HIViewSetVisible(customView, true);
+//
+//                    cid.signature = 'Lgnd';
+//                    cid.id = 0;
+//                    HIViewFindByID(contentView, cid, &image1);
+//                    cid.id = 1;
+//                    HIViewFindByID(contentView, cid, &image2);
+//                    iUPP = NewEventHandlerUPP(KeyLegendEventHandler);
+//                    err = InstallControlEventHandler(image1, iUPP, GetEventTypeCount(iEvents), iEvents, (void *) image1, &iref1);
+//                    err = InstallControlEventHandler(image2, iUPP, GetEventTypeCount(iEvents), iEvents, (void *) image2, &iref2);
+//
+//                    wUPP = NewEventHandlerUPP(KeyWindowEventHandler);
+//                    err = InstallWindowEventHandler(tWindowRef, wUPP, GetEventTypeCount(wEvents), wEvents, (void *) tWindowRef, &wref);
+//
+//                    MoveWindowPosition(tWindowRef, kWindowKeyConfig, false);
+//                    ShowWindow(tWindowRef);
+//                    err = RunAppModalLoopForWindow(tWindowRef);
+//                    HideWindow(tWindowRef);
+//                    SaveWindowPosition(tWindowRef, kWindowKeyConfig);
+//
+//                    err = RemoveEventHandler(iref2);
+//                    err = RemoveEventHandler(iref1);
+//                    DisposeEventHandlerUPP(iUPP);
+//
+//                    err = RemoveEventHandler(wref);
+//                    DisposeEventHandlerUPP(wUPP);
+//                }
+//            }
+//
+//            CFRelease(tWindowRef);
+//        }
+//
+//        DisposeNibReference(nibRef);
+//    }
 }
 
 static void CreateIconTableImage (void)
@@ -416,19 +416,19 @@ static void CreateIconTableImage (void)
 
 	iconTableCGWld = (Ptr) malloc(kIconSize * kKeys * (kIconSize + 1) * 4);
 	if (!iconTableCGWld)
-		QuitWithFatalError(0, "keyboard 08");
+		QuitWithFatalError(@"keyboard 08");
 
 	ctx = NULL;
 
 	color = CGColorSpaceCreateDeviceRGB();
 	if (color)
 	{
-		ctx = CGBitmapContextCreate(iconTableCGWld, kIconSize * kKeys, kIconSize, 8, kIconSize * kKeys * 4, color, kCGImageAlphaNoneSkipFirst | ((systemVersion >= 0x1040) ? kCGBitmapByteOrderDefault : 0));
+		ctx = CGBitmapContextCreate(iconTableCGWld, kIconSize * kKeys, kIconSize, 8, kIconSize * kKeys * 4, color, kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrderDefault);
 		CGColorSpaceRelease(color);
 	}
 
 	if (!ctx)
-		QuitWithFatalError(0, "keyboard 09");
+		QuitWithFatalError(@"keyboard 09");
 
 	CGContextTranslateCTM(ctx, 0.0f, (float) kIconSize);
 	CGContextScaleCTM(ctx, 1.0f, -1.0f);
@@ -436,24 +436,13 @@ static void CreateIconTableImage (void)
 	// SNES pads
 	for (int i = macPadIconIndex; i < macPadIconIndex + 12 * 2; i++)
 	{
-		if (systemVersion >= 0x1040)
-			CGContextDrawImage(ctx, rct, macIconImage[i]);
-	#ifdef MAC_PANTHER_SUPPORT
-		else
-			PlotIconRefInContext(ctx, &rct, kAlignNone, kTransformNone, NULL, kPlotIconRefNormalFlags, macIconRef[i]);
-	#endif
-		rct = CGRectOffset(rct, kIconSize, 0);
-	}
+        CGContextDrawImage(ctx, rct, macIconImage[i]);
+    }
 
 	// Function buttons
 	for (int i = macFunctionIconIndex; i < macFunctionIconIndex + 17; i++)
 	{
-		if (systemVersion >= 0x1040)
-			CGContextDrawImage(ctx, rct, macIconImage[i]);
-	#ifdef MAC_PANTHER_SUPPORT
-		else
-			PlotIconRefInContext(ctx, &rct, kAlignNone, kTransformNone, NULL, kPlotIconRefNormalFlags, macIconRef[i]);
-	#endif
+        CGContextDrawImage(ctx, rct, macIconImage[i]);
 		rct = CGRectOffset(rct, kIconSize, 0);
 	}
 
@@ -467,7 +456,7 @@ static void CreateIconTableImage (void)
 		color = CGColorSpaceCreateDeviceRGB();
 		if (color)
 		{
-			iconTableImage = CGImageCreate(kIconSize * kKeys, kIconSize, 8, 32, kIconSize * kKeys * 4, color, kCGImageAlphaNoneSkipFirst | ((systemVersion >= 0x1040) ? kCGBitmapByteOrderDefault : 0), prov, NULL, 0, kCGRenderingIntentDefault);
+			iconTableImage = CGImageCreate(kIconSize * kKeys, kIconSize, 8, 32, kIconSize * kKeys * 4, color, kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrderDefault, prov, NULL, 0, kCGRenderingIntentDefault);
 			CGColorSpaceRelease(color);
 		}
 
@@ -475,7 +464,7 @@ static void CreateIconTableImage (void)
 	}
 
 	if (!iconTableImage)
-		QuitWithFatalError(0, "keyboard 10");
+		QuitWithFatalError(@"keyboard 10");
 }
 
 static void ReleaseIconTableImage (void)
@@ -499,19 +488,19 @@ static void CreateKeyLayoutImage (void)
 
 	keyLayoutWorld = (Ptr) malloc(kKeyLayoutWidth * (kKeyLayoutHeight + 1) * 4);
 	if (!keyLayoutWorld)
-		QuitWithFatalError(0, "keyboard 02");
+		QuitWithFatalError(@"keyboard 02");
 
 	ctx = NULL;
 
 	color = CGColorSpaceCreateDeviceRGB();
 	if (color)
 	{
-		ctx = CGBitmapContextCreate(keyLayoutWorld, kKeyLayoutWidth, kKeyLayoutHeight, 8, kKeyLayoutWidth * 4, color, kCGImageAlphaPremultipliedFirst | ((systemVersion >= 0x1040) ? kCGBitmapByteOrderDefault : 0));
+		ctx = CGBitmapContextCreate(keyLayoutWorld, kKeyLayoutWidth, kKeyLayoutHeight, 8, kKeyLayoutWidth * 4, color, kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrderDefault);
 		CGColorSpaceRelease(color);
 	}
 
 	if (!ctx)
-		QuitWithFatalError(0, "keyboard 04");
+		QuitWithFatalError(@"keyboard 04");
 
 	CGContextSetLineJoin(ctx, kCGLineJoinMiter);
 
@@ -587,7 +576,7 @@ static void CreateKeyLayoutImage (void)
 		color = CGColorSpaceCreateDeviceRGB();
 		if (color)
 		{
-			keyLayoutImage = CGImageCreate(kKeyLayoutWidth, kKeyLayoutHeight, 8, 32, kKeyLayoutWidth * 4, color, kCGImageAlphaPremultipliedFirst | ((systemVersion >= 0x1040) ? kCGBitmapByteOrderDefault : 0), prov, NULL, 0, kCGRenderingIntentDefault);
+			keyLayoutImage = CGImageCreate(kKeyLayoutWidth, kKeyLayoutHeight, 8, 32, kKeyLayoutWidth * 4, color, kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrderDefault, prov, NULL, 0, kCGRenderingIntentDefault);
 			CGColorSpaceRelease(color);
 		}
 
@@ -595,7 +584,7 @@ static void CreateKeyLayoutImage (void)
 	}
 
 	if (!keyLayoutImage)
-		QuitWithFatalError(0, "keyboard 05");
+		QuitWithFatalError(@"keyboard 05");
 }
 
 static void ReleaseKeyLayoutImage (void)
@@ -608,7 +597,7 @@ static void CreateIconPlaceImage (void)
 {
 	iconPlaceWorld = (Ptr) malloc(kKeyLayoutWidth * (kKeyLayoutHeight + 1) * 4);
 	if (!iconPlaceWorld)
-		QuitWithFatalError(0, "keyboard 06");
+		QuitWithFatalError(@"keyboard 06");
 
 	iconPlaceImage = NULL;
 
@@ -630,7 +619,7 @@ static void UpdateIconPlaceImage (void)
 	color = CGColorSpaceCreateDeviceRGB();
 	if (color)
 	{
-		ctx = CGBitmapContextCreate(iconPlaceWorld, kKeyLayoutWidth, kKeyLayoutHeight, 8, kKeyLayoutWidth * 4, color, kCGImageAlphaPremultipliedFirst | ((systemVersion >= 0x1040) ? kCGBitmapByteOrderDefault : 0));
+		ctx = CGBitmapContextCreate(iconPlaceWorld, kKeyLayoutWidth, kKeyLayoutHeight, 8, kKeyLayoutWidth * 4, color, kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrderDefault);
 		if (ctx)
 		{
 			rct = CGRectMake(0.0f, 0.0f, (float) kKeyLayoutWidth, (float) kKeyLayoutHeight);
@@ -645,7 +634,7 @@ static void UpdateIconPlaceImage (void)
 		prov = CGDataProviderCreateWithData(NULL, iconPlaceWorld, kKeyLayoutWidth * kKeyLayoutHeight * 4, NULL);
 		if (prov)
 		{
-			iconPlaceImage = CGImageCreate(kKeyLayoutWidth, kKeyLayoutHeight, 8, 32, kKeyLayoutWidth * 4, color, kCGImageAlphaPremultipliedFirst | ((systemVersion >= 0x1040) ? kCGBitmapByteOrderDefault : 0), prov, NULL, 0, kCGRenderingIntentDefault);
+			iconPlaceImage = CGImageCreate(kKeyLayoutWidth, kKeyLayoutHeight, 8, 32, kKeyLayoutWidth * 4, color, kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrderDefault, prov, NULL, 0, kCGRenderingIntentDefault);
 			CGDataProviderRelease(prov);
 		}
 
@@ -653,7 +642,7 @@ static void UpdateIconPlaceImage (void)
 	}
 
 	if (!iconPlaceImage)
-		QuitWithFatalError(0, "keyboard 07");
+		QuitWithFatalError(@"keyboard 07");
 }
 
 static void ReleaseIconPlaceImage (void)
@@ -782,253 +771,257 @@ static int FindHitKey (HIPoint where, CGRect *keybounds, CGPoint *offset)
 
 static OSStatus KeyWindowEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
 {
-	OSStatus	err, result = eventNotHandledErr;
-	WindowRef	tWindowRef = (WindowRef) inUserData;
-
-	switch (GetEventClass(inEvent))
-	{
-		case kEventClassWindow:
-			switch (GetEventKind(inEvent))
-			{
-				case kEventWindowClose:
-					QuitAppModalLoopForWindow(tWindowRef);
-					result = noErr;
-			}
-
-			break;
-
-		case kEventClassCommand:
-			switch (GetEventKind(inEvent))
-			{
-				HICommand	tHICommand;
-
-				case kEventCommandUpdateStatus:
-					err = GetEventParameter(inEvent, kEventParamDirectObject, typeHICommand, NULL, sizeof(HICommand), NULL, &tHICommand);
-					if (err == noErr && tHICommand.commandID == 'clos')
-					{
-						UpdateMenuCommandStatus(true);
-						result = noErr;
-					}
-
-					break;
-
-				case kEventCommandProcess:
-					err = GetEventParameter(inEvent, kEventParamDirectObject, typeHICommand, NULL, sizeof(HICommand), NULL, &tHICommand);
-					if (err == noErr)
-					{
-						if (tHICommand.commandID == 'DFLT')
-						{
-							memcpy(keyCode, defaultKeys, sizeof(keyCode));
-							UpdateIconPlaceImage();
-							HIViewSetNeedsDisplay(customView, true);
-							result = noErr;
-						}
-					}
-			}
-	}
-
-	return (result);
+//    OSStatus    err, result = eventNotHandledErr;
+//    WindowRef    tWindowRef = (WindowRef) inUserData;
+//
+//    switch (GetEventClass(inEvent))
+//    {
+//        case kEventClassWindow:
+//            switch (GetEventKind(inEvent))
+//            {
+//                case kEventWindowClose:
+//                    QuitAppModalLoopForWindow(tWindowRef);
+//                    result = noErr;
+//            }
+//
+//            break;
+//
+//        case kEventClassCommand:
+//            switch (GetEventKind(inEvent))
+//            {
+//                HICommand    tHICommand;
+//
+//                case kEventCommandUpdateStatus:
+//                    err = GetEventParameter(inEvent, kEventParamDirectObject, typeHICommand, NULL, sizeof(HICommand), NULL, &tHICommand);
+//                    if (err == noErr && tHICommand.commandID == 'clos')
+//                    {
+//                        UpdateMenuCommandStatus(true);
+//                        result = noErr;
+//                    }
+//
+//                    break;
+//
+//                case kEventCommandProcess:
+//                    err = GetEventParameter(inEvent, kEventParamDirectObject, typeHICommand, NULL, sizeof(HICommand), NULL, &tHICommand);
+//                    if (err == noErr)
+//                    {
+//                        if (tHICommand.commandID == 'DFLT')
+//                        {
+//                            memcpy(keyCode, defaultKeys, sizeof(keyCode));
+//                            UpdateIconPlaceImage();
+//                            HIViewSetNeedsDisplay(customView, true);
+//                            result = noErr;
+//                        }
+//                    }
+//            }
+//    }
+//
+//    return (result);
+    return 0;
 }
 
 static OSStatus KeyLegendEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
 {
-    OSStatus	err, result = eventNotHandledErr;
-	HIViewRef	view = (HIViewRef) inUserData;
+//    OSStatus    err, result = eventNotHandledErr;
+//    HIViewRef    view = (HIViewRef) inUserData;
+//
+//    switch (GetEventClass(inEvent))
+//    {
+//        case kEventClassControl:
+//            switch (GetEventKind(inEvent))
+//            {
+//                case kEventControlDraw:
+//                    CGContextRef    ctx;
+//
+//                    err = GetEventParameter(inEvent, kEventParamCGContextRef, typeCGContextRef, NULL, sizeof(CGContextRef), NULL, &ctx);
+//                    if (err == noErr)
+//                    {
+//                        HIViewID    cid;
+//                        HIRect        bounds;
+//
+//                        GetControlID(view, &cid);
+//                        HIViewGetBounds(view, &bounds);
+//                        CGContextTranslateCTM(ctx, 0, bounds.size.height);
+//                        CGContextScaleCTM(ctx, 1.0f, -1.0f);
+//                        CGContextDrawImage(ctx, CGRectMake(0, 0, kIconSize, kIconSize), macIconImage[macLegendIconIndex + cid.id]);
+//
+//                        result = noErr;
+//                    }
+//            }
+//    }
+//
+//    return (result);
 
-	switch (GetEventClass(inEvent))
-	{
-		case kEventClassControl:
-			switch (GetEventKind(inEvent))
-			{
-				case kEventControlDraw:
-					CGContextRef	ctx;
-
-					err = GetEventParameter(inEvent, kEventParamCGContextRef, typeCGContextRef, NULL, sizeof(CGContextRef), NULL, &ctx);
-					if (err == noErr)
-					{
-						HIViewID	cid;
-						HIRect		bounds;
-
-						GetControlID(view, &cid);
-						HIViewGetBounds(view, &bounds);
-						CGContextTranslateCTM(ctx, 0, bounds.size.height);
-						CGContextScaleCTM(ctx, 1.0f, -1.0f);
-						CGContextDrawImage(ctx, CGRectMake(0, 0, kIconSize, kIconSize), macIconImage[macLegendIconIndex + cid.id]);
-
-						result = noErr;
-					}
-			}
-	}
-
-	return (result);
+    return 0;
 }
 
 static OSStatus KeyLayoutEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
 {
-	OSStatus		err, result = eventNotHandledErr;
-	CustomViewData	*data = (CustomViewData *) inUserData;
-
-	switch (GetEventClass(inEvent))
-	{
-		case kEventClassHIObject:
-			switch (GetEventKind(inEvent))
-			{
-				case kEventHIObjectConstruct:
-					data = (CustomViewData *) calloc(1, sizeof(CustomViewData));
-					if (data)
-					{
-						HIViewRef	epView;
-
-						err = GetEventParameter(inEvent, kEventParamHIObjectInstance, typeHIObjectRef, NULL, sizeof(epView), NULL, &epView);
-						if (err == noErr)
-						{
-							data->view = epView;
-							result = SetEventParameter(inEvent, kEventParamHIObjectInstance, typeVoidPtr, sizeof(data), &data);
-						}
-					}
-
-					break;
-
-				case kEventHIObjectDestruct:
-					if (data)
-						free(data);
-
-					result = noErr;
-					break;
-
-				case kEventHIObjectInitialize:
-					result = CallNextEventHandler(inHandlerRef, inEvent);
-			}
-
-			break;
-
-		case kEventClassControl:
-			switch (GetEventKind(inEvent))
-			{
-				case kEventControlDraw:
-					CGContextRef	ctx;
-
-					err = GetEventParameter(inEvent, kEventParamCGContextRef, typeCGContextRef, NULL, sizeof(ctx), NULL, &ctx);
-					if (err == noErr)
-					{
-						HIRect	bounds, srcRect, dstRect;
-
-						HIViewGetBounds(customView, &bounds);
-						srcRect = CGRectMake(0, 0, kKeyLayoutWidth, kKeyLayoutHeight);
-
-						dstRect.origin.x = (float) (((int) bounds.size.width  - kKeyLayoutWidth ) >> 1);
-						dstRect.origin.y = (float) (((int) bounds.size.height - kKeyLayoutHeight) >> 1);
-						dstRect.size.width  = (float) kKeyLayoutWidth;
-						dstRect.size.height = (float) kKeyLayoutHeight;
-
-						DrawSubCGImage(ctx, iconPlaceImage, srcRect, dstRect);
-						if (keyInDrag && (dragKey != -1))
-							DrawDraggedIcon(ctx, dragKey, &dragKeyOfs);
-					}
-
-					result = noErr;
-					break;
-
-				case kEventControlHitTest:
-					ControlPartCode	part;
-
-					part = kControlButtonPart;
-					result = SetEventParameter(inEvent, kEventParamControlPart, typeControlPartCode, sizeof(part), &part);
-
-					break;
-
-      			case kEventControlTrack:
-                    MouseTrackingResult	trackResult;
-					WindowRef			window;
-					HIViewRef			contentView;
-					HIPoint				hipt;
-
- 					dragKey = -1;
-					dragKeyOfs = CGPointMake(0.0f, 0.0f);
-					dragKeyRect = CGRectMake(0.0f, 0.0f, 0.0f, 0.0f);
-					mousePos = CGPointMake(0.0f, 0.0f);
-					trackResult = kMouseTrackingMouseDown;
-
-					window = GetControlOwner(customView);
-					HIViewFindByID(HIViewGetRoot(window), kHIViewWindowContentID, &contentView);
-
-				#ifdef MAC_TIGER_PANTHER_SUPPORT
-					CGrafPtr	oldPort;
-					Point		qdpt;
-					Boolean		portChanged = false;
-
-					if (systemVersion < 0x1050)
-						portChanged = QDSwapPort(GetWindowPort(window), &oldPort);
-				#endif
-
-					err = GetEventParameter(inEvent, kEventParamMouseLocation, typeHIPoint, NULL, sizeof(hipt), NULL, &hipt);
-					if (err == noErr)
-					{
-						hipt.x -= ofsx;
-						hipt.y -= ofsy;
-
-						dragKey = FindHitKey(hipt, &dragKeyRect, &dragKeyOfs);
-						if (dragKey != -1)
-						{
-							keyInDrag = true;
-
-							while (trackResult != kMouseTrackingMouseUp)
-							{
-								if (CGPointEqualToPoint(mousePos, hipt) == 0)
-								{
-									mousePos = hipt;
-									HIViewSetNeedsDisplay(customView, true);
-								}
-
-								if (systemVersion >= 0x1050)
-								{
-									err = HIViewTrackMouseLocation(customView, 0, kEventDurationForever, 0, NULL, &hipt, NULL, NULL, &trackResult);
-									hipt.x -= ofsx;
-									hipt.y -= ofsy;
-								}
-							#ifdef MAC_TIGER_PANTHER_SUPPORT
-								else
-								{
-									TrackMouseLocation(NULL, &qdpt, &trackResult);
-									hipt.x = qdpt.h - ofsx;
-									hipt.y = qdpt.v - ofsy;
-									HIViewConvertPoint(&hipt, contentView, customView);
-								}
-							#endif
-							}
-
-							keyInDrag = false;
-
-							for (int code = 0; code < 0x80; code++)
-							{
-								for (int each = 0; each <= 1; each++)
-								{
-									if (CGRectContainsPoint(keyRect[code][each], mousePos))
-									{
-										if (!KeyCodeInUse(code))
-										{
-											keyCode[dragKey] = code;
-											UpdateIconPlaceImage();
-										}
-									}
-								}
-							}
-
-							HIViewSetNeedsDisplay(customView, true);
-						}
-					}
-
-				#ifdef MAC_TIGER_PANTHER_SUPPORT
-					if (systemVersion < 0x1050)
-					{
-						if (portChanged)
-							QDSwapPort(oldPort, NULL);
-					}
-				#endif
-
-					result = noErr;
-			}
-	}
-
-	return (result);
+//    OSStatus        err, result = eventNotHandledErr;
+//    CustomViewData    *data = (CustomViewData *) inUserData;
+//
+//    switch (GetEventClass(inEvent))
+//    {
+//        case kEventClassHIObject:
+//            switch (GetEventKind(inEvent))
+//            {
+//                case kEventHIObjectConstruct:
+//                    data = (CustomViewData *) calloc(1, sizeof(CustomViewData));
+//                    if (data)
+//                    {
+//                        HIViewRef    epView;
+//
+//                        err = GetEventParameter(inEvent, kEventParamHIObjectInstance, typeHIObjectRef, NULL, sizeof(epView), NULL, &epView);
+//                        if (err == noErr)
+//                        {
+//                            data->view = epView;
+//                            result = SetEventParameter(inEvent, kEventParamHIObjectInstance, typeVoidPtr, sizeof(data), &data);
+//                        }
+//                    }
+//
+//                    break;
+//
+//                case kEventHIObjectDestruct:
+//                    if (data)
+//                        free(data);
+//
+//                    result = noErr;
+//                    break;
+//
+//                case kEventHIObjectInitialize:
+//                    result = CallNextEventHandler(inHandlerRef, inEvent);
+//            }
+//
+//            break;
+//
+//        case kEventClassControl:
+//            switch (GetEventKind(inEvent))
+//            {
+//                case kEventControlDraw:
+//                    CGContextRef    ctx;
+//
+//                    err = GetEventParameter(inEvent, kEventParamCGContextRef, typeCGContextRef, NULL, sizeof(ctx), NULL, &ctx);
+//                    if (err == noErr)
+//                    {
+//                        HIRect    bounds, srcRect, dstRect;
+//
+//                        HIViewGetBounds(customView, &bounds);
+//                        srcRect = CGRectMake(0, 0, kKeyLayoutWidth, kKeyLayoutHeight);
+//
+//                        dstRect.origin.x = (float) (((int) bounds.size.width  - kKeyLayoutWidth ) >> 1);
+//                        dstRect.origin.y = (float) (((int) bounds.size.height - kKeyLayoutHeight) >> 1);
+//                        dstRect.size.width  = (float) kKeyLayoutWidth;
+//                        dstRect.size.height = (float) kKeyLayoutHeight;
+//
+//                        DrawSubCGImage(ctx, iconPlaceImage, srcRect, dstRect);
+//                        if (keyInDrag && (dragKey != -1))
+//                            DrawDraggedIcon(ctx, dragKey, &dragKeyOfs);
+//                    }
+//
+//                    result = noErr;
+//                    break;
+//
+//                case kEventControlHitTest:
+//                    ControlPartCode    part;
+//
+//                    part = kControlButtonPart;
+//                    result = SetEventParameter(inEvent, kEventParamControlPart, typeControlPartCode, sizeof(part), &part);
+//
+//                    break;
+//
+//                  case kEventControlTrack:
+//                    MouseTrackingResult    trackResult;
+//                    WindowRef            window;
+//                    HIViewRef            contentView;
+//                    HIPoint                hipt;
+//
+//                     dragKey = -1;
+//                    dragKeyOfs = CGPointMake(0.0f, 0.0f);
+//                    dragKeyRect = CGRectMake(0.0f, 0.0f, 0.0f, 0.0f);
+//                    mousePos = CGPointMake(0.0f, 0.0f);
+//                    trackResult = kMouseTrackingMouseDown;
+//
+//                    window = GetControlOwner(customView);
+//                    HIViewFindByID(HIViewGetRoot(window), kHIViewWindowContentID, &contentView);
+//
+//                #ifdef MAC_TIGER_PANTHER_SUPPORT
+//                    CGrafPtr    oldPort;
+//                    Point        qdpt;
+//                    Boolean        portChanged = false;
+//
+//                    if (systemVersion < 0x1050)
+//                        portChanged = QDSwapPort(GetWindowPort(window), &oldPort);
+//                #endif
+//
+//                    err = GetEventParameter(inEvent, kEventParamMouseLocation, typeHIPoint, NULL, sizeof(hipt), NULL, &hipt);
+//                    if (err == noErr)
+//                    {
+//                        hipt.x -= ofsx;
+//                        hipt.y -= ofsy;
+//
+//                        dragKey = FindHitKey(hipt, &dragKeyRect, &dragKeyOfs);
+//                        if (dragKey != -1)
+//                        {
+//                            keyInDrag = true;
+//
+//                            while (trackResult != kMouseTrackingMouseUp)
+//                            {
+//                                if (CGPointEqualToPoint(mousePos, hipt) == 0)
+//                                {
+//                                    mousePos = hipt;
+//                                    HIViewSetNeedsDisplay(customView, true);
+//                                }
+//
+//                                if (systemVersion >= 0x1050)
+//                                {
+//                                    err = HIViewTrackMouseLocation(customView, 0, kEventDurationForever, 0, NULL, &hipt, NULL, NULL, &trackResult);
+//                                    hipt.x -= ofsx;
+//                                    hipt.y -= ofsy;
+//                                }
+//                            #ifdef MAC_TIGER_PANTHER_SUPPORT
+//                                else
+//                                {
+//                                    TrackMouseLocation(NULL, &qdpt, &trackResult);
+//                                    hipt.x = qdpt.h - ofsx;
+//                                    hipt.y = qdpt.v - ofsy;
+//                                    HIViewConvertPoint(&hipt, contentView, customView);
+//                                }
+//                            #endif
+//                            }
+//
+//                            keyInDrag = false;
+//
+//                            for (int code = 0; code < 0x80; code++)
+//                            {
+//                                for (int each = 0; each <= 1; each++)
+//                                {
+//                                    if (CGRectContainsPoint(keyRect[code][each], mousePos))
+//                                    {
+//                                        if (!KeyCodeInUse(code))
+//                                        {
+//                                            keyCode[dragKey] = code;
+//                                            UpdateIconPlaceImage();
+//                                        }
+//                                    }
+//                                }
+//                            }
+//
+//                            HIViewSetNeedsDisplay(customView, true);
+//                        }
+//                    }
+//
+//                #ifdef MAC_TIGER_PANTHER_SUPPORT
+//                    if (systemVersion < 0x1050)
+//                    {
+//                        if (portChanged)
+//                            QDSwapPort(oldPort, NULL);
+//                    }
+//                #endif
+//
+//                    result = noErr;
+//            }
+//    }
+//
+//    return (result);
+    return 0;
 }

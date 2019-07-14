@@ -21,7 +21,7 @@
 #ifndef _mac_file_h_
 #define _mac_file_h_
 
-void CheckSaveFolder (FSRef *);
+void CheckSaveFolder (NSURL *);
 void ChangeTypeAndCreator (const char *, OSType, OSType);
 const char * S9xGetSPCFilename (void);
 const char * S9xGetPNGFilename (void);

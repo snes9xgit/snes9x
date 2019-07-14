@@ -253,7 +253,7 @@ void AppearanceAlert (AlertType type, int stringID1, int stringID2)
 	if (key1) mes1 = CFCopyLocalizedString(key1, "mes1");	else mes1 = NULL;
 	if (key2) mes2 = CFCopyLocalizedString(key2, "mes2");	else mes2 = NULL;
 
-	PlayAlertSound();
+	NSBeep();
 
 	err = CreateStandardAlert(type, mes1, mes2, NULL, &dialog);
 	err = RunStandardAlert(dialog, NULL, &outItemHit);

@@ -37,7 +37,6 @@
 #include "mac-file.h"
 #include "mac-multicart.h"
 #include "mac-os.h"
-#include "mac-quicktime.h"
 #include "mac-screenshot.h"
 #include "mac-stringtools.h"
 #include "mac-snes9x.h"
@@ -51,13 +50,10 @@ void SNES9X_Go (void)
 		running = true;
 }
 
-bool8 SNES9X_OpenCart (FSRef *inRef)
+bool8 SNES9X_OpenCart (NSURL *inRef)
 {
-	OSStatus	err;
-	FSRef		cartRef;
-	char		filename[PATH_MAX + 1];
-
-	DeinitGameWindow();
+	NSURL		*cartRef;
+	const char	*filename = inRef.lastPathComponent.UTF8String;
 
 	if (cartOpen)
 	{
@@ -70,18 +66,19 @@ bool8 SNES9X_OpenCart (FSRef *inRef)
 
 	if (!inRef)
 	{
-		if (!NavOpenROMImage(&cartRef))
+        cartRef = NavOpenROMImage();
+		if (!cartRef)
 		{
 			cartOpen = false;
 			return (false);
 		}
 	}
 	else
-		cartRef = *inRef;
+		cartRef = inRef;
 
 	spcFileCount = pngFileCount = 0;
 
-	CheckSaveFolder(&cartRef);
+	CheckSaveFolder(cartRef);
 
 	Settings.ForceLoROM          = (romDetect        == kLoROMForce       );
 	Settings.ForceHiROM          = (romDetect        == kHiROMForce       );
@@ -99,8 +96,6 @@ bool8 SNES9X_OpenCart (FSRef *inRef)
 
 	S9xResetSaveTimer(true);
 
-	err = FSRefMakePath(&cartRef, (unsigned char *) filename, PATH_MAX);
-
 	SNES9X_InitSound();
 
 	if (Memory.LoadROM(filename))
@@ -111,8 +106,8 @@ bool8 SNES9X_OpenCart (FSRef *inRef)
 
 		ChangeTypeAndCreator(filename, 'CART', '~9X~');
 
-		AddRecentItem(&cartRef);
-		BuildRecentMenu();
+		AddRecentItem(cartRef);
+		//BuildRecentMenu();
 
 		ApplyNSRTHeaderControllers();
 
@@ -133,8 +128,6 @@ bool8 SNES9X_OpenMultiCart (void)
 {
 	Boolean	r;
 	char	cart[2][PATH_MAX + 1];
-
-	DeinitGameWindow();
 
 	if (cartOpen)
 	{
@@ -306,12 +299,12 @@ bool8 SNES9X_Defrost (void)
 
 bool8 SNES9X_FreezeTo (void)
 {
-    char filename[PATH_MAX + 1];
-
 	if (cartOpen)
 	{
-		if (NavFreezeTo(filename))
+		NSURL *url = NavFreezeTo();
+		if (url != nil)
 		{
+			const char *filename = url.lastPathComponent.UTF8String;
             unlink(filename);
 
 			S9xFreezeGame(filename);
@@ -331,8 +324,10 @@ bool8 SNES9X_DefrostFrom (void)
 
 	if (cartOpen)
 	{
-		if (NavDefrostFrom(filename))
+		NSURL *url = NavDefrostFrom();
+		if (url != nil)
 		{
+			const char *filename = url.lastPathComponent.UTF8String;
 			S9xUnfreezeGame(filename);
 
 			SNES9X_Go();
@@ -346,12 +341,12 @@ bool8 SNES9X_DefrostFrom (void)
 
 bool8 SNES9X_RecordMovie (void)
 {
-    char filename[PATH_MAX + 1];
-
 	if (cartOpen)
 	{
-		if (NavRecordMovieTo(filename))
+		NSURL *url = NavRecordMovieTo();
+		if (url != nil)
 		{
+			const char *filename = url.lastPathComponent.UTF8String;
             unlink(filename);
 
 			int		r;
@@ -392,8 +387,10 @@ bool8 SNES9X_PlayMovie (void)
 
 	if (cartOpen)
 	{
-		if (NavPlayMovieFrom(filename))
+		NSURL *url = NavPlayMovieFrom();
+		if (url != nil)
 		{
+			const char *filename = url.lastPathComponent.UTF8String;
 			int r;
 
 			r = S9xMovieOpen(filename, macPlayFlag & 1);
@@ -415,9 +412,10 @@ bool8 SNES9X_QTMovieRecord (void)
 
 	if (cartOpen)
 	{
-		if (NavQTMovieRecordTo(filename))
+		NSURL *url = NavQTMovieRecordTo();
+		if (url != nil)
 		{
-			MacQTStartRecording(filename);
+			const char *filename = url.lastPathComponent.UTF8String;
 			macQTRecord = true;
 			SNES9X_Go();
 
@@ -432,8 +430,6 @@ bool8 SNES9X_QTMovieRecord (void)
 
 void SNES9X_Quit (void)
 {
-	DeinitGameWindow();
-
 	if (cartOpen)
 	{
 		SNES9X_SaveSRAM();

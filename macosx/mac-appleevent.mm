@@ -44,7 +44,7 @@ static OSErr AEoapp (const AppleEvent *theEvent, AppleEvent *theReply, long refC
 		if (SNES9X_OpenCart(NULL))
 		{
 			SNES9X_Go();
-			QuitApplicationEventLoop();
+			//QuitApplicationEventLoop();
 		}
 		else
 			AdjustMenus();
@@ -65,7 +65,7 @@ static OSErr AErapp (const AppleEvent *theEvent, AppleEvent *theReply, long refC
 			if (SNES9X_OpenCart(NULL))
 			{
 				SNES9X_Go();
-				QuitApplicationEventLoop();
+				//QuitApplicationEventLoop();
 			}
 			else
 				AdjustMenus();
@@ -74,7 +74,7 @@ static OSErr AErapp (const AppleEvent *theEvent, AppleEvent *theReply, long refC
 	else
 	{
 		SNES9X_Go();
-		QuitApplicationEventLoop();
+		//QuitApplicationEventLoop();
 	}
 
 	return (noErr);
@@ -91,70 +91,71 @@ static OSErr AEquit (const AppleEvent *theEvent, AppleEvent *theReply, long refC
 		return (noErr);
 
 	SNES9X_Quit();
-	QuitApplicationEventLoop();
+	//QuitApplicationEventLoop();
 
 	return (noErr);
 }
 
 static OSErr AEodoc (const AppleEvent *theEvent, AppleEvent *theReply, long refCon)
 {
-	OSErr 		err;
-	FSRef		ref;
-	AEDescList	docList;
-	AEKeyword	keywd;
-	DescType	rtype;
-	Size		acsize;
-	long		count;
-
-	if (running)
-		return (noErr);
-
-	err = AEGetParamDesc(theEvent, keyDirectObject, typeAEList, &docList);
-	if (err)
-		return (noErr);
-
-	err = AECountItems(&docList, &count);
-	if (err || (count != 1))
-	{
-		err = AEDisposeDesc(&docList);
-		return (noErr);
-	}
-
-	err = AEGetNthPtr(&docList, 1, typeFSRef, &keywd, &rtype, &ref, sizeof(FSRef), &acsize);
-	if (err == noErr)
-	{
-		if (SNES9X_OpenCart(&ref))
-		{
-			SNES9X_Go();
-			QuitApplicationEventLoop();
-		}
-		else
-			AdjustMenus();
-	}
-
-	err = AEDisposeDesc(&docList);
-
-	return (noErr);
+//    OSErr         err;
+//    FSRef        ref;
+//    AEDescList    docList;
+//    AEKeyword    keywd;
+//    DescType    rtype;
+//    Size        acsize;
+//    long        count;
+//
+//    if (running)
+//        return (noErr);
+//
+//    err = AEGetParamDesc(theEvent, keyDirectObject, typeAEList, &docList);
+//    if (err)
+//        return (noErr);
+//
+//    err = AECountItems(&docList, &count);
+//    if (err || (count != 1))
+//    {
+//        err = AEDisposeDesc(&docList);
+//        return (noErr);
+//    }
+//
+//    err = AEGetNthPtr(&docList, 1, typeFSRef, &keywd, &rtype, &ref, sizeof(FSRef), &acsize);
+//    if (err == noErr)
+//    {
+//        if (SNES9X_OpenCart(&ref))
+//        {
+//            SNES9X_Go();
+//            //QuitApplicationEventLoop();
+//        }
+//        else
+//            AdjustMenus();
+//    }
+//
+//    err = AEDisposeDesc(&docList);
+//
+//    return (noErr);
+    return 0;
 }
 
 void InitAppleEvents (void)
 {
-	OSErr	err;
-
-	oappUPP = NewAEEventHandlerUPP(AEoapp);
-	err = AEInstallEventHandler(kCoreEventClass, kAEOpenApplication,   oappUPP, 0L, false);
-
-	odocUPP = NewAEEventHandlerUPP(AEodoc);
-	err = AEInstallEventHandler(kCoreEventClass, kAEOpenDocuments,     odocUPP, 0L, false);
-
-	pdocUPP = NewAEEventHandlerUPP(AEpdoc);
-	err = AEInstallEventHandler(kCoreEventClass, kAEPrintDocuments,    pdocUPP, 0L, false);
-
-	quitUPP = NewAEEventHandlerUPP(AEquit);
-	err = AEInstallEventHandler(kCoreEventClass, kAEQuitApplication,   quitUPP, 0L, false);
-
-	rappUPP = NewAEEventHandlerUPP(AErapp);
-	err = AEInstallEventHandler(kCoreEventClass, kAEReopenApplication, rappUPP, 0L, false);
+//    OSErr    err;
+//
+//    oappUPP = NewAEEventHandlerUPP(AEoapp);
+//    err = AEInstallEventHandler(kCoreEventClass, kAEOpenApplication,   oappUPP, 0L, false);
+//
+//    odocUPP = NewAEEventHandlerUPP(AEodoc);
+//    err = AEInstallEventHandler(kCoreEventClass, kAEOpenDocuments,     odocUPP, 0L, false);
+//
+//    pdocUPP = NewAEEventHandlerUPP(AEpdoc);
+//    err = AEInstallEventHandler(kCoreEventClass, kAEPrintDocuments,    pdocUPP, 0L, false);
+//
+//    quitUPP = NewAEEventHandlerUPP(AEquit);
+//    err = AEInstallEventHandler(kCoreEventClass, kAEQuitApplication,   quitUPP, 0L, false);
+//
+//    rappUPP = NewAEEventHandlerUPP(AErapp);
+//    err = AEInstallEventHandler(kCoreEventClass, kAEReopenApplication, rappUPP, 0L, false);
 }
 
 void DeinitAppleEvents (void)

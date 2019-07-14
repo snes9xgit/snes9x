@@ -57,12 +57,7 @@ void DrawSubCGImage (CGContextRef ctx, CGImageRef image, CGRect src, CGRect dst)
 
 static void SetIconImage (CGImageRef image, CGRect rct, int n)
 {
-	if (systemVersion >= 0x1040)
-		macIconImage[n] = CGImageCreateWithImageInRect(image, rct);
-#ifdef MAC_PANTHER_SUPPORT
-	else
-		macIconRef[n] = CreateIconRefFromImage(image, rct);
-#endif
+    macIconImage[n] = CGImageCreateWithImageInRect(image, rct);
 }
 
 void CreateIconImages (void)
@@ -160,18 +155,8 @@ void ReleaseIconImages (void)
 {
 	for (int i = 0; i < 118; i++)
 	{
-		if (systemVersion >= 0x1040)
-		{
-			if (macIconImage[i])
-				CGImageRelease(macIconImage[i]);
-		}
-	#ifdef MAC_PANTHER_SUPPORT
-		else
-		{
-			if (macIconRef[i])
-				ReleaseIconRef(macIconRef[i]);
-		}
-	#endif
+        if (macIconImage[i])
+            CGImageRelease(macIconImage[i]);
 	}
 
 #ifdef MAC_PANTHER_SUPPORT

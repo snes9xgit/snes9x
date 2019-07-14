@@ -36,7 +36,6 @@
 #include "mac-cheatfinder.h"
 #include "mac-coreimage.h"
 #include "mac-os.h"
-#include "mac-quicktime.h"
 #include "mac-screenshot.h"
 #include "mac-render.h"
 
@@ -197,13 +196,13 @@ void InitGraphics (void)
 	GFX.Screen   = gfxScreen[0];
 
 	if (!snesScreenA || !snesScreenB || !blitGLBuffer)
-		QuitWithFatalError(0, "render 01");
+		QuitWithFatalError(@"render 01");
 
 	if (!S9xBlitFilterInit()      |
 		!S9xBlit2xSaIFilterInit() |
 		!S9xBlitHQ2xFilterInit()  |
 		!S9xBlitNTSCFilterInit())
-		QuitWithFatalError(0, "render 02");
+		QuitWithFatalError(@"render 02");
 
 	switch (videoMode)
 	{
@@ -406,8 +405,6 @@ static void SetBestDisplayMode (int width, int height)
 
 static void S9xInitFullScreen (void)
 {
-	DeinitGameWindow();
-
 	size_t	width, height;
 
 	width  = autoRes ? 640 : CGDisplayPixelsWide(gGameDisplayID);
@@ -485,13 +482,13 @@ static void S9xInitWindowMode (void)
 	SetBestDisplayMode(width, height);
 #endif
 
-	InitGameWindow();
-	ShowWindow(gWindow);
+//	InitGameWindow();
+//    ShowWindow(gWindow);
+//
+//    GetWindowBounds(gWindow, kWindowContentRgn, &rct);
+//    gWindowRect = CGRectMake((float) rct.left, (float) rct.top, (float) (rct.right - rct.left), (float) (rct.bottom - rct.top));
 
-	GetWindowBounds(gWindow, kWindowContentRgn, &rct);
-	gWindowRect = CGRectMake((float) rct.left, (float) rct.top, (float) (rct.right - rct.left), (float) (rct.bottom - rct.top));
-
-	UpdateGameWindow();
+	// UpdateGameWindow();
 }
 
 static void S9xDeinitWindowMode (void)
@@ -505,7 +502,7 @@ static void S9xDeinitWindowMode (void)
 	CGDisplayModeRelease(oldDisplayModeRef);
 #endif
 
-	UpdateGameWindow();
+	// UpdateGameWindow();
 }
 
 static void S9xInitOpenGLFullScreen (void)
@@ -565,12 +562,7 @@ static void S9xInitOpenGLWindowMode (void)
 	aglpix = aglChoosePixelFormat(NULL, 0, attribs);
 	agContext = aglCreateContext(aglpix, NULL);
 
-	if (systemVersion >= 0x1050)
-		aglSetWindowRef(agContext, gWindow);
-#ifdef MAC_TIGER_PANTHER_SUPPORT
-	else
-		aglSetDrawable(agContext, GetWindowPort(gWindow));
-#endif
+    aglSetWindowRef(agContext, gWindow);
 
 	agSwapInterval = vsync ? 1 : 0;
 	if (extraOptions.benchmark)
@@ -578,23 +570,15 @@ static void S9xInitOpenGLWindowMode (void)
 	aglSetInteger(agContext, AGL_SWAP_INTERVAL, &agSwapInterval);
 	aglSetCurrentContext(agContext);
 
-	if (systemVersion >= 0x1040)
-	{
-		aglGetCGLPixelFormat(aglpix, (void **) &cglpix);
-		aglGetCGLContext(agContext, (void **) &glContext);
-	}
+    aglGetCGLPixelFormat(aglpix, (void **) &cglpix);
+    aglGetCGLContext(agContext, (void **) &glContext);
 }
 
 static void S9xDeinitOpenGLWindowMode (void)
 {
 	if (agContext)
 	{
-		if (systemVersion >= 0x1050)
-			aglSetWindowRef(agContext, NULL);
-	#ifdef MAC_TIGER_PANTHER_SUPPORT
-		else
-			aglSetDrawable(agContext, NULL);
-	#endif
+        aglSetWindowRef(agContext, NULL);
 
 		aglSetCurrentContext(NULL);
 		aglDestroyContext(agContext);

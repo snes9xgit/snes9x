@@ -118,7 +118,7 @@ CGImageRef CreateGameScreenCGImage (void)
 		color = CGColorSpaceCreateDeviceRGB();
 		if (color)
 		{
-			image = CGImageCreate(IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight, 5, 16, rowbytes, color, kCGImageAlphaNoneSkipFirst | ((systemVersion >= 0x1040) ? kCGBitmapByteOrder16Host : 0), prov, NULL, 1, kCGRenderingIntentDefault);
+			image = CGImageCreate(IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight, 5, 16, rowbytes, color, kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder16Host, prov, NULL, 1, kCGRenderingIntentDefault);
 			CGColorSpaceRelease(color);
 		}
 
@@ -140,7 +140,7 @@ CGImageRef CreateBlitScreenCGImage (int width, int height, int rowbytes, uint8 *
 		color = CGColorSpaceCreateDeviceRGB();
 		if (color)
 		{
-			image = CGImageCreate(width, height, 5, 16, rowbytes, color, kCGImageAlphaNoneSkipFirst | ((systemVersion >= 0x1040) ? kCGBitmapByteOrder16Host : 0), prov, NULL, 1, kCGRenderingIntentDefault);
+			image = CGImageCreate(width, height, 5, 16, rowbytes, color, kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder16Host, prov, NULL, 1, kCGRenderingIntentDefault);
 			CGColorSpaceRelease(color);
 		}
 
