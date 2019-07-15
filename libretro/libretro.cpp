@@ -1,4 +1,5 @@
 #include "libretro.h"
+#include "libretro_core_options.h"
 
 #include "snes9x.h"
 #include "memmap.h"
@@ -192,54 +193,7 @@ void retro_set_environment(retro_environment_t cb)
 
     cb(RETRO_ENVIRONMENT_SET_SUBSYSTEM_INFO,  (void*)subsystems);
 
-
-    struct retro_variable variables[] = {
-        // These variable names and possible values constitute an ABI with ZMZ (ZSNES Libretro player).
-        // Changing "Show layer 1" is fine, but don't change "layer_1"/etc or the possible values ("Yes|No").
-        // Adding more variables and rearranging them is safe.
-        { "snes9x_up_down_allowed", "Allow Opposing Directions; disabled|enabled" },
-        { "snes9x_overclock_superfx", "SuperFX Overclocking; 100%|150%|200%|250%|300%|350%|400%|450%|500%|50%|60%|70%|80%|90%" },
-        { "snes9x_overclock_cycles", "Reduce Slowdown (Hack, Unsafe); disabled|light|compatible|max" },
-        { "snes9x_reduce_sprite_flicker", "Reduce Flickering (Hack, Unsafe); disabled|enabled" },
-        { "snes9x_randomize_memory", "Randomize Memory (Unsafe); disabled|enabled" },
-        { "snes9x_hires_blend", "Hires Blending; disabled|merge|blur" },
-        { "snes9x_audio_interpolation", "Audio Interpolation; gaussian|cubic|sinc|none|linear" },
-        { "snes9x_blargg", "Blargg NTSC filter; disabled|monochrome|rf|composite|s-video|rgb" },
-        { "snes9x_layer_1", "Show layer 1; enabled|disabled" },
-        { "snes9x_layer_2", "Show layer 2; enabled|disabled" },
-        { "snes9x_layer_3", "Show layer 3; enabled|disabled" },
-        { "snes9x_layer_4", "Show layer 4; enabled|disabled" },
-        { "snes9x_layer_5", "Show sprite layer; enabled|disabled" },
-        { "snes9x_gfx_clip", "Enable graphic clip windows; enabled|disabled" },
-        { "snes9x_gfx_transp", "Enable transparency effects; enabled|disabled" },
-        { "snes9x_gfx_hires", "Enable hires mode; enabled|disabled" },
-        { "snes9x_sndchan_1", "Enable sound channel 1; enabled|disabled" },
-        { "snes9x_sndchan_2", "Enable sound channel 2; enabled|disabled" },
-        { "snes9x_sndchan_3", "Enable sound channel 3; enabled|disabled" },
-        { "snes9x_sndchan_4", "Enable sound channel 4; enabled|disabled" },
-        { "snes9x_sndchan_5", "Enable sound channel 5; enabled|disabled" },
-        { "snes9x_sndchan_6", "Enable sound channel 6; enabled|disabled" },
-        { "snes9x_sndchan_7", "Enable sound channel 7; enabled|disabled" },
-        { "snes9x_sndchan_8", "Enable sound channel 8; enabled|disabled" },
-        { "snes9x_overscan", "Crop overscan; enabled|disabled|auto" },
-        { "snes9x_aspect", "Preferred aspect ratio; 4:3|uncorrected|auto|ntsc|pal" },
-        { "snes9x_region", "Console region (Reload core); auto|ntsc|pal" },
-        { "snes9x_lightgun_mode", "Lightgun Mode; Lightgun|Touchscreen"},
-        { "snes9x_superscope_reverse_buttons", "Super Scope reverse trigger buttons; disabled|enabled" },
-        { "snes9x_superscope_crosshair", "Super Scope crosshair; 2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|0|1" },
-        { "snes9x_superscope_color", "Super Scope color; White|White (blend)|Red|Red (blend)|Orange|Orange (blend)|Yellow|Yellow (blend)|Green|Green (blend)|Cyan|Cyan (blend)|Sky|Sky (blend)|Blue|Blue (blend)|Violet|Violet (blend)|Pink|Pink (blend)|Purple|Purple (blend)|Black|Black (blend)|25% Grey|25% Grey (blend)|50% Grey|50% Grey (blend)|75% Grey|75% Grey (blend)" },
-        { "snes9x_justifier1_crosshair", "Justifier 1 crosshair; 4|5|6|7|8|9|10|11|12|13|14|15|16|0|1|2|3" },
-        { "snes9x_justifier1_color", "Justifier 1 color; Blue|Blue (blend)|Violet|Violet (blend)|Pink|Pink (blend)|Purple|Purple (blend)|Black|Black (blend)|25% Grey|25% Grey (blend)|50% Grey|50% Grey (blend)|75% Grey|75% Grey (blend)|White|White (blend)|Red|Red (blend)|Orange|Orange (blend)|Yellow|Yellow (blend)|Green|Green (blend)|Cyan|Cyan (blend)|Sky|Sky (blend)" },
-        { "snes9x_justifier2_crosshair", "Justifier 2 crosshair; 4|5|6|7|8|9|10|11|12|13|14|15|16|0|1|2|3" },
-        { "snes9x_justifier2_color", "Justifier 2 color; Pink|Pink (blend)|Purple|Purple (blend)|Black|Black (blend)|25% Grey|25% Grey (blend)|50% Grey|50% Grey (blend)|75% Grey|75% Grey (blend)|White|White (blend)|Red|Red (blend)|Orange|Orange (blend)|Yellow|Yellow (blend)|Green|Green (blend)|Cyan|Cyan (blend)|Sky|Sky (blend)|Blue|Blue (blend)|Violet|Violet (blend)" },
-        { "snes9x_rifle_crosshair", "M.A.C.S. rifle crosshair; 2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|0|1" },
-        { "snes9x_rifle_color", "M.A.C.S. rifle color; White|White (blend)|Red|Red (blend)|Orange|Orange (blend)|Yellow|Yellow (blend)|Green|Green (blend)|Cyan|Cyan (blend)|Sky|Sky (blend)|Blue|Blue (blend)|Violet|Violet (blend)|Pink|Pink (blend)|Purple|Purple (blend)|Black|Black (blend)|25% Grey|25% Grey (blend)|50% Grey|50% Grey (blend)|75% Grey|75% Grey (blend)" },
-        { "snes9x_block_invalid_vram_access", "Block Invalid VRAM Access; enabled|disabled" },
-        { "snes9x_echo_buffer_hack", "Echo Buffer Hack (Unsafe, only enable for old addmusic hacks); disabled|enabled"},
-        { NULL, NULL },
-    };
-
-    environ_cb(RETRO_ENVIRONMENT_SET_VARIABLES, variables);
+    libretro_set_core_options(environ_cb);
 
     static const struct retro_controller_description port_1[] = {
         { "None", RETRO_DEVICE_NONE },
