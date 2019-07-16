@@ -48,6 +48,11 @@ struct retro_core_option_definition option_defs_us[] = {
       "SuperFX Overclocking",
       "SuperFX coprocessor frequency multiplier. Can improve frame rate or cause timing errors. Values under 100% can improve game performance on slow devices.",
       {
+         { "50%",  NULL },
+         { "60%",  NULL },
+         { "70%",  NULL },
+         { "80%",  NULL },
+         { "90%",  NULL },
          { "100%", NULL },
          { "150%", NULL },
          { "200%", NULL },
@@ -57,11 +62,6 @@ struct retro_core_option_definition option_defs_us[] = {
          { "400%", NULL },
          { "450%", NULL },
          { "500%", NULL },
-         { "50%",  NULL },
-         { "60%",  NULL },
-         { "70%",  NULL },
-         { "80%",  NULL },
-         { "90%",  NULL },
          { NULL, NULL},
       },
       "100%"
@@ -383,6 +383,8 @@ struct retro_core_option_definition option_defs_us[] = {
       "Super Scope crosshair",
       "Change the crosshair size on screen.",
       {
+         { "0",  NULL },
+         { "1",  NULL },
          { "2",  NULL },
          { "3",  NULL },
          { "4",  NULL },
@@ -398,8 +400,6 @@ struct retro_core_option_definition option_defs_us[] = {
          { "14", NULL },
          { "15", NULL },
          { "16", NULL },
-         { "0",  NULL },
-         { "1",  NULL },
          { NULL, NULL},
       },
       "2"
@@ -448,6 +448,10 @@ struct retro_core_option_definition option_defs_us[] = {
       "Justifier 1 crosshair",
       "Change the crosshair size on screen.",
       {
+         { "0",  NULL },
+         { "1",  NULL },
+         { "2",  NULL },
+         { "3",  NULL },
          { "4",  NULL },
          { "5",  NULL },
          { "6",  NULL },
@@ -461,10 +465,6 @@ struct retro_core_option_definition option_defs_us[] = {
          { "14", NULL },
          { "15", NULL },
          { "16", NULL },
-         { "0",  NULL },
-         { "1",  NULL },
-         { "2",  NULL },
-         { "3",  NULL },
          { NULL, NULL},
       },
       "4"
@@ -513,6 +513,10 @@ struct retro_core_option_definition option_defs_us[] = {
       "Justifier 2 crosshair",
       "Change the crosshair size on screen.",
       {
+         { "0",  NULL },
+         { "1",  NULL },
+         { "2",  NULL },
+         { "3",  NULL },
          { "4",  NULL },
          { "5",  NULL },
          { "6",  NULL },
@@ -526,10 +530,6 @@ struct retro_core_option_definition option_defs_us[] = {
          { "14", NULL },
          { "15", NULL },
          { "16", NULL },
-         { "0",  NULL },
-         { "1",  NULL },
-         { "2",  NULL },
-         { "3",  NULL },
          { NULL, NULL},
       },
       "4"
@@ -578,6 +578,8 @@ struct retro_core_option_definition option_defs_us[] = {
       "M.A.C.S. rifle crosshair",
       "Change the crosshair size on screen.",
       {
+         { "0",  NULL },
+         { "1",  NULL },
          { "2",  NULL },
          { "3",  NULL },
          { "4",  NULL },
@@ -593,8 +595,6 @@ struct retro_core_option_definition option_defs_us[] = {
          { "14", NULL },
          { "15", NULL },
          { "16", NULL },
-         { "0",  NULL },
-         { "1",  NULL },
          { NULL, NULL},
       },
       "2"
@@ -789,8 +789,10 @@ static INLINE void libretro_set_core_options(retro_environment_t environ_cb)
       {
          const char *key                        = option_defs_us[i].key;
          const char *desc                       = option_defs_us[i].desc;
+         const char *default_value              = option_defs_us[i].default_value;
          struct retro_core_option_value *values = option_defs_us[i].values;
          size_t buf_len                         = 3;
+         size_t default_index                   = 0;
 
          values_buf[i] = NULL;
 
@@ -803,6 +805,11 @@ static INLINE void libretro_set_core_options(retro_environment_t environ_cb)
             {
                if (values[num_values].value)
                {
+                  /* Check if this is the default value */
+                  if (default_value)
+                     if (strcmp(values[num_values].value, default_value) == 0)
+                        default_index = num_values;
+
                   buf_len += strlen(values[num_values].value);
                   num_values++;
                }
@@ -825,11 +832,17 @@ static INLINE void libretro_set_core_options(retro_environment_t environ_cb)
                strcpy(values_buf[i], desc);
                strcat(values_buf[i], "; ");
 
+               /* Default value goes first */
+               strcat(values_buf[i], values[default_index].value);
+
+               /* Add remaining values */
                for (j = 0; j < num_values; j++)
                {
-                  strcat(values_buf[i], values[j].value);
-                  if (j != num_values - 1)
+                  if (j != default_index)
+                  {
                      strcat(values_buf[i], "|");
+                     strcat(values_buf[i], values[j].value);
+                  }
                }
             }
          }
