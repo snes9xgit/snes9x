@@ -6,7 +6,7 @@ project('snes9x-gtk',
 args = ['-DSNES9X_GTK', '-DUNZIP_SUPPORT', '-DNETPLAY_SUPPORT', '-DJMA_SUPPORT', '-Wall', '-W', '-Wno-unused-parameter']
 srcs = []
 deps = []
-includes = ['../apu/bapu', '../', 'src']
+includes = ['../apu/bapu', '../', 'src', '../ppc']
 warns = []
 
 prefix = get_option('prefix')
