@@ -590,13 +590,13 @@ else ifneq (,$(findstring msvc,$(platform)))
    WARNINGS_DEFINES =
    CODE_DEFINES =
 else
-   WARNINGS_DEFINES = -Wall -W -Wno-unused-parameter
+   WARNINGS_DEFINES = -Wall -W -Wno-unused-parameter -Wno-missing-field-initializers
    CODE_DEFINES = -fomit-frame-pointer
 endif
 
 CXXFLAGS	+= $(CODE_DEFINES) $(WARNINGS_DEFINES) $(fpic)
 CXXFLAGS	+= -DRIGHTSHIFT_IS_SAR -D__LIBRETRO__ -DALLOW_CPU_OVERCLOCK
-CFLAGS		= $(CXXFLAGS)
+CFLAGS		:= $(CXXFLAGS)
 CFLAGS          += -DHAVE_STDINT_H
 CXXFLAGS        += -DHAVE_STDINT_H
 ifeq (,$(findstring msvc,$(platform)))
