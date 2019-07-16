@@ -8,6 +8,7 @@
 #define __GTK_SOUND_DRIVER_SDL_H
 
 #include "SDL.h"
+// SDL.h may include altivec.h which redefines vector and bool
 #undef vector
 #undef bool
 
