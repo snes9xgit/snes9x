@@ -8,6 +8,8 @@
 #define __GTK_SOUND_DRIVER_SDL_H
 
 #include "SDL.h"
+#undef vector
+#undef bool
 
 #include "gtk_sound.h"
 #include "gtk_sound_driver.h"

@@ -5,7 +5,6 @@
 \*****************************************************************************/
 
 #include <fcntl.h>
-#include "SDL.h"
 
 #include "gtk_s9xcore.h"
 #include "gtk_s9x.h"
