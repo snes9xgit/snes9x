@@ -226,10 +226,10 @@ struct retro_core_option_definition option_defs_us[] = {
    },
    {
       "snes9x_lightgun_mode",
-      "Lightgun Mode",
-      "Use a mouse-controlled 'Lightgun' or 'Touchscreen' input.",
+      "Light Gun Mode",
+      "Use a mouse-controlled 'Light Gun' or 'Touchscreen' input.",
       {
-         { "Lightgun",    NULL },
+         { "Lightgun",    "Light Gun" },
          { "Touchscreen", NULL },
          { NULL, NULL},
       },
