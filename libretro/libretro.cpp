@@ -77,6 +77,9 @@ static uint16 *ntsc_screen_buffer, *snes_ntsc_buffer;
 
 const int MAX_SNES_WIDTH_NTSC = ((SNES_NTSC_OUT_WIDTH(256) + 3) / 4) * 4;
 
+static bool show_lightgun_settings = true;
+static bool show_advanced_av_settings = true;
+
 static void extract_basename(char *buf, const char *path, size_t size)
 {
     const char *base = strrchr(path, '/');
@@ -658,6 +661,89 @@ static void update_variables(void)
 
             if (old_filter != blargg_filter)
                 snes_ntsc_init( snes_ntsc, &setup );
+        }
+    }
+
+    /* Show/hide core options */
+
+    var.key = "snes9x_show_lightgun_settings";
+    var.value = NULL;
+
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+    {
+        bool show_lightgun_settings_prev = show_lightgun_settings;
+
+        show_lightgun_settings = true;
+        if (strcmp(var.value, "disabled") == 0)
+            show_lightgun_settings = false;
+
+        if (show_lightgun_settings != show_lightgun_settings_prev)
+        {
+            size_t i;
+            struct retro_core_option_display option_display;
+            char lightgun_keys[10][64] = {
+                "snes9x_lightgun_mode",
+                "snes9x_superscope_reverse_buttons",
+                "snes9x_superscope_crosshair",
+                "snes9x_superscope_color",
+                "snes9x_justifier1_crosshair",
+                "snes9x_justifier1_color",
+                "snes9x_justifier2_crosshair",
+                "snes9x_justifier2_color",
+                "snes9x_rifle_crosshair",
+                "snes9x_rifle_color"
+            };
+
+            option_display.visible = show_lightgun_settings;
+
+            for (i = 0; i < 10; i++)
+            {
+                option_display.key = lightgun_keys[i];
+                environ_cb(RETRO_ENVIRONMENT_SET_CORE_OPTIONS_DISPLAY, &option_display);
+            }
+        }
+    }
+
+    var.key = "snes9x_show_advanced_av_settings";
+    var.value = NULL;
+
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+    {
+        bool show_advanced_av_settings_prev = show_advanced_av_settings;
+
+        show_advanced_av_settings = true;
+        if (strcmp(var.value, "disabled") == 0)
+            show_advanced_av_settings = false;
+
+        if (show_advanced_av_settings != show_advanced_av_settings_prev)
+        {
+            size_t i;
+            struct retro_core_option_display option_display;
+            char av_keys[15][32] = {
+                "snes9x_layer_1",
+                "snes9x_layer_2",
+                "snes9x_layer_3",
+                "snes9x_layer_4",
+                "snes9x_layer_5",
+                "snes9x_gfx_clip",
+                "snes9x_gfx_transp",
+                "snes9x_sndchan_1",
+                "snes9x_sndchan_2",
+                "snes9x_sndchan_3",
+                "snes9x_sndchan_4",
+                "snes9x_sndchan_5",
+                "snes9x_sndchan_6",
+                "snes9x_sndchan_7",
+                "snes9x_sndchan_8"
+            };
+
+            option_display.visible = show_advanced_av_settings;
+
+            for (i = 0; i < 15; i++)
+            {
+                option_display.key = av_keys[i];
+                environ_cb(RETRO_ENVIRONMENT_SET_CORE_OPTIONS_DISPLAY, &option_display);
+            }
         }
     }
 }
