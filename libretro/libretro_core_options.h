@@ -33,7 +33,97 @@ struct retro_core_option_definition option_defs_us[] = {
     * Adding more variables and rearranging them is safe. */
 
    {
-      "snes9x_up_down_allowed", 
+      "snes9x_region",
+      "Console Region (Reload Core)",
+      "Specify which region the system is from. 'PAL' is 50hz, 'NTSC' is 60hz. Games will run faster or slower than normal if the incorrect region is selected.",
+      {
+         { "auto", "Auto" },
+         { "ntsc", "NTSC" },
+         { "pal",  "PAL" },
+         { NULL, NULL},
+      },
+      "auto"
+   },
+   {
+      "snes9x_aspect",
+      "Preferred Aspect Ratio",
+      "Choose the preferred content aspect ratio. This will only apply when RetroArch's aspect ratio is set to 'Core provided' in the Video settings.",
+      {
+         { "4:3",         NULL },
+         { "uncorrected", "Uncorrected" },
+         { "auto",        "Auto" },
+         { "ntsc",        "NTSC" },
+         { "pal",         "PAL" },
+         { NULL, NULL},
+      },
+      "4:3"
+   },
+   {
+      "snes9x_overscan",
+      "Crop Overscan",
+      "Remove the ~8 pixel borders at the top and bottom of the screen, typically unused by games and hidden by the bezel of a standard-definition television. 'Auto' will attempt to detect and crop overscan based on the current content.",
+      {
+         { "enabled",  NULL },
+         { "disabled", NULL },
+         { "auto",     "Auto" },
+         { NULL, NULL},
+      },
+      "enabled"
+   },
+   {
+      "snes9x_gfx_hires",
+      "Enable Hi-Res Mode",
+      "Allow games to switch to hi-res mode (512x448) or force all content to output at 256x224 (with crushed pixels).",
+      {
+         { "enabled",  NULL },
+         { "disabled", NULL },
+         { NULL, NULL},
+      },
+      "enabled"
+   },
+   {
+      "snes9x_hires_blend",
+      "Hi-Res Blending",
+      "Blend adjacent pixels when game switches to hi-res mode (512x448). Required for certain games that use hi-res mode to produce transparency effects (Kirby's Dream Land, Jurassic Park...).",
+      {
+         { "disabled", NULL },
+         { "merge",    "Merge" },
+         { "blur",     "Blur" },
+         { NULL, NULL},
+      },
+      "disabled"
+   },
+   {
+      "snes9x_blargg",
+      "Blargg NTSC Filter",
+      "Apply a video filter to mimic various NTSC TV signals.",
+      {
+         { "disabled",   NULL },
+         { "monochrome", "Monochrome" },
+         { "rf",         "RF" },
+         { "composite",  "Composite" },
+         { "s-video",    "S-Video" },
+         { "rgb",        "RGB" },
+         { NULL, NULL},
+      },
+      "disabled"
+   },
+   {
+      "snes9x_audio_interpolation",
+      "Audio Interpolation",
+      "Apply an audio filter. 'Gaussian' reproduces the bass-heavy sound of the original hardware. 'Cubic' and 'Sinc' are less accurate, and preserve more of the high range.",
+      {
+         { "gaussian", "Gaussian" },
+         { "cubic",    "Cubic" },
+         { "sinc",     "Sinc" },
+         { "none",     "None" },
+         { "linear",   "Linear" },
+         { NULL, NULL},
+      },
+      "gaussian"
+   },
+   {
+      "snes9x_up_down_allowed",
       "Allow Opposing Directions",
       "Enabling this will allow pressing / quickly alternating / holding both left and right (or up and down) directions at the same time. This may cause movement-based glitches.",
       {
@@ -44,7 +134,7 @@ struct retro_core_option_definition option_defs_us[] = {
       "disabled"
    },
    {
-      "snes9x_overclock_superfx", 
+      "snes9x_overclock_superfx",
       "SuperFX Overclocking",
       "SuperFX coprocessor frequency multiplier. Can improve frame rate or cause timing errors. Values under 100% can improve game performance on slow devices.",
       {
@@ -102,266 +192,44 @@ struct retro_core_option_definition option_defs_us[] = {
       "disabled"
    },
    {
-      "snes9x_hires_blend",
-      "Hires Blending",
-      "Blend adjacent pixels when game switches to hi-res mode (512x448). Required for certain games that use hi-res mode to produce transparency effects (Kirby's Dream Land, Jurassic Park...).",
+      "snes9x_block_invalid_vram_access",
+      "Block Invalid VRAM Access",
+      "Some homebrew/ROM hacks require this option to be disabled for correct operation.",
+      {
+         { "enabled",  NULL },
+         { "disabled", NULL },
+         { NULL, NULL},
+      },
+      "enabled"
+   },
+   {
+      "snes9x_echo_buffer_hack",
+      "Echo Buffer Hack (Unsafe, only enable for old addmusic hacks)",
+      "Some homebrew/ROM hacks require this option to be enabled for correct operation.",
       {
          { "disabled", NULL },
-         { "merge",    "Merge" },
-         { "blur",     "Blur" },
+         { "enabled",  NULL },
          { NULL, NULL},
       },
       "disabled"
    },
    {
-      "snes9x_audio_interpolation",
-      "Audio Interpolation",
-      "Apply an audio filter. 'Gaussian' reproduces the bass-heavy sound of the original hardware. 'Cubic' and 'Sinc' are less accurate, and preserve more of the high range.",
+      "snes9x_show_lightgun_settings",
+      "Show Light Gun Settings",
+      "Enable configuration of Super Scope / Justifier / M.A.C.S. rifle input. NOTE: Quick Menu must be toggled for this setting to take effect.",
       {
-         { "gaussian", "Gaussian" },
-         { "cubic",    "Cubic" },
-         { "sinc",     "Sinc" },
-         { "none",     "None" },
-         { "linear",   "Linear" },
-         { NULL, NULL},
-      },
-      "gaussian"
-   },
-   {
-      "snes9x_blargg",
-      "Blargg NTSC filter",
-      "Apply a video filter to mimic various NTSC TV signals.",
-      {
-         { "disabled",   NULL },
-         { "monochrome", "Monochrome" },
-         { "rf",         "RF" },
-         { "composite",  "Composite" },
-         { "s-video",    "S-Video" },
-         { "rgb",        "RGB" },
+         { "enabled",  NULL },
+         { "disabled", NULL },
          { NULL, NULL},
       },
       "disabled"
-   },
-   {
-      "snes9x_layer_1",
-      "Show layer 1",
-      NULL,
-      {
-         { "enabled",  NULL },
-         { "disabled", NULL },
-         { NULL, NULL},
-      },
-      "enabled"
-   },
-   {
-      "snes9x_layer_2",
-      "Show layer 2",
-      NULL,
-      {
-         { "enabled",  NULL },
-         { "disabled", NULL },
-         { NULL, NULL},
-      },
-      "enabled"
-   },
-   {
-      "snes9x_layer_3",
-      "Show layer 3",
-      NULL,
-      {
-         { "enabled",  NULL },
-         { "disabled", NULL },
-         { NULL, NULL},
-      },
-      "enabled"
-   },
-   {
-      "snes9x_layer_4",
-      "Show layer 4",
-      NULL,
-      {
-         { "enabled",  NULL },
-         { "disabled", NULL },
-         { NULL, NULL},
-      },
-      "enabled"
-   },
-   {
-      "snes9x_layer_5",
-      "Show sprite layer",
-      NULL,
-      {
-         { "enabled",  NULL },
-         { "disabled", NULL },
-         { NULL, NULL},
-      },
-      "enabled"
-   },
-   {
-      "snes9x_gfx_clip",
-      "Enable graphic clip windows",
-      NULL,
-      {
-         { "enabled",  NULL },
-         { "disabled", NULL },
-         { NULL, NULL},
-      },
-      "enabled"
-   },
-   {
-      "snes9x_gfx_transp",
-      "Enable transparency effects",
-      NULL,
-      {
-         { "enabled",  NULL },
-         { "disabled", NULL },
-         { NULL, NULL},
-      },
-      "enabled"
-   },
-   {
-      "snes9x_gfx_hires",
-      "Enable hires mode",
-      "Allow games to switch to hi-res mode (512x448) or force all content to output at 256x224 (with crushed pixels).",
-      {
-         { "enabled",  NULL },
-         { "disabled", NULL },
-         { NULL, NULL},
-      },
-      "enabled"
-   },
-   {
-      "snes9x_sndchan_1",
-      "Enable sound channel 1",
-      NULL,
-      {
-         { "enabled",  NULL },
-         { "disabled", NULL },
-         { NULL, NULL},
-      },
-      "enabled"
-   },
-   {
-      "snes9x_sndchan_2",
-      "Enable sound channel 2",
-      NULL,
-      {
-         { "enabled",  NULL },
-         { "disabled", NULL },
-         { NULL, NULL},
-      },
-      "enabled"
-   },
-   {
-      "snes9x_sndchan_3",
-      "Enable sound channel 3",
-      NULL,
-      {
-         { "enabled",  NULL },
-         { "disabled", NULL },
-         { NULL, NULL},
-      },
-      "enabled"
-   },
-   {
-      "snes9x_sndchan_4",
-      "Enable sound channel 4",
-      NULL,
-      {
-         { "enabled",  NULL },
-         { "disabled", NULL },
-         { NULL, NULL},
-      },
-      "enabled"
-   },
-   {
-      "snes9x_sndchan_5",
-      "Enable sound channel 5",
-      NULL,
-      {
-         { "enabled",  NULL },
-         { "disabled", NULL },
-         { NULL, NULL},
-      },
-      "enabled"
-   },
-   {
-      "snes9x_sndchan_6",
-      "Enable sound channel 6",
-      NULL,
-      {
-         { "enabled",  NULL },
-         { "disabled", NULL },
-         { NULL, NULL},
-      },
-      "enabled"
-   },
-   {
-      "snes9x_sndchan_7",
-      "Enable sound channel 7",
-      NULL,
-      {
-         { "enabled",  NULL },
-         { "disabled", NULL },
-         { NULL, NULL},
-      },
-      "enabled"
-   },
-   {
-      "snes9x_sndchan_8",
-      "Enable sound channel 8",
-      NULL,
-      {
-         { "enabled",  NULL },
-         { "disabled", NULL },
-         { NULL, NULL},
-      },
-      "enabled"
-   },
-   {
-      "snes9x_overscan",
-      "Crop overscan",
-      "Remove the ~8 pixel borders at the top and bottom of the screen, typically unused by games and hidden by the bezel of a standard-definition television. 'Auto' will attempt to detect and crop overscan based on the current content.",
-      {
-         { "enabled",  NULL },
-         { "disabled", NULL },
-         { "auto",     "Auto" },
-         { NULL, NULL},
-      },
-      "enabled"
-   },
-   {
-      "snes9x_aspect",
-      "Preferred aspect ratio",
-      "Choose the preferred content aspect ratio. This will only apply when RetroArch's aspect ratio is set to 'Core provided' in the Video settings.",
-      {
-         { "4:3",         NULL },
-         { "uncorrected", "Uncorrected" },
-         { "auto",        "Auto" },
-         { "ntsc",        "NTSC" },
-         { "pal",         "PAL" },
-         { NULL, NULL},
-      },
-      "4:3"
-   },
-   {
-      "snes9x_region",
-      "Console region (Reload core)",
-      "Specify which region the system is from. 'PAL' is 50hz, 'NTSC' is 60hz. Games will run faster or slower than normal if the incorrect region is selected.",
-      {
-         { "auto", "Auto" },
-         { "ntsc", "NTSC" },
-         { "pal",  "PAL" },
-         { NULL, NULL},
-      },
-      "auto"
    },
    {
       "snes9x_lightgun_mode",
-      "Lightgun Mode",
-      "Use a mouse-controlled 'Lightgun' or 'Touchscreen' input.",
+      "Light Gun Mode",
+      "Use a mouse-controlled 'Light Gun' or 'Touchscreen' input.",
       {
-         { "Lightgun",    NULL },
+         { "Lightgun",    "Light Gun" },
          { "Touchscreen", NULL },
          { NULL, NULL},
       },
@@ -369,7 +237,7 @@ struct retro_core_option_definition option_defs_us[] = {
    },
    {
       "snes9x_superscope_reverse_buttons",
-      "Super Scope reverse trigger buttons",
+      "Super Scope Reverse Trigger Buttons",
       "Swap the positions of the Super Scope 'Fire' and 'Cursor' buttons.",
       {
          { "disabled", NULL },
@@ -380,7 +248,7 @@ struct retro_core_option_definition option_defs_us[] = {
    },
    {
       "snes9x_superscope_crosshair",
-      "Super Scope crosshair",
+      "Super Scope Crosshair",
       "Change the crosshair size on screen.",
       {
          { "0",  NULL },
@@ -406,7 +274,7 @@ struct retro_core_option_definition option_defs_us[] = {
    },
    {
       "snes9x_superscope_color",
-      "Super Scope color",
+      "Super Scope Color",
       "Change the crosshair color on screen.",
       {
          { "White",            NULL },
@@ -445,7 +313,7 @@ struct retro_core_option_definition option_defs_us[] = {
    },
    {
       "snes9x_justifier1_crosshair",
-      "Justifier 1 crosshair",
+      "Justifier 1 Crosshair",
       "Change the crosshair size on screen.",
       {
          { "0",  NULL },
@@ -471,7 +339,7 @@ struct retro_core_option_definition option_defs_us[] = {
    },
    {
       "snes9x_justifier1_color",
-      "Justifier 1 color",
+      "Justifier 1 Color",
       "Change the crosshair color on screen.",
       {
          { "Blue",             NULL },
@@ -510,7 +378,7 @@ struct retro_core_option_definition option_defs_us[] = {
    },
    {
       "snes9x_justifier2_crosshair",
-      "Justifier 2 crosshair",
+      "Justifier 2 Crosshair",
       "Change the crosshair size on screen.",
       {
          { "0",  NULL },
@@ -536,7 +404,7 @@ struct retro_core_option_definition option_defs_us[] = {
    },
    {
       "snes9x_justifier2_color",
-      "Justifier 2 color",
+      "Justifier 2 Color",
       "Change the crosshair color on screen.",
       {
          { "Pink",             NULL },
@@ -575,7 +443,7 @@ struct retro_core_option_definition option_defs_us[] = {
    },
    {
       "snes9x_rifle_crosshair",
-      "M.A.C.S. rifle crosshair",
+      "M.A.C.S. Rifle Crosshair",
       "Change the crosshair size on screen.",
       {
          { "0",  NULL },
@@ -601,7 +469,7 @@ struct retro_core_option_definition option_defs_us[] = {
    },
    {
       "snes9x_rifle_color",
-      "M.A.C.S. rifle color",
+      "M.A.C.S. Rifle Color",
       "Change the crosshair color on screen.",
       {
          { "White",            NULL },
@@ -639,9 +507,20 @@ struct retro_core_option_definition option_defs_us[] = {
       "White"
    },
    {
-      "snes9x_block_invalid_vram_access",
-      "Block Invalid VRAM Access",
-      "Some homebrew/ROM hacks require this option to be disabled for correct operation.",
+      "snes9x_show_advanced_av_settings",
+      "Show Advanced Audio/Video Settings",
+      "Enable configuration of low-level video layer / GFX effect / audio channel parameters. NOTE: Quick Menu must be toggled for this setting to take effect.",
+      {
+         { "enabled",  NULL },
+         { "disabled", NULL },
+         { NULL, NULL},
+      },
+      "disabled"
+   },
+   {
+      "snes9x_layer_1",
+      "Show Layer 1",
+      NULL,
       {
          { "enabled",  NULL },
          { "disabled", NULL },
@@ -650,15 +529,158 @@ struct retro_core_option_definition option_defs_us[] = {
       "enabled"
    },
    {
-      "snes9x_echo_buffer_hack",
-      "Echo Buffer Hack (Unsafe, only enable for old addmusic hacks)",
-      "Some homebrew/ROM hacks require this option to be enabled for correct operation.",
+      "snes9x_layer_2",
+      "Show Layer 2",
+      NULL,
       {
-         { "disabled", NULL },
          { "enabled",  NULL },
+         { "disabled", NULL },
          { NULL, NULL},
       },
-      "disabled"
+      "enabled"
+   },
+   {
+      "snes9x_layer_3",
+      "Show Layer 3",
+      NULL,
+      {
+         { "enabled",  NULL },
+         { "disabled", NULL },
+         { NULL, NULL},
+      },
+      "enabled"
+   },
+   {
+      "snes9x_layer_4",
+      "Show Layer 4",
+      NULL,
+      {
+         { "enabled",  NULL },
+         { "disabled", NULL },
+         { NULL, NULL},
+      },
+      "enabled"
+   },
+   {
+      "snes9x_layer_5",
+      "Show Sprite Layer",
+      NULL,
+      {
+         { "enabled",  NULL },
+         { "disabled", NULL },
+         { NULL, NULL},
+      },
+      "enabled"
+   },
+   {
+      "snes9x_gfx_clip",
+      "Enable Graphic Clip Windows",
+      NULL,
+      {
+         { "enabled",  NULL },
+         { "disabled", NULL },
+         { NULL, NULL},
+      },
+      "enabled"
+   },
+   {
+      "snes9x_gfx_transp",
+      "Enable Transparency Effects",
+      NULL,
+      {
+         { "enabled",  NULL },
+         { "disabled", NULL },
+         { NULL, NULL},
+      },
+      "enabled"
+   },
+   {
+      "snes9x_sndchan_1",
+      "Enable Sound Channel 1",
+      NULL,
+      {
+         { "enabled",  NULL },
+         { "disabled", NULL },
+         { NULL, NULL},
+      },
+      "enabled"
+   },
+   {
+      "snes9x_sndchan_2",
+      "Enable Sound Channel 2",
+      NULL,
+      {
+         { "enabled",  NULL },
+         { "disabled", NULL },
+         { NULL, NULL},
+      },
+      "enabled"
+   },
+   {
+      "snes9x_sndchan_3",
+      "Enable Sound Channel 3",
+      NULL,
+      {
+         { "enabled",  NULL },
+         { "disabled", NULL },
+         { NULL, NULL},
+      },
+      "enabled"
+   },
+   {
+      "snes9x_sndchan_4",
+      "Enable Sound Channel 4",
+      NULL,
+      {
+         { "enabled",  NULL },
+         { "disabled", NULL },
+         { NULL, NULL},
+      },
+      "enabled"
+   },
+   {
+      "snes9x_sndchan_5",
+      "Enable Sound Channel 5",
+      NULL,
+      {
+         { "enabled",  NULL },
+         { "disabled", NULL },
+         { NULL, NULL},
+      },
+      "enabled"
+   },
+   {
+      "snes9x_sndchan_6",
+      "Enable Sound Channel 6",
+      NULL,
+      {
+         { "enabled",  NULL },
+         { "disabled", NULL },
+         { NULL, NULL},
+      },
+      "enabled"
+   },
+   {
+      "snes9x_sndchan_7",
+      "Enable Sound Channel 7",
+      NULL,
+      {
+         { "enabled",  NULL },
+         { "disabled", NULL },
+         { NULL, NULL},
+      },
+      "enabled"
+   },
+   {
+      "snes9x_sndchan_8",
+      "Enable Sound Channel 8",
+      NULL,
+      {
+         { "enabled",  NULL },
+         { "disabled", NULL },
+         { NULL, NULL},
+      },
+      "enabled"
    },
    { NULL, NULL, NULL, {{0}}, NULL },
 };
@@ -764,11 +786,17 @@ static INLINE void libretro_set_core_options(retro_environment_t environ_cb)
    else
    {
       size_t i;
+      size_t option_index              = 0;
       size_t num_options               = 0;
       struct retro_variable *variables = NULL;
       char **values_buf                = NULL;
 
-      /* Determine number of options */
+      /* Determine number of options
+       * > Note: We are going to skip a number of irrelevant
+       *   core options when building the retro_variable array,
+       *   but we'll allocate space for all of them. The difference
+       *   in resource usage is negligible, and this allows us to
+       *   keep the code 'cleaner' */
       while (true)
       {
          if (option_defs_us[num_options].key)
@@ -795,6 +823,12 @@ static INLINE void libretro_set_core_options(retro_environment_t environ_cb)
          size_t default_index                   = 0;
 
          values_buf[i] = NULL;
+
+         /* Skip options that are irrelevant when using the
+          * old style core options interface */
+         if ((strcmp(key, "snes9x_show_lightgun_settings") == 0) ||
+             (strcmp(key, "snes9x_show_advanced_av_settings") == 0))
+            continue;
 
          if (desc)
          {
@@ -847,8 +881,9 @@ static INLINE void libretro_set_core_options(retro_environment_t environ_cb)
             }
          }
 
-         variables[i].key   = key;
-         variables[i].value = values_buf[i];
+         variables[option_index].key   = key;
+         variables[option_index].value = values_buf[i];
+         option_index++;
       }
       
       /* Set variables */
