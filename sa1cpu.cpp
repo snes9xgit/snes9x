@@ -126,7 +126,11 @@ void S9xSA1MainLoop (void)
 		}
 	}
 
-	for (int i = 0; i < 5 && !(Memory.FillRAM[0x2200] & 0x60); i++)
+	#undef CPU
+	int cycles = CPU.Cycles * 3;
+	#define CPU SA1
+
+	for (; SA1.Cycles < cycles && !(Memory.FillRAM[0x2200] & 0x60);)
 	{
 	#ifdef DEBUGGER
 		if (SA1.Flags & TRACE_FLAG)
@@ -140,6 +144,7 @@ void S9xSA1MainLoop (void)
 		{
 			SA1OpenBus = Op = SA1.PCBase[Registers.PCw];
 			Opcodes = SA1.S9xOpcodes;
+			SA1.Cycles += SA1.MemSpeed;
 		}
 		else
 		{
@@ -188,9 +193,6 @@ static void S9xSA1UpdateTimer (void) // FIXME
 				SA1.VCounter = 0;
 		}
 	}
-
-	if (SA1.Cycles >= Timings.H_Max_Master)
-		SA1.Cycles -= Timings.H_Max_Master;
 
 	SA1.PrevCycles = SA1.Cycles;
 

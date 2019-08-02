@@ -87,12 +87,12 @@ extern SNPServer NPServer;
 
 __int64 PCBase, PCFrameTime, PCFrameTimeNTSC, PCFrameTimePAL, PCStart, PCEnd;
 DWORD PCStartTicks, PCEndTicks;
-bool PCFrameTimeIsDefault = true;
 
 INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgInfoProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgAboutProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 
 INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgMultiROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -428,7 +428,7 @@ static uint32 FrameTimings[] = {
 	4000, 4000, 8333, 11667, 16667, 20000, 33333, 66667, 133333, 300000, 500000, 1000000, 1000000
 };
 
-// Languages supported by Snes9X: Windows
+// Languages supported by Snes9x: Windows
 // 0 - English [Default]
 struct sLanguages Languages[] = {
 	{ IDR_MENU_US,
@@ -436,7 +436,7 @@ struct sLanguages Languages[] = {
 		TEXT("DirectDraw failed to set the selected display mode!"),
 		TEXT("DirectSound failed to initialize; no sound will be played."),
 		TEXT("These settings won't take effect until you restart the emulator."),
-		TEXT("The frame timer failed to initialize, please do NOT select the automatic framerate option or Snes9X will crash!")}
+		TEXT("The frame timer failed to initialize, please do NOT select the automatic framerate option or Snes9x will crash!")}
 };
 
 struct OpenMovieParams
@@ -685,8 +685,16 @@ static void CenterCursor()
 
 void S9xRestoreWindowTitle ()
 {
-    TCHAR buf [100];
-    _stprintf (buf, WINDOW_TITLE, TEXT(VERSION));
+    TCHAR buf [1024];
+    if (Memory.ROMFilename[0])
+    {
+        char def[_MAX_FNAME];
+        _splitpath(Memory.ROMFilename, NULL, NULL, def, NULL);
+        _stprintf(buf, TEXT("%s - %s %s"), (wchar_t *)Utf8ToWide(def), WINDOW_TITLE, TEXT(VERSION));
+    }
+    else
+        _stprintf(buf, TEXT("%s %s"), WINDOW_TITLE, TEXT(VERSION));
+
     SetWindowText (GUI.hWnd, buf);
 }
 
@@ -1980,12 +1988,12 @@ LRESULT CALLBACK WinProc(
 			GUI.SoundBufferSize = 176;
 			ReInitSound();
 			break;
-		case ID_SOUND_194MS:
-			GUI.SoundBufferSize = 194;
+		case ID_SOUND_192MS:
+			GUI.SoundBufferSize = 192;
 			ReInitSound();
 			break;
-		case ID_SOUND_210MS:
-			GUI.SoundBufferSize = 210;
+		case ID_SOUND_208MS:
+			GUI.SoundBufferSize = 208;
 			ReInitSound();
 			break;
 
@@ -2005,17 +2013,6 @@ LRESULT CALLBACK WinProc(
 			GUI.Mute = !GUI.Mute;
             break;
 
-        case ID_SOUND_STEREO:
-            Settings.Stereo = !Settings.Stereo;
-            ReInitSound();
-            break;
-        case ID_SOUND_REVERSE_STEREO:
-            Settings.ReverseStereo = !Settings.ReverseStereo;
-            break;
-        case ID_SOUND_16BIT:
-            Settings.SixteenBitSound = !Settings.SixteenBitSound;
-            ReInitSound();
-            break;
         case ID_SOUND_SYNC:
             Settings.SoundSync = !Settings.SoundSync;
 			S9xDisplayStateChange (WINPROC_SYNC_SND, Settings.SoundSync);
@@ -2232,6 +2229,22 @@ LRESULT CALLBACK WinProc(
 			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_EMU_SETTINGS), hWnd, DlgEmulatorProc);
 			RestoreSNESDisplay ();
 			break;
+        case ID_EMULATION_HACKS:
+			if (MessageBoxA(hWnd,
+				"The settings in this dialog should only be used for compatibility "
+				"with old ROM hacks or if you otherwise know what you're doing.\n\n"
+				"If any problems occur, click \"Set Defaults\" to reset the options to normal.",
+				"Warning: Unsupported",
+				MB_ICONWARNING | MB_OKCANCEL) != IDOK)
+				break;
+
+            RestoreGUIDisplay();
+			i = DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG_HACKS), hWnd, DlgEmulatorHacksProc);
+            if (i == 1)
+                S9xReset();
+            else
+                RestoreSNESDisplay();
+            break;
 		case ID_HELP_ABOUT:
 			RestoreGUIDisplay ();
 			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_ABOUT), hWnd, DlgAboutProc);
@@ -2346,6 +2359,10 @@ LRESULT CALLBACK WinProc(
 		//                RealizePalette (GUI.WindowDC);
 		break;
 	case WM_SIZE:
+		if (wParam == SIZE_MINIMIZED && GUI.InactivePause)
+		{
+			S9xSetPause(PAUSE_INACTIVE_WINDOW);
+		}
 		WinChangeWindowSize(LOWORD(lParam),HIWORD(lParam));
 		break;
 	case WM_MOVE:
@@ -2581,7 +2598,7 @@ BOOL WinInit( HINSTANCE hInstance)
     wndclass.hIconSm = NULL;
     wndclass.hCursor = NULL;
     wndclass.lpszMenuName = NULL;
-    wndclass.lpszClassName = TEXT("Snes9X: WndClass");
+    wndclass.lpszClassName = TEXT("Snes9x: WndClass");
 	wndclass.hbrBackground=(HBRUSH)GetStockObject(BLACK_BRUSH);
 
     GUI.hInstance = hInstance;
@@ -2595,7 +2612,7 @@ BOOL WinInit( HINSTANCE hInstance)
 	GUI.hMenu = LoadMenu(GUI.hInstance, MAKEINTRESOURCE(IDR_MENU_US));
     if (GUI.hMenu == NULL)
 	{
-		MessageBox (NULL, TEXT("Failed to initialize the menu.\nThis could indicate a failure of your operating system;\ntry closing some other windows or programs, or restart your computer, before opening Snes9x again.\nOr, if you compiled this program yourself, ensure that Snes9x was built with the proper resource files."), TEXT("Snes9X - Menu Initialization Failure"), MB_OK | MB_ICONSTOP);
+		MessageBox (NULL, TEXT("Failed to initialize the menu.\nThis could indicate a failure of your operating system;\ntry closing some other windows or programs, or restart your computer, before opening Snes9x again.\nOr, if you compiled this program yourself, ensure that Snes9x was built with the proper resource files."), TEXT("Snes9x - Menu Initialization Failure"), MB_OK | MB_ICONSTOP);
 //        return FALSE; // disabled: try to function without the menu
 	}
 #ifdef DEBUGGER
@@ -2608,7 +2625,7 @@ BOOL WinInit( HINSTANCE hInstance)
 #endif
 
     TCHAR buf [100];
-    _stprintf (buf, WINDOW_TITLE, TEXT(VERSION));
+    _stprintf(buf, TEXT("%s %s"), WINDOW_TITLE, TEXT(VERSION));
 
     DWORD dwExStyle;
     DWORD dwStyle;
@@ -2623,7 +2640,7 @@ BOOL WinInit( HINSTANCE hInstance)
     AdjustWindowRectEx (&rect, dwStyle, FALSE, dwExStyle);
     if ((GUI.hWnd = CreateWindowEx (
         dwExStyle,
-        TEXT("Snes9X: WndClass"),
+        TEXT("Snes9x: WndClass"),
         buf,
         WS_CLIPSIBLINGS |
         WS_CLIPCHILDREN |
@@ -3281,8 +3298,8 @@ int WINAPI WinMain(
 
 	RestoreMainWinPos();
 
-	void InitSnes9X (void);
-	InitSnes9X ();
+	void InitSnes9x (void);
+	InitSnes9x ();
 
 	if(GUI.FullScreen) {
 		GUI.FullScreen = false;
@@ -3310,7 +3327,7 @@ int WINAPI WinMain(
 	PCEnd = PCStart;
 	PCEndTicks = timeGetTime()*1000;
 	PCStartTicks = timeGetTime()*1000;
-    PCFrameTime = PCFrameTimeNTSC = (__int64)((float)PCBase / 59.948743718592964824120603015098f);
+    PCFrameTime = PCFrameTimeNTSC = (__int64)((float)PCBase / 60.09881389744051f);
     PCFrameTimePAL = PCBase / 50;
 
 
@@ -3327,7 +3344,7 @@ int WINAPI WinMain(
 
     if (GUI.hFrameTimer == 0)
     {
-        MessageBox( GUI.hWnd, Languages[ GUI.Language].errFrameTimer, TEXT("Snes9X - Frame Timer"), MB_OK | MB_ICONINFORMATION);
+        MessageBox( GUI.hWnd, Languages[ GUI.Language].errFrameTimer, TEXT("Snes9x - Frame Timer"), MB_OK | MB_ICONINFORMATION);
     }
 
 	if (rom_filename)
@@ -3467,13 +3484,6 @@ int WINAPI WinMain(
 			if(run_loop)
 			{
 				ProcessInput();
-
-				// no sound sync when speed is not set to 100%
-				while(!S9xSyncSound()) {
-                    ResetEvent(GUI.SoundSyncEvent);
-                    if(!PCFrameTimeIsDefault || WaitForSingleObject(GUI.SoundSyncEvent,1000) != WAIT_OBJECT_0)
-                        S9xClearSamples();
-				}
 
                 if(GUI.rewindBufferSize
 #ifdef NETPLAY_SUPPORT
@@ -3654,8 +3664,8 @@ void CheckDirectoryIsWritable (const char *filename)
     FILE *fs = fopen (filename, "w+");
 
     if (fs == NULL)
-	MessageBox (GUI.hWnd, TEXT("The folder where Snes9X saves emulated save RAM files and\ngame save positions (freeze files) is currently set to a\nread-only folder.\n\nIf you do not change the game save folder, Snes9X will be\nunable to save your progress in this game. Change the folder\nfrom the Settings Dialog available from the Options menu.\n\nThe default save folder is called Saves, if no value is set.\n"),
-							 TEXT("Snes9X: Unable to save file warning"),
+	MessageBox (GUI.hWnd, TEXT("The folder where Snes9x saves emulated save RAM files and\ngame save positions (freeze files) is currently set to a\nread-only folder.\n\nIf you do not change the game save folder, Snes9x will be\nunable to save your progress in this game. Change the folder\nfrom the Settings Dialog available from the Options menu.\n\nThe default save folder is called Saves, if no value is set.\n"),
+							 TEXT("Snes9x: Unable to save file warning"),
 							 MB_OK | MB_ICONINFORMATION);
     else
     {
@@ -3758,8 +3768,6 @@ static void CheckMenuStates ()
     if (Settings.SoundPlaybackRate == 0 || GUI.Mute)
         mii.fState |= MFS_DISABLED;
 
-    SetMenuItemInfo (GUI.hMenu, ID_SOUND_16BIT, FALSE, &mii);
-    SetMenuItemInfo (GUI.hMenu, ID_SOUND_STEREO, FALSE, &mii);
     SetMenuItemInfo (GUI.hMenu, ID_SOUND_SYNC, FALSE, &mii);
     SetMenuItemInfo (GUI.hMenu, ID_SOUND_INTERPOLATED, FALSE, &mii);
 
@@ -3774,13 +3782,8 @@ static void CheckMenuStates ()
 	SetMenuItemInfo (GUI.hMenu, ID_SOUND_144MS, FALSE, &mii);
 	SetMenuItemInfo (GUI.hMenu, ID_SOUND_160MS, FALSE, &mii);
 	SetMenuItemInfo (GUI.hMenu, ID_SOUND_176MS, FALSE, &mii);
-	SetMenuItemInfo (GUI.hMenu, ID_SOUND_194MS, FALSE, &mii);
-	SetMenuItemInfo (GUI.hMenu, ID_SOUND_210MS, FALSE, &mii);
-
-    if (!Settings.Stereo)
-        mii.fState |= MFS_DISABLED;
-
-    SetMenuItemInfo (GUI.hMenu, ID_SOUND_REVERSE_STEREO, FALSE, &mii);
+	SetMenuItemInfo (GUI.hMenu, ID_SOUND_192MS, FALSE, &mii);
+	SetMenuItemInfo (GUI.hMenu, ID_SOUND_208MS, FALSE, &mii);
 
     mii.fState = MFS_CHECKED;
 	if (GUI.AVIOut)
@@ -3816,22 +3819,13 @@ static void CheckMenuStates ()
 	case 144: id = ID_SOUND_144MS; break;
 	case 160: id = ID_SOUND_160MS; break;
 	case 176: id = ID_SOUND_176MS; break;
-	case 194: id = ID_SOUND_194MS; break;
-	case 210: id = ID_SOUND_210MS; break;
+	case 192: id = ID_SOUND_192MS; break;
+	case 208: id = ID_SOUND_208MS; break;
     }
     SetMenuItemInfo (GUI.hMenu, id, FALSE, &mii);
 
-    if (Settings.SixteenBitSound)
-        SetMenuItemInfo (GUI.hMenu, ID_SOUND_16BIT, FALSE, &mii);
-    if (Settings.Stereo)
-        SetMenuItemInfo (GUI.hMenu, ID_SOUND_STEREO, FALSE, &mii);
     if (Settings.SoundSync)
         SetMenuItemInfo (GUI.hMenu, ID_SOUND_SYNC, FALSE, &mii);
-
-    if (!Settings.Stereo)
-        mii.fState |= MFS_DISABLED;
-    if (Settings.ReverseStereo)
-        SetMenuItemInfo (GUI.hMenu, ID_SOUND_REVERSE_STEREO, FALSE, &mii);
 
 #ifdef DEBUGGER
     mii.fState = (CPU.Flags & TRACE_FLAG) ? MFS_CHECKED : MFS_UNCHECKED;
@@ -3928,12 +3922,15 @@ static void ResetFrameTimer ()
 {
     QueryPerformanceCounter((LARGE_INTEGER*)&PCStart);
 	PCStartTicks = timeGetTime()*1000;
-    if (Settings.FrameTime == Settings.FrameTimeNTSC) PCFrameTime = PCFrameTimeNTSC;
-    else if (Settings.FrameTime == Settings.FrameTimePAL) PCFrameTime = PCFrameTimePAL;
-    else PCFrameTime = (__int64)((double)(PCBase * Settings.FrameTime) * .000001);
+    if (Settings.FrameTime == Settings.FrameTimeNTSC)
+        PCFrameTime = PCFrameTimeNTSC;
+    else if (Settings.FrameTime == Settings.FrameTimePAL)
+        PCFrameTime = PCFrameTimePAL;
+    else
+        PCFrameTime = (__int64)((double)(PCBase * Settings.FrameTime) * .000001);
 
 	// determines if we can do sound sync
-	PCFrameTimeIsDefault = Settings.PAL ? Settings.FrameTime == Settings.FrameTimePAL : Settings.FrameTime == Settings.FrameTimeNTSC;
+	GUI.AllowSoundSync = Settings.PAL ? Settings.FrameTime == Settings.FrameTimePAL : Settings.FrameTime == Settings.FrameTimeNTSC;
 
     if (GUI.hFrameTimer)
         timeKillEvent (GUI.hFrameTimer);
@@ -4020,6 +4017,7 @@ static bool LoadROM(const TCHAR *filename, const TCHAR *filename2 /*= NULL*/) {
 		GUI.CursorTimer = 60;
 	}
 	Settings.Paused = false;
+    S9xRestoreWindowTitle();
 
 	return !Settings.StopEmulation;
 }
@@ -4364,32 +4362,17 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
             CreateToolTip(IDC_INRATEEDIT, hDlg, TEXT("For each 'Input rate' samples generated by the SNES, 'Playback rate' samples will produced. If you experience crackling you can try to lower this setting."));
             CreateToolTip(IDC_INRATE, hDlg, TEXT("For each 'Input rate' samples generated by the SNES, 'Playback rate' samples will produced. If you experience crackling you can try to lower this setting."));
-            CreateToolTip(IDC_DYNRATECONTROL, hDlg, TEXT("Try to dynamically adjust the input rate to never overflow or underflow the sound buffer. Only works with XAudio2."));
+            CreateToolTip(IDC_DYNRATECONTROL, hDlg, TEXT("Try to dynamically adjust the input rate to never overflow or underflow the sound buffer."));
 
             HWND output_dropdown = GetDlgItem(hDlg, IDC_OUTPUT_DEVICE);
             UpdateAudioDeviceDropdown(output_dropdown);
             ComboBox_SetCurSel(output_dropdown, FindAudioDeviceIndex(GUI.AudioDevice));
 
             int pos;
-            pos = SendDlgItemMessage(hDlg, IDC_DRIVER, CB_INSERTSTRING, -1, (LPARAM)TEXT("Snes9x DirectSound"));
-            SendDlgItemMessage(hDlg, IDC_DRIVER, CB_SETITEMDATA, pos, WIN_SNES9X_DIRECT_SOUND_DRIVER);
+            pos = SendDlgItemMessage(hDlg, IDC_DRIVER, CB_INSERTSTRING, -1, (LPARAM)TEXT("WaveOut"));
+            SendDlgItemMessage(hDlg, IDC_DRIVER, CB_SETITEMDATA, pos, WIN_WAVEOUT_DRIVER);
             pos = SendDlgItemMessage(hDlg, IDC_DRIVER, CB_INSERTSTRING, -1, (LPARAM)TEXT("XAudio2"));
             SendDlgItemMessage(hDlg, IDC_DRIVER, CB_SETITEMDATA, pos, WIN_XAUDIO2_SOUND_DRIVER);
-    #ifdef FMOD_SUPPORT
-            pos = SendDlgItemMessage(hDlg, IDC_DRIVER, CB_INSERTSTRING, -1, (LPARAM)TEXT("FMOD DirectSound"));
-            SendDlgItemMessage(hDlg, IDC_DRIVER, CB_SETITEMDATA, pos, WIN_FMOD_DIRECT_SOUND_DRIVER);
-            pos = SendDlgItemMessage(hDlg, IDC_DRIVER, CB_INSERTSTRING, -1, (LPARAM)TEXT("FMOD Windows Multimedia"));
-            SendDlgItemMessage(hDlg, IDC_DRIVER, CB_SETITEMDATA, pos, WIN_FMOD_WAVE_SOUND_DRIVER);
-            pos = SendDlgItemMessage(hDlg, IDC_DRIVER, CB_INSERTSTRING, -1, (LPARAM)TEXT("FMOD A3D"));
-            SendDlgItemMessage(hDlg, IDC_DRIVER, CB_SETITEMDATA, pos, WIN_FMOD_A3D_SOUND_DRIVER);
-    #elif defined FMODEX_SUPPORT
-            pos = SendDlgItemMessage(hDlg, IDC_DRIVER, CB_INSERTSTRING, -1, (LPARAM)TEXT("FMOD Ex Default"));
-            SendDlgItemMessage(hDlg, IDC_DRIVER, CB_SETITEMDATA, pos, WIN_FMODEX_DEFAULT_DRIVER);
-            pos = SendDlgItemMessage(hDlg, IDC_DRIVER, CB_INSERTSTRING, -1, (LPARAM)TEXT("FMOD Ex ASIO"));
-            SendDlgItemMessage(hDlg, IDC_DRIVER, CB_SETITEMDATA, pos, WIN_FMODEX_ASIO_DRIVER);
-            pos = SendDlgItemMessage(hDlg, IDC_DRIVER, CB_INSERTSTRING, -1, (LPARAM)TEXT("FMOD Ex OpenAL"));
-            SendDlgItemMessage(hDlg, IDC_DRIVER, CB_SETITEMDATA, pos, WIN_FMODEX_OPENAL_DRIVER);
-    #endif
             SendDlgItemMessage(hDlg, IDC_DRIVER, CB_SETCURSEL, 0, 0);
             for (pos = 0; pos < SendDlgItemMessage(hDlg, IDC_DRIVER, CB_GETCOUNT, 0, 0); pos++) {
                 if (SendDlgItemMessage(hDlg, IDC_DRIVER, CB_GETITEMDATA, pos, 0) == GUI.SoundDriver) {
@@ -4404,7 +4387,6 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
                 GUI.AutomaticInputRate = false;
             }
 
-            EnableWindow(GetDlgItem(hDlg, IDC_DYNRATECONTROL), GUI.SoundDriver == WIN_XAUDIO2_SOUND_DRIVER);
             EnableWindow(GetDlgItem(hDlg, IDC_INRATEEDIT), !GUI.AutomaticInputRate);
             EnableWindow(GetDlgItem(hDlg, IDC_INRATE), !GUI.AutomaticInputRate);
 
@@ -4434,7 +4416,7 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
             SendDlgItemMessage(hDlg, IDC_RATE, CB_INSERTSTRING, 2, (LPARAM)TEXT("16 KHz"));
             SendDlgItemMessage(hDlg, IDC_RATE, CB_INSERTSTRING, 3, (LPARAM)TEXT("22 KHz"));
             SendDlgItemMessage(hDlg, IDC_RATE, CB_INSERTSTRING, 4, (LPARAM)TEXT("30 KHz"));
-            SendDlgItemMessage(hDlg, IDC_RATE, CB_INSERTSTRING, 5, (LPARAM)TEXT("32 KHz (SNES)"));
+            SendDlgItemMessage(hDlg, IDC_RATE, CB_INSERTSTRING, 5, (LPARAM)TEXT("32 KHz"));
             SendDlgItemMessage(hDlg, IDC_RATE, CB_INSERTSTRING, 6, (LPARAM)TEXT("35 KHz"));
             SendDlgItemMessage(hDlg, IDC_RATE, CB_INSERTSTRING, 7, (LPARAM)TEXT("44 KHz"));
             SendDlgItemMessage(hDlg, IDC_RATE, CB_INSERTSTRING, 8, (LPARAM)TEXT("48 KHz"));
@@ -4468,18 +4450,13 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
             SendDlgItemMessage(hDlg, IDC_BUFLEN, CB_INSERTSTRING, 8, (LPARAM)TEXT("144 ms"));
             SendDlgItemMessage(hDlg, IDC_BUFLEN, CB_INSERTSTRING, 9, (LPARAM)TEXT("160 ms"));
             SendDlgItemMessage(hDlg, IDC_BUFLEN, CB_INSERTSTRING, 10, (LPARAM)TEXT("176 ms"));
-            SendDlgItemMessage(hDlg, IDC_BUFLEN, CB_INSERTSTRING, 11, (LPARAM)TEXT("194 ms"));
-            SendDlgItemMessage(hDlg, IDC_BUFLEN, CB_INSERTSTRING, 12, (LPARAM)TEXT("210 ms"));
+            SendDlgItemMessage(hDlg, IDC_BUFLEN, CB_INSERTSTRING, 11, (LPARAM)TEXT("192 ms"));
+            SendDlgItemMessage(hDlg, IDC_BUFLEN, CB_INSERTSTRING, 12, (LPARAM)TEXT("208 ms"));
 
             SendDlgItemMessage(hDlg, IDC_BUFLEN, CB_SETCURSEL, ((GUI.SoundBufferSize / 16) - 1), 0);
 
             if (Settings.DynamicRateControl)
                 SendDlgItemMessage(hDlg, IDC_DYNRATECONTROL, BM_SETCHECK, BST_CHECKED, 0);
-            if (Settings.Stereo)
-                SendDlgItemMessage(hDlg, IDC_STEREO, BM_SETCHECK, BST_CHECKED, 0);
-            else EnableWindow(GetDlgItem(hDlg, IDC_REV_STEREO), FALSE);
-            if (Settings.ReverseStereo)
-                SendDlgItemMessage(hDlg, IDC_REV_STEREO, BM_SETCHECK, BST_CHECKED, 0);
 
             if (GUI.Mute)
                 SendDlgItemMessage(hDlg, IDC_MUTE, BM_SETCHECK, BST_CHECKED, 0);
@@ -4539,8 +4516,6 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 										SendDlgItemMessage(hDlg, IDC_DRIVER, CB_GETCURSEL, 0,0),0);
 					Settings.DynamicRateControl=IsDlgButtonChecked(hDlg, IDC_DYNRATECONTROL);
 					Settings.SoundSync=IsDlgButtonChecked(hDlg, IDC_SYNC_TO_SOUND_CPU);
-					Settings.Stereo=IsDlgButtonChecked(hDlg, IDC_STEREO);
-					Settings.ReverseStereo=IsDlgButtonChecked(hDlg, IDC_REV_STEREO);
 					GUI.Mute=IsDlgButtonChecked(hDlg, IDC_MUTE);
 					GUI.FAMute=IsDlgButtonChecked(hDlg, IDC_FAMT)!=0;
 
@@ -4619,16 +4594,15 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				case IDC_DRIVER:
 					if(CBN_SELCHANGE==HIWORD(wParam))
 					{
-						int driver=SendDlgItemMessage(hDlg, IDC_DRIVER, CB_GETITEMDATA,
+						int driver = SendDlgItemMessage(hDlg, IDC_DRIVER, CB_GETITEMDATA,
 										SendDlgItemMessage(hDlg, IDC_DRIVER, CB_GETCURSEL, 0,0),0);
-						EnableWindow(GetDlgItem(hDlg, IDC_DYNRATECONTROL), FALSE);
+
 						switch(driver) {
-							case WIN_SNES9X_DIRECT_SOUND_DRIVER:
+							case WIN_WAVEOUT_DRIVER:
 								SendDlgItemMessage(hDlg,IDC_BUFLEN,CB_SETCURSEL,3,0);
 								break;
 							case WIN_XAUDIO2_SOUND_DRIVER:
 								SendDlgItemMessage(hDlg,IDC_BUFLEN,CB_SETCURSEL,3,0);
-								EnableWindow(GetDlgItem(hDlg, IDC_DYNRATECONTROL), TRUE);
 								break;
 							default:
 								SendDlgItemMessage(hDlg,IDC_BUFLEN,CB_SETCURSEL,7,0);
@@ -4646,20 +4620,6 @@ INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						return true;
 					}
 					else return false;
-				case IDC_STEREO:
-					{
-						if(BN_CLICKED==HIWORD(wParam)||BN_DBLCLK==HIWORD(wParam))
-						{
-							if(IsDlgButtonChecked(hDlg,IDC_STEREO))
-							{
-								EnableWindow(GetDlgItem(hDlg, IDC_REV_STEREO), TRUE);
-							}
-							else EnableWindow(GetDlgItem(hDlg, IDC_REV_STEREO), FALSE);
-							return true;
-
-						}
-						else return false;
-					}
 				case IDC_INRATEEDIT:
 					if(HIWORD(wParam)==EN_UPDATE) {
 						Edit_GetText(GetDlgItem(hDlg,IDC_INRATEEDIT),valTxt,10);
@@ -5123,6 +5083,114 @@ INT_PTR CALLBACK DlgAboutProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	default:return false;
 	}
 }
+
+INT_PTR CALLBACK DlgEmulatorHacksProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    UDACCEL accel = { 0, 10 };
+    bool must_reset = 0;
+
+    switch (msg)
+    {
+    case WM_INITDIALOG:
+
+        SendDlgItemMessage(hDlg, IDC_SFX_CLOCK_SPEED_SPIN, UDM_SETRANGE, 0, MAKELPARAM((short)400, (short)50));
+        SendDlgItemMessage(hDlg, IDC_SFX_CLOCK_SPEED_SPIN, UDM_SETPOS, 0, Settings.SuperFXClockMultiplier);
+        SendDlgItemMessage(hDlg, IDC_SFX_CLOCK_SPEED_SPIN, UDM_SETACCEL, 1, (LPARAM)&accel);
+
+        SendDlgItemMessage(hDlg, IDC_CPU_OVERCLOCK, CB_ADDSTRING, 0, (LPARAM)TEXT("None"));
+        SendDlgItemMessage(hDlg, IDC_CPU_OVERCLOCK, CB_ADDSTRING, 0, (LPARAM)TEXT("Low"));
+        SendDlgItemMessage(hDlg, IDC_CPU_OVERCLOCK, CB_ADDSTRING, 0, (LPARAM)TEXT("Medium"));
+        SendDlgItemMessage(hDlg, IDC_CPU_OVERCLOCK, CB_ADDSTRING, 0, (LPARAM)TEXT("Max"));
+        SendDlgItemMessage(hDlg, IDC_CPU_OVERCLOCK, CB_SETCURSEL, Settings.OverclockMode, 0);
+
+        SendDlgItemMessage(hDlg, IDC_SOUND_INTERPOLATION, CB_ADDSTRING, 0, (LPARAM)TEXT("None"));
+        SendDlgItemMessage(hDlg, IDC_SOUND_INTERPOLATION, CB_ADDSTRING, 0, (LPARAM)TEXT("Linear"));
+        SendDlgItemMessage(hDlg, IDC_SOUND_INTERPOLATION, CB_ADDSTRING, 0, (LPARAM)TEXT("Gaussian (SNES Hardware)"));
+        SendDlgItemMessage(hDlg, IDC_SOUND_INTERPOLATION, CB_ADDSTRING, 0, (LPARAM)TEXT("Cubic"));
+        SendDlgItemMessage(hDlg, IDC_SOUND_INTERPOLATION, CB_ADDSTRING, 0, (LPARAM)TEXT("Sinc"));
+        SendDlgItemMessage(hDlg, IDC_SOUND_INTERPOLATION, CB_SETCURSEL, Settings.InterpolationMethod, 0);
+
+        CheckDlgButton(hDlg, IDC_INVALID_VRAM, !Settings.BlockInvalidVRAMAccessMaster);
+        CheckDlgButton(hDlg, IDC_SEPARATE_ECHO_BUFFER, Settings.SeparateEchoBuffer);
+        CheckDlgButton(hDlg, IDC_NO_SPRITE_LIMIT, Settings.MaxSpriteTilesPerLine == 128);
+
+        return true;
+        break;
+
+    case WM_COMMAND:
+
+        switch (LOWORD(wParam))
+        {
+        case IDOK:
+            if (((Settings.BlockInvalidVRAMAccessMaster != !IsDlgButtonChecked(hDlg, IDC_INVALID_VRAM)) ||
+                (Settings.SeparateEchoBuffer != IsDlgButtonChecked(hDlg, IDC_SEPARATE_ECHO_BUFFER)))
+                && !Settings.StopEmulation)
+            {
+
+                if (MessageBoxA(hDlg, "To make the requested changes, the game will need to be reset.", "Reset Required", MB_OKCANCEL) != IDOK)
+                    return false;
+                must_reset = true;
+            }
+
+            Settings.SuperFXClockMultiplier = SendDlgItemMessage(hDlg, IDC_SFX_CLOCK_SPEED_SPIN, UDM_GETPOS, 0, 0);
+            Settings.OverclockMode = SendDlgItemMessage(hDlg, IDC_CPU_OVERCLOCK, CB_GETCURSEL, 0, 0);
+            Settings.InterpolationMethod = SendDlgItemMessage(hDlg, IDC_SOUND_INTERPOLATION, CB_GETCURSEL, 0, 0);
+            Settings.BlockInvalidVRAMAccessMaster = !IsDlgButtonChecked(hDlg, IDC_INVALID_VRAM);
+            Settings.SeparateEchoBuffer = IsDlgButtonChecked(hDlg, IDC_SEPARATE_ECHO_BUFFER);
+            Settings.MaxSpriteTilesPerLine = IsDlgButtonChecked(hDlg, IDC_NO_SPRITE_LIMIT) ? 128 : 34;
+
+            switch (Settings.OverclockMode)
+            {
+            default:
+            case 0:
+                Settings.OneClockCycle = 6;
+                Settings.OneSlowClockCycle = 8;
+                Settings.TwoClockCycles = 12;
+                break;
+            case 1:
+                Settings.OneClockCycle = 6;
+                Settings.OneSlowClockCycle = 6;
+                Settings.TwoClockCycles = 12;
+                break;
+            case 2:
+                Settings.OneClockCycle = 4;
+                Settings.OneSlowClockCycle = 6;
+                Settings.TwoClockCycles = 8;
+                break;
+            case 3:
+                Settings.OneClockCycle = 3;
+                Settings.OneSlowClockCycle = 4;
+                Settings.TwoClockCycles = 6;
+                break;
+            }
+
+            EndDialog(hDlg, must_reset);
+            return true;
+
+        case IDCANCEL:
+            EndDialog(hDlg, 0);
+            return true;
+
+		case IDC_SET_DEFAULTS:
+			SendDlgItemMessage(hDlg, IDC_SFX_CLOCK_SPEED_SPIN, UDM_SETPOS, 0, 100);
+			SendDlgItemMessage(hDlg, IDC_CPU_OVERCLOCK, CB_SETCURSEL, 0, 0);
+			SendDlgItemMessage(hDlg, IDC_SOUND_INTERPOLATION, CB_SETCURSEL, 2, 0);
+			CheckDlgButton(hDlg, IDC_INVALID_VRAM, false);
+			CheckDlgButton(hDlg, IDC_SEPARATE_ECHO_BUFFER, false);
+			CheckDlgButton(hDlg, IDC_NO_SPRITE_LIMIT, false);
+			break;
+        default:
+            break;
+        }
+
+        return true;
+        break;
+
+    default:
+        return false;
+    }
+}
+
 INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static TCHAR paths[10][MAX_PATH];
@@ -7717,7 +7785,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 			ofn.lStructSize = sizeof(OPENFILENAME);
 			ofn.hwndOwner = hDlg;
-			ofn.lpstrFilter = TEXT("Shader Files\0*.shader;*.cg;*.cgp;*.glsl;*.glslp\0All Files\0*.*\0\0");
+			ofn.lpstrFilter = TEXT("Shader Files\0*.shader;*.cg;*.cgp;*.glsl;*.glslp;*.slang;*.slangp\0All Files\0*.*\0\0");
 			ofn.lpstrFile = openFileName;
 			ofn.lpstrTitle = TEXT("Select Shader");
 			ofn.lpstrDefExt = TEXT("shader");
@@ -7733,19 +7801,24 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
         case IDC_SHADER_GLSL_PARAMETERS:
         {
             GetDlgItemText(hDlg, IDC_SHADER_GLSL_FILE, GUI.OGLshaderFileName, MAX_PATH);
-            if(lstrlen(GUI.OGLshaderFileName) < 6 || _tcsncicmp(&GUI.OGLshaderFileName[lstrlen(GUI.OGLshaderFileName) - 6], TEXT(".glslp"), 6)) {
-                MessageBox(GUI.hWnd, TEXT("Parameters are only supported for .glsl shaders"), TEXT("No Parameters"), MB_OK | MB_ICONINFORMATION);
+			int len = lstrlen(GUI.OGLshaderFileName);
+            if((len < 6 || _tcsncicmp(&GUI.OGLshaderFileName[len - 6], TEXT(".glslp"), 6)) &&
+			   (len < 7 || _tcsncicmp(&GUI.OGLshaderFileName[len - 7], TEXT(".slangp"), 7))) {
+                MessageBox(GUI.hWnd, TEXT("Parameters are only supported for .glslp and .slangp shaders"), TEXT("No Parameters"), MB_OK | MB_ICONINFORMATION);
                 break;
             }
 			ShowWindow(hDlg, SW_HIDE);
-            GLSLShader shader;
-            shader.load_shader(_tToChar(GUI.OGLshaderFileName));
-            CShaderParamDlg dlg(shader);
-            if(dlg.show()) {
-                SetDlgItemText(hDlg, IDC_SHADER_GLSL_FILE, GUI.OGLshaderFileName);
-                WinDisplayApplyChanges();
-                WinRefreshDisplay();
-            }
+			WinDisplayApplyChanges();
+			WinRefreshDisplay();
+			GLSLShader *shader = WinGetActiveGLSLShader();
+			if (shader) {
+				CShaderParamDlg dlg(*shader);
+				if (dlg.show()) {
+					SetDlgItemText(hDlg, IDC_SHADER_GLSL_FILE, GUI.OGLshaderFileName);
+					WinDisplayApplyChanges();
+					WinRefreshDisplay();
+				}
+			}
 			ShowWindow(hDlg, SW_SHOW);
             break;
         }

@@ -74,12 +74,11 @@ static void S9xViewportCallback (int src_width, int src_height,
                                  int *out_x, int *out_y,
                                  int *out_width, int *out_height)
 {
-
-    S9xApplyAspect (src_width, src_height, viewport_width, viewport_height);
-    *out_x = src_width + viewport_x;
-    *out_y = src_height + viewport_y;
-    *out_width = viewport_width;
-    *out_height = viewport_height;
+    S9xRect dst = S9xApplyAspect(src_width, src_height, viewport_width, viewport_height);
+    *out_x = dst.x + viewport_x;
+    *out_y = dst.y + viewport_y;
+    *out_width = dst.w;
+    *out_height = dst.h;
 }
 
 S9xOpenGLDisplayDriver::S9xOpenGLDisplayDriver (Snes9xWindow *window,
@@ -88,7 +87,6 @@ S9xOpenGLDisplayDriver::S9xOpenGLDisplayDriver (Snes9xWindow *window,
     this->window = window;
     this->config = config;
     this->drawing_area = GTK_WIDGET (window->drawing_area);
-    fence = NULL;
 }
 
 void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
@@ -96,7 +94,6 @@ void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
     uint8 *final_buffer = NULL;
     int   final_pitch;
     void  *pbo_map = NULL;
-    int   x, y, w, h;
 
     GtkAllocation allocation;
     gtk_widget_get_allocation (drawing_area, &allocation);
@@ -154,14 +151,9 @@ void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
         final_buffer += (final_pitch * yoffset);
     }
 
-    x = width;
-    y = height;
-    w = allocation.width;
-    h = allocation.height;
-    S9xApplyAspect (x, y, w, h);
-
-    glViewport (x, allocation.height - y - h, w, h);
-    window->set_mouseable_area (x, y, w, h);
+    S9xRect r = S9xApplyAspect(width, height, allocation.width, allocation.height);
+    glViewport (r.x, allocation.height - r.y - r.h, r.w, r.h);
+    window->set_mouseable_area (r.x, r.y, r.w, r.h);
 
     update_texture_size (width, height);
 
@@ -175,7 +167,14 @@ void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
                           width * height * 2,
                           NULL,
                           GL_STREAM_DRAW);
-            pbo_map = glMapBuffer (GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
+
+            if (version >= 30)
+                pbo_map = glMapBufferRange (
+                    GL_PIXEL_UNPACK_BUFFER, 0, width * height * 2,
+                    GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT |
+                        GL_MAP_UNSYNCHRONIZED_BIT);
+            else
+                pbo_map = glMapBuffer (GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
 
             for (int y = 0; y < height; y++)
             {
@@ -206,7 +205,14 @@ void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
                           width * height * 4,
                           NULL,
                           GL_STREAM_DRAW);
-            pbo_map = glMapBuffer (GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
+
+            if (version >= 30)
+                pbo_map = glMapBufferRange (
+                    GL_PIXEL_UNPACK_BUFFER, 0, width * height * 4,
+                    GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT |
+                        GL_MAP_UNSYNCHRONIZED_BIT);
+            else
+                pbo_map = glMapBuffer (GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
 
             /* Pixel swizzling in software */
             S9xSetEndianess (ENDIAN_NORMAL);
@@ -250,7 +256,7 @@ void S9xOpenGLDisplayDriver::update (int width, int height, int yoffset)
 
     if (using_glsl_shaders)
     {
-        glsl_shader->render (texmap, width, height, x, allocation.height - y - h, w, h, S9xViewportCallback);
+        glsl_shader->render (texmap, width, height, r.x, allocation.height - r.y - r.h, r.w, r.h, S9xViewportCallback);
         swap_buffers ();
         return;
     }
@@ -288,8 +294,8 @@ void S9xOpenGLDisplayDriver::clear_buffers ()
                      0,
                      0,
                      0,
-                     scaled_max_width,
-                     scaled_max_height,
+                     MIN(scaled_max_width, texture_width),
+                     MIN(scaled_max_height, texture_height),
                      GL_RGB,
                      GL_UNSIGNED_SHORT_5_6_5,
                      buffer[1]);
@@ -358,32 +364,38 @@ void S9xOpenGLDisplayDriver::update_texture_size (int width, int height)
     }
 }
 
-bool S9xOpenGLDisplayDriver::load_shaders (const char *shader_file)
+bool S9xOpenGLDisplayDriver::load_shaders(const char *shader_file)
 {
-    int length = strlen (shader_file);
+    setlocale(LC_ALL, "C");
+    std::string filename(shader_file);
 
-    setlocale (LC_ALL, "C");
+    auto endswith = [&](std::string ext) -> bool {
+        return filename.rfind(ext) == filename.length() - ext.length();
+    };
 
-    if ((length > 6 && !strcasecmp(shader_file + length - 6, ".glslp")) ||
-        (length > 5 && !strcasecmp(shader_file + length - 5, ".glsl")))
+    if (endswith(".glslp") || endswith(".glsl")
+#ifdef USE_SLANG
+        || endswith(".slangp") || endswith(".slang")
+#endif
+    )
     {
         glsl_shader = new GLSLShader;
-        if (glsl_shader->load_shader ((char *) shader_file))
+        if (glsl_shader->load_shader((char *)shader_file))
         {
             using_glsl_shaders = true;
             npot = true;
 
-            if (glsl_shader->param.size () > 0)
-                window->enable_widget ("shader_parameters_item", true);
+            if (glsl_shader->param.size() > 0)
+                window->enable_widget("shader_parameters_item", true);
 
-            setlocale (LC_ALL, "");
+            setlocale(LC_ALL, "");
             return true;
         }
 
         delete glsl_shader;
     }
 
-    setlocale (LC_ALL, "");
+    setlocale(LC_ALL, "");
     return false;
 }
 
@@ -589,9 +601,6 @@ bool S9xOpenGLDisplayDriver::create_context()
     else
         core = false;
 
-    if (version >= 31 || epoxy_has_gl_extension ("GL_ARB_sync"))
-        fences = true;
-
     return true;
 }
 
@@ -609,13 +618,13 @@ int S9xOpenGLDisplayDriver::init ()
         return -1;
     }
 
-    buffer[0] = malloc (image_padded_size);
-    buffer[1] = malloc (scaled_padded_size);
+    buffer[0] = new uint8_t[image_padded_size];
+    buffer[1] = new uint8_t[scaled_padded_size];
 
     clear_buffers ();
 
-    padded_buffer[0] = (void *) (((uint8 *) buffer[0]) + image_padded_offset);
-    padded_buffer[1] = (void *) (((uint8 *) buffer[1]) + scaled_padded_offset);
+    padded_buffer[0] = &buffer[0][image_padded_offset];
+    padded_buffer[1] = &buffer[1][scaled_padded_offset];
 
     GFX.Screen = (uint16 *) padded_buffer[0];
     GFX.Pitch = image_width * image_bpp;
@@ -646,16 +655,10 @@ void S9xOpenGLDisplayDriver::swap_buffers ()
 {
     context->swap_buffers ();
 
-    if (config->sync_every_frame && !config->use_fences)
+    if (config->use_glfinish && !config->use_sync_control)
     {
         usleep (0);
         glFinish ();
-    }
-    else if (config->use_fences && fences)
-    {
-        if (fence)
-            glDeleteSync (fence);
-        fence = glFenceSync (GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
     }
 }
 
@@ -677,8 +680,8 @@ void S9xOpenGLDisplayDriver::deinit ()
     padded_buffer[0] = NULL;
     padded_buffer[1] = NULL;
 
-    free (buffer[0]);
-    free (buffer[1]);
+    delete[] buffer[0];
+    delete[] buffer[1];
 
     if (using_pbos)
     {
@@ -720,14 +723,10 @@ int S9xOpenGLDisplayDriver::query_availability ()
 
 bool S9xOpenGLDisplayDriver::is_ready ()
 {
-    if (!fence)
+    if (context->ready())
+    {
         return true;
+    }
 
-    if (glClientWaitSync (fence, GL_SYNC_FLUSH_COMMANDS_BIT, 0) == GL_TIMEOUT_EXPIRED)
-        return false;
-
-    glDeleteSync (fence);
-    fence = NULL;
-
-    return true;
+    return false;
 }

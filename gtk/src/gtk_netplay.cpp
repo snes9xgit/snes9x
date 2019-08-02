@@ -269,8 +269,6 @@ S9xNetplaySyncSpeed ()
 int
 S9xNetplayPush ()
 {
-    static int statusbar_state = false;
-
     if (gui_config->netplay_activated &&
         (!Settings.NetPlay || !NetPlay.Connected))
         S9xNetplayDisconnect ();
@@ -285,22 +283,10 @@ S9xNetplayPush ()
         S9xSoundStop ();
         NetPlay.Paused = true;
 
-        if (statusbar_state == false)
-        {
-            top_level->update_statusbar ();
-            statusbar_state = true;
-        }
-
         return 1;
     }
 
     NetPlay.Paused = false;
-
-    if (statusbar_state)
-    {
-        top_level->update_statusbar ();
-        statusbar_state = false;
-    }
 
     S9xSoundStart ();
 

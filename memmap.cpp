@@ -1401,8 +1401,7 @@ bool8 CMemory::LoadROM (const char *filename)
         if (!totalFileSize)
             return (FALSE);
 
-        if (!Settings.NoPatch)
-            CheckForAnyPatch(filename, HeaderCount != 0, totalFileSize);
+        CheckForAnyPatch(filename, HeaderCount != 0, totalFileSize);
     }
     while(!LoadROMInt(totalFileSize));
 
@@ -1442,7 +1441,7 @@ bool8 CMemory::LoadROMInt (int32 ROMfillSize)
 		lo_score = ScoreLoROM(FALSE);
 	}
 
-	CalculatedSize = (ROMfillSize / 0x2000) * 0x2000;
+	CalculatedSize = ((ROMfillSize + 0x1fff) / 0x2000) * 0x2000;
 
 	if (CalculatedSize > 0x400000 &&
 		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x3423 && // exclude SA-1
@@ -1678,8 +1677,7 @@ bool8 CMemory::LoadMultiCart (const char *cartA, const char *cartB)
     if (Multi.cartSizeB) {
         strcpy(Multi.fileNameB, cartB);
 
-        if(!Settings.NoPatch)
-		    CheckForAnyPatch(cartB, HeaderCount != 0, Multi.cartSizeB);
+		CheckForAnyPatch(cartB, HeaderCount != 0, Multi.cartSizeB);
 
         Multi.cartOffsetB = 0x400000;
         memcpy(ROM + Multi.cartOffsetB,ROM,Multi.cartSizeB);
@@ -1691,8 +1689,7 @@ bool8 CMemory::LoadMultiCart (const char *cartA, const char *cartB)
     if (Multi.cartSizeA) {
         strcpy(Multi.fileNameA, cartA);
 
-        if(!Settings.NoPatch)
-		    CheckForAnyPatch(cartA, HeaderCount != 0, Multi.cartSizeA);
+		CheckForAnyPatch(cartA, HeaderCount != 0, Multi.cartSizeA);
     }
 
     return LoadMultiCartInt();
@@ -2572,6 +2569,13 @@ void CMemory::InitROM (void)
 		SET_UI_COLOR(255, 255, 0);
 	}
 
+	// Use slight blue tint to indicate ROM was patched.
+	if (Settings.IsPatched)
+	{
+		Settings.DisplayColor = BUILD_PIXEL(26, 26, 31);
+		SET_UI_COLOR(216, 216, 255);
+	}
+
 	if (Multi.cartType == 4)
 	{
 		Settings.DisplayColor = BUILD_PIXEL(0, 16, 31);
@@ -3125,13 +3129,13 @@ void CMemory::Map_SA1LoROMMap (void)
 
 	map_hirom_offset(0xc0, 0xff, 0x0000, 0xffff, CalculatedSize, 0);
 
-	map_space(0x00, 0x3f, 0x3000, 0x3fff, FillRAM);
-	map_space(0x80, 0xbf, 0x3000, 0x3fff, FillRAM);
+	map_space(0x00, 0x3f, 0x3000, 0x37ff, FillRAM);
+	map_space(0x80, 0xbf, 0x3000, 0x37ff, FillRAM);
 	map_index(0x00, 0x3f, 0x6000, 0x7fff, MAP_BWRAM, MAP_TYPE_I_O);
 	map_index(0x80, 0xbf, 0x6000, 0x7fff, MAP_BWRAM, MAP_TYPE_I_O);
 
-	for (int c = 0x40; c < 0x80; c++)
-		map_space(c, c, 0x0000, 0xffff, SRAM + (c & 1) * 0x10000);
+	for (int c = 0x40; c < 0x4f; c++)
+		map_space(c, c, 0x0000, 0xffff, SRAM + (c & 3) * 0x10000);
 
 	map_WRAM();
 
@@ -3149,6 +3153,10 @@ void CMemory::Map_SA1LoROMMap (void)
 		SA1.WriteMap[c + 0] = SA1.WriteMap[c + 0x800] = FillRAM + 0x3000;
 		SA1.WriteMap[c + 1] = SA1.WriteMap[c + 0x801] = (uint8 *) MAP_NONE;
 	}
+
+	// SA-1 Banks 40->4f
+	for (int c = 0x400; c < 0x500; c++)
+		SA1.Map[c] = SA1.WriteMap[c] = (uint8*)MAP_HIROM_SRAM;
 
 	// SA-1 Banks 60->6f
 	for (int c = 0x600; c < 0x700; c++)
@@ -3610,10 +3618,8 @@ void CMemory::ApplyROMFixes (void)
 	{
 		//if (match_id("AVCJ"))                                      // Rendering Ranger R2
 		//	Timings.APUSpeedup = 2;
-		if (match_id("AANJ"))                                      // Chou Aniki
-			Timings.APUSpeedup = -3;
 		if (match_na("CIRCUIT USA"))
-			Timings.APUSpeedup = 2;
+			Timings.APUSpeedup = 3;
 
 /*		if (match_na("GAIA GENSOUKI 1 JPN")                     || // Gaia Gensouki
 			match_id("JG  ")                                    || // Illusion of Gaia
@@ -3804,6 +3810,7 @@ static bool8 ReadUPSPatch (Stream *r, long, int32 &rom_size)
 	|| ((rom_crc32 == px_crc32) && (out_crc32 == py_crc32))
 	|| ((rom_crc32 == py_crc32) && (out_crc32 == px_crc32))
 	) {
+		Settings.IsPatched = 3;
 		return true;
 	} else {
 		//technically, reaching here means that patching has failed.
@@ -3858,6 +3865,7 @@ static bool8 ReadBPSPatch (Stream *r, long, int32 &rom_size)
 	if(patch_crc32 != pp_crc32) { delete[] data; return false; }  //patch is corrupted
 	if(!Settings.IgnorePatchChecksum && rom_crc32 != source_crc32) { delete[] data; return false; }  //patch is for a different ROM
 
+	XPSdecode(data, addr, size);
 	uint32 target_size = XPSdecode(data, addr, size);
 	uint32 metadata_size = XPSdecode(data, addr, size);
 	addr += metadata_size;
@@ -3910,6 +3918,7 @@ static bool8 ReadBPSPatch (Stream *r, long, int32 &rom_size)
 		memcpy(Memory.ROM, patched_rom, target_size);
 		rom_size = target_size;
 		delete[] patched_rom;
+		Settings.IsPatched = 2;
 		return true;
 	} else {
 		delete[] patched_rom;
@@ -4010,6 +4019,7 @@ static bool8 ReadIPSPatch (Stream *r, long offset, int32 &rom_size)
 	if (ofs != -1 && ofs - offset < rom_size)
 		rom_size = ofs - offset;
 
+	Settings.IsPatched = 1;
 	return (1);
 }
 
@@ -4049,6 +4059,8 @@ static int unzFindExtension (unzFile &file, const char *ext, bool restart, bool 
 
 void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &rom_size)
 {
+	Settings.IsPatched = false;
+
 	if (Settings.NoPatch)
 		return;
 

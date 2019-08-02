@@ -21,7 +21,7 @@
 #include "../gfx.h"
 #include "../filter/2xsai.h"
 #include "../filter/hq2x.h"
-#include "snes_ntsc.h"
+#include "../filter/snes_ntsc.h"
 #include "../filter/xbrz.h"
 #include <vector>
 #include <intrin.h>
@@ -859,6 +859,9 @@ void RenderTVMode ( SSurface Src, SSurface Dst, RECT *rect)
         return;
     }
 
+    if (GUI.outputMethod != DIRECTDRAW)
+        snes9x_clear_change_log = 1;
+
     uint8 *nextLine, *finish;
     uint32 colorMask = ~(RGB_LOW_BITS_MASK | (RGB_LOW_BITS_MASK << 16));
     uint32 lowPixelMask = RGB_LOW_BITS_MASK;
@@ -1481,9 +1484,9 @@ void RenderDotMatrix3X (SSurface Src, SSurface Dst, RECT *rect)
 
 	#define DrawPix(on00,on01,on10,on11) /* on00 on01 */  \
 	{                                    /* on10 on11 */  \
-		const uint16 colorXA = COLOR_ADD(colorX,colorX);  \
-		const uint16 colorXS = COLOR_SUB(colorXA,colorX); \
-		const uint16 colorX2 = COLOR_SUB(colorX,colorXS); \
+		const uint16 colorXA = COLOR_ADD::fn(colorX,colorX);  \
+		const uint16 colorXS = COLOR_SUB::fn(colorXA,colorX); \
+		const uint16 colorX2 = COLOR_SUB::fn(colorX,colorXS); \
 		*dP1++ = _THREE_PIX(colorX2, colorX,  colorX2);   \
 		*dP2++ = _THREE_PIX(colorX,  colorXA, colorX);    \
 		*dP3++ = _THREE_PIX(colorX2, colorX,  colorX2);   \
@@ -2726,43 +2729,27 @@ void RenderBlarggNTSCRgb( SSurface Src, SSurface Dst, RECT *rect)
 	RenderBlarggNTSC(Src,Dst,rect);
 }
 
-void RenderBlarggNTSC( SSurface Src, SSurface Dst, RECT *rect)
+extern unsigned int snes_ntsc_scanline_offset;
+extern unsigned short snes_ntsc_scanline_mask;
+
+void RenderBlarggNTSC(SSurface Src, SSurface Dst, RECT *rect)
 {
     SetRect(rect, 256, 239, 2);
     rect->right = SNES_NTSC_OUT_WIDTH(256);
 
-    const unsigned int srcRowPixels = Src.Pitch/2;
+    const unsigned int srcRowPixels = Src.Pitch / 2;
 
-    if(Src.Width == 512)
-        snes_ntsc_blit_hires( ntsc, (unsigned short *)Src.Surface, srcRowPixels, 0,Src.Width, Src.Height, Dst.Surface, Dst.Pitch );
-    else
-        snes_ntsc_blit( ntsc, (unsigned short *)Src.Surface, srcRowPixels, 0,Src.Width, Src.Height, Dst.Surface, Dst.Pitch );
+    snes_ntsc_scanline_offset = 0;
+    snes_ntsc_scanline_mask = 0;
 
-    //Blargg's filter produces half-height output, so we have to double the height again (unless we have double height hi-res)
-    if(Src.Height <= SNES_HEIGHT_EXTENDED)
+    if (GUI.NTSCScanlines)
     {
-        int mask = 0;
-        if (GUI.NTSCScanlines)
-            mask = 0x18E3;
-
-        int last_blargg_line = rect->bottom / 2;
-        memset(Dst.Surface + last_blargg_line * Dst.Pitch, 0, Dst.Pitch);
-        for(int y = last_blargg_line; --y >= 0; )
-        {
-            unsigned char const* in = Dst.Surface + y * Dst.Pitch;
-            unsigned char* out = Dst.Surface + y * 2 * Dst.Pitch;
-            for(int n = rect->right; n; --n)
-            {
-                unsigned prev = *(unsigned short*)in;
-                unsigned next = *(unsigned short*)(in + Dst.Pitch);
-                /* mix 16-bit rgb without losing low bits */
-                unsigned mixed = prev + next + ((prev ^ next) & 0x0821);
-                /* darken by 12% */
-                *(unsigned short*)out = prev;
-                *(unsigned short*)(out + Dst.Pitch) = (mixed >> 1) - (mixed >> 4 & mask);
-                in += 2;
-                out += 2;
-            }
-        }
+        snes_ntsc_scanline_offset = 3;
+        snes_ntsc_scanline_mask = 0x18E3;
     }
+
+    if (Src.Width == 512)
+        snes_ntsc_blit_hires_scanlines(ntsc, (unsigned short *)Src.Surface, srcRowPixels, 0, Src.Width, Src.Height, Dst.Surface, Dst.Pitch);
+    else
+        snes_ntsc_blit_scanlines(ntsc, (unsigned short *)Src.Surface, srcRowPixels, 0, Src.Width, Src.Height, Dst.Surface, Dst.Pitch);
 }

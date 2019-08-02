@@ -1,6 +1,6 @@
 AC_PREREQ([2.60])
-AC_INIT([Snes9x], [1.58], [], [snes9x])
-AC_REVISION([$Revision: 1.58 $])
+AC_INIT([Snes9x], [1.60], [], [snes9x])
+AC_REVISION([$Revision: 1.60 $])
 
 AC_CONFIG_SRCDIR([unix.cpp])
 
@@ -93,6 +93,45 @@ AC_S9X_COMPILER_FLAG([-pedantic],             [pedantic])
 AC_S9X_COMPILER_FLAG([-Wall],                 [Wall])
 AC_S9X_COMPILER_FLAG([-W],                    [W])
 AC_S9X_COMPILER_FLAG([-Wno-unused-parameter], [Wno_unused_parameter])
+
+# Enable SSE4.1
+AC_ARG_ENABLE([sse41],
+	[AS_HELP_STRING([--enable-sse41],
+		[enable SSE4.1 if available (default: no)])],
+	[], [enable_sse41="no"])
+
+if test "x$enable_sse41" = "xyes"; then
+	AC_S9X_COMPILER_FLAG([-msse4.1], [sse41])
+	if test "x$snes9x_cv_option_sse41" != "xyes"; then
+		enable_sse41="no"
+	fi
+fi
+
+# Enable AVX2
+AC_ARG_ENABLE([avx2],
+	[AS_HELP_STRING([--enable-avx2],
+		[enable AVX2 if available (default: no)])],
+	[], [enable_avx2="no"])
+
+if test "x$enable_avx2" = "xyes"; then
+	AC_S9X_COMPILER_FLAG([-mavx2], [avx2])
+	if test "x$snes9x_cv_option_avx2" != "xyes"; then
+		enable_avx2="no"
+	fi
+fi
+
+# Enable ARM NEON
+AC_ARG_ENABLE([neon],
+	[AS_HELP_STRING([--enable-neon],
+		[enable NEON if available (default: no)])],
+	[], [enable_neon="no"])
+
+if test "x$enable_neon" = "xyes"; then
+	AC_S9X_COMPILER_FLAG([-mfpu=neon], [neon])
+	if test "x$snes9x_cv_option_neon" != "xyes"; then
+		enable_neon="no"
+	fi
+fi
 
 # Check if the OS is Linux.
 
@@ -450,11 +489,9 @@ else
 	S9XDEFS="$S9XDEFS -DNOSOUND"
 fi
 
-S9XDEFS="$S9XDEFS -DGFX_MULTI_FORMAT"
-
 # Output.
 
-S9XFLGS="$S9XFLGS $CXXFLAGS $CPPFLAGS $LDFLAGS"
+S9XFLGS="$CXXFLAGS $CPPFLAGS $LDFLAGS $S9XFLGS"
 S9XLIBS="$LIBS $S9XLIBS"
 
 S9XFLGS="`echo \"$S9XFLGS\" | sed -e 's/  */ /g'`"
@@ -498,6 +535,9 @@ GZIP support......... $enable_gzip
 ZIP support.......... $enable_zip
 SYSTEM_ZIP........... $with_system_zip
 JMA support.......... $enable_jma
+SSE4.1............... $enable_sse41
+AVX2................. $enable_avx2
+NEON................. $enable_neon
 debugger............. $enable_debugger
 
 EOF

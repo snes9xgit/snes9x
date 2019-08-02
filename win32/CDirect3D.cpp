@@ -134,7 +134,7 @@ bool CDirect3D::Initialize(HWND hWnd)
 	pDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_BORDER);
 	pDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_BORDER);
 
-	pDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
+	Clear();
 
 	init_done = true;
 
@@ -298,8 +298,9 @@ void CDirect3D::Render(SSurface Src)
 		drawSurface->UnlockRect(0);
 	}
 
-	if(!GUI.Stretch||GUI.AspectRatio)
-		pDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
+	if (!GUI.Stretch || GUI.AspectRatio) {
+		Clear();
+	}
 
 	//if the output size of the render method changes we need to update the viewport
 	if(afterRenderHeight != dstRect.bottom || afterRenderWidth != dstRect.right) {
@@ -587,7 +588,6 @@ void CDirect3D::SetSnes9xColorFormat()
 	GUI.BlueShift = 0;
 	GUI.GreenShift = 6;
 	GUI.RedShift = 11;
-	S9xSetRenderPixelFormat (RGB565);
 	S9xBlit2xSaIFilterInit();
 	S9xBlitHQ2xFilterInit();
 	GUI.NeedDepthConvert = FALSE;
@@ -687,4 +687,25 @@ void CDirect3D::SetFiltering()
 		pDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
 		pDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_POINT);
 	}
+}
+
+// reset viewport to whole window, clear, set back to current viewport
+void CDirect3D::Clear()
+{
+	if (!init_done)
+		return;
+
+	D3DVIEWPORT9 vp_current, vp_all;
+	pDevice->GetViewport(&vp_current);
+
+	vp_all.X = 0;
+	vp_all.Y = 0;
+	vp_all.Width = dPresentParams.BackBufferWidth;
+	vp_all.Height = dPresentParams.BackBufferHeight;
+	vp_all.MinZ = 0.0;
+	vp_all.MaxZ = 1.0;
+
+	pDevice->SetViewport(&vp_all);
+	pDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
+	pDevice->SetViewport(&vp_current);
 }

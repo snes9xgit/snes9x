@@ -61,6 +61,14 @@ int main (int argc, char *argv[])
 
     char *rom_filename = S9xParseArgs (argv, argc);
 
+#if GTK_MAJOR_VERSION >= 3
+    auto settings = gtk_settings_get_default();
+    g_object_set(settings,
+                 "gtk-menu-images", gui_config->enable_icons,
+                 "gtk_button_images", gui_config->enable_icons,
+                 NULL);
+#endif
+
     S9xReportControllers ();
 
     if (!Memory.Init () || !S9xInitAPU ())
@@ -137,8 +145,6 @@ int main (int argc, char *argv[])
     }
 
     gui_config->flush_joysticks ();
-
-    gtk_window_present (top_level->get_window ());
 
     if (rom_filename && *Settings.InitialSnapshotFilename)
         S9xUnfreezeGame(Settings.InitialSnapshotFilename);
@@ -251,7 +257,6 @@ void S9xNoROMLoaded ()
     gui_config->rom_loaded = false;
     S9xDisplayRefresh (-1, -1);
     top_level->configure_widgets ();
-    top_level->update_statusbar ();
 }
 
 static gboolean S9xPauseFunc (gpointer data)
@@ -284,7 +289,6 @@ static gboolean S9xPauseFunc (gpointer data)
                          S9xIdleFunc,
                          NULL,
                          NULL);
-        top_level->update_statusbar ();
         return false;
     }
 
@@ -307,15 +311,18 @@ gboolean S9xIdleFunc (gpointer data)
 
         /* Move to a timer-based function to use less CPU */
         g_timeout_add (100, S9xPauseFunc, NULL);
-        top_level->update_statusbar ();
         return false;
     }
 
     S9xCheckPointerTimer ();
+
     S9xProcessEvents (true);
 
     if (!S9xDisplayDriverIsReady ())
+    {
+        usleep(100);
         return true;
+    }
 
     S9xThrottle ();
 
@@ -501,29 +508,11 @@ static void S9xThrottle ()
         frame_clock = now;
     }
 
-    if (Settings.SkipFrames == THROTTLE_SOUND_SYNC &&
-        !Settings.DynamicRateControl)
+    if (Settings.SkipFrames == THROTTLE_SOUND_SYNC ||
+        Settings.SkipFrames == THROTTLE_NONE)
     {
-        while (!S9xSyncSound ())
-        {
-            usleep (100);
-
-            /* If we can't sync sound within a half-second, we're probably deadlocked */
-            if (g_get_monotonic_time () - now > 500000)
-            {
-                S9xClearSamples ();
-                break;
-            }
-        }
-
         frame_clock = now;
         IPPU.SkippedFrames = 0;
-
-        return;
-    }
-    else if (Settings.SkipFrames == THROTTLE_NONE)
-    {
-        frame_clock = now;
     }
     else // THROTTLE_TIMER or THROTTLE_TIMER_FRAMESKIP
     {

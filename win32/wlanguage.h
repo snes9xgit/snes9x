@@ -6,13 +6,13 @@
 
 /* This is where all the GUI text strings will eventually end up */
 
-#define WINDOW_TITLE TEXT("Snes9X v%s for Windows")
+#define WINDOW_TITLE TEXT("Snes9x")
 
 // the windows registry is no longer used
-//#define MY_REG_KEY   "Software\\Emulators\\Snes9X"
+//#define MY_REG_KEY   "Software\\Emulators\\Snes9x"
 //#define REG_KEY_VER  "1.31"
 
-#define DISCLAIMER_TEXT        TEXT("Snes9X v%s for Windows.\r\n\
+#define DISCLAIMER_TEXT        TEXT("Snes9x v%s for Windows.\r\n\
 (c) Copyright 1996 - 2002  Gary Henderson and Jerremy Koot (jkoot@snes9x.com)\r\n\
 (c) Copyright 2002 - 2004  Matthew Kendora\r\n\
 (c) Copyright 2002 - 2005  Peter Bortas\r\n\
@@ -20,23 +20,23 @@
 (c) Copyright 2001 - 2006  John Weidman\r\n\
 (c) Copyright 2002 - 2010  Brad Jorsch, funkyass, Kris Bleakley, Nach, zones\r\n\
 (c) Copyright 2006 - 2007  nitsuja\r\n\
-(c) Copyright 2009 - 2018  BearOso, OV2\r\n\r\n\
+(c) Copyright 2009 - 2019  BearOso, OV2\r\n\r\n\
 Windows Port Authors: Matthew Kendora, funkyass, nitsuja, Nach, blip, OV2.\r\n\r\n\
-Snes9X is a Super Nintendo Entertainment System\r\n\
+Snes9x is a Super Nintendo Entertainment System\r\n\
 emulator that allows you to play most games designed\r\n\
 for the SNES on your PC.\r\n\r\n\
 Please visit http://www.snes9x.com for\r\n\
-up-to-the-minute information and help on Snes9X.\r\n\r\n\
-Nintendo is a trade mark.")
+up-to-the-minute information and help on Snes9x.\r\n\r\n\
+Nintendo is a trademark.")
 
 
 #define APP_NAME TEXT("Snes9x")
 // possible global strings
 #define SNES9X_INFO TEXT("Snes9x: Information")
 #define SNES9X_WARN TEXT("Snes9x: WARNING!")
-#define SNES9X_DXS TEXT("Snes9X: DirectSound")
-#define SNES9X_SNDQ TEXT("Snes9X: Sound CPU Question")
-#define SNES9X_NP_ERROR TEXT("Snes9X: NetPlay Error")
+#define SNES9X_DXS TEXT("Snes9x: DirectSound")
+#define SNES9X_SNDQ TEXT("Snes9x: Sound CPU Question")
+#define SNES9X_NP_ERROR TEXT("Snes9x: NetPlay Error")
 #define BUTTON_OK TEXT("&OK")
 #define BUTTON_CANCEL TEXT("&Cancel")
 
@@ -78,48 +78,48 @@ Nintendo is a trade mark.")
 #define HOTKEYS_ALT_MOD "Alt + "
 #define HOTKEYS_LABEL_BLUE TEXT("Blue means the hotkey is already mapped.\nPink means it conflicts with a game button.\nRed means it's reserved by Windows.\nA hotkey can be disabled using Escape.")
 #define HOTKEYS_HKCOMBO TEXT("Page %d")
-#define HOTKEYS_LABEL_1_1 TEXT("speed +")
-#define HOTKEYS_LABEL_1_2 TEXT("speed -")
-#define HOTKEYS_LABEL_1_3 TEXT("pause")
-#define HOTKEYS_LABEL_1_4 TEXT("frame advance")
-#define HOTKEYS_LABEL_1_5 TEXT("fast forward")
-#define HOTKEYS_LABEL_1_6 TEXT("skip +")
-#define HOTKEYS_LABEL_1_7 TEXT("skip -")
-#define HOTKEYS_LABEL_1_8 TEXT("superscope turbo")
-#define HOTKEYS_LABEL_1_9 TEXT("superscope pause")
-#define HOTKEYS_LABEL_1_10 TEXT("show pressed keys")
-#define HOTKEYS_LABEL_1_11 TEXT("movie frame count")
-#define HOTKEYS_LABEL_1_12 TEXT("movie read-only")
-#define HOTKEYS_LABEL_1_13 TEXT("save screenshot")
-#define HOTKEYS_LABEL_2_1 TEXT("Graphics Layer 1")
-#define HOTKEYS_LABEL_2_2 TEXT("Graphics Layer 2")
-#define HOTKEYS_LABEL_2_3 TEXT("Graphics Layer 3")
-#define HOTKEYS_LABEL_2_4 TEXT("Graphics Layer 4")
-#define HOTKEYS_LABEL_2_5 TEXT("Sprites Layer")
-#define HOTKEYS_LABEL_2_6 TEXT("Clipping Windows")
-#define HOTKEYS_LABEL_2_7 TEXT("Transparency")
-#define HOTKEYS_LABEL_2_8 TEXT("fast forward toggle")
-#define HOTKEYS_LABEL_2_9 TEXT("Rewind")
-#define HOTKEYS_LABEL_2_10 TEXT("Switch Controllers")
-#define HOTKEYS_LABEL_2_11 TEXT("Joypad Swap")
-#define HOTKEYS_LABEL_2_12 TEXT("Reset Game")
-#define HOTKEYS_LABEL_2_13 TEXT("Toggle Cheats")
-#define HOTKEYS_LABEL_3_1 TEXT("Turbo A mode")
-#define HOTKEYS_LABEL_3_2 TEXT("Turbo B mode")
-#define HOTKEYS_LABEL_3_3 TEXT("Turbo Y mode")
-#define HOTKEYS_LABEL_3_4 TEXT("Turbo X mode")
-#define HOTKEYS_LABEL_3_5 TEXT("Turbo L mode")
-#define HOTKEYS_LABEL_3_6 TEXT("Turbo R mode")
-#define HOTKEYS_LABEL_3_7 TEXT("Turbo Start mode")
-#define HOTKEYS_LABEL_3_8 TEXT("Turbo Select mode")
-#define HOTKEYS_LABEL_3_9 TEXT("Turbo Left mode")
-#define HOTKEYS_LABEL_3_10 TEXT("Turbo Up mode")
-#define HOTKEYS_LABEL_3_11 TEXT("Turbo Right mode")
-#define HOTKEYS_LABEL_3_12 TEXT("Turbo Down mode")
-#define HOTKEYS_LABEL_3_13 TEXT("Toggle Mute")
-#define HOTKEYS_LABEL_4_11 TEXT("Save To File")
-#define HOTKEYS_LABEL_4_12 TEXT("Load From File")
-#define HOTKEYS_LABEL_4_13 TEXT("Quit Snes9x")
+#define HOTKEYS_LABEL_1_1 TEXT("Speed +:")
+#define HOTKEYS_LABEL_1_2 TEXT("Speed -:")
+#define HOTKEYS_LABEL_1_3 TEXT("Pause:")
+#define HOTKEYS_LABEL_1_4 TEXT("Frame advance:")
+#define HOTKEYS_LABEL_1_5 TEXT("Fast forward:")
+#define HOTKEYS_LABEL_1_6 TEXT("Skip frames +:")
+#define HOTKEYS_LABEL_1_7 TEXT("Skip frames -:")
+#define HOTKEYS_LABEL_1_8 TEXT("SuperScope turbo:")
+#define HOTKEYS_LABEL_1_9 TEXT("SuperScope pause:")
+#define HOTKEYS_LABEL_1_10 TEXT("Show pressed keys:")
+#define HOTKEYS_LABEL_1_11 TEXT("Movie frame count:")
+#define HOTKEYS_LABEL_1_12 TEXT("Movie read-only:")
+#define HOTKEYS_LABEL_1_13 TEXT("Save screenshot")
+#define HOTKEYS_LABEL_2_1 TEXT("Graphics layer 1:")
+#define HOTKEYS_LABEL_2_2 TEXT("Graphics layer 2:")
+#define HOTKEYS_LABEL_2_3 TEXT("Graphics layer 3:")
+#define HOTKEYS_LABEL_2_4 TEXT("Graphics layer 4:")
+#define HOTKEYS_LABEL_2_5 TEXT("Sprites layer:")
+#define HOTKEYS_LABEL_2_6 TEXT("Clipping Windows:")
+#define HOTKEYS_LABEL_2_7 TEXT("Transparency:")
+#define HOTKEYS_LABEL_2_8 TEXT("Fast-forward toggle:")
+#define HOTKEYS_LABEL_2_9 TEXT("Rewind:")
+#define HOTKEYS_LABEL_2_10 TEXT("Switch controllers:")
+#define HOTKEYS_LABEL_2_11 TEXT("Joypad swap:")
+#define HOTKEYS_LABEL_2_12 TEXT("Reset game:")
+#define HOTKEYS_LABEL_2_13 TEXT("Toggle cheats:")
+#define HOTKEYS_LABEL_3_1 TEXT("Turbo A mode:")
+#define HOTKEYS_LABEL_3_2 TEXT("Turbo B mode:")
+#define HOTKEYS_LABEL_3_3 TEXT("Turbo Y mode:")
+#define HOTKEYS_LABEL_3_4 TEXT("Turbo X mode:")
+#define HOTKEYS_LABEL_3_5 TEXT("Turbo L mode:")
+#define HOTKEYS_LABEL_3_6 TEXT("Turbo R mode:")
+#define HOTKEYS_LABEL_3_7 TEXT("Turbo Start mode:")
+#define HOTKEYS_LABEL_3_8 TEXT("Turbo Select mode:")
+#define HOTKEYS_LABEL_3_9 TEXT("Turbo Left mode:")
+#define HOTKEYS_LABEL_3_10 TEXT("Turbo Up mode:")
+#define HOTKEYS_LABEL_3_11 TEXT("Turbo Right mode:")
+#define HOTKEYS_LABEL_3_12 TEXT("Turbo Down mode:")
+#define HOTKEYS_LABEL_3_13 TEXT("Toggle mute:")
+#define HOTKEYS_LABEL_4_11 TEXT("Save to file:")
+#define HOTKEYS_LABEL_4_12 TEXT("Load from file:")
+#define HOTKEYS_LABEL_4_13 TEXT("Quit Snes9x:")
 
 // gaming buttons and axes
 #define GAMEDEVICE_JOYNUMPREFIX "(J%x)" // don't change this

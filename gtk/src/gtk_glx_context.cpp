@@ -22,6 +22,8 @@ GTKGLXContext::GTKGLXContext ()
 
     version_major     = -1;
     version_minor     = -1;
+    use_oml_sync_control = false;
+    ust = msc = sbc = 0;
 }
 
 GTKGLXContext::~GTKGLXContext ()
@@ -75,7 +77,7 @@ bool GTKGLXContext::attach (GtkWidget *widget)
         return false;
     }
     fbconfig = fbconfigs[0];
-    XFree (fbconfigs);
+    XFree(fbconfigs);
 
     vi = glXGetVisualFromFBConfig (display, fbconfig);
 
@@ -107,16 +109,21 @@ bool GTKGLXContext::create_context ()
 
     const char *extensions = glXQueryExtensionsString (display, screen);
 
+    gdk_x11_display_error_trap_push(gdk_display);
     if (strstr (extensions, "GLX_ARB_create_context"))
         context = glXCreateContextAttribsARB (display, fbconfig, NULL, True, context_attribs);
     if (!context)
         context = glXCreateNewContext (display, fbconfig, GLX_RGBA_TYPE, NULL, True);
+    gdk_x11_display_error_trap_pop_ignored(gdk_display);
 
     if (!context)
     {
         printf ("Couldn't create GLX context.\n");
         return false;
     }
+
+    if (strstr(extensions, "GLX_OML_sync_control") && gui_config->use_sync_control)
+        use_oml_sync_control = true;
 
     return true;
 }
@@ -142,7 +149,25 @@ void GTKGLXContext::resize ()
 
 void GTKGLXContext::swap_buffers ()
 {
+    if (use_oml_sync_control)
+        glXGetSyncValuesOML(display, xid, &ust, &msc, &sbc);
+
     glXSwapBuffers (display, xid);
+}
+
+bool GTKGLXContext::ready()
+{
+    if (use_oml_sync_control)
+    {
+        int64 ust, msc, sbc;
+        glXGetSyncValuesOML(display, xid, &ust, &msc, &sbc);
+
+        if (sbc != this->sbc || msc - this->msc > 2)
+            return true;
+        return false;
+    }
+
+    return true;
 }
 
 void GTKGLXContext::make_current ()

@@ -1,0 +1,15 @@
+To add a new language or update the existing ones:
+
+If your language isn't here, add it to the LINGUAS file.
+
+Use meson in the gtk directory to create the build files, ie:
+  $ meson build
+
+Change to the build directory and run 'ninja snes9x-gtk-update-po'
+  $ cd build
+  $ ninja snes9x-gtk-update-po
+
+This will update all the .po files in this directory with the latest strings 
+and create any new files for those in LINGUAS.
+
+Use any method desired to translate the strings in the .po file.

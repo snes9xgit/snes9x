@@ -234,11 +234,11 @@ void S9xLoadConfigFiles (char **argv, int argc)
 
 	// Sound
 
-	Settings.SoundSync                  =  conf.GetBool("Sound::Sync",                         true);
+	Settings.SoundSync                  =  conf.GetBool("Sound::Sync",                         false);
 	Settings.SixteenBitSound            =  conf.GetBool("Sound::16BitSound",                   true);
 	Settings.Stereo                     =  conf.GetBool("Sound::Stereo",                       true);
 	Settings.ReverseStereo              =  conf.GetBool("Sound::ReverseStereo",                false);
-	Settings.SoundPlaybackRate          =  conf.GetUInt("Sound::Rate",                         32000);
+	Settings.SoundPlaybackRate          =  conf.GetUInt("Sound::Rate",                         48000);
 	Settings.SoundInputRate             =  conf.GetUInt("Sound::InputRate",                    31950);
 	Settings.Mute                       =  conf.GetBool("Sound::Mute",                         false);
 	Settings.DynamicRateControl         =  conf.GetBool("Sound::DynamicRateControl",           false);
@@ -250,6 +250,7 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.SupportHiRes               =  conf.GetBool("Display::HiRes",                      true);
 	Settings.Transparency               =  conf.GetBool("Display::Transparency",               true);
 	Settings.DisableGraphicWindows      = !conf.GetBool("Display::GraphicWindows",             true);
+	Settings.DisplayTime				=  conf.GetBool("Display::DisplayTime",                false);
 	Settings.DisplayFrameRate           =  conf.GetBool("Display::DisplayFrameRate",           false);
 	Settings.DisplayWatchedAddresses    =  conf.GetBool("Display::DisplayWatchedAddresses",    false);
 	Settings.DisplayPressedKeys         =  conf.GetBool("Display::DisplayInput",               false);
@@ -308,7 +309,8 @@ void S9xLoadConfigFiles (char **argv, int argc)
 
 	// Hack
 	Settings.SuperFXClockMultiplier         = conf.GetUInt("Hack::SuperFXClockMultiplier", 100);
-
+    Settings.OverclockMode                  = conf.GetUInt("Hack::OverclockMode", 0);
+    Settings.SeparateEchoBuffer             = conf.GetBool("Hack::SeparateEchoBuffer", false);
 	Settings.DisableGameSpecificHacks       = !conf.GetBool("Hack::EnableGameSpecificHacks",       true);
 	Settings.BlockInvalidVRAMAccessMaster   = !conf.GetBool("Hack::AllowInvalidVRAMAccess",        false);
 	Settings.HDMATimingHack                 =  conf.GetInt ("Hack::HDMATiming",                    100);
@@ -367,6 +369,7 @@ void S9xUsage (void)
 	S9xMessage(S9X_INFO, S9X_USAGE, "");
 
 	// DISPLAY OPTIONS
+	S9xMessage(S9X_INFO, S9X_USAGE, "-displaytime                    Display the time");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-displayframerate               Display the frame rate counter");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-displaykeypress                Display input of all controllers and peripherals");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-nohires                        (Not recommended) Disable support for hi-res and");
@@ -491,6 +494,11 @@ char * S9xParseArgs (char **argv, int argc)
 
 			if (!strcasecmp(argv[i], "-soundsync"))
 				Settings.SoundSync = TRUE;
+			else if (!strcasecmp(argv[i], "-dynamicratecontrol"))
+			{
+				Settings.DynamicRateControl = TRUE;
+				Settings.DynamicRateLimit = 5;
+			}
 			else
 			if (!strcasecmp(argv[i], "-playbackrate"))
 			{
@@ -533,6 +541,9 @@ char * S9xParseArgs (char **argv, int argc)
 
 			// DISPLAY OPTIONS
 
+			if (!strcasecmp(argv[i], "-displaytime"))
+				Settings.DisplayTime = TRUE;
+			else
 			if (!strcasecmp(argv[i], "-displayframerate"))
 				Settings.DisplayFrameRate = TRUE;
 			else

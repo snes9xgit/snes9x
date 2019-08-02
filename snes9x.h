@@ -8,7 +8,7 @@
 #define _SNES9X_H_
 
 #ifndef VERSION
-#define VERSION	"1.58"
+#define VERSION	"1.60"
 #endif
 
 #include "port.h"
@@ -61,7 +61,7 @@
 #define IMAGE_WIDTH					(Settings.SupportHiRes ? MAX_SNES_WIDTH : SNES_WIDTH)
 #define IMAGE_HEIGHT				(Settings.SupportHiRes ? MAX_SNES_HEIGHT : SNES_HEIGHT_EXTENDED)
 
-#define	NTSC_MASTER_CLOCK			21477272.0
+#define	NTSC_MASTER_CLOCK			21477272.727272 // 21477272 + 8/11 exact
 #define	PAL_MASTER_CLOCK			21281370.0
 
 #define SNES_MAX_NTSC_VCOUNTER		262
@@ -157,9 +157,10 @@ enum
 
 enum
 {
-	IRQ_NONE = 0,
-	IRQ_SET_FLAG = 1,
-	IRQ_CLEAR_FLAG = 2
+	IRQ_NONE        = 0x0,
+	IRQ_SET_FLAG    = 0x1,
+	IRQ_CLEAR_FLAG  = 0x2,
+	IRQ_TRIGGER_NMI = 0x4
 };
 
 struct STimings
@@ -246,6 +247,7 @@ struct SSettings
 	uint8	BG_Forced;
 	bool8	DisableGraphicWindows;
 
+	bool8	DisplayTime;
 	bool8	DisplayFrameRate;
 	bool8	DisplayWatchedAddresses;
 	bool8	DisplayPressedKeys;
@@ -296,13 +298,16 @@ struct SSettings
 	bool8	ApplyCheats;
 	bool8	NoPatch;
 	bool8	IgnorePatchChecksum;
+	bool8	IsPatched;
 	int32	AutoSaveDelay;
 	bool8	DontSaveOopsSnapshot;
 	bool8	UpAndDown;
 
 	bool8	OpenGLEnable;
 
+    bool8   SeparateEchoBuffer;
 	uint32	SuperFXClockMultiplier;
+    int OverclockMode;
 	int	OneClockCycle;
 	int	OneSlowClockCycle;
 	int	TwoClockCycles;

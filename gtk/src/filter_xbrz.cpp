@@ -4,7 +4,7 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include "snes9x.h"
+#include "gtk_s9x.h"
 #include "../filter/xbrz.h"
 #include <vector>
 
@@ -35,7 +35,6 @@ void copyImage16To32(const uint16_t* src, int width, int height, int srcPitch,
             trgLine[x] = CONVERT_16_TO_32(srcLine[x]);
     }
 }
-
 
 //stretch image and convert from ARGB to RGB565/555
 inline
@@ -70,21 +69,38 @@ void xBRZ(uint8 *srcPtr, uint32 srcPitch, uint8 *dstPtr, uint32 dstPitch, int wi
     if (width  <= 0 || height <= 0)
         return;
 
-    renderBuffer.resize(width * height);
-
-    xbrzBuffer.resize(renderBuffer.size() * scalingFactor * scalingFactor );
-
-    int trgWidth  = width  * scalingFactor;
+    int trgWidth = width * scalingFactor;
     int trgHeight = height * scalingFactor;
 
-    copyImage16To32(reinterpret_cast<const uint16_t*>(srcPtr), width, height, srcPitch,
-        &renderBuffer[0], 0, height);
+    if (gui_config->multithreading && gui_config->num_threads > 1)
+    {
+        renderBuffer.resize(width * (height + 4));
+        xbrzBuffer.resize(renderBuffer.size() * scalingFactor * scalingFactor);
 
-    xbrz::scale(scalingFactor, &renderBuffer[0], &xbrzBuffer[0], width, height, xbrz::ColorFormat::RGB, xbrz::ScalerCfg(), 0, height);
+        copyImage16To32(reinterpret_cast<const uint16_t *>(srcPtr - srcPitch * 2),
+                        width, 
+                        height + 4, 
+                        srcPitch, 
+                        &renderBuffer[0], 
+                        0, 
+                        height + 4);
+        xbrz::scale(scalingFactor, &renderBuffer[0], &xbrzBuffer[0], width, height + 4, xbrz::ColorFormat::RGB, xbrz::ScalerCfg(), 2, height + 2);
 
-    stretchImage32To16(&xbrzBuffer[0], width * scalingFactor, height * scalingFactor,
-                       reinterpret_cast<uint16_t*>(dstPtr), trgWidth, trgHeight, dstPitch, 0, height * scalingFactor);
+        stretchImage32To16(&xbrzBuffer[trgWidth * 2 * scalingFactor], trgWidth, trgHeight,
+                           reinterpret_cast<uint16_t *>(dstPtr), trgWidth, trgHeight, dstPitch, 0, height * scalingFactor);
+    }
+    else
+    {
+        renderBuffer.resize(width * height);
+        xbrzBuffer.resize(renderBuffer.size() * scalingFactor * scalingFactor);
 
+        copyImage16To32(reinterpret_cast<const uint16_t *>(srcPtr), width, height, srcPitch,
+                        &renderBuffer[0], 0, height);
+
+        xbrz::scale(scalingFactor, &renderBuffer[0], &xbrzBuffer[0], width, height, xbrz::ColorFormat::RGB, xbrz::ScalerCfg(), 0, height);
+        stretchImage32To16(&xbrzBuffer[0], width * scalingFactor, height * scalingFactor,
+                          reinterpret_cast<uint16_t *>(dstPtr), trgWidth, trgHeight, dstPitch, 0, height * scalingFactor);
+    }
 }
 
 void filter_2xBRZ(uint8 *srcPtr, uint32 srcPitch, uint8 *dstPtr, uint32 dstPitch, int width, int height)

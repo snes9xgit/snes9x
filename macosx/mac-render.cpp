@@ -199,11 +199,6 @@ void InitGraphics (void)
 	if (!snesScreenA || !snesScreenB || !blitGLBuffer)
 		QuitWithFatalError(0, "render 01");
 
-#ifdef GFX_MULTI_FORMAT
-	S9xSetRenderPixelFormat(RGB555);
-	printf("GFX_MULTI_FORMAT is #defined.\n");
-#endif
-
 	if (!S9xBlitFilterInit()      |
 		!S9xBlit2xSaIFilterInit() |
 		!S9xBlitHQ2xFilterInit()  |

@@ -11,6 +11,9 @@
 
 #include "gtk_binding.h"
 #include "SDL.h"
+// SDL.h may include altivec.h which redefines vector and bool
+#undef vector
+#undef bool
 
 const int NUM_JOYPADS = 10;
 

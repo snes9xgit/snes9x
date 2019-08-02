@@ -7,9 +7,9 @@ Files included in the Snes9x archive:
   changes.txt
   snes9x-license.txt
 
-version 1.58  December, 2018
+version 1.60  March, 2019
 Home page: http://www.snes9x.com/
-
+Source code: https://github.com/snes9xgit/snes9x/
 
 
 Contents
@@ -112,7 +112,7 @@ is displayed. This will help to find out what the problem is.
 
 These colors do NOT signify whether a game will work or not. It is just a means
 for reference so we can understand what may or may not be a problem. Most often
-the problem with games that don't work is that they are corrupt or are a bad dump 
+the problem with games that don't work is that they are corrupt or are a bad dump
 and should be redumped.
 
 SNES Joypad Emulation
@@ -171,9 +171,15 @@ https://github.com/libretro/common-shaders
 
 GLSL Shaders
 --------
-Support for GLSL shaders is available when using OpenGL. A number can be 
+Support for GLSL shaders is available when using OpenGL. A number can be
 obtained from the libretro glsl-shaders repository:
 https://github.com/libretro/glsl-shaders
+
+Slang Shaders
+--------
+Slang shaders may also be used with OpenGL. The primary location to get these
+is the libretro slang-shaders repository:
+https://github.com/libretro/slang-shaders
 
 Controllers Support
 ===================
@@ -608,8 +614,8 @@ the extension of the freeze files.
 Compatibility with Other SNES Emulators
 ---------------------------------------
 Cheat files (.cht) are common between Snes9x and higan/bsnes. higan stores
-these as cheats.bml in the higan subdirectory of a game folder. 
-RTC files (.rtc) are common between Snes9x and bsnes. 
+these as cheats.bml in the higan subdirectory of a game folder.
+RTC files (.rtc) are common between Snes9x and bsnes.
 SRAM files (.srm) should be common among all SNES emulators.
 
 
@@ -647,22 +653,28 @@ Problems with Sound
 -------------------
 No sound coming from any SNES game using Snes9x? Could be any or all of these:
 
-- If all sound menu options are grayed out, or an error dialog about Snes9x not
-  being able to initialize DirectSound is displayed - then DirectSound could not
-  initialize itself. Make sure DirectX 6 or above is installed and your sound
-  card is supported by DirectX.
   Installing the latest drivers for your sound card might help. Another Windows
-  application might have opened DirectSound in exclusive mode or opened the
-  Windows WAVE device - WinAmp uses the Windows WAVE device by default - in
-  which case you will need to stop that application and then restart Snes9x. It
-  is possible to switch WinAmp to use DirectSound, in which case both Snes9x and
-  WinAmp output can be heard at the same time.
+  application might be holding exclusive access to the sound card - in
+  which case you will need to stop that application and then restart Snes9x.
 - The sound card's volume level might be set too low. Snes9x doesn't alter the
   card's master volume level so you might need to adjust it using the sound
   card's mixer/volume controls usually available from the task bar or start
   menu.
 - Make sure your speakers and turned on, plugged in and the volume controls are
   set to a suitable level.
+- If experiencing crackling, try the following in the Sound Settings dialog:
+    * Ensure the "Synchronize with sound core" option is enabled.
+    * Increase the buffer size.
+    * Switch the sound driver from WaveOut to XAudio2 or vice-versa.
+    * If "Automatic Input Rate" option is disabled, enable it. Otherwise,
+      disable it and lower the "Input Rate" value in steps of 10 until the
+      crackling goes away.
+    * Enable the "Dynamic Rate Control" option.
+    * Change the "Playback Rate" to 48000Hz. Versions of Windows since Vista
+      have included a sound server that controls audio. It usually runs at
+      48000Hz, and matching this means Windows doesn't try to convert it.
+      Contrary to other advice, running at 32000Hz does NOT provide any
+      benefits.
 
 
 
@@ -824,6 +836,6 @@ Konami and Justifier are trademarks of Konami Corp.
 Hudson is a trademark of Husdon Soft Co., Ltd.
 Capcom is a trademark of Capcom Co., Ltd.
 
-Gary Henderson
+This document was originally authored by Gary Henderson
 
-Updated most recently: 2018/11/8
+Updated most recently: 2019/2/26

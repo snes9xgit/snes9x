@@ -39,6 +39,14 @@ enum {
     THROTTLE_NONE = 3
 };
 
+enum {
+    SPLASH_IMAGE_BLACK = 0,
+    SPLASH_IMAGE_SMTPE = 1,
+    SPLASH_IMAGE_PATTERN = 2,
+    SPLASH_IMAGE_BLUE = 3,
+    SPLASH_IMAGE_COMBO = 4
+};
+
 class Snes9xConfig
 {
   public:
@@ -56,7 +64,6 @@ class Snes9xConfig
     bool change_display_resolution;
     bool fullscreen;
     bool ui_visible;
-    bool statusbar_visible;
     int default_esc_behavior;
     bool prevent_screensaver;
     int xrr_index;
@@ -68,6 +75,7 @@ class Snes9xConfig
     bool multithreading;
     int hires_effect;
     bool force_inverted_byte_order;
+    int splash_image;
 
     snes_ntsc_setup_t ntsc_setup;
     int ntsc_format;
@@ -126,10 +134,13 @@ class Snes9xConfig
     bool rom_loaded;
     int window_width, window_height;
     int preferences_width, preferences_height;
+    int shader_parameters_width, shader_parameters_height;
+    int current_display_tab;
     bool pause_emulation_on_switch;
     int num_threads;
     bool screensaver_needs_reset;
     bool modal_dialogs;
+    bool enable_icons;
 
     bool pointer_is_visible;
     gint64 pointer_timestamp;
@@ -149,8 +160,8 @@ class Snes9xConfig
     bool npot_textures;
     bool use_shaders;
     std::string shader_filename;
-    bool sync_every_frame;
-    bool use_fences;
+    bool use_glfinish;
+    bool use_sync_control;
 #endif
 
     JoyDevice **joystick;

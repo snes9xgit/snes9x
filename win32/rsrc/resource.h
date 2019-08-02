@@ -42,14 +42,15 @@
 #define IDD_DIALOG_SHADER_PARAMS        155
 #define IDD_DIALOG_XAUDIO2_INIT_ERROR   159
 #define IDI_ICON2                       160
+#define IDI_ICON3                       161
+#define IDI_ICON4                       162
+#define IDD_DIALOG_HACKS                164
 #define IDC_DRIVER                      1001
 #define IDC_BUFLEN                      1002
 #define IDC_RATE                        1003
 #define IDC_MIX                         1004
 #define IDC_OUTPUT_DEVICE               1004
 #define IDC_DYNRATECONTROL              1005
-#define IDC_STEREO                      1006
-#define IDC_REV_STEREO                  1007
 #define IDC_LINEAR_INTER                1008
 #define IDC_SYNC_TO_SOUND_CPU           1009
 #define IDC_ECHO                        1011
@@ -203,6 +204,7 @@
 #define IDC_COMBO1                      1155
 #define IDC_C_LOADWATCH                 1155
 #define IDC_OUTPUTMETHOD                1155
+#define IDC_CPU_OVERCLOCK               1155
 #define IDC_NC_ADDRESS                  1156
 #define IDC_C_SAVEWATCH                 1156
 #define IDC_ASPECTDROP                  1156
@@ -276,6 +278,7 @@
 #define IDC_HEIGHT_EXTEND               1198
 #define IDC_LABEL_UP19                  1198
 #define IDC_ASPECT                      1199
+#define IDC_LABEL_UP26                  1199
 #define IDC_MESSAGES_IN_IMAGE           1200
 #define IDC_RECORD_NOW                  1201
 #define IDC_MESSAGES_SCALE              1201
@@ -393,6 +396,13 @@
 #define IDC_ROM_SPLITTER                3027
 #define IDC_SYSLINK_DX                  3028
 #define IDC_STATIC_ICON                 3029
+#define IDC_INVALID_VRAM                3030
+#define IDC_SEPARATE_ECHO_BUFFER        3031
+#define IDC_SOUND_INTERPOLATION         3033
+#define IDC_SFX_CLOCK_SPEED             3035
+#define IDC_SFX_CLOCK_SPEED_SPIN        3036
+#define IDC_NO_SPRITE_LIMIT             3037
+#define IDC_SET_DEFAULTS                3038
 #define ID_FILE_EXIT                    40001
 #define ID_WINDOW_HIDEMENUBAR           40004
 #define ID_FILE_AVI_RECORDING           40005
@@ -405,8 +415,6 @@
 #define ID_SOUND_INTERPOLATED           40027
 #define ID_SOUND_SYNC                   40028
 #define ID_WINDOW_FULLSCREEN            40029
-#define ID_SOUND_16BIT                  40030
-#define ID_SOUND_STEREO                 40031
 #define ID_WINDOW_STRETCH               40032
 #define ID_SOUND_8000HZ                 40033
 #define ID_SOUND_11025HZ                40034
@@ -436,7 +444,6 @@
 #define ID_SOUND_48000HZ                40085
 #define ID_SOUND_16000HZ                40086
 #define ID_SOUND_35000HZ                40087
-#define ID_SOUND_REVERSE_STEREO         40088
 #define ID_FILE_SAVE_SRAM_DATA          40089
 #define ID_RECENT_DUMMY                 40090
 #define IDM_ROM_INFO                    40094
@@ -498,8 +505,8 @@
 #define ID_SOUND_144MS                  40162
 #define ID_SOUND_160MS                  40163
 #define ID_SOUND_176MS                  40164
-#define ID_SOUND_194MS                  40165
-#define ID_SOUND_210MS                  40166
+#define ID_SOUND_192MS                  40165
+#define ID_SOUND_208MS                  40166
 #define ID_EMULATION_PAUSEWHENINACTIVE  40167
 #define ID_VIDEO_SHOWFRAMERATE          40168
 #define ID_WINDOW_SIZE_1X               40169
@@ -511,6 +518,7 @@
 #define ID_SAVEMEMPACK                  40175
 #define ID_INPUT_BACKGROUNDKEYBOARDHOTKEYS 40176
 #define ID_INPUT_DETECTGAMEPADCHANGES   40177
+#define ID_EMULATION_HACKS              40178
 #define ID_FILE_SAVE0                   44000
 #define ID_FILE_SAVE1                   44001
 #define ID_FILE_SAVE2                   44002
@@ -540,9 +548,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        161
-#define _APS_NEXT_COMMAND_VALUE         40178
-#define _APS_NEXT_CONTROL_VALUE         3030
+#define _APS_NEXT_RESOURCE_VALUE        167
+#define _APS_NEXT_COMMAND_VALUE         40179
+#define _APS_NEXT_CONTROL_VALUE         3039
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

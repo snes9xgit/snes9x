@@ -53,9 +53,6 @@ class Snes9xWindow : public GtkBuilderWindow
 
         /* GTK-base-related functions */
         void show ();
-        void show_status_message (const char *message);
-        void update_statusbar ();
-        void toggle_statusbar ();
         void set_menu_item_selected (const char *name);
         void set_mouseable_area (int x, int y, int width, int height);
         void set_menu_item_accel_to_binding (const char *name,
@@ -66,6 +63,7 @@ class Snes9xWindow : public GtkBuilderWindow
         void resize_to_multiple (int factor);
         void resize_viewport (int width, int height);
         void expose ();
+        void setup_splash();
         double get_refresh_rate ();
         int get_auto_input_rate ();
 
@@ -82,8 +80,8 @@ class Snes9xWindow : public GtkBuilderWindow
         int            maximized_state;
         bool           focused;
         bool           paused_from_focus_loss;
-        uint16         mouse_loc_x, mouse_loc_y;
-        uint16         mouse_reported_x, mouse_reported_y;
+        double         snes_mouse_x, snes_mouse_y;
+        double         gdk_mouse_x, gdk_mouse_y;
         bool           mouse_grabbed;
         GdkPixbuf      *icon, *splash;
         GdkCursor      *default_cursor, *empty_cursor;

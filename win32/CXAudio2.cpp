@@ -11,6 +11,7 @@
 #include <process.h>
 #include "dxerr.h"
 #include "commctrl.h"
+#include <assert.h>
 
 /* CXAudio2
 	Implements audio output through XAudio2.
@@ -130,7 +131,7 @@ bool CXAudio2::InitVoices(void)
     if (device_index < 0)
         device_index = 0;
 
-	if ( FAILED(hr = pXAudio2->CreateMasteringVoice( &pMasterVoice, (Settings.Stereo?2:1),
+	if ( FAILED(hr = pXAudio2->CreateMasteringVoice( &pMasterVoice, 2,
 		Settings.SoundPlaybackRate, 0, device_index, NULL ) ) ) {
 			DXTRACE_ERR_MSGBOX(TEXT("Unable to create mastering voice."),hr);
 			return false;
@@ -138,15 +139,15 @@ bool CXAudio2::InitVoices(void)
 
 	WAVEFORMATEX wfx;
 	wfx.wFormatTag = WAVE_FORMAT_PCM;
-    wfx.nChannels = Settings.Stereo ? 2 : 1;
+    wfx.nChannels = 2;
     wfx.nSamplesPerSec = Settings.SoundPlaybackRate;
-    wfx.nBlockAlign = (Settings.SixteenBitSound ? 2 : 1) * (Settings.Stereo ? 2 : 1);
-    wfx.wBitsPerSample = Settings.SixteenBitSound ? 16 : 8;
+    wfx.nBlockAlign = 2 * 2;
+    wfx.wBitsPerSample = 16;
     wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * wfx.nBlockAlign;
     wfx.cbSize = 0;
 
 	if( FAILED(hr = pXAudio2->CreateSourceVoice(&pSourceVoice, (WAVEFORMATEX*)&wfx,
-		XAUDIO2_VOICE_NOSRC , XAUDIO2_DEFAULT_FREQ_RATIO, this, NULL, NULL ) ) ) {
+		XAUDIO2_VOICE_NOSRC, XAUDIO2_DEFAULT_FREQ_RATIO, this, NULL, NULL ) ) ) {
 			DXTRACE_ERR_MSGBOX(TEXT("Unable to create source voice."),hr);
 			return false;
 	}
@@ -231,14 +232,15 @@ bool CXAudio2::SetupSound()
 	UINT32 blockTime = GUI.SoundBufferSize / blockCount;
 
 	singleBufferSamples = (Settings.SoundPlaybackRate * blockTime) / 1000;
-    singleBufferSamples *= (Settings.Stereo ? 2 : 1);
-	singleBufferBytes = singleBufferSamples * (Settings.SixteenBitSound ? 2 : 1);
+    singleBufferSamples *= 2;
+	singleBufferBytes = singleBufferSamples * 2;
 	sum_bufferSize = singleBufferBytes * blockCount;
 
     if (InitVoices())
     {
 		soundBuffer = new uint8[sum_bufferSize];
 		writeOffset = 0;
+		partialOffset = 0;
     }
 	else {
 		DeInitVoices();
@@ -267,6 +269,11 @@ void CXAudio2::StopPlayback()
 	pSourceVoice->Stop(0);
 }
 
+int CXAudio2::GetAvailableBytes()
+{
+    return ((blockCount - bufferCount) * singleBufferBytes) - partialOffset;
+}
+
 /*  CXAudio2::ProcessSound
 The mixing function called by the sound core when new samples are available.
 SoundBuffer is divided into blockCount blocks. If there are enough available samples and a free block,
@@ -275,24 +282,22 @@ the OnBufferComplete callback.
 */
 void CXAudio2::ProcessSound()
 {
-	int freeBytes = (blockCount - bufferCount) * singleBufferBytes;
+	int freeBytes = GetAvailableBytes();
 
 	if (Settings.DynamicRateControl)
 	{
 		S9xUpdateDynamicRate(freeBytes, sum_bufferSize);
 	}
 
-	S9xFinalizeSamples();
-
 	UINT32 availableSamples;
 
 	availableSamples = S9xGetSampleCount();
 
-	if (Settings.DynamicRateControl)
+	if (Settings.DynamicRateControl && !Settings.SoundSync)
 	{
 		// Using rate control, we should always keep the emulator's sound buffers empty to
 		// maintain an accurate measurement.
-		if (availableSamples > (freeBytes >> (Settings.SixteenBitSound ? 1 : 0)))
+		if (availableSamples > (freeBytes >> 1))
 		{
 			S9xClearSamples();
 			return;
@@ -302,15 +307,59 @@ void CXAudio2::ProcessSound()
 	if(!initDone)
 		return;
 
-	BYTE * curBuffer;
+    if(Settings.SoundSync && !Settings.TurboMode && !Settings.Mute)
+    {
+        // no sound sync when speed is not set to 100%
+        while((freeBytes >> 1) < availableSamples)
+        {
+            ResetEvent(GUI.SoundSyncEvent);
+            if(!GUI.AllowSoundSync || WaitForSingleObject(GUI.SoundSyncEvent, 1000) != WAIT_OBJECT_0)
+            {
+                S9xClearSamples();
+                return;
+            }
+            freeBytes = GetAvailableBytes();
+        }
+    }
 
-	while(availableSamples > singleBufferSamples && bufferCount < blockCount) {
-		curBuffer = soundBuffer + writeOffset;
-		S9xMixSamples(curBuffer,singleBufferSamples);
-		PushBuffer(singleBufferBytes,curBuffer,NULL);
-		writeOffset+=singleBufferBytes;
-		writeOffset%=sum_bufferSize;
-        availableSamples -= singleBufferSamples;
+	if (partialOffset != 0)	{
+		assert(partialOffset < singleBufferBytes);
+		assert(bufferCount < blockCount);
+		BYTE *offsetBuffer = soundBuffer + writeOffset + partialOffset;
+		UINT32 samplesleftinblock = (singleBufferBytes - partialOffset) >> 1;
+
+		if (availableSamples < samplesleftinblock)
+		{
+			S9xMixSamples(offsetBuffer, availableSamples);
+            partialOffset += availableSamples << 1;
+			assert(partialOffset < singleBufferBytes);
+			availableSamples = 0;
+		}
+		else
+		{
+			S9xMixSamples(offsetBuffer, samplesleftinblock);
+			partialOffset = 0;
+			availableSamples -= samplesleftinblock;
+			PushBuffer(singleBufferBytes, soundBuffer + writeOffset, NULL);
+			writeOffset += singleBufferBytes;
+			writeOffset %= sum_bufferSize;
+		}
+	}
+
+	while (availableSamples >= singleBufferSamples && bufferCount < blockCount) {
+		BYTE *curBuffer = soundBuffer + writeOffset;
+		S9xMixSamples(curBuffer, singleBufferSamples);
+		PushBuffer(singleBufferBytes, curBuffer, NULL);
+		writeOffset += singleBufferBytes;
+		writeOffset %= sum_bufferSize;
+		availableSamples -= singleBufferSamples;
+	}
+
+	// need to check this is less than a single buffer, otherwise we have a race condition with bufferCount
+	if (availableSamples > 0 && availableSamples < singleBufferSamples && bufferCount < blockCount) {
+		S9xMixSamples(soundBuffer + writeOffset, availableSamples);
+		partialOffset = availableSamples << 1;
+		assert(partialOffset < singleBufferBytes);
 	}
 }
 

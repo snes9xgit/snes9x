@@ -826,7 +826,7 @@ void S9xDetectJoypads()
                                               sizeof( JOYCAPS)) == JOYERR_NOERROR;
 }
 
-void InitSnes9X( void)
+void InitSnes9x( void)
 {
 #ifdef DEBUGGER
 //    extern FILE *trace;
@@ -1226,10 +1226,10 @@ void DoAVIOpen(const TCHAR* filename)
 	WAVEFORMATEX wfx;
 
 	wfx.wFormatTag = WAVE_FORMAT_PCM;
-    wfx.nChannels = Settings.Stereo ? 2 : 1;
+    wfx.nChannels = 2;
     wfx.nSamplesPerSec = Settings.SoundPlaybackRate;
-    wfx.nBlockAlign = (Settings.SixteenBitSound ? 2 : 1) * (Settings.Stereo ? 2 : 1);
-    wfx.wBitsPerSample = Settings.SixteenBitSound ? 16 : 8;
+    wfx.nBlockAlign = 2 * 2;
+    wfx.wBitsPerSample = 16;
     wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * wfx.nBlockAlign;
     wfx.cbSize = 0;
 
@@ -1303,10 +1303,10 @@ void DoAVIVideoFrame()
 	const WAVEFORMATEX* pwfex = NULL;
 	WAVEFORMATEX wfx;
 	wfx.wFormatTag = WAVE_FORMAT_PCM;
-    wfx.nChannels = Settings.Stereo ? 2 : 1;
+    wfx.nChannels = 2;
     wfx.nSamplesPerSec = Settings.SoundPlaybackRate;
-    wfx.nBlockAlign = (Settings.SixteenBitSound ? 2 : 1) * (Settings.Stereo ? 2 : 1);
-    wfx.wBitsPerSample = Settings.SixteenBitSound ? 16 : 8;
+    wfx.nBlockAlign = 2 * 2;
+    wfx.wBitsPerSample = 16;
     wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * wfx.nBlockAlign;
     wfx.cbSize = 0;
 	if(avi_skip_frames != Settings.SkipFrames ||
@@ -1327,7 +1327,7 @@ void DoAVIVideoFrame()
 	// generate sound
 	if(pwfex)
 	{
-		const int stereo_multiplier = (Settings.Stereo) ? 2 : 1;
+		const int stereo_multiplier = 2;
 
 		avi_sound_samples_error += avi_sound_samples_per_update;
 		int samples = (int) avi_sound_samples_error;

@@ -20,14 +20,15 @@ Sync = FALSE
 16BitSound = TRUE
 Stereo = TRUE
 ReverseStereo = FALSE
-Rate = 32000
-InputRate = 32000
+Rate = 48000
+InputRate = 31950
 Mute = FALSE
 
 [Display]
 HiRes = TRUE
 Transparency = TRUE
 GraphicWindows = TRUE
+DisplayTime = FALSE
 DisplayFrameRate = FALSE
 DisplayWatchedAddresses = FALSE
 DisplayInput = FALSE

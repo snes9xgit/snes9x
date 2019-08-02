@@ -1637,8 +1637,8 @@ int S9xUnfreezeFromStream (STREAM stream)
 				SA1.HCounter = 0;
 				SA1.VCounter = 0;
 				SA1.PrevHCounter = 0;
-				SA1.MemSpeed = SLOW_ONE_CYCLE;
-				SA1.MemSpeedx2 = SLOW_ONE_CYCLE * 2;
+				SA1.MemSpeed = ONE_CYCLE;
+				SA1.MemSpeedx2 = ONE_CYCLE * 2;
 			}
 		}
 

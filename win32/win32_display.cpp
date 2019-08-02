@@ -34,6 +34,11 @@ COpenGL OpenGL;
 SSurface Src = {0};
 extern BYTE *ScreenBufferBlend;
 
+typedef HRESULT (*DWMFLUSHPROC)();
+typedef HRESULT (*DWMISCOMPOSITIONENABLEDPROC)(BOOL *);
+DWMFLUSHPROC DwmFlushProc = NULL;
+DWMISCOMPOSITIONENABLEDPROC DwmIsCompositionEnabledProc = NULL;
+
 // Interface used to access the display output
 IS9xDisplayOutput *S9xDisplayOutput=&Direct3D;
 
@@ -118,9 +123,23 @@ bool WinDisplayReset(void)
 		S9xGraphicsDeinit();
 		S9xSetWinPixelFormat ();
 		S9xGraphicsInit();
+
+        if (GUI.DWMSync)
+        {
+            HMODULE dwmlib = LoadLibrary(TEXT("dwmapi"));
+            DwmFlushProc = (DWMFLUSHPROC)GetProcAddress(dwmlib, "DwmFlush");
+            DwmIsCompositionEnabledProc = (DWMISCOMPOSITIONENABLEDPROC)GetProcAddress(dwmlib, "DwmIsCompositionEnabled");
+
+            if (!DwmFlushProc || !DwmIsCompositionEnabledProc)
+            {
+                MessageBox(GUI.hWnd, TEXT("Couldn't load DWM functions. DWM Sync is disabled."), TEXT("Warning"), MB_OK | MB_ICONWARNING);
+                GUI.DWMSync = false;
+            }
+        }
+
 		return true;
 	} else {
-		MessageBox (GUI.hWnd, Languages[ GUI.Language].errInitDD, TEXT("Snes9X - Display Failure"), MB_OK | MB_ICONSTOP);
+		MessageBox (GUI.hWnd, Languages[ GUI.Language].errInitDD, TEXT("Snes9x - Display Failure"), MB_OK | MB_ICONSTOP);
 		return false;
 	}
 }
@@ -267,8 +286,26 @@ bool8 S9xDeinitUpdate (int Width, int Height)
         LastWidth = Width;
         LastHeight = Height;
     }
-	
-	WinRefreshDisplay();
+
+    if (GUI.DWMSync && GUI.outputMethod == OPENGL)
+    {
+        BOOL DWMEnabled = false;
+        DwmIsCompositionEnabledProc(&DWMEnabled);
+
+        if (GUI.FullScreen || !DWMEnabled)
+            ((COpenGL *)S9xDisplayOutput)->SetSwapInterval(GUI.Vsync ? 1 : 0);
+        else
+            ((COpenGL *)S9xDisplayOutput)->SetSwapInterval(0);
+
+        WinRefreshDisplay();
+
+        if (DWMEnabled && !GUI.FullScreen)
+            DwmFlushProc();
+    }
+    else
+    {
+        WinRefreshDisplay();
+    }
 
     return (true);
 }
@@ -278,7 +315,6 @@ sets default settings and calls the appropriate display object
 */
 void S9xSetWinPixelFormat ()
 {
-    S9xSetRenderPixelFormat (RGB565);
     GUI.NeedDepthConvert = FALSE;
 	GUI.DepthConverted = !GUI.NeedDepthConvert;
 
@@ -407,7 +443,7 @@ void RestoreGUIDisplay ()
         (GUI.FullscreenMode.width < 640 || GUI.FullscreenMode.height < 400) &&
         !DirectDraw.SetDisplayMode (640, 480, 1, 0, 60, !GUI.FullScreen, false))
     {
-        MessageBox (GUI.hWnd, Languages[ GUI.Language].errModeDD, TEXT("Snes9X - DirectDraw(1)"), MB_OK | MB_ICONSTOP);
+        MessageBox (GUI.hWnd, Languages[ GUI.Language].errModeDD, TEXT("Snes9x - DirectDraw(1)"), MB_OK | MB_ICONSTOP);
         S9xClearPause (PAUSE_RESTORE_GUI);
         return;
     }
@@ -424,7 +460,7 @@ void RestoreSNESDisplay ()
 
 	if (!DirectDraw.SetFullscreen(GUI.FullScreen))
     {
-        MessageBox (GUI.hWnd, Languages[ GUI.Language].errModeDD, TEXT("Snes9X - DirectDraw(4)"), MB_OK | MB_ICONSTOP);
+        MessageBox (GUI.hWnd, Languages[ GUI.Language].errModeDD, TEXT("Snes9x - DirectDraw(4)"), MB_OK | MB_ICONSTOP);
         return;
     }
 
@@ -487,14 +523,17 @@ void ToggleFullScreen ()
 		if(GUI.FullScreen) {
 			if(GetMenu(GUI.hWnd)!=NULL)
 				SetMenu(GUI.hWnd,NULL);
-			SetWindowLongPtr (GUI.hWnd, GWL_STYLE, WS_POPUP|WS_VISIBLE);
-			SetWindowPos (GUI.hWnd, HWND_TOPMOST, 0, 0, GUI.FullscreenMode.width, GUI.FullscreenMode.height, SWP_DRAWFRAME|SWP_FRAMECHANGED);
+			SetWindowLongPtr(GUI.hWnd, GWL_STYLE, WS_POPUP | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
+            SetWindowLongPtr(GUI.hWnd, GWL_EXSTYLE, 0);
 			if(!S9xDisplayOutput->SetFullscreen(true))
 				GUI.FullScreen = false;
+            else
+                SetWindowPos(GUI.hWnd, HWND_TOPMOST, 0, 0, GUI.FullscreenMode.width, GUI.FullscreenMode.height, SWP_DRAWFRAME | SWP_FRAMECHANGED);
 		}
 		if(!GUI.FullScreen) {
-			SetWindowLongPtr( GUI.hWnd, GWL_STYLE, WS_POPUPWINDOW|WS_CAPTION|
+			SetWindowLongPtr(GUI.hWnd, GWL_STYLE, WS_POPUPWINDOW|WS_CAPTION|
                    WS_THICKFRAME|WS_VISIBLE|WS_MINIMIZEBOX|WS_MAXIMIZEBOX);
+            SetWindowLongPtr(GUI.hWnd, GWL_EXSTYLE, WS_EX_ACCEPTFILES | WS_EX_APPWINDOW);
 			SetMenu(GUI.hWnd,GUI.hMenu);
 			S9xDisplayOutput->SetFullscreen(false);
 			SetWindowPos (GUI.hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE|SWP_DRAWFRAME|SWP_FRAMECHANGED);
@@ -615,6 +654,11 @@ int WinGetAutomaticInputRate(void)
         newInputRate = 0.0;
 
     return (int)newInputRate;
+}
+
+GLSLShader *WinGetActiveGLSLShader()
+{
+	return OpenGL.GetActiveShader();
 }
 
 /* Depth conversion functions begin */

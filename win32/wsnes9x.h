@@ -5,7 +5,7 @@
 \*****************************************************************************/
 
 /*****************************************************************************/
-/*  Snes9X: Win32                                                            */
+/*  Snes9x: Win32                                                            */
 /*****************************************************************************/
 #if !defined(SNES9X_H_INCLUDED)
 #define SNES9X_H_INCLUDED
@@ -156,6 +156,7 @@ struct sGUI {
 	bool Vsync;
 	bool ReduceInputLag;
 	bool shaderEnabled;
+    bool DWMSync;
 	TCHAR D3DshaderFileName[MAX_PATH];
 	TCHAR OGLshaderFileName[MAX_PATH];
 
@@ -217,6 +218,7 @@ struct sGUI {
 	CRITICAL_SECTION SoundCritSect;
     HANDLE SoundSyncEvent;
     TCHAR AudioDevice[MAX_AUDIO_NAME_LENGTH];
+    bool AllowSoundSync;
 
     TCHAR RomDir [_MAX_PATH];
     TCHAR ScreensDir [_MAX_PATH];
@@ -422,7 +424,8 @@ enum
 	WIN_XAUDIO2_SOUND_DRIVER,
 	WIN_FMODEX_DEFAULT_DRIVER,
 	WIN_FMODEX_ASIO_DRIVER,
-	WIN_FMODEX_OPENAL_DRIVER
+	WIN_FMODEX_OPENAL_DRIVER,
+    WIN_WAVEOUT_DRIVER
 };
 
 #define S9X_REG_KEY_BASE MY_REG_KEY

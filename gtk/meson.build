@@ -1,6 +1,6 @@
 project('snes9x-gtk',
         ['c', 'cpp'],
-        version: '1.58',
+        version: '1.60',
         default_options: ['cpp_std=c++11'])
 
 args = ['-DSNES9X_GTK', '-DUNZIP_SUPPORT', '-DNETPLAY_SUPPORT', '-DJMA_SUPPORT', '-Wall', '-W', '-Wno-unused-parameter']
@@ -75,6 +75,50 @@ if opengl
   else
     opengl = false
     warns += 'libepoxy not found. OpenGL will disabled.'
+  endif
+endif
+
+slang = get_option('slang')
+
+if slang and opengl
+  spirv_cross_hpp = join_paths(meson.source_root(), '../shaders/SPIRV-Cross/spirv_cross.hpp')
+  if not meson.get_compiler('cpp').compiles('#include "' + spirv_cross_hpp + '"')
+    slang = false
+    warns += 'Slang support needs the SPIRV-Cross directory in ../shaders'
+    warns += 'It can be downloaded with:'
+    warns += '  git submodule init ../shaders/SPIRV-Cross'
+    warns += '  git submodule update ../shaders/SPIRV-Cross'
+  endif
+endif
+
+if slang and opengl
+  glslang_dep = c_compiler.find_library('glslang', required: false)
+  spirv_dep = c_compiler.find_library('SPIRV', required: false)
+  osdependent_dep = c_compiler.find_library('OSDependent', required: false)
+  ogl_compiler_dep = c_compiler.find_library('OGLCompiler', required: false)
+  spv_remapper_dep = c_compiler.find_library('SPVRemapper', required: false)
+  resource_limits_dep = c_compiler.find_library('glslang-default-resource-limits', required:false)
+
+  if glslang_dep.found() and spirv_dep.found() and osdependent_dep.found() and ogl_compiler_dep.found() and spv_remapper_dep.found() and resource_limits_dep.found()
+    deps += [glslang_dep, spirv_dep, osdependent_dep, ogl_compiler_dep, spv_remapper_dep, resource_limits_dep]
+
+    args += ['-DUSE_SLANG', '-DSPIRV_CROSS_EXCEPTIONS_TO_ASSERTIONS']
+    srcs += ['../shaders/slang.cpp']
+    srcs += ['../shaders/SPIRV-Cross/spirv_cfg.cpp',
+             '../shaders/SPIRV-Cross/spirv_cfg.hpp',
+             '../shaders/SPIRV-Cross/spirv_common.hpp',
+             '../shaders/SPIRV-Cross/spirv_cross.cpp',
+             '../shaders/SPIRV-Cross/spirv_cross.hpp',
+             '../shaders/SPIRV-Cross/spirv_glsl.cpp',
+             '../shaders/SPIRV-Cross/spirv_glsl.hpp',
+             '../shaders/SPIRV-Cross/spirv_cross_parsed_ir.cpp',
+             '../shaders/SPIRV-Cross/spirv_cross_parsed_ir.hpp',
+             '../shaders/SPIRV-Cross/spirv_parser.cpp',
+             '../shaders/SPIRV-Cross/spirv_parser.hpp',
+             '../shaders/SPIRV-Cross/spirv.hpp']
+  else
+    slang = false
+    warns += 'glslang libraries not found. Slang shaders will be disabled.'
   endif
 endif
 
@@ -306,6 +350,9 @@ srcs += [
  '../debug.cpp',
  '../sdd1.cpp',
  '../tile.cpp',
+ '../tileimpl-n1x1.cpp',
+ '../tileimpl-n2x1.cpp',
+ '../tileimpl-h2x1.cpp',
  '../srtc.cpp',
  '../gfx.cpp',
  '../memmap.cpp',
@@ -357,7 +404,7 @@ libjma = static_library('jma',
                         cpp_args: [args, '-fexceptions'],
                         include_directories: include_directories(includes))
 
-sourcify = executable('sourcify', 'src/sourcify.c')
+sourcify = executable('sourcify', 'src/sourcify.c', native: true)
 gtk_snes9x_ui_cpp = custom_target('sourcify', 
                                   input: 'src/snes9x.ui', 
                                   output: 'gtk_snes9x_ui.cpp',
@@ -383,6 +430,7 @@ summary = [
   '            GTK+ version:      ' + gtk_ver.to_string(),
   '            Wayland:           ' + wayland.to_string(),
   '            OpenGL:            ' + opengl.to_string(),
+  '             slang shaders:    ' + slang.to_string(),
   '            XVideo:            ' + xv.to_string(),
   '            ALSA:              ' + alsa.to_string(),
   '            Open Sound System: ' + oss.to_string(),

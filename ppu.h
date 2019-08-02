@@ -228,6 +228,7 @@ extern SnesModel	M2SNES;
 #define MAX_5C78_VERSION	0x03
 #define MAX_5A22_VERSION	0x02
 
+void S9xUpdateScreen (void);
 static inline void FLUSH_REDRAW (void)
 {
 	if (IPPU.PreviousLine != IPPU.CurrentLine)

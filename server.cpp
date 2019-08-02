@@ -680,6 +680,20 @@ void S9xNPSendServerPause (bool8 paused)
     S9xNPSendToAllClients (pause, 7);
 }
 
+void S9xNPSendJoypadSwap()
+{
+#ifdef NP_DEBUG
+	printf("SERVER: Swap Joypads - @%ld\n", S9xGetMilliTime() - START);
+#endif
+	uint8 swap[7];
+	uint8 *ptr = swap;
+	*ptr++ = NP_SERV_MAGIC;
+	*ptr++ = 0;
+	*ptr++ = NP_SERV_JOYPAD_SWAP;
+	WRITE_LONG(ptr, 7);
+	S9xNPSendToAllClients(swap, 7);
+}
+
 void S9xNPServerLoop (void *)
 {
 #ifdef __WIN32__

@@ -460,5 +460,5 @@ void SNES9X_Quit (void)
 
 void SNES9X_InitSound (void)
 {
-	S9xInitSound(macSoundBuffer_ms, macSoundLagEnable ? macSoundBuffer_ms / 2 : 0);
+	S9xInitSound(0);
 }

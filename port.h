@@ -33,21 +33,23 @@
 #define RIGHTSHIFT_int32_IS_SAR
 #ifndef __LIBRETRO__
 #define SNES_JOY_READ_CALLBACKS
-#define GFX_MULTI_FORMAT
 #endif //__LIBRETRO__
 #endif
 
-#ifdef __LIBRETRO__
-#define GFX_MULTI_FORMAT
-#endif
-
 #ifdef __MACOSX__
-#undef GFX_MULTI_FORMAT
 #define PIXEL_FORMAT RGB555
 #endif
 
 #ifndef PIXEL_FORMAT
 #define PIXEL_FORMAT RGB565
+#endif
+
+#if defined(__GNUC__)
+#define alwaysinline  inline __attribute__((always_inline))
+#elif defined(_MSC_VER)
+#define alwaysinline  __forceinline
+#else
+#define alwaysinline  inline
 #endif
 
 #ifndef snes9x_types_defined

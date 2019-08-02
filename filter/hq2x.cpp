@@ -15,12 +15,8 @@
 #define	trU		0x000700
 #define	trV		0x000006
 
-#ifdef GFX_MULTI_FORMAT
-static uint16	Mask_2 = 0, Mask13 = 0;
-#else
 #define	Mask_2	SECOND_COLOR_MASK
 #define	Mask13	FIRST_THIRD_COLOR_MASK
-#endif
 
 #define Interp01(c1, c2) \
 (c1 == c2) ? c1 : \
@@ -343,11 +339,6 @@ bool8 S9xBlitHQ2xFilterInit (void)
 	RGBtoYUV = new int[n];
 	if (!RGBtoYUV)
 		return (FALSE);
-
-#ifdef GFX_MULTI_FORMAT
-	Mask_2 = SECOND_COLOR_MASK;
-	Mask13 = FIRST_THIRD_COLOR_MASK;
-#endif
 
 	InitLUTs();
 

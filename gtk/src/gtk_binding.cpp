@@ -75,12 +75,17 @@ Binding::Binding (const Binding& binding)
     this->value = binding.value;
 }
 
+Binding &Binding::operator=(const Binding &binding)
+{
+    this->value = binding.value;
+    return *this;
+}
+
 bool
 Binding::matches (Binding &binding)
 {
     if ((value & ~BINDING_THRESHOLD_MASK) ==
-        (binding.value & ~BINDING_THRESHOLD_MASK) &&
-        is_joy ())
+        (binding.value & ~BINDING_THRESHOLD_MASK))
         return true;
 
     return false;
@@ -173,17 +178,21 @@ Binding::Binding (const char *raw_string)
         bool ctrl = false;
         bool shift = false;
         bool alt= false;
+        bool direct = false;
         unsigned int keyval = 0;
         char *key;
+
+        if (!strchr (substr, '+'))
+            direct = true;
 
         key = strtok (substr, "+");
         while (key)
         {
-            if (strstr (key, "Alt"))
+            if (strstr (key, "Alt") && !direct)
                 alt = true;
-            else if (strstr (key, "Ctrl"))
+            else if (strstr (key, "Ctrl") && !direct)
                 ctrl = true;
-            else if (strstr (key, "Shift"))
+            else if (strstr (key, "Shift") && !direct)
                 shift = true;
             else
             {
@@ -193,7 +202,10 @@ Binding::Binding (const char *raw_string)
             key = strtok (NULL, "+");
         }
 
-        value = Binding(keyval, ctrl, shift, alt).value;
+        if (keyval != GDK_KEY_VoidSymbol)
+            value = Binding(keyval, ctrl, shift, alt).value;
+        else
+            value = 0;
     }
     else if (!strncmp (raw_string, "Joystick", 8))
     {
@@ -220,7 +232,6 @@ void
 Binding::to_string (char *str, bool translate)
 {
     char buf[256];
-    char *c;
 
 #undef _
 #define _(String) translate ? gettext(String) : (String)
@@ -237,7 +248,6 @@ Binding::to_string (char *str, bool translate)
         {
             sprintf (buf, _("Unknown"));
         }
-
         else
         {
             memset (buf, 0, 256);
@@ -246,10 +256,10 @@ Binding::to_string (char *str, bool translate)
                      255);
         }
 
-        while ((c = strstr (buf, "_")))
-        {
-            *c = ' ';
-        }
+        if (translate)
+            for (int i = 0; buf[i]; i++)
+                if (buf[i] == '_')
+                    buf[i] = ' ';
 
         sprintf (str, _("Keyboard %s%s%s%s"),
                  (value & BINDING_SHIFT) ? "Shift+" : "",

@@ -6,4 +6,6 @@ src/gtk_netplay.cpp
 src/gtk_preferences.cpp
 src/gtk_s9x.cpp
 src/gtk_s9xwindow.cpp
+src/gtk_shader_parameters.cpp
+src/gtk_file.cpp
 src/snes9x.ui

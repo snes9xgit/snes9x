@@ -753,8 +753,7 @@ void S9xSyncSpeed (void)
 #ifndef NOSOUND
 	if (Settings.SoundSync)
 	{
-		while (!S9xSyncSound())
-			usleep(0);
+		return;
 	}
 #endif
 
@@ -1268,47 +1267,80 @@ static void ReadJoysticks (void)
 
 #endif
 
-static void SoundTrigger (void)
+void S9xSamplesAvailable(void *data)
 {
 #ifndef NOSOUND
-	S9xProcessSound(NULL);
-#endif
-}
 
-static void InitTimer (void)
-{
-#ifndef NOSOUND
-	struct itimerval	timeout;
-#endif
-	struct sigaction	sa;
+    audio_buf_info info;
+    int samples_to_write;
+    int bytes_to_write;
+    int bytes_written;
+	static uint8 *sound_buffer = NULL;
+	static int sound_buffer_size = 0;
 
-#ifdef USE_THREADS
-	if (unixSettings.ThreadSound)
-	{
-		pthread_mutex_init(&mutex, NULL);
-		pthread_create(&thread, NULL, S9xProcessSound, NULL);
-		return;
-	}
-#endif
 
-	sa.sa_handler = (SIG_PF) SoundTrigger;
+    ioctl(so.sound_fd, SNDCTL_DSP_GETOSPACE, &info);
 
-#ifdef SA_RESTART
-	sa.sa_flags = SA_RESTART;
-#else
-	sa.sa_flags = 0;
-#endif
+    if (Settings.DynamicRateControl)
+    {
+        S9xUpdateDynamicRate(info.bytes, so.fragment_size * 4);
+    }
 
-#ifndef NOSOUND // FIXME: Kludge to get calltree running. Remove later.
-	sigemptyset(&sa.sa_mask);
-	sigaction(SIGALRM, &sa, NULL);
+    samples_to_write = S9xGetSampleCount();
 
-	timeout.it_interval.tv_sec  = 0;
-	timeout.it_interval.tv_usec = 10000;
-	timeout.it_value.tv_sec     = 0;
-	timeout.it_value.tv_usec    = 10000;
-	if (setitimer(ITIMER_REAL, &timeout, NULL) < 0)
-		perror("setitimer");
+    if (Settings.DynamicRateControl && !Settings.SoundSync)
+    {
+        // Using rate control, we should always keep the emulator's sound buffers empty to
+        // maintain an accurate measurement.
+        if (samples_to_write > (info.bytes >> 1))
+        {
+            S9xClearSamples();
+            return;
+        }
+    }
+
+    if (Settings.SoundSync && !Settings.TurboMode && !Settings.Mute)
+    {
+        while (info.bytes >> 1 < samples_to_write)
+        {
+            int usec_to_sleep = ((samples_to_write >> 1) - (info.bytes >> 2)) * 10000 /
+                                (Settings.SoundPlaybackRate / 100);
+            usleep(usec_to_sleep > 0 ? usec_to_sleep : 0);
+            ioctl(so.sound_fd, SNDCTL_DSP_GETOSPACE, &info);
+        }
+    }
+    else
+    {
+        samples_to_write = MIN(info.bytes >> 1, samples_to_write) & ~1;
+    }
+
+    if (samples_to_write < 0)
+        return;
+
+    if (sound_buffer_size < samples_to_write * 2)
+    {
+        sound_buffer = (uint8 *)realloc(sound_buffer, samples_to_write * 2);
+        sound_buffer_size = samples_to_write * 2;
+    }
+
+    S9xMixSamples(sound_buffer, samples_to_write);
+
+    bytes_written = 0;
+    bytes_to_write = samples_to_write * 2;
+
+    while (bytes_to_write > bytes_written)
+    {
+        int result;
+
+        result = write(so.sound_fd,
+                       ((char *)sound_buffer) + bytes_written,
+                       bytes_to_write - bytes_written);
+
+        if (result < 0)
+            break;
+
+        bytes_written += result;
+    }
 #endif
 }
 
@@ -1324,15 +1356,15 @@ bool8 S9xOpenSoundDevice (void)
 		return (FALSE);
 	}
 
-	J = log2(unixSettings.SoundFragmentSize) | (3 << 16);
+	J = log2(unixSettings.SoundFragmentSize) | (4 << 16);
 	if (ioctl(so.sound_fd, SNDCTL_DSP_SETFRAGMENT, &J) == -1)
 		return (FALSE);
 
-	J = K = Settings.SixteenBitSound ? AFMT_S16_NE : AFMT_U8;
+	J = K = AFMT_S16_NE;
 	if (ioctl(so.sound_fd, SNDCTL_DSP_SETFMT,      &J) == -1 || J != K)
 		return (FALSE);
 
-	J = K = Settings.Stereo ? 1 : 0;
+	J = K = 1;
 	if (ioctl(so.sound_fd, SNDCTL_DSP_STEREO,      &J) == -1 || J != K)
 		return (FALSE);
 
@@ -1348,89 +1380,13 @@ bool8 S9xOpenSoundDevice (void)
 	printf("fragment size: %d\n", J);
 #endif
 
+	S9xSetSamplesAvailableCallback(S9xSamplesAvailable, NULL);
+
 	return (TRUE);
 }
 
 #ifndef NOSOUND
 
-static void * S9xProcessSound (void *)
-{
-	// If threads in use, this is to loop indefinitely.
-	// If not, this will be called by timer.
-
-	audio_buf_info	info;
-	if (!unixSettings.ThreadSound && (ioctl(so.sound_fd, SNDCTL_DSP_GETOSPACE, &info) == -1 || info.bytes < (int) so.fragment_size))
-		return (NULL);
-
-#ifdef USE_THREADS
-	do
-	{
-#endif
-
-	int	sample_count = so.fragment_size;
-	if (Settings.SixteenBitSound)
-		sample_count >>= 1;
-
-#ifdef USE_THREADS
-	if (unixSettings.ThreadSound)
-		pthread_mutex_lock(&mutex);
-	else
-#endif
-	if (block_signal)
-		return (NULL);
-
-	block_generate_sound = TRUE;
-
-	if (so.samples_mixed_so_far < sample_count)
-	{
-		unsigned	ofs = so.play_position + (Settings.SixteenBitSound ? (so.samples_mixed_so_far << 1) : so.samples_mixed_so_far);
-		S9xMixSamples(Buf + (ofs & SOUND_BUFFER_SIZE_MASK), sample_count - so.samples_mixed_so_far);
-		so.samples_mixed_so_far = sample_count;
-	}
-
-	unsigned	bytes_to_write = sample_count;
-	if (Settings.SixteenBitSound)
-		bytes_to_write <<= 1;
-
-	unsigned	byte_offset = so.play_position;
-	so.play_position += bytes_to_write;
-	so.play_position &= SOUND_BUFFER_SIZE_MASK;
-
-#ifdef USE_THREADS
-	if (unixSettings.ThreadSound)
-		pthread_mutex_unlock(&mutex);
-#endif
-
-	block_generate_sound = FALSE;
-
-	for (;;)
-	{
-		int	I = bytes_to_write;
-		if (byte_offset + I > SOUND_BUFFER_SIZE)
-			I = SOUND_BUFFER_SIZE - byte_offset;
-		if (I == 0)
-			break;
-
-		I = write(so.sound_fd, (char *) Buf + byte_offset, I);
-		if (I > 0)
-		{
-			bytes_to_write -= I;
-			byte_offset += I;
-			byte_offset &= SOUND_BUFFER_SIZE_MASK;
-		}
-		else
-		if (I < 0 && errno != EINTR)
-			break;
-	}
-
-	so.samples_mixed_so_far -= sample_count;
-
-#ifdef USE_THREADS
-	} while (unixSettings.ThreadSound);
-#endif
-
-	return (NULL);
-}
 
 #endif
 
@@ -1484,7 +1440,7 @@ int main (int argc, char **argv)
 	Settings.FrameTimeNTSC = 16667;
 	Settings.SixteenBitSound = TRUE;
 	Settings.Stereo = TRUE;
-	Settings.SoundPlaybackRate = 32000;
+	Settings.SoundPlaybackRate = 48000;
 	Settings.SoundInputRate = 31950;
 	Settings.SupportHiRes = TRUE;
 	Settings.Transparency = TRUE;
@@ -1537,14 +1493,10 @@ int main (int argc, char **argv)
 		exit(1);
 	}
 
-	S9xInitSound(unixSettings.SoundBufferSize, 0);
+	S9xInitSound(0);
 	S9xSetSoundMute(TRUE);
 
 	S9xReportControllers();
-
-#ifdef GFX_MULTI_FORMAT
-	S9xSetRenderPixelFormat(RGB565);
-#endif
 
 	uint32	saved_flags = CPU.Flags;
 	bool8	loaded = FALSE;
@@ -1718,7 +1670,6 @@ int main (int argc, char **argv)
 	uint32	JoypadSkip = 0;
 #endif
 
-	InitTimer();
 	S9xSetSoundMute(FALSE);
 
 #ifdef NETPLAY_SUPPORT

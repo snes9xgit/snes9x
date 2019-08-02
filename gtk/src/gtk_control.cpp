@@ -5,7 +5,6 @@
 \*****************************************************************************/
 
 #include <fcntl.h>
-#include "SDL.h"
 
 #include "gtk_s9xcore.h"
 #include "gtk_s9x.h"
@@ -135,8 +134,8 @@ bool S9xPollAxis (uint32 id, int16 *value)
 
 bool S9xPollPointer (uint32 id, int16 *x, int16 *y)
 {
-    *x = top_level->mouse_loc_x;
-    *y = top_level->mouse_loc_y;
+    *x = top_level->snes_mouse_x;
+    *y = top_level->snes_mouse_y;
 
     return true;
 }
@@ -569,9 +568,9 @@ JoyDevice::JoyDevice (unsigned int device_num)
 
     num_axes = SDL_JoystickNumAxes (filedes);
     num_hats = SDL_JoystickNumHats (filedes);
-    axis = (int *) malloc (sizeof (int) * num_axes);
-    hat  = (int *) malloc (sizeof (int) * num_hats);
-    calibration = (Calibration *) malloc (sizeof (Calibration) * num_axes);
+    axis = new int[num_axes];
+    hat = new int[num_hats];
+    calibration = new Calibration[num_axes];
 
     for (int i = 0; i < num_axes; i++)
     {
@@ -595,9 +594,9 @@ JoyDevice::~JoyDevice ()
     if (enabled)
     {
         SDL_JoystickClose (filedes);
-        free (axis);
-        free (hat);
-        free (calibration);
+        delete[] axis;
+        delete[] hat;
+        delete[] calibration;
     }
 
     enabled = false;

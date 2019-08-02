@@ -117,8 +117,8 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;D3D_DEBUG_INFO;DIRECTDRAW_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)glslang\src</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;ALLOW_CPU_OVERCLOCK;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;D3D_DEBUG_INFO;DIRECTDRAW_SUPPORT;USE_SLANG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
       <PrecompiledHeader />
@@ -131,7 +131,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <ForcedIncludeFiles>_tfwopen.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
-      <AdditionalOptions>$(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus $(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -166,8 +166,8 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;D3D_DEBUG_INFO;DIRECTDRAW_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)glslang\src</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;ALLOW_CPU_OVERCLOCK;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;D3D_DEBUG_INFO;DIRECTDRAW_SUPPORT;USE_SLANG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
       <PrecompiledHeader />
@@ -180,7 +180,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <ForcedIncludeFiles>_tfwopen.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
-      <AdditionalOptions>$(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus $(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -220,8 +220,8 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;DIRECTDRAW_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)glslang\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;ALLOW_CPU_OVERCLOCK;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;DIRECTDRAW_SUPPORT;USE_SLANG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
@@ -235,7 +235,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <ForcedIncludeFiles>_tfwopen.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
-      <AdditionalOptions>$(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus $(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -273,8 +273,8 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;DIRECTDRAW_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)glslang\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;ALLOW_CPU_OVERCLOCK;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;DIRECTDRAW_SUPPORT;USE_SLANG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
@@ -288,7 +288,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <ForcedIncludeFiles>_tfwopen.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
-      <AdditionalOptions>$(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus $(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -320,9 +320,6 @@
     <ClInclude Include="..\apu\bapu\dsp\sdsp.hpp" />
     <ClInclude Include="..\apu\bapu\dsp\SPC_DSP.h" />
     <ClInclude Include="..\apu\bapu\snes\snes.hpp" />
-    <ClInclude Include="..\apu\hermite_resampler.h" />
-    <ClInclude Include="..\apu\resampler.h" />
-    <ClInclude Include="..\apu\ring_buffer.h" />
     <CustomBuild Include="..\bsx.h" />
     <CustomBuild Include="..\c4.h" />
     <CustomBuild Include="..\cheats.h" />
@@ -337,10 +334,14 @@
     <CustomBuild Include="..\display.h" />
     <CustomBuild Include="..\dma.h" />
     <CustomBuild Include="..\dsp.h" />
+    <ClInclude Include="..\apu\resampler.h" />
     <ClInclude Include="..\filter\2xsai.h" />
     <ClInclude Include="..\filter\blit.h" />
     <ClInclude Include="..\filter\epx.h" />
     <CustomBuild Include="..\filter\hq2x.h" />
+    <ClInclude Include="..\filter\snes_ntsc.h" />
+    <ClInclude Include="..\filter\snes_ntsc_config.h" />
+    <ClInclude Include="..\filter\snes_ntsc_impl.h" />
     <ClInclude Include="..\filter\xbrz.h" />
     <CustomBuild Include="..\font.h" />
     <CustomBuild Include="..\fxemu.h" />
@@ -410,11 +411,19 @@
     <ClInclude Include="..\shaders\glsl.h" />
     <ClInclude Include="..\shaders\shader_helpers.h" />
     <ClInclude Include="..\shaders\shader_platform.h" />
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv.hpp" />
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_cfg.hpp" />
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_common.hpp" />
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_cross.hpp" />
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_cross_parsed_ir.hpp" />
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_glsl.hpp" />
+    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_parser.hpp" />
     <ClInclude Include="..\statemanager.h" />
     <ClInclude Include="..\sha256.h" />
     <ClInclude Include="..\bml.h" />
     <CustomBuild Include="..\stream.h" />
     <CustomBuild Include="..\tile.h" />
+    <CustomBuild Include="..\tileimpl.h" />
     <ClInclude Include="..\unzip\crypt.h" />
     <ClInclude Include="..\unzip\ioapi.h" />
     <ClInclude Include="..\unzip\iowin32.h" />
@@ -426,15 +435,14 @@
     <ClInclude Include="CD3DCG.h" />
     <CustomBuild Include="CDirect3D.h" />
     <ClInclude Include="CDirectDraw.h" />
-    <ClInclude Include="CDirectSound.h" />
     <ClInclude Include="cgFunctions.h" />
     <ClInclude Include="CGLCG.h" />
     <ClInclude Include="cgMini.h" />
     <ClInclude Include="COpenGL.h" />
     <ClInclude Include="CShaderParamDlg.h" />
+    <ClInclude Include="CWaveOut.h" />
     <ClInclude Include="CXAudio2.h" />
     <ClInclude Include="dxerr.h" />
-    <ClInclude Include="globals.h" />
     <ClInclude Include="gl_core_3_1.h" />
     <ClInclude Include="image_functions.h" />
     <ClInclude Include="InputCustom.h" />
@@ -442,9 +450,6 @@
     <ClInclude Include="IS9xSoundOutput.h" />
     <ClInclude Include="render.h" />
     <ClInclude Include="rsrc\resource.h" />
-    <ClInclude Include="snes_ntsc.h" />
-    <ClInclude Include="snes_ntsc_config.h" />
-    <ClInclude Include="snes_ntsc_impl.h" />
     <ClInclude Include="win32_display.h" />
     <ClInclude Include="win32_sound.h" />
     <ClInclude Include="wlanguage.h" />
@@ -485,6 +490,7 @@
     <ClCompile Include="..\filter\blit.cpp" />
     <ClCompile Include="..\filter\epx.cpp" />
     <ClCompile Include="..\filter\hq2x.cpp" />
+    <ClCompile Include="..\filter\snes_ntsc.c" />
     <ClCompile Include="..\filter\xbrz.cpp" />
     <ClCompile Include="..\fxdbg.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
@@ -528,6 +534,12 @@
     <ClCompile Include="..\seta018.cpp" />
     <ClCompile Include="..\shaders\glsl.cpp" />
     <ClCompile Include="..\shaders\shader_helpers.cpp" />
+    <ClCompile Include="..\shaders\slang.cpp" />
+    <ClCompile Include="..\shaders\SPIRV-Cross\spirv_cfg.cpp" />
+    <ClCompile Include="..\shaders\SPIRV-Cross\spirv_cross.cpp" />
+    <ClCompile Include="..\shaders\SPIRV-Cross\spirv_cross_parsed_ir.cpp" />
+    <ClCompile Include="..\shaders\SPIRV-Cross\spirv_glsl.cpp" />
+    <ClCompile Include="..\shaders\SPIRV-Cross\spirv_parser.cpp" />
     <ClCompile Include="..\snapshot.cpp" />
     <ClCompile Include="..\snes9x.cpp" />
     <ClCompile Include="..\spc7110.cpp" />
@@ -555,6 +567,9 @@
     <ClCompile Include="..\bml.cpp" />
     <ClCompile Include="..\stream.cpp" />
     <ClCompile Include="..\tile.cpp" />
+    <ClCompile Include="..\tileimpl-n1x1.cpp" />
+    <ClCompile Include="..\tileimpl-n2x1.cpp" />
+    <ClCompile Include="..\tileimpl-h2x1.cpp" />
     <ClCompile Include="..\unzip\ioapi.c" />
     <ClCompile Include="..\unzip\iowin32.c" />
     <ClCompile Include="..\unzip\mztools.c" />
@@ -565,11 +580,11 @@
     <ClCompile Include="CD3DCG.cpp" />
     <ClCompile Include="CDirect3D.cpp" />
     <ClCompile Include="CDirectDraw.cpp" />
-    <ClCompile Include="CDirectSound.cpp" />
     <ClCompile Include="cgFunctions.cpp" />
     <ClCompile Include="CGLCG.cpp" />
     <ClCompile Include="COpenGL.cpp" />
     <ClCompile Include="CShaderParamDlg.cpp" />
+    <ClCompile Include="CWaveOut.cpp" />
     <ClCompile Include="CXAudio2.cpp" />
     <ClCompile Include="DumpAtEnd.cpp" />
     <ClCompile Include="dxerr.cpp" />
@@ -577,7 +592,6 @@
     <ClCompile Include="image_functions.cpp" />
     <ClCompile Include="InputCustom.cpp" />
     <ClCompile Include="render.cpp" />
-    <ClCompile Include="snes_ntsc.c" />
     <ClCompile Include="wconfig.cpp" />
     <ClCompile Include="win32.cpp" />
     <ClCompile Include="win32_display.cpp" />
@@ -706,6 +720,8 @@
     <Image Include="rsrc\hiddir.bmp" />
     <Image Include="rsrc\icon1.ico" />
     <Image Include="rsrc\icon2.ico" />
+    <Image Include="rsrc\icon3.ico" />
+    <Image Include="rsrc\icon4.ico" />
     <Image Include="rsrc\nd.bmp" />
     <Image Include="rsrc\openfold.bmp" />
     <Image Include="rsrc\pad.bmp" />
@@ -715,6 +731,12 @@
     <Image Include="rsrc\ud.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="glslang\glslang\glslang.vcxproj">
+      <Project>{bdb39616-8279-33b4-8b93-9049a49bfebb}</Project>
+    </ProjectReference>
+    <ProjectReference Include="glslang\SPIRV\SPIRV.vcxproj">
+      <Project>{b5cc37ae-e321-3064-a3d7-9d41ceed9d4e}</Project>
+    </ProjectReference>
     <ProjectReference Include="libpng\libpng.vcxproj">
       <Project>{95804e5f-b69e-4e2a-925e-52fafc19edbf}</Project>
     </ProjectReference>

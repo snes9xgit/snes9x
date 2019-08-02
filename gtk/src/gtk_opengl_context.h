@@ -19,6 +19,7 @@ class OpenGLContext
     virtual void swap_buffers () = 0;
     virtual void swap_interval (int frames) = 0;
     virtual void make_current () = 0;
+    virtual bool ready() { return true; };
 
     int x;
     int y;

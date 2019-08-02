@@ -147,6 +147,9 @@
     <ClInclude Include="..\tile.h">
       <Filter>s9x-source</Filter>
     </ClInclude>
+    <ClInclude Include="..\tileimpl.h">
+      <Filter>s9x-source</Filter>
+    </ClInclude>
     <ClInclude Include="..\apu\apu.h">
       <Filter>s9x-source\APU</Filter>
     </ClInclude>
@@ -327,6 +330,15 @@
       <Filter>s9x-source</Filter>
     </ClCompile>
     <ClCompile Include="..\tile.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tileimpl-n1x1.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tileimpl-n2x1.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tileimpl-h2x1.cpp">
       <Filter>s9x-source</Filter>
     </ClCompile>
     <ClCompile Include="..\apu\apu.cpp">
