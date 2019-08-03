@@ -2142,6 +2142,9 @@ LRESULT CALLBACK WinProc(
 		case ID_FILE_LOAD9:
 			FreezeUnfreezeSlot (9, FALSE);
 			break;
+		case ID_FILE_LOAD_OOPS:
+			FreezeUnfreezeSlot(-1, FALSE);
+			break;
         case ID_FILE_LOAD_FILE:
             FreezeUnfreezeDialog(FALSE);
             break;
@@ -3610,7 +3613,10 @@ void FreezeUnfreezeSlot(int slot, bool8 freeze)
     char filename[_MAX_PATH + 1];
     char ext[_MAX_EXT + 1];
 
-    snprintf(ext, _MAX_EXT, ".%03d", slot);
+	if (slot == -1)
+		strcpy(ext, ".oops");
+	else
+		snprintf(ext, _MAX_EXT, ".%03d", slot);
     strcpy(filename, S9xGetFilename(ext, SNAPSHOT_DIR));
 
     FreezeUnfreeze(filename, freeze);
