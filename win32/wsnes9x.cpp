@@ -3627,6 +3627,25 @@ void FreezeUnfreeze (const char *filename, bool8 freeze)
     }
 #endif
 
+	if (GUI.ConfirmSaveLoad)
+	{
+		std::string msg, title;
+		if (freeze)
+		{
+			msg = "Are you sure you want to SAVE to\n";
+			title = "Confirm SAVE";
+		}
+		else
+		{
+			msg = "Are you sure you want to LOAD from\n";
+			title = "Confirm LOAD";
+		}
+		msg += filename;
+		int res = MessageBox(GUI.hWnd, _tFromChar(msg.c_str()), _tFromChar(title.c_str()), MB_YESNO | MB_ICONQUESTION);
+		if (res != IDYES)
+			return;
+	}
+
     S9xSetPause (PAUSE_FREEZE_FILE);
 
     if (freeze)
@@ -5228,6 +5247,7 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 			CheckDlgButton(hDlg,IDC_INACTIVE_PAUSE,GUI.InactivePause ? BST_CHECKED : BST_UNCHECKED);
 			CheckDlgButton(hDlg,IDC_CUSTOMROMOPEN,GUI.CustomRomOpen ? BST_CHECKED : BST_UNCHECKED);
 			CheckDlgButton(hDlg,IDC_HIRESAVI,GUI.AVIHiRes ? BST_CHECKED : BST_UNCHECKED);
+			CheckDlgButton(hDlg, IDC_CONFIRMSAVELOAD, GUI.ConfirmSaveLoad ? BST_CHECKED : BST_UNCHECKED);
 
 			int inum = 0;
 			lstrcpy(paths[inum++],GUI.RomDir);
@@ -5318,6 +5338,7 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 					GUI.InactivePause = (BST_CHECKED==IsDlgButtonChecked(hDlg, IDC_INACTIVE_PAUSE));
 					GUI.CustomRomOpen = (BST_CHECKED==IsDlgButtonChecked(hDlg, IDC_CUSTOMROMOPEN));
 					GUI.AVIHiRes = (BST_CHECKED==IsDlgButtonChecked(hDlg, IDC_HIRESAVI));
+					GUI.ConfirmSaveLoad = (BST_CHECKED == IsDlgButtonChecked(hDlg, IDC_CONFIRMSAVELOAD));
 
 					Settings.TurboSkipFrames=SendDlgItemMessage(hDlg, IDC_SPIN_TURBO_SKIP, UDM_GETPOS, 0,0);
 					Settings.AutoMaxSkipFrames=SendDlgItemMessage(hDlg, IDC_SPIN_MAX_SKIP, UDM_GETPOS, 0,0);

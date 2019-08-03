@@ -186,6 +186,7 @@ struct sGUI {
 
 	bool InactivePause;
 	bool CustomRomOpen;
+	bool ConfirmSaveLoad;
     bool FASkipsNonInput;
     bool FAMute;
     int  ScreenDepth;
