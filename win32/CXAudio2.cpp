@@ -126,16 +126,25 @@ returns true if successful, false otherwise
 bool CXAudio2::InitVoices(void)
 {
 	HRESULT hr;
-    // subtract -1, we added "Default" as first index
-    int device_index = FindDeviceIndex(GUI.AudioDevice) - 1;
-    if (device_index < 0)
-        device_index = 0;
 
+#ifdef XAUDIO2_NEW
 	if ( FAILED(hr = pXAudio2->CreateMasteringVoice( &pMasterVoice, 2,
-		Settings.SoundPlaybackRate, 0, device_index, NULL ) ) ) {
+		Settings.SoundPlaybackRate, 0, 0, NULL ) ) ) {
 			DXTRACE_ERR_MSGBOX(TEXT("Unable to create mastering voice."),hr);
 			return false;
 	}
+#else
+	// subtract -1, we added "Default" as first index
+	int device_index = FindDeviceIndex(GUI.AudioDevice) - 1;
+	if (device_index < 0)
+		device_index = 0;
+
+	if (FAILED(hr = pXAudio2->CreateMasteringVoice(&pMasterVoice, 2,
+		Settings.SoundPlaybackRate, 0, device_index, NULL))) {
+		DXTRACE_ERR_MSGBOX(TEXT("Unable to create mastering voice."), hr);
+		return false;
+	}
+#endif
 
 	WAVEFORMATEX wfx;
 	wfx.wFormatTag = WAVE_FORMAT_PCM;
@@ -363,6 +372,8 @@ void CXAudio2::ProcessSound()
 	}
 }
 
+#ifdef XAUDIO2_NEW
+#else
 /*  CXAudio2::GetDeviceList
 get a list of the available output devices
 -----
@@ -414,3 +425,4 @@ int CXAudio2::FindDeviceIndex(TCHAR *audio_device)
 
     return index;
 }
+#endif

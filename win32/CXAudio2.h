@@ -61,8 +61,11 @@ public:
 	void DeInitSoundOutput(void) { DeInitXAudio2(); }
 	bool SetupSound(void);
 	void SetVolume(double volume);
+#ifdef XAUDIO2_NEW
+#else
 	std::vector<std::wstring> GetDeviceList();
 	int FindDeviceIndex(TCHAR *audio_device);
+#endif
 };
 
 #endif
