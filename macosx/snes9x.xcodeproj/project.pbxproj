@@ -461,6 +461,11 @@
 		307C861022D27C53001B879E /* tileimpl-h2x1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "tileimpl-h2x1.cpp"; sourceTree = "<group>"; usesTabs = 1; };
 		307C861A22D29D6D001B879E /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		307C861C22D29DD2001B879E /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
+		30AD1D1E22FBB2EA000EE989 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		30AD1D1F22FBB2EA000EE989 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		30AD1D2022FBB2EA000EE989 /* en */ = {isa = PBXFileReference; lastKnownFileType = folder; name = en; path = "en.lproj/Snes9x Help"; sourceTree = "<group>"; };
+		30AD1D2122FBB2EA000EE989 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/Snes9x.xib; sourceTree = "<group>"; };
+		30AD1D2222FBB2EA000EE989 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/musicbox.xib; sourceTree = "<group>"; };
 		30CCAD412290472E00549AED /* Snes9x.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Snes9x.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		30CCAD422290472E00549AED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = /Users/buckley/Projects/snes9x/macosx/Info.plist; sourceTree = "<absolute>"; };
 		30D15CEF22CE6B5A005BC352 /* snes9x_framework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = snes9x_framework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -488,7 +493,6 @@
 		BF0B39DE1FA580F9002B04D3 /* msu1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = msu1.cpp; sourceTree = "<group>"; usesTabs = 1; };
 		BF0B39E21FA58124002B04D3 /* msu1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = msu1.h; sourceTree = "<group>"; usesTabs = 1; };
 		CF05677E0CF9971000C7877C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = /System/Library/Frameworks/QuartzCore.framework; sourceTree = "<absolute>"; };
-		CF14733D132DA4E1000D0F91 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/Snes9x.xib; sourceTree = "<group>"; };
 		CF2CFFD30F10F2C000B8B35E /* spc7110emu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = spc7110emu.cpp; sourceTree = "<group>"; usesTabs = 1; };
 		CF2CFFD40F10F2C000B8B35E /* spc7110dec.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = spc7110dec.cpp; sourceTree = "<group>"; usesTabs = 1; };
 		CF2CFFDB0F10F2DD00B8B35E /* spc7110emu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spc7110emu.h; sourceTree = "<group>"; usesTabs = 1; };
@@ -496,7 +500,6 @@
 		CF3E42491372D48F0077DE32 /* libz_u.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libz_u.a; sourceTree = "<group>"; };
 		CF3E45BD137349960077DE32 /* zconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = zconf.h; sourceTree = "<group>"; };
 		CF3E45D013734A920077DE32 /* zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = zlib.h; sourceTree = "<group>"; };
-		CF46BEA9133E2559005A17A5 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/musicbox.xib; sourceTree = "<group>"; };
 		CF46BEAD133E256D005A17A5 /* musicbox_pause.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = musicbox_pause.png; sourceTree = "<group>"; };
 		CF4B7C420CF841580080E643 /* icons.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icons.png; sourceTree = "<group>"; };
 		CF5553B10EA24C36005957E4 /* 2xsai.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = 2xsai.cpp; sourceTree = "<group>"; };
@@ -545,9 +548,6 @@
 		EA2F381A09B17E9E0078DCA7 /* bsx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bsx.h; sourceTree = "<group>"; usesTabs = 1; };
 		EA31FE2D05F7743E00E13748 /* gfx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = gfx.cpp; sourceTree = "<group>"; usesTabs = 1; };
 		EA362C3E086119D100FBE476 /* HID_Utilities_External.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = HID_Utilities_External.h; sourceTree = "<group>"; };
-		EA3BEA990A28384E00A8FAE5 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/Localizable.strings; sourceTree = "<group>"; };
-		EA3BEA9F0A28384E00A8FAE5 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		EA3BEAA90A28386500A8FAE5 /* English */ = {isa = PBXFileReference; lastKnownFileType = folder; name = English; path = "English.lproj/Snes9x Help"; sourceTree = "<group>"; };
 		EA3D2F360A26083B00BDACCC /* SRAM.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = SRAM.icns; sourceTree = "<group>"; };
 		EA3D2F370A26083B00BDACCC /* SAVE.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = SAVE.icns; sourceTree = "<group>"; };
 		EA3D2F380A26083B00BDACCC /* musicbox_ledon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = musicbox_ledon.icns; sourceTree = "<group>"; };
@@ -1390,13 +1390,13 @@
 			};
 			buildConfigurationList = EA6A1100085808D200A1CF18 /* Build configuration list for PBXProject "snes9x" */;
 			compatibilityVersion = "Xcode 2.4";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 1;
 			knownRegions = (
-				English,
-				Japanese,
-				French,
-				German,
+				fr,
+				de,
+				ja,
+				en,
 			);
 			mainGroup = 20286C29FDCF999611CA2CEA /* Snes9x CVS */;
 			projectDirPath = "";
@@ -1659,7 +1659,7 @@
 		CF14733C132DA4E1000D0F91 /* Snes9x.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				CF14733D132DA4E1000D0F91 /* English */,
+				30AD1D2122FBB2EA000EE989 /* en */,
 			);
 			name = Snes9x.xib;
 			sourceTree = "<group>";
@@ -1667,7 +1667,7 @@
 		CF46BEA8133E2559005A17A5 /* musicbox.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				CF46BEA9133E2559005A17A5 /* English */,
+				30AD1D2222FBB2EA000EE989 /* en */,
 			);
 			name = musicbox.xib;
 			sourceTree = "<group>";
@@ -1675,7 +1675,7 @@
 		EA3BEA980A28384E00A8FAE5 /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				EA3BEA990A28384E00A8FAE5 /* English */,
+				30AD1D1F22FBB2EA000EE989 /* en */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -1683,7 +1683,7 @@
 		EA3BEA9E0A28384E00A8FAE5 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				EA3BEA9F0A28384E00A8FAE5 /* English */,
+				30AD1D1E22FBB2EA000EE989 /* en */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -1691,7 +1691,7 @@
 		EA3BEAA80A28386500A8FAE5 /* Snes9x Help */ = {
 			isa = PBXVariantGroup;
 			children = (
-				EA3BEAA90A28386500A8FAE5 /* English */,
+				30AD1D2022FBB2EA000EE989 /* en */,
 			);
 			name = "Snes9x Help";
 			sourceTree = "<group>";
