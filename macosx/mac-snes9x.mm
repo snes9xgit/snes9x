@@ -53,7 +53,7 @@ void SNES9X_Go (void)
 bool8 SNES9X_OpenCart (NSURL *inRef)
 {
 	NSURL		*cartRef;
-	const char	*filename = inRef.lastPathComponent.UTF8String;
+	const char	*filename = inRef.path.UTF8String;
 
 	if (cartOpen)
 	{
@@ -304,7 +304,7 @@ bool8 SNES9X_FreezeTo (void)
 		NSURL *url = NavFreezeTo();
 		if (url != nil)
 		{
-			const char *filename = url.lastPathComponent.UTF8String;
+			const char *filename = url.path.UTF8String;
             unlink(filename);
 
 			S9xFreezeGame(filename);
@@ -320,14 +320,12 @@ bool8 SNES9X_FreezeTo (void)
 
 bool8 SNES9X_DefrostFrom (void)
 {
-	char filename[PATH_MAX + 1];
-
 	if (cartOpen)
 	{
 		NSURL *url = NavDefrostFrom();
 		if (url != nil)
 		{
-			const char *filename = url.lastPathComponent.UTF8String;
+			const char *filename = url.path.UTF8String;
 			S9xUnfreezeGame(filename);
 
 			SNES9X_Go();
@@ -346,7 +344,7 @@ bool8 SNES9X_RecordMovie (void)
 		NSURL *url = NavRecordMovieTo();
 		if (url != nil)
 		{
-			const char *filename = url.lastPathComponent.UTF8String;
+			const char *filename = url.path.UTF8String;
             unlink(filename);
 
 			int		r;
@@ -390,7 +388,7 @@ bool8 SNES9X_PlayMovie (void)
 		NSURL *url = NavPlayMovieFrom();
 		if (url != nil)
 		{
-			const char *filename = url.lastPathComponent.UTF8String;
+			const char *filename = url.path.UTF8String;
 			int r;
 
 			r = S9xMovieOpen(filename, macPlayFlag & 1);
@@ -415,7 +413,7 @@ bool8 SNES9X_QTMovieRecord (void)
 		NSURL *url = NavQTMovieRecordTo();
 		if (url != nil)
 		{
-			const char *filename = url.lastPathComponent.UTF8String;
+			const char *filename = url.path.UTF8String;
 			macQTRecord = true;
 			SNES9X_Go();
 

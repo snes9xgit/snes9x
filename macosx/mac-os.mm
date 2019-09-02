@@ -62,12 +62,10 @@
 #import "mac-os.h"
 
 #define	kRecentMenu_MAX		20
-#define KeyIsPressed(km, k)	(1 & (((unsigned char *) km) [(k) >> 3] >> ((k) & 7)))
+#define KeyIsPressed(km, k)	(km[k])
 
 volatile bool8		running             = false;
 volatile bool8		s9xthreadrunning    = false;
-
-volatile bool8		eventQueued         = false;
 
 volatile int		windowResizeCount   = 1;
 volatile bool8		windowExtend        = true;
@@ -80,8 +78,7 @@ uint8				romDetect           = 0,
 					headerDetect        = 0;
 
 WindowRef			gWindow             = NULL;
-HIRect				gWindowRect;
-int					glScreenW,
+uint32				glScreenW,
 					glScreenH;
 CGRect				glScreenBounds;
 Point				windowPos[kWindowCount];
@@ -172,6 +169,11 @@ CFStringRef			multiCartPath[2];
 #ifdef MAC_PANTHER_SUPPORT
 IconRef				macIconRef[118];
 #endif
+
+bool8               pressedKeys[MAC_NUM_KEYCODES];
+os_unfair_lock      keyLock;
+
+NSOpenGLView        *s9xView;
 
 enum
 {
@@ -286,17 +288,7 @@ static volatile bool8	rejectinput     = false;
 static bool8			pauseEmulation  = false,
 						frameAdvance    = false;
 
-static pthread_t		s9xthread;
-
-static MenuRef			recentMenu;
 static CFStringRef		recentItem[kRecentMenu_MAX + 1];
-
-static EventHandlerUPP	gameWindowUPP,
-						gameWUPaneUPP;
-static EventHandlerRef	gameWindowEventRef,
-						gameWUPaneEventRef;
-
-static int				windowZoomCount = 0;
 
 static int				frameCount      = 0;
 
@@ -339,8 +331,6 @@ static void InitAutofire (void);
 static void InitRecentItems (void);
 static void DeinitRecentItems (void);
 static void ClearRecentItems (void);
-static void InitRecentMenu (void);
-static void DeinitRecentMenu (void);
 static void ProcessInput (void);
 static void ResizeGameWindow (void);
 static void ChangeAutofireSettings (int, int);
@@ -349,164 +339,60 @@ static void CFTimerCallback (CFRunLoopTimerRef, void *);
 static void UpdateFreezeDefrostScreen (int, CGImageRef, uint8 *, CGContextRef);
 static void * MacSnes9xThread (void *);
 static inline void EmulationLoop (void);
+static inline void CopyPressedKeys(uint8 destination[MAC_NUM_KEYCODES]);
 
 int main (int argc, const char *argv[])
 {
     return NSApplicationMain(argc, argv);
 }
-//{
-//    Initialize();
-//
-//    while (!finished)
-//    {
-//        if (cartOpen && running)
-//        {
-//        #ifdef DEBUGGER
-//            CPU.Flags |= DEBUG_MODE_FLAG;
-//            S9xDoDebug();
-//        #endif
-//
-//            eventQueued = false;
-//
-//            Microseconds((UnsignedWide *) &lastFrame);
-//            frameCount = 0;
-//            if (macFrameSkip < 0)
-//                skipFrames = 3;
-//            else
-//                skipFrames = macFrameSkip;
-//
-//            err = RemoveEventHandler(eref);
-//            DisposeEventHandlerUPP(eUPP);
-//        #ifdef MAC_PANTHER_SUPPORT
-//            [pool release];
-//
-//            pool = [[NSAutoreleasePool alloc] init];
-//        #endif
-//            eUPP = NewEventHandlerUPP(SubEventHandler);
-//            err = InstallApplicationEventHandler(eUPP, GetEventTypeCount(sEvents), sEvents, NULL, &eref);
-//
-//            S9xInitDisplay(NULL, NULL);
-//            ClearGFXScreen();
-//
-//            if (!fullscreen)
-//                ForceChangingKeyScript();
-//
-//            pthread_create(&s9xthread, NULL, MacSnes9xThread, NULL);
-//
-//            CFRunLoopTimerRef        cftimer    = NULL;
-//            CFRunLoopTimerContext    cftimerctx = { 0, NULL, NULL, NULL, NULL };
-//
-//            if (!fullscreen)
-//            {
-//                cftimer = CFRunLoopTimerCreate(kCFAllocatorDefault, CFAbsoluteTimeGetCurrent(), 30, 0, 0, CFTimerCallback, &cftimerctx);
-//                if (cftimer)
-//                    CFRunLoopAddTimer(CFRunLoopGetCurrent(), cftimer, kCFRunLoopCommonModes);
-//            }
-//
-//            AdjustMenus();
-//
-//            RunApplicationEventLoop();
-//
-//            if (!fullscreen)
-//            {
-//                if (cftimer)
-//                {
-//                    CFRunLoopTimerInvalidate(cftimer);
-//                    CFRelease(cftimer);
-//                    cftimer = NULL;
-//                }
-//            }
-//
-//            pthread_join(s9xthread, NULL);
-//
-//            if (!Settings.NetPlay || Settings.NetPlayServer)
-//            {
-//                SNES9X_SaveSRAM();
-//                S9xResetSaveTimer(false);
-//                S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
-//            }
-//
-//            S9xDeinitDisplay();
-//
-//            if (Settings.NetPlay)
-//            {
-//                if (!Settings.NetPlayServer)
-//                {
-//                    DeinitGameWindow();
-//                    cartOpen = false;
-//                }
-//
-//                Settings.NetPlay = false;
-//                Settings.NetPlayServer = false;
-//            }
-//
-//            err = RemoveEventHandler(eref);
-//            DisposeEventHandlerUPP(eUPP);
-//        #ifdef MAC_PANTHER_SUPPORT
-//            [pool release];
-//
-//            pool = [[NSAutoreleasePool alloc] init];
-//        #endif
-//            eUPP = NewEventHandlerUPP(MainEventHandler);
-//            err = InstallApplicationEventHandler(eUPP, GetEventTypeCount(mEvents), mEvents, NULL, &eref);
-//        }
-//
-//        if (!finished)
-//        {
-//            AdjustMenus();
-//            RunApplicationEventLoop();
-//        }
-//    }
-//
-//    Deinitialize();
-//
-//    err = RemoveEventHandler(eref);
-//    DisposeEventHandlerUPP(eUPP);
-//#ifdef MAC_PANTHER_SUPPORT
-//    [pool release];
-//#endif
-//
-//    return (0);
-//}
-//
-static void CFTimerCallback (CFRunLoopTimerRef timer, void *info)
-{
-//    OSStatus    err;
-//
-//    err = UpdateSystemActivity(OverallAct);
-}
-//
+
 static void * MacSnes9xThread (void *)
 {
-//    Settings.StopEmulation = false;
-//    s9xthreadrunning = true;
-//
-//    EmulationLoop();
-//
-//    s9xthreadrunning = false;
-//    Settings.StopEmulation = true;
-//
+    Settings.StopEmulation = false;
+    s9xthreadrunning = true;
+
+    EmulationLoop();
+
+    s9xthreadrunning = false;
+    Settings.StopEmulation = true;
+
     return (NULL);
 }
-//
+
+static inline void CopyPressedKeys(uint8 destination[MAC_NUM_KEYCODES])
+{
+    os_unfair_lock_lock(&keyLock);
+    NSEventModifierFlags flags = [NSEvent modifierFlags];
+    pressedKeys[kVK_Shift] = (flags & NSEventModifierFlagShift) != 0;
+    pressedKeys[kVK_Command] = (flags & NSEventModifierFlagCommand) != 0;
+    pressedKeys[kVK_Control] = (flags & NSEventModifierFlagControl) != 0;
+    pressedKeys[kVK_CapsLock] = (flags & NSEventModifierFlagCapsLock) != 0;
+    pressedKeys[kVK_Option] = (flags & NSEventModifierFlagOption) != 0;
+    pressedKeys[kVK_Help] = (flags & NSEventModifierFlagHelp) != 0;
+    pressedKeys[kVK_Function] = (flags & NSEventModifierFlagFunction) != 0;
+
+    memcpy(destination, pressedKeys, sizeof(pressedKeys));
+    os_unfair_lock_unlock(&keyLock);
+}
+
 static inline void EmulationLoop (void)
 {
-//    bool8    olddisplayframerate = false;
-//    int        storedMacFrameSkip  = macFrameSkip;
-//
-//    pauseEmulation = false;
-//    frameAdvance   = false;
-//
-//    if (macQTRecord)
-//    {
-//        olddisplayframerate = Settings.DisplayFrameRate;
-//        Settings.DisplayFrameRate = false;
-//    }
-//
-//    MacStartSound();
-//
-//    if (Settings.NetPlay)
-//    {
+    bool8    olddisplayframerate = false;
+    int        storedMacFrameSkip  = macFrameSkip;
+
+    pauseEmulation = false;
+    frameAdvance   = false;
+
+    if (macQTRecord)
+    {
+        olddisplayframerate = Settings.DisplayFrameRate;
+        Settings.DisplayFrameRate = false;
+    }
+
+    MacStartSound();
+
+    if (Settings.NetPlay)
+    {
 //        if (Settings.NetPlayServer)
 //        {
 //            NPServerDetachNetPlayThread();
@@ -537,42 +423,42 @@ static inline void EmulationLoop (void)
 //
 //            NPClientRestoreConfig();
 //        }
-//    }
-//    else
-//    {
-//        while (running)
-//        {
-//            ProcessInput();
-//
-//            if (!pauseEmulation)
-//                S9xMainLoop();
-//            else
-//            {
-//                if (frameAdvance)
-//                {
-//                    macFrameSkip = 1;
-//                    skipFrames = 1;
-//                    frameAdvance = false;
-//                    S9xMainLoop();
-//                    macFrameSkip = storedMacFrameSkip;
-//                }
-//
-//                usleep(Settings.FrameTime);
-//            }
-//        }
-//    }
-//
-//    MacStopSound();
-//
-//    if (macQTRecord)
-//    {
+    }
+    else
+    {
+        while (running)
+        {
+            ProcessInput();
+
+            if (!pauseEmulation)
+                S9xMainLoop();
+            else
+            {
+                if (frameAdvance)
+                {
+                    macFrameSkip = 1;
+                    skipFrames = 1;
+                    frameAdvance = false;
+                    S9xMainLoop();
+                    macFrameSkip = storedMacFrameSkip;
+                }
+
+                usleep(Settings.FrameTime);
+            }
+        }
+    }
+
+    MacStopSound();
+
+    if (macQTRecord)
+    {
 //        MacQTStopRecording();
 //        macQTRecord = false;
-//
-//        Settings.DisplayFrameRate = olddisplayframerate;
-//    }
-//
-//    S9xMovieShutdown();
+
+        Settings.DisplayFrameRate = olddisplayframerate;
+    }
+
+    S9xMovieShutdown();
 }
 //
 //static OSStatus MainEventHandler (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData)
@@ -1100,73 +986,73 @@ static inline void EmulationLoop (void)
 //    return (result);
 //}
 //
-//static void InitRecentItems (void)
-//{
-//    CFStringRef    keyRef, pathRef;
-//    int            count;
-//    char        key[32];
+static void InitRecentItems (void)
+{
+    CFStringRef    keyRef, pathRef;
+    int            count;
+    char        key[32];
+
+    count = 0;
+
+    for (int i = 0; i <= kRecentMenu_MAX; i++)
+        recentItem[i] = NULL;
+
+    for (int i = 0; i <  kRecentMenu_MAX; i++)
+    {
+        sprintf(key, "RecentItem_%02d", i);
+        keyRef = CFStringCreateWithCString(kCFAllocatorDefault, key, CFStringGetSystemEncoding());
+        if (keyRef)
+        {
+            pathRef = (CFStringRef) CFPreferencesCopyAppValue(keyRef, kCFPreferencesCurrentApplication);
+            if (pathRef)
+            {
+                recentItem[count] = pathRef;
+                count++;
+            }
+
+            CFRelease(keyRef);
+        }
+    }
+}
 //
-//    count = 0;
-//
-//    for (int i = 0; i <= kRecentMenu_MAX; i++)
-//        recentItem[i] = NULL;
-//
-//    for (int i = 0; i <  kRecentMenu_MAX; i++)
-//    {
-//        sprintf(key, "RecentItem_%02d", i);
-//        keyRef = CFStringCreateWithCString(kCFAllocatorDefault, key, CFStringGetSystemEncoding());
-//        if (keyRef)
-//        {
-//            pathRef = (CFStringRef) CFPreferencesCopyAppValue(keyRef, kCFPreferencesCurrentApplication);
-//            if (pathRef)
-//            {
-//                recentItem[count] = pathRef;
-//                count++;
-//            }
-//
-//            CFRelease(keyRef);
-//        }
-//    }
-//}
-//
-//static void DeinitRecentItems (void)
-//{
-//    CFStringRef    keyRef;
-//    char        key[32];
-//
-//    for (int i = 0; i < kRecentMenu_MAX; i++)
-//    {
-//        sprintf(key, "RecentItem_%02d", i);
-//        keyRef = CFStringCreateWithCString(kCFAllocatorDefault, key, CFStringGetSystemEncoding());
-//        if (keyRef)
-//        {
-//            if (recentItem[i])
-//            {
-//                CFPreferencesSetAppValue(keyRef, recentItem[i], kCFPreferencesCurrentApplication);
-//                CFRelease(recentItem[i]);
-//                recentItem[i] = NULL;
-//            }
-//            else
-//                CFPreferencesSetAppValue(keyRef, NULL, kCFPreferencesCurrentApplication);
-//
-//            CFRelease(keyRef);
-//        }
-//    }
-//
-//    CFPreferencesAppSynchronize(kCFPreferencesCurrentApplication);
-//}
-//
-//static void ClearRecentItems (void)
-//{
-//    for (int i = 0; i < kRecentMenu_MAX; i++)
-//    {
-//        if (recentItem[i])
-//        {
-//            CFRelease(recentItem[i]);
-//            recentItem[i] = NULL;
-//        }
-//    }
-//}
+static void DeinitRecentItems (void)
+{
+    CFStringRef    keyRef;
+    char        key[32];
+
+    for (int i = 0; i < kRecentMenu_MAX; i++)
+    {
+        sprintf(key, "RecentItem_%02d", i);
+        keyRef = CFStringCreateWithCString(kCFAllocatorDefault, key, CFStringGetSystemEncoding());
+        if (keyRef)
+        {
+            if (recentItem[i])
+            {
+                CFPreferencesSetAppValue(keyRef, recentItem[i], kCFPreferencesCurrentApplication);
+                CFRelease(recentItem[i]);
+                recentItem[i] = NULL;
+            }
+            else
+                CFPreferencesSetAppValue(keyRef, NULL, kCFPreferencesCurrentApplication);
+
+            CFRelease(keyRef);
+        }
+    }
+
+    CFPreferencesAppSynchronize(kCFPreferencesCurrentApplication);
+}
+
+static void ClearRecentItems (void)
+{
+    for (int i = 0; i < kRecentMenu_MAX; i++)
+    {
+        if (recentItem[i])
+        {
+            CFRelease(recentItem[i]);
+            recentItem[i] = NULL;
+        }
+    }
+}
 //
 void AddRecentItem (NSURL *url)
 {
@@ -1801,59 +1687,59 @@ void AddRecentItem (NSURL *url)
 //    return (result);
 //}
 //
-//void ChangeInputDevice (void)
-//{
-//    switch (deviceSetting)
-//    {
-//        case iPad:
-//            S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
-//            S9xSetController(1, CTL_JOYPAD,     1, 0, 0, 0);
-//            macControllerOption = SNES_JOYPAD;
-//            break;
-//
-//        case iMouse:
-//            S9xSetController(0, CTL_MOUSE,      0, 0, 0, 0);
-//            S9xSetController(1, CTL_JOYPAD,     1, 0, 0, 0);
-//            macControllerOption = SNES_MOUSE;
-//            break;
-//
-//        case iMouse2:
-//            S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
-//            S9xSetController(1, CTL_MOUSE,      1, 0, 0, 0);
-//            macControllerOption = SNES_MOUSE_SWAPPED;
-//            break;
-//
-//        case iSuperScope:
-//            S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
-//            S9xSetController(1, CTL_SUPERSCOPE, 0, 0, 0, 0);
-//            macControllerOption = SNES_SUPERSCOPE;
-//            break;
-//
-//        case iMultiPlayer5:
-//            S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
-//            S9xSetController(1, CTL_MP5,        1, 2, 3, 4);
-//            macControllerOption = SNES_MULTIPLAYER5;
-//            break;
-//
-//        case iMultiPlayer5_2:
-//            S9xSetController(0, CTL_MP5,        0, 1, 2, 3);
-//            S9xSetController(1, CTL_MP5,        4, 5, 6, 7);
-//            macControllerOption = SNES_MULTIPLAYER5_2;
-//            break;
-//
-//        case iJustifier1:
-//            S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
-//            S9xSetController(1, CTL_JUSTIFIER,  0, 0, 0, 0);
-//            macControllerOption = SNES_JUSTIFIER;
-//            break;
-//
-//        case iJustifier2:
-//            S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
-//            S9xSetController(1, CTL_JUSTIFIER,  1, 0, 0, 0);
-//            macControllerOption = SNES_JUSTIFIER_2;
-//            break;
-//    }
-//}
+void ChangeInputDevice (void)
+{
+    switch (deviceSetting)
+    {
+        case iPad:
+            S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
+            S9xSetController(1, CTL_JOYPAD,     1, 0, 0, 0);
+            macControllerOption = SNES_JOYPAD;
+            break;
+
+        case iMouse:
+            S9xSetController(0, CTL_MOUSE,      0, 0, 0, 0);
+            S9xSetController(1, CTL_JOYPAD,     1, 0, 0, 0);
+            macControllerOption = SNES_MOUSE;
+            break;
+
+        case iMouse2:
+            S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
+            S9xSetController(1, CTL_MOUSE,      1, 0, 0, 0);
+            macControllerOption = SNES_MOUSE_SWAPPED;
+            break;
+
+        case iSuperScope:
+            S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
+            S9xSetController(1, CTL_SUPERSCOPE, 0, 0, 0, 0);
+            macControllerOption = SNES_SUPERSCOPE;
+            break;
+
+        case iMultiPlayer5:
+            S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
+            S9xSetController(1, CTL_MP5,        1, 2, 3, 4);
+            macControllerOption = SNES_MULTIPLAYER5;
+            break;
+
+        case iMultiPlayer5_2:
+            S9xSetController(0, CTL_MP5,        0, 1, 2, 3);
+            S9xSetController(1, CTL_MP5,        4, 5, 6, 7);
+            macControllerOption = SNES_MULTIPLAYER5_2;
+            break;
+
+        case iJustifier1:
+            S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
+            S9xSetController(1, CTL_JUSTIFIER,  0, 0, 0, 0);
+            macControllerOption = SNES_JUSTIFIER;
+            break;
+
+        case iJustifier2:
+            S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
+            S9xSetController(1, CTL_JUSTIFIER,  1, 0, 0, 0);
+            macControllerOption = SNES_JUSTIFIER_2;
+            break;
+    }
+}
 //
 void ApplyNSRTHeaderControllers (void)
 {
@@ -2176,14 +2062,14 @@ int PromptFreezeDefrost (Boolean freezing)
 //    {
 //        if (!rejectinput)
 //        {
-//            GetKeys(keys);
+//            CopyPressedKeys(keys);
 //
 //            for (int count = 0; count <= 12; count++)
 //            {
 //                while (KeyIsPressed(keys, keyCheck[count]))
 //                {
 //                    result = count - 1;
-//                    GetKeys(keys);
+//                    CopyPressedKeys(keys);
 //                }
 //            }
 //
@@ -2195,7 +2081,7 @@ int PromptFreezeDefrost (Boolean freezing)
 //                    current_selection -= 12;
 //                UpdateFreezeDefrostScreen(current_selection, image, draw, ctx);
 //                while (KeyIsPressed(keys, keyCode[k1PRight]) && (TickCount() < (startTime + repeatDelay)))
-//                    GetKeys(keys);
+//                    CopyPressedKeys(keys);
 //            }
 //
 //            while (KeyIsPressed(keys, keyCode[k1PLeft]))
@@ -2206,7 +2092,7 @@ int PromptFreezeDefrost (Boolean freezing)
 //                    current_selection += 12;
 //                UpdateFreezeDefrostScreen(current_selection, image, draw, ctx);
 //                while (KeyIsPressed(keys, keyCode[k1PLeft])  && (TickCount() < (startTime + repeatDelay)))
-//                    GetKeys(keys);
+//                    CopyPressedKeys(keys);
 //            }
 //
 //            while (KeyIsPressed(keys, keyCode[k1PDown]))
@@ -2217,7 +2103,7 @@ int PromptFreezeDefrost (Boolean freezing)
 //                    current_selection -= 12;
 //                UpdateFreezeDefrostScreen(current_selection, image, draw, ctx);
 //                while (KeyIsPressed(keys, keyCode[k1PDown])  && (TickCount() < (startTime + repeatDelay)))
-//                    GetKeys(keys);
+//                    CopyPressedKeys(keys);
 //            }
 //
 //            while (KeyIsPressed(keys, keyCode[k1PUp]))
@@ -2228,7 +2114,7 @@ int PromptFreezeDefrost (Boolean freezing)
 //                    current_selection += 12;
 //                UpdateFreezeDefrostScreen(current_selection, image, draw, ctx);
 //                while (KeyIsPressed(keys, keyCode[k1PUp])    && (TickCount() < (startTime + repeatDelay)))
-//                    GetKeys(keys);
+//                    CopyPressedKeys(keys);
 //            }
 //
 //            while (KeyIsPressed(keys, keyCode[k1PA]     ) ||
@@ -2244,7 +2130,7 @@ int PromptFreezeDefrost (Boolean freezing)
 //                   KeyIsPressed(keys, keyCode[k1PSelect]) ||
 //                   KeyIsPressed(keys, keyCode[k2PSelect]))
 //            {
-//                GetKeys(keys);
+//                CopyPressedKeys(keys);
 //                result = current_selection;
 //            }
 //
@@ -2390,581 +2276,560 @@ int PromptFreezeDefrost (Boolean freezing)
 //    DrawFreezeDefrostScreen(draw);
 //}
 //
-//static void ProcessInput (void)
-//{
-//    KeyMap            myKeys;
-//    bool8            isok, fnbtn, altbtn, tcbtn;
-//    static bool8    toggleff = false, lastTimeTT = false, lastTimeFn = false, ffUp = false, ffDown = false, ffUpSp = false, ffDownSp = false;
-//
-//    if (rejectinput)
-//        return;
-//
-//    if (ISpKeyIsPressed(kISpEsc))
-//    {
-//        if (s9xthreadrunning)
-//        {
-//            if (!eventQueued)
-//            {
-//                PostQueueToSubEventLoop();
-//                eventQueued = true;
-//            }
-//        }
-//        else
-//            running = false;
-//
-//        return;
-//    }
-//
-//    if (ISpKeyIsPressed(kISpFreeze))
-//    {
-//        MacStopSound();
-//        while (ISpKeyIsPressed(kISpFreeze));
-//
-//        isok = SNES9X_Freeze();
-//        ClearGFXScreen();
-//        return;
-//    }
-//
-//    if (ISpKeyIsPressed(kISpDefrost))
-//    {
-//        MacStopSound();
-//        while (ISpKeyIsPressed(kISpDefrost));
-//
-//        isok = SNES9X_Defrost();
-//        ClearGFXScreen();
-//        return;
-//    }
-//
-//    if (ISpKeyIsPressed(kISpScreenshot))
-//    {
-//        Settings.TakeScreenshot = true;
-//        while (ISpKeyIsPressed(kISpScreenshot));
-//    }
-//
-//    if (ISpKeyIsPressed(kISpSPC))
-//    {
-//        S9xDumpSPCSnapshot();
-//        while (ISpKeyIsPressed(kISpSPC));
-//    }
-//
-//    if (ISpKeyIsPressed(kISpFFUp))
-//    {
-//        if (!ffUpSp)
-//        {
-//            ChangeTurboRate(+1);
-//            ffUpSp = true;
-//        }
-//    }
-//    else
-//        ffUpSp = false;
-//
-//    if (ISpKeyIsPressed(kISpFFDown))
-//    {
-//        if (!ffDownSp)
-//        {
-//            ChangeTurboRate(-1);
-//            ffDownSp = true;
-//        }
-//    }
-//    else
-//        ffDownSp = false;
-//
-//    controlPad[0] = controlPad[1] = 0;
-//
-//    JoypadScanDirection(0, &(controlPad[0]));
-//    if (ISpKeyIsPressed(kISp1PR     ))    controlPad[0] |= 0x0010;
-//    if (ISpKeyIsPressed(kISp1PL     ))    controlPad[0] |= 0x0020;
-//    if (ISpKeyIsPressed(kISp1PX     ))    controlPad[0] |= 0x0040;
-//    if (ISpKeyIsPressed(kISp1PA     ))    controlPad[0] |= 0x0080;
-//    if (ISpKeyIsPressed(kISp1PStart ))    controlPad[0] |= 0x1000;
-//    if (ISpKeyIsPressed(kISp1PSelect))    controlPad[0] |= 0x2000;
-//    if (ISpKeyIsPressed(kISp1PY     ))    controlPad[0] |= 0x4000;
-//    if (ISpKeyIsPressed(kISp1PB     ))    controlPad[0] |= 0x8000;
-//
-//    JoypadScanDirection(1, &(controlPad[1]));
-//    if (ISpKeyIsPressed(kISp2PR     ))    controlPad[1] |= 0x0010;
-//    if (ISpKeyIsPressed(kISp2PL     ))    controlPad[1] |= 0x0020;
-//    if (ISpKeyIsPressed(kISp2PX     ))    controlPad[1] |= 0x0040;
-//    if (ISpKeyIsPressed(kISp2PA     ))    controlPad[1] |= 0x0080;
-//    if (ISpKeyIsPressed(kISp2PStart ))    controlPad[1] |= 0x1000;
-//    if (ISpKeyIsPressed(kISp2PSelect))    controlPad[1] |= 0x2000;
-//    if (ISpKeyIsPressed(kISp2PY     ))    controlPad[1] |= 0x4000;
-//    if (ISpKeyIsPressed(kISp2PB     ))    controlPad[1] |= 0x8000;
-//
-//    if (((macControllerOption == SNES_MULTIPLAYER5) || (macControllerOption == SNES_MULTIPLAYER5_2)) && Settings.MultiPlayer5Master)
-//    {
-//        controlPad[2] = controlPad[3] = controlPad[4] = 0;
-//
-//        JoypadScanDirection(2, &(controlPad[2]));
-//        if (ISpKeyIsPressed(kISp3PR     ))    controlPad[2] |= 0x0010;
-//        if (ISpKeyIsPressed(kISp3PL     ))    controlPad[2] |= 0x0020;
-//        if (ISpKeyIsPressed(kISp3PX     ))    controlPad[2] |= 0x0040;
-//        if (ISpKeyIsPressed(kISp3PA     ))    controlPad[2] |= 0x0080;
-//        if (ISpKeyIsPressed(kISp3PStart ))    controlPad[2] |= 0x1000;
-//        if (ISpKeyIsPressed(kISp3PSelect))    controlPad[2] |= 0x2000;
-//        if (ISpKeyIsPressed(kISp3PY     ))    controlPad[2] |= 0x4000;
-//        if (ISpKeyIsPressed(kISp3PB     ))    controlPad[2] |= 0x8000;
-//
-//        JoypadScanDirection(3, &(controlPad[3]));
-//        if (ISpKeyIsPressed(kISp4PR     ))    controlPad[3] |= 0x0010;
-//        if (ISpKeyIsPressed(kISp4PL     ))    controlPad[3] |= 0x0020;
-//        if (ISpKeyIsPressed(kISp4PX     ))    controlPad[3] |= 0x0040;
-//        if (ISpKeyIsPressed(kISp4PA     ))    controlPad[3] |= 0x0080;
-//        if (ISpKeyIsPressed(kISp4PStart ))    controlPad[3] |= 0x1000;
-//        if (ISpKeyIsPressed(kISp4PSelect))    controlPad[3] |= 0x2000;
-//        if (ISpKeyIsPressed(kISp4PY     ))    controlPad[3] |= 0x4000;
-//        if (ISpKeyIsPressed(kISp4PB     ))    controlPad[3] |= 0x8000;
-//
-//        JoypadScanDirection(4, &(controlPad[4]));
-//        if (ISpKeyIsPressed(kISp5PR     ))    controlPad[4] |= 0x0010;
-//        if (ISpKeyIsPressed(kISp5PL     ))    controlPad[4] |= 0x0020;
-//        if (ISpKeyIsPressed(kISp5PX     ))    controlPad[4] |= 0x0040;
-//        if (ISpKeyIsPressed(kISp5PA     ))    controlPad[4] |= 0x0080;
-//        if (ISpKeyIsPressed(kISp5PStart ))    controlPad[4] |= 0x1000;
-//        if (ISpKeyIsPressed(kISp5PSelect))    controlPad[4] |= 0x2000;
-//        if (ISpKeyIsPressed(kISp5PY     ))    controlPad[4] |= 0x4000;
-//        if (ISpKeyIsPressed(kISp5PB     ))    controlPad[4] |= 0x8000;
-//
-//        ControlPadFlagsToS9xReportButtons(2, controlPad[2]);
-//        ControlPadFlagsToS9xReportButtons(3, controlPad[3]);
-//        ControlPadFlagsToS9xReportButtons(4, controlPad[4]);
-//
-//        if (macControllerOption == SNES_MULTIPLAYER5_2)
-//        {
-//            controlPad[5] = controlPad[6] = controlPad[7] = 0;
-//
-//            JoypadScanDirection(5, &(controlPad[5]));
-//            if (ISpKeyIsPressed(kISp6PR     ))    controlPad[5] |= 0x0010;
-//            if (ISpKeyIsPressed(kISp6PL     ))    controlPad[5] |= 0x0020;
-//            if (ISpKeyIsPressed(kISp6PX     ))    controlPad[5] |= 0x0040;
-//            if (ISpKeyIsPressed(kISp6PA     ))    controlPad[5] |= 0x0080;
-//            if (ISpKeyIsPressed(kISp6PStart ))    controlPad[5] |= 0x1000;
-//            if (ISpKeyIsPressed(kISp6PSelect))    controlPad[5] |= 0x2000;
-//            if (ISpKeyIsPressed(kISp6PY     ))    controlPad[5] |= 0x4000;
-//            if (ISpKeyIsPressed(kISp6PB     ))    controlPad[5] |= 0x8000;
-//
-//            JoypadScanDirection(6, &(controlPad[6]));
-//            if (ISpKeyIsPressed(kISp7PR     ))    controlPad[6] |= 0x0010;
-//            if (ISpKeyIsPressed(kISp7PL     ))    controlPad[6] |= 0x0020;
-//            if (ISpKeyIsPressed(kISp7PX     ))    controlPad[6] |= 0x0040;
-//            if (ISpKeyIsPressed(kISp7PA     ))    controlPad[6] |= 0x0080;
-//            if (ISpKeyIsPressed(kISp7PStart ))    controlPad[6] |= 0x1000;
-//            if (ISpKeyIsPressed(kISp7PSelect))    controlPad[6] |= 0x2000;
-//            if (ISpKeyIsPressed(kISp7PY     ))    controlPad[6] |= 0x4000;
-//            if (ISpKeyIsPressed(kISp7PB     ))    controlPad[6] |= 0x8000;
-//
-//            JoypadScanDirection(7, &(controlPad[7]));
-//            if (ISpKeyIsPressed(kISp8PR     ))    controlPad[7] |= 0x0010;
-//            if (ISpKeyIsPressed(kISp8PL     ))    controlPad[7] |= 0x0020;
-//            if (ISpKeyIsPressed(kISp8PX     ))    controlPad[7] |= 0x0040;
-//            if (ISpKeyIsPressed(kISp8PA     ))    controlPad[7] |= 0x0080;
-//            if (ISpKeyIsPressed(kISp8PStart ))    controlPad[7] |= 0x1000;
-//            if (ISpKeyIsPressed(kISp8PSelect))    controlPad[7] |= 0x2000;
-//            if (ISpKeyIsPressed(kISp8PY     ))    controlPad[7] |= 0x4000;
-//            if (ISpKeyIsPressed(kISp8PB     ))    controlPad[7] |= 0x8000;
-//
-//            ControlPadFlagsToS9xReportButtons(5, controlPad[5]);
-//            ControlPadFlagsToS9xReportButtons(6, controlPad[6]);
-//            ControlPadFlagsToS9xReportButtons(7, controlPad[7]);
-//        }
-//    }
-//
-//    GetKeys(myKeys);
-//
-//    fnbtn  = (KeyIsPressed(myKeys, keyCode[kKeyFunction]) || ISpKeyIsPressed(kISpFunction));
-//    altbtn = (KeyIsPressed(myKeys, keyCode[kKeyAlt]     ) || ISpKeyIsPressed(kISpAlt)     );
-//
-//    if (fnbtn)
-//    {
-//        if (!lastTimeFn)
-//        {
-//            for (unsigned int i = 0; i < kCommandListSize; i++)
-//                btncmd[i].held = false;
-//        }
-//
-//        lastTimeFn = true;
-//        lastTimeTT = false;
-//        ffUp = ffDown = false;
-//
-//        for (unsigned int i = 0; i < kCommandListSize; i++)
-//        {
-//            if (KeyIsPressed(myKeys, btncmd[i].keycode))
-//            {
-//                if (!(btncmd[i].held))
-//                {
-//                    btncmd[i].held = true;
-//
-//                    if (strncmp(btncmd[i].command, "_mac", 4) == 0)
-//                    {
-//                        static char    msg[64];
-//
-//                        switch (btncmd[i].command[4] - '0')
-//                        {
-//                            case 1:
-//                                Settings.DisplayPressedKeys = !Settings.DisplayPressedKeys;
-//                                break;
-//
-//                            case 2:
-//                                if (S9xMovieActive())
-//                                    Settings.DisplayMovieFrame = !Settings.DisplayMovieFrame;
-//                                break;
-//
-//                            case 3:
-//                                if (macFrameAdvanceRate < 5000000)
-//                                    macFrameAdvanceRate += 100000;
-//                                sprintf(msg, "Emulation Speed: 100/%d", macFrameAdvanceRate / 10000);
-//                                S9xSetInfoString(msg);
-//                                break;
-//
-//                            case 4:
-//                                if (macFrameAdvanceRate > 500000)
-//                                    macFrameAdvanceRate -= 100000;
-//                                sprintf(msg, "Emulation Speed: 100/%d", macFrameAdvanceRate / 10000);
-//                                S9xSetInfoString(msg);
-//                                break;
-//
-//                            case 5:
-//                                pauseEmulation = !pauseEmulation;
-//                                break;
-//
-//                            case 6:
-//                                frameAdvance = true;
-//                                break;
-//                        }
-//                    }
-//                    else
-//                    {
-//                        s9xcommand_t    s9xcmd;
-//
-//                        s9xcmd = S9xGetCommandT(btncmd[i].command);
-//                        S9xApplyCommand(s9xcmd, 1, 0);
-//                    }
-//                }
-//            }
-//            else
-//                btncmd[i].held = false;
-//        }
-//    }
-//    else
-//    {
-//        lastTimeFn = false;
-//
-//        if (KeyIsPressed(myKeys, keyCode[kKeyEsc]))
-//        {
-//            if (s9xthreadrunning)
-//            {
-//                if (!eventQueued)
-//                {
-//                    PostQueueToSubEventLoop();
-//                    eventQueued = true;
-//                }
-//            }
-//            else
-//                running = false;
-//
-//            return;
-//        }
-//
-//        if (KeyIsPressed(myKeys, keyCode[kKeyFreeze]))
-//        {
-//            MacStopSound();
-//            while (KeyIsPressed(myKeys, keyCode[kKeyFreeze]))
-//                GetKeys(myKeys);
-//
-//            isok = SNES9X_Freeze();
-//            ClearGFXScreen();
-//            return;
-//        }
-//
-//        if (KeyIsPressed(myKeys, keyCode[kKeyDefrost]))
-//        {
-//            MacStopSound();
-//            while (KeyIsPressed(myKeys, keyCode[kKeyDefrost]))
-//                GetKeys(myKeys);
-//
-//            isok = SNES9X_Defrost();
-//            ClearGFXScreen();
-//            return;
-//        }
-//
-//        if (KeyIsPressed(myKeys, keyCode[kKeyScreenshot]))
-//        {
-//            Settings.TakeScreenshot = true;
-//            while (KeyIsPressed(myKeys, keyCode[kKeyScreenshot]))
-//                GetKeys(myKeys);
-//        }
-//
-//        if (KeyIsPressed(myKeys, keyCode[kKeySPC]))
-//        {
-//            S9xDumpSPCSnapshot();
-//            while (KeyIsPressed(myKeys, keyCode[kKeySPC]))
-//                GetKeys(myKeys);
-//        }
-//
-//        if (KeyIsPressed(myKeys, keyCode[kKeyFFUp]))
-//        {
-//            if (!ffUp)
-//            {
-//                ChangeTurboRate(+1);
-//                ffUp = true;
-//            }
-//        }
-//        else
-//            ffUp = false;
-//
-//        if (KeyIsPressed(myKeys, keyCode[kKeyFFDown]))
-//        {
-//            if (!ffDown)
-//            {
-//                ChangeTurboRate(-1);
-//                ffDown = true;
-//            }
-//        }
-//        else
-//            ffDown = false;
-//
-//        if (KeyIsPressed(myKeys, keyCode[k1PR]     ))    controlPad[0] |= 0x0010;
-//        if (KeyIsPressed(myKeys, keyCode[k1PL]     ))    controlPad[0] |= 0x0020;
-//        if (KeyIsPressed(myKeys, keyCode[k1PX]     ))    controlPad[0] |= 0x0040;
-//        if (KeyIsPressed(myKeys, keyCode[k1PA]     ))    controlPad[0] |= 0x0080;
-//        if (KeyIsPressed(myKeys, keyCode[k1PRight] ))    controlPad[0] |= 0x0100;
-//        if (KeyIsPressed(myKeys, keyCode[k1PLeft]  ))    controlPad[0] |= 0x0200;
-//        if (KeyIsPressed(myKeys, keyCode[k1PDown]  ))    controlPad[0] |= 0x0400;
-//        if (KeyIsPressed(myKeys, keyCode[k1PUp]    ))    controlPad[0] |= 0x0800;
-//        if (KeyIsPressed(myKeys, keyCode[k1PStart] ))    controlPad[0] |= 0x1000;
-//        if (KeyIsPressed(myKeys, keyCode[k1PSelect]))    controlPad[0] |= 0x2000;
-//        if (KeyIsPressed(myKeys, keyCode[k1PY]     ))    controlPad[0] |= 0x4000;
-//        if (KeyIsPressed(myKeys, keyCode[k1PB]     ))    controlPad[0] |= 0x8000;
-//
-//        if (KeyIsPressed(myKeys, keyCode[k2PR]     ))    controlPad[1] |= 0x0010;
-//        if (KeyIsPressed(myKeys, keyCode[k2PL]     ))    controlPad[1] |= 0x0020;
-//        if (KeyIsPressed(myKeys, keyCode[k2PX]     ))    controlPad[1] |= 0x0040;
-//        if (KeyIsPressed(myKeys, keyCode[k2PA]     ))    controlPad[1] |= 0x0080;
-//        if (KeyIsPressed(myKeys, keyCode[k2PRight] ))    controlPad[1] |= 0x0100;
-//        if (KeyIsPressed(myKeys, keyCode[k2PLeft]  ))    controlPad[1] |= 0x0200;
-//        if (KeyIsPressed(myKeys, keyCode[k2PDown]  ))    controlPad[1] |= 0x0400;
-//        if (KeyIsPressed(myKeys, keyCode[k2PUp]    ))    controlPad[1] |= 0x0800;
-//        if (KeyIsPressed(myKeys, keyCode[k2PStart] ))    controlPad[1] |= 0x1000;
-//        if (KeyIsPressed(myKeys, keyCode[k2PSelect]))    controlPad[1] |= 0x2000;
-//        if (KeyIsPressed(myKeys, keyCode[k2PY]     ))    controlPad[1] |= 0x4000;
-//        if (KeyIsPressed(myKeys, keyCode[k2PB]     ))    controlPad[1] |= 0x8000;
-//
-//        if (altbtn)
-//        {
-//            if (!lastTimeTT)
-//                changeAuto[0] = changeAuto[1] = 0;
-//
-//            for (int i = 0; i < 2; i++)
-//            {
-//                for (int j = 0; j < 12; j++)
-//                {
-//                    uint16    mask = 0x0010 << j;
-//
-//                    if (controlPad[i] & mask & autofireRec[i].toggleMask)
-//                    {
-//                        controlPad[i] &= ~mask;
-//
-//                        if (!(changeAuto[i] & mask))
-//                        {
-//                            changeAuto[i] |= mask;
-//                            ChangeAutofireSettings(i, j);
-//                        }
-//                    }
-//                    else
-//                        changeAuto[i] &= ~mask;
-//                }
-//            }
-//
-//            lastTimeTT = true;
-//        }
-//        else
-//            lastTimeTT = false;
-//    }
-//
-//    if (enabletoggle)
-//    {
-//        if ((ISpKeyIsPressed(kISpFastForward) || KeyIsPressed(myKeys, keyCode[kKeyFastForward])) && !fnbtn)
-//        {
-//            if (!toggleff)
-//            {
-//                toggleff = true;
-//                Settings.TurboMode = !Settings.TurboMode;
-//                S9xSetInfoString(Settings.TurboMode ? "Turbo mode on" : "Turbo mode off");
-//                if (!Settings.TurboMode)
-//                    S9xClearSamples();
-//            }
-//        }
-//        else
-//            toggleff = false;
-//    }
-//    else
-//    {
-//        bool8    old = Settings.TurboMode;
-//        Settings.TurboMode = ((ISpKeyIsPressed(kISpFastForward) || KeyIsPressed(myKeys, keyCode[kKeyFastForward])) && !fnbtn) ? true : false;
-//        if (!Settings.TurboMode && old)
-//            S9xClearSamples();
-//    }
-//
-//    for (int i = 0; i < 2; i++)
-//        controlPad[i] ^= autofireRec[i].invertMask;
-//
-//    if (autofire)
-//    {
-//        long long    currentTime;
-//        uint16        changeMask;
-//
-//        Microseconds((UnsignedWide *) &currentTime);
-//        tcbtn = (KeyIsPressed(myKeys, keyCode[kKeyTC]) || ISpKeyIsPressed(kISpTC));
-//
-//        for (int i = 0; i < 2; i++)
-//        {
-//            changeMask = (lastTimeTT ? (~changeAuto[i]) : 0xFFFF);
-//
-//            for (int j = 0; j < 12; j++)
-//            {
-//                uint16    mask = (0x0010 << j) & changeMask;
-//
-//                if (autofireRec[i].tcMask & mask)
-//                {
-//                    if (!tcbtn)
-//                        continue;
-//                }
-//
-//                if (autofireRec[i].buttonMask & mask)
-//                {
-//                    if (controlPad[i] & mask)
-//                    {
-//                        if (currentTime > autofireRec[i].nextTime[j])
-//                        {
-//                            if (Settings.TurboMode)
-//                                autofireRec[i].nextTime[j] = currentTime + (long long) ((1.0 / (float) autofireRec[i].frequency) * 1000000.0 / macFastForwardRate);
-//                            else
-//                                autofireRec[i].nextTime[j] = currentTime + (long long) ((1.0 / (float) autofireRec[i].frequency) * 1000000.0);
-//                        }
-//                        else
-//                            controlPad[i] &= ~mask;
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    ControlPadFlagsToS9xReportButtons(0, controlPad[0]);
-//    ControlPadFlagsToS9xReportButtons(1, controlPad[1]);
-//
-//    if (macControllerOption == SNES_JUSTIFIER_2)
-//        ControlPadFlagsToS9xPseudoPointer(controlPad[1]);
-//}
-//
-//static void ChangeAutofireSettings (int player, int btn)
-//{
-//    static char    msg[64];
-//    uint16        mask, m;
-//
-//    mask = 0x0010 << btn;
-//    autofireRec[player].buttonMask ^= mask;
-//    autofire = (autofireRec[0].buttonMask || autofireRec[1].buttonMask);
-//
-//    m = autofireRec[player].buttonMask;
-//    if (m)
-//        snprintf(msg, sizeof(msg), "Autofire %d:%s%s%s%s%s%s%s%s%s%s%s%s%s", player + 1,
-//            (m & 0xC0F0 ?   " " : ""),
-//            (m & 0x0080 ?   "A" : ""),
-//            (m & 0x8000 ?   "B" : ""),
-//            (m & 0x0040 ?   "X" : ""),
-//            (m & 0x4000 ?   "Y" : ""),
-//            (m & 0x0020 ?   "L" : ""),
-//            (m & 0x0010 ?   "R" : ""),
-//            (m & 0x0800 ? " Up" : ""),
-//            (m & 0x0400 ? " Dn" : ""),
-//            (m & 0x0200 ? " Lf" : ""),
-//            (m & 0x0100 ? " Rt" : ""),
-//            (m & 0x1000 ? " St" : ""),
-//            (m & 0x2000 ? " Se" : ""));
-//    else
-//        snprintf(msg, sizeof(msg), "Autofire %d: Off", player + 1);
-//
-//    S9xSetInfoString(msg);
-//}
-//
-//static void ChangeTurboRate (int d)
-//{
-//    static char    msg[64];
-//
-//    macFastForwardRate += d;
-//    if (macFastForwardRate < 1)
-//        macFastForwardRate = 1;
-//    else
-//    if (macFastForwardRate > 15)
-//        macFastForwardRate = 15;
-//
-//    snprintf(msg, sizeof(msg), "Turbo Rate: %d", macFastForwardRate);
-//    S9xSetInfoString(msg);
-//}
-//
+static void ProcessInput (void)
+{
+    bool8           myKeys[MAC_NUM_KEYCODES];
+    bool8           isok, fnbtn, altbtn, tcbtn;
+    static bool8    toggleff = false, lastTimeTT = false, lastTimeFn = false, ffUp = false, ffDown = false, ffUpSp = false, ffDownSp = false;
+
+    if (rejectinput)
+        return;
+
+    if (ISpKeyIsPressed(kISpEsc))
+    {
+        if (!s9xthreadrunning)
+            running = false;
+
+        return;
+    }
+
+    if (ISpKeyIsPressed(kISpFreeze))
+    {
+        MacStopSound();
+        while (ISpKeyIsPressed(kISpFreeze));
+
+        isok = SNES9X_Freeze();
+        ClearGFXScreen();
+        return;
+    }
+
+    if (ISpKeyIsPressed(kISpDefrost))
+    {
+        MacStopSound();
+        while (ISpKeyIsPressed(kISpDefrost));
+
+        isok = SNES9X_Defrost();
+        ClearGFXScreen();
+        return;
+    }
+
+    if (ISpKeyIsPressed(kISpScreenshot))
+    {
+        Settings.TakeScreenshot = true;
+        while (ISpKeyIsPressed(kISpScreenshot));
+    }
+
+    if (ISpKeyIsPressed(kISpSPC))
+    {
+        S9xDumpSPCSnapshot();
+        while (ISpKeyIsPressed(kISpSPC));
+    }
+
+    if (ISpKeyIsPressed(kISpFFUp))
+    {
+        if (!ffUpSp)
+        {
+            ChangeTurboRate(+1);
+            ffUpSp = true;
+        }
+    }
+    else
+        ffUpSp = false;
+
+    if (ISpKeyIsPressed(kISpFFDown))
+    {
+        if (!ffDownSp)
+        {
+            ChangeTurboRate(-1);
+            ffDownSp = true;
+        }
+    }
+    else
+        ffDownSp = false;
+
+    controlPad[0] = controlPad[1] = 0;
+
+    JoypadScanDirection(0, &(controlPad[0]));
+    if (ISpKeyIsPressed(kISp1PR     ))    controlPad[0] |= 0x0010;
+    if (ISpKeyIsPressed(kISp1PL     ))    controlPad[0] |= 0x0020;
+    if (ISpKeyIsPressed(kISp1PX     ))    controlPad[0] |= 0x0040;
+    if (ISpKeyIsPressed(kISp1PA     ))    controlPad[0] |= 0x0080;
+    if (ISpKeyIsPressed(kISp1PStart ))    controlPad[0] |= 0x1000;
+    if (ISpKeyIsPressed(kISp1PSelect))    controlPad[0] |= 0x2000;
+    if (ISpKeyIsPressed(kISp1PY     ))    controlPad[0] |= 0x4000;
+    if (ISpKeyIsPressed(kISp1PB     ))    controlPad[0] |= 0x8000;
+
+    JoypadScanDirection(1, &(controlPad[1]));
+    if (ISpKeyIsPressed(kISp2PR     ))    controlPad[1] |= 0x0010;
+    if (ISpKeyIsPressed(kISp2PL     ))    controlPad[1] |= 0x0020;
+    if (ISpKeyIsPressed(kISp2PX     ))    controlPad[1] |= 0x0040;
+    if (ISpKeyIsPressed(kISp2PA     ))    controlPad[1] |= 0x0080;
+    if (ISpKeyIsPressed(kISp2PStart ))    controlPad[1] |= 0x1000;
+    if (ISpKeyIsPressed(kISp2PSelect))    controlPad[1] |= 0x2000;
+    if (ISpKeyIsPressed(kISp2PY     ))    controlPad[1] |= 0x4000;
+    if (ISpKeyIsPressed(kISp2PB     ))    controlPad[1] |= 0x8000;
+
+    if (((macControllerOption == SNES_MULTIPLAYER5) || (macControllerOption == SNES_MULTIPLAYER5_2)) && Settings.MultiPlayer5Master)
+    {
+        controlPad[2] = controlPad[3] = controlPad[4] = 0;
+
+        JoypadScanDirection(2, &(controlPad[2]));
+        if (ISpKeyIsPressed(kISp3PR     ))    controlPad[2] |= 0x0010;
+        if (ISpKeyIsPressed(kISp3PL     ))    controlPad[2] |= 0x0020;
+        if (ISpKeyIsPressed(kISp3PX     ))    controlPad[2] |= 0x0040;
+        if (ISpKeyIsPressed(kISp3PA     ))    controlPad[2] |= 0x0080;
+        if (ISpKeyIsPressed(kISp3PStart ))    controlPad[2] |= 0x1000;
+        if (ISpKeyIsPressed(kISp3PSelect))    controlPad[2] |= 0x2000;
+        if (ISpKeyIsPressed(kISp3PY     ))    controlPad[2] |= 0x4000;
+        if (ISpKeyIsPressed(kISp3PB     ))    controlPad[2] |= 0x8000;
+
+        JoypadScanDirection(3, &(controlPad[3]));
+        if (ISpKeyIsPressed(kISp4PR     ))    controlPad[3] |= 0x0010;
+        if (ISpKeyIsPressed(kISp4PL     ))    controlPad[3] |= 0x0020;
+        if (ISpKeyIsPressed(kISp4PX     ))    controlPad[3] |= 0x0040;
+        if (ISpKeyIsPressed(kISp4PA     ))    controlPad[3] |= 0x0080;
+        if (ISpKeyIsPressed(kISp4PStart ))    controlPad[3] |= 0x1000;
+        if (ISpKeyIsPressed(kISp4PSelect))    controlPad[3] |= 0x2000;
+        if (ISpKeyIsPressed(kISp4PY     ))    controlPad[3] |= 0x4000;
+        if (ISpKeyIsPressed(kISp4PB     ))    controlPad[3] |= 0x8000;
+
+        JoypadScanDirection(4, &(controlPad[4]));
+        if (ISpKeyIsPressed(kISp5PR     ))    controlPad[4] |= 0x0010;
+        if (ISpKeyIsPressed(kISp5PL     ))    controlPad[4] |= 0x0020;
+        if (ISpKeyIsPressed(kISp5PX     ))    controlPad[4] |= 0x0040;
+        if (ISpKeyIsPressed(kISp5PA     ))    controlPad[4] |= 0x0080;
+        if (ISpKeyIsPressed(kISp5PStart ))    controlPad[4] |= 0x1000;
+        if (ISpKeyIsPressed(kISp5PSelect))    controlPad[4] |= 0x2000;
+        if (ISpKeyIsPressed(kISp5PY     ))    controlPad[4] |= 0x4000;
+        if (ISpKeyIsPressed(kISp5PB     ))    controlPad[4] |= 0x8000;
+
+        ControlPadFlagsToS9xReportButtons(2, controlPad[2]);
+        ControlPadFlagsToS9xReportButtons(3, controlPad[3]);
+        ControlPadFlagsToS9xReportButtons(4, controlPad[4]);
+
+        if (macControllerOption == SNES_MULTIPLAYER5_2)
+        {
+            controlPad[5] = controlPad[6] = controlPad[7] = 0;
+
+            JoypadScanDirection(5, &(controlPad[5]));
+            if (ISpKeyIsPressed(kISp6PR     ))    controlPad[5] |= 0x0010;
+            if (ISpKeyIsPressed(kISp6PL     ))    controlPad[5] |= 0x0020;
+            if (ISpKeyIsPressed(kISp6PX     ))    controlPad[5] |= 0x0040;
+            if (ISpKeyIsPressed(kISp6PA     ))    controlPad[5] |= 0x0080;
+            if (ISpKeyIsPressed(kISp6PStart ))    controlPad[5] |= 0x1000;
+            if (ISpKeyIsPressed(kISp6PSelect))    controlPad[5] |= 0x2000;
+            if (ISpKeyIsPressed(kISp6PY     ))    controlPad[5] |= 0x4000;
+            if (ISpKeyIsPressed(kISp6PB     ))    controlPad[5] |= 0x8000;
+
+            JoypadScanDirection(6, &(controlPad[6]));
+            if (ISpKeyIsPressed(kISp7PR     ))    controlPad[6] |= 0x0010;
+            if (ISpKeyIsPressed(kISp7PL     ))    controlPad[6] |= 0x0020;
+            if (ISpKeyIsPressed(kISp7PX     ))    controlPad[6] |= 0x0040;
+            if (ISpKeyIsPressed(kISp7PA     ))    controlPad[6] |= 0x0080;
+            if (ISpKeyIsPressed(kISp7PStart ))    controlPad[6] |= 0x1000;
+            if (ISpKeyIsPressed(kISp7PSelect))    controlPad[6] |= 0x2000;
+            if (ISpKeyIsPressed(kISp7PY     ))    controlPad[6] |= 0x4000;
+            if (ISpKeyIsPressed(kISp7PB     ))    controlPad[6] |= 0x8000;
+
+            JoypadScanDirection(7, &(controlPad[7]));
+            if (ISpKeyIsPressed(kISp8PR     ))    controlPad[7] |= 0x0010;
+            if (ISpKeyIsPressed(kISp8PL     ))    controlPad[7] |= 0x0020;
+            if (ISpKeyIsPressed(kISp8PX     ))    controlPad[7] |= 0x0040;
+            if (ISpKeyIsPressed(kISp8PA     ))    controlPad[7] |= 0x0080;
+            if (ISpKeyIsPressed(kISp8PStart ))    controlPad[7] |= 0x1000;
+            if (ISpKeyIsPressed(kISp8PSelect))    controlPad[7] |= 0x2000;
+            if (ISpKeyIsPressed(kISp8PY     ))    controlPad[7] |= 0x4000;
+            if (ISpKeyIsPressed(kISp8PB     ))    controlPad[7] |= 0x8000;
+
+            ControlPadFlagsToS9xReportButtons(5, controlPad[5]);
+            ControlPadFlagsToS9xReportButtons(6, controlPad[6]);
+            ControlPadFlagsToS9xReportButtons(7, controlPad[7]);
+        }
+    }
+
+    CopyPressedKeys(myKeys);
+
+    fnbtn  = (KeyIsPressed(myKeys, keyCode[kKeyFunction]) || ISpKeyIsPressed(kISpFunction));
+    altbtn = (KeyIsPressed(myKeys, keyCode[kKeyAlt]     ) || ISpKeyIsPressed(kISpAlt)     );
+
+    if (fnbtn)
+    {
+        if (!lastTimeFn)
+        {
+            for (unsigned int i = 0; i < kCommandListSize; i++)
+                btncmd[i].held = false;
+        }
+
+        lastTimeFn = true;
+        lastTimeTT = false;
+        ffUp = ffDown = false;
+
+        for (unsigned int i = 0; i < kCommandListSize; i++)
+        {
+            if (KeyIsPressed(myKeys, btncmd[i].keycode))
+            {
+                if (!(btncmd[i].held))
+                {
+                    btncmd[i].held = true;
+
+                    if (strncmp(btncmd[i].command, "_mac", 4) == 0)
+                    {
+                        static char    msg[64];
+
+                        switch (btncmd[i].command[4] - '0')
+                        {
+                            case 1:
+                                Settings.DisplayPressedKeys = !Settings.DisplayPressedKeys;
+                                break;
+
+                            case 2:
+                                if (S9xMovieActive())
+                                    Settings.DisplayMovieFrame = !Settings.DisplayMovieFrame;
+                                break;
+
+                            case 3:
+                                if (macFrameAdvanceRate < 5000000)
+                                    macFrameAdvanceRate += 100000;
+                                sprintf(msg, "Emulation Speed: 100/%d", macFrameAdvanceRate / 10000);
+                                S9xSetInfoString(msg);
+                                break;
+
+                            case 4:
+                                if (macFrameAdvanceRate > 500000)
+                                    macFrameAdvanceRate -= 100000;
+                                sprintf(msg, "Emulation Speed: 100/%d", macFrameAdvanceRate / 10000);
+                                S9xSetInfoString(msg);
+                                break;
+
+                            case 5:
+                                pauseEmulation = !pauseEmulation;
+                                break;
+
+                            case 6:
+                                frameAdvance = true;
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        s9xcommand_t    s9xcmd;
+
+                        s9xcmd = S9xGetCommandT(btncmd[i].command);
+                        S9xApplyCommand(s9xcmd, 1, 0);
+                    }
+                }
+            }
+            else
+                btncmd[i].held = false;
+        }
+    }
+    else
+    {
+        lastTimeFn = false;
+
+        if (KeyIsPressed(myKeys, keyCode[kKeyEsc]))
+        {
+            if (!s9xthreadrunning)
+                running = false;
+
+            return;
+        }
+
+        if (KeyIsPressed(myKeys, keyCode[kKeyFreeze]))
+        {
+            MacStopSound();
+            while (KeyIsPressed(myKeys, keyCode[kKeyFreeze]))
+                CopyPressedKeys(myKeys);
+
+            isok = SNES9X_Freeze();
+            ClearGFXScreen();
+            return;
+        }
+
+        if (KeyIsPressed(myKeys, keyCode[kKeyDefrost]))
+        {
+            MacStopSound();
+            while (KeyIsPressed(myKeys, keyCode[kKeyDefrost]))
+                CopyPressedKeys(myKeys);
+
+            isok = SNES9X_Defrost();
+            ClearGFXScreen();
+            return;
+        }
+
+        if (KeyIsPressed(myKeys, keyCode[kKeyScreenshot]))
+        {
+            Settings.TakeScreenshot = true;
+            while (KeyIsPressed(myKeys, keyCode[kKeyScreenshot]))
+                CopyPressedKeys(myKeys);
+        }
+
+        if (KeyIsPressed(myKeys, keyCode[kKeySPC]))
+        {
+            S9xDumpSPCSnapshot();
+            while (KeyIsPressed(myKeys, keyCode[kKeySPC]))
+                CopyPressedKeys(myKeys);
+        }
+
+        if (KeyIsPressed(myKeys, keyCode[kKeyFFUp]))
+        {
+            if (!ffUp)
+            {
+                ChangeTurboRate(+1);
+                ffUp = true;
+            }
+        }
+        else
+            ffUp = false;
+
+        if (KeyIsPressed(myKeys, keyCode[kKeyFFDown]))
+        {
+            if (!ffDown)
+            {
+                ChangeTurboRate(-1);
+                ffDown = true;
+            }
+        }
+        else
+            ffDown = false;
+
+        if (KeyIsPressed(myKeys, keyCode[k1PR]     ))    controlPad[0] |= 0x0010;
+        if (KeyIsPressed(myKeys, keyCode[k1PL]     ))    controlPad[0] |= 0x0020;
+        if (KeyIsPressed(myKeys, keyCode[k1PX]     ))    controlPad[0] |= 0x0040;
+        if (KeyIsPressed(myKeys, keyCode[k1PA]     ))    controlPad[0] |= 0x0080;
+        if (KeyIsPressed(myKeys, keyCode[k1PRight] ))    controlPad[0] |= 0x0100;
+        if (KeyIsPressed(myKeys, keyCode[k1PLeft]  ))    controlPad[0] |= 0x0200;
+        if (KeyIsPressed(myKeys, keyCode[k1PDown]  ))    controlPad[0] |= 0x0400;
+        if (KeyIsPressed(myKeys, keyCode[k1PUp]    ))    controlPad[0] |= 0x0800;
+        if (KeyIsPressed(myKeys, keyCode[k1PStart] ))    controlPad[0] |= 0x1000;
+        if (KeyIsPressed(myKeys, keyCode[k1PSelect]))    controlPad[0] |= 0x2000;
+        if (KeyIsPressed(myKeys, keyCode[k1PY]     ))    controlPad[0] |= 0x4000;
+        if (KeyIsPressed(myKeys, keyCode[k1PB]     ))    controlPad[0] |= 0x8000;
+
+        if (KeyIsPressed(myKeys, keyCode[k2PR]     ))    controlPad[1] |= 0x0010;
+        if (KeyIsPressed(myKeys, keyCode[k2PL]     ))    controlPad[1] |= 0x0020;
+        if (KeyIsPressed(myKeys, keyCode[k2PX]     ))    controlPad[1] |= 0x0040;
+        if (KeyIsPressed(myKeys, keyCode[k2PA]     ))    controlPad[1] |= 0x0080;
+        if (KeyIsPressed(myKeys, keyCode[k2PRight] ))    controlPad[1] |= 0x0100;
+        if (KeyIsPressed(myKeys, keyCode[k2PLeft]  ))    controlPad[1] |= 0x0200;
+        if (KeyIsPressed(myKeys, keyCode[k2PDown]  ))    controlPad[1] |= 0x0400;
+        if (KeyIsPressed(myKeys, keyCode[k2PUp]    ))    controlPad[1] |= 0x0800;
+        if (KeyIsPressed(myKeys, keyCode[k2PStart] ))    controlPad[1] |= 0x1000;
+        if (KeyIsPressed(myKeys, keyCode[k2PSelect]))    controlPad[1] |= 0x2000;
+        if (KeyIsPressed(myKeys, keyCode[k2PY]     ))    controlPad[1] |= 0x4000;
+        if (KeyIsPressed(myKeys, keyCode[k2PB]     ))    controlPad[1] |= 0x8000;
+
+        if (altbtn)
+        {
+            if (!lastTimeTT)
+                changeAuto[0] = changeAuto[1] = 0;
+
+            for (int i = 0; i < 2; i++)
+            {
+                for (int j = 0; j < 12; j++)
+                {
+                    uint16    mask = 0x0010 << j;
+
+                    if (controlPad[i] & mask & autofireRec[i].toggleMask)
+                    {
+                        controlPad[i] &= ~mask;
+
+                        if (!(changeAuto[i] & mask))
+                        {
+                            changeAuto[i] |= mask;
+                            ChangeAutofireSettings(i, j);
+                        }
+                    }
+                    else
+                        changeAuto[i] &= ~mask;
+                }
+            }
+
+            lastTimeTT = true;
+        }
+        else
+            lastTimeTT = false;
+    }
+
+    if (enabletoggle)
+    {
+        if ((ISpKeyIsPressed(kISpFastForward) || KeyIsPressed(myKeys, keyCode[kKeyFastForward])) && !fnbtn)
+        {
+            if (!toggleff)
+            {
+                toggleff = true;
+                Settings.TurboMode = !Settings.TurboMode;
+                S9xSetInfoString(Settings.TurboMode ? "Turbo mode on" : "Turbo mode off");
+                if (!Settings.TurboMode)
+                    S9xClearSamples();
+            }
+        }
+        else
+            toggleff = false;
+    }
+    else
+    {
+        bool8    old = Settings.TurboMode;
+        Settings.TurboMode = ((ISpKeyIsPressed(kISpFastForward) || KeyIsPressed(myKeys, keyCode[kKeyFastForward])) && !fnbtn) ? true : false;
+        if (!Settings.TurboMode && old)
+            S9xClearSamples();
+    }
+
+    for (int i = 0; i < 2; i++)
+        controlPad[i] ^= autofireRec[i].invertMask;
+
+    if (autofire)
+    {
+        long long    currentTime;
+        uint16        changeMask;
+
+        currentTime = GetMicroseconds();
+        tcbtn = (KeyIsPressed(myKeys, keyCode[kKeyTC]) || ISpKeyIsPressed(kISpTC));
+
+        for (int i = 0; i < 2; i++)
+        {
+            changeMask = (lastTimeTT ? (~changeAuto[i]) : 0xFFFF);
+
+            for (int j = 0; j < 12; j++)
+            {
+                uint16    mask = (0x0010 << j) & changeMask;
+
+                if (autofireRec[i].tcMask & mask)
+                {
+                    if (!tcbtn)
+                        continue;
+                }
+
+                if (autofireRec[i].buttonMask & mask)
+                {
+                    if (controlPad[i] & mask)
+                    {
+                        if (currentTime > autofireRec[i].nextTime[j])
+                        {
+                            if (Settings.TurboMode)
+                                autofireRec[i].nextTime[j] = currentTime + (long long) ((1.0 / (float) autofireRec[i].frequency) * 1000000.0 / macFastForwardRate);
+                            else
+                                autofireRec[i].nextTime[j] = currentTime + (long long) ((1.0 / (float) autofireRec[i].frequency) * 1000000.0);
+                        }
+                        else
+                            controlPad[i] &= ~mask;
+                    }
+                }
+            }
+        }
+    }
+
+    ControlPadFlagsToS9xReportButtons(0, controlPad[0]);
+    ControlPadFlagsToS9xReportButtons(1, controlPad[1]);
+
+    if (macControllerOption == SNES_JUSTIFIER_2)
+        ControlPadFlagsToS9xPseudoPointer(controlPad[1]);
+}
+
+static void ChangeAutofireSettings (int player, int btn)
+{
+    static char    msg[64];
+    uint16        mask, m;
+
+    mask = 0x0010 << btn;
+    autofireRec[player].buttonMask ^= mask;
+    autofire = (autofireRec[0].buttonMask || autofireRec[1].buttonMask);
+
+    m = autofireRec[player].buttonMask;
+    if (m)
+        snprintf(msg, sizeof(msg), "Autofire %d:%s%s%s%s%s%s%s%s%s%s%s%s%s", player + 1,
+            (m & 0xC0F0 ?   " " : ""),
+            (m & 0x0080 ?   "A" : ""),
+            (m & 0x8000 ?   "B" : ""),
+            (m & 0x0040 ?   "X" : ""),
+            (m & 0x4000 ?   "Y" : ""),
+            (m & 0x0020 ?   "L" : ""),
+            (m & 0x0010 ?   "R" : ""),
+            (m & 0x0800 ? " Up" : ""),
+            (m & 0x0400 ? " Dn" : ""),
+            (m & 0x0200 ? " Lf" : ""),
+            (m & 0x0100 ? " Rt" : ""),
+            (m & 0x1000 ? " St" : ""),
+            (m & 0x2000 ? " Se" : ""));
+    else
+        snprintf(msg, sizeof(msg), "Autofire %d: Off", player + 1);
+
+    S9xSetInfoString(msg);
+}
+
+static void ChangeTurboRate (int d)
+{
+    static char    msg[64];
+
+    macFastForwardRate += d;
+    if (macFastForwardRate < 1)
+        macFastForwardRate = 1;
+    else
+    if (macFastForwardRate > 15)
+        macFastForwardRate = 15;
+
+    snprintf(msg, sizeof(msg), "Turbo Rate: %d", macFastForwardRate);
+    S9xSetInfoString(msg);
+}
+
 void GetGameScreenPointer (int16 *x, int16 *y, bool fullmouse)
 {
-//    int    ph;
-//
-//    ph = !drawoverscan ? ((IPPU.RenderedScreenHeight > 256) ? IPPU.RenderedScreenHeight : (IPPU.RenderedScreenHeight << 1)) : (SNES_HEIGHT_EXTENDED << 1);
-//
-//    if (fullscreen)
-//    {
-//        if (glstretch)
-//        {
-//            float   fpw = (float) glScreenH / (float) ph * 512.0f;
-//
-//            scopeViewInfo.width      = (int) (fpw + ((float) glScreenW - fpw) * (float) macAspectRatio / 10000.0);
-//            scopeViewInfo.height     = glScreenH;
-//            scopeViewInfo.globalLeft = (int) glScreenBounds.origin.x + ((glScreenW - scopeViewInfo.width) >> 1);
-//            scopeViewInfo.globalTop  = (int) glScreenBounds.origin.y;
-//        }
-//        else
-//        {
-//            scopeViewInfo.width      = 512;
-//            scopeViewInfo.height     = ph;
-//            scopeViewInfo.globalLeft = (int) glScreenBounds.origin.x + ((glScreenW - 512) >> 1);
-//            scopeViewInfo.globalTop  = (int) glScreenBounds.origin.y + ((glScreenH - ph ) >> 1);
-//        }
-//    }
-//    else
-//    {
-//        Rect    rct;
-//
-//        GetWindowBounds(gWindow, kWindowContentRgn, &rct);
-//
-//        int    ww = rct.right  - rct.left,
-//            wh = rct.bottom - rct.top;
-//
-//        scopeViewInfo.width      = ww;
-//        scopeViewInfo.globalLeft = rct.left;
-//
-//        if (windowExtend)
-//        {
-//            scopeViewInfo.height    = ph * wh / kMacWindowHeight;
-//            scopeViewInfo.globalTop = rct.top + ((kMacWindowHeight - ph) >> 1) * wh / kMacWindowHeight;
-//        }
-//        else
-//        {
-//            scopeViewInfo.height    = wh;
-//            scopeViewInfo.globalTop = rct.top;
-//        }
-//    }
-//
-//    if (!fullmouse)
-//    {
-//        Point    pos;
-//
-//        GetGlobalMouse(&pos);
-//
-//        *x = (int16) (((float) (pos.h - scopeViewInfo.globalLeft)) / ((float) scopeViewInfo.width ) * (float) IPPU.RenderedScreenWidth);
-//        *y = (int16) (((float) (pos.v - scopeViewInfo.globalTop )) / ((float) scopeViewInfo.height) * (float) (!drawoverscan ? IPPU.RenderedScreenHeight : SNES_HEIGHT_EXTENDED));
-//    }
-//    else
-//    {
-//        *x = (int16) (unlimitedCursor.x / (float) scopeViewInfo.width  * (float) IPPU.RenderedScreenWidth);
-//        *y = (int16) (unlimitedCursor.y / (float) scopeViewInfo.height * (float) (!drawoverscan ? IPPU.RenderedScreenHeight : SNES_HEIGHT_EXTENDED));
-//    }
+    int    ph;
+
+    ph = !drawoverscan ? ((IPPU.RenderedScreenHeight > 256) ? IPPU.RenderedScreenHeight : (IPPU.RenderedScreenHeight << 1)) : (SNES_HEIGHT_EXTENDED << 1);
+
+    if (fullscreen)
+    {
+        if (glstretch)
+        {
+            float   fpw = (float) glScreenH / (float) ph * 512.0f;
+
+            scopeViewInfo.width      = (int) (fpw + ((float) glScreenW - fpw) * (float) macAspectRatio / 10000.0);
+            scopeViewInfo.height     = glScreenH;
+            scopeViewInfo.globalLeft = (int) glScreenBounds.origin.x + ((glScreenW - scopeViewInfo.width) >> 1);
+            scopeViewInfo.globalTop  = (int) glScreenBounds.origin.y;
+        }
+        else
+        {
+            scopeViewInfo.width      = 512;
+            scopeViewInfo.height     = ph;
+            scopeViewInfo.globalLeft = (int) glScreenBounds.origin.x + ((glScreenW - 512) >> 1);
+            scopeViewInfo.globalTop  = (int) glScreenBounds.origin.y + ((glScreenH - ph ) >> 1);
+        }
+    }
+    else
+    {
+        CGRect frame = s9xView.frame;
+        frame = [s9xView convertRect:frame toView:nil];
+        frame = [s9xView.window convertRectToScreen:frame];
+
+        scopeViewInfo.width      = frame.size.width;
+        scopeViewInfo.globalLeft = frame.origin.x;
+
+        if (windowExtend)
+        {
+            scopeViewInfo.height    = ph * frame.size.height / kMacWindowHeight;
+            scopeViewInfo.globalTop = frame.origin.y + ((kMacWindowHeight - ph) >> 1) * frame.size.height / kMacWindowHeight;
+        }
+        else
+        {
+            scopeViewInfo.height    = frame.size.height;
+            scopeViewInfo.globalTop = frame.origin.y;
+        }
+    }
+
+    if (!fullmouse)
+    {
+        CGPoint point = [NSEvent mouseLocation];
+
+        *x = (int16) (((float) (point.x - scopeViewInfo.globalLeft)) / ((float) scopeViewInfo.width ) * (float) IPPU.RenderedScreenWidth);
+        *y = (int16) (((float) (point.y - scopeViewInfo.globalTop )) / ((float) scopeViewInfo.height) * (float) (!drawoverscan ? IPPU.RenderedScreenHeight : SNES_HEIGHT_EXTENDED));
+    }
+    else
+    {
+        *x = (int16) (unlimitedCursor.x / (float) scopeViewInfo.width  * (float) IPPU.RenderedScreenWidth);
+        *y = (int16) (unlimitedCursor.y / (float) scopeViewInfo.height * (float) (!drawoverscan ? IPPU.RenderedScreenHeight : SNES_HEIGHT_EXTENDED));
+    }
 }
 
 static void Initialize (void)
@@ -3037,11 +2902,7 @@ static void Initialize (void)
 	InitMacSound();
 	SetUpHID();
 
-	RegisterHelpBook();
-
 	InitRecentItems();
-	InitRecentMenu();
-	//BuildRecentMenu();
 
 	InitMultiCart();
 
@@ -3078,7 +2939,6 @@ static void Deinitialize (void)
 	deviceSetting = deviceSettingMaster;
 
 	DeinitMultiCart();
-	DeinitRecentMenu();
 	DeinitRecentItems();
 	SavePrefs();
 	ReleaseHID();
@@ -3094,7 +2954,7 @@ static void Deinitialize (void)
 	Memory.Deinit();
 }
 
-uint64 GetMicroseconds()
+uint64 GetMicroseconds(void)
 {
     uint64 ms = mach_absolute_time();
     ms *= machTimeNumerator;
@@ -3271,3 +3131,136 @@ void QuitWithFatalError ( NSString *message)
     [alert runModal];
     [NSApp terminate:nil];
 }
+
+@interface S9xView : NSOpenGLView
+@end
+
+@implementation S9xView
+
++ (void)initialize
+{
+    keyLock = OS_UNFAIR_LOCK_INIT;
+}
+
+- (void)keyDown:(NSEvent *)event
+{
+    os_unfair_lock_lock(&keyLock);
+    pressedKeys[event.keyCode] = true;
+    os_unfair_lock_unlock(&keyLock);
+}
+
+- (void)keyUp:(NSEvent *)event
+{
+    os_unfair_lock_lock(&keyLock);
+    pressedKeys[event.keyCode] = false;
+    os_unfair_lock_unlock(&keyLock);
+}
+
+- (BOOL)acceptsFirstResponder
+{
+    return YES;
+}
+
+- (BOOL)canBecomeKeyView
+{
+    return YES;
+}
+
+@end
+
+@implementation S9xEngine
+
+- (instancetype)init
+{
+    if (self = [super init])
+    {
+        Initialize();
+
+        CGRect frame = NSMakeRect(0, 0, SNES_WIDTH * 2.0, kMacWindowHeight);
+        s9xView = [[S9xView alloc] initWithFrame:frame pixelFormat:nil];
+        s9xView.wantsLayer = YES;
+        s9xView.layer.backgroundColor = NSColor.blackColor.CGColor;
+        NSWindow *window = [[NSWindow alloc] initWithContentRect:frame styleMask:NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable backing:NSBackingStoreBuffered defer:NO];
+        window.contentView = s9xView;
+        window.title = @"Snes9x";
+
+        [window center];
+        [window makeKeyAndOrderFront:self];
+    }
+
+    return self;
+}
+
+- (void)dealloc
+{
+    Deinitialize();
+}
+
+- (void) start
+{
+    NSLog(@"Starting");
+    if (!finished)
+    {
+#ifdef DEBUGGER
+        CPU.Flags |= DEBUG_MODE_FLAG;
+        S9xDoDebug();
+#endif
+
+        lastFrame = GetMicroseconds();
+        frameCount = 0;
+        if (macFrameSkip < 0)
+            skipFrames = 3;
+        else
+            skipFrames = macFrameSkip;
+
+        S9xInitDisplay(NULL, NULL);
+        ClearGFXScreen();
+
+        [NSThread detachNewThreadWithBlock:^
+        {
+            MacSnes9xThread(NULL);
+
+            dispatch_sync(dispatch_get_main_queue(), ^
+            {
+                if (!Settings.NetPlay || Settings.NetPlayServer)
+                {
+                    SNES9X_SaveSRAM();
+                    S9xResetSaveTimer(false);
+                    S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
+                }
+
+                S9xDeinitDisplay();
+
+                if (Settings.NetPlay)
+                {
+                    if (!Settings.NetPlayServer)
+                    {
+                        //                        DeinitGameWindow();
+                        cartOpen = false;
+                    }
+
+                    Settings.NetPlay = false;
+                    Settings.NetPlayServer = false;
+                }
+
+                if (!finished)
+                {
+                    [self start];
+                }
+            });
+        }];
+    }
+}
+
+- (void)loadROM:(NSURL *)fileURL
+{
+    if ( SNES9X_OpenCart(fileURL) )
+    {
+        SNES9X_Go();
+        s9xView.window.title = fileURL.lastPathComponent.stringByDeletingPathExtension;
+        [s9xView.window makeKeyAndOrderFront:nil];
+        [self start];
+    }
+}
+
+@end

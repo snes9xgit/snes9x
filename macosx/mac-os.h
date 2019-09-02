@@ -15,11 +15,16 @@
   (c) Copyright 2004         Alexander and Sander
   (c) Copyright 2004 - 2005  Steven Seeger
   (c) Copyright 2005         Ryan Vogt
+  (c) Copyright 2019         Michael Donald Buckley
  ***********************************************************************************/
 
 
 #ifndef _mac_os_h_
 #define _mac_os_h_
+
+#import <os/lock.h>
+
+@class NSOpenGLView;
 
 enum
 {
@@ -107,6 +112,7 @@ typedef struct
 #define kMacWindowHeight	(SNES_HEIGHT_EXTENDED << 1)
 #define	MAC_MAX_PLAYERS		8
 #define MAC_MAX_CHEATS      150
+#define MAC_NUM_KEYCODES	255
 
 extern volatile bool8	running, s9xthreadrunning;
 extern volatile bool8	eventQueued, windowExtend;
@@ -114,8 +120,7 @@ extern volatile int		windowResizeCount;
 extern uint32			controlPad[MAC_MAX_PLAYERS];
 extern uint8			romDetect, interleaveDetect, videoDetect, headerDetect;
 extern WindowRef		gWindow;
-extern HIRect			gWindowRect;
-extern int				glScreenW, glScreenH;
+extern uint32			glScreenW, glScreenH;
 extern CGRect			glScreenBounds;
 extern Point			windowPos[kWindowCount];
 extern CGSize			windowSize[kWindowCount];
@@ -158,6 +163,11 @@ extern CFStringRef		multiCartPath[2];
 extern IconRef			macIconRef[118];
 #endif
 
+extern bool8			pressedKeys[MAC_NUM_KEYCODES];
+extern os_unfair_lock	keyLock;
+
+extern NSOpenGLView		*s9xView;
+
 void AddRecentItem (NSURL *);
 void AdjustMenus (void);
 void UpdateMenuCommandStatus (Boolean);
@@ -167,6 +177,14 @@ void ChangeInputDevice (void);
 void GetGameScreenPointer (int16 *, int16 *, bool);
 void PostQueueToSubEventLoop (void);
 int PromptFreezeDefrost (Boolean);
-uint64 GetMicroseconds();
+uint64 GetMicroseconds(void);
+
+@interface S9xEngine : NSObject
+
+- (void)start;
+
+- (void)loadROM:(NSURL *)fileURL;
+
+@end
 
 #endif

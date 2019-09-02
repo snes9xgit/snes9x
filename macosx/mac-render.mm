@@ -15,8 +15,10 @@
   (c) Copyright 2004         Alexander and Sander
   (c) Copyright 2004 - 2005  Steven Seeger
   (c) Copyright 2005         Ryan Vogt
+  (c) Copyright 2019         Michael Donald Buckley
  ***********************************************************************************/
 
+#import <Cocoa/Cocoa.h>
 
 #include "snes9x.h"
 #include "memmap.h"
@@ -47,10 +49,8 @@ static void S9xInitFullScreen (void);
 static void S9xDeinitFullScreen (void);
 static void S9xInitWindowMode (void);
 static void S9xDeinitWindowMode (void);
-static void S9xInitOpenGLFullScreen (void);
-static void S9xDeinitOpenGLFullScreen (void);
-static void S9xInitOpenGLWindowMode (void);
-static void S9xDeinitOpenGLWindowMode (void);
+static void S9xInitOpenGL (void);
+static void S9xDeinitOpenGL(void);
 static void S9xInitBlitGL (void);
 static void S9xDeinitBlitGL (void);
 static void S9xInitOpenGLContext (void);
@@ -64,9 +64,6 @@ static void GLMakeScreenMesh (GLfloat *, int, int);
 static void GLMakeTextureMesh (GLfloat *, int, int, float, float);
 static void GLPrepareTexture (bool8, int, int, int, int, int, int);
 static inline void RenderBlitScreen (Blitter, int, int, int, int, int, uint16 *);
-#ifndef MAC_LEOPARD_TIGER_PANTHER_SUPPORT
-static void SetBestDisplayMode (int, int);
-#endif
 
 enum
 {
@@ -144,8 +141,6 @@ static uint16				*gfxScreen[2],
 							*snesScreenB;
 static uint8				*blitGLBuffer;
 
-static CGDirectDisplayID	gGameDisplayID;
-
 static MPTaskID				taskID            = NULL;
 static MPQueueID			notificationQueue = NULL,
 							taskQueue         = NULL;
@@ -153,17 +148,7 @@ static MPSemaphoreID		readySemaphore    = NULL;
 static MPData				*mpBlit           = NULL;
 
 static OpenGLData			OpenGL;
-static CGLContextObj		glContext;
-static AGLContext			agContext;
-static CGLPixelFormatObj	cglpix;
-static AGLPixelFormat		aglpix;
-static GLint				glSwapInterval    = 0;
-static GLint				agSwapInterval    = 0;
-#ifdef MAC_LEOPARD_TIGER_PANTHER_SUPPORT
-static CFDictionaryRef		oldDisplayMode;
-#else
-static CGDisplayModeRef		oldDisplayModeRef;
-#endif
+
 static CGImageRef			cgGameImage       = NULL,
 							cgBlitImage       = NULL;
 
@@ -338,252 +323,54 @@ void ClearGFXScreen (void)
 	imageWidth[1] = imageHeight[1] = 0;
 	prevBlitWidth = prevBlitHeight = 0;
 
-	if (fullscreen)
-	{
-		CGLSetCurrentContext(glContext);
-		glViewport(0, 0, glScreenW, glScreenH);
-	}
-	else
-	{
-		aglSetCurrentContext(agContext);
-		aglUpdateContext(agContext);
-		glViewport(0, 0, (GLsizei) gWindowRect.size.width, (GLsizei) gWindowRect.size.height);
-	}
+    CGLSetCurrentContext(s9xView.openGLContext.CGLContextObj);
+    glViewport(0, 0, glScreenW, glScreenH);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	for (int i = 0; i < 2; i++)
 	{
 		glClear(GL_COLOR_BUFFER_BIT);
-
-		if (fullscreen)
-			CGLFlushDrawable(glContext);
-		else
-			aglSwapBuffers(agContext);
+        glSwapAPPLE();
+        //CGLFlushDrawable(s9xView.openGLContext.CGLContextObj);
 	}
 }
-
-#ifndef MAC_LEOPARD_TIGER_PANTHER_SUPPORT
-static void SetBestDisplayMode (int width, int height)
-{
-	if (autoRes || !gl32bit)
-	{
-		CGError				err;
-		CGDisplayModeRef	mode;
-		CFArrayRef			array;
-		CFStringRef			pixenc, pix;
-		CFIndex				n, i;
-		size_t				w, h;
-		bool				r;
-
-		pixenc = gl32bit ? CFSTR(IO32BitDirectPixels) : CFSTR(IO16BitDirectPixels);
-
-		array = CGDisplayCopyAllDisplayModes(gGameDisplayID, NULL);
-		n = CFArrayGetCount(array);
-
-		for (i = 0; i < n; i++)
-		{
-			mode = (CGDisplayModeRef) CFArrayGetValueAtIndex(array, i);
-
-			w   = CGDisplayModeGetWidth(mode);
-			h   = CGDisplayModeGetHeight(mode);
-			pix = CGDisplayModeCopyPixelEncoding(mode);
-			r   = CFStringCompare(pix, pixenc, 0) == kCFCompareEqualTo;
-			CFRelease(pix);
-
-			if (w == (size_t) width && h == (size_t) height && r)
-				break;
-		}
-
-		if (i < n)
-			err = CGDisplaySetDisplayMode(gGameDisplayID, mode, NULL);
-
-		CFRelease(array);
-	}
-}
-#endif
 
 static void S9xInitFullScreen (void)
 {
-	size_t	width, height;
-
-	width  = autoRes ? 640 : CGDisplayPixelsWide(gGameDisplayID);
-	height = autoRes ? 480 : CGDisplayPixelsHigh(gGameDisplayID);
-
-#ifdef MAC_LEOPARD_TIGER_PANTHER_SUPPORT
-	CFDictionaryRef	mode;
-	boolean_t		exactMatch;
-	size_t			depth = gl32bit ? 32 : 16;
-
-	oldDisplayMode = CGDisplayCurrentMode(gGameDisplayID);
-	mode = CGDisplayBestModeForParameters(gGameDisplayID, depth, width, height, &exactMatch);
-	CGDisplayCapture(gGameDisplayID);
-	CGDisplaySwitchToMode(gGameDisplayID, mode);
-#else
-	oldDisplayModeRef = CGDisplayCopyDisplayMode(gGameDisplayID);
-	CGDisplayCapture(gGameDisplayID);
-	SetBestDisplayMode(width, height);
-#endif
-
-	CGDisplayErr		cgErr;
-	CGDisplayCount		numDisplays, maxDisplays = 32;
-	CGDirectDisplayID	activeDisplays[32];
-
-	cgErr = CGGetActiveDisplayList(maxDisplays, activeDisplays, &numDisplays);
-	if (cgErr == noErr)
-	{
-		if ((macControllerOption == SNES_MOUSE) || (macControllerOption == SNES_MOUSE_SWAPPED) || (numDisplays == 1))
-			CGDisplayHideCursor(gGameDisplayID);
-
-		if ((macControllerOption == SNES_MOUSE) || (macControllerOption == SNES_MOUSE_SWAPPED))
-		{
-			CGDisplayMoveCursorToPoint(gGameDisplayID, CGPointMake((float) (width >> 1), (float) (height >> 1)));
-			CGAssociateMouseAndMouseCursorPosition(false);
-		}
-	}
+    [NSCursor hide];
+    CGAssociateMouseAndMouseCursorPosition(false);
 }
 
 static void S9xDeinitFullScreen (void)
 {
 	CGAssociateMouseAndMouseCursorPosition(true);
-	CGDisplayShowCursor(gGameDisplayID);
-
-#ifdef MAC_LEOPARD_TIGER_PANTHER_SUPPORT
-	CGDisplaySwitchToMode(gGameDisplayID, oldDisplayMode);
-#else
-	CGError	err;
-
-	err = CGDisplaySetDisplayMode(gGameDisplayID, oldDisplayModeRef, NULL);
-	CGDisplayModeRelease(oldDisplayModeRef);
-#endif
-
-	CGDisplayRelease(gGameDisplayID);
+    [NSCursor unhide];
 }
 
 static void S9xInitWindowMode (void)
 {
-	Rect	rct;
-	size_t	width, height;
-
-	width  = CGDisplayPixelsWide(gGameDisplayID);
-	height = CGDisplayPixelsHigh(gGameDisplayID);
-
-#ifdef MAC_LEOPARD_TIGER_PANTHER_SUPPORT
-	CFDictionaryRef	mode;
-	boolean_t		exactMatch;
-	size_t			depth = gl32bit ? 32 : 16;
-
-	oldDisplayMode = CGDisplayCurrentMode(gGameDisplayID);
-	mode = CGDisplayBestModeForParameters(gGameDisplayID, depth, width, height, &exactMatch);
-	if (exactMatch)
-		CGDisplaySwitchToMode(gGameDisplayID, mode);
-#else
-	oldDisplayModeRef = CGDisplayCopyDisplayMode(gGameDisplayID);
-	SetBestDisplayMode(width, height);
-#endif
-
-//	InitGameWindow();
-//    ShowWindow(gWindow);
-//
-//    GetWindowBounds(gWindow, kWindowContentRgn, &rct);
-//    gWindowRect = CGRectMake((float) rct.left, (float) rct.top, (float) (rct.right - rct.left), (float) (rct.bottom - rct.top));
-
-	// UpdateGameWindow();
 }
 
 static void S9xDeinitWindowMode (void)
 {
-#ifdef MAC_LEOPARD_TIGER_PANTHER_SUPPORT
-	CGDisplaySwitchToMode(gGameDisplayID, oldDisplayMode);
-#else
-	CGError	err;
-
-	err = CGDisplaySetDisplayMode(gGameDisplayID, oldDisplayModeRef, NULL);
-	CGDisplayModeRelease(oldDisplayModeRef);
-#endif
-
-	// UpdateGameWindow();
 }
 
-static void S9xInitOpenGLFullScreen (void)
+static void S9xInitOpenGL (void)
 {
-	CGOpenGLDisplayMask	displayMask;
-	GLint 				numPixelFormats;
+    GLint glSwapInterval = vsync ? 1 : 0;
+    if (extraOptions.benchmark)
+        glSwapInterval = 0;
+    CGLSetParameter(s9xView.openGLContext.CGLContextObj, kCGLCPSwapInterval, &glSwapInterval);
+    CGLSetCurrentContext(s9xView.openGLContext.CGLContextObj);
 
-	displayMask = CGDisplayIDToOpenGLDisplayMask(gGameDisplayID);
-	CGLPixelFormatAttribute	attribs[] = { (CGLPixelFormatAttribute) kCGLPFAFullScreen,
-										  (CGLPixelFormatAttribute) kCGLPFADoubleBuffer,
-										  (CGLPixelFormatAttribute) kCGLPFAAccelerated,
-										  (CGLPixelFormatAttribute) kCGLPFANoRecovery,
-										  (CGLPixelFormatAttribute) kCGLPFAColorSize,
-										  (CGLPixelFormatAttribute) (gl32bit ? 32 : 16),
-										  (CGLPixelFormatAttribute) kCGLPFADisplayMask,
-										  (CGLPixelFormatAttribute) displayMask,
-										  (CGLPixelFormatAttribute) 0 };
-
-	CGLChoosePixelFormat(attribs, &cglpix, &numPixelFormats);
-	CGLCreateContext(cglpix, NULL, &glContext);
-	glSwapInterval = vsync ? 1 : 0;
-	if (extraOptions.benchmark)
-		glSwapInterval = 0;
-	CGLSetParameter(glContext, kCGLCPSwapInterval, &glSwapInterval);
-	CGLSetCurrentContext(glContext);
-
-#ifdef MAC_LEOPARD_TIGER_PANTHER_SUPPORT
-	CGLSetFullScreen(glContext);
-#else
-	CGLSetFullScreenOnDisplay(glContext, CGDisplayIDToOpenGLDisplayMask(gGameDisplayID));
-#endif
-
-	glScreenW = CGDisplayPixelsWide(gGameDisplayID);
-	glScreenH = CGDisplayPixelsHigh(gGameDisplayID);
+    glScreenW = glScreenBounds.size.width;
+    glScreenH = glScreenBounds.size.height;
 }
 
-static void S9xDeinitOpenGLFullScreen (void)
+static void S9xDeinitOpenGL (void)
 {
-	if (glContext)
-	{
-		CGLSetCurrentContext(NULL);
-		CGLClearDrawable(glContext);
-		CGLDestroyContext(glContext);
-		CGLDestroyPixelFormat(cglpix);
-	}
-}
-
-static void S9xInitOpenGLWindowMode (void)
-{
-	GLint	attribs[] = { AGL_RGBA,
-						  AGL_DOUBLEBUFFER,
-						  AGL_ACCELERATED,
-						  AGL_NO_RECOVERY,
-						  AGL_PIXEL_SIZE, gl32bit ? 32 : 16,
-						  AGL_NONE };
-
-	aglpix = aglChoosePixelFormat(NULL, 0, attribs);
-	agContext = aglCreateContext(aglpix, NULL);
-
-    aglSetWindowRef(agContext, gWindow);
-
-	agSwapInterval = vsync ? 1 : 0;
-	if (extraOptions.benchmark)
-		agSwapInterval = 0;
-	aglSetInteger(agContext, AGL_SWAP_INTERVAL, &agSwapInterval);
-	aglSetCurrentContext(agContext);
-
-    aglGetCGLPixelFormat(aglpix, (void **) &cglpix);
-    aglGetCGLContext(agContext, (void **) &glContext);
-}
-
-static void S9xDeinitOpenGLWindowMode (void)
-{
-	if (agContext)
-	{
-        aglSetWindowRef(agContext, NULL);
-
-		aglSetCurrentContext(NULL);
-		aglDestroyContext(agContext);
-		aglDestroyPixelFormat(aglpix);
-	}
+    CGLSetCurrentContext(NULL);
 }
 
 static void S9xInitBlitGL (void)
@@ -601,9 +388,6 @@ static void S9xDeinitBlitGL (void)
 {
 	if (multiprocessor)
 	{
-		MPNotifyQueue(taskQueue, (void *) kMPBlitDone, 0, 0);
-		MPWaitOnQueue(notificationQueue, NULL, NULL, NULL, kDurationForever);
-		MPDeleteQueue(notificationQueue);
 		notificationQueue = NULL;
 
 		printf("MP: Successfully received terminate signal from BlitGL thread.\n");
@@ -700,8 +484,8 @@ static void GLMakeTextureMesh (GLfloat *vertex2D, int meshx, int meshy, float lx
 static void S9xInitOpenGLContext (void)
 {
 	OpenGL.internal_format = GL_RGB5_A1;
-	OpenGL.format          = GL_BGRA;
-	OpenGL.type            = GL_UNSIGNED_SHORT_1_5_5_5_REV;
+    OpenGL.format          = GL_BGRA;
+    OpenGL.type            = GL_UNSIGNED_SHORT_1_5_5_5_REV;
 	OpenGL.rangeExt        = gluCheckExtension((const GLubyte *) "GL_APPLE_texture_range", glGetString(GL_EXTENSIONS));
 	OpenGL.target          = OpenGL.rangeExt ? GL_TEXTURE_RECTANGLE_EXT : GL_TEXTURE_2D;
 
@@ -805,28 +589,15 @@ static void S9xInitOpenGLContext (void)
 		GLMakeScreenMesh(scScnArray, kSCMeshX, kSCMeshY);
 	}
 
-	if (fullscreen)
-	{
-		CGLSetCurrentContext(glContext);
-		glViewport(0, 0, glScreenW, glScreenH);
-	}
-	else
-	{
-		aglSetCurrentContext(agContext);
-		aglUpdateContext(agContext);
-		glViewport(0, 0, (GLsizei) gWindowRect.size.width, (GLsizei) gWindowRect.size.height);
-	}
+    CGLSetCurrentContext(s9xView.openGLContext.CGLContextObj);
+    glViewport(0, 0, glScreenW, glScreenH);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	for (int i = 0; i < 2; i++)
 	{
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		if (fullscreen)
-			CGLFlushDrawable(glContext);
-		else
-			aglSwapBuffers(agContext);
+        glClear(GL_COLOR_BUFFER_BIT);
+        //CGLFlushDrawable(s9xView.openGLContext.CGLContextObj);
 	}
 }
 
@@ -871,7 +642,7 @@ static void S9xInitCoreImage (void)
 	cgGameImage = NULL;
 	cgBlitImage = NULL;
 
-	InitCoreImageContext(glContext, cglpix);
+	InitCoreImageContext(s9xView.openGLContext.CGLContextObj, s9xView.pixelFormat.CGLPixelFormatObj);
 }
 
 static void S9xDeinitCoreImage (void)
@@ -893,29 +664,10 @@ static void S9xDeinitCoreImage (void)
 
 void GetGameDisplay (int *w, int *h)
 {
-	CGDisplayErr		cgErr;
-	CGDisplayCount		numDisplays, maxDisplays = 32;
-	CGDirectDisplayID	activeDisplays[32];
-	CGPoint				windowAt;
-
-	gGameDisplayID = CGMainDisplayID();
-
-	windowAt = CGPointMake((float) windowPos[kWindowScreen].h, (float) windowPos[kWindowScreen].v);
-
-	cgErr = CGGetDisplaysWithPoint(windowAt, maxDisplays, activeDisplays, &numDisplays);
-	if ((cgErr == noErr) && (numDisplays > 0))
-	{
-		for (unsigned int i = 0; i < numDisplays; i++)
-		{
-			if (activeDisplays[i] != CGMainDisplayID())
-				gGameDisplayID = activeDisplays[i];
-		}
-	}
-
 	if (w != NULL && h != NULL)
 	{
-		*w = CGDisplayPixelsWide(gGameDisplayID);
-		*h = CGDisplayPixelsHigh(gGameDisplayID);
+        *w = s9xView.frame.size.width;
+		*h = s9xView.frame.size.height;
 	}
 }
 
@@ -924,9 +676,7 @@ void S9xInitDisplay (int argc, char **argv)
 	if (directDisplay)
 		return;
 
-	GetGameDisplay(NULL, NULL);
-
-	glScreenBounds = CGDisplayBounds(gGameDisplayID);
+    glScreenBounds = s9xView.frame;
 
 	unlimitedCursor = CGPointMake(0.0f, 0.0f);
 
@@ -969,13 +719,13 @@ void S9xInitDisplay (int argc, char **argv)
 	if (fullscreen)
 	{
 		S9xInitFullScreen();
-		S9xInitOpenGLFullScreen();
 	}
 	else
 	{
 		S9xInitWindowMode();
-		S9xInitOpenGLWindowMode();
 	}
+
+    S9xInitOpenGL();
 
 	S9xInitOpenGLContext();
 	if (ciFilterEnable)
@@ -984,7 +734,7 @@ void S9xInitDisplay (int argc, char **argv)
 		S9xInitBlitGL();
 
 	S9xSetSoundMute(false);
-	Microseconds((UnsignedWide *) &lastFrame);
+    lastFrame = GetMicroseconds();
 
 	windowResizeCount = 1;
 
@@ -1008,14 +758,14 @@ void S9xDeinitDisplay (void)
 
 	if (fullscreen)
 	{
-		S9xDeinitOpenGLFullScreen();
 		S9xDeinitFullScreen();
 	}
 	else
 	{
-		S9xDeinitOpenGLWindowMode();
 		S9xDeinitWindowMode();
 	}
+
+    S9xDeinitOpenGL();
 
 	directDisplay = false;
 }
@@ -1239,39 +989,29 @@ static void S9xPutImageOpenGL (int width, int height)
 
 		int	vh = (height > 256) ? height : (height << 1);
 
-		if (fullscreen)
-		{
-			CGLSetCurrentContext(glContext);
+        CGLSetCurrentContext(s9xView.openGLContext.CGLContextObj);
 
-			glViewport(0, 0, glScreenW, glScreenH);
-			glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-			glClear(GL_COLOR_BUFFER_BIT);
+        glViewport(0, 0, glScreenW, glScreenH);
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-			if (glstretch)
-			{
-				float   fpw = (float) glScreenH / vh * 512.0f;
-				int		pw  = (int) (fpw + ((float) glScreenW - fpw) * (float) macAspectRatio / 10000.0);
+        if ( fullscreen )
+        {
+            if (glstretch)
+            {
+                float   fpw = (float) glScreenH / vh * 512.0f;
+                int		pw  = (int) (fpw + ((float) glScreenW - fpw) * (float) macAspectRatio / 10000.0);
 
-				glViewport((glScreenW - pw) >> 1, 0, pw, glScreenH);
-			}
-			else
-				glViewport((glScreenW - 512) >> 1, (glScreenH - vh) >> 1, 512, vh);
-		}
-		else
-		{
-			int	ww = (int) gWindowRect.size.width,
-				wh = (int) gWindowRect.size.height;
-
-			aglSetCurrentContext(agContext);
-			aglUpdateContext(agContext);
-
-			glViewport(0, 0, ww, wh);
-			glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-			glClear(GL_COLOR_BUFFER_BIT);
-
-			if (windowExtend)
-				glViewport(0, ((kMacWindowHeight - vh) >> 1) * wh / kMacWindowHeight, ww, vh * wh / kMacWindowHeight);
-		}
+                glViewport((glScreenW - pw) >> 1, 0, pw, glScreenH);
+            }
+            else
+                glViewport((glScreenW - 512) >> 1, (glScreenH - vh) >> 1, 512, vh);
+        }
+        else
+        {
+            if (windowExtend)
+                glViewport(0, ((kMacWindowHeight - vh) >> 1) * glScreenH / kMacWindowHeight, glScreenW, vh * glScreenH / kMacWindowHeight);
+        }
 
 		glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
 
@@ -1350,10 +1090,8 @@ static void S9xPutImageOpenGL (int width, int height)
 		DrawWithCoreImageFilter(src, cgGameImage);
 	}
 
-	if (fullscreen)
-		CGLFlushDrawable(glContext);
-	else
-		aglSwapBuffers(agContext);
+    //CGLFlushDrawable(s9xView.openGLContext.CGLContextObj);
+    glSwapAPPLE();
 }
 
 static void S9xPutImageBlitGL (int width, int height)
@@ -1532,58 +1270,37 @@ static void S9xPutImageBlitGL2 (int blit_width, int blit_height)
 
 	if (windowResizeCount > 0)
 	{
-		if (fullscreen)
-		{
-			CGLSetCurrentContext(glContext);
+        CGLSetCurrentContext(s9xView.openGLContext.CGLContextObj);
 
-			glViewport(0, 0, glScreenW, glScreenH);
-			glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-			glClear(GL_COLOR_BUFFER_BIT);
+        glViewport(0, 0, glScreenW, glScreenH);
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-			if (glstretch)
-			{
-				int		sh  = (blit_width < blit_height) ? (blit_height >> 1) : ((blit_width > blit_height * 2) ? (blit_height << 1) : blit_height);
-				float	fpw = (float) glScreenH / (float) sh * (float) blit_width;
-				int		pw  = (int) (fpw + ((float) glScreenW - fpw) * (float) macAspectRatio / 10000.0);
+        if (glstretch)
+        {
+            int		sh  = (blit_width < blit_height) ? (blit_height >> 1) : ((blit_width > blit_height * 2) ? (blit_height << 1) : blit_height);
+            float	fpw = (float) glScreenH / (float) sh * (float) blit_width;
+            int		pw  = (int) (fpw + ((float) glScreenW - fpw) * (float) macAspectRatio / 10000.0);
 
-				glViewport((glScreenW - pw) >> 1, 0, pw, glScreenH);
-			}
-			else
-			{
-				int		sw, sh;
+            glViewport((glScreenW - pw) >> 1, 0, pw, glScreenH);
+        }
+        else
+        {
+            int		sw, sh;
 
-				if (nx < 0)
-				{
-					sw = ntsc_width;
-					sh = ((blit_height % SNES_HEIGHT) ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT) * 2;
-				}
-				else
-				{
-					sw = SNES_WIDTH * nx;
-					sh = ((blit_height % SNES_HEIGHT) ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT) * nx;
-				}
+            if (nx < 0)
+            {
+                sw = ntsc_width;
+                sh = ((blit_height % SNES_HEIGHT) ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT) * 2;
+            }
+            else
+            {
+                sw = SNES_WIDTH * nx;
+                sh = ((blit_height % SNES_HEIGHT) ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT) * nx;
+            }
 
-				glViewport((glScreenW - sw) >> 1, (glScreenH - sh) >> 1, sw, sh);
-			}
-		}
-		else
-		{
-			int	ww = (int) gWindowRect.size.width,
-				wh = (int) gWindowRect.size.height;
-
-			aglSetCurrentContext(agContext);
-			aglUpdateContext(agContext);
-
-			glViewport(0, 0, ww, wh);
-			glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-			glClear(GL_COLOR_BUFFER_BIT);
-
-			if (windowExtend)
-			{
-				int	bh = (blit_height % SNES_HEIGHT) ? (SNES_HEIGHT_EXTENDED << 1) : (SNES_HEIGHT << 1);
-				glViewport(0, ((kMacWindowHeight - bh) >> 1) * wh / kMacWindowHeight, ww, bh * wh / kMacWindowHeight);
-			}
-		}
+            glViewport((glScreenW - sw) >> 1, (glScreenH - sh) >> 1, sw, sh);
+        }
 
 		if (!ciFilterEnable)
 		{
@@ -1717,10 +1434,8 @@ static void S9xPutImageBlitGL2 (int blit_width, int blit_height)
 		DrawWithCoreImageFilter(src, cgBlitImage);
 	}
 
-	if (fullscreen)
-		CGLFlushDrawable(glContext);
-	else
-		aglSwapBuffers(agContext);
+    //CGLFlushDrawable(s9xView.openGLContext.CGLContextObj);
+    glSwapAPPLE();
 }
 
 void S9xTextMode (void)

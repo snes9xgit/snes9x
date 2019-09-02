@@ -15,6 +15,7 @@
   (c) Copyright 2004         Alexander and Sander
   (c) Copyright 2004 - 2005  Steven Seeger
   (c) Copyright 2005         Ryan Vogt
+  (c) Copyright 2019         Michael Donald Buckley
  ***********************************************************************************/
 
 
@@ -43,11 +44,6 @@ int	cureffect = kAUReverb;
 static AUGraph				agraph;
 static AUNode				outNode, cnvNode, revNode, eqlNode;
 static AudioUnit			outAU, cnvAU, revAU, eqlAU;
-static AudioUnitCarbonView	carbonView         = NULL;
-static EventHandlerUPP		carbonViewEventUPP = NULL;
-static EventHandlerRef		carbonViewEventRef = NULL;
-static WindowRef			effectWRef;
-static HISize				effectWSize;
 static pthread_mutex_t		mutex;
 static UInt32				outStoredFrames, cnvStoredFrames, revStoredFrames, eqlStoredFrames, devStoredFrames;
 static int16_t				*audioBuffer;
@@ -73,11 +69,7 @@ void InitMacSound (void)
 
 	err = NewAUGraph(&agraph);
 
-#ifndef MAC_LEOPARD_TIGER_PANTHER_SUPPORT
 	AudioComponentDescription	outdesc, cnvdesc, revdesc, eqldesc;
-#else
-	ComponentDescription		outdesc, cnvdesc, revdesc, eqldesc;
-#endif
 
 	outdesc.componentType         = kAudioUnitType_Output;
 	outdesc.componentSubType      = kAudioUnitSubType_DefaultOutput;
@@ -103,31 +95,18 @@ void InitMacSound (void)
 	eqldesc.componentFlags        = 0;
 	eqldesc.componentFlagsMask    = 0;
 
-#ifndef MAC_LEOPARD_TIGER_PANTHER_SUPPORT
 	err = AUGraphAddNode(agraph, &outdesc, &outNode);
 	err = AUGraphAddNode(agraph, &cnvdesc, &cnvNode);
 	err = AUGraphAddNode(agraph, &revdesc, &revNode);
 	err = AUGraphAddNode(agraph, &eqldesc, &eqlNode);
-#else
-	err = AUGraphNewNode(agraph, &outdesc, 0, NULL, &outNode);
-	err = AUGraphNewNode(agraph, &cnvdesc, 0, NULL, &cnvNode);
-	err = AUGraphNewNode(agraph, &revdesc, 0, NULL, &revNode);
-	err = AUGraphNewNode(agraph, &eqldesc, 0, NULL, &eqlNode);
-#endif
 
 	err = AUGraphOpen(agraph);
 
-#ifndef MAC_LEOPARD_TIGER_PANTHER_SUPPORT
 	err = AUGraphNodeInfo(agraph, outNode, NULL, &outAU);
 	err = AUGraphNodeInfo(agraph, cnvNode, NULL, &cnvAU);
 	err = AUGraphNodeInfo(agraph, revNode, NULL, &revAU);
 	err = AUGraphNodeInfo(agraph, eqlNode, NULL, &eqlAU);
-#else
-	err = AUGraphGetNodeInfo(agraph, outNode, NULL, NULL, NULL, &outAU);
-	err = AUGraphGetNodeInfo(agraph, cnvNode, NULL, NULL, NULL, &cnvAU);
-	err = AUGraphGetNodeInfo(agraph, revNode, NULL, NULL, NULL, &revAU);
-	err = AUGraphGetNodeInfo(agraph, eqlNode, NULL, NULL, NULL, &eqlAU);
-#endif
+
 
 	SetAudioUnitSoundFormat();
 	SetAudioUnitVolume();

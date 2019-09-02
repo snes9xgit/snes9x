@@ -15,6 +15,7 @@
   (c) Copyright 2004         Alexander and Sander
   (c) Copyright 2004 - 2005  Steven Seeger
   (c) Copyright 2005         Ryan Vogt
+  (c) Copyright 2019         Michael Donald Buckley
  ***********************************************************************************/
 
 
@@ -128,7 +129,7 @@ void CocoaAddPopUpBtnToView (NSView *view, NSArray *array, float x, float y, flo
 {
 	NSPopUpButton	*control;
 	NSMenu			*menu;
-	int				n;
+	NSUInteger		n;
 
 	menu = [[NSMenu alloc] init];
 
