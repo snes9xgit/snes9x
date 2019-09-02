@@ -778,7 +778,9 @@ bool8 S9xInitUpdate (void)
 bool8 S9xDeinitUpdate (int width, int height)
 {
 	if (directDisplay)
-		S9xPutImage(width, height);
+        dispatch_async(dispatch_get_main_queue(),^{
+            [s9xView setNeedsDisplay:YES];
+        });
 
 	return (true);
 }
@@ -1010,7 +1012,7 @@ static void S9xPutImageOpenGL (int width, int height)
         else
         {
             if (windowExtend)
-                glViewport(0, ((kMacWindowHeight - vh) >> 1) * glScreenH / kMacWindowHeight, glScreenW, vh * glScreenH / kMacWindowHeight);
+                glViewport(0, ((glScreenH - vh) >> 1), glScreenW, vh);
         }
 
 		glPixelStorei(GL_UNPACK_ROW_LENGTH, width);

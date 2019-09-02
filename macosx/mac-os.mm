@@ -21,6 +21,12 @@
 #import <Cocoa/Cocoa.h>
 #import <mach/mach_time.h>
 
+#include <OpenGL/OpenGL.h>
+#include <OpenGL/CGLRenderers.h>
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#include <OpenGL/glext.h>
+
 #import "snes9x.h"
 #import "memmap.h"
 #import "apu.h"
@@ -172,6 +178,7 @@ IconRef				macIconRef[118];
 
 bool8               pressedKeys[MAC_NUM_KEYCODES];
 os_unfair_lock      keyLock;
+os_unfair_lock      renderLock;
 
 NSOpenGLView        *s9xView;
 
@@ -431,7 +438,11 @@ static inline void EmulationLoop (void)
             ProcessInput();
 
             if (!pauseEmulation)
+            {
+                os_unfair_lock_lock(&renderLock);
                 S9xMainLoop();
+                os_unfair_lock_unlock(&renderLock);
+            }
             else
             {
                 if (frameAdvance)
@@ -439,7 +450,9 @@ static inline void EmulationLoop (void)
                     macFrameSkip = 1;
                     skipFrames = 1;
                     frameAdvance = false;
+                    os_unfair_lock_lock(&renderLock);
                     S9xMainLoop();
+                    os_unfair_lock_unlock(&renderLock);
                     macFrameSkip = storedMacFrameSkip;
                 }
 
@@ -2299,7 +2312,9 @@ static void ProcessInput (void)
         while (ISpKeyIsPressed(kISpFreeze));
 
         isok = SNES9X_Freeze();
+        os_unfair_lock_lock(&renderLock);
         ClearGFXScreen();
+        os_unfair_lock_unlock(&renderLock);
         return;
     }
 
@@ -2309,7 +2324,9 @@ static void ProcessInput (void)
         while (ISpKeyIsPressed(kISpDefrost));
 
         isok = SNES9X_Defrost();
+        os_unfair_lock_lock(&renderLock);
         ClearGFXScreen();
+        os_unfair_lock_unlock(&renderLock);
         return;
     }
 
@@ -2542,7 +2559,9 @@ static void ProcessInput (void)
                 CopyPressedKeys(myKeys);
 
             isok = SNES9X_Freeze();
+            os_unfair_lock_lock(&renderLock);
             ClearGFXScreen();
+            os_unfair_lock_unlock(&renderLock);
             return;
         }
 
@@ -2553,7 +2572,9 @@ static void ProcessInput (void)
                 CopyPressedKeys(myKeys);
 
             isok = SNES9X_Defrost();
+            os_unfair_lock_lock(&renderLock);
             ClearGFXScreen();
+            os_unfair_lock_unlock(&renderLock);
             return;
         }
 
@@ -3140,6 +3161,7 @@ void QuitWithFatalError ( NSString *message)
 + (void)initialize
 {
     keyLock = OS_UNFAIR_LOCK_INIT;
+    renderLock = OS_UNFAIR_LOCK_INIT;
 }
 
 - (void)keyDown:(NSEvent *)event
@@ -3154,6 +3176,15 @@ void QuitWithFatalError ( NSString *message)
     os_unfair_lock_lock(&keyLock);
     pressedKeys[event.keyCode] = false;
     os_unfair_lock_unlock(&keyLock);
+}
+
+- (void)drawRect:(NSRect)dirtyRect
+{
+    os_unfair_lock_lock(&renderLock);
+    glScreenW = self.frame.size.width;
+    glScreenH = self.frame.size.height;
+    S9xPutImage(IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight);
+    os_unfair_lock_unlock(&renderLock);
 }
 
 - (BOOL)acceptsFirstResponder
@@ -3178,9 +3209,7 @@ void QuitWithFatalError ( NSString *message)
 
         CGRect frame = NSMakeRect(0, 0, SNES_WIDTH * 2.0, kMacWindowHeight);
         s9xView = [[S9xView alloc] initWithFrame:frame pixelFormat:nil];
-        s9xView.wantsLayer = YES;
-        s9xView.layer.backgroundColor = NSColor.blackColor.CGColor;
-        NSWindow *window = [[NSWindow alloc] initWithContentRect:frame styleMask:NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable backing:NSBackingStoreBuffered defer:NO];
+        NSWindow *window = [[NSWindow alloc] initWithContentRect:frame styleMask:NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable|NSWindowStyleMaskResizable backing:NSBackingStoreBuffered defer:NO];
         window.contentView = s9xView;
         window.title = @"Snes9x";
 
@@ -3214,7 +3243,9 @@ void QuitWithFatalError ( NSString *message)
             skipFrames = macFrameSkip;
 
         S9xInitDisplay(NULL, NULL);
+        os_unfair_lock_lock(&renderLock);
         ClearGFXScreen();
+        os_unfair_lock_unlock(&renderLock);
 
         [NSThread detachNewThreadWithBlock:^
         {

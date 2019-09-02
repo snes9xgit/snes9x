@@ -22,9 +22,9 @@
 #ifndef _mac_os_h_
 #define _mac_os_h_
 
-#import <os/lock.h>
+#import <Cocoa/Cocoa.h>
 
-@class NSOpenGLView;
+#import <os/lock.h>
 
 enum
 {
