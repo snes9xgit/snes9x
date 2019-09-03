@@ -125,7 +125,7 @@ bool8				fullscreen          = false,
 					multiprocessor      = false,
 					ciFilterEnable      = false;
 long				drawingMethod       = kDrawingOpenGL;
-int					videoMode           = VIDEOMODE_SMOOTH;
+int					videoMode           = VIDEOMODE_BLOCKY;
 
 SInt32				macSoundVolume      = 80;	// %
 uint32				macSoundBuffer_ms   = 80;	// ms
