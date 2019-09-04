@@ -3062,6 +3062,14 @@ void QuitWithFatalError ( NSString *message)
     os_unfair_lock_unlock(&renderLock);
 }
 
+- (void)setFrame:(NSRect)frame
+{
+    if ( !NSEqualRects(frame, self.frame) )
+    {
+        windowResizeCount = 2;
+    }
+}
+
 - (BOOL)acceptsFirstResponder
 {
     return YES;
@@ -3084,6 +3092,7 @@ void QuitWithFatalError ( NSString *message)
 
         CGRect frame = NSMakeRect(0, 0, SNES_WIDTH * 2.0, kMacWindowHeight);
         s9xView = [[S9xView alloc] initWithFrame:frame pixelFormat:nil];
+        s9xView.autoresizingMask = NSViewWidthSizable|NSViewHeightSizable;
         NSWindow *window = [[NSWindow alloc] initWithContentRect:frame styleMask:NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable|NSWindowStyleMaskResizable backing:NSBackingStoreBuffered defer:NO];
         window.contentView = s9xView;
         window.title = @"Snes9x";
