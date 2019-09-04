@@ -106,9 +106,6 @@ bool8 SNES9X_OpenCart (NSURL *inRef)
 
 		ChangeTypeAndCreator(filename, 'CART', '~9X~');
 
-		AddRecentItem(cartRef);
-		//BuildRecentMenu();
-
 		ApplyNSRTHeaderControllers();
 
 		for (int a = 0; a < MAC_MAX_PLAYERS; a++)

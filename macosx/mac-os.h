@@ -168,7 +168,6 @@ extern os_unfair_lock	keyLock;
 
 extern NSOpenGLView		*s9xView;
 
-void AddRecentItem (NSURL *);
 void AdjustMenus (void);
 void UpdateMenuCommandStatus (Boolean);
 void ApplyNSRTHeaderControllers (void);
@@ -183,7 +182,7 @@ uint64 GetMicroseconds(void);
 
 - (void)start;
 
-- (void)loadROM:(NSURL *)fileURL;
+- (BOOL)loadROM:(NSURL *)fileURL;
 
 @end
 

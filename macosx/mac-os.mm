@@ -335,9 +335,6 @@ static ButtonCommand	btncmd[] =
 static void Initialize (void);
 static void Deinitialize (void);
 static void InitAutofire (void);
-static void InitRecentItems (void);
-static void DeinitRecentItems (void);
-static void ClearRecentItems (void);
 static void ProcessInput (void);
 static void ResizeGameWindow (void);
 static void ChangeAutofireSettings (int, int);
@@ -999,125 +996,6 @@ static inline void EmulationLoop (void)
 //    return (result);
 //}
 //
-static void InitRecentItems (void)
-{
-    CFStringRef    keyRef, pathRef;
-    int            count;
-    char        key[32];
-
-    count = 0;
-
-    for (int i = 0; i <= kRecentMenu_MAX; i++)
-        recentItem[i] = NULL;
-
-    for (int i = 0; i <  kRecentMenu_MAX; i++)
-    {
-        sprintf(key, "RecentItem_%02d", i);
-        keyRef = CFStringCreateWithCString(kCFAllocatorDefault, key, CFStringGetSystemEncoding());
-        if (keyRef)
-        {
-            pathRef = (CFStringRef) CFPreferencesCopyAppValue(keyRef, kCFPreferencesCurrentApplication);
-            if (pathRef)
-            {
-                recentItem[count] = pathRef;
-                count++;
-            }
-
-            CFRelease(keyRef);
-        }
-    }
-}
-//
-static void DeinitRecentItems (void)
-{
-    CFStringRef    keyRef;
-    char        key[32];
-
-    for (int i = 0; i < kRecentMenu_MAX; i++)
-    {
-        sprintf(key, "RecentItem_%02d", i);
-        keyRef = CFStringCreateWithCString(kCFAllocatorDefault, key, CFStringGetSystemEncoding());
-        if (keyRef)
-        {
-            if (recentItem[i])
-            {
-                CFPreferencesSetAppValue(keyRef, recentItem[i], kCFPreferencesCurrentApplication);
-                CFRelease(recentItem[i]);
-                recentItem[i] = NULL;
-            }
-            else
-                CFPreferencesSetAppValue(keyRef, NULL, kCFPreferencesCurrentApplication);
-
-            CFRelease(keyRef);
-        }
-    }
-
-    CFPreferencesAppSynchronize(kCFPreferencesCurrentApplication);
-}
-
-static void ClearRecentItems (void)
-{
-    for (int i = 0; i < kRecentMenu_MAX; i++)
-    {
-        if (recentItem[i])
-        {
-            CFRelease(recentItem[i]);
-            recentItem[i] = NULL;
-        }
-    }
-}
-//
-void AddRecentItem (NSURL *url)
-{
-//    OSStatus    err;
-//    char        path[PATH_MAX + 1];
-//
-//    err = FSRefMakePath(ref, (unsigned char *) path, PATH_MAX);
-//    if (err == noErr)
-//    {
-//        CFStringRef    pathRef;
-//
-//        pathRef = CFStringCreateWithCString(kCFAllocatorDefault, path, kCFStringEncodingUTF8);
-//        if (pathRef)
-//        {
-//            int    i, j;
-//
-//            for (i = 0; i < kRecentMenu_MAX; i++)
-//                if (recentItem[i] && (CFStringCompare(pathRef, recentItem[i], 0) == 0))
-//                    break;
-//
-//            if (i == kRecentMenu_MAX)
-//            {
-//                for (j = kRecentMenu_MAX - 1; j >= 0; j--)
-//                    recentItem[j + 1] = recentItem[j];
-//
-//                if (recentItem[kRecentMenu_MAX])
-//                {
-//                    CFRelease(recentItem[kRecentMenu_MAX]);
-//                    recentItem[kRecentMenu_MAX] = NULL;
-//                }
-//
-//                recentItem[0] = pathRef;
-//            }
-//            else
-//            {
-//                CFRelease(pathRef);
-//
-//                if (i > 0)
-//                {
-//                    CFStringRef    temp;
-//
-//                    temp = recentItem[i];
-//
-//                    for (j = i - 1; j >= 0; j--)
-//                        recentItem[j + 1] = recentItem[j];
-//
-//                    recentItem[0] = temp;
-//                }
-//            }
-//        }
-//    }
-}
 //
 //static void InitRecentMenu (void)
 //{
@@ -2923,8 +2801,6 @@ static void Initialize (void)
 	InitMacSound();
 	SetUpHID();
 
-	InitRecentItems();
-
 	InitMultiCart();
 
 	autofire = (autofireRec[0].buttonMask || autofireRec[1].buttonMask) ? true : false;
@@ -2960,7 +2836,6 @@ static void Deinitialize (void)
 	deviceSetting = deviceSettingMaster;
 
 	DeinitMultiCart();
-	DeinitRecentItems();
 	SavePrefs();
 	ReleaseHID();
 	DeinitCheatFinder();
@@ -3283,7 +3158,7 @@ void QuitWithFatalError ( NSString *message)
     }
 }
 
-- (void)loadROM:(NSURL *)fileURL
+- (BOOL)loadROM:(NSURL *)fileURL
 {
     if ( SNES9X_OpenCart(fileURL) )
     {
@@ -3291,7 +3166,10 @@ void QuitWithFatalError ( NSString *message)
         s9xView.window.title = fileURL.lastPathComponent.stringByDeletingPathExtension;
         [s9xView.window makeKeyAndOrderFront:nil];
         [self start];
+        return YES;
     }
+
+    return NO;
 }
 
 @end
