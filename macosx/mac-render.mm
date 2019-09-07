@@ -997,24 +997,6 @@ static void S9xPutImageOpenGL (int width, int height)
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        if ( fullscreen )
-        {
-            if (glstretch)
-            {
-                float   fpw = (float) glScreenH / vh * 512.0f;
-                int		pw  = (int) (fpw + ((float) glScreenW - fpw) * (float) macAspectRatio / 10000.0);
-
-                glViewport((glScreenW - pw) >> 1, 0, pw, glScreenH);
-            }
-            else
-                glViewport((glScreenW - 512) >> 1, (glScreenH - vh) >> 1, 512, vh);
-        }
-        else
-        {
-            if (windowExtend)
-                glViewport(0, ((glScreenH - vh) >> 1), glScreenW, vh);
-        }
-
 		glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
 
 		if (!ciFilterEnable)
@@ -1049,20 +1031,20 @@ static void S9xPutImageOpenGL (int width, int height)
 	{
 		glTexSubImage2D(OpenGL.target, 0, 0, 0, OpenGL.texW[textureNum], OpenGL.texH[textureNum], OpenGL.format, OpenGL.type, GFX.Screen);
 
-		if (!screencurvature)
+		if (!screencurvature && OpenGL.texW[textureNum] > 0)
 		{
-			glBegin(GL_QUADS);
+            glBegin(GL_QUADS);
 
-			glTexCoord2fv(&OpenGL.vertex[textureNum][6]);
-			glVertex2f(-1.0f, -1.0f);
-			glTexCoord2fv(&OpenGL.vertex[textureNum][4]);
-			glVertex2f( 1.0f, -1.0f);
-			glTexCoord2fv(&OpenGL.vertex[textureNum][2]);
-			glVertex2f( 1.0f,  1.0f);
-			glTexCoord2fv(&OpenGL.vertex[textureNum][0]);
-			glVertex2f(-1.0f,  1.0f);
+            glTexCoord2fv(&OpenGL.vertex[textureNum][6]);
+            glVertex2f(-1.0f, -1.0f);
+            glTexCoord2fv(&OpenGL.vertex[textureNum][4]);
+            glVertex2f( 1.0f, -1.0f);
+            glTexCoord2fv(&OpenGL.vertex[textureNum][2]);
+            glVertex2f( 1.0f,  1.0f);
+            glTexCoord2fv(&OpenGL.vertex[textureNum][0]);
+            glVertex2f(-1.0f,  1.0f);
 
-			glEnd();
+            glEnd();
 		}
 		else
 		{

@@ -109,7 +109,7 @@ typedef struct
 	int			glStorageHint;
 }	ExtraOption;
 
-#define kMacWindowHeight	(SNES_HEIGHT_EXTENDED << 1)
+#define kMacWindowHeight	(SNES_HEIGHT_EXTENDED)
 #define	MAC_MAX_PLAYERS		8
 #define MAC_MAX_CHEATS      150
 #define MAC_NUM_KEYCODES	255
@@ -181,6 +181,7 @@ uint64 GetMicroseconds(void);
 @interface S9xEngine : NSObject
 
 - (void)start;
+- (void)stop;
 
 - (BOOL)loadROM:(NSURL *)fileURL;
 

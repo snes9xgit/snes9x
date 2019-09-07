@@ -3067,6 +3067,7 @@ void QuitWithFatalError ( NSString *message)
     if ( !NSEqualRects(frame, self.frame) )
     {
         windowResizeCount = 2;
+        [super setFrame:frame];
     }
 }
 
@@ -3090,15 +3091,13 @@ void QuitWithFatalError ( NSString *message)
     {
         Initialize();
 
-        CGRect frame = NSMakeRect(0, 0, SNES_WIDTH * 2.0, kMacWindowHeight);
+        CGRect frame = NSMakeRect(0, 0, SNES_WIDTH * 2, SNES_HEIGHT * 2);
         s9xView = [[S9xView alloc] initWithFrame:frame pixelFormat:nil];
+        s9xView.translatesAutoresizingMaskIntoConstraints = NO;
         s9xView.autoresizingMask = NSViewWidthSizable|NSViewHeightSizable;
-        NSWindow *window = [[NSWindow alloc] initWithContentRect:frame styleMask:NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable|NSWindowStyleMaskResizable backing:NSBackingStoreBuffered defer:NO];
-        window.contentView = s9xView;
-        window.title = @"Snes9x";
-
-        [window center];
-        [window makeKeyAndOrderFront:self];
+        [s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:s9xView attribute:NSLayoutAttributeWidth multiplier:(CGFloat)SNES_HEIGHT/(CGFloat)SNES_WIDTH constant:0.0]];
+        [s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SNES_WIDTH]];
+        [s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SNES_HEIGHT]];
     }
 
     return self;
@@ -3109,9 +3108,8 @@ void QuitWithFatalError ( NSString *message)
     Deinitialize();
 }
 
-- (void) start
+- (void)start
 {
-    NSLog(@"Starting");
     if (!finished)
     {
 #ifdef DEBUGGER
@@ -3165,6 +3163,11 @@ void QuitWithFatalError ( NSString *message)
             });
         }];
     }
+}
+
+- (void)stop
+{
+    pauseEmulation = true;
 }
 
 - (BOOL)loadROM:(NSURL *)fileURL

@@ -9,17 +9,47 @@
 #import <snes9x_framework/snes9x_framework.h>
 
 @interface AppDelegate ()
-
-@property (strong) S9xEngine *s9xEngine;
+@property (nonatomic, strong) S9xEngine *s9xEngine;
+@property (nonatomic, strong) NSWindow *window;
 @end
+
+static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     self.s9xEngine = [S9xEngine new];
     [self importRecentItems];
-}
 
+    NSWindow *window = [[NSWindow alloc] initWithContentRect:s9xView.frame styleMask:NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable|NSWindowStyleMaskResizable backing:NSBackingStoreBuffered defer:NO];
+
+    window.contentView.wantsLayer = YES;
+    window.contentView.layer.backgroundColor = NSColor.blackColor.CGColor;
+
+    window.title = @"Snes9x";
+    window.restorationClass = [self class];
+    window.frameAutosaveName = kMainWindowIdentifier;
+    window.releasedWhenClosed = NO;
+
+    [window.contentView addSubview:s9xView];
+    [s9xView.topAnchor constraintEqualToAnchor:window.contentView.topAnchor].active = YES;
+    [s9xView.bottomAnchor constraintEqualToAnchor:window.contentView.bottomAnchor].active = YES;
+    [s9xView.centerXAnchor constraintEqualToAnchor:window.contentView.centerXAnchor].active = YES;
+    [s9xView.leftAnchor constraintGreaterThanOrEqualToAnchor:window.contentView.leftAnchor].active = YES;
+    [s9xView.rightAnchor constraintLessThanOrEqualToAnchor:window.contentView.rightAnchor].active = YES;
+
+    if ( ![window setFrameUsingName:kMainWindowIdentifier] )
+    {
+        [window center];
+    }
+
+    [NSNotificationCenter.defaultCenter addObserverForName:NSWindowWillCloseNotification object:window queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification *notification)
+    {
+        [self.s9xEngine stop];
+    }];
+
+    self.window = window;
+}
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
     // Insert code here to tear down your application
@@ -64,6 +94,8 @@
 {
     if ([self.s9xEngine loadROM:url])
     {
+
+        [self.window makeKeyAndOrderFront:self];
         [NSDocumentController.sharedDocumentController noteNewRecentDocumentURL:url];
         return YES;
     }
