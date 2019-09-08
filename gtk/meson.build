@@ -382,9 +382,7 @@ srcs += [
  'src/gtk_netplay_dialog.cpp',
  'src/gtk_netplay_dialog.h',
  'src/gtk_netplay.cpp',
- 'src/gtk_netplay.h',
- 'src/background_particles.cpp',
- 'src/background_particles.h'
+ 'src/gtk_netplay.h'
 ]
 
 libjma_srcs = [
