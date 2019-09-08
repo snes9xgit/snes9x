@@ -100,7 +100,13 @@ if slang and opengl
   resource_limits_dep = c_compiler.find_library('glslang-default-resource-limits', required:false)
 
   if glslang_dep.found() and spirv_dep.found() and osdependent_dep.found() and ogl_compiler_dep.found() and spv_remapper_dep.found() and resource_limits_dep.found()
-    deps += [glslang_dep, spirv_dep, osdependent_dep, ogl_compiler_dep, spv_remapper_dep, resource_limits_dep]
+    deps += [glslang_dep, spirv_dep, osdependent_dep, ogl_compiler_dep, spv_remapper_dep]
+
+    if not resource_limits_dep.found()
+        warns += 'glslang-default-resource-limits not found. Assuming it is linked statically into glslang.'
+    else
+        deps += [resource_limits_dep]
+    endif
 
     args += ['-DUSE_SLANG', '-DSPIRV_CROSS_EXCEPTIONS_TO_ASSERTIONS']
     srcs += ['../shaders/slang.cpp']
