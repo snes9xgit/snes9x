@@ -22,6 +22,7 @@
 
 static S9xDisplayDriver  *driver;
 static snes_ntsc_t       snes_ntsc;
+static int               burst_phase = 0;
 static thread_job_t      job[8];
 static GThreadPool       *pool;
 static uint8             *y_table, *u_table, *v_table;
@@ -1001,7 +1002,7 @@ static void internal_filter (uint8 *src_buffer,
             snes_ntsc_blit_hires_scanlines (&snes_ntsc,
                                             (SNES_NTSC_IN_T *) src_buffer,
                                             src_pitch >> 1,
-                                            0, /* Burst_phase */
+                                            burst_phase,
                                             width,
                                             height,
                                             (void *) dst_buffer,
@@ -1010,7 +1011,7 @@ static void internal_filter (uint8 *src_buffer,
             snes_ntsc_blit_scanlines (&snes_ntsc,
                                       (SNES_NTSC_IN_T *) src_buffer,
                                       src_pitch >> 1,
-                                      0, /* Burst_phase */
+                                      burst_phase,
                                       width,
                                       height,
                                       (void *) dst_buffer,
@@ -1230,7 +1231,7 @@ void S9xFilter (uint8 *src_buffer,
                 int   &width,
                 int   &height)
 {
-
+    burst_phase = (burst_phase + 1) % 3;
     if (gui_config->multithreading)
         internal_threaded_filter (src_buffer,
                                   src_pitch,
