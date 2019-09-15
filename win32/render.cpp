@@ -341,6 +341,7 @@ RECT GetFilterOutputSize(SSurface Src)
 	case FILTER_NONE:
 		SetRect(&rect, Src.Width, Src.Height, 1);
 		break;
+	case FILTER_BLARGGRF:
 	case FILTER_BLARGGCOMP:
 	case FILTER_BLARGGSVID:
 	case FILTER_BLARGGRGB:
