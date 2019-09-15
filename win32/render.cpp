@@ -167,6 +167,7 @@ const char* GetFilterName(RenderFilter filterID)
 		case FILTER_SIMPLE2X: return "Simple 2X";
 		case FILTER_SCANLINES: return "Scanlines";
 		case FILTER_TVMODE: return "TV Mode";
+		case FILTER_BLARGGCOMP: return "Blargg's NTSC (RF)";
 		case FILTER_BLARGGCOMP: return "Blargg's NTSC (Composite)";
 		case FILTER_BLARGGSVID: return "Blargg's NTSC (S-Video)";
 		case FILTER_BLARGGRGB: return "Blargg's NTSC (RGB)";
