@@ -1291,12 +1291,9 @@ void S9xPutImage (int width, int height)
 			for (int x = 0; x < SNES_WIDTH * 2; x += 2)
 			{
 				// Read two RGB pxls
-				//  TODO: there is an assumption of endianness here...
-				// ALSO todo:  The 0x7FFF works around some issue with S9xPutChar, where
-				//  despite asking for RGB555 in InitImage, it insists on drawing with RGB565 instead.
-				//  This may discolor messages but at least it doesn't overflow yuv-tables and crash.
-				unsigned short rgb1 = (*s & 0x7FFF); s++;
-				unsigned short rgb2 = (*s & 0x7FFF); s++;
+				//  Now that we are RGB565 throughout, need to drop the Green LSB
+				unsigned short rgb1 = (*s & 0xFFC0) >> 1 | (*s & 0x001F); s++;
+				unsigned short rgb2 = (*s & 0xFFC0) >> 1 | (*s & 0x001F); s++;
 
 				// put two YUYV pxls
 				// lum1
