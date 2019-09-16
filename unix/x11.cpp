@@ -100,6 +100,7 @@ struct GUIData
 	bool8			mod1_pressed;
 	bool8			no_repeat;
 	bool8			fullscreen;
+	bool8			js_event_latch;
 	int				x_offset;
 	int				y_offset;
 #ifdef USE_XVIDEO
@@ -1449,7 +1450,7 @@ static void Repaint (bool8 isFrameBoundry)
 	if (GUI.use_shared_memory)
 	{
 		XShmPutImage(GUI.display, GUI.window, GUI.gc, GUI.image->ximage, 0, 0, GUI.x_offset, GUI.y_offset, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2, False);
-		XSync(GUI.display, False);
+		XSync(GUI.display, False); // Is this double-sync?  See XQueryPointer below...
 	}
 	else
 #endif
@@ -1508,8 +1509,21 @@ static bool8 CheckForPendingXEvents (Display *display)
 #endif
 }
 
+void S9xLatchJSEvent ()
+{
+	// record that a JS event happened and was reported to the engine
+	GUI.js_event_latch = TRUE;
+}
+
 void S9xProcessEvents (bool8 block)
 {
+	// Kick the screensaver if a joystick event occurred
+	if (GUI.js_event_latch == TRUE) {
+		XWarpPointer(GUI.display, None, None, 0, 0, 0, 0, 0, 0);
+		GUI.js_event_latch = FALSE;
+	}
+
+	// Process all other X events
 	while (block || CheckForPendingXEvents(GUI.display))
 	{
 		XEvent	event;

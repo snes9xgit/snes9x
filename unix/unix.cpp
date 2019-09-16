@@ -166,7 +166,8 @@ static void * S9xProcessSound (void *);
 #endif
 #ifdef JOYSTICK_SUPPORT
 static void InitJoysticks (void);
-static void ReadJoysticks (void);
+static bool8 ReadJoysticks (void);
+void S9xLatchJSEvent();
 #endif
 
 
@@ -1205,8 +1206,10 @@ static void InitJoysticks (void)
 #endif
 }
 
-static void ReadJoysticks (void)
+static bool8 ReadJoysticks (void)
 {
+	// track if ANY joystick event happened this frame
+	int js_latch = FALSE;
 #ifdef JSIOCGVERSION
 	struct js_event	js_ev;
 
@@ -1220,6 +1223,7 @@ static void ReadJoysticks (void)
 			{
 				fprintf(stderr,"Joystick %d reconnected.\n",i);
 				js_unplugged[i] = FALSE;
+				js_latch = TRUE;
 			}
 		}
 
@@ -1233,12 +1237,14 @@ static void ReadJoysticks (void)
 				case JS_EVENT_AXIS:
 					S9xReportAxis(0x8000c000 | (i << 24) | js_ev.number, js_ev.value);
 					S9xReportAxis(0x80008000 | (i << 24) | (js_mod[i] << 16) | js_ev.number, js_ev.value);
+					js_latch = TRUE;
 					break;
 
 				case JS_EVENT_BUTTON:
 				case JS_EVENT_BUTTON | JS_EVENT_INIT:
 					S9xReportButton(0x80004000 | (i << 24) | js_ev.number, js_ev.value);
 					S9xReportButton(0x80000000 | (i << 24) | (js_mod[i] << 16) | js_ev.number, js_ev.value);
+					js_latch = TRUE;
 					break;
 			}
 		}
@@ -1260,9 +1266,12 @@ static void ReadJoysticks (void)
 				S9xReportButton(0x80004000 | (i << 24) | j, 0);
 				S9xReportButton(0x80000000 | (i << 24) | (js_mod[i] << 16) | j, 0);
 			}
+
+			js_latch = TRUE;
 		}
 	}
 #endif
+	return js_latch;
 }
 
 #endif
@@ -1766,7 +1775,11 @@ int main (int argc, char **argv)
 
 	#ifdef JOYSTICK_SUPPORT
 		if (unixSettings.JoystickEnabled && (JoypadSkip++ & 1) == 0)
-			ReadJoysticks();
+		{
+			if (ReadJoysticks() == TRUE) {
+				S9xLatchJSEvent();
+			}
+		}
 	#endif
 
 		S9xProcessEvents(FALSE);
