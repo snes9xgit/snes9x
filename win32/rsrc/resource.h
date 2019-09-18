@@ -45,6 +45,7 @@
 #define IDI_ICON3                       161
 #define IDI_ICON4                       162
 #define IDD_DIALOG_HACKS                164
+#define IDD_DIALOG_LOAD_PREVIEW         167
 #define IDC_DRIVER                      1001
 #define IDC_BUFLEN                      1002
 #define IDC_RATE                        1003
@@ -404,6 +405,8 @@
 #define IDC_SFX_CLOCK_SPEED_SPIN        3036
 #define IDC_NO_SPRITE_LIMIT             3037
 #define IDC_SET_DEFAULTS                3038
+#define IDC_BUTTON_SLOT_1               3039
+#define IDC_STATIC_SLOT_1               3059
 #define ID_FILE_EXIT                    40001
 #define ID_WINDOW_HIDEMENUBAR           40004
 #define ID_FILE_AVI_RECORDING           40005
@@ -520,6 +523,8 @@
 #define ID_INPUT_BACKGROUNDKEYBOARDHOTKEYS 40176
 #define ID_INPUT_DETECTGAMEPADCHANGES   40177
 #define ID_EMULATION_HACKS              40178
+#define ID_FILE_LOAD_PREVIEW            40179
+#define ID_FILE_SAVE_PREVIEW            40180
 #define ID_FILE_SAVE0                   44000
 #define ID_FILE_SAVE1                   44001
 #define ID_FILE_SAVE2                   44002
@@ -541,7 +546,7 @@
 #define ID_FILE_LOAD7                   44027
 #define ID_FILE_LOAD8                   44028
 #define ID_FILE_LOAD9                   44029
-#define ID_FILE_LOAD_OOPS				44030
+#define ID_FILE_LOAD_OOPS               44030
 #define ID_FILE_LOAD_FILE               44031
 #define IDM_MACSRIFLE_TOGGLE            44032
 #define IDC_STATIC                      -1
@@ -550,9 +555,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        167
-#define _APS_NEXT_COMMAND_VALUE         40179
-#define _APS_NEXT_CONTROL_VALUE         3039
+#define _APS_NEXT_RESOURCE_VALUE        169
+#define _APS_NEXT_COMMAND_VALUE         40181
+#define _APS_NEXT_CONTROL_VALUE         3040
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

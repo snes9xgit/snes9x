@@ -438,6 +438,7 @@
     <ClInclude Include="cgFunctions.h" />
     <ClInclude Include="CGLCG.h" />
     <ClInclude Include="cgMini.h" />
+    <ClInclude Include="CSaveLoadWithPreviewDlg.h" />
     <ClInclude Include="COpenGL.h" />
     <ClInclude Include="CShaderParamDlg.h" />
     <ClInclude Include="CWaveOut.h" />
@@ -582,6 +583,7 @@
     <ClCompile Include="CDirectDraw.cpp" />
     <ClCompile Include="cgFunctions.cpp" />
     <ClCompile Include="CGLCG.cpp" />
+    <ClCompile Include="CSaveLoadWithPreviewDlg.cpp" />
     <ClCompile Include="COpenGL.cpp" />
     <ClCompile Include="CShaderParamDlg.cpp" />
     <ClCompile Include="CWaveOut.cpp" />

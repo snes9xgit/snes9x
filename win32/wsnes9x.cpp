@@ -35,6 +35,7 @@
 #include "CCGShader.h"
 #include "../shaders/glsl.h"
 #include "CShaderParamDlg.h"
+#include "CSaveLoadWithPreviewDlg.h"
 #include "../snes9x.h"
 #include "../memmap.h"
 #include "../cpuexec.h"
@@ -462,9 +463,6 @@ void DoAVIOpen(const TCHAR* filename);
 void DoAVIClose(int reason);
 void RestoreGUIDisplay ();
 void RestoreSNESDisplay ();
-void FreezeUnfreezeDialog(bool8 freeze);
-void FreezeUnfreezeSlot(int slot, bool8 freeze);
-void FreezeUnfreeze (const char *filename, bool8 freeze);
 void CheckDirectoryIsWritable (const char *filename);
 static void CheckMenuStates ();
 static void ResetFrameTimer ();
@@ -2148,6 +2146,14 @@ LRESULT CALLBACK WinProc(
         case ID_FILE_LOAD_FILE:
             FreezeUnfreezeDialog(FALSE);
             break;
+        case ID_FILE_LOAD_PREVIEW:
+        {
+            CSaveLoadWithPreviewDlg dlg;
+            int slot = dlg.show();
+            if(slot >= 0)
+                FreezeUnfreezeSlot(slot, FALSE);
+            break;
+        }
         case ID_FILE_SAVE0:
             FreezeUnfreezeSlot (0, TRUE);
 			break;
@@ -2181,6 +2187,14 @@ LRESULT CALLBACK WinProc(
         case ID_FILE_SAVE_FILE:
             FreezeUnfreezeDialog(TRUE);
             break;
+        case ID_FILE_SAVE_PREVIEW:
+        {
+            CSaveLoadWithPreviewDlg dlg(true);
+            int slot = dlg.show();
+            if(slot >= 0)
+                FreezeUnfreezeSlot(slot, TRUE);
+            break;
+        }
 		case ID_CHEAT_ENTER:
 			RestoreGUIDisplay ();
 			while (DialogBox(g_hInst, MAKEINTRESOURCE(IDD_CHEATER), hWnd, DlgCheater) == NC_SEARCHDB)
@@ -3608,16 +3622,21 @@ void FreezeUnfreezeDialog(bool8 freeze)
     }
 }
 
+void GetSlotFilename(int slot, char filename[_MAX_PATH + 1])
+{
+    char ext[_MAX_EXT + 1];
+
+    if(slot == -1)
+        strcpy(ext, ".oops");
+    else
+        snprintf(ext, _MAX_EXT, ".%03d", slot);
+    strcpy(filename, S9xGetFilename(ext, SNAPSHOT_DIR));
+}
+
 void FreezeUnfreezeSlot(int slot, bool8 freeze)
 {
     char filename[_MAX_PATH + 1];
-    char ext[_MAX_EXT + 1];
-
-	if (slot == -1)
-		strcpy(ext, ".oops");
-	else
-		snprintf(ext, _MAX_EXT, ".%03d", slot);
-    strcpy(filename, S9xGetFilename(ext, SNAPSHOT_DIR));
+    GetSlotFilename(slot, filename);
 
     FreezeUnfreeze(filename, freeze);
 }
@@ -3742,6 +3761,9 @@ static void CheckMenuStates ()
 
 	for (int i = ID_FILE_LOAD0; i <= ID_FILE_LOAD_FILE; i++)
 		SetMenuItemInfo(GUI.hMenu, i, FALSE, &mii);
+
+    SetMenuItemInfo(GUI.hMenu, ID_FILE_SAVE_PREVIEW, FALSE, &mii);
+    SetMenuItemInfo(GUI.hMenu, ID_FILE_LOAD_PREVIEW, FALSE, &mii);
 
     SetMenuItemInfo (GUI.hMenu, ID_FILE_RESET, FALSE, &mii);
     SetMenuItemInfo (GUI.hMenu, ID_CHEAT_ENTER, FALSE, &mii);
