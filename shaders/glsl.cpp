@@ -1189,21 +1189,27 @@ void GLSLShader::save(const char *filename)
             outs("filter_linear", p->filter == GL_LINEAR ? "true" : "false");
         }
         outs("wrap_mode", wrap_mode_enum_to_string(p->wrap_mode));
-        outs("alias", p->alias);
+        if (p->alias[0])
+            outs("alias", p->alias);
         outs("float_framebuffer", p->fp ? "true" : "false");
         outs("srgb_framebuffer", p->srgb ? "true" : "false");
-        outs("scale_type_x", scale_enum_to_string(p->scale_type_x));
         outs("mipmap_input", p->mipmap_input ? "true" : "false");
-        if (p->scale_type_x == GLSL_ABSOLUTE)
-            outd("scale_x", (int)p->scale_x);
-        else
-            outf("scale_x", p->scale_x);
-
-        outs("scale_type_y", scale_enum_to_string(p->scale_type_y));
-        if (p->scale_type_y == GLSL_ABSOLUTE)
-            outd("scale_y", (int)p->scale_y);
-        else
-            outf("scale_y", p->scale_y);
+        if (p->scale_type_x != GLSL_UNDEFINED)
+        {
+            outs("scale_type_x", scale_enum_to_string(p->scale_type_x));
+            if (p->scale_type_x == GLSL_ABSOLUTE)
+                outd("scale_x", (int)p->scale_x);
+            else
+                outf("scale_x", p->scale_x);
+        }
+        if (p->scale_type_y != GLSL_UNDEFINED)
+        {
+            outs("scale_type_y", scale_enum_to_string(p->scale_type_y));
+            if (p->scale_type_y == GLSL_ABSOLUTE)
+                outd("scale_y", (int)p->scale_y);
+            else
+                outf("scale_y", p->scale_y);
+        }
 
         if (p->frame_count_mod)
             outd("frame_count_mod", p->frame_count_mod);
