@@ -43,8 +43,6 @@
 
 typedef void (* Blitter) (uint8 *, int, uint8 *, int, int, int);
 
-static OSStatus BlitMPGLTask (void *);
-static OSStatus PrepareMPBlitGL (void);
 static void S9xInitFullScreen (void);
 static void S9xDeinitFullScreen (void);
 static void S9xInitWindowMode (void);
@@ -287,18 +285,11 @@ void DrawPauseScreen (CGContextRef ctx, HIRect bounds)
 
 void DrawFreezeDefrostScreen (uint8 *draw)
 {
-	const int	w = SNES_WIDTH << 1, h = kMacWindowHeight;
+	const int	w = SNES_WIDTH << 1, h = SNES_HEIGHT << 1;
 
 	imageWidth[0] = imageHeight[0] = 0;
 	imageWidth[1] = imageHeight[1] = 0;
 	prevBlitWidth = prevBlitHeight = 0;
-
-	if ((drawingMethod == kDrawingBlitGL) && multiprocessor)
-	{
-		MPWaitOnSemaphore(readySemaphore, kDurationForever);
-		printf("MP: Send dummy signal.\n");
-		MPNotifyQueue(taskQueue, (void *) kMPBlitNone, 0, 0);
-	}
 
 	if (nx < 0 && !ciFilterEnable)
 	{
@@ -308,7 +299,7 @@ void DrawFreezeDefrostScreen (uint8 *draw)
 	else
 		memcpy(blitGLBuffer, draw, w * h * 2);
 
-	S9xPutImageBlitGL2(512, kMacWindowHeight);
+	S9xPutImageBlitGL2(w, h);
 }
 
 void ClearGFXScreen (void)
@@ -375,23 +366,10 @@ static void S9xDeinitOpenGL (void)
 
 static void S9xInitBlitGL (void)
 {
-	if (multiprocessor)
-	{
-		printf("MP: Creating BlitGL thread.\n");
-
-		if (noErr != PrepareMPBlitGL())
-			multiprocessor = false;
-	}
 }
 
 static void S9xDeinitBlitGL (void)
 {
-	if (multiprocessor)
-	{
-		notificationQueue = NULL;
-
-		printf("MP: Successfully received terminate signal from BlitGL thread.\n");
-	}
 }
 
 static void GLPrepareTexture (bool8 useRange, int texNo, int rangeOnW, int rangeOnH, int rangeOffW, int rangeOffH, int filter)
@@ -821,75 +799,6 @@ static inline void RenderBlitScreen (Blitter Fn, int x, int sW, int sH, int cW, 
 	S9xPutImageBlitGL2(cW, cH);
 }
 
-static OSStatus PrepareMPBlitGL (void)
-{
-	OSStatus	err;
-
-	mpBlit = (MPData *) MPAllocateAligned(sizeof(MPData), kMPAllocateDefaultAligned, kMPAllocateClearMask);
-	if (!mpBlit)
-		return (memFullErr);
-
-	err = MPCreateQueue(&notificationQueue);
-	if (err == noErr)
-	{
-		err = MPCreateQueue(&taskQueue);
-		if (err == noErr)
-		{
-			err = MPCreateBinarySemaphore(&readySemaphore);
-			if (err == noErr)
-			{
-				MPSignalSemaphore(readySemaphore);
-				err = MPCreateTask(BlitMPGLTask, NULL, 0, notificationQueue, NULL, NULL, 0, &taskID);
-			}
-		}
-	}
-
-	return (err);
-}
-
-static OSStatus BlitMPGLTask (void *parameter)
-{
-	OSStatus	err = noErr;
-	int32		theCommand, param1, param2;
-
-	printf("MP: Entered BlitGL thread.\n");
-
-	for (;;)
-	{
-		err = MPWaitOnQueue(taskQueue, (void **) &theCommand, (void **) &param1, (void **) &param2, kDurationForever);
-		if (err)
-			break;
-
-		if (theCommand == kMPBlitFrame)
-		{
-			RenderBlitScreen(mpBlit->blitFn, mpBlit->nx, mpBlit->srcWidth, mpBlit->srcHeight, mpBlit->copyWidth, mpBlit->copyHeight, mpBlit->gfxBuffer);
-			MPSignalSemaphore(readySemaphore);
-		}
-		else
-		if (theCommand == kMPBlitNone)
-			MPSignalSemaphore(readySemaphore);
-		else
-		if (theCommand == kMPBlitDone)
-			break;
-		else
-		{
-			err = userCanceledErr;
-			break;
-		}
-	}
-
-	MPFree(mpBlit);
-	MPDeleteSemaphore(readySemaphore);
-	MPDeleteQueue(taskQueue);
-	mpBlit         = NULL;
-	readySemaphore = NULL;
-	taskQueue      = NULL;
-
-	printf("MP: Exited BlitGL thread.\n");
-
-	return (err);
-}
-
 void S9xPutImage (int width, int height)
 {
 	static float	fps   = 0.0f;
@@ -1226,25 +1135,7 @@ static void S9xPutImageBlitGL (int width, int height)
 	imageWidth[whichBuf]  = width;
 	imageHeight[whichBuf] = height;
 
-	if (multiprocessor)
-	{
-		MPWaitOnSemaphore(readySemaphore, kDurationForever);
-
-		mpBlit->nx          = nx;
-		mpBlit->blitFn      = blitFn;
-		mpBlit->srcWidth    = width;
-		mpBlit->srcHeight   = height;
-		mpBlit->copyWidth   = copyWidth;
-		mpBlit->copyHeight  = copyHeight;
-		mpBlit->gfxBuffer   = GFX.Screen;
-
-		MPNotifyQueue(taskQueue, (void *) kMPBlitFrame, 0, 0);
-
-		whichBuf = 1 - whichBuf;
-		GFX.Screen = gfxScreen[whichBuf];
-	}
-	else
-		RenderBlitScreen(blitFn, nx, width, height, copyWidth, copyHeight, GFX.Screen);
+    RenderBlitScreen(blitFn, nx, width, height, copyWidth, copyHeight, GFX.Screen);
 }
 
 static void S9xPutImageBlitGL2 (int blit_width, int blit_height)
@@ -1260,15 +1151,6 @@ static void S9xPutImageBlitGL2 (int blit_width, int blit_height)
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        if (glstretch)
-        {
-            int		sh  = (blit_width < blit_height) ? (blit_height >> 1) : ((blit_width > blit_height * 2) ? (blit_height << 1) : blit_height);
-            float	fpw = (float) glScreenH / (float) sh * (float) blit_width;
-            int		pw  = (int) (fpw + ((float) glScreenW - fpw) * (float) macAspectRatio / 10000.0);
-
-            glViewport((glScreenW - pw) >> 1, 0, pw, glScreenH);
-        }
-        else
         {
             int		sw, sh;
 
@@ -1418,7 +1300,6 @@ static void S9xPutImageBlitGL2 (int blit_width, int blit_height)
 		DrawWithCoreImageFilter(src, cgBlitImage);
 	}
 
-    //CGLFlushDrawable(s9xView.openGLContext.CGLContextObj);
     glSwapAPPLE();
 }
 

@@ -26,6 +26,8 @@
 
 #import <os/lock.h>
 
+#import "mac-controls.h"
+
 enum
 {
 	kDrawingReserved1 = 1, // unused
@@ -112,7 +114,6 @@ typedef struct
 #define kMacWindowHeight	(SNES_HEIGHT_EXTENDED)
 #define	MAC_MAX_PLAYERS		8
 #define MAC_MAX_CHEATS      150
-#define MAC_NUM_KEYCODES	255
 
 extern volatile bool8	running, s9xthreadrunning;
 extern volatile bool8	eventQueued, windowExtend;
@@ -134,7 +135,7 @@ extern bool8			finished, cartOpen,
 						autofire, hidExist, directDisplay;
 extern bool8			fullscreen, autoRes,
 						glstretch, gl32bit, vsync, drawoverscan, lastoverscan, screencurvature,
-						multiprocessor, ciFilterEnable;
+						ciFilterEnable;
 extern long				drawingMethod;
 extern int				videoMode;
 extern SInt32			macSoundVolume;
@@ -163,7 +164,8 @@ extern CFStringRef		multiCartPath[2];
 extern IconRef			macIconRef[118];
 #endif
 
-extern bool8			pressedKeys[MAC_NUM_KEYCODES];
+extern bool8			pressedKeys[kNumButtons];
+extern bool8            pressedGamepadButtons[kNumButtons];
 extern os_unfair_lock	keyLock;
 
 extern NSOpenGLView		*s9xView;
@@ -178,10 +180,18 @@ void PostQueueToSubEventLoop (void);
 int PromptFreezeDefrost (Boolean);
 uint64 GetMicroseconds(void);
 
+void CopyPressedKeys(uint8 keys[kNumButtons], uint8 gamepadButtons[kNumButtons]);
+
 @interface S9xEngine : NSObject
 
 - (void)start;
 - (void)stop;
+
+- (BOOL)isPaused;
+- (void)pause;
+- (void)resume;
+
+- (void)setControl:(S9xKey)control forKey:(int16)key oldControl:(S9xKey *)oldControl oldKey:(int16 *)oldControl;
 
 - (BOOL)loadROM:(NSURL *)fileURL;
 

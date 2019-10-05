@@ -185,7 +185,7 @@ void WriteThumbnailToExtendedAttribute (const char *path, int destWidth, int des
     }
 }
 
-void DrawThumbnailFomExtendedAttribute (const char *path, CGContextRef ctx, CGRect bounds)
+void DrawThumbnailFromExtendedAttribute (const char *path, CGContextRef ctx, CGRect bounds)
 {
     CGContextSaveGState(ctx);
 

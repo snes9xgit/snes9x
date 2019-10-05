@@ -22,57 +22,15 @@
 #ifndef _mac_keyboard_h_
 #define _mac_keyboard_h_
 
-#define	kKeys	39
+#include "mac-controls.h"
 
-extern uint8   keyCode[kKeys];
+#define MAC_NUM_KEYCODES    255
 
-enum
-{
-	k1PUp,
-	k1PDown,
-	k1PLeft,
-	k1PRight,
-	k1PY,
-	k1PB,
-	k1PX,
-	k1PA,
-	k1PL,
-	k1PR,
-	k1PStart,
-	k1PSelect,
-
-	k2PUp,
-	k2PDown,
-	k2PLeft,
-	k2PRight,
-	k2PY,
-	k2PB,
-	k2PX,
-	k2PA,
-	k2PL,
-	k2PR,
-	k2PStart,
-	k2PSelect,
-
-	kKeyFastForward,
-	kKeyFreeze,
-	kKeyDefrost,
-	kKeyScreenshot,
-	kKeySPC,
-	kKeyScopeTurbo,
-	kKeyScopePause,
-	kKeyScopeCursor,
-	kKeyOffScreen,
-	kKeyFunction,
-	kKeyAlt,
-	kKeyFFDown,
-	kKeyFFUp,
-	kKeyEsc,
-	kKeyTC
-};
+extern int16 keyCodes[MAC_NUM_KEYCODES];
 
 void InitKeyboard (void);
 void DeinitKeyboard (void);
-void ConfigureKeyboard (void);
+
+void SetKeyCode(int16 keyCode, S9xKey control, int16 *oldKeyCode, S9xKey *oldControl);
 
 #endif

@@ -141,7 +141,6 @@ static PrefList	prefList[] =
 	{ 'glst', &glstretch,									sizeof(bool8      ) },
 	{ 'draw', &drawingMethod,								sizeof(long       ) },
 	{ 'Vmod', &videoMode,									sizeof(int        ) },
-	{ 'MPmt', &multiprocessor,								sizeof(bool8      ) },
 	{ 'VSNC', &vsync,										sizeof(bool8      ) },
 	{ 'H239', &drawoverscan,								sizeof(bool8      ) },
 	{ 'SCur', &screencurvature,								sizeof(bool8      ) },
@@ -182,7 +181,7 @@ static PrefList	prefList[] =
 
 	{ 'tab ', &lastTabIndex,								sizeof(int        ) },
 	{ 'Ftab', &autofireLastTabIndex,						sizeof(int        ) },
-	{ 'keyb', keyCode,										sizeof(keyCode    ) },
+	{ 'keyb', keyCodes,										sizeof(keyCodes   ) },
 	{ 'pset', &padSetting,									sizeof(int        ) },
 	{ 'dset', &deviceSetting,								sizeof(int        ) },
 	{ 'chea', &applycheat,									sizeof(bool8      ) },

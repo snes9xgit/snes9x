@@ -7,12 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3000A9CF23418799007DC37F /* logo_freeze.png in Resources */ = {isa = PBXBuildFile; fileRef = EA3D300B0A260A3200BDACCC /* logo_freeze.png */; };
+		3000A9D02341879B007DC37F /* logo_defrost.png in Resources */ = {isa = PBXBuildFile; fileRef = EA3D300C0A260A3200BDACCC /* logo_defrost.png */; };
+		3000A9D123418852007DC37F /* freeze_defrost.aiff in Resources */ = {isa = PBXBuildFile; fileRef = EA85C3560B4ECBD900F5F9C9 /* freeze_defrost.aiff */; };
 		302EEC9C22DAD0AB006D1502 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 302EEC9A22DAD0AB006D1502 /* AudioToolbox.framework */; };
 		302EEC9D22DAD0AB006D1502 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 302EEC9B22DAD0AB006D1502 /* AudioUnit.framework */; };
 		302EEC9F22DAD0B1006D1502 /* AGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 302EEC9E22DAD0B1006D1502 /* AGL.framework */; };
 		302EECA122DAD0B9006D1502 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 302EECA022DAD0B9006D1502 /* OpenGL.framework */; };
 		302EECA322DAD0C5006D1502 /* CoreImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 302EECA222DAD0C5006D1502 /* CoreImage.framework */; };
 		302EECA522DAD1B9006D1502 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 302EECA422DAD1B9006D1502 /* CoreAudio.framework */; };
+		3042F7E3232E9BDD00C03F5E /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3042F7E2232E9BDD00C03F5E /* Carbon.framework */; };
 		3045A1EF22D03C4B0092B97D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3045A1EE22D03C4B0092B97D /* Cocoa.framework */; };
 		30714719230E379500917F82 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 30714718230E379500917F82 /* AppDelegate.m */; };
 		3071471B230E379600917F82 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3071471A230E379600917F82 /* Assets.xcassets */; };
@@ -217,6 +221,8 @@
 		302EECA022DAD0B9006D1502 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		302EECA222DAD0C5006D1502 /* CoreImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreImage.framework; path = System/Library/Frameworks/CoreImage.framework; sourceTree = SDKROOT; };
 		302EECA422DAD1B9006D1502 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		3042F7E0232E9BD200C03F5E /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
+		3042F7E2232E9BDD00C03F5E /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		3045A1EC22D03C430092B97D /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		3045A1EE22D03C4B0092B97D /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		30714704230E372B00917F82 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -491,6 +497,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3042F7E3232E9BDD00C03F5E /* Carbon.framework in Frameworks */,
 				308092F92320B06F006A2860 /* Quartz.framework in Frameworks */,
 				308092F72320B041006A2860 /* CoreGraphics.framework in Frameworks */,
 				302EECA522DAD1B9006D1502 /* CoreAudio.framework in Frameworks */,
@@ -561,6 +568,8 @@
 		3045A1EB22D03C420092B97D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3042F7E2232E9BDD00C03F5E /* Carbon.framework */,
+				3042F7E0232E9BD200C03F5E /* CoreServices.framework */,
 				308092F82320B06F006A2860 /* Quartz.framework */,
 				308092F62320B041006A2860 /* CoreGraphics.framework */,
 				302EECA422DAD1B9006D1502 /* CoreAudio.framework */,
@@ -1110,6 +1119,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3000A9D02341879B007DC37F /* logo_defrost.png in Resources */,
+				3000A9D123418852007DC37F /* freeze_defrost.aiff in Resources */,
+				3000A9CF23418799007DC37F /* logo_freeze.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1411,6 +1423,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
+				VALID_ARCHS = x86_64;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -1469,6 +1482,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
+				VALID_ARCHS = x86_64;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};

@@ -74,408 +74,9 @@ typedef struct	padDirectionInfo
 	long		min    [2];
 }	directionInfo;
 
-static actionRec		gActionRecs[kNeedCount];
+static actionRec		gActionRecs[kNumButtons];
 static directionInfo	gDirectionInfo[MAC_MAX_PLAYERS];
 static int				gDirectionHint[MAC_MAX_PLAYERS];
-
-static const HIViewID	gControlIDs[kNeedCount] =
-{
-	{ '1_Up', 0 },
-	{ '1_Dn', 0 },
-	{ '1_Lf', 0 },
-	{ '1_Rt', 0 },
-
-	{ '2_Up', 0 },
-	{ '2_Dn', 0 },
-	{ '2_Lf', 0 },
-	{ '2_Rt', 0 },
-
-	{ '3_Up', 0 },
-	{ '3_Dn', 0 },
-	{ '3_Lf', 0 },
-	{ '3_Rt', 0 },
-
-	{ '4_Up', 0 },
-	{ '4_Dn', 0 },
-	{ '4_Lf', 0 },
-	{ '4_Rt', 0 },
-
-	{ '5_Up', 0 },
-	{ '5_Dn', 0 },
-	{ '5_Lf', 0 },
-	{ '5_Rt', 0 },
-
-	{ '6_Up', 0 },
-	{ '6_Dn', 0 },
-	{ '6_Lf', 0 },
-	{ '6_Rt', 0 },
-
-	{ '7_Up', 0 },
-	{ '7_Dn', 0 },
-	{ '7_Lf', 0 },
-	{ '7_Rt', 0 },
-
-	{ '8_Up', 0 },
-	{ '8_Dn', 0 },
-	{ '8_Lf', 0 },
-	{ '8_Rt', 0 },
-
-	{ '1__B', 0 },
-	{ '1__A', 0 },
-	{ '1__X', 0 },
-	{ '1__Y', 0 },
-	{ '1__L', 0 },
-	{ '1__R', 0 },
-	{ '1Sel', 0 },
-	{ '1Srt', 0 },
-
-	{ '2__B', 0 },
-	{ '2__A', 0 },
-	{ '2__X', 0 },
-	{ '2__Y', 0 },
-	{ '2__L', 0 },
-	{ '2__R', 0 },
-	{ '2Sel', 0 },
-	{ '2Srt', 0 },
-
-	{ '3__B', 0 },
-	{ '3__A', 0 },
-	{ '3__X', 0 },
-	{ '3__Y', 0 },
-	{ '3__L', 0 },
-	{ '3__R', 0 },
-	{ '3Sel', 0 },
-	{ '3Srt', 0 },
-
-	{ '4__B', 0 },
-	{ '4__A', 0 },
-	{ '4__X', 0 },
-	{ '4__Y', 0 },
-	{ '4__L', 0 },
-	{ '4__R', 0 },
-	{ '4Sel', 0 },
-	{ '4Srt', 0 },
-
-	{ '5__B', 0 },
-	{ '5__A', 0 },
-	{ '5__X', 0 },
-	{ '5__Y', 0 },
-	{ '5__L', 0 },
-	{ '5__R', 0 },
-	{ '5Sel', 0 },
-	{ '5Srt', 0 },
-
-	{ '6__B', 0 },
-	{ '6__A', 0 },
-	{ '6__X', 0 },
-	{ '6__Y', 0 },
-	{ '6__L', 0 },
-	{ '6__R', 0 },
-	{ '6Sel', 0 },
-	{ '6Srt', 0 },
-
-	{ '7__B', 0 },
-	{ '7__A', 0 },
-	{ '7__X', 0 },
-	{ '7__Y', 0 },
-	{ '7__L', 0 },
-	{ '7__R', 0 },
-	{ '7Sel', 0 },
-	{ '7Srt', 0 },
-
-	{ '8__B', 0 },
-	{ '8__A', 0 },
-	{ '8__X', 0 },
-	{ '8__Y', 0 },
-	{ '8__L', 0 },
-	{ '8__R', 0 },
-	{ '8Sel', 0 },
-	{ '8Srt', 0 },
-
-	{ '__FF', 0 },
-	{ '_Frz', 0 },
-	{ '_DeF', 0 },
-	{ '_Snp', 0 },
-	{ '_Esc', 0 },
-	{ '_SPC', 0 },
-	{ 'MouL', 0 },
-	{ 'MouR', 0 },
-	{ 'ScoT', 0 },
-	{ 'ScoP', 0 },
-	{ 'ScoC', 0 },
-	{ 'Ofsc', 0 },
-	{ '__Fn', 0 },
-	{ '_Alt', 0 },
-	{ 'FFUp', 0 },
-	{ 'FFDn', 0 },
-	{ '__TC', 0 }
-};
-
-static char	gNeeds[kNeedCount][64] =
-{
-	"1P Up",
-	"1P Down",
-	"1P Left",
-	"1P Right",
-
-	"2P Up",
-	"2P Down",
-	"2P Left",
-	"2P Right",
-
-	"3P Up",
-	"3P Down",
-	"3P Left",
-	"3P Right",
-
-	"4P Up",
-	"4P Down",
-	"4P Left",
-	"4P Right",
-
-	"5P Up",
-	"5P Down",
-	"5P Left",
-	"5P Right",
-
-	"6P Up",
-	"6P Down",
-	"6P Left",
-	"6P Right",
-
-	"7P Up",
-	"7P Down",
-	"7P Left",
-	"7P Right",
-
-	"8P Up",
-	"8P Down",
-	"8P Left",
-	"8P Right",
-
-	"1P B Button",
-	"1P A Button",
-	"1P X Button",
-	"1P Y Button",
-	"1P L Button",
-	"1P R Button",
-	"1P Select",
-	"1P Start",
-
-	"2P B Button",
-	"2P A Button",
-	"2P X Button",
-	"2P Y Button",
-	"2P L Button",
-	"2P R Button",
-	"2P Select",
-	"2P Start",
-
-	"3P B Button",
-	"3P A Button",
-	"3P X Button",
-	"3P Y Button",
-	"3P L Button",
-	"3P R Button",
-	"3P Select",
-	"3P Start",
-
-	"4P B Button",
-	"4P A Button",
-	"4P X Button",
-	"4P Y Button",
-	"4P L Button",
-	"4P R Button",
-	"4P Select",
-	"4P Start",
-
-	"5P B Button",
-	"5P A Button",
-	"5P X Button",
-	"5P Y Button",
-	"5P L Button",
-	"5P R Button",
-	"5P Select",
-	"5P Start",
-
-	"6P B Button",
-	"6P A Button",
-	"6P X Button",
-	"6P Y Button",
-	"6P L Button",
-	"6P R Button",
-	"6P Select",
-	"6P Start",
-
-	"7P B Button",
-	"7P A Button",
-	"7P X Button",
-	"7P Y Button",
-	"7P L Button",
-	"7P R Button",
-	"7P Select",
-	"7P Start",
-
-	"8P B Button",
-	"8P A Button",
-	"8P X Button",
-	"8P Y Button",
-	"8P L Button",
-	"8P R Button",
-	"8P Select",
-	"8P Start",
-
-	"Fast Forward",
-	"Freeze Game",
-	"Defrost Game",
-	"Screenshot",
-	"Break",
-	"Save SPC",
-	"Mouse Left",
-	"Mouse Right",
-	"Scope Turbo",
-	"Scope Pause",
-	"Scope Cursor",
-	"Offscreen",
-	"Fn Modifier",
-	"Alt Modifier",
-	"Turbo Speed Up",
-	"Turbo Speed Down",
-	"Turbo Control Modifier"
-};
-
-static int	gIconNumber[kNeedCount] =
-{
-	0,
-	1,
-	2,
-	3,
-
-	12,
-	13,
-	14,
-	15,
-
-	24,
-	25,
-	26,
-	27,
-
-	36,
-	37,
-	38,
-	39,
-
-	48,
-	49,
-	50,
-	51,
-
-	60,
-	61,
-	62,
-	63,
-
-	72,
-	73,
-	74,
-	75,
-
-	84,
-	85,
-	86,
-	87,
-
-	5,
-	7,
-	6,
-	4,
-	8,
-	9,
-	11,
-	10,
-
-	17,
-	19,
-	18,
-	16,
-	20,
-	21,
-	23,
-	22,
-
-	29,
-	31,
-	30,
-	28,
-	32,
-	33,
-	35,
-	34,
-
-	41,
-	43,
-	42,
-	40,
-	44,
-	45,
-	47,
-	46,
-
-	53,
-	55,
-	54,
-	52,
-	56,
-	57,
-	59,
-	58,
-
-	65,
-	67,
-	66,
-	64,
-	68,
-	69,
-	71,
-	70,
-
-	77,
-	79,
-	78,
-	76,
-	80,
-	81,
-	83,
-	82,
-
-	89,
-	91,
-	90,
-	88,
-	92,
-	93,
-	95,
-	94,
-
-	101,
-	102,
-	103,
-	104,
-	114,
-	105,
-	116,
-	117,
-	106,
-	107,
-	108,
-	109,
-	110,
-	111,
-	112,
-	113,
-	115
-};
 
 static void JoypadSetDirectionInfo (void);
 //static void IdleTimer (EventLoopTimerRef, void *);
@@ -539,7 +140,7 @@ void LoadControllerSettings (void)
 {
 //    CFStringRef    keyCFStringRef;
 //
-//    for (int a = 0; a < kNeedCount; a++)
+//    for (int a = 0; a < kNumButtons; a++)
 //    {
 //        pRecDevice    pDevice  = NULL;
 //        pRecElement    pElement = NULL;
@@ -556,7 +157,7 @@ void LoadControllerSettings (void)
 //        keyCFStringRef = CFStringCreateWithFormat(kCFAllocatorDefault, NULL, CFSTR("%s"), needCStr);
 //        if (keyCFStringRef)
 //        {
-//            r = HIDRestoreElementPref(keyCFStringRef, kCFPreferencesCurrentApplication, &pDevice, &pElement);
+//            // r = HIDRestoreElementPref(keyCFStringRef, kCFPreferencesCurrentApplication, &pDevice, &pElement);
 //            if (r && pDevice && pElement)
 //            {
 //                gActionRecs[a].fDevice  = pDevice;
@@ -838,26 +439,26 @@ void SetUpHID (void)
 //    hidExist = true;
 //
 //    ClearPadSetting();
-//
-//    LoadControllerSettings();
+
+    LoadControllerSettings();
 }
 
 void ClearPadSetting (void)
 {
-//    for (int i = 0; i < MAC_MAX_PLAYERS; i++)
-//    {
-//        gDirectionInfo[i].type = gDirectionHint[i] = kPadElemTypeNone;
-//        gDirectionInfo[i].device [0] = gDirectionInfo[i].device [1] = NULL;
-//        gDirectionInfo[i].element[0] = gDirectionInfo[i].element[1] = NULL;
-//    }
-//
-//    for (int i = 0; i < kNeedCount; i++)
-//    {
-//        gActionRecs[i].fDevice   = NULL;
-//        gActionRecs[i].fElement  = NULL;
-//        gActionRecs[i].fValue    = 0;
-//        gActionRecs[i].fOldValue = -2;
-//    }
+    for (int i = 0; i < MAC_MAX_PLAYERS; i++)
+    {
+        gDirectionInfo[i].type = gDirectionHint[i] = kPadElemTypeNone;
+        gDirectionInfo[i].device [0] = gDirectionInfo[i].device [1] = NULL;
+        gDirectionInfo[i].element[0] = gDirectionInfo[i].element[1] = NULL;
+    }
+
+    for (int i = 0; i < kNumButtons; i++)
+    {
+        gActionRecs[i].fDevice   = NULL;
+        gActionRecs[i].fElement  = NULL;
+        gActionRecs[i].fValue    = 0;
+        gActionRecs[i].fOldValue = -2;
+    }
 }
 
 void ReleaseHID (void)
@@ -955,12 +556,6 @@ void ReleaseHID (void)
 //        DisposeNibReference(nibRef);
 //    }
 //}
-
-long ISpKeyIsPressed (int needID)
-{
-//    return (gActionRecs[needID].fDevice ? HIDGetElementValue(gActionRecs[needID].fDevice, gActionRecs[needID].fElement) : 0);
-    return false;
-}
 
 void JoypadScanDirection (int i, uint32 *pad)
 {
@@ -1075,76 +670,76 @@ void JoypadScanDirection (int i, uint32 *pad)
 
 static void JoypadSetDirectionInfo (void)
 {
-//    for (int i = 0; i < MAC_MAX_PLAYERS; i++)
-//    {
-//        if (((gActionRecs[kUp(i)].fDevice) && (gActionRecs[kUp(i)].fElement)) &&
-//            ((gActionRecs[kDn(i)].fDevice) && (gActionRecs[kDn(i)].fElement)) &&
-//            ((gActionRecs[kLf(i)].fDevice) && (gActionRecs[kLf(i)].fElement)) &&
-//            ((gActionRecs[kRt(i)].fDevice) && (gActionRecs[kRt(i)].fElement)))
-//        {
-//            if ((gActionRecs[kUp(i)].fDevice  == gActionRecs[kDn(i)].fDevice)  &&
-//                (gActionRecs[kDn(i)].fDevice  == gActionRecs[kLf(i)].fDevice)  &&
-//                (gActionRecs[kLf(i)].fDevice  == gActionRecs[kRt(i)].fDevice)  &&
-//                (gActionRecs[kUp(i)].fElement == gActionRecs[kDn(i)].fElement) &&
-//                (gActionRecs[kDn(i)].fElement == gActionRecs[kLf(i)].fElement) &&
-//                (gActionRecs[kLf(i)].fElement == gActionRecs[kRt(i)].fElement) &&
-//                (gActionRecs[kUp(i)].fElement->usage == kHIDUsage_GD_Hatswitch))                // Hat Switch
-//            {
-//                if ((gDirectionHint[i] == kPadElemTypeHat8) || (gDirectionHint[i] == kPadElemTypeOtherHat8) ||
-//                    (gDirectionHint[i] == kPadElemTypeHat4) || (gDirectionHint[i] == kPadElemTypeOtherHat4))
-//                    gDirectionInfo[i].type = gDirectionHint[i];
-//                else                                                                            // Assuming...
-//                {
-//                    if ((gActionRecs[kUp(i)].fDevice->vendorID == 1103) || (gActionRecs[kUp(i)].fElement->min == 0))
-//                        gDirectionInfo[i].type = (gActionRecs[kUp(i)].fElement->max > 4) ? kPadElemTypeOtherHat8 : kPadElemTypeOtherHat4;
-//                    else
-//                        gDirectionInfo[i].type = (gActionRecs[kUp(i)].fElement->max > 4) ? kPadElemTypeHat8      : kPadElemTypeHat4;
-//
-//                    gDirectionHint[i] = gDirectionInfo[i].type;
-//                }
-//
-//                gDirectionInfo[i].device [kPadHat] =  gActionRecs[kUp(i)].fDevice;
-//                gDirectionInfo[i].element[kPadHat] =  gActionRecs[kUp(i)].fElement;
-//                gDirectionInfo[i].max    [kPadHat] =  gActionRecs[kUp(i)].fElement->max;
-//                gDirectionInfo[i].min    [kPadHat] =  gActionRecs[kUp(i)].fElement->min;
-//            }
-//            else
-//            if ((gActionRecs[kUp(i)].fDevice  == gActionRecs[kDn(i)].fDevice)               &&
-//                (gActionRecs[kLf(i)].fDevice  == gActionRecs[kRt(i)].fDevice)               &&
-//                (gActionRecs[kUp(i)].fElement == gActionRecs[kDn(i)].fElement)              &&
-//                (gActionRecs[kLf(i)].fElement == gActionRecs[kRt(i)].fElement)              &&
-//                (gActionRecs[kUp(i)].fElement->max - gActionRecs[kUp(i)].fElement->min > 1) &&
-//                (gActionRecs[kLf(i)].fElement->max - gActionRecs[kLf(i)].fElement->min > 1))    // Axis (maybe)
-//            {
-//                gDirectionInfo[i].type = gDirectionHint[i] = kPadElemTypeAxis;
-//
-//                gDirectionInfo[i].device [kPadYAxis] = gActionRecs[kUp(i)].fDevice;
-//                gDirectionInfo[i].element[kPadYAxis] = gActionRecs[kUp(i)].fElement;
-//                gDirectionInfo[i].max    [kPadYAxis] = gActionRecs[kUp(i)].fElement->max;
-//                gDirectionInfo[i].min    [kPadYAxis] = gActionRecs[kUp(i)].fElement->min;
-//                gDirectionInfo[i].mid    [kPadYAxis] = (gDirectionInfo[i].max[kPadYAxis] + gDirectionInfo[i].min[kPadYAxis]) >> 1;
-//                gDirectionInfo[i].maxmid [kPadYAxis] = (gDirectionInfo[i].max[kPadYAxis] + gDirectionInfo[i].mid[kPadYAxis]) >> 1;
-//                gDirectionInfo[i].midmin [kPadYAxis] = (gDirectionInfo[i].mid[kPadYAxis] + gDirectionInfo[i].min[kPadYAxis]) >> 1;
-//
-//                gDirectionInfo[i].device [kPadXAxis] = gActionRecs[kLf(i)].fDevice;
-//                gDirectionInfo[i].element[kPadXAxis] = gActionRecs[kLf(i)].fElement;
-//                gDirectionInfo[i].max    [kPadXAxis] = gActionRecs[kLf(i)].fElement->max;
-//                gDirectionInfo[i].min    [kPadXAxis] = gActionRecs[kLf(i)].fElement->min;
-//                gDirectionInfo[i].mid    [kPadXAxis] = (gDirectionInfo[i].max[kPadXAxis] + gDirectionInfo[i].min[kPadXAxis]) >> 1;
-//                gDirectionInfo[i].maxmid [kPadXAxis] = (gDirectionInfo[i].max[kPadXAxis] + gDirectionInfo[i].mid[kPadXAxis]) >> 1;
-//                gDirectionInfo[i].midmin [kPadXAxis] = (gDirectionInfo[i].mid[kPadXAxis] + gDirectionInfo[i].min[kPadXAxis]) >> 1;
-//            }
-//            else                                                                                // Button (maybe)
-//                gDirectionInfo[i].type = gDirectionHint[i] = kPadElemTypeButton;
-//        }
-//        else
-//        {
-//            gActionRecs[kUp(i)].fDevice  = gActionRecs[kDn(i)].fDevice  = gActionRecs[kLf(i)].fDevice  = gActionRecs[kRt(i)].fDevice  = NULL;
-//            gActionRecs[kUp(i)].fElement = gActionRecs[kDn(i)].fElement = gActionRecs[kLf(i)].fElement = gActionRecs[kRt(i)].fElement = NULL;
-//
-//            gDirectionInfo[i].type = gDirectionHint[i] = kPadElemTypeNone;
-//            gDirectionInfo[i].device [0] = gDirectionInfo[i].device [1] = NULL;
-//            gDirectionInfo[i].element[0] = gDirectionInfo[i].element[1] = NULL;
-//        }
-//    }
+    for (int i = 0; i < MAC_MAX_PLAYERS; i++)
+    {
+        if (((gActionRecs[kUp(i)].fDevice) && (gActionRecs[kUp(i)].fElement)) &&
+            ((gActionRecs[kDn(i)].fDevice) && (gActionRecs[kDn(i)].fElement)) &&
+            ((gActionRecs[kLf(i)].fDevice) && (gActionRecs[kLf(i)].fElement)) &&
+            ((gActionRecs[kRt(i)].fDevice) && (gActionRecs[kRt(i)].fElement)))
+        {
+            if ((gActionRecs[kUp(i)].fDevice  == gActionRecs[kDn(i)].fDevice)  &&
+                (gActionRecs[kDn(i)].fDevice  == gActionRecs[kLf(i)].fDevice)  &&
+                (gActionRecs[kLf(i)].fDevice  == gActionRecs[kRt(i)].fDevice)  &&
+                (gActionRecs[kUp(i)].fElement == gActionRecs[kDn(i)].fElement) &&
+                (gActionRecs[kDn(i)].fElement == gActionRecs[kLf(i)].fElement) &&
+                (gActionRecs[kLf(i)].fElement == gActionRecs[kRt(i)].fElement) &&
+                (gActionRecs[kUp(i)].fElement->usage == kHIDUsage_GD_Hatswitch))                // Hat Switch
+            {
+                if ((gDirectionHint[i] == kPadElemTypeHat8) || (gDirectionHint[i] == kPadElemTypeOtherHat8) ||
+                    (gDirectionHint[i] == kPadElemTypeHat4) || (gDirectionHint[i] == kPadElemTypeOtherHat4))
+                    gDirectionInfo[i].type = gDirectionHint[i];
+                else                                                                            // Assuming...
+                {
+                    if ((gActionRecs[kUp(i)].fDevice->vendorID == 1103) || (gActionRecs[kUp(i)].fElement->min == 0))
+                        gDirectionInfo[i].type = (gActionRecs[kUp(i)].fElement->max > 4) ? kPadElemTypeOtherHat8 : kPadElemTypeOtherHat4;
+                    else
+                        gDirectionInfo[i].type = (gActionRecs[kUp(i)].fElement->max > 4) ? kPadElemTypeHat8      : kPadElemTypeHat4;
+
+                    gDirectionHint[i] = gDirectionInfo[i].type;
+                }
+
+                gDirectionInfo[i].device [kPadHat] =  gActionRecs[kUp(i)].fDevice;
+                gDirectionInfo[i].element[kPadHat] =  gActionRecs[kUp(i)].fElement;
+                gDirectionInfo[i].max    [kPadHat] =  gActionRecs[kUp(i)].fElement->max;
+                gDirectionInfo[i].min    [kPadHat] =  gActionRecs[kUp(i)].fElement->min;
+            }
+            else
+            if ((gActionRecs[kUp(i)].fDevice  == gActionRecs[kDn(i)].fDevice)               &&
+                (gActionRecs[kLf(i)].fDevice  == gActionRecs[kRt(i)].fDevice)               &&
+                (gActionRecs[kUp(i)].fElement == gActionRecs[kDn(i)].fElement)              &&
+                (gActionRecs[kLf(i)].fElement == gActionRecs[kRt(i)].fElement)              &&
+                (gActionRecs[kUp(i)].fElement->max - gActionRecs[kUp(i)].fElement->min > 1) &&
+                (gActionRecs[kLf(i)].fElement->max - gActionRecs[kLf(i)].fElement->min > 1))    // Axis (maybe)
+            {
+                gDirectionInfo[i].type = gDirectionHint[i] = kPadElemTypeAxis;
+
+                gDirectionInfo[i].device [kPadYAxis] = gActionRecs[kUp(i)].fDevice;
+                gDirectionInfo[i].element[kPadYAxis] = gActionRecs[kUp(i)].fElement;
+                gDirectionInfo[i].max    [kPadYAxis] = gActionRecs[kUp(i)].fElement->max;
+                gDirectionInfo[i].min    [kPadYAxis] = gActionRecs[kUp(i)].fElement->min;
+                gDirectionInfo[i].mid    [kPadYAxis] = (gDirectionInfo[i].max[kPadYAxis] + gDirectionInfo[i].min[kPadYAxis]) >> 1;
+                gDirectionInfo[i].maxmid [kPadYAxis] = (gDirectionInfo[i].max[kPadYAxis] + gDirectionInfo[i].mid[kPadYAxis]) >> 1;
+                gDirectionInfo[i].midmin [kPadYAxis] = (gDirectionInfo[i].mid[kPadYAxis] + gDirectionInfo[i].min[kPadYAxis]) >> 1;
+
+                gDirectionInfo[i].device [kPadXAxis] = gActionRecs[kLf(i)].fDevice;
+                gDirectionInfo[i].element[kPadXAxis] = gActionRecs[kLf(i)].fElement;
+                gDirectionInfo[i].max    [kPadXAxis] = gActionRecs[kLf(i)].fElement->max;
+                gDirectionInfo[i].min    [kPadXAxis] = gActionRecs[kLf(i)].fElement->min;
+                gDirectionInfo[i].mid    [kPadXAxis] = (gDirectionInfo[i].max[kPadXAxis] + gDirectionInfo[i].min[kPadXAxis]) >> 1;
+                gDirectionInfo[i].maxmid [kPadXAxis] = (gDirectionInfo[i].max[kPadXAxis] + gDirectionInfo[i].mid[kPadXAxis]) >> 1;
+                gDirectionInfo[i].midmin [kPadXAxis] = (gDirectionInfo[i].mid[kPadXAxis] + gDirectionInfo[i].min[kPadXAxis]) >> 1;
+            }
+            else                                                                                // Button (maybe)
+                gDirectionInfo[i].type = gDirectionHint[i] = kPadElemTypeButton;
+        }
+        else
+        {
+            gActionRecs[kUp(i)].fDevice  = gActionRecs[kDn(i)].fDevice  = gActionRecs[kLf(i)].fDevice  = gActionRecs[kRt(i)].fDevice  = NULL;
+            gActionRecs[kUp(i)].fElement = gActionRecs[kDn(i)].fElement = gActionRecs[kLf(i)].fElement = gActionRecs[kRt(i)].fElement = NULL;
+
+            gDirectionInfo[i].type = gDirectionHint[i] = kPadElemTypeNone;
+            gDirectionInfo[i].device [0] = gDirectionInfo[i].device [1] = NULL;
+            gDirectionInfo[i].element[0] = gDirectionInfo[i].element[1] = NULL;
+        }
+    }
 }
