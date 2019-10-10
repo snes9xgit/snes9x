@@ -10,7 +10,7 @@
 namespace TileImpl {
 
 	template<class MATH, class BPSTART>
-	void Normal2x1Base<MATH, BPSTART>::Draw(uint8 N, uint8 M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2)
+	void Normal2x1Base<MATH, BPSTART>::Draw(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2)
 	{
 		(void) OffsetInLine;
 		if (Z1 > GFX.DB[Offset + 2 * N] && (M))

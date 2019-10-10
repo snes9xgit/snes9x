@@ -38,7 +38,7 @@ namespace TileImpl {
 		enum { Pitch = BPSTART::Pitch };
 		typedef BPSTART bpstart_t;
 
-		static void Draw(uint8 N, uint8 M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2);
+		static void Draw(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2);
 	};
 
 	template<class MATH>
@@ -52,7 +52,7 @@ namespace TileImpl {
 		enum { Pitch = BPSTART::Pitch };
 		typedef BPSTART bpstart_t;
 
-		static void Draw(uint8 N, uint8 M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2);
+		static void Draw(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2);
 	};
 
 	template<class MATH>
@@ -75,7 +75,7 @@ namespace TileImpl {
 		enum { Pitch = BPSTART::Pitch };
 		typedef BPSTART bpstart_t;
 
-		static void Draw(uint8 N, uint8 M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2);
+		static void Draw(int N, int M, uint32 Offset, uint32 OffsetInLine, uint8 Pix, uint8 Z1, uint8 Z2);
 	};
 
 	template<class MATH>
