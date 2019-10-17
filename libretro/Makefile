@@ -198,6 +198,20 @@ else ifneq (,$(findstring ios,$(platform)))
       CXXFLAGS += -miphoneos-version-min=5.0
    endif
 
+#tvOS
+else ifeq ($(platform), tvos-arm64)
+   CFLAGS += $(LTO)
+   CXXFLAGS += $(LTO)
+   LDFLAGS += $(LTO)
+   TARGET := $(TARGET_NAME)_libretro_tvos.dylib
+   fpic := -fPIC
+   SHARED := -dynamiclib
+   ifeq ($(IOSSDK),)
+      IOSSDK := $(shell xcodebuild -version -sdk appletvos Path)
+   endif
+   CXXFLAGS += -DIOS
+   CXXFLAGS += -DARM
+
 # Theos
 else ifeq ($(platform), theos_ios)
    CFLAGS += $(LTO)
@@ -302,22 +316,6 @@ else ifneq (,$(filter $(platform), ngc wii wiiu))
 else ifeq ($(platform), emscripten)
    TARGET := $(TARGET_NAME)_libretro_$(platform).bc
    STATIC_LINKING = 1
-
-# Genode
-else ifeq ($(platform), genode)
-   TARGET  := $(TARGET_NAME)_libretro.lib.so
-   PKG_CONFIG := genode-lib genode-stdcxx
-   CXXFLAGS += -D__GENODE__
-   CXXFLAGS += $(shell pkg-config --cflags $(PKG_CONFIG))
-
-   LDFLAGS += -shared --version-script=link.T
-   LDFLAGS += $(shell pkg-config --libs $(PKG_CONFIG))
-
-   CC  = $(shell pkg-config genode-base --variable=cc)
-   CXX = $(shell pkg-config genode-base --variable=cxx)
-   LD  = $(shell pkg-config genode-base --variable=ld)
-   AR  = $(shell pkg-config genode-base --variable=ar) -rcs
-   LIBS =
 
 # Windows MSVC 2003 Xbox 1
 else ifeq ($(platform), xbox1_msvc2003)
@@ -551,8 +549,8 @@ else
    CXXFLAGS += $(LTO)
    LDFLAGS += $(LTO)
    TARGET := $(TARGET_NAME)_libretro.dll
-   CC = gcc
-   CXX = g++
+   CC ?= gcc
+   CXX ?= g++
    SHARED := -shared -static-libgcc -static-libstdc++ -s -Wl,--version-script=link.T
    CXXFLAGS += -D__WIN32__
 endif
@@ -606,13 +604,13 @@ else ifneq (,$(findstring msvc,$(platform)))
    WARNINGS_DEFINES =
    CODE_DEFINES =
 else
-   WARNINGS_DEFINES = -Wall -W -Wno-unused-parameter
+   WARNINGS_DEFINES = -Wall -W -Wno-unused-parameter -Wno-missing-field-initializers
    CODE_DEFINES = -fomit-frame-pointer
 endif
 
 CXXFLAGS	+= $(CODE_DEFINES) $(WARNINGS_DEFINES) $(fpic)
 CXXFLAGS	+= -DRIGHTSHIFT_IS_SAR -D__LIBRETRO__ -DALLOW_CPU_OVERCLOCK
-CFLAGS		= $(CXXFLAGS)
+CFLAGS		:= $(CXXFLAGS)
 CFLAGS          += -DHAVE_STDINT_H
 CXXFLAGS        += -DHAVE_STDINT_H
 ifeq (,$(findstring msvc,$(platform)))
@@ -641,7 +639,7 @@ ifeq ($(STATIC_LINKING),1)
 else
 	LD = link.exe
 endif
-else ifneq ($(platform),genode)
+else
 	LD = $(CXX)
 endif
 
@@ -657,13 +655,11 @@ else
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
-	@echo "** BUILDING $(TARGET) FOR PLATFORM $(platform) **"
 ifeq ($(STATIC_LINKING), 1)
 	$(AR) rcs $@ $(OBJECTS)
 else
 	+$(LD) $(fpic) $(SHARED) $(LINKOUT)$@ $(OBJECTS) $(LDFLAGS) $(LIBS)
 endif
-	@echo "** BUILD SUCCESSFUL **"
 
 %.o: %.cpp 
 	$(CXX) $(INCFLAGS) $(CPPFLAGS) $(CXXFLAGS) -c $(OBJOUT)$@ $<
