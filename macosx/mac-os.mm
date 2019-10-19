@@ -174,8 +174,8 @@ CFStringRef			multiCartPath[2];
 IconRef				macIconRef[118];
 #endif
 
-bool8               pressedKeys[kNumButtons] = { 0 };
-bool8               pressedGamepadButtons[kNumButtons] = { 0 };
+bool8               pressedKeys[MAC_MAX_PLAYERS][kNumButtons] = { 0 };
+bool8               pressedGamepadButtons[MAC_MAX_PLAYERS][kNumButtons] = { 0 };
 os_unfair_lock      keyLock;
 os_unfair_lock      renderLock;
 
@@ -357,51 +357,51 @@ static void * MacSnes9xThread (void *)
     return (NULL);
 }
 
-void CopyPressedKeys(bool8 keys[MAC_NUM_KEYCODES], bool8 gamepadButtons[kNumButtons])
+void CopyPressedKeys(bool8 keys[MAC_MAX_PLAYERS][kNumButtons], bool8 gamepadButtons[MAC_MAX_PLAYERS][kNumButtons])
 {
     os_unfair_lock_lock(&keyLock);
     NSEventModifierFlags flags = [NSEvent modifierFlags];
 
-    int16 key = keyCodes[kVK_Shift];
-    if ( key >= 0 && key < MAC_NUM_KEYCODES)
+    struct S9xButton button = keyCodes[kVK_Shift];
+    if (button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player < MAC_MAX_PLAYERS)
     {
-        pressedKeys[key] = (flags & NSEventModifierFlagShift) != 0;
+        pressedKeys[button.player][button.buttonCode] = (flags & NSEventModifierFlagShift) != 0;
     }
 
-    key = keyCodes[kVK_Command];
-    if ( key >= 0 && key < MAC_NUM_KEYCODES)
+    button = keyCodes[kVK_Command];
+    if (button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player < MAC_MAX_PLAYERS)
     {
-        pressedKeys[key] = (flags & NSEventModifierFlagCommand) != 0;
+        pressedKeys[button.player][button.buttonCode] = (flags & NSEventModifierFlagCommand) != 0;
     }
 
-    key = keyCodes[kVK_Control];
-    if ( key >= 0 && key < MAC_NUM_KEYCODES)
+    button = keyCodes[kVK_Control];
+    if (button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player < MAC_MAX_PLAYERS)
     {
-        pressedKeys[key] = (flags & NSEventModifierFlagControl) != 0;
+        pressedKeys[button.player][button.buttonCode] = (flags & NSEventModifierFlagControl) != 0;
     }
 
-    key = keyCodes[kVK_CapsLock];
-    if ( key >= 0 && key < MAC_NUM_KEYCODES)
+    button = keyCodes[kVK_CapsLock];
+    if (button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player < MAC_MAX_PLAYERS)
     {
-        pressedKeys[key] = (flags & NSEventModifierFlagCapsLock) != 0;
+        pressedKeys[button.player][button.buttonCode] = (flags & NSEventModifierFlagCapsLock) != 0;
     }
 
-    key = keyCodes[kVK_Option];
-    if ( key >= 0 && key < MAC_NUM_KEYCODES)
+    button = keyCodes[kVK_Option];
+    if (button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player < MAC_MAX_PLAYERS)
     {
-        pressedKeys[key] = (flags & NSEventModifierFlagOption) != 0;
+        pressedKeys[button.player][button.buttonCode] = (flags & NSEventModifierFlagOption) != 0;
     }
 
-    key = keyCodes[kVK_Help];
-    if ( key >= 0 && key < MAC_NUM_KEYCODES)
+    button = keyCodes[kVK_Help];
+    if (button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player < MAC_MAX_PLAYERS)
     {
-        pressedKeys[key] = (flags & NSEventModifierFlagHelp) != 0;
+        pressedKeys[button.player][button.buttonCode] = (flags & NSEventModifierFlagHelp) != 0;
     }
 
-    key = keyCodes[kVK_Function];
-    if ( key >= 0 && key < MAC_NUM_KEYCODES)
+    button = keyCodes[kVK_Function];
+    if (button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player < MAC_MAX_PLAYERS)
     {
-        pressedKeys[key] = (flags & NSEventModifierFlagFunction) != 0;
+        pressedKeys[button.player][button.buttonCode] = (flags & NSEventModifierFlagFunction) != 0;
     }
 
     memcpy(keys, pressedKeys, sizeof(pressedKeys));
@@ -1760,8 +1760,8 @@ int PromptFreezeDefrost (Boolean freezing)
     CGRect              rct;
     CFURLRef            url;
     FSCatalogInfo       info;
-    bool8               keys[kNumButtons];
-    bool8               gamepadButtons[kNumButtons];
+    bool8               keys[MAC_MAX_PLAYERS][kNumButtons];
+    bool8               gamepadButtons[MAC_MAX_PLAYERS][kNumButtons];
     CFAbsoluteTime      newestDate, currentDate;
     int64               startTime;
     float               x, y;
@@ -1963,69 +1963,69 @@ int PromptFreezeDefrost (Boolean freezing)
 
             for (int count = 0; count <= 12; count++)
             {
-                while (KeyIsPressed(keys, gamepadButtons, count))
+                while (KeyIsPressed(keys, gamepadButtons, 0, count))
                 {
                     result = count - 1;
                     CopyPressedKeys(keys, gamepadButtons);
                 }
             }
 
-            while (KeyIsPressed(keys, gamepadButtons, k1PRight))
+            while (KeyIsPressed(keys, gamepadButtons, 0, kRight))
             {
                 startTime = mach_absolute_time();
                 current_selection += 1;
                 if (current_selection > 11)
                     current_selection -= 12;
                 UpdateFreezeDefrostScreen(current_selection, image, draw, ctx);
-                while (KeyIsPressed(keys, gamepadButtons, k1PRight) && (mach_absolute_time() < (startTime + repeatDelay)))
+                while (KeyIsPressed(keys, gamepadButtons, 0, kRight) && (mach_absolute_time() < (startTime + repeatDelay)))
                     CopyPressedKeys(keys, gamepadButtons);
             }
 
-            while (KeyIsPressed(keys, gamepadButtons, k1PLeft))
+            while (KeyIsPressed(keys, gamepadButtons, 0, kLeft))
             {
                 startTime = mach_absolute_time();
                 current_selection -= 1;
                 if (current_selection < 0)
                     current_selection += 12;
                 UpdateFreezeDefrostScreen(current_selection, image, draw, ctx);
-                while (KeyIsPressed(keys, gamepadButtons, k1PLeft) && (mach_absolute_time() < (startTime + repeatDelay)))
+                while (KeyIsPressed(keys, gamepadButtons, 0, kLeft) && (mach_absolute_time() < (startTime + repeatDelay)))
                     CopyPressedKeys(keys, gamepadButtons);
             }
 
-            while (KeyIsPressed(keys, gamepadButtons, k1PDown))
+            while (KeyIsPressed(keys, gamepadButtons, 0, kDown))
             {
                 startTime = mach_absolute_time();
                 current_selection += 4;
                 if (current_selection > 11)
                     current_selection -= 12;
                 UpdateFreezeDefrostScreen(current_selection, image, draw, ctx);
-                while (KeyIsPressed(keys, gamepadButtons, k1PDown) && (mach_absolute_time() < (startTime + repeatDelay)))
+                while (KeyIsPressed(keys, gamepadButtons, 0, kDown) && (mach_absolute_time() < (startTime + repeatDelay)))
                     CopyPressedKeys(keys, gamepadButtons);
             }
 
-            while (KeyIsPressed(keys, gamepadButtons, k1PUp))
+            while (KeyIsPressed(keys, gamepadButtons, 0, kUp))
             {
                 startTime = mach_absolute_time();
                 current_selection -= 4;
                 if (current_selection < 0)
                     current_selection += 12;
                 UpdateFreezeDefrostScreen(current_selection, image, draw, ctx);
-                while (KeyIsPressed(keys, gamepadButtons, k1PUp) && (mach_absolute_time() < (startTime + repeatDelay)))
+                while (KeyIsPressed(keys, gamepadButtons, 0, kUp) && (mach_absolute_time() < (startTime + repeatDelay)))
                     CopyPressedKeys(keys, gamepadButtons);
             }
 
-            while (KeyIsPressed(keys, gamepadButtons, k1PA     ) ||
-                   KeyIsPressed(keys, gamepadButtons, k2PA     ) ||
-                   KeyIsPressed(keys, gamepadButtons, k1PB     ) ||
-                   KeyIsPressed(keys, gamepadButtons, k2PB     ) ||
-                   KeyIsPressed(keys, gamepadButtons, k1PX     ) ||
-                   KeyIsPressed(keys, gamepadButtons, k2PX     ) ||
-                   KeyIsPressed(keys, gamepadButtons, k1PY     ) ||
-                   KeyIsPressed(keys, gamepadButtons, k2PY     ) ||
-                   KeyIsPressed(keys, gamepadButtons, k1PStart ) ||
-                   KeyIsPressed(keys, gamepadButtons, k2PStart ) ||
-                   KeyIsPressed(keys, gamepadButtons, k1PSelect) ||
-                   KeyIsPressed(keys, gamepadButtons, k2PSelect))
+            while (KeyIsPressed(keys, gamepadButtons, 1, kA     ) ||
+                   KeyIsPressed(keys, gamepadButtons, 2, kA     ) ||
+                   KeyIsPressed(keys, gamepadButtons, 1, kB     ) ||
+                   KeyIsPressed(keys, gamepadButtons, 2, kB     ) ||
+                   KeyIsPressed(keys, gamepadButtons, 1, kX     ) ||
+                   KeyIsPressed(keys, gamepadButtons, 2, kX     ) ||
+                   KeyIsPressed(keys, gamepadButtons, 1, kY     ) ||
+                   KeyIsPressed(keys, gamepadButtons, 2, kY     ) ||
+                   KeyIsPressed(keys, gamepadButtons, 1, kStart ) ||
+                   KeyIsPressed(keys, gamepadButtons, 2, kStart ) ||
+                   KeyIsPressed(keys, gamepadButtons, 1, kSelect) ||
+                   KeyIsPressed(keys, gamepadButtons, 2, kSelect))
             {
                 CopyPressedKeys(keys, gamepadButtons);
                 result = current_selection;
@@ -2034,8 +2034,8 @@ int PromptFreezeDefrost (Boolean freezing)
             uint32    pad1, pad2;
 
             while (ISpKeyIsPressed(keys, gamepadButtons, kISpEsc) ||
-                   KeyIsPressed(keys, gamepadButtons, k1PStart)   ||
-                   KeyIsPressed(keys, gamepadButtons, k2PStart))
+                   KeyIsPressed(keys, gamepadButtons, 0, kStart)   ||
+                   KeyIsPressed(keys, gamepadButtons, 1, kStart))
             {
                 CopyPressedKeys(keys, gamepadButtons);
                 result = -1;
@@ -2113,14 +2113,14 @@ int PromptFreezeDefrost (Boolean freezing)
                 } while (((pad1 & 0x0400) || (pad2 & 0x0400)) && (mach_absolute_time() < (startTime + repeatDelay)));
             }
 
-            while (KeyIsPressed(keys, gamepadButtons, k1PA) ||
-                   KeyIsPressed(keys, gamepadButtons, k2PA) ||
-                   KeyIsPressed(keys, gamepadButtons, k1PB) ||
-                   KeyIsPressed(keys, gamepadButtons, k2PB) ||
-                   KeyIsPressed(keys, gamepadButtons, k1PX) ||
-                   KeyIsPressed(keys, gamepadButtons, k2PX) ||
-                   KeyIsPressed(keys, gamepadButtons, k1PY) ||
-                   KeyIsPressed(keys, gamepadButtons, k2PY))
+            while (KeyIsPressed(keys, gamepadButtons, 0, kA) ||
+                   KeyIsPressed(keys, gamepadButtons, 1, kA) ||
+                   KeyIsPressed(keys, gamepadButtons, 0, kB) ||
+                   KeyIsPressed(keys, gamepadButtons, 1, kB) ||
+                   KeyIsPressed(keys, gamepadButtons, 0, kX) ||
+                   KeyIsPressed(keys, gamepadButtons, 1, kX) ||
+                   KeyIsPressed(keys, gamepadButtons, 0, kY) ||
+                   KeyIsPressed(keys, gamepadButtons, 1, kY))
                 result = current_selection;
         }
 
@@ -2177,8 +2177,8 @@ static void UpdateFreezeDefrostScreen (int newIndex, CGImageRef image, uint8 *dr
 
 static void ProcessInput (void)
 {
-    bool8           keys[MAC_NUM_KEYCODES];
-    bool8           gamepadButtons[kNumButtons];
+    bool8           keys[MAC_MAX_PLAYERS][kNumButtons];
+    bool8           gamepadButtons[MAC_MAX_PLAYERS][kNumButtons];
     bool8           isok, fnbtn, altbtn, tcbtn;
     static bool8    toggleff = false, lastTimeTT = false, lastTimeFn = false, ffUp = false, ffDown = false, ffUpSp = false, ffDownSp = false;
 
@@ -2253,106 +2253,6 @@ static void ProcessInput (void)
     }
     else
         ffDownSp = false;
-
-    controlPad[0] = controlPad[1] = 0;
-
-    JoypadScanDirection(0, &(controlPad[0]));
-    if (KeyIsPressed(keys, gamepadButtons, k1PR     ))    controlPad[0] |= 0x0010;
-    if (KeyIsPressed(keys, gamepadButtons, k1PL     ))    controlPad[0] |= 0x0020;
-    if (KeyIsPressed(keys, gamepadButtons, k1PX     ))    controlPad[0] |= 0x0040;
-    if (KeyIsPressed(keys, gamepadButtons, k1PA     ))    controlPad[0] |= 0x0080;
-    if (KeyIsPressed(keys, gamepadButtons, k1PStart ))    controlPad[0] |= 0x1000;
-    if (KeyIsPressed(keys, gamepadButtons, k1PSelect))    controlPad[0] |= 0x2000;
-    if (KeyIsPressed(keys, gamepadButtons, k1PY     ))    controlPad[0] |= 0x4000;
-    if (KeyIsPressed(keys, gamepadButtons, k1PB     ))    controlPad[0] |= 0x8000;
-
-    JoypadScanDirection(1, &(controlPad[1]));
-    if (KeyIsPressed(keys, gamepadButtons, k2PR     ))    controlPad[1] |= 0x0010;
-    if (KeyIsPressed(keys, gamepadButtons, k2PL     ))    controlPad[1] |= 0x0020;
-    if (KeyIsPressed(keys, gamepadButtons, k2PX     ))    controlPad[1] |= 0x0040;
-    if (KeyIsPressed(keys, gamepadButtons, k2PA     ))    controlPad[1] |= 0x0080;
-    if (KeyIsPressed(keys, gamepadButtons, k2PStart ))    controlPad[1] |= 0x1000;
-    if (KeyIsPressed(keys, gamepadButtons, k2PSelect))    controlPad[1] |= 0x2000;
-    if (KeyIsPressed(keys, gamepadButtons, k2PY     ))    controlPad[1] |= 0x4000;
-    if (KeyIsPressed(keys, gamepadButtons, k2PB     ))    controlPad[1] |= 0x8000;
-
-    if (((macControllerOption == SNES_MULTIPLAYER5) || (macControllerOption == SNES_MULTIPLAYER5_2)) && Settings.MultiPlayer5Master)
-    {
-        controlPad[2] = controlPad[3] = controlPad[4] = 0;
-
-        JoypadScanDirection(2, &(controlPad[2]));
-        if (KeyIsPressed(keys, gamepadButtons, k3PR     ))    controlPad[2] |= 0x0010;
-        if (KeyIsPressed(keys, gamepadButtons, k3PL     ))    controlPad[2] |= 0x0020;
-        if (KeyIsPressed(keys, gamepadButtons, k3PX     ))    controlPad[2] |= 0x0040;
-        if (KeyIsPressed(keys, gamepadButtons, k3PA     ))    controlPad[2] |= 0x0080;
-        if (KeyIsPressed(keys, gamepadButtons, k3PStart ))    controlPad[2] |= 0x1000;
-        if (KeyIsPressed(keys, gamepadButtons, k3PSelect))    controlPad[2] |= 0x2000;
-        if (KeyIsPressed(keys, gamepadButtons, k3PY     ))    controlPad[2] |= 0x4000;
-        if (KeyIsPressed(keys, gamepadButtons, k3PB     ))    controlPad[2] |= 0x8000;
-
-        JoypadScanDirection(3, &(controlPad[3]));
-        if (KeyIsPressed(keys, gamepadButtons, k4PR     ))    controlPad[3] |= 0x0010;
-        if (KeyIsPressed(keys, gamepadButtons, k4PL     ))    controlPad[3] |= 0x0020;
-        if (KeyIsPressed(keys, gamepadButtons, k4PX     ))    controlPad[3] |= 0x0040;
-        if (KeyIsPressed(keys, gamepadButtons, k4PA     ))    controlPad[3] |= 0x0080;
-        if (KeyIsPressed(keys, gamepadButtons, k4PStart ))    controlPad[3] |= 0x1000;
-        if (KeyIsPressed(keys, gamepadButtons, k4PSelect))    controlPad[3] |= 0x2000;
-        if (KeyIsPressed(keys, gamepadButtons, k4PY     ))    controlPad[3] |= 0x4000;
-        if (KeyIsPressed(keys, gamepadButtons, k4PB     ))    controlPad[3] |= 0x8000;
-
-        JoypadScanDirection(4, &(controlPad[4]));
-        if (KeyIsPressed(keys, gamepadButtons, k5PR     ))    controlPad[4] |= 0x0010;
-        if (KeyIsPressed(keys, gamepadButtons, k5PL     ))    controlPad[4] |= 0x0020;
-        if (KeyIsPressed(keys, gamepadButtons, k5PX     ))    controlPad[4] |= 0x0040;
-        if (KeyIsPressed(keys, gamepadButtons, k5PA     ))    controlPad[4] |= 0x0080;
-        if (KeyIsPressed(keys, gamepadButtons, k5PStart ))    controlPad[4] |= 0x1000;
-        if (KeyIsPressed(keys, gamepadButtons, k5PSelect))    controlPad[4] |= 0x2000;
-        if (KeyIsPressed(keys, gamepadButtons, k5PY     ))    controlPad[4] |= 0x4000;
-        if (KeyIsPressed(keys, gamepadButtons, k5PB     ))    controlPad[4] |= 0x8000;
-
-        ControlPadFlagsToS9xReportButtons(2, controlPad[2]);
-        ControlPadFlagsToS9xReportButtons(3, controlPad[3]);
-        ControlPadFlagsToS9xReportButtons(4, controlPad[4]);
-
-        if (macControllerOption == SNES_MULTIPLAYER5_2)
-        {
-            controlPad[5] = controlPad[6] = controlPad[7] = 0;
-
-            JoypadScanDirection(5, &(controlPad[5]));
-            if (KeyIsPressed(keys, gamepadButtons, k6PR     ))    controlPad[5] |= 0x0010;
-            if (KeyIsPressed(keys, gamepadButtons, k6PL     ))    controlPad[5] |= 0x0020;
-            if (KeyIsPressed(keys, gamepadButtons, k6PX     ))    controlPad[5] |= 0x0040;
-            if (KeyIsPressed(keys, gamepadButtons, k6PA     ))    controlPad[5] |= 0x0080;
-            if (KeyIsPressed(keys, gamepadButtons, k6PStart ))    controlPad[5] |= 0x1000;
-            if (KeyIsPressed(keys, gamepadButtons, k6PSelect))    controlPad[5] |= 0x2000;
-            if (KeyIsPressed(keys, gamepadButtons, k6PY     ))    controlPad[5] |= 0x4000;
-            if (KeyIsPressed(keys, gamepadButtons, k6PB     ))    controlPad[5] |= 0x8000;
-
-            JoypadScanDirection(6, &(controlPad[6]));
-            if (KeyIsPressed(keys, gamepadButtons, k7PR     ))    controlPad[6] |= 0x0010;
-            if (KeyIsPressed(keys, gamepadButtons, k7PL     ))    controlPad[6] |= 0x0020;
-            if (KeyIsPressed(keys, gamepadButtons, k7PX     ))    controlPad[6] |= 0x0040;
-            if (KeyIsPressed(keys, gamepadButtons, k7PA     ))    controlPad[6] |= 0x0080;
-            if (KeyIsPressed(keys, gamepadButtons, k7PStart ))    controlPad[6] |= 0x1000;
-            if (KeyIsPressed(keys, gamepadButtons, k7PSelect))    controlPad[6] |= 0x2000;
-            if (KeyIsPressed(keys, gamepadButtons, k7PY     ))    controlPad[6] |= 0x4000;
-            if (KeyIsPressed(keys, gamepadButtons, k7PB     ))    controlPad[6] |= 0x8000;
-
-            JoypadScanDirection(7, &(controlPad[7]));
-            if (KeyIsPressed(keys, gamepadButtons, k8PR     ))    controlPad[7] |= 0x0010;
-            if (KeyIsPressed(keys, gamepadButtons, k8PL     ))    controlPad[7] |= 0x0020;
-            if (KeyIsPressed(keys, gamepadButtons, k8PX     ))    controlPad[7] |= 0x0040;
-            if (KeyIsPressed(keys, gamepadButtons, k8PA     ))    controlPad[7] |= 0x0080;
-            if (KeyIsPressed(keys, gamepadButtons, k8PStart ))    controlPad[7] |= 0x1000;
-            if (KeyIsPressed(keys, gamepadButtons, k8PSelect))    controlPad[7] |= 0x2000;
-            if (KeyIsPressed(keys, gamepadButtons, k8PY     ))    controlPad[7] |= 0x4000;
-            if (KeyIsPressed(keys, gamepadButtons, k8PB     ))    controlPad[7] |= 0x8000;
-
-            ControlPadFlagsToS9xReportButtons(5, controlPad[5]);
-            ControlPadFlagsToS9xReportButtons(6, controlPad[6]);
-            ControlPadFlagsToS9xReportButtons(7, controlPad[7]);
-        }
-    }
 
     fnbtn  = ISpKeyIsPressed(keys, gamepadButtons, kISpFunction);
     altbtn = ISpKeyIsPressed(keys, gamepadButtons, kISpAlt);
@@ -2499,109 +2399,22 @@ static void ProcessInput (void)
         else
             ffDown = false;
 
-        if (KeyIsPressed(keys, gamepadButtons, k1PR     ))    controlPad[0] |= 0x0010;
-        if (KeyIsPressed(keys, gamepadButtons, k1PL     ))    controlPad[0] |= 0x0020;
-        if (KeyIsPressed(keys, gamepadButtons, k1PX     ))    controlPad[0] |= 0x0040;
-        if (KeyIsPressed(keys, gamepadButtons, k1PA     ))    controlPad[0] |= 0x0080;
-        if (KeyIsPressed(keys, gamepadButtons, k1PRight ))    controlPad[0] |= 0x0100;
-        if (KeyIsPressed(keys, gamepadButtons, k1PLeft  ))    controlPad[0] |= 0x0200;
-        if (KeyIsPressed(keys, gamepadButtons, k1PDown  ))    controlPad[0] |= 0x0400;
-        if (KeyIsPressed(keys, gamepadButtons, k1PUp    ))    controlPad[0] |= 0x0800;
-        if (KeyIsPressed(keys, gamepadButtons, k1PStart ))    controlPad[0] |= 0x1000;
-        if (KeyIsPressed(keys, gamepadButtons, k1PSelect))    controlPad[0] |= 0x2000;
-        if (KeyIsPressed(keys, gamepadButtons, k1PY     ))    controlPad[0] |= 0x4000;
-        if (KeyIsPressed(keys, gamepadButtons, k1PB     ))    controlPad[0] |= 0x8000;
-
-        if (KeyIsPressed(keys, gamepadButtons, k2PR     ))    controlPad[1] |= 0x0010;
-        if (KeyIsPressed(keys, gamepadButtons, k2PL     ))    controlPad[1] |= 0x0020;
-        if (KeyIsPressed(keys, gamepadButtons, k2PX     ))    controlPad[1] |= 0x0040;
-        if (KeyIsPressed(keys, gamepadButtons, k2PA     ))    controlPad[1] |= 0x0080;
-        if (KeyIsPressed(keys, gamepadButtons, k2PRight ))    controlPad[1] |= 0x0100;
-        if (KeyIsPressed(keys, gamepadButtons, k2PLeft  ))    controlPad[1] |= 0x0200;
-        if (KeyIsPressed(keys, gamepadButtons, k2PDown  ))    controlPad[1] |= 0x0400;
-        if (KeyIsPressed(keys, gamepadButtons, k2PUp    ))    controlPad[1] |= 0x0800;
-        if (KeyIsPressed(keys, gamepadButtons, k2PStart ))    controlPad[1] |= 0x1000;
-        if (KeyIsPressed(keys, gamepadButtons, k2PSelect))    controlPad[1] |= 0x2000;
-        if (KeyIsPressed(keys, gamepadButtons, k2PY     ))    controlPad[1] |= 0x4000;
-        if (KeyIsPressed(keys, gamepadButtons, k2PB     ))    controlPad[1] |= 0x8000;
-
-        if (KeyIsPressed(keys, gamepadButtons, k3PR     ))    controlPad[2] |= 0x0010;
-        if (KeyIsPressed(keys, gamepadButtons, k3PL     ))    controlPad[2] |= 0x0020;
-        if (KeyIsPressed(keys, gamepadButtons, k3PX     ))    controlPad[2] |= 0x0040;
-        if (KeyIsPressed(keys, gamepadButtons, k3PA     ))    controlPad[2] |= 0x0080;
-        if (KeyIsPressed(keys, gamepadButtons, k3PRight ))    controlPad[2] |= 0x0100;
-        if (KeyIsPressed(keys, gamepadButtons, k3PLeft  ))    controlPad[2] |= 0x0200;
-        if (KeyIsPressed(keys, gamepadButtons, k3PDown  ))    controlPad[2] |= 0x0400;
-        if (KeyIsPressed(keys, gamepadButtons, k3PUp    ))    controlPad[2] |= 0x0800;
-        if (KeyIsPressed(keys, gamepadButtons, k3PStart ))    controlPad[2] |= 0x1000;
-        if (KeyIsPressed(keys, gamepadButtons, k3PSelect))    controlPad[2] |= 0x2000;
-        if (KeyIsPressed(keys, gamepadButtons, k3PY     ))    controlPad[2] |= 0x4000;
-        if (KeyIsPressed(keys, gamepadButtons, k3PB     ))    controlPad[2] |= 0x8000;
-
-        if (KeyIsPressed(keys, gamepadButtons, k4PR     ))    controlPad[3] |= 0x0010;
-        if (KeyIsPressed(keys, gamepadButtons, k4PL     ))    controlPad[3] |= 0x0020;
-        if (KeyIsPressed(keys, gamepadButtons, k4PX     ))    controlPad[3] |= 0x0040;
-        if (KeyIsPressed(keys, gamepadButtons, k4PA     ))    controlPad[3] |= 0x0080;
-        if (KeyIsPressed(keys, gamepadButtons, k4PRight ))    controlPad[3] |= 0x0100;
-        if (KeyIsPressed(keys, gamepadButtons, k4PLeft  ))    controlPad[3] |= 0x0200;
-        if (KeyIsPressed(keys, gamepadButtons, k4PDown  ))    controlPad[3] |= 0x0400;
-        if (KeyIsPressed(keys, gamepadButtons, k4PUp    ))    controlPad[3] |= 0x0800;
-        if (KeyIsPressed(keys, gamepadButtons, k4PStart ))    controlPad[3] |= 0x1000;
-        if (KeyIsPressed(keys, gamepadButtons, k4PSelect))    controlPad[3] |= 0x2000;
-        if (KeyIsPressed(keys, gamepadButtons, k4PY     ))    controlPad[3] |= 0x4000;
-        if (KeyIsPressed(keys, gamepadButtons, k4PB     ))    controlPad[3] |= 0x8000;
-
-        if (KeyIsPressed(keys, gamepadButtons, k5PR     ))    controlPad[4] |= 0x0010;
-        if (KeyIsPressed(keys, gamepadButtons, k5PL     ))    controlPad[4] |= 0x0020;
-        if (KeyIsPressed(keys, gamepadButtons, k5PX     ))    controlPad[4] |= 0x0040;
-        if (KeyIsPressed(keys, gamepadButtons, k5PA     ))    controlPad[4] |= 0x0080;
-        if (KeyIsPressed(keys, gamepadButtons, k5PRight ))    controlPad[4] |= 0x0100;
-        if (KeyIsPressed(keys, gamepadButtons, k5PLeft  ))    controlPad[4] |= 0x0200;
-        if (KeyIsPressed(keys, gamepadButtons, k5PDown  ))    controlPad[4] |= 0x0400;
-        if (KeyIsPressed(keys, gamepadButtons, k5PUp    ))    controlPad[4] |= 0x0800;
-        if (KeyIsPressed(keys, gamepadButtons, k5PStart ))    controlPad[4] |= 0x1000;
-        if (KeyIsPressed(keys, gamepadButtons, k5PSelect))    controlPad[4] |= 0x2000;
-        if (KeyIsPressed(keys, gamepadButtons, k5PY     ))    controlPad[4] |= 0x4000;
-        if (KeyIsPressed(keys, gamepadButtons, k5PB     ))    controlPad[4] |= 0x8000;
-
-        if (KeyIsPressed(keys, gamepadButtons, k6PR     ))    controlPad[5] |= 0x0010;
-        if (KeyIsPressed(keys, gamepadButtons, k6PL     ))    controlPad[5] |= 0x0020;
-        if (KeyIsPressed(keys, gamepadButtons, k6PX     ))    controlPad[5] |= 0x0040;
-        if (KeyIsPressed(keys, gamepadButtons, k6PA     ))    controlPad[5] |= 0x0080;
-        if (KeyIsPressed(keys, gamepadButtons, k6PRight ))    controlPad[5] |= 0x0100;
-        if (KeyIsPressed(keys, gamepadButtons, k6PLeft  ))    controlPad[5] |= 0x0200;
-        if (KeyIsPressed(keys, gamepadButtons, k6PDown  ))    controlPad[5] |= 0x0400;
-        if (KeyIsPressed(keys, gamepadButtons, k6PUp    ))    controlPad[5] |= 0x0800;
-        if (KeyIsPressed(keys, gamepadButtons, k6PStart ))    controlPad[5] |= 0x1000;
-        if (KeyIsPressed(keys, gamepadButtons, k6PSelect))    controlPad[5] |= 0x2000;
-        if (KeyIsPressed(keys, gamepadButtons, k6PY     ))    controlPad[5] |= 0x4000;
-        if (KeyIsPressed(keys, gamepadButtons, k6PB     ))    controlPad[5] |= 0x8000;
-
-        if (KeyIsPressed(keys, gamepadButtons, k7PR     ))    controlPad[6] |= 0x0010;
-        if (KeyIsPressed(keys, gamepadButtons, k7PL     ))    controlPad[6] |= 0x0020;
-        if (KeyIsPressed(keys, gamepadButtons, k7PX     ))    controlPad[6] |= 0x0040;
-        if (KeyIsPressed(keys, gamepadButtons, k7PA     ))    controlPad[6] |= 0x0080;
-        if (KeyIsPressed(keys, gamepadButtons, k7PRight ))    controlPad[6] |= 0x0100;
-        if (KeyIsPressed(keys, gamepadButtons, k7PLeft  ))    controlPad[6] |= 0x0200;
-        if (KeyIsPressed(keys, gamepadButtons, k7PDown  ))    controlPad[6] |= 0x0400;
-        if (KeyIsPressed(keys, gamepadButtons, k7PUp    ))    controlPad[6] |= 0x0800;
-        if (KeyIsPressed(keys, gamepadButtons, k7PStart ))    controlPad[6] |= 0x1000;
-        if (KeyIsPressed(keys, gamepadButtons, k7PSelect))    controlPad[6] |= 0x2000;
-        if (KeyIsPressed(keys, gamepadButtons, k7PY     ))    controlPad[6] |= 0x4000;
-        if (KeyIsPressed(keys, gamepadButtons, k7PB     ))    controlPad[6] |= 0x8000;
-
-        if (KeyIsPressed(keys, gamepadButtons, k8PR     ))    controlPad[7] |= 0x0010;
-        if (KeyIsPressed(keys, gamepadButtons, k8PL     ))    controlPad[7] |= 0x0020;
-        if (KeyIsPressed(keys, gamepadButtons, k8PX     ))    controlPad[7] |= 0x0040;
-        if (KeyIsPressed(keys, gamepadButtons, k8PA     ))    controlPad[7] |= 0x0080;
-        if (KeyIsPressed(keys, gamepadButtons, k8PRight ))    controlPad[7] |= 0x0100;
-        if (KeyIsPressed(keys, gamepadButtons, k8PLeft  ))    controlPad[7] |= 0x0200;
-        if (KeyIsPressed(keys, gamepadButtons, k8PDown  ))    controlPad[7] |= 0x0400;
-        if (KeyIsPressed(keys, gamepadButtons, k8PUp    ))    controlPad[7] |= 0x0800;
-        if (KeyIsPressed(keys, gamepadButtons, k8PStart ))    controlPad[7] |= 0x1000;
-        if (KeyIsPressed(keys, gamepadButtons, k8PSelect))    controlPad[7] |= 0x2000;
-        if (KeyIsPressed(keys, gamepadButtons, k8PY     ))    controlPad[7] |= 0x4000;
-        if (KeyIsPressed(keys, gamepadButtons, k8PB     ))    controlPad[7] |= 0x8000;
+        for (int i = 0; i < MAC_MAX_PLAYERS; ++i)
+        {
+            controlPad[i] = 0;
+            if (KeyIsPressed(keys, gamepadButtons, i, kR     ))    controlPad[i] |= 0x0010;
+            if (KeyIsPressed(keys, gamepadButtons, i, kL     ))    controlPad[i] |= 0x0020;
+            if (KeyIsPressed(keys, gamepadButtons, i, kX     ))    controlPad[i] |= 0x0040;
+            if (KeyIsPressed(keys, gamepadButtons, i, kA     ))    controlPad[i] |= 0x0080;
+            if (KeyIsPressed(keys, gamepadButtons, i, kRight ))    controlPad[i] |= 0x0100;
+            if (KeyIsPressed(keys, gamepadButtons, i, kLeft  ))    controlPad[i] |= 0x0200;
+            if (KeyIsPressed(keys, gamepadButtons, i, kDown  ))    controlPad[i] |= 0x0400;
+            if (KeyIsPressed(keys, gamepadButtons, i, kUp    ))    controlPad[i] |= 0x0800;
+            if (KeyIsPressed(keys, gamepadButtons, i, kStart ))    controlPad[i] |= 0x1000;
+            if (KeyIsPressed(keys, gamepadButtons, i, kSelect))    controlPad[i] |= 0x2000;
+            if (KeyIsPressed(keys, gamepadButtons, i, kY     ))    controlPad[i] |= 0x4000;
+            if (KeyIsPressed(keys, gamepadButtons, i, kB     ))    controlPad[i] |= 0x8000;
+        }
 
         if (altbtn)
         {
@@ -3127,10 +2940,10 @@ void QuitWithFatalError ( NSString *message)
 - (void)keyDown:(NSEvent *)event
 {
     os_unfair_lock_lock(&keyLock);
-    int16 key = keyCodes[event.keyCode];
-    if ( key >= 0 && key < MAC_NUM_KEYCODES )
+    S9xButton button = keyCodes[event.keyCode];
+    if ( button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player <= 0 && button.player <= MAC_MAX_PLAYERS)
     {
-        pressedKeys[key] = true;
+        pressedKeys[button.player][button.buttonCode] = true;
     }
     os_unfair_lock_unlock(&keyLock);
 }
@@ -3138,10 +2951,10 @@ void QuitWithFatalError ( NSString *message)
 - (void)keyUp:(NSEvent *)event
 {
     os_unfair_lock_lock(&keyLock);
-    int16 key = keyCodes[event.keyCode];
-    if ( key >= 0 && key < MAC_NUM_KEYCODES)
+    S9xButton button = keyCodes[event.keyCode];
+    if ( button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player <= 0 && button.player <= MAC_MAX_PLAYERS)
     {
-        pressedKeys[key] = false;
+        pressedKeys[button.player][button.buttonCode] = false;
     }
     os_unfair_lock_unlock(&keyLock);
 }
@@ -3172,6 +2985,11 @@ void QuitWithFatalError ( NSString *message)
 - (BOOL)canBecomeKeyView
 {
     return YES;
+}
+
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem
+{
+    return !( running && !pauseEmulation);
 }
 
 @end
@@ -3265,7 +3083,7 @@ void QuitWithFatalError ( NSString *message)
 
 - (BOOL)isPaused
 {
-    return pauseEmulation;
+    return running && pauseEmulation;
 }
 
 - (void)pause
@@ -3278,11 +3096,13 @@ void QuitWithFatalError ( NSString *message)
     pauseEmulation = false;
 }
 
-- (void)setControl:(S9xKey)control forKey:(int16)key oldControl:(S9xKey *)oldControl oldKey:(int16 *)oldKey
+- (BOOL)setButton:(S9xButtonCode)button forKey:(int16)key player:(int8)player oldButton:(S9xButtonCode *)oldButton oldPlayer:(int8 *)oldPlayer oldKey:(int16 *)oldKey
 {
+    BOOL result = NO;
     os_unfair_lock_lock(&keyLock);
-    SetKeyCode(key, control, oldKey, oldControl);
+    result = SetKeyCode(key, button, player, oldKey, oldButton, oldPlayer);
     os_unfair_lock_unlock(&keyLock);
+    return result;
 }
 
 - (BOOL)loadROM:(NSURL *)fileURL

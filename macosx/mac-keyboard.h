@@ -26,11 +26,16 @@
 
 #define MAC_NUM_KEYCODES    255
 
-extern int16 keyCodes[MAC_NUM_KEYCODES];
+struct S9xButton {
+    int16 buttonCode;
+    int8 player;
+};
+
+extern struct S9xButton keyCodes[MAC_NUM_KEYCODES];
 
 void InitKeyboard (void);
 void DeinitKeyboard (void);
 
-void SetKeyCode(int16 keyCode, S9xKey control, int16 *oldKeyCode, S9xKey *oldControl);
+bool SetKeyCode(int16 keyCode, S9xButtonCode button, int8 player, int16 *oldKeyCode, S9xButtonCode *oldButton, int8 *oldPlayer);
 
 #endif

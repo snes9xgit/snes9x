@@ -175,8 +175,8 @@ bool S9xPollButton (uint32 id, bool *pressed)
 {
     #define kmControlKey    0x3B
 
-    bool8 keys[MAC_NUM_KEYCODES];
-    bool8 gamepadButtons[kNumButtons];
+    bool8 keys[MAC_MAX_PLAYERS][kNumButtons];
+    bool8 gamepadButtons[MAC_MAX_PLAYERS][kNumButtons];
 
     CopyPressedKeys(keys, gamepadButtons);
 
@@ -218,9 +218,9 @@ bool S9xPollButton (uint32 id, bool *pressed)
         {
             switch (id & 0xFF)
             {
-                case 0: *pressed = KeyIsPressed(keys, gamepadButtons, k2PStart);    break;
-                case 1: *pressed = KeyIsPressed(keys, gamepadButtons, k2PB);        break;
-                case 2: *pressed = KeyIsPressed(keys, gamepadButtons, k2PA);
+                case 0: *pressed = KeyIsPressed(keys, gamepadButtons, 1, kStart);    break;
+                case 1: *pressed = KeyIsPressed(keys, gamepadButtons, 1, kB);        break;
+                case 2: *pressed = KeyIsPressed(keys, gamepadButtons, 1, kA);
             }
         }
     }
@@ -310,196 +310,196 @@ void ControlPadFlagsToS9xPseudoPointer (uint32 p)
 		S9xReportButton(kMacCMapPseudoPtrBase + 3, (p & 0x0100));
 }
 
-long ISpKeyIsPressed (bool8 keys[kNumButtons], bool8 gamepadButtons[kNumButtons], ISpKey key)
+long ISpKeyIsPressed (bool8 keys[MAC_MAX_PLAYERS][kNumButtons], bool8 gamepadButtons[MAC_MAX_PLAYERS][kNumButtons], ISpKey key)
 {
     switch (key)
     {
         case kISpFastForward:
             return
-            KeyIsPressed(keys, gamepadButtons, k1PKeyFastForward) ||
-            KeyIsPressed(keys, gamepadButtons, k2PKeyFastForward) ||
-            KeyIsPressed(keys, gamepadButtons, k3PKeyFastForward) ||
-            KeyIsPressed(keys, gamepadButtons, k4PKeyFastForward) ||
-            KeyIsPressed(keys, gamepadButtons, k5PKeyFastForward) ||
-            KeyIsPressed(keys, gamepadButtons, k6PKeyFastForward) ||
-            KeyIsPressed(keys, gamepadButtons, k7PKeyFastForward) ||
-            KeyIsPressed(keys, gamepadButtons, k8PKeyFastForward);
+            KeyIsPressed(keys, gamepadButtons, 0, kKeyFastForward) ||
+            KeyIsPressed(keys, gamepadButtons, 1, kKeyFastForward) ||
+            KeyIsPressed(keys, gamepadButtons, 2, kKeyFastForward) ||
+            KeyIsPressed(keys, gamepadButtons, 3, kKeyFastForward) ||
+            KeyIsPressed(keys, gamepadButtons, 4, kKeyFastForward) ||
+            KeyIsPressed(keys, gamepadButtons, 5, kKeyFastForward) ||
+            KeyIsPressed(keys, gamepadButtons, 6, kKeyFastForward) ||
+            KeyIsPressed(keys, gamepadButtons, 7, kKeyFastForward);
 
         case kISpFreeze:
             return
-            KeyIsPressed(keys, gamepadButtons, k1PKeyFreeze) ||
-            KeyIsPressed(keys, gamepadButtons, k2PKeyFreeze) ||
-            KeyIsPressed(keys, gamepadButtons, k3PKeyFreeze) ||
-            KeyIsPressed(keys, gamepadButtons, k4PKeyFreeze) ||
-            KeyIsPressed(keys, gamepadButtons, k5PKeyFreeze) ||
-            KeyIsPressed(keys, gamepadButtons, k6PKeyFreeze) ||
-            KeyIsPressed(keys, gamepadButtons, k7PKeyFreeze) ||
-            KeyIsPressed(keys, gamepadButtons, k8PKeyFreeze);
+            KeyIsPressed(keys, gamepadButtons, 0, kKeyFreeze) ||
+            KeyIsPressed(keys, gamepadButtons, 1, kKeyFreeze) ||
+            KeyIsPressed(keys, gamepadButtons, 2, kKeyFreeze) ||
+            KeyIsPressed(keys, gamepadButtons, 3, kKeyFreeze) ||
+            KeyIsPressed(keys, gamepadButtons, 4, kKeyFreeze) ||
+            KeyIsPressed(keys, gamepadButtons, 5, kKeyFreeze) ||
+            KeyIsPressed(keys, gamepadButtons, 6, kKeyFreeze) ||
+            KeyIsPressed(keys, gamepadButtons, 7, kKeyFreeze);
 
         case kISpDefrost:
             return
-            KeyIsPressed(keys, gamepadButtons, k1PKeyDefrost) ||
-            KeyIsPressed(keys, gamepadButtons, k2PKeyDefrost) ||
-            KeyIsPressed(keys, gamepadButtons, k3PKeyDefrost) ||
-            KeyIsPressed(keys, gamepadButtons, k4PKeyDefrost) ||
-            KeyIsPressed(keys, gamepadButtons, k5PKeyDefrost) ||
-            KeyIsPressed(keys, gamepadButtons, k6PKeyDefrost) ||
-            KeyIsPressed(keys, gamepadButtons, k7PKeyDefrost) ||
-            KeyIsPressed(keys, gamepadButtons, k8PKeyDefrost);
+            KeyIsPressed(keys, gamepadButtons, 0, kKeyDefrost) ||
+            KeyIsPressed(keys, gamepadButtons, 1, kKeyDefrost) ||
+            KeyIsPressed(keys, gamepadButtons, 2, kKeyDefrost) ||
+            KeyIsPressed(keys, gamepadButtons, 3, kKeyDefrost) ||
+            KeyIsPressed(keys, gamepadButtons, 4, kKeyDefrost) ||
+            KeyIsPressed(keys, gamepadButtons, 5, kKeyDefrost) ||
+            KeyIsPressed(keys, gamepadButtons, 6, kKeyDefrost) ||
+            KeyIsPressed(keys, gamepadButtons, 7, kKeyDefrost);
 
         case kISpScreenshot:
             return
-            KeyIsPressed(keys, gamepadButtons, k1PKeyScreenshot) ||
-            KeyIsPressed(keys, gamepadButtons, k2PKeyScreenshot) ||
-            KeyIsPressed(keys, gamepadButtons, k3PKeyScreenshot) ||
-            KeyIsPressed(keys, gamepadButtons, k4PKeyScreenshot) ||
-            KeyIsPressed(keys, gamepadButtons, k5PKeyScreenshot) ||
-            KeyIsPressed(keys, gamepadButtons, k6PKeyScreenshot) ||
-            KeyIsPressed(keys, gamepadButtons, k7PKeyScreenshot) ||
-            KeyIsPressed(keys, gamepadButtons, k8PKeyScreenshot);
+            KeyIsPressed(keys, gamepadButtons, 0, kKeyScreenshot) ||
+            KeyIsPressed(keys, gamepadButtons, 1, kKeyScreenshot) ||
+            KeyIsPressed(keys, gamepadButtons, 2, kKeyScreenshot) ||
+            KeyIsPressed(keys, gamepadButtons, 3, kKeyScreenshot) ||
+            KeyIsPressed(keys, gamepadButtons, 4, kKeyScreenshot) ||
+            KeyIsPressed(keys, gamepadButtons, 5, kKeyScreenshot) ||
+            KeyIsPressed(keys, gamepadButtons, 6, kKeyScreenshot) ||
+            KeyIsPressed(keys, gamepadButtons, 7, kKeyScreenshot);
 
         case kISpSPC:
             return
-            KeyIsPressed(keys, gamepadButtons, k1PKeySPC) ||
-            KeyIsPressed(keys, gamepadButtons, k2PKeySPC) ||
-            KeyIsPressed(keys, gamepadButtons, k3PKeySPC) ||
-            KeyIsPressed(keys, gamepadButtons, k4PKeySPC) ||
-            KeyIsPressed(keys, gamepadButtons, k5PKeySPC) ||
-            KeyIsPressed(keys, gamepadButtons, k6PKeySPC) ||
-            KeyIsPressed(keys, gamepadButtons, k7PKeySPC) ||
-            KeyIsPressed(keys, gamepadButtons, k8PKeySPC);
+            KeyIsPressed(keys, gamepadButtons, 0, kKeySPC) ||
+            KeyIsPressed(keys, gamepadButtons, 1, kKeySPC) ||
+            KeyIsPressed(keys, gamepadButtons, 2, kKeySPC) ||
+            KeyIsPressed(keys, gamepadButtons, 3, kKeySPC) ||
+            KeyIsPressed(keys, gamepadButtons, 4, kKeySPC) ||
+            KeyIsPressed(keys, gamepadButtons, 5, kKeySPC) ||
+            KeyIsPressed(keys, gamepadButtons, 6, kKeySPC) ||
+            KeyIsPressed(keys, gamepadButtons, 7, kKeySPC);
 
         case kISpScopeTurbo:
             return
-            KeyIsPressed(keys, gamepadButtons, k1PKeyScopeTurbo) ||
-            KeyIsPressed(keys, gamepadButtons, k2PKeyScopeTurbo) ||
-            KeyIsPressed(keys, gamepadButtons, k3PKeyScopeTurbo) ||
-            KeyIsPressed(keys, gamepadButtons, k4PKeyScopeTurbo) ||
-            KeyIsPressed(keys, gamepadButtons, k5PKeyScopeTurbo) ||
-            KeyIsPressed(keys, gamepadButtons, k6PKeyScopeTurbo) ||
-            KeyIsPressed(keys, gamepadButtons, k7PKeyScopeTurbo) ||
-            KeyIsPressed(keys, gamepadButtons, k8PKeyScopeTurbo);
+            KeyIsPressed(keys, gamepadButtons, 0, kKeyScopeTurbo) ||
+            KeyIsPressed(keys, gamepadButtons, 1, kKeyScopeTurbo) ||
+            KeyIsPressed(keys, gamepadButtons, 2, kKeyScopeTurbo) ||
+            KeyIsPressed(keys, gamepadButtons, 3, kKeyScopeTurbo) ||
+            KeyIsPressed(keys, gamepadButtons, 4, kKeyScopeTurbo) ||
+            KeyIsPressed(keys, gamepadButtons, 5, kKeyScopeTurbo) ||
+            KeyIsPressed(keys, gamepadButtons, 6, kKeyScopeTurbo) ||
+            KeyIsPressed(keys, gamepadButtons, 7, kKeyScopeTurbo);
 
         case kISpScopePause:
             return
-            KeyIsPressed(keys, gamepadButtons, k1PKeyScopePause) ||
-            KeyIsPressed(keys, gamepadButtons, k2PKeyScopePause) ||
-            KeyIsPressed(keys, gamepadButtons, k3PKeyScopePause) ||
-            KeyIsPressed(keys, gamepadButtons, k4PKeyScopePause) ||
-            KeyIsPressed(keys, gamepadButtons, k5PKeyScopePause) ||
-            KeyIsPressed(keys, gamepadButtons, k6PKeyScopePause) ||
-            KeyIsPressed(keys, gamepadButtons, k7PKeyScopePause) ||
-            KeyIsPressed(keys, gamepadButtons, k8PKeyScopePause);
+            KeyIsPressed(keys, gamepadButtons, 0, kKeyScopePause) ||
+            KeyIsPressed(keys, gamepadButtons, 1, kKeyScopePause) ||
+            KeyIsPressed(keys, gamepadButtons, 2, kKeyScopePause) ||
+            KeyIsPressed(keys, gamepadButtons, 3, kKeyScopePause) ||
+            KeyIsPressed(keys, gamepadButtons, 4, kKeyScopePause) ||
+            KeyIsPressed(keys, gamepadButtons, 5, kKeyScopePause) ||
+            KeyIsPressed(keys, gamepadButtons, 6, kKeyScopePause) ||
+            KeyIsPressed(keys, gamepadButtons, 7, kKeyScopePause);
 
         case kISpScopeCursor:
             return
-            KeyIsPressed(keys, gamepadButtons, k1PKeyScopeCursor) ||
-            KeyIsPressed(keys, gamepadButtons, k2PKeyScopeCursor) ||
-            KeyIsPressed(keys, gamepadButtons, k3PKeyScopeCursor) ||
-            KeyIsPressed(keys, gamepadButtons, k4PKeyScopeCursor) ||
-            KeyIsPressed(keys, gamepadButtons, k5PKeyScopeCursor) ||
-            KeyIsPressed(keys, gamepadButtons, k6PKeyScopeCursor) ||
-            KeyIsPressed(keys, gamepadButtons, k7PKeyScopeCursor) ||
-            KeyIsPressed(keys, gamepadButtons, k8PKeyScopeCursor);
+            KeyIsPressed(keys, gamepadButtons, 0, kKeyScopeCursor) ||
+            KeyIsPressed(keys, gamepadButtons, 1, kKeyScopeCursor) ||
+            KeyIsPressed(keys, gamepadButtons, 2, kKeyScopeCursor) ||
+            KeyIsPressed(keys, gamepadButtons, 3, kKeyScopeCursor) ||
+            KeyIsPressed(keys, gamepadButtons, 4, kKeyScopeCursor) ||
+            KeyIsPressed(keys, gamepadButtons, 5, kKeyScopeCursor) ||
+            KeyIsPressed(keys, gamepadButtons, 6, kKeyScopeCursor) ||
+            KeyIsPressed(keys, gamepadButtons, 7, kKeyScopeCursor);
 
         case kISpOffScreen:
             return
-            KeyIsPressed(keys, gamepadButtons, k1PKeyOffScreen) ||
-            KeyIsPressed(keys, gamepadButtons, k2PKeyOffScreen) ||
-            KeyIsPressed(keys, gamepadButtons, k3PKeyOffScreen) ||
-            KeyIsPressed(keys, gamepadButtons, k4PKeyOffScreen) ||
-            KeyIsPressed(keys, gamepadButtons, k5PKeyOffScreen) ||
-            KeyIsPressed(keys, gamepadButtons, k6PKeyOffScreen) ||
-            KeyIsPressed(keys, gamepadButtons, k7PKeyOffScreen) ||
-            KeyIsPressed(keys, gamepadButtons, k8PKeyOffScreen);
+            KeyIsPressed(keys, gamepadButtons, 0, kKeyOffScreen) ||
+            KeyIsPressed(keys, gamepadButtons, 1, kKeyOffScreen) ||
+            KeyIsPressed(keys, gamepadButtons, 2, kKeyOffScreen) ||
+            KeyIsPressed(keys, gamepadButtons, 3, kKeyOffScreen) ||
+            KeyIsPressed(keys, gamepadButtons, 4, kKeyOffScreen) ||
+            KeyIsPressed(keys, gamepadButtons, 5, kKeyOffScreen) ||
+            KeyIsPressed(keys, gamepadButtons, 6, kKeyOffScreen) ||
+            KeyIsPressed(keys, gamepadButtons, 7, kKeyOffScreen);
 
         case kISpFunction:
             return
-            KeyIsPressed(keys, gamepadButtons, k1PKeyFunction) ||
-            KeyIsPressed(keys, gamepadButtons, k2PKeyFunction) ||
-            KeyIsPressed(keys, gamepadButtons, k3PKeyFunction) ||
-            KeyIsPressed(keys, gamepadButtons, k4PKeyFunction) ||
-            KeyIsPressed(keys, gamepadButtons, k5PKeyFunction) ||
-            KeyIsPressed(keys, gamepadButtons, k6PKeyFunction) ||
-            KeyIsPressed(keys, gamepadButtons, k7PKeyFunction) ||
-            KeyIsPressed(keys, gamepadButtons, k8PKeyFunction);
+            KeyIsPressed(keys, gamepadButtons, 0, kKeyFunction) ||
+            KeyIsPressed(keys, gamepadButtons, 1, kKeyFunction) ||
+            KeyIsPressed(keys, gamepadButtons, 2, kKeyFunction) ||
+            KeyIsPressed(keys, gamepadButtons, 3, kKeyFunction) ||
+            KeyIsPressed(keys, gamepadButtons, 4, kKeyFunction) ||
+            KeyIsPressed(keys, gamepadButtons, 5, kKeyFunction) ||
+            KeyIsPressed(keys, gamepadButtons, 6, kKeyFunction) ||
+            KeyIsPressed(keys, gamepadButtons, 7, kKeyFunction);
 
         case kISpAlt:
             return
-            KeyIsPressed(keys, gamepadButtons, k1PKeyAlt) ||
-            KeyIsPressed(keys, gamepadButtons, k2PKeyAlt) ||
-            KeyIsPressed(keys, gamepadButtons, k3PKeyAlt) ||
-            KeyIsPressed(keys, gamepadButtons, k4PKeyAlt) ||
-            KeyIsPressed(keys, gamepadButtons, k5PKeyAlt) ||
-            KeyIsPressed(keys, gamepadButtons, k6PKeyAlt) ||
-            KeyIsPressed(keys, gamepadButtons, k7PKeyAlt) ||
-            KeyIsPressed(keys, gamepadButtons, k8PKeyAlt);
+            KeyIsPressed(keys, gamepadButtons, 0, kKeyAlt) ||
+            KeyIsPressed(keys, gamepadButtons, 1, kKeyAlt) ||
+            KeyIsPressed(keys, gamepadButtons, 2, kKeyAlt) ||
+            KeyIsPressed(keys, gamepadButtons, 3, kKeyAlt) ||
+            KeyIsPressed(keys, gamepadButtons, 4, kKeyAlt) ||
+            KeyIsPressed(keys, gamepadButtons, 5, kKeyAlt) ||
+            KeyIsPressed(keys, gamepadButtons, 6, kKeyAlt) ||
+            KeyIsPressed(keys, gamepadButtons, 7, kKeyAlt);
 
         case kISpFFDown:
             return
-            KeyIsPressed(keys, gamepadButtons, k1PKeyFFDown) ||
-            KeyIsPressed(keys, gamepadButtons, k2PKeyFFDown) ||
-            KeyIsPressed(keys, gamepadButtons, k3PKeyFFDown) ||
-            KeyIsPressed(keys, gamepadButtons, k4PKeyFFDown) ||
-            KeyIsPressed(keys, gamepadButtons, k5PKeyFFDown) ||
-            KeyIsPressed(keys, gamepadButtons, k6PKeyFFDown) ||
-            KeyIsPressed(keys, gamepadButtons, k7PKeyFFDown) ||
-            KeyIsPressed(keys, gamepadButtons, k8PKeyFFDown);
+            KeyIsPressed(keys, gamepadButtons, 0, kKeyFFDown) ||
+            KeyIsPressed(keys, gamepadButtons, 1, kKeyFFDown) ||
+            KeyIsPressed(keys, gamepadButtons, 2, kKeyFFDown) ||
+            KeyIsPressed(keys, gamepadButtons, 3, kKeyFFDown) ||
+            KeyIsPressed(keys, gamepadButtons, 4, kKeyFFDown) ||
+            KeyIsPressed(keys, gamepadButtons, 5, kKeyFFDown) ||
+            KeyIsPressed(keys, gamepadButtons, 6, kKeyFFDown) ||
+            KeyIsPressed(keys, gamepadButtons, 7, kKeyFFDown);
 
         case kISpFFUp:
             return
-            KeyIsPressed(keys, gamepadButtons, k1PKeyFFUp) ||
-            KeyIsPressed(keys, gamepadButtons, k2PKeyFFUp) ||
-            KeyIsPressed(keys, gamepadButtons, k3PKeyFFUp) ||
-            KeyIsPressed(keys, gamepadButtons, k4PKeyFFUp) ||
-            KeyIsPressed(keys, gamepadButtons, k5PKeyFFUp) ||
-            KeyIsPressed(keys, gamepadButtons, k6PKeyFFUp) ||
-            KeyIsPressed(keys, gamepadButtons, k7PKeyFFUp) ||
-            KeyIsPressed(keys, gamepadButtons, k8PKeyFFUp);
+            KeyIsPressed(keys, gamepadButtons, 0, kKeyFFUp) ||
+            KeyIsPressed(keys, gamepadButtons, 1, kKeyFFUp) ||
+            KeyIsPressed(keys, gamepadButtons, 2, kKeyFFUp) ||
+            KeyIsPressed(keys, gamepadButtons, 3, kKeyFFUp) ||
+            KeyIsPressed(keys, gamepadButtons, 4, kKeyFFUp) ||
+            KeyIsPressed(keys, gamepadButtons, 5, kKeyFFUp) ||
+            KeyIsPressed(keys, gamepadButtons, 6, kKeyFFUp) ||
+            KeyIsPressed(keys, gamepadButtons, 7, kKeyFFUp);
 
         case kISpEsc:
             return
-            KeyIsPressed(keys, gamepadButtons, k1PKeyEsc) ||
-            KeyIsPressed(keys, gamepadButtons, k2PKeyEsc) ||
-            KeyIsPressed(keys, gamepadButtons, k3PKeyEsc) ||
-            KeyIsPressed(keys, gamepadButtons, k4PKeyEsc) ||
-            KeyIsPressed(keys, gamepadButtons, k5PKeyEsc) ||
-            KeyIsPressed(keys, gamepadButtons, k6PKeyEsc) ||
-            KeyIsPressed(keys, gamepadButtons, k7PKeyEsc) ||
-            KeyIsPressed(keys, gamepadButtons, k8PKeyEsc);
+            KeyIsPressed(keys, gamepadButtons, 0, kKeyEsc) ||
+            KeyIsPressed(keys, gamepadButtons, 1, kKeyEsc) ||
+            KeyIsPressed(keys, gamepadButtons, 2, kKeyEsc) ||
+            KeyIsPressed(keys, gamepadButtons, 3, kKeyEsc) ||
+            KeyIsPressed(keys, gamepadButtons, 4, kKeyEsc) ||
+            KeyIsPressed(keys, gamepadButtons, 5, kKeyEsc) ||
+            KeyIsPressed(keys, gamepadButtons, 6, kKeyEsc) ||
+            KeyIsPressed(keys, gamepadButtons, 7, kKeyEsc);
 
         case kISpTC:
             return
-            KeyIsPressed(keys, gamepadButtons, k1PKeyTC) ||
-            KeyIsPressed(keys, gamepadButtons, k2PKeyTC) ||
-            KeyIsPressed(keys, gamepadButtons, k3PKeyTC) ||
-            KeyIsPressed(keys, gamepadButtons, k4PKeyTC) ||
-            KeyIsPressed(keys, gamepadButtons, k5PKeyTC) ||
-            KeyIsPressed(keys, gamepadButtons, k6PKeyTC) ||
-            KeyIsPressed(keys, gamepadButtons, k7PKeyTC) ||
-            KeyIsPressed(keys, gamepadButtons, k8PKeyTC);
+            KeyIsPressed(keys, gamepadButtons, 0, kKeyTC) ||
+            KeyIsPressed(keys, gamepadButtons, 1, kKeyTC) ||
+            KeyIsPressed(keys, gamepadButtons, 2, kKeyTC) ||
+            KeyIsPressed(keys, gamepadButtons, 3, kKeyTC) ||
+            KeyIsPressed(keys, gamepadButtons, 4, kKeyTC) ||
+            KeyIsPressed(keys, gamepadButtons, 5, kKeyTC) ||
+            KeyIsPressed(keys, gamepadButtons, 6, kKeyTC) ||
+            KeyIsPressed(keys, gamepadButtons, 7, kKeyTC);
 
         case kISpMouseLeft:
             return
-            KeyIsPressed(keys, gamepadButtons, k1PKeyMouseLeft) ||
-            KeyIsPressed(keys, gamepadButtons, k2PKeyMouseLeft) ||
-            KeyIsPressed(keys, gamepadButtons, k3PKeyMouseLeft) ||
-            KeyIsPressed(keys, gamepadButtons, k4PKeyMouseLeft) ||
-            KeyIsPressed(keys, gamepadButtons, k5PKeyMouseLeft) ||
-            KeyIsPressed(keys, gamepadButtons, k6PKeyMouseLeft) ||
-            KeyIsPressed(keys, gamepadButtons, k7PKeyMouseLeft) ||
-            KeyIsPressed(keys, gamepadButtons, k7PKeyMouseLeft);
+            KeyIsPressed(keys, gamepadButtons, 0, kKeyMouseLeft) ||
+            KeyIsPressed(keys, gamepadButtons, 1, kKeyMouseLeft) ||
+            KeyIsPressed(keys, gamepadButtons, 2, kKeyMouseLeft) ||
+            KeyIsPressed(keys, gamepadButtons, 3, kKeyMouseLeft) ||
+            KeyIsPressed(keys, gamepadButtons, 4, kKeyMouseLeft) ||
+            KeyIsPressed(keys, gamepadButtons, 5, kKeyMouseLeft) ||
+            KeyIsPressed(keys, gamepadButtons, 6, kKeyMouseLeft) ||
+            KeyIsPressed(keys, gamepadButtons, 7, kKeyMouseLeft);
 
         case kISpMouseRight:
             return
-            KeyIsPressed(keys, gamepadButtons, k1PKeyMouseRight) ||
-            KeyIsPressed(keys, gamepadButtons, k2PKeyMouseRight) ||
-            KeyIsPressed(keys, gamepadButtons, k3PKeyMouseRight) ||
-            KeyIsPressed(keys, gamepadButtons, k4PKeyMouseRight) ||
-            KeyIsPressed(keys, gamepadButtons, k5PKeyMouseRight) ||
-            KeyIsPressed(keys, gamepadButtons, k6PKeyMouseRight) ||
-            KeyIsPressed(keys, gamepadButtons, k7PKeyMouseRight) ||
-            KeyIsPressed(keys, gamepadButtons, k7PKeyMouseRight);
+            KeyIsPressed(keys, gamepadButtons, 0, kKeyMouseRight) ||
+            KeyIsPressed(keys, gamepadButtons, 1, kKeyMouseRight) ||
+            KeyIsPressed(keys, gamepadButtons, 2, kKeyMouseRight) ||
+            KeyIsPressed(keys, gamepadButtons, 3, kKeyMouseRight) ||
+            KeyIsPressed(keys, gamepadButtons, 4, kKeyMouseRight) ||
+            KeyIsPressed(keys, gamepadButtons, 5, kKeyMouseRight) ||
+            KeyIsPressed(keys, gamepadButtons, 6, kKeyMouseRight) ||
+            KeyIsPressed(keys, gamepadButtons, 7, kKeyMouseRight);
 
         default:
             break;

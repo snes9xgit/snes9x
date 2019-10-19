@@ -28,13 +28,13 @@
 #include "mac-os.h"
 #include "mac-keyboard.h"
 
-int16 keyCodes[MAC_NUM_KEYCODES];
+struct S9xButton keyCodes[MAC_NUM_KEYCODES];
 
 void InitKeyboard (void)
 {
     for (int i = 0; i < MAC_NUM_KEYCODES; ++i)
     {
-        keyCodes[i] = -1;
+        keyCodes[i] = { -1, -1 };
     }
 }
 
@@ -42,17 +42,23 @@ void DeinitKeyboard (void)
 {
     for (int i = 0; i < MAC_NUM_KEYCODES; ++i)
     {
-        keyCodes[i] = -1;
+        keyCodes[i] = { -1, -1 };
     }
 }
 
-void SetKeyCode(int16 keyCode, S9xKey control, int16 *oldKeyCode, S9xKey *oldControl)
+bool SetKeyCode(int16 keyCode, S9xButtonCode buttonCode, int8 player, int16 *oldKeyCode, S9xButtonCode *oldButtonCode, int8 *oldPlayer)
 {
+    if (player < 0 || player >= MAC_MAX_PLAYERS || buttonCode < 0 || buttonCode >= kNumButtons)
+    {
+        return false;
+    }
+
     for ( int i = 0; i < MAC_NUM_KEYCODES; ++i)
     {
-        if (keyCodes[i] == control && i != keyCode)
+        struct S9xButton button = keyCodes[i];
+        if (button.player == player && button.buttonCode == buttonCode && i != keyCode)
         {
-            keyCodes[i] = -1;
+            keyCodes[i] = { -1, -1 };
 
             if (oldKeyCode !=NULL)
             {
@@ -61,10 +67,17 @@ void SetKeyCode(int16 keyCode, S9xKey control, int16 *oldKeyCode, S9xKey *oldCon
         }
     }
 
-    if (oldControl != NULL)
+    if (oldButtonCode != NULL)
     {
-        *oldControl = (S9xKey)keyCodes[keyCode];
+        *oldButtonCode = (S9xButtonCode)keyCodes[keyCode].buttonCode;
     }
 
-    keyCodes[keyCode] = control;
+    if (*oldPlayer != NULL )
+    {
+        *oldPlayer = (S9xButtonCode)keyCodes[keyCode].player;
+    }
+
+    keyCodes[keyCode] = { static_cast<int16>(buttonCode), player };
+
+    return true;
 }

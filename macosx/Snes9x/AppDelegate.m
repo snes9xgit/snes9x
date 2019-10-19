@@ -66,47 +66,47 @@ static NSString * const kKeyboardPrefs = @"KeyboardConfig";
 
     NSDictionary *defaultKeyBindings = @{
         kKeyboardPrefs : @{
-            @(k1PUp).stringValue : @(kVK_UpArrow),
-            @(k1PDown).stringValue : @(kVK_DownArrow),
-            @(k1PLeft).stringValue : @(kVK_LeftArrow),
-            @(k1PRight).stringValue : @(kVK_RightArrow),
-            @(k1PY).stringValue : @(kVK_ANSI_X),
-            @(k1PB).stringValue : @(kVK_ANSI_C),
-            @(k1PX).stringValue : @(kVK_ANSI_D),
-            @(k1PA).stringValue : @(kVK_ANSI_V),
-            @(k1PL).stringValue : @(kVK_ANSI_A),
-            @(k1PR).stringValue : @(kVK_ANSI_S),
-            @(k1PStart).stringValue : @(kVK_Space),
-            @(k1PSelect).stringValue : @(kVK_Return),
+            @(kUp).stringValue : @(kVK_UpArrow),
+            @(kDown).stringValue : @(kVK_DownArrow),
+            @(kLeft).stringValue : @(kVK_LeftArrow),
+            @(kRight).stringValue : @(kVK_RightArrow),
+            @(kY).stringValue : @(kVK_ANSI_X),
+            @(kB).stringValue : @(kVK_ANSI_C),
+            @(kX).stringValue : @(kVK_ANSI_D),
+            @(kA).stringValue : @(kVK_ANSI_V),
+            @(kL).stringValue : @(kVK_ANSI_A),
+            @(kR).stringValue : @(kVK_ANSI_S),
+            @(kStart).stringValue : @(kVK_Space),
+            @(kSelect).stringValue : @(kVK_Return),
 
-            @(k2PUp).stringValue : @(kVK_ANSI_Keypad8),
-            @(k2PDown).stringValue : @(kVK_ANSI_Keypad2),
-            @(k2PLeft).stringValue : @(kVK_ANSI_Keypad4),
-            @(k2PRight).stringValue : @(kVK_ANSI_Keypad6),
-            @(k2PY).stringValue : @(kVK_PageDown),
-            @(k2PB).stringValue : @(kVK_PageUp),
-            @(k2PX).stringValue : @(kVK_End),
-            @(k2PA).stringValue : @(kVK_Home),
-            @(k2PL).stringValue : @(kVK_ANSI_Keypad0),
-            @(k2PR).stringValue : @(kVK_ANSI_KeypadDecimal),
-            @(k2PStart).stringValue : @(kVK_ANSI_KeypadEnter),
-            @(k2PSelect).stringValue : @(kVK_ANSI_KeypadPlus),
+            @(kNumButtons + kUp).stringValue : @(kVK_ANSI_Keypad8),
+            @(kNumButtons + kDown).stringValue : @(kVK_ANSI_Keypad2),
+            @(kNumButtons + kLeft).stringValue : @(kVK_ANSI_Keypad4),
+            @(kNumButtons + kRight).stringValue : @(kVK_ANSI_Keypad6),
+            @(kNumButtons + kY).stringValue : @(kVK_PageDown),
+            @(kNumButtons + kB).stringValue : @(kVK_PageUp),
+            @(kNumButtons + kX).stringValue : @(kVK_End),
+            @(kNumButtons + kA).stringValue : @(kVK_Home),
+            @(kNumButtons + kL).stringValue : @(kVK_ANSI_Keypad0),
+            @(kNumButtons + kR).stringValue : @(kVK_ANSI_KeypadDecimal),
+            @(kNumButtons + kStart).stringValue : @(kVK_ANSI_KeypadEnter),
+            @(kNumButtons + kSelect).stringValue : @(kVK_ANSI_KeypadPlus),
 
-            @(k1PKeyFastForward).stringValue : @(kVK_ANSI_Backslash),
-            @(k1PKeyFreeze).stringValue : @(kVK_ANSI_1),
-            @(k1PKeyDefrost).stringValue : @(kVK_ANSI_0),
-            @(k1PKeyScreenshot).stringValue : @(kVK_ANSI_Grave),
-            @(k1PKeySPC).stringValue : @(kVK_ANSI_R),
-            @(k1PKeyScopeTurbo).stringValue : @(kVK_ANSI_B),
-            @(k1PKeyScopePause).stringValue : @(kVK_ANSI_N),
-            @(k1PKeyScopeCursor).stringValue : @(kVK_ANSI_Q),
-            @(k1PKeyOffScreen).stringValue : @(kVK_Tab),
-            @(k1PKeyFunction).stringValue : @(kVK_ANSI_Slash),
-            @(k1PKeyAlt).stringValue : @(kVK_ANSI_Period),
-            @(k1PKeyFFDown).stringValue : @(kVK_ANSI_Q),
-            @(k1PKeyFFUp).stringValue : @(kVK_ANSI_W),
-            @(k1PKeyEsc).stringValue : @(kVK_Escape),
-            @(k1PKeyTC).stringValue : @(kVK_ANSI_Comma)
+            @(kKeyFastForward).stringValue : @(kVK_ANSI_Backslash),
+            @(kKeyFreeze).stringValue : @(kVK_ANSI_1),
+            @(kKeyDefrost).stringValue : @(kVK_ANSI_0),
+            @(kKeyScreenshot).stringValue : @(kVK_ANSI_Grave),
+            @(kKeySPC).stringValue : @(kVK_ANSI_R),
+            @(kKeyScopeTurbo).stringValue : @(kVK_ANSI_B),
+            @(kKeyScopePause).stringValue : @(kVK_ANSI_N),
+            @(kKeyScopeCursor).stringValue : @(kVK_ANSI_Q),
+            @(kKeyOffScreen).stringValue : @(kVK_Tab),
+            @(kKeyFunction).stringValue : @(kVK_ANSI_Slash),
+            @(kKeyAlt).stringValue : @(kVK_ANSI_Period),
+            @(kKeyFFDown).stringValue : @(kVK_ANSI_Q),
+            @(kKeyFFUp).stringValue : @(kVK_ANSI_W),
+            @(kKeyEsc).stringValue : @(kVK_Escape),
+            @(kKeyTC).stringValue : @(kVK_ANSI_Comma)
         }
     };
 
@@ -116,31 +116,36 @@ static NSString * const kKeyboardPrefs = @"KeyboardConfig";
 
     for (NSString *control in [self.keys copy])
     {
-        [self setControl:@(control.integerValue) forKey:self.keys[control]];
+        NSInteger key = control.integerValue;
+        NSInteger player = key / kNumButtons;
+        S9xButtonCode buttonCode = (S9xButtonCode)(key - (kNumButtons * player));
+        [self setButtonCode:buttonCode forKeyCode:self.keys[control].integerValue player:player];
     }
 
     [self importKeySettings];
     [defaults synchronize];
 }
 
-- (void)setControl:(NSNumber *)control forKey:(NSNumber *)key
+- (void)setButtonCode:(S9xButtonCode)buttonCode forKeyCode:(int16)keyCode player:(int8)player
 {
-    if (key == nil || control == nil)
+    if (keyCode < 0)
     {
         return;
     }
 
-    self.keys[control.stringValue] = key;
+    self.keys[@(buttonCode + (kNumButtons * player)).stringValue] = @(keyCode);
 
-    S9xKey oldControl = kNumButtons;
-    [self.s9xEngine setControl:(S9xKey)control.intValue forKey:key.intValue oldControl:&oldControl oldKey:NULL];
-
-    if (oldControl >= 0 && oldControl < kNumButtons)
+    S9xButtonCode oldButton = kNumButtons;
+    int8 oldPlayer = -1;
+    if ([self.s9xEngine setButton:buttonCode forKey:keyCode player:player oldButton:&oldButton oldPlayer:&oldPlayer oldKey:NULL])
     {
-        [self.keys removeObjectForKey:@(oldControl).stringValue];
-    }
+        if (oldButton >= 0 && oldButton < kNumButtons && oldPlayer >= 0 && oldPlayer < MAC_MAX_PLAYERS)
+        {
+            [self.keys removeObjectForKey:@(oldButton + (kNumButtons * oldPlayer)).stringValue];
+        }
 
-    [NSUserDefaults.standardUserDefaults setObject:[self.keys copy] forKey:kKeyboardPrefs];
+        [NSUserDefaults.standardUserDefaults setObject:[self.keys copy] forKey:kKeyboardPrefs];
+    }
 }
 
 - (void)importRecentItems
@@ -188,11 +193,11 @@ static NSString * const kKeyboardPrefs = @"KeyboardConfig";
         // The first 24 enum values are the same, but we have to adjust after that.
         if ( i < 24 )
         {
-            [self setControl:@(i) forKey:@(bytes[i])];
+            [self setButtonCode:(S9xButtonCode)(i - (i / 12)) forKeyCode:bytes[i] player:i / 12];
         }
         else
         {
-            [self setControl:@(i - 24 + k1PKeyFastForward) forKey:@(bytes[i])];
+            [self setButtonCode:(S9xButtonCode)(i - 24 + kKeyFastForward) forKeyCode:bytes[i] player:0];
         }
     }
 }
@@ -224,6 +229,16 @@ static NSString * const kKeyboardPrefs = @"KeyboardConfig";
     }
 
     return NO;
+}
+
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem
+{
+    return [self.s9xEngine isPaused];
+}
+
+- (IBAction)terminate:(id)sender
+{
+    [NSApp terminate:sender];
 }
 
 @end

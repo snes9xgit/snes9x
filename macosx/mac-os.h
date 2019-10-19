@@ -112,7 +112,6 @@ typedef struct
 }	ExtraOption;
 
 #define kMacWindowHeight	(SNES_HEIGHT_EXTENDED)
-#define	MAC_MAX_PLAYERS		8
 #define MAC_MAX_CHEATS      150
 
 extern volatile bool8	running, s9xthreadrunning;
@@ -164,8 +163,8 @@ extern CFStringRef		multiCartPath[2];
 extern IconRef			macIconRef[118];
 #endif
 
-extern bool8			pressedKeys[kNumButtons];
-extern bool8            pressedGamepadButtons[kNumButtons];
+extern bool8			pressedKeys[MAC_MAX_PLAYERS][kNumButtons];
+extern bool8            pressedGamepadButtons[MAC_MAX_PLAYERS][kNumButtons];
 extern os_unfair_lock	keyLock;
 
 extern NSOpenGLView		*s9xView;
@@ -180,7 +179,7 @@ void PostQueueToSubEventLoop (void);
 int PromptFreezeDefrost (Boolean);
 uint64 GetMicroseconds(void);
 
-void CopyPressedKeys(uint8 keys[kNumButtons], uint8 gamepadButtons[kNumButtons]);
+void CopyPressedKeys(uint8 keys[MAC_MAX_PLAYERS][kNumButtons], uint8 gamepadButtons[MAC_MAX_PLAYERS][kNumButtons]);
 
 @interface S9xEngine : NSObject
 
@@ -191,7 +190,7 @@ void CopyPressedKeys(uint8 keys[kNumButtons], uint8 gamepadButtons[kNumButtons])
 - (void)pause;
 - (void)resume;
 
-- (void)setControl:(S9xKey)control forKey:(int16)key oldControl:(S9xKey *)oldControl oldKey:(int16 *)oldControl;
+- (BOOL)setButton:(S9xButtonCode)button forKey:(int16)key player:(int8)player oldButton:(S9xButtonCode *)oldButton oldPlayer:(int8 *)oldPlayer oldKey:(int16 *)oldKey;
 
 - (BOOL)loadROM:(NSURL *)fileURL;
 

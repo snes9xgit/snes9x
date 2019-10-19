@@ -27,7 +27,7 @@
 
 @interface MusicBoxController : NSObject
 {
-	IBOutlet id	window;
+	IBOutlet NSWindow	*window;
 	IBOutlet id	gametitle;
 	IBOutlet id	disclosure;
 	IBOutlet id	rewind;
