@@ -18,6 +18,7 @@
 		302EECA522DAD1B9006D1502 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 302EECA422DAD1B9006D1502 /* CoreAudio.framework */; };
 		3042F7E3232E9BDD00C03F5E /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3042F7E2232E9BDD00C03F5E /* Carbon.framework */; };
 		3045A1EF22D03C4B0092B97D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3045A1EE22D03C4B0092B97D /* Cocoa.framework */; };
+		30656200236A8BA700A1B3B2 /* gamecontrollerdb.txt in Resources */ = {isa = PBXBuildFile; fileRef = 306561FF236A8BA700A1B3B2 /* gamecontrollerdb.txt */; };
 		30714719230E379500917F82 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 30714718230E379500917F82 /* AppDelegate.m */; };
 		3071471B230E379600917F82 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3071471A230E379600917F82 /* Assets.xcassets */; };
 		3071471E230E379600917F82 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3071471C230E379600917F82 /* MainMenu.xib */; };
@@ -225,6 +226,7 @@
 		3042F7E2232E9BDD00C03F5E /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		3045A1EC22D03C430092B97D /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		3045A1EE22D03C4B0092B97D /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		306561FF236A8BA700A1B3B2 /* gamecontrollerdb.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = gamecontrollerdb.txt; sourceTree = "<group>"; };
 		30714704230E372B00917F82 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		30714707230E372B00917F82 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		30714709230E372B00917F82 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -617,6 +619,7 @@
 			children = (
 				30D15CF122CE6B5A005BC352 /* snes9x_framework.h */,
 				30D15CF222CE6B5A005BC352 /* Info.plist */,
+				306561FF236A8BA700A1B3B2 /* gamecontrollerdb.txt */,
 			);
 			path = "snes9x framework";
 			sourceTree = "<group>";
@@ -1121,6 +1124,7 @@
 			files = (
 				3000A9D02341879B007DC37F /* logo_defrost.png in Resources */,
 				3000A9D123418852007DC37F /* freeze_defrost.aiff in Resources */,
+				30656200236A8BA700A1B3B2 /* gamecontrollerdb.txt in Resources */,
 				3000A9CF23418799007DC37F /* logo_freeze.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

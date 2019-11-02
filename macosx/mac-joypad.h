@@ -26,10 +26,8 @@
 
 void SetUpHID (void);
 void ReleaseHID (void);
-//void ConfigureHID (void);
-void ClearPadSetting (void);
-void SaveControllerSettings (void);
-void LoadControllerSettings (void);
-void JoypadScanDirection (int, uint32 *);
+
+void SetPlayerForJoypad(int8 playerNum, uint32 vendorID, uint32 productID, uint8 index, int8 *oldPlayerNum);
+void SetButtonCodeForJoypadControl(uint32 vendorID, uint32 productID, uint8 index, uint32 cookie, int32 value, S9xButtonCode buttonCode, bool overwrite, S9xButtonCode *oldButtonCode);
 
 #endif

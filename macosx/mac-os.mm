@@ -2031,86 +2031,12 @@ int PromptFreezeDefrost (Boolean freezing)
                 result = current_selection;
             }
 
-            uint32    pad1, pad2;
-
             while (ISpKeyIsPressed(keys, gamepadButtons, kISpEsc) ||
                    KeyIsPressed(keys, gamepadButtons, 0, kStart)   ||
                    KeyIsPressed(keys, gamepadButtons, 1, kStart))
             {
                 CopyPressedKeys(keys, gamepadButtons);
                 result = -1;
-            }
-
-            pad1 = pad2 = 0;
-            JoypadScanDirection(0, &pad1);
-            JoypadScanDirection(1, &pad2);
-            while ((pad1 & 0x0100) || (pad2 & 0x0100))    // Rt
-            {
-                startTime = mach_absolute_time();
-                current_selection += 1;
-                if (current_selection > 11)
-                    current_selection -= 12;
-                UpdateFreezeDefrostScreen(current_selection, image, draw, ctx);
-                do
-                {
-                    pad1 = pad2 = 0;
-                    JoypadScanDirection(0, &pad1);
-                    JoypadScanDirection(1, &pad2);
-                } while (((pad1 & 0x0100) || (pad2 & 0x0100)) && (mach_absolute_time() < (startTime + repeatDelay)));
-            }
-
-            pad1 = pad2 = 0;
-            JoypadScanDirection(0, &pad1);
-            JoypadScanDirection(1, &pad2);
-            while ((pad1 & 0x0200) || (pad2 & 0x0200))    // Lf
-            {
-                startTime = mach_absolute_time();
-                current_selection -= 1;
-                if (current_selection < 0)
-                    current_selection += 12;
-                UpdateFreezeDefrostScreen(current_selection, image, draw, ctx);
-                do
-                {
-                    pad1 = pad2 = 0;
-                    JoypadScanDirection(0, &pad1);
-                    JoypadScanDirection(1, &pad2);
-                } while (((pad1 & 0x0200) || (pad2 & 0x0200)) && (mach_absolute_time() < (startTime + repeatDelay)));
-            }
-
-            pad1 = pad2 = 0;
-            JoypadScanDirection(0, &pad1);
-            JoypadScanDirection(1, &pad2);
-            while ((pad1 & 0x0800) || (pad2 & 0x0800))    // Up
-            {
-                startTime = mach_absolute_time();
-                current_selection -= 4;
-                if (current_selection < 0)
-                    current_selection += 12;
-                UpdateFreezeDefrostScreen(current_selection, image, draw, ctx);
-                do
-                {
-                    pad1 = pad2 = 0;
-                    JoypadScanDirection(0, &pad1);
-                    JoypadScanDirection(1, &pad2);
-                } while (((pad1 & 0x0800) || (pad2 & 0x0800)) && (mach_absolute_time() < (startTime + repeatDelay)));
-            }
-
-            pad1 = pad2 = 0;
-            JoypadScanDirection(0, &pad1);
-            JoypadScanDirection(1, &pad2);
-            while ((pad1 & 0x0400) || (pad2 & 0x0400))    // Dn
-            {
-                startTime = mach_absolute_time();
-                current_selection += 4;
-                if (current_selection > 11)
-                    current_selection -= 12;
-                UpdateFreezeDefrostScreen(current_selection, image, draw, ctx);
-                do
-                {
-                    pad1 = pad2 = 0;
-                    JoypadScanDirection(0, &pad1);
-                    JoypadScanDirection(1, &pad2);
-                } while (((pad1 & 0x0400) || (pad2 & 0x0400)) && (mach_absolute_time() < (startTime + repeatDelay)));
             }
 
             while (KeyIsPressed(keys, gamepadButtons, 0, kA) ||

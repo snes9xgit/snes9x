@@ -19,8 +19,14 @@
  ***********************************************************************************/
 
 
+#include <map>
+#include <unordered_map>
+#include <unordered_set>
+
 #include "port.h"
 
+#include <IOKit/hid/IOHIDDevice.h>
+#include <IOKit/hid/IOHIDManager.h>
 #include <IOKit/hid/IOHIDUsageTables.h>
 #include "HID_Utilities_External.h"
 
@@ -54,692 +60,794 @@
 typedef	hu_device_t		*pRecDevice;
 typedef	hu_element_t	*pRecElement;
 
-typedef struct	actionStruct
-{
-	pRecDevice 	fDevice;
-	pRecElement	fElement;
-	long		fValue;
-	long		fOldValue;
-}	actionRec, *actionPtr;
+struct JoypadDevice {
+    uint16 vendorID;
+    uint16 productID;
+    uint32 index;
 
-typedef struct	padDirectionInfo
-{
-	int			type;
-	pRecDevice	device [2];
-	pRecElement	element[2];
-	long		max    [2];
-	long		maxmid [2];
-	long		mid    [2];
-	long		midmin [2];
-	long		min    [2];
-}	directionInfo;
+    bool operator==(const struct JoypadDevice &o) const
+    {
+        return vendorID == o.vendorID && productID == o.productID && index == o.index;
+    }
 
-static actionRec		gActionRecs[kNumButtons];
-static directionInfo	gDirectionInfo[MAC_MAX_PLAYERS];
-static int				gDirectionHint[MAC_MAX_PLAYERS];
+    bool operator<(const struct JoypadDevice &o) const
+    {
+        return vendorID < o.vendorID || productID < o.productID || index < o.index;
+    }
+};
 
-static void JoypadSetDirectionInfo (void);
-//static void IdleTimer (EventLoopTimerRef, void *);
-//static OSStatus ControllerEventHandler (EventHandlerCallRef, EventRef, void *);
+struct JoypadCookie {
+    struct JoypadDevice device;
+    uint32 cookie;
 
+    JoypadCookie() {}
 
-void SaveControllerSettings (void)
-{
-//    CFStringRef    keyCFStringRef;
-//     Boolean        syncFlag;
-//
-//    JoypadSetDirectionInfo();
-//
-//    for (int a = 0; a < kNeedCount; a++)
-//    {
-//        char    needCStr[64], num[10];
-//
-//        strcpy(needCStr, gNeeds[a]);
-//        if (padSetting > 1)
-//        {
-//            sprintf(num, "_%d", padSetting);
-//            strcat(needCStr, num);
-//        }
-//
-//        keyCFStringRef = CFStringCreateWithFormat(kCFAllocatorDefault, NULL, CFSTR("%s"), needCStr);
-//        if (keyCFStringRef)
-//        {
-//            if (gActionRecs[a].fDevice && gActionRecs[a].fElement)
-//                syncFlag = HIDSaveElementPref(keyCFStringRef, kCFPreferencesCurrentApplication, gActionRecs[a].fDevice, gActionRecs[a].fElement);
-//            else
-//                CFPreferencesSetAppValue(keyCFStringRef, NULL, kCFPreferencesCurrentApplication);
-//
-//            CFRelease(keyCFStringRef);
-//        }
-//    }
-//
-//    for (int a = 0; a < MAC_MAX_PLAYERS; a++)
-//    {
-//        keyCFStringRef = CFStringCreateWithFormat(kCFAllocatorDefault, NULL, CFSTR("DirectionHint_%d_%d"), a, padSetting);
-//        if (keyCFStringRef)
-//        {
-//            CFNumberRef    numRef;
-//            CFIndex        v;
-//
-//            v = (CFIndex) gDirectionHint[a];
-//            numRef = CFNumberCreate(kCFAllocatorDefault, kCFNumberCFIndexType, &v);
-//            if (numRef)
-//            {
-//                CFPreferencesSetAppValue(keyCFStringRef, numRef, kCFPreferencesCurrentApplication);
-//                CFRelease(numRef);
-//            }
-//
-//            CFRelease(keyCFStringRef);
-//        }
-//    }
-//
-//    CFPreferencesAppSynchronize(kCFPreferencesCurrentApplication);
+    struct JoypadCookie &operator=(const struct JoypadCookie &o)
+    {
+        device = o.device;
+        cookie = o.cookie;
+        return *this;
+    }
+
+    bool operator==(const struct JoypadCookie &o) const
+    {
+        return device == o.device && cookie == o.cookie;
+    }
+
+    bool operator<(const struct JoypadCookie &o) const
+    {
+        return device < o.device || cookie < o.cookie;
+    }
+};
+
+struct JoypadCookieInfo {
+    uint32 usage;
+    uint32 index;
+    int32 midpoint;
+    int32 min;
+    int32 max;
+};
+
+struct JoypadInput {
+    struct JoypadCookie cookie;
+    int32 value;
+
+    bool operator==(const struct JoypadInput &o) const
+    {
+        return cookie == o.cookie && value == o.value;
+    }
+
+    bool operator<(const struct JoypadInput &o) const
+    {
+        return cookie < o.cookie || value < o.value;
+    }
+};
+
+namespace std {
+    template <>
+    struct hash<struct JoypadDevice>
+    {
+        std::size_t operator()(const JoypadDevice& k) const
+        {
+            return k.vendorID ^ k.productID ^ k.index;
+        }
+    };
+
+    template <>
+    struct hash<struct JoypadCookie>
+    {
+        std::size_t operator()(const JoypadCookie& k) const
+        {
+            return std::hash<struct JoypadDevice>()(k.device) ^ k.cookie;
+        }
+    };
+
+    template <>
+    struct hash<struct JoypadInput>
+    {
+        std::size_t operator()(const JoypadInput& k) const
+        {
+            return std::hash<struct JoypadCookie>()(k.cookie) ^ k.value;
+        }
+    };
 }
 
-void LoadControllerSettings (void)
+std::unordered_set<JoypadDevice> allDevices;
+std::unordered_map<JoypadDevice, std::map<uint8, std::map<int8, S9xButtonCode>>> defaultAxes;
+std::unordered_map<JoypadDevice, std::map<uint8, S9xButtonCode>> defaultButtons;
+std::unordered_map<JoypadDevice, std::map<uint8, S9xButtonCode>> defaultHatValues;
+// TODO: Hook these next two up
+std::unordered_map<JoypadDevice, int8> playerNumByDevice;
+std::unordered_map<uint32, int8> deviceIndexByPort;
+std::unordered_map<JoypadCookie, JoypadCookieInfo> infoByCookie;
+std::unordered_map<JoypadInput, S9xButtonCode> buttonCodeByJoypadInput;
+
+@interface NSData (S9xHexString)
++(id)s9x_dataWithHexString:(NSString *)hex;
+@end
+
+@implementation NSData (S9xHexString)
+
+// Not efficent
++ (id)s9x_dataWithHexString:(NSString *)hex
 {
-//    CFStringRef    keyCFStringRef;
-//
-//    for (int a = 0; a < kNumButtons; a++)
-//    {
-//        pRecDevice    pDevice  = NULL;
-//        pRecElement    pElement = NULL;
-//        Boolean        r = false;
-//        char        needCStr[64], num[10];
-//
-//        strcpy(needCStr, gNeeds[a]);
-//        if (padSetting > 1)
-//        {
-//            sprintf(num, "_%d", padSetting);
-//            strcat(needCStr, num);
-//        }
-//
-//        keyCFStringRef = CFStringCreateWithFormat(kCFAllocatorDefault, NULL, CFSTR("%s"), needCStr);
-//        if (keyCFStringRef)
-//        {
-//            // r = HIDRestoreElementPref(keyCFStringRef, kCFPreferencesCurrentApplication, &pDevice, &pElement);
-//            if (r && pDevice && pElement)
-//            {
-//                gActionRecs[a].fDevice  = pDevice;
-//                gActionRecs[a].fElement = pElement;
-//            }
-//            else
-//            {
-//                gActionRecs[a].fDevice  = NULL;
-//                gActionRecs[a].fElement = NULL;
-//            }
-//
-//            CFRelease(keyCFStringRef);
-//        }
-//    }
-//
-//    for (int a = 0; a < MAC_MAX_PLAYERS; a++)
-//    {
-//        keyCFStringRef = CFStringCreateWithFormat(kCFAllocatorDefault, NULL, CFSTR("DirectionHint_%d_%d"), a, padSetting);
-//        if (keyCFStringRef)
-//        {
-//            Boolean    r;
-//
-//            gDirectionHint[a] = (int) CFPreferencesGetAppIntegerValue(keyCFStringRef, kCFPreferencesCurrentApplication, &r);
-//            if (!r)
-//                gDirectionHint[a] = kPadElemTypeNone;
-//
-//            CFRelease(keyCFStringRef);
-//        }
-//        else
-//            gDirectionHint[a] = kPadElemTypeNone;
-//    }
-//
-//    JoypadSetDirectionInfo();
+    char buf[3];
+    buf[2] = '\0';
+    NSAssert(0 == [hex length] % 2, @"Hex strings should have an even number of digits (%@)", hex);
+    unsigned char *bytes = (unsigned char *)malloc([hex length]/2);
+    unsigned char *bp = bytes;
+    for (CFIndex i = 0; i < [hex length]; i += 2) {
+        buf[0] = [hex characterAtIndex:i];
+        buf[1] = [hex characterAtIndex:i+1];
+        char *b2 = NULL;
+        *bp++ = strtol(buf, &b2, 16);
+        NSAssert(b2 == buf + 2, @"String should be all hex digits: %@ (bad digit around %ld)", hex, (long)i);
+    }
+
+    return [NSData dataWithBytesNoCopy:bytes length:[hex length]/2 freeWhenDone:YES];
 }
 
-//static OSStatus ControllerEventHandler (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData)
-//{
-//    OSStatus    err, result = eventNotHandledErr;
-//    WindowRef    tWindowRef;
-//
-//    tWindowRef = (WindowRef) inUserData;
-//
-//    switch (GetEventClass(inEvent))
-//    {
-//        case kEventClassWindow:
-//            switch (GetEventKind(inEvent))
-//            {
-//                case kEventWindowClose:
-//                    QuitAppModalLoopForWindow(tWindowRef);
-//                    result = noErr;
-//                    break;
-//            }
-//
-//            break;
-//
-//        case kEventClassCommand:
-//            switch (GetEventKind(inEvent))
-//            {
-//                HICommand    tHICommand;
-//
-//                case kEventCommandUpdateStatus:
-//                    err = GetEventParameter(inEvent, kEventParamDirectObject, typeHICommand, NULL, sizeof(HICommand), NULL, &tHICommand);
-//                    if (err == noErr && tHICommand.commandID == 'clos')
-//                    {
-//                        UpdateMenuCommandStatus(true);
-//                        result = noErr;
-//                    }
-//
-//                    break;
-//
-//                case kEventCommandProcess:
-//                    err = GetEventParameter(inEvent, kEventParamDirectObject, typeHICommand, NULL, sizeof(HICommand), NULL, &tHICommand);
-//                    if (err == noErr)
-//                    {
-//                        if (tHICommand.commandID == 'CLRa')
-//                        {
-//                            ClearPadSetting();
-//                            result = noErr;
-//                        }
-//                        else
-//                        {
-//                            SInt32    command = -1, count;
-//
-//                            for (count = 0; count < kNeedCount; count++)
-//                                if (tHICommand.commandID == gControlIDs[count].signature)
-//                                    command = count;
-//
-//                            if (command >= 0)
-//                            {
-//                                pRecDevice    pDevice;
-//                                pRecElement    pElement;
-//
-//                                FlushEventQueue(GetCurrentEventQueue());
-//
-//                                if (HIDConfigureAction(&pDevice, &pElement, 2.5f))
-//                                {
-//                                    if (command < MAC_MAX_PLAYERS * 4)    // Direction
-//                                    {
-//                                        int        i    = command >> 2;    // Player
-//                                        long    curv = HIDGetElementValue(pDevice, pElement);
-//
-//                                        if (pElement->usage == kHIDUsage_GD_Hatswitch)    // Hat Switch
-//                                        {
-//                                            gActionRecs[kUp(i)].fDevice  = gActionRecs[kDn(i)].fDevice  = gActionRecs[kLf(i)].fDevice  = gActionRecs[kRt(i)].fDevice  = pDevice;
-//                                            gActionRecs[kUp(i)].fElement = gActionRecs[kDn(i)].fElement = gActionRecs[kLf(i)].fElement = gActionRecs[kRt(i)].fElement = pElement;
-//
-//                                            if (pDevice->vendorID == 1103)    // Thrustmaster
-//                                                gDirectionInfo[i].type = (pElement->max > 4) ? kPadElemTypeOtherHat8 : kPadElemTypeOtherHat4;
-//                                            else
-//                                            {
-//                                                if (pElement->max > 4)
-//                                                {
-//                                                    if (((command % 4 == 0) && (curv == 0)) ||    // Up    : 0
-//                                                        ((command % 4 == 1) && (curv == 4)) ||    // Down  : 4
-//                                                        ((command % 4 == 2) && (curv == 6)) ||    // Left  : 6
-//                                                        ((command % 4 == 3) && (curv == 2)))    // Right : 2
-//                                                        gDirectionInfo[i].type = kPadElemTypeOtherHat8;
-//                                                    else
-//                                                        gDirectionInfo[i].type = kPadElemTypeHat8;
-//                                                }
-//                                                else
-//                                                {
-//                                                    if (((command % 4 == 0) && (curv == 0)) ||    // Up    : 0
-//                                                        ((command % 4 == 1) && (curv == 2)) ||    // Down  : 2
-//                                                        ((command % 4 == 2) && (curv == 3)) ||    // Left  : 3
-//                                                        ((command % 4 == 3) && (curv == 1)))    // Right : 1
-//                                                        gDirectionInfo[i].type = kPadElemTypeOtherHat4;
-//                                                    else
-//                                                        gDirectionInfo[i].type = kPadElemTypeHat4;
-//                                                }
-//                                            }
-//
-//                                            gDirectionInfo[i].device [kPadHat] = pDevice;
-//                                            gDirectionInfo[i].element[kPadHat] = pElement;
-//                                            gDirectionInfo[i].max    [kPadHat] = pElement->max;
-//                                            gDirectionInfo[i].min    [kPadHat] = pElement->min;
-//                                        }
-//                                        else
-//                                        if (pElement->max - pElement->min > 1)            // Axis (maybe)
-//                                        {
-//                                            if ((command % 4 == 0) || (command % 4 == 1))    // Up or Dn
-//                                            {
-//                                                gActionRecs[kUp(i)].fDevice  = gActionRecs[kDn(i)].fDevice  = pDevice;
-//                                                gActionRecs[kUp(i)].fElement = gActionRecs[kDn(i)].fElement = pElement;
-//
-//                                                gDirectionInfo[i].type               = kPadElemTypeAxis;
-//                                                gDirectionInfo[i].device [kPadYAxis] = pDevice;
-//                                                gDirectionInfo[i].element[kPadYAxis] = pElement;
-//                                                gDirectionInfo[i].max    [kPadYAxis] = pElement->max;
-//                                                gDirectionInfo[i].min    [kPadYAxis] = pElement->min;
-//                                                gDirectionInfo[i].mid    [kPadYAxis] = (gDirectionInfo[i].max[kPadYAxis] + gDirectionInfo[i].min[kPadYAxis]) >> 1;
-//                                                gDirectionInfo[i].maxmid [kPadYAxis] = (gDirectionInfo[i].max[kPadYAxis] + gDirectionInfo[i].mid[kPadYAxis]) >> 1;
-//                                                gDirectionInfo[i].midmin [kPadYAxis] = (gDirectionInfo[i].mid[kPadYAxis] + gDirectionInfo[i].min[kPadYAxis]) >> 1;
-//                                            }
-//                                            else                                            // Lf or Rt
-//                                            {
-//                                                gActionRecs[kLf(i)].fDevice  = gActionRecs[kRt(i)].fDevice  = pDevice;
-//                                                gActionRecs[kLf(i)].fElement = gActionRecs[kRt(i)].fElement = pElement;
-//
-//                                                gDirectionInfo[i].type               = kPadElemTypeAxis;
-//                                                gDirectionInfo[i].device [kPadXAxis] = pDevice;
-//                                                gDirectionInfo[i].element[kPadXAxis] = pElement;
-//                                                gDirectionInfo[i].max    [kPadXAxis] = pElement->max;
-//                                                gDirectionInfo[i].min    [kPadXAxis] = pElement->min;
-//                                                gDirectionInfo[i].mid    [kPadXAxis] = (gDirectionInfo[i].max[kPadXAxis] + gDirectionInfo[i].min[kPadXAxis]) >> 1;
-//                                                gDirectionInfo[i].maxmid [kPadXAxis] = (gDirectionInfo[i].max[kPadXAxis] + gDirectionInfo[i].mid[kPadXAxis]) >> 1;
-//                                                gDirectionInfo[i].midmin [kPadXAxis] = (gDirectionInfo[i].mid[kPadXAxis] + gDirectionInfo[i].min[kPadXAxis]) >> 1;
-//                                            }
-//                                        }
-//                                        else                                            // Button (maybe)
-//                                        {
-//                                            gActionRecs[command].fDevice  = pDevice;
-//                                            gActionRecs[command].fElement = pElement;
-//                                            gDirectionInfo[i].type = kPadElemTypeButton;
-//                                        }
-//
-//                                        gDirectionHint[i] = gDirectionInfo[i].type;
-//                                    }
-//                                    else
-//                                    {
-//                                        gActionRecs[command].fDevice  = pDevice;
-//                                        gActionRecs[command].fElement = pElement;
-//                                    }
-//                                }
-//                                else
-//                                {
-//                                    if (command < MAC_MAX_PLAYERS * 4)    // Direction
-//                                    {
-//                                        int    i = command >> 2;    // Player
-//
-//                                        gActionRecs[kUp(i)].fDevice  = gActionRecs[kDn(i)].fDevice  = gActionRecs[kLf(i)].fDevice  = gActionRecs[kRt(i)].fDevice  = NULL;
-//                                        gActionRecs[kUp(i)].fElement = gActionRecs[kDn(i)].fElement = gActionRecs[kLf(i)].fElement = gActionRecs[kRt(i)].fElement = NULL;
-//
-//                                        gDirectionInfo[i].type = gDirectionHint[i] = kPadElemTypeNone;
-//                                        gDirectionInfo[i].device [0] = gDirectionInfo[i].device [1] = NULL;
-//                                        gDirectionInfo[i].element[0] = gDirectionInfo[i].element[1] = NULL;
-//                                    }
-//                                    else
-//                                    {
-//                                        gActionRecs[command].fDevice  = NULL;
-//                                        gActionRecs[command].fElement = NULL;
-//                                    }
-//                                }
-//
-//                                gActionRecs[command].fValue    = 0;
-//                                gActionRecs[command].fOldValue = -2;
-//
-//                                FlushEventQueue(GetCurrentEventQueue());
-//
-//                                result = noErr;
-//                            }
-//                        }
-//                    }
-//
-//                    break;
-//            }
-//
-//            break;
-//    }
-//
-//    return (result);
-//}
+@end
 
-//static void IdleTimer (EventLoopTimerRef inTimer, void *userData)
-//{
-//    static uint32    old[MAC_MAX_PLAYERS] = { ~0, ~0, ~0, ~0, ~0, ~0, ~0, ~0 };
-//
-//    HIViewRef    ctl, root;
-//    uint32        pad[MAC_MAX_PLAYERS];
-//
-//    root = HIViewGetRoot((WindowRef) userData);
-//
-//    for (int i = 0; i < MAC_MAX_PLAYERS; i++)
-//    {
-//        pad[i] = 0;
-//        JoypadScanDirection(i, &(pad[i]));
-//
-//        if (old[i] != pad[i])
-//        {
-//            old[i]  = pad[i];
-//
-//            HIViewFindByID(root, gControlIDs[kUp(i)], &ctl);
-//            SetControl32BitValue(ctl, (pad[i] & kMaskUp) ? 1 : 0);
-//            HIViewFindByID(root, gControlIDs[kDn(i)], &ctl);
-//            SetControl32BitValue(ctl, (pad[i] & kMaskDn) ? 1 : 0);
-//            HIViewFindByID(root, gControlIDs[kLf(i)], &ctl);
-//            SetControl32BitValue(ctl, (pad[i] & kMaskLf) ? 1 : 0);
-//            HIViewFindByID(root, gControlIDs[kRt(i)], &ctl);
-//            SetControl32BitValue(ctl, (pad[i] & kMaskRt) ? 1 : 0);
-//        }
-//    }
-//
-//    for (int i = MAC_MAX_PLAYERS * 4; i < kNeedCount; i++)
-//    {
-//        gActionRecs[i].fValue = ISpKeyIsPressed(i);
-//
-//        if (gActionRecs[i].fOldValue != gActionRecs[i].fValue)
-//        {
-//            gActionRecs[i].fOldValue  = gActionRecs[i].fValue;
-//
-//            HIViewFindByID(root, gControlIDs[i], &ctl);
-//            SetControl32BitValue(ctl, (gActionRecs[i].fValue ? 1 : 0));
-//        }
-//    }
-//}
+IOHIDManagerRef hidManager = NULL;
+
+void gamepadAction(void *inContext, IOReturn inResult, void *inSender, IOHIDValueRef v) {
+    os_unfair_lock_lock(&keyLock);
+
+    IOHIDDeviceRef device = (IOHIDDeviceRef) inSender;
+    uint32 port = ((NSNumber *)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDLocationIDKey))).unsignedIntValue;
+
+    if (deviceIndexByPort.find(port) == deviceIndexByPort.end())
+    {
+        os_unfair_lock_unlock(&keyLock);
+        return;
+    }
+
+    IOHIDElementRef element = IOHIDValueGetElement(v);
+
+    NSNumber *vendor = (NSNumber *)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDVendorIDKey));
+    NSNumber *product = (NSNumber *)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDProductIDKey));
+
+    struct JoypadDevice deviceStruct;
+    deviceStruct.vendorID = vendor.unsignedIntValue;
+    deviceStruct.productID = product.unsignedIntValue;
+    deviceStruct.index = deviceIndexByPort[port];
+
+    if (allDevices.find(deviceStruct) == allDevices.end())
+    {
+        os_unfair_lock_unlock(&keyLock);
+        return;
+    }
+
+    if ( playerNumByDevice.find(deviceStruct) == playerNumByDevice.end())
+    {
+        os_unfair_lock_unlock(&keyLock);
+        return;
+    }
+
+    int8 playerNum = playerNumByDevice[deviceStruct];
+    if (playerNum < 0 || playerNum >= MAC_MAX_PLAYERS)
+    {
+        os_unfair_lock_unlock(&keyLock);
+        return;
+    }
+
+    struct JoypadCookie cookieStruct;
+    cookieStruct.device = deviceStruct;
+    cookieStruct.cookie = (int32_t)IOHIDElementGetCookie(element);
+
+    if (infoByCookie.find(cookieStruct) != infoByCookie.end())
+    {
+        auto info = infoByCookie[cookieStruct];
+
+        struct JoypadInput inputStruct;
+        inputStruct.cookie = cookieStruct;
+        inputStruct.value = (int32_t)IOHIDValueGetIntegerValue(v);
+
+        struct JoypadInput oppositeInputStruct = inputStruct;
+
+        if (info.min != info.max)
+        {
+            if (inputStruct.value < info.min)
+            {
+                inputStruct.value = info.min;
+                oppositeInputStruct.value = info.max;
+            }
+            else if ( inputStruct.value > info.max)
+            {
+                inputStruct.value = info.max;
+                oppositeInputStruct.value = info.min;
+            }
+            else
+            {
+                inputStruct.value = info.midpoint;
+            }
+
+            if (buttonCodeByJoypadInput.find(inputStruct) != buttonCodeByJoypadInput.end())
+            {
+                pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[inputStruct]] = true;
+                pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[oppositeInputStruct]] = false;
+            }
+            else
+            {
+                oppositeInputStruct.value = info.min;
+                pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[oppositeInputStruct]] = false;
+                oppositeInputStruct.value = info.max;
+                pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[oppositeInputStruct]] = false;
+            }
+        }
+        else if (info.usage == kHIDUsage_GD_Hatswitch)
+        {
+            int32 value = inputStruct.value;
+
+            inputStruct.value = 1;
+            if (buttonCodeByJoypadInput.find(inputStruct) != buttonCodeByJoypadInput.end())
+            {
+                pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[inputStruct]] = (value & inputStruct.value);
+            }
+
+            inputStruct.value = 2;
+            if (buttonCodeByJoypadInput.find(inputStruct) != buttonCodeByJoypadInput.end())
+            {
+                pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[inputStruct]] = (value & inputStruct.value);
+            }
+
+            inputStruct.value = 4;
+            if (buttonCodeByJoypadInput.find(inputStruct) != buttonCodeByJoypadInput.end())
+            {
+                pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[inputStruct]] = (value & inputStruct.value);
+            }
+
+            inputStruct.value = 8;
+            if (buttonCodeByJoypadInput.find(inputStruct) != buttonCodeByJoypadInput.end())
+            {
+                pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[inputStruct]] = (value & inputStruct.value);
+            }
+        }
+        else
+        {
+            bool value = (inputStruct.value != 0);
+            inputStruct.value = 0;
+
+            if (buttonCodeByJoypadInput.find(inputStruct) != buttonCodeByJoypadInput.end())
+            {
+                pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[inputStruct]] = value;
+            }
+        }
+    }
+
+    os_unfair_lock_unlock(&keyLock);
+}
+
+void findControls(struct JoypadDevice &device, NSDictionary *properties, NSMutableArray<NSDictionary *> *buttons, NSMutableArray<NSDictionary *> *axes, int64 *hat)
+{
+    if (properties == nil)
+    {
+        return;
+    }
+
+    int usagePage = [properties[@kIOHIDElementUsagePageKey] intValue];
+    int usage = [properties[@kIOHIDElementUsageKey] intValue];
+    if (usagePage == kHIDPage_Button)
+    {
+        [buttons addObject:properties];
+    }
+    else if (usagePage == kHIDPage_GenericDesktop && (usage == kHIDUsage_GD_X || usage == kHIDUsage_GD_Y || usage == kHIDUsage_GD_Z || usage == kHIDUsage_GD_Rx || usage == kHIDUsage_GD_Ry || usage == kHIDUsage_GD_Rz))
+    {
+        [axes addObject:properties];
+    }
+    else if (usagePage == kHIDPage_GenericDesktop && usage == kHIDUsage_GD_Hatswitch)
+    {
+        if (hat != NULL)
+        {
+            *hat = [properties[@kIOHIDElementCookieKey] intValue];
+        }
+    }
+    else
+    {
+        for ( NSDictionary *child in properties[@kIOHIDElementKey] )
+        {
+            findControls(device, child, buttons, axes, hat);
+        }
+    }
+}
+
+void ParseDefaults (void)
+{
+    NSString *contents = [NSString stringWithContentsOfURL:[[NSBundle bundleForClass:[S9xEngine class]] URLForResource:@"gamecontrollerdb" withExtension:@"txt"] encoding:NSUTF8StringEncoding error:NULL];
+
+    for ( NSString *line in [contents componentsSeparatedByString:@"\n"])
+    {
+        NSMutableArray<NSString *> *components = [[line componentsSeparatedByString:@","] mutableCopy];
+        if (components.count > 0)
+        {
+            [components removeLastObject];
+        }
+
+        if (![components.lastObject isEqualToString:@"platform:Mac OS X"])
+        {
+            continue;
+        }
+
+        [components removeLastObject];
+
+        if (components.firstObject.length != 32)
+        {
+            continue;
+        }
+
+        NSData *guidData = [NSData s9x_dataWithHexString:components.firstObject];
+        uint16 *bytes = (uint16 *)guidData.bytes;
+
+        struct JoypadDevice key;
+        key.vendorID = bytes[2];
+        key.productID = bytes[4];
+        key.index = 0;
+
+        [components removeObjectAtIndex:0];
+        [components removeObjectAtIndex:0];
+
+        for (NSString *component in components)
+        {
+            NSArray<NSString *> *subcomponents = [component componentsSeparatedByString:@":"];
+
+            if (subcomponents.count != 2)
+            {
+                continue;
+            }
+
+            NSString *control = subcomponents.lastObject;
+            NSString *codeString = subcomponents.firstObject;
+
+            if ([control hasPrefix:@"b"])
+            {
+                control = [control substringFromIndex:1];
+                int buttonNum = control.intValue;
+                int16 code = -1;
+
+                // Buttons are mirrored horizontally, since the config uses the Xbox controller as a reference.
+                if ([codeString isEqualToString:@"a"])
+                {
+                    code = kB;
+                }
+                else if ([codeString isEqualToString:@"b"])
+                {
+                    code = kA;
+                }
+                else if ([codeString isEqualToString:@"x"])
+                {
+                    code = kY;
+                }
+                else if ([codeString isEqualToString:@"y"])
+                {
+                    code = kX;
+                }
+                else if ([codeString isEqualToString:@"start"])
+                {
+                    code = kStart;
+                }
+                else if ([codeString isEqualToString:@"back"])
+                {
+                    code = kSelect;
+                }
+                else if ([codeString isEqualToString:@"rightshoulder"])
+                {
+                    code = kR;
+                }
+                else if ([codeString isEqualToString:@"leftshoulder"])
+                {
+                    code = kL;
+                }
+                else if ([codeString isEqualToString:@"dpup"])
+                {
+                    code = kUp;
+                }
+                else if ([codeString isEqualToString:@"dpdown"])
+                {
+                    code = kDown;
+                }
+                else if ([codeString isEqualToString:@"dpleft"])
+                {
+                    code = kLeft;
+                }
+                else if ([codeString isEqualToString:@"dpright"])
+                {
+                    code = kRight;
+                }
+
+                if (code >= 0)
+                {
+                    defaultButtons[key][buttonNum] = (S9xButtonCode)code;
+                }
+            }
+            else if ([control hasPrefix:@"h0."])
+            {
+                control = [control substringFromIndex:3];
+                int value = control.intValue;
+                int16 code = -1;
+
+                if ([codeString isEqualToString:@"dpup"])
+                {
+                    code = kUp;
+                }
+                else if ([codeString isEqualToString:@"dpdown"])
+                {
+                    code = kDown;
+                }
+                else if ([codeString isEqualToString:@"dpleft"])
+                {
+                    code = kLeft;
+                }
+                else if ([codeString isEqualToString:@"dpright"])
+                {
+                    code = kRight;
+                }
+
+                if (code >= 0)
+                {
+                    defaultHatValues[key][value] = (S9xButtonCode)code;
+                }
+            }
+            else if ([control hasPrefix:@"a"] || [control hasPrefix:@"+a"] || [control hasPrefix:@"-a"])
+            {
+                BOOL negative = [control hasPrefix:@"-"];
+
+                if ( negative || [control hasPrefix:@"+"])
+                {
+                    control = [control substringFromIndex:2];
+                }
+                else
+                {
+                    control = [control substringFromIndex:1];
+                }
+
+                int axisNum = control.intValue;
+                int16 code = -1;
+
+                if ([codeString isEqualToString:@"dpup"])
+                {
+                    code = kUp;
+                }
+                else if ([codeString isEqualToString:@"dpdown"])
+                {
+                    code = kDown;
+                }
+                else if ([codeString isEqualToString:@"dpleft"])
+                {
+                    code = kLeft;
+                }
+                else if ([codeString isEqualToString:@"dpright"])
+                {
+                    code = kRight;
+                }
+
+                if (code >= 0)
+                {
+                    defaultAxes[key][axisNum][negative ? -1 : 1] = (S9xButtonCode)code;
+                }
+                else
+                {
+                    if ([codeString isEqualToString:@"leftx"])
+                    {
+                        defaultAxes[key][axisNum][-1] = kLeft;
+                        defaultAxes[key][axisNum][-1] = kRight;
+                    }
+                    else if ([codeString isEqualToString:@"lefty"])
+                    {
+                        defaultAxes[key][axisNum][-1] = kUp;
+                        defaultAxes[key][axisNum][-1] = kDown;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void SetDefaultButtonCodeForJoypadControl(struct JoypadInput &input, S9xButtonCode buttonCode)
+{
+    SetButtonCodeForJoypadControl(input.cookie.device.vendorID, input.cookie.device.productID, input.cookie.device.index, input.cookie.cookie, input.value, buttonCode, false, NULL);
+}
+
+void AddDevice (IOHIDDeviceRef device)
+{
+    NSNumber *vendor = (NSNumber *)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDVendorIDKey));
+    NSNumber *product = (NSNumber *)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDProductIDKey));
+
+    NSMutableArray<NSDictionary *> *buttons = [NSMutableArray new];
+    NSMutableArray<NSDictionary *> *axes = [NSMutableArray new];
+    int64 hat = -1;
+
+    struct JoypadDevice deviceStruct;
+    deviceStruct.vendorID = vendor.unsignedIntValue;
+    deviceStruct.productID = product.unsignedIntValue;
+    deviceStruct.index = 0;
+
+    struct JoypadDevice defaultsKey = deviceStruct;
+
+    while (allDevices.find(deviceStruct) != allDevices.end())
+    {
+        deviceStruct.index += 1;
+    }
+
+    allDevices.insert(deviceStruct);
+    uint32_t port = ((NSNumber *)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDLocationIDKey))).unsignedIntValue;
+    deviceIndexByPort[port] = deviceStruct.index;
+
+    CFMutableDictionaryRef properties = NULL;
+
+    IORegistryEntryCreateCFProperties(IOHIDDeviceGetService(device), &properties, kCFAllocatorDefault, kNilOptions);
+
+    for ( NSDictionary *child in ((__bridge NSDictionary *)properties)[@kIOHIDElementKey] )
+    {
+        findControls(deviceStruct, child, buttons, axes, &hat);
+    }
+
+    NSComparisonResult (^comparitor)(NSDictionary *a, NSDictionary *b) = ^NSComparisonResult(NSDictionary *a, NSDictionary *b)
+    {
+        NSNumber *usageA = a[@kIOHIDElementUsageKey];
+        NSNumber *usageB = b[@kIOHIDElementUsageKey];
+
+        return [usageA compare:usageB];
+    };
+
+    [buttons sortWithOptions:NSSortStable usingComparator:comparitor];
+
+    uint32 buttonIndex = 0;
+    for (NSDictionary<NSString *, NSNumber *> *buttonDict in buttons)
+    {
+        struct JoypadCookie cookie;
+        struct JoypadCookieInfo info;
+
+        cookie.device = deviceStruct;
+        cookie.cookie = buttonDict[@kIOHIDElementCookieKey].unsignedIntValue;
+
+        info.usage = kHIDUsage_Undefined;
+        info.min = 0;
+        info.max = 0;
+        info.midpoint = 0;
+
+        if (defaultButtons.find(defaultsKey) != defaultButtons.end())
+        {
+            std::map<uint8, S9xButtonCode> &buttonMap = defaultButtons[defaultsKey];
+            if (buttonMap.find(buttonIndex) != buttonMap.end())
+            {
+                struct JoypadInput input;
+                input.cookie = cookie;
+                input.value = 0;
+                SetDefaultButtonCodeForJoypadControl(input, buttonMap[buttonIndex]);
+            }
+        }
+
+        info.index = buttonIndex++;
+        infoByCookie[cookie] = info;
+    }
+
+    [axes sortWithOptions:NSSortStable usingComparator:comparitor];
+
+    uint32 axisIndex = 0;
+    const float deadZone = 0.3;
+    for ( NSDictionary<NSString *, NSNumber *> *axisDict in axes)
+    {
+        struct JoypadCookie cookie;
+        struct JoypadCookieInfo info;
+
+        cookie.device = deviceStruct;
+        cookie.cookie = axisDict[@kIOHIDElementCookieKey].unsignedIntValue;
+
+        info.min = axisDict[@kIOHIDElementMinKey].intValue;
+        info.max = axisDict[@kIOHIDElementMaxKey].intValue;
+        info.midpoint = (info.min + info.max) / 2;
+        info.max = info.midpoint + ((info.max - info.midpoint) * deadZone);
+        info.min = info.midpoint - ((info.midpoint - info.min) * deadZone);
+
+        if (defaultAxes.find(defaultsKey) != defaultAxes.end())
+        {
+            auto axisMap = defaultAxes[defaultsKey];
+
+            if (axisMap.find(axisIndex) != axisMap.end())
+            {
+                {
+                    struct JoypadInput input;
+                    input.cookie = cookie;
+                    input.value = info.min;
+                    SetDefaultButtonCodeForJoypadControl(input, axisMap[axisIndex][-1]);
+                }
+
+                {
+                    struct JoypadInput input;
+                    input.cookie = cookie;
+                    input.value = info.max;
+                    SetDefaultButtonCodeForJoypadControl(input, axisMap[axisIndex][1]);
+                }
+            }
+        }
+
+        // TODO: Extend axisIndex into defaultAxes
+        info.index = axisIndex++;
+        infoByCookie[cookie] = info;
+    }
+
+    if (hat >= 0)
+    {
+        struct JoypadCookie cookie;
+        struct JoypadCookieInfo info;
+
+        cookie.device = deviceStruct;
+        cookie.cookie = (uint32)hat;
+
+        info.usage = kHIDUsage_GD_Hatswitch;
+        info.min = 0;
+        info.max = 0;
+        info.midpoint = 0;
+
+        if (defaultHatValues.find(defaultsKey) != defaultHatValues.end())
+        {
+            for (auto value : defaultHatValues[defaultsKey])
+            {
+                struct JoypadInput input;
+                input.cookie = cookie;
+                input.value = value.first;
+                SetDefaultButtonCodeForJoypadControl(input, value.second);
+            }
+        }
+
+        info.index = 0;
+        infoByCookie[cookie] = info;
+    }
+
+    CFRelease(properties);
+}
 
 void SetUpHID (void)
 {
-//    pRecDevice    device;
-//
-//    HIDBuildDeviceList(NULL, NULL);
-//    device = HIDGetFirstDevice();
-//    if (!device)
-//    {
-//        hidExist = false;
-//        return;
-//    }
-//
-//    hidExist = true;
-//
-//    ClearPadSetting();
+    hidManager = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
+    IOHIDManagerRegisterInputValueCallback(hidManager, gamepadAction, NULL);
+    IOHIDManagerScheduleWithRunLoop(hidManager, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
+    IOHIDManagerSetDeviceMatching(hidManager, NULL);
 
-    LoadControllerSettings();
-}
+    ParseDefaults();
 
-void ClearPadSetting (void)
-{
-    for (int i = 0; i < MAC_MAX_PLAYERS; i++)
+    if (hidManager != NULL && IOHIDManagerOpen(hidManager, kIOHIDOptionsTypeNone) == kIOReturnSuccess)
     {
-        gDirectionInfo[i].type = gDirectionHint[i] = kPadElemTypeNone;
-        gDirectionInfo[i].device [0] = gDirectionInfo[i].device [1] = NULL;
-        gDirectionInfo[i].element[0] = gDirectionInfo[i].element[1] = NULL;
+        NSSet* devices = (NSSet *)CFBridgingRelease(IOHIDManagerCopyDevices(hidManager));
+        NSMutableArray *orderedDevices = [devices.allObjects mutableCopy];
+
+        [orderedDevices removeObjectsAtIndexes:[orderedDevices indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop)
+        {
+            IOHIDDeviceRef device = (__bridge IOHIDDeviceRef)obj;
+
+            NSNumber *usagePage = (NSNumber *)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDPrimaryUsagePageKey));
+            NSNumber *usage = (NSNumber *)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDPrimaryUsageKey));
+
+            return usagePage.intValue != kHIDPage_GenericDesktop || (usage.intValue != kHIDUsage_GD_GamePad && usage.intValue != kHIDUsage_GD_Joystick);
+        }]];
+
+        [orderedDevices sortUsingComparator:^NSComparisonResult(id a, id b)
+        {
+            NSNumber *vendorA = (NSNumber *)IOHIDDeviceGetProperty((__bridge IOHIDDeviceRef)a, CFSTR(kIOHIDVendorIDKey));
+
+            NSNumber *vendorB = (NSNumber *)IOHIDDeviceGetProperty((__bridge IOHIDDeviceRef)b, CFSTR(kIOHIDVendorIDKey));
+
+            NSComparisonResult result = [vendorA compare:vendorB];
+
+            if (result == NSOrderedSame)
+            {
+                NSNumber *productA = (NSNumber *)IOHIDDeviceGetProperty((__bridge IOHIDDeviceRef)a, CFSTR(kIOHIDProductIDKey));
+
+                NSNumber *productB = (NSNumber *)IOHIDDeviceGetProperty((__bridge IOHIDDeviceRef)b, CFSTR(kIOHIDProductIDKey));
+
+                result = [productA compare:productB];
+            }
+
+            if (result == NSOrderedSame)
+            {
+                NSNumber *portA = (NSNumber *)IOHIDDeviceGetProperty((__bridge IOHIDDeviceRef)a, CFSTR(kIOHIDLocationIDKey));
+
+                NSNumber *portB = (NSNumber *)IOHIDDeviceGetProperty((__bridge IOHIDDeviceRef)b, CFSTR(kIOHIDLocationIDKey));
+
+                result = [portA compare:portB];
+            }
+
+            return result;
+        }];
+
+        for (id device in orderedDevices)
+        {
+            AddDevice((__bridge IOHIDDeviceRef)device);
+        }
+
+        if (orderedDevices.count == 1)
+        {
+            const struct JoypadDevice &deviceStruct = *(allDevices.begin());
+            SetPlayerForJoypad(0, deviceStruct.vendorID, deviceStruct.productID, deviceStruct.index, NULL);
+        }
     }
-
-    for (int i = 0; i < kNumButtons; i++)
+    else
     {
-        gActionRecs[i].fDevice   = NULL;
-        gActionRecs[i].fElement  = NULL;
-        gActionRecs[i].fValue    = 0;
-        gActionRecs[i].fOldValue = -2;
+        hidManager = NULL;
     }
 }
 
 void ReleaseHID (void)
 {
-//    if (hidExist)
-//        HIDReleaseDeviceList();
-}
-
-//void ConfigureHID (void)
-//{
-//    OSStatus    err;
-//    IBNibRef    nibRef;
-//
-//    if (!hidExist)
-//        return;
-//
-//    err = CreateNibReference(kMacS9XCFString, &nibRef);
-//    if (err == noErr)
-//    {
-//        WindowRef    tWindowRef;
-//
-//        err = CreateWindowFromNib(nibRef, CFSTR("Controllers"), &tWindowRef);
-//        if (err == noErr)
-//        {
-//            EventHandlerRef                eref;
-//            EventLoopTimerRef            tref;
-//            EventHandlerUPP                eventUPP;
-//            EventLoopTimerUPP            timerUPP;
-//            EventTypeSpec                windowEvents[] = { { kEventClassCommand, kEventCommandProcess      },
-//                                                           { kEventClassCommand, kEventCommandUpdateStatus },
-//                                                           { kEventClassWindow,  kEventWindowClose         } };
-//            HIViewRef                    ctl, root;
-//            HIViewID                    cid;
-//            CFStringRef                    str1, str2;
-//            ControlButtonContentInfo    info;
-//
-//            LoadControllerSettings();
-//
-//            root = HIViewGetRoot(tWindowRef);
-//            cid.id = 0;
-//            cid.signature = 'PRES';
-//            HIViewFindByID(root, cid, &ctl);
-//            str1 = CFCopyLocalizedString(CFSTR("PresetNum"), "PresetNum");
-//            str2 = CFStringCreateWithFormat(kCFAllocatorDefault, NULL, str1, padSetting);
-//            SetStaticTextCFString(ctl, str2, false);
-//            CFRelease(str2);
-//            CFRelease(str1);
-//
-//            if (systemVersion >= 0x1040)
-//            {
-//                info.contentType = kControlContentCGImageRef;
-//                for (int i = 0; i < kNeedCount; i++)
-//                {
-//                    HIViewFindByID(root, gControlIDs[i], &ctl);
-//                    info.u.imageRef = macIconImage[gIconNumber[i]];
-//                    err = SetBevelButtonContentInfo(ctl, &info);
-//                }
-//            }
-//        #ifdef MAC_PANTHER_SUPPORT
-//            else
-//            {
-//                info.contentType = kControlContentIconRef;
-//                for (int i = 0; i < kNeedCount; i++)
-//                {
-//                    HIViewFindByID(root, gControlIDs[i], &ctl);
-//                    info.u.iconRef = macIconRef[gIconNumber[i]];
-//                    err = SetBevelButtonContentInfo(ctl, &info);
-//                }
-//            }
-//        #endif
-//
-//            eventUPP = NewEventHandlerUPP(ControllerEventHandler);
-//            err = InstallWindowEventHandler(tWindowRef, eventUPP, GetEventTypeCount(windowEvents), windowEvents, (void *) tWindowRef, &eref);
-//
-//            timerUPP = NewEventLoopTimerUPP(IdleTimer);
-//            err = InstallEventLoopTimer(GetCurrentEventLoop(), 0.0f, 0.1f, timerUPP, (void *) tWindowRef, &tref);
-//
-//            MoveWindowPosition(tWindowRef, kWindowControllers, false);
-//            ShowWindow(tWindowRef);
-//            err = RunAppModalLoopForWindow(tWindowRef);
-//            HideWindow(tWindowRef);
-//            SaveWindowPosition(tWindowRef, kWindowControllers);
-//
-//            err = RemoveEventLoopTimer(tref);
-//            DisposeEventLoopTimerUPP(timerUPP);
-//
-//            err = RemoveEventHandler(eref);
-//            DisposeEventHandlerUPP(eventUPP);
-//
-//            CFRelease(tWindowRef);
-//
-//            SaveControllerSettings();
-//        }
-//
-//        DisposeNibReference(nibRef);
-//    }
-//}
-
-void JoypadScanDirection (int i, uint32 *pad)
-{
-//    long    state;
-//
-//    switch (gDirectionInfo[i].type)
-//    {
-//        case kPadElemTypeAxis:                            // Axis (maybe)
-//            if (gDirectionInfo[i].device[kPadYAxis])    // Y-Axis
-//            {
-//                state = HIDGetElementValue(gDirectionInfo[i].device[kPadYAxis], gDirectionInfo[i].element[kPadYAxis]);
-//                if (state >= gDirectionInfo[i].maxmid[kPadYAxis])
-//                    *pad |= kMaskDn;
-//                else
-//                if (state <= gDirectionInfo[i].midmin[kPadYAxis])
-//                    *pad |= kMaskUp;
-//            }
-//
-//            if (gDirectionInfo[i].device[kPadXAxis])    // X-Axis
-//            {
-//                state = HIDGetElementValue(gDirectionInfo[i].device[kPadXAxis], gDirectionInfo[i].element[kPadXAxis]);
-//                if (state >= gDirectionInfo[i].maxmid[kPadXAxis])
-//                    *pad |= kMaskRt;
-//                else
-//                if (state <= gDirectionInfo[i].midmin[kPadXAxis])
-//                    *pad |= kMaskLf;
-//            }
-//
-//            break;
-//
-//        case kPadElemTypeHat8:                            // Hat Switch (8 Directions)
-//            if (gDirectionInfo[i].device[kPadHat])
-//            {
-//                state = HIDGetElementValue(gDirectionInfo[i].device[kPadHat], gDirectionInfo[i].element[kPadHat]);
-//                switch (state)
-//                {
-//                    case 1:    *pad |=  kMaskUp           ;    break;
-//                    case 2:    *pad |= (kMaskUp | kMaskRt);    break;
-//                    case 3:    *pad |=  kMaskRt           ;    break;
-//                    case 4:    *pad |= (kMaskRt | kMaskDn);    break;
-//                    case 5:    *pad |=  kMaskDn           ;    break;
-//                    case 6:    *pad |= (kMaskDn | kMaskLf);    break;
-//                    case 7:    *pad |=  kMaskLf           ;    break;
-//                    case 8:    *pad |= (kMaskLf | kMaskUp);    break;
-//                }
-//            }
-//
-//            break;
-//
-//        case kPadElemTypeHat4:                            // Hat Switch (4 Directions)
-//            if (gDirectionInfo[i].device[kPadHat])
-//            {
-//                state = HIDGetElementValue(gDirectionInfo[i].device[kPadHat], gDirectionInfo[i].element[kPadHat]);
-//                switch (state)
-//                {
-//                    case 1:    *pad |=  kMaskUp;    break;
-//                    case 2:    *pad |=  kMaskRt;    break;
-//                    case 3:    *pad |=  kMaskDn;    break;
-//                    case 4:    *pad |=  kMaskLf;    break;
-//                }
-//            }
-//
-//            break;
-//
-//        case kPadElemTypeOtherHat8:                        // Hat Switch (8 Directions, Start at 0)
-//            if (gDirectionInfo[i].device[kPadHat])
-//            {
-//                state = HIDGetElementValue(gDirectionInfo[i].device[kPadHat], gDirectionInfo[i].element[kPadHat]);
-//                switch (state)
-//                {
-//                    case 0:    *pad |=  kMaskUp           ;    break;
-//                    case 1:    *pad |= (kMaskUp | kMaskRt);    break;
-//                    case 2:    *pad |=  kMaskRt           ;    break;
-//                    case 3:    *pad |= (kMaskRt | kMaskDn);    break;
-//                    case 4:    *pad |=  kMaskDn           ;    break;
-//                    case 5:    *pad |= (kMaskDn | kMaskLf);    break;
-//                    case 6:    *pad |=  kMaskLf           ;    break;
-//                    case 7:    *pad |= (kMaskLf | kMaskUp);    break;
-//                }
-//            }
-//
-//            break;
-//
-//        case kPadElemTypeOtherHat4:                        // Hat Switch (4 Directions, Start at 0)
-//            if (gDirectionInfo[i].device[kPadHat])
-//            {
-//                state = HIDGetElementValue(gDirectionInfo[i].device[kPadHat], gDirectionInfo[i].element[kPadHat]);
-//                switch (state)
-//                {
-//                    case 0:    *pad |=  kMaskUp;    break;
-//                    case 1:    *pad |=  kMaskRt;    break;
-//                    case 2:    *pad |=  kMaskDn;    break;
-//                    case 3:    *pad |=  kMaskLf;    break;
-//                }
-//            }
-//
-//            break;
-//
-//        case kPadElemTypeButton:                        // Button (maybe)
-//            if (gActionRecs[kUp(i)].fDevice && HIDGetElementValue(gActionRecs[kUp(i)].fDevice, gActionRecs[kUp(i)].fElement))
-//                *pad |= kMaskUp;
-//            if (gActionRecs[kDn(i)].fDevice && HIDGetElementValue(gActionRecs[kDn(i)].fDevice, gActionRecs[kDn(i)].fElement))
-//                *pad |= kMaskDn;
-//            if (gActionRecs[kLf(i)].fDevice && HIDGetElementValue(gActionRecs[kLf(i)].fDevice, gActionRecs[kLf(i)].fElement))
-//                *pad |= kMaskLf;
-//            if (gActionRecs[kRt(i)].fDevice && HIDGetElementValue(gActionRecs[kRt(i)].fDevice, gActionRecs[kRt(i)].fElement))
-//                *pad |= kMaskRt;
-//
-//            break;
-//    }
-}
-
-static void JoypadSetDirectionInfo (void)
-{
-    for (int i = 0; i < MAC_MAX_PLAYERS; i++)
+    if ( hidManager != NULL)
     {
-        if (((gActionRecs[kUp(i)].fDevice) && (gActionRecs[kUp(i)].fElement)) &&
-            ((gActionRecs[kDn(i)].fDevice) && (gActionRecs[kDn(i)].fElement)) &&
-            ((gActionRecs[kLf(i)].fDevice) && (gActionRecs[kLf(i)].fElement)) &&
-            ((gActionRecs[kRt(i)].fDevice) && (gActionRecs[kRt(i)].fElement)))
+        IOHIDManagerClose(hidManager, kIOHIDOptionsTypeNone);
+    }
+}
+
+void SetPlayerForJoypad(int8 playerNum, uint32 vendorID, uint32 productID, uint8 index, int8 *oldPlayerNum)
+{
+    struct JoypadDevice device;
+    device.vendorID = vendorID;
+    device.productID = productID;
+    device.index = index;
+
+    if ( oldPlayerNum != NULL )
+    {
+        *oldPlayerNum = -1;
+
+        if (playerNumByDevice.find(device) != playerNumByDevice.end())
         {
-            if ((gActionRecs[kUp(i)].fDevice  == gActionRecs[kDn(i)].fDevice)  &&
-                (gActionRecs[kDn(i)].fDevice  == gActionRecs[kLf(i)].fDevice)  &&
-                (gActionRecs[kLf(i)].fDevice  == gActionRecs[kRt(i)].fDevice)  &&
-                (gActionRecs[kUp(i)].fElement == gActionRecs[kDn(i)].fElement) &&
-                (gActionRecs[kDn(i)].fElement == gActionRecs[kLf(i)].fElement) &&
-                (gActionRecs[kLf(i)].fElement == gActionRecs[kRt(i)].fElement) &&
-                (gActionRecs[kUp(i)].fElement->usage == kHIDUsage_GD_Hatswitch))                // Hat Switch
+            *oldPlayerNum = playerNumByDevice[device];
+        }
+    }
+
+    playerNumByDevice[device] = playerNum;
+}
+
+void SetButtonCodeForJoypadControl(uint32 vendorID, uint32 productID, uint8 index, uint32 cookie, int32 value, S9xButtonCode buttonCode, bool overwrite, S9xButtonCode *oldButtonCode)
+{
+    if (oldButtonCode != NULL)
+    {
+        *oldButtonCode = (S9xButtonCode)-1;
+    }
+
+    struct JoypadDevice device;
+    device.vendorID = vendorID;
+    device.productID = productID;
+    device.index = index;
+
+    struct JoypadCookie cookieStruct;
+    cookieStruct.device = device;
+    cookieStruct.cookie = cookie;
+
+    if ( infoByCookie.find(cookieStruct) != infoByCookie.end())
+    {
+        auto info = infoByCookie[cookieStruct];
+
+        if ( info.min != info.max )
+        {
+            if (value < info.min)
             {
-                if ((gDirectionHint[i] == kPadElemTypeHat8) || (gDirectionHint[i] == kPadElemTypeOtherHat8) ||
-                    (gDirectionHint[i] == kPadElemTypeHat4) || (gDirectionHint[i] == kPadElemTypeOtherHat4))
-                    gDirectionInfo[i].type = gDirectionHint[i];
-                else                                                                            // Assuming...
-                {
-                    if ((gActionRecs[kUp(i)].fDevice->vendorID == 1103) || (gActionRecs[kUp(i)].fElement->min == 0))
-                        gDirectionInfo[i].type = (gActionRecs[kUp(i)].fElement->max > 4) ? kPadElemTypeOtherHat8 : kPadElemTypeOtherHat4;
-                    else
-                        gDirectionInfo[i].type = (gActionRecs[kUp(i)].fElement->max > 4) ? kPadElemTypeHat8      : kPadElemTypeHat4;
-
-                    gDirectionHint[i] = gDirectionInfo[i].type;
-                }
-
-                gDirectionInfo[i].device [kPadHat] =  gActionRecs[kUp(i)].fDevice;
-                gDirectionInfo[i].element[kPadHat] =  gActionRecs[kUp(i)].fElement;
-                gDirectionInfo[i].max    [kPadHat] =  gActionRecs[kUp(i)].fElement->max;
-                gDirectionInfo[i].min    [kPadHat] =  gActionRecs[kUp(i)].fElement->min;
+                value = info.min;
+            }
+            else if (value > info.max)
+            {
+                value = info.max;
             }
             else
-            if ((gActionRecs[kUp(i)].fDevice  == gActionRecs[kDn(i)].fDevice)               &&
-                (gActionRecs[kLf(i)].fDevice  == gActionRecs[kRt(i)].fDevice)               &&
-                (gActionRecs[kUp(i)].fElement == gActionRecs[kDn(i)].fElement)              &&
-                (gActionRecs[kLf(i)].fElement == gActionRecs[kRt(i)].fElement)              &&
-                (gActionRecs[kUp(i)].fElement->max - gActionRecs[kUp(i)].fElement->min > 1) &&
-                (gActionRecs[kLf(i)].fElement->max - gActionRecs[kLf(i)].fElement->min > 1))    // Axis (maybe)
             {
-                gDirectionInfo[i].type = gDirectionHint[i] = kPadElemTypeAxis;
-
-                gDirectionInfo[i].device [kPadYAxis] = gActionRecs[kUp(i)].fDevice;
-                gDirectionInfo[i].element[kPadYAxis] = gActionRecs[kUp(i)].fElement;
-                gDirectionInfo[i].max    [kPadYAxis] = gActionRecs[kUp(i)].fElement->max;
-                gDirectionInfo[i].min    [kPadYAxis] = gActionRecs[kUp(i)].fElement->min;
-                gDirectionInfo[i].mid    [kPadYAxis] = (gDirectionInfo[i].max[kPadYAxis] + gDirectionInfo[i].min[kPadYAxis]) >> 1;
-                gDirectionInfo[i].maxmid [kPadYAxis] = (gDirectionInfo[i].max[kPadYAxis] + gDirectionInfo[i].mid[kPadYAxis]) >> 1;
-                gDirectionInfo[i].midmin [kPadYAxis] = (gDirectionInfo[i].mid[kPadYAxis] + gDirectionInfo[i].min[kPadYAxis]) >> 1;
-
-                gDirectionInfo[i].device [kPadXAxis] = gActionRecs[kLf(i)].fDevice;
-                gDirectionInfo[i].element[kPadXAxis] = gActionRecs[kLf(i)].fElement;
-                gDirectionInfo[i].max    [kPadXAxis] = gActionRecs[kLf(i)].fElement->max;
-                gDirectionInfo[i].min    [kPadXAxis] = gActionRecs[kLf(i)].fElement->min;
-                gDirectionInfo[i].mid    [kPadXAxis] = (gDirectionInfo[i].max[kPadXAxis] + gDirectionInfo[i].min[kPadXAxis]) >> 1;
-                gDirectionInfo[i].maxmid [kPadXAxis] = (gDirectionInfo[i].max[kPadXAxis] + gDirectionInfo[i].mid[kPadXAxis]) >> 1;
-                gDirectionInfo[i].midmin [kPadXAxis] = (gDirectionInfo[i].mid[kPadXAxis] + gDirectionInfo[i].min[kPadXAxis]) >> 1;
+                value = info.midpoint;
             }
-            else                                                                                // Button (maybe)
-                gDirectionInfo[i].type = gDirectionHint[i] = kPadElemTypeButton;
         }
-        else
-        {
-            gActionRecs[kUp(i)].fDevice  = gActionRecs[kDn(i)].fDevice  = gActionRecs[kLf(i)].fDevice  = gActionRecs[kRt(i)].fDevice  = NULL;
-            gActionRecs[kUp(i)].fElement = gActionRecs[kDn(i)].fElement = gActionRecs[kLf(i)].fElement = gActionRecs[kRt(i)].fElement = NULL;
+    }
 
-            gDirectionInfo[i].type = gDirectionHint[i] = kPadElemTypeNone;
-            gDirectionInfo[i].device [0] = gDirectionInfo[i].device [1] = NULL;
-            gDirectionInfo[i].element[0] = gDirectionInfo[i].element[1] = NULL;
-        }
+    struct JoypadInput input;
+    input.cookie = cookieStruct;
+    input.value = value;
+
+    if (buttonCodeByJoypadInput.find(input) == buttonCodeByJoypadInput.end())
+    {
+        overwrite = true;
+    }
+    else if (overwrite && oldButtonCode != NULL)
+    {
+        *oldButtonCode = buttonCodeByJoypadInput[input];
+    }
+
+    if (overwrite)
+    {
+        buttonCodeByJoypadInput[input] = buttonCode;
     }
 }
