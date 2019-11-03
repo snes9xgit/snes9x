@@ -202,6 +202,8 @@
 		30D15DE822CE6BC9005BC352 /* ioapi.h in Headers */ = {isa = PBXBuildFile; fileRef = CFA518D60EBCB4CA008379F6 /* ioapi.h */; };
 		30D15DE922CE6BC9005BC352 /* unzip.h in Headers */ = {isa = PBXBuildFile; fileRef = CFA518DA0EBCB4D2008379F6 /* unzip.h */; };
 		30D15DEA22CE6FE1005BC352 /* mac-os.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAE0E96604D582B700A80003 /* mac-os.mm */; };
+		30D709B0236F583600AAB7C3 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = EA3BEA980A28384E00A8FAE5 /* Localizable.strings */; };
+		30D709B1236F585100AAB7C3 /* Snes9x Help in Resources */ = {isa = PBXBuildFile; fileRef = EA3BEAA80A28386500A8FAE5 /* Snes9x Help */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -227,10 +229,6 @@
 		3045A1EC22D03C430092B97D /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		3045A1EE22D03C4B0092B97D /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		306561FF236A8BA700A1B3B2 /* gamecontrollerdb.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = gamecontrollerdb.txt; sourceTree = "<group>"; };
-		30714704230E372B00917F82 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		30714707230E372B00917F82 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		30714709230E372B00917F82 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		3071470A230E372B00917F82 /* Snes9x.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Snes9x.entitlements; sourceTree = "<group>"; };
 		30714715230E379500917F82 /* Snes9x.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Snes9x.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		30714717230E379500917F82 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		30714718230E379500917F82 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -533,7 +531,6 @@
 				20286C2AFDCF999611CA2CEA /* Sources */,
 				20286C32FDCF999611CA2CEA /* External Frameworks and Libraries */,
 				30D15CF022CE6B5A005BC352 /* snes9x framework */,
-				30714701230E372A00917F82 /* Snes9x */,
 				30714716230E379500917F82 /* Snes9x */,
 				195DF8C9FE9D4F0611CA2CBB /* Products */,
 				3045A1EB22D03C420092B97D /* Frameworks */,
@@ -587,17 +584,6 @@
 				3045A1EC22D03C430092B97D /* AppKit.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		30714701230E372A00917F82 /* Snes9x */ = {
-			isa = PBXGroup;
-			children = (
-				30714704230E372B00917F82 /* Assets.xcassets */,
-				30714706230E372B00917F82 /* MainMenu.xib */,
-				30714709230E372B00917F82 /* Info.plist */,
-				3071470A230E372B00917F82 /* Snes9x.entitlements */,
-			);
-			path = Snes9x;
 			sourceTree = "<group>";
 		};
 		30714716230E379500917F82 /* Snes9x */ = {
@@ -1114,6 +1100,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				3071471B230E379600917F82 /* Assets.xcassets in Resources */,
+				30D709B0236F583600AAB7C3 /* Localizable.strings in Resources */,
+				30D709B1236F585100AAB7C3 /* Snes9x Help in Resources */,
 				3071471E230E379600917F82 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1247,14 +1235,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		30714706230E372B00917F82 /* MainMenu.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				30714707230E372B00917F82 /* Base */,
-			);
-			name = MainMenu.xib;
-			sourceTree = "<group>";
-		};
 		3071471C230E379600917F82 /* MainMenu.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -1326,7 +1306,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = Snes9x/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.snes9x.macos.snes9x;
@@ -1369,7 +1349,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = Snes9x/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.snes9x.macos.snes9x;
@@ -1419,7 +1399,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_CFLAGS = "-DGL_SILENCE_DEPRECATION";
@@ -1478,7 +1458,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				OTHER_CFLAGS = "-DGL_SILENCE_DEPRECATION";

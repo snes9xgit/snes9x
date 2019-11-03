@@ -2886,7 +2886,7 @@ void QuitWithFatalError ( NSString *message)
         if ( event.keyCode == functionButtons[i])
         {
             pressedFunctionButtons[i] = false;
-            heldFunctionButtons[i] = false; 
+            heldFunctionButtons[i] = false;
             break;
         }
     }
