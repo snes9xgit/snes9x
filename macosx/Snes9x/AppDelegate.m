@@ -238,6 +238,7 @@ static NSString * const kKeyboardPrefs = @"KeyboardConfig";
 
 - (IBAction)terminate:(id)sender
 {
+    [self.s9xEngine stop];
     [NSApp terminate:sender];
 }
 

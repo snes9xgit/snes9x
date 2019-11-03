@@ -3013,7 +3013,7 @@ void QuitWithFatalError ( NSString *message)
 
 - (void)stop
 {
-    pauseEmulation = true;
+    S9xExit();
 }
 
 - (BOOL)isRunning
