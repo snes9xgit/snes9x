@@ -204,6 +204,13 @@
 		30D15DEA22CE6FE1005BC352 /* mac-os.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAE0E96604D582B700A80003 /* mac-os.mm */; };
 		30D709B0236F583600AAB7C3 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = EA3BEA980A28384E00A8FAE5 /* Localizable.strings */; };
 		30D709B1236F585100AAB7C3 /* Snes9x Help in Resources */ = {isa = PBXBuildFile; fileRef = EA3BEAA80A28386500A8FAE5 /* Snes9x Help */; };
+		30D709B2236F731B00AAB7C3 /* CART.icns in Resources */ = {isa = PBXBuildFile; fileRef = EA3D2F3C0A26083B00BDACCC /* CART.icns */; };
+		30D709B3236F731B00AAB7C3 /* SRAM.icns in Resources */ = {isa = PBXBuildFile; fileRef = EA3D2F360A26083B00BDACCC /* SRAM.icns */; };
+		30D709B4236F731B00AAB7C3 /* SAVE.icns in Resources */ = {isa = PBXBuildFile; fileRef = EA3D2F370A26083B00BDACCC /* SAVE.icns */; };
+		30D709B5236F731B00AAB7C3 /* folder_SRAMs.icns in Resources */ = {isa = PBXBuildFile; fileRef = EA3D2F3A0A26083B00BDACCC /* folder_SRAMs.icns */; };
+		30D709B6236F731B00AAB7C3 /* folder_Freezes.icns in Resources */ = {isa = PBXBuildFile; fileRef = EA3D2F3B0A26083B00BDACCC /* folder_Freezes.icns */; };
+		30D709B7236F731B00AAB7C3 /* musicbox_ledon.icns in Resources */ = {isa = PBXBuildFile; fileRef = EA3D2F380A26083B00BDACCC /* musicbox_ledon.icns */; };
+		30D709B8236F731B00AAB7C3 /* musicbox_ledoff.icns in Resources */ = {isa = PBXBuildFile; fileRef = EA3D2F390A26083B00BDACCC /* musicbox_ledoff.icns */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -338,7 +345,6 @@
 		EA3D2F3A0A26083B00BDACCC /* folder_SRAMs.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = folder_SRAMs.icns; sourceTree = "<group>"; };
 		EA3D2F3B0A26083B00BDACCC /* folder_Freezes.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = folder_Freezes.icns; sourceTree = "<group>"; };
 		EA3D2F3C0A26083B00BDACCC /* CART.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = CART.icns; sourceTree = "<group>"; };
-		EA3D2F3D0A26083B00BDACCC /* APPL.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = APPL.icns; sourceTree = "<group>"; };
 		EA3D2F580A26085800BDACCC /* libHIDUtilities_u.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libHIDUtilities_u.a; sourceTree = "<group>"; };
 		EA3D300A0A260A3200BDACCC /* musicbox_indicator.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = musicbox_indicator.png; sourceTree = "<group>"; };
 		EA3D300B0A260A3200BDACCC /* logo_freeze.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_freeze.png; sourceTree = "<group>"; };
@@ -890,7 +896,6 @@
 				EA2DBC0D0510ABE700A80003 /* mac-screenshot.mm */,
 				EAECB68604AC7FCE00A80003 /* mac-snes9x.mm */,
 				EAECB68804AC7FCE00A80003 /* mac-stringtools.mm */,
-				EA3D2F3D0A26083B00BDACCC /* APPL.icns */,
 				EA3D2F3C0A26083B00BDACCC /* CART.icns */,
 				EA3D2F360A26083B00BDACCC /* SRAM.icns */,
 				EA3D2F370A26083B00BDACCC /* SAVE.icns */,
@@ -1100,8 +1105,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				3071471B230E379600917F82 /* Assets.xcassets in Resources */,
+				30D709B4236F731B00AAB7C3 /* SAVE.icns in Resources */,
+				30D709B8236F731B00AAB7C3 /* musicbox_ledoff.icns in Resources */,
 				30D709B0236F583600AAB7C3 /* Localizable.strings in Resources */,
 				30D709B1236F585100AAB7C3 /* Snes9x Help in Resources */,
+				30D709B3236F731B00AAB7C3 /* SRAM.icns in Resources */,
+				30D709B5236F731B00AAB7C3 /* folder_SRAMs.icns in Resources */,
+				30D709B2236F731B00AAB7C3 /* CART.icns in Resources */,
+				30D709B7236F731B00AAB7C3 /* musicbox_ledon.icns in Resources */,
+				30D709B6236F731B00AAB7C3 /* folder_Freezes.icns in Resources */,
 				3071471E230E379600917F82 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

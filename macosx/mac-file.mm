@@ -199,7 +199,7 @@ void ChangeTypeAndCreator (const char *path, OSType type, OSType creator)
 
 static void AddFolderIcon (NSURL *fref, const char *folderName)
 {
-	NSBundle *bundle = [NSBundle bundleWithIdentifier:@"com.snes9x.macos.snes9x-framework"];
+	NSBundle *bundle = [NSBundle mainBundle];
 	NSString *filename = [@"folder_" stringByAppendingString:[NSString stringWithUTF8String:folderName]];
 	NSURL *imageURL = [bundle URLForResource:filename withExtension:@"icns"];
 	NSImage *image = [[NSImage alloc] initWithContentsOfURL:imageURL];
