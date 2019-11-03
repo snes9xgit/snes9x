@@ -186,6 +186,7 @@ void CopyPressedKeys(uint8 keys[MAC_MAX_PLAYERS][kNumButtons], uint8 gamepadButt
 - (void)start;
 - (void)stop;
 
+- (BOOL)isRunning;
 - (BOOL)isPaused;
 - (void)pause;
 - (void)resume;

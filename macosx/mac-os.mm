@@ -3016,6 +3016,11 @@ void QuitWithFatalError ( NSString *message)
     pauseEmulation = true;
 }
 
+- (BOOL)isRunning
+{
+    return running;
+}
+
 - (BOOL)isPaused
 {
     return running && pauseEmulation;

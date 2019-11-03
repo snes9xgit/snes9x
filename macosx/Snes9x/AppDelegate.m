@@ -233,7 +233,7 @@ static NSString * const kKeyboardPrefs = @"KeyboardConfig";
 
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
 {
-    return [self.s9xEngine isPaused];
+    return [self.s9xEngine isPaused] || ![self.s9xEngine isRunning];
 }
 
 - (IBAction)terminate:(id)sender
