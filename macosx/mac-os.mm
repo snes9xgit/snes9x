@@ -174,8 +174,60 @@ CFStringRef			multiCartPath[2];
 IconRef				macIconRef[118];
 #endif
 
+typedef enum
+{
+    ToggleBG0,
+    ToggleBG1,
+    ToggleBG2,
+    ToggleBG3,
+    ToggleSprites,
+    SwapJoypads,
+    SoundChannel0,
+    SoundChannel1,
+    SoundChannel2,
+    SoundChannel3,
+    SoundChannel4,
+    SoundChannel5,
+    SoundChannel6,
+    SoundChannel7,
+    SoundChannelsOn,
+    ToggleDisplayPressedKeys,
+    ToggleDisplayMovieFrame,
+    IncreaseFrameAdvanceRate,
+    DecreaseFrameAdvanceRate,
+    ToggleEmulationPause,
+    AdvanceFrame,
+    kNumFunctionButtons
+} S9xFunctionButtonCommand;
+
+uint8 functionButtons[kNumFunctionButtons] = {
+    kVK_F1,
+    kVK_F2,
+    kVK_F3,
+    kVK_F4,
+    kVK_F5,
+    kVK_F6,
+    kVK_ANSI_1,
+    kVK_ANSI_2,
+    kVK_ANSI_3,
+    kVK_ANSI_4,
+    kVK_ANSI_5,
+    kVK_ANSI_6,
+    kVK_ANSI_7,
+    kVK_ANSI_8,
+    kVK_ANSI_9,
+    kVK_ANSI_0,
+    kVK_ANSI_Minus,
+    kVK_ANSI_Q,
+    kVK_ANSI_W,
+    kVK_ANSI_O,
+    kVK_ANSI_P
+};
+
 bool8               pressedKeys[MAC_MAX_PLAYERS][kNumButtons] = { 0 };
 bool8               pressedGamepadButtons[MAC_MAX_PLAYERS][kNumButtons] = { 0 };
+bool8               pressedFunctionButtons[kNumFunctionButtons] = { 0 };
+bool8               heldFunctionButtons[kNumFunctionButtons] = { 0 };
 os_unfair_lock      keyLock;
 os_unfair_lock      renderLock;
 
@@ -183,102 +235,65 @@ NSOpenGLView        *s9xView;
 
 enum
 {
-	mApple          = 128,
-	iAbout          = 1,
+       mApple          = 128,
+       iAbout          = 1,
 
-	mFile           = 129,
-	iOpen           = 1,
-	iOpenMulti      = 2,
-	iOpenRecent     = 3,
-	iClose          = 5,
-	iRomInfo        = 7,
+       mFile           = 129,
+       iOpen           = 1,
+       iOpenMulti      = 2,
+       iOpenRecent     = 3,
+       iClose          = 5,
+       iRomInfo        = 7,
 
-	mControl        = 134,
-	iKeyboardLayout = 1,
-	iISpLayout      = 2,
-	iAutoFire       = 4,
-	iISpPreset      = 6,
+       mControl        = 134,
+       iKeyboardLayout = 1,
+       iISpLayout      = 2,
+       iAutoFire       = 4,
+       iISpPreset      = 6,
 
-	mEdit           = 130,
+       mEdit           = 130,
 
-	mEmulation      = 131,
-	iResume         = 1,
-	iSoftReset      = 3,
-	iReset          = 4,
-	iDevice         = 6,
+       mEmulation      = 131,
+       iResume         = 1,
+       iSoftReset      = 3,
+       iReset          = 4,
+       iDevice         = 6,
 
-	mCheat          = 132,
-	iApplyCheats    = 1,
-	iGameGenie      = 3,
-	iCheatFinder    = 4,
+       mCheat          = 132,
+       iApplyCheats    = 1,
+       iGameGenie      = 3,
+       iCheatFinder    = 4,
 
-	mOption         = 133,
-	iFreeze         = 1,
-	iDefrost        = 2,
-	iFreezeTo       = 4,
-	iDefrostFrom    = 5,
-	iRecordMovie    = 7,
-	iPlayMovie      = 8,
-	iQTMovie        = 10,
-	iSaveSPC        = 12,
-	iSaveSRAM       = 13,
-	iCIFilter       = 15,
-	iMusicBox       = 17,
+       mOption         = 133,
+       iFreeze         = 1,
+       iDefrost        = 2,
+       iFreezeTo       = 4,
+       iDefrostFrom    = 5,
+       iRecordMovie    = 7,
+       iPlayMovie      = 8,
+       iQTMovie        = 10,
+       iSaveSPC        = 12,
+       iSaveSRAM       = 13,
+       iCIFilter       = 15,
+       iMusicBox       = 17,
 
-	mNetplay        = 135,
-	iServer         = 1,
-	iClient         = 2,
+       mNetplay        = 135,
+       iServer         = 1,
+       iClient         = 2,
 
-	mPresets        = 201,
+       mPresets        = 201,
 
-	mDevice         = 202,
-	iPad            = 1,
-	iMouse			= 2,
-	iMouse2         = 3,
-	iSuperScope     = 4,
-	iMultiPlayer5   = 5,
-	iMultiPlayer5_2 = 6,
-	iJustifier1     = 7,
-	iJustifier2     = 8,
+       mDevice         = 202,
+       iPad            = 1,
+       iMouse                  = 2,
+       iMouse2         = 3,
+       iSuperScope     = 4,
+       iMultiPlayer5   = 5,
+       iMultiPlayer5_2 = 6,
+       iJustifier1     = 7,
+       iJustifier2     = 8,
 
-	mRecentItem     = 203
-};
-
-enum
-{
-	kmF1Key    = 0x7A,
-	kmF2Key    = 0x78,
-	kmF3Key	   = 0x63,
-	kmF4Key	   = 0x76,
-	kmF5Key	   = 0x60,
-	kmF6Key    = 0x61,
-	km0Key     = 0x1D,
-	km1Key     = 0x12,
-	km2Key     = 0x13,
-	km3Key     = 0x14,
-	km4Key     = 0x15,
-	km5Key     = 0x17,
-	km6Key     = 0x16,
-	km7Key     = 0x1A,
-	km8Key     = 0x1C,
-	km9Key     = 0x19,
-	kmAKey     = 0x00,
-	kmBKey     = 0x0B,
-	kmCKey     = 0x08,
-	kmEscKey   = 0x35,
-	kmCtrKey   = 0x3B,
-	kmMinusKey = 0x1B,
-	kmQKey     = 0x0C,
-	kmWKey     = 0x0D,
-	kmOKey     = 0x1F,
-	kmPKey     = 0x23
-};
-
-struct ButtonCommand
-{
-	char	command[16];
-	uint8	keycode;
-	bool8	held;
+       mRecentItem     = 203
 };
 
 struct GameViewInfo
@@ -301,33 +316,6 @@ static bool8			frzselecting    = false;
 static uint16			changeAuto[2] = { 0x0000, 0x0000 };
 
 static GameViewInfo		scopeViewInfo;
-
-static ButtonCommand	btncmd[] =
-{
-	{ "ToggleBG0",       kmF1Key,    false },
-	{ "ToggleBG1",       kmF2Key,    false },
-	{ "ToggleBG2",       kmF3Key,    false },
-	{ "ToggleBG3",       kmF4Key,    false },
-	{ "ToggleSprites",   kmF5Key,    false },
-	{ "SwapJoypads",     kmF6Key,    false },
-	{ "SoundChannel0",   km1Key,     false },
-	{ "SoundChannel1",   km2Key,     false },
-	{ "SoundChannel2",   km3Key,     false },
-	{ "SoundChannel3",   km4Key,     false },
-	{ "SoundChannel4",   km5Key,     false },
-	{ "SoundChannel5",   km6Key,     false },
-	{ "SoundChannel6",   km7Key,     false },
-	{ "SoundChannel7",   km8Key,     false },
-	{ "SoundChannelsOn", km9Key,     false },
-	{ "_mac1",           km0Key,     false },
-	{ "_mac2",           kmMinusKey, false },
-	{ "_mac3",           kmQKey,     false },
-	{ "_mac4",           kmWKey,     false },
-	{ "_mac5",           kmOKey,     false },
-	{ "_mac6",           kmPKey,     false }
-};
-
-#define	kCommandListSize	(sizeof(btncmd) / sizeof(btncmd[0]))
 
 static void Initialize (void);
 static void Deinitialize (void);
@@ -2113,148 +2101,148 @@ static void ProcessInput (void)
 
     CopyPressedKeys(keys, gamepadButtons);
 
-    if (ISpKeyIsPressed(keys, gamepadButtons, kISpEsc))
-    {
-        pauseEmulation = true;
-    }
-
-    if (ISpKeyIsPressed(keys, gamepadButtons, kISpFreeze))
-    {
-        MacStopSound();
-        while (ISpKeyIsPressed(keys, gamepadButtons, kISpFreeze))
-            CopyPressedKeys(keys, gamepadButtons);
-
-        isok = SNES9X_Freeze();
-        os_unfair_lock_lock(&renderLock);
-        ClearGFXScreen();
-        os_unfair_lock_unlock(&renderLock);
-        return;
-    }
-
-    if (ISpKeyIsPressed(keys, gamepadButtons, kISpDefrost))
-    {
-        MacStopSound();
-        while (ISpKeyIsPressed(keys, gamepadButtons, kISpDefrost))
-            CopyPressedKeys(keys, gamepadButtons);
-
-        isok = SNES9X_Defrost();
-        os_unfair_lock_lock(&renderLock);
-        ClearGFXScreen();
-        os_unfair_lock_unlock(&renderLock);
-        return;
-    }
-
-    if (ISpKeyIsPressed(keys, gamepadButtons, kISpScreenshot))
-    {
-        Settings.TakeScreenshot = true;
-        while (ISpKeyIsPressed(keys, gamepadButtons, kISpScreenshot))
-            CopyPressedKeys(keys, gamepadButtons);
-    }
-
-    if (ISpKeyIsPressed(keys, gamepadButtons, kISpSPC))
-    {
-        S9xDumpSPCSnapshot();
-        while (ISpKeyIsPressed(keys, gamepadButtons, kISpSPC))
-            CopyPressedKeys(keys, gamepadButtons);
-    }
-
-    if (ISpKeyIsPressed(keys, gamepadButtons, kISpFFUp))
-    {
-        if (!ffUpSp)
-        {
-            ChangeTurboRate(+1);
-            ffUpSp = true;
-        }
-    }
-    else
-        ffUpSp = false;
-
-    if (ISpKeyIsPressed(keys, gamepadButtons, kISpFFDown))
-    {
-        if (!ffDownSp)
-        {
-            ChangeTurboRate(-1);
-            ffDownSp = true;
-        }
-    }
-    else
-        ffDownSp = false;
-
     fnbtn  = ISpKeyIsPressed(keys, gamepadButtons, kISpFunction);
     altbtn = ISpKeyIsPressed(keys, gamepadButtons, kISpAlt);
 
-//    if (fnbtn)
-//    {
-//        if (!lastTimeFn)
-//        {
-//            for (unsigned int i = 0; i < kCommandListSize; i++)
-//                btncmd[i].held = false;
-//        }
-//
-//        lastTimeFn = true;
-//        lastTimeTT = false;
-//        ffUp = ffDown = false;
-//
-//        for (unsigned int i = 0; i < kCommandListSize; i++)
-//        {
-//            if (KeyIsPressed(keys, btncmd[i].keycode))
-//            {
-//                if (!(btncmd[i].held))
-//                {
-//                    btncmd[i].held = true;
-//
-//                    if (strncmp(btncmd[i].command, "_mac", 4) == 0)
-//                    {
-//                        static char    msg[64];
-//
-//                        switch (btncmd[i].command[4] - '0')
-//                        {
-//                            case 1:
-//                                Settings.DisplayPressedKeys = !Settings.DisplayPressedKeys;
-//                                break;
-//
-//                            case 2:
-//                                if (S9xMovieActive())
-//                                    Settings.DisplayMovieFrame = !Settings.DisplayMovieFrame;
-//                                break;
-//
-//                            case 3:
-//                                if (macFrameAdvanceRate < 5000000)
-//                                    macFrameAdvanceRate += 100000;
-//                                sprintf(msg, "Emulation Speed: 100/%d", macFrameAdvanceRate / 10000);
-//                                S9xSetInfoString(msg);
-//                                break;
-//
-//                            case 4:
-//                                if (macFrameAdvanceRate > 500000)
-//                                    macFrameAdvanceRate -= 100000;
-//                                sprintf(msg, "Emulation Speed: 100/%d", macFrameAdvanceRate / 10000);
-//                                S9xSetInfoString(msg);
-//                                break;
-//
-//                            case 5:
-//                                pauseEmulation = !pauseEmulation;
-//                                break;
-//
-//                            case 6:
-//                                frameAdvance = true;
-//                                break;
-//                        }
-//                    }
-//                    else
-//                    {
-//                        s9xcommand_t    s9xcmd;
-//
-//                        s9xcmd = S9xGetCommandT(btncmd[i].command);
-//                        S9xApplyCommand(s9xcmd, 1, 0);
-//                    }
-//                }
-//            }
-//            else
-//                btncmd[i].held = false;
-//        }
-//    }
-//    else
+    if (fnbtn)
+    {
+        if (!lastTimeFn)
+        {
+            memset(heldFunctionButtons, 0, kNumFunctionButtons);
+        }
+
+        lastTimeFn = true;
+        lastTimeTT = false;
+        ffUp = ffDown = false;
+
+        for (unsigned int i = 0; i < kNumFunctionButtons; i++)
+        {
+            if (pressedFunctionButtons[i])
+            {
+                if (!heldFunctionButtons[i])
+                {
+                    s9xcommand_t    s9xcmd;
+                    static char     msg[64];
+
+                    heldFunctionButtons[i] = true;
+
+                    switch ((S9xFunctionButtonCommand) i)
+                    {
+                        case ToggleBG0:
+                            s9xcmd = S9xGetCommandT("ToggleBG0");
+                            S9xApplyCommand(s9xcmd, 1, 0);
+                            break;
+
+                        case ToggleBG1:
+                            s9xcmd = S9xGetCommandT("ToggleBG1");
+                            S9xApplyCommand(s9xcmd, 1, 0);
+                            break;
+
+                        case ToggleBG2:
+                            s9xcmd = S9xGetCommandT("ToggleBG2");
+                            S9xApplyCommand(s9xcmd, 1, 0);
+                            break;
+
+                        case ToggleBG3:
+                            s9xcmd = S9xGetCommandT("ToggleBG3");
+                            S9xApplyCommand(s9xcmd, 1, 0);
+                            break;
+
+                        case ToggleSprites:
+                            s9xcmd = S9xGetCommandT("ToggleSprites");
+                            S9xApplyCommand(s9xcmd, 1, 0);
+                            break;
+
+                        case SwapJoypads:
+                            s9xcmd = S9xGetCommandT("SwapJoypads");
+                            S9xApplyCommand(s9xcmd, 1, 0);
+                            break;
+
+                        case SoundChannel0:
+                            s9xcmd = S9xGetCommandT("SoundChannel0");
+                            S9xApplyCommand(s9xcmd, 1, 0);
+                            break;
+
+                        case SoundChannel1:
+                            s9xcmd = S9xGetCommandT("SoundChannel1");
+                            S9xApplyCommand(s9xcmd, 1, 0);
+                            break;
+
+                        case SoundChannel2:
+                            s9xcmd = S9xGetCommandT("SoundChannel2");
+                            S9xApplyCommand(s9xcmd, 1, 0);
+                            break;
+
+                        case SoundChannel3:
+                            s9xcmd = S9xGetCommandT("SoundChannel3");
+                            S9xApplyCommand(s9xcmd, 1, 0);
+                            break;
+
+                        case SoundChannel4:
+                            s9xcmd = S9xGetCommandT("SoundChannel4");
+                            S9xApplyCommand(s9xcmd, 1, 0);
+                            break;
+
+                        case SoundChannel5:
+                            s9xcmd = S9xGetCommandT("SoundChannel5");
+                            S9xApplyCommand(s9xcmd, 1, 0);
+                            break;
+
+                        case SoundChannel6:
+                            s9xcmd = S9xGetCommandT("SoundChannel6");
+                            S9xApplyCommand(s9xcmd, 1, 0);
+                            break;
+
+                        case SoundChannel7:
+                            s9xcmd = S9xGetCommandT("SoundChannel7");
+                            S9xApplyCommand(s9xcmd, 1, 0);
+                            break;
+
+                        case SoundChannelsOn:
+                            s9xcmd = S9xGetCommandT("SoundChannelsOn");
+                            S9xApplyCommand(s9xcmd, 1, 0);
+                            break;
+
+                        case ToggleDisplayPressedKeys:
+                            Settings.DisplayPressedKeys = !Settings.DisplayPressedKeys;
+                            break;
+
+                        case ToggleDisplayMovieFrame:
+                            if (S9xMovieActive())
+                                Settings.DisplayMovieFrame = !Settings.DisplayMovieFrame;
+                            break;
+
+                        case IncreaseFrameAdvanceRate:
+                            if (macFrameAdvanceRate < 5000000)
+                                macFrameAdvanceRate += 100000;
+                            sprintf(msg, "Emulation Speed: 100/%d", macFrameAdvanceRate / 10000);
+                            S9xSetInfoString(msg);
+                            break;
+
+                        case DecreaseFrameAdvanceRate:
+                            if (macFrameAdvanceRate > 500000)
+                                macFrameAdvanceRate -= 100000;
+                            sprintf(msg, "Emulation Speed: 100/%d", macFrameAdvanceRate / 10000);
+                            S9xSetInfoString(msg);
+                            break;
+
+                        case ToggleEmulationPause:
+                            pauseEmulation = !pauseEmulation;
+                            break;
+
+                        case AdvanceFrame:
+                            frameAdvance = true;
+                            break;
+
+                        case kNumFunctionButtons:
+                            break;
+
+                    }
+                }
+            }
+        }
+    }
+    else
     {
         lastTimeFn = false;
 
@@ -2871,6 +2859,16 @@ void QuitWithFatalError ( NSString *message)
     {
         pressedKeys[button.player][button.buttonCode] = true;
     }
+
+    for ( NSUInteger i = 0; i < kNumFunctionButtons; ++i )
+    {
+        if ( event.keyCode == functionButtons[i])
+        {
+            pressedFunctionButtons[i] = true;
+            break;
+        }
+    }
+
     os_unfair_lock_unlock(&keyLock);
 }
 
@@ -2882,6 +2880,17 @@ void QuitWithFatalError ( NSString *message)
     {
         pressedKeys[button.player][button.buttonCode] = false;
     }
+
+    for ( NSUInteger i = 0; i < kNumFunctionButtons; ++i )
+    {
+        if ( event.keyCode == functionButtons[i])
+        {
+            pressedFunctionButtons[i] = false;
+            heldFunctionButtons[i] = false; 
+            break;
+        }
+    }
+
     os_unfair_lock_unlock(&keyLock);
 }
 
