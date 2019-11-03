@@ -72,7 +72,7 @@ bool SetKeyCode(int16 keyCode, S9xButtonCode buttonCode, int8 player, int16 *old
         *oldButtonCode = (S9xButtonCode)keyCodes[keyCode].buttonCode;
     }
 
-    if (*oldPlayer != NULL )
+    if (oldPlayer != NULL )
     {
         *oldPlayer = (S9xButtonCode)keyCodes[keyCode].player;
     }
