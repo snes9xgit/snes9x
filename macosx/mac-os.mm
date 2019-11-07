@@ -368,28 +368,10 @@ void CopyPressedKeys(bool8 keys[MAC_MAX_PLAYERS][kNumButtons], bool8 gamepadButt
         pressedKeys[button.player][button.buttonCode] = (flags & NSEventModifierFlagControl) != 0;
     }
 
-    button = keyCodes[kVK_CapsLock];
-    if (button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player < MAC_MAX_PLAYERS)
-    {
-        pressedKeys[button.player][button.buttonCode] = (flags & NSEventModifierFlagCapsLock) != 0;
-    }
-
     button = keyCodes[kVK_Option];
     if (button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player < MAC_MAX_PLAYERS)
     {
         pressedKeys[button.player][button.buttonCode] = (flags & NSEventModifierFlagOption) != 0;
-    }
-
-    button = keyCodes[kVK_Help];
-    if (button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player < MAC_MAX_PLAYERS)
-    {
-        pressedKeys[button.player][button.buttonCode] = (flags & NSEventModifierFlagHelp) != 0;
-    }
-
-    button = keyCodes[kVK_Function];
-    if (button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player < MAC_MAX_PLAYERS)
-    {
-        pressedKeys[button.player][button.buttonCode] = (flags & NSEventModifierFlagFunction) != 0;
     }
 
     memcpy(keys, pressedKeys, sizeof(pressedKeys));

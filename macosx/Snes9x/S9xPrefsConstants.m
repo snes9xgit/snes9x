@@ -18,11 +18,8 @@
   (c) Copyright 2019         Michael Donald Buckley
  ***********************************************************************************/
 
-#import <Cocoa/Cocoa.h>
+#import "S9xPrefsConstants.h"
 
-@interface AppDelegate : NSObject <NSApplicationDelegate>
-
-- (void)setButtonCode:(S9xButtonCode)buttonCode forKeyCode:(int16)keyCode player:(int8)player;
-
-@end
-
+NSString * const kKeyboardPrefs = @"KeyboardConfig";
+NSString * const kShowFPSPref = @"ShowFPS";
+NSString * const kVideoModePref = @"VideoMode";

@@ -20,9 +20,12 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface AppDelegate : NSObject <NSApplicationDelegate>
+NS_ASSUME_NONNULL_BEGIN
 
-- (void)setButtonCode:(S9xButtonCode)buttonCode forKeyCode:(int16)keyCode player:(int8)player;
+@interface S9xButtonConfigTextField : NSSearchField<NSTextFieldDelegate>
+
+@property (nonatomic, assign) CGKeyCode keyCode;
 
 @end
 
+NS_ASSUME_NONNULL_END

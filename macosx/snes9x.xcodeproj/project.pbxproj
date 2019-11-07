@@ -202,6 +202,7 @@
 		30D15DE822CE6BC9005BC352 /* ioapi.h in Headers */ = {isa = PBXBuildFile; fileRef = CFA518D60EBCB4CA008379F6 /* ioapi.h */; };
 		30D15DE922CE6BC9005BC352 /* unzip.h in Headers */ = {isa = PBXBuildFile; fileRef = CFA518DA0EBCB4D2008379F6 /* unzip.h */; };
 		30D15DEA22CE6FE1005BC352 /* mac-os.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAE0E96604D582B700A80003 /* mac-os.mm */; };
+		30D2506E2373AACC0076A160 /* S9xPrefsConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D2506D2373AACC0076A160 /* S9xPrefsConstants.m */; };
 		30D709B0236F583600AAB7C3 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = EA3BEA980A28384E00A8FAE5 /* Localizable.strings */; };
 		30D709B1236F585100AAB7C3 /* Snes9x Help in Resources */ = {isa = PBXBuildFile; fileRef = EA3BEAA80A28386500A8FAE5 /* Snes9x Help */; };
 		30D709B2236F731B00AAB7C3 /* CART.icns in Resources */ = {isa = PBXBuildFile; fileRef = EA3D2F3C0A26083B00BDACCC /* CART.icns */; };
@@ -211,6 +212,9 @@
 		30D709B6236F731B00AAB7C3 /* folder_Freezes.icns in Resources */ = {isa = PBXBuildFile; fileRef = EA3D2F3B0A26083B00BDACCC /* folder_Freezes.icns */; };
 		30D709B7236F731B00AAB7C3 /* musicbox_ledon.icns in Resources */ = {isa = PBXBuildFile; fileRef = EA3D2F380A26083B00BDACCC /* musicbox_ledon.icns */; };
 		30D709B8236F731B00AAB7C3 /* musicbox_ledoff.icns in Resources */ = {isa = PBXBuildFile; fileRef = EA3D2F390A26083B00BDACCC /* musicbox_ledoff.icns */; };
+		30D709C1236F7E3200AAB7C3 /* S9xPrefsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D709BF236F7E3200AAB7C3 /* S9xPrefsViewController.m */; };
+		30D709C2236F7E3200AAB7C3 /* S9xPrefsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 30D709C0236F7E3200AAB7C3 /* S9xPrefsViewController.xib */; };
+		30D709C5236F90DF00AAB7C3 /* S9xButtonConfigTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D709C4236F90DF00AAB7C3 /* S9xButtonConfigTextField.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -261,6 +265,13 @@
 		30D15CEF22CE6B5A005BC352 /* snes9x_framework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = snes9x_framework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		30D15CF122CE6B5A005BC352 /* snes9x_framework.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = snes9x_framework.h; sourceTree = "<group>"; };
 		30D15CF222CE6B5A005BC352 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		30D2506D2373AACC0076A160 /* S9xPrefsConstants.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xPrefsConstants.m; sourceTree = "<group>"; };
+		30D2506F2373AB880076A160 /* S9xPrefsConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xPrefsConstants.h; sourceTree = "<group>"; };
+		30D709BE236F7E3200AAB7C3 /* S9xPrefsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xPrefsViewController.h; sourceTree = "<group>"; };
+		30D709BF236F7E3200AAB7C3 /* S9xPrefsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xPrefsViewController.m; sourceTree = "<group>"; };
+		30D709C0236F7E3200AAB7C3 /* S9xPrefsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = S9xPrefsViewController.xib; sourceTree = "<group>"; };
+		30D709C3236F90DF00AAB7C3 /* S9xButtonConfigTextField.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xButtonConfigTextField.h; sourceTree = "<group>"; };
+		30D709C4236F90DF00AAB7C3 /* S9xButtonConfigTextField.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xButtonConfigTextField.m; sourceTree = "<group>"; };
 		85FEF90620DDB15B00C038E9 /* bml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = bml.cpp; sourceTree = "<group>"; usesTabs = 1; };
 		85FEF90720DDB15C00C038E9 /* bml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bml.h; sourceTree = "<group>"; usesTabs = 1; };
 		85FEF90A20DDB18D00C038E9 /* sha256.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sha256.cpp; sourceTree = "<group>"; usesTabs = 1; };
@@ -602,6 +613,13 @@
 				3071471F230E379600917F82 /* Info.plist */,
 				30714720230E379600917F82 /* main.m */,
 				30714722230E379600917F82 /* Snes9x.entitlements */,
+				30D709BE236F7E3200AAB7C3 /* S9xPrefsViewController.h */,
+				30D709BF236F7E3200AAB7C3 /* S9xPrefsViewController.m */,
+				30D709C0236F7E3200AAB7C3 /* S9xPrefsViewController.xib */,
+				30D709C3236F90DF00AAB7C3 /* S9xButtonConfigTextField.h */,
+				30D709C4236F90DF00AAB7C3 /* S9xButtonConfigTextField.m */,
+				30D2506D2373AACC0076A160 /* S9xPrefsConstants.m */,
+				30D2506F2373AB880076A160 /* S9xPrefsConstants.h */,
 			);
 			path = Snes9x;
 			sourceTree = "<group>";
@@ -1114,6 +1132,7 @@
 				30D709B2236F731B00AAB7C3 /* CART.icns in Resources */,
 				30D709B7236F731B00AAB7C3 /* musicbox_ledon.icns in Resources */,
 				30D709B6236F731B00AAB7C3 /* folder_Freezes.icns in Resources */,
+				30D709C2236F7E3200AAB7C3 /* S9xPrefsViewController.xib in Resources */,
 				3071471E230E379600917F82 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1136,8 +1155,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				30D709C5236F90DF00AAB7C3 /* S9xButtonConfigTextField.m in Sources */,
 				30714721230E379600917F82 /* main.m in Sources */,
 				30714719230E379500917F82 /* AppDelegate.m in Sources */,
+				30D709C1236F7E3200AAB7C3 /* S9xPrefsViewController.m in Sources */,
+				30D2506E2373AACC0076A160 /* S9xPrefsConstants.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

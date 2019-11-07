@@ -210,7 +210,7 @@ bool S9xPollButton (uint32 id, bool *pressed)
             switch (id & 0xFF)
             {
                 case 0: *pressed = ISpKeyIsPressed(keys, gamepadButtons, kISpOffScreen);    break;
-                case 1: *pressed = ISpKeyIsPressed(keys, gamepadButtons, kISpMouseLeft);       break;                       break;
+                case 1: *pressed = ISpKeyIsPressed(keys, gamepadButtons, kISpMouseLeft);    break;
                 case 2: *pressed = ISpKeyIsPressed(keys, gamepadButtons, kISpMouseRight);
             }
         }
@@ -218,8 +218,8 @@ bool S9xPollButton (uint32 id, bool *pressed)
         {
             switch (id & 0xFF)
             {
-                case 0: *pressed = KeyIsPressed(keys, gamepadButtons, 1, kStart);    break;
-                case 1: *pressed = KeyIsPressed(keys, gamepadButtons, 1, kB);        break;
+                case 0: *pressed = KeyIsPressed(keys, gamepadButtons, 1, kStart);   break;
+                case 1: *pressed = KeyIsPressed(keys, gamepadButtons, 1, kB);       break;
                 case 2: *pressed = KeyIsPressed(keys, gamepadButtons, 1, kA);
             }
         }

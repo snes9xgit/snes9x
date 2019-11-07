@@ -199,6 +199,7 @@ typedef enum
     kKeyFastForward,
     kKeyFreeze,
     kKeyDefrost,
+
     kKeyScreenshot,
     kKeySPC,
     kKeyScopeTurbo,

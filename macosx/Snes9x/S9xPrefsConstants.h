@@ -18,11 +18,8 @@
   (c) Copyright 2019         Michael Donald Buckley
  ***********************************************************************************/
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
-@interface AppDelegate : NSObject <NSApplicationDelegate>
-
-- (void)setButtonCode:(S9xButtonCode)buttonCode forKeyCode:(int16)keyCode player:(int8)player;
-
-@end
-
+extern NSString * const kKeyboardPrefs;
+extern NSString * const kShowFPSPref;
+extern NSString * const kVideoModePref;

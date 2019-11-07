@@ -17,12 +17,12 @@
   (c) Copyright 2005         Ryan Vogt
   (c) Copyright 2019         Michael Donald Buckley
  ***********************************************************************************/
-
 #import <Cocoa/Cocoa.h>
 
-@interface AppDelegate : NSObject <NSApplicationDelegate>
+NS_ASSUME_NONNULL_BEGIN
 
-- (void)setButtonCode:(S9xButtonCode)buttonCode forKeyCode:(int16)keyCode player:(int8)player;
+@interface S9xPrefsViewController : NSViewController
 
 @end
 
+NS_ASSUME_NONNULL_END

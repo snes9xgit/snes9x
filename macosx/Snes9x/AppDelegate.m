@@ -1,23 +1,39 @@
-//
-//  AppDelegate.m
-//  Snes9x
-//
-//  Created by Buckley on 8/21/19.
-//
+/*****************************************************************************\
+     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+                This file is licensed under the Snes9x License.
+   For further information, consult the LICENSE file in the root directory.
+\*****************************************************************************/
 
-#import "AppDelegate.h"
+/***********************************************************************************
+  SNES9X for Mac OS (c) Copyright John Stiles
+
+  Snes9x for Mac OS X
+
+  (c) Copyright 2001 - 2011  zones
+  (c) Copyright 2002 - 2005  107
+  (c) Copyright 2002         PB1400c
+  (c) Copyright 2004         Alexander and Sander
+  (c) Copyright 2004 - 2005  Steven Seeger
+  (c) Copyright 2005         Ryan Vogt
+  (c) Copyright 2019         Michael Donald Buckley
+ ***********************************************************************************/
 
 #import <Carbon/Carbon.h>
 #import <snes9x_framework/snes9x_framework.h>
+
+#import "AppDelegate.h"
+
+#import "S9xPrefsConstants.h"
+#import "S9xPrefsViewController.h"
 
 @interface AppDelegate ()
 @property (nonatomic, strong) S9xEngine *s9xEngine;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *keys;
 @property (nonatomic, strong) NSWindow *window;
+@property (nonatomic, strong, nullable) NSWindowController *prefsWindowController;
 @end
 
 static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
-static NSString * const kKeyboardPrefs = @"KeyboardConfig";
 
 @implementation AppDelegate
 
@@ -64,7 +80,7 @@ static NSString * const kKeyboardPrefs = @"KeyboardConfig";
 {
     NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
 
-    NSDictionary *defaultKeyBindings = @{
+    NSDictionary *defaultSettings = @{
         kKeyboardPrefs : @{
             @(kUp).stringValue : @(kVK_UpArrow),
             @(kDown).stringValue : @(kVK_DownArrow),
@@ -99,7 +115,7 @@ static NSString * const kKeyboardPrefs = @"KeyboardConfig";
             @(kKeySPC).stringValue : @(kVK_ANSI_R),
             @(kKeyScopeTurbo).stringValue : @(kVK_ANSI_B),
             @(kKeyScopePause).stringValue : @(kVK_ANSI_N),
-            @(kKeyScopeCursor).stringValue : @(kVK_ANSI_Q),
+            @(kKeyScopeCursor).stringValue : @(kVK_ANSI_M),
             @(kKeyOffScreen).stringValue : @(kVK_Tab),
             @(kKeyFunction).stringValue : @(kVK_ANSI_Slash),
             @(kKeyAlt).stringValue : @(kVK_ANSI_Period),
@@ -107,10 +123,12 @@ static NSString * const kKeyboardPrefs = @"KeyboardConfig";
             @(kKeyFFUp).stringValue : @(kVK_ANSI_W),
             @(kKeyEsc).stringValue : @(kVK_Escape),
             @(kKeyTC).stringValue : @(kVK_ANSI_Comma)
-        }
+        },
+        kShowFPSPref: @(NO),
+        kVideoModePref:@(VIDEOMODE_BLOCKY)
     };
 
-    [defaults registerDefaults:defaultKeyBindings];
+    [defaults registerDefaults:defaultSettings];
 
     self.keys = [[defaults objectForKey:kKeyboardPrefs] mutableCopy];
 
@@ -123,6 +141,7 @@ static NSString * const kKeyboardPrefs = @"KeyboardConfig";
     }
 
     [self importKeySettings];
+    [self importGraphicsSettings];
     [defaults synchronize];
 }
 
@@ -139,7 +158,7 @@ static NSString * const kKeyboardPrefs = @"KeyboardConfig";
     int8 oldPlayer = -1;
     if ([self.s9xEngine setButton:buttonCode forKey:keyCode player:player oldButton:&oldButton oldPlayer:&oldPlayer oldKey:NULL])
     {
-        if (oldButton >= 0 && oldButton < kNumButtons && oldPlayer >= 0 && oldPlayer < MAC_MAX_PLAYERS)
+        if (oldButton >= 0 && oldButton < kNumButtons && oldPlayer >= 0 && oldPlayer < MAC_MAX_PLAYERS && (oldPlayer != player || oldButton != buttonCode))
         {
             [self.keys removeObjectForKey:@(oldButton + (kNumButtons * oldPlayer)).stringValue];
         }
@@ -169,21 +188,7 @@ static NSString * const kKeyboardPrefs = @"KeyboardConfig";
 
 - (void)importKeySettings
 {
-    NSData *data = [NSUserDefaults.standardUserDefaults objectForKey:@"Preferences_byek"];
-
-    if (data == nil)
-    {
-        data = [NSUserDefaults.standardUserDefaults objectForKey:@"Preferences_keyb"];
-
-        if (data != nil)
-        {
-            [NSUserDefaults.standardUserDefaults removeObjectForKey:@"Preferences_keyb"];
-        }
-    }
-    else
-    {
-        [NSUserDefaults.standardUserDefaults removeObjectForKey:@"Preferences_byek"];
-    }
+    NSData *data = [self objectForPrefOSCode:'keyb'];
 
     NSUInteger length = data.length;
     char *bytes = (char*)data.bytes;
@@ -200,6 +205,49 @@ static NSString * const kKeyboardPrefs = @"KeyboardConfig";
             [self setButtonCode:(S9xButtonCode)(i - 24 + kKeyFastForward) forKeyCode:bytes[i] player:0];
         }
     }
+}
+
+- (void)importGraphicsSettings
+{
+    NSData *data = [self objectForPrefOSCode:'dfps'];
+
+    if (data != nil)
+    {
+        [NSUserDefaults.standardUserDefaults setBool:(data.length > 0 && ((char *)data.bytes)[0]) forKey:kShowFPSPref];
+    }
+
+    data = [self objectForPrefOSCode:'Vmod'];
+
+    if ( data != nil)
+    {
+        [NSUserDefaults.standardUserDefaults setInteger:((data.length >= 0 && ((char *)data.bytes)[0]) ? VIDEOMODE_SMOOTH : VIDEOMODE_BLOCKY) forKey:kVideoModePref];
+    }
+}
+
+- (id)objectForPrefOSCode:(uint32_t)osCode
+{
+    NSString *key = [@"Preferences_" stringByAppendingString:[[NSString alloc] initWithBytes:(char *)&osCode length:sizeof(uint32_t) encoding:NSASCIIStringEncoding]];
+
+    id obj = [NSUserDefaults.standardUserDefaults objectForKey:key];
+
+    if (obj == nil)
+    {
+        osCode =CFSwapInt32(osCode);
+        key = [@"Preferences_" stringByAppendingString:[[NSString alloc] initWithBytes:(char *)&osCode length:sizeof(uint32_t) encoding:NSASCIIStringEncoding]];
+
+        obj = [NSUserDefaults.standardUserDefaults objectForKey:key];
+
+        if (obj != nil)
+        {
+            [NSUserDefaults.standardUserDefaults removeObjectForKey:key];
+        }
+    }
+    else
+    {
+        [NSUserDefaults.standardUserDefaults removeObjectForKey:key];
+    }
+
+    return obj;
 }
 
 - (BOOL)application:(NSApplication *)sender openFile:(NSString *)filename
@@ -240,6 +288,20 @@ static NSString * const kKeyboardPrefs = @"KeyboardConfig";
 {
     [self.s9xEngine stop];
     [NSApp terminate:sender];
+}
+
+- (IBAction)openPrefs:(id)sender
+{
+    if ( self.prefsWindowController == nil )
+    {
+        NSWindow *prefsWindow = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 100, 100) styleMask:NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable backing:NSBackingStoreBuffered defer:NO];
+        self.prefsWindowController = [[NSWindowController alloc] initWithWindow:prefsWindow];
+
+        prefsWindow.contentViewController = [[S9xPrefsViewController alloc] initWithNibName:@"S9xPrefsViewController" bundle:nil];
+        [prefsWindow center];
+    }
+
+    [self.prefsWindowController.window makeKeyAndOrderFront:self];
 }
 
 @end
