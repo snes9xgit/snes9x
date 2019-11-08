@@ -7,16 +7,17 @@
 #include <stdio.h>
 #include <signal.h>
 #include "gtk_2_3_compat.h"
+#include "gtk_config.h"
 #include "gtk_s9x.h"
 #include "gtk_control.h"
 #include "gtk_sound.h"
 #include "gtk_display.h"
 #include "gtk_netplay.h"
 #include "statemanager.h"
-
+#include "background_particles.h"
 
 void S9xPostRomInit ();
-static void S9xThrottle ();
+static void S9xThrottle (int);
 static void S9xCheckPointerTimer ();
 static gboolean S9xIdleFunc (gpointer data);
 static gboolean S9xPauseFunc (gpointer data);
@@ -28,6 +29,8 @@ StateManager state_manager;
 gint64       frame_clock = -1;
 gint64       pointer_timestamp = -1;
 
+Background::Particles particles(Background::Particles::Mode::Snow);
+
 void S9xTerm (int signal)
 {
     S9xExit ();
@@ -37,10 +40,7 @@ int main (int argc, char *argv[])
 {
     struct sigaction sig_callback;
 
-    gtk_init (&argc, &argv);
-
-    g_set_prgname ("snes9x-gtk");
-    g_set_application_name ("Snes9x");
+    gtk_init (&argc, &argv);    
 
     setlocale (LC_ALL, "");
     bindtextdomain (GETTEXT_PACKAGE, SNES9XLOCALEDIR);
@@ -263,9 +263,6 @@ static gboolean S9xPauseFunc (gpointer data)
 {
     S9xProcessEvents (true);
 
-    if (!gui_config->rom_loaded)
-        return true;
-
     if (!S9xNetplayPush ())
     {
         S9xNetplayPop ();
@@ -292,12 +289,30 @@ static gboolean S9xPauseFunc (gpointer data)
         return false;
     }
 
-    return true;
+    if (!gui_config->rom_loaded)
+    {
+        if (gui_config->splash_image >= SPLASH_IMAGE_STARFIELD)
+        {
+            if (gui_config->splash_image == SPLASH_IMAGE_STARFIELD)
+                particles.setmode(Background::Particles::Stars);
+            else
+                particles.setmode(Background::Particles::Snow);
+
+            S9xThrottle(THROTTLE_TIMER);
+            particles.advance();
+            particles.copyto(GFX.Screen, GFX.Pitch);
+            S9xDeinitUpdate(256, 224);
+        }
+    }
+
+    g_timeout_add(8, S9xPauseFunc, NULL);
+
+    return false;
 }
 
 gboolean S9xIdleFunc (gpointer data)
 {
-    if (Settings.Paused)
+    if (Settings.Paused && gui_config->rom_loaded)
     {
         S9xSetSoundMute (gui_config->mute_sound);
         S9xSoundStop ();
@@ -310,7 +325,7 @@ gboolean S9xIdleFunc (gpointer data)
         }
 
         /* Move to a timer-based function to use less CPU */
-        g_timeout_add (100, S9xPauseFunc, NULL);
+        g_timeout_add (8, S9xPauseFunc, NULL);
         return false;
     }
 
@@ -324,7 +339,7 @@ gboolean S9xIdleFunc (gpointer data)
         return true;
     }
 
-    S9xThrottle ();
+    S9xThrottle (Settings.SkipFrames);
 
     if (!S9xNetplayPush ())
     {
@@ -461,7 +476,7 @@ void S9xParseArg (char **argv, int &i, int argc)
     }
 }
 
-static void S9xThrottle ()
+static void S9xThrottle (int method)
 {
     gint64 now;
 
@@ -508,15 +523,15 @@ static void S9xThrottle ()
         frame_clock = now;
     }
 
-    if (Settings.SkipFrames == THROTTLE_SOUND_SYNC ||
-        Settings.SkipFrames == THROTTLE_NONE)
+    if (method == THROTTLE_SOUND_SYNC ||
+        method == THROTTLE_NONE)
     {
         frame_clock = now;
         IPPU.SkippedFrames = 0;
     }
     else // THROTTLE_TIMER or THROTTLE_TIMER_FRAMESKIP
     {
-        if (Settings.SkipFrames == THROTTLE_TIMER_FRAMESKIP)
+        if (method == THROTTLE_TIMER_FRAMESKIP)
         {
             if (now - frame_clock > Settings.FrameTime)
             {

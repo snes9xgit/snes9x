@@ -787,7 +787,7 @@ Snes9xWindow::expose ()
         config->window_height = get_height ();
     }
 
-    if (is_paused () || NetPlay.Paused)
+    if ((is_paused () || NetPlay.Paused) && (gui_config->splash_image < SPLASH_IMAGE_STARFIELD || gui_config->rom_loaded))
     {
         S9xDeinitUpdate (last_width, last_height);
     }

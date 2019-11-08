@@ -823,6 +823,12 @@
       <row>
         <col id="0" translatable="yes">Color bars and patterns</col>
       </row>
+      <row>
+        <col id="0" translatable="yes">Starfield</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Snow</col>
+      </row>
     </data>
   </object>
   <object class="GtkListStore" id="liststore1">

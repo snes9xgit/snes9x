@@ -166,7 +166,7 @@ bool gtk_shader_parameters_dialog(GtkWindow *parent)
     if (!params || params->size() == 0)
         return false;
 
-    dialog = gtk_dialog_new_with_buttons(_("GLSL Shader Parameters"),
+    dialog = gtk_dialog_new_with_buttons(_("Shader Parameters"),
                                          parent,
                                          GTK_DIALOG_DESTROY_WITH_PARENT,
                                          "gtk-cancel",
