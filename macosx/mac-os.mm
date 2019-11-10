@@ -2233,6 +2233,11 @@ static void ProcessInput (void)
         if (ISpKeyIsPressed(keys, gamepadButtons, kISpEsc))
         {
             pauseEmulation = true;
+
+            dispatch_async(dispatch_get_main_queue(), ^
+            {
+                [s9xView setNeedsDisplay:YES];
+            });
         }
 
         if (ISpKeyIsPressed(keys, gamepadButtons, kISpFreeze))
@@ -2835,6 +2840,30 @@ void QuitWithFatalError ( NSString *message)
     renderLock = OS_UNFAIR_LOCK_INIT;
 }
 
+- (instancetype)initWithFrame:(NSRect)frameRect pixelFormat:(nullable NSOpenGLPixelFormat *)format
+{
+    self = [super initWithFrame:frameRect pixelFormat:format];
+
+    if (self)
+    {
+        NSView *dimmedView = [[NSView alloc] initWithFrame:frameRect];
+        dimmedView.wantsLayer = YES;
+        dimmedView.layer.backgroundColor = NSColor.blackColor.CGColor;
+        dimmedView.layer.opacity = 0.5;
+        dimmedView.layer.zPosition = 100.0;
+        [self addSubview:dimmedView];
+
+        [dimmedView.topAnchor constraintEqualToAnchor:self.topAnchor].active = YES;
+        [dimmedView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor].active = YES;
+        [dimmedView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = YES;
+        [dimmedView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor].active = YES;
+
+        dimmedView.hidden = YES;
+    }
+
+    return self;
+}
+
 - (void)keyDown:(NSEvent *)event
 {
     os_unfair_lock_lock(&keyLock);
@@ -2881,6 +2910,7 @@ void QuitWithFatalError ( NSString *message)
 - (void)drawRect:(NSRect)dirtyRect
 {
     os_unfair_lock_lock(&renderLock);
+    self.subviews[0].hidden = !pauseEmulation;
     glScreenW = self.frame.size.width;
     glScreenH = self.frame.size.height;
     S9xPutImage(IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight);
@@ -3013,6 +3043,7 @@ void QuitWithFatalError ( NSString *message)
 - (void)pause
 {
     pauseEmulation = true;
+    [s9xView setNeedsDisplay:YES];
 }
 
 - (void)resume
