@@ -65,12 +65,12 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
         [window center];
     }
 
+    self.window = window;
+
     [NSNotificationCenter.defaultCenter addObserverForName:NSWindowWillCloseNotification object:window queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification *notification)
     {
-        [self.s9xEngine stop];
+        [self.s9xEngine pause];
     }];
-
-    self.window = window;
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
