@@ -2907,6 +2907,12 @@ void QuitWithFatalError ( NSString *message)
     os_unfair_lock_unlock(&keyLock);
 }
 
+- (void)mouseDown:(NSEvent *)event
+{
+    pauseEmulation = true;
+    [self setNeedsDisplay:YES];
+}
+
 - (void)drawRect:(NSRect)dirtyRect
 {
     os_unfair_lock_lock(&renderLock);
