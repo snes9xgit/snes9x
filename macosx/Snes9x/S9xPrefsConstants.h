@@ -21,5 +21,7 @@
 #import <Foundation/Foundation.h>
 
 extern NSString * const kKeyboardPrefs;
+extern NSString * const kJoypadInputPrefs;
+extern NSString * const kJoypadPlayerPrefs;
 extern NSString * const kShowFPSPref;
 extern NSString * const kVideoModePref;

@@ -174,6 +174,8 @@ CFStringRef			multiCartPath[2];
 IconRef				macIconRef[118];
 #endif
 
+id<S9xInputDelegate>    inputDelegate = nil;
+
 typedef enum
 {
     ToggleBG0,
@@ -2076,7 +2078,7 @@ static void ProcessInput (void)
     bool8           keys[MAC_MAX_PLAYERS][kNumButtons];
     bool8           gamepadButtons[MAC_MAX_PLAYERS][kNumButtons];
     bool8           isok, fnbtn, altbtn, tcbtn;
-    static bool8    toggleff = false, lastTimeTT = false, lastTimeFn = false, ffUp = false, ffDown = false, ffUpSp = false, ffDownSp = false;
+    static bool8    toggleff = false, lastTimeTT = false, lastTimeFn = false, ffUp = false, ffDown = false;
 
     if (rejectinput)
         return;
@@ -3018,6 +3020,101 @@ void QuitWithFatalError ( NSString *message)
     pauseEmulation = false;
 }
 
+- (NSArray<S9xJoypad *> *)listJoypads
+{
+    os_unfair_lock_lock(&keyLock);
+    NSMutableArray<S9xJoypad *> *joypads = [NSMutableArray new];
+    for (auto joypadStruct : ListJoypads())
+    {
+        S9xJoypad *joypad = [S9xJoypad new];
+        joypad.vendorID = joypadStruct.vendorID;
+        joypad.productID = joypadStruct.productID;
+        joypad.index = joypadStruct.index;
+        joypad.name = [[NSString alloc] initWithUTF8String:NameForDevice(joypadStruct).c_str()];
+
+        [joypads addObject:joypad];
+    }
+
+    [joypads sortUsingComparator:^NSComparisonResult(S9xJoypad *a, S9xJoypad *b)
+    {
+        NSComparisonResult result = [a.name compare:b.name];
+
+        if ( result == NSOrderedSame )
+        {
+            result = [@(a.vendorID) compare:@(b.vendorID)];
+        }
+
+        if ( result == NSOrderedSame )
+        {
+            result = [@(a.productID) compare:@(b.productID)];
+        }
+
+        if ( result == NSOrderedSame )
+        {
+            result = [@(a.index) compare:@(b.index)];
+        }
+
+        return result;
+    }];
+    os_unfair_lock_unlock(&keyLock);
+
+    return joypads;
+}
+
+- (void)setPlayer:(int8)player forVendorID:(uint32)vendorID productID:(uint32)productID index:(uint32)index oldPlayer:(int8 *)oldPlayer
+{
+    os_unfair_lock_lock(&keyLock);
+    SetPlayerForJoypad(player, vendorID, productID, index, oldPlayer);
+    os_unfair_lock_unlock(&keyLock);
+}
+
+- (BOOL)setButton:(S9xButtonCode)button forVendorID:(uint32)vendorID productID:(uint32)productID index:(uint32)index cookie:(uint32)cookie value:(int32)value oldButton:(S9xButtonCode *)oldButton
+{
+    BOOL result = NO;
+    os_unfair_lock_lock(&keyLock);
+    result = SetButtonCodeForJoypadControl(vendorID, productID, index, cookie, value, button, true, oldButton);
+    os_unfair_lock_unlock(&keyLock);
+    return result;
+}
+
+- (void)clearJoypadForVendorID:(uint32)vendorID productID:(uint32)productID index:(uint32)index
+{
+    os_unfair_lock_lock(&keyLock);
+    ClearJoypad(vendorID, productID, index);
+    os_unfair_lock_unlock(&keyLock);
+}
+
+- (void)clearJoypadForVendorID:(uint32)vendorID productID:(uint32)productID index:(uint32)index buttonCode:(S9xButtonCode)buttonCode
+{
+    os_unfair_lock_lock(&keyLock);
+    ClearButtonCodeForJoypad(vendorID, productID, index, buttonCode);
+    os_unfair_lock_unlock(&keyLock);
+}
+
+- (NSArray<S9xJoypadInput *> *)getInputsForVendorID:(uint32)vendorID productID:(uint32)productID index:(uint32)index
+{
+    os_unfair_lock_lock(&keyLock);
+    NSMutableArray<S9xJoypadInput *> *inputs = [NSMutableArray new];
+    std::unordered_map<struct JoypadInput, S9xButtonCode> buttonCodeMap = GetJuypadButtons(vendorID, productID, index);
+    for (auto it = buttonCodeMap.begin(); it != buttonCodeMap.end(); ++it)
+    {
+        S9xJoypadInput *input = [S9xJoypadInput new];
+        input.cookie = it->first.cookie.cookie;
+        input.value = it->first.value;
+        input.buttonCode = it->second;
+
+        [inputs addObject:input];
+    }
+    os_unfair_lock_unlock(&keyLock);
+
+    return inputs;
+}
+
+- (NSString *)labelForVendorID:(uint32)vendorID productID:(uint32)productID cookie:(uint32)cookie value:(int32)value
+{
+    return [NSString stringWithUTF8String:LabelForInput(vendorID, productID, cookie, value).c_str()];
+}
+
 - (BOOL)setButton:(S9xButtonCode)button forKey:(int16)key player:(int8)player oldButton:(S9xButtonCode *)oldButton oldPlayer:(int8 *)oldPlayer oldKey:(int16 *)oldKey
 {
     BOOL result = NO;
@@ -3025,6 +3122,13 @@ void QuitWithFatalError ( NSString *message)
     result = SetKeyCode(key, button, player, oldKey, oldButton, oldPlayer);
     os_unfair_lock_unlock(&keyLock);
     return result;
+}
+
+- (void)clearButton:(S9xButtonCode)button forPlayer:(int8)player
+{
+    os_unfair_lock_lock(&keyLock);
+    ClearKeyCode(button, player);
+    os_unfair_lock_unlock(&keyLock);
 }
 
 - (BOOL)loadROM:(NSURL *)fileURL
@@ -3041,4 +3145,45 @@ void QuitWithFatalError ( NSString *message)
     return NO;
 }
 
+- (void)setShowFPS:(BOOL)showFPS
+{
+    Settings.DisplayFrameRate = showFPS;
+}
+
+- (void)setVideoMode:(int)mode
+{
+    os_unfair_lock_lock(&renderLock);
+    videoMode = mode;
+    os_unfair_lock_unlock(&renderLock);
+}
+
+@dynamic inputDelegate;
+- (void)setInputDelegate:(id<S9xInputDelegate>)delegate
+{
+    inputDelegate = delegate;
+}
+
+- (id<S9xInputDelegate>)inputDelegate
+{
+    return inputDelegate;
+}
+
+@end
+
+@implementation S9xJoypad
+
+- (BOOL)isEqual:(id)object
+{
+    if (![object isKindOfClass:[self class]])
+    {
+        return NO;
+    }
+
+    S9xJoypad *other = (S9xJoypad *)object;
+    return (self.vendorID == other.vendorID && self.productID == other.productID && self.index == other.index);
+}
+
+@end
+
+@implementation S9xJoypadInput
 @end

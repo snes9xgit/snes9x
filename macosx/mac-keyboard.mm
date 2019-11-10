@@ -81,3 +81,20 @@ bool SetKeyCode(int16 keyCode, S9xButtonCode buttonCode, int8 player, int16 *old
 
     return true;
 }
+
+void ClearKeyCode(S9xButtonCode buttonCode, int8 player)
+{
+    if (player < 0 || player >= MAC_MAX_PLAYERS || buttonCode < 0 || buttonCode >= kNumButtons)
+    {
+        return;
+    }
+
+    for ( int i = 0; i < MAC_NUM_KEYCODES; ++i)
+    {
+        struct S9xButton button = keyCodes[i];
+        if (button.player == player && button.buttonCode == buttonCode)
+        {
+            keyCodes[i] = { -1, -1 };
+        }
+    }
+}

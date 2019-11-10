@@ -37,5 +37,6 @@ void InitKeyboard (void);
 void DeinitKeyboard (void);
 
 bool SetKeyCode(int16 keyCode, S9xButtonCode button, int8 player, int16 *oldKeyCode, S9xButtonCode *oldButton, int8 *oldPlayer);
+void ClearKeyCode(S9xButtonCode buttonCode, int8 player);
 
 #endif

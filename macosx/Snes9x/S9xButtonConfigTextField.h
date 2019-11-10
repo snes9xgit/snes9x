@@ -20,11 +20,15 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class S9xJoypadInput;
+
 NS_ASSUME_NONNULL_BEGIN
 
-@interface S9xButtonConfigTextField : NSSearchField<NSTextFieldDelegate>
+@interface S9xButtonConfigTextField : NSSearchField<NSSearchFieldDelegate>
 
 @property (nonatomic, assign) CGKeyCode keyCode;
+@property (nonatomic, strong, nullable) S9xJoypadInput *joypadInput;
+@property (nonatomic, assign) BOOL disableKeyboardInput;
 
 @end
 

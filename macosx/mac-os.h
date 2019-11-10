@@ -181,7 +181,28 @@ uint64 GetMicroseconds(void);
 
 void CopyPressedKeys(uint8 keys[MAC_MAX_PLAYERS][kNumButtons], uint8 gamepadButtons[MAC_MAX_PLAYERS][kNumButtons]);
 
+@interface S9xJoypad : NSObject
+@property (nonatomic, assign) uint32 vendorID;
+@property (nonatomic, assign) uint32 productID;
+@property (nonatomic, assign) uint8 index;
+@property (nonatomic, copy) NSString *name;
+@end
+
+@interface S9xJoypadInput : NSObject
+@property (nonatomic, assign) uint32 cookie;
+@property (nonatomic, assign) int32 value;
+@property (nonatomic, assign) S9xButtonCode buttonCode;
+@end
+
+@protocol S9xInputDelegate <NSObject>
+- (BOOL)handleInput:(S9xJoypadInput *)input fromJoypad:(S9xJoypad *)joypad;
+@end
+
+extern id<S9xInputDelegate> inputDelegate;
+
 @interface S9xEngine : NSObject
+
+@property (nonatomic, weak) id<S9xInputDelegate> inputDelegate;
 
 - (void)start;
 - (void)stop;
@@ -192,8 +213,21 @@ void CopyPressedKeys(uint8 keys[MAC_MAX_PLAYERS][kNumButtons], uint8 gamepadButt
 - (void)resume;
 
 - (BOOL)setButton:(S9xButtonCode)button forKey:(int16)key player:(int8)player oldButton:(S9xButtonCode *)oldButton oldPlayer:(int8 *)oldPlayer oldKey:(int16 *)oldKey;
+- (void)clearButton:(S9xButtonCode)button forPlayer:(int8)player;
+
+- (NSArray<S9xJoypad *> *)listJoypads;
+- (void)setPlayer:(int8)player forVendorID:(uint32)vendorID productID:(uint32)productID index:(uint32)index oldPlayer:(int8 *)oldPlayer;
+- (BOOL)setButton:(S9xButtonCode)button forVendorID:(uint32)vendorID productID:(uint32)productID index:(uint32)index cookie:(uint32)cookie value:(int32)value oldButton:(S9xButtonCode *)oldButton;
+- (void)clearJoypadForVendorID:(uint32)vendorID productID:(uint32)productID index:(uint32)index;
+- (void)clearJoypadForVendorID:(uint32)vendorID productID:(uint32)productID index:(uint32)index buttonCode:(S9xButtonCode)buttonCode;
+- (NSArray<S9xJoypadInput *> *)getInputsForVendorID:(uint32)vendorID productID:(uint32)productID index:(uint32)index;
+
+- (NSString *)labelForVendorID:(uint32)vendorID productID:(uint32)productID cookie:(uint32)cookie value:(int32)value;
 
 - (BOOL)loadROM:(NSURL *)fileURL;
+
+- (void)setVideoMode:(int)videoMode;
+- (void)setShowFPS:(BOOL)showFPS;
 
 @end
 

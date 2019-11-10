@@ -21,7 +21,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface S9xPrefsViewController : NSViewController
+@interface S9xPrefsViewController : NSViewController<S9xInputDelegate>
 
 @end
 

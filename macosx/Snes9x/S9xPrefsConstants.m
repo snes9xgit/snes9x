@@ -21,5 +21,7 @@
 #import "S9xPrefsConstants.h"
 
 NSString * const kKeyboardPrefs = @"KeyboardConfig";
+NSString * const kJoypadInputPrefs = @"JoypadInputs";
+NSString * const kJoypadPlayerPrefs = @"JoypadPlayers";
 NSString * const kShowFPSPref = @"ShowFPS";
 NSString * const kVideoModePref = @"VideoMode";

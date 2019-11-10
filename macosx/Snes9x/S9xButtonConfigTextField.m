@@ -30,10 +30,21 @@
     self.delegate = self;
     self.placeholderString = @"";
     [[self cell] setSearchButtonCell:nil];
+
+    NSButtonCell *cancelButton = [[self cell] cancelButtonCell];
+    cancelButton.target = self;
+    cancelButton.action = @selector(clearSearch:);
 }
 
 - (void)setKeyCode:(CGKeyCode)keyCode
 {
+    if (keyCode == (CGKeyCode)-1)
+    {
+        _keyCode = keyCode;
+        self.stringValue = @"";
+        return;
+    }
+
     NSString *stringValue = nil;
 
     switch (keyCode)
@@ -266,11 +277,19 @@
 
 - (void)keyUp:(NSEvent *)event
 {
-    [self setKeyCode:event.keyCode];
+    if (!self.disableKeyboardInput )
+    {
+        [self setKeyCode:event.keyCode];
+    }
 }
 
 - (void)flagsChanged:(NSEvent *)event
 {
+    if (self.disableKeyboardInput)
+    {
+        return;
+    }
+
     NSEventModifierFlags flags = event.modifierFlags;
 
     if ( flags & NSEventModifierFlagShift )
@@ -297,8 +316,27 @@
     [self.currentEditor selectAll:self];
 }
 
+- (void)clearSearch:(id)sender
+{
+    self.stringValue = @"";
+
+    if (self.disableKeyboardInput)
+    {
+        self.joypadInput = nil;
+    }
+    else
+    {
+        self.keyCode = -1;
+    }
+}
+
 - (BOOL)control:(NSControl *)control textView:(NSTextView *)textView doCommandBySelector:(SEL)commandSelector
 {
+    if (self.disableKeyboardInput)
+    {
+        return NO;
+    }
+
     if (commandSelector == @selector(insertTab:))
     {
         [self setKeyCode:kVK_Tab];
@@ -311,6 +349,11 @@
     }
 
     return NO;
+}
+
+- (BOOL)control:(NSControl *)control textShouldBeginEditing:(NSText *)fieldEditor
+{
+    return !self.disableKeyboardInput;
 }
 
 @end

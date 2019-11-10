@@ -20,8 +20,6 @@
 
 
 #include <map>
-#include <unordered_map>
-#include <unordered_set>
 
 #include "port.h"
 
@@ -60,107 +58,15 @@
 typedef	hu_device_t		*pRecDevice;
 typedef	hu_element_t	*pRecElement;
 
-struct JoypadDevice {
-    uint16 vendorID;
-    uint16 productID;
-    uint32 index;
-
-    bool operator==(const struct JoypadDevice &o) const
-    {
-        return vendorID == o.vendorID && productID == o.productID && index == o.index;
-    }
-
-    bool operator<(const struct JoypadDevice &o) const
-    {
-        return vendorID < o.vendorID || productID < o.productID || index < o.index;
-    }
-};
-
-struct JoypadCookie {
-    struct JoypadDevice device;
-    uint32 cookie;
-
-    JoypadCookie() {}
-
-    struct JoypadCookie &operator=(const struct JoypadCookie &o)
-    {
-        device = o.device;
-        cookie = o.cookie;
-        return *this;
-    }
-
-    bool operator==(const struct JoypadCookie &o) const
-    {
-        return device == o.device && cookie == o.cookie;
-    }
-
-    bool operator<(const struct JoypadCookie &o) const
-    {
-        return device < o.device || cookie < o.cookie;
-    }
-};
-
-struct JoypadCookieInfo {
-    uint32 usage;
-    uint32 index;
-    int32 midpoint;
-    int32 min;
-    int32 max;
-};
-
-struct JoypadInput {
-    struct JoypadCookie cookie;
-    int32 value;
-
-    bool operator==(const struct JoypadInput &o) const
-    {
-        return cookie == o.cookie && value == o.value;
-    }
-
-    bool operator<(const struct JoypadInput &o) const
-    {
-        return cookie < o.cookie || value < o.value;
-    }
-};
-
-namespace std {
-    template <>
-    struct hash<struct JoypadDevice>
-    {
-        std::size_t operator()(const JoypadDevice& k) const
-        {
-            return k.vendorID ^ k.productID ^ k.index;
-        }
-    };
-
-    template <>
-    struct hash<struct JoypadCookie>
-    {
-        std::size_t operator()(const JoypadCookie& k) const
-        {
-            return std::hash<struct JoypadDevice>()(k.device) ^ k.cookie;
-        }
-    };
-
-    template <>
-    struct hash<struct JoypadInput>
-    {
-        std::size_t operator()(const JoypadInput& k) const
-        {
-            return std::hash<struct JoypadCookie>()(k.cookie) ^ k.value;
-        }
-    };
-}
-
 std::unordered_set<JoypadDevice> allDevices;
 std::unordered_map<JoypadDevice, std::map<uint8, std::map<int8, S9xButtonCode>>> defaultAxes;
 std::unordered_map<JoypadDevice, std::map<uint8, S9xButtonCode>> defaultButtons;
 std::unordered_map<JoypadDevice, std::map<uint8, S9xButtonCode>> defaultHatValues;
-// TODO: Hook these next two up
 std::unordered_map<JoypadDevice, int8> playerNumByDevice;
 std::unordered_map<uint32, int8> deviceIndexByPort;
 std::unordered_map<JoypadCookie, JoypadCookieInfo> infoByCookie;
 std::unordered_map<JoypadInput, S9xButtonCode> buttonCodeByJoypadInput;
+std::unordered_map<JoypadDevice, std::string> namesByDevice;
 
 @interface NSData (S9xHexString)
 +(id)s9x_dataWithHexString:(NSString *)hex;
@@ -190,6 +96,20 @@ std::unordered_map<JoypadInput, S9xButtonCode> buttonCodeByJoypadInput;
 @end
 
 IOHIDManagerRef hidManager = NULL;
+
+std::unordered_set<struct JoypadDevice> ListJoypads (void) {
+    return allDevices;
+}
+
+std::string NameForDevice(struct JoypadDevice device) {
+    auto it = namesByDevice.find(device);
+    if (it != namesByDevice.end())
+    {
+        return it->second;
+    }
+
+    return "";
+}
 
 void gamepadAction(void *inContext, IOReturn inResult, void *inSender, IOHIDValueRef v) {
     os_unfair_lock_lock(&keyLock);
@@ -243,6 +163,22 @@ void gamepadAction(void *inContext, IOReturn inResult, void *inSender, IOHIDValu
         struct JoypadInput inputStruct;
         inputStruct.cookie = cookieStruct;
         inputStruct.value = (int32_t)IOHIDValueGetIntegerValue(v);
+
+        S9xJoypad *objcJoypad = [S9xJoypad new];
+        objcJoypad.vendorID = deviceStruct.vendorID;
+        objcJoypad.productID = deviceStruct.productID;
+        objcJoypad.index = deviceStruct.index;
+
+        S9xJoypadInput *objcInput = [S9xJoypadInput new];
+        objcInput.cookie = inputStruct.cookie.cookie;
+        objcInput.value =inputStruct.value;
+
+        os_unfair_lock_unlock(&keyLock);
+        if ([inputDelegate handleInput:objcInput fromJoypad:objcJoypad])
+        {
+            return;
+        }
+        os_unfair_lock_lock(&keyLock);
 
         struct JoypadInput oppositeInputStruct = inputStruct;
 
@@ -552,6 +488,7 @@ void AddDevice (IOHIDDeviceRef device)
 {
     NSNumber *vendor = (NSNumber *)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDVendorIDKey));
     NSNumber *product = (NSNumber *)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDProductIDKey));
+    NSString *name = (NSString *)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDProductKey));
 
     NSMutableArray<NSDictionary *> *buttons = [NSMutableArray new];
     NSMutableArray<NSDictionary *> *axes = [NSMutableArray new];
@@ -570,6 +507,14 @@ void AddDevice (IOHIDDeviceRef device)
     }
 
     allDevices.insert(deviceStruct);
+    std::string s = std::string(name.UTF8String);
+
+    if (deviceStruct.index > 0)
+    {
+        s = s + " (" + std::to_string(deviceStruct.index + 1) + ")";
+    }
+
+    namesByDevice[deviceStruct] = s;
     uint32_t port = ((NSNumber *)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDLocationIDKey))).unsignedIntValue;
     deviceIndexByPort[port] = deviceStruct.index;
 
@@ -662,7 +607,7 @@ void AddDevice (IOHIDDeviceRef device)
             }
         }
 
-        // TODO: Extend axisIndex into defaultAxes
+        info.usage = axisDict[@kIOHIDElementUsageKey].intValue;
         info.index = axisIndex++;
         infoByCookie[cookie] = info;
     }
@@ -696,6 +641,46 @@ void AddDevice (IOHIDDeviceRef device)
     }
 
     CFRelease(properties);
+}
+
+void ClearJoypad(uint32 vendorID, uint32 productID, uint32 index)
+{
+    struct JoypadDevice device;
+    device.vendorID = vendorID;
+    device.productID = productID;
+    device.index = index;
+
+    for (auto it = buttonCodeByJoypadInput.begin(); it != buttonCodeByJoypadInput.end();)
+    {
+        if (it->first.cookie.device == device)
+        {
+            buttonCodeByJoypadInput.erase(it++);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+}
+
+std::unordered_map<struct JoypadInput, S9xButtonCode> GetJuypadButtons(uint32 vendorID, uint32 productID, uint32 index)
+{
+    struct JoypadDevice device;
+    device.vendorID = vendorID;
+    device.productID = productID;
+    device.index = index;
+
+    std::unordered_map<struct JoypadInput, S9xButtonCode> joypadButtons;
+
+    for (auto it = buttonCodeByJoypadInput.begin(); it != buttonCodeByJoypadInput.end(); ++it)
+    {
+        if ( it->first.cookie.device == device)
+        {
+            joypadButtons[it->first] = it->second;
+        }
+    }
+
+    return joypadButtons;
 }
 
 void SetUpHID (void)
@@ -776,7 +761,7 @@ void ReleaseHID (void)
     }
 }
 
-void SetPlayerForJoypad(int8 playerNum, uint32 vendorID, uint32 productID, uint8 index, int8 *oldPlayerNum)
+void SetPlayerForJoypad(int8 playerNum, uint32 vendorID, uint32 productID, uint32 index, int8 *oldPlayerNum)
 {
     struct JoypadDevice device;
     device.vendorID = vendorID;
@@ -796,8 +781,13 @@ void SetPlayerForJoypad(int8 playerNum, uint32 vendorID, uint32 productID, uint8
     playerNumByDevice[device] = playerNum;
 }
 
-void SetButtonCodeForJoypadControl(uint32 vendorID, uint32 productID, uint8 index, uint32 cookie, int32 value, S9xButtonCode buttonCode, bool overwrite, S9xButtonCode *oldButtonCode)
+bool SetButtonCodeForJoypadControl(uint32 vendorID, uint32 productID, uint32 index, uint32 cookie, int32 value, S9xButtonCode buttonCode, bool overwrite, S9xButtonCode *oldButtonCode)
 {
+    if (buttonCode < 0 || buttonCode >= kNumButtons)
+    {
+        return false;
+    }
+
     if (oldButtonCode != NULL)
     {
         *oldButtonCode = (S9xButtonCode)-1;
@@ -818,11 +808,11 @@ void SetButtonCodeForJoypadControl(uint32 vendorID, uint32 productID, uint8 inde
 
         if ( info.min != info.max )
         {
-            if (value < info.min)
+            if (value <= info.min)
             {
                 value = info.min;
             }
-            else if (value > info.max)
+            else if (value >= info.max)
             {
                 value = info.max;
             }
@@ -846,8 +836,195 @@ void SetButtonCodeForJoypadControl(uint32 vendorID, uint32 productID, uint8 inde
         *oldButtonCode = buttonCodeByJoypadInput[input];
     }
 
+    for (auto it = buttonCodeByJoypadInput.begin(); it != buttonCodeByJoypadInput.end();)
+    {
+        if (it->second == buttonCode && it->first.cookie.device == device)
+        {
+            if (overwrite)
+            {
+                buttonCodeByJoypadInput.erase(it++);
+            }
+            else
+            {
+                ++it;
+            }
+        }
+        else
+        {
+            ++it;
+        }
+    }
+
     if (overwrite)
     {
         buttonCodeByJoypadInput[input] = buttonCode;
     }
+
+    return true;
+}
+
+void ClearButtonCodeForJoypad(uint32 vendorID, uint32 productID, uint32 index, S9xButtonCode buttonCode)
+{
+    struct JoypadDevice device;
+    device.vendorID = vendorID;
+    device.productID = productID;
+    device.index = index;
+
+    for (auto it = buttonCodeByJoypadInput.begin(); it != buttonCodeByJoypadInput.end();)
+    {
+        if (it->first.cookie.device == device && it->second == buttonCode)
+        {
+            buttonCodeByJoypadInput.erase(it++);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+}
+
+std::string LabelForInput(uint32 vendorID, uint32 productID, uint32 cookie, int32 value)
+{
+    struct JoypadDevice deviceStruct;
+    deviceStruct.productID = productID;
+    deviceStruct.vendorID = vendorID;
+    deviceStruct.index = 0;
+
+    struct JoypadCookie cookieStruct;
+    cookieStruct.device = deviceStruct;
+    cookieStruct.cookie = cookie;
+
+    auto it = infoByCookie.find(cookieStruct);
+    if (it != infoByCookie.end())
+    {
+        auto info = it->second;
+        switch(info.usage)
+        {
+            case kHIDUsage_GD_X:
+            {
+                if (value <= info.min)
+                {
+                    return "X-";
+                }
+                else if (value >= info.max)
+                {
+                    return "X+";
+                }
+            }
+
+            case kHIDUsage_GD_Y:
+            {
+                if (value <= info.min)
+                {
+                    return "Y-";
+                }
+                else if (value >= info.max)
+                {
+                    return "Y+";
+                }
+            }
+
+            case kHIDUsage_GD_Z:
+            {
+                if (value <= info.min)
+                {
+                    return "Z-";
+                }
+                else if (value >= info.max)
+                {
+                    return "Z+";
+                }
+            }
+
+            case kHIDUsage_GD_Rx:
+            {
+                if (value <= info.min)
+                {
+                    return "Right X-";
+                }
+                else if (value >= info.max)
+                {
+                    return "Right X+";
+                }
+            }
+
+            case kHIDUsage_GD_Ry:
+            {
+                if (value <= info.min)
+                {
+                    return "Right Y-";
+                }
+                else if (value >= info.max)
+                {
+                    return "Right Y+";
+                }
+            }
+
+            case kHIDUsage_GD_Rz:
+            {
+                if (value <= info.min)
+                {
+                    return "Right Z-";
+                }
+                else if (value >= info.max)
+                {
+                    return "Right Z+";
+                }
+            }
+
+            case kHIDUsage_GD_Hatswitch:
+            {
+                auto defaultIT = defaultHatValues.find(deviceStruct);
+                if (defaultIT != defaultHatValues.end())
+                {
+                    auto hatDict = defaultIT->second;
+                    auto hatIT = hatDict.find(value);
+                    if ( hatIT != hatDict.end())
+                    {
+                        switch (hatIT->second)
+                        {
+                            case kUp:
+                                return "D-Pad Up";
+
+                            case kDown:
+                                return "D-Pad Down";
+
+                            case kLeft:
+                                return "D-Pad Left";
+
+                            case kRight:
+                                return "D-Pad Right";
+
+                            default:
+                                break;
+                        }
+                    }
+                }
+
+                if (value == 1)
+                {
+                    return "D-Pad Up";
+                }
+                else if (value == 2)
+                {
+                    return "D-Pad Right";
+                }
+                else if (value == 4)
+                {
+                    return "D-Pad Down";
+                }
+                else if (value == 8)
+                {
+                    return "D-Pad Left";
+                }
+            }
+
+            default:
+            {
+                return std::string("Button " + std::to_string(info.index));
+            }
+        }
+    }
+
+    return std::to_string(cookie);
 }

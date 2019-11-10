@@ -22,25 +22,28 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rxW-aA-Bai">
-                    <rect key="frame" x="18" y="538" width="77" height="16"/>
-                    <textFieldCell key="cell" lineBreakMode="clipping" title="Video Mode" id="XoT-95-aIF">
+                    <rect key="frame" x="18" y="538" width="191" height="16"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" title="Video Mode (Requires Restart)" id="XoT-95-aIF">
                         <font key="font" usesAppearanceFont="YES"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
                 <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="qNi-B0-E49">
-                    <rect key="frame" x="99" y="532" width="85" height="25"/>
+                    <rect key="frame" x="213" y="532" width="85" height="25"/>
                     <popUpButtonCell key="cell" type="push" title="Blocky" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Xg7-hz-RRs" id="IRO-Ia-Tlm">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="menu"/>
                         <menu key="menu" id="VtI-7w-Yps">
                             <items>
                                 <menuItem title="Blocky" state="on" id="Xg7-hz-RRs"/>
-                                <menuItem title="Smooth" tag="1" id="ucR-ef-Wfk"/>
+                                <menuItem title="Smooth" tag="2" id="ucR-ef-Wfk"/>
                             </items>
                         </menu>
                     </popUpButtonCell>
+                    <connections>
+                        <action selector="setVideoMode:" target="-2" id="oj8-pk-Kdg"/>
+                    </connections>
                 </popUpButton>
                 <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hfx-Lg-t9P">
                     <rect key="frame" x="18" y="503" width="472" height="25"/>
@@ -60,6 +63,9 @@
                             </items>
                         </menu>
                     </popUpButtonCell>
+                    <connections>
+                        <action selector="playerDropdownChanged:" target="-2" id="P4K-gg-QUK"/>
+                    </connections>
                 </popUpButton>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="qMp-14-9zW">
                     <rect key="frame" x="18" y="443" width="88" height="16"/>
@@ -211,6 +217,9 @@
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
+                    <connections>
+                        <action selector="showFPS:" target="-2" id="CM2-bf-aFb"/>
+                    </connections>
                 </button>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TuE-fA-Shh">
                     <rect key="frame" x="230" y="353" width="151" height="16"/>
@@ -311,6 +320,9 @@
                             </items>
                         </menu>
                     </popUpButtonCell>
+                    <connections>
+                        <action selector="deviceDropdownChanged:" target="-2" id="oH3-xl-IZF"/>
+                    </connections>
                 </popUpButton>
                 <searchField wantsLayer="YES" verticalHuggingPriority="750" tag="1" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5wn-WM-n7f" customClass="S9xButtonConfigTextField">
                     <rect key="frame" x="112" y="410" width="100" height="22"/>

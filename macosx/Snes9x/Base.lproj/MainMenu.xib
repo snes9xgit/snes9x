@@ -95,6 +95,18 @@
                         </items>
                     </menu>
                 </menuItem>
+                <menuItem title="Emulation" id="Kjk-eO-rPI">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Emulation" id="s2F-Pd-YT5">
+                        <items>
+                            <menuItem title="Resume" keyEquivalent="r" id="m8Y-5s-VGC">
+                                <connections>
+                                    <action selector="resume:" target="-1" id="jxw-ZM-JXi"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
                 <menuItem title="View" id="H8h-7b-M4v">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="View" id="HyV-fh-RgO">

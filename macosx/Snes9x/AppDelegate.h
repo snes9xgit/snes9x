@@ -20,9 +20,25 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface AppDelegate : NSObject <NSApplicationDelegate>
+@interface AppDelegate : NSObject <NSApplicationDelegate, S9xInputDelegate>
 
 - (void)setButtonCode:(S9xButtonCode)buttonCode forKeyCode:(int16)keyCode player:(int8)player;
+- (void)clearButton:(S9xButtonCode)button forPlayer:(int8)player;
+
+- (NSArray<S9xJoypad *> *)listJoypads;
+- (void)setPlayer:(int8)player forVendorID:(uint32)vendorID productID:(uint32)productID index:(uint32)index;
+- (BOOL)setButton:(S9xButtonCode)button forVendorID:(uint32)vendorID productID:(uint32)productID index:(uint32)index cookie:(uint32)cookie value:(int32)value;
+- (void)clearJoypadForVendorID:(uint32)vendorID productID:(uint32)productID index:(uint32)index buttonCode:(S9xButtonCode)buttonCode;
+- (NSString *)labelForVendorID:(uint32)vendorID productID:(uint32)productID cookie:(uint32)cookie value:(int32)value;
+
+- (NSString *)prefsKeyForVendorID:(uint32)vendorID productID:(uint32)productID index:(uint32)index;
+- (BOOL)getValuesFromString:(NSString *)str vendorID:(uint32 *)vendorID productID:(uint32 *)productID index:(uint32 *)index;
+
+- (NSString *)prefValueForCookie:(uint32)cookie value:(int32)value;
+- (BOOL)getValuesFromString:(NSString *)str cookie:(uint32 *)cookie value:(int32 *)value;
+
+- (void)setVideoMode:(int)videoMode;
+- (void)setShowFPS:(BOOL)showFPS;
 
 @end
 

@@ -39,7 +39,8 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     self.s9xEngine = [S9xEngine new];
-    [self setupKeyboard];
+    self.s9xEngine.inputDelegate = self;
+    [self setupDefaults];
     [self importRecentItems];
 
     NSWindow *window = [[NSWindow alloc] initWithContentRect:s9xView.frame styleMask:NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable|NSWindowStyleMaskResizable backing:NSBackingStoreBuffered defer:NO];
@@ -76,7 +77,7 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
     // Insert code here to tear down your application
 }
 
-- (void)setupKeyboard
+- (void)setupDefaults
 {
     NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
 
@@ -140,6 +141,49 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
         [self setButtonCode:buttonCode forKeyCode:self.keys[control].integerValue player:player];
     }
 
+    for ( S9xJoypad *joypad in [self listJoypads])
+    {
+        NSMutableDictionary *joypadPrefs = [[defaults objectForKey:kJoypadInputPrefs] mutableCopy];
+
+        if (joypadPrefs == nil)
+        {
+            joypadPrefs = [NSMutableDictionary new];
+            [defaults synchronize];
+        }
+
+        NSString *key = [self prefsKeyForVendorID:joypad.vendorID productID:joypad.productID index:joypad.index];
+
+        NSMutableDictionary *devicePrefs = [joypadPrefs[key] mutableCopy];
+        if (devicePrefs == nil)
+        {
+            devicePrefs = [NSMutableDictionary new];
+            for (S9xJoypadInput *input in [self.s9xEngine getInputsForVendorID:joypad.vendorID productID:joypad.productID index:joypad.index])
+            {
+                devicePrefs[@(input.buttonCode).stringValue] = [self prefValueForCookie:input.cookie value:input.value];
+            }
+
+            joypadPrefs[key] = devicePrefs;
+            [defaults setObject:joypadPrefs forKey:kJoypadInputPrefs];
+            [defaults synchronize];
+        }
+        else
+        {
+            [self.s9xEngine clearJoypadForVendorID:joypad.vendorID productID:joypad.productID index:joypad.index];
+            for (NSString *buttonCodeString in devicePrefs)
+            {
+                S9xButtonCode buttonCode = (S9xButtonCode)buttonCodeString.intValue;
+                NSString *str = devicePrefs[buttonCodeString];
+                uint32 cookie = 0;
+                int32 value = -1;
+
+                if ([self getValuesFromString:str cookie:&cookie value:&value])
+                {
+                    [self setButton:buttonCode forVendorID:joypad.vendorID productID:joypad.productID index:joypad.index cookie:cookie value:value];
+                }
+            }
+        }
+    }
+
     [self importKeySettings];
     [self importGraphicsSettings];
     [defaults synchronize];
@@ -165,6 +209,133 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 
         [NSUserDefaults.standardUserDefaults setObject:[self.keys copy] forKey:kKeyboardPrefs];
     }
+}
+
+- (void)clearButton:(S9xButtonCode)button forPlayer:(int8)player
+{
+    [self.s9xEngine clearButton:button forPlayer:player];
+    NSMutableDictionary *keyDict = [[NSUserDefaults.standardUserDefaults objectForKey:kKeyboardPrefs] mutableCopy];
+    [keyDict removeObjectForKey:@(button).stringValue];
+    [NSUserDefaults.standardUserDefaults setObject:[keyDict copy] forKey:kKeyboardPrefs];
+    [NSUserDefaults.standardUserDefaults synchronize];
+}
+
+- (NSArray<S9xJoypad *> *)listJoypads
+{
+    return [self.s9xEngine listJoypads];
+}
+
+- (NSString *)prefsKeyForVendorID:(uint32)vendorID productID:(uint32)productID index:(uint32)index
+{
+    return [NSString stringWithFormat:@"%@:%@:%@", @(vendorID).stringValue, @(productID).stringValue, @(index).stringValue];
+}
+
+- (BOOL)getValuesFromString:(NSString *)str vendorID:(uint32 *)vendorID productID:(uint32 *)productID index:(uint32 *)index
+{
+    if (vendorID == NULL || productID == NULL || index == NULL)
+    {
+        return NO;
+
+    }
+
+    NSArray<NSString *> *components = [str componentsSeparatedByString:@":"];
+
+    if (components.count != 3)
+    {
+        return NO;
+    }
+
+    *vendorID = components[0].intValue;
+    *productID = components[1].intValue;
+    *index = components[2].intValue;
+
+    return YES;
+}
+
+- (NSString *)prefValueForCookie:(uint32)cookie value:(int32)value
+{
+    return [NSString stringWithFormat:@"%@:%@", @(cookie).stringValue, @(value).stringValue];
+}
+
+- (BOOL)getValuesFromString:(NSString *)str cookie:(uint32 *)cookie value:(int32 *)value
+{
+    if (cookie == NULL || value == NULL)
+    {
+        return NO;
+    }
+
+    NSArray<NSString *> *components = [str componentsSeparatedByString:@":"];
+
+    if (components.count != 2)
+    {
+        return NO;
+    }
+
+    *cookie = components.firstObject.intValue;
+    *value = components.lastObject.intValue;
+
+    return YES;
+}
+
+- (void)setPlayer:(int8)player forVendorID:(uint32)vendorID productID:(uint32)productID index:(uint32)index
+{
+    int8 oldPlayer = -1;
+    [self.s9xEngine setPlayer:player forVendorID:vendorID productID:productID index:index oldPlayer:&oldPlayer];
+
+    NSMutableDictionary *playersDict = [[NSUserDefaults.standardUserDefaults objectForKey:kJoypadPlayerPrefs] mutableCopy];
+    if (playersDict == nil)
+    {
+        playersDict = [NSMutableDictionary new];
+    }
+
+    if (oldPlayer >= 0 && player != oldPlayer)
+    {
+        [playersDict removeObjectForKey:@(oldPlayer).stringValue];
+    }
+
+    playersDict[@(player).stringValue] = [self prefsKeyForVendorID:vendorID productID:productID index:index];
+
+    [NSUserDefaults.standardUserDefaults setObject:[playersDict copy] forKey:kJoypadPlayerPrefs];
+}
+
+- (BOOL)setButton:(S9xButtonCode)button forVendorID:(uint32)vendorID productID:(uint32)productID index:(uint32)index cookie:(uint32)cookie value:(int32)value
+{
+    S9xButtonCode oldButton = (S9xButtonCode)-1;
+    BOOL result = [self.s9xEngine setButton:button forVendorID:vendorID productID:productID index:index cookie:cookie value:value oldButton:&oldButton];
+
+    NSMutableDictionary *prefsDict = [[NSUserDefaults.standardUserDefaults objectForKey:kJoypadInputPrefs] mutableCopy];
+    NSString *key = [self prefsKeyForVendorID:vendorID productID:productID index:index];
+    NSMutableDictionary *joypadDict = [prefsDict[key] mutableCopy];
+
+    if (result && button != oldButton)
+    {
+        [joypadDict removeObjectForKey:@(oldButton).stringValue];
+    }
+
+    joypadDict[@(button).stringValue] = [self prefValueForCookie:cookie value:value];
+
+    prefsDict[key] = [joypadDict copy];
+
+    [NSUserDefaults.standardUserDefaults setObject:[prefsDict copy] forKey:kJoypadInputPrefs];
+
+    return result;
+}
+
+- (void)clearJoypadForVendorID:(uint32)vendorID productID:(uint32)productID index:(uint32)index buttonCode:(S9xButtonCode)buttonCode
+{
+    [self.s9xEngine clearJoypadForVendorID:vendorID productID:productID index:index buttonCode:buttonCode];
+    NSString *key = [self prefsKeyForVendorID:vendorID productID:productID index:index];
+    NSMutableDictionary *joypadsDict = [[NSUserDefaults.standardUserDefaults objectForKey:kJoypadInputPrefs] mutableCopy];
+    NSMutableDictionary *deviceDict = [joypadsDict[key] mutableCopy];
+    [deviceDict removeObjectForKey:@(buttonCode).stringValue];
+    joypadsDict[key] = deviceDict;
+    [NSUserDefaults.standardUserDefaults setObject:[joypadsDict copy] forKey:kJoypadInputPrefs];
+    [NSUserDefaults.standardUserDefaults synchronize];
+}
+
+- (NSString *)labelForVendorID:(uint32)vendorID productID:(uint32)productID cookie:(uint32)cookie value:(int32)value
+{
+    return [self.s9xEngine labelForVendorID:vendorID productID:productID cookie:cookie value:value];
 }
 
 - (void)importRecentItems
@@ -216,12 +387,16 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
         [NSUserDefaults.standardUserDefaults setBool:(data.length > 0 && ((char *)data.bytes)[0]) forKey:kShowFPSPref];
     }
 
+    [self setShowFPS:[NSUserDefaults.standardUserDefaults boolForKey:kShowFPSPref]];
+
     data = [self objectForPrefOSCode:'Vmod'];
 
     if ( data != nil)
     {
         [NSUserDefaults.standardUserDefaults setInteger:((data.length >= 0 && ((char *)data.bytes)[0]) ? VIDEOMODE_SMOOTH : VIDEOMODE_BLOCKY) forKey:kVideoModePref];
     }
+
+    [self setVideoMode:(int)[NSUserDefaults.standardUserDefaults integerForKey:kVideoModePref]];
 }
 
 - (id)objectForPrefOSCode:(uint32_t)osCode
@@ -302,6 +477,35 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
     }
 
     [self.prefsWindowController.window makeKeyAndOrderFront:self];
+}
+
+- (void)setVideoMode:(int)videoMode
+{
+    [self.s9xEngine setVideoMode:videoMode];
+    [NSUserDefaults.standardUserDefaults setObject:@(videoMode) forKey:kVideoModePref];
+    [NSUserDefaults.standardUserDefaults synchronize];
+}
+
+- (void)setShowFPS:(BOOL)showFPS
+{
+    [self.s9xEngine setShowFPS:showFPS];
+    [NSUserDefaults.standardUserDefaults setObject:@(showFPS) forKey:kShowFPSPref];
+    [NSUserDefaults.standardUserDefaults synchronize];
+}
+
+- (IBAction)resume:(id)sender
+{
+    [self.s9xEngine resume];
+}
+
+- (BOOL)handleInput:(S9xJoypadInput *)input fromJoypad:(S9xJoypad *)joypad
+{
+    if (NSApp.keyWindow == self.prefsWindowController.window)
+    {
+        return [((S9xPrefsViewController *) self.prefsWindowController.contentViewController) handleInput:input fromJoypad:joypad];
+    }
+
+    return NO;
 }
 
 @end
