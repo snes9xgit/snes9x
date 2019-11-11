@@ -351,32 +351,6 @@ static void * MacSnes9xThread (void *)
 void CopyPressedKeys(bool8 keys[MAC_MAX_PLAYERS][kNumButtons], bool8 gamepadButtons[MAC_MAX_PLAYERS][kNumButtons])
 {
     os_unfair_lock_lock(&keyLock);
-    NSEventModifierFlags flags = [NSEvent modifierFlags];
-
-    struct S9xButton button = keyCodes[kVK_Shift];
-    if (button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player < MAC_MAX_PLAYERS)
-    {
-        pressedKeys[button.player][button.buttonCode] = (flags & NSEventModifierFlagShift) != 0;
-    }
-
-    button = keyCodes[kVK_Command];
-    if (button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player < MAC_MAX_PLAYERS)
-    {
-        pressedKeys[button.player][button.buttonCode] = (flags & NSEventModifierFlagCommand) != 0;
-    }
-
-    button = keyCodes[kVK_Control];
-    if (button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player < MAC_MAX_PLAYERS)
-    {
-        pressedKeys[button.player][button.buttonCode] = (flags & NSEventModifierFlagControl) != 0;
-    }
-
-    button = keyCodes[kVK_Option];
-    if (button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player < MAC_MAX_PLAYERS)
-    {
-        pressedKeys[button.player][button.buttonCode] = (flags & NSEventModifierFlagOption) != 0;
-    }
-
     memcpy(keys, pressedKeys, sizeof(pressedKeys));
     memcpy(gamepadButtons, pressedGamepadButtons, sizeof(pressedGamepadButtons));
     os_unfair_lock_unlock(&keyLock);
@@ -2936,6 +2910,11 @@ void QuitWithFatalError ( NSString *message)
 
 - (void)keyDown:(NSEvent *)event
 {
+    if (!NSApp.isActive)
+    {
+        return;
+    }
+
     os_unfair_lock_lock(&keyLock);
     S9xButton button = keyCodes[event.keyCode];
     if ( button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player <= 0 && button.player <= MAC_MAX_PLAYERS)
@@ -2959,6 +2938,11 @@ void QuitWithFatalError ( NSString *message)
 
 - (void)keyUp:(NSEvent *)event
 {
+    if (!NSApp.isActive)
+    {
+        return;
+    }
+
     os_unfair_lock_lock(&keyLock);
     S9xButton button = keyCodes[event.keyCode];
     if ( button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player <= 0 && button.player <= MAC_MAX_PLAYERS)
@@ -2977,6 +2961,44 @@ void QuitWithFatalError ( NSString *message)
     }
 
     pressedRawKeyboardButtons[event.keyCode] = false;
+
+    os_unfair_lock_unlock(&keyLock);
+}
+
+- (void)flagsChanged:(NSEvent *)event
+{
+    if (!NSApp.isActive)
+    {
+        return;
+    }
+
+    os_unfair_lock_lock(&keyLock);
+
+    NSEventModifierFlags flags = event.modifierFlags;
+
+    struct S9xButton button = keyCodes[kVK_Shift];
+    if (button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player < MAC_MAX_PLAYERS)
+    {
+        pressedKeys[button.player][button.buttonCode] = (flags & NSEventModifierFlagShift) != 0;
+    }
+
+    button = keyCodes[kVK_Command];
+    if (button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player < MAC_MAX_PLAYERS)
+    {
+        pressedKeys[button.player][button.buttonCode] = (flags & NSEventModifierFlagCommand) != 0;
+    }
+
+    button = keyCodes[kVK_Control];
+    if (button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player < MAC_MAX_PLAYERS)
+    {
+        pressedKeys[button.player][button.buttonCode] = (flags & NSEventModifierFlagControl) != 0;
+    }
+
+    button = keyCodes[kVK_Option];
+    if (button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player < MAC_MAX_PLAYERS)
+    {
+        pressedKeys[button.player][button.buttonCode] = (flags & NSEventModifierFlagOption) != 0;
+    }
 
     os_unfair_lock_unlock(&keyLock);
 }
