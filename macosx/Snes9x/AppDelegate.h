@@ -19,8 +19,11 @@
  ***********************************************************************************/
 
 #import <Cocoa/Cocoa.h>
+#import <snes9x_framework/snes9x_framework.h>
 
 @interface AppDelegate : NSObject <NSApplicationDelegate, S9xInputDelegate>
+
+@property (nonatomic, readonly, assign) BOOL isRunningEmulation;
 
 - (void)setButtonCode:(S9xButtonCode)buttonCode forKeyCode:(int16)keyCode player:(int8)player;
 - (void)clearButton:(S9xButtonCode)button forPlayer:(int8)player;

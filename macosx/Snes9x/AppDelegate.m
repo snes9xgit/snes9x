@@ -19,7 +19,6 @@
  ***********************************************************************************/
 
 #import <Carbon/Carbon.h>
-#import <snes9x_framework/snes9x_framework.h>
 
 #import "AppDelegate.h"
 
@@ -456,7 +455,13 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
 {
-    return [self.s9xEngine isPaused] || ![self.s9xEngine isRunning];
+    return !self.isRunningEmulation;
+}
+
+@dynamic isRunningEmulation;
+- (BOOL)isRunningEmulation
+{
+    return [self.s9xEngine isRunning] && ![self.s9xEngine isPaused];
 }
 
 - (IBAction)terminate:(id)sender

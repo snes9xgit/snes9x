@@ -59,6 +59,7 @@
 		3082C4252378BCE80081CA7C /* FakeHandles.c in Sources */ = {isa = PBXBuildFile; fileRef = 3082C4202378BCE80081CA7C /* FakeHandles.c */; };
 		3082C4262378BCE80081CA7C /* FakeResources.c in Sources */ = {isa = PBXBuildFile; fileRef = 3082C4212378BCE80081CA7C /* FakeResources.c */; };
 		3082C4272378BCE80081CA7C /* FakeResources.h in Headers */ = {isa = PBXBuildFile; fileRef = 3082C4222378BCE80081CA7C /* FakeResources.h */; };
+		3082C42A2379199F0081CA7C /* S9xApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 3082C4292379199F0081CA7C /* S9xApplication.m */; };
 		30D15CF322CE6B5A005BC352 /* snes9x_framework.h in Headers */ = {isa = PBXBuildFile; fileRef = 30D15CF122CE6B5A005BC352 /* snes9x_framework.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		30D15CFC22CE6B74005BC352 /* sha256.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85FEF90A20DDB18D00C038E9 /* sha256.cpp */; };
 		30D15CFE22CE6B74005BC352 /* bml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85FEF90620DDB15B00C038E9 /* bml.cpp */; };
@@ -267,6 +268,8 @@
 		3082C4202378BCE80081CA7C /* FakeHandles.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = FakeHandles.c; sourceTree = "<group>"; };
 		3082C4212378BCE80081CA7C /* FakeResources.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = FakeResources.c; sourceTree = "<group>"; };
 		3082C4222378BCE80081CA7C /* FakeResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FakeResources.h; sourceTree = "<group>"; };
+		3082C4282379199F0081CA7C /* S9xApplication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xApplication.h; sourceTree = "<group>"; };
+		3082C4292379199F0081CA7C /* S9xApplication.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xApplication.m; sourceTree = "<group>"; };
 		30AD1D1E22FBB2EA000EE989 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		30AD1D1F22FBB2EA000EE989 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		30AD1D2022FBB2EA000EE989 /* en */ = {isa = PBXFileReference; lastKnownFileType = folder; name = en; path = "en.lproj/Snes9x Help"; sourceTree = "<group>"; };
@@ -631,6 +634,8 @@
 				30D709C4236F90DF00AAB7C3 /* S9xButtonConfigTextField.m */,
 				30D2506D2373AACC0076A160 /* S9xPrefsConstants.m */,
 				30D2506F2373AB880076A160 /* S9xPrefsConstants.h */,
+				3082C4282379199F0081CA7C /* S9xApplication.h */,
+				3082C4292379199F0081CA7C /* S9xApplication.m */,
 			);
 			path = Snes9x;
 			sourceTree = "<group>";
@@ -1184,6 +1189,7 @@
 				30D709C5236F90DF00AAB7C3 /* S9xButtonConfigTextField.m in Sources */,
 				30714721230E379600917F82 /* main.m in Sources */,
 				30714719230E379500917F82 /* AppDelegate.m in Sources */,
+				3082C42A2379199F0081CA7C /* S9xApplication.m in Sources */,
 				30D709C1236F7E3200AAB7C3 /* S9xPrefsViewController.m in Sources */,
 				30D2506E2373AACC0076A160 /* S9xPrefsConstants.m in Sources */,
 			);

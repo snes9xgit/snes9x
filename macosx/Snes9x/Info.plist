@@ -29,7 +29,7 @@
 	<key>CFBundleHelpBookName</key>
 	<string>Snes9x Help</string>
 	<key>NSPrincipalClass</key>
-	<string>NSApplication</string>
+	<string>S9xApplication</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
