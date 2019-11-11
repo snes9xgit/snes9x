@@ -2895,6 +2895,7 @@ void QuitWithFatalError ( NSString *message)
         dimmedView.layer.backgroundColor = NSColor.blackColor.CGColor;
         dimmedView.layer.opacity = 0.5;
         dimmedView.layer.zPosition = 100.0;
+        dimmedView.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:dimmedView];
 
         [dimmedView.topAnchor constraintEqualToAnchor:self.topAnchor].active = YES;
