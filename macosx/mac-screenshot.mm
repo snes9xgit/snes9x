@@ -31,6 +31,10 @@
 #include "mac-render.h"
 #include "mac-screenshot.h"
 
+extern "C" {
+#include "FakeResources.h"
+}
+
 const char *extendedAttributeName = "com.snes9x.preview";
 
 unsigned char *CGImageToPNGData (CGImageRef image, CFIndex *outLength);
@@ -199,25 +203,78 @@ void DrawThumbnailFromExtendedAttribute (const char *path, CGContextRef ctx, CGR
         unsigned char *buffer = (unsigned char *)malloc(size);
         if (buffer != NULL)
         {
-            CFDataRef data = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, buffer, size, NULL);
+            getxattr(path, extendedAttributeName, buffer, size, 0, 0);
+            NSData *data = [NSData dataWithBytes:buffer length:size];
             if (data)
             {
-                CGImageSourceRef source = CGImageSourceCreateWithData(data, NULL);
-                if (source)
-                {
-                    CGImageRef image = CGImageSourceCreateImageAtIndex(source, 0, NULL);
-                    if (image)
-                    {
-                        CGContextDrawImage(ctx, bounds, image);
-                        CGImageRelease(image);
-                    }
-                }
+                NSImage *image = [[NSImage alloc] initWithData:data];
 
-                CFRelease(data);
+                if (image)
+                {
+                    CGContextDrawImage(ctx, bounds, [image CGImageForProposedRect:NULL context:[NSGraphicsContext currentContext] hints:nil]);
+                }
             }
 
             free(buffer);
         }
+    }
+    else
+    {
+        struct FakeResourceMap *resourceMap = FakeResFileOpen(std::string(std::string(path) + "/..namedfork/rsrc").c_str(), "r");
+        if (resourceMap != NULL)
+        {
+            int16 fileNum = FakeCurResFile();
+            Handle pict = FakeGet1Resource('PICT', 128);
+            if (pict)
+            {
+                Size size = FakeGetHandleSize(pict);
+                NSData *imageData = [NSData dataWithBytes:*pict length:size];
+
+                if (imageData)
+                {
+                    NSImage *image = [[NSImage alloc] initWithData:imageData];
+
+                    if (image)
+                    {
+                        CGContextDrawImage(ctx, bounds, [image CGImageForProposedRect:NULL context:[NSGraphicsContext currentContext] hints:nil]);
+                    }
+                }
+            }
+            else
+            {
+                pict = FakeGet1Resource('Thum', 128);
+                Size size = FakeGetHandleSize(pict);
+                NSData *imageData = [NSData dataWithBytes:*pict length:size];
+
+                if (imageData)
+                {
+                    CGDataProviderRef provider = CGDataProviderCreateWithData(NULL, (__bridge CFDataRef)imageData, size, NULL);
+
+                    if (provider)
+                    {
+                        CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+
+                        if (colorSpace)
+                        {
+                            CGImageRef image = CGImageCreate(128, 120, 5, 16, 256, colorSpace, kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder16Big, provider, NULL, 0, kCGRenderingIntentDefault);
+
+                            if (image)
+                            {
+                                CGContextDrawImage(ctx, bounds, image);
+                                CGImageRelease(image);
+                            }
+
+                            CGColorSpaceRelease(colorSpace);
+                        }
+
+                        CFRelease(provider);
+                    }
+                }
+            }
+
+            FakeCloseResFile(fileNum);
+        }
+
     }
 
     CGContextRestoreGState(ctx);

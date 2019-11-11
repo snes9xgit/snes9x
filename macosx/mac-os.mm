@@ -138,7 +138,7 @@ int					macCurvatureWarp    = 15,
 					macAspectRatio      = 0;
 
 bool8				startopendlog       = false,
-					showtimeinfrz       = true,
+					showtimeinfrz       = false,
 					enabletoggle        = true,
 					savewindowpos       = false,
 					onscreeninfo        = true;
@@ -229,6 +229,7 @@ uint8 functionButtons[kNumFunctionButtons] = {
 bool8               pressedKeys[MAC_MAX_PLAYERS][kNumButtons] = { 0 };
 bool8               pressedGamepadButtons[MAC_MAX_PLAYERS][kNumButtons] = { 0 };
 bool8               pressedFunctionButtons[kNumFunctionButtons] = { 0 };
+bool8               pressedRawKeyboardButtons[MAC_NUM_KEYCODES] = { 0 };
 bool8               heldFunctionButtons[kNumFunctionButtons] = { 0 };
 os_unfair_lock      keyLock;
 os_unfair_lock      renderLock;
@@ -1722,6 +1723,22 @@ void ApplyNSRTHeaderControllers (void)
     ChangeInputDevice();
 }
 
+void DrawString(CGContextRef ctx, NSString *string, CGFloat size, CGFloat x, CGFloat y)
+{
+    NSAttributedString *astr = [[NSAttributedString alloc] initWithString:string attributes:@{NSFontAttributeName: [NSFont fontWithName:@"Helvetica" size:size], NSForegroundColorAttributeName: NSColor.whiteColor}];
+
+    CTLineRef line = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)astr);
+    CGFloat ascent = 0.0;
+    CGFloat descent = 0.0;
+    CGFloat leading = 0.0;
+    CTLineGetTypographicBounds(line, &ascent, &descent, &leading);
+
+    // Draw the text in the new CoreGraphics Context
+    CGContextSetTextPosition(ctx, x, y + descent);
+    CTLineDraw(line, ctx);
+    CFRelease(line);
+}
+
 int PromptFreezeDefrost (Boolean freezing)
 {
     OSStatus            err;
@@ -1741,7 +1758,7 @@ int PromptFreezeDefrost (Boolean freezing)
     char                dateC[256];
     uint8               *back, *draw;
 
-    const UInt32        repeatDelay = 10;
+    const UInt32        repeatDelay = 200000;
     const int           w = SNES_WIDTH << 1, h = SNES_HEIGHT << 1;
     const char          letters[] = "123456789ABC", *filename;
 
@@ -1795,7 +1812,7 @@ int PromptFreezeDefrost (Boolean freezing)
 
     if (image)
     {
-        rct = CGRectMake(0.0f, (float) h - 118.0f, w, 118.0f);
+        rct = CGRectMake(0.0f, (float) h - 88.0f, w, 88.0f);
         CGContextDrawImage(ctx, rct, image);
         CGImageRelease(image);
     }
@@ -1805,7 +1822,7 @@ int PromptFreezeDefrost (Boolean freezing)
 
     CGContextSetLineJoin(ctx, kCGLineJoinRound);
 
-    rct = CGRectMake(0.0f, (float) h - 238.0f, 128.0f, 120.0f);
+    rct = CGRectMake(0.0f, (float) h - 208.0f, 128.0f, 120.0f);
 
     for (int count = 0; count < 12; count++)
     {
@@ -1855,10 +1872,10 @@ int PromptFreezeDefrost (Boolean freezing)
             CGContextSetShouldAntialias(ctx, true);
             CGContextSetLineWidth(ctx, 3.0f);
 
-            [[NSColor colorWithDeviceRed:1.0 green:0.7 blue:0.7 alpha:1.0] setFill];
+            CGContextSetRGBFillColor(ctx, 1.0, 0.7, 0.7, 1.0);
             x = rct.origin.x +   5.0f;
-            y = rct.origin.y + 107.0f;
-            [[NSString stringWithFormat:@"%c", letters[count]] drawAtPoint:NSMakePoint(x, y) withAttributes:@{NSFontNameAttribute: [NSFont fontWithName:@"Helvetica" size:12.0]}];
+            y = rct.origin.y + 102.0f;
+            DrawString(ctx, [NSString stringWithFormat:@"%c", letters[count]], 12.0, x, y);
 
             if (showtimeinfrz)
             {
@@ -1878,17 +1895,15 @@ int PromptFreezeDefrost (Boolean freezing)
                 CFRelease(locale);
 
                 x = rct.origin.x +  20.0f;
-                y = rct.origin.y + 107.0f;
-                [NSColor.whiteColor setFill];
-                [[NSString stringWithUTF8String:dateC] drawAtPoint:NSMakePoint(x, y) withAttributes:@{NSFontNameAttribute: [NSFont fontWithName:@"Helvetica" size:10.0]}];
+                y = rct.origin.y + 102.0f;
+                DrawString(ctx, [NSString stringWithUTF8String:dateC], 10.0, x, y);
             }
         }
         else
         {
-            [[NSColor colorWithDeviceRed:1.0 green:0.7 blue:0.7 alpha:1.0] setFill];
             x = rct.origin.x +   5.0f;
-            y = rct.origin.y + 107.0f;
-            [[NSString stringWithFormat:@"%c", letters[count]] drawAtPoint:NSMakePoint(x, y) withAttributes:@{NSFontNameAttribute: [NSFont fontWithName:@"Helvetica" size:12.0]}];
+            y = rct.origin.y + 102.0f;
+            DrawString(ctx, [NSString stringWithFormat:@"%c", letters[count]], 12.0, x, y);
         }
 
         if ((count % 4) == 3)
@@ -1933,13 +1948,82 @@ int PromptFreezeDefrost (Boolean freezing)
         {
             CopyPressedKeys(keys, gamepadButtons);
 
-            for (int count = 0; count <= 12; count++)
+            while (pressedRawKeyboardButtons[kVK_ANSI_1])
             {
-                while (KeyIsPressed(keys, gamepadButtons, 0, count))
-                {
-                    result = count - 1;
-                    CopyPressedKeys(keys, gamepadButtons);
-                }
+                result = 0;
+                usleep(repeatDelay);
+            }
+
+            while (pressedRawKeyboardButtons[kVK_ANSI_2])
+            {
+                result = 1;
+                usleep(repeatDelay);
+            }
+
+            while (pressedRawKeyboardButtons[kVK_ANSI_3])
+            {
+                result = 2;
+                usleep(repeatDelay);
+            }
+
+            while (pressedRawKeyboardButtons[kVK_ANSI_4])
+            {
+                result = 3;
+                usleep(repeatDelay);
+            }
+
+            while (pressedRawKeyboardButtons[kVK_ANSI_5])
+            {
+                result = 4;
+                usleep(repeatDelay);
+            }
+
+            while (pressedRawKeyboardButtons[kVK_ANSI_6])
+            {
+                result = 5;
+                usleep(repeatDelay);
+            }
+
+            while (pressedRawKeyboardButtons[kVK_ANSI_7])
+            {
+                result = 6;
+                usleep(repeatDelay);
+            }
+
+            while (pressedRawKeyboardButtons[kVK_ANSI_8])
+            {
+                result = 7;
+                usleep(repeatDelay);
+            }
+
+            while (pressedRawKeyboardButtons[kVK_ANSI_9])
+            {
+                result = 8;
+                usleep(repeatDelay);
+            }
+
+            while (pressedRawKeyboardButtons[kVK_ANSI_A])
+            {
+                result = 9;
+                usleep(repeatDelay);
+            }
+
+            while (pressedRawKeyboardButtons[kVK_ANSI_B])
+            {
+                result = 10;
+                usleep(repeatDelay);
+            }
+
+            while (pressedRawKeyboardButtons[kVK_ANSI_C])
+            {
+                result = 11;
+                usleep(repeatDelay);
+            }
+
+            while (pressedRawKeyboardButtons[kVK_Return] || pressedRawKeyboardButtons[kVK_ANSI_KeypadEnter])
+            {
+                result = current_selection;
+                usleep(repeatDelay);
             }
 
             while (KeyIsPressed(keys, gamepadButtons, 0, kRight))
@@ -1949,8 +2033,8 @@ int PromptFreezeDefrost (Boolean freezing)
                 if (current_selection > 11)
                     current_selection -= 12;
                 UpdateFreezeDefrostScreen(current_selection, image, draw, ctx);
-                while (KeyIsPressed(keys, gamepadButtons, 0, kRight) && (mach_absolute_time() < (startTime + repeatDelay)))
-                    CopyPressedKeys(keys, gamepadButtons);
+                usleep(repeatDelay);
+                CopyPressedKeys(keys, gamepadButtons);
             }
 
             while (KeyIsPressed(keys, gamepadButtons, 0, kLeft))
@@ -1960,8 +2044,8 @@ int PromptFreezeDefrost (Boolean freezing)
                 if (current_selection < 0)
                     current_selection += 12;
                 UpdateFreezeDefrostScreen(current_selection, image, draw, ctx);
-                while (KeyIsPressed(keys, gamepadButtons, 0, kLeft) && (mach_absolute_time() < (startTime + repeatDelay)))
-                    CopyPressedKeys(keys, gamepadButtons);
+                usleep(repeatDelay);
+                CopyPressedKeys(keys, gamepadButtons);
             }
 
             while (KeyIsPressed(keys, gamepadButtons, 0, kDown))
@@ -1971,8 +2055,8 @@ int PromptFreezeDefrost (Boolean freezing)
                 if (current_selection > 11)
                     current_selection -= 12;
                 UpdateFreezeDefrostScreen(current_selection, image, draw, ctx);
-                while (KeyIsPressed(keys, gamepadButtons, 0, kDown) && (mach_absolute_time() < (startTime + repeatDelay)))
-                    CopyPressedKeys(keys, gamepadButtons);
+                usleep(repeatDelay);
+                CopyPressedKeys(keys, gamepadButtons);
             }
 
             while (KeyIsPressed(keys, gamepadButtons, 0, kUp))
@@ -1982,33 +2066,15 @@ int PromptFreezeDefrost (Boolean freezing)
                 if (current_selection < 0)
                     current_selection += 12;
                 UpdateFreezeDefrostScreen(current_selection, image, draw, ctx);
-                while (KeyIsPressed(keys, gamepadButtons, 0, kUp) && (mach_absolute_time() < (startTime + repeatDelay)))
-                    CopyPressedKeys(keys, gamepadButtons);
+                usleep(repeatDelay);
+                CopyPressedKeys(keys, gamepadButtons);
             }
 
-            while (KeyIsPressed(keys, gamepadButtons, 1, kA     ) ||
-                   KeyIsPressed(keys, gamepadButtons, 2, kA     ) ||
-                   KeyIsPressed(keys, gamepadButtons, 1, kB     ) ||
-                   KeyIsPressed(keys, gamepadButtons, 2, kB     ) ||
-                   KeyIsPressed(keys, gamepadButtons, 1, kX     ) ||
-                   KeyIsPressed(keys, gamepadButtons, 2, kX     ) ||
-                   KeyIsPressed(keys, gamepadButtons, 1, kY     ) ||
-                   KeyIsPressed(keys, gamepadButtons, 2, kY     ) ||
-                   KeyIsPressed(keys, gamepadButtons, 1, kStart ) ||
-                   KeyIsPressed(keys, gamepadButtons, 2, kStart ) ||
-                   KeyIsPressed(keys, gamepadButtons, 1, kSelect) ||
-                   KeyIsPressed(keys, gamepadButtons, 2, kSelect))
+            while (ISpKeyIsPressed(keys, gamepadButtons, kISpEsc))
             {
-                CopyPressedKeys(keys, gamepadButtons);
-                result = current_selection;
-            }
-
-            while (ISpKeyIsPressed(keys, gamepadButtons, kISpEsc) ||
-                   KeyIsPressed(keys, gamepadButtons, 0, kStart)   ||
-                   KeyIsPressed(keys, gamepadButtons, 1, kStart))
-            {
-                CopyPressedKeys(keys, gamepadButtons);
                 result = -1;
+                usleep(repeatDelay);
+                CopyPressedKeys(keys, gamepadButtons);
             }
 
             while (KeyIsPressed(keys, gamepadButtons, 0, kA) ||
@@ -2019,7 +2085,11 @@ int PromptFreezeDefrost (Boolean freezing)
                    KeyIsPressed(keys, gamepadButtons, 1, kX) ||
                    KeyIsPressed(keys, gamepadButtons, 0, kY) ||
                    KeyIsPressed(keys, gamepadButtons, 1, kY))
+            {
                 result = current_selection;
+                usleep(repeatDelay);
+                CopyPressedKeys(keys, gamepadButtons);
+            }
         }
 
         usleep(30000);
@@ -2051,14 +2121,14 @@ static void UpdateFreezeDefrostScreen (int newIndex, CGImageRef image, uint8 *dr
     if (newIndex >= 0 && newIndex < 12)
     {
         CGRect      rct;
-        const int   w = SNES_WIDTH << 1, h = kMacWindowHeight;
+        const int   w = SNES_WIDTH << 1, h = SNES_HEIGHT << 1;
 
         CGContextSetLineWidth(ctx, 1.0f);
 
         rct = CGRectMake(0.0f, 0.0f, (float) w, (float) h);
         CGContextDrawImage(ctx, rct, image);
 
-        rct = CGRectMake(0.0f, (float) h - 238.0f, 128.0f, 120.0f);
+        rct = CGRectMake(0.0f, (float) h - 208.0f, 128.0f, 120.0f);
         rct = CGRectOffset(rct, (float) (128 * (newIndex % 4)), (float) (-120 * (newIndex / 4)));
         rct.size.width  -= 1.0f;
         rct.size.height -= 1.0f;
@@ -2545,7 +2615,7 @@ static void Initialize (void)
 	Settings.Stereo = true;
 	Settings.SoundPlaybackRate = 32000;
 	Settings.SoundInputRate = 31950;
-	Settings.SupportHiRes = true;
+	Settings.SupportHiRes = false;
 	Settings.Transparency = true;
 	Settings.AutoDisplayMessages = true;
 	Settings.InitialInfoStringTimeout = 120;
@@ -2882,6 +2952,8 @@ void QuitWithFatalError ( NSString *message)
         }
     }
 
+    pressedRawKeyboardButtons[event.keyCode] = true;
+
     os_unfair_lock_unlock(&keyLock);
 }
 
@@ -2903,6 +2975,8 @@ void QuitWithFatalError ( NSString *message)
             break;
         }
     }
+
+    pressedRawKeyboardButtons[event.keyCode] = false;
 
     os_unfair_lock_unlock(&keyLock);
 }

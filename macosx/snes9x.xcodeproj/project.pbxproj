@@ -54,6 +54,11 @@
 		307C863322D29E29001B879E /* mac-stringtools.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAECB68804AC7FCE00A80003 /* mac-stringtools.mm */; };
 		308092F72320B041006A2860 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 308092F62320B041006A2860 /* CoreGraphics.framework */; };
 		308092F92320B06F006A2860 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 308092F82320B06F006A2860 /* Quartz.framework */; };
+		3082C4232378BCE80081CA7C /* FakeHandles.h in Headers */ = {isa = PBXBuildFile; fileRef = 3082C41E2378BCE80081CA7C /* FakeHandles.h */; };
+		3082C4242378BCE80081CA7C /* EndianStuff.h in Headers */ = {isa = PBXBuildFile; fileRef = 3082C41F2378BCE80081CA7C /* EndianStuff.h */; };
+		3082C4252378BCE80081CA7C /* FakeHandles.c in Sources */ = {isa = PBXBuildFile; fileRef = 3082C4202378BCE80081CA7C /* FakeHandles.c */; };
+		3082C4262378BCE80081CA7C /* FakeResources.c in Sources */ = {isa = PBXBuildFile; fileRef = 3082C4212378BCE80081CA7C /* FakeResources.c */; };
+		3082C4272378BCE80081CA7C /* FakeResources.h in Headers */ = {isa = PBXBuildFile; fileRef = 3082C4222378BCE80081CA7C /* FakeResources.h */; };
 		30D15CF322CE6B5A005BC352 /* snes9x_framework.h in Headers */ = {isa = PBXBuildFile; fileRef = 30D15CF122CE6B5A005BC352 /* snes9x_framework.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		30D15CFC22CE6B74005BC352 /* sha256.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85FEF90A20DDB18D00C038E9 /* sha256.cpp */; };
 		30D15CFE22CE6B74005BC352 /* bml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85FEF90620DDB15B00C038E9 /* bml.cpp */; };
@@ -257,6 +262,11 @@
 		307C861C22D29DD2001B879E /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		308092F62320B041006A2860 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		308092F82320B06F006A2860 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
+		3082C41E2378BCE80081CA7C /* FakeHandles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FakeHandles.h; sourceTree = "<group>"; };
+		3082C41F2378BCE80081CA7C /* EndianStuff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EndianStuff.h; sourceTree = "<group>"; };
+		3082C4202378BCE80081CA7C /* FakeHandles.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = FakeHandles.c; sourceTree = "<group>"; };
+		3082C4212378BCE80081CA7C /* FakeResources.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = FakeResources.c; sourceTree = "<group>"; };
+		3082C4222378BCE80081CA7C /* FakeResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FakeResources.h; sourceTree = "<group>"; };
 		30AD1D1E22FBB2EA000EE989 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		30AD1D1F22FBB2EA000EE989 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		30AD1D2022FBB2EA000EE989 /* en */ = {isa = PBXFileReference; lastKnownFileType = folder; name = en; path = "en.lproj/Snes9x Help"; sourceTree = "<group>"; };
@@ -549,6 +559,7 @@
 				20286C32FDCF999611CA2CEA /* External Frameworks and Libraries */,
 				30D15CF022CE6B5A005BC352 /* snes9x framework */,
 				30714716230E379500917F82 /* Snes9x */,
+				3082C41D2378BC280081CA7C /* ReClassicfication */,
 				195DF8C9FE9D4F0611CA2CBB /* Products */,
 				3045A1EB22D03C420092B97D /* Frameworks */,
 			);
@@ -622,6 +633,18 @@
 				30D2506F2373AB880076A160 /* S9xPrefsConstants.h */,
 			);
 			path = Snes9x;
+			sourceTree = "<group>";
+		};
+		3082C41D2378BC280081CA7C /* ReClassicfication */ = {
+			isa = PBXGroup;
+			children = (
+				3082C41F2378BCE80081CA7C /* EndianStuff.h */,
+				3082C4202378BCE80081CA7C /* FakeHandles.c */,
+				3082C41E2378BCE80081CA7C /* FakeHandles.h */,
+				3082C4212378BCE80081CA7C /* FakeResources.c */,
+				3082C4222378BCE80081CA7C /* FakeResources.h */,
+			);
+			path = ReClassicfication;
 			sourceTree = "<group>";
 		};
 		30D15CF022CE6B5A005BC352 /* snes9x framework */ = {
@@ -966,6 +989,7 @@
 				30D15DA122CE6BC9005BC352 /* debug.h in Headers */,
 				30D15DA222CE6BC9005BC352 /* display.h in Headers */,
 				30D15DA322CE6BC9005BC352 /* dma.h in Headers */,
+				3082C4242378BCE80081CA7C /* EndianStuff.h in Headers */,
 				30D15DA422CE6BC9005BC352 /* dsp.h in Headers */,
 				30D15DA522CE6BC9005BC352 /* font.h in Headers */,
 				30D15DA622CE6BC9005BC352 /* fxemu.h in Headers */,
@@ -977,6 +1001,7 @@
 				30D15DAC22CE6BC9005BC352 /* memmap.h in Headers */,
 				30D15DAD22CE6BC9005BC352 /* messages.h in Headers */,
 				30D15DAE22CE6BC9005BC352 /* missing.h in Headers */,
+				3082C4272378BCE80081CA7C /* FakeResources.h in Headers */,
 				30D15DAF22CE6BC9005BC352 /* movie.h in Headers */,
 				30D15DB022CE6BC9005BC352 /* msu1.h in Headers */,
 				30D15DB122CE6BC9005BC352 /* obc1.h in Headers */,
@@ -996,6 +1021,7 @@
 				30D15DC322CE6BC9005BC352 /* tile.h in Headers */,
 				30D15DC422CE6BC9005BC352 /* apu.h in Headers */,
 				30D15DC522CE6BC9005BC352 /* blargg_common.h in Headers */,
+				3082C4232378BCE80081CA7C /* FakeHandles.h in Headers */,
 				30D15DC622CE6BC9005BC352 /* blargg_config.h in Headers */,
 				30D15DC722CE6BC9005BC352 /* blargg_endian.h in Headers */,
 				30D15DC822CE6BC9005BC352 /* blargg_source.h in Headers */,
@@ -1197,6 +1223,7 @@
 				30D15D3122CE6B74005BC352 /* cheats2.cpp in Sources */,
 				30D15D3222CE6B74005BC352 /* clip.cpp in Sources */,
 				30D15D3322CE6B74005BC352 /* controls.cpp in Sources */,
+				3082C4262378BCE80081CA7C /* FakeResources.c in Sources */,
 				30D15D3422CE6B74005BC352 /* cpu.cpp in Sources */,
 				30D15D3522CE6B74005BC352 /* cpuexec.cpp in Sources */,
 				30D15D3622CE6B74005BC352 /* cpuops.cpp in Sources */,
@@ -1205,6 +1232,7 @@
 				30D15D3922CE6B74005BC352 /* dma.cpp in Sources */,
 				307C861222D27C53001B879E /* tileimpl-n1x1.cpp in Sources */,
 				30D15D3A22CE6B74005BC352 /* dsp.cpp in Sources */,
+				3082C4252378BCE80081CA7C /* FakeHandles.c in Sources */,
 				30D15D3B22CE6B74005BC352 /* dsp1.cpp in Sources */,
 				307C861622D27C53001B879E /* tileimpl-n2x1.cpp in Sources */,
 				30D15D3C22CE6B74005BC352 /* dsp2.cpp in Sources */,
