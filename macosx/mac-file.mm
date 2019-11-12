@@ -131,22 +131,17 @@ static NSURL *FindApplicationSupportFolder (const char *folderName)
 	{
 		purl = [s9xURL URLByAppendingPathComponent:fstr];
 	}
-	else
+	else if ([NSFileManager.defaultManager fileExistsAtPath:oldURL.path])
 	{
-		if ([NSFileManager.defaultManager fileExistsAtPath:oldURL.path])
-		{
-			purl = [oldURL URLByAppendingPathComponent:fstr];
-		}
-		else
-		{
-			NSError *error = nil;
-			if ([NSFileManager.defaultManager createDirectoryAtURL:s9xURL withIntermediateDirectories:YES attributes:nil error:&error])
-			{
-				purl = [s9xURL URLByAppendingPathComponent:fstr];
-				AddFolderIcon(purl, folderName);
-			}
-		}
+		purl = [oldURL URLByAppendingPathComponent:fstr];
 	}
+
+	if (purl == NULL)
+	{
+		purl = [s9xURL URLByAppendingPathComponent:fstr];
+	}
+
+	[NSFileManager.defaultManager createDirectoryAtURL:purl withIntermediateDirectories:YES attributes:nil error:NULL];
 
 	return purl;
 }
