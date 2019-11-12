@@ -101,7 +101,9 @@ if slang and opengl
   if glslang_dep.found() and spirv_dep.found() and osdependent_dep.found() and ogl_compiler_dep.found() and spv_remapper_dep.found()
     deps += [glslang_dep, spirv_dep, osdependent_dep, ogl_compiler_dep, spv_remapper_dep]
 
-    args += ['-DUSE_SLANG', '-DSPIRV_CROSS_EXCEPTIONS_TO_ASSERTIONS']
+    args += ['-DUSE_SLANG',
+             '-DSPIRV_CROSS_EXCEPTIONS_TO_ASSERTIONS',
+             '-I' + join_paths(prefix, 'include', 'glslang')]
     srcs += ['../shaders/slang.cpp']
     srcs += ['../shaders/SPIRV-Cross/spirv_cfg.cpp',
              '../shaders/SPIRV-Cross/spirv_cfg.hpp',
