@@ -190,11 +190,11 @@ static NSURL *FindCustomFolder (const char *folderName)
 
 void ChangeTypeAndCreator (const char *path, OSType type, OSType creator)
 {
-	NSError *error = nil;
-	if (![NSFileManager.defaultManager setAttributes:@{NSFileHFSCreatorCode: @(creator), NSFileHFSTypeCode: @(type)} ofItemAtPath:[NSString stringWithUTF8String:path] error:&error])
-	{
-		[[NSAlert alertWithError:error] runModal];
-	}
+//	NSError *error = nil;
+//	if (![NSFileManager.defaultManager setAttributes:@{NSFileHFSCreatorCode: @(creator), NSFileHFSTypeCode: @(type)} ofItemAtPath:[NSString stringWithUTF8String:path] error:&error])
+//	{
+//		[[NSAlert alertWithError:error] runModal];
+//	}
 }
 
 static void AddFolderIcon (NSURL *fref, const char *folderName)
