@@ -505,7 +505,7 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 
 - (BOOL)handleInput:(S9xJoypadInput *)input fromJoypad:(S9xJoypad *)joypad
 {
-    if (NSApp.keyWindow == self.prefsWindowController.window)
+    if (NSApp.keyWindow != nil && NSApp.keyWindow == self.prefsWindowController.window)
     {
         return [((S9xPrefsViewController *) self.prefsWindowController.contentViewController) handleInput:input fromJoypad:joypad];
     }

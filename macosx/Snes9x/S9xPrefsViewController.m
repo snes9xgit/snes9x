@@ -275,7 +275,7 @@
 {
     id firstResponder = self.view.window.firstResponder;
 
-    if ([firstResponder isFieldEditor])
+    if ([firstResponder respondsToSelector:@selector(isFieldEditor)] && [firstResponder isFieldEditor])
     {
         firstResponder = [firstResponder delegate];
     }

@@ -174,9 +174,22 @@ void gamepadAction(void *inContext, IOReturn inResult, void *inSender, IOHIDValu
         objcInput.value =inputStruct.value;
 
         os_unfair_lock_unlock(&keyLock);
-        if ([inputDelegate handleInput:objcInput fromJoypad:objcJoypad])
+        if (info.min != info.max)
         {
-            return;
+            if (inputStruct.value <= info.min || inputStruct.value >= info.max)
+            {
+                if ([inputDelegate handleInput:objcInput fromJoypad:objcJoypad])
+                {
+                    return;
+                }
+            }
+        }
+        else
+        {
+            if ([inputDelegate handleInput:objcInput fromJoypad:objcJoypad])
+            {
+                return;
+            }
         }
         os_unfair_lock_lock(&keyLock);
 
