@@ -23,7 +23,6 @@
 		3071471B230E379600917F82 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3071471A230E379600917F82 /* Assets.xcassets */; };
 		3071471E230E379600917F82 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3071471C230E379600917F82 /* MainMenu.xib */; };
 		30714721230E379600917F82 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 30714720230E379600917F82 /* main.m */; };
-		30714728230E37D500917F82 /* snes9x_framework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30D15CEF22CE6B5A005BC352 /* snes9x_framework.framework */; };
 		30714729230E387700917F82 /* mac-os.h in Headers */ = {isa = PBXBuildFile; fileRef = EAECB68204AC7FCE00A80003 /* mac-os.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		307C860B22D22C87001B879E /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 307C860A22D22C87001B879E /* libz.tbd */; };
 		307C860C22D23A5B001B879E /* mac-file.mm in Sources */ = {isa = PBXBuildFile; fileRef = EA2DBC0C0510ABE700A80003 /* mac-file.mm */; };
@@ -54,6 +53,8 @@
 		307C863322D29E29001B879E /* mac-stringtools.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAECB68804AC7FCE00A80003 /* mac-stringtools.mm */; };
 		308092F72320B041006A2860 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 308092F62320B041006A2860 /* CoreGraphics.framework */; };
 		308092F92320B06F006A2860 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 308092F82320B06F006A2860 /* Quartz.framework */; };
+		30823CD92379200700EA2331 /* snes9x_framework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30D15CEF22CE6B5A005BC352 /* snes9x_framework.framework */; };
+		30823CDA2379200700EA2331 /* snes9x_framework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 30D15CEF22CE6B5A005BC352 /* snes9x_framework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3082C4232378BCE80081CA7C /* FakeHandles.h in Headers */ = {isa = PBXBuildFile; fileRef = 3082C41E2378BCE80081CA7C /* FakeHandles.h */; };
 		3082C4242378BCE80081CA7C /* EndianStuff.h in Headers */ = {isa = PBXBuildFile; fileRef = 3082C41F2378BCE80081CA7C /* EndianStuff.h */; };
 		3082C4252378BCE80081CA7C /* FakeHandles.c in Sources */ = {isa = PBXBuildFile; fileRef = 3082C4202378BCE80081CA7C /* FakeHandles.c */; };
@@ -232,6 +233,20 @@
 			remoteInfo = "snes9x framework";
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		30823CDB2379200700EA2331 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				30823CDA2379200700EA2331 /* snes9x_framework.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		20286C33FDCF999611CA2CEA /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
@@ -519,7 +534,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				30714728230E37D500917F82 /* snes9x_framework.framework in Frameworks */,
+				30823CD92379200700EA2331 /* snes9x_framework.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1076,6 +1091,7 @@
 				30714711230E379500917F82 /* Sources */,
 				30714712230E379500917F82 /* Frameworks */,
 				30714713230E379500917F82 /* Resources */,
+				30823CDB2379200700EA2331 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1363,11 +1379,14 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_ENTITLEMENTS = Snes9x/Snes9x.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = S4YHUE5Y65;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -1379,6 +1398,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.snes9x.macos.snes9x;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				VALID_ARCHS = x86_64;
 			};
@@ -1401,11 +1421,14 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_ENTITLEMENTS = Snes9x/Snes9x.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = S4YHUE5Y65;
+				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -1422,6 +1445,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.snes9x.macos.snes9x;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				VALID_ARCHS = x86_64;
 			};
