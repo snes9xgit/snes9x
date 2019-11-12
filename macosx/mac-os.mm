@@ -3014,8 +3014,9 @@ void QuitWithFatalError ( NSString *message)
 {
     os_unfair_lock_lock(&renderLock);
     self.subviews[0].hidden = !pauseEmulation;
-    glScreenW = self.frame.size.width;
-    glScreenH = self.frame.size.height;
+    CGFloat scaleFactor = MAX(self.window.backingScaleFactor, 1.0);
+    glScreenW = self.frame.size.width * scaleFactor;
+    glScreenH = self.frame.size.height * scaleFactor;
     S9xPutImage(IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight);
     os_unfair_lock_unlock(&renderLock);
 }
