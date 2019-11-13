@@ -47,7 +47,7 @@ struct SGFX
 		{
 			int8	Sprite;
 			uint8	Line;
-		}	OBJ[32];
+		}	OBJ[128];
 	}	OBJLines[SNES_HEIGHT_EXTENDED];
 
 	void	(*DrawBackdropMath) (uint32, uint32, uint32);
