@@ -1534,8 +1534,9 @@ double
 Snes9xWindow::get_refresh_rate ()
 {
     double refresh_rate = 0.0;
+#if defined GDK_WINDOWING_X11 || defined GDK_WINDOWING_WAYLAND
     GdkDisplay *display = gtk_widget_get_display (window);
-    GdkWindow *gdk_window =  gtk_widget_get_window (window);
+#endif
 
 #ifdef GDK_WINDOWING_X11
     if (GDK_IS_X11_DISPLAY (display))
@@ -1549,6 +1550,7 @@ Snes9xWindow::get_refresh_rate ()
 #ifdef GDK_WINDOWING_WAYLAND
     if (GDK_IS_WAYLAND_DISPLAY (display))
     {
+        GdkWindow *gdk_window =  gtk_widget_get_window (window);
         GdkMonitor *monitor = gdk_display_get_monitor_at_window(display, gdk_window);
         refresh_rate = (double) gdk_monitor_get_refresh_rate(monitor) / 1000.0;
     }

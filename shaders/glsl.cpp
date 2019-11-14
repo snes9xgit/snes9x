@@ -268,6 +268,7 @@ static std::string canonicalize(const std::string &noncanonical)
     return filename_string;
 }
 
+#ifdef USE_SLANG
 static GLuint string_to_format(char *format)
 {
 #define MATCH(s, f)                                                            \
@@ -306,6 +307,7 @@ static GLuint string_to_format(char *format)
 
     return GL_RGBA;
 }
+#endif
 
 // filename must be canonical
 void GLSLShader::read_shader_file_with_includes(std::string filename,
