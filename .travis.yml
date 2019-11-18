@@ -14,6 +14,9 @@ matrix:
     - name: apple/osx/x86_64
       os: osx
       script: make -C libretro -j4
+    - name: apple/ios
+      os: osx
+      script: make -C libretro platform=iOS -j4
     - name: windows/x86_64
       os: windows
       filter_secrets: false
@@ -41,10 +44,10 @@ matrix:
       script:
         - docker pull devkitpro/devkita64
         - docker run --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp devkitpro/devkita64 make -C libretro platform=libnx -j4
-    - name: playstation/vita
-      script:
-        - docker pull malev/vita-toolchain
-        - docker run --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp malev/vita-toolchain make -C libretro platform=vita -j4
+#    - name: playstation/vita
+#      script:
+#        - docker pull malev/vita-toolchain
+#        - docker run --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp malev/vita-toolchain make -C libretro platform=vita -j4
     - name: playstation/psp
       script:
         - docker pull bkcsoft/psptoolchain
