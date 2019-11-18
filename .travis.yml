@@ -1,0 +1,70 @@
+branches:
+  only:
+    - master
+    - kivutar/travis
+    - /^v.*$/
+
+language: cpp
+
+services:
+  - docker
+
+matrix:
+  include:
+    - name: apple/osx/x86_64
+      os: osx
+      script: make -C libretro -j4
+    - name: windows/x86_64
+      os: windows
+      filter_secrets: false
+      before_script: choco install make
+      script: make -C libretro platform=win -j4
+    - name: linux/x86_64
+      script: make -C libretro -j4
+    - name: linux/x86
+      script:
+        - docker pull dockcross/linux-x86
+        - docker run --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp dockcross/linux-x86 make -C libretro -j4
+    - name: linux/armhf
+      script:
+        - docker pull dockcross/linux-armv7
+        - docker run --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp dockcross/linux-armv7 make -C libretro -j4
+    - name: linux/armv7-neon-hf
+      script:
+        - docker pull dockcross/linux-armv7
+        - docker run --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp dockcross/linux-armv7 make -C libretro platform=unix-armv7-neon-hardfloat -j4
+    - name: linux/arm64
+      script:
+        - docker pull dockcross/linux-arm64
+        - docker run --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp dockcross/linux-arm64 make -C libretro -j4
+    - name: nintendo/switch/libnx
+      script:
+        - docker pull devkitpro/devkita64
+        - docker run --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp devkitpro/devkita64 make -C libretro platform=libnx -j4
+    - name: playstation/vita
+      script:
+        - docker pull malev/vita-toolchain
+        - docker run --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp malev/vita-toolchain make -C libretro platform=vita -j4
+    - name: playstation/psp
+      script:
+        - docker pull bkcsoft/psptoolchain
+        - docker run --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp bkcsoft/psptoolchain make -C libretro platform=unix -j4
+    - name: nintendo/ngc
+      script:
+        - docker pull devkitpro/devkitppc
+        - docker run --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp devkitpro/devkitppc make -C libretro platform=ngc -j4
+    - name: nintendo/wii
+      script:
+        - docker pull devkitpro/devkitppc
+        - docker run --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp devkitpro/devkitppc make -C libretro platform=wii -j4
+    - name: emscripten
+      script: make -C libretro platform=emscripten -j4
+    - name: android/arm
+      script:
+        - docker pull dockcross/android-arm
+        - docker run --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp dockcross/android-arm make -C libretro platform=unix -j4
+    - name: android/arm64
+      script:
+        - docker pull dockcross/android-arm64
+        - docker run --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp dockcross/android-arm64 make -C libretro platform=unix-arm64 -j4
+
