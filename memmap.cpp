@@ -3672,7 +3672,7 @@ void CMemory::ApplyROMFixes (void)
 // BPS % UPS % IPS
 
 // number decoding used for both BPS and UPS
-static uint32 XPSdecode (const uint8 *data, unsigned &addr, unsigned size)
+static uint32 XPSdecode (const uint8 *data, unsigned &&addr, unsigned size)
 {
 	uint32 offset = 0, shift = 1;
 	while(addr < size) {
