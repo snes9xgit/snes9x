@@ -22,6 +22,8 @@ CWaveOut S9xWaveOut;
 // Interface used to access the sound output
 IS9xSoundOutput *S9xSoundOutput = &S9xXAudio2;
 
+static double last_volume = 1.0;
+
 /*  ReInitSound
 reinitializes the sound core with current settings
 IN:
@@ -51,6 +53,7 @@ bool ReInitSound()
 	if(S9xSoundOutput)
 		S9xSoundOutput->DeInitSoundOutput();
 
+    last_volume = 1.0;
     return S9xInitSound(0);
 }
 
@@ -95,8 +98,6 @@ called by the sound core to process generated samples
 */
 void S9xSoundCallback(void *data)
 {
-	static double last_volume = 1.0;
-
 	// only try to change volume if we actually need to switch it
 	double current_volume = ((Settings.TurboMode || Settings.Rewinding) ? GUI.VolumeTurbo : GUI.VolumeRegular) / 100.;
 	if (last_volume != current_volume) {
