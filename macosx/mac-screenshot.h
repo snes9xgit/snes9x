@@ -15,15 +15,15 @@
   (c) Copyright 2004         Alexander and Sander
   (c) Copyright 2004 - 2005  Steven Seeger
   (c) Copyright 2005         Ryan Vogt
+  (c) Copyright 2019         Michael Donald Buckley
  ***********************************************************************************/
 
 
 #ifndef _mac_scheenshot_h_
 #define _mac_scheenshot_h_
 
-void WriteThumbnailToResourceFork (FSRef *, int, int);
-void DrawThumbnailResource (FSRef *, CGContextRef, CGRect);
-PicHandle GetScreenAsPicHandle (int, int, int, int);
+void WriteThumbnailToExtendedAttribute (const char *path, int destWidth, int destHeight);
+void DrawThumbnailFromExtendedAttribute(const char *path, CGContextRef, CGRect);
 CGImageRef CreateGameScreenCGImage (void);
 CGImageRef CreateBlitScreenCGImage (int, int, int, uint8 *);
 

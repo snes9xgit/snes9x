@@ -15,6 +15,7 @@
   (c) Copyright 2004         Alexander and Sander
   (c) Copyright 2004 - 2005  Steven Seeger
   (c) Copyright 2005         Ryan Vogt
+  (c) Copyright 2019         Michael Donald Buckley
  ***********************************************************************************/
 
 
@@ -26,7 +27,7 @@
 
 @interface MusicBoxController : NSObject
 {
-	IBOutlet id	window;
+	IBOutlet NSWindow	*window;
 	IBOutlet id	gametitle;
 	IBOutlet id	disclosure;
 	IBOutlet id	rewind;
