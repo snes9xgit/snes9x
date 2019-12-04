@@ -475,6 +475,7 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
     if ( self.prefsWindowController == nil )
     {
         NSWindow *prefsWindow = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 100, 100) styleMask:NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable backing:NSBackingStoreBuffered defer:NO];
+        prefsWindow.title = NSLocalizedString(@"Preferences", @"");
         self.prefsWindowController = [[NSWindowController alloc] initWithWindow:prefsWindow];
 
         prefsWindow.contentViewController = [[S9xPrefsViewController alloc] initWithNibName:@"S9xPrefsViewController" bundle:nil];
