@@ -18,8 +18,9 @@
   (c) Copyright 2019         Michael Donald Buckley
  ***********************************************************************************/
 
-
 #include <map>
+
+#include <pthread.h>
 
 #include "port.h"
 
@@ -112,14 +113,14 @@ std::string NameForDevice(struct JoypadDevice device) {
 }
 
 void gamepadAction(void *inContext, IOReturn inResult, void *inSender, IOHIDValueRef v) {
-    os_unfair_lock_lock(&keyLock);
+    pthread_mutex_lock(&keyLock);
 
     IOHIDDeviceRef device = (IOHIDDeviceRef) inSender;
     uint32 port = ((NSNumber *)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDLocationIDKey))).unsignedIntValue;
 
     if (deviceIndexByPort.find(port) == deviceIndexByPort.end())
     {
-        os_unfair_lock_unlock(&keyLock);
+        pthread_mutex_unlock(&keyLock);
         return;
     }
 
@@ -135,20 +136,20 @@ void gamepadAction(void *inContext, IOReturn inResult, void *inSender, IOHIDValu
 
     if (allDevices.find(deviceStruct) == allDevices.end())
     {
-        os_unfair_lock_unlock(&keyLock);
+        pthread_mutex_unlock(&keyLock);
         return;
     }
 
     if ( playerNumByDevice.find(deviceStruct) == playerNumByDevice.end())
     {
-        os_unfair_lock_unlock(&keyLock);
+        pthread_mutex_unlock(&keyLock);
         return;
     }
 
     int8 playerNum = playerNumByDevice[deviceStruct];
     if (playerNum < 0 || playerNum >= MAC_MAX_PLAYERS)
     {
-        os_unfair_lock_unlock(&keyLock);
+        pthread_mutex_unlock(&keyLock);
         return;
     }
 
@@ -173,7 +174,7 @@ void gamepadAction(void *inContext, IOReturn inResult, void *inSender, IOHIDValu
         objcInput.cookie = inputStruct.cookie.cookie;
         objcInput.value =inputStruct.value;
 
-        os_unfair_lock_unlock(&keyLock);
+        pthread_mutex_unlock(&keyLock);
         if (info.min != info.max)
         {
             if (inputStruct.value <= info.min || inputStruct.value >= info.max)
@@ -191,7 +192,7 @@ void gamepadAction(void *inContext, IOReturn inResult, void *inSender, IOHIDValu
                 return;
             }
         }
-        os_unfair_lock_lock(&keyLock);
+        pthread_mutex_lock(&keyLock);
 
         struct JoypadInput oppositeInputStruct = inputStruct;
 
@@ -265,7 +266,7 @@ void gamepadAction(void *inContext, IOReturn inResult, void *inSender, IOHIDValu
         }
     }
 
-    os_unfair_lock_unlock(&keyLock);
+    pthread_mutex_unlock(&keyLock);
 }
 
 void findControls(struct JoypadDevice &device, NSDictionary *properties, NSMutableArray<NSDictionary *> *buttons, NSMutableArray<NSDictionary *> *axes, int64 *hat)

@@ -231,8 +231,8 @@ bool8               pressedGamepadButtons[MAC_MAX_PLAYERS][kNumButtons] = { 0 };
 bool8               pressedFunctionButtons[kNumFunctionButtons] = { 0 };
 bool8               pressedRawKeyboardButtons[MAC_NUM_KEYCODES] = { 0 };
 bool8               heldFunctionButtons[kNumFunctionButtons] = { 0 };
-os_unfair_lock      keyLock;
-os_unfair_lock      renderLock;
+pthread_mutex_t     keyLock;
+pthread_mutex_t     renderLock;
 
 NSOpenGLView        *s9xView;
 
@@ -350,10 +350,10 @@ static void * MacSnes9xThread (void *)
 
 void CopyPressedKeys(bool8 keys[MAC_MAX_PLAYERS][kNumButtons], bool8 gamepadButtons[MAC_MAX_PLAYERS][kNumButtons])
 {
-    os_unfair_lock_lock(&keyLock);
+    pthread_mutex_lock(&keyLock);
     memcpy(keys, pressedKeys, sizeof(pressedKeys));
     memcpy(gamepadButtons, pressedGamepadButtons, sizeof(pressedGamepadButtons));
-    os_unfair_lock_unlock(&keyLock);
+    pthread_mutex_unlock(&keyLock);
 }
 
 static inline void EmulationLoop (void)
@@ -413,9 +413,9 @@ static inline void EmulationLoop (void)
 
             if (!pauseEmulation)
             {
-                os_unfair_lock_lock(&renderLock);
+                pthread_mutex_lock(&renderLock);
                 S9xMainLoop();
-                os_unfair_lock_unlock(&renderLock);
+                pthread_mutex_unlock(&renderLock);
             }
             else
             {
@@ -424,9 +424,9 @@ static inline void EmulationLoop (void)
                     macFrameSkip = 1;
                     skipFrames = 1;
                     frameAdvance = false;
-                    os_unfair_lock_lock(&renderLock);
+                    pthread_mutex_lock(&renderLock);
                     S9xMainLoop();
-                    os_unfair_lock_unlock(&renderLock);
+                    pthread_mutex_unlock(&renderLock);
                     macFrameSkip = storedMacFrameSkip;
                 }
 
@@ -2291,9 +2291,9 @@ static void ProcessInput (void)
                 CopyPressedKeys(keys, gamepadButtons);
 
             isok = SNES9X_Freeze();
-            os_unfair_lock_lock(&renderLock);
+            pthread_mutex_lock(&renderLock);
             ClearGFXScreen();
-            os_unfair_lock_unlock(&renderLock);
+            pthread_mutex_unlock(&renderLock);
             return;
         }
 
@@ -2304,9 +2304,9 @@ static void ProcessInput (void)
                 CopyPressedKeys(keys, gamepadButtons);
 
             isok = SNES9X_Defrost();
-            os_unfair_lock_lock(&renderLock);
+            pthread_mutex_lock(&renderLock);
             ClearGFXScreen();
-            os_unfair_lock_unlock(&renderLock);
+            pthread_mutex_unlock(&renderLock);
             return;
         }
 
@@ -2880,8 +2880,8 @@ void QuitWithFatalError ( NSString *message)
 
 + (void)initialize
 {
-    keyLock = OS_UNFAIR_LOCK_INIT;
-    renderLock = OS_UNFAIR_LOCK_INIT;
+    keyLock = PTHREAD_MUTEX_INITIALIZER;
+    renderLock = PTHREAD_MUTEX_INITIALIZER;
 }
 
 - (instancetype)initWithFrame:(NSRect)frameRect pixelFormat:(nullable NSOpenGLPixelFormat *)format
@@ -2916,7 +2916,7 @@ void QuitWithFatalError ( NSString *message)
         return;
     }
 
-    os_unfair_lock_lock(&keyLock);
+    pthread_mutex_lock(&keyLock);
     S9xButton button = keyCodes[event.keyCode];
     if ( button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player <= 0 && button.player <= MAC_MAX_PLAYERS)
     {
@@ -2934,7 +2934,7 @@ void QuitWithFatalError ( NSString *message)
 
     pressedRawKeyboardButtons[event.keyCode] = true;
 
-    os_unfair_lock_unlock(&keyLock);
+    pthread_mutex_unlock(&keyLock);
 }
 
 - (void)keyUp:(NSEvent *)event
@@ -2944,7 +2944,7 @@ void QuitWithFatalError ( NSString *message)
         return;
     }
 
-    os_unfair_lock_lock(&keyLock);
+    pthread_mutex_lock(&keyLock);
     S9xButton button = keyCodes[event.keyCode];
     if ( button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player <= 0 && button.player <= MAC_MAX_PLAYERS)
     {
@@ -2963,7 +2963,7 @@ void QuitWithFatalError ( NSString *message)
 
     pressedRawKeyboardButtons[event.keyCode] = false;
 
-    os_unfair_lock_unlock(&keyLock);
+    pthread_mutex_unlock(&keyLock);
 }
 
 - (void)flagsChanged:(NSEvent *)event
@@ -2973,7 +2973,7 @@ void QuitWithFatalError ( NSString *message)
         return;
     }
 
-    os_unfair_lock_lock(&keyLock);
+    pthread_mutex_lock(&keyLock);
 
     NSEventModifierFlags flags = event.modifierFlags;
 
@@ -3001,7 +3001,7 @@ void QuitWithFatalError ( NSString *message)
         pressedKeys[button.player][button.buttonCode] = (flags & NSEventModifierFlagOption) != 0;
     }
 
-    os_unfair_lock_unlock(&keyLock);
+    pthread_mutex_unlock(&keyLock);
 }
 
 - (void)mouseDown:(NSEvent *)event
@@ -3012,13 +3012,13 @@ void QuitWithFatalError ( NSString *message)
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-    os_unfair_lock_lock(&renderLock);
+    pthread_mutex_lock(&renderLock);
     self.subviews[0].hidden = !pauseEmulation;
     CGFloat scaleFactor = MAX(self.window.backingScaleFactor, 1.0);
     glScreenW = self.frame.size.width * scaleFactor;
     glScreenH = self.frame.size.height * scaleFactor;
     S9xPutImage(IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight);
-    os_unfair_lock_unlock(&renderLock);
+    pthread_mutex_unlock(&renderLock);
 }
 
 - (void)setFrame:(NSRect)frame
@@ -3089,9 +3089,9 @@ void QuitWithFatalError ( NSString *message)
             skipFrames = macFrameSkip;
 
         S9xInitDisplay(NULL, NULL);
-        os_unfair_lock_lock(&renderLock);
+        pthread_mutex_lock(&renderLock);
         ClearGFXScreen();
-        os_unfair_lock_unlock(&renderLock);
+        pthread_mutex_unlock(&renderLock);
 
         [NSThread detachNewThreadWithBlock:^
         {
@@ -3157,7 +3157,7 @@ void QuitWithFatalError ( NSString *message)
 
 - (NSArray<S9xJoypad *> *)listJoypads
 {
-    os_unfair_lock_lock(&keyLock);
+    pthread_mutex_lock(&keyLock);
     NSMutableArray<S9xJoypad *> *joypads = [NSMutableArray new];
     for (auto joypadStruct : ListJoypads())
     {
@@ -3191,44 +3191,44 @@ void QuitWithFatalError ( NSString *message)
 
         return result;
     }];
-    os_unfair_lock_unlock(&keyLock);
+    pthread_mutex_unlock(&keyLock);
 
     return joypads;
 }
 
 - (void)setPlayer:(int8)player forVendorID:(uint32)vendorID productID:(uint32)productID index:(uint32)index oldPlayer:(int8 *)oldPlayer
 {
-    os_unfair_lock_lock(&keyLock);
+    pthread_mutex_lock(&keyLock);
     SetPlayerForJoypad(player, vendorID, productID, index, oldPlayer);
-    os_unfair_lock_unlock(&keyLock);
+    pthread_mutex_unlock(&keyLock);
 }
 
 - (BOOL)setButton:(S9xButtonCode)button forVendorID:(uint32)vendorID productID:(uint32)productID index:(uint32)index cookie:(uint32)cookie value:(int32)value oldButton:(S9xButtonCode *)oldButton
 {
     BOOL result = NO;
-    os_unfair_lock_lock(&keyLock);
+    pthread_mutex_lock(&keyLock);
     result = SetButtonCodeForJoypadControl(vendorID, productID, index, cookie, value, button, true, oldButton);
-    os_unfair_lock_unlock(&keyLock);
+    pthread_mutex_unlock(&keyLock);
     return result;
 }
 
 - (void)clearJoypadForVendorID:(uint32)vendorID productID:(uint32)productID index:(uint32)index
 {
-    os_unfair_lock_lock(&keyLock);
+    pthread_mutex_lock(&keyLock);
     ClearJoypad(vendorID, productID, index);
-    os_unfair_lock_unlock(&keyLock);
+    pthread_mutex_unlock(&keyLock);
 }
 
 - (void)clearJoypadForVendorID:(uint32)vendorID productID:(uint32)productID index:(uint32)index buttonCode:(S9xButtonCode)buttonCode
 {
-    os_unfair_lock_lock(&keyLock);
+    pthread_mutex_lock(&keyLock);
     ClearButtonCodeForJoypad(vendorID, productID, index, buttonCode);
-    os_unfair_lock_unlock(&keyLock);
+    pthread_mutex_unlock(&keyLock);
 }
 
 - (NSArray<S9xJoypadInput *> *)getInputsForVendorID:(uint32)vendorID productID:(uint32)productID index:(uint32)index
 {
-    os_unfair_lock_lock(&keyLock);
+    pthread_mutex_lock(&keyLock);
     NSMutableArray<S9xJoypadInput *> *inputs = [NSMutableArray new];
     std::unordered_map<struct JoypadInput, S9xButtonCode> buttonCodeMap = GetJuypadButtons(vendorID, productID, index);
     for (auto it = buttonCodeMap.begin(); it != buttonCodeMap.end(); ++it)
@@ -3240,7 +3240,7 @@ void QuitWithFatalError ( NSString *message)
 
         [inputs addObject:input];
     }
-    os_unfair_lock_unlock(&keyLock);
+    pthread_mutex_unlock(&keyLock);
 
     return inputs;
 }
@@ -3253,17 +3253,17 @@ void QuitWithFatalError ( NSString *message)
 - (BOOL)setButton:(S9xButtonCode)button forKey:(int16)key player:(int8)player oldButton:(S9xButtonCode *)oldButton oldPlayer:(int8 *)oldPlayer oldKey:(int16 *)oldKey
 {
     BOOL result = NO;
-    os_unfair_lock_lock(&keyLock);
+    pthread_mutex_lock(&keyLock);
     result = SetKeyCode(key, button, player, oldKey, oldButton, oldPlayer);
-    os_unfair_lock_unlock(&keyLock);
+    pthread_mutex_unlock(&keyLock);
     return result;
 }
 
 - (void)clearButton:(S9xButtonCode)button forPlayer:(int8)player
 {
-    os_unfair_lock_lock(&keyLock);
+    pthread_mutex_lock(&keyLock);
     ClearKeyCode(button, player);
-    os_unfair_lock_unlock(&keyLock);
+    pthread_mutex_unlock(&keyLock);
 }
 
 - (BOOL)loadROM:(NSURL *)fileURL
@@ -3287,9 +3287,9 @@ void QuitWithFatalError ( NSString *message)
 
 - (void)setVideoMode:(int)mode
 {
-    os_unfair_lock_lock(&renderLock);
+    pthread_mutex_lock(&renderLock);
     videoMode = mode;
-    os_unfair_lock_unlock(&renderLock);
+    pthread_mutex_unlock(&renderLock);
 }
 
 @dynamic inputDelegate;

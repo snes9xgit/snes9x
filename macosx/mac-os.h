@@ -165,7 +165,7 @@ extern IconRef			macIconRef[118];
 
 extern bool8			pressedKeys[MAC_MAX_PLAYERS][kNumButtons];
 extern bool8            pressedGamepadButtons[MAC_MAX_PLAYERS][kNumButtons];
-extern os_unfair_lock	keyLock;
+extern pthread_mutex_t	keyLock;
 
 extern NSOpenGLView		*s9xView;
 
