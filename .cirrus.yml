@@ -1,6 +1,10 @@
 # vim: sts=2 sw=2 ai
 
-linux_task:
+################################################################################
+# snes9x
+################################################################################
+
+snes9x_linux-amd64_task:
   container:
     image: gcc:latest
 
@@ -21,7 +25,7 @@ linux_task:
     path: "snes9x-${CIRRUS_CHANGE_IN_REPO}.txz"
 
 
-macOS_task:
+snes9x_macOS-amd64_task:
   osx_instance:
     image: mojave-xcode
 
@@ -35,4 +39,124 @@ macOS_task:
 
   build_artifacts:
     path: "snes9x-${CIRRUS_CHANGE_IN_REPO}.zip"
+
+################################################################################
+# libretro
+################################################################################
+
+libretro_linux-amd64_task:
+  container:
+    image: gcc:latest
+  compile_script:
+    - make -j2 -C libretro
+  build_artifacts:
+    path: "libretro/snes9x_libretro.so"
+
+
+libretro_linux-i386_task:
+  container:
+    image: dockcross/linux-x86
+  compile_script:
+    - make -j2 -C libretro
+  build_artifacts:
+    path: "libretro/snes9x_libretro.so"
+
+
+libretro_linux-armhf_task:
+  container:
+    image: dockcross/linux-armv7
+  compile_script:
+    - make -j2 -C libretro
+  build_artifacts:
+    path: "libretro/snes9x_libretro.so"
+
+
+libretro_linux-armv7-neon-hf_task:
+  container:
+    image: dockcross/linux-armv7
+  compile_script:
+    - make -j2 -C libretro platform=unix-armv7-neon-hardfloat
+  build_artifacts:
+    path: "libretro/snes9x_libretro.so"
+
+
+libretro_linux-arm64_task:
+  container:
+    image: dockcross/linux-arm64
+  compile_script:
+    - make -j2 -C libretro
+  build_artifacts:
+    path: "libretro/snes9x_libretro.so"
+
+
+libretro_android-arm_task:
+  container:
+    image: dockcross/android-arm
+  compile_script:
+    - make -j2 -C libretro platform=unix
+  build_artifacts:
+    path: "libretro/snes9x_libretro.so"
+
+
+libretro_android-arm64_task:
+  container:
+    image: dockcross/android-arm64
+  compile_script:
+    - make -j2 -C libretro platform=unix-arm64
+  build_artifacts:
+    path: "libretro/snes9x_libretro.so"
+
+
+libretro_emscripten_task:
+  container:
+    image: gcc:latest
+  compile_script:
+    - make -j2 -C libretro platform=emscripten
+  build_artifacts:
+    path: "libretro/snes9x_libretro_emscripten.bc"
+
+
+libretro_macOS-amd64_task:
+  osx_instance:
+    image: mojave-xcode
+  compile_script:
+    - make -j2 -C libretro
+  build_artifacts:
+    path: "libretro/snes9x_libretro.dylib"
+
+
+libretro_nintendo-wii_task:
+  container:
+    image: devkitpro/devkitppc
+  compile_script:
+    - make -j2 -C libretro platform=wii
+  build_artifacts:
+    path: "libretro/snes9x_libretro_wii.a"
+
+
+libretro_nintendo-switch-libnx_task:
+  container:
+    image: devkitpro/devkita64
+  compile_script:
+    - make -j2 -C libretro platform=libnx
+  build_artifacts:
+    path: "libretro/snes9x_libretro_libnx.a"
+
+
+libretro_nintendo-ngc_task:
+  container:
+    image: devkitpro/devkitppc
+  compile_script:
+    - make -j2 -C libretro platform=ngc
+  build_artifacts:
+    path: "libretro/snes9x_libretro_ngc.a"
+
+
+libretro_playstation-psp_task:
+  container:
+    image: bkcsoft/psptoolchain
+  compile_script:
+    - make -j2 -C libretro platform=unix
+  build_artifacts:
+    path: "libretro/snes9x_libretro.so"
 
