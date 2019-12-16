@@ -11,17 +11,21 @@ Download nightly builds from continuous integration:
 
 ### snes9x
 
-| OS      | status                                     |
-|---------|--------------------------------------------|
-| Windows | [![Status][s9x-win-all]][appveyor]        |
-| Linux   | [![Status][snes9x_linux-amd64]][cirrus-ci] |
-| macOS   | [![Status][snes9x_macOS-amd64]][cirrus-ci] |
+| OS            | status                                           |
+|---------------|--------------------------------------------------|
+| Windows       | [![Status][s9x-win-all]][appveyor]               |
+| Linux (GTK)   | [![Status][snes9x_linux-gtk-amd64]][cirrus-ci]   |
+| Linux (X11)   | [![Status][snes9x_linux-x11-amd64]][cirrus-ci]   |
+| FreeBSD (X11) | [![Status][snes9x_freebsd-x11-amd64]][cirrus-ci] |
+| macOS         | [![Status][snes9x_macOS-amd64]][cirrus-ci]       |
 
 [appveyor]: https://ci.appveyor.com/project/snes9x/snes9x
 [cirrus-ci]: http://cirrus-ci.com/github/snes9xgit/snes9x
 
 [s9x-win-all]: https://ci.appveyor.com/api/projects/status/github/snes9xgit/snes9x?branch=master&svg=true
-[snes9x_linux-amd64]: https://api.cirrus-ci.com/github/snes9xgit/snes9x.svg?task=snes9x_linux-amd64
+[snes9x_linux-gtk-amd64]: https://api.cirrus-ci.com/github/snes9xgit/snes9x.svg?task=snes9x_linux-gtk-amd64
+[snes9x_linux-x11-amd64]: https://api.cirrus-ci.com/github/snes9xgit/snes9x.svg?task=snes9x_linux-x11-amd64
+[snes9x_freebsd-x11-amd64]: https://api.cirrus-ci.com/github/snes9xgit/snes9x.svg?task=snes9x_freebsd-x11-amd64
 [snes9x_macOS-amd64]: https://api.cirrus-ci.com/github/snes9xgit/snes9x.svg?task=snes9x_macOS-amd64
 
 ### libretro core

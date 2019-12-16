@@ -4,7 +4,7 @@
 # snes9x
 ################################################################################
 
-snes9x_linux-amd64_task:
+snes9x_linux-gtk-amd64_task:
   container:
     image: gcc:latest
 
@@ -19,10 +19,54 @@ snes9x_linux-amd64_task:
   package_script:
     - mkdir snes9x
     - cp -ar build/snes9x-gtk README.md LICENSE docs data gtk/AUTHORS snes9x/
-    - tar -caf "snes9x-${CIRRUS_CHANGE_IN_REPO}.txz" snes9x
+    - tar -caf "snes9x-gtk-${CIRRUS_CHANGE_IN_REPO}.txz" snes9x
 
   build_artifacts:
-    path: "snes9x-${CIRRUS_CHANGE_IN_REPO}.txz"
+    path: "snes9x-gtk-${CIRRUS_CHANGE_IN_REPO}.txz"
+
+
+snes9x_linux-x11-amd64_task:
+  container:
+    image: gcc:latest
+
+  setup_script:
+    - apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install libxv-dev libxinerama-dev
+
+  compile_script:
+    - cd unix
+    - touch configure
+    - ./configure
+    - make -j2
+
+  package_script:
+    - mkdir snes9x
+    - cp -ar unix/snes9x unix/docs unix/snes9x.conf.default README.md LICENSE data snes9x/
+    - tar -caf "snes9x-x11-${CIRRUS_CHANGE_IN_REPO}.txz" snes9x
+
+  build_artifacts:
+    path: "snes9x-x11-${CIRRUS_CHANGE_IN_REPO}.txz"
+
+
+snes9x_freebsd-x11-amd64_task:
+  freebsd_instance:
+    image: freebsd-12-1-release-amd64
+
+  setup_script:
+    - pkg install -y gmake pkgconf minizip libX11 libXext
+
+  compile_script:
+    - cd unix
+    - touch configure
+    - ./configure
+    - gmake -j2
+
+  package_script:
+    - mkdir snes9x
+    - cp -a unix/snes9x unix/docs unix/snes9x.conf.default README.md LICENSE data snes9x/
+    - tar -caf "snes9x-x11-${CIRRUS_CHANGE_IN_REPO}.txz" snes9x
+
+  build_artifacts:
+    path: "snes9x-x11-${CIRRUS_CHANGE_IN_REPO}.txz"
 
 
 snes9x_macOS-amd64_task:
