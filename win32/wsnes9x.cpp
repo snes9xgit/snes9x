@@ -3703,6 +3703,14 @@ void FreezeUnfreeze (const char *filename, bool8 freeze)
     S9xClearPause (PAUSE_FREEZE_FILE);
 }
 
+bool UnfreezeScreenshotSlot(int slot, uint16 **image_buffer, int &width, int &height)
+{
+    char filename[_MAX_PATH + 1];
+    GetSlotFilename(slot, filename);
+
+    return S9xUnfreezeScreenshot(filename, image_buffer, width, height);
+}
+
 void CheckDirectoryIsWritable (const char *filename)
 {
     FILE *fs = fopen (filename, "w+");
