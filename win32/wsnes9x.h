@@ -308,17 +308,15 @@ struct SCustomKeys {
 	SCustomKey SlotMinus;
 	SCustomKey SlotSave;
 	SCustomKey SlotLoad;
+    SCustomKey DialogSave;
+    SCustomKey DialogLoad;
 	SCustomKey BGL1;
 	SCustomKey BGL2;
 	SCustomKey BGL3;
 	SCustomKey BGL4;
 	SCustomKey BGL5;
 	SCustomKey ClippingWindows;
-//	SCustomKey BGLHack;
 	SCustomKey Transparency;
-//  SCustomKey GLCube;
-//	SCustomKey HDMA;
-//	SCustomKey InterpMode7;
 	SCustomKey JoypadSwap;
 	SCustomKey SwitchControllers;
 	SCustomKey TurboA, TurboB, TurboY, TurboX, TurboL, TurboR, TurboStart, TurboSelect, TurboLeft, TurboUp, TurboRight, TurboDown;
@@ -462,6 +460,7 @@ RECT GetWindowMargins(HWND hwnd, UINT width);
 void GetSlotFilename(int slot, char filename[_MAX_PATH + 1]);
 void FreezeUnfreezeSlot(int slot, bool8 freeze);
 void FreezeUnfreezeDialog(bool8 freeze);
+void FreezeUnfreezeDialogPreview(bool8 freeze);
 void FreezeUnfreeze(const char *filename, bool8 freeze);
 bool UnfreezeScreenshotSlot(int slot, uint16 **image_buffer, int &width, int &height);
 

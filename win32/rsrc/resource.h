@@ -281,6 +281,7 @@
 #define IDC_LABEL_UP19                  1198
 #define IDC_ASPECT                      1199
 #define IDC_LABEL_UP26                  1199
+#define IDC_LABEL_UP27                  1200
 #define IDC_MESSAGES_IN_IMAGE           1200
 #define IDC_RECORD_NOW                  1201
 #define IDC_MESSAGES_SCALE              1201
@@ -309,6 +310,7 @@
 #define IDC_MOVIEROMINFO                1216
 #define IDC_SAVE10                      1217
 #define IDC_CURRENTROMINFO              1217
+#define IDC_DIALOGSAVE                  1218
 #define IDC_SAVE11                      1219
 #define IDC_DISPLAY_INPUT               1220
 #define IDC_SAVE12                      1220
@@ -322,6 +324,7 @@
 #define IDC_SAVE20                      1228
 #define IDC_LABEL_UP20                  1229
 #define IDC_LABEL_UP21                  1230
+#define IDC_DIALOGLOAD                  1231
 #define IDC_LABEL_UP22                  1234
 #define IDC_SLOTMINUS                   1235
 #define IDC_LABEL_UP23                  1236

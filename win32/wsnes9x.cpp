@@ -368,16 +368,15 @@ struct SCustomKeys CustomKeys = {
 	{0,0}, // slot minus (disabled by default)
 	{0,0}, // slot save (disabled by default)
 	{0,0}, // slot load (disabled by default)
+    {VK_F11,CUSTKEY_SHIFT_MASK}, // dialog save
+    {VK_F11,0}, // dialog load
 	{0,0}, // background layer 1
 	{0,0}, // background layer 2
 	{0,0}, // background layer 3
 	{0,0}, // background layer 4
 	{0,0}, // sprite layer
 	{0,0}, // Clipping Windows
-//	{'8',0}, // BG Layering hack
 	{0,0}, // Transparency
-//	{'6',CUSTKEY_SHIFT_MASK}, // GLCube Mode
-//	{'9',CUSTKEY_SHIFT_MASK}, // Interpolate Mode 7
 	{'6',0}, // Joypad Swap
 	{'7',0}, // Switch Controllers
 	{VK_NEXT,CUSTKEY_SHIFT_MASK}, // Turbo A
@@ -856,6 +855,18 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 				FreezeUnfreezeSlot (GUI.CurrentSaveSlot, false);
 				hitHotKey = true;
 			}
+            if(wParam == CustomKeys.DialogSave.key
+                && modifiers == CustomKeys.DialogSave.modifiers)
+            {
+                FreezeUnfreezeDialogPreview(true);
+                hitHotKey = true;
+            }
+            if(wParam == CustomKeys.DialogLoad.key
+                && modifiers == CustomKeys.DialogLoad.modifiers)
+            {
+                FreezeUnfreezeDialogPreview(false);
+                hitHotKey = true;
+            }
 			if(wParam == CustomKeys.SlotPlus.key
 			&& modifiers == CustomKeys.SlotPlus.modifiers)
 			{
@@ -2147,13 +2158,8 @@ LRESULT CALLBACK WinProc(
             FreezeUnfreezeDialog(FALSE);
             break;
         case ID_FILE_LOAD_PREVIEW:
-        {
-            CSaveLoadWithPreviewDlg dlg;
-            int slot = dlg.show();
-            if(slot >= 0)
-                FreezeUnfreezeSlot(slot, FALSE);
+            FreezeUnfreezeDialogPreview(FALSE);
             break;
-        }
         case ID_FILE_SAVE0:
             FreezeUnfreezeSlot (0, TRUE);
 			break;
@@ -2188,13 +2194,8 @@ LRESULT CALLBACK WinProc(
             FreezeUnfreezeDialog(TRUE);
             break;
         case ID_FILE_SAVE_PREVIEW:
-        {
-            CSaveLoadWithPreviewDlg dlg(true);
-            int slot = dlg.show();
-            if(slot >= 0)
-                FreezeUnfreezeSlot(slot, TRUE);
+            FreezeUnfreezeDialogPreview(TRUE);
             break;
-        }
 		case ID_CHEAT_ENTER:
 			RestoreGUIDisplay ();
 			while (DialogBox(g_hInst, MAKEINTRESOURCE(IDD_CHEATER), hWnd, DlgCheater) == NC_SEARCHDB)
@@ -3622,6 +3623,17 @@ void FreezeUnfreezeDialog(bool8 freeze)
     }
 }
 
+void FreezeUnfreezeDialogPreview(bool8 freeze)
+{
+    if(Settings.StopEmulation)
+        return;
+
+    CSaveLoadWithPreviewDlg dlg(freeze);
+    int slot = dlg.show();
+    if(slot >= 0)
+        FreezeUnfreezeSlot(slot, freeze);
+}
+
 void GetSlotFilename(int slot, char filename[_MAX_PATH + 1])
 {
     char ext[_MAX_EXT + 1];
@@ -3651,6 +3663,9 @@ void FreezeUnfreeze (const char *filename, bool8 freeze)
         return;
     }
 #endif
+
+    if(Settings.StopEmulation)
+        return;
 
 	if (GUI.ConfirmSaveLoad)
 	{
@@ -8397,6 +8412,8 @@ static void set_hotkeyinfo(HWND hDlg)
 	SendDlgItemMessage(hDlg,IDC_SLOTMINUS,WM_USER+44,CustomKeys.SlotMinus.key,CustomKeys.SlotMinus.modifiers);
 	SendDlgItemMessage(hDlg,IDC_SLOTSAVE,WM_USER+44,CustomKeys.SlotSave.key,CustomKeys.SlotSave.modifiers);
 	SendDlgItemMessage(hDlg,IDC_SLOTLOAD,WM_USER+44,CustomKeys.SlotLoad.key,CustomKeys.SlotLoad.modifiers);
+    SendDlgItemMessage(hDlg, IDC_DIALOGSAVE, WM_USER + 44, CustomKeys.DialogSave.key, CustomKeys.DialogSave.modifiers);
+    SendDlgItemMessage(hDlg, IDC_DIALOGLOAD, WM_USER + 44, CustomKeys.DialogLoad.key, CustomKeys.DialogLoad.modifiers);
 	int i;
 	for(i = 0 ; i < 10 ; i++) SendDlgItemMessage(hDlg,IDC_SAVE1+i,WM_USER+44,CustomKeys.Save[i].key,CustomKeys.Save[i].modifiers);
 	for(i = 0 ; i < 10 ; i++) SendDlgItemMessage(hDlg,IDC_SAVE11+i,WM_USER+44,CustomKeys.Load[i].key,CustomKeys.Load[i].modifiers);
@@ -8641,6 +8658,16 @@ switch(msg)
 			CustomKeys.SlotSave.key = wParam;
 			CustomKeys.SlotSave.modifiers = modifiers;
 			break;
+
+        case IDC_DIALOGSAVE:
+            CustomKeys.DialogSave.key = wParam;
+            CustomKeys.DialogSave.modifiers = modifiers;
+            break;
+
+        case IDC_DIALOGLOAD:
+            CustomKeys.DialogLoad.key = wParam;
+            CustomKeys.DialogLoad.modifiers = modifiers;
+            break;
 		}
 
 		if(which >= IDC_SAVE1 && which <= IDC_SAVE10)
