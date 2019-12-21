@@ -23,38 +23,11 @@
 #define _mac_os_h_
 
 #import <Cocoa/Cocoa.h>
+#import <MetalKit/MetalKit.h>
 
 #import <os/lock.h>
 
 #import "mac-controls.h"
-
-enum
-{
-	kDrawingReserved1 = 1, // unused
-	kDrawingOpenGL,
-	kDrawingBlitGL
-};
-
-enum
-{
-	kWindowControllers = 0,
-	kWindowPreferences,
-	kWindowAbout,
-	kWindowAutoFire,
-	kWindowRomInfo,
-	kWindowCheatFinder,
-	kWindowKeyConfig,
-	kWindowCheatEntry,
-	kWindowScreen,
-	kWindowServer,
-	kWindowClient,
-	kWindowExtra,
-	kWindowSoundEffect,
-	kWindowCoreImageFilter,
-	kWindowMultiCart,
-
-	kWindowCount
-};
 
 enum
 {
@@ -102,39 +75,24 @@ typedef struct
 	SInt32		frequency;
 }	AutoFireState;
 
-typedef struct
-{
-	bool8		benchmark;
-	bool8		glForceNoTextureRectangle;
-	bool8		glUseClientStrageApple;
-	bool8		glUseTexturePriority;
-	int			glStorageHint;
-}	ExtraOption;
-
 #define kMacWindowHeight	(SNES_HEIGHT_EXTENDED)
 #define MAC_MAX_CHEATS      150
 
 extern volatile bool8	running, s9xthreadrunning;
 extern volatile bool8	eventQueued, windowExtend;
-extern volatile int		windowResizeCount;
 extern uint32			controlPad[MAC_MAX_PLAYERS];
 extern uint8			romDetect, interleaveDetect, videoDetect, headerDetect;
 extern WindowRef		gWindow;
 extern uint32			glScreenW, glScreenH;
 extern CGRect			glScreenBounds;
-extern Point			windowPos[kWindowCount];
-extern CGSize			windowSize[kWindowCount];
 extern CGImageRef		macIconImage[118];
 extern int				macPadIconIndex, macLegendIconIndex, macMusicBoxIconIndex, macFunctionIconIndex;
 extern int				macFrameSkip;
 extern int32			skipFrames;
 extern int64			lastFrame;
 extern unsigned long	spcFileCount, pngFileCount;
-extern bool8			finished, cartOpen,
-						autofire, hidExist, directDisplay;
-extern bool8			fullscreen, autoRes,
-						glstretch, gl32bit, vsync, drawoverscan, lastoverscan, screencurvature,
-						ciFilterEnable;
+extern bool8			finished, cartOpen, autofire;
+extern bool8			fullscreen, autoRes, glstretch, gl32bit, vsync, drawoverscan, lastoverscan;
 extern long				drawingMethod;
 extern int				videoMode;
 extern SInt32			macSoundVolume;
@@ -156,7 +114,6 @@ extern int				macControllerOption;
 extern CGPoint			unlimitedCursor;
 extern char				npServerIP[256], npName[256];
 extern AutoFireState	autofireRec[MAC_MAX_PLAYERS];
-extern ExtraOption		extraOptions;
 extern CFStringRef		multiCartPath[2];
 
 #ifdef MAC_PANTHER_SUPPORT
@@ -167,7 +124,7 @@ extern bool8			pressedKeys[MAC_MAX_PLAYERS][kNumButtons];
 extern bool8            pressedGamepadButtons[MAC_MAX_PLAYERS][kNumButtons];
 extern pthread_mutex_t	keyLock;
 
-extern NSOpenGLView		*s9xView;
+extern MTKView			*s9xView;
 
 void AdjustMenus (void);
 void UpdateMenuCommandStatus (Boolean);

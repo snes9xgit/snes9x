@@ -35,19 +35,16 @@
 		307C861D22D29DD2001B879E /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 307C861C22D29DD2001B879E /* GLUT.framework */; };
 		307C861E22D29DF1001B879E /* mac-controls.mm in Sources */ = {isa = PBXBuildFile; fileRef = EA809FA108F8F2420072CDFB /* mac-controls.mm */; };
 		307C861F22D29E0D001B879E /* mac-screenshot.mm in Sources */ = {isa = PBXBuildFile; fileRef = EA2DBC0D0510ABE700A80003 /* mac-screenshot.mm */; };
-		307C862022D29E29001B879E /* mac-appleevent.mm in Sources */ = {isa = PBXBuildFile; fileRef = EACDDBB004D6A89700A80003 /* mac-appleevent.mm */; };
 		307C862122D29E29001B879E /* mac-audio.mm in Sources */ = {isa = PBXBuildFile; fileRef = EADE6347052E5C4300A80003 /* mac-audio.mm */; };
 		307C862222D29E29001B879E /* mac-cart.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67004AC7FCE00A80003 /* mac-cart.mm */; };
 		307C862322D29E29001B879E /* mac-cheat.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67204AC7FCE00A80003 /* mac-cheat.mm */; };
 		307C862422D29E29001B879E /* mac-cheatfinder.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67404AC7FCE00A80003 /* mac-cheatfinder.mm */; };
 		307C862622D29E29001B879E /* mac-cocoatools.mm in Sources */ = {isa = PBXBuildFile; fileRef = EA85C24E0B4EC13300F5F9C9 /* mac-cocoatools.mm */; };
-		307C862722D29E29001B879E /* mac-coreimage.mm in Sources */ = {isa = PBXBuildFile; fileRef = EA0C952E08364A4A009307B4 /* mac-coreimage.mm */; };
 		307C862922D29E29001B879E /* mac-gworld.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67904AC7FCE00A80003 /* mac-gworld.mm */; };
 		307C862A22D29E29001B879E /* mac-keyboard.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67D04AC7FCE00A80003 /* mac-keyboard.mm */; };
 		307C862B22D29E29001B879E /* mac-multicart.mm in Sources */ = {isa = PBXBuildFile; fileRef = EA26BBD50B3676E800A570B5 /* mac-multicart.mm */; };
 		307C862C22D29E29001B879E /* mac-musicbox.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67F04AC7FCE00A80003 /* mac-musicbox.mm */; };
 		307C862D22D29E29001B879E /* mac-netplay.mm in Sources */ = {isa = PBXBuildFile; fileRef = EA1605500639E735004412AB /* mac-netplay.mm */; };
-		307C862E22D29E29001B879E /* mac-prefs.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAE0E96B04D584B700A80003 /* mac-prefs.mm */; };
 		307C863022D29E29001B879E /* mac-render.mm in Sources */ = {isa = PBXBuildFile; fileRef = EA942A50059B0F9000D7D022 /* mac-render.mm */; };
 		307C863222D29E29001B879E /* mac-snes9x.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAECB68604AC7FCE00A80003 /* mac-snes9x.mm */; };
 		307C863322D29E29001B879E /* mac-stringtools.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAECB68804AC7FCE00A80003 /* mac-stringtools.mm */; };
@@ -61,6 +58,9 @@
 		3082C4262378BCE80081CA7C /* FakeResources.c in Sources */ = {isa = PBXBuildFile; fileRef = 3082C4212378BCE80081CA7C /* FakeResources.c */; };
 		3082C4272378BCE80081CA7C /* FakeResources.h in Headers */ = {isa = PBXBuildFile; fileRef = 3082C4222378BCE80081CA7C /* FakeResources.h */; };
 		3082C42A2379199F0081CA7C /* S9xApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 3082C4292379199F0081CA7C /* S9xApplication.m */; };
+		30A6F62423B2771A00630584 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A6F62323B2771A00630584 /* MetalKit.framework */; };
+		30A6F62623B29EF500630584 /* shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 30A6F62523B29EF500630584 /* shaders.metal */; };
+		30A6F62823B29F8200630584 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A6F62723B29F8200630584 /* Metal.framework */; };
 		30D15CF322CE6B5A005BC352 /* snes9x_framework.h in Headers */ = {isa = PBXBuildFile; fileRef = 30D15CF122CE6B5A005BC352 /* snes9x_framework.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		30D15CFC22CE6B74005BC352 /* sha256.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85FEF90A20DDB18D00C038E9 /* sha256.cpp */; };
 		30D15CFE22CE6B74005BC352 /* bml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85FEF90620DDB15B00C038E9 /* bml.cpp */; };
@@ -285,6 +285,9 @@
 		3082C4222378BCE80081CA7C /* FakeResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FakeResources.h; sourceTree = "<group>"; };
 		3082C4282379199F0081CA7C /* S9xApplication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xApplication.h; sourceTree = "<group>"; };
 		3082C4292379199F0081CA7C /* S9xApplication.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xApplication.m; sourceTree = "<group>"; };
+		30A6F62323B2771A00630584 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
+		30A6F62523B29EF500630584 /* shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = shaders.metal; sourceTree = "<group>"; };
+		30A6F62723B29F8200630584 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		30AD1D1E22FBB2EA000EE989 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		30AD1D1F22FBB2EA000EE989 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		30AD1D2022FBB2EA000EE989 /* en */ = {isa = PBXFileReference; lastKnownFileType = folder; name = en; path = "en.lproj/Snes9x Help"; sourceTree = "<group>"; };
@@ -359,8 +362,6 @@
 		CFEFAE9010EAC92B00FB081A /* snes_ntsc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = snes_ntsc.h; sourceTree = "<group>"; };
 		EA00D01D0A5A9956000C58E0 /* logger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = logger.cpp; sourceTree = "<group>"; usesTabs = 1; };
 		EA00D01F0A5A998F000C58E0 /* logger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = logger.h; sourceTree = "<group>"; usesTabs = 1; };
-		EA0C952D08364A4A009307B4 /* mac-coreimage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "mac-coreimage.h"; sourceTree = "<group>"; };
-		EA0C952E08364A4A009307B4 /* mac-coreimage.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = "mac-coreimage.mm"; sourceTree = "<group>"; };
 		EA0C95D808364AAE009307B4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		EA16053E0639E655004412AB /* mac-netplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "mac-netplay.h"; sourceTree = "<group>"; };
 		EA1605500639E735004412AB /* mac-netplay.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = "mac-netplay.mm"; sourceTree = "<group>"; };
@@ -435,7 +436,6 @@
 		EAA7B5F307609F76001BAB8B /* winout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = winout.h; sourceTree = "<group>"; };
 		EAB7319C0527033000A80003 /* memmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = memmap.cpp; sourceTree = "<group>"; usesTabs = 1; };
 		EAC5E47003D2D9C800A80004 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
-		EACDDBB004D6A89700A80003 /* mac-appleevent.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = "mac-appleevent.mm"; sourceTree = "<group>"; };
 		EAD978980555059300E8BBFD /* mac-global_prefix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "mac-global_prefix.h"; sourceTree = "<group>"; };
 		EADE6347052E5C4300A80003 /* mac-audio.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = "mac-audio.mm"; sourceTree = "<group>"; };
 		EADE6349052E5C5300A80003 /* mac-audio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "mac-audio.h"; sourceTree = "<group>"; };
@@ -502,8 +502,6 @@
 		EAE061EB0526CCB900A80003 /* tile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = tile.cpp; sourceTree = "<group>"; usesTabs = 1; };
 		EAE061EC0526CCB900A80003 /* tile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = tile.h; sourceTree = "<group>"; usesTabs = 1; };
 		EAE0E96604D582B700A80003 /* mac-os.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = "mac-os.mm"; sourceTree = "<group>"; };
-		EAE0E96B04D584B700A80003 /* mac-prefs.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = "mac-prefs.mm"; sourceTree = "<group>"; };
-		EAECB66D04AC7FCD00A80003 /* mac-appleevent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "mac-appleevent.h"; sourceTree = "<group>"; };
 		EAECB67004AC7FCE00A80003 /* mac-cart.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = "mac-cart.mm"; sourceTree = "<group>"; };
 		EAECB67104AC7FCE00A80003 /* mac-cart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "mac-cart.h"; sourceTree = "<group>"; };
 		EAECB67204AC7FCE00A80003 /* mac-cheat.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = "mac-cheat.mm"; sourceTree = "<group>"; };
@@ -520,7 +518,6 @@
 		EAECB68004AC7FCE00A80003 /* mac-musicbox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "mac-musicbox.h"; sourceTree = "<group>"; };
 		EAECB68204AC7FCE00A80003 /* mac-os.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "mac-os.h"; sourceTree = "<group>"; usesTabs = 1; };
 		EAECB68304AC7FCE00A80003 /* mac-prefix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "mac-prefix.h"; sourceTree = "<group>"; };
-		EAECB68504AC7FCE00A80003 /* mac-prefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "mac-prefs.h"; sourceTree = "<group>"; };
 		EAECB68604AC7FCE00A80003 /* mac-snes9x.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = "mac-snes9x.mm"; sourceTree = "<group>"; usesTabs = 1; };
 		EAECB68704AC7FCE00A80003 /* mac-snes9x.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "mac-snes9x.h"; sourceTree = "<group>"; };
 		EAECB68804AC7FCE00A80003 /* mac-stringtools.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = "mac-stringtools.mm"; sourceTree = "<group>"; };
@@ -542,6 +539,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				30A6F62823B29F8200630584 /* Metal.framework in Frameworks */,
+				30A6F62423B2771A00630584 /* MetalKit.framework in Frameworks */,
 				3042F7E3232E9BDD00C03F5E /* Carbon.framework in Frameworks */,
 				308092F92320B06F006A2860 /* Quartz.framework in Frameworks */,
 				308092F72320B041006A2860 /* CoreGraphics.framework in Frameworks */,
@@ -583,6 +582,7 @@
 			);
 			name = "Snes9x CVS";
 			sourceTree = "<group>";
+			usesTabs = 1;
 		};
 		20286C2AFDCF999611CA2CEA /* Sources */ = {
 			isa = PBXGroup;
@@ -613,6 +613,8 @@
 		3045A1EB22D03C420092B97D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				30A6F62723B29F8200630584 /* Metal.framework */,
+				30A6F62323B2771A00630584 /* MetalKit.framework */,
 				3042F7E2232E9BDD00C03F5E /* Carbon.framework */,
 				3042F7E0232E9BD200C03F5E /* CoreServices.framework */,
 				308092F82320B06F006A2860 /* Quartz.framework */,
@@ -910,14 +912,12 @@
 		EAECB65C04AC7FCD00A80003 /* macosx */ = {
 			isa = PBXGroup;
 			children = (
-				EAECB66D04AC7FCD00A80003 /* mac-appleevent.h */,
 				EADE6349052E5C5300A80003 /* mac-audio.h */,
 				EAECB67104AC7FCE00A80003 /* mac-cart.h */,
 				EAECB67304AC7FCE00A80003 /* mac-cheat.h */,
 				EAECB67504AC7FCE00A80003 /* mac-cheatfinder.h */,
 				EA85C24D0B4EC13300F5F9C9 /* mac-cocoatools.h */,
 				EA809F9D08F8F2190072CDFB /* mac-controls.h */,
-				EA0C952D08364A4A009307B4 /* mac-coreimage.h */,
 				EA2DBC0A0510ABE700A80003 /* mac-file.h */,
 				EAECB67A04AC7FCE00A80003 /* mac-gworld.h */,
 				EAECB67C04AC7FCE00A80003 /* mac-joypad.h */,
@@ -926,7 +926,6 @@
 				EAECB68004AC7FCE00A80003 /* mac-musicbox.h */,
 				EA16053E0639E655004412AB /* mac-netplay.h */,
 				EAECB68204AC7FCE00A80003 /* mac-os.h */,
-				EAECB68504AC7FCE00A80003 /* mac-prefs.h */,
 				EA2DBC090510ABE700A80003 /* mac-render.h */,
 				EA2DBC070510ABE700A80003 /* mac-screenshot.h */,
 				EAECB68704AC7FCE00A80003 /* mac-snes9x.h */,
@@ -936,14 +935,12 @@
 				EA362C3E086119D100FBE476 /* HID_Utilities_External.h */,
 				CF3E45BD137349960077DE32 /* zconf.h */,
 				CF3E45D013734A920077DE32 /* zlib.h */,
-				EACDDBB004D6A89700A80003 /* mac-appleevent.mm */,
 				EADE6347052E5C4300A80003 /* mac-audio.mm */,
 				EAECB67004AC7FCE00A80003 /* mac-cart.mm */,
 				EAECB67204AC7FCE00A80003 /* mac-cheat.mm */,
 				EAECB67404AC7FCE00A80003 /* mac-cheatfinder.mm */,
 				EA85C24E0B4EC13300F5F9C9 /* mac-cocoatools.mm */,
 				EA809FA108F8F2420072CDFB /* mac-controls.mm */,
-				EA0C952E08364A4A009307B4 /* mac-coreimage.mm */,
 				EA2DBC0C0510ABE700A80003 /* mac-file.mm */,
 				EAECB67904AC7FCE00A80003 /* mac-gworld.mm */,
 				EAECB67B04AC7FCE00A80003 /* mac-joypad.mm */,
@@ -952,7 +949,6 @@
 				EAECB67F04AC7FCE00A80003 /* mac-musicbox.mm */,
 				EA1605500639E735004412AB /* mac-netplay.mm */,
 				EAE0E96604D582B700A80003 /* mac-os.mm */,
-				EAE0E96B04D584B700A80003 /* mac-prefs.mm */,
 				EA942A50059B0F9000D7D022 /* mac-render.mm */,
 				EA2DBC0D0510ABE700A80003 /* mac-screenshot.mm */,
 				EAECB68604AC7FCE00A80003 /* mac-snes9x.mm */,
@@ -979,6 +975,7 @@
 				EA3D2F580A26085800BDACCC /* libHIDUtilities_u.a */,
 				CF3E42491372D48F0077DE32 /* libz_u.a */,
 				30CCAD422290472E00549AED /* Info.plist */,
+				30A6F62523B29EF500630584 /* shaders.metal */,
 			);
 			path = macosx;
 			sourceTree = "<group>";
@@ -1215,19 +1212,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				307C862022D29E29001B879E /* mac-appleevent.mm in Sources */,
 				307C862122D29E29001B879E /* mac-audio.mm in Sources */,
 				307C862222D29E29001B879E /* mac-cart.mm in Sources */,
 				307C862322D29E29001B879E /* mac-cheat.mm in Sources */,
 				307C862422D29E29001B879E /* mac-cheatfinder.mm in Sources */,
 				307C862622D29E29001B879E /* mac-cocoatools.mm in Sources */,
-				307C862722D29E29001B879E /* mac-coreimage.mm in Sources */,
 				307C862922D29E29001B879E /* mac-gworld.mm in Sources */,
 				307C862A22D29E29001B879E /* mac-keyboard.mm in Sources */,
 				307C862B22D29E29001B879E /* mac-multicart.mm in Sources */,
 				307C862C22D29E29001B879E /* mac-musicbox.mm in Sources */,
 				307C862D22D29E29001B879E /* mac-netplay.mm in Sources */,
-				307C862E22D29E29001B879E /* mac-prefs.mm in Sources */,
 				307C863022D29E29001B879E /* mac-render.mm in Sources */,
 				307C863222D29E29001B879E /* mac-snes9x.mm in Sources */,
 				307C863322D29E29001B879E /* mac-stringtools.mm in Sources */,
@@ -1250,6 +1244,7 @@
 				30D15D3522CE6B74005BC352 /* cpuexec.cpp in Sources */,
 				30D15D3622CE6B74005BC352 /* cpuops.cpp in Sources */,
 				30D15D3722CE6B74005BC352 /* crosshairs.cpp in Sources */,
+				30A6F62623B29EF500630584 /* shaders.metal in Sources */,
 				30D15D3822CE6B74005BC352 /* debug.cpp in Sources */,
 				30D15D3922CE6B74005BC352 /* dma.cpp in Sources */,
 				307C861222D27C53001B879E /* tileimpl-n1x1.cpp in Sources */,
