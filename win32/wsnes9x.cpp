@@ -2690,6 +2690,12 @@ BOOL WinInit( HINSTANCE hInstance)
 
 void S9xExtraUsage ()
 {
+	S9xMessage(S9X_INFO, S9X_USAGE, "Windows port specific:");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-fullscreen                     Start in fullscreen mode");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-hidemenu                       Initially hide the GUI menu");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-restore                        Reset all settings to default");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-cartb <filename>               Specify the second cart for multicart, also triggers multicart");
+	MessageBox(NULL, _T("Snes9x command line options have been written to stdout.txt in the same folder as snes9x.exe"), _T("Command line options"), MB_OK | MB_ICONINFORMATION);
 }
 
 // handles joystick hotkey presses

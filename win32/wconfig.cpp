@@ -276,6 +276,13 @@ const TCHAR*	WinParseCommandLineAndLoadConfigFile (TCHAR *line)
 	ReleaseMutex(configMutex);
 	CloseHandle(configMutex);
 
+	// check some additional common help switches
+	for (int i = 0; i < count; i++)
+	{
+		if(!strcasecmp(parameters[i], "/?") || !strcasecmp(parameters[i], "-h"))
+			S9xUsage();
+	}
+
 	const char* rf = S9xParseArgs (parameters, count);
 
     if(rf) // save rom_filename as TCHAR if available
