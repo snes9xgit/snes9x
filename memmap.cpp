@@ -3656,7 +3656,7 @@ void CMemory::ApplyROMFixes (void)
 	// Render Position
 	if (match_na("Sugoro Quest++"))
 		Timings.RenderPos = 128;
-	else if (match_na("FIREPOWER 2000"))
+	else if (match_na("FIREPOWER 2000") || match_na("SUPER SWIV"))
 		Timings.RenderPos = 32;
 	else if (match_na("DERBY STALLION 98"))
 		Timings.RenderPos = 128;
