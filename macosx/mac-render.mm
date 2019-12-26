@@ -147,27 +147,26 @@ static void S9xInitMetal (void)
     glScreenH = glScreenBounds.size.height;
 
     metalLayer = (CAMetalLayer *)s9xView.layer;
-	//metalLayer.presentsWithTransaction = YES;
 	
     metalDevice = s9xView.device;
+			
+	metalCommandQueue = [metalDevice newCommandQueue];
 	
 	NSError *error = nil;
 	id<MTLLibrary> defaultLibrary = [metalDevice newDefaultLibraryWithBundle:[NSBundle bundleForClass:[S9xEngine class]] error:&error];
+
+	MTLRenderPipelineDescriptor *pipelineDescriptor = [MTLRenderPipelineDescriptor new];
+	pipelineDescriptor.label = @"Snes9x Pipeline";
+	pipelineDescriptor.vertexFunction = [defaultLibrary newFunctionWithName:@"vertexShader"];
+	pipelineDescriptor.colorAttachments[0].pixelFormat = s9xView.colorPixelFormat;
+	pipelineDescriptor.fragmentFunction = [defaultLibrary newFunctionWithName:@"fragmentShader"];
 	
-	MTLRenderPipelineDescriptor *descriptor = [MTLRenderPipelineDescriptor new];
-	descriptor.label = @"Snes9x Pipeline";
-	descriptor.vertexFunction = [defaultLibrary newFunctionWithName:@"vertexShader"];
-	descriptor.fragmentFunction = [defaultLibrary newFunctionWithName:@"samplingShader"];
-	descriptor.colorAttachments[0].pixelFormat = s9xView.colorPixelFormat;
-	
-	metalPipelineState = [metalDevice newRenderPipelineStateWithDescriptor:descriptor error:&error];
+	metalPipelineState = [metalDevice newRenderPipelineStateWithDescriptor:pipelineDescriptor error:&error];
 	
 	if (metalPipelineState == nil)
 	{
 		NSLog(@"%@",error);
 	}
-	
-	metalCommandQueue = [metalDevice newCommandQueue];
 }
 
 static void S9xDeinitMetal (void)
@@ -314,12 +313,12 @@ static void S9xPutImageMetal (int width, int height, uint16 *buffer16)
 	
 	CGSize layerSize = metalLayer.bounds.size;
 	
-	MTLTextureDescriptor *descriptor = [MTLTextureDescriptor new];
-    descriptor.pixelFormat = MTLPixelFormatRGBA8Unorm;
-    descriptor.width = width;
-    descriptor.height = height;
+	MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor new];
+    textureDescriptor.pixelFormat = MTLPixelFormatRGBA8Unorm;
+    textureDescriptor.width = width;
+    textureDescriptor.height = height;
     
-	metalTexture = [metalDevice newTextureWithDescriptor:descriptor];
+	metalTexture = [metalDevice newTextureWithDescriptor:textureDescriptor];
 	
 	[metalTexture replaceRegion:MTLRegionMake2D(0, 0, width, height) mipmapLevel:0 withBytes:buffer bytesPerRow:width * 4];
 	free(buffer);
@@ -340,6 +339,7 @@ static void S9xPutImageMetal (int width, int height, uint16 *buffer16)
 	};
 	
 	id<MTLBuffer> vertexBuffer = [metalDevice newBufferWithBytes:verticies length:sizeof(verticies) options:MTLResourceStorageModeShared];
+	id<MTLBuffer> fragmentBuffer = [metalDevice newBufferWithBytes:&videoMode length:sizeof(videoMode) options:MTLResourceStorageModeShared];
 	
 	id<MTLCommandBuffer> commandBuffer = [metalCommandQueue commandBuffer];
 	commandBuffer.label = @"Snes9x command buffer";
@@ -374,6 +374,7 @@ static void S9xPutImageMetal (int width, int height, uint16 *buffer16)
                               atIndex:1];
 
         [renderEncoder setFragmentTexture:metalTexture atIndex:0];
+		[renderEncoder setFragmentBuffer:fragmentBuffer offset:0 atIndex:1];
 
         [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:6];
 

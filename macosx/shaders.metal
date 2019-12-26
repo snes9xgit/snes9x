@@ -43,10 +43,20 @@ vertexShader(uint vertexID [[ vertex_id ]], constant MetalVertex *vertexArray [[
 }
 
 fragment float4
-samplingShader(RasterizerData in [[stage_in]], texture2d<half> colorTexture [[ texture(0) ]])
+fragmentShader(RasterizerData in [[stage_in]], texture2d<half> colorTexture [[ texture(0) ]], constant int *videoModePointer [[ buffer(1) ]])
 {
-    constexpr sampler textureSampler (mag_filter::nearest, min_filter::nearest);
-    const half4 colorSample = colorTexture.sample(textureSampler, in.textureCoordinate);
-    return float4(colorSample);
+	int videoMode = int(*videoModePointer);
+	
+	if ( videoMode == 0)
+	{
+		constexpr sampler textureSampler (mag_filter::nearest, min_filter::nearest);
+		const half4 colorSample = colorTexture.sample(textureSampler, in.textureCoordinate);
+		return float4(colorSample);
+	}
+	else
+	{
+		constexpr sampler textureSampler (mag_filter::linear, min_filter::linear);
+		const half4 colorSample = colorTexture.sample(textureSampler, in.textureCoordinate);
+		return float4(colorSample);
+	}
 }
-
