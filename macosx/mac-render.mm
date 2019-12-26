@@ -36,7 +36,7 @@
 
 static void S9xInitMetal (void);
 static void S9xDeinitMetal(void);
-static void S9xPutImageMetal (int, int, uint8 *);
+static void S9xPutImageMetal (int, int, uint16 *);
 
 static uint16				*gfxScreen[2],
 							*snesScreenA,
@@ -137,21 +137,8 @@ void DeinitGraphics (void)
 
 void DrawFreezeDefrostScreen (uint8 *draw)
 {
-	const int	w = SNES_WIDTH << 1, h = SNES_HEIGHT << 1;
-
-	imageWidth[0] = imageHeight[0] = 0;
-	imageWidth[1] = imageHeight[1] = 0;
-	prevBlitWidth = prevBlitHeight = 0;
-
-	if (nx < 0)
-	{
-		for (int y = 0; y < h; y++)
-			memcpy(blitGLBuffer + y * 1024 * 2, draw + y * w * 2, w * 2);
-	}
-	else
-		memcpy(blitGLBuffer, draw, w * h * 2);
-
-	S9xPutImageMetal(w, h, draw);
+	const int w = SNES_WIDTH << 1, h = SNES_HEIGHT << 1;
+	S9xPutImageMetal(w, h, (uint16 *)draw);
 }
 
 static void S9xInitMetal (void)
@@ -262,6 +249,7 @@ bool8 S9xInitUpdate (void)
 
 bool8 S9xDeinitUpdate (int width, int height)
 {
+	S9xPutImage(width, height);
 	return true;
 }
 
@@ -298,11 +286,17 @@ void S9xPutImage (int width, int height)
 
         IPPU.DisplayedRenderedFrameCount = (Memory.ROMFramesPerSecond * 60) / frameCalc;
     }
+	
+	S9xPutImageMetal(width, height, GFX.Screen);
+}
 
-	uint8 buffer[width * height * 4];
+
+static void S9xPutImageMetal (int width, int height, uint16 *buffer16)
+{
+	uint8 *buffer = (uint8 *)malloc(width * height * 4);
 	for (int i = 0; i < width * height; ++i)
 	{
-		uint16 pixel = GFX.Screen[i];
+		uint16 pixel = buffer16[i];
 		unsigned int red = (pixel & FIRST_COLOR_MASK_RGB555) >> 10;
 		unsigned int green = (pixel & SECOND_COLOR_MASK_RGB555) >> 5;
 		unsigned int blue = (pixel & THIRD_COLOR_MASK_RGB555);
@@ -318,12 +312,6 @@ void S9xPutImage (int width, int height)
 		buffer[offset] = 0xFF;
 	}
 	
-	S9xPutImageMetal(width, height, buffer);
-}
-
-
-static void S9xPutImageMetal (int width, int height, uint8 *buffer)
-{
 	CGSize layerSize = metalLayer.bounds.size;
 	
 	MTLTextureDescriptor *descriptor = [MTLTextureDescriptor new];
@@ -334,6 +322,7 @@ static void S9xPutImageMetal (int width, int height, uint8 *buffer)
 	metalTexture = [metalDevice newTextureWithDescriptor:descriptor];
 	
 	[metalTexture replaceRegion:MTLRegionMake2D(0, 0, width, height) mipmapLevel:0 withBytes:buffer bytesPerRow:width * 4];
+	free(buffer);
 	
 	float vWidth = layerSize.width / 2.0;
 	float vHeight = layerSize.height / 2.0;

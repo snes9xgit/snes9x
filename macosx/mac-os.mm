@@ -219,7 +219,6 @@ bool8               pressedFunctionButtons[kNumFunctionButtons] = { 0 };
 bool8               pressedRawKeyboardButtons[MAC_NUM_KEYCODES] = { 0 };
 bool8               heldFunctionButtons[kNumFunctionButtons] = { 0 };
 pthread_mutex_t     keyLock;
-pthread_mutex_t     renderLock;
 
 MTKView             *s9xView;
 
@@ -400,9 +399,7 @@ static inline void EmulationLoop (void)
 
             if (!pauseEmulation)
             {
-                pthread_mutex_lock(&renderLock);
                 S9xMainLoop();
-                pthread_mutex_unlock(&renderLock);
             }
             else
             {
@@ -411,9 +408,7 @@ static inline void EmulationLoop (void)
                     macFrameSkip = 1;
                     skipFrames = 1;
                     frameAdvance = false;
-                    pthread_mutex_lock(&renderLock);
                     S9xMainLoop();
-                    pthread_mutex_unlock(&renderLock);
                     macFrameSkip = storedMacFrameSkip;
                 }
 
@@ -2808,7 +2803,6 @@ void QuitWithFatalError ( NSString *message)
 + (void)initialize
 {
     keyLock = PTHREAD_MUTEX_INITIALIZER;
-    renderLock = PTHREAD_MUTEX_INITIALIZER;
 }
 
 - (instancetype)initWithFrame:(NSRect)frameRect
@@ -2939,13 +2933,10 @@ void QuitWithFatalError ( NSString *message)
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-    pthread_mutex_lock(&renderLock);
     self.subviews[0].hidden = !pauseEmulation;
     CGFloat scaleFactor = MAX(self.window.backingScaleFactor, 1.0);
     glScreenW = self.frame.size.width * scaleFactor;
     glScreenH = self.frame.size.height * scaleFactor;
-    S9xPutImage(IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight);
-    pthread_mutex_unlock(&renderLock);
 }
 
 - (void)setFrame:(NSRect)frame
@@ -3211,9 +3202,7 @@ void QuitWithFatalError ( NSString *message)
 
 - (void)setVideoMode:(int)mode
 {
-    pthread_mutex_lock(&renderLock);
     videoMode = mode;
-    pthread_mutex_unlock(&renderLock);
 }
 
 @dynamic inputDelegate;
