@@ -26,6 +26,7 @@
 #include <dsound.h>
 #endif
 #include "rsrc/resource.h"
+#include "port.h"
 
 #define COUNT(a) (sizeof (a) / sizeof (a[0]))
 #define MAX_AUDIO_NAME_LENGTH 1024
@@ -307,17 +308,15 @@ struct SCustomKeys {
 	SCustomKey SlotMinus;
 	SCustomKey SlotSave;
 	SCustomKey SlotLoad;
+    SCustomKey DialogSave;
+    SCustomKey DialogLoad;
 	SCustomKey BGL1;
 	SCustomKey BGL2;
 	SCustomKey BGL3;
 	SCustomKey BGL4;
 	SCustomKey BGL5;
 	SCustomKey ClippingWindows;
-//	SCustomKey BGLHack;
 	SCustomKey Transparency;
-//  SCustomKey GLCube;
-//	SCustomKey HDMA;
-//	SCustomKey InterpMode7;
 	SCustomKey JoypadSwap;
 	SCustomKey SwitchControllers;
 	SCustomKey TurboA, TurboB, TurboY, TurboX, TurboL, TurboR, TurboStart, TurboSelect, TurboLeft, TurboUp, TurboRight, TurboDown;
@@ -458,5 +457,11 @@ int GetFilterScale(RenderFilter filterID);
 bool GetFilterHiResSupport(RenderFilter filterID);
 const TCHAR * S9xGetDirectoryT (enum s9x_getdirtype);
 RECT GetWindowMargins(HWND hwnd, UINT width);
+void GetSlotFilename(int slot, char filename[_MAX_PATH + 1]);
+void FreezeUnfreezeSlot(int slot, bool8 freeze);
+void FreezeUnfreezeDialog(bool8 freeze);
+void FreezeUnfreezeDialogPreview(bool8 freeze);
+void FreezeUnfreeze(const char *filename, bool8 freeze);
+bool UnfreezeScreenshotSlot(int slot, uint16 **image_buffer, int &width, int &height);
 
 #endif // !defined(SNES9X_H_INCLUDED)

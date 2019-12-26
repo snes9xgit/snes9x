@@ -285,6 +285,9 @@
     <ClInclude Include="..\filter\snes_ntsc_impl.h">
       <Filter>Filter</Filter>
     </ClInclude>
+    <ClInclude Include="CSaveLoadWithPreviewDlg.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\bsx.cpp">
@@ -625,6 +628,9 @@
     </ClCompile>
     <ClCompile Include="..\filter\snes_ntsc.c">
       <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="CSaveLoadWithPreviewDlg.cpp">
+      <Filter>GUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
