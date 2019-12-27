@@ -403,7 +403,7 @@ struct SCustomKeys CustomKeys = {
 	 {0,0}, // Select save slot 7
 	 {0,0}, // Select save slot 8
 	 {0,0}}, // Select save slot 9
-	{'R',CUSTKEY_CTRL_MASK|CUSTKEY_SHIFT_MASK}, // Reset Game
+	{'R',CUSTKEY_CTRL_MASK|CUSTKEY_ALT_MASK}, // Reset Game
 	{0,0}, // Toggle Cheats
 	{0,0},
     {'R',0}, // Rewind
