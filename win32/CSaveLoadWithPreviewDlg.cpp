@@ -145,13 +145,13 @@ void CSaveLoadWithPreviewDlg::load_slot_image_text(int slot, HWND hDlg)
                 // reserve space for date and time (both received individually)
                 std::vector<wchar_t> date_string;
                 date_string.resize(max(
-                    GetDateFormatEx(LOCALE_NAME_USER_DEFAULT, DATE_AUTOLAYOUT | DATE_LONGDATE, &stLocal, NULL, NULL, 0, NULL),
-                    GetTimeFormatEx(LOCALE_NAME_USER_DEFAULT, 0, &stLocal, NULL, NULL, 0)
+					GetDateFormat(LOCALE_USER_DEFAULT, DATE_AUTOLAYOUT | DATE_LONGDATE, &stLocal, NULL, NULL, 0),
+					GetTimeFormat(LOCALE_USER_DEFAULT, 0, &stLocal, NULL, NULL, 0)
                 ));
 
-                GetDateFormatEx(LOCALE_NAME_USER_DEFAULT, DATE_AUTOLAYOUT | DATE_LONGDATE, &stLocal, NULL, &date_string[0], 100, NULL);
+				GetDateFormat(LOCALE_USER_DEFAULT, DATE_AUTOLAYOUT | DATE_LONGDATE, &stLocal, NULL, &date_string[0], 100);
                 static_text.append(L"\n").append(&date_string[0]);
-                GetTimeFormatEx(LOCALE_NAME_USER_DEFAULT, 0, &stLocal, NULL, &date_string[0], 100);
+				GetTimeFormat(LOCALE_USER_DEFAULT, 0, &stLocal, NULL, &date_string[0], 100);
                 static_text.append(L" ").append(&date_string[0]);
             }
         }
