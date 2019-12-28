@@ -44,6 +44,14 @@
 #define PIXEL_FORMAT RGB565
 #endif
 
+#if defined(__GNUC__)
+#define alwaysinline  inline __attribute__((always_inline))
+#elif defined(_MSC_VER)
+#define alwaysinline  __forceinline
+#else
+#define alwaysinline  inline
+#endif
+
 #ifndef snes9x_types_defined
 #define snes9x_types_defined
 typedef unsigned char		bool8;

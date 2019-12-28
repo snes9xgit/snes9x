@@ -446,7 +446,8 @@ int Snes9xConfig::load_config_file ()
     }
     else
     {
-        chmod (path.c_str (), 0755);
+        if (!(file_info.st_mode & 0700))
+            chmod (path.c_str (), file_info.st_mode | 0700);
     }
 
     path = get_config_file_name ();

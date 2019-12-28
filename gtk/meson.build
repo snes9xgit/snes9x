@@ -97,10 +97,9 @@ if slang and opengl
   osdependent_dep = c_compiler.find_library('OSDependent', required: false)
   ogl_compiler_dep = c_compiler.find_library('OGLCompiler', required: false)
   spv_remapper_dep = c_compiler.find_library('SPVRemapper', required: false)
-  resource_limits_dep = c_compiler.find_library('glslang-default-resource-limits', required:false)
 
-  if glslang_dep.found() and spirv_dep.found() and osdependent_dep.found() and ogl_compiler_dep.found() and spv_remapper_dep.found() and resource_limits_dep.found()
-    deps += [glslang_dep, spirv_dep, osdependent_dep, ogl_compiler_dep, spv_remapper_dep, resource_limits_dep]
+  if glslang_dep.found() and spirv_dep.found() and osdependent_dep.found() and ogl_compiler_dep.found() and spv_remapper_dep.found()
+    deps += [glslang_dep, spirv_dep, osdependent_dep, ogl_compiler_dep, spv_remapper_dep]
 
     args += ['-DUSE_SLANG', '-DSPIRV_CROSS_EXCEPTIONS_TO_ASSERTIONS']
     srcs += ['../shaders/slang.cpp']
@@ -350,6 +349,9 @@ srcs += [
  '../debug.cpp',
  '../sdd1.cpp',
  '../tile.cpp',
+ '../tileimpl-n1x1.cpp',
+ '../tileimpl-n2x1.cpp',
+ '../tileimpl-h2x1.cpp',
  '../srtc.cpp',
  '../gfx.cpp',
  '../memmap.cpp',

@@ -1973,6 +1973,7 @@ bool retro_unserialize(const void* data, size_t size)
 
 bool8 S9xDeinitUpdate(int width, int height)
 {
+    static int burst_phase = 0;
     int overscan_offset = 0;
 
     if (crop_overscan_mode == OVERSCAN_CROP_ON)
@@ -2013,10 +2014,12 @@ bool8 S9xDeinitUpdate(int width, int height)
 
     if (blargg_filter)
     {
-        if(width == 512)
-            snes_ntsc_blit_hires(snes_ntsc, GFX.Screen, GFX.Pitch/2, 0, width, height, snes_ntsc_buffer, GFX.Pitch);
+        burst_phase = (burst_phase + 1) % 3;
+
+        if (width == 512)
+            snes_ntsc_blit_hires(snes_ntsc, GFX.Screen, GFX.Pitch / 2, burst_phase, width, height, snes_ntsc_buffer, GFX.Pitch);
         else
-            snes_ntsc_blit(snes_ntsc, GFX.Screen, GFX.Pitch/2, 0, width, height, snes_ntsc_buffer, GFX.Pitch);
+            snes_ntsc_blit(snes_ntsc, GFX.Screen, GFX.Pitch / 2, burst_phase, width, height, snes_ntsc_buffer, GFX.Pitch);
 
         video_cb(snes_ntsc_buffer + ((int)(GFX.Pitch >> 1) * overscan_offset), SNES_NTSC_OUT_WIDTH(width), height, GFX.Pitch);
     }

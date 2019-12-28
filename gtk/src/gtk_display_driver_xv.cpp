@@ -233,7 +233,7 @@ S9xXVDisplayDriver::init ()
     XvAdaptorInfo       *adaptors;
     XvAttribute         *port_attr;
     VisualID            visualid = None;
-    unsigned int        num_adaptors;
+    unsigned int        num_adaptors = 0;
     GdkScreen           *screen;
     GdkWindow           *root;
 
@@ -245,10 +245,13 @@ S9xXVDisplayDriver::init ()
     root = gdk_screen_get_root_window (screen);
 
     xv_portid = -1;
-    XvQueryAdaptors (display,
-                     gdk_x11_window_get_xid (root),
-                     &num_adaptors,
-                     &adaptors);
+    if ((XvQueryAdaptors (display,
+                          gdk_x11_window_get_xid (root),
+                          &num_adaptors,
+                          &adaptors)) != Success)
+    {
+        fprintf (stderr, "No Xv compatible adaptors.\n");
+    }
 
 
     for (int i = 0; i < (int) num_adaptors; i++)
@@ -367,7 +370,10 @@ S9xXVDisplayDriver::init ()
     free (formats);
 
     if (format == -1)
+    {
+        fprintf (stderr, "No compatible formats found for Xv.\n");
         return -1;
+    }
 
     /* Build a table for yuv conversion */
     if (format == FOURCC_YUY2)

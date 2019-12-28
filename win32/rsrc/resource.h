@@ -96,6 +96,7 @@
 #define IDC_REWIND_GRANULARITY_SPIN     1071
 #define IDC_SFXSPEED                    1072
 #define IDC_SFXSPEED_SPIN               1073
+#define IDC_CONFIRMSAVELOAD             1074
 #define IDC_HOSTNAME                    1086
 #define IDC_PORTNUMBER                  1087
 #define IDC_CLEARHISTORY                1088
@@ -540,8 +541,9 @@
 #define ID_FILE_LOAD7                   44027
 #define ID_FILE_LOAD8                   44028
 #define ID_FILE_LOAD9                   44029
-#define ID_FILE_LOAD_FILE               44030
-#define IDM_MACSRIFLE_TOGGLE            44031
+#define ID_FILE_LOAD_OOPS				44030
+#define ID_FILE_LOAD_FILE               44031
+#define IDM_MACSRIFLE_TOGGLE            44032
 #define IDC_STATIC                      -1
 
 // Next default values for new objects

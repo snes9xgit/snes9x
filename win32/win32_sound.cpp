@@ -98,7 +98,7 @@ void S9xSoundCallback(void *data)
 	static double last_volume = 1.0;
 
 	// only try to change volume if we actually need to switch it
-	double current_volume = (Settings.TurboMode ? GUI.VolumeTurbo : GUI.VolumeRegular) / 100.;
+	double current_volume = ((Settings.TurboMode || Settings.Rewinding) ? GUI.VolumeTurbo : GUI.VolumeRegular) / 100.;
 	if (last_volume != current_volume) {
 		S9xSoundOutput->SetVolume(current_volume);
 		last_volume = current_volume;

@@ -65,6 +65,7 @@ enum RenderFilter{
 	FILTER_SIMPLE2X,
 	FILTER_SCANLINES,
 	FILTER_TVMODE,
+	FILTER_BLARGGRF,
 	FILTER_BLARGGCOMP,
 	FILTER_BLARGGSVID,
 	FILTER_BLARGGRGB,
@@ -186,6 +187,7 @@ struct sGUI {
 
 	bool InactivePause;
 	bool CustomRomOpen;
+	bool ConfirmSaveLoad;
     bool FASkipsNonInput;
     bool FAMute;
     int  ScreenDepth;

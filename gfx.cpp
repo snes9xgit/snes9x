@@ -2134,10 +2134,10 @@ void S9xDrawCrosshair (const char *crosshair, uint8 fgcolor, uint8 bgcolor, int1
 			uint8	p = crosshair[(r / rx) * 15 + (c / cx)];
 
 			if (p == '#' && fgcolor)
-				*s = (fgcolor & 0x10) ? COLOR_ADD1_2(fg, *s) : fg;
+				*s = (fgcolor & 0x10) ? COLOR_ADD::fn1_2(fg, *s) : fg;
 			else
 			if (p == '.' && bgcolor)
-				*s = (bgcolor & 0x10) ? COLOR_ADD1_2(*s, bg) : bg;
+				*s = (bgcolor & 0x10) ? COLOR_ADD::fn1_2(*s, bg) : bg;
 		}
 	}
 }

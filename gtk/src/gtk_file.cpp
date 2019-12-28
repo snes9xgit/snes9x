@@ -168,11 +168,18 @@ S9xGetDirectory (enum s9x_getdirtype dirtype)
             path[0] = '\0';
     }
 
-    /* Try and mkdir, whether it exists or not */
+    /* Check if directory exists, make it and/or set correct permissions */
     if (dirtype != HOME_DIR && path[0] != '\0')
     {
-        mkdir (path, 0755);
-        chmod (path, 0755);
+        struct stat file_info;
+
+        if (stat(path, &file_info) == -1)
+        {
+            mkdir(path, 0755);
+            chmod(path, 0755);
+        }
+        else if (!(file_info.st_mode & 0700))
+            chmod(path, file_info.st_mode | 0700);
     }
 
     /* Anything else, use ROM filename path */

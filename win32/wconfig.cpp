@@ -809,6 +809,7 @@ void WinRegisterConfigItems()
 	AddBoolC("PauseWhenInactive", GUI.InactivePause, TRUE, "true to pause Snes9x when it is not the active window");
 	AddBoolC("CustomRomOpenDialog", GUI.CustomRomOpen, false, "false to use standard Windows open dialog for the ROM open dialog");
 	AddBoolC("AVIHiRes", GUI.AVIHiRes, false, "true to record AVI in Hi-Res scale");
+	AddBoolC("ConfirmSaveLoad", GUI.ConfirmSaveLoad, false, "true to ask for confirmation when saving/loading");
 //	AddUIntC("Language", GUI.Language, 0, "0=English, 1=Nederlands"); // NYI
 	AddBoolC("FrameAdvanceSkipsNonInput", GUI.FASkipsNonInput, false, "causes frame advance to fast-forward past frames where the game is definitely not checking input, such as during lag or loading time. EXPERIMENTAL");
 	AddBool("MovieDefaultClearSRAM", GUI.MovieClearSRAM, false);

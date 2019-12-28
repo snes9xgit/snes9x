@@ -52,6 +52,7 @@ void RenderSimple3X (SSurface Src, SSurface Dst, RECT *);
 void RenderSimple4X (SSurface Src, SSurface Dst, RECT *);
 void RenderTVMode3X (SSurface Src, SSurface Dst, RECT *);
 void RenderDotMatrix3X (SSurface Src, SSurface Dst, RECT *);
+void RenderBlarggNTSCRF(SSurface Src, SSurface Dst, RECT *);
 void RenderBlarggNTSCComposite(SSurface Src, SSurface Dst, RECT *);
 void RenderBlarggNTSCSvideo(SSurface Src, SSurface Dst, RECT *);
 void RenderBlarggNTSCRgb(SSurface Src, SSurface Dst, RECT *);
@@ -80,7 +81,13 @@ START_EXTERN_C
 uint8 snes9x_clear_change_log = 0;
 END_EXTERN_C
 
-enum BlarggMode { UNINITIALIZED,BLARGGCOMPOSITE,BLARGGSVIDEO,BLARGGRGB };
+enum BlarggMode {
+    UNINITIALIZED,
+    BLARGGRF,
+    BLARGGCOMPOSITE,
+    BLARGGSVIDEO,
+    BLARGGRGB
+};
 
 snes_ntsc_t *ntsc = NULL;
 BlarggMode blarggMode = UNINITIALIZED;
@@ -138,6 +145,7 @@ TRenderMethod FilterToMethod(RenderFilter filterID)
         case FILTER_LQ3XBOLD:   return RenderLQ3XB;
         case FILTER_EPX3:       return RenderEPX3;
         case FILTER_3XBRZ:      return Render3xBRZ;
+		case FILTER_BLARGGRF:   return RenderBlarggNTSCRF;
 		case FILTER_BLARGGCOMP: return RenderBlarggNTSCComposite;
 		case FILTER_BLARGGSVID: return RenderBlarggNTSCSvideo;
 		case FILTER_BLARGGRGB:  return RenderBlarggNTSCRgb;
@@ -159,6 +167,7 @@ const char* GetFilterName(RenderFilter filterID)
 		case FILTER_SIMPLE2X: return "Simple 2X";
 		case FILTER_SCANLINES: return "Scanlines";
 		case FILTER_TVMODE: return "TV Mode";
+		case FILTER_BLARGGRF: return "Blargg's NTSC (RF)";
 		case FILTER_BLARGGCOMP: return "Blargg's NTSC (Composite)";
 		case FILTER_BLARGGSVID: return "Blargg's NTSC (S-Video)";
 		case FILTER_BLARGGRGB: return "Blargg's NTSC (RGB)";
@@ -332,6 +341,7 @@ RECT GetFilterOutputSize(SSurface Src)
 	case FILTER_NONE:
 		SetRect(&rect, Src.Width, Src.Height, 1);
 		break;
+	case FILTER_BLARGGRF:
 	case FILTER_BLARGGCOMP:
 	case FILTER_BLARGGSVID:
 	case FILTER_BLARGGRGB:
@@ -1484,9 +1494,9 @@ void RenderDotMatrix3X (SSurface Src, SSurface Dst, RECT *rect)
 
 	#define DrawPix(on00,on01,on10,on11) /* on00 on01 */  \
 	{                                    /* on10 on11 */  \
-		const uint16 colorXA = COLOR_ADD(colorX,colorX);  \
-		const uint16 colorXS = COLOR_SUB(colorXA,colorX); \
-		const uint16 colorX2 = COLOR_SUB(colorX,colorXS); \
+		const uint16 colorXA = COLOR_ADD::fn(colorX,colorX);  \
+		const uint16 colorXS = COLOR_SUB::fn(colorXA,colorX); \
+		const uint16 colorX2 = COLOR_SUB::fn(colorX,colorXS); \
 		*dP1++ = _THREE_PIX(colorX2, colorX,  colorX2);   \
 		*dP2++ = _THREE_PIX(colorX,  colorXA, colorX);    \
 		*dP3++ = _THREE_PIX(colorX2, colorX,  colorX2);   \
@@ -2696,6 +2706,17 @@ void RenderxBRZ(SSurface Src, SSurface Dst, RECT* rect, int scalingFactor)
 }
 /*#################### /XBRZ support ####################*/
 
+void RenderBlarggNTSCRF( SSurface Src, SSurface Dst, RECT *rect)
+{
+	if(blarggMode!=BLARGGRF) {
+		snes_ntsc_setup_t setup = snes_ntsc_composite;
+		setup.merge_fields = 0;
+		snes_ntsc_init( ntsc, &setup );
+		blarggMode=BLARGGRF;
+	}
+	RenderBlarggNTSC(Src,Dst,rect);
+}
+
 void RenderBlarggNTSCComposite( SSurface Src, SSurface Dst, RECT *rect)
 {
 	if(blarggMode!=BLARGGCOMPOSITE) {
@@ -2734,6 +2755,8 @@ extern unsigned short snes_ntsc_scanline_mask;
 
 void RenderBlarggNTSC(SSurface Src, SSurface Dst, RECT *rect)
 {
+    static int burst_phase = 0;
+
     SetRect(rect, 256, 239, 2);
     rect->right = SNES_NTSC_OUT_WIDTH(256);
 
@@ -2748,8 +2771,10 @@ void RenderBlarggNTSC(SSurface Src, SSurface Dst, RECT *rect)
         snes_ntsc_scanline_mask = 0x18E3;
     }
 
+    burst_phase = (burst_phase + 1) % 3;
+
     if (Src.Width == 512)
-        snes_ntsc_blit_hires_scanlines(ntsc, (unsigned short *)Src.Surface, srcRowPixels, 0, Src.Width, Src.Height, Dst.Surface, Dst.Pitch);
+        snes_ntsc_blit_hires_scanlines(ntsc, (unsigned short *)Src.Surface, srcRowPixels, burst_phase, Src.Width, Src.Height, Dst.Surface, Dst.Pitch);
     else
-        snes_ntsc_blit_scanlines(ntsc, (unsigned short *)Src.Surface, srcRowPixels, 0, Src.Width, Src.Height, Dst.Surface, Dst.Pitch);
+        snes_ntsc_blit_scanlines(ntsc, (unsigned short *)Src.Surface, srcRowPixels, burst_phase, Src.Width, Src.Height, Dst.Surface, Dst.Pitch);
 }
