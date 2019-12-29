@@ -5088,8 +5088,10 @@ INT_PTR CALLBACK DlgInfoProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				case 13:
 					strcat(romtext, "South Korea");
 					break;
-				case 14:strcat(romtext, "Unknown region 14");break;
-				default:strcat(romtext, "Unknown region 15");break;
+				default:
+					sprintf(temp, "Unknown region %d", Memory.ROMRegion);
+					strcat(romtext, temp);
+					break;
 				}
                 SendDlgItemMessage(hDlg, IDC_ROM_DATA, WM_SETTEXT, 0, (LPARAM)((TCHAR *)_tFromMS932(romtext)));
 				break;
