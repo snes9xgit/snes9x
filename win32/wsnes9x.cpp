@@ -126,7 +126,7 @@ void S9xDetectJoypads();
 #define TIMER_SCANJOYPADS  (99999)
 #define NC_SEARCHDB 0x8000
 
-#define MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS 13
+#define MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS 14
 
 #ifdef UNICODE
 #define S9XW_SHARD_PATH SHARD_PATHW
@@ -370,6 +370,8 @@ struct SCustomKeys CustomKeys = {
 	{0,0}, // slot minus (disabled by default)
 	{0,0}, // slot save (disabled by default)
 	{0,0}, // slot load (disabled by default)
+	{0,0}, // bank plus (disabled by default)
+	{0,0}, // bank minus (disabled by default)
     {VK_F11,CUSTKEY_SHIFT_MASK}, // dialog save
     {VK_F11,0}, // dialog load
 	{0,0}, // background layer 1
@@ -452,7 +454,8 @@ struct OpenMovieParams
 	wchar_t Metadata[MOVIE_MAX_METADATA];
 };
 
-
+TCHAR g_bankMenuItemStrings[NUM_SAVE_BANKS][20];
+TCHAR g_saveMenuItemStrings[NUM_SAVE_BANKS * SAVE_SLOTS_PER_BANK][20];
 
 StateManager stateMan;
 
@@ -533,6 +536,17 @@ BOOL PostMenuCommand (UINT uID)
 		return PostMessage(GUI.hWnd, WM_COMMAND, (WPARAM)(uID),(LPARAM)(NULL));
 	else
 		return FALSE;
+}
+
+HMENU GetSubMenuById(UINT uID)
+{
+	MENUITEMINFO mii;
+
+	mii.cbSize = sizeof(mii);
+	mii.fMask = MIIM_SUBMENU;
+	if (!GetMenuItemInfo(GUI.hMenu, uID, FALSE, &mii))
+		return NULL;
+	return mii.hSubMenu;
 }
 
 void S9xMouseOn ()
@@ -829,18 +843,18 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 			modifiers |= CUSTKEY_SHIFT_MASK;
 
 		{
-			for(int i = 0 ; i < 10 ; i++)
+			for(int i = 0 ; i < SAVE_SLOTS_PER_BANK; i++)
 			{
 				if(wParam == CustomKeys.Save[i].key
 				&& modifiers == CustomKeys.Save[i].modifiers)
 				{
-					FreezeUnfreezeSlot (i, true);
+					FreezeUnfreezeSlot (GUI.CurrentSaveBank * SAVE_SLOTS_PER_BANK + i, true);
 					hitHotKey = true;
 				}
 				if(wParam == CustomKeys.Load[i].key
 				&& modifiers == CustomKeys.Load[i].modifiers)
 				{
-					FreezeUnfreezeSlot (i, false);
+					FreezeUnfreezeSlot (GUI.CurrentSaveBank * SAVE_SLOTS_PER_BANK + i, false);
 					hitHotKey = true;
 				}
 			}
@@ -873,7 +887,7 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 			&& modifiers == CustomKeys.SlotPlus.modifiers)
 			{
 				GUI.CurrentSaveSlot++;
-				if(GUI.CurrentSaveSlot > 9)
+				if(GUI.CurrentSaveSlot > LAST_SAVE_SLOT_IN_BANK)
 					GUI.CurrentSaveSlot = 0;
 
 				static char str [64];
@@ -891,6 +905,32 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 
 				static char str [64];
 				sprintf(str, FREEZE_INFO_SET_SLOT_N, GUI.CurrentSaveSlot);
+				S9xSetInfoString(str);
+
+				hitHotKey = true;
+			}
+			if (wParam == CustomKeys.BankPlus.key
+				&& modifiers == CustomKeys.BankPlus.modifiers)
+			{
+				GUI.CurrentSaveBank++;
+				if (GUI.CurrentSaveBank > LAST_SAVE_BANK)
+					GUI.CurrentSaveBank = 0;
+
+				static char str[64];
+				sprintf(str, FREEZE_INFO_SET_BANK_N, GUI.CurrentSaveBank);
+				S9xSetInfoString(str);
+
+				hitHotKey = true;
+			}
+			if (wParam == CustomKeys.BankMinus.key
+				&& modifiers == CustomKeys.BankMinus.modifiers)
+			{
+				GUI.CurrentSaveBank--;
+				if (GUI.CurrentSaveBank < 0)
+					GUI.CurrentSaveBank = 9;
+
+				static char str[64];
+				sprintf(str, FREEZE_INFO_SET_BANK_N, GUI.CurrentSaveBank);
 				S9xSetInfoString(str);
 
 				hitHotKey = true;
@@ -1218,11 +1258,11 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 		if(wParam == CustomKeys.TurboDown.key && modifiers == CustomKeys.TurboDown.modifiers)
 			PostMessage(GUI.hWnd, WM_COMMAND, (WPARAM)(ID_TURBO_DOWN),(LPARAM)(NULL));
 
-		for(int i = 0 ; i < 10 ; i++)
+		for(int i = 0 ; i < SAVE_SLOTS_PER_BANK; i++)
 		{
 			if(wParam == CustomKeys.SelectSave[i].key && modifiers == CustomKeys.SelectSave[i].modifiers)
 			{
-				GUI.CurrentSaveSlot = i;
+				GUI.CurrentSaveSlot = GUI.CurrentSaveBank * SAVE_SLOTS_PER_BANK + i;
 
 				static char str [64];
 				sprintf(str, FREEZE_INFO_SET_SLOT_N, GUI.CurrentSaveSlot);
@@ -1529,7 +1569,19 @@ LRESULT CALLBACK WinProc(
 		return 0;
 
 	case WM_COMMAND:
-		switch (wParam & 0xffff)
+	{
+		int cmd_id = wParam & 0xffff;
+		if (cmd_id >= ID_FILE_SAVE0 && cmd_id < ID_FILE_SAVE0 + NUM_SAVE_BANKS * SAVE_SLOTS_PER_BANK)
+		{
+			FreezeUnfreezeSlot(cmd_id - ID_FILE_SAVE0, TRUE);
+			break;
+		}
+		else if (cmd_id >= ID_FILE_LOAD0 && cmd_id < ID_FILE_LOAD0 + NUM_SAVE_BANKS * SAVE_SLOTS_PER_BANK)
+		{
+			FreezeUnfreezeSlot(cmd_id - ID_FILE_LOAD0, FALSE);
+			break;
+		}
+		switch (cmd_id)
 		{
 		case ID_FILE_AVI_RECORDING:
 			if (!GUI.AVIOut)
@@ -2123,36 +2175,6 @@ LRESULT CALLBACK WinProc(
 			Settings.FrameAdvance = false;
 			GUI.FrameAdvanceJustPressed = 0;
 			break;
-        case ID_FILE_LOAD0:
-			FreezeUnfreezeSlot (0, FALSE);
-			break;
-		case ID_FILE_LOAD1:
-			FreezeUnfreezeSlot (1, FALSE);
-			break;
-		case ID_FILE_LOAD2:
-			FreezeUnfreezeSlot (2, FALSE);
-			break;
-		case ID_FILE_LOAD3:
-			FreezeUnfreezeSlot (3, FALSE);
-			break;
-		case ID_FILE_LOAD4:
-			FreezeUnfreezeSlot (4, FALSE);
-			break;
-		case ID_FILE_LOAD5:
-			FreezeUnfreezeSlot (5, FALSE);
-			break;
-		case ID_FILE_LOAD6:
-			FreezeUnfreezeSlot (6, FALSE);
-			break;
-		case ID_FILE_LOAD7:
-			FreezeUnfreezeSlot (7, FALSE);
-			break;
-		case ID_FILE_LOAD8:
-			FreezeUnfreezeSlot (8, FALSE);
-			break;
-		case ID_FILE_LOAD9:
-			FreezeUnfreezeSlot (9, FALSE);
-			break;
 		case ID_FILE_LOAD_OOPS:
 			FreezeUnfreezeSlot(-1, FALSE);
 			break;
@@ -2162,36 +2184,6 @@ LRESULT CALLBACK WinProc(
         case ID_FILE_LOAD_PREVIEW:
             FreezeUnfreezeDialogPreview(FALSE);
             break;
-        case ID_FILE_SAVE0:
-            FreezeUnfreezeSlot (0, TRUE);
-			break;
-		case ID_FILE_SAVE1:
-			FreezeUnfreezeSlot (1, TRUE);
-			break;
-		case ID_FILE_SAVE2:
-			FreezeUnfreezeSlot (2, TRUE);
-			break;
-		case ID_FILE_SAVE3:
-			FreezeUnfreezeSlot (3, TRUE);
-			break;
-		case ID_FILE_SAVE4:
-			FreezeUnfreezeSlot (4, TRUE);
-			break;
-		case ID_FILE_SAVE5:
-			FreezeUnfreezeSlot (5, TRUE);
-			break;
-		case ID_FILE_SAVE6:
-			FreezeUnfreezeSlot (6, TRUE);
-			break;
-		case ID_FILE_SAVE7:
-			FreezeUnfreezeSlot (7, TRUE);
-			break;
-		case ID_FILE_SAVE8:
-			FreezeUnfreezeSlot (8, TRUE);
-			break;
-		case ID_FILE_SAVE9:
-			FreezeUnfreezeSlot (9, TRUE);
-			break;
         case ID_FILE_SAVE_FILE:
             FreezeUnfreezeDialog(TRUE);
             break;
@@ -2316,7 +2308,7 @@ LRESULT CALLBACK WinProc(
 			break;
         }
         break;
-
+	}
 	case WM_EXITMENULOOP:
 		UpdateWindow(GUI.hWnd);
 		DrawMenuBar(GUI.hWnd);
@@ -2634,6 +2626,40 @@ BOOL WinInit( HINSTANCE hInstance)
 	{
 		MessageBox (NULL, TEXT("Failed to initialize the menu.\nThis could indicate a failure of your operating system;\ntry closing some other windows or programs, or restart your computer, before opening Snes9x again.\nOr, if you compiled this program yourself, ensure that Snes9x was built with the proper resource files."), TEXT("Snes9x - Menu Initialization Failure"), MB_OK | MB_ICONSTOP);
 //        return FALSE; // disabled: try to function without the menu
+	}
+
+	// insert bank and slot submenus / menu items
+	HMENU parent_menu_save = GetSubMenuById(ID_FILE_SAVE_POPUP);
+	HMENU parent_menu_load = GetSubMenuById(ID_FILE_LOAD_POPUP);
+	MENUITEMINFO mii;
+	mii.cbSize = sizeof(mii);
+
+	for (int i = 0; i < NUM_SAVE_BANKS; i++)
+	{
+		// one bank sub each for save and load
+		HMENU bank_menu_save = CreatePopupMenu();
+		HMENU bank_menu_load = CreatePopupMenu();
+		// fill the slot entries into the sub menus
+		for (int j = 0; j < SAVE_SLOTS_PER_BANK; j++)
+		{
+			TCHAR *slot_string = g_saveMenuItemStrings[i * SAVE_SLOTS_PER_BANK + j];
+			_stprintf(slot_string, _T("Slot #&%d"), j);
+			mii.fMask = MIIM_STRING | MIIM_ID;
+			mii.dwTypeData = slot_string;
+			mii.wID = ID_FILE_SAVE0 + i * SAVE_SLOTS_PER_BANK + j;
+			InsertMenuItem(bank_menu_save, j, TRUE, &mii);
+			mii.wID = ID_FILE_LOAD0 + i * SAVE_SLOTS_PER_BANK + j;
+			InsertMenuItem(bank_menu_load, j, TRUE, &mii);
+		}
+
+		// add the bank menus to save and load
+		_stprintf(g_bankMenuItemStrings[i], _T("Bank #&%d"), i);
+		mii.fMask = MIIM_STRING | MIIM_SUBMENU;
+		mii.dwTypeData = g_bankMenuItemStrings[i];
+		mii.hSubMenu = bank_menu_save;
+		InsertMenuItem(parent_menu_save, i, TRUE, &mii);
+		mii.hSubMenu = bank_menu_load;
+		InsertMenuItem(parent_menu_load, i, TRUE, &mii);
 	}
 #ifdef DEBUGGER
 	if(GUI.hMenu) {
@@ -8378,6 +8404,7 @@ static hotkey_dialog_item hotkey_dialog_items[4][MAX_SWITCHABLE_HOTKEY_DIALOG_IT
         { &CustomKeys.QuitS9X, HOTKEYS_LABEL_1_11 },
         { &CustomKeys.ResetGame, HOTKEYS_LABEL_1_12 },
         { &CustomKeys.SaveScreenShot, HOTKEYS_LABEL_1_13 },
+		{ &CustomKeys.FrameAdvance, HOTKEYS_LABEL_1_14 },
     },
     {
         { &CustomKeys.BGL1, HOTKEYS_LABEL_2_1 },
@@ -8387,12 +8414,13 @@ static hotkey_dialog_item hotkey_dialog_items[4][MAX_SWITCHABLE_HOTKEY_DIALOG_IT
         { &CustomKeys.BGL5, HOTKEYS_LABEL_2_5 },
         { &CustomKeys.ClippingWindows, HOTKEYS_LABEL_2_6 },
         { &CustomKeys.Transparency, HOTKEYS_LABEL_2_7 },
-        { &CustomKeys.FrameAdvance, HOTKEYS_LABEL_2_8 },
+		{ &CustomKeys.ScopeTurbo, HOTKEYS_LABEL_2_8 },
         { &CustomKeys.ScopePause, HOTKEYS_LABEL_2_9 },
         { &CustomKeys.SwitchControllers, HOTKEYS_LABEL_2_10 },
         { &CustomKeys.JoypadSwap, HOTKEYS_LABEL_2_11 },
         { &CustomKeys.ShowPressed, HOTKEYS_LABEL_2_12 },
         { &CustomKeys.FrameCount, HOTKEYS_LABEL_2_13 },
+		{ &CustomKeys.ReadOnly, HOTKEYS_LABEL_2_14 },
     },
     {
         { &CustomKeys.TurboA, HOTKEYS_LABEL_3_1 },
@@ -8407,7 +8435,8 @@ static hotkey_dialog_item hotkey_dialog_items[4][MAX_SWITCHABLE_HOTKEY_DIALOG_IT
         { &CustomKeys.TurboUp, HOTKEYS_LABEL_3_10 },
         { &CustomKeys.TurboRight, HOTKEYS_LABEL_3_11 },
         { &CustomKeys.TurboDown, HOTKEYS_LABEL_3_12 },
-        { &CustomKeys.ScopeTurbo, HOTKEYS_LABEL_3_13 },
+		{ NULL, _T("") },
+		{ NULL, _T("") },
     },
     {
         { &CustomKeys.SelectSave[0], HOTKEYS_LABEL_4_1 },
@@ -8422,7 +8451,8 @@ static hotkey_dialog_item hotkey_dialog_items[4][MAX_SWITCHABLE_HOTKEY_DIALOG_IT
         { &CustomKeys.SelectSave[9], HOTKEYS_LABEL_4_10 },
         { &CustomKeys.SaveFileSelect, HOTKEYS_LABEL_4_11 },
         { &CustomKeys.LoadFileSelect, HOTKEYS_LABEL_4_12 },
-        { &CustomKeys.ReadOnly, HOTKEYS_LABEL_4_13 },
+		{ NULL, _T("") },
+		{ NULL, _T("") },
     },
 };
 
@@ -8447,9 +8477,11 @@ static void set_hotkeyinfo(HWND hDlg)
 	SendDlgItemMessage(hDlg,IDC_SLOTLOAD,WM_USER+44,CustomKeys.SlotLoad.key,CustomKeys.SlotLoad.modifiers);
     SendDlgItemMessage(hDlg, IDC_DIALOGSAVE, WM_USER + 44, CustomKeys.DialogSave.key, CustomKeys.DialogSave.modifiers);
     SendDlgItemMessage(hDlg, IDC_DIALOGLOAD, WM_USER + 44, CustomKeys.DialogLoad.key, CustomKeys.DialogLoad.modifiers);
+	SendDlgItemMessage(hDlg, IDC_BANKPLUS, WM_USER + 44, CustomKeys.BankPlus.key, CustomKeys.BankPlus.modifiers);
+	SendDlgItemMessage(hDlg, IDC_BANKMINUS, WM_USER + 44, CustomKeys.BankMinus.key, CustomKeys.BankMinus.modifiers);
 	int i;
-	for(i = 0 ; i < 10 ; i++) SendDlgItemMessage(hDlg,IDC_SAVE1+i,WM_USER+44,CustomKeys.Save[i].key,CustomKeys.Save[i].modifiers);
-	for(i = 0 ; i < 10 ; i++) SendDlgItemMessage(hDlg,IDC_SAVE11+i,WM_USER+44,CustomKeys.Load[i].key,CustomKeys.Load[i].modifiers);
+	for(i = 0 ; i < SAVE_SLOTS_PER_BANK; i++) SendDlgItemMessage(hDlg,IDC_SAVE1+i,WM_USER+44,CustomKeys.Save[i].key,CustomKeys.Save[i].modifiers);
+	for(i = 0 ; i < SAVE_SLOTS_PER_BANK; i++) SendDlgItemMessage(hDlg,IDC_SAVE11+i,WM_USER+44,CustomKeys.Load[i].key,CustomKeys.Load[i].modifiers);
 
     for(int i = 0; i < MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS; i++)
     {
@@ -8564,6 +8596,16 @@ switch(msg)
             CustomKeys.DialogLoad.key = wParam;
             CustomKeys.DialogLoad.modifiers = modifiers;
             break;
+
+		case IDC_BANKPLUS:
+			CustomKeys.BankPlus.key = wParam;
+			CustomKeys.BankPlus.modifiers = modifiers;
+			break;
+
+		case IDC_BANKMINUS:
+			CustomKeys.BankMinus.key = wParam;
+			CustomKeys.BankMinus.modifiers = modifiers;
+			break;
 		}
 
         if(which >= IDC_HOTKEY1 && which <= IDC_HOTKEY13)

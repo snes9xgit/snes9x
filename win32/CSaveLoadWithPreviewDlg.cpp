@@ -69,13 +69,13 @@ bool CSaveLoadWithPreviewDlg::init_preview_bmps()
     return true;
 }
 
-void CSaveLoadWithPreviewDlg::load_slot_image_text(int slot, HWND hDlg)
+void CSaveLoadWithPreviewDlg::load_slot_image_text(int slot, int bank, HWND hDlg)
 {
     uint16 *image_buffer;
     int width, height;
 
     // load the saved screenshot from a snapshot
-    if(UnfreezeScreenshotSlot(slot, &image_buffer, width, height))
+    if(UnfreezeScreenshotSlot(bank * SAVE_SLOTS_PER_BANK + slot, &image_buffer, width, height))
     {
         // create temporary bitmap storage for screenshot, 16bit RGB
         uint8_t* buffer = NULL;
@@ -118,6 +118,7 @@ void CSaveLoadWithPreviewDlg::load_slot_image_text(int slot, HWND hDlg)
         int ret = StretchDIBits(cdc, 0, 0, PREVIEW_IMAGE_WIDTH, PREVIEW_IMAGE_HEIGHT, 0, 0, width, height, buffer, bm, DIB_RGB_COLORS, SRCCOPY);
         SelectObject(cdc, old);
         DeleteDC(cdc);
+		DeleteObject(imageBmp);
 
         free(bm);
 
@@ -161,6 +162,23 @@ void CSaveLoadWithPreviewDlg::load_slot_image_text(int slot, HWND hDlg)
 
         free(image_buffer);
     }
+	else
+	{
+		// clear image and text
+		SendMessage(GetDlgItem(hDlg, IDC_BUTTON_SLOT_1 + slot), BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, NULL);
+		SetWindowText(GetDlgItem(hDlg, IDC_STATIC_SLOT_1 + slot), _T(""));
+	}
+}
+
+void CSaveLoadWithPreviewDlg::load_current_bank(HWND hDlg)
+{
+	int bank = ComboBox_GetCurSel(GetDlgItem(hDlg, IDC_COMBO_BANK));
+
+	for (int i = 0; i < NUM_DIALOG_SLOTS; i++)
+	{
+		// load one slot
+		load_slot_image_text(i, bank, hDlg);
+	}
 }
 
 void CSaveLoadWithPreviewDlg::init_window(HWND hDlg)
@@ -187,9 +205,6 @@ void CSaveLoadWithPreviewDlg::init_window(HWND hDlg)
         // set dialog font to static
         HFONT dlg_font = (HFONT)SendMessage(hDlg, WM_GETFONT, 0, 0);
         SendMessage(hStatic, WM_SETFONT, (WPARAM)dlg_font, MAKELPARAM(FALSE, 0));
-
-        // load one slot
-        load_slot_image_text(i, hDlg);
     }
 
     // resize dialog to fit all buttons and text
@@ -197,12 +212,29 @@ void CSaveLoadWithPreviewDlg::init_window(HWND hDlg)
     int dialog_height = 2 * (PREVIEW_HEIGHT + PREVIEW_TEXT_STATIC_HEIGHT) + 40; // +40 for cancel button
 
     // reposition cancel button
-    RECT rect_cancel, client_rect;
+    RECT rect_cancel, rect_bank, client_rect;
     GetWindowRect(GetDlgItem(hDlg, IDCANCEL), &rect_cancel);
     POINT topleft = { rect_cancel.left, rect_cancel.top };
     ScreenToClient(hDlg, &topleft);
     GetClientRect(hDlg, &client_rect);
     MoveWindow(GetDlgItem(hDlg, IDCANCEL), dialog_width - (client_rect.right - topleft.x), dialog_height - 30, rect_cancel.right - rect_cancel.left, rect_cancel.bottom - rect_cancel.top, TRUE);
+
+	// reposition dropdown
+	HWND combo_hwnd = GetDlgItem(hDlg, IDC_COMBO_BANK);
+	GetWindowRect(combo_hwnd, &rect_bank);
+	topleft.x = rect_bank.left;
+	topleft.y = rect_bank.top;
+	ScreenToClient(hDlg, &topleft);
+	MoveWindow(combo_hwnd, 10, dialog_height - 30, rect_bank.right - rect_bank.left, rect_bank.bottom - rect_bank.top, TRUE);
+
+	// fill bank strings
+	TCHAR temp[20];
+	for (int i = 0; i < NUM_SAVE_BANKS; i++)
+	{
+		_stprintf(temp, _T("Bank #%d"), i);
+		ComboBox_AddString(combo_hwnd, temp);
+	}
+	ComboBox_SetCurSel(combo_hwnd, GUI.CurrentSaveBank);
 
     // get monitor dimensions
     HMONITOR hm;
@@ -223,6 +255,8 @@ void CSaveLoadWithPreviewDlg::init_window(HWND hDlg)
     int left = (mi.rcWork.right - mi.rcWork.left - dialog_width) / 2;
     int top = (mi.rcWork.bottom - mi.rcWork.top - dialog_height) / 2;
     SetWindowPos(hDlg, NULL, left, top, dialog_width, dialog_height, SWP_NOZORDER);
+
+	load_current_bank(hDlg);
 }
 
 INT_PTR CALLBACK CSaveLoadWithPreviewDlg::DlgLoadWithPreview(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -243,7 +277,9 @@ INT_PTR CALLBACK CSaveLoadWithPreviewDlg::DlgLoadWithPreview(HWND hDlg, UINT msg
             int id = LOWORD(wParam);
             if(id >= IDC_BUTTON_SLOT_1 && id < IDC_BUTTON_SLOT_1 + NUM_DIALOG_SLOTS)
             {
-                EndDialog(hDlg, id - IDC_BUTTON_SLOT_1);
+				int bank = ComboBox_GetCurSel(GetDlgItem(hDlg, IDC_COMBO_BANK));
+				int slot = id - IDC_BUTTON_SLOT_1;
+                EndDialog(hDlg, bank * SAVE_SLOTS_PER_BANK + slot);
                 return true;
             }
             else if(id == IDCANCEL)
@@ -251,6 +287,13 @@ INT_PTR CALLBACK CSaveLoadWithPreviewDlg::DlgLoadWithPreview(HWND hDlg, UINT msg
                 EndDialog(hDlg, -1);
                 return true;
             }
+			else if (id == IDC_COMBO_BANK)
+			{
+				if (CBN_SELCHANGE == HIWORD(wParam))
+				{
+					dlg->load_current_bank(hDlg);
+				}
+			}
         }
         default:
             return false;

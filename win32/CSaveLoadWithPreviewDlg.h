@@ -25,7 +25,8 @@ private:
 
     void delete_preview_bmps();
     bool init_preview_bmps();
-    void load_slot_image_text(int slot, HWND hDlg);
+	void load_current_bank(HWND hDlg);
+    void load_slot_image_text(int slot, int bank, HWND hDlg);
     void init_window(HWND hDlg);
 
 public:

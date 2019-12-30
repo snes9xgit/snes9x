@@ -34,6 +34,11 @@
 #define MAX_RECENT_GAMES_LIST_SIZE 32
 #define MAX_RECENT_HOSTS_LIST_SIZE 16
 
+#define SAVE_SLOTS_PER_BANK 10
+#define LAST_SAVE_SLOT_IN_BANK (SAVE_SLOTS_PER_BANK - 1)
+#define NUM_SAVE_BANKS 10
+#define LAST_SAVE_BANK (NUM_SAVE_BANKS - 1)
+
 #include "_tfwopen.h"
 #ifdef UNICODE
 #define _tToChar WideToUtf8
@@ -197,6 +202,7 @@ struct sGUI {
     int  BlueShift;
     int  ControlForced;
 	int  CurrentSaveSlot;
+	int  CurrentSaveBank;
     int  MaxRecentGames;
 	int  ControllerOption;
 	int  ValidControllerOptions;
@@ -298,8 +304,8 @@ struct SCustomKeys {
 	SCustomKey ScopePause;
 	SCustomKey FrameCount;
 	SCustomKey ReadOnly;
-	SCustomKey Save [10];
-	SCustomKey Load [10];
+	SCustomKey Save [SAVE_SLOTS_PER_BANK];
+	SCustomKey Load [SAVE_SLOTS_PER_BANK];
 	SCustomKey FastForward;
 	SCustomKey FastForwardToggle;
 	SCustomKey ShowPressed;
@@ -308,6 +314,8 @@ struct SCustomKeys {
 	SCustomKey SlotMinus;
 	SCustomKey SlotSave;
 	SCustomKey SlotLoad;
+	SCustomKey BankPlus;
+	SCustomKey BankMinus;
     SCustomKey DialogSave;
     SCustomKey DialogLoad;
 	SCustomKey BGL1;
@@ -320,7 +328,7 @@ struct SCustomKeys {
 	SCustomKey JoypadSwap;
 	SCustomKey SwitchControllers;
 	SCustomKey TurboA, TurboB, TurboY, TurboX, TurboL, TurboR, TurboStart, TurboSelect, TurboLeft, TurboUp, TurboRight, TurboDown;
-	SCustomKey SelectSave [10];
+	SCustomKey SelectSave [SAVE_SLOTS_PER_BANK];
 	SCustomKey ResetGame;
 	SCustomKey ToggleCheats;
 	SCustomKey QuitS9X;

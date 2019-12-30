@@ -91,6 +91,8 @@ Nintendo is a trademark.")
 #define HOTKEYS_LABEL_1_11 TEXT("Quit Snes9x:")
 #define HOTKEYS_LABEL_1_12 TEXT("Reset game:")
 #define HOTKEYS_LABEL_1_13 TEXT("Save screenshot")
+#define HOTKEYS_LABEL_1_14 TEXT("Frame advance:")
+
 #define HOTKEYS_LABEL_2_1 TEXT("Graphics layer 1:")
 #define HOTKEYS_LABEL_2_2 TEXT("Graphics layer 2:")
 #define HOTKEYS_LABEL_2_3 TEXT("Graphics layer 3:")
@@ -98,12 +100,14 @@ Nintendo is a trademark.")
 #define HOTKEYS_LABEL_2_5 TEXT("Sprites layer:")
 #define HOTKEYS_LABEL_2_6 TEXT("Clipping Windows:")
 #define HOTKEYS_LABEL_2_7 TEXT("Transparency:")
-#define HOTKEYS_LABEL_2_8 TEXT("Frame advance:")
+#define HOTKEYS_LABEL_2_8 TEXT("SuperScope turbo:")
 #define HOTKEYS_LABEL_2_9 TEXT("SuperScope pause:")
 #define HOTKEYS_LABEL_2_10 TEXT("Switch controllers:")
 #define HOTKEYS_LABEL_2_11 TEXT("Joypad swap:")
 #define HOTKEYS_LABEL_2_12 TEXT("Show pressed keys:")
 #define HOTKEYS_LABEL_2_13 TEXT("Movie frame count:")
+#define HOTKEYS_LABEL_2_14 TEXT("Movie read-only:")
+
 #define HOTKEYS_LABEL_3_1 TEXT("Turbo A mode:")
 #define HOTKEYS_LABEL_3_2 TEXT("Turbo B mode:")
 #define HOTKEYS_LABEL_3_3 TEXT("Turbo Y mode:")
@@ -116,7 +120,8 @@ Nintendo is a trademark.")
 #define HOTKEYS_LABEL_3_10 TEXT("Turbo Up mode:")
 #define HOTKEYS_LABEL_3_11 TEXT("Turbo Right mode:")
 #define HOTKEYS_LABEL_3_12 TEXT("Turbo Down mode:")
-#define HOTKEYS_LABEL_3_13 TEXT("SuperScope turbo:")
+
+
 #define HOTKEYS_LABEL_4_1 TEXT("Select Slot 0:")
 #define HOTKEYS_LABEL_4_2 TEXT("Select Slot 1:")
 #define HOTKEYS_LABEL_4_3 TEXT("Select Slot 2:")
@@ -129,7 +134,8 @@ Nintendo is a trademark.")
 #define HOTKEYS_LABEL_4_10 TEXT("Select Slot 9:")
 #define HOTKEYS_LABEL_4_11 TEXT("Save to file:")
 #define HOTKEYS_LABEL_4_12 TEXT("Load from file:")
-#define HOTKEYS_LABEL_4_13 TEXT("Movie read-only:")
+
+
 
 // gaming buttons and axes
 #define GAMEDEVICE_JOYNUMPREFIX "(J%x)" // don't change this
@@ -355,7 +361,8 @@ Nintendo is a trademark.")
 
 // Save Messages
 
-#define FREEZE_INFO_SET_SLOT_N "set slot 00%d"
+#define FREEZE_INFO_SET_SLOT_N "Set save slot %03d"
+#define FREEZE_INFO_SET_BANK_N "Set save bank %03d"
 
 // AVI Messages
 

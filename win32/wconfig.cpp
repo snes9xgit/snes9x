@@ -118,6 +118,7 @@ void WinSetDefaultValues ()
 
 	GUI.Language=0;
     GUI.AllowSoundSync = true;
+	GUI.CurrentSaveBank = 0;
 }
 
 
