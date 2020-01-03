@@ -184,7 +184,7 @@ void CSaveLoadWithPreviewDlg::load_current_bank(HWND hDlg)
 void CSaveLoadWithPreviewDlg::init_window(HWND hDlg)
 {
     if(is_save_dialog)
-        SetWindowText(hDlg, L"Save with preview");
+        SetWindowText(hDlg, L"Save with Preview");
 
     int x_pos = 0;
     int y_pos = 0;
@@ -312,6 +312,7 @@ int CSaveLoadWithPreviewDlg::show()
     delete_preview_bmps();
     if(init_preview_bmps())
     {
+		RedrawWindow(GUI.hWnd, 0, 0, RDW_INTERNALPAINT); // workaround to get the dialog to show in OpenGL fullscreen / emulated fullscreen
         ret = DialogBoxParam(GUI.hInstance, MAKEINTRESOURCE(IDD_DIALOG_LOAD_PREVIEW), GUI.hWnd, DlgLoadWithPreview, (LPARAM)this);
     }
 
