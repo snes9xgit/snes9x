@@ -102,8 +102,7 @@ int					macFastForwardRate  = 5,
 unsigned long		spcFileCount        = 0,
 					pngFileCount        = 0;
 
-bool8				finished            = false,
-					cartOpen            = false,
+bool8				cartOpen            = false,
 					autofire            = false;
 
 bool8				fullscreen          = false,
@@ -2992,56 +2991,24 @@ void QuitWithFatalError ( NSString *message)
 
 - (void)start
 {
-    if (!finished)
-    {
 #ifdef DEBUGGER
-        CPU.Flags |= DEBUG_MODE_FLAG;
-        S9xDoDebug();
+	CPU.Flags |= DEBUG_MODE_FLAG;
+	S9xDoDebug();
 #endif
 
-        lastFrame = GetMicroseconds();
-        frameCount = 0;
-        if (macFrameSkip < 0)
-            skipFrames = 3;
-        else
-            skipFrames = macFrameSkip;
+	lastFrame = GetMicroseconds();
+	frameCount = 0;
+	if (macFrameSkip < 0)
+		skipFrames = 3;
+	else
+		skipFrames = macFrameSkip;
 
-        S9xInitDisplay(NULL, NULL);
+	S9xInitDisplay(NULL, NULL);
 
-        [NSThread detachNewThreadWithBlock:^
-        {
-            MacSnes9xThread(NULL);
-
-            dispatch_sync(dispatch_get_main_queue(), ^
-            {
-                if (!Settings.NetPlay || Settings.NetPlayServer)
-                {
-                    SNES9X_SaveSRAM();
-                    S9xResetSaveTimer(false);
-                    S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
-                }
-
-                S9xDeinitDisplay();
-
-                if (Settings.NetPlay)
-                {
-                    if (!Settings.NetPlayServer)
-                    {
-                        //                        DeinitGameWindow();
-                        cartOpen = false;
-                    }
-
-                    Settings.NetPlay = false;
-                    Settings.NetPlayServer = false;
-                }
-
-                if (!finished)
-                {
-                    [self start];
-                }
-            });
-        }];
-    }
+	[NSThread detachNewThreadWithBlock:^
+	{
+		MacSnes9xThread(NULL);
+	}];
 }
 
 - (void)stop
@@ -3183,6 +3150,13 @@ void QuitWithFatalError ( NSString *message)
 
 - (BOOL)loadROM:(NSURL *)fileURL
 {
+	running = false;
+
+	while (!Settings.StopEmulation)
+	{
+		usleep(Settings.FrameTime);
+	}
+
     if ( SNES9X_OpenCart(fileURL) )
     {
         SNES9X_Go();

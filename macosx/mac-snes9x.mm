@@ -431,8 +431,6 @@ void SNES9X_Quit (void)
 		S9xResetSaveTimer(false);
 		S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
 	}
-
-	finished = true;
 }
 
 void SNES9X_InitSound (void)
