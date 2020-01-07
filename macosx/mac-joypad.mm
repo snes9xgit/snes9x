@@ -700,14 +700,15 @@ std::unordered_map<struct JoypadInput, S9xButtonCode> GetJuypadButtons(uint32 ve
 void SetUpHID (void)
 {
     hidManager = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
-    IOHIDManagerRegisterInputValueCallback(hidManager, gamepadAction, NULL);
-    IOHIDManagerScheduleWithRunLoop(hidManager, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
-    IOHIDManagerSetDeviceMatching(hidManager, NULL);
-
-    ParseDefaults();
 
     if (hidManager != NULL && IOHIDManagerOpen(hidManager, kIOHIDOptionsTypeNone) == kIOReturnSuccess)
     {
+        IOHIDManagerRegisterInputValueCallback(hidManager, gamepadAction, NULL);
+        IOHIDManagerScheduleWithRunLoop(hidManager, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
+        IOHIDManagerSetDeviceMatching(hidManager, NULL);
+
+        ParseDefaults();
+
         NSSet* devices = (NSSet *)CFBridgingRelease(IOHIDManagerCopyDevices(hidManager));
         NSMutableArray *orderedDevices = [devices.allObjects mutableCopy];
 
@@ -763,6 +764,7 @@ void SetUpHID (void)
     }
     else
     {
+        printf("Unable to open IOHIDManager\n");
         hidManager = NULL;
     }
 }
