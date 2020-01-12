@@ -274,7 +274,7 @@ void findControls(struct JoypadDevice &device, NSDictionary *properties, NSMutab
     if (properties == nil)
     {
         return;
-    }
+	}
 
     int usagePage = [properties[@kIOHIDElementUsagePageKey] intValue];
     int usage = [properties[@kIOHIDElementUsageKey] intValue];
@@ -293,13 +293,11 @@ void findControls(struct JoypadDevice &device, NSDictionary *properties, NSMutab
             *hat = [properties[@kIOHIDElementCookieKey] intValue];
         }
     }
-    else
-    {
-        for ( NSDictionary *child in properties[@kIOHIDElementKey] )
-        {
-            findControls(device, child, buttons, axes, hat);
-        }
-    }
+
+	for ( NSDictionary *child in properties[@kIOHIDElementKey] )
+	{
+		findControls(device, child, buttons, axes, hat);
+	}
 }
 
 void ParseDefaults (void)
