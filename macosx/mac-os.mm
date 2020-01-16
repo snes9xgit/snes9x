@@ -2838,7 +2838,7 @@ void QuitWithFatalError ( NSString *message)
 
     pthread_mutex_lock(&keyLock);
     S9xButton button = keyCodes[event.keyCode];
-    if ( button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player <= 0 && button.player <= MAC_MAX_PLAYERS)
+    if ( button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player <= MAC_MAX_PLAYERS)
     {
         pressedKeys[button.player][button.buttonCode] = true;
     }
@@ -2866,7 +2866,7 @@ void QuitWithFatalError ( NSString *message)
 
     pthread_mutex_lock(&keyLock);
     S9xButton button = keyCodes[event.keyCode];
-    if ( button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player <= 0 && button.player <= MAC_MAX_PLAYERS)
+    if ( button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player <= MAC_MAX_PLAYERS)
     {
         pressedKeys[button.player][button.buttonCode] = false;
     }
