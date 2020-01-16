@@ -2419,8 +2419,10 @@ static void ProcessInput (void)
         }
     }
 
-    ControlPadFlagsToS9xReportButtons(0, controlPad[0]);
-    ControlPadFlagsToS9xReportButtons(1, controlPad[1]);
+	for (int i = 0; i < MAC_MAX_PLAYERS; ++i)
+	{
+		ControlPadFlagsToS9xReportButtons(i, controlPad[i]);
+	}
 
     if (macControllerOption == SNES_JUSTIFIER_2)
         ControlPadFlagsToS9xPseudoPointer(controlPad[1]);
