@@ -34,31 +34,6 @@
 #include "mac-os.h"
 #include "mac-joypad.h"
 
-#define	kUp(i)					(i * 4)
-#define	kDn(i)					(i * 4 + 1)
-#define	kLf(i)					(i * 4 + 2)
-#define	kRt(i)					(i * 4 + 3)
-
-#define	kPadElemTypeNone		0
-#define	kPadElemTypeHat4		1
-#define	kPadElemTypeHat8		2
-#define	kPadElemTypeAxis		3
-#define	kPadElemTypeButton		4
-#define	kPadElemTypeOtherHat4	5
-#define	kPadElemTypeOtherHat8	6
-
-#define	kPadXAxis				1
-#define	kPadYAxis				0
-#define	kPadHat					0
-
-#define	kMaskUp					0x0800
-#define	kMaskDn					0x0400
-#define	kMaskLf					0x0200
-#define	kMaskRt					0x0100
-
-typedef	hu_device_t		*pRecDevice;
-typedef	hu_element_t	*pRecElement;
-
 std::unordered_set<JoypadDevice> allDevices;
 std::unordered_map<JoypadDevice, std::map<uint8, std::map<int8, S9xButtonCode>>> defaultAxes;
 std::unordered_map<JoypadDevice, std::map<uint8, S9xButtonCode>> defaultButtons;
@@ -175,7 +150,7 @@ void gamepadAction(void *inContext, IOReturn inResult, void *inSender, IOHIDValu
         objcInput.value =inputStruct.value;
 
         pthread_mutex_unlock(&keyLock);
-        if (info.min != info.max)
+        if (info.usage != kHIDUsage_GD_Hatswitch && info.min != info.max)
         {
             if (inputStruct.value <= info.min || inputStruct.value >= info.max)
             {
@@ -187,16 +162,19 @@ void gamepadAction(void *inContext, IOReturn inResult, void *inSender, IOHIDValu
         }
         else
         {
-            if ([inputDelegate handleInput:objcInput fromJoypad:objcJoypad])
+            if (inputStruct.value >= info.min && inputStruct.value <= info.max)
             {
-                return;
+               if ([inputDelegate handleInput:objcInput fromJoypad:objcJoypad])
+               {
+                   return;
+               }
             }
         }
         pthread_mutex_lock(&keyLock);
 
         struct JoypadInput oppositeInputStruct = inputStruct;
 
-        if (info.min != info.max)
+        if (info.usage != kHIDUsage_GD_Hatswitch && info.min != info.max)
         {
             if (inputStruct.value < info.min)
             {
@@ -230,28 +208,45 @@ void gamepadAction(void *inContext, IOReturn inResult, void *inSender, IOHIDValu
         {
             int32 value = inputStruct.value;
 
-            inputStruct.value = 1;
-            if (buttonCodeByJoypadInput.find(inputStruct) != buttonCodeByJoypadInput.end())
+            for (int i = info.min; i <= info.max; i++)
             {
-                pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[inputStruct]] = (value & inputStruct.value);
+                inputStruct.value = i;
+                if (buttonCodeByJoypadInput.find(inputStruct) != buttonCodeByJoypadInput.end())
+                {
+                     pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[inputStruct]] = false;
+                }
             }
 
-            inputStruct.value = 2;
-            if (buttonCodeByJoypadInput.find(inputStruct) != buttonCodeByJoypadInput.end())
+            if (value >= info.min && value <= info.max)
             {
-                pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[inputStruct]] = (value & inputStruct.value);
-            }
-
-            inputStruct.value = 4;
-            if (buttonCodeByJoypadInput.find(inputStruct) != buttonCodeByJoypadInput.end())
-            {
-                pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[inputStruct]] = (value & inputStruct.value);
-            }
-
-            inputStruct.value = 8;
-            if (buttonCodeByJoypadInput.find(inputStruct) != buttonCodeByJoypadInput.end())
-            {
-                pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[inputStruct]] = (value & inputStruct.value);
+                if (value % 2 == 0)
+                {
+                    inputStruct.value = value;
+                    if (buttonCodeByJoypadInput.find(inputStruct) != buttonCodeByJoypadInput.end())
+                    {
+                        pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[inputStruct]] = true;
+                    }
+                }
+                else
+                {
+                    for (int i = value - 1; i <= value + 1; i++)
+                    {
+                        int button = i;
+                        if (i < info.min)
+                        {
+                            button = info.max;
+                        }
+                        else if (i > info.max)
+                        {
+                            button = info.min;
+                        }
+                        inputStruct.value = button;
+                        if (buttonCodeByJoypadInput.find(inputStruct) != buttonCodeByJoypadInput.end())
+                        {
+                            pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[inputStruct]] = true;
+                        }
+                    }
+                }
             }
         }
         else
@@ -269,7 +264,7 @@ void gamepadAction(void *inContext, IOReturn inResult, void *inSender, IOHIDValu
     pthread_mutex_unlock(&keyLock);
 }
 
-void findControls(struct JoypadDevice &device, NSDictionary *properties, NSMutableArray<NSDictionary *> *buttons, NSMutableArray<NSDictionary *> *axes, int64 *hat)
+void findControls(struct JoypadDevice &device, NSDictionary *properties, NSMutableArray<NSDictionary *> *buttons, NSMutableArray<NSDictionary *> *axes, NSMutableDictionary *hat)
 {
     if (properties == nil)
     {
@@ -288,10 +283,7 @@ void findControls(struct JoypadDevice &device, NSDictionary *properties, NSMutab
     }
     else if (usagePage == kHIDPage_GenericDesktop && usage == kHIDUsage_GD_Hatswitch)
     {
-        if (hat != NULL)
-        {
-            *hat = [properties[@kIOHIDElementCookieKey] intValue];
-        }
+        [hat setDictionary:properties];
     }
 
 	for ( NSDictionary *child in properties[@kIOHIDElementKey] )
@@ -504,7 +496,7 @@ void AddDevice (IOHIDDeviceRef device)
 
     NSMutableArray<NSDictionary *> *buttons = [NSMutableArray new];
     NSMutableArray<NSDictionary *> *axes = [NSMutableArray new];
-    int64 hat = -1;
+    NSMutableDictionary<NSString *, NSNumber *> *hat = [NSMutableDictionary new];
 
     struct JoypadDevice deviceStruct;
     deviceStruct.vendorID = vendor.unsignedIntValue;
@@ -536,7 +528,7 @@ void AddDevice (IOHIDDeviceRef device)
 
     for ( NSDictionary *child in ((__bridge NSDictionary *)properties)[@kIOHIDElementKey] )
     {
-        findControls(deviceStruct, child, buttons, axes, &hat);
+        findControls(deviceStruct, child, buttons, axes, hat);
     }
 
     NSComparisonResult (^comparitor)(NSDictionary *a, NSDictionary *b) = ^NSComparisonResult(NSDictionary *a, NSDictionary *b)
@@ -624,17 +616,17 @@ void AddDevice (IOHIDDeviceRef device)
         infoByCookie[cookie] = info;
     }
 
-    if (hat >= 0)
+    if ([hat count] >= 0)
     {
         struct JoypadCookie cookie;
         struct JoypadCookieInfo info;
 
         cookie.device = deviceStruct;
-        cookie.cookie = (uint32)hat;
+        cookie.cookie = hat[@kIOHIDElementCookieKey].unsignedIntValue;
 
         info.usage = kHIDUsage_GD_Hatswitch;
-        info.min = 0;
-        info.max = 0;
+        info.min = hat[@kIOHIDElementMinKey].intValue;
+        info.max = hat[@kIOHIDElementMaxKey].intValue;
         info.midpoint = 0;
 
         if (defaultHatValues.find(defaultsKey) != defaultHatValues.end())
@@ -814,7 +806,7 @@ bool SetButtonCodeForJoypadControl(uint32 vendorID, uint32 productID, uint32 ind
     {
         auto info = infoByCookie[cookieStruct];
 
-        if ( info.min != info.max )
+        if (info.usage != kHIDUsage_GD_Hatswitch && info.min != info.max)
         {
             if (value <= info.min)
             {
@@ -1009,7 +1001,7 @@ std::string LabelForInput(uint32 vendorID, uint32 productID, uint32 cookie, int3
                     }
                 }
 
-                if (value == 1)
+                if (value == 0)
                 {
                     return "D-Pad Up";
                 }
@@ -1021,7 +1013,7 @@ std::string LabelForInput(uint32 vendorID, uint32 productID, uint32 cookie, int3
                 {
                     return "D-Pad Down";
                 }
-                else if (value == 8)
+                else if (value == 6)
                 {
                     return "D-Pad Left";
                 }
