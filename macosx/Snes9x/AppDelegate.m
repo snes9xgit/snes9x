@@ -140,6 +140,8 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
         [self setButtonCode:buttonCode forKeyCode:self.keys[control].integerValue player:player];
     }
 
+	NSDictionary *joypadPlayerPrefs = [defaults objectForKey:kJoypadPlayerPrefs];
+
     for ( S9xJoypad *joypad in [self listJoypads])
     {
         NSMutableDictionary *joypadPrefs = [[defaults objectForKey:kJoypadInputPrefs] mutableCopy];
@@ -151,6 +153,14 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
         }
 
         NSString *key = [self prefsKeyForVendorID:joypad.vendorID productID:joypad.productID index:joypad.index];
+
+		for ( NSString *playerString in joypadPlayerPrefs )
+		{
+			if ( [key isEqualToString:joypadPlayerPrefs[playerString]] )
+			{
+				[self setPlayer:playerString.intValue forVendorID:joypad.vendorID productID:joypad.productID index:joypad.index];
+			}
+		}
 
         NSMutableDictionary *devicePrefs = [joypadPrefs[key] mutableCopy];
         if (devicePrefs == nil)

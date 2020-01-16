@@ -753,12 +753,6 @@ void SetUpHID (void)
         {
             AddDevice((__bridge IOHIDDeviceRef)device);
         }
-
-        if (orderedDevices.count == 1)
-        {
-            const struct JoypadDevice &deviceStruct = *(allDevices.begin());
-            SetPlayerForJoypad(0, deviceStruct.vendorID, deviceStruct.productID, deviceStruct.index, NULL);
-        }
     }
     else
     {
