@@ -2547,7 +2547,7 @@ static void Initialize (void)
 	Settings.Stereo = true;
 	Settings.SoundPlaybackRate = 32000;
 	Settings.SoundInputRate = 31950;
-	Settings.SupportHiRes = false;
+	Settings.SupportHiRes = true;
 	Settings.Transparency = true;
 	Settings.AutoDisplayMessages = true;
 	Settings.InitialInfoStringTimeout = 120;
