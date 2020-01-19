@@ -452,7 +452,7 @@ void ConfigFile::ClearLines()
     }
 }
 
-bool ConfigFile::ConfigEntry::section_then_key_less::operator()(const ConfigEntry &a, const ConfigEntry &b) {
+bool ConfigFile::ConfigEntry::section_then_key_less::operator()(const ConfigEntry &a, const ConfigEntry &b) const{
 	if(curConfigFile && a.section!=b.section){
 		const int sva = curConfigFile->GetSectionSize(a.section);
 		const int svb = curConfigFile->GetSectionSize(b.section);
