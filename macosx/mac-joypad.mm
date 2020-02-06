@@ -194,14 +194,26 @@ void gamepadAction(void *inContext, IOReturn inResult, void *inSender, IOHIDValu
             if (buttonCodeByJoypadInput.find(inputStruct) != buttonCodeByJoypadInput.end())
             {
                 pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[inputStruct]] = true;
-                pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[oppositeInputStruct]] = false;
+
+				if ( buttonCodeByJoypadInput.find(oppositeInputStruct) != buttonCodeByJoypadInput.end() )
+				{
+					pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[oppositeInputStruct]] = false;
+				}
+
             }
             else
             {
                 oppositeInputStruct.value = info.min;
-                pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[oppositeInputStruct]] = false;
+				if ( buttonCodeByJoypadInput.find(oppositeInputStruct) != buttonCodeByJoypadInput.end() )
+				{
+					pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[oppositeInputStruct]] = false;
+				}
                 oppositeInputStruct.value = info.max;
-                pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[oppositeInputStruct]] = false;
+
+				if ( buttonCodeByJoypadInput.find(oppositeInputStruct) != buttonCodeByJoypadInput.end() )
+				{
+					pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[oppositeInputStruct]] = false;
+				}
             }
         }
         else if (info.usage == kHIDUsage_GD_Hatswitch)
