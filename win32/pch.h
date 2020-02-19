@@ -28,9 +28,6 @@
 
 // MSVC headers
 #ifdef __WIN32__
-#include <direct.h>
-#include <io.h>
-#include <process.h>
 #include <tchar.h>
 #endif
 
