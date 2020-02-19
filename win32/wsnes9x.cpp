@@ -40,6 +40,7 @@
 #include "../memmap.h"
 #include "../cpuexec.h"
 #include "../display.h"
+#include "../gfx.h"
 #include "../cheats.h"
 #include "../netplay.h"
 #include "../apu/apu.h"

@@ -6,6 +6,7 @@
 
 #include "snes9x.h"
 #include "memmap.h"
+#include "ppu.h"
 
 static uint8	region_map[6][6] =
 {

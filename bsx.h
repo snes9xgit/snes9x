@@ -7,6 +7,8 @@
 #ifndef _BSX_H_
 #define _BSX_H_
 
+#include "port.h"
+
 #include <fstream>
 
 struct SBSX

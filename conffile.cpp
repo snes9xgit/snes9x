@@ -4,12 +4,12 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
+#include "conffile.h"
+
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
 #include <string>
-
-#include "conffile.h"
 
 #ifdef __WIN32__
 #define snprintf _snprintf // needs ANSI compliant name

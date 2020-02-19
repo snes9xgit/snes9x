@@ -9,6 +9,8 @@
 #ifndef _DEBUG_H_
 #define _DEBUG_H_
 
+#include "port.h"
+
 #include <string>
 
 struct SBreakPoint

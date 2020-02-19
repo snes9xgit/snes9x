@@ -7,7 +7,7 @@
 #ifndef _GFX_H_
 #define _GFX_H_
 
-#include "port.h"
+#include "snes9x.h"
 
 struct SGFX
 {

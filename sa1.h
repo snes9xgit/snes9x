@@ -7,6 +7,10 @@
 #ifndef _SA1_H_
 #define _SA1_H_
 
+#include "snes9x.h"
+#include "memmap.h"
+#include "getset.h"
+
 struct SSA1Registers
 {
 	uint8	DB;

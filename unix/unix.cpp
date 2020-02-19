@@ -34,9 +34,11 @@
 #endif
 
 #include "snes9x.h"
+#include "cpuexec.h"
 #include "memmap.h"
 #include "apu/apu.h"
 #include "gfx.h"
+#include "ppu.h"
 #include "snapshot.h"
 #include "controls.h"
 #include "cheats.h"

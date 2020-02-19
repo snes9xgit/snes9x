@@ -7,6 +7,8 @@
 #ifndef _SETA_H_
 #define _SETA_H_
 
+#include "port.h"
+
 #define ST_010	0x01
 #define ST_011	0x02
 #define ST_018	0x03

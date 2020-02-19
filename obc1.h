@@ -7,6 +7,8 @@
 #ifndef _OBC1_H_
 #define _OBC1_H_
 
+#include "port.h"
+
 struct SOBC1
 {
 	uint16	address;

@@ -356,6 +356,9 @@
     <ClCompile Include="..\fxinst.cpp">
       <Filter>Emu</Filter>
     </ClCompile>
+    <ClCompile Include="..\getset.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
     <ClCompile Include="..\gfx.cpp">
       <Filter>Emu</Filter>
     </ClCompile>

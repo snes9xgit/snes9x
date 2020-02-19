@@ -7,6 +7,8 @@
 #ifndef _MOVIE_H_
 #define _MOVIE_H_
 
+#include "port.h"
+
 #define MOVIE_OPT_FROM_SNAPSHOT		0
 #define MOVIE_OPT_FROM_RESET		(1 << 0)
 #define MOVIE_OPT_PAL				(1 << 1)

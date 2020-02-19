@@ -33,6 +33,7 @@ SOURCES_CXX := $(CORE_DIR)/apu/apu.cpp \
 				 $(CORE_DIR)/dsp4.cpp \
 				 $(CORE_DIR)/fxinst.cpp \
 				 $(CORE_DIR)/fxemu.cpp \
+				 $(CORE_DIR)/getset.cpp \
 				 $(CORE_DIR)/gfx.cpp \
 				 $(CORE_DIR)/globals.cpp \
 				 $(CORE_DIR)/logger.cpp \

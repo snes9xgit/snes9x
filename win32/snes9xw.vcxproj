@@ -501,6 +501,7 @@
     </ClCompile>
     <ClCompile Include="..\fxemu.cpp" />
     <ClCompile Include="..\fxinst.cpp" />
+    <ClCompile Include="..\getset.cpp" />
     <ClCompile Include="..\gfx.cpp" />
     <ClCompile Include="..\globals.cpp">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">Default</CompileAs>

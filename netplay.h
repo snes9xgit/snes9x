@@ -7,6 +7,8 @@
 #ifndef _NETPLAY_H_
 #define _NETPLAY_H_
 
+#include "port.h"
+
 /*
  * Client to server joypad update
  *

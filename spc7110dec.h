@@ -19,6 +19,8 @@
 #ifndef _SPC7110DEC_H_
 #define _SPC7110DEC_H_
 
+#include "spc7110.h"
+
 class SPC7110Decomp {
 public:
   uint8 read();

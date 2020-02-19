@@ -4,10 +4,11 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
+#include "cheats.h"
+
 #include <ctype.h>
 #include "snes9x.h"
 #include "memmap.h"
-#include "cheats.h"
 
 #define WRAM_BITS	ALL_BITS
 #define SRAM_BITS	ALL_BITS + (0x20000 >> 5)

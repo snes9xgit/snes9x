@@ -4,21 +4,32 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
+#include "snapshot.h"
+
 #include <assert.h>
 #include "snes9x.h"
+#include "cpuexec.h"
 #include "memmap.h"
 #include "dma.h"
+#include "ppu.h"
 #include "apu/apu.h"
 #include "fxinst.h"
 #include "fxemu.h"
 #include "sdd1.h"
 #include "srtc.h"
-#include "snapshot.h"
 #include "controls.h"
 #include "movie.h"
 #include "display.h"
 #include "language.h"
 #include "gfx.h"
+#include "dsp.h"
+#include "sa1.h"
+#include "spc7110.h"
+#include "c4.h"
+#include "obc1.h"
+#include "seta.h"
+#include "bsx.h"
+#include "msu1.h"
 
 #ifndef min
 #define min(a,b)	(((a) < (b)) ? (a) : (b))

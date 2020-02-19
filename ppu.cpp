@@ -4,8 +4,11 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
+#include "ppu.h"
+
 #include "snes9x.h"
 #include "memmap.h"
+#include "getset.h"
 #include "dma.h"
 #include "apu/apu.h"
 #include "fxemu.h"
@@ -14,6 +17,10 @@
 #include "controls.h"
 #include "movie.h"
 #include "display.h"
+#include "sa1.h"
+#include "spc7110.h"
+#include "bsx.h"
+#include "msu1.h"
 #ifdef NETPLAY_SUPPORT
 #include "netplay.h"
 #endif

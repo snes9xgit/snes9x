@@ -282,6 +282,7 @@
     <ClCompile Include="..\dsp4.cpp" />
     <ClCompile Include="..\fxemu.cpp" />
     <ClCompile Include="..\fxinst.cpp" />
+    <ClCompile Include="..\getset.cpp" />
     <ClCompile Include="..\gfx.cpp" />
     <ClCompile Include="..\globals.cpp" />
     <ClCompile Include="..\loadzip.cpp" />

@@ -7,14 +7,17 @@
 //  Input recording/playback code
 //  (c) Copyright 2004 blip
 
+#include "movie.h"
+
 #ifndef __WIN32__
 #include <unistd.h>
 #endif
 #include "snes9x.h"
+#include "cpuexec.h"
 #include "memmap.h"
 #include "controls.h"
+#include "gfx.h"
 #include "snapshot.h"
-#include "movie.h"
 #include "language.h"
 #ifdef NETPLAY_SUPPORT
 #include "netplay.h"

@@ -84,6 +84,7 @@
 		30D15D3E22CE6B74005BC352 /* dsp4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF5D3E1C0FAFD35400340007 /* dsp4.cpp */; };
 		30D15D3F22CE6B74005BC352 /* fxemu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE0617C0526CCB900A80003 /* fxemu.cpp */; };
 		30D15D4022CE6B74005BC352 /* fxinst.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE0617E0526CCB900A80003 /* fxinst.cpp */; };
+		30D15DBF22CE6BC9005BC352 /* getset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE061810526CCB900A80003 /* getset.cpp */; };
 		30D15D4122CE6B74005BC352 /* gfx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA31FE2D05F7743E00E13748 /* gfx.cpp */; };
 		30D15D4222CE6B74005BC352 /* globals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE061830526CCB900A80003 /* globals.cpp */; };
 		30D15D4322CE6B74005BC352 /* loadzip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE061A90526CCB900A80003 /* loadzip.cpp */; };
@@ -376,6 +377,7 @@
 		EA2DBC0D0510ABE700A80003 /* mac-screenshot.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = "mac-screenshot.mm"; sourceTree = "<group>"; };
 		EA2F380F09B17E070078DCA7 /* bsx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = bsx.cpp; sourceTree = "<group>"; usesTabs = 1; };
 		EA2F381A09B17E9E0078DCA7 /* bsx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bsx.h; sourceTree = "<group>"; usesTabs = 1; };
+		EAE061810526CCB900A80003 /* getset.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = getset.cpp; sourceTree = "<group>"; usesTabs = 1; };
 		EA31FE2D05F7743E00E13748 /* gfx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = gfx.cpp; sourceTree = "<group>"; usesTabs = 1; };
 		EA362C3E086119D100FBE476 /* HID_Utilities_External.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = HID_Utilities_External.h; sourceTree = "<group>"; };
 		EA3D2F360A26083B00BDACCC /* SRAM.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = SRAM.icns; sourceTree = "<group>"; };
@@ -862,6 +864,7 @@
 				CF5D3E1C0FAFD35400340007 /* dsp4.cpp */,
 				EAE0617C0526CCB900A80003 /* fxemu.cpp */,
 				EAE0617E0526CCB900A80003 /* fxinst.cpp */,
+				EAE061810526CCB900A80003 /* getset.cpp */,
 				EA31FE2D05F7743E00E13748 /* gfx.cpp */,
 				EAE061830526CCB900A80003 /* globals.cpp */,
 				EAE061A90526CCB900A80003 /* loadzip.cpp */,
@@ -1257,6 +1260,7 @@
 				30D15D3E22CE6B74005BC352 /* dsp4.cpp in Sources */,
 				30D15D3F22CE6B74005BC352 /* fxemu.cpp in Sources */,
 				30D15D4022CE6B74005BC352 /* fxinst.cpp in Sources */,
+				30D15DBF22CE6BC9005BC352 /* getset.cpp in Sources */,
 				30D15D4122CE6B74005BC352 /* gfx.cpp in Sources */,
 				30D15D4222CE6B74005BC352 /* globals.cpp in Sources */,
 				30D15D4322CE6B74005BC352 /* loadzip.cpp in Sources */,

@@ -22,6 +22,8 @@
 
 #include "snes9x.h"
 #include "memmap.h"
+#include "gfx.h"
+#include "ppu.h"
 #include "screenshot.h"
 
 #include "mac-prefix.h"

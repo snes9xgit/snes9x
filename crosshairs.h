@@ -7,6 +7,8 @@
 #ifndef _CROSSHAIRS_H_
 #define _CROSSHAIRS_H_
 
+#include "port.h"
+
 // Read in the specified crosshair file, replacing whatever data might be in that slot.
 // Available slots are 1-31.
 // The input file must be a PNG or a text file. 

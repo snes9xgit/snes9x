@@ -1,3 +1,5 @@
+#include "bml.h"
+
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -5,7 +7,6 @@
 #include <stdio.h>
 
 #include "port.h"
-#include "bml.h"
 
 bml_node::bml_node()
 {

@@ -20,6 +20,7 @@
 
 
 #import "snes9x.h"
+#import "cpuexec.h"
 #import "memmap.h"
 #import "apu.h"
 #import "snapshot.h"

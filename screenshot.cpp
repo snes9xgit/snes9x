@@ -4,13 +4,14 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
+#include "screenshot.h"
+
 #ifdef HAVE_LIBPNG
 #include <png.h>
 #endif
 #include "snes9x.h"
-#include "memmap.h"
 #include "display.h"
-#include "screenshot.h"
+#include "gfx.h"
 
 
 bool8 S9xDoScreenshot (int width, int height)

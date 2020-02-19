@@ -4,9 +4,10 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
+#include "logger.h"
+
 #include "snes9x.h"
 #include "movie.h"
-#include "logger.h"
 
 static int	resetno = 0;
 static int	framecounter = 0;

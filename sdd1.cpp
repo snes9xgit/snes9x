@@ -4,9 +4,10 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
+#include "sdd1.h"
+
 #include "snes9x.h"
 #include "memmap.h"
-#include "sdd1.h"
 #include "display.h"
 
 

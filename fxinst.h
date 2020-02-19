@@ -7,6 +7,8 @@
 #ifndef _FXINST_H_
 #define _FXINST_H_
 
+#include "port.h"
+
 /*
  * FxChip(GSU) register space specification
  * (Register address space 3000-32ff)

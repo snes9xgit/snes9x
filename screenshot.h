@@ -7,6 +7,8 @@
 #ifndef _SCREENSHOT_H_
 #define _SCREENSHOT_H_
 
+#include "port.h"
+
 bool8 S9xDoScreenshot (int, int);
 
 #endif

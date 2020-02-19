@@ -7,6 +7,8 @@
 #ifndef _C4_H_
 #define _C4_H_
 
+#include "port.h"
+
 extern int16	C4WFXVal;
 extern int16	C4WFYVal;
 extern int16	C4WFZVal;
@@ -31,10 +33,6 @@ void S9xSetC4 (uint8, uint16);
 uint8 S9xGetC4 (uint16);
 uint8 * S9xGetBasePointerC4 (uint16);
 uint8 * S9xGetMemPointerC4 (uint16);
-
-static inline uint8 * C4GetMemPointer (uint32 Address)
-{
-	return (Memory.ROM + ((Address & 0xff0000) >> 1) + (Address & 0x7fff));
-}
+uint8 * C4GetMemPointer (uint32);
 
 #endif

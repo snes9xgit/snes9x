@@ -4,8 +4,9 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
+#include "dsp.h"
+
 #include "snes9x.h"
-#include "memmap.h"
 
 static void DSP2_Op01 (void);
 static void DSP2_Op03 (void);

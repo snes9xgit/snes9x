@@ -21,6 +21,7 @@
  * or in connection with the use or performance of this software.
  *****/
 
+#include "spc7110.h"
 
 #include <limits>
 

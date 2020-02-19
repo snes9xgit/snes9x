@@ -5,7 +5,9 @@
 \*****************************************************************************/
 
 #include "snes9x.h"
+#include "cpuexec.h"
 #include "memmap.h"
+#include "getset.h"
 #include "apu/apu.h"
 
 // for "Magic WDM" features

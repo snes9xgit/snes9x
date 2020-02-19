@@ -5,7 +5,10 @@
 \*****************************************************************************/
 
 #include "snes9x.h"
+#include "cpuexec.h"
 #include "memmap.h"
+#include "getset.h"
+#include "sa1.h"
 
 #define CPU								SA1
 #define ICPU							SA1

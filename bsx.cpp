@@ -9,6 +9,8 @@
 // Thanks to Seph3 for his modem notes
 
 
+#include "bsx.h"
+
 #include "snes9x.h"
 #include "memmap.h"
 #include "display.h"

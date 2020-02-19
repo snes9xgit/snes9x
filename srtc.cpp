@@ -10,11 +10,12 @@
  *****/
 
 
+#include "srtc.h"
+
 #include <limits>
 
 #include "snes9x.h"
 #include "memmap.h"
-#include "srtc.h"
 #include "display.h"
 
 #define memory_cartrtc_read(a)		RTCData.reg[(a)]

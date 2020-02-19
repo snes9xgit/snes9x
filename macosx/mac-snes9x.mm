@@ -20,8 +20,10 @@
 
 
 #include "snes9x.h"
+#include "cpuexec.h"
 #include "memmap.h"
 #include "apu.h"
+#include "gfx.h"
 #include "snapshot.h"
 #include "cheats.h"
 #include "movie.h"
