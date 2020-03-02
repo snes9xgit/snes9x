@@ -229,37 +229,34 @@ void gamepadAction(void *inContext, IOReturn inResult, void *inSender, IOHIDValu
                 }
             }
 
-            if (value >= info.min && value <= info.max)
-            {
-                if (value % 2 == 0)
-                {
-                    inputStruct.value = value;
-                    if (buttonCodeByJoypadInput.find(inputStruct) != buttonCodeByJoypadInput.end())
-                    {
-                        pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[inputStruct]] = true;
-                    }
-                }
-                else
-                {
-                    for (int i = value - 1; i <= value + 1; i++)
-                    {
-                        int button = i;
-                        if (i < info.min)
-                        {
-                            button = info.max;
-                        }
-                        else if (i > info.max)
-                        {
-                            button = info.min;
-                        }
-                        inputStruct.value = button;
-                        if (buttonCodeByJoypadInput.find(inputStruct) != buttonCodeByJoypadInput.end())
-                        {
-                            pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[inputStruct]] = true;
-                        }
-                    }
-                }
-            }
+			if (value % 2 == 0)
+			{
+				inputStruct.value = value;
+				if (buttonCodeByJoypadInput.find(inputStruct) != buttonCodeByJoypadInput.end())
+				{
+					pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[inputStruct]] = true;
+				}
+			}
+			else
+			{
+				for (int i = value - 1; i <= value + 1; i++)
+				{
+					int button = i;
+					if (i < info.min)
+					{
+						button = info.max;
+					}
+					else if (i > info.max)
+					{
+						button = info.min;
+					}
+					inputStruct.value = button;
+					if (buttonCodeByJoypadInput.find(inputStruct) != buttonCodeByJoypadInput.end())
+					{
+						pressedGamepadButtons[playerNum][buttonCodeByJoypadInput[inputStruct]] = true;
+					}
+				}
+			}
         }
         else
         {
