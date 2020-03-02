@@ -55,7 +55,18 @@ typedef struct
     vector_float2 textureCoordinate;
 } MetalVertex;
 
+@interface MetalLayerDelegate: NSObject<CALayerDelegate, NSViewLayerContentScaleDelegate>
+@end
+
+@implementation MetalLayerDelegate
+- (BOOL)layer:(CALayer *)layer shouldInheritContentsScale:(CGFloat)newScale fromWindow:(NSWindow *)window
+{
+	return YES;
+}
+@end
+
 CAMetalLayer    			*metalLayer = nil;
+MetalLayerDelegate			*layerDelegate = nil;
 id<MTLDevice>   			metalDevice = nil;
 id<MTLTexture>  			metalTexture = nil;
 id<MTLCommandQueue>			metalCommandQueue = nil;
@@ -147,6 +158,8 @@ static void S9xInitMetal (void)
     glScreenH = glScreenBounds.size.height;
 
     metalLayer = (CAMetalLayer *)s9xView.layer;
+	layerDelegate = [MetalLayerDelegate new];
+	metalLayer.delegate = layerDelegate;
 	
     metalDevice = s9xView.device;
 			
