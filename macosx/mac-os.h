@@ -124,7 +124,10 @@ extern bool8			pressedKeys[MAC_MAX_PLAYERS][kNumButtons];
 extern bool8            pressedGamepadButtons[MAC_MAX_PLAYERS][kNumButtons];
 extern pthread_mutex_t	keyLock;
 
-extern MTKView			*s9xView;
+@interface S9xView: MTKView
+- (void)updatePauseOverlay;
+@end
+extern S9xView			*s9xView;
 
 void AdjustMenus (void);
 void UpdateMenuCommandStatus (Boolean);

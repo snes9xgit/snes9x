@@ -63,6 +63,7 @@ typedef struct
 {
 	return YES;
 }
+
 @end
 
 CAMetalLayer    			*metalLayer = nil;

@@ -219,7 +219,7 @@ bool8               pressedRawKeyboardButtons[MAC_NUM_KEYCODES] = { 0 };
 bool8               heldFunctionButtons[kNumFunctionButtons] = { 0 };
 pthread_mutex_t     keyLock;
 
-MTKView             *s9xView;
+S9xView             *s9xView;
 
 enum
 {
@@ -348,6 +348,8 @@ static inline void EmulationLoop (void)
 
     pauseEmulation = false;
     frameAdvance   = false;
+	[s9xView updatePauseOverlay];
+
 
     if (macQTRecord)
     {
@@ -2218,6 +2220,7 @@ static void ProcessInput (void)
 
                         case ToggleEmulationPause:
                             pauseEmulation = !pauseEmulation;
+							[s9xView updatePauseOverlay];
                             break;
 
                         case AdvanceFrame:
@@ -2239,6 +2242,7 @@ static void ProcessInput (void)
         if (ISpKeyIsPressed(keys, gamepadButtons, kISpEsc))
         {
             pauseEmulation = true;
+			[s9xView updatePauseOverlay];
 
             dispatch_async(dispatch_get_main_queue(), ^
             {
@@ -2796,9 +2800,6 @@ void QuitWithFatalError ( NSString *message)
     [NSApp terminate:nil];
 }
 
-@interface S9xView : MTKView
-@end
-
 @implementation S9xView
 
 + (void)initialize
@@ -2929,15 +2930,18 @@ void QuitWithFatalError ( NSString *message)
 - (void)mouseDown:(NSEvent *)event
 {
     pauseEmulation = true;
-    [self setNeedsDisplay:YES];
+	[s9xView updatePauseOverlay];
 }
 
-- (void)drawRect:(NSRect)dirtyRect
+- (void)updatePauseOverlay
 {
-    self.subviews[0].hidden = !pauseEmulation;
-    CGFloat scaleFactor = MAX(self.window.backingScaleFactor, 1.0);
-    glScreenW = self.frame.size.width * scaleFactor;
-    glScreenH = self.frame.size.height * scaleFactor;
+	dispatch_async(dispatch_get_main_queue(), ^{
+		NSLog(@"%d", pauseEmulation);
+		self.subviews[0].hidden = !pauseEmulation;
+		CGFloat scaleFactor = MAX(self.window.backingScaleFactor, 1.0);
+		glScreenW = self.frame.size.width * scaleFactor;
+		glScreenH = self.frame.size.height * scaleFactor;
+	});
 }
 
 - (void)setFrame:(NSRect)frame
@@ -3032,7 +3036,7 @@ void QuitWithFatalError ( NSString *message)
 - (void)pause
 {
     pauseEmulation = true;
-    [s9xView setNeedsDisplay:YES];
+    [s9xView updatePauseOverlay];
 }
 
 - (void)quit
@@ -3044,6 +3048,7 @@ void QuitWithFatalError ( NSString *message)
 - (void)resume
 {
     pauseEmulation = false;
+	[s9xView updatePauseOverlay];
 }
 
 - (NSArray<S9xJoypad *> *)listJoypads
