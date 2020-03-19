@@ -52,13 +52,6 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
     window.frameAutosaveName = kMainWindowIdentifier;
     window.releasedWhenClosed = NO;
 
-    [window.contentView addSubview:s9xView];
-    [s9xView.topAnchor constraintEqualToAnchor:window.contentView.topAnchor].active = YES;
-    [s9xView.bottomAnchor constraintEqualToAnchor:window.contentView.bottomAnchor].active = YES;
-    [s9xView.centerXAnchor constraintEqualToAnchor:window.contentView.centerXAnchor].active = YES;
-    [s9xView.leftAnchor constraintGreaterThanOrEqualToAnchor:window.contentView.leftAnchor].active = YES;
-    [s9xView.rightAnchor constraintLessThanOrEqualToAnchor:window.contentView.rightAnchor].active = YES;
-
     if ( ![window setFrameUsingName:kMainWindowIdentifier] )
     {
         [window center];
@@ -456,8 +449,18 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 {
     if ([self.s9xEngine loadROM:url])
     {
+		[self.s9xEngine recreateS9xView];
+		
+		NSWindow *window = self.window;
+		[window.contentView addSubview:s9xView];
+		[s9xView.topAnchor constraintEqualToAnchor:window.contentView.topAnchor].active = YES;
+		[s9xView.bottomAnchor constraintEqualToAnchor:window.contentView.bottomAnchor].active = YES;
+		[s9xView.centerXAnchor constraintEqualToAnchor:window.contentView.centerXAnchor].active = YES;
+		[s9xView.leftAnchor constraintGreaterThanOrEqualToAnchor:window.contentView.leftAnchor].active = YES;
+		[s9xView.rightAnchor constraintLessThanOrEqualToAnchor:window.contentView.rightAnchor].active = YES;
 
-        [self.window makeKeyAndOrderFront:self];
+		
+        [window makeKeyAndOrderFront:self];
         [NSDocumentController.sharedDocumentController noteNewRecentDocumentURL:url];
         return YES;
     }

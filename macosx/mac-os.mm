@@ -2976,15 +2976,7 @@ void QuitWithFatalError ( NSString *message)
     if (self = [super init])
     {
         Initialize();
-
-        CGRect frame = NSMakeRect(0, 0, SNES_WIDTH * 2, SNES_HEIGHT * 2);
-        s9xView = [[S9xView alloc] initWithFrame:frame];
-        s9xView.translatesAutoresizingMaskIntoConstraints = NO;
-        s9xView.autoresizingMask = NSViewWidthSizable|NSViewHeightSizable;
-        [s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:s9xView attribute:NSLayoutAttributeWidth multiplier:(CGFloat)SNES_HEIGHT/(CGFloat)SNES_WIDTH constant:0.0]];
-        [s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SNES_WIDTH * 2.0]];
-        [s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SNES_HEIGHT * 2.0]];
-		s9xView.device = MTLCreateSystemDefaultDevice();
+		[self recreateS9xView];
     }
 
     return self;
@@ -2993,6 +2985,21 @@ void QuitWithFatalError ( NSString *message)
 - (void)dealloc
 {
     Deinitialize();
+}
+
+- (void)recreateS9xView
+{
+	[s9xView removeFromSuperview];
+	S9xDeinitDisplay();
+	CGRect frame = NSMakeRect(0, 0, SNES_WIDTH * 2, SNES_HEIGHT * 2);
+	s9xView = [[S9xView alloc] initWithFrame:frame];
+	s9xView.translatesAutoresizingMaskIntoConstraints = NO;
+	s9xView.autoresizingMask = NSViewWidthSizable|NSViewHeightSizable;
+	[s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:s9xView attribute:NSLayoutAttributeWidth multiplier:(CGFloat)SNES_HEIGHT/(CGFloat)SNES_WIDTH constant:0.0]];
+	[s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SNES_WIDTH * 2.0]];
+	[s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SNES_HEIGHT * 2.0]];
+	s9xView.device = MTLCreateSystemDefaultDevice();
+	S9xInitDisplay(NULL, NULL);
 }
 
 - (void)start

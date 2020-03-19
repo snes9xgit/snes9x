@@ -164,6 +164,8 @@ extern id<S9xInputDelegate> inputDelegate;
 
 @property (nonatomic, weak) id<S9xInputDelegate> inputDelegate;
 
+- (void)recreateS9xView;
+
 - (void)start;
 - (void)stop;
 
