@@ -129,6 +129,8 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
     };
 
     [defaults registerDefaults:defaultSettings];
+	[defaults setBool:NO forKey:@"NSWindowAssertWhenDisplayCycleLimitReached"];
+	[defaults synchronize];
 
     self.keys = [[defaults objectForKey:kKeyboardPrefs] mutableCopy];
 
