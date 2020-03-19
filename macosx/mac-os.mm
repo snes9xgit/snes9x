@@ -3015,6 +3015,7 @@ void QuitWithFatalError ( NSString *message)
 
 - (void)stop
 {
+	SNES9X_Quit();
     S9xExit();
 }
 
@@ -3032,6 +3033,12 @@ void QuitWithFatalError ( NSString *message)
 {
     pauseEmulation = true;
     [s9xView setNeedsDisplay:YES];
+}
+
+- (void)quit
+{
+	SNES9X_Quit();
+	[self pause];
 }
 
 - (void)resume

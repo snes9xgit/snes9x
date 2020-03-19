@@ -167,6 +167,7 @@ extern id<S9xInputDelegate> inputDelegate;
 - (BOOL)isRunning;
 - (BOOL)isPaused;
 - (void)pause;
+- (void)quit;
 - (void)resume;
 
 - (BOOL)setButton:(S9xButtonCode)button forKey:(int16)key player:(int8)player oldButton:(S9xButtonCode *)oldButton oldPlayer:(int8 *)oldPlayer oldKey:(int16 *)oldKey;
