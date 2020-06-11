@@ -124,7 +124,10 @@ extern bool8			pressedKeys[MAC_MAX_PLAYERS][kNumButtons];
 extern bool8            pressedGamepadButtons[MAC_MAX_PLAYERS][kNumButtons];
 extern pthread_mutex_t	keyLock;
 
-extern MTKView			*s9xView;
+@interface S9xView: MTKView
+- (void)updatePauseOverlay;
+@end
+extern S9xView			*s9xView;
 
 void AdjustMenus (void);
 void UpdateMenuCommandStatus (Boolean);
@@ -161,12 +164,15 @@ extern id<S9xInputDelegate> inputDelegate;
 
 @property (nonatomic, weak) id<S9xInputDelegate> inputDelegate;
 
+- (void)recreateS9xView;
+
 - (void)start;
 - (void)stop;
 
 - (BOOL)isRunning;
 - (BOOL)isPaused;
 - (void)pause;
+- (void)quit;
 - (void)resume;
 
 - (BOOL)setButton:(S9xButtonCode)button forKey:(int16)key player:(int8)player oldButton:(S9xButtonCode *)oldButton oldPlayer:(int8 *)oldPlayer oldKey:(int16 *)oldKey;

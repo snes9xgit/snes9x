@@ -114,7 +114,7 @@
 
         for (NSUInteger i = 0; i < kNumButtons; ++i)
         {
-            controlsDict[@(i)] = keyboardDict[@(i + playerNum).stringValue];
+            controlsDict[@(i)] = keyboardDict[@(i + (playerNum * kNumButtons)).stringValue];
         }
 
         for (NSView *subview in self.view.subviews)

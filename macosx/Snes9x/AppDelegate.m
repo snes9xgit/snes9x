@@ -52,13 +52,6 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
     window.frameAutosaveName = kMainWindowIdentifier;
     window.releasedWhenClosed = NO;
 
-    [window.contentView addSubview:s9xView];
-    [s9xView.topAnchor constraintEqualToAnchor:window.contentView.topAnchor].active = YES;
-    [s9xView.bottomAnchor constraintEqualToAnchor:window.contentView.bottomAnchor].active = YES;
-    [s9xView.centerXAnchor constraintEqualToAnchor:window.contentView.centerXAnchor].active = YES;
-    [s9xView.leftAnchor constraintGreaterThanOrEqualToAnchor:window.contentView.leftAnchor].active = YES;
-    [s9xView.rightAnchor constraintLessThanOrEqualToAnchor:window.contentView.rightAnchor].active = YES;
-
     if ( ![window setFrameUsingName:kMainWindowIdentifier] )
     {
         [window center];
@@ -68,12 +61,12 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 
     [NSNotificationCenter.defaultCenter addObserverForName:NSWindowWillCloseNotification object:window queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification *notification)
     {
-        [self.s9xEngine pause];
+        [self.s9xEngine quit];
     }];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
-    // Insert code here to tear down your application
+    [self.s9xEngine quit];
 }
 
 - (void)setupDefaults
@@ -129,6 +122,8 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
     };
 
     [defaults registerDefaults:defaultSettings];
+	[defaults setBool:NO forKey:@"NSWindowAssertWhenDisplayCycleLimitReached"];
+	[defaults synchronize];
 
     self.keys = [[defaults objectForKey:kKeyboardPrefs] mutableCopy];
 
@@ -139,6 +134,8 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
         S9xButtonCode buttonCode = (S9xButtonCode)(key - (kNumButtons * player));
         [self setButtonCode:buttonCode forKeyCode:self.keys[control].integerValue player:player];
     }
+
+	NSDictionary *joypadPlayerPrefs = [defaults objectForKey:kJoypadPlayerPrefs];
 
     for ( S9xJoypad *joypad in [self listJoypads])
     {
@@ -151,6 +148,14 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
         }
 
         NSString *key = [self prefsKeyForVendorID:joypad.vendorID productID:joypad.productID index:joypad.index];
+
+		for ( NSString *playerString in joypadPlayerPrefs )
+		{
+			if ( [key isEqualToString:joypadPlayerPrefs[playerString]] )
+			{
+				[self setPlayer:playerString.intValue forVendorID:joypad.vendorID productID:joypad.productID index:joypad.index];
+			}
+		}
 
         NSMutableDictionary *devicePrefs = [joypadPrefs[key] mutableCopy];
         if (devicePrefs == nil)
@@ -444,8 +449,18 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 {
     if ([self.s9xEngine loadROM:url])
     {
+		[self.s9xEngine recreateS9xView];
+		
+		NSWindow *window = self.window;
+		[window.contentView addSubview:s9xView];
+		[s9xView.topAnchor constraintEqualToAnchor:window.contentView.topAnchor].active = YES;
+		[s9xView.bottomAnchor constraintEqualToAnchor:window.contentView.bottomAnchor].active = YES;
+		[s9xView.centerXAnchor constraintEqualToAnchor:window.contentView.centerXAnchor].active = YES;
+		[s9xView.leftAnchor constraintGreaterThanOrEqualToAnchor:window.contentView.leftAnchor].active = YES;
+		[s9xView.rightAnchor constraintLessThanOrEqualToAnchor:window.contentView.rightAnchor].active = YES;
 
-        [self.window makeKeyAndOrderFront:self];
+		
+        [window makeKeyAndOrderFront:self];
         [NSDocumentController.sharedDocumentController noteNewRecentDocumentURL:url];
         return YES;
     }

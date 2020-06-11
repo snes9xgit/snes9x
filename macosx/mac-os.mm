@@ -219,7 +219,7 @@ bool8               pressedRawKeyboardButtons[MAC_NUM_KEYCODES] = { 0 };
 bool8               heldFunctionButtons[kNumFunctionButtons] = { 0 };
 pthread_mutex_t     keyLock;
 
-MTKView             *s9xView;
+S9xView             *s9xView;
 
 enum
 {
@@ -348,6 +348,8 @@ static inline void EmulationLoop (void)
 
     pauseEmulation = false;
     frameAdvance   = false;
+	[s9xView updatePauseOverlay];
+
 
     if (macQTRecord)
     {
@@ -2218,6 +2220,7 @@ static void ProcessInput (void)
 
                         case ToggleEmulationPause:
                             pauseEmulation = !pauseEmulation;
+							[s9xView updatePauseOverlay];
                             break;
 
                         case AdvanceFrame:
@@ -2239,6 +2242,7 @@ static void ProcessInput (void)
         if (ISpKeyIsPressed(keys, gamepadButtons, kISpEsc))
         {
             pauseEmulation = true;
+			[s9xView updatePauseOverlay];
 
             dispatch_async(dispatch_get_main_queue(), ^
             {
@@ -2419,8 +2423,10 @@ static void ProcessInput (void)
         }
     }
 
-    ControlPadFlagsToS9xReportButtons(0, controlPad[0]);
-    ControlPadFlagsToS9xReportButtons(1, controlPad[1]);
+	for (int i = 0; i < MAC_MAX_PLAYERS; ++i)
+	{
+		ControlPadFlagsToS9xReportButtons(i, controlPad[i]);
+	}
 
     if (macControllerOption == SNES_JUSTIFIER_2)
         ControlPadFlagsToS9xPseudoPointer(controlPad[1]);
@@ -2545,7 +2551,7 @@ static void Initialize (void)
 	Settings.Stereo = true;
 	Settings.SoundPlaybackRate = 32000;
 	Settings.SoundInputRate = 31950;
-	Settings.SupportHiRes = false;
+	Settings.SupportHiRes = true;
 	Settings.Transparency = true;
 	Settings.AutoDisplayMessages = true;
 	Settings.InitialInfoStringTimeout = 120;
@@ -2794,9 +2800,6 @@ void QuitWithFatalError ( NSString *message)
     [NSApp terminate:nil];
 }
 
-@interface S9xView : MTKView
-@end
-
 @implementation S9xView
 
 + (void)initialize
@@ -2838,7 +2841,7 @@ void QuitWithFatalError ( NSString *message)
 
     pthread_mutex_lock(&keyLock);
     S9xButton button = keyCodes[event.keyCode];
-    if ( button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player <= 0 && button.player <= MAC_MAX_PLAYERS)
+    if ( button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player <= MAC_MAX_PLAYERS)
     {
         pressedKeys[button.player][button.buttonCode] = true;
     }
@@ -2866,7 +2869,7 @@ void QuitWithFatalError ( NSString *message)
 
     pthread_mutex_lock(&keyLock);
     S9xButton button = keyCodes[event.keyCode];
-    if ( button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player <= 0 && button.player <= MAC_MAX_PLAYERS)
+    if ( button.buttonCode >= 0 && button.buttonCode < kNumButtons && button.player >= 0 && button.player <= MAC_MAX_PLAYERS)
     {
         pressedKeys[button.player][button.buttonCode] = false;
     }
@@ -2927,15 +2930,18 @@ void QuitWithFatalError ( NSString *message)
 - (void)mouseDown:(NSEvent *)event
 {
     pauseEmulation = true;
-    [self setNeedsDisplay:YES];
+	[s9xView updatePauseOverlay];
 }
 
-- (void)drawRect:(NSRect)dirtyRect
+- (void)updatePauseOverlay
 {
-    self.subviews[0].hidden = !pauseEmulation;
-    CGFloat scaleFactor = MAX(self.window.backingScaleFactor, 1.0);
-    glScreenW = self.frame.size.width * scaleFactor;
-    glScreenH = self.frame.size.height * scaleFactor;
+	dispatch_async(dispatch_get_main_queue(), ^{
+		NSLog(@"%d", pauseEmulation);
+		self.subviews[0].hidden = !pauseEmulation;
+		CGFloat scaleFactor = MAX(self.window.backingScaleFactor, 1.0);
+		glScreenW = self.frame.size.width * scaleFactor;
+		glScreenH = self.frame.size.height * scaleFactor;
+	});
 }
 
 - (void)setFrame:(NSRect)frame
@@ -2970,15 +2976,7 @@ void QuitWithFatalError ( NSString *message)
     if (self = [super init])
     {
         Initialize();
-
-        CGRect frame = NSMakeRect(0, 0, SNES_WIDTH * 2, SNES_HEIGHT * 2);
-        s9xView = [[S9xView alloc] initWithFrame:frame];
-        s9xView.translatesAutoresizingMaskIntoConstraints = NO;
-        s9xView.autoresizingMask = NSViewWidthSizable|NSViewHeightSizable;
-        [s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:s9xView attribute:NSLayoutAttributeWidth multiplier:(CGFloat)SNES_HEIGHT/(CGFloat)SNES_WIDTH constant:0.0]];
-        [s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SNES_WIDTH * 2.0]];
-        [s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SNES_HEIGHT * 2.0]];
-		s9xView.device = MTLCreateSystemDefaultDevice();
+		[self recreateS9xView];
     }
 
     return self;
@@ -2987,6 +2985,21 @@ void QuitWithFatalError ( NSString *message)
 - (void)dealloc
 {
     Deinitialize();
+}
+
+- (void)recreateS9xView
+{
+	[s9xView removeFromSuperview];
+	S9xDeinitDisplay();
+	CGRect frame = NSMakeRect(0, 0, SNES_WIDTH * 2, SNES_HEIGHT * 2);
+	s9xView = [[S9xView alloc] initWithFrame:frame];
+	s9xView.translatesAutoresizingMaskIntoConstraints = NO;
+	s9xView.autoresizingMask = NSViewWidthSizable|NSViewHeightSizable;
+	[s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:s9xView attribute:NSLayoutAttributeWidth multiplier:(CGFloat)SNES_HEIGHT/(CGFloat)SNES_WIDTH constant:0.0]];
+	[s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SNES_WIDTH * 2.0]];
+	[s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SNES_HEIGHT * 2.0]];
+	s9xView.device = MTLCreateSystemDefaultDevice();
+	S9xInitDisplay(NULL, NULL);
 }
 
 - (void)start
@@ -3013,6 +3026,7 @@ void QuitWithFatalError ( NSString *message)
 
 - (void)stop
 {
+	SNES9X_Quit();
     S9xExit();
 }
 
@@ -3029,12 +3043,19 @@ void QuitWithFatalError ( NSString *message)
 - (void)pause
 {
     pauseEmulation = true;
-    [s9xView setNeedsDisplay:YES];
+    [s9xView updatePauseOverlay];
+}
+
+- (void)quit
+{
+	SNES9X_Quit();
+	[self pause];
 }
 
 - (void)resume
 {
     pauseEmulation = false;
+	[s9xView updatePauseOverlay];
 }
 
 - (NSArray<S9xJoypad *> *)listJoypads
