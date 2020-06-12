@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: Snes9x\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-12 02:37-0400\n"
-"PO-Revision-Date: 2019-07-17 17:44-0400\n"
-"Last-Translator: Pablo \"Jota\" Lezaeta Reyes <prflr88@gmail.com>\n"
+"PO-Revision-Date: 2020-06-12 02:49-0400\n"
+"Last-Translator: Pablo \"Jota\" Lezaeta <prflr88@gmail.com>\n"
 "Language-Team: Spanish / Español\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Snes9x-gtk: 1.5.2\n"
-"X-Generator: Poedit 2.2.1\n"
+"X-Generator: Poedit 2.3.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-Basepath: ../..\n"
@@ -355,9 +355,8 @@ msgid "Shader Preset"
 msgstr "Sombra preconfigurada"
 
 #: src/gtk_shader_parameters.cpp:169
-#, fuzzy
 msgid "Shader Parameters"
-msgstr "Parametro_s de sombras..."
+msgstr "Parametros de sombras..."
 
 #: src/gtk_file.cpp:424
 msgid "Open SNES ROM Image"
@@ -429,7 +428,7 @@ msgstr "Diseños de píxeles"
 
 #: src/snes9x.ui:821
 msgid "Dithered gradient"
-msgstr "Gradiente azul"
+msgstr "Degradado azul"
 
 #: src/snes9x.ui:824
 msgid "Color bars and patterns"
@@ -437,11 +436,11 @@ msgstr "Barras de colores y diseños"
 
 #: src/snes9x.ui:827
 msgid "Starfield"
-msgstr ""
+msgstr "Campo de estrellas"
 
 #: src/snes9x.ui:830
 msgid "Snow"
-msgstr ""
+msgstr "Nieve"
 
 #: src/snes9x.ui:841
 msgid "Game Genie"
@@ -1361,7 +1360,7 @@ msgstr "Sonido"
 
 #: src/snes9x.ui:4542
 msgid "Throttling method:"
-msgstr "Método de regulación"
+msgstr "Método de regulación:"
 
 #: src/snes9x.ui:4584
 msgid "<b>Speed Control</b>"
@@ -1892,7 +1891,7 @@ msgstr "<b>Protector de pantalla</b>"
 
 #: src/snes9x.ui:9293
 msgid "UI"
-msgstr "UI"
+msgstr "IU"
 
 #: src/snes9x.ui:9327
 msgid ""
