@@ -81,8 +81,7 @@ Binding &Binding::operator=(const Binding &binding)
     return *this;
 }
 
-bool
-Binding::matches (Binding &binding)
+bool Binding::operator==(const Binding &binding)
 {
     if ((value & ~BINDING_THRESHOLD_MASK) ==
         (binding.value & ~BINDING_THRESHOLD_MASK))

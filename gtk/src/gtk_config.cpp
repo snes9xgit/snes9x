@@ -194,8 +194,12 @@ int Snes9xConfig::load_defaults ()
     Settings.TwoClockCycles = 12;
 #endif
 
-    memset (pad, 0, sizeof (JoypadBinding) * NUM_JOYPADS);
-    memset (shortcut, 0, sizeof (Binding) * NUM_EMU_LINKS);
+    for (auto &joypad : pad)
+    {
+        joypad.data.fill(Binding());
+    }
+
+    shortcut.fill(Binding());
 
     return 0;
 }
@@ -399,12 +403,12 @@ int Snes9xConfig::save_config_file ()
 
     for (int i = 0; i < NUM_JOYPADS; i++)
     {
-        Binding *joypad = (Binding *) &pad[i];
+        auto &joypad = pad[i];
 
         for (int j = 0; j < NUM_JOYPAD_LINKS; j++)
         {
             snprintf (key, PATH_MAX, "Joypad %d::%s", i, b_links[j].snes9x_name);
-            joypad[j].to_string (buffer, false);
+            joypad.data[j].to_string (buffer, false);
             cf.SetString (key, std::string (buffer));
         }
     }
@@ -620,13 +624,13 @@ int Snes9xConfig::load_config_file ()
 
     for (int i = 0; i < NUM_JOYPADS; i++)
     {
-        Binding *joypad = (Binding *) &pad[i];
+        auto &joypad = pad[i];
 
         for (int j = 0; j < NUM_JOYPAD_LINKS; j++)
         {
             snprintf (key, PATH_MAX, "Joypad %d::%s", i, b_links[j].snes9x_name);
             instr (key, buffer);
-            joypad[j] = Binding (buffer.c_str ());
+            joypad.data[j] = Binding (buffer.c_str ());
         }
     }
 
@@ -714,14 +718,14 @@ void Snes9xConfig::rebind_keys()
 
     for (int joypad_i = 0; joypad_i < NUM_JOYPADS; joypad_i++)
     {
-        Binding *bin = (Binding *)&pad[joypad_i];
+        auto &bin = pad[joypad_i].data;
 
         for (int button_i = 0; button_i < NUM_JOYPAD_LINKS; button_i++)
         {
             int dupe;
             for (dupe = button_i + 1; dupe < NUM_JOYPAD_LINKS; dupe++)
             {
-                if (bin[button_i].matches(bin[dupe]) && bin[button_i].hex() != 0)
+                if (bin[button_i] == bin[dupe] && bin[button_i].hex() != 0)
                     break;
             }
             if (dupe < NUM_JOYPAD_LINKS || bin[button_i].hex() == 0)
@@ -733,7 +737,7 @@ void Snes9xConfig::rebind_keys()
             bool ismulti = false;
             for (dupe = button_i - 1; dupe > 0; dupe--)
             {
-                if (bin[button_i].matches(bin[dupe]))
+                if (bin[button_i] == bin[dupe])
                 {
                     ismulti = true;
                     string += ",Joypad" + std::to_string((joypad_i % 5) + 1) + " ";

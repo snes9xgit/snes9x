@@ -38,8 +38,8 @@ class Snes9xPreferences : public GtkBuilderWindow
         GtkToggleButton *last_toggled;
         bool            awaiting_key;
         bool            polling_joystick;
-        JoypadBinding   pad[NUM_JOYPADS];
-        Binding         shortcut[NUM_EMU_LINKS];
+        std::array<JoypadBinding, NUM_JOYPADS> pad;
+        std::array<Binding, NUM_EMU_LINKS> shortcut;
 
     private:
         void get_settings_from_dialog ();

@@ -2531,7 +2531,7 @@ void CMemory::InitROM (void)
 	if (Settings.ForcePAL)
 		Settings.PAL = TRUE;
 	else
-	if (!Settings.BS && ((ROMRegion >= 2) && (ROMRegion <= 12) || ROMRegion == 18)) // 18 is used by "Tintin in Tibet (Europe) (En,Es,Sv)"
+	if (!Settings.BS && (((ROMRegion >= 2) && (ROMRegion <= 12)) || ROMRegion == 18)) // 18 is used by "Tintin in Tibet (Europe) (En,Es,Sv)"
 		Settings.PAL = TRUE;
 	else
 		Settings.PAL = FALSE;

@@ -10,6 +10,7 @@
 #include <X11/Xlib.h>
 #include <X11/extensions/Xrandr.h>
 #include <string>
+#include <array>
 
 #include "gtk_control.h"
 #include "filter/snes_ntsc.h"
@@ -110,8 +111,8 @@ class Snes9xConfig
     std::string last_shader_directory;
 
     /* Controls */
-    JoypadBinding pad[NUM_JOYPADS];
-    Binding       shortcut[NUM_EMU_LINKS];
+    std::array<JoypadBinding, NUM_JOYPADS> pad;
+    std::array<Binding, NUM_EMU_LINKS> shortcut;
 
     /* Netplay */
     bool netplay_is_server;

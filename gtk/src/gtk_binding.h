@@ -38,6 +38,7 @@ class Binding
         Binding (unsigned int device, unsigned int button, unsigned int threshold);
         Binding (const Binding &binding);
         Binding &operator=(const Binding &binding);
+        bool operator==(const Binding &binding);
         Binding (GdkEventKey *event);
         Binding (unsigned int);
         Binding ();
@@ -45,7 +46,6 @@ class Binding
         void to_string (char *str, bool translate = true);
         unsigned int hex ();
         unsigned int base_hex ();
-        bool matches (Binding &binding);
         void clear ();
         bool is_joy ();
         bool is_key ();

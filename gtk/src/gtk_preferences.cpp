@@ -733,8 +733,8 @@ Snes9xPreferences::move_settings_to_dialog ()
     set_spin ("joystick_threshold",         config->joystick_threshold);
 
     /* Control bindings */
-    memcpy (pad, config->pad, (sizeof (JoypadBinding)) * NUM_JOYPADS);
-    memcpy (shortcut, config->shortcut, (sizeof (Binding)) * NUM_EMU_LINKS);
+    pad = config->pad;
+    shortcut = config->shortcut;
     bindings_to_dialog (0);
 
     set_combo ("joypad_to_swap_with", 0);
@@ -966,8 +966,8 @@ Snes9xPreferences::get_settings_from_dialog ()
         config->sram_directory = new_sram_directory;
     }
 
-    memcpy (config->pad, pad, (sizeof (JoypadBinding)) * NUM_JOYPADS);
-    memcpy (config->shortcut, shortcut, (sizeof (Binding)) * NUM_EMU_LINKS);
+    config->pad = pad;
+    config->shortcut = shortcut;
 
     if (sound_needs_restart)
     {
@@ -1266,7 +1266,7 @@ Snes9xPreferences::store_binding (const char *string, Binding binding)
         }
         else
         {
-            if (shortcut[i - NUM_JOYPAD_LINKS].matches (binding))
+            if (shortcut[i - NUM_JOYPAD_LINKS] == binding)
             {
                 shortcut[i - NUM_JOYPAD_LINKS].clear ();
             }
