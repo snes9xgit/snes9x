@@ -51,6 +51,7 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
     window.restorationClass = [self class];
     window.frameAutosaveName = kMainWindowIdentifier;
     window.releasedWhenClosed = NO;
+    window.backgroundColor = NSColor.clearColor;
 
     if ( ![window setFrameUsingName:kMainWindowIdentifier] )
     {
