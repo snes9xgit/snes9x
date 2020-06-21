@@ -227,6 +227,13 @@ Binding::Binding (const char *raw_string)
     }
 }
 
+std::string Binding::as_string()
+{
+    char buf[PATH_MAX];
+    to_string(buf, false);
+    return std::string(buf);
+}
+
 void
 Binding::to_string (char *str, bool translate)
 {

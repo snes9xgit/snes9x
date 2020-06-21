@@ -8,6 +8,7 @@
 #define __GTK_BINDING_H
 
 #include "gtk_2_3_compat.h"
+#include <string>
 
 #define AXIS_POS                    1
 #define AXIS_NEG                    0
@@ -44,6 +45,7 @@ class Binding
         Binding ();
         Binding (const char *str);
         void to_string (char *str, bool translate = true);
+        std::string as_string();
         unsigned int hex ();
         unsigned int base_hex ();
         void clear ();
