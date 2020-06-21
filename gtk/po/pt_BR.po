@@ -1305,14 +1305,14 @@ msgstr "Saída de áudio muda"
 msgid "Disables output of sound"
 msgstr "Desativar saída de áudio."
 
-#: src/snes9x.ui:4200
+#: src/snes9x.ui:4206
 #, fuzzy
-msgid "Mute sound when using turbo"
+msgid "Mute sound when using turbo or rewind"
 msgstr "Saída de áudio muda"
 
-#: src/snes9x.ui:4204
+#: src/snes9x.ui:4210
 #, fuzzy
-msgid "Disables output of sound when using turbo"
+msgid "Disables output of sound when using turbo or rewind"
 msgstr "Desativar saída de áudio."
 
 #: src/snes9x.ui:4227

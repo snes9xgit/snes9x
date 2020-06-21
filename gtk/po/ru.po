@@ -1287,14 +1287,14 @@ msgstr "Отключить звук"
 msgid "Disables output of sound"
 msgstr "Запрещает вывод звука"
 
-#: src/snes9x.ui:4200
+#: src/snes9x.ui:4206
 #, fuzzy
-msgid "Mute sound when using turbo"
+msgid "Mute sound when using turbo or rewind"
 msgstr "Отключить звук"
 
-#: src/snes9x.ui:4204
+#: src/snes9x.ui:4210
 #, fuzzy
-msgid "Disables output of sound when using turbo"
+msgid "Disables output of sound when using turbo or rewind"
 msgstr "Запрещает вывод звука"
 
 #: src/snes9x.ui:4227

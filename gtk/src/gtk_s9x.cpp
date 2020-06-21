@@ -360,14 +360,14 @@ gboolean S9xIdleFunc (gpointer data)
         static int muted_from_turbo = false;
         static int mute_saved_state = false;
 
-        if (Settings.TurboMode && !muted_from_turbo && gui_config->mute_sound_turbo)
+        if ((Settings.TurboMode || Settings.Rewinding) && !muted_from_turbo && gui_config->mute_sound_turbo)
         {
             muted_from_turbo = true;
             mute_saved_state = Settings.Mute;
             S9xSetSoundMute (true);
         }
 
-        if (!Settings.TurboMode && muted_from_turbo)
+        if (!(Settings.TurboMode || Settings.Rewinding) && muted_from_turbo)
         {
             muted_from_turbo = false;
             Settings.Mute = mute_saved_state;
