@@ -1269,14 +1269,14 @@ msgstr "Priguši izvor zvuka"
 msgid "Disables output of sound"
 msgstr "Isključuje izvor zvuka"
 
-#: src/snes9x.ui:4200
+#: src/snes9x.ui:4206
 #, fuzzy
-msgid "Mute sound when using turbo"
+msgid "Mute sound when using turbo or rewind"
 msgstr "Priguši izvor zvuka"
 
-#: src/snes9x.ui:4204
+#: src/snes9x.ui:4210
 #, fuzzy
-msgid "Disables output of sound when using turbo"
+msgid "Disables output of sound when using turbo or rewind"
 msgstr "Isključuje izvor zvuka"
 
 #: src/snes9x.ui:4227
