@@ -273,7 +273,6 @@ static gboolean S9xPauseFunc (gpointer data)
         /* Clear joystick queues */
         gui_config->flush_joysticks ();
 
-        S9xSetSoundMute (false);
         S9xSoundStart ();
 
         if (Settings.NetPlay && NetPlay.Connected)
@@ -314,7 +313,6 @@ gboolean S9xIdleFunc (gpointer data)
 {
     if (Settings.Paused && gui_config->rom_loaded)
     {
-        S9xSetSoundMute (gui_config->mute_sound);
         S9xSoundStop ();
 
         gui_config->flush_joysticks ();
