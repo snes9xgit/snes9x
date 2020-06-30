@@ -8,6 +8,7 @@
 #define __GTK_CONTROL_H
 
 #include <queue>
+#include <array>
 
 #include "gtk_binding.h"
 #include "SDL.h"
@@ -73,7 +74,7 @@ const int NUM_EMU_LINKS    = 62;
 
 typedef struct JoypadBinding
 {
-    Binding data[NUM_JOYPAD_LINKS]; /* Avoid packing issues */
+    std::array<Binding, NUM_JOYPAD_LINKS> data;
 } JoypadBinding;
 
 bool S9xGrabJoysticks ();

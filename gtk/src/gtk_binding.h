@@ -8,6 +8,7 @@
 #define __GTK_BINDING_H
 
 #include "gtk_2_3_compat.h"
+#include <string>
 
 #define AXIS_POS                    1
 #define AXIS_NEG                    0
@@ -38,14 +39,15 @@ class Binding
         Binding (unsigned int device, unsigned int button, unsigned int threshold);
         Binding (const Binding &binding);
         Binding &operator=(const Binding &binding);
+        bool operator==(const Binding &binding);
         Binding (GdkEventKey *event);
         Binding (unsigned int);
         Binding ();
         Binding (const char *str);
         void to_string (char *str, bool translate = true);
+        std::string as_string();
         unsigned int hex ();
         unsigned int base_hex ();
-        bool matches (Binding &binding);
         void clear ();
         bool is_joy ();
         bool is_key ();

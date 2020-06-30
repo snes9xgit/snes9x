@@ -1305,11 +1305,13 @@ msgid "Disables output of sound"
 msgstr "Desactivar la salida de sonido"
 
 #: src/snes9x.ui:4206
-msgid "Mute sound when using turbo"
+#, fuzzy
+msgid "Mute sound when using turbo or rewind"
 msgstr "Silenciar el sonido cuando se esté en turbo"
 
 #: src/snes9x.ui:4210
-msgid "Disables output of sound when using turbo"
+#, fuzzy
+msgid "Disables output of sound when using turbo or rewind"
 msgstr "Deshabilitar la salida de sonido cuando se esté en turbo"
 
 #: src/snes9x.ui:4233

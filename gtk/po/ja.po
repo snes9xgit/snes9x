@@ -1264,12 +1264,12 @@ msgstr "音声出力を無効にします"
 
 #: src/snes9x.ui:4206
 #, fuzzy
-msgid "Mute sound when using turbo"
+msgid "Mute sound when using turbo or rewind"
 msgstr "サウンドをミュートする"
 
 #: src/snes9x.ui:4210
 #, fuzzy
-msgid "Disables output of sound when using turbo"
+msgid "Disables output of sound when using turbo or rewind"
 msgstr "音声出力を無効にします"
 
 #: src/snes9x.ui:4233

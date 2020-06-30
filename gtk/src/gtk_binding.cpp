@@ -81,8 +81,7 @@ Binding &Binding::operator=(const Binding &binding)
     return *this;
 }
 
-bool
-Binding::matches (Binding &binding)
+bool Binding::operator==(const Binding &binding)
 {
     if ((value & ~BINDING_THRESHOLD_MASK) ==
         (binding.value & ~BINDING_THRESHOLD_MASK))
@@ -226,6 +225,13 @@ Binding::Binding (const char *raw_string)
         }
 
     }
+}
+
+std::string Binding::as_string()
+{
+    char buf[PATH_MAX];
+    to_string(buf, false);
+    return std::string(buf);
 }
 
 void

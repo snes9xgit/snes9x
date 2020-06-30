@@ -139,33 +139,33 @@ S9xGetDirectory (enum s9x_getdirtype dirtype)
 
     switch (dirtype)
     {
-        case HOME_DIR:
-            sstrncpy (path, get_config_dir ().c_str (), PATH_MAX + 1);
-            break;
+    case HOME_DIR:
+        snprintf(path, PATH_MAX + 1, "%s", get_config_dir().c_str());
+        break;
 
-        case SNAPSHOT_DIR:
-            sstrncpy (path, gui_config->savestate_directory.c_str (), PATH_MAX + 1);
-            break;
+    case SNAPSHOT_DIR:
+        snprintf(path, PATH_MAX + 1, "%s", gui_config->savestate_directory.c_str());
+        break;
 
-        case PATCH_DIR:
-            sstrncpy (path, gui_config->patch_directory.c_str (), PATH_MAX + 1);
-            break;
+    case PATCH_DIR:
+        snprintf(path, PATH_MAX + 1, "%s", gui_config->patch_directory.c_str());
+        break;
 
-        case CHEAT_DIR:
-            sstrncpy (path, gui_config->cheat_directory.c_str (), PATH_MAX + 1);
-            break;
+    case CHEAT_DIR:
+        snprintf(path, PATH_MAX + 1, "%s", gui_config->cheat_directory.c_str());
+        break;
 
-        case SRAM_DIR:
-            sstrncpy (path, gui_config->sram_directory.c_str (), PATH_MAX + 1);
-            break;
+    case SRAM_DIR:
+        snprintf(path, PATH_MAX + 1, "%s", gui_config->sram_directory.c_str());
+        break;
 
-        case SCREENSHOT_DIR:
-        case SPC_DIR:
-            sstrncpy (path, gui_config->export_directory.c_str (), PATH_MAX + 1);
-            break;
+    case SCREENSHOT_DIR:
+    case SPC_DIR:
+        snprintf(path, PATH_MAX + 1, "%s", gui_config->export_directory.c_str());
+        break;
 
-        default:
-            path[0] = '\0';
+    default:
+        path[0] = '\0';
     }
 
     /* Check if directory exists, make it and/or set correct permissions */
@@ -249,7 +249,7 @@ S9xBasenameNoExt (const char *f)
     ext = strrchr (f, '.');
 
     if (!ext)
-        sstrncpy (filename, base, PATH_MAX);
+        snprintf (filename, PATH_MAX, "%s", base);
     else
     {
         int len = ext - base;
@@ -288,7 +288,7 @@ S9xOpenSnapshotFile (const char *fname, bool8 read_only, STREAM *file)
 
     if (*drive || *dir == '/' || (*dir == '.' && (*(dir + 1) == '/')))
     {
-        sstrncpy (filename, fname, PATH_MAX + 1);
+        snprintf (filename, PATH_MAX + 1, "%s", fname);
 
         if (!file_exists (filename))
         {
