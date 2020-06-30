@@ -255,7 +255,7 @@ void S9xNoROMLoaded ()
 {
     S9xSoundStop ();
     gui_config->rom_loaded = false;
-    S9xDisplayRefresh (-1, -1);
+    S9xDisplayRefresh(-1, -1);
     top_level->configure_widgets ();
 }
 

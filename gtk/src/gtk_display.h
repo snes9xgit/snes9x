@@ -123,7 +123,6 @@ void S9xFilter (uint8 *src_buffer,
                 int& height);
 void get_filter_scale (int& width, int& height);
 void S9xDisplayRefresh (int width, int height);
-void S9xDisplayClearBuffers ();
 void S9xReinitDisplay ();
 void S9xDisplayReconfigure ();
 void S9xQueryDrivers ();

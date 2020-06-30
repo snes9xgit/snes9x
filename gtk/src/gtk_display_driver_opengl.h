@@ -24,61 +24,57 @@
 
 #include "shaders/glsl.h"
 
-#define BUFFER_OFFSET(i) ((char *) (i))
+#define BUFFER_OFFSET(i) ((char *)(i))
 
 class S9xOpenGLDisplayDriver : public S9xDisplayDriver
 {
-    public:
-        S9xOpenGLDisplayDriver (Snes9xWindow *window, Snes9xConfig *config);
-        void refresh (int width, int height);
-        int init ();
-        void deinit ();
-        void clear_buffers ();
-        void update (int width, int height, int yoffset);
-        uint16 *get_next_buffer ();
-        uint16 *get_current_buffer ();
-        void push_buffer (uint16 *src);
-        void *get_parameters ();
-        void save (const char *filename);
-        static int query_availability ();
-        bool is_ready ();
+  public:
+    S9xOpenGLDisplayDriver(Snes9xWindow *window, Snes9xConfig *config);
+    void refresh(int width, int height);
+    int init();
+    void deinit();
+    void update(uint16_t *buffer, int width, int height, int stride_in_pixels);
+    void *get_parameters();
+    void save(const char *filename);
+    static int query_availability();
+    bool is_ready();
 
-    private:
-        bool opengl_defaults ();
-        void swap_buffers ();
-        bool load_shaders (const char *);
-        void update_texture_size (int width, int height);
-        bool create_context ();
-        void resize ();
+  private:
+    bool opengl_defaults();
+    void swap_buffers();
+    bool load_shaders(const char *);
+    void update_texture_size(int width, int height);
+    bool create_context();
+    void resize();
 
-        GLuint            stock_program;
-        GLuint            coord_buffer;
-        GLint             texture_width;
-        GLint             texture_height;
-        GLuint            texmap;
-        GLuint            pbo;
+    GLuint stock_program;
+    GLuint coord_buffer;
+    GLint texture_width;
+    GLint texture_height;
+    GLuint texmap;
+    GLuint pbo;
 
-        bool              legacy;
-        bool              core;
-        int               version;
-        bool              npot;
-        bool              using_pbos;
-        bool              initialized;
+    bool legacy;
+    bool core;
+    int version;
+    bool npot;
+    bool using_pbos;
+    bool initialized;
 
-        bool              using_glsl_shaders;
-        GLSLShader        *glsl_shader;
+    bool using_glsl_shaders;
+    GLSLShader *glsl_shader;
 
-        GdkWindow         *gdk_window;
-        int               output_window_width;
-        int               output_window_height;
+    GdkWindow *gdk_window;
+    int output_window_width;
+    int output_window_height;
 
-        OpenGLContext     *context;
+    OpenGLContext *context;
 
 #ifdef GDK_WINDOWING_X11
-        GTKGLXContext     glx;
+    GTKGLXContext glx;
 #endif
 #ifdef GDK_WINDOWING_WAYLAND
-        WaylandEGLContext wl;
+    WaylandEGLContext wl;
 #endif
 };
 

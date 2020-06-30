@@ -1869,8 +1869,6 @@ Snes9xWindow::propagate_pause_state ()
             S9xSoundStart ();
             if (config->rom_loaded)
                 enable_widget ("pause_item", true);
-
-            S9xDisplayClearBuffers ();
         }
         else
         {
