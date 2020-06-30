@@ -156,8 +156,8 @@ typedef struct
 
 typedef struct
 {
-    bool load_shader(char *filename);
-    bool load_shader_preset_file(char *filename);
+    bool load_shader(const char *filename);
+    bool load_shader_preset_file(const char *filename);
     void render(GLuint &orig, int width, int height, int viewport_x,
                 int viewport_y, int viewport_width, int viewport_height,
                 GLSLViewportCallback vpcallback);

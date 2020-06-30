@@ -87,7 +87,7 @@ static const char *wrap_mode_enum_to_string(int val)
 }
 
 
-bool GLSLShader::load_shader_preset_file(char *filename)
+bool GLSLShader::load_shader_preset_file(const char *filename)
 {
     char key[256];
     int length = strlen(filename);
@@ -433,7 +433,7 @@ GLuint GLSLShader::compile_shader(std::vector<std::string> &lines,
     return status;
 }
 
-bool GLSLShader::load_shader(char *filename)
+bool GLSLShader::load_shader(const char *filename)
 {
     char shader_path[PATH_MAX];
     char temp[PATH_MAX];
