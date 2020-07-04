@@ -18,21 +18,18 @@
 
 const int NUM_JOYPADS = 10;
 
-enum
-{
+enum {
     JOY_MODE_GLOBAL     = 0,
     JOY_MODE_INDIVIDUAL = 1,
     JOY_MODE_CALIBRATE  = 2
 };
 
-enum
-{
+enum {
     JOY_RELEASED = 0,
     JOY_PRESSED  = 1
 };
 
-enum
-{
+enum {
     PORT_COMMAND_FULLSCREEN = 1,
     PORT_COMMAND_SAVE_SPC   = 2,
     PORT_OPEN_ROM           = 3,
@@ -70,15 +67,15 @@ typedef struct BindingLink
 extern const BindingLink b_links[];
 extern const int b_breaks[];
 const int NUM_JOYPAD_LINKS = 24;
-const int NUM_EMU_LINKS    = 62;
+const int NUM_EMU_LINKS = 62;
 
 typedef struct JoypadBinding
 {
     std::array<Binding, NUM_JOYPAD_LINKS> data;
 } JoypadBinding;
 
-bool S9xGrabJoysticks ();
-void S9xReleaseJoysticks ();
+bool S9xGrabJoysticks();
+void S9xReleaseJoysticks();
 
 typedef struct JoyEvent
 {
@@ -97,31 +94,30 @@ typedef struct Calibration
 class JoyDevice
 {
   public:
-    JoyDevice (unsigned int device_num);
-    ~JoyDevice ();
-    int get_event (JoyEvent *event);
-    void flush ();
-    void handle_event (SDL_Event *event);
-    void register_centers ();
+    JoyDevice();
+    ~JoyDevice();
+    int get_event(JoyEvent *event);
+    void flush();
+    void handle_event(SDL_Event *event);
+    void register_centers();
+    bool set_sdl_joystick_num(unsigned int device_num);
 
-    SDL_Joystick         *filedes;
-    Calibration          *calibration;
+    SDL_Joystick *filedes;
     std::queue<JoyEvent> queue;
-    int                  mode;
-    int                  joynum;
-    int                  num_axes;
-    int                  num_hats;
-    int                  *axis;
-    int                  *hat;
-    bool                 enabled;
+    int mode;
+    int joynum;
+    std::vector<Calibration> calibration;
+    std::vector<int> axis;
+    std::vector<int> hat;
+    bool enabled;
 
   private:
-    void poll_events ();
-    void add_event (unsigned int parameter, unsigned int state);
+    void poll_events();
+    void add_event(unsigned int parameter, unsigned int state);
 };
 
-void S9xDeinitInputDevices ();
-Binding S9xGetBindingByName (const char *name);
-bool S9xIsMousePluggedIn ();
+void S9xDeinitInputDevices();
+Binding S9xGetBindingByName(const char *name);
+bool S9xIsMousePluggedIn();
 
 #endif /* __GTK_CONTROL_H*/

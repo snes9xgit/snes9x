@@ -7,7 +7,7 @@
 #ifndef __GTK_BINDING_H
 #define __GTK_BINDING_H
 
-#include "gtk_2_3_compat.h"
+#include "gtk_compat.h"
 #include <string>
 
 #define AXIS_POS                    1
@@ -32,36 +32,36 @@
 #define BINDING_MOUSE_BUTTON1       0x42000001
 #define BINDING_MOUSE_BUTTON2       0x42000002
 
-class Binding 
+class Binding
 {
-    public:
-        Binding (unsigned int key, bool ctrl, bool shift, bool alt);
-        Binding (unsigned int device, unsigned int button, unsigned int threshold);
-        Binding (const Binding &binding);
-        Binding &operator=(const Binding &binding);
-        bool operator==(const Binding &binding);
-        Binding (GdkEventKey *event);
-        Binding (unsigned int);
-        Binding ();
-        Binding (const char *str);
-        void to_string (char *str, bool translate = true);
-        std::string as_string();
-        unsigned int hex ();
-        unsigned int base_hex ();
-        void clear ();
-        bool is_joy ();
-        bool is_key ();
-        bool is_mouse ();
-        bool is_positive ();
-        bool is_negative ();
-        unsigned int get_key ();
-        unsigned int get_device ();
-        unsigned int get_threshold ();
-        unsigned int get_axis ();
-        GdkModifierType get_gdk_modifiers ();
-        
-    private:
-        unsigned int value;
+  public:
+    Binding(unsigned int key, bool ctrl, bool shift, bool alt);
+    Binding(unsigned int device, unsigned int button, unsigned int threshold);
+    Binding(const Binding &binding);
+    Binding &operator=(const Binding &binding);
+    bool operator==(const Binding &binding);
+    Binding(GdkEventKey *event);
+    Binding(unsigned int);
+    Binding();
+    Binding(const char *str);
+    void to_string(char *str, bool translate = true);
+    std::string as_string();
+    unsigned int hex();
+    unsigned int base_hex();
+    void clear();
+    bool is_joy();
+    bool is_key();
+    bool is_mouse();
+    bool is_positive();
+    bool is_negative();
+    unsigned int get_key();
+    unsigned int get_device();
+    unsigned int get_threshold();
+    unsigned int get_axis();
+    Gdk::ModifierType get_gdk_modifiers();
+
+  private:
+    unsigned int value;
 };
-    
+
 #endif /* __GTK_BINDING_H_ */

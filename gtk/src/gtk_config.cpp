@@ -14,6 +14,10 @@
 #include "gtk_sound.h"
 #include "gtk_display.h"
 #include "conffile.h"
+#include "cheats.h"
+#include "apu/apu.h"
+#include "netplay.h"
+#include "controls.h"
 
 static bool directory_exists(std::string str)
 {
@@ -38,7 +42,7 @@ std::string get_config_dir()
 
     if (!env_home && !env_xdg_config_home)
     {
-        return std::string(".snes9x");
+        return std::string{".snes9x"};
     }
 
     std::string config;
@@ -70,7 +74,6 @@ void S9xParsePortConfig(ConfigFile &conf, int pass)
 
 Snes9xConfig::Snes9xConfig()
 {
-    joystick = NULL;
     joystick_threshold = 40;
 }
 
@@ -103,8 +106,8 @@ int Snes9xConfig::load_defaults()
     default_esc_behavior = 1;
     prevent_screensaver = false;
     sound_driver = 0;
-    sound_buffer_size = 32;
-    sound_playback_rate = 5;
+    sound_buffer_size = 48;
+    sound_playback_rate = 7;
     sound_input_rate = 31950;
     auto_input_rate = true;
     last_directory.clear();
@@ -149,7 +152,7 @@ int Snes9xConfig::load_defaults()
     sync_to_vblank = true;
     use_pbos = true;
     pbo_format = 0;
-    npot_textures = false;
+    npot_textures = true;
     use_shaders = false;
     shader_filename.clear();
     use_glfinish = false;
@@ -206,26 +209,26 @@ int Snes9xConfig::load_defaults()
 
 void Snes9xConfig::joystick_register_centers()
 {
-    for (int i = 0; joystick[i] != NULL; i++)
-        joystick[i]->register_centers();
+    for (auto &j : joystick)
+        j.register_centers();
 }
 
 void Snes9xConfig::flush_joysticks()
 {
-    for (int i = 0; joystick[i] != NULL; i++)
-        joystick[i]->flush();
+    for (auto &j : joystick)
+        j.flush();
 }
 
 void Snes9xConfig::set_joystick_mode(int mode)
 {
-    for (int i = 0; joystick[i] != NULL; i++)
-        joystick[i]->mode = mode;
+    for (auto &j : joystick)
+        j.mode = mode;
 }
 
 int Snes9xConfig::save_config_file()
 {
     ConfigFile cf;
-    std::string section = "";
+    std::string section;
 
     auto outbool = [&](std::string name, bool b, std::string comment = "") {
         cf.SetBool((section + "::" + name).c_str(), b, "true", "false", comment.c_str());

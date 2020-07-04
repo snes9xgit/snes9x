@@ -4,12 +4,26 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __GTK_SHADER_PARAMETERS_H
-#define __GTK_SHADER_PARAMETERS_H
+#ifndef __GTK_COMPAT_H
+#define __GTK_COMPAT_H
 
-#include "gtk_compat.h"
+#include <gtkmm.h>
 
-bool gtk_shader_parameters_dialog(GtkWindow *parent);
-void gtk_shader_parameters_dialog_close();
+#include <gtk/gtk.h>
+#include <gdk/gdk.h>
+#include <gdk/gdkkeysyms.h>
+#include <gdk/gdkkeysyms-compat.h>
 
-#endif // __GTK_SHADER_PARAMETERS_H
+#ifndef USE_WAYLAND
+#undef GDK_WINDOWING_WAYLAND
+#endif
+
+#ifdef GDK_WINDOWING_WAYLAND
+#include <gdk/gdkwayland.h>
+#endif
+
+#ifdef GDK_WINDOWING_X11
+#include <gdk/gdkx.h>
+#endif
+
+#endif

@@ -14,7 +14,7 @@
 
 #include "gtk_opengl_context.h"
 
-#include "gtk_2_3_compat.h"
+#include "gtk_compat.h"
 #ifdef GDK_WINDOWING_X11
 #include "gtk_glx_context.h"
 #endif

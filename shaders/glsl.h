@@ -151,6 +151,7 @@ typedef struct
     float max;
     float val;
     float step;
+    int digits;
     GLint unif[glsl_max_passes];
 } GLSLParam;
 

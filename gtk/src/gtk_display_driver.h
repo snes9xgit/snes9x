@@ -26,7 +26,7 @@ class S9xDisplayDriver
   protected:
     Snes9xWindow *window;
     Snes9xConfig *config;
-    GtkWidget *drawing_area;
+    Gtk::DrawingArea *drawing_area;
 };
 
 #endif /* __GTK_DISPLAY_DRIVER_H*/

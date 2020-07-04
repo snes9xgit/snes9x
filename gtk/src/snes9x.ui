@@ -285,7 +285,7 @@
             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
             <property name="layout_style">end</property>
             <child>
-              <object class="GtkButton" id="button7">
+              <object class="GtkButton" id="cheats_close">
                 <property name="label">gtk-close</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -351,7 +351,7 @@
                 <property name="border_width">5</property>
                 <property name="spacing">5</property>
                 <child>
-                  <object class="GtkButton" id="button4">
+                  <object class="GtkButton" id="add_code">
                     <property name="label">gtk-add</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -369,7 +369,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton" id="button5">
+                  <object class="GtkButton" id="remove_code">
                     <property name="label">gtk-remove</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -551,7 +551,7 @@
       </object>
     </child>
     <action-widgets>
-      <action-widget response="0">button7</action-widget>
+      <action-widget response="0">cheats_close</action-widget>
     </action-widgets>
   </object>
   <object class="GtkDialog" id="frame_advance_dialog">
@@ -2274,7 +2274,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkButton" id="button11">
+                          <object class="GtkButton" id="clear_netplay">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
@@ -2701,7 +2701,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="button8">
+              <object class="GtkButton" id="about_button">
                 <property name="label">gtk-about</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -5446,7 +5446,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkButton" id="button6">
+                          <object class="GtkButton" id="reset_current_joypad">
                             <property name="label" translatable="yes">_Reset</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
@@ -5502,7 +5502,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkButton" id="button12">
+                          <object class="GtkButton" id="swap_with">
                             <property name="label" translatable="yes">_Swap</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
@@ -9320,7 +9320,7 @@
       <action-widget response="-6">cancel_button</action-widget>
       <action-widget response="-10">ok_button</action-widget>
       <action-widget response="-5">button1</action-widget>
-      <action-widget response="0">button8</action-widget>
+      <action-widget response="0">about_button</action-widget>
     </action-widgets>
   </object>
   <object class="GtkTextBuffer" id="textbuffer1">

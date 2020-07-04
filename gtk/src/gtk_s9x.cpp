@@ -6,7 +6,9 @@
 
 #include <stdio.h>
 #include <signal.h>
-#include "gtk_2_3_compat.h"
+#include "giomm/application.h"
+#include "glibmm/main.h"
+#include "gtk_compat.h"
 #include "gtk_config.h"
 #include "gtk_s9x.h"
 #include "gtk_control.h"
@@ -15,84 +17,85 @@
 #include "gtk_netplay.h"
 #include "statemanager.h"
 #include "background_particles.h"
+#include "snes9x.h"
+#include "display.h"
+#include "apu/apu.h"
+#include "netplay.h"
+#include "movie.h"
+#include "controls.h"
+#include "snapshot.h"
+#include "gfx.h"
+#include "memmap.h"
+#include "ppu.h"
 
-void S9xPostRomInit ();
-static void S9xThrottle (int);
-static void S9xCheckPointerTimer ();
-static gboolean S9xIdleFunc (gpointer data);
-static gboolean S9xPauseFunc (gpointer data);
-static gboolean S9xScreenSaverCheckFunc (gpointer data);
+static void S9xThrottle(int);
+static void S9xCheckPointerTimer();
+static bool S9xIdleFunc();
+static bool S9xPauseFunc();
+static bool S9xScreenSaverCheckFunc();
 
 Snes9xWindow *top_level;
 Snes9xConfig *gui_config;
 StateManager state_manager;
-gint64       frame_clock = -1;
-gint64       pointer_timestamp = -1;
+gint64 frame_clock = -1;
+gint64 pointer_timestamp = -1;
 
-Background::Particles particles(Background::Particles::Mode::Snow);
+Background::Particles particles(Background::Particles::Snow);
 
-void S9xTerm (int signal)
+static void S9xTerm(int signal)
 {
-    S9xExit ();
+    S9xExit();
 }
 
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     struct sigaction sig_callback;
+    auto app = Gtk::Application::create(argc, argv, "com.snes9x.gtk", Gio::APPLICATION_NON_UNIQUE);
 
-    gtk_init (&argc, &argv);    
+    setlocale(LC_ALL, "");
+    bindtextdomain(GETTEXT_PACKAGE, SNES9XLOCALEDIR);
+    bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
+    textdomain(GETTEXT_PACKAGE);
 
-    setlocale (LC_ALL, "");
-    bindtextdomain (GETTEXT_PACKAGE, SNES9XLOCALEDIR);
-    bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-    textdomain (GETTEXT_PACKAGE);
+    memset(&Settings, 0, sizeof(Settings));
 
-    memset (&Settings, 0, sizeof (Settings));
+    // Original config fills out values this port doesn't.
+    S9xLoadConfigFiles(argv, argc);
 
-    /* Allow original config file for backend settings */
-    S9xLoadConfigFiles (argv, argc);
+    gui_config = new Snes9xConfig();
 
-    /* Perform our config here */
-    gui_config = new Snes9xConfig ();
+    S9xInitInputDevices();
 
-    S9xInitInputDevices ();
+    gui_config->load_config_file();
 
-    gui_config->load_config_file ();
+    char *rom_filename = S9xParseArgs(argv, argc);
 
-    char *rom_filename = S9xParseArgs (argv, argc);
+    auto settings = Gtk::Settings::get_default();
+    settings->set_property("gtk-menu-images", gui_config->enable_icons);
+    settings->set_property("gtk-button-images", gui_config->enable_icons);
 
-#if GTK_MAJOR_VERSION >= 3
-    auto settings = gtk_settings_get_default();
-    g_object_set(settings,
-                 "gtk-menu-images", gui_config->enable_icons,
-                 "gtk_button_images", gui_config->enable_icons,
-                 NULL);
-#endif
+    S9xReportControllers();
 
-    S9xReportControllers ();
+    if (!Memory.Init() || !S9xInitAPU())
+        exit(3);
 
-    if (!Memory.Init () || !S9xInitAPU ())
-        exit (3);
+    top_level = new Snes9xWindow(gui_config);
 
-    top_level = new Snes9xWindow (gui_config);
-
-    /* If we're going to fullscreen, do it before showing window to avoid flicker. */
+    // Setting fullscreen before showing the window avoids some flicker.
     if ((gui_config->full_screen_on_open && rom_filename) || (gui_config->fullscreen))
-        gtk_window_fullscreen (top_level->get_window ());
+        top_level->window->fullscreen();
 
-    top_level->show ();
+    top_level->show();
 
-    S9xInitDisplay (argc, argv);
+    S9xInitDisplay(argc, argv);
 
-    Memory.PostRomInitFunc = S9xPostRomInit;
-
-    S9xPortSoundInit ();
+    S9xPortSoundInit();
 
     for (int port = 0; port < 2; port++)
     {
         enum controllers type;
         int8 id;
-        S9xGetController (port, &type, &id, &id, &id, &id);
+        S9xGetController(port, &type, &id, &id, &id, &id);
         std::string device_type;
 
         switch (type)
@@ -113,96 +116,97 @@ int main (int argc, char *argv[])
             device_type = "nothingpluggedin";
         }
 
-        device_type += std::to_string (port + 1);
-        top_level->set_menu_item_selected (device_type.c_str ());
+        device_type += std::to_string(port + 1);
+        top_level->set_menu_item_selected(device_type.c_str());
     }
 
-    gui_config->rebind_keys ();
-    top_level->update_accels ();
+    gui_config->rebind_keys();
+    top_level->update_accelerators();
 
     Settings.Paused = true;
-    g_timeout_add (100, S9xPauseFunc, NULL);
-    g_timeout_add (10000, S9xScreenSaverCheckFunc, NULL);
 
-    S9xNoROMLoaded ();
+    Glib::signal_timeout().connect(sigc::ptr_fun(S9xPauseFunc), 100);
+    Glib::signal_timeout().connect(sigc::ptr_fun(S9xScreenSaverCheckFunc), 10000);
+
+    S9xNoROMLoaded();
 
     if (rom_filename)
     {
-        if (S9xOpenROM (rom_filename) && gui_config->full_screen_on_open)
-            gtk_window_unfullscreen (top_level->get_window());
+        if (S9xOpenROM(rom_filename) && gui_config->full_screen_on_open)
+            top_level->window->unfullscreen();
     }
 
-    memset (&sig_callback, 0, sizeof (struct sigaction));
+    memset(&sig_callback, 0, sizeof(struct sigaction));
     sig_callback.sa_handler = S9xTerm;
 
-    sigaction (15 /* SIGTERM */, &sig_callback, NULL);
-    sigaction (3  /* SIGQUIT */, &sig_callback, NULL);
-    sigaction (2  /* SIGINT  */, &sig_callback, NULL);
+    sigaction(15, &sig_callback, NULL); // SIGTERM
+    sigaction(3, &sig_callback, NULL);  // SIGQUIT
+    sigaction(2, &sig_callback, NULL);  // SIGINT
 
+    // Perform the complete fullscreen process, including mode sets, which
+    // didn't happen in the earlier Gtk call.
     if (gui_config->fullscreen)
-    {
-        top_level->enter_fullscreen_mode ();
-    }
+        top_level->enter_fullscreen_mode();
 
-    gui_config->flush_joysticks ();
+    gui_config->flush_joysticks();
 
     if (rom_filename && *Settings.InitialSnapshotFilename)
         S9xUnfreezeGame(Settings.InitialSnapshotFilename);
 
-    gtk_main ();
+    app->run(*top_level->window.get());
     return 0;
 }
 
-int S9xOpenROM (const char *rom_filename)
+int S9xOpenROM(const char *rom_filename)
 {
     uint32 flags;
-    bool   loaded;
+    bool loaded;
 
     if (gui_config->rom_loaded)
     {
-        S9xAutoSaveSRAM ();
+        S9xAutoSaveSRAM();
     }
 
-    S9xNetplayDisconnect ();
+    S9xNetplayDisconnect();
 
     flags = CPU.Flags;
 
     loaded = false;
 
     if (Settings.Multi)
-        loaded = Memory.LoadMultiCart (Settings.CartAName, Settings.CartBName);
+        loaded = Memory.LoadMultiCart(Settings.CartAName, Settings.CartBName);
     else if (rom_filename)
-        loaded = Memory.LoadROM (rom_filename);
+        loaded = Memory.LoadROM(rom_filename);
 
     Settings.StopEmulation = !loaded;
 
     if (!loaded && rom_filename)
     {
-        char dir [_MAX_DIR + 1];
-        char drive [_MAX_DRIVE + 1];
-        char name [_MAX_FNAME + 1];
-        char ext [_MAX_EXT + 1];
-        char fname [_MAX_PATH + 1];
+        char dir[_MAX_DIR + 1];
+        char drive[_MAX_DRIVE + 1];
+        char name[_MAX_FNAME + 1];
+        char ext[_MAX_EXT + 1];
+        char fname[_MAX_PATH + 1];
 
-        _splitpath (rom_filename, drive, dir, name, ext);
-        _makepath (fname, drive, dir, name, ext);
+        _splitpath(rom_filename, drive, dir, name, ext);
+        _makepath(fname, drive, dir, name, ext);
 
-        strcpy (fname, S9xGetDirectory (ROM_DIR));
-        strcat (fname, SLASH_STR);
-        strcat (fname, name);
+        strcpy(fname, S9xGetDirectory(ROM_DIR));
+        strcat(fname, SLASH_STR);
+        strcat(fname, name);
 
-        if (ext [0])
+        if (ext[0])
         {
-            strcat (fname, ".");
-            strcat (fname, ext);
+            strcat(fname, ".");
+            strcat(fname, ext);
         }
 
-        _splitpath (fname, drive, dir, name, ext);
-        _makepath (fname, drive, dir, name, ext);
+        _splitpath(fname, drive, dir, name, ext);
+        _makepath(fname, drive, dir, name, ext);
 
-        if ((Settings.StopEmulation = !Memory.LoadROM (fname)))
+        if ((Settings.StopEmulation = !Memory.LoadROM(fname)))
         {
-            fprintf (stderr, _("Error opening: %s\n"), rom_filename);
+            fprintf(stderr, _("Error opening: %s\n"), rom_filename);
 
             loaded = false;
         }
@@ -212,79 +216,77 @@ int S9xOpenROM (const char *rom_filename)
 
     if (loaded)
     {
-        Memory.LoadSRAM (S9xGetFilename (".srm", SRAM_DIR));
+        Memory.LoadSRAM(S9xGetFilename(".srm", SRAM_DIR));
     }
     else
     {
         CPU.Flags = flags;
         Settings.Paused = true;
 
-        S9xNoROMLoaded ();
-        top_level->refresh ();
+        S9xNoROMLoaded();
+        top_level->refresh();
 
         return 1;
     }
 
     CPU.Flags = flags;
 
-    if (state_manager.init (gui_config->rewind_buffer_size * 1024 * 1024))
+    if (state_manager.init(gui_config->rewind_buffer_size * 1024 * 1024))
     {
-        printf ("Using rewind buffer of %uMB\n", gui_config->rewind_buffer_size);
+        printf("Using rewind buffer of %uMB\n", gui_config->rewind_buffer_size);
     }
 
-    S9xROMLoaded ();
+    S9xROMLoaded();
 
     return 0;
 }
 
-void S9xROMLoaded ()
+void S9xROMLoaded()
 {
     gui_config->rom_loaded = true;
-    top_level->configure_widgets ();
+    top_level->configure_widgets();
 
     if (gui_config->full_screen_on_open)
     {
         Settings.Paused = false;
-        top_level->enter_fullscreen_mode ();
+        top_level->enter_fullscreen_mode();
     }
 
-    S9xSoundStart ();
+    S9xSoundStart();
 }
 
-void S9xNoROMLoaded ()
+void S9xNoROMLoaded()
 {
-    S9xSoundStop ();
+    S9xSoundStop();
     gui_config->rom_loaded = false;
     S9xDisplayRefresh(-1, -1);
-    top_level->configure_widgets ();
+    top_level->configure_widgets();
 }
 
-static gboolean S9xPauseFunc (gpointer data)
+static bool S9xPauseFunc()
 {
-    S9xProcessEvents (true);
+    S9xProcessEvents(true);
 
-    if (!S9xNetplayPush ())
+    if (!S9xNetplayPush())
     {
-        S9xNetplayPop ();
+        S9xNetplayPop();
     }
 
     if (!Settings.Paused) /* Coming out of pause */
     {
         /* Clear joystick queues */
-        gui_config->flush_joysticks ();
+        gui_config->flush_joysticks();
 
-        S9xSoundStart ();
+        S9xSoundStart();
 
         if (Settings.NetPlay && NetPlay.Connected)
         {
-            S9xNPSendPause (false);
+            S9xNPSendPause(false);
         }
 
         /* Resume high-performance callback */
-        g_idle_add_full (G_PRIORITY_DEFAULT_IDLE,
-                         S9xIdleFunc,
-                         NULL,
-                         NULL);
+        Glib::signal_idle().connect(sigc::ptr_fun(S9xIdleFunc));
+
         return false;
     }
 
@@ -304,44 +306,44 @@ static gboolean S9xPauseFunc (gpointer data)
         }
     }
 
-    g_timeout_add(8, S9xPauseFunc, NULL);
+    Glib::signal_timeout().connect(sigc::ptr_fun(S9xPauseFunc), 8);
 
     return false;
 }
 
-gboolean S9xIdleFunc (gpointer data)
+static bool S9xIdleFunc()
 {
     if (Settings.Paused && gui_config->rom_loaded)
     {
-        S9xSoundStop ();
+        S9xSoundStop();
 
-        gui_config->flush_joysticks ();
+        gui_config->flush_joysticks();
 
         if (Settings.NetPlay && NetPlay.Connected)
         {
-            S9xNPSendPause (true);
+            S9xNPSendPause(true);
         }
 
         /* Move to a timer-based function to use less CPU */
-        g_timeout_add (8, S9xPauseFunc, NULL);
+        Glib::signal_timeout().connect(sigc::ptr_fun(S9xPauseFunc), 8);
         return false;
     }
 
-    S9xCheckPointerTimer ();
+    S9xCheckPointerTimer();
 
-    S9xProcessEvents (true);
+    S9xProcessEvents(true);
 
-    if (!S9xDisplayDriverIsReady ())
+    if (!S9xDisplayDriverIsReady())
     {
         usleep(100);
         return true;
     }
 
-    S9xThrottle (Settings.SkipFrames);
+    S9xThrottle(Settings.SkipFrames);
 
-    if (!S9xNetplayPush ())
+    if (!S9xNetplayPush())
     {
-        if(Settings.Rewinding)
+        if (Settings.Rewinding)
         {
             uint16 joypads[8];
             for (int i = 0; i < 8; i++)
@@ -350,115 +352,104 @@ gboolean S9xIdleFunc (gpointer data)
             Settings.Rewinding = state_manager.pop();
 
             for (int i = 0; i < 8; i++)
-                MovieSetJoypad (i, joypads[i]);
+                MovieSetJoypad(i, joypads[i]);
         }
-        else if(IPPU.TotalEmulatedFrames % gui_config->rewind_granularity == 0)
+        else if (IPPU.TotalEmulatedFrames % gui_config->rewind_granularity == 0)
             state_manager.push();
 
-        static int muted_from_turbo = false;
-        static int mute_saved_state = false;
+        if ((Settings.TurboMode || Settings.Rewinding) && gui_config->mute_sound_turbo)
+            Settings.Mute |= 0x80;
+        else 
+            Settings.Mute &= ~0x80;
 
-        if ((Settings.TurboMode || Settings.Rewinding) && !muted_from_turbo && gui_config->mute_sound_turbo)
-        {
-            muted_from_turbo = true;
-            mute_saved_state = Settings.Mute;
-            S9xSetSoundMute (true);
-        }
+        S9xMainLoop();
 
-        if (!(Settings.TurboMode || Settings.Rewinding) && muted_from_turbo)
-        {
-            muted_from_turbo = false;
-            Settings.Mute = mute_saved_state;
-        }
-
-        S9xMainLoop ();
-
-        S9xNetplayPop ();
+        S9xNetplayPop();
     }
 
     return true;
 }
 
-gboolean S9xScreenSaverCheckFunc (gpointer data)
+static bool S9xScreenSaverCheckFunc()
 {
 
     if (!Settings.Paused &&
         (gui_config->screensaver_needs_reset ||
          gui_config->prevent_screensaver))
-        top_level->reset_screensaver ();
+        top_level->reset_screensaver();
 
     return true;
 }
 
 /* Snes9x core hooks */
-void S9xMessage (int type, int number, const char *message)
+void S9xMessage(int type, int number, const char *message)
 {
     switch (number)
     {
-      case S9X_MOVIE_INFO:
-        S9xSetInfoString (message);
+    case S9X_MOVIE_INFO:
+        S9xSetInfoString(message);
         break;
-      default:
+    default:
         break;
     }
 }
 
 /* Varies from ParseArgs because this one is for the OS port to handle */
-void S9xParseArg (char **argv, int &i, int argc)
+void S9xParseArg(char **argv, int &i, int argc)
 {
-    if (!strcasecmp (argv[i], "-filter"))
+    if (!strcasecmp(argv[i], "-filter"))
     {
         if ((++i) < argc)
         {
-            if (!strcasecmp (argv[i], "none"))
+            if (!strcasecmp(argv[i], "none"))
             {
                 gui_config->scale_method = FILTER_NONE;
             }
-            else if (!strcasecmp (argv[i], "supereagle"))
+            else if (!strcasecmp(argv[i], "supereagle"))
             {
                 gui_config->scale_method = FILTER_SUPEREAGLE;
             }
-            else if (!strcasecmp (argv[i], "2xsai"))
+            else if (!strcasecmp(argv[i], "2xsai"))
             {
                 gui_config->scale_method = FILTER_2XSAI;
             }
-            else if (!strcasecmp (argv[i], "super2xsai"))
+            else if (!strcasecmp(argv[i], "super2xsai"))
             {
                 gui_config->scale_method = FILTER_SUPER2XSAI;
             }
 #ifdef USE_HQ2X
-            else if (!strcasecmp (argv[i], "hq2x"))
+            else if (!strcasecmp(argv[i], "hq2x"))
             {
                 gui_config->scale_method = FILTER_HQ2X;
             }
-            else if (!strcasecmp (argv[i], "hq3x"))
+            else if (!strcasecmp(argv[i], "hq3x"))
             {
                 gui_config->scale_method = FILTER_HQ3X;
             }
-            else if (!strcasecmp (argv[i], "hq4x"))
+            else if (!strcasecmp(argv[i], "hq4x"))
             {
                 gui_config->scale_method = FILTER_HQ4X;
             }
 #endif /* USE_HQ2X */
 #ifdef USE_XBRZ
-            else if (!strcasecmp (argv[i], "2xbrz"))
+            else if (!strcasecmp(argv[i], "2xbrz"))
             {
                 gui_config->scale_method = FILTER_2XBRZ;
             }
-            else if (!strcasecmp (argv[i], "3xbrz"))
+            else if (!strcasecmp(argv[i], "3xbrz"))
             {
                 gui_config->scale_method = FILTER_3XBRZ;
             }
-            else if (!strcasecmp (argv[i], "4xbrz"))
+            else if (!strcasecmp(argv[i], "4xbrz"))
             {
                 gui_config->scale_method = FILTER_4XBRZ;
             }
 #endif /* USE_XBRZ */
-            else if (!strcasecmp (argv[i], "epx"))
+            else if (!strcasecmp(argv[i], "epx"))
             {
                 gui_config->scale_method = FILTER_EPX;
             }
-            else if (!strcasecmp (argv[i], "ntsc"))
+            else if (!strcasecmp(argv[i], "ntsc"))
             {
                 gui_config->scale_method = FILTER_NTSC;
             }
@@ -468,20 +459,20 @@ void S9xParseArg (char **argv, int &i, int argc)
             }
         }
     }
-    else if (!strcasecmp (argv[i], "-mutesound"))
+    else if (!strcasecmp(argv[i], "-mutesound"))
     {
         gui_config->mute_sound = true;
     }
 }
 
-static void S9xThrottle (int method)
+static void S9xThrottle(int method)
 {
     gint64 now;
 
-    if (S9xNetplaySyncSpeed ())
+    if (S9xNetplaySyncSpeed())
         return;
 
-    now = g_get_monotonic_time ();
+    now = g_get_monotonic_time();
 
     if (Settings.HighSpeedSeek > 0)
     {
@@ -496,8 +487,7 @@ static void S9xThrottle (int method)
     if (Settings.TurboMode)
     {
         IPPU.FrameSkip++;
-        if ((IPPU.FrameSkip >= Settings.TurboSkipFrames)
-            && !Settings.HighSpeedSeek)
+        if ((IPPU.FrameSkip >= Settings.TurboSkipFrames) && !Settings.HighSpeedSeek)
         {
             IPPU.FrameSkip = 0;
             IPPU.SkippedFrames = 0;
@@ -550,8 +540,8 @@ static void S9xThrottle (int method)
 
         while (now - frame_clock < Settings.FrameTime)
         {
-            usleep (100);
-            now = g_get_monotonic_time ();
+            usleep(100);
+            now = g_get_monotonic_time();
         }
 
         frame_clock += Settings.FrameTime;
@@ -560,129 +550,47 @@ static void S9xThrottle (int method)
     }
 }
 
-void S9xSyncSpeed ()
+void S9xSyncSpeed()
 {
 }
 
-static void S9xCheckPointerTimer ()
+static void S9xCheckPointerTimer()
 {
     if (!gui_config->pointer_is_visible)
         return;
 
-    if (g_get_monotonic_time () - gui_config->pointer_timestamp > 1000000)
+    if (g_get_monotonic_time() - gui_config->pointer_timestamp > 1000000)
     {
-        top_level->hide_mouse_cursor ();
+        top_level->hide_mouse_cursor();
         gui_config->pointer_is_visible = false;
     }
 }
 
 /* Final exit point, issues exit (0) */
-void S9xExit ()
+void S9xExit()
 {
-    gui_config->save_config_file ();
+    gui_config->save_config_file();
 
-    top_level->leave_fullscreen_mode ();
+    top_level->leave_fullscreen_mode();
 
-    S9xPortSoundDeinit ();
+    S9xPortSoundDeinit();
 
     Settings.StopEmulation = true;
 
     if (gui_config->rom_loaded)
     {
-        S9xAutoSaveSRAM ();
+        S9xAutoSaveSRAM();
     }
 
-    S9xDeinitAPU ();
+    S9xDeinitAPU();
 
-    S9xDeinitInputDevices ();
-    S9xDeinitDisplay ();
-
-    gtk_main_quit ();
+    S9xDeinitInputDevices();
+    S9xDeinitDisplay();
 
     delete top_level;
     delete gui_config;
 
-    exit (0);
-}
-
-void
-S9xPostRomInit ()
-{
-    if (!strncmp ((const char *) Memory.NSRTHeader + 24, "NSRT", 4))
-    {
-        switch (Memory.NSRTHeader[29])
-        {
-            case 0: //Everything goes
-                break;
-
-            case 0x10: //Mouse in Port 0
-                S9xSetController (0, CTL_MOUSE,      0, 0, 0, 0);
-                top_level->set_menu_item_selected ("mouse1");
-                break;
-
-            case 0x01: //Mouse in Port 1
-                S9xSetController (1, CTL_MOUSE,      1, 0, 0, 0);
-                top_level->set_menu_item_selected ("mouse2");
-                break;
-
-            case 0x03: //Super Scope in Port 1
-                S9xSetController (1, CTL_SUPERSCOPE, 0, 0, 0, 0);
-                top_level->set_menu_item_selected ("superscope1");
-                break;
-
-            case 0x06: //Multitap in Port 1
-                S9xSetController (1, CTL_MP5,        1, 2, 3, 4);
-                top_level->set_menu_item_selected ("multitap1");
-                break;
-
-            case 0x66: //Multitap in Ports 0 and 1
-                S9xSetController (0, CTL_MP5,        0, 1, 2, 3);
-                S9xSetController (1, CTL_MP5,        4, 5, 6, 7);
-                top_level->set_menu_item_selected ("multitap1");
-                top_level->set_menu_item_selected ("multitap2");
-                break;
-
-            case 0x08: //Multitap in Port 1, Mouse in new Port 1
-                S9xSetController (1, CTL_MOUSE,      1, 0, 0, 0);
-                //There should be a toggle here for putting in Multitap instead
-                top_level->set_menu_item_selected ("mouse2");
-                break;
-
-            case 0x04: //Pad or Super Scope in Port 1
-                S9xSetController (1, CTL_SUPERSCOPE, 0, 0, 0, 0);
-                top_level->set_menu_item_selected ("superscope2");
-                //There should be a toggle here for putting in a pad instead
-                break;
-
-            case 0x05: //Justifier - Must ask user...
-                S9xSetController (1, CTL_JUSTIFIER,  1, 0, 0, 0);
-                //There should be a toggle here for how many justifiers
-                break;
-
-            case 0x20: //Pad or Mouse in Port 0
-                S9xSetController (0, CTL_MOUSE,      0, 0, 0, 0);
-                //There should be a toggle here for putting in a pad instead
-                break;
-
-            case 0x22: //Pad or Mouse in Port 0 & 1
-                S9xSetController (0, CTL_MOUSE,      0, 0, 0, 0);
-                S9xSetController (1, CTL_MOUSE,      1, 0, 0, 0);
-                //There should be a toggles here for putting in pads instead
-                break;
-
-            case 0x24: //Pad or Mouse in Port 0, Pad or Super Scope in Port 1
-                //There should be a toggles here for what to put in, I'm leaving it at gamepad for now
-                break;
-
-            case 0x27: //Pad or Mouse in Port 0, Pad or Mouse or Super Scope in Port 1
-                //There should be a toggles here for what to put in, I'm leaving it at gamepad for now
-                break;
-
-                //Not Supported yet
-            case 0x99: break; //Lasabirdie
-            case 0x0A: break; //Barcode Battler
-        }
-    }
+    exit(0);
 }
 
 const char *S9xStringInput(const char *message)
@@ -690,12 +598,12 @@ const char *S9xStringInput(const char *message)
     return NULL;
 }
 
-void S9xExtraUsage ()
+void S9xExtraUsage()
 {
-    printf ("GTK port options:\n"
-            "-filter [option]               Use a filter to scale the image.\n"
-            "                               [option] is one of: none supereagle 2xsai\n"
-            "                               super2xsai hq2x hq3x hq4x 2xbrz 3xbrz 4xbrz epx ntsc\n"
-            "\n"
-            "-mutesound                     Disables sound output.\n");
+    printf("GTK port options:\n"
+           "-filter [option]               Use a filter to scale the image.\n"
+           "                               [option] is one of: none supereagle 2xsai\n"
+           "                               super2xsai hq2x hq3x hq4x 2xbrz 3xbrz 4xbrz epx ntsc\n"
+           "\n"
+           "-mutesound                     Disables sound output.\n");
 }

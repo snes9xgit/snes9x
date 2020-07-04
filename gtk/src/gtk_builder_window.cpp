@@ -9,242 +9,147 @@
 #include "gtk_builder_window.h"
 
 extern const unsigned char snes9x_ui[];
-extern const int           snes9x_ui_size;
+extern const int snes9x_ui_size;
 
-GtkBuilderWindow::GtkBuilderWindow (const char *root)
+Glib::RefPtr<Gtk::Builder> global_builder;
+bool global_builder_created = false;
+
+GtkBuilderWindow::GtkBuilderWindow(const char *root)
 {
-    builder = gtk_builder_new ();
-    gtk_builder_add_from_string (builder,
-                                 (const gchar *) snes9x_ui,
-                                 snes9x_ui_size,
-                                 NULL);
-
-    window = get_widget (root);
-}
-
-GtkBuilderWindow::~GtkBuilderWindow ()
-{
-    gtk_widget_destroy (window);
-    g_object_unref (builder);
-}
-
-GtkWidget *
-GtkBuilderWindow::get_widget (const char *name)
-{
-    return GTK_WIDGET (gtk_builder_get_object (builder, name));
-}
-
-void
-GtkBuilderWindow::signal_connection_func (GtkBuilder *builder,
-                                          GObject *object,
-                                          const gchar *signal_name,
-                                          const char *handler_name,
-                                          GObject *connect_object,
-                                          GConnectFlags flags,
-                                          gpointer data)
-{
-    GCallback function = NULL;
-    GtkBuilderWindow *window = (GtkBuilderWindow *) data;
-    GtkBuilderWindowCallbacks *callbacks = window->callbacks;
-
-    for (int i = 0; callbacks[i].signal; i++)
+    if (!global_builder_created)
     {
-        if (!strcmp (handler_name, callbacks[i].signal))
-        {
-            function = callbacks[i].function;
-            break;
-        }
+        global_builder = Gtk::Builder::create();
+        global_builder->add_from_string((const gchar *)snes9x_ui, snes9x_ui_size);
+        global_builder_created = true;
     }
 
-    if (function)
-    {
-        if (connect_object)
-        {
-            fprintf (stderr, "Error: found a persistent object signal.\n");
-            g_signal_connect_object (object,
-                                     signal_name,
-                                     function,
-                                     connect_object,
-                                     flags);
-        }
-        else
-        {
-            g_signal_connect_data (object,
-                                   signal_name,
-                                   function,
-                                   data,
-                                   NULL,
-                                   flags);
-        }
-    }
-    else
-    {
-    }
+    window = get_object<Gtk::Window>(root);
 }
 
-void
-GtkBuilderWindow::signal_connect (GtkBuilderWindowCallbacks *callbacks)
+GtkBuilderWindow::~GtkBuilderWindow()
 {
-    if (!callbacks)
-        return;
-
-    this->callbacks = callbacks;
-
-    gtk_builder_connect_signals_full (builder,
-                                      signal_connection_func,
-                                      (gpointer) this);
-
-    this->callbacks = NULL;
 }
 
-void
-GtkBuilderWindow::enable_widget (const char *name, bool state)
+void GtkBuilderWindow::enable_widget(const char *name, bool state)
 {
-    gtk_widget_set_sensitive (get_widget (name), state);
+    auto widget = get_object<Gtk::Widget>(name);
+    widget->set_sensitive(state);
 }
 
-void
-GtkBuilderWindow::resize (int width, int height)
+void GtkBuilderWindow::show_widget(const char *name, bool state)
 {
-    if (width > 0 && height > 0)
-        gtk_window_resize (GTK_WINDOW (window), width, height);
+    auto widget = get_object<Gtk::Widget>(name);
+    widget->set_visible(state);
 }
 
-void
-GtkBuilderWindow::refresh ()
+void GtkBuilderWindow::resize(int width, int height)
 {
-    gtk_widget_queue_draw (GTK_WIDGET (window));
+    window->resize(width, height);
 }
 
-int
-GtkBuilderWindow::get_width ()
+void GtkBuilderWindow::refresh()
 {
-    int width, height;
-
-    gtk_window_get_size (GTK_WINDOW (window), &width, &height);
-
-    return width;
+    window->queue_draw();
 }
 
-int
-GtkBuilderWindow::get_height ()
+int GtkBuilderWindow::get_width()
 {
-    int width, height;
-
-    gtk_window_get_size (GTK_WINDOW (window), &width, &height);
-
-    return height;
+    return window->get_width();
 }
 
-void
-GtkBuilderWindow::set_button_label (const char *name, const char *label)
+int GtkBuilderWindow::get_height()
 {
-    gtk_button_set_label (GTK_BUTTON (get_widget (name)), label);
+    return window->get_height();
 }
 
-unsigned char
-GtkBuilderWindow::get_check (const char *name)
+void GtkBuilderWindow::set_button_label(const char *name, const char *label)
 {
-    if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (get_widget (name))))
-        return 1;
-    return 0;
+    get_object<Gtk::Button>(name)->set_label(label);
+}
+
+bool GtkBuilderWindow::get_check(const char *name)
+{
+    return get_object<Gtk::ToggleButton>(name)->get_active();
 }
 
 int GtkBuilderWindow::get_entry_value(const char *name)
 {
-    return atoi (gtk_entry_get_text (GTK_ENTRY (get_widget (name))));;
+    auto text = get_object<Gtk::Entry>(name)->get_text();
+    return std::stoi(text);
 }
 
-const char *
-GtkBuilderWindow::get_entry_text (const char *name)
+std::string GtkBuilderWindow::get_entry_text(const char *name)
 {
-    return gtk_entry_get_text (GTK_ENTRY (get_widget (name)));
+    return get_object<Gtk::Entry>(name)->get_text();
 }
 
-float
-GtkBuilderWindow::get_slider (const char *name)
+void GtkBuilderWindow::set_entry_value(const char *name, unsigned int value)
 {
-    return (float) gtk_range_get_value (GTK_RANGE (get_widget (name)));
+    get_object<Gtk::Entry>(name)->set_text(std::to_string(value));
 }
 
-unsigned char
-GtkBuilderWindow::get_combo (const char *name)
+void GtkBuilderWindow::set_entry_text(const char *name, const char *text)
 {
-    return gtk_combo_box_get_active (GTK_COMBO_BOX (get_widget (name)));
+    get_object<Gtk::Entry>(name)->set_text(text);
 }
 
-void
-GtkBuilderWindow::set_slider (const char *name, float value)
+float GtkBuilderWindow::get_slider(const char *name)
 {
-    gtk_range_set_value (GTK_RANGE (get_widget (name)), (double) value);
+    return get_object<Gtk::Range>(name)->get_value();
 }
 
-void
-GtkBuilderWindow::set_check (const char *name, bool value)
+int GtkBuilderWindow::get_combo(const char *name)
 {
-    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (get_widget (name)),
-                                  value);
+    return get_object<Gtk::ComboBox>(name)->get_active_row_number();
 }
 
-void
-GtkBuilderWindow::set_entry_value (const char *name, unsigned int value)
+void GtkBuilderWindow::set_slider(const char *name, float value)
 {
-    char text[80];
-
-    snprintf (text, 80, "%u", value);
-    gtk_entry_set_text (GTK_ENTRY (get_widget (name)), text);
+    get_object<Gtk::Range>(name)->set_value(value);
 }
 
-void
-GtkBuilderWindow::set_entry_text (const char *name, const char *text)
+void GtkBuilderWindow::set_check(const char *name, bool value)
 {
-    gtk_entry_set_text (GTK_ENTRY (get_widget (name)), text);
+    get_object<Gtk::ToggleButton>(name)->set_active(value);
 }
 
-void
-GtkBuilderWindow::set_combo (const char *name, unsigned char value)
+void GtkBuilderWindow::set_combo(const char *name, unsigned char value)
 {
-    gtk_combo_box_set_active (GTK_COMBO_BOX (get_widget (name)), value);
+    get_object<Gtk::ComboBox>(name)->set_active(value);
 }
 
-void
-GtkBuilderWindow::set_spin (const char *name, double value)
+void GtkBuilderWindow::set_spin(const char *name, double value)
 {
-    gtk_spin_button_set_value (GTK_SPIN_BUTTON (get_widget (name)),
-                               (double) value);
+    get_object<Gtk::SpinButton>(name)->set_value(value);
 }
 
-void
-GtkBuilderWindow::combo_box_append (const char *name, const char *value)
+double GtkBuilderWindow::get_spin(const char *name)
 {
-    combo_box_append (GTK_COMBO_BOX (get_widget (name)), value);
+    return get_object<Gtk::SpinButton>(name)->get_value();
 }
 
-void
-GtkBuilderWindow::combo_box_append (GtkComboBox *combo, const char *value)
+void GtkBuilderWindow::combo_box_append(const char *name, const char *value)
+{
+    return combo_box_append(get_object<Gtk::ComboBox>(name).get(), value);
+}
+
+void GtkBuilderWindow::combo_box_append(Gtk::ComboBox *combo, const char *value)
 {
     GtkListStore *store;
     GtkTreeIter iter;
 
-    store = GTK_LIST_STORE (gtk_combo_box_get_model (combo));
+    store = GTK_LIST_STORE(combo->get_model()->gobj());
 
-    gtk_list_store_append (store, &iter);
-    gtk_list_store_set (store, &iter, 0, value, -1);
+    gtk_list_store_append(store, &iter);
+    gtk_list_store_set(store, &iter, 0, value, -1);
 }
 
-GtkWindow *
-GtkBuilderWindow::get_window ()
+GtkWindow *GtkBuilderWindow::get_window()
 {
-    return GTK_WINDOW (window);
-}
-
-double
-GtkBuilderWindow::get_spin (const char *name)
-{
-    return  gtk_spin_button_get_value (GTK_SPIN_BUTTON (get_widget (name)));
+    return window->gobj();
 }
 
 bool GtkBuilderWindow::has_focus(const char *widget)
 {
-    return gtk_widget_is_focus (get_widget (widget));
+    return get_object<Gtk::Widget>(widget)->is_focus();
 }

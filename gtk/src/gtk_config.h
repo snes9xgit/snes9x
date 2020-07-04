@@ -7,13 +7,13 @@
 #ifndef __GTK_CONFIG_H
 #define __GTK_CONFIG_H
 
+#include "gtk_control.h"
+#include "filter/snes_ntsc.h"
+
 #include <X11/Xlib.h>
 #include <X11/extensions/Xrandr.h>
 #include <string>
 #include <array>
-
-#include "gtk_control.h"
-#include "filter/snes_ntsc.h"
 
 enum {
     HWA_NONE = 0,
@@ -53,14 +53,14 @@ enum {
 class Snes9xConfig
 {
   public:
-    Snes9xConfig ();
-    int load_config_file ();
-    int save_config_file ();
-    int load_defaults ();
-    void rebind_keys ();
-    void flush_joysticks ();
-    void set_joystick_mode (int mode);
-    void joystick_register_centers ();
+    Snes9xConfig();
+    int load_config_file();
+    int save_config_file();
+    int load_defaults();
+    void rebind_keys();
+    void flush_joysticks();
+    void set_joystick_mode(int mode);
+    void joystick_register_centers();
 
     /* Screen options */
     bool full_screen_on_open;
@@ -167,11 +167,11 @@ class Snes9xConfig
     bool use_sync_control;
 #endif
 
-    JoyDevice **joystick;
+    std::vector<JoyDevice> joystick;
     int joystick_threshold;
 };
 
-std::string get_config_dir ();
-std::string get_config_file_name ();
+std::string get_config_dir();
+std::string get_config_file_name();
 
 #endif /* __GTK_CONFIG_H */

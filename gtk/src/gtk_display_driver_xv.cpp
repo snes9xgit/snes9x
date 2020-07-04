@@ -4,7 +4,7 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include "gtk_2_3_compat.h"
+#include "gtk_compat.h"
 #include <X11/extensions/XShm.h>
 #include <X11/extensions/Xv.h>
 #include <X11/extensions/Xvlib.h>
@@ -31,15 +31,14 @@ static int get_inv_shift(uint32 mask, int bpp)
     return (bpp - i);
 }
 
-S9xXVDisplayDriver::S9xXVDisplayDriver(Snes9xWindow *window,
-                                       Snes9xConfig *config)
+S9xXVDisplayDriver::S9xXVDisplayDriver(Snes9xWindow *window, Snes9xConfig *config)
 {
     this->window = window;
     this->config = config;
-    this->drawing_area = GTK_WIDGET(window->drawing_area);
-    display =
-        gdk_x11_display_get_xdisplay(gtk_widget_get_display(drawing_area));
-    last_known_width = last_known_height = -1;
+    this->drawing_area = window->drawing_area;
+    display = gdk_x11_display_get_xdisplay(drawing_area->get_display()->gobj());
+    last_known_width = -1;
+    last_known_height = -1;
 }
 
 void S9xXVDisplayDriver::resize_window(int width, int height)
@@ -59,12 +58,13 @@ void S9xXVDisplayDriver::create_window(int width, int height)
     window_attr.y = 0;
     window_attr.wclass = GDK_INPUT_OUTPUT;
     window_attr.window_type = GDK_WINDOW_CHILD;
-    window_attr.visual = gdk_x11_screen_lookup_visual(gtk_widget_get_screen(drawing_area), vi->visualid);
+    window_attr.visual = gdk_x11_screen_lookup_visual(drawing_area->get_screen()->gobj(), vi->visualid);
 
-    gdk_window = gdk_window_new(gtk_widget_get_window(drawing_area),
+    gdk_window = gdk_window_new(drawing_area->get_window()->gobj(),
                                 &window_attr,
                                 GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL);
-    gdk_window_set_user_data(gdk_window, (gpointer)drawing_area);
+
+    gdk_window_set_user_data(gdk_window, (gpointer)drawing_area->gobj());
 
     gdk_window_show(gdk_window);
     xwindow = gdk_x11_window_get_xid(gdk_window);
@@ -76,26 +76,22 @@ void S9xXVDisplayDriver::create_window(int width, int height)
 void S9xXVDisplayDriver::update(uint16_t *buffer, int width, int height, int stride_in_pixels)
 {
     int current_width, current_height;
-    GtkAllocation allocation;
 
-    gtk_widget_get_allocation(drawing_area, &allocation);
+    auto allocation = drawing_area->get_allocation();
 
-    if (output_window_width != allocation.width ||
-        output_window_height != allocation.height)
+    if (output_window_width != allocation.get_width() ||
+        output_window_height != allocation.get_height())
     {
-        resize_window(allocation.width, allocation.height);
+        resize_window(allocation.get_width(), allocation.get_height());
     }
 
-#if GTK_CHECK_VERSION(3, 10, 0)
-    int gdk_scale_factor = gdk_window_get_scale_factor(gdk_window);
+    int scale_factor = drawing_area->get_scale_factor();
 
-    allocation.width *= gdk_scale_factor;
-    allocation.height *= gdk_scale_factor;
+    allocation.set_width(allocation.get_width() * scale_factor);
+    allocation.set_height(allocation.get_height() * scale_factor);
 
-#endif
-
-    current_width = allocation.width;
-    current_height = allocation.height;
+    current_width = allocation.get_width();
+    current_height = allocation.get_height();
 
     update_image_size(width, height);
 
@@ -178,7 +174,7 @@ void S9xXVDisplayDriver::update_image_size(int width, int height)
             {
                 /* Can't recover, send exit. */
                 fprintf(stderr, "Couldn't reallocate shared memory.\n");
-                S9xExit();
+                exit(1);
             }
             else if (shm.shmaddr != (void *)-1)
             {
@@ -209,10 +205,10 @@ int S9xXVDisplayDriver::init()
     GdkWindow *root;
 
     /* Setup XV */
-    gtk_widget_realize(drawing_area);
+    gtk_widget_realize(GTK_WIDGET(drawing_area->gobj()));
 
-    display = gdk_x11_display_get_xdisplay(gtk_widget_get_display(drawing_area));
-    screen = gtk_widget_get_screen(drawing_area);
+    display = gdk_x11_display_get_xdisplay(drawing_area->get_display()->gobj());
+    screen = drawing_area->get_screen()->gobj();
     root = gdk_screen_get_root_window(screen);
 
     xv_portid = -1;
@@ -391,7 +387,7 @@ int S9xXVDisplayDriver::init()
     }
 
     xcolormap = XCreateColormap(display,
-                                gdk_x11_window_get_xid(gtk_widget_get_window(drawing_area)),
+                                gdk_x11_window_get_xid(drawing_area->get_window()->gobj()),
                                 vi->visual,
                                 AllocNone);
 
@@ -443,20 +439,10 @@ void S9xXVDisplayDriver::deinit()
 
 void S9xXVDisplayDriver::clear()
 {
-    int width, height;
-    GtkAllocation allocation;
     GC xgc = XDefaultGC(display, XDefaultScreen(display));
 
-    gtk_widget_get_allocation(drawing_area, &allocation);
-#if GTK_CHECK_VERSION(3, 10, 0)
-    int gdk_scale_factor = gdk_window_get_scale_factor(gdk_window);
-
-    allocation.width *= gdk_scale_factor;
-    allocation.height *= gdk_scale_factor;
-
-#endif
-    width = allocation.width;
-    height = allocation.height;
+    int width = drawing_area->get_width() * drawing_area->get_scale_factor();
+    int height = drawing_area->get_height() * drawing_area->get_scale_factor();
 
     if (window->last_width <= 0 || window->last_height <= 0)
     {

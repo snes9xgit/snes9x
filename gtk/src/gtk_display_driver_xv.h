@@ -7,13 +7,13 @@
 #ifndef __GTK_DISPLAY_DRIVER_XV_H
 #define __GTK_DISPLAY_DRIVER_XV_H
 
+#include "gtk_s9x.h"
+#include "gtk_display_driver.h"
+
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/extensions/XShm.h>
 #include <X11/extensions/Xvlib.h>
-
-#include "gtk_s9x.h"
-#include "gtk_display_driver.h"
 
 const uint32 FOURCC_YUY2 = 0x32595559;
 

@@ -4,13 +4,20 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include "gtk_2_3_compat.h"
+#include "gtk_compat.h"
 #include <sched.h>
 
 #include "gtk_s9x.h"
 #include "gtk_display.h"
 #include "gtk_display_driver.h"
 #include "gtk_display_driver_gtk.h"
+
+#include "snes9x.h"
+#include "memmap.h"
+#include "cpuexec.h"
+#include "ppu.h"
+#include "gfx.h"
+#include "netplay.h"
 
 #if defined(USE_XV) && defined(GDK_WINDOWING_X11)
 #include "gtk_display_driver_xv.h"
@@ -1284,12 +1291,12 @@ void S9xDisplayReconfigure()
 
 void S9xQueryDrivers()
 {
-    GdkDisplay *display = gtk_widget_get_display (GTK_WIDGET (top_level->get_window()));
+    GdkDisplay *gdk_display = top_level->window->get_display()->gobj();
 
     gui_config->allow_xv = false;
 #if defined(USE_XV) && defined(GDK_WINDOWING_X11)
-    if (GDK_IS_X11_DISPLAY (display))
-        gui_config->allow_xv = S9xXVDisplayDriver::query_availability ();
+    if (GDK_IS_X11_DISPLAY(gdk_display))
+        gui_config->allow_xv = S9xXVDisplayDriver::query_availability();
 #endif
 
 #ifdef USE_OPENGL
@@ -1300,10 +1307,10 @@ void S9xQueryDrivers()
 
     gui_config->allow_xrandr = false;
 #ifdef GDK_WINDOWING_X11
-    if (GDK_IS_X11_DISPLAY(display))
+    if (GDK_IS_X11_DISPLAY(gdk_display))
     {
-        Display *dpy = gdk_x11_display_get_xdisplay(gtk_widget_get_display(GTK_WIDGET(top_level->get_window())));
-        Window xid = gdk_x11_window_get_xid(gtk_widget_get_window(GTK_WIDGET(top_level->get_window())));
+        Display *dpy = gdk_x11_display_get_xdisplay(gdk_display);
+        Window xid = gdk_x11_window_get_xid(top_level->window->get_window()->gobj());
 
         gui_config->allow_xrandr = true;
         gui_config->xrr_screen_resources = XRRGetScreenResourcesCurrent(dpy, xid);
@@ -1397,31 +1404,29 @@ bool8 S9xDeinitUpdate(int width, int height)
 
 static void S9xInitDriver()
 {
+    // Only OpenGL is supported on Wayland
 #ifdef GDK_WINDOWING_WAYLAND
     if (GDK_IS_WAYLAND_DISPLAY(gdk_display_get_default()))
     {
         gui_config->hw_accel = HWA_OPENGL;
     }
 #endif
+
     switch (gui_config->hw_accel)
     {
 #ifdef USE_OPENGL
     case HWA_OPENGL:
-
-        driver = new S9xOpenGLDisplayDriver(top_level,
-                                            gui_config);
-
+        driver = new S9xOpenGLDisplayDriver(top_level, gui_config);
         break;
 #endif
+
 #if defined(USE_XV) && defined(GDK_WINDOWING_X11)
     case HWA_XV:
-
         driver = new S9xXVDisplayDriver(top_level, gui_config);
-
         break;
 #endif
-    default:
 
+    default:
         driver = new S9xGTKDisplayDriver(top_level, gui_config);
     }
 
@@ -1430,7 +1435,6 @@ static void S9xInitDriver()
         if (gui_config->hw_accel > 0)
         {
             delete driver;
-
             gui_config->hw_accel = HWA_NONE;
 
             S9xInitDriver();
@@ -1452,7 +1456,8 @@ S9xDisplayDriver *S9xDisplayGetDriver()
 
 void S9xDeinitDisplay()
 {
-    driver->deinit();
+    if (driver)
+        driver->deinit();
     delete driver;
 
     if (pool)

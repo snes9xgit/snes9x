@@ -6,6 +6,8 @@
 
 #include "gtk_sound_driver_portaudio.h"
 #include "gtk_s9x.h"
+#include "apu/apu.h"
+#include "snes9x.h"
 
 static void port_audio_samples_available_callback(void *data)
 {

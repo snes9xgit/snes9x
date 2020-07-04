@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __BACKGROUND_PARTICLES_H
+#define __BACKGROUND_PARTICLES_H
 #include <vector>
 #include <list>
 #include <cstdint>
@@ -50,3 +51,4 @@ class Particles
 };
 
 } // namespace Background
+#endif // __BACKGROUND_PARTICLES_H

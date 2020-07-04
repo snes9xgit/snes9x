@@ -23,12 +23,9 @@ args += [ '-DDATADIR="' + appdatadir + '"', '-DSNES9XLOCALEDIR="' + localedir + 
 subdir('data')
 subdir('po')
 
-glib_dep = dependency('glib-2.0', version: '> 2.28')
-gthread_dep = dependency('gthread-2.0', version: '>= 2.6')
-gobject_dep = dependency('gobject-2.0', version: '>= 2.6')
 sdl2_dep = dependency('sdl2')
 
-deps += [ glib_dep, gthread_dep, gobject_dep, sdl2_dep ]
+deps += sdl2_dep
 
 c_compiler = meson.get_compiler('c')
 
@@ -36,16 +33,7 @@ if c_compiler.version().version_compare('>=7.0.0') and c_compiler.get_id() == 'g
   args += '-Wno-format-truncation'
 endif
 
-if get_option('gtk3') and not get_option('gtk2')
-  message('Building with GTK+-3.0')
-  gtk_dep = dependency('gtk+-3.0', version: '>= 3.22')
-  gtk_ver = 3
-else
-  message('Building with GTK+-2.0')
-  gtk_dep = dependency('gtk+-2.0', version: '>= 2.16')
-  gtk_ver = 2
-endif
-
+gtk_dep = dependency('gtkmm-3.0', version: '>= 3.22')
 deps += gtk_dep
 
 x11_dep = c_compiler.find_library('X11')
@@ -125,7 +113,7 @@ if slang and opengl
 endif
 
 wayland = get_option('wayland')
-if wayland and gtk_ver == 3
+if wayland
   wayland_dep = dependency('wayland-egl', required: false)
   
   if wayland_dep.found()
@@ -320,7 +308,7 @@ srcs += [
  '../filter/snes_ntsc.h',
  '../filter/snes_ntsc_impl.h',
  '../filter/snes_ntsc.c',
- 'src/gtk_2_3_compat.h',
+ 'src/gtk_compat.h',
  'src/gtk_sound_driver_sdl.h',
  'src/gtk_sound_driver_sdl.cpp',
  '../fxinst.cpp',
@@ -405,7 +393,7 @@ libjma_srcs = [
 libjma = static_library('jma', 
                         libjma_srcs, 
                         c_args: args, 
-                        cpp_args: [args, '-fexceptions'],
+                        cpp_args: args,
                         include_directories: include_directories(includes))
 
 sourcify = executable('sourcify', 'src/sourcify.c', native: true)
@@ -418,7 +406,7 @@ snes9x_gtk = executable('snes9x-gtk',
                         srcs, 
                         gtk_snes9x_ui_cpp,
                         c_args: args, 
-                        cpp_args: [args, '-fno-exceptions', '-fno-rtti'],
+                        cpp_args: args,
                         dependencies: deps,
                         include_directories: include_directories(includes),
                         link_with: libjma,
@@ -431,7 +419,6 @@ summary = [
   '            appdatadir:        ' + appdatadir,
   '            localedir:         ' + localedir,
   '[Options]   Build type:        ' + get_option('buildtype'),
-  '            GTK+ version:      ' + gtk_ver.to_string(),
   '            Wayland:           ' + wayland.to_string(),
   '            OpenGL:            ' + opengl.to_string(),
   '             slang shaders:    ' + slang.to_string(),

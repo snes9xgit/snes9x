@@ -4,29 +4,25 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include "gtk_2_3_compat.h"
+#include "gtk_compat.h"
 #include <cairo.h>
 #include "gtk_display.h"
 #include "gtk_display_driver_gtk.h"
+#include "snes9x.h"
 
 S9xGTKDisplayDriver::S9xGTKDisplayDriver(Snes9xWindow *window,
                                          Snes9xConfig *config)
 {
     this->window = window;
     this->config = config;
-    this->drawing_area = GTK_WIDGET(window->drawing_area);
+    this->drawing_area = window->drawing_area;
 }
 
 void S9xGTKDisplayDriver::update(uint16_t *buffer, int width, int height, int stride_in_pixels)
 {
-    GtkAllocation allocation;
-
     if (width <= 0)
         return;
-
-    gtk_widget_get_allocation(drawing_area, &allocation);
-
-    S9xRect dst = S9xApplyAspect(width, height, allocation.width, allocation.height);
+    S9xRect dst = S9xApplyAspect(width, height, drawing_area->get_width(), drawing_area->get_height());
     output(buffer, stride_in_pixels * 2, dst.x, dst.y, width, height, dst.w, dst.h);
 }
 
@@ -48,7 +44,6 @@ void S9xGTKDisplayDriver::output(void *src,
     }
 
     cairo_t *cr = window->get_cairo();
-
     cairo_surface_t *surface;
 
     surface = cairo_image_surface_create_for_data((unsigned char *)src, CAIRO_FORMAT_RGB16_565, width, height, src_pitch);
@@ -94,12 +89,8 @@ void S9xGTKDisplayDriver::deinit()
 
 void S9xGTKDisplayDriver::clear()
 {
-    int width, height;
-    GtkAllocation allocation;
-
-    gtk_widget_get_allocation(drawing_area, &allocation);
-    width = allocation.width;
-    height = allocation.height;
+    int width = drawing_area->get_width();
+    int height = drawing_area->get_height();
 
     cairo_t *cr = window->get_cairo();
 

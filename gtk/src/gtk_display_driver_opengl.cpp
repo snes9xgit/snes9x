@@ -4,7 +4,7 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include "gtk_2_3_compat.h"
+#include "gtk_compat.h"
 #include <dlfcn.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -85,26 +85,23 @@ S9xOpenGLDisplayDriver::S9xOpenGLDisplayDriver(Snes9xWindow *window, Snes9xConfi
 {
     this->window = window;
     this->config = config;
-    this->drawing_area = GTK_WIDGET(window->drawing_area);
+    this->drawing_area = window->drawing_area;
 }
 
 void S9xOpenGLDisplayDriver::update(uint16_t *buffer, int width, int height, int stride_in_pixels)
 {
-    GtkAllocation allocation;
-    gtk_widget_get_allocation(drawing_area, &allocation);
+    Gtk::Allocation allocation = drawing_area->get_allocation();
 
-    if (output_window_width != allocation.width ||
-        output_window_height != allocation.height)
+    if (output_window_width != allocation.get_width() ||
+        output_window_height != allocation.get_height())
     {
         resize();
     }
 
-#if GTK_CHECK_VERSION(3, 10, 0)
-    int gdk_scale_factor = gdk_window_get_scale_factor(gdk_window);
+    int scale_factor = drawing_area->get_scale_factor();
 
-    allocation.width *= gdk_scale_factor;
-    allocation.height *= gdk_scale_factor;
-#endif
+    allocation.set_width(allocation.get_width() * scale_factor);
+    allocation.set_height(allocation.get_height() * scale_factor);
 
     if (!legacy)
         glActiveTexture(GL_TEXTURE0);
@@ -118,8 +115,8 @@ void S9xOpenGLDisplayDriver::update(uint16_t *buffer, int width, int height, int
 
     glClear(GL_COLOR_BUFFER_BIT);
 
-    S9xRect content = S9xApplyAspect(width, height, allocation.width, allocation.height);
-    glViewport(content.x, allocation.height - content.y - content.h, content.w, content.h);
+    S9xRect content = S9xApplyAspect(width, height, allocation.get_width(), allocation.get_height());
+    glViewport(content.x, allocation.get_height() - content.y - content.h, content.w, content.h);
     window->set_mouseable_area(content.x, content.y, content.w, content.h);
 
     update_texture_size(width, height);
@@ -183,7 +180,7 @@ void S9xOpenGLDisplayDriver::update(uint16_t *buffer, int width, int height, int
 
     if (using_glsl_shaders)
     {
-        glsl_shader->render(texmap, width, height, content.x, allocation.height - content.y - content.h, content.w, content.h, S9xViewportCallback);
+        glsl_shader->render(texmap, width, height, content.x, allocation.get_height() - content.y - content.h, content.w, content.h, S9xViewportCallback);
         swap_buffers();
         return;
     }
@@ -468,23 +465,25 @@ void S9xOpenGLDisplayDriver::resize()
 
 bool S9xOpenGLDisplayDriver::create_context()
 {
-    gdk_window = gtk_widget_get_window(drawing_area);
+    gdk_window = drawing_area->get_window()->gobj();
+    GdkDisplay *gdk_display = drawing_area->get_display()->gobj();
 
 #ifdef GDK_WINDOWING_WAYLAND
     if (GDK_IS_WAYLAND_WINDOW(gdk_window))
     {
+        if (!wl.attach(GTK_WIDGET(drawing_area->gobj())))
+            return false;
         context = &wl;
     }
 #endif
 #ifdef GDK_WINDOWING_X11
     if (GDK_IS_X11_WINDOW(gdk_window))
     {
+        if (!glx.attach(gdk_x11_display_get_xdisplay(gdk_display), gdk_x11_window_get_xid(gdk_window)))
+            return false;
         context = &glx;
     }
 #endif
-
-    if (!context->attach(drawing_area))
-        return false;
 
     if (!context->create_context())
         return false;
