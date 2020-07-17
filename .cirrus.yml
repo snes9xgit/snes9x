@@ -10,7 +10,7 @@ snes9x_linux-gtk-amd64_task:
 
   setup_script:
     - git submodule update --init shaders/SPIRV-Cross
-    - apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install meson gettext libsdl2-dev libgtk-3-dev libminizip-dev portaudio19-dev glslang-dev
+    - apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install meson gettext libsdl2-dev libgtkmm-3.0-dev libgtk-3-dev libminizip-dev portaudio19-dev glslang-dev
 
   compile_script:
     - meson build gtk --buildtype=release --strip
