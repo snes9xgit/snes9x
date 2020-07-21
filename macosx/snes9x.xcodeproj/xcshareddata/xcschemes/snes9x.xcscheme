@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1020"
+   LastUpgradeVersion = "1200"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "30CCAC512290472E00549AED"
+               BlueprintIdentifier = "30714714230E379500917F82"
                BuildableName = "Snes9x.app"
                BlueprintName = "Snes9x"
                ReferencedContainer = "container:snes9x.xcodeproj">
@@ -29,17 +29,6 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
       </Testables>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "30CCAC512290472E00549AED"
-            BuildableName = "Snes9x.app"
-            BlueprintName = "Snes9x"
-            ReferencedContainer = "container:snes9x.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
-      <AdditionalOptions>
-      </AdditionalOptions>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -55,14 +44,12 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "30CCAC512290472E00549AED"
+            BlueprintIdentifier = "30714714230E379500917F82"
             BuildableName = "Snes9x.app"
             BlueprintName = "Snes9x"
             ReferencedContainer = "container:snes9x.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <AdditionalOptions>
-      </AdditionalOptions>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -74,7 +61,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "30CCAC512290472E00549AED"
+            BlueprintIdentifier = "30714714230E379500917F82"
             BuildableName = "Snes9x.app"
             BlueprintName = "Snes9x"
             ReferencedContainer = "container:snes9x.xcodeproj">

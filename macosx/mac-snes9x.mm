@@ -356,7 +356,7 @@ bool8 SNES9X_RecordMovie (void)
 			else
 				opt |= MOVIE_OPT_FROM_SNAPSHOT;
 
-			r = S9xMovieCreate(filename, mask, opt, macRecordWChar, wcslen(macRecordWChar));
+			r = S9xMovieCreate(filename, mask, opt, macRecordWChar, (int)wcslen(macRecordWChar));
 			if (r == SUCCESS)
 			{
 				ChangeTypeAndCreator(filename, 'SMOV', '~9X~');
@@ -378,8 +378,6 @@ bool8 SNES9X_RecordMovie (void)
 
 bool8 SNES9X_PlayMovie (void)
 {
-	char	filename[PATH_MAX + 1];
-
 	if (cartOpen)
 	{
 		NSURL *url = NavPlayMovieFrom();
@@ -403,14 +401,11 @@ bool8 SNES9X_PlayMovie (void)
 
 bool8 SNES9X_QTMovieRecord (void)
 {
-    char	filename[PATH_MAX + 1];
-
 	if (cartOpen)
 	{
 		NSURL *url = NavQTMovieRecordTo();
 		if (url != nil)
 		{
-			const char *filename = url.path.UTF8String;
 			macQTRecord = true;
 			SNES9X_Go();
 
