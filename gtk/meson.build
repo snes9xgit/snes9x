@@ -37,6 +37,9 @@ endif
 gtk_dep = dependency('gtkmm-3.0', version: '>= 3.22')
 deps += gtk_dep
 
+gthread_dep = dependency('gthread-2.0')
+deps += gthread_dep
+
 x11_dep = c_compiler.find_library('X11')
 xext_dep = c_compiler.find_library('Xext')
 dl_dep = c_compiler.find_library('dl')
