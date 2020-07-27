@@ -152,7 +152,7 @@ bool gtk_shader_parameters_dialog(GtkWindow *parent)
     grid->set_row_spacing(2);
     grid->set_column_spacing(12);
     auto vbox = new Gtk::VBox;
-    vbox->pack_start(*grid);
+    vbox->pack_start(*grid, Gtk::PACK_SHRINK);
     scrolled_window->add(*vbox);
 
     auto sizegroup = Gtk::SizeGroup::create(Gtk::SIZE_GROUP_HORIZONTAL);
