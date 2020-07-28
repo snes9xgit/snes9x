@@ -167,7 +167,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\src\SPIRV\..;..\src\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\shaders\glslang\SPIRV\..;..\..\..\shaders\glslang\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
@@ -185,10 +185,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;ENABLE_OPT=0;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src\SPIRV\..;..\src\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\shaders\glslang\SPIRV\..;..\..\..\shaders\glslang\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>..\src\SPIRV\..;..\src\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\shaders\glslang\SPIRV\..;..\..\..\shaders\glslang\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -201,7 +201,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\src\SPIRV\..;..\src\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\shaders\glslang\SPIRV\..;..\..\..\shaders\glslang\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
@@ -219,10 +219,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;ENABLE_OPT=0;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src\SPIRV\..;..\src\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\shaders\glslang\SPIRV\..;..\..\..\shaders\glslang\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>..\src\SPIRV\..;..\src\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\shaders\glslang\SPIRV\..;..\..\..\shaders\glslang\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -233,7 +233,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\src\SPIRV\..;..\src\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\shaders\glslang\SPIRV\..;..\..\..\shaders\glslang\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -251,10 +251,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;ENABLE_OPT=0;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src\SPIRV\..;..\src\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\shaders\glslang\SPIRV\..;..\..\..\shaders\glslang\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>..\src\SPIRV\..;..\src\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\shaders\glslang\SPIRV\..;..\..\..\shaders\glslang\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -267,7 +267,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\src\SPIRV\..;..\src\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\shaders\glslang\SPIRV\..;..\..\..\shaders\glslang\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -285,10 +285,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;ENABLE_OPT=0;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src\SPIRV\..;..\src\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\shaders\glslang\SPIRV\..;..\..\..\shaders\glslang\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>..\src\SPIRV\..;..\src\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\shaders\glslang\SPIRV\..;..\..\..\shaders\glslang\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -302,7 +302,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\src\SPIRV\..;..\src\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\shaders\glslang\SPIRV\..;..\..\..\shaders\glslang\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -320,10 +320,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;ENABLE_OPT=0;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src\SPIRV\..;..\src\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\shaders\glslang\SPIRV\..;..\..\..\shaders\glslang\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>..\src\SPIRV\..;..\src\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\shaders\glslang\SPIRV\..;..\..\..\shaders\glslang\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -336,7 +336,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\src\SPIRV\..;..\src\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\shaders\glslang\SPIRV\..;..\..\..\shaders\glslang\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -354,10 +354,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;ENABLE_OPT=0;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src\SPIRV\..;..\src\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\shaders\glslang\SPIRV\..;..\..\..\shaders\glslang\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>..\src\SPIRV\..;..\src\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\shaders\glslang\SPIRV\..;..\..\..\shaders\glslang\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -371,7 +371,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\src\SPIRV\..;..\src\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\shaders\glslang\SPIRV\..;..\..\..\shaders\glslang\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -388,10 +388,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;ENABLE_OPT=0;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src\SPIRV\..;..\src\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\shaders\glslang\SPIRV\..;..\..\..\shaders\glslang\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>..\src\SPIRV\..;..\src\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\shaders\glslang\SPIRV\..;..\..\..\shaders\glslang\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -404,7 +404,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\src\SPIRV\..;..\src\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\shaders\glslang\SPIRV\..;..\..\..\shaders\glslang\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -421,10 +421,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;ENABLE_OPT=0;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src\SPIRV\..;..\src\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\shaders\glslang\SPIRV\..;..\..\..\shaders\glslang\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>..\src\SPIRV\..;..\src\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\shaders\glslang\SPIRV\..;..\..\..\shaders\glslang\glslang\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -437,29 +437,29 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\SPIRV\GlslangToSpv.cpp" />
-    <ClCompile Include="..\src\SPIRV\InReadableOrder.cpp" />
-    <ClCompile Include="..\src\SPIRV\Logger.cpp" />
-    <ClCompile Include="..\src\SPIRV\SpvBuilder.cpp" />
-    <ClCompile Include="..\src\SPIRV\SpvPostProcess.cpp" />
-    <ClCompile Include="..\src\SPIRV\doc.cpp" />
-    <ClCompile Include="..\src\SPIRV\SpvTools.cpp" />
-    <ClCompile Include="..\src\SPIRV\disassemble.cpp" />
-    <ClInclude Include="..\src\SPIRV\bitutils.h" />
-    <ClInclude Include="..\src\SPIRV\spirv.hpp" />
-    <ClInclude Include="..\src\SPIRV\GLSL.std.450.h" />
-    <ClInclude Include="..\src\SPIRV\GLSL.ext.EXT.h" />
-    <ClInclude Include="..\src\SPIRV\GLSL.ext.KHR.h" />
-    <ClInclude Include="..\src\SPIRV\GlslangToSpv.h" />
-    <ClInclude Include="..\src\SPIRV\hex_float.h" />
-    <ClInclude Include="..\src\SPIRV\Logger.h" />
-    <ClInclude Include="..\src\SPIRV\SpvBuilder.h" />
-    <ClInclude Include="..\src\SPIRV\spvIR.h" />
-    <ClInclude Include="..\src\SPIRV\doc.h" />
-    <ClInclude Include="..\src\SPIRV\SpvTools.h" />
-    <ClInclude Include="..\src\SPIRV\disassemble.h" />
-    <ClInclude Include="..\src\SPIRV\GLSL.ext.AMD.h" />
-    <ClInclude Include="..\src\SPIRV\GLSL.ext.NV.h" />
+    <ClCompile Include="..\..\..\shaders\glslang\SPIRV\GlslangToSpv.cpp" />
+    <ClCompile Include="..\..\..\shaders\glslang\SPIRV\InReadableOrder.cpp" />
+    <ClCompile Include="..\..\..\shaders\glslang\SPIRV\Logger.cpp" />
+    <ClCompile Include="..\..\..\shaders\glslang\SPIRV\SpvBuilder.cpp" />
+    <ClCompile Include="..\..\..\shaders\glslang\SPIRV\SpvPostProcess.cpp" />
+    <ClCompile Include="..\..\..\shaders\glslang\SPIRV\doc.cpp" />
+    <ClCompile Include="..\..\..\shaders\glslang\SPIRV\SpvTools.cpp" />
+    <ClCompile Include="..\..\..\shaders\glslang\SPIRV\disassemble.cpp" />
+    <ClInclude Include="..\..\..\shaders\glslang\SPIRV\bitutils.h" />
+    <ClInclude Include="..\..\..\shaders\glslang\SPIRV\spirv.hpp" />
+    <ClInclude Include="..\..\..\shaders\glslang\SPIRV\GLSL.std.450.h" />
+    <ClInclude Include="..\..\..\shaders\glslang\SPIRV\GLSL.ext.EXT.h" />
+    <ClInclude Include="..\..\..\shaders\glslang\SPIRV\GLSL.ext.KHR.h" />
+    <ClInclude Include="..\..\..\shaders\glslang\SPIRV\GlslangToSpv.h" />
+    <ClInclude Include="..\..\..\shaders\glslang\SPIRV\hex_float.h" />
+    <ClInclude Include="..\..\..\shaders\glslang\SPIRV\Logger.h" />
+    <ClInclude Include="..\..\..\shaders\glslang\SPIRV\SpvBuilder.h" />
+    <ClInclude Include="..\..\..\shaders\glslang\SPIRV\spvIR.h" />
+    <ClInclude Include="..\..\..\shaders\glslang\SPIRV\doc.h" />
+    <ClInclude Include="..\..\..\shaders\glslang\SPIRV\SpvTools.h" />
+    <ClInclude Include="..\..\..\shaders\glslang\SPIRV\disassemble.h" />
+    <ClInclude Include="..\..\..\shaders\glslang\SPIRV\GLSL.ext.AMD.h" />
+    <ClInclude Include="..\..\..\shaders\glslang\SPIRV\GLSL.ext.NV.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\hlsl\HLSL.vcxproj">

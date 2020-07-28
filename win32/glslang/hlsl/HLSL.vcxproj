@@ -412,7 +412,7 @@
     <Lib />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\hlsl\hlslAttributes.cpp">
+    <ClCompile Include="..\..\..\shaders\glslang\hlsl\hlslAttributes.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalOptions) /Zm300</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalOptions) /Zm300</AdditionalOptions>
       <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch.h</ForcedIncludeFiles>
@@ -454,7 +454,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">$(IntDir)\pch.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(IntDir)\pch.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="..\src\hlsl\hlslParseHelper.cpp">
+    <ClCompile Include="..\..\..\shaders\glslang\hlsl\hlslParseHelper.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalOptions) /Zm300</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalOptions) /Zm300</AdditionalOptions>
       <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch.h</ForcedIncludeFiles>
@@ -496,7 +496,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">$(IntDir)\pch.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(IntDir)\pch.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="..\src\hlsl\hlslScanContext.cpp">
+    <ClCompile Include="..\..\..\shaders\glslang\hlsl\hlslScanContext.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalOptions) /Zm300</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalOptions) /Zm300</AdditionalOptions>
       <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch.h</ForcedIncludeFiles>
@@ -538,7 +538,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">$(IntDir)\pch.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(IntDir)\pch.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="..\src\hlsl\hlslOpMap.cpp">
+    <ClCompile Include="..\..\..\shaders\glslang\hlsl\hlslOpMap.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalOptions) /Zm300</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalOptions) /Zm300</AdditionalOptions>
       <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch.h</ForcedIncludeFiles>
@@ -580,7 +580,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">$(IntDir)\pch.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(IntDir)\pch.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="..\src\hlsl\hlslTokenStream.cpp">
+    <ClCompile Include="..\..\..\shaders\glslang\hlsl\hlslTokenStream.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalOptions) /Zm300</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalOptions) /Zm300</AdditionalOptions>
       <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch.h</ForcedIncludeFiles>
@@ -622,7 +622,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">$(IntDir)\pch.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(IntDir)\pch.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="..\src\hlsl\hlslGrammar.cpp">
+    <ClCompile Include="..\..\..\shaders\glslang\hlsl\hlslGrammar.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalOptions) /Zm300</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalOptions) /Zm300</AdditionalOptions>
       <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch.h</ForcedIncludeFiles>
@@ -664,7 +664,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">$(IntDir)\pch.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(IntDir)\pch.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="..\src\hlsl\hlslParseables.cpp">
+    <ClCompile Include="..\..\..\shaders\glslang\hlsl\hlslParseables.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalOptions) /Zm300</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalOptions) /Zm300</AdditionalOptions>
       <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch.h</ForcedIncludeFiles>
@@ -706,7 +706,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">$(IntDir)\pch.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(IntDir)\pch.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="..\src\hlsl\pch.cpp">
+    <ClCompile Include="..\..\..\shaders\glslang\hlsl\pch.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalOptions) /Zm300</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalOptions) /Zm300</AdditionalOptions>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -740,14 +740,14 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">$(IntDir)\pch.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(IntDir)\pch.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClInclude Include="..\src\hlsl\hlslAttributes.h" />
-    <ClInclude Include="..\src\hlsl\hlslParseHelper.h" />
-    <ClInclude Include="..\src\hlsl\hlslTokens.h" />
-    <ClInclude Include="..\src\hlsl\hlslScanContext.h" />
-    <ClInclude Include="..\src\hlsl\hlslOpMap.h" />
-    <ClInclude Include="..\src\hlsl\hlslTokenStream.h" />
-    <ClInclude Include="..\src\hlsl\hlslGrammar.h" />
-    <ClInclude Include="..\src\hlsl\hlslParseables.h" />
+    <ClInclude Include="..\..\..\shaders\glslang\hlsl\hlslAttributes.h" />
+    <ClInclude Include="..\..\..\shaders\glslang\hlsl\hlslParseHelper.h" />
+    <ClInclude Include="..\..\..\shaders\glslang\hlsl\hlslTokens.h" />
+    <ClInclude Include="..\..\..\shaders\glslang\hlsl\hlslScanContext.h" />
+    <ClInclude Include="..\..\..\shaders\glslang\hlsl\hlslOpMap.h" />
+    <ClInclude Include="..\..\..\shaders\glslang\hlsl\hlslTokenStream.h" />
+    <ClInclude Include="..\..\..\shaders\glslang\hlsl\hlslGrammar.h" />
+    <ClInclude Include="..\..\..\shaders\glslang\hlsl\hlslParseables.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
