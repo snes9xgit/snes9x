@@ -87,12 +87,15 @@ if slang and opengl
   glslang_dep = c_compiler.find_library('glslang', required: false)
   hlsl_dep = c_compiler.find_library('HLSL', required: false)
   spirv_dep = c_compiler.find_library('SPIRV', required: false)
+  spirv_tools_dep = c_compiler.find_library('SPIRV-Tools', required: false)
+  spirv_tools_link_dep = c_compiler.find_library('SPIRV-Tools-link', required: false)
+  spirv_tools_opt_dep = c_compiler.find_library('SPIRV-Tools-opt', required: false)
   osdependent_dep = c_compiler.find_library('OSDependent', required: false)
   ogl_compiler_dep = c_compiler.find_library('OGLCompiler', required: false)
   spv_remapper_dep = c_compiler.find_library('SPVRemapper', required: false)
 
   if glslang_dep.found() and hlsl_dep.found() and spirv_dep.found() and osdependent_dep.found() and ogl_compiler_dep.found() and spv_remapper_dep.found()
-    deps += [glslang_dep, hlsl_dep, spirv_dep, osdependent_dep, ogl_compiler_dep, spv_remapper_dep]
+    deps += [glslang_dep, hlsl_dep, spirv_dep, spirv_tools_dep, spirv_tools_link_dep, spirv_tools_opt_dep, osdependent_dep, ogl_compiler_dep, spv_remapper_dep]
 
     args += ['-DUSE_SLANG',
              '-DSPIRV_CROSS_EXCEPTIONS_TO_ASSERTIONS',
