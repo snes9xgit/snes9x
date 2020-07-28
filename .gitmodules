@@ -10,3 +10,6 @@
 [submodule "shaders/SPIRV-Cross"]
 	path = shaders/SPIRV-Cross
 	url = https://github.com/KhronosGroup/SPIRV-Cross.git
+[submodule "shaders/glslang"]
+	path = shaders/glslang
+	url = https://github.com/KhronosGroup/glslang.git
