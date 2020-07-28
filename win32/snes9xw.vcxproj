@@ -117,7 +117,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)glslang\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)..\shaders\glslang</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;ALLOW_CPU_OVERCLOCK;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;D3D_DEBUG_INFO;DIRECTDRAW_SUPPORT;USE_SLANG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
@@ -166,7 +166,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)glslang\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)..\shaders\glslang</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;ALLOW_CPU_OVERCLOCK;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;D3D_DEBUG_INFO;DIRECTDRAW_SUPPORT;USE_SLANG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
@@ -220,7 +220,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)glslang\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)..\shaders\glslang;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;ALLOW_CPU_OVERCLOCK;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;DIRECTDRAW_SUPPORT;USE_SLANG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -273,7 +273,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)glslang\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)..\shaders\glslang;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;ALLOW_CPU_OVERCLOCK;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;DIRECTDRAW_SUPPORT;USE_SLANG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
