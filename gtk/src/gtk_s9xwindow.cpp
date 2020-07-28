@@ -680,6 +680,10 @@ std::string Snes9xWindow::open_movie_dialog(bool readonly)
     return std::string{};
 }
 
+#include <iostream>
+
+using namespace std;
+
 std::string Snes9xWindow::open_rom_dialog(bool run)
 {
     const char *extensions[] = {
@@ -703,7 +707,10 @@ std::string Snes9xWindow::open_rom_dialog(bool run)
     dialog.add_filter(filter);
     dialog.add_filter(get_all_files_filter());
 
-    if (!gui_config->last_directory.empty())
+    auto recent_items = Gtk::RecentManager::get_default()->get_items();
+    if (recent_items.size() > 0)
+        dialog.set_uri(recent_items[0]->get_uri());
+    else if (!gui_config->last_directory.empty())
         dialog.set_current_folder(config->last_directory);
 
     auto result = dialog.run();
