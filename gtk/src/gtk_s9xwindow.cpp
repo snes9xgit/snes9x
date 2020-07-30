@@ -756,8 +756,8 @@ bool Snes9xWindow::try_open_rom(std::string filename)
     data.groups = { "cartridge" };
     data.is_private = false;
     data.app_exec = Glib::get_prgname() + " %f";
-    Glib::filename_to_uri(filename);
-    Gtk::RecentManager::get_default()->add_item(filename, data);
+    auto uri = Glib::filename_to_uri(filename);
+    Gtk::RecentManager::get_default()->add_item(uri, data);
 
     unpause_from_user();
     unpause_from_focus_change();
@@ -984,6 +984,17 @@ void Snes9xWindow::configure_widgets()
         hide_mouse_cursor();
     else
         show_mouse_cursor();
+
+    if (config->rom_loaded)
+    {
+        std::string title = S9xBasenameNoExt(Memory.ROMFilename);
+        title += " - Snes9x";
+        window->set_title(title);
+    }
+    else
+    {
+        window->set_title("Snes9x");
+    }
 }
 
 void Snes9xWindow::set_mouseable_area(int x, int y, int width, int height)
