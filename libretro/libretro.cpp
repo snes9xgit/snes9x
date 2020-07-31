@@ -185,8 +185,8 @@ void retro_set_environment(retro_environment_t cb)
     };
 
     static const struct retro_subsystem_rom_info multicart_roms[] = {
-        { "Cart A", "smc|sfc|swc|fig|bs", false, false, false, multi_a_memory, 1 },
-        { "Cart B", "smc|sfc|swc|fig|bs", false, false, false, multi_b_memory, 1 },
+        { "Cart A", "smc|sfc|swc|fig|bs|st", false, false, false, multi_a_memory, 1 },
+        { "Cart B", "smc|sfc|swc|fig|bs|st", false, false, false, multi_b_memory, 1 },
     };
 
     static const struct retro_subsystem_info subsystems[] = {
@@ -779,7 +779,7 @@ void retro_get_system_info(struct retro_system_info *info)
 #define GIT_VERSION ""
 #endif
     info->library_version = VERSION GIT_VERSION;
-    info->valid_extensions = "smc|sfc|swc|fig|bs";
+    info->valid_extensions = "smc|sfc|swc|fig|bs|st";
     info->need_fullpath = false;
     info->block_extract = false;
 }
