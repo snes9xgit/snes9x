@@ -2269,11 +2269,9 @@ void S9xApplyCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 						break;
 
 					case LoadFreezeFile:
-						S9xUnfreezeGame(S9xChooseFilename(TRUE));
 						break;
 
 					case SaveFreezeFile:
-						S9xFreezeGame(S9xChooseFilename(FALSE));
 						break;
 
 					case LoadOopsFile:

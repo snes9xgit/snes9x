@@ -298,10 +298,6 @@
 		<p>
 			Called when Snes9x wants to know the directory <code>dirtype</code>.
 		</p>
-		<h3><code>const char *S9xChooseFilename (bool8 read_only)</code></h3>
-		<p>
-			If your port can match Snes9x's built-in <code>LoadFreezeFile</code>/<code>SaveFreezeFile</code> command (see <code>controls.cpp</code>), you may choose to use this function. Otherwise return <code>NULL</code>.
-		</p>
 		<h3><code>const char *S9xChooseMovieFilename (bool8 read_only)</code></h3>
 		<p>
 			If your port can match Snes9x's built-in <code>BeginRecordingMovie</code>/<code>LoadMovie</code> command (see <code>controls.cpp</code>), you may choose to use this function. Otherwise return <code>NULL</code>.

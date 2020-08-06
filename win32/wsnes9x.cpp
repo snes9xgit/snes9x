@@ -10843,12 +10843,6 @@ void S9xHandlePortCommand(s9xcommand_t cmd, int16 data1, int16 data2)
 	return;
 }
 
-//  NYI
-const char *S9xChooseFilename (bool8 read_only)
-{
-	return NULL;
-}
-
 // NYI
 const char *S9xChooseMovieFilename (bool8 read_only)
 {

@@ -2125,7 +2125,6 @@ const char* S9xGetDirectory(s9x_getdirtype type)
     return "";
 }
 void S9xInitInputDevices() {}
-const char* S9xChooseFilename(unsigned char) { return ""; }
 void S9xHandlePortCommand(s9xcommand_t, short, short) {}
 bool S9xPollButton(unsigned int, bool*) { return false; }
 void S9xToggleSoundChannel(int) {}

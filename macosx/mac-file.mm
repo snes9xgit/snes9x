@@ -365,11 +365,6 @@ const char * S9xGetFilenameInc (const char *inExt, enum s9x_getdirtype dirtype)
 	return (NULL);
 }
 
-const char * S9xChooseFilename (bool8 read_only)
-{
-	return (NULL);
-}
-
 const char * S9xChooseMovieFilename (bool8 read_only)
 {
 	return (NULL);

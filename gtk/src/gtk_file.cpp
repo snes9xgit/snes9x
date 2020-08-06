@@ -29,11 +29,6 @@ const char *S9xChooseMovieFilename(bool8 read_only)
     return path;
 }
 
-const char *S9xChooseFilename(bool8 read_only)
-{
-    return "";
-}
-
 const char *S9xGetFilenameInc(const char *e, enum s9x_getdirtype dirtype)
 {
     static char filename[PATH_MAX + 1];

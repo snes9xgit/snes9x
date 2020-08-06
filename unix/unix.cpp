@@ -588,25 +588,6 @@ const char * S9xBasename (const char *f)
 	return (f);
 }
 
-const char * S9xChooseFilename (bool8 read_only)
-{
-	char	s[PATH_MAX + 1];
-	char	drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], fname[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
-
-	const char	*filename;
-	char		title[64];
-
-	_splitpath(Memory.ROMFilename, drive, dir, fname, ext);
-	snprintf(s, PATH_MAX + 1, "%s.frz", fname);
-	sprintf(title, "%s snapshot filename", read_only ? "Select load" : "Choose save");
-
-	S9xSetSoundMute(TRUE);
-	filename = S9xSelectFilename(s, S9xGetDirectory(SNAPSHOT_DIR), "frz", title);
-	S9xSetSoundMute(FALSE);
-
-	return (filename);
-}
-
 const char * S9xChooseMovieFilename (bool8 read_only)
 {
 	char	s[PATH_MAX + 1];
