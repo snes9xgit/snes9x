@@ -2138,7 +2138,6 @@ void S9xParseArg(char**, int&, int) {}
 void S9xExit() {}
 bool S9xPollPointer(unsigned int, short*, short*) { return false; }
 
-const char *S9xChooseMovieFilename(unsigned char) { return NULL; }
 void S9xMessage(int type, int, const char* s)
 {
     if (!log_cb) return;

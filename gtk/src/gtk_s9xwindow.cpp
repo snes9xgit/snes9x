@@ -220,7 +220,7 @@ void Snes9xWindow::connect_signals()
         if (S9xMovieActive())
             S9xMovieStop(false);
 
-        S9xMovieOpen(S9xChooseMovieFilename(true), false);
+        S9xMovieOpen(open_movie_dialog(true).c_str(), false);
     });
 
     get_object<Gtk::MenuItem>("stop_recording_item")->signal_activate().connect([&] {
@@ -236,7 +236,7 @@ void Snes9xWindow::connect_signals()
         if (S9xMovieActive())
             S9xMovieStop(false);
 
-        S9xMovieCreate(S9xChooseMovieFilename(false), 0xFF, MOVIE_OPT_FROM_RESET, nullptr, 0);
+        S9xMovieCreate(open_movie_dialog(false).c_str(), 0xFF, MOVIE_OPT_FROM_RESET, nullptr, 0);
     });
 
     get_object<Gtk::MenuItem>("cheats_item")->signal_activate().connect([&] {
@@ -631,7 +631,6 @@ void Snes9xWindow::open_multicart_dialog()
 
 std::string Snes9xWindow::open_movie_dialog(bool readonly)
 {
-
     this->pause_from_focus_change();
 
     std::string title;

@@ -588,25 +588,6 @@ const char * S9xBasename (const char *f)
 	return (f);
 }
 
-const char * S9xChooseMovieFilename (bool8 read_only)
-{
-	char	s[PATH_MAX + 1];
-	char	drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], fname[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
-
-	const char	*filename;
-	char		title[64];
-
-	_splitpath(Memory.ROMFilename, drive, dir, fname, ext);
-	snprintf(s, PATH_MAX + 1, "%s.smv", fname);
-	sprintf(title, "Choose movie %s filename", read_only ? "playback" : "record");
-
-	S9xSetSoundMute(TRUE);
-	filename = S9xSelectFilename(s, S9xGetDirectory(HOME_DIR), "smv", title);
-	S9xSetSoundMute(FALSE);
-
-	return (filename);
-}
-
 bool8 S9xOpenSnapshotFile (const char *filename, bool8 read_only, STREAM *file)
 {
 	char	s[PATH_MAX + 1];

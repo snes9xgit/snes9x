@@ -16,19 +16,6 @@
 
 static char buf[PATH_MAX];
 
-const char *S9xChooseMovieFilename(bool8 read_only)
-{
-    static char path[PATH_MAX];
-
-    if (!gui_config->rom_loaded)
-        return "";
-
-    auto filename = top_level->open_movie_dialog(read_only);
-    strcpy(path, filename.c_str());
-
-    return path;
-}
-
 const char *S9xGetFilenameInc(const char *e, enum s9x_getdirtype dirtype)
 {
     static char filename[PATH_MAX + 1];
