@@ -409,8 +409,3 @@ void S9xGraphicsMode (void)
 {
 	return;
 }
-
-void S9xSetPalette (void)
-{
-	return;
-}

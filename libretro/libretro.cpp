@@ -607,10 +607,10 @@ static void update_variables(void)
 
     var.key = "snes9x_echo_buffer_hack";
     var.value = NULL;
-    
+
     if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
         Settings.SeparateEchoBuffer = !strcmp(var.value, "disabled") ? false : true;
-    else 
+    else
         Settings.SeparateEchoBuffer = false;
 
     var.key = "snes9x_blargg";
@@ -1133,7 +1133,7 @@ bool retro_load_game(const struct retro_game_info *game)
     if (rom_loaded)
     {
         /* If we're in RGB565 format, switch frontend to that */
-        if (RED_SHIFT_BITS == 11) 
+        if (RED_SHIFT_BITS == 11)
         {
             enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
             if (!environ_cb || !environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
@@ -2135,7 +2135,6 @@ bool8 S9xInitUpdate() { return TRUE; }
 void S9xExtraUsage() {}
 bool8 S9xOpenSoundDevice() { return TRUE; }
 bool S9xPollAxis(unsigned int, short*) { return FALSE; }
-void S9xSetPalette() {}
 void S9xParseArg(char**, int&, int) {}
 void S9xExit() {}
 bool S9xPollPointer(unsigned int, short*, short*) { return false; }

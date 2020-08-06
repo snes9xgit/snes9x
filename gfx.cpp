@@ -221,7 +221,6 @@ void S9xEndScreenRefresh (void)
 			{
 				uint32 saved = PPU.CGDATA[0];
 				IPPU.ColorsChanged = FALSE;
-				S9xSetPalette();
 				PPU.CGDATA[0] = saved;
 			}
 

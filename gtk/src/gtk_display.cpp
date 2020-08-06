@@ -1498,10 +1498,6 @@ bool8 S9xInitUpdate()
     return true;
 }
 
-void S9xSetPalette()
-{
-}
-
 void S9xTextMode()
 {
 }

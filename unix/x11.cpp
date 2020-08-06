@@ -1794,8 +1794,3 @@ bool S9xDisplayPollPointer (uint32 id, int16 *x, int16 *y)
 
 	return (true);
 }
-
-void S9xSetPalette (void)
-{
-	return;
-}

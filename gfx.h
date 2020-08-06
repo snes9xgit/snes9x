@@ -216,7 +216,6 @@ bool8 S9xInitUpdate (void);
 bool8 S9xDeinitUpdate (int, int);
 bool8 S9xContinueUpdate (int, int);
 void S9xReRefresh (void);
-void S9xSetPalette (void);
 void S9xSyncSpeed (void);
 
 // called instead of S9xDisplayString if set to non-NULL

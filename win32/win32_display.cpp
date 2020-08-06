@@ -211,12 +211,6 @@ RECT CalculateDisplayRect(unsigned int sourceWidth,unsigned int sourceHeight,
 	return drawRect;
 }
 
-// we no longer support 8bit modes - no palette necessary
-void S9xSetPalette( void)
-{
-	return;	
-}
-
 bool8 S9xInitUpdate (void)
 {
 	return (TRUE);
