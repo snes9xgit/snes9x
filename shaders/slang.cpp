@@ -167,6 +167,8 @@ GLint GLSLShader::slang_compile(std::vector<std::string> &lines,
 
     spirv_cross::CompilerGLSL::Options opts;
     opts.version = gl_version() * 10;
+    if (opts.version < 330 && opts.version > 150)
+        opts.version = 150;
     opts.vulkan_semantics = false;
     glsl.set_common_options(opts);
 
