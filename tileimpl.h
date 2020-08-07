@@ -793,7 +793,6 @@ namespace TileImpl {
 	template<class PIXEL>
 	struct DrawMode7MosaicBG2 : public DrawTileMosaic<PIXEL, DrawMode7BG2_OP> {};
 
-
 	#undef DRAW_PIXEL
 
 } // namespace TileImpl
