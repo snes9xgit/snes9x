@@ -78,6 +78,7 @@ if slang and opengl
   OSDependent_src = ['../shaders/glslang/glslang/OSDependent/Unix/ossource.cpp']
   OSDependent_lib = static_library('OSDependent',
                                    OSDependent_src,
+                                   include_directories: include_directories('../shaders/glslang'),
                                    cpp_args: glslang_args)
   libs += OSDependent_lib
 
@@ -116,12 +117,14 @@ if slang and opengl
 
   glslang_lib = static_library('glslang',
                                glslang_src,
+                               include_directories: include_directories('../shaders/glslang'),
                                cpp_args: glslang_args)
   libs += glslang_lib
 
   OGLCompilersDLL_src = ['../shaders/glslang/OGLCompilersDLL/InitializeDll.cpp']
   OGLCompilersDLL_lib = static_library('OGLCompilersDLL',
                                        OGLCompilersDLL_src,
+                                       include_directories: include_directories('../shaders/glslang'),
                                        cpp_args: glslang_args)
   libs += OGLCompilersDLL_lib
 
@@ -138,6 +141,7 @@ if slang and opengl
   ]
   SPIRV_lib = static_library('SPIRV',
                              SPIRV_src,
+                             include_directories: include_directories('../shaders/glslang'),
                              cpp_args: glslang_args)
   libs += SPIRV_lib
 
@@ -156,6 +160,7 @@ if slang and opengl
            '../shaders/SPIRV-Cross/spirv_parser.cpp',
            '../shaders/SPIRV-Cross/spirv_parser.hpp',
            '../shaders/SPIRV-Cross/spirv.hpp']
+  includes += '../shaders/glslang'
 endif
 
 wayland = get_option('wayland')
