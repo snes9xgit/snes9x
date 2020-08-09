@@ -50,7 +50,7 @@ static void S9xTerm(int signal)
 int main(int argc, char *argv[])
 {
     struct sigaction sig_callback;
-    auto app = Gtk::Application::create(argc, argv, "com.snes9x.gtk", Gio::APPLICATION_NON_UNIQUE);
+    auto app = Gtk::Application::create("com.snes9x.gtk", Gio::APPLICATION_NON_UNIQUE);
 
     setlocale(LC_ALL, "");
     bindtextdomain(GETTEXT_PACKAGE, SNES9XLOCALEDIR);
