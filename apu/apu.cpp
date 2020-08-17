@@ -175,10 +175,7 @@ static void UpdatePlaybackRate(void)
 
     double time_ratio = (double)Settings.SoundInputRate * spc::timing_hack_numerator / (Settings.SoundPlaybackRate * spc::timing_hack_denominator);
 
-    if (Settings.DynamicRateControl)
-    {
-        time_ratio *= spc::dynamic_rate_multiplier;
-    }
+    time_ratio *= spc::dynamic_rate_multiplier * (Settings.DynamicRateControl);
 
     spc::resampler->time_ratio(time_ratio);
 
