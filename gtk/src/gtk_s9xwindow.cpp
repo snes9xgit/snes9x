@@ -86,9 +86,8 @@ Snes9xWindow::Snes9xWindow(Snes9xConfig *config)
     }
     else
     {
-        auto loader = Gdk::PixbufLoader::create();
-        loader->write((const guint8 *)app_icon, sizeof(app_icon));
-        window->set_default_icon(loader->get_pixbuf());
+        auto pixbuf = Gdk::Pixbuf::create_from_inline(sizeof(app_icon), app_icon, false);
+        window->set_default_icon(pixbuf);
     }
 
     drawing_area = get_object<Gtk::DrawingArea>("drawingarea").get();
