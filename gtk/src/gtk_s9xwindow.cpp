@@ -80,7 +80,7 @@ Snes9xWindow::Snes9xWindow(Snes9xConfig *config)
 
     snes9x_preferences_create(config);
 
-    if (0 && Gtk::IconTheme::get_default()->has_icon("snes9x"))
+    if (Gtk::IconTheme::get_default()->has_icon("snes9x"))
     {
         window->set_default_icon_name("snes9x");
     }
