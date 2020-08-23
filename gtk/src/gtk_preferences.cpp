@@ -20,14 +20,23 @@
 
 #define SAME_AS_GAME _("Same location as current game")
 
-void snes9x_preferences_open(Snes9xWindow *window, Snes9xConfig *config)
-{
-    static Snes9xPreferences *preferences = nullptr;
+static Snes9xPreferences *preferences = nullptr;
 
+void snes9x_preferences_create(Snes9xConfig *config)
+{
+    Glib::Thread::create([config] {
+        Snes9xPreferences *new_preferences;
+        new_preferences = new Snes9xPreferences(config);
+        preferences = new_preferences;
+    }, true);
+}
+
+void snes9x_preferences_open(Snes9xWindow *window)
+{
     if (!preferences)
-    {
-        preferences = new Snes9xPreferences(config);
-    }
+        return;
+
+    auto &config = preferences->config;
 
     window->pause_from_focus_change ();
 

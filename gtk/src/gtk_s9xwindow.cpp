@@ -78,6 +78,8 @@ Snes9xWindow::Snes9xWindow(Snes9xConfig *config)
     cairo_owned = false;
     mouse_grabbed = false;
 
+    snes9x_preferences_create(config);
+
     if (Gtk::IconTheme::get_default()->has_icon("snes9x"))
     {
         window->set_default_icon_name("snes9x");
@@ -86,7 +88,6 @@ Snes9xWindow::Snes9xWindow(Snes9xConfig *config)
     {
         auto loader = Gdk::PixbufLoader::create();
         loader->write((const guint8 *)app_icon, sizeof(app_icon));
-        loader->close();
         window->set_default_icon(loader->get_pixbuf());
     }
 
@@ -244,7 +245,7 @@ void Snes9xWindow::connect_signals()
     });
 
     get_object<Gtk::MenuItem>("preferences_item")->signal_activate().connect([&] {
-        snes9x_preferences_open(this, config);
+        snes9x_preferences_open(this);
     });
 
     get_object<Gtk::MenuItem>("open_netplay_item")->signal_activate().connect([&] {

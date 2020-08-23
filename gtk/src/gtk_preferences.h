@@ -11,7 +11,8 @@
 #include "gtk_s9x.h"
 #include "gtk_builder_window.h"
 
-void snes9x_preferences_open(Snes9xWindow *window, Snes9xConfig *config);
+void snes9x_preferences_create(Snes9xConfig *config);
+void snes9x_preferences_open(Snes9xWindow *window);
 
 class Snes9xPreferences : public GtkBuilderWindow
 {
