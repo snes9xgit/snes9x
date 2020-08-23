@@ -80,14 +80,20 @@ Snes9xWindow::Snes9xWindow(Snes9xConfig *config)
 
     snes9x_preferences_create(config);
 
-    if (Gtk::IconTheme::get_default()->has_icon("snes9x"))
+    if (0 && Gtk::IconTheme::get_default()->has_icon("snes9x"))
     {
         window->set_default_icon_name("snes9x");
     }
     else
     {
-        auto pixbuf = Gdk::Pixbuf::create_from_inline(sizeof(app_icon), app_icon, false);
-        window->set_default_icon(pixbuf);
+        extern int mini_icon_size;
+        extern unsigned char mini_icon[];
+        auto loader = Gdk::PixbufLoader::create();
+        loader->write(mini_icon, mini_icon_size);
+        loader->close();
+        auto pixbuf = loader->get_pixbuf();
+        if (pixbuf)
+            window->set_default_icon(pixbuf);
     }
 
     drawing_area = get_object<Gtk::DrawingArea>("drawingarea").get();

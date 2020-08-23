@@ -454,9 +454,15 @@ gtk_snes9x_ui_cpp = custom_target('sourcify',
                                   output: 'gtk_snes9x_ui.cpp',
                                   command: [sourcify, '@INPUT@', '@OUTPUT@', 'snes9x_ui'])
 
+mini_icon = custom_target('mini_icon',
+                          input: 'data/mini_icon.png',
+                          output: 'mini_icon.cpp',
+                          command: [sourcify, '@INPUT@', '@OUTPUT@', 'mini_icon'])
+
 snes9x_gtk = executable('snes9x-gtk',
                         srcs,
                         gtk_snes9x_ui_cpp,
+                        mini_icon,
                         c_args: args,
                         cpp_args: args,
                         dependencies: deps,
