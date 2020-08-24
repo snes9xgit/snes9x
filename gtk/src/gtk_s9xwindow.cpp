@@ -934,9 +934,17 @@ const char *markup = _(R"(<b>Information for %s</b>
              (Settings.IsPatched) ? _("\n\nThis ROM has been auto-patched with ") : (Memory.ROMChecksum != Memory.CalculatedChecksum) ? _("\n\nThis ROM has been modified or damaged") : "",
              Settings.IsPatched == 1 ? "IPS" : Settings.IsPatched == 2 ? "BPS" : Settings.IsPatched == 3 ? "UPS" : "");
 
+    std::string str_output(output);
+
+    for (size_t i = 0; i < str_output.length(); i++)
+    {
+        if (str_output[i] == '&')
+            str_output.insert(i + 1, "amp;");
+    }
+
     pause_from_focus_change();
 
-    auto dialog = Gtk::MessageDialog(*window.get(), output, true, Gtk::MESSAGE_OTHER, Gtk::BUTTONS_CLOSE, true);
+    auto dialog = Gtk::MessageDialog(*window.get(), str_output, true, Gtk::MESSAGE_OTHER, Gtk::BUTTONS_CLOSE, true);
     dialog.set_title(_("File Information"));
     dialog.run();
 
