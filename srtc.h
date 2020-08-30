@@ -7,6 +7,8 @@
 #ifndef _SRTC_H_
 #define _SRTC_H_
 
+#include "port.h"
+
 struct SRTCData
 {
 	uint8	reg[20];

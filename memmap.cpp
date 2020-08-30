@@ -4,6 +4,8 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
+#include "memmap.h"
+
 #include <string>
 #include <numeric>
 #include <assert.h>
@@ -24,7 +26,16 @@
 #include <sys/stat.h>
 
 #include "snes9x.h"
-#include "memmap.h"
+#include "cpuexec.h"
+#include "dsp.h"
+#include "sa1.h"
+#include "spc7110.h"
+#include "c4.h"
+#include "obc1.h"
+#include "seta.h"
+#include "bsx.h"
+#include "msu1.h"
+#include "ppu.h"
 #include "apu/apu.h"
 #include "fxemu.h"
 #include "sdd1.h"

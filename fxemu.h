@@ -7,6 +7,8 @@
 #ifndef _FXEMU_H_
 #define _FXEMU_H_
 
+#include "port.h"
+
 #define FX_BREAKPOINT				(-1)
 #define FX_ERROR_ILLEGAL_ADDRESS	(-2)
 

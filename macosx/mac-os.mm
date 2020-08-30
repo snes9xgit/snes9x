@@ -28,7 +28,9 @@
 #include <OpenGL/glext.h>
 
 #import "snes9x.h"
+#import "cpuexec.h"
 #import "memmap.h"
+#import "ppu.h"
 #import "apu.h"
 #import "controls.h"
 #import "crosshairs.h"

@@ -102,6 +102,9 @@
     <ClCompile Include="..\..\..\fxinst.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\getset.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\gfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

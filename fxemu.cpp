@@ -4,10 +4,11 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
+#include "fxemu.h"
+
 #include "snes9x.h"
 #include "memmap.h"
 #include "fxinst.h"
-#include "fxemu.h"
 
 static void FxReset (struct FxInfo_s *);
 static void fx_readRegisterSpace (void);

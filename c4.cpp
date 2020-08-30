@@ -4,6 +4,8 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
+#include "c4.h"
+
 #include <math.h>
 #include "snes9x.h"
 #include "memmap.h"
@@ -155,4 +157,9 @@ uint8 * S9xGetMemPointerC4 (uint16 Address)
 	if (Address >= 0x7f40 && Address <= 0x7f5e)
 		return (NULL);
 	return (Memory.C4RAM - 0x6000 + (Address & 0xffff));
+}
+
+uint8 * C4GetMemPointer (uint32 Address)
+{
+	return (Memory.ROM + ((Address & 0xff0000) >> 1) + (Address & 0x7fff));
 }

@@ -7,6 +7,8 @@
 #ifndef _DSP1_H_
 #define _DSP1_H_
 
+#include "port.h"
+
 enum
 {
 	M_DSP1_LOROM_S,

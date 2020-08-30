@@ -4,12 +4,17 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include "snes9x.h"
-#include "memmap.h"
 #include "dma.h"
+
+#include "snes9x.h"
+#include "cpuexec.h"
+#include "memmap.h"
+#include "getset.h"
+#include "ppu.h"
 #include "apu/apu.h"
 #include "sdd1emu.h"
 #include "spc7110emu.h"
+#include "sa1.h"
 #ifdef DEBUGGER
 #include "missing.h"
 #endif

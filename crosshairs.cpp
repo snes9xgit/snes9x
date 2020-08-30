@@ -5,10 +5,12 @@
 \*****************************************************************************/
 
 #ifdef HAVE_LIBPNG
+
+#include "crosshairs.h"
+
 #include <png.h>
 #endif
 #include "port.h"
-#include "crosshairs.h"
 
 static const char	*crosshairs[32] =
 {

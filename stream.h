@@ -7,6 +7,8 @@
 #ifndef _STREAM_H_
 #define _STREAM_H_
 
+#include "snes9x.h"
+
 #include <string>
 
 class Stream

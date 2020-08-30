@@ -22,7 +22,9 @@
 
 #include "snes9x.h"
 #include "memmap.h"
+#include "ppu.h"
 #include "apu.h"
+#include "gfx.h"
 #include "display.h"
 #include "blit.h"
 

@@ -6,6 +6,8 @@
 
 #ifdef NETPLAY_SUPPORT
 
+#include "netplay.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -14,6 +16,7 @@
 
 #include "snes9x.h"
 #include "controls.h"
+#include "cpuexec.h"
 
 #ifdef __WIN32__
 	#include <winsock.h>
@@ -49,7 +52,6 @@
 #endif
 
 #include "memmap.h"
-#include "netplay.h"
 #include "snapshot.h"
 #include "display.h"
 

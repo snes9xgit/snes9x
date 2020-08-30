@@ -4,6 +4,8 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
+#include "controls.h"
+
 #include <map>
 #include <set>
 #include <vector>
@@ -13,10 +15,11 @@
 #include <ctype.h>
 
 #include "snes9x.h"
+#include "cpuexec.h"
 #include "memmap.h"
+#include "ppu.h"
 #include "apu/apu.h"
 #include "snapshot.h"
-#include "controls.h"
 #include "crosshairs.h"
 #include "movie.h"
 #include "display.h"

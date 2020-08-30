@@ -7,6 +7,8 @@
 #ifndef _CPUEXEC_H_
 #define _CPUEXEC_H_
 
+#include "port.h"
+
 #include "ppu.h"
 #ifdef DEBUGGER
 #include "debug.h"

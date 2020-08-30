@@ -6,6 +6,8 @@
 
 // Abstract the details of reading from zip files versus FILE *'s.
 
+#include "stream.h"
+
 #include <string>
 #ifdef UNZIP_SUPPORT
 #  ifdef SYSTEM_ZIP
@@ -15,7 +17,6 @@
 #  endif
 #endif
 #include "snes9x.h"
-#include "stream.h"
 
 
 // Generic constructor/destructor

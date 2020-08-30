@@ -4,6 +4,8 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
+#include "tile.h"
+
 #include "tileimpl.h"
 
 using namespace TileImpl;

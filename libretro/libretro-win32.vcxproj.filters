@@ -257,6 +257,9 @@
     <ClCompile Include="..\fxinst.cpp">
       <Filter>s9x-source</Filter>
     </ClCompile>
+    <ClCompile Include="..\getset.cpp">
+      <Filter>s9x-source</Filter>
+    </ClCompile>
     <ClCompile Include="..\gfx.cpp">
       <Filter>s9x-source</Filter>
     </ClCompile>

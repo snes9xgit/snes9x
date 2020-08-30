@@ -7,6 +7,8 @@
 #ifndef _CONTROLS_H_
 #define _CONTROLS_H_
 
+#include "port.h"
+
 #define S9xNoMapping			0
 #define S9xButtonJoypad			1
 #define S9xButtonMouse			2

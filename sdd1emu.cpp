@@ -19,8 +19,9 @@
  */
 
 
-#include "port.h"
 #include "sdd1emu.h"
+
+#include "port.h"
 
 static int valid_bits;
 static uint16 in_stream;

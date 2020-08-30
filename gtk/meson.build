@@ -396,6 +396,7 @@ srcs += [
  '../tileimpl-h2x1.cpp',
  '../srtc.cpp',
  '../gfx.cpp',
+ '../getset.cpp',
  '../memmap.cpp',
  '../clip.cpp',
  '../ppu.cpp',

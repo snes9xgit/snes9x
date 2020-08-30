@@ -7,6 +7,8 @@
 #ifndef _SAR_H_
 #define _SAR_H_
 
+#include "port.h"
+
 #ifdef RIGHTSHIFT_IS_SAR
 #define SAR(b, n)	((b) >> (n))
 #else

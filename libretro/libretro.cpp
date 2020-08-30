@@ -2,11 +2,13 @@
 #include "libretro_core_options.h"
 
 #include "snes9x.h"
+#include "cpuexec.h"
 #include "memmap.h"
 #include "srtc.h"
 #include "apu/apu.h"
 #include "apu/bapu/snes/snes.hpp"
 #include "gfx.h"
+#include "ppu.h"
 #include "snapshot.h"
 #include "controls.h"
 #include "cheats.h"

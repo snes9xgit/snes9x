@@ -4,8 +4,9 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include "snes9x.h"
 #include "fxinst.h"
+
+#include "snes9x.h"
 #include "fxemu.h"
 
 // Set this define if you wish the plot instruction to check for y-pos limits (I don't think it's nessecary)

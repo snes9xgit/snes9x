@@ -7,6 +7,8 @@
 #ifndef _MEMMAP_H_
 #define _MEMMAP_H_
 
+#include "snes9x.h"
+
 #define MEMMAP_BLOCK_SIZE	(0x1000)
 #define MEMMAP_NUM_BLOCKS	(0x1000000 / MEMMAP_BLOCK_SIZE)
 #define MEMMAP_SHIFT		(12)
@@ -200,19 +202,6 @@ extern SMulti	Multi;
 void S9xAutoSaveSRAM (void);
 bool8 LoadZip(const char *, uint32 *, uint8 *);
 
-enum s9xwrap_t
-{
-	WRAP_NONE,
-	WRAP_BANK,
-	WRAP_PAGE
-};
-
-enum s9xwriteorder_t
-{
-	WRITE_01,
-	WRITE_10
-};
-
-#include "getset.h"
+extern uint8	OpenBus;
 
 #endif

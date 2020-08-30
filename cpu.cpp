@@ -5,7 +5,17 @@
 \*****************************************************************************/
 
 #include "snes9x.h"
+#include "cpuexec.h"
 #include "memmap.h"
+#include "getset.h"
+#include "dsp.h"
+#include "sa1.h"
+#include "spc7110.h"
+#include "c4.h"
+#include "obc1.h"
+#include "seta.h"
+#include "bsx.h"
+#include "msu1.h"
 #include "dma.h"
 #include "apu/apu.h"
 #include "fxemu.h"

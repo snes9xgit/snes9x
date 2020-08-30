@@ -4,13 +4,14 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
+#include "snes9x.h"
+
 #include <ctype.h>
 #include <string.h>
 #ifdef HAVE_STRINGS_H
 #include <strings.h>
 #endif
 
-#include "snes9x.h"
 #include "memmap.h"
 #include "controls.h"
 #include "crosshairs.h"

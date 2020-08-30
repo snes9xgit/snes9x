@@ -6,15 +6,19 @@
 
 #ifdef DEBUGGER
 
+#include "debug.h"
+
 #include <stdarg.h>
 #include "snes9x.h"
 #include "memmap.h"
+#include "cpuexec.h"
 #include "cpuops.h"
 #include "dma.h"
+#include "ppu.h"
 #include "apu/apu.h"
 #include "display.h"
-#include "debug.h"
 #include "missing.h"
+#include "sa1.h"
 
 #include "apu/bapu/snes/snes.hpp"
 

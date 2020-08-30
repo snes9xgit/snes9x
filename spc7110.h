@@ -7,6 +7,8 @@
 #ifndef _SPC7110_H_
 #define _SPC7110_H_
 
+#include "port.h"
+
 #define SPC7110_DECOMP_BUFFER_SIZE	64
 
 // for snapshot only
