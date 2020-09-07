@@ -60,7 +60,8 @@ void _makepath(char *path, const char *drive, const char *dir, const char *fname
 
     if (ext && *ext)
     {
-        strcat(path, ".");
+        if (*ext != '.')
+            strcat(path, ".");
         strcat(path, ext);
     }
 }
