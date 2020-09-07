@@ -1,3 +1,6 @@
+#include <cstring>
+#include "port.h"
+
 void _splitpath(const char *path, char *drive, char *dir, char *fname, char *ext)
 {
     char *slash = strrchr((char *)path, SLASH_CHAR);
