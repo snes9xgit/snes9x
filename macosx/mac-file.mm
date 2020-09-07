@@ -231,38 +231,38 @@ const char * S9xGetFilename (const char *inExt, enum s9x_getdirtype dirtype)
 	{
 		case '.srm':
 		case '.rtc':
-			strcpy(folderName, "SRAMs");
+			strlcpy(folderName, "SRAMs", sizeof(folderName));
 			break;
 
 		case '.frz':
-			strcpy(folderName, "Freezes");
+			strlcpy(folderName, "Freezes", sizeof(folderName));
 			break;
 
 		case '.spc':
-			strcpy(folderName, "SPCs");
+			strlcpy(folderName, "SPCs", sizeof(folderName));
 			break;
 
 		case '.cht':
-			strcpy(folderName, "Cheats");
+			strlcpy(folderName, "Cheats", sizeof(folderName));
 			break;
 
 		case '.ups':
 		case '.ips':
-			strcpy(folderName, "Patches");
+			strlcpy(folderName, "Patches", sizeof(folderName));
 			break;
 
 		case '.png':
-			strcpy(folderName, "Screenshots");
+			strlcpy(folderName, "Screenshots", sizeof(folderName));
 			break;
 
 		case '.dat':
 		case '.out':
 		case '.log':
-			strcpy(folderName, "Logs");
+			strlcpy(folderName, "Logs", sizeof(folderName));
 			break;
 
 		case '.bio':	// dummy
-			strcpy(folderName, "BIOSes");
+			strlcpy(folderName, "BIOSes", sizeof(folderName));
 			break;
 	}
 
@@ -296,7 +296,7 @@ const char * S9xGetFilename (const char *inExt, enum s9x_getdirtype dirtype)
 		{
 			_splitpath(Memory.ROMFilename, drive, dir, fname, ext);
 
-			strcat(fname, inExt);
+			strlcat(fname, inExt, sizeof(fname));
 			_makepath(filePath[index], drive, dir, fname, "");
 		}
 	}
@@ -304,7 +304,7 @@ const char * S9xGetFilename (const char *inExt, enum s9x_getdirtype dirtype)
 	{
 		_splitpath(Memory.ROMFilename, drive, dir, fname, ext);
 
-		strcat(fname, inExt);
+		strlcat(fname, inExt, sizeof(fname));
 		_makepath(filePath[index], drive, dir, fname, "");
 	}
 
@@ -394,7 +394,7 @@ const char * S9xBasename (const char *in)
 {
 	static char	s[PATH_MAX + 1];
 
-	strncpy(s, in, PATH_MAX + 1);
+	strlcpy(s, in, sizeof(s));
 	s[PATH_MAX] = 0;
 
 	size_t	l = strlen(s);
@@ -422,14 +422,14 @@ const char * S9xGetDirectory (enum s9x_getdirtype dirtype)
 
 	switch (dirtype)
 	{
-		case SNAPSHOT_DIR:		strcpy(inExt, ".frz");	break;
-		case SRAM_DIR:			strcpy(inExt, ".srm");	break;
-		case SCREENSHOT_DIR:	strcpy(inExt, ".png");	break;
-		case SPC_DIR:			strcpy(inExt, ".spc");	break;
-		case CHEAT_DIR:			strcpy(inExt, ".cht");	break;
-		case BIOS_DIR:			strcpy(inExt, ".bio");	break;
-		case LOG_DIR:			strcpy(inExt, ".log");	break;
-		default:				strcpy(inExt, ".xxx");	break;
+		case SNAPSHOT_DIR:		strlcpy(inExt, ".frz", sizeof(inExt));	break;
+		case SRAM_DIR:			strlcpy(inExt, ".srm", sizeof(inExt));	break;
+		case SCREENSHOT_DIR:	strlcpy(inExt, ".png", sizeof(inExt));	break;
+		case SPC_DIR:			strlcpy(inExt, ".spc", sizeof(inExt));	break;
+		case CHEAT_DIR:			strlcpy(inExt, ".cht", sizeof(inExt));	break;
+		case BIOS_DIR:			strlcpy(inExt, ".bio", sizeof(inExt));	break;
+		case LOG_DIR:			strlcpy(inExt, ".log", sizeof(inExt));	break;
+		default:				strlcpy(inExt, ".xxx", sizeof(inExt));	break;
 	}
 
 	_splitpath(S9xGetFilename(inExt, dirtype), drive, dir, fname, ext);
