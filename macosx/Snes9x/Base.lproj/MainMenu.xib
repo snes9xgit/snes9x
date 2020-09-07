@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="15400" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17154" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="15400"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17154"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -102,6 +102,18 @@
                             <menuItem title="Resume" keyEquivalent="r" id="m8Y-5s-VGC">
                                 <connections>
                                     <action selector="resume:" target="-1" id="jxw-ZM-JXi"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="wRV-3p-Ovs"/>
+                            <menuItem title="Software Reset" keyEquivalent="R" id="rpq-ak-IWU">
+                                <connections>
+                                    <action selector="softwareReset:" target="-1" id="SCG-64-bMI"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Hardware Reset" keyEquivalent="r" id="tbk-CC-2si">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="hardwareReset:" target="-1" id="dRy-5Q-N2I"/>
                                 </connections>
                             </menuItem>
                         </items>

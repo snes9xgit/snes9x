@@ -1710,6 +1710,7 @@ int PromptFreezeDefrost (Boolean freezing)
     const char          letters[] = "123456789ABC", *filename;
 
     frzselecting = true;
+	[s9xView updatePauseOverlay];
     oldInactiveMode = inactiveMode;
     if (inactiveMode == 3)
         inactiveMode = 2;
@@ -2036,7 +2037,7 @@ int PromptFreezeDefrost (Boolean freezing)
         usleep(30000);
 
         UpdateFreezeDefrostScreen(current_selection, image, draw, ctx);
-    } while (result == -2);
+    } while (result == -2 && frzselecting);
 
     CocoaPlayFreezeDefrostSound();
 
@@ -2050,6 +2051,9 @@ int PromptFreezeDefrost (Boolean freezing)
 
     inactiveMode = oldInactiveMode;
     frzselecting = false;
+	pauseEmulation = false;
+
+	[s9xView updatePauseOverlay];
 
     return (result);
 }
@@ -2610,6 +2614,7 @@ static void Initialize (void)
     }
 
 	frzselecting = false;
+	[s9xView updatePauseOverlay];
 
 	S9xSetControllerCrosshair(X_MOUSE1, 0, NULL, NULL);
 	S9xSetControllerCrosshair(X_MOUSE2, 0, NULL, NULL);
@@ -2936,8 +2941,7 @@ void QuitWithFatalError ( NSString *message)
 - (void)updatePauseOverlay
 {
 	dispatch_async(dispatch_get_main_queue(), ^{
-		NSLog(@"%d", pauseEmulation);
-		self.subviews[0].hidden = !pauseEmulation;
+		self.subviews[0].hidden = (frzselecting || !pauseEmulation);
 		CGFloat scaleFactor = MAX(self.window.backingScaleFactor, 1.0);
 		glScreenW = self.frame.size.width * scaleFactor;
 		glScreenH = self.frame.size.height * scaleFactor;
@@ -3028,6 +3032,21 @@ void QuitWithFatalError ( NSString *message)
 {
 	SNES9X_Quit();
     S9xExit();
+}
+
+- (void)softwareReset
+{
+	SNES9X_SoftReset();
+	SNES9X_Go();
+	[self resume];
+}
+
+
+- (void)hardwareReset
+{
+	SNES9X_Reset();
+	SNES9X_Go();
+	[self resume];
 }
 
 - (BOOL)isRunning
@@ -3172,6 +3191,7 @@ void QuitWithFatalError ( NSString *message)
 - (BOOL)loadROM:(NSURL *)fileURL
 {
 	running = false;
+	frzselecting = false;
 
 	while (!Settings.StopEmulation)
 	{
@@ -3183,6 +3203,12 @@ void QuitWithFatalError ( NSString *message)
         SNES9X_Go();
         s9xView.window.title = fileURL.lastPathComponent.stringByDeletingPathExtension;
         [s9xView.window makeKeyAndOrderFront:nil];
+
+		dispatch_async(dispatch_get_main_queue(), ^
+		{
+			[s9xView.window makeFirstResponder:s9xView];
+		});
+
         [self start];
         return YES;
     }

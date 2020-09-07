@@ -168,6 +168,8 @@ extern id<S9xInputDelegate> inputDelegate;
 
 - (void)start;
 - (void)stop;
+- (void)softwareReset;
+- (void)hardwareReset;
 
 - (BOOL)isRunning;
 - (BOOL)isPaused;
