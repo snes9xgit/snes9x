@@ -295,6 +295,7 @@ struct GameViewInfo
 static volatile bool8	rejectinput     = false;
 
 static bool8			pauseEmulation  = false,
+						escKeyDown      = false,
 						frameAdvance    = false;
 
 static int				frameCount      = 0;
@@ -2245,14 +2246,22 @@ static void ProcessInput (void)
 
         if (ISpKeyIsPressed(keys, gamepadButtons, kISpEsc))
         {
-            pauseEmulation = true;
-			[s9xView updatePauseOverlay];
+			if (!escKeyDown)
+			{
+				escKeyDown = true;
+				pauseEmulation = !pauseEmulation;
+				[s9xView updatePauseOverlay];
 
-            dispatch_async(dispatch_get_main_queue(), ^
-            {
-                [s9xView setNeedsDisplay:YES];
-            });
+				dispatch_async(dispatch_get_main_queue(), ^
+				{
+					[s9xView setNeedsDisplay:YES];
+				});
+			}
         }
+		else
+		{
+			escKeyDown = false;
+		}
 
         if (ISpKeyIsPressed(keys, gamepadButtons, kISpFreeze))
         {
