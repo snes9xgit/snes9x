@@ -295,13 +295,17 @@ const char * S9xGetFilename (const char *inExt, enum s9x_getdirtype dirtype)
 		else
 		{
 			_splitpath(Memory.ROMFilename, drive, dir, fname, ext);
-			_makepath(filePath[index], drive, dir, fname, inExt);
+
+			strcat(fname, inExt);
+			_makepath(filePath[index], drive, dir, fname, "");
 		}
 	}
 	else
 	{
 		_splitpath(Memory.ROMFilename, drive, dir, fname, ext);
-		_makepath(filePath[index], drive, dir, fname, inExt);
+
+		strcat(fname, inExt);
+		_makepath(filePath[index], drive, dir, fname, "");
 	}
 
 	return (filePath[index]);
