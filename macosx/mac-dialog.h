@@ -25,8 +25,8 @@ enum
 {
 	kS9xMacAlertFolderNotFound = 1,
 	kS9xMacAlertFolderNotFoundHint,
-	kS9xMacAlertFolderFailToCreate,
-	kS9xMacAlertFolderFailToCreateHint,
+	kS9xMacAlertFolderNotWritable,
+	kS9xMacAlertFolderNotWritableHint,
 	kS9xMacAlertkBadRom,
 	kS9xMacAlertkBadRomHint,
 	kS9xMacAlertCFCantAddEntry,
@@ -55,6 +55,6 @@ OSStatus SetEditTextCStr (HIViewRef, char *, Boolean);
 OSStatus CopyEditTextCFString (HIViewRef, CFStringRef *);
 OSStatus SetEditTextCFString (HIViewRef, CFStringRef, Boolean);
 OSStatus SetEditTextSelection (HIViewRef, SInt16, SInt16);
-pascal OSStatus DefaultEventHandler (EventHandlerCallRef, EventRef, void *);
+OSStatus DefaultEventHandler (EventHandlerCallRef, EventRef, void *);
 
 #endif

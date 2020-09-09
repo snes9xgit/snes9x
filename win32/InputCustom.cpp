@@ -488,16 +488,15 @@ int GetNumHotKeysAssignedTo (WORD Key, int modifiers)
 		if(MATCHES_KEY(SlotMinus))         count++;
 		if(MATCHES_KEY(SlotSave))          count++;
 		if(MATCHES_KEY(SlotLoad))          count++;
+        if(MATCHES_KEY(DialogSave))        count++;
+        if(MATCHES_KEY(DialogLoad))        count++;
 		if(MATCHES_KEY(BGL1))              count++;
 		if(MATCHES_KEY(BGL2))              count++;
 		if(MATCHES_KEY(BGL3))              count++;
 		if(MATCHES_KEY(BGL4))              count++;
 		if(MATCHES_KEY(BGL5))              count++;
 		if(MATCHES_KEY(ClippingWindows))   count++;
-//		if(MATCHES_KEY(BGLHack))           count++;
 		if(MATCHES_KEY(Transparency))      count++;
-//		if(MATCHES_KEY(GLCube))            count++;
-//		if(MATCHES_KEY(InterpMode7))       count++;
 		if(MATCHES_KEY(JoypadSwap))        count++;
 		if(MATCHES_KEY(SwitchControllers)) count++;
 		if(MATCHES_KEY(TurboA))            count++;

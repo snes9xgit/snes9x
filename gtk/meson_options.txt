@@ -11,8 +11,6 @@ option('xbrz',            type: 'boolean', value: true,  description: 'Enable th
 option('zlib',            type: 'boolean', value: true,  description: 'Enable gzip compression')
 option('system-zip',      type: 'boolean', value: true,  description: 'Build using system minizip library')
 option('screenshot',      type: 'boolean', value: true,  description: 'Enable screenshots')
-option('gtk3',            type: 'boolean', value: true,  description: 'Build with GTK+ 3.0 as the toolkit')
 option('wayland',         type: 'boolean', value: true,  description: 'Build support for Wayland')
-option('gtk2',            type: 'boolean', value: false, description: 'Build with GTK+ 2.0 as the toolkit')
 option('dangerous-hacks', type: 'boolean', value: false, description: 'Allow dangerous hacks to be enabled')
 option('appdatadir',      type: 'string' , value: '',    description: 'Snes9x-only data directory (default: datadir/snes9x)')

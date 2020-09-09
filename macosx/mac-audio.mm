@@ -15,6 +15,7 @@
   (c) Copyright 2004         Alexander and Sander
   (c) Copyright 2004 - 2005  Steven Seeger
   (c) Copyright 2005         Ryan Vogt
+  (c) Copyright 2019         Michael Donald Buckley
  ***********************************************************************************/
 
 
@@ -43,11 +44,6 @@ int	cureffect = kAUReverb;
 static AUGraph				agraph;
 static AUNode				outNode, cnvNode, revNode, eqlNode;
 static AudioUnit			outAU, cnvAU, revAU, eqlAU;
-static AudioUnitCarbonView	carbonView         = NULL;
-static EventHandlerUPP		carbonViewEventUPP = NULL;
-static EventHandlerRef		carbonViewEventRef = NULL;
-static WindowRef			effectWRef;
-static HISize				effectWSize;
 static pthread_mutex_t		mutex;
 static UInt32				outStoredFrames, cnvStoredFrames, revStoredFrames, eqlStoredFrames, devStoredFrames;
 static int16_t				*audioBuffer;
@@ -63,12 +59,8 @@ static void SetAudioUnitSoundFormat (void);
 static void SetAudioUnitVolume (void);
 static void StoreBufferFrameSize (void);
 static void ChangeBufferFrameSize (void);
-static void ReplaceAudioUnitCarbonView (void);
-static void ResizeSoundEffectsDialog (HIViewRef);
 static void MacSamplesAvailableCallBack (void *);
 static OSStatus MacAURenderCallBack (void *, AudioUnitRenderActionFlags *, const AudioTimeStamp *, UInt32, UInt32, AudioBufferList *);
-static pascal OSStatus SoundEffectsEventHandler (EventHandlerCallRef, EventRef, void *);
-static pascal OSStatus SoundEffectsCarbonViewEventHandler (EventHandlerCallRef, EventRef, void *);
 
 
 void InitMacSound (void)
@@ -77,11 +69,7 @@ void InitMacSound (void)
 
 	err = NewAUGraph(&agraph);
 
-#ifndef MAC_LEOPARD_TIGER_PANTHER_SUPPORT
 	AudioComponentDescription	outdesc, cnvdesc, revdesc, eqldesc;
-#else
-	ComponentDescription		outdesc, cnvdesc, revdesc, eqldesc;
-#endif
 
 	outdesc.componentType         = kAudioUnitType_Output;
 	outdesc.componentSubType      = kAudioUnitSubType_DefaultOutput;
@@ -107,31 +95,18 @@ void InitMacSound (void)
 	eqldesc.componentFlags        = 0;
 	eqldesc.componentFlagsMask    = 0;
 
-#ifndef MAC_LEOPARD_TIGER_PANTHER_SUPPORT
 	err = AUGraphAddNode(agraph, &outdesc, &outNode);
 	err = AUGraphAddNode(agraph, &cnvdesc, &cnvNode);
 	err = AUGraphAddNode(agraph, &revdesc, &revNode);
 	err = AUGraphAddNode(agraph, &eqldesc, &eqlNode);
-#else
-	err = AUGraphNewNode(agraph, &outdesc, 0, NULL, &outNode);
-	err = AUGraphNewNode(agraph, &cnvdesc, 0, NULL, &cnvNode);
-	err = AUGraphNewNode(agraph, &revdesc, 0, NULL, &revNode);
-	err = AUGraphNewNode(agraph, &eqldesc, 0, NULL, &eqlNode);
-#endif
 
 	err = AUGraphOpen(agraph);
 
-#ifndef MAC_LEOPARD_TIGER_PANTHER_SUPPORT
 	err = AUGraphNodeInfo(agraph, outNode, NULL, &outAU);
 	err = AUGraphNodeInfo(agraph, cnvNode, NULL, &cnvAU);
 	err = AUGraphNodeInfo(agraph, revNode, NULL, &revAU);
 	err = AUGraphNodeInfo(agraph, eqlNode, NULL, &eqlAU);
-#else
-	err = AUGraphGetNodeInfo(agraph, outNode, NULL, NULL, NULL, &outAU);
-	err = AUGraphGetNodeInfo(agraph, cnvNode, NULL, NULL, NULL, &cnvAU);
-	err = AUGraphGetNodeInfo(agraph, revNode, NULL, NULL, NULL, &revAU);
-	err = AUGraphGetNodeInfo(agraph, eqlNode, NULL, NULL, NULL, &eqlAU);
-#endif
+
 
 	SetAudioUnitSoundFormat();
 	SetAudioUnitVolume();
@@ -291,12 +266,7 @@ static void ConnectAudioUnits (void)
 	callback.inputProc       = MacAURenderCallBack;
 	callback.inputProcRefCon = NULL;
 
-	if (systemVersion >= 0x1050)
-		err = AUGraphSetNodeInputCallback(agraph, aueffect ? cnvNode : outNode, 0, &callback);
-#ifdef MAC_TIGER_PANTHER_SUPPORT
-	else
-		err = AudioUnitSetProperty(aueffect ? cnvAU : outAU, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, 0, &callback, sizeof(callback));
-#endif
+    err = AUGraphSetNodeInputCallback(agraph, aueffect ? cnvNode : outNode, 0, &callback);
 
 	if ((aueffect & kAUReverb) && (aueffect & kAUGraphEQ))
 	{
@@ -510,445 +480,157 @@ bool8 S9xOpenSoundDevice (void)
 	return (true);
 }
 
-void PlayAlertSound (void)
-{
-	if (systemVersion >= 0x1050)
-		AudioServicesPlayAlertSound(kUserPreferredAlert);
-#ifdef MAC_TIGER_PANTHER_SUPPORT
-	else
-		SysBeep(10);
-#endif
-}
-
-static void ReplaceAudioUnitCarbonView (void)
-{
-	OSStatus				err;
-	AudioUnit				editau;
-	Component				cmp;
-	ComponentDescription	desc;
-	HIViewRef				pane, contentview, ctl;
-	HIViewID				cid;
-	Float32Point			location, size;
-	Rect					rct;
-	UInt32					psize;
-
-	if (carbonView)
-	{
-		err = RemoveEventHandler(carbonViewEventRef);
-		DisposeEventHandlerUPP(carbonViewEventUPP);
-		carbonViewEventRef = NULL;
-		carbonViewEventUPP = NULL;
-
-		CloseComponent(carbonView);
-		carbonView = NULL;
-	}
-
-	switch (cureffect)
-	{
-		case kAUGraphEQ:
-			editau = eqlAU;
-			break;
-
-		case kAUReverb:
-		default:
-			editau = revAU;
-			break;
-	}
-
-	desc.componentType         = kAudioUnitCarbonViewComponentType;
-	desc.componentSubType      = kAUCarbonViewSubType_Generic;
-	desc.componentManufacturer = kAudioUnitManufacturer_Apple;
-	desc.componentFlags        = 0;
-	desc.componentFlagsMask    = 0;
-
-	err = AudioUnitGetPropertyInfo(editau, kAudioUnitProperty_GetUIComponentList, kAudioUnitScope_Global, 0, &psize, NULL);
-	if (err == noErr)
-	{
-		ComponentDescription	*editors;
-		int						nEditors;
-
-		nEditors = psize / sizeof(ComponentDescription);
-
-		editors = new ComponentDescription[nEditors];
-
-		err = AudioUnitGetProperty(editau, kAudioUnitProperty_GetUIComponentList, kAudioUnitScope_Global, 0, editors, &psize);
-		if (err == noErr)
-			desc = editors[0];
-
-		delete [] editors;
-	}
-
-	HIViewFindByID(HIViewGetRoot(effectWRef), kHIViewWindowContentID, &contentview);
-
-	cmp = FindNextComponent(NULL, &desc);
-	if (cmp)
-	{
-		err = OpenAComponent(cmp, &carbonView);
-		if (err == noErr)
-		{
-			EventTypeSpec	event[] = { { kEventClassControl, kEventControlBoundsChanged } };
-
-			GetWindowBounds(effectWRef, kWindowContentRgn, &rct);
-			location.x = 20;
-			location.y = 96;
-			size.x     = rct.right  - rct.left;
-			size.y     = rct.bottom - rct.top;
-
-			err = AudioUnitCarbonViewCreate(carbonView, editau, effectWRef, contentview, &location, &size, &pane);
-
-			carbonViewEventUPP = NewEventHandlerUPP(SoundEffectsCarbonViewEventHandler);
-			err = InstallControlEventHandler(pane, carbonViewEventUPP, GetEventTypeCount(event), event, (void *) effectWRef, &carbonViewEventRef);
-
-			ResizeSoundEffectsDialog(pane);
-		}
-		else
-			carbonView = NULL;
-	}
-	else
-		carbonView = NULL;
-
-	cid.id = 0;
-	cid.signature = 'Enab';
-	HIViewFindByID(contentview, cid, &ctl);
-	SetControl32BitValue(ctl, (aueffect & cureffect) ? 1 : 0);
-}
-
-static void ResizeSoundEffectsDialog (HIViewRef view)
-{
-	OSStatus	err;
-	HIViewRef	ctl, root;
-	HIViewID	cid;
-	HIRect		bounds;
-	Rect		rv;
-	int			w, h;
-
-	root = HIViewGetRoot(effectWRef);
-
-	cid.id = 0;
-	cid.signature = 'Enab';
-	HIViewFindByID(root, cid, &ctl);
-
-	err = HIViewSetVisible(ctl,  false);
-	err = HIViewSetVisible(view, false);
-
-	HIViewGetBounds(view, &bounds);
-	w = ((int) bounds.size.width + 30 > (int) effectWSize.width) ? ((int) bounds.size.width + 30) : (int) effectWSize.width;
-	h = (int) bounds.size.height + 122;
-#ifdef MAC_PANTHER_SUPPORT
-	if (systemVersion < 0x1040)
-		h += 16;
-#endif
-	GetWindowBounds(effectWRef, kWindowStructureRgn, &rv);
-	rv.right  = rv.left + w;
-	rv.bottom = rv.top  + h;
-	err = TransitionWindow(effectWRef, kWindowSlideTransitionEffect, kWindowResizeTransitionAction, &rv);
-
-	err = HIViewSetVisible(ctl,  true);
-	err = HIViewSetVisible(view, true);
-
-#ifdef MAC_PANTHER_SUPPORT
-	if (systemVersion < 0x1040)
-	{
-		HIRect	frame;
-		Rect	rct;
-
-		GetWindowBounds(effectWRef, kWindowContentRgn, &rv);
-
-		cid.signature = 'SfUI';
-		HIViewFindByID(root, cid, &ctl);
-		HIViewGetFrame(ctl, &frame);
-		frame.size.width = (float) (rv.right - rv.left);
-		HIViewSetFrame(ctl, &frame);
-
-		cid.signature = 'LINE';
-		HIViewFindByID(root, cid, &ctl);
-		HIViewGetFrame(ctl, &frame);
-		frame.size.width = (float) (rv.right - rv.left - 24);
-		HIViewSetFrame(ctl, &frame);
-
-		rct.top    = 0;
-		rct.left   = 0;
-		rct.bottom = rv.bottom - rv.top;
-		rct.right  = rv.right  - rv.left;
-		err = InvalWindowRect(effectWRef, &rct);
-	}
-#endif
-}
-
 void ConfigureSoundEffects (void)
 {
-	OSStatus	err;
-	IBNibRef	nibRef;
-
-	err = CreateNibReference(kMacS9XCFString, &nibRef);
-	if (err == noErr)
-	{
-		WindowRef	uiparts;
-
-		err = CreateWindowFromNib(nibRef, CFSTR("SoundEffect"), &uiparts);
-		if (err == noErr)
-		{
-			EventHandlerUPP		eventUPP;
-			EventHandlerRef		eventHandler;
-			EventTypeSpec		event[] = { { kEventClassWindow,  kEventWindowClose         },
-											{ kEventClassCommand, kEventCommandProcess      },
-											{ kEventClassCommand, kEventCommandUpdateStatus } };
-			HIViewRef			ctl, userpane, contentview;
-			HIViewID			cid;
-			CFStringRef			str;
-			Rect				rct;
-			WindowAttributes	metal = 0;
-
-			cid.id = 0;
-			cid.signature = 'SfUI';
-			HIViewFindByID(HIViewGetRoot(uiparts), cid, &userpane);
-			GetWindowBounds(uiparts, kWindowContentRgn, &rct);
-
-			if (systemVersion >= 0x1040)	// AUs support compositing
-			{
-				HIRect	frame;
-
-				str = CFCopyLocalizedString(CFSTR("CreateMetalDlg"), "NO");
-				if (str)
-				{
-					if (CFStringCompare(str, CFSTR("YES"), 0) == kCFCompareEqualTo)
-						metal = kWindowMetalAttribute;
-
-					CFRelease(str);
-				}
-
-				frame = CGRectMake(0.0f, 0.0f, (float) (rct.right - rct.left), (float) (rct.bottom - rct.top));
-				err = CreateNewWindow(kDocumentWindowClass, kWindowCloseBoxAttribute | kWindowCollapseBoxAttribute | kWindowStandardHandlerAttribute | kWindowCompositingAttribute | metal, &rct, &effectWRef);
-				err = HIViewFindByID(HIViewGetRoot(effectWRef), kHIViewWindowContentID, &contentview);
-				err = HIViewAddSubview(contentview, userpane);
-				err = HIViewSetFrame(userpane, &frame);
-			}
-		#ifdef MAC_PANTHER_SUPPORT
-			else
-			{
-				err = CreateNewWindow(kDocumentWindowClass, kWindowCloseBoxAttribute | kWindowCollapseBoxAttribute | kWindowStandardHandlerAttribute, &rct, &effectWRef);
-				err = CreateRootControl(effectWRef, &contentview);
-				err = EmbedControl(userpane, contentview);
-				MoveControl(userpane, 0, 0);
-			}
-		#endif
-
-			CFRelease(uiparts);
-
-			if (!metal)
-				err = SetThemeWindowBackground(effectWRef, kThemeBrushDialogBackgroundActive, false);
-
-			str = CFCopyLocalizedString(CFSTR("SoundEffectDlg"), "SoundEffect");
-			if (str)
-			{
-				err = SetWindowTitleWithCFString(effectWRef, str);
-				CFRelease(str);
-			}
-
-			if (systemVersion >= 0x1040)	// AUs support compositing
-			{
-				HILayoutInfo	layoutinfo;
-				HIViewRef		separator;
-
-				cid.signature = 'LINE';
-				err = HIViewFindByID(userpane, cid, &separator);
-
-				layoutinfo.version = kHILayoutInfoVersionZero;
-				err = HIViewGetLayoutInfo(userpane, &layoutinfo);
-
-				layoutinfo.binding.top.toView    = contentview;
-				layoutinfo.binding.top.kind      = kHILayoutBindNone;
-				layoutinfo.binding.bottom.toView = contentview;
-				layoutinfo.binding.bottom.kind   = kHILayoutBindNone;
-				layoutinfo.binding.left.toView   = contentview;
-				layoutinfo.binding.left.kind     = kHILayoutBindLeft;
-				layoutinfo.binding.right.toView  = contentview;
-				layoutinfo.binding.right.kind    = kHILayoutBindRight;
-				err = HIViewSetLayoutInfo(userpane, &layoutinfo);
-
-				layoutinfo.version = kHILayoutInfoVersionZero;
-				err = HIViewGetLayoutInfo(separator, &layoutinfo);
-
-				layoutinfo.binding.top.toView    = userpane;
-				layoutinfo.binding.top.kind      = kHILayoutBindNone;
-				layoutinfo.binding.bottom.toView = userpane;
-				layoutinfo.binding.bottom.kind   = kHILayoutBindNone;
-				layoutinfo.binding.left.toView   = userpane;
-				layoutinfo.binding.left.kind     = kHILayoutBindLeft;
-				layoutinfo.binding.right.toView  = userpane;
-				layoutinfo.binding.right.kind    = kHILayoutBindRight;
-				err = HIViewSetLayoutInfo(separator, &layoutinfo);
-			}
-
-			eventUPP = NewEventHandlerUPP(SoundEffectsEventHandler);
-			err = InstallWindowEventHandler(effectWRef, eventUPP, GetEventTypeCount(event), event, (void *) effectWRef, &eventHandler);
-
-			GetWindowBounds(effectWRef, kWindowContentRgn, &rct);
-			effectWSize.width  = (float) (rct.right  - rct.left);
-			effectWSize.height = (float) (rct.bottom - rct.top );
-
-			carbonView = NULL;
-			ReplaceAudioUnitCarbonView();
-
-			cid.signature = 'Epop';
-			HIViewFindByID(userpane, cid, &ctl);
-			switch (cureffect)
-			{
-				case kAUReverb:
-					SetControl32BitValue(ctl, 1);
-					break;
-
-				case kAUGraphEQ:
-					SetControl32BitValue(ctl, 2);
-					break;
-			}
-
-			MoveWindowPosition(effectWRef, kWindowSoundEffect, false);
-			ShowWindow(effectWRef);
-			err = RunAppModalLoopForWindow(effectWRef);
-			HideWindow(effectWRef);
-			SaveWindowPosition(effectWRef, kWindowSoundEffect);
-
-			if (carbonView)
-			{
-				err = RemoveEventHandler(carbonViewEventRef);
-				DisposeEventHandlerUPP(carbonViewEventUPP);
-				carbonViewEventRef = NULL;
-				carbonViewEventUPP = NULL;
-
-				CloseComponent(carbonView);
-				carbonView = NULL;
-			}
-
-			err = RemoveEventHandler(eventHandler);
-			DisposeEventHandlerUPP(eventUPP);
-
-			CFRelease(effectWRef);
-		}
-
-		DisposeNibReference(nibRef);
-	}
-}
-
-static pascal OSStatus SoundEffectsCarbonViewEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
-{
-	OSStatus	err, result = eventNotHandledErr;
-	HIViewRef	ctl;
-	HIRect		bounds;
-
-	switch (GetEventClass(inEvent))
-	{
-		case kEventClassControl:
-			switch (GetEventKind(inEvent))
-			{
-				case kEventControlBoundsChanged:
-					err = GetEventParameter(inEvent, kEventParamDirectObject, typeControlRef, NULL, sizeof(ControlRef), NULL, &ctl);
-					if (err == noErr)
-					{
-						err = GetEventParameter(inEvent, kEventParamCurrentBounds, typeHIRect, NULL, sizeof(HIRect), NULL, &bounds);
-						if (err == noErr)
-						{
-							if ((bounds.size.width > 0) && (bounds.size.height > 0))
-								ResizeSoundEffectsDialog(ctl);
-						}
-					}
-
-					result = noErr;
-					break;
-			}
-
-			break;
-	}
-
-	return (result);
-}
-
-static pascal OSStatus SoundEffectsEventHandler (EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
-{
-	OSStatus	err, result = eventNotHandledErr;
-	WindowRef	tWindowRef = (WindowRef) inUserData;
-
-	switch (GetEventClass(inEvent))
-	{
-		case kEventClassWindow:
-			switch (GetEventKind(inEvent))
-			{
-				case kEventWindowClose:
-					QuitAppModalLoopForWindow(tWindowRef);
-					result = noErr;
-					break;
-			}
-
-			break;
-
-		case kEventClassCommand:
-			switch (GetEventKind(inEvent))
-			{
-				HICommand	tHICommand;
-
-				case kEventCommandUpdateStatus:
-					err = GetEventParameter(inEvent, kEventParamDirectObject, typeHICommand, NULL, sizeof(HICommand), NULL, &tHICommand);
-					if (err == noErr && tHICommand.commandID == 'clos')
-					{
-						UpdateMenuCommandStatus(true);
-						result = noErr;
-					}
-
-					break;
-
-				case kEventCommandProcess:
-					err = GetEventParameter(inEvent, kEventParamDirectObject, typeHICommand, NULL, sizeof(HICommand), NULL, &tHICommand);
-					if (err == noErr)
-					{
-						switch (tHICommand.commandID)
-						{
-							case 'Enab':
-							{
-								Boolean	r = false;
-
-								mboxPause = true;
-								
-								err = AUGraphIsRunning(agraph, &r);
-								if (err == noErr && r)
-									err = AUGraphStop(agraph);
-
-								DisconnectAudioUnits();
-								err = AUGraphUninitialize(agraph);
-
-								aueffect ^= cureffect;
-
-								SetAudioUnitSoundFormat();
-								ChangeBufferFrameSize();
-
-								err = AUGraphInitialize(agraph);
-								ConnectAudioUnits();
-
-								if (r)
-									err = AUGraphStart(agraph);
-
-								mboxPause = false;
-
-								result = noErr;
-								break;
-							}
-
-							case 'Revb':
-								cureffect = kAUReverb;
-								ReplaceAudioUnitCarbonView();
-								break;
-
-							case 'GrEQ':
-								cureffect = kAUGraphEQ;
-								ReplaceAudioUnitCarbonView();
-								break;
-						}
-					}
-
-					break;
-			}
-
-			break;
-	}
-
-	return (result);
+//    OSStatus    err;
+//    IBNibRef    nibRef;
+//
+//    err = CreateNibReference(kMacS9XCFString, &nibRef);
+//    if (err == noErr)
+//    {
+//        WindowRef    uiparts;
+//
+//        err = CreateWindowFromNib(nibRef, CFSTR("SoundEffect"), &uiparts);
+//        if (err == noErr)
+//        {
+//            EventHandlerUPP        eventUPP;
+//            EventHandlerRef        eventHandler;
+//            EventTypeSpec        event[] = { { kEventClassWindow,  kEventWindowClose         },
+//                                            { kEventClassCommand, kEventCommandProcess      },
+//                                            { kEventClassCommand, kEventCommandUpdateStatus } };
+//            HIViewRef            ctl, userpane, contentview;
+//            HIViewID            cid;
+//            CFStringRef            str;
+//            Rect                rct;
+//            WindowAttributes    metal = 0;
+//
+//            cid.id = 0;
+//            cid.signature = 'SfUI';
+//            HIViewFindByID(HIViewGetRoot(uiparts), cid, &userpane);
+//            GetWindowBounds(uiparts, kWindowContentRgn, &rct);
+//
+//            if (systemVersion >= 0x1040)    // AUs support compositing
+//            {
+//                HIRect    frame;
+//
+//                str = CFCopyLocalizedString(CFSTR("CreateMetalDlg"), "NO");
+//                if (str)
+//                {
+//                    if (CFStringCompare(str, CFSTR("YES"), 0) == kCFCompareEqualTo)
+//                        metal = kWindowMetalAttribute;
+//
+//                    CFRelease(str);
+//                }
+//
+//                frame = CGRectMake(0.0f, 0.0f, (float) (rct.right - rct.left), (float) (rct.bottom - rct.top));
+//                err = CreateNewWindow(kDocumentWindowClass, kWindowCloseBoxAttribute | kWindowCollapseBoxAttribute | kWindowStandardHandlerAttribute | kWindowCompositingAttribute | metal, &rct, &effectWRef);
+//                err = HIViewFindByID(HIViewGetRoot(effectWRef), kHIViewWindowContentID, &contentview);
+//                err = HIViewAddSubview(contentview, userpane);
+//                err = HIViewSetFrame(userpane, &frame);
+//            }
+//        #ifdef MAC_PANTHER_SUPPORT
+//            else
+//            {
+//                err = CreateNewWindow(kDocumentWindowClass, kWindowCloseBoxAttribute | kWindowCollapseBoxAttribute | kWindowStandardHandlerAttribute, &rct, &effectWRef);
+//                err = CreateRootControl(effectWRef, &contentview);
+//                err = EmbedControl(userpane, contentview);
+//                MoveControl(userpane, 0, 0);
+//            }
+//        #endif
+//
+//            CFRelease(uiparts);
+//
+//            if (!metal)
+//                err = SetThemeWindowBackground(effectWRef, kThemeBrushDialogBackgroundActive, false);
+//
+//            str = CFCopyLocalizedString(CFSTR("SoundEffectDlg"), "SoundEffect");
+//            if (str)
+//            {
+//                err = SetWindowTitleWithCFString(effectWRef, str);
+//                CFRelease(str);
+//            }
+//
+//            if (systemVersion >= 0x1040)    // AUs support compositing
+//            {
+//                HILayoutInfo    layoutinfo;
+//                HIViewRef        separator;
+//
+//                cid.signature = 'LINE';
+//                err = HIViewFindByID(userpane, cid, &separator);
+//
+//                layoutinfo.version = kHILayoutInfoVersionZero;
+//                err = HIViewGetLayoutInfo(userpane, &layoutinfo);
+//
+//                layoutinfo.binding.top.toView    = contentview;
+//                layoutinfo.binding.top.kind      = kHILayoutBindNone;
+//                layoutinfo.binding.bottom.toView = contentview;
+//                layoutinfo.binding.bottom.kind   = kHILayoutBindNone;
+//                layoutinfo.binding.left.toView   = contentview;
+//                layoutinfo.binding.left.kind     = kHILayoutBindLeft;
+//                layoutinfo.binding.right.toView  = contentview;
+//                layoutinfo.binding.right.kind    = kHILayoutBindRight;
+//                err = HIViewSetLayoutInfo(userpane, &layoutinfo);
+//
+//                layoutinfo.version = kHILayoutInfoVersionZero;
+//                err = HIViewGetLayoutInfo(separator, &layoutinfo);
+//
+//                layoutinfo.binding.top.toView    = userpane;
+//                layoutinfo.binding.top.kind      = kHILayoutBindNone;
+//                layoutinfo.binding.bottom.toView = userpane;
+//                layoutinfo.binding.bottom.kind   = kHILayoutBindNone;
+//                layoutinfo.binding.left.toView   = userpane;
+//                layoutinfo.binding.left.kind     = kHILayoutBindLeft;
+//                layoutinfo.binding.right.toView  = userpane;
+//                layoutinfo.binding.right.kind    = kHILayoutBindRight;
+//                err = HIViewSetLayoutInfo(separator, &layoutinfo);
+//            }
+//
+//            eventUPP = NewEventHandlerUPP(SoundEffectsEventHandler);
+//            err = InstallWindowEventHandler(effectWRef, eventUPP, GetEventTypeCount(event), event, (void *) effectWRef, &eventHandler);
+//
+//            GetWindowBounds(effectWRef, kWindowContentRgn, &rct);
+//            effectWSize.width  = (float) (rct.right  - rct.left);
+//            effectWSize.height = (float) (rct.bottom - rct.top );
+//
+//            carbonView = NULL;
+//            ReplaceAudioUnitCarbonView();
+//
+//            cid.signature = 'Epop';
+//            HIViewFindByID(userpane, cid, &ctl);
+//            switch (cureffect)
+//            {
+//                case kAUReverb:
+//                    SetControl32BitValue(ctl, 1);
+//                    break;
+//
+//                case kAUGraphEQ:
+//                    SetControl32BitValue(ctl, 2);
+//                    break;
+//            }
+//
+//            MoveWindowPosition(effectWRef, kWindowSoundEffect, false);
+//            ShowWindow(effectWRef);
+//            err = RunAppModalLoopForWindow(effectWRef);
+//            HideWindow(effectWRef);
+//            SaveWindowPosition(effectWRef, kWindowSoundEffect);
+//
+//            if (carbonView)
+//            {
+//                err = RemoveEventHandler(carbonViewEventRef);
+//                DisposeEventHandlerUPP(carbonViewEventUPP);
+//                carbonViewEventRef = NULL;
+//                carbonViewEventUPP = NULL;
+//
+//                CloseComponent(carbonView);
+//                carbonView = NULL;
+//            }
+//
+//            err = RemoveEventHandler(eventHandler);
+//            DisposeEventHandlerUPP(eventUPP);
+//
+//            CFRelease(effectWRef);
+//        }
+//
+//        DisposeNibReference(nibRef);
+//    }
 }

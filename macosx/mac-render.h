@@ -15,6 +15,7 @@
   (c) Copyright 2004         Alexander and Sander
   (c) Copyright 2004 - 2005  Steven Seeger
   (c) Copyright 2005         Ryan Vogt
+  (c) Copyright 2019         Michael Donald Buckley
  ***********************************************************************************/
 
 
@@ -23,8 +24,6 @@
 
 void InitGraphics (void);
 void DeinitGraphics (void);
-void DrawPauseScreen (CGContextRef, HIRect);
-void ClearGFXScreen (void);
 void DrawFreezeDefrostScreen (uint8 *);
 void GetGameDisplay (int *, int *);
 

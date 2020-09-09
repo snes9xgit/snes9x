@@ -15,6 +15,7 @@
   (c) Copyright 2004         Alexander and Sander
   (c) Copyright 2004 - 2005  Steven Seeger
   (c) Copyright 2005         Ryan Vogt
+  (c) Copyright 2019         Michael Donald Buckley
  ***********************************************************************************/
 
 
@@ -122,7 +123,7 @@ static void * SoundTask (void *);
 	MacStartSound();
 	pthread_create(&mbxThread, NULL, SoundTask, NULL);
 
-	timer = [[NSTimer scheduledTimerWithTimeInterval: (2.0 / (double) Memory.ROMFramesPerSecond) target: self selector: @selector(updateIndicator:) userInfo: nil repeats: YES] retain];
+	timer = [NSTimer scheduledTimerWithTimeInterval: (2.0 / (double) Memory.ROMFramesPerSecond) target: self selector: @selector(updateIndicator:) userInfo: nil repeats: YES];
 
 	return (self);
 }
@@ -134,7 +135,7 @@ static void * SoundTask (void *);
 	BOOL			r;
 
 	[timer invalidate];
-	[timer release];
+    timer = nil;
 
 	showIndicator = false;
 
@@ -159,10 +160,6 @@ static void * SoundTask (void *);
 		SPCPlayDefrost();
 	else
 		MusicBoxForceDefrost();
-
-	[window release];
-
-	[super dealloc];
 }
 
 - (NSWindow *) window
@@ -268,7 +265,7 @@ static void * SoundTask (void *);
 	const float	length[] = { 1.0f, 1.0f };
 
 	CGContextSetLineWidth(mboxctx, mbxBarWidth);
-	CGContextSetLineDash(mboxctx, 0, length, 2);
+	//CGContextSetLineDash(mboxctx, 0, length, 2);
 	CGContextSetLineJoin(mboxctx, kCGLineJoinMiter);
 
 	CGContextBeginPath(mboxctx);
@@ -417,20 +414,20 @@ static void SPCPlayExec (void)
 
 static void MusicBoxForceFreeze (void)
 {
-	char	filename[PATH_MAX + 1];
+	char filename[PATH_MAX + 1];
 
-	strcpy(filename, S9xGetFreezeFilename(999));
-	strcat(filename, ".tmp");
+	strlcpy(filename, S9xGetFreezeFilename(999), sizeof(filename));
+	strlcat(filename, ".tmp", sizeof(filename));
 
 	S9xFreezeGame(filename);
 }
 
 static void MusicBoxForceDefrost (void)
 {
-	char	filename[PATH_MAX + 1];
+	char filename[PATH_MAX + 1];
 
-	strcpy(filename, S9xGetFreezeFilename(999));
-	strcat(filename, ".tmp");
+	strlcpy(filename, S9xGetFreezeFilename(999), sizeof(filename));
+	strlcat(filename, ".tmp", sizeof(filename));
 
 	S9xUnfreezeGame(filename);
 	remove(filename);
@@ -457,21 +454,14 @@ static void SPCPlayDefrost (void)
 void MusicBoxDialog (void)
 {
 	MusicBoxController	*controller;
-	NSAutoreleasePool	*pool;
 
 	if (!cartOpen)
 		return;
 
-	pool = [[NSAutoreleasePool alloc] init];
 	controller = [[MusicBoxController alloc] init];
-	[pool release];
 
 	if (!controller)
 		return;
 
 	[NSApp runModalForWindow: [controller window]];
-
-	pool = [[NSAutoreleasePool alloc] init];
-	[controller release];
-	[pool release];
 }

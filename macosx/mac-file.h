@@ -15,13 +15,14 @@
   (c) Copyright 2004         Alexander and Sander
   (c) Copyright 2004 - 2005  Steven Seeger
   (c) Copyright 2005         Ryan Vogt
+  (c) Copyright 2019         Michael Donald Buckley
  ***********************************************************************************/
 
 
 #ifndef _mac_file_h_
 #define _mac_file_h_
 
-void CheckSaveFolder (FSRef *);
+void CheckSaveFolder (NSURL *);
 void ChangeTypeAndCreator (const char *, OSType, OSType);
 const char * S9xGetSPCFilename (void);
 const char * S9xGetPNGFilename (void);

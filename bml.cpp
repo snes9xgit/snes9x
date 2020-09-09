@@ -1,35 +1,16 @@
 #include <vector>
-#include <string.h>
+#include <iostream>
+#include <fstream>
+#include <stack>
 #include <stdio.h>
 
 #include "port.h"
 #include "bml.h"
 
-static char *strndup_p(char *str, int len)
+bml_node::bml_node()
 {
-    char *buffer;
-    int n;
-
-    buffer = (char *) malloc (len + 1);
-
-    if (buffer)
-    {
-        for (n = 0; ((n < len) && (str[n] != 0)); n++) buffer[n] = str[n];
-        buffer[n] = '\0';
-    }
-
-    return buffer;
-}
-
-static inline bml_node *bml_node_new (void)
-{
-    bml_node *node = new bml_node;
-
-    node->data = NULL;
-    node->name = NULL;
-    node->depth = -1;
-
-    return node;
+    type = CHILD;
+    depth = -1;
 }
 
 static inline int islf(char c)
@@ -42,6 +23,11 @@ static inline int isblank(char c)
     return (c == ' ' || c == '\t');
 }
 
+static inline int isblankorlf(char c)
+{
+    return (islf(c) || isblank(c));
+}
+
 static inline int isalnum(char c)
 {
     return ((c >= 'a' && c <= 'z') ||
@@ -49,340 +35,257 @@ static inline int isalnum(char c)
             (c >= '0' && c <= '9'));
 }
 
-static inline int bml_valid (char c)
+static inline int bml_valid(char c)
 {
-    return (isalnum (c) || c == '-');
+    return (isalnum(c) || c == '-');
 }
 
-static char *strndup_trim (char *str, int len)
+static std::string trim(std::string str)
 {
     int start;
     int end;
-
-    for (start = 0; str[start] && start != len && isblank (str[start]); start++) {}
-    if (!str[start] || start >= len)
-        return strdup ("");
-
-    for (end = len - 1; isblank (str[end]) || str[end] == '\n' || str[end] == '\r'; end--) {}
-
-    return strndup_p (str + start, end - start + 1);
+    for (start = 0; str[start] && start != (int)str.length() && isblank(str[start]); start++) {}
+    if (start >= (int)str.length())
+        return std::string("");
+    for (end = str.length() - 1; isblankorlf(str[end]); end--) {}
+    return str.substr(start, end - start + 1);
 }
 
-static inline unsigned int bml_read_depth (char *data)
+static std::string trimcomments(std::string str)
 {
-    unsigned int depth;
-    for (depth = 0; isblank (data[depth]); depth++) {}
-    return depth;
+    int end = str.length();
+    size_t comment = str.find("//");
+    if (comment != std::string::npos)
+        end = comment;
+
+    for (int i = end - 1; i >= 0; i--)
+    {
+        if (!isblankorlf(str[i]))
+        {
+            end = i + 1;
+            break;
+        }
+    }
+
+    return str.substr(0, end);
 }
 
-static void bml_parse_depth (bml_node *node, char **data)
+static inline int bml_read_depth(std::string &data)
 {
-    unsigned int depth = bml_read_depth (*data);
-    *data += depth;
-    node->depth = depth;
+    size_t depth;
+    for (depth = 0; isblank(data[depth]) && depth < data.length(); depth++) {}
+    return depth == data.length() ? -1 : depth;
 }
 
-static void bml_parse_name (bml_node *node, char **data)
+static void bml_parse_depth(bml_node &node, std::string &line)
+{
+    unsigned int depth = bml_read_depth(line);
+    line.erase(0, depth);
+    node.depth = depth;
+}
+
+static void bml_parse_name(bml_node &node, std::string &line)
 {
     int len;
 
-    for (len = 0; bml_valid(*(*data + len)); len++) {};
+    for (len = 0; bml_valid(line[len]); len++) {};
 
-    node->name = strndup_trim (*data, len);
-    *data += len;
+    node.name = trim(line.substr(0, len));
+    line.erase(0, len);
 }
 
-static void bml_parse_data (bml_node *node, char **data)
+static void bml_parse_data(bml_node &node, std::string &line)
 {
-    char *p = *data;
     int len;
 
-    if (p[0] == '=' && p[1] == '\"')
+    if (line[0] == '=' && line[1] == '\"')
     {
         len = 2;
-        while (p[len] && p[len] != '\"' && !islf (p[len]))
+        while (line[len] && line[len] != '\"' && !islf(line[len]))
             len++;
-        if (p[len] != '\"')
+        if (line[len] != '\"')
             return;
 
-        node->data = strndup_p (p + 2, len - 2);
-        *data += len + 1;
+        node.data = line.substr(2, len - 2);
+        line.erase(0, len + 1);
     }
-    else if (*p == '=')
+    else if (line[0] == '=')
     {
         len = 1;
-        while (p[len] && !islf (p[len]) && p[len] != '"' && p[len] != ' ')
+        while (line[len] && !islf(line[len]) && line[len] != '"' && line[len] != ' ')
             len++;
-        if (p[len] == '\"')
+        if (line[len] == '\"')
             return;
-        node->data = strndup_trim (p + 1, len - 1);
-        *data += len;
+        node.data = line.substr(1, len - 1);
+        line.erase(0, len);
     }
-    else if (*p == ':')
+    else if (line[0] == ':')
     {
         len = 1;
-        while (p[len] && !islf (p[len]))
+        while (line[len] && !islf(line[len]))
             len++;
-        node->data = strndup_trim (p + 1, len - 1);
-        *data += len;
+        node.data = trim(line.substr(1, len - 1));
+        line.erase(0, len);
     }
 
     return;
 }
 
-static void bml_skip_empty (char **data)
+static std::string bml_read_line(std::ifstream &fd)
 {
-    char *p = *data;
+    std::string line;
 
-    while (*p)
+    while (fd)
     {
-        for (; *p && isblank (*p) ; p++) {}
-
-        if (!islf(p[0]) && (p[0] != '/' && p[1] != '/'))
-            return;
-
-        /* Skip comment data */
-        while (*p && *p != '\r' && *p != '\n')
-            p++;
-
-        /* If we found new-line, try to skip more */
-        if (*p)
+        std::getline(fd, line);
+        line = trimcomments(line);
+        if (!line.empty())
         {
-            p++;
-            *data = p;
+            return line;
         }
     }
+
+    return std::string("");
 }
 
-static char *bml_read_line (char **data)
+static void bml_parse_attr(bml_node &node, std::string &line)
 {
-    char *line;
-    char *p;
-
-    bml_skip_empty (data);
-
-    line = *data;
-
-    if (line == NULL || *line == '\0')
-        return NULL;
-
-    p = strpbrk (line, "\r\n\0");
-
-    if (p == NULL)
-        return NULL;
-
-    if (islf (*p))
-    {
-        *p = '\0';
-        p++;
-    }
-
-    *data = p;
-
-    return line;
-}
-
-static void bml_parse_attr (bml_node *node, char **data)
-{
-    char *p = *data;
-    bml_node *n;
     int len;
 
-    while (*p && !islf (*p))
+    while (line.length() > 0)
     {
-        if (*p != ' ')
+        if (!isblank(line[0]))
             return;
 
-        while (isblank (*p))
-            p++;
-        if (p[0] == '/' && p[1] == '/')
-            break;
+        while (isblank(line[0]))
+            line.erase(0, 1);
 
-        n = bml_node_new ();
+        bml_node n;
         len = 0;
-        while (bml_valid (p[len]))
-           len++;
+        while (bml_valid(line[len]))
+            len++;
         if (len == 0)
             return;
-        n->name = strndup_trim (p, len);
-        p += len;
-        bml_parse_data (n, &p);
-        n->depth = bml_attr_type;
-        node->child.push_back (n);
+        n.name = trim(line.substr(0, len));
+        line.erase(0, len);
+        bml_parse_data(n, line);
+        n.depth = node.depth + 1;
+        n.type = bml_node::ATTRIBUTE;
+        node.child.push_back(n);
     }
-
-    *data = p;
 }
 
-static int contains_space (char *str)
+static int contains_space(const char *str)
 {
     for (int i = 0; str[i]; i++)
     {
-        if (isblank (str[i]))
+        if (isblank(str[i]))
             return 1;
     }
 
     return 0;
 }
 
-static void bml_print_node (bml_node *node, int depth)
+static void bml_print_node(bml_node &node, int depth)
 {
     int i;
 
-    if (!node)
-        return;
-
     for (i = 0; i < depth * 2; i++)
     {
-        printf (" ");
+        printf(" ");
     }
 
-    if (node->name)
-        printf ("%s", node->name);
+    if (!node.name.empty())
+        printf("%s", node.name.c_str());
 
-    if (node->data)
+    if (!node.data.empty())
     {
-        if (contains_space (node->data))
-            printf ("=\"%s\"", node->data);
+        if (contains_space(node.data.c_str()))
+            printf("=\"%s\"", node.data.c_str());
         else
-            printf (": %s", node->data);
+            printf(": %s", node.data.c_str());
     }
-    for (i = 0; i < (int) node->child.size () && node->child[i]->depth == bml_attr_type; i++)
+    for (i = 0; i < (int)node.child.size() && node.child[i].type == bml_node::ATTRIBUTE; i++)
     {
-        if (node->child[i]->name)
+        if (!node.child[i].name.empty())
         {
-            printf (" %s", node->child[i]->name);
-            if (node->child[i]->data)
+            printf(" %s", node.child[i].name.c_str());
+            if (!node.child[i].data.empty())
             {
-                if (contains_space (node->child[i]->data))
-                    printf ("=\"%s\"", node->child[i]->data);
+                if (contains_space(node.child[i].data.c_str()))
+                    printf("=\"%s\"", node.child[i].data.c_str());
                 else
-                    printf ("=%s", node->child[i]->data);
+                    printf("=%s", node.child[i].data.c_str());
             }
         }
     }
 
     if (depth >= 0)
-        printf ("\n");
+        printf("\n");
 
-    for (; i < (int) node->child.size(); i++)
+    for (; i < (int)node.child.size(); i++)
     {
-        bml_print_node (node->child[i], depth + 1);
+        bml_print_node(node.child[i], depth + 1);
     }
 
     if (depth == 0)
-        printf ("\n");
+        printf("\n");
 }
 
-void bml_print_node (bml_node *node)
+void bml_node::print()
 {
-    bml_print_node (node, -1);
+    bml_print_node(*this, -1);
 }
 
-static bml_node *bml_parse_node (char **doc)
+void bml_node::parse(std::ifstream &fd)
 {
-    char *line;
-    bml_node *node = NULL;
+    std::stack<bml_node *> nodestack;
+    nodestack.push(this);
 
-    if ((line = bml_read_line (doc)))
+    while (fd)
     {
-        node = bml_node_new ();
+        bml_node newnode;
+        std::string line = bml_read_line(fd);
+        if (line.empty())
+            return;
 
-        bml_parse_depth (node, &line);
-        bml_parse_name  (node, &line);
-        bml_parse_data  (node, &line);
-        bml_parse_attr  (node, &line);
-    }
-    else
-        return NULL;
+        int line_depth = bml_read_depth(line);
+        while (line_depth <= nodestack.top()->depth && nodestack.size() > 1)
+            nodestack.pop();
 
-    bml_skip_empty (doc);
-    while (*doc && (int) bml_read_depth (*doc) > node->depth)
-    {
-        bml_node *child = bml_parse_node (doc);
+        bml_parse_depth(newnode, line);
+        bml_parse_name(newnode, line);
+        bml_parse_data(newnode, line);
+        bml_parse_attr(newnode, line);
 
-        if (child)
-            node->child.push_back (child);
-
-        bml_skip_empty (doc);
-    }
-
-    return node;
-}
-
-void bml_free_node (bml_node *node)
-{
-    delete[] (node->name);
-    delete[] (node->data);
-
-    for (unsigned int i = 0; i < node->child.size(); i++)
-    {
-        bml_free_node (node->child[i]);
-        delete node->child[i];
+        nodestack.top()->child.push_back(newnode);
+        nodestack.push(&nodestack.top()->child.back());
     }
 
     return;
 }
 
-bml_node *bml_parse (char **doc)
-{
-    bml_node *root = NULL;
-    bml_node *node = NULL;
-    char *ptr = *doc;
-
-    root = bml_node_new ();
-
-    while ((node = bml_parse_node (&ptr)))
-    {
-        root->child.push_back (node);
-    }
-
-    if (!root->child.size())
-    {
-        delete root;
-        root = NULL;
-    }
-
-    return root;
-}
-
-bml_node *bml_find_sub (bml_node *n, const char *name)
+bml_node *bml_node::find_subnode(std::string name)
 {
     unsigned int i;
 
-    for (i = 0; i < n->child.size (); i++)
+    for (i = 0; i < child.size(); i++)
     {
-        if (!strcasecmp (n->child[i]->name, name))
-            return n->child[i];
+        if (name.compare(child[i].name) == 0)
+            return &child[i];
     }
 
     return NULL;
 }
 
-bml_node *bml_parse_file (const char *filename)
+bool bml_node::parse_file(std::string filename)
 {
-    FILE *file = NULL;
-    char *buffer = NULL;
-    int file_size = 0;
-    bml_node *node = NULL;
-
-    file = fopen (filename, "rb");
+    std::ifstream file(filename.c_str(), std::ios_base::binary);
 
     if (!file)
-        return NULL;
+        return false;
 
-    fseek (file, 0, SEEK_END);
-    file_size = ftell (file);
-    fseek (file, 0, SEEK_SET);
+    parse(file);
 
-    buffer = new char[file_size + 1];
-    fread (buffer, file_size, 1, file);
-    buffer[file_size] = '\0';
-
-    fclose (file);
-
-    node = bml_parse (&buffer);
-    delete[] buffer;
-
-    return node;
+    return true;
 }

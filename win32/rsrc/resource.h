@@ -45,6 +45,7 @@
 #define IDI_ICON3                       161
 #define IDI_ICON4                       162
 #define IDD_DIALOG_HACKS                164
+#define IDD_DIALOG_LOAD_PREVIEW         167
 #define IDD_RAMSEARCH                   500
 #define IDD_RAMWATCH                    501
 #define IDD_EDITWATCH                   502
@@ -103,6 +104,7 @@
 #define IDC_REWIND_GRANULARITY_SPIN     1071
 #define IDC_SFXSPEED                    1072
 #define IDC_SFXSPEED_SPIN               1073
+#define IDC_CONFIRMSAVELOAD             1074
 #define IDC_HOSTNAME                    1086
 #define IDC_PORTNUMBER                  1087
 #define IDC_CLEARHISTORY                1088
@@ -212,6 +214,7 @@
 #define IDC_C_LOADWATCH                 1155
 #define IDC_OUTPUTMETHOD                1155
 #define IDC_CPU_OVERCLOCK               1155
+#define IDC_COMBO_BANK                  1155
 #define IDC_NC_ADDRESS                  1156
 #define IDC_C_SAVEWATCH                 1156
 #define IDC_ASPECTDROP                  1156
@@ -286,10 +289,13 @@
 #define IDC_LABEL_UP19                  1198
 #define IDC_ASPECT                      1199
 #define IDC_LABEL_UP26                  1199
+#define IDC_LABEL_UP27                  1200
 #define IDC_MESSAGES_IN_IMAGE           1200
 #define IDC_RECORD_NOW                  1201
 #define IDC_MESSAGES_SCALE              1201
+#define IDC_LABEL_UP28                  1201
 #define IDC_RECORD_RESET                1202
+#define IDC_LABEL_UP29                  1202
 #define IDC_JOY1                        1203
 #define IDC_JOY2                        1204
 #define IDC_JOY3                        1205
@@ -314,6 +320,7 @@
 #define IDC_MOVIEROMINFO                1216
 #define IDC_SAVE10                      1217
 #define IDC_CURRENTROMINFO              1217
+#define IDC_DIALOGSAVE                  1218
 #define IDC_SAVE11                      1219
 #define IDC_DISPLAY_INPUT               1220
 #define IDC_SAVE12                      1220
@@ -327,6 +334,9 @@
 #define IDC_SAVE20                      1228
 #define IDC_LABEL_UP20                  1229
 #define IDC_LABEL_UP21                  1230
+#define IDC_DIALOGLOAD                  1231
+#define IDC_BANKMINUS                   1232
+#define IDC_BANKPLUS                    1233
 #define IDC_LABEL_UP22                  1234
 #define IDC_SLOTMINUS                   1235
 #define IDC_LABEL_UP23                  1236
@@ -351,6 +361,7 @@
 #define IDC_LABEL_HK12                  1255
 #define IDC_LABEL_HK13                  1256
 #define IDC_PLAYWARN                    1257
+#define IDC_LABEL_HK14                  1257
 #define IDC_REDUCEINPUTLAG              1258
 #define IDC_INTEGERSCALING              1259
 #define IDC_NTSCSCANLINES               1260
@@ -367,6 +378,7 @@
 #define IDC_HOTKEY11                    2010
 #define IDC_HOTKEY12                    2011
 #define IDC_HOTKEY13                    2012
+#define IDC_HOTKEY14                    2013
 #define IDC_PREV                        2147
 #define IDC_ENTERED                     2148
 #define IDC_ENTEREDADDRESS              2157
@@ -467,6 +479,8 @@
 #define IDC_BUTTON_LUABROWSE            5054
 #define IDC_NEW_LUA_SCRIPT              5055
 #define IDC_CLOSE_LUA_SCRIPTS           5056
+#define IDC_BUTTON_SLOT_1               3039
+#define IDC_STATIC_SLOT_1               3059
 #define ID_FILE_EXIT                    40001
 #define ID_WINDOW_HIDEMENUBAR           40004
 #define ID_FILE_AVI_RECORDING           40005
@@ -583,29 +597,18 @@
 #define ID_INPUT_BACKGROUNDKEYBOARDHOTKEYS 40176
 #define ID_INPUT_DETECTGAMEPADCHANGES   40177
 #define ID_EMULATION_HACKS              40178
+#define ID_FILE_LOAD_PREVIEW            40179
+#define ID_FILE_SAVE_PREVIEW            40180
+#define ID_FILE_SAVE_POPUP              40181
+#define ID_FILE_LOAD_POPUP              40182
 #define ID_FILE_SAVE0                   44000
-#define ID_FILE_SAVE1                   44001
-#define ID_FILE_SAVE2                   44002
-#define ID_FILE_SAVE3                   44003
-#define ID_FILE_SAVE4                   44004
-#define ID_FILE_SAVE5                   44005
-#define ID_FILE_SAVE6                   44006
-#define ID_FILE_SAVE7                   44007
-#define ID_FILE_SAVE8                   44008
-#define ID_FILE_SAVE9                   44009
-#define ID_FILE_SAVE_FILE               44010
-#define ID_FILE_LOAD0                   44020
-#define ID_FILE_LOAD1                   44021
-#define ID_FILE_LOAD2                   44022
-#define ID_FILE_LOAD3                   44023
-#define ID_FILE_LOAD4                   44024
-#define ID_FILE_LOAD5                   44025
-#define ID_FILE_LOAD6                   44026
-#define ID_FILE_LOAD7                   44027
-#define ID_FILE_LOAD8                   44028
-#define ID_FILE_LOAD9                   44029
-#define ID_FILE_LOAD_FILE               44030
-#define IDM_MACSRIFLE_TOGGLE            44031
+#define ID_FILE_SAVE_LAST               44100
+#define ID_FILE_LOAD0                   44200
+#define ID_FILE_LOAD_LAST               44300
+#define ID_FILE_SAVE_FILE               44310
+#define ID_FILE_LOAD_OOPS               44330
+#define ID_FILE_LOAD_FILE               44331
+#define IDM_MACSRIFLE_TOGGLE            44332
 #define RAMMENU_FILE_AUTOLOAD           45000
 #define RAMMENU_FILE_SAVEWINDOW         45001
 #define RAMMENU_FILE_SAVE               45002
@@ -625,9 +628,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        167
-#define _APS_NEXT_COMMAND_VALUE         40179
-#define _APS_NEXT_CONTROL_VALUE         3039
+#define _APS_NEXT_RESOURCE_VALUE        169
+#define _APS_NEXT_COMMAND_VALUE         40181
+#define _APS_NEXT_CONTROL_VALUE         3040
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

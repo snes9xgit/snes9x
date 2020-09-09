@@ -15,6 +15,7 @@
   (c) Copyright 2004         Alexander and Sander
   (c) Copyright 2004 - 2005  Steven Seeger
   (c) Copyright 2005         Ryan Vogt
+  (c) Copyright 2019         Michael Donald Buckley
  ***********************************************************************************/
 
 
@@ -28,6 +29,5 @@ void DeinitMacSound (void);
 void MacStartSound (void);
 void MacStopSound (void);
 void ConfigureSoundEffects (void);
-void PlayAlertSound (void);
 
 #endif

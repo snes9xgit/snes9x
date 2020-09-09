@@ -412,8 +412,8 @@
     <Lib />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\glslang\OSDependent\Windows\ossource.cpp" />
-    <ClInclude Include="..\..\..\src\glslang\OSDependent\osinclude.h" />
+    <ClCompile Include="..\..\..\..\..\shaders\glslang\glslang\OSDependent\Windows\ossource.cpp" />
+    <ClInclude Include="..\..\..\..\..\shaders\glslang\glslang\OSDependent\osinclude.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

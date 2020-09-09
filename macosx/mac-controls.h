@@ -15,11 +15,16 @@
   (c) Copyright 2004         Alexander and Sander
   (c) Copyright 2004 - 2005  Steven Seeger
   (c) Copyright 2005         Ryan Vogt
+  (c) Copyright 2019         Michael Donald Buckley
  ***********************************************************************************/
 
 
 #ifndef _mac_controls_h_
 #define _mac_controls_h_
+
+#define MAC_MAX_PLAYERS 8
+
+#define KeyIsPressed(km, bm, p, k)    (km[p][k] || bm[p][k])
 
 enum
 {
@@ -176,7 +181,66 @@ enum
 	kMacCMapPseudoPtrBase     = k_HD | k_PS | k_LG | k_C2	// for Justifier 2P
 };
 
+typedef enum
+{
+    kUp,
+    kDown,
+    kLeft,
+    kRight,
+    kY,
+    kB,
+    kX,
+    kA,
+    kL,
+    kR,
+    kStart,
+    kSelect,
+
+    kKeyFastForward,
+    kKeyFreeze,
+    kKeyDefrost,
+
+    kKeyScreenshot,
+    kKeySPC,
+    kKeyScopeTurbo,
+    kKeyScopePause,
+    kKeyScopeCursor,
+    kKeyOffScreen,
+    kKeyFunction,
+    kKeyAlt,
+    kKeyFFDown,
+    kKeyFFUp,
+    kKeyEsc,
+    kKeyTC,
+    kKeyMouseLeft,
+    kKeyMouseRight,
+
+    kNumButtons
+} S9xButtonCode;
+
+typedef enum {
+    kISpFastForward,
+    kISpFreeze,
+    kISpDefrost,
+    kISpScreenshot,
+    kISpSPC,
+    kISpScopeTurbo,
+    kISpScopePause,
+    kISpScopeCursor,
+    kISpOffScreen,
+    kISpFunction,
+    kISpAlt,
+    kISpFFDown,
+    kISpFFUp,
+    kISpEsc,
+    kISpTC,
+    kISpMouseLeft,
+    kISpMouseRight
+} ISpKey;
+
 void ControlPadFlagsToS9xReportButtons (int, uint32);
 void ControlPadFlagsToS9xPseudoPointer (uint32);
+
+long ISpKeyIsPressed (bool8 keys[MAC_MAX_PLAYERS][kNumButtons], bool8 gamepadButtons[MAC_MAX_PLAYERS][kNumButtons], ISpKey key);
 
 #endif

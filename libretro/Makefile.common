@@ -1,5 +1,8 @@
-LIBRETRO_COMM_DIR = $(CORE_DIR)/libretro/libretro-common
-INCFLAGS   = -I$(CORE_DIR)/libretro -I$(CORE_DIR) -I$(CORE_DIR)/apu/ -I$(CORE_DIR)/apu/bapu
+ifeq ($(LIBRETRO_COMM_DIR),)
+	LIBRETRO_COMM_DIR = $(CORE_DIR)/libretro/libretro-common
+endif
+
+INCFLAGS   = -I$(CORE_DIR)/libretro -I$(LIBRETRO_COMM_DIR)/include -I$(CORE_DIR) -I$(CORE_DIR)/apu/ -I$(CORE_DIR)/apu/bapu
 
 ifneq (,$(findstring msvc2003,$(platform)))
 INCFLAGS += -I$(LIBRETRO_COMM_DIR)/include/compat/msvc
@@ -52,7 +55,11 @@ SOURCES_CXX := $(CORE_DIR)/apu/apu.cpp \
 				 $(CORE_DIR)/spc7110.cpp \
 				 $(CORE_DIR)/srtc.cpp \
 				 $(CORE_DIR)/tile.cpp \
+				 $(CORE_DIR)/tileimpl-n1x1.cpp \
+				 $(CORE_DIR)/tileimpl-n2x1.cpp \
+				 $(CORE_DIR)/tileimpl-h2x1.cpp \
 				 $(CORE_DIR)/sha256.cpp \
 				 $(CORE_DIR)/bml.cpp \
 				 $(CORE_DIR)/movie.cpp \
+				 $(CORE_DIR)/compat.cpp \
 				 $(CORE_DIR)/libretro/libretro.cpp

@@ -40,7 +40,6 @@ void S9xInitDisplay (int, char **);
 void S9xDeinitDisplay (void);
 void S9xTextMode (void);
 void S9xGraphicsMode (void);
-void S9xSetPalette (void);
 void S9xToggleSoundChannel (int);
 bool8 S9xOpenSnapshotFile (const char *, bool8, STREAM *);
 void S9xCloseSnapshotFile (STREAM);
@@ -48,7 +47,6 @@ const char * S9xStringInput (const char *);
 const char * S9xGetDirectory (enum s9x_getdirtype);
 const char * S9xGetFilename (const char *, enum s9x_getdirtype);
 const char * S9xGetFilenameInc (const char *, enum s9x_getdirtype);
-const char * S9xChooseFilename (bool8);
 const char * S9xBasename (const char *);
 
 // Routines the port has to implement if it uses command-line

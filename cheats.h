@@ -86,7 +86,7 @@ void S9xUpdateCheatsInMemory (void);
 int S9xImportCheatsFromDatabase(const char *filename);
 void S9xCheatsDisable (void);
 void S9xCheatsEnable (void);
-char *S9xCheatValidate (char *cheat);
+char *S9xCheatValidate (const char *cheat);
 
 void S9xInitCheatData (void);
 void S9xInitWatchedAddress (void);

@@ -751,7 +751,7 @@ MISC_CLOCK( 30 )
 
 inline VOICE_CLOCK( V1 )
 {
-	m.t_dir_addr = m.t_dir * 0x100 + m.t_srcn * 4;
+	m.t_dir_addr = (m.t_dir * 0x100 + m.t_srcn * 4) & 0xffff;
 	m.t_srcn = VREG(v->regs,srcn);
 }
 inline VOICE_CLOCK( V2 )

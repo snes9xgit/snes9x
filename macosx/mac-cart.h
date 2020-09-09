@@ -15,21 +15,21 @@
   (c) Copyright 2004         Alexander and Sander
   (c) Copyright 2004 - 2005  Steven Seeger
   (c) Copyright 2005         Ryan Vogt
+  (c) Copyright 2019         Michael Donald Buckley
  ***********************************************************************************/
 
 
 #ifndef _mac_cart_h_
 #define _mac_cart_h_
 
-bool8 NavOpenROMImage (FSRef *);
-bool8 NavBeginOpenROMImageSheet (WindowRef, CFStringRef);
-bool8 NavEndOpenROMImageSheet (FSRef *);
-bool8 NavBeginChooseFolderSheet (WindowRef);
-bool8 NavEndChooseFolderSheet (FSRef *);
-bool8 NavFreezeTo (char *);
-bool8 NavDefrostFrom (char *);
-bool8 NavRecordMovieTo (char *);
-bool8 NavPlayMovieFrom (char *);
-bool8 NavQTMovieRecordTo (char *);
+#import <Cocoa/Cocoa.h>
+
+NSURL *NavOpenROMImage ();
+NSURL *NavChooseFolderSheet (NSWindow *);
+NSURL *NavFreezeTo ();
+NSURL *NavDefrostFrom ();
+NSURL *NavRecordMovieTo ();
+NSURL *NavPlayMovieFrom ();
+NSURL *NavQTMovieRecordTo ();
 
 #endif

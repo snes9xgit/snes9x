@@ -12,12 +12,14 @@
 #include <signal.h>
 #include <errno.h>
 #include <string.h>
+#include <algorithm>
 #ifdef HAVE_STRINGS_H
 #include <strings.h>
 #endif
 #ifdef USE_THREADS
 #include <sched.h>
 #include <pthread.h>
+#include <vector>
 #endif
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -114,10 +116,6 @@ struct SoundStatus
 {
 	int		sound_fd;
 	uint32	fragment_size;
-	uint32	err_counter;
-	uint32	err_rate;
-	int32	samples_mixed_so_far;
-	int32	play_position;
 };
 
 
@@ -126,15 +124,6 @@ static SUnixSettings	unixSettings;
 static SoundStatus		so;
 
 static bool8	rewinding;
-
-#ifndef NOSOUND
-static uint8			Buf[SOUND_BUFFER_SIZE];
-#endif
-
-#ifdef USE_THREADS
-static pthread_t		thread;
-static pthread_mutex_t	mutex;
-#endif
 
 #ifdef JOYSTICK_SUPPORT
 static uint8		js_mod[8]     = { 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -156,79 +145,13 @@ bool S9xDisplayPollButton (uint32, bool *);
 bool S9xDisplayPollAxis (uint32, int16 *);
 bool S9xDisplayPollPointer (uint32, int16 *, int16 *);
 
-static long log2 (long);
-static void SoundTrigger (void);
-static void InitTimer (void);
 static void NSRTControllerSetup (void);
 static int make_snes9x_dirs (void);
-#ifndef NOSOUND
-static void * S9xProcessSound (void *);
-#endif
 #ifdef JOYSTICK_SUPPORT
 static void InitJoysticks (void);
-static void ReadJoysticks (void);
+static bool8 ReadJoysticks (void);
+void S9xLatchJSEvent();
 #endif
-
-
-void _splitpath (const char *path, char *drive, char *dir, char *fname, char *ext)
-{
-	*drive = 0;
-
-	const char	*slash = strrchr(path, SLASH_CHAR),
-				*dot   = strrchr(path, '.');
-
-	if (dot && slash && dot < slash)
-		dot = NULL;
-
-	if (!slash)
-	{
-		*dir = 0;
-
-		strcpy(fname, path);
-
-		if (dot)
-		{
-			fname[dot - path] = 0;
-			strcpy(ext, dot + 1);
-		}
-		else
-			*ext = 0;
-	}
-	else
-	{
-		strcpy(dir, path);
-		dir[slash - path] = 0;
-
-		strcpy(fname, slash + 1);
-
-		if (dot)
-		{
-			fname[dot - slash - 1] = 0;
-			strcpy(ext, dot + 1);
-		}
-		else
-			*ext = 0;
-	}
-}
-
-void _makepath (char *path, const char *, const char *dir, const char *fname, const char *ext)
-{
-	if (dir && *dir)
-	{
-		strcpy(path, dir);
-		strcat(path, SLASH_STR);
-	}
-	else
-		*path = 0;
-
-	strcat(path, fname);
-
-	if (ext && *ext)
-	{
-		strcat(path, ".");
-		strcat(path, ext);
-	}
-}
 
 static long log2 (long num)
 {
@@ -238,6 +161,169 @@ static long log2 (long num)
 		n++;
 
 	return (n);
+}
+
+namespace {
+
+#if ! defined(NOSOUND)
+	class S9xAudioOutput
+	{
+	public:
+		S9xAudioOutput(int fd, uint32 sampleRateHz, bool isThreaded)
+		{
+			m_FD = fd;
+			uint32 bufferSizeMS = unixSettings.SoundBufferSize; // milliseconds
+			// 4 = sizeof(uint16) * STEREO
+			m_BufferSize = int(uint64(sampleRateHz) * bufferSizeMS / 1000 * 4);
+
+#if defined(USE_THREADS)
+			m_WrittenSize = 0;
+			m_Thread = pthread_t();
+			m_isExit = false;
+			if (isThreaded)
+			{
+				m_BufferMutex = PTHREAD_MUTEX_INITIALIZER;
+				m_hasBuffer = PTHREAD_COND_INITIALIZER;
+				if (pthread_create(&m_Thread, NULL, AudioOutputThreadEntry, this))
+				{
+					return;
+				}
+			}
+#endif
+		}
+
+		~S9xAudioOutput()
+		{
+#if defined(USE_THREADS)
+			if (m_Thread)
+			{
+				pthread_mutex_lock(&m_BufferMutex);
+				{
+					m_isExit = true;
+					pthread_cond_signal(&m_hasBuffer);
+				}
+				pthread_mutex_unlock(&m_BufferMutex);
+
+				pthread_join(m_Thread, NULL);
+				pthread_mutex_destroy(&m_BufferMutex);
+				pthread_cond_destroy(&m_hasBuffer);
+			}
+#endif
+		}
+
+		void Write(void* data, int size)
+		{
+#if defined(USE_THREADS)
+			if (m_Thread)
+			{
+				pthread_mutex_lock(&m_BufferMutex);
+				{
+					if (int(m_Buffering.size()) < m_BufferSize)
+					{
+						size_t oldSize = m_Buffering.size();
+						size_t newSize = oldSize + size;
+						m_WrittenSize = newSize;
+						m_Buffering.resize(newSize);
+						memcpy(&m_Buffering[oldSize], data, size);
+						pthread_cond_signal(&m_hasBuffer);
+					}
+				}
+				pthread_mutex_unlock(&m_BufferMutex);
+			}
+			else
+#endif
+			{
+				WriteImpl(data, size);
+			}
+		}
+
+		int GetFreeBufferSize()
+		{
+#if defined(USE_THREADS)
+			if (m_Thread)
+			{
+				int writtenSize;
+				pthread_mutex_lock(&m_BufferMutex);
+				{
+					writtenSize = m_WrittenSize;
+				}
+				pthread_mutex_unlock(&m_BufferMutex);
+				return m_BufferSize - writtenSize;
+			}
+			else
+#endif
+			{
+				audio_buf_info info;
+				ioctl(m_FD, SNDCTL_DSP_GETOSPACE, &info);
+				int writtenSize = info.fragsize * info.fragstotal - info.bytes;
+				return std::max(0, m_BufferSize - writtenSize);
+			}
+		}
+
+	private:
+		void WriteImpl(const void* data, int size)
+		{
+			const char* p = reinterpret_cast<const char*>(data);
+			while (size > 0)
+			{
+				int result = write(m_FD, p, size);
+				if (result < 0)
+				{
+					return;
+				}
+				p += result;
+				size -= result;
+			}
+		}
+
+		int m_FD;
+		int m_BufferSize;
+
+#if defined(USE_THREADS)
+		pthread_t m_Thread;
+		volatile bool m_isExit;
+		pthread_mutex_t m_BufferMutex;
+		pthread_cond_t m_hasBuffer;
+		std::vector<uint8> m_PlayingBuffer;
+		std::vector<uint8> m_Buffering;
+		int m_WrittenSize; // for dynamic rate control
+
+		static void* AudioOutputThreadEntry(void* arg)
+		{
+			S9xAudioOutput* obj = reinterpret_cast<S9xAudioOutput*>(arg);
+			obj->AudioOutputThread();
+			return NULL;
+		}
+
+		void AudioOutputThread()
+		{
+			while (true)
+			{
+				pthread_mutex_lock(&m_BufferMutex);
+				{
+					pthread_cond_wait(&m_hasBuffer, &m_BufferMutex);
+					if (m_isExit)
+					{
+						return;
+					}
+					m_PlayingBuffer.swap(m_Buffering);
+					m_WrittenSize = 0;
+				}
+				pthread_mutex_unlock(&m_BufferMutex);
+
+				if (! m_PlayingBuffer.empty())
+				{
+					WriteImpl(&m_PlayingBuffer[0], m_PlayingBuffer.size());
+					m_PlayingBuffer.resize(0);
+				}
+			}
+		}
+#endif // USE_THREADS
+	};
+
+	S9xAudioOutput* s_AudioOutput = NULL;
+#endif // NOSOUND
+
 }
 
 void S9xExtraUsage (void)
@@ -646,44 +732,6 @@ const char * S9xBasename (const char *f)
 		return (p + 1);
 
 	return (f);
-}
-
-const char * S9xChooseFilename (bool8 read_only)
-{
-	char	s[PATH_MAX + 1];
-	char	drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], fname[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
-
-	const char	*filename;
-	char		title[64];
-
-	_splitpath(Memory.ROMFilename, drive, dir, fname, ext);
-	snprintf(s, PATH_MAX + 1, "%s.frz", fname);
-	sprintf(title, "%s snapshot filename", read_only ? "Select load" : "Choose save");
-
-	S9xSetSoundMute(TRUE);
-	filename = S9xSelectFilename(s, S9xGetDirectory(SNAPSHOT_DIR), "frz", title);
-	S9xSetSoundMute(FALSE);
-
-	return (filename);
-}
-
-const char * S9xChooseMovieFilename (bool8 read_only)
-{
-	char	s[PATH_MAX + 1];
-	char	drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], fname[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
-
-	const char	*filename;
-	char		title[64];
-
-	_splitpath(Memory.ROMFilename, drive, dir, fname, ext);
-	snprintf(s, PATH_MAX + 1, "%s.smv", fname);
-	sprintf(title, "Choose movie %s filename", read_only ? "playback" : "record");
-
-	S9xSetSoundMute(TRUE);
-	filename = S9xSelectFilename(s, S9xGetDirectory(HOME_DIR), "smv", title);
-	S9xSetSoundMute(FALSE);
-
-	return (filename);
 }
 
 bool8 S9xOpenSnapshotFile (const char *filename, bool8 read_only, STREAM *file)
@@ -1205,8 +1253,10 @@ static void InitJoysticks (void)
 #endif
 }
 
-static void ReadJoysticks (void)
+static bool8 ReadJoysticks (void)
 {
+	// track if ANY joystick event happened this frame
+	int js_latch = FALSE;
 #ifdef JSIOCGVERSION
 	struct js_event	js_ev;
 
@@ -1220,6 +1270,7 @@ static void ReadJoysticks (void)
 			{
 				fprintf(stderr,"Joystick %d reconnected.\n",i);
 				js_unplugged[i] = FALSE;
+				js_latch = TRUE;
 			}
 		}
 
@@ -1233,12 +1284,14 @@ static void ReadJoysticks (void)
 				case JS_EVENT_AXIS:
 					S9xReportAxis(0x8000c000 | (i << 24) | js_ev.number, js_ev.value);
 					S9xReportAxis(0x80008000 | (i << 24) | (js_mod[i] << 16) | js_ev.number, js_ev.value);
+					js_latch = TRUE;
 					break;
 
 				case JS_EVENT_BUTTON:
 				case JS_EVENT_BUTTON | JS_EVENT_INIT:
 					S9xReportButton(0x80004000 | (i << 24) | js_ev.number, js_ev.value);
 					S9xReportButton(0x80000000 | (i << 24) | (js_mod[i] << 16) | js_ev.number, js_ev.value);
+					js_latch = TRUE;
 					break;
 			}
 		}
@@ -1260,9 +1313,12 @@ static void ReadJoysticks (void)
 				S9xReportButton(0x80004000 | (i << 24) | j, 0);
 				S9xReportButton(0x80000000 | (i << 24) | (js_mod[i] << 16) | j, 0);
 			}
+
+			js_latch = TRUE;
 		}
 	}
 #endif
+	return js_latch;
 }
 
 #endif
@@ -1271,48 +1327,16 @@ void S9xSamplesAvailable(void *data)
 {
 #ifndef NOSOUND
 
-    audio_buf_info info;
     int samples_to_write;
-    int bytes_to_write;
-    int bytes_written;
 	static uint8 *sound_buffer = NULL;
 	static int sound_buffer_size = 0;
 
-
-    ioctl(so.sound_fd, SNDCTL_DSP_GETOSPACE, &info);
-
     if (Settings.DynamicRateControl)
     {
-        S9xUpdateDynamicRate(info.bytes, so.fragment_size * 4);
+        S9xUpdateDynamicRate(s_AudioOutput->GetFreeBufferSize(), so.fragment_size * 4);
     }
 
     samples_to_write = S9xGetSampleCount();
-
-    if (Settings.DynamicRateControl && !Settings.SoundSync)
-    {
-        // Using rate control, we should always keep the emulator's sound buffers empty to
-        // maintain an accurate measurement.
-        if (samples_to_write > (info.bytes >> 1))
-        {
-            S9xClearSamples();
-            return;
-        }
-    }
-
-    if (Settings.SoundSync && !Settings.TurboMode && !Settings.Mute)
-    {
-        while (info.bytes >> 1 < samples_to_write)
-        {
-            int usec_to_sleep = ((samples_to_write >> 1) - (info.bytes >> 2)) * 10000 /
-                                (Settings.SoundPlaybackRate / 100);
-            usleep(usec_to_sleep > 0 ? usec_to_sleep : 0);
-            ioctl(so.sound_fd, SNDCTL_DSP_GETOSPACE, &info);
-        }
-    }
-    else
-    {
-        samples_to_write = MIN(info.bytes >> 1, samples_to_write) & ~1;
-    }
 
     if (samples_to_write < 0)
         return;
@@ -1325,22 +1349,7 @@ void S9xSamplesAvailable(void *data)
 
     S9xMixSamples(sound_buffer, samples_to_write);
 
-    bytes_written = 0;
-    bytes_to_write = samples_to_write * 2;
-
-    while (bytes_to_write > bytes_written)
-    {
-        int result;
-
-        result = write(so.sound_fd,
-                       ((char *)sound_buffer) + bytes_written,
-                       bytes_to_write - bytes_written);
-
-        if (result < 0)
-            break;
-
-        bytes_written += result;
-    }
+    s_AudioOutput->Write(sound_buffer, samples_to_write * 2);
 #endif
 }
 
@@ -1355,6 +1364,12 @@ bool8 S9xOpenSoundDevice (void)
 		fprintf(stderr, "ERROR: Failed to open sound device %s for writing.\n\t(Try loading snd-pcm-oss module?)\n", sound_device);
 		return (FALSE);
 	}
+
+	s_AudioOutput = new S9xAudioOutput(
+		so.sound_fd,
+		Settings.SoundPlaybackRate,
+		bool(unixSettings.ThreadSound)
+	);
 
 	J = log2(unixSettings.SoundFragmentSize) | (4 << 16);
 	if (ioctl(so.sound_fd, SNDCTL_DSP_SETFRAGMENT, &J) == -1)
@@ -1385,10 +1400,6 @@ bool8 S9xOpenSoundDevice (void)
 	return (TRUE);
 }
 
-#ifndef NOSOUND
-
-
-#endif
 
 void S9xExit (void)
 {
@@ -1400,6 +1411,10 @@ void S9xExit (void)
 #ifdef NETPLAY_SUPPORT
 	if (Settings.NetPlay)
 		S9xNPDisconnect();
+#endif
+
+#ifndef NOSOUND
+	delete s_AudioOutput;
 #endif
 
 	Memory.SaveSRAM(S9xGetFilename(".srm", SRAM_DIR));
@@ -1766,7 +1781,11 @@ int main (int argc, char **argv)
 
 	#ifdef JOYSTICK_SUPPORT
 		if (unixSettings.JoystickEnabled && (JoypadSkip++ & 1) == 0)
-			ReadJoysticks();
+		{
+			if (ReadJoysticks() == TRUE) {
+				S9xLatchJSEvent();
+			}
+		}
 	#endif
 
 		S9xProcessEvents(FALSE);

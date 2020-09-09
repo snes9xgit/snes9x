@@ -298,14 +298,6 @@
 		<p>
 			Called when Snes9x wants to know the directory <code>dirtype</code>.
 		</p>
-		<h3><code>const char *S9xChooseFilename (bool8 read_only)</code></h3>
-		<p>
-			If your port can match Snes9x's built-in <code>LoadFreezeFile</code>/<code>SaveFreezeFile</code> command (see <code>controls.cpp</code>), you may choose to use this function. Otherwise return <code>NULL</code>.
-		</p>
-		<h3><code>const char *S9xChooseMovieFilename (bool8 read_only)</code></h3>
-		<p>
-			If your port can match Snes9x's built-in <code>BeginRecordingMovie</code>/<code>LoadMovie</code> command (see <code>controls.cpp</code>), you may choose to use this function. Otherwise return <code>NULL</code>.
-		</p>
 		<h3><code>const char *S9xBasename (const char *path)</code></h3>
 		<p>
 			Called when Snes9x wants to know the name of the ROM image. Typically, extract the filename from <code>path</code> and return it.
@@ -317,10 +309,6 @@
 		<h3><code>void S9xToggleSoundChannel (int c)</code></h3>
 		<p>
 			If your port can match Snes9x's built-in <code>SoundChannelXXX</code> command (see <code>controls.cpp</code>), you may choose to use this function. Otherwise return <code>NULL</code>. Basically, turn on/off the sound channel <code>c</code> (0-7), and turn on all channels if <code>c</code> is 8.
-		</p>
-		<h3><code>void S9xSetPalette (void)</code></h3>
-		<p>
-			Called when the SNES color palette has changed. Use this function if your system needs to change its color palette to match the SNES's. Otherwise, leave it empty.
 		</p>
 		<h3><code>void S9xSyncSpeed (void)</code></h3>
 		<p>

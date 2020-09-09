@@ -1,4 +1,5 @@
 #include "libretro.h"
+#include "libretro_core_options.h"
 
 #include "snes9x.h"
 #include "memmap.h"
@@ -74,7 +75,10 @@ static snes_ntsc_t *snes_ntsc = NULL;
 static int blargg_filter = 0;
 static uint16 *ntsc_screen_buffer, *snes_ntsc_buffer;
 
-#define MAX_SNES_WIDTH_NTSC SNES_NTSC_OUT_WIDTH(256)
+const int MAX_SNES_WIDTH_NTSC = ((SNES_NTSC_OUT_WIDTH(256) + 3) / 4) * 4;
+
+static bool show_lightgun_settings = true;
+static bool show_advanced_av_settings = true;
 
 static void extract_basename(char *buf, const char *path, size_t size)
 {
@@ -152,6 +156,22 @@ static overscan_mode crop_overscan_mode = OVERSCAN_CROP_ON; // default to crop
 static aspect_mode aspect_ratio_mode = ASPECT_RATIO_4_3; // default to 4:3
 static bool rom_loaded = false;
 
+enum lightgun_mode
+{
+	SETTING_GUN_INPUT_LIGHTGUN,
+	SETTING_GUN_INPUT_POINTER
+};
+static lightgun_mode setting_gun_input = SETTING_GUN_INPUT_LIGHTGUN;
+
+// Touchscreen sensitivity vars
+static int pointer_pressed = 0;
+static const int POINTER_PRESSED_CYCLES = 4;
+static int pointer_cycles_after_released = 0;
+static int pointer_pressed_last_x = 0;
+static int pointer_pressed_last_y = 0;
+
+static bool setting_superscope_reverse_buttons = false;
+
 void retro_set_environment(retro_environment_t cb)
 {
     environ_cb = cb;
@@ -176,52 +196,7 @@ void retro_set_environment(retro_environment_t cb)
 
     cb(RETRO_ENVIRONMENT_SET_SUBSYSTEM_INFO,  (void*)subsystems);
 
-
-    struct retro_variable variables[] = {
-        // These variable names and possible values constitute an ABI with ZMZ (ZSNES Libretro player).
-        // Changing "Show layer 1" is fine, but don't change "layer_1"/etc or the possible values ("Yes|No").
-        // Adding more variables and rearranging them is safe.
-        { "snes9x_up_down_allowed", "Allow Opposing Directions; disabled|enabled" },
-        { "snes9x_overclock_superfx", "SuperFX Overclocking; 100%|150%|200%|250%|300%|350%|400%|450%|500%|50%|60%|70%|80%|90%" },
-        { "snes9x_overclock_cycles", "Reduce Slowdown (Hack, Unsafe); disabled|light|compatible|max" },
-        { "snes9x_reduce_sprite_flicker", "Reduce Flickering (Hack, Unsafe); disabled|enabled" },
-        { "snes9x_randomize_memory", "Randomize Memory (Unsafe); disabled|enabled" },
-        { "snes9x_hires_blend", "Hires Blending; disabled|merge|blur" },
-        { "snes9x_audio_interpolation", "Audio Interpolation; gaussian|cubic|sinc|none|linear" },
-        { "snes9x_blargg", "Blargg NTSC filter; disabled|monochrome|rf|composite|s-video|rgb" },
-        { "snes9x_layer_1", "Show layer 1; enabled|disabled" },
-        { "snes9x_layer_2", "Show layer 2; enabled|disabled" },
-        { "snes9x_layer_3", "Show layer 3; enabled|disabled" },
-        { "snes9x_layer_4", "Show layer 4; enabled|disabled" },
-        { "snes9x_layer_5", "Show sprite layer; enabled|disabled" },
-        { "snes9x_gfx_clip", "Enable graphic clip windows; enabled|disabled" },
-        { "snes9x_gfx_transp", "Enable transparency effects; enabled|disabled" },
-        { "snes9x_gfx_hires", "Enable hires mode; enabled|disabled" },
-        { "snes9x_sndchan_1", "Enable sound channel 1; enabled|disabled" },
-        { "snes9x_sndchan_2", "Enable sound channel 2; enabled|disabled" },
-        { "snes9x_sndchan_3", "Enable sound channel 3; enabled|disabled" },
-        { "snes9x_sndchan_4", "Enable sound channel 4; enabled|disabled" },
-        { "snes9x_sndchan_5", "Enable sound channel 5; enabled|disabled" },
-        { "snes9x_sndchan_6", "Enable sound channel 6; enabled|disabled" },
-        { "snes9x_sndchan_7", "Enable sound channel 7; enabled|disabled" },
-        { "snes9x_sndchan_8", "Enable sound channel 8; enabled|disabled" },
-        { "snes9x_overscan", "Crop overscan; enabled|disabled|auto" },
-        { "snes9x_aspect", "Preferred aspect ratio; 4:3|uncorrected|auto|ntsc|pal" },
-        { "snes9x_region", "Console region (Reload core); auto|ntsc|pal" },
-        { "snes9x_superscope_crosshair", "Super Scope crosshair; 2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|0|1" },
-        { "snes9x_superscope_color", "Super Scope color; White|White (blend)|Red|Red (blend)|Orange|Orange (blend)|Yellow|Yellow (blend)|Green|Green (blend)|Cyan|Cyan (blend)|Sky|Sky (blend)|Blue|Blue (blend)|Violet|Violet (blend)|Pink|Pink (blend)|Purple|Purple (blend)|Black|Black (blend)|25% Grey|25% Grey (blend)|50% Grey|50% Grey (blend)|75% Grey|75% Grey (blend)" },
-        { "snes9x_justifier1_crosshair", "Justifier 1 crosshair; 4|5|6|7|8|9|10|11|12|13|14|15|16|0|1|2|3" },
-        { "snes9x_justifier1_color", "Justifier 1 color; Blue|Blue (blend)|Violet|Violet (blend)|Pink|Pink (blend)|Purple|Purple (blend)|Black|Black (blend)|25% Grey|25% Grey (blend)|50% Grey|50% Grey (blend)|75% Grey|75% Grey (blend)|White|White (blend)|Red|Red (blend)|Orange|Orange (blend)|Yellow|Yellow (blend)|Green|Green (blend)|Cyan|Cyan (blend)|Sky|Sky (blend)" },
-        { "snes9x_justifier2_crosshair", "Justifier 2 crosshair; 4|5|6|7|8|9|10|11|12|13|14|15|16|0|1|2|3" },
-        { "snes9x_justifier2_color", "Justifier 2 color; Pink|Pink (blend)|Purple|Purple (blend)|Black|Black (blend)|25% Grey|25% Grey (blend)|50% Grey|50% Grey (blend)|75% Grey|75% Grey (blend)|White|White (blend)|Red|Red (blend)|Orange|Orange (blend)|Yellow|Yellow (blend)|Green|Green (blend)|Cyan|Cyan (blend)|Sky|Sky (blend)|Blue|Blue (blend)|Violet|Violet (blend)" },
-        { "snes9x_rifle_crosshair", "M.A.C.S. rifle crosshair; 2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|0|1" },
-        { "snes9x_rifle_color", "M.A.C.S. rifle color; White|White (blend)|Red|Red (blend)|Orange|Orange (blend)|Yellow|Yellow (blend)|Green|Green (blend)|Cyan|Cyan (blend)|Sky|Sky (blend)|Blue|Blue (blend)|Violet|Violet (blend)|Pink|Pink (blend)|Purple|Purple (blend)|Black|Black (blend)|25% Grey|25% Grey (blend)|50% Grey|50% Grey (blend)|75% Grey|75% Grey (blend)" },
-        { "snes9x_block_invalid_vram_access", "Block Invalid VRAM Access; enabled|disabled" },
-        { "snes9x_echo_buffer_hack", "Echo Buffer Hack (Unsafe, only enable for old addmusic hacks); disabled|enabled"},
-        { NULL, NULL },
-    };
-
-    environ_cb(RETRO_ENVIRONMENT_SET_VARIABLES, variables);
+    libretro_set_core_options(environ_cb);
 
     static const struct retro_controller_description port_1[] = {
         { "None", RETRO_DEVICE_NONE },
@@ -518,6 +493,22 @@ static void update_variables(void)
         }
     }
 
+    var.key="snes9x_lightgun_mode";
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
+    {
+      if ( !strcmp(var.value, "Touchscreen") ) {
+         setting_gun_input = SETTING_GUN_INPUT_POINTER;
+      } else {
+         setting_gun_input = SETTING_GUN_INPUT_LIGHTGUN;
+      }
+    }
+
+    var.key="snes9x_superscope_reverse_buttons";
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
+    {
+        setting_superscope_reverse_buttons = strcmp(var.value, "enabled") == 0;
+    }
+
     var.key="snes9x_superscope_crosshair";
 
     if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
@@ -616,10 +607,10 @@ static void update_variables(void)
 
     var.key = "snes9x_echo_buffer_hack";
     var.value = NULL;
-    
+
     if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var))
         Settings.SeparateEchoBuffer = !strcmp(var.value, "disabled") ? false : true;
-    else 
+    else
         Settings.SeparateEchoBuffer = false;
 
     var.key = "snes9x_blargg";
@@ -670,6 +661,89 @@ static void update_variables(void)
 
             if (old_filter != blargg_filter)
                 snes_ntsc_init( snes_ntsc, &setup );
+        }
+    }
+
+    /* Show/hide core options */
+
+    var.key = "snes9x_show_lightgun_settings";
+    var.value = NULL;
+
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+    {
+        bool show_lightgun_settings_prev = show_lightgun_settings;
+
+        show_lightgun_settings = true;
+        if (strcmp(var.value, "disabled") == 0)
+            show_lightgun_settings = false;
+
+        if (show_lightgun_settings != show_lightgun_settings_prev)
+        {
+            size_t i;
+            struct retro_core_option_display option_display;
+            char lightgun_keys[10][64] = {
+                "snes9x_lightgun_mode",
+                "snes9x_superscope_reverse_buttons",
+                "snes9x_superscope_crosshair",
+                "snes9x_superscope_color",
+                "snes9x_justifier1_crosshair",
+                "snes9x_justifier1_color",
+                "snes9x_justifier2_crosshair",
+                "snes9x_justifier2_color",
+                "snes9x_rifle_crosshair",
+                "snes9x_rifle_color"
+            };
+
+            option_display.visible = show_lightgun_settings;
+
+            for (i = 0; i < 10; i++)
+            {
+                option_display.key = lightgun_keys[i];
+                environ_cb(RETRO_ENVIRONMENT_SET_CORE_OPTIONS_DISPLAY, &option_display);
+            }
+        }
+    }
+
+    var.key = "snes9x_show_advanced_av_settings";
+    var.value = NULL;
+
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+    {
+        bool show_advanced_av_settings_prev = show_advanced_av_settings;
+
+        show_advanced_av_settings = true;
+        if (strcmp(var.value, "disabled") == 0)
+            show_advanced_av_settings = false;
+
+        if (show_advanced_av_settings != show_advanced_av_settings_prev)
+        {
+            size_t i;
+            struct retro_core_option_display option_display;
+            char av_keys[15][32] = {
+                "snes9x_layer_1",
+                "snes9x_layer_2",
+                "snes9x_layer_3",
+                "snes9x_layer_4",
+                "snes9x_layer_5",
+                "snes9x_gfx_clip",
+                "snes9x_gfx_transp",
+                "snes9x_sndchan_1",
+                "snes9x_sndchan_2",
+                "snes9x_sndchan_3",
+                "snes9x_sndchan_4",
+                "snes9x_sndchan_5",
+                "snes9x_sndchan_6",
+                "snes9x_sndchan_7",
+                "snes9x_sndchan_8"
+            };
+
+            option_display.visible = show_advanced_av_settings;
+
+            for (i = 0; i < 15; i++)
+            {
+                option_display.key = av_keys[i];
+                environ_cb(RETRO_ENVIRONMENT_SET_CORE_OPTIONS_DISPLAY, &option_display);
+            }
         }
     }
 }
@@ -1059,7 +1133,7 @@ bool retro_load_game(const struct retro_game_info *game)
     if (rom_loaded)
     {
         /* If we're in RGB565 format, switch frontend to that */
-        if (RED_SHIFT_BITS == 11) 
+        if (RED_SHIFT_BITS == 11)
         {
             enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
             if (!environ_cb || !environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
@@ -1354,6 +1428,11 @@ static int scope_buttons[] =
 };
 static int scope_button_count = sizeof( scope_buttons ) / sizeof( int );
 
+#define SUPER_SCOPE_TRIGGER 2
+#define SUPER_SCOPE_CURSOR 3
+#define SUPER_SCOPE_TURBO 4
+#define SUPER_SCOPE_START 5
+
 #define JUSTIFIER_TRIGGER 2
 #define JUSTIFIER_START 3
 #define JUSTIFIER_OFFSCREEN 4
@@ -1442,8 +1521,8 @@ static void input_report_gun_position( unsigned port, int s9xinput )
 {
 	int x, y;
 
-	x = input_state_cb(port, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_SCREEN_X);
-	y = input_state_cb(port, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_SCREEN_Y);
+    x = input_state_cb(port, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_SCREEN_X);
+    y = input_state_cb(port, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_SCREEN_Y);
 
 	/*scale & clamp*/
 	x = ( ( x + 0x7FFF ) * g_screen_gun_width ) / 0xFFFF;
@@ -1460,6 +1539,144 @@ static void input_report_gun_position( unsigned port, int s9xinput )
 		y = g_screen_gun_height - 1;
 
 	S9xReportPointer(s9xinput, (int16_t)x, (int16_t)y);
+}
+
+static void input_handle_pointer_lightgun( unsigned port, unsigned gun_device, int s9xinput )
+{
+    int x, y;
+    x = input_state_cb(port, RETRO_DEVICE_POINTER, 0, RETRO_DEVICE_ID_POINTER_X);
+    y = input_state_cb(port, RETRO_DEVICE_POINTER, 0, RETRO_DEVICE_ID_POINTER_Y);
+
+	/*scale & clamp*/
+	x = ( ( x + 0x7FFF ) * g_screen_gun_width ) / 0xFFFF;
+	if ( x < 0 )
+		x = 0;
+	else if ( x >= g_screen_gun_width )
+		x = g_screen_gun_width - 1;
+
+	/*scale & clamp*/
+	y = ( ( y + 0x7FFF ) * g_screen_gun_height ) / 0xFFFF;
+	if ( y < 0 )
+		y = 0;
+	else if ( y >= g_screen_gun_height )
+		y = g_screen_gun_height - 1;
+
+    // Touch sensitivity: Keep the gun position held for a fixed number of cycles after touch is released
+    // because a very light touch can result in a misfire
+    if ( pointer_cycles_after_released > 0 && pointer_cycles_after_released < POINTER_PRESSED_CYCLES ) {
+        pointer_cycles_after_released++;
+        x = pointer_pressed_last_x;
+        y = pointer_pressed_last_y;
+        S9xReportPointer(s9xinput, (int16_t)x, (int16_t)y);
+        return;
+    }
+
+    if ( input_state_cb( port, RETRO_DEVICE_POINTER, 0, RETRO_DEVICE_ID_POINTER_PRESSED ) )
+    {
+        pointer_pressed = 1;
+        pointer_cycles_after_released = 0;
+        pointer_pressed_last_x = x;
+        pointer_pressed_last_y = y;
+    } else if ( pointer_pressed ) {
+        pointer_cycles_after_released++;
+        pointer_pressed = 0;
+        x = pointer_pressed_last_x;
+        y = pointer_pressed_last_y;
+        // unpress the primary trigger
+        switch (gun_device)
+        {
+        case RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE:
+            S9xReportButton(MAKE_BUTTON(PAD_2, setting_superscope_reverse_buttons ? SUPER_SCOPE_CURSOR : SUPER_SCOPE_TRIGGER), false);
+            break;
+        case RETRO_DEVICE_LIGHTGUN_JUSTIFIER:
+            S9xReportButton(MAKE_BUTTON(PAD_2, JUSTIFIER_TRIGGER), false);
+            break;
+        case RETRO_DEVICE_LIGHTGUN_MACS_RIFLE:
+            S9xReportButton(MAKE_BUTTON(PAD_2, MACS_RIFLE_TRIGGER), false);
+            break;
+        default:
+            break;
+        }
+        return;
+    }
+    S9xReportPointer(s9xinput, (int16_t)x, (int16_t)y);
+
+    // triggers
+    switch (gun_device)
+    {
+        case RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE:
+        {
+            bool start_pressed = false;
+            bool trigger_pressed = false;
+            bool turbo_pressed = false;
+            bool cursor_pressed = false;
+            if ( input_state_cb(port, RETRO_DEVICE_POINTER, 0, RETRO_DEVICE_ID_POINTER_PRESSED) ) {
+                int touch_count = input_state_cb(port, RETRO_DEVICE_POINTER, 0, RETRO_DEVICE_ID_POINTER_COUNT);
+                if ( touch_count == 4 ) {
+                    // start button
+                    start_pressed = true;
+                } else if ( touch_count == 3 ) {
+                    turbo_pressed = true;
+                } else if ( touch_count == 2 ) {
+                    if ( setting_superscope_reverse_buttons )
+                    {
+                        trigger_pressed = true;
+                    } else
+                    {
+                        cursor_pressed = true;
+                    }
+                } else {
+                    if ( setting_superscope_reverse_buttons )
+                    {
+                        cursor_pressed = true;
+                    } else
+                    {
+                        trigger_pressed = true;
+                    }
+                }
+            }
+            S9xReportButton(MAKE_BUTTON(PAD_2, SUPER_SCOPE_START), start_pressed);
+            S9xReportButton(MAKE_BUTTON(PAD_2, SUPER_SCOPE_TRIGGER), trigger_pressed);
+            S9xReportButton(MAKE_BUTTON(PAD_2, SUPER_SCOPE_CURSOR), cursor_pressed);
+            bool old_turbo = turbo_pressed;
+            turbo_pressed = turbo_pressed && !snes_superscope_turbo_latch;
+            snes_superscope_turbo_latch = old_turbo;
+            S9xReportButton(MAKE_BUTTON(PAD_2, SUPER_SCOPE_TURBO), turbo_pressed);
+            break;
+        }
+
+        case RETRO_DEVICE_LIGHTGUN_JUSTIFIER:
+        {
+            bool trigger_pressed = false;
+            bool start_pressed = false;
+            bool offscreen = false;
+            if ( input_state_cb(port, RETRO_DEVICE_POINTER, 0, RETRO_DEVICE_ID_POINTER_PRESSED) ) {
+                int touch_count = input_state_cb(port, RETRO_DEVICE_POINTER, 0, RETRO_DEVICE_ID_POINTER_COUNT);
+                if ( touch_count == 3 ) {
+                    start_pressed = true;
+                } else if ( touch_count == 2 ) {
+                    offscreen = true;
+                } else {
+                    trigger_pressed = true;
+                }
+            }
+            S9xReportButton(MAKE_BUTTON(PAD_2, JUSTIFIER_TRIGGER), trigger_pressed || offscreen);
+            S9xReportButton(MAKE_BUTTON(PAD_2, JUSTIFIER_START), start_pressed ? 1 : 0 );
+            S9xReportButton(MAKE_BUTTON(PAD_2, JUSTIFIER_OFFSCREEN), offscreen);
+            break;
+        }
+        case RETRO_DEVICE_LIGHTGUN_MACS_RIFLE:
+        {
+            int pressed = input_state_cb(port, RETRO_DEVICE_POINTER, 0, RETRO_DEVICE_ID_POINTER_PRESSED);
+            S9xReportButton(MAKE_BUTTON(PAD_2, MACS_RIFLE_TRIGGER),pressed);
+            break;
+        }
+        case RETRO_DEVICE_NONE:
+            break;
+        default:
+            if (log_cb)
+                log_cb(RETRO_LOG_ERROR, "Unknown device for touchscreen lightgun...\n");
+    }
 }
 
 static void report_buttons()
@@ -1494,81 +1711,101 @@ static void report_buttons()
 
             case RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE:
 
-				input_report_gun_position( port, BTN_POINTER );
+                if ( setting_gun_input == SETTING_GUN_INPUT_POINTER ) {
+                    input_handle_pointer_lightgun(port, RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE, BTN_POINTER);
+                } else {
+                    // Lightgun is default
+                    input_report_gun_position( port, BTN_POINTER );
 
-				for (int i = 0; i < scope_button_count; i++)
-				{
-					int id = scope_buttons[i];
-					bool btn = input_state_cb( port, RETRO_DEVICE_LIGHTGUN, 0, id )?true:false;
+                    for (int i = 0; i < scope_button_count; i++)
+                    {
+                        int id = scope_buttons[i];
+                        bool btn = input_state_cb( port, RETRO_DEVICE_LIGHTGUN, 0, id )?true:false;
 
-					/* RETRO_DEVICE_ID_LIGHTGUN_TURBO special case - core needs a rising-edge trigger */
-					if ( id == RETRO_DEVICE_ID_LIGHTGUN_TURBO )
-					{
-						bool old = btn;
-						btn = btn && !snes_superscope_turbo_latch;
-						snes_superscope_turbo_latch = old;
-					}
-
-					S9xReportButton(MAKE_BUTTON(PAD_2, i+2), btn);
-				}
+                        /* RETRO_DEVICE_ID_LIGHTGUN_TURBO special case - core needs a rising-edge trigger */
+                        if ( id == RETRO_DEVICE_ID_LIGHTGUN_TURBO )
+                        {
+                            bool old = btn;
+                            btn = btn && !snes_superscope_turbo_latch;
+                            snes_superscope_turbo_latch = old;
+                        }
+                        int super_scope_button_id = i+2;
+                        if ( setting_superscope_reverse_buttons )
+                        {
+                            if ( super_scope_button_id == SUPER_SCOPE_TRIGGER ) {
+                                super_scope_button_id = SUPER_SCOPE_CURSOR;
+                            } else if ( super_scope_button_id == SUPER_SCOPE_CURSOR ) {
+                                super_scope_button_id = SUPER_SCOPE_TRIGGER;
+                            }
+                        }
+                        S9xReportButton(MAKE_BUTTON(PAD_2, super_scope_button_id), btn);
+                    }
+                }
                 break;
 
             case RETRO_DEVICE_LIGHTGUN_JUSTIFIER:
 
-				input_report_gun_position( port, BTN_POINTER );
+                if ( setting_gun_input == SETTING_GUN_INPUT_POINTER ) {
+                    input_handle_pointer_lightgun(port, RETRO_DEVICE_LIGHTGUN_JUSTIFIER, BTN_POINTER);
+                } else {
+                    // Lightgun is default
+                    input_report_gun_position( port, BTN_POINTER );
 
-				{
-					/* Special Reload Button */
-					int btn_offscreen_shot = input_state_cb( port, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_RELOAD );
+                    {
+                        /* Special Reload Button */
+                        int btn_offscreen_shot = input_state_cb( port, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_RELOAD );
 
-					/* Trigger ? */
-					int btn_trigger = input_state_cb( port, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_TRIGGER );
-					S9xReportButton(MAKE_BUTTON(PAD_2, JUSTIFIER_TRIGGER), btn_trigger || btn_offscreen_shot);
+                        /* Trigger ? */
+                        int btn_trigger = input_state_cb( port, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_TRIGGER );
+                        S9xReportButton(MAKE_BUTTON(PAD_2, JUSTIFIER_TRIGGER), btn_trigger || btn_offscreen_shot);
 
-					/* Start Button ? */
-					int btn_start = input_state_cb( port, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_START );
-					S9xReportButton(MAKE_BUTTON(PAD_2, JUSTIFIER_START), btn_start ? 1 : 0 );
+                        /* Start Button ? */
+                        int btn_start = input_state_cb( port, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_START );
+                        S9xReportButton(MAKE_BUTTON(PAD_2, JUSTIFIER_START), btn_start ? 1 : 0 );
 
-					/* Aiming off-screen ? */
-					int btn_offscreen = input_state_cb( port, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_IS_OFFSCREEN );
-					S9xReportButton(MAKE_BUTTON(PAD_2, JUSTIFIER_OFFSCREEN), btn_offscreen || btn_offscreen_shot);
-				}
+                        /* Aiming off-screen ? */
+                        int btn_offscreen = input_state_cb( port, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_IS_OFFSCREEN );
+                        S9xReportButton(MAKE_BUTTON(PAD_2, JUSTIFIER_OFFSCREEN), btn_offscreen || btn_offscreen_shot);
+                    }
 
-				/* Second Gun? */
-				if ( snes_devices[port+1] == RETRO_DEVICE_LIGHTGUN_JUSTIFIER_2 )
-				{
-					int second = port+1;
+                    /* Second Gun? */
+                    if ( snes_devices[port+1] == RETRO_DEVICE_LIGHTGUN_JUSTIFIER_2 )
+                    {
+                        int second = port+1;
 
-					input_report_gun_position( second, BTN_POINTER2 );
+                        input_report_gun_position( second, BTN_POINTER2 );
 
-					/* Special Reload Button */
-					int btn_offscreen_shot = input_state_cb( second, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_RELOAD );
+                        /* Special Reload Button */
+                        int btn_offscreen_shot = input_state_cb( second, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_RELOAD );
 
-					/* Trigger ? */
-					int btn_trigger = input_state_cb( second, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_TRIGGER );
-					S9xReportButton(MAKE_BUTTON(PAD_3, JUSTIFIER_TRIGGER), btn_trigger || btn_offscreen_shot);
+                        /* Trigger ? */
+                        int btn_trigger = input_state_cb( second, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_TRIGGER );
+                        S9xReportButton(MAKE_BUTTON(PAD_3, JUSTIFIER_TRIGGER), btn_trigger || btn_offscreen_shot);
 
-					/* Start Button ? */
-					int btn_start = input_state_cb( second, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_START );
-					S9xReportButton(MAKE_BUTTON(PAD_3, JUSTIFIER_START), btn_start ? 1 : 0 );
+                        /* Start Button ? */
+                        int btn_start = input_state_cb( second, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_START );
+                        S9xReportButton(MAKE_BUTTON(PAD_3, JUSTIFIER_START), btn_start ? 1 : 0 );
 
-					/* Aiming off-screen ? */
-					int btn_offscreen = input_state_cb( second, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_IS_OFFSCREEN );
-					S9xReportButton(MAKE_BUTTON(PAD_3, JUSTIFIER_OFFSCREEN), btn_offscreen || btn_offscreen_shot);
-				}
-
+                        /* Aiming off-screen ? */
+                        int btn_offscreen = input_state_cb( second, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_IS_OFFSCREEN );
+                        S9xReportButton(MAKE_BUTTON(PAD_3, JUSTIFIER_OFFSCREEN), btn_offscreen || btn_offscreen_shot);
+                    }
+                }
                 break;
 
             case RETRO_DEVICE_LIGHTGUN_MACS_RIFLE:
 
- 				input_report_gun_position( port, BTN_POINTER );
+                if ( setting_gun_input == SETTING_GUN_INPUT_POINTER ) {
+                    input_handle_pointer_lightgun(port, RETRO_DEVICE_LIGHTGUN_MACS_RIFLE, BTN_POINTER);
+                } else {
+                    input_report_gun_position( port, BTN_POINTER );
 
-				{
-					/* Trigger ? */
-					int btn_trigger = input_state_cb( port, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_TRIGGER );
-					S9xReportButton(MAKE_BUTTON(PAD_2, MACS_RIFLE_TRIGGER), btn_trigger);
-				}
-
+                    {
+                        /* Trigger ? */
+                        int btn_trigger = input_state_cb( port, RETRO_DEVICE_LIGHTGUN, 0, RETRO_DEVICE_ID_LIGHTGUN_TRIGGER );
+                        S9xReportButton(MAKE_BUTTON(PAD_2, MACS_RIFLE_TRIGGER), btn_trigger);
+                    }
+                }
                 break;
 
             case RETRO_DEVICE_NONE:
@@ -1736,6 +1973,7 @@ bool retro_unserialize(const void* data, size_t size)
 
 bool8 S9xDeinitUpdate(int width, int height)
 {
+    static int burst_phase = 0;
     int overscan_offset = 0;
 
     if (crop_overscan_mode == OVERSCAN_CROP_ON)
@@ -1774,14 +2012,16 @@ bool8 S9xDeinitUpdate(int width, int height)
     }
 
 
-    if(blargg_filter)
+    if (blargg_filter)
     {
-        if(width == 512)
-            snes_ntsc_blit_hires(snes_ntsc, GFX.Screen, GFX.Pitch/2, 0, width, height, snes_ntsc_buffer, GFX.Pitch);
-        else
-            snes_ntsc_blit(snes_ntsc, GFX.Screen, GFX.Pitch/2, 0, width, height, snes_ntsc_buffer, GFX.Pitch);
+        burst_phase = (burst_phase + 1) % 3;
 
-        video_cb(snes_ntsc_buffer + ((int)(GFX.Pitch >> 1) * overscan_offset), MAX_SNES_WIDTH_NTSC, height, GFX.Pitch);
+        if (width == 512)
+            snes_ntsc_blit_hires(snes_ntsc, GFX.Screen, GFX.Pitch / 2, burst_phase, width, height, snes_ntsc_buffer, GFX.Pitch);
+        else
+            snes_ntsc_blit(snes_ntsc, GFX.Screen, GFX.Pitch / 2, burst_phase, width, height, snes_ntsc_buffer, GFX.Pitch);
+
+        video_cb(snes_ntsc_buffer + ((int)(GFX.Pitch >> 1) * overscan_offset), SNES_NTSC_OUT_WIDTH(width), height, GFX.Pitch);
     }
     else if (width == MAX_SNES_WIDTH && hires_blend)
     {
@@ -1885,7 +2125,6 @@ const char* S9xGetDirectory(s9x_getdirtype type)
     return "";
 }
 void S9xInitInputDevices() {}
-const char* S9xChooseFilename(unsigned char) { return ""; }
 void S9xHandlePortCommand(s9xcommand_t, short, short) {}
 bool S9xPollButton(unsigned int, bool*) { return false; }
 void S9xToggleSoundChannel(int) {}
@@ -1895,12 +2134,10 @@ bool8 S9xInitUpdate() { return TRUE; }
 void S9xExtraUsage() {}
 bool8 S9xOpenSoundDevice() { return TRUE; }
 bool S9xPollAxis(unsigned int, short*) { return FALSE; }
-void S9xSetPalette() {}
 void S9xParseArg(char**, int&, int) {}
 void S9xExit() {}
 bool S9xPollPointer(unsigned int, short*, short*) { return false; }
 
-const char *S9xChooseMovieFilename(unsigned char) { return NULL; }
 void S9xMessage(int type, int, const char* s)
 {
     if (!log_cb) return;
@@ -1953,66 +2190,3 @@ void S9xAutoSaveSRAM()
 {
     return;
 }
-
-#ifndef __WIN32__
-// S9x weirdness.
-void _splitpath (const char *path, char *drive, char *dir, char *fname, char *ext)
-{
-    *drive = 0;
-
-    const char	*slash = strrchr(path, SLASH_CHAR),
-            *dot	= strrchr(path, '.');
-
-    if (dot && slash && dot < slash)
-        dot = NULL;
-
-    if (!slash)
-    {
-        *dir = 0;
-
-        strcpy(fname, path);
-
-        if (dot)
-        {
-            fname[dot - path] = 0;
-            strcpy(ext, dot + 1);
-        }
-        else
-            *ext = 0;
-    }
-    else
-    {
-        strcpy(dir, path);
-        dir[slash - path] = 0;
-
-        strcpy(fname, slash + 1);
-
-        if (dot)
-        {
-            fname[dot - slash - 1] = 0;
-            strcpy(ext, dot + 1);
-        }
-        else
-            *ext = 0;
-    }
-}
-
-void _makepath (char *path, const char *, const char *dir, const char *fname, const char *ext)
-{
-    if (dir && *dir)
-    {
-        strcpy(path, dir);
-        strcat(path, SLASH_STR);
-    }
-    else
-        *path = 0;
-
-    strcat(path, fname);
-
-    if (ext && *ext)
-    {
-        strcat(path, ".");
-        strcat(path, ext);
-    }
-}
-#endif // __WIN32__

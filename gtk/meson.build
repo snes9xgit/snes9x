@@ -1,13 +1,15 @@
 project('snes9x-gtk',
         ['c', 'cpp'],
         version: '1.60',
-        default_options: ['cpp_std=c++11'])
+        meson_version: '>=0.46.0',
+        default_options: ['cpp_std=c++17'])
 
 args = ['-DSNES9X_GTK', '-DUNZIP_SUPPORT', '-DNETPLAY_SUPPORT', '-DJMA_SUPPORT', '-Wall', '-W', '-Wno-unused-parameter']
 srcs = []
 deps = []
 includes = ['../apu/bapu', '../', 'src']
 warns = []
+libs = []
 
 prefix = get_option('prefix')
 localedir = join_paths(prefix, get_option('localedir'))
@@ -23,12 +25,9 @@ args += [ '-DDATADIR="' + appdatadir + '"', '-DSNES9XLOCALEDIR="' + localedir + 
 subdir('data')
 subdir('po')
 
-glib_dep = dependency('glib-2.0', version: '> 2.28')
-gthread_dep = dependency('gthread-2.0', version: '>= 2.6')
-gobject_dep = dependency('gobject-2.0', version: '>= 2.6')
 sdl2_dep = dependency('sdl2')
 
-deps += [ glib_dep, gthread_dep, gobject_dep, sdl2_dep ]
+deps += sdl2_dep
 
 c_compiler = meson.get_compiler('c')
 
@@ -36,17 +35,11 @@ if c_compiler.version().version_compare('>=7.0.0') and c_compiler.get_id() == 'g
   args += '-Wno-format-truncation'
 endif
 
-if get_option('gtk3') and not get_option('gtk2')
-  message('Building with GTK+-3.0')
-  gtk_dep = dependency('gtk+-3.0', version: '>= 3.22')
-  gtk_ver = 3
-else
-  message('Building with GTK+-2.0')
-  gtk_dep = dependency('gtk+-2.0', version: '>= 2.16')
-  gtk_ver = 2
-endif
-
+gtk_dep = dependency('gtkmm-3.0', version: '>= 3.22')
 deps += gtk_dep
+
+gthread_dep = dependency('gthread-2.0')
+deps += gthread_dep
 
 x11_dep = c_compiler.find_library('X11')
 xext_dep = c_compiler.find_library('Xext')
@@ -62,7 +55,7 @@ opengl = get_option('opengl')
 if opengl
   opengl_dep = dependency('epoxy', required: false)
 
-  if opengl_dep.found() 
+  if opengl_dep.found()
     args += '-DUSE_OPENGL'
     srcs += [ 'src/gtk_display_driver_opengl.cpp',
               'src/gtk_display_driver_opengl.h',
@@ -79,53 +72,101 @@ if opengl
 endif
 
 slang = get_option('slang')
-
 if slang and opengl
-  spirv_cross_hpp = join_paths(meson.source_root(), '../shaders/SPIRV-Cross/spirv_cross.hpp')
-  if not meson.get_compiler('cpp').compiles('#include "' + spirv_cross_hpp + '"')
-    slang = false
-    warns += 'Slang support needs the SPIRV-Cross directory in ../shaders'
-    warns += 'It can be downloaded with:'
-    warns += '  git submodule init ../shaders/SPIRV-Cross'
-    warns += '  git submodule update ../shaders/SPIRV-Cross'
-  endif
-endif
+  glslang_args = ['-w', '-fno-exceptions', '-DNV_EXTENSIONS', '-DAMD_EXTENSIONS', '-DGLSLANG_OSINCLUDE_UNIX', '-DENABLE_OPT=0']
 
-if slang and opengl
-  glslang_dep = c_compiler.find_library('glslang', required: false)
-  spirv_dep = c_compiler.find_library('SPIRV', required: false)
-  osdependent_dep = c_compiler.find_library('OSDependent', required: false)
-  ogl_compiler_dep = c_compiler.find_library('OGLCompiler', required: false)
-  spv_remapper_dep = c_compiler.find_library('SPVRemapper', required: false)
-  resource_limits_dep = c_compiler.find_library('glslang-default-resource-limits', required:false)
+  OSDependent_src = ['../shaders/glslang/glslang/OSDependent/Unix/ossource.cpp']
+  OSDependent_lib = static_library('OSDependent',
+                                   OSDependent_src,
+                                   include_directories: include_directories('../shaders/glslang'),
+                                   cpp_args: glslang_args)
+  libs += OSDependent_lib
 
-  if glslang_dep.found() and spirv_dep.found() and osdependent_dep.found() and ogl_compiler_dep.found() and spv_remapper_dep.found() and resource_limits_dep.found()
-    deps += [glslang_dep, spirv_dep, osdependent_dep, ogl_compiler_dep, spv_remapper_dep, resource_limits_dep]
+  glslang_src = [
+    '../shaders/glslang/glslang/MachineIndependent/glslang_tab.cpp',
+    '../shaders/glslang/glslang/MachineIndependent/attribute.cpp',
+    '../shaders/glslang/glslang/MachineIndependent/Constant.cpp',
+    '../shaders/glslang/glslang/MachineIndependent/iomapper.cpp',
+    '../shaders/glslang/glslang/MachineIndependent/InfoSink.cpp',
+    '../shaders/glslang/glslang/MachineIndependent/Initialize.cpp',
+    '../shaders/glslang/glslang/MachineIndependent/IntermTraverse.cpp',
+    '../shaders/glslang/glslang/MachineIndependent/Intermediate.cpp',
+    '../shaders/glslang/glslang/MachineIndependent/ParseContextBase.cpp',
+    '../shaders/glslang/glslang/MachineIndependent/ParseHelper.cpp',
+    '../shaders/glslang/glslang/MachineIndependent/PoolAlloc.cpp',
+    '../shaders/glslang/glslang/MachineIndependent/RemoveTree.cpp',
+    '../shaders/glslang/glslang/MachineIndependent/Scan.cpp',
+    '../shaders/glslang/glslang/MachineIndependent/ShaderLang.cpp',
+    '../shaders/glslang/glslang/MachineIndependent/SymbolTable.cpp',
+    '../shaders/glslang/glslang/MachineIndependent/Versions.cpp',
+    '../shaders/glslang/glslang/MachineIndependent/intermOut.cpp',
+    '../shaders/glslang/glslang/MachineIndependent/limits.cpp',
+    '../shaders/glslang/glslang/MachineIndependent/linkValidate.cpp',
+    '../shaders/glslang/glslang/MachineIndependent/parseConst.cpp',
+    '../shaders/glslang/glslang/MachineIndependent/reflection.cpp',
+    '../shaders/glslang/glslang/MachineIndependent/preprocessor/Pp.cpp',
+    '../shaders/glslang/glslang/MachineIndependent/preprocessor/PpAtom.cpp',
+    '../shaders/glslang/glslang/MachineIndependent/preprocessor/PpContext.cpp',
+    '../shaders/glslang/glslang/MachineIndependent/preprocessor/PpScanner.cpp',
+    '../shaders/glslang/glslang/MachineIndependent/preprocessor/PpTokens.cpp',
+    '../shaders/glslang/glslang/MachineIndependent/propagateNoContraction.cpp',
+    '../shaders/glslang/glslang/GenericCodeGen/CodeGen.cpp',
+    '../shaders/glslang/glslang/GenericCodeGen/Link.cpp',
+    '../shaders/glslang/StandAlone/ResourceLimits.cpp'
+  ]
 
-    args += ['-DUSE_SLANG', '-DSPIRV_CROSS_EXCEPTIONS_TO_ASSERTIONS']
-    srcs += ['../shaders/slang.cpp']
-    srcs += ['../shaders/SPIRV-Cross/spirv_cfg.cpp',
-             '../shaders/SPIRV-Cross/spirv_cfg.hpp',
-             '../shaders/SPIRV-Cross/spirv_common.hpp',
-             '../shaders/SPIRV-Cross/spirv_cross.cpp',
-             '../shaders/SPIRV-Cross/spirv_cross.hpp',
-             '../shaders/SPIRV-Cross/spirv_glsl.cpp',
-             '../shaders/SPIRV-Cross/spirv_glsl.hpp',
-             '../shaders/SPIRV-Cross/spirv_cross_parsed_ir.cpp',
-             '../shaders/SPIRV-Cross/spirv_cross_parsed_ir.hpp',
-             '../shaders/SPIRV-Cross/spirv_parser.cpp',
-             '../shaders/SPIRV-Cross/spirv_parser.hpp',
-             '../shaders/SPIRV-Cross/spirv.hpp']
-  else
-    slang = false
-    warns += 'glslang libraries not found. Slang shaders will be disabled.'
-  endif
+  glslang_lib = static_library('glslang',
+                               glslang_src,
+                               include_directories: include_directories('../shaders/glslang'),
+                               cpp_args: glslang_args)
+  libs += glslang_lib
+
+  OGLCompilersDLL_src = ['../shaders/glslang/OGLCompilersDLL/InitializeDll.cpp']
+  OGLCompilersDLL_lib = static_library('OGLCompilersDLL',
+                                       OGLCompilersDLL_src,
+                                       include_directories: include_directories('../shaders/glslang'),
+                                       cpp_args: glslang_args)
+  libs += OGLCompilersDLL_lib
+
+  SPIRV_src = [
+    '../shaders/glslang/SPIRV/GlslangToSpv.cpp',
+    '../shaders/glslang/SPIRV/InReadableOrder.cpp',
+    '../shaders/glslang/SPIRV/Logger.cpp',
+    '../shaders/glslang/SPIRV/SpvBuilder.cpp',
+    '../shaders/glslang/SPIRV/SpvPostProcess.cpp',
+    '../shaders/glslang/SPIRV/SpvTools.cpp',
+    '../shaders/glslang/SPIRV/disassemble.cpp',
+    '../shaders/glslang/SPIRV/SPVRemapper.cpp',
+    '../shaders/glslang/SPIRV/doc.cpp'
+  ]
+  SPIRV_lib = static_library('SPIRV',
+                             SPIRV_src,
+                             include_directories: include_directories('../shaders/glslang'),
+                             cpp_args: glslang_args)
+  libs += SPIRV_lib
+
+  args += ['-DUSE_SLANG',
+           '-DSPIRV_CROSS_EXCEPTIONS_TO_ASSERTIONS']
+  srcs += ['../shaders/slang.cpp']
+  srcs += ['../shaders/SPIRV-Cross/spirv_cfg.cpp',
+           '../shaders/SPIRV-Cross/spirv_cfg.hpp',
+           '../shaders/SPIRV-Cross/spirv_common.hpp',
+           '../shaders/SPIRV-Cross/spirv_cross.cpp',
+           '../shaders/SPIRV-Cross/spirv_cross.hpp',
+           '../shaders/SPIRV-Cross/spirv_glsl.cpp',
+           '../shaders/SPIRV-Cross/spirv_glsl.hpp',
+           '../shaders/SPIRV-Cross/spirv_cross_parsed_ir.cpp',
+           '../shaders/SPIRV-Cross/spirv_cross_parsed_ir.hpp',
+           '../shaders/SPIRV-Cross/spirv_parser.cpp',
+           '../shaders/SPIRV-Cross/spirv_parser.hpp',
+           '../shaders/SPIRV-Cross/spirv.hpp']
+  includes += '../shaders/glslang'
 endif
 
 wayland = get_option('wayland')
-if wayland and gtk_ver == 3
+if wayland
   wayland_dep = dependency('wayland-egl', required: false)
-  
+
   if wayland_dep.found()
     args += '-DUSE_WAYLAND'
     srcs += ['src/gtk_wayland_egl_context.cpp', 'src/gtk_wayland_egl_context.h']
@@ -139,7 +180,7 @@ endif
 xv = get_option('xv')
 if xv
   xv_dep = dependency('xv', required: false)
-  
+
   if xv_dep.found()
     args += '-DUSE_XV'
     srcs += ['src/gtk_display_driver_xv.cpp', 'src/gtk_display_driver_xv.h']
@@ -153,7 +194,7 @@ endif
 portaudio = get_option('portaudio')
 if portaudio
   portaudio_dep = dependency('portaudio-2.0', version: '>= 10', required: false)
-  
+
   if portaudio_dep.found()
     args += '-DUSE_PORTAUDIO'
     srcs += ['src/gtk_sound_driver_portaudio.cpp', 'src/gtk_sound_driver_portaudio.h']
@@ -178,7 +219,7 @@ endif
 alsa = get_option('alsa')
 if alsa
   alsa_dep = dependency('alsa', required: false)
-  
+
   if alsa_dep.found()
     args += '-DUSE_ALSA'
     srcs += ['src/gtk_sound_driver_alsa.cpp', 'src/gtk_sound_driver_alsa.h']
@@ -192,7 +233,7 @@ endif
 pulseaudio = get_option('pulseaudio')
 if pulseaudio
   pulseaudio_dep = dependency('libpulse', required: false)
-  
+
   if pulseaudio_dep.found()
     args += '-DUSE_PULSEAUDIO'
     srcs += ['src/gtk_sound_driver_pulse.cpp', 'src/gtk_sound_driver_pulse.h']
@@ -226,7 +267,7 @@ else
   includes += '../unzip'
   srcs += ['../unzip/unzip.c', '../unzip/ioapi.c', '../unzip/zip.c']
 endif
-        
+
 zlib = get_option('zlib')
 if zlib
   zlib_dep = dependency('zlib', required: false)
@@ -318,7 +359,7 @@ srcs += [
  '../filter/snes_ntsc.h',
  '../filter/snes_ntsc_impl.h',
  '../filter/snes_ntsc.c',
- 'src/gtk_2_3_compat.h',
+ 'src/gtk_compat.h',
  'src/gtk_sound_driver_sdl.h',
  'src/gtk_sound_driver_sdl.cpp',
  '../fxinst.cpp',
@@ -350,6 +391,9 @@ srcs += [
  '../debug.cpp',
  '../sdd1.cpp',
  '../tile.cpp',
+ '../tileimpl-n1x1.cpp',
+ '../tileimpl-n2x1.cpp',
+ '../tileimpl-h2x1.cpp',
  '../srtc.cpp',
  '../gfx.cpp',
  '../memmap.cpp',
@@ -377,10 +421,13 @@ srcs += [
  '../netplay.cpp',
  '../server.cpp',
  '../loadzip.cpp',
+ '../compat.cpp',
  'src/gtk_netplay_dialog.cpp',
  'src/gtk_netplay_dialog.h',
  'src/gtk_netplay.cpp',
- 'src/gtk_netplay.h'
+ 'src/gtk_netplay.h',
+ 'src/background_particles.cpp',
+ 'src/background_particles.h'
 ]
 
 libjma_srcs = [
@@ -395,26 +442,33 @@ libjma_srcs = [
  '../jma/winout.cpp'
 ]
 
-libjma = static_library('jma', 
-                        libjma_srcs, 
-                        c_args: args, 
-                        cpp_args: [args, '-fexceptions'],
+libjma = static_library('jma',
+                        libjma_srcs,
+                        c_args: args,
+                        cpp_args: args,
                         include_directories: include_directories(includes))
+libs += libjma
 
-sourcify = executable('sourcify', 'src/sourcify.c')
-gtk_snes9x_ui_cpp = custom_target('sourcify', 
-                                  input: 'src/snes9x.ui', 
+sourcify = executable('sourcify', 'src/sourcify.c', native: true)
+gtk_snes9x_ui_cpp = custom_target('sourcify',
+                                  input: 'src/snes9x.ui',
                                   output: 'gtk_snes9x_ui.cpp',
                                   command: [sourcify, '@INPUT@', '@OUTPUT@', 'snes9x_ui'])
 
-snes9x_gtk = executable('snes9x-gtk', 
-                        srcs, 
+mini_icon = custom_target('mini_icon',
+                          input: 'data/mini_icon.png',
+                          output: 'mini_icon.cpp',
+                          command: [sourcify, '@INPUT@', '@OUTPUT@', 'mini_icon'])
+
+snes9x_gtk = executable('snes9x-gtk',
+                        srcs,
                         gtk_snes9x_ui_cpp,
-                        c_args: args, 
-                        cpp_args: [args, '-fno-exceptions', '-fno-rtti'],
+                        mini_icon,
+                        c_args: args,
+                        cpp_args: args,
                         dependencies: deps,
                         include_directories: include_directories(includes),
-                        link_with: libjma,
+                        link_with: libs,
                         install: true)
 
 summary = [
@@ -424,7 +478,6 @@ summary = [
   '            appdatadir:        ' + appdatadir,
   '            localedir:         ' + localedir,
   '[Options]   Build type:        ' + get_option('buildtype'),
-  '            GTK+ version:      ' + gtk_ver.to_string(),
   '            Wayland:           ' + wayland.to_string(),
   '            OpenGL:            ' + opengl.to_string(),
   '             slang shaders:    ' + slang.to_string(),
