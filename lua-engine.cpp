@@ -35,6 +35,13 @@
 
 #endif
 
+#ifdef __WIN32__
+#define FORCEINLINE __forceinline
+#else
+#define FORCEINLINE __attribute__((always_inline))
+#endif
+
+
 bool g_disableStatestateWarnings = false;
 bool g_onlyCallSavestateCallbacks = false;
 
@@ -170,7 +177,9 @@ static const char* luaCallIDStrings [] =
 	"CALL_HOTKEY_15",
 	"CALL_HOTKEY_16",
 };
-static const int _makeSureWeHaveTheRightNumberOfStrings [sizeof(luaCallIDStrings)/sizeof(*luaCallIDStrings) == LUACALL_COUNT ? 1 : 0];
+
+//TODO. FIXME.
+//static const int _makeSureWeHaveTheRightNumberOfStrings [sizeof(luaCallIDStrings)/sizeof(*luaCallIDStrings) == LUACALL_COUNT ? 1 : 0];
 
 static const char* luaMemHookTypeStrings [] =
 {
@@ -182,7 +191,8 @@ static const char* luaMemHookTypeStrings [] =
 	"MEMHOOK_READ_SUB",
 	"MEMHOOK_EXEC_SUB",
 };
-static const int _makeSureWeHaveTheRightNumberOfStrings2 [sizeof(luaMemHookTypeStrings)/sizeof(*luaMemHookTypeStrings) == LUAMEMHOOK_COUNT ? 1 : 0];
+//TODO. FIXME.
+//static const int _makeSureWeHaveTheRightNumberOfStrings2 [sizeof(luaMemHookTypeStrings)/sizeof(*luaMemHookTypeStrings) == LUAMEMHOOK_COUNT ? 1 : 0];
 
 void StopScriptIfFinished(int uid, bool justReturned = false);
 void SetSaveKey(LuaContextInfo& info, const char* key);
@@ -1437,7 +1447,11 @@ void printfToOutput(const char* fmt, ...)
 {
 	va_list list;
 	va_start(list, fmt);
+#ifdef __WIN32__
 	int len = vscprintf(fmt, list);
+#else
+	int len = vsnprintf(NULL, 0, fmt, list);
+#endif
 	char* str = new char[len+1];
 	vsprintf(str, fmt, list);
 	va_end(list);
@@ -2817,7 +2831,7 @@ DEFINE_LUA_FUNCTION(joy_peekup, "[controller=1]")
 static const struct ColorMapping
 {
 	const char* name;
-	int value;
+	unsigned int value;
 }
 s_colorMapping [] =
 {
@@ -4373,7 +4387,7 @@ DEFINE_LUA_FUNCTION(input_getup, "")
 }
 
 
-#include "../apu/bapu/snes/snes.hpp"
+#include "apu/bapu/snes/snes.hpp"
 #define APURAM  SNES::smp.apuram
 
 DEFINE_LUA_FUNCTION(apu_readbyte, "address")
@@ -5033,10 +5047,15 @@ void RunLuaScriptFile(int uid, const char* filenameCStr)
 	info.nextFilename = filenameCStr;
 
 	// TODO: store script's current directory into LuaContextInfo
-	static char dirnameCStr[MAX_PATH];
+	static char dirnameCStr[PATH_MAX];
 	strcpy(dirnameCStr, filenameCStr);
 	TrimFilenameFromPath(dirnameCStr);
+	
+#if __WIN32__
 	_chdir(dirnameCStr);
+#else
+	chdir(dirnameCStr);
+#endif
 
 	if(info.running)
 	{
@@ -5453,8 +5472,8 @@ struct TieredRegion
 
 		bool Contains(unsigned int address, int size, unsigned int & mirrored_address) const
 		{
-			std::vector<Island>::const_iterator iter = islands.begin();
-			std::vector<Island>::const_iterator end = islands.end();
+			typename std::vector<Island>::const_iterator iter = islands.begin();
+			typename std::vector<Island>::const_iterator end = islands.end();
 			for(; iter != end; ++iter)
 				if(iter->Contains(address, size, mirrored_address))
 					return true;
@@ -5475,7 +5494,8 @@ struct TieredRegion
 
 	TieredRegion()
 	{
-		Calculate(std::vector<unsigned int>());
+		std::vector<unsigned int> dummy;
+		Calculate(dummy);
 	}
 
 	__forceinline int NotEmpty()
@@ -5841,7 +5861,7 @@ static void PushNils(std::vector<unsigned char>& output, int& nilcount)
 	else
 	{
 		output.push_back(LUAEXT_TNILS);
-		PushBinaryItem<UINT32>(count, output);
+		PushBinaryItem<uint32>(count, output);
 	}
 }
 
@@ -5892,7 +5912,7 @@ static void LuaStackToBinaryConverter(lua_State* L, int i, std::vector<unsigned 
 		case LUA_TNUMBER:
 			{
 				double num = (double)lua_tonumber(L,i);
-				INT32 inum = (INT32)lua_tointeger(L,i);
+				int32 inum = (int32)lua_tointeger(L,i);
 				if(num != inum)
 				{
 					PushBinaryItem(num, output);
@@ -5901,9 +5921,9 @@ static void LuaStackToBinaryConverter(lua_State* L, int i, std::vector<unsigned 
 				{
 					if((inum & ~0xFF) == 0)
 						type = LUAEXT_TBYTE;
-					else if((UINT16)(inum & 0xFFFF) == inum)
+					else if((uint16)(inum & 0xFFFF) == inum)
 						type = LUAEXT_TUSHORT;
-					else if((INT16)(inum & 0xFFFF) == inum)
+					else if((int16)(inum & 0xFFFF) == inum)
 						type = LUAEXT_TSHORT;
 					else
 						type = LUAEXT_TLONG;
@@ -5911,13 +5931,13 @@ static void LuaStackToBinaryConverter(lua_State* L, int i, std::vector<unsigned 
 					switch(type)
 					{
 					case LUAEXT_TLONG:
-						PushBinaryItem<INT32>(inum, output);
+						PushBinaryItem<int32>(inum, output);
 						break;
 					case LUAEXT_TUSHORT:
-						PushBinaryItem<UINT16>(inum, output);
+						PushBinaryItem<uint16>(inum, output);
 						break;
 					case LUAEXT_TSHORT:
-						PushBinaryItem<INT16>(inum, output);
+						PushBinaryItem<int16>(inum, output);
 						break;
 					case LUAEXT_TBYTE:
 						output.push_back(inum);
@@ -6054,7 +6074,7 @@ void BinaryToLuaStackConverter(lua_State* L, const unsigned char*& data, unsigne
 			lua_pushnil(L);
 			break;
 		case LUA_TBOOLEAN:
-			lua_pushboolean(L, AdvanceByteStream<UINT8>(data, remaining));
+			lua_pushboolean(L, AdvanceByteStream<uint8>(data, remaining));
 			break;
 		case LUA_TSTRING:
 			lua_pushstring(L, (const char*)data);
@@ -6064,16 +6084,16 @@ void BinaryToLuaStackConverter(lua_State* L, const unsigned char*& data, unsigne
 			lua_pushnumber(L, AdvanceByteStream<double>(data, remaining));
 			break;
 		case LUAEXT_TLONG:
-			lua_pushinteger(L, AdvanceByteStream<INT32>(data, remaining));
+			lua_pushinteger(L, AdvanceByteStream<int32>(data, remaining));
 			break;
 		case LUAEXT_TUSHORT:
-			lua_pushinteger(L, AdvanceByteStream<UINT16>(data, remaining));
+			lua_pushinteger(L, AdvanceByteStream<uint16>(data, remaining));
 			break;
 		case LUAEXT_TSHORT:
-			lua_pushinteger(L, AdvanceByteStream<INT16>(data, remaining));
+			lua_pushinteger(L, AdvanceByteStream<int16>(data, remaining));
 			break;
 		case LUAEXT_TBYTE:
-			lua_pushinteger(L, AdvanceByteStream<UINT8>(data, remaining));
+			lua_pushinteger(L, AdvanceByteStream<uint8>(data, remaining));
 			break;
 		case LUAEXT_TTABLE:
 		case LUAEXT_TTABLE | LUAEXT_BITS_1A:
@@ -6094,21 +6114,21 @@ void BinaryToLuaStackConverter(lua_State* L, const unsigned char*& data, unsigne
 			{
 				unsigned int arraySize = 0;
 				if(BITMATCH(type,LUAEXT_BITS_4A) || BITMATCH(type,LUAEXT_BITS_2A) || BITMATCH(type,LUAEXT_BITS_1A))
-					arraySize |= AdvanceByteStream<UINT8>(data, remaining);
+					arraySize |= AdvanceByteStream<uint8>(data, remaining);
 				if(BITMATCH(type,LUAEXT_BITS_4A) || BITMATCH(type,LUAEXT_BITS_2A))
-					arraySize |= ((UINT16)AdvanceByteStream<UINT8>(data, remaining)) << 8;
+					arraySize |= ((uint16)AdvanceByteStream<uint8>(data, remaining)) << 8;
 				if(BITMATCH(type,LUAEXT_BITS_4A))
-					arraySize |= ((UINT32)AdvanceByteStream<UINT8>(data, remaining)) << 16,
-					arraySize |= ((UINT32)AdvanceByteStream<UINT8>(data, remaining)) << 24;
+					arraySize |= ((uint32)AdvanceByteStream<uint8>(data, remaining)) << 16,
+					arraySize |= ((uint32)AdvanceByteStream<uint8>(data, remaining)) << 24;
 
 				unsigned int hashSize = 0;
 				if(BITMATCH(type,LUAEXT_BITS_4H) || BITMATCH(type,LUAEXT_BITS_2H) || BITMATCH(type,LUAEXT_BITS_1H))
-					hashSize |= AdvanceByteStream<UINT8>(data, remaining);
+					hashSize |= AdvanceByteStream<uint8>(data, remaining);
 				if(BITMATCH(type,LUAEXT_BITS_4H) || BITMATCH(type,LUAEXT_BITS_2H))
-					hashSize |= ((UINT16)AdvanceByteStream<UINT8>(data, remaining)) << 8;
+					hashSize |= ((uint16)AdvanceByteStream<uint8>(data, remaining)) << 8;
 				if(BITMATCH(type,LUAEXT_BITS_4H))
-					hashSize |= ((UINT32)AdvanceByteStream<UINT8>(data, remaining)) << 16,
-					hashSize |= ((UINT32)AdvanceByteStream<UINT8>(data, remaining)) << 24;
+					hashSize |= ((uint32)AdvanceByteStream<uint8>(data, remaining)) << 16,
+					hashSize |= ((uint32)AdvanceByteStream<uint8>(data, remaining)) << 24;
 
 				lua_createtable(L, arraySize, hashSize);
 
@@ -6118,7 +6138,7 @@ void BinaryToLuaStackConverter(lua_State* L, const unsigned char*& data, unsigne
 					if(*data == LUAEXT_TNILS)
 					{
 						AdvanceByteStream(data, remaining, 1);
-						n += AdvanceByteStream<UINT32>(data, remaining);
+						n += AdvanceByteStream<uint32>(data, remaining);
 					}
 					else
 					{

@@ -282,6 +282,11 @@ void DrawThumbnailFromExtendedAttribute (const char *path, CGContextRef ctx, CGR
 
 bool8 S9xDoScreenshot (int width, int height)
 {
+	return S9xDoScreenshot(S9xGetPNGFilename(), width, height);
+}
+
+bool8 S9xDoScreenshot (const char *fname, int width, int height)
+{
 	Settings.TakeScreenshot = false;
 
 	uint16	*data;
@@ -337,7 +342,7 @@ bool8 S9xDoScreenshot (int width, int height)
 		image = CreateBlitScreenCGImage(512, (height > 239) ? height : (height * 2), 1024, (uint8 *) data);
 		if (image)
 		{
-			ExportCGImageToPNGFile(image, S9xGetPNGFilename());
+			ExportCGImageToPNGFile(image, fname);
 			CGImageRelease(image);
 		}
 
