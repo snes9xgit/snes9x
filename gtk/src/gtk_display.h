@@ -20,8 +20,7 @@
 #include "filter_epx_unsafe.h"
 #include "filter/snes_ntsc.h"
 
-enum
-{
+enum {
     FILTER_NONE       = 0,
     FILTER_SUPEREAGLE = 1,
     FILTER_2XSAI      = 2,
@@ -42,21 +41,18 @@ enum
     NUM_FILTERS       = 17
 };
 
-enum
-{
+enum {
     NTSC_COMPOSITE = 0,
     NTSC_SVIDEO    = 1,
     NTSC_RGB       = 2
 };
 
-enum
-{
+enum {
     ENDIAN_NORMAL  = 0,
     ENDIAN_SWAPPED = 1
 };
 
-enum
-{
+enum {
     JOB_FILTER            = 0,
     JOB_CONVERT           = 1,
     JOB_SCALE_AND_CONVERT = 2,
@@ -81,46 +77,53 @@ typedef struct thread_job_t
     volatile bool complete;
 } thread_job_t;
 
-void S9xRegisterYUVTables (uint8 *y, uint8 *u, uint8 *v);
-void S9xSetEndianess (int type);
-double S9xGetAspect ();
-void S9xApplyAspect (int&, int&, int&, int&);
-void S9xConvertYUV (void *src_buffer,
-                    void *dst_buffer,
+struct S9xRect
+{
+    int x;
+    int y;
+    int w;
+    int h;
+};
+
+void S9xRegisterYUVTables(uint8 *y, uint8 *u, uint8 *v);
+void S9xSetEndianess(int type);
+double S9xGetAspect();
+S9xRect S9xApplyAspect(int, int, int, int);
+void S9xConvertYUV(void *src_buffer,
+                   void *dst_buffer,
+                   int src_pitch,
+                   int dst_pitch,
+                   int width,
+                   int height);
+void S9xConvert(void *src,
+                void *dst,
+                int src_pitch,
+                int dst_pitch,
+                int width,
+                int height,
+                int bpp);
+void S9xConvertMask(void *src,
+                    void *dst,
                     int src_pitch,
                     int dst_pitch,
                     int width,
-                    int height);
-void S9xConvert (void *src,
-                 void *dst,
-                 int src_pitch,
-                 int dst_pitch,
-                 int width,
-                 int height,
-                 int bpp);
-void S9xConvertMask (void *src,
-                     void *dst,
-                     int  src_pitch,
-                     int  dst_pitch,
-                     int  width,
-                     int  height,
-                     int  rshift,
-                     int  gshift,
-                     int  bshift,
-                     int  bpp);
-void S9xFilter (uint8 *src_buffer,
-                int src_pitch,
-                uint8 *dst_buffer,
-                int dst_pitch,
-                int& width,
-                int& height);
-void get_filter_scale (int& width, int& height);
-void S9xDisplayRefresh (int width, int height);
-void S9xDisplayClearBuffers ();
-void S9xReinitDisplay ();
-void S9xDisplayReconfigure ();
-void S9xQueryDrivers ();
-S9xDisplayDriver *S9xDisplayGetDriver ();
-bool S9xDisplayDriverIsReady ();
+                    int height,
+                    int rshift,
+                    int gshift,
+                    int bshift,
+                    int bpp);
+void S9xFilter(uint8 *src_buffer,
+               int src_pitch,
+               uint8 *dst_buffer,
+               int dst_pitch,
+               int &width,
+               int &height);
+void get_filter_scale(int &width, int &height);
+void S9xDisplayRefresh(int width, int height);
+void S9xReinitDisplay();
+void S9xDisplayReconfigure();
+void S9xQueryDrivers();
+S9xDisplayDriver *S9xDisplayGetDriver();
+bool S9xDisplayDriverIsReady();
 
 #endif /* __GTK_DISPLAY_H */

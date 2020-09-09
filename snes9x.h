@@ -247,6 +247,7 @@ struct SSettings
 	uint8	BG_Forced;
 	bool8	DisableGraphicWindows;
 
+	bool8	DisplayTime;
 	bool8	DisplayFrameRate;
 	bool8	DisplayWatchedAddresses;
 	bool8	DisplayPressedKeys;

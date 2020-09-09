@@ -34,15 +34,15 @@ enum GLSLFilter
     GLSL_UNDEFINED = 0,
 };
 
-typedef struct
+struct GLSLUniformMetrics
 {
     GLint Texture;
     GLint InputSize;
     GLint TextureSize;
     GLint TexCoord;
-} GLSLUniformMetrics;
+};
 
-typedef struct
+struct GLSLUniforms
 {
     GLint Texture;
     GLint InputSize;
@@ -67,7 +67,7 @@ typedef struct
     GLSLUniformMetrics Pass[glsl_max_passes];
     GLSLUniformMetrics PassPrev[glsl_max_passes];
     GLint Lut[9];
-} GLSLUniforms;
+};
 
 // Size must always follow texture type
 enum
@@ -85,7 +85,7 @@ enum
     SL_FEEDBACK = 10
 };
 
-typedef struct
+struct SlangUniform
 {
     // Source
     int type;
@@ -94,9 +94,9 @@ typedef struct
     // Output
     GLint location; // -1 Indicates UBO
     GLint offset;
-} SlangUniform;
+};
 
-typedef struct
+struct GLSLPass
 {
     char filename[PATH_MAX];
     char alias[256];
@@ -129,9 +129,9 @@ typedef struct
     bool uses_feedback = false;
     GLuint feedback_texture;
 #endif
-} GLSLPass;
+};
 
-typedef struct
+struct GLSLLut
 {
     char id[256];
     char filename[PATH_MAX];
@@ -141,9 +141,9 @@ typedef struct
     bool mipmap;
     int width;
     int height;
-} GLSLLut;
+};
 
-typedef struct
+struct GLSLParam
 {
     char name[PATH_MAX];
     char id[256];
@@ -151,13 +151,14 @@ typedef struct
     float max;
     float val;
     float step;
+    int digits;
     GLint unif[glsl_max_passes];
-} GLSLParam;
+};
 
-typedef struct
+struct GLSLShader
 {
-    bool load_shader(char *filename);
-    bool load_shader_preset_file(char *filename);
+    bool load_shader(const char *filename);
+    bool load_shader_preset_file(const char *filename);
     void render(GLuint &orig, int width, int height, int viewport_x,
                 int viewport_y, int viewport_width, int viewport_height,
                 GLSLViewportCallback vpcallback);
@@ -195,6 +196,6 @@ typedef struct
 
     bool using_feedback;
 #endif
-} GLSLShader;
+};
 
 #endif

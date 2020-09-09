@@ -28,6 +28,7 @@ Mute = FALSE
 HiRes = TRUE
 Transparency = TRUE
 GraphicWindows = TRUE
+DisplayTime = FALSE
 DisplayFrameRate = FALSE
 DisplayWatchedAddresses = FALSE
 DisplayInput = FALSE

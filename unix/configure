@@ -709,6 +709,9 @@ ac_user_opts='
 enable_option_checking
 enable_debug
 enable_mtune
+enable_sse41
+enable_avx2
+enable_neon
 enable_gamepad
 enable_debugger
 enable_netplay
@@ -1362,6 +1365,9 @@ Optional Features:
                           (default: no)
   --enable-mtune          use the specified value for the -mtune/-mcpu flag
                           (default: no)
+  --enable-sse41          enable SSE4.1 if available (default: no)
+  --enable-avx2           enable AVX2 if available (default: no)
+  --enable-neon           enable NEON if available (default: no)
   --enable-gamepad        enable gamepad support if available (default: yes)
   --enable-debugger       enable debugger (default: no)
   --enable-netplay        enable netplay support (default: no)
@@ -4282,6 +4288,228 @@ $as_echo "no" >&6; }
 	fi
 
 
+# Enable SSE4.1
+# Check whether --enable-sse41 was given.
+if test "${enable_sse41+set}" = set; then :
+  enableval=$enable_sse41;
+else
+  enable_sse41="no"
+fi
+
+
+if test "x$enable_sse41" = "xyes"; then
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether g++ accepts -msse4.1" >&5
+$as_echo_n "checking whether g++ accepts -msse4.1... " >&6; }
+
+	if ${snes9x_cv_option_sse41+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+		OLD_CXXFLAGS="$CXXFLAGS"
+		CXXFLAGS="$OLD_CXXFLAGS -msse4.1"
+
+		if test "$cross_compiling" = yes; then :
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "cannot run test program while cross compiling
+See \`config.log' for more details" "$LINENO" 5; }
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+			int	foo;
+
+			int	main (int argc, char **argv)
+			{
+				/* The following code triggs gcc:s generation of aline opcodes,
+				   which some versions of as does not support. */
+
+				if (argc > 0)
+					argc = 0;
+
+				return (argc);
+			}
+
+_ACEOF
+if ac_fn_cxx_try_run "$LINENO"; then :
+  snes9x_cv_option_sse41="yes"
+else
+  snes9x_cv_option_sse41="no"
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+
+fi
+
+
+	CXXFLAGS="$OLD_CXXFLAGS"
+
+	if test "x$snes9x_cv_option_sse41" = "xyes"; then
+		S9XFLGS="$S9XFLGS -msse4.1"
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	else
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+	fi
+
+	if test "x$snes9x_cv_option_sse41" != "xyes"; then
+		enable_sse41="no"
+	fi
+fi
+
+# Enable AVX2
+# Check whether --enable-avx2 was given.
+if test "${enable_avx2+set}" = set; then :
+  enableval=$enable_avx2;
+else
+  enable_avx2="no"
+fi
+
+
+if test "x$enable_avx2" = "xyes"; then
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether g++ accepts -mavx2" >&5
+$as_echo_n "checking whether g++ accepts -mavx2... " >&6; }
+
+	if ${snes9x_cv_option_avx2+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+		OLD_CXXFLAGS="$CXXFLAGS"
+		CXXFLAGS="$OLD_CXXFLAGS -mavx2"
+
+		if test "$cross_compiling" = yes; then :
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "cannot run test program while cross compiling
+See \`config.log' for more details" "$LINENO" 5; }
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+			int	foo;
+
+			int	main (int argc, char **argv)
+			{
+				/* The following code triggs gcc:s generation of aline opcodes,
+				   which some versions of as does not support. */
+
+				if (argc > 0)
+					argc = 0;
+
+				return (argc);
+			}
+
+_ACEOF
+if ac_fn_cxx_try_run "$LINENO"; then :
+  snes9x_cv_option_avx2="yes"
+else
+  snes9x_cv_option_avx2="no"
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+
+fi
+
+
+	CXXFLAGS="$OLD_CXXFLAGS"
+
+	if test "x$snes9x_cv_option_avx2" = "xyes"; then
+		S9XFLGS="$S9XFLGS -mavx2"
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	else
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+	fi
+
+	if test "x$snes9x_cv_option_avx2" != "xyes"; then
+		enable_avx2="no"
+	fi
+fi
+
+# Enable ARM NEON
+# Check whether --enable-neon was given.
+if test "${enable_neon+set}" = set; then :
+  enableval=$enable_neon;
+else
+  enable_neon="no"
+fi
+
+
+if test "x$enable_neon" = "xyes"; then
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether g++ accepts -mfpu=neon" >&5
+$as_echo_n "checking whether g++ accepts -mfpu=neon... " >&6; }
+
+	if ${snes9x_cv_option_neon+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+		OLD_CXXFLAGS="$CXXFLAGS"
+		CXXFLAGS="$OLD_CXXFLAGS -mfpu=neon"
+
+		if test "$cross_compiling" = yes; then :
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "cannot run test program while cross compiling
+See \`config.log' for more details" "$LINENO" 5; }
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+			int	foo;
+
+			int	main (int argc, char **argv)
+			{
+				/* The following code triggs gcc:s generation of aline opcodes,
+				   which some versions of as does not support. */
+
+				if (argc > 0)
+					argc = 0;
+
+				return (argc);
+			}
+
+_ACEOF
+if ac_fn_cxx_try_run "$LINENO"; then :
+  snes9x_cv_option_neon="yes"
+else
+  snes9x_cv_option_neon="no"
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+
+fi
+
+
+	CXXFLAGS="$OLD_CXXFLAGS"
+
+	if test "x$snes9x_cv_option_neon" = "xyes"; then
+		S9XFLGS="$S9XFLGS -mfpu=neon"
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	else
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+	fi
+
+	if test "x$snes9x_cv_option_neon" != "xyes"; then
+		enable_neon="no"
+	fi
+fi
+
 # Check if the OS is Linux.
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the OS is Linux" >&5
@@ -6321,7 +6549,7 @@ fi
 
 # Output.
 
-S9XFLGS="$S9XFLGS $CXXFLAGS $CPPFLAGS $LDFLAGS"
+S9XFLGS="$CXXFLAGS $CPPFLAGS $LDFLAGS $S9XFLGS"
 S9XLIBS="$LIBS $S9XLIBS"
 
 S9XFLGS="`echo \"$S9XFLGS\" | sed -e 's/  */ /g'`"
@@ -6365,6 +6593,9 @@ GZIP support......... $enable_gzip
 ZIP support.......... $enable_zip
 SYSTEM_ZIP........... $with_system_zip
 JMA support.......... $enable_jma
+SSE4.1............... $enable_sse41
+AVX2................. $enable_avx2
+NEON................. $enable_neon
 debugger............. $enable_debugger
 
 EOF

@@ -8,6 +8,9 @@
 #define __GTK_SOUND_DRIVER_SDL_H
 
 #include "SDL.h"
+// SDL.h may include altivec.h which redefines vector and bool
+#undef vector
+#undef bool
 
 #include "gtk_sound.h"
 #include "gtk_sound_driver.h"
@@ -29,8 +32,8 @@ class S9xSDLSoundDriver : public S9xSoundDriver
     void samples_available();
 
   private:
-    SDL_AudioSpec *audiospec;
-    Resampler *buffer;
+    SDL_AudioSpec audiospec;
+    Resampler buffer;
     std::mutex mutex;
     int16_t temp[512];
 };

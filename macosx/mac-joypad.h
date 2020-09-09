@@ -15,154 +15,124 @@
   (c) Copyright 2004         Alexander and Sander
   (c) Copyright 2004 - 2005  Steven Seeger
   (c) Copyright 2005         Ryan Vogt
+  (c) Copyright 2019         Michael Donald Buckley
  ***********************************************************************************/
 
 
 #ifndef _mac_joypad_h_
 #define _mac_joypad_h_
 
-enum
-{
-	kISp1PUp = 0,
-	kISp1PDn,
-	kISp1PLf,
-	kISp1PRt,
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
 
-	kISp2PUp,
-	kISp2PDn,
-	kISp2PLf,
-	kISp2PRt,
+#include "mac-controls.h"
 
-	kISp3PUp,
-	kISp3PDn,
-	kISp3PLf,
-	kISp3PRt,
+struct JoypadDevice {
+    uint16 vendorID;
+    uint16 productID;
+    uint32 index;
 
-	kISp4PUp,
-	kISp4PDn,
-	kISp4PLf,
-	kISp4PRt,
+    bool operator==(const struct JoypadDevice &o) const
+    {
+        return vendorID == o.vendorID && productID == o.productID && index == o.index;
+    }
 
-	kISp5PUp,
-	kISp5PDn,
-	kISp5PLf,
-	kISp5PRt,
-
-	kISp6PUp,
-	kISp6PDn,
-	kISp6PLf,
-	kISp6PRt,
-
-	kISp7PUp,
-	kISp7PDn,
-	kISp7PLf,
-	kISp7PRt,
-
-	kISp8PUp,
-	kISp8PDn,
-	kISp8PLf,
-	kISp8PRt,
-
-	kISp1PB,
-	kISp1PA,
-	kISp1PX,
-	kISp1PY,
-	kISp1PL,
-	kISp1PR,
-	kISp1PSelect,
-	kISp1PStart,
-
-	kISp2PB,
-	kISp2PA,
-	kISp2PX,
-	kISp2PY,
-	kISp2PL,
-	kISp2PR,
-	kISp2PSelect,
-	kISp2PStart,
-
-	kISp3PB,
-	kISp3PA,
-	kISp3PX,
-	kISp3PY,
-	kISp3PL,
-	kISp3PR,
-	kISp3PSelect,
-	kISp3PStart,
-
-	kISp4PB,
-	kISp4PA,
-	kISp4PX,
-	kISp4PY,
-	kISp4PL,
-	kISp4PR,
-	kISp4PSelect,
-	kISp4PStart,
-
-	kISp5PB,
-	kISp5PA,
-	kISp5PX,
-	kISp5PY,
-	kISp5PL,
-	kISp5PR,
-	kISp5PSelect,
-	kISp5PStart,
-
-	kISp6PB,
-	kISp6PA,
-	kISp6PX,
-	kISp6PY,
-	kISp6PL,
-	kISp6PR,
-	kISp6PSelect,
-	kISp6PStart,
-
-	kISp7PB,
-	kISp7PA,
-	kISp7PX,
-	kISp7PY,
-	kISp7PL,
-	kISp7PR,
-	kISp7PSelect,
-	kISp7PStart,
-
-	kISp8PB,
-	kISp8PA,
-	kISp8PX,
-	kISp8PY,
-	kISp8PL,
-	kISp8PR,
-	kISp8PSelect,
-	kISp8PStart,
-
-	kISpFastForward,
-	kISpFreeze,
-	kISpDefrost,
-	kISpScreenshot,
-	kISpEsc,
-	kISpSPC,
-	kISpMouseL,
-	kISpMouseR,
-	kISpScopeT,
-	kISpScopeP,
-	kISpScopeC,
-	kISpOffScreen,
-	kISpFunction,
-	kISpAlt,
-	kISpFFUp,
-	kISpFFDown,
-	kISpTC,
-
-	kNeedCount
+    bool operator<(const struct JoypadDevice &o) const
+    {
+        return vendorID < o.vendorID || productID < o.productID || index < o.index;
+    }
 };
+
+struct JoypadCookie {
+    struct JoypadDevice device;
+    uint32 cookie;
+
+    JoypadCookie() {}
+
+    struct JoypadCookie &operator=(const struct JoypadCookie &o)
+    {
+        device = o.device;
+        cookie = o.cookie;
+        return *this;
+    }
+
+    bool operator==(const struct JoypadCookie &o) const
+    {
+        return device == o.device && cookie == o.cookie;
+    }
+
+    bool operator<(const struct JoypadCookie &o) const
+    {
+        return device < o.device || cookie < o.cookie;
+    }
+};
+
+struct JoypadCookieInfo {
+    uint32 usage;
+    uint32 index;
+    int32 midpoint;
+    int32 min;
+    int32 max;
+};
+
+struct JoypadInput {
+    struct JoypadCookie cookie;
+    int32 value;
+
+    bool operator==(const struct JoypadInput &o) const
+    {
+        return cookie == o.cookie && value == o.value;
+    }
+
+    bool operator<(const struct JoypadInput &o) const
+    {
+        return cookie < o.cookie || value < o.value;
+    }
+};
+
+namespace std {
+    template <>
+    struct hash<struct JoypadDevice>
+    {
+        std::size_t operator()(const JoypadDevice& k) const
+        {
+            return k.vendorID ^ k.productID ^ k.index;
+        }
+    };
+
+    template <>
+    struct hash<struct JoypadCookie>
+    {
+        std::size_t operator()(const JoypadCookie& k) const
+        {
+            return std::hash<struct JoypadDevice>()(k.device) ^ k.cookie;
+        }
+    };
+
+    template <>
+    struct hash<struct JoypadInput>
+    {
+        std::size_t operator()(const JoypadInput& k) const
+        {
+            return std::hash<struct JoypadCookie>()(k.cookie) ^ k.value;
+        }
+    };
+}
 
 void SetUpHID (void);
 void ReleaseHID (void);
-void ConfigureHID (void);
-void ClearPadSetting (void);
-void SaveControllerSettings (void);
-void LoadControllerSettings (void);
-long ISpKeyIsPressed (int);
-void JoypadScanDirection (int, uint32 *);
+
+std::unordered_set<struct JoypadDevice> ListJoypads (void);
+std::string NameForDevice(struct JoypadDevice device);
+
+void SetPlayerForJoypad(int8 playerNum, uint32 vendorID, uint32 productID, uint32 index, int8 *oldPlayerNum);
+bool SetButtonCodeForJoypadControl(uint32 vendorID, uint32 productID, uint32 index, uint32 cookie, int32 value, S9xButtonCode buttonCode, bool overwrite, S9xButtonCode *oldButtonCode);
+void ClearButtonCodeForJoypad(uint32 vendorID, uint32 productID, uint32 index, S9xButtonCode buttonCode);
+
+void ClearJoypad(uint32 vendorID, uint32 productID, uint32 index);
+std::unordered_map<struct JoypadInput, S9xButtonCode> GetJuypadButtons(uint32 vendorID, uint32 productID, uint32 index);
+
+std::string LabelForInput(uint32 vendorID, uint32 productID, uint32 cookie, int32 value);
 
 #endif

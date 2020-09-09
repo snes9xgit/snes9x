@@ -285,7 +285,7 @@
             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
             <property name="layout_style">end</property>
             <child>
-              <object class="GtkButton" id="button7">
+              <object class="GtkButton" id="cheats_close">
                 <property name="label">gtk-close</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -351,7 +351,7 @@
                 <property name="border_width">5</property>
                 <property name="spacing">5</property>
                 <child>
-                  <object class="GtkButton" id="button4">
+                  <object class="GtkButton" id="add_code">
                     <property name="label">gtk-add</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -369,7 +369,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton" id="button5">
+                  <object class="GtkButton" id="remove_code">
                     <property name="label">gtk-remove</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -551,7 +551,7 @@
       </object>
     </child>
     <action-widgets>
-      <action-widget response="0">button7</action-widget>
+      <action-widget response="0">cheats_close</action-widget>
     </action-widgets>
   </object>
   <object class="GtkDialog" id="frame_advance_dialog">
@@ -822,6 +822,12 @@
       </row>
       <row>
         <col id="0" translatable="yes">Color bars and patterns</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Starfield</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Snow</col>
       </row>
     </data>
   </object>
@@ -2268,7 +2274,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkButton" id="button11">
+                          <object class="GtkButton" id="clear_netplay">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
@@ -2695,7 +2701,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="button8">
+              <object class="GtkButton" id="about_button">
                 <property name="label">gtk-about</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -2762,6 +2768,21 @@
                               </packing>
                             </child>
                             <child>
+                              <object class="GtkCheckButton" id="show_time">
+                                <property name="label" translatable="yes">Show local time</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="use_underline">True</property>
+                                <property name="draw_indicator">True</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
                               <object class="GtkCheckButton" id="show_frame_rate">
                                 <property name="label" translatable="yes">Show frame rate</property>
                                 <property name="visible">True</property>
@@ -2773,7 +2794,7 @@
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">False</property>
-                                <property name="position">1</property>
+                                <property name="position">2</property>
                               </packing>
                             </child>
                             <child>
@@ -2788,7 +2809,7 @@
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">False</property>
-                                <property name="position">2</property>
+                                <property name="position">3</property>
                               </packing>
                             </child>
                             <child>
@@ -2804,7 +2825,7 @@
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">False</property>
-                                <property name="position">3</property>
+                                <property name="position">4</property>
                               </packing>
                             </child>
                             <child>
@@ -2850,7 +2871,7 @@
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">False</property>
-                                <property name="position">4</property>
+                                <property name="position">5</property>
                               </packing>
                             </child>
                           </object>
@@ -4182,11 +4203,11 @@
                                     </child>
                                     <child>
                                       <object class="GtkCheckButton" id="mute_sound_turbo_check">
-                                        <property name="label" translatable="yes">Mute sound when using turbo</property>
+                                        <property name="label" translatable="yes">Mute sound when using turbo or rewind</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">False</property>
-                                        <property name="tooltip_text" translatable="yes">Disables output of sound when using turbo</property>
+                                        <property name="tooltip_text" translatable="yes">Disables output of sound when using turbo or rewind</property>
                                         <property name="use_underline">True</property>
                                         <property name="draw_indicator">True</property>
                                       </object>
@@ -5253,6 +5274,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label_xalign">0</property>
+                        <property name="border_width">5</property>
                         <property name="shadow_type">none</property>
                         <child>
                           <object class="GtkAlignment" id="alignment16">
@@ -5424,7 +5446,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkButton" id="button6">
+                          <object class="GtkButton" id="reset_current_joypad">
                             <property name="label" translatable="yes">_Reset</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
@@ -5480,7 +5502,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkButton" id="button12">
+                          <object class="GtkButton" id="swap_with">
                             <property name="label" translatable="yes">_Swap</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
@@ -9298,7 +9320,7 @@
       <action-widget response="-6">cancel_button</action-widget>
       <action-widget response="-10">ok_button</action-widget>
       <action-widget response="-5">button1</action-widget>
-      <action-widget response="0">button8</action-widget>
+      <action-widget response="0">about_button</action-widget>
     </action-widgets>
   </object>
   <object class="GtkTextBuffer" id="textbuffer1">

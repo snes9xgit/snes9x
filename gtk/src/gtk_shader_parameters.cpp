@@ -4,7 +4,7 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include "gtk_2_3_compat.h"
+#include "gtk_compat.h"
 #include <vector>
 #include <math.h>
 
@@ -13,59 +13,27 @@
 #include "gtk_shader_parameters.h"
 #include "shaders/glsl.h"
 
-static GtkWidget *dialog = NULL;
-static std::vector<GLSLParam> *params = NULL;
+#include "gfx.h"
+
+static Gtk::Dialog *dialog = nullptr;
+static std::vector<GLSLParam> *params = nullptr;
 static std::vector<GLSLParam> saved_params;
 
 static inline double snap_to_interval(double value, double interval)
 {
+    if (interval == 0.0)
+        return value;
     return round(value / interval) * interval;
 }
 
-static void value_changed(GtkRange *range, gpointer user_data)
+static void dialog_response(int response_id)
 {
-    GLSLParam *p = (GLSLParam *)user_data;
-    GtkAdjustment *adj = gtk_range_get_adjustment(range);
-    double interval = gtk_adjustment_get_step_increment(adj);
-    double value = gtk_range_get_value(range);
-
-    value = snap_to_interval(value, interval);
-
-    gtk_range_set_value(range, value);
-
-    if (p->val != value)
-    {
-        p->val = value;
-        if (Settings.Paused)
-            S9xDeinitUpdate(top_level->last_width, top_level->last_height);
-    }
-}
-
-static void toggled(GtkToggleButton *togglebutton, gpointer user_data)
-{
-    GLSLParam *p = (GLSLParam *)user_data;
-    double value = (double)gtk_toggle_button_get_active(togglebutton);
-
-    if (p->val != value)
-    {
-        p->val = value;
-        if (Settings.Paused)
-            S9xDeinitUpdate(top_level->last_width, top_level->last_height);
-    }
-}
-
-static void dialog_response(GtkDialog *pdialog, gint response_id, gpointer user_data)
-{
-    std::vector<GLSLParam> *params = (std::vector<GLSLParam> *)user_data;
-
-    int width, height;
-    gtk_window_get_size(GTK_WINDOW(pdialog), &width, &height);
-    gui_config->shader_parameters_width = width;
-    gui_config->shader_parameters_height = height;
+    gui_config->shader_parameters_width = dialog->get_width();
+    gui_config->shader_parameters_height = dialog->get_height();
 
     switch (response_id)
     {
-    case GTK_RESPONSE_OK:
+    case Gtk::RESPONSE_OK:
     {
         char path[PATH_MAX];
         std::string config_file = get_config_dir();
@@ -78,17 +46,17 @@ static void dialog_response(GtkDialog *pdialog, gint response_id, gpointer user_
         gui_config->shader_filename = path;
 
         if (dialog)
-            gtk_widget_destroy(GTK_WIDGET(dialog));
-        dialog = NULL;
+            delete dialog;
+        dialog = nullptr;
         break;
     }
 
-    case GTK_RESPONSE_CANCEL:
-    case GTK_RESPONSE_DELETE_EVENT:
-    case GTK_RESPONSE_NONE:
+    case Gtk::RESPONSE_CANCEL:
+    case Gtk::RESPONSE_DELETE_EVENT:
+    case Gtk::RESPONSE_NONE:
         if (dialog)
-            gtk_widget_destroy(GTK_WIDGET(dialog));
-        dialog = NULL;
+            delete dialog;
+        dialog = nullptr;
         *params = saved_params;
         if (Settings.Paused)
             S9xDeinitUpdate(top_level->last_width, top_level->last_height);
@@ -96,17 +64,14 @@ static void dialog_response(GtkDialog *pdialog, gint response_id, gpointer user_
 
     case 15: // Save As
     {
-        auto dialog = gtk_file_chooser_dialog_new(_("Export Shader Preset to:"),
-                                                  top_level->get_window(),
-                                                  GTK_FILE_CHOOSER_ACTION_SAVE,
-                                                  "gtk-cancel", GTK_RESPONSE_CANCEL,
-                                                  "gtk-save", GTK_RESPONSE_ACCEPT,
-                                                  NULL);
+        Gtk::FileChooserDialog dialog(_("Export Shader Preset to:"), Gtk::FILE_CHOOSER_ACTION_SAVE);
+        dialog.add_button(Gtk::StockID("gtk-cancel"), Gtk::RESPONSE_CANCEL);
+        dialog.add_button(Gtk::StockID("gtk-save"), Gtk::RESPONSE_ACCEPT);
+        dialog.set_current_folder(gui_config->last_shader_directory);
 
-        gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(dialog),
-                                            gui_config->last_shader_directory.c_str());
-        const char *name;
-        const char *extension;
+        std::string name;
+        std::string extension;
+
         if (gui_config->shader_filename.find(".slang") != std::string::npos)
         {
             name = "new.slangp";
@@ -117,26 +82,23 @@ static void dialog_response(GtkDialog *pdialog, gint response_id, gpointer user_
             name = "new.glslp";
             extension = "*.glslp";
         }
-        gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dialog), name);
-        gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), true);
 
-        auto filter = gtk_file_filter_new();
-        gtk_file_filter_set_name(filter, _("Shader Preset"));
-        gtk_file_filter_add_pattern(filter, extension);
-        gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
+        dialog.set_current_name(name);
+        dialog.set_do_overwrite_confirmation();
 
-        auto result = gtk_dialog_run(GTK_DIALOG(dialog));
+        auto filter = Gtk::FileFilter::create();
+        filter->set_name(_("Shader Preset"));
+        filter->add_pattern(extension);
+        dialog.add_filter(filter);
+
+        auto result = dialog.run();
 
         if (result == GTK_RESPONSE_ACCEPT)
-        {
-            auto filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
-            S9xDisplayGetDriver()->save(filename);
-            g_free(filename);
-        }
+            S9xDisplayGetDriver()->save(dialog.get_filename().c_str());
 
-        gtk_widget_destroy(dialog);
         break;
     }
+
     default:
         break;
     }
@@ -147,8 +109,8 @@ void gtk_shader_parameters_dialog_close()
     if (dialog)
     {
         *params = saved_params;
-        gtk_widget_destroy(GTK_WIDGET(dialog));
-        dialog = NULL;
+        delete dialog;
+        dialog = nullptr;
     }
 }
 
@@ -156,7 +118,7 @@ bool gtk_shader_parameters_dialog(GtkWindow *parent)
 {
     if (dialog)
     {
-        gtk_window_present(GTK_WINDOW(dialog));
+        dialog->present();
         return false;
     }
 
@@ -166,145 +128,85 @@ bool gtk_shader_parameters_dialog(GtkWindow *parent)
     if (!params || params->size() == 0)
         return false;
 
-    dialog = gtk_dialog_new_with_buttons(_("GLSL Shader Parameters"),
-                                         parent,
-                                         GTK_DIALOG_DESTROY_WITH_PARENT,
-                                         "gtk-cancel",
-                                         GTK_RESPONSE_CANCEL,
-                                         "gtk-save-as",
-                                         15,
-                                         "gtk-save",
-                                         GTK_RESPONSE_OK,
-                                         NULL);
+    dialog = new Gtk::Dialog(_("Shader Parameters"), Gtk::DIALOG_DESTROY_WITH_PARENT);
+    dialog->add_button(Gtk::StockID("gtk-cancel"), Gtk::RESPONSE_CANCEL);
+    dialog->add_button(Gtk::StockID("gtk-save-as"), 15);
+    dialog->add_button(Gtk::StockID("gtk-save"), GTK_RESPONSE_OK);
+    dialog->signal_response().connect(sigc::ptr_fun(dialog_response));
 
-    g_signal_connect_data(G_OBJECT(dialog), "response", G_CALLBACK(dialog_response), (gpointer)params, NULL, (GConnectFlags)0);
-
-    GtkWidget *scrolled_window;
-    gtk_widget_set_size_request(dialog, 640, 480);
+    dialog->set_size_request(640, 480);
     if (gui_config->shader_parameters_width > 0 && gui_config->shader_parameters_height > 0)
-    {
-        gtk_window_resize(GTK_WINDOW(dialog),
-                          gui_config->shader_parameters_width,
-                          gui_config->shader_parameters_height);
-    }
+        dialog->resize(gui_config->shader_parameters_width, gui_config->shader_parameters_height);
 
-    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-    gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(dialog))),
-                      scrolled_window);
+    auto scrolled_window = new Gtk::ScrolledWindow;
+    scrolled_window->set_hexpand();
+    scrolled_window->set_vexpand();
+    scrolled_window->set_margin_start(5);
+    scrolled_window->set_margin_end(5);
+    scrolled_window->set_margin_top(5);
+    dialog->get_content_area()->add(*scrolled_window);
 
-    GtkSizeGroup *sizegroup = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
+    auto grid = new Gtk::Grid;
+    grid->set_margin_end(5);
+    grid->set_row_homogeneous();
+    grid->set_row_spacing(2);
+    grid->set_column_spacing(12);
+    auto vbox = new Gtk::VBox;
+    vbox->pack_start(*grid, Gtk::PACK_SHRINK);
+    scrolled_window->add(*vbox);
 
-#if GTK_MAJOR_VERSION >= 3
-
-    gtk_widget_set_hexpand(scrolled_window, true);
-    gtk_widget_set_vexpand(scrolled_window, true);
-    gtk_widget_set_margin_start(scrolled_window, 5);
-    gtk_widget_set_margin_end(scrolled_window, 5);
-    gtk_widget_set_margin_top(scrolled_window, 5);
-    gtk_widget_set_margin_bottom(scrolled_window, 5);
-
-    GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-    GtkWidget *grid = gtk_grid_new();
-    gtk_widget_set_margin_end(grid, 5);
-    gtk_grid_set_row_homogeneous(GTK_GRID(grid), true);
-    gtk_grid_set_row_spacing(GTK_GRID(grid), 2);
-    gtk_grid_set_column_spacing(GTK_GRID(grid), 12);
-    gtk_container_add(GTK_CONTAINER(vbox), grid);
-    gtk_container_add(GTK_CONTAINER(scrolled_window), vbox);
-
+    auto sizegroup = Gtk::SizeGroup::create(Gtk::SIZE_GROUP_HORIZONTAL);
     for (unsigned int i = 0; i < params->size(); i++)
     {
-        GLSLParam *p = &(*params)[i];
-        GtkWidget *label = gtk_label_new(p->name);
-        gtk_label_set_xalign(GTK_LABEL(label), 0.0f);
-        gtk_widget_show(label);
+        GLSLParam &p = (*params)[i];
+        auto label = new Gtk::Label(p.name);
+        label->set_xalign(0.0f);
+        label->show();
+        grid->attach(*label, 0, i, 1, 1);
 
-        gtk_grid_attach(GTK_GRID(grid), label, 0, i, 1, 1);
-
-        if (p->min == 0.0 && p->max == 1.0 && p->step == 1.0)
+        if (p.min == 0.0 && p.max == 1.0 && p.step == 1.0)
         {
-            GtkWidget *check = gtk_check_button_new();
-            gtk_grid_attach(GTK_GRID(grid), check, 1, i, 1, 1);
-            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check), (int)p->val);
-            g_signal_connect_data(G_OBJECT(check), "toggled", G_CALLBACK(toggled), (gpointer)p, NULL, (GConnectFlags)0);
+            auto check = new Gtk::CheckButton;
+            grid->attach(*check, 1, i, 1, 1);
+            check->set_active(p.val);
+            check->signal_toggled().connect([check, &param = p.val] {
+                double new_value = check->get_active();
+                if (param != new_value)
+                {
+                    param = new_value;
+                    if (Settings.Paused)
+                        S9xDeinitUpdate(top_level->last_width, top_level->last_height);
+                }
+            });
         }
         else
         {
-            GtkWidget *spin = gtk_spin_button_new_with_range(p->min, p->max, p->step);
-            gtk_entry_set_width_chars(GTK_ENTRY(spin), 5);
-            gtk_grid_attach(GTK_GRID(grid), spin, 1, i, 1, 1);
-            gtk_size_group_add_widget(sizegroup, spin);
-            int digits = gtk_spin_button_get_digits(GTK_SPIN_BUTTON(spin));
-            if (digits == 2)
-                gtk_spin_button_set_digits(GTK_SPIN_BUTTON(spin), 3);
+            auto spin = new Gtk::SpinButton(0.0, p.digits);
+            spin->set_range(p.min, p.max);
+            spin->get_adjustment()->set_step_increment(p.step);
+            spin->set_width_chars(6);
+            grid->attach(*spin, 1, i, 1, 1);
+            sizegroup->add_widget(*spin);
 
-            GtkAdjustment *adjustment = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(spin));
-
-            GtkWidget *scale = gtk_scale_new(GTK_ORIENTATION_HORIZONTAL, adjustment);
-            gtk_widget_set_hexpand(scale, true);
-            gtk_grid_attach(GTK_GRID(grid), scale, 2, i, 1, 1);
-            gtk_scale_set_draw_value(GTK_SCALE(scale), false);
-            gtk_range_set_value(GTK_RANGE(scale), p->val);
-            g_signal_connect_data(G_OBJECT(scale),
-                                  "value-changed",
-                                  G_CALLBACK(value_changed),
-                                  (gpointer)p,
-                                  NULL,
-                                  (GConnectFlags)0);
+            auto scale = new Gtk::Scale(spin->get_adjustment());
+            scale->set_hexpand();
+            grid->attach(*scale, 2, i, 1, 1);
+            scale->set_draw_value(false);
+            scale->set_value(p.val);
+            scale->signal_value_changed().connect([spin, &param = p.val] {
+                double new_value = snap_to_interval(spin->get_value(), spin->get_adjustment()->get_step_increment());
+                spin->set_value(new_value);
+                if (param != new_value)
+                {
+                    param = new_value;
+                    if (Settings.Paused)
+                        S9xDeinitUpdate(top_level->last_width, top_level->last_height);
+                }
+            });
         }
     }
-#else
-    GtkWidget *vbox = gtk_vbox_new(false, 5);
-    GtkWidget *table = gtk_table_new(params->size(), 3, false);
-    gtk_table_set_row_spacings(GTK_TABLE(table), 5);
-    gtk_table_set_col_spacings(GTK_TABLE(table), 12);
-    gtk_container_add(GTK_CONTAINER(vbox), table);
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-    gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scrolled_window), vbox);
-    gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 5);
 
-    for (unsigned int i = 0; i < params->size(); i++)
-    {
-        GLSLParam *p = &(*params)[i];
-        GtkWidget *label = gtk_label_new(p->name);
-        gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
-        gtk_widget_show(label);
-
-        gtk_table_attach(GTK_TABLE(table), label, 0, 1, i, i + 1, GTK_FILL, GTK_FILL, 0, 0);
-
-        if (p->min == 0.0 && p->max == 1.0 && p->step == 1.0)
-        {
-            GtkWidget *check = gtk_check_button_new();
-            gtk_table_attach(GTK_TABLE(table), check, 1, 2, i, i + 1, GTK_FILL, GTK_FILL, 0, 0);
-            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check), (int)p->val);
-            g_signal_connect_data(G_OBJECT(check), "toggled", G_CALLBACK(toggled), (gpointer)p, NULL, (GConnectFlags)0);
-        }
-        else
-        {
-            GtkWidget *spin = gtk_spin_button_new_with_range(p->min, p->max, p->step);
-            gtk_table_attach(GTK_TABLE(table), spin, 1, 2, i, i + 1, GTK_FILL, GTK_FILL, 0, 0);
-            gtk_size_group_add_widget(sizegroup, spin);
-            int digits = gtk_spin_button_get_digits(GTK_SPIN_BUTTON(spin));
-            if (digits == 2)
-                gtk_spin_button_set_digits(GTK_SPIN_BUTTON(spin), 3);
-
-            GtkAdjustment *adjustment = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(spin));
-
-            GtkWidget *scale = gtk_hscale_new(adjustment);
-            gtk_table_attach(GTK_TABLE(table), scale, 2, 3, i, i + 1, (GtkAttachOptions)(GTK_EXPAND | GTK_FILL), GTK_FILL, 0, 0);
-            gtk_scale_set_draw_value(GTK_SCALE(scale), false);
-            gtk_range_set_value(GTK_RANGE(scale), p->val);
-            g_signal_connect_data(G_OBJECT(scale),
-                                  "value-changed",
-                                  G_CALLBACK(value_changed),
-                                  (gpointer)p,
-                                  NULL,
-                                  (GConnectFlags)0);
-        }
-    }
-#endif
-
-    gtk_widget_show_all(dialog);
+    dialog->show_all();
 
     return true;
 }

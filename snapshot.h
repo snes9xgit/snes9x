@@ -31,5 +31,7 @@ bool8 S9xUnfreezeGame (const char *);
 int S9xUnfreezeGameMem (const uint8 *,uint32);
 void S9xFreezeToStream (STREAM);
 int	 S9xUnfreezeFromStream (STREAM);
+bool8 S9xUnfreezeScreenshot(const char *filename, uint16 **image_buffer, int &width, int &height);
+int S9xUnfreezeScreenshotFromStream(STREAM stream, uint16 **image_buffer, int &width, int &height);
 
 #endif

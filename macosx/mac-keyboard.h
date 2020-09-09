@@ -15,63 +15,28 @@
   (c) Copyright 2004         Alexander and Sander
   (c) Copyright 2004 - 2005  Steven Seeger
   (c) Copyright 2005         Ryan Vogt
+  (c) Copyright 2019         Michael Donald Buckley
  ***********************************************************************************/
 
 
 #ifndef _mac_keyboard_h_
 #define _mac_keyboard_h_
 
-#define	kKeys	39
+#include "mac-controls.h"
 
-extern uint8   keyCode[kKeys];
+#define MAC_NUM_KEYCODES    255
 
-enum
-{
-	k1PUp,
-	k1PDown,
-	k1PLeft,
-	k1PRight,
-	k1PY,
-	k1PB,
-	k1PX,
-	k1PA,
-	k1PL,
-	k1PR,
-	k1PStart,
-	k1PSelect,
-
-	k2PUp,
-	k2PDown,
-	k2PLeft,
-	k2PRight,
-	k2PY,
-	k2PB,
-	k2PX,
-	k2PA,
-	k2PL,
-	k2PR,
-	k2PStart,
-	k2PSelect,
-
-	kKeyFastForward,
-	kKeyFreeze,
-	kKeyDefrost,
-	kKeyScreenshot,
-	kKeySPC,
-	kKeyScopeTurbo,
-	kKeyScopePause,
-	kKeyScopeCursor,
-	kKeyOffScreen,
-	kKeyFunction,
-	kKeyAlt,
-	kKeyFFDown,
-	kKeyFFUp,
-	kKeyEsc,
-	kKeyTC
+struct S9xButton {
+    int16 buttonCode;
+    int8 player;
 };
+
+extern struct S9xButton keyCodes[MAC_NUM_KEYCODES];
 
 void InitKeyboard (void);
 void DeinitKeyboard (void);
-void ConfigureKeyboard (void);
+
+bool SetKeyCode(int16 keyCode, S9xButtonCode button, int8 player, int16 *oldKeyCode, S9xButtonCode *oldButton, int8 *oldPlayer);
+void ClearKeyCode(S9xButtonCode buttonCode, int8 player);
 
 #endif

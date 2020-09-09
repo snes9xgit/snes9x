@@ -7,11 +7,11 @@
 #ifndef __GTK_WAYLAND_EGL_CONTEXT_H
 #define __GTK_WAYLAND_EGL_CONTEXT_H
 
-#include <epoxy/egl.h>
-#include <epoxy/egl_generated.h>
-#include <wayland-egl.h>
-
 #include "gtk_opengl_context.h"
+#include "gtk_compat.h"
+
+#include <epoxy/egl.h>
+#include <wayland-egl.h>
 
 class WaylandEGLContext : public OpenGLContext
 {

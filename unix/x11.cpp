@@ -100,6 +100,7 @@ struct GUIData
 	bool8			mod1_pressed;
 	bool8			no_repeat;
 	bool8			fullscreen;
+	bool8			js_event_latch;
 	int				x_offset;
 	int				y_offset;
 #ifdef USE_XVIDEO
@@ -1291,12 +1292,9 @@ void S9xPutImage (int width, int height)
 			for (int x = 0; x < SNES_WIDTH * 2; x += 2)
 			{
 				// Read two RGB pxls
-				//  TODO: there is an assumption of endianness here...
-				// ALSO todo:  The 0x7FFF works around some issue with S9xPutChar, where
-				//  despite asking for RGB555 in InitImage, it insists on drawing with RGB565 instead.
-				//  This may discolor messages but at least it doesn't overflow yuv-tables and crash.
-				unsigned short rgb1 = (*s & 0x7FFF); s++;
-				unsigned short rgb2 = (*s & 0x7FFF); s++;
+				//  Now that we are RGB565 throughout, need to drop the Green LSB
+				unsigned short rgb1 = (*s & 0xFFC0) >> 1 | (*s & 0x001F); s++;
+				unsigned short rgb2 = (*s & 0xFFC0) >> 1 | (*s & 0x001F); s++;
 
 				// put two YUYV pxls
 				// lum1
@@ -1452,7 +1450,7 @@ static void Repaint (bool8 isFrameBoundry)
 	if (GUI.use_shared_memory)
 	{
 		XShmPutImage(GUI.display, GUI.window, GUI.gc, GUI.image->ximage, 0, 0, GUI.x_offset, GUI.y_offset, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2, False);
-		XSync(GUI.display, False);
+		XSync(GUI.display, False); // Is this double-sync?  See XQueryPointer below...
 	}
 	else
 #endif
@@ -1511,8 +1509,21 @@ static bool8 CheckForPendingXEvents (Display *display)
 #endif
 }
 
+void S9xLatchJSEvent ()
+{
+	// record that a JS event happened and was reported to the engine
+	GUI.js_event_latch = TRUE;
+}
+
 void S9xProcessEvents (bool8 block)
 {
+	// Kick the screensaver if a joystick event occurred
+	if (GUI.js_event_latch == TRUE) {
+		XWarpPointer(GUI.display, None, None, 0, 0, 0, 0, 0, 0);
+		GUI.js_event_latch = FALSE;
+	}
+
+	// Process all other X events
 	while (block || CheckForPendingXEvents(GUI.display))
 	{
 		XEvent	event;
@@ -1782,9 +1793,4 @@ bool S9xDisplayPollPointer (uint32 id, int16 *x, int16 *y)
 	*y = GUI.mouse_y;
 
 	return (true);
-}
-
-void S9xSetPalette (void)
-{
-	return;
 }

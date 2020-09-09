@@ -2269,11 +2269,9 @@ void S9xApplyCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 						break;
 
 					case LoadFreezeFile:
-						S9xUnfreezeGame(S9xChooseFilename(TRUE));
 						break;
 
 					case SaveFreezeFile:
-						S9xFreezeGame(S9xChooseFilename(FALSE));
 						break;
 
 					case LoadOopsFile:
@@ -2414,15 +2412,15 @@ void S9xApplyCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 						break;
 
 					case BeginRecordingMovie:
-						if (S9xMovieActive())
-							S9xMovieStop(FALSE);
-						S9xMovieCreate(S9xChooseMovieFilename(FALSE), 0xFF, MOVIE_OPT_FROM_RESET, NULL, 0);
+						// if (S9xMovieActive())
+						// 	S9xMovieStop(FALSE);
+						// S9xMovieCreate(S9xChooseMovieFilename(FALSE), 0xFF, MOVIE_OPT_FROM_RESET, NULL, 0);
 						break;
 
 					case LoadMovie:
-						if (S9xMovieActive())
-							S9xMovieStop(FALSE);
-						S9xMovieOpen(S9xChooseMovieFilename(TRUE), FALSE);
+						// if (S9xMovieActive())
+						// 	S9xMovieStop(FALSE);
+						// S9xMovieOpen(S9xChooseMovieFilename(TRUE), FALSE);
 						break;
 
 					case EndRecordingMovie:
@@ -3512,11 +3510,17 @@ void S9xControlPreSaveState (struct SControlSnapshot *s)
 		for (int k = 0; k < 2; k++)
 			COPY(mp5[j].pads[k]);
 
+	assert(i == sizeof(s->internal));
+
+	#undef COPY
+	#define COPY(x)	{ memcpy((char *) s->internal_macs + i, &(x), sizeof(x)); i += sizeof(x); }
+	i = 0;
+
 	COPY(macsrifle.x);
 	COPY(macsrifle.y);
 	COPY(macsrifle.buttons);
 
-	assert(i == sizeof(s->internal) + sizeof(s->internal_macs));
+	assert(i == sizeof(s->internal_macs));
 
 #undef COPY
 
@@ -3591,11 +3595,15 @@ void S9xControlPostLoadState (struct SControlSnapshot *s)
 
 		if (s->ver > 3)
 		{
+			#undef COPY
+			#define COPY(x)	{ memcpy(&(x), (char *) s->internal_macs + i, sizeof(x)); i += sizeof(x); }
+			i = 0;
+
 			COPY(macsrifle.x);
 			COPY(macsrifle.y);
 			COPY(macsrifle.buttons);
 
-			assert(i == sizeof(s->internal) + sizeof(s->internal_macs));
+			assert(i == sizeof(s->internal_macs));
 		}
 
 	#undef COPY

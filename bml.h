@@ -1,31 +1,27 @@
 #ifndef __BML_H
 #define __BML_H
 #include <vector>
+#include <string>
+#include <fstream>
 
-const int bml_attr_type = -2;
-
-typedef struct bml_node
+struct bml_node
 {
-    char *name;
-    char *data;
+    enum node_type {
+        CHILD,
+        ATTRIBUTE
+    };
 
+    bml_node();
+    bool parse_file(std::string filename);
+    void parse(std::ifstream &fd);
+    bml_node *find_subnode(std::string name);
+    void print();
+
+    std::string name;
+    std::string data;
     int depth;
-
-    std::vector<bml_node *> child;
-
-} bml_node;
-
-bml_node *bml_find_sub (bml_node *node, const char *name);
-
-bml_node *bml_parse_file (const char *filename);
-
-/* Parse character array into BML tree. Destructive to input. */
-bml_node *bml_parse (char **buffer);
-
-/* Recursively free bml_node and substructures */
-void bml_free_node (bml_node *);
-
-/* Print node structure to stdout */
-void bml_print_node (bml_node *);
+    std::vector<bml_node> child;
+    node_type type;
+};
 
 #endif

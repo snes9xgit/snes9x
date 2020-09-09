@@ -10,6 +10,8 @@
 #include "gtk_s9x.h"
 #include "gtk_sound.h"
 #include "gtk_sound_driver.h"
+#include "snes9x.h"
+#include "apu/apu.h"
 
 #ifdef USE_PORTAUDIO
 #include "gtk_sound_driver_portaudio.h"
@@ -30,10 +32,9 @@ static int playback_rates[8] =
     0, 8000, 11025, 16000, 22050, 32000, 44100, 48000
 };
 
-S9xSoundDriver *driver;
+static S9xSoundDriver *driver;
 
-int
-S9xSoundBase2log (int num)
+int S9xSoundBase2log(int num)
 {
     int power;
 
@@ -48,14 +49,12 @@ S9xSoundBase2log (int num)
     return power;
 }
 
-int
-S9xSoundPowerof2 (int num)
+int S9xSoundPowerof2(int num)
 {
     return (1 << num);
 }
 
-void
-S9xPortSoundInit ()
+void S9xPortSoundInit()
 {
     int pao_driver = 0;
     int sdl_driver = 0;
@@ -103,34 +102,34 @@ S9xPortSoundInit ()
 
 #ifdef USE_PORTAUDIO
     if (gui_config->sound_driver == pao_driver)
-        driver = new S9xPortAudioSoundDriver ();
+        driver = new S9xPortAudioSoundDriver();
 #endif
 
 #ifdef USE_OSS
     if (gui_config->sound_driver == oss_driver)
-        driver = new S9xOSSSoundDriver ();
+        driver = new S9xOSSSoundDriver();
 #endif
 
     if (gui_config->sound_driver == sdl_driver)
-        driver = new S9xSDLSoundDriver ();
+        driver = new S9xSDLSoundDriver();
 
 #ifdef USE_ALSA
     if (gui_config->sound_driver == alsa_driver)
-        driver = new S9xAlsaSoundDriver ();
+        driver = new S9xAlsaSoundDriver();
 #endif
 
 #ifdef USE_PULSEAUDIO
     if (gui_config->sound_driver == pulse_driver)
-        driver = new S9xPulseSoundDriver ();
+        driver = new S9xPulseSoundDriver();
 #endif
 
     if (driver != NULL)
     {
-        driver->init ();
+        driver->init();
 
         if (gui_config->auto_input_rate)
         {
-            Settings.SoundInputRate = top_level->get_auto_input_rate ();
+            Settings.SoundInputRate = top_level->get_auto_input_rate();
             if (Settings.SoundInputRate == 0.0)
             {
                 Settings.SoundInputRate = 31950;
@@ -139,68 +138,65 @@ S9xPortSoundInit ()
         }
         else
         {
-            Settings.SoundInputRate = CLAMP (gui_config->sound_input_rate, 31700, 32300);
+            Settings.SoundInputRate = CLAMP(gui_config->sound_input_rate, 31700, 32300);
         }
 
         Settings.SoundPlaybackRate = playback_rates[gui_config->sound_playback_rate];
 
         S9xInitSound(0);
 
-        S9xSetSoundMute (false);
+        S9xSetSoundMute(false);
     }
     else
     {
-        S9xSetSoundMute (gui_config->mute_sound);
+        S9xSetSoundMute(gui_config->mute_sound);
     }
 }
 
-void
-S9xPortSoundReinit ()
+void S9xPortSoundReinit()
 {
-    S9xPortSoundDeinit ();
+    S9xPortSoundDeinit();
 
     /* Ensure the sound device is released before trying to reopen it. */
-    sync ();
+    sync();
 
-    S9xPortSoundInit ();
+    S9xPortSoundInit();
 }
 
-void
-S9xPortSoundDeinit ()
+void S9xPortSoundDeinit()
 {
-    S9xSoundStop ();
+    S9xSoundStop();
 
-    driver->terminate ();
+    if (driver)
+        driver->terminate();
 
     delete driver;
 }
 
-void
-S9xSoundStart ()
+void S9xSoundStart()
 {
-    driver->start ();
+    if (driver)
+        driver->start();
 }
 
-void
-S9xSoundStop ()
+void S9xSoundStop()
 {
-    driver->stop ();
+    if (driver)
+        driver->stop();
 }
 
-bool8
-S9xOpenSoundDevice ()
+bool8 S9xOpenSoundDevice()
 {
     if (gui_config->mute_sound)
         return false;
 
-    gui_config->sound_buffer_size = CLAMP (gui_config->sound_buffer_size, 2, 256);
+    gui_config->sound_buffer_size = CLAMP(gui_config->sound_buffer_size, 2, 256);
 
-    return driver->open_device ();
+    return driver->open_device();
 }
 
 /* This really shouldn't be in the port layer */
-void
-S9xToggleSoundChannel (int c)
+void S9xToggleSoundChannel(int c)
 {
     static int sound_switch = 255;
 
@@ -209,5 +205,5 @@ S9xToggleSoundChannel (int c)
     else
         sound_switch ^= 1 << c;
 
-    S9xSetSoundControl (sound_switch);
+    S9xSetSoundControl(sound_switch);
 }

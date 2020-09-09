@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14490.70"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="MusicBoxController">
+            <connections>
+                <outlet property="disclosure" destination="62" id="93"/>
+                <outlet property="gametitle" destination="72" id="113"/>
+                <outlet property="indicator" destination="1" id="114"/>
+                <outlet property="led" destination="64" id="115"/>
+                <outlet property="rewind" destination="68" id="95"/>
+                <outlet property="window" destination="2" id="116"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <window title="Music Box" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="2">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="100" y="100" width="352" height="242"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="878"/>
+            <value key="minSize" type="size" width="352" height="61"/>
+            <value key="maxSize" type="size" width="352" height="242"/>
+            <view key="contentView" id="3">
+                <rect key="frame" x="0.0" y="0.0" width="352" height="242"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView id="120">
+                        <rect key="frame" x="30" y="37" width="262" height="142"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" image="musicbox_indicator" id="121"/>
+                    </imageView>
+                    <button verticalHuggingPriority="750" imageHugsTitle="YES" id="6">
+                        <rect key="frame" x="302" y="158" width="30" height="22"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" image="musicbox_pause" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="7">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="handlePauseButton:" target="-2" id="123"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" imageHugsTitle="YES" id="68">
+                        <rect key="frame" x="302" y="134" width="30" height="22"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" image="musicbox_rewind" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="69">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="handleRewindButton:" target="-2" id="124"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" imageHugsTitle="YES" id="70">
+                        <rect key="frame" x="302" y="110" width="30" height="22"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" image="musicbox_effect" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="71">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="handleEffectButton:" target="-2" id="125"/>
+                        </connections>
+                    </button>
+                    <customView id="1" customClass="MusicBoxIndicatorView">
+                        <rect key="frame" x="36" y="43" width="250" height="130"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    </customView>
+                    <button verticalHuggingPriority="750" imageHugsTitle="YES" id="14">
+                        <rect key="frame" x="41" y="19" width="12" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="15">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="handleChannelButton:" target="-2" id="127"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" tag="5" imageHugsTitle="YES" id="26">
+                        <rect key="frame" x="111" y="19" width="12" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="27">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="handleChannelButton:" target="-2" id="133"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" tag="1" imageHugsTitle="YES" id="28">
+                        <rect key="frame" x="55" y="19" width="12" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="29">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="handleChannelButton:" target="-2" id="129"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" tag="2" imageHugsTitle="YES" id="30">
+                        <rect key="frame" x="69" y="19" width="12" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="31">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="handleChannelButton:" target="-2" id="130"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" tag="3" imageHugsTitle="YES" id="32">
+                        <rect key="frame" x="83" y="19" width="12" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="33">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="handleChannelButton:" target="-2" id="131"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" tag="4" imageHugsTitle="YES" id="34">
+                        <rect key="frame" x="97" y="19" width="12" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="35">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="handleChannelButton:" target="-2" id="132"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" tag="7" imageHugsTitle="YES" id="36">
+                        <rect key="frame" x="139" y="19" width="12" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="37">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="handleChannelButton:" target="-2" id="135"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" tag="6" imageHugsTitle="YES" id="38">
+                        <rect key="frame" x="125" y="19" width="12" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="39">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="handleChannelButton:" target="-2" id="134"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" tag="8" imageHugsTitle="YES" id="40">
+                        <rect key="frame" x="171" y="19" width="12" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="55">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="handleChannelButton:" target="-2" id="136"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" tag="13" imageHugsTitle="YES" id="41">
+                        <rect key="frame" x="241" y="19" width="12" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="54">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="handleChannelButton:" target="-2" id="141"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" tag="9" imageHugsTitle="YES" id="42">
+                        <rect key="frame" x="185" y="19" width="12" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="53">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="handleChannelButton:" target="-2" id="137"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" tag="10" imageHugsTitle="YES" id="43">
+                        <rect key="frame" x="199" y="19" width="12" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="52">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="handleChannelButton:" target="-2" id="138"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" tag="11" imageHugsTitle="YES" id="44">
+                        <rect key="frame" x="213" y="19" width="12" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="51">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="handleChannelButton:" target="-2" id="139"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" tag="12" imageHugsTitle="YES" id="45">
+                        <rect key="frame" x="227" y="19" width="12" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="50">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="handleChannelButton:" target="-2" id="140"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" tag="15" imageHugsTitle="YES" id="46">
+                        <rect key="frame" x="269" y="19" width="12" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="49">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="handleChannelButton:" target="-2" id="143"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" tag="14" imageHugsTitle="YES" id="47">
+                        <rect key="frame" x="255" y="19" width="12" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="48">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="handleChannelButton:" target="-2" id="142"/>
+                        </connections>
+                    </button>
+                    <button horizontalHuggingPriority="750" verticalHuggingPriority="750" imageHugsTitle="YES" id="62">
+                        <rect key="frame" x="307" y="198" width="29" height="26"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="disclosure" bezelStyle="roundedDisclosure" imagePosition="only" alignment="center" state="on" borderStyle="border" inset="2" id="63">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="handleDisclosureButton:" target="-2" id="126"/>
+                        </connections>
+                    </button>
+                    <imageView id="64">
+                        <rect key="frame" x="153" y="18" width="16" height="16"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="musicbox_ledoff" id="65"/>
+                    </imageView>
+                    <textField verticalHuggingPriority="750" id="66">
+                        <rect key="frame" x="17" y="203" width="58" height="17"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" lineBreakMode="truncatingTail" allowsUndo="NO" sendsActionOnEndEditing="YES" title="Playing :" bezelStyle="round" id="67">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField verticalHuggingPriority="750" id="72">
+                        <rect key="frame" x="77" y="203" width="218" height="17"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" lineBreakMode="truncatingTail" allowsUndo="NO" sendsActionOnEndEditing="YES" title="Game Title" bezelStyle="round" id="73">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                </subviews>
+            </view>
+            <connections>
+                <outlet property="delegate" destination="-2" id="146"/>
+            </connections>
+        </window>
+    </objects>
+    <resources>
+        <image name="musicbox_effect" width="16" height="16"/>
+        <image name="musicbox_indicator" width="262" height="142"/>
+        <image name="musicbox_ledoff" width="16" height="16"/>
+        <image name="musicbox_pause" width="16" height="16"/>
+        <image name="musicbox_rewind" width="16" height="16"/>
+    </resources>
+</document>

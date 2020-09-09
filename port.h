@@ -44,6 +44,14 @@
 #define PIXEL_FORMAT RGB565
 #endif
 
+#if defined(__GNUC__)
+#define alwaysinline  inline __attribute__((always_inline))
+#elif defined(_MSC_VER)
+#define alwaysinline  __forceinline
+#else
+#define alwaysinline  inline
+#endif
+
 #ifndef snes9x_types_defined
 #define snes9x_types_defined
 typedef unsigned char		bool8;
@@ -142,12 +150,6 @@ void SetInfoDlgColor(unsigned char, unsigned char, unsigned char);
 #define S9xDisplayString	DisplayStringFromBottom
 #endif  // __LIBRETRO__
 #endif  // __WIN32__
-
-inline void sstrncpy(char *dst, const char *src, size_t size)
-{
-    strncpy(dst, src, size - 1);
-    dst[size - 1] = '\0';
-}
 
 #if defined(__DJGPP) || defined(__WIN32__)
 #define SLASH_STR	"\\"

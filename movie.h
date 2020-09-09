@@ -48,7 +48,6 @@ int S9xMovieGetInfo (const char *, struct MovieInfo *);
 void S9xMovieStop (bool8);
 void S9xMovieToggleRecState (void);
 void S9xMovieToggleFrameDisplay (void);
-const char * S9xChooseMovieFilename (bool8);
 
 // methods used by the emulation
 void S9xMovieInit (void);

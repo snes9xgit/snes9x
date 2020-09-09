@@ -26,6 +26,15 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Dialog
 //
 
+IDD_DIALOG_LOAD_PREVIEW DIALOGEX 0, 0, 567, 247
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Load with Preview"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    PUSHBUTTON      "Cancel",IDCANCEL,510,226,50,14
+    COMBOBOX        IDC_COMBO_BANK,7,226,48,30,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+END
+
 IDD_SOUND_OPTS DIALOGEX 0, 0, 414, 158
 STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU
 CAPTION "Sound Settings"
@@ -80,7 +89,7 @@ BEGIN
     EDITTEXT        IDC_DISCLAIMER,6,6,222,148,ES_MULTILINE | ES_NOHIDESEL | ES_READONLY | WS_VSCROLL,WS_EX_STATICEDGE
 END
 
-IDD_EMU_SETTINGS DIALOGEX 0, 0, 342, 200
+IDD_EMU_SETTINGS DIALOGEX 0, 0, 343, 228
 STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU
 CAPTION "APP - Emulator Settings"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -88,7 +97,7 @@ BEGIN
     EDITTEXT        IDC_CUSTOM_FOLDER_FIELD,102,28,180,14,ES_AUTOHSCROLL
     PUSHBUTTON      "&Browse...",IDC_BROWSE,288,28,48,14
     EDITTEXT        IDC_AUTO_SAVE_DELAY,102,47,49,14,ES_AUTOHSCROLL | ES_NUMBER
-    CONTROL         "Spin2",IDC_SRAM_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,323,51,11,13
+    CONTROL         "Spin2",IDC_SRAM_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,324,51,11,13
     EDITTEXT        IDC_MAX_SKIP,102,66,49,14,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Spin3",IDC_SPIN_MAX_SKIP,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,309,70,11,13
     EDITTEXT        IDC_TURBO_SKIP,102,85,49,14,ES_AUTOHSCROLL | ES_NUMBER
@@ -102,8 +111,8 @@ BEGIN
     CONTROL         "Pause When Inactive",IDC_INACTIVE_PAUSE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,102,156,96,8
     CONTROL         "Custom ROM Open Dialog",IDC_CUSTOMROMOPEN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,102,168,114,8
     CONTROL         "Hi-Res AVI Recording",IDC_HIRESAVI,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,102,180,114,8
-    DEFPUSHBUTTON   "&OK",IDOK,234,180,48,14
-    PUSHBUTTON      "&Cancel",IDCANCEL,288,180,48,14
+    DEFPUSHBUTTON   "&OK",IDOK,233,205,48,14
+    PUSHBUTTON      "&Cancel",IDCANCEL,287,205,48,14
     COMBOBOX        IDC_DIRCOMBO,42,30,53,30,CBS_DROPDOWNLIST | WS_TABSTOP
     RTEXT           "Directory:",IDC_LABEL_FREEZE,0,30,38,12,SS_CENTERIMAGE
     RTEXT           "Auto-Save S-RAM",IDC_LABEL_ASRAM,12,47,84,14,SS_CENTERIMAGE
@@ -121,6 +130,8 @@ BEGIN
     LTEXT           "frames",IDC_LABEL_GRANU_TEXT,156,120,131,14,SS_CENTERIMAGE
     RTEXT           "SuperFX speed:",IDC_LABEL_SFXSPEED,18,138,78,14,SS_CENTERIMAGE
     LTEXT           "%",IDC_LABEL_SFXSPEED_2,156,138,131,14,SS_CENTERIMAGE
+    CONTROL         "Ask for confirmation when saving/loading",IDC_CONFIRMSAVELOAD,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,102,192,145,8
 END
 
 IDD_OPEN_ROM DIALOGEX 0, 0, 430, 223
@@ -416,91 +427,101 @@ BEGIN
     CONTROL         "Clear SRAM",IDC_CLEARSRAM,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,96,70,10
 END
 
-IDD_KEYCUSTOM DIALOGEX 0, 0, 408, 206
+IDD_KEYCUSTOM DIALOGEX 0, 0, 409, 296
 STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CLIPCHILDREN | WS_CAPTION
 CAPTION "Customize Special Keys"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    PUSHBUTTON      "Cancel",IDCANCEL,354,186,48,14
-    PUSHBUTTON      "OK",IDOK,300,186,48,14
+    PUSHBUTTON      "Cancel",IDCANCEL,354,276,48,14
+    PUSHBUTTON      "OK",IDOK,300,276,48,14
     RTEXT           "Speed +:",IDC_LABEL_HK1,12,30,72,12
-    RTEXT           "Frame advance:",IDC_LABEL_HK4,12,66,72,12
-    RTEXT           "Speed -:",IDC_LABEL_HK2,12,42,72,12
-    RTEXT           "Pause:",IDC_LABEL_HK3,12,54,72,12
-    RTEXT           "Frameskip +:",IDC_LABEL_HK6,12,90,72,12
-    RTEXT           "Movie frame count:",IDC_LABEL_HK11,12,150,72,12
-    RTEXT           "SuperScope turbo:",IDC_LABEL_HK8,12,114,72,12
-    RTEXT           "Movie read-only:",IDC_LABEL_HK12,12,162,72,12
-    RTEXT           "SuperScope pause:",IDC_LABEL_HK9,12,126,72,12
-    RTEXT           "Frameskip -:",IDC_LABEL_HK7,12,102,72,12
-    CONTROL         "",IDC_HOTKEY1,"InputCustomHot",WS_TABSTOP,90,30,90,11,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_HOTKEY2,"InputCustomHot",WS_TABSTOP,90,42,90,11,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_HOTKEY3,"InputCustomHot",WS_TABSTOP,90,54,90,11,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_HOTKEY4,"InputCustomHot",WS_TABSTOP,90,66,90,11,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_HOTKEY5,"InputCustomHot",WS_TABSTOP,90,78,90,11,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_HOTKEY6,"InputCustomHot",WS_TABSTOP,90,90,90,11,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_HOTKEY7,"InputCustomHot",WS_TABSTOP,90,102,90,11,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_HOTKEY8,"InputCustomHot",WS_TABSTOP,90,114,90,11,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_HOTKEY9,"InputCustomHot",WS_TABSTOP,90,126,90,11,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_HOTKEY10,"InputCustomHot",WS_TABSTOP,90,138,90,11,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_HOTKEY11,"InputCustomHot",WS_TABSTOP,90,150,90,11,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_HOTKEY12,"InputCustomHot",WS_TABSTOP,90,162,90,11,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_HOTKEY13,"InputCustomHot",WS_TABSTOP,90,174,90,11,WS_EX_CLIENTEDGE
-    CONTROL         "",IDC_SAVE1,"InputCustomHot",WS_TABSTOP,234,18,60,11,WS_EX_CLIENTEDGE
-    RTEXT           "Save 1:",IDC_LABEL_UP2,198,30,30,12
-    CONTROL         "",IDC_SAVE2,"InputCustomHot",WS_TABSTOP,234,30,60,11,WS_EX_CLIENTEDGE
-    RTEXT           "Save 2:",IDC_LABEL_UP3,198,42,30,12
-    CONTROL         "",IDC_SAVE3,"InputCustomHot",WS_TABSTOP,234,42,60,11,WS_EX_CLIENTEDGE
-    RTEXT           "Save 3:",IDC_LABEL_UP4,198,54,30,12
-    CONTROL         "",IDC_SAVE4,"InputCustomHot",WS_TABSTOP,234,54,60,11,WS_EX_CLIENTEDGE
-    RTEXT           "Save 4:",IDC_LABEL_UP5,198,66,30,12
-    CONTROL         "",IDC_SAVE5,"InputCustomHot",WS_TABSTOP,234,66,60,11,WS_EX_CLIENTEDGE
-    RTEXT           "Save 5:",IDC_LABEL_UP6,198,78,30,12
-    CONTROL         "",IDC_SAVE6,"InputCustomHot",WS_TABSTOP,234,78,60,11,WS_EX_CLIENTEDGE
-    RTEXT           "Save 6:",IDC_LABEL_UP7,198,90,30,12
-    CONTROL         "",IDC_SAVE7,"InputCustomHot",WS_TABSTOP,234,90,60,11,WS_EX_CLIENTEDGE
-    RTEXT           "Save 7:",IDC_LABEL_UP8,198,102,30,12
-    CONTROL         "",IDC_SAVE8,"InputCustomHot",WS_TABSTOP,234,102,60,11,WS_EX_CLIENTEDGE
-    RTEXT           "Save 8:",IDC_LABEL_UP9,198,114,30,12
-    CONTROL         "",IDC_SAVE9,"InputCustomHot",WS_TABSTOP,234,114,60,11,WS_EX_CLIENTEDGE
-    RTEXT           "Save 9:",IDC_LABEL_UP10,198,126,30,12
-    CONTROL         "",IDC_SAVE10,"InputCustomHot",WS_TABSTOP,234,126,60,11,WS_EX_CLIENTEDGE
-    RTEXT           "Save 0:",IDC_LABEL_UP11,198,18,30,12
-    CONTROL         "",IDC_SAVE11,"InputCustomHot",WS_TABSTOP,336,18,60,11,WS_EX_CLIENTEDGE
-    RTEXT           "Load 1:",IDC_LABEL_UP12,300,30,30,12
-    CONTROL         "",IDC_SAVE12,"InputCustomHot",WS_TABSTOP,336,30,60,11,WS_EX_CLIENTEDGE
-    RTEXT           "Load 2:",IDC_LABEL_UP13,300,42,30,12
-    CONTROL         "",IDC_SAVE13,"InputCustomHot",WS_TABSTOP,336,42,60,11,WS_EX_CLIENTEDGE
-    RTEXT           "Load 3:",IDC_LABEL_UP14,300,54,30,12
-    CONTROL         "",IDC_SAVE14,"InputCustomHot",WS_TABSTOP,336,54,60,11,WS_EX_CLIENTEDGE
-    RTEXT           "Load 4:",IDC_LABEL_UP15,300,66,30,12
-    CONTROL         "",IDC_SAVE15,"InputCustomHot",WS_TABSTOP,336,66,60,11,WS_EX_CLIENTEDGE
-    RTEXT           "Load 5:",IDC_LABEL_UP16,300,78,30,12
-    CONTROL         "",IDC_SAVE16,"InputCustomHot",WS_TABSTOP,336,78,60,11,WS_EX_CLIENTEDGE
-    RTEXT           "Load 6:",IDC_LABEL_UP17,300,90,30,12
-    CONTROL         "",IDC_SAVE17,"InputCustomHot",WS_TABSTOP,336,90,60,11,WS_EX_CLIENTEDGE
-    RTEXT           "Load 7:",IDC_LABEL_UP18,300,102,30,12
-    CONTROL         "",IDC_SAVE18,"InputCustomHot",WS_TABSTOP,336,102,60,11,WS_EX_CLIENTEDGE
-    RTEXT           "Load 8:",IDC_LABEL_UP19,300,114,30,12
-    CONTROL         "",IDC_SAVE19,"InputCustomHot",WS_TABSTOP,336,114,60,11,WS_EX_CLIENTEDGE
-    RTEXT           "Load 9:",IDC_LABEL_UP20,300,126,30,12
-    CONTROL         "",IDC_SAVE20,"InputCustomHot",WS_TABSTOP,336,126,60,11,WS_EX_CLIENTEDGE
-    RTEXT           "Load 0:",IDC_LABEL_UP21,300,18,30,12
-    RTEXT           "Fast-forward:",IDC_LABEL_HK5,12,78,72,12
-    RTEXT           "Show pressed keys:",IDC_LABEL_HK10,12,138,72,12
-    RTEXT           "Save screenshot:",IDC_LABEL_HK13,12,174,72,12
-    RTEXT           "Slot -:",IDC_LABEL_UP22,198,150,30,12
-    CONTROL         "",IDC_SLOTMINUS,"InputCustomHot",WS_TABSTOP,234,150,60,11,WS_EX_CLIENTEDGE
-    RTEXT           "Slot +:",IDC_LABEL_UP23,300,150,30,12
-    CONTROL         "",IDC_SLOTPLUS,"InputCustomHot",WS_TABSTOP,336,150,60,11,WS_EX_CLIENTEDGE
-    RTEXT           "Save #:",IDC_LABEL_UP24,198,162,30,12
-    CONTROL         "",IDC_SLOTSAVE,"InputCustomHot",WS_TABSTOP,234,162,60,11,WS_EX_CLIENTEDGE
-    RTEXT           "Load #:",IDC_LABEL_UP25,300,162,30,12
-    CONTROL         "",IDC_SLOTLOAD,"InputCustomHot",WS_TABSTOP,336,162,60,11,WS_EX_CLIENTEDGE
-    LTEXT           "Blue means the hotkey is already mapped. Pink means it conflicts with a game button. Red means it's reserved by Windows. A hotkey can be disabled using Escape.",IDC_LABEL_BLUE,192,186,78,12,NOT WS_VISIBLE
+    RTEXT           "Frame advance:",IDC_LABEL_HK4,12,75,72,12
+    RTEXT           "Speed -:",IDC_LABEL_HK2,12,45,72,12
+    RTEXT           "Pause:",IDC_LABEL_HK3,12,60,72,12
+    RTEXT           "Frameskip +:",IDC_LABEL_HK6,12,105,72,12
+    RTEXT           "Movie frame count:",IDC_LABEL_HK11,12,180,72,12
+    RTEXT           "SuperScope turbo:",IDC_LABEL_HK8,12,135,72,12
+    RTEXT           "Movie read-only:",IDC_LABEL_HK12,12,195,72,12
+    RTEXT           "SuperScope pause:",IDC_LABEL_HK9,12,150,72,12
+    RTEXT           "Frameskip -:",IDC_LABEL_HK7,12,120,72,12
+    CONTROL         "",IDC_HOTKEY1,"InputCustomHot",WS_TABSTOP,90,30,60,12,WS_EX_CLIENTEDGE
+    CONTROL         "",IDC_HOTKEY2,"InputCustomHot",WS_TABSTOP,90,45,60,12,WS_EX_CLIENTEDGE
+    CONTROL         "",IDC_HOTKEY3,"InputCustomHot",WS_TABSTOP,90,60,60,12,WS_EX_CLIENTEDGE
+    CONTROL         "",IDC_HOTKEY4,"InputCustomHot",WS_TABSTOP,90,75,60,12,WS_EX_CLIENTEDGE
+    CONTROL         "",IDC_HOTKEY5,"InputCustomHot",WS_TABSTOP,90,90,60,12,WS_EX_CLIENTEDGE
+    CONTROL         "",IDC_HOTKEY6,"InputCustomHot",WS_TABSTOP,90,105,60,12,WS_EX_CLIENTEDGE
+    CONTROL         "",IDC_HOTKEY7,"InputCustomHot",WS_TABSTOP,90,120,60,12,WS_EX_CLIENTEDGE
+    CONTROL         "",IDC_HOTKEY8,"InputCustomHot",WS_TABSTOP,90,135,60,12,WS_EX_CLIENTEDGE
+    CONTROL         "",IDC_HOTKEY9,"InputCustomHot",WS_TABSTOP,90,150,60,12,WS_EX_CLIENTEDGE
+    CONTROL         "",IDC_HOTKEY10,"InputCustomHot",WS_TABSTOP,90,165,60,12,WS_EX_CLIENTEDGE
+    CONTROL         "",IDC_HOTKEY11,"InputCustomHot",WS_TABSTOP,90,180,60,12,WS_EX_CLIENTEDGE
+    CONTROL         "",IDC_HOTKEY12,"InputCustomHot",WS_TABSTOP,90,195,60,12,WS_EX_CLIENTEDGE
+    CONTROL         "",IDC_HOTKEY13,"InputCustomHot",WS_TABSTOP,90,210,60,12,WS_EX_CLIENTEDGE
+    CONTROL         "",IDC_SAVE1,"InputCustomHot",WS_TABSTOP,217,30,60,12,WS_EX_CLIENTEDGE
+    RTEXT           "Save 1:",IDC_LABEL_UP2,181,45,30,12
+    CONTROL         "",IDC_SAVE2,"InputCustomHot",WS_TABSTOP,217,45,60,12,WS_EX_CLIENTEDGE
+    RTEXT           "Save 2:",IDC_LABEL_UP3,181,60,30,12
+    CONTROL         "",IDC_SAVE3,"InputCustomHot",WS_TABSTOP,217,60,60,12,WS_EX_CLIENTEDGE
+    RTEXT           "Save 3:",IDC_LABEL_UP4,181,75,30,12
+    CONTROL         "",IDC_SAVE4,"InputCustomHot",WS_TABSTOP,217,75,60,12,WS_EX_CLIENTEDGE
+    RTEXT           "Save 4:",IDC_LABEL_UP5,181,90,30,12
+    CONTROL         "",IDC_SAVE5,"InputCustomHot",WS_TABSTOP,217,90,60,12,WS_EX_CLIENTEDGE
+    RTEXT           "Save 5:",IDC_LABEL_UP6,181,105,30,12
+    CONTROL         "",IDC_SAVE6,"InputCustomHot",WS_TABSTOP,217,105,60,12,WS_EX_CLIENTEDGE
+    RTEXT           "Save 6:",IDC_LABEL_UP7,181,120,30,12
+    CONTROL         "",IDC_SAVE7,"InputCustomHot",WS_TABSTOP,217,120,60,12,WS_EX_CLIENTEDGE
+    RTEXT           "Save 7:",IDC_LABEL_UP8,181,135,30,12
+    CONTROL         "",IDC_SAVE8,"InputCustomHot",WS_TABSTOP,217,135,60,12,WS_EX_CLIENTEDGE
+    RTEXT           "Save 8:",IDC_LABEL_UP9,181,150,30,12
+    CONTROL         "",IDC_SAVE9,"InputCustomHot",WS_TABSTOP,217,150,60,12,WS_EX_CLIENTEDGE
+    RTEXT           "Save 9:",IDC_LABEL_UP10,181,165,30,12
+    CONTROL         "",IDC_SAVE10,"InputCustomHot",WS_TABSTOP,217,165,60,12,WS_EX_CLIENTEDGE
+    RTEXT           "Save 0:",IDC_LABEL_UP11,181,30,30,12
+    CONTROL         "",IDC_SAVE11,"InputCustomHot",WS_TABSTOP,336,30,60,12,WS_EX_CLIENTEDGE
+    RTEXT           "Load 1:",IDC_LABEL_UP12,300,45,30,12
+    CONTROL         "",IDC_SAVE12,"InputCustomHot",WS_TABSTOP,336,45,60,12,WS_EX_CLIENTEDGE
+    RTEXT           "Load 2:",IDC_LABEL_UP13,300,60,30,12
+    CONTROL         "",IDC_SAVE13,"InputCustomHot",WS_TABSTOP,336,60,60,12,WS_EX_CLIENTEDGE
+    RTEXT           "Load 3:",IDC_LABEL_UP14,300,75,30,12
+    CONTROL         "",IDC_SAVE14,"InputCustomHot",WS_TABSTOP,336,75,60,12,WS_EX_CLIENTEDGE
+    RTEXT           "Load 4:",IDC_LABEL_UP15,300,90,30,12
+    CONTROL         "",IDC_SAVE15,"InputCustomHot",WS_TABSTOP,336,90,60,12,WS_EX_CLIENTEDGE
+    RTEXT           "Load 5:",IDC_LABEL_UP16,300,105,30,12
+    CONTROL         "",IDC_SAVE16,"InputCustomHot",WS_TABSTOP,336,105,60,12,WS_EX_CLIENTEDGE
+    RTEXT           "Load 6:",IDC_LABEL_UP17,300,120,30,12
+    CONTROL         "",IDC_SAVE17,"InputCustomHot",WS_TABSTOP,336,120,60,12,WS_EX_CLIENTEDGE
+    RTEXT           "Load 7:",IDC_LABEL_UP18,300,135,30,12
+    CONTROL         "",IDC_SAVE18,"InputCustomHot",WS_TABSTOP,336,135,60,12,WS_EX_CLIENTEDGE
+    RTEXT           "Load 8:",IDC_LABEL_UP19,300,150,30,12
+    CONTROL         "",IDC_SAVE19,"InputCustomHot",WS_TABSTOP,336,150,60,12,WS_EX_CLIENTEDGE
+    RTEXT           "Load 9:",IDC_LABEL_UP20,300,165,30,12
+    CONTROL         "",IDC_SAVE20,"InputCustomHot",WS_TABSTOP,336,165,60,12,WS_EX_CLIENTEDGE
+    RTEXT           "Load 0:",IDC_LABEL_UP21,300,30,30,12
+    RTEXT           "Fast-forward:",IDC_LABEL_HK5,12,90,72,12
+    RTEXT           "Show pressed keys:",IDC_LABEL_HK10,12,165,72,12
+    RTEXT           "Save screenshot:",IDC_LABEL_HK13,12,210,72,12
+    RTEXT           "Slot -:",IDC_LABEL_UP22,181,210,30,12
+    CONTROL         "",IDC_SLOTMINUS,"InputCustomHot",WS_TABSTOP,217,210,60,12,WS_EX_CLIENTEDGE
+    RTEXT           "Slot +:",IDC_LABEL_UP23,300,210,30,12
+    CONTROL         "",IDC_SLOTPLUS,"InputCustomHot",WS_TABSTOP,336,210,60,12,WS_EX_CLIENTEDGE
+    RTEXT           "Save #:",IDC_LABEL_UP24,181,225,30,12
+    CONTROL         "",IDC_SLOTSAVE,"InputCustomHot",WS_TABSTOP,217,225,60,12,WS_EX_CLIENTEDGE
+    RTEXT           "Load #:",IDC_LABEL_UP25,300,225,30,12
+    CONTROL         "",IDC_SLOTLOAD,"InputCustomHot",WS_TABSTOP,336,225,60,12,WS_EX_CLIENTEDGE
+    LTEXT           "Blue means the hotkey is already mapped. Pink means it conflicts with a game button. Red means it's reserved by Windows. A hotkey can be disabled using Escape.",IDC_LABEL_BLUE,7,256,269,34
     COMBOBOX        IDC_HKCOMBO,6,6,60,60,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "",IDC_STATIC,6,18,180,174,0,WS_EX_TRANSPARENT
-    GROUPBOX        "Save States",IDC_STATIC,192,6,210,174,0,WS_EX_TRANSPARENT
+    GROUPBOX        "",IDC_STATIC,6,21,149,226,0,WS_EX_TRANSPARENT
+    GROUPBOX        "Save States",IDC_STATIC,161,21,241,226,0,WS_EX_TRANSPARENT
+    RTEXT           "Save Dialog:",IDC_LABEL_UP26,165,195,46,12
+    CONTROL         "",IDC_DIALOGSAVE,"InputCustomHot",WS_TABSTOP,217,195,60,12,WS_EX_CLIENTEDGE
+    CONTROL         "",IDC_DIALOGLOAD,"InputCustomHot",WS_TABSTOP,336,195,60,12,WS_EX_CLIENTEDGE
+    RTEXT           "Load Dialog:",IDC_LABEL_UP27,284,195,46,12
+    CONTROL         "",IDC_BANKMINUS,"InputCustomHot",WS_TABSTOP,217,180,60,12,WS_EX_CLIENTEDGE
+    RTEXT           "Bank -:",IDC_LABEL_UP28,165,180,46,12
+    CONTROL         "",IDC_BANKPLUS,"InputCustomHot",WS_TABSTOP,336,180,60,12,WS_EX_CLIENTEDGE
+    RTEXT           "Bank +:",IDC_LABEL_UP29,284,180,46,12
+    CONTROL         "",IDC_HOTKEY14,"InputCustomHot",WS_TABSTOP,89,225,60,12,WS_EX_CLIENTEDGE
+    RTEXT           "Save screenshot:",IDC_LABEL_HK14,11,225,72,12
 END
 
 IDD_MULTICART DIALOGEX 0, 0, 390, 90
@@ -756,6 +777,14 @@ END
 #ifdef APSTUDIO_INVOKED
 GUIDELINES DESIGNINFO
 BEGIN
+    IDD_DIALOG_LOAD_PREVIEW, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 560
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 240
+    END
+
     IDD_SOUND_OPTS, DIALOG
     BEGIN
         LEFTMARGIN, 7
@@ -783,8 +812,8 @@ BEGIN
     IDD_EMU_SETTINGS, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 334
-        BOTTOMMARGIN, 191
+        RIGHTMARGIN, 335
+        BOTTOMMARGIN, 219
     END
 
     IDD_OPEN_ROM, DIALOG
@@ -875,10 +904,9 @@ BEGIN
 
     IDD_KEYCUSTOM, DIALOG
     BEGIN
-        RIGHTMARGIN, 406
-        VERTGUIDE, 72
-        VERTGUIDE, 92
-        BOTTOMMARGIN, 200
+        RIGHTMARGIN, 407
+        VERTGUIDE, 90
+        BOTTOMMARGIN, 290
     END
 
     IDD_MULTICART, DIALOG
@@ -1087,218 +1115,175 @@ END
 // Menu
 //
 
-IDR_MENU_US MENU
+IDR_MENU_US MENUEX
 BEGIN
-    POPUP "&File"
+    POPUP "&File",                          0,MFT_STRING,MFS_ENABLED
     BEGIN
-        MENUITEM "L&oad Game...\tCtrl+O",       ID_FILE_LOAD_GAME
-        POPUP "Recent &Games"
+        MENUITEM "L&oad Game...\tCtrl+O",       ID_FILE_LOAD_GAME,MFT_STRING,MFS_ENABLED
+        POPUP "Recent &Games",                  0,MFT_STRING,MFS_ENABLED
         BEGIN
-            MENUITEM "Dummy",                       ID_RECENT_DUMMY, INACTIVE
+            MENUITEM "Dummy",                       ID_RECENT_DUMMY,MFT_STRING,MFS_GRAYED
         END
-        POPUP "&Save Game Position"
+        MENUITEM "Load MultiCart...",           ID_FILE_LOADMULTICART,MFT_STRING,MFS_ENABLED
+        MENUITEM MFT_SEPARATOR
+        POPUP "&Save Game Position",            ID_FILE_SAVE_POPUP,MFT_STRING,MFS_ENABLED
         BEGIN
-            MENUITEM "Slot #&0",                    ID_FILE_SAVE0
-            MENUITEM "Slot #&1",                    ID_FILE_SAVE1
-            MENUITEM "Slot #&2",                    ID_FILE_SAVE2
-            MENUITEM "Slot #&3",                    ID_FILE_SAVE3
-            MENUITEM "Slot #&4",                    ID_FILE_SAVE4
-            MENUITEM "Slot #&5",                    ID_FILE_SAVE5
-            MENUITEM "Slot #&6",                    ID_FILE_SAVE6
-            MENUITEM "Slot #&7",                    ID_FILE_SAVE7
-            MENUITEM "Slot #&8",                    ID_FILE_SAVE8
-            MENUITEM "Slot #&9",                    ID_FILE_SAVE9
-            MENUITEM "&Select File",                ID_FILE_SAVE_FILE
+            MENUITEM MFT_SEPARATOR
+            MENUITEM "&Select File",                ID_FILE_SAVE_FILE,MFT_STRING,MFS_ENABLED
         END
-        POPUP "&Load Game Position"
+        POPUP "&Load Game Position",            ID_FILE_LOAD_POPUP,MFT_STRING,MFS_ENABLED
         BEGIN
-            MENUITEM "Slot #&0",                    ID_FILE_LOAD0
-            MENUITEM "Slot #&1",                    ID_FILE_LOAD1
-            MENUITEM "Slot #&2",                    ID_FILE_LOAD2
-            MENUITEM "Slot #&3",                    ID_FILE_LOAD3
-            MENUITEM "Slot #&4",                    ID_FILE_LOAD4
-            MENUITEM "Slot #&5",                    ID_FILE_LOAD5
-            MENUITEM "Slot #&6",                    ID_FILE_LOAD6
-            MENUITEM "Slot #&7",                    ID_FILE_LOAD7
-            MENUITEM "Slot #&8",                    ID_FILE_LOAD8
-            MENUITEM "Slot #&9",                    ID_FILE_LOAD9
-            MENUITEM "&Select File",                ID_FILE_LOAD_FILE
+            MENUITEM MFT_SEPARATOR
+            MENUITEM "Oops File",                   ID_FILE_LOAD_OOPS,MFT_STRING,MFS_ENABLED
+            MENUITEM MFT_SEPARATOR
+            MENUITEM "&Select File",                ID_FILE_LOAD_FILE,MFT_STRING,MFS_ENABLED
         END
-        MENUITEM "Load MultiCart...",           ID_FILE_LOADMULTICART
-        MENUITEM SEPARATOR
-        POPUP "Save Other"
+        MENUITEM "&Save with Preview",          ID_FILE_SAVE_PREVIEW,MFT_STRING,MFS_ENABLED
+        MENUITEM "&Load with Preview",          ID_FILE_LOAD_PREVIEW,MFT_STRING,MFS_ENABLED
+        MENUITEM MFT_SEPARATOR
+        POPUP "Save Other",                     0,MFT_STRING,MFS_ENABLED
         BEGIN
-            MENUITEM "S&ave SPC Data",              ID_FILE_SAVE_SPC_DATA
-            MENUITEM "Save Screenshot",             ID_SAVESCREENSHOT
-            MENUITEM "Sa&ve S-RAM Data",            ID_FILE_SAVE_SRAM_DATA
-            MENUITEM "Save Memory Pack",            ID_SAVEMEMPACK
+            MENUITEM "S&ave SPC Data",              ID_FILE_SAVE_SPC_DATA,MFT_STRING,MFS_ENABLED
+            MENUITEM "Save Screenshot",             ID_SAVESCREENSHOT,MFT_STRING,MFS_ENABLED
+            MENUITEM "Sa&ve S-RAM Data",            ID_FILE_SAVE_SRAM_DATA,MFT_STRING,MFS_ENABLED
+            MENUITEM "Save Memory Pack",            ID_SAVEMEMPACK,MFT_STRING,MFS_ENABLED
         END
-        MENUITEM "ROM Information...",          IDM_ROM_INFO
-        MENUITEM SEPARATOR
-        MENUITEM "Movie Play...",               ID_FILE_MOVIE_PLAY
-        MENUITEM "Movie Record...",             ID_FILE_MOVIE_RECORD
-        MENUITEM "Movie Stop",                  ID_FILE_MOVIE_STOP
-        MENUITEM SEPARATOR
-        MENUITEM "AVI Recording",               ID_FILE_AVI_RECORDING
-        MENUITEM SEPARATOR
-        POPUP "Lua Scripting"
+        MENUITEM "ROM Information...",          IDM_ROM_INFO,MFT_STRING,MFS_ENABLED
+        MENUITEM MFT_SEPARATOR
+        MENUITEM "Movie Play...",               ID_FILE_MOVIE_PLAY,MFT_STRING,MFS_ENABLED
+        MENUITEM "Movie Record...",             ID_FILE_MOVIE_RECORD,MFT_STRING,MFS_ENABLED
+        MENUITEM "Movie Stop",                  ID_FILE_MOVIE_STOP,MFT_STRING,MFS_ENABLED
+        MENUITEM MFT_SEPARATOR
+        MENUITEM "AVI Recording",               ID_FILE_AVI_RECORDING,MFT_STRING,MFS_ENABLED
+        MENUITEM MFT_SEPARATOR
+	POPUP "Lua Scripting"
         BEGIN
             MENUITEM "New Lua Script Window...",    IDC_NEW_LUA_SCRIPT, GRAYED
             MENUITEM "Close All Script Windows",    IDC_CLOSE_LUA_SCRIPTS, GRAYED
         END
         MENUITEM SEPARATOR
-        MENUITEM "&Reset Game",                 ID_FILE_RESET
-        MENUITEM "E&xit\tAlt+F4",               ID_FILE_EXIT
+        MENUITEM "&Reset Game",                 ID_FILE_RESET,MFT_STRING,MFS_ENABLED
+        MENUITEM "E&xit\tAlt+F4",               ID_FILE_EXIT,MFT_STRING,MFS_ENABLED
     END
-    POPUP "&Emulation"
+    POPUP "&Emulation",                     0,MFT_STRING,MFS_ENABLED
     BEGIN
-        MENUITEM "&Pause",                      ID_FILE_PAUSE
-        MENUITEM "Pause &When Inactive",        ID_EMULATION_PAUSEWHENINACTIVE
-        MENUITEM "&Frame Advance",              ID_FRAME_ADVANCE
-        MENUITEM SEPARATOR
-        MENUITEM "&Hacks...",                   ID_EMULATION_HACKS
-        MENUITEM "&Settings...\tAlt+F8",        ID_OPTIONS_SETTINGS
+        MENUITEM "&Pause",                      ID_FILE_PAUSE,MFT_STRING,MFS_ENABLED
+        MENUITEM "Pause &When Inactive",        ID_EMULATION_PAUSEWHENINACTIVE,MFT_STRING,MFS_ENABLED
+        MENUITEM "&Frame Advance",              ID_FRAME_ADVANCE,MFT_STRING,MFS_ENABLED
+        MENUITEM MFT_SEPARATOR
+        MENUITEM "&Hacks...",                   ID_EMULATION_HACKS,MFT_STRING,MFS_ENABLED
+        MENUITEM "&Settings...\tAlt+F8",        ID_OPTIONS_SETTINGS,MFT_STRING,MFS_ENABLED
     END
-    POPUP "&Input"
+    POPUP "&Input",                         0,MFT_STRING,MFS_ENABLED
     BEGIN
-        MENUITEM "&Input Configuration...\tAlt+F7", 40022
-        MENUITEM "&Customize Hotkeys...\tAlt+F9", ID_OPTIONS_KEYCUSTOM
-        MENUITEM SEPARATOR
-        MENUITEM "Enable Background Input",     ID_EMULATION_BACKGROUNDINPUT
-        MENUITEM "Background Keyboard Hotkeys", ID_INPUT_BACKGROUNDKEYBOARDHOTKEYS
-        MENUITEM SEPARATOR
-        MENUITEM "Detect gamepad changes",      ID_INPUT_DETECTGAMEPADCHANGES
-        MENUITEM SEPARATOR
-        MENUITEM "Use SNES Joypad(s)",          IDM_SNES_JOYPAD
-        MENUITEM "Use SNES Mouse",              IDM_MOUSE_TOGGLE
-        MENUITEM "Use Super Scope",             IDM_SCOPE_TOGGLE
-        MENUITEM "Use Super Multitap (5-player)", IDM_ENABLE_MULTITAP
-        MENUITEM "Use Konami Justifier",        IDM_JUSTIFIER
-        MENUITEM "Use Mouse in alternate port", IDM_MOUSE_SWAPPED
-        MENUITEM "Use Multitaps (8-player)",    IDM_MULTITAP8
-        MENUITEM "Use Dual Justifiers",         IDM_JUSTIFIERS
-        MENUITEM "Use M.A.C.S. Rifle",          IDM_MACSRIFLE_TOGGLE
+        MENUITEM "&Input Configuration...\tAlt+F7", 40022,MFT_STRING,MFS_ENABLED
+        MENUITEM "&Customize Hotkeys...\tAlt+F9", ID_OPTIONS_KEYCUSTOM,MFT_STRING,MFS_ENABLED
+        MENUITEM MFT_SEPARATOR
+        MENUITEM "Enable Background Input",     ID_EMULATION_BACKGROUNDINPUT,MFT_STRING,MFS_ENABLED
+        MENUITEM "Background Keyboard Hotkeys", ID_INPUT_BACKGROUNDKEYBOARDHOTKEYS,MFT_STRING,MFS_ENABLED
+        MENUITEM MFT_SEPARATOR
+        MENUITEM "Detect gamepad changes",      ID_INPUT_DETECTGAMEPADCHANGES,MFT_STRING,MFS_ENABLED
+        MENUITEM MFT_SEPARATOR
+        MENUITEM "Use SNES Joypad(s)",          IDM_SNES_JOYPAD,MFT_STRING,MFS_ENABLED
+        MENUITEM "Use SNES Mouse",              IDM_MOUSE_TOGGLE,MFT_STRING,MFS_ENABLED
+        MENUITEM "Use Super Scope",             IDM_SCOPE_TOGGLE,MFT_STRING,MFS_ENABLED
+        MENUITEM "Use Super Multitap (5-player)", IDM_ENABLE_MULTITAP,MFT_STRING,MFS_ENABLED
+        MENUITEM "Use Konami Justifier",        IDM_JUSTIFIER,MFT_STRING,MFS_ENABLED
+        MENUITEM "Use Mouse in alternate port", IDM_MOUSE_SWAPPED,MFT_STRING,MFS_ENABLED
+        MENUITEM "Use Multitaps (8-player)",    IDM_MULTITAP8,MFT_STRING,MFS_ENABLED
+        MENUITEM "Use Dual Justifiers",         IDM_JUSTIFIERS,MFT_STRING,MFS_ENABLED
+        MENUITEM "Use M.A.C.S. Rifle",          IDM_MACSRIFLE_TOGGLE,MFT_STRING,MFS_ENABLED
     END
-    POPUP "&Sound"
+    POPUP "&Sound",                         0,MFT_STRING,MFS_ENABLED
     BEGIN
-        POPUP "&Playback Rate"
+        POPUP "&Playback Rate",                 0,MFT_STRING,MFS_ENABLED
         BEGIN
-            MENUITEM "&Mute Sound",                 ID_SOUND_NOSOUND
-            MENUITEM "8KHz",                        ID_SOUND_8000HZ
-            MENUITEM "11KHz",                       ID_SOUND_11025HZ
-            MENUITEM "16KHz",                       ID_SOUND_16000HZ
-            MENUITEM "22KHz",                       ID_SOUND_22050HZ
-            MENUITEM "30KHz",                       ID_SOUND_30000HZ
-            MENUITEM "32KHz",                       ID_SOUND_32000HZ
-            MENUITEM "35KHz",                       ID_SOUND_35000HZ
-            MENUITEM "44KHz",                       ID_SOUND_44100HZ
-            MENUITEM "48KHz",                       ID_SOUND_48000HZ
+            MENUITEM "&Mute Sound",                 ID_SOUND_NOSOUND,MFT_STRING,MFS_ENABLED
+            MENUITEM "8KHz",                        ID_SOUND_8000HZ,MFT_STRING,MFS_ENABLED
+            MENUITEM "11KHz",                       ID_SOUND_11025HZ,MFT_STRING,MFS_ENABLED
+            MENUITEM "16KHz",                       ID_SOUND_16000HZ,MFT_STRING,MFS_ENABLED
+            MENUITEM "22KHz",                       ID_SOUND_22050HZ,MFT_STRING,MFS_ENABLED
+            MENUITEM "30KHz",                       ID_SOUND_30000HZ,MFT_STRING,MFS_ENABLED
+            MENUITEM "32KHz",                       ID_SOUND_32000HZ,MFT_STRING,MFS_ENABLED
+            MENUITEM "35KHz",                       ID_SOUND_35000HZ,MFT_STRING,MFS_ENABLED
+            MENUITEM "44KHz",                       ID_SOUND_44100HZ,MFT_STRING,MFS_ENABLED
+            MENUITEM "48KHz",                       ID_SOUND_48000HZ,MFT_STRING,MFS_ENABLED
         END
-        POPUP "&Buffer Length"
+        POPUP "&Buffer Length",                 0,MFT_STRING,MFS_ENABLED
         BEGIN
-            MENUITEM "16ms",                        ID_SOUND_16MS
-            MENUITEM "32ms",                        ID_SOUND_32MS
-            MENUITEM "48ms",                        ID_SOUND_48MS
-            MENUITEM "64ms",                        ID_SOUND_64MS
-            MENUITEM "80ms",                        ID_SOUND_80MS
-            MENUITEM "96ms",                        ID_SOUND_96MS
-            MENUITEM "112ms",                       ID_SOUND_112MS
-            MENUITEM "128ms",                       ID_SOUND_128MS
-            MENUITEM "144ms",                       ID_SOUND_144MS
-            MENUITEM "160ms",                       ID_SOUND_160MS
-            MENUITEM "176ms",                       ID_SOUND_176MS
-            MENUITEM "192ms",                       ID_SOUND_192MS
-            MENUITEM "208ms",                       ID_SOUND_208MS
+            MENUITEM "16ms",                        ID_SOUND_16MS,MFT_STRING,MFS_ENABLED
+            MENUITEM "32ms",                        ID_SOUND_32MS,MFT_STRING,MFS_ENABLED
+            MENUITEM "48ms",                        ID_SOUND_48MS,MFT_STRING,MFS_ENABLED
+            MENUITEM "64ms",                        ID_SOUND_64MS,MFT_STRING,MFS_ENABLED
+            MENUITEM "80ms",                        ID_SOUND_80MS,MFT_STRING,MFS_ENABLED
+            MENUITEM "96ms",                        ID_SOUND_96MS,MFT_STRING,MFS_ENABLED
+            MENUITEM "112ms",                       ID_SOUND_112MS,MFT_STRING,MFS_ENABLED
+            MENUITEM "128ms",                       ID_SOUND_128MS,MFT_STRING,MFS_ENABLED
+            MENUITEM "144ms",                       ID_SOUND_144MS,MFT_STRING,MFS_ENABLED
+            MENUITEM "160ms",                       ID_SOUND_160MS,MFT_STRING,MFS_ENABLED
+            MENUITEM "176ms",                       ID_SOUND_176MS,MFT_STRING,MFS_ENABLED
+            MENUITEM "192ms",                       ID_SOUND_192MS,MFT_STRING,MFS_ENABLED
+            MENUITEM "208ms",                       ID_SOUND_208MS,MFT_STRING,MFS_ENABLED
         END
-        POPUP "&Channels"
+        POPUP "&Channels",                      0,MFT_STRING,MFS_ENABLED
         BEGIN
-            MENUITEM "Channel &1",                  ID_CHANNELS_CHANNEL1
-            MENUITEM "Channel &2",                  ID_CHANNELS_CHANNEL2
-            MENUITEM "Channel &3",                  ID_CHANNELS_CHANNEL3
-            MENUITEM "Channel &4",                  ID_CHANNELS_CHANNEL4
-            MENUITEM "Channel &5",                  ID_CHANNELS_CHANNEL5
-            MENUITEM "Channel &6",                  ID_CHANNELS_CHANNEL6
-            MENUITEM "Channel &7",                  ID_CHANNELS_CHANNEL7
-            MENUITEM "Channel &8",                  ID_CHANNELS_CHANNEL8
-            MENUITEM SEPARATOR
-            MENUITEM "Enable All",                  ID_CHANNELS_ENABLEALL
+            MENUITEM "Channel &1",                  ID_CHANNELS_CHANNEL1,MFT_STRING,MFS_ENABLED
+            MENUITEM "Channel &2",                  ID_CHANNELS_CHANNEL2,MFT_STRING,MFS_ENABLED
+            MENUITEM "Channel &3",                  ID_CHANNELS_CHANNEL3,MFT_STRING,MFS_ENABLED
+            MENUITEM "Channel &4",                  ID_CHANNELS_CHANNEL4,MFT_STRING,MFS_ENABLED
+            MENUITEM "Channel &5",                  ID_CHANNELS_CHANNEL5,MFT_STRING,MFS_ENABLED
+            MENUITEM "Channel &6",                  ID_CHANNELS_CHANNEL6,MFT_STRING,MFS_ENABLED
+            MENUITEM "Channel &7",                  ID_CHANNELS_CHANNEL7,MFT_STRING,MFS_ENABLED
+            MENUITEM "Channel &8",                  ID_CHANNELS_CHANNEL8,MFT_STRING,MFS_ENABLED
+            MENUITEM MFT_SEPARATOR
+            MENUITEM "Enable All",                  ID_CHANNELS_ENABLEALL,MFT_STRING,MFS_ENABLED
         END
-        MENUITEM SEPARATOR
-        MENUITEM "S&ync Sound\tAlt+]",          ID_SOUND_SYNC
-        MENUITEM "&Settings...\tAlt+T",         ID_SOUND_OPTIONS
+        MENUITEM MFT_SEPARATOR
+        MENUITEM "S&ync Sound\tAlt+]",          ID_SOUND_SYNC,MFT_STRING,MFS_ENABLED
+        MENUITEM "&Settings...\tAlt+T",         ID_SOUND_OPTIONS,MFT_STRING,MFS_ENABLED
     END
-    POPUP "&Video"
+    POPUP "&Video",                         0,MFT_STRING,MFS_ENABLED
     BEGIN
-        MENUITEM "&Hide Menubar\tEsc",          ID_WINDOW_HIDEMENUBAR
-        MENUITEM "&Full Screen\tAlt+Enter",     ID_WINDOW_FULLSCREEN
-        POPUP "&Window Size"
+        MENUITEM "&Hide Menubar\tEsc",          ID_WINDOW_HIDEMENUBAR,MFT_STRING,MFS_ENABLED
+        MENUITEM "&Full Screen\tAlt+Enter",     ID_WINDOW_FULLSCREEN,MFT_STRING,MFS_ENABLED
+        POPUP "&Window Size",                   0,MFT_STRING,MFS_ENABLED
         BEGIN
-            MENUITEM "&1x",                         ID_WINDOW_SIZE_1X
-            MENUITEM "&2x",                         ID_WINDOW_SIZE_2X
-            MENUITEM "&3x",                         ID_WINDOW_SIZE_3X
-            MENUITEM "&4x",                         ID_WINDOW_SIZE_4X
+            MENUITEM "&1x",                         ID_WINDOW_SIZE_1X,MFT_STRING,MFS_ENABLED
+            MENUITEM "&2x",                         ID_WINDOW_SIZE_2X,MFT_STRING,MFS_ENABLED
+            MENUITEM "&3x",                         ID_WINDOW_SIZE_3X,MFT_STRING,MFS_ENABLED
+            MENUITEM "&4x",                         ID_WINDOW_SIZE_4X,MFT_STRING,MFS_ENABLED
         END
-        MENUITEM SEPARATOR
-        MENUITEM "&Stretch Image\tAlt+Backspace", ID_WINDOW_STRETCH
-        MENUITEM "&Maintain Aspect Ratio",      ID_WINDOW_ASPECTRATIO
-        MENUITEM "&Bilinear Filtering",         ID_WINDOW_BILINEAR
-        MENUITEM "Show Frame &Rate",            ID_VIDEO_SHOWFRAMERATE
-        MENUITEM SEPARATOR
-        MENUITEM "&Display Configuration...\tAlt+F5", ID_OPTIONS_DISPLAY
+        MENUITEM MFT_SEPARATOR
+        MENUITEM "&Stretch Image\tAlt+Backspace", ID_WINDOW_STRETCH,MFT_STRING,MFS_ENABLED
+        MENUITEM "&Maintain Aspect Ratio",      ID_WINDOW_ASPECTRATIO,MFT_STRING,MFS_ENABLED
+        MENUITEM "&Bilinear Filtering",         ID_WINDOW_BILINEAR,MFT_STRING,MFS_ENABLED
+        MENUITEM "Show Frame &Rate",            ID_VIDEO_SHOWFRAMERATE,MFT_STRING,MFS_ENABLED
+        MENUITEM MFT_SEPARATOR
+        MENUITEM "&Display Configuration...\tAlt+F5", ID_OPTIONS_DISPLAY,MFT_STRING,MFS_ENABLED
     END
-    POPUP "&Cheat"
+    POPUP "&Cheat",                         0,MFT_STRING,MFS_ENABLED
     BEGIN
-        MENUITEM "&Game Genie, Pro-Action Replay Codes\tAlt+G", ID_CHEAT_ENTER
-        MENUITEM "&Apply Cheats",               ID_CHEAT_APPLY, CHECKED
-        MENUITEM SEPARATOR
-        MENUITEM "RAM Watch...",                ID_RAM_WATCH, GRAYED
-        MENUITEM "RAM &Search...\tAlt+A",       ID_RAM_SEARCH, GRAYED
-        MENUITEM "View &Memory",                IDM_MEMORY
+        MENUITEM "&Game Genie, Pro-Action Replay Codes\tAlt+G", ID_CHEAT_ENTER,MFT_STRING,MFS_ENABLED
+        MENUITEM "&Search for New Cheats",      ID_CHEAT_SEARCH_MODAL,MFT_STRING,MFS_ENABLED
+        MENUITEM "Search for New Cheats (active)\tAlt+A", 40064,MFT_STRING,MFS_ENABLED
+        MENUITEM "&Apply Cheats",               ID_CHEAT_APPLY,MFT_STRING,MFS_CHECKED
     END
-    POPUP "&Netplay"
+    POPUP "&Netplay",                       0,MFT_STRING,MFS_ENABLED
     BEGIN
-        MENUITEM "&Connect to Server...",       ID_NETPLAY_CONNECT
-        MENUITEM "&Disconnect from Server",     ID_NETPLAY_DISCONNECT
-        MENUITEM SEPARATOR
-        MENUITEM "&Act as Server",              ID_NETPLAY_SERVER
-        MENUITEM "&Re-sync all Clients Using Freeze File Now", ID_NETPLAY_SYNC
-        MENUITEM "&Send ROM Image to Clients Now", ID_NETPLAY_ROM
-        MENUITEM "S&end ROM Image to Clients",  ID_NETPLAY_SEND_ROM_ON_CONNECT
-        MENUITEM "S&ync Using Reset Game",      ID_NETPLAY_SYNC_BY_RESET, CHECKED
-        MENUITEM SEPARATOR
-        MENUITEM "&Options...",                 ID_NETPLAY_OPTIONS
+        MENUITEM "&Connect to Server...",       ID_NETPLAY_CONNECT,MFT_STRING,MFS_ENABLED
+        MENUITEM "&Disconnect from Server",     ID_NETPLAY_DISCONNECT,MFT_STRING,MFS_ENABLED
+        MENUITEM MFT_SEPARATOR
+        MENUITEM "&Act as Server",              ID_NETPLAY_SERVER,MFT_STRING,MFS_ENABLED
+        MENUITEM "&Re-sync all Clients Using Freeze File Now", ID_NETPLAY_SYNC,MFT_STRING,MFS_ENABLED
+        MENUITEM "&Send ROM Image to Clients Now", ID_NETPLAY_ROM,MFT_STRING,MFS_ENABLED
+        MENUITEM "S&end ROM Image to Clients",  ID_NETPLAY_SEND_ROM_ON_CONNECT,MFT_STRING,MFS_ENABLED
+        MENUITEM "S&ync Using Reset Game",      ID_NETPLAY_SYNC_BY_RESET,MFT_STRING,MFS_CHECKED
+        MENUITEM MFT_SEPARATOR
+        MENUITEM "&Options...",                 ID_NETPLAY_OPTIONS,MFT_STRING,MFS_ENABLED
     END
-    POPUP "&Help"
+    POPUP "&Help",                          0,MFT_STRING,MFS_ENABLED
     BEGIN
-        MENUITEM "&About...",                   ID_HELP_ABOUT
-    END
-END
-
-RAMWATCH_MENU MENU 
-BEGIN
-    POPUP "File"
-    BEGIN
-        MENUITEM "&New list\tCtrl N",           RAMMENU_FILE_NEW
-        MENUITEM "&Open...\tCtrl O",            RAMMENU_FILE_OPEN
-        MENUITEM "&Save\tCtrl S",               RAMMENU_FILE_SAVE
-        MENUITEM "Sa&ve As...\tCtrl Shift S",   RAMMENU_FILE_SAVEAS
-        MENUITEM "&Append file...",             RAMMENU_FILE_APPEND
-        MENUITEM "Recent",                      RAMMENU_FILE_RECENT
-        MENUITEM SEPARATOR
-        MENUITEM "Auto-&load",                  RAMMENU_FILE_AUTOLOAD
-        MENUITEM "Save Window Position",        RAMMENU_FILE_SAVEWINDOW
-        MENUITEM SEPARATOR
-        MENUITEM "&Close\tAlt F4",              IDCANCEL
-    END
-    POPUP "Watches"
-    BEGIN
-        MENUITEM "&New Watch\tN",               IDC_C_WATCH
-        MENUITEM "&Edit Watch\tE",              IDC_C_WATCH_EDIT
-        MENUITEM "&Remove Watch\tR",            IDC_C_WATCH_REMOVE
-        MENUITEM "Duplicate Watch\tA",          IDC_C_WATCH_DUPLICATE
-        MENUITEM SEPARATOR
-        MENUITEM "Move Up\tU",                  IDC_C_WATCH_UP
-        MENUITEM "Move Down\tD",                IDC_C_WATCH_DOWN
+        MENUITEM "&About...",                   ID_HELP_ABOUT,MFT_STRING,MFS_ENABLED
     END
 END
 
@@ -1394,6 +1379,11 @@ BEGIN
 END
 
 IDD_DIALOG_HACKS AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_LOAD_PREVIEW AFX_DIALOG_LAYOUT
 BEGIN
     0
 END

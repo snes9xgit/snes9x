@@ -6,6 +6,8 @@
 
 #include "gtk_sound_driver_alsa.h"
 #include "gtk_s9x.h"
+#include "snes9x.h"
+#include "apu/apu.h"
 
 #include <fcntl.h>
 #include <sys/ioctl.h>
