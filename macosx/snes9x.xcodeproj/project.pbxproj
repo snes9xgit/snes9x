@@ -293,6 +293,7 @@
 		30AD1D1F22FBB2EA000EE989 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		30AD1D2022FBB2EA000EE989 /* en */ = {isa = PBXFileReference; lastKnownFileType = folder; name = en; path = "en.lproj/Snes9x Help"; sourceTree = "<group>"; };
 		30AD1D2122FBB2EA000EE989 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/Snes9x.xib; sourceTree = "<group>"; };
+		30C49EF6250C0F2B007D04F8 /* Snes9xDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Snes9xDebug.entitlements; sourceTree = "<group>"; };
 		30CCAD422290472E00549AED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = /Users/buckley/Projects/snes9x/macosx/Info.plist; sourceTree = "<absolute>"; };
 		30D15CEF22CE6B5A005BC352 /* snes9x_framework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = snes9x_framework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		30D15CF122CE6B5A005BC352 /* snes9x_framework.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = snes9x_framework.h; sourceTree = "<group>"; };
@@ -637,6 +638,7 @@
 		30714716230E379500917F82 /* Snes9x */ = {
 			isa = PBXGroup;
 			children = (
+				30C49EF6250C0F2B007D04F8 /* Snes9xDebug.entitlements */,
 				30714717230E379500917F82 /* AppDelegate.h */,
 				30714718230E379500917F82 /* AppDelegate.m */,
 				3071471A230E379600917F82 /* Assets.xcassets */,
@@ -1417,7 +1419,7 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = Snes9x/Snes9x.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Snes9x/Snes9xDebug.entitlements;
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -1516,12 +1518,13 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_IDENTITY = "-";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -1550,6 +1553,7 @@
 				OTHER_CFLAGS = "-DGL_SILENCE_DEPRECATION";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.snes9x.macos.snes9x-framework";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";
