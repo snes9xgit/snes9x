@@ -43,8 +43,7 @@ build_script:
   - if "%config%"=="libretro Release" msbuild libretro\libretro-win32.vcxproj /t:build /p:Configuration="%config%";Platform="%platform%" /m /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
 after_build:
-  - ps: $env:gitrev = git describe --tags
-  - ps: $env:my_version = "$env:gitrev"
+  - ps: $env:my_version = "$env:APPVEYOR_BUILD_VERSION-$($env:APPVEYOR_REPO_COMMIT.substring(0,7))"
   - set package_name=snes9x-%my_version%-%arch%
   - if exist artifacts rmdir /s /q artifacts
   - mkdir artifacts
