@@ -90,18 +90,18 @@ class ConfigFile {
 		mutable bool used;
 
         struct section_then_key_less {
-            bool operator()(const ConfigEntry &a, const ConfigEntry &b);
+            bool operator()(const ConfigEntry &a, const ConfigEntry &b) const;
         };
 
         struct key_less {
-            bool operator()(const ConfigEntry &a, const ConfigEntry &b) const{
+            bool operator()(const ConfigEntry &a, const ConfigEntry &b) const {
                 if(a.section!=b.section) return a.section<b.section;
                 return a.key<b.key;
             }
         };
 
         struct line_less {
-            bool operator()(const ConfigEntry &a, const ConfigEntry &b){
+            bool operator()(const ConfigEntry &a, const ConfigEntry &b) const {
 				if(a.line==b.line) return (b.val.empty() && !a.val.empty()) || a.key<b.key;
                 if(b.line<0) return true;
                 if(a.line<0) return false;
