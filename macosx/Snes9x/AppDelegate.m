@@ -24,12 +24,14 @@
 
 #import "S9xPrefsConstants.h"
 #import "S9xPrefsViewController.h"
+#import "S9xLuaViewController.h"
 
 @interface AppDelegate ()
 @property (nonatomic, strong) S9xEngine *s9xEngine;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *keys;
 @property (nonatomic, strong) NSWindow *window;
 @property (nonatomic, strong, nullable) NSWindowController *prefsWindowController;
+@property (nonatomic, strong, nullable) NSWindowController *luaWindowController;
 @end
 
 static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
@@ -534,6 +536,27 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 {
 	[self.s9xEngine hardwareReset];
 }
+
+- (IBAction)newLuaScriptingWindow:(id)sender
+{
+    if ( self.luaWindowController == nil )
+    {
+        NSWindow *luaWindow = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 100, 100) styleMask:NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable backing:NSBackingStoreBuffered defer:NO];
+        luaWindow.title = NSLocalizedString(@"Lua Scripting", @"");
+        self.luaWindowController = [[NSWindowController alloc] initWithWindow:luaWindow];
+
+        luaWindow.contentViewController = [[S9xLuaViewController alloc] initWithNibName:@"S9xLuaViewController" bundle:nil];
+        [luaWindow center];
+    }
+
+    [self.luaWindowController.window makeKeyAndOrderFront:self];
+}
+
+- (IBAction)closeLuaScriptingWindows:(id)sender
+{
+	// TODO.
+}
+
 
 - (BOOL)handleInput:(S9xJoypadInput *)input fromJoypad:(S9xJoypad *)joypad
 {
