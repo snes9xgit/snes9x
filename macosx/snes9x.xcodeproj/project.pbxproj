@@ -1156,8 +1156,8 @@
 			projectDirPath = "";
 			projectRoot = ..;
 			targets = (
-				30D15CEE22CE6B5A005BC352 /* snes9x framework */,
 				30714714230E379500917F82 /* Snes9x */,
+				30D15CEE22CE6B5A005BC352 /* snes9x framework */,
 			);
 		};
 /* End PBXProject section */
@@ -1418,12 +1418,12 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_ENTITLEMENTS = Snes9x/Snes9x.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = S4YHUE5Y65;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
