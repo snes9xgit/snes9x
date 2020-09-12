@@ -31,7 +31,7 @@
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *keys;
 @property (nonatomic, strong) NSWindow *window;
 @property (nonatomic, strong, nullable) NSWindowController *prefsWindowController;
-@property (nonatomic, strong, nullable) NSWindowController *luaWindowController;
+@property (nonatomic, strong) NSMutableArray<NSWindowController *> *luaWindowControllers;
 @end
 
 static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
@@ -61,6 +61,7 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
     }
 
     self.window = window;
+    self.luaWindowControllers = [[NSMutableArray alloc] init];
 
     [NSNotificationCenter.defaultCenter addObserverForName:NSWindowWillCloseNotification object:window queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification *notification)
     {
@@ -539,22 +540,25 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 
 - (IBAction)newLuaScriptingWindow:(id)sender
 {
-    if ( self.luaWindowController == nil )
-    {
-        NSWindow *luaWindow = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 100, 100) styleMask:NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable backing:NSBackingStoreBuffered defer:NO];
-        luaWindow.title = NSLocalizedString(@"Lua Scripting", @"");
-        self.luaWindowController = [[NSWindowController alloc] initWithWindow:luaWindow];
+    NSWindow *luaWindow = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 100, 100) styleMask:NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable backing:NSBackingStoreBuffered defer:NO];
+    luaWindow.title = NSLocalizedString(@"Lua Scripting", @"");
+    NSWindowController* luaWindowController = [[NSWindowController alloc] initWithWindow:luaWindow];
+	[self.luaWindowControllers addObject:luaWindowController];
 
-        luaWindow.contentViewController = [[S9xLuaViewController alloc] initWithNibName:@"S9xLuaViewController" bundle:nil];
-        [luaWindow center];
-    }
+    luaWindow.contentViewController = [[S9xLuaViewController alloc] initWithNibName:@"S9xLuaViewController" bundle:nil];
+    [luaWindow center];
 
-    [self.luaWindowController.window makeKeyAndOrderFront:self];
+    [luaWindowController.window makeKeyAndOrderFront:self];
 }
 
 - (IBAction)closeLuaScriptingWindows:(id)sender
 {
-	// TODO.
+    for (NSWindowController* controller in self.luaWindowControllers)
+    {
+        [controller.window close];
+    }
+	
+    [self.luaWindowControllers removeAllObjects];
 }
 
 
