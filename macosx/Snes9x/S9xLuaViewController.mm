@@ -93,7 +93,7 @@ static LuaViewControllerMap_t s_LuaViewControllers;
 
 - (IBAction)editLuaScript:(NSButton *)sender
 {
-	// todo.
+	[NSWorkspace.sharedWorkspace openFile:[self.luaScriptPath stringValue] withApplication:@"TextEdit"];
 }
 
 - (IBAction)closeLuaScript:(NSButton *)sender
