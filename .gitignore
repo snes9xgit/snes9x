@@ -499,3 +499,7 @@ MigrationBackup/
 # vim
 *.swp
 
+# OS X temporary files
+.DS_Store
+*.lock
+profile

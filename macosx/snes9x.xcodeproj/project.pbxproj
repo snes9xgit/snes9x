@@ -222,6 +222,7 @@
 		30D709C1236F7E3200AAB7C3 /* S9xPrefsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D709BF236F7E3200AAB7C3 /* S9xPrefsViewController.m */; };
 		30D709C2236F7E3200AAB7C3 /* S9xPrefsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 30D709C0236F7E3200AAB7C3 /* S9xPrefsViewController.xib */; };
 		30D709C5236F90DF00AAB7C3 /* S9xButtonConfigTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D709C4236F90DF00AAB7C3 /* S9xButtonConfigTextField.m */; };
+		600546B8250D160E00EC0977 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 600546B7250D160D00EC0977 /* .gitignore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -305,6 +306,7 @@
 		30D709C0236F7E3200AAB7C3 /* S9xPrefsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = S9xPrefsViewController.xib; sourceTree = "<group>"; };
 		30D709C3236F90DF00AAB7C3 /* S9xButtonConfigTextField.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xButtonConfigTextField.h; sourceTree = "<group>"; };
 		30D709C4236F90DF00AAB7C3 /* S9xButtonConfigTextField.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xButtonConfigTextField.m; sourceTree = "<group>"; };
+		600546B7250D160D00EC0977 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		85FEF90620DDB15B00C038E9 /* bml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = bml.cpp; sourceTree = "<group>"; usesTabs = 1; };
 		85FEF90720DDB15C00C038E9 /* bml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bml.h; sourceTree = "<group>"; usesTabs = 1; };
 		85FEF90A20DDB18D00C038E9 /* sha256.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sha256.cpp; sourceTree = "<group>"; usesTabs = 1; };
@@ -791,6 +793,7 @@
 		EAE061540526CCB900A80003 /* snes9x */ = {
 			isa = PBXGroup;
 			children = (
+				600546B7250D160D00EC0977 /* .gitignore */,
 				EAE0615A0526CCB900A80003 /* 65c816.h */,
 				BF0B39791FA5792F002B04D3 /* apu */,
 				85FEF90620DDB15B00C038E9 /* bml.cpp */,
@@ -1180,6 +1183,7 @@
 				30D709B7236F731B00AAB7C3 /* musicbox_ledon.icns in Resources */,
 				30D709B6236F731B00AAB7C3 /* folder_Freezes.icns in Resources */,
 				30D709C2236F7E3200AAB7C3 /* S9xPrefsViewController.xib in Resources */,
+				600546B8250D160E00EC0977 /* .gitignore in Resources */,
 				3071471E230E379600917F82 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
