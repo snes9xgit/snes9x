@@ -322,14 +322,17 @@
 - (IBAction) bumpMacFrameSkip:(NSStepper *)sender
 {
 	int bumpValue = sender.intValue;   // 1 or -1
-	[self.macFrameSkipTextField setIntegerValue: self.macFrameSkipTextField.integerValue + bumpValue];
+	int nextValue = self.macFrameSkipTextField.intValue + bumpValue;
 	
 	// constrain value
-	if ([self.macFrameSkipTextField integerValue] < 0)
-		[self.macFrameSkipTextField setIntegerValue: 0];
-	if ([self.macFrameSkipTextField integerValue] > 200)
-		[self.macFrameSkipTextField setIntegerValue: 200];
+	if (nextValue < 0) {
+		nextValue = 0;
+	}
+	if (nextValue > 200) {
+		nextValue = 200;
+	}
     
+	[self.macFrameSkipTextField setIntValue: nextValue];
 	[sender setIntValue:0];	// reset stepper value
 	[self setMacFrameSkip:self.macFrameSkipTextField.intValue]; // execute setter
 }
