@@ -25,4 +25,4 @@ NSString * const kJoypadInputPrefs = @"JoypadInputs";
 NSString * const kJoypadPlayerPrefs = @"JoypadPlayers";
 NSString * const kShowFPSPref = @"ShowFPS";
 NSString * const kVideoModePref = @"VideoMode";
-NSString * const kMacFrameSkipPref = @"MacFrameSkip";
+NSString * const kMacFrameSkipPref = @"FrameSkip";
