@@ -192,6 +192,7 @@ extern id<S9xInputDelegate> inputDelegate;
 - (BOOL)loadROM:(NSURL *)fileURL;
 
 - (void)setVideoMode:(int)videoMode;
+- (void)setMacFrameSkip:(int)_macFrameSkip;
 - (void)setShowFPS:(BOOL)showFPS;
 
 @end

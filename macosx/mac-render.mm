@@ -297,6 +297,10 @@ void S9xPutImage (int width, int height)
         for (int i = 0; i < 60; i++)
             frameCalc += drawnFrames[i];
 
+		// avoid dividing by 0
+		if (frameCalc == 0)
+			frameCalc = 1;
+		
         IPPU.DisplayedRenderedFrameCount = (Memory.ROMFramesPerSecond * 60) / frameCalc;
     }
 	

@@ -119,7 +119,8 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
             @(kKeyTC).stringValue : @(kVK_ANSI_Comma)
         },
         kShowFPSPref: @(NO),
-        kVideoModePref:@(VIDEOMODE_BLOCKY)
+        kVideoModePref:@(VIDEOMODE_BLOCKY),
+        kMacFrameSkipPref:@(macFrameSkip)
     };
 
     [defaults registerDefaults:defaultSettings];
@@ -510,6 +511,13 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 {
     [self.s9xEngine setVideoMode:videoMode];
     [NSUserDefaults.standardUserDefaults setObject:@(videoMode) forKey:kVideoModePref];
+    [NSUserDefaults.standardUserDefaults synchronize];
+}
+
+- (void)setMacFrameSkip:(int)_macFrameSkip
+{
+    [self.s9xEngine setMacFrameSkip:_macFrameSkip];
+    [NSUserDefaults.standardUserDefaults setObject:@(_macFrameSkip) forKey:kMacFrameSkipPref];
     [NSUserDefaults.standardUserDefaults synchronize];
 }
 

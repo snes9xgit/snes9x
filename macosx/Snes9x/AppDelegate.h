@@ -41,6 +41,7 @@
 - (BOOL)getValuesFromString:(NSString *)str cookie:(uint32 *)cookie value:(int32 *)value;
 
 - (void)setVideoMode:(int)videoMode;
+- (void)setMacFrameSkip:(int)_macFrameSkip;
 - (void)setShowFPS:(BOOL)showFPS;
 
 @end

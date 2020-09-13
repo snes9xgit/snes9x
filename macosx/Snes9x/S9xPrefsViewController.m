@@ -30,6 +30,7 @@
 @property (nonatomic, weak) IBOutlet NSButton *showFPSCheckbox;
 @property (nonatomic, weak) IBOutlet NSPopUpButton *devicePopUp;
 @property (nonatomic, weak) IBOutlet NSPopUpButton *playerPopUp;
+@property (nonatomic, weak) IBOutlet NSTextField *macFrameSkipTextField;
 @end
 
 @implementation S9xPrefsViewController
@@ -103,6 +104,11 @@
 {
     NSUInteger index = MIN([NSUserDefaults.standardUserDefaults integerForKey:kVideoModePref], 1);
     [self.videoModePopup selectItemAtIndex:index];
+	
+	// set maxFrameSkipTextField to user default
+    NSInteger macFrameSkipDefault = [NSUserDefaults.standardUserDefaults integerForKey:kMacFrameSkipPref];
+    [self.macFrameSkipTextField setIntegerValue:macFrameSkipDefault];
+	
     self.showFPSCheckbox.state = [NSUserDefaults.standardUserDefaults boolForKey:kShowFPSPref];
 
     if (self.devicePopUp.selectedItem.tag < 0)
@@ -271,6 +277,13 @@
     [appDelegate setVideoMode:(int)sender.selectedTag];
 }
 
+- (IBAction)setMacFrameSkip:(NSTextField *)sender
+{
+    AppDelegate *appDelegate = (AppDelegate *)NSApp.delegate;
+	[appDelegate setMacFrameSkip:(int)sender.integerValue];
+	NSLog(@"setMacFrameSkip %ld", sender.integerValue);
+}
+
 - (BOOL)handleInput:(S9xJoypadInput *)input fromJoypad:(S9xJoypad *)joypad
 {
     id firstResponder = self.view.window.firstResponder;
@@ -293,5 +306,18 @@
 
     return NO;
 }
-
+- (IBAction) bumpMacFrameSkip:(id)sender
+{
+    int bumpValue = [sender intValue];   // 1 or -1
+	[self.macFrameSkipTextField setIntegerValue:[self.macFrameSkipTextField integerValue] + bumpValue];
+	
+	// constrain value
+	if ([self.macFrameSkipTextField integerValue] < -1)
+		[self.macFrameSkipTextField setIntegerValue: -1];
+	if ([self.macFrameSkipTextField integerValue] > 200)
+		[self.macFrameSkipTextField setIntegerValue: 200];
+    
+	[sender setIntValue:0];	// reset stepper value
+	[self setMacFrameSkip:self.macFrameSkipTextField]; // execute setter
+}
 @end
