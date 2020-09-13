@@ -281,7 +281,6 @@
 {
     AppDelegate *appDelegate = (AppDelegate *)NSApp.delegate;
 	[appDelegate setMacFrameSkip:(int)sender.integerValue];
-	NSLog(@"setMacFrameSkip %ld", sender.integerValue);
 }
 
 - (BOOL)handleInput:(S9xJoypadInput *)input fromJoypad:(S9xJoypad *)joypad
