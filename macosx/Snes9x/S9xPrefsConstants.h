@@ -25,3 +25,4 @@ extern NSString * const kJoypadInputPrefs;
 extern NSString * const kJoypadPlayerPrefs;
 extern NSString * const kShowFPSPref;
 extern NSString * const kVideoModePref;
+extern NSString * const kMacFrameSkipPref;

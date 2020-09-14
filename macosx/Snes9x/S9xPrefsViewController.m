@@ -30,6 +30,9 @@
 @property (nonatomic, weak) IBOutlet NSButton *showFPSCheckbox;
 @property (nonatomic, weak) IBOutlet NSPopUpButton *devicePopUp;
 @property (nonatomic, weak) IBOutlet NSPopUpButton *playerPopUp;
+@property (nonatomic, weak) IBOutlet NSTextField *macFrameSkipTextField;
+@property (nonatomic, weak) IBOutlet NSStepper *macFrameSkipStepper;
+@property (nonatomic, weak) IBOutlet NSButton *macFrameSkipAutomaticButton;
 @end
 
 @implementation S9xPrefsViewController
@@ -103,6 +106,22 @@
 {
     NSUInteger index = MIN([NSUserDefaults.standardUserDefaults integerForKey:kVideoModePref], 1);
     [self.videoModePopup selectItemAtIndex:index];
+	
+    NSInteger macFrameSkipDefault = [NSUserDefaults.standardUserDefaults integerForKey:kMacFrameSkipPref];
+	// if macFrameSkip is equal to -1, set automatic checkbox
+	// to be checked, disable the ability to change frame skip values
+	// from stepper/text field, else leave automatic checkbox
+	// unchecked and set textfield to value
+	if (macFrameSkipDefault == -1) {
+		[self.macFrameSkipTextField setEnabled: false];
+		[self.macFrameSkipStepper setEnabled: false];
+		[self.macFrameSkipTextField setIntValue: 0]; // show something at least
+		[self.macFrameSkipAutomaticButton setIntValue: 1];
+	} else {
+		[self.macFrameSkipTextField setIntValue: (int)macFrameSkipDefault];
+		[self.macFrameSkipAutomaticButton setIntValue: 0];
+	}
+	
     self.showFPSCheckbox.state = [NSUserDefaults.standardUserDefaults boolForKey:kShowFPSPref];
 
     if (self.devicePopUp.selectedItem.tag < 0)
@@ -271,6 +290,12 @@
     [appDelegate setVideoMode:(int)sender.selectedTag];
 }
 
+- (IBAction)setMacFrameSkip:(int)value
+{
+    AppDelegate *appDelegate = (AppDelegate *)NSApp.delegate;
+	[appDelegate setMacFrameSkip:value];
+}
+
 - (BOOL)handleInput:(S9xJoypadInput *)input fromJoypad:(S9xJoypad *)joypad
 {
     id firstResponder = self.view.window.firstResponder;
@@ -294,4 +319,43 @@
     return NO;
 }
 
+- (IBAction) bumpMacFrameSkip:(NSStepper *)sender
+{
+	int bumpValue = sender.intValue;   // 1 or -1
+	int nextValue = self.macFrameSkipTextField.intValue + bumpValue;
+	
+	// constrain value
+	if (nextValue < 0) {
+		nextValue = 0;
+	}
+	if (nextValue > 200) {
+		nextValue = 200;
+	}
+    
+	[self.macFrameSkipTextField setIntValue: nextValue];
+	[sender setIntValue:0];	// reset stepper value
+	[self setMacFrameSkip:self.macFrameSkipTextField.intValue]; // execute setter
+}
+
+- (IBAction)onChangeMacFrameSkipTextField:(NSTextField *)sender
+{
+	[self setMacFrameSkip:sender.intValue];
+}
+
+- (IBAction) onCheckMacFrameSkipAutomaticButton:(NSButton *)sender
+{
+	if (sender.intValue == 1) {
+		// when automatic is checked, disable macFrameSkipTextField and
+		// macFrameSkipStepper, then set macFrameSkip to -1 (automatic)
+		[self.macFrameSkipTextField setEnabled:false];
+		[self.macFrameSkipStepper setEnabled:false];
+		[self setMacFrameSkip:-1];
+	} else {
+		// when automatic is unchecked, enable macFrameSkipTextField and
+		// macFrameSkipStepper, then set macFrameSkip to value of text field
+		[self.macFrameSkipTextField setEnabled:true];
+		[self.macFrameSkipStepper setEnabled:true];
+		[self setMacFrameSkip:self.macFrameSkipTextField.intValue];
+	}
+}
 @end

@@ -3235,6 +3235,17 @@ void QuitWithFatalError ( NSString *message)
     videoMode = mode;
 }
 
+- (void)setMacFrameSkip:(int)_macFrameSkip
+{
+    macFrameSkip = _macFrameSkip;
+	
+	// contrains to -1 to 200
+	if (macFrameSkip < -1)
+		macFrameSkip = -1;
+	if (macFrameSkip > 200)
+		macFrameSkip = 200;
+}
+
 @dynamic inputDelegate;
 - (void)setInputDelegate:(id<S9xInputDelegate>)delegate
 {
