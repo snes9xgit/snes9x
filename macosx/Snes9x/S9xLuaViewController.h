@@ -1,3 +1,5 @@
+#ifdef HAVE_LUA
+
 #import <Cocoa/Cocoa.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -7,3 +9,5 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif // HAVE_LUA

@@ -123,6 +123,7 @@ extern IconRef			macIconRef[118];
 extern bool8			pressedKeys[MAC_MAX_PLAYERS][kNumButtons];
 extern bool8            pressedGamepadButtons[MAC_MAX_PLAYERS][kNumButtons];
 extern pthread_mutex_t	keyLock;
+extern pthread_mutex_t  mainLoopLock;
 
 @interface S9xView: MTKView
 - (void)updatePauseOverlay;

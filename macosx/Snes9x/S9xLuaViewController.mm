@@ -1,4 +1,6 @@
 
+#ifdef HAVE_LUA
+
 #import <snes9x_framework/snes9x_framework.h>
 
 #import "AppDelegate.h"
@@ -6,6 +8,7 @@
 #import "lua-engine.h"
 
 #import <map>
+#import <pthread.h>
 
 @interface S9xLuaViewController ()
 @property (nonatomic, weak) IBOutlet NSTextField *luaScriptPath;
@@ -41,13 +44,17 @@ static LuaViewControllerMap_t s_LuaViewControllers;
 
     ++s_UniqueIDs;
 
+    pthread_mutex_lock(&mainLoopLock);
     OpenLuaContext(self->uniqueID, PrintToWindowConsole, OnStart, OnStop);
+    pthread_mutex_unlock(&mainLoopLock);
 }
 
 - (void)viewWillDisappear
 {
+    pthread_mutex_lock(&mainLoopLock);
     StopLuaScript(self->uniqueID);
     CloseLuaContext(self->uniqueID);
+    pthread_mutex_unlock(&mainLoopLock);
 
     s_LuaViewControllers.erase(self->uniqueID);
 }
@@ -56,7 +63,6 @@ static LuaViewControllerMap_t s_LuaViewControllers;
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSString *luaScriptPath = [self.luaScriptPath stringValue];
-    NSString *invalidPath = @"cannot open : No such file or directory";
 
     if ([fileManager fileExistsAtPath:luaScriptPath])
     {
@@ -89,7 +95,9 @@ static LuaViewControllerMap_t s_LuaViewControllers;
 
 - (IBAction)closeLuaScript:(NSButton *)sender
 {
+    pthread_mutex_lock(&mainLoopLock);
     StopLuaScript(self->uniqueID);
+    pthread_mutex_unlock(&mainLoopLock);
 }
 
 - (IBAction)runLuaScript:(NSButton *)sender
@@ -100,7 +108,9 @@ static LuaViewControllerMap_t s_LuaViewControllers;
     NSString *luaScriptPath = [self.luaScriptPath stringValue];
     if ([fileManager fileExistsAtPath:luaScriptPath])
     {
+        pthread_mutex_lock(&mainLoopLock);
         RunLuaScriptFile(self->uniqueID, [luaScriptPath UTF8String]);
+        pthread_mutex_unlock(&mainLoopLock);
     }
     else
     {
@@ -110,39 +120,50 @@ static LuaViewControllerMap_t s_LuaViewControllers;
 
 static void PrintToWindowConsole(int uniqueID, const char* str)
 {
-    S9xLuaViewController *luaController = s_LuaViewControllers[uniqueID];
-
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSString *errorMsg = [[NSString alloc] initWithCString:str encoding:NSUTF8StringEncoding];
-        NSString *contentString = [luaController.luaScriptConsole stringValue];
-        NSArray *contentArray = [[NSArray alloc] initWithObjects:contentString, errorMsg, nil];
-        NSString *newContentString = [contentArray componentsJoinedByString:@""];
-        [luaController.luaScriptConsole setStringValue:newContentString];
+        LuaViewControllerMap_t::iterator iController = s_LuaViewControllers.find(uniqueID);
+        if (iController != s_LuaViewControllers.end())
+        {
+            S9xLuaViewController *luaController = iController->second;
+            NSString *errorMsg = [[NSString alloc] initWithCString:str encoding:NSUTF8StringEncoding];
+            NSString *contentString = [luaController.luaScriptConsole stringValue];
+            NSArray *contentArray = [[NSArray alloc] initWithObjects:contentString, errorMsg, nil];
+            NSString *newContentString = [contentArray componentsJoinedByString:@""];
+            [luaController.luaScriptConsole setStringValue:newContentString];
+        }
     });
 }
 
 
 static void OnStart(int uniqueID)
 {
-    S9xLuaViewController *luaController = s_LuaViewControllers[uniqueID];
-
     dispatch_async(dispatch_get_main_queue(), ^{
-        [luaController.luaBrowseButton setEnabled:false];
-        [luaController.luaStopButton setEnabled:true];
-        [luaController.luaRunButton setTitle:@"Restart"];
-        [luaController.luaScriptConsole setStringValue:@""];
+        LuaViewControllerMap_t::iterator iController = s_LuaViewControllers.find(uniqueID);
+        if (iController != s_LuaViewControllers.end())
+		{
+            S9xLuaViewController *luaController = iController->second;
+            [luaController.luaBrowseButton setEnabled:false];
+            [luaController.luaStopButton setEnabled:true];
+            [luaController.luaRunButton setTitle:@"Restart"];
+            [luaController.luaScriptConsole setStringValue:@""];
+		}
     });
 }
 
 static void OnStop(int uniqueID, bool statusOK)
 {
-    S9xLuaViewController *luaController = s_LuaViewControllers[uniqueID];
-
     dispatch_async(dispatch_get_main_queue(), ^{
-        [luaController.luaBrowseButton setEnabled:true];
-        [luaController.luaStopButton setEnabled:false];
-        [luaController.luaRunButton setTitle:@"Run"];
+        LuaViewControllerMap_t::iterator iController = s_LuaViewControllers.find(uniqueID);
+        if (iController != s_LuaViewControllers.end())
+        {
+            S9xLuaViewController *luaController = iController->second;
+            [luaController.luaBrowseButton setEnabled:true];
+            [luaController.luaStopButton setEnabled:false];
+            [luaController.luaRunButton setTitle:@"Run"];
+        }
     });
 }
 
 @end
+
+#endif // HAVE_LUA

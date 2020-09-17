@@ -86,7 +86,7 @@ CGRect				glScreenBounds;
 CGImageRef			macIconImage[118];
 int					macPadIconIndex,
 					macLegendIconIndex,
-					macMusicBoxIconIndex, 
+					macMusicBoxIconIndex,
 					macFunctionIconIndex;
 
 int					macFrameSkip        = -1;
@@ -218,6 +218,7 @@ bool8               pressedFunctionButtons[kNumFunctionButtons] = { 0 };
 bool8               pressedRawKeyboardButtons[MAC_NUM_KEYCODES] = { 0 };
 bool8               heldFunctionButtons[kNumFunctionButtons] = { 0 };
 pthread_mutex_t     keyLock;
+pthread_mutex_t     mainLoopLock;
 
 S9xView             *s9xView;
 
@@ -401,7 +402,9 @@ static inline void EmulationLoop (void)
 
             if (!pauseEmulation)
             {
+                pthread_mutex_lock(&mainLoopLock);
                 S9xMainLoop();
+                pthread_mutex_unlock(&mainLoopLock);
             }
             else
             {
@@ -410,7 +413,9 @@ static inline void EmulationLoop (void)
                     macFrameSkip = 1;
                     skipFrames = 1;
                     frameAdvance = false;
+                    pthread_mutex_lock(&mainLoopLock);
                     S9xMainLoop();
+                    pthread_mutex_unlock(&mainLoopLock);
                     macFrameSkip = storedMacFrameSkip;
                 }
 
@@ -2795,15 +2800,15 @@ void S9xToggleSoundChannel (int c)
     else
 		channel_enable ^= 1 << c;
 
-	S9xSetSoundControl(channel_enable);
+    S9xSetSoundControl(channel_enable);
 }
 
 void S9xExit (void)
 {
-	NSBeep();
+    NSBeep();
 
-	running = false;
-	cartOpen = false;
+    running = false;
+    cartOpen = false;
 }
 
 void QuitWithFatalError ( NSString *message)
@@ -2819,6 +2824,7 @@ void QuitWithFatalError ( NSString *message)
 + (void)initialize
 {
     keyLock = PTHREAD_MUTEX_INITIALIZER;
+    mainLoopLock = PTHREAD_MUTEX_INITIALIZER;
 }
 
 - (instancetype)initWithFrame:(NSRect)frameRect
