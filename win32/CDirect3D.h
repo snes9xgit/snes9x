@@ -15,8 +15,8 @@
 #include "cgFunctions.h"
 #include "CD3DCG.h"
 
-#include "render.h"
 #include "wsnes9x.h"
+#include "render.h"
 #include "IS9xDisplayOutput.h"
 
 #define FVF_COORDS_TEX D3DFVF_XYZ | D3DFVF_TEX1

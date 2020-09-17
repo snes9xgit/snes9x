@@ -17,6 +17,10 @@
 #include "bsx.h"
 #include "msu1.h"
 
+#ifdef HAVE_LUA
+#include "lua-engine.h"
+#endif
+
 #define addCyclesInMemoryAccess \
 	if (!CPU.InDMAorHDMA) \
 	{ \
@@ -54,7 +58,7 @@ static inline int32 memory_speed (uint32 address)
 	return (TWO_CYCLES);
 }
 
-inline uint8 S9xGetByte (uint32 Address)
+inline uint8 S9xGetByteQuiet (uint32 Address)
 {
 	int		block = (Address & 0xffffff) >> MEMMAP_SHIFT;
 	uint8	*GetAddress = Memory.Map[block];
@@ -157,7 +161,7 @@ inline uint8 S9xGetByte (uint32 Address)
 	}
 }
 
-inline uint16 S9xGetWord (uint32 Address, enum s9xwrap_t w = WRAP_NONE)
+inline uint16 S9xGetWordQuiet (uint32 Address, enum s9xwrap_t w = WRAP_NONE)
 {
 	uint16	word;
 
@@ -166,23 +170,23 @@ inline uint16 S9xGetWord (uint32 Address, enum s9xwrap_t w = WRAP_NONE)
 	{
 		PC_t	a;
 
-		word = OpenBus = S9xGetByte(Address);
+		word = OpenBus = S9xGetByteQuiet(Address);
 
 		switch (w)
 		{
 			case WRAP_PAGE:
 				a.xPBPC = Address;
 				a.B.xPCl++;
-				return (word | (S9xGetByte(a.xPBPC) << 8));
+				return (word | (S9xGetByteQuiet(a.xPBPC) << 8));
 
 			case WRAP_BANK:
 				a.xPBPC = Address;
 				a.W.xPC++;
-				return (word | (S9xGetByte(a.xPBPC) << 8));
+				return (word | (S9xGetByteQuiet(a.xPBPC) << 8));
 
 			case WRAP_NONE:
 			default:
-				return (word | (S9xGetByte(Address + 1) << 8));
+				return (word | (S9xGetByteQuiet(Address + 1) << 8));
 		}
 	}
 
@@ -209,8 +213,8 @@ inline uint16 S9xGetWord (uint32 Address, enum s9xwrap_t w = WRAP_NONE)
 		case CMemory::MAP_PPU:
 			if (CPU.InDMAorHDMA)
 			{
-				word = OpenBus = S9xGetByte(Address);
-				return (word | (S9xGetByte(Address + 1) << 8));
+				word = OpenBus = S9xGetByteQuiet(Address);
+				return (word | (S9xGetByteQuiet(Address + 1) << 8));
 			}
 
 			word  = S9xGetPPU(Address & 0xffff);
@@ -317,7 +321,7 @@ inline uint16 S9xGetWord (uint32 Address, enum s9xwrap_t w = WRAP_NONE)
 	}
 }
 
-inline void S9xSetByte (uint8 Byte, uint32 Address)
+inline void S9xSetByteQuiet (uint8 Byte, uint32 Address)
 {
 	int		block = (Address & 0xffffff) >> MEMMAP_SHIFT;
 	uint8	*SetAddress = Memory.WriteMap[block];
@@ -423,7 +427,7 @@ inline void S9xSetByte (uint8 Byte, uint32 Address)
 	}
 }
 
-inline void S9xSetWord (uint16 Word, uint32 Address, enum s9xwrap_t w = WRAP_NONE, enum s9xwriteorder_t o = WRITE_01)
+inline void S9xSetWordQuiet (uint16 Word, uint32 Address, enum s9xwrap_t w = WRAP_NONE, enum s9xwriteorder_t o = WRITE_01)
 {
 	uint32	mask = MEMMAP_MASK & (w == WRAP_PAGE ? 0xff : (w == WRAP_BANK ? 0xffff : 0xffffff));
 	if ((Address & mask) == mask)
@@ -431,30 +435,30 @@ inline void S9xSetWord (uint16 Word, uint32 Address, enum s9xwrap_t w = WRAP_NON
 		PC_t	a;
 
 		if (!o)
-			S9xSetByte((uint8) Word, Address);
+			S9xSetByteQuiet((uint8) Word, Address);
 
 		switch (w)
 		{
 			case WRAP_PAGE:
 				a.xPBPC = Address;
 				a.B.xPCl++;
-				S9xSetByte(Word >> 8, a.xPBPC);
+				S9xSetByteQuiet(Word >> 8, a.xPBPC);
 				break;
 
 			case WRAP_BANK:
 				a.xPBPC = Address;
 				a.W.xPC++;
-				S9xSetByte(Word >> 8, a.xPBPC);
+				S9xSetByteQuiet(Word >> 8, a.xPBPC);
 				break;
 
 			case WRAP_NONE:
 			default:
-				S9xSetByte(Word >> 8, Address + 1);
+				S9xSetByteQuiet(Word >> 8, Address + 1);
 				break;
 		}
 
 		if (o)
-			S9xSetByte((uint8) Word, Address);
+			S9xSetByteQuiet((uint8) Word, Address);
 
 		return;
 	}
@@ -692,6 +696,40 @@ inline void S9xSetWord (uint16 Word, uint32 Address, enum s9xwrap_t w = WRAP_NON
 			addCyclesInMemoryAccess_x2;
 			return;
 	}
+}
+
+inline uint8 S9xGetByte (uint32 Address)
+{
+	uint8 byte = S9xGetByteQuiet(Address);
+#ifdef HAVE_LUA
+	CallRegisteredLuaMemHook(Address, 1, byte, LUAMEMHOOK_READ);
+#endif
+	return (byte);
+}
+
+inline uint16 S9xGetWord (uint32 Address, enum s9xwrap_t w = WRAP_NONE)
+{
+	uint16 word = S9xGetWordQuiet(Address, w);
+#ifdef HAVE_LUA
+	CallRegisteredLuaMemHook(Address, 2, word, LUAMEMHOOK_READ);
+#endif
+	return (word);
+}
+
+inline void S9xSetByte (uint8 Byte, uint32 Address)
+{
+	S9xSetByteQuiet(Byte, Address);
+#ifdef HAVE_LUA
+	CallRegisteredLuaMemHook(Address, 1, Byte, LUAMEMHOOK_WRITE);
+#endif
+}
+
+inline void S9xSetWord (uint16 Word, uint32 Address, enum s9xwrap_t w = WRAP_NONE, enum s9xwriteorder_t o = WRITE_01)
+{
+	S9xSetWordQuiet(Word, Address, w, o);
+#ifdef HAVE_LUA
+	CallRegisteredLuaMemHook(Address, 2, Word, LUAMEMHOOK_WRITE);
+#endif
 }
 
 inline void S9xSetPCBase (uint32 Address)

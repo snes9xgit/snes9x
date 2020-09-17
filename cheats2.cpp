@@ -22,7 +22,7 @@ static inline char *trim (char *string)
     return &string[start];
 }
 
-static inline uint8 S9xGetByteFree (uint32 Address)
+uint8 S9xGetByteFree (uint32 Address)
 {
     int	block = (Address & 0xffffff) >> MEMMAP_SHIFT;
     uint8 *GetAddress = Memory.Map[block];
@@ -108,7 +108,7 @@ static inline uint8 S9xGetByteFree (uint32 Address)
     }
 }
 
-static inline void S9xSetByteFree (uint8 Byte, uint32 Address)
+void S9xSetByteFree (uint8 Byte, uint32 Address)
 {
     int block = (Address & 0xffffff) >> MEMMAP_SHIFT;
     uint8 *SetAddress = Memory.Map[block];

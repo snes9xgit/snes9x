@@ -45,7 +45,7 @@ build_script:
 after_build:
   - ps: $env:gitrev = git describe --tags
   - ps: $env:my_version = "$env:gitrev"
-  - set package_name=snes9x-%my_version%-%arch%
+  - set package_name=snes9x-rr-%my_version%-%arch%
   - if exist artifacts rmdir /s /q artifacts
   - mkdir artifacts
   - copy "%output%" artifacts
@@ -55,6 +55,8 @@ after_build:
     copy win32\docs\faqs-windows.txt artifacts |
     copy win32\docs\readme-windows.txt artifacts |
     copy data\cheats.bml artifacts
+  - copy win32\lua\dist\%platform%\lua5.1.dll artifacts
+  - copy win32\lua\dist\%platform%\lua51.dll artifacts
   - 7z a %package_name%.zip .\artifacts\*
 
 artifacts:

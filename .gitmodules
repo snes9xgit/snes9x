@@ -13,3 +13,6 @@
 [submodule "shaders/glslang"]
 	path = shaders/glslang
 	url = https://github.com/KhronosGroup/glslang.git
+[submodule "win32/lua"]
+	path = win32/lua
+	url = https://github.com/gocha/lua-megapack.git

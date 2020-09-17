@@ -471,6 +471,11 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
 {
+	SEL action = menuItem.action;
+	if (action == @selector(resume:) || action == @selector(softwareReset:) || action == @selector(hardwareReset:)) {
+		return [self.s9xEngine isRunning] && [self.s9xEngine isPaused];
+	}
+
     return !self.isRunningEmulation;
 }
 
@@ -518,6 +523,16 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 - (IBAction)resume:(id)sender
 {
     [self.s9xEngine resume];
+}
+
+- (IBAction)softwareReset:(id)sender
+{
+	[self.s9xEngine softwareReset];
+}
+
+- (IBAction)hardwareReset:(id)sender
+{
+	[self.s9xEngine hardwareReset];
 }
 
 - (BOOL)handleInput:(S9xJoypadInput *)input fromJoypad:(S9xJoypad *)joypad

@@ -421,6 +421,7 @@ srcs += [
  '../netplay.cpp',
  '../server.cpp',
  '../loadzip.cpp',
+ '../compat.cpp',
  'src/gtk_netplay_dialog.cpp',
  'src/gtk_netplay_dialog.h',
  'src/gtk_netplay.cpp',

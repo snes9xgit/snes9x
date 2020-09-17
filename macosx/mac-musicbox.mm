@@ -414,20 +414,20 @@ static void SPCPlayExec (void)
 
 static void MusicBoxForceFreeze (void)
 {
-	char	filename[PATH_MAX + 1];
+	char filename[PATH_MAX + 1];
 
-	strcpy(filename, S9xGetFreezeFilename(999));
-	strcat(filename, ".tmp");
+	strlcpy(filename, S9xGetFreezeFilename(999), sizeof(filename));
+	strlcat(filename, ".tmp", sizeof(filename));
 
 	S9xFreezeGame(filename);
 }
 
 static void MusicBoxForceDefrost (void)
 {
-	char	filename[PATH_MAX + 1];
+	char filename[PATH_MAX + 1];
 
-	strcpy(filename, S9xGetFreezeFilename(999));
-	strcat(filename, ".tmp");
+	strlcpy(filename, S9xGetFreezeFilename(999), sizeof(filename));
+	strlcat(filename, ".tmp", sizeof(filename));
 
 	S9xUnfreezeGame(filename);
 	remove(filename);

@@ -256,6 +256,7 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.DisplayPressedKeys         =  conf.GetBool("Display::DisplayInput",               false);
 	Settings.DisplayMovieFrame          =  conf.GetBool("Display::DisplayFrameCount",          false);
 	Settings.AutoDisplayMessages        =  conf.GetBool("Display::MessagesInImage",            true);
+	Settings.DisplayLagFrame            =  conf.GetBool("Display::DisplayLagFrameCount",       false);
 	Settings.InitialInfoStringTimeout   =  conf.GetInt ("Display::MessageDisplayTime",         120);
 	Settings.BilinearFilter             =  conf.GetBool("Display::BilinearFilter",             false);
 
@@ -265,7 +266,6 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.TurboMode                  =  conf.GetBool("Settings::TurboMode",                 false);
 	Settings.TurboSkipFrames            =  conf.GetUInt("Settings::TurboFrameSkip",            15);
 	Settings.MovieTruncate              =  conf.GetBool("Settings::MovieTruncateAtEnd",        false);
-	Settings.MovieNotifyIgnored         =  conf.GetBool("Settings::MovieNotifyIgnored",        false);
 	Settings.WrongMovieStateProtection  =  conf.GetBool("Settings::WrongMovieStateProtection", true);
 	Settings.StretchScreenshots         =  conf.GetInt ("Settings::StretchScreenshots",        1);
 	Settings.SnapshotScreenshots        =  conf.GetBool("Settings::SnapshotScreenshots",       true);
@@ -765,69 +765,3 @@ char * S9xParseArgs (char **argv, int argc)
 
 	return (rom_filename);
 }
-
-#ifndef __WIN32__
-void _splitpath(const char *path, char *drive, char *dir, char *fname, char *ext)
-{
-    char *slash = strrchr((char *)path, SLASH_CHAR);
-    char *dot = strrchr((char *)path, '.');
-
-    *drive = '\0';
-
-    if (dot && slash && dot < slash)
-    {
-        dot = 0;
-    }
-
-    if (!slash)
-    {
-        *dir = '\0';
-        strcpy(fname, path);
-
-        if (dot)
-        {
-            fname[dot - path] = '\0';
-            strcpy(ext, dot + 1);
-        }
-        else
-        {
-            *ext = '\0';
-        }
-    }
-    else
-    {
-        strcpy(dir, path);
-        dir[slash - path] = '\0';
-        strcpy(fname, slash + 1);
-
-        if (dot)
-        {
-            fname[(dot - slash) - 1] = '\0';
-            strcpy(ext, dot + 1);
-        }
-        else
-        {
-            *ext = '\0';
-        }
-    }
-}
-
-void _makepath(char *path, const char *drive, const char *dir, const char *fname, const char *ext)
-{
-    if (dir && *dir)
-    {
-        strcpy(path, dir);
-        strcat(path, "/");
-    }
-    else
-        *path = '\0';
-
-    strcat(path, fname);
-
-    if (ext && *ext)
-    {
-        strcat(path, ".");
-        strcat(path, ext);
-    }
-}
-#endif // __WIN32__

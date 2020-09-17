@@ -12,15 +12,20 @@
 #include "fxemu.h"
 #include "snapshot.h"
 #include "movie.h"
+#include "lua-engine.h"
 #ifdef DEBUGGER
 #include "debug.h"
 #include "missing.h"
 #endif
 
+static inline void StartS9xMainLoop (void);
+static inline void EndS9xMainLoop (void);
 static inline void S9xReschedule (void);
 
 void S9xMainLoop (void)
 {
+	StartS9xMainLoop();
+
 	#define CHECK_FOR_IRQ_CHANGE() \
 	if (Timings.IRQFlagChanging) \
 	{ \
@@ -167,6 +172,10 @@ void S9xMainLoop (void)
 				Opcodes = S9xOpcodesSlow;
 		}
 
+#ifdef HAVE_LUA
+		CallRegisteredLuaMemHook(Registers.PBPC, ICPU.S9xOpLengths[Op], Op, LUAMEMHOOK_EXEC);
+#endif
+
 		Registers.PCw++;
 		(*Opcodes[Op].S9xOpcode)();
 
@@ -175,6 +184,36 @@ void S9xMainLoop (void)
 	}
 
 	S9xPackStatus();
+
+	EndS9xMainLoop();
+}
+
+static inline void StartS9xMainLoop (void)
+{
+	extern bool8 pad_read, pad_read_last;
+	pad_read_last = pad_read;
+	pad_read      = FALSE;
+
+	MovieApplyNextInput();
+
+#ifdef HAVE_LUA
+	CallRegisteredLuaFunctions(LUACALL_BEFOREEMULATION);
+#endif
+
+	IPPU.InMainLoop = TRUE;
+}
+
+static inline void EndS9xMainLoop (void)
+{
+	extern bool8 pad_read;
+	if(!pad_read)
+		IPPU.PadIgnoredFrames++;
+
+	IPPU.InMainLoop = FALSE;
+
+#ifdef HAVE_LUA
+	CallRegisteredLuaFunctions(LUACALL_AFTEREMULATION);
+#endif
 }
 
 static inline void S9xReschedule (void)

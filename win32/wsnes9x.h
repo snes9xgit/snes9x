@@ -44,11 +44,31 @@
 #define _tToChar WideToUtf8
 #define _tFromChar Utf8ToWide
 #define _tFromMS932(x) CPToWide(x,932)
+#define _tToAnsi(x) WideToCP(x,CP_ACP)
+#define _tFromAnsi(x) CPToWide(x,CP_ACP)
 #else
 #define _tToChar
 #define _tFromChar
 #define _tFromMS932
+#define _tToAnsi
+#define _tFromAnsi
 #endif
+
+#include <string>
+#include <sstream>
+namespace std {
+#ifndef tstring
+#ifdef UNICODE
+	typedef wstring tstring;
+	typedef wstringbuf tstringbuf;
+	typedef wstringstream tstringstream;
+#else
+	typedef string tstring;
+	typedef stringbuf tstringbuf;
+	typedef stringstream tstringstream;
+#endif
+#endif
+}
 
 /****************************************************************************/
 inline static void Log (const char *str)
@@ -413,6 +433,18 @@ enum
 	SNES_MAX_CONTROLLER_OPTIONS
 };
 
+struct ICheat
+{
+    uint32  address;
+    uint32  new_val;
+    uint32  saved_val;
+	int		size;
+    bool8   enabled;
+    bool8   saved;
+    char    name [22];
+	int format;
+};
+
 /*****************************************************************************/
 
 void SetInfoDlgColor(unsigned char r, unsigned char g, unsigned char b);
@@ -471,5 +503,7 @@ void FreezeUnfreezeDialog(bool8 freeze);
 void FreezeUnfreezeDialogPreview(bool8 freeze);
 void FreezeUnfreeze(const char *filename, bool8 freeze);
 bool UnfreezeScreenshotSlot(int slot, uint16 **image_buffer, int &width, int &height);
+
+void UpdateToolWindows(bool frameAdvance = false);
 
 #endif // !defined(SNES9X_H_INCLUDED)

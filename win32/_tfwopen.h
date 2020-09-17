@@ -111,6 +111,13 @@ public:
 #define ifstream u8nifstream
 #endif // __cplusplus
 
+__forceinline static FILE *fopenA(const char *filename, const char *mode) {
+	return fopen(filename, mode);
+}
+__forceinline static int removeA(const char *filename) {
+	return remove(filename);
+}
+
 #define fopen _tfwopen
 #undef remove
 __forceinline static int remove(const char *filename) {

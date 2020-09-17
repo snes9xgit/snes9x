@@ -63,6 +63,8 @@ struct InternalPPU
 	uint32	TotalEmulatedFrames;
 	uint32	SkippedFrames;
 	uint32	FrameSkip;
+	uint32	PadIgnoredFrames;
+	bool8	InMainLoop;
 };
 
 struct SOBJ

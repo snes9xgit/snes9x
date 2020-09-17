@@ -19,6 +19,9 @@
 #include "display.h"
 #include "language.h"
 #include "gfx.h"
+#ifdef HAVE_LUA
+#include "lua-engine.h"
+#endif
 
 #ifndef min
 #define min(a,b)	(((a) < (b)) ? (a) : (b))
@@ -168,6 +171,12 @@ struct SnapshotScreenshotInfo
 	uint16	Height;
 	uint8	Interlaced;
 	uint8	Data[MAX_SNES_WIDTH * MAX_SNES_HEIGHT * 3];
+};
+
+struct SnapshotRRExtraInfo
+{
+	uint32	TotalEmulatedFrames;    // IPPU.TotalEmulatedFrames
+	uint32	PadIgnoredFrames;       // IPPU.PadIgnoredFrames
 };
 
 static struct Obsolete
@@ -992,6 +1001,15 @@ static FreezeData	SnapMovie[] =
 	INT_ENTRY(6, MovieInputDataSize)
 };
 
+#undef STRUCT
+#define STRUCT	struct SnapshotRRExtraInfo
+
+static FreezeData	SnapRRExtra[] =
+{
+	INT_ENTRY(8, TotalEmulatedFrames),
+	INT_ENTRY(8, PadIgnoredFrames)
+};
+
 static int UnfreezeBlock (STREAM, const char *, uint8 *, int);
 static int UnfreezeBlockCopy (STREAM, const char *, uint8 **, int);
 static int UnfreezeStruct (STREAM, const char *, void *, FreezeData *, int, int);
@@ -1014,6 +1032,7 @@ void S9xResetSaveTimer (bool8 dontsave)
 
 		_splitpath(Memory.ROMFilename, drive, dir, def, ext);
 		snprintf(filename, PATH_MAX + 1, "%s%s%s.%.*s", S9xGetDirectory(SNAPSHOT_DIR), SLASH_STR, def, _MAX_EXT - 1, "oops");
+
 		S9xMessage(S9X_INFO, S9X_FREEZE_FILE_INFO, SAVE_INFO_OOPS);
 		S9xFreezeGame(filename);
 	}
@@ -1039,6 +1058,48 @@ bool8 S9xFreezeGameMem (uint8 *buf, uint32 bufSize)
 bool8 S9xFreezeGame (const char *filename)
 {
 	STREAM	stream = NULL;
+
+#ifdef HAVE_LUA
+	// parse state number
+	int filenameLen = strlen(filename);
+	bool numberedState = false;
+	int stateNumber;
+	if (filenameLen >= 4)
+	{
+		numberedState = (filename[filenameLen - 4] == '.') && isdigit(filename[filenameLen - 3]) && isdigit(filename[filenameLen - 2]) && isdigit(filename[filenameLen - 1]);
+		if (numberedState)
+		{
+			stateNumber = strtol(&filename[filenameLen - 3], NULL, 10);
+		}
+	}
+
+	if (numberedState) {
+		LuaSaveData saveData;
+		CallRegisteredLuaSaveFunctions(stateNumber, saveData);
+
+		char luaSaveFilename [MAX_PATH];
+		strncpy(luaSaveFilename, filename, MAX_PATH);
+		luaSaveFilename[MAX_PATH-(1+7/*strlen(".luasav")*/)] = '\0';
+		strcat(luaSaveFilename, ".luasav");
+		if(saveData.recordList)
+		{
+			FILE* luaSaveFile = fopen(luaSaveFilename, "wb");
+			if(luaSaveFile)
+			{
+				saveData.ExportRecords(luaSaveFile);
+				fclose(luaSaveFile);
+			}
+		}
+		else
+		{
+			unlink(luaSaveFilename);
+		}
+	}
+
+	extern bool g_onlyCallSavestateCallbacks;
+	if(g_onlyCallSavestateCallbacks)
+		return TRUE;
+#endif
 
 	if (S9xOpenSnapshotFile(filename, FALSE, &stream))
 	{
@@ -1135,6 +1196,38 @@ bool8 S9xUnfreezeGame (const char *filename)
 			sprintf(String, SAVE_INFO_LOAD " %s", base);
 
 		S9xMessage(S9X_INFO, S9X_FREEZE_FILE_INFO, String);
+
+#ifdef HAVE_LUA
+		// parse state number
+		int filenameLen = strlen(filename);
+		bool numberedState = false;
+		int stateNumber;
+		if (filenameLen >= 4)
+		{
+			numberedState = (filename[filenameLen - 4] == '.') && isdigit(filename[filenameLen - 3]) && isdigit(filename[filenameLen - 2]) && isdigit(filename[filenameLen - 1]);
+			if (numberedState)
+			{
+				stateNumber = strtol(&filename[filenameLen - 3], NULL, 10);
+			}
+		}
+
+		if (numberedState) {
+			LuaSaveData saveData;
+
+			char luaSaveFilename [MAX_PATH];
+			strncpy(luaSaveFilename, filename, MAX_PATH);
+			luaSaveFilename[MAX_PATH-(1+7/*strlen(".luasav")*/)] = '\0';
+			strcat(luaSaveFilename, ".luasav");
+			FILE* luaSaveFile = fopen(luaSaveFilename, "rb");
+			if(luaSaveFile)
+			{
+				saveData.ImportRecords(luaSaveFile);
+				fclose(luaSaveFile);
+			}
+
+			CallRegisteredLuaLoadFunctions(stateNumber, saveData);
+		}
+#endif
 
 		return (TRUE);
 	}
@@ -1316,6 +1409,11 @@ void S9xFreezeToStream (STREAM stream)
 		}
 	}
 
+	struct SnapshotRRExtraInfo rri;
+	rri.TotalEmulatedFrames = IPPU.TotalEmulatedFrames;
+	rri.PadIgnoredFrames = IPPU.PadIgnoredFrames;
+	FreezeStruct(stream, "JXQ", &rri, SnapRRExtra, COUNT(SnapRRExtra));
+
 	delete [] soundsnapshot;
 }
 
@@ -1326,6 +1424,8 @@ int S9xUnfreezeFromStream (STREAM stream)
 	int		result = SUCCESS;
 	int		version, len;
 	char	buffer[PATH_MAX + 1];
+
+	int		movieResult = SUCCESS;
 
 	len = strlen(SNAPSHOT_MAGIC) + 1 + 4 + 1;
 	if (READ_STREAM(buffer, len, stream) != (unsigned int ) len)
@@ -1370,6 +1470,7 @@ int S9xUnfreezeFromStream (STREAM stream)
 	uint8	*local_msu1_data     = NULL;
 	uint8	*local_screenshot    = NULL;
 	uint8	*local_movie_data    = NULL;
+	uint8	*local_rr_extra      = NULL;
 
 	do
 	{
@@ -1513,34 +1614,34 @@ int S9xUnfreezeFromStream (STREAM stream)
 
 		SnapshotMovieInfo	mi;
 
-		result = UnfreezeStruct(stream, "MOV", &mi, SnapMovie, COUNT(SnapMovie), version);
-		if (result != SUCCESS)
+		movieResult = UnfreezeStruct(stream, "MOV", &mi, SnapMovie, COUNT(SnapMovie), version);
+		if (movieResult != SUCCESS)
 		{
-			if (S9xMovieActive())
-			{
-				result = NOT_A_MOVIE_SNAPSHOT;
-				break;
-			}
+			movieResult = NOT_A_MOVIE_SNAPSHOT;
 		}
 		else
 		{
-			result = UnfreezeBlockCopy(stream, "MID", &local_movie_data, mi.MovieInputDataSize);
-			if (result != SUCCESS)
+			movieResult = UnfreezeBlockCopy(stream, "MID", &local_movie_data, mi.MovieInputDataSize);
+			if (movieResult != SUCCESS)
+			{
+				movieResult = NOT_A_MOVIE_SNAPSHOT;
+				if (local_movie_data) {
+					delete [] local_movie_data;
+					local_movie_data = NULL;
+				}
+			}
+			else
 			{
 				if (S9xMovieActive())
 				{
-					result = NOT_A_MOVIE_SNAPSHOT;
-					break;
+					result = S9xMovieUnfreeze(local_movie_data, mi.MovieInputDataSize);
+					if (result != SUCCESS)
+						break;
 				}
 			}
-
-			if (S9xMovieActive())
-			{
-				result = S9xMovieUnfreeze(local_movie_data, mi.MovieInputDataSize);
-				if (result != SUCCESS)
-					break;
-			}
 		}
+
+		UnfreezeStructCopy(stream, "JXQ", &local_rr_extra, SnapRRExtra, COUNT(SnapRRExtra), version);
 
 		result = SUCCESS;
 	} while (false);
@@ -1747,6 +1848,15 @@ int S9xUnfreezeFromStream (STREAM stream)
 			S9xUpdateFrameCounter(-1);
 			pad_read = pad_read_temp;
 		}
+		if (S9xMovieActive())
+		{
+			result = movieResult;
+		}
+		if (result == NOT_A_MOVIE_SNAPSHOT)
+		{
+			// finish the movie
+			S9xMovieUnfreeze(NULL, 0);
+		}
 
 		if (local_screenshot)
 		{
@@ -1800,6 +1910,19 @@ int S9xUnfreezeFromStream (STREAM stream)
 
 			delete ssi;
 		}
+
+		if (local_rr_extra)
+		{
+			SnapshotRRExtraInfo	*rri = new SnapshotRRExtraInfo;
+
+			UnfreezeStructFromCopy(rri, SnapRRExtra, COUNT(SnapRRExtra), local_rr_extra, version);
+
+			IPPU.TotalEmulatedFrames = rri->TotalEmulatedFrames;
+			IPPU.PadIgnoredFrames = rri->PadIgnoredFrames;
+			S9xUpdateFrameCounter(-1);
+
+			delete rri;
+		}
 	}
 
 	if (local_cpu)				delete [] local_cpu;
@@ -1829,6 +1952,7 @@ int S9xUnfreezeFromStream (STREAM stream)
 	if (local_bsx_data)			delete [] local_bsx_data;
 	if (local_screenshot)		delete [] local_screenshot;
 	if (local_movie_data)		delete [] local_movie_data;
+	if (local_rr_extra)			delete [] local_rr_extra;
 
 	return (result);
 }

@@ -752,6 +752,7 @@ void WinRegisterConfigItems()
 	AddBool2C("FrameRate", Settings.DisplayFrameRate, false, "on to display the framerate (will be inaccurate if AutoMaxSkipFrames is too small)");
 	AddBoolC("DisplayInput", Settings.DisplayPressedKeys, false, "true to show which buttons are pressed");
 	AddBoolC("DisplayFrameCount", Settings.DisplayMovieFrame, true, "true to show the frame count when a movie is playing");
+	AddBoolC("DisplayLagFrameCount", Settings.DisplayLagFrame, true, "true to show the lag frame count");
 #undef CATEGORY
 #define CATEGORY "Display\\Win"
 	AddUIntC("OutputMethod", GUI.outputMethod, 1, "0=DirectDraw, 1=Direct3D, 2=OpenGL");
@@ -806,7 +807,6 @@ void WinRegisterConfigItems()
 	AddBool("BlockInvalidVRAMAccess", Settings.BlockInvalidVRAMAccessMaster, true);
 	AddBool2C("SnapshotScreenshots", Settings.SnapshotScreenshots, true, "on to save the screenshot in each snapshot, for loading-when-paused display");
 	AddBoolC("MovieTruncateAtEnd", Settings.MovieTruncate, true, "true to truncate any leftover data in the movie file after the current frame when recording stops");
-	AddBoolC("MovieNotifyIgnored", Settings.MovieNotifyIgnored, false, "true to display \"(ignored)\" in the frame counter when recording when the last frame of input was not used by the SNES (such as lag or loading frames)");
 	AddBool("DisplayWatchedAddresses", Settings.DisplayWatchedAddresses, true);
 	AddBool2C("WrongMovieStateProtection", Settings.WrongMovieStateProtection, true, "off to allow states to be loaded for recording from a different movie than they were made in");
 	AddUIntC("MessageDisplayTime", Settings.InitialInfoStringTimeout, 120, "display length of messages, in frames. set to 0 to disable all message text");

@@ -61,4 +61,5 @@ SOURCES_CXX := $(CORE_DIR)/apu/apu.cpp \
 				 $(CORE_DIR)/sha256.cpp \
 				 $(CORE_DIR)/bml.cpp \
 				 $(CORE_DIR)/movie.cpp \
+				 $(CORE_DIR)/compat.cpp \
 				 $(CORE_DIR)/libretro/libretro.cpp

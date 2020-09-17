@@ -3329,9 +3329,6 @@ void S9xControlEOF (void)
 	}
 
 	do_polling(POLL_ALL);
-
-	pad_read_last = pad_read;
-	pad_read      = false;
 }
 
 void S9xSetControllerCrosshair (enum crosscontrols ctl, int8 idx, const char *fg, const char *bg)
@@ -3627,11 +3624,12 @@ uint16 MovieGetJoypad (int i)
 	return (joypad[i].buttons);
 }
 
-void MovieSetJoypad (int i, uint16 buttons)
+void MovieSetJoypad (int i, uint16 buttons, uint16 mask)
 {
 	if (i < 0 || i > 7)
 		return;
 
+	joypad[i].buttons &= ~mask;
 	joypad[i].buttons = buttons;
 }
 

@@ -14,6 +14,7 @@
 #include "snapshot.h"
 #include "cheats.h"
 #include "logger.h"
+#include "lua-engine.h"
 #ifdef DEBUGGER
 #include "debug.h"
 #endif
@@ -132,6 +133,10 @@ void S9xReset (void)
 		S9xMSU1Init();
 
 	S9xInitCheatData();
+
+#ifdef HAVE_LUA
+	CallRegisteredLuaFunctions(LUACALL_ONSTART);
+#endif
 }
 
 void S9xSoftReset (void)

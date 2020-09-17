@@ -15,6 +15,10 @@
 #include "font.h"
 #include "display.h"
 
+#ifdef HAVE_LUA
+#include "lua-engine.h"
+#endif
+
 extern struct SCheatData		Cheat;
 extern struct SLineData			LineData[240];
 extern struct SLineMatrixData	LineMatrixData[240];
@@ -231,6 +235,11 @@ void S9xEndScreenRefresh (void)
 
 			if (Settings.AutoDisplayMessages)
 				S9xDisplayMessages(GFX.Screen, GFX.RealPPL, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight, 1);
+
+#ifdef HAVE_LUA
+			if (Settings.AutoDisplayMessages)
+				DrawLuaGuiToScreen(GFX.Screen, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight, 16, GFX.Pitch, false);
+#endif
 
 			S9xDeinitUpdate(IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight);
 		}
@@ -1888,7 +1897,7 @@ static void DisplayPressedKeys (void)
 	static int		KeyOrder[] = { 8, 10, 7, 9, 0, 6, 14, 13, 5, 1, 4, 3, 2, 11, 12 }; // < ^ > v   A B Y X  L R  S s
 
 	enum controllers	controller;
-    int					line = Settings.DisplayMovieFrame && S9xMovieActive() ? 2 : 1;
+    int					line = Settings.DisplayMovieFrame ? 2 : 1;
 	int8				ids[4];
 	char				string[255];
 
@@ -2059,7 +2068,7 @@ void S9xDisplayMessages (uint16 *screen, int ppl, int width, int height, int sca
 	if (Settings.DisplayPressedKeys)
 		DisplayPressedKeys();
 
-	if (Settings.DisplayMovieFrame && S9xMovieActive())
+	if (Settings.DisplayMovieFrame)
 		S9xDisplayString(GFX.FrameDisplayString, 1, 1, false);
 
 	if (GFX.InfoString && *GFX.InfoString)

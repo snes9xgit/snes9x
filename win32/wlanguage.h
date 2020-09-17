@@ -343,7 +343,6 @@ Nintendo is a trademark.")
 #define MOVIE_ERR_WRONG_FORMAT TEXT("The movie file is corrupt or in the wrong format.")
 #define MOVIE_ERR_WRONG_VERSION_SHORT TEXT("Unsupported movie version.")
 #define MOVIE_ERR_WRONG_VERSION MOVIE_ERR_WRONG_VERSION_SHORT TEXT(" You need a different version of Snes9x to play this movie.")
-#define MOVIE_ERR_NOFRAMETOGGLE "No movie; can't toggle frame count"
 #define MOVIE_ERR_NOREADONLYTOGGLE "No movie; can't toggle read-only"
 #define MOVIE_LABEL_AUTHORINFO TEXT("Author Info:")
 #define MOVIE_LABEL_ERRORINFO TEXT("Error Info:")
@@ -382,6 +381,8 @@ Nintendo is a trademark.")
 #define SEARCH_COLUMN_ADDRESS TEXT("Address")
 #define SEARCH_COLUMN_VALUE TEXT("Value")
 #define SEARCH_COLUMN_DESCRIPTION TEXT("Description")
+#define CHEAT_COLUMN_CODE TEXT("Code")
+#define CHEAT_COLUMN_DESCRIPTION TEXT("Description")
 
 // ROM dialog
 

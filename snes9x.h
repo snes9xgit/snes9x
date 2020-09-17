@@ -252,6 +252,7 @@ struct SSettings
 	bool8	DisplayWatchedAddresses;
 	bool8	DisplayPressedKeys;
 	bool8	DisplayMovieFrame;
+	bool8	DisplayLagFrame;
 	bool8	AutoDisplayMessages;
 	uint32	InitialInfoStringTimeout;
 	uint16	DisplayColor;
@@ -284,7 +285,6 @@ struct SSettings
 	int		Port;
 
 	bool8	MovieTruncate;
-	bool8	MovieNotifyIgnored;
 	bool8	WrongMovieStateProtection;
 	bool8	DumpStreams;
 	int		DumpStreamsMaxFrames;

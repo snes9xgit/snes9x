@@ -1733,6 +1733,11 @@ void S9xResetPPU (void)
 	PPU.M7HOFS = 0;
 	PPU.M7VOFS = 0;
 	PPU.M7byte = 0;
+
+	IPPU.TotalEmulatedFrames = 0;
+	IPPU.PadIgnoredFrames = 0;
+	extern bool8 pad_read, pad_read_last;
+	pad_read = pad_read_last = FALSE;
 }
 
 void S9xResetPPUFast (void)

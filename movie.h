@@ -62,19 +62,27 @@ int S9xMovieUnfreeze (uint8 *, uint32);
 bool8 S9xMovieActive (void);
 bool8 S9xMoviePlaying (void);
 bool8 S9xMovieRecording (void);
+bool8 S9xMovieFinished (void);
 bool8 S9xMovieReadOnly (void);
+bool8 S9xMovieSetReadOnly (bool8 readonly);
 uint8 S9xMovieControllers (void);
 uint32 S9xMovieGetId (void);
 uint32 S9xMovieGetLength (void);
 uint32 S9xMovieGetFrameCounter (void);
+uint32 S9xMovieGetRerecordCount (void);
+uint32 S9xMovieSetRerecordCount (uint32 newRerecordCount);
+bool8 S9xMovieGetRerecordCountSkip (void);
+bool8 S9xMovieSetRerecordCountSkip (bool8 newSkipRerecordCount);
+const char *S9xMovieGetFilename (void);
 
 uint16 MovieGetJoypad (int);
-void MovieSetJoypad (int, uint16);
+void MovieSetJoypad (int, uint16, uint16 mask = ~0);
 bool MovieGetMouse (int, uint8 d[MOUSE_DATA_SIZE]);
 void MovieSetMouse (int, uint8 d[MOUSE_DATA_SIZE], bool);
 bool MovieGetScope (int, uint8 d[SCOPE_DATA_SIZE]);
 void MovieSetScope (int, uint8 d[SCOPE_DATA_SIZE]);
 bool MovieGetJustifier (int, uint8 d[JUSTIFIER_DATA_SIZE]);
 void MovieSetJustifier (int, uint8 d[JUSTIFIER_DATA_SIZE]);
+void MovieApplyNextInput(void);
 
 #endif
