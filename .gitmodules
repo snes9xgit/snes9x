@@ -16,3 +16,6 @@
 [submodule "win32/lua"]
 	path = win32/lua
 	url = https://github.com/gocha/lua-megapack.git
+[submodule "macosx/lua"]
+	path = macosx/lua
+	url = https://github.com/sbzappa/lua-megapack.git
