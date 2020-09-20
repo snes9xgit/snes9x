@@ -120,12 +120,12 @@ static LuaViewControllerMap_t s_LuaViewControllers;
 
 static void PrintToWindowConsole(int uniqueID, const char* str)
 {
+    NSString *errorMsg = [[NSString alloc] initWithCString:str encoding:NSUTF8StringEncoding];
     dispatch_async(dispatch_get_main_queue(), ^{
         LuaViewControllerMap_t::iterator iController = s_LuaViewControllers.find(uniqueID);
         if (iController != s_LuaViewControllers.end())
         {
             S9xLuaViewController *luaController = iController->second;
-            NSString *errorMsg = [[NSString alloc] initWithCString:str encoding:NSUTF8StringEncoding];
             NSString *contentString = [luaController.luaScriptConsole stringValue];
             NSArray *contentArray = [[NSArray alloc] initWithObjects:contentString, errorMsg, nil];
             NSString *newContentString = [contentArray componentsJoinedByString:@""];

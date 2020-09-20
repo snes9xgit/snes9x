@@ -404,6 +404,9 @@ static inline void EmulationLoop (void)
             {
                 pthread_mutex_lock(&mainLoopLock);
                 S9xMainLoop();
+#ifdef HAVE_LUA
+                CallRegisteredLuaFunctions(LUACALL_AFTEREMULATIONGUI);
+#endif
                 pthread_mutex_unlock(&mainLoopLock);
             }
             else
@@ -415,6 +418,9 @@ static inline void EmulationLoop (void)
                     frameAdvance = false;
                     pthread_mutex_lock(&mainLoopLock);
                     S9xMainLoop();
+#ifdef HAVE_LUA
+                    CallRegisteredLuaFunctions(LUACALL_AFTEREMULATIONGUI);
+#endif
                     pthread_mutex_unlock(&mainLoopLock);
                     macFrameSkip = storedMacFrameSkip;
                 }
