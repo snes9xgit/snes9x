@@ -22,7 +22,7 @@
 #import <snes9x_framework/snes9x_framework.h>
 #import "S9xPreferences/S9xPreferencesWindowController.h"
 
-static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
+extern NSWindowFrameAutosaveName const kMainWindowIdentifier;
 
 @interface AppDelegate : NSObject <NSApplicationDelegate, S9xInputDelegate>
 

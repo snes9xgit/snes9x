@@ -22,12 +22,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString * const kKeyboardPrefs = @"KeyboardConfig";
-static NSString * const kJoypadInputPrefs = @"JoypadInputs";
-static NSString * const kJoypadPlayerPrefs = @"JoypadPlayers";
-static NSString * const kShowFPSPref = @"ShowFPS";
-static NSString * const kVideoModePref = @"VideoMode";
-static NSString * const kMacFrameSkipPref = @"FrameSkip";
+extern NSString * const kKeyboardPrefs;
+extern NSString * const kJoypadInputPrefs;
+extern NSString * const kJoypadPlayerPrefs;
+extern NSString * const kShowFPSPref;
+extern NSString * const kVideoModePref;
+extern NSString * const kMacFrameSkipPref;
 
 @interface S9xPreferencesWindowController : NSWindowController<S9xInputDelegate>
 @property (nonatomic, weak) IBOutlet NSTabView *tabView;

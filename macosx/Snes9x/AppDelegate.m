@@ -21,6 +21,8 @@
 #import <Carbon/Carbon.h>
 #import "AppDelegate.h"
 
+NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
+
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {

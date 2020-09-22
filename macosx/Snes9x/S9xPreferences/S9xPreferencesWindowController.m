@@ -23,6 +23,13 @@
 #import "S9xPreferencesWindowController.h"
 #import "S9xButtonConfigTextField.h"
 
+NSString * const kKeyboardPrefs = @"KeyboardConfig";
+NSString * const kJoypadInputPrefs = @"JoypadInputs";
+NSString * const kJoypadPlayerPrefs = @"JoypadPlayers";
+NSString * const kShowFPSPref = @"ShowFPS";
+NSString * const kVideoModePref = @"VideoMode";
+NSString * const kMacFrameSkipPref = @"FrameSkip";
+
 @implementation S9xPreferencesWindowController
 @synthesize tabView, videoModePopup, showFPSCheckbox, devicePopUp, playerPopUp, macFrameSkipTextField, macFrameSkipStepper, macFrameSkipAutomaticButton, configTextFields;
 
