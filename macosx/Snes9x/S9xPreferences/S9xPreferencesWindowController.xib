@@ -221,11 +221,11 @@
                             </tabViewItem>
                             <tabViewItem label="Sound" identifier="" id="q8u-Vx-rMQ">
                                 <view key="view" id="vwU-SK-nUc">
-                                    <rect key="frame" x="0.0" y="0.0" width="750" height="365"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="478" height="350"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="WoC-FX-Dqz">
-                                            <rect key="frame" x="264" y="317" width="222" height="16"/>
+                                            <rect key="frame" x="128" y="302" width="222" height="16"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="Sound Preferences In Development" id="qrW-0U-KYp">
                                                 <font key="font" usesAppearanceFont="YES"/>
                                                 <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
@@ -241,11 +241,11 @@
                             </tabViewItem>
                             <tabViewItem label="Joypad" identifier="" id="mgW-WL-r3B">
                                 <view key="view" id="JVq-Ud-2n2">
-                                    <rect key="frame" x="0.0" y="0.0" width="478" height="365"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="478" height="350"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="32" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xM7-pH-5lb" userLabel="Container">
-                                            <rect key="frame" x="28" y="168" width="423" height="165"/>
+                                            <rect key="frame" x="28" y="153" width="423" height="165"/>
                                             <subviews>
                                                 <stackView distribution="equalSpacing" orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="A6n-i8-ejN" userLabel="Controller Select">
                                                     <rect key="frame" x="0.0" y="144" width="423" height="21"/>
@@ -844,11 +844,11 @@
                             </tabViewItem>
                             <tabViewItem label="Files" identifier="" id="6pm-4O-Xry">
                                 <view key="view" id="KGu-va-x3o">
-                                    <rect key="frame" x="0.0" y="0.0" width="478" height="365"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="478" height="350"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Fhi-5X-cK0">
-                                            <rect key="frame" x="134" y="317" width="211" height="16"/>
+                                            <rect key="frame" x="134" y="302" width="211" height="16"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="Files Preferences In Development" id="xzk-dJ-n7z">
                                                 <font key="font" usesAppearanceFont="YES"/>
                                                 <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
@@ -1530,79 +1530,40 @@
                                     </constraints>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="UI" identifier="" id="V7H-Wr-Srp">
-                                <view key="view" id="kqG-AG-rbM">
-                                    <rect key="frame" x="0.0" y="0.0" width="750" height="365"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    <subviews>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="fj7-Q2-abT">
-                                            <rect key="frame" x="277" y="317" width="196" height="16"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="UI Preferences In Development" id="LoG-gh-joJ">
-                                                <font key="font" usesAppearanceFont="YES"/>
-                                                <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstItem="fj7-Q2-abT" firstAttribute="top" secondItem="kqG-AG-rbM" secondAttribute="top" constant="32" id="7l8-Ds-4Zr"/>
-                                        <constraint firstItem="fj7-Q2-abT" firstAttribute="centerX" secondItem="kqG-AG-rbM" secondAttribute="centerX" id="7lX-8l-gXS"/>
-                                    </constraints>
-                                </view>
-                            </tabViewItem>
                         </tabViewItems>
                     </tabView>
                 </subviews>
             </view>
             <toolbar key="toolbar" implicitIdentifier="8C6EF213-5CC8-499D-B4E6-728F44AE0475" autosavesConfiguration="NO" allowsUserCustomization="NO" displayMode="iconAndLabel" sizeMode="regular" id="D1j-gN-qi7">
                 <allowedToolbarItems>
-                    <toolbarItem implicitItemIdentifier="E4895293-96FB-44C6-9424-4BDD5C51ADCE" label="Display" paletteLabel="Display" image="Display" selectable="YES" id="XqS-3J-E0h">
-                        <size key="minSize" width="32" height="32"/>
-                        <size key="maxSize" width="32" height="32"/>
+                    <toolbarItem implicitItemIdentifier="E4895293-96FB-44C6-9424-4BDD5C51ADCE" label="Display" paletteLabel="Display" image="NSComputer" sizingBehavior="auto" selectable="YES" id="XqS-3J-E0h">
                         <connections>
                             <action selector="onToolbarItemPress:" target="-2" id="5NF-JN-hRi"/>
                         </connections>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="7DE3E9AA-5B46-441F-BC50-C16760F4D52C" label="Sound" paletteLabel="Sound" tag="1" image="Sound" selectable="YES" id="JYH-YI-FrQ">
-                        <size key="minSize" width="23" height="30"/>
-                        <size key="maxSize" width="23" height="30"/>
+                    <toolbarItem implicitItemIdentifier="7DE3E9AA-5B46-441F-BC50-C16760F4D52C" label="Sound" paletteLabel="Sound" tag="1" image="NSTouchBarAudioOutputVolumeHighTemplate" sizingBehavior="auto" selectable="YES" id="JYH-YI-FrQ">
                         <connections>
                             <action selector="onToolbarItemPress:" target="-2" id="IFA-Y3-gLc"/>
                         </connections>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="5661EE70-516C-4E5A-99E3-ADEB520E0CD6" label="Joypad" paletteLabel="Joypad" tag="2" image="Joypad" selectable="YES" id="mA4-4o-LWo">
-                        <size key="minSize" width="23" height="30"/>
-                        <size key="maxSize" width="23" height="30"/>
+                    <toolbarItem implicitItemIdentifier="5661EE70-516C-4E5A-99E3-ADEB520E0CD6" label="Joypad" paletteLabel="Joypad" tag="2" image="Joypad" sizingBehavior="auto" selectable="YES" id="mA4-4o-LWo">
                         <connections>
                             <action selector="onToolbarItemPress:" target="-2" id="ZzP-Cl-SEK"/>
                         </connections>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="650A9792-19EE-4945-AA1D-8455A4645B4D" label="Emulation" paletteLabel="Emulation" tag="3" image="Emulation" selectable="YES" id="l0M-ft-u3J">
-                        <size key="minSize" width="32" height="32"/>
-                        <size key="maxSize" width="32" height="32"/>
+                    <toolbarItem implicitItemIdentifier="650A9792-19EE-4945-AA1D-8455A4645B4D" label="Emulation" paletteLabel="Emulation" tag="3" image="Emulation" sizingBehavior="auto" selectable="YES" id="l0M-ft-u3J">
                         <connections>
                             <action selector="onToolbarItemPress:" target="-2" id="wlj-lR-3w9"/>
                         </connections>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="5EC984C6-7344-4A39-83ED-2B8B560B743A" label="Files" paletteLabel="Files" tag="4" image="NSFolder" selectable="YES" id="J5f-Kn-xJg">
-                        <size key="minSize" width="28" height="30"/>
-                        <size key="maxSize" width="28" height="30"/>
+                    <toolbarItem implicitItemIdentifier="5EC984C6-7344-4A39-83ED-2B8B560B743A" label="Files" paletteLabel="Files" tag="4" image="NSFolder" sizingBehavior="auto" selectable="YES" id="J5f-Kn-xJg">
                         <connections>
                             <action selector="onToolbarItemPress:" target="-2" id="Sqf-an-R95"/>
                         </connections>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="0A1E7290-5546-4C8D-8C49-BEE583890D7E" label="Shortcuts" paletteLabel="Shortcuts" tag="5" image="ToolbarCustomizeIcon" selectable="YES" id="qxe-qK-BYD">
-                        <size key="minSize" width="14" height="10"/>
-                        <size key="maxSize" width="14" height="10"/>
+                    <toolbarItem implicitItemIdentifier="0A1E7290-5546-4C8D-8C49-BEE583890D7E" label="Shortcuts" paletteLabel="Shortcuts" tag="5" image="NSSmartBadgeTemplate" sizingBehavior="auto" selectable="YES" id="qxe-qK-BYD">
                         <connections>
                             <action selector="onToolbarItemPress:" target="-2" id="8og-vn-6b1"/>
-                        </connections>
-                    </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="FD8CD1D3-41E4-4A17-B020-0C483A674B98" label="UI" paletteLabel="UI" tag="6" image="NSComputer" selectable="YES" id="dXM-51-fRT">
-                        <size key="minSize" width="18" height="10"/>
-                        <size key="maxSize" width="18" height="10"/>
-                        <connections>
-                            <action selector="onToolbarItemPress:" target="-2" id="D9w-n4-lZp"/>
                         </connections>
                     </toolbarItem>
                 </allowedToolbarItems>
@@ -1613,7 +1574,6 @@
                     <toolbarItem reference="l0M-ft-u3J"/>
                     <toolbarItem reference="J5f-Kn-xJg"/>
                     <toolbarItem reference="qxe-qK-BYD"/>
-                    <toolbarItem reference="dXM-51-fRT"/>
                 </defaultToolbarItems>
             </toolbar>
             <connections>
@@ -1623,12 +1583,11 @@
         </window>
     </objects>
     <resources>
-        <image name="Display" width="1024" height="1024"/>
         <image name="Emulation" width="400" height="258"/>
         <image name="Joypad" width="512" height="512"/>
         <image name="NSComputer" width="32" height="32"/>
         <image name="NSFolder" width="32" height="32"/>
-        <image name="Sound" width="1024" height="1024"/>
-        <image name="ToolbarCustomizeIcon" width="1024" height="1024"/>
+        <image name="NSSmartBadgeTemplate" width="14" height="14"/>
+        <image name="NSTouchBarAudioOutputVolumeHighTemplate" width="23" height="30"/>
     </resources>
 </document>
