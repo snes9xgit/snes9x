@@ -1541,17 +1541,17 @@
                             <action selector="onToolbarItemPress:" target="-2" id="5NF-JN-hRi"/>
                         </connections>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="7DE3E9AA-5B46-441F-BC50-C16760F4D52C" label="Sound" paletteLabel="Sound" tag="1" image="NSTouchBarAudioOutputVolumeHighTemplate" sizingBehavior="auto" selectable="YES" id="JYH-YI-FrQ">
+                    <toolbarItem implicitItemIdentifier="7DE3E9AA-5B46-441F-BC50-C16760F4D52C" label="Sound" paletteLabel="Sound" tag="1" image="NSTouchBarVolumeUpTemplate" sizingBehavior="auto" selectable="YES" id="JYH-YI-FrQ">
                         <connections>
                             <action selector="onToolbarItemPress:" target="-2" id="IFA-Y3-gLc"/>
                         </connections>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="5661EE70-516C-4E5A-99E3-ADEB520E0CD6" label="Joypad" paletteLabel="Joypad" tag="2" image="Joypad" sizingBehavior="auto" selectable="YES" id="mA4-4o-LWo">
+                    <toolbarItem implicitItemIdentifier="5661EE70-516C-4E5A-99E3-ADEB520E0CD6" label="Joypad" paletteLabel="Joypad" tag="2" image="NSFontPanel" sizingBehavior="auto" selectable="YES" id="mA4-4o-LWo">
                         <connections>
                             <action selector="onToolbarItemPress:" target="-2" id="ZzP-Cl-SEK"/>
                         </connections>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="650A9792-19EE-4945-AA1D-8455A4645B4D" label="Emulation" paletteLabel="Emulation" tag="3" image="Emulation" sizingBehavior="auto" selectable="YES" id="l0M-ft-u3J">
+                    <toolbarItem implicitItemIdentifier="650A9792-19EE-4945-AA1D-8455A4645B4D" label="Emulation" paletteLabel="Emulation" tag="3" image="CART" sizingBehavior="auto" selectable="YES" id="l0M-ft-u3J">
                         <connections>
                             <action selector="onToolbarItemPress:" target="-2" id="wlj-lR-3w9"/>
                         </connections>
@@ -1561,7 +1561,7 @@
                             <action selector="onToolbarItemPress:" target="-2" id="Sqf-an-R95"/>
                         </connections>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="0A1E7290-5546-4C8D-8C49-BEE583890D7E" label="Shortcuts" paletteLabel="Shortcuts" tag="5" image="NSSmartBadgeTemplate" sizingBehavior="auto" selectable="YES" id="qxe-qK-BYD">
+                    <toolbarItem implicitItemIdentifier="0A1E7290-5546-4C8D-8C49-BEE583890D7E" label="Shortcuts" paletteLabel="Shortcuts" tag="5" image="NSAdvanced" sizingBehavior="auto" selectable="YES" id="qxe-qK-BYD">
                         <connections>
                             <action selector="onToolbarItemPress:" target="-2" id="8og-vn-6b1"/>
                         </connections>
@@ -1583,11 +1583,11 @@
         </window>
     </objects>
     <resources>
-        <image name="Emulation" width="400" height="258"/>
-        <image name="Joypad" width="512" height="512"/>
+        <image name="CART" width="128" height="128"/>
+        <image name="NSAdvanced" width="32" height="32"/>
         <image name="NSComputer" width="32" height="32"/>
         <image name="NSFolder" width="32" height="32"/>
-        <image name="NSSmartBadgeTemplate" width="14" height="14"/>
-        <image name="NSTouchBarAudioOutputVolumeHighTemplate" width="23" height="30"/>
+        <image name="NSFontPanel" width="32" height="32"/>
+        <image name="NSTouchBarVolumeUpTemplate" width="23" height="30"/>
     </resources>
 </document>
