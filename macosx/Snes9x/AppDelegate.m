@@ -546,6 +546,7 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 	[self.s9xEngine hardwareReset];
 }
 
+#ifdef HAVE_LUA
 - (IBAction)newLuaScriptingWindow:(id)sender
 {
     NSWindow *luaWindow = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 100, 100) styleMask:NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable backing:NSBackingStoreBuffered defer:NO];
@@ -568,7 +569,7 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 
     [self.luaWindowControllers removeAllObjects];
 }
-
+#endif // HAVE_LUA
 
 - (BOOL)handleInput:(S9xJoypadInput *)input fromJoypad:(S9xJoypad *)joypad
 {
