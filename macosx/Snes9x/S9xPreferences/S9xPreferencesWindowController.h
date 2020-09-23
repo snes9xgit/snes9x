@@ -17,8 +17,10 @@
   (c) Copyright 2005         Ryan Vogt
   (c) Copyright 2019         Michael Donald Buckley
  ***********************************************************************************/
+#import <Cocoa/Cocoa.h>
+#import "S9xButtonConfigTextField.h"
 
-#import <Foundation/Foundation.h>
+NS_ASSUME_NONNULL_BEGIN
 
 extern NSString * const kKeyboardPrefs;
 extern NSString * const kJoypadInputPrefs;
@@ -26,3 +28,17 @@ extern NSString * const kJoypadPlayerPrefs;
 extern NSString * const kShowFPSPref;
 extern NSString * const kVideoModePref;
 extern NSString * const kMacFrameSkipPref;
+
+@interface S9xPreferencesWindowController : NSWindowController<S9xInputDelegate>
+@property (nonatomic, weak) IBOutlet NSTabView *tabView;
+@property (nonatomic, weak) IBOutlet NSPopUpButton *videoModePopup;
+@property (nonatomic, weak) IBOutlet NSButton *showFPSCheckbox;
+@property (nonatomic, weak) IBOutlet NSPopUpButton *devicePopUp;
+@property (nonatomic, weak) IBOutlet NSPopUpButton *playerPopUp;
+@property (nonatomic, weak) IBOutlet NSTextField *macFrameSkipTextField;
+@property (nonatomic, weak) IBOutlet NSStepper *macFrameSkipStepper;
+@property (nonatomic, weak) IBOutlet NSButton *macFrameSkipAutomaticButton;
+@property (nonatomic, strong) NSArray *configTextFields;
+@end
+
+NS_ASSUME_NONNULL_END

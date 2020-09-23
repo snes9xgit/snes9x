@@ -20,10 +20,17 @@
 
 #import <Cocoa/Cocoa.h>
 #import <snes9x_framework/snes9x_framework.h>
+#import "S9xPreferences/S9xPreferencesWindowController.h"
+
+extern NSWindowFrameAutosaveName const kMainWindowIdentifier;
 
 @interface AppDelegate : NSObject <NSApplicationDelegate, S9xInputDelegate>
 
 @property (nonatomic, readonly, assign) BOOL isRunningEmulation;
+@property (nonatomic, strong) S9xEngine *s9xEngine;
+@property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *keys;
+@property (nonatomic, strong) NSWindow *gameWindow;
+@property (nonatomic, strong) S9xPreferencesWindowController *preferencesWindowController;
 
 - (void)setButtonCode:(S9xButtonCode)buttonCode forKeyCode:(int16)keyCode player:(int8)player;
 - (void)clearButton:(S9xButtonCode)button forPlayer:(int8)player;
