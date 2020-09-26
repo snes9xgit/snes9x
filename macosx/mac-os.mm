@@ -86,7 +86,7 @@ CGRect				glScreenBounds;
 CGImageRef			macIconImage[118];
 int					macPadIconIndex,
 					macLegendIconIndex,
-					macMusicBoxIconIndex, 
+					macMusicBoxIconIndex,
 					macFunctionIconIndex;
 
 int					macFrameSkip        = -1;
@@ -218,6 +218,10 @@ bool8               pressedFunctionButtons[kNumFunctionButtons] = { 0 };
 bool8               pressedRawKeyboardButtons[MAC_NUM_KEYCODES] = { 0 };
 bool8               heldFunctionButtons[kNumFunctionButtons] = { 0 };
 pthread_mutex_t     keyLock;
+
+#ifdef HAVE_LUA
+pthread_mutex_t     mainLoopLock;
+#endif
 
 S9xView             *s9xView;
 
@@ -401,7 +405,15 @@ static inline void EmulationLoop (void)
 
             if (!pauseEmulation)
             {
+#ifdef HAVE_LUA
+                pthread_mutex_lock(&mainLoopLock);
+#endif
                 S9xMainLoop();
+
+#ifdef HAVE_LUA
+                CallRegisteredLuaFunctions(LUACALL_AFTEREMULATIONGUI);
+                pthread_mutex_unlock(&mainLoopLock);
+#endif
             }
             else
             {
@@ -410,7 +422,14 @@ static inline void EmulationLoop (void)
                     macFrameSkip = 1;
                     skipFrames = 1;
                     frameAdvance = false;
+#ifdef HAVE_LUA
+                    pthread_mutex_lock(&mainLoopLock);
+#endif
                     S9xMainLoop();
+#ifdef HAVE_LUA
+                    CallRegisteredLuaFunctions(LUACALL_AFTEREMULATIONGUI);
+                    pthread_mutex_unlock(&mainLoopLock);
+#endif
                     macFrameSkip = storedMacFrameSkip;
                 }
 
@@ -2795,15 +2814,15 @@ void S9xToggleSoundChannel (int c)
     else
 		channel_enable ^= 1 << c;
 
-	S9xSetSoundControl(channel_enable);
+    S9xSetSoundControl(channel_enable);
 }
 
 void S9xExit (void)
 {
-	NSBeep();
+    NSBeep();
 
-	running = false;
-	cartOpen = false;
+    running = false;
+    cartOpen = false;
 }
 
 void QuitWithFatalError ( NSString *message)
@@ -2819,6 +2838,9 @@ void QuitWithFatalError ( NSString *message)
 + (void)initialize
 {
     keyLock = PTHREAD_MUTEX_INITIALIZER;
+#ifdef HAVE_LUA
+    mainLoopLock = PTHREAD_MUTEX_INITIALIZER;
+#endif
 }
 
 - (instancetype)initWithFrame:(NSRect)frameRect

@@ -122,7 +122,7 @@ void S9xGraphicsScreenResize (void)
 	IPPU.Interlace    = Memory.FillRAM[0x2133] & 1;
 	IPPU.InterlaceOBJ = Memory.FillRAM[0x2133] & 2;
 	IPPU.PseudoHires = Memory.FillRAM[0x2133] & 8;
-		
+
 	if (Settings.SupportHiRes && (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.PseudoHires))
 	{
 		GFX.RealPPL = GFX.Pitch >> 1;
@@ -154,7 +154,7 @@ void S9xGraphicsScreenResize (void)
 		GFX.PPL = GFX.RealPPL;
 		IPPU.DoubleHeightPixels = FALSE;
 		IPPU.RenderedScreenHeight = PPU.ScreenHeight;
-	}	
+	}
 }
 
 void S9xBuildDirectColourMaps (void)
@@ -237,8 +237,8 @@ void S9xEndScreenRefresh (void)
 				S9xDisplayMessages(GFX.Screen, GFX.RealPPL, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight, 1);
 
 #ifdef HAVE_LUA
-			if (Settings.AutoDisplayMessages)
-				DrawLuaGuiToScreen(GFX.Screen, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight, 16, GFX.Pitch, false);
+            if (Settings.AutoDisplayMessages)
+                DrawLuaGuiToScreen(GFX.Screen, IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight, 16, GFX.RealPPL << 1, false);
 #endif
 
 			S9xDeinitUpdate(IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight);
@@ -804,7 +804,7 @@ static void DrawOBJS (int D)
 	BG.InterlaceLine = GFX.InterlaceFrame ? 8 : 0;
 	GFX.Z1 = 2;
 	int sprite_limit = (Settings.MaxSpriteTilesPerLine == 128) ? 128 : 32;
-	
+
 	for (uint32 Y = GFX.StartY, Offset = Y * GFX.PPL; Y <= GFX.EndY; Y++, Offset += GFX.PPL)
 	{
 		int	I = 0;
@@ -1852,7 +1852,7 @@ static void S9xDisplayStringType (const char *string, int linesFromBottom, int p
 static void DisplayTime (void)
 {
 	char string[10];
-	
+
 	time_t rawtime;
 	struct tm *timeinfo;
 
@@ -2058,7 +2058,7 @@ void S9xDisplayMessages (uint16 *screen, int ppl, int width, int height, int sca
 {
 	if (Settings.DisplayTime)
 		DisplayTime();
-		
+
 	if (Settings.DisplayFrameRate)
 		DisplayFrameRate();
 

@@ -1077,9 +1077,9 @@ bool8 S9xFreezeGame (const char *filename)
 		LuaSaveData saveData;
 		CallRegisteredLuaSaveFunctions(stateNumber, saveData);
 
-		char luaSaveFilename [MAX_PATH];
-		strncpy(luaSaveFilename, filename, MAX_PATH);
-		luaSaveFilename[MAX_PATH-(1+7/*strlen(".luasav")*/)] = '\0';
+		char luaSaveFilename [PATH_MAX];
+		strncpy(luaSaveFilename, filename, PATH_MAX);
+		luaSaveFilename[PATH_MAX-(1+7/*strlen(".luasav")*/)] = '\0';
 		strcat(luaSaveFilename, ".luasav");
 		if(saveData.recordList)
 		{
@@ -1214,9 +1214,9 @@ bool8 S9xUnfreezeGame (const char *filename)
 		if (numberedState) {
 			LuaSaveData saveData;
 
-			char luaSaveFilename [MAX_PATH];
-			strncpy(luaSaveFilename, filename, MAX_PATH);
-			luaSaveFilename[MAX_PATH-(1+7/*strlen(".luasav")*/)] = '\0';
+			char luaSaveFilename [PATH_MAX];
+			strncpy(luaSaveFilename, filename, PATH_MAX);
+			luaSaveFilename[PATH_MAX-(1+7/*strlen(".luasav")*/)] = '\0';
 			strcat(luaSaveFilename, ".luasav");
 			FILE* luaSaveFile = fopen(luaSaveFilename, "rb");
 			if(luaSaveFile)

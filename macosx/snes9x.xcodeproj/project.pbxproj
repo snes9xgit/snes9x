@@ -222,6 +222,34 @@
 		30D709C1236F7E3200AAB7C3 /* S9xPrefsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D709BF236F7E3200AAB7C3 /* S9xPrefsViewController.m */; };
 		30D709C2236F7E3200AAB7C3 /* S9xPrefsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 30D709C0236F7E3200AAB7C3 /* S9xPrefsViewController.xib */; };
 		30D709C5236F90DF00AAB7C3 /* S9xButtonConfigTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D709C4236F90DF00AAB7C3 /* S9xButtonConfigTextField.m */; };
+		560933E6251310ED0006B3CD /* llex.h in Headers */ = {isa = PBXBuildFile; fileRef = 560933CF251310EC0006B3CD /* llex.h */; };
+		560933E7251310ED0006B3CD /* lundump.h in Headers */ = {isa = PBXBuildFile; fileRef = 560933D0251310EC0006B3CD /* lundump.h */; };
+		560933E8251310ED0006B3CD /* lualib.h in Headers */ = {isa = PBXBuildFile; fileRef = 560933D1251310EC0006B3CD /* lualib.h */; };
+		560933E9251310ED0006B3CD /* lvm.h in Headers */ = {isa = PBXBuildFile; fileRef = 560933D2251310EC0006B3CD /* lvm.h */; };
+		560933EA251310ED0006B3CD /* lfunc.h in Headers */ = {isa = PBXBuildFile; fileRef = 560933D3251310EC0006B3CD /* lfunc.h */; };
+		560933EB251310ED0006B3CD /* lzio.h in Headers */ = {isa = PBXBuildFile; fileRef = 560933D4251310EC0006B3CD /* lzio.h */; };
+		560933EC251310ED0006B3CD /* lgc.h in Headers */ = {isa = PBXBuildFile; fileRef = 560933D5251310EC0006B3CD /* lgc.h */; };
+		560933ED251310ED0006B3CD /* lmem.h in Headers */ = {isa = PBXBuildFile; fileRef = 560933D6251310EC0006B3CD /* lmem.h */; };
+		560933EE251310ED0006B3CD /* ltable.h in Headers */ = {isa = PBXBuildFile; fileRef = 560933D7251310EC0006B3CD /* ltable.h */; };
+		560933EF251310ED0006B3CD /* lstate.h in Headers */ = {isa = PBXBuildFile; fileRef = 560933D8251310EC0006B3CD /* lstate.h */; };
+		560933F0251310ED0006B3CD /* ldebug.h in Headers */ = {isa = PBXBuildFile; fileRef = 560933D9251310EC0006B3CD /* ldebug.h */; };
+		560933F1251310ED0006B3CD /* luaconf.h in Headers */ = {isa = PBXBuildFile; fileRef = 560933DA251310EC0006B3CD /* luaconf.h */; };
+		560933F2251310ED0006B3CD /* lua.h in Headers */ = {isa = PBXBuildFile; fileRef = 560933DB251310EC0006B3CD /* lua.h */; };
+		560933F3251310ED0006B3CD /* lparser.h in Headers */ = {isa = PBXBuildFile; fileRef = 560933DC251310EC0006B3CD /* lparser.h */; };
+		560933F4251310ED0006B3CD /* lobject.h in Headers */ = {isa = PBXBuildFile; fileRef = 560933DD251310EC0006B3CD /* lobject.h */; };
+		560933F5251310ED0006B3CD /* ldo.h in Headers */ = {isa = PBXBuildFile; fileRef = 560933DE251310EC0006B3CD /* ldo.h */; };
+		560933F6251310ED0006B3CD /* lapi.h in Headers */ = {isa = PBXBuildFile; fileRef = 560933DF251310EC0006B3CD /* lapi.h */; };
+		560933F7251310ED0006B3CD /* lcode.h in Headers */ = {isa = PBXBuildFile; fileRef = 560933E0251310EC0006B3CD /* lcode.h */; };
+		560933F8251310ED0006B3CD /* llimits.h in Headers */ = {isa = PBXBuildFile; fileRef = 560933E1251310EC0006B3CD /* llimits.h */; };
+		560933F9251310ED0006B3CD /* lauxlib.h in Headers */ = {isa = PBXBuildFile; fileRef = 560933E2251310ED0006B3CD /* lauxlib.h */; };
+		560933FA251310ED0006B3CD /* lopcodes.h in Headers */ = {isa = PBXBuildFile; fileRef = 560933E3251310ED0006B3CD /* lopcodes.h */; };
+		560933FB251310ED0006B3CD /* lstring.h in Headers */ = {isa = PBXBuildFile; fileRef = 560933E4251310ED0006B3CD /* lstring.h */; };
+		560933FC251310ED0006B3CD /* ltm.h in Headers */ = {isa = PBXBuildFile; fileRef = 560933E5251310ED0006B3CD /* ltm.h */; };
+		560933FE251310FB0006B3CD /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 560933FD251310FB0006B3CD /* liblua.a */; };
+		56CDC5392509C746004F3AAB /* S9xLuaViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 56CDC5372509C746004F3AAB /* S9xLuaViewController.mm */; };
+		56CDC53A2509C746004F3AAB /* S9xLuaViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 56CDC5382509C746004F3AAB /* S9xLuaViewController.xib */; };
+		56FBDE3E25087C5F002ED5DD /* lua-engine.h in Headers */ = {isa = PBXBuildFile; fileRef = 56FBDE3C25087C5E002ED5DD /* lua-engine.h */; };
+		56FBDE3F25087C5F002ED5DD /* lua-engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 56FBDE3D25087C5F002ED5DD /* lua-engine.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -304,6 +332,35 @@
 		30D709C0236F7E3200AAB7C3 /* S9xPrefsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = S9xPrefsViewController.xib; sourceTree = "<group>"; };
 		30D709C3236F90DF00AAB7C3 /* S9xButtonConfigTextField.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xButtonConfigTextField.h; sourceTree = "<group>"; };
 		30D709C4236F90DF00AAB7C3 /* S9xButtonConfigTextField.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xButtonConfigTextField.m; sourceTree = "<group>"; };
+		560933CF251310EC0006B3CD /* llex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = llex.h; path = include/llex.h; sourceTree = "<group>"; };
+		560933D0251310EC0006B3CD /* lundump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lundump.h; path = include/lundump.h; sourceTree = "<group>"; };
+		560933D1251310EC0006B3CD /* lualib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lualib.h; path = include/lualib.h; sourceTree = "<group>"; };
+		560933D2251310EC0006B3CD /* lvm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lvm.h; path = include/lvm.h; sourceTree = "<group>"; };
+		560933D3251310EC0006B3CD /* lfunc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lfunc.h; path = include/lfunc.h; sourceTree = "<group>"; };
+		560933D4251310EC0006B3CD /* lzio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lzio.h; path = include/lzio.h; sourceTree = "<group>"; };
+		560933D5251310EC0006B3CD /* lgc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lgc.h; path = include/lgc.h; sourceTree = "<group>"; };
+		560933D6251310EC0006B3CD /* lmem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lmem.h; path = include/lmem.h; sourceTree = "<group>"; };
+		560933D7251310EC0006B3CD /* ltable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ltable.h; path = include/ltable.h; sourceTree = "<group>"; };
+		560933D8251310EC0006B3CD /* lstate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lstate.h; path = include/lstate.h; sourceTree = "<group>"; };
+		560933D9251310EC0006B3CD /* ldebug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ldebug.h; path = include/ldebug.h; sourceTree = "<group>"; };
+		560933DA251310EC0006B3CD /* luaconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = luaconf.h; path = include/luaconf.h; sourceTree = "<group>"; };
+		560933DB251310EC0006B3CD /* lua.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lua.h; path = include/lua.h; sourceTree = "<group>"; };
+		560933DC251310EC0006B3CD /* lparser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lparser.h; path = include/lparser.h; sourceTree = "<group>"; };
+		560933DD251310EC0006B3CD /* lobject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lobject.h; path = include/lobject.h; sourceTree = "<group>"; };
+		560933DE251310EC0006B3CD /* ldo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ldo.h; path = include/ldo.h; sourceTree = "<group>"; };
+		560933DF251310EC0006B3CD /* lapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lapi.h; path = include/lapi.h; sourceTree = "<group>"; };
+		560933E0251310EC0006B3CD /* lcode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lcode.h; path = include/lcode.h; sourceTree = "<group>"; };
+		560933E1251310EC0006B3CD /* llimits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = llimits.h; path = include/llimits.h; sourceTree = "<group>"; };
+		560933E2251310ED0006B3CD /* lauxlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lauxlib.h; path = include/lauxlib.h; sourceTree = "<group>"; };
+		560933E3251310ED0006B3CD /* lopcodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lopcodes.h; path = include/lopcodes.h; sourceTree = "<group>"; };
+		560933E4251310ED0006B3CD /* lstring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lstring.h; path = include/lstring.h; sourceTree = "<group>"; };
+		560933E5251310ED0006B3CD /* ltm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ltm.h; path = include/ltm.h; sourceTree = "<group>"; };
+		560933FD251310FB0006B3CD /* liblua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua.a; path = lua/dist/liblua.a; sourceTree = "<group>"; };
+		56CDC5362509C745004F3AAB /* S9xLuaViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = S9xLuaViewController.h; sourceTree = "<group>"; };
+		56CDC5372509C746004F3AAB /* S9xLuaViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = S9xLuaViewController.mm; sourceTree = "<group>"; };
+		56CDC5382509C746004F3AAB /* S9xLuaViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = S9xLuaViewController.xib; sourceTree = "<group>"; };
+		56FBDE3C25087C5E002ED5DD /* lua-engine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "lua-engine.h"; sourceTree = "<group>"; };
+		56FBDE3D25087C5F002ED5DD /* lua-engine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "lua-engine.cpp"; sourceTree = "<group>"; };
 		85FEF90620DDB15B00C038E9 /* bml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = bml.cpp; sourceTree = "<group>"; usesTabs = 1; };
 		85FEF90720DDB15C00C038E9 /* bml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bml.h; sourceTree = "<group>"; usesTabs = 1; };
 		85FEF90A20DDB18D00C038E9 /* sha256.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sha256.cpp; sourceTree = "<group>"; usesTabs = 1; };
@@ -549,6 +606,7 @@
 				302EECA322DAD0C5006D1502 /* CoreImage.framework in Frameworks */,
 				302EEC9F22DAD0B1006D1502 /* AGL.framework in Frameworks */,
 				302EEC9C22DAD0AB006D1502 /* AudioToolbox.framework in Frameworks */,
+				560933FE251310FB0006B3CD /* liblua.a in Frameworks */,
 				302EEC9D22DAD0AB006D1502 /* AudioUnit.framework in Frameworks */,
 				307C861D22D29DD2001B879E /* GLUT.framework in Frameworks */,
 				307C861B22D29D6D001B879E /* IOKit.framework in Frameworks */,
@@ -637,6 +695,9 @@
 		30714716230E379500917F82 /* Snes9x */ = {
 			isa = PBXGroup;
 			children = (
+				56CDC5362509C745004F3AAB /* S9xLuaViewController.h */,
+				56CDC5372509C746004F3AAB /* S9xLuaViewController.mm */,
+				56CDC5382509C746004F3AAB /* S9xLuaViewController.xib */,
 				30714717230E379500917F82 /* AppDelegate.h */,
 				30714718230E379500917F82 /* AppDelegate.m */,
 				3071471A230E379600917F82 /* Assets.xcassets */,
@@ -677,6 +738,36 @@
 				306561FF236A8BA700A1B3B2 /* gamecontrollerdb.txt */,
 			);
 			path = "snes9x framework";
+			sourceTree = "<group>";
+		};
+		56A6F229250B1C2E006953BC /* lua */ = {
+			isa = PBXGroup;
+			children = (
+				560933DF251310EC0006B3CD /* lapi.h */,
+				560933E2251310ED0006B3CD /* lauxlib.h */,
+				560933E0251310EC0006B3CD /* lcode.h */,
+				560933D9251310EC0006B3CD /* ldebug.h */,
+				560933DE251310EC0006B3CD /* ldo.h */,
+				560933D3251310EC0006B3CD /* lfunc.h */,
+				560933D5251310EC0006B3CD /* lgc.h */,
+				560933CF251310EC0006B3CD /* llex.h */,
+				560933E1251310EC0006B3CD /* llimits.h */,
+				560933D6251310EC0006B3CD /* lmem.h */,
+				560933DD251310EC0006B3CD /* lobject.h */,
+				560933E3251310ED0006B3CD /* lopcodes.h */,
+				560933DC251310EC0006B3CD /* lparser.h */,
+				560933D8251310EC0006B3CD /* lstate.h */,
+				560933E4251310ED0006B3CD /* lstring.h */,
+				560933D7251310EC0006B3CD /* ltable.h */,
+				560933E5251310ED0006B3CD /* ltm.h */,
+				560933DB251310EC0006B3CD /* lua.h */,
+				560933DA251310EC0006B3CD /* luaconf.h */,
+				560933D1251310EC0006B3CD /* lualib.h */,
+				560933D0251310EC0006B3CD /* lundump.h */,
+				560933D2251310EC0006B3CD /* lvm.h */,
+				560933D4251310EC0006B3CD /* lzio.h */,
+			);
+			path = lua;
 			sourceTree = "<group>";
 		};
 		BF0B39791FA5792F002B04D3 /* apu */ = {
@@ -789,6 +880,8 @@
 		EAE061540526CCB900A80003 /* snes9x */ = {
 			isa = PBXGroup;
 			children = (
+				56FBDE3D25087C5F002ED5DD /* lua-engine.cpp */,
+				56FBDE3C25087C5E002ED5DD /* lua-engine.h */,
 				EAE0615A0526CCB900A80003 /* 65c816.h */,
 				BF0B39791FA5792F002B04D3 /* apu */,
 				85FEF90620DDB15B00C038E9 /* bml.cpp */,
@@ -913,6 +1006,8 @@
 		EAECB65C04AC7FCD00A80003 /* macosx */ = {
 			isa = PBXGroup;
 			children = (
+				560933FD251310FB0006B3CD /* liblua.a */,
+				56A6F229250B1C2E006953BC /* lua */,
 				EADE6349052E5C5300A80003 /* mac-audio.h */,
 				EAECB67104AC7FCE00A80003 /* mac-cart.h */,
 				EAECB67304AC7FCE00A80003 /* mac-cheat.h */,
@@ -1001,6 +1096,7 @@
 				30D15D9B22CE6BC9005BC352 /* controls.h in Headers */,
 				30D15D9C22CE6BC9005BC352 /* cpuaddr.h in Headers */,
 				30D15D9D22CE6BC9005BC352 /* cpuexec.h in Headers */,
+				560933F8251310ED0006B3CD /* llimits.h in Headers */,
 				30D15D9E22CE6BC9005BC352 /* cpumacro.h in Headers */,
 				30D15D9F22CE6BC9005BC352 /* cpuops.h in Headers */,
 				30D15DA022CE6BC9005BC352 /* crosshairs.h in Headers */,
@@ -1009,9 +1105,11 @@
 				30D15DA322CE6BC9005BC352 /* dma.h in Headers */,
 				3082C4242378BCE80081CA7C /* EndianStuff.h in Headers */,
 				30D15DA422CE6BC9005BC352 /* dsp.h in Headers */,
+				56FBDE3E25087C5F002ED5DD /* lua-engine.h in Headers */,
 				30D15DA522CE6BC9005BC352 /* font.h in Headers */,
 				30D15DA622CE6BC9005BC352 /* fxemu.h in Headers */,
 				30D15DA722CE6BC9005BC352 /* fxinst.h in Headers */,
+				560933EB251310ED0006B3CD /* lzio.h in Headers */,
 				30D15DA822CE6BC9005BC352 /* getset.h in Headers */,
 				30D15DA922CE6BC9005BC352 /* gfx.h in Headers */,
 				30D15DAA22CE6BC9005BC352 /* language.h in Headers */,
@@ -1019,10 +1117,13 @@
 				30D15DAC22CE6BC9005BC352 /* memmap.h in Headers */,
 				30D15DAD22CE6BC9005BC352 /* messages.h in Headers */,
 				30D15DAE22CE6BC9005BC352 /* missing.h in Headers */,
+				560933F1251310ED0006B3CD /* luaconf.h in Headers */,
 				3082C4272378BCE80081CA7C /* FakeResources.h in Headers */,
 				30D15DAF22CE6BC9005BC352 /* movie.h in Headers */,
+				560933FA251310ED0006B3CD /* lopcodes.h in Headers */,
 				30D15DB022CE6BC9005BC352 /* msu1.h in Headers */,
 				30D15DB122CE6BC9005BC352 /* obc1.h in Headers */,
+				560933FC251310ED0006B3CD /* ltm.h in Headers */,
 				30D15DB222CE6BC9005BC352 /* pixform.h in Headers */,
 				30D15DB422CE6BC9005BC352 /* ppu.h in Headers */,
 				30D15DB522CE6BC9005BC352 /* stream.h in Headers */,
@@ -1036,23 +1137,34 @@
 				30D15DBD22CE6BC9005BC352 /* snes9x.h in Headers */,
 				30D15DBE22CE6BC9005BC352 /* spc7110.h in Headers */,
 				30D15DC122CE6BC9005BC352 /* srtc.h in Headers */,
+				560933F7251310ED0006B3CD /* lcode.h in Headers */,
 				30D15DC322CE6BC9005BC352 /* tile.h in Headers */,
 				30D15DC422CE6BC9005BC352 /* apu.h in Headers */,
+				560933EA251310ED0006B3CD /* lfunc.h in Headers */,
+				560933F3251310ED0006B3CD /* lparser.h in Headers */,
+				560933E9251310ED0006B3CD /* lvm.h in Headers */,
 				30D15DC522CE6BC9005BC352 /* blargg_common.h in Headers */,
 				3082C4232378BCE80081CA7C /* FakeHandles.h in Headers */,
+				560933F4251310ED0006B3CD /* lobject.h in Headers */,
+				560933F9251310ED0006B3CD /* lauxlib.h in Headers */,
 				30D15DC622CE6BC9005BC352 /* blargg_config.h in Headers */,
 				30D15DC722CE6BC9005BC352 /* blargg_endian.h in Headers */,
 				30D15DC822CE6BC9005BC352 /* blargg_source.h in Headers */,
 				30D15DC922CE6BC9005BC352 /* sdsp.hpp in Headers */,
 				30D15DCA22CE6BC9005BC352 /* SPC_DSP.h in Headers */,
+				560933F0251310ED0006B3CD /* ldebug.h in Headers */,
 				30D15DCB22CE6BC9005BC352 /* smp.hpp in Headers */,
+				560933EE251310ED0006B3CD /* ltable.h in Headers */,
 				30D15DCC22CE6BC9005BC352 /* snes.hpp in Headers */,
 				30D15DCD22CE6BC9005BC352 /* resampler.h in Headers */,
+				560933F5251310ED0006B3CD /* ldo.h in Headers */,
+				560933ED251310ED0006B3CD /* lmem.h in Headers */,
 				30D15DCE22CE6BC9005BC352 /* 2xsai.h in Headers */,
 				30D15DCF22CE6BC9005BC352 /* blit.h in Headers */,
 				30D15DD022CE6BC9005BC352 /* epx.h in Headers */,
 				30D15DD122CE6BC9005BC352 /* hq2x.h in Headers */,
 				30D15DD222CE6BC9005BC352 /* snes_ntsc.h in Headers */,
+				560933E7251310ED0006B3CD /* lundump.h in Headers */,
 				30D15DD322CE6BC9005BC352 /* snes_ntsc_config.h in Headers */,
 				30D15DD422CE6BC9005BC352 /* snes_ntsc_impl.h in Headers */,
 				30D15DD522CE6BC9005BC352 /* 7z.h in Headers */,
@@ -1064,14 +1176,21 @@
 				30D15DDB22CE6BC9005BC352 /* iiostrm.h in Headers */,
 				30D15DDC22CE6BC9005BC352 /* inbyte.h in Headers */,
 				30D15DDD22CE6BC9005BC352 /* jma.h in Headers */,
+				560933EC251310ED0006B3CD /* lgc.h in Headers */,
 				30D15DDE22CE6BC9005BC352 /* lencoder.h in Headers */,
+				560933F2251310ED0006B3CD /* lua.h in Headers */,
+				560933E8251310ED0006B3CD /* lualib.h in Headers */,
 				30D15DDF22CE6BC9005BC352 /* litcoder.h in Headers */,
 				30D15DE022CE6BC9005BC352 /* lzma.h in Headers */,
 				30D15DE122CE6BC9005BC352 /* lzmadec.h in Headers */,
 				30D15DE222CE6BC9005BC352 /* portable.h in Headers */,
+				560933F6251310ED0006B3CD /* lapi.h in Headers */,
 				30D15DE322CE6BC9005BC352 /* rcdefs.h in Headers */,
 				30D15DE422CE6BC9005BC352 /* rngcoder.h in Headers */,
 				30D15DE522CE6BC9005BC352 /* s9x-jma.h in Headers */,
+				560933EF251310ED0006B3CD /* lstate.h in Headers */,
+				560933E6251310ED0006B3CD /* llex.h in Headers */,
+				560933FB251310ED0006B3CD /* lstring.h in Headers */,
 				30D15DE622CE6BC9005BC352 /* winout.h in Headers */,
 				30D15DE722CE6BC9005BC352 /* crypt.h in Headers */,
 				30D15DE822CE6BC9005BC352 /* ioapi.h in Headers */,
@@ -1170,6 +1289,7 @@
 				3071471B230E379600917F82 /* Assets.xcassets in Resources */,
 				30D709B4236F731B00AAB7C3 /* SAVE.icns in Resources */,
 				30D709B8236F731B00AAB7C3 /* musicbox_ledoff.icns in Resources */,
+				56CDC53A2509C746004F3AAB /* S9xLuaViewController.xib in Resources */,
 				30D709B0236F583600AAB7C3 /* Localizable.strings in Resources */,
 				30D709B1236F585100AAB7C3 /* Snes9x Help in Resources */,
 				30D709B3236F731B00AAB7C3 /* SRAM.icns in Resources */,
@@ -1201,6 +1321,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				30D709C5236F90DF00AAB7C3 /* S9xButtonConfigTextField.m in Sources */,
+				56CDC5392509C746004F3AAB /* S9xLuaViewController.mm in Sources */,
 				30714721230E379600917F82 /* main.m in Sources */,
 				30714719230E379500917F82 /* AppDelegate.m in Sources */,
 				3082C42A2379199F0081CA7C /* S9xApplication.m in Sources */,
@@ -1265,6 +1386,7 @@
 				30D15D4522CE6B74005BC352 /* memmap.cpp in Sources */,
 				30D15D4622CE6B74005BC352 /* movie.cpp in Sources */,
 				30D15D4722CE6B74005BC352 /* msu1.cpp in Sources */,
+				56FBDE3F25087C5F002ED5DD /* lua-engine.cpp in Sources */,
 				30D15D4822CE6B74005BC352 /* obc1.cpp in Sources */,
 				30D15D4922CE6B74005BC352 /* ppu.cpp in Sources */,
 				30D15D4A22CE6B74005BC352 /* stream.cpp in Sources */,
@@ -1382,7 +1504,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = S4YHUE5Y65;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1391,8 +1513,10 @@
 				INFOPLIST_FILE = Snes9x/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MARKETING_VERSION = 1.60;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				OTHER_CFLAGS = "-DHAVE_LUA";
 				PRODUCT_BUNDLE_IDENTIFIER = com.snes9x.macos.snes9x;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1423,7 +1547,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = S4YHUE5Y65;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1437,8 +1561,10 @@
 				INFOPLIST_FILE = Snes9x/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MARKETING_VERSION = 1.60;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
+				OTHER_CFLAGS = "-DHAVE_LUA";
 				PRODUCT_BUNDLE_IDENTIFIER = com.snes9x.macos.snes9x;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1462,13 +1588,14 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -1485,11 +1612,16 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/lua",
+					"$(PROJECT_DIR)/lua/dist",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				OTHER_CFLAGS = "-DGL_SILENCE_DEPRECATION";
+				OTHER_CFLAGS = (
+					"-DGL_SILENCE_DEPRECATION",
+					"-DHAVE_LUA",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.snes9x.macos.snes9x-framework";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = macosx;
@@ -1515,13 +1647,14 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -1543,11 +1676,16 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/lua",
+					"$(PROJECT_DIR)/lua/dist",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				OTHER_CFLAGS = "-DGL_SILENCE_DEPRECATION";
+				OTHER_CFLAGS = (
+					"-DGL_SILENCE_DEPRECATION",
+					"-DHAVE_LUA",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.snes9x.macos.snes9x-framework";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = macosx;

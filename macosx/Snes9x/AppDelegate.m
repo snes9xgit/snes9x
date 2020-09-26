@@ -24,12 +24,14 @@
 
 #import "S9xPrefsConstants.h"
 #import "S9xPrefsViewController.h"
+#import "S9xLuaViewController.h"
 
 @interface AppDelegate ()
 @property (nonatomic, strong) S9xEngine *s9xEngine;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *keys;
 @property (nonatomic, strong) NSWindow *window;
 @property (nonatomic, strong, nullable) NSWindowController *prefsWindowController;
+@property (nonatomic, strong) NSMutableArray<NSWindowController *> *luaWindowControllers;
 @end
 
 static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
@@ -59,6 +61,7 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
     }
 
     self.window = window;
+    self.luaWindowControllers = [[NSMutableArray alloc] init];
 
     [NSNotificationCenter.defaultCenter addObserverForName:NSWindowWillCloseNotification object:window queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification *notification)
     {
@@ -451,7 +454,7 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
     if ([self.s9xEngine loadROM:url])
     {
 		[self.s9xEngine recreateS9xView];
-		
+
 		NSWindow *window = self.window;
 		[window.contentView addSubview:s9xView];
 		[s9xView.topAnchor constraintEqualToAnchor:window.contentView.topAnchor].active = YES;
@@ -460,7 +463,7 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 		[s9xView.leftAnchor constraintGreaterThanOrEqualToAnchor:window.contentView.leftAnchor].active = YES;
 		[s9xView.rightAnchor constraintLessThanOrEqualToAnchor:window.contentView.rightAnchor].active = YES;
 
-		
+
         [window makeKeyAndOrderFront:self];
         [NSDocumentController.sharedDocumentController noteNewRecentDocumentURL:url];
         return YES;
@@ -474,6 +477,14 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 	SEL action = menuItem.action;
 	if (action == @selector(resume:) || action == @selector(softwareReset:) || action == @selector(hardwareReset:)) {
 		return [self.s9xEngine isRunning] && [self.s9xEngine isPaused];
+	}
+	
+	if (action == @selector(newLuaScriptingWindow:))
+		return true;
+	
+	if (action == @selector(closeLuaScriptingWindows:))
+	{
+		return [self.luaWindowControllers count] > 0;
 	}
 
     return !self.isRunningEmulation;
@@ -534,6 +545,31 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 {
 	[self.s9xEngine hardwareReset];
 }
+
+#ifdef HAVE_LUA
+- (IBAction)newLuaScriptingWindow:(id)sender
+{
+    NSWindow *luaWindow = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 100, 100) styleMask:NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable backing:NSBackingStoreBuffered defer:NO];
+    luaWindow.title = NSLocalizedString(@"Lua Scripting", @"");
+    NSWindowController* luaWindowController = [[NSWindowController alloc] initWithWindow:luaWindow];
+    [self.luaWindowControllers addObject:luaWindowController];
+
+    luaWindow.contentViewController = [[S9xLuaViewController alloc] initWithNibName:@"S9xLuaViewController" bundle:nil];
+    [luaWindow center];
+
+    [luaWindowController.window makeKeyAndOrderFront:self];
+}
+
+- (IBAction)closeLuaScriptingWindows:(id)sender
+{
+    for (NSWindowController* controller in self.luaWindowControllers)
+    {
+        [controller.window close];
+    }
+
+    [self.luaWindowControllers removeAllObjects];
+}
+#endif // HAVE_LUA
 
 - (BOOL)handleInput:(S9xJoypadInput *)input fromJoypad:(S9xJoypad *)joypad
 {
