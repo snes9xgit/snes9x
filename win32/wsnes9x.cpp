@@ -4785,7 +4785,7 @@ INT_PTR CALLBACK DlgInfoProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			strcat(romtext, "\r\nHeader Checksum: ");
 			sprintf(temp, "%04X", Memory.ROMChecksum);
 			strcat(romtext, temp);
-			strcat(romtext, "\r\nHeader Checksum Compliment: ");
+			strcat(romtext, "\r\nHeader Checksum Complement: ");
 			sprintf(temp, "%04X", Memory.ROMComplementChecksum);
 			strcat(romtext, temp);
 			strcat(romtext, "\r\nOutput: ");

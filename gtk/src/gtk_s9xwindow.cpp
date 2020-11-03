@@ -906,7 +906,7 @@ const char *markup = _(R"(<b>Information for %s</b>
 <i>Calculated Size:</i> %d
 <i>SRAM Size:</i> %s
 <i>Header Checksum:</i> %04X
-<i>Checksum Compliment:</i> %04X
+<i>Checksum Complement:</i> %04X
 <i>Actual Checksum:</i> %04X
 <i>Video:</i> %s
 <i>CRC32:</i> %08X
