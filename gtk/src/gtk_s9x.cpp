@@ -86,9 +86,10 @@ int main(int argc, char *argv[])
         top_level->window->fullscreen();
 
     top_level->show();
-    Gtk::Main::iteration(false);
-    S9xPortSoundInit();
+
     S9xInitDisplay(argc, argv);
+
+    S9xPortSoundInit();
 
     for (int port = 0; port < 2; port++)
     {
