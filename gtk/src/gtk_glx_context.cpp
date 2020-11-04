@@ -45,16 +45,22 @@ bool GTKGLXContext::attach(Display *dpy, Window xid)
     this->xid = xid;
     display = dpy;
 
+    XWindowAttributes wa{};
+    XGetWindowAttributes(display, xid, &wa);
+    screen = XScreenNumberOfScreen(wa.screen);
+
     glXQueryVersion(display, &version_major, &version_minor);
     if (version_major < 2 && version_minor < 3)
         return false;
 
     fbconfigs = glXChooseFBConfig(display, screen, attribs, &num_fbconfigs);
+
     if (!fbconfigs || num_fbconfigs < 1)
     {
         printf("Couldn't match a GLX framebuffer config.\n");
         return false;
     }
+
     fbconfig = fbconfigs[0];
 
     return true;
