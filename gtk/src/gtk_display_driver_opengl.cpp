@@ -479,8 +479,6 @@ bool S9xOpenGLDisplayDriver::create_context()
 #ifdef GDK_WINDOWING_X11
     if (GDK_IS_X11_WINDOW(gdk_window))
     {
-        gdk_window_ensure_native(gdk_window);
-        gdk_display_sync(gdk_display);
         if (!glx.attach(gdk_x11_display_get_xdisplay(gdk_display), gdk_x11_window_get_xid(gdk_window)))
             return false;
         context = &glx;
