@@ -78,8 +78,6 @@ Snes9xWindow::Snes9xWindow(Snes9xConfig *config)
     cairo_owned = false;
     mouse_grabbed = false;
 
-    snes9x_preferences_create(config);
-
     if (Gtk::IconTheme::get_default()->has_icon("snes9x"))
     {
         window->set_default_icon_name("snes9x");

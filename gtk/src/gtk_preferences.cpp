@@ -22,19 +22,10 @@
 
 static Snes9xPreferences *preferences = nullptr;
 
-void snes9x_preferences_create(Snes9xConfig *config)
-{
-    Glib::Thread::create([config] {
-        Snes9xPreferences *new_preferences;
-        new_preferences = new Snes9xPreferences(config);
-        preferences = new_preferences;
-    }, true);
-}
-
 void snes9x_preferences_open(Snes9xWindow *window)
 {
     if (!preferences)
-        return;
+        preferences = new Snes9xPreferences(window->config);
 
     auto &config = preferences->config;
 
