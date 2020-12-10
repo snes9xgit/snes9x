@@ -12,15 +12,65 @@
 #include "fxemu.h"
 #include "snapshot.h"
 #include "movie.h"
+#include "chrono"
+#include "ctime"
+#include "iostream"
+#include "windows.h"
+#include "mmsystem.h"
+#pragma comment(lib, "winmm.lib")
 #ifdef DEBUGGER
 #include "debug.h"
 #include "missing.h"
 #endif
+using namespace std::chrono;
 
 static inline void S9xReschedule (void);
 
+long long last = 0;
+long long curr = 0;
+long interval = 3000;
+struct timeval	tv;
+bool8 pendingFlipflop = false;
+
+void playCountdownSound(void)
+{
+	PlaySound(TEXT("C:/C Projects/SNES9X/countdown.wav"), NULL, SND_FILENAME | SND_ASYNC);
+}
+
+void flipControls (void)
+{
+	if (Settings.currentlyFlipped)
+		Settings.currentlyFlipped = false;
+	else
+		Settings.currentlyFlipped = true;
+}
+
 void S9xMainLoop (void)
 {
+	if (Settings.Flipflop)
+	{
+		curr = duration_cast< milliseconds >(
+											 system_clock::now().time_since_epoch()
+		   ).count();
+		srand(time(0));
+		if (curr - last > interval)
+		{
+			interval = ((rand() % 9 + 2) * 1000);
+			last = curr;
+			playCountdownSound();
+			pendingFlipflop = true;
+		}
+		if (pendingFlipflop && curr - last > 1000)
+		{
+			flipControls();
+			pendingFlipflop = false;
+		}
+	}
+	else
+	{
+		Settings.currentlyFlipped = false;
+	}
+	
 	#define CHECK_FOR_IRQ_CHANGE() \
 	if (Timings.IRQFlagChanging) \
 	{ \

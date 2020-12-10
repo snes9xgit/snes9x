@@ -537,6 +537,7 @@
 #define ID_FILE_SAVE_PREVIEW            40180
 #define ID_FILE_SAVE_POPUP              40181
 #define ID_FILE_LOAD_POPUP              40182
+#define ID_FLIPFLOP					    40183
 #define ID_FILE_SAVE0                   44000
 #define ID_FILE_SAVE_LAST               44100
 #define ID_FILE_LOAD0                   44200

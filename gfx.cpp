@@ -28,6 +28,7 @@ static void SetupOBJ (void);
 static void DrawOBJS (int);
 static void DisplayTime (void);
 static void DisplayFrameRate (void);
+static void DisplayFlipflopIndicator (bool8);
 static void DisplayPressedKeys (void);
 static void DisplayWatchedAddresses (void);
 static void DisplayStringFromBottom (const char *, int, int, bool);
@@ -1854,6 +1855,13 @@ static void DisplayTime (void)
 	S9xDisplayString(string, 0, 0, false);
 }
 
+static void DisplayFlipflopIndicator ()
+{
+	char	string[10];
+	sprintf(string, "Flipflop");
+	S9xDisplayString(string, 2, IPPU.RenderedScreenWidth - (font_width - 1) * strlen(string) - 1, false);
+}
+
 static void DisplayFrameRate (void)
 {
 	char	string[10];
@@ -2052,6 +2060,9 @@ void S9xDisplayMessages (uint16 *screen, int ppl, int width, int height, int sca
 		
 	if (Settings.DisplayFrameRate)
 		DisplayFrameRate();
+	
+	if (Settings.currentlyFlipped)
+		DisplayFlipflopIndicator();
 
 	if (Settings.DisplayWatchedAddresses)
 		DisplayWatchedAddresses();

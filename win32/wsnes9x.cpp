@@ -1851,6 +1851,13 @@ LRESULT CALLBACK WinProc(
 				GUI.hHotkeyTimer = timeSetEvent (32, 0, (LPTIMECALLBACK)HotkeyTimer, 0, TIME_PERIODIC);
 			break;
 
+		case ID_FLIPFLOP:
+			if (Settings.Flipflop) 
+				Settings.Flipflop = false;
+			else
+				Settings.Flipflop = true;
+			break;
+
         case ID_INPUT_BACKGROUNDKEYBOARDHOTKEYS:
             GUI.BackgroundKeyHotkeys = !GUI.BackgroundKeyHotkeys;
             break;
@@ -3966,6 +3973,7 @@ static void CheckMenuStates ()
 
 	mii.fState = GUI.BackgroundInput ? MFS_CHECKED : MFS_UNCHECKED;
 	SetMenuItemInfo (GUI.hMenu, ID_EMULATION_BACKGROUNDINPUT, FALSE, &mii);
+	SetMenuItemInfo (GUI.hMenu, ID_FLIPFLOP, FALSE, &mii);
 
     mii.fState = GUI.BackgroundKeyHotkeys ? MFS_CHECKED : MFS_UNCHECKED;
     if (!GUI.BackgroundInput)

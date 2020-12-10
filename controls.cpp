@@ -2820,8 +2820,13 @@ void S9xSetJoypadLatch (bool latch)
 	if (!latch && FLAG_LATCH)
 	{
 		// 1 written, 'plug in' new controllers now
-		curcontrollers[0] = newcontrollers[0];
-		curcontrollers[1] = newcontrollers[1];
+		if (Settings.currentlyFlipped) {
+			curcontrollers[0] = newcontrollers[1];
+			curcontrollers[1] = newcontrollers[0];
+		} else {
+			curcontrollers[0] = newcontrollers[0];
+			curcontrollers[1] = newcontrollers[1];
+		}
 	}
 
 	if (latch && !FLAG_LATCH)
