@@ -15,7 +15,6 @@
 #include "chrono"
 #include "ctime"
 #include "iostream"
-#include "windows.h"
 #include "mmsystem.h"
 #pragma comment(lib, "winmm.lib")
 #ifdef DEBUGGER
@@ -34,7 +33,7 @@ bool8 pendingFlipflop = false;
 
 void playCountdownSound(void)
 {
-	PlaySound(TEXT("C:/C Projects/SNES9X/countdown.wav"), NULL, SND_FILENAME | SND_ASYNC);
+	PlaySound(TEXT("countdown.wav"), NULL, SND_FILENAME | SND_ASYNC);
 }
 
 void flipControls (void)
