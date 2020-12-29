@@ -236,68 +236,70 @@ NSString * const kMacFrameSkipPref = @"FrameSkip";
     return NO;
 }
 
+- (void)deviceSettingChanged:(S9xDeviceSetting)deviceSetting {}
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
 {
-    if ([keyPath isEqualToString:@"keyCode"])
-    {
-        S9xButtonConfigTextField *field = (S9xButtonConfigTextField *)object;
-        S9xButtonCode buttonCode = (S9xButtonCode)field.tag;
-        uint16_t keyCode = field.keyCode;
-        int8_t player = self.playerPopUp.selectedItem.tag;
+	if ([keyPath isEqualToString:@"keyCode"])
+	{
+		S9xButtonConfigTextField *field = (S9xButtonConfigTextField *)object;
+		S9xButtonCode buttonCode = (S9xButtonCode)field.tag;
+		uint16_t keyCode = field.keyCode;
+		int8_t player = self.playerPopUp.selectedItem.tag;
 
-        if (keyCode != (CGKeyCode)-1)
-        {
-            [((AppDelegate *) NSApp.delegate) setButtonCode:buttonCode forKeyCode:keyCode player:player];
-        }
-        else
-        {
-            [((AppDelegate *) NSApp.delegate) clearButton:buttonCode forPlayer:player];
-        }
+		if (keyCode != (CGKeyCode)-1)
+		{
+			[((AppDelegate *) NSApp.delegate) setButtonCode:buttonCode forKeyCode:keyCode player:player];
+		}
+		else
+		{
+			[((AppDelegate *) NSApp.delegate) clearButton:buttonCode forPlayer:player];
+		}
 
-        [NSUserDefaults.standardUserDefaults synchronize];
+		[NSUserDefaults.standardUserDefaults synchronize];
 
-        [self refresh];
-    }
-    else if ( [keyPath isEqualToString:@"joypadInput"])
-    {
-        S9xButtonConfigTextField *field = (S9xButtonConfigTextField *)object;
-        S9xButtonCode buttonCode = (S9xButtonCode)field.tag;
-        S9xJoypad *joypad = self.devicePopUp.selectedItem.representedObject;
+		[self refresh];
+	}
+	else if ( [keyPath isEqualToString:@"joypadInput"])
+	{
+		S9xButtonConfigTextField *field = (S9xButtonConfigTextField *)object;
+		S9xButtonCode buttonCode = (S9xButtonCode)field.tag;
+		S9xJoypad *joypad = self.devicePopUp.selectedItem.representedObject;
 
-        if ([joypad isKindOfClass:[S9xJoypad class]])
-        {
-            S9xJoypadInput *input = field.joypadInput;
+		if ([joypad isKindOfClass:[S9xJoypad class]])
+		{
+			S9xJoypadInput *input = field.joypadInput;
 
-            if (input != nil)
-            {
-                [((AppDelegate *)NSApp.delegate) setButton:buttonCode forVendorID:joypad.vendorID productID:joypad.productID index:joypad.index cookie:input.cookie value:input.value];
-            }
-            else
-            {
-                [((AppDelegate *)NSApp.delegate) clearJoypadForVendorID:joypad.vendorID productID:joypad.productID index:joypad.index buttonCode:buttonCode];
-            }
-        }
+			if (input != nil)
+			{
+				[((AppDelegate *)NSApp.delegate) setButton:buttonCode forVendorID:joypad.vendorID productID:joypad.productID index:joypad.index cookie:input.cookie value:input.value];
+			}
+			else
+			{
+				[((AppDelegate *)NSApp.delegate) clearJoypadForVendorID:joypad.vendorID productID:joypad.productID index:joypad.index buttonCode:buttonCode];
+			}
+		}
 
-        [NSUserDefaults.standardUserDefaults synchronize];
-        [self refresh];
-    }
+		[NSUserDefaults.standardUserDefaults synchronize];
+		[self refresh];
+	}
 }
 
 - (void)setShowFPS:(BOOL)value
 {
-    AppDelegate *appDelegate = (AppDelegate *)NSApp.delegate;
-    [appDelegate setShowFPS:value];
+	AppDelegate *appDelegate = (AppDelegate *)NSApp.delegate;
+	[appDelegate setShowFPS:value];
 }
 
 - (void)setVideoMode:(int)value
 {
-    AppDelegate *appDelegate = (AppDelegate *)NSApp.delegate;
-    [appDelegate setVideoMode:value];
+	AppDelegate *appDelegate = (AppDelegate *)NSApp.delegate;
+	[appDelegate setVideoMode:value];
 }
 
 - (void)setMacFrameSkip:(int)value
 {
-    AppDelegate *appDelegate = (AppDelegate *)NSApp.delegate;
+	AppDelegate *appDelegate = (AppDelegate *)NSApp.delegate;
 	[appDelegate setMacFrameSkip:value];
 }
 
@@ -313,14 +315,14 @@ NSString * const kMacFrameSkipPref = @"FrameSkip";
 
 - (IBAction)onSelectVideoMode:(NSPopUpButton *)sender
 {
-    [self setVideoMode:(int)sender.selectedTag];
+	[self setVideoMode:(int)sender.selectedTag];
 }
 
 - (IBAction)bumpMacFrameSkip:(NSStepper *)sender
 {
 	int bumpValue = sender.intValue;   // 1 or -1
 	int nextValue = self.macFrameSkipTextField.intValue + bumpValue;
-	
+
 	// constrain value
 	if (nextValue < 0) {
 		nextValue = 0;
@@ -328,7 +330,7 @@ NSString * const kMacFrameSkipPref = @"FrameSkip";
 	if (nextValue > 200) {
 		nextValue = 200;
 	}
-    
+
 	[self.macFrameSkipTextField setIntValue: nextValue];
 	[sender setIntValue:0];	// reset stepper value
 	[self setMacFrameSkip:self.macFrameSkipTextField.intValue]; // execute setter
@@ -358,19 +360,20 @@ NSString * const kMacFrameSkipPref = @"FrameSkip";
 
 - (IBAction)onChangePlayerDropdown:(NSPopUpButton *)sender
 {
-    [self selectDeviceForPlayer:sender.selectedTag];
-    [self refresh];
+	[self selectDeviceForPlayer:sender.selectedTag];
+	[self refresh];
 }
 
 - (IBAction)onChangeDeviceDropdown:(NSPopUpButton *)sender
 {
-    if (sender.selectedTag >= 0)
-    {
-        AppDelegate *appDelegate = (AppDelegate *)NSApp.delegate;
-        S9xJoypad *joypad = sender.selectedItem.representedObject;
-        [appDelegate setPlayer:self.playerPopUp.selectedTag forVendorID:joypad.vendorID productID:joypad.productID index:joypad.index];
-        [NSUserDefaults.standardUserDefaults synchronize];
-    }
-    [self refresh];
+	if (sender.selectedTag >= 0)
+	{
+		AppDelegate *appDelegate = (AppDelegate *)NSApp.delegate;
+		S9xJoypad *joypad = sender.selectedItem.representedObject;
+		[appDelegate setPlayer:self.playerPopUp.selectedTag forVendorID:joypad.vendorID productID:joypad.productID index:joypad.index];
+		[NSUserDefaults.standardUserDefaults synchronize];
+	}
+	[self refresh];
 }
+
 @end

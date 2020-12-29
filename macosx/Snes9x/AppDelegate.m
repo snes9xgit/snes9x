@@ -179,6 +179,8 @@ NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
         }
     }
 
+	self.deviceSetting = Gamepads;
+
     [self importKeySettings];
     [self importGraphicsSettings];
     [defaults synchronize];
@@ -465,6 +467,9 @@ NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 	if (action == @selector(resume:) || action == @selector(softwareReset:) || action == @selector(hardwareReset:)) {
 		return [self.s9xEngine isRunning] && [self.s9xEngine isPaused];
 	}
+	else if (action == @selector(updateDeviceSetting:)) {
+		menuItem.state = (self.deviceSetting == (S9xDeviceSetting)menuItem.tag) ? NSOnState : NSOffState;
+	}
 
     return !self.isRunningEmulation;
 }
@@ -529,6 +534,17 @@ NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 	[self.s9xEngine hardwareReset];
 }
 
+- (IBAction)updateDeviceSetting:(id)sender
+{
+	self.deviceSetting = (S9xDeviceSetting)[sender tag];
+}
+
+- (void)setDeviceSetting:(S9xDeviceSetting)deviceSetting
+{
+	_deviceSetting = deviceSetting;
+	[self.s9xEngine setDeviceSetting:deviceSetting];
+}
+
 - (BOOL)handleInput:(S9xJoypadInput *)input fromJoypad:(S9xJoypad *)joypad
 {
     if (NSApp.keyWindow != nil && NSApp.keyWindow == self.preferencesWindowController.window)
@@ -538,5 +554,11 @@ NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 
     return NO;
 }
+
+- (void)deviceSettingChanged:(S9xDeviceSetting)deviceSetting
+{
+    _deviceSetting = deviceSetting;
+}
+
 
 @end

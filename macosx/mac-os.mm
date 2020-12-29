@@ -83,6 +83,9 @@ uint32				glScreenW,
 					glScreenH;
 CGRect				glScreenBounds;
 
+CGFloat				rawMouseX, rawMouseY = 0;
+int16				mouseX, mouseY = 0;
+
 CGImageRef			macIconImage[118];
 int					macPadIconIndex,
 					macLegendIconIndex,
@@ -105,8 +108,7 @@ unsigned long		spcFileCount        = 0,
 bool8				cartOpen            = false,
 					autofire            = false;
 
-bool8				fullscreen          = false,
-					autoRes             = false,
+bool8				autoRes             = false,
 					glstretch           = true,
 					gl32bit             = true,
 					vsync               = true,
@@ -134,9 +136,8 @@ int					inactiveMode        = 2;
 int					musicboxmode        = kMBXSoundEmulation;
 
 bool8				applycheat          = false;
-int					padSetting          = 1,
-					deviceSetting       = 1,
-					deviceSettingMaster = 1;
+S9xDeviceSetting	deviceSetting       = Gamepads,
+					deviceSettingMaster = Gamepads;
 int					macControllerOption = SNES_JOYPAD;
 AutoFireState		autofireRec[MAC_MAX_PLAYERS];
 
@@ -272,14 +273,6 @@ enum
        mPresets        = 201,
 
        mDevice         = 202,
-       iPad            = 1,
-       iMouse                  = 2,
-       iMouse2         = 3,
-       iSuperScope     = 4,
-       iMultiPlayer5   = 5,
-       iMultiPlayer5_2 = 6,
-       iJustifier1     = 7,
-       iJustifier2     = 8,
 
        mRecentItem     = 203
 };
@@ -296,15 +289,14 @@ static volatile bool8	rejectinput     = false;
 
 static bool8			pauseEmulation  = false,
 						escKeyDown      = false,
-						frameAdvance    = false;
+						frameAdvance    = false,
+						useMouse		= false;
 
 static int				frameCount      = 0;
 
 static bool8			frzselecting    = false;
 
 static uint16			changeAuto[2] = { 0x0000, 0x0000 };
-
-static GameViewInfo		scopeViewInfo;
 
 static void Initialize (void);
 static void Deinitialize (void);
@@ -1533,54 +1525,64 @@ void ChangeInputDevice (void)
 {
     switch (deviceSetting)
     {
-        case iPad:
+        case Gamepads:
             S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
             S9xSetController(1, CTL_JOYPAD,     1, 0, 0, 0);
             macControllerOption = SNES_JOYPAD;
+			useMouse = false;
             break;
 
-        case iMouse:
+        case Mouse:
             S9xSetController(0, CTL_MOUSE,      0, 0, 0, 0);
             S9xSetController(1, CTL_JOYPAD,     1, 0, 0, 0);
             macControllerOption = SNES_MOUSE;
+			useMouse = true;
             break;
 
-        case iMouse2:
+        case Mouse2:
             S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
             S9xSetController(1, CTL_MOUSE,      1, 0, 0, 0);
             macControllerOption = SNES_MOUSE_SWAPPED;
+			useMouse = true;
             break;
 
-        case iSuperScope:
+        case SuperScope:
             S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
             S9xSetController(1, CTL_SUPERSCOPE, 0, 0, 0, 0);
             macControllerOption = SNES_SUPERSCOPE;
+			useMouse = true;
             break;
 
-        case iMultiPlayer5:
+        case MultiTap:
             S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
             S9xSetController(1, CTL_MP5,        1, 2, 3, 4);
             macControllerOption = SNES_MULTIPLAYER5;
+			useMouse = false;
             break;
 
-        case iMultiPlayer5_2:
+        case DoubleMultiTap:
             S9xSetController(0, CTL_MP5,        0, 1, 2, 3);
             S9xSetController(1, CTL_MP5,        4, 5, 6, 7);
             macControllerOption = SNES_MULTIPLAYER5_2;
+			useMouse = false;
             break;
 
-        case iJustifier1:
+        case Justifier1:
             S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
             S9xSetController(1, CTL_JUSTIFIER,  0, 0, 0, 0);
             macControllerOption = SNES_JUSTIFIER;
+			useMouse = true;
             break;
 
-        case iJustifier2:
+        case Justifier2:
             S9xSetController(0, CTL_JOYPAD,     0, 0, 0, 0);
             S9xSetController(1, CTL_JUSTIFIER,  1, 0, 0, 0);
             macControllerOption = SNES_JUSTIFIER_2;
+			useMouse = true;
             break;
     }
+
+	[inputDelegate deviceSettingChanged:deviceSetting];
 }
 
 void ApplyNSRTHeaderControllers (void)
@@ -1593,68 +1595,68 @@ void ApplyNSRTHeaderControllers (void)
         switch (Memory.NSRTHeader[29])
         {
             case 0x00: // Everything goes
-                deviceSetting = iPad;
-                valid = (1 << iPad);
+                deviceSetting = Gamepads;
+                valid = (1 << Gamepads);
                 break;
 
             case 0x10: // Mouse in Port 0
-                deviceSetting = iMouse;
-                valid = (1 << iMouse);
+                deviceSetting = Mouse;
+                valid = (1 << Mouse);
                 break;
 
             case 0x01: // Mouse in Port 1
-                deviceSetting = iMouse2;
-                valid = (1 << iMouse2);
+                deviceSetting = Mouse2;
+                valid = (1 << Mouse2);
                 break;
 
             case 0x03: // Super Scope in Port 1
-                deviceSetting = iSuperScope;
-                valid = (1 << iSuperScope);
+                deviceSetting = SuperScope;
+                valid = (1 << SuperScope);
                 break;
 
             case 0x06: // Multitap in Port 1
-                deviceSetting = iMultiPlayer5;
-                valid = (1 << iPad) | (1 << iMultiPlayer5);
+                deviceSetting = MultiTap;
+                valid = (1 << Gamepads) | (1 << MultiTap);
                 break;
 
             case 0x66: // Multitap in Ports 0 and 1
-                deviceSetting = iMultiPlayer5_2;
-                valid = (1 << iPad) | (1 << iMultiPlayer5) | (1 << iMultiPlayer5_2);
+                deviceSetting = DoubleMultiTap;
+                valid = (1 << Gamepads) | (1 << MultiTap) | (1 << DoubleMultiTap);
                 break;
 
             case 0x08: // Multitap in Port 1, Mouse in new Port 1
-                deviceSetting = iMouse2;
-                valid = (1 << iPad) | (1 << iMouse2) | (1 << iMultiPlayer5);
+                deviceSetting = Mouse;
+                valid = (1 << Gamepads) | (1 << Mouse2) | (1 << MultiTap);
                 break;
 
             case 0x04: // Pad or Super Scope in Port 1
-                deviceSetting = iSuperScope;
-                valid = (1 << iPad) | (1 << iSuperScope);
+                deviceSetting = SuperScope;
+                valid = (1 << Gamepads) | (1 << SuperScope);
                 break;
 
             case 0x05: // Justifier - Must ask user...
-                deviceSetting = iJustifier1;
-                valid = (1 << iJustifier1) | (1 << iJustifier2);
+                deviceSetting = Justifier1;
+                valid = (1 << Justifier1) | (1 << Justifier2);
                 break;
 
             case 0x20: // Pad or Mouse in Port 0
-                deviceSetting = iMouse;
-                valid = (1 << iPad) | (1 << iMouse);
+                deviceSetting = Mouse;
+                valid = (1 << Gamepads) | (1 << Mouse);
                 break;
 
             case 0x22: // Pad or Mouse in Port 0 & 1
-                deviceSetting = iMouse;
-                valid = (1 << iPad) | (1 << iMouse) | (1 << iMouse2);
+                deviceSetting = Mouse;
+                valid = (1 << Gamepads) | (1 << Mouse) | (1 << Mouse2);
                 break;
 
             case 0x24: // Pad or Mouse in Port 0, Pad or Super Scope in Port 1
-                deviceSetting = iSuperScope;
-                valid = (1 << iPad) | (1 << iMouse) | (1 << iSuperScope);
+                deviceSetting = SuperScope;
+                valid = (1 << Gamepads) | (1 << Mouse) | (1 << SuperScope);
                 break;
 
             case 0x27: // Pad or Mouse in Port 0, Pad or Mouse or Super Scope in Port 1
-                deviceSetting = iSuperScope;
-                valid = (1 << iPad) | (1 << iMouse) | (1 << iMouse2) | (1 << iSuperScope);
+                deviceSetting = SuperScope;
+                valid = (1 << Gamepads) | (1 << Mouse) | (1 << Mouse2) | (1 << SuperScope);
                 break;
 
             case 0x99: // Lasabirdie
@@ -2442,7 +2444,9 @@ static void ProcessInput (void)
 	}
 
     if (macControllerOption == SNES_JUSTIFIER_2)
+	{
         ControlPadFlagsToS9xPseudoPointer(controlPad[1]);
+	}
 }
 
 static void ChangeAutofireSettings (int player, int btn)
@@ -2489,66 +2493,6 @@ static void ChangeTurboRate (int d)
 
     snprintf(msg, sizeof(msg), "Turbo Rate: %d", macFastForwardRate);
     S9xSetInfoString(msg);
-}
-
-void GetGameScreenPointer (int16 *x, int16 *y, bool fullmouse)
-{
-    int    ph;
-
-    ph = !drawoverscan ? ((IPPU.RenderedScreenHeight > 256) ? IPPU.RenderedScreenHeight : (IPPU.RenderedScreenHeight << 1)) : (SNES_HEIGHT_EXTENDED << 1);
-
-    if (fullscreen)
-    {
-        if (glstretch)
-        {
-            float   fpw = (float) glScreenH / (float) ph * 512.0f;
-
-            scopeViewInfo.width      = (int) (fpw + ((float) glScreenW - fpw) * (float) macAspectRatio / 10000.0);
-            scopeViewInfo.height     = glScreenH;
-            scopeViewInfo.globalLeft = (int) glScreenBounds.origin.x + ((glScreenW - scopeViewInfo.width) >> 1);
-            scopeViewInfo.globalTop  = (int) glScreenBounds.origin.y;
-        }
-        else
-        {
-            scopeViewInfo.width      = 512;
-            scopeViewInfo.height     = ph;
-            scopeViewInfo.globalLeft = (int) glScreenBounds.origin.x + ((glScreenW - 512) >> 1);
-            scopeViewInfo.globalTop  = (int) glScreenBounds.origin.y + ((glScreenH - ph ) >> 1);
-        }
-    }
-    else
-    {
-        CGRect frame = s9xView.frame;
-        frame = [s9xView convertRect:frame toView:nil];
-        frame = [s9xView.window convertRectToScreen:frame];
-
-        scopeViewInfo.width      = frame.size.width;
-        scopeViewInfo.globalLeft = frame.origin.x;
-
-        if (windowExtend)
-        {
-            scopeViewInfo.height    = ph * frame.size.height / kMacWindowHeight;
-            scopeViewInfo.globalTop = frame.origin.y + ((kMacWindowHeight - ph) >> 1) * frame.size.height / kMacWindowHeight;
-        }
-        else
-        {
-            scopeViewInfo.height    = frame.size.height;
-            scopeViewInfo.globalTop = frame.origin.y;
-        }
-    }
-
-    if (!fullmouse)
-    {
-        CGPoint point = [NSEvent mouseLocation];
-
-        *x = (int16) (((float) (point.x - scopeViewInfo.globalLeft)) / ((float) scopeViewInfo.width ) * (float) IPPU.RenderedScreenWidth);
-        *y = (int16) (((float) (point.y - scopeViewInfo.globalTop )) / ((float) scopeViewInfo.height) * (float) (!drawoverscan ? IPPU.RenderedScreenHeight : SNES_HEIGHT_EXTENDED));
-    }
-    else
-    {
-        *x = (int16) (unlimitedCursor.x / (float) scopeViewInfo.width  * (float) IPPU.RenderedScreenWidth);
-        *y = (int16) (unlimitedCursor.y / (float) scopeViewInfo.height * (float) (!drawoverscan ? IPPU.RenderedScreenHeight : SNES_HEIGHT_EXTENDED));
-    }
 }
 
 static void Initialize (void)
@@ -2644,6 +2588,8 @@ static void Deinitialize (void)
 	S9xGraphicsDeinit();
 	S9xDeinitAPU();
 	Memory.Deinit();
+
+	pthread_mutex_destroy(&keyLock);
 }
 
 uint64 GetMicroseconds(void)
@@ -2846,6 +2792,11 @@ void QuitWithFatalError ( NSString *message)
     return self;
 }
 
+- (void)viewWillMoveToWindow:(NSWindow *)newWindow
+{
+	newWindow.acceptsMouseMovedEvents = YES;
+}
+
 - (void)keyDown:(NSEvent *)event
 {
     if (!NSApp.isActive)
@@ -2943,8 +2894,145 @@ void QuitWithFatalError ( NSString *message)
 
 - (void)mouseDown:(NSEvent *)event
 {
-    pauseEmulation = true;
-	[s9xView updatePauseOverlay];
+	if ( useMouse )
+	{
+		switch (deviceSetting)
+		{
+			case Mouse:
+			case SuperScope:
+			case Justifier1:
+				pressedKeys[0][kKeyMouseLeft] = true;
+				break;
+
+			case Mouse2:
+			case Justifier2:
+				pressedKeys[1][kKeyMouseLeft] = true;
+				break;
+
+			default:
+				break;
+		}
+	}
+	else
+	{
+		pauseEmulation = true;
+		[s9xView updatePauseOverlay];
+	}
+}
+
+- (void)mouseUp:(NSEvent *)event
+{
+	if ( useMouse )
+	{
+		switch (deviceSetting)
+		{
+			case Mouse:
+			case SuperScope:
+			case Justifier1:
+				pressedKeys[0][kKeyMouseLeft] = false;
+				break;
+
+			case Mouse2:
+			case Justifier2:
+				pressedKeys[1][kKeyMouseLeft] = false;
+				break;
+
+			default:
+				break;
+		}
+	}
+}
+
+- (void)rightMouseDown:(NSEvent *)event
+{
+	if ( useMouse )
+	{
+		switch (deviceSetting)
+		{
+			case Mouse:
+			case SuperScope:
+			case Justifier1:
+				pressedKeys[0][kKeyMouseRight] = true;
+				break;
+
+			case Mouse2:
+			case Justifier2:
+				pressedKeys[1][kKeyMouseRight] = true;
+				break;
+
+			default:
+				break;
+		}
+	}
+}
+
+- (void)rightMouseUp:(NSEvent *)event
+{
+	if ( useMouse )
+	{
+		switch (deviceSetting)
+		{
+			case Mouse:
+			case SuperScope:
+			case Justifier1:
+				pressedKeys[0][kKeyMouseRight] = false;
+				break;
+
+			case Mouse2:
+			case Justifier2:
+				pressedKeys[1][kKeyMouseRight] = false;
+				break;
+
+			default:
+				break;
+		}
+	}
+}
+
+- (void)mouseMoved:(NSEvent *)event
+{
+	if ( useMouse && running && !pauseEmulation )
+	{
+		rawMouseX += event.deltaX;
+		rawMouseY += event.deltaY;
+		CGRect bounds = self.bounds;
+
+		if (rawMouseX < 0)
+		{
+			rawMouseX = 0;
+		}
+		else if (rawMouseX > bounds.size.width)
+		{
+			rawMouseX = bounds.size.width;
+		}
+
+		if (rawMouseY < 0)
+		{
+			rawMouseY = 0;
+		}
+		else if ( rawMouseY > bounds.size.height)
+		{
+			rawMouseY = bounds.size.height;
+		}
+
+		mouseX = (int16) (rawMouseX / ((float) bounds.size.width ) * (float) IPPU.RenderedScreenWidth);
+		mouseY = (int16) (rawMouseY / ((float) bounds.size.height) * (float) IPPU.RenderedScreenHeight);
+	}
+}
+
+- (void)mouseDragged:(NSEvent *)event
+{
+	[self mouseMoved:event];
+}
+
+- (void)rightMouseDragged:(NSEvent *)event
+{
+	[self mouseMoved:event];
+}
+
+- (void)otherMouseDragged:(NSEvent *)event
+{
+	[self mouseMoved:event];
 }
 
 - (void)updatePauseOverlay
@@ -2954,6 +3042,24 @@ void QuitWithFatalError ( NSString *message)
 		CGFloat scaleFactor = MAX(self.window.backingScaleFactor, 1.0);
 		glScreenW = self.frame.size.width * scaleFactor;
 		glScreenH = self.frame.size.height * scaleFactor;
+
+		BOOL showMouse = !useMouse || !running || pauseEmulation;
+		CGAssociateMouseAndMouseCursorPosition(showMouse);
+
+		if (showMouse)
+		{
+			[NSCursor unhide];
+		}
+		else
+		{
+			CGRect frame = self.frame;
+			CGPoint point = CGPointMake(frame.size.width / 2.0, frame.size.height / 2.0);
+			point = [self convertPoint:point toView:nil];
+			point = [self.window convertPointToScreen:point];
+			point.y = self.window.screen.frame.size.height - point.y;
+			CGWarpMouseCursorPosition(point);
+			[NSCursor hide];
+		}
 	});
 }
 
@@ -3244,6 +3350,12 @@ void QuitWithFatalError ( NSString *message)
 		macFrameSkip = -1;
 	if (macFrameSkip > 200)
 		macFrameSkip = 200;
+}
+
+- (void)setDeviceSetting:(S9xDeviceSetting)_deviceSetting
+{
+	deviceSetting = _deviceSetting;
+	ChangeInputDevice();
 }
 
 @dynamic inputDelegate;

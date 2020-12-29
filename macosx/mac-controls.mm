@@ -163,8 +163,9 @@ void S9xSetupDefaultKeymap (void)
 	ASSIGN_POINTRt(kMacCMapMouse2Pointer,     "Pointer Mouse2");
 	ASSIGN_POINTRt(kMacCMapSuperscopePointer, "Pointer Superscope");
 	ASSIGN_POINTRt(kMacCMapJustifier1Pointer, "Pointer Justifier1");
+	ASSIGN_POINTRt(kMacCMapJustifier2Pointer, "Pointer Justifier2");
 
-	ASSIGN_POINTRf(PseudoPointerBase,         "Pointer Justifier2");
+	ASSIGN_POINTRf(PseudoPointerBase,         "Pointer Justifier2 (Controller)");
 	ASSIGN_BUTTONf(kMacCMapPseudoPtrBase + 0, "ButtonToPointer 1u Med");
 	ASSIGN_BUTTONf(kMacCMapPseudoPtrBase + 1, "ButtonToPointer 1d Med");
 	ASSIGN_BUTTONf(kMacCMapPseudoPtrBase + 2, "ButtonToPointer 1l Med");
@@ -232,13 +233,13 @@ bool S9xPollPointer (uint32 id, int16 *x, int16 *y)
 {
 	if (id & k_PT)
 	{
-		if ((id & k_MO) && fullscreen)
-			GetGameScreenPointer(x, y, true);
-		else
-			GetGameScreenPointer(x, y, false);
+		*x = (int16) mouseX;
+		*y = (int16) mouseY;
 	}
 	else
+	{
 		*x = *y = 0;
+	}
 
 	return (true);
 }
