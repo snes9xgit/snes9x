@@ -1104,6 +1104,9 @@ int CMemory::ScoreHiROM (bool8 skip_header, int32 romoff)
 	uint8	*buf = ROM + 0xff00 + romoff + (skip_header ? 0x200 : 0);
 	int		score = 0;
 
+	if (buf[0xd7] == 13 && CalculatedSize > 1024 * 1024 * 4)
+		score += 5;
+
 	if (buf[0xd5] & 0x1)
 		score += 2;
 
