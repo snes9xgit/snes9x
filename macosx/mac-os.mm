@@ -2764,7 +2764,7 @@ void QuitWithFatalError ( NSString *message)
 
 + (void)initialize
 {
-    keyLock = PTHREAD_MUTEX_INITIALIZER;
+	pthread_mutex_init(&keyLock, NULL);
 }
 
 - (instancetype)initWithFrame:(NSRect)frameRect
