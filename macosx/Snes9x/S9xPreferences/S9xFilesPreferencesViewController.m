@@ -18,13 +18,23 @@
   (c) Copyright 2019 - 2021  Michael Donald Buckley
  ***********************************************************************************/
 
-#import <Cocoa/Cocoa.h>
-#import "S9xButtonConfigTextField.h"
+#import "S9xFilesPreferencesViewController.h"
 
-NS_ASSUME_NONNULL_BEGIN
+@interface S9xFilesPreferencesViewController ()
 
-@interface S9xPreferencesWindowController : NSWindowController
-- (BOOL)handleInput:(S9xJoypadInput *)input fromJoypad:(S9xJoypad *)joypad;
 @end
 
-NS_ASSUME_NONNULL_END
+@implementation S9xFilesPreferencesViewController
+
+- (instancetype)init
+{
+	if (self = [super initWithNibName:@"S9xFilesPreferencesViewController" bundle:nil])
+	{
+		self.title = NSLocalizedString(@"Files", nil);
+		self.image = [NSImage imageNamed:@"files"];
+	}
+
+	return self;
+}
+
+@end

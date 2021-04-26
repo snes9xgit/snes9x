@@ -20,6 +20,7 @@
 
 #import <Carbon/Carbon.h>
 #import "AppDelegate.h"
+#import "S9xPreferencesConstants.h"
 
 NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 
@@ -212,7 +213,7 @@ NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 {
     [self.s9xEngine clearButton:button forPlayer:player];
     NSMutableDictionary *keyDict = [[NSUserDefaults.standardUserDefaults objectForKey:kKeyboardPrefs] mutableCopy];
-    [keyDict removeObjectForKey:@(button).stringValue];
+    [keyDict removeObjectForKey:@(button + (kNumButtons * player)).stringValue];
     [NSUserDefaults.standardUserDefaults setObject:[keyDict copy] forKey:kKeyboardPrefs];
     [NSUserDefaults.standardUserDefaults synchronize];
 }
@@ -549,7 +550,7 @@ NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 {
     if (NSApp.keyWindow != nil && NSApp.keyWindow == self.preferencesWindowController.window)
     {
-        return [((S9xPreferencesWindowController *) self.preferencesWindowController.contentViewController) handleInput:input fromJoypad:joypad];
+        return [((S9xPreferencesWindowController *) self.preferencesWindowController) handleInput:input fromJoypad:joypad];
     }
 
     return NO;

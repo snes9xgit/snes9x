@@ -19,12 +19,11 @@
  ***********************************************************************************/
 
 #import <Cocoa/Cocoa.h>
-#import "S9xButtonConfigTextField.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface S9xPreferencesWindowController : NSWindowController
-- (BOOL)handleInput:(S9xJoypadInput *)input fromJoypad:(S9xJoypad *)joypad;
+@interface S9xPreferencesTabViewController : NSTabViewController
+
 @end
 
 NS_ASSUME_NONNULL_END

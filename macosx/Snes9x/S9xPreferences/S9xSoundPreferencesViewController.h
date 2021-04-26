@@ -18,13 +18,12 @@
   (c) Copyright 2019 - 2021  Michael Donald Buckley
  ***********************************************************************************/
 
-#import <Cocoa/Cocoa.h>
-#import "S9xButtonConfigTextField.h"
+#import "S9xPreferencesViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface S9xPreferencesWindowController : NSWindowController
-- (BOOL)handleInput:(S9xJoypadInput *)input fromJoypad:(S9xJoypad *)joypad;
+@interface S9xSoundPreferencesViewController : S9xPreferencesViewController
+
 @end
 
 NS_ASSUME_NONNULL_END
