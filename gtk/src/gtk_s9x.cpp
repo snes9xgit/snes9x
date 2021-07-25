@@ -63,6 +63,7 @@ int main(int argc, char *argv[])
     S9xLoadConfigFiles(argv, argc);
 
     gui_config = new Snes9xConfig();
+    gui_config->sound_drivers = S9xGetSoundDriverNames();
 
     S9xInitInputDevices();
 

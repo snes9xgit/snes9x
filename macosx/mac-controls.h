@@ -177,6 +177,7 @@ enum
 	kMacCMapMouse2Pointer     = k_HD | k_PT | k_MO | k_C2,
 	kMacCMapSuperscopePointer = k_HD | k_PT | k_SS | k_C1,
 	kMacCMapJustifier1Pointer = k_HD | k_PT | k_LG | k_C1,
+	kMacCMapJustifier2Pointer = k_HD | k_PT | k_LG | k_C2,
 
 	kMacCMapPseudoPtrBase     = k_HD | k_PS | k_LG | k_C2	// for Justifier 2P
 };

@@ -19,22 +19,14 @@
  ***********************************************************************************/
 
 #import <Carbon/Carbon.h>
-
 #import "AppDelegate.h"
-
-#import "S9xPrefsConstants.h"
-#import "S9xPrefsViewController.h"
+#import "S9xPreferencesConstants.h"
 #import "S9xLuaViewController.h"
-
 @interface AppDelegate ()
-@property (nonatomic, strong) S9xEngine *s9xEngine;
-@property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *keys;
-@property (nonatomic, strong) NSWindow *window;
-@property (nonatomic, strong, nullable) NSWindowController *prefsWindowController;
 @property (nonatomic, strong) NSMutableArray<NSWindowController *> *luaWindowControllers;
 @end
 
-static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
+NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 
 @implementation AppDelegate
 
@@ -44,26 +36,26 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
     [self setupDefaults];
     [self importRecentItems];
 
-    NSWindow *window = [[NSWindow alloc] initWithContentRect:s9xView.frame styleMask:NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable|NSWindowStyleMaskResizable backing:NSBackingStoreBuffered defer:NO];
+    NSWindow *gameWindow = [[NSWindow alloc] initWithContentRect:s9xView.frame styleMask:NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable|NSWindowStyleMaskResizable backing:NSBackingStoreBuffered defer:NO];
 
-    window.contentView.wantsLayer = YES;
-    window.contentView.layer.backgroundColor = NSColor.blackColor.CGColor;
+    gameWindow.contentView.wantsLayer = YES;
+    gameWindow.contentView.layer.backgroundColor = NSColor.blackColor.CGColor;
 
-    window.title = @"Snes9x";
-    window.restorationClass = [self class];
-    window.frameAutosaveName = kMainWindowIdentifier;
-    window.releasedWhenClosed = NO;
-    window.backgroundColor = NSColor.clearColor;
+    gameWindow.title = @"Snes9x";
+    gameWindow.restorationClass = [self class];
+    gameWindow.frameAutosaveName = kMainWindowIdentifier;
+    gameWindow.releasedWhenClosed = NO;
+    gameWindow.backgroundColor = NSColor.clearColor;
 
-    if ( ![window setFrameUsingName:kMainWindowIdentifier] )
+    if ( ![gameWindow setFrameUsingName:kMainWindowIdentifier] )
     {
-        [window center];
+        [gameWindow center];
     }
 
-    self.window = window;
+    self.gameWindow = gameWindow;
     self.luaWindowControllers = [[NSMutableArray alloc] init];
 
-    [NSNotificationCenter.defaultCenter addObserverForName:NSWindowWillCloseNotification object:window queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification *notification)
+    [NSNotificationCenter.defaultCenter addObserverForName:NSWindowWillCloseNotification object:gameWindow queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification *notification)
     {
         [self.s9xEngine quit];
     }];
@@ -122,7 +114,8 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
             @(kKeyTC).stringValue : @(kVK_ANSI_Comma)
         },
         kShowFPSPref: @(NO),
-        kVideoModePref:@(VIDEOMODE_BLOCKY)
+        kVideoModePref:@(VIDEOMODE_BLOCKY),
+        kMacFrameSkipPref:@(macFrameSkip)
     };
 
     [defaults registerDefaults:defaultSettings];
@@ -192,6 +185,8 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
         }
     }
 
+	self.deviceSetting = Gamepads;
+
     [self importKeySettings];
     [self importGraphicsSettings];
     [defaults synchronize];
@@ -223,7 +218,7 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 {
     [self.s9xEngine clearButton:button forPlayer:player];
     NSMutableDictionary *keyDict = [[NSUserDefaults.standardUserDefaults objectForKey:kKeyboardPrefs] mutableCopy];
-    [keyDict removeObjectForKey:@(button).stringValue];
+    [keyDict removeObjectForKey:@(button + (kNumButtons * player)).stringValue];
     [NSUserDefaults.standardUserDefaults setObject:[keyDict copy] forKey:kKeyboardPrefs];
     [NSUserDefaults.standardUserDefaults synchronize];
 }
@@ -454,17 +449,17 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
     if ([self.s9xEngine loadROM:url])
     {
 		[self.s9xEngine recreateS9xView];
+ 
+		NSWindow *gameWindow = self.gameWindow;
+		[gameWindow.contentView addSubview:s9xView];
+		[s9xView.topAnchor constraintEqualToAnchor:gameWindow.contentView.topAnchor].active = YES;
+		[s9xView.bottomAnchor constraintEqualToAnchor:gameWindow.contentView.bottomAnchor].active = YES;
+		[s9xView.centerXAnchor constraintEqualToAnchor:gameWindow.contentView.centerXAnchor].active = YES;
+		[s9xView.leftAnchor constraintGreaterThanOrEqualToAnchor:gameWindow.contentView.leftAnchor].active = YES;
+		[s9xView.rightAnchor constraintLessThanOrEqualToAnchor:gameWindow.contentView.rightAnchor].active = YES;
 
-		NSWindow *window = self.window;
-		[window.contentView addSubview:s9xView];
-		[s9xView.topAnchor constraintEqualToAnchor:window.contentView.topAnchor].active = YES;
-		[s9xView.bottomAnchor constraintEqualToAnchor:window.contentView.bottomAnchor].active = YES;
-		[s9xView.centerXAnchor constraintEqualToAnchor:window.contentView.centerXAnchor].active = YES;
-		[s9xView.leftAnchor constraintGreaterThanOrEqualToAnchor:window.contentView.leftAnchor].active = YES;
-		[s9xView.rightAnchor constraintLessThanOrEqualToAnchor:window.contentView.rightAnchor].active = YES;
 
-
-        [window makeKeyAndOrderFront:self];
+        [gameWindow makeKeyAndOrderFront:self];
         [NSDocumentController.sharedDocumentController noteNewRecentDocumentURL:url];
         return YES;
     }
@@ -477,6 +472,9 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 	SEL action = menuItem.action;
 	if (action == @selector(resume:) || action == @selector(softwareReset:) || action == @selector(hardwareReset:)) {
 		return [self.s9xEngine isRunning] && [self.s9xEngine isPaused];
+	}
+	else if (action == @selector(updateDeviceSetting:)) {
+		menuItem.state = (self.deviceSetting == (S9xDeviceSetting)menuItem.tag) ? NSOnState : NSOffState;
 	}
 	
 	if (action == @selector(newLuaScriptingWindow:))
@@ -502,25 +500,29 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
     [NSApp terminate:sender];
 }
 
-- (IBAction)openPrefs:(id)sender
+- (IBAction)openPreferencesWindow:(id)sender
 {
-    if ( self.prefsWindowController == nil )
+    if ( self.preferencesWindowController == nil )
     {
-        NSWindow *prefsWindow = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 100, 100) styleMask:NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable backing:NSBackingStoreBuffered defer:NO];
-        prefsWindow.title = NSLocalizedString(@"Preferences", @"");
-        self.prefsWindowController = [[NSWindowController alloc] initWithWindow:prefsWindow];
-
-        prefsWindow.contentViewController = [[S9xPrefsViewController alloc] initWithNibName:@"S9xPrefsViewController" bundle:nil];
-        [prefsWindow center];
-    }
-
-    [self.prefsWindowController.window makeKeyAndOrderFront:self];
+		self.preferencesWindowController = [[S9xPreferencesWindowController alloc] initWithWindowNibName:@"S9xPreferencesWindowController"];
+	}
+	
+	[self.preferencesWindowController showWindow:nil];
+	[self.preferencesWindowController.window makeKeyAndOrderFront:nil];
+	[self.preferencesWindowController.window makeKeyWindow];
 }
 
 - (void)setVideoMode:(int)videoMode
 {
     [self.s9xEngine setVideoMode:videoMode];
     [NSUserDefaults.standardUserDefaults setObject:@(videoMode) forKey:kVideoModePref];
+    [NSUserDefaults.standardUserDefaults synchronize];
+}
+
+- (void)setMacFrameSkip:(int)_macFrameSkip
+{
+    [self.s9xEngine setMacFrameSkip:_macFrameSkip];
+    [NSUserDefaults.standardUserDefaults setObject:@(_macFrameSkip) forKey:kMacFrameSkipPref];
     [NSUserDefaults.standardUserDefaults synchronize];
 }
 
@@ -571,14 +573,31 @@ static NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 }
 #endif // HAVE_LUA
 
+- (IBAction)updateDeviceSetting:(id)sender
+{
+	self.deviceSetting = (S9xDeviceSetting)[sender tag];
+}
+
+- (void)setDeviceSetting:(S9xDeviceSetting)deviceSetting
+{
+	_deviceSetting = deviceSetting;
+	[self.s9xEngine setDeviceSetting:deviceSetting];
+}
+
 - (BOOL)handleInput:(S9xJoypadInput *)input fromJoypad:(S9xJoypad *)joypad
 {
-    if (NSApp.keyWindow != nil && NSApp.keyWindow == self.prefsWindowController.window)
+    if (NSApp.keyWindow != nil && NSApp.keyWindow == self.preferencesWindowController.window)
     {
-        return [((S9xPrefsViewController *) self.prefsWindowController.contentViewController) handleInput:input fromJoypad:joypad];
+        return [((S9xPreferencesWindowController *) self.preferencesWindowController) handleInput:input fromJoypad:joypad];
     }
 
     return NO;
 }
+
+- (void)deviceSettingChanged:(S9xDeviceSetting)deviceSetting
+{
+    _deviceSetting = deviceSetting;
+}
+
 
 @end

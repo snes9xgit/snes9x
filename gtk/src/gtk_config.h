@@ -127,6 +127,7 @@ class Snes9xConfig
     bool netplay_server_up;
 
     /* Operational */
+    std::vector<std::string> sound_drivers;
     int sound_driver;
     bool mute_sound;
     bool mute_sound_turbo;

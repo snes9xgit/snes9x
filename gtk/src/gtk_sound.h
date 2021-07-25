@@ -7,6 +7,9 @@
 #ifndef __GTK_SOUND_H
 #define __GTK_SOUND_H
 
+#include <vector>
+#include <string>
+
 void S9xPortSoundInit();
 void S9xPortSoundDeinit();
 void S9xPortSoundReinit();
@@ -15,5 +18,6 @@ void S9xSoundStop();
 
 int S9xSoundBase2log(int num);
 int S9xSoundPowerof2(int num);
+std::vector<std::string> S9xGetSoundDriverNames();
 
 #endif /* __GTK_SOUND_H */

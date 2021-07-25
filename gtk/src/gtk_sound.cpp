@@ -54,74 +54,56 @@ int S9xSoundPowerof2(int num)
     return (1 << num);
 }
 
+std::vector<std::string> S9xGetSoundDriverNames()
+{
+    std::vector<std::string> names;
+
+#ifdef USE_PORTAUDIO
+    names.push_back("PortAudio");
+#endif
+#ifdef USE_OSS
+    names.push_back("OSS");
+#endif
+#ifdef USE_ALSA
+    names.push_back("ALSA");
+#endif
+#ifdef USE_PULSEAUDIO
+    names.push_back("PulseAudio");
+#endif
+    names.push_back("SDL");
+
+    return names;
+}
+
 void S9xPortSoundInit()
 {
-    int pao_driver = 0;
-    int sdl_driver = 0;
-    int oss_driver = 0;
-    int alsa_driver = 0;
-    int pulse_driver = 0;
-    int max_driver = 0;
-
-    driver = NULL;
-
-#ifdef USE_PORTAUDIO
-    sdl_driver++;
-    oss_driver++;
-    alsa_driver++;
-    pulse_driver++;
-
-    max_driver++;
-#endif
-
-#ifdef USE_OSS
-    sdl_driver++;
-    alsa_driver++;
-    pulse_driver++;
-
-    max_driver++;
-#endif
-
-    /* SDL */
-    alsa_driver++;
-    pulse_driver++;
-
-    max_driver++;
-
-#ifdef USE_ALSA
-    max_driver++;
-    pulse_driver++;
-#endif
-
-#ifdef USE_PULSEAUDIO
-    max_driver++;
-#endif
-
-    if (gui_config->sound_driver >= max_driver)
+    if (gui_config->sound_driver >= (int)gui_config->sound_drivers.size())
         gui_config->sound_driver = 0;
 
+    auto &name = gui_config->sound_drivers[gui_config->sound_driver];
+
 #ifdef USE_PORTAUDIO
-    if (gui_config->sound_driver == pao_driver)
+    if (name == "PortAudio")
         driver = new S9xPortAudioSoundDriver();
 #endif
 
 #ifdef USE_OSS
-    if (gui_config->sound_driver == oss_driver)
+    if (name == "OSS")
         driver = new S9xOSSSoundDriver();
 #endif
 
-    if (gui_config->sound_driver == sdl_driver)
-        driver = new S9xSDLSoundDriver();
-
 #ifdef USE_ALSA
-    if (gui_config->sound_driver == alsa_driver)
+    if (name == "ALSA")
         driver = new S9xAlsaSoundDriver();
 #endif
 
 #ifdef USE_PULSEAUDIO
-    if (gui_config->sound_driver == pulse_driver)
+    if (name == "PulseAudio")
         driver = new S9xPulseSoundDriver();
 #endif
+
+    if (name == "SDL")
+        driver = new S9xSDLSoundDriver();
 
     if (driver != NULL)
     {

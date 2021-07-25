@@ -1,6 +1,6 @@
 /*****************************************************************************\
-     Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
-                This file is licensed under the Snes9x License.
+	 Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+				This file is licensed under the Snes9x License.
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
@@ -15,13 +15,26 @@
   (c) Copyright 2004         Alexander and Sander
   (c) Copyright 2004 - 2005  Steven Seeger
   (c) Copyright 2005         Ryan Vogt
-  (c) Copyright 2019         Michael Donald Buckley
+  (c) Copyright 2019 - 2021  Michael Donald Buckley
  ***********************************************************************************/
 
-#import <Foundation/Foundation.h>
+#import "S9xPreferencesViewController.h"
 
-extern NSString * const kKeyboardPrefs;
-extern NSString * const kJoypadInputPrefs;
-extern NSString * const kJoypadPlayerPrefs;
-extern NSString * const kShowFPSPref;
-extern NSString * const kVideoModePref;
+@interface S9xPreferencesViewController ()
+
+@end
+
+@implementation S9xPreferencesViewController
+
+- (void)viewWillAppear
+{
+	[super viewWillAppear];
+	[self refresh];
+}
+
+- (void)refresh
+{
+	// Implemented by subclasses.
+}
+
+@end
