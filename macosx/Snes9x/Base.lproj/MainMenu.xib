@@ -135,18 +135,6 @@
                                     <action selector="hardwareReset:" target="-1" id="dRy-5Q-N2I"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="wRV-3p-Ovs"/>
-                            <menuItem title="Software Reset" keyEquivalent="R" id="rpq-ak-IWU">
-                                <connections>
-                                    <action selector="softwareReset:" target="-1" id="SCG-64-bMI"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Hardware Reset" keyEquivalent="r" id="tbk-CC-2si">
-                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
-                                <connections>
-                                    <action selector="hardwareReset:" target="-1" id="dRy-5Q-N2I"/>
-                                </connections>
-                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="YAv-y2-CdP"/>
                             <menuItem title="Controls" id="2xu-Kh-K2Q">
                                 <modifierMask key="keyEquivalentModifierMask"/>
