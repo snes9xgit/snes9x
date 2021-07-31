@@ -196,7 +196,7 @@ static void FxReset (struct FxInfo_s *psFxInfo)
 		else
 		{
 			b %= GSU.nRomBanks * 2;
-			GSU.apvRomBank[i] = &GSU.pvRom[(b << 16) + 0x200000];
+			GSU.apvRomBank[i] = &GSU.pvRom[(b << 16) + 0x800000];
 		}
 	}
 
