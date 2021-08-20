@@ -1916,7 +1916,7 @@ void CMemory::ClearSRAM (bool8 onlyNonSavedSRAM)
 		if (!(Settings.SuperFX && ROMType < 0x15) && !(Settings.SA1 && ROMType == 0x34)) // can have SRAM
 			return;
 
-	memset(SRAM, SNESGameFixes.SRAMInitialValue, 0x20000);
+	memset(SRAM, SNESGameFixes.SRAMInitialValue, sizeof(SRAM));
 }
 
 bool8 CMemory::LoadSRAM (const char *filename)
@@ -1951,15 +1951,17 @@ bool8 CMemory::LoadSRAM (const char *filename)
 	}
 
 	size = SRAMSize ? (1 << (SRAMSize + 3)) * 128 : 0;
-	if (size > 0x20000)
-		size = 0x20000;
+	if (LoROM)
+		size = size < 0x70000 ? size : 0x70000;
+	else if (HiROM)
+		size = size < 0x40000 ? size : 0x40000;
 
 	if (size)
 	{
 		file = fopen(sramName, "rb");
 		if (file)
 		{
-			len = fread((char *) SRAM, 1, 0x20000, file);
+			len = fread((char *) SRAM, 1, size, file);
 			fclose(file);
 			if (len - size == 512)
 				memmove(SRAM, SRAM + 512, size);
@@ -1983,7 +1985,7 @@ bool8 CMemory::LoadSRAM (const char *filename)
 			file = fopen(path, "rb");
 			if (file)
 			{
-				len = fread((char *) SRAM, 1, 0x20000, file);
+				len = fread((char *) SRAM, 1, size, file);
 				fclose(file);
 				if (len - size == 512)
 					memmove(SRAM, SRAM + 512, size);
@@ -2040,8 +2042,10 @@ bool8 CMemory::SaveSRAM (const char *filename)
     }
 
     size = SRAMSize ? (1 << (SRAMSize + 3)) * 128 : 0;
-	if (size > 0x20000)
-		size = 0x20000;
+	if (LoROM)
+		size = size < 0x70000 ? size : 0x70000;
+	else if (HiROM)
+		size = size < 0x40000 ? size : 0x40000;
 
 	if (size)
 	{

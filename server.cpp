@@ -1169,8 +1169,11 @@ void S9xNPSendSRAMToClient (int c)
     uint8 sram [7];
     int SRAMSize = Memory.SRAMSize ?
                    (1 << (Memory.SRAMSize + 3)) * 128 : 0;
-    if (SRAMSize > 0x10000)
-        SRAMSize = 0x10000;
+    if (Memory.LoROM)
+        SRAMSize = SRAMSize < 0x70000 ? SRAMSize : 0x70000;
+	else if (Memory.HiROM)
+		SRAMSize = SRAMSize < 0x40000 ? SRAMSize : 0x40000;
+
     int len = 7 + SRAMSize;
 
     sprintf (NetPlay.ActionMsg, "SERVER: Sending S-RAM to player %d...", c + 1);

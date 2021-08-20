@@ -100,7 +100,7 @@ inline uint8 S9xGetByte (uint32 Address)
 
 		case CMemory::MAP_HIROM_SRAM:
 		case CMemory::MAP_RONLY_SRAM:
-			byte = *(Memory.SRAM + (((Address & 0x7fff) - 0x6000 + ((Address & 0xf0000) >> 3)) & Memory.SRAMMask));
+			byte = *(Memory.SRAM + (((Address & 0x7fff) - 0x6000 + ((Address & 0x1f0000) >> 3)) & Memory.SRAMMask));
 			addCyclesInMemoryAccess;
 			return (byte);
 
@@ -241,10 +241,10 @@ inline uint16 S9xGetWord (uint32 Address, enum s9xwrap_t w = WRAP_NONE)
 		case CMemory::MAP_HIROM_SRAM:
 		case CMemory::MAP_RONLY_SRAM:
 			if (Memory.SRAMMask >= MEMMAP_MASK)
-				word = READ_WORD(Memory.SRAM + (((Address & 0x7fff) - 0x6000 + ((Address & 0xf0000) >> 3)) & Memory.SRAMMask));
+				word = READ_WORD(Memory.SRAM + (((Address & 0x7fff) - 0x6000 + ((Address & 0x1f0000) >> 3)) & Memory.SRAMMask));
 			else
-				word = (*(Memory.SRAM + (((Address & 0x7fff) - 0x6000 + ((Address & 0xf0000) >> 3)) & Memory.SRAMMask)) |
-					   (*(Memory.SRAM + ((((Address + 1) & 0x7fff) - 0x6000 + (((Address + 1) & 0xf0000) >> 3)) & Memory.SRAMMask)) << 8));
+				word = (*(Memory.SRAM + (((Address & 0x7fff) - 0x6000 + ((Address & 0x1f0000) >> 3)) & Memory.SRAMMask)) |
+					   (*(Memory.SRAM + ((((Address + 1) & 0x7fff) - 0x6000 + (((Address + 1) & 0x1f0000) >> 3)) & Memory.SRAMMask)) << 8));
 			addCyclesInMemoryAccess_x2;
 			return (word);
 
@@ -368,7 +368,7 @@ inline void S9xSetByte (uint8 Byte, uint32 Address)
 		case CMemory::MAP_HIROM_SRAM:
 			if (Memory.SRAMMask)
 			{
-				*(Memory.SRAM + (((Address & 0x7fff) - 0x6000 + ((Address & 0xf0000) >> 3)) & Memory.SRAMMask)) = Byte;
+				*(Memory.SRAM + (((Address & 0x7fff) - 0x6000 + ((Address & 0x1f0000) >> 3)) & Memory.SRAMMask)) = Byte;
 				CPU.SRAMModified = TRUE;
 			}
 
@@ -555,11 +555,11 @@ inline void S9xSetWord (uint16 Word, uint32 Address, enum s9xwrap_t w = WRAP_NON
 			if (Memory.SRAMMask)
 			{
 				if (Memory.SRAMMask >= MEMMAP_MASK)
-					WRITE_WORD(Memory.SRAM + (((Address & 0x7fff) - 0x6000 + ((Address & 0xf0000) >> 3)) & Memory.SRAMMask), Word);
+					WRITE_WORD(Memory.SRAM + (((Address & 0x7fff) - 0x6000 + ((Address & 0x1f0000) >> 3)) & Memory.SRAMMask), Word);
 				else
 				{
-					*(Memory.SRAM + (((Address & 0x7fff) - 0x6000 + ((Address & 0xf0000) >> 3)) & Memory.SRAMMask)) = (uint8) Word;
-					*(Memory.SRAM + ((((Address + 1) & 0x7fff) - 0x6000 + (((Address + 1) & 0xf0000) >> 3)) & Memory.SRAMMask)) = Word >> 8;
+					*(Memory.SRAM + (((Address & 0x7fff) - 0x6000 + ((Address & 0x1f0000) >> 3)) & Memory.SRAMMask)) = (uint8) Word;
+					*(Memory.SRAM + ((((Address + 1) & 0x7fff) - 0x6000 + (((Address + 1) & 0x1f0000) >> 3)) & Memory.SRAMMask)) = Word >> 8;
 				}
 
 				CPU.SRAMModified = TRUE;
@@ -730,7 +730,7 @@ inline void S9xSetPCBase (uint32 Address)
 			if ((Memory.SRAMMask & MEMMAP_MASK) != MEMMAP_MASK)
 				CPU.PCBase = NULL;
 			else
-				CPU.PCBase = Memory.SRAM + (((Address & 0x7fff) - 0x6000 + ((Address & 0xf0000) >> 3)) & Memory.SRAMMask) - (Address & 0xffff);
+				CPU.PCBase = Memory.SRAM + (((Address & 0x7fff) - 0x6000 + ((Address & 0x1f0000) >> 3)) & Memory.SRAMMask) - (Address & 0xffff);
 			return;
 
 		case CMemory::MAP_BWRAM:
@@ -786,7 +786,7 @@ inline uint8 * S9xGetBasePointer (uint32 Address)
 		case CMemory::MAP_HIROM_SRAM:
 			if ((Memory.SRAMMask & MEMMAP_MASK) != MEMMAP_MASK)
 				return (NULL);
-			return (Memory.SRAM + (((Address & 0x7fff) - 0x6000 + ((Address & 0xf0000) >> 3)) & Memory.SRAMMask) - (Address & 0xffff));
+			return (Memory.SRAM + (((Address & 0x7fff) - 0x6000 + ((Address & 0x1f0000) >> 3)) & Memory.SRAMMask) - (Address & 0xffff));
 
 		case CMemory::MAP_BWRAM:
 			return (Memory.BWRAM - 0x6000 - (Address & 0x8000));
@@ -831,7 +831,7 @@ inline uint8 * S9xGetMemPointer (uint32 Address)
 		case CMemory::MAP_HIROM_SRAM:
 			if ((Memory.SRAMMask & MEMMAP_MASK) != MEMMAP_MASK)
 				return (NULL);
-			return (Memory.SRAM + (((Address & 0x7fff) - 0x6000 + ((Address & 0xf0000) >> 3)) & Memory.SRAMMask));
+			return (Memory.SRAM + (((Address & 0x7fff) - 0x6000 + ((Address & 0x1f0000) >> 3)) & Memory.SRAMMask));
 
 		case CMemory::MAP_BWRAM:
 			return (Memory.BWRAM - 0x6000 + (Address & 0x7fff));
