@@ -146,7 +146,7 @@ const char * S9xGameGenieToRaw (const char *code, uint32 &address, uint8 &byte)
 void S9xStartCheatSearch (SCheatData *d)
 {
 	memmove(d->CWRAM, d->RAM, 0x20000);
-	memmove(d->CSRAM, d->SRAM, 0x10000);
+	memmove(d->CSRAM, d->SRAM, 0x80000);
 	memmove(d->CIRAM, &d->FillRAM[0x3000], 0x2000);
 	memset((char *) d->ALL_BITS, 0xff, 0x32000 >> 3);
 }

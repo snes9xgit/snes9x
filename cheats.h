@@ -33,7 +33,7 @@ struct SCheatData
 	std::vector<struct SCheatGroup> g;
 	bool8	enabled;
 	uint8	CWRAM[0x20000];
-	uint8	CSRAM[0x10000];
+	uint8	CSRAM[0x80000];
 	uint8	CIRAM[0x2000];
 	uint8	*RAM;
 	uint8	*FillRAM;
