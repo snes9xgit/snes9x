@@ -2785,7 +2785,7 @@ void QuitWithFatalError ( NSString *message)
 {
 	pthread_mutex_init(&keyLock, NULL);
 #ifdef HAVE_LUA
-    mainLoopLock = PTHREAD_MUTEX_INITIALIZER;
+	pthread_mutex_init(&mainLoopLock, NULL);
 #endif
 }
 
