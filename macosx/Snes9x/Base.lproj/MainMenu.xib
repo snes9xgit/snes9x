@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="15705" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="16097.3" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="15705"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="16097.3"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -29,7 +28,7 @@
                             <menuItem isSeparatorItem="YES" id="VOq-y0-SEH"/>
                             <menuItem title="Preferences…" keyEquivalent="," id="BOF-NM-1cW">
                                 <connections>
-                                    <action selector="openPrefs:" target="-1" id="MJd-bf-iNU"/>
+                                    <action selector="openPreferencesWindow:" target="-1" id="MJd-bf-iNU"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="wFC-TO-SCJ"/>
@@ -136,6 +135,62 @@
                                     <action selector="hardwareReset:" target="-1" id="dRy-5Q-N2I"/>
                                 </connections>
                             </menuItem>
+                            <menuItem isSeparatorItem="YES" id="YAv-y2-CdP"/>
+                            <menuItem title="Controls" id="2xu-Kh-K2Q">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" id="Scs-jj-0pz">
+                                    <items>
+                                        <menuItem title="Gamepads" tag="1" id="ntk-uz-aiW">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="updateDeviceSetting:" target="-1" id="GxE-k5-uWL"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Mouse (Port 1)" tag="2" id="5es-Zi-iof">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="updateDeviceSetting:" target="-1" id="jtg-E2-98q"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Mouse (Port 2)" tag="3" id="vrV-Bh-KyE">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="updateDeviceSetting:" target="-1" id="LGe-fJ-vTb"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Super Scope (Port 2)" tag="4" id="ZF8-Xw-08U">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="updateDeviceSetting:" target="-1" id="1qY-rM-anV"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Multitap (Port 2)" tag="5" id="cdn-s1-eHL">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="updateDeviceSetting:" target="-1" id="qrs-Ih-u7R"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Multitap (Both Ports)" tag="6" id="fQJ-1V-NpK">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="updateDeviceSetting:" target="-1" id="5d9-tW-Rfm"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Justifier (Port 2)" tag="7" id="hUi-aI-ihE">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="updateDeviceSetting:" target="-1" id="QBV-bU-viB"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Double Justifier (Port 2)" tag="8" id="wTw-mT-ha1">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="updateDeviceSetting:" target="-1" id="XZV-DZ-rX3"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
+                            </menuItem>
                         </items>
                     </menu>
                 </menuItem>
@@ -192,5 +247,8 @@
             </items>
             <point key="canvasLocation" x="132" y="154"/>
         </menu>
+        <menuItem title="Mouse (Port 2)" id="P6N-Mq-1PD">
+            <modifierMask key="keyEquivalentModifierMask"/>
+        </menuItem>
     </objects>
 </document>

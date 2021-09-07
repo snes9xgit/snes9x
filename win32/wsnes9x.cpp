@@ -129,6 +129,8 @@ void S9xDetectJoypads();
 extern HWND RamSearchHWnd;
 extern LRESULT CALLBACK RamSearchProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+void S9xWinScanJoypads();
+
 #define NOTKNOWN "Unknown Company "
 #define HEADER_SIZE 512
 #define INFO_LEN (0xFF - 0xC0)
@@ -2811,6 +2813,10 @@ VOID CALLBACK HotkeyTimer( UINT idEvent, UINT uMsg, DWORD dwUser, DWORD dw1, DWO
 
 		if(GUI.JoystickHotkeys)
 		{
+			if (Settings.StopEmulation || (Settings.Paused && !Settings.FrameAdvance) || Settings.ForcedPause)
+			{
+				S9xWinScanJoypads();
+			}
 			static int counter = 0;
 			static uint32 joyState[6][53];
             for(int j = 0 ; j < 6 ; j++)
@@ -3365,7 +3371,6 @@ void ControlPadFlagsToS9xPseudoPointer(uint32 p)
 
 static void ProcessInput(void)
 {
-	extern void S9xWinScanJoypads ();
 #ifdef NETPLAY_SUPPORT
     if (!Settings.NetPlay)
 #endif
@@ -4928,7 +4933,7 @@ INT_PTR CALLBACK DlgInfoProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			strcat(romtext, "\r\nHeader Checksum: ");
 			sprintf(temp, "%04X", Memory.ROMChecksum);
 			strcat(romtext, temp);
-			strcat(romtext, "\r\nHeader Checksum Compliment: ");
+			strcat(romtext, "\r\nHeader Checksum Complement: ");
 			sprintf(temp, "%04X", Memory.ROMComplementChecksum);
 			strcat(romtext, temp);
 			strcat(romtext, "\r\nOutput: ");

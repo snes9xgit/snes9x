@@ -174,7 +174,7 @@ void S9xOpenGLDisplayDriver::update(uint16_t *buffer, int width, int height, int
     }
     else
     {
-        glPixelStorei(GL_UNPACK_ROW_LENGTH, stride_in_pixels * 2);
+        glPixelStorei(GL_UNPACK_ROW_LENGTH, stride_in_pixels);
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, buffer);
     }
 

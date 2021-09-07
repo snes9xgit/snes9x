@@ -20,7 +20,6 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <Carbon/Carbon.h>
-
 #import "S9xButtonConfigTextField.h"
 
 @implementation S9xButtonConfigTextField

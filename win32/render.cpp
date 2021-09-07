@@ -217,6 +217,7 @@ int GetFilterScale(RenderFilter filterID)
 		case FILTER_HQ3XBOLD:
 		case FILTER_LQ3XBOLD:
 		case FILTER_EPX3:
+        case FILTER_BLARGGRF:
 		case FILTER_BLARGGCOMP:
 		case FILTER_BLARGGSVID:
 		case FILTER_BLARGGRGB:
@@ -241,6 +242,7 @@ bool GetFilterHiResSupport(RenderFilter filterID)
 		case FILTER_SIMPLE1X:
 		case FILTER_SIMPLE2X:
 		case FILTER_SCANLINES:
+        case FILTER_BLARGGRF:
 		case FILTER_BLARGGCOMP:
 		case FILTER_BLARGGSVID:
 		case FILTER_BLARGGRGB:
@@ -288,6 +290,7 @@ inline static bool GetFilterBlendSupport(RenderFilter filterID)
 	switch(filterID)
 	{
 		case FILTER_SIMPLE1X:
+        case FILTER_BLARGGRF:
 		case FILTER_BLARGGCOMP:
 		case FILTER_BLARGGSVID:
 		case FILTER_BLARGGRGB:

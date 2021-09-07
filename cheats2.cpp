@@ -426,7 +426,7 @@ SCheatGroup S9xCreateCheatGroup (const char *name, const char *cheat)
             g.c.push_back (c);
     }
 
-    delete[] code_string;
+    free(code_string);
 
     return g;
 }

@@ -718,7 +718,7 @@ void SetUpHID (void)
             NSNumber *usagePage = (NSNumber *)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDPrimaryUsagePageKey));
             NSNumber *usage = (NSNumber *)IOHIDDeviceGetProperty(device, CFSTR(kIOHIDPrimaryUsageKey));
 
-            return usagePage.intValue != kHIDPage_GenericDesktop || (usage.intValue != kHIDUsage_GD_GamePad && usage.intValue != kHIDUsage_GD_Joystick);
+            return usagePage.intValue != kHIDPage_GenericDesktop || (usage.intValue != kHIDUsage_GD_GamePad && usage.intValue != kHIDUsage_GD_Joystick && usage.intValue != kHIDUsage_GD_Mouse);
         }]];
 
         [orderedDevices sortUsingComparator:^NSComparisonResult(id a, id b)

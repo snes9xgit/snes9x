@@ -1104,6 +1104,11 @@ int CMemory::ScoreHiROM (bool8 skip_header, int32 romoff)
 	uint8	*buf = ROM + 0xff00 + romoff + (skip_header ? 0x200 : 0);
 	int		score = 0;
 
+	// Check for extended HiROM expansion used in Mother 2 Deluxe et al.
+	// Looks for size byte 13 (8MB) and an actual ROM size greater than 4MB
+	if (buf[0xd7] == 13 && CalculatedSize > 1024 * 1024 * 4)
+		score += 5;
+
 	if (buf[0xd5] & 0x1)
 		score += 2;
 

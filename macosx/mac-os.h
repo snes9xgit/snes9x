@@ -65,6 +65,17 @@ enum
 	VIDEOMODE_NTSC_TV_M
 };
 
+typedef enum S9xMacDeviceSettings {
+	Gamepads       = 1,
+	Mouse          = 2,
+	Mouse2         = 3,
+	SuperScope     = 4,
+	MultiTap       = 5,
+	DoubleMultiTap = 6,
+	Justifier1     = 7,
+	Justifier2     = 8,
+} S9xDeviceSetting;
+
 typedef struct
 {
 	long long	nextTime[12];
@@ -84,6 +95,8 @@ extern uint32			controlPad[MAC_MAX_PLAYERS];
 extern uint8			romDetect, interleaveDetect, videoDetect, headerDetect;
 extern WindowRef		gWindow;
 extern uint32			glScreenW, glScreenH;
+extern CGFloat			rawMouseX, rawMouseY;
+extern int16			mouseX, mouseY;
 extern CGRect			glScreenBounds;
 extern CGImageRef		macIconImage[118];
 extern int				macPadIconIndex, macLegendIconIndex, macMusicBoxIconIndex, macFunctionIconIndex;
@@ -92,7 +105,7 @@ extern int32			skipFrames;
 extern int64			lastFrame;
 extern unsigned long	spcFileCount, pngFileCount;
 extern bool8			finished, cartOpen, autofire;
-extern bool8			fullscreen, autoRes, glstretch, gl32bit, vsync, drawoverscan, lastoverscan;
+extern bool8			autoRes, glstretch, gl32bit, vsync, drawoverscan, lastoverscan;
 extern long				drawingMethod;
 extern int				videoMode;
 extern SInt32			macSoundVolume;
@@ -109,7 +122,7 @@ extern uint16			macRecordFlag, macPlayFlag, macQTMovFlag;
 extern bool8			startopendlog, showtimeinfrz, enabletoggle, savewindowpos, onscreeninfo;
 extern int				musicboxmode;
 extern bool8			applycheat;
-extern int				padSetting, deviceSetting, deviceSettingMaster;
+extern S9xDeviceSetting	deviceSetting, deviceSettingMaster;
 extern int				macControllerOption;
 extern CGPoint			unlimitedCursor;
 extern char				npServerIP[256], npName[256];
@@ -135,7 +148,6 @@ void UpdateMenuCommandStatus (Boolean);
 void ApplyNSRTHeaderControllers (void);
 void QuitWithFatalError (NSString *);
 void ChangeInputDevice (void);
-void GetGameScreenPointer (int16 *, int16 *, bool);
 void PostQueueToSubEventLoop (void);
 int PromptFreezeDefrost (Boolean);
 uint64 GetMicroseconds(void);
@@ -157,6 +169,7 @@ void CopyPressedKeys(uint8 keys[MAC_MAX_PLAYERS][kNumButtons], uint8 gamepadButt
 
 @protocol S9xInputDelegate <NSObject>
 - (BOOL)handleInput:(S9xJoypadInput *)input fromJoypad:(S9xJoypad *)joypad;
+- (void)deviceSettingChanged:(S9xDeviceSetting)deviceSetting;
 @end
 
 extern id<S9xInputDelegate> inputDelegate;
@@ -193,7 +206,10 @@ extern id<S9xInputDelegate> inputDelegate;
 - (BOOL)loadROM:(NSURL *)fileURL;
 
 - (void)setVideoMode:(int)videoMode;
+- (void)setMacFrameSkip:(int)_macFrameSkip;
 - (void)setShowFPS:(BOOL)showFPS;
+
+- (void)setDeviceSetting:(S9xDeviceSetting)_deviceSetting;
 
 @end
 

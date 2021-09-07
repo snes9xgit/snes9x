@@ -17,14 +17,25 @@
 		302EECA522DAD1B9006D1502 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 302EECA422DAD1B9006D1502 /* CoreAudio.framework */; };
 		3042F7E3232E9BDD00C03F5E /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3042F7E2232E9BDD00C03F5E /* Carbon.framework */; };
 		3045A1EF22D03C4B0092B97D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3045A1EE22D03C4B0092B97D /* Cocoa.framework */; };
+		304B364A262E328400F8DC8E /* S9xControlsPreferencesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 304B3649262E328400F8DC8E /* S9xControlsPreferencesViewController.xib */; };
+		304B366C262E82B800F8DC8E /* S9xPreferencesConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 304B366B262E82B800F8DC8E /* S9xPreferencesConstants.m */; };
 		3059DA94250690DB003EF183 /* compat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3059DA93250690DB003EF183 /* compat.cpp */; };
 		30656200236A8BA700A1B3B2 /* gamecontrollerdb.txt in Resources */ = {isa = PBXBuildFile; fileRef = 306561FF236A8BA700A1B3B2 /* gamecontrollerdb.txt */; };
+		306937CA2635EE5800007ABB /* S9xDisplayPreferencesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 306937C82635EE5800007ABB /* S9xDisplayPreferencesViewController.m */; };
+		306937CB2635EE5800007ABB /* S9xDisplayPreferencesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 306937C92635EE5800007ABB /* S9xDisplayPreferencesViewController.xib */; };
+		306937D02636253900007ABB /* S9xPreferencesTabViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 306937CF2636253900007ABB /* S9xPreferencesTabViewController.m */; };
+		306937D526362A1100007ABB /* S9xPreferencesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 306937D426362A1100007ABB /* S9xPreferencesViewController.m */; };
+		306937DC26362B2400007ABB /* S9xSoundPreferencesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 306937DA26362B2400007ABB /* S9xSoundPreferencesViewController.m */; };
+		306937DD26362B2400007ABB /* S9xSoundPreferencesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 306937DB26362B2400007ABB /* S9xSoundPreferencesViewController.xib */; };
+		306937E22636352100007ABB /* S9xEmulationPreferencesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 306937E02636352100007ABB /* S9xEmulationPreferencesViewController.m */; };
+		306937E32636352100007ABB /* S9xEmulationPreferencesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 306937E12636352100007ABB /* S9xEmulationPreferencesViewController.xib */; };
+		306937E82636365100007ABB /* S9xFilesPreferencesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 306937E62636365100007ABB /* S9xFilesPreferencesViewController.m */; };
+		306937E92636365100007ABB /* S9xFilesPreferencesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 306937E72636365100007ABB /* S9xFilesPreferencesViewController.xib */; };
 		30714719230E379500917F82 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 30714718230E379500917F82 /* AppDelegate.m */; };
 		3071471B230E379600917F82 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3071471A230E379600917F82 /* Assets.xcassets */; };
 		3071471E230E379600917F82 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3071471C230E379600917F82 /* MainMenu.xib */; };
 		30714721230E379600917F82 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 30714720230E379600917F82 /* main.m */; };
 		30714729230E387700917F82 /* mac-os.h in Headers */ = {isa = PBXBuildFile; fileRef = EAECB68204AC7FCE00A80003 /* mac-os.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		307C860B22D22C87001B879E /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 307C860A22D22C87001B879E /* libz.tbd */; };
 		307C860C22D23A5B001B879E /* mac-file.mm in Sources */ = {isa = PBXBuildFile; fileRef = EA2DBC0C0510ABE700A80003 /* mac-file.mm */; };
 		307C861222D27C53001B879E /* tileimpl-n1x1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 307C860D22D27C53001B879E /* tileimpl-n1x1.cpp */; };
 		307C861422D27C53001B879E /* tileimpl.h in Headers */ = {isa = PBXBuildFile; fileRef = 307C860E22D27C53001B879E /* tileimpl.h */; };
@@ -58,6 +69,7 @@
 		3082C4262378BCE80081CA7C /* FakeResources.c in Sources */ = {isa = PBXBuildFile; fileRef = 3082C4212378BCE80081CA7C /* FakeResources.c */; };
 		3082C4272378BCE80081CA7C /* FakeResources.h in Headers */ = {isa = PBXBuildFile; fileRef = 3082C4222378BCE80081CA7C /* FakeResources.h */; };
 		3082C42A2379199F0081CA7C /* S9xApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 3082C4292379199F0081CA7C /* S9xApplication.m */; };
+		309C54802627F3060055DD95 /* S9xControlsPreferencesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 309C547F2627F3060055DD95 /* S9xControlsPreferencesViewController.m */; };
 		30A6F62423B2771A00630584 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A6F62323B2771A00630584 /* MetalKit.framework */; };
 		30A6F62623B29EF500630584 /* shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 30A6F62523B29EF500630584 /* shaders.metal */; };
 		30A6F62823B29F8200630584 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A6F62723B29F8200630584 /* Metal.framework */; };
@@ -209,7 +221,6 @@
 		30D15DE822CE6BC9005BC352 /* ioapi.h in Headers */ = {isa = PBXBuildFile; fileRef = CFA518D60EBCB4CA008379F6 /* ioapi.h */; };
 		30D15DE922CE6BC9005BC352 /* unzip.h in Headers */ = {isa = PBXBuildFile; fileRef = CFA518DA0EBCB4D2008379F6 /* unzip.h */; };
 		30D15DEA22CE6FE1005BC352 /* mac-os.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAE0E96604D582B700A80003 /* mac-os.mm */; };
-		30D2506E2373AACC0076A160 /* S9xPrefsConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D2506D2373AACC0076A160 /* S9xPrefsConstants.m */; };
 		30D709B0236F583600AAB7C3 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = EA3BEA980A28384E00A8FAE5 /* Localizable.strings */; };
 		30D709B1236F585100AAB7C3 /* Snes9x Help in Resources */ = {isa = PBXBuildFile; fileRef = EA3BEAA80A28386500A8FAE5 /* Snes9x Help */; };
 		30D709B2236F731B00AAB7C3 /* CART.icns in Resources */ = {isa = PBXBuildFile; fileRef = EA3D2F3C0A26083B00BDACCC /* CART.icns */; };
@@ -219,8 +230,8 @@
 		30D709B6236F731B00AAB7C3 /* folder_Freezes.icns in Resources */ = {isa = PBXBuildFile; fileRef = EA3D2F3B0A26083B00BDACCC /* folder_Freezes.icns */; };
 		30D709B7236F731B00AAB7C3 /* musicbox_ledon.icns in Resources */ = {isa = PBXBuildFile; fileRef = EA3D2F380A26083B00BDACCC /* musicbox_ledon.icns */; };
 		30D709B8236F731B00AAB7C3 /* musicbox_ledoff.icns in Resources */ = {isa = PBXBuildFile; fileRef = EA3D2F390A26083B00BDACCC /* musicbox_ledoff.icns */; };
-		30D709C1236F7E3200AAB7C3 /* S9xPrefsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D709BF236F7E3200AAB7C3 /* S9xPrefsViewController.m */; };
-		30D709C2236F7E3200AAB7C3 /* S9xPrefsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 30D709C0236F7E3200AAB7C3 /* S9xPrefsViewController.xib */; };
+		30D709C1236F7E3200AAB7C3 /* S9xPreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D709BF236F7E3200AAB7C3 /* S9xPreferencesWindowController.m */; };
+		30D709C2236F7E3200AAB7C3 /* S9xPreferencesWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 30D709C0236F7E3200AAB7C3 /* S9xPreferencesWindowController.xib */; };
 		30D709C5236F90DF00AAB7C3 /* S9xButtonConfigTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D709C4236F90DF00AAB7C3 /* S9xButtonConfigTextField.m */; };
 		560933E6251310ED0006B3CD /* llex.h in Headers */ = {isa = PBXBuildFile; fileRef = 560933CF251310EC0006B3CD /* llex.h */; };
 		560933E7251310ED0006B3CD /* lundump.h in Headers */ = {isa = PBXBuildFile; fileRef = 560933D0251310EC0006B3CD /* lundump.h */; };
@@ -246,10 +257,11 @@
 		560933FB251310ED0006B3CD /* lstring.h in Headers */ = {isa = PBXBuildFile; fileRef = 560933E4251310ED0006B3CD /* lstring.h */; };
 		560933FC251310ED0006B3CD /* ltm.h in Headers */ = {isa = PBXBuildFile; fileRef = 560933E5251310ED0006B3CD /* ltm.h */; };
 		560933FE251310FB0006B3CD /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 560933FD251310FB0006B3CD /* liblua.a */; };
+		5619719D26AE2B02006A2B0C /* lua-engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5619719A26AE2AB6006A2B0C /* lua-engine.cpp */; };
+		5619719F26AE53FB006A2B0C /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 307C860A22D22C87001B879E /* libz.tbd */; };
 		56CDC5392509C746004F3AAB /* S9xLuaViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 56CDC5372509C746004F3AAB /* S9xLuaViewController.mm */; };
 		56CDC53A2509C746004F3AAB /* S9xLuaViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 56CDC5382509C746004F3AAB /* S9xLuaViewController.xib */; };
 		56FBDE3E25087C5F002ED5DD /* lua-engine.h in Headers */ = {isa = PBXBuildFile; fileRef = 56FBDE3C25087C5E002ED5DD /* lua-engine.h */; };
-		56FBDE3F25087C5F002ED5DD /* lua-engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 56FBDE3D25087C5F002ED5DD /* lua-engine.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -288,11 +300,30 @@
 		3042F7E2232E9BDD00C03F5E /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		3045A1EC22D03C430092B97D /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		3045A1EE22D03C4B0092B97D /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		304B3649262E328400F8DC8E /* S9xControlsPreferencesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = S9xControlsPreferencesViewController.xib; sourceTree = "<group>"; };
+		304B366A262E82B800F8DC8E /* S9xPreferencesConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xPreferencesConstants.h; sourceTree = "<group>"; };
+		304B366B262E82B800F8DC8E /* S9xPreferencesConstants.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xPreferencesConstants.m; sourceTree = "<group>"; };
 		3059DA93250690DB003EF183 /* compat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = compat.cpp; sourceTree = "<group>"; };
 		306561FF236A8BA700A1B3B2 /* gamecontrollerdb.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = gamecontrollerdb.txt; sourceTree = "<group>"; };
+		306937C72635EE5800007ABB /* S9xDisplayPreferencesViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xDisplayPreferencesViewController.h; sourceTree = "<group>"; };
+		306937C82635EE5800007ABB /* S9xDisplayPreferencesViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xDisplayPreferencesViewController.m; sourceTree = "<group>"; };
+		306937C92635EE5800007ABB /* S9xDisplayPreferencesViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = S9xDisplayPreferencesViewController.xib; sourceTree = "<group>"; };
+		306937CE2636253900007ABB /* S9xPreferencesTabViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xPreferencesTabViewController.h; sourceTree = "<group>"; };
+		306937CF2636253900007ABB /* S9xPreferencesTabViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xPreferencesTabViewController.m; sourceTree = "<group>"; };
+		306937D326362A1100007ABB /* S9xPreferencesViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xPreferencesViewController.h; sourceTree = "<group>"; };
+		306937D426362A1100007ABB /* S9xPreferencesViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xPreferencesViewController.m; sourceTree = "<group>"; };
+		306937D926362B2400007ABB /* S9xSoundPreferencesViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xSoundPreferencesViewController.h; sourceTree = "<group>"; };
+		306937DA26362B2400007ABB /* S9xSoundPreferencesViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xSoundPreferencesViewController.m; sourceTree = "<group>"; };
+		306937DB26362B2400007ABB /* S9xSoundPreferencesViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = S9xSoundPreferencesViewController.xib; sourceTree = "<group>"; };
+		306937DF2636352100007ABB /* S9xEmulationPreferencesViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xEmulationPreferencesViewController.h; sourceTree = "<group>"; };
+		306937E02636352100007ABB /* S9xEmulationPreferencesViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xEmulationPreferencesViewController.m; sourceTree = "<group>"; };
+		306937E12636352100007ABB /* S9xEmulationPreferencesViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = S9xEmulationPreferencesViewController.xib; sourceTree = "<group>"; };
+		306937E52636365100007ABB /* S9xFilesPreferencesViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xFilesPreferencesViewController.h; sourceTree = "<group>"; };
+		306937E62636365100007ABB /* S9xFilesPreferencesViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xFilesPreferencesViewController.m; sourceTree = "<group>"; };
+		306937E72636365100007ABB /* S9xFilesPreferencesViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = S9xFilesPreferencesViewController.xib; sourceTree = "<group>"; };
 		30714715230E379500917F82 /* Snes9x.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Snes9x.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		30714717230E379500917F82 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		30714718230E379500917F82 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		30714718230E379500917F82 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; usesTabs = 0; };
 		3071471A230E379600917F82 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3071471D230E379600917F82 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		3071471F230E379600917F82 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -314,6 +345,8 @@
 		3082C4222378BCE80081CA7C /* FakeResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FakeResources.h; sourceTree = "<group>"; };
 		3082C4282379199F0081CA7C /* S9xApplication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xApplication.h; sourceTree = "<group>"; };
 		3082C4292379199F0081CA7C /* S9xApplication.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xApplication.m; sourceTree = "<group>"; };
+		309C547E2627F3060055DD95 /* S9xControlsPreferencesViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xControlsPreferencesViewController.h; sourceTree = "<group>"; };
+		309C547F2627F3060055DD95 /* S9xControlsPreferencesViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xControlsPreferencesViewController.m; sourceTree = "<group>"; };
 		30A6F62323B2771A00630584 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
 		30A6F62523B29EF500630584 /* shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = shaders.metal; sourceTree = "<group>"; };
 		30A6F62723B29F8200630584 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
@@ -321,15 +354,14 @@
 		30AD1D1F22FBB2EA000EE989 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		30AD1D2022FBB2EA000EE989 /* en */ = {isa = PBXFileReference; lastKnownFileType = folder; name = en; path = "en.lproj/Snes9x Help"; sourceTree = "<group>"; };
 		30AD1D2122FBB2EA000EE989 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/Snes9x.xib; sourceTree = "<group>"; };
+		30C49EF6250C0F2B007D04F8 /* Snes9xDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Snes9xDebug.entitlements; sourceTree = "<group>"; };
 		30CCAD422290472E00549AED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = /Users/buckley/Projects/snes9x/macosx/Info.plist; sourceTree = "<absolute>"; };
 		30D15CEF22CE6B5A005BC352 /* snes9x_framework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = snes9x_framework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		30D15CF122CE6B5A005BC352 /* snes9x_framework.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = snes9x_framework.h; sourceTree = "<group>"; };
 		30D15CF222CE6B5A005BC352 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		30D2506D2373AACC0076A160 /* S9xPrefsConstants.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xPrefsConstants.m; sourceTree = "<group>"; };
-		30D2506F2373AB880076A160 /* S9xPrefsConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xPrefsConstants.h; sourceTree = "<group>"; };
-		30D709BE236F7E3200AAB7C3 /* S9xPrefsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xPrefsViewController.h; sourceTree = "<group>"; };
-		30D709BF236F7E3200AAB7C3 /* S9xPrefsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xPrefsViewController.m; sourceTree = "<group>"; };
-		30D709C0236F7E3200AAB7C3 /* S9xPrefsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = S9xPrefsViewController.xib; sourceTree = "<group>"; };
+		30D709BE236F7E3200AAB7C3 /* S9xPreferencesWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xPreferencesWindowController.h; sourceTree = "<group>"; };
+		30D709BF236F7E3200AAB7C3 /* S9xPreferencesWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xPreferencesWindowController.m; sourceTree = "<group>"; };
+		30D709C0236F7E3200AAB7C3 /* S9xPreferencesWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = S9xPreferencesWindowController.xib; sourceTree = "<group>"; };
 		30D709C3236F90DF00AAB7C3 /* S9xButtonConfigTextField.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xButtonConfigTextField.h; sourceTree = "<group>"; };
 		30D709C4236F90DF00AAB7C3 /* S9xButtonConfigTextField.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xButtonConfigTextField.m; sourceTree = "<group>"; };
 		560933CF251310EC0006B3CD /* llex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = llex.h; path = include/llex.h; sourceTree = "<group>"; };
@@ -356,6 +388,7 @@
 		560933E4251310ED0006B3CD /* lstring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lstring.h; path = include/lstring.h; sourceTree = "<group>"; };
 		560933E5251310ED0006B3CD /* ltm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ltm.h; path = include/ltm.h; sourceTree = "<group>"; };
 		560933FD251310FB0006B3CD /* liblua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua.a; path = lua/dist/liblua.a; sourceTree = "<group>"; };
+		5619719A26AE2AB6006A2B0C /* lua-engine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "lua-engine.cpp"; sourceTree = "<group>"; };
 		56CDC5362509C745004F3AAB /* S9xLuaViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = S9xLuaViewController.h; sourceTree = "<group>"; };
 		56CDC5372509C746004F3AAB /* S9xLuaViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = S9xLuaViewController.mm; sourceTree = "<group>"; };
 		56CDC5382509C746004F3AAB /* S9xLuaViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = S9xLuaViewController.xib; sourceTree = "<group>"; };
@@ -601,6 +634,7 @@
 				30A6F62423B2771A00630584 /* MetalKit.framework in Frameworks */,
 				3042F7E3232E9BDD00C03F5E /* Carbon.framework in Frameworks */,
 				308092F92320B06F006A2860 /* Quartz.framework in Frameworks */,
+				5619719F26AE53FB006A2B0C /* libz.tbd in Frameworks */,
 				308092F72320B041006A2860 /* CoreGraphics.framework in Frameworks */,
 				302EECA522DAD1B9006D1502 /* CoreAudio.framework in Frameworks */,
 				302EECA322DAD0C5006D1502 /* CoreImage.framework in Frameworks */,
@@ -610,7 +644,6 @@
 				302EEC9D22DAD0AB006D1502 /* AudioUnit.framework in Frameworks */,
 				307C861D22D29DD2001B879E /* GLUT.framework in Frameworks */,
 				307C861B22D29D6D001B879E /* IOKit.framework in Frameworks */,
-				307C860B22D22C87001B879E /* libz.tbd in Frameworks */,
 				3045A1EF22D03C4B0092B97D /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -637,6 +670,7 @@
 				3082C41D2378BC280081CA7C /* ReClassicfication */,
 				195DF8C9FE9D4F0611CA2CBB /* Products */,
 				3045A1EB22D03C420092B97D /* Frameworks */,
+				5619719726AE243A006A2B0C /* Recovered References */,
 			);
 			name = "Snes9x CVS";
 			sourceTree = "<group>";
@@ -698,6 +732,8 @@
 				56CDC5362509C745004F3AAB /* S9xLuaViewController.h */,
 				56CDC5372509C746004F3AAB /* S9xLuaViewController.mm */,
 				56CDC5382509C746004F3AAB /* S9xLuaViewController.xib */,
+				600546BE250F8F1700EC0977 /* S9xPreferences */,
+				30C49EF6250C0F2B007D04F8 /* Snes9xDebug.entitlements */,
 				30714717230E379500917F82 /* AppDelegate.h */,
 				30714718230E379500917F82 /* AppDelegate.m */,
 				3071471A230E379600917F82 /* Assets.xcassets */,
@@ -705,13 +741,6 @@
 				3071471F230E379600917F82 /* Info.plist */,
 				30714720230E379600917F82 /* main.m */,
 				30714722230E379600917F82 /* Snes9x.entitlements */,
-				30D709BE236F7E3200AAB7C3 /* S9xPrefsViewController.h */,
-				30D709BF236F7E3200AAB7C3 /* S9xPrefsViewController.m */,
-				30D709C0236F7E3200AAB7C3 /* S9xPrefsViewController.xib */,
-				30D709C3236F90DF00AAB7C3 /* S9xButtonConfigTextField.h */,
-				30D709C4236F90DF00AAB7C3 /* S9xButtonConfigTextField.m */,
-				30D2506D2373AACC0076A160 /* S9xPrefsConstants.m */,
-				30D2506F2373AB880076A160 /* S9xPrefsConstants.h */,
 				3082C4282379199F0081CA7C /* S9xApplication.h */,
 				3082C4292379199F0081CA7C /* S9xApplication.m */,
 			);
@@ -738,6 +767,15 @@
 				306561FF236A8BA700A1B3B2 /* gamecontrollerdb.txt */,
 			);
 			path = "snes9x framework";
+			sourceTree = "<group>";
+		};
+		5619719726AE243A006A2B0C /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				56FBDE3C25087C5E002ED5DD /* lua-engine.h */,
+				56FBDE3D25087C5F002ED5DD /* lua-engine.cpp */,
+			);
+			name = "Recovered References";
 			sourceTree = "<group>";
 		};
 		56A6F229250B1C2E006953BC /* lua */ = {
@@ -768,6 +806,39 @@
 				560933D4251310EC0006B3CD /* lzio.h */,
 			);
 			path = lua;
+			sourceTree = "<group>";
+		};
+		600546BE250F8F1700EC0977 /* S9xPreferences */ = {
+			isa = PBXGroup;
+			children = (
+				30D709C3236F90DF00AAB7C3 /* S9xButtonConfigTextField.h */,
+				30D709C4236F90DF00AAB7C3 /* S9xButtonConfigTextField.m */,
+				309C547E2627F3060055DD95 /* S9xControlsPreferencesViewController.h */,
+				309C547F2627F3060055DD95 /* S9xControlsPreferencesViewController.m */,
+				304B3649262E328400F8DC8E /* S9xControlsPreferencesViewController.xib */,
+				306937C72635EE5800007ABB /* S9xDisplayPreferencesViewController.h */,
+				306937C82635EE5800007ABB /* S9xDisplayPreferencesViewController.m */,
+				306937C92635EE5800007ABB /* S9xDisplayPreferencesViewController.xib */,
+				306937DF2636352100007ABB /* S9xEmulationPreferencesViewController.h */,
+				306937E02636352100007ABB /* S9xEmulationPreferencesViewController.m */,
+				306937E12636352100007ABB /* S9xEmulationPreferencesViewController.xib */,
+				306937E52636365100007ABB /* S9xFilesPreferencesViewController.h */,
+				306937E62636365100007ABB /* S9xFilesPreferencesViewController.m */,
+				306937E72636365100007ABB /* S9xFilesPreferencesViewController.xib */,
+				304B366A262E82B800F8DC8E /* S9xPreferencesConstants.h */,
+				304B366B262E82B800F8DC8E /* S9xPreferencesConstants.m */,
+				306937CE2636253900007ABB /* S9xPreferencesTabViewController.h */,
+				306937CF2636253900007ABB /* S9xPreferencesTabViewController.m */,
+				306937D326362A1100007ABB /* S9xPreferencesViewController.h */,
+				306937D426362A1100007ABB /* S9xPreferencesViewController.m */,
+				30D709BE236F7E3200AAB7C3 /* S9xPreferencesWindowController.h */,
+				30D709BF236F7E3200AAB7C3 /* S9xPreferencesWindowController.m */,
+				30D709C0236F7E3200AAB7C3 /* S9xPreferencesWindowController.xib */,
+				306937D926362B2400007ABB /* S9xSoundPreferencesViewController.h */,
+				306937DA26362B2400007ABB /* S9xSoundPreferencesViewController.m */,
+				306937DB26362B2400007ABB /* S9xSoundPreferencesViewController.xib */,
+			);
+			path = S9xPreferences;
 			sourceTree = "<group>";
 		};
 		BF0B39791FA5792F002B04D3 /* apu */ = {
@@ -880,8 +951,7 @@
 		EAE061540526CCB900A80003 /* snes9x */ = {
 			isa = PBXGroup;
 			children = (
-				56FBDE3D25087C5F002ED5DD /* lua-engine.cpp */,
-				56FBDE3C25087C5E002ED5DD /* lua-engine.h */,
+				5619719A26AE2AB6006A2B0C /* lua-engine.cpp */,
 				EAE0615A0526CCB900A80003 /* 65c816.h */,
 				BF0B39791FA5792F002B04D3 /* apu */,
 				85FEF90620DDB15B00C038E9 /* bml.cpp */,
@@ -1275,8 +1345,8 @@
 			projectDirPath = "";
 			projectRoot = ..;
 			targets = (
-				30D15CEE22CE6B5A005BC352 /* snes9x framework */,
 				30714714230E379500917F82 /* Snes9x */,
+				30D15CEE22CE6B5A005BC352 /* snes9x framework */,
 			);
 		};
 /* End PBXProject section */
@@ -1289,16 +1359,21 @@
 				3071471B230E379600917F82 /* Assets.xcassets in Resources */,
 				30D709B4236F731B00AAB7C3 /* SAVE.icns in Resources */,
 				30D709B8236F731B00AAB7C3 /* musicbox_ledoff.icns in Resources */,
-				56CDC53A2509C746004F3AAB /* S9xLuaViewController.xib in Resources */,
+				306937CB2635EE5800007ABB /* S9xDisplayPreferencesViewController.xib in Resources */,
+				306937E92636365100007ABB /* S9xFilesPreferencesViewController.xib in Resources */,
 				30D709B0236F583600AAB7C3 /* Localizable.strings in Resources */,
+				304B364A262E328400F8DC8E /* S9xControlsPreferencesViewController.xib in Resources */,
+				56CDC53A2509C746004F3AAB /* S9xLuaViewController.xib in Resources */,
 				30D709B1236F585100AAB7C3 /* Snes9x Help in Resources */,
 				30D709B3236F731B00AAB7C3 /* SRAM.icns in Resources */,
 				30D709B5236F731B00AAB7C3 /* folder_SRAMs.icns in Resources */,
 				30D709B2236F731B00AAB7C3 /* CART.icns in Resources */,
 				30D709B7236F731B00AAB7C3 /* musicbox_ledon.icns in Resources */,
 				30D709B6236F731B00AAB7C3 /* folder_Freezes.icns in Resources */,
-				30D709C2236F7E3200AAB7C3 /* S9xPrefsViewController.xib in Resources */,
+				30D709C2236F7E3200AAB7C3 /* S9xPreferencesWindowController.xib in Resources */,
+				306937E32636352100007ABB /* S9xEmulationPreferencesViewController.xib in Resources */,
 				3071471E230E379600917F82 /* MainMenu.xib in Resources */,
+				306937DD26362B2400007ABB /* S9xSoundPreferencesViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1320,13 +1395,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				306937D526362A1100007ABB /* S9xPreferencesViewController.m in Sources */,
+				306937E22636352100007ABB /* S9xEmulationPreferencesViewController.m in Sources */,
+				309C54802627F3060055DD95 /* S9xControlsPreferencesViewController.m in Sources */,
 				30D709C5236F90DF00AAB7C3 /* S9xButtonConfigTextField.m in Sources */,
-				56CDC5392509C746004F3AAB /* S9xLuaViewController.mm in Sources */,
+				306937E82636365100007ABB /* S9xFilesPreferencesViewController.m in Sources */,
+				306937D02636253900007ABB /* S9xPreferencesTabViewController.m in Sources */,
 				30714721230E379600917F82 /* main.m in Sources */,
+				306937CA2635EE5800007ABB /* S9xDisplayPreferencesViewController.m in Sources */,
 				30714719230E379500917F82 /* AppDelegate.m in Sources */,
+				306937DC26362B2400007ABB /* S9xSoundPreferencesViewController.m in Sources */,
 				3082C42A2379199F0081CA7C /* S9xApplication.m in Sources */,
-				30D709C1236F7E3200AAB7C3 /* S9xPrefsViewController.m in Sources */,
-				30D2506E2373AACC0076A160 /* S9xPrefsConstants.m in Sources */,
+				30D709C1236F7E3200AAB7C3 /* S9xPreferencesWindowController.m in Sources */,
+				304B366C262E82B800F8DC8E /* S9xPreferencesConstants.m in Sources */,
+				56CDC5392509C746004F3AAB /* S9xLuaViewController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1334,6 +1416,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5619719D26AE2B02006A2B0C /* lua-engine.cpp in Sources */,
 				307C862122D29E29001B879E /* mac-audio.mm in Sources */,
 				307C862222D29E29001B879E /* mac-cart.mm in Sources */,
 				307C862322D29E29001B879E /* mac-cheat.mm in Sources */,
@@ -1386,7 +1469,6 @@
 				30D15D4522CE6B74005BC352 /* memmap.cpp in Sources */,
 				30D15D4622CE6B74005BC352 /* movie.cpp in Sources */,
 				30D15D4722CE6B74005BC352 /* msu1.cpp in Sources */,
-				56FBDE3F25087C5F002ED5DD /* lua-engine.cpp in Sources */,
 				30D15D4822CE6B74005BC352 /* obc1.cpp in Sources */,
 				30D15D4922CE6B74005BC352 /* ppu.cpp in Sources */,
 				30D15D4A22CE6B74005BC352 /* stream.cpp in Sources */,
@@ -1499,7 +1581,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_ENTITLEMENTS = Snes9x/Snes9x.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
@@ -1541,14 +1623,14 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = Snes9x/Snes9x.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_ENTITLEMENTS = Snes9x/Snes9xDebug.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = "";
-				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_HARDENED_RUNTIME = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -1647,8 +1729,8 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
@@ -1688,6 +1770,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.snes9x.macos.snes9x-framework";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";

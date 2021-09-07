@@ -22,19 +22,10 @@
 
 static Snes9xPreferences *preferences = nullptr;
 
-void snes9x_preferences_create(Snes9xConfig *config)
-{
-    Glib::Thread::create([config] {
-        Snes9xPreferences *new_preferences;
-        new_preferences = new Snes9xPreferences(config);
-        preferences = new_preferences;
-    }, true);
-}
-
 void snes9x_preferences_open(Snes9xWindow *window)
 {
     if (!preferences)
-        return;
+        preferences = new Snes9xPreferences(window->config);
 
     auto &config = preferences->config;
 
@@ -160,19 +151,10 @@ Snes9xPreferences::Snes9xPreferences(Snes9xConfig *config)
         combo_box_append("hw_accel",
                          _("XVideo - Use hardware video blitter"));
 
-#ifdef USE_PORTAUDIO
-    combo_box_append("sound_driver", _("PortAudio"));
-#endif
-#ifdef USE_OSS
-    combo_box_append("sound_driver", _("Open Sound System"));
-#endif
-    combo_box_append("sound_driver", _("SDL"));
-#ifdef USE_ALSA
-    combo_box_append("sound_driver", _("ALSA"));
-#endif
-#ifdef USE_PULSEAUDIO
-    combo_box_append("sound_driver", _("PulseAudio"));
-#endif
+    for (auto &name : config->sound_drivers)
+    {
+        combo_box_append("sound_driver", name.c_str());
+    }
 }
 
 Snes9xPreferences::~Snes9xPreferences ()
@@ -471,24 +453,6 @@ void Snes9xPreferences::move_settings_to_dialog()
     set_spin  ("superfx_multiplier",        Settings.SuperFXClockMultiplier);
     set_combo ("splash_background",         config->splash_image);
     set_check ("force_enable_icons",        config->enable_icons);
-
-    int num_sound_drivers = 0;
-#ifdef USE_PORTAUDIO
-    num_sound_drivers++;
-#endif
-#ifdef USE_OSS
-    num_sound_drivers++;
-#endif
-    num_sound_drivers++; // SDL is automatically there.
-#ifdef USE_ALSA
-    num_sound_drivers++;
-#endif
-#ifdef USE_PULSEAUDIO
-    num_sound_drivers++;
-#endif
-
-    if (config->sound_driver >= num_sound_drivers)
-        config->sound_driver = 0;
 
     set_combo ("sound_driver",              config->sound_driver);
 
@@ -965,21 +929,20 @@ void Snes9xPreferences::clear_binding(const char *name)
 
 void Snes9xPreferences::bindings_to_dialog(int joypad)
 {
-    char name[256];
     Binding *bindings = (Binding *)&pad[joypad].data;
 
     set_combo("control_combo", joypad);
 
     for (int i = 0; i < NUM_JOYPAD_LINKS; i++)
     {
-        bindings[i].to_string(name);
-        set_entry_text(b_links[i].button_name, name);
+        set_entry_text(b_links[i].button_name, bindings[i].as_string().c_str());
     }
 
-    for (int i = NUM_JOYPAD_LINKS; b_links[i].button_name; i++)
+    auto shortcut_names = &b_links[NUM_JOYPAD_LINKS];
+
+    for (int i = 0; shortcut_names[i].button_name; i++)
     {
-        shortcut[i - NUM_JOYPAD_LINKS].to_string(name);
-        set_entry_text(b_links[i].button_name, name);
+        set_entry_text(shortcut_names[i].button_name, shortcut[i].as_string().c_str());
     }
 }
 

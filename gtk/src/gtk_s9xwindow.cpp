@@ -78,8 +78,6 @@ Snes9xWindow::Snes9xWindow(Snes9xConfig *config)
     cairo_owned = false;
     mouse_grabbed = false;
 
-    snes9x_preferences_create(config);
-
     if (Gtk::IconTheme::get_default()->has_icon("snes9x"))
     {
         window->set_default_icon_name("snes9x");
@@ -906,7 +904,7 @@ const char *markup = _(R"(<b>Information for %s</b>
 <i>Calculated Size:</i> %d
 <i>SRAM Size:</i> %s
 <i>Header Checksum:</i> %04X
-<i>Checksum Compliment:</i> %04X
+<i>Checksum Complement:</i> %04X
 <i>Actual Checksum:</i> %04X
 <i>Video:</i> %s
 <i>CRC32:</i> %08X
