@@ -33,7 +33,9 @@
 
 #if !defined(WINAPI_FAMILY) || WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP
 #include <d2d1.h>
+#if WINVER < 0x0A00 // _WIN32_WINNT_WIN10
 #include <wincodec.h>
+#endif
 #include <d2derr.h>
 #include <dwrite.h>
 #endif

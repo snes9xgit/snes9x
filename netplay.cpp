@@ -668,7 +668,7 @@ bool8 S9xNPGetROMImage (uint32 len)
 
 void S9xNPGetSRAMData (uint32 len)
 {
-    if (len > 0x10000)
+    if (len > 0x70000)
     {
         S9xNPSetError ("Length error in S-RAM data received from server.");
         S9xNPDisconnect ();
