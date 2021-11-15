@@ -108,9 +108,18 @@ NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
             @(kKeyEsc).stringValue : @(kVK_Escape),
             @(kKeyTC).stringValue : @(kVK_ANSI_Comma)
         },
-        kShowFPSPref: @(NO),
-        kVideoModePref:@(VIDEOMODE_BLOCKY),
-        kMacFrameSkipPref:@(macFrameSkip)
+        kShowFPSPref : @(NO),
+        kVideoModePref : @(VIDEOMODE_BLOCKY),
+        kMacFrameSkipPref : @(macFrameSkip),
+
+        kSuperFXClockSpeedPercentPref : @(100),
+        kSoundInterpolationTypePref: @(2),
+        kCPUOverclockPref : @(0),
+
+        kApplyGameSpecificHacksPref : (@YES),
+        kAllowInvalidVRAMAccessPref : @(NO),
+        kSeparateEchoBufferFromRAMPref : @(NO),
+        kDisableSpriteLimitPref : @(NO),
     };
 
     [defaults registerDefaults:defaultSettings];
@@ -184,6 +193,7 @@ NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 
     [self importKeySettings];
     [self importGraphicsSettings];
+    [self applyEmulationSettings];
     [defaults synchronize];
 }
 
@@ -518,6 +528,21 @@ NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
     [self.s9xEngine setShowFPS:showFPS];
     [NSUserDefaults.standardUserDefaults setObject:@(showFPS) forKey:kShowFPSPref];
     [NSUserDefaults.standardUserDefaults synchronize];
+}
+
+- (void)applyEmulationSettings
+{
+    S9xEngine *engine = self.s9xEngine;
+    NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
+
+    [engine setSuperFXClockSpeedPercent:(uint32_t)[defaults integerForKey:kSuperFXClockSpeedPercentPref]];
+    [engine setSoundInterpolationType:(int)[defaults integerForKey:kSoundInterpolationTypePref]];
+    [engine setCPUOverclockMode:(int)[defaults integerForKey:kCPUOverclockPref]];
+
+    [engine setApplySpecificGameHacks:[defaults boolForKey:kApplyGameSpecificHacksPref]];
+    [engine setAllowInvalidVRAMAccess:[defaults boolForKey:kAllowInvalidVRAMAccessPref]];
+    [engine setSeparateEchoBufferFromRAM:[defaults boolForKey:kSeparateEchoBufferFromRAMPref]];
+    [engine setDisableSpriteLimit:[defaults boolForKey:kDisableSpriteLimitPref]];
 }
 
 - (IBAction)resume:(id)sender

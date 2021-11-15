@@ -3358,6 +3358,48 @@ void QuitWithFatalError ( NSString *message)
 	ChangeInputDevice();
 }
 
+- (void)setSuperFXClockSpeedPercent:(uint32_t)clockSpeed
+{
+	Settings.SuperFXClockMultiplier = clockSpeed;
+}
+
+- (void)setSoundInterpolationType:(int)type
+{
+	Settings.InterpolationMethod = type;
+}
+
+- (void)setCPUOverclockMode:(int)mode
+{
+	Settings.OverclockMode = mode;
+}
+
+- (void)setApplySpecificGameHacks:(BOOL)flag
+{
+	Settings.DisableGameSpecificHacks = !flag;
+}
+
+- (void)setAllowInvalidVRAMAccess:(BOOL)flag
+{
+	Settings.BlockInvalidVRAMAccessMaster = !flag;
+}
+
+- (void)setSeparateEchoBufferFromRAM:(BOOL)flag
+{
+	Settings.SeparateEchoBuffer = false;
+}
+
+- (void)setDisableSpriteLimit:(BOOL)flag
+{
+	if ( flag )
+	{
+		Settings.MaxSpriteTilesPerLine = 128;
+	}
+	else
+	{
+		Settings.MaxSpriteTilesPerLine = 34;
+	}
+}
+
 @dynamic inputDelegate;
 - (void)setInputDelegate:(id<S9xInputDelegate>)delegate
 {

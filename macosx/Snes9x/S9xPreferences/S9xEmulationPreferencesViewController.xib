@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17701" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="19455" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17701"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="19455"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -13,29 +13,201 @@
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <customView id="Hz6-mo-xeY">
-            <rect key="frame" x="0.0" y="0.0" width="507" height="56"/>
+        <customView misplaced="YES" id="Hz6-mo-xeY">
+            <rect key="frame" x="0.0" y="0.0" width="507" height="360"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="6GI-mh-tXk">
-                    <rect key="frame" x="18" y="20" width="471" height="16"/>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="pHm-jR-UaU">
+                    <rect key="frame" x="178" y="241" width="193" height="18"/>
+                    <buttonCell key="cell" type="check" title="Apply Specific Game Hacks" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Jk7-rw-csW">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <binding destination="YZH-Zp-q5O" name="value" keyPath="values.ApplyGameSpecificHacks" id="9p7-cT-2JY"/>
+                    </connections>
+                </button>
+                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="hJA-bR-9Rg">
+                    <rect key="frame" x="20" y="20" width="469" height="96"/>
                     <constraints>
-                        <constraint firstAttribute="width" constant="467" id="Pdt-vx-oWM"/>
+                        <constraint firstAttribute="width" constant="465" id="oam-si-j6g"/>
                     </constraints>
-                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="Emulation preferences under development." id="o3r-9I-jVn">
-                        <font key="font" usesAppearanceFont="YES"/>
-                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                    <textFieldCell key="cell" selectable="YES" id="cHh-c5-Hru">
+                        <font key="font" metaFont="system"/>
+                        <string key="title">The settings in this tab should only be used for compatibility with old ROM hacks or if you otherwise know what you're doing.
+
+If any problems occur, click "Set Defaults" to reset the options to normal.
+
+Some changes may not take effect until you close and re-open the ROM.</string>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="RYF-ip-m9E">
+                    <rect key="frame" x="18" y="300" width="156" height="16"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" title="Sound Interpolation Type" id="gn9-QR-VYO">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="UHg-CQ-hQb">
+                    <rect key="frame" x="18" y="324" width="156" height="16"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="SuperFX Clock Speed %" id="Hbr-SV-y0R">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="tSv-yu-w0h">
+                    <rect key="frame" x="180" y="321" width="60" height="21"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="60" id="4b8-D0-O3b"/>
+                    </constraints>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="Bnx-He-bBi">
+                        <numberFormatter key="formatter" formatterBehavior="default10_4" usesGroupingSeparator="NO" formatWidth="-1" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="42" id="EHM-Kb-507">
+                            <real key="minimum" value="0.0"/>
+                            <real key="maximum" value="4294967295"/>
+                        </numberFormatter>
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="YZH-Zp-q5O" name="value" keyPath="values.SuperFXClockSpeedPercent" id="7m8-cT-i6z"/>
+                    </connections>
+                </textField>
+                <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YdJ-Rv-Uxb">
+                    <rect key="frame" x="176" y="295" width="174" height="22"/>
+                    <popUpButtonCell key="cell" type="push" title="None" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="tSO-Tm-v0y" id="qf0-Qj-kbA">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="smallSystem"/>
+                        <menu key="menu" id="Tky-Y0-Ibj">
+                            <items>
+                                <menuItem title="None" state="on" id="tSO-Tm-v0y"/>
+                                <menuItem title="Linear" tag="1" id="eCZ-mR-YAd"/>
+                                <menuItem title="Gaussian (SNES Hardware)" tag="2" id="z2Y-4k-ae7"/>
+                                <menuItem title="Cubic" tag="3" id="Dbc-CX-Uh8">
+                                    <modifierMask key="keyEquivalentModifierMask"/>
+                                </menuItem>
+                                <menuItem title="Sinc" tag="4" id="HUo-D6-N9A">
+                                    <modifierMask key="keyEquivalentModifierMask"/>
+                                </menuItem>
+                            </items>
+                        </menu>
+                    </popUpButtonCell>
+                    <connections>
+                        <binding destination="YZH-Zp-q5O" name="selectedTag" keyPath="values.SoundInterpolationType" id="gZU-do-3JE"/>
+                    </connections>
+                </popUpButton>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="mik-A5-wOZ">
+                    <rect key="frame" x="18" y="276" width="156" height="16"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="CPU Overclock" id="aDb-jh-IEM">
+                        <font key="font" usesAppearanceFont="YES"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ePg-5a-zif">
+                    <rect key="frame" x="176" y="271" width="74" height="22"/>
+                    <popUpButtonCell key="cell" type="push" title="None" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="pcK-qG-DmD" id="DcC-xi-hJi">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="smallSystem"/>
+                        <menu key="menu" id="I0Q-ee-eBH">
+                            <items>
+                                <menuItem title="None" state="on" id="pcK-qG-DmD"/>
+                                <menuItem title="Min" tag="1" id="qIe-o7-X0q"/>
+                                <menuItem title="Medium" tag="2" id="r5p-dZ-XbG"/>
+                                <menuItem title="Max" tag="3" id="BnB-tx-KZn">
+                                    <modifierMask key="keyEquivalentModifierMask"/>
+                                </menuItem>
+                            </items>
+                        </menu>
+                    </popUpButtonCell>
+                    <connections>
+                        <binding destination="YZH-Zp-q5O" name="selectedTag" keyPath="values.CPUOverclock" id="UGa-C4-qro"/>
+                    </connections>
+                </popUpButton>
+                <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="eVo-vY-dDH">
+                    <rect key="frame" x="20" y="264" width="467" height="5"/>
+                </box>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vPw-Gp-UVY">
+                    <rect key="frame" x="178" y="219" width="189" height="18"/>
+                    <buttonCell key="cell" type="check" title="Allow Invalid VRAM Access" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="uQx-y6-KQc">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <binding destination="YZH-Zp-q5O" name="value" keyPath="values.AllowInvalidVRAMAccess" id="61q-ak-Gyl"/>
+                    </connections>
+                </button>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="V9R-bU-asR">
+                    <rect key="frame" x="178" y="197" width="219" height="18"/>
+                    <buttonCell key="cell" type="check" title="Separate Echo Buffer from RAM" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="ser-2S-T4f">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <binding destination="YZH-Zp-q5O" name="value" keyPath="values.SeparateEchoBufferFromRAM" id="vQw-aq-8pg"/>
+                    </connections>
+                </button>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dKI-L0-g0d">
+                    <rect key="frame" x="178" y="175" width="144" height="18"/>
+                    <buttonCell key="cell" type="check" title="Disable Sprite Limit" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="skV-fy-IGd">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <binding destination="YZH-Zp-q5O" name="value" keyPath="values.DisableSpriteLimit" id="s1Z-He-BYn"/>
+                    </connections>
+                </button>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gs3-5t-a4M">
+                    <rect key="frame" x="13" y="129" width="110" height="32"/>
+                    <buttonCell key="cell" type="push" title="Set Defaults" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="2ht-NE-2Vj">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="resetDefaults:" target="-2" id="959-up-oKL"/>
+                    </connections>
+                </button>
             </subviews>
             <constraints>
-                <constraint firstItem="6GI-mh-tXk" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="20" symbolic="YES" id="GXM-Ra-e49"/>
-                <constraint firstAttribute="bottom" secondItem="6GI-mh-tXk" secondAttribute="bottom" constant="20" symbolic="YES" id="OUI-Ov-Y6R"/>
-                <constraint firstItem="6GI-mh-tXk" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="20" symbolic="YES" id="YVL-DQ-Gfa"/>
-                <constraint firstAttribute="trailing" secondItem="6GI-mh-tXk" secondAttribute="trailing" constant="20" symbolic="YES" id="a0U-zi-q3c"/>
+                <constraint firstItem="vPw-Gp-UVY" firstAttribute="leading" secondItem="ePg-5a-zif" secondAttribute="leading" id="0XO-vg-sKo"/>
+                <constraint firstItem="RYF-ip-m9E" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="20" id="50X-qH-4br"/>
+                <constraint firstItem="UHg-CQ-hQb" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="20" symbolic="YES" id="5g3-WH-I4R"/>
+                <constraint firstItem="YdJ-Rv-Uxb" firstAttribute="firstBaseline" secondItem="RYF-ip-m9E" secondAttribute="firstBaseline" id="6re-Jd-jtz"/>
+                <constraint firstItem="ePg-5a-zif" firstAttribute="firstBaseline" secondItem="mik-A5-wOZ" secondAttribute="firstBaseline" id="7gp-c3-OXT"/>
+                <constraint firstAttribute="bottom" secondItem="hJA-bR-9Rg" secondAttribute="bottom" constant="20" symbolic="YES" id="DZa-9t-JFH"/>
+                <constraint firstItem="mik-A5-wOZ" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="20" symbolic="YES" id="EXo-Ye-aVD"/>
+                <constraint firstItem="gs3-5t-a4M" firstAttribute="top" secondItem="dKI-L0-g0d" secondAttribute="bottom" constant="20" id="FF1-Zv-wqO"/>
+                <constraint firstAttribute="trailing" secondItem="hJA-bR-9Rg" secondAttribute="trailing" constant="20" symbolic="YES" id="FJr-2c-2je"/>
+                <constraint firstItem="pHm-jR-UaU" firstAttribute="leading" secondItem="ePg-5a-zif" secondAttribute="leading" id="GSu-9b-N0b"/>
+                <constraint firstItem="eVo-vY-dDH" firstAttribute="top" secondItem="ePg-5a-zif" secondAttribute="bottom" constant="8" symbolic="YES" id="H1t-qY-wZ3"/>
+                <constraint firstItem="ePg-5a-zif" firstAttribute="leading" secondItem="tSv-yu-w0h" secondAttribute="leading" id="KQ3-wN-7Os"/>
+                <constraint firstItem="YdJ-Rv-Uxb" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="RYF-ip-m9E" secondAttribute="trailing" constant="8" symbolic="YES" id="MXd-CB-C9P"/>
+                <constraint firstItem="eVo-vY-dDH" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="20" symbolic="YES" id="Nd6-pw-iwD"/>
+                <constraint firstItem="YdJ-Rv-Uxb" firstAttribute="leading" secondItem="tSv-yu-w0h" secondAttribute="leading" id="Nq8-yC-Bd6"/>
+                <constraint firstItem="hJA-bR-9Rg" firstAttribute="top" secondItem="gs3-5t-a4M" secondAttribute="bottom" constant="20" id="Qki-es-KgW"/>
+                <constraint firstItem="YdJ-Rv-Uxb" firstAttribute="leading" secondItem="RYF-ip-m9E" secondAttribute="trailing" constant="8" symbolic="YES" id="WZd-7u-5w1"/>
+                <constraint firstItem="UHg-CQ-hQb" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="20" id="XmN-L8-zAn"/>
+                <constraint firstItem="dKI-L0-g0d" firstAttribute="top" secondItem="V9R-bU-asR" secondAttribute="bottom" constant="6" symbolic="YES" id="ZZB-XA-sSV"/>
+                <constraint firstItem="mik-A5-wOZ" firstAttribute="width" secondItem="RYF-ip-m9E" secondAttribute="width" id="c1J-dp-7yk"/>
+                <constraint firstItem="pHm-jR-UaU" firstAttribute="top" secondItem="eVo-vY-dDH" secondAttribute="bottom" constant="8" symbolic="YES" id="daV-0I-btp"/>
+                <constraint firstItem="RYF-ip-m9E" firstAttribute="width" secondItem="UHg-CQ-hQb" secondAttribute="width" id="dgb-u4-61d"/>
+                <constraint firstItem="dKI-L0-g0d" firstAttribute="leading" secondItem="ePg-5a-zif" secondAttribute="leading" id="eZT-IM-hce"/>
+                <constraint firstItem="mik-A5-wOZ" firstAttribute="top" secondItem="RYF-ip-m9E" secondAttribute="bottom" constant="8" symbolic="YES" id="epZ-m5-9CI"/>
+                <constraint firstItem="hJA-bR-9Rg" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="22" id="kHk-Wx-2Vu"/>
+                <constraint firstItem="RYF-ip-m9E" firstAttribute="top" secondItem="UHg-CQ-hQb" secondAttribute="bottom" constant="8" symbolic="YES" id="lRX-P2-KMM"/>
+                <constraint firstItem="V9R-bU-asR" firstAttribute="leading" secondItem="ePg-5a-zif" secondAttribute="leading" id="mG2-ci-myY"/>
+                <constraint firstItem="vPw-Gp-UVY" firstAttribute="top" secondItem="pHm-jR-UaU" secondAttribute="bottom" constant="6" symbolic="YES" id="rMB-NQ-2rW"/>
+                <constraint firstItem="gs3-5t-a4M" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="20" symbolic="YES" id="rWG-Bj-mEt"/>
+                <constraint firstItem="V9R-bU-asR" firstAttribute="top" secondItem="vPw-Gp-UVY" secondAttribute="bottom" constant="6" symbolic="YES" id="uzs-4y-P42"/>
+                <constraint firstAttribute="trailing" secondItem="eVo-vY-dDH" secondAttribute="trailing" constant="20" symbolic="YES" id="wBB-p0-09V"/>
+                <constraint firstItem="tSv-yu-w0h" firstAttribute="firstBaseline" secondItem="UHg-CQ-hQb" secondAttribute="firstBaseline" id="yoc-BH-8ZP"/>
             </constraints>
-            <point key="canvasLocation" x="-126.5" y="0.0"/>
+            <point key="canvasLocation" x="-126.5" y="152"/>
         </customView>
+        <userDefaultsController representsSharedInstance="YES" id="YZH-Zp-q5O"/>
     </objects>
 </document>

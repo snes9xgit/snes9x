@@ -52,5 +52,7 @@ extern NSWindowFrameAutosaveName const kMainWindowIdentifier;
 - (void)setMacFrameSkip:(int)_macFrameSkip;
 - (void)setShowFPS:(BOOL)showFPS;
 
+- (void)applyEmulationSettings;
+
 @end
 
