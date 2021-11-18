@@ -3119,6 +3119,23 @@ void QuitWithFatalError ( NSString *message)
 	[s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SNES_HEIGHT * 2.0]];
 	s9xView.device = MTLCreateSystemDefaultDevice();
 	S9xInitDisplay(NULL, NULL);
+
+	id<MTLDevice> device = nil;
+	for ( id<MTLDevice> candidate in MTLCopyAllDevices() )
+	{
+		if ( candidate.isLowPower )
+		{
+			device = candidate;
+			break;
+		}
+	}
+
+	if ( device == nil )
+	{
+		device = MTLCreateSystemDefaultDevice();
+	}
+
+	s9xView.device = device;
 }
 
 - (void)start
