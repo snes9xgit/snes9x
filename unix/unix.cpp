@@ -338,9 +338,13 @@ void S9xExtraUsage (void)
 #ifdef JOYSTICK_SUPPORT
 	S9xMessage(S9X_INFO, S9X_USAGE, "-nogamepad                      Disable gamepad reading");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-paddev1 <string>               Specify gamepad device 1");
-	S9xMessage(S9X_INFO, S9X_USAGE, "-paddev1 <string>               Specify gamepad device 2");
-	S9xMessage(S9X_INFO, S9X_USAGE, "-paddev1 <string>               Specify gamepad device 3");
-	S9xMessage(S9X_INFO, S9X_USAGE, "-paddev1 <string>               Specify gamepad device 4");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-paddev2 <string>               Specify gamepad device 2");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-paddev3 <string>               Specify gamepad device 3");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-paddev4 <string>               Specify gamepad device 4");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-paddev5 <string>               Specify gamepad device 5");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-paddev6 <string>               Specify gamepad device 6");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-paddev7 <string>               Specify gamepad device 7");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-paddev8 <string>               Specify gamepad device 8");
 	S9xMessage(S9X_INFO, S9X_USAGE, "");
 #endif
 
