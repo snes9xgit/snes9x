@@ -27,10 +27,16 @@
 #ifdef HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
 #endif
-#ifndef NOSOUND
+
+#ifndef NOSOUND 
+#ifndef ALSA
 #include <sys/soundcard.h>
 #include <sys/mman.h>
+#else
+#include <alsa/asoundlib.h>
 #endif
+#endif
+
 #ifdef JOYSTICK_SUPPORT
 #include <linux/joystick.h>
 #endif
@@ -114,8 +120,13 @@ struct SUnixSettings
 
 struct SoundStatus
 {
+#ifndef ALSA
 	int		sound_fd;
 	uint32	fragment_size;
+#else
+    snd_pcm_t *pcm_handle;
+    int output_buffer_size;
+#endif
 };
 
 
@@ -165,7 +176,7 @@ static long log2 (long num)
 
 namespace {
 
-#if ! defined(NOSOUND)
+#if ! defined(NOSOUND) && ! defined(ALSA)
 	class S9xAudioOutput
 	{
 	public:
@@ -348,14 +359,17 @@ void S9xExtraUsage (void)
 	S9xMessage(S9X_INFO, S9X_USAGE, "");
 #endif
 
-#ifdef USE_THREADS
+#ifndef NOSOUND
+#ifdef USE_THREADS && ! defined(ALSA)
 	S9xMessage(S9X_INFO, S9X_USAGE, "-threadsound                    Use a separate thread to output sound");
 #endif
 	S9xMessage(S9X_INFO, S9X_USAGE, "-buffersize                     Sound generating buffer size in millisecond");
+#ifndef ALSA
 	S9xMessage(S9X_INFO, S9X_USAGE, "-fragmentsize                   Sound playback buffer fragment size in bytes");
+#endif
 	S9xMessage(S9X_INFO, S9X_USAGE, "-sounddev <string>              Specify sound device");
 	S9xMessage(S9X_INFO, S9X_USAGE, "");
-
+#endif
 	S9xMessage(S9X_INFO, S9X_USAGE, "-loadsnapshot                   Load snapshot file at start");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-playmovie <filename>           Start emulator playing the .smv file");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-recordmovie <filename>         Start emulator recording the .smv file");
@@ -588,8 +602,11 @@ void S9xParsePortConfig (ConfigFile &conf, int pass)
 #endif
 	unixSettings.SoundBufferSize   = conf.GetUInt     ("Unix::SoundBufferSize",     100);
 	unixSettings.SoundFragmentSize = conf.GetUInt     ("Unix::SoundFragmentSize",   2048);
+#ifndef ALSA
 	sound_device                   = conf.GetStringDup("Unix::SoundDevice",         "/dev/dsp");
-
+#else
+	sound_device                   = conf.GetStringDup("Unix::SoundDevice",         "default");
+#endif    
 	keymaps.clear();
 	if (!conf.GetBool("Unix::ClearAllControls", false))
 	{
@@ -1335,9 +1352,25 @@ void S9xSamplesAvailable(void *data)
 	static uint8 *sound_buffer = NULL;
 	static int sound_buffer_size = 0;
 
+#ifdef ALSA
+    snd_pcm_sframes_t frames_written, frames;
+    frames = snd_pcm_avail(so.pcm_handle);
+
+    if (frames < 0)
+    {
+        frames = snd_pcm_recover(so.pcm_handle, frames, 1);
+        return;
+    }
+#endif
+
     if (Settings.DynamicRateControl)
     {
+#ifndef ALSA
         S9xUpdateDynamicRate(s_AudioOutput->GetFreeBufferSize(), so.fragment_size * 4);
+#else
+        S9xUpdateDynamicRate(snd_pcm_frames_to_bytes(so.pcm_handle, frames),
+                             so.output_buffer_size);
+#endif
     }
 
     samples_to_write = S9xGetSampleCount();
@@ -1345,21 +1378,79 @@ void S9xSamplesAvailable(void *data)
     if (samples_to_write < 0)
         return;
 
+#ifdef ALSA
+    if (Settings.DynamicRateControl && !Settings.SoundSync)
+    {
+        // Using rate control, we should always keep the emulator's sound buffers empty to
+        // maintain an accurate measurement.
+        if (frames < samples_to_write/2)
+        {
+            S9xClearSamples();
+            return;
+        }
+    }
+
+    if (Settings.SoundSync && !Settings.TurboMode && !Settings.Mute)
+    {
+        snd_pcm_nonblock(so.pcm_handle, 0);
+        frames = samples_to_write/2;
+    } else {
+        snd_pcm_nonblock(so.pcm_handle, 1);
+        frames = MIN(frames, samples_to_write/2);
+    }
+
+    int bytes = snd_pcm_frames_to_bytes(so.pcm_handle, frames);
+    if (bytes <= 0)
+        return;
+
+    if (sound_buffer_size < bytes || sound_buffer == NULL)
+    {
+        sound_buffer = (uint8 *)realloc(sound_buffer, bytes);
+        sound_buffer_size = bytes;
+    }
+#else //OSS
     if (sound_buffer_size < samples_to_write * 2)
     {
         sound_buffer = (uint8 *)realloc(sound_buffer, samples_to_write * 2);
         sound_buffer_size = samples_to_write * 2;
     }
+#endif
 
     S9xMixSamples(sound_buffer, samples_to_write);
-
+#ifndef ALSA
     s_AudioOutput->Write(sound_buffer, samples_to_write * 2);
-#endif
+#else
+    frames_written = 0;
+
+    while (frames_written < frames) {
+        int result;
+
+        result = snd_pcm_writei(so.pcm_handle,
+                                sound_buffer +
+                                    snd_pcm_frames_to_bytes(so.pcm_handle, frames_written),
+                                frames - frames_written);
+        if (result < 0)
+        {
+            result = snd_pcm_recover(so.pcm_handle, result, 1);
+
+            if (result < 0)
+            {
+                break;
+            }
+        }
+        else
+        {
+            frames_written += result;
+        }
+    }
+#endif //ALSA
+#endif //NOSOUND
 }
 
 bool8 S9xOpenSoundDevice (void)
 {
 #ifndef NOSOUND
+#ifndef ALSA
 	int	J, K;
 
 	so.sound_fd = open(sound_device, O_WRONLY | O_NONBLOCK);
@@ -1397,8 +1488,103 @@ bool8 S9xOpenSoundDevice (void)
 
 	so.fragment_size = J;
 	printf("fragment size: %d\n", J);
-#endif
 
+#else
+
+    int err;
+    unsigned int periods = 8;
+    unsigned int buffer_size =  unixSettings.SoundBufferSize * 1000;
+    snd_pcm_sw_params_t *sw_params;
+    snd_pcm_hw_params_t *hw_params;
+    snd_pcm_uframes_t alsa_buffer_size, alsa_period_size;
+    unsigned int min = 0;
+    unsigned int max = 0;
+
+    unsigned int rate = Settings.SoundPlaybackRate;
+
+    err = snd_pcm_open(&so.pcm_handle, sound_device, SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK);
+    if (err < 0) {
+        printf("Failed: %s\n", snd_strerror(err));
+        return (FALSE);
+    }
+
+    snd_pcm_hw_params_alloca(&hw_params);
+    snd_pcm_hw_params_any(so.pcm_handle, hw_params);
+    snd_pcm_hw_params_set_format(so.pcm_handle, hw_params, SND_PCM_FORMAT_S16);
+    snd_pcm_hw_params_set_access(so.pcm_handle, hw_params, SND_PCM_ACCESS_RW_INTERLEAVED);
+    snd_pcm_hw_params_set_rate_resample(so.pcm_handle, hw_params, 0);
+    snd_pcm_hw_params_set_channels(so.pcm_handle, hw_params, 2);
+
+    snd_pcm_hw_params_get_rate_min(hw_params, &min, NULL);
+    snd_pcm_hw_params_get_rate_max(hw_params, &max, NULL);
+    fprintf(stderr, "Alsa available rates: %d to %d\n", min, max);
+
+    if (rate > max && rate < min)
+    {
+        fprintf(stderr, "Rate %d not available. Using %d instead.\n", rate, max);
+        rate = max;
+    }
+    snd_pcm_hw_params_set_rate_near(so.pcm_handle, hw_params, &rate, NULL);
+
+
+    snd_pcm_hw_params_get_buffer_time_min(hw_params, &min, NULL);
+    snd_pcm_hw_params_get_buffer_time_max(hw_params, &max, NULL);
+    fprintf(stderr, "Alsa available buffer sizes: %dms to %dms\n", min / 1000, max / 1000);
+    if (buffer_size < min && buffer_size > max)
+    {
+        fprintf(stderr, "Buffer size %dms not available. Using %d instead.\n", buffer_size / 1000, (min + max) / 2000);
+        buffer_size = (min + max) / 2;
+    }
+    snd_pcm_hw_params_set_buffer_time_near(so.pcm_handle, hw_params, &buffer_size, NULL);
+
+
+    snd_pcm_hw_params_get_periods_min(hw_params, &min, NULL);
+    snd_pcm_hw_params_get_periods_max(hw_params, &max, NULL);
+    fprintf(stderr, "Alsa period ranges: %d to %d blocks\n", min, max);
+    if (periods > max)
+        periods = max;
+    snd_pcm_hw_params_set_periods_near(so.pcm_handle, hw_params, &periods, NULL);
+
+    err = snd_pcm_hw_params(so.pcm_handle, hw_params);
+    if (err < 0)
+    {
+        fprintf(stderr, "Alsa error: unable to install hw params\n");
+        snd_pcm_drain(so.pcm_handle);
+        snd_pcm_close(so.pcm_handle);
+        so.pcm_handle = NULL;
+        return (FALSE);
+    }
+
+
+    snd_pcm_sw_params_alloca(&sw_params);
+    snd_pcm_sw_params_current(so.pcm_handle, sw_params);
+    snd_pcm_get_params(so.pcm_handle, &alsa_buffer_size, &alsa_period_size);
+
+    /* Don't start until we're [nearly] full */
+    snd_pcm_sw_params_set_start_threshold(so.pcm_handle, sw_params, (alsa_buffer_size / 2));
+
+
+    err = snd_pcm_sw_params(so.pcm_handle, sw_params);
+    if (err < 0) {
+        fprintf(stderr, "Alsa error: unable to install sw params\n");
+        snd_pcm_drain(so.pcm_handle);
+        snd_pcm_close(so.pcm_handle);
+        so.pcm_handle = NULL;
+        return (FALSE);
+    }
+
+    err = snd_pcm_prepare(so.pcm_handle);
+    if (err < 0) {
+        fprintf(stderr, "Alsa error: unable to prepare audio: %s\n", snd_strerror(err));
+        snd_pcm_drain(so.pcm_handle);
+        snd_pcm_close(so.pcm_handle);
+        so.pcm_handle = NULL;
+        return (FALSE);
+    }
+
+    so.output_buffer_size = snd_pcm_frames_to_bytes(so.pcm_handle, alsa_buffer_size);
+#endif //ALSA
+#endif //NOSOUND
 	S9xSetSamplesAvailableCallback(S9xSamplesAvailable, NULL);
 
 	return (TRUE);
@@ -1417,7 +1603,7 @@ void S9xExit (void)
 		S9xNPDisconnect();
 #endif
 
-#ifndef NOSOUND
+#if !defined(NOSOUND) && !defined(ALSA)
 	delete s_AudioOutput;
 #endif
 

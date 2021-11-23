@@ -489,6 +489,25 @@ else
 	S9XDEFS="$S9XDEFS -DNOSOUND"
 fi
 
+# Check if we can build with alsa support
+AC_ARG_ENABLE([sound-alsa],
+    [AS_HELP_STRING([--enable-sound-alsa],
+        [enable Alsa if available (default: yes)])],
+    [], [enable_sound_alsa="yes"])
+
+if test "x$enable_sound_alsa" = "xyes"; then
+    enable_sound_alsa="no"
+    AC_CHECK_HEADER([alsa/asoundlib.h],
+    [
+        enable_sound_alsa="yes"
+        enable_sound="yes"
+        S9XLIBS="$S9XLIBS -lasound"
+        #in case '--disable-sound' and 'enable-sound-alsa'
+        S9XDEFS=$(echo $S9XDEFS|sed 's/-DNOSOUND//g; s/-DUSE_THREADS//g')
+        S9XDEFS="$S9XDEFS -DALSA"
+    ])
+fi
+
 # Output.
 
 S9XFLGS="$CXXFLAGS $CPPFLAGS $LDFLAGS $S9XFLGS"
@@ -528,6 +547,7 @@ features:
 Xvideo support....... $enable_xvideo
 Xinerama support..... $enable_xinerama
 sound support........ $enable_sound
+alsa support......... $enable_sound_alsa
 screenshot support... $enable_screenshot
 netplay support...... $enable_netplay
 gamepad support...... $enable_gamepad
