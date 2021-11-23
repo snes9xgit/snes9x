@@ -445,6 +445,22 @@ if test "x$enable_xvideo" = "xyes"; then
 	])
 fi
 
+# Check if we can build with libyuv hardware acceleration I420 conversion support
+AC_ARG_ENABLE([libyuv],
+    [AS_HELP_STRING([--enable-libyuv],
+        [enable libyuv I420 conversion support if available (default: yes)])],
+    [], [enable_libyuv="yes"])
+
+if test "x$enable_libyuv" = "xyes"; then
+    enable_libyuv="no"
+    AC_CHECK_HEADER([libyuv.h],
+    [
+        enable_libyuv="yes"
+        S9XLIBS="$S9XLIBS -lyuv"
+        S9XDEFS="$S9XDEFS -DUSE_LIBYUV"
+    ])
+fi
+
 # Check if we can build with Xinerama multi-monitor support
 AC_ARG_ENABLE([xinerama],
 	[AS_HELP_STRING([--enable-xinerama],
@@ -545,6 +561,7 @@ libs................. $S9XLIBS
 
 features:
 Xvideo support....... $enable_xvideo
+libyuv support....... $enable_libyuv
 Xinerama support..... $enable_xinerama
 sound support........ $enable_sound
 alsa support......... $enable_sound_alsa

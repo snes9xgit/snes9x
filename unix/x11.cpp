@@ -25,7 +25,12 @@
 #ifdef USE_XVIDEO
 #include <X11/extensions/Xvlib.h>
 
+#ifdef USE_LIBYUV
+#include <libyuv.h>
+#endif
+
 #define FOURCC_YUY2 0x32595559
+#define FOURCC_I420 0x30323449
 #endif
 
 #ifdef USE_XINERAMA
@@ -585,6 +590,12 @@ static bool8 SetupXvideo()
 
 	for (int i = 0; i < formats; i++)
 	{
+        //prefer I420
+        if (fo[i].id == FOURCC_I420) {
+            GUI.xv_format = FOURCC_I420;
+            break;
+        }
+
 		if (fo[i].id == 0x3 || fo[i].type == XvRGB)
 		{
 			if (fo[i].bits_per_pixel < GUI.xv_bpp)
@@ -617,32 +628,35 @@ static bool8 SetupXvideo()
 	}
 	free (fo);
 
-	if (GUI.xv_format != FOURCC_YUY2)
-	{
+	if (GUI.xv_format != FOURCC_YUY2 && GUI.xv_format != FOURCC_I420) {
 		printf("Selected XvRGB format: %d bpp\n",GUI.xv_bpp);
 	} else {
-		// use YUY2
-		printf("Fallback to YUY2 format.\n");
-		GUI.depth = 15;
+		// use I420 or YUY2
+		if(GUI.xv_format == FOURCC_I420) { 
+		    printf("Xvideo I420 image format.\n");
+        } else {
+		    printf("Xvideo YUY2 image format.\n");
+		    GUI.depth = 15;
 
-		/* Build a table for yuv conversion */
-		for (unsigned int color = 0; color < (1 << 15); color++)
-		{
-			int r, g, b;
-			int y, u, v;
+		    /* Build a table for yuv conversion */
+		    for (unsigned int color = 0; color < (1 << 15); color++)
+		    {
+		    	int r, g, b;
+		    	int y, u, v;
 
-			r = (color & 0x7c00) >> 7;
-			g = (color & 0x03e0) >> 2;
-			b = (color & 0x001F) << 3;
+		    	r = (color & 0x7c00) >> 7;
+		    	g = (color & 0x03e0) >> 2;
+		    	b = (color & 0x001F) << 3;
 
-			y = (int) ((0.257  * ((double) r)) + (0.504  * ((double) g)) + (0.098  * ((double) b)) + 16.0);
-			u = (int) ((-0.148 * ((double) r)) + (-0.291 * ((double) g)) + (0.439  * ((double) b)) + 128.0);
-			v = (int) ((0.439  * ((double) r)) + (-0.368 * ((double) g)) + (-0.071 * ((double) b)) + 128.0);
+		    	y = (int) ((0.257  * ((double) r)) + (0.504  * ((double) g)) + (0.098  * ((double) b)) + 16.0);
+		    	u = (int) ((-0.148 * ((double) r)) + (-0.291 * ((double) g)) + (0.439  * ((double) b)) + 128.0);
+		    	v = (int) ((0.439  * ((double) r)) + (-0.368 * ((double) g)) + (-0.071 * ((double) b)) + 128.0);
 
-			GUI.y_table[color] = CLAMP (y, 0, 255);
-			GUI.u_table[color] = CLAMP (u, 0, 255);
-			GUI.v_table[color] = CLAMP (v, 0, 255);
-		}
+		    	GUI.y_table[color] = CLAMP (y, 0, 255);
+		    	GUI.u_table[color] = CLAMP (u, 0, 255);
+		    	GUI.v_table[color] = CLAMP (v, 0, 255);
+		    }
+        }
 	}
 
 	return TRUE;
@@ -939,7 +953,7 @@ static void SetupImage (void)
 		FatalError("Failed to allocate GUI.filter_buffer.");
 
 #ifdef USE_XVIDEO
-	if ((GUI.depth == 15 || GUI.depth == 16) && GUI.xv_format != FOURCC_YUY2)
+	if ((GUI.depth == 15 || GUI.depth == 16) && GUI.xv_format != FOURCC_YUY2 && GUI.xv_format != FOURCC_I420)
 #else
 	if (GUI.depth == 15 || GUI.depth == 16)
 #endif
@@ -1209,6 +1223,55 @@ static void TakedownXvImage (void)
 }
 #endif
 
+#if defined(USE_XVIDEO) && !defined(USE_LIBYUV)
+void rgb565ToRgb24(uint8 *dest, uint8 *s, int width, int height) {
+    for (int i=0, j=0; i< width * height * 2 ; i+=2) {
+        uint16 c = s[i] + (s[i+1]<<8);
+        uint8 r = uint8(((c & 0xF800) >> 11) << 3);
+        uint8 g = uint8(((c & 0x7E0) >> 5) << 2);
+        uint8 b = uint8(((c & 0x1F)) << 3);
+        dest[j++]=r;
+        dest[j++]=g;
+        dest[j++]=b;
+    }
+}
+
+void rgb24ToI420(uint8 *dest, uint8 *rgb, int width, int height) {
+    int image_size = width * height;
+    int upos = image_size;
+    int vpos = upos + upos / 4;
+    int i = 0;
+    for (int line = 0; line < height; ++line) {
+        if( !(line % 2) ) {
+            for ( int x = 0; x < width; x += 2 ) {
+                uint8 r = rgb[3 * i];
+                uint8 g = rgb[3 * i + 1];
+                uint8 b = rgb[3 * i + 2];
+
+                dest[i++] = ((66*r + 129*g + 25*b) >> 8) + 16;
+
+                dest[upos++] = ((-38*r + -74*g + 112*b) >> 8) + 128;
+                dest[vpos++] = ((112*r + -94*g + -18*b) >> 8) + 128;
+
+                r = rgb[3 * i];
+                g = rgb[3 * i + 1];
+                b = rgb[3 * i + 2];
+
+                dest[i++] = ((66*r + 129*g + 25*b) >> 8) + 16;
+            }
+        } else {
+            for (int x = 0; x < width; x += 1) {
+                uint8 r = rgb[3 * i];
+                uint8 g = rgb[3 * i + 1];
+                uint8 b = rgb[3 * i + 2];
+
+                dest[i++] = ((66*r + 129*g + 25*b) >> 8) + 16;
+            }
+        }
+    }
+}
+#endif
+
 void S9xPutImage (int width, int height)
 {
 	static int	prevWidth = 0, prevHeight = 0;
@@ -1307,7 +1370,30 @@ void S9xPutImage (int width, int height)
 				*d = (GUI.v_table[rgb1] + GUI.v_table[rgb2]) / 2; d++;
 			}
 		}
-	}
+	} else if (GUI.use_xvideo && (GUI.xv_format == FOURCC_I420)) {
+        uint8 *s = (uint8 *)GUI.blit_screen;
+        uint8 *d = (uint8 *)GUI.image->data;
+
+        int tw = SNES_WIDTH * 2;
+        int th = SNES_HEIGHT_EXTENDED * 2;
+
+#ifdef USE_LIBYUV
+        libyuv::RGB565ToI420(
+            s, tw*2,
+            d, tw,
+            d + tw*th, tw/2,
+            d + tw*th + tw*th/4, tw/2,
+            tw, th);
+#else
+        uint8 *ns = (uint8 *) calloc(tw*th*3, 1);
+        //convert to RGB24
+        rgb565ToRgb24(ns, s, tw, th);
+        //convert to I420
+        rgb24ToI420(d, ns, tw, th);
+        free(ns);
+#endif
+        GUI.need_convert =0;
+    }
 	else
 #endif
 	if (GUI.need_convert)
