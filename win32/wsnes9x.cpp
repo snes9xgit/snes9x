@@ -8613,7 +8613,7 @@ switch(msg)
 			break;
 		}
 
-        if(which >= IDC_HOTKEY1 && which <= IDC_HOTKEY13)
+        if(which >= IDC_HOTKEY1 && which <= IDC_HOTKEY14)
         {
             int offset = which - IDC_HOTKEY1;
             hotkey_dialog_items[index][offset].key_entry->key = wParam;
