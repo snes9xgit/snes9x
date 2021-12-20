@@ -239,7 +239,7 @@ void S9xPulseSoundDriver::samples_available()
 
     if (Settings.SoundSync && !Settings.TurboMode && !Settings.Mute)
     {
-        while ((int)bytes < samples * 2)
+        if ((int)bytes < samples * 2)
         {
             int usec_to_sleep = ((samples >> 1) - (bytes >> 2)) * 10000 /
                                 (Settings.SoundPlaybackRate / 100);
