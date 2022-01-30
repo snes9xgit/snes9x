@@ -1,3 +1,5 @@
+Snes9x 1.61
+
 Snes9x 1.60
 - Fixed subscreen blending with master brightness < 100%.
 - Fixed NMI timing when toggling enable bit. Fixes Chou Aniki--hack removed.
