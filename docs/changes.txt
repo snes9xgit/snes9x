@@ -14,7 +14,10 @@ Win32:
   saving or loading states.
 - Fixed sound volume resetting when sound reinitializes.
 - Added a save-state preview dialog.
+- Added save banks for up to 100 states
+- Added support for relative-style save slots
 - Fixed blargg rf filter.
+- Show command line options on -h and /?
 
 Gtk:
 - Added an option to show time. (taimoorgit)
