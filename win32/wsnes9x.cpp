@@ -944,7 +944,7 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 		&& modifiers == CustomKeys.FrameAdvance.modifiers)
 		{
 			static DWORD lastTime = 0;
-			if((int)(timeGetTime() - lastTime) > 20)
+			if((timeGetTime() - lastTime) > 20)
 			{
 				lastTime = timeGetTime();
 				if(Settings.Paused || GUI.FASkipsNonInput)
