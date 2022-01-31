@@ -29,6 +29,8 @@ Unix:
 - Added audio output threading. (yoffy)
 - Added screensaver prevention on joystick use. (greg-kennedy)
 - Fix YUY2 conversion. (greg-kennedy)
+- Add alsa output support. (cjacker)
+- Add I420 conversion. (cjacker)
 
 Snes9x 1.60
 - Fixed subscreen blending with master brightness < 100%.
