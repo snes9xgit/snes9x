@@ -445,6 +445,22 @@ if test "x$enable_xvideo" = "xyes"; then
 	])
 fi
 
+# Check if we can build with libyuv hardware acceleration I420 conversion support
+AC_ARG_ENABLE([libyuv],
+    [AS_HELP_STRING([--enable-libyuv],
+        [enable libyuv I420 conversion support if available (default: yes)])],
+    [], [enable_libyuv="yes"])
+
+if test "x$enable_libyuv" = "xyes"; then
+    enable_libyuv="no"
+    AC_CHECK_HEADER([libyuv.h],
+    [
+        enable_libyuv="yes"
+        S9XLIBS="$S9XLIBS -lyuv"
+        S9XDEFS="$S9XDEFS -DUSE_LIBYUV"
+    ])
+fi
+
 # Check if we can build with Xinerama multi-monitor support
 AC_ARG_ENABLE([xinerama],
 	[AS_HELP_STRING([--enable-xinerama],
@@ -489,6 +505,25 @@ else
 	S9XDEFS="$S9XDEFS -DNOSOUND"
 fi
 
+# Check if we can build with alsa support
+AC_ARG_ENABLE([sound-alsa],
+    [AS_HELP_STRING([--enable-sound-alsa],
+        [enable Alsa if available (default: yes)])],
+    [], [enable_sound_alsa="yes"])
+
+if test "x$enable_sound_alsa" = "xyes"; then
+    enable_sound_alsa="no"
+    AC_CHECK_HEADER([alsa/asoundlib.h],
+    [
+        enable_sound_alsa="yes"
+        enable_sound="yes"
+        S9XLIBS="$S9XLIBS -lasound"
+        #in case '--disable-sound' and 'enable-sound-alsa'
+        S9XDEFS=$(echo $S9XDEFS|sed 's/-DNOSOUND//g; s/-DUSE_THREADS//g')
+        S9XDEFS="$S9XDEFS -DALSA"
+    ])
+fi
+
 # Output.
 
 S9XFLGS="$CXXFLAGS $CPPFLAGS $LDFLAGS $S9XFLGS"
@@ -526,8 +561,10 @@ libs................. $S9XLIBS
 
 features:
 Xvideo support....... $enable_xvideo
+libyuv support....... $enable_libyuv
 Xinerama support..... $enable_xinerama
 sound support........ $enable_sound
+alsa support......... $enable_sound_alsa
 screenshot support... $enable_screenshot
 netplay support...... $enable_netplay
 gamepad support...... $enable_gamepad
