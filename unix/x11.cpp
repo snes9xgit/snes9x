@@ -585,18 +585,16 @@ static bool8 SetupXvideo()
 	}
 
 	/* Ok time to search for a good Format */
-	GUI.xv_format = FOURCC_YUY2;
+	GUI.xv_format = FOURCC_I420;
 	GUI.xv_bpp = 0x7FFFFFFF;
 
 	for (int i = 0; i < formats; i++)
 	{
         //prefer I420
-        if (fo[i].id == FOURCC_I420) {
-            GUI.xv_format = FOURCC_I420;
-            break;
+        if (fo[i].id == FOURCC_YUY2) {
+            GUI.xv_format = FOURCC_YUY2;
         }
-
-		if (fo[i].id == 0x3 || fo[i].type == XvRGB)
+		else if (fo[i].id == 0x3 || fo[i].type == XvRGB)
 		{
 			if (fo[i].bits_per_pixel < GUI.xv_bpp)
 			{
@@ -617,12 +615,6 @@ static bool8 SetupXvideo()
 					GUI.red_shift = GUI.blue_shift;
 					GUI.blue_shift = copy;
 				}
-
-				/* on big-endian Xv still seems to like LSB order */
-				/*if (config->force_inverted_byte_order)
-					S9xSetEndianess (ENDIAN_MSB);
-				else
-					S9xSetEndianess (ENDIAN_LSB); */
 			}
 		}
 	}
