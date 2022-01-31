@@ -2021,7 +2021,7 @@ bool8 S9xDeinitUpdate(int width, int height)
         else
             snes_ntsc_blit(snes_ntsc, GFX.Screen, GFX.Pitch / 2, burst_phase, width, height, snes_ntsc_buffer, GFX.Pitch);
 
-        video_cb(snes_ntsc_buffer + ((int)(GFX.Pitch >> 1) * overscan_offset), SNES_NTSC_OUT_WIDTH(width), height, GFX.Pitch);
+        video_cb(snes_ntsc_buffer + ((int)(GFX.Pitch >> 1) * overscan_offset), SNES_NTSC_OUT_WIDTH(256), height, GFX.Pitch);
     }
     else if (width == MAX_SNES_WIDTH && hires_blend)
     {
