@@ -169,7 +169,7 @@ if wayland
 
   if wayland_dep.found()
     args += '-DUSE_WAYLAND'
-    srcs += ['src/gtk_wayland_egl_context.cpp', 'src/gtk_wayland_egl_context.h']
+    srcs += ['src/gtk_wayland_egl_context.cpp', 'src/gtk_wayland_egl_context.h', 'src/wayland-idle-inhibit-unstable-v1.c']
     deps += wayland_dep
   else
     wayland = false

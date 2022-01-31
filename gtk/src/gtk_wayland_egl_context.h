@@ -49,6 +49,9 @@ class WaylandEGLContext : public OpenGLContext
     PEGLGETSYNCVALUESCHROMIUM eglGetSyncValuesCHROMIUM;
     bool use_sync_control;
     EGLuint64KHR ust, msc, sbc;
+
+    struct zwp_idle_inhibit_manager_v1 *idle_inhibit_manager;
+    struct zwp_idle_inhibitor_v1 *idle_inhibitor;
 };
 
 #endif
