@@ -22,6 +22,11 @@ Gtk:
 - Switched to GTK's C++ interface, gtkmm3. This effectively drops
   GTK+ 2.0 support.
 
+Unix:
+- Added audio output threading. (yoffy)
+- Added screensaver prevention on joystick use. (greg-kennedy)
+- Fix YUY2 conversion. (greg-kennedy)
+
 Snes9x 1.60
 - Fixed subscreen blending with master brightness < 100%.
 - Fixed NMI timing when toggling enable bit. Fixes Chou Aniki--hack removed.
