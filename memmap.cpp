@@ -2371,6 +2371,11 @@ void CMemory::InitROM (void)
 		case 0x1420:
 		case 0x1520:
 		case 0x1A20:
+		// SuperFX FastROM for ROM hacks
+		case 0x1330:
+		case 0x1430:
+		case 0x1530:
+		case 0x1A30:
 			Settings.SuperFX = TRUE;
 			S9xInitSuperFX();
 			if (ROM[0x7FDA] == 0x33)
