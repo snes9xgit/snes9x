@@ -90,7 +90,7 @@ int Snes9xConfig::load_defaults()
     save_sram_after_secs = 0;
     rom_loaded = false;
     multithreading = false;
-    splash_image = SPLASH_IMAGE_COMBO;
+    splash_image = SPLASH_IMAGE_STARFIELD;
     hw_accel = 0;
     allow_opengl = false;
     allow_xv = false;
