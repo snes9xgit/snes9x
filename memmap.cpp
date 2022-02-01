@@ -893,7 +893,7 @@ static void S9xDeinterleaveGD24 (int size, uint8 *base)
 
 bool8 CMemory::Init (void)
 {
-	// TODO:If these change size, check other locations in the code that also
+	// TODO: If these change size, check other locations in the code that also
 	// have the fixed size. In the future, make this a static allocation.
     RAM	 = (uint8 *) malloc(0x20000);
     SRAM = (uint8 *) malloc(0x80000);
@@ -3678,6 +3678,8 @@ void CMemory::ApplyROMFixes (void)
 		Timings.RenderPos = 128;
 	else if (match_na("AIR STRIKE PATROL") || match_na("DESERT FIGHTER"))
 		Timings.RenderPos = 128; // Just hides shadow
+	else if (match_na("FULL THROTTLE RACING"))
+		Timings.RenderPos = 128;
 	// From bsnes
 	else if (match_na("NHL '94") || match_na("NHL PROHOCKEY'94"))
 		Timings.RenderPos = 32;
