@@ -49,8 +49,6 @@ static int g_screen_gun_height = SNES_HEIGHT;
 #define RETRO_GAME_TYPE_MULTI_CART      0x105 | 0x1000
 
 
-#define SNES_4_3 4.0f / 3.0f
-
 uint16 *screen_buffer = NULL;
 
 char g_rom_dir[1024];
@@ -788,7 +786,7 @@ float get_aspect_ratio(unsigned width, unsigned height)
 {
     if (aspect_ratio_mode == ASPECT_RATIO_4_3)
     {
-        return SNES_4_3;
+        return (4.0f * (MAX_SNES_HEIGHT - height)) / (3.0f * (MAX_SNES_WIDTH - width));
     }
     else if (aspect_ratio_mode == ASPECT_RATIO_1_1)
     {
