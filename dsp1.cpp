@@ -522,7 +522,7 @@ static void DSP1_Op0C (void)
 
 static void DSP1_Parameter (int16 Fx, int16 Fy, int16 Fz, int16 Lfe, int16 Les, int16 Aas, int16 Azs, int16 *Vof, int16 *Vva, int16 *Cx, int16 *Cy)
 {
-	const int16	MaxAZS_Exp[16] =
+	static const int16	MaxAZS_Exp[16] =
 	{
 		0x38b4, 0x38b7, 0x38ba, 0x38be, 0x38c0, 0x38c4, 0x38c7, 0x38ca,
 		0x38ce,	0x38d0, 0x38d4, 0x38d7, 0x38da, 0x38dd, 0x38e0, 0x38e4
