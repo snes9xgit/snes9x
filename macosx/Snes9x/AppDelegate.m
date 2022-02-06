@@ -15,7 +15,7 @@
   (c) Copyright 2004         Alexander and Sander
   (c) Copyright 2004 - 2005  Steven Seeger
   (c) Copyright 2005         Ryan Vogt
-  (c) Copyright 2019         Michael Donald Buckley
+  (c) Copyright 2019 - 2022  Michael Donald Buckley
  ***********************************************************************************/
 
 #import <Carbon/Carbon.h>
@@ -23,6 +23,7 @@
 #import "S9xPreferencesConstants.h"
 
 NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
+NSWindowFrameAutosaveName const kCheatsWindowIdentifier = @"s9xCheatsWindow";
 
 @implementation AppDelegate
 
@@ -194,6 +195,9 @@ NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
     [self importKeySettings];
     [self importGraphicsSettings];
     [self applyEmulationSettings];
+
+    self.s9xEngine.cheatsEnabled = [defaults boolForKey:kEnableCheatsPref];
+
     [defaults synchronize];
 }
 
@@ -463,6 +467,11 @@ NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 		[s9xView.leftAnchor constraintGreaterThanOrEqualToAnchor:gameWindow.contentView.leftAnchor].active = YES;
 		[s9xView.rightAnchor constraintLessThanOrEqualToAnchor:gameWindow.contentView.rightAnchor].active = YES;
 
+        if (self.cheatsWindowController != nil)
+        {
+            [((S9xCheatsViewController *)self.cheatsWindowController.contentViewController) deselectAll];
+            [((S9xCheatsViewController *)self.cheatsWindowController.contentViewController) reloadData];
+        }
 		
         [gameWindow makeKeyAndOrderFront:self];
         [NSDocumentController.sharedDocumentController noteNewRecentDocumentURL:url];
@@ -481,6 +490,17 @@ NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 	else if (action == @selector(updateDeviceSetting:)) {
 		menuItem.state = (self.deviceSetting == (S9xDeviceSetting)menuItem.tag) ? NSOnState : NSOffState;
 	}
+    else if (action == @selector(toggleCheats:))
+    {
+        if (self.s9xEngine.cheatsEnabled)
+        {
+            menuItem.title = NSLocalizedString(@"Disable Cheats", nil);
+        }
+        else
+        {
+            menuItem.title = NSLocalizedString(@"Enable Cheats", nil);
+        }
+    }
 
     return !self.isRunningEmulation;
 }
@@ -586,5 +606,36 @@ NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
     _deviceSetting = deviceSetting;
 }
 
+
+- (IBAction)openCheatsWindow:(id)sender
+{
+    if (self.cheatsWindowController == nil)
+    {
+        NSWindow *window = [NSWindow windowWithContentViewController:[[S9xCheatsViewController alloc] initWithNibName:@"S9xCheatsViewController" bundle:nil]];
+        self.cheatsWindowController = [[NSWindowController alloc] initWithWindow:window];
+
+        window = self.cheatsWindowController.window;
+
+        window.title = NSLocalizedString(@"Cheats", nil);
+        window.restorationClass = self.class;
+        window.frameAutosaveName = kCheatsWindowIdentifier;
+        window.releasedWhenClosed = NO;
+
+        if ( ![window setFrameUsingName:kCheatsWindowIdentifier] )
+        {
+            [window center];
+        }
+    }
+
+    [self.cheatsWindowController showWindow:nil];
+    [self.cheatsWindowController.window makeKeyAndOrderFront:nil];
+    [self.cheatsWindowController.window makeKeyWindow];
+}
+
+- (IBAction)toggleCheats:(id)sender
+{
+    self.s9xEngine.cheatsEnabled = !self.s9xEngine.cheatsEnabled;
+    [NSUserDefaults.standardUserDefaults setBool:self.s9xEngine.cheatsEnabled forKey:kEnableCheatsPref];
+}
 
 @end

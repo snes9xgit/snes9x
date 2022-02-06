@@ -15,29 +15,16 @@
   (c) Copyright 2004         Alexander and Sander
   (c) Copyright 2004 - 2005  Steven Seeger
   (c) Copyright 2005         Ryan Vogt
-  (c) Copyright 2019 - 2021  Michael Donald Buckley
+  (c) Copyright 2019 - 2022  Michael Donald Buckley
  ***********************************************************************************/
 
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString * const kKeyboardPrefs;
-extern NSString * const kJoypadInputPrefs;
-extern NSString * const kJoypadPlayerPrefs;
-extern NSString * const kShowFPSPref;
-extern NSString * const kVideoModePref;
-extern NSString * const kMacFrameSkipPref;
-
-extern NSString * const kSuperFXClockSpeedPercentPref;
-extern NSString * const kSoundInterpolationTypePref;
-extern NSString * const kCPUOverclockPref;
-
-extern NSString * const kApplyGameSpecificHacksPref;
-extern NSString * const kAllowInvalidVRAMAccessPref;
-extern NSString * const kSeparateEchoBufferFromRAMPref;
-extern NSString * const kDisableSpriteLimitPref;
-
-extern NSString * const kEnableCheatsPref;
+@interface S9xCheatsViewController : NSViewController
+- (void)deselectAll;
+- (void)reloadData;
+@end
 
 NS_ASSUME_NONNULL_END

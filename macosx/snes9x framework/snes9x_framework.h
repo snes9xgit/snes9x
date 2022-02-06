@@ -16,5 +16,5 @@ FOUNDATION_EXPORT const unsigned char snes9x_frameworkVersionString[];
 
 #import <snes9x_framework/port.h>
 #import <snes9x_framework/mac-os.h>
-
+#import <snes9x_framework/mac-cheat.h>
 
