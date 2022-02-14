@@ -178,38 +178,8 @@ static int file_exists(const char *name)
     }
 }
 
-bool8 S9xOpenSnapshotFile(const char *fname, bool8 read_only, STREAM *file)
+bool8 S9xOpenSnapshotFile(const char *filename, bool8 read_only, STREAM *file)
 {
-    char filename[PATH_MAX + 1];
-    char drive[_MAX_DRIVE + 1];
-    char dir[_MAX_DIR + 1];
-    char ext[_MAX_EXT + 1];
-
-    _splitpath(fname, drive, dir, filename, ext);
-
-    if (*drive || *dir == '/' || (*dir == '.' && (*(dir + 1) == '/')))
-    {
-        snprintf(filename, PATH_MAX + 1, "%s", fname);
-
-        if (!file_exists(filename))
-        {
-            if (!*ext)
-                strcat(filename, ".s9x");
-        }
-    }
-    else
-    {
-        strcpy(filename, S9xGetDirectory(SNAPSHOT_DIR));
-        strcat(filename, SLASH_STR);
-        strcat(filename, fname);
-
-        if (!file_exists(filename))
-        {
-            if (!*ext)
-                strcat(filename, ".s9x");
-        }
-    }
-
 #ifdef ZLIB
     if (read_only)
     {
