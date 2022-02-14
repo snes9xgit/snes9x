@@ -20,17 +20,25 @@ CWaveOut::~CWaveOut(void)
     DeInitSoundOutput();
 }
 
-void CALLBACK WaveCallback(HWAVEOUT hWave, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2)
+void CALLBACK CWaveOut::WaveCallback(HWAVEOUT hWave, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2)
 {
+	CWaveOut *wo = (CWaveOut*)dwUser;
     if (uMsg == WOM_DONE)
     {
-        InterlockedDecrement(((volatile LONG *)dwUser));
+        InterlockedDecrement(&wo->bufferCount);
         SetEvent(GUI.SoundSyncEvent);
     }
+	else if (uMsg == WOM_CLOSE) // also sent on device removals
+	{
+		// this stops any output from being sent to the non existing device
+		wo->initDone = false;
+	}
 }
 
 bool CWaveOut::SetupSound()
 {
+	DeInitSoundOutput();
+
     WAVEFORMATEX wfx;
     wfx.wFormatTag = WAVE_FORMAT_PCM;
     wfx.nChannels = 2;
@@ -43,7 +51,7 @@ bool CWaveOut::SetupSound()
 	// subtract -1, we added "Default" as first index - Default will yield -1, which is WAVE_MAPPER
 	int device_index = FindDeviceIndex(GUI.AudioDevice) - 1;
 
-    waveOutOpen(&hWaveOut, device_index, &wfx, (DWORD_PTR)WaveCallback, (DWORD_PTR)&bufferCount, CALLBACK_FUNCTION);
+    waveOutOpen(&hWaveOut, device_index, &wfx, (DWORD_PTR)WaveCallback, (DWORD_PTR)this, CALLBACK_FUNCTION);
 
     UINT32 blockTime = GUI.SoundBufferSize / blockCount;
     singleBufferSamples = (Settings.SoundPlaybackRate * blockTime) / 1000;
@@ -91,7 +99,7 @@ bool CWaveOut::InitSoundOutput()
 
 void CWaveOut::DeInitSoundOutput()
 {
-    if (!initDone)
+    if (!hWaveOut)
         return;
 
     StopPlayback();
@@ -109,6 +117,7 @@ void CWaveOut::DeInitSoundOutput()
     waveHeaders.clear();
 
     waveOutClose(hWaveOut);
+	hWaveOut = NULL;
 
     initDone = false;
 }

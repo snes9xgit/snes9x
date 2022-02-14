@@ -108,6 +108,8 @@ bool CXAudio2::InitXAudio2(void)
 	if(initDone)
 		return true;
 
+	DeInitXAudio2();
+
 	HRESULT hr;
 	if ( FAILED(hr = XAudio2Create( &pXAudio2, 0 , XAUDIO2_DEFAULT_PROCESSOR ) ) ) {
 		DXTRACE_ERR_MSGBOX(TEXT("Unable to create XAudio2 object."),hr);
@@ -115,6 +117,7 @@ bool CXAudio2::InitXAudio2(void)
 		return false;
 	}
 	initDone = true;
+	pXAudio2->RegisterForCallbacks(this);
 	return true;
 }
 
