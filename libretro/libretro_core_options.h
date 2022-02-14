@@ -72,11 +72,12 @@ struct retro_core_option_definition option_defs_us[] = {
       "Choose the preferred content aspect ratio. This will only apply when RetroArch's aspect ratio is set to 'Core provided' in the Video settings.",
       {
          { "4:3",         NULL },
+         { "4:3 scaled",  "4:3 (Preserved)" },
          { "uncorrected", "Uncorrected" },
          { "auto",        "Auto" },
          { "ntsc",        "NTSC" },
          { "pal",         "PAL" },
-         { NULL, NULL},
+         { NULL, NULL },
       },
       "4:3"
    },
