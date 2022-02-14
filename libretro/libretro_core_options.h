@@ -77,7 +77,7 @@ struct retro_core_option_definition option_defs_us[] = {
          { "auto",        "Auto" },
          { "ntsc",        "NTSC" },
          { "pal",         "PAL" },
-         { NULL, NULL },
+         { NULL, NULL},
       },
       "4:3"
    },
