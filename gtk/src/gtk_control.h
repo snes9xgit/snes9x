@@ -100,9 +100,12 @@ class JoyDevice
     void flush();
     void handle_event(SDL_Event *event);
     void register_centers();
-    bool set_sdl_joystick_num(unsigned int device_num);
+    bool set_sdl_joystick(unsigned int device_index, int slot);
+    static void poll_joystick_events();
 
+    std::string description;
     SDL_Joystick *filedes;
+    SDL_JoystickID instance_id;
     std::queue<JoyEvent> queue;
     int mode;
     int joynum;
@@ -112,9 +115,9 @@ class JoyDevice
     bool enabled;
 
   private:
-    void poll_events();
     void add_event(unsigned int parameter, unsigned int state);
 };
+
 
 void S9xDeinitInputDevices();
 Binding S9xGetBindingByName(const char *name);

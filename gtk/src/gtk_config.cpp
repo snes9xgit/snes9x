@@ -209,20 +209,71 @@ int Snes9xConfig::load_defaults()
 
 void Snes9xConfig::joystick_register_centers()
 {
-    for (auto &j : joystick)
-        j.register_centers();
+    for (auto it=joysticks.begin(); it != joysticks.end(); it++)
+        it->second->register_centers();
 }
 
 void Snes9xConfig::flush_joysticks()
 {
-    for (auto &j : joystick)
-        j.flush();
+    for (auto it=joysticks.begin(); it != joysticks.end(); it++)
+        it->second->flush();
 }
 
 void Snes9xConfig::set_joystick_mode(int mode)
 {
-    for (auto &j : joystick)
-        j.mode = mode;
+    for (auto it=joysticks.begin(); it != joysticks.end(); it++)
+        it->second->mode = mode;
+}
+
+
+bool Snes9xConfig::joystick_add(int sdl_device_index)
+{
+    // Find lowest unused joynum for new joystick
+    std::array<bool, NUM_JOYPADS> joynums;
+    int joynum = -1;
+    for (auto it = joysticks.begin(); it != joysticks.end(); it++)
+    {
+        joynums[it->second->joynum] = true;
+    }
+    for (unsigned int i=0; i< NUM_JOYPADS; i++)
+    {
+        if (!joynums[i])
+        {
+            joynum = i;
+            break;
+        }
+    }
+    if (joynum == -1)
+    {
+        printf("Joystick slots are full, cannot add joystick (device index %d)\n", sdl_device_index);
+        return false;
+    }
+
+    auto ujd = std::make_unique<JoyDevice>();
+    ujd->set_sdl_joystick(sdl_device_index, joynum);
+    printf("Joystick %d, %s", ujd->joynum+1, ujd->description.c_str());
+    joysticks[ujd->instance_id] = std::move(ujd);
+    return true;
+}
+
+bool Snes9xConfig::joystick_remove(SDL_JoystickID instance_id)
+{
+    if (!joysticks.count(instance_id))
+    {
+        printf("joystick_remove: invalid instance id %d", instance_id);
+        return false;
+    }
+    printf("Removed joystick %d, %s", joysticks[instance_id]->joynum+1, joysticks[instance_id]->description.c_str());
+    joysticks.erase(instance_id);
+    return true;
+}
+
+JoyDevice *Snes9xConfig::joystick_get(SDL_JoystickID instance_id)
+{
+    if (joysticks.count(instance_id)){
+        return joysticks[instance_id].get();
+    }
+    return NULL;
 }
 
 int Snes9xConfig::save_config_file()

@@ -61,6 +61,9 @@ class Snes9xConfig
     void flush_joysticks();
     void set_joystick_mode(int mode);
     void joystick_register_centers();
+    bool joystick_add(int sdl_device_index);
+    bool joystick_remove(SDL_JoystickID instance_id);
+    JoyDevice *joystick_get(SDL_JoystickID instance_id);
 
     /* Screen options */
     bool full_screen_on_open;
@@ -168,7 +171,8 @@ class Snes9xConfig
     bool use_sync_control;
 #endif
 
-    std::vector<JoyDevice> joystick;
+
+    std::map<SDL_JoystickID, std::unique_ptr<JoyDevice>> joysticks;
     int joystick_threshold;
 };
 

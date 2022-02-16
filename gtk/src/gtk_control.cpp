@@ -426,6 +426,39 @@ s9xcommand_t S9xGetPortCommandT(const char *name)
     return cmd;
 }
 
+
+void JoyDevice::poll_joystick_events()
+{
+    SDL_Event event;
+    JoyDevice *jd;
+
+    while (SDL_PollEvent(&event))
+    {
+        switch(event.type) {
+            case SDL_JOYAXISMOTION:
+                jd = gui_config->joystick_get(event.jaxis.which);
+                break;
+            case SDL_JOYHATMOTION:
+                jd = gui_config->joystick_get(event.jhat.which);
+                break;
+            case SDL_JOYBUTTONUP:
+            case SDL_JOYBUTTONDOWN:
+                jd = gui_config->joystick_get(event.jbutton.which);
+                break;
+            case SDL_JOYDEVICEADDED:
+                gui_config->joystick_add(event.jdevice.which);
+                continue;
+            case SDL_JOYDEVICEREMOVED:
+                gui_config->joystick_remove(event.jdevice.which);
+                continue;
+        }
+        if (jd)
+        {
+            jd->handle_event(&event);
+        }
+    }
+}
+
 void S9xProcessEvents(bool8 block)
 {
     JoyEvent event;
@@ -433,11 +466,12 @@ void S9xProcessEvents(bool8 block)
 
     if (S9xGrabJoysticks())
     {
-        for (size_t i = 0; i < gui_config->joystick.size(); i++)
+        JoyDevice::poll_joystick_events();
+        for (auto it = gui_config->joysticks.begin(); it != gui_config->joysticks.end(); it++)
         {
-            while (gui_config->joystick[i].get_event(&event))
+            while (it->second->get_event(&event))
             {
-                binding = Binding(i, event.parameter, 0);
+                binding = Binding(it->second->joynum, event.parameter, 0);
                 S9xReportButton(binding.hex(), event.state == JOY_PRESSED ? 1 : 0);
                 gui_config->screensaver_needs_reset = true;
             }
@@ -447,37 +481,15 @@ void S9xProcessEvents(bool8 block)
     }
 }
 
-static void poll_joystick_events()
-{
-    SDL_Event event;
-
-    while (SDL_PollEvent(&event))
-    {
-        if (event.type == SDL_JOYAXISMOTION)
-        {
-            gui_config->joystick[event.jaxis.which].handle_event(&event);
-        }
-        else if (event.type == SDL_JOYHATMOTION)
-        {
-            gui_config->joystick[event.jhat.which].handle_event(&event);
-        }
-        else if (event.type == SDL_JOYBUTTONUP ||
-                 event.type == SDL_JOYBUTTONDOWN)
-        {
-            gui_config->joystick[event.jbutton.which].handle_event(&event);
-        }
-    }
-}
 
 void S9xInitInputDevices()
 {
     SDL_Init(SDL_INIT_JOYSTICK);
     size_t num_joysticks = SDL_NumJoysticks();
-    gui_config->joystick.resize(num_joysticks);
 
     for (size_t i = 0; i < num_joysticks; i++)
     {
-        gui_config->joystick[i].set_sdl_joystick_num(i);
+        gui_config->joystick_add(i);
     }
 
     //First plug in both, they'll change later as needed
@@ -487,7 +499,7 @@ void S9xInitInputDevices()
 
 void S9xDeinitInputDevices()
 {
-    gui_config->joystick.clear();
+    gui_config->joysticks.clear();
     SDL_Quit();
 }
 
@@ -500,26 +512,28 @@ JoyDevice::JoyDevice()
 
 JoyDevice::~JoyDevice()
 {
-    if (enabled)
+    if (filedes)
     {
         SDL_JoystickClose(filedes);
     }
 }
 
-bool JoyDevice::set_sdl_joystick_num(unsigned int device_num)
+bool JoyDevice::set_sdl_joystick(unsigned int sdl_device_index, int new_joynum)
 {
-    if ((int)device_num >= SDL_NumJoysticks())
+    if ((int)sdl_device_index >= SDL_NumJoysticks())
     {
         enabled = false;
         return false;
     }
 
-    filedes = SDL_JoystickOpen(device_num);
+    filedes = SDL_JoystickOpen(sdl_device_index);
 
     if (!filedes)
         return false;
 
     enabled = true;
+    instance_id = SDL_JoystickInstanceID(filedes);
+    joynum = new_joynum;
 
     int num_axes = SDL_JoystickNumAxes(filedes);
     int num_hats = SDL_JoystickNumHats(filedes);
@@ -534,12 +548,14 @@ bool JoyDevice::set_sdl_joystick_num(unsigned int device_num)
         calibration[i].center = 0;
     }
 
-    printf("Joystick %d, %s:\n  %d axes, %d buttons, %d hats\n",
-           device_num + 1,
-           SDL_JoystickName(filedes),
-           SDL_JoystickNumButtons(filedes),
-           num_axes,
-           num_hats);
+    description = SDL_JoystickName(filedes);
+    description += ": ";
+    description += std::to_string(SDL_JoystickNumButtons(filedes));
+    description += " buttons, ";
+    description += std::to_string(num_axes);
+    description += " axes, ";
+    description += std::to_string(num_hats);
+    description += " hats\n";
 
     for (auto &i : axis)
         i = 0;
@@ -732,8 +748,6 @@ void JoyDevice::handle_event(SDL_Event *event)
 
 int JoyDevice::get_event(JoyEvent *event)
 {
-    poll_events();
-
     if (queue.empty())
         return 0;
 
@@ -743,11 +757,6 @@ int JoyDevice::get_event(JoyEvent *event)
     queue.pop();
 
     return 1;
-}
-
-void JoyDevice::poll_events()
-{
-    poll_joystick_events();
 }
 
 void JoyDevice::flush()
