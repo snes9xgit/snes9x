@@ -1,0 +1,23 @@
+name: Feature request
+description: If you want to have a feature to be added, please fill out this form.
+title: "[Feature request]: "
+labels: feature
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to fill out this feature form!
+  - type: textarea
+    id: feature
+    attributes:
+      label: Describe the feature
+      description: Describe the feature as accurately as possible.
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Add screenshots
+      description: Please add screenshots if available.
+    validations:
+      required: false

@@ -1,0 +1,23 @@
+name: Question
+description: If you have a question, please fill out this form.
+title: "[Question]: "
+labels: question
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to fill out the question form!
+  - type: textarea
+    id: question
+    attributes:
+      label: Describe your question
+      description: Describe your question as accurately as possible.
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Add screenshots
+      description: Please add screenshots if available.
+    validations:
+      required: false
