@@ -427,38 +427,6 @@ s9xcommand_t S9xGetPortCommandT(const char *name)
 }
 
 
-void JoyDevice::poll_joystick_events()
-{
-    SDL_Event event;
-    JoyDevice *jd;
-
-    while (SDL_PollEvent(&event))
-    {
-        switch(event.type) {
-            case SDL_JOYAXISMOTION:
-                jd = gui_config->joystick_get(event.jaxis.which);
-                break;
-            case SDL_JOYHATMOTION:
-                jd = gui_config->joystick_get(event.jhat.which);
-                break;
-            case SDL_JOYBUTTONUP:
-            case SDL_JOYBUTTONDOWN:
-                jd = gui_config->joystick_get(event.jbutton.which);
-                break;
-            case SDL_JOYDEVICEADDED:
-                gui_config->joystick_add(event.jdevice.which);
-                continue;
-            case SDL_JOYDEVICEREMOVED:
-                gui_config->joystick_remove(event.jdevice.which);
-                continue;
-        }
-        if (jd)
-        {
-            jd->handle_event(&event);
-        }
-    }
-}
-
 void S9xProcessEvents(bool8 block)
 {
     JoyEvent event;
@@ -466,7 +434,7 @@ void S9xProcessEvents(bool8 block)
 
     if (S9xGrabJoysticks())
     {
-        JoyDevice::poll_joystick_events();
+        gui_config->joysticks.poll_events();
         for (auto &j : gui_config->joysticks)
         {
             while (j.second->get_event(&event))
@@ -489,7 +457,7 @@ void S9xInitInputDevices()
 
     for (size_t i = 0; i < num_joysticks; i++)
     {
-        gui_config->joystick_add(i);
+        gui_config->joysticks.add(i);
     }
 
     //First plug in both, they'll change later as needed
@@ -770,3 +738,105 @@ void JoyDevice::flush()
     while (!queue.empty())
         queue.pop();
 }
+
+void JoyDevices::clear()
+{
+    joysticks.clear();
+}
+
+bool JoyDevices::add(int sdl_device_index)
+{
+    std::array<bool, NUM_JOYPADS> joynums;
+    for (auto &j : joysticks)
+    {
+        joynums[j.second->joynum] = true;
+    }
+
+    // New joystick always gets the lowest available joynum
+    int joynum(0);
+    for (; joynum < NUM_JOYPADS && joynums[joynum]; ++joynum);
+
+    if (joynum == NUM_JOYPADS)
+    {
+        printf("Joystick slots are full, cannot add joystick (device index %d)\n", sdl_device_index);
+        return false;
+    }
+
+    auto ujd = std::make_unique<JoyDevice>();
+    ujd->set_sdl_joystick(sdl_device_index, joynum);
+    printf("Joystick %d, %s", ujd->joynum+1, ujd->description.c_str());
+    joysticks[ujd->instance_id] = std::move(ujd);
+    return true;
+}
+
+bool JoyDevices::remove(SDL_JoystickID instance_id)
+{
+    if (!joysticks.count(instance_id))
+    {
+        printf("joystick_remove: invalid instance id %d", instance_id);
+        return false;
+    }
+    printf("Removed joystick %d, %s", joysticks[instance_id]->joynum+1, joysticks[instance_id]->description.c_str());
+    joysticks.erase(instance_id);
+    return true;
+}
+
+JoyDevice *JoyDevices::get_joystick(SDL_JoystickID instance_id)
+{
+    if (joysticks.count(instance_id)){
+        return joysticks[instance_id].get();
+    }
+    printf("BUG: Event for unknown joystick instance id: %d", instance_id);
+    return NULL;
+}
+
+void JoyDevices::register_centers()
+{
+    for (auto &j : joysticks)
+        j.second->register_centers();
+}
+
+void JoyDevices::flush_events()
+{
+    for (auto &j : joysticks)
+        j.second->flush();
+}
+
+void JoyDevices::set_mode(int mode)
+{
+    for (auto &j : joysticks)
+        j.second->mode = mode;
+}
+
+void JoyDevices::poll_events()
+{
+    SDL_Event event;
+    JoyDevice *jd;
+
+    while (SDL_PollEvent(&event))
+    {
+        switch(event.type) {
+            case SDL_JOYAXISMOTION:
+                jd = get_joystick(event.jaxis.which);
+                break;
+            case SDL_JOYHATMOTION:
+                jd = get_joystick(event.jhat.which);
+                break;
+            case SDL_JOYBUTTONUP:
+            case SDL_JOYBUTTONDOWN:
+                jd = get_joystick(event.jbutton.which);
+                break;
+            case SDL_JOYDEVICEADDED:
+                add(event.jdevice.which);
+                continue;
+            case SDL_JOYDEVICEREMOVED:
+                remove(event.jdevice.which);
+                continue;
+        }
+        if (jd)
+        {
+            jd->handle_event(&event);
+        }
+    }
+}
+

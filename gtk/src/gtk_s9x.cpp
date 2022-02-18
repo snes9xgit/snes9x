@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
     if (gui_config->fullscreen)
         top_level->enter_fullscreen_mode();
 
-    gui_config->flush_joysticks();
+    gui_config->joysticks.flush_events();
 
     if (rom_filename && *Settings.InitialSnapshotFilename)
         S9xUnfreezeGame(Settings.InitialSnapshotFilename);
@@ -276,7 +276,7 @@ static bool S9xPauseFunc()
     if (!Settings.Paused) /* Coming out of pause */
     {
         /* Clear joystick queues */
-        gui_config->flush_joysticks();
+        gui_config->joysticks.flush_events();
 
         S9xSoundStart();
 
@@ -318,7 +318,7 @@ static bool S9xIdleFunc()
     {
         S9xSoundStop();
 
-        gui_config->flush_joysticks();
+        gui_config->joysticks.flush_events();
 
         if (Settings.NetPlay && NetPlay.Connected)
         {

@@ -33,11 +33,11 @@ void snes9x_preferences_open(Snes9xWindow *window)
 
     preferences->window->set_transient_for(*window->window.get());
 
-    config->set_joystick_mode(JOY_MODE_GLOBAL);
+    config->joysticks.set_mode(JOY_MODE_GLOBAL);
     preferences->show();
     window->unpause_from_focus_change();
 
-    config->set_joystick_mode(JOY_MODE_INDIVIDUAL);
+    config->joysticks.set_mode(JOY_MODE_INDIVIDUAL);
 
     config->rebind_keys();
     window->update_accelerators();
@@ -50,7 +50,7 @@ gboolean poll_joystick(gpointer data)
     Binding binding;
     int focus;
 
-    JoyDevice::poll_joystick_events();
+    window->config->joysticks.poll_events();
     for (auto &j : window->config->joysticks)
     {
         while (j.second->get_event(&event))
@@ -66,7 +66,7 @@ gboolean poll_joystick(gpointer data)
                     window->store_binding(b_links[focus].button_name,
                                           binding);
 
-                    window->config->flush_joysticks();
+                    window->config->joysticks.flush_events();
                     return true;
                 }
             }
@@ -949,7 +949,7 @@ void Snes9xPreferences::bindings_to_dialog(int joypad)
 
 void Snes9xPreferences::calibration_dialog()
 {
-    config->joystick_register_centers();
+    config->joysticks.register_centers();
     auto dialog = Gtk::MessageDialog(_("Current joystick centers have been saved."));
     dialog.set_title(_("Calibration Complete"));
     dialog.run();

@@ -58,12 +58,6 @@ class Snes9xConfig
     int save_config_file();
     int load_defaults();
     void rebind_keys();
-    void flush_joysticks();
-    void set_joystick_mode(int mode);
-    void joystick_register_centers();
-    bool joystick_add(int sdl_device_index);
-    bool joystick_remove(SDL_JoystickID instance_id);
-    JoyDevice *joystick_get(SDL_JoystickID instance_id);
 
     /* Screen options */
     bool full_screen_on_open;
@@ -172,7 +166,7 @@ class Snes9xConfig
 #endif
 
 
-    std::map<SDL_JoystickID, std::unique_ptr<JoyDevice>> joysticks;
+    JoyDevices joysticks;
     int joystick_threshold;
 };
 
