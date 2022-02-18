@@ -51,15 +51,15 @@ gboolean poll_joystick(gpointer data)
     int focus;
 
     JoyDevice::poll_joystick_events();
-    for (auto it = window->config->joysticks.begin(); it != window->config->joysticks.end(); it++)
+    for (auto &j : window->config->joysticks)
     {
-        while (it->second->get_event(&event))
+        while (j.second->get_event(&event))
         {
             if (event.state == JOY_PRESSED)
             {
                 if ((focus = window->get_focused_binding()) >= 0)
                 {
-                    binding = Binding(it->second->joynum,
+                    binding = Binding(j.second->joynum,
                                       event.parameter,
                                       window->config->joystick_threshold);
 

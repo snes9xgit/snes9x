@@ -467,11 +467,11 @@ void S9xProcessEvents(bool8 block)
     if (S9xGrabJoysticks())
     {
         JoyDevice::poll_joystick_events();
-        for (auto it = gui_config->joysticks.begin(); it != gui_config->joysticks.end(); it++)
+        for (auto &j : gui_config->joysticks)
         {
-            while (it->second->get_event(&event))
+            while (j.second->get_event(&event))
             {
-                binding = Binding(it->second->joynum, event.parameter, 0);
+                binding = Binding(j.second->joynum, event.parameter, 0);
                 S9xReportButton(binding.hex(), event.state == JOY_PRESSED ? 1 : 0);
                 gui_config->screensaver_needs_reset = true;
             }

@@ -209,41 +209,36 @@ int Snes9xConfig::load_defaults()
 
 void Snes9xConfig::joystick_register_centers()
 {
-    for (auto it=joysticks.begin(); it != joysticks.end(); it++)
-        it->second->register_centers();
+    for (auto &j : joysticks)
+        j.second->register_centers();
 }
 
 void Snes9xConfig::flush_joysticks()
 {
-    for (auto it=joysticks.begin(); it != joysticks.end(); it++)
-        it->second->flush();
+    for (auto &j : joysticks)
+        j.second->flush();
 }
 
 void Snes9xConfig::set_joystick_mode(int mode)
 {
-    for (auto it=joysticks.begin(); it != joysticks.end(); it++)
-        it->second->mode = mode;
+    for (auto &j : joysticks)
+        j.second->mode = mode;
 }
 
 
 bool Snes9xConfig::joystick_add(int sdl_device_index)
 {
-    // Find lowest unused joynum for new joystick
     std::array<bool, NUM_JOYPADS> joynums;
-    int joynum = -1;
-    for (auto it = joysticks.begin(); it != joysticks.end(); it++)
+    for (auto &j : joysticks)
     {
-        joynums[it->second->joynum] = true;
+        joynums[j.second->joynum] = true;
     }
-    for (unsigned int i=0; i< NUM_JOYPADS; i++)
-    {
-        if (!joynums[i])
-        {
-            joynum = i;
-            break;
-        }
-    }
-    if (joynum == -1)
+
+    // New joystick always gets the lowest available joynum
+    int joynum(0);
+    for (; joynum < NUM_JOYPADS && joynums[joynum]; ++joynum);
+
+    if (joynum == NUM_JOYPADS)
     {
         printf("Joystick slots are full, cannot add joystick (device index %d)\n", sdl_device_index);
         return false;
