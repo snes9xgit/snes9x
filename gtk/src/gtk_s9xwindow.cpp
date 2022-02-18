@@ -838,7 +838,7 @@ void Snes9xWindow::save_state_dialog()
     dialog.add_button(Gtk::StockID("gtk-cancel"), Gtk::RESPONSE_CANCEL);
     dialog.add_button(Gtk::StockID("gtk-save"), Gtk::RESPONSE_ACCEPT);
     dialog.set_current_folder(S9xGetDirectory(SNAPSHOT_DIR));
-    dialog.set_current_name(S9xGetFilename(".sst", SNAPSHOT_DIR));
+    dialog.set_current_name(S9xBasename(S9xGetFilename(".sst", SNAPSHOT_DIR)));
     dialog.add_filter(get_save_states_file_filter());
     dialog.add_filter(get_all_files_filter());
 
