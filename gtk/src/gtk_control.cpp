@@ -747,6 +747,7 @@ void JoyDevices::clear()
 bool JoyDevices::add(int sdl_device_index)
 {
     std::array<bool, NUM_JOYPADS> joynums;
+    joynums.fill(false);
     for (auto &j : joysticks)
     {
         joynums[j.second->joynum] = true;
