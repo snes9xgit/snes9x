@@ -812,7 +812,7 @@ void JoyDevices::set_mode(int mode)
 void JoyDevices::poll_events()
 {
     SDL_Event event;
-    JoyDevice *jd;
+    JoyDevice *jd{};
 
     while (SDL_PollEvent(&event))
     {
@@ -834,6 +834,7 @@ void JoyDevices::poll_events()
                 remove(event.jdevice.which);
                 continue;
         }
+        
         if (jd)
         {
             jd->handle_event(&event);
