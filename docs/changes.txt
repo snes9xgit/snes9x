@@ -24,6 +24,7 @@ Gtk:
 - Use a submodule for glslang, because it doesn't guarantee API stability.
 - Switched to GTK's C++ interface, gtkmm3. This effectively drops
   GTK+ 2.0 support.
+- Joysticks can not be hotplugged. (jraby)
 
 Unix:
 - Added audio output threading. (yoffy)
