@@ -100,9 +100,12 @@ class JoyDevice
     void flush();
     void handle_event(SDL_Event *event);
     void register_centers();
-    bool set_sdl_joystick_num(unsigned int device_num);
+    bool set_sdl_joystick(unsigned int device_index, int slot);
+    static void poll_joystick_events();
 
+    std::string description;
     SDL_Joystick *filedes;
+    SDL_JoystickID instance_id;
     std::queue<JoyEvent> queue;
     int mode;
     int joynum;
@@ -112,8 +115,26 @@ class JoyDevice
     bool enabled;
 
   private:
-    void poll_events();
     void add_event(unsigned int parameter, unsigned int state);
+};
+
+class JoyDevices
+{
+    public:
+        void clear();
+        bool add(int sdl_device_index);
+        bool remove(SDL_JoystickID instance_id);
+        void register_centers();
+        void flush_events();
+        void set_mode(int mode);
+
+        void poll_events();
+        std::map<SDL_JoystickID, std::unique_ptr<JoyDevice>>::const_iterator begin() const { return joysticks.begin(); }
+        std::map<SDL_JoystickID, std::unique_ptr<JoyDevice>>::const_iterator end() const { return joysticks.end(); }
+
+    private:
+        JoyDevice *get_joystick(SDL_JoystickID instance_id);
+        std::map<SDL_JoystickID, std::unique_ptr<JoyDevice>> joysticks;
 };
 
 void S9xDeinitInputDevices();
