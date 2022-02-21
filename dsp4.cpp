@@ -90,7 +90,7 @@ static int32 DSP4_READ_DWORD (void)
 static int16 DSP4_Inverse (int16 value)
 {
 	// Attention: This lookup table is not verified
-	const uint16	div_lut[64] =
+	static const uint16	div_lut[64] =
 	{
 		0x0000, 0x8000, 0x4000, 0x2aaa, 0x2000, 0x1999, 0x1555, 0x1249,
 		0x1000, 0x0e38, 0x0ccc, 0x0ba2, 0x0aaa, 0x09d8, 0x0924, 0x0888,
@@ -1080,7 +1080,7 @@ static void DSP4_OP09 (void)
 
 static void DSP4_OP0A (int16 n2, int16 *o1, int16 *o2, int16 *o3, int16 *o4)
 {
-	const uint16	OP0A_Values[16] =
+	static const uint16	OP0A_Values[16] =
 	{
 		0x0000, 0x0030, 0x0060, 0x0090, 0x00c0, 0x00f0, 0x0120, 0x0150,
 		0xfe80, 0xfeb0, 0xfee0, 0xff10, 0xff40, 0xff70, 0xffa0, 0xffd0
