@@ -2508,9 +2508,6 @@ void CMemory::InitROM (void)
 			}
 		}
 		else
-		if (strncmp(ROMName, "ROCKMAN X", 9) == 0 && ROMVersion == 0)
-			Map_RockmanXRev0LoROMMap();
-		else
 			Map_LoROMMap();
     }
 
@@ -3227,21 +3224,6 @@ void CMemory::Map_BSSA1LoROMMap(void)
 	BWRAM = SRAM;
 }
 
-void CMemory::Map_RockmanXRev0LoROMMap(void)
-{
-	printf("Map_RockmanXRev0LoROMMap\n");
-	map_System();
-	
-	map_lorom(0x00, 0x2f, 0x8000, 0xffff, CalculatedSize);
-	map_lorom(0x40, 0x6f, 0x0000, 0xffff, CalculatedSize);
-	map_lorom(0x80, 0xaf, 0x8000, 0xffff, CalculatedSize);
-	map_lorom(0xc0, 0xef, 0x0000, 0xffff, CalculatedSize);
-	
-	map_WRAM();
-
-	map_WriteProtectROM();
-}
-
 void CMemory::Map_HiROMMap (void)
 {
 	printf("Map_HiROMMap\n");
@@ -3701,6 +3683,11 @@ void CMemory::ApplyROMFixes (void)
 		Timings.RenderPos = 32;
 	else if (match_na("ADVENTURES OF FRANKEN") && Settings.PAL)
 		Timings.RenderPos = 32;
+
+	// Copy protection fix
+	if (match_na("ROCKMAN X") && ROMVersion == 0) {
+		map_index(0x70, 0x7d, 0x0000, 0xffff, MAP_LOROM_SRAM, MAP_TYPE_RAM);
+	}
 }
 
 // BPS % UPS % IPS
