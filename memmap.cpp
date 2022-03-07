@@ -2208,10 +2208,11 @@ void CMemory::ParseSNESHeader (uint8 *RomHeader)
 	else
 		ROMSize = RomHeader[0x27];
 
-	SRAMSize  = bs ? 5 /* BS-X */    : RomHeader[0x28];
-	ROMSpeed  = bs ? RomHeader[0x28] : RomHeader[0x25];
-	ROMType   = bs ? 0xE5 /* BS-X */ : RomHeader[0x26];
-	ROMRegion = bs ? 0               : RomHeader[0x29];
+	SRAMSize   = bs ? 5 /* BS-X */    : RomHeader[0x28];
+	ROMSpeed   = bs ? RomHeader[0x28] : RomHeader[0x25];
+	ROMType    = bs ? 0xE5 /* BS-X */ : RomHeader[0x26];
+	ROMRegion  = bs ? 0               : RomHeader[0x29];
+	ROMVersion = RomHeader[0x2B];
 
 	ROMChecksum           = RomHeader[0x2E] + (RomHeader[0x2F] << 8);
 	ROMComplementChecksum = RomHeader[0x2C] + (RomHeader[0x2D] << 8);
@@ -2506,6 +2507,9 @@ void CMemory::InitROM (void)
 				Map_SufamiTurboPseudoLoROMMap();
 			}
 		}
+		else
+		if (strncmp(ROMName, "ROCKMAN X", 9) == 0 && ROMVersion == 0)
+			Map_RockmanXRev0LoROMMap();
 		else
 			Map_LoROMMap();
     }
@@ -3224,6 +3228,21 @@ void CMemory::Map_BSSA1LoROMMap(void)
 		SA1.Map[c] = SA1.WriteMap[c] = (uint8 *) MAP_BWRAM_BITMAP;
 
 	BWRAM = SRAM;
+}
+
+void CMemory::Map_RockmanXRev0LoROMMap(void)
+{
+	printf("Map_RockmanXRev0LoROMMap\n");
+	map_System();
+	
+	map_lorom(0x00, 0x2f, 0x8000, 0xffff, CalculatedSize);
+	map_lorom(0x40, 0x6f, 0x0000, 0xffff, CalculatedSize);
+	map_lorom(0x80, 0xaf, 0x8000, 0xffff, CalculatedSize);
+	map_lorom(0xc0, 0xef, 0x0000, 0xffff, CalculatedSize);
+	
+	map_WRAM();
+
+	map_WriteProtectROM();
 }
 
 void CMemory::Map_HiROMMap (void)

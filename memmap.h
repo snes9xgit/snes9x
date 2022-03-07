@@ -79,6 +79,7 @@ struct CMemory
 	uint8	ROMSpeed;
 	uint8	ROMType;
 	uint8	ROMSize;
+	uint8	ROMVersion;
 	uint32	ROMChecksum;
 	uint32	ROMComplementChecksum;
 	uint32	ROMCRC32;
@@ -155,6 +156,7 @@ struct CMemory
 	void	Map_SDD1LoROMMap (void);
 	void	Map_SA1LoROMMap (void);
 	void	Map_BSSA1LoROMMap (void);
+	void	Map_RockmanXRev0LoROMMap(void);
 	void	Map_HiROMMap (void);
 	void	Map_ExtendedHiROMMap (void);
 	void	Map_SPC7110HiROMMap (void);
