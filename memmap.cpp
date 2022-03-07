@@ -2811,9 +2811,6 @@ void CMemory::map_LoROMSRAM (void)
 {
         uint32 hi;
 
-        if (SRAMSize == 0)
-            return;
-
         if (ROMSize > 11 || SRAMSize > 5)
             hi = 0x7fff;
         else
