@@ -9,16 +9,6 @@
 #include "apu/apu.h"
 #include "snes9x.h"
 
-static void sdl_audio_callback(void *userdata, Uint8 *stream, int len)
-{
-    ((S9xSDLSoundDriver *)userdata)->mix((unsigned char *)stream, len);
-}
-
-static void c_samples_available(void *data)
-{
-    ((S9xSDLSoundDriver *)data)->samples_available();
-}
-
 void S9xSDLSoundDriver::samples_available()
 {
     int snes_samples_available = S9xGetSampleCount();
@@ -89,7 +79,10 @@ bool S9xSDLSoundDriver::open_device()
     audiospec.channels = 2;
     audiospec.format = AUDIO_S16SYS;
     audiospec.samples = (gui_config->sound_buffer_size * audiospec.freq / 1000) >> 2;
-    audiospec.callback = sdl_audio_callback;
+    audiospec.callback = [](void *userdata, uint8_t *stream, int len) {
+        ((S9xSDLSoundDriver *)userdata)->mix((unsigned char *)stream, len);
+    };
+
     audiospec.userdata = this;
 
     printf("SDL sound driver initializing...\n");
@@ -106,9 +99,10 @@ bool S9xSDLSoundDriver::open_device()
     printf("OK\n");
 
     buffer.resize(gui_config->sound_buffer_size * audiospec.freq / 500);
-    buffer.time_ratio(1.0);
 
-    S9xSetSamplesAvailableCallback(c_samples_available, this);
+    S9xSetSamplesAvailableCallback([](void *userdata) {
+        ((decltype(this)) userdata)->samples_available();;
+    }, this);
 
     return true;
 }

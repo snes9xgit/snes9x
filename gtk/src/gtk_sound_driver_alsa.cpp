@@ -13,16 +13,10 @@
 #include <sys/ioctl.h>
 #include <sys/time.h>
 
-static void alsa_samples_available(void *data)
-{
-    ((S9xAlsaSoundDriver *)data)->samples_available();
-}
-
 S9xAlsaSoundDriver::S9xAlsaSoundDriver()
 {
-    pcm = NULL;
-    sound_buffer = NULL;
-    sound_buffer_size = 0;
+    pcm = {};
+    sound_buffer.clear();
 }
 
 void S9xAlsaSoundDriver::init()
@@ -33,20 +27,16 @@ void S9xAlsaSoundDriver::terminate()
 {
     stop();
 
-    S9xSetSamplesAvailableCallback(NULL, NULL);
+    S9xSetSamplesAvailableCallback(nullptr, nullptr);
 
     if (pcm)
     {
         snd_pcm_drain(pcm);
         snd_pcm_close(pcm);
-        pcm = NULL;
+        pcm = nullptr;
     }
 
-    if (sound_buffer)
-    {
-        free(sound_buffer);
-        sound_buffer = NULL;
-    }
+    sound_buffer.clear();
 }
 
 void S9xAlsaSoundDriver::start()
@@ -71,10 +61,7 @@ bool S9xAlsaSoundDriver::open_device()
     printf("ALSA sound driver initializing...\n");
     printf("    --> (Device: default)...\n");
 
-    err = snd_pcm_open(&pcm,
-                       "default",
-                       SND_PCM_STREAM_PLAYBACK,
-                       SND_PCM_NONBLOCK);
+    err = snd_pcm_open(&pcm, "default", SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK);
 
     if (err < 0)
     {
@@ -92,34 +79,34 @@ bool S9xAlsaSoundDriver::open_device()
     snd_pcm_hw_params_set_rate_resample(pcm, hw_params, 0);
     snd_pcm_hw_params_set_channels(pcm, hw_params, 2);
 
-    snd_pcm_hw_params_get_rate_min(hw_params, &min, NULL);
-    snd_pcm_hw_params_get_rate_max(hw_params, &max, NULL);
+    snd_pcm_hw_params_get_rate_min(hw_params, &min, nullptr);
+    snd_pcm_hw_params_get_rate_max(hw_params, &max, nullptr);
     printf("    --> Available rates: %d to %d\n", min, max);
     if (Settings.SoundPlaybackRate > max && Settings.SoundPlaybackRate < min)
     {
         printf("        Rate %d not available. Using %d instead.\n", Settings.SoundPlaybackRate, max);
         Settings.SoundPlaybackRate = max;
     }
-    snd_pcm_hw_params_set_rate_near(pcm, hw_params, &Settings.SoundPlaybackRate, NULL);
+    snd_pcm_hw_params_set_rate_near(pcm, hw_params, &Settings.SoundPlaybackRate, nullptr);
 
-    snd_pcm_hw_params_get_buffer_time_min(hw_params, &min, NULL);
-    snd_pcm_hw_params_get_buffer_time_max(hw_params, &max, NULL);
+    snd_pcm_hw_params_get_buffer_time_min(hw_params, &min, nullptr);
+    snd_pcm_hw_params_get_buffer_time_max(hw_params, &max, nullptr);
     printf("    --> Available buffer sizes: %dms to %dms\n", min / 1000, max / 1000);
     if (buffer_size < min && buffer_size > max)
     {
         printf("        Buffer size %dms not available. Using %d instead.\n", buffer_size / 1000, (min + max) / 2000);
         buffer_size = (min + max) / 2;
     }
-    snd_pcm_hw_params_set_buffer_time_near(pcm, hw_params, &buffer_size, NULL);
+    snd_pcm_hw_params_set_buffer_time_near(pcm, hw_params, &buffer_size, nullptr);
 
-    snd_pcm_hw_params_get_periods_min(hw_params, &min, NULL);
-    snd_pcm_hw_params_get_periods_max(hw_params, &max, NULL);
+    snd_pcm_hw_params_get_periods_min(hw_params, &min, nullptr);
+    snd_pcm_hw_params_get_periods_max(hw_params, &max, nullptr);
     printf("    --> Period ranges: %d to %d blocks\n", min, max);
     if (periods > max)
     {
         periods = max;
     }
-    snd_pcm_hw_params_set_periods_near(pcm, hw_params, &periods, NULL);
+    snd_pcm_hw_params_set_periods_near(pcm, hw_params, &periods, nullptr);
 
     if ((err = snd_pcm_hw_params(pcm, hw_params)) < 0)
     {
@@ -144,14 +131,16 @@ bool S9xAlsaSoundDriver::open_device()
 
     printf("OK\n");
 
-    S9xSetSamplesAvailableCallback(alsa_samples_available, this);
+    S9xSetSamplesAvailableCallback([](void *userdata) {
+        ((decltype(this)) userdata)->samples_available();;
+    }, this);
 
     return true;
 
 close_fail:
     snd_pcm_drain(pcm);
     snd_pcm_close(pcm);
-    pcm = NULL;
+    pcm = nullptr;
 
 fail:
     printf("Failed: %s\n", snd_strerror(err));
@@ -162,7 +151,7 @@ fail:
 void S9xAlsaSoundDriver::samples_available()
 {
     snd_pcm_sframes_t frames_written, frames;
-    int bytes;
+    size_t bytes;
 
     frames = snd_pcm_avail(pcm);
 
@@ -206,13 +195,10 @@ void S9xAlsaSoundDriver::samples_available()
     if (bytes <= 0)
         return;
 
-    if (sound_buffer_size < bytes || sound_buffer == NULL)
-    {
-        sound_buffer = (uint8 *)realloc(sound_buffer, bytes);
-        sound_buffer_size = bytes;
-    }
+    if (sound_buffer.size() < bytes)
+        sound_buffer.resize(bytes);
 
-    S9xMixSamples(sound_buffer, frames * 2);
+    S9xMixSamples(sound_buffer.data(), frames * 2);
 
     frames_written = 0;
 
@@ -221,8 +207,7 @@ void S9xAlsaSoundDriver::samples_available()
         int result;
 
         result = snd_pcm_writei(pcm,
-                                sound_buffer +
-                                    snd_pcm_frames_to_bytes(pcm, frames_written),
+                                &sound_buffer[snd_pcm_frames_to_bytes(pcm, frames_written)],
                                 frames - frames_written);
 
         if (result < 0)
