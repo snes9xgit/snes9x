@@ -237,7 +237,7 @@
     <ClInclude Include="..\shaders\shader_helpers.h">
       <Filter>Shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\shaders\hshader_platform.h">
+    <ClInclude Include="..\shaders\shader_platform.h">
       <Filter>Shaders</Filter>
     </ClInclude>
     <ClInclude Include="gl_core_3_1.h">
