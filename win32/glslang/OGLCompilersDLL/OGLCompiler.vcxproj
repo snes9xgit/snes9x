@@ -412,8 +412,8 @@
     <Lib />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\shaders\glslang\OGLCompilersDLL\InitializeDll.cpp" />
-    <ClInclude Include="..\..\..\shaders\glslang\OGLCompilersDLL\InitializeDll.h" />
+    <ClCompile Include="..\..\..\external\glslang\OGLCompilersDLL\InitializeDll.cpp" />
+    <ClInclude Include="..\..\..\external\glslang\OGLCompilersDLL\InitializeDll.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
