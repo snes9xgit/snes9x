@@ -75,92 +75,92 @@ slang = get_option('slang')
 if slang and opengl
   glslang_args = ['-w', '-fno-exceptions', '-DNV_EXTENSIONS', '-DAMD_EXTENSIONS', '-DGLSLANG_OSINCLUDE_UNIX', '-DENABLE_OPT=0']
 
-  OSDependent_src = ['../shaders/glslang/glslang/OSDependent/Unix/ossource.cpp']
+  OSDependent_src = ['../external/glslang/glslang/OSDependent/Unix/ossource.cpp']
   OSDependent_lib = static_library('OSDependent',
                                    OSDependent_src,
-                                   include_directories: include_directories('../shaders/glslang'),
+                                   include_directories: include_directories('../external/glslang'),
                                    cpp_args: glslang_args)
   libs += OSDependent_lib
 
   glslang_src = [
-    '../shaders/glslang/glslang/MachineIndependent/glslang_tab.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/attribute.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/Constant.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/iomapper.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/InfoSink.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/Initialize.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/IntermTraverse.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/Intermediate.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/ParseContextBase.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/ParseHelper.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/PoolAlloc.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/RemoveTree.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/Scan.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/ShaderLang.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/SymbolTable.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/Versions.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/intermOut.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/limits.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/linkValidate.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/parseConst.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/reflection.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/preprocessor/Pp.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/preprocessor/PpAtom.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/preprocessor/PpContext.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/preprocessor/PpScanner.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/preprocessor/PpTokens.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/propagateNoContraction.cpp',
-    '../shaders/glslang/glslang/GenericCodeGen/CodeGen.cpp',
-    '../shaders/glslang/glslang/GenericCodeGen/Link.cpp',
-    '../shaders/glslang/StandAlone/ResourceLimits.cpp'
+    '../external/glslang/glslang/MachineIndependent/glslang_tab.cpp',
+    '../external/glslang/glslang/MachineIndependent/attribute.cpp',
+    '../external/glslang/glslang/MachineIndependent/Constant.cpp',
+    '../external/glslang/glslang/MachineIndependent/iomapper.cpp',
+    '../external/glslang/glslang/MachineIndependent/InfoSink.cpp',
+    '../external/glslang/glslang/MachineIndependent/Initialize.cpp',
+    '../external/glslang/glslang/MachineIndependent/IntermTraverse.cpp',
+    '../external/glslang/glslang/MachineIndependent/Intermediate.cpp',
+    '../external/glslang/glslang/MachineIndependent/ParseContextBase.cpp',
+    '../external/glslang/glslang/MachineIndependent/ParseHelper.cpp',
+    '../external/glslang/glslang/MachineIndependent/PoolAlloc.cpp',
+    '../external/glslang/glslang/MachineIndependent/RemoveTree.cpp',
+    '../external/glslang/glslang/MachineIndependent/Scan.cpp',
+    '../external/glslang/glslang/MachineIndependent/ShaderLang.cpp',
+    '../external/glslang/glslang/MachineIndependent/SymbolTable.cpp',
+    '../external/glslang/glslang/MachineIndependent/Versions.cpp',
+    '../external/glslang/glslang/MachineIndependent/intermOut.cpp',
+    '../external/glslang/glslang/MachineIndependent/limits.cpp',
+    '../external/glslang/glslang/MachineIndependent/linkValidate.cpp',
+    '../external/glslang/glslang/MachineIndependent/parseConst.cpp',
+    '../external/glslang/glslang/MachineIndependent/reflection.cpp',
+    '../external/glslang/glslang/MachineIndependent/preprocessor/Pp.cpp',
+    '../external/glslang/glslang/MachineIndependent/preprocessor/PpAtom.cpp',
+    '../external/glslang/glslang/MachineIndependent/preprocessor/PpContext.cpp',
+    '../external/glslang/glslang/MachineIndependent/preprocessor/PpScanner.cpp',
+    '../external/glslang/glslang/MachineIndependent/preprocessor/PpTokens.cpp',
+    '../external/glslang/glslang/MachineIndependent/propagateNoContraction.cpp',
+    '../external/glslang/glslang/GenericCodeGen/CodeGen.cpp',
+    '../external/glslang/glslang/GenericCodeGen/Link.cpp',
+    '../external/glslang/StandAlone/ResourceLimits.cpp'
   ]
 
   glslang_lib = static_library('glslang',
                                glslang_src,
-                               include_directories: include_directories('../shaders/glslang'),
+                               include_directories: include_directories('../external/glslang'),
                                cpp_args: glslang_args)
   libs += glslang_lib
 
-  OGLCompilersDLL_src = ['../shaders/glslang/OGLCompilersDLL/InitializeDll.cpp']
+  OGLCompilersDLL_src = ['../external/glslang/OGLCompilersDLL/InitializeDll.cpp']
   OGLCompilersDLL_lib = static_library('OGLCompilersDLL',
                                        OGLCompilersDLL_src,
-                                       include_directories: include_directories('../shaders/glslang'),
+                                       include_directories: include_directories('../external/glslang'),
                                        cpp_args: glslang_args)
   libs += OGLCompilersDLL_lib
 
   SPIRV_src = [
-    '../shaders/glslang/SPIRV/GlslangToSpv.cpp',
-    '../shaders/glslang/SPIRV/InReadableOrder.cpp',
-    '../shaders/glslang/SPIRV/Logger.cpp',
-    '../shaders/glslang/SPIRV/SpvBuilder.cpp',
-    '../shaders/glslang/SPIRV/SpvPostProcess.cpp',
-    '../shaders/glslang/SPIRV/SpvTools.cpp',
-    '../shaders/glslang/SPIRV/disassemble.cpp',
-    '../shaders/glslang/SPIRV/SPVRemapper.cpp',
-    '../shaders/glslang/SPIRV/doc.cpp'
+    '../external/glslang/SPIRV/GlslangToSpv.cpp',
+    '../external/glslang/SPIRV/InReadableOrder.cpp',
+    '../external/glslang/SPIRV/Logger.cpp',
+    '../external/glslang/SPIRV/SpvBuilder.cpp',
+    '../external/glslang/SPIRV/SpvPostProcess.cpp',
+    '../external/glslang/SPIRV/SpvTools.cpp',
+    '../external/glslang/SPIRV/disassemble.cpp',
+    '../external/glslang/SPIRV/SPVRemapper.cpp',
+    '../external/glslang/SPIRV/doc.cpp'
   ]
   SPIRV_lib = static_library('SPIRV',
                              SPIRV_src,
-                             include_directories: include_directories('../shaders/glslang'),
+                             include_directories: include_directories('../external/glslang'),
                              cpp_args: glslang_args)
   libs += SPIRV_lib
 
   args += ['-DUSE_SLANG',
            '-DSPIRV_CROSS_EXCEPTIONS_TO_ASSERTIONS']
   srcs += ['../shaders/slang.cpp']
-  srcs += ['../shaders/SPIRV-Cross/spirv_cfg.cpp',
-           '../shaders/SPIRV-Cross/spirv_cfg.hpp',
-           '../shaders/SPIRV-Cross/spirv_common.hpp',
-           '../shaders/SPIRV-Cross/spirv_cross.cpp',
-           '../shaders/SPIRV-Cross/spirv_cross.hpp',
-           '../shaders/SPIRV-Cross/spirv_glsl.cpp',
-           '../shaders/SPIRV-Cross/spirv_glsl.hpp',
-           '../shaders/SPIRV-Cross/spirv_cross_parsed_ir.cpp',
-           '../shaders/SPIRV-Cross/spirv_cross_parsed_ir.hpp',
-           '../shaders/SPIRV-Cross/spirv_parser.cpp',
-           '../shaders/SPIRV-Cross/spirv_parser.hpp',
-           '../shaders/SPIRV-Cross/spirv.hpp']
-  includes += '../shaders/glslang'
+  srcs += ['../external/SPIRV-Cross/spirv_cfg.cpp',
+           '../external/SPIRV-Cross/spirv_cfg.hpp',
+           '../external/SPIRV-Cross/spirv_common.hpp',
+           '../external/SPIRV-Cross/spirv_cross.cpp',
+           '../external/SPIRV-Cross/spirv_cross.hpp',
+           '../external/SPIRV-Cross/spirv_glsl.cpp',
+           '../external/SPIRV-Cross/spirv_glsl.hpp',
+           '../external/SPIRV-Cross/spirv_cross_parsed_ir.cpp',
+           '../external/SPIRV-Cross/spirv_cross_parsed_ir.hpp',
+           '../external/SPIRV-Cross/spirv_parser.cpp',
+           '../external/SPIRV-Cross/spirv_parser.hpp',
+           '../external/SPIRV-Cross/spirv.hpp']
+  includes += '../external/glslang'
 endif
 
 wayland = get_option('wayland')
