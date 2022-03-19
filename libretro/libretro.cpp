@@ -24,6 +24,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
+#include <vector>
 #include "filter/snes_ntsc.h"
 
 #define RETRO_DEVICE_JOYPAD_MULTITAP ((1 << 8) | RETRO_DEVICE_JOYPAD)
@@ -79,6 +80,9 @@ const int MAX_SNES_WIDTH_NTSC = ((SNES_NTSC_OUT_WIDTH(256) + 3) / 4) * 4;
 
 static bool show_lightgun_settings = true;
 static bool show_advanced_av_settings = true;
+
+static std::vector<int16_t> retro_audio_buffer;
+static int retro_audio_buffer_pos = 0;
 
 static void extract_basename(char *buf, const char *path, size_t size)
 {
@@ -753,23 +757,24 @@ static void update_variables(void)
 
 static void S9xAudioCallback(void*)
 {
-    const int BUFFER_SIZE = 256;
-    // This is called every time 128 to 132 samples are generated, which happens about 8 times per frame.  A buffer size of 256 samples is enough here.
-    static int16_t audio_buf[BUFFER_SIZE];
+    int avail = S9xGetSampleCount();
 
-    size_t avail = S9xGetSampleCount();
-    while (avail >= BUFFER_SIZE)
+    // If there's no space, allocate a new, larger buffer and swap it for the old one.
+    if ((int32_t)retro_audio_buffer.capacity() - retro_audio_buffer_pos < avail)
     {
-        //this loop will never be entered, but handle oversized sample counts just in case
-        S9xMixSamples((uint8*)audio_buf, BUFFER_SIZE);
-        audio_batch_cb(audio_buf, BUFFER_SIZE >> 1);
-
-        avail -= BUFFER_SIZE;
+        std::vector<int16_t> new_buffer;
+        // Overallocate a little bit to reduce the chance of additional reallocations later.
+        new_buffer.reserve((retro_audio_buffer.capacity() + avail) * 1.5);
+        memcpy(new_buffer.data(),
+               retro_audio_buffer.data(),
+               retro_audio_buffer.capacity() * sizeof(int16_t));
+        retro_audio_buffer.swap(new_buffer);
     }
+
     if (avail > 0)
     {
-        S9xMixSamples((uint8*)audio_buf, avail);
-        audio_batch_cb(audio_buf, avail >> 1);
+        S9xMixSamples((uint8*)(retro_audio_buffer.data() + retro_audio_buffer_pos), avail);
+        retro_audio_buffer_pos += avail;
     }
 }
 
@@ -1371,6 +1376,8 @@ void retro_init(void)
     }
 
     S9xInitSound(0);
+    retro_audio_buffer.reserve(1224);
+    retro_audio_buffer_pos = 0;
 
     S9xSetSoundMute(FALSE);
     S9xSetSamplesAvailableCallback(S9xAudioCallback, NULL);
@@ -1857,6 +1864,8 @@ void retro_run()
     report_buttons();
     S9xMainLoop();
     S9xAudioCallback(NULL);
+    audio_batch_cb(retro_audio_buffer.data(), retro_audio_buffer_pos >> 1);
+    retro_audio_buffer_pos = 0;
 }
 
 void retro_deinit()
