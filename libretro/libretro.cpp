@@ -16,6 +16,8 @@
 #include "conffile.h"
 #include "crosshairs.h"
 #include <stdio.h>
+#include <vector>
+
 #ifdef _WIN32
 #include <direct.h>
 #else
@@ -753,23 +755,16 @@ static void update_variables(void)
 
 static void S9xAudioCallback(void*)
 {
-    const int BUFFER_SIZE = 256;
-    // This is called every time 128 to 132 samples are generated, which happens about 8 times per frame.  A buffer size of 256 samples is enough here.
-    static int16_t audio_buf[BUFFER_SIZE];
+    static std::vector<int16_t> audio_buffer;
 
     size_t avail = S9xGetSampleCount();
-    while (avail >= BUFFER_SIZE)
+    if (avail > 256)
     {
-        //this loop will never be entered, but handle oversized sample counts just in case
-        S9xMixSamples((uint8*)audio_buf, BUFFER_SIZE);
-        audio_batch_cb(audio_buf, BUFFER_SIZE >> 1);
+        if (audio_buffer.size() < avail)
+            audio_buffer.resize(avail);
 
-        avail -= BUFFER_SIZE;
-    }
-    if (avail > 0)
-    {
-        S9xMixSamples((uint8*)audio_buf, avail);
-        audio_batch_cb(audio_buf, avail >> 1);
+        S9xMixSamples((uint8*)&audio_buffer[0], avail);
+        audio_batch_cb(&audio_buffer[0], avail >> 1);
     }
 }
 
@@ -1370,7 +1365,7 @@ void retro_init(void)
         exit(1);
     }
 
-    S9xInitSound(0);
+    S9xInitSound(32);
 
     S9xSetSoundMute(FALSE);
     S9xSetSamplesAvailableCallback(S9xAudioCallback, NULL);
