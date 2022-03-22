@@ -1,7 +1,8 @@
 project('snes9x-gtk',
         ['c', 'cpp'],
         version: '1.61',
-        meson_version: '>=0.46.0',
+        meson_version: '>=0.60.0',
+        subproject_dir: 'external',
         default_options: ['cpp_std=c++17'])
 
 args = ['-DSNES9X_GTK', '-DUNZIP_SUPPORT', '-DNETPLAY_SUPPORT', '-DJMA_SUPPORT', '-Wall', '-W', '-Wno-unused-parameter']
@@ -73,93 +74,31 @@ endif
 
 slang = get_option('slang')
 if slang and opengl
-  glslang_args = ['-w', '-fno-exceptions', '-DNV_EXTENSIONS', '-DAMD_EXTENSIONS', '-DGLSLANG_OSINCLUDE_UNIX', '-DENABLE_OPT=0']
 
-  OSDependent_src = ['../external/glslang/glslang/OSDependent/Unix/ossource.cpp']
-  OSDependent_lib = static_library('OSDependent',
-                                   OSDependent_src,
-                                   include_directories: include_directories('../external/glslang'),
-                                   cpp_args: glslang_args)
-  libs += OSDependent_lib
+  cmake = import('cmake')
 
-  glslang_src = [
-    '../external/glslang/glslang/MachineIndependent/glslang_tab.cpp',
-    '../external/glslang/glslang/MachineIndependent/attribute.cpp',
-    '../external/glslang/glslang/MachineIndependent/Constant.cpp',
-    '../external/glslang/glslang/MachineIndependent/iomapper.cpp',
-    '../external/glslang/glslang/MachineIndependent/InfoSink.cpp',
-    '../external/glslang/glslang/MachineIndependent/Initialize.cpp',
-    '../external/glslang/glslang/MachineIndependent/IntermTraverse.cpp',
-    '../external/glslang/glslang/MachineIndependent/Intermediate.cpp',
-    '../external/glslang/glslang/MachineIndependent/ParseContextBase.cpp',
-    '../external/glslang/glslang/MachineIndependent/ParseHelper.cpp',
-    '../external/glslang/glslang/MachineIndependent/PoolAlloc.cpp',
-    '../external/glslang/glslang/MachineIndependent/RemoveTree.cpp',
-    '../external/glslang/glslang/MachineIndependent/Scan.cpp',
-    '../external/glslang/glslang/MachineIndependent/ShaderLang.cpp',
-    '../external/glslang/glslang/MachineIndependent/SymbolTable.cpp',
-    '../external/glslang/glslang/MachineIndependent/Versions.cpp',
-    '../external/glslang/glslang/MachineIndependent/intermOut.cpp',
-    '../external/glslang/glslang/MachineIndependent/limits.cpp',
-    '../external/glslang/glslang/MachineIndependent/linkValidate.cpp',
-    '../external/glslang/glslang/MachineIndependent/parseConst.cpp',
-    '../external/glslang/glslang/MachineIndependent/reflection.cpp',
-    '../external/glslang/glslang/MachineIndependent/preprocessor/Pp.cpp',
-    '../external/glslang/glslang/MachineIndependent/preprocessor/PpAtom.cpp',
-    '../external/glslang/glslang/MachineIndependent/preprocessor/PpContext.cpp',
-    '../external/glslang/glslang/MachineIndependent/preprocessor/PpScanner.cpp',
-    '../external/glslang/glslang/MachineIndependent/preprocessor/PpTokens.cpp',
-    '../external/glslang/glslang/MachineIndependent/propagateNoContraction.cpp',
-    '../external/glslang/glslang/GenericCodeGen/CodeGen.cpp',
-    '../external/glslang/glslang/GenericCodeGen/Link.cpp',
-    '../external/glslang/StandAlone/ResourceLimits.cpp'
-  ]
+  glslang_opt_var = cmake.subproject_options()
+  glslang_opt_var.add_cmake_defines({'BUILD_TESTING': false})
+  glslang_pro = cmake.subproject('glslang', options: glslang_opt_var)
+#  deps += glslang_pro.dependency('GenericCodeGen')
+  deps += glslang_pro.dependency('glslang')
+#  deps += glslang_pro.dependency('MachineIndependent')
+  deps += glslang_pro.dependency('OGLCompiler')
+  deps += glslang_pro.dependency('HLSL')
+  deps += glslang_pro.dependency('OSDependent')
+  deps += glslang_pro.dependency('SPIRV')
+  deps += glslang_pro.dependency('glslang-default-resource-limits')
 
-  glslang_lib = static_library('glslang',
-                               glslang_src,
-                               include_directories: include_directories('../external/glslang'),
-                               cpp_args: glslang_args)
-  libs += glslang_lib
-
-  OGLCompilersDLL_src = ['../external/glslang/OGLCompilersDLL/InitializeDll.cpp']
-  OGLCompilersDLL_lib = static_library('OGLCompilersDLL',
-                                       OGLCompilersDLL_src,
-                                       include_directories: include_directories('../external/glslang'),
-                                       cpp_args: glslang_args)
-  libs += OGLCompilersDLL_lib
-
-  SPIRV_src = [
-    '../external/glslang/SPIRV/GlslangToSpv.cpp',
-    '../external/glslang/SPIRV/InReadableOrder.cpp',
-    '../external/glslang/SPIRV/Logger.cpp',
-    '../external/glslang/SPIRV/SpvBuilder.cpp',
-    '../external/glslang/SPIRV/SpvPostProcess.cpp',
-    '../external/glslang/SPIRV/SpvTools.cpp',
-    '../external/glslang/SPIRV/disassemble.cpp',
-    '../external/glslang/SPIRV/SPVRemapper.cpp',
-    '../external/glslang/SPIRV/doc.cpp'
-  ]
-  SPIRV_lib = static_library('SPIRV',
-                             SPIRV_src,
-                             include_directories: include_directories('../external/glslang'),
-                             cpp_args: glslang_args)
-  libs += SPIRV_lib
-
-  args += ['-DUSE_SLANG',
-           '-DSPIRV_CROSS_EXCEPTIONS_TO_ASSERTIONS']
-  srcs += ['../shaders/slang.cpp']
-  srcs += ['../external/SPIRV-Cross/spirv_cfg.cpp',
-           '../external/SPIRV-Cross/spirv_cfg.hpp',
-           '../external/SPIRV-Cross/spirv_common.hpp',
-           '../external/SPIRV-Cross/spirv_cross.cpp',
-           '../external/SPIRV-Cross/spirv_cross.hpp',
-           '../external/SPIRV-Cross/spirv_glsl.cpp',
-           '../external/SPIRV-Cross/spirv_glsl.hpp',
-           '../external/SPIRV-Cross/spirv_cross_parsed_ir.cpp',
-           '../external/SPIRV-Cross/spirv_cross_parsed_ir.hpp',
-           '../external/SPIRV-Cross/spirv_parser.cpp',
-           '../external/SPIRV-Cross/spirv_parser.hpp',
-           '../external/SPIRV-Cross/spirv.hpp']
+  spirv_cross_opt_var = cmake.subproject_options()
+  spirv_cross_opt_var.add_cmake_defines({'SPIRV_CROSS_EXCEPTIONS_TO_ASSERTIONS': true})
+  spirv_cross_pro = cmake.subproject('SPIRV-Cross', options: spirv_cross_opt_var)
+  deps += spirv_cross_pro.dependency('spirv-cross-core')
+  deps += spirv_cross_pro.dependency('spirv-cross-glsl')
+  deps += spirv_cross_pro.dependency('spirv-cross-reflect')
+  deps += spirv_cross_pro.dependency('spirv-cross-cpp')
+  
+  args += ['-DUSE_SLANG']
+  srcs += '../shaders/slang.cpp'
   includes += '../external/glslang'
 endif
 
