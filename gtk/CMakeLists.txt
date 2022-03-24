@@ -7,6 +7,7 @@ option(USE_XV "Build support for XVideo output" ON)
 option(USE_PORTAUDIO "Build PortAudio sound driver" ON)
 option(USE_ALSA "Build ALSA sound driver" ON)
 option(USE_PULSEAUDIO "Use PulseAudio" ON)
+option(USE_OSS "Build support for OSS" ON)
 option(DEBUGGER "Enable Snes9x Debugger" ON)
 option(USE_HQ2X "Build the HQ2x family of filters" ON)
 option(USE_XBRZ "Build the XBRZ family of filters" ON)
@@ -17,8 +18,11 @@ option(DANGEROUS_HACKS "Allow dangerous hacks to be used" ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_INSTALL_DATADIR "snes9x" CACHE STRING "cheats.bml directory")
+set(CMAKE_INSTALL_LOCALEDIR locale CACHE STRING "Locale directory")
 
-add_compile_options(-Wall -W -Wno-unused-parameter)
+string(APPEND DATADIR ${CMAKE_INSTALL_PREFIX} "/" ${CMAKE_INSTALL_DATAROOTDIR} "/" ${CMAKE_INSTALL_DATADIR})
+string(APPEND LOCALEDIR ${CMAKE_INSTALL_PREFIX} "/" ${CMAKE_INSTALL_DATAROOTDIR} "/" ${CMAKE_INSTALL_LOCALEDIR})
 add_compile_definitions(HAVE_LIBPNG
                         ZLIB SNES9X_GTK
                         NETPLAY_SUPPORT
@@ -28,13 +32,19 @@ add_compile_definitions(HAVE_LIBPNG
                         HAVE_STDINT_H
                         RIGHTSHIFT_IS_SAR
                         "GETTEXT_PACKAGE=\"snes9x-gtk\""
-                        "DATADIR=\"/usr/share/data\""
-                        "SNES9XLOCALEDIR=\"/usr/share/locale\"")
+                        DATADIR=\"${DATADIR}\"
+                        SNES9XLOCALEDIR=\"${LOCALEDIR}\")
 set(INCLUDES ../apu/bapu ../ src)
 set(SOURCES)
-set(ARGS)
+set(ARGS -Wall -W -Wno-unused-parameter)
 set(LIBS)
 set(DEFINES)
+
+include(FindGettext)
+
+foreach(lang es fr_FR ja pt_BR ru sr@latin uk zh_CN)
+    GETTEXT_PROCESS_PO_FILES(${lang} ALL INSTALL_DESTINATION "share/locale/" PO_FILES po/${lang}.po)
+endforeach()
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
@@ -121,6 +131,14 @@ if(USE_ALSA)
     list(APPEND SOURCES src/gtk_sound_driver_alsa.cpp)
     list(APPEND ARGS ${ALSA_CFLAGS})
     list(APPEND LIBS ${ALSA_LIBRARIES})
+endif()
+
+if(USE_OSS)
+    CHECK_INCLUDE_FILE("sys/soundcard.h" OSS)
+    if(OSS)
+        list(APPEND SOURCES src/gtk_sound_driver_oss.cpp)
+        list(APPEND DEFINES "USE_OSS")
+    endif()
 endif()
 
 pkg_check_modules(LIBPNG REQUIRED "libpng")
@@ -297,3 +315,14 @@ target_include_directories(snes9x-gtk PRIVATE ${INCLUDES})
 target_compile_options(snes9x-gtk PRIVATE ${ARGS})
 target_link_libraries(snes9x-gtk PRIVATE ${LIBS})
 target_compile_definitions(snes9x-gtk PRIVATE ${DEFINES})
+
+install(TARGETS snes9x-gtk)
+install(FILES ../data/cheats.bml DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${CMAKE_INSTALL_DATADIR})
+install(FILES data/snes9x-gtk.desktop DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications)
+install(FILES data/snes9x_16x16.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/16x16/apps RENAME snes9x.png)
+install(FILES data/snes9x_24x24.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/24x24/apps RENAME snes9x.png)
+install(FILES data/snes9x_32x32.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/32x32/apps RENAME snes9x.png)
+install(FILES data/snes9x_64x64.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/64x64/apps RENAME snes9x.png)
+install(FILES data/snes9x_128x128.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/128x128/apps RENAME snes9x.png)
+install(FILES data/snes9x_256x256.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/256x256/apps RENAME snes9x.png)
+install(FILES data/snes9x.svg DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/scalable/apps)
