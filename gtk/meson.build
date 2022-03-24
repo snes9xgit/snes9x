@@ -236,29 +236,7 @@ if get_option('xbrz')
   srcs += ['../filter/xbrz.cpp', '../filter/xbrz.h', 'src/filter_xbrz.cpp', 'src/filter_xbrz.h']
 endif
 
-if c_compiler.has_function('mkstemp')
-  args += '-DHAVE_MKSTEMP'
-endif
-
-if c_compiler.has_header('strings.h')
-  args += '-DHAVE_STRINGS_H'
-endif
-
-if c_compiler.has_header('stdint.h')
-  args += '-DHAVE_STDINT_H'
-endif
-
-results = c_compiler.run('int main(int argc, char **argv) { int i; i = -1; i >>= 1; return (i < 0 ? 0 : 1); }')
-
-if results.returncode() == 0
-  args += '-DRIGHTSHIFT_IS_SAR'
-endif
-
-results = c_compiler.run('int main(int argc, char **argv) { return (!(sizeof(void *) == sizeof(int))); }')
-
-if results.returncode() != 0
-  args += '-DPTR_NOT_INT'
-endif
+args += ['-DHAVE_MKSTEMP', '-DHAVE_STRINGS_H', '-DHAVE_STDINT_H', '-DRIGHTSHIFT_IS_SAR']
 
 srcs += [
  'src/gtk_sound_driver.h',
