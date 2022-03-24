@@ -1,7 +1,7 @@
 project('snes9x-gtk',
         ['c', 'cpp'],
         version: '1.61',
-        meson_version: '>=0.60.0',
+        meson_version: '>=0.56.2',
         subproject_dir: 'external',
         default_options: ['cpp_std=c++17'])
 
