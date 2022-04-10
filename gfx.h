@@ -11,16 +11,17 @@
 
 struct SGFX
 {
+	const uint32 Pitch = sizeof(uint16) * MAX_SNES_WIDTH;
+	const uint32 RealPPL = MAX_SNES_WIDTH; // true PPL of Screen buffer
+	const uint32 ScreenSize =  MAX_SNES_WIDTH * SNES_HEIGHT_EXTENDED;
+	uint16 ScreenBuffer[512 * (478 + 64)];
 	uint16	*Screen;
 	uint16	*SubScreen;
 	uint8	*ZBuffer;
 	uint8	*SubZBuffer;
-	uint32	Pitch;
-	uint32	ScreenSize;
 	uint16	*S;
 	uint8	*DB;
 	uint16	*ZERO;
-	uint32	RealPPL;			// true PPL of Screen buffer
 	uint32	PPL;				// number of pixels on each of Screen buffer
 	uint32	LinesPerTile;		// number of lines in 1 tile (4 or 8 due to interlace)
 	uint16	*ScreenColors;		// screen colors for rendering main

@@ -92,7 +92,6 @@ struct GUIData
 	uint32			blue_size;
 	Window			window;
 	Image			*image;
-	uint8			*snes_buffer;
 	uint8			*filter_buffer;
 	uint8			*blit_screen;
 	uint32			blit_screen_pitch;
@@ -932,14 +931,6 @@ static void SetupImage (void)
 #endif
 		SetupXImage();
 
-	// Setup SNES buffers
-	GFX.Pitch = SNES_WIDTH * 2 * 2;
-	GUI.snes_buffer = (uint8 *) calloc(GFX.Pitch * ((SNES_HEIGHT_EXTENDED + 4) * 2), 1);
-	if (!GUI.snes_buffer)
-		FatalError("Failed to allocate GUI.snes_buffer.");
-
-	GFX.Screen = (uint16 *) (GUI.snes_buffer + (GFX.Pitch * 2 * 2));
-
 	GUI.filter_buffer = (uint8 *) calloc((SNES_WIDTH * 2) * 2 * (SNES_HEIGHT_EXTENDED * 2), 1);
 	if (!GUI.filter_buffer)
 		FatalError("Failed to allocate GUI.filter_buffer.");
@@ -967,12 +958,6 @@ static void SetupImage (void)
 
 static void TakedownImage (void)
 {
-	if (GUI.snes_buffer)
-	{
-		free(GUI.snes_buffer);
-		GUI.snes_buffer = NULL;
-	}
-
 	if (GUI.filter_buffer)
 	{
 		free(GUI.filter_buffer);

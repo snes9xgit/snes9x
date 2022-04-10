@@ -1624,12 +1624,7 @@ static void S9xGTKDisplayString(const char *string, int linesFromBottom,
 
 void S9xInitDisplay(int argc, char **argv)
 {
-    static uint16_t screen_buffer[512 * 1024];
-
     Settings.SupportHiRes = true;
-    GFX.Screen = (uint16_t *)&screen_buffer[512 * 256];
-    GFX.Pitch = 512 * 2;
-
     S9xBlit2xSaIFilterInit();
 #ifdef USE_HQ2X
     S9xBlitHQ2xFilterInit();
