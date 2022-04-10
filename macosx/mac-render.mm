@@ -279,22 +279,25 @@ static void S9xPutImageMetal (int width, int height, uint16 *buffer16)
 		buffer = (uint8 *)realloc(buffer, width * height * 4);
 	}
 
-	for (int i = 0; i < width * height; ++i)
+	for (int y = 0; y < height; y++)
 	{
-		uint16 pixel = buffer16[i];
-		unsigned int red = (pixel & FIRST_COLOR_MASK_RGB555) >> 10;
-		unsigned int green = (pixel & SECOND_COLOR_MASK_RGB555) >> 5;
-		unsigned int blue = (pixel & THIRD_COLOR_MASK_RGB555);
-		
-		red = ( red * 527 + 23 ) >> 6;
-		green = ( green * 527 + 23 ) >> 6;
-		blue = ( blue * 527 + 23 ) >> 6;
-				
-		int offset = i * 4;
-		buffer[offset++] = (uint8)red;
-		buffer[offset++] = (uint8)green;
-		buffer[offset++] = (uint8)blue;
-		buffer[offset] = 0xFF;
+		for (int x = 0; x < width; x++)
+		{
+			uint16 pixel = buffer16[y * GFX.RealPPL + x];
+			unsigned int red = (pixel & FIRST_COLOR_MASK_RGB555) >> 10;
+			unsigned int green = (pixel & SECOND_COLOR_MASK_RGB555) >> 5;
+			unsigned int blue = (pixel & THIRD_COLOR_MASK_RGB555);
+
+			red = ( red * 527 + 23 ) >> 6;
+			green = ( green * 527 + 23 ) >> 6;
+			blue = ( blue * 527 + 23 ) >> 6;
+
+			int offset = (y * width + x) * 4;
+			buffer[offset++] = (uint8)red;
+			buffer[offset++] = (uint8)green;
+			buffer[offset++] = (uint8)blue;
+			buffer[offset] = 0xFF;
+		}
 	}
 	
 	CGSize layerSize = metalLayer.bounds.size;
