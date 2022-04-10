@@ -8102,7 +8102,6 @@ updateFilterBox2:
 				//UpdateScale(GUI.Scale, prevScale);
 				GUI.Scale = (RenderFilter)prevScale;
 				GUI.ScaleHiRes = (RenderFilter)prevScaleHiRes;
-				GFX.RealPPL = prevPPL;
 				GUI.Stretch = prevStretch;
 				Settings.AutoDisplayMessages = prevAutoDisplayMessages;
 				Settings.BilinearFilter = prevBilinearFilter;
