@@ -276,7 +276,7 @@ static void S9xPutImageMetal (int width, int height, uint16 *buffer16)
 
 	if (buffer_size != width * height * 4)
 	{
-		buffer = realloc(buffer, width * height * 4);
+		buffer = (uint8 *)realloc(buffer, width * height * 4);
 	}
 
 	for (int i = 0; i < width * height; ++i)
