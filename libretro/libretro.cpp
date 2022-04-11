@@ -1833,16 +1833,6 @@ void retro_run()
     poll_cb();
     report_buttons();
     S9xMainLoop();
-
-    static std::vector<int16_t> audio_buffer;
-
-    size_t avail = S9xGetSampleCount();
-
-    if (audio_buffer.size() < avail)
-        audio_buffer.resize(avail);
-
-    S9xMixSamples((uint8*)&audio_buffer[0], avail);
-    audio_batch_cb(&audio_buffer[0], avail >> 1);
 }
 
 void retro_deinit()
@@ -2066,6 +2056,16 @@ bool8 S9xDeinitUpdate(int width, int height)
     {
         video_cb(GFX.Screen + ((int)(GFX.Pitch >> 1) * overscan_offset), width, height, GFX.Pitch);
     }
+
+    static std::vector<int16_t> audio_buffer;
+
+    size_t avail = S9xGetSampleCount();
+
+    if (audio_buffer.size() < avail)
+        audio_buffer.resize(avail);
+
+    S9xMixSamples((uint8*)&audio_buffer[0], avail);
+    audio_batch_cb(&audio_buffer[0], avail >> 1);
 
     return TRUE;
 }
