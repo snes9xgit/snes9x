@@ -753,6 +753,24 @@ static void update_variables(void)
     }
 }
 
+static void S9xEndScreenRefreshCallback(void*)
+{
+    if (Settings.Mute) {
+        S9xClearSamples();
+        return;
+    }
+
+    static std::vector<int16_t> audio_buffer;
+
+    size_t avail = S9xGetSampleCount();
+
+    if (audio_buffer.size() < avail)
+        audio_buffer.resize(avail);
+
+    S9xMixSamples((uint8*)&audio_buffer[0], avail);
+    audio_batch_cb(&audio_buffer[0], avail >> 1);
+}
+
 void retro_get_system_info(struct retro_system_info *info)
 {
     memset(info,0,sizeof(retro_system_info));
@@ -1358,6 +1376,7 @@ void retro_init(void)
     ntsc_screen_buffer = (uint16*) calloc(1, MAX_SNES_WIDTH_NTSC * 2 * (MAX_SNES_HEIGHT + 16));
     snes_ntsc_buffer = ntsc_screen_buffer + (MAX_SNES_WIDTH_NTSC >> 1) * 16;
     S9xGraphicsInit();
+    S9xSetEndScreenRefreshCallback(S9xEndScreenRefreshCallback, NULL);
 
     S9xInitInputDevices();
     for (int i = 0; i < 2; i++)
@@ -2056,16 +2075,6 @@ bool8 S9xDeinitUpdate(int width, int height)
     {
         video_cb(GFX.Screen + ((int)(GFX.Pitch >> 1) * overscan_offset), width, height, GFX.Pitch);
     }
-
-    static std::vector<int16_t> audio_buffer;
-
-    size_t avail = S9xGetSampleCount();
-
-    if (audio_buffer.size() < avail)
-        audio_buffer.resize(avail);
-
-    S9xMixSamples((uint8*)&audio_buffer[0], avail);
-    audio_batch_cb(&audio_buffer[0], avail >> 1);
 
     return TRUE;
 }
