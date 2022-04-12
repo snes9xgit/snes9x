@@ -98,6 +98,9 @@ bool8 S9xGraphicsInit (void)
 		}
 	}
 
+	GFX.EndScreenRefreshCallback = NULL;
+	GFX.EndScreenRefreshCallbackData = NULL;
+
 	return (TRUE);
 }
 
@@ -107,6 +110,9 @@ void S9xGraphicsDeinit (void)
 	if (GFX.SubScreen)  { free(GFX.SubScreen);  GFX.SubScreen  = NULL; }
 	if (GFX.ZBuffer)    { free(GFX.ZBuffer);    GFX.ZBuffer    = NULL; }
 	if (GFX.SubZBuffer) { free(GFX.SubZBuffer); GFX.SubZBuffer = NULL; }
+
+	GFX.EndScreenRefreshCallback = NULL;
+	GFX.EndScreenRefreshCallbackData = NULL;
 }
 
 void S9xGraphicsScreenResize (void)
@@ -263,6 +269,15 @@ void S9xEndScreenRefresh (void)
 			}
 		}
 	}
+
+	if (GFX.EndScreenRefreshCallback)
+		GFX.EndScreenRefreshCallback(GFX.EndScreenRefreshCallbackData);
+}
+
+void S9xSetEndScreenRefreshCallback(const SGFX::Callback cb, void *const data)
+{
+	GFX.EndScreenRefreshCallback = cb;
+	GFX.EndScreenRefreshCallbackData = data;
 }
 
 void RenderLine (uint8 C)
