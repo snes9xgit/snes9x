@@ -104,8 +104,6 @@ void WinSetDefaultValues ()
 	// CPU options
 	Settings.Paused	= false;
 
-	Settings.SupportHiRes = true;
-
 #ifdef NETPLAY_SUPPORT
 	Settings.Port =	1996;
 	NetPlay.MaxFrameSkip = 10;

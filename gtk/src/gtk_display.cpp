@@ -1624,7 +1624,6 @@ static void S9xGTKDisplayString(const char *string, int linesFromBottom,
 
 void S9xInitDisplay(int argc, char **argv)
 {
-    Settings.SupportHiRes = true;
     S9xBlit2xSaIFilterInit();
 #ifdef USE_HQ2X
     S9xBlitHQ2xFilterInit();

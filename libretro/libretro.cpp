@@ -372,10 +372,6 @@ static void update_variables(void)
     var.value=NULL;
     Settings.Transparency=!(environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && !strcmp("disabled", var.value));
 
-    var.key="snes9x_gfx_hires";
-    var.value=NULL;
-    Settings.SupportHiRes=!(environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && !strcmp("disabled", var.value));
-
     var.key="snes9x_audio_interpolation";
     var.value=NULL;
     if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -1344,7 +1340,6 @@ void retro_init(void)
     Settings.Stereo = TRUE;
     Settings.SoundPlaybackRate = 32040;
     Settings.SoundInputRate = 32040;
-    Settings.SupportHiRes = TRUE;
     Settings.Transparency = TRUE;
     Settings.AutoDisplayMessages = TRUE;
     Settings.InitialInfoStringTimeout = 120;
