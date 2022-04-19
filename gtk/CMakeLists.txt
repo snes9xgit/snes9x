@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 project(snes9x-gtk VERSION 1.61)
 
-option(USE_OPENGL "Build support for OpenGL" ON)
 option(USE_SLANG "Build support for slang-type shaders" ON)
 option(USE_XV "Build support for XVideo output" ON)
 option(USE_PORTAUDIO "Build PortAudio sound driver" ON)
@@ -56,17 +55,14 @@ find_library(DL dl REQUIRED)
 list(APPEND ARGS ${SDL2_CFLAGS} ${GTK_CFLAGS} ${XRANDR_CFLAGS})
 list(APPEND LIBS ${X11} ${XEXT} ${DL} ${SDL2_LIBRARIES} ${GTK_LIBRARIES} ${XRANDR_LIBRARIES})
 
-if(USE_OPENGL)
-    pkg_check_modules(EPOXY REQUIRED epoxy)
-    list(APPEND ARGS ${EPOXY_CFLAGS})
-    list(APPEND LIBS ${EPOXY_LIBRARIES})
-    list(APPEND SOURCES src/gtk_display_driver_opengl.cpp
-                        src/gtk_glx_context.cpp
-                        ../shaders/glsl.cpp
-                        ../shaders/shader_helpers.cpp
-                        src/gtk_shader_parameters.cpp)
-    list(APPEND DEFINES "USE_OPENGL")
-endif()
+pkg_check_modules(EPOXY REQUIRED epoxy)
+list(APPEND ARGS ${EPOXY_CFLAGS})
+list(APPEND LIBS ${EPOXY_LIBRARIES})
+list(APPEND SOURCES src/gtk_display_driver_opengl.cpp
+                    src/gtk_glx_context.cpp
+                    ../shaders/glsl.cpp
+                    ../shaders/shader_helpers.cpp
+                    src/gtk_shader_parameters.cpp)
 
 if(USE_SLANG)
     list(APPEND SOURCES ../shaders/slang.cpp)

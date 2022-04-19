@@ -148,7 +148,6 @@ int Snes9xConfig::load_defaults()
     rewind_buffer_size = 0;
     Settings.Rewinding = false;
 
-#ifdef USE_OPENGL
     sync_to_vblank = true;
     use_pbos = true;
     pbo_format = 0;
@@ -157,7 +156,6 @@ int Snes9xConfig::load_defaults()
     shader_filename.clear();
     use_glfinish = false;
     use_sync_control = false;
-#endif
 
     /* Snes9x Variables */
     Settings.MouseMaster = true;
@@ -255,7 +253,6 @@ int Snes9xConfig::save_config_file()
     outbool("MergeFields", ntsc_setup.merge_fields);
     outint("ScanlineIntensity", ntsc_scanline_intensity);
 
-#ifdef USE_OPENGL
     section = "OpenGL";
     outbool("VSync", sync_to_vblank);
     outbool("glFinish", use_glfinish);
@@ -265,7 +262,6 @@ int Snes9xConfig::save_config_file()
     outbool("UsePixelBufferObjects", use_pbos);
     outint("PixelBufferObjectBitDepth", pbo_format);
     outstring("ShaderFile", shader_filename);
-#endif
 
     section = "Sound";
     outbool("MuteSound", mute_sound);
@@ -489,7 +485,6 @@ int Snes9xConfig::load_config_file()
     inbool("MergeFields", ntsc_setup.merge_fields);
     inint("ScanlineIntensity", ntsc_scanline_intensity);
 
-#ifdef USE_OPENGL
     section = "OpenGL";
     inbool("VSync", sync_to_vblank);
     inbool("glFinish", use_glfinish);
@@ -499,7 +494,6 @@ int Snes9xConfig::load_config_file()
     inbool("UseNonPowerOfTwoTextures", npot_textures);
     inbool("EnableCustomShaders", use_shaders);
     instr("ShaderFile", shader_filename);
-#endif
 
     section = "Sound";
     inbool("MuteSound", mute_sound);
@@ -663,10 +657,8 @@ int Snes9xConfig::load_config_file()
         scale_method = 0;
 #endif /* USE_XBRZ */
 
-#ifdef USE_OPENGL
     if (pbo_format != 32)
         pbo_format = 16;
-#endif
 
     if (Settings.SkipFrames == THROTTLE_SOUND_SYNC)
         Settings.SoundSync = true;

@@ -16,9 +16,7 @@
 #include <X11/extensions/Xvlib.h>
 #endif
 
-#ifdef USE_OPENGL
 #include "gtk_shader_parameters.h"
-#endif
 
 #include "gtk_s9x.h"
 #include "gtk_preferences.h"
@@ -99,13 +97,7 @@ Snes9xWindow::Snes9xWindow(Snes9xConfig *config)
     gtk_widget_realize(GTK_WIDGET(window->gobj()));
     gtk_widget_realize(GTK_WIDGET(drawing_area->gobj()));
 
-
-#ifndef USE_OPENGL
-    get_object<Gtk::Widget>("shader_parameters_separator")->hide();
-    get_object<Gtk::Widget>("shader_parameters_item")->hide();
-#else
     enable_widget("shader_parameters_item", false);
-#endif
 
     connect_signals();
 
@@ -180,11 +172,9 @@ void Snes9xWindow::connect_signals()
         S9xReset();
     });
 
-#ifdef USE_OPENGL
     get_object<Gtk::MenuItem>("shader_parameters_item")->signal_activate().connect([&] {
         gtk_shader_parameters_dialog(get_window());
     });
-#endif
 
     const std::vector<const char *> port_items = { "joypad1", "mouse1", "superscope1", "joypad2", "mouse2", "multitap2", "superscope2", "nothingpluggedin2" };
     for (auto &name : port_items)

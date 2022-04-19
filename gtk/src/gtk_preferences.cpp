@@ -333,7 +333,6 @@ bool Snes9xPreferences::key_pressed(GdkEventKey *event)
 
 void Snes9xPreferences::shader_select()
 {
-#ifdef USE_OPENGL
     auto entry = get_object<Gtk::Entry>("fragment_shader");
 
     auto dialog = Gtk::FileChooserDialog(*window.get(), _("Select Shader File"));
@@ -357,7 +356,6 @@ void Snes9xPreferences::shader_select()
         if (!filename.empty())
             entry->set_text(filename);
     }
-#endif
 }
 
 void Snes9xPreferences::load_ntsc_settings()
@@ -467,7 +465,6 @@ void Snes9xPreferences::move_settings_to_dialog()
     set_combo ("frameskip_combo",           Settings.SkipFrames);
     set_check ("bilinear_filter",           Settings.BilinearFilter);
 
-#ifdef USE_OPENGL
     set_check ("sync_to_vblank",            config->sync_to_vblank);
     set_check ("use_glfinish",              config->use_glfinish);
     set_check ("use_sync_control",          config->use_sync_control);
@@ -476,7 +473,7 @@ void Snes9xPreferences::move_settings_to_dialog()
     set_check ("npot_textures",             config->npot_textures);
     set_check ("use_shaders",               config->use_shaders);
     set_entry_text ("fragment_shader",      config->shader_filename.c_str ());
-#endif
+
     set_spin ("joystick_threshold",         config->joystick_threshold);
 
     /* Control bindings */
@@ -631,7 +628,6 @@ void Snes9xPreferences::get_settings_from_dialog()
     Settings.InterpolationMethod = get_combo("sound_filter");
 #endif
 
-#ifdef USE_OPENGL
     int pbo_format = get_combo("pixel_format") == 1 ? 32 : 16;
 
     if (config->sync_to_vblank   != get_check("sync_to_vblank") ||
@@ -653,7 +649,6 @@ void Snes9xPreferences::get_settings_from_dialog()
     config->use_sync_control = get_check("use_sync_control");
     config->shader_filename  = get_entry_text ("fragment_shader");
     config->pbo_format       = pbo_format;
-#endif
 
     std::string new_sram_directory = get_entry_text("sram_directory");
     config->savestate_directory = get_entry_text("savestate_directory");

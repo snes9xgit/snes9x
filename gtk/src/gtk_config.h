@@ -154,7 +154,6 @@ class Snes9xConfig
     XRRScreenResources *xrr_screen_resources;
     XRRCrtcInfo *xrr_crtc_info;
 
-#ifdef USE_OPENGL
     bool sync_to_vblank;
     bool use_pbos;
     int pbo_format;
@@ -163,8 +162,6 @@ class Snes9xConfig
     std::string shader_filename;
     bool use_glfinish;
     bool use_sync_control;
-#endif
-
 
     JoyDevices joysticks;
     int joystick_threshold;

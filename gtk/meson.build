@@ -52,28 +52,18 @@ deps += dl_dep
 xrandr_dep = dependency('xrandr')
 deps += xrandr_dep
 
-opengl = get_option('opengl')
-if opengl
-  opengl_dep = dependency('epoxy', required: false)
-
-  if opengl_dep.found()
-    args += '-DUSE_OPENGL'
-    srcs += [ 'src/gtk_display_driver_opengl.cpp',
-              'src/gtk_display_driver_opengl.h',
-              'src/gtk_glx_context.cpp',
-              'src/gtk_glx_context.h',
-              '../shaders/glsl.cpp',
-              '../shaders/shader_helpers.cpp',
-              'src/gtk_shader_parameters.cpp' ]
-    deps += opengl_dep
-  else
-    opengl = false
-    warns += 'libepoxy not found. OpenGL will disabled.'
-  endif
-endif
+opengl_dep = dependency('epoxy', required: true)
+srcs += [ 'src/gtk_display_driver_opengl.cpp',
+          'src/gtk_display_driver_opengl.h',
+          'src/gtk_glx_context.cpp',
+          'src/gtk_glx_context.h',
+          '../shaders/glsl.cpp',
+          '../shaders/shader_helpers.cpp',
+          'src/gtk_shader_parameters.cpp' ]
+deps += opengl_dep
 
 slang = get_option('slang')
-if slang and opengl
+if slang
 
   cmake = import('cmake')
 
@@ -397,8 +387,7 @@ summary = [
   '            localedir:         ' + localedir,
   '[Options]   Build type:        ' + get_option('buildtype'),
   '            Wayland:           ' + wayland.to_string(),
-  '            OpenGL:            ' + opengl.to_string(),
-  '             slang shaders:    ' + slang.to_string(),
+  '            slang shaders:     ' + slang.to_string(),
   '            XVideo:            ' + xv.to_string(),
   '            ALSA:              ' + alsa.to_string(),
   '            Open Sound System: ' + oss.to_string(),
