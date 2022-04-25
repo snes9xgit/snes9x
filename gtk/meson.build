@@ -313,7 +313,6 @@ srcs += [
  '../stream.cpp',
  '../conffile.cpp',
  '../bsx.cpp',
- '../logger.cpp',
  '../snapshot.cpp',
  '../screenshot.cpp',
  '../movie.cpp',

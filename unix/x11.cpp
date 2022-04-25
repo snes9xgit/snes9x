@@ -48,7 +48,6 @@
 #include "ppu.h"
 #include "controls.h"
 #include "movie.h"
-#include "logger.h"
 #include "conffile.h"
 #include "blit.h"
 #include "display.h"
@@ -1546,9 +1545,6 @@ static void Repaint (bool8 isFrameBoundry)
 			XDefineCursor(GUI.display, GUI.window, GUI.point_cursor);
 		}
 	}
-
-	if (Settings.DumpStreams && isFrameBoundry)
-		S9xVideoLogger(GUI.image->data, SNES_WIDTH * 2, SNES_HEIGHT_EXTENDED * 2, GUI.bytes_per_pixel, GUI.image->bytes_per_line);
 }
 
 void S9xTextMode (void)

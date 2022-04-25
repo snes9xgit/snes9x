@@ -365,9 +365,6 @@
     <ClCompile Include="..\loadzip.cpp">
       <Filter>Emu</Filter>
     </ClCompile>
-    <ClCompile Include="..\logger.cpp">
-      <Filter>Emu</Filter>
-    </ClCompile>
     <ClCompile Include="..\memmap.cpp">
       <Filter>Emu</Filter>
     </ClCompile>
@@ -756,9 +753,6 @@
       <Filter>Emu</Filter>
     </CustomBuild>
     <CustomBuild Include="..\language.h">
-      <Filter>Emu</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\logger.h">
       <Filter>Emu</Filter>
     </CustomBuild>
     <CustomBuild Include="..\memmap.h">

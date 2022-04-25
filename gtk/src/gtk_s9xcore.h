@@ -18,7 +18,6 @@
 #include "gfx.h"
 #include "spc7110.h"
 #include "controls.h"
-#include "logger.h"
 #include "cheats.h"
 #include "movie.h"
 #include "conffile.h"
