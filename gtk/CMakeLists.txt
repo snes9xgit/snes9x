@@ -278,6 +278,9 @@ list(APPEND SOURCES
     src/background_particles.cpp
     src/background_particles.h)
 
+list(APPEND SOURCES ../external/fmt/src/format.cc)
+list(APPEND INCLUDES ../external/fmt/include)
+
 set(LIBJMA_SOURCES
     ../jma/s9x-jma.cpp
     ../jma/7zlzma.cpp

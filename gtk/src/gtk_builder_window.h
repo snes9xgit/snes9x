@@ -49,6 +49,7 @@ class GtkBuilderWindow
     void set_check(const char *name, bool value);
     void set_entry_value(const char *name, unsigned int value);
     void set_entry_text(const char *name, const char *text);
+    void set_entry_text(const char *name, const std::string &text);
     void set_combo(const char *name, unsigned char value);
     void set_spin(const char *name, double value);
     void set_slider(const char *name, float value);

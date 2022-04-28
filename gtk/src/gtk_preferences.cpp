@@ -917,9 +917,7 @@ void Snes9xPreferences::clear_binding(const char *name)
 
     if (b_links[i].button_name)
     {
-        char buf[256];
-        unset.to_string(buf);
-        set_entry_text(b_links[i].button_name, buf);
+        set_entry_text(b_links[i].button_name, unset.to_string(true));
     }
 }
 
@@ -931,14 +929,14 @@ void Snes9xPreferences::bindings_to_dialog(int joypad)
 
     for (int i = 0; i < NUM_JOYPAD_LINKS; i++)
     {
-        set_entry_text(b_links[i].button_name, bindings[i].as_string().c_str());
+        set_entry_text(b_links[i].button_name, bindings[i].as_string());
     }
 
     auto shortcut_names = &b_links[NUM_JOYPAD_LINKS];
 
     for (int i = 0; shortcut_names[i].button_name; i++)
     {
-        set_entry_text(shortcut_names[i].button_name, shortcut[i].as_string().c_str());
+        set_entry_text(shortcut_names[i].button_name, shortcut[i].as_string());
     }
 }
 
