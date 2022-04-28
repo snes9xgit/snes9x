@@ -623,8 +623,7 @@ static void SetupOBJ (void)
 			{
 				if (HPos < 0)
 					GFX.OBJVisibleTiles[S] = (GFX.OBJWidths[S] + HPos + 7) >> 3;
-				else
-				if (HPos + GFX.OBJWidths[S] > 255)
+				else if (HPos + GFX.OBJWidths[S] > 255)
 					GFX.OBJVisibleTiles[S] = (256 - HPos + 7) >> 3;
 				else
 					GFX.OBJVisibleTiles[S] = GFX.OBJWidths[S] >> 3;
@@ -695,8 +694,7 @@ static void SetupOBJ (void)
 			{
 				if (HPos < 0)
 					GFX.OBJVisibleTiles[S] = (GFX.OBJWidths[S] + HPos + 7) >> 3;
-				else
-				if (HPos + GFX.OBJWidths[S] >= 257)
+				else if (HPos + GFX.OBJWidths[S] >= 257)
 					GFX.OBJVisibleTiles[S] = (257 - HPos + 7) >> 3;
 				else
 					GFX.OBJVisibleTiles[S] = GFX.OBJWidths[S] >> 3;
@@ -2000,7 +1998,7 @@ static void DisplayWatchedAddresses (void)
 			break;
 
 		int32	displayNumber = 0;
-		char	buf[32];
+		char	buf[64];
 
 		for (int r = 0; r < watches[i].size; r++)
 			displayNumber += (Cheat.CWatchRAM[(watches[i].address - 0x7E0000) + r]) << (8 * r);
@@ -2014,11 +2012,9 @@ static void DisplayWatchedAddresses (void)
 		{
 			if (watches[i].size == 1)
 				displayNumber = (int32) ((int8)  displayNumber);
-			else
-			if (watches[i].size == 2)
+			else if (watches[i].size == 2)
 				displayNumber = (int32) ((int16) displayNumber);
-			else
-			if (watches[i].size == 3)
+			else if (watches[i].size == 3)
 				if (displayNumber >= 8388608)
 					displayNumber -= 16777216;
 
