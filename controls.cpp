@@ -2276,16 +2276,12 @@ void S9xApplyCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 
 					case LoadOopsFile:
 					{
-						char	filename[PATH_MAX + 1];
-						char	drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], def[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
-
-						_splitpath(Memory.ROMFilename, drive, dir, def, ext);
-						snprintf(filename, PATH_MAX + 1, "%s%s%s.%.*s", S9xGetDirectory(SNAPSHOT_DIR), SLASH_STR, def, _MAX_EXT - 1, "oops");
+						const char *filename = S9xGetFilename("oops", SNAPSHOT_DIR);
 
 						if (S9xUnfreezeGame(filename))
 						{
-							snprintf(buf, 256, "%s.%.*s loaded", def, _MAX_EXT - 1, "oops");
-							S9xSetInfoString (buf);
+							snprintf(buf, 256, "%.240s.oops loaded", S9xBasename(Memory.ROMFilename));
+							S9xSetInfoString(buf);
 						}
 						else
 							S9xMessage(S9X_ERROR, S9X_FREEZE_FILE_NOT_FOUND, "Oops file not found");
@@ -2317,11 +2313,11 @@ void S9xApplyCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 						char	drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], def[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
 
 						_splitpath(Memory.ROMFilename, drive, dir, def, ext);
-						snprintf(filename, PATH_MAX + 1, "%s%s%s.%03d", S9xGetDirectory(SNAPSHOT_DIR), SLASH_STR, def, i - QuickLoad000);
+						snprintf(filename, PATH_MAX + 1, "%.2s%.512s%.512s.%03d", S9xGetDirectory(SNAPSHOT_DIR), SLASH_STR, def, i - QuickLoad000);
 
 						if (S9xUnfreezeGame(filename))
 						{
-							snprintf(buf, 256, "%s.%03d loaded", def, i - QuickLoad000);
+							snprintf(buf, 256, "%.240s.%03d loaded", def, i - QuickLoad000);
 							S9xSetInfoString(buf);
 						}
 						else
@@ -2346,9 +2342,9 @@ void S9xApplyCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 						char	drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], def[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
 
 						_splitpath(Memory.ROMFilename, drive, dir, def, ext);
-						snprintf(filename, PATH_MAX + 1, "%s%s%s.%03d", S9xGetDirectory(SNAPSHOT_DIR), SLASH_STR, def, i - QuickSave000);
+						snprintf(filename, PATH_MAX + 1, "%.2s%.512s%.512s.%03d", S9xGetDirectory(SNAPSHOT_DIR), SLASH_STR, def, i - QuickSave000);
 
-						snprintf(buf, 256, "%s.%03d saved", def, i - QuickSave000);
+						snprintf(buf, 256, "%.240s.%03d saved", def, i - QuickSave000);
 						S9xSetInfoString(buf);
 
 						S9xFreezeGame(filename);
