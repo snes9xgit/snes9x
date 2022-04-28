@@ -1741,9 +1741,12 @@ void S9xReRefresh (void)
 
 void S9xSetInfoString (const char *string)
 {
+	static std::string info_string;
+
 	if (Settings.InitialInfoStringTimeout > 0)
 	{
-		GFX.InfoString = string;
+		info_string = string;
+		GFX.InfoString = info_string.c_str();
 		GFX.InfoStringTimeout = Settings.InitialInfoStringTimeout;
 		S9xReRefresh();
 	}
