@@ -13,7 +13,7 @@
 #include "gtk_sound.h"
 #include "gtk_display.h"
 #include "gtk_binding.h"
-
+#include "fmt/format.h"
 #include "snes9x.h"
 #include "gfx.h"
 #include "display.h"
@@ -98,8 +98,6 @@ Snes9xPreferences::Snes9xPreferences(Snes9xConfig *config)
     #ifdef GDK_WINDOWING_X11
     if (config->allow_xrandr)
     {
-        char size_string[256];
-
         for (int i = 0; i < config->xrr_screen_resources->nmode; i++)
         {
             XRRModeInfo *m = &config->xrr_screen_resources->modes[i];
@@ -111,14 +109,12 @@ Snes9xPreferences::Snes9xPreferences(Snes9xConfig *config)
             if (m->modeFlags & RR_DoubleClock)
                 dotClock *= 2;
 
-            snprintf(size_string,
-                     256,
-                     "%dx%d @ %.3fHz",
-                     m->width,
-                     m->height,
-                     (double)dotClock / m->hTotal / m->vTotal);
+            auto str = fmt::format("{}x{} @ {:.3f}Hz",
+                                   m->width,
+                                   m->height,
+                                   (double)dotClock / m->hTotal / m->vTotal);
 
-            combo_box_append("resolution_combo", size_string);
+            combo_box_append("resolution_combo", str.c_str());
         }
 
         if (config->xrr_index > config->xrr_screen_resources->nmode)
@@ -208,7 +204,7 @@ void Snes9xPreferences::connect_signals()
     get_object<Gtk::Button>("about_button")->signal_clicked().connect(sigc::mem_fun(*this, &Snes9xPreferences::about_dialog));
     get_object<Gtk::ToggleButton>("auto_input_rate")->signal_toggled().connect([&] {
         auto toggle_button = get_object<Gtk::ToggleButton>("auto_input_rate");
-        enable_widget("sound_input_rate", toggle_button->get_active());
+        enable_widget("sound_input_rate", !toggle_button->get_active());
         if (toggle_button->get_active())
             set_slider("sound_input_rate", top_level->get_auto_input_rate());
     });
@@ -282,9 +278,7 @@ void Snes9xPreferences::input_rate_changed()
 {
     double value = get_object<Gtk::HScale>("sound_input_rate")->get_value();
     value = value / 32040.0 * 60.09881389744051;
-    char text[256];
-    snprintf(text, 256, "%.4f Hz", value);
-    get_object<Gtk::Label>("relative_video_rate")->set_label(text);
+    get_object<Gtk::Label>("relative_video_rate")->set_label(fmt::format("{:.4f}Hz", value));
 }
 
 bool Snes9xPreferences::key_pressed(GdkEventKey *event)
