@@ -70,9 +70,9 @@ if slang
   glslang_opt_var = cmake.subproject_options()
   glslang_opt_var.add_cmake_defines({'BUILD_TESTING': false})
   glslang_pro = cmake.subproject('glslang', options: glslang_opt_var)
-#  deps += glslang_pro.dependency('GenericCodeGen')
+  deps += glslang_pro.dependency('GenericCodeGen')
   deps += glslang_pro.dependency('glslang')
-#  deps += glslang_pro.dependency('MachineIndependent')
+  deps += glslang_pro.dependency('MachineIndependent')
   deps += glslang_pro.dependency('OGLCompiler')
   deps += glslang_pro.dependency('HLSL')
   deps += glslang_pro.dependency('OSDependent')
@@ -348,6 +348,9 @@ libjma_srcs = [
  '../jma/lzmadec.cpp',
  '../jma/winout.cpp'
 ]
+
+includes += '../external/fmt/include'
+srcs += '../external/fmt/src/format.cc'
 
 libjma = static_library('jma',
                         libjma_srcs,
