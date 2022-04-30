@@ -28,7 +28,7 @@ const char *S9xGetFilenameInc(const char *e, enum s9x_getdirtype dirtype)
     fs::path rom_filename(Memory.ROMFilename);
 
     fs::path filename_base(S9xGetDirectory(dirtype));
-    filename_base.replace_filename(rom_filename.filename());
+    filename_base /= rom_filename.filename();
 
     fs::path new_filename;
 
@@ -120,7 +120,7 @@ const char *S9xGetFilename(const char *ex, enum s9x_getdirtype dirtype)
 {
     static std::string filename;
     fs::path path(S9xGetDirectory(dirtype));
-    path.replace_filename(fs::path(Memory.ROMFilename));
+    path /= fs::path(Memory.ROMFilename).filename();
     path.replace_extension(ex);
     filename = path.string();
     return filename.c_str();
@@ -243,7 +243,7 @@ static fs::path save_slot_path(int slot)
     while (extension.length() < 3)
         extension = "0"s + extension;
     fs::path path(S9xGetDirectory(SNAPSHOT_DIR));
-    path.replace_filename(fs::path(Memory.ROMFilename).filename());
+    path /= fs::path(Memory.ROMFilename).filename();
     path.replace_extension(extension);
     return path;
 }
