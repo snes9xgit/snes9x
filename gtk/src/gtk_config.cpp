@@ -8,7 +8,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <filesystem>
 
+#include "fmt/format.h"
 #include "gtk_config.h"
 #include "gtk_s9x.h"
 #include "gtk_sound.h"
@@ -19,20 +21,7 @@
 #include "netplay.h"
 #include "controls.h"
 
-static bool directory_exists(std::string str)
-{
-    DIR *dir;
-
-    dir = opendir(str.c_str());
-
-    if (dir)
-    {
-        closedir(dir);
-        return true;
-    }
-
-    return false;
-}
+namespace fs = std::filesystem;
 
 std::string get_config_dir()
 {
@@ -45,19 +34,21 @@ std::string get_config_dir()
         return std::string{".snes9x"};
     }
 
-    std::string config;
-    std::string legacy;
+    fs::path config = env_home;
+    fs::path legacy = config;
 
     // If XDG_CONFIG_HOME is set, use that, otherwise guess default
     if (!env_xdg_config_home)
     {
-        (config += env_home) += "/.config/snes9x";
-        (legacy += env_home) += "/.snes9x";
+        config /= ".config/snes9x";
+        legacy /= ".snes9x";
     }
     else
-        config = std::string(env_xdg_config_home) + "/snes9x";
-
-    if (directory_exists(legacy) && !directory_exists(config))
+    {
+        config = env_xdg_config_home;
+        config /= "snes9x";
+    }
+    if (fs::exists(legacy) && !fs::exists(config))
         return legacy;
 
     return config;
@@ -398,36 +389,31 @@ int Snes9xConfig::save_config_file()
 
 int Snes9xConfig::load_config_file()
 {
-    struct stat file_info;
-    ConfigFile cf;
-
     load_defaults();
 
-    std::string path = get_config_dir();
+    fs::path path = get_config_dir();
 
-    if (stat(path.c_str(), &file_info))
+    if (!fs::exists(path))
     {
-        if (mkdir(path.c_str(), 0755))
+        if (!fs::create_directory(path))
         {
-            fprintf(stderr,
-                    _("Couldn't create config directory: %s\n"),
-                    path.c_str());
+            fmt::print(stderr, _("Couldn't create config directory: {}\n"), path.string());
             return -1;
         }
     }
     else
     {
-        if (!(file_info.st_mode & 0700))
-            chmod(path.c_str(), file_info.st_mode | 0700);
+        if ((fs::status(path).permissions() & fs::perms::owner_write) == fs::perms::none)
+            fs::permissions(path, fs::perms::owner_write, fs::perm_options::add);
     }
 
     path = get_config_file_name();
 
-    if (stat(path.c_str(), &file_info))
-    {
+    // Write an on-disk config file if none exists.
+    if (!fs::exists(path))
         save_config_file();
-    }
 
+    ConfigFile cf;
     if (!cf.LoadFile(path.c_str()))
         return -1;
 
