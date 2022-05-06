@@ -25,6 +25,7 @@ string(APPEND LOCALEDIR ${CMAKE_INSTALL_PREFIX} "/" ${CMAKE_INSTALL_DATAROOTDIR}
 add_compile_definitions(HAVE_LIBPNG
                         ZLIB SNES9X_GTK
                         NETPLAY_SUPPORT
+                        JMA_SUPPORT
                         UNZIP_SUPPORT
                         HAVE_MKSTEMP
                         HAVE_STRINGS_H
@@ -270,7 +271,7 @@ list(APPEND SOURCES
     ../netplay.cpp
     ../server.cpp
     ../loadzip.cpp
-    ../compat.cpp
+    ../fscompat.cpp
     src/gtk_netplay_dialog.cpp
     src/gtk_netplay_dialog.h
     src/gtk_netplay.cpp
@@ -295,6 +296,7 @@ set(LIBJMA_SOURCES
 add_library(jma ${LIBJMA_SOURCES})
 target_include_directories(jma PRIVATE ${INCLUDES})
 target_compile_options(jma PUBLIC ${ARGS})
+list(APPEND LIBS jma)
 
 add_executable(sourcify src/sourcify.c)
 

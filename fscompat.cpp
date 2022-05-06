@@ -1,0 +1,191 @@
+#include <cstring>
+#include "port.h"
+#include <string>
+#include <string.h>
+
+using std::string;
+
+bool SplitPath::ext_is(const string &other)
+{
+    if (strcasecmp(ext.c_str(), other.c_str()) == 0)
+        return true;
+    if (other[0] != '.' && (strcasecmp(other.c_str(), &(ext.c_str()[1])) == 0))
+        return true;
+    return false;
+}
+
+std::string makepath(const SplitPath &path)
+{
+    return makepath(path.drive, path.dir, path.stem, path.ext);
+}
+
+#if __cplusplus >= 201703L
+#include <filesystem>
+namespace fs = std::filesystem;
+
+SplitPath splitpath(string str)
+{
+    SplitPath output{};
+    fs::path path(str);
+
+    if (path.has_root_name())
+        output.drive = path.root_name();
+
+    if (path.has_filename())
+    {
+        output.stem = path.stem();
+        output.ext  = path.extension();
+        path.remove_filename();
+    }
+
+    if (!path.empty())
+        output.dir = path;
+
+    return output;
+}
+
+string makepath(const string &drive, const string &dir, const string &stem, const string &ext)
+{
+    fs::path path(drive);
+    path = path / dir / stem;
+    path.replace_extension(ext);
+    return path.string();
+}
+
+#else
+constexpr auto npos = std::string::npos;
+
+SplitPath splitpath(string path)
+{
+    SplitPath output{};
+
+#ifdef _WIN32
+    if (path.length() > 2 && path[1] == ':')
+    {
+        output.drive = path.substr(0, 2);
+        path = path.substr(2);
+    }
+#endif
+    auto slash = path.rfind(SLASH_CHAR);
+    auto dot   = path.rfind('.');
+
+    if (dot != npos && slash != npos && dot < slash)
+    {
+        dot = npos;
+    }
+    else if (dot != npos)
+    {
+        output.ext = path.substr(dot);
+    }
+
+    if (slash != npos)
+    {
+        output.dir = path.substr(0, slash + 1);
+        output.stem = path.substr(slash + 1, dot - slash - 1);
+    }
+    else
+    {
+        output.stem = path.substr(0, dot);
+    }
+
+    return output;
+}
+
+string makepath(string drive, string dir, string stem, string ext)
+{
+    string output;
+
+    if (!drive.empty())
+    {
+        output += drive + ":";
+        if (!dir.empty() && dir[0] != SLASH_CHAR)
+            output += SLASH_CHAR;
+    }
+
+    if (!dir.empty())
+    {
+        output += dir;
+        if (output[output.length() - 1] != SLASH_CHAR)
+            output += SLASH_CHAR;
+    }
+
+    if (!stem.empty())
+    {
+        output += stem;
+    }
+
+    if (!ext.empty())
+    {
+        if (ext[0] != '.')
+            output += '.';
+        output += ext;
+    }
+
+    return output;
+}
+
+void _splitpath(const char *path, char *drive, char *dir, char *fname, char *ext)
+{
+    char *slash = strrchr((char *)path, SLASH_CHAR);
+    char *dot = strrchr((char *)path, '.');
+
+    *drive = '\0';
+
+    if (dot && slash && dot < slash)
+    {
+        dot = 0;
+    }
+
+    if (!slash)
+    {
+        *dir = '\0';
+        strcpy(fname, path);
+
+        if (dot)
+        {
+            fname[dot - path] = '\0';
+            strcpy(ext, dot + 1);
+        }
+        else
+        {
+            *ext = '\0';
+        }
+    }
+    else
+    {
+        strcpy(dir, path);
+        dir[slash - path] = '\0';
+        strcpy(fname, slash + 1);
+
+        if (dot)
+        {
+            fname[(dot - slash) - 1] = '\0';
+            strcpy(ext, dot + 1);
+        }
+        else
+        {
+            *ext = '\0';
+        }
+    }
+}
+
+void _makepath(char *path, const char *drive, const char *dir, const char *fname, const char *ext)
+{
+    if (dir && *dir)
+    {
+        strcpy(path, dir);
+        strcat(path, "/");
+    }
+    else
+        *path = '\0';
+
+    strcat(path, fname);
+
+    if (ext && *ext)
+    {
+        if (*ext != '.')
+            strcat(path, ".");
+        strcat(path, ext);
+    }
+}
+#endif

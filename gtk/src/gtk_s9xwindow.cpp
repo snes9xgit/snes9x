@@ -203,7 +203,7 @@ void Snes9xWindow::connect_signals()
     });
 
     get_object<Gtk::MenuItem>("load_state_undo")->signal_activate().connect([&] {
-        S9xUnfreezeGame(S9xGetFilename(".undo", SNAPSHOT_DIR));
+        S9xUnfreezeGame(S9xGetFilename(".undo", SNAPSHOT_DIR).c_str());
     });
 
     get_object<Gtk::MenuItem>("save_spc_item")->signal_activate().connect([&] {
@@ -650,7 +650,7 @@ std::string Snes9xWindow::open_movie_dialog(bool readonly)
 
     if (!readonly)
     {
-        const char *default_name = S9xGetFilename(".smv", s9x_getdirtype::ROM_DIR);
+        auto default_name = S9xGetFilename(".smv", s9x_getdirtype::ROM_DIR);
         dialog.set_current_name(default_name);
 
     }
@@ -774,7 +774,7 @@ void Snes9xWindow::load_state_dialog()
     dialog.hide();
     if (result == Gtk::RESPONSE_ACCEPT)
     {
-        S9xLoadState(dialog.get_filename().c_str());
+        S9xLoadState(dialog.get_filename());
     }
 
     unpause_from_focus_change();
@@ -836,7 +836,7 @@ void Snes9xWindow::save_state_dialog()
     dialog.hide();
 
     if (result == GTK_RESPONSE_ACCEPT)
-        S9xSaveState(dialog.get_filename().c_str());
+        S9xSaveState(dialog.get_filename());
 
     unpause_from_focus_change();
 }

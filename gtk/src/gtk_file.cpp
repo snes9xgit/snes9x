@@ -19,12 +19,7 @@
 namespace fs = std::filesystem;
 using namespace std::literals;
 
-// TODO:
-// Snes9x core requires persistent memory for const char * returns, but won't
-// manage them. This is used to hold the data. Functions here are Non-reentrant.
-static std::string filename_common;
-
-const char *S9xGetFilenameInc(const char *e, enum s9x_getdirtype dirtype)
+std::string S9xGetFilenameInc(std::string e, enum s9x_getdirtype dirtype)
 {
     fs::path rom_filename(Memory.ROMFilename);
 
@@ -33,13 +28,15 @@ const char *S9xGetFilenameInc(const char *e, enum s9x_getdirtype dirtype)
 
     fs::path new_filename;
 
+    if (e[0] != '.')
+        e = "." + e;
     int i = 0;
     do
     {
         std::string new_extension = std::to_string(i);
         while (new_extension.length() < 3)
             new_extension = "0"s + new_extension;
-        new_extension += "."s + e;
+        new_extension += e;
 
         new_filename = filename_base;
         new_filename.replace_extension(new_extension);
@@ -47,11 +44,10 @@ const char *S9xGetFilenameInc(const char *e, enum s9x_getdirtype dirtype)
         i++;
     } while (fs::exists(new_filename));
 
-    filename_common = new_filename;
-    return filename_common.c_str();
+    return new_filename;
 }
 
-const char *S9xGetDirectory(enum s9x_getdirtype dirtype)
+std::string S9xGetDirectory(enum s9x_getdirtype dirtype)
 {
     std::string dirname;
 
@@ -102,7 +98,7 @@ const char *S9xGetDirectory(enum s9x_getdirtype dirtype)
     }
 
     /* Anything else, use ROM filename path */
-    if (dirname == "" && gui_config && !gui_config->rom_loaded)
+    if (dirname == "" && gui_config && gui_config->rom_loaded)
     {
         fs::path path(Memory.ROMFilename);
 
@@ -114,33 +110,25 @@ const char *S9xGetDirectory(enum s9x_getdirtype dirtype)
             dirname = path;
     }
 
-    filename_common = dirname;
-    return filename_common.c_str();
+    return dirname;
 }
 
-const char *S9xGetFilename(const char *ex, enum s9x_getdirtype dirtype)
+std::string S9xGetFilename(std::string ex, enum s9x_getdirtype dirtype)
 {
     fs::path path(S9xGetDirectory(dirtype));
     path /= fs::path(Memory.ROMFilename).filename();
     path.replace_extension(ex);
-    filename_common = path.string();
-    return filename_common.c_str();
+    return path.string();
 }
 
-const char *S9xBasename(const char *f)
+std::string S9xBasename(std::string filename)
 {
-    const char *p;
-
-    if ((p = strrchr(f, '/')) != NULL || (p = strrchr(f, '\\')) != NULL)
-        return (p + 1);
-
-    return f;
+    return fs::path(filename).filename().string();
 }
 
-const char *S9xBasenameNoExt(const char *f)
+std::string S9xBasenameNoExt(std::string f)
 {
-    filename_common = fs::path(f).stem();
-    return filename_common.c_str();
+    return fs::path(f).stem();
 }
 
 bool8 S9xOpenSnapshotFile(const char *filename, bool8 read_only, STREAM *file)
@@ -176,35 +164,35 @@ void S9xCloseSnapshotFile(STREAM file)
 
 void S9xAutoSaveSRAM()
 {
-    Memory.SaveSRAM(S9xGetFilename(".srm", SRAM_DIR));
-    S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
+    Memory.SaveSRAM(S9xGetFilename(".srm", SRAM_DIR).c_str());
+    S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR).c_str());
 }
 
-void S9xLoadState(const char *filename)
+void S9xLoadState(std::string filename)
 {
-    S9xFreezeGame(S9xGetFilename(".undo", SNAPSHOT_DIR));
+    S9xFreezeGame(S9xGetFilename(".undo", SNAPSHOT_DIR).c_str());
 
-    if (S9xUnfreezeGame(filename))
+    if (S9xUnfreezeGame(filename.c_str()))
     {
         auto info_string = filename + " loaded"s;
         S9xSetInfoString(info_string.c_str());
     }
     else
     {
-        fprintf(stderr, "Failed to load state file: %s\n", filename);
+        fprintf(stderr, "Failed to load state file: %s\n", filename.c_str());
     }
 }
 
-void S9xSaveState(const char *filename)
+void S9xSaveState(std::string filename)
 {
-    if (S9xFreezeGame(filename))
+    if (S9xFreezeGame(filename.c_str()))
     {
         auto info_string = filename + " saved"s;
         S9xSetInfoString(info_string.c_str());
     }
     else
     {
-        fprintf(stderr, "Couldn't save state file: %s\n", filename);
+        fprintf(stderr, "Couldn't save state file: %s\n", filename.c_str());
     }
 }
 
@@ -226,7 +214,6 @@ void S9xQuickSaveSlot(int slot)
         return;
 
     auto filename = save_slot_path(slot);
-
     if (S9xFreezeGame(filename.c_str()))
     {
         auto info_string = filename.filename().string() + " saved";
@@ -242,7 +229,7 @@ void S9xQuickLoadSlot(int slot)
     auto filename = save_slot_path(slot);
 
     if (fs::exists(filename))
-        S9xFreezeGame(S9xGetFilename(".undo", SNAPSHOT_DIR));
+        S9xFreezeGame(S9xGetFilename(".undo", SNAPSHOT_DIR).c_str());
 
     if (S9xUnfreezeGame(filename.c_str()))
     {

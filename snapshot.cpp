@@ -1009,9 +1009,9 @@ void S9xResetSaveTimer (bool8 dontsave)
 
 	if (!Settings.DontSaveOopsSnapshot && !dontsave && t != -1 && time(NULL) - t > 300)
 	{
-		const char *filename = S9xGetFilename("oops", SNAPSHOT_DIR);
+		auto filename = S9xGetFilename("oops", SNAPSHOT_DIR);
 		S9xMessage(S9X_INFO, S9X_FREEZE_FILE_INFO, SAVE_INFO_OOPS);
-		S9xFreezeGame(filename);
+		S9xFreezeGame(filename.c_str());
 	}
 
 	t = time(NULL);
@@ -1043,11 +1043,11 @@ bool8 S9xFreezeGame (const char *filename)
 
 		S9xResetSaveTimer(TRUE);
 
-		const char *base = S9xBasename(filename);
+		auto base = S9xBasename(filename);
 		if (S9xMovieActive())
-			sprintf(String, MOVIE_INFO_SNAPSHOT " %s", base);
+			sprintf(String, MOVIE_INFO_SNAPSHOT " %s", base.c_str());
 		else
-			sprintf(String, SAVE_INFO_SNAPSHOT " %s", base);
+			sprintf(String, SAVE_INFO_SNAPSHOT " %s", base.c_str());
 
 		S9xMessage(S9X_INFO, S9X_FREEZE_FILE_INFO, String);
 
@@ -1100,12 +1100,10 @@ void S9xMessageFromResult(int result, const char* base)
 bool8 S9xUnfreezeGame (const char *filename)
 {
 	STREAM	stream = NULL;
-	char	drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], def[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
 
-	const char	*base = S9xBasename(filename);
-
-	_splitpath(filename, drive, dir, def, ext);
-	S9xResetSaveTimer(!strcmp(ext, "oops") || !strcmp(ext, "oop") || !strcmp(ext, ".oops") || !strcmp(ext, ".oop"));
+	auto base = S9xBasename(filename);
+	auto path = splitpath(filename);
+	S9xResetSaveTimer(path.ext_is(".oops") || path.ext_is(".oop"));
 
 	if (S9xOpenSnapshotFile(filename, TRUE, &stream))
 	{
@@ -1116,26 +1114,26 @@ bool8 S9xUnfreezeGame (const char *filename)
 
 		if (result != SUCCESS)
 		{
-            S9xMessageFromResult(result, base);
+            S9xMessageFromResult(result, base.c_str());
 			return (FALSE);
 		}
 
 		if (S9xMovieActive())
 		{
 			if (S9xMovieReadOnly())
-				sprintf(String, MOVIE_INFO_REWIND " %s", base);
+				sprintf(String, MOVIE_INFO_REWIND " %s", base.c_str());
 			else
-				sprintf(String, MOVIE_INFO_RERECORD " %s", base);
+				sprintf(String, MOVIE_INFO_RERECORD " %s", base.c_str());
 		}
 		else
-			sprintf(String, SAVE_INFO_LOAD " %s", base);
+			sprintf(String, SAVE_INFO_LOAD " %s", base.c_str());
 
 		S9xMessage(S9X_INFO, S9X_FREEZE_FILE_INFO, String);
 
 		return (TRUE);
 	}
 
-	sprintf(String, SAVE_ERR_SAVE_NOT_FOUND, base);
+	sprintf(String, SAVE_ERR_SAVE_NOT_FOUND, base.c_str());
 	S9xMessage(S9X_INFO, S9X_FREEZE_FILE_INFO, String);
 
 	return (FALSE);
@@ -1145,7 +1143,7 @@ bool8 S9xUnfreezeScreenshot(const char *filename, uint16 **image_buffer, int &wi
 {
     STREAM	stream = NULL;
 
-    const char	*base = S9xBasename(filename);
+    auto base = S9xBasename(filename);
 
     if(S9xOpenSnapshotFile(filename, TRUE, &stream))
     {
@@ -1156,14 +1154,14 @@ bool8 S9xUnfreezeScreenshot(const char *filename, uint16 **image_buffer, int &wi
 
         if(result != SUCCESS)
         {
-            S9xMessageFromResult(result, base);
+            S9xMessageFromResult(result, base.c_str());
             return (FALSE);
         }
 
         return (TRUE);
     }
 
-    sprintf(String, SAVE_ERR_SAVE_NOT_FOUND, base);
+    sprintf(String, SAVE_ERR_SAVE_NOT_FOUND, base.c_str());
     S9xMessage(S9X_INFO, S9X_FREEZE_FILE_INFO, String);
 
     return (FALSE);

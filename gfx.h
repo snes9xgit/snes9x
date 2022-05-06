@@ -66,7 +66,7 @@ struct SGFX
 	void	(*DrawMode7BG2Math) (uint32, uint32, int);
 	void	(*DrawMode7BG2Nomath) (uint32, uint32, int);
 
-	const char	*InfoString;
+	std::string InfoString;
 	uint32	InfoStringTimeout;
 	char	FrameDisplayString[256];
 

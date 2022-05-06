@@ -2259,11 +2259,11 @@ void S9xApplyCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 
 					case LoadOopsFile:
 					{
-						const char *filename = S9xGetFilename("oops", SNAPSHOT_DIR);
+						std::string filename = S9xGetFilename("oops", SNAPSHOT_DIR);
 
-						if (S9xUnfreezeGame(filename))
+						if (S9xUnfreezeGame(filename.c_str()))
 						{
-							snprintf(buf, 256, "%.240s.oops loaded", S9xBasename(Memory.ROMFilename));
+							snprintf(buf, 256, "%.240s.oops loaded", S9xBasename(Memory.ROMFilename).c_str());
 							S9xSetInfoString(buf);
 						}
 						else
@@ -2292,15 +2292,15 @@ void S9xApplyCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 					case QuickLoad009:
 					case QuickLoad010:
 					{
-						char	filename[PATH_MAX + 1];
-						char	drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], def[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
+						std::string ext = std::to_string(i - QuickLoad000);
+						while (ext.length() < 3)
+							ext = '0' + ext;
 
-						_splitpath(Memory.ROMFilename, drive, dir, def, ext);
-						snprintf(filename, PATH_MAX + 1, "%.2s%.512s%.512s.%03d", S9xGetDirectory(SNAPSHOT_DIR), SLASH_STR, def, i - QuickLoad000);
+						auto filename = S9xGetFilename(ext, SNAPSHOT_DIR);
 
-						if (S9xUnfreezeGame(filename))
+						if (S9xUnfreezeGame(filename.c_str()))
 						{
-							snprintf(buf, 256, "%.240s.%03d loaded", def, i - QuickLoad000);
+							snprintf(buf, 256, "Quick save-state %s loaded", ext.c_str());
 							S9xSetInfoString(buf);
 						}
 						else
@@ -2321,16 +2321,16 @@ void S9xApplyCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 					case QuickSave009:
 					case QuickSave010:
 					{
-						char	filename[PATH_MAX + 1];
-						char	drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], def[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
+						std::string ext = std::to_string(i - QuickLoad000);
+						while (ext.length() < 3)
+							ext = '0' + ext;
 
-						_splitpath(Memory.ROMFilename, drive, dir, def, ext);
-						snprintf(filename, PATH_MAX + 1, "%.2s%.512s%.512s.%03d", S9xGetDirectory(SNAPSHOT_DIR), SLASH_STR, def, i - QuickSave000);
+						auto filename = S9xGetFilename(ext, SNAPSHOT_DIR);
 
-						snprintf(buf, 256, "%.240s.%03d saved", def, i - QuickSave000);
+						snprintf(buf, 256, "Quick save-state %s saved", ext.c_str());
 						S9xSetInfoString(buf);
 
-						S9xFreezeGame(filename);
+						S9xFreezeGame(filename.c_str());
 						break;
 					}
 

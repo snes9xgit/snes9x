@@ -195,7 +195,7 @@ void S9xStartScreenRefresh (void)
 	}
 
 	if (GFX.InfoStringTimeout > 0 && --GFX.InfoStringTimeout == 0)
-		GFX.InfoString = NULL;
+		GFX.InfoString.clear();
 
 	IPPU.TotalEmulatedFrames++;
 }
@@ -1739,12 +1739,9 @@ void S9xReRefresh (void)
 
 void S9xSetInfoString (const char *string)
 {
-	static std::string info_string;
-
 	if (Settings.InitialInfoStringTimeout > 0)
 	{
-		info_string = string;
-		GFX.InfoString = info_string.c_str();
+		GFX.InfoString = string;
 		GFX.InfoStringTimeout = Settings.InitialInfoStringTimeout;
 		S9xReRefresh();
 	}
@@ -2042,8 +2039,8 @@ void S9xDisplayMessages (uint16 *screen, int ppl, int width, int height, int sca
 	if (Settings.DisplayMovieFrame && S9xMovieActive())
 		S9xDisplayString(GFX.FrameDisplayString, 1, 1, false);
 
-	if (GFX.InfoString && *GFX.InfoString)
-		S9xDisplayString(GFX.InfoString, 5, 1, true);
+	if (!GFX.InfoString.empty())
+		S9xDisplayString(GFX.InfoString.c_str(), 5, 1, true);
 }
 
 static uint16 get_crosshair_color (uint8 color)

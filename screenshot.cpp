@@ -23,11 +23,10 @@ bool8 S9xDoScreenshot (int width, int height)
 	png_infop	info_ptr;
 	png_color_8	sig_bit;
 	int			imgwidth, imgheight;
-	const char	*fname;
 
-	fname = S9xGetFilenameInc(".png", SCREENSHOT_DIR);
+	std::string fname = S9xGetFilenameInc(".png", SCREENSHOT_DIR);
 
-	fp = fopen(fname, "wb");
+	fp = fopen(fname.c_str(), "wb");
 	if (!fp)
 	{
 		S9xMessage(S9X_ERROR, 0, "Failed to take screenshot.");
@@ -38,7 +37,7 @@ bool8 S9xDoScreenshot (int width, int height)
 	if (!png_ptr)
 	{
 		fclose(fp);
-		remove(fname);
+		remove(fname.c_str());
 		S9xMessage(S9X_ERROR, 0, "Failed to take screenshot.");
 		return (FALSE);
 	}
@@ -48,7 +47,7 @@ bool8 S9xDoScreenshot (int width, int height)
 	{
 		png_destroy_write_struct(&png_ptr, (png_infopp) NULL);
 		fclose(fp);
-		remove(fname);
+		remove(fname.c_str());
 		S9xMessage(S9X_ERROR, 0, "Failed to take screenshot.");
 		return (FALSE);
 	}
@@ -57,7 +56,7 @@ bool8 S9xDoScreenshot (int width, int height)
 	{
 		png_destroy_write_struct(&png_ptr, &info_ptr);
 		fclose(fp);
-		remove(fname);
+		remove(fname.c_str());
 		S9xMessage(S9X_ERROR, 0, "Failed to take screenshot.");
 		return (FALSE);
 	}
@@ -70,8 +69,7 @@ bool8 S9xDoScreenshot (int width, int height)
 		if (width > SNES_WIDTH && height <= SNES_HEIGHT_EXTENDED)
 			imgheight = height << 1;
 	}
-	else
-	if (Settings.StretchScreenshots == 2)
+	else if (Settings.StretchScreenshots == 2)
 	{
 		if (width  <= SNES_WIDTH)
 			imgwidth  = width  << 1;
@@ -130,11 +128,10 @@ bool8 S9xDoScreenshot (int width, int height)
 
 	fclose(fp);
 
-	fprintf(stderr, "%s saved.\n", fname);
+	fprintf(stderr, "%s saved.\n", fname.c_str());
 
-	const char	*base = S9xBasename(fname);
-	sprintf(String, "Saved screenshot %s", base);
-	S9xMessage(S9X_INFO, 0, String);
+	std::string base = "Saved screenshot " + S9xBasename(fname);
+	S9xMessage(S9X_INFO, 0, base.c_str());
 
 	return (TRUE);
 #else

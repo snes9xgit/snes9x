@@ -177,7 +177,7 @@ int S9xOpenROM(const char *rom_filename)
 
     if (loaded)
     {
-        Memory.LoadSRAM(S9xGetFilename(".srm", SRAM_DIR));
+        Memory.LoadSRAM(S9xGetFilename(".srm", SRAM_DIR).c_str());
     }
     else
     {

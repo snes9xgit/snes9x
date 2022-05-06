@@ -44,10 +44,10 @@ void S9xToggleSoundChannel (int);
 bool8 S9xOpenSnapshotFile (const char *, bool8, STREAM *);
 void S9xCloseSnapshotFile (STREAM);
 const char * S9xStringInput (const char *);
-const char * S9xGetDirectory (enum s9x_getdirtype);
-const char * S9xGetFilename (const char *, enum s9x_getdirtype);
-const char * S9xGetFilenameInc (const char *, enum s9x_getdirtype);
-const char * S9xBasename (const char *);
+std::string S9xGetDirectory (enum s9x_getdirtype);
+std::string S9xGetFilename (std::string, enum s9x_getdirtype);
+std::string S9xGetFilenameInc (std::string, enum s9x_getdirtype);
+std::string S9xBasename (std::string);
 
 // Routines the port has to implement if it uses command-line
 
