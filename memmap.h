@@ -12,6 +12,8 @@
 #define MEMMAP_SHIFT		(12)
 #define MEMMAP_MASK			(MEMMAP_BLOCK_SIZE - 1)
 
+#include <string>
+
 struct CMemory
 {
 	enum
@@ -70,9 +72,8 @@ struct CMemory
 	uint8	BlockIsROM[MEMMAP_NUM_BLOCKS];
 	uint8	ExtendedFormat;
 
-	char	ROMFilename[PATH_MAX + 1];
+	std::string ROMFilename;
 	char	ROMName[ROM_NAME_LEN];
-	char	RawROMName[ROM_NAME_LEN];
 	char	ROMId[5];
 	int32	CompanyId;
 	uint8	ROMRegion;
@@ -120,8 +121,6 @@ struct CMemory
 	bool8	SaveSRTC (void);
 	bool8	SaveMPAK (const char *);
 
-	char *	Safe (const char *);
-	char *	SafeANK (const char *);
 	void	ParseSNESHeader (uint8 *);
 	void	InitROM (void);
 

@@ -49,7 +49,6 @@
 #endif
 
 static bool8	stopMovie = TRUE;
-static char		LastRomFilename[PATH_MAX + 1] = "";
 
 // from NSRT
 static const char	*nintendo_licensees[] =
@@ -1025,9 +1024,6 @@ void CMemory::Deinit (void)
 			IPPU.TileCached[t] = NULL;
 		}
 	}
-
-	Safe(NULL);
-	SafeANK(NULL);
 }
 
 // file management and ROM detection
@@ -1273,7 +1269,7 @@ uint32 CMemory::FileLoader (uint8 *buffer, const char *filename, uint32 maxsize)
 				return (0);
 			}
 
-			strcpy(ROMFilename, filename);
+			ROMFilename = filename;
 		#else
 			S9xMessage(S9X_ERROR, S9X_ROM_INFO, "This binary was not created with Zip support.");
 			return (0);
@@ -1293,7 +1289,7 @@ uint32 CMemory::FileLoader (uint8 *buffer, const char *filename, uint32 maxsize)
 
 			totalSize = HeaderRemove(size, buffer);
 
-			strcpy(ROMFilename, filename);
+			ROMFilename = filename;
 		#else
 			S9xMessage(S9X_ERROR, S9X_ROM_INFO, "This binary was not created with JMA support.");
 			return (0);
@@ -1308,7 +1304,7 @@ uint32 CMemory::FileLoader (uint8 *buffer, const char *filename, uint32 maxsize)
 			if (!fp)
 				return (0);
 
-			strcpy(ROMFilename, filename);
+			ROMFilename = filename;
 
 			uint32	size = 0;
 
@@ -1336,7 +1332,7 @@ bool8 CMemory::LoadROMMem (const uint8 *source, uint32 sourceSize)
     if(!source || sourceSize > MAX_ROM_SIZE)
         return FALSE;
 
-    strcpy(ROMFilename,"MemoryROM");
+    ROMFilename = "MemoryROM";
 
     do
     {
@@ -1573,12 +1569,6 @@ bool8 CMemory::LoadROMInt (int32 ROMfillSize)
 		}
 	}
 
-	if (strncmp(LastRomFilename, ROMFilename, PATH_MAX + 1))
-	{
-		strncpy(LastRomFilename, ROMFilename, PATH_MAX + 1);
-		LastRomFilename[PATH_MAX] = 0;
-	}
-
 	memset(&SNESGameFixes, 0, sizeof(SNESGameFixes));
 	SNESGameFixes.SRAMInitialValue = 0x60;
 
@@ -1711,7 +1701,7 @@ bool8 CMemory::LoadMultiCartInt ()
 	    else
 		    return (FALSE);
 
-        strcpy(ROMFilename, path.c_str());
+        ROMFilename = path;
     }
 
 	switch (Multi.cartType)
@@ -1736,9 +1726,9 @@ bool8 CMemory::LoadMultiCartInt ()
 	}
 
 	if (Multi.cartSizeA)
-		strcpy(ROMFilename, Multi.fileNameA);
+		ROMFilename = Multi.fileNameA;
 	else if (Multi.cartSizeB)
-		strcpy(ROMFilename, Multi.fileNameB);
+		ROMFilename = Multi.fileNameB;
 
 	memset(&SNESGameFixes, 0, sizeof(SNESGameFixes));
 	SNESGameFixes.SRAMInitialValue = 0x60;
@@ -1879,22 +1869,14 @@ bool8 CMemory::LoadSRAM (const char *filename)
 {
 	FILE	*file;
 	int		size, len;
-	char	sramName[PATH_MAX + 1];
-
-	strcpy(sramName, filename);
 
 	ClearSRAM();
 
 	if (Multi.cartType && Multi.sramSizeB)
 	{
-		char	temp[PATH_MAX + 1];
-
-		strcpy(temp, ROMFilename);
-		strcpy(ROMFilename, Multi.fileNameB);
-
 		size = (1 << (Multi.sramSizeB + 3)) * 128;
 
-		file = fopen(S9xGetFilename(".srm", SRAM_DIR).c_str(), "rb");
+		file = fopen(S9xGetFilename(Multi.fileNameB, ".srm", SRAM_DIR).c_str(), "rb");
 		if (file)
 		{
 			len = fread((char *) Multi.sramB, 1, 0x10000, file);
@@ -1902,8 +1884,6 @@ bool8 CMemory::LoadSRAM (const char *filename)
 			if (len - size == 512)
 				memmove(Multi.sramB, Multi.sramB + 512, size);
 		}
-
-		strcpy(ROMFilename, temp);
 	}
 
 	size = SRAMSize ? (1 << (SRAMSize + 3)) * 128 : 0;
@@ -1914,7 +1894,7 @@ bool8 CMemory::LoadSRAM (const char *filename)
 
 	if (size)
 	{
-		file = fopen(sramName, "rb");
+		file = fopen(filename, "rb");
 		if (file)
 		{
 			len = fread((char *) SRAM, 1, size, file);
@@ -1967,29 +1947,19 @@ bool8 CMemory::SaveSRAM (const char *filename)
 
 	FILE	*file;
 	int		size;
-	char	sramName[PATH_MAX + 1];
-
-	strcpy(sramName, filename);
 
 	if (Multi.cartType && Multi.sramSizeB)
 	{
-		char	name[PATH_MAX + 1], temp[PATH_MAX + 1];
-
-		strcpy(temp, ROMFilename);
-		strcpy(ROMFilename, Multi.fileNameB);
-		strcpy(name, S9xGetFilename(".srm", SRAM_DIR).c_str());
-
+		std::string name = S9xGetFilename(Multi.fileNameB, ".srm", SRAM_DIR);
 		size = (1 << (Multi.sramSizeB + 3)) * 128;
 
-		file = fopen(name, "wb");
+		file = fopen(name.c_str(), "wb");
 		if (file)
 		{
 			if (!fwrite((char *) Multi.sramB, size, 1, file))
 				printf ("Couldn't write to subcart SRAM file.\n");
 			fclose(file);
 		}
-
-		strcpy(ROMFilename, temp);
     }
 
     size = SRAMSize ? (1 << (SRAMSize + 3)) * 128 : 0;
@@ -2000,7 +1970,7 @@ bool8 CMemory::SaveSRAM (const char *filename)
 
 	if (size)
 	{
-		file = fopen(sramName, "wb");
+		file = fopen(filename, "wb");
 		if (file)
 		{
 			if (!fwrite((char *) SRAM, size, 1, file))
@@ -2023,13 +1993,11 @@ bool8 CMemory::SaveMPAK (const char *filename)
 	{
 		FILE	*file;
 		int		size;
-		char	mempakName[PATH_MAX + 1];
 
-		strcpy(mempakName, filename);
 		size = 0x100000;
 		if (size)
 		{
-			file = fopen(mempakName, "wb");
+			file = fopen(filename, "wb");
 			if (file)
 			{
 				size_t	written;
@@ -2051,87 +2019,6 @@ static uint32 caCRC32 (uint8 *array, uint32 size, uint32 crc32)
 		crc32 = ((crc32 >> 8) & 0x00FFFFFF) ^ crc32Table[(crc32 ^ array[i]) & 0xFF];
 
 	return (~crc32);
-}
-
-char * CMemory::Safe (const char *s)
-{
-	static char	*safe = NULL;
-	static int	safe_len = 0;
-
-	if (s == NULL)
-	{
-		if (safe)
-		{
-			free(safe);
-			safe = NULL;
-		}
-
-		return (NULL);
-	}
-
-	int	len = strlen(s);
-	if (!safe || len + 1 > safe_len)
-	{
-		if (safe)
-			free(safe);
-
-		safe_len = len + 1;
-		safe = (char *) malloc(safe_len);
-	}
-
-	for (int i = 0; i < len; i++)
-	{
-		if (s[i] >= 32 && s[i] < 127)
-			safe[i] = s[i];
-		else
-			safe[i] = '_';
-	}
-
-	safe[len] = 0;
-
-	return (safe);
-}
-
-char * CMemory::SafeANK (const char *s)
-{
-	static char	*safe = NULL;
-	static int	safe_len = 0;
-
-	if (s == NULL)
-	{
-		if (safe)
-		{
-			free(safe);
-			safe = NULL;
-		}
-
-		return (NULL);
-	}
-
-	int	len = strlen(s);
-	if (!safe || len + 1 > safe_len)
-	{
-		if (safe)
-			free(safe);
-
-		safe_len = len + 1;
-		safe = (char *) malloc(safe_len);
-	}
-
-	for (int i = 0; i < len; i++)
-	{
-		if (s[i] >= 32 && s[i] < 127) // ASCII
-			safe [i] = s[i];
-		else
-		if (ROMRegion == 0 && ((uint8) s[i] >= 0xa0 && (uint8) s[i] < 0xe0)) // JIS X 201 - Katakana
-			safe [i] = s[i];
-		else
-			safe [i] = '_';
-	}
-
-	safe [len] = 0;
-
-	return (safe);
 }
 
 void CMemory::ParseSNESHeader (uint8 *RomHeader)
@@ -2563,15 +2450,10 @@ void CMemory::InitROM (void)
 	ApplyROMFixes();
 
 	//// Show ROM information
-	char displayName[ROM_NAME_LEN];
-
-	strcpy(RawROMName, ROMName);
-	sprintf(displayName, "%s", SafeANK(ROMName));
-	sprintf(ROMName, "%s", Safe(ROMName));
-	sprintf(ROMId, "%s", Safe(ROMId));
+	ROMId[4] = 0;
 
 	sprintf(String, "\"%s\" [%s] %s, %s, %s, %s, SRAM:%s, ID:%s, CRC32:%08X",
-		displayName, isChecksumOK ? "checksum ok" : ((Multi.cartType == 4) ? "no checksum" : "bad checksum"),
+		ROMName, isChecksumOK ? "checksum ok" : ((Multi.cartType == 4) ? "no checksum" : "bad checksum"),
 		MapType(), Size(), KartContents(), Settings.PAL ? "PAL" : "NTSC", StaticRAMSize(), ROMId, ROMCRC32);
 	S9xMessage(S9X_INFO, S9X_ROM_INFO, String);
 
@@ -4058,8 +3940,6 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 				do
 				{
 					snprintf(ips, 8, "ips%d", i);
-					if (strlen(ips) > _MAX_EXT)
-						break;
 
 					if (unzFindExtension(file, ips) != UNZ_OK)
 						break;

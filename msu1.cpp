@@ -112,10 +112,9 @@ static bool AudioOpen()
 
 	AudioClose();
 
-	char ext[_MAX_EXT];
-	snprintf(ext, _MAX_EXT, "-%d.pcm", MSU1.MSU1_CURRENT_TRACK);
+	std::string extension = "-" + std::to_string(MSU1.MSU1_CURRENT_TRACK) + ".pcm";
 
-    audioStream = S9xMSU1OpenFile(ext);
+    audioStream = S9xMSU1OpenFile(extension.c_str());
 	if (audioStream)
 	{
 		if (GETC_STREAM(audioStream) != 'M')

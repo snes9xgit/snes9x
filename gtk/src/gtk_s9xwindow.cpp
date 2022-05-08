@@ -903,7 +903,7 @@ const char *markup = _(R"(<b>Information for %s</b>
     char output[2048];
 
     snprintf(output, 2048, markup,
-             Memory.ROMFilename,
+             Memory.ROMFilename.c_str(),
              Memory.ROMName,
              Memory.ROMSpeed,
              ((Memory.ROMSpeed & 0x10) != 0) ? "FastROM" : "SlowROM",
@@ -1018,12 +1018,6 @@ void Snes9xWindow::reset_screensaver()
     if (GDK_IS_X11_WINDOW(gdk_window))
     {
         XResetScreenSaver(GDK_DISPLAY_XDISPLAY(gdk_display));
-    }
-#endif
-#ifdef GDK_WINDOWING_WAYLAND
-    if (GDK_IS_WAYLAND_WINDOW(gdk_window))
-    {
-        // TODO screensaver for wayland
     }
 #endif
 

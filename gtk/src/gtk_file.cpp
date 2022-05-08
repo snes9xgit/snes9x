@@ -113,24 +113,6 @@ std::string S9xGetDirectory(enum s9x_getdirtype dirtype)
     return dirname;
 }
 
-std::string S9xGetFilename(std::string ex, enum s9x_getdirtype dirtype)
-{
-    fs::path path(S9xGetDirectory(dirtype));
-    path /= fs::path(Memory.ROMFilename).filename();
-    path.replace_extension(ex);
-    return path.string();
-}
-
-std::string S9xBasename(std::string filename)
-{
-    return fs::path(filename).filename().string();
-}
-
-std::string S9xBasenameNoExt(std::string f)
-{
-    return fs::path(f).stem();
-}
-
 bool8 S9xOpenSnapshotFile(const char *filename, bool8 read_only, STREAM *file)
 {
     if (read_only)

@@ -960,7 +960,7 @@ bool8 S9xNPSendROMImageToClient (int c)
     uint8 header [7 + 1 + 4];
     uint8 *ptr = header;
     int len = sizeof (header) + Memory.CalculatedSize +
-              strlen (Memory.ROMFilename) + 1;
+              Memory.ROMFilename.length() + 1;
     *ptr++ = NP_SERV_MAGIC;
     *ptr++ = NPServer.Clients [c].SendSequenceNum++;
     *ptr++ = NP_SERV_ROM_IMAGE;
@@ -972,8 +972,8 @@ bool8 S9xNPSendROMImageToClient (int c)
     if (!S9xNPSSendData (NPServer.Clients [c].Socket, header, sizeof (header)) ||
         !S9xNPSSendData (NPServer.Clients [c].Socket, Memory.ROM,
                         Memory.CalculatedSize) ||
-        !S9xNPSSendData (NPServer.Clients [c].Socket, (uint8 *) Memory.ROMFilename,
-                        strlen (Memory.ROMFilename) + 1))
+        !S9xNPSSendData (NPServer.Clients [c].Socket, (uint8 *) Memory.ROMFilename.c_str(),
+                        Memory.ROMFilename.length() + 1))
     {
         S9xNPShutdownClient (c, TRUE);
         return (FALSE);

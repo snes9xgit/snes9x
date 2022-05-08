@@ -1,7 +1,10 @@
 #include <cstring>
-#include "port.h"
 #include <string>
-#include <string.h>
+
+#include "display.h"
+#include "fscompat.h"
+#include "port.h"
+#include "memmap.h"
 
 using std::string;
 
@@ -17,6 +20,29 @@ bool SplitPath::ext_is(const string &other)
 std::string makepath(const SplitPath &path)
 {
     return makepath(path.drive, path.dir, path.stem, path.ext);
+}
+
+std::string S9xGetFilename(string filename, string ext, enum s9x_getdirtype dirtype)
+{
+    auto path = splitpath(filename);
+    auto dir  = S9xGetDirectory(dirtype);
+    return makepath(path.drive, dir, path.stem, ext);
+}
+
+std::string S9xGetFilename(string ext, enum s9x_getdirtype dirtype)
+{
+    return S9xGetFilename(Memory.ROMFilename, ext, dirtype);
+}
+
+std::string S9xBasename(std::string filename)
+{
+    auto path = splitpath(filename);
+    return path.stem + path.ext;
+}
+
+std::string S9xBasenameNoExt(std::string filename)
+{
+    return splitpath(filename).stem;
 }
 
 #if __cplusplus >= 201703L
