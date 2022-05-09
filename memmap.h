@@ -55,10 +55,11 @@ struct CMemory
 	uint8	NSRTHeader[32];
 	int32	HeaderCount;
 
-	uint8	*RAM;
-	uint8	*ROM;
-	uint8	*SRAM;
-	uint8	*VRAM;
+	uint8	RAM[0x20000];
+	uint8	ROMStorage[MAX_ROM_SIZE + 0x200 + 0x8000];
+	uint8   *ROM;
+	uint8	SRAM[0x80000];
+	uint8	VRAM[0x10000];
 	uint8	*FillRAM;
 	uint8	*BWRAM;
 	uint8	*C4RAM;

@@ -1189,11 +1189,11 @@ void S9xFreezeToStream (STREAM stream)
 		dma_snap.dma[d] = DMA[d];
 	FreezeStruct(stream, "DMA", &dma_snap, SnapDMA, COUNT(SnapDMA));
 
-	FreezeBlock (stream, "VRA", Memory.VRAM, 0x10000);
+	FreezeBlock (stream, "VRA", Memory.VRAM, sizeof(Memory.VRAM));
 
-	FreezeBlock (stream, "RAM", Memory.RAM, 0x20000);
+	FreezeBlock (stream, "RAM", Memory.RAM, sizeof(Memory.RAM));
 
-	FreezeBlock (stream, "SRA", Memory.SRAM, 0x80000);
+	FreezeBlock (stream, "SRA", Memory.SRAM, sizeof(Memory.SRAM));
 
 	FreezeBlock (stream, "FIL", Memory.FillRAM, 0x8000);
 
@@ -1391,16 +1391,16 @@ int S9xUnfreezeFromStream (STREAM stream)
 			break;
 
 		if (fast)
-			result = UnfreezeBlock(stream, "RAM", Memory.RAM, 0x20000);
+			result = UnfreezeBlock(stream, "RAM", Memory.RAM, sizeof(Memory.RAM));
 		else
-			result = UnfreezeBlockCopy(stream, "RAM", &local_ram, 0x20000);
+			result = UnfreezeBlockCopy(stream, "RAM", &local_ram, sizeof(Memory.RAM));
 		if (result != SUCCESS)
 			break;
 
 		if (fast)
-			result = UnfreezeBlock(stream, "SRA", Memory.SRAM, 0x80000);
+			result = UnfreezeBlock(stream, "SRA", Memory.SRAM, sizeof(Memory.SRAM));
 		else
-			result = UnfreezeBlockCopy (stream, "SRA", &local_sram, 0x80000);
+			result = UnfreezeBlockCopy (stream, "SRA", &local_sram, sizeof(Memory.SRAM));
 		if (result != SUCCESS)
 			break;
 

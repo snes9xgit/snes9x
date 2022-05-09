@@ -893,13 +893,6 @@ static void S9xDeinterleaveGD24 (int size, uint8 *base)
 
 bool8 CMemory::Init (void)
 {
-	// TODO: If these change size, check other locations in the code that also
-	// have the fixed size. In the future, make this a static allocation.
-    RAM	 = (uint8 *) malloc(0x20000);
-    SRAM = (uint8 *) malloc(0x80000);
-    VRAM = (uint8 *) malloc(0x10000);
-    ROM  = (uint8 *) malloc(MAX_ROM_SIZE + 0x200 + 0x8000);
-
 	IPPU.TileCache[TILE_2BIT]       = (uint8 *) malloc(MAX_2BIT_TILES * 64);
 	IPPU.TileCache[TILE_4BIT]       = (uint8 *) malloc(MAX_4BIT_TILES * 64);
 	IPPU.TileCache[TILE_8BIT]       = (uint8 *) malloc(MAX_8BIT_TILES * 64);
@@ -916,8 +909,7 @@ bool8 CMemory::Init (void)
 	IPPU.TileCached[TILE_4BIT_EVEN] = (uint8 *) malloc(MAX_4BIT_TILES);
 	IPPU.TileCached[TILE_4BIT_ODD]  = (uint8 *) malloc(MAX_4BIT_TILES);
 
-	if (!RAM || !SRAM || !VRAM || !ROM ||
-		!IPPU.TileCache[TILE_2BIT]       ||
+	if (!IPPU.TileCache[TILE_2BIT]       ||
 		!IPPU.TileCache[TILE_4BIT]       ||
 		!IPPU.TileCache[TILE_8BIT]       ||
 		!IPPU.TileCache[TILE_2BIT_EVEN]  ||
@@ -936,10 +928,10 @@ bool8 CMemory::Init (void)
 		return (FALSE);
     }
 
-	memset(RAM, 0,  0x20000);
-	memset(SRAM, 0, 0x80000);
-	memset(VRAM, 0, 0x10000);
-	memset(ROM, 0,  MAX_ROM_SIZE + 0x200 + 0x8000);
+	memset(RAM, 0,  sizeof(RAM));
+	memset(SRAM, 0, sizeof(SRAM));
+	memset(VRAM, 0, sizeof(VRAM));
+	memset(ROMStorage, 0,  sizeof(ROMStorage));
 
 	memset(IPPU.TileCache[TILE_2BIT], 0,       MAX_2BIT_TILES * 64);
 	memset(IPPU.TileCache[TILE_4BIT], 0,       MAX_4BIT_TILES * 64);
@@ -960,12 +952,12 @@ bool8 CMemory::Init (void)
 	// FillRAM uses first 32K of ROM image area, otherwise space just
 	// wasted. Might be read by the SuperFX code.
 
-	FillRAM = ROM;
+	FillRAM = &ROMStorage[0];
 
 	// Add 0x8000 to ROM image pointer to stop SuperFX code accessing
 	// unallocated memory (can cause crash on some ports).
 
-	ROM += 0x8000;
+	ROM = &ROMStorage[0x8000];
 
 	C4RAM   = ROM + 0x400000 + 8192 * 8; // C4
 	OBC1RAM = ROM + 0x400000; // OBC1
@@ -985,30 +977,7 @@ bool8 CMemory::Init (void)
 
 void CMemory::Deinit (void)
 {
-	if (RAM)
-	{
-		free(RAM);
-		RAM = NULL;
-	}
-
-	if (SRAM)
-	{
-		free(SRAM);
-		SRAM = NULL;
-	}
-
-	if (VRAM)
-	{
-		free(VRAM);
-		VRAM = NULL;
-	}
-
-	if (ROM)
-	{
-		ROM -= 0x8000;
-		free(ROM);
-		ROM = NULL;
-	}
+	ROM = NULL;
 
 	for (int t = 0; t < 7; t++)
 	{
