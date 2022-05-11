@@ -98,7 +98,7 @@ std::string S9xGetDirectory(enum s9x_getdirtype dirtype)
     }
 
     /* Anything else, use ROM filename path */
-    if (dirname == "" && gui_config && gui_config->rom_loaded)
+    if (dirname == "" && !Memory.ROMFilename.empty())
     {
         fs::path path(Memory.ROMFilename);
 

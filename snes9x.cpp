@@ -463,7 +463,7 @@ void S9xParseArgsForCheats (char **argv, int argc)
                 }
                 else
                 {
-                    S9xEnableCheatGroup (Cheat.g.size() - 1);
+                    S9xEnableCheatGroup (Cheat.group.size() - 1);
                 }
             }
             else
@@ -647,7 +647,7 @@ char * S9xParseArgs (char **argv, int argc)
 					}
 					else
 					{
-						S9xEnableCheatGroup (Cheat.g.size() - 1);
+						S9xEnableCheatGroup (Cheat.group.size() - 1);
 					}
 				}
 				else

@@ -85,7 +85,6 @@ STREAM S9xMSU1OpenFile(const char *msu_ext, bool skip_unpacked)
             int	port = unzFindExtension(unzFile, msu_ext, true, true, true);
             if (port == UNZ_OK)
             {
-                printf(" in %s.\n", zip_filename.c_str());
                 file = new unzStream(unzFile);
             }
             else

@@ -99,8 +99,8 @@ void S9xReset (void)
 {
 	S9xResetSaveTimer(FALSE);
 
-	memset(Memory.RAM, 0x55, 0x20000);
-	memset(Memory.VRAM, 0x00, 0x10000);
+	memset(Memory.RAM, 0x55, sizeof(Memory.RAM));
+	memset(Memory.VRAM, 0x00, sizeof(Memory.VRAM));
 	memset(Memory.FillRAM, 0, 0x8000);
 
 	S9xResetBSX();
