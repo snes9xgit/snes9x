@@ -47,36 +47,6 @@ enum {
     NTSC_RGB       = 2
 };
 
-enum {
-    ENDIAN_NORMAL  = 0,
-    ENDIAN_SWAPPED = 1
-};
-
-enum {
-    JOB_FILTER            = 0,
-    JOB_CONVERT           = 1,
-    JOB_SCALE_AND_CONVERT = 2,
-    JOB_CONVERT_YUV       = 3,
-    JOB_CONVERT_MASK      = 4
-};
-
-typedef struct thread_job_t
-{
-    int operation_type;
-    uint8 *src_buffer;
-    int src_pitch;
-    uint8 *dst_buffer;
-    int dst_pitch;
-    int width;
-    int height;
-    int bpp;
-    int inv_rmask;
-    int inv_gmask;
-    int inv_bmask;
-
-    volatile bool complete;
-} thread_job_t;
-
 struct S9xRect
 {
     int x;
@@ -86,7 +56,6 @@ struct S9xRect
 };
 
 void S9xRegisterYUVTables(uint8 *y, uint8 *u, uint8 *v);
-void S9xSetEndianess(int type);
 double S9xGetAspect();
 S9xRect S9xApplyAspect(int, int, int, int);
 void S9xConvertYUV(void *src_buffer,
@@ -118,7 +87,7 @@ void S9xFilter(uint8 *src_buffer,
                int dst_pitch,
                int &width,
                int &height);
-void get_filter_scale(int &width, int &height);
+void apply_filter_scale(int &width, int &height);
 void S9xDisplayRefresh(int width, int height);
 void S9xReinitDisplay();
 void S9xDisplayReconfigure();

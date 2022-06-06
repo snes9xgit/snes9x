@@ -161,7 +161,6 @@ void S9xOpenGLDisplayDriver::update(uint16_t *buffer, int width, int height, int
                 pbo_memory = glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
 
             /* Pixel swizzling in software */
-            S9xSetEndianess(ENDIAN_NORMAL);
             S9xConvert(buffer, pbo_memory, stride_in_pixels * 2, width * 4, width, height, 32);
 
             glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);

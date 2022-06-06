@@ -192,6 +192,8 @@ list(APPEND SOURCES
     src/gtk_display_driver_gtk.h
     src/gtk_display_driver.h
     src/gtk_display.h
+    src/threadpool.cpp
+    src/threadpool.h
     src/gtk_file.cpp
     src/gtk_file.h
     src/gtk_builder_window.cpp

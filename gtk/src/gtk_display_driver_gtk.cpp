@@ -107,7 +107,7 @@ void S9xGTKDisplayDriver::clear()
     S9xRect dst;
     dst.w = window->last_width;
     dst.h = window->last_height;
-    get_filter_scale(dst.w, dst.h);
+    apply_filter_scale(dst.w, dst.h);
     dst = S9xApplyAspect(dst.w, dst.h, width, height);
 
     if (dst.x > 0)

@@ -294,12 +294,6 @@ int S9xXVDisplayDriver::init()
                     this->rshift = this->bshift;
                     this->bshift = copy;
                 }
-
-                /* on big-endian Xv still seems to like LSB order */
-                if (config->force_inverted_byte_order)
-                    S9xSetEndianess(ENDIAN_SWAPPED);
-                else
-                    S9xSetEndianess(ENDIAN_NORMAL);
             }
         }
     }
@@ -312,21 +306,6 @@ int S9xXVDisplayDriver::init()
             {
                 format = formats[i].id;
                 depth = formats[i].depth;
-
-                if (formats[i].byte_order == LSBFirst)
-                {
-                    if (config->force_inverted_byte_order)
-                        S9xSetEndianess(ENDIAN_SWAPPED);
-                    else
-                        S9xSetEndianess(ENDIAN_NORMAL);
-                }
-                else
-                {
-                    if (config->force_inverted_byte_order)
-                        S9xSetEndianess(ENDIAN_NORMAL);
-                    else
-                        S9xSetEndianess(ENDIAN_SWAPPED);
-                }
 
                 break;
             }
@@ -454,7 +433,7 @@ void S9xXVDisplayDriver::clear()
     S9xRect dst;
     dst.w = window->last_width;
     dst.h = window->last_height;
-    get_filter_scale(dst.w, dst.h);
+    apply_filter_scale(dst.w, dst.h);
     dst = S9xApplyAspect(dst.w, dst.h, width, height);
 
     if (dst.x > 0)
