@@ -16,12 +16,6 @@
 #include <array>
 
 enum {
-    HWA_NONE = 0,
-    HWA_OPENGL = 1,
-    HWA_XV = 2
-};
-
-enum {
     HIRES_MERGE = 0,
     HIRES_NORMAL = 1,
     HIRES_SCALE = 2
@@ -92,7 +86,7 @@ class Snes9xConfig
     float ntsc_merge_fields;
     int ntsc_scanline_intensity;
     int scanline_filter_intensity;
-    int hw_accel;
+    std::string display_driver;
     bool allow_opengl;
     bool allow_xv;
     bool allow_xrandr;
@@ -125,6 +119,7 @@ class Snes9xConfig
 
     /* Operational */
     std::vector<std::string> sound_drivers;
+    std::vector<std::string> display_drivers;
     int sound_driver;
     bool mute_sound;
     bool mute_sound_turbo;

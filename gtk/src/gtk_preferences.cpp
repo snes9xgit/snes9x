@@ -138,15 +138,18 @@ Snes9xPreferences::Snes9xPreferences(Snes9xConfig *config)
     combo_box_append("scale_method_combo", _("4xBRZ"));
 #endif
 
-    combo_box_append("hw_accel", _("None - Use software scaler"));
+    for (const auto &driver : config->display_drivers)
+    {
+        std::string entry;
+        if (!strcasecmp(driver.c_str(), "opengl"))
+            entry = _("OpenGL - Use 3D graphics hardware");
+        else if (!strcasecmp(driver.c_str(), "Xv"))
+            entry = _("XVideo - Use hardware video blitter");
+        else
+            entry = _("None - Use software scaler");
 
-    if (config->allow_opengl)
-        combo_box_append("hw_accel",
-                         _("OpenGL - Use 3D graphics hardware"));
-
-    if (config->allow_xv)
-        combo_box_append("hw_accel",
-                         _("XVideo - Use hardware video blitter"));
+        combo_box_append("hw_accel", entry.c_str());
+    }
 
     for (auto &name : config->sound_drivers)
     {
@@ -173,9 +176,9 @@ void Snes9xPreferences::connect_signals()
 
     get_object<Gtk::ComboBox>("hw_accel")->signal_changed().connect([&] {
         int id = get_combo("hw_accel");
-        show_widget("bilinear_filter", id != HWA_XV);
-        show_widget("opengl_frame", id == HWA_OPENGL);
-        show_widget("xv_frame", id == HWA_XV);
+        show_widget("bilinear_filter", config->display_drivers[id] != "Xv");
+        show_widget("opengl_frame", config->display_drivers[id] == "OpenGL");
+        show_widget("xv_frame", config->display_drivers[id] == "Xv");
     });
 
     get_object<Gtk::Button>("reset_current_joypad")->signal_pressed().connect(sigc::mem_fun(*this, &Snes9xPreferences::reset_current_joypad));
@@ -425,7 +428,7 @@ void Snes9xPreferences::move_settings_to_dialog()
     set_check("prevent_screensaver",       config->prevent_screensaver);
     set_check("force_inverted_byte_order", config->force_inverted_byte_order);
     set_combo("playback_combo",            7 - config->sound_playback_rate);
-    set_combo("hw_accel",                  combo_value (config->hw_accel));
+    set_combo("hw_accel",                  combo_value (config->display_driver));
     set_check("pause_emulation_on_switch", config->pause_emulation_on_switch);
     set_spin ("num_threads",               config->num_threads);
     set_check("mute_sound_check",          config->mute_sound);
@@ -545,7 +548,7 @@ void Snes9xPreferences::get_settings_from_dialog()
     if (config->multithreading != get_check("multithreading"))
         gfx_needs_restart = true;
 
-    if (config->hw_accel != hw_accel_value (get_combo("hw_accel")))
+    if (config->display_driver != config->display_drivers[get_combo("hw_accel")])
         gfx_needs_restart = true;
 
     if (config->force_inverted_byte_order != get_check("force_inverted_byte_order"))
@@ -586,7 +589,7 @@ void Snes9xPreferences::get_settings_from_dialog()
     store_ntsc_settings();
     config->ntsc_scanline_intensity   = get_combo("ntsc_scanline_intensity");
     config->scanline_filter_intensity = get_combo("scanline_filter_intensity");
-    config->hw_accel                  = hw_accel_value(get_combo("hw_accel"));
+    config->display_driver            = config->display_drivers[get_combo("hw_accel")];
     Settings.BilinearFilter           = get_check("bilinear_filter");
     config->num_threads               = get_spin("num_threads");
     config->default_esc_behavior      = get_combo("default_esc_behavior");
@@ -715,28 +718,15 @@ void Snes9xPreferences::get_settings_from_dialog()
         top_level->leave_fullscreen_mode();
 }
 
-int Snes9xPreferences::hw_accel_value(int combo_value)
+int Snes9xPreferences::combo_value(std::string driver_name)
 {
-    if (config->allow_opengl && config->allow_xv)
-        return combo_value;
-    else if (!config->allow_opengl && !config->allow_xv)
-        return 0;
-    else if (!config->allow_opengl && config->allow_xv)
-        return combo_value ? 2 : 0;
-    else
-        return combo_value ? 1 : 0;
-}
+    for (size_t i = 0; i < config->display_drivers.size(); i++)
+    {
+        if (config->display_drivers[i] == driver_name)
+            return i;
+    }
 
-int Snes9xPreferences::combo_value(int hw_accel)
-{
-    if (config->allow_opengl && config->allow_xv)
-        return hw_accel;
-    else if (!config->allow_opengl && !config->allow_xv)
-        return 0;
-    else if (!config->allow_opengl && config->allow_xv)
-        return hw_accel == HWA_XV ? 1 : 0;
-    else
-        return hw_accel == HWA_OPENGL ? 1 : 0;
+    return 0;
 }
 
 void Snes9xPreferences::show()

@@ -82,7 +82,7 @@ int Snes9xConfig::load_defaults()
     rom_loaded = false;
     multithreading = false;
     splash_image = SPLASH_IMAGE_STARFIELD;
-    hw_accel = 0;
+    display_driver = "OpenGL";
     allow_opengl = false;
     allow_xv = false;
     allow_xrandr = false;
@@ -227,7 +227,7 @@ int Snes9xConfig::save_config_file()
     outint("ScanlineFilterIntensity", scanline_filter_intensity, "0: 0%, 1: 12.5%, 2: 25%, 3: 50%, 4: 100%");
     outint("HiresEffect", hires_effect, "0: Downscale to low-res, 1: Leave as-is, 2: Upscale low-res screens");
     outint("NumberOfThreads", num_threads);
-    outint("HardwareAcceleration", hw_accel, "0: None, 1: OpenGL, 2: XVideo");
+    outstring("HardwareAcceleration", display_driver, "None, OpenGL, Xv, Vulkan");
     outint("SplashBackground", splash_image, "0: Black, 1: Color bars, 2: Pattern, 3: Blue, 4: Default");
 
     section = "NTSC";
@@ -453,7 +453,7 @@ int Snes9xConfig::load_config_file()
     inbool("ForceInvertedByteOrder", force_inverted_byte_order);
     inbool("Multithreading", multithreading);
     inint("NumberOfThreads", num_threads);
-    inint("HardwareAcceleration", hw_accel);
+    instr("HardwareAcceleration", display_driver);
     inbool("BilinearFilter", Settings.BilinearFilter);
     inint("SplashBackground", splash_image);
 

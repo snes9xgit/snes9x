@@ -798,6 +798,14 @@ void S9xQueryDrivers()
                                                    gui_config->xrr_screen_resources->crtcs[0]);
     }
 #endif
+
+    auto &dd = gui_config->display_drivers;
+    dd.clear();
+    dd.push_back("None");
+    if (gui_config->allow_opengl)
+        dd.push_back("OpenGL");
+    if (gui_config->allow_xv)
+        dd.push_back("Xv");
 }
 
 bool8 S9xDeinitUpdate(int width, int height)
@@ -887,40 +895,30 @@ static void S9xInitDriver()
 #ifdef GDK_WINDOWING_WAYLAND
     if (GDK_IS_WAYLAND_DISPLAY(gdk_display_get_default()))
     {
-        gui_config->hw_accel = HWA_OPENGL;
+        gui_config->display_driver = "OpenGL";
     }
 #endif
 
-    switch (gui_config->hw_accel)
+    if ("OpenGL" == gui_config->display_driver)
     {
-    case HWA_OPENGL:
         driver = new S9xOpenGLDisplayDriver(top_level, gui_config);
-        break;
-
+    }
 #if defined(USE_XV) && defined(GDK_WINDOWING_X11)
-    case HWA_XV:
+    else if ("Xv" == gui_config->display_driver)
+    {
         driver = new S9xXVDisplayDriver(top_level, gui_config);
-        break;
+    }
 #endif
-
-    default:
+    else
+    {
         driver = new S9xGTKDisplayDriver(top_level, gui_config);
     }
 
     if (driver->init())
     {
-        if (gui_config->hw_accel > 0)
-        {
-            delete driver;
-            gui_config->hw_accel = HWA_NONE;
-
-            S9xInitDriver();
-        }
-        else
-        {
-            fprintf(stderr, "Error: Couldn't initialize any display output.\n");
-            exit(1);
-        }
+        delete driver;
+        gui_config->display_driver = "None";
+        driver->init();
     }
 
     pool = NULL;

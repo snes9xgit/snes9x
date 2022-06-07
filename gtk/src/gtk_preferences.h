@@ -24,7 +24,7 @@ class Snes9xPreferences : public GtkBuilderWindow
     int get_focused_binding();
     void store_binding(const char *string, Binding binding);
     int hw_accel_value(int combo_value);
-    int combo_value(int hw_accel);
+    int combo_value(std::string driver_name);
     void focus_next();
     void swap_with();
     void clear_binding(const char *name);

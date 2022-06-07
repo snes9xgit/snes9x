@@ -589,9 +589,6 @@ int S9xOpenGLDisplayDriver::query_availability()
     }
 #endif
 
-    if (gui_config->hw_accel == HWA_OPENGL)
-        gui_config->hw_accel = HWA_NONE;
-
     return 0;
 }
 
