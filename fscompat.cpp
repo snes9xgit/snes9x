@@ -78,9 +78,19 @@ SplitPath splitpath(string str)
 
 string makepath(const string &drive, const string &dir, const string &stem, const string &ext)
 {
+    auto dot_position = ext.find('.');
+
+    if (dot_position == string::npos)
+    {
+        fs::path path(drive);
+        path = path / dir / stem;
+        path.replace_extension(ext);
+        return path.string();
+    }
+
+    auto filename = stem + ext;
     fs::path path(drive);
-    path = path / dir / stem;
-    path.replace_extension(ext);
+    path = path / dir / filename;
     return path.string();
 }
 
@@ -123,7 +133,7 @@ SplitPath splitpath(string path)
     return output;
 }
 
-string makepath(string drive, string dir, string stem, string ext)
+string makepath(const string &drive, const string &dir, const string &stem, const string &ext)
 {
     string output;
 
@@ -148,7 +158,7 @@ string makepath(string drive, string dir, string stem, string ext)
 
     if (!ext.empty())
     {
-        if (ext[0] != '.')
+        if (ext.find('.') == string::npos)
             output += '.';
         output += ext;
     }
@@ -215,7 +225,7 @@ void _makepath(char *path, const char *drive, const char *dir, const char *fname
 
     if (ext && *ext)
     {
-        if (*ext != '.')
+        if (!strchr(ext, '.'))
             strcat(path, ".");
         strcat(path, ext);
     }

@@ -6,8 +6,6 @@
 
 #include <stdio.h>
 #include <signal.h>
-#include "giomm/application.h"
-#include "glibmm/main.h"
 #include "gtk_compat.h"
 #include "gtk_config.h"
 #include "gtk_s9x.h"
@@ -84,6 +82,10 @@ int main(int argc, char *argv[])
         exit(3);
 
     top_level = new Snes9xWindow(gui_config);
+#ifdef GDK_WINDOWING_X11
+    if (!GDK_IS_X11_WINDOW(top_level->window->get_window()->gobj()))
+        XInitThreads();
+#endif
 
     // Setting fullscreen before showing the window avoids some flicker.
     if ((gui_config->full_screen_on_open && rom_filename) || (gui_config->fullscreen))

@@ -3994,7 +3994,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 #endif
 
 	// BPS
-	std::string filename = patch_path + S9xGetFilename(".bps", PATCH_DIR);
+	std::string filename = S9xGetFilename(".bps", PATCH_DIR);
 
 	if ((patch_file = OPEN_FSTREAM(filename.c_str(), "rb")) != NULL)
 	{
@@ -4014,7 +4014,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 	}
 
 	// UPS
-	filename = patch_path + S9xGetFilename(".ups", PATCH_DIR);
+	filename = S9xGetFilename(".ups", PATCH_DIR);
 
 	if ((patch_file = OPEN_FSTREAM(filename.c_str(), "rb")) != NULL)
 	{
@@ -4034,7 +4034,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 	}
 
 	// IPS
-	filename = patch_path + S9xGetFilename(".ips", PATCH_DIR);
+	filename = S9xGetFilename(".ips", PATCH_DIR);
 
 	if ((patch_file = OPEN_FSTREAM(filename.c_str(), "rb")) != NULL)
 	{

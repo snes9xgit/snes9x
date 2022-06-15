@@ -4,7 +4,6 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include "gtk_compat.h"
 #include <cairo.h>
 #include "gtk_display.h"
 #include "gtk_display_driver_gtk.h"

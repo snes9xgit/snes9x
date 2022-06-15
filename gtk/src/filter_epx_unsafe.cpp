@@ -4,13 +4,6 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include "snes9x.h"
-#include "memmap.h"
-#include "cpuops.h"
-#include "dma.h"
-#include "apu/apu.h"
-#include "fxemu.h"
-#include "snapshot.h"
 #ifdef DEBUGGER
 #include "debug.h"
 #include "missing.h"

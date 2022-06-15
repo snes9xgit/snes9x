@@ -5,6 +5,7 @@
 \*****************************************************************************/
 
 #include "gtk_sound_driver_sdl.h"
+#include "SDL_audio.h"
 #include "gtk_s9x.h"
 #include "apu/apu.h"
 #include "snes9x.h"
@@ -84,6 +85,12 @@ bool S9xSDLSoundDriver::open_device()
     };
 
     audiospec.userdata = this;
+
+    char *name;
+    SDL_AudioSpec spec;
+    SDL_GetDefaultAudioInfo(&name, &spec, 0);
+    printf("%s\n", name);
+    SDL_free(name);
 
     printf("SDL sound driver initializing...\n");
     printf("    --> (Frequency: %dhz, Latency: %dms)...",

@@ -141,10 +141,12 @@ Snes9xPreferences::Snes9xPreferences(Snes9xConfig *config)
     for (const auto &driver : config->display_drivers)
     {
         std::string entry;
-        if (!strcasecmp(driver.c_str(), "opengl"))
+        if (driver == "opengl")
             entry = _("OpenGL - Use 3D graphics hardware");
-        else if (!strcasecmp(driver.c_str(), "Xv"))
+        else if (driver == "xv")
             entry = _("XVideo - Use hardware video blitter");
+        else if (driver == "vulkan")
+            entry = _("Vulkan");
         else
             entry = _("None - Use software scaler");
 
@@ -176,9 +178,10 @@ void Snes9xPreferences::connect_signals()
 
     get_object<Gtk::ComboBox>("hw_accel")->signal_changed().connect([&] {
         int id = get_combo("hw_accel");
-        show_widget("bilinear_filter", config->display_drivers[id] != "Xv");
-        show_widget("opengl_frame", config->display_drivers[id] == "OpenGL");
-        show_widget("xv_frame", config->display_drivers[id] == "Xv");
+        show_widget("bilinear_filter", config->display_drivers[id] != "xv");
+        show_widget("opengl_frame", config->display_drivers[id] == "opengl" ||
+                    config->display_drivers[id] == "vulkan");
+        show_widget("xv_frame", config->display_drivers[id] == "xv");
     });
 
     get_object<Gtk::Button>("reset_current_joypad")->signal_pressed().connect(sigc::mem_fun(*this, &Snes9xPreferences::reset_current_joypad));

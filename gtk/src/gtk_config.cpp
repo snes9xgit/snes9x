@@ -13,7 +13,6 @@
 #include "fmt/format.h"
 #include "gtk_config.h"
 #include "gtk_s9x.h"
-#include "gtk_sound.h"
 #include "gtk_display.h"
 #include "conffile.h"
 #include "cheats.h"
@@ -82,7 +81,7 @@ int Snes9xConfig::load_defaults()
     rom_loaded = false;
     multithreading = false;
     splash_image = SPLASH_IMAGE_STARFIELD;
-    display_driver = "OpenGL";
+    display_driver = "opengl";
     allow_opengl = false;
     allow_xv = false;
     allow_xrandr = false;
@@ -227,7 +226,7 @@ int Snes9xConfig::save_config_file()
     outint("ScanlineFilterIntensity", scanline_filter_intensity, "0: 0%, 1: 12.5%, 2: 25%, 3: 50%, 4: 100%");
     outint("HiresEffect", hires_effect, "0: Downscale to low-res, 1: Leave as-is, 2: Upscale low-res screens");
     outint("NumberOfThreads", num_threads);
-    outstring("HardwareAcceleration", display_driver, "None, OpenGL, Xv, Vulkan");
+    outstring("HardwareAcceleration", display_driver, "none, opengl, xv, vulkan");
     outint("SplashBackground", splash_image, "0: Black, 1: Color bars, 2: Pattern, 3: Blue, 4: Default");
 
     section = "NTSC";

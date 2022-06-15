@@ -4,7 +4,6 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include "gtk_compat.h"
 #include <dlfcn.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -13,7 +12,6 @@
 #include "gtk_display.h"
 #include "gtk_display_driver_opengl.h"
 #include "gtk_shader_parameters.h"
-#include "shaders/shader_helpers.h"
 
 static const GLchar *stock_vertex_shader_110 =
 "#version 110\n"
@@ -91,7 +89,7 @@ S9xOpenGLDisplayDriver::S9xOpenGLDisplayDriver(Snes9xWindow *window, Snes9xConfi
 void S9xOpenGLDisplayDriver::update(uint16_t *buffer, int width, int height, int stride_in_pixels)
 {
     Gtk::Allocation allocation = drawing_area->get_allocation();
-
+    
     if (output_window_width != allocation.get_width() ||
         output_window_height != allocation.get_height())
     {

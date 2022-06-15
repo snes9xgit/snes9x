@@ -24,6 +24,7 @@
 #endif
 
 #include "gtk_display_driver_opengl.h"
+#include "gtk_display_driver_vulkan.h"
 
 void filter_scanlines(uint8 *, int, uint8 *, int, int, int);
 void filter_2x(uint8 *, int, uint8 *, int, int, int);
@@ -801,16 +802,20 @@ void S9xQueryDrivers()
 
     auto &dd = gui_config->display_drivers;
     dd.clear();
-    dd.push_back("None");
+    dd.push_back("none");
     if (gui_config->allow_opengl)
-        dd.push_back("OpenGL");
+        dd.push_back("opengl");
     if (gui_config->allow_xv)
-        dd.push_back("Xv");
+        dd.push_back("xv");
+    dd.push_back("vulkan");
 }
 
 bool8 S9xDeinitUpdate(int width, int height)
 {
     int yoffset = 0;
+
+    if (width <= 0 || height <= 0)
+        return false;
 
     if (top_level->last_height > height)
     {
@@ -848,8 +853,8 @@ bool8 S9xDeinitUpdate(int width, int height)
             height = SNES_HEIGHT * 2;
         }
     }
-
-    uint16_t *screen_view = GFX.Screen + yoffset * GFX.RealPPL;
+    
+    uint16_t *screen_view = GFX.Screen + (yoffset * (int)GFX.RealPPL);
 
     if (!Settings.Paused && !NetPlay.Paused)
 
@@ -895,16 +900,20 @@ static void S9xInitDriver()
 #ifdef GDK_WINDOWING_WAYLAND
     if (GDK_IS_WAYLAND_DISPLAY(gdk_display_get_default()))
     {
-        gui_config->display_driver = "OpenGL";
+        gui_config->display_driver = "opengl";
     }
 #endif
 
-    if ("OpenGL" == gui_config->display_driver)
+    if ("opengl" == gui_config->display_driver)
     {
         driver = new S9xOpenGLDisplayDriver(top_level, gui_config);
     }
+    else if ("vulkan" == gui_config->display_driver)
+    {
+        driver = new S9xVulkanDisplayDriver(top_level, gui_config);
+    }
 #if defined(USE_XV) && defined(GDK_WINDOWING_X11)
-    else if ("Xv" == gui_config->display_driver)
+    else if ("xv" == gui_config->display_driver)
     {
         driver = new S9xXVDisplayDriver(top_level, gui_config);
     }
@@ -917,7 +926,7 @@ static void S9xInitDriver()
     if (driver->init())
     {
         delete driver;
-        gui_config->display_driver = "None";
+        gui_config->display_driver = "none";
         driver->init();
     }
 

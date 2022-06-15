@@ -515,6 +515,7 @@ void Snes9xWindow::setup_splash()
 
         return;
     }
+    return;
 
     for (int y = 0; y < 224; y++, screen_ptr += (GFX.Pitch / 2)) {
         memset(screen_ptr, 0, 256 * sizeof(uint16));
