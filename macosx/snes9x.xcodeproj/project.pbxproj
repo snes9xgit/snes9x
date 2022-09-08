@@ -105,7 +105,6 @@
 		30D15D4122CE6B74005BC352 /* gfx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA31FE2D05F7743E00E13748 /* gfx.cpp */; };
 		30D15D4222CE6B74005BC352 /* globals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE061830526CCB900A80003 /* globals.cpp */; };
 		30D15D4322CE6B74005BC352 /* loadzip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAE061A90526CCB900A80003 /* loadzip.cpp */; };
-		30D15D4422CE6B74005BC352 /* logger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA00D01D0A5A9956000C58E0 /* logger.cpp */; };
 		30D15D4522CE6B74005BC352 /* memmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAB7319C0527033000A80003 /* memmap.cpp */; };
 		30D15D4622CE6B74005BC352 /* movie.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA813E9A066F50A5004F99B5 /* movie.cpp */; };
 		30D15D4722CE6B74005BC352 /* msu1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF0B39DE1FA580F9002B04D3 /* msu1.cpp */; };
@@ -166,7 +165,6 @@
 		30D15DA822CE6BC9005BC352 /* getset.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE061800526CCB900A80003 /* getset.h */; };
 		30D15DA922CE6BC9005BC352 /* gfx.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE061820526CCB900A80003 /* gfx.h */; };
 		30D15DAA22CE6BC9005BC352 /* language.h in Headers */ = {isa = PBXBuildFile; fileRef = EA809E9508F8D6E00072CDFB /* language.h */; };
-		30D15DAB22CE6BC9005BC352 /* logger.h in Headers */ = {isa = PBXBuildFile; fileRef = EA00D01F0A5A998F000C58E0 /* logger.h */; };
 		30D15DAC22CE6BC9005BC352 /* memmap.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE061B10526CCB900A80003 /* memmap.h */; };
 		30D15DAD22CE6BC9005BC352 /* messages.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE061B20526CCB900A80003 /* messages.h */; };
 		30D15DAE22CE6BC9005BC352 /* missing.h in Headers */ = {isa = PBXBuildFile; fileRef = EAE061B30526CCB900A80003 /* missing.h */; };
@@ -404,8 +402,6 @@
 		CFEFAE8E10EAC92B00FB081A /* snes_ntsc_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = snes_ntsc_config.h; sourceTree = "<group>"; };
 		CFEFAE8F10EAC92B00FB081A /* snes_ntsc_impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = snes_ntsc_impl.h; sourceTree = "<group>"; };
 		CFEFAE9010EAC92B00FB081A /* snes_ntsc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = snes_ntsc.h; sourceTree = "<group>"; };
-		EA00D01D0A5A9956000C58E0 /* logger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = logger.cpp; sourceTree = "<group>"; usesTabs = 1; };
-		EA00D01F0A5A998F000C58E0 /* logger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = logger.h; sourceTree = "<group>"; usesTabs = 1; };
 		EA0C95D808364AAE009307B4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		EA16053E0639E655004412AB /* mac-netplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "mac-netplay.h"; sourceTree = "<group>"; };
 		EA1605500639E735004412AB /* mac-netplay.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = "mac-netplay.mm"; sourceTree = "<group>"; };
@@ -923,8 +919,6 @@
 				EAA7B5D807609F76001BAB8B /* jma */,
 				EA809E9508F8D6E00072CDFB /* language.h */,
 				EAE061A90526CCB900A80003 /* loadzip.cpp */,
-				EA00D01D0A5A9956000C58E0 /* logger.cpp */,
-				EA00D01F0A5A998F000C58E0 /* logger.h */,
 				EAECB65C04AC7FCD00A80003 /* macosx */,
 				EAB7319C0527033000A80003 /* memmap.cpp */,
 				EAE061B10526CCB900A80003 /* memmap.h */,
@@ -1100,7 +1094,6 @@
 				30D15DA822CE6BC9005BC352 /* getset.h in Headers */,
 				30D15DA922CE6BC9005BC352 /* gfx.h in Headers */,
 				30D15DAA22CE6BC9005BC352 /* language.h in Headers */,
-				30D15DAB22CE6BC9005BC352 /* logger.h in Headers */,
 				30D15DAC22CE6BC9005BC352 /* memmap.h in Headers */,
 				30D15DAD22CE6BC9005BC352 /* messages.h in Headers */,
 				30D15DAE22CE6BC9005BC352 /* missing.h in Headers */,
@@ -1363,7 +1356,6 @@
 				30D15D4122CE6B74005BC352 /* gfx.cpp in Sources */,
 				30D15D4222CE6B74005BC352 /* globals.cpp in Sources */,
 				30D15D4322CE6B74005BC352 /* loadzip.cpp in Sources */,
-				30D15D4422CE6B74005BC352 /* logger.cpp in Sources */,
 				30D15D4522CE6B74005BC352 /* memmap.cpp in Sources */,
 				30D15D4622CE6B74005BC352 /* movie.cpp in Sources */,
 				30D15D4722CE6B74005BC352 /* msu1.cpp in Sources */,
