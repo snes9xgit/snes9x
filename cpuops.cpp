@@ -1406,11 +1406,13 @@ bOP(70Slow, RelativeSlow,  CheckOverflow(), 0, CheckEmulation())
 static void Op82 (void)
 {
 	S9xSetPCBase(ICPU.ShiftedPB + RelativeLong(JUMP));
+	AddCycles(ONE_CYCLE);
 }
 
 static void Op82Slow (void)
 {
 	S9xSetPCBase(ICPU.ShiftedPB + RelativeLongSlow(JUMP));
+	AddCycles(ONE_CYCLE);
 }
 
 /* Flag Instructions ******************************************************* */
@@ -2851,6 +2853,7 @@ static void Op22E1 (void)
 	PushW(Registers.PCw - 1);
 	Registers.SH = 1;
 	S9xSetPCBase(addr);
+	AddCycles(ONE_CYCLE);
 }
 
 static void Op22E0 (void)
@@ -2859,6 +2862,7 @@ static void Op22E0 (void)
 	PushB(Registers.PB);
 	PushW(Registers.PCw - 1);
 	S9xSetPCBase(addr);
+	AddCycles(ONE_CYCLE);
 }
 
 static void Op22Slow (void)
@@ -2869,6 +2873,7 @@ static void Op22Slow (void)
 	if (CheckEmulation())
 		Registers.SH = 1;
 	S9xSetPCBase(addr);
+	AddCycles(ONE_CYCLE);
 }
 
 static void Op6BE1 (void)

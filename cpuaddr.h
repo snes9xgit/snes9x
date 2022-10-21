@@ -513,7 +513,6 @@ static inline uint32 StackRelativeIndirectIndexed (AccessMode a)		// (d,S),Y
 	if (a & READ)
 		OpenBus = (uint8) (addr >> 8);
 	addr = (addr + Registers.Y.W + ICPU.ShiftedDB) & 0xffffff;
-	AddCycles(ONE_CYCLE);
 
 	return (addr);
 }
