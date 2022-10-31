@@ -368,11 +368,13 @@ static void S9xPutImageMetal (int width, int height, uint16 *buffer16)
         [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:6];
 
         [renderEncoder endEncoding];
+
+		[commandBuffer commit];
+
+		[commandBuffer waitUntilCompleted];
 		
-		[commandBuffer presentDrawable:drawable];
+		[drawable present];
     }
-	
-	[commandBuffer commit];
 }
 
 void S9xTextMode (void)
