@@ -3369,31 +3369,6 @@ void QuitWithFatalError ( NSString *message)
 - (void)setCPUOverclockMode:(int)mode
 {
 	Settings.OverclockMode = mode;
-
-	switch (mode)
-	{
-		default:
-		case 0:
-			Settings.OneClockCycle = 6;
-			Settings.OneSlowClockCycle = 8;
-			Settings.TwoClockCycles = 12;
-			break;
-		case 1:
-			Settings.OneClockCycle = 6;
-			Settings.OneSlowClockCycle = 6;
-			Settings.TwoClockCycles = 12;
-			break;
-		case 2:
-			Settings.OneClockCycle = 4;
-			Settings.OneSlowClockCycle = 6;
-			Settings.TwoClockCycles = 8;
-			break;
-		case 3:
-			Settings.OneClockCycle = 3;
-			Settings.OneSlowClockCycle = 4;
-			Settings.TwoClockCycles = 6;
-			break;
-	}
 }
 
 - (void)setApplySpecificGameHacks:(BOOL)flag
