@@ -121,8 +121,15 @@ const char *S9xGetFilename(const char *ex, enum s9x_getdirtype dirtype)
     static std::string filename;
     fs::path path(S9xGetDirectory(dirtype));
     path /= fs::path(Memory.ROMFilename).filename();
-    path.replace_extension(ex);
-    filename = path.string();
+    //Fixes issue with MSU-1 on linux
+    if(ex[0] == '-') {
+        path.replace_extension("");
+        filename = path.string();
+        filename.append(ex);
+    } else {
+        path.replace_extension(ex);
+        filename = path.string();
+    }
     return filename.c_str();
 }
 
