@@ -7341,6 +7341,7 @@ void MakeExtFile(void)
 	out<<"sfcN"<<endl;
 	out<<"bsN"<<endl;
 	out<<"jmaY"<<endl;
+	out << "stN" << endl;
 	out.close();
 	SetFileAttributes(TEXT("Valid.Ext"), FILE_ATTRIBUTE_ARCHIVE|FILE_ATTRIBUTE_READONLY);
 };
