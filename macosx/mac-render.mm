@@ -303,78 +303,80 @@ static void S9xPutImageMetal (int width, int height, uint16 *buffer16)
 	
 	CGSize layerSize = metalLayer.bounds.size;
 	
-	MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor new];
-    textureDescriptor.pixelFormat = MTLPixelFormatRGBA8Unorm;
-    textureDescriptor.width = width;
-    textureDescriptor.height = height;
-    
-	metalTexture = [metalDevice newTextureWithDescriptor:textureDescriptor];
-	
-	[metalTexture replaceRegion:MTLRegionMake2D(0, 0, width, height) mipmapLevel:0 withBytes:buffer bytesPerRow:width * 4];
-	
-	float vWidth = layerSize.width / 2.0;
-	float vHeight = layerSize.height / 2.0;
-	
-	const MetalVertex verticies[] =
-	{
-		// Pixel positions, Texture coordinates
-		{ {  vWidth,  -vHeight },  { 1.f, 1.f } },
-		{ { -vWidth,  -vHeight },  { 0.f, 1.f } },
-		{ { -vWidth,   vHeight },  { 0.f, 0.f } },
-
-		{ {  vWidth,  -vHeight },  { 1.f, 1.f } },
-		{ { -vWidth,   vHeight },  { 0.f, 0.f } },
-		{ {  vWidth,   vHeight },  { 1.f, 0.f } },
-	};
-	
-	id<MTLBuffer> vertexBuffer = [metalDevice newBufferWithBytes:verticies length:sizeof(verticies) options:MTLResourceStorageModeShared];
-	id<MTLBuffer> fragmentBuffer = [metalDevice newBufferWithBytes:&videoMode length:sizeof(videoMode) options:MTLResourceStorageModeShared];
-	
-	id<MTLCommandBuffer> commandBuffer = [metalCommandQueue commandBuffer];
-	commandBuffer.label = @"Snes9x command buffer";
-	
-	id<CAMetalDrawable> drawable = [metalLayer nextDrawable];
-	
-	MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
-
-	renderPassDescriptor.colorAttachments[0].texture = drawable.texture;
-	renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
-	renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.0,0.0,0.0,1.0);
-
-    if(renderPassDescriptor != nil)
-    {
-        id<MTLRenderCommandEncoder> renderEncoder =
-        [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
-        renderEncoder.label = @"Snes9x render encoder";
-
-		vector_uint2 viewportSize = { static_cast<unsigned int>(layerSize.width), static_cast<unsigned int>(layerSize.height) };
+	@autoreleasepool {
+		MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor new];
+		textureDescriptor.pixelFormat = MTLPixelFormatRGBA8Unorm;
+		textureDescriptor.width = width;
+		textureDescriptor.height = height;
 		
-		CGFloat scale = metalLayer.contentsScale;
-		[renderEncoder setViewport:(MTLViewport){0.0, 0.0, layerSize.width * scale, layerSize.height * scale, -1.0, 1.0 }];
-
-        [renderEncoder setRenderPipelineState:metalPipelineState];
-
-        [renderEncoder setVertexBuffer:vertexBuffer
-                                offset:0
-                              atIndex:0];
-
-        [renderEncoder setVertexBytes:&viewportSize
-                               length:sizeof(viewportSize)
-                              atIndex:1];
-
-        [renderEncoder setFragmentTexture:metalTexture atIndex:0];
-		[renderEncoder setFragmentBuffer:fragmentBuffer offset:0 atIndex:1];
-
-        [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:6];
-
-        [renderEncoder endEncoding];
-
-		[commandBuffer commit];
-
-		[commandBuffer waitUntilCompleted];
+		metalTexture = [metalDevice newTextureWithDescriptor:textureDescriptor];
 		
-		[drawable present];
-    }
+		[metalTexture replaceRegion:MTLRegionMake2D(0, 0, width, height) mipmapLevel:0 withBytes:buffer bytesPerRow:width * 4];
+		
+		float vWidth = layerSize.width / 2.0;
+		float vHeight = layerSize.height / 2.0;
+		
+		const MetalVertex verticies[] =
+		{
+			// Pixel positions, Texture coordinates
+			{ {  vWidth,  -vHeight },  { 1.f, 1.f } },
+			{ { -vWidth,  -vHeight },  { 0.f, 1.f } },
+			{ { -vWidth,   vHeight },  { 0.f, 0.f } },
+			
+			{ {  vWidth,  -vHeight },  { 1.f, 1.f } },
+			{ { -vWidth,   vHeight },  { 0.f, 0.f } },
+			{ {  vWidth,   vHeight },  { 1.f, 0.f } },
+		};
+		
+		id<MTLBuffer> vertexBuffer = [metalDevice newBufferWithBytes:verticies length:sizeof(verticies) options:MTLResourceStorageModeShared];
+		id<MTLBuffer> fragmentBuffer = [metalDevice newBufferWithBytes:&videoMode length:sizeof(videoMode) options:MTLResourceStorageModeShared];
+		
+		id<MTLCommandBuffer> commandBuffer = [metalCommandQueue commandBuffer];
+		commandBuffer.label = @"Snes9x command buffer";
+		
+		id<CAMetalDrawable> drawable = [metalLayer nextDrawable];
+		
+		MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
+		
+		renderPassDescriptor.colorAttachments[0].texture = drawable.texture;
+		renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
+		renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.0,0.0,0.0,1.0);
+		
+		if(renderPassDescriptor != nil)
+		{
+			id<MTLRenderCommandEncoder> renderEncoder =
+			[commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
+			renderEncoder.label = @"Snes9x render encoder";
+			
+			vector_uint2 viewportSize = { static_cast<unsigned int>(layerSize.width), static_cast<unsigned int>(layerSize.height) };
+			
+			CGFloat scale = metalLayer.contentsScale;
+			[renderEncoder setViewport:(MTLViewport){0.0, 0.0, layerSize.width * scale, layerSize.height * scale, -1.0, 1.0 }];
+			
+			[renderEncoder setRenderPipelineState:metalPipelineState];
+			
+			[renderEncoder setVertexBuffer:vertexBuffer
+									offset:0
+								   atIndex:0];
+			
+			[renderEncoder setVertexBytes:&viewportSize
+								   length:sizeof(viewportSize)
+								  atIndex:1];
+			
+			[renderEncoder setFragmentTexture:metalTexture atIndex:0];
+			[renderEncoder setFragmentBuffer:fragmentBuffer offset:0 atIndex:1];
+			
+			[renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:6];
+			
+			[renderEncoder endEncoding];
+			
+			[commandBuffer commit];
+			
+			[commandBuffer waitUntilCompleted];
+			
+			[drawable present];
+		}
+	}
 }
 
 void S9xTextMode (void)
