@@ -122,7 +122,10 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
 
 int S9xGetSampleCount(void)
 {
-    return spc::resampler->avail();
+	int avail = spc::resampler->avail();
+	if (Settings.MSU1) // return minimum available samples, otherwise we can run into the assert above due to partial sample generation in msu1
+		avail = Resampler::min(avail, msu::resampler->avail());
+    return avail;
 }
 
 void S9xLandSamples(void)
