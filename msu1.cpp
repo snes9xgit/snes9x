@@ -253,7 +253,14 @@ void S9xMSU1Generate(size_t sample_count)
 			{
 				if (MSU1.MSU1_STATUS & AudioRepeating)
 				{
-					MSU1.MSU1_AUDIO_POS = audioLoopPos;
+					if (audioLoopPos < MSU1.MSU1_AUDIO_POS)
+					{
+						MSU1.MSU1_AUDIO_POS = audioLoopPos;
+					}
+					else // if the loop point is invalid, revert to start
+					{
+						MSU1.MSU1_AUDIO_POS = 8;
+					}
 					REVERT_STREAM(audioStream, MSU1.MSU1_AUDIO_POS, 0);
 				}
 				else
