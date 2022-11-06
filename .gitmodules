@@ -8,13 +8,13 @@
 	path = win32/DirectXMath
 	url = https://github.com/Microsoft/DirectXMath
 [submodule "shaders/SPIRV-Cross"]
-	path = shaders/SPIRV-Cross
+	path = external/SPIRV-Cross
 	url = https://github.com/KhronosGroup/SPIRV-Cross.git
 [submodule "shaders/glslang"]
-	path = shaders/glslang
+	path = external/glslang
 	url = https://github.com/KhronosGroup/glslang.git
 [submodule "vulkan/vulkan"]
-	path = vulkan/vulkan
+	path = external/vulkan-headers
 	url = https://github.com/KhronosGroup/Vulkan-Headers.git
 [submodule "win32/lua"]
 	path = win32/lua

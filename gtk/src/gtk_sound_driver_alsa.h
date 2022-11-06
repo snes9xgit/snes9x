@@ -24,8 +24,7 @@ class S9xAlsaSoundDriver : public S9xSoundDriver
 
   private:
     snd_pcm_t *pcm;
-    int sound_buffer_size;
-    uint8 *sound_buffer;
+    std::vector<uint8_t> sound_buffer;
     int output_buffer_size;
 };
 

@@ -31,9 +31,6 @@
 
 #include <math.h>
 
-BYTE *ScreenBuf = NULL;
-BYTE *ScreenBuffer = NULL;
-
 struct SJoyState Joystick [16];
 uint32 joypads [8];
 bool8 do_frame_adjust=false;
@@ -850,14 +847,6 @@ void InitSnes9x( void)
 	extern void S9xPostRomInit();
 	Memory.PostRomInitFunc = S9xPostRomInit;
 
-    ScreenBuf = new BYTE [EXT_PITCH * EXT_HEIGHT_WITH_CENTERING];
-    ScreenBuffer = ScreenBuf + EXT_OFFSET_WITH_CENTERING;
-    memset (ScreenBuf, 0, EXT_PITCH * EXT_HEIGHT_WITH_CENTERING);
-
-    GFX.Pitch = EXT_PITCH;
-    GFX.RealPPL = EXT_PITCH;
-	GFX.Screen = (uint16*)(ScreenBuffer);
-
 	InitializeCriticalSection(&GUI.SoundCritSect);
     GUI.SoundSyncEvent = CreateEvent(NULL,TRUE,TRUE,NULL);
 	CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
@@ -873,9 +862,6 @@ void InitSnes9x( void)
 }
 void DeinitS9x()
 {
-	if(ScreenBuf)
-		delete [] ScreenBuf;
-
 	DeleteCriticalSection(&GUI.SoundCritSect);
     CloseHandle(GUI.SoundSyncEvent);
 	CoUninitialize();

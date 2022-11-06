@@ -26,3 +26,14 @@ NSString * const kJoypadPlayerPrefs = @"JoypadPlayers";
 NSString * const kShowFPSPref = @"ShowFPS";
 NSString * const kVideoModePref = @"VideoMode";
 NSString * const kMacFrameSkipPref = @"FrameSkip";
+
+NSString * const kSuperFXClockSpeedPercentPref = @"SuperFXClockSpeedPercent";
+NSString * const kSoundInterpolationTypePref = @"SoundInterpolationType";
+NSString * const kCPUOverclockPref = @"CPUOverclock";
+
+NSString * const kApplyGameSpecificHacksPref = @"ApplyGameSpecificHacks";
+NSString * const kAllowInvalidVRAMAccessPref = @"AllowInvalidVRAMAccess";
+NSString * const kSeparateEchoBufferFromRAMPref = @"SeparateEchoBufferFromRAM";
+NSString * const kDisableSpriteLimitPref = @"DisableSpriteLimit";
+
+NSString * const kEnableCheatsPref = @"EnableCheats";

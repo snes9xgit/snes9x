@@ -1,7 +1,8 @@
 project('snes9x-gtk',
         ['c', 'cpp'],
-        version: '1.60',
-        meson_version: '>=0.46.0',
+        version: '1.61',
+        meson_version: '>=0.56.2',
+        subproject_dir: 'external',
         default_options: ['cpp_std=c++17'])
 
 args = ['-DSNES9X_GTK', '-DUNZIP_SUPPORT', '-DNETPLAY_SUPPORT', '-DJMA_SUPPORT', '-Wall', '-W', '-Wno-unused-parameter']
@@ -51,126 +52,55 @@ deps += dl_dep
 xrandr_dep = dependency('xrandr')
 deps += xrandr_dep
 
-opengl = get_option('opengl')
-if opengl
-  opengl_dep = dependency('epoxy', required: false)
-
-  if opengl_dep.found()
-    args += '-DUSE_OPENGL'
-    srcs += [ 'src/gtk_display_driver_opengl.cpp',
-              'src/gtk_display_driver_opengl.h',
-              'src/gtk_glx_context.cpp',
-              'src/gtk_glx_context.h',
-              '../shaders/glsl.cpp',
-              '../shaders/shader_helpers.cpp',
-              'src/gtk_shader_parameters.cpp' ]
-    deps += opengl_dep
-  else
-    opengl = false
-    warns += 'libepoxy not found. OpenGL will disabled.'
-  endif
-endif
+opengl_dep = dependency('epoxy', required: true)
+srcs += [ 'src/gtk_display_driver_opengl.cpp',
+          'src/gtk_display_driver_opengl.h',
+          'src/gtk_glx_context.cpp',
+          'src/gtk_glx_context.h',
+          '../shaders/glsl.cpp',
+          '../shaders/shader_helpers.cpp',
+          'src/gtk_shader_parameters.cpp' ]
+deps += opengl_dep
 
 slang = get_option('slang')
-if slang and opengl
-  glslang_args = ['-w', '-fno-exceptions', '-DNV_EXTENSIONS', '-DAMD_EXTENSIONS', '-DGLSLANG_OSINCLUDE_UNIX', '-DENABLE_OPT=0']
+if slang
 
-  OSDependent_src = ['../shaders/glslang/glslang/OSDependent/Unix/ossource.cpp']
-  OSDependent_lib = static_library('OSDependent',
-                                   OSDependent_src,
-                                   include_directories: include_directories('../shaders/glslang'),
-                                   cpp_args: glslang_args)
-  libs += OSDependent_lib
+  cmake = import('cmake')
 
-  glslang_src = [
-    '../shaders/glslang/glslang/MachineIndependent/glslang_tab.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/attribute.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/Constant.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/iomapper.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/InfoSink.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/Initialize.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/IntermTraverse.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/Intermediate.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/ParseContextBase.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/ParseHelper.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/PoolAlloc.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/RemoveTree.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/Scan.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/ShaderLang.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/SymbolTable.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/Versions.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/intermOut.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/limits.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/linkValidate.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/parseConst.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/reflection.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/preprocessor/Pp.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/preprocessor/PpAtom.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/preprocessor/PpContext.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/preprocessor/PpScanner.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/preprocessor/PpTokens.cpp',
-    '../shaders/glslang/glslang/MachineIndependent/propagateNoContraction.cpp',
-    '../shaders/glslang/glslang/GenericCodeGen/CodeGen.cpp',
-    '../shaders/glslang/glslang/GenericCodeGen/Link.cpp',
-    '../shaders/glslang/StandAlone/ResourceLimits.cpp'
-  ]
+  glslang_opt_var = cmake.subproject_options()
+  glslang_opt_var.add_cmake_defines({'BUILD_TESTING': false})
+  glslang_pro = cmake.subproject('glslang', options: glslang_opt_var)
+#  deps += glslang_pro.dependency('GenericCodeGen')
+  deps += glslang_pro.dependency('glslang')
+#  deps += glslang_pro.dependency('MachineIndependent')
+  deps += glslang_pro.dependency('OGLCompiler')
+  deps += glslang_pro.dependency('HLSL')
+  deps += glslang_pro.dependency('OSDependent')
+  deps += glslang_pro.dependency('SPIRV')
+  deps += glslang_pro.dependency('glslang-default-resource-limits')
 
-  glslang_lib = static_library('glslang',
-                               glslang_src,
-                               include_directories: include_directories('../shaders/glslang'),
-                               cpp_args: glslang_args)
-  libs += glslang_lib
-
-  OGLCompilersDLL_src = ['../shaders/glslang/OGLCompilersDLL/InitializeDll.cpp']
-  OGLCompilersDLL_lib = static_library('OGLCompilersDLL',
-                                       OGLCompilersDLL_src,
-                                       include_directories: include_directories('../shaders/glslang'),
-                                       cpp_args: glslang_args)
-  libs += OGLCompilersDLL_lib
-
-  SPIRV_src = [
-    '../shaders/glslang/SPIRV/GlslangToSpv.cpp',
-    '../shaders/glslang/SPIRV/InReadableOrder.cpp',
-    '../shaders/glslang/SPIRV/Logger.cpp',
-    '../shaders/glslang/SPIRV/SpvBuilder.cpp',
-    '../shaders/glslang/SPIRV/SpvPostProcess.cpp',
-    '../shaders/glslang/SPIRV/SpvTools.cpp',
-    '../shaders/glslang/SPIRV/disassemble.cpp',
-    '../shaders/glslang/SPIRV/SPVRemapper.cpp',
-    '../shaders/glslang/SPIRV/doc.cpp'
-  ]
-  SPIRV_lib = static_library('SPIRV',
-                             SPIRV_src,
-                             include_directories: include_directories('../shaders/glslang'),
-                             cpp_args: glslang_args)
-  libs += SPIRV_lib
-
-  args += ['-DUSE_SLANG',
-           '-DSPIRV_CROSS_EXCEPTIONS_TO_ASSERTIONS']
-  srcs += ['../shaders/slang.cpp']
-  srcs += ['../shaders/SPIRV-Cross/spirv_cfg.cpp',
-           '../shaders/SPIRV-Cross/spirv_cfg.hpp',
-           '../shaders/SPIRV-Cross/spirv_common.hpp',
-           '../shaders/SPIRV-Cross/spirv_cross.cpp',
-           '../shaders/SPIRV-Cross/spirv_cross.hpp',
-           '../shaders/SPIRV-Cross/spirv_glsl.cpp',
-           '../shaders/SPIRV-Cross/spirv_glsl.hpp',
-           '../shaders/SPIRV-Cross/spirv_cross_parsed_ir.cpp',
-           '../shaders/SPIRV-Cross/spirv_cross_parsed_ir.hpp',
-           '../shaders/SPIRV-Cross/spirv_parser.cpp',
-           '../shaders/SPIRV-Cross/spirv_parser.hpp',
-           '../shaders/SPIRV-Cross/spirv.hpp']
-  includes += '../shaders/glslang'
+  spirv_cross_opt_var = cmake.subproject_options()
+  spirv_cross_opt_var.add_cmake_defines({'SPIRV_CROSS_EXCEPTIONS_TO_ASSERTIONS': true})
+  spirv_cross_pro = cmake.subproject('SPIRV-Cross', options: spirv_cross_opt_var)
+  deps += spirv_cross_pro.dependency('spirv-cross-core')
+  deps += spirv_cross_pro.dependency('spirv-cross-glsl')
+  deps += spirv_cross_pro.dependency('spirv-cross-reflect')
+  deps += spirv_cross_pro.dependency('spirv-cross-cpp')
+  
+  args += ['-DUSE_SLANG']
+  srcs += '../shaders/slang.cpp'
+  includes += '../external/glslang'
 endif
 
 wayland = get_option('wayland')
 if wayland
+  wayland_client_dep = dependency('wayland-client', required: false)
   wayland_dep = dependency('wayland-egl', required: false)
 
-  if wayland_dep.found()
+  if wayland_dep.found() and wayland_client_dep.found()
     args += '-DUSE_WAYLAND'
-    srcs += ['src/gtk_wayland_egl_context.cpp', 'src/gtk_wayland_egl_context.h']
-    deps += wayland_dep
+    srcs += ['src/gtk_wayland_egl_context.cpp', 'src/gtk_wayland_egl_context.h', 'src/wayland-idle-inhibit-unstable-v1.c']
+    deps += [wayland_dep, wayland_client_dep]
   else
     wayland = false
     warns += 'wayland-egl not found. Wayland will be disabled.'
@@ -296,29 +226,7 @@ if get_option('xbrz')
   srcs += ['../filter/xbrz.cpp', '../filter/xbrz.h', 'src/filter_xbrz.cpp', 'src/filter_xbrz.h']
 endif
 
-if c_compiler.has_function('mkstemp')
-  args += '-DHAVE_MKSTEMP'
-endif
-
-if c_compiler.has_header('strings.h')
-  args += '-DHAVE_STRINGS_H'
-endif
-
-if c_compiler.has_header('stdint.h')
-  args += '-DHAVE_STDINT_H'
-endif
-
-results = c_compiler.run('int main(int argc, char **argv) { int i; i = -1; i >>= 1; return (i < 0 ? 0 : 1); }')
-
-if results.returncode() == 0
-  args += '-DRIGHTSHIFT_IS_SAR'
-endif
-
-results = c_compiler.run('int main(int argc, char **argv) { return (!(sizeof(void *) == sizeof(int))); }')
-
-if results.returncode() != 0
-  args += '-DPTR_NOT_INT'
-endif
+args += ['-DHAVE_MKSTEMP', '-DHAVE_STRINGS_H', '-DHAVE_STDINT_H', '-DRIGHTSHIFT_IS_SAR']
 
 srcs += [
  'src/gtk_sound_driver.h',
@@ -405,7 +313,6 @@ srcs += [
  '../stream.cpp',
  '../conffile.cpp',
  '../bsx.cpp',
- '../logger.cpp',
  '../snapshot.cpp',
  '../screenshot.cpp',
  '../movie.cpp',
@@ -479,8 +386,7 @@ summary = [
   '            localedir:         ' + localedir,
   '[Options]   Build type:        ' + get_option('buildtype'),
   '            Wayland:           ' + wayland.to_string(),
-  '            OpenGL:            ' + opengl.to_string(),
-  '             slang shaders:    ' + slang.to_string(),
+  '            slang shaders:     ' + slang.to_string(),
   '            XVideo:            ' + xv.to_string(),
   '            ALSA:              ' + alsa.to_string(),
   '            Open Sound System: ' + oss.to_string(),

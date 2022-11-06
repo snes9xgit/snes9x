@@ -2527,7 +2527,6 @@ static void Initialize (void)
 	Settings.Stereo = true;
 	Settings.SoundPlaybackRate = 32000;
 	Settings.SoundInputRate = 31950;
-	Settings.SupportHiRes = true;
 	Settings.Transparency = true;
 	Settings.AutoDisplayMessages = true;
 	Settings.InitialInfoStringTimeout = 120;
@@ -2538,7 +2537,6 @@ static void Initialize (void)
 	Settings.DumpStreamsMaxFrames = -1;
 	Settings.StretchScreenshots = 1;
 	Settings.SnapshotScreenshots = true;
-	Settings.OpenGLEnable = true;
 	Settings.SuperFXClockMultiplier = 100;
 	Settings.InterpolationMethod = DSP_INTERPOLATION_GAUSSIAN;
 	Settings.MaxSpriteTilesPerLine = 34;
@@ -3380,6 +3378,48 @@ void QuitWithFatalError ( NSString *message)
 	ChangeInputDevice();
 }
 
+- (void)setSuperFXClockSpeedPercent:(uint32_t)clockSpeed
+{
+	Settings.SuperFXClockMultiplier = clockSpeed;
+}
+
+- (void)setSoundInterpolationType:(int)type
+{
+	Settings.InterpolationMethod = type;
+}
+
+- (void)setCPUOverclockMode:(int)mode
+{
+	Settings.OverclockMode = mode;
+}
+
+- (void)setApplySpecificGameHacks:(BOOL)flag
+{
+	Settings.DisableGameSpecificHacks = !flag;
+}
+
+- (void)setAllowInvalidVRAMAccess:(BOOL)flag
+{
+	Settings.BlockInvalidVRAMAccessMaster = !flag;
+}
+
+- (void)setSeparateEchoBufferFromRAM:(BOOL)flag
+{
+	Settings.SeparateEchoBuffer = false;
+}
+
+- (void)setDisableSpriteLimit:(BOOL)flag
+{
+	if ( flag )
+	{
+		Settings.MaxSpriteTilesPerLine = 128;
+	}
+	else
+	{
+		Settings.MaxSpriteTilesPerLine = 34;
+	}
+}
+
 @dynamic inputDelegate;
 - (void)setInputDelegate:(id<S9xInputDelegate>)delegate
 {
@@ -3389,6 +3429,17 @@ void QuitWithFatalError ( NSString *message)
 - (id<S9xInputDelegate>)inputDelegate
 {
     return inputDelegate;
+}
+
+@dynamic cheatsEnabled;
+- (BOOL)cheatsEnabled
+{
+	return Cheat.enabled;
+}
+
+- (void)setCheatsEnabled:(BOOL)cheatsEnabled
+{
+	Cheat.enabled = cheatsEnabled;
 }
 
 @end

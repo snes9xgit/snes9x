@@ -13,26 +13,22 @@
 #include <sys/ioctl.h>
 #include <sys/time.h>
 
-static void pulse_samples_available(void *data)
-{
-    ((S9xPulseSoundDriver *)data)->samples_available();
-}
-
 S9xPulseSoundDriver::S9xPulseSoundDriver()
 {
-    mainloop = NULL;
-    context = NULL;
-    stream = NULL;
-    buffer_size = 0;
+    init();
 }
 
 void S9xPulseSoundDriver::init()
 {
+    mainloop = {};
+    context = {};
+    stream = {};
+    buffer_size = {};
 }
 
 void S9xPulseSoundDriver::terminate()
 {
-    S9xSetSamplesAvailableCallback(NULL, NULL);
+    S9xSetSamplesAvailableCallback(nullptr, nullptr);
 
     if (mainloop)
         pa_threaded_mainloop_stop(mainloop);
@@ -110,15 +106,14 @@ static void stream_state_callback(pa_stream *p, void *userdata)
 
 bool S9xPulseSoundDriver::open_device()
 {
-    int err = PA_ERR_UNKNOWN;
-    pa_sample_spec ss;
-    pa_buffer_attr buffer_attr;
-    const pa_buffer_attr *actual_buffer_attr;
+    init();
 
+    pa_sample_spec ss;
     ss.channels = 2;
     ss.format = PA_SAMPLE_S16NE;
     ss.rate = Settings.SoundPlaybackRate;
 
+    pa_buffer_attr buffer_attr;
     buffer_attr.fragsize = -1;
     buffer_attr.tlength = pa_usec_to_bytes(gui_config->sound_buffer_size * 1000, &ss);
     buffer_attr.maxlength = buffer_attr.tlength * 2;
@@ -130,93 +125,59 @@ bool S9xPulseSoundDriver::open_device()
     printf("    --> (%dhz, 16-bit Stereo, %dms)...",
            Settings.SoundPlaybackRate,
            gui_config->sound_buffer_size);
-    fflush(stdout);
 
+    int err = PA_ERR_UNKNOWN;
     mainloop = pa_threaded_mainloop_new();
-    if (!mainloop)
-    {
-        fprintf(stderr, "Failed to create mainloop.\n");
-        goto error0;
-    }
-
     context = pa_context_new(pa_threaded_mainloop_get_api(mainloop), "Snes9x");
-    if (!context)
-        goto error1;
-
     pa_context_set_state_callback(context, context_state_cb, this);
-    if ((err = pa_context_connect(context, NULL, PA_CONTEXT_NOFLAGS, NULL)) != 0)
-        goto error2;
+    pa_context_connect(context, nullptr, PA_CONTEXT_NOFLAGS, nullptr);
 
     lock();
-
-    if ((err = pa_threaded_mainloop_start(mainloop)) != 0)
-        goto error2;
+    pa_threaded_mainloop_start(mainloop);
     wait();
 
     if ((err = pa_context_get_state(context)) != PA_CONTEXT_READY)
-    {
-        printf("Coundn't create context: State: %d\n", err);
-        goto error2;
-    }
+        return false;
 
-    stream = pa_stream_new(context, "Game", &ss, NULL);
-
-    if (!stream)
-        goto error2;
+    stream = pa_stream_new(context, "Game", &ss, nullptr);
 
     pa_stream_set_state_callback(stream, stream_state_callback, this);
 
     if (pa_stream_connect_playback(stream,
-                                   NULL,
+                                   nullptr,
                                    &buffer_attr,
                                    PA_STREAM_ADJUST_LATENCY,
-                                   NULL,
-                                   NULL) < 0)
-        goto error3;
+                                   nullptr,
+                                   nullptr) < 0)
+    {
+        return false;
+    }
+
     wait();
 
     if (pa_stream_get_state(stream) != PA_STREAM_READY)
-    {
-        goto error3;
-    }
+        return false;
 
-    actual_buffer_attr = pa_stream_get_buffer_attr(stream);
+    auto actual_buffer_attr = pa_stream_get_buffer_attr(stream);
+    unlock();
 
     buffer_size = actual_buffer_attr->tlength;
 
     printf("OK\n");
 
-    S9xSetSamplesAvailableCallback(pulse_samples_available, this);
+    S9xSetSamplesAvailableCallback([](void *userdata) {
+        ((decltype(this)) userdata)->samples_available();;
+    }, this);
 
-    unlock();
 
     return true;
-
-error3:
-    pa_stream_disconnect(stream);
-    pa_stream_unref(stream);
-error2:
-    pa_context_disconnect(context);
-    pa_context_unref(context);
-    unlock();
-error1:
-    pa_threaded_mainloop_free(mainloop);
-error0:
-    printf("Failed: %s\n", pa_strerror(err));
-
-    return false;
 }
 
 void S9xPulseSoundDriver::samples_available()
 {
-    size_t bytes;
-    int samples;
-    const pa_buffer_attr *buffer_attr;
-    void *output_buffer = NULL;
-
     lock();
-    bytes = pa_stream_writable_size(stream);
-    buffer_attr = pa_stream_get_buffer_attr(stream);
+    size_t bytes = pa_stream_writable_size(stream);
+    auto buffer_attr = pa_stream_get_buffer_attr(stream);
     unlock();
 
     buffer_size = buffer_attr->tlength;
@@ -226,22 +187,22 @@ void S9xPulseSoundDriver::samples_available()
         S9xUpdateDynamicRate(bytes, buffer_size);
     }
 
-    samples = S9xGetSampleCount();
+    size_t samples = S9xGetSampleCount();
 
-    if (Settings.DynamicRateControl && !Settings.SoundSync)
+    int frames_available = samples / 2;
+    int frames_writable = bytes / 4;
+
+    if (frames_writable < frames_available)
     {
-        if ((int)bytes < (samples * 2))
+        if (Settings.DynamicRateControl && !Settings.SoundSync)
         {
             S9xClearSamples();
             return;
         }
-    }
 
-    if (Settings.SoundSync && !Settings.TurboMode && !Settings.Mute)
-    {
-        while ((int)bytes < samples * 2)
+        if (Settings.SoundSync && !Settings.TurboMode && !Settings.Mute)
         {
-            int usec_to_sleep = ((samples >> 1) - (bytes >> 2)) * 10000 /
+            int usec_to_sleep = (frames_available - frames_writable) * 10000 /
                                 (Settings.SoundPlaybackRate / 100);
             usleep(usec_to_sleep > 0 ? usec_to_sleep : 0);
             lock();
@@ -250,16 +211,17 @@ void S9xPulseSoundDriver::samples_available()
         }
     }
 
-    bytes = MIN((int)bytes, samples * 2) & ~1;
+    bytes = MIN(bytes, samples * 2) & ~1;
 
     if (!bytes)
         return;
 
     lock();
 
+    void *output_buffer;;
     if (pa_stream_begin_write(stream, &output_buffer, &bytes) != 0)
     {
-        pa_stream_flush(stream, NULL, NULL);
+        pa_stream_flush(stream, nullptr, nullptr);
         unlock();
         return;
     }
@@ -270,8 +232,8 @@ void S9xPulseSoundDriver::samples_available()
         return;
     }
 
-    S9xMixSamples((uint8 *)output_buffer, bytes >> 1);
-    pa_stream_write(stream, output_buffer, bytes, NULL, 0, PA_SEEK_RELATIVE);
+    S9xMixSamples((uint8_t *)output_buffer, bytes >> 1);
+    pa_stream_write(stream, output_buffer, bytes, nullptr, 0, PA_SEEK_RELATIVE);
 
     unlock();
 }

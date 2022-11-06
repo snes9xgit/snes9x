@@ -33,11 +33,11 @@ void snes9x_preferences_open(Snes9xWindow *window)
 
     preferences->window->set_transient_for(*window->window.get());
 
-    config->set_joystick_mode(JOY_MODE_GLOBAL);
+    config->joysticks.set_mode(JOY_MODE_GLOBAL);
     preferences->show();
     window->unpause_from_focus_change();
 
-    config->set_joystick_mode(JOY_MODE_INDIVIDUAL);
+    config->joysticks.set_mode(JOY_MODE_INDIVIDUAL);
 
     config->rebind_keys();
     window->update_accelerators();
@@ -50,22 +50,23 @@ gboolean poll_joystick(gpointer data)
     Binding binding;
     int focus;
 
-    for (size_t i = 0; i < window->config->joystick.size(); i++)
+    window->config->joysticks.poll_events();
+    for (auto &j : window->config->joysticks)
     {
-        while (window->config->joystick[i].get_event(&event))
+        while (j.second->get_event(&event))
         {
             if (event.state == JOY_PRESSED)
             {
                 if ((focus = window->get_focused_binding()) >= 0)
                 {
-                    binding = Binding(i,
+                    binding = Binding(j.second->joynum,
                                       event.parameter,
                                       window->config->joystick_threshold);
 
                     window->store_binding(b_links[focus].button_name,
                                           binding);
 
-                    window->config->flush_joysticks();
+                    window->config->joysticks.flush_events();
                     return true;
                 }
             }
@@ -332,7 +333,6 @@ bool Snes9xPreferences::key_pressed(GdkEventKey *event)
 
 void Snes9xPreferences::shader_select()
 {
-#ifdef USE_OPENGL
     auto entry = get_object<Gtk::Entry>("fragment_shader");
 
     auto dialog = Gtk::FileChooserDialog(*window.get(), _("Select Shader File"));
@@ -356,7 +356,6 @@ void Snes9xPreferences::shader_select()
         if (!filename.empty())
             entry->set_text(filename);
     }
-#endif
 }
 
 void Snes9xPreferences::load_ntsc_settings()
@@ -466,7 +465,6 @@ void Snes9xPreferences::move_settings_to_dialog()
     set_combo ("frameskip_combo",           Settings.SkipFrames);
     set_check ("bilinear_filter",           Settings.BilinearFilter);
 
-#ifdef USE_OPENGL
     set_check ("sync_to_vblank",            config->sync_to_vblank);
     set_check ("use_glfinish",              config->use_glfinish);
     set_check ("use_sync_control",          config->use_sync_control);
@@ -475,7 +473,7 @@ void Snes9xPreferences::move_settings_to_dialog()
     set_check ("npot_textures",             config->npot_textures);
     set_check ("use_shaders",               config->use_shaders);
     set_entry_text ("fragment_shader",      config->shader_filename.c_str ());
-#endif
+
     set_spin ("joystick_threshold",         config->joystick_threshold);
 
     /* Control bindings */
@@ -630,7 +628,6 @@ void Snes9xPreferences::get_settings_from_dialog()
     Settings.InterpolationMethod = get_combo("sound_filter");
 #endif
 
-#ifdef USE_OPENGL
     int pbo_format = get_combo("pixel_format") == 1 ? 32 : 16;
 
     if (config->sync_to_vblank   != get_check("sync_to_vblank") ||
@@ -652,7 +649,6 @@ void Snes9xPreferences::get_settings_from_dialog()
     config->use_sync_control = get_check("use_sync_control");
     config->shader_filename  = get_entry_text ("fragment_shader");
     config->pbo_format       = pbo_format;
-#endif
 
     std::string new_sram_directory = get_entry_text("sram_directory");
     config->savestate_directory = get_entry_text("savestate_directory");
@@ -948,7 +944,7 @@ void Snes9xPreferences::bindings_to_dialog(int joypad)
 
 void Snes9xPreferences::calibration_dialog()
 {
-    config->joystick_register_centers();
+    config->joysticks.register_centers();
     auto dialog = Gtk::MessageDialog(_("Current joystick centers have been saved."));
     dialog.set_title(_("Calibration Complete"));
     dialog.run();

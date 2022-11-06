@@ -15,12 +15,13 @@
   (c) Copyright 2004         Alexander and Sander
   (c) Copyright 2004 - 2005  Steven Seeger
   (c) Copyright 2005         Ryan Vogt
-  (c) Copyright 2019 - 2021  Michael Donald Buckley
+  (c) Copyright 2019 - 2022  Michael Donald Buckley
  ***********************************************************************************/
 
 #import <Cocoa/Cocoa.h>
 #import <snes9x_framework/snes9x_framework.h>
 #import "S9xPreferences/S9xPreferencesWindowController.h"
+#import "Cheats/S9xCheatsViewController.h"
 
 extern NSWindowFrameAutosaveName const kMainWindowIdentifier;
 
@@ -31,6 +32,7 @@ extern NSWindowFrameAutosaveName const kMainWindowIdentifier;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *keys;
 @property (nonatomic, strong) NSWindow *gameWindow;
 @property (nonatomic, strong) S9xPreferencesWindowController *preferencesWindowController;
+@property (nonatomic, strong) NSWindowController *cheatsWindowController;
 @property (nonatomic, readonly, assign) S9xDeviceSetting deviceSetting;
 
 - (void)setButtonCode:(S9xButtonCode)buttonCode forKeyCode:(int16)keyCode player:(int8)player;
@@ -51,6 +53,8 @@ extern NSWindowFrameAutosaveName const kMainWindowIdentifier;
 - (void)setVideoMode:(int)videoMode;
 - (void)setMacFrameSkip:(int)_macFrameSkip;
 - (void)setShowFPS:(BOOL)showFPS;
+
+- (void)applyEmulationSettings;
 
 @end
 

@@ -201,10 +201,10 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\shaders\glslang\SPIRV\SPVRemapper.cpp" />
-    <ClCompile Include="..\..\..\shaders\glslang\SPIRV\doc.cpp" />
-    <ClInclude Include="..\..\..\shaders\glslang\SPIRV\SPVRemapper.h" />
-    <ClInclude Include="..\..\..\shaders\glslang\SPIRV\doc.h" />
+    <ClCompile Include="..\..\..\external\glslang\SPIRV\SPVRemapper.cpp" />
+    <ClCompile Include="..\..\..\external\glslang\SPIRV\doc.cpp" />
+    <ClInclude Include="..\..\..\external\glslang\SPIRV\SPVRemapper.h" />
+    <ClInclude Include="..\..\..\external\glslang\SPIRV\doc.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

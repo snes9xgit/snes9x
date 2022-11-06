@@ -29,4 +29,15 @@ extern NSString * const kShowFPSPref;
 extern NSString * const kVideoModePref;
 extern NSString * const kMacFrameSkipPref;
 
+extern NSString * const kSuperFXClockSpeedPercentPref;
+extern NSString * const kSoundInterpolationTypePref;
+extern NSString * const kCPUOverclockPref;
+
+extern NSString * const kApplyGameSpecificHacksPref;
+extern NSString * const kAllowInvalidVRAMAccessPref;
+extern NSString * const kSeparateEchoBufferFromRAMPref;
+extern NSString * const kDisableSpriteLimitPref;
+
+extern NSString * const kEnableCheatsPref;
+
 NS_ASSUME_NONNULL_END

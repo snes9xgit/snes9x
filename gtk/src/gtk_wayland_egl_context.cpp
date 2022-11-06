@@ -9,6 +9,7 @@
 
 #include "gtk_s9x.h"
 #include "gtk_wayland_egl_context.h"
+#include "wayland-idle-inhibit-unstable-v1.h"
 
 static void wl_global(void *data,
                       struct wl_registry *wl_registry,
@@ -22,6 +23,8 @@ static void wl_global(void *data,
         wl->compositor = (struct wl_compositor *)wl_registry_bind(wl_registry, name, &wl_compositor_interface, 3);
     else if (!strcmp(interface, "wl_subcompositor"))
         wl->subcompositor = (struct wl_subcompositor *)wl_registry_bind(wl_registry, name, &wl_subcompositor_interface, 1);
+    else if (!strcmp(interface, zwp_idle_inhibit_manager_v1_interface.name))
+        wl->idle_inhibit_manager = (struct zwp_idle_inhibit_manager_v1 *)wl_registry_bind(wl_registry, name, &zwp_idle_inhibit_manager_v1_interface, 1);
 }
 
 static void wl_global_remove(void *data,
@@ -52,10 +55,18 @@ WaylandEGLContext::WaylandEGLContext()
     egl_window = NULL;
     use_sync_control = false;
     ust = msc = sbc = 0;
+    idle_inhibit_manager = NULL;
+    idle_inhibitor = NULL;
 }
 
 WaylandEGLContext::~WaylandEGLContext()
 {
+    if (idle_inhibitor)
+        zwp_idle_inhibitor_v1_destroy(idle_inhibitor);
+
+    if (idle_inhibit_manager)
+        zwp_idle_inhibit_manager_v1_destroy(idle_inhibit_manager);
+
     if (subsurface)
         wl_subsurface_destroy(subsurface);
 
@@ -102,6 +113,12 @@ bool WaylandEGLContext::attach(GtkWidget *widget)
     wl_surface_set_input_region(child, region);
     wl_subsurface_set_desync(subsurface);
     wl_subsurface_set_position(subsurface, x, y);
+
+    if (idle_inhibit_manager && gui_config->prevent_screensaver)
+    {
+        printf("Inhibiting screensaver.\n");
+        zwp_idle_inhibit_manager_v1_create_inhibitor(idle_inhibit_manager, child);
+    }
 
     return true;
 }

@@ -957,7 +957,7 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 		&& modifiers == CustomKeys.FrameAdvance.modifiers)
 		{
 			static DWORD lastTime = 0;
-			if((int)(timeGetTime() - lastTime) > 20)
+			if((timeGetTime() - lastTime) > 20)
 			{
 				lastTime = timeGetTime();
 				if(Settings.Paused || GUI.FASkipsNonInput)
@@ -8245,7 +8245,6 @@ updateFilterBox2:
 				//UpdateScale(GUI.Scale, prevScale);
 				GUI.Scale = (RenderFilter)prevScale;
 				GUI.ScaleHiRes = (RenderFilter)prevScaleHiRes;
-				GFX.RealPPL = prevPPL;
 				GUI.Stretch = prevStretch;
 				Settings.AutoDisplayMessages = prevAutoDisplayMessages;
 				Settings.BilinearFilter = prevBilinearFilter;
@@ -8756,7 +8755,7 @@ switch(msg)
 			break;
 		}
 
-        if(which >= IDC_HOTKEY1 && which <= IDC_HOTKEY13)
+        if(which >= IDC_HOTKEY1 && which <= IDC_HOTKEY14)
         {
             int offset = which - IDC_HOTKEY1;
             hotkey_dialog_items[index][offset].key_entry->key = wParam;

@@ -15,7 +15,7 @@
   (c) Copyright 2004         Alexander and Sander
   (c) Copyright 2004 - 2005  Steven Seeger
   (c) Copyright 2005         Ryan Vogt
-  (c) Copyright 2019         Michael Donald Buckley
+  (c) Copyright 2019 - 2022  Michael Donald Buckley
  ***********************************************************************************/
 
 #import <Carbon/Carbon.h>
@@ -27,6 +27,7 @@
 @end
 
 NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
+NSWindowFrameAutosaveName const kCheatsWindowIdentifier = @"s9xCheatsWindow";
 
 @implementation AppDelegate
 
@@ -113,9 +114,18 @@ NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
             @(kKeyEsc).stringValue : @(kVK_Escape),
             @(kKeyTC).stringValue : @(kVK_ANSI_Comma)
         },
-        kShowFPSPref: @(NO),
-        kVideoModePref:@(VIDEOMODE_BLOCKY),
-        kMacFrameSkipPref:@(macFrameSkip)
+        kShowFPSPref : @(NO),
+        kVideoModePref : @(VIDEOMODE_BLOCKY),
+        kMacFrameSkipPref : @(macFrameSkip),
+
+        kSuperFXClockSpeedPercentPref : @(100),
+        kSoundInterpolationTypePref: @(2),
+        kCPUOverclockPref : @(0),
+
+        kApplyGameSpecificHacksPref : (@YES),
+        kAllowInvalidVRAMAccessPref : @(NO),
+        kSeparateEchoBufferFromRAMPref : @(NO),
+        kDisableSpriteLimitPref : @(NO),
     };
 
     [defaults registerDefaults:defaultSettings];
@@ -189,6 +199,10 @@ NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 
     [self importKeySettings];
     [self importGraphicsSettings];
+    [self applyEmulationSettings];
+
+    self.s9xEngine.cheatsEnabled = [defaults boolForKey:kEnableCheatsPref];
+
     [defaults synchronize];
 }
 
@@ -458,7 +472,12 @@ NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 		[s9xView.leftAnchor constraintGreaterThanOrEqualToAnchor:gameWindow.contentView.leftAnchor].active = YES;
 		[s9xView.rightAnchor constraintLessThanOrEqualToAnchor:gameWindow.contentView.rightAnchor].active = YES;
 
-
+        if (self.cheatsWindowController != nil)
+        {
+            [((S9xCheatsViewController *)self.cheatsWindowController.contentViewController) deselectAll];
+            [((S9xCheatsViewController *)self.cheatsWindowController.contentViewController) reloadData];
+        }
+		
         [gameWindow makeKeyAndOrderFront:self];
         [NSDocumentController.sharedDocumentController noteNewRecentDocumentURL:url];
         return YES;
@@ -476,7 +495,18 @@ NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 	else if (action == @selector(updateDeviceSetting:)) {
 		menuItem.state = (self.deviceSetting == (S9xDeviceSetting)menuItem.tag) ? NSOnState : NSOffState;
 	}
-	
+    else if (action == @selector(toggleCheats:))
+    {
+        if (self.s9xEngine.cheatsEnabled)
+        {
+            menuItem.title = NSLocalizedString(@"Disable Cheats", nil);
+        }
+        else
+        {
+            menuItem.title = NSLocalizedString(@"Enable Cheats", nil);
+        }
+    }
+
 	if (action == @selector(newLuaScriptingWindow:))
 		return true;
 	
@@ -531,6 +561,21 @@ NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
     [self.s9xEngine setShowFPS:showFPS];
     [NSUserDefaults.standardUserDefaults setObject:@(showFPS) forKey:kShowFPSPref];
     [NSUserDefaults.standardUserDefaults synchronize];
+}
+
+- (void)applyEmulationSettings
+{
+    S9xEngine *engine = self.s9xEngine;
+    NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
+
+    [engine setSuperFXClockSpeedPercent:(uint32_t)[defaults integerForKey:kSuperFXClockSpeedPercentPref]];
+    [engine setSoundInterpolationType:(int)[defaults integerForKey:kSoundInterpolationTypePref]];
+    [engine setCPUOverclockMode:(int)[defaults integerForKey:kCPUOverclockPref]];
+
+    [engine setApplySpecificGameHacks:[defaults boolForKey:kApplyGameSpecificHacksPref]];
+    [engine setAllowInvalidVRAMAccess:[defaults boolForKey:kAllowInvalidVRAMAccessPref]];
+    [engine setSeparateEchoBufferFromRAM:[defaults boolForKey:kSeparateEchoBufferFromRAMPref]];
+    [engine setDisableSpriteLimit:[defaults boolForKey:kDisableSpriteLimitPref]];
 }
 
 - (IBAction)resume:(id)sender
@@ -599,5 +644,36 @@ NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
     _deviceSetting = deviceSetting;
 }
 
+
+- (IBAction)openCheatsWindow:(id)sender
+{
+    if (self.cheatsWindowController == nil)
+    {
+        NSWindow *window = [NSWindow windowWithContentViewController:[[S9xCheatsViewController alloc] initWithNibName:@"S9xCheatsViewController" bundle:nil]];
+        self.cheatsWindowController = [[NSWindowController alloc] initWithWindow:window];
+
+        window = self.cheatsWindowController.window;
+
+        window.title = NSLocalizedString(@"Cheats", nil);
+        window.restorationClass = self.class;
+        window.frameAutosaveName = kCheatsWindowIdentifier;
+        window.releasedWhenClosed = NO;
+
+        if ( ![window setFrameUsingName:kCheatsWindowIdentifier] )
+        {
+            [window center];
+        }
+    }
+
+    [self.cheatsWindowController showWindow:nil];
+    [self.cheatsWindowController.window makeKeyAndOrderFront:nil];
+    [self.cheatsWindowController.window makeKeyWindow];
+}
+
+- (IBAction)toggleCheats:(id)sender
+{
+    self.s9xEngine.cheatsEnabled = !self.s9xEngine.cheatsEnabled;
+    [NSUserDefaults.standardUserDefaults setBool:self.s9xEngine.cheatsEnabled forKey:kEnableCheatsPref];
+}
 
 @end

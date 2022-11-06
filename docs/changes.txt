@@ -1,3 +1,38 @@
+Snes9x 1.61
+- Restructured tile.cpp tile renderer from heavy macros into C++
+  templates, significantly lowering compile time. (yoffy)
+- MichaelBuckley provided a brand new MacOS port that is completely
+  rewritten based on newer, supported APIs.
+- Fixed an out-of-bound memory access in sound DSP. (Sour, byuu)
+- Revert default SFX2 clock speed increase.
+- Added a render position hack. Fixes glitches in several games.
+- Allow an SRAM mapping up to 128KB.
+
+Win32:
+- Apply turbo mode volume when rewinding.
+- Added menu entry to load oops files, and an option to confirm before
+  saving or loading states.
+- Fixed sound volume resetting when sound reinitializes.
+- Added a save-state preview dialog.
+- Added save banks for up to 100 states
+- Added support for relative-style save slots
+- Fixed blargg rf filter.
+- Show command line options on -h and /?
+
+Gtk:
+- Added an option to show time. (taimoorgit)
+- Use a submodule for glslang, because it doesn't guarantee API stability.
+- Switched to GTK's C++ interface, gtkmm3. This effectively drops
+  GTK+ 2.0 support.
+- Joysticks can now be hotplugged. (jraby)
+
+Unix:
+- Added audio output threading. (yoffy)
+- Added screensaver prevention on joystick use. (greg-kennedy)
+- Fix YUY2 conversion. (greg-kennedy)
+- Add alsa output support. (cjacker)
+- Add I420 conversion. (cjacker)
+
 Snes9x 1.60
 - Fixed subscreen blending with master brightness < 100%.
 - Fixed NMI timing when toggling enable bit. Fixes Chou Aniki--hack removed.

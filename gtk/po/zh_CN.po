@@ -1,6 +1,6 @@
 # Chinese translations for snes9x-gtk package
 # snes9x-gtk 软件包的简体中文翻译. 
-# Copyright (C) 2019-2020
+# Copyright (C) 2019-2022
 # This file is distributed under the same license as the snes9x-gtk package.
 #
 msgid ""

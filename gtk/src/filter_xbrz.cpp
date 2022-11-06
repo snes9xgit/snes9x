@@ -5,7 +5,7 @@
 \*****************************************************************************/
 
 #include "gtk_s9x.h"
-#include "../filter/xbrz.h"
+#include "filter/xbrz.h"
 #include <vector>
 
 #define CONVERT_16_TO_32(pixel) \

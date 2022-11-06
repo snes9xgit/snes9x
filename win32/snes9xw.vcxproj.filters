@@ -261,25 +261,25 @@
     <ClInclude Include="image_functions.h">
       <Filter>GUI\VideoDriver</Filter>
     </ClInclude>
-    <ClInclude Include="..\shaders\SPIRV-Cross\spirv.hpp">
+    <ClInclude Include="..\external\SPIRV-Cross\spirv.hpp">
       <Filter>Shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_cfg.hpp">
+    <ClInclude Include="..\external\SPIRV-Cross\spirv_cfg.hpp">
       <Filter>Shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_common.hpp">
+    <ClInclude Include="..\external\SPIRV-Cross\spirv_common.hpp">
       <Filter>Shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_cross.hpp">
+    <ClInclude Include="..\external\SPIRV-Cross\spirv_cross.hpp">
       <Filter>Shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_cross_parsed_ir.hpp">
+    <ClInclude Include="..\external\SPIRV-Cross\spirv_cross_parsed_ir.hpp">
       <Filter>Shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_glsl.hpp">
+    <ClInclude Include="..\external\SPIRV-Cross\spirv_glsl.hpp">
       <Filter>Shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\shaders\SPIRV-Cross\spirv_parser.hpp">
+    <ClInclude Include="..\external\SPIRV-Cross\spirv_parser.hpp">
       <Filter>Shaders</Filter>
     </ClInclude>
     <ClInclude Include="CWaveOut.h">
@@ -375,9 +375,6 @@
       <Filter>Emu</Filter>
     </ClCompile>
     <ClCompile Include="..\loadzip.cpp">
-      <Filter>Emu</Filter>
-    </ClCompile>
-    <ClCompile Include="..\logger.cpp">
       <Filter>Emu</Filter>
     </ClCompile>
     <ClCompile Include="..\memmap.cpp">
@@ -635,19 +632,19 @@
     <ClCompile Include="..\shaders\slang.cpp">
       <Filter>Shaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\shaders\SPIRV-Cross\spirv_cfg.cpp">
+    <ClCompile Include="..\external\SPIRV-Cross\spirv_cfg.cpp">
       <Filter>Shaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\shaders\SPIRV-Cross\spirv_cross.cpp">
+    <ClCompile Include="..\external\SPIRV-Cross\spirv_cross.cpp">
       <Filter>Shaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\shaders\SPIRV-Cross\spirv_cross_parsed_ir.cpp">
+    <ClCompile Include="..\external\SPIRV-Cross\spirv_cross_parsed_ir.cpp">
       <Filter>Shaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\shaders\SPIRV-Cross\spirv_glsl.cpp">
+    <ClCompile Include="..\external\SPIRV-Cross\spirv_glsl.cpp">
       <Filter>Shaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\shaders\SPIRV-Cross\spirv_parser.cpp">
+    <ClCompile Include="..\external\SPIRV-Cross\spirv_parser.cpp">
       <Filter>Shaders</Filter>
     </ClCompile>
     <ClCompile Include="CWaveOut.cpp">
@@ -786,9 +783,6 @@
       <Filter>Emu</Filter>
     </CustomBuild>
     <CustomBuild Include="..\language.h">
-      <Filter>Emu</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\logger.h">
       <Filter>Emu</Filter>
     </CustomBuild>
     <CustomBuild Include="..\memmap.h">

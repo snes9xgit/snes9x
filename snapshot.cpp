@@ -1864,11 +1864,11 @@ int S9xUnfreezeFromStream (STREAM stream)
 
 			UnfreezeStructFromCopy(ssi, SnapScreenshot, COUNT(SnapScreenshot), local_screenshot, version);
 
-			IPPU.RenderedScreenWidth  = min(ssi->Width,  IMAGE_WIDTH);
-			IPPU.RenderedScreenHeight = min(ssi->Height, IMAGE_HEIGHT);
+			IPPU.RenderedScreenWidth  = min(ssi->Width,  MAX_SNES_WIDTH);
+			IPPU.RenderedScreenHeight = min(ssi->Height, MAX_SNES_HEIGHT);
 			const bool8 scaleDownX = IPPU.RenderedScreenWidth  < ssi->Width;
 			const bool8 scaleDownY = IPPU.RenderedScreenHeight < ssi->Height && ssi->Height > SNES_HEIGHT_EXTENDED;
-			GFX.DoInterlace = Settings.SupportHiRes ? ssi->Interlaced : 0;
+			GFX.DoInterlace = ssi->Interlaced;
 
 			uint8	*rowpix = ssi->Data;
 			uint16	*screen = GFX.Screen;
@@ -1905,7 +1905,7 @@ int S9xUnfreezeFromStream (STREAM stream)
 			}
 
 			// black out what we might have missed
-			for (uint32 y = IPPU.RenderedScreenHeight; y < (uint32) (IMAGE_HEIGHT); y++)
+			for (uint32 y = IPPU.RenderedScreenHeight; y < (uint32) (MAX_SNES_HEIGHT); y++)
 				memset(GFX.Screen + y * GFX.RealPPL, 0, GFX.RealPPL * 2);
 
 			delete ssi;
@@ -2017,8 +2017,8 @@ int S9xUnfreezeScreenshotFromStream(STREAM stream, uint16 **image_buffer, int &w
 
         UnfreezeStructFromCopy(ssi, SnapScreenshot, COUNT(SnapScreenshot), local_screenshot, version);
 
-        width = min(ssi->Width, IMAGE_WIDTH);
-        height = min(ssi->Height, IMAGE_HEIGHT);
+        width = min(ssi->Width, MAX_SNES_WIDTH);
+        height = min(ssi->Height, MAX_SNES_HEIGHT);
 
         *image_buffer = (uint16 *)malloc(width * height * sizeof(uint16));
 

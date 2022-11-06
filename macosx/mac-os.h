@@ -178,6 +178,8 @@ extern id<S9xInputDelegate> inputDelegate;
 
 @property (nonatomic, weak) id<S9xInputDelegate> inputDelegate;
 
+@property (nonatomic, assign) BOOL cheatsEnabled;
+
 - (void)recreateS9xView;
 
 - (void)start;
@@ -210,6 +212,15 @@ extern id<S9xInputDelegate> inputDelegate;
 - (void)setShowFPS:(BOOL)showFPS;
 
 - (void)setDeviceSetting:(S9xDeviceSetting)_deviceSetting;
+
+- (void)setSuperFXClockSpeedPercent:(uint32_t)clockSpeed;
+- (void)setSoundInterpolationType:(int)type;
+- (void)setCPUOverclockMode:(int)mode;
+
+- (void)setApplySpecificGameHacks:(BOOL)flag;
+- (void)setAllowInvalidVRAMAccess:(BOOL)flag;
+- (void)setSeparateEchoBufferFromRAM:(BOOL)flag;
+- (void)setDisableSpriteLimit:(BOOL)flag;
 
 @end
 

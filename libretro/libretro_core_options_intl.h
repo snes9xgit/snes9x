@@ -96,6 +96,7 @@ struct retro_core_option_definition option_defs_tr[] = {
       "Tercih edilen içerik en boy oranını seçin. Bu, yalnızca RetroArch’ın en boy oranı Video ayarlarında 'Core tarafından' olarak ayarlandığında uygulanacaktır.",
       {
          { "4:3",         NULL },
+         { "4:3 scaled",  "4:3 (Korunmuş)" },
          { "uncorrected", "Düzeltilmemiş" },
          { "auto",        "Otomatik" },
          { "ntsc",        "NTSC" },

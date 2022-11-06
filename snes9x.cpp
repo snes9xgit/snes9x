@@ -247,7 +247,6 @@ void S9xLoadConfigFiles (char **argv, int argc)
 
 	// Display
 
-	Settings.SupportHiRes               =  conf.GetBool("Display::HiRes",                      true);
 	Settings.Transparency               =  conf.GetBool("Display::Transparency",               true);
 	Settings.DisableGraphicWindows      = !conf.GetBool("Display::GraphicWindows",             true);
 	Settings.DisplayTime				=  conf.GetBool("Display::DisplayTime",                false);
@@ -549,9 +548,6 @@ char * S9xParseArgs (char **argv, int argc)
 			else
 			if (!strcasecmp(argv[i], "-displaykeypress"))
 				Settings.DisplayPressedKeys = TRUE;
-			else
-			if (!strcasecmp(argv[i], "-nohires"))
-				Settings.SupportHiRes = FALSE;
 			else
 			if (!strcasecmp(argv[i], "-notransparency"))
 				Settings.Transparency = FALSE;

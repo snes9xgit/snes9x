@@ -9,11 +9,11 @@
 #include <vector>
 #include <string>
 #include <sstream>
-#include "glslang/glslang/Public/ShaderLang.h"
-#include "glslang/SPIRV/GlslangToSpv.h"
-#include "glslang/StandAlone/ResourceLimits.h"
-#include "SPIRV-Cross/spirv_cross.hpp"
-#include "SPIRV-Cross/spirv_glsl.hpp"
+#include "external/glslang/glslang/Public/ShaderLang.h"
+#include "external/glslang/SPIRV/GlslangToSpv.h"
+#include "external/glslang/StandAlone/ResourceLimits.h"
+#include "external/SPIRV-Cross/spirv_cross.hpp"
+#include "external/SPIRV-Cross/spirv_glsl.hpp"
 
 std::string GLSLShader::slang_get_stage(std::vector<std::string> &lines,
                                         std::string name)

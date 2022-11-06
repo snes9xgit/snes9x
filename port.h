@@ -99,11 +99,7 @@ __extension__
 #endif
 typedef long long			int64;
 typedef unsigned long long	uint64;
-#ifdef PTR_NOT_INT
 typedef size_t				pint;
-#else   // __PTR_NOT_INT
-typedef size_t					pint;
-#endif  // __PTR_NOT_INT
 #endif	//  __WIN32__
 #endif	// HAVE_STDINT_H
 #endif	// snes9x_types_defined

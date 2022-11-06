@@ -15,13 +15,34 @@
   (c) Copyright 2004         Alexander and Sander
   (c) Copyright 2004 - 2005  Steven Seeger
   (c) Copyright 2005         Ryan Vogt
-  (c) Copyright 2019         Michael Donald Buckley
+  (c) Copyright 2019 - 2022  Michael Donald Buckley
  ***********************************************************************************/
 
 
 #ifndef _mac_cheat_h_
 #define _mac_cheat_h_
 
-void ConfigureCheat (void);
+#import <Foundation/Foundation.h>
+
+@interface S9xCheatItem : NSView
+@property (nonatomic, assign) uint32	cheatID;
+@property (nonatomic, strong) NSNumber	*address;
+@property (nonatomic, strong) NSNumber	*value;
+@property (nonatomic, strong) NSNumber	*enabled;
+@property (nonatomic, strong) NSString	*cheatDescription;
+
+- (void)delete;
+@end
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+bool CheatValuesFromCode(NSString *code, uint32 *address, uint8 *value);
+void CreateCheatFromAddress(NSNumber *address, NSNumber *value, NSString *cheatDescription);
+void CreateCheatFromCode(NSString *code, NSString *cheatDescription);
+NSArray<S9xCheatItem *> *GetAllCheats(void);
+#ifdef __cplusplus
+}
+#endif
 
 #endif

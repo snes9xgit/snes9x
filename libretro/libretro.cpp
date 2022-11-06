@@ -11,11 +11,12 @@
 #include "controls.h"
 #include "cheats.h"
 #include "movie.h"
-#include "logger.h"
 #include "display.h"
 #include "conffile.h"
 #include "crosshairs.h"
 #include <stdio.h>
+#include <vector>
+
 #ifdef _WIN32
 #include <direct.h>
 #else
@@ -146,6 +147,7 @@ enum overscan_mode {
 };
 enum aspect_mode {
     ASPECT_RATIO_4_3,
+    ASPECT_RATIO_4_3_SCALED,
     ASPECT_RATIO_1_1,
     ASPECT_RATIO_NTSC,
     ASPECT_RATIO_PAL,
@@ -369,10 +371,6 @@ static void update_variables(void)
     var.value=NULL;
     Settings.Transparency=!(environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && !strcmp("disabled", var.value));
 
-    var.key="snes9x_gfx_hires";
-    var.value=NULL;
-    Settings.SupportHiRes=!(environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && !strcmp("disabled", var.value));
-
     var.key="snes9x_audio_interpolation";
     var.value=NULL;
     if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -462,6 +460,8 @@ static void update_variables(void)
             newval = ASPECT_RATIO_PAL;
         else if (strcmp(var.value, "4:3") == 0)
             newval = ASPECT_RATIO_4_3;
+        else if (strcmp(var.value, "4:3 scaled") == 0)
+            newval = ASPECT_RATIO_4_3_SCALED;
         else if (strcmp(var.value, "uncorrected") == 0)
             newval = ASPECT_RATIO_1_1;
 
@@ -748,26 +748,22 @@ static void update_variables(void)
     }
 }
 
-static void S9xAudioCallback(void*)
+static void S9xEndScreenRefreshCallback(void*)
 {
-    const int BUFFER_SIZE = 256;
-    // This is called every time 128 to 132 samples are generated, which happens about 8 times per frame.  A buffer size of 256 samples is enough here.
-    static int16_t audio_buf[BUFFER_SIZE];
+    if (Settings.Mute) {
+        S9xClearSamples();
+        return;
+    }
+
+    static std::vector<int16_t> audio_buffer;
 
     size_t avail = S9xGetSampleCount();
-    while (avail >= BUFFER_SIZE)
-    {
-        //this loop will never be entered, but handle oversized sample counts just in case
-        S9xMixSamples((uint8*)audio_buf, BUFFER_SIZE);
-        audio_batch_cb(audio_buf, BUFFER_SIZE >> 1);
 
-        avail -= BUFFER_SIZE;
-    }
-    if (avail > 0)
-    {
-        S9xMixSamples((uint8*)audio_buf, avail);
-        audio_batch_cb(audio_buf, avail >> 1);
-    }
+    if (audio_buffer.size() < avail)
+        audio_buffer.resize(avail);
+
+    S9xMixSamples((uint8*)&audio_buffer[0], avail);
+    audio_batch_cb(&audio_buffer[0], avail >> 1);
 }
 
 void retro_get_system_info(struct retro_system_info *info)
@@ -789,6 +785,10 @@ float get_aspect_ratio(unsigned width, unsigned height)
     if (aspect_ratio_mode == ASPECT_RATIO_4_3)
     {
         return SNES_4_3;
+    }
+    else if (aspect_ratio_mode == ASPECT_RATIO_4_3_SCALED)
+    {
+        return (4.0f * (MAX_SNES_HEIGHT - height)) / (3.0f * (MAX_SNES_WIDTH - width));
     }
     else if (aspect_ratio_mode == ASPECT_RATIO_1_1)
     {
@@ -1339,7 +1339,6 @@ void retro_init(void)
     Settings.Stereo = TRUE;
     Settings.SoundPlaybackRate = 32040;
     Settings.SoundInputRate = 32040;
-    Settings.SupportHiRes = TRUE;
     Settings.Transparency = TRUE;
     Settings.AutoDisplayMessages = TRUE;
     Settings.InitialInfoStringTimeout = 120;
@@ -1363,17 +1362,15 @@ void retro_init(void)
         exit(1);
     }
 
-    S9xInitSound(0);
+    S9xInitSound(32);
 
     S9xSetSoundMute(FALSE);
-    S9xSetSamplesAvailableCallback(S9xAudioCallback, NULL);
+    S9xSetSamplesAvailableCallback(NULL, NULL);
 
-    GFX.Pitch = MAX_SNES_WIDTH_NTSC * sizeof(uint16);
-    screen_buffer = (uint16*) calloc(1, GFX.Pitch * (MAX_SNES_HEIGHT + 16));
-    GFX.Screen = screen_buffer + (GFX.Pitch >> 1) * 16;
-    ntsc_screen_buffer = (uint16*) calloc(1, GFX.Pitch * (MAX_SNES_HEIGHT + 16));
-    snes_ntsc_buffer = ntsc_screen_buffer + (GFX.Pitch >> 1) * 16;
+    ntsc_screen_buffer = (uint16*) calloc(1, MAX_SNES_WIDTH_NTSC * 2 * (MAX_SNES_HEIGHT + 16));
+    snes_ntsc_buffer = ntsc_screen_buffer + (MAX_SNES_WIDTH_NTSC >> 1) * 16;
     S9xGraphicsInit();
+    S9xSetEndScreenRefreshCallback(S9xEndScreenRefreshCallback, NULL);
 
     S9xInitInputDevices();
     for (int i = 0; i < 2; i++)
@@ -1849,7 +1846,6 @@ void retro_run()
     poll_cb();
     report_buttons();
     S9xMainLoop();
-    S9xAudioCallback(NULL);
 }
 
 void retro_deinit()
@@ -2017,11 +2013,11 @@ bool8 S9xDeinitUpdate(int width, int height)
         burst_phase = (burst_phase + 1) % 3;
 
         if (width == 512)
-            snes_ntsc_blit_hires(snes_ntsc, GFX.Screen, GFX.Pitch / 2, burst_phase, width, height, snes_ntsc_buffer, GFX.Pitch);
+            snes_ntsc_blit_hires(snes_ntsc, GFX.Screen, GFX.Pitch / 2, burst_phase, width, height, snes_ntsc_buffer, MAX_SNES_WIDTH_NTSC * 2);
         else
-            snes_ntsc_blit(snes_ntsc, GFX.Screen, GFX.Pitch / 2, burst_phase, width, height, snes_ntsc_buffer, GFX.Pitch);
+            snes_ntsc_blit(snes_ntsc, GFX.Screen, GFX.Pitch / 2, burst_phase, width, height, snes_ntsc_buffer, MAX_SNES_WIDTH_NTSC * 2);
 
-        video_cb(snes_ntsc_buffer + ((int)(GFX.Pitch >> 1) * overscan_offset), SNES_NTSC_OUT_WIDTH(width), height, GFX.Pitch);
+        video_cb(snes_ntsc_buffer + ((int)(MAX_SNES_WIDTH_NTSC) * overscan_offset), SNES_NTSC_OUT_WIDTH(256), height, MAX_SNES_WIDTH_NTSC * 2);
     }
     else if (width == MAX_SNES_WIDTH && hires_blend)
     {

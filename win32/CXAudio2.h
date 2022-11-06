@@ -11,7 +11,7 @@
 #include <windows.h>
 #include "IS9xSoundOutput.h"
 
-class CXAudio2 : public IXAudio2VoiceCallback, public IS9xSoundOutput
+class CXAudio2 : public IXAudio2VoiceCallback, public IXAudio2EngineCallback, public IS9xSoundOutput
 {
 private:
 	IXAudio2SourceVoice *pSourceVoice;
@@ -54,6 +54,23 @@ public:
 	STDMETHODIMP_(void) OnVoiceError(void *pBufferContext, HRESULT Error) {}
 	STDMETHODIMP_(void) OnVoiceProcessingPassEnd() {}
 	STDMETHODIMP_(void) OnVoiceProcessingPassStart(UINT32 BytesRequired) {}
+
+
+	// inherited from IXAudio2EngineCallback - we only use OnCriticalError
+
+	// Called by XAudio2 just before an audio processing pass begins.
+	STDMETHODIMP_(void) OnProcessingPassStart() {}
+
+	// Called just after an audio processing pass ends.
+	STDMETHODIMP_(void) OnProcessingPassEnd() {}
+
+	// Called in the event of a critical system error which requires XAudio2
+	// to be closed down and restarted.  The error code is given in Error.
+	STDMETHODIMP_(void) OnCriticalError(HRESULT Error)
+	{
+		// this stops any output from being sent to the non existing device
+		initDone = false;
+	}
 
 
 	// Inherited from IS9xSoundOutput

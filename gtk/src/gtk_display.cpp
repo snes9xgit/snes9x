@@ -23,9 +23,7 @@
 #include "gtk_display_driver_xv.h"
 #endif
 
-#ifdef USE_OPENGL
 #include "gtk_display_driver_opengl.h"
-#endif
 
 static S9xDisplayDriver *driver;
 static snes_ntsc_t snes_ntsc;
@@ -1299,11 +1297,7 @@ void S9xQueryDrivers()
         gui_config->allow_xv = S9xXVDisplayDriver::query_availability();
 #endif
 
-#ifdef USE_OPENGL
     gui_config->allow_opengl = S9xOpenGLDisplayDriver::query_availability();
-#else
-    gui_config->allow_opengl = false;
-#endif
 
     gui_config->allow_xrandr = false;
 #ifdef GDK_WINDOWING_X11
@@ -1414,11 +1408,9 @@ static void S9xInitDriver()
 
     switch (gui_config->hw_accel)
     {
-#ifdef USE_OPENGL
     case HWA_OPENGL:
         driver = new S9xOpenGLDisplayDriver(top_level, gui_config);
         break;
-#endif
 
 #if defined(USE_XV) && defined(GDK_WINDOWING_X11)
     case HWA_XV:
@@ -1624,12 +1616,6 @@ static void S9xGTKDisplayString(const char *string, int linesFromBottom,
 
 void S9xInitDisplay(int argc, char **argv)
 {
-    static uint16_t screen_buffer[512 * 1024];
-
-    Settings.SupportHiRes = true;
-    GFX.Screen = (uint16_t *)&screen_buffer[512 * 256];
-    GFX.Pitch = 512 * 2;
-
     S9xBlit2xSaIFilterInit();
 #ifdef USE_HQ2X
     S9xBlitHQ2xFilterInit();
