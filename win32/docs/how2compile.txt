@@ -7,7 +7,7 @@ NOTE: Unicode support requires a special zlib build - see the end of the zlib en
   the correct Windows SDK Version (7.1A)
 
 - A recent DirectX SDK..
-  https://www.microsoft.com/en-us/download/details.aspx?id=23549
+  https://www.microsoft.com/en-us/download/details.aspx?id=6812
 
 - The following modules can all be downloaded automatically by using:
       git submodule update --init
