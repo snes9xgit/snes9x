@@ -519,6 +519,11 @@ void AddDevice (IOHIDDeviceRef device)
         deviceStruct.index += 1;
     }
 
+	if (name == nil)
+	{
+		name = @"Unknown Device";
+	}
+
     allDevices.insert(deviceStruct);
     std::string s = std::string(name.UTF8String);
 
