@@ -140,7 +140,7 @@ void Texture::from_buffer(vk::CommandBuffer cmd,
             .setSrcAccessMask(vk::AccessFlagBits::eTransferWrite)
             .setDstAccessMask(vk::AccessFlagBits::eTransferRead)
             .setSubresourceRange(srr(base_level));
-        
+
         cmd.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
                             vk::PipelineStageFlagBits::eTransfer,
                             {}, {}, {}, barrier);
@@ -285,7 +285,7 @@ void Texture::create(int width, int height, vk::Format fmt, vk::SamplerAddressMo
         sampler_create_info
             .setMagFilter(vk::Filter::eLinear)
             .setMinFilter(vk::Filter::eLinear);
-    
+
     if (mipmap)
         sampler_create_info
             .setMinLod(0.0f)

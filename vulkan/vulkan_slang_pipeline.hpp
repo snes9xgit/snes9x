@@ -29,7 +29,7 @@ class SlangPipeline
     vk::UniqueSemaphore semaphore;
     vk::UniqueSampler sampler;
 
-    struct 
+    struct
     {
       vk::UniqueDescriptorSet descriptor_set;
       PipelineImage image;

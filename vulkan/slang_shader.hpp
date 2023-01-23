@@ -4,7 +4,7 @@
 
 struct SlangShader
 {
-    struct Parameter 
+    struct Parameter
     {
         std::string name;
         std::string id;
@@ -58,7 +58,7 @@ struct SlangShader
         int binding;
     };
 
-    enum class Stage 
+    enum class Stage
     {
         Vertex,
         Fragment

@@ -17,7 +17,7 @@ static std::string trim_comments(std::string str)
     for (auto &comment : { "//", "#" })
     {
         auto location = str.rfind(comment);
-    
+
         if (location != std::string::npos)
             str = str.substr(0, location);
     }
@@ -47,7 +47,7 @@ bool IniFile::load_file(std::string filename)
     {
         if (file.eof())
             break;
-    
+
         std::getline(file, line);
 
         line = trim(line);
@@ -75,7 +75,7 @@ bool IniFile::load_file(std::string filename)
         {
             auto left_side = trim_quotes(trim(line.substr(0, equals)));
             auto right_side = trim_quotes(trim(line.substr(equals + 1)));
- 
+
             keys.insert_or_assign(left_side, std::make_pair(right_side, filename));
         }
     }
@@ -115,7 +115,7 @@ std::string IniFile::get_source(std::string key)
     auto it = keys.find(key);
     if (it == keys.end())
         return "";
-    
+
     return it->second.second;
 }
 
@@ -128,7 +128,7 @@ bool IniFile::get_bool(std::string key, bool default_value = false)
     std::string lower = it->second.first;
     for (auto &c : lower)
         c = tolower(c);
-    
+
     const char *true_strings[] = { "true", "1", "yes", "on"};
     for (auto &s : true_strings)
         if (lower == s)

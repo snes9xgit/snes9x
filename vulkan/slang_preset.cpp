@@ -259,7 +259,7 @@ void SlangPreset::gather_parameters()
             map.insert({ p.id, p });
         }
     }
-    
+
     parameters.clear();
     for (auto &p : map)
         parameters.push_back(p.second);
@@ -344,8 +344,8 @@ void SlangPreset::print()
         printf("  Samplers: %zu\n", s.samplers.size());
         for (auto &sampler : s.samplers)
         {
-            const char *strings[] = 
-            { 
+            const char *strings[] =
+            {
                 "Previous Frame",
                 "Pass",
                 "Pass Feedback",
@@ -426,7 +426,7 @@ bool SlangPreset::match_sampler_semantic(const string &name, int pass, SlangShad
         specifier = -1;
         return true;
     }
-    else if (name == "Source") 
+    else if (name == "Source")
     {
         type = SlangShader::Sampler::Type::Pass;
         specifier = pass - 1;
@@ -452,7 +452,7 @@ bool SlangPreset::match_sampler_semantic(const string &name, int pass, SlangShad
         type = SlangShader::Sampler::Type::Lut;
         return true;
     }
-    else 
+    else
     {
         for (size_t i = 0; i < passes.size(); i++)
         {
@@ -462,7 +462,7 @@ bool SlangPreset::match_sampler_semantic(const string &name, int pass, SlangShad
                 specifier = i;
                 return true;
             }
-            else if (passes[i].alias + "Feedback" == name) 
+            else if (passes[i].alias + "Feedback" == name)
             {
                 type = SlangShader::Sampler::Type::PassFeedback;
                 specifier = i;
@@ -491,7 +491,7 @@ bool SlangPreset::match_buffer_semantic(const string &name, int pass, SlangShade
         type = SlangShader::Uniform::Type::MVP;
         return true;
     }
-    
+
     if (name == "FrameCount")
     {
         type = SlangShader::Uniform::Type::FrameCount;
@@ -518,7 +518,7 @@ bool SlangPreset::match_buffer_semantic(const string &name, int pass, SlangShade
 
             if (name.compare(prefix.length(), 4, "Size") != 0)
                 return false;
-            
+
             if (prefix.length() + 4 < name.length())
                 specifier = std::stoi(name.substr(prefix.length() + 4));
 
@@ -530,7 +530,7 @@ bool SlangPreset::match_buffer_semantic(const string &name, int pass, SlangShade
             type = SlangShader::Uniform::Type::PassSize;
             specifier = -1;
             return true;
-        }    
+        }
         else if (match("Source"))
         {
             type = SlangShader::Uniform::Type::PassSize;
@@ -573,7 +573,7 @@ bool SlangPreset::match_buffer_semantic(const string &name, int pass, SlangShade
                 return true;
             }
         }
-        
+
         for (size_t i = 0; i < textures.size(); i++)
         {
             if (match(textures[i].id))
@@ -636,7 +636,7 @@ bool SlangPreset::introspect_shader(SlangShader &shader, int pass, SlangShader::
     {
         shader.push_constant_block_size = 0;
     }
-    else 
+    else
     {
         auto &pcb = res.push_constant_buffers[0];
         auto &pcb_type = cross.get_type(pcb.base_type_id);
@@ -659,7 +659,7 @@ bool SlangPreset::introspect_shader(SlangShader &shader, int pass, SlangShader::
                 if (!exists(uniform))
                     shader.uniforms.push_back(uniform);
             }
-            else 
+            else
             {
                 printf("%s: Failed to match push constant semantic: \"%s\"\n", shader.filename.c_str(), name.c_str());
             }
@@ -670,7 +670,7 @@ bool SlangPreset::introspect_shader(SlangShader &shader, int pass, SlangShader::
     {
         shader.ubo_size = 0;
     }
-    else 
+    else
     {
         auto &ubo = res.uniform_buffers[0];
         auto &ubo_type = cross.get_type(ubo.base_type_id);
@@ -694,7 +694,7 @@ bool SlangPreset::introspect_shader(SlangShader &shader, int pass, SlangShader::
                 if (!exists(uniform))
                     shader.uniforms.push_back(uniform);
             }
-            else 
+            else
             {
                 printf("%s: Failed to match uniform buffer semantic: \"%s\"\n", shader.filename.c_str(), name.c_str());
             }
@@ -706,7 +706,7 @@ bool SlangPreset::introspect_shader(SlangShader &shader, int pass, SlangShader::
         printf("No sampled images found in fragment shader.\n");
         return false;
     }
-    
+
     if (res.sampled_images.size() > 0 && stage == SlangShader::Stage::Vertex)
     {
         printf("Sampled image found in vertex shader.\n");
@@ -725,7 +725,7 @@ bool SlangPreset::introspect_shader(SlangShader &shader, int pass, SlangShader::
                 int binding = cross.get_decoration(image.id, spv::DecorationBinding);
                 shader.samplers.push_back({ semantic_type, specifier, binding });
             }
-            else 
+            else
             {
                 printf("%s: Failed to match sampler semantic: \"%s\"\n", shader.filename.c_str(), image.name.c_str());
                 return false;
@@ -740,7 +740,7 @@ bool SlangPreset::introspect_shader(SlangShader &shader, int pass, SlangShader::
     Introspect all of preset's shaders.
 */
 bool SlangPreset::introspect()
-{ 
+{
     for (size_t i = 0; i < passes.size(); i++)
     {
         if (!introspect_shader(passes[i], i, SlangShader::Stage::Vertex))
@@ -752,7 +752,7 @@ bool SlangPreset::introspect()
     oldest_previous_frame = 0;
     uses_feedback = false;
     last_pass_uses_feedback = false;
-    
+
     for (auto &p : passes)
     {
         for (auto &s : p.samplers)
@@ -772,7 +772,7 @@ bool SlangPreset::introspect()
 }
 
 bool SlangPreset::save_to_file(std::string filename)
-{    
+{
     std::ofstream out(filename);
     if (!out.is_open())
         return false;
@@ -837,6 +837,6 @@ bool SlangPreset::save_to_file(std::string filename)
     }
 
     out.close();
- 
+
     return true;
 }

@@ -202,7 +202,7 @@ void PipelineImage::clear(vk::CommandBuffer cmd)
                         vk::PipelineStageFlagBits::eFragmentShader,
                         {}, {}, {},
                         image_memory_barrier);
-    
+
     current_layout = vk::ImageLayout::eShaderReadOnlyOptimal;
 }
 

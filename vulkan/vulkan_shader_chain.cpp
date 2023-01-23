@@ -330,7 +330,7 @@ void ShaderChain::update_descriptor_set(vk::CommandBuffer cmd, int pipe_num, int
         {
             assert(sampler.specifier < (int)pipelines.size());
             assert(sampler.specifier >= 0);
-            
+
             if (!pipelines[sampler.specifier]->frame[last_frame_index].image.image)
                 update_framebuffers(cmd, last_frame_index);
             auto &feedback_frame = pipelines[sampler.specifier]->frame[last_frame_index];

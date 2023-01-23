@@ -16,10 +16,10 @@ int main(int argc, char **argv)
         printf("Failed to load %s\n", argv[1]);
         return -1;
     }
-    
+
     preset.introspect();
 
     preset.print();
- 
+
     return 0;
 }
