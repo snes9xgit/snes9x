@@ -114,10 +114,7 @@ bool SlangPreset::load_preset_file(string filename)
         if (!shader.load_file())
             return false;
     }
-
-    for (auto &texture : textures)
-        canonicalize(texture.filename, conf.textures_filename);
-
+    
     gather_parameters();
 
     for (auto &p : parameters)
