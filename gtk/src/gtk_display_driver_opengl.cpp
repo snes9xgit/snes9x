@@ -89,7 +89,7 @@ S9xOpenGLDisplayDriver::S9xOpenGLDisplayDriver(Snes9xWindow *window, Snes9xConfi
 void S9xOpenGLDisplayDriver::update(uint16_t *buffer, int width, int height, int stride_in_pixels)
 {
     Gtk::Allocation allocation = drawing_area->get_allocation();
-    
+
     if (output_window_width != allocation.get_width() ||
         output_window_height != allocation.get_height())
     {
@@ -119,61 +119,8 @@ void S9xOpenGLDisplayDriver::update(uint16_t *buffer, int width, int height, int
 
     update_texture_size(width, height);
 
-    if (using_pbos)
-    {
-        void *pbo_memory = NULL;
-        GLbitfield bits = GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT | GL_MAP_UNSYNCHRONIZED_BIT;
-
-        if (config->pbo_format == 16)
-        {
-            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
-            glBufferData(GL_PIXEL_UNPACK_BUFFER, width * height * 2, NULL, GL_STREAM_DRAW);
-
-            if (version >= 30)
-                pbo_memory = glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, width * height * 2, bits);
-            else
-                pbo_memory = glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
-
-            for (int y = 0; y < height; y++)
-            {
-                uint16 *dst = (uint16_t *)pbo_memory + (width * y);
-                uint16 *src = &buffer[y * stride_in_pixels];
-                memcpy(dst, src, width * 2);
-            }
-            glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
-
-            glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
-            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGB,
-                            GL_UNSIGNED_SHORT_5_6_5, BUFFER_OFFSET(0));
-
-            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-        }
-        else /* 32-bit color */
-        {
-            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
-            glBufferData(GL_PIXEL_UNPACK_BUFFER, width * height * 4, NULL, GL_STREAM_DRAW);
-
-            if (version >= 30)
-                pbo_memory = glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, width * height * 4, bits);
-            else
-                pbo_memory = glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
-
-            /* Pixel swizzling in software */
-            S9xConvert(buffer, pbo_memory, stride_in_pixels * 2, width * 4, width, height, 32);
-
-            glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
-
-            glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
-            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_BGRA, GL_UNSIGNED_BYTE, BUFFER_OFFSET(0));
-
-            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-        }
-    }
-    else
-    {
-        glPixelStorei(GL_UNPACK_ROW_LENGTH, stride_in_pixels);
-        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, buffer);
-    }
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, stride_in_pixels);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, buffer);
 
     if (using_glsl_shaders)
     {
@@ -213,30 +160,15 @@ void S9xOpenGLDisplayDriver::update_texture_size(int width, int height)
         {
             glBindTexture(GL_TEXTURE_2D, texmap);
 
-            if (using_pbos && config->pbo_format == 32)
-            {
-                glTexImage2D(GL_TEXTURE_2D,
-                             0,
-                             GL_RGBA,
-                             width,
-                             height,
-                             0,
-                             GL_BGRA,
-                             GL_UNSIGNED_BYTE,
-                             NULL);
-            }
-            else
-            {
-                glTexImage2D(GL_TEXTURE_2D,
-                             0,
-                             GL_RGB565,
-                             width,
-                             height,
-                             0,
-                             GL_RGB,
-                             GL_UNSIGNED_SHORT_5_6_5,
-                             NULL);
-            }
+            glTexImage2D(GL_TEXTURE_2D,
+                         0,
+                         GL_RGB565,
+                         width,
+                         height,
+                         0,
+                         GL_RGB,
+                         GL_UNSIGNED_SHORT_5_6_5,
+                         NULL);
 
             coords[9] = 1.0f;
             coords[10] = 1.0f;
@@ -306,15 +238,6 @@ bool S9xOpenGLDisplayDriver::load_shaders(const char *shader_file)
 bool S9xOpenGLDisplayDriver::opengl_defaults()
 {
     npot = false;
-    using_pbos = false;
-
-    if (config->use_pbos)
-    {
-        if (version >= 15)
-            using_pbos = true;
-        else
-            config->use_pbos = false;
-    }
 
     using_glsl_shaders = false;
     glsl_shader = NULL;
@@ -330,10 +253,7 @@ bool S9xOpenGLDisplayDriver::opengl_defaults()
     texture_width = 1024;
     texture_height = 1024;
 
-    if (config->npot_textures)
-    {
-        npot = true;
-    }
+    npot = true;
 
     if (legacy)
     {
@@ -402,45 +322,18 @@ bool S9xOpenGLDisplayDriver::opengl_defaults()
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
-    if (config->use_pbos)
-    {
-        glGenBuffers(1, &pbo);
-        glGenTextures(1, &texmap);
+    glGenTextures(1, &texmap);
 
-        glBindTexture(GL_TEXTURE_2D, texmap);
-        glTexImage2D(GL_TEXTURE_2D,
-                     0,
-                     config->pbo_format == 16 ? GL_RGB565 : GL_RGBA,
-                     texture_width,
-                     texture_height,
-                     0,
-                     config->pbo_format == 16 ? GL_RGB : GL_BGRA,
-                     config->pbo_format == 16 ? GL_UNSIGNED_SHORT_5_6_5 : GL_UNSIGNED_BYTE,
-                     NULL);
-
-        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
-        glBufferData(GL_PIXEL_UNPACK_BUFFER,
-                     texture_width * texture_height * 3,
-                     NULL,
-                     GL_STREAM_DRAW);
-
-        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-    }
-    else
-    {
-        glGenTextures(1, &texmap);
-
-        glBindTexture(GL_TEXTURE_2D, texmap);
-        glTexImage2D(GL_TEXTURE_2D,
-                     0,
-                     GL_RGB565,
-                     texture_width,
-                     texture_height,
-                     0,
-                     GL_RGB,
-                     GL_UNSIGNED_SHORT_5_6_5,
-                     NULL);
-    }
+    glBindTexture(GL_TEXTURE_2D, texmap);
+    glTexImage2D(GL_TEXTURE_2D,
+                 0,
+                 GL_RGB565,
+                 texture_width,
+                 texture_height,
+                 0,
+                 GL_RGB,
+                 GL_UNSIGNED_SHORT_5_6_5,
+                 NULL);
 
     glClearColor(0.0, 0.0, 0.0, 0.0);
 
@@ -535,7 +428,7 @@ void S9xOpenGLDisplayDriver::swap_buffers()
 {
     context->swap_buffers();
 
-    if (config->use_glfinish && !config->use_sync_control)
+    if (config->reduce_input_lag)
     {
         usleep(0);
         glFinish();
@@ -553,12 +446,6 @@ void S9xOpenGLDisplayDriver::deinit()
         gtk_shader_parameters_dialog_close();
         glsl_shader->destroy();
         delete glsl_shader;
-    }
-
-    if (using_pbos)
-    {
-        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-        glDeleteBuffers(1, &pbo);
     }
 
     glDeleteTextures(1, &texmap);

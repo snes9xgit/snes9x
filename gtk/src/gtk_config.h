@@ -150,13 +150,9 @@ class Snes9xConfig
     XRRCrtcInfo *xrr_crtc_info;
 
     bool sync_to_vblank;
-    bool use_pbos;
-    int pbo_format;
-    bool npot_textures;
     bool use_shaders;
     std::string shader_filename;
-    bool use_glfinish;
-    bool use_sync_control;
+    bool reduce_input_lag;
 
     JoyDevices joysticks;
     int joystick_threshold;

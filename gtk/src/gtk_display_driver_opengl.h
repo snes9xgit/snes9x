@@ -52,13 +52,11 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
     GLint texture_width;
     GLint texture_height;
     GLuint texmap;
-    GLuint pbo;
 
     bool legacy;
     bool core;
     int version;
     bool npot;
-    bool using_pbos;
     bool initialized;
 
     bool using_glsl_shaders;

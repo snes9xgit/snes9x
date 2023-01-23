@@ -287,6 +287,9 @@ void S9xVulkanDisplayDriver::update(uint16_t *buffer, int width, int height, int
     if (!context)
         return;
 
+    if (gui_config->reduce_input_lag)
+        device.waitIdle();
+
     auto viewport = S9xApplyAspect(width, height, current_width, current_height);
 
     if (shaderchain)

@@ -53,8 +53,6 @@ WaylandEGLContext::WaylandEGLContext()
     egl_context = NULL;
     egl_config = NULL;
     egl_window = NULL;
-    use_sync_control = false;
-    ust = msc = sbc = 0;
     idle_inhibit_manager = NULL;
     idle_inhibitor = NULL;
 }
@@ -188,13 +186,6 @@ bool WaylandEGLContext::create_context()
         }
     }
 
-    if (gui_config->use_sync_control && epoxy_has_egl_extension(egl_display, "EGL_CHROMIUM_sync_control"))
-    {
-        eglGetSyncValuesCHROMIUM = (PEGLGETSYNCVALUESCHROMIUM)eglGetProcAddress("eglGetSyncValuesCHROMIUM");
-        if (eglGetSyncValuesCHROMIUM)
-            use_sync_control = true;
-    }
-
     wl_surface_set_buffer_scale(child, scale);
     gdk_window_invalidate_rect(gdk_window, NULL, false);
 
@@ -216,24 +207,12 @@ void WaylandEGLContext::resize()
 
 void WaylandEGLContext::swap_buffers()
 {
-    if (use_sync_control)
-        eglGetSyncValuesCHROMIUM(egl_display, egl_surface, &ust, &msc, &sbc);
-
     eglSwapBuffers(egl_display, egl_surface);
     wl_surface_commit(child);
 }
 
 bool WaylandEGLContext::ready()
 {
-    if (use_sync_control)
-    {
-        EGLuint64KHR ust, msc, sbc;
-        eglGetSyncValuesCHROMIUM(egl_display, egl_surface, &ust, &msc, &sbc);
-        if (sbc != this->sbc || msc - this->msc > 2)
-            return true;
-        return false;
-    }
-
     return true;
 }
 

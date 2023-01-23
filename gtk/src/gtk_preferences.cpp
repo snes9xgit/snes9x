@@ -466,11 +466,7 @@ void Snes9xPreferences::move_settings_to_dialog()
     set_check ("bilinear_filter",           Settings.BilinearFilter);
 
     set_check ("sync_to_vblank",            config->sync_to_vblank);
-    set_check ("use_glfinish",              config->use_glfinish);
-    set_check ("use_sync_control",          config->use_sync_control);
-    set_check ("use_pbos",                  config->use_pbos);
-    set_combo ("pixel_format",              config->pbo_format == 16 ? 0 : 1);
-    set_check ("npot_textures",             config->npot_textures);
+    set_check ("reduce_input_lag",          config->reduce_input_lag);
     set_check ("use_shaders",               config->use_shaders);
     set_entry_text ("fragment_shader",      config->shader_filename.c_str ());
 
@@ -628,13 +624,7 @@ void Snes9xPreferences::get_settings_from_dialog()
     Settings.InterpolationMethod = get_combo("sound_filter");
 #endif
 
-    int pbo_format = get_combo("pixel_format") == 1 ? 32 : 16;
-
     if (config->sync_to_vblank   != get_check("sync_to_vblank") ||
-        config->use_sync_control != get_check("use_sync_control") ||
-        config->npot_textures    != get_check("npot_textures") ||
-        config->use_pbos         != get_check("use_pbos") ||
-        config->pbo_format       !=  pbo_format ||
         config->use_shaders      != get_check("use_shaders") ||
         (config->shader_filename.compare(get_entry_text("fragment_shader"))))
     {
@@ -642,13 +632,9 @@ void Snes9xPreferences::get_settings_from_dialog()
     }
 
     config->sync_to_vblank   = get_check("sync_to_vblank");
-    config->use_pbos         = get_check("use_pbos");
-    config->npot_textures    = get_check("npot_textures");
     config->use_shaders      = get_check("use_shaders");
-    config->use_glfinish     = get_check("use_glfinish");
-    config->use_sync_control = get_check("use_sync_control");
+    config->reduce_input_lag     = get_check("reduce_input_lag");
     config->shader_filename  = get_entry_text ("fragment_shader");
-    config->pbo_format       = pbo_format;
 
     std::string new_sram_directory = get_entry_text("sram_directory");
     config->savestate_directory = get_entry_text("savestate_directory");
