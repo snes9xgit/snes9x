@@ -235,17 +235,18 @@ bool ShaderChain::load_shader_preset(std::string filename)
         if (p.samplers.size() > 0)
             num_samplers += p.samplers.size();
     }
+
     std::array<vk::DescriptorPoolSize, 2> descriptor_pool_sizes;
     descriptor_pool_sizes[0]
         .setType(vk::DescriptorType::eUniformBuffer)
-        .setDescriptorCount(num_ubos * 3);
+        .setDescriptorCount(num_ubos * context->swapchain->get_num_frames());
     descriptor_pool_sizes[1]
         .setType(vk::DescriptorType::eCombinedImageSampler)
-        .setDescriptorCount(num_samplers * 3);
+        .setDescriptorCount(num_samplers * context->swapchain->get_num_frames());
 
     auto descriptor_pool_create_info = vk::DescriptorPoolCreateInfo{}
         .setPoolSizes(descriptor_pool_sizes)
-        .setMaxSets(pipelines.size() * 3)
+        .setMaxSets(pipelines.size() * context->swapchain->get_num_frames())
         .setFlags(vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet);
 
     descriptor_pool = context->device.createDescriptorPoolUnique(descriptor_pool_create_info);
@@ -393,7 +394,6 @@ void ShaderChain::do_frame(uint8_t *data, int width, int height, int stride, vk:
     auto cmd = context->swapchain->get_cmd();
 
     current_frame_index = context->swapchain->get_current_frame();
-
     update_and_propagate_sizes(width, height, viewport_width, viewport_height);
 
     update_framebuffers(cmd, current_frame_index);

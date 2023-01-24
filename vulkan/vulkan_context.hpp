@@ -1,6 +1,9 @@
 #pragma once
 
-#include "X11/Xlib.h"
+//"VK_USE_PLATFORM_WAYLAND_KHR"
+#ifdef VK_USE_PLATFORM_XLIB_KHR
+#include <X11/Xlib.h>
+#endif
 #include "vk_mem_alloc.hpp"
 #include "vulkan/vulkan.hpp"
 #include "vulkan_swapchain.hpp"
@@ -15,9 +18,15 @@ class Context
   public:
     Context();
     ~Context();
-    bool init(Display *dpy, Window xid, int preferred_device = 0);
-    bool create_swapchain();
-    bool recreate_swapchain();
+#ifdef VK_USE_PLATFORM_XLIB_KHR
+    bool init_Xlib(Display *dpy, Window xid, int preferred_device = 0);
+#endif
+#ifdef VK_USE_PLATFORM_WAYLAND_KHR
+    bool init_wayland(wl_display *dpy, wl_surface *parent, int width, int height, int preferred_device = 0);
+#endif
+    bool init(int preferred_device = 0);
+    bool create_swapchain(int width = -1, int height = -1);
+    bool recreate_swapchain(int width = -1, int height = -1);
     void wait_idle();
     vk::CommandBuffer begin_cmd_buffer();
     void end_cmd_buffer();
@@ -38,8 +47,10 @@ class Context
 
     vk::UniquePipeline create_generic_pipeline();
 
+#ifdef VK_USE_PLATFORM_XLIB_KHR
     Display *xlib_display;
     Window xlib_window;
+#endif
 
     vk::UniqueInstance instance;
     vk::PhysicalDevice physical_device;

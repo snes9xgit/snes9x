@@ -12,6 +12,10 @@
 #include "../../vulkan/slang_preset.hpp"
 #include "../../vulkan/vulkan_shader_chain.hpp"
 
+#ifdef VK_USE_PLATFORM_WAYLAND_KHR
+#include "gtk_wayland_surface.h"
+#endif
+
 class S9xVulkanDisplayDriver : public S9xDisplayDriver
 {
   public:
@@ -39,6 +43,10 @@ class S9xVulkanDisplayDriver : public S9xDisplayDriver
     Colormap colormap;
     int current_width;
     int current_height;
+
+#ifdef VK_USE_PLATFORM_WAYLAND_KHR
+    std::unique_ptr<WaylandSurface> wayland_surface;
+#endif
 
     void create_pipeline();
     vk::UniqueDescriptorSetLayout descriptor_set_layout;

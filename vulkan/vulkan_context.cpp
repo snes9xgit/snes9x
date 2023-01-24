@@ -37,22 +37,52 @@ Context::~Context()
     device.destroy();
 }
 
-bool Context::init(Display *dpy, Window xid, int preferred_device)
+static vk::UniqueInstance create_instance_preamble(const char *wsi_extension)
 {
-    if (instance)
-        return false;
-
-    xlib_display = dpy;
-    xlib_window = xid;
-
-    std::vector<const char *> extensions = { VK_KHR_XLIB_SURFACE_EXTENSION_NAME, VK_KHR_SURFACE_EXTENSION_NAME };
+    std::vector<const char *> extensions = { wsi_extension, VK_KHR_SURFACE_EXTENSION_NAME };
     vk::ApplicationInfo application_info({}, {}, {}, {}, VK_API_VERSION_1_0);
     vk::InstanceCreateInfo instance_create_info({}, &application_info, {}, extensions);
 
-    instance = vk::createInstanceUnique(instance_create_info);
+    auto instance = vk::createInstanceUnique(instance_create_info);
 
     VULKAN_HPP_DEFAULT_DISPATCHER.init(instance.get());
-    surface = instance->createXlibSurfaceKHRUnique({ {}, xlib_display, xlib_window });
+
+    return instance;
+}
+
+#ifdef VK_USE_PLATFORM_XLIB_KHR
+bool Context::init_Xlib(Display *dpy, Window xid, int preferred_device)
+{
+    if (instance)
+        return false;
+    instance = create_instance_preamble(VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
+    surface = instance->createXlibSurfaceKHRUnique({ {}, dpy, xid });
+    return init(preferred_device);
+}
+#endif
+
+#ifdef VK_USE_PLATFORM_WAYLAND_KHR
+bool Context::init_wayland(wl_display *dpy, wl_surface *parent, int initial_width, int initial_height, int preferred_device)
+{
+    if (instance)
+        return false;
+    instance = create_instance_preamble(VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME);
+    auto wayland_surface_create_info = vk::WaylandSurfaceCreateInfoKHR{}
+        .setSurface(parent)
+        .setDisplay(dpy);
+    surface = instance->createWaylandSurfaceKHRUnique(wayland_surface_create_info);
+    init_device(preferred_device);
+    init_vma();
+    init_command_pool();
+    init_descriptor_pool();
+    create_swapchain(initial_width, initial_height);
+    device.waitIdle();
+    return true;
+}
+#endif
+
+bool Context::init(int preferred_device)
+{
 
     init_device(preferred_device);
     init_vma();
@@ -159,16 +189,16 @@ bool Context::init_vma()
     return true;
 }
 
-bool Context::create_swapchain()
+bool Context::create_swapchain(int width, int height)
 {
     wait_idle();
     swapchain = std::make_unique<Swapchain>(device, physical_device, queue, surface.get(), command_pool.get());
-    return swapchain->create(3);
+    return swapchain->create(3, width, height);
 }
 
-bool Context::recreate_swapchain()
+bool Context::recreate_swapchain(int width, int height)
 {
-    return swapchain->recreate();
+    return swapchain->recreate(width, height);
 }
 
 void Context::wait_idle()

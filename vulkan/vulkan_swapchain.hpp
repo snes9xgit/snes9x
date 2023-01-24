@@ -16,13 +16,13 @@ class Swapchain
               vk::SurfaceKHR surface,
               vk::CommandPool command_pool);
     ~Swapchain();
-    bool create(unsigned int num_frames);
-    bool recreate();
+    bool create(unsigned int num_frames, int width = -1, int height = -1);
+    bool recreate(int width = -1, int height = -1);
     bool begin_frame();
     void begin_render_pass();
     void end_render_pass();
     bool wait_on_frame(int frame_num);
-    bool end_frame();
+    bool end_frame(vk::Fence extra_fence = nullptr);
     // Returns true if vsync setting was changed, false if it was the same
     bool set_vsync(bool on);
 
@@ -53,7 +53,7 @@ class Swapchain
         vk::UniqueFramebuffer framebuffer;
     };
 
-    vk::UniqueSwapchainKHR swapchain;
+    vk::UniqueSwapchainKHR swapchain_object;
     vk::Extent2D extents;
 
     vk::UniqueRenderPass render_pass;

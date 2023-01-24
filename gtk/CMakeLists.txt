@@ -125,6 +125,8 @@ if(USE_WAYLAND)
     list(APPEND DEFINES "USE_WAYLAND")
     list(APPEND SOURCES src/gtk_wayland_egl_context.cpp
                         src/gtk_wayland_egl_context.h
+                        src/gtk_wayland_surface.cpp
+                        src/gtk_wayland_surface.h
                         src/wayland-idle-inhibit-unstable-v1.c)
     list(APPEND ARGS ${WAYLAND_CFLAGS})
     list(APPEND LIBS ${WAYLAND_LIBRARIES})
@@ -365,21 +367,6 @@ add_executable(slang_test ../vulkan/slang_helpers.cpp
                         ../vulkan/slang_preset_test.cpp
                         ../conffile.cpp
                         ../stream.cpp)
-#add_executable(vulkan_test ../vulkan/slang_helpers.cpp
-#                           ../vulkan/slang_helpers.hpp
-#                           ../vulkan/slang_shader.cpp
-#                           ../vulkan/slang_shader.hpp
-#                           ../vulkan/slang_preset.cpp
-#                          ../vulkan/slang_preset.hpp
-#                           ../vulkan/vulkan_hpp_storage.cpp
-#                           ../vulkan/test.cpp
-#                           ../vulkan/vk2d.cpp
-#                           ../conffile.cpp
-#                           ../stream.cpp)
-#target_include_directories(vulkan_test PRIVATE ${INCLUDES})
-#target_compile_options(vulkan_test PRIVATE ${ARGS})
-#target_compile_definitions(vulkan_test PRIVATE ${DEFINES} "VULKAN_HPP_NO_EXCEPTIONS" "VULKAN_HPP_ASSERT_ON_RESULT=")
-#target_link_libraries(vulkan_test PRIVATE ${LIBS})
 
 target_include_directories(slang_test PRIVATE ${INCLUDES})
 target_compile_options(slang_test PRIVATE ${ARGS})

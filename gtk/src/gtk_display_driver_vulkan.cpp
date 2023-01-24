@@ -160,7 +160,7 @@ void S9xVulkanDisplayDriver::create_pipeline()
     auto [result, pipeline] = device.createGraphicsPipelineUnique(nullptr, pipeline_create_info);
     this->pipeline = std::move(pipeline);
 }
- 
+
 S9xVulkanDisplayDriver::S9xVulkanDisplayDriver(Snes9xWindow *_window, Snes9xConfig *_config)
 {
     window = _window;
@@ -187,7 +187,13 @@ void S9xVulkanDisplayDriver::refresh(int width, int height)
 
     if (new_width != current_width || new_height != current_height || vsync_changed)
     {
-        context->recreate_swapchain();
+#ifdef GDK_WINDOWING_WAYLAND
+        if (GDK_IS_WAYLAND_WINDOW(drawing_area->get_window()->gobj()))
+        {
+            wayland_surface->resize();
+        }
+#endif
+        context->recreate_swapchain(new_width, new_height);
         context->wait_idle();
         current_width = new_width;
         current_height = new_height;
@@ -200,11 +206,27 @@ int S9xVulkanDisplayDriver::init()
 {
     current_width = drawing_area->get_width() * drawing_area->get_scale_factor();
     current_height = drawing_area->get_height() * drawing_area->get_scale_factor();
-    display = gdk_x11_display_get_xdisplay(drawing_area->get_display()->gobj());
-    xid = gdk_x11_window_get_xid(drawing_area->get_window()->gobj());
 
     context = std::make_unique<Vulkan::Context>();
-    context->init(display, xid);
+
+#ifdef GDK_WINDOWING_WAYLAND
+    if (GDK_IS_WAYLAND_WINDOW(drawing_area->get_window()->gobj()))
+    {
+        wayland_surface = std::make_unique<WaylandSurface>();
+        if (!wayland_surface->attach(GTK_WIDGET(drawing_area->gobj())))
+        {
+            return -1;
+        }
+        context->init_wayland(wayland_surface->display, wayland_surface->child, current_width, current_height);
+    }
+#endif
+    if (GDK_IS_X11_WINDOW(drawing_area->get_window()->gobj()))
+    {
+        display = gdk_x11_display_get_xdisplay(drawing_area->get_display()->gobj());
+        xid = gdk_x11_window_get_xid(drawing_area->get_window()->gobj());
+
+        context->init_Xlib(display, xid);
+    }
     swapchain = context->swapchain.get();
     device = context->device;
 
@@ -236,7 +258,7 @@ int S9xVulkanDisplayDriver::init()
         auto descriptor = device.allocateDescriptorSetsUnique(dsai);
         descriptors.push_back(std::move(descriptor[0]));
     }
-    
+
     textures.clear();
     textures.resize(swapchain->get_num_frames());
     for (auto &t : textures)
