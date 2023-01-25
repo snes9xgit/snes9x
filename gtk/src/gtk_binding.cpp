@@ -17,7 +17,22 @@ Binding::Binding()
 
 Binding::Binding(GdkEventKey *event)
 {
-    event->keyval = gdk_keyval_to_lower(event->keyval);
+    GdkKeymapKey* keys;
+    guint* keyvals;
+    int n_entries;
+
+    gdk_keymap_get_entries_for_keycode(
+        gdk_keymap_get_for_display(top_level->window->get_display()->gobj()),
+        event->hardware_keycode,
+        &keys,
+        &keyvals,
+        &n_entries
+    );
+    event->keyval = keyvals[0];
+
+    g_free(keys);
+    g_free(keyvals);
+
     value = BINDING_KEY | (event->keyval & BINDING_KEY_MASK);
 
     /* Strip modifiers from modifiers */
