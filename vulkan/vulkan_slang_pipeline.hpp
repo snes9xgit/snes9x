@@ -34,7 +34,7 @@ class SlangPipeline
       vk::UniqueDescriptorSet descriptor_set;
       PipelineImage image;
       vk::UniqueFence fence;
-    } frame[4];
+    } frame[3];
 
     vk::Buffer uniform_buffer;
     vma::Allocation uniform_buffer_allocation;

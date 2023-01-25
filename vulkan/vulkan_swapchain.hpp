@@ -3,6 +3,7 @@
 #include "vulkan/vulkan.hpp"
 #include "vulkan/vulkan_handles.hpp"
 #include "vulkan/vulkan_structs.hpp"
+#include <deque>
 
 namespace Vulkan
 {
@@ -10,6 +11,8 @@ namespace Vulkan
 class Swapchain
 {
   public:
+    const int max_latency = 3;
+
     Swapchain(vk::Device device,
               vk::PhysicalDevice physical_device,
               vk::Queue queue,
@@ -22,7 +25,7 @@ class Swapchain
     void begin_render_pass();
     void end_render_pass();
     bool wait_on_frame(int frame_num);
-    bool end_frame(vk::Fence extra_fence = nullptr);
+    bool end_frame();
     // Returns true if vsync setting was changed, false if it was the same
     bool set_vsync(bool on);
 
@@ -60,7 +63,7 @@ class Swapchain
 
     unsigned int current_frame = 0;
     unsigned int current_swapchain_image = 0;
-    unsigned int num_frames = 0;
+    unsigned int num_swapchain_images = 0;
     bool vsync = true;
     std::vector<Frame> frames;
     std::vector<ImageViewFB> imageviewfbs;

@@ -12,6 +12,8 @@ namespace Vulkan
 class ShaderChain
 {
   public:
+    const int queue_size = 3;
+
     ShaderChain(Context *context_);
     ~ShaderChain();
     bool load_shader_preset(std::string filename);

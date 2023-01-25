@@ -23,7 +23,6 @@ bool Swapchain::set_vsync(bool new_setting)
     if (new_setting == vsync)
         return false;
 
-    vsync = new_setting;
     return true;
 }
 
@@ -75,8 +74,7 @@ void Swapchain::create_render_pass()
 bool Swapchain::recreate(int new_width, int new_height)
 {
     device.waitIdle();
-
-    return create(num_frames, new_width, new_height);
+    return create(num_swapchain_images, new_width, new_height);
 }
 
 vk::Image Swapchain::get_image()
@@ -84,17 +82,17 @@ vk::Image Swapchain::get_image()
     return imageviewfbs[current_swapchain_image].image;
 }
 
-bool Swapchain::create(unsigned int desired_num_frames, int new_width, int new_height)
+bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width, int new_height)
 {
     frames.clear();
     imageviewfbs.clear();
 
     auto surface_capabilities = physical_device.getSurfaceCapabilitiesKHR(surface);
 
-    if (surface_capabilities.minImageCount > desired_num_frames)
-        num_frames = surface_capabilities.minImageCount;
+    if (surface_capabilities.minImageCount > desired_num_swapchain_images)
+        num_swapchain_images = surface_capabilities.minImageCount;
     else
-        num_frames = desired_num_frames;
+        num_swapchain_images = desired_num_swapchain_images;
 
     extents = surface_capabilities.currentExtent;
 
@@ -113,7 +111,7 @@ bool Swapchain::create(unsigned int desired_num_frames, int new_width, int new_h
     }
 
     auto swapchain_create_info = vk::SwapchainCreateInfoKHR{}
-        .setMinImageCount(num_frames)
+        .setMinImageCount(num_swapchain_images)
         .setImageFormat(vk::Format::eB8G8R8A8Unorm)
         .setImageExtent(extents)
         .setImageColorSpace(vk::ColorSpaceKHR::eSrgbNonlinear)
@@ -133,18 +131,18 @@ bool Swapchain::create(unsigned int desired_num_frames, int new_width, int new_h
         return false;
 
     auto swapchain_images = device.getSwapchainImagesKHR(swapchain_object.get());
-    vk::CommandBufferAllocateInfo command_buffer_allocate_info(command_pool, vk::CommandBufferLevel::ePrimary, num_frames);
+    vk::CommandBufferAllocateInfo command_buffer_allocate_info(command_pool, vk::CommandBufferLevel::ePrimary, max_latency);
     auto command_buffers = device.allocateCommandBuffersUnique(command_buffer_allocate_info);
 
-    if (imageviewfbs.size() > num_frames)
-        num_frames = imageviewfbs.size();
+    if (imageviewfbs.size() > num_swapchain_images)
+        num_swapchain_images = imageviewfbs.size();
 
-    frames.resize(num_frames);
-    imageviewfbs.resize(num_frames);
+    frames.resize(max_latency);
+    imageviewfbs.resize(num_swapchain_images);
 
     vk::FenceCreateInfo fence_create_info(vk::FenceCreateFlagBits::eSignaled);
 
-    for (unsigned int i = 0; i < num_frames; i++)
+    for (int i = 0; i < max_latency; i++)
     {
         // Create frame queue resources
         auto &frame = frames[i];
@@ -155,7 +153,7 @@ bool Swapchain::create(unsigned int desired_num_frames, int new_width, int new_h
     }
     current_frame = 0;
 
-    for (unsigned int i = 0; i < num_frames; i++)
+    for (unsigned int i = 0; i < num_swapchain_images; i++)
     {
         // Create resources associated with swapchain images
         auto &image = imageviewfbs[i];
@@ -216,8 +214,9 @@ bool Swapchain::begin_frame()
         return false;
     }
 
-    device.resetFences(frame.fence.get());
     current_swapchain_image = result_value.value;
+
+    device.resetFences(frame.fence.get());
 
     vk::CommandBufferBeginInfo command_buffer_begin_info(vk::CommandBufferUsageFlags{vk::CommandBufferUsageFlagBits::eOneTimeSubmit});
     frame.command_buffer->begin(command_buffer_begin_info);
@@ -225,7 +224,7 @@ bool Swapchain::begin_frame()
     return true;
 }
 
-bool Swapchain::end_frame(vk::Fence extra_fence)
+bool Swapchain::end_frame()
 {
     auto &frame = frames[current_frame];
     frame.command_buffer->end();
@@ -237,8 +236,6 @@ bool Swapchain::end_frame(vk::Fence extra_fence)
         frame.command_buffer.get(),
         frame.complete.get());
 
-    if (extra_fence)
-        queue.submit(submit_info, extra_fence);
     queue.submit(submit_info, frame.fence.get());
 
     auto present_info = vk::PresentInfoKHR{}
@@ -248,7 +245,7 @@ bool Swapchain::end_frame(vk::Fence extra_fence)
 
     auto result = queue.presentKHR(present_info);
 
-    current_frame = (current_frame + 1) % num_frames;
+    current_frame = (current_frame + 1) % max_latency;
 
     if (result != vk::Result::eSuccess)
         return false;
@@ -308,7 +305,7 @@ vk::RenderPass &Swapchain::get_render_pass()
 
 unsigned int Swapchain::get_num_frames()
 {
-    return num_frames;
+    return max_latency;
 }
 
 } // namespace Vulkan

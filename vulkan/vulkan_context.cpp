@@ -76,7 +76,7 @@ bool Context::init_wayland(wl_display *dpy, wl_surface *parent, int initial_widt
     init_command_pool();
     init_descriptor_pool();
     create_swapchain(initial_width, initial_height);
-    device.waitIdle();
+    wait_idle();
     return true;
 }
 #endif
@@ -90,9 +90,7 @@ bool Context::init(int preferred_device)
     init_descriptor_pool();
 
     create_swapchain();
-
-    device.waitIdle();
-
+    wait_idle();
     return true;
 }
 

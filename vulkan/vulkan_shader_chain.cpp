@@ -239,14 +239,14 @@ bool ShaderChain::load_shader_preset(std::string filename)
     std::array<vk::DescriptorPoolSize, 2> descriptor_pool_sizes;
     descriptor_pool_sizes[0]
         .setType(vk::DescriptorType::eUniformBuffer)
-        .setDescriptorCount(num_ubos * context->swapchain->get_num_frames());
+        .setDescriptorCount(num_ubos * queue_size);
     descriptor_pool_sizes[1]
         .setType(vk::DescriptorType::eCombinedImageSampler)
-        .setDescriptorCount(num_samplers * context->swapchain->get_num_frames());
+        .setDescriptorCount(num_samplers * queue_size);
 
     auto descriptor_pool_create_info = vk::DescriptorPoolCreateInfo{}
         .setPoolSizes(descriptor_pool_sizes)
-        .setMaxSets(pipelines.size() * context->swapchain->get_num_frames())
+        .setMaxSets(pipelines.size() * queue_size)
         .setFlags(vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet);
 
     descriptor_pool = context->device.createDescriptorPoolUnique(descriptor_pool_create_info);
@@ -276,6 +276,8 @@ bool ShaderChain::load_shader_preset(std::string filename)
     context->allocator.flushAllocation(vertex_buffer_allocation, 0, sizeof(vertex_data));
 
     frame_count = 0;
+    current_frame_index = 0;
+    last_frame_index = 2;
 
     return true;
 }
@@ -393,7 +395,6 @@ void ShaderChain::do_frame(uint8_t *data, int width, int height, int stride, vk:
 
     auto cmd = context->swapchain->get_cmd();
 
-    current_frame_index = context->swapchain->get_current_frame();
     update_and_propagate_sizes(width, height, viewport_width, viewport_height);
 
     update_framebuffers(cmd, current_frame_index);
@@ -508,6 +509,7 @@ void ShaderChain::do_frame(uint8_t *data, int width, int height, int stride, vk:
     context->swapchain->end_frame();
 
     last_frame_index = current_frame_index;
+    current_frame_index = (current_frame_index + 1) % queue_size;
     frame_count++;
 }
 
