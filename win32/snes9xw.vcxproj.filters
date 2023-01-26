@@ -43,6 +43,9 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{31758447-7e76-4af0-8561-a377194049e1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="fmtlib">
+      <UniqueIdentifier>{07a3a904-2263-4912-80ea-c31a0e4c78c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\statemanager.h">
@@ -287,6 +290,9 @@
     </ClInclude>
     <ClInclude Include="CSaveLoadWithPreviewDlg.h">
       <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fscompat.h">
+      <Filter>Emu</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -628,6 +634,12 @@
     </ClCompile>
     <ClCompile Include="CSaveLoadWithPreviewDlg.cpp">
       <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\external\fmt\src\format.cc">
+      <Filter>fmtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fscompat.cpp">
+      <Filter>Emu</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

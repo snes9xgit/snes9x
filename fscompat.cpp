@@ -61,17 +61,17 @@ SplitPath splitpath(string str)
     fs::path path(str);
 
     if (path.has_root_name())
-        output.drive = path.root_name();
+        output.drive = path.root_name().string();
 
     if (path.has_filename())
     {
-        output.stem = path.stem();
-        output.ext  = path.extension();
+        output.stem = path.stem().string();
+        output.ext  = path.extension().string();
         path.remove_filename();
     }
 
     if (!path.empty())
-        output.dir = path;
+        output.dir = path.string();
 
     return output;
 }

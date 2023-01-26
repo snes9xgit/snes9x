@@ -745,7 +745,7 @@ void S9xBSXSetStream1 (uint8 count)
 	path += name;
 
 	BSX.sat_stream1.clear();
-	BSX.sat_stream1.open(path, std::ios::in | std::ios::binary);
+	BSX.sat_stream1.open(path.c_str(), std::ios::in | std::ios::binary);
 	if (BSX.sat_stream1.good())
 	{
 		BSX.sat_stream1.seekg(0, BSX.sat_stream1.end);
@@ -776,7 +776,7 @@ void S9xBSXSetStream2 (uint8 count)
 	path += name;
 
 	BSX.sat_stream2.clear();
-	BSX.sat_stream2.open(path, std::ios::in | std::ios::binary);
+	BSX.sat_stream2.open(path.c_str(), std::ios::in | std::ios::binary);
 	if (BSX.sat_stream2.good())
 	{
 		BSX.sat_stream2.seekg(0, BSX.sat_stream2.end);

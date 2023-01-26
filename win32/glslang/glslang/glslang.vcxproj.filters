@@ -31,6 +31,7 @@
     <ClCompile Include="..\..\..\external\glslang\glslang\GenericCodeGen\CodeGen.cpp" />
     <ClCompile Include="..\..\..\external\glslang\glslang\GenericCodeGen\Link.cpp" />
     <ClCompile Include="..\..\..\external\glslang\StandAlone\ResourceLimits.cpp" />
+    <ClCompile Include="..\..\..\external\glslang\glslang\MachineIndependent\SpirvIntrinsics.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\external\glslang\glslang\Public\ShaderLang.h" />

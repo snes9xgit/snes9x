@@ -74,12 +74,12 @@ namespace std {
 class u8nifstream: public std::ifstream
 {
 public:
-	void __CLR_OR_THIS_CALL open(const char *_Filename, ios_base::open_mode _Mode)
+	void __CLR_OR_THIS_CALL open(const char *_Filename, ios_base::openmode _Mode)
 		{
 			std::ifstream::open(Utf8ToWide(_Filename), (ios_base::openmode)_Mode);
 		}
 
-	void __CLR_OR_THIS_CALL open(const wchar_t *_Filename, ios_base::open_mode _Mode)
+	void __CLR_OR_THIS_CALL open(const wchar_t *_Filename, ios_base::openmode _Mode)
 		{
 			std::ifstream::open(_Filename, (ios_base::openmode)_Mode);
 		}

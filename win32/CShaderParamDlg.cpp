@@ -208,7 +208,7 @@ void CShaderParamDlg::createContent(HWND hDlg)
     for(int i = 0; i < shader.param.size(); i++) {
         GLSLParam &p = shader.param[i];
         TCHAR desc[270];
-        _stprintf(desc, TEXT("%s [%g-%g]"), (TCHAR*)_tFromChar(p.name), p.min, p.max);
+        _stprintf(desc, TEXT("%s [%g-%g]"), (TCHAR*)_tFromChar(p.name.c_str()), p.min, p.max);
         HWND item = CreateWindow(TEXT("STATIC"), desc, SS_LEFTNOWORDWRAP | WS_VISIBLE | WS_CHILD, desc_left, (INT)(top + avgCharHeight * 0.3), desc_width, avgCharHeight, parent, (HMENU)(UINT_PTR)(IDC_PARAMS_START_STATIC + i), GUI.hInstance, NULL);
         SendMessage(item, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(FALSE, 0));
         TCHAR val[100];

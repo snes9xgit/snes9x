@@ -255,8 +255,8 @@ struct SSettings
 	bool8	BilinearFilter;
 
 	bool8	Multi;
-	char	CartAName[4097];
-	char	CartBName[4097];
+	char	CartAName[PATH_MAX + 1];
+	char	CartBName[PATH_MAX + 1];
 
 	bool8	DisableGameSpecificHacks;
 	bool8	BlockInvalidVRAMAccessMaster;

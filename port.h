@@ -114,6 +114,16 @@ typedef size_t				pint;
 #define START_EXTERN_C	extern "C" {
 #define END_EXTERN_C	}
 
+#ifndef __WIN32__
+#ifndef PATH_MAX
+#define PATH_MAX        1024
+#endif
+#else
+#ifndef PATH_MAX
+#define PATH_MAX        _MAX_PATH
+#endif
+#endif
+
 #include "fscompat.h"
 
 #ifndef __WIN32__

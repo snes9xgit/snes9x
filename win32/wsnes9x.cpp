@@ -704,7 +704,7 @@ void S9xRestoreWindowTitle ()
     if (Memory.ROMFilename[0])
     {
         char def[_MAX_FNAME];
-        _splitpath(Memory.ROMFilename, NULL, NULL, def, NULL);
+        _splitpath(Memory.ROMFilename.c_str(), NULL, NULL, def, NULL);
         _stprintf(buf, TEXT("%s - %s %s"), (wchar_t *)Utf8ToWide(def), WINDOW_TITLE, TEXT(VERSION));
     }
     else
@@ -1439,10 +1439,10 @@ bool WinMoviePlay(LPCTSTR filename)
 		return false;
 	}
 
-	while (info.ROMCRC32 != Memory.ROMCRC32 || strcmp(info.ROMName, Memory.RawROMName) != 0) {
+	while (info.ROMCRC32 != Memory.ROMCRC32) {
 		TCHAR temp[512];
-		wsprintf(temp, TEXT("Movie's ROM: crc32=%08X, name=%s\nCurrent ROM: crc32=%08X, name=%s\n\nstill want to play the movie?"),
-			info.ROMCRC32, _tFromMS932(info.ROMName), Memory.ROMCRC32, _tFromMS932(Memory.RawROMName));
+		wsprintf(temp, TEXT("Movie's ROM: crc32=%08X, name=%s\nCurrent ROM: crc32=%08X\n\nstill want to play the movie?"),
+			info.ROMCRC32, _tFromMS932(info.ROMName), Memory.ROMCRC32);
 		int sel = MessageBox(GUI.hWnd, temp, SNES9X_INFO, MB_ABORTRETRYIGNORE|MB_ICONQUESTION);
 		switch (sel) {
 		case IDABORT:
@@ -2137,18 +2137,18 @@ LRESULT CALLBACK WinProc(
 			S9xMessage(S9X_INFO, 0, INFO_SAVE_SPC);
 			break;
 		case ID_FILE_SAVE_SRAM_DATA: {
-			bool8 success = Memory.SaveSRAM (S9xGetFilename (".srm", SRAM_DIR));
+			bool8 success = Memory.SaveSRAM (S9xGetFilename (".srm", SRAM_DIR).c_str());
 			if(!success)
 				S9xMessage(S9X_ERROR, S9X_FREEZE_FILE_INFO, SRM_SAVE_FAILED);
 		}	break;
 		case ID_SAVEMEMPACK: {
-			const char *filename = S9xGetFilenameInc(".bs", SRAM_DIR);
-			bool8 success = Memory.SaveMPAK(filename);
+			std::string filename = S9xGetFilenameInc(".bs", SRAM_DIR);
+			bool8 success = Memory.SaveMPAK(filename.c_str());
 			if (!success)
 				S9xMessage(S9X_ERROR, 0, MPAK_SAVE_FAILED);
 			else
 			{
-				sprintf(String, "Saved Memory Pack %s", filename);
+				sprintf(String, "Saved Memory Pack %s", filename.c_str());
 				S9xMessage(S9X_INFO, 0, String);
 			}
 		}	break;
@@ -2229,8 +2229,8 @@ LRESULT CALLBACK WinProc(
 				S9xCheatsEnable ();
 				bool on = false;
 				extern struct SCheatData Cheat;
-				for (uint32 i = 0; i < Cheat.g.size() && !on; i++)
-					if (Cheat.g [i].enabled)
+				for (uint32 i = 0; i < Cheat.group.size() && !on; i++)
+					if (Cheat.group[i].enabled)
 						on = true;
 				S9xMessage (S9X_INFO, S9X_GAME_GENIE_CODE_ERROR, on ? CHEATS_INFO_ENABLED : CHEATS_INFO_ENABLED_NONE);
 			}
@@ -2330,7 +2330,7 @@ LRESULT CALLBACK WinProc(
 		break;
 
 	case WM_DESTROY:
-		Memory.SaveSRAM(S9xGetFilename(".srm", SRAM_DIR));
+		Memory.SaveSRAM(S9xGetFilename(".srm", SRAM_DIR).c_str());
 		GUI.hWnd = NULL;
 		PostQuitMessage (0);
 		return (0);
@@ -3596,8 +3596,8 @@ loop_exit:
 
     if (!Settings.StopEmulation)
     {
-        Memory.SaveSRAM (S9xGetFilename (".srm", SRAM_DIR));
-        S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
+        Memory.SaveSRAM (S9xGetFilename (".srm", SRAM_DIR).c_str());
+        S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR).c_str());
     }
     //if (!VOODOO_MODE && !GUI.FullScreen)
     //    GetWindowRect (GUI.hWnd, &GUI.window_size);
@@ -3681,7 +3681,7 @@ void GetSlotFilename(int slot, char filename[_MAX_PATH + 1])
         strcpy(ext, ".oops");
     else
         snprintf(ext, _MAX_EXT, ".%03d", slot);
-    strcpy(filename, S9xGetFilename(ext, SNAPSHOT_DIR));
+    strcpy(filename, S9xGetFilename(ext, SNAPSHOT_DIR).c_str());
 }
 
 void FreezeUnfreezeSlot(int slot, bool8 freeze)
@@ -4087,8 +4087,8 @@ static bool LoadROM(const TCHAR *filename, const TCHAR *filename2 /*= NULL*/) {
 #endif
 
 	if (!Settings.StopEmulation) {
-		Memory.SaveSRAM (S9xGetFilename (".srm", SRAM_DIR));
-		S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
+		Memory.SaveSRAM (S9xGetFilename (".srm", SRAM_DIR).c_str());
+		S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR).c_str());
 	}
 
 	if(filename2)
@@ -4097,12 +4097,12 @@ static bool LoadROM(const TCHAR *filename, const TCHAR *filename2 /*= NULL*/) {
 		Settings.StopEmulation = !LoadROMPlain(filename);
 
 	if (!Settings.StopEmulation) {
-		bool8 loadedSRAM = Memory.LoadSRAM (S9xGetFilename (".srm", SRAM_DIR));
+		bool8 loadedSRAM = Memory.LoadSRAM (S9xGetFilename (".srm", SRAM_DIR).c_str());
 		if(!loadedSRAM) // help migration from earlier Snes9x versions by checking ROM directory for savestates
-			Memory.LoadSRAM (S9xGetFilename (".srm", ROMFILENAME_DIR));
+			Memory.LoadSRAM (S9xGetFilename (".srm", ROMFILENAME_DIR).c_str());
 		if(!filename2) // no recent for multi cart
 			S9xAddToRecentGames (filename);
-		CheckDirectoryIsWritable (S9xGetFilename (".---", SNAPSHOT_DIR));
+		CheckDirectoryIsWritable (S9xGetFilename (".---", SNAPSHOT_DIR).c_str());
 
 #ifdef NETPLAY_SUPPORT
 		if (NPServer.SendROMImageOnConnect)
@@ -4335,7 +4335,7 @@ void S9xSetRecentGames ()
 				// append the game title to name, with formatting modifications as necessary
 				{
 					TCHAR baseName [256];
-					lstrcpy (baseName, _tFromChar(S9xBasename (_tToChar(GUI.RecentGames [i]))));
+					lstrcpy (baseName, _tFromChar(S9xBasename (std::string(_tToChar(GUI.RecentGames [i]))).c_str()));
 					int pos = lstrlen (name), baseNameLen = lstrlen (baseName);
 					for (int j = 0; j < baseNameLen ; j++)
 					{
@@ -4771,7 +4771,7 @@ INT_PTR CALLBACK DlgInfoProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		{
 			char temp[100];
 			char romtext[4096];
-			sprintf(romtext, "File: %s\r\nName: %s\r\n", Memory.ROMFilename, Memory.RawROMName);
+			sprintf(romtext, "File: %s\r\n", Memory.ROMFilename);
 			sprintf(temp, "Speed: %02X/%s\r\nROM Map: %s\r\nType: %02x\r\n", Memory.ROMSpeed, ((Memory.ROMSpeed&0x10)!=0)?"FastROM":"SlowROM",(Memory.HiROM)?"HiROM":"LoROM",Memory.ROMType);
 			strcat(romtext, temp);
 			strcat(romtext, "Kart contents: ");
@@ -6453,7 +6453,7 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 						memset(&lvfi, 0, sizeof(LVFINDINFO));
 						TCHAR filename[_MAX_PATH];
 						TCHAR *tmp, *tmp2;
-						lstrcpy(filename,_tFromChar(Memory.ROMFilename));
+						lstrcpy(filename,_tFromChar(Memory.ROMFilename.c_str()));
 						tmp = filename;
 						while(tmp2=_tcsstr(tmp, TEXT("\\")))
 							tmp=tmp2+sizeof(TCHAR);
@@ -7759,7 +7759,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			GUI.filterMessagFont = (bool)(IsDlgButtonChecked(hDlg, IDC_MESSAGES_SCALE) == BST_CHECKED);
 			if(Settings.AutoDisplayMessages)
 			{
-				if(!GFX.InfoString || !*GFX.InfoString){
+				if(GFX.InfoString.empty()) {
 					GFX.InfoString = "Test message!";
 					GFX.InfoStringTimeout = 1;
 				}
@@ -8796,15 +8796,14 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 			ListView_InsertColumn(GetDlgItem(hDlg,IDC_CHEAT_LIST),    1,   &col);
 
-			ct.state.resize(Cheat.g.size());
+			ct.state.resize(Cheat.group.size());
 
-			for(uint32 counter =0; counter < Cheat.g.size(); counter++)
+			for(uint32 counter =0; counter < Cheat.group.size(); counter++)
 			{
-				char *code_string;
+				std::string code_string;
 				int curr_idx = -1;
 				code_string = S9xCheatGroupToText(counter);
-				Utf8ToWide wstring(code_string);
-				delete[] code_string;
+				Utf8ToWide wstring(code_string.c_str());
 
 				LVITEM lvi;
 				memset(&lvi, 0, sizeof(LVITEM));
@@ -8817,7 +8816,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 				ct.state[counter] = Untouched;
 
-				Utf8ToWide wstring_name(Cheat.g[counter].name);
+				Utf8ToWide wstring_name(Cheat.group[counter].name.c_str());
 				memset(&lvi, 0, sizeof(LVITEM));
 				lvi.iItem = curr_idx;
 				lvi.iSubItem = 1;
@@ -8826,7 +8825,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				lvi.pszText = wstring_name;
 				SendDlgItemMessage(hDlg,IDC_CHEAT_LIST, LVM_SETITEM, 0, (LPARAM)&lvi);
 
-				ListView_SetCheckState(GetDlgItem(hDlg,IDC_CHEAT_LIST), curr_idx, Cheat.g[counter].enabled);
+				ListView_SetCheckState(GetDlgItem(hDlg,IDC_CHEAT_LIST), curr_idx, Cheat.group[counter].enabled);
 
 			}
 		return true;
@@ -8910,12 +8909,11 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					GetDlgItemTextA(hDlg, IDC_CHEAT_CODE, temp, CHEAT_SIZE);
 					GetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, tempDesc, CHEAT_SIZE);
 
-					char *valid_cheat = S9xCheatValidate (temp);
+					std::string valid_cheat = S9xCheatValidate(temp);
 
-					if(valid_cheat)
+					if(!valid_cheat.empty())
 					{
-						Utf8ToWide wstring(valid_cheat);
-						delete[] valid_cheat;
+						Utf8ToWide wstring(valid_cheat.c_str());
 
 						int curr_idx = -1;
 
@@ -8951,12 +8949,10 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					char code[CHEAT_SIZE];
 					GetDlgItemTextA(hDlg, IDC_CHEAT_CODE, code, CHEAT_SIZE);
 
-					char *valid_cheat = S9xCheatValidate(code);
+					std::string valid_cheat = S9xCheatValidate(code);
 
-					if(valid_cheat)
+					if(!valid_cheat.empty())
 					{
-						delete[] valid_cheat;
-
 						Utf8ToWide wstring(code);
 
 						LVITEM lvi;
@@ -9021,7 +9017,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					break;
 				}
 				ListView_DeleteAllItems(GetDlgItem(hDlg, IDC_CHEAT_LIST));
-				for (unsigned int j = 0; j < Cheat.g.size(); j++)
+				for (unsigned int j = 0; j < Cheat.group.size(); j++)
 				{
 					ct.state[j] = Deleted;
 				}
@@ -9062,7 +9058,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 						char *valid_cheat = NULL;
 						GetDlgItemTextA(hDlg, IDC_CHEAT_CODE, temp, CHEAT_SIZE);
 
-						if (temp && temp[0] && (valid_cheat = S9xCheatValidate(temp)))
+						if (temp && temp[0] && (!S9xCheatValidate(temp).empty()))
 						{
 							if (has_sel)
 								EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), true);
@@ -9122,7 +9118,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 								WideToUtf8 code(wcode);
 								WideToUtf8 description(wdescription);
 
-								S9xModifyCheatGroup(internal_index, description, code);
+								S9xModifyCheatGroup(internal_index, std::string(description), std::string(code));
 							}
 
 							// set core state according to checkbox
@@ -9155,7 +9151,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 							WideToUtf8 code(wcode);
 							WideToUtf8 description(wdescription);
 
-							int index = S9xAddCheatGroup(description, code);
+							int index = S9xAddCheatGroup(std::string(description), std::string(code));
 
 							if (index >= 0)
 								if (ListView_GetCheckState(GetDlgItem(hDlg, IDC_CHEAT_LIST), k))
@@ -10572,7 +10568,7 @@ INT_PTR CALLBACK DlgOpenMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				TCHAR dir [_MAX_DIR + 1];
 				TCHAR fname [_MAX_FNAME + 1];
 				TCHAR ext [_MAX_EXT + 1];
-				_tsplitpath (_tFromChar(Memory.ROMFilename), drive, dir, fname, ext);
+				_tsplitpath (_tFromChar(Memory.ROMFilename.c_str()), drive, dir, fname, ext);
 				_tmakepath (filename, TEXT(""), TEXT(""), fname, TEXT("smv"));
 				SetWindowText(GetDlgItem(hDlg, IDC_MOVIE_PATH), filename);
 				set_movieinfo(filename, hDlg);
@@ -10669,7 +10665,7 @@ INT_PTR CALLBACK DlgOpenMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 // checks if the currently loaded ROM has an SRAM file in the saves directory that we have write access to
 static bool existsSRAM ()
 {
-  return(!access(S9xGetFilename(".srm", SRAM_DIR), R_OK|W_OK));
+  return(!access(S9xGetFilename(".srm", SRAM_DIR).c_str(), R_OK | W_OK));
 }
 
 INT_PTR CALLBACK DlgCreateMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -10689,7 +10685,7 @@ INT_PTR CALLBACK DlgCreateMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 
 			// have to save here or the SRAM file might not exist when we check for it
 			// (which would cause clear SRAM option to not work)
-			Memory.SaveSRAM(S9xGetFilename (".srm", SRAM_DIR));
+			Memory.SaveSRAM(S9xGetFilename (".srm", SRAM_DIR).c_str());
 
 
 			op=(OpenMovieParams*)lParam;
@@ -10711,7 +10707,7 @@ INT_PTR CALLBACK DlgCreateMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 				TCHAR dir [_MAX_DIR + 1];
 				TCHAR fname [_MAX_FNAME + 1];
 				TCHAR ext [_MAX_EXT + 1];
-				_tsplitpath (_tFromChar(Memory.ROMFilename), drive, dir, fname, ext);
+				_tsplitpath (_tFromChar(Memory.ROMFilename.c_str()), drive, dir, fname, ext);
 				_tmakepath (filename, TEXT(""), TEXT(""), fname, TEXT("smv"));
 				SetWindowText(GetDlgItem(hDlg, IDC_MOVIE_PATH), filename);
 			}
@@ -10799,9 +10795,9 @@ INT_PTR CALLBACK DlgCreateMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 					if(IsDlgButtonChecked(hDlg, IDC_CLEARSRAM) && IsDlgButtonChecked(hDlg, IDC_RECORD_RESET) && existsSRAM())
 					{
 						GUI.MovieClearSRAM = TRUE;
-						remove(S9xGetFilename (".srm", SRAM_DIR)); // delete SRAM if it exists (maybe unnecessary?)
-						remove(S9xGetFilename (".srm", ROMFILENAME_DIR));
-						Memory.LoadSRAM(S9xGetFilename (".srm", SRAM_DIR)); // refresh memory (hard reset)
+						remove(S9xGetFilename (".srm", SRAM_DIR).c_str()); // delete SRAM if it exists (maybe unnecessary?)
+						remove(S9xGetFilename (".srm", ROMFILENAME_DIR).c_str());
+						Memory.LoadSRAM(S9xGetFilename (".srm", SRAM_DIR).c_str()); // refresh memory (hard reset)
 					}
 					else if(!IsDlgButtonChecked(hDlg, IDC_CLEARSRAM) && IsDlgButtonChecked(hDlg, IDC_RECORD_RESET) && existsSRAM())
 					{
@@ -10955,9 +10951,9 @@ void S9xPostRomInit()
 	{
 		S9xCheatsEnable();
 		extern struct SCheatData Cheat;
-	    for (uint32 i = 0; i < Cheat.g.size(); i++)
+	    for (uint32 i = 0; i < Cheat.group.size(); i++)
 		{
-	        if (Cheat.g [i].enabled)
+	        if (Cheat.group[i].enabled)
 			{
 				char String2 [1024];
 				sprintf(String2, "(CHEATS ARE ON!) %s", String);
