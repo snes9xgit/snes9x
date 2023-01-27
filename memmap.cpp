@@ -2822,7 +2822,8 @@ void CMemory::map_LoROMSRAM (void)
             hi = 0xffff;
 
 	map_index(0x70, 0x7d, 0x0000, hi, MAP_LOROM_SRAM, MAP_TYPE_RAM);
-	map_index(0xf0, 0xff, 0x0000, hi, MAP_LOROM_SRAM, MAP_TYPE_RAM);
+	if (SRAMSize > 0)
+            map_index(0xf0, 0xff, 0x0000, hi, MAP_LOROM_SRAM, MAP_TYPE_RAM);
 }
 
 void CMemory::map_HiROMSRAM (void)
