@@ -1,7 +1,6 @@
 #pragma once
 
 #include "slang_shader.hpp"
-#include "vulkan/vulkan_core.h"
 
 #include <string>
 #include <vector>

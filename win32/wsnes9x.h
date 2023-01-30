@@ -109,7 +109,8 @@ enum RenderFilter{
 enum OutputMethod {
 	DIRECTDRAW = 0,
 	DIRECT3D,
-	OPENGL
+	OPENGL,
+	VULKAN
 };
 
 struct dMode

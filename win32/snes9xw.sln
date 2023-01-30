@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "snes9x", "snes9xw.vcxproj", "{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}"
 EndProject
@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\.gitignore = ..\.gitignore
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "glsang", "glsang", "{188A2A44-C7BB-420C-93D8-2CE3458925D4}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "glslang", "glslang", "{188A2A44-C7BB-420C-93D8-2CE3458925D4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "glslang", "glslang", "{031A55FD-212F-30BB-9E23-93274E16EC78}"
 EndProject

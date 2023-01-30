@@ -4,6 +4,7 @@
 #include <vector>
 #include <filesystem>
 #include <cmath>
+#include <cctype>
 
 using std::string;
 using std::string_view;

@@ -50,6 +50,22 @@ static vk::UniqueInstance create_instance_preamble(const char *wsi_extension)
     return instance;
 }
 
+#ifdef VK_USE_PLATFORM_WIN32_KHR
+bool Context::init_win32(HINSTANCE hinstance, HWND hwnd, int preferred_device)
+{
+    if (instance)
+        return false;
+    instance = create_instance_preamble(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+    auto win32_surface_create_info = vk::Win32SurfaceCreateInfoKHR{}
+        .setHinstance(hinstance)
+        .setHwnd(hwnd);
+    surface = instance->createWin32SurfaceKHRUnique(win32_surface_create_info);
+    if (!surface)
+        return false;
+    return init(preferred_device);
+}
+#endif
+
 #ifdef VK_USE_PLATFORM_XLIB_KHR
 bool Context::init_Xlib(Display *dpy, Window xid, int preferred_device)
 {
@@ -126,7 +142,7 @@ bool Context::init_device(int preferred_device)
         {
             auto ep = d.enumerateDeviceExtensionProperties();
             auto exists = std::find_if(ep.begin(), ep.end(), [](vk::ExtensionProperties &ext) {
-                return (std::string(ext.extensionName) == VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+                return (std::string(ext.extensionName.data()) == VK_KHR_SWAPCHAIN_EXTENSION_NAME);
             });
 
             if (exists != ep.end())

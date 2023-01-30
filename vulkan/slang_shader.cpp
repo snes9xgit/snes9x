@@ -30,7 +30,7 @@ SlangShader::~SlangShader()
 */
 bool SlangShader::preprocess_shader_file(string filename, vector<string> &lines)
 {
-    std::ifstream stream(filename);
+    std::ifstream stream(filename.c_str(), std::ios::binary);
 
     if (stream.fail())
         return false;
@@ -203,7 +203,7 @@ std::vector<uint32_t> SlangShader::generate_spirv(std::string shader_string, std
 
     glslang::TShader shaderTShader(language);
 
-    auto compile = [&debug, &forbid_includer](glslang::TShader &shader, string &shader_string, std::vector<uint32_t> &spirv) -> bool {
+    auto compile = [&](glslang::TShader &shader, string &shader_string, std::vector<uint32_t> &spirv) -> bool {
         const char *source = shader_string.c_str();
         shader.setStrings(&source, 1);
         if (!shader.preprocess(&glslang::DefaultTBuiltInResource, 450, ENoProfile, false, false, messages, &debug, forbid_includer))
@@ -245,7 +245,7 @@ bool SlangShader::generate_spirv()
     glslang::TShader vertexTShader(EShLangVertex);
     glslang::TShader fragmentTShader(EShLangFragment);
 
-    auto compile = [&forbid_includer](glslang::TShader &shader, string &shader_string, std::vector<uint32_t> &spirv) -> bool {
+    auto compile = [&](glslang::TShader &shader, string &shader_string, std::vector<uint32_t> &spirv) -> bool {
         const char *source = shader_string.c_str();
         shader.setStrings(&source, 1);
         if (!shader.parse(&glslang::DefaultTBuiltInResource, 450, false, messages, forbid_includer))

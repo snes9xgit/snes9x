@@ -4771,7 +4771,7 @@ INT_PTR CALLBACK DlgInfoProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		{
 			char temp[100];
 			char romtext[4096];
-			sprintf(romtext, "File: %s\r\n", Memory.ROMFilename);
+			sprintf(romtext, "File: %s\r\n", Memory.ROMFilename.c_str());
 			sprintf(temp, "Speed: %02X/%s\r\nROM Map: %s\r\nType: %02x\r\n", Memory.ROMSpeed, ((Memory.ROMSpeed&0x10)!=0)?"FastROM":"SlowROM",(Memory.HiROM)?"HiROM":"LoROM",Memory.ROMType);
 			strcat(romtext, temp);
 			strcat(romtext, "Kart contents: ");
@@ -7668,7 +7668,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
             EnableWindow(GetDlgItem(hDlg, IDC_SHADER_HLSL_BROWSE), TRUE);
             EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_FILE), TRUE);
             EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_BROWSE), TRUE);
-			EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_PARAMETERS), TRUE);
+            EnableWindow(GetDlgItem(hDlg, IDC_SHADER_GLSL_PARAMETERS), TRUE);
         }
         SetDlgItemText(hDlg, IDC_SHADER_HLSL_FILE, GUI.D3DshaderFileName);
         SetDlgItemText(hDlg, IDC_SHADER_GLSL_FILE, GUI.OGLshaderFileName);
@@ -7678,17 +7678,18 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
         EnableWindow(GetDlgItem(hDlg, IDC_ASPECT), GUI.Stretch);
 
         // add output method to droplist with itemdata set to their enum value
-        int inserted_index = -1;
+        auto InsertOutputMethod = [&](LPARAM text, int value) {
+            auto inserted_index = SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_ADDSTRING, 0, text);
+            SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_SETITEMDATA, inserted_index, value);
+        };
 #if DIRECTDRAW_SUPPORT
-        inserted_index = SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_ADDSTRING, 0, (LPARAM)TEXT("DirectDraw"));
-        SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_SETITEMDATA, inserted_index, DIRECTDRAW);
+        InsertOutputMethod((LPARAM)TEXT("DirectDraw"), DIRECTDRAW);
 #endif
-        inserted_index = SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_ADDSTRING, 0, (LPARAM)TEXT("Direct3D"));
-        SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_SETITEMDATA, inserted_index, DIRECT3D);
-        inserted_index = SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_ADDSTRING, 0, (LPARAM)TEXT("OpenGL"));
-        SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_SETITEMDATA, inserted_index, OPENGL);
+        InsertOutputMethod((LPARAM)TEXT("Direct3D"), DIRECT3D);
+        InsertOutputMethod((LPARAM)TEXT("OpenGL"), OPENGL);
+        InsertOutputMethod((LPARAM)TEXT("Vulkan"), VULKAN);
 
-		SelectOutputMethodInVideoDropdown(hDlg, GUI.outputMethod);
+        SelectOutputMethodInVideoDropdown(hDlg, GUI.outputMethod);
 
         // add all the GUI.Scale filters to the combo box
         for (int filter = 0; filter < (int)NUM_FILTERS; filter++)
