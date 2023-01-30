@@ -175,10 +175,10 @@ void PipelineImage::clear(vk::CommandBuffer cmd)
         .setSubresourceRange(subresource_range)
         .setOldLayout(vk::ImageLayout::eUndefined)
         .setNewLayout(vk::ImageLayout::eTransferDstOptimal)
-        .setSrcAccessMask(vk::AccessFlagBits::eTransferWrite | vk::AccessFlagBits::eTransferRead)
+        .setSrcAccessMask(vk::AccessFlagBits::eShaderRead)
         .setDstAccessMask(vk::AccessFlagBits::eTransferWrite | vk::AccessFlagBits::eTransferRead);
 
-    cmd.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
+    cmd.pipelineBarrier(vk::PipelineStageFlagBits::eFragmentShader,
                         vk::PipelineStageFlagBits::eTransfer,
                         {}, {}, {},
                         image_memory_barrier);

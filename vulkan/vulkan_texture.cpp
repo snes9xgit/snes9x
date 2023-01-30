@@ -214,6 +214,7 @@ void Texture::from_buffer(uint8_t *buffer, int width, int height, int byte_strid
     vk::SubmitInfo si{};
     si.setCommandBuffers(cmd.get());
     queue.submit(si);
+    queue.waitIdle();
 }
 
 void Texture::create(int width, int height, vk::Format fmt, vk::SamplerAddressMode wrap_mode, bool linear, bool mipmap)

@@ -3,6 +3,7 @@
 #include "slang_helpers.hpp"
 #include "slang_preset_ini.hpp"
 
+#include <algorithm>
 #include <string>
 #include <cstdio>
 #include <vector>
@@ -10,7 +11,6 @@
 #include <iostream>
 #include <fstream>
 #include <filesystem>
-#include <unordered_map>
 #include "../external/SPIRV-Cross/spirv_cross.hpp"
 #include "../external/SPIRV-Cross/spirv_glsl.hpp"
 #include "slang_shader.hpp"
@@ -247,19 +247,19 @@ bool SlangPreset::load_preset_file(string filename)
 */
 void SlangPreset::gather_parameters()
 {
-    std::unordered_map<std::string, SlangShader::Parameter> map;
-
+    parameters.clear();
     for (auto &s : passes)
     {
         for (auto &p : s.parameters)
         {
-            map.insert({ p.id, p });
+            auto it = std::find_if(parameters.begin(), parameters.end(), [&p](SlangShader::Parameter &needle) {
+                return (needle.id == p.id);
+            });
+
+            if (it == parameters.end())
+                parameters.push_back(p);
         }
     }
-
-    parameters.clear();
-    for (auto &p : map)
-        parameters.push_back(p.second);
 }
 
 /*
