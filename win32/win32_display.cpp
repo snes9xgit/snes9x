@@ -19,6 +19,7 @@
 #include "CDirectDraw.h"
 #endif
 #include "COpenGL.h"
+#include "CVulkan.h"
 #include "IS9xDisplayOutput.h"
 
 #include "../filter/hq2x.h"
@@ -31,6 +32,7 @@ CDirect3D Direct3D;
 CDirectDraw DirectDraw;
 #endif
 COpenGL OpenGL;
+CVulkan VulkanDriver;
 SSurface Src = {0};
 extern BYTE *ScreenBufferBlend;
 
@@ -117,6 +119,9 @@ bool WinDisplayReset(void)
 #endif
 		case OPENGL:
 			S9xDisplayOutput = &OpenGL;
+			break;
+		case VULKAN:
+			S9xDisplayOutput = &VulkanDriver;
 			break;
 	}
 	if(S9xDisplayOutput->Initialize(GUI.hWnd)) {

@@ -10,7 +10,7 @@ struct Texture
 {
     Texture();
     void init(vk::Device device, vk::CommandPool command, vk::Queue queue, vma::Allocator allocator);
-    void init(Vulkan::Context *context);
+    void init(Context *context);
     ~Texture();
 
     void create(int width, int height, vk::Format fmt, vk::SamplerAddressMode wrap_mode, bool linear, bool mipmap);
