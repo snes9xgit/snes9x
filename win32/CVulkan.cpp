@@ -22,6 +22,16 @@ bool CVulkan::Initialize(HWND hWnd)
     swapchain = context->swapchain.get();
     device = context->device;
 
+    if (GUI.shaderEnabled && GUI.OGLshaderFileName)
+    {
+        shaderchain = std::make_unique<Vulkan::ShaderChain>(context.get());
+        if (!shaderchain->load_shader_preset(std::string(_tToChar(GUI.OGLshaderFileName))))
+        {
+            return false;
+        }
+        return true;
+    }
+
     create_pipeline();
 
     descriptors.clear();
@@ -72,6 +82,7 @@ void CVulkan::DeInitialize()
         return;
 
     context->wait_idle();
+    shaderchain.reset();
     textures.clear();
     descriptors.clear();
     device.destroySampler(linear_sampler);
@@ -116,6 +127,12 @@ void CVulkan::Render(SSurface Src)
     GetClientRect(hWnd, &windowSize);
     //Get maximum rect respecting AR setting
     displayRect = CalculateDisplayRect(Dst.Width, Dst.Height, windowSize.right, windowSize.bottom);
+
+    if (shaderchain)
+    {
+        shaderchain->do_frame(Dst.Surface, Dst.Width, Dst.Height, Dst.Pitch, vk::Format::eR5G6B5UnormPack16, displayRect.left, displayRect.top, displayRect.right - displayRect.left, displayRect.bottom - displayRect.top);
+        return;
+    }
 
     if (!swapchain->begin_frame())
         return;
