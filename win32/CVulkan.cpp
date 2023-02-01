@@ -25,10 +25,13 @@ bool CVulkan::Initialize(HWND hWnd)
     if (GUI.shaderEnabled && GUI.OGLshaderFileName)
     {
         shaderchain = std::make_unique<Vulkan::ShaderChain>(context.get());
-        if (!shaderchain->load_shader_preset(std::string(_tToChar(GUI.OGLshaderFileName))))
+        std::string shaderstring = _tToChar(GUI.OGLshaderFileName);
+        if (!shaderchain->load_shader_preset(shaderstring))
         {
             return false;
         }
+
+        current_shadername = shaderstring;
         return true;
     }
 
@@ -81,12 +84,21 @@ void CVulkan::DeInitialize()
     if (!context)
         return;
 
+    current_shadername = "";
     context->wait_idle();
     shaderchain.reset();
     textures.clear();
     descriptors.clear();
-    device.destroySampler(linear_sampler);
-    device.destroySampler(nearest_sampler);
+    if (linear_sampler)
+    {
+        device.destroySampler(linear_sampler);
+        linear_sampler = nullptr;
+    }
+    if (nearest_sampler)
+    {
+        device.destroySampler(nearest_sampler);
+        nearest_sampler = nullptr;
+    }
     swapchain = nullptr;
     descriptor_set_layout.reset();
     pipeline_layout.reset();
@@ -105,7 +117,7 @@ void CVulkan::Render(SSurface Src)
     if (GUI.ReduceInputLag)
         device.waitIdle();
 
-    SSurface Dst;
+    SSurface Dst{};
 
     RECT dstRect = GetFilterOutputSize(Src);
     Dst.Width = dstRect.right - dstRect.left;
@@ -191,7 +203,34 @@ bool CVulkan::ChangeRenderSize(unsigned int newWidth, unsigned int newHeight)
 
 bool CVulkan::ApplyDisplayChanges(void)
 {
-    return false;
+    if ((!GUI.shaderEnabled && shaderchain) || (GUI.shaderEnabled && !shaderchain))
+    {
+        DeInitialize();
+        Initialize(hWnd);
+        return true;
+    }
+
+    std::string shadername = std::string(_tToChar(GUI.OGLshaderFileName));
+    if (GUI.shaderEnabled && shaderchain && (shadername != current_shadername))
+    {
+        shaderchain.reset();
+        shaderchain = std::make_unique<Vulkan::ShaderChain>(context.get());
+        if (!shaderchain->load_shader_preset(shadername))
+        {
+            DeInitialize();
+            GUI.shaderEnabled = false;
+            Initialize(hWnd);
+            return false;
+        }
+        current_shadername = shadername;
+    }
+
+    if (swapchain->set_vsync(GUI.Vsync))
+    {
+        swapchain->recreate();
+    }
+
+    return true;
 }
 
 bool CVulkan::SetFullscreen(bool fullscreen)
@@ -240,6 +279,24 @@ void CVulkan::EnumModes(std::vector<dMode>* modeVector)
         }
         dev++;
     }
+}
+
+std::vector<SlangShader::Parameter> *CVulkan::GetShaderParameters()
+{
+    if (shaderchain)
+    {
+        return &shaderchain->preset->parameters;
+    }
+    else
+        return nullptr;
+}
+
+std::function<void(const char *)> CVulkan::GetShaderParametersSaveFunction()
+{
+    return [&](const char *filename) {
+        if (shaderchain)
+            shaderchain->preset->save_to_file(filename);
+    };
 }
 
 static const char* vertex_shader = R"(

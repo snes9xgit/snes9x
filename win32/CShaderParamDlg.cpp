@@ -117,7 +117,9 @@ INT_PTR CALLBACK CShaderParamDlg::WndProcContainerStatic(HWND hStatic, UINT msg,
 	return dlg->oldStaticProc(hStatic, msg, wParam, lParam);
 }
 
-CShaderParamDlg::CShaderParamDlg(GLSLShader &glsl_shader): shader(glsl_shader)
+CShaderParamDlg::CShaderParamDlg(std::vector<GLSLParam>& parameters_, std::function<void (const char *)> save_function_)
+    : parameters(parameters_),
+      save_function(save_function_)
 {
     HDC hIC;
     TEXTMETRIC tm;
@@ -170,7 +172,7 @@ CShaderParamDlg::~CShaderParamDlg()
 
 bool CShaderParamDlg::show()
 {
-	saved_parameters = shader.param;
+	saved_parameters = parameters;
 
     if(DialogBoxParam(GUI.hInstance, MAKEINTRESOURCE(IDD_DIALOG_SHADER_PARAMS), GUI.hWnd, DlgShaderParams, (LPARAM)this) == IDOK)
     {
@@ -178,7 +180,7 @@ bool CShaderParamDlg::show()
         return true;
     }
 
-	shader.param = saved_parameters;
+	parameters = saved_parameters;
 	WinRefreshDisplay();
     return false;
 }
@@ -205,8 +207,8 @@ void CShaderParamDlg::createContent(HWND hDlg)
 	unsigned int edit_width = clientRect.right - clientRect.left - edit_left - HORIZONTAL_MARGIN;
 	unsigned int top = VERTICAL_MARGIN;
 
-    for(int i = 0; i < shader.param.size(); i++) {
-        GLSLParam &p = shader.param[i];
+    for(int i = 0; i < parameters.size(); i++) {
+        GLSLParam &p = parameters[i];
         TCHAR desc[270];
         _stprintf(desc, TEXT("%s [%g-%g]"), (TCHAR*)_tFromChar(p.name.c_str()), p.min, p.max);
         HWND item = CreateWindow(TEXT("STATIC"), desc, SS_LEFTNOWORDWRAP | WS_VISIBLE | WS_CHILD, desc_left, (INT)(top + avgCharHeight * 0.3), desc_width, avgCharHeight, parent, (HMENU)(UINT_PTR)(IDC_PARAMS_START_STATIC + i), GUI.hInstance, NULL);
@@ -240,7 +242,7 @@ void CShaderParamDlg::handle_up_down(HWND hStatic, int id, int change)
 {
 	int param_id = id - IDC_PARAMS_START_UPDOWN;
 	HWND hEdit = GetDlgItem(hStatic, IDC_PARAMS_START_EDIT + param_id);
-	GLSLParam &p = shader.param[param_id];
+	GLSLParam &p = parameters[param_id];
 	TCHAR val[100];
 	GetWindowText(hEdit, val, 100);
 	p.val = _ttof(val);
@@ -256,8 +258,8 @@ void CShaderParamDlg::handle_up_down(HWND hStatic, int id, int change)
 void CShaderParamDlg::get_changed_parameters(HWND hDlg)
 {
     HWND parent = GetDlgItem(hDlg, IDC_STATIC_CONTAINER);
-    for(int i = 0; i < shader.param.size(); i++) {
-        GLSLParam &p = shader.param[i];
+    for(int i = 0; i < parameters.size(); i++) {
+        GLSLParam &p = parameters[i];
         TCHAR val[100];
         HWND hEdit = GetDlgItem(parent, IDC_PARAMS_START_EDIT + i);
         GetWindowText(hEdit, val, 100);
@@ -281,7 +283,7 @@ void CShaderParamDlg::save_custom_shader()
 	else {
 		_stprintf(save_path, TEXT("%s\\custom_shader_params.slangp"), S9xGetDirectoryT(DEFAULT_DIR));
 	}
-    shader.save(_tToChar(save_path));
+    save_function(_tToChar(save_path));
     lstrcpy(GUI.OGLshaderFileName, save_path);
 }
 

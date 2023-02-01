@@ -390,6 +390,21 @@ void COpenGL::SetSwapInterval(int frames)
         wglSwapIntervalEXT(frames);
 }
 
+std::vector<GLSLParam>* COpenGL::GetShaderParameters(void)
+{
+	if (shader_type == OGL_SHADER_GLSL && initDone)
+		return &glslShader->param;
+
+	return nullptr;
+}
+
+std::function<void(const char *)> COpenGL::GetShaderParametersSaveFunction()
+{
+	return [&](const char *filename) {
+		this->glslShader->save(filename);
+	};
+}
+
 bool COpenGL::ApplyDisplayChanges(void)
 {
 	if(wglSwapIntervalEXT) {

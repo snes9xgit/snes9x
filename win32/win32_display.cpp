@@ -655,9 +655,23 @@ int WinGetAutomaticInputRate(void)
     return (int)newInputRate;
 }
 
-GLSLShader *WinGetActiveGLSLShader()
+std::vector<GLSLParam> *WinGetShaderParameters()
 {
-	return OpenGL.GetActiveShader();
+	if (GUI.outputMethod == OPENGL)
+		return OpenGL.GetShaderParameters();
+	if (GUI.outputMethod == VULKAN)
+		return (std::vector<GLSLParam> *)VulkanDriver.GetShaderParameters();
+	return nullptr;
+}
+
+std::function<void(const char*)> WinGetShaderSaveFunction()
+{
+	if (GUI.outputMethod == OPENGL)
+		return OpenGL.GetShaderParametersSaveFunction();
+	else if (GUI.outputMethod == VULKAN)
+		return VulkanDriver.GetShaderParametersSaveFunction();
+	else
+		return std::function<void(const char*)>();
 }
 
 /* Depth conversion functions begin */

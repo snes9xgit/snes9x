@@ -7,6 +7,7 @@
 #pragma once
 #include "windows.h"
 #include "../shaders/glsl.h"
+#include <functional>
 
 typedef void(*APPLYCALLBACK) ();
 
@@ -21,17 +22,18 @@ private:
     void save_custom_shader();
 	void apply_changes(HWND hDlg);
 
-    GLSLShader &shader;
     HFONT hFont;
     unsigned int avgCharWidth;
     unsigned int avgCharHeight;
     int scrollpos;
-	std::vector<GLSLParam> saved_parameters;
+    std::vector<GLSLParam>& parameters;
+    std::vector<GLSLParam> saved_parameters;
+    std::function<void (const char *)> save_function;
 
 	WNDPROC oldStaticProc;
 
 public:
-    CShaderParamDlg(GLSLShader &shade);
+    CShaderParamDlg(std::vector<GLSLParam> &parameters, std::function<void (const char *)> save_function);
     virtual ~CShaderParamDlg();
 
     bool show();

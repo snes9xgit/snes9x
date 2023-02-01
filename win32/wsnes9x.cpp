@@ -7925,9 +7925,10 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			ShowWindow(hDlg, SW_HIDE);
 			WinDisplayApplyChanges();
 			WinRefreshDisplay();
-			GLSLShader *shader = WinGetActiveGLSLShader();
-			if (shader) {
-				CShaderParamDlg dlg(*shader);
+			auto shader_parameters = WinGetShaderParameters();
+			if (shader_parameters) {
+				auto save_function = WinGetShaderSaveFunction();
+				CShaderParamDlg dlg(*shader_parameters, save_function);
 				if (dlg.show()) {
 					SetDlgItemText(hDlg, IDC_SHADER_GLSL_FILE, GUI.OGLshaderFileName);
 					WinDisplayApplyChanges();

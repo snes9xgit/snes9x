@@ -18,10 +18,10 @@ int mipmap_levels_for_size(int width, int height)
 
 void trim(string_view &view)
 {
-    while (view.length() > 0 && isspace(view.at(0)))
+    while (view.length() > 0 && isspace((unsigned char)view.at(0)))
         view.remove_prefix(1);
 
-    while (view.length() > 0 && isspace(view.at(view.length() - 1)))
+    while (view.length() > 0 && isspace((unsigned char)view.at(view.length() - 1)))
         view.remove_suffix(1);
 }
 

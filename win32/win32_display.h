@@ -12,6 +12,7 @@
 #include "render.h"
 #include "../shaders/glsl.h"
 #include <vector>
+#include <functional>
 
 #define IsHiRes(x) ((x.Height > SNES_HEIGHT_EXTENDED || x.Width == 512))
 #define CurrentScale (IsHiRes(Src) ? GUI.ScaleHiRes : GUI.Scale)
@@ -41,6 +42,7 @@ char *ReadShaderFileContents(const TCHAR *filename);
 void ReduceToPath(TCHAR *filename);
 double WinGetRefreshRate();
 int WinGetAutomaticInputRate();
-GLSLShader *WinGetActiveGLSLShader();
+std::vector<GLSLParam> *WinGetShaderParameters();
+std::function<void(const char*)> WinGetShaderSaveFunction();
 
 #endif
