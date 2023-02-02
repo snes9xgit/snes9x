@@ -108,11 +108,11 @@ void Texture::from_buffer(vk::CommandBuffer cmd,
         .setImage(image)
         .setOldLayout(vk::ImageLayout::eUndefined)
         .setNewLayout(vk::ImageLayout::eTransferDstOptimal)
-        .setSrcAccessMask(vk::AccessFlagBits::eNone)
+        .setSrcAccessMask(vk::AccessFlagBits::eShaderRead)
         .setDstAccessMask(vk::AccessFlagBits::eTransferWrite)
         .setSubresourceRange(srr(0));
 
-    cmd.pipelineBarrier(vk::PipelineStageFlagBits::eTopOfPipe,
+    cmd.pipelineBarrier(vk::PipelineStageFlagBits::eFragmentShader,
                         vk::PipelineStageFlagBits::eTransfer,
                         {}, {}, {}, barrier);
 

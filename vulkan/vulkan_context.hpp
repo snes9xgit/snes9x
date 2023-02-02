@@ -32,6 +32,7 @@ class Context
     void wait_idle();
     vk::CommandBuffer begin_cmd_buffer();
     void end_cmd_buffer();
+    void hard_barrier(vk::CommandBuffer cmd);
 
     vma::Allocator allocator;
     vk::Device device;

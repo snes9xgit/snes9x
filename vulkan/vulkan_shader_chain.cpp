@@ -279,6 +279,8 @@ bool ShaderChain::load_shader_preset(std::string filename)
     current_frame_index = 0;
     last_frame_index = 2;
 
+    context->wait_idle();
+
     return true;
 }
 
@@ -392,6 +394,8 @@ void ShaderChain::do_frame(uint8_t *data, int width, int height, int stride, vk:
 {
     if (!context->swapchain->begin_frame())
          return;
+
+    current_frame_index = context->swapchain->get_current_frame();
 
     auto cmd = context->swapchain->get_cmd();
 
@@ -509,7 +513,6 @@ void ShaderChain::do_frame(uint8_t *data, int width, int height, int stride, vk:
     context->swapchain->end_frame();
 
     last_frame_index = current_frame_index;
-    current_frame_index = (current_frame_index + 1) % queue_size;
     frame_count++;
 }
 
@@ -523,7 +526,7 @@ void ShaderChain::upload_original(vk::CommandBuffer cmd, uint8_t *data, int widt
                         format,
                         wrap_mode_from_string(pipelines[0]->shader->wrap_mode),
                         pipelines[0]->shader->filter_linear,
-                        true);
+                        pipelines[0]->shader->mipmap_input);
     };
 
     if (original.size() > original_history_size)

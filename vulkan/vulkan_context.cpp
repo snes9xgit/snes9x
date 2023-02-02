@@ -230,6 +230,15 @@ vk::CommandBuffer Context::begin_cmd_buffer()
     return one_time_use_cmd;
 }
 
+void Context::hard_barrier(vk::CommandBuffer cmd)
+{
+    vk::MemoryBarrier barrier(vk::AccessFlagBits::eMemoryRead | vk::AccessFlagBits::eMemoryWrite,
+                              vk::AccessFlagBits::eMemoryRead | vk::AccessFlagBits::eMemoryWrite);
+    cmd.pipelineBarrier(vk::PipelineStageFlagBits::eAllCommands,
+                        vk::PipelineStageFlagBits::eAllCommands,
+                        {}, barrier, {}, {});
+}
+
 void Context::end_cmd_buffer()
 {
     one_time_use_cmd.end();
