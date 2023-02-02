@@ -37,7 +37,7 @@ int get_significant_digits(const string_view &view)
     auto pos = view.rfind('.');
     if (pos == string_view::npos)
         return 0;
-    return view.size() - pos - 1;
+    return view.length() - pos - 1;
 }
 
 vector<string> split_string_quotes(const string_view &view)
@@ -63,7 +63,7 @@ vector<string> split_string_quotes(const string_view &view)
         {
             indexb = view.find_first_of("\t\r\n ", indexa);
             if (indexb == string::npos)
-                indexb = view.size();
+                indexb = view.length();
         }
 
         if (indexb > indexa)
@@ -105,7 +105,7 @@ vector<string> split_string(const string_view &str, unsigned char delim)
 
 bool ends_with(const string &str, const string &ext)
 {
-    if (ext.size() > str.size())
+    if (ext.length() > str.length())
         return false;
 
     auto icmp = [](const unsigned char a, const unsigned char b) -> bool {
