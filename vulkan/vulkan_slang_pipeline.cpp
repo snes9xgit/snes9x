@@ -110,9 +110,9 @@ SlangPipeline::~SlangPipeline()
 
 bool SlangPipeline::generate_pipeline(bool lastpass)
 {
-    VkFormat backup_format = VK_FORMAT_R8G8B8A8_UNORM;
+    VkFormat backup_format = VK_FORMAT_B8G8R8A8_UNORM;
     if (shader->srgb_framebuffer)
-        backup_format = VK_FORMAT_R8G8B8A8_SRGB;
+        backup_format = VK_FORMAT_B8G8R8A8_SRGB;
     if (shader->float_framebuffer)
         backup_format = VK_FORMAT_R32G32B32A32_SFLOAT;
     this->format = vk::Format(format_string_to_format(shader->format, backup_format));
