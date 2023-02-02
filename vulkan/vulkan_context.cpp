@@ -53,9 +53,10 @@ static vk::UniqueInstance create_instance_preamble(const char *wsi_extension)
 #ifdef VK_USE_PLATFORM_WIN32_KHR
 bool Context::init_win32(HINSTANCE hinstance, HWND hwnd, int preferred_device)
 {
-    if (instance)
-        return false;
     instance = create_instance_preamble(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+    if (!instance)
+        return false;
+
     auto win32_surface_create_info = vk::Win32SurfaceCreateInfoKHR{}
         .setHinstance(hinstance)
         .setHwnd(hwnd);
@@ -69,10 +70,14 @@ bool Context::init_win32(HINSTANCE hinstance, HWND hwnd, int preferred_device)
 #ifdef VK_USE_PLATFORM_XLIB_KHR
 bool Context::init_Xlib(Display *dpy, Window xid, int preferred_device)
 {
-    if (instance)
-        return false;
     instance = create_instance_preamble(VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
+    if (!instance)
+        return false;
+
     surface = instance->createXlibSurfaceKHRUnique({ {}, dpy, xid });
+
+    if (!surface)
+        return false;
     return init(preferred_device);
 }
 #endif
@@ -80,13 +85,17 @@ bool Context::init_Xlib(Display *dpy, Window xid, int preferred_device)
 #ifdef VK_USE_PLATFORM_WAYLAND_KHR
 bool Context::init_wayland(wl_display *dpy, wl_surface *parent, int initial_width, int initial_height, int preferred_device)
 {
-    if (instance)
-        return false;
     instance = create_instance_preamble(VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME);
+    if (!instance)
+        return false;
+
     auto wayland_surface_create_info = vk::WaylandSurfaceCreateInfoKHR{}
         .setSurface(parent)
         .setDisplay(dpy);
     surface = instance->createWaylandSurfaceKHRUnique(wayland_surface_create_info);
+    if (!surface)
+        return false;
+
     init_device(preferred_device);
     init_vma();
     init_command_pool();

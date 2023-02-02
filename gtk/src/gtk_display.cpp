@@ -853,7 +853,7 @@ bool8 S9xDeinitUpdate(int width, int height)
             height = SNES_HEIGHT * 2;
         }
     }
-    
+
     uint16_t *screen_view = GFX.Screen + (yoffset * (int)GFX.RealPPL);
 
     if (!Settings.Paused && !NetPlay.Paused)
@@ -927,8 +927,13 @@ static void S9xInitDriver()
     if (driver->init())
     {
         delete driver;
-        gui_config->display_driver = "none";
+
+        driver = new S9xGTKDisplayDriver(top_level, gui_config);
         driver->init();
+        gui_config->display_driver = "none";
+
+        Gtk::MessageDialog dialog("Couldn't load display driver. Using default.");
+        dialog.run();
     }
 
     pool = NULL;
