@@ -129,7 +129,7 @@ bool IniFile::get_bool(std::string key, bool default_value = false)
     for (auto &c : lower)
         c = tolower(c);
 
-    const char *true_strings[] = { "true", "1", "yes", "on"};
+    const char *true_strings[] = { "true", "1", "yes", "on", "y"};
     for (auto &s : true_strings)
         if (lower == s)
             return true;

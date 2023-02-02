@@ -1,6 +1,5 @@
 #include "vulkan_slang_pipeline.hpp"
 #include "slang_helpers.hpp"
-#include "fmt/format.h"
 #include <unordered_map>
 
 namespace Vulkan
@@ -243,11 +242,6 @@ bool SlangPipeline::generate_pipeline(bool lastpass)
                            vk::ColorComponentFlagBits::eA)
         .setBlendEnable(false)
         .setColorBlendOp(vk::BlendOp::eAdd);
-        // .setSrcColorBlendFactor(vk::BlendFactor::eSrcAlpha)
-        // .setDstColorBlendFactor(vk::BlendFactor::eOneMinusSrcAlpha)
-        // .setAlphaBlendOp(vk::BlendOp::eAdd)
-        // .setSrcAlphaBlendFactor(vk::BlendFactor::eOne)
-        // .setSrcAlphaBlendFactor(vk::BlendFactor::eZero);
 
     auto blend_state_info = vk::PipelineColorBlendStateCreateInfo{}
         .setLogicOpEnable(false)
@@ -319,7 +313,7 @@ bool SlangPipeline::generate_pipeline(bool lastpass)
 
     if (result != vk::Result::eSuccess)
     {
-        fmt::print("Failed to create pipeline for shader: {}\n", shader->filename);
+        printf("Failed to create pipeline for shader: %s\n", shader->filename.c_str());
         return false;
     }
 

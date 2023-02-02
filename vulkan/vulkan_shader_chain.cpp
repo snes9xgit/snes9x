@@ -1,6 +1,5 @@
 #include "vulkan_shader_chain.hpp"
 #include "slang_helpers.hpp"
-#include "fmt/format.h"
 #include "stb_image.h"
 #include "vulkan/vulkan_enums.hpp"
 
@@ -191,19 +190,19 @@ void ShaderChain::update_and_propagate_sizes(int original_width_new, int origina
 bool ShaderChain::load_shader_preset(std::string filename)
 {
     if (!ends_with(filename, ".slangp"))
-        fmt::print("Warning: loading preset without .slangp extension\n");
+        printf("Warning: loading preset without .slangp extension\n");
 
     preset = std::make_unique<SlangPreset>();
 
     if (!preset->load_preset_file(filename))
     {
-        fmt::print("Couldn't load preset file: {}\n", filename);
+        printf("Couldn't load preset file: %s\n", filename.c_str());
         return false;
     }
 
     if (!preset->introspect())
     {
-        fmt::print("Failed introspection process in preset: {}\n", filename);
+        printf("Failed introspection process in preset: %s\n", filename.c_str());
         return false;
     }
 
@@ -221,7 +220,7 @@ bool ShaderChain::load_shader_preset(std::string filename)
         bool lastpass = (i == preset->passes.size() - 1);
         if (!pipelines[i]->generate_pipeline(lastpass))
         {
-            fmt::print("Couldn't create pipeline for shader: {}\n", p.filename);
+            printf("Couldn't create pipeline for shader: %s\n", p.filename.c_str());
             return false;
         }
 
@@ -573,7 +572,7 @@ bool ShaderChain::load_lookup_textures()
 
         if (!bytes)
         {
-            fmt::print("Couldn't load look-up texture: {}\n", l.filename);
+            printf("Couldn't load look-up texture: %s\n", l.filename.c_str());
             return false;
         }
 
