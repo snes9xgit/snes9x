@@ -6,7 +6,6 @@
 
 #include "bml.h"
 #include "cheats.h"
-#include "fmt/format.h"
 #include "snes9x.h"
 #include "memmap.h"
 
@@ -522,10 +521,14 @@ int S9xModifyCheatGroup(uint32 num, const std::string &name, const std::string &
 
 std::string S9xCheatToText(const SCheat &c)
 {
-    if (c.conditional)
-        return fmt::format("{:06x}={:02x}?{:02x}", c.address, c.cond_byte, c.byte);
+    char output[256]{};
 
-    return fmt::format("{:06x}={:02x}", c.address, c.byte);
+    if (c.conditional)
+        sprintf(output, "%06x=%02x?%02x", c.address, c.cond_byte, c.byte);
+    else
+        sprintf(output, "%06x=%02x", c.address, c.byte);
+
+    return std::string(output);
 }
 
 std::string S9xCheatGroupToText(SCheatGroup &g)
@@ -638,8 +641,9 @@ static bool8 S9xLoadCheatFileClassic(const std::string &filename)
         c.address = data[2] | (data[3] << 8) | (data[4] << 16);
 
         std::string name((const char *)&data[8], 20);
-        auto cheat = fmt::format("{:x}={:x}", c.address, c.byte);
-
+        char code[32]{};
+        sprintf(code, "%x=%x", c.address, c.byte);
+        std::string cheat(code);
         S9xAddCheatGroup(name, cheat);
 
         if (c.enabled)
@@ -691,14 +695,14 @@ bool8 S9xSaveCheatFile(const std::string &filename)
 
     for (i = 0; i < Cheat.group.size(); i++)
     {
-        fmt::print(file,
-                   "cheat\n"
-                   "  name: {}\n"
-                   "  code: {}\n"
-                   "{}\n",
-                   Cheat.group[i].name,
-                   S9xCheatGroupToText(i),
-                   Cheat.group[i].enabled ? "  enable\n" : "");
+        fprintf(file,
+                "cheat\n"
+                "  name: %s\n"
+                "  code: %s\n"
+                "%s\n",
+                Cheat.group[i].name.c_str(),
+                S9xCheatGroupToText(i).c_str(),
+                Cheat.group[i].enabled ? "  enable\n" : "");
     }
 
     fclose(file);

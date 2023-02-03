@@ -16,6 +16,7 @@
 #include "crosshairs.h"
 #include <stdio.h>
 #include <vector>
+#include <string>
 
 #ifdef _WIN32
 #include <direct.h>
@@ -936,10 +937,10 @@ void retro_cheat_set(unsigned index, bool enabled, const char *codeline)
         }
 
         /* Goldfinger was broken and nobody noticed. Removed */
-        if (S9xAddCheatGroup ("retro", code) >= 0)
+        if (S9xAddCheatGroup (std::string("retro"), std::string(code)) >= 0)
         {
             if (enabled)
-                S9xEnableCheatGroup (Cheat.g.size () - 1);
+                S9xEnableCheatGroup (Cheat.group.size () - 1);
         }
         else
         {
@@ -1059,14 +1060,14 @@ static bool8 LoadBIOS(uint8 *biosrom, const char *biosname, int biossize)
     char	name[PATH_MAX + 1];
     bool8 r = FALSE;
 
-    strcpy(name, S9xGetDirectory(ROMFILENAME_DIR));
+    strcpy(name, S9xGetDirectory(ROMFILENAME_DIR).c_str());
     strcat(name, SLASH_STR);
     strcat(name, biosname);
 
     fp = fopen(name, "rb");
     if (!fp)
     {
-        strcpy(name, S9xGetDirectory(BIOS_DIR));
+        strcpy(name, S9xGetDirectory(BIOS_DIR).c_str());
         strcat(name, SLASH_STR);
         strcat(name, biosname);
 
@@ -2108,23 +2109,23 @@ const char* S9xGetFilename(const char* in, s9x_getdirtype type)
     return in;
 }
 
-const char* S9xGetDirectory(s9x_getdirtype type)
+std::string S9xGetDirectory(s9x_getdirtype type)
 {
     switch (type)
     {
         case BIOS_DIR:
-            return retro_system_directory;
+            return std::string(retro_system_directory);
         default:
-            return g_rom_dir;
+            return std::string(g_rom_dir);
     }
 
-    return "";
+    return std::string("");
 }
 void S9xInitInputDevices() {}
 void S9xHandlePortCommand(s9xcommand_t, short, short) {}
 bool S9xPollButton(unsigned int, bool*) { return false; }
 void S9xToggleSoundChannel(int) {}
-const char* S9xGetFilenameInc(const char* in, s9x_getdirtype) { return ""; }
+std::string S9xGetFilenameInc(std::string in, s9x_getdirtype) { return ""; }
 const char* S9xBasename(const char* in) { return in; }
 bool8 S9xInitUpdate() { return TRUE; }
 void S9xExtraUsage() {}
