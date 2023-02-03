@@ -13,7 +13,7 @@ snes9x_linux-gtk-amd64_task:
     - apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install meson gettext libsdl2-dev libgtkmm-3.0-dev libgtk-3-dev libminizip-dev portaudio19-dev glslang-dev cmake
 
   compile_script:
-    - meson build gtk --buildtype=release --strip
+    - cmake -G Ninja -B build -S gtk -DCMAKE_BUILD_TYPE=Release
     - ninja -j2 -C build
 
   package_script:
