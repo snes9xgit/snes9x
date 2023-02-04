@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.18)
 project(snes9x-gtk VERSION 1.61)
 
 option(USE_SLANG "Build support for slang-type shaders" ON)
