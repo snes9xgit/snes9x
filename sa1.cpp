@@ -563,8 +563,9 @@ void S9xSetSA1 (uint8 byte, uint32 address)
 					{
 						int16 dividend = (int16) SA1.op1;
 						uint16 divisor = (uint16) SA1.op2;
-						uint16	remainder = (dividend >= 0) ? dividend % divisor : (dividend % divisor) + divisor;
-						uint16	quotient  = (dividend - remainder) / divisor;
+						uint32 dividend_ext = dividend + (uint32)divisor * 65536;
+						uint16 remainder = dividend_ext % divisor;
+						uint16 quotient = dividend_ext / divisor;
 						SA1.sum = (remainder << 16) | quotient;
 					}
 
