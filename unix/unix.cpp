@@ -28,7 +28,7 @@
 #include <sys/ioctl.h>
 #endif
 
-#ifndef NOSOUND 
+#ifndef NOSOUND
 #ifndef ALSA
 #include <sys/soundcard.h>
 #include <sys/mman.h>
@@ -51,6 +51,7 @@
 #include "movie.h"
 #include "display.h"
 #include "conffile.h"
+#include "fscompat.h"
 #ifdef NETPLAY_SUPPORT
 #include "netplay.h"
 #endif
@@ -359,7 +360,7 @@ void S9xExtraUsage (void)
 #endif
 
 #ifndef NOSOUND
-#ifdef USE_THREADS && ! defined(ALSA)
+#if defined(USE_THREADS) && !defined(ALSA)
 	S9xMessage(S9X_INFO, S9X_USAGE, "-threadsound                    Use a separate thread to output sound");
 #endif
 	S9xMessage(S9X_INFO, S9X_USAGE, "-buffersize                     Sound generating buffer size in millisecond");
@@ -392,7 +393,7 @@ void S9xParseArg (char **argv, int &i, int argc)
 	if (!strcasecmp(argv[i], "-carta"))
 	{
 		if (i + 1 < argc)
-			strncpy(Settings.CartAName, argv[++i], _MAX_PATH);
+			strncpy(Settings.CartAName, argv[++i], PATH_MAX);
 		else
 			S9xUsage();
 	}
@@ -400,7 +401,7 @@ void S9xParseArg (char **argv, int &i, int argc)
 	if (!strcasecmp(argv[i], "-cartb"))
 	{
 		if (i + 1 < argc)
-			strncpy(Settings.CartBName, argv[++i], _MAX_PATH);
+			strncpy(Settings.CartBName, argv[++i], PATH_MAX);
 		else
 			S9xUsage();
 	}
@@ -605,7 +606,7 @@ void S9xParsePortConfig (ConfigFile &conf, int pass)
 	sound_device                   = conf.GetStringDup("Unix::SoundDevice",         "/dev/dsp");
 #else
 	sound_device                   = conf.GetStringDup("Unix::SoundDevice",         "default");
-#endif    
+#endif
 	keymaps.clear();
 	if (!conf.GetBool("Unix::ClearAllControls", false))
 	{
@@ -670,78 +671,65 @@ static int make_snes9x_dirs (void)
 	return (0);
 }
 
-const char * S9xGetDirectory (enum s9x_getdirtype dirtype)
+std::string S9xGetDirectory (enum s9x_getdirtype dirtype)
 {
-	static char	s[PATH_MAX + 1];
+    std::string retval = Memory.ROMFilename;
+    size_t pos;
 
-	if (dirNames[dirtype][0])
-		snprintf(s, PATH_MAX + 1, "%s%s%s", s9x_base_dir, SLASH_STR, dirNames[dirtype]);
+    if (dirNames[dirtype][0])
+		return std::string(s9x_base_dir) + SLASH_STR + dirNames[dirtype];
 	else
 	{
 		switch (dirtype)
 		{
 			case DEFAULT_DIR:
-				strncpy(s, s9x_base_dir, PATH_MAX + 1);
-				s[PATH_MAX] = 0;
+				retval = s9x_base_dir;
 				break;
 
 			case HOME_DIR:
-				strncpy(s, getenv("HOME"), PATH_MAX + 1);
-				s[PATH_MAX] = 0;
+				retval = std::string(getenv("HOME"));
 				break;
 
 			case ROMFILENAME_DIR:
-				strncpy(s, Memory.ROMFilename, PATH_MAX + 1);
-				s[PATH_MAX] = 0;
-
-				for (int i = strlen(s); i >= 0; i--)
-				{
-					if (s[i] == SLASH_CHAR)
-					{
-						s[i] = 0;
-						break;
-					}
-				}
-
+				retval = Memory.ROMFilename;
+				pos = retval.rfind("/");
+				if (pos != std::string::npos)
+					retval = retval.substr(pos);
 				break;
 
 			default:
-				s[0] = 0;
 				break;
 		}
 	}
-
-	return (s);
+	return retval;
 }
 
-const char * S9xGetFilename (const char *ex, enum s9x_getdirtype dirtype)
+std::string S9xGetFilenameInc (std::string ex, enum s9x_getdirtype dirtype)
 {
-	static char	s[PATH_MAX + 1];
-	char		drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], fname[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
+	struct stat buf;
 
-	_splitpath(Memory.ROMFilename, drive, dir, fname, ext);
-	snprintf(s, PATH_MAX + 1, "%s%s%s%s", S9xGetDirectory(dirtype), SLASH_STR, fname, ex);
+	SplitPath path = splitpath(Memory.ROMFilename);
+	std::string directory = S9xGetDirectory(dirtype);
 
-	return (s);
-}
+	if (ex[0] != '.')
+	{
+		ex = "." + ex;
+	}
 
-const char * S9xGetFilenameInc (const char *ex, enum s9x_getdirtype dirtype)
-{
-	static char	s[PATH_MAX + 1];
-	char		drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], fname[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
-
-	unsigned int	i = 0;
-	const char		*d;
-	struct stat		buf;
-
-	_splitpath(Memory.ROMFilename, drive, dir, fname, ext);
-	d = S9xGetDirectory(dirtype);
-
+	std::string new_filename;
+	unsigned int i = 0;
 	do
-		snprintf(s, PATH_MAX + 1, "%s%s%s.%03d%s", d, SLASH_STR, fname, i++, ex);
-	while (stat(s, &buf) == 0 && i < 1000);
+	{
+		std::string new_extension = std::to_string(i);
+		while (new_extension.length() < 3)
+			new_extension = "0" + new_extension;
+		new_extension += ex;
 
-	return (s);
+		new_filename = path.stem + new_extension;
+		i++;
+	} while (stat(new_filename.c_str(), &buf) == 0 && i < 1000);
+
+	return new_filename;
 }
 
 const char * S9xBasename (const char *f)
@@ -756,26 +744,28 @@ const char * S9xBasename (const char *f)
 
 bool8 S9xOpenSnapshotFile (const char *filename, bool8 read_only, STREAM *file)
 {
-	char	s[PATH_MAX + 1];
-	char	drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], fname[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
+    if (read_only)
+    {
+        if ((*file = OPEN_STREAM(filename, "rb")))
+            return (true);
+        else
+            fprintf(stderr, "Failed to open file stream for reading.\n");
+    }
+    else
+    {
+        if ((*file = OPEN_STREAM(filename, "wb")))
+        {
+            return (true);
+        }
+        else
+        {
+            fprintf(stderr, "Couldn't open stream with zlib.\n");
+        }
+    }
 
-	_splitpath(filename, drive, dir, fname, ext);
+    fprintf(stderr, "Couldn't open snapshot file:\n%s\n", filename);
 
-	if (*drive || *dir == SLASH_CHAR || (strlen(dir) > 1 && *dir == '.' && *(dir + 1) == SLASH_CHAR))
-	{
-		strncpy(s, filename, PATH_MAX + 1);
-		s[PATH_MAX] = 0;
-	}
-	else
-		snprintf(s, PATH_MAX + 1, "%s%s%s", S9xGetDirectory(SNAPSHOT_DIR), SLASH_STR, fname);
-
-	if (!*ext && strlen(s) <= PATH_MAX - 4)
-		strcat(s, ".frz");
-
-	if ((*file = OPEN_STREAM(s, read_only ? "rb" : "wb")))
-		return (TRUE);
-
-	return (FALSE);
+    return false;
 }
 
 void S9xCloseSnapshotFile (STREAM file)
@@ -813,7 +803,7 @@ void S9xToggleSoundChannel (int c)
 
 void S9xAutoSaveSRAM (void)
 {
-	Memory.SaveSRAM(S9xGetFilename(".srm", SRAM_DIR));
+	Memory.SaveSRAM(S9xGetFilename(".srm", SRAM_DIR).c_str());
 }
 
 void S9xSyncSpeed (void)
@@ -1607,7 +1597,7 @@ void S9xExit (void)
 	delete s_AudioOutput;
 #endif
 
-	Memory.SaveSRAM(S9xGetFilename(".srm", SRAM_DIR));
+	Memory.SaveSRAM(S9xGetFilename(".srm", SRAM_DIR).c_str());
 	S9xResetSaveTimer(FALSE);
 	S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
 	S9xUnmapAllControls();
@@ -1711,34 +1701,21 @@ int main (int argc, char **argv)
 
 		if (!loaded)
 		{
-			char	s1[PATH_MAX + 1], s2[PATH_MAX + 1];
-			char	drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], fname[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
-
-			s1[0] = s2[0] = 0;
+			std::string s1, s2;
 
 			if (Settings.CartAName[0])
 			{
-				_splitpath(Settings.CartAName, drive, dir, fname, ext);
-				snprintf(s1, PATH_MAX + 1, "%s%s%s", S9xGetDirectory(ROM_DIR), SLASH_STR, fname);
-				if (ext[0] && (strlen(s1) <= PATH_MAX - 1 - strlen(ext)))
-				{
-					strcat(s1, ".");
-					strcat(s1, ext);
-				}
+				SplitPath path = splitpath(Settings.CartAName);
+				s1 = makepath("", S9xGetDirectory(ROM_DIR), path.stem, path.ext);
 			}
 
 			if (Settings.CartBName[0])
 			{
-				_splitpath(Settings.CartBName, drive, dir, fname, ext);
-				snprintf(s2, PATH_MAX + 1, "%s%s%s", S9xGetDirectory(ROM_DIR), SLASH_STR, fname);
-				if (ext[0] && (strlen(s2) <= PATH_MAX - 1 - strlen(ext)))
-				{
-					strcat(s2, ".");
-					strcat(s2, ext);
-				}
+				SplitPath path = splitpath(Settings.CartBName);
+				s2 = makepath("", S9xGetDirectory(ROM_DIR), path.stem, path.ext);
 			}
 
-			loaded = Memory.LoadMultiCart(s1, s2);
+			loaded = Memory.LoadMultiCart(s1.c_str(), s2.c_str());
 		}
 	}
 	else
@@ -1748,18 +1725,9 @@ int main (int argc, char **argv)
 
 		if (!loaded && rom_filename[0])
 		{
-			char	s[PATH_MAX + 1];
-			char	drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], fname[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
-
-			_splitpath(rom_filename, drive, dir, fname, ext);
-			snprintf(s, PATH_MAX + 1, "%s%s%s", S9xGetDirectory(ROM_DIR), SLASH_STR, fname);
-			if (ext[0] && (strlen(s) <= PATH_MAX - 1 - strlen(ext)))
-			{
-				strcat(s, ".");
-				strcat(s, ext);
-			}
-
-			loaded = Memory.LoadROM(s);
+			SplitPath path = splitpath(rom_filename);
+			std::string s = makepath("", S9xGetDirectory(ROM_DIR), path.stem, path.ext);
+			loaded = Memory.LoadROM(s.c_str());
 		}
 	}
 
@@ -1772,7 +1740,7 @@ int main (int argc, char **argv)
 	S9xDeleteCheats();
 	S9xCheatsEnable();
 	NSRTControllerSetup();
-	Memory.LoadSRAM(S9xGetFilename(".srm", SRAM_DIR));
+	Memory.LoadSRAM(S9xGetFilename(".srm", SRAM_DIR).c_str());
 
 	if (Settings.ApplyCheats)
 	{
