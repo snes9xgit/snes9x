@@ -3802,8 +3802,6 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 	bool		flag;
 	char 		ips[8];
 
-	std::string patch_path = S9xGetDirectory(PATCH_DIR) + SLASH_STR;
-
 	int rom_filename_length = strlen(rom_filename);
 	const char *ext = NULL;
 	if (rom_filename_length < 4)
@@ -4059,7 +4057,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 	do
 	{
 		snprintf(ips, 8, "%03d.ips", i);
-		filename = patch_path + S9xGetFilename(ips, PATCH_DIR);
+		filename = S9xGetFilename(ips, PATCH_DIR);
 
 		if (!(patch_file = OPEN_FSTREAM(filename.c_str(), "rb")))
 			break;
@@ -4091,7 +4089,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 	do
 	{
 		snprintf(ips, 8, "ips%d", i);
-		filename = patch_path + S9xGetFilename(ips, PATCH_DIR);
+		filename = S9xGetFilename(ips, PATCH_DIR);
 
 		if (!(patch_file = OPEN_FSTREAM(filename.c_str(), "rb")))
 			break;
@@ -4122,7 +4120,7 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 	do
 	{
 		snprintf(ips, 4, "ip%d", i);
-		filename = patch_path + S9xGetFilename(ips, PATCH_DIR);
+		filename = S9xGetFilename(ips, PATCH_DIR);
 
 		if (!(patch_file = OPEN_FSTREAM(filename.c_str(), "rb")))
 			break;
