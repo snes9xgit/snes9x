@@ -2,7 +2,6 @@
 #include <cstring>
 #include <tuple>
 #include "vulkan_context.hpp"
-#include "vk_mem_alloc.hpp"
 #include "slang_shader.hpp"
 #include "vulkan/vulkan.hpp"
 

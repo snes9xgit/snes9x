@@ -3,6 +3,10 @@
 #ifdef VK_USE_PLATFORM_XLIB_KHR
 #include <X11/Xlib.h>
 #endif
+#ifdef VK_USE_PLATFORM_WIN32_KHR
+#undef WINVER
+#define WINVER 0x599
+#endif
 #include "vk_mem_alloc.hpp"
 #include "vulkan/vulkan.hpp"
 #include "vulkan_swapchain.hpp"
@@ -46,9 +50,6 @@ class Context
     bool init_device(int preferred_device = 0);
     bool init_command_pool();
     bool init_descriptor_pool();
-    void create_vertex_buffer();
-
-    vk::UniquePipeline create_generic_pipeline();
 
 #ifdef VK_USE_PLATFORM_XLIB_KHR
     Display *xlib_display;

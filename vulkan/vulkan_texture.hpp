@@ -1,6 +1,5 @@
 #pragma once
 
-#include "vk_mem_alloc.hpp"
 #include "vulkan_context.hpp"
 
 namespace Vulkan
