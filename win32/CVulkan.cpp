@@ -22,17 +22,19 @@ bool CVulkan::Initialize(HWND hWnd)
     swapchain = context->swapchain.get();
     device = context->device;
 
-    if (GUI.shaderEnabled && GUI.OGLshaderFileName)
+    if (GUI.shaderEnabled && GUI.OGLshaderFileName && GUI.OGLshaderFileName[0])
     {
         shaderchain = std::make_unique<Vulkan::ShaderChain>(context.get());
         std::string shaderstring = _tToChar(GUI.OGLshaderFileName);
         if (!shaderchain->load_shader_preset(shaderstring))
         {
-            return false;
+            shaderchain.reset();
         }
-
-        current_shadername = shaderstring;
-        return true;
+        else
+        {
+            current_shadername = shaderstring;
+            return true;
+        }
     }
 
     create_pipeline();
@@ -81,11 +83,10 @@ bool CVulkan::Initialize(HWND hWnd)
 
 void CVulkan::DeInitialize()
 {
-    if (!context)
-        return;
-
     current_shadername = "";
-    context->wait_idle();
+
+    if (context)
+        context->wait_idle();
     shaderchain.reset();
     textures.clear();
     descriptors.clear();
