@@ -3829,7 +3829,6 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 				else
 					printf(" failed!\n");
 			}
-			assert(unzClose(file) == UNZ_OK);
 
 			port = unzFindExtension(file, "ups");
 			if (port == UNZ_OK)
@@ -3845,7 +3844,6 @@ void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &r
 				else
 					printf(" failed!\n");
 			}
-			assert(unzClose(file) == UNZ_OK);
 
 			port = unzFindExtension(file, "ips");
 			while (port == UNZ_OK)
