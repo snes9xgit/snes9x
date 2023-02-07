@@ -3788,356 +3788,141 @@ static int unzFindExtension (unzFile &file, const char *ext, bool restart, bool 
 }
 #endif
 
-void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &rom_size)
+void CMemory::CheckForAnyPatch(const char *rom_filename, bool8 header, int32 &rom_size)
 {
-	Settings.IsPatched = false;
+    Settings.IsPatched = false;
 
-	if (Settings.NoPatch)
-		return;
+    if (Settings.NoPatch)
+        return;
 
-	FSTREAM		patch_file  = NULL;
-	uint32		i;
-	long		offset = header ? 512 : 0;
-	int			ret;
-	bool		flag;
-	char 		ips[8];
+    FSTREAM patch_file = NULL;
+    long offset = header ? 512 : 0;
+    int ret;
+    bool flag = false;
 
-	int rom_filename_length = strlen(rom_filename);
-	const char *ext = NULL;
-	if (rom_filename_length < 4)
-		return;
-	if (rom_filename[rom_filename_length - 4] == '.')
-		ext = &rom_filename[rom_filename_length - 3];
+    int rom_filename_length = strlen(rom_filename);
+    const char *ext = NULL;
+    if (rom_filename_length < 4)
+        return;
+    if (rom_filename[rom_filename_length - 4] == '.')
+        ext = &rom_filename[rom_filename_length - 3];
 
 #ifdef UNZIP_SUPPORT
-	if (!strcasecmp(ext, "zip") || !strcasecmp(ext, ".zip"))
-	{
-		unzFile	file = unzOpen(rom_filename);
-		if (file)
-		{
-			int	port = unzFindExtension(file, "bps");
-			if (port == UNZ_OK)
-			{
-				printf(" in %s", rom_filename);
-
-                Stream *s = new unzStream(file);
-				ret = ReadBPSPatch(s, offset, rom_size);
-				delete s;
-
-				if (ret)
-					printf("!\n");
-				else
-					printf(" failed!\n");
-			}
-
-			port = unzFindExtension(file, "ups");
-			if (port == UNZ_OK)
-			{
-				printf(" in %s", rom_filename);
-
-                Stream *s = new unzStream(file);
-				ret = ReadUPSPatch(s, offset, rom_size);
-				delete s;
-
-				if (ret)
-					printf("!\n");
-				else
-					printf(" failed!\n");
-			}
-
-			port = unzFindExtension(file, "ips");
-			while (port == UNZ_OK)
-			{
-				printf(" in %s", rom_filename);
-
-                Stream *s = new unzStream(file);
-				ret = ReadIPSPatch(s, offset, rom_size);
-				delete s;
-
-				if (ret)
-				{
-					printf("!\n");
-					flag = true;
-				}
-				else
-					printf(" failed!\n");
-
-				port = unzFindExtension(file, "ips", false);
-			}
-
-			if (!flag)
-			{
-				i = 0;
-
-				do
-				{
-					snprintf(ips, 8, "%03d.ips", i);
-
-					if (unzFindExtension(file, ips) != UNZ_OK)
-						break;
-
-					printf(" in %s", rom_filename);
+    if (!strcasecmp(ext, "zip") || !strcasecmp(ext, ".zip"))
+    {
+        unzFile file = unzOpen(rom_filename);
+        if (file)
+        {
+            auto try_zip_patch = [&](const char *ext, bool8 (*read_patch_func)(Stream * r, long offset, int32 &rom_size)) -> bool {
+                if (unzFindExtension(file, ext) == UNZ_OK)
+                {
+                    printf(" in %s", rom_filename);
 
                     Stream *s = new unzStream(file);
-					ret = ReadIPSPatch(s, offset, rom_size);
-					delete s;
+                    ret = read_patch_func(s, offset, rom_size);
+                    delete s;
 
-					if (ret)
-					{
-						printf("!\n");
-						flag = true;
-					}
-					else
-					{
-						printf(" failed!\n");
-						break;
-					}
+                    if (ret)
+                    {
+                        printf("!\n");
+                        flag = true;
+                        return true;
+                    }
 
-					if (unzFindExtension(file, ips, false, false) == UNZ_OK)
-						printf("WARNING: Ignoring extra .%s files!\n", ips);
-				} while (++i < 1000);
-			}
+                    printf(" failed!\n");
+                }
+                return false;
+            };
 
-			if (!flag)
-			{
-				i = 0;
+            auto try_zip_ips_sequence = [&](const char *pattern) {
+                for (int i = 0; i < 1000; i++)
+                {
+                    char ips[8];
+                    snprintf(ips, 8, pattern, i);
+                    if (!try_zip_patch(ips, ReadIPSPatch))
+                        break;
+                }
+            };
 
-				do
-				{
-					snprintf(ips, 8, "ips%d", i);
+            if (!flag)
+                try_zip_patch("bps", ReadBPSPatch);
+            if (!flag)
+                try_zip_patch("ups", ReadUPSPatch);
+            if (!flag)
+                try_zip_patch("ips", ReadIPSPatch);
+            if (!flag)
+                try_zip_ips_sequence("%03d.ips");
+            if (!flag)
+                try_zip_ips_sequence("ips%d");
+            if (!flag)
+                try_zip_ips_sequence("ip%d");
 
-					if (unzFindExtension(file, ips) != UNZ_OK)
-						break;
+            assert(unzClose(file) == UNZ_OK);
 
-					printf(" in %s", rom_filename);
+            if (flag)
+                return;
+        }
+    }
 
-                    Stream *s = new unzStream(file);
-					ret = ReadIPSPatch(s, offset, rom_size);
-					delete s;
+    // Mercurial Magic (MSU-1 distribution pack)
+    if (strcasecmp(ext, "msu1") && strcasecmp(ext, ".msu1")) // ROM was *NOT* loaded from a .msu1 pack
+    {
+        Stream *s = S9xMSU1OpenFile("patch.bps", TRUE);
+        if (s)
+        {
+            printf("Using BPS patch from msu1");
+            ret = ReadBPSPatch(s, offset, rom_size);
+            s->closeStream();
 
-					if (ret)
-					{
-						printf("!\n");
-						flag = true;
-					}
-					else
-					{
-						printf(" failed!\n");
-						break;
-					}
-
-					if (unzFindExtension(file, ips, false, false) == UNZ_OK)
-						printf("WARNING: Ignoring extra .%s files!\n", ips);
-				} while (++i < 1000);
-			}
-
-			if (!flag)
-			{
-				i = 0;
-
-				do
-				{
-					snprintf(ips, 4, "ip%d", i);
-
-					if (unzFindExtension(file, ips) != UNZ_OK)
-						break;
-
-					printf(" in %s", rom_filename);
-
-                    Stream *s = new unzStream(file);
-					ret = ReadIPSPatch(s, offset, rom_size);
-					delete s;
-
-					if (ret)
-					{
-						printf("!\n");
-						flag = true;
-					}
-					else
-					{
-						printf(" failed!\n");
-						break;
-					}
-
-					if (unzFindExtension(file, ips, false, false) == UNZ_OK)
-						printf("WARNING: Ignoring extra .%s files!\n", ips);
-				} while (++i < 10);
-			}
-
-			assert(unzClose(file) == UNZ_OK);
-
-			if (flag)
-				return;
-		}
-	}
-
-	// Mercurial Magic (MSU-1 distribution pack)
-	if (strcasecmp(ext, "msu1") && strcasecmp(ext, ".msu1"))	// ROM was *NOT* loaded from a .msu1 pack
-	{
-		Stream *s = S9xMSU1OpenFile("patch.bps", TRUE);
-		if (s)
-		{
-			printf("Using BPS patch from msu1");
-			ret = ReadBPSPatch(s, offset, rom_size);
-			s->closeStream();
-
-			if (ret)
-				printf("!\n");
-			else
-				printf(" failed!\n");
-		}
-	}
+            if (ret)
+                printf("!\n");
+            else
+                printf(" failed!\n");
+        }
+    }
 #endif
 
-	// BPS
-	std::string filename = S9xGetFilename(".bps", PATCH_DIR);
+    auto try_patch = [&](const char *type, std::string filename, bool8 (*read_patch_func)(Stream * r, long offset, int32 &rom_size)) -> bool {
+        if ((patch_file = OPEN_FSTREAM(filename.c_str(), "rb")) != NULL)
+        {
+            printf("Using %s patch %s", type, filename.c_str());
 
-	if ((patch_file = OPEN_FSTREAM(filename.c_str(), "rb")) != NULL)
-	{
-		printf("Using BPS patch %s", filename.c_str());
+            Stream *s = new fStream(patch_file);
+            ret = read_patch_func(s, 0, rom_size);
+            s->closeStream();
 
-        Stream *s = new fStream(patch_file);
-		ret = ReadBPSPatch(s, 0, rom_size);
-        s->closeStream();
+            if (ret)
+            {
+                printf("!\n");
+                return true;
+            }
+            else
+                printf(" failed!\n");
+        }
+        return false;
+    };
 
-		if (ret)
-		{
-			printf("!\n");
-			return;
-		}
-		else
-			printf(" failed!\n");
-	}
+    auto try_ips_sequence = [&](const char *pattern) -> bool {
+        for (int i = 0; i < 1000; i++)
+        {
+            char ips[8];
+            snprintf(ips, 8, pattern, i);
+            if (!try_patch("IPS", ips, ReadIPSPatch))
+                break;
+        }
+        return flag;
+    };
 
-	// UPS
-	filename = S9xGetFilename(".ups", PATCH_DIR);
-
-	if ((patch_file = OPEN_FSTREAM(filename.c_str(), "rb")) != NULL)
-	{
-		printf("Using UPS patch %s", filename.c_str());;
-
-        Stream *s = new fStream(patch_file);
-		ret = ReadUPSPatch(s, 0, rom_size);
-        s->closeStream();
-
-		if (ret)
-		{
-			printf("!\n");
-			return;
-		}
-		else
-			printf(" failed!\n");
-	}
-
-	// IPS
-	filename = S9xGetFilename(".ips", PATCH_DIR);
-
-	if ((patch_file = OPEN_FSTREAM(filename.c_str(), "rb")) != NULL)
-	{
-		printf("Using IPS patch %s", filename.c_str());
-
-        Stream *s = new fStream(patch_file);
-		ret = ReadIPSPatch(s, offset, rom_size);
-        s->closeStream();
-
-		if (ret)
-		{
-			printf("!\n");
-			return;
-		}
-		else
-			printf(" failed!\n");
-	}
-
-	i = 0;
-	flag = false;
-
-	do
-	{
-		snprintf(ips, 8, "%03d.ips", i);
-		filename = S9xGetFilename(ips, PATCH_DIR);
-
-		if (!(patch_file = OPEN_FSTREAM(filename.c_str(), "rb")))
-			break;
-
-		printf("Using IPS patch %s", filename.c_str());
-
-		Stream *s = new fStream(patch_file);
-		ret = ReadIPSPatch(s, offset, rom_size);
-		s->closeStream();
-
-		if (ret)
-		{
-			printf("!\n");
-			flag = true;
-		}
-		else
-		{
-			printf(" failed!\n");
-			break;
-		}
-
-	} while (i < 1000);
-
-	if (flag)
-		return;
-
-	i = 0;
-	flag = false;
-	do
-	{
-		snprintf(ips, 8, "ips%d", i);
-		filename = S9xGetFilename(ips, PATCH_DIR);
-
-		if (!(patch_file = OPEN_FSTREAM(filename.c_str(), "rb")))
-			break;
-
-		printf("Using IPS patch %s", filename.c_str());
-
-		Stream *s = new fStream(patch_file);
-		ret = ReadIPSPatch(s, offset, rom_size);
-		s->closeStream();
-
-		if (ret)
-		{
-			printf("!\n");
-			flag = true;
-		}
-		else
-		{
-			printf(" failed!\n");
-			break;
-		}
-	} while (++i < 1000);
-
-	if (flag)
-		return;
-
-	i = 0;
-	flag = false;
-	do
-	{
-		snprintf(ips, 4, "ip%d", i);
-		filename = S9xGetFilename(ips, PATCH_DIR);
-
-		if (!(patch_file = OPEN_FSTREAM(filename.c_str(), "rb")))
-			break;
-
-		printf("Using IPS patch %s", filename.c_str());;
-
-		Stream *s = new fStream(patch_file);
-		ret = ReadIPSPatch(s, offset, rom_size);
-		s->closeStream();
-
-		if (ret)
-		{
-			printf("!\n");
-			flag = true;
-		}
-		else
-		{
-			printf(" failed!\n");
-			break;
-		}
-	} while (++i < 10);
+    if (try_patch("BPS", S9xGetFilename(".bps", PATCH_DIR), ReadBPSPatch))
+        return;
+    if (try_patch("UPS", S9xGetFilename(".ups", PATCH_DIR), ReadUPSPatch))
+        return;
+    if (try_patch("IPS", S9xGetFilename(".ips", PATCH_DIR), ReadIPSPatch))
+        return;
+    if (try_ips_sequence("%03d.ips"))
+        return;
+    if (try_ips_sequence("ips%d"))
+        return;
+    if (try_ips_sequence("ip%d"))
+        return;
 }
