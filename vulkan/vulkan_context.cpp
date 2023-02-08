@@ -8,14 +8,21 @@
 namespace Vulkan
 {
 
+static std::unique_ptr<vk::DynamicLoader> dl;
+
 Context::Context()
 {
-    vk::DynamicLoader *dl = new vk::DynamicLoader;
+    if (!dl)
+    {
+        dl = std::make_unique<vk::DynamicLoader>();
+        if (!dl->success())
+            return;
+    }
+
     auto vkGetInstanceProcAddr =
         dl->getProcAddress<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr");
 
     VULKAN_HPP_DEFAULT_DISPATCHER.init(vkGetInstanceProcAddr);
-
 }
 
 Context::~Context()
@@ -39,6 +46,9 @@ Context::~Context()
 
 static vk::UniqueInstance create_instance_preamble(const char *wsi_extension)
 {
+    if (!dl || !dl->success())
+        return vk::UniqueInstance();
+
     std::vector<const char *> extensions = { wsi_extension, VK_KHR_SURFACE_EXTENSION_NAME };
     vk::ApplicationInfo application_info({}, {}, {}, {}, VK_API_VERSION_1_0);
     vk::InstanceCreateInfo instance_create_info({}, &application_info, {}, extensions);
