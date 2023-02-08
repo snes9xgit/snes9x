@@ -48,6 +48,7 @@ class Snes9xConfig
 {
   public:
     Snes9xConfig();
+    ~Snes9xConfig();
     int load_config_file();
     int save_config_file();
     int load_defaults();

@@ -793,10 +793,12 @@ void S9xQueryDrivers()
         Window xid = gdk_x11_window_get_xid(top_level->window->get_window()->gobj());
 
         gui_config->allow_xrandr = true;
-        gui_config->xrr_screen_resources = XRRGetScreenResourcesCurrent(dpy, xid);
-        gui_config->xrr_crtc_info = XRRGetCrtcInfo(dpy,
-                                                   gui_config->xrr_screen_resources,
-                                                   gui_config->xrr_screen_resources->crtcs[0]);
+        if (!gui_config->xrr_screen_resources)
+            gui_config->xrr_screen_resources = XRRGetScreenResourcesCurrent(dpy, xid);
+        if (!gui_config->xrr_crtc_info)
+            gui_config->xrr_crtc_info = XRRGetCrtcInfo(dpy,
+                                                       gui_config->xrr_screen_resources,
+                                                       gui_config->xrr_screen_resources->crtcs[0]);
     }
 #endif
 

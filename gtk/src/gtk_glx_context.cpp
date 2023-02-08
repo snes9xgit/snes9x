@@ -60,6 +60,7 @@ bool GTKGLXContext::attach(Display *dpy, Window xid)
     }
 
     fbconfig = fbconfigs[0];
+    free(fbconfigs);
 
     return true;
 }

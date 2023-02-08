@@ -65,6 +65,16 @@ void S9xParsePortConfig(ConfigFile &conf, int pass)
 Snes9xConfig::Snes9xConfig()
 {
     joystick_threshold = 40;
+    xrr_crtc_info = nullptr;
+    xrr_screen_resources = nullptr;
+}
+
+Snes9xConfig::~Snes9xConfig()
+{
+    if (xrr_crtc_info)
+        XRRFreeCrtcInfo(xrr_crtc_info);
+    if (xrr_screen_resources)
+        XRRFreeScreenResources(xrr_screen_resources);
 }
 
 int Snes9xConfig::load_defaults()

@@ -1562,6 +1562,7 @@ s9xcommand_t S9xGetCommandT (const char *name)
 
 		cmd.button.multi_idx = multis.size() - 1;
 		cmd.type = S9xButtonMulti;
+		free(c);
 	}
 	else
 	{

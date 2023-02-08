@@ -10,11 +10,12 @@ namespace Vulkan
 
 Context::Context()
 {
-    auto dl = new vk::DynamicLoader;
+    vk::DynamicLoader dl;
     auto vkGetInstanceProcAddr =
-        dl->getProcAddress<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr");
+        dl.getProcAddress<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr");
 
     VULKAN_HPP_DEFAULT_DISPATCHER.init(vkGetInstanceProcAddr);
+
 }
 
 Context::~Context()

@@ -1167,20 +1167,28 @@ void Snes9xWindow::enter_fullscreen_mode()
     {
         Display *dpy = gdk_x11_display_get_xdisplay(gdk_display);
 
+        auto xrr_screen_resources = XRRGetScreenResourcesCurrent(dpy, gdk_x11_window_get_xid(gdk_window));
+        auto xrr_crtc_info = XRRGetCrtcInfo(dpy,
+                                            xrr_screen_resources,
+                                            xrr_screen_resources->crtcs[0]);
+
+
         gdk_display_sync(gdk_display);
         if (XRRSetCrtcConfig(dpy,
-                             config->xrr_screen_resources,
-                             config->xrr_screen_resources->crtcs[0],
+                             xrr_screen_resources,
+                             xrr_screen_resources->crtcs[0],
                              CurrentTime,
-                             config->xrr_crtc_info->x,
-                             config->xrr_crtc_info->y,
-                             config->xrr_screen_resources->modes[config->xrr_index].id,
-                             config->xrr_crtc_info->rotation,
-                             &config->xrr_crtc_info->outputs[0],
+                             xrr_crtc_info->x,
+                             xrr_crtc_info->y,
+                             xrr_screen_resources->modes[config->xrr_index].id,
+                             xrr_crtc_info->rotation,
+                             &xrr_crtc_info->outputs[0],
                              1) != 0)
         {
             config->change_display_resolution = 0;
         }
+        XRRFreeCrtcInfo(xrr_crtc_info);
+        XRRFreeScreenResources(xrr_screen_resources);
 
         if (gui_config->auto_input_rate)
         {
