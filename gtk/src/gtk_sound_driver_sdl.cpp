@@ -86,12 +86,6 @@ bool S9xSDLSoundDriver::open_device()
 
     audiospec.userdata = this;
 
-    char *name;
-    SDL_AudioSpec spec;
-    SDL_GetDefaultAudioInfo(&name, &spec, 0);
-    printf("%s\n", name);
-    SDL_free(name);
-
     printf("SDL sound driver initializing...\n");
     printf("    --> (Frequency: %dhz, Latency: %dms)...",
            audiospec.freq,
