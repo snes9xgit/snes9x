@@ -23,6 +23,7 @@ bool Swapchain::set_vsync(bool new_setting)
     if (new_setting == vsync)
         return false;
 
+    vsync = new_setting;
     return true;
 }
 

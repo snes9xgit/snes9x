@@ -64,7 +64,7 @@ bool COpenGL::Initialize(HWND hWnd)
 		PFD_SUPPORT_OPENGL |							// Format Must Support OpenGL
 		PFD_DOUBLEBUFFER,								// Must Support Double Buffering
 		PFD_TYPE_RGBA,									// Request An RGBA Format
-		16,												// Select Our Color Depth
+		24,												// Select Our Color Depth
 		0, 0, 0, 0, 0, 0,								// Color Bits Ignored
 		0,												// No Alpha Buffer
 		0,												// Shift Bit Ignored
@@ -84,8 +84,11 @@ bool COpenGL::Initialize(HWND hWnd)
 		return false;
 	}
 	if(!SetPixelFormat(hDC,pfdIndex,&pfd)) {
-		DeInitialize();
-		return false;
+		// SetPixelFormat can only be called once per window. Vulkan WSI will do
+		// this automatically and fall back if it's already been set. Since Vulkan
+		// has similar requirements, we don't need to set it any more anyway.
+		// DeInitialize();
+		// return false;
 	}
 	if(!(hRC=wglCreateContext(hDC))) {
 		DeInitialize();

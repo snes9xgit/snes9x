@@ -327,6 +327,9 @@
     <ClInclude Include="..\vulkan\vulkan_texture.hpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClInclude>
+    <ClInclude Include="..\vulkan\vulkan_simple_output.hpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\bsx.cpp">
@@ -717,6 +720,9 @@
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\external\stb\stb_image_implementation.cpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vulkan\vulkan_simple_output.cpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClCompile>
   </ItemGroup>

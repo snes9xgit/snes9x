@@ -445,6 +445,7 @@
     <ClInclude Include="..\vulkan\vulkan_context.hpp" />
     <ClInclude Include="..\vulkan\vulkan_pipeline_image.hpp" />
     <ClInclude Include="..\vulkan\vulkan_shader_chain.hpp" />
+    <ClInclude Include="..\vulkan\vulkan_simple_output.hpp" />
     <ClInclude Include="..\vulkan\vulkan_slang_pipeline.hpp" />
     <ClInclude Include="..\vulkan\vulkan_swapchain.hpp" />
     <ClInclude Include="..\vulkan\vulkan_texture.hpp" />
@@ -607,6 +608,7 @@
     <ClCompile Include="..\vulkan\vulkan_hpp_storage.cpp" />
     <ClCompile Include="..\vulkan\vulkan_pipeline_image.cpp" />
     <ClCompile Include="..\vulkan\vulkan_shader_chain.cpp" />
+    <ClCompile Include="..\vulkan\vulkan_simple_output.cpp" />
     <ClCompile Include="..\vulkan\vulkan_slang_pipeline.cpp" />
     <ClCompile Include="..\vulkan\vulkan_swapchain.cpp" />
     <ClCompile Include="..\vulkan\vulkan_texture.cpp" />
