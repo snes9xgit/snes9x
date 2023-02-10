@@ -50,6 +50,7 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
 pkg_check_modules(GTK REQUIRED gtkmm-3.0 gthread-2.0 libpng)
 pkg_check_modules(XRANDR REQUIRED xrandr)
+
 find_library(X11 X11 REQUIRED)
 find_library(XEXT Xext REQUIRED)
 find_library(DL dl REQUIRED)
@@ -116,7 +117,9 @@ if(USE_SLANG)
                         ../vulkan/vulkan_pipeline_image.cpp
                         ../vulkan/vulkan_pipeline_image.hpp
                         ../vulkan/vulkan_shader_chain.cpp
-                        ../vulkan/vulkan_shader_chain.hpp)
+                        ../vulkan/vulkan_shader_chain.hpp
+			../vulkan/vulkan_simple_output.hpp
+			../vulkan/vulkan_simple_output.cpp)
 
 endif()
 

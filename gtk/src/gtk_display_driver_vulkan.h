@@ -8,9 +8,8 @@
 #include "gtk_s9x.h"
 #include "gtk_display_driver.h"
 #include "../../vulkan/vulkan_context.hpp"
-#include "../../vulkan/vulkan_texture.hpp"
-#include "../../vulkan/slang_preset.hpp"
 #include "../../vulkan/vulkan_shader_chain.hpp"
+#include "../../vulkan/vulkan_simple_output.hpp"
 
 #ifdef VK_USE_PLATFORM_WAYLAND_KHR
 #include "gtk_wayland_surface.h"
@@ -33,14 +32,12 @@ class S9xVulkanDisplayDriver : public S9xDisplayDriver
 
   private:
     std::unique_ptr<Vulkan::Context> context;
-    Vulkan::Swapchain *swapchain;
     vk::Device device;
     
     GdkDisplay *gdk_display;
     GdkWindow *gdk_window;
     Display *display;
     Window xid;
-    Colormap colormap;
     int current_width;
     int current_height;
 
@@ -48,16 +45,6 @@ class S9xVulkanDisplayDriver : public S9xDisplayDriver
     std::unique_ptr<WaylandSurface> wayland_surface;
 #endif
 
-    void create_pipeline();
-    vk::UniqueDescriptorSetLayout descriptor_set_layout;
-    vk::UniquePipelineLayout pipeline_layout;
-    vk::UniquePipeline pipeline;
-    vk::Sampler linear_sampler;
-    vk::Sampler nearest_sampler;
-
-    void draw_buffer(uint8_t *buffer, int width, int height, int byte_stride);
-    bool filter = true;
-    std::vector<Vulkan::Texture> textures;
-    std::vector<vk::UniqueDescriptorSet> descriptors;
     std::unique_ptr<Vulkan::ShaderChain> shaderchain;
+    std::unique_ptr<Vulkan::SimpleOutput> simple_output;
 };
