@@ -135,7 +135,7 @@ void CShaderParamDlg::trackbar_changed(HWND trackbar)
 
     auto& p = parameter_widgets[i];
     int pos = SendMessage(trackbar, TBM_GETPOS, 0, 0);
-    float value = parameters[i].step * pos;
+    float value = parameters[i].step * pos + parameters[i].min;
 
     TCHAR val[256];
     _stprintf(val, TEXT("%g"), value);
@@ -311,7 +311,7 @@ void CShaderParamDlg::createContent(HWND hDlg)
         );
         SendMessage(item, TBM_SETRANGEMIN, false, 0);
         SendMessage(item, TBM_SETRANGEMAX, false, (int)round((p.max - p.min) / p.step));
-        SendMessage(item, TBM_SETPOS, true, (int)round(p.val / p.step));
+        SendMessage(item, TBM_SETPOS, true, (int)round((p.val - p.min) / p.step));
         SetWindowLongPtr(item, GWLP_USERDATA, i);
         widgets.trackbar = item;
 
@@ -355,9 +355,9 @@ void CShaderParamDlg::handle_up_down(HWND hStatic, int id, int change)
 	TCHAR val[100];
 	GetWindowText(hEdit, val, 100);
 	p.val = _ttof(val);
-    int step = round(p.val / p.step);
+    int step = round((p.val - p.min) / p.step);
 	step += change > 0 ? 1 : -1;
-    p.val = step * p.step;
+    p.val = step * p.step + p.min;
 	if (p.val < p.min)
 		p.val = p.min;
 	if (p.val > p.max)
