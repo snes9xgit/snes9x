@@ -149,9 +149,9 @@ CShaderParamDlg::CShaderParamDlg(std::vector<GLSLParam>& parameters_, std::funct
 {
     HDC hIC;
     TEXTMETRIC tm;
-    LOGFONT lf;
+    LOGFONT lf{};
 
-    OSVERSIONINFO ovi;
+    OSVERSIONINFO ovi{};
 
     ovi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
     GetVersionEx(&ovi);
@@ -251,8 +251,8 @@ void CShaderParamDlg::resize(HWND hDlg)
     for (size_t i = 0; i < parameter_widgets.size(); i++)
     {
         auto& p = parameter_widgets[i];
-        SetWindowPos(p.trackbar, 0, 0, 0, crect.right - MARGIN * 4 - maxDescriptionWidth - edit_width, avgCharHeight * 1.7, SWP_NOMOVE | SWP_NOZORDER);
-        SetWindowPos(p.entry, 0, crect.right - MARGIN - edit_width, -1 * scrollpos + MARGIN + i * ((int)(avgCharHeight * 1.7) + MARGIN), edit_width, avgCharHeight * 1.7, SWP_NOZORDER);
+        SetWindowPos(p.trackbar, 0, 0, 0, crect.right - MARGIN * 4 - maxDescriptionWidth - edit_width, (int)(avgCharHeight * 1.7), SWP_NOMOVE | SWP_NOZORDER);
+        SetWindowPos(p.entry, 0, crect.right - MARGIN - edit_width, -1 * scrollpos + MARGIN + (int)i * ((int)(avgCharHeight * 1.7) + MARGIN), edit_width, (int)(avgCharHeight * 1.7), SWP_NOZORDER);
         SendMessage(p.updown, UDM_SETBUDDY, (WPARAM)p.entry, 0);
     }
 }
@@ -287,7 +287,7 @@ void CShaderParamDlg::createContent(HWND hDlg)
 
     parameter_widgets.clear();
     for(int i = 0; i < parameters.size(); i++) {
-        ParameterWidgetSet widgets;
+        ParameterWidgetSet widgets{};
         GLSLParam &p = parameters[i];
         TCHAR desc[270];
         _stprintf(desc, TEXT("%s [%g-%g]"), (TCHAR*)_tFromChar(p.name.c_str()), p.min, p.max);
@@ -303,15 +303,15 @@ void CShaderParamDlg::createContent(HWND hDlg)
             WS_VISIBLE |
             TBS_NOTICKS,
             desc_width + MARGIN * 2, top,
-            clientRect.right - desc_width - edit_width - MARGIN * 4, avgCharHeight * 1.7,
+            clientRect.right - desc_width - edit_width - MARGIN * 4, (int)(avgCharHeight * 1.7),
             parent,
-            (HMENU)(IDC_PARAMS_START_TRACKBAR + i),
+            (HMENU)(UINT_PTR)(IDC_PARAMS_START_TRACKBAR + i),
             GUI.hInstance,
             NULL
         );
         SendMessage(item, TBM_SETRANGEMIN, false, 0);
-        SendMessage(item, TBM_SETRANGEMAX, false, (int)round((p.max - p.min) / p.step));
-        SendMessage(item, TBM_SETPOS, true, (int)round((p.val - p.min) / p.step));
+        SendMessage(item, TBM_SETRANGEMAX, false, (LPARAM)round((p.max - p.min) / p.step));
+        SendMessage(item, TBM_SETPOS, true, (LPARAM)round((p.val - p.min) / p.step));
         SetWindowLongPtr(item, GWLP_USERDATA, i);
         widgets.trackbar = item;
 
@@ -331,7 +331,7 @@ void CShaderParamDlg::createContent(HWND hDlg)
         parameter_widgets.push_back(widgets);
     }
 
-    RECT windowRect;
+    RECT windowRect{};
     GetClientRect(parent, &clientRect);
     HWND scrollbar = GetDlgItem(hDlg,IDC_SCROLLBAR_PARAMS);
     SCROLLINFO si = { 0 };
@@ -355,7 +355,7 @@ void CShaderParamDlg::handle_up_down(HWND hStatic, int id, int change)
 	TCHAR val[100];
 	GetWindowText(hEdit, val, 100);
 	p.val = _ttof(val);
-    int step = round((p.val - p.min) / p.step);
+    int step = (int)round((p.val - p.min) / p.step);
 	step += change > 0 ? 1 : -1;
     p.val = step * p.step + p.min;
 	if (p.val < p.min)
