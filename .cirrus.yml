@@ -195,12 +195,3 @@ libretro_nintendo-ngc_task:
   build_artifacts:
     path: "libretro/snes9x_libretro_ngc.a"
 
-
-libretro_playstation-psp_task:
-  container:
-    image: bkcsoft/psptoolchain
-  compile_script:
-    - make -j2 -C libretro platform=unix
-  build_artifacts:
-    path: "libretro/snes9x_libretro.so"
-
