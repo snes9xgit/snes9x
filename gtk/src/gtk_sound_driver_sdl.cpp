@@ -32,6 +32,8 @@ void S9xSDLSoundDriver::samples_available()
 
     mutex.lock();
     buffer.push(temp, snes_samples_available);
+    if (Settings.DynamicRateControl)
+        S9xUpdateDynamicRate(buffer.space_empty(), buffer.buffer_size);
     mutex.unlock();
 }
 
