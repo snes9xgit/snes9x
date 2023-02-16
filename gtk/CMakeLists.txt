@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.18)
 project(snes9x-gtk VERSION 1.61)
 
-option(USE_SLANG "Build support for slang-type shaders" ON)
+option(USE_SLANG "Build support for Vulkan output and .slangp shaders" ON)
 option(USE_XV "Build support for XVideo output" ON)
 option(USE_PORTAUDIO "Build PortAudio sound driver" ON)
 option(USE_ALSA "Build ALSA sound driver" ON)
@@ -19,6 +19,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_INSTALL_DATADIR "snes9x" CACHE STRING "cheats.bml directory")
 set(CMAKE_INSTALL_LOCALEDIR locale CACHE STRING "Locale directory")
+
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "One of: Debug Release RelWithDebInfo MinSizeRel" FORCE)
+endif(NOT CMAKE_BUILD_TYPE)
 
 string(APPEND DATADIR ${CMAKE_INSTALL_PREFIX} "/" ${CMAKE_INSTALL_DATAROOTDIR} "/" ${CMAKE_INSTALL_DATADIR})
 string(APPEND LOCALEDIR ${CMAKE_INSTALL_PREFIX} "/" ${CMAKE_INSTALL_DATAROOTDIR} "/" ${CMAKE_INSTALL_LOCALEDIR})
@@ -39,6 +43,8 @@ set(SOURCES)
 set(ARGS -Wall -Wno-unused-parameter)
 set(LIBS)
 set(DEFINES)
+
+include(CheckIncludeFile)
 
 include(FindGettext)
 
@@ -118,8 +124,10 @@ if(USE_SLANG)
                         ../vulkan/vulkan_pipeline_image.hpp
                         ../vulkan/vulkan_shader_chain.cpp
                         ../vulkan/vulkan_shader_chain.hpp
-			../vulkan/vulkan_simple_output.hpp
-			../vulkan/vulkan_simple_output.cpp)
+                        ../vulkan/vulkan_simple_output.hpp
+                        ../vulkan/vulkan_simple_output.cpp
+                        src/gtk_display_driver_vulkan.cpp
+                        src/gtk_display_driver_vulkan.h)
 
 endif()
 
@@ -227,8 +235,6 @@ list(APPEND SOURCES
     src/gtk_control.h
     src/gtk_display.cpp
     src/gtk_display_driver_gtk.cpp
-    src/gtk_display_driver_vulkan.cpp
-    src/gtk_display_driver_vulkan.h
     src/gtk_display_driver_gtk.h
     src/gtk_display_driver.h
     src/gtk_display.h
@@ -358,23 +364,25 @@ target_compile_options(snes9x-gtk PRIVATE ${ARGS})
 target_link_libraries(snes9x-gtk PRIVATE ${LIBS})
 target_compile_definitions(snes9x-gtk PRIVATE ${DEFINES})
 
-add_executable(slang_test ../vulkan/slang_helpers.cpp
-                        ../vulkan/slang_helpers.hpp
-                        ../vulkan/slang_shader.cpp
-                        ../vulkan/slang_shader.hpp
-                        ../vulkan/slang_preset.cpp
-                        ../vulkan/slang_preset.hpp
-                        ../vulkan/slang_preset_ini.cpp
-                        ../vulkan/slang_preset_ini.hpp
-                        ../vulkan/vulkan_hpp_storage.cpp
-                        ../vulkan/slang_preset_test.cpp
-                        ../conffile.cpp
-                        ../stream.cpp)
+if(USE_SLANG)
+    add_executable(slang_test ../vulkan/slang_helpers.cpp
+        ../vulkan/slang_helpers.hpp
+        ../vulkan/slang_shader.cpp
+        ../vulkan/slang_shader.hpp
+        ../vulkan/slang_preset.cpp
+        ../vulkan/slang_preset.hpp
+        ../vulkan/slang_preset_ini.cpp
+        ../vulkan/slang_preset_ini.hpp
+        ../vulkan/vulkan_hpp_storage.cpp
+        ../vulkan/slang_preset_test.cpp
+        ../conffile.cpp
+        ../stream.cpp)
 
-target_include_directories(slang_test PRIVATE ${INCLUDES})
-target_compile_options(slang_test PRIVATE ${ARGS})
-target_compile_definitions(slang_test PRIVATE ${DEFINES})
-target_link_libraries(slang_test PRIVATE ${LIBS})
+    target_include_directories(slang_test PRIVATE ${INCLUDES})
+    target_compile_options(slang_test PRIVATE ${ARGS})
+    target_compile_definitions(slang_test PRIVATE ${DEFINES})
+    target_link_libraries(slang_test PRIVATE ${LIBS})
+endif()
 
 install(TARGETS snes9x-gtk)
 install(FILES ../data/cheats.bml DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${CMAKE_INSTALL_DATADIR})

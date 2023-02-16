@@ -24,7 +24,9 @@
 #endif
 
 #include "gtk_display_driver_opengl.h"
+#ifdef USE_SLANG
 #include "gtk_display_driver_vulkan.h"
+#endif
 
 void filter_scanlines(uint8 *, int, uint8 *, int, int, int);
 void filter_2x(uint8 *, int, uint8 *, int, int, int);
@@ -809,7 +811,9 @@ void S9xQueryDrivers()
         dd.push_back("opengl");
     if (gui_config->allow_xv)
         dd.push_back("xv");
+#ifdef USE_SLANG
     dd.push_back("vulkan");
+#endif
 }
 
 bool8 S9xDeinitUpdate(int width, int height)
@@ -911,10 +915,12 @@ static void S9xInitDriver()
     {
         driver = new S9xOpenGLDisplayDriver(top_level, gui_config);
     }
+#ifdef USE_SLANG
     else if ("vulkan" == gui_config->display_driver)
     {
         driver = new S9xVulkanDisplayDriver(top_level, gui_config);
     }
+#endif
 #if defined(USE_XV) && defined(GDK_WINDOWING_X11)
     else if ("xv" == gui_config->display_driver)
     {
