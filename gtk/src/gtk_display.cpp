@@ -1317,6 +1317,9 @@ void S9xQueryDrivers()
 
 bool8 S9xDeinitUpdate(int width, int height)
 {
+    if (width <= 0 || height <= 0)
+        return false;
+
     int yoffset = 0;
 
     if (top_level->last_height > height)
