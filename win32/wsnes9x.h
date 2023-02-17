@@ -260,6 +260,8 @@ struct sGUI {
     // rewinding
     unsigned int rewindBufferSize;
     unsigned int rewindGranularity;
+
+	bool AddToRegistry;
 };
 
 //TURBO masks

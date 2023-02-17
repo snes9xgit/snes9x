@@ -5338,6 +5338,7 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 			SendDlgItemMessage(hDlg, IDC_SFXSPEED_SPIN, UDM_SETPOS, 0, Settings.SuperFXClockMultiplier);
 			CheckDlgButton(hDlg,IDC_INACTIVE_PAUSE,GUI.InactivePause ? BST_CHECKED : BST_UNCHECKED);
 			CheckDlgButton(hDlg,IDC_CUSTOMROMOPEN,GUI.CustomRomOpen ? BST_CHECKED : BST_UNCHECKED);
+			CheckDlgButton(hDlg, IDC_ADD_REGISTRY, GUI.AddToRegistry ? BST_CHECKED : BST_UNCHECKED);
 			CheckDlgButton(hDlg,IDC_HIRESAVI,GUI.AVIHiRes ? BST_CHECKED : BST_UNCHECKED);
 			CheckDlgButton(hDlg, IDC_CONFIRMSAVELOAD, GUI.ConfirmSaveLoad ? BST_CHECKED : BST_UNCHECKED);
 
@@ -5431,6 +5432,7 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 					GUI.CustomRomOpen = (BST_CHECKED==IsDlgButtonChecked(hDlg, IDC_CUSTOMROMOPEN));
 					GUI.AVIHiRes = (BST_CHECKED==IsDlgButtonChecked(hDlg, IDC_HIRESAVI));
 					GUI.ConfirmSaveLoad = (BST_CHECKED == IsDlgButtonChecked(hDlg, IDC_CONFIRMSAVELOAD));
+					GUI.AddToRegistry = (BST_CHECKED == IsDlgButtonChecked(hDlg, IDC_ADD_REGISTRY));
 
 					Settings.TurboSkipFrames=SendDlgItemMessage(hDlg, IDC_SPIN_TURBO_SKIP, UDM_GETPOS, 0,0);
 					Settings.AutoMaxSkipFrames=SendDlgItemMessage(hDlg, IDC_SPIN_MAX_SKIP, UDM_GETPOS, 0,0);
@@ -7321,8 +7323,12 @@ void LoadExts(void)
 	curr=valid_ext;
 	valid_ext=valid_ext->next;
 	delete curr;
-	RegisterProgid();
-	RegisterExts();
+
+	if (GUI.AddToRegistry)
+	{
+		RegisterProgid();
+		RegisterExts();
+	}
 }
 
 void MakeExtFile(void)
