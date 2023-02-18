@@ -110,6 +110,11 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
         swapchain_object.reset();
         return false;
     }
+    else if (extents.width > 8192 || extents.height > 8192)
+    {
+        extents.width = 512;
+        extents.height = 512;
+    }
 
     auto swapchain_create_info = vk::SwapchainCreateInfoKHR{}
         .setMinImageCount(num_swapchain_images)

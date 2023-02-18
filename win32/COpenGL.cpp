@@ -147,10 +147,7 @@ void COpenGL::DeInitialize()
 		wglDeleteContext(hRC);
 		hRC = NULL;
 	}
-	if(hDC) {
-		ReleaseDC(hWnd,hDC);
-		hDC = NULL;
-	}
+	hDC = NULL;
 	hWnd = NULL;
 	afterRenderWidth = 0;
 	afterRenderHeight = 0;
