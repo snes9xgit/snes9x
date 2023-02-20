@@ -15,7 +15,6 @@
 #include "../external/SPIRV-Cross/spirv_cross.hpp"
 #include "../external/SPIRV-Cross/spirv_glsl.hpp"
 #include "slang_shader.hpp"
-#include "../../conffile.h"
 
 using std::string;
 using std::to_string;
@@ -27,7 +26,7 @@ SlangPreset::SlangPreset()
 SlangPreset::~SlangPreset()
 {
 }
-#if 1
+
 bool SlangPreset::load_preset_file(string filename)
 {
     if (!ends_with(filename, ".slangp"))
@@ -45,8 +44,6 @@ bool SlangPreset::load_preset_file(string filename)
 
     passes.resize(num_passes);
 
-    // ConfFile.cpp searches global keys using a "::" prefix. .slang shaders
-    // indicate data specific to shader pass by appending the pass number.
     int index;
     auto key = [&](string s) -> string { return s + to_string(index); };
     auto iGetBool = [&](string s, bool def = false) -> bool {
@@ -117,10 +114,7 @@ bool SlangPreset::load_preset_file(string filename)
             return passes[i].load_file();
         }));
     }
-    bool success = true;
-    for (auto &f : futures)
-        success &= f.get();
-    if (!success)
+    if (!std::all_of(futures.begin(), futures.end(), [](auto &f) { return f.get(); }))
         return false;
 
     gather_parameters();
@@ -140,115 +134,7 @@ bool SlangPreset::load_preset_file(string filename)
 
     return true;
 }
-#else
-bool SlangPreset::load_preset_file(string filename)
-{
-    if (!ends_with(filename, ".slangp"))
-        return false;
 
-    ConfigFile conf;
-
-    if (!conf.LoadFile(filename.c_str()))
-        return false;
-
-    int num_passes = conf.GetInt("::shaders", 0);
-
-    if (num_passes <= 0)
-        return false;
-
-    passes.resize(num_passes);
-
-    // ConfFile.cpp searches global keys using a "::" prefix. .slang shaders
-    // indicate data specific to shader pass by appending the pass number.
-    int index;
-    auto key = [&](string s) -> string { return "::" + s + to_string(index); };
-    auto iGetBool = [&](string s, bool def = false) -> bool {
-        return conf.GetBool(key(s).c_str(), def);
-    };
-    auto iGetString = [&](string s, string def = "") -> string {
-        return conf.GetString(key(s).c_str(), def);
-    };
-    auto iGetFloat = [&](string s, float def = 1.0f) -> float {
-        return std::stof(conf.GetString(key(s).c_str(), to_string(def).c_str()));
-    };
-    auto iGetInt = [&](string s, int def = 0) -> int {
-        return conf.GetInt(key(s).c_str(), def);
-    };
-
-    for (index = 0; index < num_passes; index++)
-    {
-        auto &shader = passes[index];
-        shader.filename = iGetString("shader", "");
-        shader.alias = iGetString("alias", "");
-        shader.filter_linear = iGetBool("filter_linear");
-        shader.mipmap_input = iGetBool("mipmap_input");
-        shader.float_framebuffer = iGetBool("float_framebuffer");
-        shader.srgb_framebuffer = iGetBool("srgb_framebuffer");
-        shader.frame_count_mod = iGetInt("frame_count_mod", 0);
-        shader.wrap_mode = iGetString("wrap_mode");
-        // Is this correct? It gives priority to _x and _y scale types.
-        string scale_type = iGetString("scale_type", "undefined");
-        shader.scale_type_x = iGetString("scale_type_x", scale_type);
-        shader.scale_type_y = iGetString("scale_type_y", scale_type);
-        shader.scale_x = iGetFloat("scale_x", 1.0f);
-        shader.scale_y = iGetFloat("scale_y", 1.0f);
-        if (conf.Exists(key("scale").c_str()))
-        {
-            float scale = iGetFloat("scale");
-            shader.scale_x = scale;
-            shader.scale_y = scale;
-        }
-    }
-
-    string texture_string = conf.GetString("::textures", "");
-    if (!texture_string.empty())
-    {
-        auto texture_list = split_string(texture_string, ';');
-
-        for (auto &id : texture_list)
-        {
-            Texture texture;
-            texture.id = trim(id);
-            textures.push_back(texture);
-        }
-
-        for (auto &t : textures)
-        {
-            t.wrap_mode = conf.GetString(("::" + t.id + "_wrap_mode").c_str(), "");
-            t.mipmap = conf.GetBool(("::" + t.id + "_mipmap").c_str(), "");
-            t.linear = conf.GetBool(("::" + t.id + "_linear").c_str(), "");
-            t.filename = conf.GetString(("::" + t.id).c_str(), "");
-        }
-    }
-
-    for (auto &shader : passes)
-    {
-        canonicalize(shader.filename, filename);
-        if (!shader.load_file())
-            return false;
-    }
-
-    for (auto &texture : textures)
-        canonicalize(texture.filename, filename);
-
-    gather_parameters();
-
-    for (auto &p : parameters)
-    {
-        auto value_str = conf.GetString(("::" + p.id).c_str());
-        if (value_str)
-        {
-            p.val = atof(value_str);
-            if (p.val < p.min)
-                p.val = p.min;
-            else if (p.val > p.max)
-                p.val = p.max;
-        }
-    }
-
-    return true;
-}
-#endif
 /*
     Aggregates the parameters from individual stages and separate shader files,
     resolving duplicates.
