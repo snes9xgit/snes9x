@@ -11,6 +11,7 @@
 #include <iostream>
 #include <fstream>
 #include <filesystem>
+#include <future>
 #include "../external/SPIRV-Cross/spirv_cross.hpp"
 #include "../external/SPIRV-Cross/spirv_glsl.hpp"
 #include "slang_shader.hpp"
@@ -109,12 +110,19 @@ bool SlangPreset::load_preset_file(string filename)
         }
     }
 
-    for (auto &shader : passes)
+    std::vector<std::future<bool>> futures;
+    for (size_t i = 0; i < passes.size(); i++)
     {
-        if (!shader.load_file())
-            return false;
+        futures.push_back(std::async(std::launch::async, [&, i]() -> bool {
+            return passes[i].load_file();
+        }));
     }
-    
+    bool success = true;
+    for (auto &f : futures)
+        success &= f.get();
+    if (!success)
+        return false;
+
     gather_parameters();
 
     for (auto &p : parameters)
