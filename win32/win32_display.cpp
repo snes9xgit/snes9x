@@ -107,6 +107,9 @@ returns true if successful, false otherwise
 bool WinDisplayReset(void)
 {
 	S9xDisplayOutput->DeInitialize();
+	if (S9xDisplayOutput == (IS9xDisplayOutput *)&VulkanDriver && GUI.outputMethod == OPENGL)
+		Sleep(500);
+
 	switch(GUI.outputMethod) {
 		default:
 		case DIRECT3D:
@@ -124,14 +127,23 @@ bool WinDisplayReset(void)
 			S9xDisplayOutput = &VulkanDriver;
 			break;
 	}
-	if(S9xDisplayOutput->Initialize(GUI.hWnd)) {
+
+	bool initialized = S9xDisplayOutput->Initialize(GUI.hWnd);
+
+	if (!initialized) {
+		S9xDisplayOutput->DeInitialize();
+		Sleep(500);
+		initialized = S9xDisplayOutput->Initialize(GUI.hWnd);
+	}
+
+	if (initialized) {
 		S9xGraphicsDeinit();
-		S9xSetWinPixelFormat ();
+		S9xSetWinPixelFormat();
 		S9xGraphicsInit();
 
-        if (GUI.DWMSync)
-        {
-            HMODULE dwmlib = LoadLibrary(TEXT("dwmapi"));
+		if (GUI.DWMSync)
+		{
+			HMODULE dwmlib = LoadLibrary(TEXT("dwmapi"));
             DwmFlushProc = (DWMFLUSHPROC)GetProcAddress(dwmlib, "DwmFlush");
             DwmIsCompositionEnabledProc = (DWMISCOMPOSITIONENABLEDPROC)GetProcAddress(dwmlib, "DwmIsCompositionEnabled");
 

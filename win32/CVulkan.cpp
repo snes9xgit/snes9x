@@ -14,9 +14,15 @@ bool CVulkan::Initialize(HWND hWnd)
     current_width = window_rect.right - window_rect.left;
     current_height = window_rect.bottom - window_rect.top;
 
-    context = std::make_unique<Vulkan::Context>();
-    if (!context->init_win32(0, hWnd))
+    try {
+        context = std::make_unique<Vulkan::Context>();
+        if (!context->init_win32(0, hWnd))
+            return false;
+    }
+    catch (std::exception& e)
+    {
         return false;
+    }
 
     if (GUI.shaderEnabled && GUI.OGLshaderFileName && GUI.OGLshaderFileName[0])
     {
