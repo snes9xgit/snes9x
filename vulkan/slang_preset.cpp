@@ -107,10 +107,6 @@ bool SlangPreset::load_preset_file(string filename)
         }
     }
 
-    if (!cache_directory.empty())
-        for (auto &p : passes)
-            p.set_cache_directory(cache_directory);
-
     std::vector<std::future<bool>> futures;
     for (size_t i = 0; i < passes.size(); i++)
     {
@@ -137,11 +133,6 @@ bool SlangPreset::load_preset_file(string filename)
     }
 
     return true;
-}
-
-void SlangPreset::set_cache_directory(std::string filename)
-{
-    cache_directory = filename;
 }
 
 /*

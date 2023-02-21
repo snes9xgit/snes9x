@@ -72,10 +72,6 @@ struct SlangShader
     bool load_file(std::string new_filename = "");
     void divide_into_stages(const std::vector<std::string> &lines);
     bool generate_spirv();
-    std::string get_hash_filename(const std::string &shader_string);
-    bool load_cache(std::string hash_filename, std::vector<uint32_t> &output);
-    void save_cache(std::string hash_filename, std::vector<uint32_t> &spv);
-    void set_cache_directory(std::string dir);
     static std::vector<uint32_t> generate_spirv(std::string shader_string, std::string stage);
 
     std::string filename;
@@ -104,5 +100,4 @@ struct SlangShader
     int ubo_binding;
     std::vector<Uniform> uniforms;
     std::vector<Sampler> samplers;
-    std::string cache_directory;
 };

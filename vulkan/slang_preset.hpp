@@ -18,7 +18,6 @@ struct SlangPreset
     bool match_sampler_semantic(const std::string &name, int pass, SlangShader::Sampler::Type &type, int &specifier);
     void gather_parameters();
     bool save_to_file(std::string filename);
-    void set_cache_directory(std::string filename);
 
     struct Texture
     {
@@ -35,5 +34,4 @@ struct SlangPreset
     int oldest_previous_frame;
     bool uses_feedback;
     bool last_pass_uses_feedback;
-    std::string cache_directory;
 };

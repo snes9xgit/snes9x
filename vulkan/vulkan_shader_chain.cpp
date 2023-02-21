@@ -187,15 +187,12 @@ void ShaderChain::update_and_propagate_sizes(int original_width_new, int origina
     }
 }
 
-bool ShaderChain::load_shader_preset(std::string filename, std::string cache_dir)
+bool ShaderChain::load_shader_preset(std::string filename)
 {
     if (!ends_with(filename, ".slangp"))
         printf("Warning: loading preset without .slangp extension\n");
 
     preset = std::make_unique<SlangPreset>();
-
-    if (!cache_dir.empty())
-        preset->set_cache_directory(cache_dir);
 
     if (!preset->load_preset_file(filename))
     {
