@@ -10,6 +10,8 @@
 #include "../external/glslang/glslang/Public/ShaderLang.h"
 #include "../external/glslang/SPIRV/GlslangToSpv.h"
 #include "../external/glslang/StandAlone/ResourceLimits.h"
+#include "../external/xxh64/xxh64.hpp"
+#include <filesystem>
 
 using std::string;
 using std::vector;
@@ -21,6 +23,11 @@ SlangShader::SlangShader()
 
 SlangShader::~SlangShader()
 {
+}
+
+void SlangShader::set_cache_directory(std::string dir)
+{
+    cache_directory = dir;
 }
 
 /*
@@ -231,44 +238,76 @@ std::vector<uint32_t> SlangShader::generate_spirv(std::string shader_string, std
 
 }
 
+std::string SlangShader::get_hash_filename(const std::string &shader_string)
+{
+    uint64_t hash = xxh64::hash(shader_string.c_str(), fragment_shader_string.size(), 56);
+    char hash_hex_string[32];
+    snprintf(hash_hex_string, 32, "%016lx.spv", hash);
+    auto cache_path = std::filesystem::path(cache_directory);
+    cache_path /= hash_hex_string;
+
+    return cache_path.string();
+}
+
+static const char *header = "SPVCACHE1";
+static size_t header_size = 9;
+
+bool SlangShader::load_cache(std::string hash_filename, std::vector<uint32_t> &output)
+{
+    if (cache_directory.empty())
+        return false;
+    if (!std::filesystem::exists(hash_filename))
+        return false;
+    auto size = std::filesystem::file_size(hash_filename);
+    size -= header_size;
+    if ((size & 3) != 0)
+        return false;
+
+    std::ifstream file(hash_filename, std::ios::binary);
+    char headerblock[header_size];
+    file.read(headerblock, header_size);
+    if (memcmp(headerblock, header, header_size))
+    {
+        printf("Invalid cache file format %s.\n", headerblock);
+        return false;
+    }
+
+    output.resize(size / 4);
+    file.read((char *)output.data(), size);
+
+    return true;
+}
+
+void SlangShader::save_cache(std::string hash_filename, std::vector<uint32_t> &spv)
+{
+    if (cache_directory.empty())
+        return;
+    std::ofstream file(hash_filename, std::ios::binary);
+    file.write(header, header_size);
+    file.write((char *)spv.data(), spv.size() * 4);
+}
+
 /*
     Generate SPIRV from separate preprocessed fragment and vertex shaders.
     Must have called divide_into_stages beforehand. Returns true on success.
 */
 bool SlangShader::generate_spirv()
 {
-    Initializeglslang();
+    fragment_shader_spirv.clear();
+    vertex_shader_spirv.clear();
 
-    const EShMessages messages = (EShMessages)(EShMsgDefault | EShMsgVulkanRules | EShMsgSpvRules | EShMsgDebugInfo | EShMsgAST | EShMsgEnhanced);
-    auto forbid_includer = glslang::TShader::ForbidIncluder();
+    auto vertex_cache_filename = get_hash_filename(vertex_shader_string);
+    auto fragment_cache_filename = get_hash_filename(fragment_shader_string);
 
-    glslang::TShader vertexTShader(EShLangVertex);
-    glslang::TShader fragmentTShader(EShLangFragment);
+    if (load_cache(vertex_cache_filename, vertex_shader_spirv))
+        if (load_cache(fragment_cache_filename, fragment_shader_spirv))
+            return true;
 
-    auto compile = [&](glslang::TShader &shader, string &shader_string, std::vector<uint32_t> &spirv) -> bool {
-        const char *source = shader_string.c_str();
-        shader.setStrings(&source, 1);
-        if (!shader.parse(&glslang::DefaultTBuiltInResource, 450, false, messages, forbid_includer))
-            return false;
+    vertex_shader_spirv = generate_spirv(vertex_shader_string, "vertex");
+    fragment_shader_spirv = generate_spirv(fragment_shader_string, "fragment");
 
-        glslang::TProgram program;
-        program.addShader(&shader);
-        if (!program.link(messages))
-            return false;
+    save_cache(vertex_cache_filename, vertex_shader_spirv);
+    save_cache(fragment_cache_filename, fragment_shader_spirv);
 
-        glslang::GlslangToSpv(*program.getIntermediate(shader.getStage()), spirv);
-        return true;
-    };
-
-    if (!compile(vertexTShader, vertex_shader_string, vertex_shader_spirv))
-    {
-        printf("%s\n%s\n", vertexTShader.getInfoLog(), vertexTShader.getInfoDebugLog());
-        return false;
-    }
-    if (!compile(fragmentTShader, fragment_shader_string, fragment_shader_spirv))
-    {
-        printf("%s\n%s\n", fragmentTShader.getInfoLog(), fragmentTShader.getInfoDebugLog());
-        return false;
-    }
     return true;
 }

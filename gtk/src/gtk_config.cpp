@@ -22,6 +22,26 @@
 
 namespace fs = std::filesystem;
 
+std::string get_cache_dir()
+{
+    char *env_home = getenv("HOME");
+    char *env_cache = getenv("XDG_CACHE_HOME");
+
+    std::string dir;
+
+    if (env_cache)
+        dir = std::string(env_cache) + "/snes9x";
+
+    else if (env_home)
+        dir = std::string(env_home) + "/.cache/snes9x";
+
+    if (dir.empty())
+        return dir;
+
+    fs::create_directories(dir);
+    return dir;
+}
+
 std::string get_config_dir()
 {
     // Find config directory

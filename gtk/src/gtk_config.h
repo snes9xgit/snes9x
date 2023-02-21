@@ -159,6 +159,7 @@ class Snes9xConfig
     int joystick_threshold;
 };
 
+std::string get_cache_dir();
 std::string get_config_dir();
 std::string get_config_file_name();
 

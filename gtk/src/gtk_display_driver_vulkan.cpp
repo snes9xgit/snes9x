@@ -84,7 +84,7 @@ int S9xVulkanDisplayDriver::init()
     if (!gui_config->shader_filename.empty() && gui_config->use_shaders)
     {
         shaderchain = std::make_unique<Vulkan::ShaderChain>(context.get());
-        if (!shaderchain->load_shader_preset(gui_config->shader_filename))
+        if (!shaderchain->load_shader_preset(gui_config->shader_filename, get_cache_dir()))
         {
             fmt::print("Couldn't load shader preset file\n");
             shaderchain = nullptr;
@@ -94,6 +94,8 @@ int S9xVulkanDisplayDriver::init()
             window->enable_widget("shader_parameters_item", true);
             return 0;
         }
+
+
     }
 
     simple_output = std::make_unique<Vulkan::SimpleOutput>(context.get(), vk::Format::eR5G6B5UnormPack16);

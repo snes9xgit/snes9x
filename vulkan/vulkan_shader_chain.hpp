@@ -16,7 +16,7 @@ class ShaderChain
 
     ShaderChain(Context *context_);
     ~ShaderChain();
-    bool load_shader_preset(std::string filename);
+    bool load_shader_preset(std::string filename, std::string cache_dir = "");
     void update_and_propagate_sizes(int original_width_, int original_height_, int viewport_width_, int viewport_height_);
     bool load_lookup_textures();
     void do_frame(uint8_t *data, int width, int height, int stride, vk::Format format, int viewport_x, int viewport_y, int viewport_width, int viewport_height);
