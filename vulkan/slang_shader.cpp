@@ -181,10 +181,9 @@ bool SlangShader::load_file(string new_filename)
     return true;
 }
 
-static void Initializeglslang()
+void SlangShader::initialize_glslang()
 {
     static bool ProcessInitialized = false;
-
     if (!ProcessInitialized)
     {
         glslang::InitializeProcess();
@@ -194,7 +193,7 @@ static void Initializeglslang()
 
 std::vector<uint32_t> SlangShader::generate_spirv(std::string shader_string, std::string stage)
 {
-    Initializeglslang();
+    initialize_glslang();
     const EShMessages messages = (EShMessages)(EShMsgDefault | EShMsgVulkanRules | EShMsgSpvRules);
     string debug;
     auto forbid_includer = glslang::TShader::ForbidIncluder();
@@ -228,7 +227,6 @@ std::vector<uint32_t> SlangShader::generate_spirv(std::string shader_string, std
     }
 
     return spirv;
-
 }
 
 /*
@@ -237,38 +235,12 @@ std::vector<uint32_t> SlangShader::generate_spirv(std::string shader_string, std
 */
 bool SlangShader::generate_spirv()
 {
-    Initializeglslang();
-
-    const EShMessages messages = (EShMessages)(EShMsgDefault | EShMsgVulkanRules | EShMsgSpvRules | EShMsgDebugInfo | EShMsgAST | EShMsgEnhanced);
-    auto forbid_includer = glslang::TShader::ForbidIncluder();
-
-    glslang::TShader vertexTShader(EShLangVertex);
-    glslang::TShader fragmentTShader(EShLangFragment);
-
-    auto compile = [&](glslang::TShader &shader, string &shader_string, std::vector<uint32_t> &spirv) -> bool {
-        const char *source = shader_string.c_str();
-        shader.setStrings(&source, 1);
-        if (!shader.parse(&glslang::DefaultTBuiltInResource, 450, false, messages, forbid_includer))
-            return false;
-
-        glslang::TProgram program;
-        program.addShader(&shader);
-        if (!program.link(messages))
-            return false;
-
-        glslang::GlslangToSpv(*program.getIntermediate(shader.getStage()), spirv);
-        return true;
-    };
-
-    if (!compile(vertexTShader, vertex_shader_string, vertex_shader_spirv))
-    {
-        printf("%s\n%s\n", vertexTShader.getInfoLog(), vertexTShader.getInfoDebugLog());
+    vertex_shader_spirv = generate_spirv(vertex_shader_string, "vertex");
+    if (vertex_shader_spirv.empty())
         return false;
-    }
-    if (!compile(fragmentTShader, fragment_shader_string, fragment_shader_spirv))
-    {
-        printf("%s\n%s\n", fragmentTShader.getInfoLog(), fragmentTShader.getInfoDebugLog());
+    fragment_shader_spirv = generate_spirv(fragment_shader_string, "fragment");
+    if (fragment_shader_spirv.empty())
         return false;
-    }
+
     return true;
 }

@@ -72,6 +72,7 @@ struct SlangShader
     bool load_file(std::string new_filename = "");
     void divide_into_stages(const std::vector<std::string> &lines);
     bool generate_spirv();
+    static void initialize_glslang();
     static std::vector<uint32_t> generate_spirv(std::string shader_string, std::string stage);
 
     std::string filename;

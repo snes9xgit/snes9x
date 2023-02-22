@@ -107,10 +107,11 @@ bool SlangPreset::load_preset_file(string filename)
         }
     }
 
+    SlangShader::initialize_glslang();
     std::vector<std::future<bool>> futures;
     for (size_t i = 0; i < passes.size(); i++)
     {
-        futures.push_back(std::async(std::launch::async, [&, i]() -> bool {
+        futures.push_back(std::async(std::launch::async, [this, i]() -> bool {
             return passes[i].load_file();
         }));
     }
