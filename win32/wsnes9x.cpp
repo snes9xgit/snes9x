@@ -87,7 +87,6 @@ extern SNPServer NPServer;
 #endif
 
 __int64 PCBase, PCFrameTime, PCFrameTimeNTSC, PCFrameTimePAL, PCStart, PCEnd;
-DWORD PCStartTicks, PCEndTicks;
 
 INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgInfoProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -2803,83 +2802,33 @@ VOID CALLBACK HotkeyTimer( UINT idEvent, UINT uMsg, DWORD dwUser, DWORD dw1, DWO
 	}
 }
 
-void CALLBACK FrameTimer( UINT idEvent, UINT uMsg, DWORD dwUser, DWORD dw1, DWORD dw2)
+bool ThrottleTimer()
 {
-	// QueryPerformanceCounter is unreliable on newfangled frequency-switching computers,
-	// yet is absolutely necessary for best performance on somewhat older computers (even ones that are capable of frequency switching but don't do it very often).
-	// Thus, we keep two timers and use the QueryPerformanceCounter one unless the other (more accurate but less precise)
-	// one differs from it by more than a few milliseconds.
+	bool run_frame = false;
+	do_frame_adjust = false;
+	QueryPerformanceCounter((LARGE_INTEGER*)&PCEnd);
 
-    QueryPerformanceCounter((LARGE_INTEGER*)&PCEnd);
-	PCEndTicks = timeGetTime()*1000;
-
-	const __int64 PCElapsedPrecise = PCEnd - PCStart;
-	const __int64 PCElapsedAccurate = (__int64)(PCEndTicks - PCStartTicks) * PCBase / 1000000;
-	const bool useTicksTimer = (abs((int)(PCElapsedPrecise - PCElapsedAccurate)) > (PCBase >> 7)); // if > 7.8 ms difference, settle for accuracy at the sacrifice of precision
-
-    while ((!useTicksTimer && (PCEnd      - PCStart     ) >= PCFrameTime) ||
-		   ( useTicksTimer && (PCEndTicks - PCStartTicks) >= PCFrameTime * 1000000 / PCBase))
-	{
-        if (GUI.FrameCount == GUI.LastFrameCount)
-            GUI.IdleCount++;
-        else
-        {
-            GUI.IdleCount = 0;
-            GUI.LastFrameCount = GUI.FrameCount;
-        }
-
+	if (Settings.TurboMode || Settings.FrameAdvance || Settings.SkipFrames != AUTO_FRAMERATE
 #ifdef NETPLAY_SUPPORT
-		//    if (Settings.NetPlay && !Settings.NetPlayServer)
-		//        return;
-        if (Settings.NetPlay && !Settings.NetPlayServer)
-            return;
-
-		//-    if (Settings.NetPlayServer)
-		//-    {
-		//-        if (Settings.Paused || Settings.StopEmulation || Settings.ForcedPause)
-        if (Settings.NetPlayServer)
-		{
-			//-            WaitForSingleObject (GUI.ServerTimerSemaphore, 0);
-            if ((Settings.Paused && !Settings.FrameAdvance) || Settings.StopEmulation || Settings.ForcedPause)
-            {
-                WaitForSingleObject (GUI.ServerTimerSemaphore, 0);
-                return;
-            }
-            ReleaseSemaphore (GUI.ServerTimerSemaphore, 1, NULL);
-
-            if (Settings.NetPlay)
-                return;
-        }
-        else
+		|| Settings.NetPlay
 #endif
-		{
-			if (Settings.SkipFrames != AUTO_FRAMERATE || Settings.TurboMode ||
-				(Settings.Paused /*&& !Settings.FrameAdvance*/) || Settings.StopEmulation || Settings.ForcedPause)
-			{
-				WaitForSingleObject (GUI.FrameTimerSemaphore, 0);
-				PCStart = PCEnd;
-				PCStartTicks = PCEndTicks;
-				return;
-			}
-			//        ReleaseSemaphore (GUI.ServerTimerSemaphore, 1, NULL);
-			ReleaseSemaphore (GUI.FrameTimerSemaphore, 1, NULL);
-
-			//        if (Settings.NetPlay)
-			//            return;
-			//    }
-			//    else
-			//#endif
-			//    if (Settings.SkipFrames != AUTO_FRAMERATE || Settings.TurboMode ||
-			//        Settings.Paused || Settings.StopEmulation || Settings.ForcedPause)
-			//    {
-			//        WaitForSingleObject (GUI.FrameTimerSemaphore, 0);
-			//        return;
-			//    }
-			//    ReleaseSemaphore (GUI.FrameTimerSemaphore, 1, NULL);
-			PCStart += PCFrameTime;
-			PCStartTicks += (DWORD)(PCFrameTime * 1000000 / PCBase);
-		}
+		)
+	{
+		PCStart = PCEnd;
+		return true;
 	}
+
+    while ((PCEnd - PCStart) >= PCFrameTime)
+	{
+		if ((PCEnd - PCStart) >= (PCFrameTime * 2))
+			do_frame_adjust = true;
+
+		run_frame = true;
+
+		PCStart += PCFrameTime;
+	}
+
+	return run_frame;
 }
 
 static void EnsureInputDisplayUpdated()
@@ -3382,27 +3331,18 @@ int WINAPI WinMain(
     QueryPerformanceFrequency((LARGE_INTEGER*)&PCBase);
     QueryPerformanceCounter((LARGE_INTEGER*)&PCStart);
 	PCEnd = PCStart;
-	PCEndTicks = timeGetTime()*1000;
-	PCStartTicks = timeGetTime()*1000;
     PCFrameTime = PCFrameTimeNTSC = (__int64)((float)PCBase / 60.09881389744051f);
     PCFrameTimePAL = PCBase / 50;
 
 
     Settings.StopEmulation = TRUE;
-    GUI.hFrameTimer = timeSetEvent (20, 0, (LPTIMECALLBACK)FrameTimer, 0, TIME_PERIODIC);
 
 	if(GUI.JoystickHotkeys || GUI.BackgroundInput)
 	    GUI.hHotkeyTimer = timeSetEvent (32, 0, (LPTIMECALLBACK)HotkeyTimer, 0, TIME_PERIODIC);
 	else
 		GUI.hHotkeyTimer = 0;
 
-    GUI.FrameTimerSemaphore = CreateSemaphore (NULL, 0, 10, NULL);
     GUI.ServerTimerSemaphore = CreateSemaphore (NULL, 0, 10, NULL);
-
-    if (GUI.hFrameTimer == 0)
-    {
-        MessageBox( GUI.hWnd, Languages[ GUI.Language].errFrameTimer, TEXT("Snes9x - Frame Timer"), MB_OK | MB_ICONINFORMATION);
-    }
 
 	if (rom_filename)
 	{
@@ -3490,43 +3430,6 @@ int WINAPI WinMain(
 				}
 			}
 
-			// the following is a hack to allow frametimes greater than 100ms,
-			// without affecting the responsiveness of the GUI
-			BOOL run_loop=false;
-			do_frame_adjust=false;
-			if (Settings.TurboMode || Settings.FrameAdvance || Settings.SkipFrames != AUTO_FRAMERATE
-#ifdef NETPLAY_SUPPORT
-			|| Settings.NetPlay
-#endif
-			)
-			{
-				run_loop=true;
-			}
-			else
-			{
-				LONG prev;
-				BOOL success;
-				if ((success = ReleaseSemaphore (GUI.FrameTimerSemaphore, 1, &prev)) &&
-					prev == 0)
-				{
-					WaitForSingleObject (GUI.FrameTimerSemaphore, 0);
-					if (WaitForSingleObject (GUI.FrameTimerSemaphore, 100) == WAIT_OBJECT_0)
-					{
-						run_loop=true;
-					}
-				}
-				else
-				{
-					if (success)
-						WaitForSingleObject (GUI.FrameTimerSemaphore, 0);
-					WaitForSingleObject (GUI.FrameTimerSemaphore, 0);
-
-					run_loop=true;
-					do_frame_adjust=true;
-				}
-			}
-
-
 			if(Settings.FrameAdvance)
 			{
 				if(GFX.InfoStringTimeout > 4)
@@ -3538,7 +3441,7 @@ int WINAPI WinMain(
 			if(GUI.FrameAdvanceJustPressed)
 				GUI.FrameAdvanceJustPressed--;
 
-			if(run_loop)
+			if(ThrottleTimer())
 			{
 				ProcessInput();
 
@@ -4030,7 +3933,6 @@ static void CheckMenuStates ()
 static void ResetFrameTimer ()
 {
     QueryPerformanceCounter((LARGE_INTEGER*)&PCStart);
-	PCStartTicks = timeGetTime()*1000;
     if (Settings.FrameTime == Settings.FrameTimeNTSC)
         PCFrameTime = PCFrameTimeNTSC;
     else if (Settings.FrameTime == Settings.FrameTimePAL)
@@ -4040,11 +3942,6 @@ static void ResetFrameTimer ()
 
 	// determines if we can do sound sync
 	GUI.AllowSoundSync = Settings.PAL ? Settings.FrameTime == Settings.FrameTimePAL : Settings.FrameTime == Settings.FrameTimeNTSC;
-
-    if (GUI.hFrameTimer)
-        timeKillEvent (GUI.hFrameTimer);
-
-    GUI.hFrameTimer = timeSetEvent ((Settings.FrameTime+500)/1000, 0, (LPTIMECALLBACK)FrameTimer, 0, TIME_PERIODIC);
 }
 
 static bool LoadROMPlain(const TCHAR *filename)
