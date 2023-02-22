@@ -3471,17 +3471,13 @@ int WINAPI WinMain(
 					}
 				}
 			}
-			else if ((PCEnd - PCStart) > PCFrameTime / 10)
+			else
 			{
-				auto time_left = ((PCFrameTime - (PCEnd - PCStart)) * 1000000 / PCBase) - 100;
+				auto time_left = ((PCFrameTime - (PCEnd - PCStart)) * 100000 / PCBase);
 				LARGE_INTEGER li;
 				li.QuadPart = -time_left;
 				SetWaitableTimer(throttle_timer, &li, 0, NULL, NULL, false);
 				WaitForSingleObject(throttle_timer, INFINITE);
-			}
-			else
-			{
-				Sleep(0);
 			}
 
 #ifdef NETPLAY_SUPPORT
