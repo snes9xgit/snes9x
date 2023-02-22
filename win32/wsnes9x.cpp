@@ -3369,6 +3369,8 @@ int WINAPI WinMain(
 
     MSG msg;
 
+	HANDLE throttle_timer = CreateWaitableTimer(NULL, true, NULL);
+
     while (TRUE)
     {
 		EnsureInputDisplayUpdated();
@@ -3460,6 +3462,26 @@ int WINAPI WinMain(
 
 				S9xMainLoop();
 				GUI.FrameCount++;
+				if (GUI.CursorTimer)
+				{
+					if (--GUI.CursorTimer == 0)
+					{
+						if (GUI.ControllerOption != SNES_SUPERSCOPE && GUI.ControllerOption != SNES_JUSTIFIER && GUI.ControllerOption != SNES_JUSTIFIER_2 && GUI.ControllerOption != SNES_MACSRIFLE)
+							SetCursor(NULL);
+					}
+				}
+			}
+			else if ((PCEnd - PCStart) > PCFrameTime / 10)
+			{
+				auto time_left = ((PCFrameTime - (PCEnd - PCStart)) * 1000000 / PCBase) - 100;
+				LARGE_INTEGER li;
+				li.QuadPart = -time_left;
+				SetWaitableTimer(throttle_timer, &li, 0, NULL, NULL, false);
+				WaitForSingleObject(throttle_timer, INFINITE);
+			}
+			else
+			{
+				Sleep(0);
 			}
 
 #ifdef NETPLAY_SUPPORT
@@ -3470,14 +3492,6 @@ int WINAPI WinMain(
             Settings.Paused = TRUE;
             Settings.FrameAdvance = false;
             CPU.Flags &= ~DEBUG_MODE_FLAG;
-        }
-        if (GUI.CursorTimer)
-        {
-            if (--GUI.CursorTimer == 0)
-            {
-                if (GUI.ControllerOption != SNES_SUPERSCOPE && GUI.ControllerOption != SNES_JUSTIFIER && GUI.ControllerOption != SNES_JUSTIFIER_2 && GUI.ControllerOption != SNES_MACSRIFLE)
-                    SetCursor (NULL);
-            }
         }
     }
 
