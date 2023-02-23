@@ -215,7 +215,7 @@ void SimpleOutput::set_filter(bool on)
     filter = on;
 }
 
-void SimpleOutput::do_frame(uint8_t *buffer, int width, int height, int byte_stride, int viewport_x, int viewport_y, int viewport_width, int viewport_height)
+void SimpleOutput::do_frame_without_swap(uint8_t *buffer, int width, int height, int byte_stride, int viewport_x, int viewport_y, int viewport_width, int viewport_height)
 {
     if (!context)
         return;
@@ -252,7 +252,13 @@ void SimpleOutput::do_frame(uint8_t *buffer, int width, int height, int byte_str
     cmd.draw(3, 1, 0, 0);
 
     swapchain->end_render_pass();
-    swapchain->end_frame();
+    swapchain->end_frame_without_swap();
+}
+
+void SimpleOutput::do_frame(uint8_t *buffer, int width, int height, int byte_stride, int viewport_x, int viewport_y, int viewport_width, int viewport_height)
+{
+    do_frame_without_swap(buffer, width, height, byte_stride, viewport_x, viewport_y, viewport_width, viewport_height);
+    swapchain->swap();
 }
 
 } // namespace Vulkan

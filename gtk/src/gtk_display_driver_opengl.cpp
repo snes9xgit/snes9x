@@ -125,11 +125,11 @@ void S9xOpenGLDisplayDriver::update(uint16_t *buffer, int width, int height, int
     if (using_glsl_shaders)
     {
         glsl_shader->render(texmap, width, height, content.x, allocation.get_height() - content.y - content.h, content.w, content.h, S9xViewportCallback);
-        swap_buffers();
-        return;
     }
-
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    else
+    {
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    }
 
     swap_buffers();
 }
@@ -426,6 +426,12 @@ int S9xOpenGLDisplayDriver::init()
 
 void S9xOpenGLDisplayDriver::swap_buffers()
 {
+    if (Settings.SkipFrames == THROTTLE_TIMER_FRAMESKIP || Settings.SkipFrames == THROTTLE_TIMER)
+    {
+        throttle.set_frame_rate(Settings.PAL ? PAL_PROGRESSIVE_FRAME_RATE : NTSC_PROGRESSIVE_FRAME_RATE);
+        throttle.wait_for_frame_and_rebase_time();
+    }
+
     context->swap_buffers();
 
     if (config->reduce_input_lag)

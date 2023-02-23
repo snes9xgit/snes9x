@@ -11,6 +11,7 @@ class SimpleOutput
     SimpleOutput(Vulkan::Context *context, vk::Format format);
     ~SimpleOutput();
     void do_frame(uint8_t *buffer, int width, int height, int byte_stride, int viewport_x, int viewport_y, int viewport_width, int viewport_height);
+    void do_frame_without_swap(uint8_t *buffer, int width, int height, int byte_stride, int viewport_x, int viewport_y, int viewport_width, int viewport_height);
     void set_filter(bool on);
 
   private:

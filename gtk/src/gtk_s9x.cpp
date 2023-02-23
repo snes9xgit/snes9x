@@ -450,6 +450,9 @@ static void S9xThrottle(int method)
     }
     else // THROTTLE_TIMER or THROTTLE_TIMER_FRAMESKIP
     {
+        if (S9xDisplayGetDriver()->can_throttle())
+            return;
+
         if (method == THROTTLE_TIMER_FRAMESKIP)
         {
             if (now - frame_clock > Settings.FrameTime)

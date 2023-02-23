@@ -391,6 +391,12 @@ void ShaderChain::update_descriptor_set(vk::CommandBuffer cmd, int pipe_num, int
 
 void ShaderChain::do_frame(uint8_t *data, int width, int height, int stride, vk::Format format, int viewport_x, int viewport_y, int viewport_width, int viewport_height)
 {
+    do_frame_without_swap(data, width, height, stride, format, viewport_x, viewport_y, viewport_width, viewport_height);
+    context->swapchain->swap();
+}
+
+void ShaderChain::do_frame_without_swap(uint8_t *data, int width, int height, int stride, vk::Format format, int viewport_x, int viewport_y, int viewport_width, int viewport_height)
+{
     if (!context->swapchain->begin_frame())
          return;
 
@@ -508,8 +514,7 @@ void ShaderChain::do_frame(uint8_t *data, int width, int height, int stride, vk:
             frame.image.current_layout = vk::ImageLayout::eTransferDstOptimal;
         }
     }
-
-    context->swapchain->end_frame();
+    context->swapchain->end_frame_without_swap();
 
     last_frame_index = current_frame_index;
     frame_count++;

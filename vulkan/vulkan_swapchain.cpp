@@ -231,12 +231,7 @@ bool Swapchain::begin_frame()
     return true;
 }
 
-void Swapchain::set_max_frame_rate(double frame_rate)
-{
-    throttle.set_frame_rate(frame_rate);
-}
-
-bool Swapchain::end_frame()
+void Swapchain::end_frame_without_swap()
 {
     auto &frame = frames[current_frame];
     frame.command_buffer->end();
@@ -249,24 +244,14 @@ bool Swapchain::end_frame()
         frame.complete.get());
 
     queue.submit(submit_info, frame.fence.get());
+}
 
+bool Swapchain::swap()
+{
     auto present_info = vk::PresentInfoKHR{}
         .setWaitSemaphores(frames[current_frame].complete.get())
         .setSwapchains(swapchain_object.get())
         .setImageIndices(current_swapchain_image);
-
-    if (throttle.max_frame_rate != 0.0)
-    {
-        auto remaining = throttle.remaining();
-        if (remaining < -throttle.frame_duration_us / 10)
-            throttle.reset();
-        else if (remaining.count() > 0)
-        {
-            queue.waitIdle();
-            throttle.wait_for_frame();
-            throttle.advance();
-        }
-    }
 
     auto result = queue.presentKHR(present_info);
 
@@ -275,6 +260,12 @@ bool Swapchain::end_frame()
     if (result != vk::Result::eSuccess)
         return false;
     return true;
+}
+
+bool Swapchain::end_frame()
+{
+    end_frame_without_swap();
+    return swap();
 }
 
 vk::Framebuffer Swapchain::get_framebuffer()

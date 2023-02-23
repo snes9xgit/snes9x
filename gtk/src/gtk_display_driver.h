@@ -22,6 +22,7 @@ class S9xDisplayDriver
     virtual void *get_parameters() = 0;
     virtual void save(const char *filename) = 0;
     virtual bool is_ready() = 0;
+    virtual bool can_throttle() { return false; };
 
   protected:
     Snes9xWindow *window;

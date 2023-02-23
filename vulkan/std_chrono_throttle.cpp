@@ -25,6 +25,20 @@ void Throttle::wait_for_frame()
         std::this_thread::sleep_for(time_to_wait);
 }
 
+void Throttle::wait_for_frame_and_rebase_time()
+{
+    auto time_to_wait = remaining();
+
+    if (time_to_wait < -frame_duration_us / 10)
+        reset();
+
+    if (time_to_wait.count() > 0)
+    {
+        std::this_thread::sleep_for(time_to_wait);
+        advance();
+    }
+}
+
 void Throttle::advance()
 {
     then += frame_duration_us;

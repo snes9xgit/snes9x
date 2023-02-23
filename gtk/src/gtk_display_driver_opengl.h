@@ -23,6 +23,7 @@
 #endif
 
 #include "shaders/glsl.h"
+#include "vulkan/std_chrono_throttle.hpp"
 
 #define BUFFER_OFFSET(i) ((char *)(i))
 
@@ -30,14 +31,15 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
 {
   public:
     S9xOpenGLDisplayDriver(Snes9xWindow *window, Snes9xConfig *config);
-    void refresh(int width, int height);
-    int init();
-    void deinit();
-    void update(uint16_t *buffer, int width, int height, int stride_in_pixels);
-    void *get_parameters();
-    void save(const char *filename);
+    void refresh(int width, int height) override;
+    int init() override;
+    void deinit() override;
+    void update(uint16_t *buffer, int width, int height, int stride_in_pixels) override;
+    void *get_parameters() override;
+    void save(const char *filename) override;
     static int query_availability();
-    bool is_ready();
+    bool is_ready() override;
+    bool can_throttle() override { return true; };
 
   private:
     bool opengl_defaults();
@@ -67,6 +69,8 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
     int output_window_height;
 
     OpenGLContext *context;
+
+    Throttle throttle;
 
 #ifdef GDK_WINDOWING_X11
     GTKGLXContext glx;

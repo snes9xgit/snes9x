@@ -119,20 +119,27 @@ void S9xVulkanDisplayDriver::update(uint16_t *buffer, int width, int height, int
         return;
 
     auto viewport = S9xApplyAspect(width, height, current_width, current_height);
-    context->swapchain->set_max_frame_rate(60.09881389744051);
 
     if (shaderchain)
     {
-        shaderchain->do_frame((uint8_t *)buffer, width, height, stride_in_pixels << 1, vk::Format::eR5G6B5UnormPack16, viewport.x, viewport.y, viewport.w, viewport.h);
+        shaderchain->do_frame_without_swap((uint8_t *)buffer, width, height, stride_in_pixels << 1, vk::Format::eR5G6B5UnormPack16, viewport.x, viewport.y, viewport.w, viewport.h);
     }
     else if (simple_output)
     {
         simple_output->set_filter(Settings.BilinearFilter);
-        simple_output->do_frame((uint8_t *)buffer, width, height, stride_in_pixels << 1, viewport.x, viewport.y, viewport.w, viewport.h);
+        simple_output->do_frame_without_swap((uint8_t *)buffer, width, height, stride_in_pixels << 1, viewport.x, viewport.y, viewport.w, viewport.h);
     }
 
+    if (Settings.SkipFrames == THROTTLE_TIMER || Settings.SkipFrames == THROTTLE_TIMER_FRAMESKIP)
+    {
+        throttle.set_frame_rate(Settings.PAL ? PAL_PROGRESSIVE_FRAME_RATE : NTSC_PROGRESSIVE_FRAME_RATE);
+        throttle.wait_for_frame_and_rebase_time();
+    }
+
+    context->swapchain->swap();
+
     if (gui_config->reduce_input_lag)
-       context->wait_idle();
+        context->wait_idle();
 }
 
 int S9xVulkanDisplayDriver::query_availability()

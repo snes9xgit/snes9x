@@ -3,7 +3,6 @@
 #include "vulkan/vulkan.hpp"
 #include "vulkan/vulkan_handles.hpp"
 #include "vulkan/vulkan_structs.hpp"
-#include "std_chrono_throttle.hpp"
 
 namespace Vulkan
 {
@@ -26,9 +25,10 @@ class Swapchain
     void end_render_pass();
     bool wait_on_frame(int frame_num);
     bool end_frame();
+    void end_frame_without_swap();
+    bool swap();
     // Returns true if vsync setting was changed, false if it was the same
     bool set_vsync(bool on);
-    void set_max_frame_rate(double frame_rate);
 
     vk::Image get_image();
     vk::Framebuffer get_framebuffer();
@@ -62,7 +62,6 @@ class Swapchain
 
     vk::UniqueRenderPass render_pass;
 
-    Throttle throttle;
     unsigned int current_frame = 0;
     unsigned int current_swapchain_image = 0;
     unsigned int num_swapchain_images = 0;

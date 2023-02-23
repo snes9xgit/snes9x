@@ -10,6 +10,7 @@
 #include "../../vulkan/vulkan_context.hpp"
 #include "../../vulkan/vulkan_shader_chain.hpp"
 #include "../../vulkan/vulkan_simple_output.hpp"
+#include "../../vulkan/std_chrono_throttle.hpp"
 
 #ifdef VK_USE_PLATFORM_WAYLAND_KHR
 #include "gtk_wayland_surface.h"
@@ -27,19 +28,21 @@ class S9xVulkanDisplayDriver : public S9xDisplayDriver
     void *get_parameters() override;
     void save(const char *filename) override;
     bool is_ready() override;
+    bool can_throttle() override { return true; }
 
     static int query_availability();
 
   private:
     std::unique_ptr<Vulkan::Context> context;
     vk::Device device;
-    
+
     GdkDisplay *gdk_display;
     GdkWindow *gdk_window;
     Display *display;
     Window xid;
     int current_width;
     int current_height;
+    Throttle throttle;
 
 #ifdef VK_USE_PLATFORM_WAYLAND_KHR
     std::unique_ptr<WaylandSurface> wayland_surface;
