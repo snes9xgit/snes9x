@@ -42,6 +42,7 @@ char *ReadShaderFileContents(const TCHAR *filename);
 void ReduceToPath(TCHAR *filename);
 double WinGetRefreshRate();
 int WinGetAutomaticInputRate();
+void WinThrottleFramerate();
 std::vector<GLSLParam> *WinGetShaderParameters();
 std::function<void(const char*)> WinGetShaderSaveFunction();
 

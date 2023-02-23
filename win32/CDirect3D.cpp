@@ -334,6 +334,7 @@ void CDirect3D::Render(SSurface Src)
 	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,0,2);
 	pDevice->EndScene();
 
+	WinThrottleFramerate();
 	pDevice->Present(NULL, NULL, NULL, NULL);
 
 	if (GUI.ReduceInputLag)
@@ -569,7 +570,7 @@ bool CDirect3D::ResetDevice()
 	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 
 	pDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
-	
+
 	//recreate the surface
 	CreateDrawSurface();
 

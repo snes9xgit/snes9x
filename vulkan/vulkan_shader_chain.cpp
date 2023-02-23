@@ -63,10 +63,10 @@ void ShaderChain::construct_buffer_objects()
                     break;
             }
 
-            auto write_size = [&location](float width, float height) {
+            auto write_size = [&location](int width, int height) {
                 std::array<float, 4> size;
-                size[0] = width;
-                size[1] = height;
+                size[0] = (float)width;
+                size[1] = (float)height;
                 size[2] = 1.0f / size[0];
                 size[3] = 1.0f / size[1];
                 memcpy(location, size.data(), sizeof(float) * 4);
@@ -104,7 +104,7 @@ void ShaderChain::construct_buffer_objects()
                     if (uniform.specifier < (int)lookup_textures.size())
                         write_size(lookup_textures[uniform.specifier]->image_width, lookup_textures[uniform.specifier]->image_height);
                     else
-                        write_size(1.0f, 1.0f);
+                        write_size(1, 1);
                     break;
 
                 case SlangShader::Uniform::MVP:
@@ -389,16 +389,18 @@ void ShaderChain::update_descriptor_set(vk::CommandBuffer cmd, int pipe_num, int
     }
 }
 
-void ShaderChain::do_frame(uint8_t *data, int width, int height, int stride, vk::Format format, int viewport_x, int viewport_y, int viewport_width, int viewport_height)
+bool ShaderChain::do_frame(uint8_t *data, int width, int height, int stride, vk::Format format, int viewport_x, int viewport_y, int viewport_width, int viewport_height)
 {
-    do_frame_without_swap(data, width, height, stride, format, viewport_x, viewport_y, viewport_width, viewport_height);
+    if (!do_frame_without_swap(data, width, height, stride, format, viewport_x, viewport_y, viewport_width, viewport_height))
+        return false;
     context->swapchain->swap();
+    return true;
 }
 
-void ShaderChain::do_frame_without_swap(uint8_t *data, int width, int height, int stride, vk::Format format, int viewport_x, int viewport_y, int viewport_width, int viewport_height)
+bool ShaderChain::do_frame_without_swap(uint8_t *data, int width, int height, int stride, vk::Format format, int viewport_x, int viewport_y, int viewport_width, int viewport_height)
 {
     if (!context->swapchain->begin_frame())
-         return;
+         return false;
 
     current_frame_index = context->swapchain->get_current_frame();
 
@@ -518,6 +520,7 @@ void ShaderChain::do_frame_without_swap(uint8_t *data, int width, int height, in
 
     last_frame_index = current_frame_index;
     frame_count++;
+    return true;
 }
 
 void ShaderChain::upload_original(vk::CommandBuffer cmd, uint8_t *data, int width, int height, int stride, vk::Format format)

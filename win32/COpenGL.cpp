@@ -369,6 +369,9 @@ void COpenGL::Render(SSurface Src)
     }
 
 	glFlush();
+
+	WinThrottleFramerate();
+
 	SwapBuffers(hDC);
 	if (GUI.ReduceInputLag)
 		glFinish();

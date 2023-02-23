@@ -675,6 +675,49 @@ int WinGetAutomaticInputRate(void)
     return (int)newInputRate;
 }
 
+void WinThrottleFramerate()
+{
+	static HANDLE throttle_timer = nullptr;
+	static int64_t PCBase, PCFrameTime, PCFrameTimeNTSC, PCFrameTimePAL, PCStart, PCEnd;
+
+	if (Settings.SkipFrames != AUTO_FRAMERATE)
+		return;
+
+	if (!throttle_timer)
+	{
+		QueryPerformanceFrequency((LARGE_INTEGER *)&PCBase);
+
+		PCFrameTimeNTSC = (int64_t)(PCBase / NTSC_PROGRESSIVE_FRAME_RATE);
+		PCFrameTimePAL = (int64_t)(PCBase / PAL_PROGRESSIVE_FRAME_RATE);
+
+		throttle_timer = CreateWaitableTimer(NULL, true, NULL);
+		QueryPerformanceCounter((LARGE_INTEGER *)&PCStart);
+	}
+
+	if (Settings.PAL)
+		PCFrameTime = PCBase / PAL_PROGRESSIVE_FRAME_RATE;
+	else
+		PCFrameTime = PCBase / NTSC_PROGRESSIVE_FRAME_RATE;
+
+	QueryPerformanceCounter((LARGE_INTEGER *)&PCEnd);
+	int64_t time_left_us = ((PCFrameTime - (PCEnd - PCStart)) * 1000000) / PCBase;
+
+	int64_t PCFrameTime_us = (int64_t)(PCFrameTime * 1000000.0 / PCBase);
+	if (time_left_us < -PCFrameTime_us / 10)
+	{
+		QueryPerformanceCounter((LARGE_INTEGER *)&PCStart);
+		return;
+	}
+	if (time_left_us > 0)
+	{
+		LARGE_INTEGER li;
+		li.QuadPart = -time_left_us * 10;
+		SetWaitableTimer(throttle_timer, &li, 0, NULL, NULL, false);
+		WaitForSingleObject(throttle_timer, INFINITE);
+	}
+	PCStart += PCFrameTime;
+}
+
 std::vector<GLSLParam> *WinGetShaderParameters()
 {
 	if (GUI.outputMethod == OPENGL)

@@ -449,7 +449,6 @@
     <ClInclude Include="..\vulkan\vulkan_slang_pipeline.hpp" />
     <ClInclude Include="..\vulkan\vulkan_swapchain.hpp" />
     <ClInclude Include="..\vulkan\vulkan_texture.hpp" />
-    <ClInclude Include="..\vulkan\std_chrono_throttle.hpp" />
     <ClInclude Include="AVIOutput.h" />
     <ClInclude Include="CCGShader.h" />
     <ClInclude Include="CD3DCG.h" />
@@ -613,7 +612,6 @@
     <ClCompile Include="..\vulkan\vulkan_slang_pipeline.cpp" />
     <ClCompile Include="..\vulkan\vulkan_swapchain.cpp" />
     <ClCompile Include="..\vulkan\vulkan_texture.cpp" />
-    <ClCompile Include="..\vulkan\std_chrono_throttle.cpp" />
     <ClCompile Include="AVIOutput.cpp" />
     <ClCompile Include="CCGShader.cpp" />
     <ClCompile Include="CD3DCG.cpp" />

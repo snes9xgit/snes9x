@@ -19,8 +19,8 @@ class ShaderChain
     bool load_shader_preset(std::string filename);
     void update_and_propagate_sizes(int original_width_, int original_height_, int viewport_width_, int viewport_height_);
     bool load_lookup_textures();
-    void do_frame(uint8_t *data, int width, int height, int stride, vk::Format format, int viewport_x, int viewport_y, int viewport_width, int viewport_height);
-    void do_frame_without_swap(uint8_t *data, int width, int height, int stride, vk::Format format, int viewport_x, int viewport_y, int viewport_width, int viewport_height);
+    bool do_frame(uint8_t *data, int width, int height, int stride, vk::Format format, int viewport_x, int viewport_y, int viewport_width, int viewport_height);
+    bool do_frame_without_swap(uint8_t *data, int width, int height, int stride, vk::Format format, int viewport_x, int viewport_y, int viewport_width, int viewport_height);
     void upload_original(uint8_t *data, int width, int height, int stride, vk::Format format);
     void upload_original(vk::CommandBuffer cmd, uint8_t *data, int width, int height, int stride, vk::Format format);
     void construct_buffer_objects();

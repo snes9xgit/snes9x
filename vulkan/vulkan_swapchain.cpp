@@ -199,14 +199,14 @@ bool Swapchain::begin_frame()
 
     auto &frame = frames[current_frame];
 
-    auto result = device.waitForFences(frame.fence.get(), true, 33000000);
+    auto result = device.waitForFences(frame.fence.get(), true, UINT64_MAX);
     if (result != vk::Result::eSuccess)
     {
         printf("Failed fence\n");
         return false;
     }
 
-    auto result_value = device.acquireNextImageKHR(swapchain_object.get(), 33000000, frame.acquire.get());
+    auto result_value = device.acquireNextImageKHR(swapchain_object.get(), UINT64_MAX, frame.acquire.get());
     if (result_value.result == vk::Result::eErrorOutOfDateKHR ||
         result_value.result == vk::Result::eSuboptimalKHR)
     {
@@ -217,7 +217,7 @@ bool Swapchain::begin_frame()
 
     if (result_value.result != vk::Result::eSuccess)
     {
-        printf("Timeout waiting for frame. Running too slow.\n");
+        printf("Unable to acquire swapchain image: %s\n", vk::to_string(result_value.result).c_str());
         return false;
     }
 

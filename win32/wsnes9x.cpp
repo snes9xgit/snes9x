@@ -2802,35 +2802,6 @@ VOID CALLBACK HotkeyTimer( UINT idEvent, UINT uMsg, DWORD dwUser, DWORD dw1, DWO
 	}
 }
 
-bool ThrottleTimer()
-{
-	bool run_frame = false;
-	do_frame_adjust = false;
-	QueryPerformanceCounter((LARGE_INTEGER*)&PCEnd);
-
-	if (Settings.TurboMode || Settings.FrameAdvance || Settings.SkipFrames != AUTO_FRAMERATE
-#ifdef NETPLAY_SUPPORT
-		|| Settings.NetPlay
-#endif
-		)
-	{
-		PCStart = PCEnd;
-		return true;
-	}
-
-    while ((PCEnd - PCStart) >= PCFrameTime)
-	{
-		if ((PCEnd - PCStart) >= (PCFrameTime * 2))
-			do_frame_adjust = true;
-
-		run_frame = true;
-
-		PCStart += PCFrameTime;
-	}
-
-	return run_frame;
-}
-
 static void EnsureInputDisplayUpdated()
 {
 	if(GUI.FrameAdvanceJustPressed==1 && Settings.Paused && Settings.DisplayPressedKeys==2 && GUI.ControllerOption != SNES_JOYPAD && GUI.ControllerOption != SNES_MULTIPLAYER5 && GUI.ControllerOption != SNES_MULTIPLAYER8)
@@ -3369,8 +3340,6 @@ int WINAPI WinMain(
 
     MSG msg;
 
-	HANDLE throttle_timer = CreateWaitableTimer(NULL, true, NULL);
-
     while (TRUE)
     {
 		EnsureInputDisplayUpdated();
@@ -3443,43 +3412,32 @@ int WINAPI WinMain(
 			if(GUI.FrameAdvanceJustPressed)
 				GUI.FrameAdvanceJustPressed--;
 
-			if(ThrottleTimer())
-			{
-				ProcessInput();
+			ProcessInput();
 
-                if(GUI.rewindBufferSize
+			if (GUI.rewindBufferSize
 #ifdef NETPLAY_SUPPORT
-                    &&!Settings.NetPlay
+				&& !Settings.NetPlay
 #endif
-                    ) {
-                    if(Settings.Rewinding) {
-                        Settings.Rewinding = stateMan.pop();
-                    } else {
-                        if(IPPU.TotalEmulatedFrames % GUI.rewindGranularity == 0)
-                            stateMan.push();
-                    }
-                }
-
-				S9xMainLoop();
-				GUI.FrameCount++;
-				if (GUI.CursorTimer)
-				{
-					if (--GUI.CursorTimer == 0)
-					{
-						if (GUI.ControllerOption != SNES_SUPERSCOPE && GUI.ControllerOption != SNES_JUSTIFIER && GUI.ControllerOption != SNES_JUSTIFIER_2 && GUI.ControllerOption != SNES_MACSRIFLE)
-							SetCursor(NULL);
-					}
+				) {
+				if (Settings.Rewinding) {
+					Settings.Rewinding = stateMan.pop();
+				}
+				else {
+					if (IPPU.TotalEmulatedFrames % GUI.rewindGranularity == 0)
+						stateMan.push();
 				}
 			}
-			else
-			{
-				auto time_left = ((PCFrameTime - (PCEnd - PCStart)) * 100000 / PCBase);
-				LARGE_INTEGER li;
-				li.QuadPart = -time_left;
-				SetWaitableTimer(throttle_timer, &li, 0, NULL, NULL, false);
-				WaitForSingleObject(throttle_timer, INFINITE);
-			}
 
+			S9xMainLoop();
+			GUI.FrameCount++;
+			if (GUI.CursorTimer)
+			{
+				if (--GUI.CursorTimer == 0)
+				{
+					if (GUI.ControllerOption != SNES_SUPERSCOPE && GUI.ControllerOption != SNES_JUSTIFIER && GUI.ControllerOption != SNES_JUSTIFIER_2 && GUI.ControllerOption != SNES_MACSRIFLE)
+						SetCursor(NULL);
+				}
+			}
 #ifdef NETPLAY_SUPPORT
         }
 #endif

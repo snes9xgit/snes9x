@@ -215,13 +215,13 @@ void SimpleOutput::set_filter(bool on)
     filter = on;
 }
 
-void SimpleOutput::do_frame_without_swap(uint8_t *buffer, int width, int height, int byte_stride, int viewport_x, int viewport_y, int viewport_width, int viewport_height)
+bool SimpleOutput::do_frame_without_swap(uint8_t *buffer, int width, int height, int byte_stride, int viewport_x, int viewport_y, int viewport_width, int viewport_height)
 {
     if (!context)
-        return;
+        return false;
 
     if (!swapchain->begin_frame())
-        return;
+        return false;
 
     auto &tex = textures[swapchain->get_current_frame()];
     auto &cmd = swapchain->get_cmd();
@@ -253,12 +253,16 @@ void SimpleOutput::do_frame_without_swap(uint8_t *buffer, int width, int height,
 
     swapchain->end_render_pass();
     swapchain->end_frame_without_swap();
+
+    return true;
 }
 
-void SimpleOutput::do_frame(uint8_t *buffer, int width, int height, int byte_stride, int viewport_x, int viewport_y, int viewport_width, int viewport_height)
+bool SimpleOutput::do_frame(uint8_t *buffer, int width, int height, int byte_stride, int viewport_x, int viewport_y, int viewport_width, int viewport_height)
 {
-    do_frame_without_swap(buffer, width, height, byte_stride, viewport_x, viewport_y, viewport_width, viewport_height);
+    if (!do_frame_without_swap(buffer, width, height, byte_stride, viewport_x, viewport_y, viewport_width, viewport_height))
+        return false;
     swapchain->swap();
+    return true;
 }
 
 } // namespace Vulkan

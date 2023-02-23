@@ -61,9 +61,6 @@ void CVulkan::Render(SSurface Src)
     if (!context)
         return;
 
-    if (GUI.ReduceInputLag)
-        context->wait_idle();
-
     SSurface Dst{};
 
     RECT dstRect = GetFilterOutputSize(Src);
@@ -87,14 +84,27 @@ void CVulkan::Render(SSurface Src)
     //Get maximum rect respecting AR setting
     displayRect = CalculateDisplayRect(Dst.Width, Dst.Height, windowSize.right, windowSize.bottom);
 
+    bool result;
+
     if (shaderchain)
     {
-        shaderchain->do_frame(Dst.Surface, Dst.Width, Dst.Height, Dst.Pitch, vk::Format::eR5G6B5UnormPack16, displayRect.left, displayRect.top, displayRect.right - displayRect.left, displayRect.bottom - displayRect.top);
-        return;
+        result = shaderchain->do_frame_without_swap(Dst.Surface, Dst.Width, Dst.Height, Dst.Pitch, vk::Format::eR5G6B5UnormPack16, displayRect.left, displayRect.top, displayRect.right - displayRect.left, displayRect.bottom - displayRect.top);
+    }
+    else if (simple_output)
+    {
+        simple_output->set_filter(Settings.BilinearFilter);
+        result = simple_output->do_frame_without_swap(Dst.Surface, Dst.Width, Dst.Height, Dst.Pitch, displayRect.left, displayRect.top, displayRect.right - displayRect.left, displayRect.bottom - displayRect.top);
     }
 
-    simple_output->set_filter(Settings.BilinearFilter);
-    simple_output->do_frame(Dst.Surface, Dst.Width, Dst.Height, Dst.Pitch, displayRect.left, displayRect.top, displayRect.right - displayRect.left, displayRect.bottom - displayRect.top);
+    WinThrottleFramerate();
+
+    if (result)
+    {
+        context->swapchain->swap();
+
+        if (GUI.ReduceInputLag)
+            context->wait_idle();
+    }
 }
 
 bool CVulkan::ChangeRenderSize(unsigned int newWidth, unsigned int newHeight)
