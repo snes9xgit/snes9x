@@ -104,7 +104,7 @@ bool COpenGL::Initialize(HWND hWnd)
 	LoadPBOFunctions();
 
 	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress( "wglSwapIntervalEXT" );
-	
+
 	glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnable(GL_BLEND);
@@ -113,7 +113,7 @@ bool COpenGL::Initialize(HWND hWnd)
 	glMatrixMode (GL_PROJECTION);
     glLoadIdentity ();
     glOrtho (0.0, 1.0, 0.0, 1.0, -1, 1);
-	
+
 	glVertexPointer(2, GL_FLOAT, 0, vertices);
 	glTexCoordPointer(2, GL_FLOAT, 0, texcoords);
 
@@ -147,7 +147,11 @@ void COpenGL::DeInitialize()
 		wglDeleteContext(hRC);
 		hRC = NULL;
 	}
-	hDC = NULL;
+	if (hDC)
+	{
+		ReleaseDC(hWnd, hDC);
+		hDC = NULL;
+	}
 	hWnd = NULL;
 	afterRenderWidth = 0;
 	afterRenderHeight = 0;
@@ -446,7 +450,7 @@ bool COpenGL::SetFullscreen(bool fullscreen)
 		ChangeDisplaySettings(NULL,0);
 	}
 
-	
+
 
 	return true;
 }
@@ -510,7 +514,7 @@ bool COpenGL::LoadPBOFunctions()
 		if(glGenBuffers && glBindBuffer && glBufferData && glDeleteBuffers && glMapBuffer) {
 			pboFunctionsLoaded = true;
 		}
-		 
+
 	}
 	return pboFunctionsLoaded;
 }

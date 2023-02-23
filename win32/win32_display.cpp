@@ -98,6 +98,15 @@ void WinChangeWindowSize(unsigned int newWidth, unsigned int newHeight)
 	S9xDisplayOutput->ChangeRenderSize(newWidth,newHeight);
 }
 
+static void FlushMessageQueue()
+{
+	for (MSG msg; PeekMessage(&msg, GUI.hWnd, 0, 0, PM_NOREMOVE);)
+	{
+		GetMessage(&msg, GUI.hWnd, 0, 0);
+		DispatchMessage(&msg);
+	}
+}
+
 /*  WinDisplayReset
 initializes the currently selected display output and
 reinitializes the core graphics rendering
@@ -107,8 +116,7 @@ returns true if successful, false otherwise
 bool WinDisplayReset(void)
 {
 	S9xDisplayOutput->DeInitialize();
-	if (S9xDisplayOutput == (IS9xDisplayOutput *)&VulkanDriver && GUI.outputMethod == OPENGL)
-		Sleep(500);
+	FlushMessageQueue();
 
 	switch(GUI.outputMethod) {
 		default:
@@ -238,7 +246,7 @@ bool8 S9xInitUpdate (void)
 bool8 S9xContinueUpdate(int Width, int Height)
 {
 	// called every other frame during interlace
-	
+
     Src.Width = Width;
 	if(Height%SNES_HEIGHT)
 	    Src.Height = Height;
