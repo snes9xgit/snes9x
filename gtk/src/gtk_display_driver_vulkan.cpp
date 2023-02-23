@@ -92,6 +92,7 @@ int S9xVulkanDisplayDriver::init()
         else
         {
             window->enable_widget("shader_parameters_item", true);
+
             return 0;
         }
     }
@@ -117,21 +118,21 @@ void S9xVulkanDisplayDriver::update(uint16_t *buffer, int width, int height, int
     if (!context)
         return;
 
-    if (gui_config->reduce_input_lag)
-        context->wait_idle();
-
     auto viewport = S9xApplyAspect(width, height, current_width, current_height);
+    context->swapchain->set_max_frame_rate(60.09881389744051);
 
     if (shaderchain)
     {
         shaderchain->do_frame((uint8_t *)buffer, width, height, stride_in_pixels << 1, vk::Format::eR5G6B5UnormPack16, viewport.x, viewport.y, viewport.w, viewport.h);
-        return;
     }
     else if (simple_output)
     {
         simple_output->set_filter(Settings.BilinearFilter);
         simple_output->do_frame((uint8_t *)buffer, width, height, stride_in_pixels << 1, viewport.x, viewport.y, viewport.w, viewport.h);
     }
+
+    if (gui_config->reduce_input_lag)
+       context->wait_idle();
 }
 
 int S9xVulkanDisplayDriver::query_availability()

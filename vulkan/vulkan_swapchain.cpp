@@ -1,5 +1,6 @@
 #include "vulkan_swapchain.hpp"
 #include "vulkan/vulkan_structs.hpp"
+#include <thread>
 
 namespace Vulkan
 {
@@ -230,6 +231,11 @@ bool Swapchain::begin_frame()
     return true;
 }
 
+void Swapchain::set_max_frame_rate(double frame_rate)
+{
+    throttle.set_frame_rate(frame_rate);
+}
+
 bool Swapchain::end_frame()
 {
     auto &frame = frames[current_frame];
@@ -248,6 +254,19 @@ bool Swapchain::end_frame()
         .setWaitSemaphores(frames[current_frame].complete.get())
         .setSwapchains(swapchain_object.get())
         .setImageIndices(current_swapchain_image);
+
+    if (throttle.max_frame_rate != 0.0)
+    {
+        auto remaining = throttle.remaining();
+        if (remaining < -throttle.frame_duration_us / 10)
+            throttle.reset();
+        else if (remaining.count() > 0)
+        {
+            queue.waitIdle();
+            throttle.wait_for_frame();
+            throttle.advance();
+        }
+    }
 
     auto result = queue.presentKHR(present_info);
 

@@ -126,6 +126,8 @@ if(USE_SLANG)
                         ../vulkan/vulkan_shader_chain.hpp
                         ../vulkan/vulkan_simple_output.hpp
                         ../vulkan/vulkan_simple_output.cpp
+                        ../vulkan/std_chrono_throttle.cpp
+                        ../vulkan/std_chrono_throttle.hpp
                         src/gtk_display_driver_vulkan.cpp
                         src/gtk_display_driver_vulkan.h)
 
