@@ -319,11 +319,10 @@ void CDirect3D::Render(SSurface Src)
 		displayRect=CalculateDisplayRect(dPresentParams.BackBufferWidth,dPresentParams.BackBufferHeight,
 										dPresentParams.BackBufferWidth,dPresentParams.BackBufferHeight);
 		cgShader->Render(drawSurface,
-			XMFLOAT2((float)quadTextureSize, (float)quadTextureSize),
-			XMFLOAT2((float)afterRenderWidth, (float)afterRenderHeight),
-			XMFLOAT2((float)(displayRect.right - displayRect.left),
-								(float)(displayRect.bottom - displayRect.top)),
-			XMFLOAT2((float)dPresentParams.BackBufferWidth, (float)dPresentParams.BackBufferHeight));
+			float2{ (float)quadTextureSize, (float)quadTextureSize },
+			float2{ (float)afterRenderWidth, (float)afterRenderHeight },
+			float2{ (float)(displayRect.right - displayRect.left), (float)(displayRect.bottom - displayRect.top) },
+			float2{ (float)dPresentParams.BackBufferWidth, (float)dPresentParams.BackBufferHeight });
 	}
 
 	SetFiltering();
@@ -469,11 +468,19 @@ void CDirect3D::SetupVertices()
 
 void CDirect3D::SetViewport()
 {
-	XMMATRIX matIdentity;
-	XMMATRIX matProjection;
+	D3DMATRIX matIdentity;
+	D3DMATRIX matProjection;
 
-	matProjection = XMMatrixOrthographicOffCenterLH(0.0f,1.0f,0.0f,1.0f,0.0f,1.0f);
-	matIdentity = XMMatrixIdentity();
+    matIdentity = { 1.0f, 0.0f, 0.0f, 0.0f,
+                    0.0f, 1.0f, 0.0f, 0.0f,
+                    0.0f, 0.0f, 1.0f, 0.0f,
+                    0.0f, 0.0f, 0.0f, 1.0f };
+
+    matProjection = {  2.0f,  0.0f,  0.0f, 0.0f,
+                       0.0f,  2.0f,  0.0f, 0.0f,
+                       0.0f,  0.0f, -1.0f, 0.0f,
+                      -1.0f, -1.0f,  0.0f, 1.0f };
+
 	pDevice->SetTransform(D3DTS_WORLD,(D3DMATRIX*)&matIdentity);
 	pDevice->SetTransform(D3DTS_VIEW, (D3DMATRIX*)&matIdentity);
 	pDevice->SetTransform(D3DTS_PROJECTION, (D3DMATRIX*)&matProjection);
