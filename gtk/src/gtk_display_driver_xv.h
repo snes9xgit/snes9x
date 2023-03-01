@@ -21,7 +21,7 @@ class S9xXVDisplayDriver : public S9xDisplayDriver
 {
   public:
     S9xXVDisplayDriver(Snes9xWindow *window, Snes9xConfig *config);
-    void refresh(int width, int height);
+    void refresh();
     int init();
     void deinit();
     void update(uint16_t *buffer, int width, int height, int stride_in_pixels);

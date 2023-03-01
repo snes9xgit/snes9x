@@ -340,7 +340,7 @@ bool S9xOpenGLDisplayDriver::opengl_defaults()
     return true;
 }
 
-void S9xOpenGLDisplayDriver::refresh(int width, int height)
+void S9xOpenGLDisplayDriver::refresh()
 {
     resize();
 }

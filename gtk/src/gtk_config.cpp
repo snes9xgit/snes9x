@@ -234,6 +234,7 @@ int Snes9xConfig::save_config_file()
     outint("NumberOfThreads", num_threads);
     outstring("HardwareAcceleration", display_driver, "none, opengl, xv, vulkan");
     outint("SplashBackground", splash_image, "0: Black, 1: Color bars, 2: Pattern, 3: Blue, 4: Default");
+    outbool("AutoVRR", auto_vrr, "Automatically use the best settings for variable sync in fullscreen mode");
 
     section = "NTSC";
     outstring("Hue", std::to_string(ntsc_setup.hue));
@@ -457,6 +458,7 @@ int Snes9xConfig::load_config_file()
     instr("HardwareAcceleration", display_driver);
     inbool("BilinearFilter", Settings.BilinearFilter);
     inint("SplashBackground", splash_image);
+    inbool("AutoVRR", auto_vrr);
 
     section = "NTSC";
     indouble("Hue", ntsc_setup.hue);

@@ -5,6 +5,7 @@
 \*****************************************************************************/
 
 #include "gtk_compat.h"
+#include "gtk_config.h"
 
 #ifdef GDK_WINDOWING_X11
 #include <X11/Xatom.h>
@@ -538,7 +539,7 @@ bool Snes9xWindow::draw(const Cairo::RefPtr<Cairo::Context> &cr)
         setup_splash();
     }
 
-    S9xDisplayRefresh(last_width, last_height);
+    S9xDisplayRefresh();
 
     if (!(config->fullscreen))
     {
@@ -1204,6 +1205,21 @@ void Snes9xWindow::enter_fullscreen_mode()
     gdk_display_sync(gdk_display);
     window->present();
 
+    if (config->auto_vrr)
+    {
+        autovrr_saved_frameskip = Settings.SkipFrames;
+        autovrr_saved_sound_input_rate = Settings.SoundInputRate;
+        autovrr_saved_sync_to_vblank = gui_config->sync_to_vblank;
+        autovrr_saved_sound_sync = Settings.SoundSync;
+
+        Settings.SoundSync = false;
+        Settings.SkipFrames = THROTTLE_TIMER;
+        Settings.SoundInputRate = 32040;
+        S9xUpdateDynamicRate(1, 2);
+        gui_config->sync_to_vblank = true;
+        S9xDisplayRefresh();
+    }
+
 #ifdef GDK_WINDOWING_X11
     if (GDK_IS_X11_WINDOW(window->get_window()->gobj()) &&
         config->default_esc_behavior != ESC_TOGGLE_MENUBAR)
@@ -1215,6 +1231,7 @@ void Snes9xWindow::enter_fullscreen_mode()
 #endif
     config->fullscreen = 1;
     config->rom_loaded = rom_loaded;
+
 
     /* If we're running a game, disable ui when entering fullscreen */
     if (!Settings.Paused && config->rom_loaded)
@@ -1229,6 +1246,16 @@ void Snes9xWindow::leave_fullscreen_mode()
 
     if (!config->fullscreen)
         return;
+
+    if (config->auto_vrr)
+    {
+        Settings.SkipFrames = autovrr_saved_frameskip;
+        Settings.SoundInputRate = autovrr_saved_sound_input_rate;
+        gui_config->sync_to_vblank = autovrr_saved_sync_to_vblank;
+        Settings.SoundSync = autovrr_saved_sound_sync;
+        S9xUpdateDynamicRate(1, 2);
+        S9xDisplayRefresh();
+    }
 
     GdkDisplay *gdk_display = window->get_display()->gobj();
     GdkWindow *gdk_window = window->get_window()->gobj();

@@ -26,7 +26,7 @@ S9xVulkanDisplayDriver::~S9xVulkanDisplayDriver()
 {
 }
 
-void S9xVulkanDisplayDriver::refresh(int width, int height)
+void S9xVulkanDisplayDriver::refresh()
 {
     if (!context)
         return;

@@ -31,7 +31,7 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
 {
   public:
     S9xOpenGLDisplayDriver(Snes9xWindow *window, Snes9xConfig *config);
-    void refresh(int width, int height) override;
+    void refresh() override;
     int init() override;
     void deinit() override;
     void update(uint16_t *buffer, int width, int height, int stride_in_pixels) override;

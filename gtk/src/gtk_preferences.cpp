@@ -283,7 +283,7 @@ void Snes9xPreferences::game_data_browse(std::string folder)
 void Snes9xPreferences::input_rate_changed()
 {
     double value = get_object<Gtk::HScale>("sound_input_rate")->get_value();
-    value = value / 32040.0 * 60.09881389744051;
+    value = value / 32040.0 * NTSC_PROGRESSIVE_FRAME_RATE;
     get_object<Gtk::Label>("relative_video_rate")->set_label(fmt::format("{:.4f}Hz", value));
 }
 
@@ -464,6 +464,7 @@ void Snes9xPreferences::move_settings_to_dialog()
 
     set_combo ("frameskip_combo",           Settings.SkipFrames);
     set_check ("bilinear_filter",           Settings.BilinearFilter);
+    set_check ("auto_vrr",                  config->auto_vrr);
 
     set_check ("sync_to_vblank",            config->sync_to_vblank);
     set_check ("reduce_input_lag",          config->reduce_input_lag);
@@ -568,6 +569,7 @@ void Snes9xPreferences::get_settings_from_dialog()
     config->aspect_ratio              = get_combo("aspect_ratio");
     config->scale_method              = get_combo("scale_method_combo");
     config->hires_effect              = get_combo("hires_effect");
+    config->auto_vrr                  = get_check("auto_vrr");
     config->force_inverted_byte_order = get_check("force_inverted_byte_order");
     Settings.AutoSaveDelay            = get_entry_value("save_sram_after_sec");
     config->multithreading            = get_check("multithreading");
@@ -697,7 +699,7 @@ void Snes9xPreferences::get_settings_from_dialog()
     }
 
     S9xDisplayReconfigure();
-    S9xDisplayRefresh(top_level->last_width, top_level->last_height);
+    S9xDisplayRefresh();
 
     S9xDeinitUpdate(top_level->last_width, top_level->last_height);
 

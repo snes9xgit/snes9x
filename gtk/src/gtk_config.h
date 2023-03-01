@@ -71,6 +71,7 @@ class Snes9xConfig
     int hires_effect;
     bool force_inverted_byte_order;
     int splash_image;
+    bool auto_vrr;
 
     snes_ntsc_setup_t ntsc_setup;
     int ntsc_format;

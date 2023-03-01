@@ -751,9 +751,9 @@ void S9xConvertMask(void *src,
                               bpp);
 }
 
-void S9xDisplayRefresh(int width, int height)
+void S9xDisplayRefresh()
 {
-    driver->refresh(width, height);
+    driver->refresh();
 }
 
 static void ntsc_filter_init()

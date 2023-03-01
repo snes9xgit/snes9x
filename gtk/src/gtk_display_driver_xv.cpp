@@ -456,7 +456,7 @@ void S9xXVDisplayDriver::clear()
     XSync(display, False);
 }
 
-void S9xXVDisplayDriver::refresh(int width, int height)
+void S9xXVDisplayDriver::refresh()
 {
     clear();
 }

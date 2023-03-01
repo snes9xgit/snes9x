@@ -21,7 +21,7 @@ class S9xVulkanDisplayDriver : public S9xDisplayDriver
   public:
     S9xVulkanDisplayDriver(Snes9xWindow *window, Snes9xConfig *config);
     ~S9xVulkanDisplayDriver();
-    void refresh(int width, int height) override;
+    void refresh() override;
     int init() override;
     void deinit() override;
     void update(uint16_t *buffer, int width, int height, int stride_in_pixels) override;

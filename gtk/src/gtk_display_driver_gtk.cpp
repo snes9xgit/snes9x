@@ -131,7 +131,7 @@ void S9xGTKDisplayDriver::clear()
     window->release_cairo();
 }
 
-void S9xGTKDisplayDriver::refresh(int width, int height)
+void S9xGTKDisplayDriver::refresh()
 {
     clear();
 }
