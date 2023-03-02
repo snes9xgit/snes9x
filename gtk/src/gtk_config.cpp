@@ -95,6 +95,7 @@ int Snes9xConfig::load_defaults()
     allow_opengl = false;
     allow_xv = false;
     allow_xrandr = false;
+    auto_vrr = false;
     force_inverted_byte_order = false;
     hires_effect = HIRES_NORMAL;
     pause_emulation_on_switch = false;
