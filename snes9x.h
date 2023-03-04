@@ -187,8 +187,6 @@ struct STimings
 	bool8	APUAllowTimeOverflow;
 };
 
-#define S9xInterlaceField ((Memory.FillRAM[0x213F] & 0x80) >> 7)
-
 struct SSettings
 {
 	bool8	TraceDMA;

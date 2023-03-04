@@ -94,7 +94,7 @@ static int CyclesUntilNext (int hc, int vc)
 		// Add number of lines
 		total += (vc - vpos) * Timings.H_Max_Master;
 		// If line 240 is in there and we're odd, subtract a dot
-		if (vpos <= 240 && vc > 240 && S9xInterlaceField & !IPPU.Interlace)
+		if (vpos <= 240 && vc > 240 && S9xInterlaceField() & !IPPU.Interlace)
 			total -= ONE_DOT_CYCLE;
 	}
 	else
@@ -105,11 +105,11 @@ static int CyclesUntilNext (int hc, int vc)
 		}
 
 		total += (Timings.V_Max - vpos) * Timings.H_Max_Master;
-		if (vpos <= 240 && S9xInterlaceField && !IPPU.Interlace)
+		if (vpos <= 240 && S9xInterlaceField() && !IPPU.Interlace)
 			total -= ONE_DOT_CYCLE;
 
 		total += (vc) * Timings.H_Max_Master;
-		if (vc > 240 && !S9xInterlaceField && !IPPU.Interlace)
+		if (vc > 240 && !S9xInterlaceField() && !IPPU.Interlace)
 			total -= ONE_DOT_CYCLE;
 	}
 
@@ -146,7 +146,7 @@ void S9xUpdateIRQPositions (bool initial)
 		}
 
 		// Check for short dot scanline
-		if (v_pos == 240 && S9xInterlaceField && !IPPU.Interlace)
+		if (v_pos == 240 && S9xInterlaceField() && !IPPU.Interlace)
 		{
 			Timings.NextIRQTimer -= PPU.IRQHBeamPos <= 322 ? ONE_DOT_CYCLE / 2 : 0;
 			Timings.NextIRQTimer -= PPU.IRQHBeamPos <= 326 ? ONE_DOT_CYCLE / 2 : 0;
@@ -164,7 +164,7 @@ void S9xUpdateIRQPositions (bool initial)
 		Timings.NextIRQTimer = CyclesUntilNext (PPU.HTimerPosition, PPU.VTimerPosition);
 
 		// Check for short dot scanline
-		int field = S9xInterlaceField;
+		int field = S9xInterlaceField();
 
 		if (PPU.VTimerPosition < CPU.V_Counter ||
 		   (PPU.VTimerPosition == CPU.V_Counter && Timings.NextIRQTimer > Timings.H_Max))
