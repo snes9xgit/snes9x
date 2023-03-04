@@ -410,7 +410,7 @@ static FreezeData	SnapTimings[] =
 	INT_ENTRY(6, NMITriggerPos),
 	INT_ENTRY(6, WRAMRefreshPos),
 	INT_ENTRY(6, RenderPos),
-	INT_ENTRY(6, InterlaceField),
+	DELETED_INT_ENTRY(6, 12, InterlaceField, 1),
 	INT_ENTRY(6, DMACPUSync),
 	INT_ENTRY(6, NMIDMADelay),
 	INT_ENTRY(6, IRQFlagChanging),
@@ -1689,12 +1689,11 @@ int S9xUnfreezeFromStream (STREAM stream)
 		IPPU.ColorsChanged = TRUE;
 		IPPU.OBJChanged = TRUE;
 		IPPU.RenderThisFrame = TRUE;
-		
-		GFX.InterlaceFrame = Timings.InterlaceField;
+
 		GFX.DoInterlace = 0;
 
 		S9xGraphicsScreenResize();
-		
+
 		if (Settings.FastSavestates == 0)
 			memset(GFX.Screen,0,GFX.Pitch * MAX_SNES_HEIGHT);
 

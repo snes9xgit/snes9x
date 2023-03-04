@@ -180,13 +180,14 @@ struct STimings
 	int32	IRQTriggerCycles;
 	int32	WRAMRefreshPos;
 	int32	RenderPos;
-	bool8	InterlaceField;
 	int32	DMACPUSync;		// The cycles to synchronize DMA and CPU. Snes9x cannot emulate correctly.
 	int32	NMIDMADelay;	// The delay of NMI trigger after DMA transfers. Snes9x cannot emulate correctly.
 	int32	IRQFlagChanging;	// This value is just a hack.
 	int32	APUSpeedup;
 	bool8	APUAllowTimeOverflow;
 };
+
+#define S9xInterlaceField ((Memory.FillRAM[0x213F] & 0x80) >> 7)
 
 struct SSettings
 {
@@ -217,7 +218,7 @@ struct SSettings
 	bool8	JustifierMaster;
 	bool8	MultiPlayer5Master;
 	bool8	MacsRifleMaster;
-	
+
 	bool8	ForceLoROM;
 	bool8	ForceHiROM;
 	bool8	ForceHeader;

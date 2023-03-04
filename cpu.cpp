@@ -75,7 +75,6 @@ static void S9xSoftResetCPU (void)
 	SetFlags(MemoryFlag | IndexFlag | IRQ | Emulation);
 	ClearFlags(Decimal);
 
-	Timings.InterlaceField = FALSE;
 	Timings.H_Max = Timings.H_Max_Master;
 	Timings.V_Max = Timings.V_Max_Master;
 	Timings.NMITriggerPos = 0xffff;

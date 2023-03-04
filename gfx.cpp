@@ -122,7 +122,7 @@ void S9xGraphicsScreenResize (void)
 	IPPU.Interlace    = Memory.FillRAM[0x2133] & 1;
 	IPPU.InterlaceOBJ = Memory.FillRAM[0x2133] & 2;
 	IPPU.PseudoHires = Memory.FillRAM[0x2133] & 8;
-		
+
 	if (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.PseudoHires)
 	{
 		IPPU.DoubleWidthPixels = TRUE;
@@ -146,7 +146,7 @@ void S9xGraphicsScreenResize (void)
 		GFX.PPL = GFX.RealPPL;
 		IPPU.DoubleHeightPixels = FALSE;
 		IPPU.RenderedScreenHeight = PPU.ScreenHeight;
-	}	
+	}
 }
 
 void S9xBuildDirectColourMaps (void)
@@ -160,13 +160,12 @@ void S9xBuildDirectColourMaps (void)
 
 void S9xStartScreenRefresh (void)
 {
-	GFX.InterlaceFrame = !GFX.InterlaceFrame;
 	if (GFX.DoInterlace)
 		GFX.DoInterlace--;
 
 	if (IPPU.RenderThisFrame)
 	{
-		if (!GFX.DoInterlace || !GFX.InterlaceFrame)
+		if (!GFX.DoInterlace || !S9xInterlaceField)
 		{
 			if (!S9xInitUpdate())
 			{
@@ -206,7 +205,7 @@ void S9xEndScreenRefresh (void)
 	{
 		FLUSH_REDRAW();
 
-		if (GFX.DoInterlace && GFX.InterlaceFrame == 0)
+		if (GFX.DoInterlace && S9xInterlaceField == 0)
 		{
 			S9xControlEOF();
 			S9xContinueUpdate(IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight);
@@ -329,7 +328,7 @@ static inline void RenderScreen (bool8 sub)
 	if (!sub)
 	{
 		GFX.S = GFX.Screen;
-		if (GFX.DoInterlace && GFX.InterlaceFrame)
+		if (GFX.DoInterlace && S9xInterlaceField)
 			GFX.S += GFX.RealPPL;
 		GFX.DB = GFX.ZBuffer;
 		GFX.Clip = IPPU.Clip[0];
@@ -515,7 +514,7 @@ void S9xUpdateScreen (void)
 		const uint16	black = BUILD_PIXEL(0, 0, 0);
 
 		GFX.S = GFX.Screen + GFX.StartY * GFX.PPL;
-		if (GFX.DoInterlace && GFX.InterlaceFrame)
+		if (GFX.DoInterlace && S9xInterlaceField)
 			GFX.S += GFX.RealPPL;
 
 		for (uint32 l = GFX.StartY; l <= GFX.EndY; l++, GFX.S += GFX.PPL)
@@ -576,7 +575,7 @@ static void SetupOBJ (void)
 
 	int	inc = IPPU.InterlaceOBJ ? 2 : 1;
 
-	int startline = (IPPU.InterlaceOBJ && GFX.InterlaceFrame) ? 1 : 0;
+	int startline = (IPPU.InterlaceOBJ && S9xInterlaceField) ? 1 : 0;
 
 	// OK, we have three cases here. Either there's no priority, priority is
 	// normal FirstSprite, or priority is FirstSprite+Y. The first two are
@@ -771,10 +770,10 @@ static void DrawOBJS (int D)
 	void (*DrawClippedTile) (uint32, uint32, uint32, uint32, uint32, uint32) = NULL;
 
 	int	PixWidth = IPPU.DoubleWidthPixels ? 2 : 1;
-	BG.InterlaceLine = GFX.InterlaceFrame ? 8 : 0;
+	BG.InterlaceLine = S9xInterlaceField ? 8 : 0;
 	GFX.Z1 = 2;
 	int sprite_limit = (Settings.MaxSpriteTilesPerLine == 128) ? 128 : 32;
-	
+
 	for (uint32 Y = GFX.StartY, Offset = Y * GFX.PPL; Y <= GFX.EndY; Y++, Offset += GFX.PPL)
 	{
 		int	I = 0;
@@ -906,7 +905,7 @@ static void DrawBackground (int bg, uint8 Zh, uint8 Zl)
 
 		for (uint32 Y = GFX.StartY; Y <= GFX.EndY; Y += Lines)
 		{
-			uint32	Y2 = HiresInterlace ? Y * 2 + GFX.InterlaceFrame : Y;
+			uint32	Y2 = HiresInterlace ? Y * 2 + S9xInterlaceField : Y;
 			uint32	VOffset = LineData[Y].BG[bg].VOffset + (HiresInterlace ? 1 : 0);
 			uint32	HOffset = LineData[Y].BG[bg].HOffset;
 			int		VirtAlign = ((Y2 + VOffset) & 7) >> (HiresInterlace ? 1 : 0);
@@ -1300,7 +1299,7 @@ static void DrawBackgroundOffset (int bg, uint8 Zh, uint8 Zl, int VOffOff)
 
 		for (uint32 Y = GFX.StartY; Y <= GFX.EndY; Y++)
 		{
-			uint32	Y2 = HiresInterlace ? Y * 2 + GFX.InterlaceFrame : Y;
+			uint32	Y2 = HiresInterlace ? Y * 2 + S9xInterlaceField : Y;
 			uint32	VOff = LineData[Y].BG[2].VOffset - 1;
 			uint32	HOff = LineData[Y].BG[2].HOffset;
 			uint32	HOffsetRow = VOff >> Offset2Shift;
@@ -1822,7 +1821,7 @@ static void S9xDisplayStringType (const char *string, int linesFromBottom, int p
 static void DisplayTime (void)
 {
 	char string[10];
-	
+
 	time_t rawtime;
 	struct tm *timeinfo;
 
@@ -2026,7 +2025,7 @@ void S9xDisplayMessages (uint16 *screen, int ppl, int width, int height, int sca
 {
 	if (Settings.DisplayTime)
 		DisplayTime();
-		
+
 	if (Settings.DisplayFrameRate)
 		DisplayFrameRate();
 

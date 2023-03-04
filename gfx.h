@@ -32,7 +32,6 @@ struct SGFX
 	uint8	Z2;					// depth to save
 	uint32	FixedColour;
 	uint8	DoInterlace;
-	uint8	InterlaceFrame;
 	uint32	StartY;
 	uint32	EndY;
 	bool8	ClipColors;
