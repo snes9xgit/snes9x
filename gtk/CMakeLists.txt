@@ -140,7 +140,9 @@ if(USE_WAYLAND)
                         src/gtk_wayland_egl_context.h
                         src/gtk_wayland_surface.cpp
                         src/gtk_wayland_surface.h
-                        src/wayland-idle-inhibit-unstable-v1.c)
+                        src/wayland-idle-inhibit-unstable-v1.c
+                        src/viewporter-client-protocol.c
+                        src/fractional-scale-v1.c)
     list(APPEND ARGS ${WAYLAND_CFLAGS})
     list(APPEND LIBS ${WAYLAND_LIBRARIES})
 endif()

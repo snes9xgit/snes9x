@@ -31,26 +31,29 @@ void S9xVulkanDisplayDriver::refresh()
     if (!context)
         return;
 
-    bool vsync_changed = context->swapchain->set_vsync(gui_config->sync_to_vblank);
+    context->swapchain->set_vsync(gui_config->sync_to_vblank);
+    int new_width, new_height;
 
-    auto new_width = drawing_area->get_width() * drawing_area->get_scale_factor();
-    auto new_height = drawing_area->get_height() * drawing_area->get_scale_factor();
-
-    if (new_width != current_width || new_height != current_height || vsync_changed)
-    {
 #ifdef GDK_WINDOWING_WAYLAND
-        if (GDK_IS_WAYLAND_WINDOW(drawing_area->get_window()->gobj()))
-        {
-            wayland_surface->resize();
-        }
+    if (GDK_IS_WAYLAND_WINDOW(drawing_area->get_window()->gobj()))
+    {
+        wayland_surface->resize();
+        std::tie(new_width, new_height) = wayland_surface->get_size();
+    }
+    else
 #endif
+    {
+        new_width = drawing_area->get_width() * drawing_area->get_scale_factor();
+        new_height = drawing_area->get_height() * drawing_area->get_scale_factor();
+    }
+
+    if (new_width != current_width || new_height != current_height)
+    {
         context->recreate_swapchain(new_width, new_height);
         context->wait_idle();
         current_width = new_width;
         current_height = new_height;
     }
-
-    context->swapchain->set_vsync(gui_config->sync_to_vblank);
 }
 
 int S9xVulkanDisplayDriver::init()
