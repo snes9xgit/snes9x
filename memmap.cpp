@@ -3887,7 +3887,7 @@ void CMemory::CheckForAnyPatch(const char *rom_filename, bool8 header, int32 &ro
             printf("Using %s patch %s", type, filename.c_str());
 
             Stream *s = new fStream(patch_file);
-            ret = read_patch_func(s, 0, rom_size);
+            ret = read_patch_func(s, offset, rom_size);
             s->closeStream();
 
             if (ret)
