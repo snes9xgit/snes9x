@@ -9,71 +9,20 @@
 
 #include "gtk_s9x.h"
 #include "gtk_wayland_egl_context.h"
-#include "wayland-idle-inhibit-unstable-v1.h"
-
-static void wl_global(void *data,
-                      struct wl_registry *wl_registry,
-                      uint32_t name,
-                      const char *interface,
-                      uint32_t version)
-{
-    WaylandEGLContext *wl = (WaylandEGLContext *)data;
-
-    if (!strcmp(interface, "wl_compositor"))
-        wl->compositor = (struct wl_compositor *)wl_registry_bind(wl_registry, name, &wl_compositor_interface, 3);
-    else if (!strcmp(interface, "wl_subcompositor"))
-        wl->subcompositor = (struct wl_subcompositor *)wl_registry_bind(wl_registry, name, &wl_subcompositor_interface, 1);
-    else if (!strcmp(interface, zwp_idle_inhibit_manager_v1_interface.name))
-        wl->idle_inhibit_manager = (struct zwp_idle_inhibit_manager_v1 *)wl_registry_bind(wl_registry, name, &zwp_idle_inhibit_manager_v1_interface, 1);
-}
-
-static void wl_global_remove(void *data,
-                             struct wl_registry *wl_registry,
-                             uint32_t name)
-{
-}
-
-static const struct wl_registry_listener wl_registry_listener = {
-    wl_global,
-    wl_global_remove
-};
 
 WaylandEGLContext::WaylandEGLContext()
 {
-    display = NULL;
-    registry = NULL;
-    compositor = NULL;
-    subcompositor = NULL;
-    parent = NULL;
-    child = NULL;
-    region = NULL;
-    subsurface = NULL;
     egl_display = NULL;
     egl_surface = NULL;
     egl_context = NULL;
     egl_config = NULL;
     egl_window = NULL;
-    idle_inhibit_manager = NULL;
-    idle_inhibitor = NULL;
+    x = 0;
+    y = 0;
 }
 
 WaylandEGLContext::~WaylandEGLContext()
 {
-    if (idle_inhibitor)
-        zwp_idle_inhibitor_v1_destroy(idle_inhibitor);
-
-    if (idle_inhibit_manager)
-        zwp_idle_inhibit_manager_v1_destroy(idle_inhibit_manager);
-
-    if (subsurface)
-        wl_subsurface_destroy(subsurface);
-
-    if (region)
-        wl_region_destroy(region);
-
-    if (child)
-        wl_surface_destroy(child);
-
     if (egl_context)
         eglDestroyContext(egl_display, egl_context);
 
@@ -91,41 +40,14 @@ bool WaylandEGLContext::attach(GtkWidget *widget)
     if (!GDK_IS_WAYLAND_WINDOW(window))
         return false;
 
-    gdk_window = window;
-    gdk_window_get_geometry(gdk_window, &x, &y, &width, &height);
-
-    display = gdk_wayland_display_get_wl_display(gdk_window_get_display(gdk_window));
-    parent = gdk_wayland_window_get_wl_surface(gdk_window);
-    registry = wl_display_get_registry(display);
-
-    wl_registry_add_listener(registry, &wl_registry_listener, this);
-    wl_display_roundtrip(display);
-
-    if (!compositor || !subcompositor)
-        return false;
-
-    child = wl_compositor_create_surface(compositor);
-    region = wl_compositor_create_region(compositor);
-    subsurface = wl_subcompositor_get_subsurface(subcompositor, child, parent);
-
-    wl_surface_set_input_region(child, region);
-    wl_subsurface_set_desync(subsurface);
-    wl_subsurface_set_position(subsurface, x, y);
-
-    if (idle_inhibit_manager && gui_config->prevent_screensaver)
-    {
-        printf("Inhibiting screensaver.\n");
-        zwp_idle_inhibit_manager_v1_create_inhibitor(idle_inhibit_manager, child);
-    }
+    wayland_surface = std::make_unique<WaylandSurface>();
+    wayland_surface->attach(widget);
 
     return true;
 }
 
 bool WaylandEGLContext::create_context()
 {
-    int scale = gdk_window_get_scale_factor(gdk_window);
-    gdk_window_get_geometry(gdk_window, &x, &y, &width, &height);
-
     EGLint surface_attribs[] = {
         EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
         EGL_RED_SIZE, 8,
@@ -148,10 +70,7 @@ bool WaylandEGLContext::create_context()
 
     EGLint num_configs = 0;
 
-    if (!subsurface)
-        return false;
-
-    egl_display = eglGetDisplay((EGLNativeDisplayType)display);
+    egl_display = eglGetDisplay((EGLNativeDisplayType)wayland_surface->display);
     eglInitialize(egl_display, NULL, NULL);
 
     if (!eglChooseConfig(egl_display, surface_attribs, &egl_config, 1, &num_configs))
@@ -161,7 +80,8 @@ bool WaylandEGLContext::create_context()
     }
     eglBindAPI(EGL_OPENGL_API);
 
-    egl_window = wl_egl_window_create(child, width * scale, height * scale);
+    std::tie(width, height) = wayland_surface->get_size();
+    egl_window = wl_egl_window_create(wayland_surface->child, width, height);
     if (!egl_window)
     {
         printf("Couldn't create window.\n");
@@ -186,21 +106,15 @@ bool WaylandEGLContext::create_context()
         }
     }
 
-    wl_surface_set_buffer_scale(child, scale);
-    gdk_window_invalidate_rect(gdk_window, NULL, false);
-
     return true;
 }
 
 void WaylandEGLContext::resize()
 {
-    int scale;
-
-    gdk_window_get_geometry(gdk_window, &x, &y, &width, &height);
-    scale = gdk_window_get_scale_factor(gdk_window);
-
-    wl_egl_window_resize(egl_window, width * scale, height * scale, 0, 0);
-    wl_subsurface_set_position(subsurface, x, y);
+    wayland_surface->resize();
+    
+    std::tie(width, height) = wayland_surface->get_size();
+    wl_egl_window_resize(egl_window, width, height, 0, 0);
 
     make_current();
 }
@@ -208,7 +122,7 @@ void WaylandEGLContext::resize()
 void WaylandEGLContext::swap_buffers()
 {
     eglSwapBuffers(egl_display, egl_surface);
-    wl_surface_commit(child);
+    wl_surface_commit(wayland_surface->child);
 }
 
 bool WaylandEGLContext::ready()

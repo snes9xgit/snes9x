@@ -147,6 +147,8 @@ bool WaylandSurface::attach(GtkWidget *widget)
         zwp_idle_inhibit_manager_v1_create_inhibitor(idle_inhibit_manager, child);
     }
 
+    resize();
+
     return true;
 }
 

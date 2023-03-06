@@ -89,17 +89,11 @@ S9xOpenGLDisplayDriver::S9xOpenGLDisplayDriver(Snes9xWindow *window, Snes9xConfi
 void S9xOpenGLDisplayDriver::update(uint16_t *buffer, int width, int height, int stride_in_pixels)
 {
     Gtk::Allocation allocation = drawing_area->get_allocation();
-
     if (output_window_width != allocation.get_width() ||
         output_window_height != allocation.get_height())
     {
         resize();
     }
-
-    int scale_factor = drawing_area->get_scale_factor();
-
-    allocation.set_width(allocation.get_width() * scale_factor);
-    allocation.set_height(allocation.get_height() * scale_factor);
 
     if (!legacy)
         glActiveTexture(GL_TEXTURE0);
@@ -113,8 +107,8 @@ void S9xOpenGLDisplayDriver::update(uint16_t *buffer, int width, int height, int
 
     glClear(GL_COLOR_BUFFER_BIT);
 
-    S9xRect content = S9xApplyAspect(width, height, allocation.get_width(), allocation.get_height());
-    glViewport(content.x, allocation.get_height() - content.y - content.h, content.w, content.h);
+    S9xRect content = S9xApplyAspect(width, height, context->width, context->height);
+    glViewport(content.x, context->height - content.y - content.h, content.w, content.h);
     window->set_mouseable_area(content.x, content.y, content.w, content.h);
 
     update_texture_size(width, height);
@@ -124,7 +118,7 @@ void S9xOpenGLDisplayDriver::update(uint16_t *buffer, int width, int height, int
 
     if (using_glsl_shaders)
     {
-        glsl_shader->render(texmap, width, height, content.x, allocation.get_height() - content.y - content.h, content.w, content.h, S9xViewportCallback);
+        glsl_shader->render(texmap, width, height, content.x, context->height - content.y - content.h, content.w, content.h, S9xViewportCallback);
     }
     else
     {
@@ -349,8 +343,9 @@ void S9xOpenGLDisplayDriver::resize()
 {
     context->resize();
     context->swap_interval(config->sync_to_vblank);
-    output_window_width = context->width;
-    output_window_height = context->height;
+    Gtk::Allocation allocation = drawing_area->get_allocation();
+    output_window_width = allocation.get_width();
+    output_window_height = allocation.get_height();
 }
 
 bool S9xOpenGLDisplayDriver::create_context()
@@ -377,9 +372,6 @@ bool S9xOpenGLDisplayDriver::create_context()
 
     if (!context->create_context())
         return false;
-
-    output_window_width = context->width;
-    output_window_height = context->height;
 
     context->make_current();
 
