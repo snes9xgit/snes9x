@@ -70,8 +70,8 @@ snes9x_freebsd-x11-amd64_task:
 
 
 snes9x_macOS-amd64_task:
-  osx_instance:
-    image: mojave-xcode
+  macos_instance:
+    image: ghcr.io/cirruslabs/macos-ventura-xcode:latest
 
   compile_script:
     - xcodebuild -project macosx/snes9x.xcodeproj -target Snes9x -configuration Release build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
@@ -161,8 +161,8 @@ libretro_emscripten_task:
 
 
 libretro_macOS-amd64_task:
-  osx_instance:
-    image: mojave-xcode
+  macos_instance:
+    image: ghcr.io/cirruslabs/macos-ventura-xcode:latest
   compile_script:
     - make -j2 -C libretro
   build_artifacts:
