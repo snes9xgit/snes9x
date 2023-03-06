@@ -101,7 +101,7 @@ void S9xOpenGLDisplayDriver::update(uint16_t *buffer, int width, int height, int
     GLint filter = Settings.BilinearFilter ? GL_LINEAR : GL_NEAREST;
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
-    GLint clamp = (using_glsl_shaders || !npot) ? GL_CLAMP_TO_BORDER : GL_CLAMP_TO_EDGE;
+    GLint clamp = (using_glsl_shaders) ? GL_CLAMP_TO_BORDER : GL_CLAMP_TO_EDGE;
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, clamp);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, clamp);
 
@@ -150,32 +150,17 @@ void S9xOpenGLDisplayDriver::update_texture_size(int width, int height)
 {
     if (width != texture_width || height != texture_height)
     {
-        if (npot)
-        {
-            glBindTexture(GL_TEXTURE_2D, texmap);
+        glBindTexture(GL_TEXTURE_2D, texmap);
 
-            glTexImage2D(GL_TEXTURE_2D,
-                         0,
-                         GL_RGB565,
-                         width,
-                         height,
-                         0,
-                         GL_RGB,
-                         GL_UNSIGNED_SHORT_5_6_5,
-                         NULL);
-
-            coords[9] = 1.0f;
-            coords[10] = 1.0f;
-            coords[11] = 1.0f;
-            coords[14] = 1.0f;
-        }
-        else
-        {
-            coords[9] = height / 1024.0f;
-            coords[10] = width / 1024.0f;
-            coords[11] = height / 1024.0f;
-            coords[14] = width / 1024.0f;
-        }
+        glTexImage2D(GL_TEXTURE_2D,
+                     0,
+                     GL_RGB565,
+                     width,
+                     height,
+                     0,
+                     GL_RGB,
+                     GL_UNSIGNED_SHORT_5_6_5,
+                     NULL);
 
         texture_width = width;
         texture_height = height;
@@ -213,7 +198,6 @@ bool S9xOpenGLDisplayDriver::load_shaders(const char *shader_file)
         if (glsl_shader->load_shader((char *)shader_file))
         {
             using_glsl_shaders = true;
-            npot = true;
 
             if (glsl_shader->param.size() > 0)
                 window->enable_widget("shader_parameters_item", true);
@@ -231,8 +215,6 @@ bool S9xOpenGLDisplayDriver::load_shaders(const char *shader_file)
 
 bool S9xOpenGLDisplayDriver::opengl_defaults()
 {
-    npot = false;
-
     using_glsl_shaders = false;
     glsl_shader = NULL;
 
@@ -244,10 +226,8 @@ bool S9xOpenGLDisplayDriver::opengl_defaults()
         }
     }
 
-    texture_width = 1024;
-    texture_height = 1024;
-
-    npot = true;
+    texture_width = 256;
+    texture_height = 224;
 
     if (legacy)
     {

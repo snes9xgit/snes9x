@@ -180,4 +180,5 @@ void WaylandSurface::resize()
     wp_viewport_set_destination(viewport, width, height);
 
     wl_surface_commit(child);
+    wl_surface_commit(parent);
 }

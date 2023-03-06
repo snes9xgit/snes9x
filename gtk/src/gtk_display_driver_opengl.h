@@ -58,7 +58,6 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
     bool legacy;
     bool core;
     int version;
-    bool npot;
     bool initialized;
 
     bool using_glsl_shaders;
