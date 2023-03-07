@@ -27,7 +27,7 @@ bool CVulkan::Initialize(HWND hWnd)
     if (GUI.shaderEnabled && GUI.OGLshaderFileName && GUI.OGLshaderFileName[0])
     {
         shaderchain = std::make_unique<Vulkan::ShaderChain>(context.get());
-        std::string shaderstring = _tToChar(GUI.OGLshaderFileName);
+        std::string shaderstring = std::string(_tToChar(GUI.OGLshaderFileName));
         if (!shaderchain->load_shader_preset(shaderstring))
         {
             shaderchain.reset();

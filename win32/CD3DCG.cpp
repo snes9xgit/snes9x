@@ -430,7 +430,7 @@ void CD3DCG::Render(LPDIRECT3DTEXTURE9 &origTex, float2 textureSize,
 	pDevice->SetPixelShader(NULL);
 }
 
-static D3DMATRIX matrix_mul(D3DMATRIX& mat1, D3DMATRIX& mat2)
+static D3DMATRIX matrix_mul(D3DMATRIX mat1, D3DMATRIX mat2)
 {
 	D3DMATRIX out;
 	for (auto y = 0; y < 4; y++)
@@ -448,7 +448,7 @@ static D3DMATRIX matrix_mul(D3DMATRIX& mat1, D3DMATRIX& mat2)
 	return out;
 }
 
-static D3DMATRIX matrix_transpose(D3DMATRIX& mat)
+static D3DMATRIX matrix_transpose(D3DMATRIX mat)
 {
 	D3DMATRIX out;
 	for (auto y = 0; y < 4; y++)
