@@ -3184,6 +3184,10 @@ void CMemory::Map_SA1LoROMMap (void)
 	for (int c = 0x600; c < 0x700; c++)
 		SA1.Map[c] = SA1.WriteMap[c] = (uint8 *) MAP_BWRAM_BITMAP;
 
+	// WRAM is inaccessable
+	for (int c = 0x7e0; c < 0x800; c++)
+		SA1.Map[c] = SA1.WriteMap[c] = (uint8 *) MAP_NONE;
+
 	BWRAM = SRAM;
 }
 
@@ -3225,6 +3229,10 @@ void CMemory::Map_BSSA1LoROMMap(void)
 	// SA-1 Banks 60->6f
 	for (int c = 0x600; c < 0x700; c++)
 		SA1.Map[c] = SA1.WriteMap[c] = (uint8 *) MAP_BWRAM_BITMAP;
+
+	// WRAM is inaccessable
+	for (int c = 0x7e0; c < 0x800; c++)
+		SA1.Map[c] = SA1.WriteMap[c] = (uint8 *) MAP_NONE;
 
 	BWRAM = SRAM;
 }
