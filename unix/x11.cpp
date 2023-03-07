@@ -622,7 +622,7 @@ static bool8 SetupXvideo()
 		printf("Selected XvRGB format: %d bpp\n",GUI.xv_bpp);
 	} else {
 		// use I420 or YUY2
-		if(GUI.xv_format == FOURCC_I420) { 
+		if(GUI.xv_format == FOURCC_I420) {
 		    printf("Xvideo I420 image format.\n");
         } else {
 		    printf("Xvideo YUY2 image format.\n");
@@ -1631,40 +1631,6 @@ void S9xProcessEvents (bool8 block)
 
 const char * S9xSelectFilename (const char *def, const char *dir1, const char *ext1, const char *title)
 {
-	static char	s[PATH_MAX + 1];
-	char		buffer[PATH_MAX + 1];
-
-	SetXRepeat(TRUE);
-
-	printf("\n%s (default: %s): ", title, def);
-	fflush(stdout);
-
-	SetXRepeat(FALSE);
-
-	if (fgets(buffer, PATH_MAX + 1, stdin))
-	{
-		char	drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], fname[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
-
-		char	*p = buffer;
-		while (isspace(*p))
-			p++;
-		if (!*p)
-		{
-			strncpy(buffer, def, PATH_MAX + 1);
-			buffer[PATH_MAX] = 0;
-			p = buffer;
-		}
-
-		char	*q = strrchr(p, '\n');
-		if (q)
-			*q = 0;
-
-		_splitpath(p, drive, dir, fname, ext);
-		_makepath(s, drive, *dir ? dir : dir1, fname, *ext ? ext : ext1);
-
-		return (s);
-	}
-
 	return (NULL);
 }
 

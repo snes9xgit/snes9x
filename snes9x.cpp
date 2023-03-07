@@ -39,26 +39,19 @@ static bool parse_controller_spec (int port, const char *arg)
 {
 	if (!strcasecmp(arg, "none"))
 		S9xSetController(port, CTL_NONE,       0, 0, 0, 0);
-	else
-	if (!strncasecmp(arg, "pad",   3) && arg[3] >= '1' && arg[3] <= '8' && arg[4] == '\0')
+	else if (!strncasecmp(arg, "pad",   3) && arg[3] >= '1' && arg[3] <= '8' && arg[4] == '\0')
 		S9xSetController(port, CTL_JOYPAD, arg[3] - '1', 0, 0, 0);
-	else
-	if (!strncasecmp(arg, "mouse", 5) && arg[5] >= '1' && arg[5] <= '2' && arg[6] == '\0')
+	else if (!strncasecmp(arg, "mouse", 5) && arg[5] >= '1' && arg[5] <= '2' && arg[6] == '\0')
 		S9xSetController(port, CTL_MOUSE,  arg[5] - '1', 0, 0, 0);
-	else
-	if (!strcasecmp(arg, "superscope"))
+	else if (!strcasecmp(arg, "superscope"))
 		S9xSetController(port, CTL_SUPERSCOPE, 0, 0, 0, 0);
-	else
-	if (!strcasecmp(arg, "justifier"))
+	else if (!strcasecmp(arg, "justifier"))
 		S9xSetController(port, CTL_JUSTIFIER,  0, 0, 0, 0);
-	else
-	if (!strcasecmp(arg, "two-justifiers"))
+	else if (!strcasecmp(arg, "two-justifiers"))
 		S9xSetController(port, CTL_JUSTIFIER,  1, 0, 0, 0);
-	else
-	if (!strcasecmp(arg, "macsrifle"))
+	else if (!strcasecmp(arg, "macsrifle"))
 		S9xSetController(port, CTL_MACSRIFLE,  0, 0, 0, 0);
-	else
-	if (!strncasecmp(arg, "mp5:", 4) && ((arg[4] >= '1' && arg[4] <= '8') || arg[4] == 'n') &&
+	else if (!strncasecmp(arg, "mp5:", 4) && ((arg[4] >= '1' && arg[4] <= '8') || arg[4] == 'n') &&
 										((arg[5] >= '1' && arg[5] <= '8') || arg[5] == 'n') &&
 										((arg[6] >= '1' && arg[6] <= '8') || arg[6] == 'n') &&
 										((arg[7] >= '1' && arg[7] <= '8') || arg[7] == 'n') && arg[8] == '\0')
@@ -470,7 +463,7 @@ void S9xParseArgsForCheats (char **argv, int argc)
                 }
                 else
                 {
-                    S9xEnableCheatGroup (Cheat.g.size() - 1);
+                    S9xEnableCheatGroup (Cheat.group.size() - 1);
                 }
             }
             else
@@ -654,7 +647,7 @@ char * S9xParseArgs (char **argv, int argc)
 					}
 					else
 					{
-						S9xEnableCheatGroup (Cheat.g.size() - 1);
+						S9xEnableCheatGroup (Cheat.group.size() - 1);
 					}
 				}
 				else

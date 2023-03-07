@@ -188,8 +188,6 @@ static void swap_controllers_1_2()
 
 static void change_slot(int difference)
 {
-    static char buf[256];
-
     gui_config->current_save_slot += difference;
     gui_config->current_save_slot %= 1000;
     if (gui_config->current_save_slot < 0)
@@ -197,8 +195,8 @@ static void change_slot(int difference)
     if (!gui_config->rom_loaded)
         return;
 
-    snprintf(buf, 256, "State Slot: %d", gui_config->current_save_slot);
-    S9xSetInfoString(buf);
+    auto info_string = "State Slot: " + std::to_string(gui_config->current_save_slot);
+    S9xSetInfoString(info_string.c_str());
     GFX.InfoStringTimeout = 60;
 }
 

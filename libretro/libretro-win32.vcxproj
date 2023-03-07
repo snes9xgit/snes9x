@@ -311,6 +311,7 @@
     <ClCompile Include="..\tileimpl-n2x1.cpp" />
     <ClCompile Include="..\tileimpl-h2x1.cpp" />
     <ClCompile Include="libretro.cpp" />
+    <ClCompile Include="..\fscompat.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

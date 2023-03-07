@@ -32,9 +32,6 @@ class GTKGLXContext : public OpenGLContext
 
     int version_major;
     int version_minor;
-
-    bool use_oml_sync_control;
-    int64_t ust, msc, sbc;
 };
 
 #endif

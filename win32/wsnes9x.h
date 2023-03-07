@@ -109,7 +109,8 @@ enum RenderFilter{
 enum OutputMethod {
 	DIRECTDRAW = 0,
 	DIRECT3D,
-	OPENGL
+	OPENGL,
+	VULKAN
 };
 
 struct dMode
@@ -259,6 +260,8 @@ struct sGUI {
     // rewinding
     unsigned int rewindBufferSize;
     unsigned int rewindGranularity;
+
+	bool AddToRegistry;
 };
 
 //TURBO masks

@@ -9,24 +9,6 @@
 
 #include "snes9x.h"
 
-enum s9x_getdirtype
-{
-	DEFAULT_DIR = 0,
-	HOME_DIR,
-	ROMFILENAME_DIR,
-	ROM_DIR,
-	SRAM_DIR,
-	SNAPSHOT_DIR,
-	SCREENSHOT_DIR,
-	SPC_DIR,
-	CHEAT_DIR,
-	PATCH_DIR,
-	BIOS_DIR,
-	LOG_DIR,
-	SAT_DIR,
-	LAST_DIR
-};
-
 void S9xUsage (void);
 char * S9xParseArgs (char **, int);
 void S9xParseArgsForCheats (char **, int);
@@ -44,10 +26,6 @@ void S9xToggleSoundChannel (int);
 bool8 S9xOpenSnapshotFile (const char *, bool8, STREAM *);
 void S9xCloseSnapshotFile (STREAM);
 const char * S9xStringInput (const char *);
-const char * S9xGetDirectory (enum s9x_getdirtype);
-const char * S9xGetFilename (const char *, enum s9x_getdirtype);
-const char * S9xGetFilenameInc (const char *, enum s9x_getdirtype);
-const char * S9xBasename (const char *);
 
 // Routines the port has to implement if it uses command-line
 

@@ -340,10 +340,14 @@ void GLSLShader::read_shader_file_with_includes(std::string filename,
         }
         else if (line.compare(0, 17, "#pragma parameter") == 0)
         {
+            char id[PATH_MAX];
+            char name[PATH_MAX];
             GLSLParam par;
 
             sscanf(line.c_str(), "#pragma parameter %s \"%[^\"]\" %f %f %f %f",
-                   par.id, par.name, &par.val, &par.min, &par.max, &par.step);
+                   id, name, &par.val, &par.min, &par.max, &par.step);
+            par.id = id;
+            par.name = name;
 
             unsigned int last_decimal = line.rfind(".") + 1;
             unsigned int index = last_decimal;
@@ -359,7 +363,7 @@ void GLSLShader::read_shader_file_with_includes(std::string filename,
             unsigned int i = 0;
             for (; i < param.size(); i++)
             {
-                if (!strcmp(param[i].id, par.id))
+                if (param[i].id == par.id)
                     break;
             }
             if (i >= param.size())
@@ -650,7 +654,7 @@ bool GLSLShader::load_shader(const char *filename)
     {
         char key[266];
         const char *value;
-        snprintf (key, 266, "::%s", param[i].id);
+        snprintf (key, 266, "::%s", param[i].id.c_str());
         value = conf.GetString (key, NULL);
         if (value)
         {
@@ -947,6 +951,7 @@ void GLSLShader::register_uniforms()
     max_prev_frame = 0;
     char varname[100];
 
+    unif.resize(pass.size());
     for (unsigned int i = 1; i < pass.size(); i++)
     {
         GLSLUniforms *u = &pass[i].unif;
@@ -1027,9 +1032,10 @@ void GLSLShader::register_uniforms()
             u->Lut[j] = glGetUniformLocation(program, lut[j].id);
         }
 
-        for (unsigned int j = 0; j < param.size(); j++)
+        unif[i].resize(param.size());
+        for (unsigned int param_num = 0; param_num < param.size(); param_num++)
         {
-            param[j].unif[i] = glGetUniformLocation(program, param[j].id);
+            unif[i][param_num] = glGetUniformLocation(program, param[param_num].id.c_str());
         }
     }
 
@@ -1160,7 +1166,7 @@ void GLSLShader::set_shader_vars(unsigned int p, bool inverted)
     // User and Preset Parameters
     for (unsigned int i = 0; i < param.size(); i++)
     {
-        setUniform1f(param[i].unif[p], param[i].val);
+        setUniform1f(unif[p][i], param[i].val);
     }
 
     glActiveTexture(GL_TEXTURE0);
@@ -1230,14 +1236,14 @@ void GLSLShader::save(const char *filename)
         fprintf(file, "parameters = \"");
         for (unsigned int i = 0; i < param.size(); i++)
         {
-            fprintf(file, "%s%c", param[i].id, (i == param.size() - 1) ? '\"' : ';');
+            fprintf(file, "%s%c", param[i].id.c_str(), (i == param.size() - 1) ? '\"' : ';');
         }
         fprintf(file, "\n");
     }
 
     for (unsigned int i = 0; i < param.size(); i++)
     {
-        fprintf(file, "%s = \"%f\"\n", param[i].id, param[i].val);
+        fprintf(file, "%s = \"%f\"\n", param[i].id.c_str(), param[i].val);
     }
 
     if (lut.size() > 0)

@@ -132,20 +132,20 @@ void Snes9xCheats::show()
 
 static void cheat_move(int src, int dst)
 {
-    Cheat.g.insert(Cheat.g.begin() + dst, Cheat.g[src]);
+    Cheat.group.insert(Cheat.group.begin() + dst, Cheat.group[src]);
 
     if (dst < src)
         src++;
-    Cheat.g.erase(Cheat.g.begin() + src);
+    Cheat.group.erase(Cheat.group.begin() + src);
 }
 
 static void cheat_gather_enabled()
 {
     unsigned int enabled = 0;
 
-    for (unsigned int i = 0; i < Cheat.g.size(); i++)
+    for (unsigned int i = 0; i < Cheat.group.size(); i++)
     {
-        if (Cheat.g[i].enabled && i >= enabled)
+        if (Cheat.group[i].enabled && i >= enabled)
         {
             cheat_move(i, enabled);
             enabled++;
@@ -199,22 +199,21 @@ void Snes9xCheats::refresh_tree_view()
 
     auto list_size = store->children().size();
 
-    if (Cheat.g.size() == 0)
+    if (Cheat.group.size() == 0)
         return;
 
-    for (unsigned int i = 0; i < Cheat.g.size() - list_size; i++)
+    for (unsigned int i = 0; i < Cheat.group.size() - list_size; i++)
         store->append();
 
     auto iter = store->children().begin();
-    for (unsigned int i = 0; i < Cheat.g.size (); i++)
+    for (unsigned int i = 0; i < Cheat.group.size (); i++)
     {
-        char *str = S9xCheatGroupToText(i);
-        Glib::ustring description = Cheat.g[i].name[0] == '\0' ? "" :Cheat.g[i].name;
-        iter->set_value(COLUMN_ENABLED, Cheat.g[i].enabled);
+        auto str = S9xCheatGroupToText(i);
+        Glib::ustring description = Cheat.group[i].name[0] == '\0' ? "" :Cheat.group[i].name;
+        iter->set_value(COLUMN_ENABLED, Cheat.group[i].enabled);
         iter->set_value(COLUMN_DESCRIPTION, description);
         iter->set_value(COLUMN_CHEAT, Glib::ustring(str));
         iter++;
-        delete[] str;
     }
 
     enable_dnd(true);
@@ -228,15 +227,14 @@ void Snes9xCheats::add_code()
     if (description.empty())
         description = _("No description");
 
-    if (S9xAddCheatGroup(description.c_str(), code.c_str()) < 0)
+    if (S9xAddCheatGroup(description, code) < 0)
     {
         display_errorbox(_("Couldn't find any cheat codes in input."));
         return;
     }
 
-    auto parsed_code = S9xCheatGroupToText(Cheat.g.size() - 1);
+    auto parsed_code = S9xCheatGroupToText(Cheat.group.size() - 1);
     set_entry_text("code_entry", parsed_code);
-    delete[] parsed_code;
 
     get_object<Gtk::Entry>("code_entry")->grab_focus();
 
@@ -247,7 +245,7 @@ void Snes9xCheats::add_code()
 
     auto selection = get_object<Gtk::TreeView>("cheat_treeview")->get_selection();
     Gtk::TreePath path;
-    path.push_back(Cheat.g.size() - 1);
+    path.push_back(Cheat.group.size() - 1);
     selection->select(path);
 
     auto adj = get_object<Gtk::ScrolledWindow>("cheat_scrolledwindow")->get_vadjustment();
@@ -288,53 +286,27 @@ void Snes9xCheats::search_database()
     int result;
     int reason = 0;
 
-    filename = S9xGetDirectory(CHEAT_DIR);
-    filename += "/cheats.bml";
-    if (!(result = S9xImportCheatsFromDatabase(filename.c_str())))
+    for (const auto &dir : { S9xGetDirectory(CHEAT_DIR),
+                             get_config_dir(),
+                             std::string(DATADIR) })
     {
-        refresh_tree_view();
-        return;
+        filename = dir + "/cheats.bml";
+        result = S9xImportCheatsFromDatabase(filename);
+        if (result == 0)
+        {
+            refresh_tree_view();
+            return;
+        }
+
+        if (result < reason)
+            reason = result;
     }
-
-    if (result < reason)
-        reason = result;
-
-    filename = get_config_dir() + "/cheats.bml";
-    if (!(result = S9xImportCheatsFromDatabase(filename.c_str())))
-    {
-        refresh_tree_view();
-        return;
-    }
-
-    if (result < reason)
-        reason = result;
-
-    filename = std::string(DATADIR) + "/cheats.bml";
-    if (!(result = S9xImportCheatsFromDatabase(filename.c_str())))
-    {
-        refresh_tree_view();
-        return;
-    }
-
-    if (result < reason)
-        reason = result;
-
-    filename = S9xGetDirectory(ROM_DIR);
-    filename += "/cheats.bml";
-    if (!(result = S9xImportCheatsFromDatabase(filename.c_str())))
-    {
-        refresh_tree_view();
-        return;
-    }
-
-    if (result < reason)
-        reason = result;
 
     auto dialog = Gtk::MessageDialog(*window.get(), reason == -1 ? _("Couldn't Find Cheats Database") : _("No Matching Game Found"), true);
     dialog.set_secondary_text(reason == -1 ? _("The database file <b>cheats.bml</b> was not found. It is normally installed with "
                                                "Snes9x, but you may also place a custom copy in your configuration or cheats directory.")
                                            : _("No matching game was found in the databases. If you are using a non-official "
-                                               "translation or modified copy, you may be able to find and manually enter the codes."));
+                                               "translation or modified copy, you may be able to find and manually enter the codes."), true);
     dialog.run();
     dialog.hide();
 }
@@ -348,12 +320,10 @@ void Snes9xCheats::sort_cheats()
 void Snes9xCheats::row_activated(const Gtk::TreeModel::Path &path, Gtk::TreeViewColumn *column)
 {
     int index = get_index_from_path(path);
-    char *cheat_text;
 
-    cheat_text = S9xCheatGroupToText(index);
+    auto cheat_text = S9xCheatGroupToText(index);
     set_entry_text("code_entry", cheat_text);
-    delete[] cheat_text;
-    set_entry_text("description_entry", Cheat.g[index].name);
+    set_entry_text("description_entry", Cheat.group[index].name);
 }
 
 void Snes9xCheats::toggle_code(const Glib::ustring &path)
@@ -383,16 +353,15 @@ void Snes9xCheats::update_code()
     if (description.empty())
         description = _("No description");
 
-    auto parsed_code = S9xCheatValidate(code.c_str());
-    if (!parsed_code)
+    auto parsed_code = S9xCheatValidate(code);
+    if (parsed_code.empty())
     {
         display_errorbox(_("Couldn't find any cheat codes in input."));
         return;
     }
 
-    S9xModifyCheatGroup(index, description.c_str(), parsed_code);
+    S9xModifyCheatGroup(index, description, parsed_code);
     set_entry_text("code_entry", parsed_code);
-    delete[] parsed_code;
 
     get_object<Gtk::Entry>("code_entry")->grab_focus();
 
@@ -401,9 +370,9 @@ void Snes9xCheats::update_code()
 
 void Snes9xCheats::disable_all()
 {
-    for (unsigned int i = 0; i < Cheat.g.size(); i++)
+    for (unsigned int i = 0; i < Cheat.group.size(); i++)
     {
-        if (Cheat.g[i].enabled)
+        if (Cheat.group[i].enabled)
             S9xDisableCheatGroup(i);
     }
 

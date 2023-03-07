@@ -647,7 +647,7 @@ bool8 S9xNPGetROMImage (uint32 len)
     S9xNPSetAction ("Receiving ROM filename...");
     uint32 filename_len = len - Memory.CalculatedSize - 5;
     if (filename_len > PATH_MAX ||
-        !S9xNPGetData (NetPlay.Socket, (uint8 *) Memory.ROMFilename, filename_len))
+        !S9xNPGetData (NetPlay.Socket, (uint8 *) Memory.ROMFilename.c_str(), filename_len))
     {
         S9xNPSetError ("Error while receiving ROM filename from server.");
         S9xNPDisconnect ();

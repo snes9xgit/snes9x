@@ -392,7 +392,7 @@ static inline bool Diff (int c1, int c2)
 	return (false);
 }
 
-void HQ2X_16 (uint8 *srcPtr, uint32 srcPitch, uint8 *dstPtr, uint32 dstPitch, int width, int height)
+void HQ2X_16 (uint8 *srcPtr, int srcPitch, uint8 *dstPtr, int dstPitch, int width, int height)
 {
 	int	w1, w2, w3, w4, w5, w6, w7, w8, w9;
 	uint32	src1line = srcPitch >> 1;
@@ -3091,7 +3091,7 @@ void HQ2X_16 (uint8 *srcPtr, uint32 srcPitch, uint8 *dstPtr, uint32 dstPitch, in
 	}
 }
 
-void HQ3X_16 (uint8 *srcPtr, uint32 srcPitch, uint8 *dstPtr, uint32 dstPitch, int width, int height)
+void HQ3X_16 (uint8 *srcPtr, int srcPitch, uint8 *dstPtr, int dstPitch, int width, int height)
 {
 	int	w1, w2, w3, w4, w5, w6, w7, w8, w9;
 	uint32	src1line = srcPitch >> 1;
@@ -6763,7 +6763,7 @@ void HQ3X_16 (uint8 *srcPtr, uint32 srcPitch, uint8 *dstPtr, uint32 dstPitch, in
 	}
 }
 
-void HQ4X_16 (uint8 *srcPtr, uint32 srcPitch, uint8 *dstPtr, uint32 dstPitch, int width, int height)
+void HQ4X_16 (uint8 *srcPtr, int srcPitch, uint8 *dstPtr, int dstPitch, int width, int height)
 {
 	int	w1, w2, w3, w4, w5, w6, w7, w8, w9;
 	uint32	src1line = srcPitch >> 1;

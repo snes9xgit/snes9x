@@ -4,37 +4,24 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include <ctype.h>
-
+#include "bml.h"
+#include "cheats.h"
 #include "snes9x.h"
 #include "memmap.h"
-#include "cheats.h"
-#include "bml.h"
 
-static inline char *trim (char *string)
+static inline uint8 S9xGetByteFree(uint32 Address)
 {
-    int start;
-    int end;
-
-    for (start = 0; string[start] && isspace (string[start]); start++) {}
-    for (end = start; string[end] && !isspace (string[end]); end++) {}
-    string[end] = '\0';
-    return &string[start];
-}
-
-static inline uint8 S9xGetByteFree (uint32 Address)
-{
-    int	block = (Address & 0xffffff) >> MEMMAP_SHIFT;
+    int block = (Address & 0xffffff) >> MEMMAP_SHIFT;
     uint8 *GetAddress = Memory.Map[block];
     uint8 byte;
 
-    if (GetAddress >= (uint8 *) CMemory::MAP_LAST)
+    if (GetAddress >= (uint8 *)CMemory::MAP_LAST)
     {
         byte = *(GetAddress + (Address & 0xffff));
         return (byte);
     }
 
-    switch ((pint) GetAddress)
+    switch ((pint)GetAddress)
     {
     case CMemory::MAP_CPU:
         byte = S9xGetCPU(Address & 0xffff);
@@ -108,18 +95,18 @@ static inline uint8 S9xGetByteFree (uint32 Address)
     }
 }
 
-static inline void S9xSetByteFree (uint8 Byte, uint32 Address)
+static inline void S9xSetByteFree(uint8 Byte, uint32 Address)
 {
     int block = (Address & 0xffffff) >> MEMMAP_SHIFT;
     uint8 *SetAddress = Memory.Map[block];
 
-    if (SetAddress >= (uint8 *) CMemory::MAP_LAST)
+    if (SetAddress >= (uint8 *)CMemory::MAP_LAST)
     {
         *(SetAddress + (Address & 0xffff)) = Byte;
         return;
     }
 
-    switch ((pint) SetAddress)
+    switch ((pint)SetAddress)
     {
     case CMemory::MAP_CPU:
         S9xSetCPU(Byte, Address & 0xffff);
@@ -197,165 +184,229 @@ static inline void S9xSetByteFree (uint8 Byte, uint32 Address)
     }
 }
 
-void S9xInitWatchedAddress (void)
+void S9xInitWatchedAddress(void)
 {
     for (unsigned int i = 0; i < sizeof(watches) / sizeof(watches[0]); i++)
         watches[i].on = false;
 }
 
-void S9xInitCheatData (void)
+void S9xInitCheatData(void)
 {
     Cheat.RAM = Memory.RAM;
     Cheat.SRAM = Memory.SRAM;
     Cheat.FillRAM = Memory.FillRAM;
 }
 
+static inline std::string trim(const std::string &&string)
+{
+    auto start = string.find_first_not_of(" \t\n\r");
+    auto end   = string.find_last_not_of(" \t\n\r");
+    if (start != std::string::npos && end != std::string::npos)
+        return string.substr(start, end - start + 1);
+    return "";
+}
 
-void S9xUpdateCheatInMemory (SCheat *c)
+void S9xUpdateCheatInMemory(SCheat &c)
 {
     uint8 byte;
 
-    if (!c->enabled)
+    if (!c.enabled)
         return;
 
-    byte = S9xGetByteFree (c->address);
+    byte = S9xGetByteFree(c.address);
 
-    if (byte != c->byte)
+    if (byte != c.byte)
     {
         /* The game wrote a different byte to the address, update saved_byte */
-        c->saved_byte = byte;
+        c.saved_byte = byte;
 
-        if (c->conditional)
+        if (c.conditional)
         {
-            if (c->saved_byte != c->cond_byte && c->cond_true)
+            if (c.saved_byte != c.cond_byte && c.cond_true)
             {
                 /* Condition is now false, let the byte stand */
-                c->cond_true = false;
+                c.cond_true = false;
             }
-            else if (c->saved_byte == c->cond_byte && !c->cond_true)
+            else if (c.saved_byte == c.cond_byte && !c.cond_true)
             {
-                c->cond_true = true;
-                S9xSetByteFree (c->byte, c->address);
+                c.cond_true = true;
+                S9xSetByteFree(c.byte, c.address);
             }
         }
         else
-            S9xSetByteFree (c->byte, c->address);
+            S9xSetByteFree(c.byte, c.address);
     }
-    else if (c->conditional)
+    else if (c.conditional)
     {
-        if (byte == c->cond_byte)
+        if (byte == c.cond_byte)
         {
-            c->cond_true = true;
-            c->saved_byte = byte;
-            S9xSetByteFree (c->byte, c->address);
+            c.cond_true = true;
+            c.saved_byte = byte;
+            S9xSetByteFree(c.byte, c.address);
         }
     }
 }
 
-void S9xDisableCheat (SCheat *c)
+void S9xDisableCheat(SCheat &c)
 {
-    if (!c->enabled)
+    if (!c.enabled)
         return;
 
     if (!Cheat.enabled)
     {
-        c->enabled = false;
+        c.enabled = false;
         return;
     }
 
     /* Make sure we restore the up-to-date written byte */
-    S9xUpdateCheatInMemory (c);
-    c->enabled = false;
+    S9xUpdateCheatInMemory(c);
+    c.enabled = false;
 
-    if (c->conditional && !c->cond_true)
+    if (c.conditional && !c.cond_true)
         return;
 
-    S9xSetByteFree (c->saved_byte, c->address);
-    c->cond_true = false;
+    S9xSetByteFree (c.saved_byte, c.address);
+    c.cond_true = false;
 }
 
-void S9xDeleteCheatGroup (uint32 g)
+void S9xDeleteCheatGroup(uint32 g)
 {
     unsigned int i;
 
-    if (g >= Cheat.g.size ())
+    if (g >= Cheat.group.size())
         return;
 
-    for (i = 0; i < Cheat.g[g].c.size (); i++)
+    for (i = 0; i < Cheat.group[g].cheat.size(); i++)
     {
-        S9xDisableCheat (&Cheat.g[g].c[i]);
+        S9xDisableCheat(Cheat.group[g].cheat[i]);
     }
 
-    delete[] Cheat.g[g].name;
-
-    Cheat.g.erase (Cheat.g.begin () + g);
+    Cheat.group.erase(Cheat.group.begin() + g);
 }
 
-void S9xDeleteCheats (void)
+void S9xDeleteCheats(void)
 {
-    unsigned int i;
-
-    for (i = 0; i < Cheat.g.size (); i++)
+    for (size_t i = 0; i < Cheat.group.size(); i++)
     {
-        S9xDisableCheatGroup (i);
-
-        delete[] Cheat.g[i].name;
+        S9xDisableCheatGroup(i);
     }
 
-    Cheat.g.clear ();
+    Cheat.group.clear();
 }
 
-void S9xEnableCheat (SCheat *c)
+void S9xEnableCheat(SCheat &c)
 {
     uint8 byte;
 
-    if (c->enabled)
+    if (c.enabled)
         return;
 
-    c->enabled = true;
+    c.enabled = true;
 
     if (!Cheat.enabled)
         return;
 
-    byte = S9xGetByteFree(c->address);
+    byte = S9xGetByteFree(c.address);
 
-    if (c->conditional)
+    if (c.conditional)
     {
-        if (byte != c->cond_byte)
+        if (byte != c.cond_byte)
             return;
 
-        c->cond_true = true;
+        c.cond_true = true;
     }
 
-    c->saved_byte = byte;
-    S9xSetByteFree (c->byte, c->address);
+    c.saved_byte = byte;
+    S9xSetByteFree(c.byte, c.address);
 }
 
-void S9xEnableCheatGroup (uint32 num)
+void S9xEnableCheatGroup(uint32 num)
 {
-    unsigned int i;
+    for (auto &c : Cheat.group[num].cheat)
+        S9xEnableCheat(c);
 
-    for (i = 0; i < Cheat.g[num].c.size (); i++)
-    {
-        S9xEnableCheat (&Cheat.g[num].c[i]);
-    }
-
-    Cheat.g[num].enabled = true;
+    Cheat.group[num].enabled = true;
 }
 
-void S9xDisableCheatGroup (uint32 num)
+void S9xDisableCheatGroup(uint32 num)
 {
-    unsigned int i;
+    for (auto &c : Cheat.group[num].cheat)
+        S9xDisableCheat(c);
 
-    for (i = 0; i < Cheat.g[num].c.size (); i++)
-    {
-        S9xDisableCheat (&Cheat.g[num].c[i]);
-    }
-
-    Cheat.g[num].enabled = false;
+    Cheat.group[num].enabled = false;
 }
 
-SCheat S9xTextToCheat (char *text)
+static bool is_all_hex(const std::string &code)
+{
+    for (const auto &c : code)
+    {
+        if ((c < '0' || c > '9') &&
+            (c < 'a' || c > 'f') &&
+            (c < 'A' || c > 'F'))
+            return false;
+    }
+
+    return true;
+}
+
+bool S9xProActionReplayToRaw(const std::string &code, uint32 &address, uint8 &byte)
+{
+    if (code.length() != 8 || !is_all_hex(code))
+        return false;
+
+    uint32 data = std::strtoul(code.c_str(), nullptr, 16);
+
+    address = data >> 8;
+    byte = (uint8)data;
+
+    return true;
+}
+
+bool S9xGameGenieToRaw(const std::string &code, uint32 &address, uint8 &byte)
+{
+    if (code.length() != 9)
+        return false;
+    if (code[4] != '-')
+        return false;
+    if (!is_all_hex(code.substr(0, 4)))
+        return false;
+    if (!is_all_hex(code.substr(5, 4)))
+        return false;
+
+    auto new_code = code.substr(0, 4) + code.substr(5, 4);
+
+    static const char *real_hex = "0123456789ABCDEF";
+    static const char *genie_hex = "DF4709156BC8A23E";
+
+    for (auto &c : new_code)
+    {
+        c = toupper(c);
+
+        for (int i = 0; i < 16; i++)
+        {
+            if (genie_hex[i] == c)
+            {
+                c = real_hex[i];
+                break;
+            }
+        }
+    }
+
+    uint32 data = strtoul(new_code.c_str(), nullptr, 16);
+    byte = (uint8)(data >> 24);
+    address = data & 0xffffff;
+    address = ((address & 0x003c00) << 10) +
+              ((address & 0x00003c) << 14) +
+              ((address & 0xf00000) >> 8) +
+              ((address & 0x000003) << 10) +
+              ((address & 0x00c000) >> 6) +
+              ((address & 0x0f0000) >> 12) +
+              ((address & 0x0003c0) >> 6);
+
+    return true;
+}
+
+SCheat S9xTextToCheat(const std::string &text)
 {
     SCheat c;
     unsigned int byte = 0;
@@ -364,34 +415,28 @@ SCheat S9xTextToCheat (char *text)
     c.enabled     = false;
     c.conditional = false;
 
-    if (!S9xGameGenieToRaw (text, c.address, c.byte))
+    if (S9xGameGenieToRaw(text, c.address, c.byte))
     {
         byte = c.byte;
     }
-
-    else if (!S9xProActionReplayToRaw (text, c.address, c.byte))
+    else if (S9xProActionReplayToRaw(text, c.address, c.byte))
     {
         byte = c.byte;
     }
-
-    else if (sscanf (text, "%x = %x ? %x", &c.address, &cond_byte, &byte) == 3)
+    else if (sscanf(text.c_str(), "%x = %x ? %x", &c.address, &cond_byte, &byte) == 3)
     {
         c.conditional = true;
     }
-
-    else if (sscanf (text, "%x = %x", &c.address, &byte) == 2)
+    else if (sscanf(text.c_str(), "%x = %x", &c.address, &byte) == 2)
     {
     }
-
-    else if (sscanf (text, "%x / %x / %x", &c.address, &cond_byte, &byte) == 3)
+    else if (sscanf(text.c_str(), "%x / %x / %x", &c.address, &cond_byte, &byte) == 3)
     {
         c.conditional = true;
     }
-
-    else if (sscanf (text, "%x / %x", &c.address, &byte) == 2)
+    else if (sscanf(text.c_str(), "%x / %x", &c.address, &byte) == 2)
     {
     }
-
     else
     {
         c.address = 0;
@@ -404,313 +449,287 @@ SCheat S9xTextToCheat (char *text)
     return c;
 }
 
-SCheatGroup S9xCreateCheatGroup (const char *name, const char *cheat)
+std::vector<std::string> split_string(const std::string &str, unsigned char delim)
 {
-    SCheatGroup g;
-    char *code_string = strdup (cheat);
-    char *code_ptr = code_string;
-    int len;
+    std::vector<std::string> tokens;
+    size_t pos = 0;
+    size_t index;
 
-    g.name = strdup (name);
-    g.enabled = false;
-
-    for (len = strcspn (code_ptr, "+"); len; len = strcspn (code_ptr, "+"))
+    while (pos < str.length())
     {
-        char *code = code_ptr;
-        code_ptr += len + (code_ptr[len] == '\0' ? 0 : 1);
-        code[len] = '\0';
-        code = trim (code);
+        index = str.find(delim, pos);
+        if (index == std::string::npos)
+        {
+            if (pos < str.length())
+            {
+                tokens.push_back(trim(str.substr(pos)));
+            }
 
-        SCheat c = S9xTextToCheat (code);
-        if (c.address)
-            g.c.push_back (c);
+            break;
+        }
+        else if (index > pos)
+        {
+            tokens.push_back(trim(str.substr(pos, index - pos)));
+        }
+
+        pos = index + 1;
     }
 
-    free(code_string);
+    return tokens;
+}
+
+SCheatGroup S9xCreateCheatGroup(const std::string &name, const std::string &cheat)
+{
+    SCheatGroup g;
+
+    g.name = name;
+    g.enabled = false;
+
+    auto cheats = split_string(cheat, '+');
+    for (const auto &c : cheats)
+    {
+        SCheat new_cheat = S9xTextToCheat(c);
+        if (new_cheat.address)
+            g.cheat.push_back(new_cheat);
+    }
 
     return g;
 }
 
-int S9xAddCheatGroup (const char *name, const char *cheat)
+int S9xAddCheatGroup(const std::string &name, const std::string &cheat)
 {
-    SCheatGroup g = S9xCreateCheatGroup (name, cheat);
-    if (g.c.size () == 0)
+    SCheatGroup g = S9xCreateCheatGroup(name, cheat);
+    if (g.cheat.size() == 0)
         return -1;
 
-    Cheat.g.push_back (g);
+    Cheat.group.push_back(g);
 
-    return Cheat.g.size () - 1;
+    return Cheat.group.size() - 1;
 }
 
-int S9xModifyCheatGroup (uint32 num, const char *name, const char *cheat)
+int S9xModifyCheatGroup(uint32 num, const std::string &name, const std::string &cheat)
 {
-	if (num >= Cheat.g.size())
+	if (num >= Cheat.group.size())
 		return -1;
 
-    S9xDisableCheatGroup (num);
-    delete[] Cheat.g[num].name;
+    S9xDisableCheatGroup(num);
 
-    Cheat.g[num] = S9xCreateCheatGroup (name, cheat);
+    Cheat.group[num] = S9xCreateCheatGroup(name, cheat);
 
     return num;
 }
 
-char *S9xCheatToText (SCheat *c)
+std::string S9xCheatToText(const SCheat &c)
 {
-    int size = 10; /* 6 address, 1 =, 2 byte, 1 NUL */
-    char *text;
+    char output[256]{};
 
-    if (c->conditional)
-        size += 3; /* additional 2 byte, 1 ? */
-
-    text = new char[size];
-
-    if (c->conditional)
-        snprintf (text, size, "%06x=%02x?%02x", c->address, c->cond_byte, c->byte);
+    if (c.conditional)
+        sprintf(output, "%06x=%02x?%02x", c.address, c.cond_byte, c.byte);
     else
-        snprintf (text, size, "%06x=%02x", c->address, c->byte);
+        sprintf(output, "%06x=%02x", c.address, c.byte);
+
+    return std::string(output);
+}
+
+std::string S9xCheatGroupToText(SCheatGroup &g)
+{
+    std::string text = "";
+
+    for (size_t i = 0; i < g.cheat.size(); i++)
+    {
+        text += S9xCheatToText(g.cheat[i]);
+        if (i != g.cheat.size() - 1)
+            text += "+";
+    }
 
     return text;
 }
 
-char *S9xCheatGroupToText (SCheatGroup *g)
+std::string S9xCheatValidate(const std::string &code_string)
 {
-    std::string text = "";
-    unsigned int i;
+    SCheatGroup g = S9xCreateCheatGroup("temp", code_string);
 
-    if (g->c.size () == 0)
-        return NULL;
-
-    for (i = 0; i < g->c.size (); i++)
+    if (g.cheat.size() > 0)
     {
-        char *tmp = S9xCheatToText (&g->c[i]);
-        if (i != 0)
-            text += " + ";
-        text += tmp;
-        delete[] tmp;
+        return S9xCheatGroupToText(g);
     }
 
-    return strdup (text.c_str ());
+    return "";
 }
 
-char *S9xCheatValidate (const char *code_string)
+std::string S9xCheatGroupToText(uint32 num)
 {
-    SCheatGroup g = S9xCreateCheatGroup ("temp", code_string);
+    if (num >= Cheat.group.size())
+        return "";
 
-    delete[] g.name;
-
-    if (g.c.size() > 0)
-    {
-        return S9xCheatGroupToText (&g);
-    }
-
-    return NULL;
+    return S9xCheatGroupToText(Cheat.group[num]);
 }
 
-char *S9xCheatGroupToText (uint32 num)
+void S9xUpdateCheatsInMemory(void)
 {
-    if (num >= Cheat.g.size ())
-        return NULL;
-
-    return S9xCheatGroupToText (&Cheat.g[num]);
-}
-
-void S9xUpdateCheatsInMemory (void)
-{
-    unsigned int i;
-    unsigned int j;
-
     if (!Cheat.enabled)
         return;
 
-    for (i = 0; i < Cheat.g.size (); i++)
-    {
-        for (j = 0; j < Cheat.g[i].c.size (); j++)
-        {
-            S9xUpdateCheatInMemory (&Cheat.g[i].c[j]);
-        }
-    }
+    for (auto &group : Cheat.group)
+        for (auto &cheat : group.cheat)
+            S9xUpdateCheatInMemory(cheat);
 }
 
-static int S9xCheatIsDuplicate (const char *name, const char *code)
+static bool S9xCheatIsDuplicate(const std::string &name, const std::string &code)
 {
-    unsigned int i;
-
-    for (i = 0; i < Cheat.g.size(); i++)
+    for (size_t i = 0; i < Cheat.group.size(); i++)
     {
-        if (!strcmp (name, Cheat.g[i].name))
+        if (Cheat.group[i].name == name)
         {
-            char *code_string = S9xCheatGroupToText (i);
-            char *validated   = S9xCheatValidate (code);
+            auto code_string = S9xCheatGroupToText(i);
+            auto validated_string = S9xCheatValidate(code);
 
-            if (validated && !strcmp (code_string, validated))
-            {
-                free (code_string);
-                free (validated);
-                return TRUE;
-            }
-
-            free (code_string);
-            free (validated);
+            if (validated_string == code_string)
+                return true;
         }
     }
 
-    return FALSE;
+    return false;
 }
 
-static void S9xLoadCheatsFromBMLNode (bml_node *n)
+static void S9xLoadCheatsFromBMLNode(bml_node &n)
 {
-    unsigned int i;
-
-    for (i = 0; i < n->child.size (); i++)
+    for (auto &c : n.child)
     {
-        if (!strcasecmp (n->child[i].name.c_str(), "cheat"))
-        {
-            const char *desc = NULL;
-            const char *code = NULL;
-            bool8 enabled = false;
+        if (strcasecmp(c.name.c_str(), "cheat"))
+            continue;
 
-            bml_node *c = &n->child[i];
-            bml_node *tmp = NULL;
+        auto subnode = c.find_subnode("code");
+        if (!subnode)
+            continue;
+        std::string code = subnode->data;
 
-            tmp = c->find_subnode("name");
-            if (!tmp)
-                desc = (char *) "";
-            else
-                desc = tmp->data.c_str();
+        std::string name;
+        subnode = c.find_subnode("name");
+        if (subnode)
+            name = subnode->data;
 
-            tmp = c->find_subnode("code");
-            if (tmp)
-                code = tmp->data.c_str();
+        bool enable = false;
+        if (c.find_subnode("enable"))
+            enable = true;
 
-            if (c->find_subnode("enable"))
-                enabled = true;
+        if (S9xCheatIsDuplicate(name, code))
+            continue;
 
-            if (code && !S9xCheatIsDuplicate (desc, code))
-            {
-                int index = S9xAddCheatGroup (desc, code);
-
-                if (enabled)
-                    S9xEnableCheatGroup (index);
-            }
-        }
+        auto index = S9xAddCheatGroup(name, code);
+        if (enable)
+            S9xEnableCheatGroup(index);
     }
 
     return;
 }
 
-static bool8 S9xLoadCheatFileClassic (const char *filename)
+static bool8 S9xLoadCheatFileClassic(const std::string &filename)
 {
     FILE *fs;
     uint8 data[28];
 
-    fs = fopen(filename, "rb");
+    fs = fopen(filename.c_str(), "rb");
     if (!fs)
         return (FALSE);
 
-    while (fread ((void *) data, 1, 28, fs) == 28)
+    while (fread(data, 1, 28, fs) == 28)
     {
         SCheat c;
-        char name[21];
-        char cheat[10];
         c.enabled = (data[0] & 4) == 0;
         c.byte = data[1];
-        c.address = data[2] | (data[3] << 8) |  (data[4] << 16);
-        memcpy (name, &data[8], 20);
-        name[20] = 0;
+        c.address = data[2] | (data[3] << 8) | (data[4] << 16);
 
-        snprintf (cheat, 10, "%x=%x", c.address, c.byte);
-        S9xAddCheatGroup (name, cheat);
+        std::string name((const char *)&data[8], 20);
+        char code[32]{};
+        sprintf(code, "%x=%x", c.address, c.byte);
+        std::string cheat(code);
+        S9xAddCheatGroup(name, cheat);
 
         if (c.enabled)
-            S9xEnableCheatGroup (Cheat.g.size () - 1);
+            S9xEnableCheatGroup(Cheat.group.size() - 1);
     }
 
     fclose(fs);
 
-    return (TRUE);
+    return TRUE;
 }
 
-bool8 S9xLoadCheatFile (const char *filename)
+bool8 S9xLoadCheatFile(const std::string &filename)
 {
     bml_node bml;
     if (!bml.parse_file(filename))
     {
-        return S9xLoadCheatFileClassic (filename);
+        return S9xLoadCheatFileClassic(filename);
     }
 
     bml_node *n = bml.find_subnode("cheat");
     if (n)
     {
-        S9xLoadCheatsFromBMLNode (&bml);
+        S9xLoadCheatsFromBMLNode(bml);
     }
 
     if (!n)
     {
-        return S9xLoadCheatFileClassic (filename);
+        return S9xLoadCheatFileClassic(filename);
     }
 
     return (TRUE);
 }
 
-bool8 S9xSaveCheatFile (const char *filename)
+bool8 S9xSaveCheatFile(const std::string &filename)
 {
     unsigned int i;
     FILE *file = NULL;
 
-    if (Cheat.g.size () == 0)
+    if (Cheat.group.size() == 0)
     {
-        remove (filename);
+        remove(filename.c_str());
         return TRUE;
     }
 
-    file = fopen (filename, "w");
+    file = fopen(filename.c_str(), "w");
 
     if (!file)
         return FALSE;
 
-    for (i = 0; i < Cheat.g.size (); i++)
+    for (i = 0; i < Cheat.group.size(); i++)
     {
-        char *txt = S9xCheatGroupToText (i);
-
-        fprintf (file,
-                 "cheat\n"
-                 "  name: %s\n"
-                 "  code: %s\n"
-                 "%s\n",
-                 Cheat.g[i].name ? Cheat.g[i].name : "",
-                 txt,
-                 Cheat.g[i].enabled ? "  enable\n" : ""
-                 );
-
-        delete[] txt;
+        fprintf(file,
+                "cheat\n"
+                "  name: %s\n"
+                "  code: %s\n"
+                "%s\n",
+                Cheat.group[i].name.c_str(),
+                S9xCheatGroupToText(i).c_str(),
+                Cheat.group[i].enabled ? "  enable\n" : "");
     }
 
-    fclose (file);
+    fclose(file);
 
     return TRUE;
 }
 
-void S9xCheatsDisable (void)
+void S9xCheatsDisable(void)
 {
     unsigned int i;
 
     if (!Cheat.enabled)
         return;
 
-    for (i = 0; i < Cheat.g.size (); i++)
+    for (i = 0; i < Cheat.group.size(); i++)
     {
-        if (Cheat.g[i].enabled)
+        if (Cheat.group[i].enabled)
         {
-            S9xDisableCheatGroup (i);
-            Cheat.g[i].enabled = TRUE;
+            S9xDisableCheatGroup(i);
+            Cheat.group[i].enabled = TRUE;
         }
     }
 
     Cheat.enabled = FALSE;
 }
 
-void S9xCheatsEnable (void)
+void S9xCheatsEnable(void)
 {
     unsigned int i;
 
@@ -719,17 +738,17 @@ void S9xCheatsEnable (void)
 
     Cheat.enabled = TRUE;
 
-    for (i = 0; i < Cheat.g.size (); i++)
+    for (i = 0; i < Cheat.group.size(); i++)
     {
-        if (Cheat.g[i].enabled)
+        if (Cheat.group[i].enabled)
         {
-            Cheat.g[i].enabled = FALSE;
-            S9xEnableCheatGroup (i);
+            Cheat.group[i].enabled = FALSE;
+            S9xEnableCheatGroup(i);
         }
     }
 }
 
-int S9xImportCheatsFromDatabase (const char *filename)
+int S9xImportCheatsFromDatabase(const std::string &filename)
 {
     char sha256_txt[65];
     char hextable[] = "0123456789abcdef";
@@ -746,19 +765,16 @@ int S9xImportCheatsFromDatabase (const char *filename)
     }
     sha256_txt[64] = '\0';
 
-    for (i = 0; i < bml.child.size (); i++)
+    for (auto &c : bml.child)
     {
-        if (!strcasecmp (bml.child[i].name.c_str(), "cartridge"))
+        if (!strcasecmp(c.name.c_str(), "cartridge"))
         {
-            bml_node *n;
+            auto n = c.find_subnode("sha256");
 
-            if ((n = bml.child[i].find_subnode ("sha256")))
+            if (n && !strcasecmp(n->data.c_str(), sha256_txt))
             {
-                if (!strcasecmp (n->data.c_str(), sha256_txt))
-                {
-                    S9xLoadCheatsFromBMLNode (&bml.child[i]);
-                    return 0;
-                }
+                S9xLoadCheatsFromBMLNode(c);
+                return 0;
             }
         }
     }

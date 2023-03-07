@@ -16,9 +16,6 @@
     <Filter Include="GUI\VideoDriver">
       <UniqueIdentifier>{a94f817d-5513-4c45-909f-b75c01f63b0c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="i386">
-      <UniqueIdentifier>{f48483e9-ed1d-4820-bc4f-17815191dc2c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="JMA">
       <UniqueIdentifier>{a9636c94-51c1-43d0-8e46-8d6656c7bb5d}</UniqueIdentifier>
     </Filter>
@@ -42,6 +39,12 @@
     </Filter>
     <Filter Include="Shaders">
       <UniqueIdentifier>{31758447-7e76-4af0-8561-a377194049e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fmtlib">
+      <UniqueIdentifier>{07a3a904-2263-4912-80ea-c31a0e4c78c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI\VideoDriver\Vulkan">
+      <UniqueIdentifier>{33cdb579-8582-4adc-91d3-c6624af3ad94}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -287,6 +290,45 @@
     </ClInclude>
     <ClInclude Include="CSaveLoadWithPreviewDlg.h">
       <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\fscompat.h">
+      <Filter>Emu</Filter>
+    </ClInclude>
+    <ClInclude Include="CVulkan.h">
+      <Filter>GUI\VideoDriver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vulkan\slang_helpers.hpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vulkan\slang_preset.hpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vulkan\slang_preset_ini.hpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vulkan\slang_shader.hpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vulkan\vulkan_context.hpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vulkan\vulkan_pipeline_image.hpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vulkan\vulkan_shader_chain.hpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vulkan\vulkan_slang_pipeline.hpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vulkan\vulkan_swapchain.hpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vulkan\vulkan_texture.hpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vulkan\vulkan_simple_output.hpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -629,6 +671,60 @@
     <ClCompile Include="CSaveLoadWithPreviewDlg.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
+    <ClCompile Include="..\external\fmt\src\format.cc">
+      <Filter>fmtlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fscompat.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
+    <ClCompile Include="CVulkan.cpp">
+      <Filter>GUI\VideoDriver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vulkan\slang_helpers.cpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vulkan\slang_preset.cpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vulkan\slang_preset_ini.cpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vulkan\slang_preset_test.cpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vulkan\slang_shader.cpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vulkan\vk_mem_alloc_implementation.cpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vulkan\vulkan_context.cpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vulkan\vulkan_hpp_storage.cpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vulkan\vulkan_pipeline_image.cpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vulkan\vulkan_shader_chain.cpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vulkan\vulkan_slang_pipeline.cpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vulkan\vulkan_swapchain.cpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vulkan\vulkan_texture.cpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\external\stb\stb_image_implementation.cpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vulkan\vulkan_simple_output.cpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="rsrc\nodrop.cur">
@@ -832,54 +928,6 @@
     </CustomBuild>
     <CustomBuild Include="CDirect3D.h">
       <Filter>GUI\VideoDriver</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\c4.asm">
-      <Filter>i386</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\c4.obj">
-      <Filter>i386</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\fxemu2.asm">
-      <Filter>i386</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\fxemu2.obj">
-      <Filter>i386</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\fxemu2b.asm">
-      <Filter>i386</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\fxemu2b.obj">
-      <Filter>i386</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\fxemu2c.asm">
-      <Filter>i386</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\fxemu2c.obj">
-      <Filter>i386</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\fxtable.asm">
-      <Filter>i386</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\fxtable.obj">
-      <Filter>i386</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\sfxproc.asm">
-      <Filter>i386</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\sfxproc.obj">
-      <Filter>i386</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\zsnes.asm">
-      <Filter>i386</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\zsnes.obj">
-      <Filter>i386</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\zsnesc4.asm">
-      <Filter>i386</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\zsnesc4.obj">
-      <Filter>i386</Filter>
     </CustomBuild>
     <CustomBuild Include="..\filter\hq2x.h">
       <Filter>Filter</Filter>

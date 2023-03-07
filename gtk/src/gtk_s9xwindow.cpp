@@ -5,6 +5,7 @@
 \*****************************************************************************/
 
 #include "gtk_compat.h"
+#include "gtk_config.h"
 
 #ifdef GDK_WINDOWING_X11
 #include <X11/Xatom.h>
@@ -203,7 +204,7 @@ void Snes9xWindow::connect_signals()
     });
 
     get_object<Gtk::MenuItem>("load_state_undo")->signal_activate().connect([&] {
-        S9xUnfreezeGame(S9xGetFilename(".undo", SNAPSHOT_DIR));
+        S9xUnfreezeGame(S9xGetFilename(".undo", SNAPSHOT_DIR).c_str());
     });
 
     get_object<Gtk::MenuItem>("save_spc_item")->signal_activate().connect([&] {
@@ -515,6 +516,7 @@ void Snes9xWindow::setup_splash()
 
         return;
     }
+    return;
 
     for (int y = 0; y < 224; y++, screen_ptr += (GFX.Pitch / 2)) {
         memset(screen_ptr, 0, 256 * sizeof(uint16));
@@ -537,7 +539,7 @@ bool Snes9xWindow::draw(const Cairo::RefPtr<Cairo::Context> &cr)
         setup_splash();
     }
 
-    S9xDisplayRefresh(last_width, last_height);
+    S9xDisplayRefresh();
 
     if (!(config->fullscreen))
     {
@@ -650,7 +652,7 @@ std::string Snes9xWindow::open_movie_dialog(bool readonly)
 
     if (!readonly)
     {
-        const char *default_name = S9xGetFilename(".smv", s9x_getdirtype::ROM_DIR);
+        auto default_name = S9xGetFilename(".smv", s9x_getdirtype::ROM_DIR);
         dialog.set_current_name(default_name);
 
     }
@@ -774,7 +776,7 @@ void Snes9xWindow::load_state_dialog()
     dialog.hide();
     if (result == Gtk::RESPONSE_ACCEPT)
     {
-        S9xLoadState(dialog.get_filename().c_str());
+        S9xLoadState(dialog.get_filename());
     }
 
     unpause_from_focus_change();
@@ -836,7 +838,7 @@ void Snes9xWindow::save_state_dialog()
     dialog.hide();
 
     if (result == GTK_RESPONSE_ACCEPT)
-        S9xSaveState(dialog.get_filename().c_str());
+        S9xSaveState(dialog.get_filename());
 
     unpause_from_focus_change();
 }
@@ -903,7 +905,7 @@ const char *markup = _(R"(<b>Information for %s</b>
     char output[2048];
 
     snprintf(output, 2048, markup,
-             Memory.ROMFilename,
+             Memory.ROMFilename.c_str(),
              Memory.ROMName,
              Memory.ROMSpeed,
              ((Memory.ROMSpeed & 0x10) != 0) ? "FastROM" : "SlowROM",
@@ -1018,12 +1020,6 @@ void Snes9xWindow::reset_screensaver()
     if (GDK_IS_X11_WINDOW(gdk_window))
     {
         XResetScreenSaver(GDK_DISPLAY_XDISPLAY(gdk_display));
-    }
-#endif
-#ifdef GDK_WINDOWING_WAYLAND
-    if (GDK_IS_WAYLAND_WINDOW(gdk_window))
-    {
-        // TODO screensaver for wayland
     }
 #endif
 
@@ -1172,20 +1168,28 @@ void Snes9xWindow::enter_fullscreen_mode()
     {
         Display *dpy = gdk_x11_display_get_xdisplay(gdk_display);
 
+        auto xrr_screen_resources = XRRGetScreenResourcesCurrent(dpy, gdk_x11_window_get_xid(gdk_window));
+        auto xrr_crtc_info = XRRGetCrtcInfo(dpy,
+                                            xrr_screen_resources,
+                                            xrr_screen_resources->crtcs[0]);
+
+
         gdk_display_sync(gdk_display);
         if (XRRSetCrtcConfig(dpy,
-                             config->xrr_screen_resources,
-                             config->xrr_screen_resources->crtcs[0],
+                             xrr_screen_resources,
+                             xrr_screen_resources->crtcs[0],
                              CurrentTime,
-                             config->xrr_crtc_info->x,
-                             config->xrr_crtc_info->y,
-                             config->xrr_screen_resources->modes[config->xrr_index].id,
-                             config->xrr_crtc_info->rotation,
-                             &config->xrr_crtc_info->outputs[0],
+                             xrr_crtc_info->x,
+                             xrr_crtc_info->y,
+                             xrr_screen_resources->modes[config->xrr_index].id,
+                             xrr_crtc_info->rotation,
+                             &xrr_crtc_info->outputs[0],
                              1) != 0)
         {
             config->change_display_resolution = 0;
         }
+        XRRFreeCrtcInfo(xrr_crtc_info);
+        XRRFreeScreenResources(xrr_screen_resources);
 
         if (gui_config->auto_input_rate)
         {
@@ -1201,6 +1205,21 @@ void Snes9xWindow::enter_fullscreen_mode()
     gdk_display_sync(gdk_display);
     window->present();
 
+    if (config->auto_vrr)
+    {
+        autovrr_saved_frameskip = Settings.SkipFrames;
+        autovrr_saved_sound_input_rate = Settings.SoundInputRate;
+        autovrr_saved_sync_to_vblank = gui_config->sync_to_vblank;
+        autovrr_saved_sound_sync = Settings.SoundSync;
+
+        Settings.SoundSync = false;
+        Settings.SkipFrames = THROTTLE_TIMER;
+        Settings.SoundInputRate = 32040;
+        S9xUpdateDynamicRate(1, 2);
+        gui_config->sync_to_vblank = true;
+        S9xDisplayRefresh();
+    }
+
 #ifdef GDK_WINDOWING_X11
     if (GDK_IS_X11_WINDOW(window->get_window()->gobj()) &&
         config->default_esc_behavior != ESC_TOGGLE_MENUBAR)
@@ -1212,6 +1231,7 @@ void Snes9xWindow::enter_fullscreen_mode()
 #endif
     config->fullscreen = 1;
     config->rom_loaded = rom_loaded;
+
 
     /* If we're running a game, disable ui when entering fullscreen */
     if (!Settings.Paused && config->rom_loaded)
@@ -1226,6 +1246,16 @@ void Snes9xWindow::leave_fullscreen_mode()
 
     if (!config->fullscreen)
         return;
+
+    if (config->auto_vrr)
+    {
+        Settings.SkipFrames = autovrr_saved_frameskip;
+        Settings.SoundInputRate = autovrr_saved_sound_input_rate;
+        gui_config->sync_to_vblank = autovrr_saved_sync_to_vblank;
+        Settings.SoundSync = autovrr_saved_sound_sync;
+        S9xUpdateDynamicRate(1, 2);
+        S9xDisplayRefresh();
+    }
 
     GdkDisplay *gdk_display = window->get_display()->gobj();
     GdkWindow *gdk_window = window->get_window()->gobj();

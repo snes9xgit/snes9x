@@ -814,6 +814,7 @@ void WinRegisterConfigItems()
     AddUIntC("RewindGranularity", GUI.rewindGranularity, 1, "rewind granularity - rewind takes a snapshot each x frames");
 	AddBoolC("PauseWhenInactive", GUI.InactivePause, TRUE, "true to pause Snes9x when it is not the active window");
 	AddBoolC("CustomRomOpenDialog", GUI.CustomRomOpen, false, "false to use standard Windows open dialog for the ROM open dialog");
+	AddBoolC("AddToRegistry", GUI.AddToRegistry, false, "true to add entries to registry for file type associations");
 	AddBoolC("AVIHiRes", GUI.AVIHiRes, false, "true to record AVI in Hi-Res scale");
 	AddBoolC("ConfirmSaveLoad", GUI.ConfirmSaveLoad, false, "true to ask for confirmation when saving/loading");
 //	AddUIntC("Language", GUI.Language, 0, "0=English, 1=Nederlands"); // NYI

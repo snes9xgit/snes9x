@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.18)
 project(snes9x-gtk VERSION 1.61)
 
-option(USE_SLANG "Build support for slang-type shaders" ON)
+option(USE_SLANG "Build support for Vulkan output and .slangp shaders" ON)
 option(USE_XV "Build support for XVideo output" ON)
 option(USE_PORTAUDIO "Build PortAudio sound driver" ON)
 option(USE_ALSA "Build ALSA sound driver" ON)
@@ -20,11 +20,16 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_INSTALL_DATADIR "snes9x" CACHE STRING "cheats.bml directory")
 set(CMAKE_INSTALL_LOCALEDIR locale CACHE STRING "Locale directory")
 
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "One of: Debug Release RelWithDebInfo MinSizeRel" FORCE)
+endif(NOT CMAKE_BUILD_TYPE)
+
 string(APPEND DATADIR ${CMAKE_INSTALL_PREFIX} "/" ${CMAKE_INSTALL_DATAROOTDIR} "/" ${CMAKE_INSTALL_DATADIR})
 string(APPEND LOCALEDIR ${CMAKE_INSTALL_PREFIX} "/" ${CMAKE_INSTALL_DATAROOTDIR} "/" ${CMAKE_INSTALL_LOCALEDIR})
 add_compile_definitions(HAVE_LIBPNG
                         ZLIB SNES9X_GTK
                         NETPLAY_SUPPORT
+                        JMA_SUPPORT
                         UNZIP_SUPPORT
                         HAVE_MKSTEMP
                         HAVE_STRINGS_H
@@ -35,9 +40,11 @@ add_compile_definitions(HAVE_LIBPNG
                         SNES9XLOCALEDIR=\"${LOCALEDIR}\")
 set(INCLUDES ../apu/bapu ../ src)
 set(SOURCES)
-set(ARGS -Wall -W -Wno-unused-parameter)
+set(ARGS -Wall -Wno-unused-parameter)
 set(LIBS)
 set(DEFINES)
+
+include(CheckIncludeFile)
 
 include(FindGettext)
 
@@ -49,6 +56,7 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
 pkg_check_modules(GTK REQUIRED gtkmm-3.0 gthread-2.0 libpng)
 pkg_check_modules(XRANDR REQUIRED xrandr)
+
 find_library(X11 X11 REQUIRED)
 find_library(XEXT Xext REQUIRED)
 find_library(DL dl REQUIRED)
@@ -84,6 +92,45 @@ if(USE_SLANG)
                      spirv-cross-cpp)
     list(APPEND DEFINES "USE_SLANG")
     list(APPEND INCLUDES "../external/glslang")
+
+    list(APPEND DEFINES "VK_USE_PLATFORM_XLIB_KHR"
+                        "VK_USE_PLATFORM_WAYLAND_KHR"
+                        "VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1"
+                        "VMA_DYNAMIC_VULKAN_FUNCTIONS=1"
+                        "VMA_STATIC_VULKAN_FUNCTIONS=0")
+    list(APPEND INCLUDES ../external/vulkan-headers/include)
+    list(APPEND INCLUDES ../external/VulkanMemoryAllocator-Hpp/include)
+    list(APPEND INCLUDES ../external/stb)
+    list(APPEND SOURCES ../external/stb/stb_image_implementation.cpp)
+    list(APPEND SOURCES ../vulkan/slang_helpers.cpp
+                        ../vulkan/slang_helpers.hpp
+                        ../vulkan/slang_shader.cpp
+                        ../vulkan/slang_shader.hpp
+                        ../vulkan/slang_preset.cpp
+                        ../vulkan/slang_preset.hpp
+                        ../vulkan/slang_preset_ini.cpp
+                        ../vulkan/slang_preset_ini.hpp
+                        ../vulkan/vulkan_hpp_storage.cpp
+                        ../vulkan/vk_mem_alloc_implementation.cpp
+                        ../vulkan/vulkan_context.cpp
+                        ../vulkan/vulkan_context.hpp
+                        ../vulkan/vulkan_texture.cpp
+                        ../vulkan/vulkan_texture.hpp
+                        ../vulkan/vulkan_swapchain.cpp
+                        ../vulkan/vulkan_swapchain.hpp
+                        ../vulkan/vulkan_slang_pipeline.cpp
+                        ../vulkan/vulkan_slang_pipeline.hpp
+                        ../vulkan/vulkan_pipeline_image.cpp
+                        ../vulkan/vulkan_pipeline_image.hpp
+                        ../vulkan/vulkan_shader_chain.cpp
+                        ../vulkan/vulkan_shader_chain.hpp
+                        ../vulkan/vulkan_simple_output.hpp
+                        ../vulkan/vulkan_simple_output.cpp
+                        ../vulkan/std_chrono_throttle.cpp
+                        ../vulkan/std_chrono_throttle.hpp
+                        src/gtk_display_driver_vulkan.cpp
+                        src/gtk_display_driver_vulkan.h)
+
 endif()
 
 if(USE_WAYLAND)
@@ -91,7 +138,11 @@ if(USE_WAYLAND)
     list(APPEND DEFINES "USE_WAYLAND")
     list(APPEND SOURCES src/gtk_wayland_egl_context.cpp
                         src/gtk_wayland_egl_context.h
-                        src/wayland-idle-inhibit-unstable-v1.c)
+                        src/gtk_wayland_surface.cpp
+                        src/gtk_wayland_surface.h
+                        src/wayland-idle-inhibit-unstable-v1.c
+                        src/viewporter-client-protocol.c
+                        src/fractional-scale-v1.c)
     list(APPEND ARGS ${WAYLAND_CFLAGS})
     list(APPEND LIBS ${WAYLAND_LIBRARIES})
 endif()
@@ -191,6 +242,8 @@ list(APPEND SOURCES
     src/gtk_display_driver_gtk.h
     src/gtk_display_driver.h
     src/gtk_display.h
+    src/threadpool.cpp
+    src/threadpool.h
     src/gtk_file.cpp
     src/gtk_file.h
     src/gtk_builder_window.cpp
@@ -270,13 +323,16 @@ list(APPEND SOURCES
     ../netplay.cpp
     ../server.cpp
     ../loadzip.cpp
-    ../compat.cpp
+    ../fscompat.cpp
     src/gtk_netplay_dialog.cpp
     src/gtk_netplay_dialog.h
     src/gtk_netplay.cpp
     src/gtk_netplay.h
     src/background_particles.cpp
     src/background_particles.h)
+
+list(APPEND SOURCES ../external/fmt/src/format.cc)
+list(APPEND INCLUDES ../external/fmt/include)
 
 set(LIBJMA_SOURCES
     ../jma/s9x-jma.cpp
@@ -292,6 +348,7 @@ set(LIBJMA_SOURCES
 add_library(jma ${LIBJMA_SOURCES})
 target_include_directories(jma PRIVATE ${INCLUDES})
 target_compile_options(jma PUBLIC ${ARGS})
+list(APPEND LIBS jma)
 
 add_executable(sourcify src/sourcify.c)
 
@@ -310,6 +367,26 @@ target_include_directories(snes9x-gtk PRIVATE ${INCLUDES})
 target_compile_options(snes9x-gtk PRIVATE ${ARGS})
 target_link_libraries(snes9x-gtk PRIVATE ${LIBS})
 target_compile_definitions(snes9x-gtk PRIVATE ${DEFINES})
+
+if(USE_SLANG)
+    add_executable(slang_test ../vulkan/slang_helpers.cpp
+        ../vulkan/slang_helpers.hpp
+        ../vulkan/slang_shader.cpp
+        ../vulkan/slang_shader.hpp
+        ../vulkan/slang_preset.cpp
+        ../vulkan/slang_preset.hpp
+        ../vulkan/slang_preset_ini.cpp
+        ../vulkan/slang_preset_ini.hpp
+        ../vulkan/vulkan_hpp_storage.cpp
+        ../vulkan/slang_preset_test.cpp
+        ../conffile.cpp
+        ../stream.cpp)
+
+    target_include_directories(slang_test PRIVATE ${INCLUDES})
+    target_compile_options(slang_test PRIVATE ${ARGS})
+    target_compile_definitions(slang_test PRIVATE ${DEFINES})
+    target_link_libraries(slang_test PRIVATE ${LIBS})
+endif()
 
 install(TARGETS snes9x-gtk)
 install(FILES ../data/cheats.bml DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${CMAKE_INSTALL_DATADIR})

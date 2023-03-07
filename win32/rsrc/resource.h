@@ -98,6 +98,7 @@
 #define IDC_SFXSPEED                    1072
 #define IDC_SFXSPEED_SPIN               1073
 #define IDC_CONFIRMSAVELOAD             1074
+#define IDC_ADD_REGISTRY                1075
 #define IDC_HOSTNAME                    1086
 #define IDC_PORTNUMBER                  1087
 #define IDC_CLEARHISTORY                1088

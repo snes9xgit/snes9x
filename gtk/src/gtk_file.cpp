@@ -19,12 +19,8 @@
 namespace fs = std::filesystem;
 using namespace std::literals;
 
-static std::string info_string;
-
-const char *S9xGetFilenameInc(const char *e, enum s9x_getdirtype dirtype)
+std::string S9xGetFilenameInc(std::string e, enum s9x_getdirtype dirtype)
 {
-    static std::string filename;
-
     fs::path rom_filename(Memory.ROMFilename);
 
     fs::path filename_base(S9xGetDirectory(dirtype));
@@ -32,13 +28,15 @@ const char *S9xGetFilenameInc(const char *e, enum s9x_getdirtype dirtype)
 
     fs::path new_filename;
 
+    if (e[0] != '.')
+        e = "." + e;
     int i = 0;
     do
     {
         std::string new_extension = std::to_string(i);
         while (new_extension.length() < 3)
             new_extension = "0"s + new_extension;
-        new_extension += "."s + e;
+        new_extension += e;
 
         new_filename = filename_base;
         new_filename.replace_extension(new_extension);
@@ -46,13 +44,12 @@ const char *S9xGetFilenameInc(const char *e, enum s9x_getdirtype dirtype)
         i++;
     } while (fs::exists(new_filename));
 
-    filename = new_filename;
-    return filename.c_str();
+    return new_filename;
 }
 
-const char *S9xGetDirectory(enum s9x_getdirtype dirtype)
+std::string S9xGetDirectory(enum s9x_getdirtype dirtype)
 {
-    static std::string dirname;
+    std::string dirname;
 
     switch (dirtype)
     {
@@ -101,7 +98,7 @@ const char *S9xGetDirectory(enum s9x_getdirtype dirtype)
     }
 
     /* Anything else, use ROM filename path */
-    if (dirname == "")
+    if (dirname == "" && !Memory.ROMFilename.empty())
     {
         fs::path path(Memory.ROMFilename);
 
@@ -113,54 +110,17 @@ const char *S9xGetDirectory(enum s9x_getdirtype dirtype)
             dirname = path;
     }
 
-    return dirname.c_str();
-}
-
-const char *S9xGetFilename(const char *ex, enum s9x_getdirtype dirtype)
-{
-    static std::string filename;
-    fs::path path(S9xGetDirectory(dirtype));
-    path /= fs::path(Memory.ROMFilename).filename();
-    //Fixes issue with MSU-1 on linux
-    if(ex[0] == '-') {
-        path.replace_extension("");
-        filename = path.string();
-        filename.append(ex);
-    } else {
-        path.replace_extension(ex);
-        filename = path.string();
-    }
-    return filename.c_str();
-}
-
-const char *S9xBasename(const char *f)
-{
-    const char *p;
-
-    if ((p = strrchr(f, '/')) != NULL || (p = strrchr(f, '\\')) != NULL)
-        return (p + 1);
-
-    return f;
-}
-
-const char *S9xBasenameNoExt(const char *f)
-{
-    static std::string filename;
-    filename = fs::path(f).stem();
-    return filename.c_str();
+    return dirname;
 }
 
 bool8 S9xOpenSnapshotFile(const char *filename, bool8 read_only, STREAM *file)
 {
-#ifdef ZLIB
     if (read_only)
     {
         if ((*file = OPEN_STREAM(filename, "rb")))
             return (true);
         else
-            fprintf(stderr,
-                    "Failed to open file stream for reading. (%s)\n",
-                    zError(errno));
+            fprintf(stderr, "Failed to open file stream for reading.\n");
     }
     else
     {
@@ -170,77 +130,51 @@ bool8 S9xOpenSnapshotFile(const char *filename, bool8 read_only, STREAM *file)
         }
         else
         {
-            fprintf(stderr,
-                    "Couldn't open stream with zlib. (%s)\n",
-                    zError(errno));
+            fprintf(stderr, "Couldn't open stream with zlib.\n");
         }
     }
 
-    fprintf(stderr, "zlib: Couldn't open snapshot file:\n%s\n", filename);
+    fprintf(stderr, "Couldn't open snapshot file:\n%s\n", filename);
 
-#else
-    char command[PATH_MAX];
-
-    if (read_only)
-    {
-        sprintf(command, "gzip -d <\"%s\"", filename);
-        if (*file = popen(command, "r"))
-            return (true);
-    }
-    else
-    {
-        sprintf(command, "gzip --best >\"%s\"", filename);
-        if (*file = popen(command, "wb"))
-            return (true);
-    }
-
-    fprintf(stderr, "gzip: Couldn't open snapshot file:\n%s\n", filename);
-
-#endif
-
-    return (false);
+    return false;
 }
 
 void S9xCloseSnapshotFile(STREAM file)
 {
-#ifdef ZLIB
     CLOSE_STREAM(file);
-#else
-    pclose(file);
-#endif
 }
 
 void S9xAutoSaveSRAM()
 {
-    Memory.SaveSRAM(S9xGetFilename(".srm", SRAM_DIR));
-    S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
+    Memory.SaveSRAM(S9xGetFilename(".srm", SRAM_DIR).c_str());
+    S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR).c_str());
 }
 
-void S9xLoadState(const char *filename)
+void S9xLoadState(std::string filename)
 {
-    S9xFreezeGame(S9xGetFilename(".undo", SNAPSHOT_DIR));
+    S9xFreezeGame(S9xGetFilename(".undo", SNAPSHOT_DIR).c_str());
 
-    if (S9xUnfreezeGame(filename))
+    if (S9xUnfreezeGame(filename.c_str()))
     {
-        info_string = filename + " loaded"s;
+        auto info_string = filename + " loaded"s;
         S9xSetInfoString(info_string.c_str());
     }
     else
     {
-        fprintf(stderr, "Failed to load state file: %s\n", filename);
+        fprintf(stderr, "Failed to load state file: %s\n", filename.c_str());
     }
 }
 
-void S9xSaveState(const char *filename)
+void S9xSaveState(std::string filename)
 {
-    if (S9xFreezeGame(filename))
+    if (S9xFreezeGame(filename.c_str()))
     {
-        info_string = filename + " saved"s;
+        auto info_string = filename + " saved"s;
         S9xSetInfoString(info_string.c_str());
     }
     else
     {
-        fprintf(stderr, "Couldn't save state file: %s\n", filename);
+        fprintf(stderr, "Couldn't save state file: %s\n", filename.c_str());
     }
 }
 
@@ -262,10 +196,9 @@ void S9xQuickSaveSlot(int slot)
         return;
 
     auto filename = save_slot_path(slot);
-
     if (S9xFreezeGame(filename.c_str()))
     {
-        info_string = filename.filename().string() + " saved";
+        auto info_string = filename.filename().string() + " saved";
         S9xSetInfoString(info_string.c_str());
     }
 }
@@ -278,11 +211,11 @@ void S9xQuickLoadSlot(int slot)
     auto filename = save_slot_path(slot);
 
     if (fs::exists(filename))
-        S9xFreezeGame(S9xGetFilename(".undo", SNAPSHOT_DIR));
+        S9xFreezeGame(S9xGetFilename(".undo", SNAPSHOT_DIR).c_str());
 
     if (S9xUnfreezeGame(filename.c_str()))
     {
-        info_string = filename.filename().string() + " loaded";
+        auto info_string = filename.filename().string() + " loaded";
         S9xSetInfoString(info_string.c_str());
         return;
     }

@@ -74,7 +74,7 @@ ifneq (,$(findstring unix,$(platform)))
 # OS X
 else ifeq ($(platform), osx)
    CFLAGS += $(LTO)
-   CXXFLAGS += $(LTO)
+   CXXFLAGS += -std=c++14 $(LTO)
    LDFLAGS += $(LTO)
    TARGET := $(TARGET_NAME)_libretro.dylib
    fpic := -fPIC

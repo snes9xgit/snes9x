@@ -16,6 +16,8 @@
 #include "wglext.h"
 #include "IS9xDisplayOutput.h"
 
+#include <functional>
+
 enum current_ogl_shader_type { OGL_SHADER_NONE, OGL_SHADER_GLSL, OGL_SHADER_CG, OGL_SHADER_GLSL_OLD};
 
 class COpenGL : public IS9xDisplayOutput
@@ -83,10 +85,8 @@ public:
 	void SetSnes9xColorFormat(void);
 	void EnumModes(std::vector<dMode> *modeVector);
     void SetSwapInterval(int frames);
-	GLSLShader *GetActiveShader()
-	{
-		return glslShader;
-	}
+	std::vector<GLSLParam> *GetShaderParameters(void);
+	std::function<void(const char*)> GetShaderParametersSaveFunction();
 };
 
 

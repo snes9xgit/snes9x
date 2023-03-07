@@ -61,6 +61,10 @@
 
 #define	NTSC_MASTER_CLOCK			21477272.727272 // 21477272 + 8/11 exact
 #define	PAL_MASTER_CLOCK			21281370.0
+#define NTSC_PROGRESSIVE_FRAME_RATE	60.09881389744051
+#define NTSC_INTERLACED_FRAME_RATE	59.94005994
+#define PAL_PROGRESSIVE_FRAME_RATE	50.006977968
+
 
 #define SNES_MAX_NTSC_VCOUNTER		262
 #define SNES_MAX_PAL_VCOUNTER		312
@@ -176,7 +180,6 @@ struct STimings
 	int32	IRQTriggerCycles;
 	int32	WRAMRefreshPos;
 	int32	RenderPos;
-	bool8	InterlaceField;
 	int32	DMACPUSync;		// The cycles to synchronize DMA and CPU. Snes9x cannot emulate correctly.
 	int32	NMIDMADelay;	// The delay of NMI trigger after DMA transfers. Snes9x cannot emulate correctly.
 	int32	IRQFlagChanging;	// This value is just a hack.
@@ -213,7 +216,7 @@ struct SSettings
 	bool8	JustifierMaster;
 	bool8	MultiPlayer5Master;
 	bool8	MacsRifleMaster;
-	
+
 	bool8	ForceLoROM;
 	bool8	ForceHiROM;
 	bool8	ForceHeader;

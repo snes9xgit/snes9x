@@ -100,9 +100,9 @@ const char *S9xGetFilename (const char *ex, enum s9x_getdirtype dirtype)
     char drive [_MAX_DRIVE + 1];
     char fname [_MAX_FNAME + 1];
     char ext [_MAX_EXT + 1];
-   _splitpath (Memory.ROMFilename, drive, dir, fname, ext);
+   _splitpath (Memory.ROMFilename.c_str(), drive, dir, fname, ext);
    _snprintf(filename, sizeof(filename), "%s" SLASH_STR "%s%s",
-             S9xGetDirectory(dirtype), fname, ex);
+             S9xGetDirectory(dirtype).c_str(), fname, ex);
     return (filename);
 }
 
@@ -172,7 +172,7 @@ const TCHAR *S9xGetDirectoryT (enum s9x_getdirtype dirtype)
 		  break;
 
 	  case ROMFILENAME_DIR: {
-			lstrcpy(filename, _tFromChar(Memory.ROMFilename));
+			lstrcpy(filename, _tFromChar(Memory.ROMFilename.c_str()));
 			if(!filename[0])
 				rv = GUI.RomDir;
 			for(int i=lstrlen(filename); i>=0; i--){
@@ -198,7 +198,7 @@ const TCHAR *S9xGetDirectoryT (enum s9x_getdirtype dirtype)
 	return rv;
 }
 
-const char *S9xGetDirectory (enum s9x_getdirtype dirtype)
+std::string S9xGetDirectory (enum s9x_getdirtype dirtype)
 {
 	static char path[PATH_MAX]={0};
 	strncpy(path,_tToChar(S9xGetDirectoryT(dirtype)),PATH_MAX-1);
@@ -206,7 +206,7 @@ const char *S9xGetDirectory (enum s9x_getdirtype dirtype)
 	return path;
 }
 
-const char *S9xGetFilenameInc (const char *e, enum s9x_getdirtype dirtype)
+std::string S9xGetFilenameInc (std::string e, enum s9x_getdirtype dirtype)
 {
     static char filename [PATH_MAX + 1];
     char dir [_MAX_DIR + 1];
@@ -216,10 +216,12 @@ const char *S9xGetFilenameInc (const char *e, enum s9x_getdirtype dirtype)
     unsigned int i=0;
     const char *d;
 
-    _splitpath (Memory.ROMFilename, drive, dir, fname, ext);
-    d=S9xGetDirectory(dirtype);
+    _splitpath (Memory.ROMFilename.c_str(), drive, dir, fname, ext);
+    std::string directory_string = S9xGetDirectory(dirtype);
+
+    d = directory_string.c_str();
     do {
-        _snprintf(filename, sizeof(filename), "%s\\%s%03d%s", d, fname, i, e);
+        _snprintf(filename, sizeof(filename), "%s\\%s%03d%s", d, fname, i, e.c_str());
         i++;
     } while(_taccess (_tFromChar(filename), 0) == 0 && i!=0);
 

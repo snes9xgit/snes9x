@@ -23,14 +23,14 @@ struct SCheat
 
 struct SCheatGroup
 {
-	char *name;
+	std::string name;
 	bool8 enabled;
-	std::vector<struct SCheat> c;
+	std::vector<struct SCheat> cheat;
 };
 
 struct SCheatData
 {
-	std::vector<struct SCheatGroup> g;
+	std::vector<struct SCheatGroup> group;
 	bool8	enabled;
 	uint8	CWRAM[0x20000];
 	uint8	CSRAM[0x80000];
@@ -73,20 +73,20 @@ typedef enum
 extern SCheatData	Cheat;
 extern Watch		watches[16];
 
-int S9xAddCheatGroup (const char *name, const char *cheat);
-int S9xModifyCheatGroup (uint32 index, const char *name, const char *cheat);
-void S9xEnableCheatGroup (uint32 index);
-void S9xDisableCheatGroup (uint32 index);
-void S9xDeleteCheats (void);
-char *S9xCheatGroupToText (uint32 index);
-void S9xDeleteCheatGroup (uint32 index);
-bool8 S9xLoadCheatFile (const char *filename);
-bool8 S9xSaveCheatFile (const char *filename);
-void S9xUpdateCheatsInMemory (void);
-int S9xImportCheatsFromDatabase(const char *filename);
-void S9xCheatsDisable (void);
-void S9xCheatsEnable (void);
-char *S9xCheatValidate (const char *cheat);
+int S9xAddCheatGroup(const std::string &name, const std::string &cheat);
+int S9xModifyCheatGroup(uint32 index, const std::string &name, const std::string &cheat);
+void S9xEnableCheatGroup(uint32 index);
+void S9xDisableCheatGroup(uint32 index);
+void S9xDeleteCheats(void);
+std::string S9xCheatGroupToText(uint32 index);
+void S9xDeleteCheatGroup(uint32 index);
+bool8 S9xLoadCheatFile(const std::string &filename);
+bool8 S9xSaveCheatFile(const std::string &filename);
+void S9xUpdateCheatsInMemory(void);
+int S9xImportCheatsFromDatabase(const std::string &filename);
+void S9xCheatsDisable(void);
+void S9xCheatsEnable(void);
+std::string S9xCheatValidate(const std::string &cheat);
 
 void S9xInitCheatData (void);
 void S9xInitWatchedAddress (void);
@@ -95,9 +95,5 @@ void S9xSearchForChange (SCheatData *, S9xCheatComparisonType, S9xCheatDataSize,
 void S9xSearchForValue (SCheatData *, S9xCheatComparisonType, S9xCheatDataSize, uint32, bool8, bool8);
 void S9xSearchForAddress (SCheatData *, S9xCheatComparisonType, S9xCheatDataSize, uint32, bool8);
 void S9xOutputCheatSearchResults (SCheatData *);
-
-const char * S9xGameGenieToRaw (const char *, uint32 &, uint8 &);
-const char * S9xProActionReplayToRaw (const char *, uint32 &, uint8 &);
-const char * S9xGoldFingerToRaw (const char *, uint32 &, bool8 &, uint8 &, uint8 bytes[3]);
 
 #endif

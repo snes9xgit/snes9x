@@ -233,8 +233,8 @@ bool CD3DCG::LoadShader(const TCHAR *shaderFile)
 	return true;
 }
 
-void CD3DCG::ensureTextureSize(LPDIRECT3DTEXTURE9 &tex, XMFLOAT2 &texSize,
-                               XMFLOAT2 wantedSize,bool renderTarget,bool useFloat)
+void CD3DCG::ensureTextureSize(LPDIRECT3DTEXTURE9 &tex, float2 &texSize,
+                               float2 wantedSize,bool renderTarget,bool useFloat)
 {
 	HRESULT hr;
 
@@ -261,7 +261,7 @@ void CD3DCG::ensureTextureSize(LPDIRECT3DTEXTURE9 &tex, XMFLOAT2 &texSize,
 }
 
 void CD3DCG::setVertexStream(IDirect3DVertexBuffer9 *vertexBuffer,
-                             XMFLOAT2 inputSize, XMFLOAT2 textureSize, XMFLOAT2 outputSize)
+                             float2 inputSize, float2 textureSize, float2 outputSize)
 {
 	float tX = inputSize.x / textureSize.x;
 	float tY = inputSize.y / textureSize.y;
@@ -302,8 +302,8 @@ void CD3DCG::setVertexStream(IDirect3DVertexBuffer9 *vertexBuffer,
 	pDevice->SetStreamSource(3,vertexBuffer,0,sizeof(VERTEX));
 }
 
-void CD3DCG::Render(LPDIRECT3DTEXTURE9 &origTex, XMFLOAT2 textureSize,
-                    XMFLOAT2 inputSize, XMFLOAT2 viewportSize, XMFLOAT2 windowSize)
+void CD3DCG::Render(LPDIRECT3DTEXTURE9 &origTex, float2 textureSize,
+                    float2 inputSize, float2 viewportSize, float2 windowSize)
 {
 	LPDIRECT3DSURFACE9 pRenderSurface = NULL,pBackBuffer = NULL;
 	frameCnt++;
@@ -355,7 +355,7 @@ void CD3DCG::Render(LPDIRECT3DTEXTURE9 &origTex, XMFLOAT2 textureSize,
 		/* make sure the render target exists and has an appropriate size,
 		   then set as current render target with last pass as source
 		*/
-		ensureTextureSize(shaderPasses[i].tex,shaderPasses[i].textureSize, XMFLOAT2(texSize,texSize),true,shaderPasses[i].useFloatTex);
+		ensureTextureSize(shaderPasses[i].tex, shaderPasses[i].textureSize, float2{ texSize,texSize }, true, shaderPasses[i].useFloatTex);
 		shaderPasses[i].tex->GetSurfaceLevel(0,&pRenderSurface);
 		pDevice->SetTexture(0, shaderPasses[i-1].tex);
 		pDevice->SetRenderTarget(0,pRenderSurface);
@@ -425,22 +425,50 @@ void CD3DCG::Render(LPDIRECT3DTEXTURE9 &origTex, XMFLOAT2 textureSize,
 	setViewport(displayRect.left,displayRect.top,displayRect.right - displayRect.left,displayRect.bottom - displayRect.top);
 	setVertexStream(shaderPasses.back().vertexBuffer,
 		shaderPasses.back().outputSize,shaderPasses.back().textureSize,
-		XMFLOAT2((float)(displayRect.right - displayRect.left),(float)(displayRect.bottom - displayRect.top)));
+		float2{ (float)(displayRect.right - displayRect.left),(float)(displayRect.bottom - displayRect.top) });
 	pDevice->SetVertexShader(NULL);
 	pDevice->SetPixelShader(NULL);
 }
 
+static D3DMATRIX matrix_mul(D3DMATRIX mat1, D3DMATRIX mat2)
+{
+	D3DMATRIX out;
+	for (auto y = 0; y < 4; y++)
+	{
+		for (auto x = 0; x < 4; x++)
+		{
+			out.m[y][x] =
+				mat1.m[y][0] * mat2.m[0][x] +
+				mat1.m[y][1] * mat2.m[1][x] +
+				mat1.m[y][2] * mat2.m[2][x] +
+				mat1.m[y][3] * mat2.m[3][x];
+		}
+	}
+
+	return out;
+}
+
+static D3DMATRIX matrix_transpose(D3DMATRIX mat)
+{
+	D3DMATRIX out;
+	for (auto y = 0; y < 4; y++)
+		for (auto x = 0; x < 4; x++)
+			out.m[y][x] = mat.m[x][y];
+
+	return out;
+}
+
 void CD3DCG::calculateMatrix()
 {
-	XMMATRIX matWorld;
-	XMMATRIX matView;
-	XMMATRIX matProj;
+	D3DMATRIX matWorld;
+	D3DMATRIX matView;
+	D3DMATRIX matProj;
 
 	pDevice->GetTransform(D3DTS_WORLD, (D3DMATRIX*)&matWorld);
 	pDevice->GetTransform(D3DTS_VIEW, (D3DMATRIX*)&matView);
 	pDevice->GetTransform(D3DTS_PROJECTION, (D3DMATRIX*)&matProj);
 
-	XMStoreFloat4x4(&mvp, XMMatrixTranspose(XMMatrixMultiply(matProj, XMMatrixMultiply(matWorld, matView))));
+	mvp = matrix_transpose(matrix_mul(matProj, matrix_mul(matWorld, matView)));
 }
 
 void CD3DCG::setViewport(DWORD x, DWORD y, DWORD width, DWORD height)
@@ -457,9 +485,9 @@ void CD3DCG::setViewport(DWORD x, DWORD y, DWORD width, DWORD height)
 
 void CD3DCG::setShaderVars(int pass)
 {
-	XMFLOAT2 inputSize = shaderPasses[pass-1].outputSize;
-	XMFLOAT2 textureSize = shaderPasses[pass-1].textureSize;
-	XMFLOAT2 outputSize = shaderPasses[pass].outputSize;
+	float2 inputSize = shaderPasses[pass-1].outputSize;
+	float2 textureSize = shaderPasses[pass-1].textureSize;
+	float2 outputSize = shaderPasses[pass].outputSize;
 
 	/* mvp paramater
 	*/

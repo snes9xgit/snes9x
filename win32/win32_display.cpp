@@ -19,6 +19,7 @@
 #include "CDirectDraw.h"
 #endif
 #include "COpenGL.h"
+#include "CVulkan.h"
 #include "IS9xDisplayOutput.h"
 
 #include "../filter/hq2x.h"
@@ -31,6 +32,7 @@ CDirect3D Direct3D;
 CDirectDraw DirectDraw;
 #endif
 COpenGL OpenGL;
+CVulkan VulkanDriver;
 SSurface Src = {0};
 extern BYTE *ScreenBufferBlend;
 
@@ -40,7 +42,7 @@ DWMFLUSHPROC DwmFlushProc = NULL;
 DWMISCOMPOSITIONENABLEDPROC DwmIsCompositionEnabledProc = NULL;
 
 // Interface used to access the display output
-IS9xDisplayOutput *S9xDisplayOutput=&Direct3D;
+IS9xDisplayOutput* S9xDisplayOutput = NULL;
 
 #ifndef max
 #define max(a,b)            (((a) > (b)) ? (a) : (b))
@@ -93,7 +95,8 @@ void WinRefreshDisplay(void)
 
 void WinChangeWindowSize(unsigned int newWidth, unsigned int newHeight)
 {
-	S9xDisplayOutput->ChangeRenderSize(newWidth,newHeight);
+	if (S9xDisplayOutput)
+		S9xDisplayOutput->ChangeRenderSize(newWidth,newHeight);
 }
 
 /*  WinDisplayReset
@@ -104,8 +107,9 @@ returns true if successful, false otherwise
 */
 bool WinDisplayReset(void)
 {
-	S9xDisplayOutput->DeInitialize();
-	switch(GUI.outputMethod) {
+	if (S9xDisplayOutput == NULL)
+	{
+		switch (GUI.outputMethod) {
 		default:
 		case DIRECT3D:
 			S9xDisplayOutput = &Direct3D;
@@ -118,15 +122,29 @@ bool WinDisplayReset(void)
 		case OPENGL:
 			S9xDisplayOutput = &OpenGL;
 			break;
+		case VULKAN:
+			S9xDisplayOutput = &VulkanDriver;
+			break;
+		}
 	}
-	if(S9xDisplayOutput->Initialize(GUI.hWnd)) {
+
+	S9xDisplayOutput->DeInitialize();
+	bool initialized = S9xDisplayOutput->Initialize(GUI.hWnd);
+
+	if (!initialized) {
+		S9xDisplayOutput->DeInitialize();
+		Sleep(500);
+		initialized = S9xDisplayOutput->Initialize(GUI.hWnd);
+	}
+
+	if (initialized) {
 		S9xGraphicsDeinit();
-		S9xSetWinPixelFormat ();
+		S9xSetWinPixelFormat();
 		S9xGraphicsInit();
 
-        if (GUI.DWMSync)
-        {
-            HMODULE dwmlib = LoadLibrary(TEXT("dwmapi"));
+		if (GUI.DWMSync)
+		{
+			HMODULE dwmlib = LoadLibrary(TEXT("dwmapi"));
             DwmFlushProc = (DWMFLUSHPROC)GetProcAddress(dwmlib, "DwmFlush");
             DwmIsCompositionEnabledProc = (DWMISCOMPOSITIONENABLEDPROC)GetProcAddress(dwmlib, "DwmIsCompositionEnabled");
 
@@ -221,7 +239,7 @@ bool8 S9xInitUpdate (void)
 bool8 S9xContinueUpdate(int Width, int Height)
 {
 	// called every other frame during interlace
-	
+
     Src.Width = Width;
 	if(Height%SNES_HEIGHT)
 	    Src.Height = Height;
@@ -650,9 +668,66 @@ int WinGetAutomaticInputRate(void)
     return (int)newInputRate;
 }
 
-GLSLShader *WinGetActiveGLSLShader()
+void WinThrottleFramerate()
 {
-	return OpenGL.GetActiveShader();
+	static HANDLE throttle_timer = nullptr;
+	static int64_t PCBase, PCFrameTime, PCFrameTimeNTSC, PCFrameTimePAL, PCStart, PCEnd;
+
+	if (Settings.SkipFrames != AUTO_FRAMERATE)
+		return;
+
+	if (!throttle_timer)
+	{
+		QueryPerformanceFrequency((LARGE_INTEGER *)&PCBase);
+
+		PCFrameTimeNTSC = (int64_t)(PCBase / NTSC_PROGRESSIVE_FRAME_RATE);
+		PCFrameTimePAL = (int64_t)(PCBase / PAL_PROGRESSIVE_FRAME_RATE);
+
+		throttle_timer = CreateWaitableTimer(NULL, true, NULL);
+		QueryPerformanceCounter((LARGE_INTEGER *)&PCStart);
+	}
+
+	if (Settings.PAL)
+		PCFrameTime = PCBase / PAL_PROGRESSIVE_FRAME_RATE;
+	else
+		PCFrameTime = PCBase / NTSC_PROGRESSIVE_FRAME_RATE;
+
+	QueryPerformanceCounter((LARGE_INTEGER *)&PCEnd);
+	int64_t time_left_us = ((PCFrameTime - (PCEnd - PCStart)) * 1000000) / PCBase;
+
+	int64_t PCFrameTime_us = (int64_t)(PCFrameTime * 1000000.0 / PCBase);
+	if (time_left_us < -PCFrameTime_us / 10)
+	{
+		QueryPerformanceCounter((LARGE_INTEGER *)&PCStart);
+		return;
+	}
+	if (time_left_us > 0)
+	{
+		LARGE_INTEGER li;
+		li.QuadPart = -time_left_us * 10;
+		SetWaitableTimer(throttle_timer, &li, 0, NULL, NULL, false);
+		WaitForSingleObject(throttle_timer, INFINITE);
+	}
+	PCStart += PCFrameTime;
+}
+
+std::vector<GLSLParam> *WinGetShaderParameters()
+{
+	if (GUI.outputMethod == OPENGL)
+		return OpenGL.GetShaderParameters();
+	if (GUI.outputMethod == VULKAN)
+		return (std::vector<GLSLParam> *)VulkanDriver.GetShaderParameters();
+	return nullptr;
+}
+
+std::function<void(const char*)> WinGetShaderSaveFunction()
+{
+	if (GUI.outputMethod == OPENGL)
+		return OpenGL.GetShaderParametersSaveFunction();
+	else if (GUI.outputMethod == VULKAN)
+		return VulkanDriver.GetShaderParametersSaveFunction();
+	else
+		return std::function<void(const char*)>();
 }
 
 /* Depth conversion functions begin */
