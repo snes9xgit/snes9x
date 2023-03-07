@@ -228,6 +228,14 @@ void S9xNoROMLoaded()
 
 static bool S9xPauseFunc()
 {
+    static bool first_clear = false;
+
+    if (!first_clear)
+    {
+        top_level->refresh();
+        first_clear = true;
+    }
+
     S9xProcessEvents(true);
 
     if (!S9xNetplayPush())
