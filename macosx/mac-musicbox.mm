@@ -59,13 +59,12 @@ static void * SoundTask (void *);
 	NSRect			rect;
 	NSSize			size;
 	BOOL			apuonly, r;
-	char			drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], fname[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
 
 	self = [super init];
 	if (!self)
 		return (self);
 
-	r = [NSBundle loadNibNamed: @"musicbox" owner: self];
+	r = [NSBundle loadNibNamed: @"musicbox" owner: self ];
 	if (!r)
 		return (self);
 
@@ -76,8 +75,8 @@ static void * SoundTask (void *);
 	else
 		MusicBoxForceFreeze();
 
-	_splitpath(Memory.ROMFilename, drive, dir, fname, ext);
-	[gametitle setStringValue: [NSString stringWithUTF8String: fname]];
+	auto path = splitpath(Memory.ROMFilename);
+	[gametitle setStringValue: [NSString stringWithUTF8String: path.stem.c_str()]];
 
 	[led setImage: [NSImage imageNamed: (apuonly ? @"musicbox_ledoff.icns" : @"musicbox_ledon.icns")]];
 
@@ -124,7 +123,7 @@ static void * SoundTask (void *);
 	pthread_create(&mbxThread, NULL, SoundTask, NULL);
 
 	timer = [NSTimer scheduledTimerWithTimeInterval: (2.0 / (double) Memory.ROMFramesPerSecond) target: self selector: @selector(updateIndicator:) userInfo: nil repeats: YES];
-
+//
 	return (self);
 }
 

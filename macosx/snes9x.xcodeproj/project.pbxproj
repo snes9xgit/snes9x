@@ -19,7 +19,6 @@
 		3045A1EF22D03C4B0092B97D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3045A1EE22D03C4B0092B97D /* Cocoa.framework */; };
 		304B364A262E328400F8DC8E /* S9xControlsPreferencesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 304B3649262E328400F8DC8E /* S9xControlsPreferencesViewController.xib */; };
 		304B366C262E82B800F8DC8E /* S9xPreferencesConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 304B366B262E82B800F8DC8E /* S9xPreferencesConstants.m */; };
-		3059DA94250690DB003EF183 /* compat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3059DA93250690DB003EF183 /* compat.cpp */; };
 		30656200236A8BA700A1B3B2 /* gamecontrollerdb.txt in Resources */ = {isa = PBXBuildFile; fileRef = 306561FF236A8BA700A1B3B2 /* gamecontrollerdb.txt */; };
 		306937CA2635EE5800007ABB /* S9xDisplayPreferencesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 306937C82635EE5800007ABB /* S9xDisplayPreferencesViewController.m */; };
 		306937CB2635EE5800007ABB /* S9xDisplayPreferencesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 306937C92635EE5800007ABB /* S9xDisplayPreferencesViewController.xib */; };
@@ -60,6 +59,8 @@
 		307C863022D29E29001B879E /* mac-render.mm in Sources */ = {isa = PBXBuildFile; fileRef = EA942A50059B0F9000D7D022 /* mac-render.mm */; };
 		307C863222D29E29001B879E /* mac-snes9x.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAECB68604AC7FCE00A80003 /* mac-snes9x.mm */; };
 		307C863322D29E29001B879E /* mac-stringtools.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAECB68804AC7FCE00A80003 /* mac-stringtools.mm */; };
+		307DB16C29B8421800378ADE /* fscompat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 307DB16A29B8421800378ADE /* fscompat.cpp */; };
+		307DB16D29B8421800378ADE /* fscompat.h in Headers */ = {isa = PBXBuildFile; fileRef = 307DB16B29B8421800378ADE /* fscompat.h */; };
 		308092F72320B041006A2860 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 308092F62320B041006A2860 /* CoreGraphics.framework */; };
 		308092F92320B06F006A2860 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 308092F82320B06F006A2860 /* Quartz.framework */; };
 		30823CD92379200700EA2331 /* snes9x_framework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30D15CEF22CE6B5A005BC352 /* snes9x_framework.framework */; };
@@ -278,7 +279,6 @@
 		304B3649262E328400F8DC8E /* S9xControlsPreferencesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = S9xControlsPreferencesViewController.xib; sourceTree = "<group>"; };
 		304B366A262E82B800F8DC8E /* S9xPreferencesConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xPreferencesConstants.h; sourceTree = "<group>"; };
 		304B366B262E82B800F8DC8E /* S9xPreferencesConstants.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xPreferencesConstants.m; sourceTree = "<group>"; };
-		3059DA93250690DB003EF183 /* compat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = compat.cpp; sourceTree = "<group>"; };
 		306561FF236A8BA700A1B3B2 /* gamecontrollerdb.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = gamecontrollerdb.txt; sourceTree = "<group>"; };
 		306937C72635EE5800007ABB /* S9xDisplayPreferencesViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xDisplayPreferencesViewController.h; sourceTree = "<group>"; };
 		306937C82635EE5800007ABB /* S9xDisplayPreferencesViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xDisplayPreferencesViewController.m; sourceTree = "<group>"; };
@@ -311,6 +311,8 @@
 		307C861022D27C53001B879E /* tileimpl-h2x1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "tileimpl-h2x1.cpp"; sourceTree = "<group>"; usesTabs = 1; };
 		307C861A22D29D6D001B879E /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		307C861C22D29DD2001B879E /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
+		307DB16A29B8421800378ADE /* fscompat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fscompat.cpp; sourceTree = "<group>"; };
+		307DB16B29B8421800378ADE /* fscompat.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; path = fscompat.h; sourceTree = "<group>"; };
 		308092F62320B041006A2860 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		308092F82320B06F006A2860 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
 		3082C41E2378BCE80081CA7C /* FakeHandles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FakeHandles.h; sourceTree = "<group>"; };
@@ -883,7 +885,6 @@
 				EAE061640526CCB900A80003 /* cheats.h */,
 				EAE061650526CCB900A80003 /* cheats2.cpp */,
 				EAE061660526CCB900A80003 /* clip.cpp */,
-				3059DA93250690DB003EF183 /* compat.cpp */,
 				EA809E9908F8D7240072CDFB /* controls.cpp */,
 				EA809E9308F8D6C40072CDFB /* controls.h */,
 				EAE061690526CCB900A80003 /* cpu.cpp */,
@@ -908,6 +909,8 @@
 				CF5D3E1C0FAFD35400340007 /* dsp4.cpp */,
 				CF5553B00EA24C36005957E4 /* filter */,
 				EAE0617A0526CCB900A80003 /* font.h */,
+				307DB16A29B8421800378ADE /* fscompat.cpp */,
+				307DB16B29B8421800378ADE /* fscompat.h */,
 				EAE0617C0526CCB900A80003 /* fxemu.cpp */,
 				EAE0617D0526CCB900A80003 /* fxemu.h */,
 				EAE0617E0526CCB900A80003 /* fxinst.cpp */,
@@ -1134,6 +1137,7 @@
 				30D15DD322CE6BC9005BC352 /* snes_ntsc_config.h in Headers */,
 				30D15DD422CE6BC9005BC352 /* snes_ntsc_impl.h in Headers */,
 				30D15DD522CE6BC9005BC352 /* 7z.h in Headers */,
+				307DB16D29B8421800378ADE /* fscompat.h in Headers */,
 				30D15DD622CE6BC9005BC352 /* aribitcd.h in Headers */,
 				30D15DD722CE6BC9005BC352 /* ariconst.h in Headers */,
 				30CF849727AEFD4F002B37A9 /* mac-cheat.h in Headers */,
@@ -1350,6 +1354,7 @@
 				307C861622D27C53001B879E /* tileimpl-n2x1.cpp in Sources */,
 				30D15D3C22CE6B74005BC352 /* dsp2.cpp in Sources */,
 				30D15D3D22CE6B74005BC352 /* dsp3.cpp in Sources */,
+				307DB16C29B8421800378ADE /* fscompat.cpp in Sources */,
 				30D15D3E22CE6B74005BC352 /* dsp4.cpp in Sources */,
 				30D15D3F22CE6B74005BC352 /* fxemu.cpp in Sources */,
 				30D15D4022CE6B74005BC352 /* fxinst.cpp in Sources */,
@@ -1393,7 +1398,6 @@
 				307C861822D27C53001B879E /* tileimpl-h2x1.cpp in Sources */,
 				30D15D8E22CE6B75005BC352 /* s9x-jma.cpp in Sources */,
 				30D15D8F22CE6B75005BC352 /* winout.cpp in Sources */,
-				3059DA94250690DB003EF183 /* compat.cpp in Sources */,
 				30D15D9322CE6B75005BC352 /* ioapi.c in Sources */,
 				30D15D9422CE6B75005BC352 /* unzip.c in Sources */,
 			);

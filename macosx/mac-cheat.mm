@@ -42,6 +42,9 @@
 
 extern SCheatData	Cheat;
 
+bool S9xGameGenieToRaw(const std::string &code, uint32 &address, uint8 &byte);
+bool S9xProActionReplayToRaw(const std::string &code, uint32 &address, uint8 &byte);
+
 @implementation S9xCheatItem
 
 - (void)setAddress:(uint32)address value:(uint8)value cheatDescription:(const char *)cheatDescription
@@ -61,29 +64,29 @@ extern SCheatData	Cheat;
 @dynamic address;
 - (NSNumber *)address
 {
-	return @(Cheat.g[self.cheatID].c[0].address);
+	return @(Cheat.group[self.cheatID].cheat[0].address);
 }
 
 - (void)setAddress:(NSNumber *)address
 {
-	[self setAddress:address.unsignedIntValue value:Cheat.g[self.cheatID].c[0].byte cheatDescription:self.cheatDescription.UTF8String];
+	[self setAddress:address.unsignedIntValue value:Cheat.group[self.cheatID].cheat[0].byte cheatDescription:self.cheatDescription.UTF8String];
 }
 
 @dynamic value;
 - (NSNumber *)value
 {
-	return @(Cheat.g[self.cheatID].c[0].byte);
+	return @(Cheat.group[self.cheatID].cheat[0].byte);
 }
 
 - (void)setValue:(NSNumber *)value
 {
-	[self setAddress:Cheat.g[self.cheatID].c[0].address value:value.unsignedCharValue cheatDescription:self.cheatDescription.UTF8String];
+	[self setAddress:Cheat.group[self.cheatID].cheat[0].address value:value.unsignedCharValue cheatDescription:self.cheatDescription.UTF8String];
 }
 
 @dynamic enabled;
 - (NSNumber *)enabled
 {
-	return @(Cheat.g[self.cheatID].enabled);
+	return @(Cheat.group[self.cheatID].enabled);
 }
 
 - (void)setEnabled:(NSNumber *)enabled
@@ -101,12 +104,12 @@ extern SCheatData	Cheat;
 @dynamic cheatDescription;
 - (NSString *)cheatDescription
 {
-	return [NSString stringWithUTF8String:Cheat.g[self.cheatID].name];
+	return [NSString stringWithUTF8String:Cheat.group[self.cheatID].name.c_str()];
 }
 
 - (void)setCheatDescription:(NSString *)cheatDescription
 {
-	[self setAddress:Cheat.g[self.cheatID].c[0].address value:Cheat.g[self.cheatID].c[0].byte cheatDescription:cheatDescription.UTF8String];
+	[self setAddress:Cheat.group[self.cheatID].cheat[0].address value:Cheat.group[self.cheatID].cheat[0].byte cheatDescription:cheatDescription.UTF8String];
 }
 
 - (void)delete
@@ -151,13 +154,13 @@ void CreateCheatFromAddress(NSNumber *address, NSNumber *value, NSString *cheatD
 	char code[256];
 	sprintf(code, "%x=%x", address.unsignedIntValue, value.unsignedCharValue);
 	S9xAddCheatGroup(cheatDescription.UTF8String, code);
-	S9xEnableCheatGroup(Cheat.g.size() - 1);
+	S9xEnableCheatGroup(Cheat.group.size() - 1);
 }
 
 void CreateCheatFromCode(NSString *code, NSString *cheatDescription)
 {
 	S9xAddCheatGroup(cheatDescription.UTF8String, code.UTF8String);
-	S9xEnableCheatGroup(Cheat.g.size() - 1);
+	S9xEnableCheatGroup(Cheat.group.size() - 1);
 }
 
 NSArray<S9xCheatItem *> *GetAllCheats(void)
@@ -165,7 +168,7 @@ NSArray<S9xCheatItem *> *GetAllCheats(void)
 	NSMutableArray *cheats = [NSMutableArray new];
 	uint32 cheatID = 0;
 
-	for (auto it : Cheat.g)
+	for (auto it : Cheat.group)
 	{
 		S9xCheatItem *cheat    = [S9xCheatItem new];
 		cheat.cheatID		   = cheatID++;
