@@ -5298,7 +5298,10 @@ INT_PTR CALLBACK DlgEmulatorProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPar
 					GUI.CustomRomOpen = (BST_CHECKED==IsDlgButtonChecked(hDlg, IDC_CUSTOMROMOPEN));
 					GUI.AVIHiRes = (BST_CHECKED==IsDlgButtonChecked(hDlg, IDC_HIRESAVI));
 					GUI.ConfirmSaveLoad = (BST_CHECKED == IsDlgButtonChecked(hDlg, IDC_CONFIRMSAVELOAD));
-					GUI.AddToRegistry = (BST_CHECKED == IsDlgButtonChecked(hDlg, IDC_ADD_REGISTRY));
+					bool AddRegistryChecked = (BST_CHECKED == IsDlgButtonChecked(hDlg, IDC_ADD_REGISTRY));
+					if (GUI.AddToRegistry && !AddRegistryChecked)
+						S9xWinRemoveRegistryKeys();
+					GUI.AddToRegistry = AddRegistryChecked;
 
 					Settings.TurboSkipFrames=SendDlgItemMessage(hDlg, IDC_SPIN_TURBO_SKIP, UDM_GETPOS, 0,0);
 					Settings.AutoMaxSkipFrames=SendDlgItemMessage(hDlg, IDC_SPIN_MAX_SKIP, UDM_GETPOS, 0,0);
@@ -7218,19 +7221,8 @@ void LoadExts(void)
 
 	if (GUI.AddToRegistry)
 	{
-		auto result = MessageBox(
-			GUI.hWnd,
-			TEXT("Snes9x would like to add entries to the Windows registry to set file associations and configure the jump list. Is this okay?"),
-			TEXT("Snes9x"),
-			MB_YESNO | MB_ICONQUESTION);
-
-		if (result == IDYES)
-		{
-			RegisterProgid();
-			RegisterExts();
-		}
-
-		GUI.AddToRegistry = false;
+		RegisterProgid();
+		RegisterExts();
 	}
 }
 
