@@ -410,7 +410,7 @@ static FreezeData	SnapTimings[] =
 	INT_ENTRY(6, NMITriggerPos),
 	INT_ENTRY(6, WRAMRefreshPos),
 	INT_ENTRY(6, RenderPos),
-	DELETED_INT_ENTRY(6, 12, InterlaceField, 1),
+	INT_ENTRY(6, InterlaceField),
 	INT_ENTRY(6, DMACPUSync),
 	INT_ENTRY(6, NMIDMADelay),
 	INT_ENTRY(6, IRQFlagChanging),
@@ -1204,6 +1204,7 @@ void S9xFreezeToStream (STREAM stream)
 	S9xControlPreSaveState(&ctl_snap);
 	FreezeStruct(stream, "CTL", &ctl_snap, SnapControls, COUNT(SnapControls));
 
+	Timings.InterlaceField = S9xInterlaceField();
 	FreezeStruct(stream, "TIM", &Timings, SnapTimings, COUNT(SnapTimings));
 
 	if (Settings.SuperFX)
