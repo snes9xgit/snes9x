@@ -2721,6 +2721,7 @@ void S9xExtraUsage ()
 	S9xMessage(S9X_INFO, S9X_USAGE, "-fullscreen                     Start in fullscreen mode");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-hidemenu                       Initially hide the GUI menu");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-restore                        Reset all settings to default");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-removeregistrykeys             Remove registry keys");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-cartb <filename>               Specify the second cart for multicart, also triggers multicart");
 	MessageBox(NULL, _T("Snes9x command line options have been written to stdout.txt in the same folder as snes9x.exe"), _T("Command line options"), MB_OK | MB_ICONINFORMATION);
 }
@@ -3240,8 +3241,6 @@ int WINAPI WinMain(
 
 	DWORD wSoundTimerRes;
 
-	LoadExts();
-
 	WinRegisterConfigItems ();
 
 	ConfigFile::SetAlphaSort(false);
@@ -3250,6 +3249,8 @@ int WINAPI WinMain(
     const TCHAR *rom_filename = WinParseCommandLineAndLoadConfigFile (GetCommandLine());
     WinSaveConfigFile ();
 	WinLockConfigFile ();
+
+	LoadExts();
 
     ControllerOptionsFromControllers();
     ChangeInputDevice();
@@ -7015,6 +7016,32 @@ void SetInfoDlgColor(unsigned char r, unsigned char g, unsigned char b)
 		return false;\
 	}
 
+void S9xWinRemoveRegistryKeys() {
+	TCHAR szRegKey[4096] = {};
+
+	_stprintf_s(szRegKey, 4095, TEXT("Software\\Classes\\%s"), SNES9XWPROGID);
+	SHDeleteKey(HKEY_CURRENT_USER, szRegKey);
+	_stprintf_s(szRegKey, 4095, TEXT("Software\\RegisteredApplications\\%s"), SNES9XWPROGID);
+	SHDeleteKey(HKEY_CURRENT_USER, szRegKey);
+	_stprintf_s(szRegKey, 4095, TEXT("Software\\Snes9x"), SNES9XWPROGID);
+	SHDeleteKey(HKEY_CURRENT_USER, szRegKey);
+
+	const TCHAR* szExeNames[] = { TEXT("snes9x.exe"), TEXT("snes9x-debug.exe"), TEXT("snes9x-x64.exe"), TEXT("snes9x-debug-x64.exe") };
+	for (auto& szExeName : szExeNames)
+	{
+		_stprintf_s(szRegKey, 4095, TEXT("Software\\Classes\\Applications\\%s"), szExeName);
+		SHDeleteKey(HKEY_CURRENT_USER, szRegKey);
+
+		ExtList* curr = valid_ext;
+		while (curr->next != NULL) {
+			auto ext = curr->extension;
+			_stprintf(szRegKey, TEXT("Software\\Classes\\.%s\\OpenWithList\\%s"), ext, szExeName);
+			SHDeleteKey(HKEY_CURRENT_USER, szRegKey);
+			curr = curr->next;
+		}
+	}
+}
+
 bool RegisterProgid() {
 	LONG	regResult;
 	TCHAR	szRegKey[PATH_MAX];
@@ -7191,8 +7218,19 @@ void LoadExts(void)
 
 	if (GUI.AddToRegistry)
 	{
-		RegisterProgid();
-		RegisterExts();
+		auto result = MessageBox(
+			GUI.hWnd,
+			TEXT("Snes9x would like to add entries to the Windows registry to set file associations and configure the jump list. Is this okay?"),
+			TEXT("Snes9x"),
+			MB_YESNO | MB_ICONQUESTION);
+
+		if (result == IDYES)
+		{
+			RegisterProgid();
+			RegisterExts();
+		}
+
+		GUI.AddToRegistry = false;
 	}
 }
 
