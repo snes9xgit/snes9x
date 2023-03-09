@@ -688,9 +688,9 @@ void WinThrottleFramerate()
 	}
 
 	if (Settings.PAL)
-		PCFrameTime = PCBase / PAL_PROGRESSIVE_FRAME_RATE;
+		PCFrameTime = PCFrameTimePAL;
 	else
-		PCFrameTime = PCBase / NTSC_PROGRESSIVE_FRAME_RATE;
+		PCFrameTime = PCFrameTimeNTSC;
 
 	QueryPerformanceCounter((LARGE_INTEGER *)&PCEnd);
 	int64_t time_left_us = ((PCFrameTime - (PCEnd - PCStart)) * 1000000) / PCBase;
