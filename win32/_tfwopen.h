@@ -97,13 +97,6 @@ public:
 		int _Prot = (int)ios_base::_Openprot)
 		: std::ifstream(_Filename,_Mode,_Prot) {}
 
- #ifdef _NATIVE_WCHAR_T_DEFINED
-	explicit __CLR_OR_THIS_CALL u8nifstream(const unsigned short *_Filename,
-		ios_base::openmode _Mode = ios_base::in,
-		int _Prot = (int)ios_base::_Openprot)
-		: std::ifstream(_Filename,_Mode,_Prot) {}
- #endif /* _NATIVE_WCHAR_T_DEFINED */
-
 	explicit __CLR_OR_THIS_CALL u8nifstream(FILE *_File)
 		: std::ifstream(_File) {}
 };

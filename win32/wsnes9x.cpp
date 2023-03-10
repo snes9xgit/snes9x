@@ -1440,8 +1440,9 @@ bool WinMoviePlay(LPCTSTR filename)
 
 	while (info.ROMCRC32 != Memory.ROMCRC32) {
 		TCHAR temp[512];
+		CPToWide wromname(info.ROMName, 932);
 		wsprintf(temp, TEXT("Movie's ROM: crc32=%08X, name=%s\nCurrent ROM: crc32=%08X\n\nstill want to play the movie?"),
-			info.ROMCRC32, _tFromMS932(info.ROMName), Memory.ROMCRC32);
+			info.ROMCRC32, (wchar_t *)wromname, Memory.ROMCRC32);
 		int sel = MessageBox(GUI.hWnd, temp, SNES9X_INFO, MB_ABORTRETRYIGNORE|MB_ICONQUESTION);
 		switch (sel) {
 		case IDABORT:
@@ -3895,7 +3896,7 @@ static void CheckMenuStates ()
 	mii.cbSize = sizeof(mii);
 	mii.fMask = MIIM_STRING;
 
-	mii.dwTypeData = !GUI.AVIOut ? TEXT("Start AVI Recording...") : TEXT("Stop AVI Recording");
+	mii.dwTypeData = (TCHAR *)(!GUI.AVIOut ? TEXT("Start AVI Recording...") : TEXT("Stop AVI Recording"));
 	SetMenuItemInfo (GUI.hMenu, ID_FILE_AVI_RECORDING, FALSE, &mii);
 }
 
@@ -6722,18 +6723,18 @@ INT_PTR CALLBACK DlgOpenROMProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 
 							if(nmlvdi->item.iSubItem==0)
 							{
-								nmlvdi->item.pszText=curr->fname?curr->fname:TEXT("");
+								nmlvdi->item.pszText = (TCHAR *)(curr->fname?curr->fname:TEXT(""));
 								nmlvdi->item.cchTextMax=MAX_PATH;
 							}
 							if(nmlvdi->item.iSubItem==1)
 							{
-								nmlvdi->item.pszText=curr->rname?curr->rname:TEXT("");
+								nmlvdi->item.pszText = (TCHAR *)(curr->rname?curr->rname:TEXT(""));
 								nmlvdi->item.cchTextMax=24;
 							}
 
 							if(nmlvdi->item.iSubItem==2)
 							{
-								nmlvdi->item.pszText=curr->rmbits?curr->rmbits:TEXT("");
+								nmlvdi->item.pszText = (TCHAR *)(curr->rmbits?curr->rmbits:TEXT(""));
 								nmlvdi->item.cchTextMax=11;
 							}
 							// nmlvdi->item.mask=LVIF_TEXT; // This is bad as wine relies on this to not change.
