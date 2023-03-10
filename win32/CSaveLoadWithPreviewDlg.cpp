@@ -254,7 +254,7 @@ void CSaveLoadWithPreviewDlg::init_window(HWND hDlg)
     dialog_width += rcMargins.left + rcMargins.right;
     int left = (mi.rcWork.right - mi.rcWork.left - dialog_width) / 2;
     int top = (mi.rcWork.bottom - mi.rcWork.top - dialog_height) / 2;
-    SetWindowPos(hDlg, NULL, left, top, dialog_width, dialog_height, SWP_NOZORDER);
+    SetWindowPos(hDlg, NULL, left, top, dialog_width, dialog_height, SWP_SHOWWINDOW);
 
 	load_current_bank(hDlg);
 }
