@@ -10,3 +10,6 @@
 [submodule "shaders/glslang"]
 	path = external/glslang
 	url = https://github.com/KhronosGroup/glslang.git
+[submodule "external/vulkan-headers"]
+	path = external/vulkan-headers
+	url = https://github.com/KhronosGroup/Vulkan-Headers.git
