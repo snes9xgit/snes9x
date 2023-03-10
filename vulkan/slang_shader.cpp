@@ -9,7 +9,7 @@
 #include <fstream>
 #include "../external/glslang/glslang/Public/ShaderLang.h"
 #include "../external/glslang/SPIRV/GlslangToSpv.h"
-#include "../external/glslang/StandAlone/ResourceLimits.h"
+#include "../external/glslang/glslang/Public/ResourceLimits.h"
 
 using std::string;
 using std::vector;
@@ -205,9 +205,9 @@ std::vector<uint32_t> SlangShader::generate_spirv(std::string shader_string, std
     auto compile = [&](glslang::TShader &shader, string &shader_string, std::vector<uint32_t> &spirv) -> bool {
         const char *source = shader_string.c_str();
         shader.setStrings(&source, 1);
-        if (!shader.preprocess(&glslang::DefaultTBuiltInResource, 450, ENoProfile, false, false, messages, &debug, forbid_includer))
+        if (!shader.preprocess(GetDefaultResources(), 450, ENoProfile, false, false, messages, &debug, forbid_includer))
             return false;
-        if (!shader.parse(&glslang::DefaultTBuiltInResource, 450, false, messages))
+        if (!shader.parse(GetDefaultResources(), 450, false, messages))
             return false;
 
         glslang::TProgram program;
