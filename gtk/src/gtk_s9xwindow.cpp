@@ -1388,6 +1388,18 @@ void Snes9xWindow::show()
         });
 
         recent_menu->show();
+
+        auto clear_recent = get_object<Gtk::MenuItem>("clear_recent_items");
+        clear_recent->signal_activate().connect([&] {
+            auto manager = Gtk::RecentManager::get_default();
+            auto items = manager->get_items();
+            for (auto &i : items)
+            {
+                auto groups = i->get_groups();
+                if (groups.end() != std::find_if(groups.begin(), groups.end(), [](Glib::ustring &name) -> bool { return name == "cartridge"; }))
+                    manager->remove_item(i->get_uri());
+            }
+        });
     }
 }
 
