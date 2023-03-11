@@ -168,7 +168,7 @@ std::tuple<int, int> WaylandSurface::get_size()
 
 void WaylandSurface::resize()
 {
-    int w, h; std::tie(w, h) = get_size();
+    auto [w, h] = get_size();
     wl_subsurface_set_position(subsurface, x, y);
 
     if (!viewport)
