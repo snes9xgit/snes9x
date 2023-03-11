@@ -10,7 +10,6 @@
 #include "wsnes9x.h"
 #include "port.h"
 #include "render.h"
-#include "../shaders/glsl.h"
 #include <vector>
 #include <functional>
 
@@ -43,7 +42,7 @@ void ReduceToPath(TCHAR *filename);
 double WinGetRefreshRate();
 int WinGetAutomaticInputRate();
 void WinThrottleFramerate();
-std::vector<GLSLParam> *WinGetShaderParameters();
+std::vector<ShaderParam> *WinGetShaderParameters();
 std::function<void(const char*)> WinGetShaderSaveFunction();
 
 #endif

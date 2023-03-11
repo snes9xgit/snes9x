@@ -6,7 +6,7 @@
 
 #pragma once
 #include "windows.h"
-#include "../shaders/glsl.h"
+#include "wsnes9x.h"
 #include <functional>
 
 typedef void(*APPLYCALLBACK) ();
@@ -29,8 +29,8 @@ private:
     unsigned int avgCharHeight;
     unsigned int maxDescriptionWidth;
     int scrollpos;
-    std::vector<GLSLParam>& parameters;
-    std::vector<GLSLParam> saved_parameters;
+    std::vector<ShaderParam>& parameters;
+    std::vector<ShaderParam> saved_parameters;
     std::function<void (const char *)> save_function;
 
     struct ParameterWidgetSet
@@ -45,7 +45,7 @@ private:
 	WNDPROC oldStaticProc;
 
 public:
-    CShaderParamDlg(std::vector<GLSLParam> &parameters, std::function<void (const char *)> save_function);
+    CShaderParamDlg(std::vector<ShaderParam> &parameters, std::function<void (const char *)> save_function);
     virtual ~CShaderParamDlg();
 
     bool show();

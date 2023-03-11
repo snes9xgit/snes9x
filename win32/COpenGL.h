@@ -76,17 +76,17 @@ private:
 public:
 	COpenGL();
 	~COpenGL();
-	bool Initialize(HWND hWnd);
-	void DeInitialize();
-	void Render(SSurface Src);
-	bool ChangeRenderSize(unsigned int newWidth, unsigned int newHeight);
-	bool ApplyDisplayChanges(void);
-	bool SetFullscreen(bool fullscreen);
-	void SetSnes9xColorFormat(void);
-	void EnumModes(std::vector<dMode> *modeVector);
+	bool Initialize(HWND hWnd) override;
+	void DeInitialize() override;
+	void Render(SSurface Src) override;
+	bool ChangeRenderSize(unsigned int newWidth, unsigned int newHeight) override;
+	bool ApplyDisplayChanges(void) override;
+	bool SetFullscreen(bool fullscreen) override;
+	void SetSnes9xColorFormat(void) override;
+	void EnumModes(std::vector<dMode> *modeVector) override;
     void SetSwapInterval(int frames);
-	std::vector<GLSLParam> *GetShaderParameters(void);
-	std::function<void(const char*)> GetShaderParametersSaveFunction();
+	std::vector<ShaderParam> *GetShaderParameters(void) override;
+	std::function<void(const char*)> GetShaderParametersSaveFunction() override;
 };
 
 

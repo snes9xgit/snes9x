@@ -121,6 +121,17 @@ struct dMode
 	long rate;
 };
 
+struct ShaderParam
+{
+    std::string name;
+    std::string id;
+    float min;
+    float max;
+    float val;
+    float step;
+    int significant_digits;
+};
+
 struct sCustomRomDlgSettings {
 	int columnFilename;
 	int columnDescription;

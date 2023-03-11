@@ -20,15 +20,15 @@ class CVulkan : public IS9xDisplayOutput
     int current_height;
 
   public:
-    bool Initialize(HWND hWnd);
-    void DeInitialize();
-    void Render(SSurface Src);
-    bool ChangeRenderSize(unsigned int newWidth, unsigned int newHeight);
-    bool ApplyDisplayChanges(void);
-    bool SetFullscreen(bool fullscreen);
-    void SetSnes9xColorFormat();
-    void EnumModes(std::vector<dMode>* modeVector);
-    std::vector<SlangShader::Parameter> *GetShaderParameters(void);
-    std::function<void(const char *)> GetShaderParametersSaveFunction();
+    bool Initialize(HWND hWnd) override;
+    void DeInitialize() override;
+    void Render(SSurface Src) override;
+    bool ChangeRenderSize(unsigned int newWidth, unsigned int newHeight) override;
+    bool ApplyDisplayChanges(void) override;
+    bool SetFullscreen(bool fullscreen) override;
+    void SetSnes9xColorFormat() override;
+    void EnumModes(std::vector<dMode>* modeVector) override;
+    std::vector<ShaderParam> *GetShaderParameters(void) override;
+    std::function<void(const char *)> GetShaderParametersSaveFunction() override;
 };
 

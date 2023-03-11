@@ -48,16 +48,16 @@ public:
 		char pDepth, int pRefreshRate, bool pWindowed,
 		bool pDoubleBuffered);
     void GetPixelFormat ();
-	void DeInitialize();
-	bool Initialize (HWND hWnd);
+	void DeInitialize() override;
+	bool Initialize (HWND hWnd) override;
 
-	void Render(SSurface Src);
-	bool ApplyDisplayChanges(void);
-	bool ChangeRenderSize(unsigned int newWidth, unsigned int newHeight);
-	bool SetFullscreen(bool fullscreen);
-	void SetSnes9xColorFormat();
+	void Render(SSurface Src) override;
+	bool ApplyDisplayChanges(void) override;
+	bool ChangeRenderSize(unsigned int newWidth, unsigned int newHeight) override;
+	bool SetFullscreen(bool fullscreen) override;
+	void SetSnes9xColorFormat() override;
 
-	void EnumModes(std::vector<dMode> *modeVector);
+	void EnumModes(std::vector<dMode> *modeVector) override;
 
 	CDirectDraw();
 	virtual ~CDirectDraw();

@@ -205,11 +205,12 @@ void CVulkan::EnumModes(std::vector<dMode>* modeVector)
     }
 }
 
-std::vector<SlangShader::Parameter> *CVulkan::GetShaderParameters()
+std::vector<ShaderParam> *CVulkan::GetShaderParameters()
 {
     if (shaderchain)
     {
-        return &shaderchain->preset->parameters;
+        // SlangShader::Parameter currently equal ShaderParam, so no conversion is neccessary
+        return (std::vector<ShaderParam>*)&shaderchain->preset->parameters;
     }
     else
         return nullptr;

@@ -397,10 +397,13 @@ void COpenGL::SetSwapInterval(int frames)
         wglSwapIntervalEXT(frames);
 }
 
-std::vector<GLSLParam>* COpenGL::GetShaderParameters(void)
+std::vector<ShaderParam>* COpenGL::GetShaderParameters(void)
 {
 	if (shader_type == OGL_SHADER_GLSL && initDone)
-		return &glslShader->param;
+	{
+		// GLSLParam currently equal ShaderParam, so no conversion is neccessary
+		return (std::vector<ShaderParam>*)&glslShader->param;
+	}
 
 	return nullptr;
 }

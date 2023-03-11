@@ -143,7 +143,7 @@ void CShaderParamDlg::trackbar_changed(HWND trackbar)
     SetWindowText(p.entry, val);
 }
 
-CShaderParamDlg::CShaderParamDlg(std::vector<GLSLParam>& parameters_, std::function<void (const char *)> save_function_)
+CShaderParamDlg::CShaderParamDlg(std::vector<ShaderParam>& parameters_, std::function<void (const char *)> save_function_)
     : parameters(parameters_),
       save_function(save_function_)
 {
@@ -288,7 +288,7 @@ void CShaderParamDlg::createContent(HWND hDlg)
     parameter_widgets.clear();
     for(int i = 0; i < parameters.size(); i++) {
         ParameterWidgetSet widgets{};
-        GLSLParam &p = parameters[i];
+		ShaderParam &p = parameters[i];
         TCHAR desc[270];
         _stprintf(desc, TEXT("%s [%g-%g]"), (TCHAR*)_tFromChar(p.name.c_str()), p.min, p.max);
         HWND item = CreateWindow(TEXT("STATIC"), desc, SS_LEFTNOWORDWRAP | WS_VISIBLE | WS_CHILD, MARGIN, (INT)(top + avgCharHeight * 0.3), desc_width, avgCharHeight, parent, (HMENU)(UINT_PTR)(IDC_PARAMS_START_STATIC + i), GUI.hInstance, NULL);
@@ -351,7 +351,7 @@ void CShaderParamDlg::handle_up_down(HWND hStatic, int id, int change)
 {
 	int param_id = id - IDC_PARAMS_START_UPDOWN;
 	HWND hEdit = GetDlgItem(hStatic, IDC_PARAMS_START_EDIT + param_id);
-	GLSLParam &p = parameters[param_id];
+	ShaderParam &p = parameters[param_id];
 	TCHAR val[100];
 	GetWindowText(hEdit, val, 100);
 	p.val = _ttof(val);
@@ -371,7 +371,7 @@ void CShaderParamDlg::get_changed_parameters(HWND hDlg)
 {
     HWND parent = GetDlgItem(hDlg, IDC_STATIC_CONTAINER);
     for(int i = 0; i < parameters.size(); i++) {
-        GLSLParam &p = parameters[i];
+		ShaderParam &p = parameters[i];
         TCHAR val[100];
         HWND hEdit = GetDlgItem(parent, IDC_PARAMS_START_EDIT + i);
         GetWindowText(hEdit, val, 100);

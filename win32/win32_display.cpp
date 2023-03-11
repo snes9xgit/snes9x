@@ -711,23 +711,14 @@ void WinThrottleFramerate()
 	PCStart += PCFrameTime;
 }
 
-std::vector<GLSLParam> *WinGetShaderParameters()
+std::vector<ShaderParam> *WinGetShaderParameters()
 {
-	if (GUI.outputMethod == OPENGL)
-		return OpenGL.GetShaderParameters();
-	if (GUI.outputMethod == VULKAN)
-		return (std::vector<GLSLParam> *)VulkanDriver.GetShaderParameters();
-	return nullptr;
+    return S9xDisplayOutput->GetShaderParameters();
 }
 
 std::function<void(const char*)> WinGetShaderSaveFunction()
 {
-	if (GUI.outputMethod == OPENGL)
-		return OpenGL.GetShaderParametersSaveFunction();
-	else if (GUI.outputMethod == VULKAN)
-		return VulkanDriver.GetShaderParametersSaveFunction();
-	else
-		return std::function<void(const char*)>();
+    return S9xDisplayOutput->GetShaderParametersSaveFunction();
 }
 
 /* Depth conversion functions begin */
