@@ -93,19 +93,6 @@ void S9xExit( void)
     SendMessage (GUI.hWnd, WM_COMMAND, ID_FILE_EXIT, 0);
 }
 
-const char *S9xGetFilename (const char *ex, enum s9x_getdirtype dirtype)
-{
-    static char filename [PATH_MAX + 1];
-    char dir [_MAX_DIR + 1];
-    char drive [_MAX_DRIVE + 1];
-    char fname [_MAX_FNAME + 1];
-    char ext [_MAX_EXT + 1];
-   _splitpath (Memory.ROMFilename.c_str(), drive, dir, fname, ext);
-   _snprintf(filename, sizeof(filename), "%s" SLASH_STR "%s%s",
-             S9xGetDirectory(dirtype).c_str(), fname, ex);
-    return (filename);
-}
-
 #define IS_SLASH(x) ((x) == TEXT('\\') || (x) == TEXT('/'))
 static TCHAR startDirectory [PATH_MAX];
 static bool startDirectoryValid = false;
@@ -927,7 +914,7 @@ void DeinitS9x()
 
 void S9xAutoSaveSRAM ()
 {
-    Memory.SaveSRAM (S9xGetFilename (".srm", SRAM_DIR));
+    Memory.SaveSRAM (S9xGetFilename (".srm", SRAM_DIR).c_str());
 }
 
 void S9xSetPause (uint32 mask)
