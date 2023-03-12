@@ -3896,6 +3896,7 @@ void CMemory::CheckForAnyPatch(const char *rom_filename, bool8 header, int32 &ro
             if (ret)
             {
                 printf("!\n");
+                flag = true;
                 return true;
             }
             else
