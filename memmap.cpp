@@ -3807,15 +3807,10 @@ void CMemory::CheckForAnyPatch(const char *rom_filename, bool8 header, int32 &ro
     int ret;
     bool flag = false;
 
-    int rom_filename_length = strlen(rom_filename);
-    const char *ext = NULL;
-    if (rom_filename_length < 4)
-        return;
-    if (rom_filename[rom_filename_length - 4] == '.')
-        ext = &rom_filename[rom_filename_length - 3];
+    auto path = splitpath(rom_filename);
 
 #ifdef UNZIP_SUPPORT
-    if (!strcasecmp(ext, "zip") || !strcasecmp(ext, ".zip"))
+    if (path.ext_is(".zip"))
     {
         unzFile file = unzOpen(rom_filename);
         if (file)
@@ -3872,7 +3867,7 @@ void CMemory::CheckForAnyPatch(const char *rom_filename, bool8 header, int32 &ro
     }
 
     // Mercurial Magic (MSU-1 distribution pack)
-    if (strcasecmp(ext, "msu1") && strcasecmp(ext, ".msu1")) // ROM was *NOT* loaded from a .msu1 pack
+    if (path.ext_is(".msu1")) // ROM was *NOT* loaded from a .msu1 pack
     {
         Stream *s = S9xMSU1OpenFile("patch.bps", TRUE);
         if (s)
