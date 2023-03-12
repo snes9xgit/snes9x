@@ -2294,6 +2294,13 @@ LRESULT CALLBACK WinProc(
 				int i = (wParam & 0xffff) - 0xFF00;
 				int j = 0;
 				{
+					if (wParam == 0xFF00 + MAX_RECENT_GAMES_LIST_SIZE)
+					{
+						WinDeleteRecentGamesList();
+						S9xSetRecentGames();
+						break;
+					}
+
 					while (j < MAX_RECENT_GAMES_LIST_SIZE && j != i)
 						j++;
 					if (i == j)
@@ -4224,6 +4231,14 @@ void S9xSetRecentGames ()
 
                 InsertMenuItem (recent, 0xFF00 + i, FALSE, &mii);
             }
+
+			if (i > 0)
+			{
+				mii.dwTypeData = TEXT("Clear List");
+				mii.cch = lstrlen(name) + 1;
+				mii.wID = 0xFF00 + MAX_RECENT_GAMES_LIST_SIZE;
+				InsertMenuItem(recent, mii.wID, FALSE, &mii);
+			}
 #ifdef UNICODE
 			Win7_CreateJumpList();
 #endif
