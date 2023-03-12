@@ -3809,6 +3809,58 @@ void CMemory::CheckForAnyPatch(const char *rom_filename, bool8 header, int32 &ro
 
     auto path = splitpath(rom_filename);
 
+    auto try_patch = [&](const char *type, std::string filename, bool8(*read_patch_func)(Stream * r, long offset, int32 &rom_size)) -> bool {
+        if ((patch_file = OPEN_FSTREAM(filename.c_str(), "rb")) != NULL)
+        {
+            printf("Using %s patch %s", type, filename.c_str());
+
+            Stream *s = new fStream(patch_file);
+            ret = read_patch_func(s, offset, rom_size);
+            s->closeStream();
+
+            if (ret)
+            {
+                printf("!\n");
+                flag = true;
+                return true;
+            }
+            else
+                printf(" failed!\n");
+        }
+        return false;
+    };
+
+    auto try_ips_sequence = [&](const char *pattern, enum s9x_getdirtype dirtype) -> bool {
+        for (int i = 0; i < 1000; i++)
+        {
+            char ips[9];
+            snprintf(ips, 9, pattern, i);
+            if (!try_patch("IPS", S9xGetFilename(ips, dirtype), ReadIPSPatch))
+                break;
+        }
+        return flag;
+    };
+
+    auto try_patch_type_sequence = [&](enum s9x_getdirtype dirtype) -> bool {
+        if (try_patch("BPS", S9xGetFilename(".bps", dirtype), ReadBPSPatch))
+            return true;
+        if (try_patch("UPS", S9xGetFilename(".ups", dirtype), ReadUPSPatch))
+            return true;
+        if (try_patch("IPS", S9xGetFilename(".ips", dirtype), ReadIPSPatch))
+            return true;
+        if (try_ips_sequence(".%03d.ips", dirtype))
+            return true;
+        if (try_ips_sequence(".ips%d", dirtype))
+            return true;
+        if (try_ips_sequence(".ip%d", dirtype))
+            return true;
+
+        return false;
+    };
+
+    if (try_patch_type_sequence(ROMFILENAME_DIR))
+        return;
+
 #ifdef UNZIP_SUPPORT
     if (path.ext_is(".zip"))
     {
@@ -3884,48 +3936,6 @@ void CMemory::CheckForAnyPatch(const char *rom_filename, bool8 header, int32 &ro
     }
 #endif
 
-    auto try_patch = [&](const char *type, std::string filename, bool8 (*read_patch_func)(Stream * r, long offset, int32 &rom_size)) -> bool {
-        if ((patch_file = OPEN_FSTREAM(filename.c_str(), "rb")) != NULL)
-        {
-            printf("Using %s patch %s", type, filename.c_str());
-
-            Stream *s = new fStream(patch_file);
-            ret = read_patch_func(s, offset, rom_size);
-            s->closeStream();
-
-            if (ret)
-            {
-                printf("!\n");
-                flag = true;
-                return true;
-            }
-            else
-                printf(" failed!\n");
-        }
-        return false;
-    };
-
-    auto try_ips_sequence = [&](const char *pattern) -> bool {
-        for (int i = 0; i < 1000; i++)
-        {
-            char ips[9];
-            snprintf(ips, 9, pattern, i);
-            if (!try_patch("IPS", S9xGetFilename(ips, PATCH_DIR), ReadIPSPatch))
-                break;
-        }
-        return flag;
-    };
-
-    if (try_patch("BPS", S9xGetFilename(".bps", PATCH_DIR), ReadBPSPatch))
-        return;
-    if (try_patch("UPS", S9xGetFilename(".ups", PATCH_DIR), ReadUPSPatch))
-        return;
-    if (try_patch("IPS", S9xGetFilename(".ips", PATCH_DIR), ReadIPSPatch))
-        return;
-    if (try_ips_sequence(".%03d.ips"))
-        return;
-    if (try_ips_sequence(".ips%d"))
-        return;
-    if (try_ips_sequence(".ip%d"))
+    if (try_patch_type_sequence(PATCH_DIR))
         return;
 }
