@@ -3908,9 +3908,9 @@ void CMemory::CheckForAnyPatch(const char *rom_filename, bool8 header, int32 &ro
     auto try_ips_sequence = [&](const char *pattern) -> bool {
         for (int i = 0; i < 1000; i++)
         {
-            char ips[8];
-            snprintf(ips, 8, pattern, i);
-            if (!try_patch("IPS", ips, ReadIPSPatch))
+            char ips[9];
+            snprintf(ips, 9, pattern, i);
+            if (!try_patch("IPS", S9xGetFilename(ips, PATCH_DIR), ReadIPSPatch))
                 break;
         }
         return flag;
@@ -3922,10 +3922,10 @@ void CMemory::CheckForAnyPatch(const char *rom_filename, bool8 header, int32 &ro
         return;
     if (try_patch("IPS", S9xGetFilename(".ips", PATCH_DIR), ReadIPSPatch))
         return;
-    if (try_ips_sequence("%03d.ips"))
+    if (try_ips_sequence(".%03d.ips"))
         return;
-    if (try_ips_sequence("ips%d"))
+    if (try_ips_sequence(".ips%d"))
         return;
-    if (try_ips_sequence("ip%d"))
+    if (try_ips_sequence(".ip%d"))
         return;
 }
