@@ -1061,6 +1061,12 @@ BEGIN
             MENUITEM "&2x",                         ID_WINDOW_SIZE_2X,MFT_STRING,MFS_ENABLED
             MENUITEM "&3x",                         ID_WINDOW_SIZE_3X,MFT_STRING,MFS_ENABLED
             MENUITEM "&4x",                         ID_WINDOW_SIZE_4X,MFT_STRING,MFS_ENABLED
+            MENUITEM "&5x",                         ID_WINDOW_SIZE_5X,MFT_STRING,MFS_ENABLED
+            MENUITEM "&6x",                         ID_WINDOW_SIZE_6X,MFT_STRING,MFS_ENABLED
+            MENUITEM "&7x",                         ID_WINDOW_SIZE_7X,MFT_STRING,MFS_ENABLED
+            MENUITEM "&8x",                         ID_WINDOW_SIZE_8X,MFT_STRING,MFS_ENABLED
+            MENUITEM "&9x",                         ID_WINDOW_SIZE_9X,MFT_STRING,MFS_ENABLED
+            MENUITEM "1&0x",                        ID_WINDOW_SIZE_10X,MFT_STRING,MFS_ENABLED
         END
         MENUITEM MFT_SEPARATOR
         MENUITEM "&Stretch Image\tAlt+Backspace", ID_WINDOW_STRETCH,MFT_STRING,MFS_ENABLED

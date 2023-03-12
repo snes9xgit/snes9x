@@ -528,16 +528,22 @@
 #define ID_WINDOW_SIZE_2X               40170
 #define ID_WINDOW_SIZE_3X               40171
 #define ID_WINDOW_SIZE_4X               40172
-#define ID_DEBUG_APU_TRACE              40173
-#define ID_EMULATION_BACKGROUNDINPUT    40174
-#define ID_SAVEMEMPACK                  40175
-#define ID_INPUT_BACKGROUNDKEYBOARDHOTKEYS 40176
-#define ID_INPUT_DETECTGAMEPADCHANGES   40177
-#define ID_EMULATION_HACKS              40178
-#define ID_FILE_LOAD_PREVIEW            40179
-#define ID_FILE_SAVE_PREVIEW            40180
-#define ID_FILE_SAVE_POPUP              40181
-#define ID_FILE_LOAD_POPUP              40182
+#define ID_WINDOW_SIZE_5X               40173
+#define ID_WINDOW_SIZE_6X               40174
+#define ID_WINDOW_SIZE_7X               40175
+#define ID_WINDOW_SIZE_8X               40176
+#define ID_WINDOW_SIZE_9X               40177
+#define ID_WINDOW_SIZE_10X              40178
+#define ID_DEBUG_APU_TRACE              40179
+#define ID_EMULATION_BACKGROUNDINPUT    40180
+#define ID_SAVEMEMPACK                  40181
+#define ID_INPUT_BACKGROUNDKEYBOARDHOTKEYS 40182
+#define ID_INPUT_DETECTGAMEPADCHANGES   40183
+#define ID_EMULATION_HACKS              40184
+#define ID_FILE_LOAD_PREVIEW            40185
+#define ID_FILE_SAVE_PREVIEW            40186
+#define ID_FILE_SAVE_POPUP              40187
+#define ID_FILE_LOAD_POPUP              40188
 #define ID_FILE_SAVE0                   44000
 #define ID_FILE_SAVE_LAST               44100
 #define ID_FILE_LOAD0                   44200
@@ -553,7 +559,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        169
-#define _APS_NEXT_COMMAND_VALUE         40181
+#define _APS_NEXT_COMMAND_VALUE         40189
 #define _APS_NEXT_CONTROL_VALUE         3040
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

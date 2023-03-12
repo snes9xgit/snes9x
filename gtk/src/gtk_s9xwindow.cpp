@@ -258,7 +258,7 @@ void Snes9xWindow::connect_signals()
         toggle_ui();
     });
 
-    for (int i = 1; i <= 5; i++)
+    for (int i = 1; i <= 10; i++)
     {
         std::string name = "exact_pixels_" + std::to_string(i) + "x_item";
         get_object<Gtk::MenuItem>(name.c_str())->signal_activate().connect([i, this] {

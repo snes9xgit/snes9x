@@ -2099,6 +2099,12 @@ LRESULT CALLBACK WinProc(
 		case ID_WINDOW_SIZE_2X:
 		case ID_WINDOW_SIZE_3X:
 		case ID_WINDOW_SIZE_4X:
+		case ID_WINDOW_SIZE_5X:
+		case ID_WINDOW_SIZE_6X:
+		case ID_WINDOW_SIZE_7X:
+		case ID_WINDOW_SIZE_8X:
+		case ID_WINDOW_SIZE_9X:
+		case ID_WINDOW_SIZE_10X:
 			UINT factor, newWidth, newHeight;
 			RECT margins;
 			factor = (wParam & 0xffff) - ID_WINDOW_SIZE_1X + 1;

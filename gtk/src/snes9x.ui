@@ -1793,6 +1793,51 @@
                                 <signal name="activate" handler="exact_5x" swapped="no"/>
                               </object>
                             </child>
+                            <child>
+                              <object class="GtkMenuItem" id="exact_pixels_6x_item">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">_6x</property>
+                                <property name="use_underline">True</property>
+                                <signal name="activate" handler="exact_6x" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkMenuItem" id="exact_pixels_7x_item">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">_7x</property>
+                                <property name="use_underline">True</property>
+                                <signal name="activate" handler="exact_7x" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkMenuItem" id="exact_pixels_8x_item">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">_8x</property>
+                                <property name="use_underline">True</property>
+                                <signal name="activate" handler="exact_8x" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkMenuItem" id="exact_pixels_9x_item">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">_9x</property>
+                                <property name="use_underline">True</property>
+                                <signal name="activate" handler="exact_9x" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkMenuItem" id="exact_pixels_10x_item">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">1_0x</property>
+                                <property name="use_underline">True</property>
+                                <signal name="activate" handler="exact_10x" swapped="no"/>
+                              </object>
+                            </child>
                           </object>
                         </child>
                       </object>
