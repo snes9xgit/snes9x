@@ -87,6 +87,7 @@ void WinSetDefaultValues ()
 	GUI.LockDirectories = false;
 	GUI.window_maximized = false;
 	GUI.EmulatedFullscreen = false;
+	GUI.FullscreenOnOpen = false;
 
 	WinDeleteRecentGamesList ();
 
@@ -793,6 +794,7 @@ void WinRegisterConfigItems()
 	AddUInt("Fullscreen:Depth", GUI.FullscreenMode.depth, 16);
 	AddUInt("Fullscreen:RefreshRate", GUI.FullscreenMode.rate, 60);
 	AddBool("Fullscreen:DoubleBuffered", GUI.DoubleBuffered, false);
+	AddBoolC("Fullscreen:FullscreenOnOpen", GUI.FullscreenOnOpen, false, "Change to fullscreen when opening a ROM.");
 	AddBoolC("Fullscreen:EmulateFullscreen", GUI.EmulateFullscreen, true,"true makes snes9x create a window that spans the entire screen when going fullscreen");
 	AddBoolC("HideMenu", GUI.HideMenu, false, "true to auto-hide the menu bar on startup.");
 	AddBoolC("Vsync", GUI.Vsync, false, "true to enable Vsync");

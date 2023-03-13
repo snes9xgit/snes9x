@@ -162,6 +162,7 @@ struct sGUI {
 	bool AVIHiRes;
     bool DoubleBuffered;
     bool FullScreen;
+	bool FullscreenOnOpen;
     bool Stretch;
     bool HeightExtend;
     bool AspectRatio;

@@ -144,6 +144,7 @@
 #define IDC_STRETCH                     1109
 #define IDC_FULLSCREEN                  1110
 #define IDC_EMUFULLSCREEN               1111
+#define IDC_FULLSCREEN_ON_OPEN          1112
 #define IDC_TRANS                       1113
 #define IDC_HIRES                       1114
 #define IDC_CHEAT_CODE                  1115
