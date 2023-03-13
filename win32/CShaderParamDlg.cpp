@@ -286,7 +286,7 @@ void CShaderParamDlg::createContent(HWND hDlg)
 	unsigned int top = MARGIN;
 
     parameter_widgets.clear();
-    for(int i = 0; i < parameters.size(); i++) {
+    for(int i = 0; i < parameters.size() && i < 500; i++) {
         ParameterWidgetSet widgets{};
 		ShaderParam &p = parameters[i];
         TCHAR desc[270];
@@ -370,7 +370,7 @@ void CShaderParamDlg::handle_up_down(HWND hStatic, int id, int change)
 void CShaderParamDlg::get_changed_parameters(HWND hDlg)
 {
     HWND parent = GetDlgItem(hDlg, IDC_STATIC_CONTAINER);
-    for(int i = 0; i < parameters.size(); i++) {
+    for(int i = 0; i < parameters.size() && i < 500; i++) {
 		ShaderParam &p = parameters[i];
         TCHAR val[100];
         HWND hEdit = GetDlgItem(parent, IDC_PARAMS_START_EDIT + i);
