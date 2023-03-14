@@ -2424,6 +2424,7 @@ void CMemory::InitROM (void)
 
 	//// Show ROM information
 	ROMId[4] = 0;
+    strcpy(ROMId, SafeString(ROMId).c_str());
 
 	sprintf(String, "\"%s\" [%s] %s, %s, %s, %s, SRAM:%s, ID:%s, CRC32:%08X",
 		ROMName, isChecksumOK ? "checksum ok" : ((Multi.cartType == 4) ? "no checksum" : "bad checksum"),
@@ -3498,6 +3499,23 @@ void CMemory::ApplyROMFixes (void)
 		Timings.RenderPos = 32;
 	else if (match_na("ADVENTURES OF FRANKEN") && Settings.PAL)
 		Timings.RenderPos = 32;
+}
+
+std::string CMemory::SafeString(std::string s, bool allow_jis /*=false*/)
+{
+    std::string safe;
+    for (int i = 0; i < s.length(); i++)
+    {
+        if (s[i] >= 32 && s[i] < 127) // ASCII
+            safe += s[i];
+        else
+            if (allow_jis && ROMRegion == 0 && ((uint8)s[i] >= 0xa0 && (uint8)s[i] < 0xe0)) // JIS X 201 - Katakana
+                safe += s[i];
+            else
+                safe += '_';
+    }
+
+    return safe;
 }
 
 // BPS % UPS % IPS

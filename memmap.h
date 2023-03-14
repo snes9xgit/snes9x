@@ -170,6 +170,7 @@ struct CMemory
 	bool8	match_nc (const char *);
 	bool8	match_id (const char *);
 	void	ApplyROMFixes (void);
+    std::string SafeString(std::string s, bool allow_jis = false);
 	void	CheckForAnyPatch (const char *, bool8, int32 &);
 
 	void	MakeRomInfoText (char *);
