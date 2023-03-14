@@ -58,20 +58,20 @@ namespace fs = std::filesystem;
 SplitPath splitpath(string str)
 {
     SplitPath output{};
-    fs::path path(str);
+    fs::path path(fs::u8path(str));
 
     if (path.has_root_name())
-        output.drive = path.root_name().string();
+        output.drive = path.root_name().u8string();
 
     if (path.has_filename())
     {
-        output.stem = path.stem().string();
-        output.ext  = path.extension().string();
+        output.stem = path.stem().u8string();
+        output.ext  = path.extension().u8string();
         path.remove_filename();
     }
 
     if (!path.empty())
-        output.dir = path.string();
+        output.dir = path.u8string();
 
     return output;
 }
@@ -82,16 +82,16 @@ string makepath(const string &drive, const string &dir, const string &stem, cons
 
     if (dot_position == string::npos)
     {
-        fs::path path(drive);
-        path = path / dir / stem;
+        fs::path path(fs::u8path(drive));
+        path = path / fs::u8path(dir) / fs::u8path(stem);
         path.replace_extension(ext);
-        return path.string();
+        return path.u8string();
     }
 
     auto filename = stem + ext;
-    fs::path path(drive);
-    path = path / dir / filename;
-    return path.string();
+    fs::path path(fs::u8path(drive));
+    path = path / fs::u8path(dir) / fs::u8path(filename);
+    return path.u8string();
 }
 
 #else
