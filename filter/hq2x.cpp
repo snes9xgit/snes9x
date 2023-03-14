@@ -29,7 +29,7 @@
 
  /* Modified to 16-bit R5G6B5 for Snes9x */
 
-#include <cmath>
+#include <cstdlib>
 #include <cstdint>
 
 static uint32_t yuvtable[65536];
@@ -41,13 +41,14 @@ static void init()
         return;
     initialized = true;
 
+    // YUV table generation public domain from nall by near
     for (unsigned i = 0; i < 65536; i++)
     {
         uint8_t R = (i >> 0) & 31;
         uint8_t G = (i >> 5) & 31;
         uint8_t B = (i >> 11) & 31;
 
-        // bgr555->bgr888
+        // bgr565->bgr888
         double r = (R << 3) | (R >> 2);
         double g = (G << 2) | (G >> 4);
         double b = (B << 3) | (B >> 2);
