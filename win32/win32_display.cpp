@@ -115,6 +115,8 @@ returns true if successful, false otherwise
 */
 bool WinDisplayReset(void)
 {
+	static bool VulkanUsed = false;
+	static bool OpenGLUsed = false;
 	S9xDisplayOutput->DeInitialize();
 	FlushMessageQueue();
 
@@ -129,10 +131,22 @@ bool WinDisplayReset(void)
 			break;
 #endif
 		case OPENGL:
+			if (VulkanUsed)
+			{
+				MessageBox(GUI.hWnd, TEXT("Changing to OpenGL requires a restart if you've already used Vulkan"), TEXT("Snes9x Display Driver"), MB_OK);
+				break;
+			}
 			S9xDisplayOutput = &OpenGL;
+			OpenGLUsed = true;
 			break;
 		case VULKAN:
+			if (OpenGLUsed)
+			{
+				MessageBox(GUI.hWnd, TEXT("Changing to Vulkan requires a restart if you've already used OpenGL"), TEXT("Snes9x Display Driver"), MB_OK);
+				break;
+			}
 			S9xDisplayOutput = &VulkanDriver;
+			VulkanUsed = true;
 			break;
 	}
 
