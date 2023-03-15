@@ -7783,9 +7783,14 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				OutputMethod newOut = (OutputMethod)SendDlgItemMessage(hDlg, IDC_OUTPUTMETHOD, CB_GETITEMDATA, index, 0);
 				if(GUI.outputMethod==newOut)
 					break;
-
+				if(GUI.FullScreen)
+					ToggleFullScreen();
 				GUI.outputMethod=newOut;
-				MessageBox(hDlg, TEXT("Changes to graphics output method will take place when Snes9x is restarted."), TEXT("Snes9x Display"), MB_OK | MB_ICONINFORMATION);
+
+				WinDisplayReset();
+				UpdateModeComboBox(GetDlgItem(hDlg,IDC_RESOLUTION));
+				WinRefreshDisplay();
+				UpdateWindow(GUI.hWnd);
 			}
 			break;
 		case IDC_SHADER_ENABLED:

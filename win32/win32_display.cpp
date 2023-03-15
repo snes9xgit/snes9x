@@ -42,7 +42,7 @@ DWMFLUSHPROC DwmFlushProc = NULL;
 DWMISCOMPOSITIONENABLEDPROC DwmIsCompositionEnabledProc = NULL;
 
 // Interface used to access the display output
-IS9xDisplayOutput* S9xDisplayOutput = NULL;
+IS9xDisplayOutput *S9xDisplayOutput=&Direct3D;
 
 #ifndef max
 #define max(a,b)            (((a) > (b)) ? (a) : (b))
@@ -95,8 +95,16 @@ void WinRefreshDisplay(void)
 
 void WinChangeWindowSize(unsigned int newWidth, unsigned int newHeight)
 {
-	if (S9xDisplayOutput)
-		S9xDisplayOutput->ChangeRenderSize(newWidth,newHeight);
+	S9xDisplayOutput->ChangeRenderSize(newWidth,newHeight);
+}
+
+static void FlushMessageQueue()
+{
+	for (MSG msg; PeekMessage(&msg, GUI.hWnd, 0, 0, PM_NOREMOVE);)
+	{
+		GetMessage(&msg, GUI.hWnd, 0, 0);
+		DispatchMessage(&msg);
+	}
 }
 
 /*  WinDisplayReset
@@ -107,9 +115,10 @@ returns true if successful, false otherwise
 */
 bool WinDisplayReset(void)
 {
-	if (S9xDisplayOutput == NULL)
-	{
-		switch (GUI.outputMethod) {
+	S9xDisplayOutput->DeInitialize();
+	FlushMessageQueue();
+
+	switch(GUI.outputMethod) {
 		default:
 		case DIRECT3D:
 			S9xDisplayOutput = &Direct3D;
@@ -125,10 +134,8 @@ bool WinDisplayReset(void)
 		case VULKAN:
 			S9xDisplayOutput = &VulkanDriver;
 			break;
-		}
 	}
 
-	S9xDisplayOutput->DeInitialize();
 	bool initialized = S9xDisplayOutput->Initialize(GUI.hWnd);
 
 	if (!initialized) {
