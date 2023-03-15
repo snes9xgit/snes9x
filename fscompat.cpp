@@ -139,9 +139,12 @@ string makepath(const string &drive, const string &dir, const string &stem, cons
 
     if (!drive.empty())
     {
-        output += drive + ":";
-        if (!dir.empty() && dir[0] != SLASH_CHAR)
-            output += SLASH_CHAR;
+        if (!(dir.length() > 2 && dir[1] == ':'))
+        {
+            output += drive + ":";
+            if (!dir.empty() && dir[0] != SLASH_CHAR)
+                output += SLASH_CHAR;
+        }
     }
 
     if (!dir.empty())
