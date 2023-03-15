@@ -51,7 +51,7 @@ std::string S9xBasenameNoExt(std::string filename)
     return splitpath(filename).stem;
 }
 
-#if __cplusplus >= 201703L
+#if __cplusplus >= 201703L && 0
 #include <filesystem>
 namespace fs = std::filesystem;
 
@@ -166,6 +166,7 @@ string makepath(const string &drive, const string &dir, const string &stem, cons
     return output;
 }
 
+#ifndef _WIN32
 void _splitpath(const char *path, char *drive, char *dir, char *fname, char *ext)
 {
     char *slash = strrchr((char *)path, SLASH_CHAR);
@@ -230,4 +231,5 @@ void _makepath(char *path, const char *drive, const char *dir, const char *fname
         strcat(path, ext);
     }
 }
+#endif
 #endif
