@@ -3505,7 +3505,7 @@ void CMemory::ApplyROMFixes (void)
 std::string CMemory::SafeString(std::string s, bool allow_jis /*=false*/)
 {
     std::string safe;
-    for (int i = 0; i < s.length(); i++)
+    for (size_t i = 0; i < s.length(); i++)
     {
         if (s[i] >= 32 && s[i] < 127) // ASCII
             safe += s[i];
