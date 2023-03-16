@@ -187,10 +187,7 @@ const TCHAR *S9xGetDirectoryT (enum s9x_getdirtype dirtype)
 
 std::string S9xGetDirectory (enum s9x_getdirtype dirtype)
 {
-	static char path[PATH_MAX]={0};
-	strncpy(path,_tToChar(S9xGetDirectoryT(dirtype)),PATH_MAX-1);
-
-	return path;
+	return std::string(_tToChar(S9xGetDirectoryT(dirtype)));
 }
 
 std::string S9xGetFilenameInc (std::string e, enum s9x_getdirtype dirtype)
