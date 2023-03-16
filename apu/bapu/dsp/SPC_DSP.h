@@ -204,6 +204,8 @@ private:
 		sample_t extra [extra_size];
 
         uint8_t separate_echo_buffer [0x10000];
+		uint8_t external_regs [register_count];
+
 	};
 	state_t m;
 
@@ -260,7 +262,7 @@ inline int SPC_DSP::sample_count() const { return m.out - m.out_begin; }
 inline int SPC_DSP::read( int addr ) const
 {
 	assert( (unsigned) addr < register_count );
-	return m.regs [addr];
+	return m.external_regs [addr];
 }
 
 inline void SPC_DSP::write( int addr, int data )
@@ -268,6 +270,7 @@ inline void SPC_DSP::write( int addr, int data )
 	assert( (unsigned) addr < register_count );
 
 	m.regs [addr] = (uint8_t) data;
+	m.external_regs [addr] = (uint8_t) data;
 	switch ( addr & 0x0F )
 	{
 	case v_envx:
