@@ -708,10 +708,12 @@ void WinThrottleFramerate()
 		QueryPerformanceCounter((LARGE_INTEGER *)&PCStart);
 	}
 
-	if (Settings.PAL)
-		PCFrameTime = PCFrameTimePAL;
-	else
-		PCFrameTime = PCFrameTimeNTSC;
+    if (Settings.FrameTime == Settings.FrameTimeNTSC)
+        PCFrameTime = PCFrameTimeNTSC;
+    else if (Settings.FrameTime == Settings.FrameTimePAL)
+        PCFrameTime = PCFrameTimePAL;
+    else
+        PCFrameTime = (__int64)(PCBase * Settings.FrameTime / 1e6);
 
 	QueryPerformanceCounter((LARGE_INTEGER *)&PCEnd);
 	int64_t time_left_us = ((PCFrameTime - (PCEnd - PCStart)) * 1000000) / PCBase;
