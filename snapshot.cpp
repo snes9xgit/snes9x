@@ -1576,16 +1576,35 @@ int S9xUnfreezeFromStream (STREAM stream)
 		if (local_fillram)
 			memcpy(Memory.FillRAM, local_fillram, 0x8000);
 
-        if(version < SNAPSHOT_VERSION_BAPU) {
+        if (version < SNAPSHOT_VERSION_BAPU)
+        {
             printf("Using Blargg APU snapshot loading (snapshot version %d, current is %d)\n...", version, SNAPSHOT_VERSION);
             S9xAPULoadBlarggState(local_apu_sound);
-        } else
-		    S9xAPULoadState(local_apu_sound);
+        }
+        else if (version < 12)
+        {
+            printf("Adjusting old APU snapshot (snapshot version %d, current is %d)\n", version, SNAPSHOT_VERSION);
+            const size_t spc_block_size = 65700;
+            const size_t old_dsp_block_size = 514;
+            const size_t added_bytes_v12 = 128;
+            const size_t bytes_afterward = 16;
+            // Shift end to make room for extra 128 bytes
+            memmove(local_apu_sound + spc_block_size + old_dsp_block_size + added_bytes_v12,
+                    local_apu_sound + spc_block_size + old_dsp_block_size,
+                    bytes_afterward);
+            // Copy saved internal registers to external registers
+            memmove(local_apu_sound + spc_block_size + old_dsp_block_size, local_apu_sound + spc_block_size, added_bytes_v12);
+            S9xAPULoadState(local_apu_sound);
+        }
+        else if (version >= 12)
+        {
+            S9xAPULoadState(local_apu_sound);
+        }
 
-		struct SControlSnapshot	ctl_snap;
-		UnfreezeStructFromCopy(&ctl_snap, SnapControls, COUNT(SnapControls), local_control_data, version);
+        struct SControlSnapshot ctl_snap;
+        UnfreezeStructFromCopy(&ctl_snap, SnapControls, COUNT(SnapControls), local_control_data, version);
 
-		UnfreezeStructFromCopy(&Timings, SnapTimings, COUNT(SnapTimings), local_timing_data, version);
+        UnfreezeStructFromCopy(&Timings, SnapTimings, COUNT(SnapTimings), local_timing_data, version);
 
 		if (local_superfx)
 		{
