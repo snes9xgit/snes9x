@@ -4666,7 +4666,7 @@ INT_PTR CALLBACK DlgInfoProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		{
 			char temp[100];
 			char romtext[4096];
-            sprintf(romtext, "File: %s\r\nName: %s\r\n", Memory.ROMFilename.c_str(), Memory.ROMName);
+            sprintf(romtext, "Name: %s\r\n", Memory.ROMName);
 			sprintf(temp, "Speed: %02X/%s\r\nROM Map: %s\r\nType: %02x\r\n", Memory.ROMSpeed, ((Memory.ROMSpeed&0x10)!=0)?"FastROM":"SlowROM",(Memory.HiROM)?"HiROM":"LoROM",Memory.ROMType);
 			strcat(romtext, temp);
 			strcat(romtext, "Kart contents: ");
@@ -5019,7 +5019,12 @@ INT_PTR CALLBACK DlgInfoProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					strcat(romtext, temp);
 					break;
 				}
-                SendDlgItemMessage(hDlg, IDC_ROM_DATA, WM_SETTEXT, 0, (LPARAM)((TCHAR *)_tFromMS932(romtext)));
+
+				Utf8ToWide romname(Memory.ROMFilename.c_str());
+				TCHAR rominfo[4096];
+				_stprintf(rominfo, TEXT("File: %s\r\n%s"), (TCHAR *)romname, _tFromMS932(romtext));
+
+                SendDlgItemMessage(hDlg, IDC_ROM_DATA, WM_SETTEXT, 0, (LPARAM)((TCHAR *)rominfo));
 				break;
 			}
 			case WM_CTLCOLORSTATIC:
