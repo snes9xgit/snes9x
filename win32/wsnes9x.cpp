@@ -86,8 +86,6 @@ extern SNPServer NPServer;
 #define R_OK 4
 #endif
 
-__int64 PCBase, PCFrameTime, PCFrameTimeNTSC, PCFrameTimePAL, PCStart, PCEnd;
-
 INT_PTR CALLBACK DlgSoundConf(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgInfoProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK DlgAboutProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -440,8 +438,7 @@ struct sLanguages Languages[] = {
 		TEXT("Failed to initialize currently selected display output!\n Try switching to a different output method in the display settings."),
 		TEXT("DirectDraw failed to set the selected display mode!"),
 		TEXT("DirectSound failed to initialize; no sound will be played."),
-		TEXT("These settings won't take effect until you restart the emulator."),
-		TEXT("The frame timer failed to initialize, please do NOT select the automatic framerate option or Snes9x will crash!")}
+		TEXT("These settings won't take effect until you restart the emulator.")}
 };
 
 struct OpenMovieParams
@@ -3314,13 +3311,6 @@ int WINAPI WinMain(
         timeBeginPeriod (wSoundTimerRes);
 	}
 
-    QueryPerformanceFrequency((LARGE_INTEGER*)&PCBase);
-    QueryPerformanceCounter((LARGE_INTEGER*)&PCStart);
-	PCEnd = PCStart;
-    PCFrameTime = PCFrameTimeNTSC = (__int64)((float)PCBase / 60.09881389744051f);
-    PCFrameTimePAL = PCBase / 50;
-
-
     Settings.StopEmulation = TRUE;
 
 	if(GUI.JoystickHotkeys || GUI.BackgroundInput)
@@ -3474,11 +3464,7 @@ loop_exit:
     if (GUI.hHotkeyTimer)
         timeKillEvent (GUI.hHotkeyTimer);
 
-    if( GUI.hFrameTimer)
-    {
-        timeKillEvent (GUI.hFrameTimer);
-        timeEndPeriod (wSoundTimerRes);
-    }
+    timeEndPeriod(wSoundTimerRes);
 
     if (!Settings.StopEmulation)
     {
@@ -3915,14 +3901,6 @@ static void CheckMenuStates ()
 
 static void ResetFrameTimer ()
 {
-    QueryPerformanceCounter((LARGE_INTEGER*)&PCStart);
-    if (Settings.FrameTime == Settings.FrameTimeNTSC)
-        PCFrameTime = PCFrameTimeNTSC;
-    else if (Settings.FrameTime == Settings.FrameTimePAL)
-        PCFrameTime = PCFrameTimePAL;
-    else
-        PCFrameTime = (__int64)((double)(PCBase * Settings.FrameTime) * .000001);
-
 	// determines if we can do sound sync
 	GUI.AllowSoundSync = Settings.PAL ? Settings.FrameTime == Settings.FrameTimePAL : Settings.FrameTime == Settings.FrameTimeNTSC;
 }

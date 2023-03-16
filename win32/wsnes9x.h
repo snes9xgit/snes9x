@@ -146,10 +146,8 @@ struct sGUI {
     HMENU hMenu;
     HINSTANCE hInstance;
 
-    DWORD hFrameTimer;
     DWORD hHotkeyTimer;
     HANDLE ClientSemaphore;
-    HANDLE FrameTimerSemaphore;
     HANDLE ServerTimerSemaphore;
 
     BYTE Language;
@@ -296,7 +294,6 @@ struct sLanguages {
     TCHAR *errModeDD;
     TCHAR *errInitDS;
     TCHAR *ApplyNeedRestart;
-    TCHAR *errFrameTimer;
 };
 
 #define CUSTKEY_ALT_MASK   0x01
