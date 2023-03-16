@@ -192,22 +192,21 @@ std::string S9xGetDirectory (enum s9x_getdirtype dirtype)
 
 std::string S9xGetFilenameInc (std::string e, enum s9x_getdirtype dirtype)
 {
-    static char filename [PATH_MAX + 1];
-    char dir [_MAX_DIR + 1];
-    char drive [_MAX_DRIVE + 1];
-    char fname [_MAX_FNAME + 1];
-    char ext [_MAX_EXT + 1];
-    unsigned int i=0;
-    const char *d;
+    std::string filename;
 
-    _splitpath (Memory.ROMFilename.c_str(), drive, dir, fname, ext);
+    auto split = splitpath(Memory.ROMFilename);
     std::string directory_string = S9xGetDirectory(dirtype);
 
-    d = directory_string.c_str();
+    unsigned int i = 0;
     do {
-        _snprintf(filename, sizeof(filename), "%s\\%s%03d%s", d, fname, i, e.c_str());
+        std::string new_extension = std::to_string(i);
+        while (new_extension.length() < 3)
+            new_extension = "0" + new_extension;
+        new_extension += e;
+
+        filename = makepath("", directory_string, split.stem, new_extension);
         i++;
-    } while(_taccess (_tFromChar(filename), 0) == 0 && i!=0);
+    } while(_taccess(_tFromChar(filename.c_str()), 0) == 0 && i < 1000);
 
     return (filename);
 }
