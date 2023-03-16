@@ -1,3 +1,32 @@
+Snes9x 1.62
+- Fixed SA1 division with negative dividend again. (Atari2)
+- Fixed timing on several instructions. (pi1541)
+- MSU1 audio with no loop point will not repeat from start.
+- Modernized some old memory-related code.
+- Fixed a desynchronization in interlaced modes and reporting.
+- Remove SA1 access to WRAM.
+- Added second set of registers between S-DSP and S-SMP. Fixes
+  PAL version of Virtual Bart.
+
+Gtk + Windows:
+- Added a Vulkan graphics output method. Similar to OpenGL, this
+  can use libretro's slang shaders.
+- Changed the automatic frame skip throttle to take place immediately
+  before showing the frame, making VRR work better.
+- Add menu item to clear recent files entries.
+- Add fixed window size changes up to 10x.
+
+Windows:
+- Improved the shader parameters dialog with sliders and resize.
+- Allow disabling adding registry entries. Deletes any existing
+  entries when the option is disabled.
+
+Gtk:
+- Switched to CMake for build system. Removed meson.
+- Fixed some keys not working with modifiers. (Gutawer)
+- Removed graphics options most people won't understand or need.
+- Improved wayland support. Handle fractional DPI properly.
+
 Snes9x 1.61
 - Restructured tile.cpp tile renderer from heavy macros into C++
   templates, significantly lowering compile time. (yoffy)
