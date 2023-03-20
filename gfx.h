@@ -11,8 +11,6 @@
 
 struct SGFX
 {
-	typedef void (*Callback)(void *);
-
 	const uint32 Pitch = sizeof(uint16) * MAX_SNES_WIDTH;
 	const uint32 RealPPL = MAX_SNES_WIDTH; // true PPL of Screen buffer
 	const uint32 ScreenSize =  MAX_SNES_WIDTH * MAX_SNES_HEIGHT;
@@ -68,9 +66,6 @@ struct SGFX
 	std::string InfoString;
 	uint32	InfoStringTimeout;
 	char	FrameDisplayString[256];
-
-	Callback EndScreenRefreshCallback;
-	void *EndScreenRefreshCallbackData;
 };
 
 struct SBG
@@ -206,7 +201,6 @@ struct COLOR_SUB
 
 void S9xStartScreenRefresh (void);
 void S9xEndScreenRefresh (void);
-void S9xSetEndScreenRefreshCallback(SGFX::Callback cb, void *data);
 void S9xBuildDirectColourMaps (void);
 void RenderLine (uint8);
 void S9xComputeClipWindows (void);

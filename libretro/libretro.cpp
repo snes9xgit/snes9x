@@ -749,8 +749,8 @@ static void update_variables(void)
     }
 }
 
-static void S9xEndScreenRefreshCallback(void*)
-{
+void S9xSyncSpeed() {
+
     if (Settings.Mute) {
         S9xClearSamples();
         return;
@@ -1371,7 +1371,6 @@ void retro_init(void)
     ntsc_screen_buffer = (uint16*) calloc(1, MAX_SNES_WIDTH_NTSC * 2 * (MAX_SNES_HEIGHT + 16));
     snes_ntsc_buffer = ntsc_screen_buffer + (MAX_SNES_WIDTH_NTSC >> 1) * 16;
     S9xGraphicsInit();
-    S9xSetEndScreenRefreshCallback(S9xEndScreenRefreshCallback, NULL);
 
     S9xInitInputDevices();
     for (int i = 0; i < 2; i++)
@@ -2082,7 +2081,6 @@ bool8 S9xContinueUpdate(int width, int height)
 
 // Dummy functions that should probably be implemented correctly later.
 void S9xParsePortConfig(ConfigFile&, int) {}
-void S9xSyncSpeed() {}
 const char* S9xStringInput(const char* in) { return in; }
 
 #ifdef _WIN32
