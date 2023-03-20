@@ -132,13 +132,6 @@ void S9xMainLoop (void)
 
 		if (CPU.Flags & SCAN_KEYS_FLAG)
 		{
-			#ifdef DEBUGGER
-			if (!(CPU.Flags & FRAME_ADVANCE_FLAG))
-			#endif
-			{
-				S9xSyncSpeed();
-			}
-
 			break;
 		}
 
@@ -326,6 +319,12 @@ void S9xDoHEventProcessing (void)
 			if (CPU.V_Counter == PPU.ScreenHeight + FIRST_VISIBLE_LINE)	// VBlank starts from V=225(240).
 			{
 				S9xEndScreenRefresh();
+				#ifdef DEBUGGER
+					if (!(CPU.Flags & FRAME_ADVANCE_FLAG))
+				#endif
+				{
+					S9xSyncSpeed();
+				}
 
 				CPU.Flags |= SCAN_KEYS_FLAG;
 

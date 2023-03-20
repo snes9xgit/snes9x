@@ -304,8 +304,6 @@ static bool S9xIdleFunc()
 
     S9xProcessEvents(true);
 
-    S9xThrottle(Settings.SkipFrames);
-
     if (!S9xDisplayDriverIsReady())
     {
         usleep(100);
@@ -494,6 +492,7 @@ static void S9xThrottle(int method)
 
 void S9xSyncSpeed()
 {
+    S9xThrottle(Settings.SkipFrames);
 }
 
 static void S9xCheckPointerTimer()
