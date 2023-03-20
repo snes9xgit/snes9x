@@ -3465,6 +3465,7 @@ void CMemory::ApplyROMFixes (void)
 	if (match_na("SUPER DRIFT OUT")      || // Super Drift Out
 		match_na("SATAN IS OUR FATHER!") ||
 		match_na("S.F.S.95 della SerieA") ||
+		match_id("AACJ") || // Nichibutsu Arcade Classics
 		match_na("goemon 4"))               // Ganbare Goemon Kirakira Douchuu
 		SNESGameFixes.SRAMInitialValue = 0x00;
 
