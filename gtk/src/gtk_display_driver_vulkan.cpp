@@ -87,17 +87,17 @@ int S9xVulkanDisplayDriver::init()
     if (!gui_config->shader_filename.empty() && gui_config->use_shaders)
     {
         shaderchain = std::make_unique<Vulkan::ShaderChain>(context.get());
-        setlocale(LC_ALL, "C");
+        setlocale(LC_NUMERIC, "C");
         if (!shaderchain->load_shader_preset(gui_config->shader_filename))
         {
             fmt::print("Couldn't load shader preset file\n");
             shaderchain = nullptr;
-            setlocale(LC_ALL, "");
+            setlocale(LC_NUMERIC, "");
         }
         else
         {
             window->enable_widget("shader_parameters_item", true);
-            setlocale(LC_ALL, "");
+            setlocale(LC_NUMERIC, "");
             return 0;
         }
     }
@@ -165,8 +165,10 @@ void *S9xVulkanDisplayDriver::get_parameters()
 
 void S9xVulkanDisplayDriver::save(const char *filename)
 {
+    setlocale(LC_NUMERIC, "C");
     if (shaderchain)
         shaderchain->preset->save_to_file(filename);
+    setlocale(LC_NUMERIC, "");
 }
 
 bool S9xVulkanDisplayDriver::is_ready()
