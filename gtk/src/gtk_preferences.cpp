@@ -904,14 +904,14 @@ void Snes9xPreferences::bindings_to_dialog(int joypad)
 
     for (int i = 0; i < NUM_JOYPAD_LINKS; i++)
     {
-        set_entry_text(b_links[i].button_name, bindings[i].as_string());
+        set_entry_text(b_links[i].button_name, bindings[i].to_string(true));
     }
 
     auto shortcut_names = &b_links[NUM_JOYPAD_LINKS];
 
     for (int i = 0; shortcut_names[i].button_name; i++)
     {
-        set_entry_text(shortcut_names[i].button_name, shortcut[i].as_string());
+        set_entry_text(shortcut_names[i].button_name, shortcut[i].to_string(true));
     }
 }
 
