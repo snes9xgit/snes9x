@@ -18,7 +18,7 @@
 #include "gfx.h"
 #include "display.h"
 
-#define SAME_AS_GAME _("Same location as current game")
+#define SAME_AS_GAME gettext("Same location as current game")
 
 static Snes9xPreferences *preferences = nullptr;
 

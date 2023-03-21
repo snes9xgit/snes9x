@@ -236,8 +236,8 @@ std::string Binding::to_string(bool translate)
 {
     std::string str;
 
-#undef _
-#define _(String) translate ? gettext(String) : (String)
+#undef maybegettext
+#define maybegettext(String) translate ? gettext(String) : (String)
 
     if (is_key())
     {
@@ -245,7 +245,7 @@ std::string Binding::to_string(bool translate)
         char *keyval_name = gdk_keyval_name(keyval);
 
         if (keyval_name == nullptr)
-            str = _("Unknown");
+            str = maybegettext("Unknown");
         else
             str = keyval_name;
 
@@ -254,7 +254,7 @@ std::string Binding::to_string(bool translate)
                 if (c == '_')
                     c = ' ';
 
-        str = fmt::format(_("Keyboard {}{}{}{}"),
+        str = fmt::format(maybegettext("Keyboard {}{}{}{}"),
                           (value & BINDING_SHIFT) ? "Shift+" : "",
                           (value & BINDING_CTRL) ? "Ctrl+" : "",
                           (value & BINDING_ALT) ? "Alt+" : "",
@@ -264,18 +264,18 @@ std::string Binding::to_string(bool translate)
     else if (is_joy())
     {
         if ((get_key()) >= 512)
-            str = fmt::format(_("Axis {} {} {}%"),
+            str = fmt::format(maybegettext("Axis {} {} {}%"),
                               get_axis(),
                               is_positive() ? "+" : "-",
                               get_threshold());
         else
-            str = fmt::format(_("Button {}"), get_key());
+            str = fmt::format(maybegettext("Button {}"), get_key());
 
-        str = fmt::format(_("Joystick {} {}"), get_device(), str);
+        str = fmt::format(maybegettext("Joystick {} {}"), get_device(), str);
     }
 
     else
-        str = _("Unset");
+        str = maybegettext("Unset");
 
     return str;
 }
