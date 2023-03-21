@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Snes9x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-21 15:34-0500\n"
-"PO-Revision-Date: 2023-03-21 16:32-0500\n"
+"POT-Creation-Date: 2023-03-21 17:30-0500\n"
+"PO-Revision-Date: 2023-03-21 17:35-0500\n"
 "Last-Translator: Pablo \"Jota\" Lezaeta <prflr88@gmail.com>\n"
 "Language-Team: Spanish / Español\n"
 "Language: es\n"
@@ -35,6 +35,34 @@ msgstr ""
 "X-Poedit-SearchPath-12: unix\n"
 "X-Poedit-SearchPath-13: win32\n"
 "X-Poedit-SearchPath-14: .\n"
+
+#: src/gtk_binding.cpp:248
+msgid "Unknown"
+msgstr "Desconocido"
+
+#: src/gtk_binding.cpp:257
+msgid "Keyboard {}{}{}{}"
+msgstr "Teclado {}{}{}{}"
+
+#: src/gtk_binding.cpp:267
+msgid "Axis {} {} {}%"
+msgstr "Eje {} {} {}%"
+
+#: src/gtk_binding.cpp:272
+msgid "Button {}"
+msgstr "Botón {}"
+
+#: src/gtk_binding.cpp:274
+msgid "Joystick {} {}"
+msgstr "Mando {} {}"
+
+#: src/gtk_binding.cpp:278
+msgid "Unset"
+msgstr "Sin asignar"
+
+#: src/gtk_preferences.cpp:21
+msgid "Same location as current game"
+msgstr "El mismo lugar que el juego actual"
 
 #: src/snes9x.ui:9
 msgid "About Snes9x"
@@ -1626,28 +1654,12 @@ msgstr ""
 "  Nintendo Co., Limited y sus filiales."
 
 #, c-format
-#~ msgid "Unknown"
-#~ msgstr "Desconocido"
-
-#, c-format
 #~ msgid "Keyboard %s%s%s%s"
 #~ msgstr "Tecla %s%s%s%s"
 
 #, c-format
 #~ msgid "Axis %u %s %u%%"
 #~ msgstr "Eje %u %s %u%%"
-
-#, c-format
-#~ msgid "Button %u"
-#~ msgstr "Botón %u"
-
-#, c-format
-#~ msgid "Joystick %u %s"
-#~ msgstr "Mando %u %s"
-
-#, c-format
-#~ msgid "Unset"
-#~ msgstr "Sin asignar"
 
 #~ msgid "Error"
 #~ msgstr "Error"
@@ -1694,9 +1706,6 @@ msgstr ""
 
 #~ msgid "Connection Error"
 #~ msgstr "Error de connección"
-
-#~ msgid "Same location as current game"
-#~ msgstr "El mismo lugar que el juego actual"
 
 #~ msgid "Current joystick centers have been saved."
 #~ msgstr "Los centros de ejes del mando fueron guardados."
