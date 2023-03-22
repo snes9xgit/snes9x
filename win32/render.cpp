@@ -66,11 +66,10 @@ TRenderMethod _RenderMethod = RenderPlain;
 TRenderMethod _RenderMethodHiRes = RenderPlain;
 
 // Used as change log
-static uint8 ChangeLog1 [EXT_PITCH * MAX_SNES_HEIGHT];
-static uint8 ChangeLog2 [EXT_PITCH * MAX_SNES_HEIGHT];
-static uint8 ChangeLog3 [EXT_PITCH * MAX_SNES_HEIGHT];
+static uint8 ChangeLog1 [2 * MAX_SNES_WIDTH * MAX_SNES_HEIGHT];
+static uint8 ChangeLog2 [2 * MAX_SNES_WIDTH * MAX_SNES_HEIGHT];
+static uint8 ChangeLog3 [2 * MAX_SNES_WIDTH * MAX_SNES_HEIGHT];
 
-BYTE *BlendBuf = NULL;
 BYTE *BlendBuffer = NULL;
 
 uint8 *ChangeLog [3] = {
@@ -383,7 +382,7 @@ void RenderMethod(SSurface Src, SSurface Dst, RECT * rect)
     AdjustHeightExtend(Src.Height);
 	if(Src.Height > SNES_HEIGHT_EXTENDED || Src.Width == 512) {
 		if(GUI.BlendHiRes && Src.Width == 512 && !GetFilterBlendSupport(GUI.ScaleHiRes)) {
-			RenderMergeHires(Src.Surface,Src.Pitch,BlendBuffer,EXT_PITCH,Src.Width,Src.Height);
+			RenderMergeHires(Src.Surface,Src.Pitch,BlendBuffer,GFX.Pitch,Src.Width,Src.Height);
 			Src.Surface = BlendBuffer;
 		}
 		_RenderMethodHiRes(Src,Dst,rect);
@@ -398,10 +397,8 @@ void InitRenderFilters(void)
 	if(!ntsc) {
 		ntsc =  new snes_ntsc_t;
 	}
-	if(!BlendBuf) {
-		BlendBuf = new BYTE [EXT_PITCH * EXT_HEIGHT];
-		BlendBuffer = BlendBuf + EXT_OFFSET;
-		memset(BlendBuf, 0, EXT_PITCH * EXT_HEIGHT);
+	if(!BlendBuffer) {
+		BlendBuffer = new BYTE [GFX.Pitch * MAX_SNES_HEIGHT];
 	}
 
     SYSTEM_INFO sysinfo;
@@ -424,8 +421,8 @@ void DeInitRenderFilters()
 	if (ntsc) {
 		delete ntsc;
 	}
-	if (BlendBuf) {
-		delete[] BlendBuf;
+	if (BlendBuffer) {
+		delete[] BlendBuffer;
 	}
 	if (xbrz_thread_sync_data) {
 		delete[] xbrz_thread_sync_data;

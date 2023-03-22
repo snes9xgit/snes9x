@@ -44,7 +44,7 @@ class Binding
     Binding(unsigned int);
     Binding();
     Binding(const char *str);
-    void to_string(char *str, bool translate = true);
+    std::string to_string(bool translate = true);
     std::string as_string();
     unsigned int hex();
     unsigned int base_hex();

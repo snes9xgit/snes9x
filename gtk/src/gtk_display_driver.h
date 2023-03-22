@@ -15,13 +15,14 @@ class S9xDisplayDriver
     virtual ~S9xDisplayDriver()
     {
     }
-    virtual void refresh(int width, int height) = 0;
+    virtual void refresh() = 0;
     virtual int init() = 0;
     virtual void deinit() = 0;
     virtual void update(uint16_t *buffer, int width, int height, int stride_in_pixels) = 0;
     virtual void *get_parameters() = 0;
     virtual void save(const char *filename) = 0;
     virtual bool is_ready() = 0;
+    virtual bool can_throttle() { return false; };
 
   protected:
     Snes9xWindow *window;

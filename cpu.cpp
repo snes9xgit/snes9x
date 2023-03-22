@@ -13,7 +13,6 @@
 #include "srtc.h"
 #include "snapshot.h"
 #include "cheats.h"
-#include "logger.h"
 #ifdef DEBUGGER
 #include "debug.h"
 #endif
@@ -76,7 +75,6 @@ static void S9xSoftResetCPU (void)
 	SetFlags(MemoryFlag | IndexFlag | IRQ | Emulation);
 	ClearFlags(Decimal);
 
-	Timings.InterlaceField = FALSE;
 	Timings.H_Max = Timings.H_Max_Master;
 	Timings.V_Max = Timings.V_Max_Master;
 	Timings.NMITriggerPos = 0xffff;
@@ -99,10 +97,9 @@ static void S9xSoftResetCPU (void)
 void S9xReset (void)
 {
 	S9xResetSaveTimer(FALSE);
-	S9xResetLogger();
 
-	memset(Memory.RAM, 0x55, 0x20000);
-	memset(Memory.VRAM, 0x00, 0x10000);
+	memset(Memory.RAM, 0x55, sizeof(Memory.RAM));
+	memset(Memory.VRAM, 0x00, sizeof(Memory.VRAM));
 	memset(Memory.FillRAM, 0, 0x8000);
 
 	S9xResetBSX();

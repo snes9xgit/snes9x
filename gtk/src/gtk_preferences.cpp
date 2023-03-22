@@ -13,12 +13,12 @@
 #include "gtk_sound.h"
 #include "gtk_display.h"
 #include "gtk_binding.h"
-
+#include "fmt/format.h"
 #include "snes9x.h"
 #include "gfx.h"
 #include "display.h"
 
-#define SAME_AS_GAME _("Same location as current game")
+#define SAME_AS_GAME gettext("Same location as current game")
 
 static Snes9xPreferences *preferences = nullptr;
 
@@ -98,8 +98,6 @@ Snes9xPreferences::Snes9xPreferences(Snes9xConfig *config)
     #ifdef GDK_WINDOWING_X11
     if (config->allow_xrandr)
     {
-        char size_string[256];
-
         for (int i = 0; i < config->xrr_screen_resources->nmode; i++)
         {
             XRRModeInfo *m = &config->xrr_screen_resources->modes[i];
@@ -111,14 +109,12 @@ Snes9xPreferences::Snes9xPreferences(Snes9xConfig *config)
             if (m->modeFlags & RR_DoubleClock)
                 dotClock *= 2;
 
-            snprintf(size_string,
-                     256,
-                     "%dx%d @ %.3fHz",
-                     m->width,
-                     m->height,
-                     (double)dotClock / m->hTotal / m->vTotal);
+            auto str = fmt::format("{}x{} @ {:.3f}Hz",
+                                   m->width,
+                                   m->height,
+                                   (double)dotClock / m->hTotal / m->vTotal);
 
-            combo_box_append("resolution_combo", size_string);
+            combo_box_append("resolution_combo", str.c_str());
         }
 
         if (config->xrr_index > config->xrr_screen_resources->nmode)
@@ -142,15 +138,20 @@ Snes9xPreferences::Snes9xPreferences(Snes9xConfig *config)
     combo_box_append("scale_method_combo", _("4xBRZ"));
 #endif
 
-    combo_box_append("hw_accel", _("None - Use software scaler"));
+    for (const auto &driver : config->display_drivers)
+    {
+        std::string entry;
+        if (driver == "opengl")
+            entry = _("OpenGL - Use 3D graphics hardware");
+        else if (driver == "xv")
+            entry = _("XVideo - Use hardware video blitter");
+        else if (driver == "vulkan")
+            entry = _("Vulkan");
+        else
+            entry = _("None - Use software scaler");
 
-    if (config->allow_opengl)
-        combo_box_append("hw_accel",
-                         _("OpenGL - Use 3D graphics hardware"));
-
-    if (config->allow_xv)
-        combo_box_append("hw_accel",
-                         _("XVideo - Use hardware video blitter"));
+        combo_box_append("hw_accel", entry.c_str());
+    }
 
     for (auto &name : config->sound_drivers)
     {
@@ -177,9 +178,10 @@ void Snes9xPreferences::connect_signals()
 
     get_object<Gtk::ComboBox>("hw_accel")->signal_changed().connect([&] {
         int id = get_combo("hw_accel");
-        show_widget("bilinear_filter", id != HWA_XV);
-        show_widget("opengl_frame", id == HWA_OPENGL);
-        show_widget("xv_frame", id == HWA_XV);
+        show_widget("bilinear_filter", config->display_drivers[id] != "xv");
+        show_widget("opengl_frame", config->display_drivers[id] == "opengl" ||
+                    config->display_drivers[id] == "vulkan");
+        show_widget("xv_frame", config->display_drivers[id] == "xv");
     });
 
     get_object<Gtk::Button>("reset_current_joypad")->signal_pressed().connect(sigc::mem_fun(*this, &Snes9xPreferences::reset_current_joypad));
@@ -208,7 +210,7 @@ void Snes9xPreferences::connect_signals()
     get_object<Gtk::Button>("about_button")->signal_clicked().connect(sigc::mem_fun(*this, &Snes9xPreferences::about_dialog));
     get_object<Gtk::ToggleButton>("auto_input_rate")->signal_toggled().connect([&] {
         auto toggle_button = get_object<Gtk::ToggleButton>("auto_input_rate");
-        enable_widget("sound_input_rate", toggle_button->get_active());
+        enable_widget("sound_input_rate", !toggle_button->get_active());
         if (toggle_button->get_active())
             set_slider("sound_input_rate", top_level->get_auto_input_rate());
     });
@@ -281,10 +283,8 @@ void Snes9xPreferences::game_data_browse(std::string folder)
 void Snes9xPreferences::input_rate_changed()
 {
     double value = get_object<Gtk::HScale>("sound_input_rate")->get_value();
-    value = value / 32040.0 * 60.09881389744051;
-    char text[256];
-    snprintf(text, 256, "%.4f Hz", value);
-    get_object<Gtk::Label>("relative_video_rate")->set_label(text);
+    value = value / 32040.0 * NTSC_PROGRESSIVE_FRAME_RATE;
+    get_object<Gtk::Label>("relative_video_rate")->set_label(fmt::format("{:.4f}Hz", value));
 }
 
 bool Snes9xPreferences::key_pressed(GdkEventKey *event)
@@ -333,7 +333,6 @@ bool Snes9xPreferences::key_pressed(GdkEventKey *event)
 
 void Snes9xPreferences::shader_select()
 {
-#ifdef USE_OPENGL
     auto entry = get_object<Gtk::Entry>("fragment_shader");
 
     auto dialog = Gtk::FileChooserDialog(*window.get(), _("Select Shader File"));
@@ -357,7 +356,6 @@ void Snes9xPreferences::shader_select()
         if (!filename.empty())
             entry->set_text(filename);
     }
-#endif
 }
 
 void Snes9xPreferences::load_ntsc_settings()
@@ -433,7 +431,7 @@ void Snes9xPreferences::move_settings_to_dialog()
     set_check("prevent_screensaver",       config->prevent_screensaver);
     set_check("force_inverted_byte_order", config->force_inverted_byte_order);
     set_combo("playback_combo",            7 - config->sound_playback_rate);
-    set_combo("hw_accel",                  combo_value (config->hw_accel));
+    set_combo("hw_accel",                  combo_value (config->display_driver));
     set_check("pause_emulation_on_switch", config->pause_emulation_on_switch);
     set_spin ("num_threads",               config->num_threads);
     set_check("mute_sound_check",          config->mute_sound);
@@ -466,17 +464,13 @@ void Snes9xPreferences::move_settings_to_dialog()
 
     set_combo ("frameskip_combo",           Settings.SkipFrames);
     set_check ("bilinear_filter",           Settings.BilinearFilter);
+    set_check ("auto_vrr",                  config->auto_vrr);
 
-#ifdef USE_OPENGL
     set_check ("sync_to_vblank",            config->sync_to_vblank);
-    set_check ("use_glfinish",              config->use_glfinish);
-    set_check ("use_sync_control",          config->use_sync_control);
-    set_check ("use_pbos",                  config->use_pbos);
-    set_combo ("pixel_format",              config->pbo_format == 16 ? 0 : 1);
-    set_check ("npot_textures",             config->npot_textures);
+    set_check ("reduce_input_lag",          config->reduce_input_lag);
     set_check ("use_shaders",               config->use_shaders);
     set_entry_text ("fragment_shader",      config->shader_filename.c_str ());
-#endif
+
     set_spin ("joystick_threshold",         config->joystick_threshold);
 
     /* Control bindings */
@@ -554,7 +548,7 @@ void Snes9xPreferences::get_settings_from_dialog()
     if (config->multithreading != get_check("multithreading"))
         gfx_needs_restart = true;
 
-    if (config->hw_accel != hw_accel_value (get_combo("hw_accel")))
+    if (config->display_driver != config->display_drivers[get_combo("hw_accel")])
         gfx_needs_restart = true;
 
     if (config->force_inverted_byte_order != get_check("force_inverted_byte_order"))
@@ -575,6 +569,7 @@ void Snes9xPreferences::get_settings_from_dialog()
     config->aspect_ratio              = get_combo("aspect_ratio");
     config->scale_method              = get_combo("scale_method_combo");
     config->hires_effect              = get_combo("hires_effect");
+    config->auto_vrr                  = get_check("auto_vrr");
     config->force_inverted_byte_order = get_check("force_inverted_byte_order");
     Settings.AutoSaveDelay            = get_entry_value("save_sram_after_sec");
     config->multithreading            = get_check("multithreading");
@@ -595,7 +590,7 @@ void Snes9xPreferences::get_settings_from_dialog()
     store_ntsc_settings();
     config->ntsc_scanline_intensity   = get_combo("ntsc_scanline_intensity");
     config->scanline_filter_intensity = get_combo("scanline_filter_intensity");
-    config->hw_accel                  = hw_accel_value(get_combo("hw_accel"));
+    config->display_driver            = config->display_drivers[get_combo("hw_accel")];
     Settings.BilinearFilter           = get_check("bilinear_filter");
     config->num_threads               = get_spin("num_threads");
     config->default_esc_behavior      = get_combo("default_esc_behavior");
@@ -631,14 +626,7 @@ void Snes9xPreferences::get_settings_from_dialog()
     Settings.InterpolationMethod = get_combo("sound_filter");
 #endif
 
-#ifdef USE_OPENGL
-    int pbo_format = get_combo("pixel_format") == 1 ? 32 : 16;
-
     if (config->sync_to_vblank   != get_check("sync_to_vblank") ||
-        config->use_sync_control != get_check("use_sync_control") ||
-        config->npot_textures    != get_check("npot_textures") ||
-        config->use_pbos         != get_check("use_pbos") ||
-        config->pbo_format       !=  pbo_format ||
         config->use_shaders      != get_check("use_shaders") ||
         (config->shader_filename.compare(get_entry_text("fragment_shader"))))
     {
@@ -646,14 +634,9 @@ void Snes9xPreferences::get_settings_from_dialog()
     }
 
     config->sync_to_vblank   = get_check("sync_to_vblank");
-    config->use_pbos         = get_check("use_pbos");
-    config->npot_textures    = get_check("npot_textures");
     config->use_shaders      = get_check("use_shaders");
-    config->use_glfinish     = get_check("use_glfinish");
-    config->use_sync_control = get_check("use_sync_control");
+    config->reduce_input_lag     = get_check("reduce_input_lag");
     config->shader_filename  = get_entry_text ("fragment_shader");
-    config->pbo_format       = pbo_format;
-#endif
 
     std::string new_sram_directory = get_entry_text("sram_directory");
     config->savestate_directory = get_entry_text("savestate_directory");
@@ -716,7 +699,7 @@ void Snes9xPreferences::get_settings_from_dialog()
     }
 
     S9xDisplayReconfigure();
-    S9xDisplayRefresh(top_level->last_width, top_level->last_height);
+    S9xDisplayRefresh();
 
     S9xDeinitUpdate(top_level->last_width, top_level->last_height);
 
@@ -726,28 +709,15 @@ void Snes9xPreferences::get_settings_from_dialog()
         top_level->leave_fullscreen_mode();
 }
 
-int Snes9xPreferences::hw_accel_value(int combo_value)
+int Snes9xPreferences::combo_value(std::string driver_name)
 {
-    if (config->allow_opengl && config->allow_xv)
-        return combo_value;
-    else if (!config->allow_opengl && !config->allow_xv)
-        return 0;
-    else if (!config->allow_opengl && config->allow_xv)
-        return combo_value ? 2 : 0;
-    else
-        return combo_value ? 1 : 0;
-}
+    for (size_t i = 0; i < config->display_drivers.size(); i++)
+    {
+        if (config->display_drivers[i] == driver_name)
+            return i;
+    }
 
-int Snes9xPreferences::combo_value(int hw_accel)
-{
-    if (config->allow_opengl && config->allow_xv)
-        return hw_accel;
-    else if (!config->allow_opengl && !config->allow_xv)
-        return 0;
-    else if (!config->allow_opengl && config->allow_xv)
-        return hw_accel == HWA_XV ? 1 : 0;
-    else
-        return hw_accel == HWA_OPENGL ? 1 : 0;
+    return 0;
 }
 
 void Snes9xPreferences::show()
@@ -922,9 +892,7 @@ void Snes9xPreferences::clear_binding(const char *name)
 
     if (b_links[i].button_name)
     {
-        char buf[256];
-        unset.to_string(buf);
-        set_entry_text(b_links[i].button_name, buf);
+        set_entry_text(b_links[i].button_name, unset.to_string(true));
     }
 }
 
@@ -936,14 +904,14 @@ void Snes9xPreferences::bindings_to_dialog(int joypad)
 
     for (int i = 0; i < NUM_JOYPAD_LINKS; i++)
     {
-        set_entry_text(b_links[i].button_name, bindings[i].as_string().c_str());
+        set_entry_text(b_links[i].button_name, bindings[i].to_string(true));
     }
 
     auto shortcut_names = &b_links[NUM_JOYPAD_LINKS];
 
     for (int i = 0; shortcut_names[i].button_name; i++)
     {
-        set_entry_text(shortcut_names[i].button_name, shortcut[i].as_string().c_str());
+        set_entry_text(shortcut_names[i].button_name, shortcut[i].to_string(true));
     }
 }
 

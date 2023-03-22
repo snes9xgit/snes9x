@@ -4,7 +4,6 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include "gtk_compat.h"
 #include <dlfcn.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -13,7 +12,6 @@
 #include "gtk_display.h"
 #include "gtk_display_driver_opengl.h"
 #include "gtk_shader_parameters.h"
-#include "shaders/shader_helpers.h"
 
 static const GLchar *stock_vertex_shader_110 =
 "#version 110\n"
@@ -91,17 +89,11 @@ S9xOpenGLDisplayDriver::S9xOpenGLDisplayDriver(Snes9xWindow *window, Snes9xConfi
 void S9xOpenGLDisplayDriver::update(uint16_t *buffer, int width, int height, int stride_in_pixels)
 {
     Gtk::Allocation allocation = drawing_area->get_allocation();
-
     if (output_window_width != allocation.get_width() ||
         output_window_height != allocation.get_height())
     {
         resize();
     }
-
-    int scale_factor = drawing_area->get_scale_factor();
-
-    allocation.set_width(allocation.get_width() * scale_factor);
-    allocation.set_height(allocation.get_height() * scale_factor);
 
     if (!legacy)
         glActiveTexture(GL_TEXTURE0);
@@ -109,83 +101,29 @@ void S9xOpenGLDisplayDriver::update(uint16_t *buffer, int width, int height, int
     GLint filter = Settings.BilinearFilter ? GL_LINEAR : GL_NEAREST;
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
-    GLint clamp = (using_glsl_shaders || !npot) ? GL_CLAMP_TO_BORDER : GL_CLAMP_TO_EDGE;
+    GLint clamp = (using_glsl_shaders) ? GL_CLAMP_TO_BORDER : GL_CLAMP_TO_EDGE;
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, clamp);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, clamp);
 
     glClear(GL_COLOR_BUFFER_BIT);
 
-    S9xRect content = S9xApplyAspect(width, height, allocation.get_width(), allocation.get_height());
-    glViewport(content.x, allocation.get_height() - content.y - content.h, content.w, content.h);
+    S9xRect content = S9xApplyAspect(width, height, context->width, context->height);
+    glViewport(content.x, context->height - content.y - content.h, content.w, content.h);
     window->set_mouseable_area(content.x, content.y, content.w, content.h);
 
     update_texture_size(width, height);
 
-    if (using_pbos)
-    {
-        void *pbo_memory = NULL;
-        GLbitfield bits = GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT | GL_MAP_UNSYNCHRONIZED_BIT;
-
-        if (config->pbo_format == 16)
-        {
-            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
-            glBufferData(GL_PIXEL_UNPACK_BUFFER, width * height * 2, NULL, GL_STREAM_DRAW);
-
-            if (version >= 30)
-                pbo_memory = glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, width * height * 2, bits);
-            else
-                pbo_memory = glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
-
-            for (int y = 0; y < height; y++)
-            {
-                uint16 *dst = (uint16_t *)pbo_memory + (width * y);
-                uint16 *src = &buffer[y * stride_in_pixels];
-                memcpy(dst, src, width * 2);
-            }
-            glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
-
-            glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
-            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGB,
-                            GL_UNSIGNED_SHORT_5_6_5, BUFFER_OFFSET(0));
-
-            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-        }
-        else /* 32-bit color */
-        {
-            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
-            glBufferData(GL_PIXEL_UNPACK_BUFFER, width * height * 4, NULL, GL_STREAM_DRAW);
-
-            if (version >= 30)
-                pbo_memory = glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, width * height * 4, bits);
-            else
-                pbo_memory = glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
-
-            /* Pixel swizzling in software */
-            S9xSetEndianess(ENDIAN_NORMAL);
-            S9xConvert(buffer, pbo_memory, stride_in_pixels * 2, width * 4, width, height, 32);
-
-            glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
-
-            glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
-            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_BGRA, GL_UNSIGNED_BYTE, BUFFER_OFFSET(0));
-
-            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-        }
-    }
-    else
-    {
-        glPixelStorei(GL_UNPACK_ROW_LENGTH, stride_in_pixels);
-        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, buffer);
-    }
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, stride_in_pixels);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, buffer);
 
     if (using_glsl_shaders)
     {
-        glsl_shader->render(texmap, width, height, content.x, allocation.get_height() - content.y - content.h, content.w, content.h, S9xViewportCallback);
-        swap_buffers();
-        return;
+        glsl_shader->render(texmap, width, height, content.x, context->height - content.y - content.h, content.w, content.h, S9xViewportCallback);
     }
-
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    else
+    {
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    }
 
     swap_buffers();
 }
@@ -212,47 +150,17 @@ void S9xOpenGLDisplayDriver::update_texture_size(int width, int height)
 {
     if (width != texture_width || height != texture_height)
     {
-        if (npot)
-        {
-            glBindTexture(GL_TEXTURE_2D, texmap);
+        glBindTexture(GL_TEXTURE_2D, texmap);
 
-            if (using_pbos && config->pbo_format == 32)
-            {
-                glTexImage2D(GL_TEXTURE_2D,
-                             0,
-                             GL_RGBA,
-                             width,
-                             height,
-                             0,
-                             GL_BGRA,
-                             GL_UNSIGNED_BYTE,
-                             NULL);
-            }
-            else
-            {
-                glTexImage2D(GL_TEXTURE_2D,
-                             0,
-                             GL_RGB565,
-                             width,
-                             height,
-                             0,
-                             GL_RGB,
-                             GL_UNSIGNED_SHORT_5_6_5,
-                             NULL);
-            }
-
-            coords[9] = 1.0f;
-            coords[10] = 1.0f;
-            coords[11] = 1.0f;
-            coords[14] = 1.0f;
-        }
-        else
-        {
-            coords[9] = height / 1024.0f;
-            coords[10] = width / 1024.0f;
-            coords[11] = height / 1024.0f;
-            coords[14] = width / 1024.0f;
-        }
+        glTexImage2D(GL_TEXTURE_2D,
+                     0,
+                     GL_RGB565,
+                     width,
+                     height,
+                     0,
+                     GL_RGB,
+                     GL_UNSIGNED_SHORT_5_6_5,
+                     NULL);
 
         texture_width = width;
         texture_height = height;
@@ -273,7 +181,7 @@ void S9xOpenGLDisplayDriver::update_texture_size(int width, int height)
 
 bool S9xOpenGLDisplayDriver::load_shaders(const char *shader_file)
 {
-    setlocale(LC_ALL, "C");
+    setlocale(LC_NUMERIC, "C");
     std::string filename(shader_file);
 
     auto endswith = [&](std::string ext) -> bool {
@@ -290,35 +198,23 @@ bool S9xOpenGLDisplayDriver::load_shaders(const char *shader_file)
         if (glsl_shader->load_shader((char *)shader_file))
         {
             using_glsl_shaders = true;
-            npot = true;
 
             if (glsl_shader->param.size() > 0)
                 window->enable_widget("shader_parameters_item", true);
 
-            setlocale(LC_ALL, "");
+            setlocale(LC_NUMERIC, "");
             return true;
         }
 
         delete glsl_shader;
     }
 
-    setlocale(LC_ALL, "");
+    setlocale(LC_NUMERIC, "");
     return false;
 }
 
 bool S9xOpenGLDisplayDriver::opengl_defaults()
 {
-    npot = false;
-    using_pbos = false;
-
-    if (config->use_pbos)
-    {
-        if (version >= 15)
-            using_pbos = true;
-        else
-            config->use_pbos = false;
-    }
-
     using_glsl_shaders = false;
     glsl_shader = NULL;
 
@@ -330,13 +226,8 @@ bool S9xOpenGLDisplayDriver::opengl_defaults()
         }
     }
 
-    texture_width = 1024;
-    texture_height = 1024;
-
-    if (config->npot_textures)
-    {
-        npot = true;
-    }
+    texture_width = 256;
+    texture_height = 224;
 
     if (legacy)
     {
@@ -405,52 +296,25 @@ bool S9xOpenGLDisplayDriver::opengl_defaults()
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
-    if (config->use_pbos)
-    {
-        glGenBuffers(1, &pbo);
-        glGenTextures(1, &texmap);
+    glGenTextures(1, &texmap);
 
-        glBindTexture(GL_TEXTURE_2D, texmap);
-        glTexImage2D(GL_TEXTURE_2D,
-                     0,
-                     config->pbo_format == 16 ? GL_RGB565 : GL_RGBA,
-                     texture_width,
-                     texture_height,
-                     0,
-                     config->pbo_format == 16 ? GL_RGB : GL_BGRA,
-                     config->pbo_format == 16 ? GL_UNSIGNED_SHORT_5_6_5 : GL_UNSIGNED_BYTE,
-                     NULL);
-
-        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
-        glBufferData(GL_PIXEL_UNPACK_BUFFER,
-                     texture_width * texture_height * 3,
-                     NULL,
-                     GL_STREAM_DRAW);
-
-        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-    }
-    else
-    {
-        glGenTextures(1, &texmap);
-
-        glBindTexture(GL_TEXTURE_2D, texmap);
-        glTexImage2D(GL_TEXTURE_2D,
-                     0,
-                     GL_RGB565,
-                     texture_width,
-                     texture_height,
-                     0,
-                     GL_RGB,
-                     GL_UNSIGNED_SHORT_5_6_5,
-                     NULL);
-    }
+    glBindTexture(GL_TEXTURE_2D, texmap);
+    glTexImage2D(GL_TEXTURE_2D,
+                 0,
+                 GL_RGB565,
+                 texture_width,
+                 texture_height,
+                 0,
+                 GL_RGB,
+                 GL_UNSIGNED_SHORT_5_6_5,
+                 NULL);
 
     glClearColor(0.0, 0.0, 0.0, 0.0);
 
     return true;
 }
 
-void S9xOpenGLDisplayDriver::refresh(int width, int height)
+void S9xOpenGLDisplayDriver::refresh()
 {
     resize();
 }
@@ -459,8 +323,9 @@ void S9xOpenGLDisplayDriver::resize()
 {
     context->resize();
     context->swap_interval(config->sync_to_vblank);
-    output_window_width = context->width;
-    output_window_height = context->height;
+    Gtk::Allocation allocation = drawing_area->get_allocation();
+    output_window_width = allocation.get_width();
+    output_window_height = allocation.get_height();
 }
 
 bool S9xOpenGLDisplayDriver::create_context()
@@ -487,9 +352,6 @@ bool S9xOpenGLDisplayDriver::create_context()
 
     if (!context->create_context())
         return false;
-
-    output_window_width = context->width;
-    output_window_height = context->height;
 
     context->make_current();
 
@@ -536,9 +398,15 @@ int S9xOpenGLDisplayDriver::init()
 
 void S9xOpenGLDisplayDriver::swap_buffers()
 {
+    if (Settings.SkipFrames == THROTTLE_TIMER_FRAMESKIP || Settings.SkipFrames == THROTTLE_TIMER)
+    {
+        throttle.set_frame_rate(Settings.PAL ? PAL_PROGRESSIVE_FRAME_RATE : NTSC_PROGRESSIVE_FRAME_RATE);
+        throttle.wait_for_frame_and_rebase_time();
+    }
+
     context->swap_buffers();
 
-    if (config->use_glfinish && !config->use_sync_control)
+    if (config->reduce_input_lag)
     {
         usleep(0);
         glFinish();
@@ -556,12 +424,6 @@ void S9xOpenGLDisplayDriver::deinit()
         gtk_shader_parameters_dialog_close();
         glsl_shader->destroy();
         delete glsl_shader;
-    }
-
-    if (using_pbos)
-    {
-        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-        glDeleteBuffers(1, &pbo);
     }
 
     glDeleteTextures(1, &texmap);
@@ -589,9 +451,6 @@ int S9xOpenGLDisplayDriver::query_availability()
         }
     }
 #endif
-
-    if (gui_config->hw_accel == HWA_OPENGL)
-        gui_config->hw_accel = HWA_NONE;
 
     return 0;
 }

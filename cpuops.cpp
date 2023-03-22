@@ -1406,11 +1406,13 @@ bOP(70Slow, RelativeSlow,  CheckOverflow(), 0, CheckEmulation())
 static void Op82 (void)
 {
 	S9xSetPCBase(ICPU.ShiftedPB + RelativeLong(JUMP));
+	AddCycles(ONE_CYCLE);
 }
 
 static void Op82Slow (void)
 {
 	S9xSetPCBase(ICPU.ShiftedPB + RelativeLongSlow(JUMP));
+	AddCycles(ONE_CYCLE);
 }
 
 /* Flag Instructions ******************************************************* */
@@ -2847,6 +2849,7 @@ static void Op22E1 (void)
 	// Note: JSL is a new instruction,
 	// and so doesn't respect the emu-mode stack bounds.
 	uint32	addr = AbsoluteLong(JSR);
+	AddCycles(ONE_CYCLE);
 	PushB(Registers.PB);
 	PushW(Registers.PCw - 1);
 	Registers.SH = 1;
@@ -2856,6 +2859,7 @@ static void Op22E1 (void)
 static void Op22E0 (void)
 {
 	uint32	addr = AbsoluteLong(JSR);
+	AddCycles(ONE_CYCLE);
 	PushB(Registers.PB);
 	PushW(Registers.PCw - 1);
 	S9xSetPCBase(addr);
@@ -2864,6 +2868,7 @@ static void Op22E0 (void)
 static void Op22Slow (void)
 {
 	uint32	addr = AbsoluteLongSlow(JSR);
+	AddCycles(ONE_CYCLE);
 	PushB(Registers.PB);
 	PushW(Registers.PCw - 1);
 	if (CheckEmulation())

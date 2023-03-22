@@ -6,6 +6,8 @@
 
 #include <sys/stat.h>
 #include <errno.h>
+#include <string>
+#include <filesystem>
 
 #include "gtk_compat.h"
 #include "gtk_s9x.h"
@@ -14,181 +16,111 @@
 #include "snapshot.h"
 #include "cheats.h"
 
-static char buf[PATH_MAX];
+namespace fs = std::filesystem;
+using namespace std::literals;
 
-const char *S9xGetFilenameInc(const char *e, enum s9x_getdirtype dirtype)
+std::string S9xGetFilenameInc(std::string e, enum s9x_getdirtype dirtype)
 {
-    static char filename[PATH_MAX + 1];
-    char dir[_MAX_DIR + 1];
-    char drive[_MAX_DRIVE + 1];
-    char fname[_MAX_FNAME + 1];
-    char ext[_MAX_EXT + 1];
-    unsigned int i = 0;
-    struct stat buf;
-    const char *d;
+    fs::path rom_filename(Memory.ROMFilename);
 
-    _splitpath(Memory.ROMFilename, drive, dir, fname, ext);
-    d = S9xGetDirectory(dirtype);
+    fs::path filename_base(S9xGetDirectory(dirtype));
+    filename_base /= rom_filename.filename();
 
+    fs::path new_filename;
+
+    if (e[0] != '.')
+        e = "." + e;
+    int i = 0;
     do
     {
-        snprintf(filename, PATH_MAX, "%s" SLASH_STR "%s%03d%s", d, fname, i, e);
-        i++;
-    } while (stat(filename, &buf) == 0 && i != 0); /* Overflow? ...riiight :-) */
+        std::string new_extension = std::to_string(i);
+        while (new_extension.length() < 3)
+            new_extension = "0"s + new_extension;
+        new_extension += e;
 
-    return (filename);
+        new_filename = filename_base;
+        new_filename.replace_extension(new_extension);
+
+        i++;
+    } while (fs::exists(new_filename));
+
+    return new_filename;
 }
 
-const char *S9xGetDirectory(enum s9x_getdirtype dirtype)
+std::string S9xGetDirectory(enum s9x_getdirtype dirtype)
 {
-    static char path[PATH_MAX + 1];
+    std::string dirname;
 
     switch (dirtype)
     {
     case HOME_DIR:
-        snprintf(path, PATH_MAX + 1, "%s", get_config_dir().c_str());
+        dirname = get_config_dir();
         break;
 
     case SNAPSHOT_DIR:
-        snprintf(path, PATH_MAX + 1, "%s", gui_config->savestate_directory.c_str());
+        dirname = gui_config->savestate_directory;
         break;
 
     case PATCH_DIR:
-        snprintf(path, PATH_MAX + 1, "%s", gui_config->patch_directory.c_str());
+        dirname = gui_config->patch_directory;
         break;
 
     case CHEAT_DIR:
-        snprintf(path, PATH_MAX + 1, "%s", gui_config->cheat_directory.c_str());
+        dirname = gui_config->cheat_directory;
         break;
 
     case SRAM_DIR:
-        snprintf(path, PATH_MAX + 1, "%s", gui_config->sram_directory.c_str());
+        dirname = gui_config->sram_directory;
         break;
 
     case SCREENSHOT_DIR:
     case SPC_DIR:
-        snprintf(path, PATH_MAX + 1, "%s", gui_config->export_directory.c_str());
+        dirname = gui_config->export_directory;
         break;
 
     default:
-        path[0] = '\0';
+        dirname = "";
     }
 
     /* Check if directory exists, make it and/or set correct permissions */
-    if (dirtype != HOME_DIR && path[0] != '\0')
+    if (dirtype != HOME_DIR && dirname != "")
     {
-        struct stat file_info;
+        fs::path path(dirname);
 
-        if (stat(path, &file_info) == -1)
+        if (!fs::exists(path))
         {
-            mkdir(path, 0755);
-            chmod(path, 0755);
+            fs::create_directory(path);
         }
-        else if (!(file_info.st_mode & 0700))
-            chmod(path, file_info.st_mode | 0700);
+        else if ((fs::status(path).permissions() & fs::perms::owner_write) == fs::perms::none)
+        {
+            fs::permissions(path, fs::perms::owner_write, fs::perm_options::add);
+        }
     }
 
     /* Anything else, use ROM filename path */
-    if (path[0] == '\0')
+    if (dirname == "" && !Memory.ROMFilename.empty())
     {
-        char *loc;
+        fs::path path(Memory.ROMFilename);
 
-        strcpy(path, Memory.ROMFilename);
+        path.remove_filename();
 
-        loc = strrchr(path, SLASH_CHAR);
-
-        if (loc == NULL)
-        {
-            if (getcwd(path, PATH_MAX + 1) == NULL)
-            {
-                strcpy(path, getenv("HOME"));
-            }
-        }
+        if (!fs::is_directory(path))
+            dirname = fs::current_path();
         else
-        {
-            path[loc - path] = '\0';
-        }
+            dirname = path;
     }
 
-    return path;
-}
-
-const char *S9xGetFilename(const char *ex, enum s9x_getdirtype dirtype)
-{
-    static char filename[PATH_MAX + 1];
-    char dir[_MAX_DIR + 1];
-    char drive[_MAX_DRIVE + 1];
-    char fname[_MAX_FNAME + 1];
-    char ext[_MAX_EXT + 1];
-
-    _splitpath(Memory.ROMFilename, drive, dir, fname, ext);
-
-    snprintf(filename, sizeof(filename), "%s" SLASH_STR "%s%s",
-             S9xGetDirectory(dirtype), fname, ex);
-
-    return (filename);
-}
-
-const char *S9xBasename(const char *f)
-{
-    const char *p;
-
-    if ((p = strrchr(f, '/')) != NULL || (p = strrchr(f, '\\')) != NULL)
-        return (p + 1);
-
-    return f;
-}
-
-const char *S9xBasenameNoExt(const char *f)
-{
-    static char filename[PATH_MAX];
-    const char *base, *ext;
-
-    if (!(base = strrchr(f, SLASH_CHAR)))
-        base = f;
-    else
-        base += 1;
-
-    ext = strrchr(f, '.');
-
-    if (!ext)
-        snprintf(filename, PATH_MAX, "%s", base);
-    else
-    {
-        int len = ext - base;
-        strncpy(filename, base, len);
-        filename[len] = '\0';
-    }
-
-    return filename;
-}
-
-static int file_exists(const char *name)
-{
-    FILE *f = NULL;
-
-    f = fopen(name, "r");
-
-    if (!f)
-        return 0;
-    else
-    {
-        fclose(f);
-        return 1;
-    }
+    return dirname;
 }
 
 bool8 S9xOpenSnapshotFile(const char *filename, bool8 read_only, STREAM *file)
 {
-#ifdef ZLIB
     if (read_only)
     {
         if ((*file = OPEN_STREAM(filename, "rb")))
             return (true);
         else
-            fprintf(stderr,
-                    "Failed to open file stream for reading. (%s)\n",
-                    zError(errno));
+            fprintf(stderr, "Failed to open file stream for reading.\n");
     }
     else
     {
@@ -198,150 +130,93 @@ bool8 S9xOpenSnapshotFile(const char *filename, bool8 read_only, STREAM *file)
         }
         else
         {
-            fprintf(stderr,
-                    "Couldn't open stream with zlib. (%s)\n",
-                    zError(errno));
+            fprintf(stderr, "Couldn't open stream with zlib.\n");
         }
     }
 
-    fprintf(stderr, "zlib: Couldn't open snapshot file:\n%s\n", filename);
+    fprintf(stderr, "Couldn't open snapshot file:\n%s\n", filename);
 
-#else
-    char command[PATH_MAX];
-
-    if (read_only)
-    {
-        sprintf(command, "gzip -d <\"%s\"", filename);
-        if (*file = popen(command, "r"))
-            return (true);
-    }
-    else
-    {
-        sprintf(command, "gzip --best >\"%s\"", filename);
-        if (*file = popen(command, "wb"))
-            return (true);
-    }
-
-    fprintf(stderr, "gzip: Couldn't open snapshot file:\n%s\n", filename);
-
-#endif
-
-    return (false);
+    return false;
 }
 
 void S9xCloseSnapshotFile(STREAM file)
 {
-#ifdef ZLIB
     CLOSE_STREAM(file);
-#else
-    pclose(file);
-#endif
 }
 
 void S9xAutoSaveSRAM()
 {
-    Memory.SaveSRAM(S9xGetFilename(".srm", SRAM_DIR));
-    S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
+    Memory.SaveSRAM(S9xGetFilename(".srm", SRAM_DIR).c_str());
+    S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR).c_str());
 }
 
-void S9xLoadState(const char *filename)
+void S9xLoadState(std::string filename)
 {
-    S9xFreezeGame(S9xGetFilename(".undo", SNAPSHOT_DIR));
+    S9xFreezeGame(S9xGetFilename(".undo", SNAPSHOT_DIR).c_str());
 
-    if (S9xUnfreezeGame(filename))
+    if (S9xUnfreezeGame(filename.c_str()))
     {
-        sprintf(buf, "%s loaded", filename);
-        S9xSetInfoString(buf);
+        auto info_string = filename + " loaded"s;
+        S9xSetInfoString(info_string.c_str());
     }
     else
     {
-        fprintf(stderr, "Failed to load state file: %s\n", filename);
+        fprintf(stderr, "Failed to load state file: %s\n", filename.c_str());
     }
 }
 
-void S9xSaveState(const char *filename)
+void S9xSaveState(std::string filename)
 {
-    if (S9xFreezeGame(filename))
+    if (S9xFreezeGame(filename.c_str()))
     {
-        sprintf(buf, "%s saved", filename);
-        S9xSetInfoString(buf);
+        auto info_string = filename + " saved"s;
+        S9xSetInfoString(info_string.c_str());
     }
     else
     {
-        fprintf(stderr, "Couldn't save state file: %s\n", filename);
+        fprintf(stderr, "Couldn't save state file: %s\n", filename.c_str());
     }
+}
+
+static fs::path save_slot_path(int slot)
+{
+    std::string extension = std::to_string(slot);
+    while (extension.length() < 3)
+        extension = "0"s + extension;
+    fs::path path(S9xGetDirectory(SNAPSHOT_DIR));
+    path /= fs::path(Memory.ROMFilename).filename();
+    path.replace_extension(extension);
+    return path;
 }
 
 /* QuickSave/Load from S9x base controls.cpp */
 void S9xQuickSaveSlot(int slot)
 {
-    char def[PATH_MAX];
-    char filename[PATH_MAX];
-    char drive[_MAX_DRIVE];
-    char dir[_MAX_DIR];
-    char ext[_MAX_EXT];
-
     if (!gui_config->rom_loaded)
         return;
 
-    _splitpath(Memory.ROMFilename, drive, dir, def, ext);
-
-    snprintf(filename, PATH_MAX, "%s%s%s.%03d",
-             S9xGetDirectory(SNAPSHOT_DIR), SLASH_STR, def,
-             slot);
-
-    if (S9xFreezeGame(filename))
+    auto filename = save_slot_path(slot);
+    if (S9xFreezeGame(filename.c_str()))
     {
-        snprintf(buf, PATH_MAX, "%s.%03d saved", def, slot);
-
-        S9xSetInfoString(buf);
+        auto info_string = filename.filename().string() + " saved";
+        S9xSetInfoString(info_string.c_str());
     }
 }
 
 void S9xQuickLoadSlot(int slot)
 {
-    char def[PATH_MAX];
-    char filename[PATH_MAX];
-    char drive[_MAX_DRIVE];
-    char dir[_MAX_DIR];
-    char ext[_MAX_EXT];
-
     if (!gui_config->rom_loaded)
         return;
 
-    _splitpath(Memory.ROMFilename, drive, dir, def, ext);
+    auto filename = save_slot_path(slot);
 
-    snprintf(filename, PATH_MAX, "%s%s%s.%03d",
-             S9xGetDirectory(SNAPSHOT_DIR), SLASH_STR, def,
-             slot);
+    if (fs::exists(filename))
+        S9xFreezeGame(S9xGetFilename(".undo", SNAPSHOT_DIR).c_str());
 
-    if (file_exists(filename))
-        S9xFreezeGame(S9xGetFilename(".undo", SNAPSHOT_DIR));
-
-    if (S9xUnfreezeGame(filename))
+    if (S9xUnfreezeGame(filename.c_str()))
     {
-        snprintf(buf, PATH_MAX, "%s.%03d loaded", def, slot);
-        S9xSetInfoString(buf);
-        return;
-    }
-
-    static const char *digits = "t123456789";
-
-    _splitpath(Memory.ROMFilename, drive, dir, def, ext);
-
-    snprintf(filename, PATH_MAX, "%s%s%s.zs%c",
-             S9xGetDirectory(SNAPSHOT_DIR), SLASH_STR,
-             def, digits[slot]);
-
-    if (file_exists(filename))
-        S9xFreezeGame(S9xGetFilename(".undo", SNAPSHOT_DIR));
-
-    if (S9xUnfreezeGame(filename))
-    {
-        snprintf(buf, PATH_MAX,
-                 "Loaded ZSNES freeze file %s.zs%c",
-                 def, digits[slot]);
-        S9xSetInfoString(buf);
+        auto info_string = filename.filename().string() + " loaded";
+        S9xSetInfoString(info_string.c_str());
         return;
     }
 

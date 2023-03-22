@@ -4,13 +4,6 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include "snes9x.h"
-#include "memmap.h"
-#include "cpuops.h"
-#include "dma.h"
-#include "apu/apu.h"
-#include "fxemu.h"
-#include "snapshot.h"
 #ifdef DEBUGGER
 #include "debug.h"
 #include "missing.h"
@@ -23,11 +16,11 @@
 #define AVERAGE_565(el0, el1) (((el0) & (el1)) + ((((el0) ^ (el1)) & 0xF7DE) >> 1))
 
 /* Allows vertical overlap. We need this to avoid seams when threading */
-void EPX_16_unsafe (uint8 *srcPtr, 
-                    uint32 srcPitch, 
-                    uint8 *dstPtr, 
-                    uint32 dstPitch, 
-                    int width, 
+void EPX_16_unsafe (uint8 *srcPtr,
+                    int srcPitch,
+                    uint8 *dstPtr,
+                    int dstPitch,
+                    int width,
                     int height)
 {
     uint16  colorX, colorA, colorB, colorC, colorD;
@@ -120,9 +113,9 @@ void EPX_16_unsafe (uint8 *srcPtr,
 
 /* Blends with edge pixel instead of just using it directly. */
 void EPX_16_smooth_unsafe (uint8 *srcPtr,
-                           uint32 srcPitch,
+                           int srcPitch,
                            uint8 *dstPtr,
-                           uint32 dstPitch,
+                           int dstPitch,
                            int width,
                            int height)
 {

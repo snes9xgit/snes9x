@@ -64,7 +64,7 @@ bool COpenGL::Initialize(HWND hWnd)
 		PFD_SUPPORT_OPENGL |							// Format Must Support OpenGL
 		PFD_DOUBLEBUFFER,								// Must Support Double Buffering
 		PFD_TYPE_RGBA,									// Request An RGBA Format
-		16,												// Select Our Color Depth
+		32,												// Select Our Color Depth
 		0, 0, 0, 0, 0, 0,								// Color Bits Ignored
 		0,												// No Alpha Buffer
 		0,												// Shift Bit Ignored
@@ -84,8 +84,11 @@ bool COpenGL::Initialize(HWND hWnd)
 		return false;
 	}
 	if(!SetPixelFormat(hDC,pfdIndex,&pfd)) {
-		DeInitialize();
-		return false;
+		// SetPixelFormat can only be called once per window. Vulkan WSI will do
+		// this automatically and fall back if it's already been set. Since Vulkan
+		// has similar requirements, we don't need to set it any more anyway.
+		// DeInitialize();
+		// return false;
 	}
 	if(!(hRC=wglCreateContext(hDC))) {
 		DeInitialize();
@@ -101,7 +104,7 @@ bool COpenGL::Initialize(HWND hWnd)
 	LoadPBOFunctions();
 
 	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress( "wglSwapIntervalEXT" );
-	
+
 	glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnable(GL_BLEND);
@@ -110,7 +113,7 @@ bool COpenGL::Initialize(HWND hWnd)
 	glMatrixMode (GL_PROJECTION);
     glLoadIdentity ();
     glOrtho (0.0, 1.0, 0.0, 1.0, -1, 1);
-	
+
 	glVertexPointer(2, GL_FLOAT, 0, vertices);
 	glTexCoordPointer(2, GL_FLOAT, 0, texcoords);
 
@@ -144,8 +147,9 @@ void COpenGL::DeInitialize()
 		wglDeleteContext(hRC);
 		hRC = NULL;
 	}
-	if(hDC) {
-		ReleaseDC(hWnd,hDC);
+	if (hDC)
+	{
+		ReleaseDC(hWnd, hDC);
 		hDC = NULL;
 	}
 	hWnd = NULL;
@@ -365,6 +369,9 @@ void COpenGL::Render(SSurface Src)
     }
 
 	glFlush();
+
+	WinThrottleFramerate();
+
 	SwapBuffers(hDC);
 	if (GUI.ReduceInputLag)
 		glFinish();
@@ -388,6 +395,24 @@ void COpenGL::SetSwapInterval(int frames)
 {
     if (wglSwapIntervalEXT)
         wglSwapIntervalEXT(frames);
+}
+
+std::vector<ShaderParam>* COpenGL::GetShaderParameters(void)
+{
+	if (shader_type == OGL_SHADER_GLSL && initDone)
+	{
+		// GLSLParam currently equal ShaderParam, so no conversion is neccessary
+		return (std::vector<ShaderParam>*)&glslShader->param;
+	}
+
+	return nullptr;
+}
+
+std::function<void(const char *)> COpenGL::GetShaderParametersSaveFunction()
+{
+	return [&](const char *filename) {
+		this->glslShader->save(filename);
+	};
 }
 
 bool COpenGL::ApplyDisplayChanges(void)
@@ -431,7 +456,7 @@ bool COpenGL::SetFullscreen(bool fullscreen)
 		ChangeDisplaySettings(NULL,0);
 	}
 
-	
+
 
 	return true;
 }
@@ -495,7 +520,7 @@ bool COpenGL::LoadPBOFunctions()
 		if(glGenBuffers && glBindBuffer && glBufferData && glDeleteBuffers && glMapBuffer) {
 			pboFunctionsLoaded = true;
 		}
-		 
+
 	}
 	return pboFunctionsLoaded;
 }

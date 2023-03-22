@@ -91,7 +91,7 @@ bool8 SNES9X_OpenCart (NSURL *inRef)
 	Settings.ForcePAL            = (videoDetect      == kPALForce         );
 	Settings.ForceNTSC           = (videoDetect      == kNTSCForce        );
 
-	GFX.InfoString = NULL;
+	GFX.InfoString = "";
 	GFX.InfoStringTimeout = 0;
 
 	S9xResetSaveTimer(true);
@@ -148,7 +148,7 @@ bool8 SNES9X_OpenMultiCart (void)
 	Settings.ForcePAL      = (videoDetect      == kPALForce     );
 	Settings.ForceNTSC     = (videoDetect      == kNTSCForce    );
 
-	GFX.InfoString = NULL;
+	GFX.InfoString = "";
 	GFX.InfoStringTimeout = 0;
 
 	S9xResetSaveTimer(true);
@@ -192,18 +192,18 @@ bool8 SNES9X_OpenMultiCart (void)
 void SNES9X_LoadSRAM (void)
 {
 	if (cartOpen)
-		Memory.LoadSRAM(S9xGetFilename(".srm", SRAM_DIR));
+		Memory.LoadSRAM(S9xGetFilename(".srm", SRAM_DIR).c_str());
 }
 
 void SNES9X_SaveSRAM (void)
 {
-	const char	*sramFilename;
+	std::string	sramFilename;
 
 	if (cartOpen)
 	{
 		sramFilename = S9xGetFilename(".srm", SRAM_DIR);
-		Memory.SaveSRAM(sramFilename);
-		ChangeTypeAndCreator(sramFilename, 'SRAM', '~9X~');
+		Memory.SaveSRAM(sramFilename.c_str());
+		ChangeTypeAndCreator(sramFilename.c_str(), 'SRAM', '~9X~');
 	}
 }
 

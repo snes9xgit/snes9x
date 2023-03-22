@@ -6,11 +6,12 @@
 
 #ifndef __GTK_FILE_H
 #define __GTK_FILE_H
+#include <string>
 
-const char *S9xBasenameNoExt(const char *);
+std::string S9xBasenameNoExt(std::string);
 
-void S9xLoadState(const char *filename);
-void S9xSaveState(const char *filename);
+void S9xLoadState(std::string);
+void S9xSaveState(std::string);
 
 void S9xQuickSaveSlot(int slot);
 void S9xQuickLoadSlot(int slot);

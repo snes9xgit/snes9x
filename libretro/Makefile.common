@@ -35,7 +35,6 @@ SOURCES_CXX := $(CORE_DIR)/apu/apu.cpp \
 				 $(CORE_DIR)/fxemu.cpp \
 				 $(CORE_DIR)/gfx.cpp \
 				 $(CORE_DIR)/globals.cpp \
-				 $(CORE_DIR)/logger.cpp \
 				 $(CORE_DIR)/memmap.cpp \
 				 $(CORE_DIR)/obc1.cpp \
 				 $(CORE_DIR)/msu1.cpp \
@@ -61,5 +60,5 @@ SOURCES_CXX := $(CORE_DIR)/apu/apu.cpp \
 				 $(CORE_DIR)/sha256.cpp \
 				 $(CORE_DIR)/bml.cpp \
 				 $(CORE_DIR)/movie.cpp \
-				 $(CORE_DIR)/compat.cpp \
+				 $(CORE_DIR)/fscompat.cpp \
 				 $(CORE_DIR)/libretro/libretro.cpp

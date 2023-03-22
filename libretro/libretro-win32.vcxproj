@@ -221,7 +221,6 @@
     <ClInclude Include="..\getset.h" />
     <ClInclude Include="..\gfx.h" />
     <ClInclude Include="..\language.h" />
-    <ClInclude Include="..\logger.h" />
     <ClInclude Include="..\memmap.h" />
     <ClInclude Include="..\messages.h" />
     <ClInclude Include="..\missing.h" />
@@ -285,7 +284,6 @@
     <ClCompile Include="..\gfx.cpp" />
     <ClCompile Include="..\globals.cpp" />
     <ClCompile Include="..\loadzip.cpp" />
-    <ClCompile Include="..\logger.cpp" />
     <ClCompile Include="..\memmap.cpp" />
     <ClCompile Include="..\movie.cpp" />
     <ClCompile Include="..\msu1.cpp" />
@@ -313,6 +311,7 @@
     <ClCompile Include="..\tileimpl-n2x1.cpp" />
     <ClCompile Include="..\tileimpl-h2x1.cpp" />
     <ClCompile Include="libretro.cpp" />
+    <ClCompile Include="..\fscompat.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -35,3 +35,5 @@ NSString * const kApplyGameSpecificHacksPref = @"ApplyGameSpecificHacks";
 NSString * const kAllowInvalidVRAMAccessPref = @"AllowInvalidVRAMAccess";
 NSString * const kSeparateEchoBufferFromRAMPref = @"SeparateEchoBufferFromRAM";
 NSString * const kDisableSpriteLimitPref = @"DisableSpriteLimit";
+
+NSString * const kEnableCheatsPref = @"EnableCheats";

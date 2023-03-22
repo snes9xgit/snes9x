@@ -740,7 +740,6 @@ int S9xMovieCreate (const char *filename, uint8 controllers_mask, uint8 opts, co
 	}
 
 	Movie.ROMCRC32 = Memory.ROMCRC32;
-	strncpy(Movie.ROMName, Memory.RawROMName, 23);
 
 	write_movie_extrarominfo(fd, &Movie);
 

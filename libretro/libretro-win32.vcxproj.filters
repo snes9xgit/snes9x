@@ -81,9 +81,6 @@
     <ClInclude Include="..\language.h">
       <Filter>s9x-source</Filter>
     </ClInclude>
-    <ClInclude Include="..\logger.h">
-      <Filter>s9x-source</Filter>
-    </ClInclude>
     <ClInclude Include="..\memmap.h">
       <Filter>s9x-source</Filter>
     </ClInclude>
@@ -264,9 +261,6 @@
       <Filter>s9x-source</Filter>
     </ClCompile>
     <ClCompile Include="..\loadzip.cpp">
-      <Filter>s9x-source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\logger.cpp">
       <Filter>s9x-source</Filter>
     </ClCompile>
     <ClCompile Include="..\memmap.cpp">

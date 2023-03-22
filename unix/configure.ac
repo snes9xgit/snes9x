@@ -1,6 +1,6 @@
-AC_PREREQ([2.60])
-AC_INIT([Snes9x], [1.61], [], [snes9x])
-AC_REVISION([$Revision: 1.61 $])
+AC_PREREQ([2.71])
+AC_INIT([Snes9x],[1.62],[],[snes9x])
+AC_REVISION([$Revision: 1.62 $])
 
 AC_CONFIG_SRCDIR([unix.cpp])
 
@@ -23,8 +23,7 @@ AC_DEFUN([AC_S9X_COMPILER_FLAG],
 		OLD_CXXFLAGS="[$]CXXFLAGS"
 		CXXFLAGS="[$]OLD_CXXFLAGS $1"
 
-		AC_TRY_RUN(
-		[
+		AC_RUN_IFELSE([AC_LANG_SOURCE([[
 			int	foo;
 
 			int	main (int argc, char **argv)
@@ -37,8 +36,7 @@ AC_DEFUN([AC_S9X_COMPILER_FLAG],
 
 				return (argc);
 			}
-		],
-		[snes9x_cv_option_$2="yes"], [snes9x_cv_option_$2="no"])
+		]])],[snes9x_cv_option_$2="yes"],[snes9x_cv_option_$2="no"],[])
 	])
 
 	CXXFLAGS="[$]OLD_CXXFLAGS"
@@ -350,14 +348,12 @@ AC_CHECK_HEADERS([unistd.h sys/socket.h])
 if test "x$snes9x_have_stdint_h" = "x"; then
 	AC_MSG_CHECKING([whether the size of pointer is int])
 	
-	AC_TRY_RUN(
-	[
+	AC_RUN_IFELSE([AC_LANG_SOURCE([[
 		int main (void)
 		{
 			return (!(sizeof(void *) == sizeof(int)));
 		}
-	],
-	[snes9x_ptr_is_int="yes"], [snes9x_ptr_is_int="no"])
+	]])],[snes9x_ptr_is_int="yes"],[snes9x_ptr_is_int="no"],[])
 	
 	if test "x$snes9x_ptr_is_int" = "xyes"; then
 		AC_MSG_RESULT(yes)
@@ -376,8 +372,7 @@ AC_DEFUN([AC_S9X_CHECK_SAR],
 	OLD_CXXFLAGS="[$]CXXFLAGS"
 	CXXFLAGS="[$]OLD_CXXFLAGS $snes9x_have_stdint_h"
 
-	AC_TRY_RUN(
-	[
+	AC_RUN_IFELSE([AC_LANG_SOURCE([[
 		#ifdef HAVE_STDINT_H
 		#include <stdint.h>
 		typedef int8_t			int8;
@@ -403,8 +398,7 @@ AC_DEFUN([AC_S9X_CHECK_SAR],
 
 			return (i < 0 ? 0 : 1);
 		}
-	],
-	[snes9x_sar_$1="yes"], [snes9x_sar_$1="no"])
+	]])],[snes9x_sar_$1="yes"],[snes9x_sar_$1="no"],[])
 
 	CXXFLAGS="[$]OLD_CXXFLAGS"
 
@@ -581,4 +575,5 @@ EOF
 
 cat config.info
 
-AC_OUTPUT(Makefile)
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT

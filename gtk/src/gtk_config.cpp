@@ -8,10 +8,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <filesystem>
 
+#include "fmt/format.h"
 #include "gtk_config.h"
 #include "gtk_s9x.h"
-#include "gtk_sound.h"
 #include "gtk_display.h"
 #include "conffile.h"
 #include "cheats.h"
@@ -19,20 +20,7 @@
 #include "netplay.h"
 #include "controls.h"
 
-static bool directory_exists(std::string str)
-{
-    DIR *dir;
-
-    dir = opendir(str.c_str());
-
-    if (dir)
-    {
-        closedir(dir);
-        return true;
-    }
-
-    return false;
-}
+namespace fs = std::filesystem;
 
 std::string get_config_dir()
 {
@@ -45,19 +33,21 @@ std::string get_config_dir()
         return std::string{".snes9x"};
     }
 
-    std::string config;
-    std::string legacy;
+    fs::path config = env_home;
+    fs::path legacy = config;
 
     // If XDG_CONFIG_HOME is set, use that, otherwise guess default
     if (!env_xdg_config_home)
     {
-        (config += env_home) += "/.config/snes9x";
-        (legacy += env_home) += "/.snes9x";
+        config /= ".config/snes9x";
+        legacy /= ".snes9x";
     }
     else
-        config = std::string(env_xdg_config_home) + "/snes9x";
-
-    if (directory_exists(legacy) && !directory_exists(config))
+    {
+        config = env_xdg_config_home;
+        config /= "snes9x";
+    }
+    if (fs::exists(legacy) && !fs::exists(config))
         return legacy;
 
     return config;
@@ -75,6 +65,16 @@ void S9xParsePortConfig(ConfigFile &conf, int pass)
 Snes9xConfig::Snes9xConfig()
 {
     joystick_threshold = 40;
+    xrr_crtc_info = nullptr;
+    xrr_screen_resources = nullptr;
+}
+
+Snes9xConfig::~Snes9xConfig()
+{
+    if (xrr_crtc_info)
+        XRRFreeCrtcInfo(xrr_crtc_info);
+    if (xrr_screen_resources)
+        XRRFreeScreenResources(xrr_screen_resources);
 }
 
 int Snes9xConfig::load_defaults()
@@ -91,10 +91,11 @@ int Snes9xConfig::load_defaults()
     rom_loaded = false;
     multithreading = false;
     splash_image = SPLASH_IMAGE_STARFIELD;
-    hw_accel = 0;
+    display_driver = "opengl";
     allow_opengl = false;
     allow_xv = false;
     allow_xrandr = false;
+    auto_vrr = false;
     force_inverted_byte_order = false;
     hires_effect = HIRES_NORMAL;
     pause_emulation_on_switch = false;
@@ -148,16 +149,10 @@ int Snes9xConfig::load_defaults()
     rewind_buffer_size = 0;
     Settings.Rewinding = false;
 
-#ifdef USE_OPENGL
     sync_to_vblank = true;
-    use_pbos = true;
-    pbo_format = 0;
-    npot_textures = true;
     use_shaders = false;
     shader_filename.clear();
-    use_glfinish = false;
-    use_sync_control = false;
-#endif
+    reduce_input_lag = false;
 
     /* Snes9x Variables */
     Settings.MouseMaster = true;
@@ -177,7 +172,6 @@ int Snes9xConfig::load_defaults()
     Settings.StopEmulation = true;
     Settings.FrameTimeNTSC = 16639;
     Settings.FrameTimePAL = 20000;
-    Settings.SupportHiRes = true;
     Settings.FrameTime = Settings.FrameTimeNTSC;
     Settings.BlockInvalidVRAMAccessMaster = true;
     Settings.SoundSync = false;
@@ -239,8 +233,9 @@ int Snes9xConfig::save_config_file()
     outint("ScanlineFilterIntensity", scanline_filter_intensity, "0: 0%, 1: 12.5%, 2: 25%, 3: 50%, 4: 100%");
     outint("HiresEffect", hires_effect, "0: Downscale to low-res, 1: Leave as-is, 2: Upscale low-res screens");
     outint("NumberOfThreads", num_threads);
-    outint("HardwareAcceleration", hw_accel, "0: None, 1: OpenGL, 2: XVideo");
+    outstring("HardwareAcceleration", display_driver, "none, opengl, xv, vulkan");
     outint("SplashBackground", splash_image, "0: Black, 1: Color bars, 2: Pattern, 3: Blue, 4: Default");
+    outbool("AutoVRR", auto_vrr, "Automatically use the best settings for variable sync in fullscreen mode");
 
     section = "NTSC";
     outstring("Hue", std::to_string(ntsc_setup.hue));
@@ -256,17 +251,11 @@ int Snes9xConfig::save_config_file()
     outbool("MergeFields", ntsc_setup.merge_fields);
     outint("ScanlineIntensity", ntsc_scanline_intensity);
 
-#ifdef USE_OPENGL
     section = "OpenGL";
     outbool("VSync", sync_to_vblank);
-    outbool("glFinish", use_glfinish);
-    outbool("SyncControl", use_sync_control);
-    outbool("UseNonPowerOfTwoTextures", npot_textures);
+    outbool("ReduceInputLag", reduce_input_lag);
     outbool("EnableCustomShaders", use_shaders);
-    outbool("UsePixelBufferObjects", use_pbos);
-    outint("PixelBufferObjectBitDepth", pbo_format);
     outstring("ShaderFile", shader_filename);
-#endif
 
     section = "Sound";
     outbool("MuteSound", mute_sound);
@@ -403,36 +392,31 @@ int Snes9xConfig::save_config_file()
 
 int Snes9xConfig::load_config_file()
 {
-    struct stat file_info;
-    ConfigFile cf;
-
     load_defaults();
 
-    std::string path = get_config_dir();
+    fs::path path = get_config_dir();
 
-    if (stat(path.c_str(), &file_info))
+    if (!fs::exists(path))
     {
-        if (mkdir(path.c_str(), 0755))
+        if (!fs::create_directory(path))
         {
-            fprintf(stderr,
-                    _("Couldn't create config directory: %s\n"),
-                    path.c_str());
+            fmt::print(stderr, _("Couldn't create config directory: {}\n"), path.string());
             return -1;
         }
     }
     else
     {
-        if (!(file_info.st_mode & 0700))
-            chmod(path.c_str(), file_info.st_mode | 0700);
+        if ((fs::status(path).permissions() & fs::perms::owner_write) == fs::perms::none)
+            fs::permissions(path, fs::perms::owner_write, fs::perm_options::add);
     }
 
     path = get_config_file_name();
 
-    if (stat(path.c_str(), &file_info))
-    {
+    // Write an on-disk config file if none exists.
+    if (!fs::exists(path))
         save_config_file();
-    }
 
+    ConfigFile cf;
     if (!cf.LoadFile(path.c_str()))
         return -1;
 
@@ -472,9 +456,10 @@ int Snes9xConfig::load_config_file()
     inbool("ForceInvertedByteOrder", force_inverted_byte_order);
     inbool("Multithreading", multithreading);
     inint("NumberOfThreads", num_threads);
-    inint("HardwareAcceleration", hw_accel);
+    instr("HardwareAcceleration", display_driver);
     inbool("BilinearFilter", Settings.BilinearFilter);
     inint("SplashBackground", splash_image);
+    inbool("AutoVRR", auto_vrr);
 
     section = "NTSC";
     indouble("Hue", ntsc_setup.hue);
@@ -490,17 +475,11 @@ int Snes9xConfig::load_config_file()
     inbool("MergeFields", ntsc_setup.merge_fields);
     inint("ScanlineIntensity", ntsc_scanline_intensity);
 
-#ifdef USE_OPENGL
     section = "OpenGL";
     inbool("VSync", sync_to_vblank);
-    inbool("glFinish", use_glfinish);
-    inbool("SyncControl", use_sync_control);
-    inbool("UsePixelBufferObjects", use_pbos);
-    inint("PixelBufferObjectBitDepth", pbo_format);
-    inbool("UseNonPowerOfTwoTextures", npot_textures);
+    inbool("ReduceInputLag", reduce_input_lag);
     inbool("EnableCustomShaders", use_shaders);
     instr("ShaderFile", shader_filename);
-#endif
 
     section = "Sound";
     inbool("MuteSound", mute_sound);
@@ -663,11 +642,6 @@ int Snes9xConfig::load_config_file()
     if (scale_method >= NUM_FILTERS - 3)
         scale_method = 0;
 #endif /* USE_XBRZ */
-
-#ifdef USE_OPENGL
-    if (pbo_format != 32)
-        pbo_format = 16;
-#endif
 
     if (Settings.SkipFrames == THROTTLE_SOUND_SYNC)
         Settings.SoundSync = true;

@@ -5,6 +5,7 @@
 \*****************************************************************************/
 
 #include "gtk_sound_driver_sdl.h"
+#include "SDL_audio.h"
 #include "gtk_s9x.h"
 #include "apu/apu.h"
 #include "snes9x.h"
@@ -31,6 +32,8 @@ void S9xSDLSoundDriver::samples_available()
 
     mutex.lock();
     buffer.push(temp, snes_samples_available);
+    if (Settings.DynamicRateControl)
+        S9xUpdateDynamicRate(buffer.space_empty(), buffer.buffer_size);
     mutex.unlock();
 }
 

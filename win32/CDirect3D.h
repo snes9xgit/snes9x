@@ -81,14 +81,14 @@ private:
 public:
 	CDirect3D();
 	~CDirect3D();
-	bool Initialize(HWND hWnd);
-	void DeInitialize();
-	void Render(SSurface Src);
-	bool ChangeRenderSize(unsigned int newWidth, unsigned int newHeight);
-	bool ApplyDisplayChanges(void);
-	bool SetFullscreen(bool fullscreen);
-	void SetSnes9xColorFormat();
-	void EnumModes(std::vector<dMode> *modeVector);
+	bool Initialize(HWND hWnd) override;
+	void DeInitialize() override;
+	void Render(SSurface Src) override;
+	bool ChangeRenderSize(unsigned int newWidth, unsigned int newHeight) override;
+	bool ApplyDisplayChanges(void) override;
+	bool SetFullscreen(bool fullscreen) override;
+	void SetSnes9xColorFormat() override;
+	void EnumModes(std::vector<dMode> *modeVector) override;
 };
 
 #endif

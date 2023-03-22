@@ -5,6 +5,7 @@
 \*****************************************************************************/
 
 #include <cmath>
+#include <vector>
 #include "../snes9x.h"
 #include "apu.h"
 #include "../msu1.h"
@@ -36,10 +37,10 @@ namespace spc {
 static apu_callback callback = NULL;
 static void *callback_data = NULL;
 
-static bool8 sound_in_sync = TRUE;
-static bool8 sound_enabled = FALSE;
+static bool8 sound_in_sync = true;
+static bool8 sound_enabled = false;
 
-static Resampler *resampler = NULL;
+static Resampler resampler;
 
 static int32 reference_time;
 static uint32 remainder;
@@ -56,9 +57,8 @@ static double dynamic_rate_multiplier = 1.0;
 
 namespace msu {
 // Always 16-bit, Stereo; 1.5x dsp buffer to never overflow
-static Resampler *resampler = NULL;
-static int16 *resample_buffer = NULL;
-static int resample_buffer_size = 0;
+static Resampler resampler;
+static std::vector<int16_t> resampler_buffer;
 } // namespace msu
 
 static void UpdatePlaybackRate(void);
@@ -74,44 +74,32 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
     {
         memset(out, 0, sample_count << 1);
         S9xClearSamples();
+        spc::sound_in_sync = true;
+        return true;
     }
-    else
+
+    if (spc::resampler.avail() < sample_count)
     {
-        if (spc::resampler->avail() >= sample_count)
-        {
-            spc::resampler->read((short *)out, sample_count);
+        memset(out, 0, sample_count << 1);
+        return false;
+    }
 
-            if (Settings.MSU1)
-            {
-                if (msu::resampler->avail() >= sample_count)
-                {
-                    if (msu::resample_buffer_size < sample_count)
-                    {
-                        if (msu::resample_buffer)
-                            delete[] msu::resample_buffer;
-                        msu::resample_buffer = new int16[sample_count];
-                        msu::resample_buffer_size = sample_count;
-                    }
-                    msu::resampler->read(msu::resample_buffer,
-                                         sample_count);
-                    for (int i = 0; i < sample_count; ++i)
-                    {
-                        int32 mixed = (int32)out[i] + msu::resample_buffer[i];
-                        out[i] = ((int16)mixed != mixed) ? (mixed >> 31) ^ 0x7fff : mixed;
-                    }
-                }
-                else // should never occur
-                    assert(0);
-            }
-        }
-        else
+    spc::resampler.read((short *)out, sample_count);
+
+    if (Settings.MSU1)
+    {
+        if ((int)msu::resampler_buffer.size() < sample_count)
+            msu::resampler_buffer.resize(sample_count);
+
+        msu::resampler.read(msu::resampler_buffer.data(), sample_count);
+        for (int i = 0; i < sample_count; ++i)
         {
-            memset(out, 0, sample_count << 1);
-            return false;
+            int32 mixed = (int32)out[i] + msu::resampler_buffer[i];
+            out[i] = ((int16)mixed != mixed) ? (mixed >> 31) ^ 0x7fff : mixed;
         }
     }
 
-    if (spc::resampler->space_empty() >= 535 * 2 || !Settings.SoundSync ||
+    if (spc::resampler.space_empty() >= 535 * 2 || !Settings.SoundSync ||
         Settings.TurboMode || Settings.Mute)
         spc::sound_in_sync = true;
     else
@@ -122,7 +110,10 @@ bool8 S9xMixSamples(uint8 *dest, int sample_count)
 
 int S9xGetSampleCount(void)
 {
-    return spc::resampler->avail();
+	int avail = spc::resampler.avail();
+	if (Settings.MSU1) // return minimum available samples, otherwise we can run into the assert above due to partial sample generation in msu1
+		avail = Resampler::min(avail, msu::resampler.avail());
+    return avail;
 }
 
 void S9xLandSamples(void)
@@ -130,7 +121,7 @@ void S9xLandSamples(void)
     if (spc::callback != NULL)
         spc::callback(spc::callback_data);
 
-    if (spc::resampler->space_empty() >= 535 * 2 || !Settings.SoundSync ||
+    if (spc::resampler.space_empty() >= 535 * 2 || !Settings.SoundSync ||
         Settings.TurboMode || Settings.Mute)
         spc::sound_in_sync = true;
     else
@@ -139,15 +130,15 @@ void S9xLandSamples(void)
 
 void S9xClearSamples(void)
 {
-    spc::resampler->clear();
+    spc::resampler.clear();
     if (Settings.MSU1)
-        msu::resampler->clear();
+        msu::resampler.clear();
 }
 
 bool8 S9xSyncSound(void)
 {
     if (!Settings.SoundSync || spc::sound_in_sync)
-        return (TRUE);
+        return true;
 
     S9xLandSamples();
 
@@ -180,12 +171,12 @@ static void UpdatePlaybackRate(void)
         time_ratio *= spc::dynamic_rate_multiplier;
     }
 
-    spc::resampler->time_ratio(time_ratio);
+    spc::resampler.time_ratio(time_ratio);
 
     if (Settings.MSU1)
     {
-        time_ratio = (44100.0 / Settings.SoundPlaybackRate) * (Settings.SoundInputRate / 32040.0);
-        msu::resampler->time_ratio(time_ratio);
+        time_ratio = time_ratio * 44100 / 32040;
+        msu::resampler.time_ratio(time_ratio);
     }
 }
 
@@ -198,27 +189,11 @@ bool8 S9xInitSound(int buffer_ms)
     if (requested_buffer_size_samples > buffer_size_samples)
         buffer_size_samples = requested_buffer_size_samples;
 
-    if (!spc::resampler)
-    {
-        spc::resampler = new Resampler(buffer_size_samples);
-        if (!spc::resampler)
-            return (FALSE);
-    }
-    else
-        spc::resampler->resize(buffer_size_samples);
+    spc::resampler.resize(buffer_size_samples);
+    msu::resampler.resize(buffer_size_samples * 3 / 2);
 
-
-    if (!msu::resampler)
-    {
-        msu::resampler = new Resampler(buffer_size_samples * 3 / 2);
-        if (!msu::resampler)
-            return (FALSE);
-    }
-    else
-        msu::resampler->resize(buffer_size_samples * 3 / 2);
-
-    SNES::dsp.spc_dsp.set_output(spc::resampler);
-    S9xMSU1SetOutput(msu::resampler);
+    SNES::dsp.spc_dsp.set_output(&spc::resampler);
+    S9xMSU1SetOutput(&msu::resampler);
 
     UpdatePlaybackRate();
 
@@ -236,7 +211,7 @@ void S9xSetSoundMute(bool8 mute)
 {
     Settings.Mute = mute;
     if (!spc::sound_enabled)
-        Settings.Mute = TRUE;
+        Settings.Mute = true;
 }
 
 void S9xDumpSPCSnapshot(void)
@@ -246,33 +221,22 @@ void S9xDumpSPCSnapshot(void)
 
 static void SPCSnapshotCallback(void)
 {
-    S9xSPCDump(S9xGetFilenameInc((".spc"), SPC_DIR));
+    S9xSPCDump(S9xGetFilenameInc((".spc"), SPC_DIR).c_str());
     printf("Dumped key-on triggered spc snapshot.\n");
 }
 
 bool8 S9xInitAPU(void)
 {
-    spc::resampler = NULL;
-    msu::resampler = NULL;
+    spc::resampler.clear();
+    msu::resampler.clear();
 
-    return (TRUE);
+    return true;
 }
 
 void S9xDeinitAPU(void)
 {
-    if (spc::resampler)
-    {
-        delete spc::resampler;
-        spc::resampler = NULL;
-    }
-
-    if (msu::resampler)
-    {
-        delete msu::resampler;
-        msu::resampler = NULL;
-    }
-
     S9xMSU1DeInit();
+    msu::resampler_buffer.clear();
 }
 
 static inline int S9xAPUGetClock(int32 cpucycles)
@@ -306,10 +270,10 @@ void S9xAPUSetReferenceTime(int32 cpucycles)
 
 void S9xAPUExecute(void)
 {
-    SNES::smp.clock -= S9xAPUGetClock(CPU.Cycles);
-    SNES::smp.enter();
-
+    int cycles = S9xAPUGetClock(CPU.Cycles);
     spc::remainder = S9xAPUGetClockRemainder(CPU.Cycles);
+    SNES::smp.clock -= cycles;
+    SNES::smp.enter();
 
     S9xAPUSetReferenceTime(CPU.Cycles);
 }
@@ -319,7 +283,7 @@ void S9xAPUEndScanline(void)
     S9xAPUExecute();
     SNES::dsp.synchronize();
 
-    if (spc::resampler->space_filled() >= APU_SAMPLE_BLOCK || !spc::sound_in_sync)
+    if (spc::resampler.space_filled() >= APU_SAMPLE_BLOCK)
         S9xLandSamples();
 }
 
@@ -386,7 +350,6 @@ void S9xAPULoadState(uint8 *block)
 
     SNES::smp.load_state(&ptr);
     SNES::dsp.load_state(&ptr);
-
     spc::reference_time = SNES::get_le32(ptr);
     ptr += sizeof(int32);
     spc::remainder = SNES::get_le32(ptr);
@@ -515,9 +478,9 @@ bool8 S9xSPCDump(const char *filename)
 
     fs = fopen(filename, "wb");
     if (!fs)
-        return (FALSE);
+        return false;
 
-    S9xSetSoundMute(TRUE);
+    S9xSetSoundMute(true);
 
     SNES::smp.save_spc(buf);
 
@@ -530,7 +493,7 @@ bool8 S9xSPCDump(const char *filename)
 
     fclose(fs);
 
-    S9xSetSoundMute(FALSE);
+    S9xSetSoundMute(false);
 
-    return (TRUE);
+    return true;
 }

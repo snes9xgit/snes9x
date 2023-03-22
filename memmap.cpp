@@ -34,6 +34,7 @@
 #include "movie.h"
 #include "display.h"
 #include "sha256.h"
+#include "snapshot.h"
 
 #ifndef SET_UI_COLOR
 #define SET_UI_COLOR(r, g, b) ;
@@ -48,7 +49,6 @@
 #endif
 
 static bool8	stopMovie = TRUE;
-static char		LastRomFilename[PATH_MAX + 1] = "";
 
 // from NSRT
 static const char	*nintendo_licensees[] =
@@ -893,13 +893,6 @@ static void S9xDeinterleaveGD24 (int size, uint8 *base)
 
 bool8 CMemory::Init (void)
 {
-	// TODO: If these change size, check other locations in the code that also
-	// have the fixed size. In the future, make this a static allocation.
-    RAM	 = (uint8 *) malloc(0x20000);
-    SRAM = (uint8 *) malloc(0x80000);
-    VRAM = (uint8 *) malloc(0x10000);
-    ROM  = (uint8 *) malloc(MAX_ROM_SIZE + 0x200 + 0x8000);
-
 	IPPU.TileCache[TILE_2BIT]       = (uint8 *) malloc(MAX_2BIT_TILES * 64);
 	IPPU.TileCache[TILE_4BIT]       = (uint8 *) malloc(MAX_4BIT_TILES * 64);
 	IPPU.TileCache[TILE_8BIT]       = (uint8 *) malloc(MAX_8BIT_TILES * 64);
@@ -916,8 +909,7 @@ bool8 CMemory::Init (void)
 	IPPU.TileCached[TILE_4BIT_EVEN] = (uint8 *) malloc(MAX_4BIT_TILES);
 	IPPU.TileCached[TILE_4BIT_ODD]  = (uint8 *) malloc(MAX_4BIT_TILES);
 
-	if (!RAM || !SRAM || !VRAM || !ROM ||
-		!IPPU.TileCache[TILE_2BIT]       ||
+	if (!IPPU.TileCache[TILE_2BIT]       ||
 		!IPPU.TileCache[TILE_4BIT]       ||
 		!IPPU.TileCache[TILE_8BIT]       ||
 		!IPPU.TileCache[TILE_2BIT_EVEN]  ||
@@ -936,10 +928,10 @@ bool8 CMemory::Init (void)
 		return (FALSE);
     }
 
-	memset(RAM, 0,  0x20000);
-	memset(SRAM, 0, 0x80000);
-	memset(VRAM, 0, 0x10000);
-	memset(ROM, 0,  MAX_ROM_SIZE + 0x200 + 0x8000);
+	memset(RAM, 0,  sizeof(RAM));
+	memset(SRAM, 0, sizeof(SRAM));
+	memset(VRAM, 0, sizeof(VRAM));
+	memset(ROMStorage, 0,  sizeof(ROMStorage));
 
 	memset(IPPU.TileCache[TILE_2BIT], 0,       MAX_2BIT_TILES * 64);
 	memset(IPPU.TileCache[TILE_4BIT], 0,       MAX_4BIT_TILES * 64);
@@ -960,12 +952,12 @@ bool8 CMemory::Init (void)
 	// FillRAM uses first 32K of ROM image area, otherwise space just
 	// wasted. Might be read by the SuperFX code.
 
-	FillRAM = ROM;
+	FillRAM = &ROMStorage[0];
 
 	// Add 0x8000 to ROM image pointer to stop SuperFX code accessing
 	// unallocated memory (can cause crash on some ports).
 
-	ROM += 0x8000;
+	ROM = &ROMStorage[0x8000];
 
 	C4RAM   = ROM + 0x400000 + 8192 * 8; // C4
 	OBC1RAM = ROM + 0x400000; // OBC1
@@ -985,30 +977,7 @@ bool8 CMemory::Init (void)
 
 void CMemory::Deinit (void)
 {
-	if (RAM)
-	{
-		free(RAM);
-		RAM = NULL;
-	}
-
-	if (SRAM)
-	{
-		free(SRAM);
-		SRAM = NULL;
-	}
-
-	if (VRAM)
-	{
-		free(VRAM);
-		VRAM = NULL;
-	}
-
-	if (ROM)
-	{
-		ROM -= 0x8000;
-		free(ROM);
-		ROM = NULL;
-	}
+	ROM = NULL;
 
 	for (int t = 0; t < 7; t++)
 	{
@@ -1024,9 +993,6 @@ void CMemory::Deinit (void)
 			IPPU.TileCached[t] = NULL;
 		}
 	}
-
-	Safe(NULL);
-	SafeANK(NULL);
 }
 
 // file management and ROM detection
@@ -1250,27 +1216,15 @@ uint32 CMemory::FileLoader (uint8 *buffer, const char *filename, uint32 maxsize)
 	// ** Memory.ROMFilename
 
 	uint32	totalSize = 0;
-    char	fname[PATH_MAX + 1];
-    char	drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], name[_MAX_FNAME + 1], exts[_MAX_EXT + 1];
-	char	*ext;
-
-#if defined(__WIN32__) || defined(__MACOSX__)
-	ext = &exts[1];
-#else
-	ext = &exts[0];
-#endif
-
 	memset(NSRTHeader, 0, sizeof(NSRTHeader));
 	HeaderCount = 0;
 
-	_splitpath(filename, drive, dir, name, exts);
-	_makepath(fname, drive, dir, name, exts);
+	auto path = splitpath(filename);
 
 	int	nFormat = FILE_DEFAULT;
-	if (strcasecmp(ext, "zip") == 0 || strcasecmp(ext, "msu1") == 0)
+	if (path.ext_is(".zip") || path.ext_is(".msu1"))
 		nFormat = FILE_ZIP;
-	else
-	if (strcasecmp(ext, "jma") == 0)
+	else if (path.ext_is(".jma"))
 		nFormat = FILE_JMA;
 
 	switch (nFormat)
@@ -1278,13 +1232,13 @@ uint32 CMemory::FileLoader (uint8 *buffer, const char *filename, uint32 maxsize)
 		case FILE_ZIP:
 		{
 		#ifdef UNZIP_SUPPORT
-			if (!LoadZip(fname, &totalSize, buffer))
+			if (!LoadZip(filename, &totalSize, buffer))
 			{
 			 	S9xMessage(S9X_ERROR, S9X_ROM_INFO, "Invalid Zip archive.");
 				return (0);
 			}
 
-			strcpy(ROMFilename, fname);
+			ROMFilename = filename;
 		#else
 			S9xMessage(S9X_ERROR, S9X_ROM_INFO, "This binary was not created with Zip support.");
 			return (0);
@@ -1295,7 +1249,7 @@ uint32 CMemory::FileLoader (uint8 *buffer, const char *filename, uint32 maxsize)
 		case FILE_JMA:
 		{
 		#ifdef JMA_SUPPORT
-			size_t	size = load_jma_file(fname, buffer);
+			size_t	size = load_jma_file(filename, buffer);
 			if (!size)
 			{
 			 	S9xMessage(S9X_ERROR, S9X_ROM_INFO, "Invalid JMA archive.");
@@ -1304,7 +1258,7 @@ uint32 CMemory::FileLoader (uint8 *buffer, const char *filename, uint32 maxsize)
 
 			totalSize = HeaderRemove(size, buffer);
 
-			strcpy(ROMFilename, fname);
+			ROMFilename = filename;
 		#else
 			S9xMessage(S9X_ERROR, S9X_ROM_INFO, "This binary was not created with JMA support.");
 			return (0);
@@ -1315,58 +1269,26 @@ uint32 CMemory::FileLoader (uint8 *buffer, const char *filename, uint32 maxsize)
 		case FILE_DEFAULT:
 		default:
 		{
-			STREAM	fp = OPEN_STREAM(fname, "rb");
+			STREAM	fp = OPEN_STREAM(filename, "rb");
 			if (!fp)
 				return (0);
 
-			strcpy(ROMFilename, fname);
+			ROMFilename = filename;
 
-			int 	len  = 0;
 			uint32	size = 0;
-			bool8	more = FALSE;
-			uint8	*ptr = buffer;
 
-			do
-			{
-				size = READ_STREAM(ptr, maxsize + 0x200 - (ptr - buffer), fp);
-				CLOSE_STREAM(fp);
+			size = READ_STREAM(buffer, maxsize + 0x200, fp);
+			CLOSE_STREAM(fp);
 
-				size = HeaderRemove(size, ptr);
-				totalSize += size;
-				ptr += size;
-
-				// check for multi file roms
-				if (ptr - buffer < maxsize + 0x200 &&
-					(isdigit(ext[0]) && ext[1] == 0 && ext[0] < '9'))
-				{
-					more = TRUE;
-					ext[0]++;
-					_makepath(fname, drive, dir, name, exts);
-				}
-				else
-				if (ptr - buffer < maxsize + 0x200 &&
-					(((len = strlen(name)) == 7 || len == 8) &&
-					strncasecmp(name, "sf", 2) == 0 &&
-					isdigit(name[2]) && isdigit(name[3]) && isdigit(name[4]) && isdigit(name[5]) &&
-					isalpha(name[len - 1])))
-				{
-					more = TRUE;
-					name[len - 1]++;
-					_makepath(fname, drive, dir, name, exts);
-				}
-				else
-					more = FALSE;
-
-			}	while (more && (fp = OPEN_STREAM(fname, "rb")) != NULL);
+			totalSize = HeaderRemove(size, buffer);
 
 			break;
 		}
 	}
 
-    if (HeaderCount == 0)
+	if (HeaderCount == 0)
 		S9xMessage(S9X_INFO, S9X_HEADERS_INFO, "No ROM file header found.");
-    else
-    if (HeaderCount == 1)
+	else if (HeaderCount == 1)
 		S9xMessage(S9X_INFO, S9X_HEADERS_INFO, "Found ROM file header (and ignored it).");
 	else
 		S9xMessage(S9X_INFO, S9X_HEADERS_INFO, "Found multiple ROM file headers (and ignored them).");
@@ -1379,7 +1301,7 @@ bool8 CMemory::LoadROMMem (const uint8 *source, uint32 sourceSize)
     if(!source || sourceSize > MAX_ROM_SIZE)
         return FALSE;
 
-    strcpy(ROMFilename,"MemoryROM");
+    ROMFilename = "MemoryROM";
 
     do
     {
@@ -1396,6 +1318,8 @@ bool8 CMemory::LoadROM (const char *filename)
 {
     if(!filename || !*filename)
         return FALSE;
+
+    S9xResetSaveTimer(FALSE); // reset oops timer here so that .oops file has rom name of previous rom
 
     int32 totalFileSize;
 
@@ -1451,6 +1375,10 @@ bool8 CMemory::LoadROMInt (int32 ROMfillSize)
 	CalculatedSize = ((ROMfillSize + 0x1fff) / 0x2000) * 0x2000;
 
 	if (CalculatedSize > 0x400000 &&
+		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x1320 && // exclude SuperFX
+		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x1420 &&
+		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x1520 &&
+		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x1A20 &&
 		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x3423 && // exclude SA-1
 		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x3523 &&
 		(ROM[0x7fd5] + (ROM[0x7fd6] << 8)) != 0x4332 && // exclude S-DD1
@@ -1568,16 +1496,14 @@ bool8 CMemory::LoadROMInt (int32 ROMfillSize)
 			LoROM = FALSE;
 			HiROM = TRUE;
 		}
-		else
-		if (Settings.ForceInterleaveGD24 && CalculatedSize == 0x300000)
+		else if (Settings.ForceInterleaveGD24 && CalculatedSize == 0x300000)
 		{
 			bool8	t = LoROM;
 			LoROM = HiROM;
 			HiROM = t;
 			S9xDeinterleaveGD24(CalculatedSize, ROM);
 		}
-		else
-		if (Settings.ForceInterleaved2)
+		else if (Settings.ForceInterleaved2)
 			S9xDeinterleaveType2(CalculatedSize, ROM);
 		else
 		{
@@ -1616,12 +1542,6 @@ bool8 CMemory::LoadROMInt (int32 ROMfillSize)
 		}
 	}
 
-	if (strncmp(LastRomFilename, ROMFilename, PATH_MAX + 1))
-	{
-		strncpy(LastRomFilename, ROMFilename, PATH_MAX + 1);
-		LastRomFilename[PATH_MAX] = 0;
-	}
-
 	memset(&SNESGameFixes, 0, sizeof(SNESGameFixes));
 	SNESGameFixes.SRAMInitialValue = 0x60;
 
@@ -1630,7 +1550,7 @@ bool8 CMemory::LoadROMInt (int32 ROMfillSize)
 	S9xReset();
 
 	S9xDeleteCheats();
-	S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
+	S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR).c_str());
 
     return (TRUE);
 }
@@ -1672,6 +1592,8 @@ bool8 CMemory::LoadMultiCartMem (const uint8 *sourceA, uint32 sourceASize,
 
 bool8 CMemory::LoadMultiCart (const char *cartA, const char *cartB)
 {
+    S9xResetSaveTimer(FALSE); // reset oops timer here so that .oops file has rom name of previous rom
+
     memset(ROM, 0, MAX_ROM_SIZE);
 	memset(&Multi, 0, sizeof(Multi));
 
@@ -1711,7 +1633,7 @@ bool8 CMemory::LoadMultiCartInt ()
 
 	if (Multi.cartSizeA)
 	{
-        if (is_SufamiTurbo_Cart(ROM + Multi.cartOffsetA, Multi.cartSizeA))
+		if (is_SufamiTurbo_Cart(ROM + Multi.cartOffsetA, Multi.cartSizeA))
 			Multi.cartType = 4;
 		else
 		if (is_BSCartSA1_BIOS(ROM + Multi.cartOffsetA, Multi.cartSizeA))
@@ -1739,13 +1661,9 @@ bool8 CMemory::LoadMultiCartInt ()
 
         FILE	*fp;
 	    size_t	size;
-	    char	path[PATH_MAX + 1];
+		std::string path = S9xGetDirectory(BIOS_DIR) + SLASH_STR + "STBIOS.bin";
 
-	    strcpy(path, S9xGetDirectory(BIOS_DIR));
-	    strcat(path, SLASH_STR);
-	    strcat(path, "STBIOS.bin");
-
-	    fp = fopen(path, "rb");
+	    fp = fopen(path.c_str(), "rb");
 	    if (fp)
 	    {
 		    size = fread((void *) ROM, 1, 0x40000, fp);
@@ -1756,7 +1674,7 @@ bool8 CMemory::LoadMultiCartInt ()
 	    else
 		    return (FALSE);
 
-        strcpy(ROMFilename, path);
+        ROMFilename = path;
     }
 
 	switch (Multi.cartType)
@@ -1780,11 +1698,10 @@ bool8 CMemory::LoadMultiCartInt ()
 		return (FALSE);
 	}
 
-    if (Multi.cartSizeA)
-		strcpy(ROMFilename, Multi.fileNameA);
-	else
-	if (Multi.cartSizeB)
-		strcpy(ROMFilename, Multi.fileNameB);
+	if (Multi.cartSizeA)
+		ROMFilename = Multi.fileNameA;
+	else if (Multi.cartSizeB)
+		ROMFilename = Multi.fileNameB;
 
 	memset(&SNESGameFixes, 0, sizeof(SNESGameFixes));
 	SNESGameFixes.SRAMInitialValue = 0x60;
@@ -1794,7 +1711,7 @@ bool8 CMemory::LoadMultiCartInt ()
 	S9xReset();
 
 	S9xDeleteCheats();
-	S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
+	S9xLoadCheatFile(S9xGetFilename(".cht", CHEAT_DIR).c_str());
 
 	return (TRUE);
 }
@@ -1884,7 +1801,7 @@ bool8 CMemory::LoadSRTC (void)
 {
 	FILE	*fp;
 
-	fp = fopen(S9xGetFilename(".rtc", SRAM_DIR), "rb");
+	fp = fopen(S9xGetFilename(".rtc", SRAM_DIR).c_str(), "rb");
 	if (!fp)
 		return (FALSE);
 
@@ -1899,7 +1816,7 @@ bool8 CMemory::SaveSRTC (void)
 {
 	FILE	*fp;
 
-	fp = fopen(S9xGetFilename(".rtc", SRAM_DIR), "wb");
+	fp = fopen(S9xGetFilename(".rtc", SRAM_DIR).c_str(), "wb");
 	if (!fp)
 		return (FALSE);
 
@@ -1925,22 +1842,14 @@ bool8 CMemory::LoadSRAM (const char *filename)
 {
 	FILE	*file;
 	int		size, len;
-	char	sramName[PATH_MAX + 1];
-
-	strcpy(sramName, filename);
 
 	ClearSRAM();
 
 	if (Multi.cartType && Multi.sramSizeB)
 	{
-		char	temp[PATH_MAX + 1];
-
-		strcpy(temp, ROMFilename);
-		strcpy(ROMFilename, Multi.fileNameB);
-
 		size = (1 << (Multi.sramSizeB + 3)) * 128;
 
-		file = fopen(S9xGetFilename(".srm", SRAM_DIR), "rb");
+		file = fopen(S9xGetFilename(Multi.fileNameB, ".srm", SRAM_DIR).c_str(), "rb");
 		if (file)
 		{
 			len = fread((char *) Multi.sramB, 1, 0x10000, file);
@@ -1948,8 +1857,6 @@ bool8 CMemory::LoadSRAM (const char *filename)
 			if (len - size == 512)
 				memmove(Multi.sramB, Multi.sramB + 512, size);
 		}
-
-		strcpy(ROMFilename, temp);
 	}
 
 	size = SRAMSize ? (1 << (SRAMSize + 3)) * 128 : 0;
@@ -1960,7 +1867,7 @@ bool8 CMemory::LoadSRAM (const char *filename)
 
 	if (size)
 	{
-		file = fopen(sramName, "rb");
+		file = fopen(filename, "rb");
 		if (file)
 		{
 			len = fread((char *) SRAM, 1, size, file);
@@ -1973,18 +1880,13 @@ bool8 CMemory::LoadSRAM (const char *filename)
 
 			return (TRUE);
 		}
-		else
-		if (Settings.BS && !Settings.BSXItself)
+		else if (Settings.BS && !Settings.BSXItself)
 		{
 			// The BS game's SRAM was not found
 			// Try to read BS-X.srm instead
-			char	path[PATH_MAX + 1];
+			std::string path = S9xGetDirectory(SRAM_DIR) + SLASH_STR + "BS-X.srm";
 
-			strcpy(path, S9xGetDirectory(SRAM_DIR));
-			strcat(path, SLASH_STR);
-			strcat(path, "BS-X.srm");
-
-			file = fopen(path, "rb");
+			file = fopen(path.c_str(), "rb");
 			if (file)
 			{
 				len = fread((char *) SRAM, 1, size, file);
@@ -2018,29 +1920,19 @@ bool8 CMemory::SaveSRAM (const char *filename)
 
 	FILE	*file;
 	int		size;
-	char	sramName[PATH_MAX + 1];
-
-	strcpy(sramName, filename);
 
 	if (Multi.cartType && Multi.sramSizeB)
 	{
-		char	name[PATH_MAX + 1], temp[PATH_MAX + 1];
-
-		strcpy(temp, ROMFilename);
-		strcpy(ROMFilename, Multi.fileNameB);
-		strcpy(name, S9xGetFilename(".srm", SRAM_DIR));
-
+		std::string name = S9xGetFilename(Multi.fileNameB, ".srm", SRAM_DIR);
 		size = (1 << (Multi.sramSizeB + 3)) * 128;
 
-		file = fopen(name, "wb");
+		file = fopen(name.c_str(), "wb");
 		if (file)
 		{
 			if (!fwrite((char *) Multi.sramB, size, 1, file))
 				printf ("Couldn't write to subcart SRAM file.\n");
 			fclose(file);
 		}
-
-		strcpy(ROMFilename, temp);
     }
 
     size = SRAMSize ? (1 << (SRAMSize + 3)) * 128 : 0;
@@ -2051,7 +1943,7 @@ bool8 CMemory::SaveSRAM (const char *filename)
 
 	if (size)
 	{
-		file = fopen(sramName, "wb");
+		file = fopen(filename, "wb");
 		if (file)
 		{
 			if (!fwrite((char *) SRAM, size, 1, file))
@@ -2074,13 +1966,11 @@ bool8 CMemory::SaveMPAK (const char *filename)
 	{
 		FILE	*file;
 		int		size;
-		char	mempakName[PATH_MAX + 1];
 
-		strcpy(mempakName, filename);
 		size = 0x100000;
 		if (size)
 		{
-			file = fopen(mempakName, "wb");
+			file = fopen(filename, "wb");
 			if (file)
 			{
 				size_t	written;
@@ -2102,87 +1992,6 @@ static uint32 caCRC32 (uint8 *array, uint32 size, uint32 crc32)
 		crc32 = ((crc32 >> 8) & 0x00FFFFFF) ^ crc32Table[(crc32 ^ array[i]) & 0xFF];
 
 	return (~crc32);
-}
-
-char * CMemory::Safe (const char *s)
-{
-	static char	*safe = NULL;
-	static int	safe_len = 0;
-
-	if (s == NULL)
-	{
-		if (safe)
-		{
-			free(safe);
-			safe = NULL;
-		}
-
-		return (NULL);
-	}
-
-	int	len = strlen(s);
-	if (!safe || len + 1 > safe_len)
-	{
-		if (safe)
-			free(safe);
-
-		safe_len = len + 1;
-		safe = (char *) malloc(safe_len);
-	}
-
-	for (int i = 0; i < len; i++)
-	{
-		if (s[i] >= 32 && s[i] < 127)
-			safe[i] = s[i];
-		else
-			safe[i] = '_';
-	}
-
-	safe[len] = 0;
-
-	return (safe);
-}
-
-char * CMemory::SafeANK (const char *s)
-{
-	static char	*safe = NULL;
-	static int	safe_len = 0;
-
-	if (s == NULL)
-	{
-		if (safe)
-		{
-			free(safe);
-			safe = NULL;
-		}
-
-		return (NULL);
-	}
-
-	int	len = strlen(s);
-	if (!safe || len + 1 > safe_len)
-	{
-		if (safe)
-			free(safe);
-
-		safe_len = len + 1;
-		safe = (char *) malloc(safe_len);
-	}
-
-	for (int i = 0; i < len; i++)
-	{
-		if (s[i] >= 32 && s[i] < 127) // ASCII
-			safe [i] = s[i];
-		else
-		if (ROMRegion == 0 && ((uint8) s[i] >= 0xa0 && (uint8) s[i] < 0xe0)) // JIS X 201 - Katakana
-			safe [i] = s[i];
-		else
-			safe [i] = '_';
-	}
-
-	safe [len] = 0;
-
-	return (safe);
 }
 
 void CMemory::ParseSNESHeader (uint8 *RomHeader)
@@ -2275,13 +2084,11 @@ void CMemory::InitROM (void)
 		else
 			Settings.DSP = 1; // DSP1
 	}
-	else
-	if (ROMType == 0x05)
+	else if (ROMType == 0x05)
 	{
 		if (ROMSpeed == 0x20)
 			Settings.DSP = 2; // DSP2
-		else
-		if (ROMSpeed == 0x30 && RomHeader[0x2a] == 0xb2)
+		else if (ROMSpeed == 0x30 && RomHeader[0x2a] == 0xb2)
 			Settings.DSP = 3; // DSP3
 		else
 			Settings.DSP = 1; // DSP1
@@ -2295,8 +2102,7 @@ void CMemory::InitROM (void)
 				DSP0.boundary = 0x7000;
 				DSP0.maptype = M_DSP1_HIROM;
 			}
-			else
-			if (CalculatedSize > 0x100000)
+			else if (CalculatedSize > 0x100000)
 			{
 				DSP0.boundary = 0x4000;
 				DSP0.maptype = M_DSP1_LOROM_L;
@@ -2435,65 +2241,53 @@ void CMemory::InitROM (void)
 	CalculatedChecksum = 0;
 
 	if (HiROM)
-    {
+	{
 		if (Settings.BS)
 			/* Do nothing */;
-		else
-		if (Settings.SPC7110)
+		else if (Settings.SPC7110)
 			Map_SPC7110HiROMMap();
-		else
-		if (ExtendedFormat != NOPE)
+		else if (ExtendedFormat != NOPE)
 			Map_ExtendedHiROMMap();
-		else
-		if (Multi.cartType == 3)
+		else if (Multi.cartType == 3)
 			Map_BSCartHiROMMap();
 		else
 			Map_HiROMMap();
-    }
-    else
-    {
+	}
+	else
+	{
 		if (Settings.BS)
 			/* Do nothing */;
-		else
-		if (Settings.SETA && Settings.SETA != ST_018)
+		else if (Settings.SETA && Settings.SETA != ST_018)
 			Map_SetaDSPLoROMMap();
-		else
-		if (Settings.SuperFX)
+		else if (Settings.SuperFX)
 			Map_SuperFXLoROMMap();
-		else
-		if (Settings.SA1)
+		else if (Settings.SA1)
 		{
 			if (Multi.cartType == 5)
 				Map_BSSA1LoROMMap();
 			else
 				Map_SA1LoROMMap();
 		}
-		else
-		if (Settings.SDD1)
+		else if (Settings.SDD1)
 			Map_SDD1LoROMMap();
-		else
-		if (ExtendedFormat != NOPE)
+		else if (ExtendedFormat != NOPE)
 			Map_JumboLoROMMap();
 		else
 		if (strncmp(ROMName, "WANDERERS FROM YS", 17) == 0)
 			Map_NoMAD1LoROMMap();
-		else
-		if (Multi.cartType == 3)
+		else if (Multi.cartType == 3)
 			if (strncmp(ROMName, "SOUND NOVEL-TCOOL", 17) == 0 ||
 				strncmp(ROMName, "DERBY STALLION 96", 17) == 0)
 				Map_BSCartLoROMMap(1);
 			else
 				Map_BSCartLoROMMap(0);
-		else
-		if (strncmp(ROMName, "SOUND NOVEL-TCOOL", 17) == 0 ||
+		else if (strncmp(ROMName, "SOUND NOVEL-TCOOL", 17) == 0 ||
 			strncmp(ROMName, "DERBY STALLION 96", 17) == 0)
 			Map_ROM24MBSLoROMMap();
-		else
-		if (strncmp(ROMName, "THOROUGHBRED BREEDER3", 21) == 0 ||
+		else if (strncmp(ROMName, "THOROUGHBRED BREEDER3", 21) == 0 ||
 			strncmp(ROMName, "RPG-TCOOL 2", 11) == 0)
 			Map_SRAM512KLoROMMap();
-		else
-		if (strncmp(ROMName, "ADD-ON BASE CASSETE", 19) == 0)
+		else if (strncmp(ROMName, "ADD-ON BASE CASSETE", 19) == 0)
 		{
 			if (Multi.cartType == 4)
 			{
@@ -2543,11 +2337,9 @@ void CMemory::InitROM (void)
 	// NTSC/PAL
 	if (Settings.ForceNTSC)
 		Settings.PAL = FALSE;
-	else
-	if (Settings.ForcePAL)
+	else if (Settings.ForcePAL)
 		Settings.PAL = TRUE;
-	else
-	if (!Settings.BS && (((ROMRegion >= 2) && (ROMRegion <= 12)) || ROMRegion == 18)) // 18 is used by "Tintin in Tibet (Europe) (En,Es,Sv)"
+	else if (!Settings.BS && (((ROMRegion >= 2) && (ROMRegion <= 12)) || ROMRegion == 18)) // 18 is used by "Tintin in Tibet (Europe) (En,Es,Sv)"
 		Settings.PAL = TRUE;
 	else
 		Settings.PAL = FALSE;
@@ -2631,15 +2423,12 @@ void CMemory::InitROM (void)
 	ApplyROMFixes();
 
 	//// Show ROM information
-	char displayName[ROM_NAME_LEN];
+	ROMId[4] = 0;
+    strcpy(ROMId, SafeString(ROMId).c_str());
 
-	strcpy(RawROMName, ROMName);
-	sprintf(displayName, "%s", SafeANK(ROMName));
-	sprintf(ROMName, "%s", Safe(ROMName));
-	sprintf(ROMId, "%s", Safe(ROMId));
 
 	sprintf(String, "\"%s\" [%s] %s, %s, %s, %s, SRAM:%s, ID:%s, CRC32:%08X",
-		displayName, isChecksumOK ? "checksum ok" : ((Multi.cartType == 4) ? "no checksum" : "bad checksum"),
+		SafeString(ROMName).c_str(), isChecksumOK ? "checksum ok" : ((Multi.cartType == 4) ? "no checksum" : "bad checksum"),
 		MapType(), Size(), KartContents(), Settings.PAL ? "PAL" : "NTSC", StaticRAMSize(), ROMId, ROMCRC32);
 	S9xMessage(S9X_INFO, S9X_ROM_INFO, String);
 
@@ -2817,7 +2606,8 @@ void CMemory::map_LoROMSRAM (void)
             hi = 0xffff;
 
 	map_index(0x70, 0x7d, 0x0000, hi, MAP_LOROM_SRAM, MAP_TYPE_RAM);
-	map_index(0xf0, 0xff, 0x0000, hi, MAP_LOROM_SRAM, MAP_TYPE_RAM);
+	if (SRAMSize > 0)
+            map_index(0xf0, 0xff, 0x0000, hi, MAP_LOROM_SRAM, MAP_TYPE_RAM);
 }
 
 void CMemory::map_HiROMSRAM (void)
@@ -3074,24 +2864,58 @@ void CMemory::Map_SuperFXLoROMMap (void)
 	printf("Map_SuperFXLoROMMap\n");
 	map_System();
 
-	// Replicate the first 2Mb of the ROM at ROM + 2MB such that each 32K
+	// Replicate the first 2Mb of the ROM at ROM + 8MB such that each 32K
 	// block is repeated twice in each 64K block.
 	for (int c = 0; c < 64; c++)
 	{
-		memmove(&ROM[0x200000 + c * 0x10000], &ROM[c * 0x8000], 0x8000);
-		memmove(&ROM[0x208000 + c * 0x10000], &ROM[c * 0x8000], 0x8000);
+		memmove(&ROM[0x800000 + c * 0x10000], &ROM[c * 0x8000], 0x8000);
+		memmove(&ROM[0x808000 + c * 0x10000], &ROM[c * 0x8000], 0x8000);
 	}
 
-	map_lorom(0x00, 0x3f, 0x8000, 0xffff, CalculatedSize);
-	map_lorom(0x80, 0xbf, 0x8000, 0xffff, CalculatedSize);
+	// Check GSU revision (not 100% accurate but it works)
+	// GSU2
+	if (CalculatedSize > 0x400000)
+	{
+		map_lorom(0x00, 0x3f, 0x8000, 0xffff, 0x200000);
+		map_lorom_offset(0x80, 0xbf, 0x8000, 0xffff, 0x200000, 0x200000);
 
-	map_hirom_offset(0x40, 0x7f, 0x0000, 0xffff, CalculatedSize, 0);
-	map_hirom_offset(0xc0, 0xff, 0x0000, 0xffff, CalculatedSize, 0);
+		map_hirom_offset(0x40, 0x5f, 0x0000, 0xffff, 0x200000, 0);
+		map_hirom_offset(0xc0, 0xff, 0x0000, 0xffff, CalculatedSize - 0x400000, 0x400000);
 
-	map_space(0x00, 0x3f, 0x6000, 0x7fff, SRAM - 0x6000);
-	map_space(0x80, 0xbf, 0x6000, 0x7fff, SRAM - 0x6000);
-	map_space(0x70, 0x70, 0x0000, 0xffff, SRAM);
-	map_space(0x71, 0x71, 0x0000, 0xffff, SRAM + 0x10000);
+		map_space(0x00, 0x3f, 0x6000, 0x7fff, SRAM - 0x6000);
+		map_space(0x80, 0xbf, 0x6000, 0x7fff, SRAM - 0x6000);
+		map_space(0x70, 0x70, 0x0000, 0xffff, SRAM);
+		map_space(0x71, 0x71, 0x0000, 0xffff, SRAM + 0x10000);
+	}
+	else if (CalculatedSize > 0x200000)
+	{
+		map_lorom(0x00, 0x3f, 0x8000, 0xffff, 0x200000);
+		map_lorom_offset(0x80, 0xbf, 0x8000, 0xffff, CalculatedSize - 0x200000, 0x200000);
+
+		map_hirom_offset(0x40, 0x5f, 0x0000, 0xffff, 0x200000, 0);
+		map_hirom_offset(0xc0, 0xff, 0x0000, 0xffff, CalculatedSize - 0x200000, 0x200000);
+
+		map_space(0x00, 0x3f, 0x6000, 0x7fff, SRAM - 0x6000);
+		map_space(0x80, 0xbf, 0x6000, 0x7fff, SRAM - 0x6000);
+		map_space(0x70, 0x70, 0x0000, 0xffff, SRAM);
+		map_space(0x71, 0x71, 0x0000, 0xffff, SRAM + 0x10000);
+	}
+	// GSU1
+	else
+	{
+		map_lorom(0x00, 0x3f, 0x8000, 0xffff, CalculatedSize);
+		map_lorom(0x80, 0xbf, 0x8000, 0xffff, CalculatedSize);
+
+		map_hirom_offset(0x40, 0x5f, 0x0000, 0xffff, CalculatedSize, 0);
+		map_hirom_offset(0xc0, 0xdf, 0x0000, 0xffff, CalculatedSize, 0);
+
+		map_space(0x00, 0x3f, 0x6000, 0x7fff, SRAM - 0x6000);
+		map_space(0x80, 0xbf, 0x6000, 0x7fff, SRAM - 0x6000);
+		map_space(0x70, 0x70, 0x0000, 0xffff, SRAM);
+		map_space(0x71, 0x71, 0x0000, 0xffff, SRAM + 0x10000);
+		map_space(0xf0, 0xf0, 0x0000, 0xffff, SRAM);
+		map_space(0xf1, 0xf1, 0x0000, 0xffff, SRAM + 0x10000);
+	}
 
 	map_WRAM();
 
@@ -3178,6 +3002,10 @@ void CMemory::Map_SA1LoROMMap (void)
 	for (int c = 0x600; c < 0x700; c++)
 		SA1.Map[c] = SA1.WriteMap[c] = (uint8 *) MAP_BWRAM_BITMAP;
 
+	// WRAM is inaccessable
+	for (int c = 0x7e0; c < 0x800; c++)
+		SA1.Map[c] = SA1.WriteMap[c] = (uint8 *) MAP_NONE;
+
 	BWRAM = SRAM;
 }
 
@@ -3219,6 +3047,10 @@ void CMemory::Map_BSSA1LoROMMap(void)
 	// SA-1 Banks 60->6f
 	for (int c = 0x600; c < 0x700; c++)
 		SA1.Map[c] = SA1.WriteMap[c] = (uint8 *) MAP_BWRAM_BITMAP;
+
+	// WRAM is inaccessable
+	for (int c = 0x7e0; c < 0x800; c++)
+		SA1.Map[c] = SA1.WriteMap[c] = (uint8 *) MAP_NONE;
 
 	BWRAM = SRAM;
 }
@@ -3388,8 +3220,7 @@ void CMemory::Checksum_Calculate (void)
 
 	if (Settings.BS && !Settings.BSXItself)
 		sum = checksum_calc_sum(ROM, CalculatedSize) - checksum_calc_sum(ROM + (HiROM ? 0xffb0 : 0x7fb0), 48);
-	else
-	if (Settings.SPC7110)
+	else if (Settings.SPC7110)
 	{
 		sum = checksum_calc_sum(ROM, CalculatedSize);
 		if (CalculatedSize == 0x300000)
@@ -3434,8 +3265,7 @@ const char * CMemory::Size (void)
 
 	if (Multi.cartType == 4)
 		strcpy(str, "N/A");
-	else
-	if (ROMSize < 7 || ROMSize - 7 > 23)
+	else if (ROMSize < 7 || ROMSize - 7 > 23)
 		strcpy(str, "Corrupt");
 	else
 		sprintf(str, "%dMbits", 1 << (ROMSize - 7));
@@ -3464,41 +3294,29 @@ const char * CMemory::KartContents (void)
 
 	if (Settings.BS)
 		strcpy(chip, "+BS");
-	else
-	if (Settings.SuperFX)
+	else if (Settings.SuperFX)
 		strcpy(chip, "+Super FX");
-	else
-	if (Settings.SDD1)
+	else if (Settings.SDD1)
 		strcpy(chip, "+S-DD1");
-	else
-	if (Settings.OBC1)
+	else if (Settings.OBC1)
 		strcpy(chip, "+OBC1");
-	else
-	if (Settings.SA1)
+	else if (Settings.SA1)
 		strcpy(chip, "+SA-1");
-	else
-	if (Settings.SPC7110RTC)
+	else if (Settings.SPC7110RTC)
 		strcpy(chip, "+SPC7110+RTC");
-	else
-	if (Settings.SPC7110)
+	else if (Settings.SPC7110)
 		strcpy(chip, "+SPC7110");
-	else
-	if (Settings.SRTC)
+	else if (Settings.SRTC)
 		strcpy(chip, "+S-RTC");
-	else
-	if (Settings.C4)
+	else if (Settings.C4)
 		strcpy(chip, "+C4");
-	else
-	if (Settings.SETA == ST_010)
+	else if (Settings.SETA == ST_010)
 		strcpy(chip, "+ST-010");
-	else
-	if (Settings.SETA == ST_011)
+	else if (Settings.SETA == ST_011)
 		strcpy(chip, "+ST-011");
-	else
-	if (Settings.SETA == ST_018)
+	else if (Settings.SETA == ST_018)
 		strcpy(chip, "+ST-018");
-	else
-	if (Settings.DSP)
+	else if (Settings.DSP)
 		sprintf(chip, "+DSP-%d", Settings.DSP);
 	else
 		strcpy(chip, "");
@@ -3646,6 +3464,8 @@ void CMemory::ApplyROMFixes (void)
 	// SRAM value fixes
 	if (match_na("SUPER DRIFT OUT")      || // Super Drift Out
 		match_na("SATAN IS OUR FATHER!") ||
+		match_na("S.F.S.95 della SerieA") ||
+		match_id("AACJ") || // Nichibutsu Arcade Classics
 		match_na("goemon 4"))               // Ganbare Goemon Kirakira Douchuu
 		SNESGameFixes.SRAMInitialValue = 0x00;
 
@@ -3684,6 +3504,23 @@ void CMemory::ApplyROMFixes (void)
 		Timings.RenderPos = 32;
 }
 
+std::string CMemory::SafeString(std::string s, bool allow_jis /*=false*/)
+{
+    std::string safe;
+    for (size_t i = 0; i < s.length(); i++)
+    {
+        if (s[i] >= 32 && s[i] < 127) // ASCII
+            safe += s[i];
+        else
+            if (allow_jis && ROMRegion == 0 && ((uint8)s[i] >= 0xa0 && (uint8)s[i] < 0xe0)) // JIS X 201 - Katakana
+                safe += s[i];
+            else
+                safe += '_';
+    }
+
+    return safe;
+}
+
 // BPS % UPS % IPS
 
 // number decoding used for both BPS and UPS
@@ -3700,6 +3537,33 @@ static uint32 XPSdecode (const uint8 *data, unsigned &addr, unsigned size)
 	return offset;
 }
 
+static std::vector<uint8_t> ReadStreamUntilEOF(Stream *r)
+{
+    const size_t max_buffer_size = 4096;
+    std::vector<uint8_t> data;
+    uint8_t buffer[max_buffer_size];
+    size_t total_size = 0;
+    size_t buffer_size = 0;
+
+    int value = 0;
+    while (value != EOF)
+    {
+        value = r->get_char();
+        if (value != EOF)
+            buffer[buffer_size++] = value;
+
+        if (buffer_size == max_buffer_size || (value == EOF && buffer_size > 0))
+        {
+            data.resize(data.size() + buffer_size);
+            memcpy(&data[total_size], buffer, buffer_size);
+            total_size += buffer_size;
+            buffer_size = 0;
+        }
+    }
+
+    return data;
+}
+
 //NOTE: UPS patches are *never* created against a headered ROM!
 //this is per the UPS file specification. however, do note that it is
 //technically possible for a non-compliant patcher to ignore this requirement.
@@ -3712,40 +3576,28 @@ static uint32 XPSdecode (const uint8 *data, unsigned &addr, unsigned size)
 static bool8 ReadUPSPatch (Stream *r, long, int32 &rom_size)
 {
 	//Reader lacks size() and rewind(), so we need to read in the file to get its size
-	uint8 *data = new uint8[8 * 1024 * 1024];  //allocate a lot of memory, better safe than sorry ...
-	uint32 size = 0;
-	while(true) {
-		int value = r->get_char();
-		if(value == EOF) break;
-		data[size++] = value;
-		if(size >= 8 * 1024 * 1024) {
-			//prevent buffer overflow: SNES-made UPS patches should never be this big anyway ...
-			delete[] data;
-			return false;
-		}
-	}
+	auto data_vector = ReadStreamUntilEOF(r);
+	uint8 *data = &data_vector[0];
+	uint32 size = data_vector.size();
 
 	//4-byte header + 1-byte input size + 1-byte output size + 4-byte patch CRC32 + 4-byte unpatched CRC32 + 4-byte patched CRC32
-	if(size < 18) { delete[] data; return false; }  //patch is too small
+	if(size < 18) return false;  //patch is too small
 
-	uint32 addr = 0;
-	if(data[addr++] != 'U') { delete[] data; return false; }  //patch has an invalid header
-	if(data[addr++] != 'P') { delete[] data; return false; }  //...
-	if(data[addr++] != 'S') { delete[] data; return false; }  //...
-	if(data[addr++] != '1') { delete[] data; return false; }  //...
+	uint32 addr = 4;
+	if (memcmp(data, "UPS1", 4) != 0) return false; //patch has an invalid header
 
 	uint32 patch_crc32 = caCRC32(data, size - 4);  //don't include patch CRC32 itself in CRC32 calculation
 	uint32 rom_crc32 = caCRC32(Memory.ROM, rom_size);
 	uint32 px_crc32 = (data[size - 12] << 0) + (data[size - 11] << 8) + (data[size - 10] << 16) + (data[size -  9] << 24);
 	uint32 py_crc32 = (data[size -  8] << 0) + (data[size -  7] << 8) + (data[size -  6] << 16) + (data[size -  5] << 24);
 	uint32 pp_crc32 = (data[size -  4] << 0) + (data[size -  3] << 8) + (data[size -  2] << 16) + (data[size -  1] << 24);
-	if(patch_crc32 != pp_crc32) { delete[] data; return false; }  //patch is corrupted
-	if(!Settings.IgnorePatchChecksum && (rom_crc32 != px_crc32) && (rom_crc32 != py_crc32)) { delete[] data; return false; }  //patch is for a different ROM
+	if(patch_crc32 != pp_crc32) { return false; }  //patch is corrupted
+	if(!Settings.IgnorePatchChecksum && (rom_crc32 != px_crc32) && (rom_crc32 != py_crc32)) return false; //patch is for a different ROM
 
 	uint32 px_size = XPSdecode(data, addr, size);
 	uint32 py_size = XPSdecode(data, addr, size);
 	uint32 out_size = ((uint32) rom_size == px_size) ? py_size : px_size;
-	if(out_size > CMemory::MAX_ROM_SIZE) { delete[] data; return false; }  //applying this patch will overflow Memory.ROM buffer
+	if(out_size > CMemory::MAX_ROM_SIZE) { return false; }  //applying this patch will overflow Memory.ROM buffer
 
 	//fill expanded area with 0x00s; so that XORing works as expected below.
 	//note that this is needed (and works) whether output ROM is larger or smaller than pre-patched ROM
@@ -3764,7 +3616,6 @@ static bool8 ReadUPSPatch (Stream *r, long, int32 &rom_size)
 	}
 
 	rom_size = out_size;
-	delete[] data;
 
 	uint32 out_crc32 = caCRC32(Memory.ROM, rom_size);
 	if(Settings.IgnorePatchChecksum
@@ -3795,49 +3646,38 @@ static bool8 ReadUPSPatch (Stream *r, long, int32 &rom_size)
 //
 static bool8 ReadBPSPatch (Stream *r, long, int32 &rom_size)
 {
-	uint8 *data = new uint8[8 * 1024 * 1024];  //allocate a lot of memory, better safe than sorry ...
-	uint32 size = 0;
-	while(true) {
-		int value = r->get_char();
-		if(value == EOF) break;
-		data[size++] = value;
-		if(size >= 8 * 1024 * 1024) {
-			//prevent buffer overflow: SNES-made BPS patches should never be this big anyway ...
-			delete[] data;
-			return false;
-		}
-	}
+	auto data_vector = ReadStreamUntilEOF(r);
+	uint8 *data = &data_vector[0];
+	uint32 size = data_vector.size();
 
 	/* 4-byte header + 1-byte input size + 1-byte output size + 1-byte metadata size
 	   + 4-byte unpatched CRC32 + 4-byte patched CRC32 + 4-byte patch CRC32 */
-	if(size < 19) { delete[] data; return false; }  //patch is too small
+	if(size < 19) return false; //patch is too small
 
-	uint32 addr = 0;
-	if(data[addr++] != 'B') { delete[] data; return false; }  //patch has an invalid header
-	if(data[addr++] != 'P') { delete[] data; return false; }  //...
-	if(data[addr++] != 'S') { delete[] data; return false; }  //...
-	if(data[addr++] != '1') { delete[] data; return false; }  //...
+	uint32 addr = 4;
+	if (memcmp(data, "BPS1", 4) != 0) return false; //patch has an invalid header
 
 	uint32 patch_crc32 = caCRC32(data, size - 4);  //don't include patch CRC32 itself in CRC32 calculation
 	uint32 rom_crc32 = caCRC32(Memory.ROM, rom_size);
 	uint32 source_crc32 = (data[size - 12] << 0) + (data[size - 11] << 8) + (data[size - 10] << 16) + (data[size -  9] << 24);
 	uint32 target_crc32 = (data[size -  8] << 0) + (data[size -  7] << 8) + (data[size -  6] << 16) + (data[size -  5] << 24);
 	uint32 pp_crc32 = (data[size -  4] << 0) + (data[size -  3] << 8) + (data[size -  2] << 16) + (data[size -  1] << 24);
-	if(patch_crc32 != pp_crc32) { delete[] data; return false; }  //patch is corrupted
-	if(!Settings.IgnorePatchChecksum && rom_crc32 != source_crc32) { delete[] data; return false; }  //patch is for a different ROM
+	if(patch_crc32 != pp_crc32) return false;  //patch is corrupted
+	if(!Settings.IgnorePatchChecksum && rom_crc32 != source_crc32) return false;  //patch is for a different ROM
 
 	XPSdecode(data, addr, size);
 	uint32 target_size = XPSdecode(data, addr, size);
 	uint32 metadata_size = XPSdecode(data, addr, size);
 	addr += metadata_size;
 
-	if(target_size > CMemory::MAX_ROM_SIZE) { delete[] data; return false; }  //applying this patch will overflow Memory.ROM buffer
+	if(target_size > CMemory::MAX_ROM_SIZE) return false;  //applying this patch will overflow Memory.ROM buffer
 
 	enum { SourceRead, TargetRead, SourceCopy, TargetCopy };
 	uint32 outputOffset = 0, sourceRelativeOffset = 0, targetRelativeOffset = 0;
 
-	uint8 *patched_rom = new uint8[target_size];
-	memset(patched_rom,0,target_size);
+	std::vector<uint8_t> patched_rom_vector(target_size);
+	uint8 *patched_rom = &patched_rom_vector[0];
+	memset(patched_rom, 0, target_size);
 
 	while(addr < size - 12) {
 		uint32 length = XPSdecode(data, addr, size);
@@ -3872,17 +3712,13 @@ static bool8 ReadBPSPatch (Stream *r, long, int32 &rom_size)
 		}
 	}
 
-	delete[] data;
-
 	uint32 out_crc32 = caCRC32(patched_rom, target_size);
 	if(Settings.IgnorePatchChecksum || out_crc32 == target_crc32) {
 		memcpy(Memory.ROM, patched_rom, target_size);
 		rom_size = target_size;
-		delete[] patched_rom;
 		Settings.IsPatched = 2;
 		return true;
 	} else {
-		delete[] patched_rom;
 		fprintf(stderr, "WARNING: BPS patching failed.\nROM has not been altered.\n");
 		return false;
 	}
@@ -4018,557 +3854,147 @@ static int unzFindExtension (unzFile &file, const char *ext, bool restart, bool 
 }
 #endif
 
-void CMemory::CheckForAnyPatch (const char *rom_filename, bool8 header, int32 &rom_size)
+void CMemory::CheckForAnyPatch(const char *rom_filename, bool8 header, int32 &rom_size)
 {
-	Settings.IsPatched = false;
+    Settings.IsPatched = false;
 
-	if (Settings.NoPatch)
-		return;
+    if (Settings.NoPatch)
+        return;
 
-	FSTREAM		patch_file  = NULL;
-	uint32		i;
-	long		offset = header ? 512 : 0;
-	int			ret;
-	bool		flag;
-	char		dir[_MAX_DIR + 1], drive[_MAX_DRIVE + 1], name[_MAX_FNAME + 1], ext[_MAX_EXT + 1], ips[_MAX_EXT + 3], fname[PATH_MAX + 1];
-	const char	*n;
+    FSTREAM patch_file = NULL;
+    long offset = header ? 512 : 0;
+    int ret;
+    bool flag = false;
 
-	_splitpath(rom_filename, drive, dir, name, ext);
+    auto path = splitpath(rom_filename);
 
-	// BPS
-	_makepath(fname, drive, dir, name, "bps");
-
-	if ((patch_file = OPEN_FSTREAM(fname, "rb")) != NULL)
-	{
-		printf("Using BPS patch %s", fname);
-
-        Stream *s = new fStream(patch_file);
-		ret = ReadBPSPatch(s, 0, rom_size);
-        s->closeStream();
-
-		if (ret)
-		{
-			printf("!\n");
-			return;
-		}
-		else
-			printf(" failed!\n");
-	}
-
-#ifdef UNZIP_SUPPORT
-	if (!strcasecmp(ext, "zip") || !strcasecmp(ext, ".zip"))
-	{
-		unzFile	file = unzOpen(rom_filename);
-		if (file)
-		{
-			int	port = unzFindExtension(file, "bps");
-			if (port == UNZ_OK)
-			{
-				printf(" in %s", rom_filename);
-
-                Stream *s = new unzStream(file);
-				ret = ReadBPSPatch(s, offset, rom_size);
-				delete s;
-
-				if (ret)
-					printf("!\n");
-				else
-					printf(" failed!\n");
-			}
-			assert(unzClose(file) == UNZ_OK);
-		}
-	}
-#endif
-
-	n = S9xGetFilename(".bps", PATCH_DIR);
-
-	if ((patch_file = OPEN_FSTREAM(n, "rb")) != NULL)
-	{
-		printf("Using BPS patch %s", n);
-
-        Stream *s = new fStream(patch_file);
-		ret = ReadBPSPatch(s, 0, rom_size);
-        s->closeStream();
-
-		if (ret)
-		{
-			printf("!\n");
-			return;
-		}
-		else
-			printf(" failed!\n");
-	}
-
-	// UPS
-
-	_makepath(fname, drive, dir, name, "ups");
-
-	if ((patch_file = OPEN_FSTREAM(fname, "rb")) != NULL)
-	{
-		printf("Using UPS patch %s", fname);
-
-        Stream *s = new fStream(patch_file);
-		ret = ReadUPSPatch(s, 0, rom_size);
-        s->closeStream();
-
-		if (ret)
-		{
-			printf("!\n");
-			return;
-		}
-		else
-			printf(" failed!\n");
-	}
-
-#ifdef UNZIP_SUPPORT
-	if (!strcasecmp(ext, "zip") || !strcasecmp(ext, ".zip"))
-	{
-		unzFile	file = unzOpen(rom_filename);
-		if (file)
-		{
-			int	port = unzFindExtension(file, "ups");
-			if (port == UNZ_OK)
-			{
-				printf(" in %s", rom_filename);
-
-                Stream *s = new unzStream(file);
-				ret = ReadUPSPatch(s, offset, rom_size);
-				delete s;
-
-				if (ret)
-					printf("!\n");
-				else
-					printf(" failed!\n");
-			}
-			assert(unzClose(file) == UNZ_OK);
-		}
-	}
-#endif
-
-	n = S9xGetFilename(".ups", PATCH_DIR);
-
-	if ((patch_file = OPEN_FSTREAM(n, "rb")) != NULL)
-	{
-		printf("Using UPS patch %s", n);
-
-        Stream *s = new fStream(patch_file);
-		ret = ReadUPSPatch(s, 0, rom_size);
-        s->closeStream();
-
-		if (ret)
-		{
-			printf("!\n");
-			return;
-		}
-		else
-			printf(" failed!\n");
-	}
-
-	// IPS
-
-	_makepath(fname, drive, dir, name, "ips");
-
-	if ((patch_file = OPEN_FSTREAM(fname, "rb")) != NULL)
-	{
-		printf("Using IPS patch %s", fname);
-
-        Stream *s = new fStream(patch_file);
-		ret = ReadIPSPatch(s, offset, rom_size);
-        s->closeStream();
-
-		if (ret)
-		{
-			printf("!\n");
-			return;
-		}
-		else
-			printf(" failed!\n");
-	}
-
-	if (_MAX_EXT > 6)
-	{
-		i = 0;
-		flag = false;
-
-		do
-		{
-			snprintf(ips, 8, "%03d.ips", i);
-			_makepath(fname, drive, dir, name, ips);
-
-			if (!(patch_file = OPEN_FSTREAM(fname, "rb")))
-				break;
-
-			printf("Using IPS patch %s", fname);
+    auto try_patch = [&](const char *type, std::string filename, bool8(*read_patch_func)(Stream * r, long offset, int32 &rom_size)) -> bool {
+        if ((patch_file = OPEN_FSTREAM(filename.c_str(), "rb")) != NULL)
+        {
+            printf("Using %s patch %s", type, filename.c_str());
 
             Stream *s = new fStream(patch_file);
-			ret = ReadIPSPatch(s, offset, rom_size);
+            ret = read_patch_func(s, offset, rom_size);
             s->closeStream();
 
-			if (ret)
-			{
-				printf("!\n");
-				flag = true;
-			}
-			else
-			{
-				printf(" failed!\n");
-				break;
-			}
-		} while (++i < 1000);
+            if (ret)
+            {
+                printf("!\n");
+                flag = true;
+                return true;
+            }
+            else
+                printf(" failed!\n");
+        }
+        return false;
+    };
 
-		if (flag)
-			return;
-	}
+    auto try_ips_sequence = [&](const char *pattern, enum s9x_getdirtype dirtype) -> bool {
+        for (int i = 0; i < 1000; i++)
+        {
+            char ips[9];
+            snprintf(ips, 9, pattern, i);
+            if (!try_patch("IPS", S9xGetFilename(ips, dirtype), ReadIPSPatch))
+                break;
+        }
+        return flag;
+    };
 
-	if (_MAX_EXT > 3)
-	{
-		i = 0;
-		flag = false;
+    auto try_patch_type_sequence = [&](enum s9x_getdirtype dirtype) -> bool {
+        if (try_patch("BPS", S9xGetFilename(".bps", dirtype), ReadBPSPatch))
+            return true;
+        if (try_patch("UPS", S9xGetFilename(".ups", dirtype), ReadUPSPatch))
+            return true;
+        if (try_patch("IPS", S9xGetFilename(".ips", dirtype), ReadIPSPatch))
+            return true;
+        if (try_ips_sequence(".%03d.ips", dirtype))
+            return true;
+        if (try_ips_sequence(".ips%d", dirtype))
+            return true;
+        if (try_ips_sequence(".ip%d", dirtype))
+            return true;
 
-		do
-		{
-			snprintf(ips, _MAX_EXT + 2, "ips%d", i);
-			if (strlen(ips) > _MAX_EXT)
-				break;
-			_makepath(fname, drive, dir, name, ips);
+        return false;
+    };
 
-			if (!(patch_file = OPEN_FSTREAM(fname, "rb")))
-				break;
-
-			printf("Using IPS patch %s", fname);
-
-            Stream *s = new fStream(patch_file);
-			ret = ReadIPSPatch(s, offset, rom_size);
-            s->closeStream();
-
-			if (ret)
-			{
-				printf("!\n");
-				flag = true;
-			}
-			else
-			{
-				printf(" failed!\n");
-				break;
-			}
-		} while (++i != 0);
-
-		if (flag)
-			return;
-	}
-
-	if (_MAX_EXT > 2)
-	{
-		i = 0;
-		flag = false;
-
-		do
-		{
-			snprintf(ips, 4, "ip%d", i);
-			_makepath(fname, drive, dir, name, ips);
-
-			if (!(patch_file = OPEN_FSTREAM(fname, "rb")))
-				break;
-
-			printf("Using IPS patch %s", fname);
-
-            Stream *s = new fStream(patch_file);
-			ret = ReadIPSPatch(s, offset, rom_size);
-            s->closeStream();
-
-			if (ret)
-			{
-				printf("!\n");
-				flag = true;
-			}
-			else
-			{
-				printf(" failed!\n");
-				break;
-			}
-		} while (++i < 10);
-
-		if (flag)
-			return;
-	}
+    if (try_patch_type_sequence(ROMFILENAME_DIR))
+        return;
 
 #ifdef UNZIP_SUPPORT
-	if (!strcasecmp(ext, "zip") || !strcasecmp(ext, ".zip"))
-	{
-		unzFile	file = unzOpen(rom_filename);
-		if (file)
-		{
-			int	port = unzFindExtension(file, "ips");
-			while (port == UNZ_OK)
-			{
-				printf(" in %s", rom_filename);
-
-                Stream *s = new unzStream(file);
-				ret = ReadIPSPatch(s, offset, rom_size);
-				delete s;
-
-				if (ret)
-				{
-					printf("!\n");
-					flag = true;
-				}
-				else
-					printf(" failed!\n");
-
-				port = unzFindExtension(file, "ips", false);
-			}
-
-			if (!flag)
-			{
-				i = 0;
-
-				do
-				{
-					snprintf(ips, 8, "%03d.ips", i);
-
-					if (unzFindExtension(file, ips) != UNZ_OK)
-						break;
-
-					printf(" in %s", rom_filename);
+    if (path.ext_is(".zip"))
+    {
+        unzFile file = unzOpen(rom_filename);
+        if (file)
+        {
+            auto try_zip_patch = [&](const char *ext, bool8 (*read_patch_func)(Stream * r, long offset, int32 &rom_size)) -> bool {
+                if (unzFindExtension(file, ext) == UNZ_OK)
+                {
+                    printf(" in %s", rom_filename);
 
                     Stream *s = new unzStream(file);
-					ret = ReadIPSPatch(s, offset, rom_size);
-					delete s;
+                    ret = read_patch_func(s, offset, rom_size);
+                    delete s;
 
-					if (ret)
-					{
-						printf("!\n");
-						flag = true;
-					}
-					else
-					{
-						printf(" failed!\n");
-						break;
-					}
+                    if (ret)
+                    {
+                        printf("!\n");
+                        flag = true;
+                        return true;
+                    }
 
-					if (unzFindExtension(file, ips, false, false) == UNZ_OK)
-						printf("WARNING: Ignoring extra .%s files!\n", ips);
-				} while (++i < 1000);
-			}
+                    printf(" failed!\n");
+                }
+                return false;
+            };
 
-			if (!flag)
-			{
-				i = 0;
+            auto try_zip_ips_sequence = [&](const char *pattern) {
+                for (int i = 0; i < 1000; i++)
+                {
+                    char ips[8];
+                    snprintf(ips, 8, pattern, i);
+                    if (!try_zip_patch(ips, ReadIPSPatch))
+                        break;
+                }
+            };
 
-				do
-				{
-					snprintf(ips, _MAX_EXT + 2, "ips%d", i);
-					if (strlen(ips) > _MAX_EXT)
-						break;
+            if (!flag)
+                try_zip_patch("bps", ReadBPSPatch);
+            if (!flag)
+                try_zip_patch("ups", ReadUPSPatch);
+            if (!flag)
+                try_zip_patch("ips", ReadIPSPatch);
+            if (!flag)
+                try_zip_ips_sequence("%03d.ips");
+            if (!flag)
+                try_zip_ips_sequence("ips%d");
+            if (!flag)
+                try_zip_ips_sequence("ip%d");
 
-					if (unzFindExtension(file, ips) != UNZ_OK)
-						break;
+            assert(unzClose(file) == UNZ_OK);
 
-					printf(" in %s", rom_filename);
+            if (flag)
+                return;
+        }
+    }
 
-                    Stream *s = new unzStream(file);
-					ret = ReadIPSPatch(s, offset, rom_size);
-					delete s;
+    // Mercurial Magic (MSU-1 distribution pack)
+    if (path.ext_is(".msu1")) // ROM was *NOT* loaded from a .msu1 pack
+    {
+        Stream *s = S9xMSU1OpenFile("patch.bps", TRUE);
+        if (s)
+        {
+            printf("Using BPS patch from msu1");
+            ret = ReadBPSPatch(s, offset, rom_size);
+            s->closeStream();
 
-					if (ret)
-					{
-						printf("!\n");
-						flag = true;
-					}
-					else
-					{
-						printf(" failed!\n");
-						break;
-					}
-
-					if (unzFindExtension(file, ips, false, false) == UNZ_OK)
-						printf("WARNING: Ignoring extra .%s files!\n", ips);
-				} while (++i != 0);
-			}
-
-			if (!flag)
-			{
-				i = 0;
-
-				do
-				{
-					snprintf(ips, 4, "ip%d", i);
-
-					if (unzFindExtension(file, ips) != UNZ_OK)
-						break;
-
-					printf(" in %s", rom_filename);
-
-                    Stream *s = new unzStream(file);
-					ret = ReadIPSPatch(s, offset, rom_size);
-					delete s;
-
-					if (ret)
-					{
-						printf("!\n");
-						flag = true;
-					}
-					else
-					{
-						printf(" failed!\n");
-						break;
-					}
-
-					if (unzFindExtension(file, ips, false, false) == UNZ_OK)
-						printf("WARNING: Ignoring extra .%s files!\n", ips);
-				} while (++i < 10);
-			}
-
-			assert(unzClose(file) == UNZ_OK);
-
-			if (flag)
-				return;
-		}
-	}
+            if (ret)
+                printf("!\n");
+            else
+                printf(" failed!\n");
+        }
+    }
 #endif
 
-	n = S9xGetFilename(".ips", PATCH_DIR);
-
-	if ((patch_file = OPEN_FSTREAM(n, "rb")) != NULL)
-	{
-		printf("Using IPS patch %s", n);
-
-        Stream *s = new fStream(patch_file);
-		ret = ReadIPSPatch(s, offset, rom_size);
-        s->closeStream();
-
-		if (ret)
-		{
-			printf("!\n");
-			return;
-		}
-		else
-			printf(" failed!\n");
-	}
-
-	if (_MAX_EXT > 6)
-	{
-		i = 0;
-		flag = false;
-
-		do
-		{
-			snprintf(ips, 9, ".%03d.ips", i);
-			n = S9xGetFilename(ips, PATCH_DIR);
-
-			if (!(patch_file = OPEN_FSTREAM(n, "rb")))
-				break;
-
-			printf("Using IPS patch %s", n);
-
-            Stream *s = new fStream(patch_file);
-			ret = ReadIPSPatch(s, offset, rom_size);
-            s->closeStream();
-
-			if (ret)
-			{
-				printf("!\n");
-				flag = true;
-			}
-			else
-			{
-				printf(" failed!\n");
-				break;
-			}
-		} while (++i < 1000);
-
-		if (flag)
-			return;
-	}
-
-	if (_MAX_EXT > 3)
-	{
-		i = 0;
-		flag = false;
-
-		do
-		{
-			snprintf(ips, _MAX_EXT + 3, ".ips%d", i);
-			if (strlen(ips) > _MAX_EXT + 1)
-				break;
-			n = S9xGetFilename(ips, PATCH_DIR);
-
-			if (!(patch_file = OPEN_FSTREAM(n, "rb")))
-				break;
-
-			printf("Using IPS patch %s", n);
-
-            Stream *s = new fStream(patch_file);
-			ret = ReadIPSPatch(s, offset, rom_size);
-            s->closeStream();
-
-			if (ret)
-			{
-				printf("!\n");
-				flag = true;
-			}
-			else
-			{
-				printf(" failed!\n");
-				break;
-			}
-		} while (++i != 0);
-
-		if (flag)
-			return;
-	}
-
-	if (_MAX_EXT > 2)
-	{
-		i = 0;
-		flag = false;
-
-		do
-		{
-			snprintf(ips, 5, ".ip%d", i);
-			n = S9xGetFilename(ips, PATCH_DIR);
-
-			if (!(patch_file = OPEN_FSTREAM(n, "rb")))
-				break;
-
-			printf("Using IPS patch %s", n);
-
-            Stream *s = new fStream(patch_file);
-			ret = ReadIPSPatch(s, offset, rom_size);
-            s->closeStream();
-
-			if (ret)
-			{
-				printf("!\n");
-				flag = true;
-			}
-			else
-			{
-				printf(" failed!\n");
-				break;
-			}
-		} while (++i < 10);
-
-		if (flag)
-			return;
-	}
-
-#ifdef UNZIP_SUPPORT
-	// Mercurial Magic (MSU-1 distribution pack)
-	if (strcasecmp(ext, "msu1") && strcasecmp(ext, ".msu1"))	// ROM was *NOT* loaded from a .msu1 pack
-	{
-		Stream *s = S9xMSU1OpenFile("patch.bps", TRUE);
-		if (s)
-		{
-			printf("Using BPS patch %s.msu1", name);
-			ret = ReadBPSPatch(s, offset, rom_size);
-			s->closeStream();
-
-			if (ret)
-				printf("!\n");
-			else
-				printf(" failed!\n");
-		}
-	}
-#endif
+    if (try_patch_type_sequence(PATCH_DIR))
+        return;
 }

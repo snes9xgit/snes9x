@@ -1,36 +1,36 @@
 version: 1.61-{build}
 
-image: Visual Studio 2017
+image: Visual Studio 2022
 
 environment:
   matrix:
-  - generator: "Visual Studio 15"
+  - generator: "Visual Studio 2022"
     config: Release Unicode
     platform: Win32
     arch: win32
     output: win32\snes9x.exe
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
 
-  - generator: "Visual Studio 15"
+  - generator: "Visual Studio 2022"
     config: Release Unicode
     platform: x64
     arch: win32-x64
     output: win32\snes9x-x64.exe
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
 
-  - generator: "Visual Studio 15"
+  - generator: "Visual Studio 2022"
     config: libretro Release
     platform: Win32
     arch: libretro
     output: libretro\Win32\libretro Release\snes9x_libretro.dll
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
 
-  - generator: "Visual Studio 15"
+  - generator: "Visual Studio 2022"
     config: libretro Release
     platform: x64
     arch: libretro-x64
     output: libretro\x64\libretro Release\snes9x_libretro.dll
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
 
 init:
   - git config --global core.autocrlf input

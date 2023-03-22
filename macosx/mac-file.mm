@@ -212,7 +212,6 @@ const char * S9xGetFilename (const char *inExt, enum s9x_getdirtype dirtype)
 
 	uint32		type;
 	char		folderName[16];
-	char		drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], fname[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
 	const char	*p;
 
 	index++;
@@ -289,23 +288,21 @@ const char * S9xGetFilename (const char *inExt, enum s9x_getdirtype dirtype)
 
 		if (folderURL != nil)
 		{
-			_splitpath(Memory.ROMFilename, drive, dir, fname, ext);
-			snprintf(filePath[index], PATH_MAX + 1, "%s%s%s%s", folderURL.path.UTF8String, MAC_PATH_SEPARATOR, fname, inExt);
+			auto path = splitpath(Memory.ROMFilename);
+			snprintf(filePath[index], PATH_MAX + 1, "%s%s%s%s", folderURL.path.UTF8String, MAC_PATH_SEPARATOR, path.stem.c_str(), inExt);
 		}
 		else
 		{
-			_splitpath(Memory.ROMFilename, drive, dir, fname, ext);
-
-			strlcat(fname, inExt, sizeof(fname));
-			_makepath(filePath[index], drive, dir, fname, "");
+			auto path = splitpath(Memory.ROMFilename);
+			path.ext = inExt;
+			makepath(path);
 		}
 	}
 	else
 	{
-		_splitpath(Memory.ROMFilename, drive, dir, fname, ext);
-
-		strlcat(fname, inExt, sizeof(fname));
-		_makepath(filePath[index], drive, dir, fname, "");
+		auto path = splitpath(Memory.ROMFilename);
+		path.ext = inExt;
+		makepath(path);
 	}
 
 	return (filePath[index]);
@@ -346,27 +343,19 @@ const char * S9xGetFreezeFilename (int which)
 	return (S9xGetFilename(frzExt, SNAPSHOT_DIR));
 }
 
-const char * S9xGetFilenameInc (const char *inExt, enum s9x_getdirtype dirtype)
+std::string S9xGetFilenameInc (std::string, enum s9x_getdirtype type)
 {
-	uint32		type;
-	const char	*p;
-
-	if (strlen(inExt) < 4)
-		return (NULL);
-
-	p = inExt + strlen(inExt) - 4;
-	type = ((uint32) p[0] << 24) + ((uint32) p[1] << 16) + ((uint32) p[2] << 8) + (uint32) p[3];
-
 	switch (type)
 	{
-		case '.spc':
+		case SPC_DIR:
 			return (S9xGetSPCFilename());
 
-		case '.png':
+		case SCREENSHOT_DIR:
 			return (S9xGetPNGFilename());
-	}
 
-	return (NULL);
+		default:
+			return "";
+	}
 }
 
 bool8 S9xOpenSnapshotFile (const char *fname, bool8 read_only, STREAM *file)
@@ -408,13 +397,12 @@ const char * S9xBasename (const char *in)
 	return (basename(s));
 }
 
-const char * S9xGetDirectory (enum s9x_getdirtype dirtype)
+std::string S9xGetDirectory (enum s9x_getdirtype dirtype)
 {
 	static int	index = 0;
 	static char	path[4][PATH_MAX + 1];
 
-	char	inExt[16];
-	char	drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], fname[_MAX_FNAME + 1], ext[_MAX_EXT + 1];
+	char inExt[16];
 
 	index++;
 	if (index > 3)
@@ -432,8 +420,8 @@ const char * S9xGetDirectory (enum s9x_getdirtype dirtype)
 		default:				strlcpy(inExt, ".xxx", sizeof(inExt));	break;
 	}
 
-	_splitpath(S9xGetFilename(inExt, dirtype), drive, dir, fname, ext);
-	_makepath(path[index], drive, dir, "", "");
+	auto p = splitpath(S9xGetFilename(inExt, dirtype));
+	makepath(p.drive, p.drive, path[index], "");
 
 	size_t	l = strlen(path[index]);
 	if (l > 1)

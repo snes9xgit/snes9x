@@ -9,6 +9,7 @@
 #include <string.h>
 #include "gtk_s9x.h"
 #include "gtk_binding.h"
+#include "fmt/format.h"
 
 Binding::Binding()
 {
@@ -17,7 +18,22 @@ Binding::Binding()
 
 Binding::Binding(GdkEventKey *event)
 {
-    event->keyval = gdk_keyval_to_lower(event->keyval);
+    GdkKeymapKey* keys;
+    guint* keyvals;
+    int n_entries;
+
+    gdk_keymap_get_entries_for_keycode(
+        gdk_keymap_get_for_display(top_level->window->get_display()->gobj()),
+        event->hardware_keycode,
+        &keys,
+        &keyvals,
+        &n_entries
+    );
+    event->keyval = keyvals[0];
+
+    g_free(keys);
+    g_free(keyvals);
+
     value = BINDING_KEY | (event->keyval & BINDING_KEY_MASK);
 
     /* Strip modifiers from modifiers */
@@ -213,66 +229,53 @@ Binding::Binding(const char *raw_string)
 
 std::string Binding::as_string()
 {
-    char buf[PATH_MAX];
-    to_string(buf, false);
-    return std::string(buf);
+    return to_string(false);
 }
 
-void Binding::to_string(char *str, bool translate)
+std::string Binding::to_string(bool translate)
 {
-    char buf[256];
+    std::string str;
 
-#undef _
-#define _(String) translate ? gettext(String) : (String)
-
-    str[0] = '\0';
+#undef maybegettext
+#define maybegettext(String) translate ? gettext(String) : (String)
 
     if (is_key())
     {
-        char *keyval_name = NULL;
         unsigned int keyval = gdk_keyval_to_lower(get_key());
-        keyval_name = gdk_keyval_name(keyval);
+        char *keyval_name = gdk_keyval_name(keyval);
 
-        if (keyval_name == NULL)
-        {
-            sprintf(buf, _("Unknown"));
-        }
+        if (keyval_name == nullptr)
+            str = maybegettext("Unknown");
         else
-        {
-            memset(buf, 0, 256);
-            strncpy(buf,
-                    keyval_name,
-                    255);
-        }
+            str = keyval_name;
 
         if (translate)
-            for (int i = 0; buf[i]; i++)
-                if (buf[i] == '_')
-                    buf[i] = ' ';
+            for (char &c : str)
+                if (c == '_')
+                    c = ' ';
 
-        sprintf(str, _("Keyboard %s%s%s%s"),
-                (value & BINDING_SHIFT) ? "Shift+" : "",
-                (value & BINDING_CTRL) ? "Ctrl+" : "",
-                (value & BINDING_ALT) ? "Alt+" : "",
-                buf);
+        str = fmt::format(maybegettext("Keyboard {}{}{}{}"),
+                          (value & BINDING_SHIFT) ? "Shift+" : "",
+                          (value & BINDING_CTRL) ? "Ctrl+" : "",
+                          (value & BINDING_ALT) ? "Alt+" : "",
+                          str);
     }
 
     else if (is_joy())
     {
         if ((get_key()) >= 512)
-            sprintf(buf,
-                    _("Axis %u %s %u%%"),
-                    get_axis(),
-                    is_positive() ? "+" : "-",
-                    get_threshold());
+            str = fmt::format(maybegettext("Axis {} {} {}%"),
+                              get_axis(),
+                              is_positive() ? "+" : "-",
+                              get_threshold());
         else
-            sprintf(buf, _("Button %u"), get_key());
+            str = fmt::format(maybegettext("Button {}"), get_key());
 
-        sprintf(str, _("Joystick %u %s"), get_device(), buf);
+        str = fmt::format(maybegettext("Joystick {} {}"), get_device(), str);
     }
 
     else
-    {
-        sprintf(str, _("Unset"));
-    }
+        str = maybegettext("Unset");
+
+    return str;
 }

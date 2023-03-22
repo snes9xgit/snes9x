@@ -10,6 +10,7 @@
 #include "render.h"
 #include "wsnes9x.h"
 #include <vector>
+#include <functional>
 
 /* IS9xDisplayOutput
 	Interface for display driver.
@@ -27,6 +28,8 @@ public:
 	virtual bool SetFullscreen(bool fullscreen)=0;
 	virtual void SetSnes9xColorFormat()=0;
 	virtual void EnumModes(std::vector<dMode> *modeVector)=0;
+	virtual std::vector<ShaderParam>* GetShaderParameters(void) { return nullptr; }
+	virtual std::function<void(const char *)> GetShaderParametersSaveFunction() { return std::function<void(const char*)>(); }
 };
 
 

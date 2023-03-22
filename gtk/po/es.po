@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Snes9x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-12 02:37-0400\n"
-"PO-Revision-Date: 2020-06-12 02:49-0400\n"
+"POT-Creation-Date: 2023-03-21 17:30-0500\n"
+"PO-Revision-Date: 2023-03-21 17:35-0500\n"
 "Last-Translator: Pablo \"Jota\" Lezaeta <prflr88@gmail.com>\n"
 "Language-Team: Spanish / Español\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Snes9x-gtk: 1.5.2\n"
-"X-Generator: Poedit 2.3.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Snes9x-gtk: 1.5.2\n"
+"X-Generator: Poedit 3.2.2\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-Basepath: ../..\n"
 "X-Poedit-SearchPath-0: gtk\n"
@@ -36,335 +36,33 @@ msgstr ""
 "X-Poedit-SearchPath-13: win32\n"
 "X-Poedit-SearchPath-14: .\n"
 
-#: src/gtk_binding.cpp:249
-#, c-format
+#: src/gtk_binding.cpp:248
 msgid "Unknown"
 msgstr "Desconocido"
 
-#: src/gtk_binding.cpp:264
-#, c-format
-msgid "Keyboard %s%s%s%s"
-msgstr "Tecla %s%s%s%s"
+#: src/gtk_binding.cpp:257
+msgid "Keyboard {}{}{}{}"
+msgstr "Teclado {}{}{}{}"
 
-#: src/gtk_binding.cpp:275
-#, c-format
-msgid "Axis %u %s %u%%"
-msgstr "Eje %u %s %u%%"
+#: src/gtk_binding.cpp:267
+msgid "Axis {} {} {}%"
+msgstr "Eje {} {} {}%"
 
-#: src/gtk_binding.cpp:280
-#, c-format
-msgid "Button %u"
-msgstr "Botón %u"
+#: src/gtk_binding.cpp:272
+msgid "Button {}"
+msgstr "Botón {}"
 
-#: src/gtk_binding.cpp:282
-#, c-format
-msgid "Joystick %u %s"
-msgstr "Mando %u %s"
+#: src/gtk_binding.cpp:274
+msgid "Joystick {} {}"
+msgstr "Mando {} {}"
 
-#: src/gtk_binding.cpp:287
-#, c-format
+#: src/gtk_binding.cpp:278
 msgid "Unset"
 msgstr "Sin asignar"
 
-#: src/gtk_cheat.cpp:31 src/gtk_s9xwindow.cpp:864 src/gtk_s9xwindow.cpp:995
-#: src/gtk_s9xwindow.cpp:1292
-msgid "Error"
-msgstr "Error"
-
-#: src/gtk_cheat.cpp:161
-msgid "Description"
-msgstr "Descripción"
-
-#: src/gtk_cheat.cpp:172
-msgid "Cheat"
-msgstr "Truco"
-
-#: src/gtk_cheat.cpp:343 src/gtk_cheat.cpp:362 src/gtk_cheat.cpp:532
-msgid "No description"
-msgstr "Sin descripción"
-
-#: src/gtk_cheat.cpp:366 src/gtk_cheat.cpp:537
-msgid "Couldn't find any cheat codes in input."
-msgstr "No se pudo encontrar ningún código de trucos en la entrada."
-
-#: src/gtk_cheat.cpp:472
-msgid "Couldn't Find Cheats Database"
-msgstr "No se pudo encontrar la base de datos de trucos"
-
-#: src/gtk_cheat.cpp:473
-msgid "No Matching Game Found"
-msgstr "No se encontró un juego que coincida"
-
-#: src/gtk_cheat.cpp:476
-msgid ""
-"The database file <b>cheats.bml</b> was not found. It is normally installed "
-"with Snes9x, but you may also place a custom copy in your configuration or "
-"cheats directory."
-msgstr ""
-"No se encontró el archivo de base de datos <b>cheats.bml</b>. Normalmente se "
-"instala con Snes9x, pero también puede colocar una copia personalizada en su "
-"directorio de configuración o trucos."
-
-#: src/gtk_cheat.cpp:478
-msgid ""
-"No matching game was found in the databases. If you are using a non-official "
-"translation or modified copy, you may be able to find and manually enter the "
-"codes."
-msgstr ""
-"No se encontró ningún juego que coincida en las bases de datos Si está "
-"utilizando una traducción no oficial o una copia modificada, es posible que "
-"pueda encontrar e ingresar manualmente los códigos."
-
-#: src/gtk_config.cpp:442
-#, c-format
-msgid "Couldn't create config directory: %s\n"
-msgstr "No se pudo crear el directorio de configuracion: %s\n"
-
-#: src/gtk_netplay.cpp:62
-msgid "Connection Error"
-msgstr "Error de connección"
-
-#: src/gtk_preferences.cpp:18
+#: src/gtk_preferences.cpp:21
 msgid "Same location as current game"
 msgstr "El mismo lugar que el juego actual"
-
-#: src/gtk_preferences.cpp:417
-msgid "Current joystick centers have been saved."
-msgstr "Los centros de ejes del mando fueron guardados."
-
-#: src/gtk_preferences.cpp:418
-msgid "Calibration Complete"
-msgstr "Calibrado completado"
-
-#: src/gtk_preferences.cpp:460
-msgid "Snes9x version: "
-msgstr "Versión de Snes9x: "
-
-#: src/gtk_preferences.cpp:461
-msgid "GTK+ port version: "
-msgstr "Adaptación GTK+ versión: "
-
-#: src/gtk_preferences.cpp:463
-msgid "English localization by Brandon Wright"
-msgstr ""
-"Localización al inglés por Brandon Wright\n"
-"Localización al español por INUKAZE, Jota (aka Jristz), y otros"
-
-#: src/gtk_preferences.cpp:945
-msgid ""
-"Changing the SRAM directory with a game loaded will replace the .srm file in "
-"the selected directory with the SRAM from the running game. If this is not "
-"what you want, click 'cancel'."
-msgstr ""
-"Cambiar el directorio de SRAM con un juego cargado reemplazará el archivo ."
-"srm en el directorio seleccionado con el SRAM del juego en ejecución. Si "
-"esto no es lo que quieres, haz clic en «Cancelar»."
-
-#: src/gtk_preferences.cpp:946
-msgid "Warning: Possible File Overwrite"
-msgstr "Advertencia: posible sobrescritura de archivos"
-
-#: src/gtk_preferences.cpp:1027
-msgid "Select Folder"
-msgstr "Seleccione una carpeta"
-
-#: src/gtk_preferences.cpp:1104
-msgid "HQ2x"
-msgstr "HQ 2x"
-
-#: src/gtk_preferences.cpp:1105
-msgid "HQ3x"
-msgstr "HQ 3x"
-
-#: src/gtk_preferences.cpp:1106
-msgid "HQ4x"
-msgstr "HQ 4x"
-
-#: src/gtk_preferences.cpp:1111
-msgid "2xBRZ"
-msgstr "2x BRZ"
-
-#: src/gtk_preferences.cpp:1112
-msgid "3xBRZ"
-msgstr "3x BRZ"
-
-#: src/gtk_preferences.cpp:1113
-msgid "4xBRZ"
-msgstr "4x BRZ"
-
-#: src/gtk_preferences.cpp:1118
-msgid "None - Use software scaler"
-msgstr "Nada - Usar ajuste por software"
-
-#: src/gtk_preferences.cpp:1122
-msgid "OpenGL - Use 3D graphics hardware"
-msgstr "OpenGL - Usar aceleración en 3D por hardware"
-
-#: src/gtk_preferences.cpp:1126
-msgid "XVideo - Use hardware video blitter"
-msgstr "XVideo - Usar cegador de vídeo por hardware"
-
-#: src/gtk_preferences.cpp:1132
-msgid "PortAudio"
-msgstr "Port Audio"
-
-#: src/gtk_preferences.cpp:1136
-msgid "Open Sound System"
-msgstr "Open Sound System"
-
-#: src/gtk_preferences.cpp:1139
-msgid "SDL"
-msgstr "SDL"
-
-#: src/gtk_preferences.cpp:1142
-msgid "ALSA"
-msgstr "ALSA"
-
-#: src/gtk_preferences.cpp:1146
-msgid "PulseAudio"
-msgstr "Pulseaudio"
-
-#: src/gtk_s9x.cpp:205
-#, c-format
-msgid "Error opening: %s\n"
-msgstr "Error abriendo: %s\n"
-
-#: src/gtk_s9xwindow.cpp:863
-msgid "Couldn't load files."
-msgstr "No se puedieron cargar los archivos."
-
-#: src/gtk_s9xwindow.cpp:892
-msgid "Open SNES Movie"
-msgstr "Abrir vídeo SNES"
-
-#: src/gtk_s9xwindow.cpp:911
-msgid "New SNES Movie"
-msgstr "Nuevo vídeo SNES"
-
-#: src/gtk_s9xwindow.cpp:924
-msgid "SNES Movies"
-msgstr "Vídeos SNES"
-
-#: src/gtk_s9xwindow.cpp:932 src/gtk_s9xwindow.cpp:1080
-#: src/gtk_s9xwindow.cpp:1200 src/gtk_s9xwindow.cpp:1265 src/gtk_file.cpp:440
-msgid "All Files"
-msgstr "Todos los archivos"
-
-#: src/gtk_s9xwindow.cpp:993
-#, c-format
-msgid "Couldn't load file '%s'"
-msgstr "No puedo cargar el archivo «%s»"
-
-#: src/gtk_s9xwindow.cpp:1052
-msgid "Load Saved State"
-msgstr "Cargar estado guardado"
-
-#: src/gtk_s9xwindow.cpp:1063 src/gtk_s9xwindow.cpp:1183 src/snes9x.ui:8390
-msgid "Save States"
-msgstr "Estados guardados"
-
-#: src/gtk_s9xwindow.cpp:1120
-#, c-format
-msgid "The current frame in the movie is <b>%d</b>."
-msgstr "El cuadro actual en el vídeo is <b>%d</b>."
-
-#: src/gtk_s9xwindow.cpp:1170
-msgid "Save State"
-msgstr "Guardar estado"
-
-#: src/gtk_s9xwindow.cpp:1246
-msgid "Save SPC file..."
-msgstr "Guardar archivo SPC..."
-
-#: src/gtk_s9xwindow.cpp:1259
-msgid "SPC Files"
-msgstr "Archivos SPC"
-
-#: src/gtk_s9xwindow.cpp:1290
-#, c-format
-msgid "Couldn't save SPC file '%s'"
-msgstr "No se puede guardar el archivo SPC «%s»"
-
-#: src/gtk_s9xwindow.cpp:1330
-#, c-format
-msgid ""
-"<b>Information for %s</b>\n"
-"\n"
-"<i>Name:</i> %s\n"
-"<i>Speed:</i> %02X/%s\n"
-"<i>Map:</i> %s\n"
-"<i>Type:</i> %02x\n"
-"<i>Contents:</i> %s\n"
-"<i>ROM Size:</i> %s\n"
-"<i>Calculated Size:</i> %d\n"
-"<i>SRAM Size:</i> %s\n"
-"<i>Header Checksum:</i> %04X\n"
-"<i>Checksum Compliment:</i> %04X\n"
-"<i>Actual Checksum:</i> %04X\n"
-"<i>Video:</i> %s\n"
-"<i>CRC32:</i> %08X\n"
-"<i>Revision:</i> %s<b><i>%s%s</i></b>"
-msgstr ""
-"<b>Información de %s</b>\n"
-"\n"
-"<i>Nombre: </i> %s\n"
-"<i>Velocidad: </i> %02X / %s\n"
-"<i>Mapa: </i> %s\n"
-"<i>Tipo: </i> %02x\n"
-"<i>Contenido: </i> %s\n"
-"<i>Tamaño de la ROM: </i> %s\n"
-"<i>Tamaño Calculado: </i> %d\n"
-"<i>Tamaño de SRAM: </i> %s\n"
-"<i>Suma de verificación de la cabezera: </i> %04X\n"
-"<i>Suma de verificación cumplida: </i> %04X\n"
-"<i>Suma de verificación actual: </i> %04X\n"
-"<i>Vídeo: </i> %s\n"
-"<i>Suma CRC32: </i> %08X\n"
-"<i>Revisión: </i> %s<b><i>%s%s</i></b>"
-
-#: src/gtk_s9xwindow.cpp:1366
-msgid ""
-"\n"
-"\n"
-"This ROM has been auto-patched with "
-msgstr ""
-"\n"
-"\n"
-" Esta ROM ha sido parcheada automáticamente con "
-
-#: src/gtk_s9xwindow.cpp:1369
-msgid ""
-"\n"
-"\n"
-"This ROM has been modified or damaged"
-msgstr ""
-"\n"
-"\n"
-" Esta ROM ha sido modificado o dañado"
-
-#: src/gtk_s9xwindow.cpp:1375
-msgid "File Information"
-msgstr "Formato de vídeo"
-
-#: src/gtk_shader_parameters.cpp:99
-msgid "Export Shader Preset to:"
-msgstr "Exportar sombra preconfigurada a:"
-
-#: src/gtk_shader_parameters.cpp:124
-msgid "Shader Preset"
-msgstr "Sombra preconfigurada"
-
-#: src/gtk_shader_parameters.cpp:169
-msgid "Shader Parameters"
-msgstr "Parametros de sombras..."
-
-#: src/gtk_file.cpp:424
-msgid "Open SNES ROM Image"
-msgstr "Abrir imagen ROM"
-
-#: src/gtk_file.cpp:432
-msgid "SNES ROM Images"
-msgstr "Imagenes SNES"
 
 #: src/snes9x.ui:9
 msgid "About Snes9x"
@@ -474,7 +172,7 @@ msgstr "100 %"
 msgid "0%"
 msgstr "0 %"
 
-#: src/snes9x.ui:901 src/snes9x.ui:1928
+#: src/snes9x.ui:901 src/snes9x.ui:1982
 msgid "None"
 msgstr "Nada"
 
@@ -602,7 +300,7 @@ msgstr "Activa o desactiva la barra de menú"
 msgid "Exit fullscreen mode"
 msgstr "Salir del modo pantalla completa"
 
-#: src/snes9x.ui:1073 src/snes9x.ui:6917
+#: src/snes9x.ui:1073 src/snes9x.ui:6886
 msgid "Quit Snes9x"
 msgstr "Salir de Snes9x"
 
@@ -698,235 +396,259 @@ msgstr "Abrir imagen R_OM..."
 msgid "Open Recent"
 msgstr "Abrir reciente"
 
-#: src/snes9x.ui:1234
+#: src/snes9x.ui:1231
+msgid "Clear Recent Items"
+msgstr "Limpiar archivos recientes"
+
+#: src/snes9x.ui:1243
 msgid "Open with _NetPlay..."
 msgstr "Abrir con juego e_n red..."
 
-#: src/snes9x.ui:1237
+#: src/snes9x.ui:1246
 msgid "Open a ROM to use with NetPlay"
 msgstr "Abrir la ROM para usar con juego en red"
 
-#: src/snes9x.ui:1248
+#: src/snes9x.ui:1257
 msgid "Open _MultiCart..."
 msgstr "Abrir _multicartucho..."
 
-#: src/snes9x.ui:1263
+#: src/snes9x.ui:1272
 msgid "_Load State"
 msgstr "_Cargar estado"
 
-#: src/snes9x.ui:1273 src/snes9x.ui:1407
+#: src/snes9x.ui:1282 src/snes9x.ui:1416
 msgid "Slot _0"
 msgstr "Ranura _0"
 
-#: src/snes9x.ui:1282 src/snes9x.ui:1416
+#: src/snes9x.ui:1291 src/snes9x.ui:1425
 msgid "Slot _1"
 msgstr "Ranura _1"
 
-#: src/snes9x.ui:1291 src/snes9x.ui:1425
+#: src/snes9x.ui:1300 src/snes9x.ui:1434
 msgid "Slot _2"
 msgstr "Ranura _2"
 
-#: src/snes9x.ui:1300 src/snes9x.ui:1434
+#: src/snes9x.ui:1309 src/snes9x.ui:1443
 msgid "Slot _3"
 msgstr "Ranura _3"
 
-#: src/snes9x.ui:1309 src/snes9x.ui:1443
+#: src/snes9x.ui:1318 src/snes9x.ui:1452
 msgid "Slot _4"
 msgstr "Ranura _4"
 
-#: src/snes9x.ui:1318 src/snes9x.ui:1452
+#: src/snes9x.ui:1327 src/snes9x.ui:1461
 msgid "Slot _5"
 msgstr "Ranura _5"
 
-#: src/snes9x.ui:1327 src/snes9x.ui:1461
+#: src/snes9x.ui:1336 src/snes9x.ui:1470
 msgid "Slot _6"
 msgstr "Ranura _6"
 
-#: src/snes9x.ui:1336 src/snes9x.ui:1470
+#: src/snes9x.ui:1345 src/snes9x.ui:1479
 msgid "Slot _7"
 msgstr "Ranura _7"
 
-#: src/snes9x.ui:1345 src/snes9x.ui:1479
+#: src/snes9x.ui:1354 src/snes9x.ui:1488
 msgid "Slot _8"
 msgstr "Ranura _8"
 
-#: src/snes9x.ui:1354 src/snes9x.ui:1488
+#: src/snes9x.ui:1363 src/snes9x.ui:1497
 msgid "Slot _9"
 msgstr "Ranura _9"
 
-#: src/snes9x.ui:1369
+#: src/snes9x.ui:1378
 msgid "From _File..."
 msgstr "Desde de un arc_hivo..."
 
-#: src/snes9x.ui:1384
+#: src/snes9x.ui:1393
 msgid "_Undo Load State"
 msgstr "_Deshacer guardado de estado"
 
-#: src/snes9x.ui:1397
+#: src/snes9x.ui:1406
 msgid "_Save State"
 msgstr "_Guardar estado"
 
-#: src/snes9x.ui:1503
+#: src/snes9x.ui:1512
 msgid "To _File..."
 msgstr "En un archi_vo..."
 
-#: src/snes9x.ui:1520
+#: src/snes9x.ui:1529
 msgid "Save SPC..."
 msgstr "Guardar SPC..."
 
-#: src/snes9x.ui:1537
+#: src/snes9x.ui:1546
 msgid "Show ROM _Info..."
 msgstr "Mostrar _infomación de la ROM..."
 
-#: src/snes9x.ui:1554
+#: src/snes9x.ui:1563
 msgid "_Quit"
 msgstr "_Salir"
 
-#: src/snes9x.ui:1571
+#: src/snes9x.ui:1580
 msgid "_Emulation"
 msgstr "_Emulación"
 
-#: src/snes9x.ui:1578
+#: src/snes9x.ui:1587
 msgid "Run / _Continue"
 msgstr "Correr / _Continuar"
 
-#: src/snes9x.ui:1589
+#: src/snes9x.ui:1598
 msgid "_Pause"
 msgstr "_Pausar"
 
-#: src/snes9x.ui:1607
+#: src/snes9x.ui:1616
 msgid "Load _Movie..."
 msgstr "Cargar _vídeo..."
 
-#: src/snes9x.ui:1619
+#: src/snes9x.ui:1628
 msgid "R_ecord Movie..."
 msgstr "Grabar víd_eo..."
 
-#: src/snes9x.ui:1631
+#: src/snes9x.ui:1640
 msgid "_Stop Recording"
 msgstr "_Detener grabación"
 
-#: src/snes9x.ui:1643
+#: src/snes9x.ui:1652
 msgid "_Jump to Frame..."
 msgstr "_Ir al cuadro..."
 
-#: src/snes9x.ui:1661
+#: src/snes9x.ui:1670
 msgid "Sy_nc Clients"
 msgstr "Si_ncronizar clientes"
 
-#: src/snes9x.ui:1678
+#: src/snes9x.ui:1687
 msgid "Reset"
 msgstr "Reiniciar"
 
-#: src/snes9x.ui:1690
+#: src/snes9x.ui:1699
 msgid "Soft _Reset"
 msgstr "_Reinicio suave"
 
-#: src/snes9x.ui:1707
+#: src/snes9x.ui:1716
 msgid "_View"
 msgstr "_Ver"
 
-#: src/snes9x.ui:1715
+#: src/snes9x.ui:1724
 msgid "_Toggle Menubar"
 msgstr "Activa o desactiva la barra de menú"
 
-#: src/snes9x.ui:1732
+#: src/snes9x.ui:1741
 msgid "_Change Size"
 msgstr "_Cambiar tamaño"
 
-#: src/snes9x.ui:1746
+#: src/snes9x.ui:1755
 msgid "_1x"
 msgstr "_1x"
 
-#: src/snes9x.ui:1755
+#: src/snes9x.ui:1764
 msgid "_2x"
 msgstr "_2x"
 
-#: src/snes9x.ui:1764
+#: src/snes9x.ui:1773
 msgid "_3x"
 msgstr "_3x"
 
-#: src/snes9x.ui:1773
+#: src/snes9x.ui:1782
 msgid "_4x"
 msgstr "_4x"
 
-#: src/snes9x.ui:1782
+#: src/snes9x.ui:1791
 msgid "_5x"
 msgstr "_5x"
 
-#: src/snes9x.ui:1799
+#: src/snes9x.ui:1800
+msgid "_6x"
+msgstr "_6x"
+
+#: src/snes9x.ui:1809
+msgid "_7x"
+msgstr "_7x"
+
+#: src/snes9x.ui:1818
+msgid "_8x"
+msgstr "_8x"
+
+#: src/snes9x.ui:1827
+msgid "_9x"
+msgstr "_9x"
+
+#: src/snes9x.ui:1836
+msgid "1_0x"
+msgstr "1_0x"
+
+#: src/snes9x.ui:1853
 msgid "_Fullscreen"
 msgstr "_Pantalla completa"
 
-#: src/snes9x.ui:1816
+#: src/snes9x.ui:1870
 msgid "_Options"
 msgstr "_Opciones"
 
-#: src/snes9x.ui:1825
+#: src/snes9x.ui:1879
 msgid "Controller Ports"
 msgstr "Control de mandos"
 
-#: src/snes9x.ui:1834
+#: src/snes9x.ui:1888
 msgid "SNES Port 1"
 msgstr "Mando SNES 1"
 
-#: src/snes9x.ui:1844 src/snes9x.ui:1888
+#: src/snes9x.ui:1898 src/snes9x.ui:1942
 msgid "Joypad"
 msgstr "Mando"
 
-#: src/snes9x.ui:1853 src/snes9x.ui:1897
+#: src/snes9x.ui:1907 src/snes9x.ui:1951
 msgid "Mouse"
 msgstr "Ratón"
 
-#: src/snes9x.ui:1863 src/snes9x.ui:1917
+#: src/snes9x.ui:1917 src/snes9x.ui:1971
 msgid "Superscope"
 msgstr "Súper Escopeta Nintendo"
 
-#: src/snes9x.ui:1878
+#: src/snes9x.ui:1932
 msgid "SNES Port 2"
 msgstr "Mando SNES 2"
 
-#: src/snes9x.ui:1907
+#: src/snes9x.ui:1961
 msgid "Multitap"
 msgstr "Toques múltiples"
 
-#: src/snes9x.ui:1954
+#: src/snes9x.ui:2008
 msgid "_Cheats..."
 msgstr "_Trucos..."
 
-#: src/snes9x.ui:1968
+#: src/snes9x.ui:2022
 msgid "_Shader Parameters..."
 msgstr "Parametro_s de sombras..."
 
-#: src/snes9x.ui:1984
+#: src/snes9x.ui:2038
 msgid "_Preferences..."
 msgstr "_Preferencias..."
 
-#: src/snes9x.ui:2029
+#: src/snes9x.ui:2083
 msgid "Open Multiple ROM Images (MultiCart)"
 msgstr "Abrir múltiples imágenes ROM (multicartucho)"
 
-#: src/snes9x.ui:2092
+#: src/snes9x.ui:2146
 msgid "Slot A:"
 msgstr "Ranura A:"
 
-#: src/snes9x.ui:2104
+#: src/snes9x.ui:2158
 msgid "Select an Image for Slot A"
 msgstr "Seleccione una imagen para la ranura A"
 
-#: src/snes9x.ui:2128
+#: src/snes9x.ui:2182
 msgid "Slot B:"
 msgstr "Ranura B:"
 
-#: src/snes9x.ui:2140
+#: src/snes9x.ui:2194
 msgid "Select an Image for Slot B"
 msgstr "Seleccione una imagen para la ranura B"
 
-#: src/snes9x.ui:2172
+#: src/snes9x.ui:2226
 msgid "Snes9x NetPlay"
 msgstr "Juego en red de Snes9x"
 
-#: src/snes9x.ui:2249
+#: src/snes9x.ui:2303
 msgid ""
 "The game chosen will be loaded before connecting. This field can be blank if "
 "the server will send the ROM image"
@@ -934,50 +656,50 @@ msgstr ""
 "El juego seleccionado será cargado antes de conectarse. Este campo debe "
 "estar en blanco si el servidor envía la ROM"
 
-#: src/snes9x.ui:2264 src/snes9x.ui:3982 src/snes9x.ui:5097 src/snes9x.ui:5112
-#: src/snes9x.ui:5129 src/snes9x.ui:5146 src/snes9x.ui:5163
+#: src/snes9x.ui:2318 src/snes9x.ui:3951 src/snes9x.ui:5066 src/snes9x.ui:5081
+#: src/snes9x.ui:5098 src/snes9x.ui:5115 src/snes9x.ui:5132
 msgid "Browse..."
 msgstr "Explorar..."
 
-#: src/snes9x.ui:2286
+#: src/snes9x.ui:2340
 msgid "Clear entry"
 msgstr "Limpiar entrada"
 
-#: src/snes9x.ui:2306
+#: src/snes9x.ui:2360
 msgid "<b>ROM Image</b>"
 msgstr "<b>Imagen ROM</b>"
 
-#: src/snes9x.ui:2335
+#: src/snes9x.ui:2389
 msgid "Connect to another computer"
 msgstr "Conectar a otro equipo"
 
-#: src/snes9x.ui:2339
+#: src/snes9x.ui:2393
 msgid "Connect to another computer that is running Snes9x NetPlay as a server"
 msgstr ""
 "Conectar a otro equipo que este ejecutando el juego en red de Snes9x como "
 "servidor"
 
-#: src/snes9x.ui:2359
+#: src/snes9x.ui:2413
 msgid "Name or IP address:"
 msgstr "Nombre o dirección IP:"
 
-#: src/snes9x.ui:2371
+#: src/snes9x.ui:2425
 msgid "Domain name or internet protocol address of a remote computer"
 msgstr "Nombre de dominio o dirección IP del equipo remoto"
 
-#: src/snes9x.ui:2387
+#: src/snes9x.ui:2441
 msgid "Port:"
 msgstr "Puerto:"
 
-#: src/snes9x.ui:2399
+#: src/snes9x.ui:2453
 msgid "Connect to specified TCP port on remote computer"
 msgstr "Conectar al puerto TCP especifico de un equipo remoto"
 
-#: src/snes9x.ui:2424
+#: src/snes9x.ui:2478
 msgid "Act as a server"
 msgstr "Ser un servidor"
 
-#: src/snes9x.ui:2428
+#: src/snes9x.ui:2482
 msgid ""
 "Host a game on this computer as Player 1, requiring extra throughput to "
 "support multitple users"
@@ -985,15 +707,15 @@ msgstr ""
 "Ser el anfitrión del juego como el jugador 1, requiere salidas extras para "
 "soportar múltiples clientes"
 
-#: src/snes9x.ui:2448
+#: src/snes9x.ui:2502
 msgid "<b>Server</b>"
 msgstr "<b>Servidor</b>"
 
-#: src/snes9x.ui:2478
+#: src/snes9x.ui:2532
 msgid "Sync using reset"
 msgstr "Sincronizar usando reiniciar"
 
-#: src/snes9x.ui:2482
+#: src/snes9x.ui:2536
 msgid ""
 "Reset the game when players join instead of transferring potentially "
 "unreliable freeze states"
@@ -1001,11 +723,11 @@ msgstr ""
 "Reiniciar el juego cuando los jugadores se unan en lugar de transferir "
 "estados de congelación potencialmente poco fiables"
 
-#: src/snes9x.ui:2493
+#: src/snes9x.ui:2547
 msgid "Send ROM image to clients"
 msgstr "Enviar imagen ROM a los clientes"
 
-#: src/snes9x.ui:2497
+#: src/snes9x.ui:2551
 msgid ""
 "Send the running game image to players instead of requiring them to have "
 "their own copies"
@@ -1013,199 +735,205 @@ msgstr ""
 "Enviar el juego actual a los jugadores en lugar de exigir que ellos tengan "
 "sus propias copias"
 
-#: src/snes9x.ui:2515
+#: src/snes9x.ui:2569
 msgid "Default port:"
 msgstr "Puerto estándar:"
 
-#: src/snes9x.ui:2527
+#: src/snes9x.ui:2581
 msgid "TCP port used as a connection point for remote clients"
 msgstr "El puerto TCP usado como punto de conexión para clientes remotos"
 
-#: src/snes9x.ui:2559
+#: src/snes9x.ui:2613
 msgid "Ask server to pause when"
 msgstr "Preguntar al servidor cuando pausar"
 
-#: src/snes9x.ui:2589
+#: src/snes9x.ui:2643
 msgid "frames behind"
 msgstr "cuadros de retraso"
 
-#: src/snes9x.ui:2612
+#: src/snes9x.ui:2666
 msgid "<b>Settings</b>"
 msgstr "<b>Configuraciones</b>"
 
-#: src/snes9x.ui:2640
+#: src/snes9x.ui:2694
 msgid "Snes9x Preferences"
 msgstr "Configuración de Snes9x"
 
-#: src/snes9x.ui:2756
+#: src/snes9x.ui:2810
 msgid "Use fullscreen on ROM open"
 msgstr "Usar la pantalla completa al abrir una imagen ROM"
 
-#: src/snes9x.ui:2760
+#: src/snes9x.ui:2814
 msgid "Go to fullscreen mode immediately after opening a ROM"
 msgstr "Ir a pantalla completa inmediatamente tras abrir una ROM"
 
-#: src/snes9x.ui:2772
+#: src/snes9x.ui:2826
 msgid "Show local time"
 msgstr "Mostrar tiempo local"
 
-#: src/snes9x.ui:2787
+#: src/snes9x.ui:2841
 msgid "Show frame rate"
 msgstr "Mostrar cuadros por segundo"
 
-#: src/snes9x.ui:2802
+#: src/snes9x.ui:2856
 msgid "Show pressed keys"
 msgstr "Mostrar teclas pulsadas"
 
-#: src/snes9x.ui:2817
+#: src/snes9x.ui:2871
 msgid "Use overscanned height"
 msgstr "Usar altura sobrescaneada"
 
-#: src/snes9x.ui:2821
+#: src/snes9x.ui:2875
 msgid "Use SNES extended height. Will probably cause letterboxing"
 msgstr "Usar altura extendida del SNES. Esto podría causar bordes negros"
 
-#: src/snes9x.ui:2838
+#: src/snes9x.ui:2892
 msgid "Change fullscreen resolution:"
 msgstr "Cambiar la resolución a pantalla completa:"
 
-#: src/snes9x.ui:2842
+#: src/snes9x.ui:2896
 msgid "Changes the screen resolution when running Snes9x in fullscreen mode"
 msgstr "Cambiar la resolución cuando se ejecute Snes9x a pantalla completa"
 
-#: src/snes9x.ui:2885
+#: src/snes9x.ui:2939
 msgid "Basic Settings"
 msgstr "Configuraciones básicas"
 
-#: src/snes9x.ui:2926
+#: src/snes9x.ui:2980
 msgid "Scale image to fit window"
 msgstr "Ajustar la imagen hasta encajar en la ventana"
 
-#: src/snes9x.ui:2930
+#: src/snes9x.ui:2984
 msgid "Scales the image so no black bars are present"
 msgstr "Ajustar la imagen hasta que los bordes negros desaparezcan"
 
-#: src/snes9x.ui:2950
+#: src/snes9x.ui:3004
 msgid "Aspect ratio:"
 msgstr "Relación de aspecto:"
 
-#: src/snes9x.ui:2985
+#: src/snes9x.ui:3039
 msgid "Maintain aspect-ratio"
 msgstr "Mantener la relación de aspecto"
 
-#: src/snes9x.ui:2989
+#: src/snes9x.ui:3043
 msgid "Scales the image as large as possible without distortion"
 msgstr "Ajusta la imagen lo más grande posible sin distorcionarla"
 
-#: src/snes9x.ui:3006
+#: src/snes9x.ui:3060
 msgid "Use "
 msgstr "Usar "
 
-#: src/snes9x.ui:3010
+#: src/snes9x.ui:3064
 msgid "Allows scaling and filtering to use multiple processors"
 msgstr "Permitir el uso de múltiples hilos de procesos para ajuste y filtrado"
 
-#: src/snes9x.ui:3042
+#: src/snes9x.ui:3096
 msgid "threads for filtering and scaling"
 msgstr "hilos para filtrar y ajustar"
 
-#: src/snes9x.ui:3066
+#: src/snes9x.ui:3120
 msgid "High-resolution effect:"
 msgstr "Efectos de alta resolución:"
 
-#: src/snes9x.ui:3109
+#: src/snes9x.ui:3163
 msgid "Apply scaling filter:"
 msgstr "Aplicar ajustes de filtros:"
 
-#: src/snes9x.ui:3177
+#: src/snes9x.ui:3231
 msgid "Video preset:"
 msgstr "Predeterminados del vídeo:"
 
-#: src/snes9x.ui:3191
+#: src/snes9x.ui:3245
 msgid "Composite"
 msgstr "Composición"
 
-#: src/snes9x.ui:3205
+#: src/snes9x.ui:3259
 msgid "S-Video"
 msgstr "S-Video"
 
-#: src/snes9x.ui:3219
+#: src/snes9x.ui:3273
 msgid "RGB"
 msgstr "RVA (RGB)"
 
-#: src/snes9x.ui:3233
+#: src/snes9x.ui:3287
 msgid "Monochrome"
 msgstr "Monócromo"
 
-#: src/snes9x.ui:3274
+#: src/snes9x.ui:3328
 msgid "Artifacts:"
 msgstr "Artefactos:"
 
-#: src/snes9x.ui:3289
+#: src/snes9x.ui:3343
 msgid "Sharpness:"
 msgstr "Nitidez:"
 
-#: src/snes9x.ui:3304
+#: src/snes9x.ui:3358
 msgid "Brightness:"
 msgstr "Brillo:"
 
-#: src/snes9x.ui:3319
+#: src/snes9x.ui:3373
 msgid "Contrast:"
 msgstr "Contraste:"
 
-#: src/snes9x.ui:3334
+#: src/snes9x.ui:3388
 msgid "Saturation:"
 msgstr "Saturación:"
 
-#: src/snes9x.ui:3349
+#: src/snes9x.ui:3403
 msgid "Hue:"
 msgstr "Matiz:"
 
-#: src/snes9x.ui:3550
+#: src/snes9x.ui:3604
 msgid "Gamma:"
 msgstr "Gama:"
 
-#: src/snes9x.ui:3565
+#: src/snes9x.ui:3619
 msgid "Fringing:"
 msgstr "Margen:"
 
-#: src/snes9x.ui:3580
+#: src/snes9x.ui:3634
 msgid "Bleed:"
 msgstr "Purga:"
 
-#: src/snes9x.ui:3595
+#: src/snes9x.ui:3649
 msgid "Resolution:"
 msgstr "Resolución:"
 
-#: src/snes9x.ui:3625
+#: src/snes9x.ui:3679
 msgid "Merge odd and even fields"
 msgstr "Mezclar los campos pares e impares"
 
-#: src/snes9x.ui:3647 src/snes9x.ui:3706
+#: src/snes9x.ui:3701 src/snes9x.ui:3760
 msgid "Scanline intensity:"
 msgstr "Intensidad de líneas de escaneado:"
 
-#: src/snes9x.ui:3751
+#: src/snes9x.ui:3805
 msgid "Scaling"
 msgstr "Lineas de escaneado"
 
-#: src/snes9x.ui:3793
+#: src/snes9x.ui:3847
 msgid "Bilinear-filter output"
 msgstr "Salida con filtro bilinear"
 
-#: src/snes9x.ui:3814
+#: src/snes9x.ui:3862
+msgid "Use best settings for FreeSync/G-Sync when fullscreen"
+msgstr ""
+"Use la mejor configuración para FreeSync/G-Sync cuando esté en pantalla "
+"completa"
+
+#: src/snes9x.ui:3883
 msgid "Sync to vertical blank"
 msgstr "Sincronizar con blanco vertical"
 
-#: src/snes9x.ui:3818
+#: src/snes9x.ui:3887
 msgid "Sync the image to the vertical retrace to stop tearing"
 msgstr "Sincronizar la imagen con el refresco vertical para evitar el desgarro"
 
-#: src/snes9x.ui:3830
-msgid "Reduce input lag with glFinish"
+#: src/snes9x.ui:3899
+msgid "Reduce input lag"
 msgstr "Reducir el retraso de entrada con glFinish"
 
-#: src/snes9x.ui:3834
+#: src/snes9x.ui:3903
 msgid ""
 "Sync the program with the video output after every displayed frame to reduce "
 "input latency"
@@ -1213,52 +941,15 @@ msgstr ""
 "Sincronizar el programa con la salida de vídeo después de cada cuadro "
 "mostrado para reducir la latencia de entrada"
 
-#: src/snes9x.ui:3845
-msgid "Reduce input lag with sync control"
-msgstr "Reducir el retraso de entrada con sync_control"
-
-#: src/snes9x.ui:3849
-msgid ""
-"More modern method for syncing the program with the video output to reduce "
-"input latency. Allows GUI events to occur in the meantime"
-msgstr ""
-"Sincronizar el programa con la salida de vídeo después de cada cuadro "
-"mostrado para reducir la latencia de entrada, pero permite que ocurran "
-"eventos de GUI mientras tanto"
-
-#: src/snes9x.ui:3860
-msgid "Allow non-power-of-two textures"
-msgstr "Permitir texturas que no sean múltiplos de dos"
-
-#: src/snes9x.ui:3864
-msgid "Prevents edge artifacts, but can slow performance"
-msgstr "Previene artefactos en los bordes, pero puede disminuir el rendimiento"
-
-#: src/snes9x.ui:3875
-msgid "Use pixel-buffer objects"
-msgstr "Usar objetos del búfer de píxeles"
-
-#: src/snes9x.ui:3880
-msgid "Can be faster or slower depending on drivers"
-msgstr "Puede ser más rápido o más lento dependiendo de los controladores"
-
-#: src/snes9x.ui:3900
-msgid "Different formats can yield highly different performance"
-msgstr "Diferentes formatos pueden producir rendimientos muy diferentes"
-
-#: src/snes9x.ui:3907
-msgid "Pixel-buffer format:"
-msgstr "Formato del búfer de píxeles:"
-
-#: src/snes9x.ui:3950
+#: src/snes9x.ui:3919
 msgid "Shader:"
 msgstr "Sombras:"
 
-#: src/snes9x.ui:4014
+#: src/snes9x.ui:3983
 msgid "Force an inverted byte-ordering"
 msgstr "Fuerza una orden de bytes invertido"
 
-#: src/snes9x.ui:4018
+#: src/snes9x.ui:3987
 msgid ""
 "Forces a swapped byte-ordering for cases where the system's endian is used "
 "instead of the video card"
@@ -1266,75 +957,73 @@ msgstr ""
 "Fuerza un orden de bytes intercambiado para los casos en que se utiliza "
 "endian del sistema en lugar del de la tarjeta de vídeo"
 
-#: src/snes9x.ui:4042
+#: src/snes9x.ui:4011
 msgid "Hardware Acceleration"
 msgstr "Aceleración por hardware"
 
-#: src/snes9x.ui:4071
+#: src/snes9x.ui:4040
 msgid "Display"
 msgstr "Pantalla"
 
-#: src/snes9x.ui:4124
+#: src/snes9x.ui:4093
 msgid "Sound driver:"
 msgstr "Controlador de sonido:"
 
-#: src/snes9x.ui:4159
+#: src/snes9x.ui:4128
 msgid "Automatically adjust input rate to display"
 msgstr "Ajustar automáticamente la tasa de entrada a mostrar"
 
-#: src/snes9x.ui:4163
+#: src/snes9x.ui:4132
 msgid "Sets the correct input rate based on the display's refresh rate"
 msgstr ""
 "Establece la velocidad de entrada correcta en función de la frecuencia de "
 "actualización de la pantalla"
 
-#: src/snes9x.ui:4175
+#: src/snes9x.ui:4144
 msgid "Dynamic rate control"
 msgstr "Control de velocidad dinámica"
 
-#: src/snes9x.ui:4179
+#: src/snes9x.ui:4148
 msgid "Smooth out slight hiccups in sound input rate"
 msgstr "Suavizar los pequeños contratiempos en la tasa de entrada de sonido"
 
-#: src/snes9x.ui:4190
+#: src/snes9x.ui:4159
 msgid "Mute sound output"
 msgstr "Silenciar la salida de sonido"
 
-#: src/snes9x.ui:4194
+#: src/snes9x.ui:4163
 msgid "Disables output of sound"
 msgstr "Desactivar la salida de sonido"
 
-#: src/snes9x.ui:4206
-#, fuzzy
+#: src/snes9x.ui:4175
 msgid "Mute sound when using turbo or rewind"
 msgstr "Silenciar el sonido cuando se esté en turbo"
 
-#: src/snes9x.ui:4210
-#, fuzzy
+#: src/snes9x.ui:4179
 msgid "Disables output of sound when using turbo or rewind"
 msgstr "Deshabilitar la salida de sonido cuando se esté en turbo"
 
-#: src/snes9x.ui:4233
+#: src/snes9x.ui:4202
 msgid "Playback rate:"
 msgstr "Velocidad de reproducción:"
 
-#: src/snes9x.ui:4268
+#: src/snes9x.ui:4237
 msgid "milliseconds"
 msgstr "milisegundos"
 
-#: src/snes9x.ui:4291
+#: src/snes9x.ui:4260
 msgid "Buffer size:"
 msgstr "Tamaño del búfer:"
 
-#: src/snes9x.ui:4305
+#: src/snes9x.ui:4274
 msgid "Dynamic rate limit:"
 msgstr "Límite de velocidad dinámica:"
 
-#: src/snes9x.ui:4350
+#: src/snes9x.ui:4319
 msgid "Input rate:"
 msgstr "Tasa de entrada:"
 
-#: src/snes9x.ui:4363
+#: src/snes9x.ui:4332
 msgid ""
 "Adjust to produce more or less data. Decrease the rate if experiencing "
 "crackling. Increase the rate if experiencing frame-rate stuttering. Best "
@@ -1344,47 +1033,47 @@ msgstr ""
 "chisporroteo. Aumentar la tasa si experimentar tartamudeo en la velocidad de "
 "los cuadros por segundo. Mejor usa con la opción «Sincronizar con sonido»"
 
-#: src/snes9x.ui:4412
+#: src/snes9x.ui:4381
 msgid "Video rate:"
 msgstr "Tasa de refresco del vídeo:"
 
-#: src/snes9x.ui:4425
+#: src/snes9x.ui:4394
 msgid "label"
 msgstr "etiqueta"
 
-#: src/snes9x.ui:4450
+#: src/snes9x.ui:4419
 msgid "<b>Sound Settings</b>"
 msgstr "<b>Configuraciones del sonido</b>"
 
-#: src/snes9x.ui:4484 src/snes9x.ui:8715
+#: src/snes9x.ui:4453 src/snes9x.ui:8684
 msgid "Sound"
 msgstr "Sonido"
 
-#: src/snes9x.ui:4542
+#: src/snes9x.ui:4511
 msgid "Throttling method:"
 msgstr "Método de regulación:"
 
-#: src/snes9x.ui:4584
+#: src/snes9x.ui:4553
 msgid "<b>Speed Control</b>"
 msgstr "<b>Control de Velocidad</b>"
 
-#: src/snes9x.ui:4622
+#: src/snes9x.ui:4591
 msgid "Rewind buffer size (MB):"
 msgstr "Tamaño del búfer de rebobinado (MB):"
 
-#: src/snes9x.ui:4664
+#: src/snes9x.ui:4633
 msgid "Number of frames between rewind snapshots:"
 msgstr "Número de cuadros entre instantáneas rebobinadas:"
 
-#: src/snes9x.ui:4705
+#: src/snes9x.ui:4674
 msgid "<b>Rewind Settings</b>"
 msgstr "<b>Configuración Rebobinado</b>"
 
-#: src/snes9x.ui:4736
+#: src/snes9x.ui:4705
 msgid "Allow invalid VRAM access"
 msgstr "Permitir accesos no validos a la VRAM"
 
-#: src/snes9x.ui:4740
+#: src/snes9x.ui:4709
 msgid ""
 "Allows ROM hacks to write to screen at the wrong time. Only use if you know "
 "your ROM hack expects this"
@@ -1392,91 +1081,91 @@ msgstr ""
 "Permite que los ROM hackeadas escriban en la pantalla en el momento "
 "equivocado. Úselo solo si sabe que su ROM hackeada espera que esto pase"
 
-#: src/snes9x.ui:4750
+#: src/snes9x.ui:4719
 msgid "Allow opposing dpad directions"
 msgstr "Permitir direcciones opuestas en el mando"
 
-#: src/snes9x.ui:4754
+#: src/snes9x.ui:4723
 msgid "Let left and right or up and down be pressed at the same time"
 msgstr ""
 "Permitir que izquierda y derecha o arriba y abajo puedan ser pulsados al "
 "mismo tiempo"
 
-#: src/snes9x.ui:4765
+#: src/snes9x.ui:4734
 msgid "Overclock CPU"
 msgstr "Overclock CPU"
 
-#: src/snes9x.ui:4769
+#: src/snes9x.ui:4738
 msgid "Reduces slowdown, but has potential to break games"
 msgstr "Reduce la ralentización, pero tiene potencial para romper juegos"
 
-#: src/snes9x.ui:4780
+#: src/snes9x.ui:4749
 msgid "Remove sprite limit"
 msgstr "Eliminar el límite de sprite"
 
-#: src/snes9x.ui:4784
+#: src/snes9x.ui:4753
 msgid "Reduces flicker, but may cause graphical artifacts"
 msgstr "Reduce el parpadeo, pero puede causar artefactos gráficos"
 
-#: src/snes9x.ui:4795
+#: src/snes9x.ui:4764
 msgid "Redirect echo buffer overflow"
 msgstr "Redireccionar el eco de desbordamiento de búfer"
 
-#: src/snes9x.ui:4799
+#: src/snes9x.ui:4768
 msgid "Allows old addmusic hacks to work, but will likely hurt other games"
 msgstr ""
 "Permite que funcionen los viejos hacks de addmusic, pero es probable que "
 "dañen otros juegos"
 
-#: src/snes9x.ui:4817
+#: src/snes9x.ui:4786
 msgid "SuperFX clock speed %:"
 msgstr "Velocidad de reloj SuperFX %:"
 
-#: src/snes9x.ui:4856
+#: src/snes9x.ui:4825
 msgid "Gaussian is the correct behavior for SNES hardware"
 msgstr "Gaussian es el comportamiento correcto del SNES"
 
-#: src/snes9x.ui:4863
+#: src/snes9x.ui:4832
 msgid "Sound filter:"
 msgstr "Interpolación sonido:"
 
-#: src/snes9x.ui:4900
+#: src/snes9x.ui:4869
 msgid "<b>Hacks</b>"
 msgstr "<b>Hacks</b>"
 
-#: src/snes9x.ui:4942 src/snes9x.ui:7132
+#: src/snes9x.ui:4911 src/snes9x.ui:7101
 msgid "Emulation"
 msgstr "Emulación"
 
-#: src/snes9x.ui:5183
+#: src/snes9x.ui:5152
 msgid "SRAM:"
 msgstr "SRAM:"
 
-#: src/snes9x.ui:5195
+#: src/snes9x.ui:5164
 msgid "Save states:"
 msgstr "Estados guardados:"
 
-#: src/snes9x.ui:5209
+#: src/snes9x.ui:5178
 msgid "Cheats:"
 msgstr "Trucos:"
 
-#: src/snes9x.ui:5223
+#: src/snes9x.ui:5192
 msgid "Patches:"
 msgstr "Parches:"
 
-#: src/snes9x.ui:5237
+#: src/snes9x.ui:5206
 msgid "Exports:"
 msgstr "Exportaciones:"
 
-#: src/snes9x.ui:5261
+#: src/snes9x.ui:5230
 msgid "<b>Game Data Locations</b>"
 msgstr "<b>Ubicación de los datos del juego</b>"
 
-#: src/snes9x.ui:5294
+#: src/snes9x.ui:5263
 msgid "Save SRAM:"
 msgstr "Guardar SRAM:"
 
-#: src/snes9x.ui:5306
+#: src/snes9x.ui:5275
 msgid ""
 "Automatically save the game's SRAM at this interval. Setting this to 0 will "
 "only save when quitting or changing ROMs"
@@ -1484,144 +1173,144 @@ msgstr ""
 "Guardar automáticamente la SRAM del juego en este intervalo. Al establecerla "
 "en 0 solamente cuando se cambie o finalize la ROM"
 
-#: src/snes9x.ui:5325
+#: src/snes9x.ui:5294
 msgid "seconds after change"
 msgstr "segundos después del cambiar"
 
-#: src/snes9x.ui:5341
+#: src/snes9x.ui:5310
 msgid "<b>Automatic Saving</b>"
 msgstr "<b>Guardado automático</b>"
 
-#: src/snes9x.ui:5378
+#: src/snes9x.ui:5347
 msgid "Files"
 msgstr "Archivos"
 
-#: src/snes9x.ui:5409
+#: src/snes9x.ui:5378
 msgid "<b>Joypad:</b>"
 msgstr "<b>Mando:</b>"
 
-#: src/snes9x.ui:5450
+#: src/snes9x.ui:5419
 msgid "_Reset"
 msgstr "_Reiniciar"
 
-#: src/snes9x.ui:5478
+#: src/snes9x.ui:5447
 msgid "Swap with:"
 msgstr "Intercambiar con:"
 
-#: src/snes9x.ui:5506
+#: src/snes9x.ui:5475
 msgid "_Swap"
 msgstr "_Intercambiar"
 
-#: src/snes9x.ui:5528
+#: src/snes9x.ui:5497
 msgid "Use modifier keys (CTRL, SHIFT, ALT) directly"
 msgstr "Usar las teclas modificadoras (CTL, Mayús, ALT) directamente"
 
-#: src/snes9x.ui:5532
+#: src/snes9x.ui:5501
 msgid "Allow using modifier keys as independent keys instead of modifiers"
 msgstr ""
 "Permitir usa las teclas modificadoras como teclas independientes en lugar de "
 "modificadoras"
 
-#: src/snes9x.ui:5566
+#: src/snes9x.ui:5535
 msgid "Up"
 msgstr "Arriba"
 
-#: src/snes9x.ui:5578
+#: src/snes9x.ui:5547
 msgid "Down"
 msgstr "Abajo"
 
-#: src/snes9x.ui:5592
+#: src/snes9x.ui:5561
 msgid "Left"
 msgstr "Izquierda"
 
-#: src/snes9x.ui:5606
+#: src/snes9x.ui:5575
 msgid "Right"
 msgstr "Derecha"
 
-#: src/snes9x.ui:5620
+#: src/snes9x.ui:5589
 msgid "Start"
 msgstr "Start"
 
-#: src/snes9x.ui:5634
+#: src/snes9x.ui:5603
 msgid "Select"
 msgstr "Select"
 
-#: src/snes9x.ui:5775 src/snes9x.ui:6005 src/snes9x.ui:6217
+#: src/snes9x.ui:5744 src/snes9x.ui:5974 src/snes9x.ui:6186
 msgid "A"
 msgstr "A"
 
-#: src/snes9x.ui:5787 src/snes9x.ui:6017 src/snes9x.ui:6229
+#: src/snes9x.ui:5756 src/snes9x.ui:5986 src/snes9x.ui:6198
 msgid "B"
 msgstr "B"
 
-#: src/snes9x.ui:5801 src/snes9x.ui:6031 src/snes9x.ui:6243
+#: src/snes9x.ui:5770 src/snes9x.ui:6000 src/snes9x.ui:6212
 msgid "X"
 msgstr "X"
 
-#: src/snes9x.ui:5815 src/snes9x.ui:6045 src/snes9x.ui:6257
+#: src/snes9x.ui:5784 src/snes9x.ui:6014 src/snes9x.ui:6226
 msgid "Y"
 msgstr "Y"
 
-#: src/snes9x.ui:5829 src/snes9x.ui:6059 src/snes9x.ui:6271
+#: src/snes9x.ui:5798 src/snes9x.ui:6028 src/snes9x.ui:6240
 msgid "L"
 msgstr "L"
 
-#: src/snes9x.ui:5843 src/snes9x.ui:6073 src/snes9x.ui:6285
+#: src/snes9x.ui:5812 src/snes9x.ui:6042 src/snes9x.ui:6254
 msgid "R"
 msgstr "R"
 
-#: src/snes9x.ui:5977
+#: src/snes9x.ui:5946
 msgid "Buttons"
 msgstr "Botones"
 
-#: src/snes9x.ui:6418
+#: src/snes9x.ui:6387
 msgid "<b>Sticky</b>"
 msgstr "<b>Pegajoso</b>"
 
-#: src/snes9x.ui:6434
+#: src/snes9x.ui:6403
 msgid "<b>Turbo</b>"
 msgstr "<b>Turbo</b>"
 
-#: src/snes9x.ui:6453
+#: src/snes9x.ui:6422
 msgid "Turbo / Sticky Buttons"
 msgstr "Turbo / Botones pegajosos"
 
-#: src/snes9x.ui:6490
+#: src/snes9x.ui:6459
 msgid "Set new axis bindings at:"
 msgstr "Establecer nuevos enlaces de ejes en:"
 
-#: src/snes9x.ui:6502
+#: src/snes9x.ui:6471
 msgid ""
 "Changes the amount a joystick should be tilted to register a button press"
 msgstr ""
 "Cambia la cantidad que un mando debe estar inclinado para registrar una "
 "pulsación del botón"
 
-#: src/snes9x.ui:6521
+#: src/snes9x.ui:6490
 msgid "percent"
 msgstr "por ciento"
 
-#: src/snes9x.ui:6538
+#: src/snes9x.ui:6507
 msgid "<b>Joystick Axis Threshold</b>"
 msgstr "<b>Umbral del eje del mando</b>"
 
-#: src/snes9x.ui:6575
+#: src/snes9x.ui:6544
 msgid "Center all axes on all joysticks and press Calibrate."
 msgstr "Centre todos los ejes de todas las palancas de mando y pulse Calibrar."
 
-#: src/snes9x.ui:6590
+#: src/snes9x.ui:6559
 msgid "Cali_brate"
 msgstr "Cali_brar"
 
-#: src/snes9x.ui:6623
+#: src/snes9x.ui:6592
 msgid "<b>Calibration</b>"
 msgstr "<b>Calibración</b>"
 
-#: src/snes9x.ui:6644
+#: src/snes9x.ui:6613
 msgid "Joystick Options"
 msgstr "Opciones del mando"
 
-#: src/snes9x.ui:6662 src/snes9x.ui:9014
+#: src/snes9x.ui:6631 src/snes9x.ui:8983
 msgid ""
 "<small>Click an entry and then press the desired keys or joystick button\n"
 "<i>Escape</i>: Move to next<i>  Shift-Escape</i>: Clear selected</small>"
@@ -1631,271 +1320,275 @@ msgstr ""
 "<i>Escape</i>: Pasa al siguiente  <i>Mayús-Escape</i>: Borrar el "
 "seleccionado</small>"
 
-#: src/snes9x.ui:6700
+#: src/snes9x.ui:6669
 msgid "Joypads"
 msgstr "Mandos"
 
-#: src/snes9x.ui:6727
+#: src/snes9x.ui:6696
 msgid "<b>Snes9x Emulator Shortcut Keys</b>"
 msgstr "<b>Atajos de teclado del emulador Snes9x</b>"
 
-#: src/snes9x.ui:6778
+#: src/snes9x.ui:6747
 msgid "Soft reset"
 msgstr "Reinicio suave"
 
-#: src/snes9x.ui:6792
+#: src/snes9x.ui:6761
 msgid "Hardware reset"
 msgstr "Reinicio por hardware"
 
-#: src/snes9x.ui:6806
+#: src/snes9x.ui:6775
 msgid "Increase frame time"
 msgstr "Aumentar los tiempos de los cuadros"
 
-#: src/snes9x.ui:6820
+#: src/snes9x.ui:6789
 msgid "Decrease frame time"
 msgstr "Disminuir los tiempos de los cuadros"
 
-#: src/snes9x.ui:6834
+#: src/snes9x.ui:6803
 msgid "Increase frame rate"
 msgstr "Aumentar los cuadros por segundo"
 
-#: src/snes9x.ui:6848
+#: src/snes9x.ui:6817
 msgid "Decrease frame rate"
 msgstr "Disminuir los cuadros por segundo"
 
-#: src/snes9x.ui:6862
+#: src/snes9x.ui:6831
 msgid "Pause"
 msgstr "Pausa"
 
-#: src/snes9x.ui:6876
+#: src/snes9x.ui:6845
 msgid "Toggle turbo"
 msgstr "Alternar turbo"
 
-#: src/snes9x.ui:6890
+#: src/snes9x.ui:6859
 msgid "Enable turbo"
 msgstr "Activar Turbo"
 
-#: src/snes9x.ui:6905
+#: src/snes9x.ui:6874
 msgid "Open ROM"
 msgstr "Abrir ROM"
 
-#: src/snes9x.ui:7164
+#: src/snes9x.ui:7133
 msgid "Toggle BG layer 0"
 msgstr "Alternar capa de fondo 0"
 
-#: src/snes9x.ui:7176
+#: src/snes9x.ui:7145
 msgid "Toggle BG layer 1"
 msgstr "Alternar capa de fondo 1"
 
-#: src/snes9x.ui:7190
+#: src/snes9x.ui:7159
 msgid "Toggle BG layer 2"
 msgstr "Alternar capa de fondo 2"
 
-#: src/snes9x.ui:7204
+#: src/snes9x.ui:7173
 msgid "Toggle BG layer 3"
 msgstr "Alternar capa de fondo 3"
 
-#: src/snes9x.ui:7218
+#: src/snes9x.ui:7187
 msgid "Toggle sprites"
 msgstr "Alternar «sprites»"
 
-#: src/snes9x.ui:7232
+#: src/snes9x.ui:7201
 msgid "BG layering hack"
 msgstr "Hack de capas de fondo"
 
-#: src/snes9x.ui:7246
+#: src/snes9x.ui:7215
 msgid "Screenshot"
 msgstr "Captura de pantalla"
 
-#: src/snes9x.ui:7260
+#: src/snes9x.ui:7229
 msgid "Toggle fullscreen"
 msgstr "Alternar pantalla completa"
 
-#: src/snes9x.ui:7424
+#: src/snes9x.ui:7393
 msgid "Graphics"
 msgstr "Gráficos"
 
-#: src/snes9x.ui:7461
+#: src/snes9x.ui:7430
 msgid "Save current slot"
 msgstr "Guardar ranura actual"
 
-#: src/snes9x.ui:7494
+#: src/snes9x.ui:7463
 msgid "Load current slot"
 msgstr "Cargar ranura actual"
 
-#: src/snes9x.ui:7527
+#: src/snes9x.ui:7496
 msgid "Increment and save"
 msgstr "Incremento y guardado"
 
-#: src/snes9x.ui:7560
+#: src/snes9x.ui:7529
 msgid "Decrement and load"
 msgstr "Decremento y carga"
 
-#: src/snes9x.ui:7593
+#: src/snes9x.ui:7562
 msgid "Increment slot"
 msgstr "Incrementar ranura"
 
-#: src/snes9x.ui:7626
+#: src/snes9x.ui:7595
 msgid "Decrement slot"
 msgstr "Decrementar ranura"
 
-#: src/snes9x.ui:7670
+#: src/snes9x.ui:7639
 msgid "<b>Quick save state</b>"
 msgstr "<b>Guardado rápido de estado</b>"
 
-#: src/snes9x.ui:7685
+#: src/snes9x.ui:7654
 msgid "<b>Quick load state</b>"
 msgstr "<b>Carga rápida de estado</b>"
 
-#: src/snes9x.ui:7700 src/snes9x.ui:7840
+#: src/snes9x.ui:7669 src/snes9x.ui:7809
 msgid "Slot 0"
 msgstr "Ranura 0"
 
-#: src/snes9x.ui:7714 src/snes9x.ui:7856
+#: src/snes9x.ui:7683 src/snes9x.ui:7825
 msgid "Slot 1"
 msgstr "Ranura 1"
 
-#: src/snes9x.ui:7728 src/snes9x.ui:7872
+#: src/snes9x.ui:7697 src/snes9x.ui:7841
 msgid "Slot 2"
 msgstr "Ranura 2"
 
-#: src/snes9x.ui:7742 src/snes9x.ui:7888
+#: src/snes9x.ui:7711 src/snes9x.ui:7857
 msgid "Slot 3"
 msgstr "Ranura 3"
 
-#: src/snes9x.ui:7756 src/snes9x.ui:7904
+#: src/snes9x.ui:7725 src/snes9x.ui:7873
 msgid "Slot 4"
 msgstr "Ranura 4"
 
-#: src/snes9x.ui:7770 src/snes9x.ui:7920
+#: src/snes9x.ui:7739 src/snes9x.ui:7889
 msgid "Slot 5"
 msgstr "Ranura 5"
 
-#: src/snes9x.ui:7784 src/snes9x.ui:7936
+#: src/snes9x.ui:7753 src/snes9x.ui:7905
 msgid "Slot 6"
 msgstr "Ranura 6"
 
-#: src/snes9x.ui:7798 src/snes9x.ui:7952
+#: src/snes9x.ui:7767 src/snes9x.ui:7921
 msgid "Slot 7"
 msgstr "Ranura 7"
 
-#: src/snes9x.ui:7812 src/snes9x.ui:7968
+#: src/snes9x.ui:7781 src/snes9x.ui:7937
 msgid "Slot 8"
 msgstr "Ranura 8"
 
-#: src/snes9x.ui:7826 src/snes9x.ui:7984
+#: src/snes9x.ui:7795 src/snes9x.ui:7953
 msgid "Slot 9"
 msgstr "Ranura 9"
 
-#: src/snes9x.ui:8423
+#: src/snes9x.ui:8359
+msgid "Save States"
+msgstr "Estados guardados"
+
+#: src/snes9x.ui:8392
 msgid "Toggle sound channel 0"
 msgstr "Alternar canal de sonido 0"
 
-#: src/snes9x.ui:8435
+#: src/snes9x.ui:8404
 msgid "Toggle sound channel 1"
 msgstr "Alternar canal de sonido 1"
 
-#: src/snes9x.ui:8449
+#: src/snes9x.ui:8418
 msgid "Toggle sound channel 2"
 msgstr "Alternar canal de sonido 2"
 
-#: src/snes9x.ui:8463
+#: src/snes9x.ui:8432
 msgid "Toggle sound channel 3"
 msgstr "Alternar canal de sonido 3"
 
-#: src/snes9x.ui:8477
+#: src/snes9x.ui:8446
 msgid "Toggle sound channel 4"
 msgstr "Alternar canal de sonido 4"
 
-#: src/snes9x.ui:8491
+#: src/snes9x.ui:8460
 msgid "Toggle sound channel 5"
 msgstr "Alternar canal de sonido 5"
 
-#: src/snes9x.ui:8505
+#: src/snes9x.ui:8474
 msgid "Toggle sound channel 6"
 msgstr "Alternar canal de sonido 6"
 
-#: src/snes9x.ui:8519
+#: src/snes9x.ui:8488
 msgid "Toggle sound channel 7"
 msgstr "Alternar canal de sonido 7"
 
-#: src/snes9x.ui:8533
+#: src/snes9x.ui:8502
 msgid "Toggle all sound channels"
 msgstr "Alternar todos los canales de sonido"
 
-#: src/snes9x.ui:8738
+#: src/snes9x.ui:8707
 msgid "Seek to frame"
 msgstr "Tratar de enmarcar"
 
-#: src/snes9x.ui:8753
+#: src/snes9x.ui:8722
 msgid "Load Movie"
 msgstr "Cargar vídeo"
 
-#: src/snes9x.ui:8768
+#: src/snes9x.ui:8737
 msgid "Stop movie recording"
 msgstr "Detener grabación de vídeo"
 
-#: src/snes9x.ui:8783
+#: src/snes9x.ui:8752
 msgid "Begin movie recording"
 msgstr "Iniciar grabación de vídeo"
 
-#: src/snes9x.ui:8798
+#: src/snes9x.ui:8767
 msgid "Save SPC"
 msgstr "Guardar SPC"
 
-#: src/snes9x.ui:8898
+#: src/snes9x.ui:8867
 msgid "Swap controllers 1 & 2"
 msgstr "Intercambiar controles 1 y 2"
 
-#: src/snes9x.ui:8929
+#: src/snes9x.ui:8898
 msgid "Rewind"
 msgstr "Rebobinar"
 
-#: src/snes9x.ui:8960
+#: src/snes9x.ui:8929
 msgid "Capture/release mouse"
 msgstr "Capturar/Soltar el ratón"
 
-#: src/snes9x.ui:8996
+#: src/snes9x.ui:8965
 msgid "Misc"
 msgstr "Varios"
 
-#: src/snes9x.ui:9052
+#: src/snes9x.ui:9021
 msgid "Shortcuts"
 msgstr "Atajos"
 
-#: src/snes9x.ui:9091
+#: src/snes9x.ui:9060
 msgid "Pause emulation when switching away from Snes9x"
 msgstr "Pausar la emulación cuando el foco no esté en Snes9x"
 
-#: src/snes9x.ui:9105
+#: src/snes9x.ui:9074
 msgid "Force-enable button and menu icons"
 msgstr "Mostrar iconos en menús y botones"
 
-#: src/snes9x.ui:9126
+#: src/snes9x.ui:9095
 msgid "The ESC key should:"
 msgstr "La tecla ESC permite:"
 
-#: src/snes9x.ui:9168
+#: src/snes9x.ui:9137
 msgid "Initial background:"
 msgstr "Pantalla inicial:"
 
-#: src/snes9x.ui:9209
+#: src/snes9x.ui:9178
 msgid "<b>Window Behavior</b>"
 msgstr "<b>Comportamiento de la Ventana</b>"
 
-#: src/snes9x.ui:9239
+#: src/snes9x.ui:9208
 msgid "Prevent the screensaver from activating"
 msgstr "Prevenir que el protector de pantalla se active"
 
-#: src/snes9x.ui:9259
+#: src/snes9x.ui:9228
 msgid "<b>Screensaver</b>"
 msgstr "<b>Protector de pantalla</b>"
 
-#: src/snes9x.ui:9293
+#: src/snes9x.ui:9262
 msgid "UI"
 msgstr "IU"
 
-#: src/snes9x.ui:9327
+#: src/snes9x.ui:9296
 msgid ""
 "  Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.\n"
 "\n"
@@ -1959,6 +1652,279 @@ msgstr ""
 "\n"
 "  Super NES y Super Nintendo Entertainment System son marcas comerciales de\n"
 "  Nintendo Co., Limited y sus filiales."
+
+#, c-format
+#~ msgid "Keyboard %s%s%s%s"
+#~ msgstr "Tecla %s%s%s%s"
+
+#, c-format
+#~ msgid "Axis %u %s %u%%"
+#~ msgstr "Eje %u %s %u%%"
+
+#~ msgid "Error"
+#~ msgstr "Error"
+
+#~ msgid "Description"
+#~ msgstr "Descripción"
+
+#~ msgid "Cheat"
+#~ msgstr "Truco"
+
+#~ msgid "No description"
+#~ msgstr "Sin descripción"
+
+#~ msgid "Couldn't find any cheat codes in input."
+#~ msgstr "No se pudo encontrar ningún código de trucos en la entrada."
+
+#~ msgid "Couldn't Find Cheats Database"
+#~ msgstr "No se pudo encontrar la base de datos de trucos"
+
+#~ msgid "No Matching Game Found"
+#~ msgstr "No se encontró un juego que coincida"
+
+#~ msgid ""
+#~ "The database file <b>cheats.bml</b> was not found. It is normally "
+#~ "installed with Snes9x, but you may also place a custom copy in your "
+#~ "configuration or cheats directory."
+#~ msgstr ""
+#~ "No se encontró el archivo de base de datos <b>cheats.bml</b>. Normalmente "
+#~ "se instala con Snes9x, pero también puede colocar una copia personalizada "
+#~ "en su directorio de configuración o trucos."
+
+#~ msgid ""
+#~ "No matching game was found in the databases. If you are using a non-"
+#~ "official translation or modified copy, you may be able to find and "
+#~ "manually enter the codes."
+#~ msgstr ""
+#~ "No se encontró ningún juego que coincida en las bases de datos Si está "
+#~ "utilizando una traducción no oficial o una copia modificada, es posible "
+#~ "que pueda encontrar e ingresar manualmente los códigos."
+
+#, c-format
+#~ msgid "Couldn't create config directory: %s\n"
+#~ msgstr "No se pudo crear el directorio de configuracion: %s\n"
+
+#~ msgid "Connection Error"
+#~ msgstr "Error de connección"
+
+#~ msgid "Current joystick centers have been saved."
+#~ msgstr "Los centros de ejes del mando fueron guardados."
+
+#~ msgid "Calibration Complete"
+#~ msgstr "Calibrado completado"
+
+#~ msgid "Snes9x version: "
+#~ msgstr "Versión de Snes9x: "
+
+#~ msgid "GTK+ port version: "
+#~ msgstr "Adaptación GTK+ versión: "
+
+#~ msgid "English localization by Brandon Wright"
+#~ msgstr ""
+#~ "Localización al inglés por Brandon Wright\n"
+#~ "Localización al español por INUKAZE, Jota (aka Jristz), y otros"
+
+#~ msgid ""
+#~ "Changing the SRAM directory with a game loaded will replace the .srm file "
+#~ "in the selected directory with the SRAM from the running game. If this is "
+#~ "not what you want, click 'cancel'."
+#~ msgstr ""
+#~ "Cambiar el directorio de SRAM con un juego cargado reemplazará el "
+#~ "archivo .srm en el directorio seleccionado con el SRAM del juego en "
+#~ "ejecución. Si esto no es lo que quieres, haz clic en «Cancelar»."
+
+#~ msgid "Warning: Possible File Overwrite"
+#~ msgstr "Advertencia: posible sobrescritura de archivos"
+
+#~ msgid "Select Folder"
+#~ msgstr "Seleccione una carpeta"
+
+#~ msgid "HQ2x"
+#~ msgstr "HQ 2x"
+
+#~ msgid "HQ3x"
+#~ msgstr "HQ 3x"
+
+#~ msgid "HQ4x"
+#~ msgstr "HQ 4x"
+
+#~ msgid "2xBRZ"
+#~ msgstr "2x BRZ"
+
+#~ msgid "3xBRZ"
+#~ msgstr "3x BRZ"
+
+#~ msgid "4xBRZ"
+#~ msgstr "4x BRZ"
+
+#~ msgid "None - Use software scaler"
+#~ msgstr "Nada - Usar ajuste por software"
+
+#~ msgid "OpenGL - Use 3D graphics hardware"
+#~ msgstr "OpenGL - Usar aceleración en 3D por hardware"
+
+#~ msgid "XVideo - Use hardware video blitter"
+#~ msgstr "XVideo - Usar cegador de vídeo por hardware"
+
+#~ msgid "PortAudio"
+#~ msgstr "Port Audio"
+
+#~ msgid "Open Sound System"
+#~ msgstr "Open Sound System"
+
+#~ msgid "SDL"
+#~ msgstr "SDL"
+
+#~ msgid "ALSA"
+#~ msgstr "ALSA"
+
+#~ msgid "PulseAudio"
+#~ msgstr "Pulseaudio"
+
+#, c-format
+#~ msgid "Error opening: %s\n"
+#~ msgstr "Error abriendo: %s\n"
+
+#~ msgid "Couldn't load files."
+#~ msgstr "No se puedieron cargar los archivos."
+
+#~ msgid "Open SNES Movie"
+#~ msgstr "Abrir vídeo SNES"
+
+#~ msgid "New SNES Movie"
+#~ msgstr "Nuevo vídeo SNES"
+
+#~ msgid "SNES Movies"
+#~ msgstr "Vídeos SNES"
+
+#~ msgid "All Files"
+#~ msgstr "Todos los archivos"
+
+#, c-format
+#~ msgid "Couldn't load file '%s'"
+#~ msgstr "No puedo cargar el archivo «%s»"
+
+#~ msgid "Load Saved State"
+#~ msgstr "Cargar estado guardado"
+
+#, c-format
+#~ msgid "The current frame in the movie is <b>%d</b>."
+#~ msgstr "El cuadro actual en el vídeo is <b>%d</b>."
+
+#~ msgid "Save State"
+#~ msgstr "Guardar estado"
+
+#~ msgid "Save SPC file..."
+#~ msgstr "Guardar archivo SPC..."
+
+#~ msgid "SPC Files"
+#~ msgstr "Archivos SPC"
+
+#, c-format
+#~ msgid "Couldn't save SPC file '%s'"
+#~ msgstr "No se puede guardar el archivo SPC «%s»"
+
+#, c-format
+#~ msgid ""
+#~ "<b>Information for %s</b>\n"
+#~ "\n"
+#~ "<i>Name:</i> %s\n"
+#~ "<i>Speed:</i> %02X/%s\n"
+#~ "<i>Map:</i> %s\n"
+#~ "<i>Type:</i> %02x\n"
+#~ "<i>Contents:</i> %s\n"
+#~ "<i>ROM Size:</i> %s\n"
+#~ "<i>Calculated Size:</i> %d\n"
+#~ "<i>SRAM Size:</i> %s\n"
+#~ "<i>Header Checksum:</i> %04X\n"
+#~ "<i>Checksum Compliment:</i> %04X\n"
+#~ "<i>Actual Checksum:</i> %04X\n"
+#~ "<i>Video:</i> %s\n"
+#~ "<i>CRC32:</i> %08X\n"
+#~ "<i>Revision:</i> %s<b><i>%s%s</i></b>"
+#~ msgstr ""
+#~ "<b>Información de %s</b>\n"
+#~ "\n"
+#~ "<i>Nombre: </i> %s\n"
+#~ "<i>Velocidad: </i> %02X / %s\n"
+#~ "<i>Mapa: </i> %s\n"
+#~ "<i>Tipo: </i> %02x\n"
+#~ "<i>Contenido: </i> %s\n"
+#~ "<i>Tamaño de la ROM: </i> %s\n"
+#~ "<i>Tamaño Calculado: </i> %d\n"
+#~ "<i>Tamaño de SRAM: </i> %s\n"
+#~ "<i>Suma de verificación de la cabezera: </i> %04X\n"
+#~ "<i>Suma de verificación cumplida: </i> %04X\n"
+#~ "<i>Suma de verificación actual: </i> %04X\n"
+#~ "<i>Vídeo: </i> %s\n"
+#~ "<i>Suma CRC32: </i> %08X\n"
+#~ "<i>Revisión: </i> %s<b><i>%s%s</i></b>"
+
+#~ msgid ""
+#~ "\n"
+#~ "\n"
+#~ "This ROM has been auto-patched with "
+#~ msgstr ""
+#~ "\n"
+#~ "\n"
+#~ " Esta ROM ha sido parcheada automáticamente con "
+
+#~ msgid ""
+#~ "\n"
+#~ "\n"
+#~ "This ROM has been modified or damaged"
+#~ msgstr ""
+#~ "\n"
+#~ "\n"
+#~ " Esta ROM ha sido modificado o dañado"
+
+#~ msgid "File Information"
+#~ msgstr "Formato de vídeo"
+
+#~ msgid "Export Shader Preset to:"
+#~ msgstr "Exportar sombra preconfigurada a:"
+
+#~ msgid "Shader Preset"
+#~ msgstr "Sombra preconfigurada"
+
+#~ msgid "Shader Parameters"
+#~ msgstr "Parametros de sombras..."
+
+#~ msgid "Open SNES ROM Image"
+#~ msgstr "Abrir imagen ROM"
+
+#~ msgid "SNES ROM Images"
+#~ msgstr "Imagenes SNES"
+
+#~ msgid "Reduce input lag with sync control"
+#~ msgstr "Reducir el retraso de entrada con sync_control"
+
+#~ msgid ""
+#~ "More modern method for syncing the program with the video output to "
+#~ "reduce input latency. Allows GUI events to occur in the meantime"
+#~ msgstr ""
+#~ "Sincronizar el programa con la salida de vídeo después de cada cuadro "
+#~ "mostrado para reducir la latencia de entrada, pero permite que ocurran "
+#~ "eventos de GUI mientras tanto"
+
+#~ msgid "Allow non-power-of-two textures"
+#~ msgstr "Permitir texturas que no sean múltiplos de dos"
+
+#~ msgid "Prevents edge artifacts, but can slow performance"
+#~ msgstr ""
+#~ "Previene artefactos en los bordes, pero puede disminuir el rendimiento"
+
+#~ msgid "Use pixel-buffer objects"
+#~ msgstr "Usar objetos del búfer de píxeles"
+
+#~ msgid "Can be faster or slower depending on drivers"
+#~ msgstr "Puede ser más rápido o más lento dependiendo de los controladores"
+
+#~ msgid "Different formats can yield highly different performance"
+#~ msgstr "Diferentes formatos pueden producir rendimientos muy diferentes"
+
+#~ msgid "Pixel-buffer format:"
+#~ msgstr "Formato del búfer de píxeles:"
 
 #~ msgid "GLSL Shader Parameters"
 #~ msgstr "Parámetros de sombra GLSL"

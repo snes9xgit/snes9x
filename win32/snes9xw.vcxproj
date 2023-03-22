@@ -117,8 +117,8 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)..\external\glslang</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;ALLOW_CPU_OVERCLOCK;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;D3D_DEBUG_INFO;DIRECTDRAW_SUPPORT;USE_SLANG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)..\external\glslang;$(ProjectDir)..\external\stb;$(ProjectDir)..\external\vulkan-headers\include;$(ProjectDir)..\external\VulkanMemoryAllocator-Hpp\include;$(ProjectDir)..\external\fmt\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;ALLOW_CPU_OVERCLOCK;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;D3D_DEBUG_INFO;DIRECTDRAW_SUPPORT;USE_SLANG;%(PreprocessorDefinitions);VK_USE_PLATFORM_WIN32_KHR;VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1;VMA_DYNAMIC_VULKAN_FUNCTIONS=1;VMA_STATIC_VULKAN_FUNCTIONS=0;VMA_USE_STL_SHARED_MUTEX=0</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
       <PrecompiledHeader />
@@ -132,6 +132,8 @@
       <CompileAs>Default</CompileAs>
       <ForcedIncludeFiles>_tfwopen.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <AdditionalOptions>/Zc:__cplusplus $(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -166,8 +168,8 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)..\external\glslang</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;ALLOW_CPU_OVERCLOCK;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;D3D_DEBUG_INFO;DIRECTDRAW_SUPPORT;USE_SLANG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)..\external\glslang;$(ProjectDir)..\external\stb;$(ProjectDir)..\external\vulkan-headers\include;$(ProjectDir)..\external\VulkanMemoryAllocator-Hpp\include;$(ProjectDir)..\external\fmt\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;ALLOW_CPU_OVERCLOCK;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;D3D_DEBUG_INFO;DIRECTDRAW_SUPPORT;USE_SLANG;%(PreprocessorDefinitions);VK_USE_PLATFORM_WIN32_KHR;VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1;VMA_DYNAMIC_VULKAN_FUNCTIONS=1;VMA_STATIC_VULKAN_FUNCTIONS=0;VMA_USE_STL_SHARED_MUTEX=0</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
       <PrecompiledHeader />
@@ -181,6 +183,8 @@
       <CompileAs>Default</CompileAs>
       <ForcedIncludeFiles>_tfwopen.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <AdditionalOptions>/Zc:__cplusplus $(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -220,8 +224,8 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)..\external\glslang;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;ALLOW_CPU_OVERCLOCK;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;DIRECTDRAW_SUPPORT;USE_SLANG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)..\external\glslang;$(ProjectDir)..\external\stb;$(ProjectDir)..\external\vulkan-headers\include;$(ProjectDir)..\external\VulkanMemoryAllocator-Hpp\include;$(ProjectDir)..\external\fmt\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;ALLOW_CPU_OVERCLOCK;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;DIRECTDRAW_SUPPORT;USE_SLANG;%(PreprocessorDefinitions);VK_USE_PLATFORM_WIN32_KHR;VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1;VMA_DYNAMIC_VULKAN_FUNCTIONS=1;VMA_STATIC_VULKAN_FUNCTIONS=0;VMA_USE_STL_SHARED_MUTEX=0</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
@@ -236,6 +240,8 @@
       <CompileAs>Default</CompileAs>
       <ForcedIncludeFiles>_tfwopen.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <AdditionalOptions>/Zc:__cplusplus $(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -273,8 +279,8 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)..\external\glslang;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;ALLOW_CPU_OVERCLOCK;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;DIRECTDRAW_SUPPORT;USE_SLANG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)..\external\glslang;$(ProjectDir)..\external\stb;$(ProjectDir)..\external\vulkan-headers\include;$(ProjectDir)..\external\VulkanMemoryAllocator-Hpp\include;$(ProjectDir)..\external\fmt\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;ALLOW_CPU_OVERCLOCK;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;DIRECTDRAW_SUPPORT;USE_SLANG;%(PreprocessorDefinitions);VK_USE_PLATFORM_WIN32_KHR;VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1;VMA_DYNAMIC_VULKAN_FUNCTIONS=1;VMA_STATIC_VULKAN_FUNCTIONS=0;VMA_USE_STL_SHARED_MUTEX=0</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
@@ -289,6 +295,8 @@
       <CompileAs>Default</CompileAs>
       <ForcedIncludeFiles>_tfwopen.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <AdditionalOptions>/Zc:__cplusplus $(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -350,6 +358,7 @@
     <CustomBuild Include="..\gfx.h" />
     <ClInclude Include="..\filter\xbrz_config.h" />
     <ClInclude Include="..\filter\xbrz_tools.h" />
+    <ClInclude Include="..\fscompat.h" />
     <ClInclude Include="..\jma\7z.h" />
     <ClInclude Include="..\jma\aribitcd.h" />
     <ClInclude Include="..\jma\ariconst.h" />
@@ -369,7 +378,6 @@
     <ClInclude Include="..\jma\s9x-jma.h" />
     <ClInclude Include="..\jma\winout.h" />
     <CustomBuild Include="..\language.h" />
-    <CustomBuild Include="..\logger.h" />
     <CustomBuild Include="..\memmap.h" />
     <CustomBuild Include="..\messages.h" />
     <CustomBuild Include="..\missing.h" />
@@ -430,6 +438,17 @@
     <ClInclude Include="..\unzip\mztools.h" />
     <ClInclude Include="..\unzip\unzip.h" />
     <ClInclude Include="..\unzip\zip.h" />
+    <ClInclude Include="..\vulkan\slang_helpers.hpp" />
+    <ClInclude Include="..\vulkan\slang_preset.hpp" />
+    <ClInclude Include="..\vulkan\slang_preset_ini.hpp" />
+    <ClInclude Include="..\vulkan\slang_shader.hpp" />
+    <ClInclude Include="..\vulkan\vulkan_context.hpp" />
+    <ClInclude Include="..\vulkan\vulkan_pipeline_image.hpp" />
+    <ClInclude Include="..\vulkan\vulkan_shader_chain.hpp" />
+    <ClInclude Include="..\vulkan\vulkan_simple_output.hpp" />
+    <ClInclude Include="..\vulkan\vulkan_slang_pipeline.hpp" />
+    <ClInclude Include="..\vulkan\vulkan_swapchain.hpp" />
+    <ClInclude Include="..\vulkan\vulkan_texture.hpp" />
     <ClInclude Include="AVIOutput.h" />
     <ClInclude Include="CCGShader.h" />
     <ClInclude Include="CD3DCG.h" />
@@ -441,6 +460,7 @@
     <ClInclude Include="CSaveLoadWithPreviewDlg.h" />
     <ClInclude Include="COpenGL.h" />
     <ClInclude Include="CShaderParamDlg.h" />
+    <ClInclude Include="CVulkan.h" />
     <ClInclude Include="CWaveOut.h" />
     <ClInclude Include="CXAudio2.h" />
     <ClInclude Include="dxerr.h" />
@@ -487,12 +507,15 @@
     <ClCompile Include="..\dsp2.cpp" />
     <ClCompile Include="..\dsp3.cpp" />
     <ClCompile Include="..\dsp4.cpp" />
+    <ClCompile Include="..\external\fmt\src\format.cc" />
+    <ClCompile Include="..\external\stb\stb_image_implementation.cpp" />
     <ClCompile Include="..\filter\2xsai.cpp" />
     <ClCompile Include="..\filter\blit.cpp" />
     <ClCompile Include="..\filter\epx.cpp" />
     <ClCompile Include="..\filter\hq2x.cpp" />
     <ClCompile Include="..\filter\snes_ntsc.c" />
     <ClCompile Include="..\filter\xbrz.cpp" />
+    <ClCompile Include="..\fscompat.cpp" />
     <ClCompile Include="..\fxdbg.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
@@ -516,7 +539,6 @@
     <ClCompile Include="..\jma\s9x-jma.cpp" />
     <ClCompile Include="..\jma\winout.cpp" />
     <ClCompile Include="..\loadzip.cpp" />
-    <ClCompile Include="..\logger.cpp" />
     <ClCompile Include="..\memmap.cpp" />
     <ClCompile Include="..\movie.cpp" />
     <ClCompile Include="..\msu1.cpp" />
@@ -576,6 +598,20 @@
     <ClCompile Include="..\unzip\mztools.c" />
     <ClCompile Include="..\unzip\unzip.c" />
     <ClCompile Include="..\unzip\zip.c" />
+    <ClCompile Include="..\vulkan\slang_helpers.cpp" />
+    <ClCompile Include="..\vulkan\slang_preset.cpp" />
+    <ClCompile Include="..\vulkan\slang_preset_ini.cpp" />
+    <ClCompile Include="..\vulkan\slang_preset_test.cpp" />
+    <ClCompile Include="..\vulkan\slang_shader.cpp" />
+    <ClCompile Include="..\vulkan\vk_mem_alloc_implementation.cpp" />
+    <ClCompile Include="..\vulkan\vulkan_context.cpp" />
+    <ClCompile Include="..\vulkan\vulkan_hpp_storage.cpp" />
+    <ClCompile Include="..\vulkan\vulkan_pipeline_image.cpp" />
+    <ClCompile Include="..\vulkan\vulkan_shader_chain.cpp" />
+    <ClCompile Include="..\vulkan\vulkan_simple_output.cpp" />
+    <ClCompile Include="..\vulkan\vulkan_slang_pipeline.cpp" />
+    <ClCompile Include="..\vulkan\vulkan_swapchain.cpp" />
+    <ClCompile Include="..\vulkan\vulkan_texture.cpp" />
     <ClCompile Include="AVIOutput.cpp" />
     <ClCompile Include="CCGShader.cpp" />
     <ClCompile Include="CD3DCG.cpp" />
@@ -586,6 +622,7 @@
     <ClCompile Include="CSaveLoadWithPreviewDlg.cpp" />
     <ClCompile Include="COpenGL.cpp" />
     <ClCompile Include="CShaderParamDlg.cpp" />
+    <ClCompile Include="CVulkan.cpp" />
     <ClCompile Include="CWaveOut.cpp" />
     <ClCompile Include="CXAudio2.cpp" />
     <ClCompile Include="DumpAtEnd.cpp" />
@@ -602,107 +639,9 @@
     <ClCompile Include="_tfwopen.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\i386\c4.asm">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\fxemu2.asm">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\fxemu2b.asm">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\fxemu2c.asm">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\fxtable.asm">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\sfxproc.asm">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\zsnes.asm">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\zsnesc4.asm">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
-    </CustomBuild>
     <None Include="rsrc\nodrop.cur" />
     <None Include="rsrc\rt_manif.bin" />
     <CustomBuild Include="snes9x.cfg">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
-    </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="..\i386\c4.obj">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\fxemu2.obj">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\fxemu2b.obj">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\fxemu2c.obj">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\fxtable.obj">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\sfxproc.obj">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\zsnes.obj">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
-    </CustomBuild>
-    <CustomBuild Include="..\i386\zsnesc4.obj">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>

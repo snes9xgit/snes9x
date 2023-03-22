@@ -93,6 +93,11 @@ void GtkBuilderWindow::set_entry_text(const char *name, const char *text)
     get_object<Gtk::Entry>(name)->set_text(text);
 }
 
+void GtkBuilderWindow::set_entry_text(const char *name, const std::string &text)
+{
+    get_object<Gtk::Entry>(name)->set_text(text);
+}
+
 float GtkBuilderWindow::get_slider(const char *name)
 {
     return get_object<Gtk::Range>(name)->get_value();

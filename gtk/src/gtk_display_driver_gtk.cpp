@@ -4,7 +4,6 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include "gtk_compat.h"
 #include <cairo.h>
 #include "gtk_display.h"
 #include "gtk_display_driver_gtk.h"
@@ -107,7 +106,7 @@ void S9xGTKDisplayDriver::clear()
     S9xRect dst;
     dst.w = window->last_width;
     dst.h = window->last_height;
-    get_filter_scale(dst.w, dst.h);
+    apply_filter_scale(dst.w, dst.h);
     dst = S9xApplyAspect(dst.w, dst.h, width, height);
 
     if (dst.x > 0)
@@ -132,7 +131,7 @@ void S9xGTKDisplayDriver::clear()
     window->release_cairo();
 }
 
-void S9xGTKDisplayDriver::refresh(int width, int height)
+void S9xGTKDisplayDriver::refresh()
 {
     clear();
 }

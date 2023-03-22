@@ -13,7 +13,7 @@ snes9x_linux-gtk-amd64_task:
     - apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install meson gettext libsdl2-dev libgtkmm-3.0-dev libgtk-3-dev libminizip-dev portaudio19-dev glslang-dev cmake
 
   compile_script:
-    - meson build gtk --buildtype=release --strip
+    - cmake -G Ninja -B build -S gtk -DCMAKE_BUILD_TYPE=Release
     - ninja -j2 -C build
 
   package_script:
@@ -70,8 +70,8 @@ snes9x_freebsd-x11-amd64_task:
 
 
 snes9x_macOS-amd64_task:
-  osx_instance:
-    image: mojave-xcode
+  macos_instance:
+    image: ghcr.io/cirruslabs/macos-ventura-xcode:latest
 
   compile_script:
     - xcodebuild -project macosx/snes9x.xcodeproj -target Snes9x -configuration Release build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
@@ -161,8 +161,8 @@ libretro_emscripten_task:
 
 
 libretro_macOS-amd64_task:
-  osx_instance:
-    image: mojave-xcode
+  macos_instance:
+    image: ghcr.io/cirruslabs/macos-ventura-xcode:latest
   compile_script:
     - make -j2 -C libretro
   build_artifacts:
@@ -194,13 +194,4 @@ libretro_nintendo-ngc_task:
     - make -j2 -C libretro platform=ngc
   build_artifacts:
     path: "libretro/snes9x_libretro_ngc.a"
-
-
-libretro_playstation-psp_task:
-  container:
-    image: bkcsoft/psptoolchain
-  compile_script:
-    - make -j2 -C libretro platform=unix
-  build_artifacts:
-    path: "libretro/snes9x_libretro.so"
 

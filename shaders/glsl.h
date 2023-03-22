@@ -145,14 +145,13 @@ struct GLSLLut
 
 struct GLSLParam
 {
-    char name[PATH_MAX];
-    char id[256];
+    std::string name;
+    std::string id;
     float min;
     float max;
     float val;
     float step;
     int digits;
-    GLint unif[glsl_max_passes];
 };
 
 struct GLSLShader
@@ -178,6 +177,8 @@ struct GLSLShader
     std::vector<GLSLPass> pass;
     std::vector<GLSLLut> lut;
     std::vector<GLSLParam> param;
+    std::vector<std::vector<GLint>> unif;
+
     int max_prev_frame;
     std::deque<GLSLPass> prev_frame;
     std::vector<GLuint> vaos;

@@ -8,7 +8,7 @@
 #define _SNES9X_H_
 
 #ifndef VERSION
-#define VERSION	"1.61"
+#define VERSION	"1.62"
 #endif
 
 #include "port.h"
@@ -58,11 +58,13 @@
 #define SNES_HEIGHT_EXTENDED		239
 #define MAX_SNES_WIDTH				(SNES_WIDTH * 2)
 #define MAX_SNES_HEIGHT				(SNES_HEIGHT_EXTENDED * 2)
-#define IMAGE_WIDTH					(Settings.SupportHiRes ? MAX_SNES_WIDTH : SNES_WIDTH)
-#define IMAGE_HEIGHT				(Settings.SupportHiRes ? MAX_SNES_HEIGHT : SNES_HEIGHT_EXTENDED)
 
 #define	NTSC_MASTER_CLOCK			21477272.727272 // 21477272 + 8/11 exact
 #define	PAL_MASTER_CLOCK			21281370.0
+#define NTSC_PROGRESSIVE_FRAME_RATE	60.09881389744051
+#define NTSC_INTERLACED_FRAME_RATE	59.94005994
+#define PAL_PROGRESSIVE_FRAME_RATE	50.006977968
+
 
 #define SNES_MAX_NTSC_VCOUNTER		262
 #define SNES_MAX_PAL_VCOUNTER		312
@@ -215,7 +217,7 @@ struct SSettings
 	bool8	JustifierMaster;
 	bool8	MultiPlayer5Master;
 	bool8	MacsRifleMaster;
-	
+
 	bool8	ForceLoROM;
 	bool8	ForceHiROM;
 	bool8	ForceHeader;
@@ -242,7 +244,6 @@ struct SSettings
 	int32	DynamicRateLimit; /* Multiplied by 1000 */
 	int32	InterpolationMethod;
 
-	bool8	SupportHiRes;
 	bool8	Transparency;
 	uint8	BG_Forced;
 	bool8	DisableGraphicWindows;
@@ -302,8 +303,6 @@ struct SSettings
 	int32	AutoSaveDelay;
 	bool8	DontSaveOopsSnapshot;
 	bool8	UpAndDown;
-
-	bool8	OpenGLEnable;
 
     bool8   SeparateEchoBuffer;
 	uint32	SuperFXClockMultiplier;
