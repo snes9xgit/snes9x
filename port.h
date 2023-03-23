@@ -32,7 +32,6 @@
 #define RIGHTSHIFT_int16_IS_SAR
 #define RIGHTSHIFT_int32_IS_SAR
 #ifndef __LIBRETRO__
-#define SNES_JOY_READ_CALLBACKS
 #endif //__LIBRETRO__
 #endif
 

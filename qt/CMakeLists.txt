@@ -1,0 +1,259 @@
+cmake_minimum_required(VERSION 3.20)
+project(snes9x-qt VERSION 1.61)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_GLOBAL_AUTOGEN_TARGET ON)
+
+set(DEFINES SNES9X_QT)
+set(SNES9X_CORE_SOURCES
+    ../fxinst.cpp
+    ../fxemu.cpp
+    ../fxdbg.cpp
+    ../c4.cpp
+    ../c4emu.cpp
+    ../apu/apu.cpp
+    ../apu/bapu/dsp/sdsp.cpp
+    ../apu/bapu/smp/smp.cpp
+    ../apu/bapu/smp/smp_state.cpp
+    ../msu1.cpp
+    ../msu1.h
+    ../dsp.cpp
+    ../dsp1.cpp
+    ../dsp2.cpp
+    ../dsp3.cpp
+    ../dsp4.cpp
+    ../spc7110.cpp
+    ../obc1.cpp
+    ../seta.cpp
+    ../seta010.cpp
+    ../seta011.cpp
+    ../seta018.cpp
+    ../controls.cpp
+    ../crosshairs.cpp
+    ../cpu.cpp
+    ../sa1.cpp
+    ../debug.cpp
+    ../sdd1.cpp
+    ../tile.cpp
+    ../tileimpl-n1x1.cpp
+    ../tileimpl-n2x1.cpp
+    ../tileimpl-h2x1.cpp
+    ../srtc.cpp
+    ../gfx.cpp
+    ../memmap.cpp
+    ../clip.cpp
+    ../ppu.cpp
+    ../dma.cpp
+    ../snes9x.cpp
+    ../globals.cpp
+    ../stream.cpp
+    ../conffile.cpp
+    ../bsx.cpp
+    ../snapshot.cpp
+    ../screenshot.cpp
+    ../movie.cpp
+    ../statemanager.cpp
+    ../sha256.cpp
+    ../bml.cpp
+    ../cpuops.cpp
+    ../cpuexec.cpp
+    ../sa1cpu.cpp
+    ../cheats.cpp
+    ../cheats2.cpp
+    ../sdd1emu.cpp
+    ../netplay.cpp
+    ../server.cpp
+    ../loadzip.cpp
+    ../fscompat.cpp)
+add_library(snes9x-core ${SNES9X_CORE_SOURCES})
+target_include_directories(snes9x-core PRIVATE ../)
+target_compile_definitions(snes9x-core PRIVATE ZLIB HAVE_STDINT_H ALLOW_CPU_OVERCLOCK)
+
+find_package(Qt6 REQUIRED COMPONENTS Widgets Gui)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(SDL REQUIRED sdl2)
+pkg_check_modules(ZLIB REQUIRED zlib)
+pkg_check_modules(PORTAUDIO REQUIRED portaudio-2.0)
+
+list(APPEND LIBS Qt6::Widgets Qt6::Gui ${SDL_LIBRARIES} ${ZLIB_LIBRARIES} ${PORTAUDIO_LIBRARIES})
+list(APPEND INCLUDES ${SDL_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${PORTAUDIO_INCLUDE_DIRS} ${Qt6Gui_PRIVATE_INCLUDE_DIRS})
+list(APPEND FLAGS ${SDL_COMPILE_FLAGS} ${ZLIB_COMPILE_FLAGS} ${PORTAUDIO_COMPILE_FLAGS})
+
+set(QT_GUI_SOURCES
+    src/main.cpp
+    src/EmuApplication.cpp
+    src/EmuMainWindow.cpp
+    src/Snes9xController.cpp
+    src/EmuSettingsWindow.cpp
+    src/EmuConfig.cpp
+    src/EmuInputPanel.cpp
+    src/EmuBinding.cpp
+    src/EmuCanvas.cpp
+    src/BindingPanel.cpp
+    src/ControllerPanel.cpp
+    src/DisplayPanel.cpp
+    src/SoundPanel.cpp
+    src/EmulationPanel.cpp
+    src/ShortcutsPanel.cpp
+    src/GeneralPanel.cpp
+    src/FoldersPanel.cpp
+    src/SDLInputManager.cpp
+    src/ShaderParametersDialog.cpp
+    src/SoftwareScalers.cpp
+    src/EmuCanvasQt.cpp
+    src/EmuCanvasOpenGL.cpp
+    src/EmuCanvasVulkan.cpp
+    ../external/glad/src/gl.c
+    ../common/audio/s9x_sound_driver_sdl.cpp
+    ../common/audio/s9x_sound_driver_sdl.hpp
+    ../common/audio/s9x_sound_driver_portaudio.cpp
+    ../common/audio/s9x_sound_driver_portaudio.hpp
+    ../common/audio/s9x_sound_driver_cubeb.cpp
+    ../common/audio/s9x_sound_driver_cubeb.hpp
+    ../filter/2xsai.cpp
+    ../filter/2xsai.h
+    ../filter/epx.cpp
+    ../filter/epx.h
+    ../filter/snes_ntsc_config.h
+    ../filter/snes_ntsc.h
+    ../filter/snes_ntsc_impl.h
+    ../filter/snes_ntsc.c)
+
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+    pkg_check_modules(WAYLAND REQUIRED wayland-client wayland-egl)
+
+    include(FindX11)
+    if(NOT X11_FOUND)
+        error()
+    endif()
+
+    list(APPEND INCLUDES ${WAYLAND_INCLUDE_DIRS} ${X11_INCLUDE_DIRS})
+    list(APPEND LIBS ${WAYLAND_LIBRARIES} ${X11_LIBRARIES})
+    list(APPEND FLAGS ${WAYLAND_CFLAGS})
+
+    set(PLATFORM_SOURCES
+        ../common/video/glx_context.cpp
+        ../common/video/wayland_egl_context.cpp
+        ../common/video/wayland_surface.cpp
+        ../common/video/fractional-scale-v1.c
+        ../common/video/viewporter-client-protocol.c
+        ../common/video/wayland-idle-inhibit-unstable-v1.c
+        ../external/glad/src/glx.c
+        ../external/glad/src/egl.c)
+else()
+    set(PLATFORM_SOURCES
+        ../common/video/wgl_context.cpp
+        ../external/glad/src/wgl.c)
+    list(APPEND LIBS opengl32)
+endif()
+
+set(QT_UI_FILES
+    src/GeneralPanel.ui
+    src/ControllerPanel.ui
+    src/EmuSettingsWindow.ui
+    src/DisplayPanel.ui
+    src/SoundPanel.ui
+    src/EmulationPanel.ui
+    src/ShortcutsPanel.ui
+    src/FoldersPanel.ui)
+
+set(USE_SANITIZERS CACHE BOOL OFF)
+set(BUILD_TESTS CACHE BOOL OFF)
+set(BUILD_TOOLS CACHE BOOL OFF)
+add_subdirectory("../external/cubeb" "cubeb" EXCLUDE_FROM_ALL)
+list(APPEND LIBS cubeb)
+list(APPEND INCLUDES "../external/cubeb/include")
+
+set(BUILD_TESTING CACHE BOOL OFF)
+add_subdirectory("../external/glslang" "glslang" EXCLUDE_FROM_ALL)
+list(APPEND LIBS
+    glslang
+    OGLCompiler
+    HLSL
+    OSDependent
+    SPIRV
+    glslang-default-resource-limits)
+list(APPEND INCLUDES "../external/glslang")
+
+set(SPIRV_CROSS_EXCEPTIONS_TO_ASSERTIONS CACHE BOOL ON)
+add_subdirectory("../external/SPIRV-Cross" "SPIRV-Cross" EXCLUDE_FROM_ALL)
+list(APPEND LIBS
+    spirv-cross-core
+    spirv-cross-glsl
+    spirv-cross-reflect
+    spirv-cross-cpp)
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+    list(APPEND DEFINES "VK_USE_PLATFORM_WIN32_KHR")
+else()
+    list(APPEND DEFINES
+        "VK_USE_PLATFORM_XLIB_KHR"
+        "VK_USE_PLATFORM_WAYLAND_KHR")
+endif()
+
+list(APPEND DEFINES
+    "VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1"
+    "VMA_DYNAMIC_VULKAN_FUNCTIONS=1"
+    "VMA_STATIC_VULKAN_FUNCTIONS=0"
+    "USE_SLANG")
+list(APPEND INCLUDES
+    ../external/vulkan-headers/include
+    ../external/VulkanMemoryAllocator-Hpp/include
+    ../external/stb
+    "../external/glad/include")
+list(APPEND SOURCES
+    ../vulkan/slang_shader.cpp
+    ../vulkan/slang_shader.hpp
+    ../vulkan/slang_preset.cpp
+    ../vulkan/slang_preset.hpp
+    ../vulkan/vulkan_hpp_storage.cpp
+    ../vulkan/vk_mem_alloc_implementation.cpp
+    ../vulkan/vulkan_context.cpp
+    ../vulkan/vulkan_context.hpp
+    ../vulkan/vulkan_texture.cpp
+    ../vulkan/vulkan_texture.hpp
+    ../vulkan/vulkan_swapchain.cpp
+    ../vulkan/vulkan_swapchain.hpp
+    ../vulkan/vulkan_slang_pipeline.cpp
+    ../vulkan/vulkan_slang_pipeline.hpp
+    ../vulkan/vulkan_pipeline_image.cpp
+    ../vulkan/vulkan_pipeline_image.hpp
+    ../vulkan/vulkan_shader_chain.cpp
+    ../vulkan/vulkan_shader_chain.hpp
+    ../vulkan/vulkan_simple_output.hpp
+    ../vulkan/vulkan_simple_output.cpp
+    ../vulkan/std_chrono_throttle.cpp
+    ../vulkan/std_chrono_throttle.hpp
+    ../vulkan/slang_helpers.cpp
+    ../vulkan/slang_helpers.hpp
+    ../vulkan/slang_preset_ini.cpp
+    ../vulkan/slang_preset_ini.hpp
+    ../external/stb/stb_image_implementation.cpp
+    ../shaders/glsl.cpp
+    ../shaders/slang.cpp
+    ../shaders/shader_helpers.cpp)
+
+list(APPEND DEFINES "IMGUI_IMPL_VULKAN_NO_PROTOTYPES")
+list(APPEND SOURCES ../external/imgui/imgui.cpp
+    ../external/imgui/imgui_demo.cpp
+    ../external/imgui/imgui_draw.cpp
+    ../external/imgui/imgui_tables.cpp
+    ../external/imgui/imgui_widgets.cpp
+    ../external/imgui/imgui_impl_opengl3.cpp
+    ../external/imgui/imgui_impl_vulkan.cpp
+    ../external/imgui/snes9x_imgui.cpp)
+list(APPEND INCLUDES ../external/imgui)
+
+add_executable(snes9x-qt ${QT_GUI_SOURCES} ${SOURCES} ${PLATFORM_SOURCES} src/resources/snes9x.qrc)
+target_link_libraries(snes9x-qt snes9x-core ${LIBS})
+target_compile_definitions(snes9x-qt PRIVATE ${DEFINES})
+target_compile_options(snes9x-qt PRIVATE ${FLAGS})
+target_include_directories(snes9x-qt PRIVATE "../" ${INCLUDES})
+

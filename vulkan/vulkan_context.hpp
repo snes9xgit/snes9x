@@ -9,8 +9,8 @@
 #endif
 #include <cstdio>
 #include <cstdint>
-#include "vk_mem_alloc.hpp"
 #include "vulkan/vulkan.hpp"
+#include "../external/VulkanMemoryAllocator-Hpp/include/vk_mem_alloc.hpp"
 #include "vulkan_swapchain.hpp"
 #include <memory>
 #include <optional>
@@ -24,21 +24,22 @@ class Context
     Context();
     ~Context();
 #ifdef VK_USE_PLATFORM_XLIB_KHR
-    bool init_Xlib(Display *dpy, Window xid, int preferred_device = 0);
+    bool init_Xlib(Display *dpy, Window xid, int preferred_device = -1);
 #endif
 #ifdef VK_USE_PLATFORM_WAYLAND_KHR
-    bool init_wayland(wl_display *dpy, wl_surface *parent, int width, int height, int preferred_device = 0);
+    bool init_wayland(wl_display *dpy, wl_surface *parent, int width, int height, int preferred_device = -1);
 #endif
 #ifdef VK_USE_PLATFORM_WIN32_KHR
-    bool init_win32(HINSTANCE hinstance, HWND hwnd, int preferred_device = 0);
+    bool init_win32(HINSTANCE hinstance, HWND hwnd, int preferred_device = -1);
 #endif
-    bool init(int preferred_device = 0);
+    bool init(int preferred_device = -1);
     bool create_swapchain(int width = -1, int height = -1);
     bool recreate_swapchain(int width = -1, int height = -1);
     void wait_idle();
     vk::CommandBuffer begin_cmd_buffer();
     void end_cmd_buffer();
     void hard_barrier(vk::CommandBuffer cmd);
+    static std::vector<std::string> get_device_list();
 
     vma::Allocator allocator;
     vk::Device device;

@@ -40,7 +40,7 @@ add_compile_definitions(HAVE_LIBPNG
                         SNES9XLOCALEDIR=\"${LOCALEDIR}\")
 set(INCLUDES ../apu/bapu ../ src)
 set(SOURCES)
-set(ARGS -Wall -Wno-unused-parameter)
+set(ARGS -Wall -Wno-unused-parameter -Wno-unused-variable -Wno-nullability-completeness)
 set(LIBS)
 set(DEFINES)
 

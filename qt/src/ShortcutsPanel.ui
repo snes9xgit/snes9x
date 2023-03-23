@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ShortcutsPanel</class>
+ <widget class="QWidget" name="ShortcutsPanel">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>797</width>
+    <height>716</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QToolButton" name="toolButton_reset_to_default">
+       <property name="text">
+        <string>Reset to Default</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_clear_all">
+       <property name="text">
+        <string>Clear All</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QTableWidget" name="tableWidget_shortcuts">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <row>
+      <property name="text">
+       <string>Open ROM</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Enable Fast-Forward</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Toggle Fast-Forward</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Pause/Continue</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Reset</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Power Cycle Console</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Quit</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Toggle Fullscreen</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Save Screenshot</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Save SPC</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Save State to Current Slot</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Load State from Current Slot</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Increase Current Save Slot</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Decrease Current Save Slot</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Quick Save Slot 0</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Quick Save Slot 1</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Quick Save Slot 2</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Quick Save Slot 3</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Quick Save Slot 4</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Quick Save Slot 5</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Quick Save Slot 6</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Quick Save Slot 7</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Quick Save Slot 8</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Quick Save Slot 9</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Quick Load Slot 0</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Quick Load Slot 1</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Quick Load Slot 2</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Quick Load Slot 3</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Quick Load Slot 4</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Quick Load Slot 5</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Quick Load Slot 6</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Quick Load Slot 7</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Quick Load Slot 8</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Quick Load Slot 9</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Rewind</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Grab Mouse</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Swap Controllers 1 and 2</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Toggle BG Layer 0</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Toggle BG Layer 1</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Toggle BG Layer 2</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Toggle BG Layer 3</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Toggle Sprites</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Change Backdrop Color</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Toggle Sound Channel 1</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Toggle Sound Channel 2</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Toggle Sound Channel 3</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Toggle Sound Channel 4</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Toggle Sound Channel 5</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Toggle Sound Channel 6</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Toggle Sound Channel 7</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Toggle Sound Channel 8</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Toggle All Sound Channels</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Start Recording</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Stop Recording</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Seek to Frame</string>
+      </property>
+     </row>
+     <column>
+      <property name="text">
+       <string>Binding #1</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Binding #2</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Binding #3</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Binding #4</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

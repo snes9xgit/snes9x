@@ -158,6 +158,7 @@ void WaylandSurface::resize(Metrics m)
 {
     metrics = m;
     auto [w, h] = get_size();
+
     wl_subsurface_set_position(subsurface, m.x, m.y);
 
     if (!viewport)

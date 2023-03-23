@@ -16,6 +16,7 @@ class S9xPortAudioSoundDriver : public S9xSoundDriver
 {
   public:
     S9xPortAudioSoundDriver();
+    ~S9xPortAudioSoundDriver();
     void init() override;
     void deinit() override;
     bool open_device(int playback_rate, int buffer_size) override;
@@ -25,9 +26,12 @@ class S9xPortAudioSoundDriver : public S9xSoundDriver
     int space_free() override;
     std::pair<int, int> buffer_level() override;
     void samples_available();
+    bool tryHostAPI(int index);
 
   private:
     PaStream *audio_stream;
+    int playback_rate;
+    int buffer_size_ms;
     int output_buffer_size;
 };
 

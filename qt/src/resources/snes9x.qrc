@@ -1,0 +1,25 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>blackicons/settings.svg</file>
+    <file>blackicons/folders.svg</file>
+    <file>blackicons/emulation.svg</file>
+    <file>blackicons/sound.svg</file>
+    <file>blackicons/keyboard.svg</file>
+    <file>blackicons/display.svg</file>
+    <file>blackicons/joypad.svg</file>
+    <file>blackicons/key.svg</file>
+    <file>blackicons/a.svg</file>
+    <file>blackicons/b.svg</file>
+    <file>blackicons/l.svg</file>
+    <file>blackicons/left.svg</file>
+    <file>blackicons/down.svg</file>
+    <file>blackicons/r.svg</file>
+    <file>blackicons/right.svg</file>
+    <file>blackicons/select.svg</file>
+    <file>blackicons/start.svg</file>
+    <file>blackicons/up.svg</file>
+    <file>blackicons/x.svg</file>
+    <file>blackicons/y.svg</file>
+    <file>blackicons/shader.svg</file>
+  </qresource>
+</RCC>

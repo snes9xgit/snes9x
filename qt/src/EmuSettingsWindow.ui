@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>EmuSettingsWindow</class>
+ <widget class="QDialog" name="EmuSettingsWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>933</width>
+    <height>719</height>
+   </rect>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::NoFocus</enum>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QListWidget" name="panelList">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="sizeAdjustPolicy">
+        <enum>QAbstractScrollArea::AdjustToContents</enum>
+       </property>
+       <property name="resizeMode">
+        <enum>QListView::Fixed</enum>
+       </property>
+       <item>
+        <property name="text">
+         <string>General</string>
+        </property>
+        <property name="icon">
+         <iconset resource="resources/snes9x.qrc">
+          <normaloff>:/icons/blackicons/settings.svg</normaloff>:/icons/blackicons/settings.svg</iconset>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Display</string>
+        </property>
+        <property name="icon">
+         <iconset resource="resources/snes9x.qrc">
+          <normaloff>:/icons/blackicons/display.svg</normaloff>:/icons/blackicons/display.svg</iconset>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Sound</string>
+        </property>
+        <property name="icon">
+         <iconset resource="resources/snes9x.qrc">
+          <normaloff>:/icons/blackicons/sound.svg</normaloff>:/icons/blackicons/sound.svg</iconset>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Emulation</string>
+        </property>
+        <property name="icon">
+         <iconset resource="resources/snes9x.qrc">
+          <normaloff>:/icons/blackicons/emulation.svg</normaloff>:/icons/blackicons/emulation.svg</iconset>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Controllers</string>
+        </property>
+        <property name="icon">
+         <iconset resource="resources/snes9x.qrc">
+          <normaloff>:/icons/blackicons/joypad.svg</normaloff>:/icons/blackicons/joypad.svg</iconset>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Shortcuts</string>
+        </property>
+        <property name="icon">
+         <iconset resource="resources/snes9x.qrc">
+          <normaloff>:/icons/blackicons/keyboard.svg</normaloff>:/icons/blackicons/keyboard.svg</iconset>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Files</string>
+        </property>
+        <property name="icon">
+         <iconset resource="resources/snes9x.qrc">
+          <normaloff>:/icons/blackicons/folders.svg</normaloff>:/icons/blackicons/folders.svg</iconset>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QStackedWidget" name="stackedWidget">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QPushButton" name="defaultsButton">
+       <property name="text">
+        <string>Restore Defaults</string>
+       </property>
+       <property name="icon">
+        <iconset theme="view-refresh">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="closeButton">
+       <property name="text">
+        <string>Close</string>
+       </property>
+       <property name="icon">
+        <iconset theme="window-close">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="resources/snes9x.qrc"/>
+ </resources>
+ <connections/>
+</ui>

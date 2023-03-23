@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>895</width>
+    <height>651</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTableWidget" name="tableWidget">
+     <property name="showGrid">
+      <bool>true</bool>
+     </property>
+     <property name="gridStyle">
+      <enum>Qt::SolidLine</enum>
+     </property>
+     <property name="sortingEnabled">
+      <bool>false</bool>
+     </property>
+     <property name="cornerButtonEnabled">
+      <bool>true</bool>
+     </property>
+     <row>
+      <property name="text">
+       <string>Up</string>
+      </property>
+      <property name="icon">
+       <iconset resource="snes9x.qrc">
+        <normaloff>:/icons/icons/up.svg</normaloff>:/icons/icons/up.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Down</string>
+      </property>
+      <property name="icon">
+       <iconset resource="snes9x.qrc">
+        <normaloff>:/icons/icons/down.svg</normaloff>:/icons/icons/down.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Left</string>
+      </property>
+      <property name="icon">
+       <iconset resource="snes9x.qrc">
+        <normaloff>:/icons/icons/left.svg</normaloff>:/icons/icons/left.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Right</string>
+      </property>
+      <property name="icon">
+       <iconset resource="snes9x.qrc">
+        <normaloff>:/icons/icons/right.svg</normaloff>:/icons/icons/right.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>A</string>
+      </property>
+      <property name="icon">
+       <iconset resource="snes9x.qrc">
+        <normaloff>:/icons/icons/a.svg</normaloff>:/icons/icons/a.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>B</string>
+      </property>
+      <property name="icon">
+       <iconset resource="snes9x.qrc">
+        <normaloff>:/icons/icons/b.svg</normaloff>:/icons/icons/b.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>X</string>
+      </property>
+      <property name="icon">
+       <iconset resource="snes9x.qrc">
+        <normaloff>:/icons/icons/x.svg</normaloff>:/icons/icons/x.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Y</string>
+      </property>
+      <property name="icon">
+       <iconset resource="snes9x.qrc">
+        <normaloff>:/icons/icons/y.svg</normaloff>:/icons/icons/y.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>L</string>
+      </property>
+      <property name="icon">
+       <iconset resource="snes9x.qrc">
+        <normaloff>:/icons/icons/l.svg</normaloff>:/icons/icons/l.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>R</string>
+      </property>
+      <property name="icon">
+       <iconset resource="snes9x.qrc">
+        <normaloff>:/icons/icons/r.svg</normaloff>:/icons/icons/r.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Start</string>
+      </property>
+      <property name="icon">
+       <iconset resource="snes9x.qrc">
+        <normaloff>:/icons/icons/start.svg</normaloff>:/icons/icons/start.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Select</string>
+      </property>
+      <property name="icon">
+       <iconset resource="snes9x.qrc">
+        <normaloff>:/icons/icons/select.svg</normaloff>:/icons/icons/select.svg</iconset>
+      </property>
+     </row>
+     <column>
+      <property name="text">
+       <string>Binding #1</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Binding #2</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Binding #3</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Binding #4</string>
+      </property>
+     </column>
+     <item row="0" column="0">
+      <property name="text">
+       <string>Up</string>
+      </property>
+      <property name="icon">
+       <iconset theme="input-gaming"/>
+      </property>
+     </item>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="snes9x.qrc"/>
+ </resources>
+ <connections/>
+</ui>

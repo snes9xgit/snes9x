@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ControllerPanel</class>
+ <widget class="QWidget" name="ControllerPanel">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>674</width>
+    <height>632</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Set</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="controllerComboBox">
+       <item>
+        <property name="text">
+         <string>SNES Controller 1</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>SNES Controller 2</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>SNES Controller 3 (Multitap)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>SNES Controller 4 (Multitap)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>SNES Controller 5 (Multitap)</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="editToolButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>90</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Swap or clear groups of bindings</string>
+       </property>
+       <property name="text">
+        <string>Edit</string>
+       </property>
+       <property name="popupMode">
+        <enum>QToolButton::DelayedPopup</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="autoAssignToolButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>90</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Automatically assign a controller's buttons to a slot</string>
+       </property>
+       <property name="text">
+        <string>Auto-Assign</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QTableWidget" name="tableWidget_controller">
+     <property name="editTriggers">
+      <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
+     <property name="selectionMode">
+      <enum>QAbstractItemView::SingleSelection</enum>
+     </property>
+     <attribute name="verticalHeaderCascadingSectionResizes">
+      <bool>true</bool>
+     </attribute>
+     <row>
+      <property name="text">
+       <string>Up</string>
+      </property>
+      <property name="icon">
+       <iconset resource="resources/snes9x.qrc">
+        <normaloff>:/icons/blackicons/up.svg</normaloff>:/icons/blackicons/up.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Down</string>
+      </property>
+      <property name="icon">
+       <iconset resource="resources/snes9x.qrc">
+        <normaloff>:/icons/blackicons/down.svg</normaloff>:/icons/blackicons/down.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Left</string>
+      </property>
+      <property name="icon">
+       <iconset resource="resources/snes9x.qrc">
+        <normaloff>:/icons/blackicons/left.svg</normaloff>:/icons/blackicons/left.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Right</string>
+      </property>
+      <property name="icon">
+       <iconset resource="resources/snes9x.qrc">
+        <normaloff>:/icons/blackicons/right.svg</normaloff>:/icons/blackicons/right.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>A</string>
+      </property>
+      <property name="icon">
+       <iconset resource="resources/snes9x.qrc">
+        <normaloff>:/icons/blackicons/a.svg</normaloff>:/icons/blackicons/a.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>B</string>
+      </property>
+      <property name="icon">
+       <iconset resource="resources/snes9x.qrc">
+        <normaloff>:/icons/blackicons/b.svg</normaloff>:/icons/blackicons/b.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>X</string>
+      </property>
+      <property name="icon">
+       <iconset resource="resources/snes9x.qrc">
+        <normaloff>:/icons/blackicons/x.svg</normaloff>:/icons/blackicons/x.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Y</string>
+      </property>
+      <property name="icon">
+       <iconset resource="resources/snes9x.qrc">
+        <normaloff>:/icons/blackicons/y.svg</normaloff>:/icons/blackicons/y.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>L</string>
+      </property>
+      <property name="icon">
+       <iconset resource="resources/snes9x.qrc">
+        <normaloff>:/icons/blackicons/l.svg</normaloff>:/icons/blackicons/l.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>R</string>
+      </property>
+      <property name="icon">
+       <iconset resource="resources/snes9x.qrc">
+        <normaloff>:/icons/blackicons/r.svg</normaloff>:/icons/blackicons/r.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Start</string>
+      </property>
+      <property name="icon">
+       <iconset resource="resources/snes9x.qrc">
+        <normaloff>:/icons/blackicons/start.svg</normaloff>:/icons/blackicons/start.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Select</string>
+      </property>
+      <property name="icon">
+       <iconset resource="resources/snes9x.qrc">
+        <normaloff>:/icons/blackicons/select.svg</normaloff>:/icons/blackicons/select.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Turbo A</string>
+      </property>
+      <property name="icon">
+       <iconset resource="resources/snes9x.qrc">
+        <normaloff>:/icons/blackicons/a.svg</normaloff>:/icons/blackicons/a.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Turbo B</string>
+      </property>
+      <property name="icon">
+       <iconset resource="resources/snes9x.qrc">
+        <normaloff>:/icons/blackicons/b.svg</normaloff>:/icons/blackicons/b.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Turbo X</string>
+      </property>
+      <property name="icon">
+       <iconset resource="resources/snes9x.qrc">
+        <normaloff>:/icons/blackicons/x.svg</normaloff>:/icons/blackicons/x.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Turbo Y</string>
+      </property>
+      <property name="icon">
+       <iconset resource="resources/snes9x.qrc">
+        <normaloff>:/icons/blackicons/y.svg</normaloff>:/icons/blackicons/y.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Turbo L</string>
+      </property>
+      <property name="icon">
+       <iconset resource="resources/snes9x.qrc">
+        <normaloff>:/icons/blackicons/l.svg</normaloff>:/icons/blackicons/l.svg</iconset>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Turbo R</string>
+      </property>
+      <property name="icon">
+       <iconset resource="resources/snes9x.qrc">
+        <normaloff>:/icons/blackicons/r.svg</normaloff>:/icons/blackicons/r.svg</iconset>
+      </property>
+     </row>
+     <column>
+      <property name="text">
+       <string>Binding #1</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Binding #2</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Binding #3</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Binding #4</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="resources/snes9x.qrc"/>
+ </resources>
+ <connections/>
+</ui>

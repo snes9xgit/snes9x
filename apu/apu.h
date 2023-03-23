@@ -41,7 +41,7 @@ void S9xLandSamples (void);
 void S9xClearSamples (void);
 bool8 S9xMixSamples (uint8 *, int);
 void S9xSetSamplesAvailableCallback (apu_callback, void *);
-void S9xUpdateDynamicRate (int, int);
+void S9xUpdateDynamicRate (int empty = 1, int buffer_size = 2);
 
 #define DSP_INTERPOLATION_NONE     0
 #define DSP_INTERPOLATION_LINEAR   1

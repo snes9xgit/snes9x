@@ -15,6 +15,11 @@ S9xPortAudioSoundDriver::S9xPortAudioSoundDriver()
     audio_stream = NULL;
 }
 
+S9xPortAudioSoundDriver::~S9xPortAudioSoundDriver()
+{
+    deinit();
+}
+
 void S9xPortAudioSoundDriver::init()
 {
     PaError err;
@@ -60,9 +65,64 @@ void S9xPortAudioSoundDriver::stop()
     }
 }
 
+bool S9xPortAudioSoundDriver::tryHostAPI(int index)
+{
+    auto hostapi_info = Pa_GetHostApiInfo(index);
+    if (!hostapi_info)
+    {
+        printf("Host API #%d has no info\n", index);
+        return false;
+    }
+    printf("Attempting API: %s\n", hostapi_info->name);
+
+    auto device_info = Pa_GetDeviceInfo(hostapi_info->defaultOutputDevice);
+    if (!device_info)
+    {
+        printf("(%s)...No device info available.\n", hostapi_info->name);
+        return false;
+    }
+
+    PaStreamParameters param{};
+    param.device = hostapi_info->defaultOutputDevice;
+    param.suggestedLatency = buffer_size_ms * 0.001;
+    param.channelCount = 2;
+    param.sampleFormat = paInt16;
+    param.hostApiSpecificStreamInfo = NULL;
+
+    printf("(%s : %s, latency %dms)...\n",
+           hostapi_info->name,
+           device_info->name,
+           (int)(param.suggestedLatency * 1000.0));
+
+    auto err = Pa_OpenStream(&audio_stream,
+                             NULL,
+                             &param,
+                             playback_rate,
+                             0,
+                             paNoFlag,
+                             NULL,
+                             NULL);
+
+    int frames = playback_rate * buffer_size_ms / 1000;
+    //int frames = Pa_GetStreamWriteAvailable(audio_stream);
+    printf("PortAudio set buffer size to %d frames.\n", frames);
+    output_buffer_size = frames;
+
+    if (err == paNoError)
+    {
+        printf("OK\n");
+        return true;
+    }
+    else
+    {
+        printf("Failed (%s)\n", Pa_GetErrorText(err));
+        return false;
+    }
+}
+
 bool S9xPortAudioSoundDriver::open_device(int playback_rate, int buffer_size_ms)
 {
-    PaStreamParameters param;
+    
     const PaDeviceInfo *device_info;
     const PaHostApiInfo *hostapi_info;
     PaError err = paNoError;
@@ -74,84 +134,31 @@ bool S9xPortAudioSoundDriver::open_device(int playback_rate, int buffer_size_ms)
 
         if (err != paNoError)
         {
-            fprintf(stderr,
-                    "Couldn't reset audio stream.\nError: %s\n",
-                    Pa_GetErrorText(err));
+            fprintf(stderr, "Couldn't reset audio stream.\nError: %s\n", Pa_GetErrorText(err));
             return true;
         }
 
         audio_stream = NULL;
     }
 
-    param.channelCount = 2;
-    param.sampleFormat = paInt16;
-    param.hostApiSpecificStreamInfo = NULL;
+    this->playback_rate = playback_rate;
+    this->buffer_size_ms = buffer_size_ms;
 
     printf("PortAudio sound driver initializing...\n");
 
+    int host = 2; //Pa_GetDefaultHostApi();
+    if (tryHostAPI(host))
+        return true;
+
     for (int i = 0; i < Pa_GetHostApiCount(); i++)
     {
-        printf("    --> ");
-
-        hostapi_info = Pa_GetHostApiInfo(i);
-        if (!hostapi_info)
-        {
-            printf("Host API #%d has no info\n", i);
-            err = paNotInitialized;
-            continue;
-        }
-
-        device_info = Pa_GetDeviceInfo(hostapi_info->defaultOutputDevice);
-        if (!device_info)
-        {
-            printf("(%s)...No device info available.\n", hostapi_info->name);
-            err = paNotInitialized;
-            continue;
-        }
-
-        param.device = hostapi_info->defaultOutputDevice;
-        param.suggestedLatency = buffer_size_ms * 0.001;
-
-        printf("(%s : %s, latency %dms)...\n",
-               hostapi_info->name,
-               device_info->name,
-               (int)(param.suggestedLatency * 1000.0));
-
-        fflush(stdout);
-
-        err = Pa_OpenStream(&audio_stream,
-                            NULL,
-                            &param,
-                            playback_rate,
-                            0,
-                            paNoFlag,
-                            NULL,
-                            NULL);
-
-        int frames = Pa_GetStreamWriteAvailable(audio_stream);
-        printf ("PortAudio set buffer size to %d frames.\n", frames);
-        output_buffer_size = frames;
-
-        if (err == paNoError)
-        {
-            printf("OK\n");
-            break;
-        }
-        else
-        {
-            printf("Failed (%s)\n",
-                   Pa_GetErrorText(err));
-        }
+        if (Pa_GetDefaultHostApi() != i)
+        if (tryHostAPI(i))
+            return true;
     }
 
-    if (err != paNoError || Pa_GetHostApiCount() < 1)
-    {
-        fprintf(stderr,
-                "Couldn't initialize sound\n");
-        return false;
-    }
-
-    return true;
+    fprintf(stderr, "Couldn't initialize sound\n");
+    return false;
 }
 
 int S9xPortAudioSoundDriver::space_free()

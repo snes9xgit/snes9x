@@ -28,6 +28,11 @@ S9xSDLSoundDriver::S9xSDLSoundDriver()
 {
 }
 
+S9xSDLSoundDriver::~S9xSDLSoundDriver()
+{
+    deinit();
+}
+
 void S9xSDLSoundDriver::init()
 {
     SDL_InitSubSystem(SDL_INIT_AUDIO);

@@ -251,7 +251,8 @@ void Texture::create(int width, int height, vk::Format fmt, vk::SamplerAddressMo
         .setUsage(vk::BufferUsageFlagBits::eTransferSrc);
 
     aci.setRequiredFlags(vk::MemoryPropertyFlagBits::eHostVisible)
-        .setFlags(vma::AllocationCreateFlagBits::eHostAccessSequentialWrite);
+        .setFlags(vma::AllocationCreateFlagBits::eHostAccessSequentialWrite)
+        .setUsage(vma::MemoryUsage::eAutoPreferHost);
 
     std::tie(buffer, buffer_allocation) = allocator.createBuffer(bci, aci);
 

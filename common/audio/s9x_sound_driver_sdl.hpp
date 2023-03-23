@@ -22,6 +22,7 @@ class S9xSDLSoundDriver : public S9xSoundDriver
 {
   public:
     S9xSDLSoundDriver();
+    ~S9xSDLSoundDriver();
     void init() override;
     void deinit() override;
     bool open_device(int playback_rate, int buffer_size) override;

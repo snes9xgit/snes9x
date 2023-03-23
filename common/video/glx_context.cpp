@@ -94,6 +94,8 @@ bool GTKGLXContext::create_context()
         return false;
     }
 
+    resize();
+
     return true;
 }
 

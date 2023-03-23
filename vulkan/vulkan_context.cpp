@@ -1,9 +1,10 @@
 #include <exception>
 #include <cstring>
 #include <tuple>
+#include <vector>
+#include <string>
 #include "vulkan_context.hpp"
 #include "slang_shader.hpp"
-#include "vulkan/vulkan.hpp"
 
 namespace Vulkan
 {
@@ -56,7 +57,7 @@ static vk::UniqueInstance create_instance_preamble(const char *wsi_extension)
 {
     load_loader();
     if (!dl || !dl->success())
-        return vk::UniqueInstance();
+        return {};
 
     std::vector<const char *> extensions = { wsi_extension, VK_KHR_SURFACE_EXTENSION_NAME };
     vk::ApplicationInfo application_info({}, {}, {}, {}, VK_API_VERSION_1_0);
@@ -67,6 +68,26 @@ static vk::UniqueInstance create_instance_preamble(const char *wsi_extension)
     VULKAN_HPP_DEFAULT_DISPATCHER.init(instance.get());
 
     return instance;
+}
+
+std::vector<std::string> Vulkan::Context::get_device_list()
+{
+    std::vector<std::string> device_names;
+    auto instance = create_instance_preamble(VK_KHR_SURFACE_EXTENSION_NAME);
+    if (!instance)
+        return {};
+
+    auto device_list = instance->enumeratePhysicalDevices();
+    for (auto &d : device_list)
+    {
+        auto props = d.getProperties();
+        std::string device_name((const char *)props.deviceName);
+
+        device_name += " (" + vk::to_string(props.deviceType) + ")";
+        device_names.push_back(device_name);
+    }
+
+    return device_names;
 }
 
 #ifdef VK_USE_PLATFORM_WIN32_KHR
@@ -127,7 +148,6 @@ bool Context::init_wayland(wl_display *dpy, wl_surface *parent, int initial_widt
 
 bool Context::init(int preferred_device)
 {
-
     init_device(preferred_device);
     init_vma();
     init_command_pool();
@@ -179,12 +199,13 @@ bool Context::init_device(int preferred_device)
         return device_list[0];
     };
 
-    if (preferred_device > 0)
+    if (preferred_device > -1 && preferred_device < device_list.size())
         physical_device = device_list[preferred_device];
     else
         physical_device = find_device();
 
     physical_device.getProperties(&physical_device_props);
+    printf("Vulkan: Using device \"%s\"\n", (const char *)physical_device_props.deviceName);
 
     graphics_queue_family_index = UINT32_MAX;
     auto queue_props = physical_device.getQueueFamilyProperties();

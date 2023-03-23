@@ -13,6 +13,7 @@
 #include <deque>
 #include <limits.h>
 #include <vector>
+#include <unistd.h>
 
 static const unsigned int glsl_max_passes = 20;
 
