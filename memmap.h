@@ -13,6 +13,7 @@
 #define MEMMAP_MASK			(MEMMAP_BLOCK_SIZE - 1)
 
 #include <string>
+#include <vector>
 
 struct CMemory
 {
@@ -56,7 +57,7 @@ struct CMemory
 	int32	HeaderCount;
 
 	uint8	RAM[0x20000];
-	uint8	ROMStorage[MAX_ROM_SIZE + 0x200 + 0x8000];
+	std::vector<uint8_t> ROMStorage;
 	uint8   *ROM;
 	uint8	SRAM[0x80000];
 	uint8	VRAM[0x10000];

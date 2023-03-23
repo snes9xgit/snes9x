@@ -928,10 +928,11 @@ bool8 CMemory::Init (void)
 		return (FALSE);
     }
 
+	ROMStorage.resize(MAX_ROM_SIZE + 0x200 + 0x8000);
 	memset(RAM, 0,  sizeof(RAM));
 	memset(SRAM, 0, sizeof(SRAM));
 	memset(VRAM, 0, sizeof(VRAM));
-	memset(ROMStorage, 0,  sizeof(ROMStorage));
+	memset(ROMStorage.data(), 0, ROMStorage.size());
 
 	memset(IPPU.TileCache[TILE_2BIT], 0,       MAX_2BIT_TILES * 64);
 	memset(IPPU.TileCache[TILE_4BIT], 0,       MAX_4BIT_TILES * 64);
