@@ -226,7 +226,7 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,186,167,150,8
     CONTROL         "Scale messages with EPX if possible",IDC_MESSAGES_SCALE,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,186,179,150,8
-    GROUPBOX        "Frame Skipping:",IDC_STATIC,6,145,167,48,0,WS_EX_TRANSPARENT
+    GROUPBOX        "Frame Skipping:",IDC_STATIC,6,145,168,48,0,WS_EX_TRANSPARENT
     GROUPBOX        "SNES Image",IDC_STATIC,180,118,162,75,0,WS_EX_TRANSPARENT
     GROUPBOX        "Output Image Processing",IDC_STATIC,180,6,162,61,0,WS_EX_TRANSPARENT
     GROUPBOX        "Fullscreen Display Settings",IDC_STATIC,180,73,162,42,0,WS_EX_TRANSPARENT
