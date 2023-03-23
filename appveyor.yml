@@ -1,4 +1,4 @@
-version: 1.61-{build}
+version: 1.62-{build}
 
 image: Visual Studio 2022
 
