@@ -5000,7 +5000,7 @@ INT_PTR CALLBACK DlgInfoProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 				Utf8ToWide romname(Memory.ROMFilename.c_str());
 				TCHAR rominfo[4096];
-				_stprintf(rominfo, TEXT("File: %s\r\n%s"), (TCHAR *)romname, _tFromMS932(romtext));
+				_stprintf(rominfo, TEXT("File: %s\r\n%s"), (TCHAR *)romname, (TCHAR *)_tFromMS932(romtext));
 
                 SendDlgItemMessage(hDlg, IDC_ROM_DATA, WM_SETTEXT, 0, (LPARAM)((TCHAR *)rominfo));
 				break;
