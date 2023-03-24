@@ -59,7 +59,8 @@ struct CMemory
 	uint8	RAM[0x20000];
 	std::vector<uint8_t> ROMStorage;
 	uint8   *ROM;
-	uint8	SRAM[0x80000];
+	std::vector<uint8_t> SRAMStorage;
+	uint8	*SRAM;
 	uint8	VRAM[0x10000];
 	uint8	*FillRAM;
 	uint8	*BWRAM;
