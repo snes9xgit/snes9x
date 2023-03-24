@@ -7861,9 +7861,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 
 				const int oldScaleScale = max(GetFilterScale(GUI.Scale), GetFilterScale(GUI.ScaleHiRes));
 
-//				UpdateScale(GUI.Scale, scale);
 				GUI.Scale = (RenderFilter)scale;
-
 
 				const int newScaleScale = max(GetFilterScale(GUI.Scale), GetFilterScale(GUI.ScaleHiRes));
 
@@ -7873,45 +7871,9 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				// refresh screen, so the user can see the new filter
 				// (assuming the dialog box isn't completely covering the game window)
 				WinRefreshDisplay();
-
-				// set hi-res combo box to match the lo-res output filter as best as possible
-//				if(GetFilterHiResSupport(GUI.Scale))
-checkUpdateFilterBox2:
-				{
-					char textOriginal [256];
-					SendMessageA(GetDlgItem(hDlg, IDC_FILTERBOX), WM_GETTEXT, 256,(LPARAM)textOriginal);
-					int count = SendDlgItemMessage(hDlg,IDC_FILTERBOX2,CB_GETCOUNT,0,0);
-//					int scale = GUI.Scale;
-					bool switched = false;
-					for(int j=0; j<2 && !switched; j++){
-						if(j){
-							RenderFilter filter; // no match, set default for chosen scale
-							switch(GetFilterScale(GUI.Scale)){
-								case 1: filter = FILTER_SIMPLE1X; break;
-					   default: case 2: filter = FILTER_SIMPLE2X; break;
-								case 3: filter = FILTER_SIMPLE3X; break;
-								case 4: filter = FILTER_SIMPLE4X; break;
-								case 5: case 6: filter = FILTER_SIMPLE4X; break;
-							}
-							strcpy(textOriginal, GetFilterName(filter));
-						}
-						for(int i=0; i<count && !switched; i++){
-							int textLen = SendDlgItemMessageA(hDlg,IDC_FILTERBOX2,CB_GETLBTEXTLEN,(WPARAM)i,0);
-							char* text = new char[textLen+1];
-							SendDlgItemMessageA(hDlg,IDC_FILTERBOX2,CB_GETLBTEXT,(WPARAM)i,(LPARAM)text);
-							if(!stricmp(textOriginal, text)){
-								SendDlgItemMessageA(hDlg,IDC_FILTERBOX2,CB_SETCURSEL,(WPARAM)i,0);
-								switched = true;
-							}
-							delete[] text;
-						}
-					}
-					goto updateFilterBox2;
-				}
 			}
 			break;
 		case IDC_FILTERBOX2: // hi-res
-updateFilterBox2:
 			{
 				char text [256];
 				text[0] = '\0';
@@ -7927,7 +7889,6 @@ updateFilterBox2:
 
 				const int oldScaleScale = max(GetFilterScale(GUI.Scale), GetFilterScale(GUI.ScaleHiRes));
 
-//				UpdateScale(GUI.Scale, scale);
 				GUI.ScaleHiRes = (RenderFilter)scale;
 
 				const int newScaleScale = max(GetFilterScale(GUI.Scale), GetFilterScale(GUI.ScaleHiRes));
