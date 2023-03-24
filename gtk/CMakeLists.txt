@@ -373,7 +373,8 @@ target_link_libraries(snes9x-gtk PRIVATE ${LIBS})
 target_compile_definitions(snes9x-gtk PRIVATE ${DEFINES})
 
 if(USE_SLANG)
-    add_executable(slang_test ../vulkan/slang_helpers.cpp
+	add_executable(slang_test EXCLUDE_FROM_ALL
+	../vulkan/slang_helpers.cpp
         ../vulkan/slang_helpers.hpp
         ../vulkan/slang_shader.cpp
         ../vulkan/slang_shader.hpp
