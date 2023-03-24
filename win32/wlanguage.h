@@ -20,7 +20,7 @@
 (c) Copyright 2001 - 2006  John Weidman\r\n\
 (c) Copyright 2002 - 2010  Brad Jorsch, funkyass, Kris Bleakley, Nach, zones\r\n\
 (c) Copyright 2006 - 2007  nitsuja\r\n\
-(c) Copyright 2009 - 2022  BearOso, OV2\r\n\r\n\
+(c) Copyright 2009 - 2023  BearOso, OV2\r\n\r\n\
 Windows Port Authors: Matthew Kendora, funkyass, nitsuja, Nach, blip, OV2.\r\n\r\n\
 Snes9x is a Super Nintendo Entertainment System\r\n\
 emulator that allows you to play most games designed\r\n\

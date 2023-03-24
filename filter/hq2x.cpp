@@ -29,6 +29,7 @@
 
  /* Modified to 16-bit R5G6B5 for Snes9x */
 
+#include "../port.h"
 #include <cstdlib>
 #include <cstdint>
 
@@ -62,12 +63,12 @@ static void init()
     }
 }
 
-static inline uint32_t rgb2yuv(const uint32_t *table, uint16_t color)
+static alwaysinline uint32_t rgb2yuv(const uint32_t *table, uint16_t color)
 {
     return (table[color]);
 }
 
-static inline int yuv_diff(uint32_t yuv1, uint32_t yuv2)
+static alwaysinline int yuv_diff(uint32_t yuv1, uint32_t yuv2)
 {
 #define YMASK 0xff0000
 #define UMASK 0x00ff00
@@ -79,13 +80,13 @@ static inline int yuv_diff(uint32_t yuv1, uint32_t yuv2)
            ABSDIFF(yuv1 & VMASK, yuv2 & VMASK) > (6 << 0);
 }
 
-static inline uint32_t interp_2px(uint16_t c1, int w1, uint16_t c2, int w2, int s)
+static alwaysinline uint32_t interp_2px(uint16_t c1, int w1, uint16_t c2, int w2, int s)
 {
     return (((((c1 & 0x07e0) >> 5) * w1 + ((c2 & 0x07e0) >> 5) * w2) << (5 - s)) & 0x07e0) |
            (((((c1 & 0xf81f)) * w1 + ((c2 & 0xf81f)) * w2) >> s) & 0xf81f);
 }
 
-static inline uint32_t interp_3px(uint16_t c1, int w1, uint16_t c2, int w2, uint16_t c3, int w3, int s)
+static alwaysinline uint32_t interp_3px(uint16_t c1, int w1, uint16_t c2, int w2, uint16_t c3, int w3, int s)
 {
     return (((((c1 & 0x07e0) >> 5) * w1 + ((c2 & 0x07e0) >> 5) * w2 + ((c3 & 0x07e0) >> 5) * w3) << (5 - s)) & 0x07e0) |
            (((((c1 & 0xf81f)) * w1 + ((c2 & 0xf81f)) * w2 + ((c3 & 0xf81f)) * w3) >> s) & 0xf81f);
@@ -119,7 +120,7 @@ static inline uint32_t interp_3px(uint16_t c1, int w1, uint16_t c2, int w2, uint
 /* Assuming p0..p8 is mapped to pixels 0..8, this function interpolates the
  * top-left pixel in the total of the 2x2 pixels to interpolates. The function
  * is also used for the 3 other pixels */
-static inline uint32_t hq2x_interp_1x1(const uint32_t *r2y, int k,
+static alwaysinline uint32_t hq2x_interp_1x1(const uint32_t *r2y, int k,
                                        const uint16_t *w,
                                        int p0, int p1, int p2,
                                        int p3, int p4, int p5,
@@ -170,7 +171,7 @@ static inline uint32_t hq2x_interp_1x1(const uint32_t *r2y, int k,
  * interpolates. The function is also used for the 3 other couples of pixels
  * defining the outline. The center pixel is not defined through this function,
  * since it's just the same as the original value. */
-static inline void hq3x_interp_2x1(uint16_t *dst, int dst_linesize,
+static alwaysinline void hq3x_interp_2x1(uint16_t *dst, int dst_linesize,
                                    const uint32_t *r2y, int k,
                                    const uint16_t *w,
                                    int pos00, int pos01,
@@ -239,7 +240,7 @@ static inline void hq3x_interp_2x1(uint16_t *dst, int dst_linesize,
  * top-left block of 2x2 pixels in the total of the 4x4 pixels (or 4 blocks) to
  * interpolates. The function is also used for the 3 other blocks of 2x2
  * pixels. */
-static inline void hq4x_interp_2x2(uint16_t *dst, int dst_linesize,
+static alwaysinline void hq4x_interp_2x2(uint16_t *dst, int dst_linesize,
                                    const uint32_t *r2y, int k,
                                    const uint16_t *w,
                                    int pos00, int pos01,
@@ -389,7 +390,7 @@ static inline void hq4x_interp_2x2(uint16_t *dst, int dst_linesize,
         *dst11 = w4;
 }
 
-static inline void hqx_filter(uint16_t *in, int in_pitch, uint16_t *out, int out_pitch, int width, int height, int n)
+static alwaysinline void hqx_filter(uint16_t *in, int in_pitch, uint16_t *out, int out_pitch, int width, int height, int n)
 {
     int x, y;
     const uint32_t *r2y = yuvtable;
