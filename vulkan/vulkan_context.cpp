@@ -12,17 +12,6 @@ static std::unique_ptr<vk::DynamicLoader> dl;
 
 Context::Context()
 {
-    if (!dl)
-    {
-        dl = std::make_unique<vk::DynamicLoader>();
-        if (!dl->success())
-            return;
-    }
-
-    auto vkGetInstanceProcAddr =
-        dl->getProcAddress<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr");
-
-    VULKAN_HPP_DEFAULT_DISPATCHER.init(vkGetInstanceProcAddr);
 }
 
 Context::~Context()
@@ -44,8 +33,28 @@ Context::~Context()
     device.destroy();
 }
 
+static bool load_loader()
+{
+    if (dl)
+        return true;
+
+    dl = std::make_unique<vk::DynamicLoader>();
+    if (!dl->success())
+    {
+        dl.reset();
+        return false;
+    }
+
+    auto vkGetInstanceProcAddr =
+        dl->getProcAddress<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr");
+
+    VULKAN_HPP_DEFAULT_DISPATCHER.init(vkGetInstanceProcAddr);
+    return true;
+}
+
 static vk::UniqueInstance create_instance_preamble(const char *wsi_extension)
 {
+    load_loader();
     if (!dl || !dl->success())
         return vk::UniqueInstance();
 

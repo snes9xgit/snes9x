@@ -98,15 +98,6 @@ void WinChangeWindowSize(unsigned int newWidth, unsigned int newHeight)
 	S9xDisplayOutput->ChangeRenderSize(newWidth,newHeight);
 }
 
-static void FlushMessageQueue()
-{
-	for (MSG msg; PeekMessage(&msg, GUI.hWnd, 0, 0, PM_NOREMOVE);)
-	{
-		GetMessage(&msg, GUI.hWnd, 0, 0);
-		DispatchMessage(&msg);
-	}
-}
-
 /*  WinDisplayReset
 initializes the currently selected display output and
 reinitializes the core graphics rendering
@@ -115,10 +106,10 @@ returns true if successful, false otherwise
 */
 bool WinDisplayReset(void)
 {
+	const TCHAR* driverNames[] = { TEXT("DirectDraw"), TEXT("Direct3D"), TEXT("OpenGL"), TEXT("Vulkan") };
 	static bool VulkanUsed = false;
 	static bool OpenGLUsed = false;
 	S9xDisplayOutput->DeInitialize();
-	FlushMessageQueue();
 
 	switch(GUI.outputMethod) {
 		default:
@@ -137,7 +128,6 @@ bool WinDisplayReset(void)
 				break;
 			}
 			S9xDisplayOutput = &OpenGL;
-			OpenGLUsed = true;
 			break;
 		case VULKAN:
 			if (OpenGLUsed)
@@ -146,7 +136,6 @@ bool WinDisplayReset(void)
 				break;
 			}
 			S9xDisplayOutput = &VulkanDriver;
-			VulkanUsed = true;
 			break;
 	}
 
@@ -155,10 +144,33 @@ bool WinDisplayReset(void)
 	if (!initialized) {
 		S9xDisplayOutput->DeInitialize();
 		Sleep(500);
+
+		auto oldDriverName = driverNames[GUI.outputMethod];
+
+		if (GUI.outputMethod == VULKAN)
+		{
+			GUI.outputMethod = OPENGL;
+			S9xDisplayOutput = &OpenGL;
+		}
+		else
+		{
+			GUI.outputMethod = DIRECT3D;
+			S9xDisplayOutput = &Direct3D;
+		}
+
+		auto newDriverName = driverNames[GUI.outputMethod];
+		TCHAR msg[512];
+		_stprintf(msg, TEXT("Couldn't load selected driver: %s. Trying %s."), oldDriverName, newDriverName);
+		MessageBox(GUI.hWnd, msg, TEXT("Snes9x Display Driver"), MB_OK | MB_ICONERROR);
+
 		initialized = S9xDisplayOutput->Initialize(GUI.hWnd);
 	}
 
 	if (initialized) {
+		if (S9xDisplayOutput == &VulkanDriver)
+			VulkanUsed = true;
+		if (S9xDisplayOutput == &OpenGL)
+			OpenGLUsed = true;
 		S9xGraphicsDeinit();
 		S9xSetWinPixelFormat();
 		S9xGraphicsInit();
