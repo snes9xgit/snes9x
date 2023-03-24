@@ -3386,16 +3386,19 @@ static void Op42 (void)
 	#endif
 
 		case 0x42: // "WDM" = Snapshot
-			char	filename[PATH_MAX + 1], drive[_MAX_DRIVE + 1], dir[_MAX_DIR + 1], def[PATH_MAX + 1], ext[_MAX_EXT + 1];
+        {
+            char	tmp[PATH_MAX + 1];
+            SplitPath split = splitpath(Memory.ROMFilename);
 
-			_splitpath(Memory.ROMFilename, drive, dir, def, ext);
-			snprintf(filename, PATH_MAX, "%s%s%s-%06X.wdm", S9xGetDirectory(SNAPSHOT_DIR), SLASH_STR, def, Registers.PBPC & 0xffffff);
-			sprintf(def, "WDM Snapshot at $%02X:%04X: %s", Registers.PB, Registers.PCw, filename);
-			S9xMessage(S9X_DEBUG, S9X_DEBUG_OUTPUT, def);
-			S9xFreezeGame(filename);
+            snprintf(tmp, PATH_MAX, "%s-%06X", split.stem.c_str(), Registers.PBPC & 0xffffff);
+            std::string filename = makepath(split.dir, S9xGetDirectory(SNAPSHOT_DIR), tmp, ".wdm");
 
-			break;
+            sprintf(tmp, "WDM Snapshot at $%02X:%04X: %s", Registers.PB, Registers.PCw, filename.c_str());
+            S9xMessage(S9X_DEBUG, S9X_DEBUG_OUTPUT, tmp);
+            S9xFreezeGame(filename.c_str());
 
+            break;
+        }
 		default:
 			break;
 	}
