@@ -295,14 +295,14 @@ const char * S9xGetFilename (const char *inExt, enum s9x_getdirtype dirtype)
 		{
 			auto path = splitpath(Memory.ROMFilename);
 			path.ext = inExt;
-			makepath(path);
+			strncpy(filePath[index], makepath(path).c_str(), PATH_MAX);
 		}
 	}
 	else
 	{
 		auto path = splitpath(Memory.ROMFilename);
 		path.ext = inExt;
-		makepath(path);
+		strncpy(filePath[index], makepath(path).c_str(), PATH_MAX);
 	}
 
 	return (filePath[index]);
@@ -421,11 +421,6 @@ std::string S9xGetDirectory (enum s9x_getdirtype dirtype)
 	}
 
 	auto p = splitpath(S9xGetFilename(inExt, dirtype));
-	makepath(p.drive, p.drive, path[index], "");
-
-	size_t	l = strlen(path[index]);
-	if (l > 1)
-		path[index][l - 1] = 0;
-
+	strncpy(path[index], makepath(p.drive, p.dir, "", "").c_str(), PATH_MAX);
 	return (path[index]);
 }
