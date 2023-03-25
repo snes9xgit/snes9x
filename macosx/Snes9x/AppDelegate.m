@@ -22,6 +22,7 @@
 #import "AppDelegate.h"
 #import "S9xPreferencesConstants.h"
 #import "S9xCheatFinderViewController.h"
+#import "S9xOpenMultipleViewController.h"
 
 NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 NSWindowFrameAutosaveName const kCheatsWindowIdentifier = @"s9xCheatsWindow";
@@ -450,6 +451,9 @@ NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderW
 - (IBAction)openDocument:(id)sender
 {
     NSOpenPanel* panel = [NSOpenPanel new];
+    panel.canChooseDirectories = NO;
+    panel.allowsMultipleSelection = NO;
+
     NSModalResponse response = [panel runModal];
 
     if ( response == NSModalResponseOK )
@@ -462,28 +466,60 @@ NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderW
 {
     if ([self.s9xEngine loadROM:url])
     {
-		[self.s9xEngine recreateS9xView];
-		
-		NSWindow *gameWindow = self.gameWindow;
-		[gameWindow.contentView addSubview:s9xView];
-		[s9xView.topAnchor constraintEqualToAnchor:gameWindow.contentView.topAnchor].active = YES;
-		[s9xView.bottomAnchor constraintEqualToAnchor:gameWindow.contentView.bottomAnchor].active = YES;
-		[s9xView.centerXAnchor constraintEqualToAnchor:gameWindow.contentView.centerXAnchor].active = YES;
-		[s9xView.leftAnchor constraintGreaterThanOrEqualToAnchor:gameWindow.contentView.leftAnchor].active = YES;
-		[s9xView.rightAnchor constraintLessThanOrEqualToAnchor:gameWindow.contentView.rightAnchor].active = YES;
-
-        if (self.cheatsWindowController != nil)
-        {
-            [((S9xCheatsViewController *)self.cheatsWindowController.contentViewController) deselectAll];
-            [((S9xCheatsViewController *)self.cheatsWindowController.contentViewController) reloadData];
-        }
-		
-        [gameWindow makeKeyAndOrderFront:self];
+        [self resetWindow];
         [NSDocumentController.sharedDocumentController noteNewRecentDocumentURL:url];
         return YES;
     }
 
     return NO;
+}
+
+- (IBAction)openMultiple:(id)sender
+{
+    S9xOpenMultipleViewController *vc = [[S9xOpenMultipleViewController alloc] initWithNibName:@"S9xOpenMultipleViewController" bundle:nil];
+    vc.completionBlock = ^(NSArray<NSURL *> *fileURLs)
+    {
+        [self openMultipleURLs:fileURLs];
+    };
+
+    NSWindow *window = [NSWindow windowWithContentViewController:vc];
+    window.title = NSLocalizedString(@"Open MultiCart", @"");
+    window.styleMask = NSWindowStyleMaskTitled;
+    [window makeKeyAndOrderFront:self];
+
+    [NSApp runModalForWindow:window];
+}
+
+- (BOOL)openMultipleURLs:(NSArray<NSURL *> *)urls
+{
+    if ([self.s9xEngine loadMultiple:urls])
+    {
+        [self resetWindow];
+        return YES;
+    }
+
+    return NO;
+}
+
+- (void)resetWindow
+{
+    [self.s9xEngine recreateS9xView];
+
+    NSWindow *gameWindow = self.gameWindow;
+    [gameWindow.contentView addSubview:s9xView];
+    [s9xView.topAnchor constraintEqualToAnchor:gameWindow.contentView.topAnchor].active = YES;
+    [s9xView.bottomAnchor constraintEqualToAnchor:gameWindow.contentView.bottomAnchor].active = YES;
+    [s9xView.centerXAnchor constraintEqualToAnchor:gameWindow.contentView.centerXAnchor].active = YES;
+    [s9xView.leftAnchor constraintGreaterThanOrEqualToAnchor:gameWindow.contentView.leftAnchor].active = YES;
+    [s9xView.rightAnchor constraintLessThanOrEqualToAnchor:gameWindow.contentView.rightAnchor].active = YES;
+
+    if (self.cheatsWindowController != nil)
+    {
+        [((S9xCheatsViewController *)self.cheatsWindowController.contentViewController) deselectAll];
+        [((S9xCheatsViewController *)self.cheatsWindowController.contentViewController) reloadData];
+    }
+
+    [gameWindow makeKeyAndOrderFront:self];
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem

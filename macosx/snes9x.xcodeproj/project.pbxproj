@@ -52,7 +52,6 @@
 		307C862622D29E29001B879E /* mac-cocoatools.mm in Sources */ = {isa = PBXBuildFile; fileRef = EA85C24E0B4EC13300F5F9C9 /* mac-cocoatools.mm */; };
 		307C862922D29E29001B879E /* mac-gworld.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67904AC7FCE00A80003 /* mac-gworld.mm */; };
 		307C862A22D29E29001B879E /* mac-keyboard.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67D04AC7FCE00A80003 /* mac-keyboard.mm */; };
-		307C862B22D29E29001B879E /* mac-multicart.mm in Sources */ = {isa = PBXBuildFile; fileRef = EA26BBD50B3676E800A570B5 /* mac-multicart.mm */; };
 		307C862C22D29E29001B879E /* mac-musicbox.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67F04AC7FCE00A80003 /* mac-musicbox.mm */; };
 		307C862D22D29E29001B879E /* mac-netplay.mm in Sources */ = {isa = PBXBuildFile; fileRef = EA1605500639E735004412AB /* mac-netplay.mm */; };
 		307C863022D29E29001B879E /* mac-render.mm in Sources */ = {isa = PBXBuildFile; fileRef = EA942A50059B0F9000D7D022 /* mac-render.mm */; };
@@ -240,6 +239,8 @@
 		30F727EE29C7B365000235A8 /* S9xCheatFinderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 30F727EC29C7B365000235A8 /* S9xCheatFinderViewController.m */; };
 		30F727EF29C7B365000235A8 /* S9xCheatFinderViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 30F727ED29C7B365000235A8 /* S9xCheatFinderViewController.xib */; };
 		30F72A8E29CCF8E2000235A8 /* S9xHexNumberFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 30F72A8D29CCF8E2000235A8 /* S9xHexNumberFormatter.m */; };
+		30F72BE929CF588B000235A8 /* S9xOpenMultipleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 30F72BE729CF588B000235A8 /* S9xOpenMultipleViewController.m */; };
+		30F72BEA29CF588B000235A8 /* S9xOpenMultipleViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 30F72BE829CF588B000235A8 /* S9xOpenMultipleViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -354,6 +355,9 @@
 		30F727ED29C7B365000235A8 /* S9xCheatFinderViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = S9xCheatFinderViewController.xib; sourceTree = "<group>"; };
 		30F72A8C29CCF8E2000235A8 /* S9xHexNumberFormatter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xHexNumberFormatter.h; sourceTree = "<group>"; };
 		30F72A8D29CCF8E2000235A8 /* S9xHexNumberFormatter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xHexNumberFormatter.m; sourceTree = "<group>"; };
+		30F72BE629CF588B000235A8 /* S9xOpenMultipleViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xOpenMultipleViewController.h; sourceTree = "<group>"; };
+		30F72BE729CF588B000235A8 /* S9xOpenMultipleViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xOpenMultipleViewController.m; sourceTree = "<group>"; };
+		30F72BE829CF588B000235A8 /* S9xOpenMultipleViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = S9xOpenMultipleViewController.xib; sourceTree = "<group>"; };
 		85FEF90620DDB15B00C038E9 /* bml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = bml.cpp; sourceTree = "<group>"; usesTabs = 1; };
 		85FEF90720DDB15C00C038E9 /* bml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bml.h; sourceTree = "<group>"; usesTabs = 1; };
 		85FEF90A20DDB18D00C038E9 /* sha256.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sha256.cpp; sourceTree = "<group>"; usesTabs = 1; };
@@ -416,8 +420,6 @@
 		EA1605500639E735004412AB /* mac-netplay.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = "mac-netplay.mm"; sourceTree = "<group>"; };
 		EA22EFA2053EEDE500A80003 /* sdd1emu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = sdd1emu.h; sourceTree = "<group>"; usesTabs = 1; };
 		EA22EFA4053EEE0700A80003 /* sdd1emu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = sdd1emu.cpp; sourceTree = "<group>"; usesTabs = 1; };
-		EA26BBD50B3676E800A570B5 /* mac-multicart.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = "mac-multicart.mm"; sourceTree = "<group>"; };
-		EA26BBD90B36771500A570B5 /* mac-multicart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "mac-multicart.h"; sourceTree = "<group>"; };
 		EA2DBC070510ABE700A80003 /* mac-screenshot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "mac-screenshot.h"; sourceTree = "<group>"; };
 		EA2DBC090510ABE700A80003 /* mac-render.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "mac-render.h"; sourceTree = "<group>"; };
 		EA2DBC0A0510ABE700A80003 /* mac-file.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "mac-file.h"; sourceTree = "<group>"; };
@@ -695,6 +697,9 @@
 				30714722230E379600917F82 /* Snes9x.entitlements */,
 				3082C4282379199F0081CA7C /* S9xApplication.h */,
 				3082C4292379199F0081CA7C /* S9xApplication.m */,
+				30F72BE629CF588B000235A8 /* S9xOpenMultipleViewController.h */,
+				30F72BE729CF588B000235A8 /* S9xOpenMultipleViewController.m */,
+				30F72BE829CF588B000235A8 /* S9xOpenMultipleViewController.xib */,
 			);
 			path = Snes9x;
 			sourceTree = "<group>";
@@ -1014,7 +1019,6 @@
 				EAECB67A04AC7FCE00A80003 /* mac-gworld.h */,
 				EAECB67C04AC7FCE00A80003 /* mac-joypad.h */,
 				EAECB67E04AC7FCE00A80003 /* mac-keyboard.h */,
-				EA26BBD90B36771500A570B5 /* mac-multicart.h */,
 				EAECB68004AC7FCE00A80003 /* mac-musicbox.h */,
 				EA16053E0639E655004412AB /* mac-netplay.h */,
 				EAECB68204AC7FCE00A80003 /* mac-os.h */,
@@ -1036,7 +1040,6 @@
 				EAECB67904AC7FCE00A80003 /* mac-gworld.mm */,
 				EAECB67B04AC7FCE00A80003 /* mac-joypad.mm */,
 				EAECB67D04AC7FCE00A80003 /* mac-keyboard.mm */,
-				EA26BBD50B3676E800A570B5 /* mac-multicart.mm */,
 				EAECB67F04AC7FCE00A80003 /* mac-musicbox.mm */,
 				EA1605500639E735004412AB /* mac-netplay.mm */,
 				EAE0E96604D582B700A80003 /* mac-os.mm */,
@@ -1276,6 +1279,7 @@
 				30D709C2236F7E3200AAB7C3 /* S9xPreferencesWindowController.xib in Resources */,
 				306937E32636352100007ABB /* S9xEmulationPreferencesViewController.xib in Resources */,
 				30CF849627AEF5B0002B37A9 /* S9xCheatsViewController.xib in Resources */,
+				30F72BEA29CF588B000235A8 /* S9xOpenMultipleViewController.xib in Resources */,
 				3071471E230E379600917F82 /* MainMenu.xib in Resources */,
 				306937DD26362B2400007ABB /* S9xSoundPreferencesViewController.xib in Resources */,
 			);
@@ -1304,6 +1308,7 @@
 				309C54802627F3060055DD95 /* S9xControlsPreferencesViewController.m in Sources */,
 				30D709C5236F90DF00AAB7C3 /* S9xButtonConfigTextField.m in Sources */,
 				306937E82636365100007ABB /* S9xFilesPreferencesViewController.m in Sources */,
+				30F72BE929CF588B000235A8 /* S9xOpenMultipleViewController.m in Sources */,
 				30F72A8E29CCF8E2000235A8 /* S9xHexNumberFormatter.m in Sources */,
 				30F727EE29C7B365000235A8 /* S9xCheatFinderViewController.m in Sources */,
 				30CF849C27AF0C61002B37A9 /* S9xCheatEditViewController.m in Sources */,
@@ -1329,7 +1334,6 @@
 				307C862622D29E29001B879E /* mac-cocoatools.mm in Sources */,
 				307C862922D29E29001B879E /* mac-gworld.mm in Sources */,
 				307C862A22D29E29001B879E /* mac-keyboard.mm in Sources */,
-				307C862B22D29E29001B879E /* mac-multicart.mm in Sources */,
 				307C862C22D29E29001B879E /* mac-musicbox.mm in Sources */,
 				307C862D22D29E29001B879E /* mac-netplay.mm in Sources */,
 				307C863022D29E29001B879E /* mac-render.mm in Sources */,

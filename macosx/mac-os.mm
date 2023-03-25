@@ -15,7 +15,7 @@
   (c) Copyright 2004         Alexander and Sander
   (c) Copyright 2004 - 2005  Steven Seeger
   (c) Copyright 2005         Ryan Vogt
-  (c) Copyright 2019         Michael Donald Buckley
+  (c) Copyright 2019-2023	Michael Donald Buckley
  ***********************************************************************************/
 
 #import <Cocoa/Cocoa.h>
@@ -54,7 +54,6 @@
 #import "mac-gworld.h"
 #import "mac-joypad.h"
 #import "mac-keyboard.h"
-#import "mac-multicart.h"
 #import "mac-musicbox.h"
 #import "mac-netplay.h"
 #import "mac-render.h"
@@ -153,8 +152,6 @@ char				npServerIP[256],
 bool8				lastoverscan        = false;
 
 CGPoint				unlimitedCursor;
-
-CFStringRef			multiCartPath[2];
 
 #ifdef MAC_PANTHER_SUPPORT
 IconRef				macIconRef[118];
@@ -2569,8 +2566,6 @@ static void Initialize (void)
 	InitMacSound();
 	SetUpHID();
 
-	InitMultiCart();
-
 	autofire = (autofireRec[0].buttonMask || autofireRec[1].buttonMask) ? true : false;
 	for (int a = 0; a < MAC_MAX_PLAYERS; a++)
 		for (int b = 0; b < 12; b++)
@@ -2598,7 +2593,6 @@ static void Deinitialize (void)
 {
 	deviceSetting = deviceSettingMaster;
 
-	DeinitMultiCart();
 	ReleaseHID();
 	DeinitGraphics();
 	DeinitKeyboard();
@@ -3356,6 +3350,41 @@ void QuitWithFatalError ( NSString *message)
     }
 
     return NO;
+}
+
+- (BOOL)loadMultiple:(NSArray<NSURL *> *)fileURLs
+{
+	if (fileURLs.count == 0)
+	{
+		return NO;
+	}
+
+	running = false;
+	frzselecting = false;
+
+	while (!Settings.StopEmulation)
+	{
+		usleep(Settings.FrameTime);
+	}
+
+	if (SNES9X_OpenMultiCart(fileURLs.firstObject, fileURLs.lastObject))
+	{
+		[self.emulationDelegate gameLoaded];
+
+		SNES9X_Go();
+		s9xView.window.title = fileURLs.firstObject.lastPathComponent.stringByDeletingPathExtension;
+		[s9xView.window makeKeyAndOrderFront:nil];
+
+		dispatch_async(dispatch_get_main_queue(), ^
+		{
+			[s9xView.window makeFirstResponder:s9xView];
+		});
+
+		[self start];
+		return YES;
+	}
+
+	return NO;
 }
 
 - (void)setShowFPS:(BOOL)showFPS

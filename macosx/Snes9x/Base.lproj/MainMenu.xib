@@ -73,6 +73,11 @@
                                     <action selector="openDocument:" target="-1" id="bVn-NM-KNZ"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Open MultiCart…" keyEquivalent="O" id="fHh-Bn-iRt">
+                                <connections>
+                                    <action selector="openMultiple:" target="-1" id="wiR-Kv-il0"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="Open Recent" id="tXI-mr-wws">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Open Recent" systemMenu="recentDocuments" id="oas-Oc-fiZ">
@@ -404,16 +409,10 @@
                                     <action selector="toggleCheats:" target="-1" id="IZg-ZR-9iA"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Show Cheats…" id="9oz-Uu-GkA">
+                            <menuItem title="Show Cheats" id="9oz-Uu-GkA">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="openCheatsWindow:" target="-1" id="VdR-bM-JgN"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Cheat Finder…" id="FVY-1R-MN4">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="openCheatFinderWindow:" target="-1" id="6gG-03-7xm"/>
                                 </connections>
                             </menuItem>
                         </items>

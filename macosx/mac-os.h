@@ -127,7 +127,6 @@ extern int				macControllerOption;
 extern CGPoint			unlimitedCursor;
 extern char				npServerIP[256], npName[256];
 extern AutoFireState	autofireRec[MAC_MAX_PLAYERS];
-extern CFStringRef		multiCartPath[2];
 
 #ifdef MAC_PANTHER_SUPPORT
 extern IconRef			macIconRef[118];
@@ -229,6 +228,7 @@ extern id<S9xInputDelegate> inputDelegate;
 - (NSString *)labelForVendorID:(uint32)vendorID productID:(uint32)productID cookie:(uint32)cookie value:(int32)value;
 
 - (BOOL)loadROM:(NSURL *)fileURL;
+- (BOOL)loadMultiple:(NSArray<NSURL *> *)fileURLs;
 
 - (void)setVideoMode:(int)videoMode;
 - (void)setMacFrameSkip:(int)_macFrameSkip;
