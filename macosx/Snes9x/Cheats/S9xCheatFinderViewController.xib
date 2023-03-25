@@ -53,7 +53,7 @@
                         <rect key="frame" x="1" y="1" width="391" height="462"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnResizing="NO" autosaveColumns="NO" rowHeight="24" rowSizeStyle="automatic" headerView="iN8-VY-ogh" viewBased="YES" id="sYl-gL-DD1" customClass="S9xCheatFinderTableView">
+                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnResizing="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="24" rowSizeStyle="automatic" headerView="iN8-VY-ogh" viewBased="YES" id="sYl-gL-DD1" customClass="S9xCheatFinderTableView">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="434"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <size key="intercellSpacing" width="17" height="0.0"/>
@@ -222,17 +222,17 @@
                 </textField>
                 <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="cRe-AN-vwd">
                     <rect key="frame" x="539" y="461" width="86" height="25"/>
-                    <popUpButtonCell key="cell" type="push" title="1 Bytes" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" tag="1" imageScaling="proportionallyDown" inset="2" selectedItem="6u8-S0-1HE" id="v4e-cD-Jvg">
+                    <popUpButtonCell key="cell" type="push" title="1 Bytes" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" tag="1" imageScaling="proportionallyDown" inset="2" selectedItem="6u8-S0-1HE" id="v4e-cD-Jvg">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="menu"/>
                         <menu key="menu" id="ahy-ao-c12">
                             <items>
-                                <menuItem title="1 Bytes" tag="1" id="6u8-S0-1HE">
+                                <menuItem title="1 Bytes" state="on" tag="1" id="6u8-S0-1HE">
                                     <connections>
                                         <action selector="reload:" target="-2" id="R90-mV-hi2"/>
                                     </connections>
                                 </menuItem>
-                                <menuItem title="2 Bytes" state="on" tag="2" id="cIU-wH-R28">
+                                <menuItem title="2 Bytes" tag="2" id="cIU-wH-R28">
                                     <connections>
                                         <action selector="reload:" target="-2" id="8nL-gR-C8K"/>
                                     </connections>
@@ -353,7 +353,7 @@
                         <rect key="frame" x="1" y="1" width="198" height="147"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="24" rowSizeStyle="automatic" headerView="Be9-bB-Nds" viewBased="YES" id="0yj-jc-bsT" customClass="S9xCheatFinderTableView">
+                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnResizing="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="24" rowSizeStyle="automatic" headerView="Be9-bB-Nds" viewBased="YES" id="0yj-jc-bsT" customClass="S9xCheatFinderTableView">
                                 <rect key="frame" x="0.0" y="0.0" width="198" height="119"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <size key="intercellSpacing" width="17" height="0.0"/>
@@ -405,7 +405,7 @@
                         <constraint firstAttribute="width" constant="200" id="cs4-sZ-4UP"/>
                     </constraints>
                     <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="V1J-zT-Szg">
-                        <rect key="frame" x="1" y="132" width="10" height="16"/>
+                        <rect key="frame" x="1" y="132" width="198" height="16"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                     <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="TMt-m8-lYU">

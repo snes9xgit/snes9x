@@ -621,6 +621,7 @@ typedef NS_ENUM(uint32_t, S9xCheatFinderWatchSegments) {
 		case S9xCheatFinderWatchSegmentsRemove:
 		{
 			[_watchRows removeObjectsAtIndexes:self.watchTableView.selectedRowIndexes];
+			[self.engine setWatchPoints:_watchRows];
 			[self reloadWatchPoints];
 
 			break;
