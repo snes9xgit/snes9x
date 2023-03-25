@@ -1585,7 +1585,7 @@ int S9xUnfreezeFromStream (STREAM stream)
         {
             printf("Adjusting old APU snapshot (snapshot version %d, current is %d)\n", version, SNAPSHOT_VERSION);
             const size_t spc_block_size = 65700;
-            const size_t old_dsp_block_size = 514;
+            const size_t old_dsp_block_size = 513;
             const size_t added_bytes_v12 = 128;
             const size_t bytes_afterward = 16;
             // Shift end to make room for extra 128 bytes
