@@ -25,10 +25,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface S9xCheatEditViewController () <NSTextFieldDelegate>
-@property (nonatomic, weak) IBOutlet NSTextField *codeField;
-@property (nonatomic, weak) IBOutlet NSTextField *descriptionField;
-@property (nonatomic, weak) IBOutlet NSTextField *addressField;
-@property (nonatomic, weak) IBOutlet NSTextField *valueField;
 @property (nonatomic, weak) IBOutlet NSTextField *invalidCodeLabel;
 @property (nonatomic, weak) IBOutlet NSButton *saveButton;
 

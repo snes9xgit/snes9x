@@ -15,25 +15,23 @@
   (c) Copyright 2004         Alexander and Sander
   (c) Copyright 2004 - 2005  Steven Seeger
   (c) Copyright 2005         Ryan Vogt
-  (c) Copyright 2019 - 2022  Michael Donald Buckley
+  (c) Copyright 2019 - 2023  Michael Donald Buckley
  ***********************************************************************************/
 
 #import <Cocoa/Cocoa.h>
 
+#import <snes9x_framework/snes9x_framework.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
-@class S9xCheatItem;
+@protocol S9xCheatFinderDelegate <NSObject>
+- (void)addedCheat;
+@end
 
-@interface S9xCheatEditViewController : NSViewController
+@interface S9xCheatFinderViewController : NSViewController
 
-- (instancetype)initWithCheatItem:(nullable S9xCheatItem *)cheatItem saveCallback:(void (^)(void))saveCallback;
-
-- (void)updateSaveButton;
-
-@property (nonatomic, weak) IBOutlet NSTextField *codeField;
-@property (nonatomic, weak) IBOutlet NSTextField *descriptionField;
-@property (nonatomic, weak) IBOutlet NSTextField *addressField;
-@property (nonatomic, weak) IBOutlet NSTextField *valueField;
+@property (nonatomic, strong) S9xEngine *engine;
+@property (nonatomic, weak) id<S9xCheatFinderDelegate> delegate;
 
 @end
 

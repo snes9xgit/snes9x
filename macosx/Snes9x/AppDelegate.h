@@ -33,6 +33,7 @@ extern NSWindowFrameAutosaveName const kMainWindowIdentifier;
 @property (nonatomic, strong) NSWindow *gameWindow;
 @property (nonatomic, strong) S9xPreferencesWindowController *preferencesWindowController;
 @property (nonatomic, strong) NSWindowController *cheatsWindowController;
+@property (nonatomic, strong) NSWindowController *cheatFinderWindowController;
 @property (nonatomic, readonly, assign) S9xDeviceSetting deviceSetting;
 
 - (void)setButtonCode:(S9xButtonCode)buttonCode forKeyCode:(int16)keyCode player:(int8)player;

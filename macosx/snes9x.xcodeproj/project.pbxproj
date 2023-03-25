@@ -49,7 +49,6 @@
 		307C862122D29E29001B879E /* mac-audio.mm in Sources */ = {isa = PBXBuildFile; fileRef = EADE6347052E5C4300A80003 /* mac-audio.mm */; };
 		307C862222D29E29001B879E /* mac-cart.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67004AC7FCE00A80003 /* mac-cart.mm */; };
 		307C862322D29E29001B879E /* mac-cheat.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67204AC7FCE00A80003 /* mac-cheat.mm */; };
-		307C862422D29E29001B879E /* mac-cheatfinder.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67404AC7FCE00A80003 /* mac-cheatfinder.mm */; };
 		307C862622D29E29001B879E /* mac-cocoatools.mm in Sources */ = {isa = PBXBuildFile; fileRef = EA85C24E0B4EC13300F5F9C9 /* mac-cocoatools.mm */; };
 		307C862922D29E29001B879E /* mac-gworld.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67904AC7FCE00A80003 /* mac-gworld.mm */; };
 		307C862A22D29E29001B879E /* mac-keyboard.mm in Sources */ = {isa = PBXBuildFile; fileRef = EAECB67D04AC7FCE00A80003 /* mac-keyboard.mm */; };
@@ -238,6 +237,9 @@
 		30D709C1236F7E3200AAB7C3 /* S9xPreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D709BF236F7E3200AAB7C3 /* S9xPreferencesWindowController.m */; };
 		30D709C2236F7E3200AAB7C3 /* S9xPreferencesWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 30D709C0236F7E3200AAB7C3 /* S9xPreferencesWindowController.xib */; };
 		30D709C5236F90DF00AAB7C3 /* S9xButtonConfigTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 30D709C4236F90DF00AAB7C3 /* S9xButtonConfigTextField.m */; };
+		30F727EE29C7B365000235A8 /* S9xCheatFinderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 30F727EC29C7B365000235A8 /* S9xCheatFinderViewController.m */; };
+		30F727EF29C7B365000235A8 /* S9xCheatFinderViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 30F727ED29C7B365000235A8 /* S9xCheatFinderViewController.xib */; };
+		30F72A8E29CCF8E2000235A8 /* S9xHexNumberFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 30F72A8D29CCF8E2000235A8 /* S9xHexNumberFormatter.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -347,6 +349,11 @@
 		30D709C0236F7E3200AAB7C3 /* S9xPreferencesWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = S9xPreferencesWindowController.xib; sourceTree = "<group>"; };
 		30D709C3236F90DF00AAB7C3 /* S9xButtonConfigTextField.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xButtonConfigTextField.h; sourceTree = "<group>"; };
 		30D709C4236F90DF00AAB7C3 /* S9xButtonConfigTextField.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xButtonConfigTextField.m; sourceTree = "<group>"; };
+		30F727EB29C7B365000235A8 /* S9xCheatFinderViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xCheatFinderViewController.h; sourceTree = "<group>"; };
+		30F727EC29C7B365000235A8 /* S9xCheatFinderViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xCheatFinderViewController.m; sourceTree = "<group>"; };
+		30F727ED29C7B365000235A8 /* S9xCheatFinderViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = S9xCheatFinderViewController.xib; sourceTree = "<group>"; };
+		30F72A8C29CCF8E2000235A8 /* S9xHexNumberFormatter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xHexNumberFormatter.h; sourceTree = "<group>"; };
+		30F72A8D29CCF8E2000235A8 /* S9xHexNumberFormatter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xHexNumberFormatter.m; sourceTree = "<group>"; };
 		85FEF90620DDB15B00C038E9 /* bml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = bml.cpp; sourceTree = "<group>"; usesTabs = 1; };
 		85FEF90720DDB15C00C038E9 /* bml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bml.h; sourceTree = "<group>"; usesTabs = 1; };
 		85FEF90A20DDB18D00C038E9 /* sha256.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sha256.cpp; sourceTree = "<group>"; usesTabs = 1; };
@@ -548,8 +555,6 @@
 		EAECB67104AC7FCE00A80003 /* mac-cart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "mac-cart.h"; sourceTree = "<group>"; };
 		EAECB67204AC7FCE00A80003 /* mac-cheat.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = "mac-cheat.mm"; sourceTree = "<group>"; };
 		EAECB67304AC7FCE00A80003 /* mac-cheat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "mac-cheat.h"; sourceTree = "<group>"; };
-		EAECB67404AC7FCE00A80003 /* mac-cheatfinder.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = "mac-cheatfinder.mm"; sourceTree = "<group>"; };
-		EAECB67504AC7FCE00A80003 /* mac-cheatfinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "mac-cheatfinder.h"; sourceTree = "<group>"; };
 		EAECB67904AC7FCE00A80003 /* mac-gworld.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = "mac-gworld.mm"; sourceTree = "<group>"; };
 		EAECB67A04AC7FCE00A80003 /* mac-gworld.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = "mac-gworld.h"; sourceTree = "<group>"; };
 		EAECB67B04AC7FCE00A80003 /* mac-joypad.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = "mac-joypad.mm"; sourceTree = "<group>"; };
@@ -715,6 +720,11 @@
 				30CF849927AF0C61002B37A9 /* S9xCheatEditViewController.h */,
 				30CF849A27AF0C61002B37A9 /* S9xCheatEditViewController.m */,
 				30CF849B27AF0C61002B37A9 /* S9xCheatEditViewController.xib */,
+				30F727EB29C7B365000235A8 /* S9xCheatFinderViewController.h */,
+				30F727EC29C7B365000235A8 /* S9xCheatFinderViewController.m */,
+				30F727ED29C7B365000235A8 /* S9xCheatFinderViewController.xib */,
+				30F72A8C29CCF8E2000235A8 /* S9xHexNumberFormatter.h */,
+				30F72A8D29CCF8E2000235A8 /* S9xHexNumberFormatter.m */,
 			);
 			path = Cheats;
 			sourceTree = "<group>";
@@ -998,7 +1008,6 @@
 				EADE6349052E5C5300A80003 /* mac-audio.h */,
 				EAECB67104AC7FCE00A80003 /* mac-cart.h */,
 				EAECB67304AC7FCE00A80003 /* mac-cheat.h */,
-				EAECB67504AC7FCE00A80003 /* mac-cheatfinder.h */,
 				EA85C24D0B4EC13300F5F9C9 /* mac-cocoatools.h */,
 				EA809F9D08F8F2190072CDFB /* mac-controls.h */,
 				EA2DBC0A0510ABE700A80003 /* mac-file.h */,
@@ -1021,7 +1030,6 @@
 				EADE6347052E5C4300A80003 /* mac-audio.mm */,
 				EAECB67004AC7FCE00A80003 /* mac-cart.mm */,
 				EAECB67204AC7FCE00A80003 /* mac-cheat.mm */,
-				EAECB67404AC7FCE00A80003 /* mac-cheatfinder.mm */,
 				EA85C24E0B4EC13300F5F9C9 /* mac-cocoatools.mm */,
 				EA809FA108F8F2420072CDFB /* mac-controls.mm */,
 				EA2DBC0C0510ABE700A80003 /* mac-file.mm */,
@@ -1256,6 +1264,7 @@
 				306937CB2635EE5800007ABB /* S9xDisplayPreferencesViewController.xib in Resources */,
 				306937E92636365100007ABB /* S9xFilesPreferencesViewController.xib in Resources */,
 				30D709B0236F583600AAB7C3 /* Localizable.strings in Resources */,
+				30F727EF29C7B365000235A8 /* S9xCheatFinderViewController.xib in Resources */,
 				304B364A262E328400F8DC8E /* S9xControlsPreferencesViewController.xib in Resources */,
 				30D709B1236F585100AAB7C3 /* Snes9x Help in Resources */,
 				30D709B3236F731B00AAB7C3 /* SRAM.icns in Resources */,
@@ -1295,6 +1304,8 @@
 				309C54802627F3060055DD95 /* S9xControlsPreferencesViewController.m in Sources */,
 				30D709C5236F90DF00AAB7C3 /* S9xButtonConfigTextField.m in Sources */,
 				306937E82636365100007ABB /* S9xFilesPreferencesViewController.m in Sources */,
+				30F72A8E29CCF8E2000235A8 /* S9xHexNumberFormatter.m in Sources */,
+				30F727EE29C7B365000235A8 /* S9xCheatFinderViewController.m in Sources */,
 				30CF849C27AF0C61002B37A9 /* S9xCheatEditViewController.m in Sources */,
 				306937D02636253900007ABB /* S9xPreferencesTabViewController.m in Sources */,
 				30714721230E379600917F82 /* main.m in Sources */,
@@ -1315,7 +1326,6 @@
 				307C862122D29E29001B879E /* mac-audio.mm in Sources */,
 				307C862222D29E29001B879E /* mac-cart.mm in Sources */,
 				307C862322D29E29001B879E /* mac-cheat.mm in Sources */,
-				307C862422D29E29001B879E /* mac-cheatfinder.mm in Sources */,
 				307C862622D29E29001B879E /* mac-cocoatools.mm in Sources */,
 				307C862922D29E29001B879E /* mac-gworld.mm in Sources */,
 				307C862A22D29E29001B879E /* mac-keyboard.mm in Sources */,

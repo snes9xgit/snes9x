@@ -47,7 +47,6 @@
 #import "mac-prefix.h"
 #import "mac-audio.h"
 #import "mac-cheat.h"
-#import "mac-cheatfinder.h"
 #import "mac-cocoatools.h"
 #import "mac-controls.h"
 #import "mac-dialog.h"
@@ -339,10 +338,14 @@ static inline void EmulationLoop (void)
     bool8    olddisplayframerate = false;
     int        storedMacFrameSkip  = macFrameSkip;
 
+	if (pauseEmulation)
+	{
+		[s9xView.emulationDelegate emulationResumed];
+	}
+
     pauseEmulation = false;
     frameAdvance   = false;
 	[s9xView updatePauseOverlay];
-
 
     if (macQTRecord)
     {
@@ -2227,6 +2230,16 @@ static void ProcessInput (void)
 
                         case ToggleEmulationPause:
                             pauseEmulation = !pauseEmulation;
+
+							if (pauseEmulation)
+							{
+								[s9xView.emulationDelegate emulationPaused];
+							}
+							else
+							{
+								[s9xView.emulationDelegate emulationResumed];
+							}
+							
 							[s9xView updatePauseOverlay];
                             break;
 
@@ -2252,6 +2265,16 @@ static void ProcessInput (void)
 			{
 				escKeyDown = true;
 				pauseEmulation = !pauseEmulation;
+
+				if (pauseEmulation)
+				{
+					[s9xView.emulationDelegate emulationPaused];
+				}
+				else
+				{
+					[s9xView.emulationDelegate emulationResumed];
+				}
+
 				[s9xView updatePauseOverlay];
 
 				dispatch_async(dispatch_get_main_queue(), ^
@@ -2504,6 +2527,7 @@ static void Initialize (void)
 	Settings.MultiPlayer5Master = true;
 	Settings.FrameTimePAL = 20000;
 	Settings.FrameTimeNTSC = 16667;
+	Settings.DisplayWatchedAddresses = true;
 	Settings.SixteenBitSound = true;
 	Settings.Stereo = true;
 	Settings.SoundPlaybackRate = 32000;
@@ -2540,7 +2564,6 @@ static void Initialize (void)
 
 	InitKeyboard();
 	InitAutofire();
-	InitCheatFinder();
 
 	InitGraphics();
 	InitMacSound();
@@ -2577,7 +2600,6 @@ static void Deinitialize (void)
 
 	DeinitMultiCart();
 	ReleaseHID();
-	DeinitCheatFinder();
 	DeinitGraphics();
 	DeinitKeyboard();
 	DeinitMacSound();
@@ -2914,6 +2936,8 @@ void QuitWithFatalError ( NSString *message)
 	else
 	{
 		pauseEmulation = true;
+		[self.emulationDelegate emulationPaused];
+
 		[s9xView updatePauseOverlay];
 	}
 }
@@ -3116,6 +3140,7 @@ void QuitWithFatalError ( NSString *message)
 	[s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SNES_WIDTH * 2.0]];
 	[s9xView addConstraint:[NSLayoutConstraint constraintWithItem:s9xView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SNES_HEIGHT * 2.0]];
 	s9xView.device = MTLCreateSystemDefaultDevice();
+	s9xView.emulationDelegate = self;
 	S9xInitDisplay(NULL, NULL);
 }
 
@@ -3175,6 +3200,7 @@ void QuitWithFatalError ( NSString *message)
 - (void)pause
 {
     pauseEmulation = true;
+	[self.emulationDelegate emulationPaused];
     [s9xView updatePauseOverlay];
 }
 
@@ -3187,6 +3213,7 @@ void QuitWithFatalError ( NSString *message)
 - (void)resume
 {
     pauseEmulation = false;
+	[self.emulationDelegate emulationResumed];
 	[s9xView updatePauseOverlay];
 }
 
@@ -3313,6 +3340,8 @@ void QuitWithFatalError ( NSString *message)
 
     if ( SNES9X_OpenCart(fileURL) )
     {
+		[self.emulationDelegate gameLoaded];
+		
         SNES9X_Go();
         s9xView.window.title = fileURL.lastPathComponent.stringByDeletingPathExtension;
         [s9xView.window makeKeyAndOrderFront:nil];
@@ -3420,6 +3449,86 @@ void QuitWithFatalError ( NSString *message)
 	Cheat.enabled = cheatsEnabled;
 }
 
+- (void)copyRAM:(uint8_t *)buffer length:(size_t)length
+{
+	if ( length > 0x20000)
+	{
+		length = 0x20000;
+	}
+
+	memcpy(buffer, Memory.RAM, length);
+}
+
+- (NSArray<S9xWatchPoint *> *)getWatchPoints
+{
+	NSMutableArray<S9xWatchPoint *> *watchPoints = [NSMutableArray new];
+
+	for (NSUInteger i = 0; i < sizeof(watches)/sizeof(*watches); ++i)
+	{
+		if (watches[i].on)
+		{
+			S9xWatchPoint *watchPoint = [S9xWatchPoint new];
+			watchPoint.address = watches[i].address;
+			watchPoint.size = watches[i].size;
+			watchPoint.format = (S9xWatchPointFormat)watches[i].format;
+
+			[watchPoints insertObject:watchPoint atIndex:0];
+		}
+	}
+
+	return watchPoints;
+}
+
+- (void)setWatchPoints:(NSArray<S9xWatchPoint *> *)watchPoints
+{
+	memset(watches, 0, sizeof(watches));
+	NSUInteger i = 0;
+
+	for (S9xWatchPoint *watchPoint in watchPoints.reverseObjectEnumerator)
+	{
+		uint32_t address = watchPoint.address;
+		watches[i].on = true;
+		watches[i].address = address;
+		watches[i].size = watchPoint.size;
+		watches[i].format = watchPoint.format;
+
+		if(address < 0x7E0000 + 0x20000)
+		{
+			snprintf(watches[i].desc, sizeof(watches[i].desc), "%6X", address);
+		}
+		else if(address < 0x7E0000 + 0x30000)
+		{
+			snprintf(watches[i].desc, sizeof(watches[i].desc), "s%05X", address - 0x7E0000 - 0x20000);
+		}
+		else
+		{
+			snprintf(watches[i].desc, sizeof(watches[i].desc), "i%05X", address - 0x7E0000 - 0x30000);
+		}
+
+		++i;
+
+		if (i == 16)
+		{
+			break;
+		}
+	}
+}
+
+- (void)gameLoaded
+{
+	[self.emulationDelegate gameLoaded];
+}
+
+- (void)emulationPaused
+{
+	[self.emulationDelegate emulationPaused];
+}
+
+- (void)emulationResumed
+{
+	[self.emulationDelegate emulationResumed];
+}
+
 @end
 
 @implementation S9xJoypad
@@ -3438,4 +3547,7 @@ void QuitWithFatalError ( NSString *message)
 @end
 
 @implementation S9xJoypadInput
+@end
+
+@implementation S9xWatchPoint
 @end

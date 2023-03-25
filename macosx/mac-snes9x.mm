@@ -32,7 +32,6 @@
 #include "mac-prefix.h"
 #include "mac-audio.h"
 #include "mac-cart.h"
-#include "mac-cheatfinder.h"
 #include "mac-dialog.h"
 #include "mac-file.h"
 #include "mac-multicart.h"
@@ -61,8 +60,6 @@ bool8 SNES9X_OpenCart (NSURL *inRef)
 		S9xResetSaveTimer(false);
 		S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
 	}
-
-	ResetCheatFinder();
 
 	if (!inRef)
 	{
@@ -132,8 +129,6 @@ bool8 SNES9X_OpenMultiCart (void)
 		S9xResetSaveTimer(false);
 		S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
 	}
-
-	ResetCheatFinder();
 
 	if (!MultiCartDialog())
 	{

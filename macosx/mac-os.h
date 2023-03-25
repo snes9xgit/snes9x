@@ -137,8 +137,16 @@ extern bool8			pressedKeys[MAC_MAX_PLAYERS][kNumButtons];
 extern bool8            pressedGamepadButtons[MAC_MAX_PLAYERS][kNumButtons];
 extern pthread_mutex_t	keyLock;
 
+@protocol S9xEmulationDelegate <NSObject>
+- (void)gameLoaded;
+- (void)emulationPaused;
+- (void)emulationResumed;
+@end
+
 @interface S9xView: MTKView
 - (void)updatePauseOverlay;
+
+@property (nonatomic, weak) id<S9xEmulationDelegate> emulationDelegate;
 @end
 extern S9xView			*s9xView;
 
@@ -166,6 +174,21 @@ void CopyPressedKeys(uint8 keys[MAC_MAX_PLAYERS][kNumButtons], uint8 gamepadButt
 @property (nonatomic, assign) S9xButtonCode buttonCode;
 @end
 
+typedef NS_ENUM(uint32_t, S9xWatchPointFormat)
+{
+	S9xWatchPointFormatUnsigned = 1,
+	S9xWatchPointFormatSigned = 2,
+	S9xWatchPointFormatHex = 3
+};
+
+@interface S9xWatchPoint: NSObject
+
+@property (nonatomic, assign) uint32_t address;
+@property (nonatomic, assign) uint32_t size;
+@property (nonatomic, assign) S9xWatchPointFormat format;
+
+@end
+
 @protocol S9xInputDelegate <NSObject>
 - (BOOL)handleInput:(S9xJoypadInput *)input fromJoypad:(S9xJoypad *)joypad;
 - (void)deviceSettingChanged:(S9xDeviceSetting)deviceSetting;
@@ -173,9 +196,10 @@ void CopyPressedKeys(uint8 keys[MAC_MAX_PLAYERS][kNumButtons], uint8 gamepadButt
 
 extern id<S9xInputDelegate> inputDelegate;
 
-@interface S9xEngine : NSObject
+@interface S9xEngine : NSObject <S9xEmulationDelegate>
 
 @property (nonatomic, weak) id<S9xInputDelegate> inputDelegate;
+@property (nonatomic, weak) id<S9xEmulationDelegate> emulationDelegate;
 
 @property (nonatomic, assign) BOOL cheatsEnabled;
 
@@ -220,6 +244,11 @@ extern id<S9xInputDelegate> inputDelegate;
 - (void)setAllowInvalidVRAMAccess:(BOOL)flag;
 - (void)setSeparateEchoBufferFromRAM:(BOOL)flag;
 - (void)setDisableSpriteLimit:(BOOL)flag;
+
+- (void)copyRAM:(uint8_t *)buffer length:(size_t)length;
+
+- (NSArray<S9xWatchPoint *> *)getWatchPoints;
+- (void)setWatchPoints:(NSArray<S9xWatchPoint *> *)watchPoints;
 
 @end
 

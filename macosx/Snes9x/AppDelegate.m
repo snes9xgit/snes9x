@@ -21,9 +21,14 @@
 #import <Carbon/Carbon.h>
 #import "AppDelegate.h"
 #import "S9xPreferencesConstants.h"
+#import "S9xCheatFinderViewController.h"
 
 NSWindowFrameAutosaveName const kMainWindowIdentifier = @"s9xMainWindow";
 NSWindowFrameAutosaveName const kCheatsWindowIdentifier = @"s9xCheatsWindow";
+NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderWindow";
+
+@interface AppDelegate () <S9xCheatFinderDelegate>
+@end
 
 @implementation AppDelegate
 
@@ -636,6 +641,41 @@ NSWindowFrameAutosaveName const kCheatsWindowIdentifier = @"s9xCheatsWindow";
 {
     self.s9xEngine.cheatsEnabled = !self.s9xEngine.cheatsEnabled;
     [NSUserDefaults.standardUserDefaults setBool:self.s9xEngine.cheatsEnabled forKey:kEnableCheatsPref];
+}
+
+- (IBAction)openCheatFinderWindow:(id)sender
+{
+    if ( self.cheatFinderWindowController == nil )
+    {
+        S9xCheatFinderViewController *vc = [[S9xCheatFinderViewController alloc] initWithNibName:@"S9xCheatFinderViewController" bundle:nil];
+        vc.engine = self.s9xEngine;
+        vc.delegate = self;
+
+        NSWindow *window = [NSWindow windowWithContentViewController:vc];
+        self.cheatFinderWindowController = [[NSWindowController alloc] initWithWindow:window];
+
+        window = self.cheatFinderWindowController.window;
+
+        window.title = NSLocalizedString(@"Cheat Finder", nil);
+        window.restorationClass = self.class;
+        window.frameAutosaveName = kCheatFinderWindowIdentifier;
+        window.releasedWhenClosed = NO;
+
+        if ( ![window setFrameUsingName:kCheatFinderWindowIdentifier] )
+        {
+            [window center];
+        }
+    }
+
+    [self.cheatFinderWindowController showWindow:nil];
+    [self.cheatFinderWindowController.window makeKeyAndOrderFront:nil];
+    [self.cheatFinderWindowController.window makeKeyWindow];
+}
+
+- (void)addedCheat
+{
+    [((S9xCheatsViewController *)self.cheatsWindowController.contentViewController) deselectAll];
+    [((S9xCheatsViewController *)self.cheatsWindowController.contentViewController) reloadData];
 }
 
 @end

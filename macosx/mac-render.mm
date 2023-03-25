@@ -21,6 +21,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include "snes9x.h"
+#include "cheats.h"
 #include "memmap.h"
 #include "apu.h"
 #include "display.h"
@@ -29,7 +30,6 @@
 #include <sys/time.h>
 
 #include "mac-prefix.h"
-#include "mac-cheatfinder.h"
 #include "mac-os.h"
 #include "mac-screenshot.h"
 #include "mac-render.h"
@@ -234,8 +234,29 @@ bool8 S9xContinueUpdate (int width, int height)
 
 void S9xPutImage (int width, int height)
 {
-    if (cfIsWatching)
-        CheatFinderDrawWatchAddr();
+	for(unsigned int i = 0 ; i < sizeof(watches)/sizeof(*watches) ; i++)
+	{
+		if(watches[i].on)
+		{
+			int address = watches[i].address - 0x7E0000;
+			const uint8* source;
+
+			if(address < 0x20000)
+			{
+				source = Memory.RAM + address;
+			}
+			else if(address < 0x30000)
+			{
+				source = Memory.SRAM + address - 0x20000;
+			}
+			else
+			{
+				source = Memory.FillRAM + address - 0x30000;
+			}
+
+			memcpy(&(Cheat.CWatchRAM[address]), source, watches[i].size);
+		}
+	}
 
     if (Settings.DisplayFrameRate)
     {
