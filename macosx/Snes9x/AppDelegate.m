@@ -61,6 +61,8 @@ NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderW
     {
         [self.s9xEngine quit];
     }];
+
+    [self resetWindow];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
