@@ -7,7 +7,7 @@ Files included in the Snes9x archive:
   changes.txt
   snes9x-license.txt
 
-version 1.62  March, 2023
+version 1.62.1  March, 2023
 Home page: http://www.snes9x.com/
 Source code: https://github.com/snes9xgit/snes9x/
 
