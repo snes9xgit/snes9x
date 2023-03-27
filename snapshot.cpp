@@ -1193,7 +1193,7 @@ void S9xFreezeToStream (STREAM stream)
 
 	FreezeBlock (stream, "RAM", Memory.RAM, sizeof(Memory.RAM));
 
-	FreezeBlock (stream, "SRA", Memory.SRAM, sizeof(Memory.SRAM));
+	FreezeBlock (stream, "SRA", Memory.SRAM, Memory.SRAM_SIZE);
 
 	FreezeBlock (stream, "FIL", Memory.FillRAM, 0x8000);
 
@@ -1399,9 +1399,9 @@ int S9xUnfreezeFromStream (STREAM stream)
 			break;
 
 		if (fast)
-			result = UnfreezeBlock(stream, "SRA", Memory.SRAM, sizeof(Memory.SRAM));
+			result = UnfreezeBlock(stream, "SRA", Memory.SRAM, Memory.SRAM_SIZE);
 		else
-			result = UnfreezeBlockCopy (stream, "SRA", &local_sram, sizeof(Memory.SRAM));
+			result = UnfreezeBlockCopy (stream, "SRA", &local_sram, Memory.SRAM_SIZE);
 		if (result != SUCCESS)
 			break;
 
@@ -1571,7 +1571,7 @@ int S9xUnfreezeFromStream (STREAM stream)
 			memcpy(Memory.RAM, local_ram, 0x20000);
 
 		if (local_sram)
-			memcpy(Memory.SRAM, local_sram, 0x80000);
+			memcpy(Memory.SRAM, local_sram, Memory.SRAM_SIZE);
 
 		if (local_fillram)
 			memcpy(Memory.FillRAM, local_fillram, 0x8000);
@@ -1585,7 +1585,7 @@ int S9xUnfreezeFromStream (STREAM stream)
         {
             printf("Adjusting old APU snapshot (snapshot version %d, current is %d)\n", version, SNAPSHOT_VERSION);
             const size_t spc_block_size = 65700;
-            const size_t old_dsp_block_size = 513;
+            const size_t old_dsp_block_size = 514;
             const size_t added_bytes_v12 = 128;
             const size_t bytes_afterward = 16;
             // Shift end to make room for extra 128 bytes
@@ -1593,7 +1593,11 @@ int S9xUnfreezeFromStream (STREAM stream)
                     local_apu_sound + spc_block_size + old_dsp_block_size,
                     bytes_afterward);
             // Copy saved internal registers to external registers
-            memmove(local_apu_sound + spc_block_size + old_dsp_block_size, local_apu_sound + spc_block_size, added_bytes_v12);
+			const size_t new_dsp_registers_position = spc_block_size + 513;
+
+            memmove(local_apu_sound + spc_block_size + new_dsp_registers_position,
+					local_apu_sound + spc_block_size,
+					added_bytes_v12);
             S9xAPULoadState(local_apu_sound);
         }
         else if (version >= 12)
