@@ -120,6 +120,8 @@ class Resampler
             if (end >= buffer_size)
                 end -= buffer_size;
             buffer[end] = l;
+            if (end + 1 == buffer_size)
+                end -= buffer_size;
             buffer[end + 1] = r;
             size += 2;
         }
