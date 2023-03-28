@@ -1126,7 +1126,7 @@ bool retro_load_game(const struct retro_game_info *game)
         }
 
         else
-            rom_loaded = Memory.LoadROMMem((const uint8_t*)game->data ,game->size);
+            rom_loaded = Memory.LoadROMMem((const uint8_t*)game->data ,game->size, game->path);
 
         if(biosrom) delete[] biosrom;
     }
@@ -2088,24 +2088,6 @@ const char* S9xStringInput(const char* in) { return in; }
 #else
 #define SLASH '/'
 #endif
-
-const char* S9xGetFilename(const char* in, s9x_getdirtype type)
-{
-    static char newpath[2048];
-
-    newpath[0] = '\0';
-
-    switch (type)
-    {
-        case ROMFILENAME_DIR:
-            sprintf(newpath, "%s%c%s%s", g_rom_dir, SLASH, g_basename, in);
-            return newpath;
-        default:
-            break;
-    }
-
-    return in;
-}
 
 std::string S9xGetDirectory(s9x_getdirtype type)
 {
