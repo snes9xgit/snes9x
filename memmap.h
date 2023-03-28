@@ -108,8 +108,7 @@ struct CMemory
 	int		First512BytesCountZeroes() const;
 	uint32	HeaderRemove (uint32, uint8 *);
 	uint32	FileLoader (uint8 *, const char *, uint32);
-    uint32  MemLoader (uint8 *, const char*, uint32);
-    bool8   LoadROMMem (const uint8 *, uint32);
+    bool8   LoadROMMem (const uint8 *, uint32, const char* optional_rom_filename = NULL);
 	bool8	LoadROM (const char *);
     bool8	LoadROMInt (int32);
     bool8   LoadMultiCartMem (const uint8 *, uint32, const uint8 *, uint32, const uint8 *, uint32);

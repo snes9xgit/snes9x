@@ -1299,12 +1299,15 @@ uint32 CMemory::FileLoader (uint8 *buffer, const char *filename, uint32 maxsize)
 	return ((uint32) totalSize);
 }
 
-bool8 CMemory::LoadROMMem (const uint8 *source, uint32 sourceSize)
+bool8 CMemory::LoadROMMem (const uint8 *source, uint32 sourceSize, const char* optional_rom_filename /*= NULL*/)
 {
     if(!source || sourceSize > MAX_ROM_SIZE)
         return FALSE;
 
-    ROMFilename = "MemoryROM";
+    if (optional_rom_filename)
+        ROMFilename = optional_rom_filename;
+    else
+        ROMFilename = "MemoryROM";
 
     do
     {
