@@ -1595,9 +1595,11 @@ int S9xUnfreezeFromStream (STREAM stream)
             // Copy saved internal registers to external registers
 			const size_t new_dsp_registers_position = spc_block_size + 513;
 
-            memmove(local_apu_sound + spc_block_size + new_dsp_registers_position,
+            memmove(local_apu_sound + new_dsp_registers_position,
 					local_apu_sound + spc_block_size,
 					added_bytes_v12);
+            // the extra 0 byte between external registers and bytes_afterward is already present due to memset in S9xAPUSaveState
+
             S9xAPULoadState(local_apu_sound);
         }
         else if (version >= 12)
