@@ -65,6 +65,9 @@ class Resampler
 
     Resampler(int num_samples)
     {
+        // Only allow even buffer sizes
+        if (num_samples & 1)
+            num_samples++;
         this->buffer_size = num_samples;
         buffer = new int16_t[this->buffer_size];
         r_step = 1.0;
@@ -120,8 +123,6 @@ class Resampler
             if (end >= buffer_size)
                 end -= buffer_size;
             buffer[end] = l;
-            if (end + 1 == buffer_size)
-                end -= buffer_size;
             buffer[end + 1] = r;
             size += 2;
         }
