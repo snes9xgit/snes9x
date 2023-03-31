@@ -54,7 +54,7 @@ bool ReInitSound()
 		S9xSoundOutput->DeInitSoundOutput();
 
     last_volume = 1.0;
-    return S9xInitSound(0);
+    return S9xInitSound(25);
 }
 
 void CloseSoundDevice() {
