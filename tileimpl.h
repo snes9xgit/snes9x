@@ -481,6 +481,8 @@ namespace TileImpl {
 
 			GFX.RealScreenColors = IPPU.ScreenColors;
 			GFX.ScreenColors = GFX.ClipColors ? BlackColourMap : GFX.RealScreenColors;
+			if (Settings.ForcedBackdrop)
+				GFX.ScreenColors = &Settings.ForcedBackdrop;
 
 			OFFSET_IN_LINE;
 			for (l = GFX.StartY; l <= GFX.EndY; l++, Offset += GFX.PPL)

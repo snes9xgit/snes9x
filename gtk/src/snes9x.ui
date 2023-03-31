@@ -7198,7 +7198,7 @@
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
                                         <property name="xalign">0</property>
-                                        <property name="label" translatable="yes">BG layering hack</property>
+                                        <property name="label" translatable="yes">Toggle forced backdrop color</property>
                                       </object>
                                       <packing>
                                         <property name="top_attach">5</property>
@@ -7324,7 +7324,7 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkEntry" id="b_bg_layering_hack">
+                                      <object class="GtkEntry" id="toggle_backdrop">
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="editable">False</property>

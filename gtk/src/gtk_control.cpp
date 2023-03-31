@@ -62,7 +62,7 @@ const BindingLink b_links[] =
         { "b_bg_layer_2",          "ToggleBG2"         },
         { "b_bg_layer_3",          "ToggleBG3"         },
         { "b_sprites",             "ToggleSprites"     },
-        { "b_bg_layering_hack",    "BGLayeringHack"    },
+        { "toggle_backdrop",       "ToggleBackdrop"    },
         { "b_screenshot",          "Screenshot"        },
         { "b_fullscreen",          "GTK_fullscreen"    },
         { "b_state_save_current",  "GTK_state_save_current" },

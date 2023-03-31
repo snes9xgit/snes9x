@@ -247,6 +247,7 @@ struct SSettings
 	bool8	Transparency;
 	uint8	BG_Forced;
 	bool8	DisableGraphicWindows;
+	uint16  ForcedBackdrop;
 
 	bool8	DisplayTime;
 	bool8	DisplayFrameRate;

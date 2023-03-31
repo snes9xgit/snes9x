@@ -51,6 +51,7 @@ bool8 S9xGraphicsInit (void)
 
 	IPPU.OBJChanged = TRUE;
 	Settings.BG_Forced = 0;
+	Settings.ForcedBackdrop = 0;
 	S9xFixColourBrightness();
 	S9xBuildDirectColourMaps();
 

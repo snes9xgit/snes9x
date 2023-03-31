@@ -265,6 +265,7 @@ static const int	ptrspeeds[4] = { 1, 1, 4, 8 };
 	S(ToggleBG1), \
 	S(ToggleBG2), \
 	S(ToggleBG3), \
+	S(ToggleBackdrop), \
 	S(ToggleEmuTurbo), \
 	S(ToggleSprites), \
 	S(ToggleTransparency) \
@@ -2358,6 +2359,26 @@ void S9xApplyCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 					case SoundChannelsOn:
 						S9xToggleSoundChannel(8);
 						S9xSetInfoString("All sound channels on");
+						break;
+
+					case ToggleBackdrop:
+						switch (Settings.ForcedBackdrop)
+						{
+						case 0:
+							Settings.ForcedBackdrop = 0xf81f;
+							break;
+						case 0xf81f:
+							Settings.ForcedBackdrop = 0x07e0;
+							break;
+						case 0x07e0:
+							Settings.ForcedBackdrop = 0x07ff;
+							break;
+						default:
+							Settings.ForcedBackdrop = 0;
+							break;
+						}
+						sprintf(buf, "Setting backdrop to 0x%04x", Settings.ForcedBackdrop);
+						S9xSetInfoString(buf);
 						break;
 
 					case ToggleBG0:
