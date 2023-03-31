@@ -335,7 +335,6 @@
 		30AD1D2022FBB2EA000EE989 /* en */ = {isa = PBXFileReference; lastKnownFileType = folder; name = en; path = "en.lproj/Snes9x Help"; sourceTree = "<group>"; };
 		30AD1D2122FBB2EA000EE989 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/Snes9x.xib; sourceTree = "<group>"; };
 		30C49EF6250C0F2B007D04F8 /* Snes9xDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Snes9xDebug.entitlements; sourceTree = "<group>"; };
-		30CCAD422290472E00549AED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = /Users/buckley/Projects/snes9x/macosx/Info.plist; sourceTree = "<absolute>"; };
 		30CF849227AEF5AF002B37A9 /* S9xCheatsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = S9xCheatsViewController.h; sourceTree = "<group>"; };
 		30CF849327AEF5AF002B37A9 /* S9xCheatsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S9xCheatsViewController.m; sourceTree = "<group>"; };
 		30CF849427AEF5AF002B37A9 /* S9xCheatsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = S9xCheatsViewController.xib; sourceTree = "<group>"; };
@@ -1068,7 +1067,6 @@
 				EA3BEAA80A28386500A8FAE5 /* Snes9x Help */,
 				EA3D2F580A26085800BDACCC /* libHIDUtilities_u.a */,
 				CF3E42491372D48F0077DE32 /* libz_u.a */,
-				30CCAD422290472E00549AED /* Info.plist */,
 				30A6F62523B29EF500630584 /* shaders.metal */,
 			);
 			path = macosx;
@@ -1503,7 +1501,7 @@
 				INFOPLIST_FILE = Snes9x/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 1.62.1;
+				MARKETING_VERSION = 1.62.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.snes9x.macos.snes9x;
@@ -1550,7 +1548,7 @@
 				INFOPLIST_FILE = Snes9x/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 1.62.1;
+				MARKETING_VERSION = 1.62.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.snes9x.macos.snes9x;
