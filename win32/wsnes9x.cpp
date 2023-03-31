@@ -8357,10 +8357,16 @@ static void set_hotkeyinfo(HWND hDlg)
 {
 	int index = SendDlgItemMessage(hDlg,IDC_HKCOMBO,CB_GETCURSEL,0,0);
 
-    for(int i = 0; i < MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS; i++)
+    for (int i = 0; i < MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS; i++)
     {
+        int flags = SW_SHOWNOACTIVATE;
+        if (hotkey_dialog_items[index][i].key_entry == NULL)
+            flags = SW_HIDE;
+        ShowWindow(GetDlgItem(hDlg, IDC_HOTKEY1 + i), flags);
+        ShowWindow(GetDlgItem(hDlg, IDC_LABEL_HK1 + i), flags);
+
         int wParam = 0, lParam = 0;
-        if(hotkey_dialog_items[index][i].key_entry)
+        if (hotkey_dialog_items[index][i].key_entry)
         {
             wParam = hotkey_dialog_items[index][i].key_entry->key;
             lParam = hotkey_dialog_items[index][i].key_entry->modifiers;
