@@ -378,6 +378,7 @@ struct SCustomKeys CustomKeys = {
 	{0,0}, // background layer 3
 	{0,0}, // background layer 4
 	{0,0}, // sprite layer
+	{0,0}, // Toggle backdrop
 	{0,0}, // Clipping Windows
 	{0,0}, // Transparency
 	{'6',0}, // Joypad Swap
@@ -1216,6 +1217,13 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 			GUI.Mute = !GUI.Mute;
 			hitHotKey = true;
 		}
+
+		if (wParam == CustomKeys.ToggleBackdrop.key && modifiers == CustomKeys.ToggleBackdrop.modifiers)
+		{
+			auto cmd = S9xGetCommandT("ToggleBackdrop");
+			S9xApplyCommand(cmd, 1, 0);
+		}
+
 		//if(wParam == CustomKeys.BGLHack.key
 		//&& modifiers == CustomKeys.BGLHack.modifiers)
 		//{
@@ -8340,7 +8348,7 @@ static hotkey_dialog_item hotkey_dialog_items[4][MAX_SWITCHABLE_HOTKEY_DIALOG_IT
         { &CustomKeys.SelectSave[9], HOTKEYS_LABEL_4_10 },
         { &CustomKeys.SaveFileSelect, HOTKEYS_LABEL_4_11 },
         { &CustomKeys.LoadFileSelect, HOTKEYS_LABEL_4_12 },
-		{ NULL, _T("") },
+		{ &CustomKeys.ToggleBackdrop, HOTKEYS_LABEL_4_13 },
 		{ NULL, _T("") },
     },
 };

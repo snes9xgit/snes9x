@@ -938,6 +938,7 @@ void WinRegisterConfigItems()
 	ADD(QuitS9X);ADD(Rewind);
 	ADD(SaveFileSelect); ADD(LoadFileSelect);
 	ADD(Mute);
+	ADD(ToggleBackdrop);
 #undef ADD
 #undef ADDN
 #undef CATEGORY

@@ -335,6 +335,7 @@ struct SCustomKeys {
 	SCustomKey BGL3;
 	SCustomKey BGL4;
 	SCustomKey BGL5;
+	SCustomKey ToggleBackdrop;
 	SCustomKey ClippingWindows;
 	SCustomKey Transparency;
 	SCustomKey JoypadSwap;

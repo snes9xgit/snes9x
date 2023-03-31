@@ -518,6 +518,7 @@ int GetNumHotKeysAssignedTo (WORD Key, int modifiers)
         if(MATCHES_KEY(SaveFileSelect))    count++;
         if(MATCHES_KEY(LoadFileSelect))    count++;
         if(MATCHES_KEY(Mute))              count++;
+		if(MATCHES_KEY(ToggleBackdrop))    count++;
 
 		#undef MATCHES_KEY
 	}

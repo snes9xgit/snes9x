@@ -134,8 +134,7 @@ Nintendo is a trademark.")
 #define HOTKEYS_LABEL_4_10 TEXT("Select Slot 9:")
 #define HOTKEYS_LABEL_4_11 TEXT("Save to file:")
 #define HOTKEYS_LABEL_4_12 TEXT("Load from file:")
-
-
+#define HOTKEYS_LABEL_4_13 TEXT("Toggle backdrop:")
 
 // gaming buttons and axes
 #define GAMEDEVICE_JOYNUMPREFIX "(J%x)" // don't change this
