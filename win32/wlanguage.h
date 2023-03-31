@@ -100,7 +100,7 @@ Nintendo is a trademark.")
 #define HOTKEYS_LABEL_2_5 TEXT("Sprites layer:")
 #define HOTKEYS_LABEL_2_6 TEXT("Clipping Windows:")
 #define HOTKEYS_LABEL_2_7 TEXT("Transparency:")
-#define HOTKEYS_LABEL_2_8 TEXT("SuperScope turbo:")
+#define HOTKEYS_LABEL_2_8 TEXT("Toggle backdrop:")
 #define HOTKEYS_LABEL_2_9 TEXT("SuperScope pause:")
 #define HOTKEYS_LABEL_2_10 TEXT("Switch controllers:")
 #define HOTKEYS_LABEL_2_11 TEXT("Joypad swap:")
@@ -120,6 +120,7 @@ Nintendo is a trademark.")
 #define HOTKEYS_LABEL_3_10 TEXT("Turbo Up mode:")
 #define HOTKEYS_LABEL_3_11 TEXT("Turbo Right mode:")
 #define HOTKEYS_LABEL_3_12 TEXT("Turbo Down mode:")
+#define HOTKEYS_LABEL_3_13 TEXT("SuperScope turbo:")
 
 
 #define HOTKEYS_LABEL_4_1 TEXT("Select Slot 0:")
@@ -134,7 +135,6 @@ Nintendo is a trademark.")
 #define HOTKEYS_LABEL_4_10 TEXT("Select Slot 9:")
 #define HOTKEYS_LABEL_4_11 TEXT("Save to file:")
 #define HOTKEYS_LABEL_4_12 TEXT("Load from file:")
-#define HOTKEYS_LABEL_4_13 TEXT("Toggle backdrop:")
 
 // gaming buttons and axes
 #define GAMEDEVICE_JOYNUMPREFIX "(J%x)" // don't change this

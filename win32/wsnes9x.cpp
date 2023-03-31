@@ -8311,7 +8311,7 @@ static hotkey_dialog_item hotkey_dialog_items[4][MAX_SWITCHABLE_HOTKEY_DIALOG_IT
         { &CustomKeys.BGL5, HOTKEYS_LABEL_2_5 },
         { &CustomKeys.ClippingWindows, HOTKEYS_LABEL_2_6 },
         { &CustomKeys.Transparency, HOTKEYS_LABEL_2_7 },
-		{ &CustomKeys.ScopeTurbo, HOTKEYS_LABEL_2_8 },
+		{ &CustomKeys.ToggleBackdrop, HOTKEYS_LABEL_2_8 },
         { &CustomKeys.ScopePause, HOTKEYS_LABEL_2_9 },
         { &CustomKeys.SwitchControllers, HOTKEYS_LABEL_2_10 },
         { &CustomKeys.JoypadSwap, HOTKEYS_LABEL_2_11 },
@@ -8332,7 +8332,7 @@ static hotkey_dialog_item hotkey_dialog_items[4][MAX_SWITCHABLE_HOTKEY_DIALOG_IT
         { &CustomKeys.TurboUp, HOTKEYS_LABEL_3_10 },
         { &CustomKeys.TurboRight, HOTKEYS_LABEL_3_11 },
         { &CustomKeys.TurboDown, HOTKEYS_LABEL_3_12 },
-		{ NULL, _T("") },
+		{ &CustomKeys.ScopeTurbo, HOTKEYS_LABEL_3_13 },
 		{ NULL, _T("") },
     },
     {
@@ -8348,7 +8348,7 @@ static hotkey_dialog_item hotkey_dialog_items[4][MAX_SWITCHABLE_HOTKEY_DIALOG_IT
         { &CustomKeys.SelectSave[9], HOTKEYS_LABEL_4_10 },
         { &CustomKeys.SaveFileSelect, HOTKEYS_LABEL_4_11 },
         { &CustomKeys.LoadFileSelect, HOTKEYS_LABEL_4_12 },
-		{ &CustomKeys.ToggleBackdrop, HOTKEYS_LABEL_4_13 },
+		{ NULL, _T("") },
 		{ NULL, _T("") },
     },
 };
