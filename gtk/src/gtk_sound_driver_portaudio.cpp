@@ -197,11 +197,6 @@ void S9xPortAudioSoundDriver::samples_available()
         frames -= output_buffer_size >> 1;
     }
 
-    if (Settings.DynamicRateControl)
-    {
-        S9xUpdateDynamicRate(frames, output_buffer_size);
-    }
-
     int snes_frames_available = S9xGetSampleCount() >> 1;
 
     if (Settings.DynamicRateControl && !Settings.SoundSync)
@@ -224,4 +219,10 @@ void S9xPortAudioSoundDriver::samples_available()
     set_buffer_min(frames);
     S9xMixSamples(sound_buffer, frames << 1);
     Pa_WriteStream(audio_stream, sound_buffer, frames);
+
+    if (Settings.DynamicRateControl)
+    {
+        frames = Pa_GetStreamWriteAvailable(audio_stream);
+        S9xUpdateDynamicRate(frames, output_buffer_size);
+    }
 }

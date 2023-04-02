@@ -114,10 +114,9 @@ bool S9xPulseSoundDriver::open_device()
     ss.rate = Settings.SoundPlaybackRate;
 
     pa_buffer_attr buffer_attr;
-    buffer_attr.fragsize = -1;
     buffer_attr.tlength = pa_usec_to_bytes(gui_config->sound_buffer_size * 1000, &ss);
     buffer_attr.maxlength = buffer_attr.tlength * 2;
-    buffer_attr.minreq = -1;
+    buffer_attr.minreq = pa_usec_to_bytes(3000, &ss);
     buffer_attr.prebuf = -1;
 
     printf("PulseAudio sound driver initializing...\n");
@@ -146,7 +145,7 @@ bool S9xPulseSoundDriver::open_device()
     if (pa_stream_connect_playback(stream,
                                    nullptr,
                                    &buffer_attr,
-                                   PA_STREAM_ADJUST_LATENCY,
+                                   PA_STREAM_EARLY_REQUESTS,
                                    nullptr,
                                    nullptr) < 0)
     {
@@ -175,17 +174,14 @@ bool S9xPulseSoundDriver::open_device()
 
 void S9xPulseSoundDriver::samples_available()
 {
+    bool clear_samples = false;
+
     lock();
     size_t bytes = pa_stream_writable_size(stream);
     auto buffer_attr = pa_stream_get_buffer_attr(stream);
     unlock();
 
     buffer_size = buffer_attr->tlength;
-
-    if (Settings.DynamicRateControl)
-    {
-        S9xUpdateDynamicRate(bytes, buffer_size);
-    }
 
     size_t samples = S9xGetSampleCount();
 
@@ -194,27 +190,43 @@ void S9xPulseSoundDriver::samples_available()
 
     if (frames_writable < frames_available)
     {
-        if (Settings.DynamicRateControl && !Settings.SoundSync)
+        if (!Settings.SoundSync)
         {
-            S9xClearSamples();
-            return;
+            clear_samples = true;
         }
 
         if (Settings.SoundSync && !Settings.TurboMode && !Settings.Mute)
         {
-            int usec_to_sleep = (frames_available - frames_writable) * 10000 /
-                                (Settings.SoundPlaybackRate / 100);
-            usleep(usec_to_sleep > 0 ? usec_to_sleep : 0);
             lock();
-            bytes = pa_stream_writable_size(stream);
-            unlock();
+            int i;
+            for (i = 0; i < 500; i++)
+            {
+                bytes = pa_stream_writable_size(stream);
+                if (bytes / 2 < samples)
+                {
+                    unlock();
+                    usleep(50);
+                    lock();
+                }
+                else
+                {
+                    unlock();
+                    break;
+                }
+            }
+
+            if (i == 500)
+                printf("PulseAudio: Timed out waiting for sound sync.\n");
         }
     }
 
     bytes = MIN(bytes, samples * 2) & ~1;
 
     if (!bytes)
+    {
+        S9xClearSamples();
         return;
+    }
 
     lock();
 
@@ -235,5 +247,14 @@ void S9xPulseSoundDriver::samples_available()
     S9xMixSamples((uint8_t *)output_buffer, bytes >> 1);
     pa_stream_write(stream, output_buffer, bytes, nullptr, 0, PA_SEEK_RELATIVE);
 
+    if (Settings.DynamicRateControl)
+    {
+        bytes = pa_stream_writable_size(stream);
+        S9xUpdateDynamicRate(bytes, buffer_size);
+    }
+
     unlock();
+
+    if (clear_samples)
+        S9xClearSamples();
 }

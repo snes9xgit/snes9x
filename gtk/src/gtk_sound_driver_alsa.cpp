@@ -161,12 +161,6 @@ void S9xAlsaSoundDriver::samples_available()
         return;
     }
 
-    if (Settings.DynamicRateControl)
-    {
-        S9xUpdateDynamicRate(snd_pcm_frames_to_bytes(pcm, frames),
-                             output_buffer_size);
-    }
-
     int snes_frames_available = S9xGetSampleCount() >> 1;
 
     if (Settings.DynamicRateControl && !Settings.SoundSync)
@@ -223,5 +217,12 @@ void S9xAlsaSoundDriver::samples_available()
         {
             frames_written += result;
         }
+    }
+
+    if (Settings.DynamicRateControl)
+    {
+        frames = snd_pcm_avail(pcm);
+        S9xUpdateDynamicRate(snd_pcm_frames_to_bytes(pcm, frames),
+                             output_buffer_size);
     }
 }

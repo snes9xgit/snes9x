@@ -81,7 +81,7 @@ bool S9xSDLSoundDriver::open_device()
     audiospec.freq = Settings.SoundPlaybackRate;
     audiospec.channels = 2;
     audiospec.format = AUDIO_S16SYS;
-    audiospec.samples = (gui_config->sound_buffer_size * audiospec.freq / 1000) >> 2;
+    audiospec.samples = audiospec.freq * 4 / 1000; // 4ms per sampling
     audiospec.callback = [](void *userdata, uint8_t *stream, int len) {
         ((S9xSDLSoundDriver *)userdata)->mix((unsigned char *)stream, len);
     };
