@@ -40,7 +40,7 @@ extern TCHAR multiRomB[MAX_PATH];
 
 void S9xParseArg (char **argv, int &i, int argc)
 {
-	if (strcasecmp (argv [i], "-removeregistrykeys"))
+	if (strcasecmp (argv [i], "-removeregistrykeys") == 0)
 	{
 		S9xWinRemoveRegistryKeys();
 	}

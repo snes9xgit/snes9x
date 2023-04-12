@@ -7047,6 +7047,9 @@ void SetInfoDlgColor(unsigned char r, unsigned char g, unsigned char b)
 void S9xWinRemoveRegistryKeys() {
 	TCHAR szRegKey[4096] = {};
 
+    if(!valid_ext)
+        LoadExts();
+
 	_stprintf_s(szRegKey, 4095, TEXT("Software\\Classes\\%s"), SNES9XWPROGID);
 	SHDeleteKey(HKEY_CURRENT_USER, szRegKey);
 	_stprintf_s(szRegKey, 4095, TEXT("Software\\RegisteredApplications\\%s"), SNES9XWPROGID);
