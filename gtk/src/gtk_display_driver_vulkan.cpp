@@ -12,6 +12,9 @@
 #include "gfx.h"
 #include "fmt/format.h"
 
+#include "snes9x_imgui.h"
+#include "../../external/imgui/imgui_impl_vulkan.h"
+
 S9xVulkanDisplayDriver::S9xVulkanDisplayDriver(Snes9xWindow *_window, Snes9xConfig *_config)
 {
     window = _window;
@@ -24,6 +27,46 @@ S9xVulkanDisplayDriver::S9xVulkanDisplayDriver(Snes9xWindow *_window, Snes9xConf
 
 S9xVulkanDisplayDriver::~S9xVulkanDisplayDriver()
 {
+}
+
+bool S9xVulkanDisplayDriver::init_imgui()
+{
+    S9xImGuiInit();
+
+    ImGui_ImplVulkan_LoadFunctions([](const char *function, void *instance) {
+        return VULKAN_HPP_DEFAULT_DISPATCHER.vkGetInstanceProcAddr(*((VkInstance *)instance), function);
+    }, &context->instance.get());
+
+    vk::DescriptorPoolSize pool_sizes[] =
+    {
+        { vk::DescriptorType::eCombinedImageSampler, 1000 },
+        { vk::DescriptorType::eUniformBuffer, 1000 }
+    };
+    auto descriptor_pool_create_info = vk::DescriptorPoolCreateInfo{}
+        .setPoolSizes(pool_sizes)
+        .setMaxSets(1000)
+        .setFlags(vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet);
+    imgui_descriptor_pool = device.createDescriptorPoolUnique(descriptor_pool_create_info);
+
+    ImGui_ImplVulkan_InitInfo init_info{};
+    init_info.Instance = context->instance.get();
+    init_info.PhysicalDevice = context->physical_device;
+    init_info.Device = context->device;;
+    init_info.QueueFamily = context->graphics_queue_family_index;
+    init_info.Queue = context->queue;
+    init_info.DescriptorPool = imgui_descriptor_pool.get();
+    init_info.Subpass = 0;
+    init_info.MinImageCount = context->swapchain->get_num_frames();
+    init_info.ImageCount = context->swapchain->get_num_frames();
+    init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+    ImGui_ImplVulkan_Init(&init_info, context->swapchain->get_render_pass());
+
+    auto cmd = context->begin_cmd_buffer();
+    ImGui_ImplVulkan_CreateFontsTexture(cmd);
+    context->end_cmd_buffer();
+    context->wait_idle();
+
+    return true;
 }
 
 void S9xVulkanDisplayDriver::refresh()
@@ -83,6 +126,7 @@ int S9xVulkanDisplayDriver::init()
     }
 
     device = context->device;
+    init_imgui();
 
     if (!gui_config->shader_filename.empty() && gui_config->use_shaders)
     {
@@ -98,6 +142,7 @@ int S9xVulkanDisplayDriver::init()
         {
             window->enable_widget("shader_parameters_item", true);
             setlocale(LC_NUMERIC, "");
+
             return 0;
         }
     }
@@ -116,12 +161,27 @@ void S9xVulkanDisplayDriver::deinit()
         gtk_shader_parameters_dialog_close();
 
     context->wait_idle();
+
+    if (ImGui::GetCurrentContext())
+    {
+        ImGui_ImplVulkan_Shutdown();
+        ImGui::DestroyContext();
+    }
 }
 
 void S9xVulkanDisplayDriver::update(uint16_t *buffer, int width, int height, int stride_in_pixels)
 {
     if (!context)
         return;
+
+    if (S9xImGuiDraw(current_width, current_height))
+    {
+        ImDrawData *draw_data = ImGui::GetDrawData();
+
+        context->swapchain->on_render_pass_end([&, draw_data] {
+            ImGui_ImplVulkan_RenderDrawData(draw_data, context->swapchain->get_cmd());
+        });
+    }
 
     auto viewport = S9xApplyAspect(width, height, current_width, current_height);
     bool retval = false;

@@ -39,7 +39,9 @@ class S9xOpenGLDisplayDriver : public S9xDisplayDriver
     void save(const char *filename) override;
     static int query_availability();
     bool is_ready() override;
-    bool can_throttle() override { return true; };
+    bool can_throttle() override { return true; }
+    int get_width() final override { return output_window_width; }
+    int get_height() final override { return output_window_height; }
 
   private:
     bool opengl_defaults();

@@ -137,6 +137,17 @@ if(USE_SLANG)
 
 endif()
 
+
+list(APPEND SOURCES ../external/imgui/imgui.cpp
+../external/imgui/imgui_demo.cpp
+../external/imgui/imgui_draw.cpp
+../external/imgui/imgui_impl_vulkan.cpp
+../external/imgui/imgui_tables.cpp
+../external/imgui/imgui_widgets.cpp
+../external/imgui/snes9x_imgui.cpp)
+list(APPEND INCLUDES ../external/imgui)
+list(APPEND DEFINES "IMGUI_IMPL_VULKAN_NO_PROTOTYPES")
+
 if(USE_WAYLAND)
     pkg_check_modules(WAYLAND REQUIRED wayland-client wayland-egl)
     list(APPEND DEFINES "USE_WAYLAND")

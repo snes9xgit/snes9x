@@ -29,12 +29,18 @@ class S9xVulkanDisplayDriver : public S9xDisplayDriver
     void save(const char *filename) override;
     bool is_ready() override;
     bool can_throttle() override { return true; }
+    int get_width() final override { return current_width; }
+    int get_height() final override { return current_height; }
 
     static int query_availability();
 
   private:
+    bool init_imgui();
+
     std::unique_ptr<Vulkan::Context> context;
     vk::Device device;
+    vk::UniqueDescriptorPool imgui_descriptor_pool;
+    vk::UniqueRenderPass imgui_render_pass;
 
     GdkDisplay *gdk_display;
     GdkWindow *gdk_window;

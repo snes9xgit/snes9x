@@ -13,6 +13,7 @@ Swapchain::Swapchain(vk::Device device_, vk::PhysicalDevice physical_device_, vk
 {
     device = device_;
     create_render_pass();
+    end_render_pass_function = nullptr;
 }
 
 Swapchain::~Swapchain()
@@ -26,6 +27,11 @@ bool Swapchain::set_vsync(bool new_setting)
 
     vsync = new_setting;
     return true;
+}
+
+void Swapchain::on_render_pass_end(std::function<void ()> function)
+{
+    end_render_pass_function = function;
 }
 
 void Swapchain::create_render_pass()
@@ -295,6 +301,12 @@ void Swapchain::begin_render_pass()
 
 void Swapchain::end_render_pass()
 {
+    if (end_render_pass_function)
+    {
+        end_render_pass_function();
+        end_render_pass_function = nullptr;
+    }
+
     get_cmd().endRenderPass();
 }
 

@@ -3,6 +3,7 @@
 #include "vulkan/vulkan.hpp"
 #include "vulkan/vulkan_handles.hpp"
 #include "vulkan/vulkan_structs.hpp"
+#include <functional>
 
 namespace Vulkan
 {
@@ -29,6 +30,7 @@ class Swapchain
     bool swap();
     // Returns true if vsync setting was changed, false if it was the same
     bool set_vsync(bool on);
+    void on_render_pass_end(std::function<void()> function);
 
     vk::Image get_image();
     vk::Framebuffer get_framebuffer();
@@ -39,7 +41,7 @@ class Swapchain
     unsigned int get_num_frames();
 
   private:
-
+    std::function<void()> end_render_pass_function;
     void create_render_pass();
 
     struct Frame

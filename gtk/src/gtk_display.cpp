@@ -18,6 +18,8 @@
 #include "ppu.h"
 #include "gfx.h"
 #include "netplay.h"
+#include "controls.h"
+#include "movie.h"
 
 #if defined(USE_XV) && defined(GDK_WINDOWING_X11)
 #include "gtk_display_driver_xv.h"
@@ -27,6 +29,8 @@
 #ifdef USE_SLANG
 #include "gtk_display_driver_vulkan.h"
 #endif
+
+#include "snes9x_imgui.h"
 
 void filter_scanlines(uint8 *, int, uint8 *, int, int, int);
 void filter_2x(uint8 *, int, uint8 *, int, int, int);
@@ -1069,6 +1073,9 @@ static void GTKDisplayChar(int x, int y, uint8 c, bool monospace = false, int ov
 static void S9xGTKDisplayString(const char *string, int linesFromBottom,
                                 int pixelsFromLeft, bool allowWrap, int type)
 {
+    if (S9xImGuiRunning())
+        return;
+
     bool monospace = true;
     if (type == S9X_NO_INFO)
     {

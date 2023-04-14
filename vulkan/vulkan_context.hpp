@@ -40,10 +40,15 @@ class Context
 
     vma::Allocator allocator;
     vk::Device device;
+    uint32_t graphics_queue_family_index;
     vk::Queue queue;
     vk::UniqueCommandPool command_pool;
     vk::UniqueDescriptorPool descriptor_pool;
     std::unique_ptr<Swapchain> swapchain;
+    vk::UniqueInstance instance;
+    vk::PhysicalDevice physical_device;
+    vk::PhysicalDeviceProperties physical_device_props;
+    vk::UniqueSurfaceKHR surface;
 
   private:
     bool init_vma();
@@ -55,13 +60,6 @@ class Context
     Display *xlib_display;
     Window xlib_window;
 #endif
-
-    vk::UniqueInstance instance;
-    vk::PhysicalDevice physical_device;
-    vk::PhysicalDeviceProperties physical_device_props;
-    vk::UniqueSurfaceKHR surface;
-
-    uint32_t graphics_queue_family_index;
 
     vk::CommandBuffer one_time_use_cmd;
 };

@@ -295,6 +295,8 @@ static bool S9xIdleFunc()
             S9xNPSendPause(true);
         }
 
+        top_level->window->queue_draw();
+
         /* Move to a timer-based function to use less CPU */
         Glib::signal_timeout().connect(sigc::ptr_fun(S9xPauseFunc), 8);
         return false;

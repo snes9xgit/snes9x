@@ -29,6 +29,8 @@ class S9xGTKDisplayDriver : public S9xDisplayDriver
     {
         return true;
     }
+    int get_width() { return last_known_width; }
+    int get_height() { return last_known_height; }
 
   private:
     void clear();
