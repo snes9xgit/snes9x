@@ -272,7 +272,7 @@ void Context::end_cmd_buffer()
     one_time_use_cmd.end();
     vk::SubmitInfo submit_info{};
     submit_info.setCommandBuffers(one_time_use_cmd);
-    queue.submit(vk::SubmitInfo());
+    queue.submit(submit_info);
     queue.waitIdle();
     device.freeCommandBuffers(command_pool.get(), one_time_use_cmd);
     one_time_use_cmd = nullptr;
