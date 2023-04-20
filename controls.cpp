@@ -2322,7 +2322,7 @@ void S9xApplyCommand (s9xcommand_t cmd, int16 data1, int16 data2)
 					case QuickSave009:
 					case QuickSave010:
 					{
-						std::string ext = std::to_string(i - QuickLoad000);
+						std::string ext = std::to_string(i - QuickSave000);
 						while (ext.length() < 3)
 							ext = '0' + ext;
 
