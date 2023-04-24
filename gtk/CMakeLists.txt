@@ -142,6 +142,7 @@ list(APPEND SOURCES ../external/imgui/imgui.cpp
 ../external/imgui/imgui_demo.cpp
 ../external/imgui/imgui_draw.cpp
 ../external/imgui/imgui_impl_vulkan.cpp
+../external/imgui/imgui_impl_opengl3.cpp
 ../external/imgui/imgui_tables.cpp
 ../external/imgui/imgui_widgets.cpp
 ../external/imgui/snes9x_imgui.cpp)

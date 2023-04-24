@@ -13,6 +13,9 @@
 #include "gtk_display_driver_opengl.h"
 #include "gtk_shader_parameters.h"
 
+#include "snes9x_imgui.h"
+#include "imgui_impl_opengl3.h"
+
 static const GLchar *stock_vertex_shader_110 =
 "#version 110\n"
 
@@ -123,6 +126,17 @@ void S9xOpenGLDisplayDriver::update(uint16_t *buffer, int width, int height, int
     else
     {
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    }
+
+    if (S9xImGuiRunning())
+    {
+        ImGui_ImplOpenGL3_NewFrame();
+        if (S9xImGuiDraw(context->width, context->height))
+        {
+
+            auto *draw_data = ImGui::GetDrawData();
+            ImGui_ImplOpenGL3_RenderDrawData(draw_data);
+        }
     }
 
     swap_buffers();
@@ -391,6 +405,12 @@ int S9xOpenGLDisplayDriver::init()
 
     context->swap_interval(config->sync_to_vblank);
 
+    if (version >= 33)
+    {
+        S9xImGuiInit();
+        ImGui_ImplOpenGL3_Init();
+    }
+
     initialized = true;
 
     return 0;
@@ -427,6 +447,12 @@ void S9xOpenGLDisplayDriver::deinit()
     }
 
     glDeleteTextures(1, &texmap);
+
+    if (S9xImGuiRunning())
+    {
+        ImGui_ImplOpenGL3_Shutdown();
+        S9xImGuiDeinit();
+    }
 }
 
 int S9xOpenGLDisplayDriver::query_availability()

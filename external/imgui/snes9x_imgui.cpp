@@ -12,11 +12,10 @@
 #include "gfx.h"
 #include "ppu.h"
 
-const int fontsize = 24;
-const int spacing = 10;
-const uint32_t bgcolor = 0x88000000;
-const uint32_t textcolor = 0xffffffff;
-const uint32_t lotextcolor = 0x44ffffff;
+namespace
+{
+    S9xImGuiInitInfo settings;
+} // anonymous
 
 static void ImGui_DrawPressedKeys(int spacing)
 {
@@ -67,10 +66,10 @@ static void ImGui_DrawPressedKeys(int spacing)
 
             draw_list->AddRectFilled(ImVec2(x, y),
                                      ImVec2(x + box_width, y + box_height),
-                                     bgcolor,
+                                     settings.box_color,
                                      3.0f);
 
-            draw_list->AddText(ImVec2(x + spacing, y + spacing), textcolor, string);
+            draw_list->AddText(ImVec2(x + spacing, y + spacing), settings.text_color, string);
 
             break;
         }
@@ -85,12 +84,12 @@ static void ImGui_DrawPressedKeys(int spacing)
 
             draw_list->AddRectFilled(ImVec2(x, y),
                                      ImVec2(x + box_width, y + box_height),
-                                     bgcolor,
+                                     settings.box_color,
                                      spacing / 3);
             x += spacing;
             y += spacing;
 
-            draw_list->AddText(ImVec2(x, y), textcolor, prefix.c_str());
+            draw_list->AddText(ImVec2(x, y), settings.text_color, prefix.c_str());
             x += prefix_size.x;
 
             uint16 pad = MovieGetJoypad(ids[0]);
@@ -98,7 +97,7 @@ static void ImGui_DrawPressedKeys(int spacing)
             {
                 int j = keyorder[i];
                 int mask = (1 << (j + 1));
-                auto color = (pad & mask) ? textcolor : lotextcolor;
+                auto color = (pad & mask) ? settings.text_color : settings.inactive_text_color;
                 draw_list->AddText(ImVec2(x, y), color, keynames[j]);
                 x += cell_width;
             }
@@ -132,9 +131,9 @@ static void ImGui_DrawTextOverlay(const char *text,
 
     draw_list->AddRectFilled(ImVec2(x, y),
                              ImVec2(x + box_size.x, y + box_size.y),
-                             bgcolor,
-                             spacing / 3);
-    draw_list->AddText(ImVec2(x + padding, y + padding), textcolor, text);
+                             settings.box_color,
+                             settings.spacing / 3);
+    draw_list->AddText(ImVec2(x + padding, y + padding), settings.text_color, text);
 }
 
 bool S9xImGuiDraw(int width, int height)
@@ -150,12 +149,12 @@ bool S9xImGuiDraw(int width, int height)
 
     if (!GFX.InfoString.empty())
         ImGui_DrawTextOverlay(GFX.InfoString.c_str(),
-                              spacing,
-                              height - spacing,
-                              spacing,
+                              settings.spacing,
+                              height - settings.spacing,
+                              settings.spacing,
                               ImGui::DrawTextAlignment::BEGIN,
                               ImGui::DrawTextAlignment::END,
-                              width - spacing * 4);
+                              width - settings.spacing * 4);
 
     if (Settings.DisplayTime)
     {
@@ -168,9 +167,9 @@ bool S9xImGuiDraw(int width, int height)
 
         sprintf(string, "%02u:%02u", timeinfo->tm_hour, timeinfo->tm_min);
         ImGui_DrawTextOverlay(string,
-                              width - spacing,
-                              height - spacing,
-                              spacing,
+                              width - settings.spacing,
+                              height - settings.spacing,
+                              settings.spacing,
                               ImGui::DrawTextAlignment::END,
                               ImGui::DrawTextAlignment::END);
     }
@@ -195,31 +194,31 @@ bool S9xImGuiDraw(int width, int height)
         sprintf(string, "%u fps\n%02d/%02d", calcFps, (int)IPPU.DisplayedRenderedFrameCount, (int)Memory.ROMFramesPerSecond);
 
         ImGui_DrawTextOverlay(string,
-                              width - spacing,
-                              spacing,
-                              spacing,
+                              width - settings.spacing,
+                              settings.spacing,
+                              settings.spacing,
                               ImGui::DrawTextAlignment::END,
                               ImGui::DrawTextAlignment::BEGIN);
     }
 
     if (Settings.DisplayPressedKeys)
     {
-        ImGui_DrawPressedKeys(spacing / 2);
+        ImGui_DrawPressedKeys(settings.spacing / 2);
     }
 
     if (Settings.Paused || Settings.ForcedPause)
     {
         ImGui_DrawTextOverlay("❚❚",
-                              spacing,
-                              spacing,
-                              spacing);
+                              settings.spacing,
+                              settings.spacing,
+                              settings.spacing);
     }
     else if (Settings.TurboMode)
     {
         ImGui_DrawTextOverlay("▶▶",
-                              spacing,
-                              spacing,
-                              spacing);
+                              settings.spacing,
+                              settings.spacing,
+                              settings.spacing);
     }
 
     ImGui::Render();
@@ -240,11 +239,25 @@ void S9xImGuiDeinit()
         ImGui::DestroyContext();
 }
 
-void S9xImGuiInit()
+S9xImGuiInitInfo S9xImGuiGetDefaults()
+{
+    return { 24, 10, 0x88000000, 0xffffffff, 0x44ffffff };
+}
+
+void S9xImGuiInit(S9xImGuiInitInfo *init_info)
 {
     static ImVector<ImWchar> ranges;
     if (ImGui::GetCurrentContext())
         return;
+
+    if (init_info)
+    {
+        ::settings = *init_info;
+    }
+    else
+    {
+        settings = S9xImGuiGetDefaults();
+    }
 
     ImGui::CreateContext();
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouse;
@@ -255,5 +268,5 @@ void S9xImGuiInit()
     builder.AddText("↑←↓→▶❚");
     ranges.clear();
     builder.BuildRanges(&ranges);
-    ImGui::GetIO().Fonts->AddFontFromMemoryCompressedBase85TTF(imgui_roboto_font_compressed_data_base85, fontsize, nullptr, ranges.Data);
+    ImGui::GetIO().Fonts->AddFontFromMemoryCompressedBase85TTF(imgui_roboto_font_compressed_data_base85, settings.font_size, nullptr, ranges.Data);
 }
