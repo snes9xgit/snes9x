@@ -72,6 +72,7 @@ class Snes9xConfig
     bool force_inverted_byte_order;
     int splash_image;
     bool auto_vrr;
+    int osd_size;
 
     snes_ntsc_setup_t ntsc_setup;
     int ntsc_format;

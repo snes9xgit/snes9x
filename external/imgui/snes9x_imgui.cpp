@@ -67,7 +67,7 @@ static void ImGui_DrawPressedKeys(int spacing)
             draw_list->AddRectFilled(ImVec2(x, y),
                                      ImVec2(x + box_width, y + box_height),
                                      settings.box_color,
-                                     3.0f);
+                                     spacing / 2);
 
             draw_list->AddText(ImVec2(x + spacing, y + spacing), settings.text_color, string);
 
@@ -85,7 +85,7 @@ static void ImGui_DrawPressedKeys(int spacing)
             draw_list->AddRectFilled(ImVec2(x, y),
                                      ImVec2(x + box_width, y + box_height),
                                      settings.box_color,
-                                     spacing / 3);
+                                     spacing / 2);
             x += spacing;
             y += spacing;
 
@@ -132,12 +132,15 @@ static void ImGui_DrawTextOverlay(const char *text,
     draw_list->AddRectFilled(ImVec2(x, y),
                              ImVec2(x + box_size.x, y + box_size.y),
                              settings.box_color,
-                             settings.spacing / 3);
+                             settings.spacing / 2);
     draw_list->AddText(ImVec2(x + padding, y + padding), settings.text_color, text);
 }
 
 bool S9xImGuiDraw(int width, int height)
 {
+    if (Memory.ROMFilename.empty())
+        return false;
+
     if (!ImGui::GetCurrentContext())
         return false;
 
@@ -146,15 +149,6 @@ bool S9xImGuiDraw(int width, int height)
     ImGui::GetIO().DisplayFramebufferScale.x = 1.0;
     ImGui::GetIO().DisplayFramebufferScale.y = 1.0;
     ImGui::NewFrame();
-
-    if (!GFX.InfoString.empty())
-        ImGui_DrawTextOverlay(GFX.InfoString.c_str(),
-                              settings.spacing,
-                              height - settings.spacing,
-                              settings.spacing,
-                              ImGui::DrawTextAlignment::BEGIN,
-                              ImGui::DrawTextAlignment::END,
-                              width - settings.spacing * 4);
 
     if (Settings.DisplayTime)
     {
@@ -206,20 +200,32 @@ bool S9xImGuiDraw(int width, int height)
         ImGui_DrawPressedKeys(settings.spacing / 2);
     }
 
-    if (Settings.Paused || Settings.ForcedPause)
+    if (Settings.DisplayIndicators)
     {
-        ImGui_DrawTextOverlay("❚❚",
-                              settings.spacing,
-                              settings.spacing,
-                              settings.spacing);
+        if (Settings.Paused || Settings.ForcedPause)
+        {
+            ImGui_DrawTextOverlay("❚❚",
+                                  settings.spacing,
+                                  settings.spacing,
+                                  settings.spacing);
+        }
+        else if (Settings.TurboMode)
+        {
+            ImGui_DrawTextOverlay("▶▶",
+                                  settings.spacing,
+                                  settings.spacing,
+                                  settings.spacing);
+        }
     }
-    else if (Settings.TurboMode)
-    {
-        ImGui_DrawTextOverlay("▶▶",
+
+    if (!GFX.InfoString.empty())
+        ImGui_DrawTextOverlay(GFX.InfoString.c_str(),
                               settings.spacing,
+                              height - settings.spacing,
                               settings.spacing,
-                              settings.spacing);
-    }
+                              ImGui::DrawTextAlignment::BEGIN,
+                              ImGui::DrawTextAlignment::END,
+                              width - settings.spacing * 4);
 
     ImGui::Render();
 

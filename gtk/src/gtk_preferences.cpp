@@ -394,6 +394,8 @@ void Snes9xPreferences::move_settings_to_dialog()
     set_check("show_time",                 Settings.DisplayTime);
     set_check("show_frame_rate",           Settings.DisplayFrameRate);
     set_check("show_pressed_keys",         Settings.DisplayPressedKeys);
+    set_check("show_indicators",           Settings.DisplayIndicators);
+    set_spin("osd_size",                   config->osd_size);
     set_check("change_display_resolution", config->change_display_resolution);
     set_check("scale_to_fit",              config->scale_to_fit);
     set_check("overscan",                  config->overscan);
@@ -554,6 +556,10 @@ void Snes9xPreferences::get_settings_from_dialog()
     if (config->force_inverted_byte_order != get_check("force_inverted_byte_order"))
         gfx_needs_restart = true;
 
+    if (config->osd_size != get_spin("osd_size"))
+        gfx_needs_restart = true;
+
+
     config->enable_icons = get_check("force_enable_icons");
     auto settings = Gtk::Settings::get_default();
     settings->set_property("gtk-menu-images", gui_config->enable_icons);
@@ -563,6 +569,8 @@ void Snes9xPreferences::get_settings_from_dialog()
     Settings.DisplayTime              = get_check("show_time");
     Settings.DisplayFrameRate         = get_check("show_frame_rate");
     Settings.DisplayPressedKeys       = get_check("show_pressed_keys");
+    Settings.DisplayIndicators        = get_check("show_indicators");
+    config->osd_size                  = get_spin("osd_size");
     config->scale_to_fit              = get_check("scale_to_fit");
     config->overscan                  = get_check("overscan");
     config->maintain_aspect_ratio     = get_check("maintain_aspect_ratio");

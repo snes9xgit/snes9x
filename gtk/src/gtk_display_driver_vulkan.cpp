@@ -31,7 +31,10 @@ S9xVulkanDisplayDriver::~S9xVulkanDisplayDriver()
 
 bool S9xVulkanDisplayDriver::init_imgui()
 {
-    S9xImGuiInit();
+    auto defaults = S9xImGuiGetDefaults();
+    defaults.font_size = gui_config->osd_size;
+    defaults.spacing = defaults.font_size / 2.4;
+    S9xImGuiInit(&defaults);
 
     ImGui_ImplVulkan_LoadFunctions([](const char *function, void *instance) {
         return VULKAN_HPP_DEFAULT_DISPATCHER.vkGetInstanceProcAddr(*((VkInstance *)instance), function);
