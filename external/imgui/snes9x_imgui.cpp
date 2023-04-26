@@ -133,7 +133,8 @@ static void ImGui_DrawTextOverlay(const char *text,
                              ImVec2(x + box_size.x, y + box_size.y),
                              settings.box_color,
                              settings.spacing / 2);
-    draw_list->AddText(ImVec2(x + padding, y + padding), settings.text_color, text);
+
+    draw_list->AddText(nullptr, 0.0f, ImVec2(x + padding, y + padding), settings.text_color, text, nullptr, wrap_at);
 }
 
 bool S9xImGuiDraw(int width, int height)
