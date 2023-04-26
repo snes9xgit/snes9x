@@ -2434,7 +2434,13 @@ void CMemory::InitROM (void)
 
 
 	sprintf(String, "\"%s\" [%s] %s, %s, %s, %s, SRAM:%s, ID:%s, CRC32:%08X",
-		SafeString(ROMName).c_str(), isChecksumOK ? "checksum ok" : ((Multi.cartType == 4) ? "no checksum" : "bad checksum"),
+		SafeString(ROMName).c_str(),
+		 isChecksumOK ? "checksum ok"
+		 : Settings.IsPatched == 3 ? "UPS Patched"
+		 : Settings.IsPatched == 2 ? "BPS Patched"
+		 : Settings.IsPatched == 1 ? "IPS Patched"
+		 : ((Multi.cartType == 4) ? "no checksum"
+		 : "bad checksum"),
 		MapType(), Size(), KartContents(), Settings.PAL ? "PAL" : "NTSC", StaticRAMSize(), ROMId, ROMCRC32);
 	S9xMessage(S9X_INFO, S9X_ROM_INFO, String);
 
