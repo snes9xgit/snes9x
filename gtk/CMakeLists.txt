@@ -74,7 +74,10 @@ list(APPEND SOURCES src/gtk_display_driver_opengl.cpp
                     src/gtk_glx_context.cpp
                     ../shaders/glsl.cpp
                     ../shaders/shader_helpers.cpp
+                    ../vulkan/slang_helpers.cpp
+                    ../vulkan/slang_helpers.hpp
                     ../vulkan/slang_preset_ini.cpp
+                    ../vulkan/slang_preset_ini.hpp
                     src/gtk_shader_parameters.cpp)
 
 if(USE_SLANG)
@@ -108,9 +111,7 @@ if(USE_SLANG)
     list(APPEND INCLUDES ../external/VulkanMemoryAllocator-Hpp/include)
     list(APPEND INCLUDES ../external/stb)
     list(APPEND SOURCES ../external/stb/stb_image_implementation.cpp)
-    list(APPEND SOURCES ../vulkan/slang_helpers.cpp
-                        ../vulkan/slang_helpers.hpp
-                        ../vulkan/slang_shader.cpp
+    list(APPEND SOURCES ../vulkan/slang_shader.cpp
                         ../vulkan/slang_shader.hpp
                         ../vulkan/slang_preset.cpp
                         ../vulkan/slang_preset.hpp

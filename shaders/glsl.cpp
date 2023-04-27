@@ -11,6 +11,7 @@
 #include <map>
 #include "glsl.h"
 #include "shader_helpers.h"
+#include "../vulkan/slang_helpers.hpp"
 #include "shader_platform.h"
 
 
@@ -20,35 +21,6 @@ static const GLfloat mvp_ortho[16] = { 2.0f,  0.0f,  0.0f,  0.0f,
                                        0.0f,  2.0f,  0.0f,  0.0f,
                                        0.0f,  0.0f, -1.0f,  0.0f,
                                       -1.0f, -1.0f,  0.0f,  1.0f };
-
-static std::vector<std::string> split_string(const std::string_view &str, unsigned char delim)
-{
-    std::vector<std::string> tokens;
-    size_t pos = 0;
-    size_t index;
-
-    while (pos < str.length())
-    {
-        index = str.find(delim, pos);
-        if (index == std::string::npos)
-        {
-            if (pos < str.length())
-            {
-                tokens.push_back(std::string{str.substr(pos)});
-            }
-
-            break;
-        }
-        else if (index > pos)
-        {
-            tokens.push_back(std::string{str.substr(pos, index - pos)});
-        }
-
-        pos = index + 1;
-    }
-
-    return tokens;
-}
 
 static int scale_string_to_enum(std::string string)
 {
@@ -80,17 +52,17 @@ static const char *scale_enum_to_string(int val)
     }
 }
 
-static int wrap_mode_string_to_enum(const char *string)
+static int wrap_mode_string_to_enum(std::string string)
 {
-    if (!strcasecmp(string, "repeat"))
+    if (string == "repeat")
     {
         return GL_REPEAT;
     }
-    else if (!strcasecmp(string, "clamp_to_edge"))
+    else if (string == "clamp_to_edge")
     {
         return GL_CLAMP_TO_EDGE;
     }
-    else if (!strcasecmp(string, "clamp"))
+    else if (string == "clamp")
     {
         return GL_CLAMP;
     }
@@ -116,17 +88,8 @@ static const char *wrap_mode_enum_to_string(int val)
 
 bool GLSLShader::load_shader_preset_file(const char *filename)
 {
-    char key[256];
-    int length = strlen(filename);
-    bool singlepass = false;
-
-    if (length > 6 && (!strcasecmp(&filename[length - 5], ".glsl") ||
-                       !strcasecmp(&filename[length - 6], ".slang")))
-        singlepass = true;
-
     this->using_slang = false;
-    if (length > 7 && (!strcasecmp(&filename[length - 6], ".slang") ||
-                       !strcasecmp(&filename[length - 7], ".slangp")))
+    if (ends_with(filename, ".slang") || ends_with(filename, ".slangp"))
     {
 #ifdef USE_SLANG
         this->using_slang = true;
@@ -135,7 +98,7 @@ bool GLSLShader::load_shader_preset_file(const char *filename)
 #endif
     }
 
-    if (singlepass)
+    if (ends_with(filename, ".glsl") || ends_with(filename, ".slang"))
     {
         GLSLPass pass;
         this->pass.push_back(GLSLPass());
@@ -153,10 +116,8 @@ bool GLSLShader::load_shader_preset_file(const char *filename)
 
         return true;
     }
-    else
-    {
-        ini.load_file(filename);
-    }
+
+    ini.load_file(filename);
 
     int shader_count = ini.get_int("shaders", 0);
 
@@ -169,20 +130,18 @@ bool GLSLShader::load_shader_preset_file(const char *filename)
     {
         GLSLPass pass;
 
-        snprintf(key, 256, "filter_linear%u", i);
+        std::string num = std::to_string(i);
+        std::string key = "filter_linear" + num;
         pass.filter = ini.exists(key) ? (ini.get_bool(key, true) ? GL_LINEAR : GL_NEAREST) : GLSL_UNDEFINED;
 
-        sprintf(key, "scale_type%u", i);
-        std::string scaleType = ini.get_string(key, "");
+        std::string scaleType = ini.get_string("scale_type" + num, "");
 
         if (scaleType == "")
         {
-            sprintf(key, "scale_type_x%u", i);
-            std::string scaleTypeX = ini.get_string(key, "");
+            std::string scaleTypeX = ini.get_string("scale_type_x" + num, "");
             pass.scale_type_x = scale_string_to_enum(scaleTypeX);
 
-            sprintf(key, "scale_type_y%u", i);
-            std::string scaleTypeY = ini.get_string(key, "");
+            std::string scaleTypeY = ini.get_string("scale_type_y" + num, "");
             pass.scale_type_y = scale_string_to_enum(scaleTypeY);
         }
         else
@@ -192,41 +151,27 @@ bool GLSLShader::load_shader_preset_file(const char *filename)
             pass.scale_type_y = scale_type;
         }
 
-        sprintf(key, "scale%u", i);
-        auto scaleFloat = ini.get_float(key, 1.0f);
-        sprintf(key, "scale_x%u", i);
-        pass.scale_x = ini.get_float(key, scaleFloat);
-        sprintf(key, "scale_y%u", i);
-        pass.scale_y = ini.get_float(key, scaleFloat);
+        auto scaleFloat = ini.get_float("scale" + num, 1.0f);
+        pass.scale_x = ini.get_float("scale_x" + num, scaleFloat);
+        pass.scale_y = ini.get_float("scale_y" + num, scaleFloat);
 
-        sprintf(key, "shader%u", i);
-        strcpy(pass.filename, ini.get_string(key, "").c_str());
+        strcpy(pass.filename, ini.get_string("shader" + num, "").c_str());
 
-        sprintf(key, "wrap_mode%u", i);
-        pass.wrap_mode = wrap_mode_string_to_enum(ini.get_string (key ,"").c_str());
-
-        sprintf(key, "mipmap_input%u", i);
-        pass.mipmap_input = ini.get_bool(key, true);
-
-        sprintf(key, "frame_count_mod%u", i);
-        pass.frame_count_mod = ini.get_int(key, 0);
+        pass.wrap_mode = wrap_mode_string_to_enum(ini.get_string("wrap_mode" + num, ""));
+        pass.mipmap_input = ini.get_bool("mipmap_input" + num, true);
+        pass.frame_count_mod = ini.get_int("frame_count_mod" + num, 1);
 
         pass.fp = false;
         if (gl_float_texture_available())
         {
-            sprintf(key, "float_framebuffer%u", i);
-            pass.fp = ini.get_bool(key, false);
+            pass.fp = ini.get_bool("float_framebuffer" + num, false);
         }
 
         pass.srgb = false;
         if (gl_srgb_available())
-        {
-            sprintf(key, "srgb_framebuffer%u", i);
-            pass.srgb = ini.get_bool(key, false);
-        }
+            pass.srgb = ini.get_bool("srgb_framebuffer" + num, false);
 
-        sprintf(key, "alias%u", i);
-        strcpy(pass.alias, ini.get_string(key, "").c_str());
+        strcpy(pass.alias, ini.get_string("alias" + num, "").c_str());
 
         this->pass.push_back(pass);
     }
@@ -241,7 +186,7 @@ bool GLSLShader::load_shader_preset_file(const char *filename)
         strcpy(lut.id, id.c_str());
         strcpy(lut.filename, ini.get_string(id, "").c_str());
 
-        lut.wrap_mode = wrap_mode_string_to_enum(ini.get_string(id + "_wrap_mode", "").c_str());
+        lut.wrap_mode = wrap_mode_string_to_enum(ini.get_string(id + "_wrap_mode", ""));
         lut.mipmap = ini.get_bool(id + "_mipmap", false);
         lut.filter = (ini.get_bool(id + "_linear", false)) ? GL_LINEAR : GL_NEAREST;
 
@@ -274,8 +219,6 @@ static std::string canonicalize(const std::string &noncanonical)
 #ifdef USE_SLANG
 static GLuint string_to_format(char *format)
 {
-    // const struct { const char *string; int value; } map[] =
-    // {
     const std::map<const char *, int> map =
     {
         { "R8_UNORM", GL_R8 },
