@@ -7,7 +7,8 @@
 #ifndef __GLSL_H
 #define __GLSL_H
 
-#include "../../conffile.h"
+#include "snes9x.h"
+#include "../vulkan/slang_preset_ini.hpp"
 #include "shader_platform.h"
 #include <deque>
 #include <limits.h>
@@ -172,7 +173,7 @@ struct GLSLShader
     void destroy();
     void register_uniforms();
 
-    ConfigFile conf;
+    IniFile ini;
 
     std::vector<GLSLPass> pass;
     std::vector<GLSLLut> lut;

@@ -74,6 +74,7 @@ list(APPEND SOURCES src/gtk_display_driver_opengl.cpp
                     src/gtk_glx_context.cpp
                     ../shaders/glsl.cpp
                     ../shaders/shader_helpers.cpp
+                    ../vulkan/slang_preset_ini.cpp
                     src/gtk_shader_parameters.cpp)
 
 if(USE_SLANG)
@@ -101,7 +102,8 @@ if(USE_SLANG)
                         "VK_USE_PLATFORM_WAYLAND_KHR"
                         "VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1"
                         "VMA_DYNAMIC_VULKAN_FUNCTIONS=1"
-                        "VMA_STATIC_VULKAN_FUNCTIONS=0")
+                        "VMA_STATIC_VULKAN_FUNCTIONS=0"
+                        "IMGUI_IMPL_VULKAN_NO_PROTOTYPES")
     list(APPEND INCLUDES ../external/vulkan-headers/include)
     list(APPEND INCLUDES ../external/VulkanMemoryAllocator-Hpp/include)
     list(APPEND INCLUDES ../external/stb)
@@ -112,8 +114,6 @@ if(USE_SLANG)
                         ../vulkan/slang_shader.hpp
                         ../vulkan/slang_preset.cpp
                         ../vulkan/slang_preset.hpp
-                        ../vulkan/slang_preset_ini.cpp
-                        ../vulkan/slang_preset_ini.hpp
                         ../vulkan/vulkan_hpp_storage.cpp
                         ../vulkan/vk_mem_alloc_implementation.cpp
                         ../vulkan/vulkan_context.cpp
@@ -133,21 +133,19 @@ if(USE_SLANG)
                         ../vulkan/std_chrono_throttle.cpp
                         ../vulkan/std_chrono_throttle.hpp
                         src/gtk_display_driver_vulkan.cpp
-                        src/gtk_display_driver_vulkan.h)
-
+                        src/gtk_display_driver_vulkan.h
+                        ../external/imgui/imgui_impl_vulkan.cpp)
 endif()
 
 
 list(APPEND SOURCES ../external/imgui/imgui.cpp
 ../external/imgui/imgui_demo.cpp
 ../external/imgui/imgui_draw.cpp
-../external/imgui/imgui_impl_vulkan.cpp
 ../external/imgui/imgui_impl_opengl3.cpp
 ../external/imgui/imgui_tables.cpp
 ../external/imgui/imgui_widgets.cpp
 ../external/imgui/snes9x_imgui.cpp)
 list(APPEND INCLUDES ../external/imgui)
-list(APPEND DEFINES "IMGUI_IMPL_VULKAN_NO_PROTOTYPES")
 
 if(USE_WAYLAND)
     pkg_check_modules(WAYLAND REQUIRED wayland-client wayland-egl)

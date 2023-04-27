@@ -8,10 +8,11 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <map>
 #include "glsl.h"
-#include "../../conffile.h"
 #include "shader_helpers.h"
 #include "shader_platform.h"
+
 
 static const GLfloat tex_coords[16] = { 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
                                         0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f };
@@ -20,22 +21,48 @@ static const GLfloat mvp_ortho[16] = { 2.0f,  0.0f,  0.0f,  0.0f,
                                        0.0f,  0.0f, -1.0f,  0.0f,
                                       -1.0f, -1.0f,  0.0f,  1.0f };
 
-static int scale_string_to_enum(const char *string)
+static std::vector<std::string> split_string(const std::string_view &str, unsigned char delim)
 {
-    if (!strcasecmp(string, "source"))
+    std::vector<std::string> tokens;
+    size_t pos = 0;
+    size_t index;
+
+    while (pos < str.length())
     {
-        return GLSL_SOURCE;
+        index = str.find(delim, pos);
+        if (index == std::string::npos)
+        {
+            if (pos < str.length())
+            {
+                tokens.push_back(std::string{str.substr(pos)});
+            }
+
+            break;
+        }
+        else if (index > pos)
+        {
+            tokens.push_back(std::string{str.substr(pos, index - pos)});
+        }
+
+        pos = index + 1;
     }
-    else if (!strcasecmp(string, "viewport"))
+
+    return tokens;
+}
+
+static int scale_string_to_enum(std::string string)
+{
+    const struct { const char *string; int value; } map[] =
     {
-        return GLSL_VIEWPORT;
-    }
-    else if (!strcasecmp(string, "absolute"))
-    {
-        return GLSL_ABSOLUTE;
-    }
-    else
-        return GLSL_NONE;
+        { "source",   GLSL_SOURCE   },
+        { "viewport", GLSL_VIEWPORT },
+        { "absolute", GLSL_ABSOLUTE }
+    };
+
+    for (size_t i = 0; i < sizeof(map); i++)
+        if (string == map[i].string)
+            return map[i].value;
+    return GLSL_NONE;
 }
 
 static const char *scale_enum_to_string(int val)
@@ -128,10 +155,10 @@ bool GLSLShader::load_shader_preset_file(const char *filename)
     }
     else
     {
-        conf.LoadFile(filename);
+        ini.load_file(filename);
     }
 
-    int shader_count = conf.GetInt("::shaders", 0);
+    int shader_count = ini.get_int("shaders", 0);
 
     if (shader_count < 1)
         return false;
@@ -142,20 +169,20 @@ bool GLSLShader::load_shader_preset_file(const char *filename)
     {
         GLSLPass pass;
 
-        snprintf(key, 256, "::filter_linear%u", i);
-        pass.filter = conf.Exists(key) ? (conf.GetBool(key) ? GL_LINEAR : GL_NEAREST) : GLSL_UNDEFINED;
+        snprintf(key, 256, "filter_linear%u", i);
+        pass.filter = ini.exists(key) ? (ini.get_bool(key, true) ? GL_LINEAR : GL_NEAREST) : GLSL_UNDEFINED;
 
-        sprintf(key, "::scale_type%u", i);
-        const char* scaleType = conf.GetString(key, "");
+        sprintf(key, "scale_type%u", i);
+        std::string scaleType = ini.get_string(key, "");
 
-        if (!strcasecmp(scaleType, ""))
+        if (scaleType == "")
         {
-            sprintf(key, "::scale_type_x%u", i);
-            const char* scaleTypeX = conf.GetString(key, "");
+            sprintf(key, "scale_type_x%u", i);
+            std::string scaleTypeX = ini.get_string(key, "");
             pass.scale_type_x = scale_string_to_enum(scaleTypeX);
 
-            sprintf(key, "::scale_type_y%u", i);
-            const char* scaleTypeY = conf.GetString(key, "");
+            sprintf(key, "scale_type_y%u", i);
+            std::string scaleTypeY = ini.get_string(key, "");
             pass.scale_type_y = scale_string_to_enum(scaleTypeY);
         }
         else
@@ -165,88 +192,64 @@ bool GLSLShader::load_shader_preset_file(const char *filename)
             pass.scale_type_y = scale_type;
         }
 
-        sprintf(key, "::scale%u", i);
-        const char* scaleFloat = conf.GetString(key, "");
-        if (!strcasecmp(scaleFloat, ""))
-        {
-            sprintf(key, "::scale_x%u", i);
-            const char* scaleFloatX = conf.GetString(key, "1.0");
-            pass.scale_x = atof(scaleFloatX);
-            sprintf(key, "::scale_y%u", i);
-            const char* scaleFloatY = conf.GetString(key, "1.0");
-            pass.scale_y = atof(scaleFloatY);
-        }
-        else
-        {
-            pass.scale_x = pass.scale_y = atof(scaleFloat);
-        }
+        sprintf(key, "scale%u", i);
+        auto scaleFloat = ini.get_float(key, 1.0f);
+        sprintf(key, "scale_x%u", i);
+        pass.scale_x = ini.get_float(key, scaleFloat);
+        sprintf(key, "scale_y%u", i);
+        pass.scale_y = ini.get_float(key, scaleFloat);
 
-        sprintf(key, "::shader%u", i);
-        strcpy(pass.filename, conf.GetString(key, ""));
+        sprintf(key, "shader%u", i);
+        strcpy(pass.filename, ini.get_string(key, "").c_str());
 
-        sprintf(key, "::wrap_mode%u", i);
-        pass.wrap_mode = wrap_mode_string_to_enum (conf.GetString (key ,""));
+        sprintf(key, "wrap_mode%u", i);
+        pass.wrap_mode = wrap_mode_string_to_enum(ini.get_string (key ,"").c_str());
 
-        sprintf(key, "::mipmap_input%u", i);
-        pass.mipmap_input = conf.GetBool (key);
+        sprintf(key, "mipmap_input%u", i);
+        pass.mipmap_input = ini.get_bool(key, true);
 
-        sprintf(key, "::frame_count_mod%u", i);
-        pass.frame_count_mod = conf.GetInt(key, 0);
+        sprintf(key, "frame_count_mod%u", i);
+        pass.frame_count_mod = ini.get_int(key, 0);
 
+        pass.fp = false;
         if (gl_float_texture_available())
         {
-            sprintf(key, "::float_framebuffer%u", i);
-            pass.fp = conf.GetBool(key);
+            sprintf(key, "float_framebuffer%u", i);
+            pass.fp = ini.get_bool(key, false);
         }
-        else
-            pass.fp = false;
 
+        pass.srgb = false;
         if (gl_srgb_available())
         {
-            sprintf(key, "::srgb_framebuffer%u", i);
-            pass.srgb = conf.GetBool(key);
+            sprintf(key, "srgb_framebuffer%u", i);
+            pass.srgb = ini.get_bool(key, false);
         }
-        else
-            pass.srgb = false;
 
-        sprintf(key, "::alias%u", i);
-        strcpy(pass.alias, conf.GetString(key, ""));
+        sprintf(key, "alias%u", i);
+        strcpy(pass.alias, ini.get_string(key, "").c_str());
 
         this->pass.push_back(pass);
     }
 
-    char* ids = conf.GetStringDup("::textures", "");
+    auto ids_string = ini.get_string("textures", "");
+    auto ids = split_string(ids_string, ';');
 
-    char* id = strtok(ids, ";");
-
-    while (id != NULL)
+    for (auto &id : ids)
     {
         GLSLLut lut;
 
-        sprintf(key, "::%s", id);
-        strcpy(lut.id, id);
-        strcpy(lut.filename, conf.GetString(key, ""));
+        strcpy(lut.id, id.c_str());
+        strcpy(lut.filename, ini.get_string(id, "").c_str());
 
-        sprintf(key, "::%s_wrap_mode", id);
-        lut.wrap_mode = wrap_mode_string_to_enum (conf.GetString (key, ""));
-
-        sprintf(key, "::%s_mipmap", id);
-        lut.mipmap = conf.GetBool (key);
-
-        sprintf(key, "::%s_linear", id);
-        lut.filter = (conf.GetBool(key, false)) ? GL_LINEAR : GL_NEAREST;
+        lut.wrap_mode = wrap_mode_string_to_enum(ini.get_string(id + "_wrap_mode", "").c_str());
+        lut.mipmap = ini.get_bool(id + "_mipmap", false);
+        lut.filter = (ini.get_bool(id + "_linear", false)) ? GL_LINEAR : GL_NEAREST;
 
         if (lut.mipmap)
-        {
             lut.filter = (lut.filter == GL_LINEAR) ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_NEAREST;
-        }
 
         this->lut.push_back(lut);
-
-        id = strtok(NULL, ";");
     }
-
-    free(ids);
 
     return true;
 }
@@ -271,40 +274,45 @@ static std::string canonicalize(const std::string &noncanonical)
 #ifdef USE_SLANG
 static GLuint string_to_format(char *format)
 {
-#define MATCH(s, f)                                                            \
-    if (!strcmp(format, s))                                                    \
-        return f;
-    MATCH("R8_UNORM", GL_R8);
-    MATCH("R8_UINT", GL_R8UI);
-    MATCH("R8_SINT", GL_R8I);
-    MATCH("R8G8_UNORM", GL_RG8);
-    MATCH("R8G8_UINT", GL_RG8UI);
-    MATCH("R8G8_SINT", GL_RG8I);
-    MATCH("R8G8B8A8_UNORM", GL_RGBA8);
-    MATCH("R8G8B8A8_UINT", GL_RGBA8UI);
-    MATCH("R8G8B8A8_SINT", GL_RGBA8I);
-    MATCH("R8G8B8A8_SRGB", GL_SRGB8_ALPHA8);
+    // const struct { const char *string; int value; } map[] =
+    // {
+    const std::map<const char *, int> map =
+    {
+        { "R8_UNORM", GL_R8 },
+        { "R8_UINT", GL_R8UI },
+        { "R8_SINT", GL_R8I },
+        { "R8G8_UNORM", GL_RG8 },
+        { "R8G8_UINT", GL_RG8UI },
+        { "R8G8_SINT", GL_RG8I },
+        { "R8G8B8A8_UNORM", GL_RGBA8 },
+        { "R8G8B8A8_UINT", GL_RGBA8UI },
+        { "R8G8B8A8_SINT", GL_RGBA8I },
+        { "R8G8B8A8_SRGB", GL_SRGB8_ALPHA8 },
 
-    MATCH("R16_UINT", GL_R16UI);
-    MATCH("R16_SINT", GL_R16I);
-    MATCH("R16_SFLOAT", GL_R16F);
-    MATCH("R16G16_UINT", GL_RG16UI);
-    MATCH("R16G16_SINT", GL_RG16I);
-    MATCH("R16G16_SFLOAT", GL_RG16F);
-    MATCH("R16G16B16A16_UINT", GL_RGBA16UI);
-    MATCH("R16G16B16A16_SINT", GL_RGBA16I);
-    MATCH("R16G16B16A16_SFLOAT", GL_RGBA16F);
+        { "R16_UINT", GL_R16UI },
+        { "R16_SINT", GL_R16I },
+        { "R16_SFLOAT", GL_R16F },
+        { "R16G16_UINT", GL_RG16UI },
+        { "R16G16_SINT", GL_RG16I },
+        { "R16G16_SFLOAT", GL_RG16F },
+        { "R16G16B16A16_UINT", GL_RGBA16UI },
+        { "R16G16B16A16_SINT", GL_RGBA16I },
+        { "R16G16B16A16_SFLOAT", GL_RGBA16F },
 
-    MATCH("R32_UINT", GL_R32UI);
-    MATCH("R32_SINT", GL_R32I);
-    MATCH("R32_SFLOAT", GL_R32F);
-    MATCH("R32G32_UINT", GL_RG32UI);
-    MATCH("R32G32_SINT", GL_RG32I);
-    MATCH("R32G32_SFLOAT", GL_RG32F);
-    MATCH("R32G32B32A32_UINT", GL_RGBA32UI);
-    MATCH("R32G32B32A32_SINT", GL_RGBA32I);
-    MATCH("R32G32B32A32_SFLOAT", GL_RGBA32F);
+        { "R32_UINT", GL_R32UI },
+        { "R32_SINT", GL_R32I },
+        { "R32_SFLOAT", GL_R32F },
+        { "R32G32_UINT", GL_RG32UI },
+        { "R32G32_SINT", GL_RG32I },
+        { "R32G32_SFLOAT", GL_RG32F },
+        { "R32G32B32A32_UINT", GL_RGBA32UI },
+        { "R32G32B32A32_SINT", GL_RGBA32I },
+        { "R32G32B32A32_SFLOAT", GL_RGBA32F }
+    };
 
+    auto iter = map.find(format);
+    if (iter != map.end())
+        return iter->second;
     return GL_RGBA;
 }
 #endif
@@ -652,18 +660,11 @@ bool GLSLShader::load_shader(const char *filename)
     // Check for parameters specified in file
     for (unsigned int i = 0; i < param.size(); i++)
     {
-        char key[266];
-        const char *value;
-        snprintf (key, 266, "::%s", param[i].id.c_str());
-        value = conf.GetString (key, NULL);
-        if (value)
-        {
-            param[i].val = atof(value);
-            if (param[i].val < param[i].min)
-                param[i].val = param[i].min;
-            if (param[i].val > param[i].max)
-                param[i].val = param[i].max;
-        }
+        param[i].val = ini.get_float(param[i].id, param[i].val);
+        if (param[i].val < param[i].min)
+            param[i].val = param[i].min;
+        if (param[i].val > param[i].max)
+            param[i].val = param[i].max;
     }
 
     glActiveTexture(GL_TEXTURE0);
@@ -1309,5 +1310,4 @@ void GLSLShader::destroy()
     pass.clear();
     lut.clear();
     prev_frame.clear();
-    conf.Clear();
 }
