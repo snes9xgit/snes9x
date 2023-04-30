@@ -672,9 +672,10 @@ inline void SPC_DSP::decode_brr( voice_t* v )
 
 		// Shift sample based on header
 		int const shift = header >> 4;
-		s = (s << shift) >> 1;
-		if ( shift >= 0xD ) // handle invalid range
-			s = (s >> 25) << 11; // same as: s = (s < 0 ? -0x800 : 0)
+		if (shift <= 12)
+			s = (s << shift) >> 1;
+		else
+			s &= 0x7ff;
 
 		// Apply IIR filter (8 is the most commonly used)
 		int const filter = header & 0x0C;
