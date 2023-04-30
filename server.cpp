@@ -228,7 +228,7 @@ static bool8 S9xNPSSendData (int fd, const uint8 *data, int length)
 void S9xNPSendHeartBeat ()
 {
     int len = 3;
-    uint8 data [3 + 4 * 5];
+    uint8 data [(3 + 4) * 8];
     uint8 *ptr = data;
     int n;
 
@@ -1031,7 +1031,7 @@ void S9xNPSyncClient (int client)
                 S9xNPRecomputePause ();
                 S9xNPSendFreezeFile (client, data, len);
             }
-            delete data;
+            delete[] data;
         }
         remove (fname);
     }
@@ -1208,7 +1208,7 @@ void S9xNPSendFreezeFileToAllClients (const char *filename)
             if (NPServer.Clients [c].SaidHello)
                 S9xNPSendFreezeFile (c, data, len);
         }
-        delete data;
+        delete[] data;
     }
 }
 
