@@ -31,7 +31,7 @@ static int scale_string_to_enum(std::string string)
         { "absolute", GLSL_ABSOLUTE }
     };
 
-    for (size_t i = 0; i < sizeof(map); i++)
+    for (size_t i = 0; i < 3; i++)
         if (string == map[i].string)
             return map[i].value;
     return GLSL_NONE;
