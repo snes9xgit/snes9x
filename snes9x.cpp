@@ -171,11 +171,6 @@ void S9xLoadConfigFiles (char **argv, int argc)
 
 	if (!skip)
 	{
-	#ifdef SYS_CONFIG_FILE
-		try_load_config_file(SYS_CONFIG_FILE, conf);
-		S9xParsePortConfig(conf, 0);
-	#endif
-
 		std::string	fname;
 
 		fname = S9xGetDirectory(DEFAULT_DIR);

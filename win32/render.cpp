@@ -76,9 +76,7 @@ uint8 *ChangeLog [3] = {
     ChangeLog1, ChangeLog2, ChangeLog3
 };
 
-START_EXTERN_C
 uint8 snes9x_clear_change_log = 0;
-END_EXTERN_C
 
 enum BlarggMode {
     UNINITIALIZED,

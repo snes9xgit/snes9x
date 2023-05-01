@@ -111,9 +111,6 @@ typedef size_t				pint;
 #define FALSE	0
 #endif
 
-#define START_EXTERN_C	extern "C" {
-#define END_EXTERN_C	}
-
 #ifndef __WIN32__
 #ifndef PATH_MAX
 #define PATH_MAX        1024
@@ -148,15 +145,6 @@ void SetInfoDlgColor(unsigned char, unsigned char, unsigned char);
 #else
 #define SLASH_STR	"/"
 #define SLASH_CHAR	'/'
-#endif
-
-#ifndef SIG_PF
-#define SIG_PF	void (*) (int)
-#endif
-
-#ifdef __linux
-#define TITLE "Snes9x: Linux"
-#define SYS_CONFIG_FILE "/etc/snes9x/snes9x.conf"
 #endif
 
 #ifndef TITLE
