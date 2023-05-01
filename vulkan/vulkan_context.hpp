@@ -7,6 +7,8 @@
 #undef WINVER
 #define WINVER 0x599
 #endif
+#include <cstdio>
+#include <cstdint>
 #include "vk_mem_alloc.hpp"
 #include "vulkan/vulkan.hpp"
 #include "vulkan_swapchain.hpp"
