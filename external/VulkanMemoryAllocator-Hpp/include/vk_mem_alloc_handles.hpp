@@ -650,6 +650,16 @@ namespace VMA_HPP_NAMESPACE {
                                                                            VULKAN_HPP_NAMESPACE::Buffer* buffer) const;
 
 #ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
+    VULKAN_HPP_NODISCARD_WHEN_NO_EXCEPTIONS typename VULKAN_HPP_NAMESPACE::ResultValueType<VULKAN_HPP_NAMESPACE::Buffer>::type createAliasingBuffer2(Allocation allocation,
+                                                                                                                                                     VULKAN_HPP_NAMESPACE::DeviceSize allocationLocalOffset,
+                                                                                                                                                     const VULKAN_HPP_NAMESPACE::BufferCreateInfo& bufferCreateInfo) const;
+#endif
+    VULKAN_HPP_NODISCARD VULKAN_HPP_NAMESPACE::Result createAliasingBuffer2(Allocation allocation,
+                                                                            VULKAN_HPP_NAMESPACE::DeviceSize allocationLocalOffset,
+                                                                            const VULKAN_HPP_NAMESPACE::BufferCreateInfo* bufferCreateInfo,
+                                                                            VULKAN_HPP_NAMESPACE::Buffer* buffer) const;
+
+#ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
     void destroyBuffer(VULKAN_HPP_NAMESPACE::Buffer buffer,
                        Allocation allocation) const;
 #else
@@ -680,6 +690,16 @@ namespace VMA_HPP_NAMESPACE {
     VULKAN_HPP_NODISCARD VULKAN_HPP_NAMESPACE::Result createAliasingImage(Allocation allocation,
                                                                           const VULKAN_HPP_NAMESPACE::ImageCreateInfo* imageCreateInfo,
                                                                           VULKAN_HPP_NAMESPACE::Image* image) const;
+
+#ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
+    VULKAN_HPP_NODISCARD_WHEN_NO_EXCEPTIONS typename VULKAN_HPP_NAMESPACE::ResultValueType<VULKAN_HPP_NAMESPACE::Image>::type createAliasingImage2(Allocation allocation,
+                                                                                                                                                   VULKAN_HPP_NAMESPACE::DeviceSize allocationLocalOffset,
+                                                                                                                                                   const VULKAN_HPP_NAMESPACE::ImageCreateInfo& imageCreateInfo) const;
+#endif
+    VULKAN_HPP_NODISCARD VULKAN_HPP_NAMESPACE::Result createAliasingImage2(Allocation allocation,
+                                                                           VULKAN_HPP_NAMESPACE::DeviceSize allocationLocalOffset,
+                                                                           const VULKAN_HPP_NAMESPACE::ImageCreateInfo* imageCreateInfo,
+                                                                           VULKAN_HPP_NAMESPACE::Image* image) const;
 
 #ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
     void destroyImage(VULKAN_HPP_NAMESPACE::Image image,

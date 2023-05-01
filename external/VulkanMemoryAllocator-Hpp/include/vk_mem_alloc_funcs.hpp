@@ -769,6 +769,24 @@ namespace VMA_HPP_NAMESPACE {
   }
 
 #ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
+  VULKAN_HPP_INLINE typename VULKAN_HPP_NAMESPACE::ResultValueType<VULKAN_HPP_NAMESPACE::Buffer>::type Allocator::createAliasingBuffer2(Allocation allocation,
+                                                                                                                                        VULKAN_HPP_NAMESPACE::DeviceSize allocationLocalOffset,
+                                                                                                                                        const VULKAN_HPP_NAMESPACE::BufferCreateInfo& bufferCreateInfo) const {
+    VULKAN_HPP_NAMESPACE::Buffer buffer;
+    VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCreateAliasingBuffer2(m_allocator, static_cast<VmaAllocation>(allocation), static_cast<VkDeviceSize>(allocationLocalOffset), reinterpret_cast<const VkBufferCreateInfo*>(&bufferCreateInfo), reinterpret_cast<VkBuffer*>(&buffer)) );
+    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::createAliasingBuffer2");
+    return createResultValueType(result, buffer);
+  }
+#endif
+  VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::createAliasingBuffer2(Allocation allocation,
+                                                                                  VULKAN_HPP_NAMESPACE::DeviceSize allocationLocalOffset,
+                                                                                  const VULKAN_HPP_NAMESPACE::BufferCreateInfo* bufferCreateInfo,
+                                                                                  VULKAN_HPP_NAMESPACE::Buffer* buffer) const {
+    VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCreateAliasingBuffer2(m_allocator, static_cast<VmaAllocation>(allocation), static_cast<VkDeviceSize>(allocationLocalOffset), reinterpret_cast<const VkBufferCreateInfo*>(bufferCreateInfo), reinterpret_cast<VkBuffer*>(buffer)) );
+    return result;
+  }
+
+#ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
   VULKAN_HPP_INLINE void Allocator::destroyBuffer(VULKAN_HPP_NAMESPACE::Buffer buffer,
                                                   Allocation allocation) const {
     vmaDestroyBuffer(m_allocator, static_cast<VkBuffer>(buffer), static_cast<VmaAllocation>(allocation));
@@ -826,6 +844,24 @@ namespace VMA_HPP_NAMESPACE {
                                                                                 const VULKAN_HPP_NAMESPACE::ImageCreateInfo* imageCreateInfo,
                                                                                 VULKAN_HPP_NAMESPACE::Image* image) const {
     VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCreateAliasingImage(m_allocator, static_cast<VmaAllocation>(allocation), reinterpret_cast<const VkImageCreateInfo*>(imageCreateInfo), reinterpret_cast<VkImage*>(image)) );
+    return result;
+  }
+
+#ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
+  VULKAN_HPP_INLINE typename VULKAN_HPP_NAMESPACE::ResultValueType<VULKAN_HPP_NAMESPACE::Image>::type Allocator::createAliasingImage2(Allocation allocation,
+                                                                                                                                      VULKAN_HPP_NAMESPACE::DeviceSize allocationLocalOffset,
+                                                                                                                                      const VULKAN_HPP_NAMESPACE::ImageCreateInfo& imageCreateInfo) const {
+    VULKAN_HPP_NAMESPACE::Image image;
+    VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCreateAliasingImage2(m_allocator, static_cast<VmaAllocation>(allocation), static_cast<VkDeviceSize>(allocationLocalOffset), reinterpret_cast<const VkImageCreateInfo*>(&imageCreateInfo), reinterpret_cast<VkImage*>(&image)) );
+    resultCheck(result, VMA_HPP_NAMESPACE_STRING "::Allocator::createAliasingImage2");
+    return createResultValueType(result, image);
+  }
+#endif
+  VULKAN_HPP_INLINE VULKAN_HPP_NAMESPACE::Result Allocator::createAliasingImage2(Allocation allocation,
+                                                                                 VULKAN_HPP_NAMESPACE::DeviceSize allocationLocalOffset,
+                                                                                 const VULKAN_HPP_NAMESPACE::ImageCreateInfo* imageCreateInfo,
+                                                                                 VULKAN_HPP_NAMESPACE::Image* image) const {
+    VULKAN_HPP_NAMESPACE::Result result = static_cast<VULKAN_HPP_NAMESPACE::Result>( vmaCreateAliasingImage2(m_allocator, static_cast<VmaAllocation>(allocation), static_cast<VkDeviceSize>(allocationLocalOffset), reinterpret_cast<const VkImageCreateInfo*>(imageCreateInfo), reinterpret_cast<VkImage*>(image)) );
     return result;
   }
 
