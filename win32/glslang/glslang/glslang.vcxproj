@@ -714,7 +714,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">%(AdditionalOptions) /Zm300</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">%(AdditionalOptions) /Zm300</AdditionalOptions>
     </ClCompile>
-    <ClCompile Include="..\..\..\external\glslang\StandAlone\ResourceLimits.cpp">
+    <ClCompile Include="..\..\..\external\glslang\glslang\ResourceLimits\ResourceLimits.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalOptions) /Zm300</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalOptions) /Zm300</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalOptions) /Zm300</AdditionalOptions>
