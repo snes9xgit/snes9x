@@ -675,7 +675,7 @@ inline void SPC_DSP::decode_brr( voice_t* v )
 		if (shift <= 12)
 			s = (s << shift) >> 1;
 		else
-			s &= 0x7ff;
+			s &= ~0x7ff;
 
 		// Apply IIR filter (8 is the most commonly used)
 		int const filter = header & 0x0C;
