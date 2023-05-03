@@ -1,9 +1,10 @@
 #include "snes9x_imgui.h"
-#include "snes9x_imgui_vera.h"
+#include "snes9x_imgui_noto.h"
 #include "imgui.h"
 
 #include <cstdint>
 #include <string>
+#include <array>
 
 #include "snes9x.h"
 #include "port.h"
@@ -20,12 +21,14 @@ namespace
 static void ImGui_DrawPressedKeys(int spacing)
 {
 
-    const char *keynames[] = { " ", " ", " ", "R", "L", "X", "A", "→", "←", "↓", "↑", "S", "s", "Y", "B" };
-    const int keyorder[] = { 8, 10, 7, 9, 0, 6, 14, 13, 5, 1, 4, 3, 2, 11, 12 }; // < ^ > v   A B Y X  L R  S s
+    const std::array<const char *, 15> keynames =
+        { " ", " ", " ", "R", "L", "X", "A", "→", "←", "↓", "↑", "St", "Sel", "Y", "B" };
+    const std::array<int, 12> keyorder =
+        { 10, 9, 8, 7, 6, 14, 13, 5, 4, 3, 11, 12 }; // < ^ > v   A B Y X  L R  S s
 
     enum controllers controller;
     int num_lines = 0;
-    int cell_width = ImGui::CalcTextSize("--").x;
+    int cell_width = ImGui::CalcTextSize("→ ").x;
     int8_t ids[4];
     std::string final_string;
 
@@ -77,7 +80,7 @@ static void ImGui_DrawPressedKeys(int spacing)
         case CTL_JOYPAD: {
             std::string prefix = "#" + std::to_string(port + 1) + " ";
             auto prefix_size = ImGui::CalcTextSize(prefix.c_str());
-            int box_width = 2 * spacing + prefix_size.x + cell_width * 15;
+            int box_width = 2 * spacing + prefix_size.x + cell_width * keyorder.size();
             int box_height = 2 * spacing + prefix_size.y;
             int x = (ImGui::GetIO().DisplaySize.x - box_width) / 2;
             int y = ImGui::GetIO().DisplaySize.y - (spacing + box_height) * num_lines;
@@ -93,7 +96,7 @@ static void ImGui_DrawPressedKeys(int spacing)
             x += prefix_size.x;
 
             uint16 pad = MovieGetJoypad(ids[0]);
-            for (int i = 0; i < 15; i++)
+            for (size_t i = 0; i < keyorder.size(); i++)
             {
                 int j = keyorder[i];
                 int mask = (1 << (j + 1));
@@ -272,8 +275,9 @@ void S9xImGuiInit(S9xImGuiInitInfo *init_info)
     ImFontGlyphRangesBuilder builder;
     builder.Clear();
     builder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesDefault());
-    builder.AddText("↑←↓→▶❚");
+    builder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesJapanese());
+    builder.AddText("←↑→↓▶❚");
     ranges.clear();
     builder.BuildRanges(&ranges);
-    ImGui::GetIO().Fonts->AddFontFromMemoryCompressedBase85TTF(imgui_roboto_font_compressed_data_base85, settings.font_size, nullptr, ranges.Data);
+    ImGui::GetIO().Fonts->AddFontFromMemoryCompressedBase85TTF(imgui_noto_font_compressed_data_base85, settings.font_size, nullptr, ranges.Data);
 }

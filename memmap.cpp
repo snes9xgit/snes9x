@@ -5,6 +5,8 @@
 \*****************************************************************************/
 
 #include <string>
+#include <iomanip>
+#include <sstream>
 #include <numeric>
 #include <assert.h>
 
@@ -3266,7 +3268,7 @@ const char * CMemory::StaticRAMSize (void)
 	if (SRAMSize > 16)
 		strcpy(str, "Corrupt");
 	else
-		sprintf(str, "%dKbits", 8 * (SRAMMask + 1) / 1024);
+		sprintf(str, "%d Kbit", 8 * (SRAMMask + 1) / 1024);
 
 	return (str);
 }
@@ -3280,7 +3282,7 @@ const char * CMemory::Size (void)
 	else if (ROMSize < 7 || ROMSize - 7 > 23)
 		strcpy(str, "Corrupt");
 	else
-		sprintf(str, "%dMbits", 1 << (ROMSize - 7));
+		sprintf(str, "%d Mbit", 1 << (ROMSize - 7));
 
 	return (str);
 }
@@ -3372,6 +3374,45 @@ const char * CMemory::PublishingCompany (void)
 		return ("Unknown");
 
 	return (nintendo_licensees[CompanyId]);
+}
+
+static std::string sjis_to_utf8(std::string in)
+{
+    std::string out;
+    for (const auto &i : in)
+    {
+        unsigned char c = i;
+        if (c > 160 && c < 192)
+            out += "\357\275";
+        else if (c >= 192)
+        {
+            out += "\357\276";
+            c -= 0x40;
+        }
+        out += c;
+    }
+
+    return out;
+}
+
+std::string CMemory::GetMultilineROMInfo()
+{
+    bool8 isChecksumOK = (Memory.ROMChecksum + Memory.ROMComplementChecksum == 0xffff) &&
+                         (Memory.ROMChecksum == Memory.CalculatedChecksum);
+    std::string utf8_romname = sjis_to_utf8(Memory.ROMName);
+    std::string tvstandard = Settings.PAL ? "PAL" : "NTSC";
+    std::string checksum = isChecksumOK              ? "Checksum OK"
+                           : Settings.IsPatched == 3 ? "UPS patched"
+                           : Settings.IsPatched == 2 ? "BPS patched"
+                           : Settings.IsPatched == 1 ? "IPS patched"
+                                                     : "Invalid Checksum";
+
+    std::stringstream ss;
+    ss << "\"" << utf8_romname << "\" (" + tvstandard + ") version " << Memory.Revision() << "\n";
+    ss << Memory.KartContents() << ": " << Memory.MapType() << ": " << Memory.Size() << ", SRAM: " << Memory.StaticRAMSize() << "\n";
+    ss << "ID: " << Memory.ROMId << ", CRC32: " << std::setfill('0') << std::setw(8) << std::setbase(16) << Memory.ROMCRC32 << ", " << checksum;
+
+	return ss.str();
 }
 
 void CMemory::MakeRomInfoText (char *romtext)
