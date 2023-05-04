@@ -74,11 +74,6 @@ void CVulkan::Render(SSurface Src)
 
     RenderMethod(Src, Dst, &dstRect);
 
-    if (!Settings.AutoDisplayMessages) {
-        WinSetCustomDisplaySurface((void*)Dst.Surface, Dst.Pitch / 2, dstRect.right - dstRect.left, dstRect.bottom - dstRect.top, GetFilterScale(GUI.Scale));
-        S9xDisplayMessages((uint16*)Dst.Surface, Dst.Pitch / 2, dstRect.right - dstRect.left, dstRect.bottom - dstRect.top, GetFilterScale(GUI.Scale));
-    }
-
     RECT windowSize, displayRect;
     GetClientRect(hWnd, &windowSize);
     //Get maximum rect respecting AR setting

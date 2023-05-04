@@ -33,10 +33,6 @@ RECT CalculateDisplayRect(unsigned int sourceWidth,unsigned int sourceHeight,
 						  unsigned int displayWidth,unsigned int displayHeight);
 void WinEnumDisplayModes(std::vector<dMode> *modeVector);
 void ConvertDepth (SSurface *src, SSurface *dst, RECT *srect);
-void WinDisplayStringFromBottom (const char *string, int linesFromBottom, int pixelsFromLeft, bool allowWrap);
-void WinSetCustomDisplaySurface(void *screen, int ppl, int width, int height, int scale);
-template<typename screenPtrType>
-void WinDisplayStringInBuffer (const char *string, int linesFromBottom, int pixelsFromLeft, bool allowWrap);
 char *ReadShaderFileContents(const TCHAR *filename);
 void ReduceToPath(TCHAR *filename);
 double WinGetRefreshRate();

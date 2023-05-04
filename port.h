@@ -123,20 +123,11 @@ typedef size_t				pint;
 
 #include "fscompat.h"
 
-#ifndef __WIN32__
 #define S9xDisplayString	DisplayStringFromBottom
-#else   // __WIN32__
+#ifdef __WIN32__
 #define snprintf _snprintf
 #define strcasecmp	stricmp
 #define strncasecmp	strnicmp
-#ifndef __LIBRETRO__
-void WinDisplayStringFromBottom(const char *string, int linesFromBottom, int pixelsFromLeft, bool allowWrap);
-#define S9xDisplayString	WinDisplayStringFromBottom
-void SetInfoDlgColor(unsigned char, unsigned char, unsigned char);
-#define SET_UI_COLOR(r,g,b) SetInfoDlgColor(r,g,b)
-#else   // __LIBRETRO__
-#define S9xDisplayString	DisplayStringFromBottom
-#endif  // __LIBRETRO__
 #endif  // __WIN32__
 
 #if defined(__DJGPP) || defined(__WIN32__)

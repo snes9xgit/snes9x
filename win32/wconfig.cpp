@@ -766,7 +766,7 @@ void WinRegisterConfigItems()
 	AddStringC("Direct3D:D3DShader", GUI.D3DshaderFileName, MAX_PATH, "", "shader filename for Direct3D mode (HLSL effect file or CG shader");
 	AddStringC("OpenGL:OGLShader", GUI.OGLshaderFileName, MAX_PATH, "", "shader filename for OpenGL mode (bsnes-style XML shader or CG shader)");
 	AddBoolC("OpenGL:DisablePBOs", GUI.OGLdisablePBOs, true, "do not use PBOs in OpenGL mode, even if the video card supports them");
-	AddBoolC("ExtendHeight", GUI.HeightExtend, false, "true to display an extra 15 pixels at the bottom, which few games use. Also increases AVI output size from 256x224 to 256x240.");
+	AddBoolC("ExtendHeight", Settings.ShowOverscan, false, "true to display an extra 15 pixels at the bottom, which few games use. Also increases AVI output size from 256x224 to 256x240.");
 	AddBoolC("AlwaysCenterImage", GUI.AlwaysCenterImage,false, "true to center the image even if larger than window");
 	AddIntC("Window:Width", GUI.window_size.right, 512, "256=1x, 512=2x, 768=3x, 1024=4x, etc. (usually)");
 	AddIntC("Window:Height", GUI.window_size.bottom, 448, "224=1x, 448=2x, 672=3x,  896=4x, etc. (usually)");
@@ -800,7 +800,7 @@ void WinRegisterConfigItems()
 	AddBoolC("Vsync", GUI.Vsync, false, "true to enable Vsync");
 	AddBoolC("ReduceInputLag", GUI.ReduceInputLag, false, "true to reduce input lag by hard synchronization");
     AddBoolC("DWMSync", GUI.DWMSync, false, "sync to DWM compositor if it is running");
-	AddBoolC("FilterMessageFont", GUI.filterMessagFont, true, "true to filter message font with EPX on 2x/3x scales if MessagesInImage is false)");
+	AddUInt("OSDSize", GUI.OSDSize, 24, "Size of On-Screen Display");
 #undef CATEGORY
 #define CATEGORY "Settings"
 	AddUIntC("FrameSkip", Settings.SkipFrames, AUTO_FRAMERATE, "200=automatic (limits at 50/60 fps), 0=none, 1=skip every other, ...");

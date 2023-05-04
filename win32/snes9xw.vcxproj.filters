@@ -46,6 +46,9 @@
     <Filter Include="GUI\VideoDriver\Vulkan">
       <UniqueIdentifier>{33cdb579-8582-4adc-91d3-c6624af3ad94}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GUI\VideoDriver\ImGui">
+      <UniqueIdentifier>{fc57774a-1be8-4755-932f-90d2f6609097}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\statemanager.h">
@@ -329,6 +332,39 @@
     </ClInclude>
     <ClInclude Include="..\vulkan\vulkan_simple_output.hpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\external\imgui\imconfig.h">
+      <Filter>GUI\VideoDriver\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\external\imgui\imgui.h">
+      <Filter>GUI\VideoDriver\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\external\imgui\imgui_impl_dx9.h">
+      <Filter>GUI\VideoDriver\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\external\imgui\imgui_impl_opengl3.h">
+      <Filter>GUI\VideoDriver\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\external\imgui\imgui_impl_opengl3_loader.h">
+      <Filter>GUI\VideoDriver\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\external\imgui\imgui_impl_vulkan.h">
+      <Filter>GUI\VideoDriver\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\external\imgui\imgui_internal.h">
+      <Filter>GUI\VideoDriver\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\external\imgui\imstb_rectpack.h">
+      <Filter>GUI\VideoDriver\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\external\imgui\imstb_textedit.h">
+      <Filter>GUI\VideoDriver\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\external\imgui\imstb_truetype.h">
+      <Filter>GUI\VideoDriver\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\external\imgui\snes9x_imgui.h">
+      <Filter>GUI\VideoDriver\ImGui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -724,6 +760,33 @@
     </ClCompile>
     <ClCompile Include="..\vulkan\vulkan_simple_output.cpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\external\imgui\imgui.cpp">
+      <Filter>GUI\VideoDriver\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\external\imgui\imgui_demo.cpp">
+      <Filter>GUI\VideoDriver\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\external\imgui\imgui_draw.cpp">
+      <Filter>GUI\VideoDriver\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\external\imgui\imgui_impl_dx9.cpp">
+      <Filter>GUI\VideoDriver\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\external\imgui\imgui_impl_opengl3.cpp">
+      <Filter>GUI\VideoDriver\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\external\imgui\imgui_impl_vulkan.cpp">
+      <Filter>GUI\VideoDriver\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\external\imgui\imgui_tables.cpp">
+      <Filter>GUI\VideoDriver\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\external\imgui\imgui_widgets.cpp">
+      <Filter>GUI\VideoDriver\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\external\imgui\snes9x_imgui.cpp">
+      <Filter>GUI\VideoDriver\ImGui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

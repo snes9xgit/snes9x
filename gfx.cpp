@@ -12,7 +12,6 @@
 #include "cheats.h"
 #include "movie.h"
 #include "screenshot.h"
-#include "font.h"
 #include "display.h"
 
 extern struct SCheatData		Cheat;
@@ -21,7 +20,6 @@ extern struct SLineMatrixData	LineMatrixData[240];
 
 void S9xComputeClipWindows (void);
 
-static int	font_width = 8, font_height = 9;
 void (*S9xCustomDisplayString) (const char *, int, int, bool, int) = NULL;
 
 static void SetupOBJ (void);
@@ -1733,76 +1731,147 @@ void S9xSetInfoString (const char *string)
 	}
 }
 
-void S9xDisplayChar (uint16 *s, uint8 c)
+#include "var8x10font.h"
+static const int font_width = 8;
+static const int font_height = 10;
+
+static inline int CharWidth(uint8 c)
 {
-	const uint16	black = BUILD_PIXEL(0, 0, 0);
+	return font_width - var8x10font_kern[c - 32][0] - var8x10font_kern[c - 32][1];
+}
 
-	int	line   = ((c - 32) >> 4) * font_height;
-	int	offset = ((c - 32) & 15) * font_width;
+static int StringWidth(const char* str)
+{
+	int length = strlen(str);
+	int pixcount = 0;
 
-	for (int h = 0; h < font_height; h++, line++, s += GFX.RealPPL - font_width)
+	if (length > 0)
+		pixcount++;
+
+	for (int i = 0; i < length; i++)
 	{
-		for (int w = 0; w < font_width; w++, s++)
-		{
-			char	p = font[line][offset + w];
+		pixcount += (CharWidth(str[i]) - 1);
+	}
 
-			if (p == '#')
+	return pixcount;
+}
+
+static void VariableDisplayChar(int x, int y, uint8 c, bool monospace = false, int overlap = 0)
+{
+	int cindex = c - 32;
+	int crow = cindex >> 4;
+	int ccol = cindex & 15;
+	int cwidth = font_width - (monospace ? 0 : (var8x10font_kern[cindex][0] + var8x10font_kern[cindex][1]));
+
+	int	line = crow * font_height;
+	int	offset = ccol * font_width + (monospace ? 0 : var8x10font_kern[cindex][0]);
+	int scale = IPPU.RenderedScreenWidth / SNES_WIDTH;
+
+	uint16* s = GFX.Screen + y * GFX.RealPPL + x * scale;
+
+	for (int h = 0; h < font_height; h++, line++, s += GFX.RealPPL - cwidth * scale)
+	{
+		for (int w = 0; w < cwidth; w++, s++)
+		{
+			if (var8x10font[line][offset + w] == '#')
 				*s = Settings.DisplayColor;
-			else
-			if (p == '.')
-				*s = black;
+			else if (var8x10font[line][offset + w] == '.')
+				*s = 0x0000;
+			//            else if (!monospace && w >= overlap)
+			//                *s = (*s & 0xf7de) >> 1;
+			//                *s = (*s & 0xe79c) >> 2;
+
+			if (scale > 1)
+			{
+				s[1] = s[0];
+				s++;
+			}
 		}
 	}
 }
 
-static void DisplayStringFromBottom (const char *string, int linesFromBottom, int pixelsFromLeft, bool allowWrap)
+static void S9xVariableDisplayString(const char* string, int linesFromBottom,
+	int pixelsFromLeft, bool allowWrap, int type)
 {
-	if (S9xCustomDisplayString)
+	bool monospace = true;
+	if (type == S9X_NO_INFO)
 	{
-		S9xCustomDisplayString (string, linesFromBottom, pixelsFromLeft, allowWrap, S9X_NO_INFO);
-		return;
+		if (linesFromBottom <= 0)
+			linesFromBottom = 1;
+
+		if (linesFromBottom >= 5 && !Settings.DisplayPressedKeys)
+		{
+			if (!Settings.DisplayPressedKeys)
+				linesFromBottom -= 3;
+			else
+				linesFromBottom -= 1;
+		}
+
+		if (pixelsFromLeft > 128)
+			pixelsFromLeft = SNES_WIDTH - StringWidth(string);
+
+		monospace = false;
 	}
 
-	if (linesFromBottom <= 0)
-		linesFromBottom = 1;
+	int dst_x = pixelsFromLeft;
+	int dst_y = IPPU.RenderedScreenHeight - (font_height)*linesFromBottom;
+	int len = strlen(string);
 
-	uint16	*dst = GFX.Screen + (IPPU.RenderedScreenHeight - font_height * linesFromBottom) * GFX.RealPPL + pixelsFromLeft;
+	if (IPPU.RenderedScreenHeight % 224 && !Settings.ShowOverscan)
+		dst_y -= 8;
+	else if (Settings.ShowOverscan)
+		dst_y += 8;
 
-	int	len = strlen(string);
-	int	max_chars = IPPU.RenderedScreenWidth / (font_width - 1);
-	int	char_count = 0;
+	int overlap = 0;
 
-	for (int i = 0 ; i < len ; i++, char_count++)
+	for (int i = 0; i < len; i++)
 	{
-		if (char_count >= max_chars || (uint8) string[i] < 32)
+		int cindex = string[i] - 32;
+		int char_width = font_width - (monospace ? 1 : (var8x10font_kern[cindex][0] + var8x10font_kern[cindex][1]));
+
+		if (dst_x + char_width > SNES_WIDTH || (uint8)string[i] < 32)
 		{
 			if (!allowWrap)
 				break;
 
-			dst += font_height * GFX.RealPPL - (font_width - 1) * max_chars;
-			if (dst >= GFX.Screen + IPPU.RenderedScreenHeight * GFX.RealPPL)
-				break;
+			linesFromBottom--;
+			dst_y = IPPU.RenderedScreenHeight - font_height * linesFromBottom;
+			dst_x = pixelsFromLeft;
 
-			char_count -= max_chars;
+			if (dst_y >= IPPU.RenderedScreenHeight)
+				break;
 		}
 
-		if ((uint8) string[i] < 32)
+		if ((uint8)string[i] < 32)
 			continue;
 
-		S9xDisplayChar(dst, string[i]);
-		dst += font_width - 1;
+		VariableDisplayChar(dst_x, dst_y, string[i], monospace, overlap);
+
+		dst_x += char_width - 1;
+		overlap = 1;
 	}
 }
 
-static void S9xDisplayStringType (const char *string, int linesFromBottom, int pixelsFromLeft, bool allowWrap, int type)
+static void DisplayStringFromBottom(const char* string, int linesFromBottom, int pixelsFromLeft, bool allowWrap)
 {
-    if (S9xCustomDisplayString)
-    {
-            S9xCustomDisplayString (string, linesFromBottom, pixelsFromLeft, allowWrap, type);
-            return;
-    }
+	if (S9xCustomDisplayString)
+	{
+		S9xCustomDisplayString(string, linesFromBottom, pixelsFromLeft, allowWrap, S9X_NO_INFO);
+		return;
+	}
 
-    S9xDisplayString (string, linesFromBottom, pixelsFromLeft, allowWrap);
+	S9xVariableDisplayString(string, linesFromBottom, pixelsFromLeft, allowWrap, S9X_NO_INFO);
+}
+
+static void S9xDisplayStringType(const char* string, int linesFromBottom, int pixelsFromLeft, bool allowWrap, int type)
+{
+	if (S9xCustomDisplayString)
+	{
+		S9xCustomDisplayString(string, linesFromBottom, pixelsFromLeft, allowWrap, type);
+		return;
+	}
+
+	S9xVariableDisplayString(string, linesFromBottom, pixelsFromLeft, allowWrap, type);
 }
 
 static void DisplayTime (void)

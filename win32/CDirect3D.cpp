@@ -290,10 +290,6 @@ void CDirect3D::Render(SSurface Src)
 		Dst.Pitch = lr.Pitch;
 
 		RenderMethod (Src, Dst, &dstRect);
-		if(!Settings.AutoDisplayMessages) {
-			WinSetCustomDisplaySurface((void *)Dst.Surface, Dst.Pitch/2, dstRect.right-dstRect.left, dstRect.bottom-dstRect.top, GetFilterScale(CurrentScale));
-			S9xDisplayMessages ((uint16*)Dst.Surface, Dst.Pitch/2, dstRect.right-dstRect.left, dstRect.bottom-dstRect.top, GetFilterScale(CurrentScale));
-		}
 
 		drawSurface->UnlockRect(0);
 	}

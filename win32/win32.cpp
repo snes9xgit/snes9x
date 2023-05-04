@@ -1169,7 +1169,7 @@ void DoAVIOpen(const TCHAR* filename)
 	AVISetFramerate(framerate, frameskip, GUI.AVIOut);
 
 	avi_width = SNES_WIDTH;
-	avi_height = GUI.HeightExtend ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT;
+	avi_height = Settings.ShowOverscan ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT;
 	avi_skip_frames = Settings.SkipFrames;
 
 	if(GUI.AVIHiRes) {

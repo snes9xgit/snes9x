@@ -222,10 +222,8 @@ BEGIN
     CONTROL         "Transparency Effects",IDC_TRANS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,186,131,150,8
     CONTROL         "Blend Hi-Res Images",IDC_HIRESBLEND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,186,143,150,8
     CONTROL         "Extend Height of SNES Image",IDC_HEIGHT_EXTEND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,186,155,150,8
-    CONTROL         "Display messages before applying filters",IDC_MESSAGES_IN_IMAGE,
+    CONTROL         "Display messages inside SNES image",IDC_MESSAGES_IN_IMAGE,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,186,167,150,8
-    CONTROL         "Scale messages with EPX if possible",IDC_MESSAGES_SCALE,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,186,179,150,8
     GROUPBOX        "Frame Skipping:",IDC_STATIC,6,145,168,48,0,WS_EX_TRANSPARENT
     GROUPBOX        "SNES Image",IDC_STATIC,180,118,162,75,0,WS_EX_TRANSPARENT
     GROUPBOX        "Output Image Processing",IDC_STATIC,180,6,162,61,0,WS_EX_TRANSPARENT
@@ -233,6 +231,9 @@ BEGIN
     LTEXT           "Hi Res:",IDC_HIRESLABEL,186,36,31,8
     GROUPBOX        "General",IDC_STATIC,6,6,168,138,0,WS_EX_TRANSPARENT
     LTEXT           "Output Method",IDC_STATIC,12,18,51,12
+    LTEXT           "On-screen Display Size:",IDC_STATIC,186,179,79,8
+    EDITTEXT        IDC_OSD_SCALE,296,176,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "",IDC_SPIN_OSD_SIZE,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,320,177,9,12
 END
 
 IDD_CHEATER DIALOGEX 0, 0, 378, 189

@@ -300,7 +300,7 @@ inline static bool GetFilterBlendSupport(RenderFilter filterID)
 
 void AdjustHeightExtend(unsigned int &height)
 {
-    if(GUI.HeightExtend)
+    if(Settings.ShowOverscan)
     {
         if(height == SNES_HEIGHT)
             height = SNES_HEIGHT_EXTENDED;

@@ -162,7 +162,6 @@ struct sGUI {
     bool FullScreen;
 	bool FullscreenOnOpen;
     bool Stretch;
-    bool HeightExtend;
     bool AspectRatio;
 	bool IntegerScaling;
 	OutputMethod outputMethod;
@@ -179,7 +178,7 @@ struct sGUI {
 	TCHAR OGLshaderFileName[MAX_PATH];
 
 	bool OGLdisablePBOs;
-	bool filterMessagFont;
+	int OSDSize;
 
     bool IgnoreNextMouseMove;
     RECT window_size;

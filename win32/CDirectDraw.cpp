@@ -435,11 +435,6 @@ void CDirectDraw::Render(SSurface Src)
 		RenderMethod (Src, Dst, &srcRect);
 	}
 
-	if(!Settings.AutoDisplayMessages) {
-		WinSetCustomDisplaySurface((void *)Dst.Surface, (Dst.Pitch*8/GUI.ScreenDepth), srcRect.right-srcRect.left, srcRect.bottom-srcRect.top, GetFilterScale(CurrentScale));
-		S9xDisplayMessages ((uint16*)Dst.Surface, Dst.Pitch/2, srcRect.right-srcRect.left, srcRect.bottom-srcRect.top, GetFilterScale(CurrentScale));
-	}
-
 	RECT lastRect = SizeHistory [GUI.FlipCounter % GUI.NumFlipFrames];
 	POINT p;
 
@@ -456,7 +451,7 @@ void CDirectDraw::Render(SSurface Src)
 			int height = dstRect.bottom - dstRect.top;
 
 			int oldWidth = GUI.AspectWidth;
-			int oldHeight = GUI.HeightExtend ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT;
+			int oldHeight = Settings.ShowOverscan ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT;
 			int newWidth, newHeight;
 
 			if(oldWidth * height > oldHeight * width)
