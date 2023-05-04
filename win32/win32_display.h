@@ -36,6 +36,7 @@ void ConvertDepth (SSurface *src, SSurface *dst, RECT *srect);
 char *ReadShaderFileContents(const TCHAR *filename);
 void ReduceToPath(TCHAR *filename);
 double WinGetRefreshRate();
+void S9xWinDisplayString(const char*, int, int, bool, int);
 int WinGetAutomaticInputRate();
 void WinThrottleFramerate();
 std::vector<ShaderParam> *WinGetShaderParameters();

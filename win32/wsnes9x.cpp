@@ -7922,12 +7922,22 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
  			Settings.Transparency = IsDlgButtonChecked(hDlg, IDC_TRANS);
 			Settings.BilinearFilter = (bool)(IsDlgButtonChecked(hDlg,IDC_BILINEAR)==BST_CHECKED);
 			Settings.ShowOverscan = IsDlgButtonChecked(hDlg, IDC_HEIGHT_EXTEND)!=0;
-			Settings.AutoDisplayMessages = IsDlgButtonChecked(hDlg, IDC_MESSAGES_IN_IMAGE);
 			GUI.DoubleBuffered = (bool)(IsDlgButtonChecked(hDlg, IDC_DBLBUFFER)==BST_CHECKED);
 			GUI.ReduceInputLag = (bool)(IsDlgButtonChecked(hDlg, IDC_REDUCEINPUTLAG) == BST_CHECKED);
 			GUI.Vsync = (bool)(IsDlgButtonChecked(hDlg, IDC_VSYNC
 
 				)==BST_CHECKED);
+			{
+				int newOSDSize = SendDlgItemMessage(hDlg, IDC_SPIN_OSD_SIZE, UDM_GETPOS, 0, 0);
+				bool need_reset = (Settings.AutoDisplayMessages != prevAutoDisplayMessages || newOSDSize != GUI.OSDSize);
+				GUI.OSDSize = newOSDSize;
+				if (need_reset)
+				{
+					WinDisplayReset();
+					WinRefreshDisplay();
+					UpdateWindow(GUI.hWnd);
+				}
+			}
 			if(IsDlgButtonChecked(hDlg, IDC_AUTOFRAME))
 			{
 				Settings.SkipFrames=AUTO_FRAMERATE;
@@ -7983,10 +7993,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				ToggleFullScreen();
 			}
 
-
 			return false;
-
-
 
 		case IDCANCEL:
 			SelectOutputMethodInVideoDropdown(hDlg, prevOutputMethod);

@@ -16,11 +16,14 @@ class CVulkan : public IS9xDisplayOutput
     std::string current_shadername;
     std::unique_ptr<Vulkan::SimpleOutput> simple_output;
 
+    vk::UniqueDescriptorPool imgui_descriptor_pool;
+
     int current_width;
     int current_height;
 
   public:
-    bool Initialize(HWND hWnd) override;
+      bool InitImGui();
+      bool Initialize(HWND hWnd) override;
     void DeInitialize() override;
     void Render(SSurface Src) override;
     bool ChangeRenderSize(unsigned int newWidth, unsigned int newHeight) override;

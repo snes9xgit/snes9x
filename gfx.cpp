@@ -1790,8 +1790,7 @@ static void VariableDisplayChar(int x, int y, uint8 c, bool monospace = false, i
 	}
 }
 
-static void S9xVariableDisplayString(const char* string, int linesFromBottom,
-	int pixelsFromLeft, bool allowWrap, int type)
+void S9xVariableDisplayString(const char* string, int linesFromBottom,	int pixelsFromLeft, bool allowWrap, int type)
 {
 	bool monospace = true;
 	if (type == S9X_NO_INFO)

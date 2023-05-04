@@ -6,6 +6,52 @@
 #include "../filter/hq2x.h"
 #include "../filter/2xsai.h"
 
+#include "snes9x_imgui.h"
+#include "imgui_impl_vulkan.h"
+
+bool CVulkan::InitImGui()
+{
+    auto defaults = S9xImGuiGetDefaults();
+    defaults.font_size = GUI.OSDSize;
+    defaults.spacing = defaults.font_size / 2.4;
+    S9xImGuiInit(&defaults);
+
+    ImGui_ImplVulkan_LoadFunctions([](const char* function, void* instance) {
+        return VULKAN_HPP_DEFAULT_DISPATCHER.vkGetInstanceProcAddr(*((VkInstance*)instance), function);
+        }, &context->instance.get());
+
+    vk::DescriptorPoolSize pool_sizes[] =
+    {
+        { vk::DescriptorType::eCombinedImageSampler, 1000 },
+        { vk::DescriptorType::eUniformBuffer, 1000 }
+    };
+    auto descriptor_pool_create_info = vk::DescriptorPoolCreateInfo{}
+        .setPoolSizes(pool_sizes)
+        .setMaxSets(1000)
+        .setFlags(vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet);
+    imgui_descriptor_pool = context->device.createDescriptorPoolUnique(descriptor_pool_create_info);
+
+    ImGui_ImplVulkan_InitInfo init_info{};
+    init_info.Instance = context->instance.get();
+    init_info.PhysicalDevice = context->physical_device;
+    init_info.Device = context->device;;
+    init_info.QueueFamily = context->graphics_queue_family_index;
+    init_info.Queue = context->queue;
+    init_info.DescriptorPool = imgui_descriptor_pool.get();
+    init_info.Subpass = 0;
+    init_info.MinImageCount = context->swapchain->get_num_frames();
+    init_info.ImageCount = context->swapchain->get_num_frames();
+    init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+    ImGui_ImplVulkan_Init(&init_info, context->swapchain->get_render_pass());
+
+    auto cmd = context->begin_cmd_buffer();
+    ImGui_ImplVulkan_CreateFontsTexture(cmd);
+    context->end_cmd_buffer();
+    context->wait_idle();
+
+    return true;
+}
+
 bool CVulkan::Initialize(HWND hWnd)
 {
     this->hWnd = hWnd;
@@ -22,6 +68,12 @@ bool CVulkan::Initialize(HWND hWnd)
     catch (std::exception& e)
     {
         return false;
+    }
+
+    if (!Settings.AutoDisplayMessages)
+    {
+        Settings.DisplayIndicators = true;
+        InitImGui();
     }
 
     if (GUI.shaderEnabled && GUI.OGLshaderFileName && GUI.OGLshaderFileName[0])
@@ -49,7 +101,15 @@ void CVulkan::DeInitialize()
     current_shadername = "";
 
     if (context)
+    {
         context->wait_idle();
+        if (ImGui::GetCurrentContext())
+        {
+            imgui_descriptor_pool.reset();
+            ImGui_ImplVulkan_Shutdown();
+            ImGui::DestroyContext();
+        }
+    }
     shaderchain.reset();
     simple_output.reset();
     filtered_image.clear();
@@ -80,6 +140,15 @@ void CVulkan::Render(SSurface Src)
     displayRect = CalculateDisplayRect(Dst.Width, Dst.Height, windowSize.right, windowSize.bottom);
 
     bool result;
+
+    if (S9xImGuiDraw(windowSize.right, windowSize.bottom))
+    {
+        ImDrawData* draw_data = ImGui::GetDrawData();
+
+        context->swapchain->on_render_pass_end([&, draw_data] {
+            ImGui_ImplVulkan_RenderDrawData(draw_data, context->swapchain->get_cmd());
+            });
+    }
 
     if (shaderchain)
     {

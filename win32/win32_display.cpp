@@ -888,3 +888,12 @@ void ConvertDepth (SSurface *src, SSurface *dst, RECT *srect)
 }
 
 /* Depth conversion functions end */
+#include "snes9x_imgui.h"
+void S9xWinDisplayString(const char *string, int linesFromBottom, int pixelsFromLeft, bool allowWrap, int type)
+{
+	if (S9xImGuiRunning() && !Settings.AutoDisplayMessages)
+	{
+		return;
+	}
+	S9xVariableDisplayString(string, linesFromBottom, pixelsFromLeft, allowWrap, type);
+}

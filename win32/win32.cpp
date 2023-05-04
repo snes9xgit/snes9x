@@ -826,7 +826,7 @@ void InitSnes9x( void)
 //    generate_offsets_h (0, NULL);
 //    fclose (offsets_h);
 //#endif
-
+	S9xCustomDisplayString = S9xWinDisplayString;
     Memory.Init();
 
 	extern void S9xPostRomInit();
