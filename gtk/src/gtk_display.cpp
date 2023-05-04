@@ -1011,125 +1011,6 @@ void S9xGraphicsMode()
 {
 }
 
-#include "var8x10font.h"
-static const int font_width = 8;
-static const int font_height = 10;
-
-static inline int CharWidth(uint8 c)
-{
-    return font_width - var8x10font_kern[c - 32][0] - var8x10font_kern[c - 32][1];
-}
-
-static int StringWidth(const char *str)
-{
-    int length = strlen(str);
-    int pixcount = 0;
-
-    if (length > 0)
-        pixcount++;
-
-    for (int i = 0; i < length; i++)
-    {
-        pixcount += (CharWidth(str[i]) - 1);
-    }
-
-    return pixcount;
-}
-
-static void GTKDisplayChar(int x, int y, uint8 c, bool monospace = false, int overlap = 0)
-{
-    int cindex = c - 32;
-    int crow   = cindex >> 4;
-    int ccol   = cindex & 15;
-    int cwidth = font_width - (monospace ? 0 : (var8x10font_kern[cindex][0] + var8x10font_kern[cindex][1]));
-
-    int	line   = crow * font_height;
-    int	offset = ccol * font_width + (monospace ? 0 : var8x10font_kern[cindex][0]);
-    int scale = IPPU.RenderedScreenWidth / SNES_WIDTH;
-
-    uint16 *s = GFX.Screen + y * GFX.RealPPL + x * scale;
-
-    for (int h = 0; h < font_height; h++, line++, s += GFX.RealPPL - cwidth * scale)
-    {
-        for (int w = 0; w < cwidth; w++, s++)
-        {
-            if (var8x10font[line][offset + w] == '#')
-                *s = Settings.DisplayColor;
-            else if (var8x10font[line][offset + w] == '.')
-                *s = 0x0000;
-            //            else if (!monospace && w >= overlap)
-            //                *s = (*s & 0xf7de) >> 1;
-            //                *s = (*s & 0xe79c) >> 2;
-
-            if (scale > 1)
-            {
-                s[1] = s[0];
-                s++;
-            }
-        }
-    }
-}
-
-static void S9xGTKDisplayString(const char *string, int linesFromBottom,
-                                int pixelsFromLeft, bool allowWrap, int type)
-{
-    if (S9xImGuiRunning())
-        return;
-
-    bool monospace = true;
-    if (type == S9X_NO_INFO)
-    {
-        if (linesFromBottom <= 0)
-            linesFromBottom = 1;
-
-        if (linesFromBottom >= 5)
-            linesFromBottom -= 3;
-
-        if (pixelsFromLeft > 128)
-            pixelsFromLeft = SNES_WIDTH - StringWidth(string);
-
-        monospace = false;
-    }
-
-    int dst_x = pixelsFromLeft;
-    int dst_y = IPPU.RenderedScreenHeight - (font_height)*linesFromBottom;
-    int len = strlen(string);
-
-    if (IPPU.RenderedScreenHeight % 224 && !gui_config->overscan)
-        dst_y -= 8;
-    else if (gui_config->overscan)
-        dst_y += 8;
-
-    int overlap = 0;
-
-    for (int i = 0; i < len; i++)
-    {
-        int cindex = string[i] - 32;
-        int char_width = font_width - (monospace ? 1 : (var8x10font_kern[cindex][0] + var8x10font_kern[cindex][1]));
-
-        if (dst_x + char_width > SNES_WIDTH || (uint8)string[i] < 32)
-        {
-            if (!allowWrap)
-                break;
-
-            linesFromBottom--;
-            dst_y = IPPU.RenderedScreenHeight - font_height * linesFromBottom;
-            dst_x = pixelsFromLeft;
-
-            if (dst_y >= IPPU.RenderedScreenHeight)
-                break;
-        }
-
-        if ((uint8)string[i] < 32)
-            continue;
-
-        GTKDisplayChar(dst_x, dst_y, string[i], monospace, overlap);
-
-        dst_x += char_width - 1;
-        overlap = 1;
-    }
-}
-
 void S9xInitDisplay(int argc, char **argv)
 {
     S9xBlit2xSaIFilterInit();
@@ -1140,7 +1021,6 @@ void S9xInitDisplay(int argc, char **argv)
     S9xInitDriver();
     S9xGraphicsInit();
     S9xDisplayReconfigure();
-    S9xCustomDisplayString = S9xGTKDisplayString;
 }
 
 bool S9xDisplayDriverIsReady()
