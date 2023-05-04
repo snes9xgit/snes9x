@@ -279,5 +279,5 @@ void S9xImGuiInit(S9xImGuiInitInfo *init_info)
     builder.AddText("←↑→↓▶❚");
     ranges.clear();
     builder.BuildRanges(&ranges);
-    ImGui::GetIO().Fonts->AddFontFromMemoryCompressedBase85TTF(imgui_noto_font_compressed_data_base85, settings.font_size, nullptr, ranges.Data);
+    ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(imgui_noto_font_compressed_data, settings.font_size, nullptr, ranges.Data);
 }
