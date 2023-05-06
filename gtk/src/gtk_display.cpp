@@ -1021,6 +1021,11 @@ void S9xInitDisplay(int argc, char **argv)
     S9xInitDriver();
     S9xGraphicsInit();
     S9xDisplayReconfigure();
+
+    S9xCustomDisplayString = [](const char *str, int linesFromBottom, int pixelsFromLeft, bool allowWrap, int type) {
+        if (!S9xImGuiRunning())
+            S9xVariableDisplayString(str, linesFromBottom, pixelsFromLeft, allowWrap, type);
+    };
 }
 
 bool S9xDisplayDriverIsReady()
