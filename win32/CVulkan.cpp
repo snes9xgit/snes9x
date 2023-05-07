@@ -105,9 +105,9 @@ void CVulkan::DeInitialize()
         context->wait_idle();
         if (ImGui::GetCurrentContext())
         {
-            imgui_descriptor_pool.reset();
             ImGui_ImplVulkan_Shutdown();
-            ImGui::DestroyContext();
+            imgui_descriptor_pool.reset();
+            S9xImGuiDeinit();
         }
     }
     shaderchain.reset();

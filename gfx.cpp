@@ -1792,6 +1792,9 @@ static void VariableDisplayChar(int x, int y, uint8 c, bool monospace = false, i
 
 void S9xVariableDisplayString(const char* string, int linesFromBottom,	int pixelsFromLeft, bool allowWrap, int type)
 {
+	if (GFX.ScreenBuffer.empty() || IPPU.RenderedScreenWidth == 0)
+		return;
+
 	bool monospace = true;
 	if (type == S9X_NO_INFO)
 	{
@@ -1811,6 +1814,14 @@ void S9xVariableDisplayString(const char* string, int linesFromBottom,	int pixel
 
 		monospace = false;
 	}
+
+	int min_lines = 1;
+	std::string msg(string);
+	for (auto& c : msg)
+		if (c < 32)
+			min_lines++;
+	if (min_lines > linesFromBottom)
+		linesFromBottom = min_lines;
 
 	int dst_x = pixelsFromLeft;
 	int dst_y = IPPU.RenderedScreenHeight - (font_height)*linesFromBottom;

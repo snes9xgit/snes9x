@@ -2444,7 +2444,8 @@ void CMemory::InitROM (void)
 		 : ((Multi.cartType == 4) ? "no checksum"
 		 : "bad checksum"),
 		MapType(), Size(), KartContents(), Settings.PAL ? "PAL" : "NTSC", StaticRAMSize(), ROMId, ROMCRC32);
-	S9xMessage(S9X_INFO, S9X_ROM_INFO, String);
+
+	S9xMessage(S9X_INFO, S9X_ROM_INFO, GetMultilineROMInfo().c_str());
 
 	Settings.ForceLoROM = FALSE;
 	Settings.ForceHiROM = FALSE;
@@ -3389,7 +3390,8 @@ static std::string sjis_to_utf8(std::string in)
             out += "\357\276";
             c -= 0x40;
         }
-        out += c;
+        else if (c >= 32)
+            out += c;
     }
 
     return out;
@@ -3401,6 +3403,7 @@ std::string CMemory::GetMultilineROMInfo()
                          (Memory.ROMChecksum == Memory.CalculatedChecksum);
     std::string utf8_romname = sjis_to_utf8(Memory.ROMName);
     std::string tvstandard = Settings.PAL ? "PAL" : "NTSC";
+	std::string romid = sjis_to_utf8(Memory.ROMId);
     std::string checksum = isChecksumOK              ? "Checksum OK"
                            : Settings.IsPatched == 3 ? "UPS patched"
                            : Settings.IsPatched == 2 ? "BPS patched"
@@ -3410,7 +3413,7 @@ std::string CMemory::GetMultilineROMInfo()
     std::stringstream ss;
     ss << "\"" << utf8_romname << "\" (" + tvstandard + ") version " << Memory.Revision() << "\n";
     ss << Memory.KartContents() << ": " << Memory.MapType() << ": " << Memory.Size() << ", SRAM: " << Memory.StaticRAMSize() << "\n";
-    ss << "ID: " << Memory.ROMId << ", CRC32: " << std::setfill('0') << std::setw(8) << std::setbase(16) << Memory.ROMCRC32 << ", " << checksum;
+    ss << "ID: " << romid << ", CRC32: " << std::setfill('0') << std::setw(8) << std::setbase(16) << Memory.ROMCRC32 << ", " << checksum;
 
 	return ss.str();
 }

@@ -18,6 +18,9 @@
 #include "../filter/hq2x.h"
 #include "../filter/2xsai.h"
 
+#include "imgui_impl_dx9.h"
+#include "snes9x_imgui.h"
+
 #ifndef max
 #define max(a, b) (((a) > (b)) ? (a) : (b))
 #endif
@@ -138,6 +141,16 @@ bool CDirect3D::Initialize(HWND hWnd)
 
 	init_done = true;
 
+	if (!Settings.AutoDisplayMessages)
+	{
+		auto defaults = S9xImGuiGetDefaults();
+		defaults.font_size = GUI.OSDSize;
+		defaults.spacing = defaults.font_size / 2.4;
+		S9xImGuiInit(&defaults);
+		ImGui_ImplDX9_Init(pDevice);
+		Settings.DisplayIndicators = true;
+	}
+
 	ApplyDisplayChanges();
 
 	return true;
@@ -146,6 +159,12 @@ bool CDirect3D::Initialize(HWND hWnd)
 
 void CDirect3D::DeInitialize()
 {
+	if (S9xImGuiRunning())
+	{
+		ImGui_ImplDX9_Shutdown();
+		S9xImGuiDeinit();
+	}
+
 	DestroyDrawSurface();
 	SetShader(NULL);
 
@@ -327,6 +346,13 @@ void CDirect3D::Render(SSurface Src)
 
 	pDevice->BeginScene();
 	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,0,2);
+	if (S9xImGuiRunning())
+	{
+		ImGui_ImplDX9_NewFrame();
+		if (S9xImGuiDraw(dPresentParams.BackBufferWidth, dPresentParams.BackBufferHeight))
+			ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+	}
+
 	pDevice->EndScene();
 
 	WinThrottleFramerate();
@@ -530,6 +556,11 @@ bool CDirect3D::ResetDevice()
 
 	HRESULT hr;
 
+	if (S9xImGuiRunning)
+	{
+		ImGui_ImplDX9_Shutdown();
+	}
+
 	//release prior to reset
 	DestroyDrawSurface();
 
@@ -578,6 +609,11 @@ bool CDirect3D::ResetDevice()
 	CreateDrawSurface();
 
 	SetViewport();
+
+	if (S9xImGuiRunning)
+	{
+		ImGui_ImplDX9_Init(pDevice);
+	}
 
 	return true;
 }
