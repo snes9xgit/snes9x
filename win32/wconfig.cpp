@@ -800,7 +800,7 @@ void WinRegisterConfigItems()
 	AddBoolC("Vsync", GUI.Vsync, false, "true to enable Vsync");
 	AddBoolC("ReduceInputLag", GUI.ReduceInputLag, false, "true to reduce input lag by hard synchronization");
     AddBoolC("DWMSync", GUI.DWMSync, false, "sync to DWM compositor if it is running");
-	AddUInt("OSDSize", GUI.OSDSize, 24, "Size of On-Screen Display");
+	AddUIntC("OSDSize", GUI.OSDSize, 24, "Size of On-Screen Display");
 #undef CATEGORY
 #define CATEGORY "Settings"
 	AddUIntC("FrameSkip", Settings.SkipFrames, AUTO_FRAMERATE, "200=automatic (limits at 50/60 fps), 0=none, 1=skip every other, ...");

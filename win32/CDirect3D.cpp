@@ -145,7 +145,7 @@ bool CDirect3D::Initialize(HWND hWnd)
 	{
 		auto defaults = S9xImGuiGetDefaults();
 		defaults.font_size = GUI.OSDSize;
-		defaults.spacing = defaults.font_size / 2.4;
+		defaults.spacing = (int)(defaults.font_size / 2.4);
 		S9xImGuiInit(&defaults);
 		ImGui_ImplDX9_Init(pDevice);
 		Settings.DisplayIndicators = true;

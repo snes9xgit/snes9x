@@ -13,7 +13,7 @@ bool CVulkan::InitImGui()
 {
     auto defaults = S9xImGuiGetDefaults();
     defaults.font_size = GUI.OSDSize;
-    defaults.spacing = defaults.font_size / 2.4;
+    defaults.spacing = (int)(defaults.font_size / 2.4);
     S9xImGuiInit(&defaults);
 
     ImGui_ImplVulkan_LoadFunctions([](const char* function, void* instance) {

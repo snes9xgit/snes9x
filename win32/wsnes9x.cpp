@@ -7929,7 +7929,7 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				)==BST_CHECKED);
 			{
 				int newOSDSize = SendDlgItemMessage(hDlg, IDC_SPIN_OSD_SIZE, UDM_GETPOS, 0, 0);
-				bool need_reset = (Settings.AutoDisplayMessages != prevAutoDisplayMessages || newOSDSize != GUI.OSDSize);
+				bool need_reset = ((bool)Settings.AutoDisplayMessages != prevAutoDisplayMessages || newOSDSize != GUI.OSDSize);
 				GUI.OSDSize = newOSDSize;
 				if (need_reset)
 				{
