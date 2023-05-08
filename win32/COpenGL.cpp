@@ -151,12 +151,12 @@ bool COpenGL::Initialize(HWND hWnd)
 
 void COpenGL::DeInitialize()
 {
-	initDone = false;
-	if (S9xImGuiRunning())
+	if (initDone && S9xImGuiRunning())
 	{
 		ImGui_ImplOpenGL3_Shutdown();
 		S9xImGuiDeinit();
 	}
+    initDone = false;
 	SetShaders(NULL);
 	DestroyDrawSurface();
 	wglMakeCurrent(NULL,NULL);
