@@ -1818,7 +1818,7 @@ void S9xVariableDisplayString(const char* string, int linesFromBottom,	int pixel
 	int min_lines = 1;
 	std::string msg(string);
 	for (auto& c : msg)
-		if (c < 32)
+		if (c == '\n')
 			min_lines++;
 	if (min_lines > linesFromBottom)
 		linesFromBottom = min_lines;
@@ -1836,10 +1836,10 @@ void S9xVariableDisplayString(const char* string, int linesFromBottom,	int pixel
 
 	for (int i = 0; i < len; i++)
 	{
-		int cindex = string[i] - 32;
+		int cindex = (uint8)string[i] - 32;
 		int char_width = font_width - (monospace ? 1 : (var8x10font_kern[cindex][0] + var8x10font_kern[cindex][1]));
 
-		if (dst_x + char_width > SNES_WIDTH || (uint8)string[i] < 32)
+		if (dst_x + char_width > SNES_WIDTH || string[i] == '\n')
 		{
 			if (!allowWrap)
 				break;
@@ -1852,7 +1852,7 @@ void S9xVariableDisplayString(const char* string, int linesFromBottom,	int pixel
 				break;
 		}
 
-		if ((uint8)string[i] < 32)
+		if (string[i] == '\n')
 			continue;
 
 		VariableDisplayChar(dst_x, dst_y, string[i], monospace, overlap);

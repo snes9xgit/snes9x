@@ -140,6 +140,30 @@ static void ImGui_DrawTextOverlay(const char *text,
     draw_list->AddText(nullptr, 0.0f, ImVec2(x + padding, y + padding), settings.text_color, text, nullptr, wrap_at);
 }
 
+static std::string sjis_to_utf8(std::string in)
+{
+    std::string out;
+    for (const auto &i : in)
+    {
+        unsigned char c = i;
+        if (c > 160 && c < 192)
+		{
+            out += "\357\275";
+			out += c;
+		}
+        else if (c >= 192)
+        {
+            out += "\357\276";
+            c -= 0x40;
+			out += c;
+        }
+        else
+            out += c;
+    }
+
+    return out;
+}
+
 bool S9xImGuiDraw(int width, int height)
 {
     if (Memory.ROMFilename.empty())
@@ -223,13 +247,16 @@ bool S9xImGuiDraw(int width, int height)
     }
 
     if (!GFX.InfoString.empty())
-        ImGui_DrawTextOverlay(GFX.InfoString.c_str(),
+    {
+        auto utf8_message = sjis_to_utf8(GFX.InfoString);
+        ImGui_DrawTextOverlay(utf8_message.c_str(),
                               settings.spacing,
                               height - settings.spacing,
                               settings.spacing,
                               ImGui::DrawTextAlignment::BEGIN,
                               ImGui::DrawTextAlignment::END,
                               width - settings.spacing * 4);
+    }
 
     ImGui::Render();
 

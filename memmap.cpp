@@ -3377,37 +3377,13 @@ const char * CMemory::PublishingCompany (void)
 	return (nintendo_licensees[CompanyId]);
 }
 
-static std::string sjis_to_utf8(std::string in)
-{
-    std::string out;
-    for (const auto &i : in)
-    {
-        unsigned char c = i;
-        if (c > 160 && c < 192)
-		{
-            out += "\357\275";
-			out += c;
-		}
-        else if (c >= 192)
-        {
-            out += "\357\276";
-            c -= 0x40;
-			out += c;
-        }
-        else if (c >= 32)
-            out += c;
-    }
-
-    return out;
-}
-
 std::string CMemory::GetMultilineROMInfo()
 {
     bool8 isChecksumOK = (Memory.ROMChecksum + Memory.ROMComplementChecksum == 0xffff) &&
                          (Memory.ROMChecksum == Memory.CalculatedChecksum);
-    std::string utf8_romname = sjis_to_utf8(Memory.ROMName);
+    std::string utf8_romname = Memory.ROMName;
     std::string tvstandard = Settings.PAL ? "PAL" : "NTSC";
-	std::string romid = sjis_to_utf8(Memory.ROMId);
+	std::string romid = Memory.ROMId;
     std::string checksum = isChecksumOK              ? "Checksum OK"
                            : Settings.IsPatched == 3 ? "UPS patched"
                            : Settings.IsPatched == 2 ? "BPS patched"
