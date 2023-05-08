@@ -906,7 +906,7 @@ const char *markup = _(R"(<b>Information for %s</b>
 
     snprintf(output, 2048, markup,
              Memory.ROMFilename.c_str(),
-             Memory.ROMName,
+             Glib::convert(Memory.ROMName, "utf8", "shift-jis").c_str(),
              Memory.ROMSpeed,
              ((Memory.ROMSpeed & 0x10) != 0) ? "FastROM" : "SlowROM",
              (Memory.HiROM) ? "HiROM" : "LoROM",
