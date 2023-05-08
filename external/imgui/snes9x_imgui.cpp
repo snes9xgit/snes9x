@@ -70,7 +70,7 @@ static void ImGui_DrawPressedKeys(int spacing)
             draw_list->AddRectFilled(ImVec2(x, y),
                                      ImVec2(x + box_width, y + box_height),
                                      settings.box_color,
-                                     spacing / 2);
+                                     spacing / 2.0f);
 
             draw_list->AddText(ImVec2(x + spacing, y + spacing), settings.text_color, string);
 
@@ -88,7 +88,7 @@ static void ImGui_DrawPressedKeys(int spacing)
             draw_list->AddRectFilled(ImVec2(x, y),
                                      ImVec2(x + box_width, y + box_height),
                                      settings.box_color,
-                                     spacing / 2);
+                                     spacing / 2.0f);
             x += spacing;
             y += spacing;
 
@@ -135,7 +135,7 @@ static void ImGui_DrawTextOverlay(const char *text,
     draw_list->AddRectFilled(ImVec2(x, y),
                              ImVec2(x + box_size.x, y + box_size.y),
                              settings.box_color,
-                             settings.spacing / 2);
+                             settings.spacing / 2.0f);
 
     draw_list->AddText(nullptr, 0.0f, ImVec2(x + padding, y + padding), settings.text_color, text, nullptr, wrap_at);
 }
