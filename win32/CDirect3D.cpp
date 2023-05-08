@@ -556,7 +556,7 @@ bool CDirect3D::ResetDevice()
 
 	HRESULT hr;
 
-	if (S9xImGuiRunning)
+	if (S9xImGuiRunning())
 	{
 		ImGui_ImplDX9_Shutdown();
 	}
@@ -610,7 +610,7 @@ bool CDirect3D::ResetDevice()
 
 	SetViewport();
 
-	if (S9xImGuiRunning)
+	if (S9xImGuiRunning())
 	{
 		ImGui_ImplDX9_Init(pDevice);
 	}
