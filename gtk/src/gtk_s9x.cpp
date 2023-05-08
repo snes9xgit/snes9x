@@ -362,6 +362,11 @@ void S9xMessage(int type, int number, const char *message)
     case S9X_MOVIE_INFO:
         S9xSetInfoString(message);
         break;
+    case S9X_ROM_INFO:
+    {
+        S9xSetInfoString(Memory.GetMultilineROMInfo().c_str());
+        break;
+    }
     default:
         break;
     }
