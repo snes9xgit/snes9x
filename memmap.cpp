@@ -3384,11 +3384,15 @@ static std::string sjis_to_utf8(std::string in)
     {
         unsigned char c = i;
         if (c > 160 && c < 192)
+		{
             out += "\357\275";
+			out += c;
+		}
         else if (c >= 192)
         {
             out += "\357\276";
             c -= 0x40;
+			out += c;
         }
         else if (c >= 32)
             out += c;
