@@ -1126,7 +1126,7 @@ bool retro_load_game(const struct retro_game_info *game)
         }
 
         else
-            rom_loaded = Memory.LoadROMMem((const uint8_t*)game->data ,game->size, game->path);
+            rom_loaded = Memory.LoadROMMem((const uint8_t*)game->data ,game->size, g_basename);
 
         if(biosrom) delete[] biosrom;
     }
