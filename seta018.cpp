@@ -108,7 +108,7 @@ void S9xSetST018 (uint8 Byte, uint32 Address)
 
 	if (ST018.in_count == ST018.in_index)
 	{
-		// qctually execute the command
+		// actually execute the command
 		ST018.waiting4command = true;
 		ST018.in_index        = 0;
 		ST018.out_index       = 0;
