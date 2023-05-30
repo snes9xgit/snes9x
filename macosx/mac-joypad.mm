@@ -282,7 +282,9 @@ void findControls(struct JoypadDevice &device, NSDictionary *properties, NSMutab
 
     int usagePage = [properties[@kIOHIDElementUsagePageKey] intValue];
     int usage = [properties[@kIOHIDElementUsageKey] intValue];
-    if (usagePage == kHIDPage_Button)
+    if (usagePage == kHIDPage_Button ||
+        (usagePage == kHIDPage_GenericDesktop && (usage == kHIDUsage_GD_DPadUp || usage == kHIDUsage_GD_DPadDown || usage == kHIDUsage_GD_DPadLeft || usage == kHIDUsage_GD_DPadRight))
+        || (usagePage == kHIDPage_Consumer && (usage == kHIDUsage_Csmr_ACProperties || usage == kHIDUsage_Csmr_ACExit)))
     {
         [buttons addObject:properties];
     }
