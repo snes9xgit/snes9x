@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "gtk_compat.h"
 #include "viewporter-client-protocol.h"
 #include "fractional-scale-v1.h"
 
@@ -15,11 +14,14 @@ class WaylandSurface
   public:
     WaylandSurface();
     ~WaylandSurface();
-    bool attach(GtkWidget *widget);
-    void resize();
-    std::tuple<int, int> get_size();
 
-    GdkWindow *gdk_window;
+    struct Metrics {
+        int x, y, width, height, scale;
+    };
+
+    bool attach(wl_display *display, wl_surface *surface, Metrics source_metrics);
+    void resize(Metrics new_metrics);
+    std::tuple<int, int> get_size();
 
     struct wl_display *display;
     struct wl_registry *registry;
@@ -31,11 +33,7 @@ class WaylandSurface
     struct wl_subsurface *subsurface;
     struct wl_region *region;
 
-    int x;
-    int y;
-    int width;
-    int height;
-    int gdk_scale;
+    Metrics metrics;
     double actual_scale;
 
     struct zwp_idle_inhibit_manager_v1 *idle_inhibit_manager;

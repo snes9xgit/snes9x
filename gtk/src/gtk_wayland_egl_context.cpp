@@ -33,15 +33,10 @@ WaylandEGLContext::~WaylandEGLContext()
         wl_egl_window_destroy(egl_window);
 }
 
-bool WaylandEGLContext::attach(GtkWidget *widget)
+bool WaylandEGLContext::attach(wl_display *display, wl_surface *surface, WaylandSurface::Metrics m)
 {
-    GdkWindow *window = gtk_widget_get_window(widget);
-
-    if (!GDK_IS_WAYLAND_WINDOW(window))
-        return false;
-
     wayland_surface = std::make_unique<WaylandSurface>();
-    wayland_surface->attach(widget);
+    wayland_surface->attach(display, surface, m);
 
     return true;
 }
@@ -109,9 +104,9 @@ bool WaylandEGLContext::create_context()
     return true;
 }
 
-void WaylandEGLContext::resize()
+void WaylandEGLContext::resize(WaylandSurface::Metrics m)
 {
-    wayland_surface->resize();
+    wayland_surface->resize(m);
     
     std::tie(width, height) = wayland_surface->get_size();
     wl_egl_window_resize(egl_window, width, height, 0, 0);

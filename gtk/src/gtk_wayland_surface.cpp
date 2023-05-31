@@ -106,19 +106,11 @@ wp_fractional_scale_v1_listener fractional_scale_v1_listener =
     preferred_scale
 };
 
-bool WaylandSurface::attach(GtkWidget *widget)
+bool WaylandSurface::attach(wl_display *display, wl_surface *surface, Metrics m)
 {
-    GdkWindow *window = gtk_widget_get_window(widget);
-
-    if (!GDK_IS_WAYLAND_WINDOW(window))
-        return false;
-
-    gdk_window = window;
-    gdk_window_get_geometry(gdk_window, &x, &y, &width, &height);
-    gdk_scale = gdk_window_get_scale_factor(gdk_window);
-
-    display = gdk_wayland_display_get_wl_display(gdk_window_get_display(gdk_window));
-    parent = gdk_wayland_window_get_wl_surface(gdk_window);
+    metrics = m;
+    this->display = display;
+    parent = surface;
     registry = wl_display_get_registry(display);
 
     wl_registry_add_listener(registry, &wl_registry_listener, this);
@@ -133,7 +125,7 @@ bool WaylandSurface::attach(GtkWidget *widget)
 
     wl_surface_set_input_region(child, region);
     wl_subsurface_set_desync(subsurface);
-    wl_subsurface_set_position(subsurface, x, y);
+    wl_subsurface_set_position(subsurface, m.x, m.y);
 
     if (fractional_scale_manager)
     {
@@ -147,29 +139,26 @@ bool WaylandSurface::attach(GtkWidget *widget)
         zwp_idle_inhibit_manager_v1_create_inhibitor(idle_inhibit_manager, child);
     }
 
-    resize();
+    resize(m);
 
     return true;
 }
 
 std::tuple<int, int> WaylandSurface::get_size()
 {
-    gdk_window_get_geometry(gdk_window, &x, &y, &width, &height);
-
     if (actual_scale == 0.0)
     {
-        gdk_scale = gdk_window_get_scale_factor(gdk_window);
-
-        return { width * gdk_scale, height * gdk_scale };
+        return { metrics.width * metrics.scale, metrics.height * metrics.scale };
     }
 
-    return { width * actual_scale, height * actual_scale };
+    return { metrics.width * actual_scale, metrics.height * actual_scale };
 }
 
-void WaylandSurface::resize()
+void WaylandSurface::resize(Metrics m)
 {
+    metrics = m;
     auto [w, h] = get_size();
-    wl_subsurface_set_position(subsurface, x, y);
+    wl_subsurface_set_position(subsurface, m.x, m.y);
 
     if (!viewport)
         viewport = wp_viewporter_get_viewport(viewporter, child);
@@ -177,7 +166,7 @@ void WaylandSurface::resize()
     wp_viewport_set_source(viewport,
         wl_fixed_from_int(0), wl_fixed_from_int(0),
         wl_fixed_from_int(w), wl_fixed_from_int(h));
-    wp_viewport_set_destination(viewport, width, height);
+    wp_viewport_set_destination(viewport, m.width, m.height);
 
     wl_surface_commit(child);
     wl_surface_commit(parent);

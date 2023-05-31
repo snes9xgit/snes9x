@@ -9,7 +9,6 @@
 
 #include "gtk_opengl_context.h"
 #include "gtk_wayland_surface.h"
-#include "gtk_compat.h"
 
 #include <epoxy/egl.h>
 #include <memory>
@@ -20,15 +19,14 @@ class WaylandEGLContext : public OpenGLContext
   public:
     WaylandEGLContext();
     ~WaylandEGLContext();
-    bool attach(GtkWidget *widget);
+    bool attach(wl_display *display, wl_surface *surface, WaylandSurface::Metrics m);
     bool create_context();
-    void resize();
+    void resize() {};
+    void resize(WaylandSurface::Metrics m);
     void swap_buffers();
     void swap_interval(int frames);
     void make_current();
     bool ready();
-
-    GdkWindow *gdk_window;
 
     EGLDisplay egl_display;
     EGLSurface egl_surface;

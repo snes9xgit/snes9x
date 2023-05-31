@@ -65,6 +65,14 @@ static const GLchar *stock_fragment_shader_140 =
 "    fragcolor = texture(texmap, texcoord);\n"
 "}\n";
 
+#ifdef GDK_WINDOWING_WAYLAND
+static WaylandSurface::Metrics get_metrics(Gtk::DrawingArea &w)
+{
+    int x, y, width, height;
+    w.get_window()->get_geometry(x, y, width, height);
+    return { x, y, width, height, w.get_window()->get_scale_factor() };
+}
+#endif
 
 static GLfloat coords[] = { -1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f,
                              0.0f,  1.0f, 1.0f,  1.0f,  0.0f, 0.0f, 1.0f, 0.0f, };
@@ -335,7 +343,20 @@ void S9xOpenGLDisplayDriver::refresh()
 
 void S9xOpenGLDisplayDriver::resize()
 {
-    context->resize();
+#ifdef GDK_WINDOWING_WAYLAND
+    if (GDK_IS_WAYLAND_WINDOW(gdk_window))
+    {
+        ((WaylandEGLContext *)context)->resize(get_metrics(*drawing_area));
+    }
+#endif
+#ifdef GDK_WINDOWING_X11
+    if (GDK_IS_X11_WINDOW(gdk_window))
+    {
+        context->resize();
+    }
+#endif
+
+
     context->swap_interval(config->sync_to_vblank);
     Gtk::Allocation allocation = drawing_area->get_allocation();
     output_window_width = allocation.get_width();
@@ -350,7 +371,9 @@ bool S9xOpenGLDisplayDriver::create_context()
 #ifdef GDK_WINDOWING_WAYLAND
     if (GDK_IS_WAYLAND_WINDOW(gdk_window))
     {
-        if (!wl.attach(GTK_WIDGET(drawing_area->gobj())))
+        wl_surface *surface = gdk_wayland_window_get_wl_surface(drawing_area->get_window()->gobj());
+        wl_display *display = gdk_wayland_display_get_wl_display(drawing_area->get_display()->gobj());
+        if (!wl.attach(display, surface, get_metrics(*drawing_area)))
             return false;
         context = &wl;
     }

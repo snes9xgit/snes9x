@@ -15,6 +15,15 @@
 #include "snes9x_imgui.h"
 #include "../../external/imgui/imgui_impl_vulkan.h"
 
+#ifdef GDK_WINDOWING_WAYLAND
+static WaylandSurface::Metrics get_metrics(Gtk::DrawingArea &w)
+{
+    int x, y, width, height;
+    w.get_window()->get_geometry(x, y, width, height);
+    return { x, y, width, height, w.get_window()->get_scale_factor() };
+}
+#endif
+
 S9xVulkanDisplayDriver::S9xVulkanDisplayDriver(Snes9xWindow *_window, Snes9xConfig *_config)
 {
     window = _window;
@@ -83,7 +92,7 @@ void S9xVulkanDisplayDriver::refresh()
 #ifdef GDK_WINDOWING_WAYLAND
     if (GDK_IS_WAYLAND_WINDOW(drawing_area->get_window()->gobj()))
     {
-        wayland_surface->resize();
+        wayland_surface->resize(get_metrics(*drawing_area));
         std::tie(new_width, new_height) = wayland_surface->get_size();
     }
     else
@@ -113,7 +122,9 @@ int S9xVulkanDisplayDriver::init()
     if (GDK_IS_WAYLAND_WINDOW(drawing_area->get_window()->gobj()))
     {
         wayland_surface = std::make_unique<WaylandSurface>();
-        if (!wayland_surface->attach(GTK_WIDGET(drawing_area->gobj())))
+        wl_surface *surface = gdk_wayland_window_get_wl_surface(drawing_area->get_window()->gobj());
+        wl_display *display = gdk_wayland_display_get_wl_display(drawing_area->get_display()->gobj());
+        if (!wayland_surface->attach(display, surface, get_metrics(*drawing_area)))
         {
             return -1;
         }
