@@ -5,6 +5,7 @@
 \*****************************************************************************/
 
 #include <dlfcn.h>
+#include <cstdio>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/time.h>
@@ -391,9 +392,16 @@ bool S9xOpenGLDisplayDriver::create_context()
         return false;
 
     context->make_current();
+    gladLoaderLoadGL();
 
     legacy = false;
-    version = epoxy_gl_version();
+
+    auto version_string = (const char *)glGetString(GL_VERSION);
+    int major_version = 1;
+    int minor_version = 0;
+    std::sscanf(version_string, "%d.%d", &major_version, &minor_version);
+    version = major_version * 10 + minor_version;
+
     if (version < 20)
     {
         printf("OpenGL version is only %d.%d. Recommended version is 2.0.\n",
@@ -479,6 +487,8 @@ void S9xOpenGLDisplayDriver::deinit()
         ImGui_ImplOpenGL3_Shutdown();
         S9xImGuiDeinit();
     }
+
+    gladLoaderUnloadGL();
 }
 
 int S9xOpenGLDisplayDriver::query_availability()
@@ -495,12 +505,7 @@ int S9xOpenGLDisplayDriver::query_availability()
 #ifdef GDK_WINDOWING_X11
     if (GDK_IS_X11_DISPLAY(gdk_display))
     {
-        Display *dpy = GDK_DISPLAY_XDISPLAY(gdk_display);
-
-        if (glXQueryExtension(dpy, NULL, NULL) == True)
-        {
             return 1;
-        }
     }
 #endif
 

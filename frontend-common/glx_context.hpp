@@ -4,12 +4,12 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __GTK_GLX_CONTEXT_H
-#define __GTK_GLX_CONTEXT_H
+#ifndef __GLX_CONTEXT_HPP
+#define __GLX_CONTEXT_HPP
 
-#include "gtk_opengl_context.h"
+#include "opengl_context.hpp"
 
-#include <epoxy/glx.h>
+#include <glad/glx.h>
 
 class GTKGLXContext : public OpenGLContext
 {

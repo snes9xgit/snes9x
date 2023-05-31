@@ -67,18 +67,19 @@ find_library(DL dl REQUIRED)
 list(APPEND ARGS ${SDL2_CFLAGS} ${GTK_CFLAGS} ${XRANDR_CFLAGS})
 list(APPEND LIBS ${X11} ${XEXT} ${DL} ${SDL2_LIBRARIES} ${GTK_LIBRARIES} ${XRANDR_LIBRARIES})
 
-pkg_check_modules(EPOXY REQUIRED epoxy)
-list(APPEND ARGS ${EPOXY_CFLAGS})
-list(APPEND LIBS ${EPOXY_LIBRARIES})
 list(APPEND SOURCES src/gtk_display_driver_opengl.cpp
-                    src/gtk_glx_context.cpp
+                    ../frontend-common/glx_context.cpp
                     ../shaders/glsl.cpp
                     ../shaders/shader_helpers.cpp
                     ../vulkan/slang_helpers.cpp
                     ../vulkan/slang_helpers.hpp
                     ../vulkan/slang_preset_ini.cpp
                     ../vulkan/slang_preset_ini.hpp
+                    ../external/glad/src/glx.c
+                    ../external/glad/src/egl.c
+                    ../external/glad/src/gl.c
                     src/gtk_shader_parameters.cpp)
+list(APPEND INCLUDES ../external/glad/include)
 
 if(USE_SLANG)
     list(APPEND SOURCES ../shaders/slang.cpp)
@@ -151,13 +152,13 @@ list(APPEND INCLUDES ../external/imgui)
 if(USE_WAYLAND)
     pkg_check_modules(WAYLAND REQUIRED wayland-client wayland-egl)
     list(APPEND DEFINES "USE_WAYLAND")
-    list(APPEND SOURCES src/gtk_wayland_egl_context.cpp
-                        src/gtk_wayland_egl_context.h
-                        src/gtk_wayland_surface.cpp
-                        src/gtk_wayland_surface.h
-                        src/wayland-idle-inhibit-unstable-v1.c
-                        src/viewporter-client-protocol.c
-                        src/fractional-scale-v1.c)
+    list(APPEND SOURCES ../frontend-common/wayland_egl_context.cpp
+                        ../frontend-common/wayland_egl_context.hpp
+                        ../frontend-common/wayland_surface.cpp
+                        ../frontend-common/wayland_surface.hpp
+                        ../frontend-common/wayland-idle-inhibit-unstable-v1.c
+                        ../frontend-common/viewporter-client-protocol.c
+                        ../frontend-common/fractional-scale-v1.c)
     list(APPEND ARGS ${WAYLAND_CFLAGS})
     list(APPEND LIBS ${WAYLAND_LIBRARIES})
 endif()

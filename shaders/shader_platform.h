@@ -10,8 +10,8 @@
 #include "port.h"
 
 #ifdef SNES9X_GTK
-#include <epoxy/gl.h>
-#include <epoxy/glx.h>
+#include <glad/gl.h>
+#include <glad/glx.h>
 #endif
 
 #ifdef _WIN32

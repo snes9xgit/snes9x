@@ -4,12 +4,12 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
+#include <cstdlib>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 
-#include "gtk_s9x.h"
-#include "gtk_glx_context.h"
+#include "glx_context.hpp"
 
 GTKGLXContext::GTKGLXContext()
 {
@@ -18,6 +18,8 @@ GTKGLXContext::GTKGLXContext()
 
     version_major = -1;
     version_minor = -1;
+
+    gladLoaderLoadGLX(nullptr, 0);
 }
 
 GTKGLXContext::~GTKGLXContext()
@@ -127,12 +129,12 @@ void GTKGLXContext::make_current()
 
 void GTKGLXContext::swap_interval(int frames)
 {
-    if (epoxy_has_glx_extension(display, screen, "GLX_EXT_swap_control"))
+    if (GLAD_GLX_EXT_swap_control)
         glXSwapIntervalEXT(display, xid, frames);
-    else if (epoxy_has_glx_extension(display, screen, "GLX_SGI_swap_control"))
+    else if (GLAD_GLX_SGI_swap_control)
         glXSwapIntervalSGI(frames);
 #ifdef GLX_MESA_swap_control
-    else if (epoxy_has_glx_extension(display, screen, "GLX_MESA_swap_control"))
+    else if (GLAD_GLX_MESA_swap_control)
         glXSwapIntervalMESA(frames);
 #endif
 }

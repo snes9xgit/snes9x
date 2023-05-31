@@ -6,11 +6,11 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <tuple>
 #include <wayland-util.h>
 
 #include "fractional-scale-v1.h"
-#include "gtk_s9x.h"
-#include "gtk_wayland_surface.h"
+#include "wayland_surface.hpp"
 #include "wayland-idle-inhibit-unstable-v1.h"
 #include "viewporter-client-protocol.h"
 
@@ -133,7 +133,7 @@ bool WaylandSurface::attach(wl_display *display, wl_surface *surface, Metrics m)
         wp_fractional_scale_v1_add_listener(fractional_scale, &fractional_scale_v1_listener, this);
     }
 
-    if (idle_inhibit_manager && gui_config->prevent_screensaver)
+    if (idle_inhibit_manager)
     {
         printf("Inhibiting screensaver.\n");
         zwp_idle_inhibit_manager_v1_create_inhibitor(idle_inhibit_manager, child);

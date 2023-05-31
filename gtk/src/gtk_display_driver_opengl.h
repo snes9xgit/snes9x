@@ -10,16 +10,16 @@
 #include "gtk_s9x.h"
 #include "gtk_display_driver.h"
 
-#include <epoxy/gl.h>
+#include <glad/gl.h>
 
-#include "gtk_opengl_context.h"
+#include "../../frontend-common/opengl_context.hpp"
 
 #include "gtk_compat.h"
 #ifdef GDK_WINDOWING_X11
-#include "gtk_glx_context.h"
+#include "../../frontend-common/glx_context.hpp"
 #endif
 #ifdef GDK_WINDOWING_WAYLAND
-#include "gtk_wayland_egl_context.h"
+#include "../../frontend-common/wayland_egl_context.hpp"
 #endif
 
 #include "shaders/glsl.h"

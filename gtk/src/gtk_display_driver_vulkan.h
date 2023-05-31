@@ -13,7 +13,7 @@
 #include "../../vulkan/std_chrono_throttle.hpp"
 
 #ifdef VK_USE_PLATFORM_WAYLAND_KHR
-#include "gtk_wayland_surface.h"
+#include "../../frontend-common/wayland_surface.hpp"
 #endif
 
 class S9xVulkanDisplayDriver : public S9xDisplayDriver
