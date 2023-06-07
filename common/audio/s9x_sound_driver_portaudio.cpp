@@ -4,8 +4,11 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include "gtk_sound_driver_portaudio.h"
+#include "s9x_sound_driver_portaudio.hpp"
 #include <cstring>
+#include <cstdio>
+#include <cstdint>
+#include <vector>
 
 S9xPortAudioSoundDriver::S9xPortAudioSoundDriver()
 {

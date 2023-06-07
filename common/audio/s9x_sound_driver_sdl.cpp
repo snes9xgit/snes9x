@@ -4,7 +4,7 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include "gtk_sound_driver_sdl.h"
+#include "s9x_sound_driver_sdl.hpp"
 #include "SDL_audio.h"
 
 void S9xSDLSoundDriver::write_samples(int16_t *data, int samples)

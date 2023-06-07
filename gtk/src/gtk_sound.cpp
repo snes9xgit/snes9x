@@ -9,22 +9,22 @@
 
 #include "gtk_s9x.h"
 #include "gtk_sound.h"
-#include "gtk_sound_driver.h"
+#include "common/audio/s9x_sound_driver.hpp"
 #include "snes9x.h"
 #include "apu/apu.h"
 
 #ifdef USE_PORTAUDIO
-#include "gtk_sound_driver_portaudio.h"
+#include "common/audio/s9x_sound_driver_portaudio.hpp"
 #endif
 #ifdef USE_OSS
-#include "gtk_sound_driver_oss.h"
+#include "common/audio/s9x_sound_driver_oss.hpp"
 #endif
-#include "gtk_sound_driver_sdl.h"
+#include "common/audio/s9x_sound_driver_sdl.hpp"
 #ifdef USE_ALSA
-#include "gtk_sound_driver_alsa.h"
+#include "common/audio/s9x_sound_driver_alsa.hpp"
 #endif
 #ifdef USE_PULSEAUDIO
-#include "gtk_sound_driver_pulse.h"
+#include "common/audio/s9x_sound_driver_pulse.hpp"
 #endif
 
 static int playback_rates[8] =

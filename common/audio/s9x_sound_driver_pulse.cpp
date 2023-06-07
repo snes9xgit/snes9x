@@ -4,9 +4,10 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include "gtk_sound_driver_pulse.h"
+#include "s9x_sound_driver_pulse.hpp"
 
 #include <cstring>
+#include <cstdio>
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/time.h>

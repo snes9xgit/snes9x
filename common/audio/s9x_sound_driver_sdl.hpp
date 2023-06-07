@@ -4,16 +4,15 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __GTK_SOUND_DRIVER_SDL_H
-#define __GTK_SOUND_DRIVER_SDL_H
+#ifndef __S9X_SOUND_DRIVER_SDL_HPP
+#define __S9X_SOUND_DRIVER_SDL_HPP
 
 #include "SDL.h"
 // SDL.h may include altivec.h which redefines vector and bool
 #undef vector
 #undef bool
 
-#include "gtk_sound.h"
-#include "gtk_sound_driver.h"
+#include "s9x_sound_driver.hpp"
 #include "../../apu/resampler.h"
 
 #include <mutex>
@@ -41,4 +40,4 @@ class S9xSDLSoundDriver : public S9xSoundDriver
     int16_t temp[512];
 };
 
-#endif /* __GTK_SOUND_DRIVER_SDL_H */
+#endif /* __S9X_SOUND_DRIVER_SDL_HPP */

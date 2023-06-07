@@ -4,35 +4,27 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __GTK_SOUND_DRIVER_PULSE_H
-#define __GTK_SOUND_DRIVER_PULSE_H
+#ifndef __S9X_SOUND_DRIVER_OSS_HPP
+#define __S9X_SOUND_DRIVER_OSS_HPP
 
-#include "gtk_sound.h"
-#include "gtk_sound_driver.h"
-#include "pulse/pulseaudio.h"
+#include "s9x_sound_driver.hpp"
 
-class S9xPulseSoundDriver : public S9xSoundDriver
+class S9xOSSSoundDriver : public S9xSoundDriver
 {
   public:
-    S9xPulseSoundDriver();
+    S9xOSSSoundDriver();
     void init() override;
     void deinit() override;
-    void write_samples(int16_t *data, int samples) override;
-    bool open_device(int playback_rate, int buffer_size) override;
+    bool open_device(int playback_rate, int buffer_size_ms) override;
     void start() override;
     void stop() override;
+    void write_samples(int16_t *data, int samples) override;
     int space_free() override;
     std::pair<int, int> buffer_level() override;
-    pa_threaded_mainloop *mainloop;
-    pa_context *context;
-    pa_stream *stream;
 
   private:
-    void lock();
-    void unlock();
-    void wait();
-
-    int buffer_size;
+    int filedes;
+    int output_buffer_size_bytes;
 };
 
-#endif /* __GTK_SOUND_DRIVER_PULSE_H */
+#endif /* __S9X_SOUND_DRIVER_OSS_HPP */

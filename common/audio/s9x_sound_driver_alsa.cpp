@@ -4,7 +4,7 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include "gtk_sound_driver_alsa.h"
+#include "s9x_sound_driver_alsa.hpp"
 
 #include <fcntl.h>
 #include <sys/ioctl.h>

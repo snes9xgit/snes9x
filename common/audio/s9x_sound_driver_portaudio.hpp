@@ -4,29 +4,31 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __GTK_SOUND_DRIVER_ALSA_H
-#define __GTK_SOUND_DRIVER_ALSA_H
+#ifndef __S9X_SOUND_DRIVER_PORTAUDIO_HPP
+#define __S9X_SOUND_DRIVER_PORTAUDIO_HPP
 
-#include "gtk_sound.h"
-#include "gtk_sound_driver.h"
-#include "alsa/asoundlib.h"
+#include <errno.h>
+#include <portaudio.h>
 
-class S9xAlsaSoundDriver : public S9xSoundDriver
+#include "s9x_sound_driver.hpp"
+
+class S9xPortAudioSoundDriver : public S9xSoundDriver
 {
   public:
-    S9xAlsaSoundDriver();
+    S9xPortAudioSoundDriver();
     void init() override;
     void deinit() override;
-    bool open_device(int playback_rate, int buffer_size_ms) override;
+    bool open_device(int playback_rate, int buffer_size) override;
     void start() override;
     void stop() override;
     void write_samples(int16_t *data, int samples) override;
     int space_free() override;
     std::pair<int, int> buffer_level() override;
+    void samples_available();
 
   private:
-    snd_pcm_t *pcm;
-    int output_buffer_size_bytes;
+    PaStream *audio_stream;
+    int output_buffer_size;
 };
 
-#endif /* __GTK_SOUND_DRIVER_ALSA_H */
+#endif /* __S9X_SOUND_DRIVER_PORTAUDIO_HPP */

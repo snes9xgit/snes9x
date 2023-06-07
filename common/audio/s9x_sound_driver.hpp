@@ -4,8 +4,8 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __S9X_SOUND_DRIVER_H
-#define __S9X_SOUND_DRIVER_H
+#ifndef __S9X_SOUND_DRIVER_HPP
+#define __S9X_SOUND_DRIVER_HPP
 
 #include <cstdint>
 #include <tuple>
@@ -26,4 +26,4 @@ class S9xSoundDriver
     virtual void stop() = 0;
 };
 
-#endif /* __GTK_SOUND_DRIVER_H */
+#endif /* __S9X_SOUND_DRIVER_HPP */

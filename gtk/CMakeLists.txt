@@ -175,7 +175,7 @@ endif()
 if(USE_PULSEAUDIO)
     pkg_check_modules(PULSEAUDIO REQUIRED libpulse)
     list(APPEND DEFINES "USE_PULSEAUDIO")
-    list(APPEND SOURCES src/gtk_sound_driver_pulse.cpp)
+    list(APPEND SOURCES ../common/audio/s9x_sound_driver_pulse.cpp)
     list(APPEND ARGS ${PULSEAUDIO_CFLAGS})
     list(APPEND LIBS ${PULSEAUDIO_LIBRARIES})
 endif()
@@ -183,7 +183,7 @@ endif()
 if(USE_PORTAUDIO)
     pkg_check_modules(PORTAUDIO REQUIRED portaudio-2.0)
     list(APPEND DEFINES "USE_PORTAUDIO")
-    list(APPEND SOURCES src/gtk_sound_driver_portaudio.cpp)
+    list(APPEND SOURCES ../common/audio/s9x_sound_driver_portaudio.cpp)
     list(APPEND ARGS ${PORTAUDIO_CFLAGS})
     list(APPEND LIBS ${PORTAUDIO_LIBRARIES})
 endif()
@@ -191,7 +191,7 @@ endif()
 if(USE_ALSA)
     pkg_check_modules(ALSA REQUIRED alsa)
     list(APPEND DEFINES "USE_ALSA")
-    list(APPEND SOURCES src/gtk_sound_driver_alsa.cpp)
+    list(APPEND SOURCES ../common/audio/s9x_sound_driver_alsa.cpp)
     list(APPEND ARGS ${ALSA_CFLAGS})
     list(APPEND LIBS ${ALSA_LIBRARIES})
 endif()
@@ -199,7 +199,7 @@ endif()
 if(USE_OSS)
     CHECK_INCLUDE_FILE("sys/soundcard.h" OSS)
     if(OSS)
-        list(APPEND SOURCES src/gtk_sound_driver_oss.cpp)
+        list(APPEND SOURCES ../common/audio/s9x_sound_driver_oss.cpp)
         list(APPEND DEFINES "USE_OSS")
     endif()
 endif()
@@ -238,7 +238,7 @@ if(DANGEROUS_HACKS)
 endif()
 
 list(APPEND SOURCES
-    src/gtk_sound_driver.h
+    ../common/audio/s9x_sound_driver.hpp
     ../filter/2xsai.cpp
     ../filter/2xsai.h
     ../filter/epx.cpp
@@ -279,8 +279,8 @@ list(APPEND SOURCES
     ../filter/snes_ntsc_impl.h
     ../filter/snes_ntsc.c
     src/gtk_compat.h
-    src/gtk_sound_driver_sdl.h
-    src/gtk_sound_driver_sdl.cpp
+    ../common/audio/s9x_sound_driver_sdl.hpp
+    ../common/audio/s9x_sound_driver_sdl.cpp
     ../fxinst.cpp
     ../fxemu.cpp
     ../fxdbg.cpp

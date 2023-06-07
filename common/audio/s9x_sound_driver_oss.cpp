@@ -4,13 +4,29 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include "gtk_sound_driver_oss.h"
+#include "s9x_sound_driver_oss.hpp"
 
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/soundcard.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <cstdio>
+
+static inline int log2(int num)
+{
+    int power;
+
+    if (num < 1)
+        return 0;
+
+    for (power = 0; num > 1; power++)
+    {
+        num >>= 1;
+    }
+
+    return power;
+}
 
 S9xOSSSoundDriver::S9xOSSSoundDriver()
 {
@@ -106,7 +122,7 @@ bool S9xOSSSoundDriver::open_device(int playback_rate, int buffer_size_ms)
 
     /* OSS requires a power-of-two buffer size, first 16 bits are the number
      * of fragments to generate, second 16 are the respective power-of-two. */
-    temp = (4 << 16) | (S9xSoundBase2log(output_buffer_size_bytes / 4));
+    temp = (4 << 16) | (log2(output_buffer_size_bytes / 4));
 
     if (ioctl(filedes, SNDCTL_DSP_SETFRAGMENT, &temp) < 0)
         goto close_fail;
