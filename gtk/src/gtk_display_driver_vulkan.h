@@ -7,13 +7,13 @@
 #pragma once
 #include "gtk_s9x.h"
 #include "gtk_display_driver.h"
-#include "../../vulkan/vulkan_context.hpp"
-#include "../../vulkan/vulkan_shader_chain.hpp"
-#include "../../vulkan/vulkan_simple_output.hpp"
-#include "../../vulkan/std_chrono_throttle.hpp"
+#include "vulkan/vulkan_context.hpp"
+#include "vulkan/vulkan_shader_chain.hpp"
+#include "vulkan/vulkan_simple_output.hpp"
+#include "vulkan/std_chrono_throttle.hpp"
 
 #ifdef VK_USE_PLATFORM_WAYLAND_KHR
-#include "../../frontend-common/wayland_surface.hpp"
+#include "common/video/wayland_surface.hpp"
 #endif
 
 class S9xVulkanDisplayDriver : public S9xDisplayDriver

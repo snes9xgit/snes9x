@@ -13,7 +13,7 @@
 #include "fmt/format.h"
 
 #include "snes9x_imgui.h"
-#include "../../external/imgui/imgui_impl_vulkan.h"
+#include "external/imgui/imgui_impl_vulkan.h"
 
 #ifdef GDK_WINDOWING_WAYLAND
 static WaylandSurface::Metrics get_metrics(Gtk::DrawingArea &w)

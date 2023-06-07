@@ -68,7 +68,7 @@ list(APPEND ARGS ${SDL2_CFLAGS} ${GTK_CFLAGS} ${XRANDR_CFLAGS})
 list(APPEND LIBS ${X11} ${XEXT} ${DL} ${SDL2_LIBRARIES} ${GTK_LIBRARIES} ${XRANDR_LIBRARIES})
 
 list(APPEND SOURCES src/gtk_display_driver_opengl.cpp
-                    ../frontend-common/glx_context.cpp
+                    ../common/video/glx_context.cpp
                     ../shaders/glsl.cpp
                     ../shaders/shader_helpers.cpp
                     ../vulkan/slang_helpers.cpp
@@ -152,13 +152,13 @@ list(APPEND INCLUDES ../external/imgui)
 if(USE_WAYLAND)
     pkg_check_modules(WAYLAND REQUIRED wayland-client wayland-egl)
     list(APPEND DEFINES "USE_WAYLAND")
-    list(APPEND SOURCES ../frontend-common/wayland_egl_context.cpp
-                        ../frontend-common/wayland_egl_context.hpp
-                        ../frontend-common/wayland_surface.cpp
-                        ../frontend-common/wayland_surface.hpp
-                        ../frontend-common/wayland-idle-inhibit-unstable-v1.c
-                        ../frontend-common/viewporter-client-protocol.c
-                        ../frontend-common/fractional-scale-v1.c)
+    list(APPEND SOURCES ../common/video/wayland_egl_context.cpp
+                        ../common/video/wayland_egl_context.hpp
+                        ../common/video/wayland_surface.cpp
+                        ../common/video/wayland_surface.hpp
+                        ../common/video/wayland-idle-inhibit-unstable-v1.c
+                        ../common/video/viewporter-client-protocol.c
+                        ../common/video/fractional-scale-v1.c)
     list(APPEND ARGS ${WAYLAND_CFLAGS})
     list(APPEND LIBS ${WAYLAND_LIBRARIES})
 endif()

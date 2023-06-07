@@ -10,7 +10,7 @@
 #include "opengl_context.hpp"
 #include "wayland_surface.hpp"
 
-#include "../external/glad/include/glad/egl.h"
+#include "glad/egl.h"
 #include <memory>
 #include <wayland-egl.h>
 
