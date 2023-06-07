@@ -6,34 +6,13 @@
 
 #include "gtk_sound_driver_sdl.h"
 #include "SDL_audio.h"
-#include "gtk_s9x.h"
-#include "apu/apu.h"
-#include "snes9x.h"
 
-void S9xSDLSoundDriver::samples_available()
+void S9xSDLSoundDriver::write_samples(int16_t *data, int samples)
 {
-    int snes_samples_available = S9xGetSampleCount();
-    S9xMixSamples((uint8 *)temp, snes_samples_available);
-
-    if (Settings.SoundSync && !Settings.TurboMode && !Settings.Mute)
-    {
-        mutex.lock();
-        int samples = buffer.space_empty();
-        mutex.unlock();
-
-        while (samples < snes_samples_available)
-        {
-            usleep(100);
-            mutex.lock();
-            samples = buffer.space_empty();
-            mutex.unlock();
-        }
-    }
-
     mutex.lock();
-    buffer.push(temp, snes_samples_available);
-    if (Settings.DynamicRateControl)
-        S9xUpdateDynamicRate(buffer.space_empty(), buffer.buffer_size);
+    if (samples > buffer.space_empty())
+        samples = buffer.space_empty();
+    buffer.push(data, samples);
     mutex.unlock();
 }
 
@@ -55,7 +34,7 @@ void S9xSDLSoundDriver::init()
     stop();
 }
 
-void S9xSDLSoundDriver::terminate()
+void S9xSDLSoundDriver::deinit()
 {
     stop();
     SDL_CloseAudio();
@@ -64,10 +43,7 @@ void S9xSDLSoundDriver::terminate()
 
 void S9xSDLSoundDriver::start()
 {
-    if (!gui_config->mute_sound)
-    {
-        SDL_PauseAudio(0);
-    }
+    SDL_PauseAudio(0);
 }
 
 void S9xSDLSoundDriver::stop()
@@ -75,10 +51,10 @@ void S9xSDLSoundDriver::stop()
     SDL_PauseAudio(1);
 }
 
-bool S9xSDLSoundDriver::open_device()
+bool S9xSDLSoundDriver::open_device(int playback_rate, int buffer_size)
 {
     audiospec = {};
-    audiospec.freq = Settings.SoundPlaybackRate;
+    audiospec.freq = playback_rate;
     audiospec.channels = 2;
     audiospec.format = AUDIO_S16SYS;
     audiospec.samples = audiospec.freq * 4 / 1000; // 4ms per sampling
@@ -101,11 +77,23 @@ bool S9xSDLSoundDriver::open_device()
 
     printf("OK\n");
 
-    buffer.resize(gui_config->sound_buffer_size * audiospec.freq / 500);
-
-    S9xSetSamplesAvailableCallback([](void *userdata) {
-        ((decltype(this)) userdata)->samples_available();;
-    }, this);
+    buffer.resize(buffer_size * audiospec.freq / 1000);
 
     return true;
+}
+
+int S9xSDLSoundDriver::space_free()
+{
+    mutex.lock();
+    auto space_empty = buffer.space_empty();
+    mutex.unlock();
+    return space_empty;
+}
+
+std::pair<int, int> S9xSDLSoundDriver::buffer_level()
+{
+    mutex.lock();
+    std::pair<int, int> level = { buffer.space_empty(), buffer.buffer_size };
+    mutex.unlock();
+    return level;
 }

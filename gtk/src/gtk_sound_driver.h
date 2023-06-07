@@ -4,10 +4,11 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifndef __GTK_SOUND_DRIVER_H
-#define __GTK_SOUND_DRIVER_H
+#ifndef __S9X_SOUND_DRIVER_H
+#define __S9X_SOUND_DRIVER_H
 
-#include "gtk_s9x.h"
+#include <cstdint>
+#include <tuple>
 
 class S9xSoundDriver
 {
@@ -15,9 +16,12 @@ class S9xSoundDriver
     virtual ~S9xSoundDriver()
     {
     }
+    virtual void write_samples(int16_t *data, int samples) = 0;
+    virtual int space_free() = 0;
+    virtual std::pair<int, int> buffer_level() = 0;
     virtual void init() = 0;
-    virtual void terminate() = 0;
-    virtual bool open_device() = 0;
+    virtual void deinit() = 0;
+    virtual bool open_device(int playback_rate, int buffer_size) = 0;
     virtual void start() = 0;
     virtual void stop() = 0;
 };

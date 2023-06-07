@@ -15,17 +15,18 @@ class S9xAlsaSoundDriver : public S9xSoundDriver
 {
   public:
     S9xAlsaSoundDriver();
-    void init();
-    void terminate();
-    bool open_device();
-    void start();
-    void stop();
-    void samples_available();
+    void init() override;
+    void deinit() override;
+    bool open_device(int playback_rate, int buffer_size_ms) override;
+    void start() override;
+    void stop() override;
+    void write_samples(int16_t *data, int samples) override;
+    int space_free() override;
+    std::pair<int, int> buffer_level() override;
 
   private:
     snd_pcm_t *pcm;
-    std::vector<uint8_t> sound_buffer;
-    int output_buffer_size;
+    int output_buffer_size_bytes;
 };
 
 #endif /* __GTK_SOUND_DRIVER_ALSA_H */

@@ -5,46 +5,29 @@
 \*****************************************************************************/
 
 #include "gtk_sound_driver_oss.h"
-#include "gtk_s9x.h"
-#include "snes9x.h"
-#include "apu/apu.h"
 
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/soundcard.h>
 #include <sys/time.h>
-
-static void oss_samples_available(void *data)
-{
-    ((S9xOSSSoundDriver *)data)->samples_available();
-}
+#include <unistd.h>
 
 S9xOSSSoundDriver::S9xOSSSoundDriver()
 {
     filedes = -1;
-    sound_buffer = NULL;
-    sound_buffer_size = 0;
 }
 
 void S9xOSSSoundDriver::init()
 {
 }
 
-void S9xOSSSoundDriver::terminate()
+void S9xOSSSoundDriver::deinit()
 {
     stop();
-
-    S9xSetSamplesAvailableCallback(NULL, NULL);
 
     if (filedes >= 0)
     {
         close(filedes);
-    }
-
-    if (sound_buffer)
-    {
-        free(sound_buffer);
-        sound_buffer = NULL;
     }
 }
 
@@ -56,16 +39,16 @@ void S9xOSSSoundDriver::stop()
 {
 }
 
-bool S9xOSSSoundDriver::open_device()
+bool S9xOSSSoundDriver::open_device(int playback_rate, int buffer_size_ms)
 {
     int temp;
     audio_buf_info info;
 
-    output_buffer_size = (gui_config->sound_buffer_size * Settings.SoundPlaybackRate) / 1000;
+    output_buffer_size_bytes = (buffer_size_ms * playback_rate) / 1000;
 
-    output_buffer_size *= 4;
-    if (output_buffer_size < 256)
-        output_buffer_size = 256;
+    output_buffer_size_bytes *= 4;
+    if (output_buffer_size_bytes < 256)
+        output_buffer_size_bytes = 256;
 
     printf("OSS sound driver initializing...\n");
 
@@ -115,30 +98,28 @@ bool S9xOSSSoundDriver::open_device()
 
     printf("OK\n");
 
-    printf("    --> (Frequency: %d)...", Settings.SoundPlaybackRate);
-    if (ioctl(filedes, SNDCTL_DSP_SPEED, &Settings.SoundPlaybackRate) < 0)
+    printf("    --> (Frequency: %d)...", playback_rate);
+    if (ioctl(filedes, SNDCTL_DSP_SPEED, &playback_rate) < 0)
         goto close_fail;
 
     printf("OK\n");
 
     /* OSS requires a power-of-two buffer size, first 16 bits are the number
      * of fragments to generate, second 16 are the respective power-of-two. */
-    temp = (4 << 16) | (S9xSoundBase2log(output_buffer_size / 4));
+    temp = (4 << 16) | (S9xSoundBase2log(output_buffer_size_bytes / 4));
 
     if (ioctl(filedes, SNDCTL_DSP_SETFRAGMENT, &temp) < 0)
         goto close_fail;
 
     ioctl(filedes, SNDCTL_DSP_GETOSPACE, &info);
 
-    output_buffer_size = info.fragsize * info.fragstotal;
+    output_buffer_size_bytes = info.fragsize * info.fragstotal;
 
     printf("    --> (Buffer size: %d bytes, %dms latency)...",
-           output_buffer_size,
-           (output_buffer_size * 250) / Settings.SoundPlaybackRate);
+           output_buffer_size_bytes,
+           (output_buffer_size_bytes * 250) / playback_rate);
 
     printf("OK\n");
-
-    S9xSetSamplesAvailableCallback(oss_samples_available, this);
 
     return true;
 
@@ -152,68 +133,41 @@ fail:
     return false;
 }
 
-void S9xOSSSoundDriver::samples_available()
+int S9xOSSSoundDriver::space_free()
 {
     audio_buf_info info;
-    int samples_to_write;
+    ioctl(filedes, SNDCTL_DSP_GETOSPACE, &info);
+    return info.bytes / 2;
+}
+
+std::pair<int, int> S9xOSSSoundDriver::buffer_level()
+{
+    return { space_free(), output_buffer_size_bytes / 2};
+}
+
+void S9xOSSSoundDriver::write_samples(int16_t *data, int samples)
+{
+    audio_buf_info info;
     int bytes_to_write;
     int bytes_written;
 
     ioctl(filedes, SNDCTL_DSP_GETOSPACE, &info);
 
-    if (Settings.DynamicRateControl)
-    {
-        S9xUpdateDynamicRate(info.bytes, output_buffer_size);
-    }
+    if (samples > info.bytes / 2)
+        samples = info.bytes / 2;
 
-    samples_to_write = S9xGetSampleCount();
-
-    if (Settings.DynamicRateControl && !Settings.SoundSync)
-    {
-        // Using rate control, we should always keep the emulator's sound buffers empty to
-        // maintain an accurate measurement.
-        if (samples_to_write > (info.bytes >> 1))
-        {
-            S9xClearSamples();
-            return;
-        }
-    }
-
-    if (Settings.SoundSync && !Settings.TurboMode && !Settings.Mute)
-    {
-        while (info.bytes >> 1 < samples_to_write)
-        {
-            int usec_to_sleep = ((samples_to_write >> 1) - (info.bytes >> 2)) * 10000 /
-                                (Settings.SoundPlaybackRate / 100);
-            usleep(usec_to_sleep > 0 ? usec_to_sleep : 0);
-            ioctl(filedes, SNDCTL_DSP_GETOSPACE, &info);
-        }
-    }
-    else
-    {
-        samples_to_write = MIN(info.bytes >> 1, samples_to_write) & ~1;
-    }
-
-    if (samples_to_write < 0)
+    if (samples == 0)
         return;
 
-    if (sound_buffer_size < samples_to_write * 2)
-    {
-        sound_buffer = (uint8 *)realloc(sound_buffer, samples_to_write * 2);
-        sound_buffer_size = samples_to_write * 2;
-    }
-
-    S9xMixSamples(sound_buffer, samples_to_write);
-
     bytes_written = 0;
-    bytes_to_write = samples_to_write * 2;
+    bytes_to_write = samples * 2;
 
     while (bytes_to_write > bytes_written)
     {
         int result;
 
         result = write(filedes,
-                       ((char *)sound_buffer) + bytes_written,
+                       ((char *)data) + bytes_written,
                        bytes_to_write - bytes_written);
 
         if (result < 0)

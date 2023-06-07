@@ -5,9 +5,6 @@
 \*****************************************************************************/
 
 #include "gtk_sound_driver_alsa.h"
-#include "gtk_s9x.h"
-#include "snes9x.h"
-#include "apu/apu.h"
 
 #include <fcntl.h>
 #include <sys/ioctl.h>
@@ -16,18 +13,15 @@
 S9xAlsaSoundDriver::S9xAlsaSoundDriver()
 {
     pcm = {};
-    sound_buffer.clear();
 }
 
 void S9xAlsaSoundDriver::init()
 {
 }
 
-void S9xAlsaSoundDriver::terminate()
+void S9xAlsaSoundDriver::deinit()
 {
     stop();
-
-    S9xSetSamplesAvailableCallback(nullptr, nullptr);
 
     if (pcm)
     {
@@ -35,8 +29,6 @@ void S9xAlsaSoundDriver::terminate()
         snd_pcm_close(pcm);
         pcm = nullptr;
     }
-
-    sound_buffer.clear();
 }
 
 void S9xAlsaSoundDriver::start()
@@ -47,16 +39,17 @@ void S9xAlsaSoundDriver::stop()
 {
 }
 
-bool S9xAlsaSoundDriver::open_device()
+bool S9xAlsaSoundDriver::open_device(int playback_rate, int buffer_size_ms)
 {
     int err;
     unsigned int periods = 8;
-    unsigned int buffer_size = gui_config->sound_buffer_size * 1000;
+    unsigned int buffer_size = buffer_size_ms * 1000;
     snd_pcm_sw_params_t *sw_params;
     snd_pcm_hw_params_t *hw_params;
     snd_pcm_uframes_t alsa_buffer_size, alsa_period_size;
     unsigned int min = 0;
     unsigned int max = 0;
+    unsigned int playback_rate_param = 0;
 
     printf("ALSA sound driver initializing...\n");
     printf("    --> (Device: default)...\n");
@@ -69,8 +62,8 @@ bool S9xAlsaSoundDriver::open_device()
     }
 
     printf("    --> (16-bit Stereo, %dhz, %d ms)...\n",
-           Settings.SoundPlaybackRate,
-           gui_config->sound_buffer_size);
+           playback_rate,
+           buffer_size_ms);
 
     snd_pcm_hw_params_alloca(&hw_params);
     snd_pcm_hw_params_any(pcm, hw_params);
@@ -82,12 +75,14 @@ bool S9xAlsaSoundDriver::open_device()
     snd_pcm_hw_params_get_rate_min(hw_params, &min, nullptr);
     snd_pcm_hw_params_get_rate_max(hw_params, &max, nullptr);
     printf("    --> Available rates: %d to %d\n", min, max);
-    if (Settings.SoundPlaybackRate > max && Settings.SoundPlaybackRate < min)
+    if (playback_rate > (int)max || playback_rate < (int)min)
     {
-        printf("        Rate %d not available. Using %d instead.\n", Settings.SoundPlaybackRate, max);
-        Settings.SoundPlaybackRate = max;
+        printf("        Rate %d not available. Using %d instead.\n", playback_rate, max);
+        playback_rate = max;
     }
-    snd_pcm_hw_params_set_rate_near(pcm, hw_params, &Settings.SoundPlaybackRate, nullptr);
+
+    playback_rate_param = playback_rate;
+    snd_pcm_hw_params_set_rate_near(pcm, hw_params, &playback_rate_param, nullptr);
 
     snd_pcm_hw_params_get_buffer_time_min(hw_params, &min, nullptr);
     snd_pcm_hw_params_get_buffer_time_max(hw_params, &max, nullptr);
@@ -121,7 +116,7 @@ bool S9xAlsaSoundDriver::open_device()
     snd_pcm_sw_params_set_start_threshold(pcm, sw_params, (alsa_buffer_size / 2));
     err = snd_pcm_sw_params(pcm, sw_params);
 
-    output_buffer_size = snd_pcm_frames_to_bytes(pcm, alsa_buffer_size);
+    output_buffer_size_bytes = snd_pcm_frames_to_bytes(pcm, alsa_buffer_size);
 
     if (err < 0)
     {
@@ -130,10 +125,6 @@ bool S9xAlsaSoundDriver::open_device()
     }
 
     printf("OK\n");
-
-    S9xSetSamplesAvailableCallback([](void *userdata) {
-        ((decltype(this)) userdata)->samples_available();;
-    }, this);
 
     return true;
 
@@ -148,7 +139,7 @@ fail:
     return false;
 }
 
-void S9xAlsaSoundDriver::samples_available()
+void S9xAlsaSoundDriver::write_samples(int16_t *data, int samples)
 {
     snd_pcm_sframes_t frames_written, frames;
     size_t bytes;
@@ -161,47 +152,21 @@ void S9xAlsaSoundDriver::samples_available()
         return;
     }
 
-    int snes_frames_available = S9xGetSampleCount() >> 1;
-
-    if (Settings.DynamicRateControl && !Settings.SoundSync)
-    {
-        // Using rate control, we should always keep the emulator's sound buffers empty to
-        // maintain an accurate measurement.
-        if (frames < snes_frames_available)
-        {
-            S9xClearSamples();
-            return;
-        }
-    }
-
-    if (Settings.SoundSync && !Settings.TurboMode && !Settings.Mute)
-    {
-        snd_pcm_nonblock(pcm, 0);
-        frames = snes_frames_available;
-    }
-    else
-    {
-        snd_pcm_nonblock(pcm, 1);
-        frames = MIN(frames, snes_frames_available);
-    }
+    snd_pcm_nonblock(pcm, 0);
+    if (frames > samples / 2)
+        frames = samples / 2;
 
     bytes = snd_pcm_frames_to_bytes(pcm, frames);
     if (bytes <= 0)
         return;
 
-    if (sound_buffer.size() < bytes)
-        sound_buffer.resize(bytes);
-
-    S9xMixSamples(sound_buffer.data(), frames * 2);
-
     frames_written = 0;
-
     while (frames_written < frames)
     {
         int result;
 
         result = snd_pcm_writei(pcm,
-                                &sound_buffer[snd_pcm_frames_to_bytes(pcm, frames_written)],
+                                &data[snd_pcm_frames_to_bytes(pcm, frames_written) / 2],
                                 frames - frames_written);
 
         if (result < 0)
@@ -218,11 +183,14 @@ void S9xAlsaSoundDriver::samples_available()
             frames_written += result;
         }
     }
+}
 
-    if (Settings.DynamicRateControl)
-    {
-        frames = snd_pcm_avail(pcm);
-        S9xUpdateDynamicRate(snd_pcm_frames_to_bytes(pcm, frames),
-                             output_buffer_size);
-    }
+int S9xAlsaSoundDriver::space_free()
+{
+    return snd_pcm_avail(pcm) * 2;
+}
+
+std::pair<int, int> S9xAlsaSoundDriver::buffer_level()
+{
+    return { snd_pcm_avail(pcm), output_buffer_size_bytes / 4 };
 }
