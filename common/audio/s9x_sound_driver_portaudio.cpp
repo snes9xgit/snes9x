@@ -9,6 +9,7 @@
 #include <cstdio>
 #include <cstdint>
 #include <vector>
+#include <string>
 
 S9xPortAudioSoundDriver::S9xPortAudioSoundDriver()
 {
@@ -146,15 +147,28 @@ bool S9xPortAudioSoundDriver::open_device(int playback_rate, int buffer_size_ms)
 
     printf("PortAudio sound driver initializing...\n");
 
-    int host = 2; //Pa_GetDefaultHostApi();
+    int host = Pa_GetDefaultHostApi();
+#ifdef _WIN32
+    // Look for WASAPI
+    for (int i = 0; i < Pa_GetHostApiCount(); i++)
+    {
+        auto hostapi_info = Pa_GetHostApiInfo(i);
+        std::string str(hostapi_info->name);
+        if (str == "Windows WASAPI")
+        {
+            host = i;
+            break;
+        }
+    }
+#endif
     if (tryHostAPI(host))
         return true;
 
     for (int i = 0; i < Pa_GetHostApiCount(); i++)
     {
-        if (Pa_GetDefaultHostApi() != i)
-        if (tryHostAPI(i))
-            return true;
+        if (host != i)
+            if (tryHostAPI(i))
+                return true;
     }
 
     fprintf(stderr, "Couldn't initialize sound\n");
