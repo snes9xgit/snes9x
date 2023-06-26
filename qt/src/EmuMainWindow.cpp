@@ -120,7 +120,7 @@ void EmuMainWindow::setCoreActionsEnabled(bool enable)
 void EmuMainWindow::createWidgets()
 {
     setWindowTitle("Snes9x");
-    setWindowIcon(QIcon::fromTheme("snes9x"));
+    setWindowIcon(QIcon(":/icons/snes9x.svg"));
 
     // File menu
     auto file_menu = new QMenu(tr("&File"));

@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="icons">
+    <file>snes9x.svg</file>
     <file>blackicons/settings.svg</file>
     <file>blackicons/folders.svg</file>
     <file>blackicons/emulation.svg</file>

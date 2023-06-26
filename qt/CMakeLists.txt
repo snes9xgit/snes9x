@@ -93,7 +93,6 @@ set(QT_GUI_SOURCES
     src/Snes9xController.cpp
     src/EmuSettingsWindow.cpp
     src/EmuConfig.cpp
-    src/EmuInputPanel.cpp
     src/EmuBinding.cpp
     src/EmuCanvas.cpp
     src/BindingPanel.cpp

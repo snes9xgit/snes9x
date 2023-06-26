@@ -133,7 +133,7 @@ void EmuApplication::startIdleLoop()
 void EmuApplication::idleLoop()
 {
     if (core->active && pause_count == 0)
-    {            
+    {
         idle_loop->setInterval(0);
         pollJoysticks();
         bool muted = config->mute_audio || (config->mute_audio_during_alternate_speed && core->isAbnormalSpeed());
@@ -224,7 +224,7 @@ void EmuApplication::handleBinding(std::string name, bool pressed)
             {
                 window->pauseContinue();
             }
-            
+
             else if (name == "IncreaseSlot")
             {
                 save_slot++;

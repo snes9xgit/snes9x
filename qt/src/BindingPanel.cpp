@@ -130,7 +130,7 @@ void BindingPanel::finalizeCurrentBinding(EmuBinding b)
         accept_return = true;
         return;
     }
-    
+
     updateCellFromBinding(cell_row, cell_column);
     setRedirectInput(false);
     awaiting_binding = false;

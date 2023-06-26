@@ -14,7 +14,7 @@
    <enum>Qt::NoFocus</enum>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Settings</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>

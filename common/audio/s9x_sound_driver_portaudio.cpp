@@ -123,7 +123,6 @@ bool S9xPortAudioSoundDriver::tryHostAPI(int index)
 
 bool S9xPortAudioSoundDriver::open_device(int playback_rate, int buffer_size_ms)
 {
-    
     const PaDeviceInfo *device_info;
     const PaHostApiInfo *hostapi_info;
     PaError err = paNoError;
