@@ -408,7 +408,7 @@ std::string S9xGetDirectory(s9x_getdirtype dirtype)
 
         if (!fs::exists(path))
         {
-            fs::create_directory(path);
+            fs::create_directories(path);
         }
         else if ((fs::status(path).permissions() & fs::perms::owner_write) == fs::perms::none)
         {

@@ -332,6 +332,12 @@ void EmuCanvasOpenGL::paintEvent(QPaintEvent *event)
 void EmuCanvasOpenGL::deinit()
 {
     shader_parameters_dialog.reset();
+    if (ImGui::GetCurrentContext())
+    {
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui::DestroyContext();
+    }
+
     context.reset();
 }
 

@@ -144,6 +144,7 @@ std::string EmuConfig::findConfigDir()
     char *dir;
     fs::path path;
 
+#ifndef _WIN32
     if ((dir = getenv("XDG_CONFIG_HOME")))
     {
         path = dir;
@@ -158,9 +159,23 @@ std::string EmuConfig::findConfigDir()
     {
         path = "./.snes9x";
     }
+#else
+    if ((dir = getenv("LOCALAPPDATA")))
+    {
+        path = dir;
+        path /= "Snes9x";
+    }
+    else if ((dir = getenv("APPDATA")))
+    {
+        path = dir;
+        path /= "Snes9x";
+    }
+    else
+        path = "snes9x";
+#endif
 
     if (!fs::exists(path))
-        fs::create_directory(path);
+        fs::create_directories(path);
 
     return path.string();
 }
