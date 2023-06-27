@@ -165,7 +165,7 @@ void EmuMainWindow::createWidgets()
 
     auto load_state_undo_item = load_state_menu->addAction(QIcon::fromTheme("edit-undo"), tr("&Undo Load State"));
     connect(load_state_undo_item, &QAction::triggered, [&] {
-        app->core->loadUndoState();
+        app->loadUndoState();
     });
     core_actions.push_back(load_state_undo_item);
 
@@ -332,7 +332,7 @@ void EmuMainWindow::chooseState(bool save)
 
     QFileDialog dialog(this, tr("Choose a State File"));
 
-    dialog.setDirectory(QString::fromStdString(app->core->getStateFolder()));
+    dialog.setDirectory(QString::fromStdString(app->getStateFolder()));
     dialog.setNameFilters({ tr("Save States (*.sst *.oops *.undo *.0?? *.1?? *.2?? *.3?? *.4?? *.5?? *.6?? *.7?? *.8?? *.9*)"), tr("All Files (*)") });
 
     if (!save)
@@ -562,5 +562,11 @@ void EmuMainWindow::pauseContinue()
 
 bool EmuMainWindow::isActivelyDrawing()
 {
-    return (!app->isPaused() && app->core->active);
+    return (!app->isPaused() && app->isCoreActive());
+}
+
+void EmuMainWindow::output(uint8_t *buffer, int width, int height, QImage::Format format, int bytes_per_line, double frame_rate)
+{
+    if (canvas)
+        canvas->output(buffer, width, height, format, bytes_per_line, frame_rate);
 }

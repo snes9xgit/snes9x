@@ -38,10 +38,13 @@ struct EmuApplication
     void loadState(std::string filename);
     void saveState(int slot);
     void saveState(std::string filename);
+    std::string getStateFolder();
+    void loadUndoState();
     void startGame();
     void startIdleLoop();
     void stopIdleLoop();
     void idleLoop();
+    bool isCoreActive();
 
     enum Handler
     {

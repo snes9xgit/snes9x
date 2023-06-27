@@ -9,6 +9,11 @@ class EmuApplication;
 
 class EmuMainWindow : public QMainWindow
 {
+  Q_OBJECT
+
+  public Q_SLOTS:
+    void output(uint8_t *buffer, int width, int height, QImage::Format format, int bytes_per_line, double frame_rate);
+
   public:
     EmuMainWindow(EmuApplication *app);
     ~EmuMainWindow();

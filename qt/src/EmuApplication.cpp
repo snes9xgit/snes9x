@@ -71,7 +71,15 @@ void EmuApplication::startGame()
 
     core->screen_output_function = [&](uint16_t *data, int width, int height, int stride_bytes, double frame_rate) {
         if (window->canvas)
-            window->canvas->output((uint8_t *)data, width, height, QImage::Format_RGB16, stride_bytes, frame_rate);
+        {
+            QMetaObject::invokeMethod(window.get(), "output", Qt::ConnectionType::QueuedConnection,
+                Q_ARG(uint8_t *, (uint8_t *)data),
+                Q_ARG(int, width),
+                Q_ARG(int, height),
+                Q_ARG(QImage::Format, QImage::Format_RGB16),
+                Q_ARG(int, stride_bytes),
+                Q_ARG(double, frame_rate));
+        }
     };
 
     core->updateSettings(config.get());
@@ -349,4 +357,19 @@ void EmuApplication::reset()
 void EmuApplication::powerCycle()
 {
     core->reset();
+}
+
+void EmuApplication::loadUndoState()
+{
+    core->loadUndoState();
+}
+
+std::string EmuApplication::getStateFolder()
+{
+    return core->getStateFolder();
+}
+
+bool EmuApplication::isCoreActive()
+{
+    return core->active;
 }
