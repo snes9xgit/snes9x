@@ -71,7 +71,17 @@ long data_callback(cubeb_stream *stream, void *user_ptr,
 
 long S9xCubebSoundDriver::data_callback(cubeb_stream *stream, void const *input_buffer, void *output_buffer, long nframes)
 {
-    buffer.read((int16_t *)output_buffer, nframes * 2);
+    auto avail = buffer.avail();
+    if (avail < nframes * 2)
+    {
+        auto zeroed_samples = nframes * 2 - avail;
+        memset(output_buffer, 0, zeroed_samples);
+        buffer.read((int16_t *)output_buffer + zeroed_samples, nframes * 2 - zeroed_samples);
+    }
+    else
+    {
+        buffer.read((int16_t *)output_buffer, nframes * 2);
+    }
     return nframes;
 }
 

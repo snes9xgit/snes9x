@@ -9,19 +9,15 @@
 
 #include <cstring>
 #include <cassert>
-#if __cplusplus >= 201103L
 #include <cstdint>
-#else
-#include <stdint.h>
-#endif
 #include <cmath>
 
 class Resampler
 {
   public:
-    int size;
+    volatile int end;
     int buffer_size;
-    int start;
+    volatile int start;
     int16_t *buffer;
 
     float r_step;
@@ -87,7 +83,7 @@ class Resampler
             return;
 
         start = 0;
-        size = 0;
+        end = 0;
         memset(buffer, 0, buffer_size * 2);
 
         r_frac = 0.0;
@@ -100,13 +96,14 @@ class Resampler
         if (space_filled() < num_samples)
             return false;
 
-        memcpy(dst, buffer + start, min(num_samples, buffer_size - start) * 2);
+        int first_block_size = buffer_size - start;
 
-        if (num_samples > (buffer_size - start))
-            memcpy(dst + (buffer_size - start), buffer, (num_samples - (buffer_size - start)) * 2);
+        memcpy(dst, buffer + start, min(num_samples, first_block_size) * 2);
+
+        if (num_samples > first_block_size)
+            memcpy(dst + first_block_size, buffer, (num_samples - first_block_size) * 2);
 
         start = (start + num_samples) % buffer_size;
-        size -= num_samples;
 
         return true;
     }
@@ -115,12 +112,9 @@ class Resampler
     {
         if (space_empty() >= 2)
         {
-            int end = start + size;
-            if (end >= buffer_size)
-                end -= buffer_size;
             buffer[end] = l;
             buffer[end + 1] = r;
-            size += 2;
+            end = (end + 2) % buffer_size;
         }
     }
 
@@ -129,17 +123,14 @@ class Resampler
         if (space_empty() < num_samples)
             return false;
 
-        int end = start + size;
-        if (end > buffer_size)
-            end -= buffer_size;
-        int first_write_size = min(num_samples, buffer_size - end);
+        int first_block_size = min(num_samples, buffer_size - end);
 
-        memcpy(buffer + end, src, first_write_size * 2);
+        memcpy(buffer + end, src, first_block_size * 2);
 
-        if (num_samples > first_write_size)
-            memcpy(buffer, src + first_write_size, (num_samples - first_write_size) * 2);
+        if (num_samples > first_block_size)
+            memcpy(buffer, src + first_block_size, (num_samples - first_block_size) * 2);
 
-        size += num_samples;
+        end = (end + num_samples) % buffer_size;
 
         return true;
     }
@@ -156,7 +147,7 @@ class Resampler
         assert((num_samples & 1) == 0); // resampler always processes both stereo samples
         int o_position = 0;
 
-        while (o_position < num_samples && size > 0)
+        while (o_position < num_samples && space_filled() >= 2)
         {
             int s_left = buffer[start];
             int s_right = buffer[start + 1];
@@ -191,23 +182,26 @@ class Resampler
                 start += 2;
                 if (start >= buffer_size)
                     start -= buffer_size;
-                size -= 2;
             }
         }
     }
 
     inline int space_empty(void) const
     {
-        return buffer_size - size;
+        return buffer_size - 2 - space_filled();
     }
 
     inline int space_filled(void) const
     {
+        int size = end - start;
+        if (size < 0)
+            size += buffer_size;
         return size;
     }
 
     inline int avail(void)
     {
+        int size = space_filled();
         //If we are outputting the exact same ratio as the input, find out directly from the input buffer
         if (r_step == 1.0)
             return size;
