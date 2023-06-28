@@ -30,8 +30,11 @@ SoundPanel::SoundPanel(EmuApplication *app_)
     });
 
     connect(spinBox_buffer_size, &QSpinBox::valueChanged, [&](int value) {
-        app->config->audio_buffer_size_ms = value;
-        app->restartAudio();
+        if (app->config->audio_buffer_size_ms != value)
+        {
+            app->config->audio_buffer_size_ms = value;
+            app->restartAudio();
+        }
     });
 
     connect(checkBox_adjust_input_rate, &QCheckBox::clicked, [&](bool checked) {
