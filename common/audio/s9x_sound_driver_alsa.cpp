@@ -139,7 +139,7 @@ fail:
     return false;
 }
 
-void S9xAlsaSoundDriver::write_samples(int16_t *data, int samples)
+bool S9xAlsaSoundDriver::write_samples(int16_t *data, int samples)
 {
     snd_pcm_sframes_t frames_written, frames;
     size_t bytes;
@@ -149,16 +149,20 @@ void S9xAlsaSoundDriver::write_samples(int16_t *data, int samples)
     if (frames < 0)
     {
         frames = snd_pcm_recover(pcm, frames, 1);
-        return;
+        return false;
     }
 
+    bool result = true;
     snd_pcm_nonblock(pcm, 0);
     if (frames > samples / 2)
+    {
         frames = samples / 2;
+        result = false;
+    }
 
     bytes = snd_pcm_frames_to_bytes(pcm, frames);
     if (bytes <= 0)
-        return;
+        return false;
 
     frames_written = 0;
     while (frames_written < frames)
@@ -183,6 +187,8 @@ void S9xAlsaSoundDriver::write_samples(int16_t *data, int samples)
             frames_written += result;
         }
     }
+
+    return result;
 }
 
 int S9xAlsaSoundDriver::space_free()

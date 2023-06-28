@@ -35,6 +35,7 @@ class Snes9xController
     void softReset();
     void setPaused(bool paused);
     void setMessage(std::string message);
+    void clearSoundBuffer();
     std::string getStateFolder();
     std::string config_folder;
     std::string sram_folder;

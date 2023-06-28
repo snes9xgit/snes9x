@@ -23,7 +23,7 @@ class S9xCubebSoundDriver : public S9xSoundDriver
     void start() override;
     void stop() override;
     long data_callback(cubeb_stream *stream, void const *input_buffer, void *output_buffer, long nframes);
-    void write_samples(int16_t *data, int samples) override;
+    bool write_samples(int16_t *data, int samples) override;
     int space_free() override;
     std::pair<int, int> buffer_level() override;
 

@@ -16,7 +16,7 @@ class S9xSoundDriver
     virtual ~S9xSoundDriver()
     {
     }
-    virtual void write_samples(int16_t *data, int samples) = 0;
+    virtual bool write_samples(int16_t *data, int samples) = 0;
     virtual int space_free() = 0;
     virtual std::pair<int, int> buffer_level() = 0;
     virtual void init() = 0;

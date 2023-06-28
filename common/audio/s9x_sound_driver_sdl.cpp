@@ -7,21 +7,23 @@
 #include "s9x_sound_driver_sdl.hpp"
 #include "SDL_audio.h"
 
-void S9xSDLSoundDriver::write_samples(int16_t *data, int samples)
+bool S9xSDLSoundDriver::write_samples(int16_t *data, int samples)
 {
-    mutex.lock();
+    bool retval = true;
     if (samples > buffer.space_empty())
+    {
+        retval = false;
         samples = buffer.space_empty();
+    }
     buffer.push(data, samples);
-    mutex.unlock();
+
+    return retval;
 }
 
 void S9xSDLSoundDriver::mix(unsigned char *output, int bytes)
 {
-    mutex.lock();
     if (buffer.avail() >= bytes >> 1)
         buffer.read((int16_t *)output, bytes >> 1);
-    mutex.unlock();
 }
 
 S9xSDLSoundDriver::S9xSDLSoundDriver()
@@ -89,16 +91,12 @@ bool S9xSDLSoundDriver::open_device(int playback_rate, int buffer_size)
 
 int S9xSDLSoundDriver::space_free()
 {
-    mutex.lock();
     auto space_empty = buffer.space_empty();
-    mutex.unlock();
     return space_empty;
 }
 
 std::pair<int, int> S9xSDLSoundDriver::buffer_level()
 {
-    mutex.lock();
     std::pair<int, int> level = { buffer.space_empty(), buffer.buffer_size };
-    mutex.unlock();
     return level;
 }

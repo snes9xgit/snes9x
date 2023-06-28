@@ -7,11 +7,17 @@
 #include "s9x_sound_driver_cubeb.hpp"
 #include <cstdio>
 
-void S9xCubebSoundDriver::write_samples(int16_t *data, int samples)
+bool S9xCubebSoundDriver::write_samples(int16_t *data, int samples)
 {
+    bool retval = true;
     if (samples > buffer.space_empty())
+    {
+        retval = false;
         samples = buffer.space_empty();
+    }
     buffer.push(data, samples);
+
+    return retval;
 }
 
 S9xCubebSoundDriver::S9xCubebSoundDriver()
@@ -74,6 +80,7 @@ long S9xCubebSoundDriver::data_callback(cubeb_stream *stream, void const *input_
     auto avail = buffer.avail();
     if (avail < nframes * 2)
     {
+        printf("Underrun\n");
         auto zeroed_samples = nframes * 2 - avail;
         memset(output_buffer, 0, zeroed_samples);
         buffer.read((int16_t *)output_buffer + zeroed_samples, nframes * 2 - zeroed_samples);
@@ -94,13 +101,19 @@ bool S9xCubebSoundDriver::open_device(int playback_rate, int buffer_size)
     params.rate = playback_rate;
     params.prefs = CUBEB_STREAM_PREF_NONE;
 
+    uint32_t suggested_latency = playback_rate * buffer_size / 1000;
     uint32_t min_latency;
     cubeb_get_min_latency(context, &params, &min_latency);
+    if (min_latency > suggested_latency)
+    {
+        suggested_latency = min_latency;
+        printf("Using minimum latency: %d\n", min_latency);
+    }
 
     auto retval = cubeb_stream_init(context, &stream, "Snes9x",
                                     nullptr, nullptr,
                                     nullptr, &params,
-                                    min_latency,
+                                    suggested_latency,
                                     &::data_callback,
                                     &state_callback,
                                     this);

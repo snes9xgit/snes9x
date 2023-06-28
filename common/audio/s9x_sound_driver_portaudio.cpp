@@ -184,7 +184,7 @@ std::pair<int, int> S9xPortAudioSoundDriver::buffer_level()
     return { Pa_GetStreamWriteAvailable(audio_stream), output_buffer_size };
 }
 
-void S9xPortAudioSoundDriver::write_samples(int16_t *data, int samples)
+bool S9xPortAudioSoundDriver::write_samples(int16_t *data, int samples)
 {
     int frames;
 
@@ -199,8 +199,14 @@ void S9xPortAudioSoundDriver::write_samples(int16_t *data, int samples)
         frames -= output_buffer_size >> 1;
     }
 
+    bool retval = true;
     if (frames > samples / 2)
+    {
+        retval = false;
         frames = samples / 2;
+    }
 
     Pa_WriteStream(audio_stream, data, frames);
+
+    return retval;
 }

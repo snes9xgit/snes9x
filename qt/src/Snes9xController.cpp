@@ -534,6 +534,11 @@ void Snes9xController::SamplesAvailable()
     }
 }
 
+void Snes9xController::clearSoundBuffer()
+{
+    S9xClearSamples();
+}
+
 void S9xMessage(int message_class, int type, const char *message)
 {
     S9xSetInfoString(message);

@@ -49,19 +49,51 @@ void EmuApplication::restartAudio()
 
 void EmuApplication::writeSamples(int16_t *data, int samples)
 {
+    static uint64_t total;
+    static uint64_t ticks;
+    static std::chrono::steady_clock::time_point then; 
     if (config->speed_sync_method == EmuConfig::eSoundSync && !core->isAbnormalSpeed())
     {
         int iterations = 0;
-        while (sound_driver->space_free() < samples && iterations < 100)
+        while (sound_driver->space_free() < samples && iterations < 500)
         {
             iterations++;
             std::this_thread::sleep_for(50us);
         }
     }
-
-    sound_driver->write_samples(data, samples);
     auto buffer_level = sound_driver->buffer_level();
     core->updateSoundBufferLevel(buffer_level.first, buffer_level.second);
+
+    if (!sound_driver->write_samples(data, samples))
+    {
+        printf("Overrun\n");
+        core->clearSoundBuffer();
+    }
+
+    char sym = '*';
+    int percent = (buffer_level.second - buffer_level.first) * 100 / buffer_level.second;
+    printf("\033[0;0H>");
+    if (percent < 50)
+        sym = '_';
+    for (int i = 0; i < percent; i+=2)
+        putchar(sym);
+    for (int i = percent; i <= 100; i+=2)
+        putchar('-');
+    
+    total += percent;
+    ticks++;
+
+    auto now = std::chrono::steady_clock::now();
+    if (now - then >= std::chrono::seconds(1))
+    {
+        then = now;
+        printf(" %lu %%", total / ticks);
+        total = 0;
+        ticks = 0;
+    }
+    printf("\n");
+
+    printf("    10   20   30   40   50   60   70   80   90   100");
 }
 
 void EmuApplication::startGame()
