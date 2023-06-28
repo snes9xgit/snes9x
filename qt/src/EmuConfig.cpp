@@ -1,15 +1,13 @@
 #include <cstdio>
 #include <string>
-#define TOML_LARGE_FILES 1
-#define TOML_IMPLEMENTATION 1
 #include <fstream>
-#include "toml.hpp"
 #include <filesystem>
 namespace fs = std::filesystem;
 
 #include "EmuConfig.hpp"
 #include "EmuBinding.hpp"
 #include <functional>
+#include <QSettings>
 
 static const char *shortcut_names[] =
 {
@@ -307,9 +305,7 @@ void EmuConfig::setDefaults(int section)
 
 void EmuConfig::config(std::string filename, bool write)
 {
-    toml::table root;
-    toml::table *table = nullptr;
-    std::string section;
+    QSettings settings(QString::fromStdString(filename), QSettings::IniFormat);
 
     std::function<void(std::string, bool &)> Bool;
     std::function<void(std::string, int &)> Int;
@@ -323,76 +319,63 @@ void EmuConfig::config(std::string filename, bool write)
     if (write)
     {
         Bool = [&](std::string key, bool &value) {
-            table->insert_or_assign(key, value);
+            settings.setValue(key, value);
         };
         Int = [&](std::string key, int &value) {
-            table->insert_or_assign(key, value);
+            settings.setValue(key, value);
         };
         String = [&](std::string key, std::string &value) {
-            table->insert_or_assign(key, value);
+            settings.setValue(key, QString::fromStdString(value));
         };
         Enum = [&](std::string key, int &value, std::vector<const char *> map) {
-            table->insert_or_assign(key, map[value]);
+            settings.setValue(key, map[value]);
         };
         Double = [&](std::string key, double &value) {
-            table->insert_or_assign(key, value);
+            settings.setValue(key, value);
         };
         Binding = [&](std::string key, EmuBinding &binding) {
-            table->insert_or_assign(key, binding.to_config_string());
+            settings.setValue(key, QString::fromStdString(binding.to_config_string()));
         };
         BeginSection = [&](std::string str) {
-            section = str;
-            table = new toml::table;
+            settings.beginGroup(str);
         };
-
         EndSection = [&]() {
-            root.insert_or_assign(section, *table);
-            delete table;
+            settings.endGroup();
         };
-
-        root.clear();
     }
     else
     {
         Bool = [&](std::string key, bool &value) {
-            if (table && table->contains(key) && table->get(key)->is_boolean())
-                value = table->get(key)->as_boolean()->get();
+            if (settings.contains(key))
+                value = settings.value(key).toBool();
         };
         Int = [&](std::string key, int &value) {
-            if (table && table->contains(key) && table->get(key)->is_integer())
-                value = table->get(key)->as_integer()->get();
+            if (settings.contains(key))
+                value = settings.value(key).toInt();
         };
         String = [&](std::string key, std::string &value) {
-            if (table && table->contains(key) && table->get(key)->is_string())
-                value = table->get(key)->as_string()->get();
+            if (settings.contains(key))
+                value = settings.value(key).toString().toStdString();
         };
         Binding = [&](std::string key, EmuBinding &binding) {
-            if (table && table->contains(key) && table->get(key)->is_string())
-                binding = EmuBinding::from_config_string(table->get(key)->as_string()->get());
+            if (settings.contains(key))
+                binding = EmuBinding::from_config_string(settings.value(key).toString().toStdString());
         };
         Double = [&](std::string key, double &value) {
-            if (table && table->contains(key) && table->get(key)->is_floating_point())
-                value = table->get(key)->as_floating_point()->get();
+            if (settings.contains(key))
+                value = settings.value(key).toDouble();
         };
         Enum = [&](std::string key, int &value, std::vector<const char *> map) {
-            std::string entry;
+            QString entry;
 
-            if (table && table->contains(key) && table->get(key)->is_string())
-                entry = table->get(key)->as_string()->get();
-            else
+            if (settings.contains(key))
+                entry = settings.value(key).toString().toLower();
+            else 
                 return;
 
-            auto tolower = [](std::string str) -> std::string {
-                for (auto &c : str)
-                    if (c >= 'A' && c <= 'Z')
-                        c += ('a' - 'A');
-                return str;
-            };
-
-            entry = tolower(entry);
             for (size_t i = 0; i < map.size(); i++)
             {
-                if (tolower(map[i]) == entry)
+                if (QString(map[i]).toLower() == entry)
                 {
                     value = i;
                     return;
@@ -400,20 +383,11 @@ void EmuConfig::config(std::string filename, bool write)
             }
         };
         BeginSection = [&](std::string str) {
-            section = str;
-            auto root_section = root.get(section);
-            if (root_section)
-                table = root_section->as_table();
-            else
-                table = nullptr;
+            settings.beginGroup(QString::fromStdString(str));
         };
         EndSection = [&]() {
+            settings.endGroup();
         };
-
-        auto parse_result = toml::parse_file(filename);
-        if (parse_result.failed())
-            return;
-        root = std::move(parse_result.table());
     }
 
     BeginSection("Operational");
@@ -494,10 +468,10 @@ void EmuConfig::config(std::string filename, bool write)
     Enum("SoundFilter", sound_filter, { "Gaussian", "Nearest", "Linear", "Cubic", "Sinc" });
     EndSection();
 
-    const char *names[] = { "Up", "Down", "Left", "Right", "A", "B", "X", "Y", "L", "R", "Start", "Select", "Turbo A", "Turbo B", "Turbo X", "Turbo Y", "Turbo L", "Turbo R" };
+    const char *names[] = { "Up", "Down", "Left", "Right", "A", "B", "X", "Y", "L", "R", "Start", "Select", "Turbo_A", "Turbo_B", "Turbo_X", "Turbo_Y", "Turbo_L", "Turbo_R" };
     for (int c = 0; c < 5; c++)
     {
-        BeginSection("Controller " + std::to_string(c));
+        BeginSection("Controller_" + std::to_string(c));
 
         for (int y = 0; y < num_controller_bindings; y++)
             for (int x = 0; x < allowed_bindings; x++)
@@ -534,13 +508,6 @@ void EmuConfig::config(std::string filename, bool write)
 
     Int("SRAMSaveInterval", sram_save_interval);
     EndSection();
-
-    if (write)
-    {
-        std::ofstream ofs(filename);
-        ofs << root;
-        ofs.close();
-    }
 }
 
 void EmuConfig::setVRRConfig(bool enable)
