@@ -32,7 +32,8 @@ EmuMainWindow::EmuMainWindow(EmuApplication *app)
     mouse_timer.callOnTimeout([&] {
         if (cursor_visible && isActivelyDrawing())
         {
-            setCursor(QCursor(Qt::BlankCursor));
+            if (canvas)
+                canvas->setCursor(QCursor(Qt::BlankCursor));
             cursor_visible = false;
             mouse_timer.stop();
         }
@@ -241,10 +242,10 @@ void EmuMainWindow::createWidgets()
 
     // Set Size Menu
     auto set_size_menu = new QMenu(tr("&Set Size"));
-    for (size_t i = 1; i <= 5; i++)
+    for (size_t i = 1; i <= 10; i++)
     {
-        auto item = new QAction(tr("&%1x").arg(i));
-        set_size_menu->addAction(item);
+        auto string = (i == 10) ? tr("1&0x") : tr("&%1x").arg(i);
+        auto item = set_size_menu->addAction(string);
         item->connect(item, &QAction::triggered, this, [&, i](bool checked) {
             resizeToMultiple(i);
         });
@@ -472,7 +473,8 @@ bool EmuMainWindow::event(QEvent *event)
     case QEvent::MouseMove:
         if (!cursor_visible)
         {
-            setCursor(QCursor(Qt::ArrowCursor));
+            if (canvas)
+                canvas->setCursor(QCursor(Qt::ArrowCursor));
             cursor_visible = true;
             mouse_timer.start();
         }
