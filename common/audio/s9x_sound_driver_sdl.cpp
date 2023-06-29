@@ -64,7 +64,7 @@ bool S9xSDLSoundDriver::open_device(int playback_rate, int buffer_size)
     audiospec.freq = playback_rate;
     audiospec.channels = 2;
     audiospec.format = AUDIO_S16SYS;
-    audiospec.samples = audiospec.freq * 4 / 1000; // 4ms per sampling
+    audiospec.samples = audiospec.freq * buffer_size / 8 / 1000; // 1/8th buffer per callback
     audiospec.callback = [](void *userdata, uint8_t *stream, int len) {
         ((S9xSDLSoundDriver *)userdata)->mix((unsigned char *)stream, len);
     };
@@ -83,8 +83,10 @@ bool S9xSDLSoundDriver::open_device(int playback_rate, int buffer_size)
     }
 
     printf("OK\n");
+    if (buffer_size < 32)
+        buffer_size = 32;
 
-    buffer.resize(buffer_size * audiospec.freq / 1000);
+    buffer.resize(buffer_size * 4 * audiospec.freq / 1000);
 
     return true;
 }

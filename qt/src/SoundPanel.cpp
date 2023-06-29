@@ -89,14 +89,16 @@ void SoundPanel::showEvent(QShowEvent *event)
     auto &config = app->config;
 
     comboBox_driver->clear();
-    comboBox_driver->addItem("SDL");
-    comboBox_driver->addItem("PortAudio");
-    comboBox_driver->addItem("Cubeb");
-
     driver_list.clear();
-    driver_list.push_back("sdl");
-    driver_list.push_back("portaudio");
+
+    comboBox_driver->addItem("Cubeb");
     driver_list.push_back("cubeb");
+    comboBox_driver->addItem("SDL");
+    driver_list.push_back("sdl");
+#ifdef USE_PULSEAUDIO
+    comboBox_driver->addItem("PulseAudio");
+    driver_list.push_back("pulseaudio");
+#endif
 
     for (int i = 0; i < driver_list.size(); i++)
     {

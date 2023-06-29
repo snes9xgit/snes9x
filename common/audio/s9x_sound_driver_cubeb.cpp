@@ -80,7 +80,6 @@ long S9xCubebSoundDriver::data_callback(cubeb_stream *stream, void const *input_
     auto avail = buffer.avail();
     if (avail < nframes * 2)
     {
-        printf("Underrun\n");
         auto zeroed_samples = nframes * 2 - avail;
         memset(output_buffer, 0, zeroed_samples);
         buffer.read((int16_t *)output_buffer + zeroed_samples, nframes * 2 - zeroed_samples);
@@ -107,7 +106,7 @@ bool S9xCubebSoundDriver::open_device(int playback_rate, int buffer_size)
     if (min_latency > suggested_latency)
     {
         suggested_latency = min_latency;
-        printf("Using minimum latency: %d\n", min_latency);
+        printf("Requires a minimum latency: %d\n", min_latency);
     }
 
     auto retval = cubeb_stream_init(context, &stream, "Snes9x",
@@ -125,7 +124,7 @@ bool S9xCubebSoundDriver::open_device(int playback_rate, int buffer_size)
         return false;
     }
 
-    buffer.resize(2 * buffer_size * playback_rate / 1000);
+    buffer.resize(suggested_latency * 4);
 
     return true;
 }

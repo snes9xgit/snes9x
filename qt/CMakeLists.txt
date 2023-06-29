@@ -80,13 +80,19 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets Gui)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL REQUIRED sdl2)
 pkg_check_modules(ZLIB REQUIRED zlib)
-pkg_check_modules(PORTAUDIO REQUIRED portaudio-2.0)
+list(APPEND LIBS Qt6::Widgets Qt6::Gui ${SDL_LIBRARIES} ${ZLIB_LIBRARIES})
+list(APPEND INCLUDES ${SDL_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS}${Qt6Gui_PRIVATE_INCLUDE_DIRS})
+list(APPEND FLAGS ${SDL_COMPILE_FLAGS} ${ZLIB_COMPILE_FLAGS})
 
-list(APPEND LIBS Qt6::Widgets Qt6::Gui ${SDL_LIBRARIES} ${ZLIB_LIBRARIES} ${PORTAUDIO_LIBRARIES})
-list(APPEND INCLUDES ${SDL_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${PORTAUDIO_INCLUDE_DIRS} ${Qt6Gui_PRIVATE_INCLUDE_DIRS})
-list(APPEND FLAGS ${SDL_COMPILE_FLAGS} ${ZLIB_COMPILE_FLAGS} ${PORTAUDIO_COMPILE_FLAGS})
+pkg_check_modules(PULSEAUDIO REQUIRED libpulse)
+if(PULSEAUDIO_FOUND)
+    list(APPEND LIBS ${PULSEAUDIO_LIBRARIES})
+    list(APPEND INCLUDES ${PULSEAUDIO_INCLUDE_DIRS})
+    list(APPEND DEFINES "USE_PULSEAUDIO")
+    list(APPEND PLATFORM_SOURCES ../common/audio/s9x_sound_driver_pulse.cpp)
+endif()
 
-set(QT_GUI_SOURCES
+list(APPEND QT_GUI_SOURCES
     src/main.cpp
     src/EmuApplication.cpp
     src/EmuMainWindow.cpp
@@ -112,8 +118,6 @@ set(QT_GUI_SOURCES
     ../external/glad/src/gl.c
     ../common/audio/s9x_sound_driver_sdl.cpp
     ../common/audio/s9x_sound_driver_sdl.hpp
-    ../common/audio/s9x_sound_driver_portaudio.cpp
-    ../common/audio/s9x_sound_driver_portaudio.hpp
     ../common/audio/s9x_sound_driver_cubeb.cpp
     ../common/audio/s9x_sound_driver_cubeb.hpp
     ../filter/2xsai.cpp
@@ -137,7 +141,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     list(APPEND LIBS ${WAYLAND_LIBRARIES} ${X11_LIBRARIES})
     list(APPEND FLAGS ${WAYLAND_CFLAGS})
 
-    set(PLATFORM_SOURCES
+    list(APPEND PLATFORM_SOURCES
         ../common/video/glx_context.cpp
         ../common/video/wayland_egl_context.cpp
         ../common/video/wayland_surface.cpp
@@ -147,7 +151,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
         ../external/glad/src/glx.c
         ../external/glad/src/egl.c)
 else()
-    set(PLATFORM_SOURCES
+    list(APPEND PLATFORM_SOURCES
         ../common/video/wgl_context.cpp
         ../external/glad/src/wgl.c)
     list(APPEND LIBS opengl32)

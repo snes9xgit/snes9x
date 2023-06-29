@@ -1,11 +1,16 @@
 #include "EmuApplication.hpp"
 #include "common/audio/s9x_sound_driver_sdl.hpp"
-#include "common/audio/s9x_sound_driver_portaudio.hpp"
 #include "common/audio/s9x_sound_driver_cubeb.hpp"
+#include <qlabel.h>
+#ifdef USE_PULSEAUDIO
+#include "common/audio/s9x_sound_driver_pulse.hpp"
+#endif
 #include <QTimer>
 #include <chrono>
 #include <thread>
 using namespace std::chrono_literals;
+
+#undef SOUND_BUFFER_WINDOW
 
 EmuApplication::EmuApplication()
 {
@@ -22,11 +27,14 @@ void EmuApplication::restartAudio()
     sound_driver.reset();
     core->sound_output_function = nullptr;
 
-    if (config->sound_driver == "portaudio")
-        sound_driver = std::make_unique<S9xPortAudioSoundDriver>();
-    else if (config->sound_driver == "cubeb")
+#ifdef USE_PULSEAUDIO
+    if (config->sound_driver == "pulseaudio")
+        sound_driver = std::make_unique<S9xPulseSoundDriver>();
+#endif
+    if (config->sound_driver == "cubeb")
         sound_driver = std::make_unique<S9xCubebSoundDriver>();
-    else
+
+    if (!sound_driver)
     {
         config->sound_driver = "sdl";
         sound_driver = std::make_unique<S9xSDLSoundDriver>();
@@ -47,11 +55,42 @@ void EmuApplication::restartAudio()
         };
 }
 
+#ifdef SOUND_BUFFER_WINDOW
+#include <QProgressDialog>
+static void trackBufferLevel(int percent, QWidget *parent)
+{
+    static uint64_t total = 0;
+    static uint64_t ticks = 0;
+    static std::chrono::steady_clock::time_point then;
+
+    static QProgressDialog *dialog = nullptr;
+
+    if (!dialog)
+    {
+        dialog = new QProgressDialog(parent);
+        dialog->setRange(0, 100);
+    }
+
+    ticks++;
+    total += percent;
+
+    dialog->setValue(percent);
+    auto now = std::chrono::steady_clock::now();
+    if (ticks > 0 && now - then >= std::chrono::seconds(1))
+    {
+        dialog->setLabelText(QString("%1").arg(total / ticks));
+        then = now;
+        total = 0;
+        ticks = 0;
+    }
+
+    if (!dialog->isVisible())
+        dialog->show();
+}
+#endif
+
 void EmuApplication::writeSamples(int16_t *data, int samples)
 {
-    static uint64_t total;
-    static uint64_t ticks;
-    static std::chrono::steady_clock::time_point then; 
     if (config->speed_sync_method == EmuConfig::eSoundSync && !core->isAbnormalSpeed())
     {
         int iterations = 0;
@@ -66,34 +105,13 @@ void EmuApplication::writeSamples(int16_t *data, int samples)
 
     if (!sound_driver->write_samples(data, samples))
     {
-        printf("Overrun\n");
         core->clearSoundBuffer();
     }
 
-    char sym = '*';
+#ifdef SOUND_BUFFER_WINDOW
     int percent = (buffer_level.second - buffer_level.first) * 100 / buffer_level.second;
-    printf("\033[0;0H>");
-    if (percent < 50)
-        sym = '_';
-    for (int i = 0; i < percent; i+=2)
-        putchar(sym);
-    for (int i = percent; i <= 100; i+=2)
-        putchar('-');
-    
-    total += percent;
-    ticks++;
-
-    auto now = std::chrono::steady_clock::now();
-    if (now - then >= std::chrono::seconds(1))
-    {
-        then = now;
-        printf(" %lu %%", total / ticks);
-        total = 0;
-        ticks = 0;
-    }
-    printf("\n");
-
-    printf("    10   20   30   40   50   60   70   80   90   100");
+    trackBufferLevel(percent, window.get());
+#endif
 }
 
 void EmuApplication::startGame()

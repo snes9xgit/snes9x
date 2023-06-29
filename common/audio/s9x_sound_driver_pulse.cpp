@@ -181,16 +181,22 @@ std::pair<int, int> S9xPulseSoundDriver::buffer_level()
     return { bytes, buffer_size };
 }
 
-void S9xPulseSoundDriver::write_samples(int16_t *data, int samples)
+bool S9xPulseSoundDriver::write_samples(int16_t *data, int samples)
 {
+    bool retval = true;
+
     lock();
     size_t bytes = pa_stream_writable_size(stream);
     unlock();
 
-    bytes = MIN(bytes, samples * 2) & ~1;
+    if (samples * 2 > bytes)
+        return false;
+
+    if (samples * 2 < bytes)
+        bytes = samples * 2;
 
     if (bytes == 0)
-        return;
+        return false;
 
     lock();
     void *output_buffer;
@@ -198,16 +204,18 @@ void S9xPulseSoundDriver::write_samples(int16_t *data, int samples)
     {
         pa_stream_flush(stream, nullptr, nullptr);
         unlock();
-        return;
+        return false;
     }
 
     if (bytes <= 0 || !output_buffer)
     {
         unlock();
-        return;
+        return false;
     }
 
     std::memcpy(output_buffer, data, bytes);
     pa_stream_write(stream, output_buffer, bytes, nullptr, 0, PA_SEEK_RELATIVE);
     unlock();
+
+    return retval;
 }

@@ -16,7 +16,7 @@ class S9xPulseSoundDriver : public S9xSoundDriver
     S9xPulseSoundDriver();
     void init() override;
     void deinit() override;
-    void write_samples(int16_t *data, int samples) override;
+    bool write_samples(int16_t *data, int samples) override;
     bool open_device(int playback_rate, int buffer_size) override;
     void start() override;
     void stop() override;

@@ -74,7 +74,6 @@ bool S9xPortAudioSoundDriver::tryHostAPI(int index)
         printf("Host API #%d has no info\n", index);
         return false;
     }
-    printf("Attempting API: %s\n", hostapi_info->name);
 
     auto device_info = Pa_GetDeviceInfo(hostapi_info->defaultOutputDevice);
     if (!device_info)
@@ -104,8 +103,12 @@ bool S9xPortAudioSoundDriver::tryHostAPI(int index)
                              NULL,
                              NULL);
 
-    int frames = playback_rate * buffer_size_ms / 1000;
-    //int frames = Pa_GetStreamWriteAvailable(audio_stream);
+    int frames = Pa_GetStreamWriteAvailable(audio_stream);
+    if (frames < 0)
+    {
+        Pa_Sleep(10);
+        frames = Pa_GetStreamWriteAvailable(audio_stream);
+    }
     printf("PortAudio set buffer size to %d frames.\n", frames);
     output_buffer_size = frames;
 
@@ -181,7 +184,7 @@ int S9xPortAudioSoundDriver::space_free()
 
 std::pair<int, int> S9xPortAudioSoundDriver::buffer_level()
 {
-    return { Pa_GetStreamWriteAvailable(audio_stream), output_buffer_size };
+        return { Pa_GetStreamWriteAvailable(audio_stream), output_buffer_size };
 }
 
 bool S9xPortAudioSoundDriver::write_samples(int16_t *data, int samples)
