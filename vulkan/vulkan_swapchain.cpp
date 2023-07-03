@@ -134,6 +134,7 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
         .setClipped(true)
         .setPresentMode(vsync ? vk::PresentModeKHR::eFifo : vk::PresentModeKHR::eImmediate)
         .setSurface(surface)
+        .setPreTransform(vk::SurfaceTransformFlagBitsKHR::eIdentity)
         .setImageArrayLayers(1);
 
     if (swapchain_object)
