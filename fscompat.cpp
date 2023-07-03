@@ -108,8 +108,19 @@ SplitPath splitpath(string path)
         path = path.substr(2);
     }
 #endif
-    auto slash = path.rfind(SLASH_CHAR);
-    auto dot   = path.rfind('.');
+    auto backslash = path.rfind('\\');
+    auto slash = path.rfind('/');
+    if (backslash != npos)
+    {
+        if (slash == npos || backslash > slash)
+            slash = backslash;
+    }
+    else if (slash != npos)
+    {
+        if (backslash != npos && backslash > slash)
+            slash = backslash;
+    }
+    auto dot = path.rfind('.');
 
     if (dot != npos && slash != npos && dot < slash)
     {

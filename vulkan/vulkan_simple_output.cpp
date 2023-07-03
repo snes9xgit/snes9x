@@ -55,7 +55,7 @@ SimpleOutput::~SimpleOutput()
 void SimpleOutput::create_objects()
 {
     descriptors.clear();
-    for (size_t i = 0; i < swapchain->get_num_frames(); i++)
+    for (size_t i = 0; i < queue_size; i++)
     {
         vk::DescriptorSetAllocateInfo dsai{};
         dsai
@@ -67,7 +67,7 @@ void SimpleOutput::create_objects()
     }
 
     textures.clear();
-    textures.resize(swapchain->get_num_frames());
+    textures.resize(queue_size);
     for (auto &t : textures)
     {
         t.init(context);
@@ -223,10 +223,10 @@ bool SimpleOutput::do_frame_without_swap(uint8_t *buffer, int width, int height,
     if (!swapchain->begin_frame())
         return false;
 
-    auto &tex = textures[swapchain->get_current_frame()];
+    auto &tex = textures[current_frame];
     auto &cmd = swapchain->get_cmd();
     auto extents = swapchain->get_extents();
-    auto &dstset = descriptors[swapchain->get_current_frame()].get();
+    auto &dstset = descriptors[current_frame].get();
 
     tex.from_buffer(cmd, (uint8_t *)buffer, width, height, byte_stride);
 
@@ -253,6 +253,8 @@ bool SimpleOutput::do_frame_without_swap(uint8_t *buffer, int width, int height,
 
     swapchain->end_render_pass();
     swapchain->end_frame_without_swap();
+
+    current_frame = (current_frame + 1) % queue_size;
 
     return true;
 }

@@ -11,8 +11,6 @@ namespace Vulkan
 class Swapchain
 {
   public:
-    const int max_latency = 3;
-
     Swapchain(vk::Device device,
               vk::PhysicalDevice physical_device,
               vk::Queue queue,
@@ -31,14 +29,13 @@ class Swapchain
     // Returns true if vsync setting was changed, false if it was the same
     bool set_vsync(bool on);
     void on_render_pass_end(std::function<void()> function);
+    int get_num_frames() { return num_swapchain_images; }
 
     vk::Image get_image();
     vk::Framebuffer get_framebuffer();
     vk::CommandBuffer &get_cmd();
-    unsigned int get_current_frame();
     vk::Extent2D get_extents();
     vk::RenderPass &get_render_pass();
-    unsigned int get_num_frames();
 
   private:
     std::function<void()> end_render_pass_function;

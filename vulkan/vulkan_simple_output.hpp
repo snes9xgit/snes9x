@@ -15,6 +15,9 @@ class SimpleOutput
     void set_filter(bool on);
 
   private:
+    const int queue_size = 3;
+    int current_frame = 0;
+
     void create_pipeline();
     void create_objects();
 

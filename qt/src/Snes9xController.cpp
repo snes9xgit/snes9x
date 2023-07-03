@@ -582,6 +582,7 @@ void S9xCloseSnapshotFile(STREAM file)
 
 void S9xAutoSaveSRAM()
 {
+    printf("%s\n", S9xGetFilename(".srm", SRAM_DIR).c_str());
     Memory.SaveSRAM(S9xGetFilename(".srm", SRAM_DIR).c_str());
     S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR).c_str());
 }

@@ -402,8 +402,6 @@ bool ShaderChain::do_frame_without_swap(uint8_t *data, int width, int height, in
     if (!context->swapchain->begin_frame())
          return false;
 
-    current_frame_index = context->swapchain->get_current_frame();
-
     auto cmd = context->swapchain->get_cmd();
 
     update_and_propagate_sizes(width, height, viewport_width, viewport_height);
@@ -519,6 +517,7 @@ bool ShaderChain::do_frame_without_swap(uint8_t *data, int width, int height, in
     context->swapchain->end_frame_without_swap();
 
     last_frame_index = current_frame_index;
+    current_frame_index = (current_frame_index + 1) % queue_size;
     frame_count++;
     return true;
 }

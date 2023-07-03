@@ -256,7 +256,7 @@ bool Context::create_swapchain(int width, int height)
 {
     wait_idle();
     swapchain = std::make_unique<Swapchain>(device, physical_device, queue, surface.get(), command_pool.get());
-    return swapchain->create(3, width, height);
+    return swapchain->create(2, width, height);
 }
 
 bool Context::recreate_swapchain(int width, int height)
