@@ -111,10 +111,10 @@ bool S9xPulseSoundDriver::open_device(int playback_rate, int buffer_size_ms)
     ss.rate = playback_rate;
 
     pa_buffer_attr buffer_attr;
-    buffer_attr.tlength = pa_usec_to_bytes(buffer_size_ms * 1000, &ss);
+    buffer_attr.tlength = 2 * pa_usec_to_bytes(buffer_size_ms * 1000, &ss);
     buffer_attr.maxlength = buffer_attr.tlength * 2;
     buffer_attr.minreq = pa_usec_to_bytes(3000, &ss);
-    buffer_attr.prebuf = -1;
+    buffer_attr.prebuf = buffer_attr.tlength / 2;
 
     printf("PulseAudio sound driver initializing...\n");
 
@@ -189,8 +189,23 @@ bool S9xPulseSoundDriver::write_samples(int16_t *data, int samples)
     size_t bytes = pa_stream_writable_size(stream);
     unlock();
 
+    if (draining)
+    {
+        if (bytes > buffer_size / 2)
+        {
+            return false;
+        }
+        else
+        {
+            draining = false;
+        }
+    }
+
     if (samples * 2 > bytes)
+    {
+        draining = true;
         return false;
+    }
 
     if (samples * 2 < bytes)
         bytes = samples * 2;

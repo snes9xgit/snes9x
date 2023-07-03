@@ -10,11 +10,13 @@
 bool S9xCubebSoundDriver::write_samples(int16_t *data, int samples)
 {
     bool retval = true;
-    if (samples > buffer.space_empty())
+    auto empty = buffer.space_empty();
+    if (samples > empty)
     {
         retval = false;
-        samples = buffer.space_empty();
+        buffer.dump(buffer.buffer_size / 2 - empty);
     }
+
     buffer.push(data, samples);
 
     return retval;
@@ -83,6 +85,7 @@ long S9xCubebSoundDriver::data_callback(cubeb_stream *stream, void const *input_
         auto zeroed_samples = nframes * 2 - avail;
         memset(output_buffer, 0, zeroed_samples);
         buffer.read((int16_t *)output_buffer + zeroed_samples, nframes * 2 - zeroed_samples);
+        buffer.add_silence(buffer.buffer_size / 2);
     }
     else
     {

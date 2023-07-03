@@ -32,6 +32,7 @@ class S9xPulseSoundDriver : public S9xSoundDriver
     void wait();
 
     int buffer_size;
+    bool draining = false;
 };
 
 #endif /* __S9X_SOUND_DRIVER_PULSE_HPP */

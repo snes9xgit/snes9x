@@ -84,8 +84,14 @@ static void trackBufferLevel(int percent, QWidget *parent)
         ticks = 0;
     }
 
+    dialog->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+
     if (!dialog->isVisible())
+    {
+        dialog->setDisabled(true);
         dialog->show();
+        dialog->setModal(false);
+    }
 }
 #endif
 

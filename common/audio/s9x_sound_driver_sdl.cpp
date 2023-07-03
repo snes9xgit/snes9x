@@ -10,10 +10,11 @@
 bool S9xSDLSoundDriver::write_samples(int16_t *data, int samples)
 {
     bool retval = true;
-    if (samples > buffer.space_empty())
+    auto empty = buffer.space_empty();
+    if (samples > empty)
     {
         retval = false;
-        samples = buffer.space_empty();
+        buffer.dump(buffer.buffer_size / 2 - empty);
     }
     buffer.push(data, samples);
 
@@ -24,6 +25,11 @@ void S9xSDLSoundDriver::mix(unsigned char *output, int bytes)
 {
     if (buffer.avail() >= bytes >> 1)
         buffer.read((int16_t *)output, bytes >> 1);
+    else
+    {
+        buffer.read((int16_t *)output, buffer.avail());
+        buffer.add_silence(buffer.buffer_size / 2);
+    }
 }
 
 S9xSDLSoundDriver::S9xSDLSoundDriver()
