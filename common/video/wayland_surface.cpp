@@ -139,6 +139,8 @@ bool WaylandSurface::attach(wl_display *display, wl_surface *surface, Metrics m)
         zwp_idle_inhibit_manager_v1_create_inhibitor(idle_inhibit_manager, child);
     }
 
+    wl_display_roundtrip(display);
+
     resize(m);
 
     return true;
