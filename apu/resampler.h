@@ -93,13 +93,13 @@ class Resampler
 
     inline void dump(unsigned int num_samples)
     {
-        if (space_filled() >= num_samples)
+        if ((unsigned int)space_filled() >= num_samples)
             start = (start + num_samples) % buffer_size;
     }
 
     inline void add_silence(unsigned int num_samples)
     {
-        if (space_empty() <= num_samples)
+        if ((unsigned int)space_empty() <= num_samples)
         {
             int new_end = (end + num_samples) % buffer_size;
 

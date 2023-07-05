@@ -1,5 +1,4 @@
 #include "SoundPanel.hpp"
-#include <QScreen>
 
 static const int playback_rates[] = { 96000, 48000, 44100 };
 
@@ -39,20 +38,19 @@ SoundPanel::SoundPanel(EmuApplication *app_)
 
     connect(checkBox_adjust_input_rate, &QCheckBox::clicked, [&](bool checked) {
         app->config->adjust_input_rate_automatically = checked;
+        app->updateSettings();
+        updateInputRate();
+
         if (checked)
         {
-            int calculated = screen()->refreshRate() / 60.09881 * 32040;
-            horizontalSlider_input_rate->setValue(calculated);
+           horizontalSlider_input_rate->setValue(app->config->input_rate);
         }
-
-        horizontalSlider_input_rate->setDisabled(checked);
-        app->updateSettings();
     });
 
     connect(horizontalSlider_input_rate, &QSlider::valueChanged, [&](int value) {
         app->config->input_rate = value;
-        setInputRateText(value);
         app->updateSettings();
+        updateInputRate();
     });
 
     connect(checkBox_dynamic_rate_control, &QCheckBox::clicked, [&](bool checked) {
@@ -78,10 +76,19 @@ SoundPanel::~SoundPanel()
 {
 }
 
-void SoundPanel::setInputRateText(int value)
+void SoundPanel::updateInputRate()
 {
-    double hz = value / 32040.0 * 60.09881;
-    label_input_rate->setText(QString("%1\n%2 Hz").arg(value).arg(hz, 6, 'g', 6));
+    constexpr double ir_ratio = 60.098813 / 32040.0;
+
+    app->updateSettings();
+    if (app->config->adjust_input_rate_automatically)
+        horizontalSlider_input_rate->setEnabled(false);
+    else
+        horizontalSlider_input_rate->setEnabled(true);
+
+    double hz = app->config->input_rate * ir_ratio;
+
+    label_input_rate->setText(QString("%1\n%2 Hz").arg(app->config->input_rate).arg(hz, 6, 'g', 6));
 }
 
 void SoundPanel::showEvent(QShowEvent *event)
@@ -126,7 +133,8 @@ void SoundPanel::showEvent(QShowEvent *event)
     spinBox_buffer_size->setValue(config->audio_buffer_size_ms);
 
     checkBox_adjust_input_rate->setChecked(config->adjust_input_rate_automatically);
-    setInputRateText(config->input_rate);
+    updateInputRate();
+    horizontalSlider_input_rate->setValue(config->input_rate);
     checkBox_dynamic_rate_control->setChecked(config->dynamic_rate_control);
     doubleSpinBox_dynamic_rate_limit->setValue(config->dynamic_rate_limit);
 

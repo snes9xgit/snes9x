@@ -12,7 +12,7 @@ class SoundPanel :
     ~SoundPanel();
     EmuApplication *app;
     void showEvent(QShowEvent *event) override;
-    void setInputRateText(int value);
+    void updateInputRate();
 
     std::vector<std::string> driver_list;
 };

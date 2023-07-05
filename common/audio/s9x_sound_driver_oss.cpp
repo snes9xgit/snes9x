@@ -161,7 +161,7 @@ std::pair<int, int> S9xOSSSoundDriver::buffer_level()
     return { space_free(), output_buffer_size_bytes / 2};
 }
 
-void S9xOSSSoundDriver::write_samples(int16_t *data, int samples)
+bool S9xOSSSoundDriver::write_samples(int16_t *data, int samples)
 {
     audio_buf_info info;
     int bytes_to_write;
@@ -173,7 +173,7 @@ void S9xOSSSoundDriver::write_samples(int16_t *data, int samples)
         samples = info.bytes / 2;
 
     if (samples == 0)
-        return;
+        return false;
 
     bytes_written = 0;
     bytes_to_write = samples * 2;
@@ -191,4 +191,6 @@ void S9xOSSSoundDriver::write_samples(int16_t *data, int samples)
 
         bytes_written += result;
     }
+
+    return true;
 }

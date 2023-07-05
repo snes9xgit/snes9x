@@ -6,6 +6,7 @@
 #include "common/audio/s9x_sound_driver_pulse.hpp"
 #endif
 #include <QTimer>
+#include <QScreen>
 #include <chrono>
 #include <thread>
 using namespace std::chrono_literals;
@@ -138,7 +139,7 @@ void EmuApplication::startGame()
         }
     };
 
-    core->updateSettings(config.get());
+    updateSettings();
     updateBindings();
 
     startIdleLoop();
@@ -333,6 +334,20 @@ bool EmuApplication::isBound(EmuBinding b)
 
 void EmuApplication::updateSettings()
 {
+    if (config->adjust_input_rate_automatically)
+    {
+        constexpr double ir_ratio = 60.098813 / 32040.0;
+
+        auto refresh = window->screen()->refreshRate();
+        config->input_rate = refresh / ir_ratio;
+        if (refresh > 119 && refresh < 121)
+            config->input_rate /= 2;
+        else if (refresh > 179 && refresh < 181)
+            config->input_rate /= 3;
+        else if (refresh > 239 && refresh < 241)
+            config->input_rate /= 4;
+    }
+
     core->updateSettings(config.get());
 }
 
