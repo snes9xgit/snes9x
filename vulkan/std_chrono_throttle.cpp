@@ -25,18 +25,44 @@ void Throttle::wait_for_frame()
         std::this_thread::sleep_for(time_to_wait);
 }
 
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
 void Throttle::wait_for_frame_and_rebase_time()
 {
+#ifdef _WIN32
+    static HANDLE timer = nullptr;
+
+    if (timer == nullptr)
+        timer = CreateWaitableTimer(nullptr, true, nullptr);
+#endif
+
     auto time_to_wait = remaining();
 
     if (time_to_wait < -frame_duration_us / 10)
         reset();
 
-    if (time_to_wait.count() > 0)
+    if (time_to_wait.count() > 1000)
     {
-        std::this_thread::sleep_for(time_to_wait);
-        advance();
+#ifdef _WIN32
+        LARGE_INTEGER li;
+		li.QuadPart = -(time_to_wait.count() - 1000) * 10;
+		SetWaitableTimer(timer, &li, 0, nullptr, nullptr, false);
+		WaitForSingleObject(timer, INFINITE);
+#else
+        std::this_thread::sleep_for(time_to_wait - 1000);
+#endif
     }
+
+    time_to_wait = remaining();
+    while (time_to_wait.count() > 0)
+    {
+        std::this_thread::yield();
+        time_to_wait = remaining();
+    }
+
+    advance();
 }
 
 void Throttle::advance()
