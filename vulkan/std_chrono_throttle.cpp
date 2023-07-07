@@ -30,7 +30,10 @@ void Throttle::wait_for_frame()
     auto time_to_wait = remaining();
 
     if (time_to_wait < -frame_duration_us / 10)
+    {
         reset();
+        return;
+    }
 
     if (time_to_wait.count() > 2000)
     {
@@ -55,7 +58,10 @@ void Throttle::wait_for_frame()
     auto time_to_wait = remaining();
 
     if (time_to_wait < -frame_duration_us / 10)
+    {
         reset();
+        return;
+    }
 
     if (time_to_wait.count() > 1000)
         std::this_thread::sleep_for(time_to_wait - 1ms);
