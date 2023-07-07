@@ -29,7 +29,7 @@ void Throttle::wait_for_frame()
 
     auto time_to_wait = remaining();
 
-    if (time_to_wait < -frame_duration_us / 10)
+    if (time_to_wait < -frame_duration_us)
     {
         reset();
         return;
@@ -57,7 +57,7 @@ void Throttle::wait_for_frame()
 {
     auto time_to_wait = remaining();
 
-    if (time_to_wait < -frame_duration_us / 10)
+    if (time_to_wait < -frame_duration_us)
     {
         reset();
         return;

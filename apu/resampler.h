@@ -99,19 +99,18 @@ class Resampler
 
     inline void add_silence(unsigned int num_samples)
     {
-        if ((unsigned int)space_empty() <= num_samples)
-        {
-            int new_end = (end + num_samples) % buffer_size;
+        if ((unsigned int)space_empty() < num_samples)
+            return;
 
-            if (new_end < end)
-            {
-                memset(buffer + end, 0, 2 * (buffer_size - end));
-                memset(buffer, 0, 2 * (num_samples - (buffer_size - end)));
-            }
+        int new_end = (end + num_samples) % buffer_size;
 
-            memset(buffer + end, 0, 2 * num_samples);
-            end = new_end;
+        if (new_end < end) {
+            memset(buffer + end, 0, 2 * (buffer_size - end));
+            memset(buffer, 0, 2 * (num_samples - (buffer_size - end)));
         }
+
+        memset(buffer + end, 0, 2 * num_samples);
+        end = new_end;
     }
 
     inline bool pull(int16_t *dst, int num_samples)

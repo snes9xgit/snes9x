@@ -53,7 +53,13 @@ void FoldersPanel::refreshEntry(QComboBox *combo, QLineEdit *lineEdit, QPushButt
 {
     bool custom = (*location == EmuConfig::eCustomDirectory);
     combo->setCurrentIndex(*location);
-    lineEdit->setText(custom ? QString::fromUtf8(*folder) : "");
+    if (custom)
+        lineEdit->setText(QString::fromUtf8(*folder));
+    else if (*location == EmuConfig::eConfigDirectory)
+        lineEdit->setText(tr("Config folder is %1").arg(app->config->findConfigDir().c_str()));
+    else
+        lineEdit->clear();
+
     lineEdit->setEnabled(custom);
     browse->setEnabled(custom);
 
