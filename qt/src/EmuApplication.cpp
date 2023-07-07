@@ -9,6 +9,7 @@
 #include <QScreen>
 #include <chrono>
 #include <thread>
+#include <QThread>
 using namespace std::chrono_literals;
 
 #undef SOUND_BUFFER_WINDOW
@@ -104,7 +105,7 @@ void EmuApplication::writeSamples(int16_t *data, int samples)
         while (sound_driver->space_free() < samples && iterations < 500)
         {
             iterations++;
-            std::this_thread::sleep_for(50us);
+            QThread::usleep(50);
         }
     }
     auto buffer_level = sound_driver->buffer_level();

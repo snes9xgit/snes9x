@@ -17,42 +17,27 @@ microseconds Throttle::remaining()
     return frame_duration_us - diff;
 }
 
-void Throttle::wait_for_frame()
-{
-    auto time_to_wait = remaining();
-
-    if (time_to_wait.count() > 0)
-        std::this_thread::sleep_for(time_to_wait);
-}
-
-#ifdef _WIN32
+#if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#endif
-void Throttle::wait_for_frame_and_rebase_time()
+void Throttle::wait_for_frame()
 {
-#ifdef _WIN32
-    static HANDLE timer = nullptr;
+        static HANDLE timer = nullptr;
 
     if (timer == nullptr)
         timer = CreateWaitableTimer(nullptr, true, nullptr);
-#endif
 
     auto time_to_wait = remaining();
 
     if (time_to_wait < -frame_duration_us / 10)
         reset();
 
-    if (time_to_wait.count() > 1000)
+    if (time_to_wait.count() > 2000)
     {
-#ifdef _WIN32
         LARGE_INTEGER li;
-		li.QuadPart = -(time_to_wait.count() - 1000) * 10;
-		SetWaitableTimer(timer, &li, 0, nullptr, nullptr, false);
-		WaitForSingleObject(timer, INFINITE);
-#else
-        std::this_thread::sleep_for(time_to_wait - 1000);
-#endif
+        li.QuadPart = -(time_to_wait.count() - 2000) * 10;
+        SetWaitableTimer(timer, &li, 0, nullptr, nullptr, false);
+        WaitForSingleObject(timer, INFINITE);
     }
 
     time_to_wait = remaining();
@@ -61,7 +46,32 @@ void Throttle::wait_for_frame_and_rebase_time()
         std::this_thread::yield();
         time_to_wait = remaining();
     }
+}
+#endif
 
+#if !defined(_WIN32)
+void Throttle::wait_for_frame()
+{
+    auto time_to_wait = remaining();
+
+    if (time_to_wait < -frame_duration_us / 10)
+        reset();
+
+    if (time_to_wait.count() > 1000)
+        std::this_thread::sleep_for(time_to_wait - 1ms);
+
+    time_to_wait = remaining();
+    while (time_to_wait.count() > 0)
+    {
+        std::this_thread::yield();
+        time_to_wait = remaining();
+    }
+}
+#endif
+
+void Throttle::wait_for_frame_and_rebase_time()
+{
+    wait_for_frame();
     advance();
 }
 
