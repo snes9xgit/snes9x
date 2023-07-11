@@ -6,6 +6,7 @@
 #include <QtEvents>
 #include <QGuiApplication>
 #include <QStackedWidget>
+#include <qnamespace.h>
 #include <qpa/qplatformnativeinterface.h>
 
 #include "EmuMainWindow.hpp"
@@ -470,6 +471,22 @@ bool EmuMainWindow::event(QEvent *event)
             app->pause();
         }
         break;
+    case QEvent::WindowStateChange:
+    {
+        auto scevent = (QWindowStateChangeEvent *)event;
+        if (!(scevent->oldState() & Qt::WindowMinimized) && windowState() & Qt::WindowMinimized)
+        {
+            minimized_pause = true;
+            app->pause();
+        }
+        else if (minimized_pause && !(windowState() & Qt::WindowMinimized))
+        {
+            minimized_pause = false;
+            app->unpause();
+        }
+        
+        break;
+    }
     case QEvent::MouseMove:
         if (!cursor_visible)
         {
