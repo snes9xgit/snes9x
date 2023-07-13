@@ -109,8 +109,10 @@ void EmuMainWindow::createCanvas()
 
 void EmuMainWindow::recreateCanvas()
 {
+    app->suspendThread();
     destroyCanvas();
     createCanvas();
+    app->unsuspendThread();
 }
 
 void EmuMainWindow::setCoreActionsEnabled(bool enable)
@@ -528,6 +530,15 @@ void EmuMainWindow::toggleFullscreen()
 
 bool EmuMainWindow::eventFilter(QObject *watched, QEvent *event)
 {
+    if (watched == canvas && event->type() == QEvent::Resize)
+    {
+        app->suspendThread();
+        canvas->resizeEvent((QResizeEvent *)event);
+        event->accept();
+        app->unsuspendThread();
+        return true;
+    }
+
     if (event->type() != QEvent::KeyPress && event->type() != QEvent::KeyRelease)
         return false;
 

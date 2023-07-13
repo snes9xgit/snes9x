@@ -26,12 +26,11 @@ int main(int argc, char *argv[])
     emu.window->show();
 
     emu.updateBindings();
-    emu.startIdleLoop();
-
-
-
+    emu.startInputTimer();
+    emu.startThread();
     emu.qtapp->exec();
 
+    emu.stopThread();
     emu.config->saveFile(EmuConfig::findConfigFile());
 
     return 0;

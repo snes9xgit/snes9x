@@ -45,3 +45,8 @@ void EmuCanvasQt::paintEvent(QPaintEvent *event)
 
     paint.drawImage(dest, image, QRect(0, 0, output_data.width, output_data.height));
 }
+
+void EmuCanvasQt::resizeEvent(QResizeEvent *event)
+{
+    QWidget::resizeEvent(event);
+}

@@ -26,6 +26,7 @@ EmuApplication::~EmuApplication()
 
 void EmuApplication::restartAudio()
 {
+    suspendThread();
     sound_driver.reset();
     core->sound_output_function = nullptr;
 
@@ -55,6 +56,8 @@ void EmuApplication::restartAudio()
         core->sound_output_function = [&](int16_t *data, int samples) {
             writeSamples(data, samples);
         };
+
+    unsuspendThread();
 }
 
 #ifdef SOUND_BUFFER_WINDOW
@@ -124,13 +127,14 @@ void EmuApplication::writeSamples(int16_t *data, int samples)
 
 void EmuApplication::startGame()
 {
+    suspendThread();
     if (!sound_driver)
         restartAudio();
 
     core->screen_output_function = [&](uint16_t *data, int width, int height, int stride_bytes, double frame_rate) {
         if (window->canvas)
         {
-            QMetaObject::invokeMethod(window.get(), "output", Qt::ConnectionType::QueuedConnection,
+            QMetaObject::invokeMethod(window.get(), "output", Qt::ConnectionType::DirectConnection,
                 Q_ARG(uint8_t *, (uint8_t *)data),
                 Q_ARG(int, width),
                 Q_ARG(int, height),
@@ -143,7 +147,12 @@ void EmuApplication::startGame()
     updateSettings();
     updateBindings();
 
-    startIdleLoop();
+    emu_thread->setMainLoop([&] {
+        mainLoop();
+    });
+
+    unsuspendThread();
+    unpause();
 }
 
 bool EmuApplication::isPaused()
@@ -151,21 +160,61 @@ bool EmuApplication::isPaused()
     return (pause_count != 0);
 }
 
+void EmuApplication::suspendThread()
+{
+    suspend_count++;
+
+    if (!emu_thread)
+        return;
+
+    if (suspend_count > 0)
+    {
+        printf("Suspend %d\n", suspend_count);
+        emu_thread->runOnThread([&] { emu_thread->setStatusBits(EmuThread::eSuspended); });
+        emu_thread->waitForStatusBit(EmuThread::eSuspended);
+    }
+}
+
+void EmuApplication::unsuspendThread()
+{
+    suspend_count--;
+    assert(suspend_count >= 0);
+
+    if (!emu_thread)
+        return;
+
+        printf("Un Suspend %d\n", suspend_count);
+
+    if (suspend_count == 0)
+    {
+        emu_thread->runOnThread([&] { emu_thread->unsetStatusBits(EmuThread::eSuspended); });
+        emu_thread->waitForStatusBitCleared(EmuThread::eSuspended);
+    }
+}
+
 void EmuApplication::pause()
 {
     pause_count++;
     if (pause_count > 0)
     {
+        if (emu_thread)
+            emu_thread->pause();
         core->setPaused(true);
         if (sound_driver)
             sound_driver->stop();
     }
 }
 
-void EmuApplication::stopIdleLoop()
+void EmuApplication::stopThread()
 {
-    idle_loop->stop();
-    pause_count = 0;
+    if (!emu_thread)
+        return;
+
+    emu_thread->setStatusBits(EmuThread::eQuit);
+    while (!emu_thread->isFinished())
+    {
+        std::this_thread::yield();
+    }
 }
 
 void EmuApplication::unpause()
@@ -179,45 +228,40 @@ void EmuApplication::unpause()
     core->setPaused(false);
     if (core->active && sound_driver)
         sound_driver->start();
+    if (emu_thread)
+        emu_thread->unpause();
 }
 
-void EmuApplication::startIdleLoop()
+void EmuApplication::startThread()
 {
-    if (!idle_loop)
+    if (!emu_thread)
     {
-        idle_loop = std::make_unique<QTimer>();
-        idle_loop->setTimerType(Qt::TimerType::PreciseTimer);
-        idle_loop->setInterval(0);
-        idle_loop->setSingleShot(false);
-        idle_loop->callOnTimeout([&]{ idleLoop(); });
-        pause_count = 0;
-    }
-
-    idle_loop->start();
-}
-
-void EmuApplication::idleLoop()
-{
-    if (core->active && pause_count == 0)
-    {
-        idle_loop->setInterval(0);
-        pollJoysticks();
-        bool muted = config->mute_audio || (config->mute_audio_during_alternate_speed && core->isAbnormalSpeed());
-        core->mute(muted);
-        core->mainLoop();
-    }
-    else
-    {
-        pollJoysticks();
-        idle_loop->setInterval(32);
+        emu_thread = std::make_unique<EmuThread>(QThread::currentThread());
+        emu_thread->start();
+        emu_thread->waitForStatusBit(EmuThread::ePaused);
+        emu_thread->moveToThread(emu_thread.get());
     }
 }
 
 bool EmuApplication::openFile(std::string filename)
 {
+    suspendThread();
     auto result = core->openFile(filename);
+    unsuspendThread();
 
     return result;
+}
+
+void EmuApplication::mainLoop()
+{
+    if (!core->active)
+    {
+        std::this_thread::yield();
+        return;
+    }
+
+    printf("Here\n");
+    core->mainLoop();
 }
 
 void EmuApplication::reportBinding(EmuBinding b, bool active)
@@ -238,7 +282,7 @@ void EmuApplication::reportBinding(EmuBinding b, bool active)
         return;
     }
 
-    core->reportBinding(b, active);
+    emu_thread->runOnThread([&, b, active] { core->reportBinding(b, active); });
 }
 
 void EmuApplication::updateBindings()
@@ -273,7 +317,9 @@ void EmuApplication::updateBindings()
         }
     }
 
+    suspendThread();
     core->updateBindings(config.get());
+    unsuspendThread();
 }
 
 void EmuApplication::handleBinding(std::string name, bool pressed)
@@ -296,14 +342,18 @@ void EmuApplication::handleBinding(std::string name, bool pressed)
                 save_slot++;
                 if (save_slot > 999)
                     save_slot = 0;
-                core->setMessage("Current slot: " + std::to_string(save_slot));
+                emu_thread->runOnThread([&] {
+                    core->setMessage("Current slot: " + std::to_string(save_slot));
+                });
             }
             else if (name == "DecreaseSlot")
             {
                 save_slot--;
                 if (save_slot < 0)
                     save_slot = 999;
-                core->setMessage("Current slot: " + std::to_string(save_slot));
+                emu_thread->runOnThread([&] {
+                    core->setMessage("Current slot: " + std::to_string(save_slot));
+                });
             }
             else if (name == "SaveState")
             {
@@ -349,7 +399,9 @@ void EmuApplication::updateSettings()
             config->input_rate /= 4;
     }
 
-    core->updateSettings(config.get());
+    emu_thread->runOnThread([&] {
+        core->updateSettings(config.get());
+    });
 }
 
 void EmuApplication::pollJoysticks()
@@ -401,39 +453,63 @@ void EmuApplication::pollJoysticks()
     }
 }
 
+void EmuApplication::startInputTimer()
+{
+    poll_input_timer = std::make_unique<QTimer>();
+    poll_input_timer->setTimerType(Qt::TimerType::PreciseTimer);
+    poll_input_timer->setInterval(4);
+    poll_input_timer->setSingleShot(false);
+    poll_input_timer->callOnTimeout([&] { pollJoysticks(); });
+    poll_input_timer->start();
+}
+
 void EmuApplication::loadState(int slot)
 {
-    core->loadState(slot);
+    emu_thread->runOnThread([&] {
+        core->loadState(slot);
+    });
 }
 
 void EmuApplication::loadState(std::string filename)
 {
-    core->loadState(filename);
+    emu_thread->runOnThread([&] {
+        core->loadState(filename);
+    });
 }
 
 void EmuApplication::saveState(int slot)
 {
-    core->saveState(slot);
+    emu_thread->runOnThread([&] {
+        core->saveState(slot);
+    });
 }
 
 void EmuApplication::saveState(std::string filename)
 {
-    core->saveState(filename);
+    emu_thread->runOnThread([&] {
+        core->saveState(filename);
+    });
 }
 
 void EmuApplication::reset()
 {
-    core->softReset();
+    emu_thread->runOnThread([&] {
+        core->softReset();
+    });
 }
 
 void EmuApplication::powerCycle()
 {
-    core->reset();
+    emu_thread->runOnThread([&] {
+        core->reset();
+    });
 }
 
 void EmuApplication::loadUndoState()
 {
-    core->loadUndoState();
+    emu_thread->runOnThread([&] {
+        core->loadUndoState();
+    });
 }
 
 std::string EmuApplication::getStateFolder()
@@ -444,4 +520,110 @@ std::string EmuApplication::getStateFolder()
 bool EmuApplication::isCoreActive()
 {
     return core->active;
+}
+
+void EmuThread::runOnThread(std::function<void()> func)
+{
+    if (QThread::currentThread() != this)
+    {
+        QMetaObject::invokeMethod(this, "runOnThread", Q_ARG(std::function<void()>, func));
+        return;
+    }
+
+    func();
+}
+
+EmuThread::EmuThread(QThread *main_thread_)
+    : main_thread(main_thread_), QThread()
+{
+    qRegisterMetaType<std::function<void()>>("std::function<void()>");
+}
+
+void EmuThread::setStatusBits(int new_status)
+{
+    std::unique_lock lock(status_mutex);
+    status |= new_status;
+    lock.unlock();
+    status_cond.notify_all();
+}
+
+void EmuThread::unsetStatusBits(int new_status)
+{
+    printf("Old: %08x, new: %08x\n", status, new_status);
+    std::unique_lock lock(status_mutex);
+    status &= ~new_status;
+    printf("Final: %08x\n", status);
+    lock.unlock();
+    status_cond.notify_all();
+}
+
+void EmuThread::waitForStatusBit(int new_status)
+{
+    if (status & new_status)
+        return;
+
+    while (1)
+    {
+        std::unique_lock lock(status_mutex);
+        status_cond.wait_for(lock, std::chrono::milliseconds(500));
+        if (status & new_status)
+            break;
+    }
+}
+
+void EmuThread::waitForStatusBitCleared(int new_status)
+{
+    if (!(status & new_status))
+        return;
+
+    while (1)
+    {
+        std::unique_lock lock(status_mutex);
+        status_cond.wait_for(lock, std::chrono::milliseconds(500));
+        if (!(status & new_status))
+            break;
+    }
+}
+
+void EmuThread::pause()
+{
+    runOnThread([&] { setStatusBits(ePaused); });
+    waitForStatusBit(ePaused);
+}
+
+void EmuThread::unpause()
+{
+    runOnThread([&] { unsetStatusBits(ePaused); });
+    waitForStatusBitCleared(ePaused);
+}
+
+void EmuThread::run()
+{
+    auto event_loop = new QEventLoop();
+
+    setStatusBits(ePaused);
+
+    while (1)
+    {
+        event_loop->processEvents();
+
+        if (status & eQuit)
+            break;
+
+        if (status & (ePaused | eSuspended))
+        {
+            std::this_thread::sleep_for(2ms);
+            printf("Paused: %08x\n", status);
+            continue;
+        }
+
+        printf("Loop\n");
+        if (main_loop)
+            main_loop();
+    }
+}
+
+void EmuThread::setMainLoop(std::function<void ()> loop)
+{
+    main_loop = loop;
 }
