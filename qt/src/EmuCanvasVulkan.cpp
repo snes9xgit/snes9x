@@ -25,11 +25,6 @@ EmuCanvasVulkan::EmuCanvasVulkan(EmuConfig *config, QWidget *parent, QWidget *ma
 
     createWinId();
     window = windowHandle();
-
-    auto timer = new QTimer(this);
-    timer->setSingleShot(true);
-    timer->callOnTimeout([&]{ createContext(); });
-    timer->start();
 }
 
 EmuCanvasVulkan::~EmuCanvasVulkan()

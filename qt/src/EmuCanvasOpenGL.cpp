@@ -57,11 +57,6 @@ EmuCanvasOpenGL::EmuCanvasOpenGL(EmuConfig *config, QWidget *parent, QWidget *ma
     setAttribute(Qt::WA_OpaquePaintEvent);
 
     createWinId();
-
-    auto timer = new QTimer(this);
-    timer->setSingleShot(true);
-    timer->callOnTimeout([&]{ createContext(); });
-    timer->start();
 }
 
 EmuCanvasOpenGL::~EmuCanvasOpenGL()
@@ -251,6 +246,7 @@ void EmuCanvasOpenGL::draw()
         return;
 
     context->make_current();
+    gladLoaderLoadGL();
 
     uploadTexture();
     glActiveTexture(GL_TEXTURE0);
@@ -298,7 +294,8 @@ void EmuCanvasOpenGL::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
 
-    if (!context) return;
+    if (!context) 
+        return;
 
     auto g = parent->geometry();
     int s = devicePixelRatio();
@@ -308,6 +305,8 @@ void EmuCanvasOpenGL::resizeEvent(QResizeEvent *event)
         ((WaylandEGLContext *)context.get())->resize({ g.x(), g.y(), g.width(), g.height(), s });
     else if (platform == "xcb")
         ((GTKGLXContext *)context.get())->resize();
+#else
+    ((WGLContext *)context.get())->resize();
 #endif
 }
 
@@ -324,6 +323,9 @@ void EmuCanvasOpenGL::paintEvent(QPaintEvent *event)
         return;
     }
 
+#ifdef _WIN32
+    ((WGLContext *)context.get())->resize();
+#endif
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     context->swap_buffers();

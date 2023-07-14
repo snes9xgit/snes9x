@@ -84,22 +84,40 @@ void EmuMainWindow::createCanvas()
         auto central_widget = new QStackedWidget();
 
         if (app->config->display_driver == "vulkan")
+        {
             canvas = new EmuCanvasVulkan(app->config.get(), central_widget, this);
+            QGuiApplication::processEvents();
+            canvas->createContext();
+        }            
         else if (app->config->display_driver == "opengl")
+        {
             canvas = new EmuCanvasOpenGL(app->config.get(), central_widget, this);
+            QGuiApplication::processEvents();
+            app->emu_thread->runOnThread([&] { canvas->createContext(); }, true);
+        }
 
         central_widget->addWidget(canvas);
         central_widget->setCurrentWidget(canvas);
         setCentralWidget(central_widget);
         using_stacked_widget = true;
+        QGuiApplication::processEvents();
+
         return;
     }
 #endif
 
     if (app->config->display_driver == "vulkan")
+    {
         canvas = new EmuCanvasVulkan(app->config.get(), this, this);
+        QGuiApplication::processEvents();
+        canvas->createContext();
+    }
     else if (app->config->display_driver == "opengl")
+    {
         canvas = new EmuCanvasOpenGL(app->config.get(), this, this);
+        QGuiApplication::processEvents();
+        app->emu_thread->runOnThread([&] { canvas->createContext(); }, true);
+    } 
     else
         canvas = new EmuCanvasQt(app->config.get(), this, this);
 
@@ -447,6 +465,7 @@ bool EmuMainWindow::event(QEvent *event)
         {
             toggleFullscreen();
         }
+        app->stopThread();
         if (canvas)
             canvas->deinit();
         QGuiApplication::sync();
@@ -530,13 +549,24 @@ void EmuMainWindow::toggleFullscreen()
 
 bool EmuMainWindow::eventFilter(QObject *watched, QEvent *event)
 {
-    if (watched == canvas && event->type() == QEvent::Resize)
+    if (watched == canvas) 
     {
-        app->suspendThread();
-        canvas->resizeEvent((QResizeEvent *)event);
-        event->accept();
-        app->unsuspendThread();
-        return true;
+        if (event->type() == QEvent::Resize) 
+        {
+            app->suspendThread();
+            canvas->resizeEvent((QResizeEvent *)event);
+            event->accept();
+            app->unsuspendThread();
+            return true;
+        }
+        else if (event->type() == QEvent::Paint)
+        {
+            app->emu_thread->runOnThread([&] {
+                canvas->paintEvent((QPaintEvent *)event);
+            }, true);
+            event->accept();
+            return true;
+        }
     }
 
     if (event->type() != QEvent::KeyPress && event->type() != QEvent::KeyRelease)

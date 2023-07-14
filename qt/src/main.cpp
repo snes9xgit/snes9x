@@ -17,6 +17,8 @@ int main(int argc, char *argv[])
         signal(s, quit_handler);
 #endif
 
+    emu.startThread();
+
     emu.config = std::make_unique<EmuConfig>();
     emu.config->setDefaults();
     emu.config->loadFile(EmuConfig::findConfigFile());
@@ -27,7 +29,6 @@ int main(int argc, char *argv[])
 
     emu.updateBindings();
     emu.startInputTimer();
-    emu.startThread();
     emu.qtapp->exec();
 
     emu.stopThread();

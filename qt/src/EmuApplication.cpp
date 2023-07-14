@@ -2,6 +2,7 @@
 #include "common/audio/s9x_sound_driver_sdl.hpp"
 #include "common/audio/s9x_sound_driver_cubeb.hpp"
 #include <qlabel.h>
+#include <qnamespace.h>
 #ifdef USE_PULSEAUDIO
 #include "common/audio/s9x_sound_driver_pulse.hpp"
 #endif
@@ -169,9 +170,7 @@ void EmuApplication::suspendThread()
 
     if (suspend_count > 0)
     {
-        printf("Suspend %d\n", suspend_count);
-        emu_thread->runOnThread([&] { emu_thread->setStatusBits(EmuThread::eSuspended); });
-        emu_thread->waitForStatusBit(EmuThread::eSuspended);
+        emu_thread->runOnThread([&] { emu_thread->setStatusBits(EmuThread::eSuspended); }, true);
     }
 }
 
@@ -183,12 +182,9 @@ void EmuApplication::unsuspendThread()
     if (!emu_thread)
         return;
 
-        printf("Un Suspend %d\n", suspend_count);
-
     if (suspend_count == 0)
     {
-        emu_thread->runOnThread([&] { emu_thread->unsetStatusBits(EmuThread::eSuspended); });
-        emu_thread->waitForStatusBitCleared(EmuThread::eSuspended);
+        emu_thread->runOnThread([&] { emu_thread->unsetStatusBits(EmuThread::eSuspended); }, true);
     }
 }
 
@@ -260,7 +256,6 @@ void EmuApplication::mainLoop()
         return;
     }
 
-    printf("Here\n");
     core->mainLoop();
 }
 
@@ -522,11 +517,15 @@ bool EmuApplication::isCoreActive()
     return core->active;
 }
 
-void EmuThread::runOnThread(std::function<void()> func)
+void EmuThread::runOnThread(std::function<void()> func, bool blocking)
 {
     if (QThread::currentThread() != this)
     {
-        QMetaObject::invokeMethod(this, "runOnThread", Q_ARG(std::function<void()>, func));
+        QMetaObject::invokeMethod(this,
+                                  "runOnThread",
+                                  blocking ? Qt::BlockingQueuedConnection : Qt::QueuedConnection,
+                                  Q_ARG(std::function<void()>, func),
+                                  Q_ARG(bool, blocking));
         return;
     }
 
@@ -541,20 +540,12 @@ EmuThread::EmuThread(QThread *main_thread_)
 
 void EmuThread::setStatusBits(int new_status)
 {
-    std::unique_lock lock(status_mutex);
     status |= new_status;
-    lock.unlock();
-    status_cond.notify_all();
 }
 
 void EmuThread::unsetStatusBits(int new_status)
 {
-    printf("Old: %08x, new: %08x\n", status, new_status);
-    std::unique_lock lock(status_mutex);
     status &= ~new_status;
-    printf("Final: %08x\n", status);
-    lock.unlock();
-    status_cond.notify_all();
 }
 
 void EmuThread::waitForStatusBit(int new_status)
@@ -564,8 +555,7 @@ void EmuThread::waitForStatusBit(int new_status)
 
     while (1)
     {
-        std::unique_lock lock(status_mutex);
-        status_cond.wait_for(lock, std::chrono::milliseconds(500));
+        QThread::yieldCurrentThread();
         if (status & new_status)
             break;
     }
@@ -578,8 +568,7 @@ void EmuThread::waitForStatusBitCleared(int new_status)
 
     while (1)
     {
-        std::unique_lock lock(status_mutex);
-        status_cond.wait_for(lock, std::chrono::milliseconds(500));
+        QThread::yieldCurrentThread();
         if (!(status & new_status))
             break;
     }
@@ -587,14 +576,12 @@ void EmuThread::waitForStatusBitCleared(int new_status)
 
 void EmuThread::pause()
 {
-    runOnThread([&] { setStatusBits(ePaused); });
-    waitForStatusBit(ePaused);
+    runOnThread([&] { setStatusBits(ePaused); }, true);
 }
 
 void EmuThread::unpause()
 {
-    runOnThread([&] { unsetStatusBits(ePaused); });
-    waitForStatusBitCleared(ePaused);
+    runOnThread([&] { unsetStatusBits(ePaused); }, true);
 }
 
 void EmuThread::run()
@@ -612,12 +599,10 @@ void EmuThread::run()
 
         if (status & (ePaused | eSuspended))
         {
-            std::this_thread::sleep_for(2ms);
-            printf("Paused: %08x\n", status);
+            QThread::usleep(2000);
             continue;
         }
 
-        printf("Loop\n");
         if (main_loop)
             main_loop();
     }

@@ -36,11 +36,9 @@ Q_OBJECT
     };
 
     int status = eDead;
-    std::mutex status_mutex;
-    std::condition_variable status_cond;
-
+    
   public slots:
-    void runOnThread(std::function<void()> func);
+    void runOnThread(std::function<void()> func, bool blocking = false);
 };
 
 struct EmuApplication
