@@ -6,6 +6,7 @@
 #include <QtEvents>
 #include <QGuiApplication>
 #include <QStackedWidget>
+#include <qguiapplication.h>
 #include <qnamespace.h>
 #include <qpa/qplatformnativeinterface.h>
 
@@ -82,6 +83,8 @@ void EmuMainWindow::createCanvas()
     if (QGuiApplication::platformName() == "wayland" && app->config->display_driver != "qt")
     {
         auto central_widget = new QStackedWidget();
+        setVisible(true);
+        QGuiApplication::processEvents();
 
         if (app->config->display_driver == "vulkan")
         {
