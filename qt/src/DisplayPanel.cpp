@@ -82,19 +82,19 @@ DisplayPanel::DisplayPanel(EmuApplication *app_)
     });
 
     QObject::connect(comboBox_messages, &QComboBox::currentIndexChanged, [&](int index) {
-        bool restart = (app->config->display_messages == EmuConfig::eOnscreen || index == EmuConfig::eOnscreen);
+        bool recreate = (app->config->display_messages == EmuConfig::eOnscreen || index == EmuConfig::eOnscreen);
 
         app->config->display_messages = index;
         app->updateSettings();
-        if (restart)
-            app->window->recreateCanvas();
+        if (recreate)
+            app->window->recreateUIAssets();
     });
 
     QObject::connect(spinBox_osd_size, &QSpinBox::valueChanged, [&](int value) {
-        bool restart = (app->config->osd_size != value && app->config->display_messages == EmuConfig::eOnscreen);
+        bool recreate = (app->config->osd_size != value && app->config->display_messages == EmuConfig::eOnscreen);
         app->config->osd_size = value;
-        if (restart)
-            app->window->recreateCanvas();
+        if (recreate)
+            app->window->recreateUIAssets();
     });
 }
 

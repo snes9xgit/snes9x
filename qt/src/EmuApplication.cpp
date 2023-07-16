@@ -460,28 +460,28 @@ void EmuApplication::startInputTimer()
 
 void EmuApplication::loadState(int slot)
 {
-    emu_thread->runOnThread([&] {
+    emu_thread->runOnThread([&, slot] {
         core->loadState(slot);
     });
 }
 
 void EmuApplication::loadState(std::string filename)
 {
-    emu_thread->runOnThread([&] {
+    emu_thread->runOnThread([&, filename] {
         core->loadState(filename);
     });
 }
 
 void EmuApplication::saveState(int slot)
 {
-    emu_thread->runOnThread([&] {
+    emu_thread->runOnThread([&, slot] {
         core->saveState(slot);
     });
 }
 
 void EmuApplication::saveState(std::string filename)
 {
-    emu_thread->runOnThread([&] {
+    emu_thread->runOnThread([&, filename] {
         core->saveState(filename);
     });
 }

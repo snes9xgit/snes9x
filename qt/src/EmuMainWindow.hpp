@@ -33,6 +33,7 @@ class EmuMainWindow : public QMainWindow
     bool isActivelyDrawing();
     void openFile();
     bool openFile(std::string filename);
+    void recreateUIAssets();
     std::vector<std::string> getDisplayDeviceList();
     EmuApplication *app;
     EmuCanvas *canvas;

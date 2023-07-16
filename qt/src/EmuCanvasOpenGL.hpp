@@ -23,7 +23,7 @@ class EmuCanvasOpenGL : public EmuCanvas
     void shaderChanged() override;
     void showParametersDialog() override;
     void saveParameters(std::string filename) override;
-
+    void recreateUIAssets() override;
 
   private:
     void resizeTexture(int width, int height);

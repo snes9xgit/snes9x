@@ -633,3 +633,11 @@ void EmuMainWindow::output(uint8_t *buffer, int width, int height, QImage::Forma
     if (canvas)
         canvas->output(buffer, width, height, format, bytes_per_line, frame_rate);
 }
+
+void EmuMainWindow::recreateUIAssets()
+{
+    app->emu_thread->runOnThread([&] {
+        if (canvas)
+            canvas->recreateUIAssets();
+    }, true);
+}

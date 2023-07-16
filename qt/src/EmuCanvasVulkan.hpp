@@ -30,6 +30,7 @@ class EmuCanvasVulkan : public EmuCanvas
     void draw() override;
 
     bool initImGui();
+    void recreateUIAssets();
     vk::UniqueRenderPass imgui_render_pass;
     vk::UniqueDescriptorPool imgui_descriptor_pool;
 

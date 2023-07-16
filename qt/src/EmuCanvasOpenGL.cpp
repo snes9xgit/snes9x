@@ -174,11 +174,7 @@ void EmuCanvasOpenGL::createContext()
 
     if (config->display_messages == EmuConfig::eOnscreen)
     {
-        auto defaults = S9xImGuiGetDefaults();
-        defaults.font_size = config->osd_size;
-        defaults.spacing = defaults.font_size / 2.4;
-        S9xImGuiInit(&defaults);
-        ImGui_ImplOpenGL3_Init();
+        recreateUIAssets();
     }
 
     loadShaders();
@@ -382,4 +378,21 @@ void EmuCanvasOpenGL::saveParameters(std::string filename)
 {
     if (shader)
         shader->save(filename.c_str());
+}
+
+void EmuCanvasOpenGL::recreateUIAssets()
+{
+    if (S9xImGuiRunning())
+    {
+        S9xImGuiDeinit();
+    }
+
+    if (config->display_messages != EmuConfig::eOnscreen)
+        return;
+
+    auto defaults = S9xImGuiGetDefaults();
+    defaults.font_size = config->osd_size;
+    defaults.spacing = defaults.font_size / 2.4;
+    S9xImGuiInit(&defaults);
+    ImGui_ImplOpenGL3_Init();
 }

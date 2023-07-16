@@ -300,3 +300,20 @@ void EmuCanvasVulkan::saveParameters(std::string filename)
     if (shader_chain && shader_chain->preset)
         shader_chain->preset->save_to_file(filename);
 }
+
+void EmuCanvasVulkan::recreateUIAssets()
+{
+    if (ImGui::GetCurrentContext())
+    {
+        context->wait_idle();
+        imgui_descriptor_pool.reset();
+        imgui_render_pass.reset();
+        ImGui_ImplVulkan_Shutdown();
+        ImGui::DestroyContext();
+    }
+
+    if (config->display_messages != EmuConfig::eOnscreen)
+        return;
+
+    initImGui();
+}
