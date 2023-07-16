@@ -13,3 +13,6 @@
 [submodule "external/vulkan-headers"]
 	path = external/vulkan-headers
 	url = https://github.com/KhronosGroup/Vulkan-Headers.git
+[submodule "external/cubeb"]
+	path = external/cubeb
+	url = https://github.com/mozilla/cubeb.git
