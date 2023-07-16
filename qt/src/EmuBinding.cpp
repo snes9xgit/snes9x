@@ -141,7 +141,7 @@ EmuBinding EmuBinding::from_config_string(std::string string)
         {
             return joystick_button(device, button);
         }
-        else if (sscanf(substr.c_str(), "%u hat %u %5s", &device, &axis, direction_string))
+        else if (sscanf(substr.c_str(), "%u hat %u %5s", &device, &axis, direction_string) == 3)
         {
             uint8_t direction;
             if (!strcmp(direction_string, "up"))
@@ -188,7 +188,7 @@ std::string EmuBinding::to_string(bool config)
     else if (type == Joystick)
     {
         if (config)
-            rep += "joystick " + std::to_string(guid) + " ";
+            rep += "Joystick " + std::to_string(guid) + " ";
         else
             rep += "J" + std::to_string(guid) + " ";
 
@@ -201,7 +201,12 @@ std::string EmuBinding::to_string(bool config)
         {
             rep += "Axis ";
             rep += std::to_string(axis) + " ";
-            rep += std::to_string(threshold) + "%";
+            if (threshold >= 0)
+                rep += "+";
+            else if (!config)
+                rep += "-";
+            if (config)
+                rep += std::to_string(threshold) + "%";
         }
         if (input_type == Hat)
         {

@@ -323,9 +323,8 @@ void EmuCanvasOpenGL::paintEvent(QPaintEvent *event)
         return;
     }
 
-#ifdef _WIN32
-    ((WGLContext *)context.get())->resize();
-#endif
+    context->resize();
+
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     context->swap_buffers();

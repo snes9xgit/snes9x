@@ -90,6 +90,29 @@ vk::Image Swapchain::get_image()
     return imageviewfbs[current_swapchain_image].image;
 }
 
+bool Swapchain::check_and_resize(int width, int height)
+{
+    vk::SurfaceCapabilitiesKHR surface_capabilities;
+
+    if (width == -1 && height == -1)
+    {
+        surface_capabilities = physical_device.getSurfaceCapabilitiesKHR(surface);
+        width = surface_capabilities.currentExtent.width;
+        height = surface_capabilities.currentExtent.height;
+    }
+
+    if (width < 1 || height < 1)
+        return false;
+
+    if (extents.width != width || extents.height != height)
+    {
+        recreate(width, height);
+        return true;
+    }
+
+    return false;
+}
+
 bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width, int new_height)
 {
     frames.clear();
@@ -217,7 +240,7 @@ bool Swapchain::begin_frame()
     if (result_value.result == vk::Result::eErrorOutOfDateKHR ||
         result_value.result == vk::Result::eSuboptimalKHR)
     {
-        printf("Out of date\n");
+        // printf("Out of date\n");
         recreate();
         return begin_frame();
     }

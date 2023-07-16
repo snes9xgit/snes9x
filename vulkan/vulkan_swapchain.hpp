@@ -19,6 +19,7 @@ class Swapchain
     ~Swapchain();
     bool create(unsigned int num_frames, int width = -1, int height = -1);
     bool recreate(int width = -1, int height = -1);
+    bool check_and_resize(int width = -1, int height = -1);
     bool begin_frame();
     void begin_render_pass();
     void end_render_pass();

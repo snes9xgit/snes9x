@@ -38,6 +38,12 @@ BindingPanel::~BindingPanel()
 
 void BindingPanel::showEvent(QShowEvent *event)
 {
+    app->joypads_changed_callback = [&]
+    {
+        if (joypads_changed)
+            joypads_changed();
+    };
+
     QWidget::showEvent(event);
 }
 
@@ -45,6 +51,8 @@ void BindingPanel::hideEvent(QHideEvent *event)
 {
     awaiting_binding = false;
     setRedirectInput(false);
+    app->joypads_changed_callback = nullptr;
+
     QWidget::hideEvent(event);
 }
 
@@ -56,16 +64,10 @@ void BindingPanel::setRedirectInput(bool redirect)
         {
             finalizeCurrentBinding(b);
         };
-
-        app->joypads_changed_callback = [&] {
-            if (joypads_changed)
-                joypads_changed();
-        };
     }
     else
     {
         app->binding_callback = nullptr;
-        app->joypads_changed_callback = nullptr;
     }
 }
 

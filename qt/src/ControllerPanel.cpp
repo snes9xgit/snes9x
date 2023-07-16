@@ -147,6 +147,12 @@ void ControllerPanel::clearAllControllers()
     fillTable();
 }
 
+void ControllerPanel::showEvent(QShowEvent *event)
+{
+    BindingPanel::showEvent(event);
+    recreateAutoAssignMenu();
+}
+
 ControllerPanel::~ControllerPanel()
 {
 }

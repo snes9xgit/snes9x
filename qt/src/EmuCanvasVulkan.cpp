@@ -208,12 +208,12 @@ void EmuCanvasVulkan::resizeEvent(QResizeEvent *event)
         std::tie(width, height) = wayland_surface->get_size();
         // On Wayland, Vulkan WSI provides the buffer for the subsurface,
         // so we have to specify a width and height instead of polling the parent.
-        context->recreate_swapchain(width, height);
+        context->swapchain->check_and_resize(width, height);
         return;
     }
 #endif
 
-    context->recreate_swapchain(-1, -1);
+    context->swapchain->check_and_resize(event->size().width() * devicePixelRatio(), event->size().height() * devicePixelRatio());
 }
 
 void EmuCanvasVulkan::paintEvent(QPaintEvent *event)
@@ -226,7 +226,9 @@ void EmuCanvasVulkan::paintEvent(QPaintEvent *event)
     if (output_data.ready)
     {
         if (!window->isActivelyDrawing())
+        {
             draw();
+        }
         return;
     }
 

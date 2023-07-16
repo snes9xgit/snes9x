@@ -553,10 +553,10 @@ bool EmuMainWindow::eventFilter(QObject *watched, QEvent *event)
     {
         if (event->type() == QEvent::Resize) 
         {
-            app->suspendThread();
-            canvas->resizeEvent((QResizeEvent *)event);
+            app->emu_thread->runOnThread([&] {
+                canvas->resizeEvent((QResizeEvent *)event);
+            }, true);
             event->accept();
-            app->unsuspendThread();
             return true;
         }
         else if (event->type() == QEvent::Paint)

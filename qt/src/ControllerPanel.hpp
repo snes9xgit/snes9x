@@ -11,6 +11,7 @@ class ControllerPanel :
   public:
     ControllerPanel(EmuApplication *app);
     ~ControllerPanel();
+    void showEvent(QShowEvent *event) override;
     void clearAllControllers();
     void clearCurrentController();
     void autoPopulateWithKeyboard(int slot);
