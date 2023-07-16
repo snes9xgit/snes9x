@@ -30,7 +30,7 @@ DisplayPanel::DisplayPanel(EmuApplication *app_)
 
     QObject::connect(checkBox_use_shader, &QCheckBox::clicked, [&](bool checked) {
         app->config->use_shader = checked;
-        app->window->canvas->shaderChanged();
+        app->window->shaderChanged();
     });
 
     QObject::connect(pushButton_browse_shader, &QPushButton::clicked, [&] {
@@ -116,7 +116,7 @@ void DisplayPanel::selectShaderDialog()
     app->config->shader = dialog.selectedFiles().at(0).toUtf8();
     app->config->last_shader_folder = dialog.directory().absolutePath().toStdString();
     lineEdit_shader->setText(app->config->shader.c_str());
-    app->window->canvas->shaderChanged();
+    app->window->shaderChanged();
 }
 
 void DisplayPanel::populateDevices()

@@ -641,3 +641,11 @@ void EmuMainWindow::recreateUIAssets()
             canvas->recreateUIAssets();
     }, true);
 }
+
+void EmuMainWindow::shaderChanged()
+{
+    app->emu_thread->runOnThread([&] {
+        if (canvas)
+            canvas->shaderChanged();
+    });
+}
