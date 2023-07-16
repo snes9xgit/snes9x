@@ -94,6 +94,11 @@ void EmuCanvasVulkan::createContext()
     if (platform == "wayland")
     {
         wayland_surface = std::make_unique<WaylandSurface>();
+        if (!main_window->isVisible())
+        {
+            main_window->setVisible(true);
+            QGuiApplication::processEvents();
+        }
         auto display = (wl_display *)pni->nativeResourceForWindow("display", window);
         auto surface = (wl_surface *)pni->nativeResourceForWindow("surface", main_window->windowHandle());
         wayland_surface->attach(display, surface, { parent->x(), parent->y(), width(), height(), static_cast<int>(devicePixelRatio()) });
