@@ -1,4 +1,5 @@
 #include "BindingPanel.hpp"
+#include "EmuApplication.hpp"
 #include <QTimer>
 
 BindingPanel::BindingPanel(EmuApplication *app)

@@ -1,8 +1,9 @@
 #pragma once
 #include <QWidget>
 #include <QImage>
-#include "EmuConfig.hpp"
 #include "../../vulkan/std_chrono_throttle.hpp"
+
+class EmuConfig;
 
 class EmuCanvas : public QWidget
 {
@@ -33,7 +34,7 @@ class EmuCanvas : public QWidget
 
     struct Parameter
     {
-        bool operator==(const Parameter &other)
+        bool operator==(const Parameter &other) const
         {
             if (name == other.name &&
                 id   == other.id &&

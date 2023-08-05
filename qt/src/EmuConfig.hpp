@@ -2,6 +2,8 @@
 #define __EMU_CONFIG_HPP
 
 #include <string>
+#include <vector>
+
 #include "EmuBinding.hpp"
 
 struct EmuConfig

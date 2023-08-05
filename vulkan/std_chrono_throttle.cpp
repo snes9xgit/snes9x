@@ -22,25 +22,50 @@ microseconds Throttle::remaining()
 #include <windows.h>
 void Throttle::wait_for_frame()
 {
-        static HANDLE timer = nullptr;
+    static UINT (WINAPI *NtDelayExecution)(BOOL, LARGE_INTEGER *) = nullptr;
+    static UINT (WINAPI *NtQueryTimerResolution) (ULONG *, ULONG *, ULONG *) = nullptr;
+    static UINT (WINAPI *NtSetTimerResolution) (ULONG, BOOL, ULONG *) = nullptr;
+    static int timer_resolution = 12500;
 
-    if (timer == nullptr)
-        timer = CreateWaitableTimer(nullptr, true, nullptr);
+    if (NtDelayExecution == nullptr)
+    {
+        HMODULE ntdll = ::GetModuleHandleW(L"ntdll.dll");
+
+        if (ntdll)
+        {
+            NtDelayExecution = reinterpret_cast<typeof NtDelayExecution>(GetProcAddress(ntdll, "NtDelayExecution"));
+            NtQueryTimerResolution = reinterpret_cast<typeof NtQueryTimerResolution>(GetProcAddress(ntdll, "NtQueryTimerResolution"));
+            NtSetTimerResolution   = reinterpret_cast<typeof NtSetTimerResolution>(GetProcAddress(ntdll, "NtSetTimerResolution"));
+        }
+
+        if (NtQueryTimerResolution)
+        {
+            ULONG min, max, current;
+            NtQueryTimerResolution(&min, &max, &current);
+
+            if (NtSetTimerResolution)
+                NtSetTimerResolution(max, true, &current);
+
+            timer_resolution = current * 5 / 4;
+        }
+    }
 
     auto time_to_wait = remaining();
 
-    if (time_to_wait < -frame_duration_us)
+    if (time_to_wait < -(frame_duration_us / 8))
     {
         reset();
         return;
     }
 
-    if (time_to_wait.count() > 2000)
+    if (NtDelayExecution)
     {
-        LARGE_INTEGER li;
-        li.QuadPart = -(time_to_wait.count() - 2000) * 10;
-        SetWaitableTimer(timer, &li, 0, nullptr, nullptr, false);
-        WaitForSingleObject(timer, INFINITE);
+        if (time_to_wait.count() * 10 > timer_resolution)
+        {
+            LARGE_INTEGER li;
+            li.QuadPart = -(time_to_wait.count() * 10 - timer_resolution);
+            NtDelayExecution(false, &li);
+        }
     }
 
     time_to_wait = remaining();
@@ -64,7 +89,7 @@ void Throttle::wait_for_frame()
     }
 
     if (time_to_wait.count() > 1000)
-        std::this_thread::sleep_for(time_to_wait - 1ms);
+        std::this_thread::sleep_for(time_to_wait - 1000us);
 
     time_to_wait = remaining();
     while (time_to_wait.count() > 0)

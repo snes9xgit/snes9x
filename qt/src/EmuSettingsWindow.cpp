@@ -1,10 +1,11 @@
 #include "EmuSettingsWindow.hpp"
-#include "src/EmuMainWindow.hpp"
+#include "EmuMainWindow.hpp"
+#include "EmuConfig.hpp"
 
 #include <QScrollArea>
 
-EmuSettingsWindow::EmuSettingsWindow(QWidget *parent, EmuApplication *app)
-    : QDialog(parent), app(app)
+EmuSettingsWindow::EmuSettingsWindow(QWidget *parent, EmuApplication *app_)
+    : QDialog(parent), app(app_)
 {
     setupUi(this);
 
@@ -35,12 +36,18 @@ EmuSettingsWindow::EmuSettingsWindow(QWidget *parent, EmuApplication *app)
 
     stackedWidget->setCurrentIndex(0);
 
-    closeButton->connect(closeButton, &QPushButton::clicked, [&](bool) {
+    connect(closeButton, &QPushButton::clicked, [&](bool) {
         this->close();
     });
 
-    panelList->connect(panelList, &QListWidget::currentItemChanged, [&](QListWidgetItem *prev, QListWidgetItem *cur) {
+    connect(panelList, &QListWidget::currentItemChanged, [&](QListWidgetItem *prev, QListWidgetItem *cur) {
         stackedWidget->setCurrentIndex(panelList->currentRow());
+    });
+
+    connect(defaultsButton, &QPushButton::clicked, [&](bool) {
+        app->config->setDefaults(stackedWidget->currentIndex());
+        stackedWidget->currentWidget()->hide();
+        stackedWidget->currentWidget()->show();
     });
 }
 

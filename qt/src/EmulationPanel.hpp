@@ -1,6 +1,7 @@
 #pragma once
 #include "ui_EmulationPanel.h"
-#include "EmuApplication.hpp"
+
+class EmuApplication;
 
 class EmulationPanel :
     public Ui::EmulationPanel,

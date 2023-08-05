@@ -1,4 +1,5 @@
 #include "EmuCanvas.hpp"
+#include "EmuConfig.hpp"
 #include <qnamespace.h>
 #include <qwidget.h>
 

@@ -13,6 +13,7 @@
 #include "EmuMainWindow.hpp"
 #include "EmuSettingsWindow.hpp"
 #include "EmuApplication.hpp"
+#include "EmuBinding.hpp"
 #include "EmuCanvasVulkan.hpp"
 #include "EmuCanvasOpenGL.hpp"
 #include "EmuCanvasQt.hpp"
@@ -464,10 +465,13 @@ bool EmuMainWindow::event(QEvent *event)
     switch (event->type())
     {
     case QEvent::Close:
+        app->suspendThread();
         if (isFullScreen())
         {
             toggleFullscreen();
         }
+        QGuiApplication::processEvents();
+        QGuiApplication::sync();
         app->stopThread();
         if (canvas)
             canvas->deinit();

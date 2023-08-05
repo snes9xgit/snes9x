@@ -145,9 +145,10 @@ void ShaderParametersDialog::save()
 
     saved_parameters = *parameters;
 
-    auto filename = config->findConfigDir() + "/customized_shader" + extension;
-    canvas->saveParameters(filename);
-    config->shader = filename;
+    QDir dir(config->findConfigDir().c_str());
+    auto filename = dir.absoluteFilePath(QString::fromStdString("customized_shader" + extension));
+    canvas->saveParameters(filename.toStdString());
+    config->shader = QDir::toNativeSeparators(filename).toStdString();
 }
 
 void ShaderParametersDialog::saveAs()
@@ -155,7 +156,7 @@ void ShaderParametersDialog::saveAs()
     auto folder = config->last_shader_folder;
     auto filename = QFileDialog::getSaveFileName(this, tr("Save Shader Preset As"), folder.c_str());
     canvas->saveParameters(filename.toStdString());
-    config->shader = filename.toStdString();
+    config->shader = QDir::toNativeSeparators(filename).toStdString();
 }
 
 void ShaderParametersDialog::refreshWidgets()

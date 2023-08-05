@@ -1,6 +1,10 @@
 #include "EmuCanvasQt.hpp"
+#include "EmuConfig.hpp"
+
 #include <QGuiApplication>
 #include <QtEvents>
+#include <QThread>
+#include <qguiapplication.h>
 
 EmuCanvasQt::EmuCanvasQt(EmuConfig *config, QWidget *parent, QWidget *main_window)
     : EmuCanvas(config, parent, main_window)
@@ -19,8 +23,11 @@ void EmuCanvasQt::deinit()
 
 void EmuCanvasQt::draw()
 {
-    QWidget::repaint(0, 0, width(), height());
+    qimage_mutex.lock();
+    qimage = QImage((const uchar *)output_data.buffer, output_data.width, output_data.height, output_data.bytes_per_line, output_data.format);
+    qimage_mutex.unlock();
     throttle();
+    update();
 }
 
 void EmuCanvasQt::paintEvent(QPaintEvent *event)
@@ -34,7 +41,6 @@ void EmuCanvasQt::paintEvent(QPaintEvent *event)
     }
 
     QPainter paint(this);
-    QImage image((const uchar *)output_data.buffer, output_data.width, output_data.height, output_data.bytes_per_line, output_data.format);
     paint.setRenderHint(QPainter::SmoothPixmapTransform, config->bilinear_filter);
     QRect dest = { 0, 0, width(), height() };
     if (config->maintain_aspect_ratio)
@@ -43,7 +49,9 @@ void EmuCanvasQt::paintEvent(QPaintEvent *event)
         dest = applyAspect(dest);
     }
 
-    paint.drawImage(dest, image, QRect(0, 0, output_data.width, output_data.height));
+    qimage_mutex.lock();
+    paint.drawImage(dest, qimage, QRect(0, 0, output_data.width, output_data.height));
+    qimage_mutex.unlock();
 }
 
 void EmuCanvasQt::resizeEvent(QResizeEvent *event)

@@ -22,7 +22,7 @@ class WGLContext : public OpenGLContext
     void swap_buffers() override;
     void swap_interval(int frames) override;
     void make_current() override;
-    bool ready();
+    bool ready() override;
     void deinit();
 
     HWND hwnd;

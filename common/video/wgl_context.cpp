@@ -25,8 +25,7 @@ WGLContext::~WGLContext()
 
 void WGLContext::deinit()
 {
-    if (wglMakeCurrent)
-        wglMakeCurrent(nullptr, nullptr);
+    wglMakeCurrent(nullptr, nullptr);
     if (hglrc)
         wglDeleteContext(hglrc);
     if (hdc)

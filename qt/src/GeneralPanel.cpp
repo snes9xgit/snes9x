@@ -1,4 +1,6 @@
 #include "GeneralPanel.hpp"
+#include "EmuApplication.hpp"
+#include "EmuConfig.hpp"
 
 GeneralPanel::GeneralPanel(EmuApplication *app_)
     : app(app_)

@@ -1,5 +1,7 @@
 #include "ControllerPanel.hpp"
 #include "SDLInputManager.hpp"
+#include "EmuApplication.hpp"
+#include "EmuConfig.hpp"
 #include "SDL_gamecontroller.h"
 #include <optional>
 #include <QtEvents>

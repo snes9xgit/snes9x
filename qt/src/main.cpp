@@ -1,11 +1,25 @@
 #include "EmuApplication.hpp"
+#include "EmuConfig.hpp"
+#include "EmuMainWindow.hpp"
+#include "SDLInputManager.hpp"
+
+#include <QStyle>
+#include <QStyleHints>
+#include <qnamespace.h>
 
 #ifndef _WIN32
 #include <csignal>
 #endif
 
+#ifdef _WIN32
+int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, const char *lpCmdLine, int nShowCmd)
+{
+    char **argv = nullptr;
+    int argc = 0;
+#else
 int main(int argc, char *argv[])
 {
+#endif
     EmuApplication emu;
     emu.qtapp = std::make_unique<QApplication>(argc, argv);
 

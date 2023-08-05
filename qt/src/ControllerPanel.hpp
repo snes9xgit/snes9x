@@ -1,8 +1,9 @@
 #pragma once
 #include "ui_ControllerPanel.h"
 #include "BindingPanel.hpp"
-#include "EmuApplication.hpp"
 #include <QMenu>
+
+class EmuApplication;
 
 class ControllerPanel :
     public Ui::ControllerPanel,

@@ -1,8 +1,10 @@
 #pragma once
-#include <QtEvents>
-#include <QIcon>
+
+#include <QWidget>
 #include <QTableWidget>
-#include "EmuApplication.hpp"
+#include "EmuBinding.hpp"
+
+class EmuApplication;
 
 class BindingPanel : public QWidget
 {

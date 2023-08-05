@@ -16,7 +16,7 @@ class EmuCanvasVulkan : public EmuCanvas
     EmuCanvasVulkan(EmuConfig *config, QWidget *parent, QWidget *main_window);
     ~EmuCanvasVulkan();
 
-    void createContext();
+    void createContext() override;
     void deinit() override;
     void paintEvent(QPaintEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
@@ -30,7 +30,7 @@ class EmuCanvasVulkan : public EmuCanvas
     void draw() override;
 
     bool initImGui();
-    void recreateUIAssets();
+    void recreateUIAssets() override;
     vk::UniqueRenderPass imgui_render_pass;
     vk::UniqueDescriptorPool imgui_descriptor_pool;
 

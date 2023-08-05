@@ -76,6 +76,7 @@ add_library(snes9x-core ${SNES9X_CORE_SOURCES})
 target_include_directories(snes9x-core PRIVATE ../)
 target_compile_definitions(snes9x-core PRIVATE ZLIB HAVE_STDINT_H ALLOW_CPU_OVERCLOCK)
 
+
 find_package(Qt6 REQUIRED COMPONENTS Widgets Gui)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL REQUIRED sdl2)
@@ -153,8 +154,10 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 else()
     list(APPEND PLATFORM_SOURCES
         ../common/video/wgl_context.cpp
-        ../external/glad/src/wgl.c)
+        ../external/glad/src/wgl.c
+        src/resources/snes9x_icon.rc)
     list(APPEND LIBS opengl32)
+    list(APPEND DEFINES SDL_MAIN_HANDLED)
 endif()
 
 set(QT_UI_FILES
@@ -170,6 +173,7 @@ set(QT_UI_FILES
 set(USE_SANITIZERS CACHE BOOL OFF)
 set(BUILD_TESTS CACHE BOOL OFF)
 set(BUILD_TOOLS CACHE BOOL OFF)
+set(BUNDLE_SPEEX FORCE BOOL ON)
 add_subdirectory("../external/cubeb" "cubeb" EXCLUDE_FROM_ALL)
 list(APPEND LIBS cubeb)
 list(APPEND INCLUDES "../external/cubeb/include")
@@ -255,6 +259,10 @@ list(APPEND SOURCES ../external/imgui/imgui.cpp
 list(APPEND INCLUDES ../external/imgui)
 
 add_executable(snes9x-qt ${QT_GUI_SOURCES} ${SOURCES} ${PLATFORM_SOURCES} src/resources/snes9x.qrc)
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+set_target_properties(snes9x-qt PROPERTIES WIN32_EXECUTABLE True)
+endif()
 target_link_libraries(snes9x-qt snes9x-core ${LIBS})
 target_compile_definitions(snes9x-qt PRIVATE ${DEFINES})
 target_compile_options(snes9x-qt PRIVATE ${FLAGS})

@@ -1,4 +1,6 @@
 #include "SoundPanel.hpp"
+#include "EmuApplication.hpp"
+#include "EmuConfig.hpp"
 
 static const int playback_rates[] = { 96000, 48000, 44100 };
 

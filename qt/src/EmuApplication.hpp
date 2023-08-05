@@ -3,11 +3,12 @@
 #include <QTimer>
 #include <QThread>
 
-#include "EmuMainWindow.hpp"
-#include "EmuConfig.hpp"
-#include "SDLInputManager.hpp"
-#include "Snes9xController.hpp"
-#include "common/audio/s9x_sound_driver.hpp"
+class EmuMainWindow;
+class EmuConfig;
+class EmuBinding;
+class SDLInputManager;
+class Snes9xController;
+class S9xSoundDriver;
 
 struct EmuThread : public QThread
 {

@@ -1,4 +1,6 @@
 #include "DisplayPanel.hpp"
+#include "EmuMainWindow.hpp"
+#include "EmuConfig.hpp"
 #include <QFileDialog>
 
 DisplayPanel::DisplayPanel(EmuApplication *app_)

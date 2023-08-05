@@ -185,7 +185,9 @@ void EmuCanvasVulkan::draw()
         throttle();
         context->swapchain->swap();
         if (config->reduce_input_lag)
+        {
             context->wait_idle();
+        }
     }
 }
 

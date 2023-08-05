@@ -17,6 +17,7 @@ using namespace QNativeInterface;
 #include "EmuMainWindow.hpp"
 #include "snes9x_imgui.h"
 #include "imgui_impl_opengl3.h"
+#include <locale.h>
 
 static const char *stock_vertex_shader_140 = R"(
 #version 140

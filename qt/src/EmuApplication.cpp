@@ -1,4 +1,7 @@
 #include "EmuApplication.hpp"
+#include "EmuMainWindow.hpp"
+#include "SDLInputManager.hpp"
+#include "Snes9xController.hpp"
 #include "common/audio/s9x_sound_driver_sdl.hpp"
 #include "common/audio/s9x_sound_driver_cubeb.hpp"
 #include <qlabel.h>
@@ -135,13 +138,14 @@ void EmuApplication::startGame()
     core->screen_output_function = [&](uint16_t *data, int width, int height, int stride_bytes, double frame_rate) {
         if (window->canvas)
         {
-            QMetaObject::invokeMethod(window.get(), "output", Qt::ConnectionType::DirectConnection,
-                Q_ARG(uint8_t *, (uint8_t *)data),
-                Q_ARG(int, width),
-                Q_ARG(int, height),
-                Q_ARG(QImage::Format, QImage::Format_RGB16),
-                Q_ARG(int, stride_bytes),
-                Q_ARG(double, frame_rate));
+            window->output((uint8_t *)data, width, height, QImage::Format_RGB16, stride_bytes, frame_rate);
+            // QMetaObject::invokeMethod(window.get(), "output", Qt::ConnectionType::DirectConnection,
+            //     Q_ARG(uint8_t *, (uint8_t *)data),
+            //     Q_ARG(int, width),
+            //     Q_ARG(int, height),
+            //     Q_ARG(QImage::Format, QImage::Format_RGB16),
+            //     Q_ARG(int, stride_bytes),
+            //     Q_ARG(double, frame_rate));
         }
     };
 
