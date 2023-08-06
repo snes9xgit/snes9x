@@ -59,7 +59,7 @@ void ControllerPanel::recreateAutoAssignMenu()
 
     for (int i = 0; i < app->config->allowed_bindings; i++)
     {
-        auto slot_menu = auto_assign_menu.addMenu(tr("Slot %1").arg(i));
+        auto slot_menu = auto_assign_menu.addMenu(tr("Binding Set #%1").arg(i + 1));
         auto default_keyboard = slot_menu->addAction(tr("Default Keyboard"));
         default_keyboard->connect(default_keyboard, &QAction::triggered, [&, slot = i](bool) {
             autoPopulateWithKeyboard(slot);
