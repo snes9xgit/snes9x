@@ -185,8 +185,20 @@ std::string EmuConfig::findConfigFile()
     return path.string();
 }
 
-void EmuConfig::setDefaults(int section)
+bool EmuConfig::setDefaults(int section)
 {
+    main_window_width = 640;
+    main_window_height = 480;
+
+    bool restart = false;
+    auto restart_set = [&](auto& dst, auto str) {
+        if (dst != str)
+        {
+            restart = true;
+            dst = str;
+        }
+    };
+
     if (section == -1 || section == 0)
     {
         // General
@@ -203,20 +215,22 @@ void EmuConfig::setDefaults(int section)
     if (section == -1 || section == 1)
     {
         // Display
-        display_driver = {};
-        display_device_index = 0;
+        restart_set(display_driver, "vulkan");
+        restart_set(display_device_index, 0);
         enable_vsync = true;
         ;
         bilinear_filter = true;
         ;
         reduce_input_lag = true;
         adjust_for_vrr = false;
-        use_shader = false;
-        shader = {};
+        restart_set(use_shader, false);
+        if (use_shader)
+            restart_set(shader, "");
+        else
+            shader = {};
         last_shader_folder = {};
 
         scale_image = true;
-        ;
         maintain_aspect_ratio = true;
         use_integer_scaling = false;
         aspect_ratio_numerator = 4;
@@ -233,10 +247,10 @@ void EmuConfig::setDefaults(int section)
     if (section == -1 || section == 2)
     {
         // Sound
-        sound_driver = {};
+        restart_set(sound_driver, "cubeb");
         sound_device = {};
-        playback_rate = 48000;
-        audio_buffer_size_ms = 64;
+        restart_set(playback_rate, 48000);
+        restart_set(audio_buffer_size_ms, 64);
 
         adjust_input_rate_automatically = true;
         input_rate = 31979;
@@ -301,6 +315,8 @@ void EmuConfig::setDefaults(int section)
         patch_location = eROMDirectory;
         export_location = eROMDirectory;
     }
+
+    return restart;
 }
 
 void EmuConfig::config(std::string filename, bool write)
@@ -370,7 +386,7 @@ void EmuConfig::config(std::string filename, bool write)
 
             if (settings.contains(key))
                 entry = settings.value(key).toString().toLower();
-            else 
+            else
                 return;
 
             for (size_t i = 0; i < map.size(); i++)

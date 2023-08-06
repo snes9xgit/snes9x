@@ -333,7 +333,8 @@ void EmuMainWindow::createWidgets()
 
 void EmuMainWindow::resizeToMultiple(int multiple)
 {
-    resize((224 * multiple) * app->config->aspect_ratio_numerator / app->config->aspect_ratio_denominator, (224 * multiple) + menuBar()->height());
+    double hidpi_height = 224 / devicePixelRatioF();
+    resize((hidpi_height * multiple) * app->config->aspect_ratio_numerator / app->config->aspect_ratio_denominator, (hidpi_height * multiple) + menuBar()->height());
 }
 
 void EmuMainWindow::setBypassCompositor(bool bypass)

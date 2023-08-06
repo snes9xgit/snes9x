@@ -8,7 +8,7 @@
 EmuCanvasQt::EmuCanvasQt(EmuConfig *config, QWidget *parent, QWidget *main_window)
     : EmuCanvas(config, parent, main_window)
 {
-    setMinimumSize(256, 224);
+    setMinimumSize(256 / devicePixelRatioF(), 224 / devicePixelRatioF());
 }
 
 EmuCanvasQt::~EmuCanvasQt()

@@ -10,7 +10,7 @@ struct EmuConfig
 {
     static std::string findConfigFile();
     static std::string findConfigDir();
-    void setDefaults(int section = -1);
+    bool setDefaults(int section = -1);
     void config(std::string filename, bool write);
     void loadFile(std::string filename)
     {

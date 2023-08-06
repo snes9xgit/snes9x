@@ -114,12 +114,18 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QPushButton" name="defaultsButton">
+       <property name="focusPolicy">
+        <enum>Qt::TabFocus</enum>
+       </property>
        <property name="text">
         <string>Restore Defaults</string>
        </property>
        <property name="icon">
         <iconset theme="view-refresh">
          <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
        </property>
       </widget>
      </item>

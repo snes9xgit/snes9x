@@ -45,9 +45,21 @@ EmuSettingsWindow::EmuSettingsWindow(QWidget *parent, EmuApplication *app_)
     });
 
     connect(defaultsButton, &QPushButton::clicked, [&](bool) {
-        app->config->setDefaults(stackedWidget->currentIndex());
+        auto section = stackedWidget->currentIndex();
+        bool restart_needed = app->config->setDefaults(stackedWidget->currentIndex());
         stackedWidget->currentWidget()->hide();
         stackedWidget->currentWidget()->show();
+
+        if (restart_needed)
+        {
+            if (section == 1) // Display
+                app->window->recreateCanvas();
+            else if (section == 2) // Sound
+                app->restartAudio();
+            else if (section == 4 || section == 5) // Controller Bindings
+                app->updateBindings();
+        }
+        app->updateSettings();
     });
 }
 
@@ -61,4 +73,5 @@ void EmuSettingsWindow::show(int page)
     stackedWidget->setCurrentIndex(page);
     if (!isVisible())
         open();
+    closeButton->setDefault(false);
 }
