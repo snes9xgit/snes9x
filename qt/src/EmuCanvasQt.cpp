@@ -4,7 +4,6 @@
 #include <QGuiApplication>
 #include <QtEvents>
 #include <QThread>
-#include <qguiapplication.h>
 
 EmuCanvasQt::EmuCanvasQt(EmuConfig *config, QWidget *parent, QWidget *main_window)
     : EmuCanvas(config, parent, main_window)
@@ -24,7 +23,16 @@ void EmuCanvasQt::deinit()
 void EmuCanvasQt::draw()
 {
     qimage_mutex.lock();
-    qimage = QImage((const uchar *)output_data.buffer, output_data.width, output_data.height, output_data.bytes_per_line, output_data.format);
+    if (qimage.width() != output_data.width || qimage.height() != output_data.height || qimage.format() != output_data.format)
+    {
+        qimage = QImage(output_data.width, output_data.height, output_data.format);
+    }
+
+    for (int y = 0; y < output_data.height; y++)
+        memcpy(qimage.bits() + (output_data.width * 2 * y),
+               &output_data.buffer[output_data.bytes_per_line * y],
+               output_data.width * 2);
+
     qimage_mutex.unlock();
     throttle();
     update();
