@@ -24,6 +24,7 @@
 -DFEATURE_system_harfbuzz=0
 -DFEATURE_system_jpeg=0
 -DFEATURE_system_libb2=0
+-DFEATURE_system_pcre2=0
 -DFEATURE_system_png=0
 -DFEATURE_system_proxies=0
 -DFEATURE_system_textmarkdownreader=0
