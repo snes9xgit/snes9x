@@ -215,6 +215,8 @@ void EmuApplication::stopThread()
     {
         std::this_thread::yield();
     }
+
+    emu_thread = nullptr;
 }
 
 void EmuApplication::unpause()

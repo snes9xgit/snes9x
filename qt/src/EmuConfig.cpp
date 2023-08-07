@@ -8,6 +8,8 @@ namespace fs = std::filesystem;
 #include "EmuBinding.hpp"
 #include <functional>
 #include <QSettings>
+#include <QGuiApplication>
+#include <QDir>
 
 static const char *shortcut_names[] =
 {
@@ -141,6 +143,11 @@ std::string EmuConfig::findConfigDir()
 {
     char *dir;
     fs::path path;
+
+    auto app_dir_path = QGuiApplication::applicationDirPath();
+    auto config_file = QDir(app_dir_path).absoluteFilePath("snes9x.conf");
+    if (QFile::exists(config_file))
+        return app_dir_path.toStdString();
 
 #ifndef _WIN32
     if ((dir = getenv("XDG_CONFIG_HOME")))

@@ -297,6 +297,7 @@ void S9xImGuiInit(S9xImGuiInitInfo *init_info)
     }
 
     ImGui::CreateContext();
+    ImGui::GetIO().IniFilename = nullptr;
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouse;
     ImGui::StyleColorsLight();
     ImFontGlyphRangesBuilder builder;

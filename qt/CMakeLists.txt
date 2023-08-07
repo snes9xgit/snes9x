@@ -11,6 +11,11 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_GLOBAL_AUTOGEN_TARGET ON)
 
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+set(CMAKE_PREFIX_PATH "../external/qt6-mingw-clang-bin")
+endif()
+
 set(DEFINES SNES9X_QT)
 set(SNES9X_CORE_SOURCES
     ../fxinst.cpp
