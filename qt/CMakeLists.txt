@@ -11,11 +11,6 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_GLOBAL_AUTOGEN_TARGET ON)
 
-
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-set(CMAKE_PREFIX_PATH "../external/qt6-mingw-clang-bin")
-endif()
-
 set(DEFINES SNES9X_QT)
 set(SNES9X_CORE_SOURCES
     ../fxinst.cpp
@@ -81,21 +76,55 @@ add_library(snes9x-core ${SNES9X_CORE_SOURCES})
 target_include_directories(snes9x-core PRIVATE ../)
 target_compile_definitions(snes9x-core PRIVATE ZLIB HAVE_STDINT_H ALLOW_CPU_OVERCLOCK)
 
-
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+    set(CMAKE_PREFIX_PATH "../external/qt6-mingw-clang-bin")
+endif()
 find_package(Qt6 REQUIRED COMPONENTS Widgets Gui)
+list(APPEND LIBS Qt6::Widgets Qt6::Gui)
+list(APPEND INCLUDES ${Qt6Gui_PRIVATE_INCLUDE_DIRS})
+
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL REQUIRED sdl2)
 pkg_check_modules(ZLIB REQUIRED zlib)
-list(APPEND LIBS Qt6::Widgets Qt6::Gui ${SDL_LIBRARIES} ${ZLIB_LIBRARIES})
-list(APPEND INCLUDES ${SDL_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS}${Qt6Gui_PRIVATE_INCLUDE_DIRS})
+list(APPEND INCLUDES ${SDL_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
 list(APPEND FLAGS ${SDL_COMPILE_FLAGS} ${ZLIB_COMPILE_FLAGS})
 
-pkg_check_modules(PULSEAUDIO libpulse)
-if(PULSEAUDIO_FOUND)
-    list(APPEND LIBS ${PULSEAUDIO_LIBRARIES})
-    list(APPEND INCLUDES ${PULSEAUDIO_INCLUDE_DIRS})
-    list(APPEND DEFINES "USE_PULSEAUDIO")
-    list(APPEND PLATFORM_SOURCES ../common/audio/s9x_sound_driver_pulse.cpp)
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+    list(APPEND LIBS opengl32 libSDL2.a libz.a libc++.a)
+    list(APPEND DEFINES SDL_MAIN_HANDLED)
+    list(APPEND PLATFORM_SOURCES
+        ../common/video/wgl_context.cpp
+        ../external/glad/src/wgl.c
+        src/resources/snes9x_win32.rc)
+else()
+
+    pkg_check_modules(WAYLAND REQUIRED wayland-client wayland-egl)
+    include(FindX11)
+    if(NOT X11_FOUND)
+        error()
+    endif()
+
+    list(APPEND INCLUDES ${WAYLAND_INCLUDE_DIRS} ${X11_INCLUDE_DIRS})
+    list(APPEND LIBS ${WAYLAND_LIBRARIES} ${X11_LIBRARIES} ${ZLIB_LIBRARIES ${SDL_LIBRARIES}})
+    list(APPEND FLAGS ${WAYLAND_CFLAGS})
+
+    pkg_check_modules(PULSEAUDIO libpulse)
+    if(PULSEAUDIO_FOUND)
+        list(APPEND LIBS ${PULSEAUDIO_LIBRARIES})
+        list(APPEND INCLUDES ${PULSEAUDIO_INCLUDE_DIRS})
+        list(APPEND DEFINES "USE_PULSEAUDIO")
+        list(APPEND PLATFORM_SOURCES ../common/audio/s9x_sound_driver_pulse.cpp)
+    endif()
+
+    list(APPEND PLATFORM_SOURCES
+    ../common/video/glx_context.cpp
+    ../common/video/wayland_egl_context.cpp
+    ../common/video/wayland_surface.cpp
+    ../common/video/fractional-scale-v1.c
+    ../common/video/viewporter-client-protocol.c
+    ../common/video/wayland-idle-inhibit-unstable-v1.c
+    ../external/glad/src/glx.c
+    ../external/glad/src/egl.c)
 endif()
 
 list(APPEND QT_GUI_SOURCES
@@ -134,36 +163,6 @@ list(APPEND QT_GUI_SOURCES
     ../filter/snes_ntsc.h
     ../filter/snes_ntsc_impl.h
     ../filter/snes_ntsc.c)
-
-if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-    pkg_check_modules(WAYLAND REQUIRED wayland-client wayland-egl)
-
-    include(FindX11)
-    if(NOT X11_FOUND)
-        error()
-    endif()
-
-    list(APPEND INCLUDES ${WAYLAND_INCLUDE_DIRS} ${X11_INCLUDE_DIRS})
-    list(APPEND LIBS ${WAYLAND_LIBRARIES} ${X11_LIBRARIES})
-    list(APPEND FLAGS ${WAYLAND_CFLAGS})
-
-    list(APPEND PLATFORM_SOURCES
-        ../common/video/glx_context.cpp
-        ../common/video/wayland_egl_context.cpp
-        ../common/video/wayland_surface.cpp
-        ../common/video/fractional-scale-v1.c
-        ../common/video/viewporter-client-protocol.c
-        ../common/video/wayland-idle-inhibit-unstable-v1.c
-        ../external/glad/src/glx.c
-        ../external/glad/src/egl.c)
-else()
-    list(APPEND PLATFORM_SOURCES
-        ../common/video/wgl_context.cpp
-        ../external/glad/src/wgl.c
-        src/resources/snes9x_icon.rc)
-    list(APPEND LIBS opengl32)
-    list(APPEND DEFINES SDL_MAIN_HANDLED)
-endif()
 
 set(QT_UI_FILES
     src/GeneralPanel.ui
@@ -266,7 +265,7 @@ list(APPEND INCLUDES ../external/imgui)
 add_executable(snes9x-qt ${QT_GUI_SOURCES} ${SOURCES} ${PLATFORM_SOURCES} src/resources/snes9x.qrc)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-set_target_properties(snes9x-qt PROPERTIES WIN32_EXECUTABLE True)
+    set_target_properties(snes9x-qt PROPERTIES WIN32_EXECUTABLE True)
 endif()
 target_link_libraries(snes9x-qt snes9x-core ${LIBS})
 target_compile_definitions(snes9x-qt PRIVATE ${DEFINES})

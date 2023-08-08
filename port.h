@@ -124,9 +124,15 @@ typedef size_t				pint;
 
 #define S9xDisplayString	DisplayStringFromBottom
 #ifdef __WIN32__
-#define snprintf _snprintf
-#define strcasecmp	stricmp
-#define strncasecmp	strnicmp
+#ifndef snprintf
+   #define snprintf _snprintf
+#endif
+#ifndef strcasecmp
+   #define strcasecmp	stricmp
+#endif
+#ifndef strncasecmp
+   #define strncasecmp	strnicmp
+#endif
 #endif  // __WIN32__
 
 #if defined(__DJGPP) || defined(__WIN32__)

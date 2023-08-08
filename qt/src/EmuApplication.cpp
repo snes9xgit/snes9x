@@ -4,16 +4,15 @@
 #include "Snes9xController.hpp"
 #include "common/audio/s9x_sound_driver_sdl.hpp"
 #include "common/audio/s9x_sound_driver_cubeb.hpp"
-#include <qlabel.h>
-#include <qnamespace.h>
 #ifdef USE_PULSEAUDIO
 #include "common/audio/s9x_sound_driver_pulse.hpp"
 #endif
+
 #include <QTimer>
 #include <QScreen>
-#include <chrono>
-#include <thread>
 #include <QThread>
+#include <thread>
+#include <chrono>
 using namespace std::chrono_literals;
 
 #undef SOUND_BUFFER_WINDOW
