@@ -5,6 +5,7 @@
 
 #include <QStyle>
 #include <QStyleHints>
+#include <clocale>
 #include <qnamespace.h>
 
 #ifndef _WIN32
@@ -16,6 +17,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, const char *lpCmdLine,
 {
     char **argv = nullptr;
     int argc = 0;
+    setlocale(LC_ALL, ".utf8");
 #else
 int main(int argc, char *argv[])
 {

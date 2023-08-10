@@ -127,14 +127,14 @@ void EmuCanvasVulkan::tryLoadShader()
     if (config->use_shader && !config->shader.empty())
     {
         shader_chain = std::make_unique<Vulkan::ShaderChain>(context.get());
-        setlocale(LC_NUMERIC, "C");
+        auto previous_locale = setlocale(LC_NUMERIC, "C");
         current_shader = config->shader;
         if (!shader_chain->load_shader_preset(config->shader))
         {
             printf("Couldn't load shader preset: %s\n", config->shader.c_str());
             shader_chain.reset();
         }
-        setlocale(LC_NUMERIC, "");
+        setlocale(LC_NUMERIC, previous_locale);
     }
 
     if (!shader_chain)

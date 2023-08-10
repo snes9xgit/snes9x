@@ -212,7 +212,7 @@ void EmuCanvasOpenGL::loadShaders()
     }
     else
     {
-        setlocale(LC_NUMERIC, "C");
+        auto previous_locale = setlocale(LC_NUMERIC, "C");
         shader = std::make_unique<GLSLShader>();
         if (!shader->load_shader(config->shader.c_str()))
         {
@@ -220,7 +220,7 @@ void EmuCanvasOpenGL::loadShaders()
             using_shader = false;
             createStockShaders();
         }
-        setlocale(LC_NUMERIC, "");
+        setlocale(LC_NUMERIC, previous_locale);
     }
 }
 
