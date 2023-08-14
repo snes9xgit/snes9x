@@ -534,7 +534,7 @@ std::string S9xCheatToText(const SCheat &c)
     return std::string(output);
 }
 
-std::string S9xCheatGroupToText(SCheatGroup &g)
+std::string S9xCheatGroupToText(const SCheatGroup &g)
 {
     std::string text = "";
 

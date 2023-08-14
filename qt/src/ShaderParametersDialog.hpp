@@ -16,6 +16,7 @@ class ShaderParametersDialog : public QDialog
     void refreshWidgets();
     void showEvent(QShowEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
     void save();
     void saveAs();
 

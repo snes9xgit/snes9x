@@ -31,6 +31,10 @@ struct EmuConfig
     std::string last_rom_folder;
     int main_window_width = 0;
     int main_window_height = 0;
+    int cheat_dialog_width = 0;
+    int cheat_dialog_height = 0;
+    int shader_parameters_dialog_width = 0;
+    int shader_parameters_dialog_height = 0;
     std::vector<std::string> recently_used;
 
     // General

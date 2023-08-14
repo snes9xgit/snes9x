@@ -7,6 +7,7 @@
 #include <QSpacerItem>
 #include <QScrollArea>
 #include <QFileDialog>
+#include <QResizeEvent>
 
 static bool is_simple(const EmuCanvas::Parameter &p)
 {
@@ -129,6 +130,9 @@ ShaderParametersDialog::ShaderParametersDialog(EmuCanvas *parent_, std::vector<E
     scroll_area->setWidget(scroll_area_widget_contents);
     layout->addWidget(scroll_area);
     layout->addLayout(buttonbox, 0);
+
+    if (config->shader_parameters_dialog_width != 0)
+        resize(config->shader_parameters_dialog_width, config->shader_parameters_dialog_height);
 }
 
 void ShaderParametersDialog::save()
@@ -195,6 +199,12 @@ void ShaderParametersDialog::showEvent(QShowEvent *event)
 void ShaderParametersDialog::closeEvent(QCloseEvent *event)
 {
     *parameters = saved_parameters;
+}
+
+void ShaderParametersDialog::resizeEvent(QResizeEvent *event)
+{
+    config->shader_parameters_dialog_width = event->size().width();
+    config->shader_parameters_dialog_height = event->size().height();
 }
 
 ShaderParametersDialog::~ShaderParametersDialog()

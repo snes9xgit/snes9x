@@ -6,6 +6,7 @@
 #include "EmuCanvas.hpp"
 
 class EmuApplication;
+class CheatsDialog;
 
 class EmuMainWindow : public QMainWindow
 {
@@ -35,6 +36,7 @@ class EmuMainWindow : public QMainWindow
     bool openFile(std::string filename);
     void recreateUIAssets();
     void shaderChanged();
+    void gameChanging();
     std::vector<std::string> getDisplayDeviceList();
     EmuApplication *app;
     EmuCanvas *canvas;
@@ -45,6 +47,8 @@ class EmuMainWindow : public QMainWindow
 
     static const size_t recent_menu_size = 10;
     static const size_t state_items_size = 10;
+
+    std::unique_ptr<CheatsDialog> cheats_dialog;
 
     bool manual_pause = false;
     bool focus_pause = false;

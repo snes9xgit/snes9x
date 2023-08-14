@@ -417,6 +417,11 @@ void EmuConfig::config(std::string filename, bool write)
     String("LastROMFolder", last_rom_folder);
     Int("MainWindowWidth", main_window_width);
     Int("MainWindowHeight", main_window_height);
+    Int("ShaderParametersDialogWidth", shader_parameters_dialog_width);
+    Int("ShaderParametersDialogHeight", shader_parameters_dialog_height);
+    Int("CheatDialogWidth", cheat_dialog_width);
+    Int("CheatDialogHeight", cheat_dialog_height);
+
     int recent_count = recently_used.size();
     Int("RecentlyUsedEntries", recent_count);
     if (!write)

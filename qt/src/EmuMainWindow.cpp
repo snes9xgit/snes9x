@@ -18,7 +18,6 @@
 #include "EmuCanvasOpenGL.hpp"
 #include "EmuCanvasQt.hpp"
 #include "CheatsDialog.hpp"
-#include "ShaderParametersDialog.hpp"
 #undef KeyPress
 
 static EmuSettingsWindow *g_emu_settings_window = nullptr;
@@ -265,7 +264,9 @@ void EmuMainWindow::createWidgets()
 
     auto cheats_item = emulation_menu->addAction(tr("&Cheats"));
     connect(cheats_item, &QAction::triggered, [&] {
-        auto cheats_dialog = new CheatsDialog(this, app);
+        if (!cheats_dialog)
+            cheats_dialog = std::make_unique<CheatsDialog>(this, app);
+        cheats_dialog->show();
     });
     core_actions.push_back(cheats_item);
 
@@ -662,4 +663,10 @@ void EmuMainWindow::shaderChanged()
         if (canvas)
             canvas->shaderChanged();
     });
+}
+
+void EmuMainWindow::gameChanging()
+{
+    if (cheats_dialog)
+        cheats_dialog->close();
 }

@@ -81,6 +81,7 @@ int S9xModifyCheatGroup(uint32_t index, const std::string &name, const std::stri
 void S9xEnableCheatGroup(uint32_t index);
 void S9xDisableCheatGroup(uint32_t index);
 void S9xDeleteCheats(void);
+std::string S9xCheatGroupToText(const SCheatGroup &g);
 std::string S9xCheatGroupToText(uint32_t index);
 void S9xDeleteCheatGroup(uint32_t index);
 bool8 S9xLoadCheatFile(const std::string &filename);
