@@ -40,6 +40,9 @@
           <property name="toolTip">
            <string>Choose a device to render output. If you have no integrated graphics, there will be only one choice.</string>
           </property>
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When using &lt;span style=&quot; font-style:italic;&quot;&gt;Vulkan&lt;/span&gt;, this chooses the GPU you wish to use Snes9x with.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
          </widget>
         </item>
         <item row="0" column="1">
@@ -52,6 +55,9 @@
           </property>
           <property name="toolTip">
            <string>Select the output driver.</string>
+          </property>
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose one of &lt;span style=&quot; font-style:italic;&quot;&gt;Qt Software, Vulkan, or OpenGL&lt;/span&gt;.&lt;/p&gt;&lt;p&gt;Qt Software will use the CPU to draw the display. Vulkan or OpenGL will use that respective graphics interface to draw the display.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
         </item>
@@ -71,6 +77,9 @@
           <property name="toolTip">
            <string>Smooth screen output.</string>
           </property>
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Turns on a bilinear smoothing filter to smooth out the pixels. This option won't work with a hardware shader enabled.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Bilinear filter</string>
           </property>
@@ -80,6 +89,9 @@
          <widget class="QCheckBox" name="checkBox_reduce_input_lag">
           <property name="toolTip">
            <string>Prevent the display driver from getting too far ahead in order to reduce lag.</string>
+          </property>
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This prevents the GPU from queuing up additional frames in advance, reducing the time it takes for the display to react to your input.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string>Reduce input lag</string>
@@ -91,6 +103,9 @@
           <property name="toolTip">
            <string>When entering fullscreen mode, temporarily change other settings to use VRR (G-Sync or FreeSync) correctly.</string>
           </property>
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When entering fullscreen mode, this option temporarily sets a number of other options to values that make variable refresh rate monitors that use FreeSync or GSync smoother.&lt;/p&gt;&lt;p&gt;Enables vsync.&lt;/p&gt;&lt;p&gt;Sets synchronization mode to timer and the frame rate to exactly that of the SNES.&lt;/p&gt;&lt;p&gt;Sets input rate to 32040Hz.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Adjust settings for VRR in fullscreen mode</string>
           </property>
@@ -100,6 +115,9 @@
          <widget class="QCheckBox" name="checkBox_vsync">
           <property name="toolTip">
            <string>Sync the display to vertical retrace to eliminate tearing.</string>
+          </property>
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option prevents tearing in the output.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string>Enable vsync</string>
@@ -117,16 +135,26 @@
 .slangp is supported by Vulkan and OpenGL. 
 .glslp is supported by OpenGL.</string>
           </property>
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Uses a hardware shader with &lt;span style=&quot; font-style:italic;&quot;&gt;Vulkan&lt;/span&gt; or &lt;span style=&quot; font-style:italic;&quot;&gt;OpenGL&lt;/span&gt; drivers. These can be either .glslp or .slangp preset files.&lt;/p&gt;&lt;p&gt;GLSL shaders (.glslp) can be downloaded from:&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/libretro/glsl-shaders&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;https://github.com/libretro/glsl-shaders&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Slang shaders (.slangp) can be downloaded from:&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/libretro/slang-shaders&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;https://github.com/libretro/slang-shaders&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Use a hardware shader:</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="lineEdit_shader"/>
+         <widget class="QLineEdit" name="lineEdit_shader">
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Uses a hardware shader with &lt;span style=&quot; font-style:italic;&quot;&gt;Vulkan&lt;/span&gt; or &lt;span style=&quot; font-style:italic;&quot;&gt;OpenGL&lt;/span&gt; drivers. These can be either .glslp or .slangp preset files.&lt;/p&gt;&lt;p&gt;GLSL shaders (.glslp) can be downloaded from:&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/libretro/glsl-shaders&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;https://github.com/libretro/glsl-shaders&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Slang shaders (.slangp) can be downloaded from:&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/libretro/slang-shaders&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;https://github.com/libretro/slang-shaders&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QPushButton" name="pushButton_browse_shader">
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Uses a hardware shader with &lt;span style=&quot; font-style:italic;&quot;&gt;Vulkan&lt;/span&gt; or &lt;span style=&quot; font-style:italic;&quot;&gt;OpenGL&lt;/span&gt; drivers. These can be either .glslp or .slangp preset files.&lt;/p&gt;&lt;p&gt;GLSL shaders (.glslp) can be downloaded from:&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/libretro/glsl-shaders&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;https://github.com/libretro/glsl-shaders&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Slang shaders (.slangp) can be downloaded from:&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/libretro/slang-shaders&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;https://github.com/libretro/slang-shaders&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Browse...</string>
           </property>
@@ -150,18 +178,11 @@
           <property name="toolTip">
            <string>Keep the screen at the requested proportions for width and height.</string>
           </property>
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option keeps the proportions of the emulated display the same no matter how you change the size of the window.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Maintain aspect ratio</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QCheckBox" name="checkBox_integer_scaling">
-          <property name="toolTip">
-           <string>When scaling up, only use integer multiples of the original height.</string>
-          </property>
-          <property name="text">
-           <string>Use integer scaling</string>
           </property>
          </widget>
         </item>
@@ -170,8 +191,24 @@
           <property name="toolTip">
            <string>Show the areas on the top and bottom of the screen that are normally black and hidden by the TV. Some games will draw in these areas.</string>
           </property>
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;On classic CRT televisions, some areas of the screen were covered by the bezel, so weren't used often in games. This option allows you to show that area, but it will usually be just black bars.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Show overscan area</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QCheckBox" name="checkBox_integer_scaling">
+          <property name="toolTip">
+           <string>When scaling up, only use integer multiples of the original height.</string>
+          </property>
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option adapts &lt;span style=&quot; font-style:italic;&quot;&gt;maintain aspect ratio&lt;/span&gt; and scales the image in steps of integral scale, so game pixels are never spread across the borders of screen pixels.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Use integer scaling</string>
           </property>
          </widget>
         </item>
@@ -193,6 +230,9 @@
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option affects how &lt;span style=&quot; font-style:italic;&quot;&gt;maintain aspect ratio &lt;/span&gt;works. &lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;4:3 &lt;/span&gt;will maintain a ratio where the screen is 1.333 times wider than high.&lt;/p&gt;&lt;p&gt;64:49 presents an idealized ratio where the display output is perfect, but is affected by NTSC compression.&lt;/p&gt;&lt;p&gt;1:1 Means pixels will be square. This will squeeze the image horizontally.&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <item>
            <property name="text">
@@ -231,6 +271,9 @@
 For games like Kirby 3 and Jurassic Park, choose the &quot;merge fields&quot; option.
 For games like Seiken Densetsu 3 and Marvelous, choose the &quot;scale up&quot; option.
 Output directly will cause the screen to change between the two modes and look weird.</string>
+          </property>
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option only affects the SNES's high-resolution, 512 pixel wide mode. Few games use this. &lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Output directly&lt;/span&gt; will use whatever is output directly, but when the game changes modes, the filtering will get sharper or blurrier and may be distracting.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Merge fields &lt;/span&gt;will scale the image down and blend the extra pixels together. This is useful in games like Jurassic Park and Kirby's Dreamland 3, which use it for a transparency effect.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Scale low resolution &lt;/span&gt;will double the width of low-resolution screens, so when the game switches between modes there isn't any distracting changes in filtering. This is useful when a game uses the high resolution mode often, like Seiken Densetsu 3.&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <item>
            <property name="text">
@@ -302,6 +345,9 @@ Output directly will cause the screen to change between the two modes and look w
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option determines whether messages show up in the game display:&lt;/p&gt;&lt;p&gt;Onscreen will show a high resolution overlay when using &lt;span style=&quot; font-style:italic;&quot;&gt;Vulkan&lt;/span&gt; or &lt;span style=&quot; font-style:italic;&quot;&gt;OpenGL&lt;/span&gt;.&lt;/p&gt;&lt;p&gt;Inscreen will draw in a pixel font to the ingame display.&lt;/p&gt;&lt;p&gt;Don't display messages will show nothing.&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <item>
            <property name="text">
             <string>Onscreen - High resolution</string>
@@ -326,6 +372,9 @@ Output directly will cause the screen to change between the two modes and look w
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option only affects the size of the font and the icons shown when display messages are set to the &lt;span style=&quot; font-style:italic;&quot;&gt;Onscreen&lt;/span&gt; option.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

@@ -3,6 +3,7 @@
 #include "EmuConfig.hpp"
 
 #include <QScrollArea>
+#include <QWhatsThis>
 
 EmuSettingsWindow::EmuSettingsWindow(QWidget *parent, EmuApplication *app_)
     : QDialog(parent), app(app_)
@@ -60,6 +61,10 @@ EmuSettingsWindow::EmuSettingsWindow(QWidget *parent, EmuApplication *app_)
                 app->updateBindings();
         }
         app->updateSettings();
+    });
+
+    connect(pushButton_help, &QPushButton::clicked, [&] {
+        QWhatsThis::enterWhatsThisMode();
     });
 }
 
