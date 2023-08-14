@@ -17,7 +17,8 @@
 #include "EmuCanvasVulkan.hpp"
 #include "EmuCanvasOpenGL.hpp"
 #include "EmuCanvasQt.hpp"
-#include "src/ShaderParametersDialog.hpp"
+#include "CheatsDialog.hpp"
+#include "ShaderParametersDialog.hpp"
 #undef KeyPress
 
 static EmuSettingsWindow *g_emu_settings_window = nullptr;
@@ -259,6 +260,14 @@ void EmuMainWindow::createWidgets()
         }
     });
     core_actions.push_back(hard_reset_item);
+
+    emulation_menu->addSeparator();
+
+    auto cheats_item = emulation_menu->addAction(tr("&Cheats"));
+    connect(cheats_item, &QAction::triggered, [&] {
+        auto cheats_dialog = new CheatsDialog(this, app);
+    });
+    core_actions.push_back(cheats_item);
 
     menuBar()->addMenu(emulation_menu);
 

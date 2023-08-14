@@ -146,6 +146,7 @@ list(APPEND QT_GUI_SOURCES
     src/FoldersPanel.cpp
     src/SDLInputManager.cpp
     src/ShaderParametersDialog.cpp
+    src/CheatsDialog.cpp
     src/SoftwareScalers.cpp
     src/EmuCanvasQt.cpp
     src/EmuCanvasOpenGL.cpp
