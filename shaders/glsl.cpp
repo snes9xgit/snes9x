@@ -13,7 +13,9 @@
 #include "shader_helpers.h"
 #include "../vulkan/slang_helpers.hpp"
 #include "shader_platform.h"
-
+#ifndef _MSC_VER
+#include <unistd.h>
+#endif
 
 static const GLfloat tex_coords[16] = { 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
                                         0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f };

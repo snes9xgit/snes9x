@@ -53,6 +53,9 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <property name="whatsThis">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This box lists application shortcuts. There are 4 slots, so you can assign 4 different keys or buttons to one function.&lt;/p&gt;&lt;p&gt;To set a binding, click a box or highlight it with the keyboard and press Enter/Return. The box will show three dots &amp;quot;...&amp;quot;. Press the desired key or gamepad button to assign it to that box. The Escape key will clear the box.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <row>
       <property name="text">
        <string>Open ROM</string>

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>862</width>
-    <height>756</height>
+    <height>763</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -31,6 +31,9 @@
         </item>
         <item>
          <widget class="QComboBox" name="comboBox_speed_control_method">
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This controls how the program runs the emulated content at the correct speed.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Timer&lt;/span&gt;: This sets a literal timer and shows emulated frames at the exact frame rate specified, or automatically matches the emulated system. It may not match your display's frame rate, which can cause judders.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Timer with Frameskipping&lt;/span&gt;: The same as timer, except if your display has a lower refresh rate than the emulated system it will skip frames to keep up.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Sound Synchronization: &lt;/span&gt;Assume the sound engine is outputting the sound at the correct speed and match the video output rate with it. This assumes your refresh rate is fairly close to the emulated system and you have vsync turned on.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;None:&lt;/span&gt; Don't attempt to slow emulation down. If you turn off vsync, this will run as fast as possible. If your display matches the emulated system's refresh rate closely, this with vsync enabled is generally the smoothest option aside from variable refresh rates with a timer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <item>
            <property name="text">
             <string>Timer - Match the frame rate configured below</string>
@@ -79,6 +82,9 @@
         </item>
         <item>
          <widget class="QDoubleSpinBox" name="doubleSpinBox_frame_rate">
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Override the frame rate of the emulated system. This can be used to run slightly faster or slower than usual, or to match the timer to your exact refresh rate.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Set this to 0 to use whatever the emulated system uses.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="suffix">
            <string> fps</string>
           </property>
@@ -135,6 +141,9 @@
         </item>
         <item>
          <widget class="QSpinBox" name="spinBox_fast_forward_skip_frames">
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Skips rendering the specified amount of frames when using the fast-forward function. The higher this amount, the faster it goes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="suffix">
            <string> frames</string>
           </property>
@@ -180,7 +189,11 @@
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QSpinBox" name="spinBox_rewind_frames"/>
+         <widget class="QSpinBox" name="spinBox_rewind_frames">
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The number of frames between each rewind snapshot. More frames mean rewind can go back further and will rewind faster. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
         </item>
         <item row="1" column="0">
          <widget class="QLabel" name="label_5">
@@ -191,6 +204,9 @@
         </item>
         <item row="0" column="1">
          <widget class="QSpinBox" name="spinBox_rewind_buffer_size">
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount of memory to use to enable the rewind function. The amount of time each MB gets you varies based on the complexity of the game. Set to 0 to disable rewind altogether and use less processor time.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="suffix">
            <string> MB</string>
           </property>
@@ -224,6 +240,9 @@
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">
          <widget class="QCheckBox" name="checkBox_allow_invalid_vram_access">
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A hack option. Only use this if you are running a third-party hack of a game that was designed for emulators and needs this.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Allow invalid VRAM access</string>
           </property>
@@ -231,6 +250,9 @@
         </item>
         <item row="1" column="0">
          <widget class="QCheckBox" name="checkBox_overclock">
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Decrease the time it takes for the CPU to perform operations, making it faster. This can remove slowdown, but can also cause glitches in many games.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Overclock the CPU</string>
           </property>
@@ -238,6 +260,9 @@
         </item>
         <item row="2" column="0">
          <widget class="QCheckBox" name="checkBox_use_shadow_echo_buffer">
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option is explicitly for old AddMusic hacks. If you know you have one of those, you can enable this. Otherwise, leave it unchecked.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Use a shadow echo buffer</string>
           </property>
@@ -245,6 +270,9 @@
         </item>
         <item row="0" column="1">
          <widget class="QCheckBox" name="checkBox_allow_opposing_dpad_directions">
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Original controllers may have had a small pin in the dpad preventing left and right or up and down from being pressed at the same time. This will allow that behavior if you're using a keyboard or device that can press those buttons at the same time. Some games will glitch when this is done.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Allow opposite D-pad directions simultaneously</string>
           </property>
@@ -252,6 +280,9 @@
         </item>
         <item row="1" column="1">
          <widget class="QCheckBox" name="checkBox_remove_sprite_limit">
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Allows more sprites to be displayed on the screen in an attempt to remove flickering.&lt;/p&gt;&lt;p&gt;Some games take advantage of this limit and use it to hide glitches, and removing the limit will make those visible.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Remove the sprite limit</string>
           </property>
@@ -270,6 +301,9 @@
         </item>
         <item>
          <widget class="QSpinBox" name="spinBox_superfx_clock_speed">
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Change the speed of the SuperFX chip. The SuperFX had some notoriously slow games, and this can be used to attempt to speed them up.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="suffix">
            <string>%</string>
           </property>
@@ -313,6 +347,9 @@
         </item>
         <item>
          <widget class="QComboBox" name="comboBox_sound_filter">
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Alternate sound filters can make the audio more crisp than the authentic gaussian filter.&lt;/p&gt;&lt;p&gt;The Cubic and Sinc filters provide the best improvement, but they can reveal some noise that would normally be hidden by the hardware.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <item>
            <property name="text">
             <string>Nearest</string>

@@ -30,6 +30,9 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The buffer size for the emulator side of sound playback. Ideally, it should be about two frames worth of audio, or about 32ms at 60Hz. Latency will be half this value.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="suffix">
            <string> ms</string>
           </property>
@@ -51,6 +54,9 @@
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The output playback rate on your computer. This is &lt;span style=&quot; font-weight:700;&quot;&gt;not&lt;/span&gt; the playback rate of the emulated system.&lt;/p&gt;&lt;p&gt;You should set this to match your operating system's sound server. It should almost always be 48000Hz.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <item>
            <property name="text">
@@ -87,7 +93,7 @@
            </sizepolicy>
           </property>
           <property name="toolTip">
-           <string>Choose a device to render output. If you have no integrated graphics, there will be only one choice.</string>
+           <string/>
           </property>
          </widget>
         </item>
@@ -122,6 +128,9 @@
           <property name="toolTip">
            <string>Select the output driver.</string>
           </property>
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selects the driver to output sound with.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Cubeb: &lt;/span&gt;The recommended option.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;SDL&lt;/span&gt;: If Cubeb doesn't work.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;PulseAudio:&lt;/span&gt; Unix only. May have less latency.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
          </widget>
         </item>
         <item row="2" column="0">
@@ -146,6 +155,9 @@
        <layout class="QHBoxLayout" name="horizontalLayout_5">
         <item>
          <widget class="QCheckBox" name="checkBox_dynamic_rate_control">
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option causes the audio to be slightly stretched to keep the latency even and to prevent underruns and overruns, which will cause pops and cracks in the audio.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Dynamic rate control</string>
           </property>
@@ -153,6 +165,9 @@
         </item>
         <item>
          <widget class="QCheckBox" name="checkBox_adjust_input_rate">
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option stretches the emulated audio output to coincide exactly with your display's refresh rate. It automatically handles the &lt;span style=&quot; font-style:italic;&quot;&gt;Input Rate&lt;/span&gt; option.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Adjust input rate to display rate automatically</string>
           </property>
@@ -183,6 +198,9 @@
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
            <widget class="QSlider" name="horizontalSlider_input_rate">
+            <property name="whatsThis">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Control how much the audio is stretched initially.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Unless you know what you're doing, it's best to use the option above this to adjust it automatically.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="minimum">
              <number>31800</number>
             </property>
@@ -227,6 +245,9 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="whatsThis">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If after everything, you're still getting pops and crackles in audio, you can increase this value. However, it may cause noticeable distortion.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="decimals">
            <number>3</number>
           </property>
@@ -267,6 +288,9 @@
      <layout class="QHBoxLayout" name="horizontalLayout_4">
       <item>
        <widget class="QCheckBox" name="checkBox_mute_sound">
+        <property name="whatsThis">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Erases all emulated sound output and just sends out silence.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <property name="text">
          <string>Mute all sound</string>
         </property>
@@ -274,6 +298,9 @@
       </item>
       <item>
        <widget class="QCheckBox" name="checkBox_mute_during_alt_speed">
+        <property name="whatsThis">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mutes sound when using the turbo and rewind functions, which might be annoying to some users.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <property name="text">
          <string>Mute sound during turbo or rewind</string>
         </property>

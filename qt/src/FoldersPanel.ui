@@ -22,6 +22,9 @@
      <layout class="QGridLayout" name="gridLayout">
       <item row="5" column="2">
        <widget class="QComboBox" name="comboBox_export">
+        <property name="whatsThis">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Determines where to save these files.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;ROM Folder&lt;/span&gt; will always save to the same folder as the ROM.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Config Folder&lt;/span&gt; will save to a subfolder of the config folder that is shown. If there is a snes9x.conf file next to your executable, Snes9x will operate in portable mode and the config folder will be the folder the executable is in.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Custom&lt;/span&gt; allows you to specify exactly where to save these files.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <item>
          <property name="text">
           <string>ROM Folder</string>
@@ -41,6 +44,9 @@
       </item>
       <item row="1" column="2">
        <widget class="QComboBox" name="comboBox_state">
+        <property name="whatsThis">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Determines where to save these files.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;ROM Folder&lt;/span&gt; will always save to the same folder as the ROM.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Config Folder&lt;/span&gt; will save to a subfolder of the config folder that is shown. If there is a snes9x.conf file next to your executable, Snes9x will operate in portable mode and the config folder will be the folder the executable is in.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Custom&lt;/span&gt; allows you to specify exactly where to save these files.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <item>
          <property name="text">
           <string>ROM Folder</string>
@@ -60,6 +66,9 @@
       </item>
       <item row="0" column="2">
        <widget class="QComboBox" name="comboBox_sram">
+        <property name="whatsThis">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Determines where to save these files.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;ROM Folder&lt;/span&gt; will always save to the same folder as the ROM.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Config Folder&lt;/span&gt; will save to a subfolder of the config folder that is shown. If there is a snes9x.conf file next to your executable, Snes9x will operate in portable mode and the config folder will be the folder the executable is in.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Custom&lt;/span&gt; allows you to specify exactly where to save these files.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <item>
          <property name="text">
           <string>ROM Folder</string>
@@ -107,6 +116,9 @@
       </item>
       <item row="4" column="2">
        <widget class="QComboBox" name="comboBox_patch">
+        <property name="whatsThis">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Determines where to save these files.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;ROM Folder&lt;/span&gt; will always save to the same folder as the ROM.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Config Folder&lt;/span&gt; will save to a subfolder of the config folder that is shown. If there is a snes9x.conf file next to your executable, Snes9x will operate in portable mode and the config folder will be the folder the executable is in.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Custom&lt;/span&gt; allows you to specify exactly where to save these files.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <item>
          <property name="text">
           <string>ROM Folder</string>
@@ -126,6 +138,9 @@
       </item>
       <item row="3" column="2">
        <widget class="QComboBox" name="comboBox_cheat">
+        <property name="whatsThis">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Determines where to save these files.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;ROM Folder&lt;/span&gt; will always save to the same folder as the ROM.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Config Folder&lt;/span&gt; will save to a subfolder of the config folder that is shown. If there is a snes9x.conf file next to your executable, Snes9x will operate in portable mode and the config folder will be the folder the executable is in.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Custom&lt;/span&gt; allows you to specify exactly where to save these files.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <item>
          <property name="text">
           <string>ROM Folder</string>
@@ -238,6 +253,9 @@
       </item>
       <item>
        <widget class="QSpinBox" name="spinBox_sram_interval">
+        <property name="whatsThis">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Setting this to anything other than 0 will save the SRAM (internal game saves) file regularly. If it is set to to 0, it will only save when exiting Snes9x or changing games, and you will lose any progress since the last save if your device crashes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <property name="suffix">
          <string> seconds</string>
         </property>
