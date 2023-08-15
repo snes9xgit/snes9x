@@ -117,6 +117,12 @@
        <property name="focusPolicy">
         <enum>Qt::TabFocus</enum>
        </property>
+       <property name="toolTip">
+        <string>Restore all settings on the current page to their default values.</string>
+       </property>
+       <property name="whatsThis">
+        <string>Restore all settings on the current page to their default values.</string>
+       </property>
        <property name="text">
         <string>Restore Defaults</string>
        </property>
@@ -131,8 +137,14 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_help">
+       <property name="toolTip">
+        <string>Click on a setting to find out more info.</string>
+       </property>
        <property name="text">
         <string>Help</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
