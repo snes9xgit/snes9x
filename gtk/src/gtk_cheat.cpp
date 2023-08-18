@@ -288,8 +288,8 @@ void Snes9xCheats::search_database()
     for (const auto &dir : { S9xGetDirectory(CHEAT_DIR),
                              get_config_dir(),
                              std::string(DATADIR),
-                             "/usr/share/snes9x",
-                             "/usr/local/share/snes9x" })
+                             std::string("/usr/share/snes9x"),
+                             std::string("/usr/local/share/snes9x") })
     {
         filename = dir + "/cheats.bml";
         result = S9xImportCheatsFromDatabase(filename);
