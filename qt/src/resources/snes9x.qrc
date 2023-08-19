@@ -1,5 +1,26 @@
 <RCC>
   <qresource prefix="icons">
+    <file>whiteicons/a.svg</file>
+    <file>whiteicons/b.svg</file>
+    <file>whiteicons/display.svg</file>
+    <file>whiteicons/down.svg</file>
+    <file>whiteicons/emulation.svg</file>
+    <file>whiteicons/folders.svg</file>
+    <file>whiteicons/joypad.svg</file>
+    <file>whiteicons/key.svg</file>
+    <file>whiteicons/keyboard.svg</file>
+    <file>whiteicons/l.svg</file>
+    <file>whiteicons/left.svg</file>
+    <file>whiteicons/r.svg</file>
+    <file>whiteicons/right.svg</file>
+    <file>whiteicons/select.svg</file>
+    <file>whiteicons/settings.svg</file>
+    <file>whiteicons/shader.svg</file>
+    <file>whiteicons/sound.svg</file>
+    <file>whiteicons/start.svg</file>
+    <file>whiteicons/up.svg</file>
+    <file>whiteicons/x.svg</file>
+    <file>whiteicons/y.svg</file>
     <file>snes9x.svg</file>
     <file>blackicons/settings.svg</file>
     <file>blackicons/folders.svg</file>

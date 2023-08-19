@@ -1,5 +1,6 @@
 #include "BindingPanel.hpp"
 #include "EmuApplication.hpp"
+#include <QStyleHints>
 #include <QTimer>
 
 BindingPanel::BindingPanel(EmuApplication *app)
@@ -11,8 +12,11 @@ BindingPanel::BindingPanel(EmuApplication *app)
 
 void BindingPanel::setTableWidget(QTableWidget *bindingTableWidget, EmuBinding *binding, int width, int height)
 {
-    keyboard_icon.addFile(":/icons/blackicons/key.svg");
-    joypad_icon.addFile(":/icons/blackicons/joypad.svg");
+    QString iconset = ":/icons/blackicons/";
+    if (QGuiApplication::styleHints()->colorScheme() == Qt::ColorScheme::Dark)
+        iconset = ":/icons/whiteicons/";
+    keyboard_icon.addFile(iconset + "key.svg");
+    joypad_icon.addFile(iconset + "joypad.svg");
     this->binding_table_widget = bindingTableWidget;
     this->binding = binding;
     table_width = width;
@@ -50,6 +54,8 @@ void BindingPanel::showEvent(QShowEvent *event)
 
 void BindingPanel::hideEvent(QHideEvent *event)
 {
+    if (awaiting_binding)
+        updateCellFromBinding(cell_row, cell_column);
     awaiting_binding = false;
     setRedirectInput(false);
     app->joypads_changed_callback = nullptr;

@@ -300,6 +300,8 @@ void EmuMainWindow::createWidgets()
     // Options Menu
     auto options_menu = new QMenu(tr("&Options"));
 
+
+
     std::array<QString, 7> setting_panels = { tr("&General..."),
                                               tr("&Display..."),
                                               tr("&Sound..."),
@@ -307,17 +309,21 @@ void EmuMainWindow::createWidgets()
                                               tr("&Controllers..."),
                                               tr("Shortcu&ts..."),
                                               tr("&Files...") };
-    const char *setting_icons[] = { ":/icons/blackicons/settings.svg",
-                                    ":/icons/blackicons/display.svg",
-                                    ":/icons/blackicons/sound.svg",
-                                    ":/icons/blackicons/emulation.svg",
-                                    ":/icons/blackicons/joypad.svg",
-                                    ":/icons/blackicons/keyboard.svg",
-                                    ":/icons/blackicons/folders.svg" };
+    QString iconset =
+        QGuiApplication::styleHints()->colorScheme() == Qt::ColorScheme::Dark
+            ? ":/icons/whiteicons/"
+            : ":/icons/blackicons/";
+    const char *setting_icons[] = { "settings.svg",
+                                    "display.svg",
+                                    "sound.svg",
+                                    "emulation.svg",
+                                    "joypad.svg",
+                                    "keyboard.svg",
+                                    "folders.svg" };
 
     for (int i = 0; i < setting_panels.size(); i++)
     {
-        auto action = options_menu->addAction(QIcon(setting_icons[i]), setting_panels[i]);
+        auto action = options_menu->addAction(QIcon(iconset + setting_icons[i]), setting_panels[i]);
         QObject::connect(action, &QAction::triggered, [&, i] {
             if (!g_emu_settings_window)
                 g_emu_settings_window = new EmuSettingsWindow(this, app);
@@ -326,7 +332,7 @@ void EmuMainWindow::createWidgets()
     }
 
     options_menu->addSeparator();
-    auto shader_settings_item = new QAction(QIcon(":/icons/blackicons/shader.svg"), tr("S&hader Settings..."));
+    auto shader_settings_item = new QAction(QIcon(iconset + "shader.svg"), tr("S&hader Settings..."));
     QObject::connect(shader_settings_item, &QAction::triggered, [&] {
         if (canvas)
             canvas->showParametersDialog();

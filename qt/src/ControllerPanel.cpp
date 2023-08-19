@@ -6,6 +6,7 @@
 #include <optional>
 #include <QtEvents>
 #include <QTimer>
+#include <QStyleHints>
 
 ControllerPanel::ControllerPanel(EmuApplication *app)
     : BindingPanel(app)
@@ -47,6 +48,13 @@ ControllerPanel::ControllerPanel(EmuApplication *app)
 
     editToolButton->setMenu(&edit_menu);
     editToolButton->setPopupMode(QToolButton::InstantPopup);
+
+    QString iconset = QGuiApplication::styleHints()->colorScheme() == Qt::ColorScheme::Dark ? ":/icons/whiteicons/" : ":/icons/blackicons/";
+    const char *icons[] = {
+        "up", "down", "left", "right", "a", "b", "x", "y", "l", "r", "start", "select", "a", "b", "x", "y", "l", "r"
+    };
+    for (int i = 0; i < 18; i++)
+        tableWidget_controller->verticalHeaderItem(i)->setIcon(QIcon(iconset + icons[i] + ".svg"));
 
     recreateAutoAssignMenu();
     onJoypadsChanged([&]{ recreateAutoAssignMenu(); });
