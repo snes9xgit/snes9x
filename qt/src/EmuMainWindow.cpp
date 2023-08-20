@@ -309,10 +309,7 @@ void EmuMainWindow::createWidgets()
                                               tr("&Controllers..."),
                                               tr("Shortcu&ts..."),
                                               tr("&Files...") };
-    QString iconset =
-        QGuiApplication::styleHints()->colorScheme() == Qt::ColorScheme::Dark
-            ? ":/icons/whiteicons/"
-            : ":/icons/blackicons/";
+    QString iconset = app->iconPrefix();
     const char *setting_icons[] = { "settings.svg",
                                     "display.svg",
                                     "sound.svg",

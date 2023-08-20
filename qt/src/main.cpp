@@ -3,8 +3,6 @@
 #include "EmuMainWindow.hpp"
 #include "SDLInputManager.hpp"
 
-#include <QStyle>
-#include <QStyleHints>
 #include <clocale>
 #include <qnamespace.h>
 
@@ -26,7 +24,6 @@ int main(int argc, char *argv[])
     emu.qtapp = std::make_unique<QApplication>(argc, argv);
 
     QGuiApplication::setDesktopFileName("snes9x-gtk");
-    //emu.qtapp->setStyle("fusion");
 
 #ifndef _WIN32
     auto quit_handler = [](int) { QApplication::quit(); };

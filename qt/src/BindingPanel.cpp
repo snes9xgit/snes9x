@@ -12,9 +12,7 @@ BindingPanel::BindingPanel(EmuApplication *app)
 
 void BindingPanel::setTableWidget(QTableWidget *bindingTableWidget, EmuBinding *binding, int width, int height)
 {
-    QString iconset = ":/icons/blackicons/";
-    if (QGuiApplication::styleHints()->colorScheme() == Qt::ColorScheme::Dark)
-        iconset = ":/icons/whiteicons/";
+    QString iconset = app->iconPrefix();
     keyboard_icon.addFile(iconset + "key.svg");
     joypad_icon.addFile(iconset + "joypad.svg");
     this->binding_table_widget = bindingTableWidget;

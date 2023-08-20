@@ -11,6 +11,7 @@
 #include <QTimer>
 #include <QScreen>
 #include <QThread>
+#include <QStyleHints>
 #include <thread>
 #include <chrono>
 using namespace std::chrono_literals;
@@ -521,6 +522,23 @@ std::string EmuApplication::getStateFolder()
 bool EmuApplication::isCoreActive()
 {
     return core->active;
+}
+
+QString EmuApplication::iconPrefix()
+{
+    const char *whiteicons = ":/icons/whiteicons/";
+    const char *blackicons = ":/icons/blackicons/";
+
+    if (QGuiApplication::styleHints()->colorScheme() == Qt::ColorScheme::Dark)
+        return whiteicons;
+    if (QGuiApplication::styleHints()->colorScheme() == Qt::ColorScheme::Light)
+        return blackicons;
+
+    if (QGuiApplication::palette().color(QPalette::WindowText).lightness() >
+        QGuiApplication::palette().color(QPalette::Window).lightness())
+        return whiteicons;
+
+    return blackicons;
 }
 
 void EmuThread::runOnThread(std::function<void()> func, bool blocking)

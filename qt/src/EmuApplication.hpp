@@ -37,7 +37,7 @@ Q_OBJECT
     };
 
     int status = eDead;
-    
+
   public slots:
     void runOnThread(std::function<void()> func, bool blocking = false);
 };
@@ -82,6 +82,7 @@ struct EmuApplication
     void startThread();
     void stopThread();
     bool isCoreActive();
+    QString iconPrefix();
 
     enum Handler
     {

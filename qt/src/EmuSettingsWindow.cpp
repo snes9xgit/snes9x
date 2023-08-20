@@ -3,7 +3,6 @@
 #include "EmuConfig.hpp"
 
 #include <QScrollArea>
-#include <QStyleHints>
 #include <QWhatsThis>
 
 EmuSettingsWindow::EmuSettingsWindow(QWidget *parent, EmuApplication *app_)
@@ -46,9 +45,7 @@ EmuSettingsWindow::EmuSettingsWindow(QWidget *parent, EmuApplication *app_)
         stackedWidget->setCurrentIndex(panelList->currentRow());
     });
 
-    QString iconset = ":/icons/whiteicons/";
-    if (QGuiApplication::styleHints()->colorScheme() == Qt::ColorScheme::Light)
-        iconset = ":/icons/blackicons/";
+    auto iconset = app->iconPrefix();
     auto icon = [iconset](QString name) -> QIcon { return QIcon(iconset + name); };
 
     panelList->item(0)->setIcon(icon("settings.svg"));
