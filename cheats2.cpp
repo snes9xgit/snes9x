@@ -434,6 +434,9 @@ SCheat S9xTextToCheat(const std::string &text)
     {
         c.conditional = true;
     }
+    else if (sscanf(text.c_str(), "%x : %x", &c.address, &byte) == 2)
+    {
+    }
     else if (sscanf(text.c_str(), "%x / %x", &c.address, &byte) == 2)
     {
     }
