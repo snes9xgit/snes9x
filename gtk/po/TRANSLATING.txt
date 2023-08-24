@@ -1,7 +1,7 @@
 To add a new language or update the existing ones:
 
 Generate the template file:
-Change to the gtk directory and run 'xgettext -f po/POTFILES.in -o po/snes9x-gtk.pot'
+Run the shell script "updatepot.sh" or change to the gtk directory and run 'xgettext -f po/POTFILES.in -o po/snes9x-gtk.pot -kmaybegettext'.
 This will update the snes9x-gtk.pot file in this directory with the latest strings.
 
 Use the program 'poedit' to use this template and create a new translation or merge the template's new strings into an existing .po file.

@@ -49,7 +49,7 @@ include(CheckIncludeFile)
 include(FindGettext)
 
 foreach(lang es fr_FR ja pt_BR ru sr@latin uk zh_CN)
-    GETTEXT_PROCESS_PO_FILES(${lang} ALL "share/locale/" PO_FILES po/${lang}.po)
+    GETTEXT_PROCESS_PO_FILES(${lang} ALL PO_FILES po/${lang}.po)
     install(FILES ${CMAKE_BINARY_DIR}/${lang}.gmo
             DESTINATION ${LOCALEDIR}/${lang}/LC_MESSAGES
             RENAME snes9x-gtk.mo
