@@ -4006,7 +4006,8 @@ void CMemory::CheckForAnyPatch(const char *rom_filename, bool8 header, int32 &ro
             if (!flag)
                 try_zip_ips_sequence("ip%d");
 
-            assert(unzClose(file) == UNZ_OK);
+            int close_ret = unzClose(file);
+            assert(close_ret == UNZ_OK);
 
             if (flag)
                 return;
