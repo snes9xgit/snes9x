@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.18)
-project(snes9x-gtk VERSION 1.61)
+project(snes9x-gtk VERSION 1.62.3)
 
 option(USE_SLANG "Build support for Vulkan output and .slangp shaders" ON)
 option(USE_XV "Build support for XVideo output" ON)
@@ -25,7 +25,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif(NOT CMAKE_BUILD_TYPE)
 
 string(APPEND DATADIR ${CMAKE_INSTALL_PREFIX} "/" ${CMAKE_INSTALL_DATAROOTDIR} "/snes9x")
-string(APPEND LOCALEDIR ${CMAKE_INSTALL_PREFIX} "/" ${CMAKE_INSTALL_DATAROOTDIR} "/locale" )
+string(APPEND LOCALEDIR ${CMAKE_INSTALL_PREFIX} "/" ${CMAKE_INSTALL_DATAROOTDIR} "/locale")
 add_compile_definitions(HAVE_LIBPNG
                         ZLIB SNES9X_GTK
                         NETPLAY_SUPPORT
@@ -35,7 +35,7 @@ add_compile_definitions(HAVE_LIBPNG
                         HAVE_STRINGS_H
                         HAVE_STDINT_H
                         RIGHTSHIFT_IS_SAR
-                        "GETTEXT_PACKAGE=\"snes9x-gtk\""
+                        "GETTEXT_PACKAGE=\"${CMAKE_PROJECT_NAME}\""
                         DATADIR=\"${DATADIR}\"
                         SNES9XLOCALEDIR=\"${LOCALEDIR}\")
 set(INCLUDES ../apu/bapu ../ src)
@@ -48,11 +48,12 @@ include(CheckIncludeFile)
 
 include(FindGettext)
 
-foreach(lang es fr_FR ja pt_BR ru sr@latin uk zh_CN)
+# Add any new language to this foreach loop
+foreach(lang es fr_FR ja pl pt_BR ru sr@latin uk zh_CN)
     GETTEXT_PROCESS_PO_FILES(${lang} ALL PO_FILES po/${lang}.po)
     install(FILES ${CMAKE_BINARY_DIR}/${lang}.gmo
             DESTINATION ${LOCALEDIR}/${lang}/LC_MESSAGES
-            RENAME snes9x-gtk.mo
+            RENAME ${CMAKE_PROJECT_NAME}.mo
             COMPONENT translations)
 endforeach()
 
@@ -385,8 +386,8 @@ target_link_libraries(snes9x-gtk PRIVATE ${LIBS})
 target_compile_definitions(snes9x-gtk PRIVATE ${DEFINES})
 
 if(USE_SLANG)
-	add_executable(slang_test EXCLUDE_FROM_ALL
-	../vulkan/slang_helpers.cpp
+    add_executable(slang_test EXCLUDE_FROM_ALL
+        ../vulkan/slang_helpers.cpp
         ../vulkan/slang_helpers.hpp
         ../vulkan/slang_shader.cpp
         ../vulkan/slang_shader.hpp
@@ -406,7 +407,7 @@ if(USE_SLANG)
 endif()
 
 install(TARGETS snes9x-gtk)
-install(FILES ../data/cheats.bml DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/snes9x)
+install(FILES ../data/cheats.bml DESTINATION ${DATADIR})
 install(FILES data/snes9x-gtk.desktop DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications)
 install(FILES data/snes9x_16x16.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/16x16/apps RENAME snes9x.png)
 install(FILES data/snes9x_24x24.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/24x24/apps RENAME snes9x.png)
