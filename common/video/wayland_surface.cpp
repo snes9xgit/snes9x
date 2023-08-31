@@ -153,7 +153,7 @@ std::tuple<int, int> WaylandSurface::get_size()
         return { metrics.width * metrics.scale, metrics.height * metrics.scale };
     }
 
-    return { metrics.width * actual_scale, metrics.height * actual_scale };
+    return { round(metrics.width * actual_scale), round(metrics.height * actual_scale) };
 }
 
 void WaylandSurface::resize(Metrics m)
