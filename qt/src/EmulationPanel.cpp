@@ -36,7 +36,7 @@ EmulationPanel::EmulationPanel(EmuApplication *app_)
 
     connect_checkbox(checkBox_allow_invalid_vram_access, &app->config->allow_invalid_vram_access);
     connect_checkbox(checkBox_allow_opposing_dpad_directions, &app->config->allow_opposing_dpad_directions);
-    connect_checkbox(checkBox_overclock, &app->config->overclock);
+    connect_combo(comboBox_overclock, &app->config->overclock);
     connect_checkbox(checkBox_remove_sprite_limit, &app->config->remove_sprite_limit);
     connect_checkbox(checkBox_use_shadow_echo_buffer, &app->config->enable_shadow_buffer);
     connect_spin(spinBox_superfx_clock_speed, &app->config->superfx_clock_multiplier);
@@ -59,7 +59,7 @@ void EmulationPanel::showEvent(QShowEvent *event)
 
     checkBox_allow_invalid_vram_access->setChecked(config->allow_invalid_vram_access);
     checkBox_allow_opposing_dpad_directions->setChecked(config->allow_opposing_dpad_directions);
-    checkBox_overclock->setChecked(config->overclock);
+    comboBox_overclock->setCurrentIndex(config->overclock);
     checkBox_remove_sprite_limit->setChecked(config->remove_sprite_limit);
     checkBox_use_shadow_echo_buffer->setChecked(config->enable_shadow_buffer);
     spinBox_superfx_clock_speed->setValue(config->superfx_clock_multiplier);

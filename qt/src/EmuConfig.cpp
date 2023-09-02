@@ -278,7 +278,7 @@ bool EmuConfig::setDefaults(int section)
 
         allow_invalid_vram_access = false;
         allow_opposing_dpad_directions = false;
-        overclock = false;
+        overclock = eNoOverclock;
         remove_sprite_limit = false;
         enable_shadow_buffer = false;
         superfx_clock_multiplier = 100;
@@ -489,7 +489,7 @@ void EmuConfig::config(std::string filename, bool write)
     Int("RewindFrameInterval", rewind_frame_interval);
     Bool("AllowInvalidVRAMAccess", allow_invalid_vram_access);
     Bool("AllowOpposingDpadDirections", allow_opposing_dpad_directions);
-    Bool("Overclock", overclock);
+    Int("Overclock", overclock);
     Bool("RemoveSpriteLimit", remove_sprite_limit);
     Bool("EnableShadowBuffer", enable_shadow_buffer);
     Int("SuperFXClockMultiplier", superfx_clock_multiplier);

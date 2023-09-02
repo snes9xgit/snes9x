@@ -174,18 +174,10 @@ void Snes9xController::updateSettings(const EmuConfig * const config)
     else
         Settings.MaxSpriteTilesPerLine = 34;
 
-    if (!config->overclock)
-    {
-        Settings.OneClockCycle = 6;
-        Settings.OneSlowClockCycle = 8;
-        Settings.TwoClockCycles = 12;
-    }
-    else
-    {
-        Settings.OneClockCycle = 2;
-        Settings.OneSlowClockCycle = 3;
-        Settings.TwoClockCycles = 4;
-    }
+    const int overclock_cycles[4][2] = { { 6, 8 }, { 6, 6 }, { 3, 4 }, { 1, 1 } };
+    Settings.OneClockCycle = overclock_cycles[config->overclock][0];
+    Settings.OneSlowClockCycle = overclock_cycles[config->overclock][1];
+    Settings.TwoClockCycles = overclock_cycles[config->overclock][0] * 2;
 
     Settings.ShowOverscan = config->show_overscan;
 

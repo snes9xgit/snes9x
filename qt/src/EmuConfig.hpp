@@ -116,7 +116,14 @@ struct EmuConfig
 
     bool allow_invalid_vram_access;
     bool allow_opposing_dpad_directions;
-    bool overclock;
+    enum Overclock
+    {
+        eNoOverclock = 0,
+        eAutoFastROM = 1,
+        eLow = 2,
+        eHigh = 3
+    };
+    int overclock;
     bool remove_sprite_limit;
     bool enable_shadow_buffer;
     int superfx_clock_multiplier;
