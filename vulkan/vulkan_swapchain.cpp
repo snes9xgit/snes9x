@@ -267,7 +267,16 @@ bool Swapchain::begin_frame()
         return false;
     }
 
-    auto result_value = device.acquireNextImageKHR(swapchain_object.get(), 33333333, frame.acquire.get());
+    vk::ResultValue<uint32_t> result_value(vk::Result::eSuccess, 0);
+    try
+    {
+        result_value = device.acquireNextImageKHR(swapchain_object.get(), 33333333, frame.acquire.get());
+    }
+    catch (vk::OutOfDateKHRError)
+    {
+        result_value.result = vk::Result::eErrorOutOfDateKHR;
+    }
+
     if (result_value.result == vk::Result::eErrorOutOfDateKHR ||
         result_value.result == vk::Result::eSuboptimalKHR)
     {
