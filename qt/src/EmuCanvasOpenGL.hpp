@@ -14,7 +14,7 @@ class EmuCanvasOpenGL : public EmuCanvas
     EmuCanvasOpenGL(EmuConfig *config, QWidget *parent, QWidget *main_window);
     ~EmuCanvasOpenGL();
 
-    void createContext() override;
+    bool createContext() override;
     void deinit() override;
     void paintEvent(QPaintEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;

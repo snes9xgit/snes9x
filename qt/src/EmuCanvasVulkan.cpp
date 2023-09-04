@@ -75,10 +75,10 @@ bool EmuCanvasVulkan::initImGui()
     return true;
 }
 
-void EmuCanvasVulkan::createContext()
+bool EmuCanvasVulkan::createContext()
 {
-    if (simple_output)
-        return;
+    if (context)
+        return true;
 
     platform = QGuiApplication::platformName();
     auto pni = QGuiApplication::platformNativeInterface();
@@ -89,7 +89,11 @@ void EmuCanvasVulkan::createContext()
 
 #ifdef _WIN32
     auto hwnd = (HWND)winId();
-    context->init_win32(nullptr, hwnd, config->display_device_index);
+    if (!context->init_win32(nullptr, hwnd, config->display_device_index))
+    {
+        context.reset();
+        return false;
+    }
 #else
     if (platform == "wayland")
     {
@@ -98,14 +102,21 @@ void EmuCanvasVulkan::createContext()
         auto surface = (wl_surface *)pni->nativeResourceForWindow("surface", main_window->windowHandle());
         wayland_surface->attach(display, surface, { parent->x(), parent->y(), width(), height(), static_cast<int>(devicePixelRatio()) });
         auto [scaled_width, scaled_height] = wayland_surface->get_size();
-        context->init_wayland(display, wayland_surface->child, scaled_width, scaled_height, config->display_device_index);
+        if (!context->init_wayland(display, wayland_surface->child, scaled_width, scaled_height, config->display_device_index))
+        {
+            context.reset();
+            return false;
+        }
     }
     else if (platform == "xcb")
     {
         auto display = (Display *)pni->nativeResourceForWindow("display", window);
         auto xid = (Window)winId();
-
-        context->init_Xlib(display, xid, config->display_device_index);
+        if (!context->init_Xlib(display, xid, config->display_device_index))
+        {
+            context.reset();
+            return false;
+        }
     }
 #endif
 
@@ -116,10 +127,15 @@ void EmuCanvasVulkan::createContext()
 
     QGuiApplication::sync();
     paintEvent(nullptr);
+
+    return true;
 }
 
 void EmuCanvasVulkan::tryLoadShader()
 {
+    if (!context)
+        return;
+
     simple_output.reset();
     shader_chain.reset();
     shader_parameters_dialog.reset();
@@ -143,6 +159,9 @@ void EmuCanvasVulkan::tryLoadShader()
 
 void EmuCanvasVulkan::shaderChanged()
 {
+    if (!context)
+        return;
+
     if (!config->use_shader)
         current_shader.clear();
 
@@ -248,7 +267,8 @@ void EmuCanvasVulkan::deinit()
 
     if (ImGui::GetCurrentContext())
     {
-        context->wait_idle();
+        if (context)
+            context->wait_idle();
         imgui_descriptor_pool.reset();
         imgui_render_pass.reset();
         ImGui_ImplVulkan_Shutdown();
@@ -305,6 +325,9 @@ void EmuCanvasVulkan::saveParameters(std::string filename)
 
 void EmuCanvasVulkan::recreateUIAssets()
 {
+    if (!context)
+        return;
+
     if (ImGui::GetCurrentContext())
     {
         context->wait_idle();

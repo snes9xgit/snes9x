@@ -73,7 +73,7 @@ void EmuMainWindow::destroyCanvas()
     }
 }
 
-void EmuMainWindow::createCanvas()
+bool EmuMainWindow::createCanvas()
 {
     if (app->config->display_driver != "vulkan" &&
         app->config->display_driver != "opengl" &&
@@ -91,8 +91,12 @@ void EmuMainWindow::createCanvas()
         {
             canvas = new EmuCanvasVulkan(app->config.get(), central_widget, this);
             QGuiApplication::processEvents();
-            canvas->createContext();
-        }            
+            if (!canvas->createContext())
+            {
+                delete canvas;
+                return false;
+            }
+        }
         else if (app->config->display_driver == "opengl")
         {
             canvas = new EmuCanvasOpenGL(app->config.get(), central_widget, this);
@@ -106,7 +110,7 @@ void EmuMainWindow::createCanvas()
         using_stacked_widget = true;
         QGuiApplication::processEvents();
 
-        return;
+        return true;
     }
 #endif
 
@@ -114,26 +118,41 @@ void EmuMainWindow::createCanvas()
     {
         canvas = new EmuCanvasVulkan(app->config.get(), this, this);
         QGuiApplication::processEvents();
-        canvas->createContext();
+        if (!canvas->createContext())
+        {
+            delete canvas;
+            return false;
+        }
     }
     else if (app->config->display_driver == "opengl")
     {
         canvas = new EmuCanvasOpenGL(app->config.get(), this, this);
         QGuiApplication::processEvents();
         app->emu_thread->runOnThread([&] { canvas->createContext(); }, true);
-    } 
+    }
     else
         canvas = new EmuCanvasQt(app->config.get(), this, this);
 
     setCentralWidget(canvas);
     using_stacked_widget = false;
+
+    return true;
 }
 
 void EmuMainWindow::recreateCanvas()
 {
     app->suspendThread();
     destroyCanvas();
-    createCanvas();
+
+    if (!createCanvas())
+    {
+        QMessageBox::warning(this,
+            tr("Unable to Start Display Driver"),
+            tr("Unable to create a %1 context. Attempting to use qt.").arg(QString::fromUtf8(app->config->display_driver)));
+        app->config->display_driver = "qt";
+        createCanvas();
+    }
+
     app->unsuspendThread();
 }
 
@@ -526,7 +545,7 @@ bool EmuMainWindow::event(QEvent *event)
             minimized_pause = false;
             app->unpause();
         }
-        
+
         break;
     }
     case QEvent::MouseMove:
@@ -570,9 +589,9 @@ void EmuMainWindow::toggleFullscreen()
 
 bool EmuMainWindow::eventFilter(QObject *watched, QEvent *event)
 {
-    if (watched == canvas) 
+    if (watched == canvas)
     {
-        if (event->type() == QEvent::Resize) 
+        if (event->type() == QEvent::Resize)
         {
             app->emu_thread->runOnThread([&] {
                 canvas->resizeEvent((QResizeEvent *)event);

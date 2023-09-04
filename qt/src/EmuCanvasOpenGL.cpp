@@ -122,10 +122,10 @@ void EmuCanvasOpenGL::customShaderDraw()
     shader->render(texture, output_data.width, output_data.height, viewport.x(), viewport.y(), viewport.width(), viewport.height(), S9xViewportCallback);
 }
 
-void EmuCanvasOpenGL::createContext()
+bool EmuCanvasOpenGL::createContext()
 {
     if (context)
-        return;
+        return true;
 
     auto platform = QGuiApplication::platformName();
     auto pni = QGuiApplication::platformNativeInterface();
@@ -139,7 +139,11 @@ void EmuCanvasOpenGL::createContext()
         int s = devicePixelRatio();
 
         if (!wayland_egl_context->attach(display, surface, { parent->x(), parent->y(), parent->width(), parent->height(), s }))
+        {
             printf("Couldn't attach context to wayland surface.\n");
+            context.reset();
+            return false;
+        }
 
         context.reset(wayland_egl_context);
     }
@@ -150,7 +154,11 @@ void EmuCanvasOpenGL::createContext()
 
         auto glx_context = new GTKGLXContext();
         if (!glx_context->attach(display, xid))
+        {
             printf("Couldn't attach to X11 window.\n");
+            context.reset();
+            return false;
+        }
 
         context.reset(glx_context);
     }
@@ -160,7 +168,8 @@ void EmuCanvasOpenGL::createContext()
     if (!wgl_context->attach((HWND)hwnd))
     {
         printf("Couldn't attach to context\n");
-        return;
+        context.reset();
+        return false;
     }
     context.reset(wgl_context);
 #endif
@@ -194,6 +203,8 @@ void EmuCanvasOpenGL::createContext()
     context->swap_interval(config->enable_vsync ? 1 : 0);
     QGuiApplication::sync();
     paintEvent(nullptr);
+
+    return true;
 }
 
 void EmuCanvasOpenGL::loadShaders()

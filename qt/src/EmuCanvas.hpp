@@ -14,7 +14,7 @@ class EmuCanvas : public QWidget
     virtual void deinit() = 0;
     virtual void draw() = 0;
     void paintEvent(QPaintEvent *) override = 0;
-    virtual void createContext() {}
+    virtual bool createContext() { return false; }
     virtual void recreateUIAssets() {}
     void output(uint8_t *buffer, int width, int height, QImage::Format format, int bytes_per_line, double frame_rate);
     void throttle();

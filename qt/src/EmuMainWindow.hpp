@@ -20,7 +20,7 @@ class EmuMainWindow : public QMainWindow
     ~EmuMainWindow();
 
     void toggleFullscreen();
-    void createCanvas();
+    bool createCanvas();
     void destroyCanvas();
     void recreateCanvas();
     void setBypassCompositor(bool);

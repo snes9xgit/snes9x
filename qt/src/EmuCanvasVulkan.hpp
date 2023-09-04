@@ -16,7 +16,7 @@ class EmuCanvasVulkan : public EmuCanvas
     EmuCanvasVulkan(EmuConfig *config, QWidget *parent, QWidget *main_window);
     ~EmuCanvasVulkan();
 
-    void createContext() override;
+    bool createContext() override;
     void deinit() override;
     void paintEvent(QPaintEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
