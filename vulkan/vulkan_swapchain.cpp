@@ -126,6 +126,17 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
 
     extents = surface_capabilities.currentExtent;
 
+    uint32_t graphics_queue_index = 0;
+    auto queue_properties = physical_device.getQueueFamilyProperties();
+    for (size_t i = 0; i < queue_properties.size(); i++)
+    {
+        if (queue_properties[i].queueFlags & vk::QueueFlagBits::eGraphics)
+        {
+            graphics_queue_index = i;
+            break;
+        }
+    }
+
     if (new_width > 0 && new_height > 0)
     {
         // No buffer is allocated for surface yet
@@ -168,7 +179,8 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
         .setPresentMode(vsync ? vk::PresentModeKHR::eFifo : vk::PresentModeKHR::eImmediate)
         .setSurface(surface)
         .setPreTransform(vk::SurfaceTransformFlagBitsKHR::eIdentity)
-        .setImageArrayLayers(1);
+        .setImageArrayLayers(1)
+        .setQueueFamilyIndices(graphics_queue_index);
 
     if (swapchain_object)
         swapchain_create_info.setOldSwapchain(swapchain_object.get());
