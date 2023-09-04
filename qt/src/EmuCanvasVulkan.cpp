@@ -178,6 +178,9 @@ void EmuCanvasVulkan::draw()
     if (!window->isVisible())
         return;
 
+    if (context->swapchain->set_vsync(config->enable_vsync))
+        context->recreate_swapchain();
+
     if (S9xImGuiDraw(width() * devicePixelRatioF(), height() * devicePixelRatioF()))
     {
         auto draw_data = ImGui::GetDrawData();

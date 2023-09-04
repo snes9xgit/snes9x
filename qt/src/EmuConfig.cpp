@@ -225,9 +225,7 @@ bool EmuConfig::setDefaults(int section)
         restart_set(display_driver, "vulkan");
         restart_set(display_device_index, 0);
         enable_vsync = true;
-        ;
         bilinear_filter = true;
-        ;
         reduce_input_lag = true;
         adjust_for_vrr = false;
         restart_set(use_shader, false);
