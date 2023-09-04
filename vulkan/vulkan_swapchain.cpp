@@ -1,5 +1,4 @@
 #include "vulkan_swapchain.hpp"
-#include "vulkan/vulkan_structs.hpp"
 #include <thread>
 
 namespace Vulkan
@@ -146,6 +145,13 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
         extents.height = 512;
     }
 
+    auto present_modes = physical_device.getSurfacePresentModesKHR(surface);
+    auto tearing_present_mode = vk::PresentModeKHR::eFifo;
+    if (std::find(present_modes.begin(), present_modes.end(), vk::PresentModeKHR::eImmediate) != present_modes.end())
+        tearing_present_mode = vk::PresentModeKHR::eImmediate;
+    if (std::find(present_modes.begin(), present_modes.end(), vk::PresentModeKHR::eMailbox) != present_modes.end())
+        tearing_present_mode = vk::PresentModeKHR::eMailbox;
+
     auto swapchain_create_info = vk::SwapchainCreateInfoKHR{}
         .setMinImageCount(num_swapchain_images)
         .setImageFormat(vk::Format::eB8G8R8A8Unorm)
@@ -163,7 +169,16 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
     if (swapchain_object)
         swapchain_create_info.setOldSwapchain(swapchain_object.get());
 
-    swapchain_object = device.createSwapchainKHRUnique(swapchain_create_info);
+    try
+    {
+        swapchain_object = device.createSwapchainKHRUnique(swapchain_create_info);
+    }
+    catch (std::exception &e)
+    {
+        printf("%s\n", e.what());
+        swapchain_object.reset();
+    }
+
     if (!swapchain_object)
         return false;
 
