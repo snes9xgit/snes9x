@@ -139,11 +139,15 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
         swapchain_object.reset();
         return false;
     }
-    else if (extents.width > 8192 || extents.height > 8192)
-    {
-        extents.width = 512;
-        extents.height = 512;
-    }
+
+    if (extents.width > surface_capabilities.maxImageExtent.width)
+        extents.width = surface_capabilities.maxImageExtent.width;
+    if (extents.height > surface_capabilities.maxImageExtent.height)
+        extents.height = surface_capabilities.maxImageExtent.height;
+    if (extents.width < surface_capabilities.minImageExtent.width)
+        extents.width = surface_capabilities.minImageExtent.width;
+    if (extents.height < surface_capabilities.minImageExtent.height)
+        extents.height = surface_capabilities.minImageExtent.height;
 
     auto present_modes = physical_device.getSurfacePresentModesKHR(surface);
     auto tearing_present_mode = vk::PresentModeKHR::eFifo;
