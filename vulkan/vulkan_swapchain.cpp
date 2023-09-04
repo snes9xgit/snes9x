@@ -320,11 +320,19 @@ bool Swapchain::swap()
         .setSwapchains(swapchain_object.get())
         .setImageIndices(current_swapchain_image);
 
-    auto result = queue.presentKHR(present_info);
+    vk::Result result;
+    try
+    {
+        result = queue.presentKHR(present_info);
+    }
+    catch (std::exception &e)
+    {
+        printf("%s\n", e.what());
+    }
 
     current_frame = (current_frame + 1) % num_swapchain_images;
 
-    if (result != vk::Result::eSuccess)
+    if (result != vk::Result::eSuccess && result != vk::Result::eSuboptimalKHR)
         return false;
     return true;
 }
