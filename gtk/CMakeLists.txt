@@ -79,7 +79,9 @@ list(APPEND SOURCES src/gtk_display_driver_opengl.cpp
                     ../external/glad/src/glx.c
                     ../external/glad/src/egl.c
                     ../external/glad/src/gl.c
-                    src/gtk_shader_parameters.cpp)
+                    src/gtk_shader_parameters.cpp
+                    ../vulkan/std_chrono_throttle.cpp
+                    ../vulkan/std_chrono_throttle.hpp)
 list(APPEND INCLUDES ../external/glad/include)
 
 if(USE_SLANG)
@@ -133,8 +135,6 @@ if(USE_SLANG)
                         ../vulkan/vulkan_shader_chain.hpp
                         ../vulkan/vulkan_simple_output.hpp
                         ../vulkan/vulkan_simple_output.cpp
-                        ../vulkan/std_chrono_throttle.cpp
-                        ../vulkan/std_chrono_throttle.hpp
                         src/gtk_display_driver_vulkan.cpp
                         src/gtk_display_driver_vulkan.h
                         ../external/imgui/imgui_impl_vulkan.cpp)
