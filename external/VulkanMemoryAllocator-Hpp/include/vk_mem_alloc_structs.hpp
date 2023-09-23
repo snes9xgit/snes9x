@@ -1306,11 +1306,15 @@ namespace VMA_HPP_NAMESPACE {
         , Pool pool_ = {}
         , VULKAN_HPP_NAMESPACE::DeviceSize maxBytesPerPass_ = {}
         , uint32_t maxAllocationsPerPass_ = {}
+        , PFN_vmaCheckDefragmentationBreakFunction pfnBreakCallback_ = {}
+        , void* pBreakCallbackUserData_ = {}
       ) VULKAN_HPP_NOEXCEPT
       : flags(flags_)
       , pool(pool_)
       , maxBytesPerPass(maxBytesPerPass_)
       , maxAllocationsPerPass(maxAllocationsPerPass_)
+      , pfnBreakCallback(pfnBreakCallback_)
+      , pBreakCallbackUserData(pBreakCallbackUserData_)
       {}
 
     VULKAN_HPP_CONSTEXPR DefragmentationInfo(DefragmentationInfo const &) VULKAN_HPP_NOEXCEPT = default;
@@ -1339,6 +1343,8 @@ namespace VMA_HPP_NAMESPACE {
           && pool == rhs.pool
           && maxBytesPerPass == rhs.maxBytesPerPass
           && maxAllocationsPerPass == rhs.maxAllocationsPerPass
+          && pfnBreakCallback == rhs.pfnBreakCallback
+          && pBreakCallbackUserData == rhs.pBreakCallbackUserData
       ;
     }
 #endif
@@ -1364,6 +1370,16 @@ namespace VMA_HPP_NAMESPACE {
       maxAllocationsPerPass = maxAllocationsPerPass_;
       return *this;
     }
+
+    VULKAN_HPP_CONSTEXPR_14 DefragmentationInfo& setPfnBreakCallback(PFN_vmaCheckDefragmentationBreakFunction pfnBreakCallback_) VULKAN_HPP_NOEXCEPT {
+      pfnBreakCallback = pfnBreakCallback_;
+      return *this;
+    }
+
+    VULKAN_HPP_CONSTEXPR_14 DefragmentationInfo& setPBreakCallbackUserData(void* pBreakCallbackUserData_) VULKAN_HPP_NOEXCEPT {
+      pBreakCallbackUserData = pBreakCallbackUserData_;
+      return *this;
+    }
 #endif
 
   public:
@@ -1371,6 +1387,8 @@ namespace VMA_HPP_NAMESPACE {
     Pool pool = {};
     VULKAN_HPP_NAMESPACE::DeviceSize maxBytesPerPass = {};
     uint32_t maxAllocationsPerPass = {};
+    PFN_vmaCheckDefragmentationBreakFunction pfnBreakCallback = {};
+    void* pBreakCallbackUserData = {};
   };
   VULKAN_HPP_STATIC_ASSERT(sizeof(DefragmentationInfo) == sizeof(VmaDefragmentationInfo),
                            "struct and wrapper have different size!");

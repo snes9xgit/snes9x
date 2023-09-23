@@ -387,12 +387,12 @@ namespace VMA_HPP_NAMESPACE {
   }
 
 #ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
-  VULKAN_HPP_INLINE void Allocator::freeMemory(const Allocation allocation) const {
-    vmaFreeMemory(m_allocator, static_cast<const VmaAllocation>(allocation));
+  VULKAN_HPP_INLINE void Allocator::freeMemory(Allocation allocation) const {
+    vmaFreeMemory(m_allocator, static_cast<VmaAllocation>(allocation));
   }
 #else
-  VULKAN_HPP_INLINE void Allocator::freeMemory(const Allocation allocation) const {
-    vmaFreeMemory(m_allocator, static_cast<const VmaAllocation>(allocation));
+  VULKAN_HPP_INLINE void Allocator::freeMemory(Allocation allocation) const {
+    vmaFreeMemory(m_allocator, static_cast<VmaAllocation>(allocation));
   }
 #endif
 

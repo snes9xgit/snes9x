@@ -22,11 +22,11 @@ namespace VMA_HPP_NAMESPACE {
   struct VirtualAllocationCreateInfo;
   struct VirtualAllocationInfo;
 
+  class Allocator;
   class Pool;
   class Allocation;
   class DefragmentationContext;
   class VirtualAllocation;
-  class Allocator;
   class VirtualBlock;
 }
 
@@ -81,7 +81,8 @@ namespace VMA_HPP_NAMESPACE {
 }
 #ifndef VULKAN_HPP_NO_SMART_HANDLE
 namespace VULKAN_HPP_NAMESPACE {
-  template<> struct UniqueHandleTraits<VMA_HPP_NAMESPACE::Pool, VMA_HPP_NAMESPACE::Dispatcher> {
+  template<> class UniqueHandleTraits<VMA_HPP_NAMESPACE::Pool, VMA_HPP_NAMESPACE::Dispatcher> {
+    public:
     using deleter = VMA_HPP_NAMESPACE::Deleter<VMA_HPP_NAMESPACE::Pool, VMA_HPP_NAMESPACE::Allocator>;
   };
 }
@@ -138,7 +139,8 @@ namespace VMA_HPP_NAMESPACE {
 }
 #ifndef VULKAN_HPP_NO_SMART_HANDLE
 namespace VULKAN_HPP_NAMESPACE {
-  template<> struct UniqueHandleTraits<VMA_HPP_NAMESPACE::Allocation, VMA_HPP_NAMESPACE::Dispatcher> {
+  template<> class UniqueHandleTraits<VMA_HPP_NAMESPACE::Allocation, VMA_HPP_NAMESPACE::Dispatcher> {
+    public:
     using deleter = VMA_HPP_NAMESPACE::Deleter<VMA_HPP_NAMESPACE::Allocation, VMA_HPP_NAMESPACE::Allocator>;
   };
 }
@@ -193,14 +195,6 @@ namespace VMA_HPP_NAMESPACE {
   VULKAN_HPP_STATIC_ASSERT(sizeof(DefragmentationContext) == sizeof(VmaDefragmentationContext),
                            "handle and wrapper have different size!");
 }
-#ifndef VULKAN_HPP_NO_SMART_HANDLE
-namespace VULKAN_HPP_NAMESPACE {
-  template<> struct UniqueHandleTraits<VMA_HPP_NAMESPACE::DefragmentationContext, VMA_HPP_NAMESPACE::Dispatcher> {
-    using deleter = VMA_HPP_NAMESPACE::Deleter<VMA_HPP_NAMESPACE::DefragmentationContext, void>;
-  };
-}
-namespace VMA_HPP_NAMESPACE { using UniqueDefragmentationContext = VULKAN_HPP_NAMESPACE::UniqueHandle<DefragmentationContext, Dispatcher>; }
-#endif
 
 namespace VMA_HPP_NAMESPACE {
   class Allocator {
@@ -444,9 +438,9 @@ namespace VMA_HPP_NAMESPACE {
                                                                              AllocationInfo* allocationInfo) const;
 
 #ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
-    void freeMemory(const Allocation allocation) const;
+    void freeMemory(Allocation allocation) const;
 #else
-    void freeMemory(const Allocation allocation) const;
+    void freeMemory(Allocation allocation) const;
 #endif
 
 #ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
@@ -731,7 +725,8 @@ namespace VMA_HPP_NAMESPACE {
 }
 #ifndef VULKAN_HPP_NO_SMART_HANDLE
 namespace VULKAN_HPP_NAMESPACE {
-  template<> struct UniqueHandleTraits<VMA_HPP_NAMESPACE::Allocator, VMA_HPP_NAMESPACE::Dispatcher> {
+  template<> class UniqueHandleTraits<VMA_HPP_NAMESPACE::Allocator, VMA_HPP_NAMESPACE::Dispatcher> {
+    public:
     using deleter = VMA_HPP_NAMESPACE::Deleter<VMA_HPP_NAMESPACE::Allocator, void>;
   };
 }
@@ -788,7 +783,8 @@ namespace VMA_HPP_NAMESPACE {
 }
 #ifndef VULKAN_HPP_NO_SMART_HANDLE
 namespace VULKAN_HPP_NAMESPACE {
-  template<> struct UniqueHandleTraits<VMA_HPP_NAMESPACE::VirtualAllocation, VMA_HPP_NAMESPACE::Dispatcher> {
+  template<> class UniqueHandleTraits<VMA_HPP_NAMESPACE::VirtualAllocation, VMA_HPP_NAMESPACE::Dispatcher> {
+    public:
     using deleter = VMA_HPP_NAMESPACE::Deleter<VMA_HPP_NAMESPACE::VirtualAllocation, VMA_HPP_NAMESPACE::VirtualBlock>;
   };
 }
@@ -919,7 +915,8 @@ namespace VMA_HPP_NAMESPACE {
 }
 #ifndef VULKAN_HPP_NO_SMART_HANDLE
 namespace VULKAN_HPP_NAMESPACE {
-  template<> struct UniqueHandleTraits<VMA_HPP_NAMESPACE::VirtualBlock, VMA_HPP_NAMESPACE::Dispatcher> {
+  template<> class UniqueHandleTraits<VMA_HPP_NAMESPACE::VirtualBlock, VMA_HPP_NAMESPACE::Dispatcher> {
+    public:
     using deleter = VMA_HPP_NAMESPACE::Deleter<VMA_HPP_NAMESPACE::VirtualBlock, void>;
   };
 }
