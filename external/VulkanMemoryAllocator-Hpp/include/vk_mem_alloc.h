@@ -23,6 +23,8 @@
 #ifndef AMD_VULKAN_MEMORY_ALLOCATOR_H
 #define AMD_VULKAN_MEMORY_ALLOCATOR_H
 
+#include <cstdio>
+
 /** \mainpage Vulkan Memory Allocator
 
 <b>Version 3.1.0-development</b>
