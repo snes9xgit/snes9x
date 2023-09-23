@@ -23,7 +23,10 @@
 #ifndef AMD_VULKAN_MEMORY_ALLOCATOR_H
 #define AMD_VULKAN_MEMORY_ALLOCATOR_H
 
-#include <cstdio>
+#if VMA_STATS_STRING_ENABLED
+  // Needed for snprintf()
+  #include <cstdio>
+#endif
 
 /** \mainpage Vulkan Memory Allocator
 
