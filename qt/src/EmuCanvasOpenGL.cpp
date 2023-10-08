@@ -245,6 +245,7 @@ void EmuCanvasOpenGL::uploadTexture()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glPixelStorei(GL_UNPACK_ROW_LENGTH, output_data.bytes_per_line / 2);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB565, output_data.width, output_data.height, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, output_data.buffer);
 }
 
