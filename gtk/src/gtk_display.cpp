@@ -617,6 +617,10 @@ static void internal_threaded_filter(uint8 *src_buffer,
                                      int width,
                                      int height)
 {
+    // NTSC filter has internal state, so it can't be threaded properly.
+    if (gui_config->scale_method == FILTER_NTSC)
+        return internal_filter(src_buffer, src_pitch, dst_buffer, dst_pitch, width, height);
+
     /* If the threadpool doesn't exist, create it */
     create_thread_pool();
 
