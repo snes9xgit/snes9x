@@ -477,7 +477,7 @@ void apply_filter_scale(int &width, int &height)
 {
     if (gui_config->scale_method == FILTER_NTSC)
     {
-        width = SNES_NTSC_OUT_WIDTH(width);
+        width = SNES_NTSC_OUT_WIDTH(256);
         height *= 2;
         return;
     }
