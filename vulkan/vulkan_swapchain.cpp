@@ -176,7 +176,7 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
         .setImageUsage(vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eTransferSrc)
         .setCompositeAlpha(vk::CompositeAlphaFlagBitsKHR::eOpaque)
         .setClipped(true)
-        .setPresentMode(vsync ? vk::PresentModeKHR::eFifo : vk::PresentModeKHR::eImmediate)
+        .setPresentMode(vsync ? vk::PresentModeKHR::eFifo : tearing_present_mode)
         .setSurface(surface)
         .setPreTransform(vk::SurfaceTransformFlagBitsKHR::eIdentity)
         .setImageArrayLayers(1)
@@ -191,7 +191,6 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
     }
     catch (std::exception &e)
     {
-        printf("%s\n", e.what());
         swapchain_object.reset();
     }
 
@@ -270,7 +269,7 @@ bool Swapchain::begin_frame()
     vk::ResultValue<uint32_t> result_value(vk::Result::eSuccess, 0);
     try
     {
-        result_value = device.acquireNextImageKHR(swapchain_object.get(), 33333333, frame.acquire.get());
+        result_value = device.acquireNextImageKHR(swapchain_object.get(), UINT64_MAX, frame.acquire.get());
     }
     catch (vk::OutOfDateKHRError)
     {
@@ -280,7 +279,6 @@ bool Swapchain::begin_frame()
     if (result_value.result == vk::Result::eErrorOutOfDateKHR ||
         result_value.result == vk::Result::eSuboptimalKHR)
     {
-        // printf("Out of date\n");
         recreate();
         return begin_frame();
     }
