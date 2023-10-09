@@ -63,7 +63,13 @@ static vk::UniqueInstance create_instance_preamble(const char *wsi_extension)
     vk::ApplicationInfo application_info({}, {}, {}, {}, VK_API_VERSION_1_0);
     vk::InstanceCreateInfo instance_create_info({}, &application_info, {}, extensions);
 
-    auto instance = vk::createInstanceUnique(instance_create_info);
+    vk::UniqueInstance instance;
+    try {
+        instance = vk::createInstanceUnique(instance_create_info);
+    } catch (std::exception &e) {
+        instance.reset();
+        return {};
+    }
 
     VULKAN_HPP_DEFAULT_DISPATCHER.init(instance.get());
 

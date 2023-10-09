@@ -124,11 +124,12 @@ int S9xVulkanDisplayDriver::init()
         wayland_surface = std::make_unique<WaylandSurface>();
         wl_surface *surface = gdk_wayland_window_get_wl_surface(drawing_area->get_window()->gobj());
         wl_display *display = gdk_wayland_display_get_wl_display(drawing_area->get_display()->gobj());
+
         if (!wayland_surface->attach(display, surface, get_metrics(*drawing_area)))
-        {
             return -1;
-        }
-        context->init_wayland(wayland_surface->display, wayland_surface->child, current_width, current_height);
+
+        if (!context->init_wayland(wayland_surface->display, wayland_surface->child, current_width, current_height))
+            return -1;
     }
 #endif
     if (GDK_IS_X11_WINDOW(drawing_area->get_window()->gobj()))
@@ -136,7 +137,8 @@ int S9xVulkanDisplayDriver::init()
         display = gdk_x11_display_get_xdisplay(drawing_area->get_display()->gobj());
         xid = gdk_x11_window_get_xid(drawing_area->get_window()->gobj());
 
-        context->init_Xlib(display, xid);
+        if (!context->init_Xlib(display, xid))
+            return -1;
     }
 
     device = context->device;
