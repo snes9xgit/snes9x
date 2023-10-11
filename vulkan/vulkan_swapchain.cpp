@@ -103,7 +103,7 @@ bool Swapchain::check_and_resize(int width, int height)
     if (width < 1 || height < 1)
         return false;
 
-    if (extents.width != width || extents.height != height)
+    if (extents.width != (uint32_t)width || extents.height != (uint32_t)height)
     {
         recreate(width, height);
         return true;
@@ -185,12 +185,9 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
     if (swapchain_object)
         swapchain_create_info.setOldSwapchain(swapchain_object.get());
 
-    try
-    {
+    try {
         swapchain_object = device.createSwapchainKHRUnique(swapchain_create_info);
-    }
-    catch (std::exception &e)
-    {
+    } catch (std::exception &e) {
         swapchain_object.reset();
     }
 
@@ -209,7 +206,7 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
 
     vk::FenceCreateInfo fence_create_info(vk::FenceCreateFlagBits::eSignaled);
 
-    for (int i = 0; i < num_swapchain_images; i++)
+    for (unsigned int i = 0; i < num_swapchain_images; i++)
     {
         // Create frame queue resources
         auto &frame = frames[i];
@@ -267,12 +264,9 @@ bool Swapchain::begin_frame()
     }
 
     vk::ResultValue<uint32_t> result_value(vk::Result::eSuccess, 0);
-    try
-    {
+    try {
         result_value = device.acquireNextImageKHR(swapchain_object.get(), UINT64_MAX, frame.acquire.get());
-    }
-    catch (vk::OutOfDateKHRError)
-    {
+    } catch (vk::OutOfDateKHRError &e) {
         result_value.result = vk::Result::eErrorOutOfDateKHR;
     }
 
@@ -327,13 +321,13 @@ bool Swapchain::swap()
         .setSwapchains(swapchain_object.get())
         .setImageIndices(current_swapchain_image);
 
-    vk::Result result;
-    try
-    {
+    vk::Result result = vk::Result::eSuccess;
+    try {
         result = queue.presentKHR(present_info);
-    }
-    catch (std::exception &e)
-    {
+    } catch (vk::OutOfDateKHRError &e) {
+        // NVIDIA binary drivers will set OutOfDate between acquire and
+        // present. Ignore this and fix it on the next swapchain acquire.
+    } catch (std::exception &e) {
         printf("%s\n", e.what());
     }
 
