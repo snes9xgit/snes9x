@@ -100,7 +100,7 @@ bool EmuCanvasVulkan::createContext()
         wayland_surface = std::make_unique<WaylandSurface>();
         auto display = (wl_display *)pni->nativeResourceForWindow("display", window);
         auto surface = (wl_surface *)pni->nativeResourceForWindow("surface", main_window->windowHandle());
-        wayland_surface->attach(display, surface, { parent->x(), parent->y(), width(), height(), static_cast<int>(devicePixelRatio()) });
+        wayland_surface->attach(display, surface, { parent->x() - main_window->x(), parent->y() - main_window->y(), width(), height(), static_cast<int>(devicePixelRatio()) });
         auto [scaled_width, scaled_height] = wayland_surface->get_size();
         if (!context->init_wayland(display, wayland_surface->child, scaled_width, scaled_height, config->display_device_index))
         {
@@ -228,7 +228,7 @@ void EmuCanvasVulkan::resizeEvent(QResizeEvent *event)
 #ifndef _WIN32
     if (platform == "wayland")
     {
-        wayland_surface->resize({ parent->x(), parent->y(), width, height, (int)devicePixelRatio() });
+        wayland_surface->resize({ parent->x() - main_window->x(), parent->y() - main_window->y(), width, height, (int)devicePixelRatio() });
         std::tie(width, height) = wayland_surface->get_size();
         // On Wayland, Vulkan WSI provides the buffer for the subsurface,
         // so we have to specify a width and height instead of polling the parent.

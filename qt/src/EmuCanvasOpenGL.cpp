@@ -138,7 +138,7 @@ bool EmuCanvasOpenGL::createContext()
         auto wayland_egl_context = new WaylandEGLContext();
         int s = devicePixelRatio();
 
-        if (!wayland_egl_context->attach(display, surface, { parent->x(), parent->y(), parent->width(), parent->height(), s }))
+        if (!wayland_egl_context->attach(display, surface, { parent->x() - main_window->x(), parent->y() - main_window->y(), parent->width(), parent->height(), s }))
         {
             printf("Couldn't attach context to wayland surface.\n");
             context.reset();
@@ -311,7 +311,7 @@ void EmuCanvasOpenGL::resizeEvent(QResizeEvent *event)
     auto platform = QGuiApplication::platformName();
 #ifndef _WIN32
     if (QGuiApplication::platformName() == "wayland")
-        ((WaylandEGLContext *)context.get())->resize({ g.x(), g.y(), g.width(), g.height(), s });
+        ((WaylandEGLContext *)context.get())->resize({ g.x() - main_window->x(), g.y() - main_window->y(), g.width(), g.height(), s });
     else if (platform == "xcb")
         ((GTKGLXContext *)context.get())->resize();
 #else
