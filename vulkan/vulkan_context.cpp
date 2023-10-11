@@ -205,7 +205,7 @@ bool Context::init_device(int preferred_device)
         return device_list[0];
     };
 
-    if (preferred_device > -1 && preferred_device < device_list.size())
+    if (preferred_device > -1 && (size_t)preferred_device < device_list.size())
         physical_device = device_list[preferred_device];
     else
         physical_device = find_device();

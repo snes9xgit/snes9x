@@ -191,7 +191,7 @@ bool S9xPulseSoundDriver::write_samples(int16_t *data, int samples)
 
     if (draining)
     {
-        if (bytes > buffer_size / 2)
+        if (bytes > (size_t)buffer_size / 2)
         {
             return false;
         }
@@ -201,13 +201,13 @@ bool S9xPulseSoundDriver::write_samples(int16_t *data, int samples)
         }
     }
 
-    if (samples * 2 > bytes)
+    if ((size_t)samples * 2 > bytes)
     {
         draining = true;
         return false;
     }
 
-    if (samples * 2 < bytes)
+    if ((size_t)samples * 2 < bytes)
         bytes = samples * 2;
 
     if (bytes == 0)

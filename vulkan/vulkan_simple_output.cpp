@@ -55,7 +55,7 @@ SimpleOutput::~SimpleOutput()
 void SimpleOutput::create_objects()
 {
     descriptors.clear();
-    for (size_t i = 0; i < queue_size; i++)
+    for (int i = 0; i < queue_size; i++)
     {
         vk::DescriptorSetAllocateInfo dsai{};
         dsai
