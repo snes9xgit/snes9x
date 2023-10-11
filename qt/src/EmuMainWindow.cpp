@@ -568,8 +568,11 @@ void EmuMainWindow::toggleFullscreen()
 {
     if (isFullScreen())
     {
-        app->config->setVRRConfig(false);
-        app->updateSettings();
+        if (app->config->adjust_for_vrr)
+        {
+            app->config->setVRRConfig(false);
+            app->updateSettings();
+        }
         setBypassCompositor(false);
         showNormal();
         menuBar()->setVisible(true);

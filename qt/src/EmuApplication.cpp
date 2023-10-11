@@ -387,7 +387,7 @@ bool EmuApplication::isBound(EmuBinding b)
 
 void EmuApplication::updateSettings()
 {
-    if (config->adjust_input_rate_automatically)
+    if (config->adjust_input_rate_automatically && !config->vrr_enabled)
     {
         constexpr double ir_ratio = 60.098813 / 32040.0;
 
@@ -399,6 +399,12 @@ void EmuApplication::updateSettings()
             config->input_rate /= 3;
         else if (refresh > 239 && refresh < 241)
             config->input_rate /= 4;
+        else
+        {
+            // We're not even close to a multiple of 60hz, so we're stuttering
+            // anyway. Use the true hardware speed.
+            config->input_rate = 32040.0;
+        }
     }
 
     emu_thread->runOnThread([&] {
