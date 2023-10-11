@@ -91,15 +91,15 @@ class Resampler
         r_right[0] = r_right[1] = r_right[2] = r_right[3] = 0;
     }
 
-    inline void dump(unsigned int num_samples)
+    inline void dump(int num_samples)
     {
-        if ((unsigned int)space_filled() >= num_samples)
+        if (num_samples > 0 && space_filled() >= num_samples)
             start = (start + num_samples) % buffer_size;
     }
 
-    inline void add_silence(unsigned int num_samples)
+    inline void add_silence(int num_samples)
     {
-         if (space_empty() < num_samples)
+         if (num_samples > 0 && space_empty() < num_samples)
             return;
 
         int first_block_size = min(num_samples, buffer_size - end);
