@@ -11,6 +11,9 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/time.h>
+#include "fmt/format.h"
+#include "messages.h"
+#include "snes9x.h"
 
 S9xPulseSoundDriver::S9xPulseSoundDriver()
 {
@@ -116,11 +119,12 @@ bool S9xPulseSoundDriver::open_device(int playback_rate, int buffer_size_ms)
     buffer_attr.minreq = pa_usec_to_bytes(3000, &ss);
     buffer_attr.prebuf = buffer_attr.tlength / 2;
 
-    printf("PulseAudio sound driver initializing...\n");
+    S9xMessage(S9X_INFO, S9X_NO_INFO, "Initializing PulseAudio sound driver…");
 
-    printf("    --> (%dhz, 16-bit Stereo, %dms)...",
-           playback_rate,
-           buffer_size_ms);
+    S9xMessage(S9X_INFO, S9X_NO_INFO,
+        fmt::format("    --> ({0:Ld} Hz, 16‑bit stereo, {1:Ld} ms)…",
+            playback_rate,
+            buffer_size_ms).c_str());
 
     int err = PA_ERR_UNKNOWN;
     mainloop = pa_threaded_mainloop_new();
@@ -159,7 +163,7 @@ bool S9xPulseSoundDriver::open_device(int playback_rate, int buffer_size_ms)
 
     buffer_size = actual_buffer_attr->tlength;
 
-    printf("OK\n");
+    S9xMessage(S9X_INFO, S9X_NO_INFO, "OK");
 
     return true;
 }

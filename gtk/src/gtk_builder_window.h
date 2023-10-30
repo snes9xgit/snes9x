@@ -37,6 +37,7 @@ class GtkBuilderWindow
 
     void enable_widget(const char *name, bool state);
     void show_widget(const char *name, bool state);
+    void set_label(const char * const name, const char * const label);
     void set_button_label(const char *name, const char *label);
     bool get_check(const char *name);
     int get_entry_value(const char *name);

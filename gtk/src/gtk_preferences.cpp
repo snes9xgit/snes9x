@@ -4,8 +4,6 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include <string>
-#include <stdlib.h>
 #include "gtk_compat.h"
 #include "gtk_preferences.h"
 #include "gtk_config.h"
@@ -109,7 +107,7 @@ Snes9xPreferences::Snes9xPreferences(Snes9xConfig *config)
             if (m->modeFlags & RR_DoubleClock)
                 dotClock *= 2;
 
-            auto str = fmt::format("{}x{} @ {:.3f}Hz",
+            auto str = fmt::format(_("{0:Ld}×{1:Ld} @ {2:.3Lf} Hz"),
                                    m->width,
                                    m->height,
                                    (double)dotClock / m->hTotal / m->vTotal);
@@ -127,28 +125,28 @@ Snes9xPreferences::Snes9xPreferences(Snes9xConfig *config)
     }
 
 #ifdef USE_HQ2X
-    combo_box_append("scale_method_combo", _("HQ2x"));
-    combo_box_append("scale_method_combo", _("HQ3x"));
-    combo_box_append("scale_method_combo", _("HQ4x"));
+    combo_box_append("scale_method_combo", "HQ2x");
+    combo_box_append("scale_method_combo", "HQ3x");
+    combo_box_append("scale_method_combo", "HQ4x");
 #endif
 
 #ifdef USE_XBRZ
-    combo_box_append("scale_method_combo", _("2xBRZ"));
-    combo_box_append("scale_method_combo", _("3xBRZ"));
-    combo_box_append("scale_method_combo", _("4xBRZ"));
+    combo_box_append("scale_method_combo", "2xBRZ");
+    combo_box_append("scale_method_combo", "3xBRZ");
+    combo_box_append("scale_method_combo", "4xBRZ");
 #endif
 
     for (const auto &driver : config->display_drivers)
     {
         std::string entry;
         if (driver == "opengl")
-            entry = _("OpenGL - Use 3D graphics hardware");
+            entry = _("OpenGL – Use 3D graphics hardware");
         else if (driver == "xv")
-            entry = _("XVideo - Use hardware video blitter");
+            entry = _("XVideo – Use hardware video blitter");
         else if (driver == "vulkan")
             entry = _("Vulkan");
         else
-            entry = _("None - Use software scaler");
+            entry = _("None – Use software scaler");
 
         combo_box_append("hw_accel", entry.c_str());
     }
@@ -169,6 +167,18 @@ void Snes9xPreferences::connect_signals()
 
     get_object<Gtk::ComboBox>("control_combo")->signal_changed().connect([&] {
         bindings_to_dialog(get_object<Gtk::ComboBox>("control_combo")->get_active_row_number());
+    });
+    get_object<Gtk::CheckButton>("multithreading")->signal_toggled().connect([&] {
+        enable_widget("num_threads", get_check("multithreading"));
+    });
+    // Handle plurals on GtkLabel “threads_for_filtering_and_scaling_label”
+    get_object<Gtk::SpinButton>("num_threads")->signal_value_changed().connect([&] {
+        set_label("threads_for_filtering_and_scaling_label",
+            // GLib’s g_d_ngettext() would have been a better fit here but
+            // xgettext does not extract g_dngettext() by default
+            ngettext("thread for filtering and scaling",
+                     "threads for filtering and scaling",
+                     get_spin("num_threads")));
     });
     get_object<Gtk::ComboBox>("scale_method_combo")->signal_changed().connect([&] {
         int id = get_combo("scale_method_combo");
@@ -207,12 +217,25 @@ void Snes9xPreferences::connect_signals()
     get_object<Gtk::Button>("fragment_shader_button")->signal_pressed().connect(sigc::mem_fun(*this, &Snes9xPreferences::shader_select));
     get_object<Gtk::Button>("calibrate_button")->signal_pressed().connect(sigc::mem_fun(*this, &Snes9xPreferences::calibration_dialog));
     get_object<Gtk::HScale>("sound_input_rate")->signal_value_changed().connect(sigc::mem_fun(*this, &Snes9xPreferences::input_rate_changed));
+    get_object<Gtk::HScale>("sound_input_rate")->signal_format_value().connect(sigc::mem_fun(*this, &Snes9xPreferences::format_sound_input_rate_value));
     get_object<Gtk::Button>("about_button")->signal_clicked().connect(sigc::mem_fun(*this, &Snes9xPreferences::about_dialog));
     get_object<Gtk::ToggleButton>("auto_input_rate")->signal_toggled().connect([&] {
         auto toggle_button = get_object<Gtk::ToggleButton>("auto_input_rate");
+        enable_widget("sound_input_rate_label", !toggle_button->get_active());
         enable_widget("sound_input_rate", !toggle_button->get_active());
+        enable_widget("video_rate_label", !toggle_button->get_active());
+        enable_widget("relative_video_rate", !toggle_button->get_active());
         if (toggle_button->get_active())
             set_slider("sound_input_rate", top_level->get_auto_input_rate());
+    });
+    // Handle plurals on GtkLabel “milliseconds_label”
+    get_object<Gtk::SpinButton>("sound_buffer_size")->signal_value_changed().connect([&] {
+        set_label("milliseconds_label",
+            // GLib’s g_d_ngettext() would have been a better fit here but
+            // xgettext does not extract g_dngettext() by default
+            ngettext("millisecond",
+                     "milliseconds",
+                     get_spin("sound_buffer_size")));
     });
 
     std::array<std::string, 5> browse_buttons = { "sram", "savestate", "cheat", "patch", "export" };
@@ -228,6 +251,16 @@ void Snes9xPreferences::connect_signals()
             get_object<Gtk::Entry>((name + "_directory").c_str())->set_text(SAME_AS_GAME);
         });
     }
+
+    // Handle plurals on GtkLabel “save_sram_after_sec_label”
+    get_object<Gtk::SpinButton>("save_sram_after_sec")->signal_value_changed().connect([&] {
+        set_label("save_sram_after_sec_label",
+            // GLib’s g_d_ngettext() would have been a better fit here but
+            // xgettext does not extract g_dngettext() by default
+            ngettext("second after change",
+                     "seconds after change",
+                     get_spin("save_sram_after_sec")));
+    });
 }
 
 void Snes9xPreferences::about_dialog()
@@ -282,9 +315,17 @@ void Snes9xPreferences::game_data_browse(std::string folder)
 
 void Snes9xPreferences::input_rate_changed()
 {
-    double value = get_object<Gtk::HScale>("sound_input_rate")->get_value();
-    value = value / 32040.0 * NTSC_PROGRESSIVE_FRAME_RATE;
-    get_object<Gtk::Label>("relative_video_rate")->set_label(fmt::format("{:.4f}Hz", value));
+    const double value =
+        get_object<Gtk::HScale>("sound_input_rate")->get_value() /
+        32040.0 * NTSC_PROGRESSIVE_FRAME_RATE;
+    set_label(
+        "relative_video_rate",
+        fmt::format(_("{0:.4Lf} Hz"), value).c_str());
+}
+
+Glib::ustring Snes9xPreferences::format_sound_input_rate_value(double value)
+{
+    return fmt::format(_("{0:Ld} Hz"), (uint32_t)std::round(value));
 }
 
 bool Snes9xPreferences::key_pressed(GdkEventKey *event)
@@ -400,6 +441,11 @@ void Snes9xPreferences::move_settings_to_dialog()
     set_check("scale_to_fit",              config->scale_to_fit);
     set_check("overscan",                  config->overscan);
     set_check("multithreading",            config->multithreading);
+    enable_widget("num_threads", get_check("multithreading"));
+    set_label("threads_for_filtering_and_scaling_label",
+        ngettext("thread for filtering and scaling",
+                 "threads for filtering and scaling",
+                 get_spin("num_threads")));
     set_combo("hires_effect",              config->hires_effect);
     set_check("maintain_aspect_ratio",     config->maintain_aspect_ratio);
     set_combo("aspect_ratio",              config->aspect_ratio);
@@ -426,7 +472,8 @@ void Snes9xPreferences::move_settings_to_dialog()
 
     set_combo("resolution_combo",          config->xrr_index);
     set_combo("scale_method_combo",        config->scale_method);
-    set_entry_value("save_sram_after_sec", Settings.AutoSaveDelay);
+    set_spin ("save_sram_after_sec",       Settings.AutoSaveDelay);
+    set_label("save_sram_after_sec_label", ngettext("second after change", "seconds after change", get_spin("save_sram_after_sec")));
     set_check("allow_invalid_vram_access", !Settings.BlockInvalidVRAMAccessMaster);
     set_check("upanddown",                 Settings.UpAndDown);
     set_combo("default_esc_behavior",      config->default_esc_behavior);
@@ -445,8 +492,12 @@ void Snes9xPreferences::move_settings_to_dialog()
         enable_widget("auto_input_rate", false);
     }
     set_check ("auto_input_rate",           config->auto_input_rate);
-    enable_widget("sound_input_rate",       config->auto_input_rate ? false : true);
+    enable_widget("sound_input_rate_label", !config->auto_input_rate);
+    enable_widget("sound_input_rate",       !config->auto_input_rate);
+    enable_widget("video_rate_label",       !config->auto_input_rate);
+    enable_widget("relative_video_rate",    !config->auto_input_rate);
     set_spin  ("sound_buffer_size",         config->sound_buffer_size);
+    set_label ("milliseconds_label", ngettext("millisecond", "milliseconds", get_spin("sound_buffer_size")));
     set_check ("dynamic_rate_control",      Settings.DynamicRateControl);
     set_spin  ("dynamic_rate_limit",        Settings.DynamicRateLimit / 1000.0);
     set_spin  ("rewind_buffer_size",        config->rewind_buffer_size);
@@ -579,7 +630,7 @@ void Snes9xPreferences::get_settings_from_dialog()
     config->hires_effect              = get_combo("hires_effect");
     config->auto_vrr                  = get_check("auto_vrr");
     config->force_inverted_byte_order = get_check("force_inverted_byte_order");
-    Settings.AutoSaveDelay            = get_entry_value("save_sram_after_sec");
+    Settings.AutoSaveDelay            = get_spin("save_sram_after_sec");
     config->multithreading            = get_check("multithreading");
     config->pause_emulation_on_switch = get_check("pause_emulation_on_switch");
     Settings.BlockInvalidVRAMAccessMaster   = !get_check("allow_invalid_vram_access");

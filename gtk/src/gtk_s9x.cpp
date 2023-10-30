@@ -4,8 +4,9 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include <stdio.h>
 #include <signal.h>
+#define G_LOG_USE_STRUCTURED
+#define G_LOG_DOMAIN GETTEXT_PACKAGE
 #include "gtk_compat.h"
 #include "gtk_config.h"
 #include "gtk_s9x.h"
@@ -52,7 +53,7 @@ int main(int argc, char *argv[])
 {
     auto app = Gtk::Application::create("com.snes9x.gtk", Gio::APPLICATION_NON_UNIQUE);
 
-    setlocale(LC_ALL, "");
+    std::locale::global(std::locale(""));
     bindtextdomain(GETTEXT_PACKAGE, SNES9XLOCALEDIR);
     bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
     textdomain(GETTEXT_PACKAGE);
@@ -199,7 +200,13 @@ int S9xOpenROM(const char *rom_filename)
 
     if (state_manager.init(gui_config->rewind_buffer_size * 1024 * 1024))
     {
-        printf("Using rewind buffer of %uMB\n", gui_config->rewind_buffer_size);
+        S9xMessage(
+            S9X_INFO,
+            S9X_NO_INFO,
+            fmt::format(_("Using rewind buffer of {0}\n"),
+                Glib::format_size(
+                    gui_config->rewind_buffer_size * 1024 * 1024,
+                    Glib::FORMAT_SIZE_IEC_UNITS).c_str()).c_str());
     }
 
     S9xROMLoaded();
@@ -359,16 +366,55 @@ void S9xMessage(int type, int number, const char *message)
 {
     switch (number)
     {
-    case S9X_MOVIE_INFO:
-        S9xSetInfoString(message);
-        break;
-    case S9X_ROM_INFO:
-    {
-        S9xSetInfoString(Memory.GetMultilineROMInfo().c_str());
-        break;
-    }
-    default:
-        break;
+        case S9X_MOVIE_INFO:
+        {
+            S9xSetInfoString(message);
+            break;
+        }
+        case S9X_ROM_INFO:
+        {
+            S9xSetInfoString(Memory.GetMultilineROMInfo().c_str());
+            break;
+        }
+        default:
+        {
+            switch (type)
+            {
+                case S9X_TRACE:
+                case S9X_DEBUG:
+                {
+                    g_debug(message);
+                    break;
+                }
+                case S9X_WARNING:
+                {
+                    g_warning(message);
+                    break;
+                }
+                case S9X_INFO:
+                {
+                    g_info(message);
+                    g_message(message);
+                    break;
+                }
+                case S9X_ERROR:
+                {
+                    // GLib’s g_critical() does not terminate the process
+                    g_critical(message);
+                    break;
+                }
+                case S9X_FATAL_ERROR:
+                {
+                    // GLib’s g_error() terminates the process
+                    g_error(message);
+                    break;
+                }
+                default:
+                {
+                    g_message(message);
+                }
+            }
+        }
     }
 }
 
@@ -550,10 +596,11 @@ const char *S9xStringInput(const char *message)
 
 void S9xExtraUsage()
 {
-    printf("GTK port options:\n"
+    S9xMessage(S9X_INFO, S9X_USAGE,
+         _("GTK port options:\n"
            "-filter [option]               Use a filter to scale the image.\n"
            "                               [option] is one of: none supereagle 2xsai\n"
            "                               super2xsai hq2x hq3x hq4x 2xbrz 3xbrz 4xbrz epx ntsc\n"
            "\n"
-           "-mutesound                     Disables sound output.\n");
+           "-mutesound                     Disables sound output.\n"));
 }

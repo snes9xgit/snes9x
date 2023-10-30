@@ -23,6 +23,13 @@ Snes9xNetplayDialog::Snes9xNetplayDialog(Snes9xConfig *config)
         if (!filename.empty())
             get_object<Gtk::Entry>("rom_image")->set_text(filename);
     });
+    // Handle plurals on GtkLabel "frames_behind_label"
+    get_object<Gtk::SpinButton>("frames_behind")->signal_value_changed().connect([&] {
+        set_label("frames_behind_label",
+            // GLib’s g_dngettext() would have been a better fit here but
+            // xgettext does not extract g_dngettext() by default
+            ngettext("frame behind", "frames behind", get_spin("frames_behind")));
+    });
 
     this->config = config;
 }

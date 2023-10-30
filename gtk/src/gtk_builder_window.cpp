@@ -62,6 +62,11 @@ int GtkBuilderWindow::get_height()
     return window->get_height();
 }
 
+void GtkBuilderWindow::set_label(const char * const name, const char * const label)
+{
+    get_object<Gtk::Label>(name)->set_label(label);
+}
+
 void GtkBuilderWindow::set_button_label(const char *name, const char *label)
 {
     get_object<Gtk::Button>(name)->set_label(label);
