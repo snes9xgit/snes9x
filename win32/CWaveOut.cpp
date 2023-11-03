@@ -4,10 +4,15 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
+
 #include "CWaveOut.h"
+#include <mmdeviceapi.h> // needs to be before snes9x.h, otherwise conflicts with SetFlags macro
+#include <Functiondiscoverykeys_devpkey.h>
 #include "../snes9x.h"
 #include "../apu/apu.h"
 #include "wsnes9x.h"
+
+
 
 CWaveOut::CWaveOut(void)
 {
@@ -235,38 +240,80 @@ void CWaveOut::ProcessSound()
 
 std::vector<std::wstring> CWaveOut::GetDeviceList()
 {
-	std::vector<std::wstring> device_list;
+    std::vector<std::wstring> device_list;
 
-	UINT num_devices = waveOutGetNumDevs();
+    device_list.push_back(_T("Default"));
 
-	device_list.push_back(_T("Default"));
+    // try to enumerate devices via multimedia device enumerator, waveout has a 31 character limit on device names
+    IMMDeviceEnumerator* deviceEnumerator;
+    HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_INPROC_SERVER, __uuidof(IMMDeviceEnumerator), (LPVOID*)&deviceEnumerator);
+    if (SUCCEEDED(hr))
+    {
+        IMMDeviceCollection* renderDevices;
+        hr = deviceEnumerator->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &renderDevices);
+        if (SUCCEEDED(hr))
+        {
+            UINT count;
+            renderDevices->GetCount(&count);
+            for (int i = 0; i < count; i++)
+            {
+                IMMDevice* renderDevice = NULL;
+                if (renderDevices->Item(i, &renderDevice) != S_OK)
+                {
+                    continue;
+                }
+                IPropertyStore* propStore;
+                PROPVARIANT propVar;
+                PropVariantInit(&propVar);
+                hr = renderDevice->OpenPropertyStore(STGM_READ, &propStore);
+                if (SUCCEEDED(hr))
+                {
+                    hr = propStore->GetValue(PKEY_Device_FriendlyName, &propVar);
+                }
+                if (SUCCEEDED(hr) && propVar.vt == VT_LPWSTR)
+                {
+                    device_list.push_back(propVar.pwszVal);
+                }
+                PropVariantClear(&propVar);
+                renderDevice->Release();
+            }
+            renderDevices->Release();
+        }
+        deviceEnumerator->Release();
+    }
 
-	for (unsigned int i = 0; i < num_devices; i++)
-	{
-		WAVEOUTCAPS caps;
-		if(waveOutGetDevCaps(i, &caps, sizeof(WAVEOUTCAPS)) == MMSYSERR_NOERROR)
-		{
-			device_list.push_back(caps.szPname);
-		}
-	}
+    // if we still only have "default" in the list, use old waveout enumeration
+    if (device_list.size() == 1)
+    {
+        UINT num_devices = waveOutGetNumDevs();
 
-	return device_list;
+        for (unsigned int i = 0; i < num_devices; i++)
+        {
+            WAVEOUTCAPS caps;
+            if (waveOutGetDevCaps(i, &caps, sizeof(WAVEOUTCAPS)) == MMSYSERR_NOERROR)
+            {
+                device_list.push_back(caps.szPname);
+            }
+        }
+    }
+
+    return device_list;
 }
 
 int CWaveOut::FindDeviceIndex(TCHAR *audio_device)
 {
-	std::vector<std::wstring> device_list = GetDeviceList();
+    std::vector<std::wstring> device_list = GetDeviceList();
 
-	int index = 0;
+    int index = 0;
 
-	for (int i = 0; i < device_list.size(); i++)
-	{
-		if (_tcsstr(device_list[i].c_str(), audio_device) != NULL)
-		{
-			index = i;
-			break;
-		}
-	}
+    for (int i = 0; i < device_list.size(); i++)
+    {
+        if (_tcsstr(device_list[i].c_str(), audio_device) != NULL)
+        {
+            index = i;
+            break;
+        }
+    }
 
-	return index;
+    return index;
 }

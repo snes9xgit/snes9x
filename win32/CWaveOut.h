@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "../snes9x.h"
 #include <windows.h>
 #include "IS9xSoundOutput.h"
 #include <mmsystem.h>
