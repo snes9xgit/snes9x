@@ -11,8 +11,10 @@
 #include "../snes9x.h"
 #include "../apu/apu.h"
 #include "wsnes9x.h"
+#include <map>
 
-
+#define DRV_QUERYFUNCTIONINSTANCEID       (DRV_RESERVED + 17)
+#define DRV_QUERYFUNCTIONINSTANCEIDSIZE   (DRV_RESERVED + 18)
 
 CWaveOut::CWaveOut(void)
 {
@@ -244,13 +246,16 @@ std::vector<std::wstring> CWaveOut::GetDeviceList()
 
     device_list.push_back(_T("Default"));
 
-    // try to enumerate devices via multimedia device enumerator, waveout has a 31 character limit on device names
+    std::map<std::wstring, std::wstring> endpointId_deviceName_map;
+
+    // try to get device names via multimedia device enumerator, waveOut has a 31 character limit on device names
+    // save them in a map with their endpoint id to later match to waveOut devices
     IMMDeviceEnumerator* deviceEnumerator;
     HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_INPROC_SERVER, __uuidof(IMMDeviceEnumerator), (LPVOID*)&deviceEnumerator);
     if (SUCCEEDED(hr))
     {
         IMMDeviceCollection* renderDevices;
-        hr = deviceEnumerator->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &renderDevices);
+        hr = deviceEnumerator->EnumAudioEndpoints(eRender, DEVICE_STATEMASK_ALL, &renderDevices);
         if (SUCCEEDED(hr))
         {
             UINT count;
@@ -262,19 +267,27 @@ std::vector<std::wstring> CWaveOut::GetDeviceList()
                 {
                     continue;
                 }
-                IPropertyStore* propStore;
-                PROPVARIANT propVar;
-                PropVariantInit(&propVar);
-                hr = renderDevice->OpenPropertyStore(STGM_READ, &propStore);
+                WCHAR* pstrEndpointId = NULL;
+                hr = renderDevice->GetId(&pstrEndpointId);
                 if (SUCCEEDED(hr))
                 {
-                    hr = propStore->GetValue(PKEY_Device_FriendlyName, &propVar);
+                    std::wstring strEndpoint = pstrEndpointId;
+                    CoTaskMemFree(pstrEndpointId);
+                    IPropertyStore* propStore;
+                    PROPVARIANT propVar;
+                    PropVariantInit(&propVar);
+                    hr = renderDevice->OpenPropertyStore(STGM_READ, &propStore);
+                    if (SUCCEEDED(hr))
+                    {
+                        hr = propStore->GetValue(PKEY_Device_FriendlyName, &propVar);
+                    }
+                    if (SUCCEEDED(hr) && propVar.vt == VT_LPWSTR)
+                    {
+                        endpointId_deviceName_map[strEndpoint] = propVar.pwszVal;
+                    }
+                    PropVariantClear(&propVar);
                 }
-                if (SUCCEEDED(hr) && propVar.vt == VT_LPWSTR)
-                {
-                    device_list.push_back(propVar.pwszVal);
-                }
-                PropVariantClear(&propVar);
+
                 renderDevice->Release();
             }
             renderDevices->Release();
@@ -282,19 +295,41 @@ std::vector<std::wstring> CWaveOut::GetDeviceList()
         deviceEnumerator->Release();
     }
 
-    // if we still only have "default" in the list, use old waveout enumeration
-    if (device_list.size() == 1)
+    // enum waveOut devices, using mapped names if available
+    UINT num_devices = waveOutGetNumDevs();
+    for (unsigned int i = 0; i < num_devices; i++)
     {
-        UINT num_devices = waveOutGetNumDevs();
-
-        for (unsigned int i = 0; i < num_devices; i++)
+        WAVEOUTCAPS caps;
+        MMRESULT mmr;
+        mmr = waveOutGetDevCaps(i, &caps, sizeof(WAVEOUTCAPS));
+        if (mmr != MMSYSERR_NOERROR)
         {
-            WAVEOUTCAPS caps;
-            if (waveOutGetDevCaps(i, &caps, sizeof(WAVEOUTCAPS)) == MMSYSERR_NOERROR)
-            {
-                device_list.push_back(caps.szPname);
-            }
+            continue;
         }
+
+        // get endpoint id, called function instance id in waveOutMessage
+        size_t endpointIdSize = 0;
+        mmr = waveOutMessage((HWAVEOUT)IntToPtr(i), DRV_QUERYFUNCTIONINSTANCEIDSIZE, (DWORD_PTR)&endpointIdSize, NULL);
+        if (mmr != MMSYSERR_NOERROR)
+        {
+            continue;
+        }
+        std::vector<wchar_t> endpointIdBuffer(endpointIdSize);
+        mmr = waveOutMessage((HWAVEOUT)IntToPtr(i), DRV_QUERYFUNCTIONINSTANCEID, (DWORD_PTR)endpointIdBuffer.data(), endpointIdSize);
+        if (mmr != MMSYSERR_NOERROR)
+        {
+            continue;
+        }
+        std::wstring strEndpoint(endpointIdBuffer.data());
+
+        // use name retrieved from mmdevice above if available
+        std::wstring devName = caps.szPname;
+        if (endpointId_deviceName_map.count(strEndpoint))
+        {
+            devName = endpointId_deviceName_map[strEndpoint];
+        }
+
+        device_list.push_back(devName);
     }
 
     return device_list;
