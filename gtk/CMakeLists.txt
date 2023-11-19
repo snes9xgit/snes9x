@@ -49,7 +49,7 @@ include(CheckIncludeFile)
 include(FindGettext)
 
 # Add any new language to this foreach loop
-foreach(lang es fr_FR ja pl pt_BR ru sr@latin uk zh_CN)
+foreach(lang de es fr_FR ja pl pt_BR ru sr@latin uk zh_CN)
     GETTEXT_PROCESS_PO_FILES(${lang} ALL PO_FILES po/${lang}.po)
     install(FILES ${CMAKE_BINARY_DIR}/${lang}.gmo
             DESTINATION ${LOCALEDIR}/${lang}/LC_MESSAGES
