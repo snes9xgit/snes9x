@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="2.16"/>
+  <requires lib="gtk+" version="3.24"/>
   <!-- interface-naming-policy project-wide -->
   <object class="GtkDialog" id="about_dialog">
+  <!-- TODO: Replace GtkDialog with GtkAboutDialog -->
     <property name="width_request">560</property>
     <property name="height_request">448</property>
     <property name="can_focus">False</property>
@@ -45,7 +46,6 @@
                 <property name="yalign">0</property>
                 <property name="xpad">10</property>
                 <property name="ypad">10</property>
-                <property name="label" translatable="yes">label106</property>
                 <property name="use_markup">True</property>
                 <property name="justify">center</property>
                 <property name="wrap">True</property>
@@ -163,6 +163,11 @@
     <property name="value">100</property>
     <property name="step_increment">10</property>
     <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="save_sram_after_sec_adjustment">
+    <property name="upper">3600</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">60</property>
   </object>
   <object class="GtkAdjustment" id="adjustment13">
     <property name="lower">-1</property>
@@ -655,7 +660,7 @@
                     <property name="can_focus">False</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <property name="xalign">0</property>
-                    <property name="label" translatable="yes">Fast-forward to frame</property>
+                    <property name="label" translatable="yes">Fast‑forward to frame</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -731,28 +736,10 @@
     <property name="stock">gtk-leave-fullscreen</property>
     <property name="icon-size">1</property>
   </object>
-  <object class="GtkImage" id="image15">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-fullscreen</property>
-    <property name="icon-size">1</property>
-  </object>
-  <object class="GtkImage" id="image16">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-preferences</property>
-    <property name="icon-size">1</property>
-  </object>
   <object class="GtkImage" id="image17">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="stock">gtk-zoom-in</property>
-    <property name="icon-size">1</property>
-  </object>
-  <object class="GtkImage" id="image18">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-quit</property>
     <property name="icon-size">1</property>
   </object>
   <object class="GtkImage" id="image19">
@@ -845,13 +832,13 @@
     </columns>
     <data>
       <row>
-        <col id="0" translatable="yes">Game Genie</col>
+        <col id="0" translatable="no">Game Genie</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Pro Action Replay</col>
+        <col id="0" translatable="no">Pro Action Replay</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Goldfinger</col>
+        <col id="0" translatable="no">Goldfinger</col>
       </row>
     </data>
   </object>
@@ -905,37 +892,37 @@
     </columns>
     <data>
       <row>
-        <col id="0" translatable="yes">None</col>
+        <col id="0" translatable="yes" context="filter list">None</col>
       </row>
       <row>
-        <col id="0" translatable="yes">SuperEagle</col>
+        <col id="0" translatable="no">SuperEagle</col>
       </row>
       <row>
-        <col id="0" translatable="yes">2xSaI</col>
+        <col id="0" translatable="no">2xSaI</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Super2xSaI</col>
+        <col id="0" translatable="no">Super2xSaI</col>
       </row>
       <row>
-        <col id="0" translatable="yes">EPX</col>
+        <col id="0" translatable="no">EPX</col>
       </row>
       <row>
-        <col id="0" translatable="yes">EPX Smooth</col>
+        <col id="0" translatable="no">EPX Smooth</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Blargg's NTSC</col>
+        <col id="0" translatable="no">Blargg’s NTSC</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Scanlines</col>
+        <col id="0" translatable="no">Scanlines</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Simple2x</col>
+        <col id="0" translatable="no">Simple2x</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Simple3x</col>
+        <col id="0" translatable="no">Simple3x</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Simple4x</col>
+        <col id="0" translatable="no">Simple4x</col>
       </row>
     </data>
   </object>
@@ -984,7 +971,7 @@
         <col id="0" translatable="yes">Output directly</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Scale low-resolution screens</col>
+        <col id="0" translatable="yes">Scale low‑resolution screens</col>
       </row>
     </data>
   </object>
@@ -1088,10 +1075,10 @@
     </columns>
     <data>
       <row>
-        <col id="0" translatable="yes">Timer-based</col>
+        <col id="0" translatable="yes">Timer‑based</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Timer-based with automatic frame-skipping</col>
+        <col id="0" translatable="yes">Timer‑based with automatic frame-skipping</col>
       </row>
       <row>
         <col id="0" translatable="yes">Sound buffer synchronization</col>
@@ -1108,28 +1095,28 @@
     </columns>
     <data>
       <row>
-        <col id="0" translatable="yes">48000 hz</col>
+        <col id="0" translatable="yes">48,000 Hz</col>
       </row>
       <row>
-        <col id="0" translatable="yes">44100 hz</col>
+        <col id="0" translatable="yes">44,100 Hz</col>
       </row>
       <row>
-        <col id="0" translatable="yes">32000 hz</col>
+        <col id="0" translatable="yes">32,000 Hz</col>
       </row>
       <row>
-        <col id="0" translatable="yes">22050 hz</col>
+        <col id="0" translatable="yes">22,050 Hz</col>
       </row>
       <row>
-        <col id="0" translatable="yes">16000 hz</col>
+        <col id="0" translatable="yes">16,000 Hz</col>
       </row>
       <row>
-        <col id="0" translatable="yes">11025 hz</col>
+        <col id="0" translatable="yes">11,025 Hz</col>
       </row>
       <row>
-        <col id="0" translatable="yes">8000 hz</col>
+        <col id="0" translatable="yes">8,000 Hz</col>
       </row>
       <row>
-        <col id="0" translatable="yes">0 hz</col>
+        <col id="0" translatable="yes">0 Hz</col>
       </row>
     </data>
   </object>
@@ -1146,10 +1133,10 @@
     </columns>
     <data>
       <row>
-        <col id="0" translatable="yes">16-bit (GL_RGB)</col>
+        <col id="0" translatable="yes">16‑bit (GL_RGB)</col>
       </row>
       <row>
-        <col id="0" translatable="yes">32-bit (GL_BGRA)</col>
+        <col id="0" translatable="yes">32‑bit (GL_BGRA)</col>
       </row>
     </data>
   </object>
@@ -1212,7 +1199,7 @@
                     <property name="can_focus">False</property>
                     <child>
                       <object class="GtkImageMenuItem" id="open_rom_item">
-                        <property name="label" translatable="yes">_Open ROM Image...</property>
+                        <property name="label" translatable="yes">_Open ROM Image…</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
@@ -1247,7 +1234,7 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="open_netplay_item">
-                        <property name="label" translatable="yes">Open with _NetPlay...</property>
+                        <property name="label" translatable="yes">Open with _NetPlay…</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Open a ROM to use with NetPlay</property>
@@ -1261,7 +1248,7 @@
                       <object class="GtkMenuItem" id="open_multicart_item">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Open _MultiCart...</property>
+                        <property name="label" translatable="yes">Open _MultiCart…</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="open_multicart" swapped="no"/>
                       </object>
@@ -1382,7 +1369,7 @@
                               <object class="GtkMenuItem" id="from_file1">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">From _File...</property>
+                                <property name="label" translatable="yes">From _File…</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="load_state_file" swapped="no"/>
                               </object>
@@ -1516,7 +1503,7 @@
                               <object class="GtkMenuItem" id="to_file1">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">To _File...</property>
+                                <property name="label" translatable="yes">To _File…</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="save_state_file" swapped="no"/>
                               </object>
@@ -1533,7 +1520,7 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="save_spc_item">
-                        <property name="label" translatable="yes">Save SPC...</property>
+                        <property name="label" translatable="yes">Save SPC…</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
@@ -1550,7 +1537,7 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="rom_info_item">
-                        <property name="label" translatable="yes">Show ROM _Info...</property>
+                        <property name="label" translatable="yes">Show ROM _Info…</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
@@ -1567,12 +1554,9 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="exit_item">
-                        <property name="label" translatable="yes">_Quit</property>
+                        <property name="label" translatable="yes">gtk-quit</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="image">image18</property>
-                        <property name="use_stock">False</property>
+                        <property name="use_stock">True</property>
                         <signal name="activate" handler="main_window_delete_event" swapped="no"/>
                       </object>
                     </child>
@@ -1620,7 +1604,7 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="open_movie_item">
-                        <property name="label" translatable="yes">Load _Movie...</property>
+                        <property name="label" translatable="yes">Load _Movie…</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
@@ -1632,7 +1616,7 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="record_movie_item">
-                        <property name="label" translatable="yes">R_ecord Movie...</property>
+                        <property name="label" translatable="yes">R_ecord Movie…</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
@@ -1656,7 +1640,7 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="jump_to_frame_item">
-                        <property name="label" translatable="yes">_Jump to Frame...</property>
+                        <property name="label" translatable="yes">_Jump to Frame…</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
@@ -1759,7 +1743,7 @@
                               <object class="GtkMenuItem" id="exact_pixels_1x_item">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">_1x</property>
+                                <property name="label" translatable="yes">_1×</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="exact_1x" swapped="no"/>
                               </object>
@@ -1768,7 +1752,7 @@
                               <object class="GtkMenuItem" id="exact_pixels_2x_item">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">_2x</property>
+                                <property name="label" translatable="yes">_2×</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="exact_2x" swapped="no"/>
                               </object>
@@ -1777,7 +1761,7 @@
                               <object class="GtkMenuItem" id="exact_pixels_3x_item">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">_3x</property>
+                                <property name="label" translatable="yes">_3×</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="exact_3x" swapped="no"/>
                               </object>
@@ -1786,7 +1770,7 @@
                               <object class="GtkMenuItem" id="exact_pixels_4x_item">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">_4x</property>
+                                <property name="label" translatable="yes">_4×</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="exact_4x" swapped="no"/>
                               </object>
@@ -1795,7 +1779,7 @@
                               <object class="GtkMenuItem" id="exact_pixels_5x_item">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">_5x</property>
+                                <property name="label" translatable="yes">_5×</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="exact_5x" swapped="no"/>
                               </object>
@@ -1804,7 +1788,7 @@
                               <object class="GtkMenuItem" id="exact_pixels_6x_item">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">_6x</property>
+                                <property name="label" translatable="yes">_6×</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="exact_6x" swapped="no"/>
                               </object>
@@ -1813,7 +1797,7 @@
                               <object class="GtkMenuItem" id="exact_pixels_7x_item">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">_7x</property>
+                                <property name="label" translatable="yes">_7×</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="exact_7x" swapped="no"/>
                               </object>
@@ -1822,7 +1806,7 @@
                               <object class="GtkMenuItem" id="exact_pixels_8x_item">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">_8x</property>
+                                <property name="label" translatable="yes">_8×</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="exact_8x" swapped="no"/>
                               </object>
@@ -1831,7 +1815,7 @@
                               <object class="GtkMenuItem" id="exact_pixels_9x_item">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">_9x</property>
+                                <property name="label" translatable="yes">_9×</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="exact_9x" swapped="no"/>
                               </object>
@@ -1840,7 +1824,7 @@
                               <object class="GtkMenuItem" id="exact_pixels_10x_item">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">1_0x</property>
+                                <property name="label" translatable="yes">1_0×</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="exact_10x" swapped="no"/>
                               </object>
@@ -1857,12 +1841,9 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="fullscreen_item">
-                        <property name="label" translatable="yes">_Fullscreen</property>
+                        <property name="label" translatable="yes">gtk-fullscreen</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="image">image15</property>
-                        <property name="use_stock">False</property>
+                        <property name="use_stock">True</property>
                         <signal name="activate" handler="on_fullscreen_item_activate" swapped="no"/>
                       </object>
                     </child>
@@ -1986,7 +1967,7 @@
                                       <object class="GtkRadioMenuItem" id="nothingpluggedin2">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label" translatable="yes">None</property>
+                                        <property name="label" translatable="yes" context="SNES port 2">None</property>
                                         <property name="use_underline">True</property>
                                         <property name="active">True</property>
                                         <property name="group">joypad2</property>
@@ -2012,7 +1993,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                        <property name="label" translatable="yes">_Cheats...</property>
+                        <property name="label" translatable="yes">_Cheats…</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="open_cheats" swapped="no"/>
                       </object>
@@ -2026,7 +2007,7 @@
                     </child>
                     <child>
                       <object class="GtkMenuItem" id="shader_parameters_item">
-                        <property name="label" translatable="yes">_Shader Parameters...</property>
+                        <property name="label" translatable="yes">_Shader Parameters…</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
@@ -2042,12 +2023,9 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="preferences_item">
-                        <property name="label" translatable="yes">_Preferences...</property>
+                        <property name="label" translatable="yes">gtk-preferences</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="image">image16</property>
-                        <property name="use_stock">False</property>
+                        <property name="use_stock">True</property>
                         <signal name="activate" handler="on_preferences_item_activate" swapped="no"/>
                       </object>
                     </child>
@@ -2322,7 +2300,7 @@
                         </child>
                         <child>
                           <object class="GtkButton" id="browse_button">
-                            <property name="label" translatable="yes">Browse...</property>
+                            <property name="label" translatable="yes">Browse…</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
@@ -2636,6 +2614,7 @@
                                 <property name="adjustment">adjustment1</property>
                                 <property name="snap_to_ticks">True</property>
                                 <property name="numeric">True</property>
+                                <signal name="value-changed" handler="frames_behind_changed"/>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -2644,10 +2623,10 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkLabel" id="label136">
+                              <object class="GtkLabel" id="frames_behind_label">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">frames behind</property>
+                                <property name="label" translatable="yes"/>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -2875,7 +2854,7 @@
                             </child>
                             <child>
                               <object class="GtkCheckButton" id="show_indicators">
-                                <property name="label" translatable="yes">Show fast-forward and pause indicators</property>
+                                <property name="label" translatable="yes">Show fast‑forward and pause indicators</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
@@ -2916,7 +2895,7 @@
                                   <object class="GtkLabel" id="osdlabel">
                                     <property name="visible">True</property>
                                    <property name="can_focus">False</property>
-                                   <property name="label" translatable="yes">On-screen display size:</property>
+                                   <property name="label" translatable="yes">On‑screen display size:</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -2927,7 +2906,7 @@
                                   <object class="GtkSpinButton" id="osd_size">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="tooltip_text" translatable="yes">Connect to specified TCP port on remote computer</property>
+                                    <property name="tooltip_text" translatable="yes">The size of on‑screen display messages in pixels</property>
                                     <property name="primary_icon_activatable">False</property>
                                     <property name="secondary_icon_activatable">False</property>
                                     <property name="primary_icon_sensitive">True</property>
@@ -3107,7 +3086,7 @@
                                         </child>
                                         <child>
                                           <object class="GtkCheckButton" id="maintain_aspect_ratio">
-                                            <property name="label" translatable="yes">Maintain aspect-ratio</property>
+                                            <property name="label" translatable="yes">Maintain aspect ratio</property>
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">False</property>
@@ -3126,13 +3105,13 @@
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
                                             <property name="spacing">5</property>
+                                            <property name="tooltip-text" translatable="yes">Allows scaling and filtering to use multiple processors</property>
                                             <child>
                                               <object class="GtkCheckButton" id="multithreading">
-                                                <property name="label" translatable="yes">Use </property>
+                                                <property name="label" translatable="yes">Use</property>
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">True</property>
                                                 <property name="receives_default">False</property>
-                                                <property name="tooltip_text" translatable="yes">Allows scaling and filtering to use multiple processors</property>
                                                 <property name="use_underline">True</property>
                                                 <property name="draw_indicator">True</property>
                                               </object>
@@ -3153,6 +3132,7 @@
                                                 <property name="adjustment">adjustment17</property>
                                                 <property name="snap_to_ticks">True</property>
                                                 <property name="numeric">True</property>
+                                                <signal name="value-changed" handler="num_threads_changed"/>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>
@@ -3161,10 +3141,9 @@
                                               </packing>
                                             </child>
                                             <child>
-                                              <object class="GtkLabel" id="label126">
+                                              <object class="GtkLabel" id="threads_for_filtering_and_scaling_label">
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">False</property>
-                                                <property name="label" translatable="yes">threads for filtering and scaling</property>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>
@@ -3188,7 +3167,7 @@
                                               <object class="GtkLabel" id="label124">
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">False</property>
-                                                <property name="label" translatable="yes">High-resolution effect:</property>
+                                                <property name="label" translatable="yes">High‑resolution effect:</property>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>
@@ -3327,7 +3306,7 @@
                                                 </child>
                                                 <child>
                                                   <object class="GtkButton" id="ntsc_svideo_preset">
-                                                    <property name="label" translatable="yes">S-Video</property>
+                                                    <property name="label" translatable="yes">S‑Video</property>
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">True</property>
@@ -3896,7 +3875,7 @@
                             <child>
                               <object class="GtkComboBox" id="hw_accel">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can_focus">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="model">liststore9</property>
                                 <signal name="changed" handler="hw_accel_changed" swapped="no"/>
@@ -3915,7 +3894,7 @@
                             </child>
                             <child>
                               <object class="GtkCheckButton" id="bilinear_filter">
-                                <property name="label" translatable="yes">Bilinear-filter output</property>
+                                <property name="label" translatable="yes">Bilinear‐filter output</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
@@ -3930,7 +3909,7 @@
                             </child>
                              <child>
                               <object class="GtkCheckButton" id="auto_vrr">
-                                <property name="label" translatable="yes">Use best settings for FreeSync/G-Sync when fullscreen</property>
+                                <property name="label" translatable="yes">Use best settings for FreeSync/G‑Sync when in fullscreen</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
@@ -4019,7 +3998,7 @@
                                     </child>
                                     <child>
                                       <object class="GtkButton" id="fragment_shader_button">
-                                        <property name="label" translatable="yes">Browse...</property>
+                                        <property name="label" translatable="yes">Browse…</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
@@ -4051,11 +4030,11 @@
                                 <property name="can_focus">False</property>
                                 <child>
                                   <object class="GtkCheckButton" id="force_inverted_byte_order">
-                                    <property name="label" translatable="yes">Force an inverted byte-ordering</property>
+                                    <property name="label" translatable="yes">Force an inverted byte‑ordering</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Forces a swapped byte-ordering for cases where the system's endian is used instead of the video card</property>
+                                    <property name="tooltip_text" translatable="yes">Forces a swapped byte‑ordering for cases where the system’s endian is used instead of the video card</property>
                                     <property name="draw_indicator">True</property>
                                   </object>
                                   <packing>
@@ -4200,7 +4179,7 @@
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">False</property>
-                                        <property name="tooltip_text" translatable="yes">Sets the correct input rate based on the display's refresh rate</property>
+                                        <property name="tooltip_text" translatable="yes">Sets the correct input rate based on the display’s refresh rate</property>
                                         <property name="draw_indicator">True</property>
                                         <signal name="toggled" handler="auto_input_rate_toggled" swapped="no"/>
                                       </object>
@@ -4294,6 +4273,7 @@
                                                 <property name="snap_to_ticks">True</property>
                                                 <property name="width_chars">6</property>
                                                 <property name="numeric">True</property>
+                                                <signal name="value-changed" handler="sound_buffer_size_changed"/>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>
@@ -4302,10 +4282,9 @@
                                               </packing>
                                             </child>
                                             <child>
-                                              <object class="GtkLabel" id="label137">
+                                              <object class="GtkLabel" id="milliseconds_label">
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">False</property>
-                                                <property name="label" translatable="yes">milliseconds</property>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>
@@ -4400,11 +4379,12 @@
                                           <object class="GtkHScale" id="sound_input_rate">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
-                                            <property name="tooltip_text" translatable="yes">Adjust to produce more or less data. Decrease the rate if experiencing crackling. Increase the rate if experiencing frame-rate stuttering. Best used with the "Synchronize with sound" option</property>
+                                            <property name="tooltip_text" translatable="yes">Adjust to produce more or less data. Decrease the rate if experiencing crackling. Increase the rate if experiencing frame rate stuttering. Best used with the “Sound buffer synchronization” option.</property>
                                             <property name="adjustment">adjustment5</property>
                                             <property name="restrict_to_fill_level">False</property>
-                                            <property name="digits">0</property>
+                                            <property name="digits">8</property>
                                             <property name="value_pos">left</property>
+                                            <signal name="format_value" handler="format_sound_input_rate_value"/>
                                           </object>
                                           <packing>
                                             <property name="left_attach">1</property>
@@ -4445,7 +4425,7 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkLabel" id="label139">
+                                          <object class="GtkLabel" id="video_rate_label">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
                                             <property name="xalign">0</property>
@@ -4462,7 +4442,6 @@
                                           <object class="GtkLabel" id="relative_video_rate">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label" translatable="yes">label</property>
                                           </object>
                                           <packing>
                                             <property name="left_attach">1</property>
@@ -5134,7 +5113,7 @@
                                     </child>
                                     <child>
                                       <object class="GtkButton" id="sram_browse">
-                                        <property name="label" translatable="yes">Browse...</property>
+                                        <property name="label" translatable="yes">Browse…</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
@@ -5149,7 +5128,7 @@
                                     </child>
                                     <child>
                                       <object class="GtkButton" id="savestate_browse">
-                                        <property name="label" translatable="yes">Browse...</property>
+                                        <property name="label" translatable="yes">Browse…</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
@@ -5166,7 +5145,7 @@
                                     </child>
                                     <child>
                                       <object class="GtkButton" id="cheat_browse">
-                                        <property name="label" translatable="yes">Browse...</property>
+                                        <property name="label" translatable="yes">Browse…</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
@@ -5183,7 +5162,7 @@
                                     </child>
                                     <child>
                                       <object class="GtkButton" id="patch_browse">
-                                        <property name="label" translatable="yes">Browse...</property>
+                                        <property name="label" translatable="yes">Browse…</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
@@ -5200,7 +5179,7 @@
                                     </child>
                                     <child>
                                       <object class="GtkButton" id="export_browse">
-                                        <property name="label" translatable="yes">Browse...</property>
+                                        <property name="label" translatable="yes">Browse…</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
@@ -5340,17 +5319,13 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkEntry" id="save_sram_after_sec">
+                                  <object class="GtkSpinButton" id="save_sram_after_sec">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="tooltip_text" translatable="yes">Automatically save the game's SRAM at this interval. Setting this to 0 will only save when quitting or changing ROMs</property>
-                                    <property name="invisible_char">•</property>
-                                    <property name="width_chars">5</property>
-                                    <property name="xalign">1</property>
-                                    <property name="primary_icon_activatable">False</property>
-                                    <property name="secondary_icon_activatable">False</property>
-                                    <property name="primary_icon_sensitive">True</property>
-                                    <property name="secondary_icon_sensitive">True</property>
+                                    <property name="tooltip_text" translatable="yes">Automatically save the game’s SRAM at this interval. Setting this to 0 will only save when quitting or changing ROMs</property>
+                                    <property name="numeric">True</property>
+                                    <property name="adjustment">save_sram_after_sec_adjustment</property>
+                                    <signal name="value-changed" handler="save_sram_after_sec_value_changed"/>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -5359,10 +5334,9 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkLabel" id="label12">
+                                  <object class="GtkLabel" id="save_sram_after_sec_label">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">seconds after change</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -5565,13 +5539,14 @@
                     </child>
                     <child>
                       <object class="GtkCheckButton" id="use_modifiers">
-                        <property name="label" translatable="yes">Use modifier keys (CTRL, SHIFT, ALT) directly</property>
+                        <property name="label" translatable="yes">Use _modifier keys (Ctrl, Shift, Alt) directly</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="tooltip_text" translatable="yes">Allow using modifier keys as independent keys instead of modifiers</property>
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
+                        <property name="use_underline">True</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -6700,7 +6675,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">&lt;small&gt;Click an entry and then press the desired keys or joystick button
-&lt;i&gt;Escape&lt;/i&gt;: Move to next&lt;i&gt;  Shift-Escape&lt;/i&gt;: Clear selected&lt;/small&gt;</property>
+&lt;tt&gt;Escape&lt;/tt&gt;: Move to next  &lt;tt&gt;Shift+Escape&lt;/tt&gt;: Clear selected&lt;/small&gt;</property>
                         <property name="use_markup">True</property>
                         <property name="justify">fill</property>
                         <property name="wrap">True</property>
@@ -9052,7 +9027,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">&lt;small&gt;Click an entry and then press the desired keys or joystick button
-&lt;i&gt;Escape&lt;/i&gt;: Move to next&lt;i&gt;  Shift-Escape&lt;/i&gt;: Clear selected&lt;/small&gt;</property>
+&lt;tt&gt;Escape&lt;/tt&gt;: Move to next  &lt;tt&gt;Shift+Escape&lt;/tt&gt;: Clear selected&lt;/small&gt;</property>
                         <property name="use_markup">True</property>
                         <property name="justify">fill</property>
                         <property name="wrap">True</property>
@@ -9142,7 +9117,7 @@
                                 </child>
                                 <child>
                                   <object class="GtkCheckButton" id="force_enable_icons">
-                                    <property name="label" translatable="yes">Force-enable button and menu icons</property>
+                                    <property name="label" translatable="yes">Force‑enable button and menu icons</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
@@ -9163,7 +9138,9 @@
                                       <object class="GtkLabel" id="label128">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label" translatable="yes">The ESC key should:</property>
+                                        <property name="label" translatable="yes">The &lt;tt&gt;Esc&lt;/tt&gt; key should:</property>
+                                        <property name="use_markup">True</property>
+                                        <property name="use_underline">True</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -9364,19 +9341,19 @@
     </action-widgets>
   </object>
   <object class="GtkTextBuffer" id="textbuffer1">
-    <property name="text" translatable="yes">  Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+    <property name="text" translatable="yes">  Snes9x – A Portable Super Nintendo Entertainment System™ Emulator
 
   Snes9x homepage: http://www.snes9x.com/
   Snes9x source code: https://github.com/snes9xgit/snes9x/
 
   Permission to use, copy, modify and/or distribute Snes9x in both binary
-  and source form, for non-commercial purposes, is hereby granted without
+  and source form, for non‑commercial purposes, is hereby granted without
   fee, providing that this license information and copyright notice appear
   with all copies and any derived work.
 
-  This software is provided 'as-is', without any express or implied
+  This software is provided ‘as‑is’, without any express or implied
   warranty. In no event shall the authors be held liable for any damages
-  arising from the use of this software or it's derivatives.
+  arising from the use of this software or it’s derivatives.
 
   Snes9x is freeware for PERSONAL USE only. Commercial users should
   seek permission of the copyright holders first. Commercial use includes,

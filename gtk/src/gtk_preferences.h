@@ -14,7 +14,7 @@
 void snes9x_preferences_create(Snes9xConfig *config);
 void snes9x_preferences_open(Snes9xWindow *window);
 
-class Snes9xPreferences : public GtkBuilderWindow
+class Snes9xPreferences final : public GtkBuilderWindow
 {
   public:
     Snes9xPreferences(Snes9xConfig *config);
@@ -49,6 +49,7 @@ class Snes9xPreferences : public GtkBuilderWindow
   private:
     void get_settings_from_dialog();
     void move_settings_to_dialog();
+    Glib::ustring format_sound_input_rate_value(double);
 };
 
 #endif /* __GTK_PREFERENCES_H */

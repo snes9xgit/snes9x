@@ -12,7 +12,7 @@
 
 #include <glib/gi18n.h>
 
-#define SNES9X_GTK_AUTHORS "(c) 2007 - 2020 Brandon Wright (bearoso@gmail.com)"
+#define SNES9X_GTK_AUTHORS "© 2007 - 2023 Brandon Wright (bearoso@gmail.com)"
 #define SNES9X_GTK_VERSION "87"
 
 extern Snes9xWindow *top_level;
