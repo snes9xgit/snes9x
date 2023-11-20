@@ -5813,14 +5813,14 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        SYSTEM_ZIP_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "minizip" 2>&1`
+                SYSTEM_ZIP_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "minizip" 2>&1`
         else
-	        SYSTEM_ZIP_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "minizip" 2>&1`
+                SYSTEM_ZIP_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "minizip" 2>&1`
         fi
-	# Put the nasty error message in config.log where it belongs
-	echo "$SYSTEM_ZIP_PKG_ERRORS" >&5
+        # Put the nasty error message in config.log where it belongs
+        echo "$SYSTEM_ZIP_PKG_ERRORS" >&5
 
-	if test "x${with_system_zip}" != "xcheck"; then
+        if test "x${with_system_zip}" != "xcheck"; then
 				as_fn_error $? "--with-system-zip requested but no proper minizip lib found." "$LINENO" 5
 			else
 				{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: minizip not found. Build without SYSTEM_ZIP support." >&5
@@ -5830,7 +5830,7 @@ printf "%s\n" "$as_me: WARNING: minizip not found. Build without SYSTEM_ZIP supp
 elif test $pkg_failed = untried; then
         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
 printf "%s\n" "no" >&6; }
-	if test "x${with_system_zip}" != "xcheck"; then
+        if test "x${with_system_zip}" != "xcheck"; then
 				as_fn_error $? "--with-system-zip requested but no proper minizip lib found." "$LINENO" 5
 			else
 				{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: minizip not found. Build without SYSTEM_ZIP support." >&5
@@ -5838,11 +5838,11 @@ printf "%s\n" "$as_me: WARNING: minizip not found. Build without SYSTEM_ZIP supp
 			fi
 
 else
-	SYSTEM_ZIP_CFLAGS=$pkg_cv_SYSTEM_ZIP_CFLAGS
-	SYSTEM_ZIP_LIBS=$pkg_cv_SYSTEM_ZIP_LIBS
+        SYSTEM_ZIP_CFLAGS=$pkg_cv_SYSTEM_ZIP_CFLAGS
+        SYSTEM_ZIP_LIBS=$pkg_cv_SYSTEM_ZIP_LIBS
         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; }
-	S9XZIP="S9XZIP=1"
+        S9XZIP="S9XZIP=1"
 			S9XDEFS="$S9XDEFS -DUNZIP_SUPPORT"
 			S9X_SYSTEM_ZIP="SYSTEM_ZIP=1"
 			S9XLIBS="$S9XLIBS $SYSTEM_ZIP_LIBS"
@@ -7264,18 +7264,60 @@ fi
 
 
 if test "x$enable_sound" = "xyes"; then
-	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether sound is supported on this platform" >&5
-printf %s "checking whether sound is supported on this platform... " >&6; }
-	if test "x$snes9x_cv_linux_os" = "xyes"; then
-		{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-printf "%s\n" "yes" >&6; }
-	else
-		{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
-printf "%s\n" "no" >&6; }
-		{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: Your OS is not Linux. Build without sound support." >&5
-printf "%s\n" "$as_me: WARNING: Your OS is not Linux. Build without sound support." >&2;}
+	ac_fn_cxx_check_header_compile "$LINENO" "sys/soundcard.h" "ac_cv_header_sys_soundcard_h" "$ac_includes_default"
+if test "x$ac_cv_header_sys_soundcard_h" = xyes
+then :
+
+		{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for _oss_ioctl in -lossaudio" >&5
+printf %s "checking for _oss_ioctl in -lossaudio... " >&6; }
+if test ${ac_cv_lib_ossaudio__oss_ioctl+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lossaudio  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+namespace conftest {
+  extern "C" int _oss_ioctl ();
+}
+int
+main (void)
+{
+return conftest::_oss_ioctl ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"
+then :
+  ac_cv_lib_ossaudio__oss_ioctl=yes
+else $as_nop
+  ac_cv_lib_ossaudio__oss_ioctl=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_ossaudio__oss_ioctl" >&5
+printf "%s\n" "$ac_cv_lib_ossaudio__oss_ioctl" >&6; }
+if test "x$ac_cv_lib_ossaudio__oss_ioctl" = xyes
+then :
+
+			S9XLIBS="$S9XLIBS -lossaudio"
+
+fi
+
+
+else $as_nop
+
+		{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: Your OS does not have OSS. Build without sound support." >&5
+printf "%s\n" "$as_me: WARNING: Your OS does not have OSS. Build without sound support." >&2;}
 		enable_sound="no"
-	fi
+
+fi
+
 fi
 
 if test "x$enable_sound" = "xyes"; then

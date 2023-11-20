@@ -479,14 +479,16 @@ AC_ARG_ENABLE([sound],
 	[], [enable_sound="yes"])
 
 if test "x$enable_sound" = "xyes"; then
-	AC_MSG_CHECKING([whether sound is supported on this platform])
-	if test "x$snes9x_cv_linux_os" = "xyes"; then
-		AC_MSG_RESULT([yes])
-	else
-		AC_MSG_RESULT([no])
-		AC_MSG_WARN([Your OS is not Linux. Build without sound support.])
+	AC_CHECK_HEADER([sys/soundcard.h],
+	[
+		AC_CHECK_LIB([ossaudio], [_oss_ioctl], [
+			S9XLIBS="$S9XLIBS -lossaudio"
+		], [], [])
+	],
+	[
+		AC_MSG_WARN([Your OS does not have OSS. Build without sound support.])
 		enable_sound="no"
-	fi
+	])
 fi
 
 if test "x$enable_sound" = "xyes"; then
