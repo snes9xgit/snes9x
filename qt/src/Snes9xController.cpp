@@ -611,7 +611,7 @@ void Snes9xController::updateBindings(const EmuConfig *const config)
     S9xUnmapAllControls();
 
     S9xSetController(0, CTL_JOYPAD, 0, 0, 0, 0);
-
+    S9xSetController(1, CTL_JOYPAD, 1, 1, 1, 1);
 
     for (int controller_number = 0; controller_number < 5; controller_number++)
     {

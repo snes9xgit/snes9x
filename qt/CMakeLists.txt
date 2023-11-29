@@ -77,7 +77,19 @@ target_include_directories(snes9x-core PRIVATE ../)
 target_compile_definitions(snes9x-core PRIVATE ZLIB HAVE_STDINT_H ALLOW_CPU_OVERCLOCK)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-    set(CMAKE_PREFIX_PATH "../external/qt6-mingw-clang-bin")
+    set(PREBUILT_QT "${PROJECT_SOURCE_DIR}/../external/qt6-mingw-clang-bin")
+    if (EXISTS ${PREBUILT_QT})
+        message("Using existing Qt6 build at ${PREBUILT_QT}")
+        set(CMAKE_PREFIX_PATH ${PREBUILT_QT})
+    else()
+	    message("Getting Qt6 binaries...")
+        include(FetchContent)
+        FetchContent_Declare(qt6-mingw-clang-bin
+	        GIT_REPOSITORY https://github.com/bearoso/qt6-mingw-clang-bin.git
+	        GIT_TAG main)
+        FetchContent_MakeAvailable(qt6-mingw-clang-bin)
+        set(CMAKE_PREFIX_PATH ${qt6-mingw-clang-bin_SOURCE_DIR})
+    endif()
 endif()
 find_package(Qt6 REQUIRED COMPONENTS Widgets Gui)
 list(APPEND LIBS Qt6::Widgets Qt6::Gui)
@@ -91,6 +103,7 @@ list(APPEND FLAGS ${SDL_COMPILE_FLAGS} ${ZLIB_COMPILE_FLAGS})
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     list(APPEND LIBS opengl32 libSDL2.a libz.a libc++.a)
+    list(APPEND LIBS gdi32 winmm imm32 ole32 oleaut32 version uuid advapi32 setupapi shell32 dinput8)
     list(APPEND DEFINES SDL_MAIN_HANDLED)
     list(APPEND PLATFORM_SOURCES
         ../common/video/wgl_context.cpp
