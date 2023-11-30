@@ -93,6 +93,7 @@ void ControllerPanel::autoPopulateWithKeyboard(int slot)
         buttons[app->config->allowed_bindings * i + slot] = EmuBinding::keyboard(QKeySequence::fromString(button_list[i])[0].key());
 
     fillTable();
+    app->updateBindings();
 }
 
 void ControllerPanel::autoPopulateWithJoystick(int joystick_id, int slot)
@@ -124,6 +125,7 @@ void ControllerPanel::autoPopulateWithJoystick(int joystick_id, int slot)
             buttons[4 * i + slot] = EmuBinding::joystick_axis(device.index, sdl_binding.value.axis, sdl_binding.value.axis);
     }
     fillTable();
+    app->updateBindings();
 }
 
 void ControllerPanel::swapControllers(int first, int second)
@@ -138,6 +140,8 @@ void ControllerPanel::swapControllers(int first, int second)
         b[i] = a[i];
         a[i] = swap;
     }
+
+    app->updateBindings();
 }
 
 void ControllerPanel::clearCurrentController()
@@ -146,6 +150,7 @@ void ControllerPanel::clearCurrentController()
     for (auto &b : c.buttons)
         b = {};
     fillTable();
+    app->updateBindings();
 }
 
 void ControllerPanel::clearAllControllers()
@@ -154,6 +159,7 @@ void ControllerPanel::clearAllControllers()
         for (auto &b : c.buttons)
             b = {};
     fillTable();
+    app->updateBindings();
 }
 
 void ControllerPanel::showEvent(QShowEvent *event)
