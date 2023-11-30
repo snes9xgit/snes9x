@@ -1825,13 +1825,10 @@ LRESULT CALLBACK WinProc(
 
 				RestoreSNESDisplay ();
 
-				S9xGraphicsDeinit();
 				S9xSetWinPixelFormat ();
 				S9xInitUpdate();
-				S9xGraphicsInit();
 
 				IPPU.RenderThisFrame = false;
-
 
 				RECT rect;
 				GetClientRect (GUI.hWnd, &rect);
