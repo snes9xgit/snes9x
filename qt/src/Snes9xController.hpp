@@ -36,6 +36,17 @@ class Snes9xController
     void setPaused(bool paused);
     void setMessage(std::string message);
     void clearSoundBuffer();
+    std::vector<std::tuple<bool, std::string, std::string>> getCheatList();
+    void disableAllCheats();
+    void enableCheat(int index);
+    void disableCheat(int index);
+    bool addCheat(std::string description, std::string code);
+    void deleteCheat(int index);
+    void deleteAllCheats();
+    int tryImportCheats(std::string filename);
+    std::string validateCheat(std::string code);
+    int modifyCheat(int index, std::string name, std::string code);
+
     std::string getStateFolder();
     std::string config_folder;
     std::string sram_folder;

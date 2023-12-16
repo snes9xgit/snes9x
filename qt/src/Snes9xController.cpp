@@ -745,3 +745,63 @@ void Snes9xController::setMessage(std::string message)
 {
     S9xSetInfoString(message.c_str());
 }
+
+std::vector<std::tuple<bool, std::string, std::string>> Snes9xController::getCheatList()
+{
+    std::vector<std::tuple<bool, std::string, std::string>> cheat_list;
+
+    cheat_list.reserve(Cheat.group.size());
+
+    for (auto &c : Cheat.group)
+        cheat_list.push_back({ c.enabled, c.name, S9xCheatGroupToText(c) });
+
+    return std::move(cheat_list);
+}
+
+void Snes9xController::disableAllCheats()
+{
+    for (size_t i = 0; i < Cheat.group.size(); i++)
+    {
+        S9xDisableCheatGroup(i);
+    }
+}
+
+void Snes9xController::enableCheat(int index)
+{
+    S9xEnableCheatGroup(index);
+}
+
+void Snes9xController::disableCheat(int index)
+{
+    S9xDisableCheatGroup(index);
+}
+
+bool Snes9xController::addCheat(std::string description, std::string code)
+{
+    return S9xAddCheatGroup(description, code) >= 0;
+}
+
+void Snes9xController::deleteCheat(int index)
+{
+    S9xDeleteCheatGroup(index);
+}
+
+void Snes9xController::deleteAllCheats()
+{
+    S9xDeleteCheats();
+}
+
+int Snes9xController::tryImportCheats(std::string filename)
+{
+    return S9xImportCheatsFromDatabase(filename);
+}
+
+std::string Snes9xController::validateCheat(std::string code)
+{
+    return S9xCheatValidate(code);
+}
+
+int Snes9xController::modifyCheat(int index, std::string name, std::string code)
+{
+    return S9xModifyCheatGroup(index, name, code);
+}

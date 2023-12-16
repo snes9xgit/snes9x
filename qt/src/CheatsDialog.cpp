@@ -1,15 +1,12 @@
 #include "CheatsDialog.hpp"
 #include "EmuApplication.hpp"
 #include "EmuConfig.hpp"
-#include "../cheats.h"
 #include "fscompat.h"
+#include <tuple>
 
 #include <QMessageBox>
 #include <QDir>
 #include <QtEvents>
-
-extern SCheatData Cheat;
-auto &clist = Cheat.group;
 
 static const auto desired_flags = Qt::ItemFlag::ItemIsUserCheckable |
                                   Qt::ItemFlag::ItemIsEnabled |
@@ -35,12 +32,10 @@ CheatsDialog::CheatsDialog(QWidget *parent, EmuApplication *app_)
 
         auto index = treeWidget_cheats->indexOfTopLevelItem(item);
 
-        app->suspendThread();
         if (item->checkState(0) == Qt::Checked)
-            S9xEnableCheatGroup(index);
+            app->enableCheat(index);
         else
-            S9xDisableCheatGroup(index);
-        app->unsuspendThread();
+            app->disableCheat(index);
     });
 
     connect(treeWidget_cheats, &QTreeWidget::itemDoubleClicked, [&](QTreeWidgetItem *item, int column) {
@@ -68,7 +63,7 @@ void CheatsDialog::addCode()
     if (description.empty())
         description = tr("No description").toStdString();
 
-    if (S9xAddCheatGroup(description, code) < 0)
+    if (app->addCheat(description, code))
     {
         QMessageBox::information(this, tr("Invalid Cheat"), tr("The cheat you entered was not valid."));
         return;
@@ -84,9 +79,7 @@ void CheatsDialog::removeCode()
         return;
 
     auto index = treeWidget_cheats->currentIndex().row();
-    app->suspendThread();
-    S9xDeleteCheatGroup(index);
-    app->unsuspendThread();
+    app->deleteCheat(index);
     auto item = treeWidget_cheats->takeTopLevelItem(index);
     if (item)
         delete item;
@@ -94,19 +87,14 @@ void CheatsDialog::removeCode()
 
 void CheatsDialog::disableAll()
 {
-    app->suspendThread();
-    for (size_t i = 0; i < clist.size(); i++)
-        S9xDisableCheatGroup(i);
-    app->unsuspendThread();
+    app->disableAllCheats();
     refreshList();
 }
 
 void CheatsDialog::removeAll()
 {
     treeWidget_cheats->clear();
-    app->suspendThread();
-    S9xDeleteCheats();
-    app->unsuspendThread();
+    app->deleteAllCheats();
 }
 
 void CheatsDialog::searchDatabase()
@@ -125,9 +113,7 @@ void CheatsDialog::searchDatabase()
     for (auto &path : dirs)
     {
         auto filename = QDir(QString::fromStdString(path)).absoluteFilePath("cheats.bml").toStdString();
-        app->suspendThread();
-        auto result = S9xImportCheatsFromDatabase(filename);
-        app->unsuspendThread();
+        auto result = app->tryImportCheats(filename);
         if (result == 0)
         {
             refreshList();
@@ -159,16 +145,14 @@ void CheatsDialog::updateCurrent()
     if (description.empty())
         description = tr("No description").toStdString();
 
-    auto validated = S9xCheatValidate(code);
+    auto validated = app->validateCheat(code);
     if (validated.empty())
     {
         QMessageBox::information(this, tr("Invalid Cheat"), tr("The cheat you entered was not valid."));
         return;
     }
 
-    app->suspendThread();
-    S9xModifyCheatGroup(index, description, validated);
-    app->unsuspendThread();
+    app->modifyCheat(index, description, validated);
 
     treeWidget_cheats->currentItem()->setText(1, lineEdit_description->text());
     treeWidget_cheats->currentItem()->setText(2, QString::fromStdString(validated));
@@ -180,17 +164,16 @@ void CheatsDialog::refreshList()
 
     QList<QTreeWidgetItem *> items;
 
-    app->suspendThread();
-    for (const auto &c: clist)
+    auto clist = app->getCheatList();
+    for (const auto &[enabled, name, cheat]: clist)
     {
         auto i = new QTreeWidgetItem();
         i->setFlags(desired_flags);
-        i->setCheckState(0, c.enabled ? Qt::Checked : Qt::Unchecked);
-        i->setText(1, QString::fromStdString(c.name));
-        i->setText(2, QString::fromStdString(S9xCheatGroupToText(c)));
+        i->setCheckState(0, enabled ? Qt::Checked : Qt::Unchecked);
+        i->setText(1, QString::fromStdString(name));
+        i->setText(2, QString::fromStdString(cheat));
         items.push_back(i);
     }
-    app->unsuspendThread();
 
     treeWidget_cheats->insertTopLevelItems(0, items);
 }

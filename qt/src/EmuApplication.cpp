@@ -525,6 +525,82 @@ std::string EmuApplication::getStateFolder()
     return core->getStateFolder();
 }
 
+std::vector<std::tuple<bool, std::string, std::string>> EmuApplication::getCheatList()
+{
+    suspendThread();
+    auto cheat_list = core->getCheatList();
+    unsuspendThread();
+
+    return std::move(cheat_list);
+}
+
+void EmuApplication::disableAllCheats()
+{
+    emu_thread->runOnThread([&] {
+        core->disableAllCheats();
+    });
+}
+
+void EmuApplication::enableCheat(int index)
+{
+    emu_thread->runOnThread([&] {
+        core->enableCheat(index);
+    });
+}
+
+void EmuApplication::disableCheat(int index)
+{
+    emu_thread->runOnThread([&] {
+        core->disableCheat(index);
+    });
+}
+
+bool EmuApplication::addCheat(std::string description, std::string code)
+{
+    suspendThread();
+    auto retval = core->addCheat(description, code);
+    unsuspendThread();
+    return retval;
+}
+
+void EmuApplication::deleteCheat(int index)
+{
+    emu_thread->runOnThread([&] {
+        core->deleteCheat(index);
+    });
+}
+
+void EmuApplication::deleteAllCheats()
+{
+    emu_thread->runOnThread([&] {
+        core->deleteAllCheats();
+    });
+}
+
+int EmuApplication::tryImportCheats(std::string filename)
+{
+    suspendThread();
+    auto retval = core->tryImportCheats(filename);
+    unsuspendThread();
+    return retval;
+}
+
+std::string EmuApplication::validateCheat(std::string code)
+{
+    suspendThread();
+    auto retval = core->validateCheat(code);
+    unsuspendThread();
+    return retval;
+}
+
+int EmuApplication::modifyCheat(int index, std::string name, std::string code)
+{
+    suspendThread();
+    auto retval = core->modifyCheat(index, name, code);
+    unsuspendThread();
+    return retval;
+}
+
 bool EmuApplication::isCoreActive()
 {
     return core->active;
