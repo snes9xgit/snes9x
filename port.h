@@ -124,6 +124,10 @@ typedef size_t				pint;
 
 #define S9xDisplayString	DisplayStringFromBottom
 #ifdef __WIN32__
+#ifndef SNES9X_QT
+void SetInfoDlgColor(unsigned char, unsigned char, unsigned char);
+#define SET_UI_COLOR(r,g,b) SetInfoDlgColor(r,g,b)
+#endif
 #ifndef snprintf
    #define snprintf _snprintf
 #endif
