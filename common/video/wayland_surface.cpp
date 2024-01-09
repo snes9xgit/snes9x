@@ -167,8 +167,8 @@ void WaylandSurface::resize(Metrics m)
         viewport = wp_viewporter_get_viewport(viewporter, child);
 
     wp_viewport_set_source(viewport,
-        wl_fixed_from_int(0), wl_fixed_from_int(0),
-        wl_fixed_from_int(w), wl_fixed_from_int(h));
+        wl_fixed_from_int(-1), wl_fixed_from_int(-1),
+        wl_fixed_from_int(-1), wl_fixed_from_int(-1));
     wp_viewport_set_destination(viewport, m.width, m.height);
 
     wl_surface_commit(child);
