@@ -220,19 +220,23 @@ void EmuCanvasVulkan::resizeEvent(QResizeEvent *event)
     if (!context)
         return;
 
-    int width = event->size().width();
-    int height = event->size().height();
-
     context->swapchain->set_vsync(config->enable_vsync);
 
 #ifndef _WIN32
     if (platform == "wayland")
     {
-        wayland_surface->resize({ parent->x() - main_window->x(), parent->y() - main_window->y(), width, height, (int)devicePixelRatio() });
-        std::tie(width, height) = wayland_surface->get_size();
-        // On Wayland, Vulkan WSI provides the buffer for the subsurface,
-        // so we have to specify a width and height instead of polling the parent.
+        WaylandSurface::Metrics m = {
+            parent->x() - main_window->x(),
+            parent->y() - main_window->y(),
+            event->size().width(),
+            event->size().height(),
+            (int)devicePixelRatio()
+        };
+
+        auto [width, height] = wayland_surface->get_size_for_metrics(m);
         context->swapchain->check_and_resize(width, height);
+
+        wayland_surface->resize(m);
         return;
     }
 #endif

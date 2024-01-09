@@ -119,11 +119,9 @@ bool WaylandEGLContext::create_context()
 
 void WaylandEGLContext::resize(WaylandSurface::Metrics m)
 {
-    wayland_surface->resize(m);
-
-    std::tie(width, height) = wayland_surface->get_size();
+    std::tie(width, height) = wayland_surface->get_size_for_metrics(m);
     wl_egl_window_resize(egl_window, width, height, 0, 0);
-
+    wayland_surface->resize(m);
     make_current();
 }
 

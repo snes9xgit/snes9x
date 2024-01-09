@@ -91,10 +91,7 @@ void S9xVulkanDisplayDriver::refresh()
 
 #ifdef GDK_WINDOWING_WAYLAND
     if (GDK_IS_WAYLAND_WINDOW(drawing_area->get_window()->gobj()))
-    {
-        wayland_surface->resize(get_metrics(*drawing_area));
-        std::tie(new_width, new_height) = wayland_surface->get_size();
-    }
+        std::tie(new_width, new_height) = wayland_surface->get_size_for_metrics(get_metrics(*drawing_area));
     else
 #endif
     {
@@ -108,6 +105,11 @@ void S9xVulkanDisplayDriver::refresh()
         context->wait_idle();
         current_width = new_width;
         current_height = new_height;
+
+#ifdef GDK_WINDOWING_WAYLAND
+        if (GDK_IS_WAYLAND_WINDOW(drawing_area->get_window()->gobj()))
+            wayland_surface->resize(get_metrics(*drawing_area));
+#endif
     }
 }
 
