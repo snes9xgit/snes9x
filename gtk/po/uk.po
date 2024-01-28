@@ -109,11 +109,11 @@ msgstr "{0:Ld} * {1:Ld} @ {2:.3Lf} Гц"
 
 #: src/gtk_preferences.cpp:143
 msgid "OpenGL – Use 3D graphics hardware"
-msgstr "Open GL – використовувати 3D-графіку обладнання"
+msgstr "Open GL - використовувати 3D-графіку обладнання"
 
 #: src/gtk_preferences.cpp:145
 msgid "XVideo – Use hardware video blitter"
-msgstr "XVideo – використовувати апаратний відеоблітер"
+msgstr "XVideo - використовувати апаратний відеоблітер"
 
 #: src/gtk_preferences.cpp:147
 msgid "Vulkan"
