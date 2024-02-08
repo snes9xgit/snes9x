@@ -124,7 +124,10 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
     else
         num_swapchain_images = desired_num_swapchain_images;
 
-    extents = surface_capabilities.currentExtent;
+    // If extents aren't reported (Wayland), we have to rely on Wayland to report
+    // the size, so keep current extent.
+    if (surface_capabilities.currentExtent.width != -1)
+        extents = surface_capabilities.currentExtent;
 
     uint32_t graphics_queue_index = 0;
     auto queue_properties = physical_device.getQueueFamilyProperties();
