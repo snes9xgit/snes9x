@@ -965,6 +965,7 @@ void S9xDeinitDisplay()
     if (driver)
         driver->deinit();
     delete driver;
+    driver = nullptr;
 
     if (pool)
     {

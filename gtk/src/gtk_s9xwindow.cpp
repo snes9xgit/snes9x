@@ -1293,7 +1293,16 @@ void Snes9xWindow::leave_fullscreen_mode()
     }
 #endif
 
+#ifdef GDK_WINDOWING_WAYLAND
+    if (GDK_IS_WAYLAND_WINDOW(gdk_window))
+    {
+        S9xDeinitDisplay();
+    }
+#endif
+
     window->unfullscreen();
+
+    window->show();
 
 #ifdef GDK_WINDOWING_X11
     if (GDK_IS_X11_WINDOW(gdk_window))
@@ -1310,6 +1319,15 @@ void Snes9xWindow::leave_fullscreen_mode()
     config->rom_loaded = rom_loaded;
     config->fullscreen = 0;
     configure_widgets();
+    window->show();
+
+#ifdef GDK_WINDOWING_WAYLAND
+    if (GDK_IS_WAYLAND_WINDOW(gdk_window))
+    {
+        S9xReinitDisplay();
+    }
+#endif
+
 }
 
 void Snes9xWindow::resize_viewport(int width, int height)
