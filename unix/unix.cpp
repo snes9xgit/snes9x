@@ -164,7 +164,7 @@ static bool8 ReadJoysticks (void);
 void S9xLatchJSEvent();
 #endif
 
-static long log2 (long num)
+static long snes9x_log2 (long num)
 {
 	long	n = 0;
 
@@ -1456,7 +1456,7 @@ bool8 S9xOpenSoundDevice (void)
 		bool(unixSettings.ThreadSound)
 	);
 
-	J = log2(unixSettings.SoundFragmentSize) | (4 << 16);
+	J = snes9x_log2(unixSettings.SoundFragmentSize) | (4 << 16);
 	if (ioctl(so.sound_fd, SNDCTL_DSP_SETFRAGMENT, &J) == -1)
 		return (FALSE);
 

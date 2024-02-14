@@ -74,7 +74,7 @@ set(SNES9X_CORE_SOURCES
     ../fscompat.cpp)
 add_library(snes9x-core ${SNES9X_CORE_SOURCES})
 target_include_directories(snes9x-core PRIVATE ../)
-target_compile_definitions(snes9x-core PRIVATE ZLIB HAVE_STDINT_H ALLOW_CPU_OVERCLOCK)
+target_compile_definitions(snes9x-core PRIVATE ${DEFINES} ZLIB HAVE_STDINT_H ALLOW_CPU_OVERCLOCK)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     set(PREBUILT_QT "${PROJECT_SOURCE_DIR}/../external/qt6-mingw-clang-bin")
