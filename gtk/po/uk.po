@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: 1.62.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-29 23:56+0100\n"
-"PO-Revision-Date: 2024-01-27 20:25+0200\n"
+"PO-Revision-Date: 2024-02-14 15:43+0200\n"
 "Last-Translator: Stanley Kid <stanley.udr.kid@gmail.com>\n"
 "Language-Team: \n"
 "Language: uk\n"
@@ -62,7 +62,7 @@ msgstr "Неможливо знайти будь-які чіт-коди."
 
 #: src/gtk_cheat.cpp:306
 msgid "Couldn't Find Cheats Database"
-msgstr "Неможливо знайти базу даних чітів"
+msgstr "Неможливо знайти базу даних чітів."
 
 #: src/gtk_cheat.cpp:306
 msgid "No Matching Game Found"
@@ -109,7 +109,7 @@ msgstr "{0:Ld} * {1:Ld} @ {2:.3Lf} Гц"
 
 #: src/gtk_preferences.cpp:143
 msgid "OpenGL – Use 3D graphics hardware"
-msgstr "Open GL - використовувати 3D-графіку обладнання"
+msgstr "OpenGL - використовувати 3D-графіку обладнання"
 
 #: src/gtk_preferences.cpp:145
 msgid "XVideo – Use hardware video blitter"
@@ -238,7 +238,7 @@ msgstr "SNES-відео"
 
 #: src/gtk_s9xwindow.cpp:690
 msgid "Open SNES ROM Image"
-msgstr "Відкрити ROM-образ..."
+msgstr "Відкрити ROM-образ"
 
 #: src/gtk_s9xwindow.cpp:695
 msgid "SNES ROM Images"
@@ -315,7 +315,7 @@ msgid ""
 msgstr ""
 "\n"
 "\n"
-"ROM автоматично виправлено "
+"ROM автоматично залатано "
 
 #: src/gtk_s9xwindow.cpp:924
 msgid ""
@@ -381,7 +381,7 @@ msgstr "Перейти до кадру"
 
 #: src/snes9x.ui:642
 msgid "The current frame in the movie is"
-msgstr "Поточний кадр відео:"
+msgstr "Поточний кадр відео"
 
 #: src/snes9x.ui:663
 msgid "Fast-forward to frame"
@@ -1365,7 +1365,7 @@ msgid ""
 "changing ROMs"
 msgstr ""
 "Автоматичне збереження SRAM гри впродовж указаного інтервалу (0: збереження лише при виході чи зміні "
-"образу)."
+"ROM'у)."
 
 #: src/snes9x.ui:5355
 msgid "<b>Automatic Saving</b>"
