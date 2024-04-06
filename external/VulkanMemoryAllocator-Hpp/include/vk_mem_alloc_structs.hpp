@@ -111,9 +111,9 @@ namespace VMA_HPP_NAMESPACE {
 #if VMA_MEMORY_BUDGET || VMA_VULKAN_VERSION >= 1001000
         , PFN_vkGetPhysicalDeviceMemoryProperties2KHR vkGetPhysicalDeviceMemoryProperties2KHR_ = {}
 #endif
-#if VMA_VULKAN_VERSION >= 1003000
-        , PFN_vkGetDeviceBufferMemoryRequirements vkGetDeviceBufferMemoryRequirements_ = {}
-        , PFN_vkGetDeviceImageMemoryRequirements vkGetDeviceImageMemoryRequirements_ = {}
+#if VMA_KHR_MAINTENANCE4 || VMA_VULKAN_VERSION >= 1003000
+        , PFN_vkGetDeviceBufferMemoryRequirementsKHR vkGetDeviceBufferMemoryRequirements_ = {}
+        , PFN_vkGetDeviceImageMemoryRequirementsKHR vkGetDeviceImageMemoryRequirements_ = {}
 #endif
       ) VULKAN_HPP_NOEXCEPT
       : vkGetInstanceProcAddr(vkGetInstanceProcAddr_)
@@ -146,7 +146,7 @@ namespace VMA_HPP_NAMESPACE {
 #if VMA_MEMORY_BUDGET || VMA_VULKAN_VERSION >= 1001000
       , vkGetPhysicalDeviceMemoryProperties2KHR(vkGetPhysicalDeviceMemoryProperties2KHR_)
 #endif
-#if VMA_VULKAN_VERSION >= 1003000
+#if VMA_KHR_MAINTENANCE4 || VMA_VULKAN_VERSION >= 1003000
       , vkGetDeviceBufferMemoryRequirements(vkGetDeviceBufferMemoryRequirements_)
       , vkGetDeviceImageMemoryRequirements(vkGetDeviceImageMemoryRequirements_)
 #endif
@@ -204,7 +204,7 @@ namespace VMA_HPP_NAMESPACE {
 #if VMA_MEMORY_BUDGET || VMA_VULKAN_VERSION >= 1001000
           && vkGetPhysicalDeviceMemoryProperties2KHR == rhs.vkGetPhysicalDeviceMemoryProperties2KHR
 #endif
-#if VMA_VULKAN_VERSION >= 1003000
+#if VMA_KHR_MAINTENANCE4 || VMA_VULKAN_VERSION >= 1003000
           && vkGetDeviceBufferMemoryRequirements == rhs.vkGetDeviceBufferMemoryRequirements
           && vkGetDeviceImageMemoryRequirements == rhs.vkGetDeviceImageMemoryRequirements
 #endif
@@ -339,14 +339,14 @@ namespace VMA_HPP_NAMESPACE {
       return *this;
     }
 #endif
-#if VMA_VULKAN_VERSION >= 1003000
+#if VMA_KHR_MAINTENANCE4 || VMA_VULKAN_VERSION >= 1003000
 
-    VULKAN_HPP_CONSTEXPR_14 VulkanFunctions& setVkGetDeviceBufferMemoryRequirements(PFN_vkGetDeviceBufferMemoryRequirements vkGetDeviceBufferMemoryRequirements_) VULKAN_HPP_NOEXCEPT {
+    VULKAN_HPP_CONSTEXPR_14 VulkanFunctions& setVkGetDeviceBufferMemoryRequirements(PFN_vkGetDeviceBufferMemoryRequirementsKHR vkGetDeviceBufferMemoryRequirements_) VULKAN_HPP_NOEXCEPT {
       vkGetDeviceBufferMemoryRequirements = vkGetDeviceBufferMemoryRequirements_;
       return *this;
     }
 
-    VULKAN_HPP_CONSTEXPR_14 VulkanFunctions& setVkGetDeviceImageMemoryRequirements(PFN_vkGetDeviceImageMemoryRequirements vkGetDeviceImageMemoryRequirements_) VULKAN_HPP_NOEXCEPT {
+    VULKAN_HPP_CONSTEXPR_14 VulkanFunctions& setVkGetDeviceImageMemoryRequirements(PFN_vkGetDeviceImageMemoryRequirementsKHR vkGetDeviceImageMemoryRequirements_) VULKAN_HPP_NOEXCEPT {
       vkGetDeviceImageMemoryRequirements = vkGetDeviceImageMemoryRequirements_;
       return *this;
     }
@@ -384,9 +384,9 @@ namespace VMA_HPP_NAMESPACE {
 #if VMA_MEMORY_BUDGET || VMA_VULKAN_VERSION >= 1001000
     PFN_vkGetPhysicalDeviceMemoryProperties2KHR vkGetPhysicalDeviceMemoryProperties2KHR = {};
 #endif
-#if VMA_VULKAN_VERSION >= 1003000
-    PFN_vkGetDeviceBufferMemoryRequirements vkGetDeviceBufferMemoryRequirements = {};
-    PFN_vkGetDeviceImageMemoryRequirements vkGetDeviceImageMemoryRequirements = {};
+#if VMA_KHR_MAINTENANCE4 || VMA_VULKAN_VERSION >= 1003000
+    PFN_vkGetDeviceBufferMemoryRequirementsKHR vkGetDeviceBufferMemoryRequirements = {};
+    PFN_vkGetDeviceImageMemoryRequirementsKHR vkGetDeviceImageMemoryRequirements = {};
 #endif
   };
   VULKAN_HPP_STATIC_ASSERT(sizeof(VulkanFunctions) == sizeof(VmaVulkanFunctions),
@@ -1296,6 +1296,79 @@ namespace VMA_HPP_NAMESPACE {
                            "struct wrapper is not a standard layout!");
   VULKAN_HPP_STATIC_ASSERT(std::is_nothrow_move_constructible<AllocationInfo>::value,
                            "AllocationInfo is not nothrow_move_constructible!");
+
+  struct AllocationInfo2 {
+    using NativeType = VmaAllocationInfo2;
+
+#if !defined( VULKAN_HPP_NO_STRUCT_CONSTRUCTORS )
+    VULKAN_HPP_CONSTEXPR AllocationInfo2(
+          AllocationInfo allocationInfo_ = {}
+        , VULKAN_HPP_NAMESPACE::DeviceSize blockSize_ = {}
+        , VULKAN_HPP_NAMESPACE::Bool32 dedicatedMemory_ = {}
+      ) VULKAN_HPP_NOEXCEPT
+      : allocationInfo(allocationInfo_)
+      , blockSize(blockSize_)
+      , dedicatedMemory(dedicatedMemory_)
+      {}
+
+    VULKAN_HPP_CONSTEXPR AllocationInfo2(AllocationInfo2 const &) VULKAN_HPP_NOEXCEPT = default;
+    AllocationInfo2(VmaAllocationInfo2 const & rhs) VULKAN_HPP_NOEXCEPT : AllocationInfo2(*reinterpret_cast<AllocationInfo2 const *>(&rhs)) {}
+#endif
+
+    AllocationInfo2& operator=(AllocationInfo2 const &) VULKAN_HPP_NOEXCEPT = default;
+    AllocationInfo2& operator=(VmaAllocationInfo2 const & rhs) VULKAN_HPP_NOEXCEPT {
+      *this = *reinterpret_cast<VMA_HPP_NAMESPACE::AllocationInfo2 const *>(&rhs);
+      return *this;
+    }
+
+    explicit operator VmaAllocationInfo2 const &() const VULKAN_HPP_NOEXCEPT {
+      return *reinterpret_cast<const VmaAllocationInfo2 *>(this);
+    }
+
+    explicit operator VmaAllocationInfo2&() VULKAN_HPP_NOEXCEPT {
+      return *reinterpret_cast<VmaAllocationInfo2 *>(this);
+    }
+
+#if defined( VULKAN_HPP_HAS_SPACESHIP_OPERATOR )
+    bool operator==(AllocationInfo2 const &) const = default;
+#else
+    bool operator==(AllocationInfo2 const & rhs) const VULKAN_HPP_NOEXCEPT {
+      return allocationInfo == rhs.allocationInfo
+          && blockSize == rhs.blockSize
+          && dedicatedMemory == rhs.dedicatedMemory
+      ;
+    }
+#endif
+
+#if !defined( VULKAN_HPP_NO_STRUCT_SETTERS )
+
+    VULKAN_HPP_CONSTEXPR_14 AllocationInfo2& setAllocationInfo(AllocationInfo allocationInfo_) VULKAN_HPP_NOEXCEPT {
+      allocationInfo = allocationInfo_;
+      return *this;
+    }
+
+    VULKAN_HPP_CONSTEXPR_14 AllocationInfo2& setBlockSize(VULKAN_HPP_NAMESPACE::DeviceSize blockSize_) VULKAN_HPP_NOEXCEPT {
+      blockSize = blockSize_;
+      return *this;
+    }
+
+    VULKAN_HPP_CONSTEXPR_14 AllocationInfo2& setDedicatedMemory(VULKAN_HPP_NAMESPACE::Bool32 dedicatedMemory_) VULKAN_HPP_NOEXCEPT {
+      dedicatedMemory = dedicatedMemory_;
+      return *this;
+    }
+#endif
+
+  public:
+    AllocationInfo allocationInfo = {};
+    VULKAN_HPP_NAMESPACE::DeviceSize blockSize = {};
+    VULKAN_HPP_NAMESPACE::Bool32 dedicatedMemory = {};
+  };
+  VULKAN_HPP_STATIC_ASSERT(sizeof(AllocationInfo2) == sizeof(VmaAllocationInfo2),
+                           "struct and wrapper have different size!");
+  VULKAN_HPP_STATIC_ASSERT(std::is_standard_layout<AllocationInfo2>::value,
+                           "struct wrapper is not a standard layout!");
+  VULKAN_HPP_STATIC_ASSERT(std::is_nothrow_move_constructible<AllocationInfo2>::value,
+                           "AllocationInfo2 is not nothrow_move_constructible!");
 
   struct DefragmentationInfo {
     using NativeType = VmaDefragmentationInfo;
