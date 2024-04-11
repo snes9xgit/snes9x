@@ -24,6 +24,8 @@ set(SNES9X_CORE_SOURCES
     ../apu/bapu/smp/smp_state.cpp
     ../msu1.cpp
     ../msu1.h
+    ../vorbis.cpp
+    ../vorbis.h
     ../dsp.cpp
     ../dsp1.cpp
     ../dsp2.cpp
@@ -73,7 +75,7 @@ set(SNES9X_CORE_SOURCES
     ../loadzip.cpp
     ../fscompat.cpp)
 add_library(snes9x-core ${SNES9X_CORE_SOURCES})
-target_include_directories(snes9x-core PRIVATE ../)
+target_include_directories(snes9x-core PRIVATE ../ ../external/stb)
 target_compile_definitions(snes9x-core PRIVATE ${DEFINES} ZLIB HAVE_STDINT_H ALLOW_CPU_OVERCLOCK)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")

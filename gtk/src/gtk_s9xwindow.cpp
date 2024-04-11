@@ -683,6 +683,7 @@ std::string Snes9xWindow::open_rom_dialog(bool run)
         "*.smc", "*.SMC", "*.fig", "*.FIG", "*.sfc", "*.SFC",
         "*.jma", "*.JMA", "*.zip", "*.ZIP", "*.gd3", "*.GD3",
         "*.swc", "*.SWC", "*.gz", "*.GZ", "*.bs", "*.BS",
+        "*.msu1", "*.MSU1",
         NULL
     };
 

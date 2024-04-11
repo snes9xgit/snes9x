@@ -292,6 +292,8 @@ list(APPEND SOURCES
     ../apu/bapu/smp/smp_state.cpp
     ../msu1.cpp
     ../msu1.h
+    ../vorbis.cpp
+    ../vorbis.h
     ../dsp.cpp
     ../dsp1.cpp
     ../dsp2.cpp

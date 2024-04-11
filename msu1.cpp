@@ -8,15 +8,19 @@
 #include "memmap.h"
 #include "display.h"
 #include "msu1.h"
+#include "vorbis.h"
 #include "apu/resampler.h"
 #include "apu/bapu/dsp/blargg_endian.h"
 #include <fstream>
 #include <sys/stat.h>
+#include <optional>
 
 STREAM dataStream = NULL;
 STREAM audioStream = NULL;
 uint32 audioLoopPos;
 size_t partial_frames;
+bool usingVorbis = false;
+VorbisReader vorbisReader;
 
 // Sample buffer
 static Resampler *msu_resampler = NULL;
@@ -98,6 +102,8 @@ STREAM S9xMSU1OpenFile(const char *msu_ext, bool skip_unpacked)
 
 static void AudioClose()
 {
+	usingVorbis = false;
+	vorbisReader.close();
 	if (audioStream)
 	{
 		CLOSE_STREAM(audioStream);
@@ -113,7 +119,7 @@ static bool AudioOpen()
 
 	std::string extension = "-" + std::to_string(MSU1.MSU1_CURRENT_TRACK) + ".pcm";
 
-    audioStream = S9xMSU1OpenFile(extension.c_str());
+	audioStream = S9xMSU1OpenFile(extension.c_str());
 	if (audioStream)
 	{
 		if (GETC_STREAM(audioStream) != 'M')
@@ -133,6 +139,35 @@ static bool AudioOpen()
         MSU1.MSU1_AUDIO_POS = 8;
 
 		MSU1.MSU1_STATUS &= ~AudioError;
+
+		usingVorbis = false;
+		return true;
+	}
+
+	extension = "-" + std::to_string(MSU1.MSU1_CURRENT_TRACK) + ".ogg";
+
+    audioStream = S9xMSU1OpenFile(extension.c_str());
+	if (audioStream)
+	{
+		auto mem = std::vector<uint8_t>();
+		const auto BYTES = 1024;
+		auto buf = std::array<uint8_t, BYTES>();
+		while (true) {
+			auto bytes_read = READ_STREAM(buf.data(), BYTES, audioStream);
+			mem.insert(mem.end(), buf.begin(), buf.begin() + bytes_read);
+			if (bytes_read != BYTES) {
+				break;
+			}
+		}
+		if (!vorbisReader.load(std::move(mem))) {
+			return false;
+		}
+
+        MSU1.MSU1_AUDIO_POS = 0;
+
+		MSU1.MSU1_STATUS &= ~AudioError;
+
+		usingVorbis = true;
 		return true;
 	}
 
@@ -223,6 +258,52 @@ bool S9xMSU1ROMExists(void)
     return false;
 }
 
+void genPcmLeftRightSamples() {
+	if (usingVorbis) {
+		return;
+	}
+
+	int32 sample;
+	int16* left = (int16*)&sample;
+	int16* right = left + 1;
+
+	int bytes_read = READ_STREAM((char *)&sample, 4, audioStream);
+	if (bytes_read == 4)
+	{
+		*left = ((int32)(int16)GET_LE16(left) * MSU1.MSU1_VOLUME / 255);
+		*right = ((int32)(int16)GET_LE16(right) * MSU1.MSU1_VOLUME / 255);
+
+		msu_resampler->push_sample(*left, *right);
+		MSU1.MSU1_AUDIO_POS += 4;
+		partial_frames -= 3204;
+	}
+	else
+	if (bytes_read >= 0)
+	{
+		if (MSU1.MSU1_STATUS & AudioRepeating)
+		{
+			if (audioLoopPos < MSU1.MSU1_AUDIO_POS)
+			{
+				MSU1.MSU1_AUDIO_POS = audioLoopPos;
+			}
+			else // if the loop point is invalid, revert to start
+			{
+				MSU1.MSU1_AUDIO_POS = 8;
+			}
+			REVERT_STREAM(audioStream, MSU1.MSU1_AUDIO_POS, 0);
+		}
+		else
+		{
+			MSU1.MSU1_STATUS &= ~(AudioPlaying | AudioRepeating);
+			REVERT_STREAM(audioStream, 8, 0);
+		}
+	}
+	else
+	{
+		MSU1.MSU1_STATUS &= ~(AudioPlaying | AudioRepeating);
+	}
+}
+
 void S9xMSU1Generate(size_t sample_count)
 {
 	partial_frames += 4410 * (sample_count / 2);
@@ -231,44 +312,18 @@ void S9xMSU1Generate(size_t sample_count)
 	{
 		if (MSU1.MSU1_STATUS & AudioPlaying && audioStream)
 		{
-			int32 sample;
-			int16* left = (int16*)&sample;
-			int16* right = left + 1;
-
-			int bytes_read = READ_STREAM((char *)&sample, 4, audioStream);
-			if (bytes_read == 4)
-			{
-				*left = ((int32)(int16)GET_LE16(left) * MSU1.MSU1_VOLUME / 255);
-				*right = ((int32)(int16)GET_LE16(right) * MSU1.MSU1_VOLUME / 255);
-
-				msu_resampler->push_sample(*left, *right);
-				MSU1.MSU1_AUDIO_POS += 4;
-				partial_frames -= 3204;
-			}
-			else
-			if (bytes_read >= 0)
-			{
-				if (MSU1.MSU1_STATUS & AudioRepeating)
-				{
-					if (audioLoopPos < MSU1.MSU1_AUDIO_POS)
-					{
-						MSU1.MSU1_AUDIO_POS = audioLoopPos;
-					}
-					else // if the loop point is invalid, revert to start
-					{
-						MSU1.MSU1_AUDIO_POS = 8;
-					}
-					REVERT_STREAM(audioStream, MSU1.MSU1_AUDIO_POS, 0);
-				}
-				else
-				{
+			if (usingVorbis) {
+				auto opt = vorbisReader.getSamples(bool(MSU1.MSU1_STATUS & AudioRepeating));
+				if (!opt.has_value()) {
 					MSU1.MSU1_STATUS &= ~(AudioPlaying | AudioRepeating);
-					REVERT_STREAM(audioStream, 8, 0);
+					continue;
 				}
-			}
-			else
-			{
-				MSU1.MSU1_STATUS &= ~(AudioPlaying | AudioRepeating);
+				auto [left, right] = *opt;
+				msu_resampler->push_sample(left, right);
+				partial_frames -= 3204;
+				MSU1.MSU1_AUDIO_POS = vorbisReader.sampleNumber() * 4;
+			} else {
+				genPcmLeftRightSamples();
 			}
 		}
 		else
@@ -413,14 +468,19 @@ void S9xMSU1PostLoadState(void)
 
 		if (AudioOpen())
 		{
-            REVERT_STREAM(audioStream, 4, 0);
-            READ_STREAM((char *)&audioLoopPos, 4, audioStream);
-			audioLoopPos = GET_LE32(&audioLoopPos);
-			audioLoopPos <<= 2;
-			audioLoopPos += 8;
+			if (usingVorbis) {
+				MSU1.MSU1_AUDIO_POS = savedPosition;
+				vorbisReader.seek(MSU1.MSU1_AUDIO_POS / 4);
+			} else {
+				REVERT_STREAM(audioStream, 4, 0);
+				READ_STREAM((char *)&audioLoopPos, 4, audioStream);
+				audioLoopPos = GET_LE32(&audioLoopPos);
+				audioLoopPos <<= 2;
+				audioLoopPos += 8;
 
-			MSU1.MSU1_AUDIO_POS = savedPosition;
-            REVERT_STREAM(audioStream, MSU1.MSU1_AUDIO_POS, 0);
+				MSU1.MSU1_AUDIO_POS = savedPosition;
+				REVERT_STREAM(audioStream, MSU1.MSU1_AUDIO_POS, 0);
+			}
 		}
 		else
 		{
