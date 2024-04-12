@@ -62,7 +62,7 @@ void SimpleOutput::create_objects()
             .setDescriptorPool(context->descriptor_pool.get())
             .setDescriptorSetCount(1)
             .setSetLayouts(descriptor_set_layout.get());
-        auto descriptor = device.allocateDescriptorSetsUnique(dsai);
+        auto descriptor = device.allocateDescriptorSetsUnique(dsai).value;
         descriptors.push_back(std::move(descriptor[0]));
     }
 
@@ -87,11 +87,11 @@ void SimpleOutput::create_objects()
         .setMaxLod(1.0f)
         .setMipLodBias(0.0)
         .setCompareEnable(false);
-    linear_sampler = device.createSampler(sci);
+    linear_sampler = device.createSampler(sci).value;
 
     sci.setMinFilter(vk::Filter::eNearest)
        .setMagFilter(vk::Filter::eNearest);
-    nearest_sampler = device.createSampler(sci);
+    nearest_sampler = device.createSampler(sci).value;
 }
 
 void SimpleOutput::create_pipeline()
@@ -99,8 +99,8 @@ void SimpleOutput::create_pipeline()
     auto vertex_spirv = SlangShader::generate_spirv(vertex_shader, "vertex");
     auto fragment_spirv = SlangShader::generate_spirv(fragment_shader, "fragment");
 
-    auto vertex_module = device.createShaderModuleUnique({ {}, vertex_spirv });
-    auto fragment_module = device.createShaderModuleUnique({ {}, fragment_spirv });
+    auto vertex_module = device.createShaderModuleUnique({ {}, vertex_spirv }).value;
+    auto fragment_module = device.createShaderModuleUnique({ {}, fragment_spirv }).value;
 
     vk::PipelineShaderStageCreateInfo vertex_ci;
     vertex_ci.setStage(vk::ShaderStageFlagBits::eVertex)
@@ -182,14 +182,14 @@ void SimpleOutput::create_pipeline()
         .setDescriptorType(vk::DescriptorType::eCombinedImageSampler);
     vk::DescriptorSetLayoutCreateInfo dslci{};
     dslci.setBindings(dslb);
-    descriptor_set_layout = device.createDescriptorSetLayoutUnique(dslci);
+    descriptor_set_layout = device.createDescriptorSetLayoutUnique(dslci).value;
 
     vk::PipelineLayoutCreateInfo pipeline_layout_info;
     pipeline_layout_info.setSetLayoutCount(0)
         .setPushConstantRangeCount(0)
         .setSetLayouts(descriptor_set_layout.get());
 
-    pipeline_layout = device.createPipelineLayoutUnique(pipeline_layout_info);
+    pipeline_layout = device.createPipelineLayoutUnique(pipeline_layout_info).value;
 
     vk::GraphicsPipelineCreateInfo pipeline_create_info;
     pipeline_create_info.setStageCount(2)

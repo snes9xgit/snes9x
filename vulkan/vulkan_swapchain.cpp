@@ -75,7 +75,7 @@ void Swapchain::create_render_pass()
         .setDependencies(subpass_dependency)
         .setAttachments(attachment_description);
 
-    render_pass = device.createRenderPassUnique(render_pass_create_info);
+    render_pass = device.createRenderPassUnique(render_pass_create_info).value;
 }
 
 bool Swapchain::recreate(int new_width, int new_height)
@@ -95,7 +95,7 @@ bool Swapchain::check_and_resize(int width, int height)
 
     if (width == -1 && height == -1)
     {
-        surface_capabilities = physical_device.getSurfaceCapabilitiesKHR(surface);
+        surface_capabilities = physical_device.getSurfaceCapabilitiesKHR(surface).value;
         width = surface_capabilities.currentExtent.width;
         height = surface_capabilities.currentExtent.height;
     }
@@ -117,7 +117,7 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
     frames.clear();
     imageviewfbs.clear();
 
-    auto surface_capabilities = physical_device.getSurfaceCapabilitiesKHR(surface);
+    auto surface_capabilities = physical_device.getSurfaceCapabilitiesKHR(surface).value;
 
     if (surface_capabilities.minImageCount > desired_num_swapchain_images)
         num_swapchain_images = surface_capabilities.minImageCount;
@@ -163,7 +163,7 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
     if (extents.height < surface_capabilities.minImageExtent.height)
         extents.height = surface_capabilities.minImageExtent.height;
 
-    auto present_modes = physical_device.getSurfacePresentModesKHR(surface);
+    auto present_modes = physical_device.getSurfacePresentModesKHR(surface).value;
     auto tearing_present_mode = vk::PresentModeKHR::eFifo;
     if (std::find(present_modes.begin(), present_modes.end(), vk::PresentModeKHR::eImmediate) != present_modes.end())
         tearing_present_mode = vk::PresentModeKHR::eImmediate;
@@ -189,7 +189,7 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
         swapchain_create_info.setOldSwapchain(swapchain_object.get());
 
     try {
-        swapchain_object = device.createSwapchainKHRUnique(swapchain_create_info);
+        swapchain_object = device.createSwapchainKHRUnique(swapchain_create_info).value;
     } catch (std::exception &e) {
         swapchain_object.reset();
     }
@@ -197,9 +197,9 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
     if (!swapchain_object)
         return false;
 
-    auto swapchain_images = device.getSwapchainImagesKHR(swapchain_object.get());
+    auto swapchain_images = device.getSwapchainImagesKHR(swapchain_object.get()).value;
     vk::CommandBufferAllocateInfo command_buffer_allocate_info(command_pool, vk::CommandBufferLevel::ePrimary, swapchain_images.size());
-    auto command_buffers = device.allocateCommandBuffersUnique(command_buffer_allocate_info);
+    auto command_buffers = device.allocateCommandBuffersUnique(command_buffer_allocate_info).value;
 
     if (imageviewfbs.size() > num_swapchain_images)
         num_swapchain_images = imageviewfbs.size();
@@ -214,9 +214,9 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
         // Create frame queue resources
         auto &frame = frames[i];
         frame.command_buffer = std::move(command_buffers[i]);
-        frame.fence = device.createFenceUnique(fence_create_info);
-        frame.acquire = device.createSemaphoreUnique({});
-        frame.complete = device.createSemaphoreUnique({});
+        frame.fence = device.createFenceUnique(fence_create_info).value;
+        frame.acquire = device.createSemaphoreUnique({}).value;
+        frame.complete = device.createSemaphoreUnique({}).value;
     }
     current_frame = 0;
 
@@ -231,7 +231,7 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
             .setFormat(vk::Format::eB8G8R8A8Unorm)
             .setComponents(vk::ComponentMapping())
             .setSubresourceRange(vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1));
-        image.image_view = device.createImageViewUnique(image_view_create_info);
+        image.image_view = device.createImageViewUnique(image_view_create_info).value;
 
         auto framebuffer_create_info = vk::FramebufferCreateInfo{}
             .setAttachments(image.image_view.get())
@@ -239,7 +239,7 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
             .setHeight(extents.height)
             .setLayers(1)
             .setRenderPass(render_pass.get());
-        image.framebuffer = device.createFramebufferUnique(framebuffer_create_info);
+        image.framebuffer = device.createFramebufferUnique(framebuffer_create_info).value;
     }
 
     device.waitIdle();
@@ -267,12 +267,8 @@ bool Swapchain::begin_frame()
     }
 
     vk::ResultValue<uint32_t> result_value(vk::Result::eSuccess, 0);
-    try {
-        result_value = device.acquireNextImageKHR(swapchain_object.get(), UINT64_MAX, frame.acquire.get());
-    } catch (vk::OutOfDateKHRError &e) {
-        result_value.result = vk::Result::eErrorOutOfDateKHR;
-    }
-
+    result_value = device.acquireNextImageKHR(swapchain_object.get(), UINT64_MAX, frame.acquire.get());
+    
     if (result_value.result == vk::Result::eErrorOutOfDateKHR ||
         result_value.result == vk::Result::eSuboptimalKHR)
     {
@@ -325,14 +321,12 @@ bool Swapchain::swap()
         .setImageIndices(current_swapchain_image);
 
     vk::Result result = vk::Result::eSuccess;
-    try {
-        result = queue.presentKHR(present_info);
-    } catch (vk::OutOfDateKHRError &e) {
+    result = queue.presentKHR(present_info);
+    if (result == vk::Result::eErrorOutOfDateKHR)
+    {
         // NVIDIA binary drivers will set OutOfDate between acquire and
         // present. Ignore this and fix it on the next swapchain acquire.
-    } catch (std::exception &e) {
-        printf("%s\n", e.what());
-    }
+    } 
 
     current_frame = (current_frame + 1) % num_swapchain_images;
 

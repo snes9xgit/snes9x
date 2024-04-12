@@ -52,7 +52,7 @@ bool EmuCanvasVulkan::initImGui()
         .setPoolSizes(pool_sizes)
         .setMaxSets(1000)
         .setFlags(vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet);
-    imgui_descriptor_pool = context->device.createDescriptorPoolUnique(descriptor_pool_create_info);
+    imgui_descriptor_pool = context->device.createDescriptorPoolUnique(descriptor_pool_create_info).value;
 
     ImGui_ImplVulkan_InitInfo init_info{};
     init_info.Instance = context->instance.get();

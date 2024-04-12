@@ -91,7 +91,7 @@ void Texture::from_buffer(vk::CommandBuffer cmd,
         byte_stride = pixel_size * width;
     }
 
-    auto map = allocator.mapMemory(buffer_allocation);
+    auto map = allocator.mapMemory(buffer_allocation).value;
     for (int y = 0; y < height; y++)
     {
         auto src = buffer + byte_stride * y;
@@ -206,7 +206,7 @@ void Texture::from_buffer(vk::CommandBuffer cmd,
 void Texture::from_buffer(uint8_t *buffer, int width, int height, int byte_stride)
 {
     vk::CommandBufferAllocateInfo cbai(command_pool, vk::CommandBufferLevel::ePrimary, 1);
-    auto command_buffer_vector = device.allocateCommandBuffersUnique(cbai);
+    auto command_buffer_vector = device.allocateCommandBuffersUnique(cbai).value;
     auto &cmd = command_buffer_vector[0];
     cmd->begin({ vk::CommandBufferUsageFlagBits::eOneTimeSubmit });
     from_buffer(cmd.get(), buffer, width, height, byte_stride);
@@ -241,7 +241,7 @@ void Texture::create(int width, int height, vk::Format fmt, vk::SamplerAddressMo
         .setSamples(vk::SampleCountFlagBits::e1)
         .setSharingMode(vk::SharingMode::eExclusive);
 
-    std::tie(image, image_allocation) = allocator.createImage(ici, aci);
+    std::tie(image, image_allocation) = allocator.createImage(ici, aci).value;
 
     buffer_size = width * height * 4;
     if (format == vk::Format::eR5G6B5UnormPack16)
@@ -254,7 +254,7 @@ void Texture::create(int width, int height, vk::Format fmt, vk::SamplerAddressMo
         .setFlags(vma::AllocationCreateFlagBits::eHostAccessSequentialWrite)
         .setUsage(vma::MemoryUsage::eAutoPreferHost);
 
-    std::tie(buffer, buffer_allocation) = allocator.createBuffer(bci, aci);
+    std::tie(buffer, buffer_allocation) = allocator.createBuffer(bci, aci).value;
 
     auto isrr = vk::ImageSubresourceRange{}
         .setAspectMask(vk::ImageAspectFlagBits::eColor)
@@ -269,7 +269,7 @@ void Texture::create(int width, int height, vk::Format fmt, vk::SamplerAddressMo
         .setComponents(vk::ComponentMapping())
         .setSubresourceRange(isrr);
 
-    image_view = device.createImageView(ivci);
+    image_view = device.createImageView(ivci).value;
 
     image_width = width;
     image_height = height;
@@ -293,7 +293,7 @@ void Texture::create(int width, int height, vk::Format fmt, vk::SamplerAddressMo
             .setMaxLod(10000.0f)
             .setMipmapMode(vk::SamplerMipmapMode::eLinear);
 
-    sampler = device.createSampler(sampler_create_info);
+    sampler = device.createSampler(sampler_create_info).value;
 }
 
 void Texture::discard_staging_buffer()

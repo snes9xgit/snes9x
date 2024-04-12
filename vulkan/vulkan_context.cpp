@@ -1,4 +1,3 @@
-#include <exception>
 #include <cstring>
 #include <tuple>
 #include <vector>
@@ -19,7 +18,7 @@ Context::~Context()
 {
     if (!device)
         return;
-    device.waitIdle();
+    wait_idle();
 
     swapchain = nullptr;
 
@@ -29,7 +28,7 @@ Context::~Context()
     allocator.destroy();
 
     surface.reset();
-    device.waitIdle();
+    wait_idle();
 
     device.destroy();
 }
@@ -63,17 +62,17 @@ static vk::UniqueInstance create_instance_preamble(const char *wsi_extension)
     vk::ApplicationInfo application_info({}, {}, {}, {}, VK_API_VERSION_1_0);
     vk::InstanceCreateInfo instance_create_info({}, &application_info, {}, extensions);
 
-    vk::UniqueInstance instance;
-    try {
-        instance = vk::createInstanceUnique(instance_create_info);
-    } catch (std::exception &e) {
+    auto [result, instance] = vk::createInstanceUnique(instance_create_info);
+
+    if (result != vk::Result::eSuccess)
+    {
         instance.reset();
         return {};
     }
 
     VULKAN_HPP_DEFAULT_DISPATCHER.init(instance.get());
 
-    return instance;
+    return std::move(instance);
 }
 
 std::vector<std::string> Vulkan::Context::get_device_list()
@@ -83,7 +82,7 @@ std::vector<std::string> Vulkan::Context::get_device_list()
     if (!instance)
         return {};
 
-    auto device_list = instance->enumeratePhysicalDevices();
+    auto [result, device_list] = instance->enumeratePhysicalDevices();
     for (auto &d : device_list)
     {
         auto props = d.getProperties();
@@ -119,11 +118,12 @@ bool Context::init_Xlib(Display *dpy, Window xid, int preferred_device)
     instance = create_instance_preamble(VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
     if (!instance)
         return false;
-
-    surface = instance->createXlibSurfaceKHRUnique({ {}, dpy, xid });
-
-    if (!surface)
+    
+    auto retval = instance->createXlibSurfaceKHRUnique({ {}, dpy, xid });
+    if (retval.result != vk::Result::eSuccess)
         return false;
+    surface = std::move(retval.value);
+
     return init(preferred_device);
 }
 #endif
@@ -138,9 +138,11 @@ bool Context::init_wayland(wl_display *dpy, wl_surface *parent, int initial_widt
     auto wayland_surface_create_info = vk::WaylandSurfaceCreateInfoKHR{}
         .setSurface(parent)
         .setDisplay(dpy);
-    surface = instance->createWaylandSurfaceKHRUnique(wayland_surface_create_info);
-    if (!surface)
+
+    auto [result, new_surface] = instance->createWaylandSurfaceKHRUnique(wayland_surface_create_info);
+    if (result != vk::Result::eSuccess)
         return false;
+    surface = std::move(new_surface);
 
     init_device(preferred_device);
     init_vma();
@@ -173,7 +175,9 @@ bool Context::init_descriptor_pool()
         .setPoolSizes(descriptor_pool_size)
         .setMaxSets(20)
         .setFlags(vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet);
-    descriptor_pool = device.createDescriptorPoolUnique(descriptor_pool_create_info);
+    
+    auto retval = device.createDescriptorPoolUnique(descriptor_pool_create_info);
+    descriptor_pool = std::move(retval.value);
 
     return true;
 }
@@ -182,19 +186,20 @@ bool Context::init_command_pool()
 {
     vk::CommandPoolCreateInfo cpci({}, graphics_queue_family_index);
     cpci.setFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer);
-    command_pool = device.createCommandPoolUnique(cpci);
+    auto retval = device.createCommandPoolUnique(cpci);
+    command_pool = std::move(retval.value);
 
     return true;
 }
 
 bool Context::init_device(int preferred_device)
 {
-    auto device_list = instance->enumeratePhysicalDevices();
+    auto device_list = instance->enumeratePhysicalDevices().value;
 
     auto find_device = [&]() -> vk::PhysicalDevice {
         for (auto &d : device_list)
         {
-            auto ep = d.enumerateDeviceExtensionProperties();
+            auto [retval, ep] = d.enumerateDeviceExtensionProperties();
             auto exists = std::find_if(ep.begin(), ep.end(), [](vk::ExtensionProperties &ext) {
                 return (std::string(ext.extensionName.data()) == VK_KHR_SWAPCHAIN_EXTENSION_NAME);
             });
@@ -228,10 +233,10 @@ bool Context::init_device(int preferred_device)
     std::vector<float> priorities { 1.0f };
     vk::DeviceQueueCreateInfo dqci({}, graphics_queue_family_index, priorities);
     vk::DeviceCreateInfo dci({}, dqci, {}, extension_names, {});
-    device = physical_device.createDevice(dci);
+    device = physical_device.createDevice(dci).value;
     queue = device.getQueue(graphics_queue_family_index, 0);
 
-    auto surface_formats = physical_device.getSurfaceFormatsKHR(surface.get());
+    auto [retval, surface_formats] = physical_device.getSurfaceFormatsKHR(surface.get());
     auto format = std::find_if(surface_formats.begin(), surface_formats.end(), [](vk::SurfaceFormatKHR &f) {
         return (f.format == vk::Format::eB8G8R8A8Unorm);
     });
@@ -253,7 +258,7 @@ bool Context::init_vma()
         .setInstance(instance.get())
         .setPhysicalDevice(physical_device)
         .setPVulkanFunctions(&vulkan_functions);
-    allocator = vma::createAllocator(allocator_create_info);
+    allocator = vma::createAllocator(allocator_create_info).value;
 
     return true;
 }
@@ -279,7 +284,7 @@ void Context::wait_idle()
 vk::CommandBuffer Context::begin_cmd_buffer()
 {
     vk::CommandBufferAllocateInfo command_buffer_allocate_info(command_pool.get(), vk::CommandBufferLevel::ePrimary, 1);
-    auto command_buffer = device.allocateCommandBuffers(command_buffer_allocate_info);
+    auto command_buffer = device.allocateCommandBuffers(command_buffer_allocate_info).value;
     one_time_use_cmd = command_buffer[0];
     one_time_use_cmd.begin({ vk::CommandBufferUsageFlagBits::eOneTimeSubmit });
     return one_time_use_cmd;

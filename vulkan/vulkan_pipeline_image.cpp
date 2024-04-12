@@ -229,7 +229,7 @@ void PipelineImage::create(int width, int height, vk::Format fmt, vk::RenderPass
         .setSamples(vk::SampleCountFlagBits::e1)
         .setSharingMode(vk::SharingMode::eExclusive);
 
-    std::tie(image, image_allocation) = allocator.createImage(image_create_info, allocation_create_info);
+    std::tie(image, image_allocation) = allocator.createImage(image_create_info, allocation_create_info).value;
 
     auto subresource_range = vk::ImageSubresourceRange{}
         .setAspectMask(vk::ImageAspectFlagBits::eColor)
@@ -245,10 +245,10 @@ void PipelineImage::create(int width, int height, vk::Format fmt, vk::RenderPass
         .setComponents(vk::ComponentMapping())
         .setSubresourceRange(subresource_range);
 
-    image_view = device.createImageView(image_view_create_info);
+    image_view = device.createImageView(image_view_create_info).value;
 
     image_view_create_info.setSubresourceRange(vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1));
-    mipless_view = device.createImageView(image_view_create_info);
+    mipless_view = device.createImageView(image_view_create_info).value;
 
     image_width = width;
     image_height = height;
@@ -260,7 +260,7 @@ void PipelineImage::create(int width, int height, vk::Format fmt, vk::RenderPass
         .setRenderPass(renderpass)
         .setLayers(1);
 
-    framebuffer = device.createFramebufferUnique(framebuffer_create_info);
+    framebuffer = device.createFramebufferUnique(framebuffer_create_info).value;
 }
 
 } // namespace Vulkan

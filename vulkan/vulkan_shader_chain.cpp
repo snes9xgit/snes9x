@@ -40,7 +40,7 @@ void ShaderChain::construct_buffer_objects()
         uint8_t *ubo_memory = nullptr;
 
         if (pipeline.shader->ubo_size > 0)
-            ubo_memory = (uint8_t *)context->allocator.mapMemory(pipeline.uniform_buffer_allocation);
+            ubo_memory = (uint8_t *)context->allocator.mapMemory(pipeline.uniform_buffer_allocation).value;
 
         for (auto &uniform : pipeline.shader->uniforms)
         {
@@ -248,7 +248,7 @@ bool ShaderChain::load_shader_preset(std::string filename)
         .setMaxSets(pipelines.size() * queue_size)
         .setFlags(vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet);
 
-    descriptor_pool = context->device.createDescriptorPoolUnique(descriptor_pool_create_info);
+    descriptor_pool = context->device.createDescriptorPoolUnique(descriptor_pool_create_info).value;
 
     for (auto &p : pipelines)
         p->generate_frame_resources(descriptor_pool.get());
@@ -267,9 +267,9 @@ bool ShaderChain::load_shader_preset(std::string filename)
         .setFlags(vma::AllocationCreateFlagBits::eHostAccessSequentialWrite)
         .setRequiredFlags(vk::MemoryPropertyFlagBits::eHostVisible);
 
-    std::tie(vertex_buffer, vertex_buffer_allocation) = context->allocator.createBuffer(buffer_create_info, allocation_create_info);
+    std::tie(vertex_buffer, vertex_buffer_allocation) = context->allocator.createBuffer(buffer_create_info, allocation_create_info).value;
 
-    auto vertex_buffer_memory = context->allocator.mapMemory(vertex_buffer_allocation);
+    auto vertex_buffer_memory = context->allocator.mapMemory(vertex_buffer_allocation).value;
     memcpy(vertex_buffer_memory, vertex_data, sizeof(vertex_data));
     context->allocator.unmapMemory(vertex_buffer_allocation);
     context->allocator.flushAllocation(vertex_buffer_allocation, 0, sizeof(vertex_data));
