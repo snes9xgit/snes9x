@@ -105,7 +105,7 @@ bool Context::init_win32(HINSTANCE hinstance, HWND hwnd, int preferred_device)
     auto win32_surface_create_info = vk::Win32SurfaceCreateInfoKHR{}
         .setHinstance(hinstance)
         .setHwnd(hwnd);
-    surface = instance->createWin32SurfaceKHRUnique(win32_surface_create_info);
+    surface = instance->createWin32SurfaceKHRUnique(win32_surface_create_info).value;
     if (!surface)
         return false;
     return init(preferred_device);

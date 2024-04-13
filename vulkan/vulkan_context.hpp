@@ -9,7 +9,7 @@
 #endif
 #include <cstdio>
 #include <cstdint>
-#include "vulkan/vulkan.hpp"
+#include "vulkan/vulkan_hpp_wrapper.hpp"
 #include "../external/VulkanMemoryAllocator-Hpp/include/vk_mem_alloc.hpp"
 #include "vulkan_swapchain.hpp"
 #include <memory>
