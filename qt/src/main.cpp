@@ -5,6 +5,7 @@
 
 #include <clocale>
 #include <qnamespace.h>
+#include <QStyle>
 
 #ifndef _WIN32
 #include <csignal>
@@ -24,6 +25,12 @@ int main(int argc, char *argv[])
     emu.qtapp = std::make_unique<QApplication>(argc, argv);
 
     QGuiApplication::setDesktopFileName("snes9x-gtk");
+
+    if (emu.qtapp->platformName() == "windows")
+    {
+        if (emu.qtapp->style()->name() == "windows11")
+            emu.qtapp->setStyle("windowsvista");
+    }
 
 #ifndef _WIN32
     auto quit_handler = [](int) { QApplication::quit(); };
