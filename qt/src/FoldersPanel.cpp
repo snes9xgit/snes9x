@@ -26,7 +26,7 @@ void FoldersPanel::connectEntry(QComboBox *combo, QLineEdit *lineEdit, QPushButt
 
     QObject::connect(combo, &QComboBox::activated, [=](int index) {
         *location = index;
-        refreshEntry(combo, lineEdit, browse, location, folder);
+        this->refreshEntry(combo, lineEdit, browse, location, folder);
         app->updateSettings();
     });
 
