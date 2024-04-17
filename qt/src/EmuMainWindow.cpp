@@ -660,6 +660,7 @@ void EmuMainWindow::pauseContinue()
     {
         manual_pause = true;
         app->pause();
+        canvas->paintEvent(nullptr);
     }
 }
 
