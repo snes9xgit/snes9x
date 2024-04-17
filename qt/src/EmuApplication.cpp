@@ -543,14 +543,14 @@ void EmuApplication::disableAllCheats()
 
 void EmuApplication::enableCheat(int index)
 {
-    emu_thread->runOnThread([&] {
+    emu_thread->runOnThread([&, index] {
         core->enableCheat(index);
     });
 }
 
 void EmuApplication::disableCheat(int index)
 {
-    emu_thread->runOnThread([&] {
+    emu_thread->runOnThread([&, index] {
         core->disableCheat(index);
     });
 }
@@ -565,7 +565,7 @@ bool EmuApplication::addCheat(std::string description, std::string code)
 
 void EmuApplication::deleteCheat(int index)
 {
-    emu_thread->runOnThread([&] {
+    emu_thread->runOnThread([&, index] {
         core->deleteCheat(index);
     });
 }
