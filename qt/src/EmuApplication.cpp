@@ -248,6 +248,7 @@ void EmuApplication::startThread()
 bool EmuApplication::openFile(std::string filename)
 {
     window->gameChanging();
+    updateSettings();
     suspendThread();
     auto result = core->openFile(filename);
     unsuspendThread();
