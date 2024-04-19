@@ -277,7 +277,6 @@ void EmuCanvasVulkan::deinit()
         if (context)
             context->wait_idle();
         imgui_descriptor_pool.reset();
-        imgui_render_pass.reset();
         ImGui_ImplVulkan_Shutdown();
         ImGui::DestroyContext();
     }
@@ -339,7 +338,6 @@ void EmuCanvasVulkan::recreateUIAssets()
     {
         context->wait_idle();
         imgui_descriptor_pool.reset();
-        imgui_render_pass.reset();
         ImGui_ImplVulkan_Shutdown();
         ImGui::DestroyContext();
     }

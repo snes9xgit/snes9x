@@ -40,7 +40,6 @@ class S9xVulkanDisplayDriver : public S9xDisplayDriver
     std::unique_ptr<Vulkan::Context> context;
     vk::Device device;
     vk::UniqueDescriptorPool imgui_descriptor_pool;
-    vk::UniqueRenderPass imgui_render_pass;
 
     GdkDisplay *gdk_display;
     GdkWindow *gdk_window;

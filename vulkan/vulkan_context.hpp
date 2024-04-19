@@ -7,13 +7,11 @@
 #undef WINVER
 #define WINVER 0x599
 #endif
-#include <cstdio>
 #include <cstdint>
 #include "vulkan/vulkan_hpp_wrapper.hpp"
 #include "../external/VulkanMemoryAllocator-Hpp/include/vk_mem_alloc.hpp"
 #include "vulkan_swapchain.hpp"
 #include <memory>
-#include <optional>
 
 namespace Vulkan
 {
@@ -32,7 +30,7 @@ class Context
 #ifdef VK_USE_PLATFORM_WIN32_KHR
     bool init_win32(HINSTANCE hinstance, HWND hwnd, int preferred_device = -1);
 #endif
-    bool init(int preferred_device = -1);
+    bool init(int preferred_device = -1, int initial_width = -1, int initial_height = -1);
     bool create_swapchain(int width = -1, int height = -1);
     bool recreate_swapchain(int width = -1, int height = -1);
     void wait_idle();
