@@ -141,7 +141,7 @@ bool Context::init_wayland(wl_display *dpy, wl_surface *parent, int initial_widt
         return false;
     surface = std::move(new_surface);
 
-    return init(preferred_device, initial_width, initial_height)
+    return init(preferred_device, initial_width, initial_height);
 }
 #endif
 
