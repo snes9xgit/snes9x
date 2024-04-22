@@ -1,4 +1,5 @@
 #include "Snes9xController.hpp"
+#include "EmuConfig.hpp"
 #include "SoftwareScalers.hpp"
 #include <memory>
 #include <filesystem>
@@ -610,8 +611,28 @@ void Snes9xController::updateBindings(const EmuConfig *const config)
 
     S9xUnmapAllControls();
 
-    S9xSetController(0, CTL_JOYPAD, 0, 0, 0, 0);
-    S9xSetController(1, CTL_JOYPAD, 1, 1, 1, 1);
+    switch (config->port_configuration)
+    {
+    case EmuConfig::eTwoControllers:
+        S9xSetController(0, CTL_JOYPAD, 0, 0, 0, 0);
+        S9xSetController(1, CTL_JOYPAD, 1, 1, 1, 1);
+        break;
+    case EmuConfig::eMousePlusController:
+        S9xSetController(0, CTL_MOUSE, 0, 0, 0, 0);
+        S9xSetController(1, CTL_JOYPAD, 0, 0, 0, 0);
+        break;
+    case EmuConfig::eSuperScopePlusController:
+        S9xSetController(0, CTL_SUPERSCOPE, 0, 0, 0, 0);
+        S9xSetController(1, CTL_JOYPAD, 0, 0, 0, 0);
+        break;
+    case EmuConfig::eControllerPlusMultitap:
+        S9xSetController(0, CTL_JOYPAD, 0, 0, 0, 0);
+        S9xSetController(1, CTL_MP5, 1, 2, 3, 4);
+        break;
+    default:
+        S9xSetController(0, CTL_JOYPAD, 0, 0, 0, 0);
+        S9xSetController(1, CTL_NONE, 0, 0, 0, 0);
+    }
 
     for (int controller_number = 0; controller_number < 5; controller_number++)
     {

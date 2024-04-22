@@ -286,6 +286,7 @@ bool EmuConfig::setDefaults(int section)
     if (section == -1 || section == 4)
     {
         // Controllers
+        port_configuration = 0;
         memset(binding.controller, 0, sizeof(binding.controller));
 
         const char *button_list[] = { "Up", "Down", "Left", "Right", "d", "c", "s", "x", "z", "a", "Return", "Space" };
@@ -492,6 +493,10 @@ void EmuConfig::config(std::string filename, bool write)
     Bool("EnableShadowBuffer", enable_shadow_buffer);
     Int("SuperFXClockMultiplier", superfx_clock_multiplier);
     Enum("SoundFilter", sound_filter, { "Gaussian", "Nearest", "Linear", "Cubic", "Sinc" });
+    EndSection();
+
+    BeginSection("Ports");
+    Enum("PortConfiguration", port_configuration, { "OneController", "TwoControllers", "Mouse", "SuperScope", "Multitap" });
     EndSection();
 
     const char *names[] = { "Up", "Down", "Left", "Right", "A", "B", "X", "Y", "L", "R", "Start", "Select", "Turbo_A", "Turbo_B", "Turbo_X", "Turbo_Y", "Turbo_L", "Turbo_R" };
