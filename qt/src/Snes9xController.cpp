@@ -1,15 +1,12 @@
 #include "Snes9xController.hpp"
 #include "EmuConfig.hpp"
 #include "SoftwareScalers.hpp"
-#include <memory>
 #include <filesystem>
 namespace fs = std::filesystem;
 
 #include "snes9x.h"
 #include "memmap.h"
-#include "srtc.h"
 #include "apu/apu.h"
-#include "apu/bapu/snes/snes.hpp"
 #include "gfx.h"
 #include "snapshot.h"
 #include "controls.h"

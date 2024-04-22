@@ -361,6 +361,15 @@ void EmuApplication::handleBinding(std::string name, bool pressed)
             {
                 loadState(save_slot);
             }
+            else if (name == "SwapControllers1and2")
+            {
+                int num_bindings = EmuConfig::num_controller_bindings * EmuConfig::allowed_bindings;
+                EmuBinding temp[num_bindings];
+                memcpy(temp, config->binding.controller[0].buttons, sizeof(temp));
+                memcpy(config->binding.controller[0].buttons, config->binding.controller[1].buttons, sizeof(temp));
+                memcpy(config->binding.controller[1].buttons, temp, sizeof(temp));
+                updateBindings();
+            }
         }
     }
 
