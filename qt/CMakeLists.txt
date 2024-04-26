@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(snes9x-qt VERSION 1.61)
+project(snes9x-qt VERSION 1.62)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -102,8 +102,15 @@ list(APPEND INCLUDES ${SDL_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
 list(APPEND FLAGS ${SDL_COMPILE_FLAGS} ${ZLIB_COMPILE_FLAGS})
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-    list(APPEND LIBS opengl32 libSDL2.a libz.a libc++.a)
-    list(APPEND LIBS gdi32 winmm imm32 ole32 oleaut32 version uuid advapi32 setupapi shell32 dinput8)
+    if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+        message("Clang compiler, using libc++.")
+        list(APPEND LIBS libc++.a)
+    elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+        message("GNU compiler, using libstdc++.")
+        list(APPEND LIBS libstdc++.a)
+    endif()
+
+    list(APPEND LIBS libSDL2.a libz.a opengl32 gdi32 winmm imm32 ole32 oleaut32 version uuid advapi32 setupapi shell32 dinput8)
     list(APPEND DEFINES SDL_MAIN_HANDLED)
     list(APPEND PLATFORM_SOURCES
         ../common/video/wgl_context.cpp
@@ -228,6 +235,8 @@ endif()
 
 list(APPEND DEFINES
     "VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1"
+    "VULKAN_HPP_NO_NODISCARD_WARNINGS=1"
+    "VULKAN_HPP_NO_EXCEPTIONS=1"
     "VMA_DYNAMIC_VULKAN_FUNCTIONS=1"
     "VMA_STATIC_VULKAN_FUNCTIONS=0"
     "USE_SLANG")

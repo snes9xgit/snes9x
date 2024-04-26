@@ -142,7 +142,7 @@ uint8 S9xGetSuperFX (uint16 address)
 
 void S9xSuperFXExec (void)
 {
-	if ((Memory.FillRAM[0x3000 + GSU_SFR] & FLG_G) && (Memory.FillRAM[0x3000 + GSU_SCMR] & 0x18) == 0x18)
+	if ((Memory.FillRAM[0x3000 + GSU_SFR] & FLG_G) && (Memory.FillRAM[0x3000 + GSU_SCMR] & 0x18) != 0)
 	{
 		FxEmulate(((Memory.FillRAM[0x3000 + GSU_CLSR] & 1) ? (SuperFX.speedPerLine * 5 / 2) : SuperFX.speedPerLine) * Settings.SuperFXClockMultiplier / 100);
 

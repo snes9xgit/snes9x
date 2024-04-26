@@ -52,7 +52,7 @@ bool EmuCanvasVulkan::initImGui()
         .setPoolSizes(pool_sizes)
         .setMaxSets(1000)
         .setFlags(vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet);
-    imgui_descriptor_pool = context->device.createDescriptorPoolUnique(descriptor_pool_create_info);
+    imgui_descriptor_pool = context->device.createDescriptorPoolUnique(descriptor_pool_create_info).value;
 
     ImGui_ImplVulkan_InitInfo init_info{};
     init_info.Instance = context->instance.get();
@@ -277,7 +277,6 @@ void EmuCanvasVulkan::deinit()
         if (context)
             context->wait_idle();
         imgui_descriptor_pool.reset();
-        imgui_render_pass.reset();
         ImGui_ImplVulkan_Shutdown();
         ImGui::DestroyContext();
     }
@@ -339,7 +338,6 @@ void EmuCanvasVulkan::recreateUIAssets()
     {
         context->wait_idle();
         imgui_descriptor_pool.reset();
-        imgui_render_pass.reset();
         ImGui_ImplVulkan_Shutdown();
         ImGui::DestroyContext();
     }

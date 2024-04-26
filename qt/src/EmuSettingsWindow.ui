@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="focusPolicy">
-   <enum>Qt::NoFocus</enum>
+   <enum>Qt::FocusPolicy::NoFocus</enum>
   </property>
   <property name="windowTitle">
    <string>Settings</string>
@@ -28,10 +28,10 @@
         </sizepolicy>
        </property>
        <property name="sizeAdjustPolicy">
-        <enum>QAbstractScrollArea::AdjustToContents</enum>
+        <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents</enum>
        </property>
        <property name="resizeMode">
-        <enum>QListView::Fixed</enum>
+        <enum>QListView::ResizeMode::Fixed</enum>
        </property>
        <item>
         <property name="text">
@@ -115,7 +115,7 @@
      <item>
       <widget class="QPushButton" name="defaultsButton">
        <property name="focusPolicy">
-        <enum>Qt::TabFocus</enum>
+        <enum>Qt::FocusPolicy::TabFocus</enum>
        </property>
        <property name="toolTip">
         <string>Restore all settings on the current page to their default values.</string>
@@ -125,10 +125,6 @@
        </property>
        <property name="text">
         <string>Restore Defaults</string>
-       </property>
-       <property name="icon">
-        <iconset theme="view-refresh">
-         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="autoDefault">
         <bool>false</bool>
@@ -151,7 +147,7 @@
      <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -165,10 +161,6 @@
       <widget class="QPushButton" name="closeButton">
        <property name="text">
         <string>Close</string>
-       </property>
-       <property name="icon">
-        <iconset theme="window-close">
-         <normaloff>.</normaloff>.</iconset>
        </property>
       </widget>
      </item>

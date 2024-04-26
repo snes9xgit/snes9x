@@ -7,8 +7,8 @@
 #include <QtEvents>
 #include <QTimer>
 
-ControllerPanel::ControllerPanel(EmuApplication *app)
-    : BindingPanel(app)
+ControllerPanel::ControllerPanel(EmuApplication *app_)
+    : BindingPanel(app_)
 {
     setupUi(this);
     QObject::connect(controllerComboBox, &QComboBox::currentIndexChanged, [&](int index) {
@@ -57,6 +57,11 @@ ControllerPanel::ControllerPanel(EmuApplication *app)
 
     recreateAutoAssignMenu();
     onJoypadsChanged([&]{ recreateAutoAssignMenu(); });
+
+    connect(portComboBox, &QComboBox::currentIndexChanged, [&](int index) {
+        this->app->config->port_configuration = index;
+        app->updateBindings();
+    });
 }
 
 void ControllerPanel::recreateAutoAssignMenu()
@@ -166,6 +171,7 @@ void ControllerPanel::showEvent(QShowEvent *event)
 {
     BindingPanel::showEvent(event);
     recreateAutoAssignMenu();
+    portComboBox->setCurrentIndex(app->config->port_configuration);
 }
 
 ControllerPanel::~ControllerPanel()

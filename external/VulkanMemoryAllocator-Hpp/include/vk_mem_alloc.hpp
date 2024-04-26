@@ -23,12 +23,12 @@ namespace VMA_HPP_NAMESPACE {
     return VULKAN_HPP_NAMESPACE::UniqueHandle<T, Dispatcher>(t);
   }
   template<class T, class O>
-  VULKAN_HPP_NAMESPACE::UniqueHandle<T, Dispatcher> createUniqueHandle(const T& t, const O* o) VULKAN_HPP_NOEXCEPT {
+  VULKAN_HPP_NAMESPACE::UniqueHandle<T, Dispatcher> createUniqueHandle(const T& t, O o) VULKAN_HPP_NOEXCEPT {
     return VULKAN_HPP_NAMESPACE::UniqueHandle<T, Dispatcher>(t, o);
   }
   template<class F, class S, class O>
   std::pair<VULKAN_HPP_NAMESPACE::UniqueHandle<F, Dispatcher>, VULKAN_HPP_NAMESPACE::UniqueHandle<S, Dispatcher>>
-          createUniqueHandle(const std::pair<F, S>& t, const O* o) VULKAN_HPP_NOEXCEPT {
+          createUniqueHandle(const std::pair<F, S>& t, O o) VULKAN_HPP_NOEXCEPT {
     return {
             VULKAN_HPP_NAMESPACE::UniqueHandle<F, Dispatcher>(t.first, o),
             VULKAN_HPP_NAMESPACE::UniqueHandle<S, Dispatcher>(t.second, o)
@@ -37,7 +37,7 @@ namespace VMA_HPP_NAMESPACE {
 
   template<class T, class UniqueVectorAllocator, class VectorAllocator, class O>
   std::vector<VULKAN_HPP_NAMESPACE::UniqueHandle<T, Dispatcher>, UniqueVectorAllocator>
-        createUniqueHandleVector(const std::vector<T, VectorAllocator>& vector, const O* o,
+        createUniqueHandleVector(const std::vector<T, VectorAllocator>& vector, O o,
                                  const UniqueVectorAllocator& vectorAllocator) VULKAN_HPP_NOEXCEPT {
     std::vector<VULKAN_HPP_NAMESPACE::UniqueHandle<T, Dispatcher>, UniqueVectorAllocator> result(vectorAllocator);
     result.reserve(vector.size());
@@ -46,10 +46,10 @@ namespace VMA_HPP_NAMESPACE {
   }
 
   template<class T, class Owner> class Deleter {
-    const Owner* owner;
+    Owner owner;
   public:
     Deleter() = default;
-    Deleter(const Owner* owner) VULKAN_HPP_NOEXCEPT : owner(owner) {}
+    Deleter(Owner owner) VULKAN_HPP_NOEXCEPT : owner(owner) {}
   protected:
     void destroy(const T& t) VULKAN_HPP_NOEXCEPT; // Implemented manually for each handle type
   };
@@ -85,11 +85,11 @@ namespace VMA_HPP_NAMESPACE {
 # define VMA_HPP_DESTROY_IMPL(NAME) \
   template<> VULKAN_HPP_INLINE void VULKAN_HPP_NAMESPACE::UniqueHandleTraits<NAME, Dispatcher>::deleter::destroy(const NAME& t) VULKAN_HPP_NOEXCEPT
 
-  VMA_HPP_DESTROY_IMPL(VULKAN_HPP_NAMESPACE::Buffer) { owner->destroyBuffer(t, nullptr); }
-  VMA_HPP_DESTROY_IMPL(VULKAN_HPP_NAMESPACE::Image) { owner->destroyImage(t, nullptr); }
-  VMA_HPP_DESTROY_IMPL(Pool) { owner->destroyPool(t); }
-  VMA_HPP_DESTROY_IMPL(Allocation) { owner->freeMemory(t); }
-  VMA_HPP_DESTROY_IMPL(VirtualAllocation) { owner->virtualFree(t); }
+  VMA_HPP_DESTROY_IMPL(VULKAN_HPP_NAMESPACE::Buffer) { owner.destroyBuffer(t, nullptr); }
+  VMA_HPP_DESTROY_IMPL(VULKAN_HPP_NAMESPACE::Image) { owner.destroyImage(t, nullptr); }
+  VMA_HPP_DESTROY_IMPL(Pool) { owner.destroyPool(t); }
+  VMA_HPP_DESTROY_IMPL(Allocation) { owner.freeMemory(t); }
+  VMA_HPP_DESTROY_IMPL(VirtualAllocation) { owner.virtualFree(t); }
 
 # undef VMA_HPP_DESTROY_IMPL
 #endif

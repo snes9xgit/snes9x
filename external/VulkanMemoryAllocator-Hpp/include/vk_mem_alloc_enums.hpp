@@ -10,7 +10,8 @@ namespace VMA_HPP_NAMESPACE {
     eExtMemoryBudget = VMA_ALLOCATOR_CREATE_EXT_MEMORY_BUDGET_BIT,
     eAmdDeviceCoherentMemory = VMA_ALLOCATOR_CREATE_AMD_DEVICE_COHERENT_MEMORY_BIT,
     eBufferDeviceAddress = VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT,
-    eExtMemoryPriority = VMA_ALLOCATOR_CREATE_EXT_MEMORY_PRIORITY_BIT
+    eExtMemoryPriority = VMA_ALLOCATOR_CREATE_EXT_MEMORY_PRIORITY_BIT,
+    eKhrMaintenance4 = VMA_ALLOCATOR_CREATE_KHR_MAINTENANCE4_BIT
   };
 
 # if !defined( VULKAN_HPP_NO_TO_STRING )
@@ -22,6 +23,7 @@ namespace VMA_HPP_NAMESPACE {
     if (value == AllocatorCreateFlagBits::eAmdDeviceCoherentMemory) return "AmdDeviceCoherentMemory";
     if (value == AllocatorCreateFlagBits::eBufferDeviceAddress) return "BufferDeviceAddress";
     if (value == AllocatorCreateFlagBits::eExtMemoryPriority) return "ExtMemoryPriority";
+    if (value == AllocatorCreateFlagBits::eKhrMaintenance4) return "KhrMaintenance4";
     return "invalid ( " + VULKAN_HPP_NAMESPACE::toHexString(static_cast<uint32_t>(value)) + " )";
   }
 # endif
@@ -37,7 +39,8 @@ namespace VULKAN_HPP_NAMESPACE {
       | VMA_HPP_NAMESPACE::AllocatorCreateFlagBits::eExtMemoryBudget
       | VMA_HPP_NAMESPACE::AllocatorCreateFlagBits::eAmdDeviceCoherentMemory
       | VMA_HPP_NAMESPACE::AllocatorCreateFlagBits::eBufferDeviceAddress
-      | VMA_HPP_NAMESPACE::AllocatorCreateFlagBits::eExtMemoryPriority;
+      | VMA_HPP_NAMESPACE::AllocatorCreateFlagBits::eExtMemoryPriority
+      | VMA_HPP_NAMESPACE::AllocatorCreateFlagBits::eKhrMaintenance4;
   };
 }
 
@@ -72,6 +75,7 @@ namespace VMA_HPP_NAMESPACE {
     if (value & AllocatorCreateFlagBits::eAmdDeviceCoherentMemory) result += "AmdDeviceCoherentMemory | ";
     if (value & AllocatorCreateFlagBits::eBufferDeviceAddress) result += "BufferDeviceAddress | ";
     if (value & AllocatorCreateFlagBits::eExtMemoryPriority) result += "ExtMemoryPriority | ";
+    if (value & AllocatorCreateFlagBits::eKhrMaintenance4) result += "KhrMaintenance4 | ";
     return "{ " + result.substr( 0, result.size() - 3 ) + " }";
   }
 # endif

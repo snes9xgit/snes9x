@@ -49,7 +49,7 @@ snes9x_linux-x11-amd64_task:
 
 snes9x_freebsd-x11-amd64_task:
   freebsd_instance:
-    image: freebsd-12-1-release-amd64
+    image: freebsd-13-2-release-amd64
 
   setup_script:
     - pkg install -y gmake pkgconf minizip libX11 libXext

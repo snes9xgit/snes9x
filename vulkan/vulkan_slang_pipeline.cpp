@@ -156,10 +156,10 @@ bool SlangPipeline::generate_pipeline(bool lastpass)
         .setDependencies(subpass_dependency)
         .setAttachments(attachment_description);
 
-    render_pass = device.createRenderPassUnique(render_pass_create_info);
+    render_pass = device.createRenderPassUnique(render_pass_create_info).value;
 
-    auto vertex_module = device.createShaderModuleUnique({ {}, shader->vertex_shader_spirv });
-    auto fragment_module = device.createShaderModuleUnique({ {}, shader->fragment_shader_spirv });
+    auto vertex_module = device.createShaderModuleUnique({ {}, shader->vertex_shader_spirv }).value;
+    auto fragment_module = device.createShaderModuleUnique({ {}, shader->fragment_shader_spirv }).value;
 
     auto vertex_ci = vk::PipelineShaderStageCreateInfo{}
         .setStage(vk::ShaderStageFlagBits::eVertex)
@@ -278,7 +278,7 @@ bool SlangPipeline::generate_pipeline(bool lastpass)
 
     auto dslci = vk::DescriptorSetLayoutCreateInfo{}
         .setBindings(descriptor_set_layout_bindings);
-    descriptor_set_layout = device.createDescriptorSetLayoutUnique(dslci);
+    descriptor_set_layout = device.createDescriptorSetLayoutUnique(dslci).value;
 
     vk::PushConstantRange pcr(vk::ShaderStageFlagBits::eAllGraphics, 0, shader->push_constant_block_size);
 
@@ -289,7 +289,7 @@ bool SlangPipeline::generate_pipeline(bool lastpass)
     if (shader->push_constant_block_size > 0)
         pipeline_layout_info.setPushConstantRanges(pcr);
 
-    pipeline_layout = device.createPipelineLayoutUnique(pipeline_layout_info);
+    pipeline_layout = device.createPipelineLayoutUnique(pipeline_layout_info).value;
 
     auto pipeline_create_info = vk::GraphicsPipelineCreateInfo{}
         .setStageCount(2)
@@ -343,11 +343,11 @@ bool SlangPipeline::generate_frame_resources(vk::DescriptorPool pool)
 
         vk::DescriptorSetAllocateInfo descriptor_set_allocate_info(pool, descriptor_set_layout.get());
 
-        auto result = device.allocateDescriptorSetsUnique(descriptor_set_allocate_info);
+        auto result = device.allocateDescriptorSetsUnique(descriptor_set_allocate_info).value;
         f.descriptor_set = std::move(result[0]);
     }
 
-    semaphore = device.createSemaphoreUnique({});
+    semaphore = device.createSemaphoreUnique({}).value;
 
     push_constants.resize(shader->push_constant_block_size);
 
@@ -361,7 +361,7 @@ bool SlangPipeline::generate_frame_resources(vk::DescriptorPool pool)
             .setFlags(vma::AllocationCreateFlagBits::eHostAccessSequentialWrite)
             .setRequiredFlags(vk::MemoryPropertyFlagBits::eHostVisible);
 
-        std::tie(uniform_buffer, uniform_buffer_allocation) = context->allocator.createBuffer(buffer_create_info, allocation_create_info);
+        std::tie(uniform_buffer, uniform_buffer_allocation) = context->allocator.createBuffer(buffer_create_info, allocation_create_info).value;
     }
     else
     {
@@ -385,7 +385,7 @@ bool SlangPipeline::generate_frame_resources(vk::DescriptorPool pool)
         .setMaxLod(VK_LOD_CLAMP_NONE)
         .setAnisotropyEnable(false);
 
-    sampler = device.createSamplerUnique(sampler_create_info);
+    sampler = device.createSamplerUnique(sampler_create_info).value;
 
     return true;
 }

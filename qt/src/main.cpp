@@ -5,6 +5,7 @@
 
 #include <clocale>
 #include <qnamespace.h>
+#include <QStyle>
 
 #ifndef _WIN32
 #include <csignal>
@@ -24,6 +25,39 @@ int main(int argc, char *argv[])
     emu.qtapp = std::make_unique<QApplication>(argc, argv);
 
     QGuiApplication::setDesktopFileName("snes9x-gtk");
+
+    if (emu.qtapp->platformName() == "windows")
+    {
+        emu.qtapp->setStyle("fusion");
+
+        const QColor darkGray(53, 53, 53);
+        const QColor gray(128, 128, 128);
+        const QColor black(25, 25, 25);
+        const QColor blue(198, 238, 255);
+        const QColor blue2(0, 88, 208);
+
+        QPalette darkPalette;
+        darkPalette.setColor(QPalette::Window, darkGray);
+        darkPalette.setColor(QPalette::WindowText, Qt::white);
+        darkPalette.setColor(QPalette::Base, black);
+        darkPalette.setColor(QPalette::AlternateBase, darkGray);
+        darkPalette.setColor(QPalette::ToolTipBase, blue2);
+        darkPalette.setColor(QPalette::ToolTipText, Qt::white);
+        darkPalette.setColor(QPalette::Text, Qt::white);
+        darkPalette.setColor(QPalette::Button, darkGray);
+        darkPalette.setColor(QPalette::ButtonText, Qt::white);
+        darkPalette.setColor(QPalette::Link, blue);
+        darkPalette.setColor(QPalette::Highlight, blue2);
+        darkPalette.setColor(QPalette::HighlightedText, Qt::white);
+        darkPalette.setColor(QPalette::PlaceholderText, QColor(Qt::white).darker());
+
+        darkPalette.setColor(QPalette::Active, QPalette::Button, darkGray);
+        darkPalette.setColor(QPalette::Disabled, QPalette::ButtonText, gray);
+        darkPalette.setColor(QPalette::Disabled, QPalette::WindowText, gray);
+        darkPalette.setColor(QPalette::Disabled, QPalette::Text, gray);
+        darkPalette.setColor(QPalette::Disabled, QPalette::Light, darkGray);
+        emu.qtapp->setPalette(darkPalette);
+    }
 
 #ifndef _WIN32
     auto quit_handler = [](int) { QApplication::quit(); };

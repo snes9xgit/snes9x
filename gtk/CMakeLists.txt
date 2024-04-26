@@ -107,6 +107,8 @@ if(USE_SLANG)
     list(APPEND DEFINES "VK_USE_PLATFORM_XLIB_KHR"
                         "VK_USE_PLATFORM_WAYLAND_KHR"
                         "VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1"
+                        "VULKAN_HPP_NO_NODISCARD_WARNINGS=1"
+                        "VULKAN_HPP_NO_EXCEPTIONS=1"
                         "VMA_DYNAMIC_VULKAN_FUNCTIONS=1"
                         "VMA_STATIC_VULKAN_FUNCTIONS=0"
                         "IMGUI_IMPL_VULKAN_NO_PROTOTYPES")

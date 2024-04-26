@@ -157,6 +157,16 @@ struct EmuConfig
 
     int sram_save_interval;
 
+    enum PortConfiguration
+    {
+        eOneController = 0,
+        eTwoControllers,
+        eMousePlusController,
+        eSuperScopePlusController,
+        eControllerPlusMultitap
+    };
+    int port_configuration;
+
     static const int allowed_bindings = 4;
     static const int num_controller_bindings = 18;
     static const int num_shortcuts = 55;
