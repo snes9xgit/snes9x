@@ -339,29 +339,15 @@ static bool8 fx_checkStartAddress (void)
 {
 	// Check if we start inside the cache
 	if (GSU.bCacheActive && R15 >= GSU.vCacheBaseReg && R15 < (GSU.vCacheBaseReg + 512))
-		return (TRUE);
+		return true;
 
-	/*
-	// Check if we're in an unused area
-	if (GSU.vPrgBankReg < 0x40 && R15 < 0x8000)
-		return (FALSE);
-	*/
+	if (GSU.vPrgBankReg <= 0x5f && (SCMR & (1 << 3)))
+		return true;
 
-	if (GSU.vPrgBankReg >= 0x60 && GSU.vPrgBankReg <= 0x6f)
-		return (FALSE);
+	if (GSU.vPrgBankReg <= 0x7f && (SCMR & (1 << 4)))
+		return true;
 
-	if (GSU.vPrgBankReg >= 0x74)
-		return (FALSE);
-
-	// Check if we're in RAM and the RAN flag is not set
-	if (GSU.vPrgBankReg >= 0x70 && GSU.vPrgBankReg <= 0x73 && !(SCMR & (1 << 3)))
-		return (FALSE);
-
-	// If not, we're in ROM, so check if the RON flag is set
-	if (!(SCMR & (1 << 4)))
-		return (FALSE);
-
-	return (TRUE);
+	return false;
 }
 
 // Execute until the next stop instruction
