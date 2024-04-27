@@ -143,6 +143,14 @@ void S9xMainLoop (void)
 			Op = CPU.PCBase[Registers.PCw];
 			CPU.Cycles += CPU.MemSpeed;
 			Opcodes = ICPU.S9xOpcodes;
+
+			if (CPU.Cycles > 1000000)
+			{
+				Settings.StopEmulation = true;
+				CPU.Flags |= HALTED_FLAG;
+				S9xMessage(S9X_FATAL_ERROR, 0, "CPU is deadlocked");
+				return;
+			}
 		}
 		else
 		{
