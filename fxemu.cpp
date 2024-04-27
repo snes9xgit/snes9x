@@ -341,10 +341,14 @@ static bool8 fx_checkStartAddress (void)
 	if (GSU.bCacheActive && R15 >= GSU.vCacheBaseReg && R15 < (GSU.vCacheBaseReg + 512))
 		return true;
 
-	if (GSU.vPrgBankReg <= 0x5f && (SCMR & (1 << 3)))
-		return true;
 
-	if (GSU.vPrgBankReg <= 0x7f && (SCMR & (1 << 4)))
+	if (SCMR & (1 << 4))
+	{
+		if (GSU.vPrgBankReg <= 0x5f || GSU.vPrgBankReg >= 0x80)
+			return true;
+	}
+
+	if (GSU.vPrgBankReg <= 0x7f && (SCMR & (1 << 3)))
 		return true;
 
 	return false;
