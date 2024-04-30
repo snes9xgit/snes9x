@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
 project(snes9x-qt VERSION 1.62)
 
+include(GNUInstallDirs)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -298,3 +300,5 @@ target_compile_definitions(snes9x-qt PRIVATE ${DEFINES})
 target_compile_options(snes9x-qt PRIVATE ${FLAGS})
 target_include_directories(snes9x-qt PRIVATE "../" ${INCLUDES})
 
+install(TARGETS snes9x-qt)
+install(FILES ../data/cheats.bml DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/snes9x)
