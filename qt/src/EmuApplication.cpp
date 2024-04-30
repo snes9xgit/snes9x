@@ -370,6 +370,12 @@ void EmuApplication::handleBinding(std::string name, bool pressed)
                 memcpy(config->binding.controller[1].buttons, temp, sizeof(temp));
                 updateBindings();
             }
+            else if (name == "GrabMouse")
+            {
+                if (config->port_configuration == EmuConfig::eMousePlusController ||
+                    config->port_configuration == EmuConfig::eSuperScopePlusController)
+                    window->toggleMouseGrab();
+            }
         }
     }
 
@@ -464,6 +470,20 @@ void EmuApplication::pollJoysticks()
             break;
         }
     }
+}
+
+void EmuApplication::reportPointer(int x, int y)
+{
+    emu_thread->runOnThread([&, x, y] {
+        core->reportPointer(x, y);
+    });
+}
+
+void EmuApplication::reportMouseButton(int button, bool pressed)
+{
+    emu_thread->runOnThread([&, button, pressed] {
+        core->reportMouseButton(button, pressed);
+    });
 }
 
 void EmuApplication::startInputTimer()

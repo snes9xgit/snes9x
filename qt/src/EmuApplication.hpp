@@ -62,6 +62,8 @@ struct EmuApplication
     void reportBinding(EmuBinding b, bool active);
     void startInputTimer();
     void pollJoysticks();
+    void reportPointer(int x, int y);
+    void reportMouseButton(int button, bool pressed);
     void restartAudio();
     void writeSamples(int16_t *data, int samples);
     void mainLoop();

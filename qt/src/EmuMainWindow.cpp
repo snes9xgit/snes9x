@@ -526,6 +526,8 @@ bool EmuMainWindow::event(QEvent *event)
         }
         break;
     case QEvent::WindowDeactivate:
+        if (mouse_grabbed)
+            toggleMouseGrab();
         if (app->config->pause_emulation_when_unfocused && !focus_pause)
         {
             focus_pause = true;
@@ -548,10 +550,27 @@ bool EmuMainWindow::event(QEvent *event)
 
         break;
     }
+    case QEvent::MouseButtonPress:
+    case QEvent::MouseButtonRelease:
+    {
+        if (!mouse_grabbed)
+            break;
+        auto mouse_event = (QMouseEvent *)event;
+        app->reportMouseButton(mouse_event->button(), event->type() == QEvent::MouseButtonPress);
+        break;
+    }
     case QEvent::MouseMove:
+        if (mouse_grabbed)
+        {
+            auto center = mapToGlobal(rect().center());
+            auto pos = QCursor::pos();
+            auto delta = pos - center;
+            app->reportPointer(delta.x(), delta.y());
+            QCursor::setPos(center);
+        }
         if (!cursor_visible)
         {
-            if (canvas)
+            if (canvas && !mouse_grabbed)
                 canvas->setCursor(QCursor(Qt::ArrowCursor));
             cursor_visible = true;
             mouse_timer.start();
@@ -584,6 +603,7 @@ void EmuMainWindow::toggleFullscreen()
             app->config->setVRRConfig(true);
             app->updateSettings();
         }
+        QCursor::setPos(mapToGlobal(rect().center()));
         showFullScreen();
         menuBar()->setVisible(false);
         setBypassCompositor(true);
@@ -620,7 +640,13 @@ bool EmuMainWindow::eventFilter(QObject *watched, QEvent *event)
 
     auto key_event = (QKeyEvent *)event;
 
-    if (isFullScreen() && key_event->key() == Qt::Key_Escape)
+    if (mouse_grabbed && key_event->key() == Qt::Key_Escape && event->type() == QEvent::KeyPress)
+    {
+        toggleMouseGrab();
+        return true;
+    }
+
+    if (isFullScreen() && key_event->key() == Qt::Key_Escape && event->type() == QEvent::KeyPress)
     {
         toggleFullscreen();
         return true;
@@ -695,4 +721,19 @@ void EmuMainWindow::gameChanging()
 {
     if (cheats_dialog)
         cheats_dialog->close();
+}
+
+void EmuMainWindow::toggleMouseGrab()
+{
+    mouse_grabbed = !mouse_grabbed;
+
+    if (mouse_grabbed)
+    {
+        canvas->setCursor(QCursor(Qt::CursorShape::BlankCursor));
+        QCursor::setPos(mapToGlobal(rect().center()));
+    }
+    else
+    {
+        canvas->setCursor(QCursor(Qt::CursorShape::ArrowCursor));
+    }
 }

@@ -37,6 +37,7 @@ class EmuMainWindow : public QMainWindow
     void recreateUIAssets();
     void shaderChanged();
     void gameChanging();
+    void toggleMouseGrab();
     std::vector<std::string> getDisplayDeviceList();
     EmuApplication *app;
     EmuCanvas *canvas;
@@ -54,6 +55,7 @@ class EmuMainWindow : public QMainWindow
     bool focus_pause = false;
     bool minimized_pause = false;
     bool using_stacked_widget = false;
+    bool mouse_grabbed = false;
     QMenu *load_state_menu;
     QMenu *save_state_menu;
     QMenu *recent_menu;

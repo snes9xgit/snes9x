@@ -2,7 +2,6 @@
 #define __EMU_BINDING_HPP
 #include <cstdint>
 #include <string>
-#include <vector>
 
 struct EmuBinding
 {
@@ -15,6 +14,11 @@ struct EmuBinding
     static EmuBinding from_config_string(std::string str);
     std::string to_config_string();
     bool operator==(const EmuBinding &);
+
+    static const uint32_t MOUSE_POINTER = 0x0f000000;
+    static const uint32_t MOUSE_BUTTON1 = 0x0f000001;
+    static const uint32_t MOUSE_BUTTON2 = 0x0f000002;
+    static const uint32_t MOUSE_BUTTON3 = 0x0f000003;
 
     enum Type
     {

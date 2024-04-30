@@ -663,11 +663,38 @@ void Snes9xController::updateBindings(const EmuConfig *const config)
                 S9xMapButton(binding.hash(), command, false);
         }
     }
+
+    auto cmd = S9xGetCommandT("Pointer Mouse1+Superscope+Justifier1");
+    S9xMapPointer(EmuBinding::MOUSE_POINTER, cmd, false);
+    mouse_x = mouse_y = 0;
+    S9xReportPointer(EmuBinding::MOUSE_POINTER, mouse_x, mouse_y);
+
+    cmd = S9xGetCommandT("{Mouse1 L,Superscope Fire,Justifier1 Trigger}");
+    S9xMapButton(EmuBinding::MOUSE_BUTTON1, cmd, false);
+
+    cmd = S9xGetCommandT("{Justifier1 AimOffscreen Trigger,Superscope AimOffscreen}");
+    S9xMapButton(EmuBinding::MOUSE_BUTTON3, cmd, false);
+
+    cmd = S9xGetCommandT("{Mouse1 R,Superscope Cursor,Justifier1 Start}");
+    S9xMapButton(EmuBinding::MOUSE_BUTTON2, cmd, false);
+
 }
 
 void Snes9xController::reportBinding(EmuBinding b, bool active)
 {
     S9xReportButton(b.hash(), active);
+}
+
+void Snes9xController::reportMouseButton(int button, bool pressed)
+{
+    S9xReportButton(EmuBinding::MOUSE_POINTER + button, pressed);
+}
+
+void Snes9xController::reportPointer(int x, int y)
+{
+    mouse_x += x;
+    mouse_y += y;
+    S9xReportPointer(EmuBinding::MOUSE_POINTER, mouse_x, mouse_y);
 }
 
 static fs::path save_slot_path(int slot)

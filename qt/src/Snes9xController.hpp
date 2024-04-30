@@ -4,7 +4,6 @@
 #include <vector>
 #include <cstdint>
 #include <string>
-#include <memory>
 
 #include "EmuConfig.hpp"
 
@@ -27,6 +26,8 @@ class Snes9xController
     void updateSettings(const EmuConfig * const config);
     void updateBindings(const EmuConfig * const config);
     void reportBinding(EmuBinding b, bool active);
+    void reportMouseButton(int button, bool pressed);
+    void reportPointer(int x, int y);
     void updateSoundBufferLevel(int, int);
     bool acceptsCommand(const char *command);
     bool isAbnormalSpeed();
@@ -54,6 +55,7 @@ class Snes9xController
     std::string cheat_folder;
     std::string patch_folder;
     std::string export_folder;
+    int16_t mouse_x, mouse_y;
     int high_resolution_effect;
     int rewind_buffer_size;
     int rewind_frame_interval;
