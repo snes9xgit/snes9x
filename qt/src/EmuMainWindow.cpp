@@ -565,6 +565,8 @@ bool EmuMainWindow::event(QEvent *event)
             auto center = mapToGlobal(rect().center());
             auto pos = QCursor::pos();
             auto delta = pos - center;
+            if (delta.x() == 0 && delta.y() == 0)
+                break;
             app->reportPointer(delta.x(), delta.y());
             QCursor::setPos(center);
         }
@@ -729,11 +731,11 @@ void EmuMainWindow::toggleMouseGrab()
 
     if (mouse_grabbed)
     {
-        canvas->setCursor(QCursor(Qt::CursorShape::BlankCursor));
+        canvas->setCursor(QCursor(Qt::BlankCursor));
         QCursor::setPos(mapToGlobal(rect().center()));
     }
     else
     {
-        canvas->setCursor(QCursor(Qt::CursorShape::ArrowCursor));
+        canvas->setCursor(QCursor(Qt::ArrowCursor));
     }
 }
