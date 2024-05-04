@@ -21,6 +21,14 @@
     <file>whiteicons/up.svg</file>
     <file>whiteicons/x.svg</file>
     <file>whiteicons/y.svg</file>
+    <file>whiteicons/open.svg</file>
+    <file>whiteicons/pause.svg</file>
+    <file>whiteicons/play.svg</file>
+    <file>whiteicons/refresh.svg</file>
+    <file>whiteicons/reset.svg</file>
+    <file>whiteicons/save.svg</file>
+    <file>whiteicons/exit.svg</file>
+    <file>whiteicons/fullscreen.svg</file>
     <file>snes9x.svg</file>
     <file>blackicons/settings.svg</file>
     <file>blackicons/folders.svg</file>
@@ -43,5 +51,13 @@
     <file>blackicons/x.svg</file>
     <file>blackicons/y.svg</file>
     <file>blackicons/shader.svg</file>
+    <file>blackicons/open.svg</file>
+    <file>blackicons/pause.svg</file>
+    <file>blackicons/play.svg</file>
+    <file>blackicons/refresh.svg</file>
+    <file>blackicons/reset.svg</file>
+    <file>blackicons/save.svg</file>
+    <file>blackicons/exit.svg</file>
+    <file>blackicons/fullscreen.svg</file>
   </qresource>
 </RCC>

@@ -167,9 +167,11 @@ void EmuMainWindow::createWidgets()
     setWindowTitle("Snes9x");
     setWindowIcon(QIcon(":/icons/snes9x.svg"));
 
+    auto iconset = app->iconPrefix();
+
     // File menu
     auto file_menu = new QMenu(tr("&File"));
-    auto open_item = file_menu->addAction(QIcon::fromTheme("document-open"), tr("&Open File..."));
+    auto open_item = file_menu->addAction(QIcon(iconset + "open.svg"), tr("&Open File..."));
     open_item->connect(open_item, &QAction::triggered, this, [&] {
         openFile();
     });
@@ -200,7 +202,7 @@ void EmuMainWindow::createWidgets()
 
     load_state_menu->addSeparator();
 
-    auto load_state_file_item = load_state_menu->addAction(QIcon::fromTheme("document-open"), tr("From &File..."));
+    auto load_state_file_item = load_state_menu->addAction(QIcon(iconset + "open.svg"), tr("From &File..."));
     connect(load_state_file_item, &QAction::triggered, [&] {
         this->chooseState(false);
     });
@@ -208,7 +210,7 @@ void EmuMainWindow::createWidgets()
 
     load_state_menu->addSeparator();
 
-    auto load_state_undo_item = load_state_menu->addAction(QIcon::fromTheme("edit-undo"), tr("&Undo Load State"));
+    auto load_state_undo_item = load_state_menu->addAction(QIcon(iconset + "refresh.svg"), tr("&Undo Load State"));
     connect(load_state_undo_item, &QAction::triggered, [&] {
         app->loadUndoState();
     });
@@ -217,14 +219,14 @@ void EmuMainWindow::createWidgets()
     file_menu->addMenu(load_state_menu);
 
     save_state_menu->addSeparator();
-    auto save_state_file_item = save_state_menu->addAction(QIcon::fromTheme("document-save"), tr("To &File..."));
+    auto save_state_file_item = save_state_menu->addAction(QIcon(iconset + "save.svg"), tr("To &File..."));
     connect(save_state_file_item, &QAction::triggered, [&] {
         this->chooseState(true);
     });
     core_actions.push_back(save_state_file_item);
     file_menu->addMenu(save_state_menu);
 
-    auto exit_item = new QAction(QIcon::fromTheme("application-exit"), tr("E&xit"));
+    auto exit_item = new QAction(QIcon(iconset + "exit.svg"), tr("E&xit"));
     exit_item->connect(exit_item, &QAction::triggered, this, [&](bool checked) {
         close();
     });
@@ -245,7 +247,7 @@ void EmuMainWindow::createWidgets()
     });
     core_actions.push_back(run_item);
 
-    auto pause_item = emulation_menu->addAction(QIcon::fromTheme("media-playback-pause"), tr("&Pause"));
+    auto pause_item = emulation_menu->addAction(QIcon(iconset + "pause.svg"), tr("&Pause"));
     connect(pause_item, &QAction::triggered, [&] {
         if (!manual_pause)
         {
@@ -257,7 +259,7 @@ void EmuMainWindow::createWidgets()
 
     emulation_menu->addSeparator();
 
-    auto reset_item = emulation_menu->addAction(QIcon::fromTheme("view-refresh"), tr("Rese&t"));
+    auto reset_item = emulation_menu->addAction(QIcon(iconset + "refresh.svg"), tr("Rese&t"));
     connect(reset_item, &QAction::triggered, [&] {
         app->reset();
         if (manual_pause)
@@ -268,7 +270,7 @@ void EmuMainWindow::createWidgets()
     });
     core_actions.push_back(reset_item);
 
-    auto hard_reset_item = emulation_menu->addAction(QIcon::fromTheme("process-stop"), tr("&Hard Reset"));
+    auto hard_reset_item = emulation_menu->addAction(QIcon(iconset + "reset.svg"), tr("&Hard Reset"));
     connect(hard_reset_item, &QAction::triggered, [&] {
         app->powerCycle();
         if (manual_pause)
@@ -308,7 +310,7 @@ void EmuMainWindow::createWidgets()
 
     view_menu->addSeparator();
 
-    auto fullscreen_item = new QAction(QIcon::fromTheme("view-fullscreen"), tr("&Fullscreen"));
+    auto fullscreen_item = new QAction(QIcon(iconset + "fullscreen.svg"), tr("&Fullscreen"));
     view_menu->addAction(fullscreen_item);
     fullscreen_item->connect(fullscreen_item, &QAction::triggered, [&](bool checked) {
         toggleFullscreen();
@@ -328,7 +330,6 @@ void EmuMainWindow::createWidgets()
                                               tr("&Controllers..."),
                                               tr("Shortcu&ts..."),
                                               tr("&Files...") };
-    QString iconset = app->iconPrefix();
     const char *setting_icons[] = { "settings.svg",
                                     "display.svg",
                                     "sound.svg",
