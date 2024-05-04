@@ -204,7 +204,7 @@ bool Context::init_device(int preferred_device)
     auto device_list = instance->enumeratePhysicalDevices().value;
 
     if (preferred_device > -1 &&
-        preferred_device < device_list.size() &&
+        (size_t)preferred_device < device_list.size() &&
         check_extensions(device_list[preferred_device]))
     {
         physical_device = device_list[preferred_device];

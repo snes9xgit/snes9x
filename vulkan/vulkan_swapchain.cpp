@@ -126,7 +126,7 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
 
     // If extents aren't reported (Wayland), we have to rely on Wayland to report
     // the size, so keep current extent.
-    if (surface_capabilities.currentExtent.width != -1)
+    if (surface_capabilities.currentExtent.width != UINT32_MAX)
         extents = surface_capabilities.currentExtent;
 
     uint32_t graphics_queue_index = 0;
