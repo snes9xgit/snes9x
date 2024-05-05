@@ -159,7 +159,7 @@ bool CDirect3D::Initialize(HWND hWnd)
 
 void CDirect3D::DeInitialize()
 {
-	if (S9xImGuiRunning())
+	if (init_done && S9xImGuiRunning())
 	{
 		ImGui_ImplDX9_Shutdown();
 		S9xImGuiDeinit();
