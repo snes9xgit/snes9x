@@ -16,13 +16,12 @@ class Snes9xController
     void deinit();
     void mainLoop();
     bool openFile(std::string filename);
+    bool slotUsed(int slot);
     bool loadState(std::string filename);
     bool loadState(int slot);
     void loadUndoState();
     bool saveState(std::string filename);
     bool saveState(int slot);
-    void increaseSaveSlot();
-    void decreaseSaveSlot();
     void updateSettings(const EmuConfig * const config);
     void updateBindings(const EmuConfig * const config);
     void reportBinding(EmuBinding b, bool active);

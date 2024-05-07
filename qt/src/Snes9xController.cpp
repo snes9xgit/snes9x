@@ -718,6 +718,11 @@ std::string Snes9xController::getStateFolder()
     return S9xGetDirectory(SNAPSHOT_DIR);
 }
 
+bool Snes9xController::slotUsed(int slot)
+{
+    return fs::exists(save_slot_path(slot));
+}
+
 bool Snes9xController::loadState(int slot)
 {
     return loadState(save_slot_path(slot).u8string());

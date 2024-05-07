@@ -335,22 +335,21 @@ void EmuApplication::handleBinding(std::string name, bool pressed)
                 window->pauseContinue();
             }
 
-            else if (name == "IncreaseSlot")
+            else if (name == "IncreaseSlot" || name == "DecreaseSlot")
             {
-                save_slot++;
+                if (name == "IncreaseSlot")
+                    save_slot++;
+                else
+                    save_slot--;
+
                 if (save_slot > 999)
                     save_slot = 0;
-                emu_thread->runOnThread([&] {
-                    core->setMessage("Current slot: " + std::to_string(save_slot));
-                });
-            }
-            else if (name == "DecreaseSlot")
-            {
-                save_slot--;
                 if (save_slot < 0)
                     save_slot = 999;
-                emu_thread->runOnThread([&] {
-                    core->setMessage("Current slot: " + std::to_string(save_slot));
+
+                emu_thread->runOnThread([&, slot = this->save_slot] {
+                    std::string status = core->slotUsed(slot) ? " [used]" : " [empty]";
+                    core->setMessage("Current slot: " + std::to_string(save_slot) + status);
                 });
             }
             else if (name == "SaveState")
