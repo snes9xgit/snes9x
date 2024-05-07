@@ -731,7 +731,7 @@ static void ShowStatusSlotInfo()
 {
 	static char str[64];
 
-	char filename[_MAX_PATH + 1]
+	char filename[_MAX_PATH + 1];
 	GetSlotFilename(GUI.CurrentSaveBank * SAVE_SLOTS_PER_BANK + GUI.CurrentSaveSlot, filename);
 
 	bool exists = false;
