@@ -5,8 +5,10 @@
 \*****************************************************************************/
 
 #include <fcntl.h>
+#include <filesystem>
 
 #include "SDL_joystick.h"
+#include "fscompat.h"
 #include "gtk_s9x.h"
 #include "gtk_config.h"
 #include "gtk_control.h"
@@ -195,7 +197,15 @@ static void change_slot(int difference)
     if (!gui_config->rom_loaded)
         return;
 
-    auto info_string = "State Slot: " + std::to_string(gui_config->current_save_slot);
+    char extension_string[5];
+    snprintf(extension_string, 5, ".%03d", gui_config->current_save_slot);
+    auto filename = S9xGetFilename(extension_string, SNAPSHOT_DIR);
+    struct stat info;
+    std::string exists = "empty";
+    if (stat(filename.c_str(), &info) == 0)
+        exists = "used";
+
+    auto info_string = "State Slot: " + std::to_string(gui_config->current_save_slot) + " [" + exists + "]";
     S9xSetInfoString(info_string.c_str());
     GFX.InfoStringTimeout = 60;
 }
