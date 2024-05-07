@@ -727,6 +727,22 @@ static char InfoString [100];
 static uint32 prevPadReadFrame = (uint32)-1;
 static bool skipNextFrameStop = false;
 
+static void ShowStatusSlotInfo()
+{
+	static char str[64];
+
+	char filename[_MAX_PATH + 1]
+	GetSlotFilename(GUI.CurrentSaveBank * SAVE_SLOTS_PER_BANK + GUI.CurrentSaveSlot, filename);
+
+	bool exists = false;
+	struct stat stats;
+	if (stat(filename, &stats) == 0)
+		exists = true;
+
+	sprintf(str, FREEZE_INFO_SET_SLOT_N, GUI.CurrentSaveSlot, exists ? "used" : "empty");
+	S9xSetInfoString(str);
+}
+
 int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 {
 	// update toggles
@@ -889,9 +905,7 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 				if(GUI.CurrentSaveSlot > LAST_SAVE_SLOT_IN_BANK)
 					GUI.CurrentSaveSlot = 0;
 
-				static char str [64];
-				sprintf(str, FREEZE_INFO_SET_SLOT_N, GUI.CurrentSaveSlot);
-				S9xSetInfoString(str);
+				ShowStatusSlotInfo();
 
 				hitHotKey = true;
 			}
@@ -902,9 +916,7 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 				if(GUI.CurrentSaveSlot < 0)
 					GUI.CurrentSaveSlot = 9;
 
-				static char str [64];
-				sprintf(str, FREEZE_INFO_SET_SLOT_N, GUI.CurrentSaveSlot);
-				S9xSetInfoString(str);
+				ShowStatusSlotInfo();
 
 				hitHotKey = true;
 			}
@@ -1270,9 +1282,7 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 			{
 				GUI.CurrentSaveSlot = GUI.CurrentSaveBank * SAVE_SLOTS_PER_BANK + i;
 
-				static char str [64];
-				sprintf(str, FREEZE_INFO_SET_SLOT_N, GUI.CurrentSaveSlot);
-				S9xSetInfoString(str);
+				ShowStatusSlotInfo();
 
 				hitHotKey = true;
 			}
