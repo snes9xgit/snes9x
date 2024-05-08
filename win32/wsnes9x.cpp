@@ -8669,6 +8669,25 @@ int WinSearchCheatDatabase()
 						ListView_GetItem(GetDlgItem(hDlg, b), &a);
 #define CHEAT_SIZE 1024
 
+/* return a vector of all selected list items with their index in the listview
+*  as first element and their lparam as second element of a pair
+*/
+static std::vector<std::pair<int, int>> get_all_selected_listitems(HWND lView)
+{
+    std::vector<std::pair<int, int>> result;
+    LVITEM lvitem = { 0 };
+    lvitem.mask = LVIF_PARAM;
+    int index = ListView_GetNextItem(lView, -1, LVNI_SELECTED);
+    do
+    {
+        lvitem.iItem = index;
+        ListView_GetItem(lView, &lvitem);
+        result.push_back(std::make_pair(index, (int)lvitem.lParam));
+    } while ((index = ListView_GetNextItem(lView, index, LVNI_SELECTED)) != -1);
+
+    return result;
+}
+
 INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static bool internal_change;
@@ -8754,41 +8773,67 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		{
 			switch(LOWORD(wParam))
 			{
-			case IDC_CHEAT_LIST:
-				if(0==ListView_GetSelectedCount(GetDlgItem(hDlg, IDC_CHEAT_LIST)))
-				{
-					EnableWindow(GetDlgItem(hDlg, IDC_DELETE_CHEAT), false);
-					EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), false);
-					has_sel=false;
-					sel_idx=-1;
-				}
-				else
-				{
-					EnableWindow(GetDlgItem(hDlg, IDC_DELETE_CHEAT), true);
-					if(!has_sel||sel_idx!=ListView_GetSelectionMark(GetDlgItem(hDlg, IDC_CHEAT_LIST)))
-					{
-						new_sel=3;
-						//change
-						TCHAR buf[CHEAT_SIZE];
-						LV_ITEM lvi;
+            case IDC_CHEAT_LIST:
+            {
+                // react only to item changes (we are interested in selection or checkbox)
+                if (((LPNMHDR)lParam)->code == LVN_ITEMCHANGED)
+                {
+                    NMLISTVIEW* listview_notify = (NMLISTVIEW*)lParam;
+                    if (listview_notify->uChanged & LVIF_STATE)
+                    {
+                        HWND lView = GetDlgItem(hDlg, IDC_CHEAT_LIST);
+                        int sel_count = ListView_GetSelectedCount(lView);
+                        // selection change, update button states and selection tracking variable
+                        if ((listview_notify->uOldState & LVIS_SELECTED) != (listview_notify->uNewState & LVIS_SELECTED))
+                        {
+                            if (0 == sel_count)
+                            {
+                                EnableWindow(GetDlgItem(hDlg, IDC_DELETE_CHEAT), false);
+                                EnableWindow(GetDlgItem(hDlg, IDC_UPDATE_CHEAT), false);
+                                has_sel = false;
+                                sel_idx = -1;
+                            }
+                            else
+                            {
+                                EnableWindow(GetDlgItem(hDlg, IDC_DELETE_CHEAT), true);
+                                if (!has_sel || sel_idx != ListView_GetSelectionMark(lView))
+                                {
+                                    new_sel = 3;
+                                    //change
+                                    TCHAR buf[CHEAT_SIZE];
+                                    LV_ITEM lvi;
 
-						internal_change = true; // do not enable update button
+                                    internal_change = true; // do not enable update button
 
-						/* Code */
-						ITEM_QUERY (lvi, IDC_CHEAT_LIST, 0, buf, CHEAT_SIZE);
-						SetDlgItemText(hDlg, IDC_CHEAT_CODE, lvi.pszText);
+                                    /* Code */
+                                    ITEM_QUERY(lvi, IDC_CHEAT_LIST, 0, buf, CHEAT_SIZE);
+                                    SetDlgItemText(hDlg, IDC_CHEAT_CODE, lvi.pszText);
 
-						/* Description */
-						ITEM_QUERY(lvi, IDC_CHEAT_LIST, 1, buf, CHEAT_SIZE);
-						SetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, lvi.pszText);
+                                    /* Description */
+                                    ITEM_QUERY(lvi, IDC_CHEAT_LIST, 1, buf, CHEAT_SIZE);
+                                    SetDlgItemText(hDlg, IDC_CHEAT_DESCRIPTION, lvi.pszText);
 
-						internal_change = false;
-					}
-					sel_idx=ListView_GetSelectionMark(GetDlgItem(hDlg, IDC_CHEAT_LIST));
-					has_sel=true;
-				}
+                                    internal_change = false;
+                                }
+                                sel_idx = ListView_GetSelectionMark(lView);
+                                has_sel = true;
+                            }
+                        }
 
-					return true;
+                        // multi-select and change of checkbox state - set same state to all selected items
+                        if (sel_count > 1 && (listview_notify->uOldState & LVIS_STATEIMAGEMASK) != (listview_notify->uNewState & LVIS_STATEIMAGEMASK))
+                        {
+                            auto selected_items = get_all_selected_listitems(lView);
+                            for (const auto &item : selected_items)
+                            {
+                                ListView_SetItemState(lView, item.first, listview_notify->uNewState, LVIS_STATEIMAGEMASK);
+                            }
+                        }
+
+                        return true;
+                    }
+                }
+            }
 			default: return false;
 			}
 		}
@@ -8904,20 +8949,22 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				break;
 			case IDC_DELETE_CHEAT:
 				{
-					LVITEM lvi;
+                    // save index, deleting item removes selection
+                    int old_sel = sel_idx;
+                    HWND lView = GetDlgItem(hDlg, IDC_CHEAT_LIST);
+                    auto deleted_items = get_all_selected_listitems(lView);
 
-					// get index in internal cheat list, if present mark as deleted
-					memset(&lvi, 0, sizeof(LVITEM));
-					lvi.mask = LVIF_PARAM;
-					lvi.iItem = sel_idx;
-					ListView_GetItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), &lvi);
-					if (lvi.lParam >= 0)
-						ct.state[lvi.lParam] = Deleted;
+                    // we delete in reverse order so that our item indexes stay valid
+                    std::reverse(deleted_items.begin(), deleted_items.end());
+                    for (const auto &item : deleted_items)
+                    {
+                        // get index in internal cheat list, if present mark as deleted
+                        if(item.second >= 0)
+                            ct.state[item.second] = Deleted;
+                        ListView_DeleteItem(lView, item.first);
+                    }
 
-					// save index, deleting item removes selection
-					int old_sel = sel_idx;
-					ListView_DeleteItem(GetDlgItem(hDlg, IDC_CHEAT_LIST), sel_idx);
-					ListView_SetItemState(GetDlgItem(hDlg, IDC_CHEAT_LIST), old_sel, LVIS_FOCUSED | LVIS_SELECTED, LVIS_FOCUSED | LVIS_SELECTED);
+					ListView_SetItemState(lView, old_sel, LVIS_FOCUSED | LVIS_SELECTED, LVIS_FOCUSED | LVIS_SELECTED);
 				}
 
 				break;
@@ -9087,6 +9134,7 @@ INT_PTR CALLBACK DlgCheater(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				return false;
 			}
 		}
+
 	default: return false;
 	}
 }
