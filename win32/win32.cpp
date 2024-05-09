@@ -48,7 +48,6 @@ static int avi_image_size = 0;
 static uint32 avi_skip_frames = 0;
 static bool pre_avi_soundsync = true;
 static uint32 pre_avi_soundinputrate = 32000;
-void DoAVIOpen(const char* filename);
 void DoAVIClose(int reason);
 
 void S9xWinScanJoypads ();

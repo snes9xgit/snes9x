@@ -139,7 +139,7 @@ bool COpenGL::Initialize(HWND hWnd)
 	{
 		auto defaults = S9xImGuiGetDefaults();
 		defaults.font_size = GUI.OSDSize;
-		defaults.spacing = defaults.font_size / 2.4;
+		defaults.spacing = static_cast<int>(defaults.font_size / 2.4);
 		S9xImGuiInit(&defaults);
 		ImGui_ImplOpenGL3_Init();
 		Settings.DisplayIndicators = true;
