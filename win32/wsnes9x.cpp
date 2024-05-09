@@ -10199,6 +10199,7 @@ INT_PTR CALLBACK DlgCheatSearchAdd(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 				memset(buf,0,sizeof(TCHAR) * 12);
 				_stprintf(buf, TEXT("%u"), new_cheat->new_val);
 				SetDlgItemText(hDlg, IDC_NC_CURRVAL, buf);
+                SetDlgItemText(hDlg, IDC_NC_NEWVAL, buf);
 				memset(buf,0,sizeof(TCHAR) * 12);
 				_stprintf(buf, TEXT("%u"), new_cheat->saved_val);
 				SetDlgItemText(hDlg, IDC_NC_PREVVAL, buf);
@@ -10380,6 +10381,11 @@ INT_PTR CALLBACK DlgCheatSearchAdd(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lP
 
 						ret=0;
 					}
+                    else
+                    {
+                        MessageBox(hDlg, SEARCH_ERR_INVALIDNEWVALUE, SEARCH_TITLE_RANGEERROR, MB_OK);
+                        return true;
+                    }
 				}
 
 			case IDCANCEL:
