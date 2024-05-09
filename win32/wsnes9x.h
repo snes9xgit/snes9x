@@ -39,6 +39,9 @@
 #define NUM_SAVE_BANKS 10
 #define LAST_SAVE_BANK (NUM_SAVE_BANKS - 1)
 
+constexpr int ASPECT_WIDTH_4_3 = 256;
+constexpr int ASPECT_WIDTH_8_7 = 299;
+
 #include "_tfwopen.h"
 #ifdef UNICODE
 #define _tToChar WideToUtf8
@@ -348,6 +351,7 @@ struct SCustomKeys {
     SCustomKey SaveFileSelect;
     SCustomKey LoadFileSelect;
     SCustomKey Mute;
+    SCustomKey AspectRatio;
 };
 
 struct SJoypad {

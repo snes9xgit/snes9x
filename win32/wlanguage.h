@@ -136,6 +136,8 @@ Nintendo is a trademark.")
 #define HOTKEYS_LABEL_4_11 TEXT("Save to file:")
 #define HOTKEYS_LABEL_4_12 TEXT("Load from file:")
 
+#define HOTKEYS_SWITCH_ASPECT_RATIO TEXT("Switch aspect Ratio:")
+
 // gaming buttons and axes
 #define GAMEDEVICE_JOYNUMPREFIX "(J%x)" // don't change this
 #define GAMEDEVICE_JOYBUTPREFIX "#[%d]" // don't change this

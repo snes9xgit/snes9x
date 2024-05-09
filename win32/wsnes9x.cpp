@@ -125,7 +125,8 @@ void S9xWinScanJoypads();
 #define TIMER_SCANJOYPADS  (99999)
 #define NC_SEARCHDB 0x8000
 
-#define MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS 14
+constexpr int MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS = 14;
+constexpr int MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES = 5;
 
 #ifdef UNICODE
 #define S9XW_SHARD_PATH SHARD_PATHW
@@ -1222,6 +1223,18 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 			FreezeUnfreezeDialog(FALSE);
 			hitHotKey = true;
 		}
+        if (wParam == CustomKeys.AspectRatio.key
+            && modifiers == CustomKeys.AspectRatio.modifiers)
+        {
+            if (GUI.AspectWidth == ASPECT_WIDTH_4_3)
+            {
+                GUI.AspectWidth = ASPECT_WIDTH_8_7;
+            }
+            else
+            {
+                GUI.AspectWidth = ASPECT_WIDTH_4_3;
+            }
+        }
 
 		if (wParam == CustomKeys.Mute.key
 			&& modifiers == CustomKeys.Mute.modifiers)
@@ -7562,10 +7575,10 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 		SendDlgItemMessage(hDlg, IDC_ASPECTDROP, CB_ADDSTRING, 0, (LPARAM)TEXT("8:7"));
         SendDlgItemMessage(hDlg, IDC_ASPECTDROP, CB_ADDSTRING, 0, (LPARAM)TEXT("4:3"));
         switch (GUI.AspectWidth) {
-        case 256:
+        case ASPECT_WIDTH_4_3:
             SendDlgItemMessage(hDlg, IDC_ASPECTDROP, CB_SETCURSEL, (WPARAM)0, 0);
             break;
-        case 299:
+        case ASPECT_WIDTH_8_7:
             SendDlgItemMessage(hDlg, IDC_ASPECTDROP, CB_SETCURSEL, (WPARAM)1, 0);
             break;
         default:
@@ -7731,10 +7744,10 @@ INT_PTR CALLBACK DlgFunky(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				int newsel = SendDlgItemMessage(hDlg,IDC_ASPECTDROP,CB_GETCURSEL,0,0);
 				switch(newsel) {
 					case 0:
-						GUI.AspectWidth = 256;
+						GUI.AspectWidth = ASPECT_WIDTH_4_3;
 						break;
 					case 1:
-						GUI.AspectWidth = 299;
+						GUI.AspectWidth = ASPECT_WIDTH_8_7;
 						break;
 					default:
 						GUI.AspectWidth = prevAspectWidth;
@@ -8301,7 +8314,7 @@ struct hotkey_dialog_item {
 
 // this structure defines the four sub pages in the hotkey config dialog
 // to keep an entry blank, set the SCustomKey pointer to NULL and the text to an empty string
-static hotkey_dialog_item hotkey_dialog_items[4][MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS] = {
+static hotkey_dialog_item hotkey_dialog_items[MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES][MAX_SWITCHABLE_HOTKEY_DIALOG_ITEMS] = {
     {
         { &CustomKeys.SpeedUp, HOTKEYS_LABEL_1_1 },
         { &CustomKeys.SpeedDown, HOTKEYS_LABEL_1_2 },
@@ -8365,6 +8378,22 @@ static hotkey_dialog_item hotkey_dialog_items[4][MAX_SWITCHABLE_HOTKEY_DIALOG_IT
         { &CustomKeys.LoadFileSelect, HOTKEYS_LABEL_4_12 },
 		{ NULL, _T("") },
 		{ NULL, _T("") },
+    },
+    {
+        { &CustomKeys.AspectRatio, HOTKEYS_SWITCH_ASPECT_RATIO },
+        { NULL, _T("") },
+        { NULL, _T("") },
+        { NULL, _T("") },
+        { NULL, _T("") },
+        { NULL, _T("") },
+        { NULL, _T("") },
+        { NULL, _T("") },
+        { NULL, _T("") },
+        { NULL, _T("") },
+        { NULL, _T("") },
+        { NULL, _T("") },
+        { NULL, _T("") },
+        { NULL, _T("") },
     },
 };
 
@@ -8434,7 +8463,7 @@ switch(msg)
 		SetWindowText(hDlg,HOTKEYS_TITLE);
 
 		// insert hotkey page list items
-		for(i=1 ; i <= 4 ; i++)
+		for(i=1 ; i <= MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES; i++)
 		{
 			TCHAR temp[256];
 			_stprintf(temp,HOTKEYS_HKCOMBO,i);

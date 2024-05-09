@@ -939,6 +939,7 @@ void WinRegisterConfigItems()
 	ADD(SaveFileSelect); ADD(LoadFileSelect);
 	ADD(Mute);
 	ADD(ToggleBackdrop);
+    ADD(AspectRatio);
 #undef ADD
 #undef ADDN
 #undef CATEGORY
