@@ -352,6 +352,8 @@ struct SCustomKeys {
     SCustomKey LoadFileSelect;
     SCustomKey Mute;
     SCustomKey AspectRatio;
+    SCustomKey CheatEditorDialog;
+    SCustomKey CheatSearchDialog;
 };
 
 struct SJoypad {

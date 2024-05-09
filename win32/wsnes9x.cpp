@@ -108,6 +108,8 @@ INT_PTR CALLBACK DlgCreateMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 INT_PTR CALLBACK DlgOpenMovie(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
 HRESULT CALLBACK EnumModesCallback( LPDDSURFACEDESC lpDDSurfaceDesc, LPVOID lpContext);
 int WinSearchCheatDatabase();
+void WinShowCheatEditorDialog();
+void WinShowCheatSearchDialog();
 
 VOID CALLBACK HotkeyTimer( UINT idEvent, UINT uMsg, DWORD dwUser, DWORD dw1, DWORD dw2);
 
@@ -408,10 +410,15 @@ struct SCustomKeys CustomKeys = {
 	 {0,0}}, // Select save slot 9
 	{'R',CUSTKEY_CTRL_MASK|CUSTKEY_ALT_MASK}, // Reset Game
 	{0,0}, // Toggle Cheats
-	{0,0},
+	{0,0}, // Quit
     {'R',0}, // Rewind
+    {0,0}, // Save File Select
+    {0,0}, // Load File Select
+    {0,0}, // Mute
+    {0,0}, // Aspect ratio
+    {'G', CUSTKEY_ALT_MASK}, // Cheat Editor Dialog
+    {'A', CUSTKEY_ALT_MASK}, // Cheat Search Dialog
 };
-
 
 struct SSoundRates
 {
@@ -1223,18 +1230,6 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 			FreezeUnfreezeDialog(FALSE);
 			hitHotKey = true;
 		}
-        if (wParam == CustomKeys.AspectRatio.key
-            && modifiers == CustomKeys.AspectRatio.modifiers)
-        {
-            if (GUI.AspectWidth == ASPECT_WIDTH_4_3)
-            {
-                GUI.AspectWidth = ASPECT_WIDTH_8_7;
-            }
-            else
-            {
-                GUI.AspectWidth = ASPECT_WIDTH_4_3;
-            }
-        }
 
 		if (wParam == CustomKeys.Mute.key
 			&& modifiers == CustomKeys.Mute.modifiers)
@@ -1247,7 +1242,54 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 		{
 			auto cmd = S9xGetCommandT("ToggleBackdrop");
 			S9xApplyCommand(cmd, 1, 0);
+            hitHotKey = true;
 		}
+
+        if (wParam == CustomKeys.AspectRatio.key
+            && modifiers == CustomKeys.AspectRatio.modifiers)
+        {
+            if (GUI.AspectWidth == ASPECT_WIDTH_4_3)
+            {
+                GUI.AspectWidth = ASPECT_WIDTH_8_7;
+            }
+            else
+            {
+                GUI.AspectWidth = ASPECT_WIDTH_4_3;
+            }
+            hitHotKey = true;
+        }
+        if (wParam == CustomKeys.CheatEditorDialog.key
+            && modifiers == CustomKeys.CheatEditorDialog.modifiers)
+        {
+            // update menu state
+            CheckMenuStates();
+            // check menu state if item is enabled
+            MENUITEMINFO mii = { 0 };
+            mii.cbSize = sizeof(mii);
+            mii.fMask = MIIM_STATE;
+            GetMenuItemInfo(GUI.hMenu, ID_CHEAT_ENTER, FALSE, &mii);
+            if ((mii.fState & MFS_DISABLED) != MFS_DISABLED)
+            {
+                WinShowCheatEditorDialog();
+            }
+            hitHotKey = true;
+        }
+        if (wParam == CustomKeys.CheatSearchDialog.key
+            && modifiers == CustomKeys.CheatSearchDialog.modifiers)
+        {
+            // update menu state
+            CheckMenuStates();
+            // check menu state if item is enabled
+            MENUITEMINFO mii = { 0 };
+            mii.cbSize = sizeof(mii);
+            mii.fMask = MIIM_STATE;
+            GetMenuItemInfo(GUI.hMenu, ID_CHEAT_SEARCH, FALSE, &mii);
+            if((mii.fState & MFS_DISABLED) != MFS_DISABLED)
+            {
+                WinShowCheatSearchDialog();
+            }
+            hitHotKey = true;
+        }
 
 		//if(wParam == CustomKeys.BGLHack.key
 		//&& modifiers == CustomKeys.BGLHack.modifiers)
@@ -1511,6 +1553,32 @@ bool WinMoviePlay(LPCTSTR filename)
 static bool startingMovie = false;
 
 HWND cheatSearchHWND = NULL;
+
+void WinShowCheatSearchDialog()
+{
+    RestoreGUIDisplay();
+    if (!cheatSearchHWND) // create and show non-modal cheat search window
+    {
+        cheatSearchHWND = CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_CHEAT_SEARCH), GUI.hWnd, DlgCheatSearch); // non-modal/modeless
+        ShowWindow(cheatSearchHWND, SW_SHOW);
+    }
+    else // already open so just reactivate the window
+    {
+        SetActiveWindow(cheatSearchHWND);
+    }
+    RestoreSNESDisplay();
+}
+
+void WinShowCheatEditorDialog()
+{
+    RestoreGUIDisplay();
+    while (DialogBox(g_hInst, MAKEINTRESOURCE(IDD_CHEATER), GUI.hWnd, DlgCheater) == NC_SEARCHDB)
+    {
+        WinSearchCheatDatabase();
+    }
+    S9xSaveCheatFile(S9xGetFilename(".cht", CHEAT_DIR));
+    RestoreSNESDisplay();
+}
 
 
 #define MOVIE_LOCKED_SETTING	if(S9xMovieActive()) {MessageBox(GUI.hWnd,TEXT("That setting is locked while a movie is active."),TEXT("Notice"),MB_OK|MB_ICONEXCLAMATION); break;}
@@ -2224,32 +2292,10 @@ LRESULT CALLBACK WinProc(
             FreezeUnfreezeDialogPreview(TRUE);
             break;
 		case ID_CHEAT_ENTER:
-			RestoreGUIDisplay ();
-			while (DialogBox(g_hInst, MAKEINTRESOURCE(IDD_CHEATER), hWnd, DlgCheater) == NC_SEARCHDB)
-			{
-				WinSearchCheatDatabase();
-			}
-			S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
-			RestoreSNESDisplay ();
+            WinShowCheatEditorDialog();
 			break;
 		case ID_CHEAT_SEARCH:
-			RestoreGUIDisplay ();
-			if(!cheatSearchHWND) // create and show non-modal cheat search window
-			{
-				cheatSearchHWND = CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_CHEAT_SEARCH), hWnd, DlgCheatSearch); // non-modal/modeless
-				ShowWindow(cheatSearchHWND, SW_SHOW);
-			}
-			else // already open so just reactivate the window
-			{
-				SetActiveWindow(cheatSearchHWND);
-			}
-			RestoreSNESDisplay ();
-			break;
-		case ID_CHEAT_SEARCH_MODAL:
-			RestoreGUIDisplay ();
-			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_CHEAT_SEARCH), hWnd, DlgCheatSearch); // modal
-			S9xSaveCheatFile (S9xGetFilename (".cht", CHEAT_DIR));
-			RestoreSNESDisplay ();
+            WinShowCheatSearchDialog();
 			break;
 		case ID_CHEAT_APPLY:
 			Settings.ApplyCheats = !Settings.ApplyCheats;
@@ -3729,7 +3775,6 @@ static void CheckMenuStates ()
 
     SetMenuItemInfo (GUI.hMenu, ID_FILE_RESET, FALSE, &mii);
     SetMenuItemInfo (GUI.hMenu, ID_CHEAT_ENTER, FALSE, &mii);
-    SetMenuItemInfo (GUI.hMenu, ID_CHEAT_SEARCH_MODAL, FALSE, &mii);
 	SetMenuItemInfo (GUI.hMenu, IDM_ROM_INFO, FALSE, &mii);
 
 	if (GUI.FullScreen)
@@ -8381,8 +8426,8 @@ static hotkey_dialog_item hotkey_dialog_items[MAX_SWITCHABLE_HOTKEY_DIALOG_PAGES
     },
     {
         { &CustomKeys.AspectRatio, HOTKEYS_SWITCH_ASPECT_RATIO },
-        { NULL, _T("") },
-        { NULL, _T("") },
+        { &CustomKeys.CheatEditorDialog, HOTKEYS_CHEAT_EDITOR_DIALOG },
+        { &CustomKeys.CheatSearchDialog, HOTKEYS_CHEAT_SEARCH_DIALOG },
         { NULL, _T("") },
         { NULL, _T("") },
         { NULL, _T("") },
@@ -10124,7 +10169,12 @@ INT_PTR CALLBACK DlgCheatSearch(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lPara
 			default: break;
 			}
 		}
-	default: return false;
+	case WM_MENUCHAR:
+	    // get rid of asterisk sound when pressing non existing menu hotkey - would play when opening
+		// with default alt + a hotkey
+        SetWindowLong(hDlg, DWLP_MSGRESULT, (MNC_CLOSE << 16));
+        return true;
+    default: return false;
 	}
 	return false;
 }

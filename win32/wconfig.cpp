@@ -940,6 +940,8 @@ void WinRegisterConfigItems()
 	ADD(Mute);
 	ADD(ToggleBackdrop);
     ADD(AspectRatio);
+    ADD(CheatEditorDialog);
+    ADD(CheatSearchDialog);
 #undef ADD
 #undef ADDN
 #undef CATEGORY

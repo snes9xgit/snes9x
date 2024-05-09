@@ -508,7 +508,6 @@
 #define ID_CHANNELS_CHANNEL7            40145
 #define ID_CHANNELS_CHANNEL8            40146
 #define ID_CHANNELS_ENABLEALL           40147
-#define ID_CHEAT_SEARCH_MODAL           40148
 #define ID_SAVESCREENSHOT               40151
 #define ID_FILE_LOAD_GAME               40152
 #define ID_FILE_LOADMULTICART           40153

@@ -802,8 +802,6 @@ IDC_CURSOR_SCOPE        CURSOR                  "nodrop.cur"
 
 IDR_SNES9X_ACCELERATORS ACCELERATORS
 BEGIN
-    "G",            ID_CHEAT_ENTER,         VIRTKEY, ALT, NOINVERT
-    "A",            ID_CHEAT_SEARCH,        VIRTKEY, ALT, NOINVERT
     "O",            ID_FILE_LOAD_GAME,      VIRTKEY, CONTROL, NOINVERT
     VK_F5,          ID_OPTIONS_DISPLAY,     VIRTKEY, ALT, NOINVERT
     VK_F7,          ID_OPTIONS_JOYPAD,      VIRTKEY, ALT, NOINVERT
@@ -1081,9 +1079,8 @@ BEGIN
     END
     POPUP "&Cheat",                         0,MFT_STRING,MFS_ENABLED
     BEGIN
-        MENUITEM "&Game Genie, Pro-Action Replay Codes\tAlt+G", ID_CHEAT_ENTER,MFT_STRING,MFS_ENABLED
-        MENUITEM "&Search for New Cheats",      ID_CHEAT_SEARCH_MODAL,MFT_STRING,MFS_ENABLED
-        MENUITEM "Search for New Cheats (active)\tAlt+A", 40064,MFT_STRING,MFS_ENABLED
+        MENUITEM "&Game Genie, Pro-Action Replay Codes", ID_CHEAT_ENTER,MFT_STRING,MFS_ENABLED
+        MENUITEM "&Search for New Cheats",      ID_CHEAT_SEARCH,MFT_STRING,MFS_ENABLED
         MENUITEM "&Apply Cheats",               ID_CHEAT_APPLY,MFT_STRING,MFS_CHECKED
     END
     POPUP "&Netplay",                       0,MFT_STRING,MFS_ENABLED
