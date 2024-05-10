@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.18)
-project(snes9x-gtk VERSION 1.62.3)
+project(snes9x-gtk VERSION 1.63)
 
 option(USE_SLANG "Build support for Vulkan output and .slangp shaders" ON)
 option(USE_XV "Build support for XVideo output" ON)

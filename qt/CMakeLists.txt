@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(snes9x-qt VERSION 1.62)
+project(snes9x-qt VERSION 1.63)
 
 include(GNUInstallDirs)
 
