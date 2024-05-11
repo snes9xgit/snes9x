@@ -91,6 +91,11 @@ bool CVulkan::Initialize(HWND hWnd)
         }
     }
 
+    if (context->swapchain->set_vsync(GUI.Vsync))
+    {
+        context->recreate_swapchain();
+    }
+
     simple_output = std::make_unique<Vulkan::SimpleOutput>(context.get(), vk::Format::eR5G6B5UnormPack16);
 
     return true;
