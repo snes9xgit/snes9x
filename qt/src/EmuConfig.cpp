@@ -144,7 +144,7 @@ std::string EmuConfig::findConfigDir()
     fs::path path;
 
     auto app_dir_path = QGuiApplication::applicationDirPath();
-    auto config_file = QDir(app_dir_path).absoluteFilePath("snes9x.conf");
+    auto config_file = QDir(app_dir_path).absoluteFilePath("snes9x-qt.conf");
     if (QFile::exists(config_file))
         return app_dir_path.toStdString();
 
@@ -164,12 +164,12 @@ std::string EmuConfig::findConfigDir()
         path = "./.snes9x";
     }
 #else
-    if ((dir = getenv("LOCALAPPDATA")))
+    if ((dir = getenv("APPDATA")))
     {
         path = dir;
         path /= "Snes9x";
     }
-    else if ((dir = getenv("APPDATA")))
+    else if ((dir = getenv("LOCALAPPDATA")))
     {
         path = dir;
         path /= "Snes9x";
