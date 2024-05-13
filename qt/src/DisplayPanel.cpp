@@ -98,6 +98,8 @@ DisplayPanel::DisplayPanel(EmuApplication *app_)
         if (recreate)
             app->window->recreateUIAssets();
     });
+
+    groupBox_software_filters->hide();
 }
 
 DisplayPanel::~DisplayPanel()

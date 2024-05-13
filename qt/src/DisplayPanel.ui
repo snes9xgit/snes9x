@@ -311,7 +311,7 @@ Output directly will cause the screen to change between the two modes and look w
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox_3">
+    <widget class="QGroupBox" name="groupBox_software_filters">
      <property name="title">
       <string>Software Filters</string>
      </property>
