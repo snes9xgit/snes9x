@@ -518,9 +518,13 @@ int S9xModifyCheatGroup(uint32 num, const std::string &name, const std::string &
 	if (num >= Cheat.group.size())
 		return -1;
 
+    bool enabled = Cheat.group[num].enabled;
     S9xDisableCheatGroup(num);
 
     Cheat.group[num] = S9xCreateCheatGroup(name, cheat);
+
+    if (enabled)
+        S9xEnableCheatGroup(num);
 
     return num;
 }
