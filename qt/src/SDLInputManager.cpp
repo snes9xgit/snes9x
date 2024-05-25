@@ -74,7 +74,6 @@ SDLInputManager::DiscretizeHatEvent(SDL_Event &event)
     for (auto &s : { SDL_HAT_UP, SDL_HAT_DOWN, SDL_HAT_LEFT, SDL_HAT_RIGHT })
         if ((old_state & s) != (new_state & s))
         {
-            printf(" old: %d, new: %d\n", old_state, new_state);
             dhe.direction = s;
             dhe.pressed = (new_state & s);
             old_state = new_state;
