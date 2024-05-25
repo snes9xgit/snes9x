@@ -1,6 +1,7 @@
 #include "Snes9xController.hpp"
 #include "EmuConfig.hpp"
 #include "SoftwareScalers.hpp"
+#include "fscompat.h"
 #include <filesystem>
 namespace fs = std::filesystem;
 
@@ -854,4 +855,9 @@ std::string Snes9xController::validateCheat(std::string code)
 int Snes9xController::modifyCheat(int index, std::string name, std::string code)
 {
     return S9xModifyCheatGroup(index, name, code);
+}
+
+std::string Snes9xController::getContentFolder()
+{
+    return S9xGetDirectory(ROMFILENAME_DIR);
 }

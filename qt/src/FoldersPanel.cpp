@@ -3,6 +3,7 @@
 #include "EmuConfig.hpp"
 #include <QSpinBox>
 #include <QFileDialog>
+#include <QDesktopServices>
 
 FoldersPanel::FoldersPanel(EmuApplication *app_)
     : app(app_)
@@ -29,17 +30,6 @@ void FoldersPanel::connectEntry(QComboBox *combo, QLineEdit *lineEdit, QPushButt
         this->refreshEntry(combo, lineEdit, browse, location, folder);
         app->updateSettings();
     });
-
-    QObject::connect(browse, &QPushButton::pressed, [=] {
-        QFileDialog dialog(this, tr("Select a Folder"));
-        dialog.setFileMode(QFileDialog::Directory);
-        dialog.setDirectory(QString::fromUtf8(*folder));
-        if (!dialog.exec())
-            return;
-        *folder = dialog.selectedFiles().at(0).toUtf8();
-        lineEdit->setText(QString::fromUtf8(*folder));
-        app->updateSettings();
-    });
 }
 
 void FoldersPanel::refreshData()
@@ -53,18 +43,56 @@ void FoldersPanel::refreshData()
 
 void FoldersPanel::refreshEntry(QComboBox *combo, QLineEdit *lineEdit, QPushButton *browse, int *location, std::string *folder)
 {
+    QString rom_dir;
     bool custom = (*location == EmuConfig::eCustomDirectory);
     combo->setCurrentIndex(*location);
     if (custom)
+    {
         lineEdit->setText(QString::fromUtf8(*folder));
+    }
     else if (*location == EmuConfig::eConfigDirectory)
+    {
         lineEdit->setText(tr("Config folder is %1").arg(app->config->findConfigDir().c_str()));
-    else
-        lineEdit->clear();
+    } else
+    {
+        rom_dir = QString::fromStdString(app->getContentFolder());
+        if (rom_dir.isEmpty())
+            rom_dir = QString::fromStdString(app->config->last_rom_folder);
+
+        lineEdit->setText("ROM Folder: " + rom_dir);
+    }
 
     lineEdit->setEnabled(custom);
-    browse->setEnabled(custom);
 
+    browse->disconnect();
+    if (custom)
+    {
+        browse->setText(tr("Browse..."));
+        QObject::connect(browse, &QPushButton::pressed, [=] {
+            QFileDialog dialog(this, tr("Select a Folder"));
+            dialog.setFileMode(QFileDialog::Directory);
+            dialog.setDirectory(QString::fromUtf8(*folder));
+            if (!dialog.exec())
+                return;
+            *folder = dialog.selectedFiles().at(0).toUtf8();
+            lineEdit->setText(QString::fromStdString(*folder));
+            app->updateSettings();
+        });
+    }
+    else
+    {
+        QString dir{};
+        if (*location == EmuConfig::eConfigDirectory)
+            dir = app->config->findConfigDir().c_str();
+        else if (*location == EmuConfig::eROMDirectory)
+            dir = rom_dir;
+
+        QObject::connect(browse, &QPushButton::pressed, [dir] {
+            QDesktopServices::openUrl(QUrl::fromLocalFile(dir));
+        });
+        lineEdit->setEnabled(custom);
+        browse->setText(tr("Open Folder..."));
+    }
 }
 
 void FoldersPanel::showEvent(QShowEvent *event)

@@ -46,6 +46,7 @@ class Snes9xController
     int tryImportCheats(std::string filename);
     std::string validateCheat(std::string code);
     int modifyCheat(int index, std::string name, std::string code);
+    std::string getContentFolder();
 
     std::string getStateFolder();
     std::string config_folder;

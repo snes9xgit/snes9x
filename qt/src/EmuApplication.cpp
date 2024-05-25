@@ -642,6 +642,11 @@ QString EmuApplication::iconPrefix()
     return blackicons;
 }
 
+std::string EmuApplication::getContentFolder()
+{
+    return core->getContentFolder();
+}
+
 void EmuThread::runOnThread(std::function<void()> func, bool blocking)
 {
     if (QThread::currentThread() != this)

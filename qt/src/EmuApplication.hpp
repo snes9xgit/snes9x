@@ -85,6 +85,7 @@ struct EmuApplication
     void stopThread();
     bool isCoreActive();
     QString iconPrefix();
+    std::string getContentFolder();
 
     std::vector<std::tuple<bool, std::string, std::string>> getCheatList();
     void disableAllCheats();
