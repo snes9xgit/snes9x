@@ -288,6 +288,8 @@ bool8 S9xContinueUpdate(int Width, int Height)
 	// avi writing
 	DoAVIVideoFrame();
 
+	WinThrottleFramerate();
+
 	return true;
 }
 
