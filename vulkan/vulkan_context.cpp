@@ -183,55 +183,74 @@ bool Context::init_command_pool()
     return true;
 }
 
-bool Context::init_device(int preferred_device)
+static bool find_extension(std::vector<vk::ExtensionProperties> &props, const char *extension_string)
 {
-    const char *required_extensions[] = {
-        VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-        // VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME
-    };
-    auto check_extensions = [&](vk::PhysicalDevice &device) -> bool {
-        auto [retval, props] = device.enumerateDeviceExtensionProperties();
-        for (const auto &extension : required_extensions) {
-        auto found = std::find_if(
-            props.begin(), props.end(), [&](vk::ExtensionProperties &ext) {
-                return (std::string(ext.extensionName.data()) == extension);
-            });
-            return found != props.end();
-        }
-        return true;
-    };
+    return std::find_if(props.begin(),
+                        props.end(),
+                        [&](vk::ExtensionProperties &ext) {
+                            return (std::string(ext.extensionName.data()) == extension_string);
+                        }) != props.end();
+};
 
-    auto device_list = instance->enumeratePhysicalDevices().value;
-
-    if (preferred_device > -1 &&
-        (size_t)preferred_device < device_list.size() &&
-        check_extensions(device_list[preferred_device]))
-    {
-        physical_device = device_list[preferred_device];
-    }
-    else
-    {
-        for (auto &device : device_list)
-            if (check_extensions(device))
-            {
-                physical_device = device;
-                break;
-            }
-    }
-
-    physical_device.getProperties(&physical_device_props);
-
-    graphics_queue_family_index = UINT32_MAX;
-    auto queue_props = physical_device.getQueueFamilyProperties();
+static uint32_t find_graphics_queue(vk::PhysicalDevice &device)
+{
+    auto queue_props = device.getQueueFamilyProperties();
     for (size_t i = 0; i < queue_props.size(); i++)
     {
         if (queue_props[i].queueFlags & vk::QueueFlagBits::eGraphics)
         {
-            graphics_queue_family_index = i;
-            break;
+            return i;
         }
     }
 
+    return UINT32_MAX;
+}
+
+static bool check_extensions(std::vector<const char *> &required_extensions, vk::PhysicalDevice &device)
+{
+    auto props = device.enumerateDeviceExtensionProperties().value;
+    for (const auto &extension : required_extensions)
+    {
+        if (!find_extension(props, extension))
+            return false;
+    }
+    return true;
+};
+
+bool Context::init_device(int preferred_device)
+{
+    std::vector<const char *> required_extensions;
+    required_extensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+
+    auto device_list = instance->enumeratePhysicalDevices().value;
+    physical_device = nullptr;
+
+    if (preferred_device > -1 &&
+        (size_t)preferred_device < device_list.size() &&
+        check_extensions(required_extensions, device_list[preferred_device]))
+    {
+        physical_device = device_list[preferred_device];
+    }
+
+    if (physical_device != nullptr)
+    {
+        for (auto &device : device_list)
+        {
+            if (check_extensions(required_extensions, device))
+            {
+                physical_device = device;
+                break;
+            }
+        }
+    }
+
+    auto extension_properties = physical_device.enumerateDeviceExtensionProperties().value;
+    physical_device.getProperties(&physical_device_props);
+
+    if (find_extension(extension_properties, VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME))
+        required_extensions.push_back(VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME);
+
+    graphics_queue_family_index = find_graphics_queue(physical_device);
     if (graphics_queue_family_index == UINT32_MAX)
         return false;
 
@@ -241,11 +260,11 @@ bool Context::init_device(int preferred_device)
     queue = device.getQueue(graphics_queue_family_index, 0);
 
     auto surface_formats = physical_device.getSurfaceFormatsKHR(surface.get()).value;
-    auto format = std::find_if(surface_formats.begin(), surface_formats.end(), [](vk::SurfaceFormatKHR &f) {
-        return (f.format == vk::Format::eB8G8R8A8Unorm);
-    });
-
-    if (format == surface_formats.end())
+    if (std::find_if(surface_formats.begin(),
+                     surface_formats.end(),
+                     [](vk::SurfaceFormatKHR &f) {
+                         return (f.format == vk::Format::eB8G8R8A8Unorm);
+                     }) == surface_formats.end())
         return false;
 
     return true;
