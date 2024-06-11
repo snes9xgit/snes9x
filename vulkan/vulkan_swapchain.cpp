@@ -172,10 +172,13 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
                   vk::PresentModeKHR::eImmediate) != present_modes.end();
 
     vk::PresentModeKHR present_mode = vk::PresentModeKHR::eFifo;
-    if (mailbox_supported)
-        present_mode = vk::PresentModeKHR::eMailbox;
-    if (!vsync && immediate_supported)
-        present_mode = vk::PresentModeKHR::eImmediate;
+    if (!vsync)
+    {
+        if (mailbox_supported)
+            present_mode = vk::PresentModeKHR::eMailbox;
+        if (immediate_supported)
+            present_mode = vk::PresentModeKHR::eImmediate;
+    }
 
     if (present_mode == vk::PresentModeKHR::eMailbox)
         num_swapchain_images++;
