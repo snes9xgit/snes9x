@@ -164,11 +164,21 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
         extents.height = surface_capabilities.minImageExtent.height;
 
     auto present_modes = physical_device.getSurfacePresentModesKHR(surface).value;
-    auto tearing_present_mode = vk::PresentModeKHR::eFifo;
-    if (std::find(present_modes.begin(), present_modes.end(), vk::PresentModeKHR::eImmediate) != present_modes.end())
-        tearing_present_mode = vk::PresentModeKHR::eImmediate;
-    if (std::find(present_modes.begin(), present_modes.end(), vk::PresentModeKHR::eMailbox) != present_modes.end())
-        tearing_present_mode = vk::PresentModeKHR::eMailbox;
+    bool mailbox_supported =
+        std::find(present_modes.begin(), present_modes.end(),
+                  vk::PresentModeKHR::eMailbox) != present_modes.end();
+    bool immediate_supported =
+        std::find(present_modes.begin(), present_modes.end(),
+                  vk::PresentModeKHR::eImmediate) != present_modes.end();
+
+    vk::PresentModeKHR present_mode = vk::PresentModeKHR::eFifo;
+    if (mailbox_supported)
+        present_mode = vk::PresentModeKHR::eMailbox;
+    if (!vsync && immediate_supported)
+        present_mode = vk::PresentModeKHR::eImmediate;
+
+    if (present_mode == vk::PresentModeKHR::eMailbox)
+        num_swapchain_images++;
 
     auto swapchain_create_info = vk::SwapchainCreateInfoKHR{}
         .setMinImageCount(num_swapchain_images)
@@ -179,23 +189,20 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
         .setImageUsage(vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eTransferSrc)
         .setCompositeAlpha(vk::CompositeAlphaFlagBitsKHR::eOpaque)
         .setClipped(true)
-        .setPresentMode(vsync ? vk::PresentModeKHR::eFifo : tearing_present_mode)
+        .setPresentMode(present_mode)
         .setSurface(surface)
         .setPreTransform(vk::SurfaceTransformFlagBitsKHR::eIdentity)
         .setImageArrayLayers(1)
         .setQueueFamilyIndices(graphics_queue_index);
 
-    if (swapchain_object)
-        swapchain_create_info.setOldSwapchain(swapchain_object.get());
-
-    try {
-        swapchain_object = device.createSwapchainKHRUnique(swapchain_create_info).value;
-    } catch (std::exception &e) {
+    swapchain_object.reset();
+    auto resval = device.createSwapchainKHRUnique(swapchain_create_info);
+    if (resval.result != vk::Result::eSuccess && resval.result != vk::Result::eSuboptimalKHR)
+    {
         swapchain_object.reset();
-    }
-
-    if (!swapchain_object)
         return false;
+    }
+    swapchain_object = std::move(resval.value);
 
     auto swapchain_images = device.getSwapchainImagesKHR(swapchain_object.get()).value;
     vk::CommandBufferAllocateInfo command_buffer_allocate_info(command_pool, vk::CommandBufferLevel::ePrimary, swapchain_images.size());
@@ -268,7 +275,7 @@ bool Swapchain::begin_frame()
 
     vk::ResultValue<uint32_t> result_value(vk::Result::eSuccess, 0);
     result_value = device.acquireNextImageKHR(swapchain_object.get(), UINT64_MAX, frame.acquire.get());
-    
+
     if (result_value.result == vk::Result::eErrorOutOfDateKHR ||
         result_value.result == vk::Result::eSuboptimalKHR)
     {
@@ -326,7 +333,7 @@ bool Swapchain::swap()
     {
         // NVIDIA binary drivers will set OutOfDate between acquire and
         // present. Ignore this and fix it on the next swapchain acquire.
-    } 
+    }
 
     current_frame = (current_frame + 1) % num_swapchain_images;
 
