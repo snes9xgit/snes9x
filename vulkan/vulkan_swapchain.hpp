@@ -17,6 +17,7 @@ class Swapchain
     ~Swapchain();
     bool create(unsigned int num_frames, int width = -1, int height = -1);
     bool recreate(int width = -1, int height = -1);
+    bool create_resources();
     bool check_and_resize(int width = -1, int height = -1);
     bool begin_frame();
     void begin_render_pass();
@@ -25,6 +26,7 @@ class Swapchain
     bool end_frame();
     void end_frame_without_swap();
     bool swap();
+    void wait_on_frames();
     // Returns true if vsync setting was changed, false if it was the same
     bool set_vsync(bool on);
     void on_render_pass_end(std::function<void()> function);
@@ -43,6 +45,7 @@ class Swapchain
     struct Frame
     {
         vk::UniqueFence fence;
+        vk::UniqueFence freeable;
         vk::UniqueSemaphore acquire;
         vk::UniqueSemaphore complete;
         vk::UniqueCommandBuffer command_buffer;
@@ -64,6 +67,8 @@ class Swapchain
     unsigned int current_swapchain_image = 0;
     unsigned int num_swapchain_images = 0;
     bool vsync = true;
+    bool supports_immediate = false;
+    bool supports_mailbox = false;
     std::vector<Frame> frames;
     std::vector<ImageViewFB> imageviewfbs;
 

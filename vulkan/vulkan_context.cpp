@@ -219,8 +219,9 @@ static bool check_extensions(std::vector<const char *> &required_extensions, vk:
 
 bool Context::init_device(int preferred_device)
 {
-    std::vector<const char *> required_extensions;
-    required_extensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+    std::vector<const char *> required_extensions = {
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+    };
 
     auto device_list = instance->enumeratePhysicalDevices().value;
     physical_device = nullptr;
@@ -247,15 +248,14 @@ bool Context::init_device(int preferred_device)
     auto extension_properties = physical_device.enumerateDeviceExtensionProperties().value;
     physical_device.getProperties(&physical_device_props);
 
-    if (find_extension(extension_properties, VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME))
-        required_extensions.push_back(VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME);
-
     graphics_queue_family_index = find_graphics_queue(physical_device);
     if (graphics_queue_family_index == UINT32_MAX)
         return false;
 
-    vk::DeviceQueueCreateInfo dqci({}, graphics_queue_family_index, 1);
-    vk::DeviceCreateInfo dci({}, dqci, {}, required_extensions, {});
+    std::vector<float> priorities = { 1.0f };
+    vk::DeviceQueueCreateInfo dqci({}, graphics_queue_family_index, priorities);
+    vk::DeviceCreateInfo dci({}, dqci, {}, required_extensions);
+
     device = physical_device.createDevice(dci).value;
     queue = device.getQueue(graphics_queue_family_index, 0);
 
