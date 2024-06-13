@@ -45,15 +45,15 @@ class Swapchain
     struct Frame
     {
         vk::UniqueFence fence;
-        vk::UniqueFence freeable;
         vk::UniqueSemaphore acquire;
         vk::UniqueSemaphore complete;
         vk::UniqueCommandBuffer command_buffer;
     };
 
-    struct ImageViewFB
+    struct ImageData
     {
         vk::Image image;
+        vk::UniqueFence fence;
         vk::UniqueImageView image_view;
         vk::UniqueFramebuffer framebuffer;
     };
@@ -70,7 +70,7 @@ class Swapchain
     bool supports_immediate = false;
     bool supports_mailbox = false;
     std::vector<Frame> frames;
-    std::vector<ImageViewFB> imageviewfbs;
+    std::vector<ImageData> image_data;
 
     vk::Device device;
     vk::SurfaceKHR surface;

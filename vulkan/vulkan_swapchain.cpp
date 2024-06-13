@@ -80,14 +80,16 @@ void Swapchain::create_render_pass()
 bool Swapchain::recreate(int new_width, int new_height)
 {
     if (swapchain_object)
+    {
         wait_on_frames();
+    }
 
     return create(num_swapchain_images, new_width, new_height);
 }
 
 vk::Image Swapchain::get_image()
 {
-    return imageviewfbs[current_swapchain_image].image;
+    return image_data[current_swapchain_image].image;
 }
 
 bool Swapchain::check_and_resize(int width, int height)
@@ -116,7 +118,7 @@ bool Swapchain::check_and_resize(int width, int height)
 bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width, int new_height)
 {
     frames.clear();
-    imageviewfbs.clear();
+    image_data.clear();
 
     auto surface_capabilities = physical_device.getSurfaceCapabilitiesKHR(surface).value;
 
@@ -224,7 +226,7 @@ bool Swapchain::create_resources()
     auto command_buffers = device.allocateCommandBuffersUnique(command_buffer_allocate_info).value;
 
     frames.resize(num_swapchain_images);
-    imageviewfbs.resize(num_swapchain_images);
+    image_data.resize(num_swapchain_images);
 
     vk::FenceCreateInfo fence_create_info(vk::FenceCreateFlagBits::eSignaled);
 
@@ -234,7 +236,6 @@ bool Swapchain::create_resources()
         auto &frame = frames[i];
         frame.command_buffer = std::move(command_buffers[i]);
         frame.fence = device.createFenceUnique(fence_create_info).value;
-        frame.freeable = device.createFenceUnique(fence_create_info).value;
         frame.acquire = device.createSemaphoreUnique({}).value;
         frame.complete = device.createSemaphoreUnique({}).value;
     }
@@ -242,7 +243,7 @@ bool Swapchain::create_resources()
     for (unsigned int i = 0; i < num_swapchain_images; i++)
     {
         // Create resources associated with swapchain images
-        auto &image = imageviewfbs[i];
+        auto &image = image_data[i];
         image.image = swapchain_images[i];
         auto image_view_create_info = vk::ImageViewCreateInfo{}
             .setImage(swapchain_images[i])
@@ -259,6 +260,8 @@ bool Swapchain::create_resources()
             .setLayers(1)
             .setRenderPass(render_pass.get());
         image.framebuffer = device.createFramebufferUnique(framebuffer_create_info).value;
+
+        image.fence = device.createFenceUnique(fence_create_info).value;
     }
 
     current_swapchain_image = 0;
@@ -277,7 +280,7 @@ bool Swapchain::begin_frame()
 
     auto &frame = frames[current_frame];
 
-    auto result = device.waitForFences({ frame.fence.get(), frame.freeable.get() }, true, 33333333);
+    auto result = device.waitForFences({ frame.fence.get() }, true, 33333333);
     if (result != vk::Result::eSuccess)
     {
         printf("Timed out waiting for fence.\n");
@@ -350,8 +353,9 @@ bool Swapchain::swap()
     present_mode_info.setPresentModes(present_mode);
     present_info.setPNext(&present_mode_info);
 
-    device.resetFences(frames[current_frame].freeable.get());
-    vk::SwapchainPresentFenceInfoEXT present_fence_info(frames[current_frame].freeable.get());
+    auto &present_fence = image_data[current_swapchain_image].fence.get();
+    device.resetFences(present_fence);
+    vk::SwapchainPresentFenceInfoEXT present_fence_info(present_fence);
     present_mode_info.setPNext(&present_fence_info);
 
     vk::Result result = queue.presentKHR(present_info);
@@ -376,7 +380,7 @@ bool Swapchain::end_frame()
 
 vk::Framebuffer Swapchain::get_framebuffer()
 {
-    return imageviewfbs[current_swapchain_image].framebuffer.get();
+    return image_data[current_swapchain_image].framebuffer.get();
 }
 
 vk::CommandBuffer &Swapchain::get_cmd()
@@ -393,7 +397,7 @@ void Swapchain::begin_render_pass()
 
     auto render_pass_begin_info = vk::RenderPassBeginInfo{}
         .setRenderPass(render_pass.get())
-        .setFramebuffer(imageviewfbs[current_swapchain_image].framebuffer.get())
+        .setFramebuffer(image_data[current_swapchain_image].framebuffer.get())
         .setRenderArea(vk::Rect2D({}, extents))
         .setClearValues(value);
     get_cmd().beginRenderPass(render_pass_begin_info, vk::SubpassContents::eInline);
@@ -412,13 +416,13 @@ void Swapchain::end_render_pass()
 
 bool Swapchain::wait_on_frame(int frame_num)
 {
-    auto result = device.waitForFences({ frames[frame_num].fence.get(), frames[frame_num].freeable.get() }, true, 133000000);
+    auto result = device.waitForFences({ image_data[frame_num].fence.get() }, true, 33000000);
     return (result == vk::Result::eSuccess);
 }
 
 void Swapchain::wait_on_frames()
 {
-    for (auto i = 0; i < frames.size(); i++)
+    for (auto i = 0; i < image_data.size(); i++)
         wait_on_frame(i);
 }
 
