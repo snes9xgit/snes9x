@@ -233,7 +233,7 @@ bool Context::init_device(int preferred_device)
         physical_device = device_list[preferred_device];
     }
 
-    if (physical_device != nullptr)
+    if (physical_device == nullptr)
     {
         for (auto &device : device_list)
         {
