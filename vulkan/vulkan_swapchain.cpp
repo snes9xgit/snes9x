@@ -81,6 +81,7 @@ bool Swapchain::recreate(int new_width, int new_height)
 {
     if (swapchain_object)
     {
+        device.waitIdle();
         wait_on_frames();
     }
 
