@@ -31,6 +31,7 @@ class Swapchain
     bool set_vsync(bool on);
     void on_render_pass_end(std::function<void()> function);
     int get_num_frames() { return num_swapchain_images; }
+    vk::PresentModeKHR get_present_mode();
 
     vk::Image get_image();
     vk::Framebuffer get_framebuffer();
@@ -69,6 +70,7 @@ class Swapchain
     bool vsync = true;
     bool supports_immediate = false;
     bool supports_mailbox = false;
+    bool supports_relaxed = false;
     std::vector<Frame> frames;
     std::vector<ImageData> image_data;
 

@@ -92,6 +92,28 @@ vk::Image Swapchain::get_image()
     return image_data[current_swapchain_image].image;
 }
 
+template<typename T>
+static bool vector_find(std::vector<T> haystack, T&& needle)
+{
+    for (auto &elem : haystack)
+        if (elem == needle)
+            return true;
+    return false;
+}
+
+vk::PresentModeKHR Swapchain::get_present_mode() {
+    auto present_mode = vk::PresentModeKHR::eFifo;
+    if (supports_relaxed)
+        present_mode = vk::PresentModeKHR::eFifoRelaxed;
+    if (!vsync) {
+        if (supports_mailbox)
+            present_mode = vk::PresentModeKHR::eMailbox;
+        if (supports_immediate)
+            present_mode = vk::PresentModeKHR::eImmediate;
+    }
+    return present_mode;
+}
+
 bool Swapchain::check_and_resize(int width, int height)
 {
     vk::SurfaceCapabilitiesKHR surface_capabilities;
@@ -167,21 +189,9 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
         extents.height = surface_capabilities.minImageExtent.height;
 
     auto present_modes = physical_device.getSurfacePresentModesKHR(surface).value;
-    supports_mailbox =
-        std::find(present_modes.begin(), present_modes.end(),
-                  vk::PresentModeKHR::eMailbox) != present_modes.end();
-    supports_immediate =
-        std::find(present_modes.begin(), present_modes.end(),
-                  vk::PresentModeKHR::eImmediate) != present_modes.end();
-
-    auto present_mode = vk::PresentModeKHR::eFifo;
-    if (!vsync)
-    {
-        if (supports_mailbox)
-            present_mode = vk::PresentModeKHR::eMailbox;
-        if (supports_immediate)
-            present_mode = vk::PresentModeKHR::eImmediate;
-    }
+    supports_mailbox = vector_find(present_modes, vk::PresentModeKHR::eMailbox);
+    supports_immediate = vector_find(present_modes, vk::PresentModeKHR::eImmediate);
+    supports_relaxed = vector_find(present_modes, vk::PresentModeKHR::eFifoRelaxed);
 
     auto swapchain_maintenance_info = vk::SwapchainPresentModesCreateInfoEXT{}
         .setPresentModes(present_modes);
@@ -195,7 +205,7 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
         .setImageUsage(vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eTransferSrc)
         .setCompositeAlpha(vk::CompositeAlphaFlagBitsKHR::eOpaque)
         .setClipped(true)
-        .setPresentMode(present_mode)
+        .setPresentMode(get_present_mode())
         .setSurface(surface)
         .setPreTransform(vk::SurfaceTransformFlagBitsKHR::eIdentity)
         .setImageArrayLayers(1)
@@ -342,14 +352,7 @@ bool Swapchain::swap()
         .setImageIndices(current_swapchain_image);
 
     vk::SwapchainPresentModeInfoEXT present_mode_info;
-    vk::PresentModeKHR present_mode = vk::PresentModeKHR::eFifo;
-    if (!vsync)
-    {
-        if (supports_mailbox)
-            present_mode = vk::PresentModeKHR::eMailbox;
-        if (supports_immediate)
-            present_mode = vk::PresentModeKHR::eImmediate;
-    }
+    auto present_mode = get_present_mode();
     present_mode_info.setPresentModes(present_mode);
     present_info.setPNext(&present_mode_info);
 
