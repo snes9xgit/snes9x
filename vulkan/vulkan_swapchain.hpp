@@ -27,8 +27,7 @@ class Swapchain
     void end_frame_without_swap();
     bool swap();
     void wait_on_frames();
-    // Returns true if vsync setting was changed, false if it was the same
-    bool set_vsync(bool on);
+    void set_vsync(bool on);
     void on_render_pass_end(std::function<void()> function);
     int get_num_frames() { return num_swapchain_images; }
     vk::PresentModeKHR get_present_mode();

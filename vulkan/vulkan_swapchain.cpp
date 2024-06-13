@@ -18,13 +18,9 @@ Swapchain::~Swapchain()
 {
 }
 
-bool Swapchain::set_vsync(bool new_setting)
+void Swapchain::set_vsync(bool new_setting)
 {
-    if (new_setting == vsync)
-        return false;
-
     vsync = new_setting;
-    return true;
 }
 
 void Swapchain::on_render_pass_end(std::function<void ()> function)
@@ -104,14 +100,14 @@ static bool vector_find(std::vector<T> haystack, T&& needle)
 
 vk::PresentModeKHR Swapchain::get_present_mode() {
     auto present_mode = vk::PresentModeKHR::eFifo;
-    if (supports_relaxed)
-        present_mode = vk::PresentModeKHR::eFifoRelaxed;
+
     if (!vsync) {
         if (supports_mailbox)
             present_mode = vk::PresentModeKHR::eMailbox;
         if (supports_immediate)
             present_mode = vk::PresentModeKHR::eImmediate;
     }
+
     return present_mode;
 }
 

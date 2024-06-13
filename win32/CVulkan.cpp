@@ -70,6 +70,8 @@ bool CVulkan::Initialize(HWND hWnd)
         return false;
     }
 
+    context->swapchain->set_vsync(GUI.Vsync);
+
     if (!Settings.AutoDisplayMessages)
     {
         Settings.DisplayIndicators = true;
@@ -89,11 +91,6 @@ bool CVulkan::Initialize(HWND hWnd)
             current_shadername = shaderstring;
             return true;
         }
-    }
-
-    if (context->swapchain->set_vsync(GUI.Vsync))
-    {
-        context->recreate_swapchain();
     }
 
     simple_output = std::make_unique<Vulkan::SimpleOutput>(context.get(), vk::Format::eR5G6B5UnormPack16);
@@ -181,8 +178,6 @@ bool CVulkan::ChangeRenderSize(unsigned int newWidth, unsigned int newHeight)
     if (!context)
         return false;
 
-    bool vsync_changed = context->swapchain->set_vsync(GUI.Vsync);
-
     if (newWidth != current_width || newHeight != current_height || vsync_changed)
     {
         context->recreate_swapchain(newWidth, newHeight);
@@ -218,10 +213,7 @@ bool CVulkan::ApplyDisplayChanges(void)
         current_shadername = shadername;
     }
 
-    if (context->swapchain->set_vsync(GUI.Vsync))
-    {
-        context->recreate_swapchain();
-    }
+    context->swapchain->set_vsync(GUI.Vsync);
 
     return true;
 }
