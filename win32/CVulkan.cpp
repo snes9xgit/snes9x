@@ -178,7 +178,7 @@ bool CVulkan::ChangeRenderSize(unsigned int newWidth, unsigned int newHeight)
     if (!context)
         return false;
 
-    if (newWidth != current_width || newHeight != current_height || vsync_changed)
+    if (newWidth != current_width || newHeight != current_height)
     {
         context->recreate_swapchain(newWidth, newHeight);
         context->wait_idle();
