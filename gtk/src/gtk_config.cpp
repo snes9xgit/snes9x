@@ -33,22 +33,18 @@ std::string get_config_dir()
         return std::string{".snes9x"};
     }
 
-    fs::path config = env_home;
-    fs::path legacy = config;
-
+    fs::path config;
     // If XDG_CONFIG_HOME is set, use that, otherwise guess default
-    if (!env_xdg_config_home)
-    {
-        config /= ".config/snes9x";
-        legacy /= ".snes9x";
-    }
-    else
+    if (env_xdg_config_home)
     {
         config = env_xdg_config_home;
         config /= "snes9x";
     }
-    if (fs::exists(legacy) && !fs::exists(config))
-        return legacy;
+    else
+    {
+        config = env_home;
+        config /= ".config/snes9x";
+    }
 
     return config;
 }
