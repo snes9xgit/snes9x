@@ -46,6 +46,9 @@ std::string get_config_dir()
         config /= ".config/snes9x";
     }
 
+    if (!fs::exists(config))
+        fs::create_directories(config);
+
     return config;
 }
 
