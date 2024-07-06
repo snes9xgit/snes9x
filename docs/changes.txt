@@ -1,3 +1,28 @@
+Snes9x 1.63
+General:
+- Added a shortcut to change the backdrop color for sprite extraction.
+- Fixed QuickSave 0-9 slot shortcuts not working.
+- Allow "Address:byte" form for cheat inputs.
+- Fixed ZIP files not being closed after patch search.
+- Various memmap fixes to allow unofficial mappings.
+- Added usage of ImGui to draw things on top of the screen instead of inside.
+
+Win32:
+- Fixed AVI not recording audio.
+- Fixed framerate throttling in turbo mode.
+- Fixed interlaced output speed being double.
+
+Gtk:
+- Fixed config file location to never put files directly in $HOME and obey
+  $XDG_CONFIG_HOME.
+- Updated translations from JakeSmarter and StanleyKid-22.
+
+Mac:
+- Added a new cheat finder.
+- Added MultiCart support back.
+- Create a blank window when starting the program, so the global menu change
+  doesn't go unnoticed.
+
 Snes9x 1.62
 - Fixed SA1 division with negative dividend again. (Atari2)
 - Fixed timing on several instructions. (pi1541)
