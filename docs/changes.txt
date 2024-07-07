@@ -9,8 +9,13 @@ General:
 
 Win32:
 - Fixed AVI not recording audio.
-- Fixed framerate throttling in turbo mode.
+- Fixed framerate throttling in turbo mode (now works during AVI recording).
 - Fixed interlaced output speed being double.
+- Fixed command line arguments not working.
+- Fixed WaveOut device name display for names longer than 31 characters.
+- Fixed Bank+/- hotkey saving.
+- Added hotkeys for aspect ratio, cheat edit/search.
+- Added multiselect for cheat edit dialog.
 
 Gtk:
 - Fixed config file location to never put files directly in $HOME and obey
