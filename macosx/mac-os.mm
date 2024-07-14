@@ -3286,7 +3286,7 @@ void QuitWithFatalError ( NSString *message)
 {
     pthread_mutex_lock(&keyLock);
     NSMutableArray<S9xJoypadInput *> *inputs = [NSMutableArray new];
-    std::unordered_map<struct JoypadInput, S9xButtonCode> buttonCodeMap = GetJuypadButtons(vendorID, productID, index);
+    std::unordered_map<struct JoypadInput, S9xButtonCode> buttonCodeMap = GetJoypadButtons(vendorID, productID, index);
     for (auto it = buttonCodeMap.begin(); it != buttonCodeMap.end(); ++it)
     {
         S9xJoypadInput *input = [S9xJoypadInput new];

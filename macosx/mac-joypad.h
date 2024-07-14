@@ -131,7 +131,7 @@ bool SetButtonCodeForJoypadControl(uint32 vendorID, uint32 productID, uint32 ind
 void ClearButtonCodeForJoypad(uint32 vendorID, uint32 productID, uint32 index, S9xButtonCode buttonCode);
 
 void ClearJoypad(uint32 vendorID, uint32 productID, uint32 index);
-std::unordered_map<struct JoypadInput, S9xButtonCode> GetJuypadButtons(uint32 vendorID, uint32 productID, uint32 index);
+std::unordered_map<struct JoypadInput, S9xButtonCode> GetJoypadButtons(uint32 vendorID, uint32 productID, uint32 index);
 
 std::string LabelForInput(uint32 vendorID, uint32 productID, uint32 cookie, int32 value);
 
