@@ -45,7 +45,6 @@ NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderW
     gameWindow.contentView.layer.backgroundColor = NSColor.blackColor.CGColor;
 
     gameWindow.title = @"Snes9x";
-    gameWindow.restorationClass = [self class];
     gameWindow.frameAutosaveName = kMainWindowIdentifier;
     gameWindow.releasedWhenClosed = NO;
     gameWindow.backgroundColor = NSColor.clearColor;
@@ -660,7 +659,6 @@ NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderW
         window = self.cheatsWindowController.window;
 
         window.title = NSLocalizedString(@"Cheats", nil);
-        window.restorationClass = self.class;
         window.frameAutosaveName = kCheatsWindowIdentifier;
         window.releasedWhenClosed = NO;
 
@@ -695,7 +693,6 @@ NSWindowFrameAutosaveName const kCheatFinderWindowIdentifier = @"s9xCheatFinderW
         window = self.cheatFinderWindowController.window;
 
         window.title = NSLocalizedString(@"Cheat Finder", nil);
-        window.restorationClass = self.class;
         window.frameAutosaveName = kCheatFinderWindowIdentifier;
         window.releasedWhenClosed = NO;
 
