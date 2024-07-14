@@ -885,7 +885,7 @@ BEGIN
             VALUE "FileDescription", "Snes9x"
             VALUE "FileVersion", "1.63"
             VALUE "InternalName", "Snes9x"
-            VALUE "LegalCopyright", "Copyright  1996-2023"
+            VALUE "LegalCopyright", "Copyright  1996-2024"
             VALUE "OriginalFilename", "Snes9x.exe"
             VALUE "ProductName", "Snes9x SNES Emulator"
             VALUE "ProductVersion", "1.63"
