@@ -12,6 +12,7 @@
 #include "movie.h"
 #include "gfx.h"
 #include "ppu.h"
+#include "cheats.h"
 
 namespace
 {
@@ -112,6 +113,42 @@ static void ImGui_DrawPressedKeys(int spacing)
         default:
             break;
         }
+    }
+}
+
+static void ImGui_GetWatchesText(std::string& osd_text)
+{
+    for (unsigned int i = 0; i < sizeof(watches) / sizeof(watches[0]); i++)
+    {
+        if (!watches[i].on)
+            break;
+
+        int32	displayNumber = 0;
+        char	buf[64];
+
+        for (int r = 0; r < watches[i].size; r++)
+            displayNumber += (Cheat.CWatchRAM[(watches[i].address - 0x7E0000) + r]) << (8 * r);
+
+        if (watches[i].format == 1)
+            sprintf(buf, "%s,%du = %u", watches[i].desc, watches[i].size, (unsigned int)displayNumber);
+        else
+            if (watches[i].format == 3)
+                sprintf(buf, "%s,%dx = %X", watches[i].desc, watches[i].size, (unsigned int)displayNumber);
+            else // signed
+            {
+                if (watches[i].size == 1)
+                    displayNumber = (int32)((int8)displayNumber);
+                else if (watches[i].size == 2)
+                    displayNumber = (int32)((int16)displayNumber);
+                else if (watches[i].size == 3)
+                    if (displayNumber >= 8388608)
+                        displayNumber -= 16777216;
+
+                sprintf(buf, "%s,%ds = %d", watches[i].desc, watches[i].size, (int)displayNumber);
+            }
+
+        osd_text += buf;
+        osd_text += '\n';
     }
 }
 
@@ -246,9 +283,29 @@ bool S9xImGuiDraw(int width, int height)
         }
     }
 
+    std::string utf8_message;
+    if (Settings.DisplayWatchedAddresses)
+    {
+        ImGui_GetWatchesText(utf8_message);
+    }
+
     if (!GFX.InfoString.empty())
     {
-        auto utf8_message = sjis_to_utf8(GFX.InfoString);
+        utf8_message += sjis_to_utf8(GFX.InfoString);
+    }
+
+    if (Settings.DisplayMovieFrame && S9xMovieActive())
+    {
+        // move movie frame count into its own line if info message is active and not already a newline at end
+        if (!utf8_message.empty() && utf8_message.back() != '\n')
+        {
+            utf8_message += '\n';
+        }
+        utf8_message += GFX.FrameDisplayString;
+    }
+
+    if (!utf8_message.empty())
+    {
         ImGui_DrawTextOverlay(utf8_message.c_str(),
                               settings.spacing,
                               height - settings.spacing,
