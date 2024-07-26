@@ -3011,7 +3011,7 @@ void CMemory::Map_SA1LoROMMap (void)
 
 	// SA-1 Banks 40->4f
 	for (int c = 0x400; c < 0x500; c++)
-		SA1.Map[c] = SA1.WriteMap[c] = (uint8*)MAP_HIROM_SRAM;
+		SA1.Map[c] = SA1.WriteMap[c] = (uint8*) MAP_SA1RAM;
 
 	// SA-1 Banks 60->6f
 	for (int c = 0x600; c < 0x700; c++)
