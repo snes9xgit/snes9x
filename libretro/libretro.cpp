@@ -1156,6 +1156,8 @@ bool retro_load_game(const struct retro_game_info *game)
     if (!rom_loaded && log_cb)
         log_cb(RETRO_LOG_ERROR, "ROM loading failed...\n");
 
+    Memory.ClearSRAM();
+
     return rom_loaded;
 }
 
