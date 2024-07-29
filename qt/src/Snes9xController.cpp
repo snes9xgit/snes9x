@@ -532,7 +532,10 @@ void Snes9xController::clearSoundBuffer()
 
 void S9xMessage(int message_class, int type, const char *message)
 {
-    S9xSetInfoString(message);
+    if (type == S9X_ROM_INFO)
+        S9xSetInfoString(Memory.GetMultilineROMInfo().c_str());
+
+    printf("%s\n", message);
 }
 
 const char *S9xStringInput(const char *prompt)
