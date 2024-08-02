@@ -39,8 +39,8 @@ class EmuMainWindow : public QMainWindow
     void gameChanging();
     void toggleMouseGrab();
     std::vector<std::string> getDisplayDeviceList();
-    EmuApplication *app;
-    EmuCanvas *canvas;
+    EmuApplication *app = nullptr;
+    EmuCanvas *canvas = nullptr;
 
   private:
     void idle();

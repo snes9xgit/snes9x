@@ -22,6 +22,27 @@
 
 static EmuSettingsWindow *g_emu_settings_window = nullptr;
 
+class DefaultBackground
+    : public QWidget
+{
+public:
+    DefaultBackground(QWidget *parent)
+        : QWidget(parent)
+    {
+    }
+
+    void paintEvent(QPaintEvent *event) override
+    {
+        QPainter paint(this);
+        QLinearGradient gradient(0.0, 0.0, 0.0, event->rect().toRectF().height());
+        gradient.setColorAt(0.0, QColor(0, 0, 128));
+        gradient.setColorAt(1.0, QColor(0, 0, 0));
+
+        paint.setBrush(QBrush(gradient));
+        paint.drawRect(0, 0, event->rect().width(), event->rect().height());
+    }
+};
+
 EmuMainWindow::EmuMainWindow(EmuApplication *app)
     : app(app)
 {
@@ -33,12 +54,11 @@ EmuMainWindow::EmuMainWindow(EmuApplication *app)
     mouse_timer.setTimerType(Qt::CoarseTimer);
     mouse_timer.setInterval(1000);
     mouse_timer.callOnTimeout([&] {
-        if (cursor_visible && isActivelyDrawing())
-        {
-            if (canvas)
-                canvas->setCursor(QCursor(Qt::BlankCursor));
-            cursor_visible = false;
-            mouse_timer.stop();
+        if (cursor_visible && isActivelyDrawing()) {
+        if (canvas)
+            canvas->setCursor(QCursor(Qt::BlankCursor));
+        cursor_visible = false;
+        mouse_timer.stop();
         }
     });
 }
@@ -71,10 +91,20 @@ void EmuMainWindow::destroyCanvas()
         widget->deinit();
         delete widget;
     }
+    canvas = nullptr;
 }
 
 bool EmuMainWindow::createCanvas()
 {
+    auto fallback = [this]() -> bool {
+        QMessageBox::warning(
+            this, tr("Unable to Start Display Driver"),
+            tr("Unable to create a %1 context. Attempting to use qt.")
+                .arg(QString::fromUtf8(app->config->display_driver)));
+        app->config->display_driver = "qt";
+        return createCanvas();
+    };
+
     if (app->config->display_driver != "vulkan" &&
         app->config->display_driver != "opengl" &&
         app->config->display_driver != "qt")
@@ -94,7 +124,7 @@ bool EmuMainWindow::createCanvas()
             if (!canvas->createContext())
             {
                 delete canvas;
-                return false;
+                return fallback();
             }
         }
         else if (app->config->display_driver == "opengl")
@@ -121,7 +151,7 @@ bool EmuMainWindow::createCanvas()
         if (!canvas->createContext())
         {
             delete canvas;
-            return false;
+            return fallback();
         }
     }
     else if (app->config->display_driver == "opengl")
@@ -141,17 +171,12 @@ bool EmuMainWindow::createCanvas()
 
 void EmuMainWindow::recreateCanvas()
 {
+    if (!canvas)
+        return;
+
     app->suspendThread();
     destroyCanvas();
-
-    if (!createCanvas())
-    {
-        QMessageBox::warning(this,
-            tr("Unable to Start Display Driver"),
-            tr("Unable to create a %1 context. Attempting to use qt.").arg(QString::fromUtf8(app->config->display_driver)));
-        app->config->display_driver = "qt";
-        createCanvas();
-    }
+    createCanvas();
 
     app->unsuspendThread();
 }
@@ -362,6 +387,8 @@ void EmuMainWindow::createWidgets()
 
     if (app->config->main_window_width != 0 && app->config->main_window_height != 0)
         resize(app->config->main_window_width, app->config->main_window_height);
+
+    setCentralWidget(new DefaultBackground(this));
 }
 
 void EmuMainWindow::resizeToMultiple(int multiple)
@@ -453,6 +480,12 @@ bool EmuMainWindow::openFile(std::string filename)
         setCoreActionsEnabled(true);
         if (!isFullScreen() && app->config->fullscreen_on_open)
             toggleFullscreen();
+
+        if (!canvas)
+            if (!createCanvas())
+                return false;
+
+        QApplication::sync();
         app->startGame();
         mouse_timer.start();
         return true;
