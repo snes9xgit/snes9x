@@ -1,5 +1,5 @@
 #include "slang_preset.hpp"
-#include "../external/SPIRV-Cross/spirv.hpp"
+#include "external/SPIRV-Cross/spirv.hpp"
 #include "slang_helpers.hpp"
 #include "slang_preset_ini.hpp"
 
@@ -12,8 +12,8 @@
 #include <fstream>
 #include <filesystem>
 #include <future>
-#include "../external/SPIRV-Cross/spirv_cross.hpp"
-#include "../external/SPIRV-Cross/spirv_glsl.hpp"
+#include "external/SPIRV-Cross/spirv_cross.hpp"
+#include "external/SPIRV-Cross/spirv_glsl.hpp"
 #include "slang_shader.hpp"
 
 using std::string;

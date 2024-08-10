@@ -1,5 +1,5 @@
 #pragma once
-#include "vulkan/vulkan_hpp_wrapper.hpp"
+#include "vulkan_hpp_wrapper.hpp"
 #include "slang_shader.hpp"
 #include "vulkan_context.hpp"
 #include "vulkan_pipeline_image.hpp"

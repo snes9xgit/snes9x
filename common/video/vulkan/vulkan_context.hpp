@@ -8,8 +8,8 @@
 #define WINVER 0x599
 #endif
 #include <cstdint>
-#include "vulkan/vulkan_hpp_wrapper.hpp"
-#include "../external/VulkanMemoryAllocator-Hpp/include/vk_mem_alloc.hpp"
+#include "vulkan_hpp_wrapper.hpp"
+#include "external/VulkanMemoryAllocator-Hpp/include/vk_mem_alloc.hpp"
 #include "vulkan_swapchain.hpp"
 #include <memory>
 

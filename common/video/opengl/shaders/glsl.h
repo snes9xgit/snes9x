@@ -8,7 +8,7 @@
 #define __GLSL_H
 
 #include "snes9x.h"
-#include "vulkan/slang_preset_ini.hpp"
+#include "common/video/vulkan/slang_preset_ini.hpp"
 #include "shader_platform.h"
 #include <deque>
 #include <limits.h>

@@ -11,7 +11,7 @@
 #include <map>
 #include "glsl.h"
 #include "shader_helpers.h"
-#include "vulkan/slang_helpers.hpp"
+#include "common/video/vulkan/slang_helpers.hpp"
 #include "shader_platform.h"
 #ifndef _MSC_VER
 #include <unistd.h>

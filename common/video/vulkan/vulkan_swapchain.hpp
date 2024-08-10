@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vulkan/vulkan_hpp_wrapper.hpp"
+#include "vulkan_hpp_wrapper.hpp"
 #include <functional>
 
 namespace Vulkan

@@ -7,9 +7,9 @@
 #include <sstream>
 #include <vector>
 #include <fstream>
-#include "../external/glslang/glslang/Public/ShaderLang.h"
-#include "../external/glslang/SPIRV/GlslangToSpv.h"
-#include "../external/glslang/glslang/Public/ResourceLimits.h"
+#include "external/glslang/glslang/Public/ShaderLang.h"
+#include "external/glslang/SPIRV/GlslangToSpv.h"
+#include "external/glslang/glslang/Public/ResourceLimits.h"
 
 using std::string;
 using std::vector;

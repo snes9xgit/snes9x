@@ -254,32 +254,32 @@ list(APPEND INCLUDES
     ../external/stb
     "../external/glad/include")
 list(APPEND SOURCES
-    ../vulkan/slang_shader.cpp
-    ../vulkan/slang_shader.hpp
-    ../vulkan/slang_preset.cpp
-    ../vulkan/slang_preset.hpp
-    ../vulkan/vulkan_hpp_storage.cpp
-    ../vulkan/vk_mem_alloc_implementation.cpp
-    ../vulkan/vulkan_context.cpp
-    ../vulkan/vulkan_context.hpp
-    ../vulkan/vulkan_texture.cpp
-    ../vulkan/vulkan_texture.hpp
-    ../vulkan/vulkan_swapchain.cpp
-    ../vulkan/vulkan_swapchain.hpp
-    ../vulkan/vulkan_slang_pipeline.cpp
-    ../vulkan/vulkan_slang_pipeline.hpp
-    ../vulkan/vulkan_pipeline_image.cpp
-    ../vulkan/vulkan_pipeline_image.hpp
-    ../vulkan/vulkan_shader_chain.cpp
-    ../vulkan/vulkan_shader_chain.hpp
-    ../vulkan/vulkan_simple_output.hpp
-    ../vulkan/vulkan_simple_output.cpp
-    ../vulkan/std_chrono_throttle.cpp
-    ../vulkan/std_chrono_throttle.hpp
-    ../vulkan/slang_helpers.cpp
-    ../vulkan/slang_helpers.hpp
-    ../vulkan/slang_preset_ini.cpp
-    ../vulkan/slang_preset_ini.hpp
+    ../common/video/vulkan/slang_shader.cpp
+    ../common/video/vulkan/slang_shader.hpp
+    ../common/video/vulkan/slang_preset.cpp
+    ../common/video/vulkan/slang_preset.hpp
+    ../common/video/vulkan/vulkan_hpp_storage.cpp
+    ../common/video/vulkan/vk_mem_alloc_implementation.cpp
+    ../common/video/vulkan/vulkan_context.cpp
+    ../common/video/vulkan/vulkan_context.hpp
+    ../common/video/vulkan/vulkan_texture.cpp
+    ../common/video/vulkan/vulkan_texture.hpp
+    ../common/video/vulkan/vulkan_swapchain.cpp
+    ../common/video/vulkan/vulkan_swapchain.hpp
+    ../common/video/vulkan/vulkan_slang_pipeline.cpp
+    ../common/video/vulkan/vulkan_slang_pipeline.hpp
+    ../common/video/vulkan/vulkan_pipeline_image.cpp
+    ../common/video/vulkan/vulkan_pipeline_image.hpp
+    ../common/video/vulkan/vulkan_shader_chain.cpp
+    ../common/video/vulkan/vulkan_shader_chain.hpp
+    ../common/video/vulkan/vulkan_simple_output.hpp
+    ../common/video/vulkan/vulkan_simple_output.cpp
+    ../common/video/std_chrono_throttle.cpp
+    ../common/video/std_chrono_throttle.hpp
+    ../common/video/vulkan/slang_helpers.cpp
+    ../common/video/vulkan/slang_helpers.hpp
+    ../common/video/vulkan/slang_preset_ini.cpp
+    ../common/video/vulkan/slang_preset_ini.hpp
     ../external/stb/stb_image_implementation.cpp
     ../common/video/opengl/shaders/glsl.cpp
     ../common/video/opengl/shaders/slang.cpp

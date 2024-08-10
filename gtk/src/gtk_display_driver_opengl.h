@@ -23,7 +23,7 @@
 #endif
 
 #include "common/video/opengl/shaders/glsl.h"
-#include "vulkan/std_chrono_throttle.hpp"
+#include "common/video/std_chrono_throttle.hpp"
 
 #define BUFFER_OFFSET(i) ((char *)(i))
 

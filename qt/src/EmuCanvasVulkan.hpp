@@ -3,8 +3,8 @@
 
 #include "EmuCanvas.hpp"
 #include "ShaderParametersDialog.hpp"
-#include "../../vulkan/vulkan_simple_output.hpp"
-#include "../../vulkan/vulkan_shader_chain.hpp"
+#include "common/video/vulkan/vulkan_simple_output.hpp"
+#include "common/video/vulkan/vulkan_shader_chain.hpp"
 
 #ifndef _WIN32
 #include "common/video/wayland/wayland_surface.hpp"

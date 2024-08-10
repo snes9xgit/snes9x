@@ -4,7 +4,6 @@
 #include <QtEvents>
 #include <QMessageBox>
 #include "EmuCanvasVulkan.hpp"
-#include "src/ShaderParametersDialog.hpp"
 #include "EmuMainWindow.hpp"
 
 #include "snes9x_imgui.h"

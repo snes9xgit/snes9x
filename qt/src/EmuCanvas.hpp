@@ -1,7 +1,7 @@
 #pragma once
 #include <QWidget>
 #include <QImage>
-#include "../../vulkan/std_chrono_throttle.hpp"
+#include "common/video/std_chrono_throttle.hpp"
 
 class EmuConfig;
 
