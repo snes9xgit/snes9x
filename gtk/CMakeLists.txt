@@ -69,8 +69,8 @@ list(APPEND LIBS ${X11} ${XEXT} ${CMAKE_DL_LIBS} ${SDL2_LIBRARIES} ${GTK_LIBRARI
 
 list(APPEND SOURCES src/gtk_display_driver_opengl.cpp
                     ../common/video/opengl/glx_context.cpp
-                    ../shaders/glsl.cpp
-                    ../shaders/shader_helpers.cpp
+                    ../common/video/opengl/shaders/glsl.cpp
+                    ../common/video/opengl/shaders/shader_helpers.cpp
                     ../vulkan/slang_helpers.cpp
                     ../vulkan/slang_helpers.hpp
                     ../vulkan/slang_preset_ini.cpp
@@ -84,7 +84,7 @@ list(APPEND SOURCES src/gtk_display_driver_opengl.cpp
 list(APPEND INCLUDES ../external/glad/include)
 
 if(USE_SLANG)
-    list(APPEND SOURCES ../shaders/slang.cpp)
+    list(APPEND SOURCES ../common/video/opengl/shaders/slang.cpp)
     list(APPEND INCLUDES ../external/glslang)
 
     set(SPIRV_CROSS_EXCEPTIONS_TO_ASSERTIONS CACHE BOOL ON)

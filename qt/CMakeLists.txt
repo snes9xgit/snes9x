@@ -281,9 +281,9 @@ list(APPEND SOURCES
     ../vulkan/slang_preset_ini.cpp
     ../vulkan/slang_preset_ini.hpp
     ../external/stb/stb_image_implementation.cpp
-    ../shaders/glsl.cpp
-    ../shaders/slang.cpp
-    ../shaders/shader_helpers.cpp)
+    ../common/video/opengl/shaders/glsl.cpp
+    ../common/video/opengl/shaders/slang.cpp
+    ../common/video/opengl/shaders/shader_helpers.cpp)
 
 list(APPEND DEFINES "IMGUI_IMPL_VULKAN_NO_PROTOTYPES")
 list(APPEND SOURCES ../external/imgui/imgui.cpp

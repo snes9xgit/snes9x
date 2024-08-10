@@ -22,7 +22,7 @@
 #include "common/video/opengl/wayland_egl_context.hpp"
 #endif
 
-#include "shaders/glsl.h"
+#include "common/video/opengl/shaders/glsl.h"
 #include "vulkan/std_chrono_throttle.hpp"
 
 #define BUFFER_OFFSET(i) ((char *)(i))

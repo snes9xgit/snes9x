@@ -13,7 +13,7 @@ using namespace QNativeInterface;
 #else
 #include "common/video/wgl_context.hpp"
 #endif
-#include "shaders/glsl.h"
+#include "common/video/opengl/shaders/glsl.h"
 #include "EmuMainWindow.hpp"
 #include "snes9x_imgui.h"
 #include "imgui_impl_opengl3.h"

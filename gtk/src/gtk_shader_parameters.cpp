@@ -11,7 +11,7 @@
 #include "gtk_s9x.h"
 #include "gtk_display.h"
 #include "gtk_shader_parameters.h"
-#include "shaders/glsl.h"
+#include "common/video/opengl/shaders/glsl.h"
 
 #include "gfx.h"
 
