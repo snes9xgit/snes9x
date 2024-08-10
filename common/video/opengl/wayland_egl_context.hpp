@@ -8,7 +8,7 @@
 #define __WAYLAND_EGL_CONTEXT_H
 
 #include "opengl_context.hpp"
-#include "wayland_surface.hpp"
+#include "common/video/wayland/wayland_surface.hpp"
 
 #include "glad/egl.h"
 #include <memory>

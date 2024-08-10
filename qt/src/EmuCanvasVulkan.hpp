@@ -7,7 +7,7 @@
 #include "../../vulkan/vulkan_shader_chain.hpp"
 
 #ifndef _WIN32
-#include "common/video/wayland_surface.hpp"
+#include "common/video/wayland/wayland_surface.hpp"
 #endif
 
 class EmuCanvasVulkan : public EmuCanvas

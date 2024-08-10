@@ -12,14 +12,14 @@
 
 #include <glad/gl.h>
 
-#include "common/video/opengl_context.hpp"
+#include "common/video/opengl/opengl_context.hpp"
 
 #include "gtk_compat.h"
 #ifdef GDK_WINDOWING_X11
-#include "common/video/glx_context.hpp"
+#include "common/video/opengl/glx_context.hpp"
 #endif
 #ifdef GDK_WINDOWING_WAYLAND
-#include "common/video/wayland_egl_context.hpp"
+#include "common/video/opengl/wayland_egl_context.hpp"
 #endif
 
 #include "shaders/glsl.h"

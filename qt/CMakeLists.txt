@@ -139,12 +139,18 @@ else()
     endif()
 
     list(APPEND PLATFORM_SOURCES
-    ../common/video/glx_context.cpp
-    ../common/video/wayland_egl_context.cpp
-    ../common/video/wayland_surface.cpp
-    ../common/video/fractional-scale-v1.c
-    ../common/video/viewporter-client-protocol.c
-    ../common/video/wayland-idle-inhibit-unstable-v1.c
+    ../common/video/opengl/glx_context.cpp
+    ../common/video/opengl/glx_context.hpp
+    ../common/video/opengl/wayland_egl_context.cpp
+    ../common/video/opengl/wayland_egl_context.hpp
+    ../common/video/wayland/wayland_surface.cpp
+    ../common/video/wayland/wayland_surface.hpp
+    ../common/video/wayland/fractional-scale-v1.c
+    ../common/video/wayland/fractional-scale-v1.h
+    ../common/video/wayland/viewporter-client-protocol.c
+    ../common/video/wayland/viewporter-client-protocol.h
+    ../common/video/wayland/wayland-idle-inhibit-unstable-v1.c
+    ../common/video/wayland/wayland-idle-inhibit-unstable-v1.h
     ../external/glad/src/glx.c
     ../external/glad/src/egl.c)
 endif()
