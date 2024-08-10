@@ -237,13 +237,13 @@
     <ClInclude Include="..\filter\xbrz_tools.h">
       <Filter>Filter</Filter>
     </ClInclude>
-    <ClInclude Include="..\shaders\glsl.h">
+    <ClInclude Include="..\common\video\opengl\shaders\glsl.h">
       <Filter>Shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\shaders\shader_helpers.h">
+    <ClInclude Include="..\common\video\opengl\shaders\shader_helpers.h">
       <Filter>Shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\shaders\shader_platform.h">
+    <ClInclude Include="..\common\video\opengl\shaders\shader_platform.h">
       <Filter>Shaders</Filter>
     </ClInclude>
     <ClInclude Include="gl_core_3_1.h">
@@ -300,37 +300,37 @@
     <ClInclude Include="CVulkan.h">
       <Filter>GUI\VideoDriver</Filter>
     </ClInclude>
-    <ClInclude Include="..\vulkan\slang_helpers.hpp">
+    <ClInclude Include="..\common\video\vulkan\slang_helpers.hpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\vulkan\slang_preset.hpp">
+    <ClInclude Include="..\common\video\vulkan\slang_preset.hpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\vulkan\slang_preset_ini.hpp">
+    <ClInclude Include="..\common\video\vulkan\slang_preset_ini.hpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\vulkan\slang_shader.hpp">
+    <ClInclude Include="..\common\video\vulkan\slang_shader.hpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\vulkan\vulkan_context.hpp">
+    <ClInclude Include="..\common\video\vulkan\vulkan_context.hpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\vulkan\vulkan_pipeline_image.hpp">
+    <ClInclude Include="..\common\video\vulkan\vulkan_pipeline_image.hpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\vulkan\vulkan_shader_chain.hpp">
+    <ClInclude Include="..\common\video\vulkan\vulkan_shader_chain.hpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\vulkan\vulkan_slang_pipeline.hpp">
+    <ClInclude Include="..\common\video\vulkan\vulkan_slang_pipeline.hpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\vulkan\vulkan_swapchain.hpp">
+    <ClInclude Include="..\common\video\vulkan\vulkan_swapchain.hpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\vulkan\vulkan_texture.hpp">
+    <ClInclude Include="..\common\video\vulkan\vulkan_texture.hpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\vulkan\vulkan_simple_output.hpp">
+    <ClInclude Include="..\common\video\vulkan\vulkan_simple_output.hpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClInclude>
     <ClInclude Include="..\external\imgui\imconfig.h">
@@ -665,10 +665,10 @@
     <ClCompile Include="DumpAtEnd.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
-    <ClCompile Include="..\shaders\glsl.cpp">
+    <ClCompile Include="..\common\video\opengl\shaders\glsl.cpp">
       <Filter>Shaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\shaders\shader_helpers.cpp">
+    <ClCompile Include="..\common\video\opengl\shaders\shader_helpers.cpp">
       <Filter>Shaders</Filter>
     </ClCompile>
     <ClCompile Include="gl_core_3_1.c">
@@ -680,7 +680,7 @@
     <ClCompile Include="image_functions.cpp">
       <Filter>GUI\VideoDriver</Filter>
     </ClCompile>
-    <ClCompile Include="..\shaders\slang.cpp">
+    <ClCompile Include="..\common\video\opengl\shaders\slang.cpp">
       <Filter>Shaders</Filter>
     </ClCompile>
     <ClCompile Include="..\external\SPIRV-Cross\spirv_cfg.cpp">
@@ -716,49 +716,49 @@
     <ClCompile Include="CVulkan.cpp">
       <Filter>GUI\VideoDriver</Filter>
     </ClCompile>
-    <ClCompile Include="..\vulkan\slang_helpers.cpp">
+    <ClCompile Include="..\common\video\vulkan\slang_helpers.cpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\vulkan\slang_preset.cpp">
+    <ClCompile Include="..\common\video\vulkan\slang_preset.cpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\vulkan\slang_preset_ini.cpp">
+    <ClCompile Include="..\common\video\vulkan\slang_preset_ini.cpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\vulkan\slang_preset_test.cpp">
+    <ClCompile Include="..\common\video\vulkan\slang_preset_test.cpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\vulkan\slang_shader.cpp">
+    <ClCompile Include="..\common\video\vulkan\slang_shader.cpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\vulkan\vk_mem_alloc_implementation.cpp">
+    <ClCompile Include="..\common\video\vulkan\vk_mem_alloc_implementation.cpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\vulkan\vulkan_context.cpp">
+    <ClCompile Include="..\common\video\vulkan\vulkan_context.cpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\vulkan\vulkan_hpp_storage.cpp">
+    <ClCompile Include="..\common\video\vulkan\vulkan_hpp_storage.cpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\vulkan\vulkan_pipeline_image.cpp">
+    <ClCompile Include="..\common\video\vulkan\vulkan_pipeline_image.cpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\vulkan\vulkan_shader_chain.cpp">
+    <ClCompile Include="..\common\video\vulkan\vulkan_shader_chain.cpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\vulkan\vulkan_slang_pipeline.cpp">
+    <ClCompile Include="..\common\video\vulkan\vulkan_slang_pipeline.cpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\vulkan\vulkan_swapchain.cpp">
+    <ClCompile Include="..\common\video\vulkan\vulkan_swapchain.cpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\vulkan\vulkan_texture.cpp">
+    <ClCompile Include="..\common\video\vulkan\vulkan_texture.cpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\external\stb\stb_image_implementation.cpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\vulkan\vulkan_simple_output.cpp">
+    <ClCompile Include="..\common\video\vulkan\vulkan_simple_output.cpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\external\imgui\imgui.cpp">

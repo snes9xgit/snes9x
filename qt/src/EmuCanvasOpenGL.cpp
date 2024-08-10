@@ -11,7 +11,7 @@
 using namespace QNativeInterface;
 #include <X11/Xlib.h>
 #else
-#include "common/video/wgl_context.hpp"
+#include "common/video/opengl/wgl_context.hpp"
 #endif
 #include "common/video/opengl/shaders/glsl.h"
 #include "EmuMainWindow.hpp"
@@ -303,7 +303,7 @@ void EmuCanvasOpenGL::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
 
-    if (!context) 
+    if (!context)
         return;
 
     auto g = parent->geometry();

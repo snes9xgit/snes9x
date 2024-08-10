@@ -11,7 +11,7 @@
 #include "gl_core_3_1.h"
 #include "cgFunctions.h"
 #include "CGLCG.h"
-#include "../shaders/glsl.h"
+#include "common/video/opengl/shaders/glsl.h"
 
 #include "wglext.h"
 #include "IS9xDisplayOutput.h"

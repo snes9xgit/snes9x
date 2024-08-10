@@ -33,7 +33,7 @@
 #include "win32_sound.h"
 #include "win32_display.h"
 #include "CCGShader.h"
-#include "../shaders/glsl.h"
+#include "common/video/opengl/shaders/glsl.h"
 #include "CShaderParamDlg.h"
 #include "CSaveLoadWithPreviewDlg.h"
 #include "../snes9x.h"

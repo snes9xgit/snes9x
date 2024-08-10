@@ -1,9 +1,9 @@
 #pragma once
 
 #include "IS9xDisplayOutput.h"
-#include "../vulkan/vulkan_context.hpp"
-#include "../vulkan/vulkan_shader_chain.hpp"
-#include "../vulkan/vulkan_simple_output.hpp"
+#include "common/video/vulkan/vulkan_context.hpp"
+#include "common/video/vulkan/vulkan_shader_chain.hpp"
+#include "common/video/vulkan/vulkan_simple_output.hpp"
 #include <functional>
 
 class CVulkan : public IS9xDisplayOutput

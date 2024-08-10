@@ -115,7 +115,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     list(APPEND LIBS libSDL2.a libz.a opengl32 gdi32 winmm imm32 ole32 oleaut32 version uuid advapi32 setupapi shell32 dinput8)
     list(APPEND DEFINES SDL_MAIN_HANDLED)
     list(APPEND PLATFORM_SOURCES
-        ../common/video/wgl_context.cpp
+        ../common/video/opengl/wgl_context.cpp
         ../external/glad/src/wgl.c
         src/resources/snes9x_win32.rc)
 else()
