@@ -245,6 +245,23 @@ bool Context::init_device(int preferred_device)
         }
     }
 
+    std::vector<const char *> present_wait_extensions =
+    {
+        VK_KHR_PRESENT_ID_EXTENSION_NAME,
+        VK_KHR_PRESENT_WAIT_EXTENSION_NAME
+    };
+
+    if (check_extensions(present_wait_extensions, physical_device))
+    {
+        for (auto &ext : present_wait_extensions)
+            required_extensions.push_back(ext);
+        have_VK_KHR_present_wait = true;
+    }
+    else
+    {
+        have_VK_KHR_present_wait = false;
+    }
+
     auto extension_properties = physical_device.enumerateDeviceExtensionProperties().value;
     physical_device.getProperties(&physical_device_props);
 
@@ -255,6 +272,14 @@ bool Context::init_device(int preferred_device)
     std::vector<float> priorities = { 1.0f };
     vk::DeviceQueueCreateInfo dqci({}, graphics_queue_family_index, priorities);
     vk::DeviceCreateInfo dci({}, dqci, {}, required_extensions);
+
+    vk::PhysicalDevicePresentWaitFeaturesKHR physical_device_present_wait_feature(true);
+    vk::PhysicalDevicePresentIdFeaturesKHR physical_device_present_id_feature(true);
+    if (have_VK_KHR_present_wait)
+    {
+        dci.setPNext(&physical_device_present_wait_feature);
+        physical_device_present_wait_feature.setPNext(&physical_device_present_id_feature);
+    }
 
     device = physical_device.createDevice(dci).value;
     queue = device.getQueue(graphics_queue_family_index, 0);
@@ -289,7 +314,7 @@ bool Context::init_vma()
 bool Context::create_swapchain(int width, int height)
 {
     wait_idle();
-    swapchain = std::make_unique<Swapchain>(device, physical_device, queue, surface.get(), command_pool.get());
+    swapchain = std::make_unique<Swapchain>(*this);
     return swapchain->create(2, width, height);
 }
 

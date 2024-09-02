@@ -6,14 +6,12 @@
 namespace Vulkan
 {
 
+class Context;
+
 class Swapchain
 {
   public:
-    Swapchain(vk::Device device,
-              vk::PhysicalDevice physical_device,
-              vk::Queue queue,
-              vk::SurfaceKHR surface,
-              vk::CommandPool command_pool);
+    Swapchain(Context &);
     ~Swapchain();
     bool create(unsigned int num_frames, int width = -1, int height = -1);
     bool recreate(int width = -1, int height = -1);
@@ -66,6 +64,7 @@ class Swapchain
     unsigned int current_frame = 0;
     unsigned int current_swapchain_image = 0;
     unsigned int num_swapchain_images = 0;
+    uint64_t presentation_id = 0;
     bool vsync = true;
     bool supports_immediate = false;
     bool supports_mailbox = false;
@@ -73,6 +72,7 @@ class Swapchain
     std::vector<Frame> frames;
     std::vector<ImageData> image_data;
 
+    Vulkan::Context &context;
     vk::Device device;
     vk::SurfaceKHR surface;
     vk::CommandPool command_pool;

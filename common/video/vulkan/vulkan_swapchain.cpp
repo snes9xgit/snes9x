@@ -1,15 +1,17 @@
 #include "vulkan_swapchain.hpp"
+#include "vulkan_context.hpp"
 
 namespace Vulkan
 {
 
-Swapchain::Swapchain(vk::Device device_, vk::PhysicalDevice physical_device_, vk::Queue queue_, vk::SurfaceKHR surface_, vk::CommandPool command_pool_)
-    : surface(surface_),
-      command_pool(command_pool_),
-      physical_device(physical_device_),
-      queue(queue_)
+Swapchain::Swapchain(Context &context_)
+    : context(context_)
 {
-    device = device_;
+    device = context.device;
+    queue = context.queue;
+    surface = context.surface.get();
+    physical_device = context.physical_device;
+    command_pool = context.command_pool.get();
     create_render_pass();
     end_render_pass_function = nullptr;
 }
@@ -351,12 +353,21 @@ bool Swapchain::swap()
     vk::SwapchainPresentModeInfoEXT present_mode_info;
     auto present_mode = get_present_mode();
     present_mode_info.setPresentModes(present_mode);
-    present_info.setPNext(&present_mode_info);
 
     auto &present_fence = image_data[current_swapchain_image].fence.get();
     device.resetFences(present_fence);
     vk::SwapchainPresentFenceInfoEXT present_fence_info(present_fence);
+
+    present_info.setPNext(&present_mode_info);
     present_mode_info.setPNext(&present_fence_info);
+
+    vk::PresentIdKHR present_id;
+    if (context.have_VK_KHR_present_wait)
+    {
+        presentation_id++;
+        present_id.setPresentIds(presentation_id);
+        present_fence_info.setPNext(&present_id);
+    }
 
     vk::Result result = queue.presentKHR(present_info);
     if (result == vk::Result::eErrorOutOfDateKHR)
@@ -424,6 +435,15 @@ void Swapchain::wait_on_frames()
 {
     for (auto i = 0; i < image_data.size(); i++)
         wait_on_frame(i);
+
+    if (context.have_VK_KHR_present_wait)
+    {
+        auto result = device.waitForPresentKHR(swapchain_object.get(), presentation_id, 16666666);
+        if (result != vk::Result::eSuccess)
+        {
+            printf("Error waiting on present: %s\n", vk::to_string(result).c_str());
+        }
+    }
 }
 
 vk::Extent2D Swapchain::get_extents()
