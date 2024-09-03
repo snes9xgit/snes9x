@@ -255,11 +255,11 @@ bool Context::init_device(int preferred_device)
     {
         for (auto &ext : present_wait_extensions)
             required_extensions.push_back(ext);
-        have_VK_KHR_present_wait = true;
+        supports_VK_KHR_present_wait = true;
     }
     else
     {
-        have_VK_KHR_present_wait = false;
+        supports_VK_KHR_present_wait = false;
     }
 
     auto extension_properties = physical_device.enumerateDeviceExtensionProperties().value;
@@ -275,7 +275,7 @@ bool Context::init_device(int preferred_device)
 
     vk::PhysicalDevicePresentWaitFeaturesKHR physical_device_present_wait_feature(true);
     vk::PhysicalDevicePresentIdFeaturesKHR physical_device_present_id_feature(true);
-    if (have_VK_KHR_present_wait)
+    if (supports_VK_KHR_present_wait)
     {
         dci.setPNext(&physical_device_present_wait_feature);
         physical_device_present_wait_feature.setPNext(&physical_device_present_id_feature);

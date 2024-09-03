@@ -24,6 +24,7 @@ ShaderChain::~ShaderChain()
 {
     if (context && context->device)
     {
+        context->wait_idle();
         if (vertex_buffer)
             context->allocator.destroyBuffer(vertex_buffer, vertex_buffer_allocation);
         vertex_buffer = nullptr;
@@ -50,16 +51,13 @@ void ShaderChain::construct_buffer_objects()
                                     0.0f, 0.0f, 1.0f, 0.0f,
                                     0.0f, 0.0f, 0.0f, 1.0f };
 
-            std::string block;
             switch (uniform.block)
             {
                 case SlangShader::Uniform::UBO:
                     location = &ubo_memory[uniform.offset];
-                    block = "uniform";
                     break;
                 case SlangShader::Uniform::PushConstant:
                     location = &pipeline.push_constants[uniform.offset];
-                    block = "push constant";
                     break;
             }
 
@@ -416,6 +414,7 @@ bool ShaderChain::do_frame_without_swap(uint8_t *data, int width, int height, in
     {
         auto &pipe = *pipelines[i];
         auto &frame = pipe.frame[current_frame_index];
+        bool is_last_pass = (i == pipelines.size() - 1);
 
         update_descriptor_set(cmd, i, current_frame_index);
 
@@ -428,7 +427,7 @@ bool ShaderChain::do_frame_without_swap(uint8_t *data, int width, int height, in
             .setRenderArea(vk::Rect2D({}, vk::Extent2D(frame.image.image_width, frame.image.image_height)))
             .setClearValues(value);
 
-        if (i == pipelines.size() - 1)
+        if (is_last_pass)
             context->swapchain->begin_render_pass();
         else
             cmd.beginRenderPass(render_pass_begin_info, vk::SubpassContents::eInline);
@@ -439,32 +438,29 @@ bool ShaderChain::do_frame_without_swap(uint8_t *data, int width, int height, in
         if (pipe.push_constants.size() > 0)
             cmd.pushConstants(pipe.pipeline_layout.get(), vk::ShaderStageFlagBits::eAllGraphics, 0, pipe.push_constants.size(), pipe.push_constants.data());
 
-        if (i < pipelines.size() - 1)
-        {
-            cmd.setViewport(0, vk::Viewport(0, 0, pipe.destination_width, pipe.destination_height, 0.0f, 1.0f));
-            cmd.setScissor(0, vk::Rect2D({}, vk::Extent2D(pipe.destination_width, pipe.destination_height)));
-        }
-        else
+        if (is_last_pass)
         {
             cmd.setViewport(0, vk::Viewport(viewport_x, viewport_y, viewport_width, viewport_height, 0.0f, 1.0f));
             cmd.setScissor(0, vk::Rect2D(vk::Offset2D(viewport_x, viewport_y), vk::Extent2D(viewport_width, viewport_height)));
         }
-        cmd.draw(3, 1, 0, 0);
-
-        if (i < pipelines.size() - 1)
-        {
-            cmd.endRenderPass();
-        }
         else
         {
-            context->swapchain->end_render_pass();
+            cmd.setViewport(0, vk::Viewport(0, 0, pipe.destination_width, pipe.destination_height, 0.0f, 1.0f));
+            cmd.setScissor(0, vk::Rect2D({}, vk::Extent2D(pipe.destination_width, pipe.destination_height)));
         }
 
+        cmd.draw(3, 1, 0, 0);
+
+        if (is_last_pass)
+            context->swapchain->end_render_pass();
+        else
+            cmd.endRenderPass();
+
         frame.image.barrier(cmd);
-        if (i < pipelines.size() - 1)
+        if (!is_last_pass)
             frame.image.generate_mipmaps(cmd);
 
-        if (preset->last_pass_uses_feedback && i == pipelines.size() - 1)
+        if (preset->last_pass_uses_feedback && is_last_pass)
         {
             std::array<vk::ImageMemoryBarrier, 2> image_memory_barrier{};
             image_memory_barrier[0]
@@ -525,32 +521,33 @@ bool ShaderChain::do_frame_without_swap(uint8_t *data, int width, int height, in
 void ShaderChain::upload_original(vk::CommandBuffer cmd, uint8_t *data, int width, int height, int stride, vk::Format format)
 {
     std::unique_ptr<Texture> texture;
-
-    auto create_texture = [&]() {
-        texture->create(width,
-                        height,
-                        format,
-                        wrap_mode_from_string(pipelines[0]->shader->wrap_mode),
-                        pipelines[0]->shader->filter_linear,
-                        pipelines[0]->shader->mipmap_input);
-    };
+    bool create_texture = false;
 
     if (original.size() > original_history_size)
     {
         texture = std::move(original.back());
         original.pop_back();
+
         if (texture->image_width != width || texture->image_height != height || texture->format != format)
         {
             texture->destroy();
-            create_texture();
+            create_texture = true;
         }
     }
     else
     {
         texture = std::make_unique<Texture>();
         texture->init(context);
-        create_texture();
+        create_texture = true;
     }
+
+    if (create_texture)
+        texture->create(width,
+                        height,
+                        format,
+                        wrap_mode_from_string(pipelines[0]->shader->wrap_mode),
+                        pipelines[0]->shader->filter_linear,
+                        pipelines[0]->shader->mipmap_input);
 
     if (cmd)
         texture->from_buffer(cmd, data, width, height, stride);

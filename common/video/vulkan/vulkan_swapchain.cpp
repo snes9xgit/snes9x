@@ -362,7 +362,7 @@ bool Swapchain::swap()
     present_mode_info.setPNext(&present_fence_info);
 
     vk::PresentIdKHR present_id;
-    if (context.have_VK_KHR_present_wait)
+    if (context.supports_VK_KHR_present_wait)
     {
         presentation_id++;
         present_id.setPresentIds(presentation_id);
@@ -436,7 +436,7 @@ void Swapchain::wait_on_frames()
     for (auto i = 0; i < image_data.size(); i++)
         wait_on_frame(i);
 
-    if (context.have_VK_KHR_present_wait)
+    if (context.supports_VK_KHR_present_wait)
     {
         auto result = device.waitForPresentKHR(swapchain_object.get(), presentation_id, 16666666);
         if (result != vk::Result::eSuccess)
