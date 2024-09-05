@@ -51,8 +51,6 @@ class Context
     vk::PhysicalDeviceProperties physical_device_props;
     vk::UniqueSurfaceKHR surface;
 
-    bool supports_VK_KHR_present_wait = false;
-
   private:
     bool init_vma();
     bool init_device(int preferred_device = 0);

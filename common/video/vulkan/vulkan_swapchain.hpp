@@ -20,11 +20,9 @@ class Swapchain
     bool begin_frame();
     void begin_render_pass();
     void end_render_pass();
-    bool wait_on_frame(int frame_num);
     bool end_frame();
     void end_frame_without_swap();
     bool swap();
-    void wait_on_frames();
     void set_vsync(bool on);
     void on_render_pass_end(std::function<void()> function);
     int get_num_frames() { return num_swapchain_images; }
@@ -51,7 +49,6 @@ class Swapchain
     struct ImageData
     {
         vk::Image image;
-        vk::UniqueFence fence;
         vk::UniqueImageView image_view;
         vk::UniqueFramebuffer framebuffer;
     };

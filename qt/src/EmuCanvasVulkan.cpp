@@ -179,6 +179,8 @@ void EmuCanvasVulkan::draw()
     if (!window->isVisible())
         return;
 
+    context->swapchain->set_vsync(config->enable_vsync);
+
     if (S9xImGuiDraw(width() * devicePixelRatioF(), height() * devicePixelRatioF()))
     {
         auto draw_data = ImGui::GetDrawData();
@@ -203,11 +205,10 @@ void EmuCanvasVulkan::draw()
     if (retval)
     {
         throttle();
-        context->swapchain->set_vsync(config->enable_vsync);
         context->swapchain->swap();
         if (config->reduce_input_lag)
         {
-            context->swapchain->wait_on_frames();
+            context->wait_idle();
         }
     }
 }

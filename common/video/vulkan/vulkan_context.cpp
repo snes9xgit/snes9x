@@ -245,26 +245,6 @@ bool Context::init_device(int preferred_device)
         }
     }
 
-    std::vector<const char *> present_wait_extensions =
-    {
-        VK_KHR_PRESENT_ID_EXTENSION_NAME,
-        VK_KHR_PRESENT_WAIT_EXTENSION_NAME
-    };
-
-    if (check_extensions(present_wait_extensions, physical_device))
-    {
-        for (auto &ext : present_wait_extensions)
-            required_extensions.push_back(ext);
-        supports_VK_KHR_present_wait = true;
-    }
-    else
-    {
-        supports_VK_KHR_present_wait = false;
-    }
-
-    auto extension_properties = physical_device.enumerateDeviceExtensionProperties().value;
-    physical_device.getProperties(&physical_device_props);
-
     graphics_queue_family_index = find_graphics_queue(physical_device);
     if (graphics_queue_family_index == UINT32_MAX)
         return false;
@@ -272,14 +252,6 @@ bool Context::init_device(int preferred_device)
     std::vector<float> priorities = { 1.0f };
     vk::DeviceQueueCreateInfo dqci({}, graphics_queue_family_index, priorities);
     vk::DeviceCreateInfo dci({}, dqci, {}, required_extensions);
-
-    vk::PhysicalDevicePresentWaitFeaturesKHR physical_device_present_wait_feature(true);
-    vk::PhysicalDevicePresentIdFeaturesKHR physical_device_present_id_feature(true);
-    if (supports_VK_KHR_present_wait)
-    {
-        dci.setPNext(&physical_device_present_wait_feature);
-        physical_device_present_wait_feature.setPNext(&physical_device_present_id_feature);
-    }
 
     device = physical_device.createDevice(dci).value;
     queue = device.getQueue(graphics_queue_family_index, 0);
