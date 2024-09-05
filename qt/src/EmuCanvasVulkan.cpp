@@ -124,6 +124,8 @@ bool EmuCanvasVulkan::createContext()
 
     tryLoadShader();
 
+    context->wait_idle();
+
     QGuiApplication::sync();
     paintEvent(nullptr);
 
@@ -256,13 +258,6 @@ void EmuCanvasVulkan::paintEvent(QPaintEvent *event)
         }
         return;
     }
-
-    // Clear to black
-    uint8_t buffer[] = { 0, 0, 0, 0 };
-    if (shader_chain)
-        shader_chain->do_frame(buffer, 1, 1, 1, vk::Format::eR5G6B5UnormPack16, 0, 0, width(), height());
-    if (simple_output)
-        simple_output->do_frame(buffer, 1, 1, 1, 0, 0, width(), height());
 }
 
 void EmuCanvasVulkan::deinit()
