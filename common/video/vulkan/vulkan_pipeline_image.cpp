@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "vulkan_pipeline_image.hpp"
 #include "slang_helpers.hpp"
 

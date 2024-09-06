@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "vulkan_shader_chain.hpp"
 #include "slang_helpers.hpp"
 #include "stb_image.h"
