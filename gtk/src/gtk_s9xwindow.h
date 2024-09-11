@@ -88,7 +88,6 @@ class Snes9xWindow : public GtkBuilderWindow
     int last_width, last_height;
     int mouse_region_x, mouse_region_y;
     int mouse_region_width, mouse_region_height;
-    int nfs_width, nfs_height, nfs_x, nfs_y;
     int autovrr_saved_frameskip;
     int autovrr_saved_sound_input_rate;
     bool autovrr_saved_sync_to_vblank;

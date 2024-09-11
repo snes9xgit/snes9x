@@ -543,12 +543,6 @@ bool Snes9xWindow::draw(const Cairo::RefPtr<Cairo::Context> &cr)
 
     S9xDisplayRefresh();
 
-    if (!(config->fullscreen))
-    {
-        config->window_width = get_width();
-        config->window_height = get_height();
-    }
-
     if ((is_paused() || NetPlay.Paused) && (gui_config->splash_image < SPLASH_IMAGE_STARFIELD || gui_config->rom_loaded))
     {
         S9xDeinitUpdate(last_width, last_height);
@@ -1159,12 +1153,7 @@ void Snes9xWindow::enter_fullscreen_mode()
     GdkWindow *gdk_window = window->get_window()->gobj();
 
     config->rom_loaded = 0;
-
-    nfs_width = config->window_width;
-    nfs_height = config->window_height;
-    int nfs_x;
-    int nfs_y;
-    window->get_position(nfs_x, nfs_y);
+    config->fullscreen = 1;
 
 #ifdef GDK_WINDOWING_X11
     if (config->change_display_resolution && GDK_IS_X11_WINDOW(gdk_window))
@@ -1232,9 +1221,7 @@ void Snes9xWindow::enter_fullscreen_mode()
                               1);
     }
 #endif
-    config->fullscreen = 1;
     config->rom_loaded = rom_loaded;
-
 
     /* If we're running a game, disable ui when entering fullscreen */
     if (!Settings.Paused && config->rom_loaded)
@@ -1312,9 +1299,6 @@ void Snes9xWindow::leave_fullscreen_mode()
                               0);
     }
 #endif
-
-    resize(nfs_width, nfs_height);
-    window->move(nfs_x, nfs_y);
 
     config->rom_loaded = rom_loaded;
     config->fullscreen = 0;
