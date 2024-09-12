@@ -254,3 +254,19 @@ bool S9xVulkanDisplayDriver::is_ready()
 {
     return true;
 }
+
+void S9xVulkanDisplayDriver::shrink()
+{
+#ifdef GDK_WINDOWING_WAYLAND
+    if (GDK_IS_WAYLAND_WINDOW(drawing_area->get_window()->gobj()))
+        wayland_surface->shrink();
+#endif
+}
+
+void S9xVulkanDisplayDriver::regrow()
+{
+#ifdef GDK_WINDOWING_WAYLAND
+    if (GDK_IS_WAYLAND_WINDOW(drawing_area->get_window()->gobj()))
+        wayland_surface->regrow();
+#endif
+}

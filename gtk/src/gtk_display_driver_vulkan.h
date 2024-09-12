@@ -31,6 +31,8 @@ class S9xVulkanDisplayDriver : public S9xDisplayDriver
     bool can_throttle() override { return true; }
     int get_width() final override { return current_width; }
     int get_height() final override { return current_height; }
+    void shrink() override;
+    void regrow() override;
 
     static int query_availability();
 

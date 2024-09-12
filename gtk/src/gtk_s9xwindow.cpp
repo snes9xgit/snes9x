@@ -1144,7 +1144,7 @@ static void set_bypass_compositor(Display *dpy, Window window, unsigned char byp
 
 void Snes9xWindow::enter_fullscreen_mode()
 {
-    int rom_loaded = config->rom_loaded;
+    bool rom_loaded = config->rom_loaded;
 
     if (config->fullscreen)
         return;
@@ -1152,8 +1152,8 @@ void Snes9xWindow::enter_fullscreen_mode()
     GdkDisplay *gdk_display = window->get_display()->gobj();
     GdkWindow *gdk_window = window->get_window()->gobj();
 
-    config->rom_loaded = 0;
-    config->fullscreen = 1;
+    config->rom_loaded = false;
+    config->fullscreen = true;
 
 #ifdef GDK_WINDOWING_X11
     if (config->change_display_resolution && GDK_IS_X11_WINDOW(gdk_window))
@@ -1232,7 +1232,7 @@ void Snes9xWindow::enter_fullscreen_mode()
 
 void Snes9xWindow::leave_fullscreen_mode()
 {
-    int rom_loaded = config->rom_loaded;
+    bool rom_loaded = config->rom_loaded;
 
     if (!config->fullscreen)
         return;
@@ -1250,7 +1250,7 @@ void Snes9xWindow::leave_fullscreen_mode()
     GdkDisplay *gdk_display = window->get_display()->gobj();
     GdkWindow *gdk_window = window->get_window()->gobj();
 
-    config->rom_loaded = 0;
+    config->rom_loaded = false;
 
 #ifdef GDK_WINDOWING_X11
     if (config->change_display_resolution && GDK_IS_X11_WINDOW(gdk_window))
@@ -1280,10 +1280,15 @@ void Snes9xWindow::leave_fullscreen_mode()
     }
 #endif
 
+    // If the window is covered by a subsurface, for some reason Gtk doesn't
+    // send any resize events or do anything to resize the window. So shrink
+    // the subsurface's viewport to 2x2 temporarily.
+    auto driver = S9xDisplayGetDriver();
 #ifdef GDK_WINDOWING_WAYLAND
     if (GDK_IS_WAYLAND_WINDOW(gdk_window))
     {
-        S9xDeinitDisplay();
+        if (driver)
+            driver->shrink();
     }
 #endif
 
@@ -1301,14 +1306,15 @@ void Snes9xWindow::leave_fullscreen_mode()
 #endif
 
     config->rom_loaded = rom_loaded;
-    config->fullscreen = 0;
+    config->fullscreen = false;
     configure_widgets();
     window->show();
 
 #ifdef GDK_WINDOWING_WAYLAND
     if (GDK_IS_WAYLAND_WINDOW(gdk_window))
     {
-        S9xReinitDisplay();
+        if (driver)
+            driver->regrow();
     }
 #endif
 

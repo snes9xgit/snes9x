@@ -522,3 +522,23 @@ bool S9xOpenGLDisplayDriver::is_ready()
 
     return false;
 }
+
+void S9xOpenGLDisplayDriver::shrink()
+{
+#ifdef GDK_WINDOWING_WAYLAND
+    if (GDK_IS_WAYLAND_WINDOW(gdk_window))
+    {
+        ((WaylandEGLContext *)context)->shrink();
+    }
+#endif
+}
+
+void S9xOpenGLDisplayDriver::regrow()
+{
+#ifdef GDK_WINDOWING_WAYLAND
+    if (GDK_IS_WAYLAND_WINDOW(gdk_window))
+    {
+        ((WaylandEGLContext *)context)->regrow();
+    }
+#endif
+}

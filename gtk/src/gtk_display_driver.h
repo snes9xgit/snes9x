@@ -25,6 +25,8 @@ class S9xDisplayDriver
     virtual bool can_throttle() { return false; };
     virtual int get_width() = 0;
     virtual int get_height() = 0;
+    virtual void shrink() {};
+    virtual void regrow() {};
 
   protected:
     Snes9xWindow *window;

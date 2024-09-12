@@ -26,6 +26,8 @@ class WaylandEGLContext : public OpenGLContext
     void swap_buffers();
     void swap_interval(int frames);
     void make_current();
+    void shrink();
+    void regrow();
     bool ready();
 
     EGLDisplay egl_display;

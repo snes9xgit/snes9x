@@ -145,3 +145,13 @@ void WaylandEGLContext::swap_interval(int frames)
 {
     eglSwapInterval(egl_display, frames);
 }
+
+void WaylandEGLContext::shrink()
+{
+    wayland_surface->shrink();
+}
+
+void WaylandEGLContext::regrow()
+{
+    wayland_surface->regrow();
+}

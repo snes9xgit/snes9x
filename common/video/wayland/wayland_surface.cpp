@@ -23,15 +23,15 @@ static void wl_global(void *data,
     auto wl = (WaylandSurface *)data;
 
     if (!strcmp(interface, "wl_compositor"))
-        wl->compositor = (struct wl_compositor *)wl_registry_bind(wl_registry, name, &wl_compositor_interface, 3);
+        wl->compositor = (struct wl_compositor *)wl_registry_bind(wl_registry, name, &wl_compositor_interface, version);
     else if (!strcmp(interface, "wl_subcompositor"))
-        wl->subcompositor = (struct wl_subcompositor *)wl_registry_bind(wl_registry, name, &wl_subcompositor_interface, 1);
+        wl->subcompositor = (struct wl_subcompositor *)wl_registry_bind(wl_registry, name, &wl_subcompositor_interface, version);
     else if (!strcmp(interface, zwp_idle_inhibit_manager_v1_interface.name))
-        wl->idle_inhibit_manager = (struct zwp_idle_inhibit_manager_v1 *)wl_registry_bind(wl_registry, name, &zwp_idle_inhibit_manager_v1_interface, 1);
+        wl->idle_inhibit_manager = (struct zwp_idle_inhibit_manager_v1 *)wl_registry_bind(wl_registry, name, &zwp_idle_inhibit_manager_v1_interface, version);
     else if (!strcmp(interface, wp_viewporter_interface.name))
-        wl->viewporter = (struct wp_viewporter *)wl_registry_bind(wl_registry, name, &wp_viewporter_interface, 1);
+        wl->viewporter = (struct wp_viewporter *)wl_registry_bind(wl_registry, name, &wp_viewporter_interface, version);
     else if (!strcmp(interface, wp_fractional_scale_manager_v1_interface.name))
-        wl->fractional_scale_manager = (struct wp_fractional_scale_manager_v1 *)wl_registry_bind(wl_registry, name, &wp_fractional_scale_manager_v1_interface, 1);
+        wl->fractional_scale_manager = (struct wp_fractional_scale_manager_v1 *)wl_registry_bind(wl_registry, name, &wp_fractional_scale_manager_v1_interface, version);
 }
 
 static void wl_global_remove(void *data,
@@ -161,10 +161,37 @@ std::tuple<int, int> WaylandSurface::get_size_for_metrics(Metrics m)
     return { round(m.width * actual_scale), round(m.height * actual_scale) };
 }
 
+void WaylandSurface::shrink()
+{
+    if (!viewport)
+        viewport = wp_viewporter_get_viewport(viewporter, child);
+
+    wp_viewport_set_source(viewport,
+        wl_fixed_from_int(-1), wl_fixed_from_int(-1),
+        wl_fixed_from_int(-1), wl_fixed_from_int(-1));
+    wp_viewport_set_destination(viewport, 2, 2);
+
+    wl_surface_commit(child);
+    wl_surface_commit(parent);
+}
+
+void WaylandSurface::regrow()
+{
+    if (!viewport)
+        viewport = wp_viewporter_get_viewport(viewporter, child);
+
+    wp_viewport_set_source(viewport,
+        wl_fixed_from_int(-1), wl_fixed_from_int(-1),
+        wl_fixed_from_int(-1), wl_fixed_from_int(-1));
+    wp_viewport_set_destination(viewport, metrics.width, metrics.height);
+
+    wl_surface_commit(child);
+    wl_surface_commit(parent);
+}
+
 void WaylandSurface::resize(Metrics m)
 {
     metrics = m;
-    auto [w, h] = get_size();
 
     wl_subsurface_set_position(subsurface, m.x, m.y);
 
