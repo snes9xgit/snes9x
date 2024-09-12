@@ -7,6 +7,11 @@
 #ifdef HAVE_LIBPNG
 #include <png.h>
 #endif
+
+#include <ctime>
+#include <sstream>
+#include <iomanip>
+
 #include "snes9x.h"
 #include "memmap.h"
 #include "display.h"
@@ -24,7 +29,27 @@ bool8 S9xDoScreenshot (int width, int height)
 	png_color_8	sig_bit;
 	int			imgwidth, imgheight;
 
-	std::string fname = S9xGetFilenameInc(".png", SCREENSHOT_DIR);
+	std::tm current_time;
+	std::time_t current_timet = time(nullptr);
+	localtime_r(&current_timet, &current_time);
+
+	auto screenshot_dir = S9xGetDirectory(SCREENSHOT_DIR);
+	std::stringstream ss;
+	ss << screenshot_dir
+	   << S9xBasenameNoExt(Memory.ROMFilename) << "-"
+	   << std::put_time(&current_time, "%Y-%m-%d-%H:%M:%S");
+	std::string fname = ss.str() + ".png";
+
+	for (int i = 0; i < 1000; i++)
+	{
+		FILE *fp = fopen(fname.c_str(), "r");
+
+		if (!fp)
+			break;
+
+		fclose(fp);
+		fname = ss.str() + "-" + std::to_string(i) + ".png";
+	}
 
 	fp = fopen(fname.c_str(), "wb");
 	if (!fp)
