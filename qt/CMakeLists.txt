@@ -76,7 +76,7 @@ set(SNES9X_CORE_SOURCES
     ../fscompat.cpp)
 add_library(snes9x-core ${SNES9X_CORE_SOURCES})
 target_include_directories(snes9x-core PRIVATE ../)
-target_compile_definitions(snes9x-core PRIVATE ${DEFINES} ZLIB HAVE_STDINT_H ALLOW_CPU_OVERCLOCK)
+target_compile_definitions(snes9x-core PRIVATE ${DEFINES} ZLIB HAVE_STDINT_H HAVE_LIBPNG ALLOW_CPU_OVERCLOCK)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     set(PREBUILT_QT "${PROJECT_SOURCE_DIR}/../external/qt6-mingw-clang-bin")
@@ -100,6 +100,7 @@ list(APPEND INCLUDES ${Qt6Gui_PRIVATE_INCLUDE_DIRS})
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL REQUIRED sdl2)
 pkg_check_modules(ZLIB REQUIRED zlib)
+pkg_check_modules(PNG REQUIRED libpng)
 list(APPEND INCLUDES ${SDL_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
 list(APPEND FLAGS ${SDL_COMPILE_FLAGS} ${ZLIB_COMPILE_FLAGS})
 
@@ -112,7 +113,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
         list(APPEND LIBS libstdc++.a)
     endif()
 
-    list(APPEND LIBS libSDL2.a libz.a opengl32 gdi32 winmm imm32 ole32 oleaut32 version uuid advapi32 setupapi shell32 dinput8)
+    list(APPEND LIBS libSDL2.a libz.a libpng.a opengl32 gdi32 winmm imm32 ole32 oleaut32 version uuid advapi32 setupapi shell32 dinput8)
     list(APPEND DEFINES SDL_MAIN_HANDLED)
     list(APPEND PLATFORM_SOURCES
         ../common/video/opengl/wgl_context.cpp
@@ -127,7 +128,7 @@ else()
     endif()
 
     list(APPEND INCLUDES ${WAYLAND_INCLUDE_DIRS} ${X11_INCLUDE_DIRS})
-    list(APPEND LIBS ${WAYLAND_LIBRARIES} ${X11_LIBRARIES} ${ZLIB_LIBRARIES} ${SDL_LIBRARIES})
+    list(APPEND LIBS ${WAYLAND_LIBRARIES} ${PNG_LIBRARIES} ${X11_LIBRARIES} ${ZLIB_LIBRARIES} ${SDL_LIBRARIES})
     list(APPEND FLAGS ${WAYLAND_CFLAGS})
 
     pkg_check_modules(PULSEAUDIO libpulse)

@@ -14,7 +14,6 @@
 
 #include "snes9x.h"
 #include "memmap.h"
-#include "display.h"
 #include "screenshot.h"
 
 
@@ -29,15 +28,15 @@ bool8 S9xDoScreenshot (int width, int height)
 	png_color_8	sig_bit;
 	int			imgwidth, imgheight;
 
-	std::tm current_time;
+	std::tm *current_time;
 	std::time_t current_timet = time(nullptr);
-	localtime_r(&current_timet, &current_time);
+	current_time = localtime(&current_timet);
 
 	auto screenshot_dir = S9xGetDirectory(SCREENSHOT_DIR);
 	std::stringstream ss;
 	ss << screenshot_dir
 	   << S9xBasenameNoExt(Memory.ROMFilename) << "-"
-	   << std::put_time(&current_time, "%Y-%m-%d-%H:%M:%S");
+	   << std::put_time(current_time, "%Y-%m-%d-%H-%M-%S");
 	std::string fname = ss.str() + ".png";
 
 	for (int i = 0; i < 1000; i++)
