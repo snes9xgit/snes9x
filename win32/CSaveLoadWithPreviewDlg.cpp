@@ -126,7 +126,7 @@ void CSaveLoadWithPreviewDlg::load_slot_image_text(int slot, int bank, HWND hDlg
         SendMessage(GetDlgItem(hDlg, IDC_BUTTON_SLOT_1 + slot), BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)previewHbmps[slot]);
 
         char filename[_MAX_PATH + 1];
-        GetSlotFilename(slot, filename);
+        GetSlotFilename(bank * SAVE_SLOTS_PER_BANK + slot, filename);
         Utf8ToWide filenameW(filename);
 
         // text with filename and last write time
