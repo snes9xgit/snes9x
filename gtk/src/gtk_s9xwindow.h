@@ -39,6 +39,8 @@ class Snes9xWindow : public GtkBuilderWindow
     void leave_fullscreen_mode();
     void toggle_fullscreen_mode();
     void finish_fullscreen();
+    void set_bypass_compositor(bool bypass);
+    void set_custom_video_mode(bool enable);
 
     /* Cursor modifying functions */
     void show_mouse_cursor();
