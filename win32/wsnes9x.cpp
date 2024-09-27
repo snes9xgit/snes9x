@@ -747,7 +747,7 @@ static void ShowStatusSlotInfo()
 	if (stat(filename, &stats) == 0)
 		exists = true;
 
-	sprintf(str, FREEZE_INFO_SET_SLOT_N, GUI.CurrentSaveSlot, exists ? "used" : "empty");
+	sprintf(str, FREEZE_INFO_SET_SLOT_N, GUI.CurrentSaveSlot, GUI.CurrentSaveBank, exists ? "used" : "empty");
 	S9xSetInfoString(str);
 }
 
@@ -885,13 +885,13 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 			if(wParam == CustomKeys.SlotSave.key
 			&& modifiers == CustomKeys.SlotSave.modifiers)
 			{
-				FreezeUnfreezeSlot (GUI.CurrentSaveSlot, true);
+				FreezeUnfreezeSlot (GUI.CurrentSaveBank * SAVE_SLOTS_PER_BANK + GUI.CurrentSaveSlot, true);
 				hitHotKey = true;
 			}
 			if(wParam == CustomKeys.SlotLoad.key
 			&& modifiers == CustomKeys.SlotLoad.modifiers)
 			{
-				FreezeUnfreezeSlot (GUI.CurrentSaveSlot, false);
+				FreezeUnfreezeSlot (GUI.CurrentSaveBank * SAVE_SLOTS_PER_BANK + GUI.CurrentSaveSlot, false);
 				hitHotKey = true;
 			}
             if(wParam == CustomKeys.DialogSave.key
@@ -935,9 +935,7 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 				if (GUI.CurrentSaveBank > LAST_SAVE_BANK)
 					GUI.CurrentSaveBank = 0;
 
-				static char str[64];
-				sprintf(str, FREEZE_INFO_SET_BANK_N, GUI.CurrentSaveBank);
-				S9xSetInfoString(str);
+                ShowStatusSlotInfo();
 
 				hitHotKey = true;
 			}
@@ -948,9 +946,7 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 				if (GUI.CurrentSaveBank < 0)
 					GUI.CurrentSaveBank = 9;
 
-				static char str[64];
-				sprintf(str, FREEZE_INFO_SET_BANK_N, GUI.CurrentSaveBank);
-				S9xSetInfoString(str);
+                ShowStatusSlotInfo();
 
 				hitHotKey = true;
 			}

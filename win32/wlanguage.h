@@ -364,8 +364,7 @@ Nintendo is a trademark.")
 
 // Save Messages
 
-#define FREEZE_INFO_SET_SLOT_N "Set save slot %03d [%s]"
-#define FREEZE_INFO_SET_BANK_N "Set save bank %03d"
+#define FREEZE_INFO_SET_SLOT_N "Set save slot %03d, bank %03d [%s]"
 
 // AVI Messages
 
