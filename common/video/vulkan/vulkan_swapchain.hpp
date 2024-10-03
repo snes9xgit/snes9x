@@ -79,10 +79,11 @@ class Swapchain
     std::vector<ImageData> image_data;
 
     Vulkan::Context &context;
-    vk::Device device;
-    vk::CommandPool command_pool;
-    vk::PhysicalDevice physical_device;
-    vk::Queue queue;
+    vk::SurfaceKHR &surface;
+    vk::Device &device;
+    vk::CommandPool &command_pool;
+    vk::PhysicalDevice &physical_device;
+    vk::Queue &queue;
 };
 
 } // namespace Vulkan

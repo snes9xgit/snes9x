@@ -5,12 +5,13 @@ namespace Vulkan
 {
 
 Swapchain::Swapchain(Context &context_)
-    : context(context_)
+    : context(context_),
+      device(context.device),
+      queue(context.queue),
+      physical_device(context.physical_device),
+      command_pool(context.command_pool.get()),
+      surface(context.surface.get())
 {
-    device = context.device;
-    queue = context.queue;
-    physical_device = context.physical_device;
-    command_pool = context.command_pool.get();
     create_render_pass();
     end_render_pass_function = nullptr;
 }
@@ -76,7 +77,7 @@ void Swapchain::create_render_pass()
         .setDependencies(subpass_dependency)
         .setAttachments(attachment_description);
 
-    render_pass = context.device.createRenderPassUnique(render_pass_create_info).value;
+    render_pass = device.createRenderPassUnique(render_pass_create_info).value;
 }
 
 bool Swapchain::recreate()
@@ -122,7 +123,7 @@ bool Swapchain::check_and_resize(int width, int height)
 
     if (width == -1 && height == -1)
     {
-        surface_capabilities = physical_device.getSurfaceCapabilitiesKHR(context.surface.get()).value;
+        surface_capabilities = physical_device.getSurfaceCapabilitiesKHR(surface).value;
         width = surface_capabilities.currentExtent.width;
         height = surface_capabilities.currentExtent.height;
     }
@@ -154,7 +155,7 @@ bool Swapchain::create()
     frames.clear();
     image_data.clear();
 
-    auto surface_capabilities = physical_device.getSurfaceCapabilitiesKHR(context.surface.get()).value;
+    auto surface_capabilities = physical_device.getSurfaceCapabilitiesKHR(surface).value;
 
     if (desired_latency == - 1 || (int)surface_capabilities.minImageCount > desired_latency)
         num_swapchain_images = surface_capabilities.minImageCount;
@@ -210,7 +211,7 @@ bool Swapchain::create()
         .setCompositeAlpha(vk::CompositeAlphaFlagBitsKHR::eOpaque)
         .setClipped(true)
         .setPresentMode(get_present_mode())
-        .setSurface(context.surface.get())
+        .setSurface(surface)
         .setPreTransform(vk::SurfaceTransformFlagBitsKHR::eIdentity)
         .setImageArrayLayers(1)
         .setQueueFamilyIndices(graphics_queue_index);
