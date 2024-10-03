@@ -9,7 +9,6 @@ Swapchain::Swapchain(Context &context_)
 {
     device = context.device;
     queue = context.queue;
-    surface = context.surface.get();
     physical_device = context.physical_device;
     command_pool = context.command_pool.get();
     create_render_pass();
@@ -77,17 +76,17 @@ void Swapchain::create_render_pass()
         .setDependencies(subpass_dependency)
         .setAttachments(attachment_description);
 
-    render_pass = device.createRenderPassUnique(render_pass_create_info).value;
+    render_pass = context.device.createRenderPassUnique(render_pass_create_info).value;
 }
 
-bool Swapchain::recreate(int new_width, int new_height)
+bool Swapchain::recreate()
 {
     if (swapchain_object)
     {
         device.waitIdle();
     }
 
-    return create(num_swapchain_images, new_width, new_height);
+    return create();
 }
 
 vk::Image Swapchain::get_image()
@@ -123,7 +122,7 @@ bool Swapchain::check_and_resize(int width, int height)
 
     if (width == -1 && height == -1)
     {
-        surface_capabilities = physical_device.getSurfaceCapabilitiesKHR(surface).value;
+        surface_capabilities = physical_device.getSurfaceCapabilitiesKHR(context.surface.get()).value;
         width = surface_capabilities.currentExtent.width;
         height = surface_capabilities.currentExtent.height;
     }
@@ -133,24 +132,34 @@ bool Swapchain::check_and_resize(int width, int height)
 
     if (extents.width != (uint32_t)width || extents.height != (uint32_t)height)
     {
-        recreate(width, height);
+        set_desired_size(width, height);
+        recreate();
         return true;
     }
 
     return false;
 }
 
-bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width, int new_height)
+bool Swapchain::uncreate()
+{
+    frames.clear();
+    image_data.clear();
+    swapchain_object.reset();
+
+    return true;
+}
+
+bool Swapchain::create()
 {
     frames.clear();
     image_data.clear();
 
-    auto surface_capabilities = physical_device.getSurfaceCapabilitiesKHR(surface).value;
+    auto surface_capabilities = physical_device.getSurfaceCapabilitiesKHR(context.surface.get()).value;
 
-    if (surface_capabilities.minImageCount > desired_num_swapchain_images)
+    if (desired_latency == - 1 || (int)surface_capabilities.minImageCount > desired_latency)
         num_swapchain_images = surface_capabilities.minImageCount;
     else
-        num_swapchain_images = desired_num_swapchain_images;
+        num_swapchain_images = desired_latency;
 
     // If extents aren't reported (Wayland), we have to rely on Wayland to report
     // the size, so keep current extent.
@@ -168,11 +177,11 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
         }
     }
 
-    if (new_width > 0 && new_height > 0)
+    if (desired_width > 0 && desired_height > 0)
     {
         // No buffer is allocated for surface yet
-        extents.width = new_width;
-        extents.height = new_height;
+        extents.width = desired_width;
+        extents.height = desired_height;
     }
     else if (extents.width < 1 || extents.height < 1)
     {
@@ -191,14 +200,6 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
     if (extents.height < surface_capabilities.minImageExtent.height)
         extents.height = surface_capabilities.minImageExtent.height;
 
-    auto present_modes = physical_device.getSurfacePresentModesKHR(surface).value;
-    supports_mailbox = vector_find(present_modes, vk::PresentModeKHR::eMailbox);
-    supports_immediate = vector_find(present_modes, vk::PresentModeKHR::eImmediate);
-    supports_relaxed = vector_find(present_modes, vk::PresentModeKHR::eFifoRelaxed);
-
-    auto swapchain_maintenance_info = vk::SwapchainPresentModesCreateInfoEXT{}
-        .setPresentModes(present_modes);
-
     auto swapchain_create_info = vk::SwapchainCreateInfoKHR{}
         .setMinImageCount(num_swapchain_images)
         .setImageFormat(vk::Format::eB8G8R8A8Unorm)
@@ -209,11 +210,10 @@ bool Swapchain::create(unsigned int desired_num_swapchain_images, int new_width,
         .setCompositeAlpha(vk::CompositeAlphaFlagBitsKHR::eOpaque)
         .setClipped(true)
         .setPresentMode(get_present_mode())
-        .setSurface(surface)
+        .setSurface(context.surface.get())
         .setPreTransform(vk::SurfaceTransformFlagBitsKHR::eIdentity)
         .setImageArrayLayers(1)
-        .setQueueFamilyIndices(graphics_queue_index)
-        .setPNext(&swapchain_maintenance_info);
+        .setQueueFamilyIndices(graphics_queue_index);
 
     swapchain_object.reset();
     auto resval = device.createSwapchainKHRUnique(swapchain_create_info);
@@ -299,7 +299,7 @@ bool Swapchain::begin_frame()
     }
 
     vk::ResultValue<uint32_t> result_value(vk::Result::eSuccess, 0);
-    result_value = device.acquireNextImageKHR(swapchain_object.get(), UINT64_MAX, frame.acquire.get());
+    result_value = device.acquireNextImageKHR(swapchain_object.get(), 33333333, frame.acquire.get());
 
     if (result_value.result == vk::Result::eErrorOutOfDateKHR ||
         result_value.result == vk::Result::eSuboptimalKHR)

@@ -13,10 +13,16 @@ class Swapchain
   public:
     Swapchain(Context &);
     ~Swapchain();
-    bool create(unsigned int num_frames, int width = -1, int height = -1);
-    bool recreate(int width = -1, int height = -1);
+    bool create();
+    bool uncreate();
+    bool recreate();
     bool create_resources();
     bool check_and_resize(int width = -1, int height = -1);
+    Swapchain &set_desired_size(int width, int height) { desired_width = width; desired_height = height; return *this; }
+    void unset_desired_size() { desired_width = -1; desired_height = -1; }
+    Swapchain &set_desired_latency(int latency) { desired_latency = latency; return *this; }
+    void unset_desired_latency() { desired_latency = -1; }
+
     bool begin_frame();
     void begin_render_pass();
     void end_render_pass();
@@ -61,6 +67,9 @@ class Swapchain
     unsigned int current_frame = 0;
     unsigned int current_swapchain_image = 0;
     unsigned int num_swapchain_images = 0;
+    int desired_width = -1;
+    int desired_height = -1;
+    int desired_latency = -1;
     uint64_t presentation_id = 0;
     bool vsync = true;
     bool supports_immediate = false;
@@ -71,7 +80,6 @@ class Swapchain
 
     Vulkan::Context &context;
     vk::Device device;
-    vk::SurfaceKHR surface;
     vk::CommandPool command_pool;
     vk::PhysicalDevice physical_device;
     vk::Queue queue;

@@ -1,6 +1,7 @@
 #include <cstring>
 #include <vector>
 #include <string>
+#include <optional>
 #include "vulkan_context.hpp"
 
 namespace Vulkan
@@ -93,45 +94,61 @@ std::vector<std::string> Vulkan::Context::get_device_list()
 }
 
 #ifdef VK_USE_PLATFORM_WIN32_KHR
-bool Context::init_win32(HINSTANCE hinstance, HWND hwnd, int preferred_device)
+bool Context::init_win32()
 {
     instance = create_instance_preamble(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
     if (!instance)
         return false;
 
+    return init(preferred_device);
+}
+
+bool Context::create_win32_surface(HINSTANCE hinstance, HWND hwnd)
+{
     auto win32_surface_create_info = vk::Win32SurfaceCreateInfoKHR{}
         .setHinstance(hinstance)
         .setHwnd(hwnd);
-    surface = instance->createWin32SurfaceKHRUnique(win32_surface_create_info).value;
-    if (!surface)
+    auto retval = instance->createWin32SurfaceKHRUnique(win32_surface_create_info);
+    if (retval.result != vk::Result::eSuccess)
         return false;
-    return init(preferred_device);
+    surface = std::move(retval.value);
+    return true;
 }
 #endif
 
 #ifdef VK_USE_PLATFORM_XLIB_KHR
-bool Context::init_Xlib(Display *dpy, Window xid, int preferred_device)
+bool Context::init_Xlib()
 {
     instance = create_instance_preamble(VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
     if (!instance)
         return false;
 
+    return init();
+}
+
+bool Context::create_Xlib_surface(Display *dpy, Window xid)
+{
     auto retval = instance->createXlibSurfaceKHRUnique({ {}, dpy, xid });
     if (retval.result != vk::Result::eSuccess)
         return false;
     surface = std::move(retval.value);
 
-    return init(preferred_device);
+    return true;
 }
 #endif
 
 #ifdef VK_USE_PLATFORM_WAYLAND_KHR
-bool Context::init_wayland(wl_display *dpy, wl_surface *parent, int initial_width, int initial_height, int preferred_device)
+bool Context::init_wayland()
 {
     instance = create_instance_preamble(VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME);
     if (!instance)
         return false;
 
+    return init();
+}
+
+bool Context::create_wayland_surface(wl_display *dpy, wl_surface *parent)
+{
     auto wayland_surface_create_info = vk::WaylandSurfaceCreateInfoKHR{}
         .setSurface(parent)
         .setDisplay(dpy);
@@ -141,18 +158,29 @@ bool Context::init_wayland(wl_display *dpy, wl_surface *parent, int initial_widt
         return false;
     surface = std::move(new_surface);
 
-    return init(preferred_device, initial_width, initial_height);
+    return true;
 }
 #endif
 
-bool Context::init(int preferred_device, int initial_width, int initial_height)
+bool Context::destroy_surface()
 {
-    init_device(preferred_device);
+    wait_idle();
+    if (swapchain)
+        swapchain->uncreate();
+
+    surface.reset();
+
+    return true;
+}
+
+bool Context::init()
+{
+    init_device();
     init_vma();
     init_command_pool();
     init_descriptor_pool();
 
-    create_swapchain(initial_width, initial_height);
+    swapchain = std::make_unique<Swapchain>(*this);
     wait_idle();
     return true;
 }
@@ -192,7 +220,7 @@ static bool find_extension(std::vector<vk::ExtensionProperties> &props, const ch
                         }) != props.end();
 };
 
-static uint32_t find_graphics_queue(vk::PhysicalDevice &device)
+static std::optional<uint32_t> find_graphics_queue(vk::PhysicalDevice &device)
 {
     auto queue_props = device.getQueueFamilyProperties();
     for (size_t i = 0; i < queue_props.size(); i++)
@@ -203,7 +231,7 @@ static uint32_t find_graphics_queue(vk::PhysicalDevice &device)
         }
     }
 
-    return UINT32_MAX;
+    return std::nullopt;
 }
 
 static bool check_extensions(std::vector<const char *> &required_extensions, vk::PhysicalDevice &device)
@@ -217,7 +245,7 @@ static bool check_extensions(std::vector<const char *> &required_extensions, vk:
     return true;
 };
 
-bool Context::init_device(int preferred_device)
+bool Context::init_device()
 {
     std::vector<const char *> required_extensions = {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME,
@@ -251,8 +279,9 @@ bool Context::init_device(int preferred_device)
     if (!device_chosen)
         return false;
 
-    graphics_queue_family_index = find_graphics_queue(physical_device);
-    if (graphics_queue_family_index == UINT32_MAX)
+    if (auto index = find_graphics_queue(physical_device))
+        graphics_queue_family_index = *index;
+    else
         return false;
 
     std::vector<float> priorities = { 1.0f };
@@ -261,14 +290,6 @@ bool Context::init_device(int preferred_device)
 
     device = physical_device.createDevice(dci).value;
     queue = device.getQueue(graphics_queue_family_index, 0);
-
-    auto surface_formats = physical_device.getSurfaceFormatsKHR(surface.get()).value;
-    if (std::find_if(surface_formats.begin(),
-                     surface_formats.end(),
-                     [](vk::SurfaceFormatKHR &f) {
-                         return (f.format == vk::Format::eB8G8R8A8Unorm);
-                     }) == surface_formats.end())
-        return false;
 
     return true;
 }
@@ -289,16 +310,15 @@ bool Context::init_vma()
     return true;
 }
 
-bool Context::create_swapchain(int width, int height)
+bool Context::create_swapchain()
 {
     wait_idle();
-    swapchain = std::make_unique<Swapchain>(*this);
-    return swapchain->create(2, width, height);
+    return swapchain->create();
 }
 
-bool Context::recreate_swapchain(int width, int height)
+bool Context::recreate_swapchain()
 {
-    return swapchain->recreate(width, height);
+    return swapchain->recreate();
 }
 
 void Context::wait_idle()

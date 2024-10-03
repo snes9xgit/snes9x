@@ -91,7 +91,10 @@ void S9xVulkanDisplayDriver::refresh()
 
 #ifdef GDK_WINDOWING_WAYLAND
     if (GDK_IS_WAYLAND_WINDOW(drawing_area->get_window()->gobj()))
+    {
         std::tie(new_width, new_height) = wayland_surface->get_size_for_metrics(get_metrics(*drawing_area));
+        context->swapchain->set_desired_size(new_width, new_height);
+    }
     else
 #endif
     {
@@ -101,7 +104,7 @@ void S9xVulkanDisplayDriver::refresh()
 
     if (new_width != current_width || new_height != current_height)
     {
-        context->recreate_swapchain(new_width, new_height);
+        context->recreate_swapchain();
         context->wait_idle();
         current_width = new_width;
         current_height = new_height;
@@ -128,10 +131,14 @@ int S9xVulkanDisplayDriver::init()
         wl_display *display = gdk_wayland_display_get_wl_display(drawing_area->get_display()->gobj());
 
         if (!wayland_surface->attach(display, surface, get_metrics(*drawing_area)))
-            return -1;
-
-        if (!context->init_wayland(wayland_surface->display, wayland_surface->child, current_width, current_height))
-            return -1;
+            goto abort;
+        if (!context->init_wayland())
+            goto abort;
+        if (!context->create_wayland_surface(wayland_surface->display, wayland_surface->child))
+            goto abort;
+        context->swapchain->set_desired_size(current_width, current_height);
+        if (!context->create_swapchain())
+            goto abort;
     }
 #endif
     if (GDK_IS_X11_WINDOW(drawing_area->get_window()->gobj()))
@@ -139,8 +146,12 @@ int S9xVulkanDisplayDriver::init()
         display = gdk_x11_display_get_xdisplay(drawing_area->get_display()->gobj());
         xid = gdk_x11_window_get_xid(drawing_area->get_window()->gobj());
 
-        if (!context->init_Xlib(display, xid))
-            return -1;
+        if (!context->init_Xlib())
+            goto abort;
+        if (!context->create_Xlib_surface(display, xid))
+            goto abort;
+        if (!context->create_swapchain())
+            goto abort;
     }
 
     device = context->device;
@@ -168,6 +179,10 @@ int S9xVulkanDisplayDriver::init()
     simple_output = std::make_unique<Vulkan::SimpleOutput>(context.get(), vk::Format::eR5G6B5UnormPack16);
 
     return 0;
+
+abort:
+    context.reset();
+    return -1;
 }
 
 void S9xVulkanDisplayDriver::deinit()

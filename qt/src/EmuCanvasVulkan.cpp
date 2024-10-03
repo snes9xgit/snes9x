@@ -28,7 +28,7 @@ EmuCanvasVulkan::EmuCanvasVulkan(EmuConfig *config, QWidget *parent, QWidget *ma
 
 EmuCanvasVulkan::~EmuCanvasVulkan()
 {
-    deinit();
+    assert(!context);
 }
 
 bool EmuCanvasVulkan::initImGui()
@@ -85,14 +85,16 @@ bool EmuCanvasVulkan::createContext()
     QGuiApplication::sync();
 
     context = std::make_unique<Vulkan::Context>();
+    context->set_preferred_device(config->display_device_index);
 
 #ifdef _WIN32
     auto hwnd = (HWND)winId();
     if (!context->init_win32(nullptr, hwnd, config->display_device_index))
-    {
-        context.reset();
-        return false;
-    }
+        goto fail;
+    if (!context->create_win32_surface(nullptr, hwnd))
+        goto fail;
+    if (!context->swapchain->create())
+        goto fail;
 #else
     if (platform == "wayland")
     {
@@ -101,21 +103,31 @@ bool EmuCanvasVulkan::createContext()
         auto surface = (wl_surface *)pni->nativeResourceForWindow("surface", main_window->windowHandle());
         wayland_surface->attach(display, surface, { parent->x() - main_window->x(), parent->y() - main_window->y(), width(), height(), static_cast<int>(devicePixelRatio()) });
         auto [scaled_width, scaled_height] = wayland_surface->get_size();
-        if (!context->init_wayland(display, wayland_surface->child, scaled_width, scaled_height, config->display_device_index))
-        {
-            context.reset();
-            return false;
-        }
+
+        if (!context->init_wayland())
+            goto fail;
+
+        if (!context->create_wayland_surface(display, wayland_surface->child))
+            goto fail;
+
+        context->swapchain->set_desired_size(scaled_width, scaled_height);
+        if (!context->swapchain->create())
+            goto fail;
     }
     else if (platform == "xcb")
     {
         auto display = (Display *)pni->nativeResourceForWindow("display", window);
         auto xid = (Window)winId();
-        if (!context->init_Xlib(display, xid, config->display_device_index))
-        {
-            context.reset();
-            return false;
-        }
+
+        if (!context->init_Xlib())
+            goto fail;
+
+        if (!context->create_Xlib_surface(display, xid))
+            goto fail;
+
+        context->wait_idle();
+        if (!context->swapchain->create())
+            goto fail;
     }
 #endif
 
@@ -130,6 +142,10 @@ bool EmuCanvasVulkan::createContext()
     paintEvent(nullptr);
 
     return true;
+
+fail:
+    context.reset();
+    return false;
 }
 
 void EmuCanvasVulkan::tryLoadShader()
