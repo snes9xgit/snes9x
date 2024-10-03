@@ -62,7 +62,11 @@ bool CVulkan::Initialize(HWND hWnd)
 
     try {
         context = std::make_unique<Vulkan::Context>();
-        if (!context->init_win32(0, hWnd))
+        if (!context->init_win32())
+            return false;
+        if (!context->create_win32_surface(0, hWnd))
+            return false;
+        if (!context->create_swapchain())
             return false;
     }
     catch (std::exception& e)
@@ -180,7 +184,7 @@ bool CVulkan::ChangeRenderSize(unsigned int newWidth, unsigned int newHeight)
 
     if (newWidth != current_width || newHeight != current_height)
     {
-        context->recreate_swapchain(newWidth, newHeight);
+        context->recreate_swapchain();
         context->wait_idle();
         current_width = newWidth;
         current_height = newHeight;

@@ -100,7 +100,7 @@ bool Context::init_win32()
     if (!instance)
         return false;
 
-    return init(preferred_device);
+    return init();
 }
 
 bool Context::create_win32_surface(HINSTANCE hinstance, HWND hwnd)

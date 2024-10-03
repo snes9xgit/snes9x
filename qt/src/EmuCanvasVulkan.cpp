@@ -89,7 +89,7 @@ bool EmuCanvasVulkan::createContext()
 
 #ifdef _WIN32
     auto hwnd = (HWND)winId();
-    if (!context->init_win32(nullptr, hwnd, config->display_device_index))
+    if (!context->init_win32())
         goto fail;
     if (!context->create_win32_surface(nullptr, hwnd))
         goto fail;
