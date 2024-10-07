@@ -12,7 +12,6 @@ Swapchain::Swapchain(Context &context_)
       command_pool(context.command_pool.get()),
       surface(context.surface.get())
 {
-    create_render_pass();
     end_render_pass_function = nullptr;
 }
 
@@ -152,6 +151,9 @@ bool Swapchain::uncreate()
 
 bool Swapchain::create()
 {
+    if (!render_pass)
+        create_render_pass();
+
     frames.clear();
     image_data.clear();
 

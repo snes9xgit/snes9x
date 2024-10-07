@@ -11,6 +11,7 @@ static std::unique_ptr<vk::DynamicLoader> dl;
 
 Context::Context()
 {
+    swapchain = std::make_unique<Swapchain>(*this);
 }
 
 Context::~Context()
@@ -180,7 +181,6 @@ bool Context::init()
     init_command_pool();
     init_descriptor_pool();
 
-    swapchain = std::make_unique<Swapchain>(*this);
     wait_idle();
     return true;
 }

@@ -89,12 +89,13 @@ bool EmuCanvasVulkan::createContext()
 
 #ifdef _WIN32
     auto hwnd = (HWND)winId();
-    if (!context->init_win32())
-        goto fail;
-    if (!context->create_win32_surface(nullptr, hwnd))
-        goto fail;
-    if (!context->swapchain->create())
-        goto fail;
+    if (!context->init_win32() ||
+        !context->create_win32_surface(nullptr, hwnd) ||
+        !context->swapchain->create())
+    {
+        context.reset();
+        return false;
+    }
 #else
     if (platform == "wayland")
     {
@@ -104,30 +105,27 @@ bool EmuCanvasVulkan::createContext()
         wayland_surface->attach(display, surface, { parent->x() - main_window->x(), parent->y() - main_window->y(), width(), height(), static_cast<int>(devicePixelRatio()) });
         auto [scaled_width, scaled_height] = wayland_surface->get_size();
 
-        if (!context->init_wayland())
-            goto fail;
-
-        if (!context->create_wayland_surface(display, wayland_surface->child))
-            goto fail;
-
         context->swapchain->set_desired_size(scaled_width, scaled_height);
-        if (!context->swapchain->create())
-            goto fail;
+        if (!context->init_wayland() ||
+            !context->create_wayland_surface(display, wayland_surface->child) ||
+            !context->swapchain->create())
+        {
+            context.reset();
+            return false;
+        }
     }
     else if (platform == "xcb")
     {
         auto display = (Display *)pni->nativeResourceForWindow("display", window);
         auto xid = (Window)winId();
 
-        if (!context->init_Xlib())
-            goto fail;
-
-        if (!context->create_Xlib_surface(display, xid))
-            goto fail;
-
-        context->wait_idle();
-        if (!context->swapchain->create())
-            goto fail;
+        if (!context->init_Xlib() ||
+            !context->create_Xlib_surface(display, xid) ||
+            !context->swapchain->create())
+        {
+            context.reset();
+            return false;
+        }
     }
 #endif
 
@@ -142,10 +140,6 @@ bool EmuCanvasVulkan::createContext()
     paintEvent(nullptr);
 
     return true;
-
-fail:
-    context.reset();
-    return false;
 }
 
 void EmuCanvasVulkan::tryLoadShader()

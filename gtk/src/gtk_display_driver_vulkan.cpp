@@ -130,15 +130,15 @@ int S9xVulkanDisplayDriver::init()
         wl_surface *surface = gdk_wayland_window_get_wl_surface(drawing_area->get_window()->gobj());
         wl_display *display = gdk_wayland_display_get_wl_display(drawing_area->get_display()->gobj());
 
-        if (!wayland_surface->attach(display, surface, get_metrics(*drawing_area)))
-            goto abort;
-        if (!context->init_wayland())
-            goto abort;
-        if (!context->create_wayland_surface(wayland_surface->display, wayland_surface->child))
-            goto abort;
         context->swapchain->set_desired_size(current_width, current_height);
-        if (!context->create_swapchain())
-            goto abort;
+        if (!wayland_surface->attach(display, surface, get_metrics(*drawing_area)) ||
+            !context->init_wayland() ||
+            !context->create_wayland_surface(wayland_surface->display, wayland_surface->child) ||
+            !context->create_swapchain())
+        {
+            context.reset();
+            return -1;
+        }
     }
 #endif
     if (GDK_IS_X11_WINDOW(drawing_area->get_window()->gobj()))
@@ -146,12 +146,13 @@ int S9xVulkanDisplayDriver::init()
         display = gdk_x11_display_get_xdisplay(drawing_area->get_display()->gobj());
         xid = gdk_x11_window_get_xid(drawing_area->get_window()->gobj());
 
-        if (!context->init_Xlib())
-            goto abort;
-        if (!context->create_Xlib_surface(display, xid))
-            goto abort;
-        if (!context->create_swapchain())
-            goto abort;
+        if (!context->init_Xlib() ||
+            !context->create_Xlib_surface(display, xid) ||
+            !context->create_swapchain())
+        {
+            context.reset();
+            return -1;
+        }
     }
 
     device = context->device;
@@ -179,10 +180,6 @@ int S9xVulkanDisplayDriver::init()
     simple_output = std::make_unique<Vulkan::SimpleOutput>(context.get(), vk::Format::eR5G6B5UnormPack16);
 
     return 0;
-
-abort:
-    context.reset();
-    return -1;
 }
 
 void S9xVulkanDisplayDriver::deinit()
