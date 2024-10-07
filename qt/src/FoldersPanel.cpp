@@ -23,9 +23,7 @@ FoldersPanel::~FoldersPanel()
 
 void FoldersPanel::connectEntry(QComboBox *combo, QLineEdit *lineEdit, QPushButton *browse, int *location, std::string *folder)
 {
-    auto config = app->config.get();
-
-    QObject::connect(combo, &QComboBox::activated, [=](int index) {
+    QObject::connect(combo, &QComboBox::activated, [=, this](int index) {
         *location = index;
         this->refreshEntry(combo, lineEdit, browse, location, folder);
         app->updateSettings();
@@ -68,7 +66,7 @@ void FoldersPanel::refreshEntry(QComboBox *combo, QLineEdit *lineEdit, QPushButt
     if (custom)
     {
         browse->setText(tr("Browse..."));
-        QObject::connect(browse, &QPushButton::pressed, [=] {
+        QObject::connect(browse, &QPushButton::pressed, [=, this] {
             QFileDialog dialog(this, tr("Select a Folder"));
             dialog.setFileMode(QFileDialog::Directory);
             dialog.setDirectory(QString::fromUtf8(*folder));

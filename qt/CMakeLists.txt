@@ -3,7 +3,7 @@ project(snes9x-qt VERSION 1.63)
 
 include(GNUInstallDirs)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -302,7 +302,7 @@ add_executable(snes9x-qt ${QT_GUI_SOURCES} ${SOURCES} ${PLATFORM_SOURCES} src/re
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     set_target_properties(snes9x-qt PROPERTIES WIN32_EXECUTABLE True)
 endif()
-target_link_libraries(snes9x-qt snes9x-core ${LIBS})
+target_link_libraries(snes9x-qt PRIVATE snes9x-core ${LIBS})
 target_compile_definitions(snes9x-qt PRIVATE ${DEFINES})
 target_compile_options(snes9x-qt PRIVATE ${FLAGS})
 target_include_directories(snes9x-qt PRIVATE "../" ${INCLUDES})
