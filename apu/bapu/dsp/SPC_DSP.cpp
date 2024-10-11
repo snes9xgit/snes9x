@@ -1245,6 +1245,8 @@ void SPC_DSP::load( uint8_t const regs [register_count] )
 {
 	memcpy( m.external_regs, regs, sizeof m.regs );
 	memset( m.regs, 0, sizeof m.regs);
+	m.regs[66] = 0x01;
+	m.regs[82] = 0x01;
 	m.regs[r_flg] = 0xE0;
 	memset( &m.regs [register_count], 0, offsetof (state_t,ram) - register_count );
 
