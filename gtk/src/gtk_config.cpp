@@ -721,9 +721,15 @@ void Snes9xConfig::rebind_keys()
     cmd = S9xGetPortCommandT("{Mouse1 L,Superscope Fire,Justifier1 Trigger}");
     S9xMapButton(BINDING_MOUSE_BUTTON0, cmd, false);
 
-    cmd = S9xGetPortCommandT("{Justifier1 AimOffscreen Trigger,Superscope AimOffscreen}");
+    cmd = S9xGetPortCommandT("Superscope ToggleTurbo");
     S9xMapButton(BINDING_MOUSE_BUTTON1, cmd, false);
 
-    cmd = S9xGetPortCommandT("{Mouse1 R,Superscope Cursor,Justifier1 Start}");
+    cmd = S9xGetPortCommandT("{Mouse1 R,Superscope Pause,Justifier1 Start}");
     S9xMapButton(BINDING_MOUSE_BUTTON2, cmd, false);
+
+    cmd = S9xGetPortCommandT("Superscope Cursor");
+    S9xMapButton(BINDING_MOUSE_BUTTON0 + 7, cmd, false);
+
+    cmd = S9xGetPortCommandT("{Superscope AimOffscreen,Justifier1 AimOffscreen}");
+    S9xMapButton(BINDING_MOUSE_BUTTON0 + 8, cmd, false);
 }

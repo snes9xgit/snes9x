@@ -139,8 +139,28 @@ bool S9xPollAxis(uint32 id, int16 *value)
     return true;
 }
 
+static bool using_superscope()
+{
+    for (int i = 0; i < 2; i++)
+    {
+        enum controllers ctl;
+        int8_t id1, id2, id3, id4;
+        S9xGetController(i, &ctl, &id1, &id2, &id3, &id4);
+        if (ctl == CTL_SUPERSCOPE)
+            return true;
+    }
+
+    return false;
+}
+
 bool S9xPollPointer(uint32 id, int16 *x, int16 *y)
 {
+    if (using_superscope())
+    {
+        top_level->snes_mouse_x = std::clamp(top_level->snes_mouse_x, 0.0, 256.0);
+        top_level->snes_mouse_y = std::clamp(top_level->snes_mouse_y, 0.0, 239.0);
+    }
+
     *x = top_level->snes_mouse_x;
     *y = top_level->snes_mouse_y;
 
