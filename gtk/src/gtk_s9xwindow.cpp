@@ -280,16 +280,14 @@ bool Snes9xWindow::button_press(GdkEventButton *event)
         return false;
     }
 
-    if (event->button >= 1 && event->button <= 3)
-        S9xReportButton(BINDING_MOUSE_BUTTON0 + event->button - 1, true);
+    S9xReportButton(BINDING_MOUSE_BUTTON0 + event->button - 1, true);
 
     return false;
 }
 
 bool Snes9xWindow::button_release(GdkEventButton *event)
 {
-    if (event->button >= 1 && event->button <= 3)
-        S9xReportButton(BINDING_MOUSE_BUTTON0 + event->button - 1, false);
+    S9xReportButton(BINDING_MOUSE_BUTTON0 + event->button - 1, false);
 
     return false;
 }
@@ -1054,7 +1052,7 @@ Snes9xWindow::get_refresh_rate()
 #endif
 
 #ifdef GDK_WINDOWING_X11
-    if (GDK_IS_X11_DISPLAY(gdk_display))
+    if (is_wayland())
     {
         Window xid = gdk_x11_window_get_xid(gdk_window);
         Display *dpy = gdk_x11_display_get_xdisplay(gdk_display);
@@ -1063,7 +1061,7 @@ Snes9xWindow::get_refresh_rate()
 #endif
 
 #ifdef GDK_WINDOWING_WAYLAND
-    if (GDK_IS_WAYLAND_DISPLAY(gdk_display))
+    if (is_wayland())
     {
         GdkMonitor *monitor = gdk_display_get_monitor_at_window(gdk_display, gdk_window);
         refresh_rate = (double)gdk_monitor_get_refresh_rate(monitor) / 1000.0;

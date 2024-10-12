@@ -90,7 +90,7 @@ void S9xVulkanDisplayDriver::refresh()
     int new_width, new_height;
 
 #ifdef GDK_WINDOWING_WAYLAND
-    if (GDK_IS_WAYLAND_WINDOW(drawing_area->get_window()->gobj()))
+    if (is_wayland())
     {
         std::tie(new_width, new_height) = wayland_surface->get_size_for_metrics(get_metrics(*drawing_area));
         context->swapchain->set_desired_size(new_width, new_height);
@@ -110,7 +110,7 @@ void S9xVulkanDisplayDriver::refresh()
         current_height = new_height;
 
 #ifdef GDK_WINDOWING_WAYLAND
-        if (GDK_IS_WAYLAND_WINDOW(drawing_area->get_window()->gobj()))
+        if (is_wayland())
             wayland_surface->resize(get_metrics(*drawing_area));
 #endif
     }
@@ -124,7 +124,7 @@ int S9xVulkanDisplayDriver::init()
     context = std::make_unique<Vulkan::Context>();
 
 #ifdef GDK_WINDOWING_WAYLAND
-    if (GDK_IS_WAYLAND_WINDOW(drawing_area->get_window()->gobj()))
+    if (is_wayland())
     {
         wayland_surface = std::make_unique<WaylandSurface>();
         wl_surface *surface = gdk_wayland_window_get_wl_surface(drawing_area->get_window()->gobj());
@@ -270,7 +270,7 @@ bool S9xVulkanDisplayDriver::is_ready()
 void S9xVulkanDisplayDriver::shrink()
 {
 #ifdef GDK_WINDOWING_WAYLAND
-    if (GDK_IS_WAYLAND_WINDOW(drawing_area->get_window()->gobj()))
+    if (is_wayland())
         wayland_surface->shrink();
 #endif
 }
@@ -278,7 +278,7 @@ void S9xVulkanDisplayDriver::shrink()
 void S9xVulkanDisplayDriver::regrow()
 {
 #ifdef GDK_WINDOWING_WAYLAND
-    if (GDK_IS_WAYLAND_WINDOW(drawing_area->get_window()->gobj()))
+    if (is_wayland())
         wayland_surface->regrow();
 #endif
 }

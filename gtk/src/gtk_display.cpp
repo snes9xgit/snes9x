@@ -912,7 +912,7 @@ static void S9xInitDriver()
 {
     // Only OpenGL is supported on Wayland
 #ifdef GDK_WINDOWING_WAYLAND
-    if (GDK_IS_WAYLAND_DISPLAY(gdk_display_get_default()))
+    if (is_wayland())
     {
         if (gui_config->display_driver != "vulkan")
             gui_config->display_driver = "opengl";

@@ -346,13 +346,13 @@ void S9xOpenGLDisplayDriver::refresh()
 void S9xOpenGLDisplayDriver::resize()
 {
 #ifdef GDK_WINDOWING_WAYLAND
-    if (GDK_IS_WAYLAND_WINDOW(gdk_window))
+    if (is_wayland())
     {
         ((WaylandEGLContext *)context)->resize(get_metrics(*drawing_area));
     }
 #endif
 #ifdef GDK_WINDOWING_X11
-    if (GDK_IS_X11_WINDOW(gdk_window))
+    if (is_wayland())
     {
         context->resize();
     }
@@ -371,7 +371,7 @@ bool S9xOpenGLDisplayDriver::create_context()
     GdkDisplay *gdk_display = drawing_area->get_display()->gobj();
 
 #ifdef GDK_WINDOWING_WAYLAND
-    if (GDK_IS_WAYLAND_WINDOW(gdk_window))
+    if (is_wayland())
     {
         wl_surface *surface = gdk_wayland_window_get_wl_surface(drawing_area->get_window()->gobj());
         wl_display *display = gdk_wayland_display_get_wl_display(drawing_area->get_display()->gobj());
@@ -381,7 +381,7 @@ bool S9xOpenGLDisplayDriver::create_context()
     }
 #endif
 #ifdef GDK_WINDOWING_X11
-    if (GDK_IS_X11_WINDOW(gdk_window))
+    if (is_wayland())
     {
         if (!glx.attach(gdk_x11_display_get_xdisplay(gdk_display), gdk_x11_window_get_xid(gdk_window)))
             return false;
@@ -494,23 +494,7 @@ void S9xOpenGLDisplayDriver::deinit()
 
 int S9xOpenGLDisplayDriver::query_availability()
 {
-    GdkDisplay *gdk_display = gdk_display_get_default();
-
-#ifdef GDK_WINDOWING_WAYLAND
-    if (GDK_IS_WAYLAND_DISPLAY(gdk_display))
-    {
-        return 1;
-    }
-#endif
-
-#ifdef GDK_WINDOWING_X11
-    if (GDK_IS_X11_DISPLAY(gdk_display))
-    {
-            return 1;
-    }
-#endif
-
-    return 0;
+    return 1;
 }
 
 bool S9xOpenGLDisplayDriver::is_ready()
@@ -526,7 +510,7 @@ bool S9xOpenGLDisplayDriver::is_ready()
 void S9xOpenGLDisplayDriver::shrink()
 {
 #ifdef GDK_WINDOWING_WAYLAND
-    if (GDK_IS_WAYLAND_WINDOW(gdk_window))
+    if (is_wayland())
     {
         ((WaylandEGLContext *)context)->shrink();
     }
@@ -536,7 +520,7 @@ void S9xOpenGLDisplayDriver::shrink()
 void S9xOpenGLDisplayDriver::regrow()
 {
 #ifdef GDK_WINDOWING_WAYLAND
-    if (GDK_IS_WAYLAND_WINDOW(gdk_window))
+    if (is_wayland())
     {
         ((WaylandEGLContext *)context)->regrow();
     }
