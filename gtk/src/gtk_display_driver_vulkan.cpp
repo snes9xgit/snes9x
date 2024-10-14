@@ -141,7 +141,7 @@ int S9xVulkanDisplayDriver::init()
         }
     }
 #endif
-    if (GDK_IS_X11_WINDOW(drawing_area->get_window()->gobj()))
+    if (is_x11())
     {
         display = gdk_x11_display_get_xdisplay(drawing_area->get_display()->gobj());
         xid = gdk_x11_window_get_xid(drawing_area->get_window()->gobj());

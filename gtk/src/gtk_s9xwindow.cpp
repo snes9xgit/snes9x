@@ -981,7 +981,7 @@ void Snes9xWindow::reset_screensaver()
     GdkDisplay *gdk_display = window->get_display()->gobj();
 
 #ifdef GDK_WINDOWING_X11
-    if (GDK_IS_X11_WINDOW(gdk_window))
+    if (is_x11())
     {
         XResetScreenSaver(GDK_DISPLAY_XDISPLAY(gdk_display));
     }
@@ -1052,7 +1052,7 @@ Snes9xWindow::get_refresh_rate()
 #endif
 
 #ifdef GDK_WINDOWING_X11
-    if (!is_wayland())
+    if (is_x11())
     {
         Window xid = gdk_x11_window_get_xid(gdk_window);
         Display *dpy = gdk_x11_display_get_xdisplay(gdk_display);
@@ -1105,8 +1105,7 @@ void Snes9xWindow::set_bypass_compositor(bool bypass)
 {
 #ifdef GDK_WINDOWING_X11
     auto gdk_window = window->get_window()->gobj();
-    if (GDK_IS_X11_WINDOW(gdk_window) &&
-        config->default_esc_behavior != ESC_TOGGLE_MENUBAR)
+    if (is_x11() && config->default_esc_behavior != ESC_TOGGLE_MENUBAR)
     {
         auto gdk_display = window->get_display()->gobj();
         Display *dpy = gdk_x11_display_get_xdisplay(gdk_display);
@@ -1124,7 +1123,7 @@ void Snes9xWindow::set_custom_video_mode(bool enable)
     GdkDisplay *gdk_display = window->get_display()->gobj();
     GdkWindow *gdk_window = window->get_window()->gobj();
 
-    if (!GDK_IS_X11_WINDOW(window->get_window()->gobj()))
+    if (!is_x11())
         return;
 
     Display *dpy = gdk_x11_display_get_xdisplay(gdk_display);

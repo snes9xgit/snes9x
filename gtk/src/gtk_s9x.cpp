@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 
     top_level = new Snes9xWindow(gui_config);
 #ifdef GDK_WINDOWING_X11
-    if (!GDK_IS_X11_WINDOW(top_level->window->get_window()->gobj()))
+    if (!is_x11())
         XInitThreads();
 #endif
 
