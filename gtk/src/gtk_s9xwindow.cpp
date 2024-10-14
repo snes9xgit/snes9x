@@ -1052,7 +1052,7 @@ Snes9xWindow::get_refresh_rate()
 #endif
 
 #ifdef GDK_WINDOWING_X11
-    if (is_wayland())
+    if (!is_wayland())
     {
         Window xid = gdk_x11_window_get_xid(gdk_window);
         Display *dpy = gdk_x11_display_get_xdisplay(gdk_display);
