@@ -381,7 +381,7 @@ bool S9xOpenGLDisplayDriver::create_context()
     }
 #endif
 #ifdef GDK_WINDOWING_X11
-    if (is_wayland())
+    if (is_x11())
     {
         if (!glx.attach(gdk_x11_display_get_xdisplay(gdk_display), gdk_x11_window_get_xid(gdk_window)))
             return false;
