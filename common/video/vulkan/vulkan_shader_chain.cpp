@@ -476,7 +476,7 @@ bool ShaderChain::do_frame_without_swap(uint8_t *data, int width, int height, in
                 .setImage(context->swapchain->get_image())
                 .setOldLayout(vk::ImageLayout::ePresentSrcKHR)
                 .setNewLayout(vk::ImageLayout::eTransferSrcOptimal)
-                .setSrcAccessMask(vk::AccessFlagBits::eColorAttachmentWrite)
+                .setSrcAccessMask(vk::AccessFlagBits::eNone)
                 .setDstAccessMask(vk::AccessFlagBits::eTransferRead)
                 .setSubresourceRange(vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1));
 
@@ -498,16 +498,19 @@ bool ShaderChain::do_frame_without_swap(uint8_t *data, int width, int height, in
                 .setSrcAccessMask(vk::AccessFlagBits::eTransferWrite)
                 .setDstAccessMask(vk::AccessFlagBits::eShaderRead)
                 .setSubresourceRange(vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1));
+            cmd.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
+                                vk::PipelineStageFlagBits::eVertexShader | vk::PipelineStageFlagBits::eFragmentShader,
+                                {}, {}, {}, image_memory_barrier[0]);
+
             image_memory_barrier[1]
                 .setOldLayout(vk::ImageLayout::eTransferSrcOptimal)
                 .setNewLayout(vk::ImageLayout::ePresentSrcKHR)
-                .setSrcAccessMask(vk::AccessFlagBits::eTransferWrite)
-                .setDstAccessMask(vk::AccessFlagBits::eMemoryRead)
+                .setSrcAccessMask(vk::AccessFlagBits::eTransferRead)
+                .setDstAccessMask(vk::AccessFlagBits::eNone)
                 .setSubresourceRange(vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1));
-
             cmd.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
-                                vk::PipelineStageFlagBits::eAllGraphics,
-                                {}, {}, {}, image_memory_barrier);
+                                vk::PipelineStageFlagBits::eBottomOfPipe,
+                                {}, {}, {}, image_memory_barrier[1]);
 
             frame.image.current_layout = vk::ImageLayout::eTransferDstOptimal;
         }

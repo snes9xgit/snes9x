@@ -74,11 +74,11 @@ void PipelineImage::generate_mipmaps(vk::CommandBuffer cmd)
         .setImage(image)
         .setOldLayout(vk::ImageLayout::eShaderReadOnlyOptimal)
         .setNewLayout(vk::ImageLayout::eTransferSrcOptimal)
-        .setSrcAccessMask(vk::AccessFlagBits::eColorAttachmentWrite)
+        .setSrcAccessMask(vk::AccessFlagBits::eShaderRead | vk::AccessFlagBits::eInputAttachmentRead)
         .setDstAccessMask(vk::AccessFlagBits::eTransferRead)
         .setSubresourceRange(srr(0));
 
-    cmd.pipelineBarrier(vk::PipelineStageFlagBits::eAllGraphics,
+    cmd.pipelineBarrier(vk::PipelineStageFlagBits::eVertexShader | vk::PipelineStageFlagBits::eFragmentShader,
                         vk::PipelineStageFlagBits::eTransfer,
                         {}, {}, {}, image_memory_barrier);
 
@@ -139,7 +139,7 @@ void PipelineImage::generate_mipmaps(vk::CommandBuffer cmd)
         image_memory_barrier
             .setOldLayout(vk::ImageLayout::eTransferSrcOptimal)
             .setNewLayout(vk::ImageLayout::eShaderReadOnlyOptimal)
-            .setSrcAccessMask(vk::AccessFlagBits::eTransferWrite)
+            .setSrcAccessMask(vk::AccessFlagBits::eTransferRead)
             .setDstAccessMask(vk::AccessFlagBits::eShaderRead)
             .setSubresourceRange(srr(base_level));
 
@@ -163,7 +163,7 @@ void PipelineImage::generate_mipmaps(vk::CommandBuffer cmd)
 
 void PipelineImage::barrier(vk::CommandBuffer cmd)
 {
-    cmd.pipelineBarrier(vk::PipelineStageFlagBits::eAllGraphics,
+    cmd.pipelineBarrier(vk::PipelineStageFlagBits::eBottomOfPipe,
                         vk::PipelineStageFlagBits::eFragmentShader,
                         {}, {}, {}, {});
 }
@@ -178,7 +178,7 @@ void PipelineImage::clear(vk::CommandBuffer cmd)
         .setOldLayout(vk::ImageLayout::eUndefined)
         .setNewLayout(vk::ImageLayout::eTransferDstOptimal)
         .setSrcAccessMask(vk::AccessFlagBits::eShaderRead)
-        .setDstAccessMask(vk::AccessFlagBits::eTransferWrite | vk::AccessFlagBits::eTransferRead);
+        .setDstAccessMask(vk::AccessFlagBits::eTransferWrite);
 
     cmd.pipelineBarrier(vk::PipelineStageFlagBits::eFragmentShader,
                         vk::PipelineStageFlagBits::eTransfer,
