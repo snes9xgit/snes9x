@@ -66,8 +66,6 @@ void PipelineImage::generate_mipmaps(vk::CommandBuffer cmd)
 
     auto range = [](unsigned int i) { return vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, i, 1, 0, 1); };
     auto level = [](unsigned int i) { return vk::ImageSubresourceLayers(vk::ImageAspectFlagBits::eColor, i, 0, 1); };
-    auto image_memory_barrier = vk::ImageMemoryBarrier{}.setImage(image);
-
     auto mipmap_levels = mipmap ? mipmap_levels_for_size(image_width, image_height) : 1;
 
     image_layout_transition(cmd, image, vk::ImageLayout::eShaderReadOnlyOptimal, vk::ImageLayout::eTransferSrcOptimal);
