@@ -454,6 +454,7 @@
     <ClInclude Include="..\common\video\vulkan\slang_preset_ini.hpp" />
     <ClInclude Include="..\common\video\vulkan\slang_shader.hpp" />
     <ClInclude Include="..\common\video\vulkan\vulkan_context.hpp" />
+    <ClInclude Include="..\common\video\vulkan\vulkan_common.hpp" />
     <ClInclude Include="..\common\video\vulkan\vulkan_pipeline_image.hpp" />
     <ClInclude Include="..\common\video\vulkan\vulkan_shader_chain.hpp" />
     <ClInclude Include="..\common\video\vulkan\vulkan_simple_output.hpp" />
@@ -625,6 +626,7 @@
     <ClCompile Include="..\common\video\vulkan\slang_shader.cpp" />
     <ClCompile Include="..\common\video\vulkan\vk_mem_alloc_implementation.cpp" />
     <ClCompile Include="..\common\video\vulkan\vulkan_context.cpp" />
+    <ClCompile Include="..\common\video\vulkan\vulkan_common.cpp" />
     <ClCompile Include="..\common\video\vulkan\vulkan_hpp_storage.cpp" />
     <ClCompile Include="..\common\video\vulkan\vulkan_pipeline_image.cpp" />
     <ClCompile Include="..\common\video\vulkan\vulkan_shader_chain.cpp" />

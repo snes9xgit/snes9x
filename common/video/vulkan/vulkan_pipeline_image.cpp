@@ -2,6 +2,7 @@
 
 #include "vulkan_pipeline_image.hpp"
 #include "slang_helpers.hpp"
+#include "vulkan_common.hpp"
 
 namespace Vulkan
 {
@@ -63,25 +64,14 @@ void PipelineImage::generate_mipmaps(vk::CommandBuffer cmd)
     if (!mipmap)
         return;
 
-    auto srr = [](unsigned int i) { return vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, i, 1, 0, 1); };
-    auto srl = [](unsigned int i) { return vk::ImageSubresourceLayers(vk::ImageAspectFlagBits::eColor, i, 0, 1); };
+    auto range = [](unsigned int i) { return vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, i, 1, 0, 1); };
+    auto level = [](unsigned int i) { return vk::ImageSubresourceLayers(vk::ImageAspectFlagBits::eColor, i, 0, 1); };
     auto image_memory_barrier = vk::ImageMemoryBarrier{}.setImage(image);
 
     auto mipmap_levels = mipmap ? mipmap_levels_for_size(image_width, image_height) : 1;
 
+    image_layout_transition(cmd, image, vk::ImageLayout::eShaderReadOnlyOptimal, vk::ImageLayout::eTransferSrcOptimal);
     // Transition base layer to readable format.
-    image_memory_barrier
-        .setImage(image)
-        .setOldLayout(vk::ImageLayout::eShaderReadOnlyOptimal)
-        .setNewLayout(vk::ImageLayout::eTransferSrcOptimal)
-        .setSrcAccessMask(vk::AccessFlagBits::eShaderRead | vk::AccessFlagBits::eInputAttachmentRead)
-        .setDstAccessMask(vk::AccessFlagBits::eTransferRead)
-        .setSubresourceRange(srr(0));
-
-    cmd.pipelineBarrier(vk::PipelineStageFlagBits::eVertexShader | vk::PipelineStageFlagBits::eFragmentShader,
-                        vk::PipelineStageFlagBits::eTransfer,
-                        {}, {}, {}, image_memory_barrier);
-
     int base_width = image_width;
     int base_height = image_height;
     int base_level = 0;
@@ -90,75 +80,52 @@ void PipelineImage::generate_mipmaps(vk::CommandBuffer cmd)
         // Transition base layer to readable format.
         if (base_level > 0)
         {
-            image_memory_barrier
-                .setImage(image)
-                .setOldLayout(vk::ImageLayout::eTransferDstOptimal)
-                .setNewLayout(vk::ImageLayout::eTransferSrcOptimal)
-                .setSrcAccessMask(vk::AccessFlagBits::eTransferWrite)
-                .setDstAccessMask(vk::AccessFlagBits::eTransferRead)
-                .setSubresourceRange(srr(base_level));
-
-            cmd.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
-                                vk::PipelineStageFlagBits::eTransfer,
-                                {}, {}, {}, image_memory_barrier);
+            image_layout_transition(cmd,
+                                    image,
+                                    vk::ImageLayout::eTransferDstOptimal,
+                                    vk::ImageLayout::eTransferSrcOptimal,
+                                    range(base_level));
         }
 
         // Transition mipmap layer to writable
-        image_memory_barrier
-            .setImage(image)
-            .setOldLayout(vk::ImageLayout::eUndefined)
-            .setNewLayout(vk::ImageLayout::eTransferDstOptimal)
-            .setSrcAccessMask(vk::AccessFlagBits::eNone)
-            .setDstAccessMask(vk::AccessFlagBits::eTransferWrite)
-            .setSubresourceRange(srr(base_level + 1));
-
-        cmd.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
-                            vk::PipelineStageFlagBits::eTransfer,
-                            {}, {}, {}, image_memory_barrier);
+        image_layout_transition(cmd,
+                                image,
+                                vk::ImageLayout::eUndefined,
+                                vk::ImageLayout::eTransferDstOptimal,
+                                range(base_level + 1));
 
         // Blit base layer to mipmap layer
-        int mipmap_width = base_width >> 1;
-        int mipmap_height = base_height >> 1;
-        if (mipmap_width < 1)
-            mipmap_width = 1;
-        if (mipmap_height < 1)
-            mipmap_height = 1;
+        int mipmap_width = std::max(base_width >> 1, 1);
+        int mipmap_height = std::max(base_height >> 1, 1);
 
         auto blit = vk::ImageBlit{}
             .setSrcOffsets({ vk::Offset3D(0, 0, 0), vk::Offset3D(base_width, base_height, 1) })
             .setDstOffsets({ vk::Offset3D(0, 0, 0), vk::Offset3D(mipmap_width, mipmap_height, 1) })
-            .setSrcSubresource(srl(base_level))
-            .setDstSubresource(srl(base_level + 1));
+            .setSrcSubresource(level(base_level))
+            .setDstSubresource(level(base_level + 1));
 
         base_width = mipmap_width;
         base_height = mipmap_height;
 
-        cmd.blitImage(image, vk::ImageLayout::eTransferSrcOptimal, image, vk::ImageLayout::eTransferDstOptimal, blit, vk::Filter::eLinear);
+        cmd.blitImage(image,
+                      vk::ImageLayout::eTransferSrcOptimal,
+                      image,
+                      vk::ImageLayout::eTransferDstOptimal,
+                      blit,
+                      vk::Filter::eLinear);
 
-        // Transition base layer to shader readable
-        image_memory_barrier
-            .setOldLayout(vk::ImageLayout::eTransferSrcOptimal)
-            .setNewLayout(vk::ImageLayout::eShaderReadOnlyOptimal)
-            .setSrcAccessMask(vk::AccessFlagBits::eTransferRead)
-            .setDstAccessMask(vk::AccessFlagBits::eShaderRead)
-            .setSubresourceRange(srr(base_level));
-
-        cmd.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
-                            vk::PipelineStageFlagBits::eFragmentShader,
-                            {}, {}, {}, image_memory_barrier);
+        image_layout_transition(cmd,
+                                image,
+                                vk::ImageLayout::eTransferSrcOptimal,
+                                vk::ImageLayout::eShaderReadOnlyOptimal,
+                                range(base_level));
     }
 
-    // Transition final layer to shader readable
-    image_memory_barrier
-        .setOldLayout(vk::ImageLayout::eTransferDstOptimal)
-        .setNewLayout(vk::ImageLayout::eShaderReadOnlyOptimal)
-        .setSrcAccessMask(vk::AccessFlagBits::eTransferWrite)
-        .setDstAccessMask(vk::AccessFlagBits::eShaderRead)
-        .setSubresourceRange(srr(base_level));
-
-    cmd.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
-                        vk::PipelineStageFlagBits::eFragmentShader,
-                        {}, {}, {}, image_memory_barrier);
+    image_layout_transition(cmd,
+                            image,
+                            vk::ImageLayout::eTransferDstOptimal,
+                            vk::ImageLayout::eShaderReadOnlyOptimal,
+                            range(base_level));
 }
 
 void PipelineImage::barrier(vk::CommandBuffer cmd)
@@ -172,18 +139,11 @@ void PipelineImage::clear(vk::CommandBuffer cmd)
 {
     vk::ImageSubresourceRange subresource_range(vk::ImageAspectFlagBits::eColor, 0, VK_REMAINING_MIP_LEVELS, 0, 1);
 
-    auto image_memory_barrier = vk::ImageMemoryBarrier{}
-        .setImage(image)
-        .setSubresourceRange(subresource_range)
-        .setOldLayout(vk::ImageLayout::eUndefined)
-        .setNewLayout(vk::ImageLayout::eTransferDstOptimal)
-        .setSrcAccessMask(vk::AccessFlagBits::eShaderRead)
-        .setDstAccessMask(vk::AccessFlagBits::eTransferWrite);
-
-    cmd.pipelineBarrier(vk::PipelineStageFlagBits::eFragmentShader,
-                        vk::PipelineStageFlagBits::eTransfer,
-                        {}, {}, {},
-                        image_memory_barrier);
+    image_layout_transition(cmd,
+                            image,
+                            vk::ImageLayout::eUndefined,
+                            vk::ImageLayout::eTransferDstOptimal,
+                            subresource_range);
 
     vk::ClearColorValue color{};
 
@@ -194,16 +154,11 @@ void PipelineImage::clear(vk::CommandBuffer cmd)
                         color,
                         subresource_range);
 
-    image_memory_barrier
-        .setOldLayout(vk::ImageLayout::eTransferDstOptimal)
-        .setNewLayout(vk::ImageLayout::eShaderReadOnlyOptimal)
-        .setSrcAccessMask(vk::AccessFlagBits::eTransferWrite)
-        .setDstAccessMask(vk::AccessFlagBits::eShaderRead);
-
-    cmd.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
-                        vk::PipelineStageFlagBits::eFragmentShader,
-                        {}, {}, {},
-                        image_memory_barrier);
+    image_layout_transition(cmd,
+                            image,
+                            vk::ImageLayout::eTransferDstOptimal,
+                            vk::ImageLayout::eShaderReadOnlyOptimal,
+                            subresource_range);
 
     current_layout = vk::ImageLayout::eShaderReadOnlyOptimal;
 }

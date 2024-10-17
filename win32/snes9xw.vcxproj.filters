@@ -315,6 +315,9 @@
     <ClInclude Include="..\common\video\vulkan\vulkan_context.hpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClInclude>
+    <ClInclude Include="..\common\video\vulkan\vulkan_common.hpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClInclude>
     <ClInclude Include="..\common\video\vulkan\vulkan_pipeline_image.hpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClInclude>
@@ -735,6 +738,9 @@
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\common\video\vulkan\vulkan_context.cpp">
+      <Filter>GUI\VideoDriver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\video\vulkan\vulkan_common.cpp">
       <Filter>GUI\VideoDriver\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\common\video\vulkan\vulkan_hpp_storage.cpp">

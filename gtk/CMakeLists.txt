@@ -124,6 +124,8 @@ if(USE_SLANG)
                         ../common/video/vulkan/vk_mem_alloc_implementation.cpp
                         ../common/video/vulkan/vulkan_context.cpp
                         ../common/video/vulkan/vulkan_context.hpp
+                        ../common/video/vulkan/vulkan_common.cpp
+                        ../common/video/vulkan/vulkan_common.hpp
                         ../common/video/vulkan/vulkan_texture.cpp
                         ../common/video/vulkan/vulkan_texture.hpp
                         ../common/video/vulkan/vulkan_swapchain.cpp

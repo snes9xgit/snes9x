@@ -1,8 +1,8 @@
 #include <cassert>
 
 #include "vulkan_texture.hpp"
-#include "vulkan/vulkan_enums.hpp"
 #include "slang_helpers.hpp"
+#include "vulkan_common.hpp"
 
 namespace Vulkan
 {
@@ -103,20 +103,13 @@ void Texture::from_buffer(vk::CommandBuffer cmd,
     allocator.unmapMemory(buffer_allocation);
     allocator.flushAllocation(buffer_allocation, 0, width * height * pixel_size);
 
-    auto srr = [](unsigned int i) { return vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, i, 1, 0, 1); };
-    auto srl = [](unsigned int i) { return vk::ImageSubresourceLayers(vk::ImageAspectFlagBits::eColor, i, 0, 1); };
+    auto range = [](unsigned int i) { return vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, i, 1, 0, 1); };
+    auto level = [](unsigned int i) { return vk::ImageSubresourceLayers(vk::ImageAspectFlagBits::eColor, i, 0, 1); };
 
-    auto barrier = vk::ImageMemoryBarrier{}
-        .setImage(image)
-        .setOldLayout(vk::ImageLayout::eUndefined)
-        .setNewLayout(vk::ImageLayout::eTransferDstOptimal)
-        .setSrcAccessMask(vk::AccessFlagBits::eShaderRead)
-        .setDstAccessMask(vk::AccessFlagBits::eTransferWrite)
-        .setSubresourceRange(srr(0));
-
-    cmd.pipelineBarrier(vk::PipelineStageFlagBits::eFragmentShader,
-                        vk::PipelineStageFlagBits::eTransfer,
-                        {}, {}, {}, barrier);
+    image_layout_transition(cmd, image,
+                            vk::ImageLayout::eUndefined,
+                            vk::ImageLayout::eTransferDstOptimal,
+                            range(0));
 
     auto buffer_image_copy = vk::BufferImageCopy{}
         .setBufferOffset(0)
@@ -124,7 +117,7 @@ void Texture::from_buffer(vk::CommandBuffer cmd,
         .setBufferImageHeight(height)
         .setImageExtent(vk::Extent3D(width, height, 1))
         .setImageOffset(vk::Offset3D(0, 0, 0))
-        .setImageSubresource(srl(0));
+        .setImageSubresource(level(0));
     cmd.copyBufferToImage(this->buffer, image, vk::ImageLayout::eTransferDstOptimal, buffer_image_copy);
 
     auto mipmap_levels = mipmap ? mipmap_levels_for_size(image_width, image_height) : 1;
@@ -135,30 +128,16 @@ void Texture::from_buffer(vk::CommandBuffer cmd,
     for (; base_level + 1 < mipmap_levels; base_level++)
     {
         // Transition base layer to readable format.
-        barrier
-            .setImage(image)
-            .setOldLayout(vk::ImageLayout::eTransferDstOptimal)
-            .setNewLayout(vk::ImageLayout::eTransferSrcOptimal)
-            .setSrcAccessMask(vk::AccessFlagBits::eTransferWrite)
-            .setDstAccessMask(vk::AccessFlagBits::eTransferRead)
-            .setSubresourceRange(srr(base_level));
-
-        cmd.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
-                            vk::PipelineStageFlagBits::eTransfer,
-                            {}, {}, {}, barrier);
+        image_layout_transition(cmd, image,
+                                vk::ImageLayout::eTransferDstOptimal,
+                                vk::ImageLayout::eTransferSrcOptimal,
+                                range(base_level));
 
         // Transition mipmap layer to writable
-        barrier
-            .setImage(image)
-            .setOldLayout(vk::ImageLayout::eUndefined)
-            .setNewLayout(vk::ImageLayout::eTransferDstOptimal)
-            .setSrcAccessMask(vk::AccessFlagBits::eTransferRead)
-            .setDstAccessMask(vk::AccessFlagBits::eTransferWrite)
-            .setSubresourceRange(srr(base_level + 1));
-
-        cmd.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
-                            vk::PipelineStageFlagBits::eTransfer,
-                            {}, {}, {}, barrier);
+        image_layout_transition(cmd, image,
+                                vk::ImageLayout::eUndefined,
+                                vk::ImageLayout::eTransferDstOptimal,
+                                range(base_level + 1));
 
         // Blit base layer to mipmap layer
         int mipmap_width = base_width >> 1;
@@ -171,8 +150,8 @@ void Texture::from_buffer(vk::CommandBuffer cmd,
         auto blit = vk::ImageBlit{}
             .setSrcOffsets({ vk::Offset3D(0, 0, 0), vk::Offset3D(base_width, base_height, 1) })
             .setDstOffsets({ vk::Offset3D(0, 0, 0), vk::Offset3D(mipmap_width, mipmap_height, 1)})
-            .setSrcSubresource(srl(base_level))
-            .setDstSubresource(srl(base_level + 1));
+            .setSrcSubresource(level(base_level))
+            .setDstSubresource(level(base_level + 1));
 
         base_width = mipmap_width;
         base_height = mipmap_height;
@@ -180,29 +159,17 @@ void Texture::from_buffer(vk::CommandBuffer cmd,
         cmd.blitImage(image, vk::ImageLayout::eTransferSrcOptimal, image, vk::ImageLayout::eTransferDstOptimal, blit, vk::Filter::eLinear);
 
         // Transition base layer to shader readable
-        barrier
-            .setOldLayout(vk::ImageLayout::eTransferSrcOptimal)
-            .setNewLayout(vk::ImageLayout::eShaderReadOnlyOptimal)
-            .setSrcAccessMask(vk::AccessFlagBits::eTransferWrite)
-            .setDstAccessMask(vk::AccessFlagBits::eShaderRead)
-            .setSubresourceRange(srr(base_level));
-
-        cmd.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
-                            vk::PipelineStageFlagBits::eFragmentShader,
-                            {}, {}, {}, barrier);
+        image_layout_transition(cmd, image,
+                                vk::ImageLayout::eTransferSrcOptimal,
+                                vk::ImageLayout::eShaderReadOnlyOptimal,
+                                range(base_level));
     }
 
     // Transition final layer to shader readable
-    barrier
-        .setOldLayout(vk::ImageLayout::eTransferDstOptimal)
-        .setNewLayout(vk::ImageLayout::eShaderReadOnlyOptimal)
-        .setSrcAccessMask(vk::AccessFlagBits::eTransferWrite)
-        .setDstAccessMask(vk::AccessFlagBits::eShaderRead)
-        .setSubresourceRange(srr(base_level));
-
-    cmd.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
-                        vk::PipelineStageFlagBits::eFragmentShader,
-                        {}, {}, {}, barrier);
+    image_layout_transition(cmd, image,
+                            vk::ImageLayout::eTransferDstOptimal,
+                            vk::ImageLayout::eShaderReadOnlyOptimal,
+                            range(base_level));
 }
 
 void Texture::from_buffer(uint8_t *buffer, int width, int height, int byte_stride)

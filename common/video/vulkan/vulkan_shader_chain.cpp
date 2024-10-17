@@ -4,6 +4,7 @@
 #include "slang_helpers.hpp"
 #include "stb_image.h"
 #include "vulkan/vulkan_enums.hpp"
+#include "vulkan_common.hpp"
 
 namespace Vulkan
 {
@@ -464,25 +465,12 @@ bool ShaderChain::do_frame_without_swap(uint8_t *data, int width, int height, in
 
         if (preset->last_pass_uses_feedback && is_last_pass)
         {
-            std::array<vk::ImageMemoryBarrier, 2> image_memory_barrier{};
-            image_memory_barrier[0]
-                .setImage(frame.image.image)
-                .setOldLayout(vk::ImageLayout::eUndefined)
-                .setNewLayout(vk::ImageLayout::eTransferDstOptimal)
-                .setSrcAccessMask(vk::AccessFlagBits::eColorAttachmentWrite)
-                .setDstAccessMask(vk::AccessFlagBits::eTransferWrite)
-                .setSubresourceRange(vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1));
-            image_memory_barrier[1]
-                .setImage(context->swapchain->get_image())
-                .setOldLayout(vk::ImageLayout::ePresentSrcKHR)
-                .setNewLayout(vk::ImageLayout::eTransferSrcOptimal)
-                .setSrcAccessMask(vk::AccessFlagBits::eNone)
-                .setDstAccessMask(vk::AccessFlagBits::eTransferRead)
-                .setSubresourceRange(vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1));
-
-            cmd.pipelineBarrier(vk::PipelineStageFlagBits::eColorAttachmentOutput,
-                                vk::PipelineStageFlagBits::eTransfer,
-                                {}, {}, {}, image_memory_barrier);
+            image_layout_transition(cmd, frame.image.image,
+                                    vk::ImageLayout::eUndefined,
+                                    vk::ImageLayout::eTransferDstOptimal);
+            image_layout_transition(cmd, context->swapchain->get_image(),
+                                    vk::ImageLayout::ePresentSrcKHR,
+                                    vk::ImageLayout::eTransferSrcOptimal);
 
             auto image_blit = vk::ImageBlit{}
                 .setSrcOffsets({ vk::Offset3D(viewport_x, viewport_y, 0), vk::Offset3D(viewport_x + viewport_width, viewport_y + viewport_height, 1) })
@@ -492,25 +480,12 @@ bool ShaderChain::do_frame_without_swap(uint8_t *data, int width, int height, in
 
             cmd.blitImage(context->swapchain->get_image(), vk::ImageLayout::eTransferSrcOptimal, frame.image.image, vk::ImageLayout::eTransferDstOptimal, image_blit, vk::Filter::eNearest);
 
-            image_memory_barrier[0]
-                .setOldLayout(vk::ImageLayout::eTransferDstOptimal)
-                .setNewLayout(vk::ImageLayout::eShaderReadOnlyOptimal)
-                .setSrcAccessMask(vk::AccessFlagBits::eTransferWrite)
-                .setDstAccessMask(vk::AccessFlagBits::eShaderRead)
-                .setSubresourceRange(vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1));
-            cmd.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
-                                vk::PipelineStageFlagBits::eVertexShader | vk::PipelineStageFlagBits::eFragmentShader,
-                                {}, {}, {}, image_memory_barrier[0]);
-
-            image_memory_barrier[1]
-                .setOldLayout(vk::ImageLayout::eTransferSrcOptimal)
-                .setNewLayout(vk::ImageLayout::ePresentSrcKHR)
-                .setSrcAccessMask(vk::AccessFlagBits::eTransferRead)
-                .setDstAccessMask(vk::AccessFlagBits::eNone)
-                .setSubresourceRange(vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1));
-            cmd.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
-                                vk::PipelineStageFlagBits::eBottomOfPipe,
-                                {}, {}, {}, image_memory_barrier[1]);
+            image_layout_transition(cmd, frame.image.image,
+                                    vk::ImageLayout::eTransferDstOptimal,
+                                    vk::ImageLayout::eShaderReadOnlyOptimal);
+            image_layout_transition(cmd, context->swapchain->get_image(),
+                                    vk::ImageLayout::eTransferSrcOptimal,
+                                    vk::ImageLayout::ePresentSrcKHR);
 
             frame.image.current_layout = vk::ImageLayout::eTransferDstOptimal;
         }
