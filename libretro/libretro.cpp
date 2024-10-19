@@ -1148,7 +1148,7 @@ bool retro_load_game(const struct retro_game_info *game)
         if (randomize_memory)
         {
             srand(time(NULL));
-            for(int lcv = 0; lcv < sizeof(Memory.RAM); lcv++)
+            for(size_t lcv = 0; lcv < sizeof(Memory.RAM); lcv++)
                 Memory.RAM[lcv] = rand() % 256;
         }
     }
