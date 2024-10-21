@@ -352,7 +352,7 @@ void S9xOpenGLDisplayDriver::resize()
     }
 #endif
 #ifdef GDK_WINDOWING_X11
-    if (is_wayland())
+    if (is_x11())
     {
         context->resize();
     }
