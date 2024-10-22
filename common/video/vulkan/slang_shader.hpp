@@ -65,9 +65,6 @@ struct SlangShader
         Fragment
     };
 
-    SlangShader();
-    ~SlangShader();
-
     bool preprocess_shader_file(std::string filename, std::vector<std::string> &lines);
     void set_base_path(std::string filename);
     bool load_file(std::string new_filename = "");

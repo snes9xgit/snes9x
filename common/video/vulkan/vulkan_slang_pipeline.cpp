@@ -65,18 +65,6 @@ vk::SamplerAddressMode wrap_mode_from_string(std::string s)
     return vk::SamplerAddressMode::eClampToBorder;
 }
 
-SlangPipeline::SlangPipeline()
-{
-    device = nullptr;
-    shader = nullptr;
-    uniform_buffer = nullptr;
-    uniform_buffer_allocation = nullptr;
-    source_width = 0;
-    source_height = 0;
-    destination_width = 0;
-    destination_height = 0;
-}
-
 void SlangPipeline::init(Context *context_, SlangShader *shader_)
 {
     this->context = context_;

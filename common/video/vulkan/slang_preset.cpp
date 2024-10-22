@@ -19,14 +19,6 @@
 using std::string;
 using std::to_string;
 
-SlangPreset::SlangPreset()
-{
-}
-
-SlangPreset::~SlangPreset()
-{
-}
-
 bool SlangPreset::load_preset_file(string filename)
 {
     if (!ends_with(filename, ".slangp"))

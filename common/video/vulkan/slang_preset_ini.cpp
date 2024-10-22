@@ -4,14 +4,6 @@
 #include <cstring>
 #include <charconv>
 
-IniFile::IniFile()
-{
-}
-
-IniFile::~IniFile()
-{
-}
-
 static std::string trim_comments(std::string str)
 {
     for (auto &comment : { "//", "#" })

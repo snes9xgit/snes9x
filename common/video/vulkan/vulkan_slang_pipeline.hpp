@@ -10,7 +10,7 @@ namespace Vulkan
 class SlangPipeline
 {
   public:
-    SlangPipeline();
+    SlangPipeline() = default;
     void init(Context *context_, SlangShader *shader_);
     ~SlangPipeline();
 

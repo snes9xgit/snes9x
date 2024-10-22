@@ -4,8 +4,6 @@
 
 struct IniFile
 {
-    IniFile();
-    ~IniFile();
     bool load_file(std::string filename);
     std::string get_string(std::string key, std::string default_string);
     int get_int(std::string key, int default_int);

@@ -7,9 +7,6 @@
 
 struct SlangPreset
 {
-    SlangPreset();
-    ~SlangPreset();
-
     void print();
     bool load_preset_file(std::string filename);
     bool introspect();

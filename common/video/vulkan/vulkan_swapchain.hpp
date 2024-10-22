@@ -41,7 +41,7 @@ class Swapchain
     vk::RenderPass &get_render_pass();
 
   private:
-    std::function<void()> end_render_pass_function;
+    std::function<void()> end_render_pass_function = nullptr;
     void create_render_pass();
 
     struct Frame
@@ -79,11 +79,11 @@ class Swapchain
     std::vector<ImageData> image_data;
 
     Vulkan::Context &context;
-    vk::SurfaceKHR &surface;
     vk::Device &device;
-    vk::CommandPool &command_pool;
-    vk::PhysicalDevice &physical_device;
     vk::Queue &queue;
+    vk::PhysicalDevice &physical_device;
+    vk::CommandPool &command_pool;
+    vk::SurfaceKHR &surface;
 };
 
 } // namespace Vulkan

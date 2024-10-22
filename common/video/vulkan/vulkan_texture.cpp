@@ -7,20 +7,6 @@
 namespace Vulkan
 {
 
-Texture::Texture()
-{
-    image_width = 0;
-    image_height = 0;
-    buffer_size = 0;
-    device = nullptr;
-    command_pool = nullptr;
-    allocator = nullptr;
-    queue = nullptr;
-    buffer = nullptr;
-    image = nullptr;
-    sampler = nullptr;
-}
-
 Texture::~Texture()
 {
     destroy();

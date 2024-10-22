@@ -7,18 +7,6 @@
 namespace Vulkan
 {
 
-PipelineImage::PipelineImage()
-{
-    image_width = 0;
-    image_height = 0;
-    device = nullptr;
-    command_pool = nullptr;
-    allocator = nullptr;
-    queue = nullptr;
-    image = nullptr;
-    current_layout = vk::ImageLayout::eUndefined;
-}
-
 PipelineImage::~PipelineImage()
 {
     destroy();

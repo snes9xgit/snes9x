@@ -12,7 +12,6 @@ Swapchain::Swapchain(Context &context_)
       command_pool(context.command_pool.get()),
       surface(context.surface.get())
 {
-    end_render_pass_function = nullptr;
 }
 
 Swapchain::~Swapchain()

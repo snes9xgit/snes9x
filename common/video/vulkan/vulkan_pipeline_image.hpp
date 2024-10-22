@@ -6,7 +6,7 @@ namespace Vulkan
 
 struct PipelineImage
 {
-    PipelineImage();
+    PipelineImage() = default;
     void init(vk::Device device, vk::CommandPool command, vk::Queue queue, vma::Allocator allocator);
     void init(Vulkan::Context *context);
     ~PipelineImage();

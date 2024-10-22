@@ -7,7 +7,7 @@ namespace Vulkan
 
 struct Texture
 {
-    Texture();
+    Texture() = default;
     void init(vk::Device device, vk::CommandPool command, vk::Queue queue, vma::Allocator allocator);
     void init(Context *context);
     ~Texture();

@@ -14,15 +14,6 @@
 using std::string;
 using std::vector;
 
-SlangShader::SlangShader()
-{
-    ubo_size = 0;
-}
-
-SlangShader::~SlangShader()
-{
-}
-
 /*
     Recursively load shader file and included files into memory, applying
     #include and #pragma directives. Will strip all directives except
