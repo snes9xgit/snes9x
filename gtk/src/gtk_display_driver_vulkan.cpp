@@ -9,7 +9,6 @@
 #include "gtk_display_driver_vulkan.h"
 #include "gtk_shader_parameters.h"
 #include "snes9x.h"
-#include "gfx.h"
 #include "fmt/format.h"
 
 #include "snes9x_imgui.h"

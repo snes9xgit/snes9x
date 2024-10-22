@@ -8,9 +8,7 @@
 #include <cstdio>
 #include <vector>
 #include <cctype>
-#include <iostream>
 #include <fstream>
-#include <filesystem>
 #include <future>
 #include "external/SPIRV-Cross/spirv_cross.hpp"
 #include "external/SPIRV-Cross/spirv_glsl.hpp"

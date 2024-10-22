@@ -5,7 +5,6 @@
 \*****************************************************************************/
 
 #include <stdlib.h>
-#include <string.h>
 #include "gtk_builder_window.h"
 
 extern const unsigned char snes9x_ui[];

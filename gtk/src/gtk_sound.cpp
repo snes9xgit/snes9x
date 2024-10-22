@@ -4,7 +4,6 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include <errno.h>
 #include <unistd.h>
 
 #include "gtk_s9x.h"

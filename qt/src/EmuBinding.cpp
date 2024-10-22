@@ -2,7 +2,6 @@
 #include "SDL_joystick.h"
 #include <QString>
 #include <QKeySequence>
-#include <sstream>
 
 // Hash format:
 //

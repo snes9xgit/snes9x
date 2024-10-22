@@ -2,7 +2,6 @@
 #include "EmuApplication.hpp"
 #include "EmuConfig.hpp"
 #include "fscompat.h"
-#include <tuple>
 
 #include <QMessageBox>
 #include <QDir>

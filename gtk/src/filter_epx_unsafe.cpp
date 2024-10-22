@@ -4,37 +4,31 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#ifdef DEBUGGER
-#include "debug.h"
-#include "missing.h"
-#endif
-
-#include "port.h"
 #include "filter_epx_unsafe.h"
 
 #undef  AVERAGE_565
 #define AVERAGE_565(el0, el1) (((el0) & (el1)) + ((((el0) ^ (el1)) & 0xF7DE) >> 1))
 
 /* Allows vertical overlap. We need this to avoid seams when threading */
-void EPX_16_unsafe (uint8 *srcPtr,
+void EPX_16_unsafe (uint8_t *srcPtr,
                     int srcPitch,
-                    uint8 *dstPtr,
+                    uint8_t *dstPtr,
                     int dstPitch,
                     int width,
                     int height)
 {
-    uint16  colorX, colorA, colorB, colorC, colorD;
-    uint16  *sP, *uP, *lP;
-    uint32  *dP1, *dP2;
+    uint16_t  colorX, colorA, colorB, colorC, colorD;
+    uint16_t  *sP, *uP, *lP;
+    uint32_t  *dP1, *dP2;
     int     w;
 
     for (; height; height--)
     {
-        sP  = (uint16 *) srcPtr;
-        uP  = (uint16 *) (srcPtr - srcPitch);
-        lP  = (uint16 *) (srcPtr + srcPitch);
-        dP1 = (uint32 *) dstPtr;
-        dP2 = (uint32 *) (dstPtr + dstPitch);
+        sP  = (uint16_t *) srcPtr;
+        uP  = (uint16_t *) (srcPtr - srcPitch);
+        lP  = (uint16_t *) (srcPtr + srcPitch);
+        dP1 = (uint32_t *) dstPtr;
+        dP2 = (uint32_t *) (dstPtr + dstPitch);
 
         // left edge
 
@@ -112,25 +106,25 @@ void EPX_16_unsafe (uint8 *srcPtr,
 }
 
 /* Blends with edge pixel instead of just using it directly. */
-void EPX_16_smooth_unsafe (uint8 *srcPtr,
+void EPX_16_smooth_unsafe (uint8_t *srcPtr,
                            int srcPitch,
-                           uint8 *dstPtr,
+                           uint8_t *dstPtr,
                            int dstPitch,
                            int width,
                            int height)
 {
-    uint16  colorX, colorA, colorB, colorC, colorD;
-    uint16  *sP, *uP, *lP;
-    uint32  *dP1, *dP2;
+    uint16_t  colorX, colorA, colorB, colorC, colorD;
+    uint16_t  *sP, *uP, *lP;
+    uint32_t  *dP1, *dP2;
     int     w;
 
     for (; height; height--)
     {
-        sP  = (uint16 *) srcPtr;
-        uP  = (uint16 *) (srcPtr - srcPitch);
-        lP  = (uint16 *) (srcPtr + srcPitch);
-        dP1 = (uint32 *) dstPtr;
-        dP2 = (uint32 *) (dstPtr + dstPitch);
+        sP  = (uint16_t *) srcPtr;
+        uP  = (uint16_t *) (srcPtr - srcPitch);
+        lP  = (uint16_t *) (srcPtr + srcPitch);
+        dP1 = (uint32_t *) dstPtr;
+        dP2 = (uint32_t *) (dstPtr + dstPitch);
 
         // left edge
 

@@ -4,8 +4,6 @@
    For further information, consult the LICENSE file in the root directory.
 \*****************************************************************************/
 
-#include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <filesystem>

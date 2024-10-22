@@ -5,7 +5,6 @@
 \*****************************************************************************/
 
 #include <fcntl.h>
-#include <filesystem>
 
 #include "SDL_joystick.h"
 #include "fscompat.h"

@@ -2,7 +2,6 @@
 #include "slang_helpers.hpp"
 #include <fstream>
 #include <cstring>
-#include <charconv>
 
 static std::string trim_comments(std::string str)
 {

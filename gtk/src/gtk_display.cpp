@@ -13,13 +13,8 @@
 #include "gtk_display_driver_gtk.h"
 
 #include "snes9x.h"
-#include "memmap.h"
-#include "cpuexec.h"
-#include "ppu.h"
 #include "gfx.h"
 #include "netplay.h"
-#include "controls.h"
-#include "movie.h"
 
 #if defined(USE_XV) && defined(GDK_WINDOWING_X11)
 #include "gtk_display_driver_xv.h"

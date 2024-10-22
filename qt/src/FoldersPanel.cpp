@@ -1,5 +1,4 @@
 #include "FoldersPanel.hpp"
-#include "EmuBinding.hpp"
 #include "EmuConfig.hpp"
 #include <QSpinBox>
 #include <QFileDialog>

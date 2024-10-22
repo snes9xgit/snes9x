@@ -3,7 +3,6 @@
 #include "EmuApplication.hpp"
 #include "EmuConfig.hpp"
 #include "SDL_gamecontroller.h"
-#include <optional>
 #include <QtEvents>
 #include <QTimer>
 

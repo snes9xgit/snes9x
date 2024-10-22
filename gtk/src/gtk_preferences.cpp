@@ -14,7 +14,6 @@
 #include "fmt/format.h"
 #include "snes9x.h"
 #include "gfx.h"
-#include "display.h"
 
 #define SAME_AS_GAME gettext("Same location as current game")
 

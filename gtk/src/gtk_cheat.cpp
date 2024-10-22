@@ -7,7 +7,6 @@
 #include "gtk_s9x.h"
 #include "gtk_cheat.h"
 #include "cheats.h"
-#include "display.h"
 
 enum {
     COLUMN_ENABLED = 0,
