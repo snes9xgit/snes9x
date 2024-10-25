@@ -459,8 +459,9 @@ void blendPixel(const Kernel_3x3& ker,
 #undef i
 }
 
+
 template <class Scaler, class ColorDistance> //scaler policy: see "Scaler2x" reference implementation
-alwaysinline void scaleImage(const uint32_t* src, uint32_t* trg, int srcWidth, int srcHeight, const xbrz::ScalerCfg& cfg, int yFirst, int yLast)
+void scaleImage(const uint32_t* src, uint32_t* trg, int srcWidth, int srcHeight, const xbrz::ScalerCfg& cfg, int yFirst, int yLast)
 {
     yFirst = std::max(yFirst, 0);
     yLast  = std::min(yLast, srcHeight);
@@ -1068,7 +1069,6 @@ struct ColorGradientARGB
 };
 }
 
-__attribute__((target_clones("default", "avx2")))
 void xbrz::scale(size_t factor, const uint32_t* src, uint32_t* trg, int srcWidth, int srcHeight, ColorFormat colFmt, const xbrz::ScalerCfg& cfg, int yFirst, int yLast)
 {
     static_assert(SCALE_FACTOR_MAX == 6, "");
