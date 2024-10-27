@@ -50,7 +50,6 @@ class Context
     uint32_t graphics_queue_family_index;
     vk::Queue queue;
     vk::UniqueCommandPool command_pool;
-    vk::UniqueDescriptorPool descriptor_pool;
     std::unique_ptr<Swapchain> swapchain;
     vk::UniqueInstance instance;
     vk::PhysicalDevice physical_device;
@@ -61,7 +60,6 @@ class Context
     bool init_vma();
     bool init_device();
     bool init_command_pool();
-    bool init_descriptor_pool();
     int preferred_device;
 
 #ifdef VK_USE_PLATFORM_XLIB_KHR

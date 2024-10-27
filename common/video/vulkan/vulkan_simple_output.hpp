@@ -25,6 +25,7 @@ class SimpleOutput
     vk::Device device;
     Vulkan::Swapchain *swapchain;
 
+    vk::UniqueDescriptorPool descriptor_pool;
     vk::UniqueDescriptorSetLayout descriptor_set_layout;
     vk::UniquePipelineLayout pipeline_layout;
     vk::UniquePipeline pipeline;

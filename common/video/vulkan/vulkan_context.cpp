@@ -22,7 +22,6 @@ Context::~Context()
     wait_idle();
     swapchain.reset();
     command_pool.reset();
-    descriptor_pool.reset();
     allocator.destroy();
     surface.reset();
     wait_idle();
@@ -179,25 +178,8 @@ bool Context::init()
     init_device();
     init_vma();
     init_command_pool();
-    init_descriptor_pool();
 
     wait_idle();
-    return true;
-}
-
-bool Context::init_descriptor_pool()
-{
-    auto descriptor_pool_size = vk::DescriptorPoolSize{}
-        .setDescriptorCount(9)
-        .setType(vk::DescriptorType::eCombinedImageSampler);
-    auto descriptor_pool_create_info = vk::DescriptorPoolCreateInfo{}
-        .setPoolSizes(descriptor_pool_size)
-        .setMaxSets(20)
-        .setFlags(vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet);
-
-    auto retval = device.createDescriptorPoolUnique(descriptor_pool_create_info);
-    descriptor_pool = std::move(retval.value);
-
     return true;
 }
 

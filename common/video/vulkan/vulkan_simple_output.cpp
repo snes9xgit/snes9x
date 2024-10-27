@@ -48,6 +48,7 @@ SimpleOutput::~SimpleOutput()
     context->wait_idle();
     textures.clear();
     descriptors.clear();
+    descriptor_pool.reset();
     device.destroySampler(linear_sampler);
     device.destroySampler(nearest_sampler);
 }
@@ -55,11 +56,17 @@ SimpleOutput::~SimpleOutput()
 void SimpleOutput::create_objects()
 {
     descriptors.clear();
+    descriptor_pool.reset();
+
+    vk::DescriptorPoolSize descriptor_pool_size(vk::DescriptorType::eCombinedImageSampler, 20);
+    vk::DescriptorPoolCreateInfo dpci(vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet, 20,
+                                      descriptor_pool_size);
+    descriptor_pool = device.createDescriptorPoolUnique(dpci).value;
+
     for (int i = 0; i < queue_size; i++)
     {
-        vk::DescriptorSetAllocateInfo dsai{};
-        dsai
-            .setDescriptorPool(context->descriptor_pool.get())
+        auto dsai = vk::DescriptorSetAllocateInfo{}
+            .setDescriptorPool(descriptor_pool.get())
             .setDescriptorSetCount(1)
             .setSetLayouts(descriptor_set_layout.get());
         auto descriptor = device.allocateDescriptorSetsUnique(dsai).value;
