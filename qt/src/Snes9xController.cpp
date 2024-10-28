@@ -473,7 +473,7 @@ std::string S9xGetFilenameInc(std::string e, enum s9x_getdirtype dirtype)
         i++;
     } while (fs::exists(new_filename));
 
-    return new_filename;
+    return new_filename.string();
 }
 
 bool8 S9xInitUpdate()
@@ -729,7 +729,7 @@ bool Snes9xController::slotUsed(int slot)
 
 bool Snes9xController::loadState(int slot)
 {
-    return loadState(save_slot_path(slot));
+    return loadState(save_slot_path(slot).string());
 }
 
 bool Snes9xController::loadState(std::string filename)
@@ -792,7 +792,7 @@ void Snes9xController::softReset()
 
 bool Snes9xController::saveState(int slot)
 {
-    return saveState(save_slot_path(slot));
+    return saveState(save_slot_path(slot).string());
 }
 
 void Snes9xController::setMessage(std::string message)

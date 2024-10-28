@@ -10,6 +10,10 @@
 #include <qnamespace.h>
 #include <qpa/qplatformnativeinterface.h>
 
+#ifdef Q_OS_WIN
+#include <dwmapi.h>
+#endif
+
 #include "EmuMainWindow.hpp"
 #include "EmuSettingsWindow.hpp"
 #include "EmuApplication.hpp"
@@ -191,6 +195,13 @@ void EmuMainWindow::createWidgets()
 {
     setWindowTitle("Snes9x");
     setWindowIcon(QIcon(":/icons/snes9x.svg"));
+
+#ifdef Q_OS_WIN
+    HWND hwnd = reinterpret_cast<HWND>(winId());
+    DWM_WINDOW_CORNER_PREFERENCE cornerPref = DWMWCP_DONOTROUND;
+    DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, &cornerPref,
+                          sizeof(cornerPref));
+#endif
 
     auto iconset = app->iconPrefix();
 
