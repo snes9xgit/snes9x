@@ -45,7 +45,7 @@ void FoldersPanel::refreshEntry(QComboBox *combo, QLineEdit *lineEdit, QPushButt
     combo->setCurrentIndex(*location);
     if (custom)
     {
-        lineEdit->setText(QString::fromUtf8(*folder));
+        lineEdit->setText(QDir::toNativeSeparators(QString::fromUtf8(*folder)));
     }
     else if (*location == EmuConfig::eConfigDirectory)
     {
@@ -55,6 +55,7 @@ void FoldersPanel::refreshEntry(QComboBox *combo, QLineEdit *lineEdit, QPushButt
         rom_dir = QString::fromStdString(app->getContentFolder());
         if (rom_dir.isEmpty())
             rom_dir = QString::fromStdString(app->config->last_rom_folder);
+        rom_dir = QDir::toNativeSeparators(rom_dir);
 
         lineEdit->setText("ROM Folder: " + rom_dir);
     }
@@ -72,6 +73,7 @@ void FoldersPanel::refreshEntry(QComboBox *combo, QLineEdit *lineEdit, QPushButt
             if (!dialog.exec())
                 return;
             *folder = dialog.selectedFiles().at(0).toUtf8();
+            *folder = QDir::toNativeSeparators(QString::fromUtf8(*folder)).toStdString();
             lineEdit->setText(QString::fromStdString(*folder));
             app->updateSettings();
         });

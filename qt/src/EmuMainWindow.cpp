@@ -522,7 +522,9 @@ void EmuMainWindow::populateRecentlyUsed()
     for (int i = 0; i < app->config->recently_used.size(); i++)
     {
         auto &string = app->config->recently_used[i];
-        auto action = recent_menu->addAction(QString("&%1: %2").arg(i).arg(QString::fromStdString(string)));
+        auto action = recent_menu->addAction(QString("&%1: %2")
+            .arg(i)
+            .arg(QDir::toNativeSeparators(QString::fromStdString(string))));
         connect(action, &QAction::triggered, [&, string] {
             openFile(string);
         });
