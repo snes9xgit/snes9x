@@ -223,7 +223,6 @@ void EmuCanvasVulkan::draw()
     if (retval)
     {
         throttle();
-        context->swapchain->set_vsync(config->enable_vsync);
         context->swapchain->swap();
         if (config->reduce_input_lag)
         {

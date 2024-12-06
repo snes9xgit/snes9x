@@ -203,6 +203,8 @@ void S9xVulkanDisplayDriver::update(uint16_t *buffer, int width, int height, int
     if (!context)
         return;
 
+    context->swapchain->set_vsync(gui_config->sync_to_vblank);
+
     if (S9xImGuiDraw(current_width, current_height))
     {
         ImDrawData *draw_data = ImGui::GetDrawData();
@@ -233,7 +235,6 @@ void S9xVulkanDisplayDriver::update(uint16_t *buffer, int width, int height, int
             throttle.wait_for_frame_and_rebase_time();
         }
 
-        context->swapchain->set_vsync(gui_config->sync_to_vblank);
         context->swapchain->swap();
 
         if (gui_config->reduce_input_lag)
