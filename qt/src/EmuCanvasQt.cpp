@@ -5,8 +5,8 @@
 #include <QtEvents>
 #include <QThread>
 
-EmuCanvasQt::EmuCanvasQt(EmuConfig *config, QWidget *parent, QWidget *main_window)
-    : EmuCanvas(config, parent, main_window)
+EmuCanvasQt::EmuCanvasQt(EmuConfig *config, QWidget *main_window)
+    : EmuCanvas(config, main_window)
 {
     setMinimumSize(256 / devicePixelRatioF(), 224 / devicePixelRatioF());
 }

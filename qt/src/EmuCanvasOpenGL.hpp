@@ -11,7 +11,7 @@ class GLSLShader;
 class EmuCanvasOpenGL : public EmuCanvas
 {
   public:
-    EmuCanvasOpenGL(EmuConfig *config, QWidget *parent, QWidget *main_window);
+    EmuCanvasOpenGL(EmuConfig *config, QWidget *main_window);
     ~EmuCanvasOpenGL();
 
     bool createContext() override;

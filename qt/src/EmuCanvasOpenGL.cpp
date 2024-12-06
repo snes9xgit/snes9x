@@ -46,12 +46,19 @@ void main()
 }
 )";
 
-EmuCanvasOpenGL::EmuCanvasOpenGL(EmuConfig *config, QWidget *parent, QWidget *main_window)
-    : EmuCanvas(config, parent, main_window)
+EmuCanvasOpenGL::EmuCanvasOpenGL(EmuConfig *config, QWidget *main_window)
+    : EmuCanvas(config, main_window)
 {
     setMinimumSize(256 / devicePixelRatioF(), 224 / devicePixelRatioF());
     setUpdatesEnabled(false);
     setAutoFillBackground(false);
+
+    if (QGuiApplication::platformName() == "wayland")
+    {
+        main_window->createWinId();
+        return;
+    }
+
     setAttribute(Qt::WA_NoSystemBackground, true);
     setAttribute(Qt::WA_NativeWindow, true);
     setAttribute(Qt::WA_PaintOnScreen, true);
@@ -133,12 +140,12 @@ bool EmuCanvasOpenGL::createContext()
 #ifndef _WIN32
     if (platform == "wayland")
     {
-        auto display = (wl_display *)pni->nativeResourceForWindow("display", windowHandle());
+        auto display = (wl_display *)pni->nativeResourceForWindow("display", main_window->windowHandle());
         auto surface = (wl_surface *)pni->nativeResourceForWindow("surface", main_window->windowHandle());
         auto wayland_egl_context = new WaylandEGLContext();
         int s = devicePixelRatio();
 
-        if (!wayland_egl_context->attach(display, surface, { parent->x() - main_window->x(), parent->y() - main_window->y(), parent->width(), parent->height(), s }))
+        if (!wayland_egl_context->attach(display, surface, { x() - main_window->x(), y() - main_window->y(), width(), height(), s }))
         {
             printf("Couldn't attach context to wayland surface.\n");
             context.reset();
@@ -306,12 +313,11 @@ void EmuCanvasOpenGL::resizeEvent(QResizeEvent *event)
     if (!context)
         return;
 
-    auto g = parent->geometry();
     int s = devicePixelRatio();
     auto platform = QGuiApplication::platformName();
 #ifndef _WIN32
     if (QGuiApplication::platformName() == "wayland")
-        ((WaylandEGLContext *)context.get())->resize({ g.x() - main_window->x(), g.y() - main_window->y(), g.width(), g.height(), s });
+        ((WaylandEGLContext *)context.get())->resize({ x() - main_window->x(), y() - main_window->y(), width(), height(), s });
     else if (platform == "xcb")
         ((GTKGLXContext *)context.get())->resize();
 #else

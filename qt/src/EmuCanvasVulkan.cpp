@@ -11,12 +11,20 @@
 
 using namespace QNativeInterface;
 
-EmuCanvasVulkan::EmuCanvasVulkan(EmuConfig *config, QWidget *parent, QWidget *main_window)
-    : EmuCanvas(config, parent, main_window)
+EmuCanvasVulkan::EmuCanvasVulkan(EmuConfig *config, QWidget *main_window)
+    : EmuCanvas(config, main_window)
 {
     setMinimumSize(256 / devicePixelRatioF(), 224 / devicePixelRatioF());
     setUpdatesEnabled(false);
     setAutoFillBackground(false);
+
+    if (QGuiApplication::platformName() == "wayland")
+    {
+        main_window->createWinId();
+        window = main_window->windowHandle();
+        return;
+    }
+
     setAttribute(Qt::WA_NoSystemBackground, true);
     setAttribute(Qt::WA_NativeWindow, true);
     setAttribute(Qt::WA_PaintOnScreen, true);
@@ -102,7 +110,7 @@ bool EmuCanvasVulkan::createContext()
         wayland_surface = std::make_unique<WaylandSurface>();
         auto display = (wl_display *)pni->nativeResourceForWindow("display", window);
         auto surface = (wl_surface *)pni->nativeResourceForWindow("surface", main_window->windowHandle());
-        wayland_surface->attach(display, surface, { parent->x() - main_window->x(), parent->y() - main_window->y(), width(), height(), static_cast<int>(devicePixelRatio()) });
+        wayland_surface->attach(display, surface, { x() - main_window->x(), y() - main_window->y(), width(), height(), static_cast<int>(devicePixelRatio()) });
         auto [scaled_width, scaled_height] = wayland_surface->get_size();
 
         context->swapchain->set_desired_size(scaled_width, scaled_height);
@@ -215,6 +223,7 @@ void EmuCanvasVulkan::draw()
     if (retval)
     {
         throttle();
+        context->swapchain->set_vsync(config->enable_vsync);
         context->swapchain->swap();
         if (config->reduce_input_lag)
         {
@@ -236,8 +245,8 @@ void EmuCanvasVulkan::resizeEvent(QResizeEvent *event)
     if (platform == "wayland")
     {
         WaylandSurface::Metrics m = {
-            parent->x() - main_window->x(),
-            parent->y() - main_window->y(),
+            this->x() - main_window->x(),
+            this->y() - main_window->y(),
             event->size().width(),
             event->size().height(),
             (int)devicePixelRatio()

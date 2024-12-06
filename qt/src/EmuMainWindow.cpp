@@ -114,43 +114,9 @@ bool EmuMainWindow::createCanvas()
         app->config->display_driver != "qt")
         app->config->display_driver = "qt";
 
-#ifndef _WIN32
-    if (QGuiApplication::platformName() == "wayland" && app->config->display_driver != "qt")
-    {
-        auto central_widget = new QStackedWidget();
-        setVisible(true);
-        QGuiApplication::processEvents();
-
-        if (app->config->display_driver == "vulkan")
-        {
-            canvas = new EmuCanvasVulkan(app->config.get(), central_widget, this);
-            QGuiApplication::processEvents();
-            if (!canvas->createContext())
-            {
-                delete canvas;
-                return fallback();
-            }
-        }
-        else if (app->config->display_driver == "opengl")
-        {
-            canvas = new EmuCanvasOpenGL(app->config.get(), central_widget, this);
-            QGuiApplication::processEvents();
-            app->emu_thread->runOnThread([&] { canvas->createContext(); }, true);
-        }
-
-        central_widget->addWidget(canvas);
-        central_widget->setCurrentWidget(canvas);
-        setCentralWidget(central_widget);
-        using_stacked_widget = true;
-        QGuiApplication::processEvents();
-
-        return true;
-    }
-#endif
-
     if (app->config->display_driver == "vulkan")
     {
-        canvas = new EmuCanvasVulkan(app->config.get(), this, this);
+        canvas = new EmuCanvasVulkan(app->config.get(), this);
         QGuiApplication::processEvents();
         if (!canvas->createContext())
         {
@@ -160,12 +126,12 @@ bool EmuMainWindow::createCanvas()
     }
     else if (app->config->display_driver == "opengl")
     {
-        canvas = new EmuCanvasOpenGL(app->config.get(), this, this);
+        canvas = new EmuCanvasOpenGL(app->config.get(), this);
         QGuiApplication::processEvents();
         app->emu_thread->runOnThread([&] { canvas->createContext(); }, true);
     }
     else
-        canvas = new EmuCanvasQt(app->config.get(), this, this);
+        canvas = new EmuCanvasQt(app->config.get(), this);
 
     setCentralWidget(canvas);
     using_stacked_widget = false;

@@ -8,7 +8,7 @@ class EmuConfig;
 class EmuCanvas : public QWidget
 {
   public:
-    EmuCanvas(EmuConfig *config, QWidget *parent, QWidget *main_window);
+    EmuCanvas(EmuConfig *config, QWidget *main_window);
     ~EmuCanvas();
 
     virtual void deinit() = 0;
@@ -71,7 +71,6 @@ class EmuCanvas : public QWidget
         double frame_rate;
     } output_data;
 
-    QWidget *parent{};
     QWidget *main_window{};
     EmuConfig *config{};
     Throttle throttle_object;

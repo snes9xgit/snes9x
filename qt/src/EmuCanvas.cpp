@@ -3,8 +3,8 @@
 #include <qnamespace.h>
 #include <qwidget.h>
 
-EmuCanvas::EmuCanvas(EmuConfig *config, QWidget *parent, QWidget *main_window)
-    : QWidget(parent)
+EmuCanvas::EmuCanvas(EmuConfig *config, QWidget *main_window)
+    : config(config), main_window(main_window)
 {
     setFocus();
     setFocusPolicy(Qt::StrongFocus);
@@ -12,9 +12,6 @@ EmuCanvas::EmuCanvas(EmuConfig *config, QWidget *parent, QWidget *main_window)
 
     output_data.buffer = nullptr;
     output_data.ready = false;
-    this->config = config;
-    this->parent = parent;
-    this->main_window = main_window;
 }
 
 EmuCanvas::~EmuCanvas()

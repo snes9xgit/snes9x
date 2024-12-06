@@ -13,7 +13,7 @@
 class EmuCanvasVulkan : public EmuCanvas
 {
   public:
-    EmuCanvasVulkan(EmuConfig *config, QWidget *parent, QWidget *main_window);
+    EmuCanvasVulkan(EmuConfig *config, QWidget *main_window);
     ~EmuCanvasVulkan();
 
     bool createContext() override;
