@@ -89,7 +89,6 @@ bool EmuCanvasVulkan::createContext()
 
     platform = QGuiApplication::platformName();
     auto pni = QGuiApplication::platformNativeInterface();
-    setVisible(true);
     QGuiApplication::sync();
 
     context = std::make_unique<Vulkan::Context>();
