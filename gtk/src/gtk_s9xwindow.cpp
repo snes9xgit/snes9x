@@ -520,7 +520,7 @@ void Snes9xWindow::focus_notify(bool state)
 {
     focused = state;
 
-    if (!state && config->pause_emulation_on_switch)
+    if (!state && config->pause_emulation_on_switch && !paused_from_focus_loss)
     {
         sys_pause++;
         propagate_pause_state();
