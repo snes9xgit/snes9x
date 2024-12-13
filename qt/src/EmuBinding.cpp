@@ -1,7 +1,7 @@
 #include "EmuBinding.hpp"
-#include "SDL_joystick.h"
 #include <QString>
 #include <QKeySequence>
+#include "SDL3/SDL.h"
 
 // Hash format:
 //

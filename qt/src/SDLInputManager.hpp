@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SDL.h"
+#include "SDL3/SDL.h"
 #include <map>
 #include <vector>
 #include <string>
@@ -12,8 +12,8 @@ struct SDLInputDevice
 
     int index;
     int sdl_joystick_number;
-    bool is_controller;
-    SDL_GameController *controller = nullptr;
+    bool is_gamepad;
+    SDL_Gamepad *gamepad = nullptr;
     SDL_Joystick *joystick = nullptr;
     SDL_JoystickID instance_id;
 

@@ -2,7 +2,7 @@
 #include "EmuMainWindow.hpp"
 #include "SDLInputManager.hpp"
 #include "Snes9xController.hpp"
-#include "common/audio/s9x_sound_driver_sdl.hpp"
+#include "common/audio/s9x_sound_driver_sdl3.hpp"
 #include "common/audio/s9x_sound_driver_cubeb.hpp"
 #ifdef USE_PULSEAUDIO
 #include "common/audio/s9x_sound_driver_pulse.hpp"
@@ -42,7 +42,7 @@ void EmuApplication::restartAudio()
     if (!sound_driver)
     {
         config->sound_driver = "sdl";
-        sound_driver = std::make_unique<S9xSDLSoundDriver>();
+        sound_driver = std::make_unique<S9xSDL3SoundDriver>();
     }
 
     sound_driver->init();
@@ -432,12 +432,12 @@ void EmuApplication::pollJoysticks()
 
         switch (event->type)
         {
-        case SDL_JOYDEVICEADDED:
-        case SDL_JOYDEVICEREMOVED:
+        case SDL_EVENT_JOYSTICK_ADDED:
+        case SDL_EVENT_JOYSTICK_REMOVED:
             if (joypads_changed_callback)
                 joypads_changed_callback();
             break;
-        case SDL_JOYAXISMOTION: {
+        case SDL_EVENT_JOYSTICK_AXIS_MOTION: {
             auto axis_event = input_manager->DiscretizeJoyAxisEvent(event.value());
             if (axis_event)
             {
@@ -450,13 +450,13 @@ void EmuApplication::pollJoysticks()
             }
             break;
         }
-        case SDL_JOYBUTTONDOWN:
-        case SDL_JOYBUTTONUP:
+        case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
+        case SDL_EVENT_JOYSTICK_BUTTON_UP:
             reportBinding(EmuBinding::joystick_button(
                               input_manager->devices[event->jbutton.which].index,
-                              event->jbutton.button), event->jbutton.state == 1);
+                              event->jbutton.button), event->jbutton.down == 1);
             break;
-        case SDL_JOYHATMOTION:
+        case SDL_EVENT_JOYSTICK_HAT_MOTION:
             auto hat_event = input_manager->DiscretizeHatEvent(event.value());
             if (hat_event)
             {
