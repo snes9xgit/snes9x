@@ -11,6 +11,8 @@
 bool S9xSDL3SoundDriver::write_samples(int16_t *data, int samples)
 {
     bool retval = true;
+
+    mutex.lock();
     auto empty = buffer.space_empty();
     if (samples > empty)
     {
@@ -18,6 +20,7 @@ bool S9xSDL3SoundDriver::write_samples(int16_t *data, int samples)
         buffer.dump(buffer.buffer_size / 2 - empty);
     }
     buffer.push(data, samples);
+    mutex.unlock();
 
     return retval;
 }
@@ -27,18 +30,22 @@ void S9xSDL3SoundDriver::mix(int req, int total)
     if (tmp.size() < req / 2)
         tmp.resize(req / 2);
 
+    mutex.lock();
     if (buffer.avail() >= req / 2)
     {
 
         buffer.read((int16_t *)(tmp.data()), req / 2);
+        mutex.unlock();
         SDL_PutAudioStreamData(stream, tmp.data(), req);
     }
     else
     {
         auto avail = buffer.avail();
         buffer.read((int16_t *)(tmp.data()), avail);
-        SDL_PutAudioStreamData(stream, tmp.data(), avail * 2);
         buffer.add_silence(buffer.buffer_size / 2);
+        mutex.unlock();
+        SDL_PutAudioStreamData(stream, tmp.data(), avail * 2);
+
     }
 }
 
