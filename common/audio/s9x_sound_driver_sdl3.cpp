@@ -102,7 +102,7 @@ bool S9xSDL3SoundDriver::open_device(int playback_rate, int buffer_size)
     if (buffer_size < 32)
         buffer_size = 32;
 
-    buffer.resize(buffer_size * 4 * audiospec.freq / 1000);
+    buffer.resize(buffer_size * 2 * audiospec.freq / 1000);
 
     return true;
 }
