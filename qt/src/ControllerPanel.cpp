@@ -141,6 +141,8 @@ void ControllerPanel::autoPopulateWithJoystick(int joystick_id, int slot)
         else if (SDL_GAMEPAD_BINDTYPE_AXIS == sdl_binding.input_type)
             buttons[4 * i + slot] = EmuBinding::joystick_axis(device.index, sdl_binding.input.axis.axis, sdl_binding.input.axis.axis);
     }
+    SDL_free(bindings);
+
     fillTable();
     app->updateBindings();
 }
