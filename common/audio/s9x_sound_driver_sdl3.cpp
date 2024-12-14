@@ -6,6 +6,7 @@
 
 #include "s9x_sound_driver_sdl3.hpp"
 #include "SDL3/SDL_audio.h"
+#include <cstdio>
 #include <vector>
 
 bool S9xSDL3SoundDriver::write_samples(int16_t *data, int samples)

@@ -110,10 +110,10 @@ void ControllerPanel::autoPopulateWithJoystick(int joystick_id, int slot)
                                        SDL_GAMEPAD_BUTTON_DPAD_LEFT,
                                        SDL_GAMEPAD_BUTTON_DPAD_RIGHT,
                                        // B, A and X, Y are inverted on XInput vs SNES
-                                       SDL_GAMEPAD_BUTTON_SOUTH,
                                        SDL_GAMEPAD_BUTTON_EAST,
-                                       SDL_GAMEPAD_BUTTON_WEST,
+                                       SDL_GAMEPAD_BUTTON_SOUTH,
                                        SDL_GAMEPAD_BUTTON_NORTH,
+                                       SDL_GAMEPAD_BUTTON_WEST,
                                        SDL_GAMEPAD_BUTTON_LEFT_SHOULDER,
                                        SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER,
                                        SDL_GAMEPAD_BUTTON_START,
@@ -125,7 +125,8 @@ void ControllerPanel::autoPopulateWithJoystick(int joystick_id, int slot)
     auto get_binding_for_button = [&](SDL_GamepadButton button) -> SDL_GamepadBinding
     {
         for (int i = 0; i < num_bindings; i++)
-            if (bindings[i]->output.button == button)
+            if (bindings[i]->output_type == SDL_GAMEPAD_BINDTYPE_BUTTON &&
+                bindings[i]->output.button == button)
                 return *bindings[i];
         return SDL_GamepadBinding{};
     };
