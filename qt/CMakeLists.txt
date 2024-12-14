@@ -154,17 +154,32 @@ else()
     ../external/glad/src/egl.c)
 endif()
 
-if(NOT (${CMAKE_SYSTEM_NAME} STREQUAL "Windows"))
-    set(SDL_UNIX_CONSOLE_BUILD BOOL ON FORCE)
+find_package(SDL3 QUIET)
+if (SDL3_FOUND AND (NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Windows"))
+    message("Using system SDL3.")
+    list(APPEND LIBS SDL3::SDL3)
+    list(APPEND INCLUDES ${SDL3_INCLUDE_DIRS})
+else()
+    include(FetchContent)
+    FetchContent_Declare(
+        SDL3
+        GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+        GIT_TAG 313d522f39c5b6aa9fa3498d41c75c7d560250da
+        GIT_SHALLOW TRUE
+        GIT_PROGRESS TRUE
+        EXCLUDE_FROM_ALL
+    )
+    message(STATUS "Using SDL3 via FetchContent")
+    set(SDL_UNIX_CONSOLE_BUILD FORCE CACHE BOOL ON)
+    set(SDL_GPU CACHE BOOL OFF)
+    set(SDL_VIDEO CACHE BOOL OFF)
+    set(SDL_RENDER CACHE BOOL OFF)
+    set(SDL_SHARED BOOL FALSE)
+    set(SDL_STATIC BOOL TRUE)
+    FetchContent_MakeAvailable(SDL3)
+    list(APPEND INCLUDES ${SDL3_SOURCE_DIR}/include)
+    list(APPEND LIBS SDL3::SDL3-static)
 endif()
-set(SDL_GPU CACHE BOOL OFF FORCE)
-set(SDL_VIDEO CACHE BOOL OFF FORCE)
-set(SDL_RENDER CACHE BOOL OFF FORCE)
-set(SDL_SHARED BOOL OFF FORCE)
-set(SDL_STATIC BOOL ON FORCE)
-add_subdirectory("../external/SDL" "SDL" EXCLUDE_FROM_ALL)
-list(APPEND LIBS SDL3-static)
-list(APPEND INCLUDES ../external/SDL/include)
 
 list(APPEND DEFINES SDL_MAIN_HANDLED)
 
