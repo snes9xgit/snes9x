@@ -386,6 +386,10 @@ void EmuApplication::handleBinding(std::string name, bool pressed)
     {
         window->openFile();
     }
+    else if (name == "Quit" && pressed)
+    {
+        window->close();
+    }
 }
 
 bool EmuApplication::isBound(EmuBinding b)
