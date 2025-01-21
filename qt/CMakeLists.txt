@@ -164,7 +164,7 @@ else()
     FetchContent_Declare(
         SDL3
         GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-        GIT_TAG 313d522f39c5b6aa9fa3498d41c75c7d560250da
+        GIT_TAG release-3.2.0
         GIT_SHALLOW TRUE
         GIT_PROGRESS TRUE
         EXCLUDE_FROM_ALL
