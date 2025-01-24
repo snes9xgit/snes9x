@@ -226,6 +226,7 @@ void EmuCanvasVulkan::draw()
         if (config->reduce_input_lag)
         {
             context->wait_idle();
+            context->swapchain->present_wait();
         }
     }
 }

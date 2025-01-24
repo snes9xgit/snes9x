@@ -364,6 +364,14 @@ bool Swapchain::swap()
         .setSwapchains(swapchain_object.get())
         .setImageIndices(current_swapchain_image);
 
+    vk::PresentIdKHR present_id;
+    if (context.have_present_wait)
+    {
+        presentation_id++;
+        present_id.setPresentIds(presentation_id);
+        present_info.setPNext(&present_id);
+    }
+
     vk::Result result = queue.presentKHR(present_info);
     if (result == vk::Result::eErrorOutOfDateKHR)
     {
@@ -428,6 +436,14 @@ vk::Extent2D Swapchain::get_extents()
 vk::RenderPass &Swapchain::get_render_pass()
 {
     return render_pass.get();
+}
+
+void Swapchain::present_wait()
+{
+    if (context.have_present_wait && context.platform_name != "wayland")
+    {
+        device.waitForPresentKHR(swapchain_object.get(), presentation_id, 16666666);
+    }
 }
 
 } // namespace Vulkan

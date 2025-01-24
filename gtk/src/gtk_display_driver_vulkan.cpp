@@ -238,7 +238,10 @@ void S9xVulkanDisplayDriver::update(uint16_t *buffer, int width, int height, int
         context->swapchain->swap();
 
         if (gui_config->reduce_input_lag)
+        {
             context->wait_idle();
+            context->swapchain->present_wait();
+        }
     }
 }
 
