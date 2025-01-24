@@ -123,6 +123,7 @@ bool Context::init_Xlib()
     if (!instance)
         return false;
 
+    platform_name = "xlib";
     return init();
 }
 
@@ -144,6 +145,7 @@ bool Context::init_wayland()
     if (!instance)
         return false;
 
+    platform_name = "wayland";
     return init();
 }
 

@@ -105,9 +105,13 @@ static bool vector_find(std::vector<T> haystack, T&& needle)
 vk::PresentModeKHR Swapchain::get_present_mode() {
     auto present_mode = vk::PresentModeKHR::eFifo;
 
-    if (!vsync) {
+    if (context.platform_name == "wayland")
+    {
         if (supports_mailbox)
             present_mode = vk::PresentModeKHR::eMailbox;
+    }
+
+    if (!vsync) {
         if (supports_immediate)
             present_mode = vk::PresentModeKHR::eImmediate;
     }
@@ -156,6 +160,13 @@ bool Swapchain::create()
     frames.clear();
     image_data.clear();
 
+    auto present_modes = physical_device.getSurfacePresentModesKHR(surface).value;
+    for (auto &mode : present_modes)
+    {
+        if (mode == vk::PresentModeKHR::eMailbox)
+            supports_mailbox = true;
+    }
+
     auto surface_capabilities = physical_device.getSurfaceCapabilitiesKHR(surface).value;
 
     if (desired_latency == - 1 || (int)surface_capabilities.minImageCount > desired_latency)
@@ -185,22 +196,21 @@ bool Swapchain::create()
         extents.width = desired_width;
         extents.height = desired_height;
     }
-    else if (extents.width < 1 || extents.height < 1)
+
+    extents.width = std::clamp(extents.width,
+                               surface_capabilities.minImageExtent.width,
+                               surface_capabilities.maxImageExtent.width);
+    extents.height = std::clamp(extents.height,
+                                surface_capabilities.minImageExtent.height,
+                                surface_capabilities.maxImageExtent.height);
+
+    if (extents.width < 1 || extents.height < 1)
     {
         // Surface is likely hidden
         printf("Extents too small.\n");
         swapchain_object.reset();
         return false;
     }
-
-    if (extents.width > surface_capabilities.maxImageExtent.width)
-        extents.width = surface_capabilities.maxImageExtent.width;
-    if (extents.height > surface_capabilities.maxImageExtent.height)
-        extents.height = surface_capabilities.maxImageExtent.height;
-    if (extents.width < surface_capabilities.minImageExtent.width)
-        extents.width = surface_capabilities.minImageExtent.width;
-    if (extents.height < surface_capabilities.minImageExtent.height)
-        extents.height = surface_capabilities.minImageExtent.height;
 
     auto swapchain_create_info = vk::SwapchainCreateInfoKHR{}
         .setMinImageCount(num_swapchain_images)
