@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-29 23:56+0100\n"
-"PO-Revision-Date: 2025-02-08 19:07+0100\n"
+"PO-Revision-Date: 2025-02-08 19:28+0100\n"
 "Last-Translator: Daniel Nylander <github@danielnylander.se>\n"
 "Language-Team: \n"
 "Language: sv\n"
@@ -186,9 +186,8 @@ msgid "{0:Ld} Hz"
 msgstr "{0:Ld} Hz"
 
 #: src/gtk_preferences.cpp:379
-#, fuzzy
 msgid "Select Shader File"
-msgstr "Välj Shader-fil"
+msgstr "Välj shader-fil"
 
 #: src/gtk_preferences.cpp:720
 #, fuzzy
@@ -449,9 +448,8 @@ msgid "Color bars and patterns"
 msgstr "Färgfält och mönster"
 
 #: src/snes9x.ui:821
-#, fuzzy
 msgid "Starfield"
-msgstr "Stjärnfältet"
+msgstr "Stjärnfält"
 
 #: src/snes9x.ui:824
 msgid "Snow"
@@ -758,9 +756,8 @@ msgid "Save SPC…"
 msgstr "Spara SPC…"
 
 #: src/snes9x.ui:1540
-#, fuzzy
 msgid "Show ROM _Info…"
-msgstr "Visa ROM _Info.."
+msgstr "Visa ROM-_info…"
 
 #: src/snes9x.ui:1557
 msgid "gtk-quit"
@@ -1111,9 +1108,8 @@ msgid "The size of on‑screen display messages in pixels"
 msgstr "Storleken på meddelanden på skärmen i pixlar"
 
 #: src/snes9x.ui:2940
-#, fuzzy
 msgid "Change fullscreen resolution:"
-msgstr "Ändra upplösning för helskärm:"
+msgstr "Ändra helskärmsupplösning:"
 
 #: src/snes9x.ui:2944
 #, fuzzy
@@ -1704,9 +1700,8 @@ msgid "Hardware reset"
 msgstr "Återställning av hårdvara"
 
 #: src/snes9x.ui:6821
-#, fuzzy
 msgid "Increase frame time"
-msgstr "Öka ramtiden"
+msgstr "Öka bildtid"
 
 #: src/snes9x.ui:6835
 #, fuzzy
@@ -1714,9 +1709,8 @@ msgid "Decrease frame time"
 msgstr "Minska ramtiden"
 
 #: src/snes9x.ui:6849
-#, fuzzy
 msgid "Increase frame rate"
-msgstr "Öka bildfrekvensen"
+msgstr "Öka bildfrekvens"
 
 #: src/snes9x.ui:6863
 #, fuzzy
@@ -1728,7 +1722,6 @@ msgid "Pause"
 msgstr "Paus"
 
 #: src/snes9x.ui:6891
-#, fuzzy
 msgid "Toggle turbo"
 msgstr "Växla turbo"
 
@@ -1907,9 +1900,8 @@ msgid "Load Movie"
 msgstr "Läs in film"
 
 #: src/snes9x.ui:8783
-#, fuzzy
 msgid "Stop movie recording"
-msgstr "Stoppa filminspelningen"
+msgstr "Stoppa filminspelning"
 
 #: src/snes9x.ui:8798
 #, fuzzy
